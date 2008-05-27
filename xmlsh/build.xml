@@ -23,7 +23,7 @@
 
   
     <target name="compile" description="Compilation target">
-    	
+  		<mkdir dir="_out"/>
     	 <javac destdir="_out" debug="on" source="1.5" target="1.5">
     	        <src path="src/core" />
     	 		<src path="src/shell"/>
@@ -59,7 +59,7 @@
   		
   		<mkdir dir="${dist}"/>
 		<zip destfile="${dist}/xmlsh_${release}.zip" >
-			<zipfileset dir="." includes="bin/** test/** doc/** win32/** lib/** unix/** license.txt" 
+			<zipfileset dir="." includes="bin/** test/** doc/** win32/** lib/** unix/** notices/** license.txt" 
 					excludes="**/sh_histo" prefix="xmlsh_${release}"/>
   		</zip>
 		<zip destfile="${dist}/xmlsh_src_${release}.zip" >

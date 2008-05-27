@@ -2,10 +2,10 @@ empty sequence
 1 2 string <foo>bar</foo>
 the following crashes saxon sometimes
 <bar>
-   <foo>value</foo>
+   <foo a1="attribute">value</foo>
 </bar>
-for: 1 string <simple/> <foo>value</foo>
+for: 1 string <simple/> <foo a1="attribute">value</foo>
 for: 2 3 4
 Number of params: 2
-<foo>value</foo>
+<foo a1="attribute">value</foo>
 second arg

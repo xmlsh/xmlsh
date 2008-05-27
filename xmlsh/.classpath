@@ -8,5 +8,5 @@
 	<classpathentry kind="lib" path="lib/saxon9.jar"/>
 	<classpathentry kind="lib" path="lib/saxon9-dom.jar"/>
 	<classpathentry kind="lib" path="lib/saxon9-s9api.jar"/>
-	<classpathentry kind="output" path="bin"/>
+	<classpathentry kind="output" path="_out"/>
 </classpath>

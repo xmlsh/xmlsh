@@ -12,9 +12,8 @@ echo <[1,2,"string",<foo>bar</foo>]>
 # constructed element 
 #
 echo the following crashes saxon sometimes
-#X=<[<foo a1='{$B}'>{$A}</foo>]>
-#
-X=<[<foo>{$A}</foo>]>
+X=<[<foo a1='{$B}'>{$A}</foo>]>
+#X=<[<foo>{$A}</foo>]>
 echo <[<bar>{$X}</bar>]>
 
 # for loop with sequences

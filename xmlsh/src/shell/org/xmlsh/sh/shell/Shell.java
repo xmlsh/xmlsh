@@ -43,6 +43,12 @@ public class Shell {
 
 	
 	static {
+		
+	 /*
+	     * Workaround a saxon bug - pre-initialize processor
+	     */
+		 getProcessor();
+	
 		SystemEnvironment.getInstance().setProperty("user.dir", System.getProperty("user.dir"));
 		System.setProperties( new SystemProperties(System.getProperties()));
 		PropertyConfigurator.configure(Shell.class.getResource("log4j.properties"));
@@ -224,7 +230,9 @@ public class Shell {
 	}
 
 	public static void main(String args[]) throws Exception {
-	    Shell shell = new Shell();
+	 	
+		
+		Shell shell = new Shell();
 	    
 	    // Export path to shell path
 	    String path = System.getenv("PATH");
