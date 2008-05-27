@@ -1,0 +1,78 @@
+<?xml version="1.0" ?>
+<project default="main">
+
+	
+    <target name="main" depends="clean, compile, jar" description="Main target">
+        <echo>
+            Building xmlsh
+        </echo>
+    </target>
+	
+	
+	<property name="dist" location="_dist"/>
+	 <tstamp prefix="bdate"/>
+	<property name="release" value="pre_${bdate.DSTAMP}"/>
+		
+	<target name="clean" description="Clean all">
+		  <delete includeEmptyDirs="true" quiet="true">
+		    <fileset dir="${dist}"/>
+		  	<fileset dir="_out" includes="**/*" />
+		  	<fileset dir="test" includes="**/_out.txt"/>
+		  </delete>
+	</target>
+
+  
+    <target name="compile" description="Compilation target">
+    	
+    	 <javac destdir="_out" debug="on" source="1.5" target="1.5">
+    	        <src path="src/core" />
+    	 		<src path="src/shell"/>
+        	 	<src path="src/commands"/>
+    	 	<classpath>
+    				<fileset dir="lib">
+    	                  	<include name="**/*.jar"/>
+    				</fileset>
+    	            </classpath>
+    	        </javac>
+    	 <copy todir="_out" filtering="on">
+    	            <fileset dir="src/shell">
+    	                <include name="**/*.properties"/>
+    	            </fileset>
+    	        </copy>
+
+   	</target>
+  
+  <target name="jar" description="Build JAR - jar">
+        <jar jarfile="bin/xmlsh.jar" basedir="_out" />
+
+  </target>
+  <target name="test" description="Test Cases">
+  	<java 
+  		classname="org.xmlsh.sh.shell.Shell"
+  		classpath="bin/xmlsh.jar;lib/log4j-1.2.7.jar;lib/saxon9.jar;lib/saxon9-s9api.jar"
+  		fork="true"
+  	    dir="test">
+  			<arg value="./run_tests.xsh"/>
+  	</java>
+  </target>
+  <target name="dist" description="Create Distribution">
+  		
+  		<mkdir dir="${dist}"/>
+		<zip destfile="${dist}/xmlsh_${release}.zip" >
+			<zipfileset dir="." includes="bin/** test/** doc/** win32/** lib/** unix/** license.txt" 
+					excludes="**/sh_histo" prefix="xmlsh_${release}"/>
+  		</zip>
+		<zip destfile="${dist}/xmlsh_src_${release}.zip" >
+			<zipfileset dir="." includes="*/**" 
+				excludes="**/sh_histo _out/** bin/** _dist/** lib/**"  prefix="xmlsh_${release}"/>
+		</zip>
+  	
+		<tar destfile="${dist}/xmlsh_${release}.tar.gz" compression="gzip">
+  		  <zipfileset src="_dist/xmlsh_${release}.zip"/>
+  		</tar>
+		<tar destfile="${dist}/xmlsh_src_${release}.tar.gz" compression="gzip">
+		  <zipfileset src="_dist/xmlsh_src_${release}.zip"/>
+		</tar>
+
+  </target>
+</project>

@@ -1,0 +1,152 @@
+/**
+ * $Id: $
+ * $DateTime: $
+ *
+ */
+
+package org.xmlsh.commands;
+
+import java.io.FileInputStream;
+import java.util.List;
+
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
+
+import net.sf.saxon.s9api.Processor;
+import net.sf.saxon.s9api.QName;
+import net.sf.saxon.s9api.Serializer;
+import net.sf.saxon.s9api.XsltCompiler;
+import net.sf.saxon.s9api.XsltExecutable;
+import net.sf.saxon.s9api.XsltTransformer;
+import org.xmlsh.core.Options;
+import org.xmlsh.core.XCommand;
+import org.xmlsh.core.XEnvironment;
+import org.xmlsh.core.XValue;
+import org.xmlsh.core.Options.OptionValue;
+import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.sh.shell.ShellURIResolver;
+import org.xmlsh.util.XMLException;
+
+
+
+public class xslt extends XCommand {
+
+	@Override
+	public int run(XValue[] args, XEnvironment env)
+	throws Exception 
+	{
+		
+		Options opts = new Options( "f:,i:,n,V" , args );
+		opts.parse();
+		
+		Processor  processor  = Shell.getProcessor();
+		
+		XsltCompiler compiler = processor.newXsltCompiler();
+		Source	context = null;
+		
+		
+		boolean bReadStdin = false ;
+		if( ! opts.hasOpt("n" ) ){ // Has XML data input
+			OptionValue ov = opts.getOpt("i");
+
+			if( ov != null && ! ov.getValue().toString().equals("-"))
+				context = new StreamSource(env.getFile(ov.getValue()));
+			else {
+				bReadStdin = true ;
+				context = new StreamSource( env.getStdin());
+			}	
+		
+		}
+		
+		Source source = null;
+		
+		
+		List<XValue> xvargs = opts.getRemainingArgs();
+		
+		OptionValue ov = opts.getOpt("f");
+		if( ov != null ){
+			String fname = ov.getValue().toString();
+			if( fname.equals("-")){
+				if( bReadStdin )
+					throwInvalidArg( env , "Cannot read both xslt and context from stdin");
+			
+				source = new StreamSource(env.getStdin());
+			}
+			else
+				source =  new StreamSource( new FileInputStream( env.getShell().getFile(fname)));
+	
+
+		}
+
+		
+		if( source == null ){
+			throwInvalidArg(env,"No xslt source specified");
+		}
+		
+		
+
+		XsltExecutable expr = compiler.compile( source );
+		
+		compiler.setURIResolver( new ShellURIResolver( compiler.getURIResolver()));
+		XsltTransformer eval = expr.load();
+		if( context != null )
+			eval.setSource(  context  );
+		
+		
+		if( opts.hasOpt("V")){
+			// Read pairs from args to set
+			for( int i = 0 ; i < xvargs.size()/2 ; i++ ){
+				String name = xvargs.get(i*2).toString();
+				XValue value = xvargs.get(i*2+1);
+				
+				eval.setParameter( new QName(name),  value.toXdmValue() );	
+			}			
+		}
+			
+		Serializer dest = new Serializer();
+		dest.setOutputProperty( Serializer.Property.OMIT_XML_DECLARATION, "yes");
+		dest.setOutputStream(env.getStdout());
+		eval.setDestination(dest);
+		
+		eval.transform();
+
+		
+		return 0;
+		
+
+	}
+
+
+	/**
+	 * @param args
+	 * @throws XMLException 
+	 */
+	public static void main(String[] args) throws Exception {
+		xslt cmd = new xslt();
+		
+		cmd.run( args );
+		
+	}
+
+}
+
+//
+//
+//Copyright (C) 2008, David A. Lee.
+//
+//The contents of this file are subject to the "Simplified BSD License" (the "License");
+//you may not use this file except in compliance with the License. You may obtain a copy of the
+//License at http://www.opensource.org/licenses/bsd-license.php 
+//
+//Software distributed under the License is distributed on an "AS IS" basis,
+//WITHOUT WARRANTY OF ANY KIND, either express or implied.
+//See the License for the specific language governing rights and limitations under the License.
+//
+//The Original Code is: all this file.
+//
+//The Initial Developer of the Original Code is David A. Lee
+//
+//Portions created by (your name) are Copyright (C) (your legal entity). All Rights Reserved.
+//
+//Contributor(s): none.
+//

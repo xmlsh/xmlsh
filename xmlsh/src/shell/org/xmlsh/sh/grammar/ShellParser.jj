@@ -1,0 +1,815 @@
+/**
+ * JavaCC file
+ */
+ 
+options {
+  JDK_VERSION = "1.5";
+
+  STATIC=false;
+  
+// DEBUG_PARSER=true;
+// DEBUG_LOOKAHEAD=true;
+// DEBUG_TOKEN_MANAGER=true;
+// FORCE_LA_CHECK=true;
+  
+} 
+PARSER_BEGIN(ShellParser)
+package org.xmlsh.sh.grammar;
+import org.xmlsh.sh.core.*;
+ 
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import org.xmlsh.core.XEnvironment;
+ 
+public class ShellParser {
+  
+}
+PARSER_END(ShellParser)
+
+TOKEN_MGR_DECLS :
+{
+  String here_end = "EOF";
+  boolean in_for = false ;
+  
+  private String readXExpr()
+  {
+  	StringBuffer sb = new StringBuffer("<[");
+  	char c;
+  	try {
+	  	while( (c=input_stream.readChar())> 0 ) {
+	  		sb.append(c);
+	  		if( sb.toString().endsWith( "]>") )
+	  			break;	
+	  	}
+  	} catch( Exception e ){}
+  	return sb.toString();
+  }
+  
+  
+}
+
+/*
+ LEXICAL STATES: 
+ 
+ <DEFAULT> - The beginning of a line or command.  Most reserved words are only
+    recocongized in this state (for,if, else ... )
+    
+ <CMD>	   - After the first word of a command is started
+ <HERE>	   - A HERE DOCUMENT has been started ( <<-EOF )
+ 
+*/
+
+
+<DEFAULT,CMD> SKIP :
+{
+ 	" "
+|	"\r"
+|	"\t"
+}
+
+
+<DEFAULT,CMD> TOKEN : {
+    < NEWLINE: "\n" >
+    : DEFAULT 
+}
+
+/* COMMENTS */
+
+<*> SPECIAL_TOKEN :
+{
+  <SINGLE_LINE_COMMENT: "#" (~["\n"])*  >
+  : DEFAULT
+}
+
+<DEFAULT> TOKEN : {
+		< CSEMI : ";" >
+}
+
+
+
+
+<CMD> TOKEN : { 
+    < AND_IF: "&&" > : DEFAULT 
+|   < OR_IF: "||" >  : DEFAULT 
+|   < DSEMI: ";;" >  : DEFAULT 
+
+}
+
+<CMD> TOKEN : {
+    < DLESS: "<<" >
+|   < DGREAT: ">>" >
+|   < LESSAND: "<&" >
+|   < GREATAND: ">&" >
+|   < LESSGREAT: "<>" >
+|   < DLESSDASH: "<<-" >
+}
+
+<CMD> TOKEN : {
+    < CLOBBER: ">|" >
+}
+
+TOKEN : {
+    < IF: "if" >
+|   < ELIF: "elif" >
+|   < THEN: "then" >
+|	< ELSE: "else" >
+|   < FI:   "fi" >
+|   < DO:   "do" >
+|   < DONE:  "done" >
+|   < CASE: "case" > 
+|   < ESAC: "esac" >
+|	< WHILE: "while" >
+|	< UNTIL: "until" >
+|	< FOR: "for" > { in_for = true ; }
+}
+
+<DEFAULT> TOKEN : {
+    < LBRACE: "{" >			// RESERVED WORD only at beginning of command
+|   < BANG: "!" >
+| 	< LPAREN: "(" >
+}
+
+
+<DEFAULT> TOKEN : {
+	< RBRACE: "}" >	: CMD	// RESERVED WORD only at beginning of command and starts a command    
+}
+
+<CMD> TOKEN : {
+    < IN: "in" > {  if( ! in_for ) matchedToken.kind = WORD ; in_for = false ; }
+}
+
+<CMD> TOKEN : {
+	< LESS : "<" >
+|	< GT   : ">" >
+}
+
+
+<CMD,DEFAULT> TOKEN : {
+	< RPAREN : ")" >		// Recoginze ")" within command to terminate command (unlike })
+}
+
+<CMD> TOKEN : {
+	< AMP : "&" > : DEFAULT 
+|	< SEMI : ";" >: DEFAULT 
+}
+
+<CMD> TOKEN : {
+	< PIPE : "|" >
+: DEFAULT 
+}
+
+TOKEN : {
+	< NAME : (["A" - "Z","a"-"z","_","0"-"9", ".", "/", "[", ":","*","?","]","{","}"] | <VAR_EXPANSION>)+  | <STRING_LITERAL1> | <STRING_LITERAL2>  >
+	: CMD
+}
+
+
+
+ 
+ <CMD> TOKEN : {
+	< XEXPR : "<[" > {
+		matchedToken.image = readXExpr();
+	}
+	
+	
+ }
+
+
+<CMD> TOKEN : {
+	< WORD : (~["\t","\n","\r" ," ","\"","'","|","<",">","&",";",")","(","$"] | "\\" ~[] | <VAR_EXPANSION>)+ | <STRING_LITERAL1> | <STRING_LITERAL2>  > 
+	: CMD
+|	< IO_NUMBER : (["0"-"9"])+["<",">"] >
+|
+  < #STRING_LITERAL1:
+      "\""
+      (   (~["\"","\\","\n","\r"])
+        | ("\\"
+            ( ~[]  )
+          )
+      )*
+      "\""
+    >
+   |
+    < #STRING_LITERAL2:
+      "\'"
+      (   (~["'"])  )*
+      "\'"
+    >
+    | 
+    < #VAR_EXPANSION :
+	    "$("  (~[")"])+ ")" 
+     |  "${"  (~["}"])+ "}" 
+     | 	"$<(" (~[")"])+ ")>"
+     |  "$" (["0" - "9" , "a" - "z" , "A" - "Z" , "_","#","?","*","@" ]) + 
+	>
+	
+
+ }
+ 
+
+<*> TOKEN : {
+	< ASSIGN_WORD : <NAME> (("=<[") | ("=" (<WORD>)?)) >
+	{ 	
+		String m = matchedToken.image;
+		if( m.endsWith("=<[") )
+			matchedToken.image = m.substring(0,m.length()-2)  + readXExpr();
+	}
+	
+}
+
+
+/* HERE document parsing 
+  Read input char at a time ( ~[] )
+  Strip out \r (Windows)
+  Since there is a \n already in the input stream, check for
+  	\n{here_end}\n
+  Exit but pushing back the \n so it matches with the end of the command
+  
+*/
+
+
+
+<HERE> SKIP : { "\r" }
+
+<HERE> MORE :
+{
+  < ~[] > { if( image.toString().endsWith( "\n" + here_end + "\n" )) {
+  			image.setLength( image.length() - here_end.length()  - 1);
+  			 input_stream.backup(1);
+  			
+  			SwitchTo(HERE_END); 
+  			}
+  		}
+}
+
+<HERE_END> TOKEN : {  <HERE_BODY : "" > : DEFAULT }
+
+
+Command script() :
+{
+	Command	c;
+}
+{
+	c=compound_list() <EOF>
+	{ return c; }
+}
+
+Command command_line() : 
+{
+	Command c;
+	 String op="";
+}
+{ 
+	 c=complete_command() [ op=separator_op() ] (<NEWLINE>|<EOF>) { 
+		if( op.equals("&") )
+		  c.setWait(false);
+		return c; 
+		
+		} |
+	<NEWLINE> { return new NullCommand() ; }
+|	<EOF>	{ return null ; }
+
+
+}
+
+
+
+
+Command complete_command() : 
+	{ Command c;}
+{ 
+	c=list() 
+	{	
+
+		return c;
+	}
+}
+
+ Command and_or() : 
+	{ 
+		AndOr	andor=null;
+		Command first;
+		Command c	=	null; 
+		String 	op 	= 	null;		
+} {
+	first=pipeline() ( op=andor_if() linebreak() c=pipeline() 
+		{ 
+			if( andor == null )
+				andor = new AndOr( first , op , c );
+			else
+				andor = new AndOr( andor , op , c );
+		} 
+	
+	)*
+	{	return andor == null ? first : andor ; }
+		
+} 	  
+
+String andor_if() : 
+	{Token t; }
+{
+	 t=<AND_IF> 	
+	 	{ return t.toString(); } 
+	| t=<OR_IF>     
+		{ return t.toString(); }
+}
+
+Pipeline pipeline() : 
+	{ Pipeline p;}
+{
+	p=pipe_sequence() 
+		{ return p ; }	
+|	<BANG> p=pipe_sequence()  
+	{ p.setBang(true) ; return p ; }
+}
+
+Pipeline pipe_sequence() : 
+	{	Pipeline p = new Pipeline(false);  Command c;}
+{
+	c=command() { p.add(c); }  
+	(  <PIPE> linebreak() c=command() { p.add(c);} )*
+		
+		{return p ; }
+}
+
+Command command() : 
+{   SimpleCommand sc;
+	CompoundCommand c;
+	FunctionDefinition f;
+	IORedirectList 	r;
+}
+
+{
+LOOKAHEAD(2)	sc=simple_command()  
+	{ return sc ; }
+	
+|	c=compound_command() [LOOKAHEAD(2)	r=redirect_list() { c.setRedirect(r);} ]  
+		{ return c; }
+
+|	LOOKAHEAD(2)	f=function_definition() 
+	{ return f ; }
+
+}
+
+CompoundCommand 	compound_command() : 
+{ 
+	CompoundCommand c;
+}
+{
+	c=brace_group()  
+	{ return c ;} 
+	
+|	c=subshell() 
+	{ return c ;} 
+	
+|	c=for_clause()
+	{ return c ;}  
+	
+|	c=case_clause() 
+	{ return c ;} 
+	
+|	c=if_clause() 
+	{ return c ;} 
+	
+|	c=while_clause() 
+	{ return c ;} 
+	
+|	c=until_clause() 
+	{ return c ;} 
+}
+
+
+SubShell subshell() : 
+{ Command c ;}
+{
+	<LPAREN> c=compound_list() <RPAREN> {return new SubShell(c);}
+}
+
+
+
+
+
+
+
+
+
+Command compound_list() : 
+{ Command c; String op=""; }
+{
+    <CSEMI><NEWLINE> { return new NullCommand() ; }
+    |
+    
+    
+    [ LOOKAHEAD(newline_list()) newline_list() ] c=term() [LOOKAHEAD(separator()) op=separator()] 
+ 	{	
+ 		if( op.length() > 0 )
+ 			token_source.SwitchTo(DEFAULT);
+ 		if( op.equals("&") )
+ 			c.setWait(false);
+ 		return c;
+ 	}
+	
+}
+
+
+
+
+Command list() : 
+	{
+		CommandList	list=null;
+		Command first;
+		Command c;
+		String op=null;
+	} 
+{ 
+   <CSEMI><NEWLINE> { return new NullCommand() ; }
+    |
+    	
+	
+	 first=and_or() ( LOOKAHEAD(3) op=separator_op() c=and_or() 
+{ 
+			if( list == null )
+				list = new CommandList( first , op , c );
+			else
+				list = new CommandList( list , op , c );
+		} 
+	 )* 
+	 	{	return list == null ? first : list ; }
+}
+
+
+Command term() : 
+{
+	Command first; 
+	String op;
+	Command c;
+	CommandList list=null;
+
+}
+{
+	
+
+	first=and_or() (
+	// USE LOOKAHEAD(999999999) here to allow "if true ;\necho foo;\nfi" 
+	LOOKAHEAD(999999999) op=separator() c=and_or()
+{ 
+			if( list == null )
+				list = new CommandList( first , op , c );
+			else
+				list = new CommandList( list , op , c );
+		} 
+	 )* 
+	 	{	return list == null ? first : list ; }
+
+}
+
+
+
+ForClause for_clause() : 
+	{
+		Command c;
+		String n;
+		StringList w = null;
+	}
+{
+
+	<FOR> n=name()  ( (<NEWLINE>|<SEMI>) {token_source.in_for=false;}  |   <IN> w=wordlist()  sequential_sep() )  c=do_group()
+	{
+		return new ForClause( n ,w, c );
+	} 
+}
+
+
+
+
+String	name() : 
+	{Token t;}
+{
+	t=<NAME>
+	{ return t.toString() ; }
+	
+}
+
+String wordname() :
+{ Token t;}
+{ 
+	t=<WORD>  { return t.toString(); }
+| 	t=<NAME>  { return t.toString(); }
+| 	t=<XEXPR> { return t.toString(); }
+}
+
+StringList	wordlist() : 
+	{
+		StringList list = new StringList();
+		String s;
+	}
+{
+	(s=wordname()  { list.add(s); } )+
+	{ return list;}
+	
+}
+
+CaseClause case_clause() : 
+	{
+		String	s;
+		CaseList l=null;
+	}
+{
+	<CASE> s=cmd_word() {token_source.in_for=true;} linebreak() <IN> linebreak() [l=case_list()] <ESAC>	
+	{ return new CaseClause( s , l ) ; }
+
+}
+
+
+CaseList case_list() : 
+	{	CaseList list = new CaseList(); CaseItem c;}
+{
+	(LOOKAHEAD(2)	c=case_item() 
+		{  list.add( c ); }
+		
+	)+
+		{ return list ; }		 
+}
+
+CaseItem case_item() : 
+	{StringList p; Command c; }
+{
+	[<LPAREN>]	p=pattern() <RPAREN>	 c=compound_list() <DSEMI>	linebreak() 
+	{ return new CaseItem( p , c ); }	
+	
+}
+
+
+StringList pattern() : 
+	{ StringList list = new StringList(); String s;}	
+{ 
+	s=wordname() { list.add(s);}
+		(  <PIPE> s=wordname() { list.add(s);} )* 
+	{	return list ; }
+}	
+
+
+IfClause if_clause() : 
+	{ Command ip=null,tp=null,ep=null; }
+{   
+	<IF>	ip=compound_list() <THEN> tp=compound_list() [ LOOKAHEAD(2) ep=else_part()] <FI> 
+	{ return new IfClause( ip , tp , ep ); }
+
+
+
+}
+
+Command else_part() : { Command ip=null,tp=null,ep=null; }
+{
+ LOOKAHEAD(2)	<ELIF>	ip=compound_list() <THEN> tp=compound_list()  ep=else_part() 
+	{ return new IfClause( ip , tp , ep ); }
+|LOOKAHEAD(2)	<ELSE>	ep=compound_list() 
+	{ return ep ; }
+}
+
+
+WhileClause while_clause() : 
+	{Command w,d;}
+{
+	<WHILE> w=compound_list() d=do_group()
+		{ return new WhileClause( w,d);}
+}
+
+UntilClause  until_clause() : 
+	{Command w,d;}
+{
+	<UNTIL> w=compound_list() d=do_group()
+			{ return new UntilClause( w,d);}
+}
+
+FunctionDefinition function_definition() : {}
+{
+	fname() "(" ")" linebreak() function_body() 
+	{ return new FunctionDefinition() ; }
+}
+
+void function_body() : {}
+{
+	compound_command() [redirect_list()]
+}
+
+String fname() : 
+	{Token t;} 
+{ 
+	t=<NAME>
+		{ return t.toString(); }
+}
+
+
+BraceGroup brace_group() : 
+	{ Command c;}
+{
+	<LBRACE> c=compound_list() <RBRACE> 
+	{ 
+		token_source.SwitchTo(CMD);	// RBRACE sometimes doesnt switch to CMD due to lookahead and op processing
+	
+		return new BraceGroup(c); 
+		
+	}
+}
+
+Command do_group() : 
+	{Command c;}
+{
+	<DO> c=compound_list()   <DONE>
+	{ return c; }
+}
+
+SimpleCommand simple_command() : 
+	{
+		CommandPrefix p;
+		String c=null;
+		CommandSuffix s=null;
+	}
+{
+
+
+LOOKAHEAD(2)	 p=cmd_prefix()  [LOOKAHEAD(2) c=cmd_word()] s=cmd_suffix()
+	{ return new SimpleCommand( p , c ,s ); } 
+
+
+|LOOKAHEAD(2)	c=cmd_word() s=cmd_suffix() 
+	{ return new SimpleCommand( null , c , s); } 
+
+|LOOKAHEAD(2)	c=cmd_word()
+		{ return new SimpleCommand( null , c , null  ); } 
+
+}
+
+String cmd_name() : {Token t;}
+{ 
+	t=<NAME> 
+	{ return t.toString(); } 
+
+}
+
+String cmd_word() : 
+	{Token t;}
+{ 
+	( t=<WORD> | t=<NAME>  | t=<XEXPR> )
+	{ return t.toString(); }
+	
+}
+
+
+CommandPrefix cmd_prefix() : 
+	{ 
+		CommandPrefix p = new CommandPrefix();
+		Token t1;
+	}
+{
+	( LOOKAHEAD(2) t1=<ASSIGN_WORD>
+		{ p.add( t1.toString() ); }
+	
+	)+
+	{
+		return p;
+	}
+}
+
+CommandSuffix cmd_suffix() : 
+	{
+		CommandSuffix s = new CommandSuffix();
+		String str;
+		IORedirect io;
+		Token t;
+	}
+{
+  ( ( str=cmd_word()
+  	 ) 
+      { s.addArg(str);} 
+  )* (io=io_redirect(){ s.addIO( io);} )*
+  { return s;}
+}
+IORedirectList redirect_list() : 
+	{ IORedirectList r = new IORedirectList();
+	  IORedirect io;}
+{
+	(LOOKAHEAD(2) io=io_redirect() { r.add(io); } )+ 
+	{ return r; }
+}
+
+IORedirect io_redirect() : 
+	{  IOFile f;  Token t; IOHere h;}
+{
+LOOKAHEAD(2)					f=io_file()	
+						{ return new IORedirect( "",f ); }
+|LOOKAHEAD(2)	t=<IO_NUMBER>	f=io_file()
+						{ return new IORedirect( t.toString() , f ); }
+				
+|					h=io_here()
+						{ return new IORedirect( "",h); }
+|LOOKAHEAD(2)	t=<IO_NUMBER>	h=io_here()
+						{ return new IORedirect( t.toString(),h ); }
+}
+
+
+IOFile io_file() : 
+	{ Token t; String s;}
+{
+	<LESS>			s=filename()
+		{ return new IOFile( "<" , s ); }
+|	t=<LESSAND>		s=filename()
+		{ return new IOFile( t.toString() , s ); }
+|	<GT>				s=filename()
+		{ return new IOFile( ">" , s ); }
+|	t=<GREATAND>	s=filename()
+		{ return new IOFile( t.toString() , s ); }
+		{ return new IOFile( t.toString(), s ); }
+|	t=<LESSGREAT>	s=filename()
+		{ return new IOFile(t.toString() , s ); }
+|	t=<CLOBBER>		s=filename()
+		{ return new IOFile( t.toString() , s ); }
+}
+
+
+String	filename() : 
+	{Token t;}
+{
+	t=<WORD> { return t.toString() ; }
+|	t=<NAME> { return t.toString() ; }
+}
+
+IOHere	io_here() : 
+	{ Token tless ; String s; Token t;}
+{
+	( tless=<DLESS>	| tless=<DLESSDASH> )		s=here_end()  { 
+		token_source.here_end = s;
+		token_source.SwitchTo(HERE);
+		
+	} t=<HERE_BODY> { 		
+		return new IOHere(tless.toString(),t.toString());
+	}
+	
+	
+
+}
+
+String here_end() : 
+	{ String t;}
+{
+	t=cmd_word() <NEWLINE> { return t ; }
+}
+
+void	newline_list() : {}
+{
+	(<NEWLINE>)+
+
+}
+
+void	linebreak() : {}
+{
+		( <NEWLINE>)*
+
+}
+
+String	separator_op() : 
+	{}
+{
+	  <AMP>	{ return "&" ; } 
+	| <SEMI> { return ";" ; }
+}
+
+String	separator() : 
+	{String op;}
+{
+ LOOKAHEAD(newline_list())	newline_list()
+		{ return "\n" ; }
+
+
+|	op=separator_op() [ LOOKAHEAD(<NEWLINE>) (<NEWLINE>)+ ] 
+		{ return op; }
+	 
+}
+
+void sequential_sep() : {}
+{
+	<SEMI> linebreak() 
+|	newline_list()
+}
+
+//
+// 
+//Copyright (C) 2008, David A. Lee.
+// 
+//The contents of this file are subject to the "Simplified BSD License" (the "License");
+//you may not use this file except in compliance with the License. You may obtain a copy of the
+//License at http://www.xmlsh.org/license.txt 
+//
+//Software distributed under the License is distributed on an "AS IS" basis,
+//WITHOUT WARRANTY OF ANY KIND, either express or implied.
+//See the License for the specific language governing rights and limitations under the License.
+//
+//The Original Code is: all this file.
+//
+//The Initial Developer of the Original Code is David A. Lee
+//
+//Portions created by (your name) are Copyright (C) (your legal entity). All Rights Reserved.
+//
+//Contributor(s): none.
+//
