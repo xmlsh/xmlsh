@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src/commands"/>
+	<classpathentry kind="src" path="src/core"/>
+	<classpathentry kind="src" path="src/shell"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="lib/log4j-1.2.7.jar"/>
+	<classpathentry kind="lib" path="lib/saxon9.jar"/>
+	<classpathentry kind="lib" path="lib/saxon9-dom.jar"/>
+	<classpathentry kind="lib" path="lib/saxon9-s9api.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
