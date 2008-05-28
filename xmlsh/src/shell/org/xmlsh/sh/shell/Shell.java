@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Stack;
 
 import net.sf.saxon.s9api.Processor;
-import org.apache.log4j.PropertyConfigurator;
 import org.xmlsh.core.CommandFactory;
 import org.xmlsh.core.ICommand;
 import org.xmlsh.core.Path;
@@ -41,18 +40,18 @@ public class Shell {
 	private 	String  mSavedCD = null;
 	
 
-	
 	static {
 		
-	 /*
+		Logging.configureLogger();
+		
+		/*
 	     * Workaround a saxon bug - pre-initialize processor
 	     */
 		 getProcessor();
 	
 		SystemEnvironment.getInstance().setProperty("user.dir", System.getProperty("user.dir"));
 		System.setProperties( new SystemProperties(System.getProperties()));
-		PropertyConfigurator.configure(Shell.class.getResource("log4j.properties"));
-	
+		// PropertyConfigurator.configure(Shell.class.getResource("log4j.properties"));
 
 	}
 
