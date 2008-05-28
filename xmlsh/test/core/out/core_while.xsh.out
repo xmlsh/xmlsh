@@ -1,3 +1,5 @@
 before while
+while RET = 1
+while2 RET = 0
 Until 0
-RET = 1
+RET = 0

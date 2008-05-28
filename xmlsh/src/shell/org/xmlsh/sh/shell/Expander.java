@@ -55,7 +55,7 @@ class Expander {
 		
 		void flush() 
 		{
-			if( sb.length() > 0 || bQuoted ){
+			if( sb.length() > 0 || (bQuoted && result.isEmpty()) ){
 				// Quoted strings that evaluate to "" get saved as args
 				add(sb.toString());
 				sb.setLength(0);

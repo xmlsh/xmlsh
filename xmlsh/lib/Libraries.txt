@@ -1,0 +1,17 @@
+SVN and the source bundle do not include the libraries necessary to run xmlsh.
+The binary bundle does include these libraries as a convenience for the user.
+
+The following libraries are required to run xmlsh
+
+Log4J:
+from: http://logging.apache.org/log4j/1.2/index.html
+
+log4j-1.2.7.jar
+
+Saxon B: version 9.0.0.5
+from: http://www.saxonica.com
+
+saxon9.jar
+saxon9-dom.jar
+saxon9-s9api.jar
+
