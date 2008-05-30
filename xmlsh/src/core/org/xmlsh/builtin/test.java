@@ -139,7 +139,7 @@ public class test extends BuiltinCommand {
 	private File 	getFile( String str ) throws Error
 	{
 		try {
-			return mShell.getFile(str);
+			return mShell.getFile(str).getCanonicalFile();
 		} catch (IOException e) {
 			throw new Error("IOException resolving file: " + str );
 		}

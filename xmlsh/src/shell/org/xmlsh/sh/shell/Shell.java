@@ -332,15 +332,7 @@ public class Shell {
 	}
 
 	public File getExplicitFile(String name, boolean mustExist ) {
-		File file = null;
-		
-		if( name.startsWith( "/" ) )
-			file= new File(name);
-		else
-		//if( name.startsWith("./") || name.startsWith("../"))
-			file =  new File( getCurdir() , name );
-		if( file == null )
-			return null ;
+		File file = new File(name).getAbsoluteFile();
 		
 		
 		if(  mustExist && ! file.exists() )
@@ -393,7 +385,7 @@ public class Shell {
 	}
 
 	public File getFile(String fname) throws IOException {
-		return getExplicitFile( fname , false).getCanonicalFile();
+		return getExplicitFile( fname , false);
 	}
 	
 	public File getFile(XValue fvalue) throws IOException {

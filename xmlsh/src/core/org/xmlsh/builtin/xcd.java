@@ -30,7 +30,7 @@ public class xcd extends BuiltinCommand {
 		else
 			sdir = args[0].toString();
 		
-		File newDir = shell.getFile( sdir).getCanonicalFile();
+		File newDir = shell.getFile( sdir);
 		if( newDir.exists() && newDir.isDirectory() && newDir.canRead() ){
 			shell.setCurdir(newDir);
 			return 0;
