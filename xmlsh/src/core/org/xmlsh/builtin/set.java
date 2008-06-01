@@ -8,6 +8,7 @@ package org.xmlsh.builtin;
 
 import java.io.OutputStream;
 import java.util.Collection;
+import java.util.List;
 
 import javax.xml.transform.sax.TransformerHandler;
 
@@ -23,8 +24,8 @@ import org.xmlsh.util.Util;
 public class set extends BuiltinCommand {
 
 	static final String sDocRoot = "env";
-	public int run( Shell shell,String cmd, XValue[] args) throws Exception {
-		if( args == null || args.length == 0 )	
+	public int run( Shell shell,String cmd,  List<XValue> args ) throws Exception {
+		if( args == null || args.size() == 0 )	
 			printVars( shell );
 		else
 		

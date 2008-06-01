@@ -7,6 +7,7 @@
 package org.xmlsh.builtin;
 
 import java.io.File;
+import java.util.List;
 
 import org.xmlsh.core.BuiltinCommand;
 import org.xmlsh.core.XValue;
@@ -18,9 +19,9 @@ public class xcd extends BuiltinCommand {
 	
 	
 	
-	public int run(Shell shell, String cmd, XValue[] args) throws Exception {
+	public int run(Shell shell, String cmd,  List<XValue> args ) throws Exception {
 		String sdir = null;
-		if( args.length < 1 ){
+		if( args.size() < 1 ){
 			XVariable xhome = shell.getEnv().getVar("HOME");
 			
 			String home = xhome == null ? null : xhome.getValue().toString();
@@ -34,7 +35,7 @@ public class xcd extends BuiltinCommand {
 			sdir = home;
 		}
 		else
-			sdir = args[0].toString();
+			sdir = args.get(0).toString();
 		
 		File newDir = shell.getFile( sdir);
 		if( newDir.exists() && newDir.isDirectory() && newDir.canRead() ){

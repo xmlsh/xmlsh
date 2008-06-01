@@ -284,11 +284,11 @@ public class test extends BuiltinCommand {
 	}
 	
 	
-	public int run( Shell shell, String cmd, XValue[] args) throws Exception {
+	public int run( Shell shell, String cmd,  List<XValue> args ) throws Exception {
 			
 		mShell = shell;  // Used for file resolution
 		
-		List<XValue> av = Util.toList(args);
+		List<XValue> av = args;
 		List<String> a = Util.toStringList(av);
 		
 		if( cmd.equals("[") ){

@@ -8,6 +8,8 @@ package org.xmlsh.core;
 
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.xmlsh.sh.shell.Shell;
 
@@ -28,7 +30,7 @@ public abstract class XCommand implements ICommand {
 	/* (non-Javadoc)
 	 * @see org.xmlsh.core.ICommand#run(org.xmlsh.sh.shell.Shell, java.lang.String[])
 	 */
-	public int run(Shell shell, String cmd, XValue[] args) throws Exception 
+	public int run(Shell shell, String cmd, List<XValue> args) throws Exception 
 	{
 
 		
@@ -44,9 +46,10 @@ public abstract class XCommand implements ICommand {
 		
 		XEnvironment env = new XEnvironment(new Shell());
 		
-		XValue[]	vargs = new XValue[ args.length ];
+		List<XValue> vargs = new ArrayList<XValue>(args.length);
+
 		for( int i = 0 ; i < args.length ; i++ )
-			vargs[i] = new XValue( args[i]);
+			vargs.add( new XValue( args[i]));
 		
 		
 		
@@ -61,7 +64,7 @@ public abstract class XCommand implements ICommand {
 	}
 	
 	
-	abstract public int run( XValue args[] , XEnvironment env ) throws Exception;
+	abstract public int run( List<XValue>  args, XEnvironment env ) throws Exception;
 	
 	
 	/* (non-Javadoc)

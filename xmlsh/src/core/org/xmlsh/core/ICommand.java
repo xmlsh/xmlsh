@@ -7,6 +7,7 @@
 package org.xmlsh.core;
 
 import java.io.File;
+import java.util.List;
 
 import org.xmlsh.sh.shell.Shell;
 
@@ -21,7 +22,7 @@ public interface ICommand {
 	
 	
 	
-	public int 	run( Shell shell , String cmd , XValue[] args )  throws Exception;
+	public int 	run( Shell shell , String cmd , List<XValue> args )  throws Exception;
 	public 	CommandType	getType();
 	public 	File 	getFile();
 }

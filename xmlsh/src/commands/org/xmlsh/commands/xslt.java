@@ -32,7 +32,7 @@ import org.xmlsh.util.XMLException;
 public class xslt extends XCommand {
 
 	@Override
-	public int run(XValue[] args, XEnvironment env)
+	public int run( List<XValue> args , XEnvironment env)
 	throws Exception 
 	{
 		

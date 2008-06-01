@@ -8,6 +8,7 @@ package org.xmlsh.commands;
 
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.util.List;
 
 import javax.xml.transform.stream.StreamSource;
 
@@ -31,7 +32,7 @@ import org.xmlsh.util.XMLException;
 public class xpath extends XCommand {
 
 	@Override
-	public int run(XValue[] args, XEnvironment env)
+	public int run( List<XValue> args , XEnvironment env)
 	throws Exception 
 	{
 		

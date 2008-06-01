@@ -8,6 +8,7 @@ package org.xmlsh.builtin;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.StringTokenizer;
 
 import org.xmlsh.core.BuiltinCommand;
@@ -24,7 +25,7 @@ public class read extends BuiltinCommand {
 	 */
 	
 	
-	public int run( Shell shell,String cmd, XValue[] args) throws Exception {
+	public int run( Shell shell,String cmd,  List<XValue> args ) throws Exception {
 			InputStream is = shell.getEnv().getStdin();
 			String line = Util.readLine( is );
 			
@@ -37,9 +38,9 @@ public class read extends BuiltinCommand {
 			int arg = 0;
 			while( tok.hasMoreTokens()){
 				String s=tok.nextToken();
-				if( arg < args.length)
+				if( arg < args.size() )
 					shell.getParentEnv().setVar(
-							new XVariable(args[arg++].toString(), new XValue(s)));
+							new XVariable(args.get(arg++).toString(), new XValue(s)));
 				
 			}
 			

@@ -7,6 +7,7 @@
 package org.xmlsh.builtin;
 
 import java.io.InputStream;
+import java.util.List;
 
 import javax.xml.transform.stream.StreamSource;
 
@@ -26,7 +27,7 @@ public class xread extends BuiltinCommand {
 	 */
 	
 	
-	public int run( Shell shell,String cmd, XValue[] args) throws Exception {
+	public int run( Shell shell,String cmd,  List<XValue> args ) throws Exception {
 			InputStream is = shell.getEnv().getStdin();
 		
 			Processor proc = Shell.getProcessor();
@@ -34,7 +35,7 @@ public class xread extends BuiltinCommand {
 			
 			XdmNode node = builder.build(new StreamSource( shell.getEnv().getStdin()));
 			shell.getParentEnv().setVar(
-					new XVariable(args[0].toString(), new XValue(node)));
+					new XVariable(args.get(0).toString(), new XValue(node)));
 			
 			
 			return 0;

@@ -103,6 +103,11 @@ public class Options
 		
 	}
 	
+	public Options(String options, List<XValue> args) {
+		this( options , args.toArray( new XValue[args.size()]) );
+	}
+
+
 	private OptionDef	getOptDef(String str)
 	{
 		

@@ -7,6 +7,6 @@
 	<classpathentry kind="lib" path="lib/log4j-1.2.7.jar"/>
 	<classpathentry kind="lib" path="lib/saxon9.jar"/>
 	<classpathentry kind="lib" path="lib/saxon9-dom.jar"/>
-	<classpathentry kind="lib" path="lib/saxon9-s9api.jar"/>
+	<classpathentry kind="lib" path="lib/saxon9-s9api.jar" sourcepath="/saxon"/>
 	<classpathentry kind="output" path="_out"/>
 </classpath>

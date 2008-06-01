@@ -8,6 +8,8 @@ package org.xmlsh.commands;
 
 import java.io.File;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.transform.sax.TransformerHandler;
 
@@ -34,7 +36,7 @@ public class xls extends XCommand {
 		
 	}
 
-	public int run( XValue args[] , XEnvironment env )	throws Exception
+	public int run(  List<XValue> args , XEnvironment env )	throws Exception
 	{
 		
 		OutputStream stdout = env.getStdout();
@@ -48,8 +50,10 @@ public class xls extends XCommand {
 		hd.startElement("", sDocRoot,sDocRoot,attrs);
 		
 		
-		if( args.length == 0)
-			args = new XValue[] { new XValue("") };
+		if( args == null )
+			args = new ArrayList<XValue>();
+		if( args.size() == 0 )
+			args.add(new XValue(""));
 		
 		
 		for( XValue arg : args ){

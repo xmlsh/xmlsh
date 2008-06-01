@@ -6,6 +6,8 @@
 
 package org.xmlsh.builtin;
 
+import java.util.List;
+
 import org.xmlsh.core.BuiltinCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
@@ -15,12 +17,12 @@ public class exit extends BuiltinCommand {
 
 
 	
-	public int run( Shell shell,String cmd , XValue[] args) throws Exception {
-			if( args.length == 0 ){
+	public int run( Shell shell,String cmd , List<XValue> args ) throws Exception {
+			if( args.size() == 0 ){
 				shell.exit( 0 );
 				
 			} else
-				shell.exit( Util.parseInt(args[0].toString(),-1));
+				shell.exit( Util.parseInt(args.get(0).toString(),-1));
 			return 0;
 				
 	}

@@ -25,9 +25,12 @@ import org.xmlsh.util.Util;
 public class xwhich extends BuiltinCommand {
 
 	
+	private static final String typenames[] = new String[] {
+		"builtin" , "internal" , "user" , "external" , "script"
+
+	};
 	
-	
-	public int run( Shell shell,String cmd , XValue[] args) throws Exception {
+	public int run( Shell shell,String cmd ,  List<XValue> args ) throws Exception {
 			
 		Options opts = new Options( "n" , args );
 		opts.parse();
@@ -36,9 +39,9 @@ public class xwhich extends BuiltinCommand {
 
 		
 		
-		List<XValue> xvargs = opts.getRemainingArgs();
+		List<XValue> xvargs = Util.expandList(opts.getRemainingArgs());
 		
-		if( args.length < 1  ){
+		if( xvargs.size() < 1  ){
 			shell.printErr("usage: " + cmd + " command ...");
 			return 1;
 		}
@@ -77,8 +80,10 @@ public class xwhich extends BuiltinCommand {
 					
 					atts.addAttribute("", sName, sName , "CDATA", name );
 					
+		
 					
-					String type = command.getType().toString();
+					String type = typenames[command.getType().ordinal()];
+					
 					atts.addAttribute("", sType, sType, "CDATA", type );
 					
 					File file = command.getFile();

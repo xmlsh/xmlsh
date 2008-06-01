@@ -11,6 +11,7 @@ import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
@@ -22,6 +23,8 @@ import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.sax.TransformerHandler;
 import javax.xml.transform.stream.StreamResult;
 
+import net.sf.saxon.s9api.XdmItem;
+import net.sf.saxon.s9api.XdmValue;
 import org.xmlsh.core.XValue;
 
 /**
@@ -425,6 +428,25 @@ public class Util
 				sb.append((char)c);
 		}
 		return sb.toString();
+	}
+
+
+	public static List<XValue> expandList(List<XValue> values)
+	{
+		ArrayList<XValue> list = new ArrayList<XValue>( values.size());
+		for( XValue arg : values ){
+			if( arg.isString() )
+				list.add(arg);
+			else {
+				XdmValue xv = arg.toXdmValue();
+				Iterator<XdmItem> iter = xv.iterator();
+				while( iter.hasNext() )
+					list.add( new XValue( iter.next() ));
+				
+	
+			}
+		}
+		return list;
 	}
 
 	

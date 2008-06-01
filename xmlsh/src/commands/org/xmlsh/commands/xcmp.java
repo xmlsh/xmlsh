@@ -64,7 +64,7 @@ public class xcmp extends XCommand {
 	
 
 	
-	public int run( XValue args[] , XEnvironment env )	throws Exception
+	public int run( List<XValue> args  , XEnvironment env )	throws Exception
 	{
 		
 

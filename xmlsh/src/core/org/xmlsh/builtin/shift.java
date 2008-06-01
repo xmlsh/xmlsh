@@ -6,6 +6,8 @@
 
 package org.xmlsh.builtin;
 
+import java.util.List;
+
 import org.xmlsh.core.BuiltinCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
@@ -14,11 +16,11 @@ import org.xmlsh.util.Util;
 public class shift  extends BuiltinCommand {
 
 	
-	public int run( Shell shell,String cmd , XValue[] args) throws Exception {
+	public int run( Shell shell,String cmd ,  List<XValue> args ) throws Exception {
 		
 		int num = 1;
-		if( args.length > 0 )
-			num = Util.parseInt( args[0] , 1  );
+		if( args.size() > 0 )
+			num = Util.parseInt( args.get(0) , 1  );
 		
 		
 		shell.shift( num );

@@ -8,6 +8,7 @@ package org.xmlsh.builtin;
 
 import java.io.OutputStream;
 import java.util.Collection;
+import java.util.List;
 
 import javax.xml.transform.sax.TransformerHandler;
 
@@ -23,7 +24,7 @@ import org.xmlsh.util.Util;
 public class unset extends BuiltinCommand {
 
 	static final String sDocRoot = "env";
-	public int run( Shell shell,String cmd, XValue[] args) throws Exception {
+	public int run( Shell shell,String cmd,  List<XValue> args ) throws Exception {
 		for( XValue arg : args ){
 			if( arg.isString()){
 				shell.getEnv().unsetVar( arg.toString() );

@@ -81,11 +81,9 @@ public class SimpleCommand extends Command {
 			}
 		
 			mSuffix.exec( shell );
+
 			
-			XValue[] args = (XValue[]) cmdLine.toArray( new XValue[ cmdLine.size() ] );
-			
-			
-			return cmd.run(  shell, cmdName , args );
+			return cmd.run(  shell, cmdName , cmdLine );
 
 			
 		} finally {

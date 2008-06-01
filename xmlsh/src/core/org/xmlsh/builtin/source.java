@@ -6,6 +6,8 @@
 
 package org.xmlsh.builtin;
 
+import java.util.List;
+
 import org.xmlsh.core.BuiltinCommand;
 import org.xmlsh.core.CommandFactory;
 import org.xmlsh.core.ICommand;
@@ -17,17 +19,17 @@ public class source extends BuiltinCommand {
 
 
 	
-	public int run( Shell shell,String cmd,XValue[] args) throws Exception {
-			if( args.length != 1 )
+	public int run( Shell shell,String cmd,   List<XValue> args ) throws Exception {
+			if( args.size() != 1 )
 				throw new UnexpectedException("source expects 1 argument");
 			
-			ICommand icmd = CommandFactory.getInstance().getScript(shell, args[0].toString(),true);
+			ICommand icmd = CommandFactory.getInstance().getScript(shell, args.get(0).toString(),true);
 			if( icmd == null){
-				shell.printErr( args[0] + ": not found");
+				shell.printErr( args.get(0) + ": not found");
 				return 1;
 			}
 			
-			return icmd.run(shell, args[0].toString() , null);
+			return icmd.run(shell, args.get(0).toString() , null);
 			
 	}
 

@@ -7,31 +7,26 @@
 package org.xmlsh.builtin;
 
 import java.io.PrintWriter;
-import java.util.Iterator;
+import java.util.List;
 
-import net.sf.saxon.s9api.XdmValue;
 import org.xmlsh.core.BuiltinCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.util.Util;
 
 public class xecho extends BuiltinCommand {
 	
-	public int run( Shell shell,String cmd,XValue[] args) throws Exception {
+	public int run( Shell shell,String cmd, List<XValue> args ) throws Exception {
 		PrintWriter out =  new PrintWriter(shell.getEnv().getStdout());
 
+		args = Util.expandList( args);
 		boolean bFirst = true;
-		for (int i = 0; i < args.length; i++) {
-			XdmValue arg = args[i].toXdmValue();
-			Iterator iter = arg.iterator();
-
-			while( iter.hasNext()){
-				if(!bFirst){
+		for ( XValue arg : args ){
+				if( ! bFirst )
 					out.print(" ");
-				}
 				bFirst = false;
-				Object o = iter.next();
-				out.print(o.toString());
-			}
+	
+				out.print(arg.toString());
 		}
 		out.println();
 		out.flush();

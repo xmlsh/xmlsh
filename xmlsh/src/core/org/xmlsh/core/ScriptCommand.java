@@ -11,8 +11,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.StringBufferInputStream;
+import java.util.List;
 
-import org.xmlsh.core.ICommand.CommandType;
 import org.xmlsh.sh.shell.Shell;
 
 public class ScriptCommand implements ICommand {
@@ -39,7 +39,7 @@ public class ScriptCommand implements ICommand {
 	}
 	
 	
-	public int run(Shell shell, String cmd, XValue[] args) throws Exception {
+	public int run(Shell shell, String cmd, List<XValue> args) throws Exception {
 		
 		try {
 			if( mSourceMode ){

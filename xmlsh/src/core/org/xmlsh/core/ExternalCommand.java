@@ -8,6 +8,7 @@ package org.xmlsh.core;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -27,15 +28,14 @@ public class ExternalCommand implements ICommand {
 	}
 	
 	
-	public int run(Shell shell, String cmd, XValue[] args) throws Exception 
+	public int run(Shell shell, String cmd, List<XValue> args) throws Exception 
 	{
 		mLogger.debug("Run external command: " + mCommandFile.getPath());
 		
 		
 		ArrayList<XValue> cmdlist = new ArrayList<XValue>();
-		cmdlist.add(new XValue(mCommandFile.getAbsolutePath()));
-		for( XValue arg : args )
-			cmdlist.add(arg);
+		cmdlist.add( new XValue(cmd));
+		cmdlist.addAll( Util.expandList(args));
 		
 		ProcessBuilder	builder = new ProcessBuilder();
 		builder.command( Util.toStringList(cmdlist));

@@ -247,8 +247,10 @@ public class Shell {
 	    	if( cmd == null )
 	    		shell.printErr( args[0] + ": not found");
 	    	else {
-	    		XValue args2[] = new XValue[args.length-1];
-	    		System.arraycopy(args, 1, args2, 0, args.length-1);
+	    		
+	    		List<XValue> args2 = new ArrayList<XValue>(args.length-1);
+	    		for( int i = 1 ; i < args.length ; i++ )
+	    			args2.add( new XValue(args[i]));
 	    		// Run as sourced mode, in this shell ...
 	    		// must set args ourselves
 	    		
@@ -323,10 +325,9 @@ public class Shell {
 		SystemEnvironment.getInstance().setProperty("user.dir",cd.getAbsolutePath());
 	}
 
-	public void setArgs(XValue[] args) {
+	public void setArgs(List<XValue> args) {
 		mArgs.clear();
-		for( XValue a : args )
-			mArgs.add( a);
+		mArgs.addAll(args);
 		
 		
 	}

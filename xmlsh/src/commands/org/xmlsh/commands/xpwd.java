@@ -7,6 +7,7 @@
 package org.xmlsh.commands;
 
 import java.io.OutputStream;
+import java.util.List;
 
 import javax.xml.transform.sax.TransformerHandler;
 
@@ -33,7 +34,7 @@ public class xpwd extends XCommand
 
 	
 	
-	public int run( XValue args[] , XEnvironment env )	throws Exception
+	public int run(  List<XValue> args , XEnvironment env )	throws Exception
 	{
 		
 
