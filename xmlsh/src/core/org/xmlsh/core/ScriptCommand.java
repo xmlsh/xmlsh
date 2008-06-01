@@ -12,6 +12,7 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.StringBufferInputStream;
 
+import org.xmlsh.core.ICommand.CommandType;
 import org.xmlsh.sh.shell.Shell;
 
 public class ScriptCommand implements ICommand {
@@ -19,12 +20,14 @@ public class ScriptCommand implements ICommand {
 	private String	mScriptName;
 	private InputStream mScript;
 	private boolean mSourceMode;
+	private File	 mScriptFile; // file for script, may be null if internal script
 	
 	public ScriptCommand( File script, boolean bSourceMode ) throws FileNotFoundException
 	{
 		mScript = new FileInputStream(script);
 		mScriptName = script.getName();
 		mSourceMode = bSourceMode;
+		mScriptFile = script;
 		
 	}
 	
@@ -57,5 +60,16 @@ public class ScriptCommand implements ICommand {
 			mScript.close();
 		}
 	}
+	
+	/* (non-Javadoc)
+	 * @see org.xmlsh.core.ICommand#getType()
+	 */
+	public CommandType getType() {
+		return CommandType.CMD_TYPE_SCRIPT ;
+	}
 
+	public File getFile() {
+		return mScriptFile ; // may be null 
+		
+	}
 }

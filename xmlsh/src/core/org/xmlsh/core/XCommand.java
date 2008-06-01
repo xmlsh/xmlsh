@@ -7,6 +7,8 @@
 package org.xmlsh.core;
 
 
+import java.io.File;
+
 import org.xmlsh.sh.shell.Shell;
 
 public abstract class XCommand implements ICommand {
@@ -60,6 +62,21 @@ public abstract class XCommand implements ICommand {
 	
 	
 	abstract public int run( XValue args[] , XEnvironment env ) throws Exception;
+	
+	
+	/* (non-Javadoc)
+	 * @see org.xmlsh.core.ICommand#getType()
+	 */
+	public CommandType getType() {
+		return CommandType.CMD_TYPE_INTERNAL ;
+	}
+	
+	public File getFile() {
+		return null ; // no associated file 
+		
+	}
+
+	
 	
 }
 //

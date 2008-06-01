@@ -10,6 +10,7 @@ import java.io.File;
 
 import org.xmlsh.core.BuiltinCommand;
 import org.xmlsh.core.XValue;
+import org.xmlsh.core.XVariable;
 import org.xmlsh.sh.shell.Shell;
 
 public class xcd extends BuiltinCommand {
@@ -20,7 +21,12 @@ public class xcd extends BuiltinCommand {
 	public int run(Shell shell, String cmd, XValue[] args) throws Exception {
 		String sdir = null;
 		if( args.length < 1 ){
-			String home = shell.getEnv().getVar("HOME").toString();
+			XVariable xhome = shell.getEnv().getVar("HOME");
+			
+			String home = xhome == null ? null : xhome.getValue().toString();
+			if( home == null )
+				home = System.getProperty("user.home");
+			
 			if( home == null ){
 				shell.printErr("Cannot cd to HOME");
 				return 1;

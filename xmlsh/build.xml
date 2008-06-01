@@ -43,6 +43,7 @@
    	</target>
   
   <target name="jar" description="Build JAR - jar">
+		<mkdir dir="bin"/>
         <jar jarfile="bin/xmlsh.jar" basedir="_out" />
 
   </target>

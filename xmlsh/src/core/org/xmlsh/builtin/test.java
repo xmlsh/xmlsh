@@ -27,10 +27,6 @@ import org.xmlsh.util.Util;
 DESCRIPTION
 Exit with the status determined by EXPRESSION.
 
---help display this help and exit
-
---version
-   output version information and exit
 
 An omitted EXPRESSION defaults to false.  Otherwise, EXPRESSION is true
 or false and sets exit status.  It is one of:

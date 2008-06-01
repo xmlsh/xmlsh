@@ -19,21 +19,21 @@ public class ExternalCommand implements ICommand {
 
 	private 	static		Logger		mLogger = LogManager.getLogger( ExternalCommand.class );
 	
-	private		File		mCommand;		// command path
+	private		File		mCommandFile;		// command path
 	
 	public ExternalCommand( File cmd )
 	{
-		mCommand = cmd;
+		mCommandFile = cmd;
 	}
 	
 	
 	public int run(Shell shell, String cmd, XValue[] args) throws Exception 
 	{
-		mLogger.debug("Run external command: " + mCommand.getPath());
+		mLogger.debug("Run external command: " + mCommandFile.getPath());
 		
 		
 		ArrayList<XValue> cmdlist = new ArrayList<XValue>();
-		cmdlist.add(new XValue(mCommand.getAbsolutePath()));
+		cmdlist.add(new XValue(mCommandFile.getAbsolutePath()));
 		for( XValue arg : args )
 			cmdlist.add(arg);
 		
@@ -82,6 +82,20 @@ public class ExternalCommand implements ICommand {
 		
 		
 	}
+	
+	/* (non-Javadoc)
+	 * @see org.xmlsh.core.ICommand#getType()
+	 */
+	public CommandType getType() {
+		return CommandType.CMD_TYPE_EXTERNAL;
+	}
+	
+	public File getFile() {
+		return mCommandFile ;  
+		
+	}
+
+	
 
 }
 

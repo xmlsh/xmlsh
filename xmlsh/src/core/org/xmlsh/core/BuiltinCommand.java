@@ -6,9 +6,22 @@
 
 package org.xmlsh.core;
 
+import java.io.File;
+
 public abstract class BuiltinCommand implements ICommand {
 
+	/* (non-Javadoc)
+	 * @see org.xmlsh.core.ICommand#getType()
+	 */
+	public CommandType getType() {
+		return CommandType.CMD_TYPE_BUILTIN ;
+	}
+
 	
+	public File getFile() {
+		return null ; // builtins have no file  
+		
+	}
 
 	
 	
