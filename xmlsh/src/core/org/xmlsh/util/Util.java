@@ -38,10 +38,7 @@ public class Util
     private static DateFormat sDateTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
     private static DateFormat sTimeFormat = new SimpleDateFormat("HH:mm:ss");
     private static Random mRand = null;
-    
-    
-
-
+ 
 	public static boolean isEmpty(String s)
 	{
 		return s == null || s.length() == 0;
@@ -442,20 +439,10 @@ public class Util
 				Iterator<XdmItem> iter = xv.iterator();
 				while( iter.hasNext() )
 					list.add( new XValue( iter.next() ));
-				
-	
 			}
 		}
 		return list;
 	}
-
-	
-	
-
-
-	
-    
-
 }
 
 //

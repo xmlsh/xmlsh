@@ -30,6 +30,7 @@ public class XEnvironment  {
 	 */
 	
 	private SynchronizedInputStream	 mStdin;
+	private	 boolean				 mStdinRedirected = false;
 	private SynchronizedOutputStream mStdout;
 	private SynchronizedOutputStream mStderr;
 	
@@ -99,6 +100,7 @@ public class XEnvironment  {
 	 * @param stdin the stdin to set
 	 */
 	public void setStdin(InputStream stdin) {
+		mStdinRedirected = true ;
 		mStdin = new SynchronizedInputStream(stdin);
 	}
 
@@ -132,6 +134,24 @@ public class XEnvironment  {
 		mVars.put(var.getName(), var);
 	}
 	
+	public void	setVar( String name , XValue value)
+	{
+		/* DO not do this until we have a copy-on-write deep cloning
+		 * of the environment
+		 * 
+		 */
+		/*
+		XVariable var = mVars.get(name);
+		if( var == null )
+			setVar( new XVariable( name , value ));
+		else
+			var.setValue(value);
+			*/
+		
+		setVar( new XVariable( name , value ));
+	}
+	
+	
 	
 	
 	public XEnvironment clone()
@@ -158,8 +178,10 @@ public class XEnvironment  {
 		
 		
 		that.mStdin  = this.mStdin;
-		if( that.mStdin != null )
+		if( that.mStdin != null ){
 			that.mStdin.addRef();
+			that.mStdinRedirected = this.mStdinRedirected;
+		}
 		
 		
 		that.mStdout = this.mStdout;
@@ -192,19 +214,6 @@ public class XEnvironment  {
 	
 	public Shell getShell() { 
 		return mShell;
-	}
-
-	// Return TRUE if this stream coresponds to the input stream
-	public boolean isStdin( InputStream stream )
-	{
-		if( mStdin == null )
-			return false;
-		if( stream == mStdin )
-			return true;
-		if( stream == mStdin.getStream() )
-			return true ;
-		return false;
-		
 	}
 
 
@@ -284,6 +293,8 @@ public class XEnvironment  {
 	public void unsetVar(String name ) {
 		mVars.remove( name );
 	}
+	
+	public boolean isStdinRedirected() { return mStdinRedirected ; }
 
 }
 //

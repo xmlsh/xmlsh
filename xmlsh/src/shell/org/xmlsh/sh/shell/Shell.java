@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Stack;
 
@@ -18,9 +19,11 @@ import net.sf.saxon.s9api.Processor;
 import org.xmlsh.core.CommandFactory;
 import org.xmlsh.core.ICommand;
 import org.xmlsh.core.Path;
+import org.xmlsh.core.XDynamicVariable;
 import org.xmlsh.core.XEnvironment;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.XVariable;
+import org.xmlsh.core.XVariable.XVarFlag;
 import org.xmlsh.sh.core.Command;
 import org.xmlsh.sh.grammar.ParseException;
 import org.xmlsh.sh.grammar.ShellParser;
@@ -62,8 +65,32 @@ public class Shell {
 	{
 		mSavedCD = System.getProperty("user.dir");
 		mEnvStack.push( new XEnvironment(this));
+		
+		setGlobalVars();
+		
+		
 	}
 	
+	/*
+	 * Populate the environment with any global variables
+	 */
+	
+	private void setGlobalVars() {
+		
+		getEnv().setVar(
+				new XDynamicVariable("PWD" , EnumSet.of( XVarFlag.READONLY , XVarFlag.XEXPR )) { 
+					public XValue getValue() 
+					{
+						return new XValue( getEnv().getCurdir().getAbsolutePath() ) ;
+					}
+					
+				}
+				
+				
+		);
+		
+	}
+
 	/*
 	 * Cloned shell for sub-thread execution
 	 */
@@ -322,7 +349,10 @@ public class Shell {
 	
 	public  void  		setCurdir( File cd )
 	{
-		SystemEnvironment.getInstance().setProperty("user.dir",cd.getAbsolutePath());
+		String dir = cd.getAbsolutePath();
+		SystemEnvironment.getInstance().setProperty("user.dir",dir);
+
+	
 	}
 
 	public void setArgs(List<XValue> args) {
@@ -346,17 +376,7 @@ public class Shell {
 		return mArgs;
 	}
 	
-	/*
-	 * Return TRUE if the command input is the same as stdin
-	 * 
-	 */
 	
-	public boolean isCommandStdin()
-	{
-		return getEnv().isStdin( this.mCommandInput );
-		
-	}
-
 	public void exit(int retval) {
 		mExitVal = new Integer(retval);
 		

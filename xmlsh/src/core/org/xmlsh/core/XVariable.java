@@ -19,10 +19,12 @@ public class XVariable {
 	private static final String sVariable = "variable";
 	
 	private static final String sType = "type";
+	private static final String sFlags = "flags";
 
 	public enum XVarFlag {
 		EXPORT , 		// to be exported to child shells
-		XEXPR			// participates in XEXPRs 	
+		XEXPR ,			// participates in XEXPRs
+		READONLY
 		
 	};
 	
@@ -30,15 +32,25 @@ public class XVariable {
 	private		String	mName;
 	private		XValue	mValue;
 	private		EnumSet<XVarFlag>	mFlags;
-	
-	public XVariable( String name , XValue value )
+
+	public XVariable( String name , XValue value , EnumSet<XVarFlag> flags)
 	{
 		mName = name ;
 		mValue = value;
-		mFlags = EnumSet.of( XVarFlag.EXPORT , XVarFlag.XEXPR );
+		mFlags = flags;
 		
 	}
-
+	
+	public XVariable( String name , XValue value )
+	{
+		this( name , value , EnumSet.of( XVarFlag.EXPORT , XVarFlag.XEXPR ));
+		
+	}
+	
+	protected XVariable( String name , EnumSet<XVarFlag> flags )
+	{
+		this( name , null , flags );
+	}
 	/**
 	 * @return the name
 	 */
@@ -62,8 +74,12 @@ public class XVariable {
 
 	/**
 	 * @param value the value to set
+	 * @throws InvalidArgumentException 
 	 */
-	public void setValue(XValue value) {
+	public void setValue(XValue value) throws InvalidArgumentException {
+		if( mFlags.contains( XVarFlag.READONLY ))
+			throw new InvalidArgumentException("Cannot modify readonly variable: " + getName());
+		
 		mValue = value;
 	}
 
@@ -93,7 +109,10 @@ public class XVariable {
 		
 		
 	//	atts.addAttribute("", "value", "value", "CDATA", value.toString() );
-			
+		String flagStr = mFlags.toString();
+		
+		
+		atts.addAttribute("", sFlags, sFlags, "CDATA", flagStr );
 
 		writer.startElement("", sVariable, sVariable, atts);
 

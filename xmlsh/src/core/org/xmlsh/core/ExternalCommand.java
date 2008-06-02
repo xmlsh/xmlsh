@@ -55,7 +55,7 @@ public class ExternalCommand implements ICommand {
 		
 		StreamCopier inCopier = null;
 		
-		if( ! shell.isCommandStdin() )
+		if( shell.getEnv().isStdinRedirected() )
 			inCopier = new StreamCopier(  shell.getEnv().getStdin() , proc.getOutputStream(), true);
 		
 		else
