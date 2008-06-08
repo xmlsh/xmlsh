@@ -14,6 +14,7 @@ import javax.xml.transform.stream.StreamSource;
 
 import net.sf.saxon.s9api.DocumentBuilder;
 import net.sf.saxon.s9api.Processor;
+import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.XPathCompiler;
 import net.sf.saxon.s9api.XPathExecutable;
 import net.sf.saxon.s9api.XPathSelector;
@@ -24,6 +25,7 @@ import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XEnvironment;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.Options.OptionValue;
+import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.Util;
 import org.xmlsh.util.XMLException;
 
@@ -36,10 +38,10 @@ public class xpath extends XCommand {
 	throws Exception 
 	{
 		
-		Options opts = new Options( "f:,i:,n" , args );
+		Options opts = new Options( "f:,i:,n,V" , args );
 		opts.parse();
 		
-		Processor  processor  = new Processor(false);
+		Processor  processor  = Shell.getProcessor();
 		
 		XPathCompiler compiler = processor.newXPathCompiler();
 		XdmNode	context = null;
@@ -56,19 +58,58 @@ public class xpath extends XCommand {
 		
 		}
 		
-		XPathExecutable expr = null;
+
+		List<XValue> xvargs = opts.getRemainingArgs();
+		
 
 		
 		OptionValue ov = opts.getOpt("f");
+		String xpath = null;
 		if( ov != null )
-			expr = compiler.compile( Util.readString( env.getShell().getFile(ov.getValue().toString()) ) );
-		else
-			expr = compiler.compile( opts.getRemainingArgs().get(0).toString() );
+			xpath = Util.readString( env.getShell().getFile(ov.getValue().toString()) ) ;
+		else 
+			xpath = xvargs.remove(0).toString();
 		
+
+		
+		if( opts.hasOpt("V")){
+			// Read pairs from args to set
+			for( int i = 0 ; i < xvargs.size()/2 ; i++ ){
+				String name = xvargs.get(i*2).toString();
+
+				compiler.declareVariable(new QName(name));			
+				
+			}
+				
+			
+		}
+		
+		
+		
+
+		XPathExecutable expr = compiler.compile( xpath );
 		
 		XPathSelector eval = expr.load();
 		if( context != null )
 			eval.setContextItem(context);
+		
+		if( opts.hasOpt("V")){
+			// Read pairs from args to set
+			for( int i = 0 ; i < xvargs.size()/2 ; i++ ){
+				String name = xvargs.get(i*2).toString();
+				XValue value = xvargs.get(i*2+1);
+				
+				
+				eval.setVariable( new QName(name),  value.toXdmValue() );	
+					
+				
+			}
+				
+			
+		}
+		
+		
+		
 /*
 		Serializer dest = new Serializer();
 		dest.setOutputProperty( Serializer.Property.OMIT_XML_DECLARATION, "yes");

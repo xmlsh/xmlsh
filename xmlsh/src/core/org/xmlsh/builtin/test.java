@@ -50,6 +50,13 @@ STRING equivalent to -n STRING
 
 -z STRING
    the length of STRING is zero
+   
+-S value
+	true if the value/argument is a string (not an xml type)
+	
+-X value
+	true if the value/argument is an xml type
+	
 
 STRING1 = STRING2
    the strings are equal
@@ -132,56 +139,65 @@ public class test extends BuiltinCommand {
 	};
 
 	
-	private File 	getFile( String str ) throws Error
+	private File 	getFile( XValue value ) throws Error
 	{
 		try {
-			return mShell.getFile(str).getCanonicalFile();
+			return mShell.getFile(value).getCanonicalFile();
 		} catch (IOException e) {
-			throw new Error("IOException resolving file: " + str );
+			throw new Error("IOException resolving file: " + value );
 		}
 	}
 	
 	
-	private 	boolean		eval( List<String> args) throws Error
+	private 	boolean		eval( List<XValue> av) throws Error
 	{
-		if( args.size() == 0 )
+		if( av.size() == 0 )
 			return false;
 		
-		String a1 = args.remove(0);
-		if( a1.equals("!"))
-			return ! eval( args );
-		else
-		if( a1.equals("(")){
-			boolean ret = eval(args);
-			if( args.size() < 1 || !args.remove(0).equals(")")){
-				throw new Error("mismatched (");
+		XValue av1 = av.remove(0);
 
-			}
-			return ret;
-		}
-		else
-		if( a1.startsWith("-") && ! Util.isInt(a1, true)){
-			if( args.size() < 1 ){
-				throw new Error("expected arg after " + a1);
-
-			}
-			return evalUnary( a1 , args.remove(0));
-		}
-		else
-		if( args.size() == 0 || args.get(0).equals(")") )
-			return evalUnary("-n" , a1);
-		else
-		if( args.size() == 1 ){
-			throw new Error("unexpected arg: " + args.remove(0));
+		if( av.size() == 0 || av.get(0).equals(")") )
+			return evalUnary("-n" , av1);
 		
+		if( av1.isString() ){
+
+
+			String a1 = av1.toString();
+			
+			if( a1.equals("!"))
+				return ! eval( av );
+			
+			if( a1.equals("(")){
+				boolean ret = eval(av);
+				if( av.size() < 1 || !av.remove(0).equals(")")){
+					throw new Error("mismatched (");
+	
+				}
+				return ret;
+			}
+			else
+			if( a1.startsWith("-") && ! Util.isInt(a1, true)){
+				if( av.size() < 1 ){
+					throw new Error("expected arg after " + a1);
+	
+				}
+				return evalUnary( a1 , av.remove(0));
+			}
+			
+			else
+			if( av.size() == 1 ){
+				throw new Error("unexpected arg: " + av.remove(0));
+			
+			}
 		}
-		else {
-			String op = args.remove(0);
+		
+		XValue op  = av.remove(0);
+		if( op.isString() )
+			return evalBinary( av1 ,  op.toString() , av.remove(0 ) );
+		else
+				throw new Error("Unexpected xml value operator");
 			
 
-			return evalBinary( a1 ,  op , args.remove(0 ) );
-		}	
-		
 		
 	}
 	
@@ -190,42 +206,41 @@ public class test extends BuiltinCommand {
 	
 	
 	
-	
-	private boolean evalBinary(String a1, String op, String a2) throws Error {
+	private boolean evalBinary(XValue av1, String op, XValue value) throws Error {
 		if( op.equals("="))
-			return a1.equals(a2);
+			return av1.equals(value);
 		else
 		if( op.equals("!="))
-			return !a1.equals(a2);
+			return !av1.equals(value);
 		else
 		if( op.equals("-eq"))
-			return compareInt( a1 , a2 ) == 0;
+			return compareInt( av1 , value ) == 0;
 		else
 		if( op.equals("-ne"))
-			return compareInt(a1,a2) != 0 ;
+			return compareInt(av1,value) != 0 ;
 		else
 		if( op.equals("-gt"))
-			return compareInt(a1,a2) > 0 ;
+			return compareInt(av1,value) > 0 ;
 			else
 		if( op.equals("-ge"))
-			return compareInt( a1,a2) >= 0;
+			return compareInt( av1,value) >= 0;
 			else
 		if( op.equals("-lt"))
-			return compareInt(a1,a2) < 0;
+			return compareInt(av1,value) < 0;
 		else
 		if( op.equals("-le"))
-			return compareInt(a1,a2) <= 0 ;
+			return compareInt(av1,value) <= 0 ;
 		else
 		if( op.equals("-ef"))
-			return getFile(a1).compareTo(getFile(a2)) == 0;
+			return getFile(av1).compareTo(getFile(value)) == 0;
 		else
 		if( op.equals("-nt"))
-			return getFile(a1).lastModified() >
-				    getFile(a2).lastModified() ;
+			return getFile(av1).lastModified() >
+				    getFile(value).lastModified() ;
 		else
 		if( op.equals("-ot" ))
-			return getFile(a1).lastModified() <
-		   		getFile(a2).lastModified() ;		
+			return getFile(av1).lastModified() <
+		   		getFile(value).lastModified() ;		
 					   
 		
 		else
@@ -235,51 +250,70 @@ public class test extends BuiltinCommand {
 
 	}
 
-	private int compareInt(String a1, String a2) throws Error {
-		if( ! Util.isInt(a1,true) || ! Util.isInt(a2,true) ){
+	private int compareInt(XValue a1, XValue a2) throws Error {
+		
+		if(!( a1.isString() && a2.isString() ))
+			throw new Error("args must be non xml expressions");
+		
+		String s1 = a1.toString();
+		String s2 = a2.toString();
+		
+		if( ! Util.isInt(s1,true) || ! Util.isInt(s2,true) ){
 			throw new Error("Invalid integer expression");
 			
 		}
-		return Util.parseInt(a1, 0) -
-				Util.parseInt(a2, 0);
+		return Util.parseInt(s1, 0) -
+				Util.parseInt(s2, 0);
 		
  
 	}
 
-	private boolean evalUnary(String op, String arg) throws Error {
-		if( op.equals("-n"))
-			return arg.length() > 0 ;
-			else
-		if( op.equals("-z"))
-			return arg.length() == 0;
-		
-		else
-		if( op.equals("-d") )
-			return getFile( arg ).isDirectory();
-		else
-		if( op.equals("-e"))
-			return getFile(arg).exists();
-		else
-		if( op.equals("-f"))
-			return getFile(arg).isFile();
-		else
-		if( op.equals("-r"))
-			return getFile(arg).canRead();
-		else
-		if( op.equals("-s"))
-			return getFile(arg).length() > 0;
-		else
-		if( op.equals("-w") )
-			return getFile(arg).canWrite();
-		else
-		if( op.equals("-x"))
-			return getFile(arg).canExecute();
+	private boolean evalUnary(String op, XValue value) throws Error {
 		
 		
-		else {
-			throw new Error("unknown test " + op);
+		/* try type tests first */
+		
+		if( op.equals("-X"))
+			return value.isXExpr();
+		else
+		if(op.equals("-S"))
+			return value.isString();
+	
 
-		}
+			if( op.equals("-n"))
+				return ! (value.isNull() || value.toString().length() == 0) ;
+				else
+			if( op.equals("-z"))
+				return value.isNull() || value.toString().length() == 0;
+			
+			else
+			if( op.equals("-d") )
+				return getFile( value ).isDirectory();
+			else
+			if( op.equals("-e"))
+				return getFile(value).exists();
+			else
+			if( op.equals("-f"))
+				return getFile(value).isFile();
+			else
+			if( op.equals("-r"))
+				return getFile(value).canRead();
+			else
+			if( op.equals("-s"))
+				return getFile(value).length() > 0;
+			else
+			if( op.equals("-w") )
+				return getFile(value).canWrite();
+			else
+			if( op.equals("-x"))
+				return getFile(value).canExecute();
+			
+			
+			else {
+				throw new Error("unknown test " + op);
+	
+			}
+		
 		
 	}
 	
@@ -289,10 +323,10 @@ public class test extends BuiltinCommand {
 		mShell = shell;  // Used for file resolution
 		
 		List<XValue> av = args;
-		List<String> a = Util.toStringList(av);
+
 		
 		if( cmd.equals("[") ){
-			if( a.size() == 0 || !a.remove(a.size()-1).equals("]")){
+			if( av.size() == 0 || !av.remove(av.size()-1).equals("]")){
 				shell.printErr("Unbalanced [");
 				return 1;
 	
@@ -307,13 +341,16 @@ public class test extends BuiltinCommand {
 		boolean ret = false ;
 		boolean bFirst = true ;
 		try {
-			while( a.size() > 0 ){
+			while( av.size() > 0 ){
 				String op = null;
-				if( ! bFirst && ( a.get(0).equals("-a")|| a.get(0).equals("-o")))
-					op = a.remove(0);
+				XValue a1 = av.get(0);
+				if( ! bFirst &&  a1.isString() && ( a1.equals("-a") || a1.equals("-o"))){
+					op = a1.toString();
+					av.remove(0);
+				}
 
 				
-				boolean r  = eval(a);
+				boolean r  = eval(av);
 				if( op != null ){
 					if( op.equals("-a"))	
 						ret = ret && r;

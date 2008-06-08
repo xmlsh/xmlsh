@@ -8,9 +8,15 @@ package org.xmlsh.core;
 
 import java.util.ArrayList;
 
+import net.sf.saxon.s9api.Processor;
+import net.sf.saxon.s9api.XPathCompiler;
+import net.sf.saxon.s9api.XPathExecutable;
+import net.sf.saxon.s9api.XPathSelector;
 import net.sf.saxon.s9api.XdmAtomicValue;
 import net.sf.saxon.s9api.XdmItem;
+import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XdmValue;
+import org.xmlsh.sh.shell.Shell;
 
 public class XValue {
 	
@@ -99,7 +105,58 @@ public class XValue {
 	public boolean isString() {
 		return mString != null ;
 	}	
+	
+	
+	public XValue	xpath( String expr ) throws UnexpectedException 
+	{
+		
+		if( isString() )
+			return new XValue();
+		
+		Processor  processor  = Shell.getProcessor();
+	
+		XPathCompiler compiler = processor.newXPathCompiler();
 
+		
+		try {
+			XPathExecutable exec = compiler.compile( expr );
+
+			XPathSelector eval = exec.load();
+			eval.setContextItem( mValue.itemAt(0) );
+			return new XValue( eval.evaluate());
+			
+		
+		} catch( Exception e ){
+			throw new UnexpectedException("Exception evaluating xpath: " + expr,e );
+		}
+	}
+	
+	public boolean isNull()
+	{
+		return mString == null && mValue == null ;
+	}
+
+	public boolean isXExpr()
+	{
+		return mValue != null ;
+	}
+	
+	public boolean equals(String s)
+	{
+		return mString != null && mString.equals(s);
+	}
+	public boolean equals( XValue that )
+	{
+		if( this == that )
+			return true ;
+		
+		if( mString != null && that.mString != null )
+			return mString.equals( that.mString );
+		
+		if( mValue != null && that.mValue != null )
+			return mValue.equals( that.mValue );
+		return false ;
+	}
 }
 //
 //
