@@ -45,6 +45,25 @@ TOKEN_MGR_DECLS :
   	return sb.toString();
   }
   
+  private String readParen()
+  {
+  	StringBuffer sb = new StringBuffer("");
+  	char c;
+  	int endp = 0;
+  	try {
+	  	while( (c=input_stream.readChar())> 0 ) {
+	  		sb.append(c);
+	  		if( c == '(' )
+	  			endp++;
+	  		if( c == ')' )
+	  		{
+	  			if( endp-- <= 0 )
+	  				break;
+	  		}
+	  	}
+  	} catch( Exception e ){}
+  	return sb.toString();
+  }
   
 }
 
@@ -166,7 +185,7 @@ TOKEN : {
 
 
  
- <CMD> TOKEN : {
+ <*> TOKEN : {
 	< XEXPR : "<[" > {
 		matchedToken.image = readXExpr();
 	}
@@ -208,12 +227,7 @@ TOKEN : {
  
 
 <*> TOKEN : {
-	< ASSIGN_WORD : <NAME> (("=<[") | ("=" (<WORD>)?)) >
-	{ 	
-		String m = matchedToken.image;
-		if( m.endsWith("=<[") )
-			matchedToken.image = m.substring(0,m.length()-2)  + readXExpr();
-	}
+	< ASSIGN_WORD : <NAME> "=" >
 	
 }
 
@@ -661,10 +675,11 @@ CommandPrefix cmd_prefix() :
 	{ 
 		CommandPrefix p = new CommandPrefix();
 		Token t1;
+		String s1;
 	}
 {
-	( LOOKAHEAD(2) t1=<ASSIGN_WORD>
-		{ p.add( t1.toString() ); }
+	( LOOKAHEAD(2) t1=<ASSIGN_WORD> s1=cmd_word()
+		{ p.add( t1.toString() + s1 ); }
 	
 	)+
 	{

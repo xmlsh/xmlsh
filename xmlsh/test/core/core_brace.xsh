@@ -40,7 +40,7 @@ echo '<foo2/>' | { xcat | xcat;}
 
 # { env does change
 A=1
-{ A=2  }
+{ A=2 ;  }  # trailing ";" required
 
 if [ ! $A = 2 ] ; then 
 	echo  Brace environment wrong A=$A

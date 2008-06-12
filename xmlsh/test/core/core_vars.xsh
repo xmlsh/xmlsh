@@ -1,6 +1,10 @@
 # core_vars.xsh
 # test variables
 
+
+# clear just in case they were exported
+unset A AA
+
 echo NO $A variable
 echo NO $AA variable
 echo NO ${A} variable
