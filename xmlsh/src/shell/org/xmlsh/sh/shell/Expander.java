@@ -168,10 +168,20 @@ class Expander {
 		}
 		
 		// $<(sub comd>)
-		if( arg.startsWith("$<(") && arg.endsWith(")>")){
+		if( arg.startsWith("$<(") && arg.endsWith(")")){
 			List<XValue> 	r = new ArrayList<XValue>(1);
-			r.add( new XValue( parseXCmd(arg.substring(3,arg.length()-2))));
+			r.add( new XValue( parseXCmd(arg.substring(3,arg.length()-1))));
 			return r;
+		}
+		
+
+		if( arg.startsWith("$(") && arg.endsWith(")"))
+		{
+			List<XValue> 	r = new ArrayList<XValue>(1);
+			for( String w : runCmd(arg.substring(2,arg.length()-1)).split("\n") )
+				r.add( new XValue(w));
+			return r;
+			
 		}
 		
 		boolean bQuoted = false ;
@@ -203,15 +213,7 @@ class Expander {
 					i = readToMatching( arg , i , sbv ,  '}' );
 					
 				} 
-				else
-				if( arg.charAt(i) == '(' )
-				{
-					StringBuffer sbc = new StringBuffer();
-					i = readToMatching( arg , i , sbc , ')' );
-					// Expand the result into a command output then continue
-					result.append( runCmd(sbc.toString()).split("\n"));
-					
-				}
+				
 				
 				else { 
 					// Speical case 

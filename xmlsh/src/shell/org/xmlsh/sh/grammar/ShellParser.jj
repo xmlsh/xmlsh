@@ -50,16 +50,39 @@ TOKEN_MGR_DECLS :
   	StringBuffer sb = new StringBuffer("");
   	char c;
   	int endp = 0;
+  	boolean escaped = false;
+  	char quoted = '\0';
   	try {
 	  	while( (c=input_stream.readChar())> 0 ) {
 	  		sb.append(c);
-	  		if( c == '(' )
-	  			endp++;
-	  		if( c == ')' )
-	  		{
-	  			if( endp-- <= 0 )
-	  				break;
+	  		
+	  		
+	  		if( c == '\\' ){
+	  			escaped=true;
+	  			continue;
 	  		}
+	  		if( ! escaped ){
+	  			if( quoted == c ){
+	  				quoted = '\0';
+	  				continue;
+	  			}
+	  			
+	  			if( quoted == '\0' ){
+		  			if( c == '"' || c == '\'' )
+		  				quoted = c ;
+		  			
+		  			else
+		  			if( c == '(' )
+		  				endp++;
+		  			else
+		  			if( c == ')' )
+		  			{
+		  				if( endp-- <= 0 )
+		  					break;
+		  			}
+	  			}
+	  		}
+	  		escaped = false ;
 	  	}
   	} catch( Exception e ){}
   	return sb.toString();
@@ -216,15 +239,22 @@ TOKEN : {
     >
     | 
     < #VAR_EXPANSION :
-	    "$("  (~[")"])+ ")" 
-     |  "${"  (~["}"])+ "}" 
-     | 	"$<(" (~[")"])+ ")>"
-     |  "$" (["0" - "9" , "a" - "z" , "A" - "Z" , "_","#","?","*","@" ]) + 
-	>
-	
 
+       "${"  (~["}"])+ "}" 
+    |  "$" (["0" - "9" , "a" - "z" , "A" - "Z" , "_","#","?","*","@" ]) + 
+	>
  }
  
+ <*> TOKEN : {
+ 	< VAR_SUBPROC :
+ 		"$("  
+	 | 	"$<(" 
+	 >
+	 {
+	 	matchedToken.image += readParen();
+	 }
+ }
+ 	
 
 <*> TOKEN : {
 	< ASSIGN_WORD : <NAME> "=" >
@@ -510,6 +540,7 @@ String wordname() :
 	t=<WORD>  { return t.toString(); }
 | 	t=<NAME>  { return t.toString(); }
 | 	t=<XEXPR> { return t.toString(); }
+|   t=<VAR_SUBPROC> { return t.toString(); }
 }
 
 StringList	wordlist() : 
@@ -665,7 +696,7 @@ String cmd_name() : {Token t;}
 String cmd_word() : 
 	{Token t;}
 { 
-	( t=<WORD> | t=<NAME>  | t=<XEXPR> )
+	( t=<WORD> | t=<NAME>  | t=<XEXPR> | t=<VAR_SUBPROC> )
 	{ return t.toString(); }
 	
 }
