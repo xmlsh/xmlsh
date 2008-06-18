@@ -17,7 +17,7 @@ import org.xml.sax.helpers.AttributesImpl;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
 
-public class XFile implements XSerializable {
+public class XFile /* implements XSerializble */ {
 	private static Logger mLogger = Logger.getLogger( XFile.class);
 	private File mFile;
 
@@ -102,10 +102,20 @@ public class XFile implements XSerializable {
 
 	
 
-	public void serialize(TransformerHandler writer) throws SAXException {
+	public void serialize(TransformerHandler writer, boolean all ) throws SAXException {
 		AttributesImpl atts = new AttributesImpl();
+		
 		atts.addAttribute("", "name", "name", "CDATA", getName());
 		atts.addAttribute("", "path", "path", "CDATA", getPath());
+		if( all ){
+			
+			atts.addAttribute("", "length", "length", "CDATA", String.valueOf(mFile.length()));
+			atts.addAttribute("", "type", "type", "CDATA", mFile.isDirectory() ? "dir" : "file");
+			atts.addAttribute("", "readable", "readable", "CDATA", mFile.canRead()? "true" : "false");
+			atts.addAttribute("", "writable", "writable", "CDATA", mFile.canWrite()? "true" : "false");
+
+			
+		}
 
 		writer.startElement("", "file", "file", atts);
 		writer.endElement("", "file", "file");

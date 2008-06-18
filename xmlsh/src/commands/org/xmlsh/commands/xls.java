@@ -15,6 +15,7 @@ import javax.xml.transform.sax.TransformerHandler;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.helpers.AttributesImpl;
+import org.xmlsh.core.Options;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XEnvironment;
 import org.xmlsh.core.XValue;
@@ -38,6 +39,10 @@ public class xls extends XCommand {
 
 	public int run(  List<XValue> args , XEnvironment env )	throws Exception
 	{
+		Options opts = new Options("l",args);
+		opts.parse();
+		args = opts.getRemainingArgs();
+		
 		
 		OutputStream stdout = env.getStdout();
 	      
@@ -55,12 +60,13 @@ public class xls extends XCommand {
 		if( args.size() == 0 )
 			args.add(new XValue(""));
 		
-		
+		boolean longMode = opts.hasOpt("l");
 		for( XValue arg : args ){
 			
 			File dir = env.getShell().getFile(arg.toString());
 			if( !dir.isDirectory() ){
-				new XFile(dir).serialize(hd);
+
+				new XFile(dir).serialize(hd, longMode);
 			} else {
 	
 				File [] files =  dir.listFiles();
@@ -68,7 +74,7 @@ public class xls extends XCommand {
 		
 					
 		
-					new XFile(f ).serialize(hd);
+					new XFile(f ).serialize(hd,longMode);
 					
 		
 					

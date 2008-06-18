@@ -49,7 +49,7 @@ public class xpwd extends XCommand
 		hd.startDocument();
 		
 		
-		file.serialize(hd);
+		file.serialize(hd,false);
 		
 		hd.endDocument();
 		
