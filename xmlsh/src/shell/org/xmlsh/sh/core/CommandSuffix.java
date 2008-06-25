@@ -45,9 +45,9 @@ public class CommandSuffix {
 	{
 		ArrayList<XValue>	args = new ArrayList<XValue>();
 				
-		args.addAll( shell.expand(command));
+		args.addAll( shell.expand(command,false));
 		for( String arg : mArgs )
-			args.addAll(shell.expand( arg ));
+			args.addAll(shell.expand( arg,false ));
 
 		return args;
 		

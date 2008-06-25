@@ -19,7 +19,7 @@ public class xecho extends BuiltinCommand {
 	public int run( Shell shell,String cmd, List<XValue> args ) throws Exception {
 		PrintWriter out =  new PrintWriter(shell.getEnv().getStdout());
 
-		args = Util.expandList( args);
+		args = Util.expandSequences( args);
 		boolean bFirst = true;
 		for ( XValue arg : args ){
 				if( ! bFirst )

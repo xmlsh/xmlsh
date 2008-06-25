@@ -39,10 +39,8 @@ public class CaseClause  extends CompoundCommand {
 	@Override
 	public int exec(Shell shell) throws Exception {
 		
-		List<XValue> words = shell.expand(mWord);
-		if( words.size() != 1 )
-			throw new UnexpectedException("Expect case word to evalaute to one term");
-		String word = words.get(0).toString();
+		XValue wordv = shell.expandString(mWord);
+		String word = wordv.toString();
 		
 		for( CaseItem item : mList ){
 			

@@ -27,6 +27,7 @@ import org.xmlsh.core.XVariable.XVarFlag;
 import org.xmlsh.sh.core.Command;
 import org.xmlsh.sh.grammar.ParseException;
 import org.xmlsh.sh.grammar.ShellParser;
+import org.xmlsh.util.Util;
 
 public class Shell {
 	private		Stack<XEnvironment>	mEnvStack = new Stack<XEnvironment>();
@@ -386,9 +387,12 @@ public class Shell {
 		return mArg0;
 	}
 
-	public List<XValue> expand(String s) {
+	public List<XValue> expand(String s, boolean bExpandSequences ) {
 		Expander e = new Expander( this );
-		return e.expand(s);
+		List<XValue> result =  e.expand(s);
+		if( bExpandSequences )
+			result = Util.expandSequences( result );
+		return result;
 	}
 
 	/**
@@ -415,7 +419,7 @@ public class Shell {
 	
 
 	public XValue expandString(String value) {
-		List<XValue> ret = expand(value);
+		List<XValue> ret = expand(value,false);
 		if( ret.size() == 0 )
 			return new XValue();
 		else

@@ -39,7 +39,7 @@ public class xwhich extends BuiltinCommand {
 
 		
 		
-		List<XValue> xvargs = Util.expandList(opts.getRemainingArgs());
+		List<XValue> xvargs = Util.expandSequences(opts.getRemainingArgs());
 		
 		if( xvargs.size() < 1  ){
 			shell.printErr("usage: " + cmd + " command ...");

@@ -35,7 +35,7 @@ public class ExternalCommand implements ICommand {
 		
 		ArrayList<XValue> cmdlist = new ArrayList<XValue>();
 		cmdlist.add( new XValue(cmd));
-		cmdlist.addAll( Util.expandList(args));
+		cmdlist.addAll( Util.expandSequences(args));
 		
 		ProcessBuilder	builder = new ProcessBuilder();
 		builder.command( Util.toStringList(cmdlist));

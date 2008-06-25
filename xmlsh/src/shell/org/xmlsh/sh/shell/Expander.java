@@ -151,7 +151,7 @@ class Expander {
 	}
 	
 
-	public List<XValue> expand(String arg) {
+	List<XValue> expand(String arg) {
 		
 		// 1a) single quote expansion
 		if( arg.startsWith("'")){

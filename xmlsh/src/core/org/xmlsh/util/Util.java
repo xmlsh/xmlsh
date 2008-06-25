@@ -428,7 +428,7 @@ public class Util
 	}
 
 
-	public static List<XValue> expandList(List<XValue> values)
+	public static List<XValue> expandSequences(List<XValue> values)
 	{
 		ArrayList<XValue> list = new ArrayList<XValue>( values.size());
 		for( XValue arg : values ){
