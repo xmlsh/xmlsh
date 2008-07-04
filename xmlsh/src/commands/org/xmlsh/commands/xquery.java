@@ -56,13 +56,13 @@ public class xquery extends XCommand {
 				XdmItem item = ov.getValue().toXdmValue().itemAt(0);
 				if( item instanceof XdmNode )
 					context = (XdmNode) item ; // builder.build(((XdmNode)item).asSource());
-				// context = (XdmNode) ov.getValue().toXdmValue();
+				 // context = (XdmNode) ov.getValue().toXdmValue();
 			}
 			if( context == null )
 			{
 	
 				if( ov != null && ! ov.getValue().toString().equals("-"))
-					context = builder.build( env.getShell().getFile(ov.getValue().toString()));
+					context = builder.build( env.getShell().getFile(ov.getValue()));
 				else {
 					bReadStdin = true ;
 					context = builder.build( new StreamSource( env.getStdin()));
