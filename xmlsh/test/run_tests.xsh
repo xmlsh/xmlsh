@@ -18,7 +18,7 @@ mkdir $_TEMP
 
 
 
-for d in core builtin; do
+for d in core builtin internal; do
    echo "running tests in $d"
    cd $d
    for test in *.xsh ; do

@@ -21,7 +21,7 @@ if [ -f out/${1}.out ] ; then
 		exit 1
 		echo after exit
 	fi
-	rm out/${1}.out
+	rm _out.txt
 fi
 
 exit 0
