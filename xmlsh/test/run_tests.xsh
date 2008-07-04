@@ -11,8 +11,9 @@ if ! xwhich -n $EXTERNS ; then
 fi
 
 # Set up a temp directory
-#_TEMP=$PWD/_temp
-#mkdir $_TEMP
+_TEMP=$PWD/_temp
+rm -rf $_TEMP
+mkdir $_TEMP
 
 
 
@@ -28,5 +29,6 @@ for d in core builtin; do
    cd ..
 done
 
+rm -rf $_TEMP
 
          

@@ -274,9 +274,10 @@ public class XEnvironment  {
 
 	/**
 	 * @param cd
+	 * @throws IOException 
 	 * @see org.xmlsh.sh.shell.Shell#setCurdir(java.io.File)
 	 */
-	public void setCurdir(File cd) {
+	public void setCurdir(File cd) throws IOException {
 		mShell.setCurdir(cd);
 	}
 

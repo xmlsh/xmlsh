@@ -349,9 +349,9 @@ public class Shell {
 	}
 	
 	
-	public  void  		setCurdir( File cd )
+	public  void  		setCurdir( File cd ) throws IOException
 	{
-		String dir = cd.getAbsolutePath();
+		String dir = cd.getCanonicalPath();
 		SystemEnvironment.getInstance().setProperty("user.dir",dir);
 
 	
