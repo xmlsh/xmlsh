@@ -1,6 +1,6 @@
 /**
- * $Id: $
- * $DateTime: $
+ * $Id$
+ * $Date$
  *
  */
 

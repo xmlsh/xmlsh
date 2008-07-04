@@ -1,7 +1,7 @@
 package org.xmlsh.util;
 /**
- * $Id: $
- * $DateTime: $
+ * $Id$
+ * $Date$
  *
  */
 
