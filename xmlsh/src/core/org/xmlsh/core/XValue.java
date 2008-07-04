@@ -8,14 +8,16 @@ package org.xmlsh.core;
 
 import java.util.ArrayList;
 
+import net.sf.saxon.om.ValueRepresentation;
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.XPathCompiler;
 import net.sf.saxon.s9api.XPathExecutable;
 import net.sf.saxon.s9api.XPathSelector;
 import net.sf.saxon.s9api.XdmAtomicValue;
 import net.sf.saxon.s9api.XdmItem;
-import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XdmValue;
+import net.sf.saxon.trans.XPathException;
+import net.sf.saxon.value.AtomicValue;
 import org.xmlsh.sh.shell.Shell;
 
 public class XValue {
@@ -44,6 +46,24 @@ public class XValue {
 	 */
 	public XValue( XdmValue v )
 	{
+		/*
+		 * If value is an atomic type, then coerce to string
+		 */
+/*		
+		ValueRepresentation value = v.getUnderlyingValue();
+		if( value instanceof AtomicValue ){
+			AtomicValue atom = (AtomicValue) value;
+			try {
+				mString = value.getStringValue();
+			} catch (XPathException e) {
+				
+				// Any error then dont convert
+				mValue = v ;
+			}
+			return ;
+		}
+*/		
+		
 		mValue = v;
 	}
 	
@@ -65,17 +85,15 @@ public class XValue {
 	
 	/*
 	 * Return (cast) the variable to an XdmValue
-	 * 
-	 * The first time a variable is evaluated in an XML context a XdmValue is created and cached
+	 * do not modify the variable itself. 
 	 * 
 	 */
 	public XdmValue toXdmValue(){
-		if( mValue == null ){
-			mValue = new XdmAtomicValue( mString );
-			
-		}
-		
-		return mValue ;
+		if( mValue == null )
+			return new XdmAtomicValue( mString );
+
+		else 
+			return mValue ;
 		
 	}
 
@@ -156,6 +174,16 @@ public class XValue {
 		if( mValue != null && that.mValue != null )
 			return mValue.equals( that.mValue );
 		return false ;
+	}
+
+	public boolean isAtomic() {
+		if( isString() )
+			return true ;
+		
+		ValueRepresentation value = mValue.getUnderlyingValue();
+		return value instanceof AtomicValue ;
+	
+		
 	}
 }
 //

@@ -218,6 +218,7 @@ public class xcmp extends XCommand {
 	
 
 	
+	@SuppressWarnings("unchecked")
 	private boolean compareAttributes(Iterator attributes1, Iterator attributes2) {
 		/*
 		 * Compare attributes in no order

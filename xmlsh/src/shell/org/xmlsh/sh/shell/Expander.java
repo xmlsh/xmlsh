@@ -109,7 +109,7 @@ class Expander {
 		}
 
 		public void append(XValue value) {
-			if( value.isString() )
+			if( value.isString() || value.isAtomic() )
 				append( value.toString());
 			else {
 				flush();
@@ -462,7 +462,7 @@ class Expander {
 	private List<XValue> expandWild(XValue v) {
 		ArrayList<XValue> r = new ArrayList<XValue>();
 		
-		if( ! hasWild(v.toString())){
+		if( v.isXExpr() || ! hasWild(v.toString())){
 			r.add( v);
 			return r;
 		}

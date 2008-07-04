@@ -17,6 +17,7 @@ import net.sf.saxon.s9api.Serializer;
 import net.sf.saxon.s9api.XQueryCompiler;
 import net.sf.saxon.s9api.XQueryEvaluator;
 import net.sf.saxon.s9api.XQueryExecutable;
+import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.XCommand;
@@ -36,7 +37,7 @@ public class xquery extends XCommand {
 	throws Exception 
 	{
 		
-		Options opts = new Options( "qf:,i:,n,q:,V" , args );
+		Options opts = new Options( "qf:,i:,n,q:,v" , args );
 		opts.parse();
 		
 		Processor  processor  = Shell.getProcessor();
@@ -49,14 +50,24 @@ public class xquery extends XCommand {
 		if( ! opts.hasOpt("n" ) ){ // Has XML data input
 			OptionValue ov = opts.getOpt("i");
 			DocumentBuilder builder = processor.newDocumentBuilder();
-
-			if( ov != null && ! ov.getValue().toString().equals("-"))
-				context = builder.build( env.getShell().getFile(ov.getValue().toString()));
-			else {
-				bReadStdin = true ;
-				context = builder.build( new StreamSource( env.getStdin()));
-			}	
-		
+			
+			// If -i argument is an XML expression take the first node as the context
+			if( ov != null  && ov.getValue().isXExpr() ){
+				XdmItem item = ov.getValue().toXdmValue().itemAt(0);
+				if( item instanceof XdmNode )
+					context = (XdmNode) item ; // builder.build(((XdmNode)item).asSource());
+				// context = (XdmNode) ov.getValue().toXdmValue();
+			}
+			if( context == null )
+			{
+	
+				if( ov != null && ! ov.getValue().toString().equals("-"))
+					context = builder.build( env.getShell().getFile(ov.getValue().toString()));
+				else {
+					bReadStdin = true ;
+					context = builder.build( new StreamSource( env.getStdin()));
+				}	
+			}
 		}
 		
 		String query = null;
@@ -103,7 +114,7 @@ public class xquery extends XCommand {
 			eval.setContextItem(context);
 		
 		
-		if( opts.hasOpt("V")){
+		if( opts.hasOpt("v")){
 			// Read pairs from args to set
 			for( int i = 0 ; i < xvargs.size()/2 ; i++ ){
 				String name = xvargs.get(i*2).toString();

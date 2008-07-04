@@ -30,18 +30,21 @@ public class IOFile {
 		
 	}
 	public void exec(Shell shell) throws IOException {
+		
+		String file = shell.expandString( mFile ).toString();
+		
 		if( mPrefix.equals("<"))
 			shell.getEnv().setStdin( 
-					new FileInputStream(shell.getFile(mFile)));
+					new FileInputStream(shell.getFile(file)));
 		else
 		if( mPrefix.equals(">"))
 			shell.getEnv().setStdout(
-					 new FileOutputStream(shell.getFile(mFile)));
+					 new FileOutputStream(shell.getFile(file)));
 	
 		else
 		if( mPrefix.equals(">>"))
 				shell.getEnv().setStdout(
-						new FileOutputStream(shell.getFile(mFile),true));
+						new FileOutputStream(shell.getFile(file),true));
 		
 		
 	}
