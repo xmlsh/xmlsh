@@ -28,8 +28,6 @@ public class IOHere {
 	}
 	public void exec(Shell shell) throws UnsupportedEncodingException  {
 		
-		
-		
 		shell.getEnv().setStdin( 
 				new ByteArrayInputStream(mHere.getBytes("UTF-8")));
 		

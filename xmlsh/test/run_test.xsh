@@ -2,8 +2,12 @@
 
 [ $# -ne 1 ] && exit 1
 
-$1			> _out.txt 
+rm -rf $_TEMP
+mkdir $_TEMP
+
+$1  > _out.txt 
 RET=$?
+rm -rf $_TEMP
 if [ $RET -ne 0 ] ; then
    echo $1 failed: return code: $RET
    exit $RET
@@ -17,6 +21,7 @@ if [ -f out/${1}.out ] ; then
 		exit 1
 		echo after exit
 	fi
+	rm out/${1}.out
 fi
 
 exit 0

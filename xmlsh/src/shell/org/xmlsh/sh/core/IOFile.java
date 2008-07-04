@@ -33,14 +33,18 @@ public class IOFile {
 		
 		String file = shell.expandString( mFile ).toString();
 		
-		if( mPrefix.equals("<"))
+		if( mPrefix.equals("<")){
 			shell.getEnv().setStdin( 
 					new FileInputStream(shell.getFile(file)));
+		}
+		else
+		if( mPrefix.equals("2>"))
+				shell.getEnv().setStderr(
+						 new FileOutputStream(shell.getFile(file)));
 		else
 		if( mPrefix.equals(">"))
 			shell.getEnv().setStdout(
 					 new FileOutputStream(shell.getFile(file)));
-	
 		else
 		if( mPrefix.equals(">>"))
 				shell.getEnv().setStdout(

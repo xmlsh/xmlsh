@@ -183,6 +183,7 @@ TOKEN : {
 <CMD> TOKEN : {
 	< LESS : "<" >
 |	< GT   : ">" >
+|   < TGT  : "2>" >
 }
 
 
@@ -219,8 +220,7 @@ TOKEN : {
 
 <CMD> TOKEN : {
 	< WORD : (~["\t","\n","\r" ," ","\"","'","|","<",">","&",";",")","(","$"] | "\\" ~[] | <VAR_EXPANSION>)+ | <STRING_LITERAL1> | <STRING_LITERAL2>  > 
-	: CMD
-|	< IO_NUMBER : (["0"-"9"])+["<",">"] >
+|	< IO_NUMBER : ["0"-"9"] >
 |
   < #STRING_LITERAL1:
       "\""
@@ -741,36 +741,35 @@ IORedirectList redirect_list() :
 }
 
 IORedirect io_redirect() : 
-	{  IOFile f;  Token t; IOHere h;}
+	{  IORedirect i;  Token t; IOHere h;}
 {
-LOOKAHEAD(2)					f=io_file()	
-						{ return new IORedirect( "",f ); }
-|LOOKAHEAD(2)	t=<IO_NUMBER>	f=io_file()
-						{ return new IORedirect( t.toString() , f ); }
+					i=io_file()	
+						{ return i; }
 				
 |					h=io_here()
-						{ return new IORedirect( "",h); }
-|LOOKAHEAD(2)	t=<IO_NUMBER>	h=io_here()
-						{ return new IORedirect( t.toString(),h ); }
+						{ return new IORedirect( h); }
+
 }
 
 
-IOFile io_file() : 
-	{ Token t; String s;}
+IORedirect io_file() : 
+	{ Token t; String s; String num;}
 {
 	<LESS>			s=filename()
-		{ return new IOFile( "<" , s ); }
+		{ return new IORedirect( new IOFile( "<" , s )); }
 |	t=<LESSAND>		s=filename()
-		{ return new IOFile( t.toString() , s ); }
+		{ return new IORedirect(new IOFile( t.toString() , s )); }
+|	<TGT>				s=filename()
+		{ return new IORedirect(new IOFile( "2>" , s )); }
 |	<GT>				s=filename()
-		{ return new IOFile( ">" , s ); }
+		{ return new IORedirect(new IOFile( ">" , s )); }
 |	t=<GREATAND>	s=filename()
-		{ return new IOFile( t.toString() , s ); }
-		{ return new IOFile( t.toString(), s ); }
+		{ return new IORedirect(new IOFile( t.toString() , s )); }
+
 |	t=<LESSGREAT>	s=filename()
-		{ return new IOFile(t.toString() , s ); }
+		{ return new IORedirect(new IOFile(t.toString() , s )); }
 |	t=<CLOBBER>		s=filename()
-		{ return new IOFile( t.toString() , s ); }
+		{ return new IORedirect(new IOFile( t.toString() , s )); }
 }
 
 

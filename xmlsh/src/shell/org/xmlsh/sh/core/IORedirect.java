@@ -11,24 +11,23 @@ import java.io.PrintWriter;
 import org.xmlsh.sh.shell.Shell;
 
 public class IORedirect {
-	String	mIoNumber;
 	IOFile	mFile;
 	IOHere	mHere;
 	
-	public IORedirect( String num , IOFile file ){
-		mIoNumber = num;
+	public IORedirect( IOFile file ){
+		
 		mFile = file;
 		mHere = null;
 	}
 	
-	public IORedirect( String num , IOHere here ){
-		mIoNumber = num;
+	public IORedirect( IOHere here ){
+		
 		mFile = null;
 		mHere = here;
 	}
 
 	public void print(PrintWriter out) {
-		out.print(mIoNumber);
+		
 		if( mFile != null)
 			mFile.print(out);
 		if( mHere != null)
@@ -40,7 +39,7 @@ public class IORedirect {
 		if( mFile != null )
 			mFile.exec(shell);
 		if( mHere != null )
-			mHere.exec(shell);
+			mHere.exec( shell);
 		
 	}
 }
