@@ -12,9 +12,12 @@ import java.util.List;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
+import net.sf.saxon.s9api.DocumentBuilder;
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.Serializer;
+import net.sf.saxon.s9api.XdmItem;
+import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XsltCompiler;
 import net.sf.saxon.s9api.XsltExecutable;
 import net.sf.saxon.s9api.XsltTransformer;
@@ -45,17 +48,29 @@ public class xslt extends XCommand {
 		Source	context = null;
 		
 		
+
 		boolean bReadStdin = false ;
 		if( ! opts.hasOpt("n" ) ){ // Has XML data input
 			OptionValue ov = opts.getOpt("i");
-
-			if( ov != null && ! ov.getValue().toString().equals("-"))
-				context = new StreamSource(env.getFile(ov.getValue()));
-			else {
-				bReadStdin = true ;
-				context = new StreamSource( env.getStdin());
-			}	
-		
+			DocumentBuilder builder = processor.newDocumentBuilder();
+			
+			// If -i argument is an XML expression take the first node as the context
+			if( ov != null  && ov.getValue().isXExpr() ){
+				XdmItem item = ov.getValue().toXdmValue().itemAt(0);
+				if( item instanceof XdmNode )
+					context = ((XdmNode) item).asSource() ; // builder.build(((XdmNode)item).asSource());
+				 // context = (XdmNode) ov.getValue().toXdmValue();
+			}
+			if( context == null )
+			{
+	
+				if( ov != null && ! ov.getValue().toString().equals("-"))
+					context = new StreamSource( env.getShell().getFile(ov.getValue()));
+				else {
+					bReadStdin = true ;
+					context =  new StreamSource( env.getStdin());
+				}	
+			}
 		}
 		
 		Source source = null;

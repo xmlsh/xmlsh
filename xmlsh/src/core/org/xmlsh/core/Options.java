@@ -7,6 +7,7 @@
 package org.xmlsh.core;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.xmlsh.util.Util;
@@ -58,7 +59,7 @@ public class Options
 	}
 	
 	private List<OptionDef> mDefs;
-	private XValue[] mArgs;
+	private List<XValue> mArgs;
 	private List<XValue> mRemainingArgs;
 	private List<OptionValue> mOptions;
 	
@@ -90,23 +91,19 @@ public class Options
 	}
 	
 	
-	public Options( String  options , XValue[] args )
+	public Options( String  options ,  List<XValue> args )
 	{
 		this( parseDefs(options) , args);
 	}
 	
 	
-	public Options( List<OptionDef>  options , XValue[] args )
+	private Options( List<OptionDef>  options ,  List<XValue> args )
 	{
 		mDefs = options;
 		mArgs = args;
 		
 	}
 	
-	public Options(String options, List<XValue> args) {
-		this( options , args.toArray( new XValue[args.size()]) );
-	}
-
 
 	private OptionDef	getOptDef(String str)
 	{
@@ -133,33 +130,37 @@ public class Options
 		
 		mOptions = new ArrayList<OptionValue>();
 		
-		for (int i = 0; i < mArgs.length; i++) {
+		
+		for ( Iterator<XValue> I = mArgs.iterator() ; I.hasNext() ; ) {
+			XValue arg = I.next();
 			
-			if( mArgs[i].toString().startsWith("-") && ! mArgs[i].equals("--")){
-				String a = mArgs[i].toString().substring(1);
+			if( arg.isString() &&  arg.toString().startsWith("-") && ! arg.equals("--")){
+				String a = arg.toString().substring(1);
 				
 				OptionDef def = getOptDef(a);
 				if( def == null )
-					throw new UnknownOption("Unknown option: " + mArgs[i]);
+					throw new UnknownOption("Unknown option: " + arg);
 				OptionValue ov = new OptionValue();
 				ov.option = def ;
 				if( def.hasArgs ){
-					if( (i+1) >= mArgs.length)
-						throw new UnknownOption("Option has no args: " + mArgs[i]);
-					ov.value = mArgs[++i];
+					if( !I.hasNext() )
+						throw new UnknownOption("Option has no args: " + arg);
+					ov.value = I.next();
 				}
 				mOptions.add(ov);
 				
 			} else {
-				if( mArgs[i].equals("--"))
-					i++;
-				if( i < mArgs.length ){
-					
-					mRemainingArgs = new ArrayList<XValue>( mArgs.length - i );
 
-					while( i < mArgs.length )
-						mRemainingArgs.add( mArgs[i++]);
-				}	
+				mRemainingArgs = new ArrayList<XValue>( );
+				
+				if( arg.isString() && arg.equals("--") )
+						arg = null;
+				if( arg != null )
+					mRemainingArgs.add(arg);
+				while( I.hasNext() )
+					mRemainingArgs.add( I.next());
+				
+					
 				break;
 	
 			}

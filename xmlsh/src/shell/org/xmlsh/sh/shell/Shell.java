@@ -15,6 +15,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Stack;
 
+import net.sf.saxon.FeatureKeys;
 import net.sf.saxon.s9api.Processor;
 import org.xmlsh.core.CommandFactory;
 import org.xmlsh.core.ICommand;
@@ -448,8 +449,10 @@ public class Shell {
 	 */
 	public static synchronized Processor getProcessor()
 	{
-		if( mProcessor == null )
+		if( mProcessor == null ){
 			mProcessor  = new Processor(false);
+			// mProcessor.setConfigurationProperty(FeatureKeys.TREE_MODEL, net.sf.saxon.event.Builder.LINKED_TREE);
+		}
 		
 		return mProcessor;
 	}
