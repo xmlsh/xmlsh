@@ -151,7 +151,12 @@ public class XEnvironment  {
 		setVar( new XVariable( name , value ));
 	}
 	
-	
+
+
+	public void setVar(String name, String value) {
+		setVar( name , new XValue(value));
+		
+	}
 	
 	
 	public XEnvironment clone()
@@ -296,6 +301,7 @@ public class XEnvironment  {
 	}
 	
 	public boolean isStdinRedirected() { return mStdinRedirected ; }
+
 
 }
 //

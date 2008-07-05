@@ -2,7 +2,7 @@
 # test of xcat
 
 
-cd $_TEMP
+cd $TMPDIR
 echo <[<foo><x>bar</x></foo>]> > x1.xml
 echo <[<foo><x>spam</x></foo>]> > x2.xml
 

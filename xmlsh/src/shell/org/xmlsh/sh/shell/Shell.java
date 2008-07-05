@@ -78,6 +78,13 @@ public class Shell {
 	 */
 	
 	private void setGlobalVars() {
+	    
+		
+		// Export path to shell path
+	    String path = System.getenv("PATH");
+	    getEnv().setVar( new XVariable("PATH", new XValue(path)));
+	
+		
 		
 		getEnv().setVar(
 				new XDynamicVariable("PWD" , EnumSet.of( XVarFlag.READONLY , XVarFlag.XEXPR )) { 
@@ -91,6 +98,7 @@ public class Shell {
 				
 		);
 		
+		getEnv().setVar("TMPDIR" , System.getProperty("java.io.tmpdir"));
 	}
 
 	/*
@@ -262,9 +270,6 @@ public class Shell {
 		
 		Shell shell = new Shell();
 	    
-	    // Export path to shell path
-	    String path = System.getenv("PATH");
-	    shell.getEnv().setVar( new XVariable("PATH", new XValue(path)));
 	    
 	    
 	    int ret = 0;
@@ -364,8 +369,8 @@ public class Shell {
 		
 	}
 
-	public File getExplicitFile(String name, boolean mustExist ) {
-		File file = new File(name).getAbsoluteFile();
+	public File getExplicitFile(String name, boolean mustExist ) throws IOException {
+		File file = new File( name).getCanonicalFile();
 		
 		
 		if(  mustExist && ! file.exists() )

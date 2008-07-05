@@ -10,13 +10,6 @@ if ! xwhich -n $EXTERNS ; then
 	exit 1
 fi
 
-# Set up a temp directory
-_TEMP=$PWD/_temp
-rm -rf $_TEMP
-mkdir $_TEMP
-
-
-
 
 for d in core builtin internal; do
    echo "running tests in $d"
@@ -28,7 +21,5 @@ for d in core builtin internal; do
    done
    cd ..
 done
-
-rm -rf $_TEMP
 
          

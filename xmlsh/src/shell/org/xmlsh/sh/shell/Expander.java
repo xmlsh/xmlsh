@@ -178,7 +178,7 @@ class Expander {
 		if( arg.startsWith("$(") && arg.endsWith(")"))
 		{
 			List<XValue> 	r = new ArrayList<XValue>(1);
-			for( String w : runCmd(arg.substring(2,arg.length()-1)).split("\n") )
+			for( String w : runCmd(arg.substring(2,arg.length()-1)).split("(\r)?\n") )
 				r.add( new XValue(w));
 			return r;
 			

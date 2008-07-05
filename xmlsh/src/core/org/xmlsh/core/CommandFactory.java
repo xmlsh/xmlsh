@@ -8,6 +8,7 @@ package org.xmlsh.core;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.HashMap;
 
 import org.apache.log4j.Logger;
@@ -69,7 +70,7 @@ public class CommandFactory
 		
 	
 	
-	public ICommand		getCommand(Shell shell , String name)
+	public ICommand		getCommand(Shell shell , String name) throws IOException
 	{
 		
 		ICommand cmd =  	getBuiltin(shell, name);
@@ -92,7 +93,7 @@ public class CommandFactory
 	 * by looking through the External Path
 	 */
 
-	private ICommand getExternal(Shell shell, String name) 
+	private ICommand getExternal(Shell shell, String name) throws IOException 
 	{
 		File	cmdFile = null;
 		
@@ -135,7 +136,7 @@ public class CommandFactory
 		}
 	}
 
-	public ICommand		getScript( Shell shell , String name, boolean bSourceMode  )
+	public ICommand		getScript( Shell shell , String name, boolean bSourceMode  ) throws IOException
 	{
 		File scriptFile = null;
 		

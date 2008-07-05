@@ -2,12 +2,9 @@
 
 [ $# -ne 1 ] && exit 1
 
-rm -rf $_TEMP
-mkdir $_TEMP
 
 $1  > _out.txt 
 RET=$?
-rm -rf $_TEMP
 if [ $RET -ne 0 ] ; then
    echo $1 failed: return code: $RET
    exit $RET
