@@ -28,7 +28,6 @@ PARSER_END(ShellParser)
 
 TOKEN_MGR_DECLS :
 {
-  String here_end = "EOF";
   boolean in_for = false ;
   
   private String readXExpr()
@@ -40,6 +39,27 @@ TOKEN_MGR_DECLS :
 	  		sb.append(c);
 	  		if( sb.toString().endsWith( "]>") )
 	  			break;	
+	  	}
+  	} catch( Exception e ){}
+  	return sb.toString();
+  }
+  
+    String readHere(String here_end)
+  {
+  	StringBuffer sb = new StringBuffer("");
+  	char c;
+  	String estr = "\n" + here_end + "\n";
+  	try {
+	  	while( (c=input_stream.readChar())> 0 ) {
+	  		if( c == '\r' )
+	  			continue;
+	  		sb.append(c);
+	  		if( c == '\n' &&
+	  			 sb.toString().endsWith( estr ) ){
+	  			 sb.setLength( sb.length() - estr.length() + 1 );
+	  			 input_stream.backup(1);
+	  			break;	
+	  			 }
 	  	}
   	} catch( Exception e ){}
   	return sb.toString();
@@ -97,7 +117,7 @@ TOKEN_MGR_DECLS :
     recocongized in this state (for,if, else ... )
     
  <CMD>	   - After the first word of a command is started
- <HERE>	   - A HERE DOCUMENT has been started ( <<-EOF )
+
  
 */
 
@@ -260,33 +280,6 @@ TOKEN : {
 	< ASSIGN_WORD : <NAME> "=" >
 	
 }
-
-
-/* HERE document parsing 
-  Read input char at a time ( ~[] )
-  Strip out \r (Windows)
-  Since there is a \n already in the input stream, check for
-  	\n{here_end}\n
-  Exit but pushing back the \n so it matches with the end of the command
-  
-*/
-
-
-
-<HERE> SKIP : { "\r" }
-
-<HERE> MORE :
-{
-  < ~[] > { if( image.toString().endsWith( "\n" + here_end + "\n" )) {
-  			image.setLength( image.length() - here_end.length()  - 1);
-  			 input_stream.backup(1);
-  			
-  			SwitchTo(HERE_END); 
-  			}
-  		}
-}
-
-<HERE_END> TOKEN : {  <HERE_BODY : "" > : DEFAULT }
 
 
 Command script() :
@@ -736,7 +729,7 @@ IORedirectList redirect_list() :
 	{ IORedirectList r = new IORedirectList();
 	  IORedirect io;}
 {
-	(LOOKAHEAD(2) io=io_redirect() { r.add(io); } )+ 
+	( io=io_redirect() { r.add(io); } )+ 
 	{ return r; }
 }
 
@@ -783,14 +776,13 @@ String	filename() :
 }
 
 IOHere	io_here() : 
-	{ Token tless ; String s; Token t;}
+	{ Token tless ; String s; }
 {
-	( tless=<DLESS>	| tless=<DLESSDASH> )		s=here_end()  { 
-		token_source.here_end = s;
-		token_source.SwitchTo(HERE);
+	( tless=<DLESS>	| tless=<DLESSDASH> )		s=here_end() { 
+		String body = token_source.readHere(s);
 		
-	} t=<HERE_BODY> { 		
-		return new IOHere(tless.toString(),t.toString());
+				
+		return new IOHere(tless.toString(),body);
 	}
 	
 	
