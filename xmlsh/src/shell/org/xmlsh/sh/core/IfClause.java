@@ -47,10 +47,10 @@ public class IfClause extends CompoundCommand
 	public int exec(Shell shell) throws Exception 
 	{
 		int ret = shell.exec( mIfPart );
-		if( ret == 0 )
+		if( ret == 0 && shell.keepRunning() )
 			ret = shell.exec( mThenPart );
 		else
-		if( mElsePart != null )
+		if( mElsePart != null && shell.keepRunning() )
 			ret = shell.exec( mElsePart );
 		return ret;
 	

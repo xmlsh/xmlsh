@@ -388,6 +388,10 @@ public class Shell {
 		mExitVal = new Integer(retval);
 		
 	}
+	public boolean keepRunning()
+	{
+		return mExitVal == null;
+	}
 
 	public String getArg0() {
 		return mArg0;

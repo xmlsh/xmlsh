@@ -21,6 +21,9 @@ public class AndOr extends BinaryOpCommand {
 	@Override
 	public int exec(Shell shell) throws Exception {
 		int leftRet = shell.exec(mLeft);
+		if( ! shell.keepRunning() )
+			return leftRet ;
+		
 		if( mOp.equals("||") ){
 			if( Shell.toBool(leftRet))
 				return leftRet;

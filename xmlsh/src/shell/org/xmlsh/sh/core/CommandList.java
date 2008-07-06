@@ -25,7 +25,7 @@ public class CommandList extends BinaryOpCommand
 	@Override
 	public int exec(Shell shell) throws Exception {
 		int leftRet = shell.exec(mLeft);
-		if( mRight == null )
+		if( mRight == null || ! shell.keepRunning() )
 			return leftRet ;
 		else
 			return shell.exec( mRight );

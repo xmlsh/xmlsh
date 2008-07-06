@@ -32,7 +32,7 @@ public class UntilClause extends CompoundCommand {
 		
 		shell.pushEnv();
 		try {
-			while( !shell.toBool( shell.exec( mUntil ) ) ){
+			while( !shell.toBool( shell.exec( mUntil ) ) && shell.keepRunning() ){
 				
 				shell.exec( mDo );
 			}

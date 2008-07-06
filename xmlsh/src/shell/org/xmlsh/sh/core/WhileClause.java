@@ -30,7 +30,7 @@ public class WhileClause extends CompoundCommand {
 	
 
 	public int exec(Shell shell) throws Exception {
-				while( shell.toBool( shell.exec( mWhile ) ) ){
+				while( shell.toBool( shell.exec( mWhile )) && shell.keepRunning() ){
 				
 				shell.exec( mDo );
 			}

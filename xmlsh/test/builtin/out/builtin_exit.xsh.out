@@ -1,2 +1,11 @@
+Exit test 1
 return value 1
-return value 2
+Exit test 2
+return value 0
+Exit test 3
+return value 0
+Exit test 4
+return value 0
+Exit test 5
+return value 0
+Exit test 100
