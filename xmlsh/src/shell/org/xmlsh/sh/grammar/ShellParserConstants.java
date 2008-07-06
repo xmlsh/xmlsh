@@ -36,24 +36,23 @@ public interface ShellParserConstants {
   int IN = 33;
   int LESS = 34;
   int GT = 35;
-  int RPAREN = 36;
-  int AMP = 37;
-  int SEMI = 38;
-  int PIPE = 39;
-  int NAME = 40;
-  int XEXPR = 41;
-  int WORD = 42;
-  int IO_NUMBER = 43;
-  int STRING_LITERAL1 = 44;
-  int STRING_LITERAL2 = 45;
-  int VAR_EXPANSION = 46;
-  int ASSIGN_WORD = 47;
-  int HERE_BODY = 50;
+  int TGT = 36;
+  int RPAREN = 37;
+  int AMP = 38;
+  int SEMI = 39;
+  int PIPE = 40;
+  int NAME = 41;
+  int XEXPR = 42;
+  int WORD = 43;
+  int IO_NUMBER = 44;
+  int STRING_LITERAL1 = 45;
+  int STRING_LITERAL2 = 46;
+  int VAR_EXPANSION = 47;
+  int VAR_SUBPROC = 48;
+  int ASSIGN_WORD = 49;
 
   int DEFAULT = 0;
   int CMD = 1;
-  int HERE_END = 2;
-  int HERE = 3;
 
   String[] tokenImage = {
     "<EOF>",
@@ -92,6 +91,7 @@ public interface ShellParserConstants {
     "\"in\"",
     "\"<\"",
     "\">\"",
+    "\"2>\"",
     "\")\"",
     "\"&\"",
     "\";\"",
@@ -103,10 +103,8 @@ public interface ShellParserConstants {
     "<STRING_LITERAL1>",
     "<STRING_LITERAL2>",
     "<VAR_EXPANSION>",
+    "<VAR_SUBPROC>",
     "<ASSIGN_WORD>",
-    "\"\\r\"",
-    "<token of kind 49>",
-    "\"\"",
   };
 
 }
