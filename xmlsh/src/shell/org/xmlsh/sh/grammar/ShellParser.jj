@@ -763,6 +763,8 @@ IORedirect io_file() :
 		{ return new IORedirect(new IOFile( "2>" , s )); }
 |	<GT>				s=filename()
 		{ return new IORedirect(new IOFile( ">" , s )); }
+|	<DGREAT>				s=filename()
+		{ return new IORedirect(new IOFile( ">>" , s )); }
 |	t=<GREATAND>	s=filename()
 		{ return new IORedirect(new IOFile( t.toString() , s )); }
 

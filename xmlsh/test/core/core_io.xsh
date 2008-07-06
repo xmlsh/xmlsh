@@ -8,6 +8,7 @@ fi
 F=$TMPDIR/test.core_io
 
 echo foo > $F
+echo foo >> $F
 cat $F
 cat < $F
 rm $F
