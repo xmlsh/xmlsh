@@ -10,6 +10,7 @@ import java.io.PrintWriter;
 import java.util.List;
 
 import org.xmlsh.core.BuiltinCommand;
+import org.xmlsh.core.Options;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.Util;
@@ -19,6 +20,14 @@ public class xecho extends BuiltinCommand {
 	public int run( Shell shell,String cmd, List<XValue> args ) throws Exception {
 		PrintWriter out =  new PrintWriter(shell.getEnv().getStdout());
 
+		Options opts = new Options( "n" , args );
+		opts.parse();
+		
+		boolean nolf = opts.hasOpt("n");
+		
+		args = opts.getRemainingArgs();
+		
+		
 		args = Util.expandSequences( args);
 		boolean bFirst = true;
 		for ( XValue arg : args ){
@@ -28,7 +37,8 @@ public class xecho extends BuiltinCommand {
 	
 				out.print(arg.toString());
 		}
-		out.println();
+		if( ! nolf )
+			out.println();
 		out.flush();
 		return 0;
 	}

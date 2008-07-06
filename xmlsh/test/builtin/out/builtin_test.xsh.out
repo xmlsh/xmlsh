@@ -17,3 +17,13 @@ Success -ne
 Success -ne
 Success -ef
 success -ef
+Success -d
+Success -e
+Success -s
+Success -w
+Success empty ()
+Success ()
+Success simple -o
+success -o
+success -a
+Success compound

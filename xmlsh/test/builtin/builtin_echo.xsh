@@ -20,5 +20,9 @@ echo "$A$C$B"
 # echo single quoted
 echo '$A$C$B'
 
+# Echo -n
+echo -n foo ; echo bar
+
+
 
 

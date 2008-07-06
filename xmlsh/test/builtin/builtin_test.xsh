@@ -56,9 +56,47 @@
 [ ././foo.bar -ef foo.bar ] && echo success -ef
 [ ././foo.bar -ef foox.bar ] && echo Fail -ef
 
-# TBD: File based tests
+# File based tests
 #
+TDIR=$TMPDIR/_xmlsh
+
+rm -rf $TDIR
+[ -f $TDIR -o -d $TDIR ] && echo Fail -f -d
+mkdir $TDIR
+[ -d $TDIR ] && echo Success -d
+[ -f $TDIR ] && echo Fail -f
+[ -e $TDIR ] || echo Fail -e directory
+
+echo -n > $TDIR/empty
+[ -e $TDIR/empty ] && echo Success  -e
+[ -z $TDIR/empty ] && echo Succcess -z 
+[ -s $TDIR/empty ] && echo Fail -s
+
+echo notempty > $TDIR/notempty
+[ -s $TDIR/notempty ] && echo Success -s
+[ -z $TDIR/notempty ] && echo Fail -z 
+
+[ -w $TDIR/notempty ] && echo Success -w
+chmod a-w $TDIR/notempty
+
+[ -w $TDIR/notempty ] && echo Fail -w
+
+# Test of -x depends on unix 
+# [ -x ... ]
+
+# Tests of compound statements
+[ \( \) ] && echo Success empty "()" 
+[ \( "test" \) ] && echo Success "()"
+[ ! \( "test" \) ] && echo Fail !
+
+# test or 
+[ -n "test" -o -n "test" ] && echo Success simple -o
+[ 1 -eq 1 -o 1 -eq 2 ] && echo success -o
+[ 1 -eq 1 -a 2 -eq 2 ] && echo success -a
+
+# test compound
+[ -n "test" -a \( 1 -eq 1 \) -o 2 -eq 2 ] && Echo Success compound
+
 
 
 exit 0
-
