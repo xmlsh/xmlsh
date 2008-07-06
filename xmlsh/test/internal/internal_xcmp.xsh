@@ -39,7 +39,7 @@ cat > f3 <<EOF
 EOF
 
 xcmp -x f1 f3 && Echo xml compare Success
-#rm f1 f2 f3
+rm f1 f2 f3
 exit 0
    
 
