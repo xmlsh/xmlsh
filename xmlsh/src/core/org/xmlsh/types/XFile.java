@@ -51,6 +51,7 @@ public class XFile /* implements XSerializble */ {
 		mFile = file;
 	}
 
+
 	public String getName() {
 		return mFile.getName();
 
