@@ -4,7 +4,7 @@ import org.xmlsh.sh.core.*;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import org.xmlsh.core.XEnvironment;
-
+ 
 public class ShellParserTokenManager implements ShellParserConstants
 {
   boolean in_for = false ;

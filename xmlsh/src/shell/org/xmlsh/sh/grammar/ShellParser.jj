@@ -29,6 +29,7 @@ PARSER_END(ShellParser)
 TOKEN_MGR_DECLS :
 {
   boolean in_for = false ;
+  boolean major_difference ;
   
   private String readXExpr()
   {
