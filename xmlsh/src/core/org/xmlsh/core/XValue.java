@@ -168,8 +168,8 @@ public class XValue {
 		if( this == that )
 			return true ;
 		
-		if( mString != null && that.mString != null )
-			return mString.equals( that.mString );
+		if( this.isAtomic() && that.isAtomic() )
+			return toString().equals(that.toString());
 		
 		if( mValue != null && that.mValue != null )
 			return mValue.equals( that.mValue );

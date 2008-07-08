@@ -17,7 +17,7 @@ for d in core builtin internal; do
    for test in *.xsh ; do
      
      echo Running test $test
-     ../run_test.xsh $test || exit 1
+     ../run_test.xsh $test || { echo failed test $test ; exit 1 ; }
    done
    cd ..
 done

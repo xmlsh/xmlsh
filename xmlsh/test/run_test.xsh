@@ -16,9 +16,11 @@ if [ -f out/${1}.out ] ; then
 		echo $1 out/${1}.out different output
 		#/mks/mksnt/mv _out.txt ${1}.txt
 		exit 1
-		echo after exit
 	fi
 	rm _out.txt
+else
+	echo $1 - no output to compare 
+ 	exit 2
 fi
 
 exit 0

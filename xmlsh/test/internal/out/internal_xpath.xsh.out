@@ -1,0 +1,16 @@
+Xpath on stdin
+<AUTHOR xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">Jane Austen</AUTHOR>
+<AUTHOR xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">Charlotte Brontë</AUTHOR>
+<AUTHOR xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">Thomas Hardy</AUTHOR>
+<AUTHOR xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">Thomas Hardy</AUTHOR>
+<AUTHOR xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">Jasper Fforde</AUTHOR>
+<AUTHOR xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">Jasper Fforde</AUTHOR>
+Xpath on file
+<AUTHOR xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">Jane Austen</AUTHOR>
+<AUTHOR xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">Charlotte Brontë</AUTHOR>
+<AUTHOR xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">Thomas Hardy</AUTHOR>
+<AUTHOR xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">Thomas Hardy</AUTHOR>
+<AUTHOR xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">Jasper Fforde</AUTHOR>
+<AUTHOR xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">Jasper Fforde</AUTHOR>
+Xpath on xml expression
+<bar a2="value2"/>

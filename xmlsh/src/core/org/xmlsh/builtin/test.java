@@ -252,7 +252,7 @@ public class test extends BuiltinCommand {
 
 	private int compareInt(XValue a1, XValue a2) throws Error {
 		
-		if(!( a1.isString() && a2.isString() ))
+		if(!( a1.isAtomic() && a2.isAtomic() ))
 			throw new Error("args must be non xml expressions");
 		
 		String s1 = a1.toString();
