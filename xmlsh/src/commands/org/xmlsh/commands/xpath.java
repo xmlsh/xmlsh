@@ -106,7 +106,7 @@ public class xpath extends XCommand {
 		if( context != null )
 			eval.setContextItem(context);
 		
-		if( opts.hasOpt("V")){
+		if( opts.hasOpt("v")){
 			// Read pairs from args to set
 			for( int i = 0 ; i < xvargs.size()/2 ; i++ ){
 				String name = xvargs.get(i*2).toString();

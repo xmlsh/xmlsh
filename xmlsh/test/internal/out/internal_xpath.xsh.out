@@ -14,3 +14,4 @@ Xpath on file
 <AUTHOR xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">Jasper Fforde</AUTHOR>
 Xpath on xml expression
 <bar a2="value2"/>
+<foo>text</foo>

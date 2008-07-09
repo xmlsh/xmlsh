@@ -25,3 +25,6 @@ xpath -i books.xml //AUTHOR
 echo Xpath on xml expression
 xpath -i $D1 //bar
 
+#xpath with substitued variables and no input
+xpath -n -v '$x/foo' x <[<bar><foo>text</foo></bar>]>
+
