@@ -151,7 +151,7 @@ class Expander {
 	}
 	
 
-	List<XValue> expand(String arg) {
+	List<XValue> expand(String arg) throws IOException {
 		
 		// 1a) single quote expansion
 		if( arg.startsWith("'")){
@@ -404,7 +404,7 @@ class Expander {
 		
 	}
 
-	private String runCmd(String cmd) {
+	private String runCmd(String cmd) throws IOException {
 
 		
 		InputStream script = new StringBufferInputStream(cmd);

@@ -6,6 +6,7 @@
 
 package org.xmlsh.sh.core;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
@@ -53,7 +54,7 @@ public class CommandPrefix {
 		
 	}
 
-	public void exec(Shell shell) {
+	public void exec(Shell shell) throws IOException {
 		for (Assign ass : mList) {
 			XValue value = shell.expandString(ass.mValue);
 			shell.getEnv().setVar( new XVariable(ass.mVariable, value) );

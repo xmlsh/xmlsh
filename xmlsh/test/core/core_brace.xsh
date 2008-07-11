@@ -37,7 +37,6 @@ echo '<foo2/>' | { xcat | xcat;}
 
 
 
-
 # { env does change
 A=1
 { A=2 ;  }  # trailing ";" required

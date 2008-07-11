@@ -7,6 +7,7 @@
 package org.xmlsh.sh.core;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 
@@ -26,7 +27,7 @@ public class IOHere {
 		out.print(mHere);
 		
 	}
-	public void exec(Shell shell) throws UnsupportedEncodingException  {
+	public void exec(Shell shell) throws IOException  {
 		
 		shell.getEnv().setStdin( 
 				new ByteArrayInputStream(mHere.getBytes("UTF-8")));

@@ -6,6 +6,7 @@
 
 package org.xmlsh.sh.core;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +42,7 @@ public class CommandSuffix {
 	 * into runtime argument list 0-n ... 
 	 */
 	
-	public List<XValue> toCmdLine(Shell shell, String command) 
+	public List<XValue> toCmdLine(Shell shell, String command) throws IOException 
 	{
 		ArrayList<XValue>	args = new ArrayList<XValue>();
 				

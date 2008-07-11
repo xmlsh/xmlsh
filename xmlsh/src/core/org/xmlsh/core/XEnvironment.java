@@ -98,23 +98,32 @@ public class XEnvironment  {
 
 	/**
 	 * @param stdin the stdin to set
+	 * @throws IOException 
 	 */
-	public void setStdin(InputStream stdin) {
+	public void setStdin(InputStream stdin) throws IOException {
 		mStdinRedirected = true ;
+		if( mStdin != null )
+			mStdin.close();
 		mStdin = new SynchronizedInputStream(stdin);
 	}
 
 	/**
 	 * @param stdout the stdout to set
+	 * @throws IOException 
 	 */
-	public void setStdout(OutputStream stdout) {
+	public void setStdout(OutputStream stdout) throws IOException {
+		if( mStdout != null )
+			mStdout.close();
 		mStdout = new SynchronizedOutputStream(stdout);
 	}
 
 	/**
 	 * @param stderr the stderr to set
+	 * @throws IOException 
 	 */
-	public void setStderr(OutputStream stderr) {
+	public void setStderr(OutputStream stderr) throws IOException {
+		if( mStderr != null )
+			mStderr.close();
 		mStderr = new SynchronizedOutputStream(stderr);
 	}
 

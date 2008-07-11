@@ -397,7 +397,7 @@ public class Shell {
 		return mArg0;
 	}
 
-	public List<XValue> expand(String s, boolean bExpandSequences ) {
+	public List<XValue> expand(String s, boolean bExpandSequences ) throws IOException {
 		Expander e = new Expander( this );
 		List<XValue> result =  e.expand(s);
 		if( bExpandSequences )
@@ -428,7 +428,7 @@ public class Shell {
 	}
 	
 
-	public XValue expandString(String value) {
+	public XValue expandString(String value) throws IOException {
 		List<XValue> ret = expand(value,false);
 		if( ret.size() == 0 )
 			return new XValue();
