@@ -24,10 +24,10 @@ package org.xmlsh.commands;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -98,7 +98,7 @@ public class xsplit extends XCommand {
 		mEnv = env;
 
 
-		Options opts = new Options( "w:,n,p:" , args );
+		Options opts = new Options( "c:,w:,n,p:,e:,s:" , args );
 		opts.parse();
 		
 		// root node
@@ -111,9 +111,11 @@ public class xsplit extends XCommand {
 		
 		
 		
-		if( opts.hasOpt("c")){
-			mNumChildren = Util.parseInt(opts.getOpt("c").getValue().toString(),1);
-		}
+		mNumChildren = Util.parseInt(opts.getOptString("c","1"),1);
+		
+		mExt 	 = opts.getOptString("e",mExt);
+		mSuffix  = opts.getOptString("s",mSuffix);
+		mPrefix  = opts.getOptString("p",mPrefix);
 		
 		
 		if( opts.hasOpt("n") ){ 
@@ -223,7 +225,8 @@ public class xsplit extends XCommand {
 
 	private void write(XMLEventReader xmlreader, XMLEvent first) throws XMLStreamException, IOException {
 		File fout = nextFile();
-		XMLEventWriter w = mOutputFactory.createXMLEventWriter( new FileOutputStream(fout));
+		OutputStream fo = new FileOutputStream(fout); // need to close seperately
+		XMLEventWriter w = mOutputFactory.createXMLEventWriter( fo );
 		
 		
 		/*
@@ -237,6 +240,8 @@ public class xsplit extends XCommand {
 		w.add(first);
 		
 		int depth = 0;
+		int nchild = 0;
+		
 		while( xmlreader.hasNext() ){
 			XMLEvent e = xmlreader.nextEvent();
 			w.add(e);
@@ -245,8 +250,10 @@ public class xsplit extends XCommand {
 				depth++;
 			else
 			if( e.getEventType() == XMLStreamConstants.END_ELEMENT ){
-				if( depth-- <= 0 )
-					break;
+				if( depth-- <= 0 ){
+					if( ++nchild == mNumChildren )
+						break;
+				}
 
 			}
 			
@@ -258,7 +265,7 @@ public class xsplit extends XCommand {
 		w.add( mEventFactory.createEndElement( first.asStartElement().getName(), null));
 		w.add( mEventFactory.createEndDocument());
 		w.close();
-		
+		fo.close();
 		
 		
 	}

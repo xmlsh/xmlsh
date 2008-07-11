@@ -185,6 +185,14 @@ public class Options
 		
 	}
 	
+	public String getOptString( String opt , String defValue )
+	{
+		if( hasOpt(opt))
+			return getOpt(opt).getValue().toString();
+		else
+			return defValue ;
+		
+	}
 	public List<XValue> getRemainingArgs()
 	{
 		if( mRemainingArgs == null )
