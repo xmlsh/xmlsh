@@ -7,7 +7,7 @@ options {
 
   STATIC=false;
   
-// DEBUG_PARSER=true;
+ // DEBUG_PARSER=true;
 // DEBUG_LOOKAHEAD=true;
 // DEBUG_TOKEN_MANAGER=true;
 // FORCE_LA_CHECK=true;

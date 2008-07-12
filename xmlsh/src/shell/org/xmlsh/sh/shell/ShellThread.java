@@ -20,10 +20,11 @@ public class ShellThread extends Thread {
 	private Shell 		mShell ;
 	private Command 	mCmd;
 	private	 File		mIniitalCD;
+	private		Shell	mParent = null;
 
-
-	public ShellThread(Shell shell , Command cmd ) {
+	public ShellThread(Shell shell , Shell parent ,  Command cmd ) {
 		mShell = shell;
+		mParent = parent ;
 		mCmd = cmd;
 		mIniitalCD = shell.getCurdir();
 
@@ -48,10 +49,12 @@ public class ShellThread extends Thread {
 		} finally {
 			
 			mShell.close();
+			if( mParent != null )
+				mParent.removeJob( this );
 		}
 		
 	}
-	
+
 	
 
 	

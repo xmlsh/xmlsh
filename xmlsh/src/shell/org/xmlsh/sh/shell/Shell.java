@@ -15,7 +15,6 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Stack;
 
-import net.sf.saxon.FeatureKeys;
 import net.sf.saxon.s9api.Processor;
 import org.xmlsh.core.CommandFactory;
 import org.xmlsh.core.ICommand;
@@ -43,6 +42,10 @@ public class Shell {
 	private		static Processor	mProcessor = null;
 	
 	private 	String  mSavedCD = null;
+	
+
+	private		List<ShellThread>	mChildren = new ArrayList<ShellThread>();
+	private boolean mIsInteractive = false ;
 	
 
 	static {
@@ -194,6 +197,7 @@ public class Shell {
 	
 	private		int		interactive()
 	{
+		mIsInteractive = true ;
 		int		ret = 0;
 		mCommandInput = System.in;
 		ShellParser parser= new ShellParser(mCommandInput);
@@ -242,11 +246,23 @@ public class Shell {
 		if( c.isWait())
 			return mStatus = c.exec(this);
 		
-		ShellThread sht = new ShellThread( new Shell(this) , c);
+		ShellThread sht = new ShellThread( new Shell(this) , this , c);
+		
+		if( isInteractive() )
+			printErr( "" + sht.getId() );
 		sht.start();
+		addJob( sht );
 		return mStatus = 0;
 		
 		
+	}
+
+	private boolean isInteractive() {
+		return mIsInteractive ;
+	}
+
+	private synchronized void addJob(ShellThread sht) {
+		mChildren.add(sht);
 	}
 
 	public void printErr(String s) {
@@ -464,6 +480,23 @@ public class Shell {
 		}
 		
 		return mProcessor;
+	}
+
+	public synchronized void removeJob(ShellThread job) {
+		mChildren.remove(job);
+		
+	}
+	
+	/*
+	 * Returns the children of the current thread
+	 * copied into a collection so that it is thread safe
+	 */
+	
+	public synchronized List<ShellThread> getChildren()
+	{
+		ArrayList<ShellThread> copy = new ArrayList<ShellThread>();
+		copy.addAll(mChildren);
+		return copy;
 	}
 	
 }

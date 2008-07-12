@@ -14,12 +14,14 @@ import java.util.HashMap;
 import org.apache.log4j.Logger;
 import org.xmlsh.builtin.colon;
 import org.xmlsh.builtin.exit;
+import org.xmlsh.builtin.jobs;
 import org.xmlsh.builtin.read;
 import org.xmlsh.builtin.set;
 import org.xmlsh.builtin.shift;
 import org.xmlsh.builtin.source;
 import org.xmlsh.builtin.test;
 import org.xmlsh.builtin.unset;
+import org.xmlsh.builtin.wait;
 import org.xmlsh.builtin.xcd;
 import org.xmlsh.builtin.xecho;
 import org.xmlsh.builtin.xfalse;
@@ -58,6 +60,8 @@ public class CommandFactory
 		addBuiltin( "unset" , unset.class );
 		addBuiltin( "xwhich" , xwhich.class );
 		addBuiltin( "xversion" , xversion.class);
+		addBuiltin("jobs" , jobs.class);
+		addBuiltin("wait" , wait.class);
 	}
 	
 	

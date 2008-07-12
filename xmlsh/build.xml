@@ -26,7 +26,7 @@
     <target name="compile" description="Compilation target">
   		<mkdir dir="_out"/>
     	<echo file="src/shell/org/xmlsh/sh/shell/version.properties" append="false">
-version.build_date=${bdate.DSTAMP}
+version.build_date=${bdate.DSTAMP} ${bdate.TSTAMP}
 version.release=${release}
 </echo>
     	 <javac destdir="_out" debug="on" source="1.6" target="1.6">

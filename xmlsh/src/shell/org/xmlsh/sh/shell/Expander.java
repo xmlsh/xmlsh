@@ -324,7 +324,7 @@ class Expander {
 			
 			Command c = new EvalScriptCommand( cmd );
 			
-			sht = new ShellThread( shell , c );
+			sht = new ShellThread( shell , null ,  c );
 
 
 			 sht.start();
