@@ -243,7 +243,7 @@ public class Shell {
 			return mStatus = c.exec(this);
 		
 		ShellThread sht = new ShellThread( new Shell(this) , c);
-		sht.run();
+		sht.start();
 		return mStatus = 0;
 		
 		

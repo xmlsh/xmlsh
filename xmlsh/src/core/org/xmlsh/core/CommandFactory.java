@@ -25,8 +25,8 @@ import org.xmlsh.builtin.xecho;
 import org.xmlsh.builtin.xfalse;
 import org.xmlsh.builtin.xread;
 import org.xmlsh.builtin.xtrue;
+import org.xmlsh.builtin.xversion;
 import org.xmlsh.builtin.xwhich;
-
 import org.xmlsh.sh.shell.Shell;
 
 public class CommandFactory 
@@ -57,6 +57,7 @@ public class CommandFactory
 		addBuiltin( "xread" , xread.class);
 		addBuiltin( "unset" , unset.class );
 		addBuiltin( "xwhich" , xwhich.class );
+		addBuiltin( "xversion" , xversion.class);
 	}
 	
 	

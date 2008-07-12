@@ -18,13 +18,18 @@
 		    <fileset dir="${dist}"/>
 		  	<fileset dir="_out" includes="**/*" />
 		  	<fileset dir="test" includes="**/_out.txt"/>
+		  	<fileset dir="src" includes="**/version.properties"/>
 		  </delete>
 	</target>
 
   
     <target name="compile" description="Compilation target">
   		<mkdir dir="_out"/>
-    	 <javac destdir="_out" debug="on" source="1.5" target="1.5">
+    	<echo file="src/shell/org/xmlsh/sh/shell/version.properties" append="false">
+version.build_date=${bdate.DSTAMP}
+version.release=${release}
+</echo>
+    	 <javac destdir="_out" debug="on" source="1.6" target="1.6">
     	        <src path="src/core" />
     	 		<src path="src/shell"/>
         	 	<src path="src/commands"/>
