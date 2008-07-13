@@ -7,6 +7,7 @@
 package org.xmlsh.sh.core;
 
 import java.io.PrintWriter;
+import java.io.StringWriter;
 
 import org.xmlsh.sh.shell.Shell;
 
@@ -19,6 +20,15 @@ public abstract class Command {
 	
 	public abstract void print( PrintWriter out );
 	public abstract int exec( Shell shell) throws Exception;
+	
+	public String	toString() {
+		StringWriter sw = new StringWriter();
+		PrintWriter w = new PrintWriter(sw);
+		print(w);
+		w.flush();
+		return sw.toString();
+		
+	}
 }
 
 

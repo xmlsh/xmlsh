@@ -18,14 +18,14 @@ public class ShellThread extends Thread {
 	private static Logger mLogger = LogManager.getLogger( ShellThread.class);
 
 	private Shell 		mShell ;
-	private Command 	mCmd;
+	private Command 	mCommand;
 	private	 File		mIniitalCD;
 	private		Shell	mParent = null;
 
 	public ShellThread(Shell shell , Shell parent ,  Command cmd ) {
 		mShell = shell;
 		mParent = parent ;
-		mCmd = cmd;
+		mCommand = cmd;
 		mIniitalCD = shell.getCurdir();
 
 	}
@@ -41,7 +41,7 @@ public class ShellThread extends Thread {
 			mShell.setCurdir(mIniitalCD); // Populate the current directory in this thread
 			
 			
-			mCmd.exec(mShell);
+			mCommand.exec(mShell);
 		
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -55,7 +55,9 @@ public class ShellThread extends Thread {
 		
 	}
 
-	
+	public Command getCommand(){
+		return mCommand ;
+	}
 
 	
 }

@@ -20,7 +20,7 @@ public class jobs extends BuiltinCommand {
 			
 			for( ShellThread thread : shell.getChildren() )
 			{
-				shell.printErr( "" + thread.getId() );
+				shell.printErr( "" + thread.getId() + ":" + thread.getCommand().toString() );
 				
 			}
 			return 0;
