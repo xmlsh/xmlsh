@@ -185,6 +185,12 @@ public class XValue {
 	
 		
 	}
+
+	public long toLong() {
+		if( ! isAtomic() )
+			return -1 ;
+		return Long.parseLong(toString());
+	}
 }
 //
 //

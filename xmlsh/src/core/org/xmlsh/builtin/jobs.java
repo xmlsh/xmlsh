@@ -20,11 +20,16 @@ public class jobs extends BuiltinCommand {
 			
 			for( ShellThread thread : shell.getChildren() )
 			{
-				shell.printErr( "" + thread.getId() + ":" + thread.getCommand().toString() );
+				shell.printErr( "" + thread.getId() + " : " + getCommand(thread) );
 				
 			}
 			return 0;
 				
+	}
+
+	private String getCommand(ShellThread thread) {
+		String c =  thread.getCommand().toString();
+		return c.replaceAll("(\r?\n)", " ");
 	}
 
 

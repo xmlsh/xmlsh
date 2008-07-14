@@ -17,10 +17,40 @@ public class wait extends BuiltinCommand {
 
 	
 	public int run( Shell shell,String cmd ,  List<XValue> args ) throws Exception {
-			
+		
+			if( args.size() > 0 ){
+				for( XValue arg : args ){
+					if( ! arg.isAtomic() ){
+						shell.printErr("Arg is not a job ID");
+						continue ;
+					}
+					long id = arg.toLong();
+					if( id < 0 ){
+						shell.printErr("Arg is not a job ID");
+						continue ;
+					}
+					
+					boolean bFound = false ;
+					
+					for(  ShellThread thread : shell.getChildren()  )
+						if( thread.getId() == id ){
+							bFound = true ;
+							thread.join();
+							break;
+						}
+					if( ! bFound )
+						shell.printErr("Invalid job ID: " + id );
+					
+				}
+				
+				
+				
+			}
+			else 
 			for( ShellThread thread : shell.getChildren() )
 			{
-				thread.join();
+				
+					thread.join();
 				
 			}
 			return 0;
