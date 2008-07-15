@@ -219,7 +219,7 @@ class Expander {
 					// Speical case 
 					// $?  $*  $@ $$ $0...$9
 					c = arg.charAt(i);
-					if( c == '?' ||  c == '@' || c == '$' || c == '#' || c == '*' || Character.isDigit(c)){
+					if( c == '?' ||  c == '@' || c == '$' || c == '#' || c == '*' || c == '!' || Character.isDigit(c)){
 						boolean bKeepGoing ;
 						do {
 							bKeepGoing = false ;
@@ -511,6 +511,12 @@ class Expander {
 		else
 		if( var.equals("?"))
 			return new XValue( mShell.getStatus());
+		else
+		if( var.equals("!")){
+			
+				return new XValue( mShell.getLastThreadId() );
+		}
+			
 		else
 		if( Util.isInt(var,false)){
 			int n = Util.parseInt(var, -1);

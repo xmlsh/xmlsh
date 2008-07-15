@@ -30,7 +30,7 @@ xquery -n -v 'declare variable $x external ; $x/foo' x <[<bar><foo>text</foo></b
 
 # more complicated xquery
 
-xquery -qf ../query/books.xquery -i books.xml
+xquery -f ../query/books.xquery -i books.xml
 
 
 

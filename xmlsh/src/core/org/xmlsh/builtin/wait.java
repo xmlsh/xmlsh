@@ -30,16 +30,13 @@ public class wait extends BuiltinCommand {
 						continue ;
 					}
 					
-					boolean bFound = false ;
 					
 					for(  ShellThread thread : shell.getChildren()  )
 						if( thread.getId() == id ){
-							bFound = true ;
 							thread.join();
 							break;
 						}
-					if( ! bFound )
-						shell.printErr("Invalid job ID: " + id );
+					
 					
 				}
 				

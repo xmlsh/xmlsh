@@ -46,6 +46,7 @@ public class Shell {
 
 	private		List<ShellThread>	mChildren = new ArrayList<ShellThread>();
 	private boolean mIsInteractive = false ;
+	private		long	mLastThreadId = 0;
 	
 
 	static {
@@ -263,6 +264,7 @@ public class Shell {
 
 	private synchronized void addJob(ShellThread sht) {
 		mChildren.add(sht);
+		mLastThreadId = sht.getId();
 	}
 
 	public void printErr(String s) {
@@ -497,6 +499,13 @@ public class Shell {
 		ArrayList<ShellThread> copy = new ArrayList<ShellThread>();
 		copy.addAll(mChildren);
 		return copy;
+	}
+
+
+
+	public long getLastThreadId() {
+		// TODO Auto-generated method stub
+		return mLastThreadId;
 	}
 	
 }

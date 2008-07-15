@@ -6,7 +6,7 @@ mkdir $TMPDIR/_xmlsh
 cd $TMPDIR/_xmlsh
 
 # Create a test file to split
-xquery -n -qf - > test.xml <<EOF
+xquery -n -f - > test.xml <<EOF
 document {
 <root>
 {

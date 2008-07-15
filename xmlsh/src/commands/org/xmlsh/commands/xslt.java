@@ -39,7 +39,7 @@ public class xslt extends XCommand {
 	throws Exception 
 	{
 		
-		Options opts = new Options( "f:,i:,n,V" , args );
+		Options opts = new Options( "f:,i:,n,v" , args );
 		opts.parse();
 		
 		Processor  processor  = Shell.getProcessor();
@@ -108,7 +108,7 @@ public class xslt extends XCommand {
 			eval.setSource(  context  );
 		
 		
-		if( opts.hasOpt("V")){
+		if( opts.hasOpt("v")){
 			// Read pairs from args to set
 			for( int i = 0 ; i < xvargs.size()/2 ; i++ ){
 				String name = xvargs.get(i*2).toString();

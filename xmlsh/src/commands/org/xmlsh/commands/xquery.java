@@ -37,7 +37,7 @@ public class xquery extends XCommand {
 	throws Exception 
 	{
 		
-		Options opts = new Options( "qf:,i:,n,q:,v" , args );
+		Options opts = new Options( "f:,i:,n,q:,v" , args );
 		opts.parse();
 		
 		Processor  processor  = Shell.getProcessor();
@@ -80,10 +80,10 @@ public class xquery extends XCommand {
 		
 		List<XValue> xvargs = opts.getRemainingArgs();
 		
-		OptionValue ov = opts.getOpt("qf");
+		OptionValue ov = opts.getOpt("f");
 		if( ov != null ){
 			if( query != null )
-				throwInvalidArg( env, "Cannot specifify both -q and -qf");
+				throwInvalidArg( env, "Cannot specifify both -q and -f");
 			String fname = ov.getValue().toString();
 			if( fname.equals("-")){
 				if( bReadStdin )
