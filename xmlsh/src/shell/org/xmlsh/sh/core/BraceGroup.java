@@ -8,6 +8,7 @@ package org.xmlsh.sh.core;
 
 import java.io.PrintWriter;
 
+import org.xmlsh.core.XIOEnvironment;
 import org.xmlsh.sh.shell.Shell;
 
 public class BraceGroup extends CompoundCommand {
@@ -28,8 +29,13 @@ public class BraceGroup extends CompoundCommand {
 	@Override
 	public int exec(Shell shell) throws Exception {
 
-		applyRedirect(shell);
-		return shell.exec( mCommand);
+		XIOEnvironment io = shell.getEnv().saveIO();
+		try {
+			applyRedirect(shell);
+			return shell.exec( mCommand);
+		} finally {
+			shell.getEnv().restoreIO(io);
+		}
 
 	
 	}

@@ -9,6 +9,7 @@ package org.xmlsh.sh.core;
 import java.io.PrintWriter;
 import java.util.List;
 
+import org.xmlsh.core.XIOEnvironment;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.XVariable;
 import org.xmlsh.sh.shell.Shell;
@@ -52,7 +53,7 @@ public class ForClause extends CompoundCommand {
 		}
 		
 		
-		shell.pushEnv();
+		XIOEnvironment io = shell.getEnv().saveIO();
 		try {
 			applyRedirect(shell);
 			if( mWords == null ) {	// for all args 
@@ -76,7 +77,7 @@ public class ForClause extends CompoundCommand {
 			
 			
 		} finally {
-			shell.popEnv();
+			shell.getEnv().restoreIO(io);
 		}
 		return 0;
 		

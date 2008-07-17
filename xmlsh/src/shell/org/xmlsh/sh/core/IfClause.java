@@ -8,6 +8,7 @@ package org.xmlsh.sh.core;
 
 import java.io.PrintWriter;
 
+import org.xmlsh.core.XIOEnvironment;
 import org.xmlsh.sh.shell.Shell;
 
 public class IfClause extends CompoundCommand 
@@ -46,14 +47,20 @@ public class IfClause extends CompoundCommand
 	
 	public int exec(Shell shell) throws Exception 
 	{
-		int ret = shell.exec( mIfPart );
-		if( ret == 0 && shell.keepRunning() )
-			ret = shell.exec( mThenPart );
-		else
-		if( mElsePart != null && shell.keepRunning() )
-			ret = shell.exec( mElsePart );
-		return ret;
-	
+		XIOEnvironment io = shell.getEnv().saveIO();
+		try {
+			applyRedirect(shell);
+			
+			int ret = shell.exec( mIfPart );
+			if( ret == 0 && shell.keepRunning() )
+				ret = shell.exec( mThenPart );
+			else
+			if( mElsePart != null && shell.keepRunning() )
+				ret = shell.exec( mElsePart );
+			return ret;
+		} finally {
+			shell.getEnv().restoreIO(io);
+		}
 	}
 }
 

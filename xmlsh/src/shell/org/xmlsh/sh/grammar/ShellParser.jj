@@ -157,7 +157,7 @@ TOKEN_MGR_DECLS :
 
 }
 
-<CMD> TOKEN : {
+<DEFAULT,CMD> TOKEN : {
     < DLESS: "<<" >
 |   < DGREAT: ">>" >
 |   < LESSAND: "<&" >
@@ -166,7 +166,7 @@ TOKEN_MGR_DECLS :
 |   < DLESSDASH: "<<-" >
 }
 
-<CMD> TOKEN : {
+<DEFAULT,CMD> TOKEN : {
     < CLOBBER: ">|" >
 }
 
@@ -200,7 +200,7 @@ TOKEN : {
     < IN: "in" > {  if( ! in_for ) matchedToken.kind = WORD ; in_for = false ; }
 }
 
-<CMD> TOKEN : {
+<DEFAULT,CMD> TOKEN : {
 	< LESS : "<" >
 |	< GT   : ">" >
 |   < TGT  : "2>" >
@@ -216,7 +216,7 @@ TOKEN : {
 |	< SEMI : ";" >: DEFAULT 
 }
 
-<CMD> TOKEN : {
+<DEFAULT,CMD> TOKEN : {
 	< PIPE : "|" >
 : DEFAULT 
 }

@@ -16,23 +16,14 @@ import java.util.HashMap;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.util.SynchronizedInputStream;
-import org.xmlsh.util.SynchronizedOutputStream;
 
 public class XEnvironment  {
 	
 	private static Logger mLogger = LogManager.getLogger( XEnvironment.class );
 	private Shell mShell;
 	
+	private	XIOEnvironment mIO = new XIOEnvironment();
 	
-	/*
-	 * Standard IO
-	 */
-	
-	private SynchronizedInputStream	 mStdin;
-	private	 boolean				 mStdinRedirected = false;
-	private SynchronizedOutputStream mStdout;
-	private SynchronizedOutputStream mStderr;
 	
 	
 	/*
@@ -65,68 +56,6 @@ public class XEnvironment  {
 	}
 	
 	
-	/*
-	 * Standard input stream - created on first request
-	 */
-	
-	public	InputStream getStdin() 
-	{
-		if( mStdin == null )
-			mStdin = new SynchronizedInputStream(System.in);
-		return mStdin;
-	}
-	
-	/*
-	 * Stdandard output stream - created on first request
-	 */
-	public	OutputStream	getStdout() 
-	{
-		if( mStdout == null )
-			mStdout =  new SynchronizedOutputStream(System.out);
-		return mStdout ;
-	}
-	
-	/*
-	 * Standard error stream - created on first request
-	 */
-	public	OutputStream	getStderr() 
-	{
-		if( mStderr == null )
-			mStderr = new SynchronizedOutputStream(System.err);
-		return mStderr ;
-	}
-
-	/**
-	 * @param stdin the stdin to set
-	 * @throws IOException 
-	 */
-	public void setStdin(InputStream stdin) throws IOException {
-		mStdinRedirected = true ;
-		if( mStdin != null )
-			mStdin.close();
-		mStdin = new SynchronizedInputStream(stdin);
-	}
-
-	/**
-	 * @param stdout the stdout to set
-	 * @throws IOException 
-	 */
-	public void setStdout(OutputStream stdout) throws IOException {
-		if( mStdout != null )
-			mStdout.close();
-		mStdout = new SynchronizedOutputStream(stdout);
-	}
-
-	/**
-	 * @param stderr the stderr to set
-	 * @throws IOException 
-	 */
-	public void setStderr(OutputStream stderr) throws IOException {
-		if( mStderr != null )
-			mStderr.close();
-		mStderr = new SynchronizedOutputStream(stderr);
-	}
-
 
 	
 	/*
@@ -183,47 +112,14 @@ public class XEnvironment  {
 		XEnvironment 	that = new XEnvironment(shell);
 
 		that.mVars.putAll( this.mVars );	// clone variables
-		
-		
-		// Copy streams, assume they are thread safe streams
-		that.mStderr = this.mStderr;
-		if( that.mStderr != null )
-			that.mStderr.addRef();
-		
-		
-		that.mStdin  = this.mStdin;
-		if( that.mStdin != null ){
-			that.mStdin.addRef();
-			that.mStdinRedirected = this.mStdinRedirected;
-		}
-		
-		
-		that.mStdout = this.mStdout;
-		if( that.mStdout != null )
-			that.mStdout.addRef();
+		that.mIO = mIO.clone();
 		
 		return that;
 	}
 
 
 	public void close() {
-		try {
-			if( this.mStdout != null)
-				this.mStdout.close();
-			
-			if( this.mStderr != null )
-				this.mStderr.close();
-			
-			if( this.mStdin != null )
-				this.mStdin.close();
-			
-			this.mStderr = null;
-			this.mStdout = null;
-			this.mStdin = null;
-			
-		} catch (IOException e) {
-			mLogger.error("Exception closing environment",e);
-		}
+		mIO.close();
 	}
 	
 	public Shell getShell() { 
@@ -235,6 +131,21 @@ public class XEnvironment  {
 		return mVars.keySet();
 	}
 
+	public XIOEnvironment saveIO()
+	{
+		XIOEnvironment io = mIO;
+		mIO = mIO.clone();
+		return io;
+	}
+	
+	public void restoreIO( XIOEnvironment io )
+	{
+		mIO.close();
+		mIO = io;
+		
+	}
+
+	
 
 	/**
 	 * @param fname
@@ -309,7 +220,64 @@ public class XEnvironment  {
 		mVars.remove( name );
 	}
 	
-	public boolean isStdinRedirected() { return mStdinRedirected ; }
+	public boolean isStdinRedirected() { return mIO.isStdinRedirected() ; }
+
+
+	/**
+	 * @return
+	 * @see org.xmlsh.core.XIOEnvironment#getStderr()
+	 */
+	public OutputStream getStderr() {
+		return mIO.getStderr();
+	}
+
+
+	/**
+	 * @return
+	 * @see org.xmlsh.core.XIOEnvironment#getStdin()
+	 */
+	public InputStream getStdin() {
+		return mIO.getStdin();
+	}
+
+
+	/**
+	 * @return
+	 * @see org.xmlsh.core.XIOEnvironment#getStdout()
+	 */
+	public OutputStream getStdout() {
+		return mIO.getStdout();
+	}
+
+
+	/**
+	 * @param stderr
+	 * @throws IOException
+	 * @see org.xmlsh.core.XIOEnvironment#setStderr(java.io.OutputStream)
+	 */
+	public void setStderr(OutputStream stderr) throws IOException {
+		mIO.setStderr(stderr);
+	}
+
+
+	/**
+	 * @param stdin
+	 * @throws IOException
+	 * @see org.xmlsh.core.XIOEnvironment#setStdin(java.io.InputStream)
+	 */
+	public void setStdin(InputStream stdin) throws IOException {
+		mIO.setStdin(stdin);
+	}
+
+
+	/**
+	 * @param stdout
+	 * @throws IOException
+	 * @see org.xmlsh.core.XIOEnvironment#setStdout(java.io.OutputStream)
+	 */
+	public void setStdout(OutputStream stdout) throws IOException {
+		mIO.setStdout(stdout);
+	}
 
 
 }

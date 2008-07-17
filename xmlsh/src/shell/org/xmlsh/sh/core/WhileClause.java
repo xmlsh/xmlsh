@@ -8,6 +8,7 @@ package org.xmlsh.sh.core;
 
 import java.io.PrintWriter;
 
+import org.xmlsh.core.XIOEnvironment;
 import org.xmlsh.sh.shell.Shell;
 
 public class WhileClause extends CompoundCommand {
@@ -30,12 +31,19 @@ public class WhileClause extends CompoundCommand {
 	
 
 	public int exec(Shell shell) throws Exception {
-				while( shell.toBool( shell.exec( mWhile )) && shell.keepRunning() ){
-				
-				shell.exec( mDo );
+		
+		XIOEnvironment io = shell.getEnv().saveIO();
+		try {
+			applyRedirect(shell);	
+		
+			while( Shell.toBool( shell.exec( mWhile )) && shell.keepRunning() ){
+					
+					shell.exec( mDo );
 			}
-			
-	
+		} 
+		finally {
+			shell.getEnv().restoreIO(io);
+		}
 		
 		return 0;
 		

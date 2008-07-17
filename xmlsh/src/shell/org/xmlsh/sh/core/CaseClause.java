@@ -7,9 +7,8 @@
 package org.xmlsh.sh.core;
 
 import java.io.PrintWriter;
-import java.util.List;
 
-import org.xmlsh.core.UnexpectedException;
+import org.xmlsh.core.XIOEnvironment;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
 
@@ -39,18 +38,24 @@ public class CaseClause  extends CompoundCommand {
 	@Override
 	public int exec(Shell shell) throws Exception {
 		
-		XValue wordv = shell.expandString(mWord);
-		String word = wordv.toString();
-		
-		for( CaseItem item : mList ){
+		XIOEnvironment io = shell.getEnv().saveIO();
+		try {
+			applyRedirect(shell);
+			XValue wordv = shell.expandString(mWord);
+			String word = wordv.toString();
 			
-			if( item.matches( word )){
-				return item.exec( shell );
+			for( CaseItem item : mList ){
+				
+				if( item.matches( word )){
+					return item.exec( shell );
+					
+				}
 				
 			}
-			
+			return 1;
+		} finally {
+			shell.getEnv().restoreIO(io);
 		}
-		return 1;
 		
 		
 	}
