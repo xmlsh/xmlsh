@@ -32,6 +32,23 @@ else
 	echo Success 
 fi
 
+# Test redirection 
+[ -d $TMPDIR/_xmlsh ] || mkdir $TMPDIR/_xmlsh
+T1=$TMPDIR/_xmlsh/for1.tmp
+T2=$TMPDIR/_xmlsh/for2.tmp
+
+echo line1 > $T1
+
+line=initial
+if true ; then read line ; fi  < $T1
+echo line is $line
+
+if true ; then echo line2 is $line ; fi  > $T2
+cat $T2
+
+rm $T1 $T2
+
+
 
 exit 0
 

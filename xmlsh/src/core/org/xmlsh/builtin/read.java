@@ -28,6 +28,8 @@ public class read extends BuiltinCommand {
 	public int run( Shell shell,String cmd,  List<XValue> args ) throws Exception {
 			InputStream is = shell.getEnv().getStdin();
 			String line = Util.readLine( is );
+			if( line == null )
+				return 1; // EOF
 			
 			XValue xifs = shell.getEnv().getVarValue("IFS");
 			String ifs = xifs == null ? " \t" : xifs.toString();

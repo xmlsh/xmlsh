@@ -30,6 +30,29 @@ until [ $X -eq 1 ] ; do
 	X=1
 done
 
+echo X = $X - should be 1
+echo RET = $RET - should be 0
 
-echo RET = $RET
+
+
+
+# Test redirection 
+[ -d $TMPDIR/_xmlsh ] || mkdir $TMPDIR/_xmlsh
+T1=$TMPDIR/_xmlsh/while1.tmp
+T2=$TMPDIR/_xmlsh/while2.tmp
+
+echo line1 > $T1
+echo line2 >> $T1
+echo line3 >> $T1
+
+while read line ; do
+	echo line is $line
+done < $T1 > $T2
+echo data is
+cat $T2
+rm $T1 $T2
+
+
+
+
 exit 0

@@ -2,4 +2,9 @@ before while
 while RET = 1
 while2 RET = 0
 Until 0
-RET = 0
+X = 1 - should be 1
+RET = 0 - should be 0
+data is
+line is line1
+line is line2
+line is line3

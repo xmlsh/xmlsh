@@ -420,10 +420,15 @@ public class Util
 	public static String readLine(InputStream is) throws IOException {
 		StringBuffer sb = new StringBuffer();
 		int c;
+		boolean bAny = false ;
 		while( (c=is.read()) > 0 && c != '\n' ){
+			bAny = true;
 			if( c != '\r' )
 				sb.append((char)c);
 		}
+		if( c == -1 && ! bAny )
+			return null;
+		
 		return sb.toString();
 	}
 

@@ -19,3 +19,21 @@ case foo in
 	f*)	 echo failure ; exit 1 ;;
 	
 esac
+
+# Test IO to case
+[ -d $TMPDIR/_xmlsh ] || mkdir $TMPDIR/_xmlsh
+T1=$TMPDIR/_xmlsh/case1.tmp
+T2=$TMPDIR/_xmlsh/case2.tmp
+
+echo test4
+
+echo data > $T1
+
+case foo in 
+	foo) read d ; echo data is $d ;;
+	bar) echo failure ; exit 1 ;;
+esac < $T1 > $T2
+
+cat $T2
+
+rm $T1 $T2
