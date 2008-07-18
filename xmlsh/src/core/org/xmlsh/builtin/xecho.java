@@ -6,7 +6,7 @@
 
 package org.xmlsh.builtin;
 
-import java.io.PrintWriter;
+import java.io.OutputStream;
 import java.util.List;
 
 import org.xmlsh.core.BuiltinCommand;
@@ -18,7 +18,7 @@ import org.xmlsh.util.Util;
 public class xecho extends BuiltinCommand {
 	
 	public int run( Shell shell,String cmd, List<XValue> args ) throws Exception {
-		PrintWriter out =  new PrintWriter(shell.getEnv().getStdout());
+		OutputStream out =  shell.getEnv().getStdout();
 
 		Options opts = new Options( "n" , args );
 		opts.parse();
@@ -26,19 +26,19 @@ public class xecho extends BuiltinCommand {
 		boolean nolf = opts.hasOpt("n");
 		
 		args = opts.getRemainingArgs();
-		
+		byte[] newline = System.getProperty("line.separator").getBytes();
 		
 		args = Util.expandSequences( args);
 		boolean bFirst = true;
 		for ( XValue arg : args ){
 				if( ! bFirst )
-					out.print(" ");
+					out.write(' ');
+				
 				bFirst = false;
-	
-				out.print(arg.toString());
+				arg.serialize( out );
 		}
 		if( ! nolf )
-			out.println();
+			out.write(newline);
 		out.flush();
 		return 0;
 	}

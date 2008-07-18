@@ -6,6 +6,10 @@
 
 package org.xmlsh.core;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 
 import net.sf.saxon.om.ValueRepresentation;
@@ -190,6 +194,18 @@ public class XValue {
 		if( ! isAtomic() )
 			return -1 ;
 		return Long.parseLong(toString());
+	}
+
+
+	public void serialize(OutputStream out) throws UnsupportedEncodingException, IOException 
+	{
+		if( mString != null )
+			out.write( mString.getBytes("UTF-8") );
+		else
+			out.write( mValue.toString().getBytes("UTF-8"));
+			
+		
+		
 	}
 }
 //
