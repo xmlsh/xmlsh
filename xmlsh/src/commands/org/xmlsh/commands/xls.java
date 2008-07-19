@@ -70,6 +70,7 @@ public class xls extends XCommand {
 			} else {
 	
 				File [] files =  dir.listFiles();
+				Util.sortFiles(files);
 				for( File f : files ){
 		
 					

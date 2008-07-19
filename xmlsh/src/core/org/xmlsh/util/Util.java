@@ -11,6 +11,8 @@ import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
@@ -38,7 +40,21 @@ public class Util
     private static DateFormat sDateTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
     private static DateFormat sTimeFormat = new SimpleDateFormat("HH:mm:ss");
     private static Random mRand = null;
- 
+
+	public static byte mNewline[];
+	
+	private static class FileComparator implements Comparator<File>
+	{
+
+		public int compare(File o1, File o2) {
+			return o1.getName().compareTo(o2.getName());
+		}
+		
+	}
+	
+	
+	
+	
 	public static boolean isEmpty(String s)
 	{
 		return s == null || s.length() == 0;
@@ -448,6 +464,25 @@ public class Util
 		}
 		return list;
 	}
+
+
+	public static synchronized byte[] getNewline()
+	{
+		if( Util.mNewline == null ){
+			try {
+				Util.mNewline = System.getProperty("line.separator").getBytes("UTF-8");
+			} catch (UnsupportedEncodingException e) {
+				Util.mNewline = new byte[] { '\n' };
+			} 
+		}
+		return Util.mNewline;
+	}
+
+	public static void sortFiles( File[] list )
+	{
+		Arrays.sort(list, new FileComparator() );
+	}
+	
 }
 
 //

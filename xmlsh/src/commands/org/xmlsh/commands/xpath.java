@@ -132,7 +132,7 @@ public class xpath extends XCommand {
 		ser.setOutputProperty(Serializer.Property.OMIT_XML_DECLARATION, "yes");
 		for( XdmItem item : eval ){
 			processor.writeXdmValue(item, ser );
-			env.getStdout().write( XEnvironment.getNewline() );
+			env.getStdout().write( Util.getNewline() );
 			
 		}
 

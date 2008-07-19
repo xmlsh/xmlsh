@@ -11,7 +11,6 @@ import java.util.List;
 
 import org.xmlsh.core.BuiltinCommand;
 import org.xmlsh.core.Options;
-import org.xmlsh.core.XEnvironment;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.Util;
@@ -39,7 +38,7 @@ public class xecho extends BuiltinCommand {
 				arg.serialize( out );
 		}
 		if( ! nolf )
-			out.write(XEnvironment.getNewline());
+			out.write(Util.getNewline());
 		out.flush();
 		return 0;
 	}

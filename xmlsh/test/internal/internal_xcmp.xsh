@@ -29,7 +29,7 @@ EOF
 
 cp f1 f2
 # identity xml compare
-xcmp -x f1 f2 && Echo xml compare Success
+xcmp -x f1 f2 && echo xml compare Success
 
 # Create equivilent but different file
 cat > f3 <<EOF
@@ -38,7 +38,7 @@ cat > f3 <<EOF
 </foo>
 EOF
 
-xcmp -x f1 f3 && Echo xml compare Success
+xcmp -x f1 f3 && echo xml compare Success
 rm f1 f2 f3
 exit 0
    

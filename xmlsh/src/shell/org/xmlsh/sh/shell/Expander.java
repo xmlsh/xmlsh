@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringBufferInputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.xml.transform.stream.StreamSource;
@@ -485,6 +486,7 @@ class Expander {
 
 		
 		String[] files = dir.list();
+		Arrays.sort(files);
 		for( String f : files ){
 			if( Util.wildMatches( wild , f))
 				r.add( new XValue(dirName == null ? f : dirName + "/" + f ));
