@@ -8,19 +8,19 @@ package org.xmlsh.core;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 
 import net.sf.saxon.om.ValueRepresentation;
 import net.sf.saxon.s9api.Processor;
+import net.sf.saxon.s9api.SaxonApiException;
+import net.sf.saxon.s9api.Serializer;
 import net.sf.saxon.s9api.XPathCompiler;
 import net.sf.saxon.s9api.XPathExecutable;
 import net.sf.saxon.s9api.XPathSelector;
 import net.sf.saxon.s9api.XdmAtomicValue;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmValue;
-import net.sf.saxon.trans.XPathException;
 import net.sf.saxon.value.AtomicValue;
 import org.xmlsh.sh.shell.Shell;
 
@@ -197,12 +197,17 @@ public class XValue {
 	}
 
 
-	public void serialize(OutputStream out) throws UnsupportedEncodingException, IOException 
+	public void serialize(OutputStream out) throws UnsupportedEncodingException, IOException, SaxonApiException 
 	{
 		if( mString != null )
 			out.write( mString.getBytes("UTF-8") );
-		else
-			out.write( mValue.toString().getBytes("UTF-8"));
+		else {
+			Serializer ser = new Serializer();
+			ser.setOutputStream( out );
+			ser.setOutputProperty(Serializer.Property.OMIT_XML_DECLARATION, "yes");
+			Shell.getProcessor().writeXdmValue( mValue, ser);
+		}
+			
 			
 		
 		

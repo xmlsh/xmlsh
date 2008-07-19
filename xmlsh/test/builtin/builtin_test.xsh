@@ -95,7 +95,7 @@ chmod a-w $TDIR/notempty
 [ 1 -eq 1 -a 2 -eq 2 ] && echo success -a
 
 # test compound
-[ -n "test" -a \( 1 -eq 1 \) -o 2 -eq 2 ] && Echo Success compound
+[ -n "test" -a \( 1 -eq 1 \) -o 2 -eq 2 ] && echo Success compound
 
 
 

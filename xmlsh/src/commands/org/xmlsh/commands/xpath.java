@@ -6,8 +6,6 @@
 
 package org.xmlsh.commands;
 
-import java.io.OutputStreamWriter;
-import java.io.Writer;
 import java.util.List;
 
 import javax.xml.transform.stream.StreamSource;
@@ -15,6 +13,7 @@ import javax.xml.transform.stream.StreamSource;
 import net.sf.saxon.s9api.DocumentBuilder;
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.QName;
+import net.sf.saxon.s9api.Serializer;
 import net.sf.saxon.s9api.XPathCompiler;
 import net.sf.saxon.s9api.XPathExecutable;
 import net.sf.saxon.s9api.XPathSelector;
@@ -128,14 +127,15 @@ public class xpath extends XCommand {
 		dest.setOutputProperty( Serializer.Property.OMIT_XML_DECLARATION, "yes");
 		dest.setOutputStream(env.getStdout());
 */		
-		
-		Writer w = new OutputStreamWriter(env.getStdout());
+		Serializer ser = new Serializer();
+		ser.setOutputStream( env.getStdout() );
+		ser.setOutputProperty(Serializer.Property.OMIT_XML_DECLARATION, "yes");
 		for( XdmItem item : eval ){
-			
-			w.write( item.toString() + "\n");
+			processor.writeXdmValue(item, ser );
+			env.getStdout().write( XEnvironment.getNewline() );
 			
 		}
-		w.flush();
+
 
 		
 		return 0;

@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.Collection;
 import java.util.HashMap;
 
@@ -24,7 +25,7 @@ public class XEnvironment  {
 	
 	private	XIOEnvironment mIO = new XIOEnvironment();
 	
-	
+	private static byte mNewline[];
 	
 	/*
 	 * Standard Variables
@@ -53,6 +54,18 @@ public class XEnvironment  {
 		getStdout();
 		getStderr();
 
+	}
+	
+	public static synchronized byte[] getNewline()
+	{
+		if( mNewline == null ){
+			try {
+				mNewline = System.getProperty("line.separator").getBytes("UTF-8");
+			} catch (UnsupportedEncodingException e) {
+				mNewline = new byte[] { '\n' };
+			} 
+		}
+		return mNewline;
 	}
 	
 	

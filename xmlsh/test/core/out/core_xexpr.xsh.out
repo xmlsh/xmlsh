@@ -1,9 +1,7 @@
 empty sequence
 1 2 string <foo>bar</foo>
 the following crashes saxon sometimes
-<bar>
-   <foo a1="attribute">value</foo>
-</bar>
+<bar><foo a1="attribute">value</foo></bar>
 for: 1
 for: string
 for: <simple/>
