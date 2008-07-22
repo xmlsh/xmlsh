@@ -34,7 +34,64 @@ echo X = $X - should be 1
 echo RET = $RET - should be 0
 
 
+echo 2 level while
+X=<[0]>
+while [ $X -lt 3 ] ;  do
+   Y=<[0]>
+   while [ $Y -lt 3 ] ; do 
+      echo -n "$X$Y "
+      Y=<[$Y + 1]>
+   done
+   echo
+   X=<[$X + 1 ]>
+done
 
+
+echo 2 level while with break 
+X=<[0]>
+while [ $X -lt 3 ] ;  do
+   Y=<[0]>
+   while [ $Y -lt 3 ] ; do 
+      echo -n "$X$Y "
+      [ $Y -eq 1 ] && break ;
+      Y=<[$Y + 1]>
+   done
+   echo
+   X=<[$X + 1 ]>
+done
+
+
+
+echo 2 level while with break 2
+X=<[0]>
+while [ $X -lt 3 ] ;  do
+   Y=<[0]>
+   while [ $Y -lt 3 ] ; do 
+      echo -n "$X$Y "
+      [ $Y -eq 1 ] && break 2;
+      Y=<[$Y + 1]>
+   done
+   echo
+   X=<[$X + 1 ]>
+done
+echo
+
+
+
+echo 2 level while with continue 
+X=<[0]>
+while [ $X -lt 3 ] ;  do
+   Y=<[0]>
+   while [ $Y -lt 3 ] ; do 
+      echo -n "$X$Y "
+      Y=<[$Y + 1]>
+      [ $Y -eq 1 ] && continue ;
+      [ $Y -eq 1 ] && echo Failed continue ;
+   done
+   echo
+   X=<[$X + 1 ]>
+done
+echo
 
 # Test redirection 
 [ -d $TMPDIR/_xmlsh ] || mkdir $TMPDIR/_xmlsh

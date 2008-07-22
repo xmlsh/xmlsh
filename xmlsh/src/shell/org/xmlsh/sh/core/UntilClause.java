@@ -9,6 +9,7 @@ package org.xmlsh.sh.core;
 import java.io.PrintWriter;
 
 import org.xmlsh.core.XIOEnvironment;
+import org.xmlsh.sh.shell.ControlLoop;
 import org.xmlsh.sh.shell.Shell;
 
 public class UntilClause extends CompoundCommand {
@@ -32,6 +33,7 @@ public class UntilClause extends CompoundCommand {
 	public int exec(Shell shell) throws Exception {
 		
 		XIOEnvironment io = shell.getEnv().saveIO();
+		ControlLoop loop = shell.pushLoop(  );
 		try {
 			applyRedirect(shell);
 			while( !shell.toBool( shell.exec( mUntil ) ) && shell.keepRunning() ){
@@ -41,6 +43,7 @@ public class UntilClause extends CompoundCommand {
 			
 		}
 		finally {
+			shell.popLoop(  loop );
 			shell.getEnv().restoreIO(io);
 		}
 		

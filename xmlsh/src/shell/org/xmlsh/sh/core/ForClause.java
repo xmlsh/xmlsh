@@ -12,6 +12,7 @@ import java.util.List;
 import org.xmlsh.core.XIOEnvironment;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.XVariable;
+import org.xmlsh.sh.shell.ControlLoop;
 import org.xmlsh.sh.shell.Shell;
 
 public class ForClause extends CompoundCommand {
@@ -54,29 +55,40 @@ public class ForClause extends CompoundCommand {
 		
 		
 		XIOEnvironment io = shell.getEnv().saveIO();
+		ControlLoop loop = shell.pushLoop(  );
 		try {
 			applyRedirect(shell);
 			if( mWords == null ) {	// for all args 
 				for( XValue inword : shell.getArgs() ){
+					if( ! shell.keepRunning() )
+						break ;
 					shell.getEnv().setVar( new XVariable(mName, inword));
 					shell.exec( mCommand );	
+					if( loop.mContinue ) // continue clause - clear out  continue & keep going
+						loop.mContinue = false ;
+
 					
 				}
 			} else
 			for( String in : mWords ) {
 				List<XValue> inList = shell.expand( in , true  );
+				if( ! shell.keepRunning() )
+					break ;
 				for( XValue inword : inList ) {
 					if( ! shell.keepRunning() )
 						break ;
 					shell.getEnv().setVar( new XVariable(mName, inword));
 					shell.exec( mCommand );
+					if( loop.mContinue ) // continue clause - clear out  continue & keep going
+						loop.mContinue = false ;
+
 				}
-				if( ! shell.keepRunning() )
-					break ;
+
 			}
 			
 			
 		} finally {
+			shell.popLoop(  loop );
 			shell.getEnv().restoreIO(io);
 		}
 		return 0;

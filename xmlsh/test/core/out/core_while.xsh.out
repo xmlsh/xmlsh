@@ -4,6 +4,21 @@ while2 RET = 0
 Until 0
 X = 1 - should be 1
 RET = 0 - should be 0
+2 level while
+00 01 02 
+10 11 12 
+20 21 22 
+2 level while with break
+00 01 
+10 11 
+20 21 
+2 level while with break 2
+00 01 
+2 level while with continue
+00 01 02 
+10 11 12 
+20 21 22 
+
 data is
 line is line1
 line is line2

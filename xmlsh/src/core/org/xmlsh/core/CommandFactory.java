@@ -22,7 +22,9 @@ import org.xmlsh.builtin.source;
 import org.xmlsh.builtin.test;
 import org.xmlsh.builtin.unset;
 import org.xmlsh.builtin.wait;
+import org.xmlsh.builtin.xbreak;
 import org.xmlsh.builtin.xcd;
+import org.xmlsh.builtin.xcontinue;
 import org.xmlsh.builtin.xecho;
 import org.xmlsh.builtin.xfalse;
 import org.xmlsh.builtin.xread;
@@ -62,6 +64,8 @@ public class CommandFactory
 		addBuiltin( "xversion" , xversion.class);
 		addBuiltin("jobs" , jobs.class);
 		addBuiltin("wait" , wait.class);
+		addBuiltin("break" , xbreak.class);
+		addBuiltin("continue", xcontinue.class );
 	}
 	
 	

@@ -9,6 +9,7 @@ package org.xmlsh.sh.core;
 import java.io.PrintWriter;
 
 import org.xmlsh.core.XIOEnvironment;
+import org.xmlsh.sh.shell.ControlLoop;
 import org.xmlsh.sh.shell.Shell;
 
 public class WhileClause extends CompoundCommand {
@@ -33,15 +34,22 @@ public class WhileClause extends CompoundCommand {
 	public int exec(Shell shell) throws Exception {
 		
 		XIOEnvironment io = shell.getEnv().saveIO();
+		ControlLoop loop = shell.pushLoop(  );
 		try {
+
 			applyRedirect(shell);	
-		
-			while( Shell.toBool( shell.exec( mWhile )) && shell.keepRunning() ){
+
+			while( shell.keepRunning() && Shell.toBool( shell.exec( mWhile ))   ){
 					
 					shell.exec( mDo );
+					
+					
+					if( loop.mContinue ) // continue clause - clear out  continue & keep going
+						loop.mContinue = false ;
 			}
 		} 
 		finally {
+			shell.popLoop(  loop );
 			shell.getEnv().restoreIO(io);
 		}
 		

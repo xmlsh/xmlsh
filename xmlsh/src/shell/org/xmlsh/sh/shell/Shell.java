@@ -48,6 +48,8 @@ public class Shell {
 	private boolean mIsInteractive = false ;
 	private		long	mLastThreadId = 0;
 	
+	private		Stack<ControlLoop>  mControlStack = new Stack<ControlLoop>();
+	
 
 	static {
 		
@@ -406,9 +408,28 @@ public class Shell {
 		mExitVal = new Integer(retval);
 		
 	}
+	
+	/*
+	 * Return TRUE if we should keep running on this shell
+	 * Includes early termination in control stacks
+	 */
 	public boolean keepRunning()
 	{
-		return mExitVal == null;
+		// Hit exit stop 
+		if(  mExitVal != null )
+			return false ;
+		
+		// If the top control stack is break then stopi
+		if(! mControlStack.empty() ){
+			ControlLoop loop = mControlStack.peek();
+			if( loop.mBreak || loop.mContinue )
+				return false;
+		}
+
+		return true ;
+				
+		
+		
 	}
 
 	public String getArg0() {
@@ -507,6 +528,63 @@ public class Shell {
 		// TODO Auto-generated method stub
 		return mLastThreadId;
 	}
+
+	
+	/*
+	 * Break n levels of control stacks
+	 */
+	public int doBreak(int levels) 
+	{
+		int end = mControlStack.size() - 1 ;
+		
+		while( levels-- > 0 && end >= 0 )
+			mControlStack.get(end--).mBreak = true ;
+		
+		return 0;
+			
+		
+		
+	}
+	
+	/*
+	 * Continue n levels of control stacks
+	 * 
+	 */
+
+	public int doContinue(int levels) 
+	{
+		int end = mControlStack.size() - 1 ;
+		
+		/*
+		 * Break n-1 levels 
+		 */
+		while( levels-- > 1 && end >= 0 )
+			mControlStack.get(end--).mBreak = true ;
+		
+		// Continue the final level
+		if( end >= 0 )
+			mControlStack.get(end).mContinue = true ;
+		
+		return 0;
+	}
+
+	public ControlLoop pushLoop() {
+		ControlLoop loop = new ControlLoop();
+		mControlStack.add( loop );
+		return loop;
+	}
+
+	/*
+	 * Pop the control stack until we hit loop, if loop isnt found (SNH) pop until empty
+	 * 
+	 */
+	public void popLoop(ControlLoop loop) {
+		
+		while( ! mControlStack.empty() )
+			if ( mControlStack.pop() == loop )
+				break ;
+	}
+	
 	
 }
 //
