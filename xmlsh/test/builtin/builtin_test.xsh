@@ -97,6 +97,8 @@ chmod a-w $TDIR/notempty
 # test compound
 [ -n "test" -a \( 1 -eq 1 \) -o 2 -eq 2 ] && echo Success compound
 
+# Test zero length sequence
+[ <[()]> ] && echo failed zero length sequence test
 
 
 exit 0

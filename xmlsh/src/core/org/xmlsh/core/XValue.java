@@ -6,6 +6,7 @@
 
 package org.xmlsh.core;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
@@ -22,9 +23,12 @@ import net.sf.saxon.s9api.XdmAtomicValue;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmValue;
 import net.sf.saxon.value.AtomicValue;
+import org.apache.log4j.Logger;
 import org.xmlsh.sh.shell.Shell;
 
 public class XValue {
+	private static Logger mLogger = Logger.getLogger( XValue.class);
+	
 	
 	XdmValue	mValue;			// s9 value
 	String		mString;		// string 
@@ -114,8 +118,25 @@ public class XValue {
 	public String	toString(){
 		if( mString != null )
 			return mString;
-		if( mValue != null )
-			return mValue.toString();
+		if( mValue != null ){
+			if( isAtomic() )
+				return mValue.toString();
+			else
+			{
+				ByteArrayOutputStream out = new ByteArrayOutputStream();
+				try {
+					serialize( out );
+					return out.toString("UTF-8");
+				} catch (Exception e )
+				{
+					mLogger.warn("Exception serializing XML value");
+				}
+				
+				
+			}
+			
+		}
+			
 		return "";
 	}
 

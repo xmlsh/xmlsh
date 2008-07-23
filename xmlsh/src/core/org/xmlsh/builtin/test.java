@@ -44,7 +44,9 @@ EXPRESSION1 -o EXPRESSION2
    either EXPRESSION1 or EXPRESSION2 is true
 
 -n STRING
-   the length of STRING is nonzero
+   if a string the length of STRING is nonzero or
+   if xml then the sequence is not the null sequence
+
 
 STRING equivalent to -n STRING
 

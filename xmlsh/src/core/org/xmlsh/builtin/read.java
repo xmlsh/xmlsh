@@ -26,6 +26,12 @@ public class read extends BuiltinCommand {
 	
 	
 	public int run( Shell shell,String cmd,  List<XValue> args ) throws Exception {
+			
+		// Unset all args
+		for( XValue arg : args )
+			shell.getParentEnv().unsetVar( arg.toString() );
+		
+			
 			InputStream is = shell.getEnv().getStdin();
 			String line = Util.readLine( is );
 			if( line == null )
