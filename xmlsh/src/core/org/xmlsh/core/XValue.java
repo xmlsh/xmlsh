@@ -233,6 +233,36 @@ public class XValue {
 		
 		
 	}
+
+	public boolean toBoolean() throws UnexpectedException {
+		if( isString() )
+			return ! mString.isEmpty();
+		// Sequence of > 1 length 
+		if( mValue.size() > 1 )
+			return true ;
+		// Sequence of 0 length 
+		if( mValue.size() == 0 )
+			return false ;
+		
+
+		Processor  processor  = Shell.getProcessor();
+	
+		XPathCompiler compiler = processor.newXPathCompiler();
+
+		
+		try {
+			XPathExecutable exec = compiler.compile( "." );
+
+			XPathSelector eval = exec.load();
+			eval.setContextItem( mValue.itemAt(0) );
+			return eval.effectiveBooleanValue();
+			
+		
+		} catch( Exception e ){
+			throw new UnexpectedException("Exception evaluating boolean xpath" );
+		}
+		
+	}
 }
 //
 //

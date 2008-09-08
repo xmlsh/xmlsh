@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.util.List;
 
 import org.xmlsh.core.BuiltinCommand;
+import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.Util;
@@ -151,7 +152,7 @@ public class test extends BuiltinCommand {
 	}
 	
 	
-	private 	boolean		eval( List<XValue> av) throws Error
+	private 	boolean		eval( List<XValue> av) throws Error, UnexpectedException
 	{
 		if( av.size() == 0 )
 			return false;
@@ -270,7 +271,7 @@ public class test extends BuiltinCommand {
  
 	}
 
-	private boolean evalUnary(String op, XValue value) throws Error {
+	private boolean evalUnary(String op, XValue value) throws Error, UnexpectedException {
 		
 		
 		/* try type tests first */
@@ -282,12 +283,31 @@ public class test extends BuiltinCommand {
 			return value.isString();
 	
 
-			if( op.equals("-n"))
-				return ! (value.isNull() || value.toString().length() == 0) ;
-				else
-			if( op.equals("-z"))
-				return value.isNull() || value.toString().length() == 0;
+			if( op.equals("-n")){
+				if( value.isNull() )
+					return false ;
+				// Single arg 
+				// if xvalue then evaluate as boolean
+				if( value.isXExpr() )
+					return value.toBoolean();
+				
+				
+				return !value.toString().isEmpty()  ;
 			
+			}	
+			else
+			if( op.equals("-z")){
+				// -z is opposite of -n 
+				// returns true if null, zero length string or false boolean xexpr
+				
+				if( value.isNull())
+					return true ;
+				
+				if( value.isXExpr() )
+					return ! value.toBoolean();
+				
+				return value.toString().isEmpty() ;
+			}
 			else
 			if( op.equals("-d") )
 				return getFile( value ).isDirectory();
