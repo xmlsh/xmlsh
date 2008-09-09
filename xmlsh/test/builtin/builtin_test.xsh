@@ -100,5 +100,24 @@ chmod a-w $TDIR/notempty
 # Test zero length sequence
 [ <[()]> ] && echo failed zero length sequence test
 
+# Test XExprs in boolean mode 
+
+[ <[ fn:true() ]> ]&& echo success xexpr true
+[ <[ fn:false() ]> ]&& echo failed xexpr false
+
+[ <[ (0,0,0) ]> ] && echo success sequence
+
+[ -z <[ fn:false() ]> ] && echo success -z xexpr false
+
+[ -z <[ 0 ]> ] && echo success -z xexpr 0
+[ -z <[ 1 ]> ] && echo failed -z xexpr 1
+[ -n <[fn:true()]> -o -n <[fn:false()]> ] && echo succeed xexpr or
+
+# Test variables in xexprs
+a=<[ "string" ]>
+[ $a ] && echo success xexpr string 
+
+b=<[ (1,2,3) ]>
+[ -n $b ] && echo success xexpr var sequence 
 
 exit 0

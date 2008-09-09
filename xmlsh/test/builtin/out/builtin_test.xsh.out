@@ -27,3 +27,10 @@ Success simple -o
 success -o
 success -a
 Success compound
+success xexpr true
+success sequence
+success -z xexpr false
+success -z xexpr 0
+succeed xexpr or
+success xexpr string
+success xexpr var sequence
