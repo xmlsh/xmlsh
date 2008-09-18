@@ -6,6 +6,7 @@
 
 package org.xmlsh.commands;
 
+import java.io.File;
 import java.util.List;
 
 import javax.xml.transform.stream.StreamSource;
@@ -91,8 +92,14 @@ public class xquery extends XCommand {
 			
 				query = Util.readString(env.getStdin());
 			}
-			else
-				query =  Util.readString( env.getShell().getFile(fname));
+			else {
+				File qfile = env.getShell().getFile(fname);
+				query =  Util.readString( qfile);
+
+				// Set file as base URI for debugging output 
+				compiler.setBaseURI(qfile.toURI());
+			
+			}
 	
 
 		}
