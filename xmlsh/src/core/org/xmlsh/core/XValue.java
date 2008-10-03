@@ -30,15 +30,14 @@ public class XValue {
 	private static Logger mLogger = Logger.getLogger( XValue.class);
 	
 	
-	XdmValue	mValue;			// s9 value
-	String		mString;		// string 
+	private XdmValue	mValue;			// s9 value
+
 	
 	
 	
 	public XValue()
 	{
 		mValue = null;
-		mString = null;
 	}
 	
 	/*
@@ -47,7 +46,7 @@ public class XValue {
 	
 	public XValue(String s)
 	{
-		mString = s;
+		mValue = new XdmAtomicValue( s );
 	}
 	/*
 	 * Create an XValue from an XdmValue 
@@ -97,11 +96,7 @@ public class XValue {
 	 * 
 	 */
 	public XdmValue toXdmValue(){
-		if( mValue == null )
-			return new XdmAtomicValue( mString );
-
-		else 
-			return mValue ;
+		return mValue ;
 		
 	}
 
@@ -116,8 +111,6 @@ public class XValue {
 
 	
 	public String	toString(){
-		if( mString != null )
-			return mString;
 		if( mValue != null ){
 			if( isAtomic() )
 				return mValue.toString();
@@ -141,20 +134,19 @@ public class XValue {
 	}
 
 	
-	/*
+	/**
 	 * Variables are considered pure strings
 	 * if the string element is not null
+	 * @depreciated
 	 */
 	public boolean isString() {
-		return mString != null ;
+		return isAtomic();
 	}	
 	
 	
 	public XValue	xpath( String expr ) throws UnexpectedException 
 	{
 		
-		if( isString() )
-			return new XValue();
 		
 		Processor  processor  = Shell.getProcessor();
 	
@@ -176,17 +168,17 @@ public class XValue {
 	
 	public boolean isNull()
 	{
-		return mString == null && mValue == null ;
+		return  mValue == null ;
 	}
 
 	public boolean isXExpr()
 	{
-		return mValue != null ;
+		return ! isAtomic();
 	}
 	
 	public boolean equals(String s)
 	{
-		return mString != null && mString.equals(s);
+		return isAtomic() && toString().equals(s);
 	}
 	public boolean equals( XValue that )
 	{
@@ -202,7 +194,7 @@ public class XValue {
 	}
 
 	public boolean isAtomic() {
-		if( isString() )
+		if( mValue == null )
 			return true ;
 		
 		ValueRepresentation value = mValue.getUnderlyingValue();
@@ -212,6 +204,9 @@ public class XValue {
 	}
 
 	public long toLong() {
+		if( mValue == null )
+			return 0;
+		
 		if( ! isAtomic() )
 			return -1 ;
 		return Long.parseLong(toString());
@@ -220,8 +215,8 @@ public class XValue {
 
 	public void serialize(OutputStream out) throws UnsupportedEncodingException, IOException, SaxonApiException 
 	{
-		if( mString != null )
-			out.write( mString.getBytes("UTF-8") );
+		if( isString() )
+			out.write( toString().getBytes("UTF-8") );
 		else {
 			Serializer ser = new Serializer();
 			ser.setOutputStream( out );
@@ -235,8 +230,9 @@ public class XValue {
 	}
 
 	public boolean toBoolean() throws UnexpectedException {
-		if( isString() )
-			return ! mString.isEmpty();
+		if( mValue == null )
+			return false ;
+		
 		// Sequence of > 1 length 
 		if( mValue.size() > 1 )
 			return true ;

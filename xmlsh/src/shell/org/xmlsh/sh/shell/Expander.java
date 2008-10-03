@@ -367,8 +367,6 @@ class Expander {
 			XValue value = mShell.getEnv().getVarValue(name);
 			
 			sb.append("declare variable $").append(name)
-			.append(" as ")
-			.append( value.isString() ? "xs:string" : "item()*")
 			.append(" external ;\n");
 			
 		}

@@ -256,7 +256,7 @@ public class test extends BuiltinCommand {
 	private int compareInt(XValue a1, XValue a2) throws Error {
 		
 		if(!( a1.isAtomic() && a2.isAtomic() ))
-			throw new Error("args must be non xml expressions");
+			throw new Error("args must be atomic expressions");
 		
 		String s1 = a1.toString();
 		String s2 = a2.toString();
@@ -284,29 +284,15 @@ public class test extends BuiltinCommand {
 	
 
 			if( op.equals("-n")){
-				if( value.isNull() )
-					return false ;
-				// Single arg 
-				// if xvalue then evaluate as boolean
-				if( value.isXExpr() )
-					return value.toBoolean();
-				
-				
-				return !value.toString().isEmpty()  ;
+				return value.toBoolean();
 			
 			}	
 			else
 			if( op.equals("-z")){
 				// -z is opposite of -n 
 				// returns true if null, zero length string or false boolean xexpr
-				
-				if( value.isNull())
-					return true ;
-				
-				if( value.isXExpr() )
-					return ! value.toBoolean();
-				
-				return value.toString().isEmpty() ;
+
+				return ! value.toBoolean();
 			}
 			else
 			if( op.equals("-d") )
