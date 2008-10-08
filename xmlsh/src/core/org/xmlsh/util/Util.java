@@ -431,6 +431,10 @@ public class Util
 			list.add(v.toString());
 		return list;
 	}
+	public static String[] toStringArray(List<XValue> a) {
+		List<String> list = toStringList(a);
+		return list.toArray( new String[list.size() ] );
+	}
 
 
 	public static String readLine(InputStream is) throws IOException {
