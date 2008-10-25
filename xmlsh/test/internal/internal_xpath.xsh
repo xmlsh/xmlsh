@@ -22,9 +22,14 @@ echo Xpath on file
 xpath -i books.xml //AUTHOR
 
 #xpath with xml expression
-echo Xpath on xml expression
+echo xpath on xml expression
 xpath -i $D1 //bar
 
 #xpath with substitued variables and no input
 xpath -n -v '$x/foo' x <[<bar><foo>text</foo></bar>]>
+
+#Test -q and result of xpath
+xpath -n -v -q '$x/foo' x <[<bar><foo>text</foo></bar>]> && echo Success returned xpath
+xpath -n -v -q '$x/spam' x <[<bar><foo>text</foo></bar>]> || echo Success empty returned xpath
+
 

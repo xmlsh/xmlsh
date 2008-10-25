@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.text.DateFormat;
@@ -485,6 +486,22 @@ public class Util
 	public static void sortFiles( File[] list )
 	{
 		Arrays.sort(list, new FileComparator() );
+	}
+
+
+	public static String readLine(Reader ir) throws IOException {
+		StringBuffer sb = new StringBuffer();
+		int c;
+		boolean bAny = false ;
+		while( (c=ir.read()) > 0 && c != '\n' ){
+			bAny = true;
+			if( c != '\r' )
+				sb.append((char)c);
+		}
+		if( c == -1 && ! bAny )
+			return null;
+		
+		return sb.toString();
 	}
 	
 }

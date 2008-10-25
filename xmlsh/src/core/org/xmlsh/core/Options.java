@@ -193,6 +193,19 @@ public class Options
 			return defValue ;
 		
 	}
+	
+	public boolean getOptBool( String opt, boolean defValue )
+	{
+		if( hasOpt(opt))
+			try {
+				return getOpt(opt).getValue().toBoolean();
+			} catch (UnexpectedException e) {
+				return false ;
+			}
+		return defValue ;
+		
+	}
+	
 	public List<XValue> getRemainingArgs()
 	{
 		if( mRemainingArgs == null )

@@ -37,7 +37,7 @@ public class xpath extends XCommand {
 	throws Exception 
 	{
 		
-		Options opts = new Options( "f:,i:,n,v" , args );
+		Options opts = new Options( "f:,i:,q:,n,v" , args );
 		opts.parse();
 		
 		Processor  processor  = Shell.getProcessor();
@@ -73,13 +73,20 @@ public class xpath extends XCommand {
 
 		List<XValue> xvargs = opts.getRemainingArgs();
 		
-
+		
 		
 		OptionValue ov = opts.getOpt("f");
 		String xpath = null;
 		if( ov != null )
 			xpath = Util.readString( env.getShell().getFile(ov.getValue().toString()) ) ;
-		else 
+		else {
+			ov = opts.getOpt("q");
+			if( ov != null )
+				xpath = ov.getValue().toString();
+		}
+		
+		
+		if( xpath == null )
 			xpath = xvargs.remove(0).toString();
 		
 
@@ -130,15 +137,16 @@ public class xpath extends XCommand {
 		Serializer ser = new Serializer();
 		ser.setOutputStream( env.getStdout() );
 		ser.setOutputProperty(Serializer.Property.OMIT_XML_DECLARATION, "yes");
+		boolean bAnyOutput = false ;
 		for( XdmItem item : eval ){
 			processor.writeXdmValue(item, ser );
 			env.getStdout().write( Util.getNewline() );
-			
+			bAnyOutput = true ;
 		}
 
 
 		
-		return 0;
+		return bAnyOutput ? 0 : 1 ;
 		
 
 	}
