@@ -105,7 +105,9 @@ public class csv2xml extends XCommand
 		}
 		hd.endElement("", root,root);
 		hd.endDocument();
-				
+		
+		ir.close();
+		
 		
 		
 		return 0;

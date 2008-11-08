@@ -37,7 +37,7 @@ public class xpath extends XCommand {
 	throws Exception 
 	{
 		
-		Options opts = new Options( "f:,i:,q:,n,v" , args );
+		Options opts = new Options( "f:,i:,q:,n,v,e" , args );
 		opts.parse();
 		
 		Processor  processor  = Shell.getProcessor();
@@ -73,7 +73,7 @@ public class xpath extends XCommand {
 
 		List<XValue> xvargs = opts.getRemainingArgs();
 		
-		
+		boolean bQuiet = opts.hasOpt("e");
 		
 		OptionValue ov = opts.getOpt("f");
 		String xpath = null;
@@ -138,10 +138,16 @@ public class xpath extends XCommand {
 		ser.setOutputStream( env.getStdout() );
 		ser.setOutputProperty(Serializer.Property.OMIT_XML_DECLARATION, "yes");
 		boolean bAnyOutput = false ;
+
 		for( XdmItem item : eval ){
+			bAnyOutput = true ;
+
+			if( bQuiet )
+				break ;
+			
 			processor.writeXdmValue(item, ser );
 			env.getStdout().write( Util.getNewline() );
-			bAnyOutput = true ;
+			
 		}
 
 
