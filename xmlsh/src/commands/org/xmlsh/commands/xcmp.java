@@ -42,29 +42,16 @@ import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XEnvironment;
 import org.xmlsh.core.XValue;
 import org.xmlsh.util.Util;
-import org.xmlsh.util.XMLException;
 
 public class xcmp extends XCommand {
 	
 	private boolean xopt = false;
 	private boolean bopt = false ;	// blank (CR/LF) insensitive
 
-	/**
-	 * @param args
-	 * @throws XMLException 
-	 */
-	public static void main(String[] args) throws Exception {
-		xcmp  cmd = new xcmp();
-
-		cmd.run( args );
-		
-		
-	}
-	
 	
 
 	
-	public int run( List<XValue> args  , XEnvironment env )	throws Exception
+	public int run( List<XValue> args   )	throws Exception
 	{
 		
 
@@ -81,25 +68,25 @@ public class xcmp extends XCommand {
 
 		List<XValue> argv;
 		if( (argv=opts.getRemainingArgs()).size() != 2 )
-			return usage(env);
+			return usage();
 		
 		
-		File 	f1 = env.getFile( argv.get(0));
-		File 	f2 =  env.getFile( argv.get(1));
+		File 	f1 = getFile( argv.get(0));
+		File 	f2 =  getFile( argv.get(1));
 		
 		if( ! f1.exists() || ! f1.canRead()){
-			env.printErr("Cannot open or read: " + f1.getName() );
+			printErr("Cannot open or read: " + f1.getName() );
 			return 1;
 		}
 		if( ! f2.exists() || ! f2.canRead()){
-			env.printErr("Cannot open or read: " + f2.getName() );
+			printErr("Cannot open or read: " + f2.getName() );
 			return 1;
 		}
 			
 		if( xopt )
-			return xml_cmp( env, f1 , f2 );
+			return xml_cmp(  f1 , f2 );
 		else
-			return bin_cmp( env , f1, f2 );
+			return bin_cmp(  f1, f2 );
 			
 		
 
@@ -118,7 +105,7 @@ public class xcmp extends XCommand {
 
 
 
-	private int bin_cmp(XEnvironment env, File f1, File f2) throws IOException {
+	private int bin_cmp(File f1, File f2) throws IOException {
 		BufferedInputStream is1 = new BufferedInputStream(new FileInputStream(f1));
 	
 		
@@ -132,7 +119,7 @@ public class xcmp extends XCommand {
 				int c2 = readByte(is2);
 				if( c != c2 ){
 			
-					env.getShell().printErr("Differs at byte: " + b);
+					printErr("Differs at byte: " + b);
 				
 					return 1;
 				}
@@ -140,7 +127,7 @@ public class xcmp extends XCommand {
 			}
 			
 			if( is2.read() != -1 ){
-				env.getShell().printErr("Differs at byte: " + b);
+				printErr("Differs at byte: " + b);
 				return 2;
 			}
 			return 0;
@@ -157,7 +144,7 @@ public class xcmp extends XCommand {
 
 
 
-	private int xml_cmp(XEnvironment env,File f1, File f2) throws FileNotFoundException, XMLStreamException  {
+	private int xml_cmp(File f1, File f2) throws FileNotFoundException, XMLStreamException  {
 		
 		XMLInputFactory inputFactory=XMLInputFactory.newInstance();
 		inputFactory.setProperty(XMLInputFactory.IS_COALESCING, Boolean.valueOf(true));
@@ -180,7 +167,7 @@ public class xcmp extends XCommand {
 				
 				if( ! isEqual( e1 , e2 )){
 					Location loc = e1.getLocation();
-					env.printErr("xml diff at file1: " + loc.toString() );
+					printErr("xml diff at file1: " + loc.toString() );
 					
 					
 					return 2;
@@ -363,8 +350,8 @@ public class xcmp extends XCommand {
 
 
 
-	private int usage( XEnvironment env ) {
-		env.getShell().printErr("Usage: xcmp [-x] [-b] file1 file2");
+	private int usage(  ) {
+		printErr("Usage: xcmp [-x] [-b] file1 file2");
 		return 1;
 	}
 

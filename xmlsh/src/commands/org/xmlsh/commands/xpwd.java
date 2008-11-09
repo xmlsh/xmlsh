@@ -22,26 +22,16 @@ public class xpwd extends XCommand
 {
 	
 	
-	public static void main( String args[] ) throws Exception
-	{
-		xpwd cmd = new xpwd();
-
-		cmd.run( args );
-		
-		
-		
-	}
-
 	
 	
-	public int run(  List<XValue> args , XEnvironment env )	throws Exception
+	public int run(  List<XValue> args )	throws Exception
 	{
 		
 
-		XFile file = new XFile(env.getShell().getCurdir());
+		XFile file = new XFile(getCurdir());
 		
 
-		OutputStream stdout = env.getStdout();
+		OutputStream stdout = getStdout();
 	      
 		TransformerHandler hd = Util.getTransformerHander(stdout);
 

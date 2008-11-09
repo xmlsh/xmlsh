@@ -37,7 +37,7 @@ import org.xmlsh.util.XMLException;
 public class xed extends XCommand {
 
 	@Override
-	public int run( List<XValue> args , XEnvironment env)
+	public int run( List<XValue> args )
 	throws Exception 
 	{
 		
@@ -71,10 +71,10 @@ public class xed extends XCommand {
 			{
 	
 				if( ov != null && ! ov.getValue().toString().equals("-"))
-					context = builder.build( env.getShell().getFile(ov.getValue()));
+					context = builder.build( getFile(ov.getValue()));
 				else {
 					bReadStdin = true ;
-					context = builder.build( new StreamSource( env.getStdin()));
+					context = builder.build( new StreamSource( getStdin()));
 				}	
 			}
 		}
@@ -87,14 +87,14 @@ public class xed extends XCommand {
 		OptionValue ov = opts.getOpt("f");
 		String xpath = null;
 		if( ov != null )
-			xpath = Util.readString( env.getShell().getFile(ov.getValue().toString()) ) ;
+			xpath = Util.readString( getFile(ov.getValue().toString()) ) ;
 		else 
 			xpath = xvargs.remove(0).toString();
 		
 
 		ov = opts.getOpt("r");
 		if( ov == null )
-			throwInvalidArg(env,"No replacement [-r] specified");
+			throwInvalidArg("No replacement [-r] specified");
 		
 		XValue replace = ov.getValue();
 		if( opts.hasOpt("v")){
@@ -156,7 +156,7 @@ public class xed extends XCommand {
 		}
 		
 		Serializer ser = new Serializer();
-		ser.setOutputStream( env.getStdout());
+		ser.setOutputStream( getStdout());
 		
 		processor.writeXdmValue(context, ser );
 
@@ -173,16 +173,6 @@ public class xed extends XCommand {
 		return ((DocumentImpl) node.getUnderlyingNode().getDocumentRoot()).getDocumentElement();
 	}
 
-	/**
-	 * @param args
-	 * @throws XMLException 
-	 */
-	public static void main(String[] args) throws Exception {
-		xed cmd = new xed();
-		
-		cmd.run( args );
-		
-	}
 
 }
 

@@ -35,7 +35,7 @@ import org.xmlsh.util.XMLException;
 public class xslt extends XCommand {
 
 	@Override
-	public int run( List<XValue> args , XEnvironment env)
+	public int run( List<XValue> args )
 	throws Exception 
 	{
 		
@@ -65,10 +65,10 @@ public class xslt extends XCommand {
 			{
 	
 				if( ov != null && ! ov.getValue().toString().equals("-"))
-					context = new StreamSource( env.getShell().getFile(ov.getValue()));
+					context = new StreamSource( getFile(ov.getValue()));
 				else {
 					bReadStdin = true ;
-					context =  new StreamSource( env.getStdin());
+					context =  new StreamSource( getStdin());
 				}	
 			}
 		}
@@ -83,19 +83,19 @@ public class xslt extends XCommand {
 			String fname = ov.getValue().toString();
 			if( fname.equals("-")){
 				if( bReadStdin )
-					throwInvalidArg( env , "Cannot read both xslt and context from stdin");
+					throwInvalidArg( "Cannot read both xslt and context from stdin");
 			
-				source = new StreamSource(env.getStdin());
+				source = new StreamSource(getStdin());
 			}
 			else
-				source =  new StreamSource( new FileInputStream( env.getShell().getFile(fname)));
+				source =  new StreamSource( new FileInputStream( getFile(fname)));
 	
 
 		}
 
 		
 		if( source == null ){
-			throwInvalidArg(env,"No xslt source specified");
+			throwInvalidArg("No xslt source specified");
 		}
 		
 		
@@ -120,7 +120,7 @@ public class xslt extends XCommand {
 			
 		Serializer dest = new Serializer();
 		dest.setOutputProperty( Serializer.Property.OMIT_XML_DECLARATION, "yes");
-		dest.setOutputStream(env.getStdout());
+		dest.setOutputStream(getStdout());
 		eval.setDestination(dest);
 		
 		eval.transform();
@@ -131,17 +131,6 @@ public class xslt extends XCommand {
 
 	}
 
-
-	/**
-	 * @param args
-	 * @throws XMLException 
-	 */
-	public static void main(String[] args) throws Exception {
-		xslt cmd = new xslt();
-		
-		cmd.run( args );
-		
-	}
 
 }
 

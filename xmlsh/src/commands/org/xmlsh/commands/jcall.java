@@ -7,7 +7,6 @@
 package org.xmlsh.commands;
 
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.PrintStream;
 import java.lang.reflect.Method;
 import java.util.List;
@@ -30,19 +29,10 @@ public class jcall extends XCommand
 {
 	
 	
-	public static void main( String args[] ) throws Exception
-	{
-		jcall cmd = new jcall();
-
-		cmd.run( args );
-		
-		
-		
-	}
 
 	
 	
-	public int run(  List<XValue> args , XEnvironment env )	throws Exception
+	public int run(  List<XValue> args )	throws Exception
 	{
 		
 		if( args.size() < 1 )
@@ -60,9 +50,9 @@ public class jcall extends XCommand
 		
 		try {
 			
-			System.setOut(newStdout = new PrintStream(env.getStdout()));
+			System.setOut(newStdout = new PrintStream(getStdout()));
 			// System.setErr(newStderr = new PrintStream(env.getStderr()));
-			System.setIn(env.getStdin()) ;
+			System.setIn(getStdin()) ;
 		
 			String className = args.remove(0).toString();
 			Class cls = Class.forName(className);
@@ -83,6 +73,12 @@ public class jcall extends XCommand
 		
 		return 0;
 		
+	}
+	
+	public static void main( String[] args )
+	{
+		
+		System.out.println(args[0]);
 	}
 	
 }

@@ -25,6 +25,7 @@ import org.xmlsh.core.XValue;
 import org.xmlsh.core.XVariable;
 import org.xmlsh.core.XVariable.XVarFlag;
 import org.xmlsh.sh.core.Command;
+import org.xmlsh.sh.core.EvalScriptCommand;
 import org.xmlsh.sh.grammar.ParseException;
 import org.xmlsh.sh.grammar.ShellParser;
 import org.xmlsh.util.Util;
@@ -295,7 +296,18 @@ public class Shell {
 	    int ret = 0;
 	    if( args.length == 0 ){
 	    	ret = shell.interactive();
-	    } else {
+	    } else 
+	    	
+	    // Run command
+	    if( args[0].equals("-c"))
+	    {
+	    	Command cmd = new EvalScriptCommand( args[1] );
+    		ret = shell.exec(cmd);
+	    	
+
+	    }
+	    else // Run script 
+	    {
 	    	
 	    	ICommand cmd = CommandFactory.getInstance().getScript( shell , args[0], true );
 	    	if( cmd == null )

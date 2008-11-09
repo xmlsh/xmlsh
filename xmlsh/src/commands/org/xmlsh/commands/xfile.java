@@ -41,22 +41,7 @@ public class xfile extends XCommand
 	
 	
 	
-	
-	
-	public static void main( String args[] ) throws Exception
-	{
-		xfile cmd = new xfile();
-
-		cmd.run( args );
-		
-		
-		
-	}
-
-	
-	
-	
-	public int run(  List<XValue> args , XEnvironment env )	throws Exception
+	public int run(  List<XValue> args  )	throws Exception
 	{
 		Options opts = new Options("n,b,d,a,c,e",args);
 		opts.parse();
@@ -65,7 +50,7 @@ public class xfile extends XCommand
 		XFile xf = null ;
 		switch( args.size() ){
 		case	0:
-			xf = new XFile( env.getCurdir() ); break;
+			xf = new XFile( getCurdir() ); break;
 		case	1:
 			xf = new XFile( args.get(0) ); break;
 		case	2:
@@ -74,7 +59,7 @@ public class xfile extends XCommand
 		}
 		
 		
-		PrintWriter out = new PrintWriter( env.getStdout() );
+		PrintWriter out = new PrintWriter( getStdout() );
 		
 		if( opts.hasOpt("b") )
 			out.println( xf.getBaseName());

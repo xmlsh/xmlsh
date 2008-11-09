@@ -33,7 +33,7 @@ import org.xmlsh.util.XMLException;
 public class xpath extends XCommand {
 
 	@Override
-	public int run( List<XValue> args , XEnvironment env)
+	public int run( List<XValue> args )
 	throws Exception 
 	{
 		
@@ -62,10 +62,10 @@ public class xpath extends XCommand {
 			{
 	
 				if( ov != null && ! ov.getValue().toString().equals("-"))
-					context = builder.build( env.getShell().getFile(ov.getValue()));
+					context = builder.build( getFile(ov.getValue()));
 				else {
 					bReadStdin = true ;
-					context = builder.build( new StreamSource( env.getStdin()));
+					context = builder.build( new StreamSource( getStdin()));
 				}	
 			}
 		}
@@ -78,7 +78,7 @@ public class xpath extends XCommand {
 		OptionValue ov = opts.getOpt("f");
 		String xpath = null;
 		if( ov != null )
-			xpath = Util.readString( env.getShell().getFile(ov.getValue().toString()) ) ;
+			xpath = Util.readString( getFile(ov.getValue().toString()) ) ;
 		else {
 			ov = opts.getOpt("q");
 			if( ov != null )
@@ -135,7 +135,7 @@ public class xpath extends XCommand {
 		dest.setOutputStream(env.getStdout());
 */		
 		Serializer ser = new Serializer();
-		ser.setOutputStream( env.getStdout() );
+		ser.setOutputStream( getStdout() );
 		ser.setOutputProperty(Serializer.Property.OMIT_XML_DECLARATION, "yes");
 		boolean bAnyOutput = false ;
 
@@ -146,7 +146,7 @@ public class xpath extends XCommand {
 				break ;
 			
 			processor.writeXdmValue(item, ser );
-			env.getStdout().write( Util.getNewline() );
+			getStdout().write( Util.getNewline() );
 			
 		}
 
@@ -157,16 +157,6 @@ public class xpath extends XCommand {
 
 	}
 
-	/**
-	 * @param args
-	 * @throws XMLException 
-	 */
-	public static void main(String[] args) throws Exception {
-		xpath cmd = new xpath();
-		
-		cmd.run( args );
-		
-	}
 
 }
 

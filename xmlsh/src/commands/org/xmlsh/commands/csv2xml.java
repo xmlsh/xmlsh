@@ -41,19 +41,9 @@ import org.xmlsh.util.Util;
 public class csv2xml extends XCommand
 {
 
-	public static void main( String args[] ) throws Exception
-	{
-		csv2xml cmd = new csv2xml();
-
-		cmd.run( args );
-		
-		
-		
-	}
-
 	
 	
-	public int run(  List<XValue> args , XEnvironment env )	throws Exception
+	public int run(  List<XValue> args )	throws Exception
 	{
 
 		
@@ -73,7 +63,7 @@ public class csv2xml extends XCommand
 		List<XValue> xvargs = opts.getRemainingArgs();
 		
 // Output XML
-		OutputStream stdout = env.getStdout();
+		OutputStream stdout = getStdout();
 		TransformerHandler hd = Util.getTransformerHander(stdout);
 		hd.startDocument();
 		Attributes attrs = new AttributesImpl();
@@ -83,9 +73,9 @@ public class csv2xml extends XCommand
 		
 		InputStream in = null;
 		if( xvargs.size() == 0 || xvargs.get(0).toString().equals("-"))
-			in = env.getStdin();
+			in = getStdin();
 		else
-			in = new FileInputStream(  env.getShell().getFile(xvargs.get(0)) );
+			in = new FileInputStream(  getFile(xvargs.get(0)) );
 		
 		
 		Reader ir = new InputStreamReader( in , encoding );

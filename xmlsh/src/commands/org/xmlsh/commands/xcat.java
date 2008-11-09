@@ -31,25 +31,9 @@ public class xcat extends XCommand {
 
 	
 
-	/**
-	 * @param args
-	 * @throws XMLException 
-	 */
-	public static void main(String[] args) throws Exception {
-		xcat  cmd = new xcat();
-
-		
-		
-		cmd.run( args );
-		
-		
-	}
-	
-
 	
 	
-	
-	public int run( List<XValue> args, XEnvironment env )	throws Exception
+	public int run( List<XValue> args )	throws Exception
 	{
 		
 
@@ -79,7 +63,7 @@ public class xcat extends XCommand {
 		 */
 		if(  xvargs.size() == 1 ){
 			DocumentBuilder builder = processor.newDocumentBuilder();
-			context = builder.build( env.getShell().getFile(xvargs.remove(0).toString()));
+			context = builder.build( getFile(xvargs.remove(0).toString()));
 
 		}
 
@@ -88,7 +72,7 @@ public class xcat extends XCommand {
 		
 		if( context == null && ! hasFiles ){
 			DocumentBuilder builder = processor.newDocumentBuilder();
-			context = builder.build( new StreamSource( env.getStdin()));
+			context = builder.build( new StreamSource( getStdin()));
 		}
 		
 		
@@ -155,19 +139,15 @@ public class xcat extends XCommand {
 		if( hasFiles ){
 			ArrayList<XValue> files = new ArrayList<XValue>();
 			for( XValue a : xvargs ){
-				files.add( new XValue( env.getShell().getFile(a).toURI().toString()));
+				files.add( new XValue( getFile(a).toURI().toString()));
 			}
-			
-		
 			eval.setExternalVariable( new QName("files"), new XValue(files).toXdmValue());
 		
 		}	
 		
-		
-		
 		Serializer dest = new Serializer();
 		dest.setOutputProperty( Serializer.Property.OMIT_XML_DECLARATION, "yes");
-		dest.setOutputStream(env.getStdout());
+		dest.setOutputStream(getStdout());
 		
 		eval.run(dest);
 		

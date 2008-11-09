@@ -15,8 +15,6 @@ import javax.xml.transform.stream.StreamSource;
 import net.sf.saxon.s9api.DocumentBuilder;
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.SaxonApiException;
-import net.sf.saxon.s9api.XPathExecutable;
-import net.sf.saxon.s9api.XPathSelector;
 import net.sf.saxon.s9api.XQueryCompiler;
 import net.sf.saxon.s9api.XQueryEvaluator;
 import net.sf.saxon.s9api.XQueryExecutable;
@@ -26,9 +24,9 @@ import org.xmlsh.commands.util.CSVFormatter;
 import org.xmlsh.commands.util.CSVRecord;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.XCommand;
-import org.xmlsh.core.XEnvironment;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.Options.OptionValue;
+import org.xmlsh.sh.shell.Shell;
 
 /*
  * 
@@ -52,22 +50,13 @@ public class xml2csv extends XCommand
 	
 	
 	private XQueryCompiler mCompiler;
-	private XEnvironment mEnv;
+
 	private CSVFormatter mFormatter;
 	
-	
-	public static void main( String args[] ) throws Exception
-	{
-		xml2csv cmd = new xml2csv();
-
-		cmd.run( args );
-	}
 
 	
-	
-	public int run(  List<XValue> args , XEnvironment env )	throws Exception
+	public int run(  List<XValue> args  )	throws Exception
 	{
-		mEnv = env ;
 		mFormatter = new CSVFormatter();
 		
 
@@ -77,7 +66,7 @@ public class xml2csv extends XCommand
 		bHeader = opts.hasOpt("header");
 		bAttr = opts.hasOpt("attr");
 		
-		Processor processor = env.getShell().getProcessor();
+		Processor processor = Shell.getProcessor();
 		mCompiler = processor.newXQueryCompiler();
 		XdmNode	context = null;
 
@@ -100,10 +89,10 @@ public class xml2csv extends XCommand
 			{
 	
 				if( ov != null && ! ov.getValue().toString().equals("-"))
-					context = builder.build( env.getShell().getFile(ov.getValue()));
+					context = builder.build( getFile(ov.getValue()));
 				else {
 					bReadStdin = true ;
-					context = builder.build( new StreamSource( env.getStdin()));
+					context = builder.build( new StreamSource( getStdin()));
 				}	
 			}
 		}
@@ -163,7 +152,7 @@ public class xml2csv extends XCommand
 		}
 		CSVRecord rec = new CSVRecord(fields);
 		String line = mFormatter.encodeRow(rec);
-		mEnv.getStdout().write( (line +  "\n") . getBytes());
+		getStdout().write( (line +  "\n") . getBytes());
 		
 		
 		

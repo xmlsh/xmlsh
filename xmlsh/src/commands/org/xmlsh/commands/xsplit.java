@@ -69,33 +69,10 @@ public class xsplit extends XCommand {
 	private		int				mNumChildren = 1;
 	
 	private		List<XMLEvent>	mHeader = new ArrayList<XMLEvent>();
-	
-	private		XEnvironment	mEnv ;
 
-	/**
-	 * 
-	 * 
-	 * 
-	 * @param args
-	 * @throws XMLException 
-	 */
-	public static void main(String[] args) throws Exception {
-		xsplit  cmd = new xsplit();
 
-		
-		
-		cmd.run( args );
-		
-		
-	}
-	
-
-	
-	
-	
-	public int run( List<XValue> args, XEnvironment env )	throws Exception
+	public int run( List<XValue> args)	throws Exception
 	{
-		mEnv = env;
 
 
 		Options opts = new Options( "c:,w:,n,p:,e:,s:" , args );
@@ -127,15 +104,15 @@ public class xsplit extends XCommand {
 		
 		List<XValue> xvargs = opts.getRemainingArgs();
 		if( xvargs.size() > 1 ){
-			usage(env);
+			usage();
 			return 1;
 		}
 		
 		InputStream is = 
 			xvargs.size() == 1 ? 
-					new FileInputStream(env.getFile(xvargs.get(0))): 
-					env.getStdin() ;
-		split(is ,env );
+					new FileInputStream(getFile(xvargs.get(0))): 
+					getStdin() ;
+		split(is );
 		
 		
 		
@@ -152,7 +129,7 @@ public class xsplit extends XCommand {
 
 
 
-	private void split(InputStream is,XEnvironment env) throws XMLStreamException, IOException {
+	private void split(InputStream is) throws XMLStreamException, IOException {
 	
 		XMLInputFactory inputFactory=XMLInputFactory.newInstance();
 		inputFactory.setProperty(XMLInputFactory.IS_COALESCING, Boolean.valueOf(true));
@@ -205,7 +182,7 @@ public class xsplit extends XCommand {
 			else
 			{
 				
-				env.printErr("Skipping XML node: " + e.toString());
+				printErr("Skipping XML node: " + e.toString());
 			}
 		}
 		
@@ -275,7 +252,7 @@ public class xsplit extends XCommand {
 
 
 	private File nextFile() throws IOException {
-		File f = mEnv.getFile( mPrefix + mSeq++ + mSuffix + mExt );
+		File f = getFile( mPrefix + mSeq++ + mSuffix + mExt );
 		return f;
 	}
 
@@ -283,8 +260,8 @@ public class xsplit extends XCommand {
 
 
 
-	private int usage( XEnvironment env ) {
-		env.getShell().printErr("Usage: xsplit [-w wrap] [-c children] [-n]  [-p prefix] [file]");
+	private int usage( ) {
+		printErr("Usage: xsplit [-w wrap] [-c children] [-n]  [-p prefix] [file]");
 		return 1;
 	}
 

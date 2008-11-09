@@ -34,7 +34,7 @@ import org.xmlsh.util.XMLException;
 public class xquery extends XCommand {
 
 	@Override
-	public int run( List<XValue> args , XEnvironment env)
+	public int run( List<XValue> args )
 	throws Exception 
 	{
 		
@@ -63,10 +63,10 @@ public class xquery extends XCommand {
 			{
 	
 				if( ov != null && ! ov.getValue().toString().equals("-"))
-					context = builder.build( env.getShell().getFile(ov.getValue()));
+					context = builder.build( getFile(ov.getValue()));
 				else {
 					bReadStdin = true ;
-					context = builder.build( new StreamSource( env.getStdin()));
+					context = builder.build( new StreamSource( getStdin()));
 				}	
 			}
 		}
@@ -84,16 +84,16 @@ public class xquery extends XCommand {
 		OptionValue ov = opts.getOpt("f");
 		if( ov != null ){
 			if( query != null )
-				throwInvalidArg( env, "Cannot specifify both -q and -f");
+				throwInvalidArg(  "Cannot specifify both -q and -f");
 			String fname = ov.getValue().toString();
 			if( fname.equals("-")){
 				if( bReadStdin )
-					throwInvalidArg( env , "Cannot read both query and context from stdin");
+					throwInvalidArg(  "Cannot read both query and context from stdin");
 			
-				query = Util.readString(env.getStdin());
+				query = Util.readString(getStdin());
 			}
 			else {
-				File qfile = env.getShell().getFile(fname);
+				File qfile = getFile(fname);
 				query =  Util.readString( qfile);
 
 				// Set file as base URI for debugging output 
@@ -107,7 +107,7 @@ public class xquery extends XCommand {
 		
 		if( query == null ){
 			if ( xvargs.size() < 1 )
-				throwInvalidArg(env,"No query specified");
+				throwInvalidArg("No query specified");
 			query = xvargs.remove(0).toString(); // remove arg 0
 		}
 		
@@ -140,7 +140,7 @@ public class xquery extends XCommand {
 		
 		Serializer dest = new Serializer();
 		dest.setOutputProperty( Serializer.Property.OMIT_XML_DECLARATION, "yes");
-		dest.setOutputStream(env.getStdout());
+		dest.setOutputStream(getStdout());
 		
 		eval.run(dest);
 
@@ -150,16 +150,7 @@ public class xquery extends XCommand {
 
 	}
 
-	/**
-	 * @param args
-	 * @throws XMLException 
-	 */
-	public static void main(String[] args) throws Exception {
-		XCommand cmd = new xquery();
-		
-		cmd.run( args );
-		
-	}
+	
 
 }
 

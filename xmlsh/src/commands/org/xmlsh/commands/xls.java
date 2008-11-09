@@ -25,26 +25,16 @@ import org.xmlsh.util.XMLException;
 
 public class xls extends XCommand {
 
-	/**
-	 * @param args
-	 * @throws XMLException 
-	 */
-	public static void main(String[] args) throws Exception {
-		
-		xls cmd = new xls();
+	
 
-		cmd.run( args );
-		
-	}
-
-	public int run(  List<XValue> args , XEnvironment env )	throws Exception
+	public int run(  List<XValue> args  )	throws Exception
 	{
 		Options opts = new Options("l",args);
 		opts.parse();
 		args = opts.getRemainingArgs();
 		
 		
-		OutputStream stdout = env.getStdout();
+		OutputStream stdout = getStdout();
 	      
 		TransformerHandler hd = Util.getTransformerHander(stdout);
 
@@ -63,7 +53,7 @@ public class xls extends XCommand {
 		boolean longMode = opts.hasOpt("l");
 		for( XValue arg : args ){
 			
-			File dir = env.getShell().getFile(arg.toString());
+			File dir = getFile(arg.toString());
 			if( !dir.isDirectory() ){
 
 				new XFile(dir).serialize(hd, longMode);

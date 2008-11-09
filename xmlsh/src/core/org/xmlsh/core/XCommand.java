@@ -8,22 +8,24 @@ package org.xmlsh.core;
 
 
 import java.io.File;
-import java.util.ArrayList;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.List;
 
 import org.xmlsh.sh.shell.Shell;
 
 public abstract class XCommand implements ICommand {
 	
+	private XEnvironment mEnvironment;
 	
 	
-	
-	protected static void throwInvalidArg(XEnvironment env, String string)
+	protected void throwInvalidArg(String string)
 			throws InvalidArgumentException {
-				env.getShell().printErr(string);
+				printErr(string);
 				throw new InvalidArgumentException( string );
 				
-			}
+	}
 
 
 
@@ -38,34 +40,15 @@ public abstract class XCommand implements ICommand {
 		
 	}
 	
+	abstract public int run( List<XValue>  args ) throws Exception;
 
-
-	// Command line run using System in/out/err
-	public	int run( String[] args ) throws Exception
-	{
-		
-		XEnvironment env = new XEnvironment(new Shell());
-		
-		List<XValue> vargs = new ArrayList<XValue>(args.length);
-
-		for( int i = 0 ; i < args.length ; i++ )
-			vargs.add( new XValue( args[i]));
-		
-		
-		
-	    try {
-	    	return  run( vargs , env );
-	    } finally {
-			
-	    }
-			
-
-		
-	}
 	
-	
-	abstract public int run( List<XValue>  args, XEnvironment env ) throws Exception;
-	
+   public int run( List<XValue>  args, XEnvironment env ) throws Exception
+   {
+	   mEnvironment = env ;
+	   return run(args);
+	   
+   }
 	
 	/* (non-Javadoc)
 	 * @see org.xmlsh.core.ICommand#getType()
@@ -79,6 +62,65 @@ public abstract class XCommand implements ICommand {
 		
 	}
 
+	protected	XEnvironment getEnv() { return mEnvironment;}
+	
+	protected InputStream getStdin() { return mEnvironment.getStdin();}
+	protected OutputStream getStdout() { return mEnvironment.getStdout();}
+	protected OutputStream getStderr() { return mEnvironment.getStderr();}
+	
+
+	/**
+	 * @return
+	 * @see org.xmlsh.core.XEnvironment#getCurdir()
+	 */
+	public File getCurdir() {
+		return mEnvironment.getCurdir();
+	}
+
+
+
+	/**
+	 * @param fname
+	 * @return
+	 * @throws IOException
+	 * @see org.xmlsh.core.XEnvironment#getFile(java.lang.String)
+	 */
+	public File getFile(String fname) throws IOException {
+		return mEnvironment.getFile(fname);
+	}
+
+
+
+	/**
+	 * @param fvalue
+	 * @return
+	 * @throws IOException
+	 * @see org.xmlsh.core.XEnvironment#getFile(org.xmlsh.core.XValue)
+	 */
+	public File getFile(XValue fvalue) throws IOException {
+		return mEnvironment.getFile(fvalue);
+	}
+
+
+
+	/**
+	 * @param s
+	 * @param e
+	 * @see org.xmlsh.core.XEnvironment#printErr(java.lang.String, java.lang.Exception)
+	 */
+	public void printErr(String s, Exception e) {
+		mEnvironment.printErr(s, e);
+	}
+
+
+
+	/**
+	 * @param s
+	 * @see org.xmlsh.core.XEnvironment#printErr(java.lang.String)
+	 */
+	public void printErr(String s) {
+		mEnvironment.printErr(s);
+	}
 	
 	
 }
