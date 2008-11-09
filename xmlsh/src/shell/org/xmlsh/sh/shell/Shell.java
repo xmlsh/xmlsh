@@ -31,6 +31,22 @@ import org.xmlsh.sh.grammar.ShellParser;
 import org.xmlsh.util.Util;
 
 public class Shell {
+	
+	static class ShellOpts 
+	{
+		boolean	mVerbose = false;		// -v
+		boolean mExec	 = false;		// -x
+		public ShellOpts clone() {
+			ShellOpts that = new ShellOpts();
+			that.mVerbose = mVerbose;
+			that.mExec= mExec ;
+			return that;
+		}
+	}
+	
+	private ShellOpts	mOpts;
+	
+	
 	private		Stack<XEnvironment>	mEnvStack = new Stack<XEnvironment>();
 	private		List<XValue> 	mArgs = new ArrayList<XValue>();
 	private		InputStream	mCommandInput = null;
@@ -72,6 +88,7 @@ public class Shell {
 	 */
 	public Shell()
 	{
+		mOpts = new ShellOpts();
 		mSavedCD = System.getProperty("user.dir");
 		mEnvStack.push( new XEnvironment(this));
 		
@@ -113,6 +130,7 @@ public class Shell {
 	 */
 	private Shell( Shell that )
 	{
+		mOpts = that.mOpts.clone();
 		mEnvStack.push( that.getEnv().clone(this) );
 		mCommandInput = that.mCommandInput;
 		mArg0 = that.mArg0;
@@ -247,6 +265,14 @@ public class Shell {
 	 */
 	
 	public int exec(Command c) throws Exception {
+		if( mOpts.mExec){
+			PrintWriter pw = new PrintWriter(getEnv().getStderr());
+			pw.print("+ ");
+			c.print(pw);
+			pw.println();
+			pw.flush();
+		
+		}
 		if( c.isWait())
 			return mStatus = c.exec(this);
 		
@@ -288,45 +314,81 @@ public class Shell {
 
 	public static void main(String args[]) throws Exception {
 	 	
+		List<String> vargs = Util.toList(args);
 		
 		Shell shell = new Shell();
 	    
+		
+		
+		if( vargs.size() > 0 &&vargs.get(0).equals("-v") ){
+    		shell.mOpts.mVerbose = true ;
+    		vargs.remove(0);
+    		
+    		
+    	}
+    	if(vargs.size() > 0 &&vargs.get(0).equals("-x")){
+    		
+    		shell.mOpts.mExec = true ;
+    		vargs.remove(0);
+    	}
 	    
 	    
 	    int ret = 0;
-	    if( args.length == 0 ){
+	    if( vargs.size() == 0 ){
 	    	ret = shell.interactive();
-	    } else 
 	    	
-	    // Run command
-	    if( args[0].equals("-c"))
-	    {
-	    	Command cmd = new EvalScriptCommand( args[1] );
-    		ret = shell.exec(cmd);
+	    } else {
 	    	
+	    
+	    	
+	    	
+	     	
+		    // Run command
+		    if( vargs.get(0).equals("-c"))
+		    {
+		    	vargs.remove(0);
 
+		    	StringBuffer sb = new StringBuffer(0);
+		    	for( String s : vargs ){
+		    		
+		    		if( sb.length() > 0 )
+		    			sb.append(' ');
+		    		sb.append(s);
+		    	}
+		    	
+		    	
+		    	Command cmd = new EvalScriptCommand( sb.toString() );
+	    		ret = shell.exec(cmd);
+		    	
+
+		    }
+		    else // Run script 
+		    {
+		    	
+		    	String scmd = vargs.remove(0);
+		    	ICommand cmd = CommandFactory.getInstance().getScript( shell , scmd, true );
+		    	if( cmd == null )
+		    		shell.printErr( args[0] + ": not found");
+		    	else {
+		    		
+		    		List<XValue> args2 = new ArrayList<XValue>(vargs.size());
+		    		for( int i = 1 ; i < args.length ; i++ )
+		    			args2.add( new XValue(vargs.get(i)));
+		    		// Run as sourced mode, in this shell ...
+		    		// must set args ourselves
+		    		
+		    		shell.setArg0( args[0]);
+		    		shell.setArgs( args2 );
+		    		ret = cmd.run( shell , args[0] , null );
+		    	}
+		    	
+		    	
+		    }
+	    	
 	    }
-	    else // Run script 
-	    {
-	    	
-	    	ICommand cmd = CommandFactory.getInstance().getScript( shell , args[0], true );
-	    	if( cmd == null )
-	    		shell.printErr( args[0] + ": not found");
-	    	else {
-	    		
-	    		List<XValue> args2 = new ArrayList<XValue>(args.length-1);
-	    		for( int i = 1 ; i < args.length ; i++ )
-	    			args2.add( new XValue(args[i]));
-	    		// Run as sourced mode, in this shell ...
-	    		// must set args ourselves
-	    		
-	    		shell.setArg0( args[0]);
-	    		shell.setArgs( args2 );
-	    		ret = cmd.run( shell , args[0] , null );
-	    	}
-	    	
-	    	
-	    }
+	    
+	    
+	   
 	    System.exit(ret);
 	  }
 	

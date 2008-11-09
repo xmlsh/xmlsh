@@ -424,6 +424,15 @@ public class Util
 			a.add(args[i]);
 		return a;
 	}
+	
+	public static List<String> toList(String[] args)
+	{
+		ArrayList<String> a = new ArrayList<String>();
+		for(int i =0  ; i < args.length ; i++)
+			a.add(args[i]);
+		return a;
+		
+	}
 
 
 	public static List<String> toStringList(List<XValue> a) {
