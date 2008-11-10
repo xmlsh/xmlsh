@@ -18,9 +18,9 @@ public class BraceGroup extends CompoundCommand {
 		super();
 		mCommand = command;
 	}
-	public void print( PrintWriter out ){
+	public void print( PrintWriter out, boolean bExec ){
 		out.print("{");
-		mCommand.print(out);
+		mCommand.print(out, bExec);
 		out.print("}");
 	}
 	/* (non-Javadoc)

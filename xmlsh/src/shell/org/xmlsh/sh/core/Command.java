@@ -18,13 +18,18 @@ public abstract class Command {
 	public boolean isWait(){ return mWait ; }
 	public void	setWait(boolean w) { mWait = w ; }
 	
-	public abstract void print( PrintWriter out );
+	public abstract void print( PrintWriter out, boolean bExec);
 	public abstract int exec( Shell shell) throws Exception;
 	
 	public String	toString() {
+		
+		return toString(false);
+	}
+	
+	public String	toString(boolean bExec) {
 		StringWriter sw = new StringWriter();
 		PrintWriter w = new PrintWriter(sw);
-		print(w);
+		print(w, bExec);
 		w.flush();
 		return sw.toString();
 		

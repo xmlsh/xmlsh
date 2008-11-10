@@ -186,6 +186,13 @@ public class Shell {
 		      	if( c == null )
 		      		break;
 		      
+		    	
+		      	if( mOpts.mVerbose ){
+		      		String s  = c.toString(false);
+		      		if( s.length() > 0)
+		      			printErr( "- " + s );
+		      	}
+		      	
 		      	ret = exec( c );
 			}
 					
@@ -232,7 +239,14 @@ public class Shell {
 		      	Command c = parser.command_line();
 		      	if( c == null )
 		      		break;
-		      
+		      	
+		      	if( mOpts.mVerbose ){
+		      		String s  = c.toString(false);
+		      		if( s.length() > 0)
+		      			printErr( "- " + s );
+		      	}
+		      	
+		      	
 		      	ret = exec( c );
 		      	
 		      	// PrintWriter out = new PrintWriter( System.out );
@@ -265,12 +279,12 @@ public class Shell {
 	 */
 	
 	public int exec(Command c) throws Exception {
+		
 		if( mOpts.mExec){
-			PrintWriter pw = new PrintWriter(getEnv().getStderr());
-			pw.print("+ ");
-			c.print(pw);
-			pw.println();
-			pw.flush();
+			String out = c.toString(true);
+			if( out.length() > 0 )
+				printErr("+ " + out);
+			
 		
 		}
 		if( c.isWait())

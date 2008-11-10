@@ -21,12 +21,12 @@ public class WhileClause extends CompoundCommand {
 		mDo = do1;
 	}
 	
-	public void print(PrintWriter out)
+	public void print(PrintWriter out, boolean bExec)
 	{
 		out.print("while ");
-		mWhile.print(out);
+		mWhile.print(out, bExec);
 		out.println(" do");
-		mDo.print(out);
+		mDo.print(out, bExec);
 		out.println("done");
 	}
 	

@@ -36,7 +36,7 @@ public class SimpleCommand extends Command {
 	 * @see org.xmlsh.sh.core.Command#print(java.io.PrintStream)
 	 */
 	@Override
-	public void print(PrintWriter out) {
+	public void print(PrintWriter out, boolean bExec) {
 		if( mPrefix != null )
 			mPrefix.print(out);
 		out.print( mCommand );

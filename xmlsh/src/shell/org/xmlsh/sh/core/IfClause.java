@@ -28,17 +28,17 @@ public class IfClause extends CompoundCommand
 	 * @see org.xmlsh.sh.core.Command#print(java.io.PrintWriter)
 	 */
 	@Override
-	public void print(PrintWriter out) {
+	public void print(PrintWriter out, boolean bExec) {
 		out.print("if " );
-		mIfPart.print(out);
+		mIfPart.print(out, bExec);
 		out.println("; ");
 		if( mThenPart !=null){
 			out.println("then");
-			mThenPart.print(out);
+			mThenPart.print(out, bExec);
 		}
 		if( mElsePart !=null){
 			out.println("else");
-			mElsePart.print(out);
+			mElsePart.print(out, bExec);
 		}
 		out.println("fi");
 		

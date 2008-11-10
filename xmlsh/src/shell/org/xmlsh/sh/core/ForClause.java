@@ -31,7 +31,7 @@ public class ForClause extends CompoundCommand {
 		this(name,null,c);
 	}
 
-	public void print(PrintWriter out)
+	public void print(PrintWriter out, boolean bExec)
 	{
 		out.print("for " + mName );
 		if(! mWords.isEmpty()  ){
@@ -40,7 +40,7 @@ public class ForClause extends CompoundCommand {
 			mWords.print(out);
 		}
 		out.println(" ; do");
-		mCommand.print(out);
+		mCommand.print(out, bExec);
 		out.println();
 		out.println("done");
 		

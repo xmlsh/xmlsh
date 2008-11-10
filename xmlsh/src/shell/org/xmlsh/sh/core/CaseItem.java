@@ -20,10 +20,10 @@ public class CaseItem {
 		mCommand = command;
 	}
 	
-	public void print(PrintWriter out){
+	public void print(PrintWriter out,boolean bExec){
 		mPattern.print(out);
 		out.print(") ");
-		mCommand.print(out);
+		mCommand.print(out, bExec);
 	}
 
 	public boolean matches(String word) {

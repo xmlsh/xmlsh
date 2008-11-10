@@ -16,7 +16,7 @@ public class FunctionDefinition extends Command {
 	 * @see org.xmlsh.sh.core.Command#print(java.io.PrintWriter)
 	 */
 	@Override
-	public void print(PrintWriter out) {
+	public void print(PrintWriter out, boolean bExec) {
 		out.println("function decl");
 		
 	}

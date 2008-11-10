@@ -12,10 +12,10 @@ import java.util.ArrayList;
 @SuppressWarnings("serial")
 public class CaseList  extends ArrayList<CaseItem>	{
 
-	public void print(PrintWriter out){
+	public void print(PrintWriter out, boolean bExec){
 		
 		for (CaseItem item : this) {
-			item.print(out);
+			item.print(out,bExec);
 			
 		}
 		

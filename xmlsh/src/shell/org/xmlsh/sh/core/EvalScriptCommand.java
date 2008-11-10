@@ -36,7 +36,7 @@ public class EvalScriptCommand extends Command {
 	 * @see org.xmlsh.sh.core.Command#print(java.io.PrintStream)
 	 */
 	@Override
-	public void print(PrintWriter out) {
+	public void print(PrintWriter out, boolean bExec) {
 
 		out.print( mCommand );
 

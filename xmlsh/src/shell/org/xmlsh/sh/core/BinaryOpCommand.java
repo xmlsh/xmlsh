@@ -22,10 +22,13 @@ public abstract class BinaryOpCommand extends Command {
 		mRight = right;
 	}
 
-	public void print( PrintWriter out ){
-		mLeft.print(out);
+	public void print( PrintWriter out, boolean bExec ){
+		if( bExec )
+			return ;
+		
+		mLeft.print(out, bExec);
 		out.println(mOp);
-		mRight.print(out);
+		mRight.print(out, bExec);
 	}
 
 

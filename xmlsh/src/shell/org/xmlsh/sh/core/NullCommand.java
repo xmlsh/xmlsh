@@ -13,7 +13,7 @@ import org.xmlsh.sh.shell.Shell;
 public class NullCommand extends Command {
 
 	@Override
-	public void print(PrintWriter out) {
+	public void print(PrintWriter out, boolean bExec) {
 	
 
 	}

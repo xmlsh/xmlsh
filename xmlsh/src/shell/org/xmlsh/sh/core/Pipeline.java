@@ -41,13 +41,17 @@ public class Pipeline extends Command {
 	public boolean add(Command e) {
 		return mList.add(e);
 	}
-	public void print( PrintWriter out ){
+	public void print( PrintWriter out, boolean bExec ){
+		// Dont print pipelines in exec mode
+		if( bExec )
+			return ;
+		
 		if( isBang() )
 			out.print("! ");
 		
 		int n = mList.size();
 		for (Command c : mList) {
-			c.print(out);
+			c.print(out, bExec);
 			if( n-- > 1 )
 				out.print("|");
 			
