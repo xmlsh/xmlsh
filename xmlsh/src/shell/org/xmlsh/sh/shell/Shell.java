@@ -326,9 +326,9 @@ public class Shell {
 		
 	}
 
-	public static void main(String args[]) throws Exception {
-	 	List<XValue> vargs = new ArrayList<XValue>(args.length);
-	 	for( String a : args)
+	public static void main(String argv[]) throws Exception {
+	 	List<XValue> vargs = new ArrayList<XValue>(argv.length);
+	 	for( String a : argv)
 	 		vargs.add( new XValue(a));
 		
 		Shell shell = new Shell();
@@ -375,18 +375,15 @@ public class Shell {
 		    	String scmd = vargs.get(0).toString();
 		    	ICommand cmd = CommandFactory.getInstance().getScript( shell , scmd, true );
 		    	if( cmd == null )
-		    		shell.printErr( args[0] + ": not found");
+		    		shell.printErr( scmd + ": not found");
 		    	else {
 		    		
-		    		List<XValue> args2 = new ArrayList<XValue>(vargs.size());
-		    		for( int i = 1 ; i < args.length ; i++ )
-		    			args2.add( vargs.get(i));
-		    		// Run as sourced mode, in this shell ...
+		    			// Run as sourced mode, in this shell ...
 		    		// must set args ourselves
 		    		
-		    		shell.setArg0( args[0]);
-		    		shell.setArgs( args2 );
-		    		ret = cmd.run( shell , args[0] , null );
+		    		shell.setArg0( scmd);
+		    		shell.setArgs(vargs );
+		    		ret = cmd.run( shell , scmd , null );
 		    	}
 		    	
 		    	
