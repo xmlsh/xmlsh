@@ -282,6 +282,10 @@ TOKEN : {
 	
 }
 
+<DEFAULT> TOKEN : {
+	< FUNC_DECL : <NAME> (["\t"," "])* "()" >
+}
+
 
 Command script() :
 {
@@ -621,23 +625,24 @@ UntilClause  until_clause() :
 			{ return new UntilClause( w,d);}
 }
 
-FunctionDefinition function_definition() : {}
+FunctionDefinition function_definition() : 
+	{ Token t; CompoundCommand b;}
 {
-	fname() "(" ")" linebreak() function_body() 
-	{ return new FunctionDefinition() ; }
+	t=<FUNC_DECL> linebreak() b=function_body() 
+	{ String name = t.toString()
+		.replaceFirst("\\s*\\(\\s*\\)\\s*$","");
+		return new 
+		FunctionDefinition(name, b ) ; }
 }
 
-void function_body() : {}
+CompoundCommand function_body() : 
+	{CompoundCommand c;}
 {
-	compound_command() [redirect_list()]
+	c=compound_command() 
+	{ return c ; }
 }
 
-String fname() : 
-	{Token t;} 
-{ 
-	t=<NAME>
-		{ return t.toString(); }
-}
+
 
 
 BraceGroup brace_group() : 

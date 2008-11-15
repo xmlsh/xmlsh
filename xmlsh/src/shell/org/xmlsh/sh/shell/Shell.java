@@ -44,9 +44,9 @@ public class Shell {
 		}
 	}
 	
-	private ShellOpts	mOpts;
+	private 	ShellOpts	mOpts;
 	
-	
+	private		FunctionDeclarations mFunctions = null;
 	private		Stack<XEnvironment>	mEnvStack = new Stack<XEnvironment>();
 	private		List<XValue> 	mArgs = new ArrayList<XValue>();
 	private		InputStream	mCommandInput = null;
@@ -135,6 +135,9 @@ public class Shell {
 		mCommandInput = that.mCommandInput;
 		mArg0 = that.mArg0;
 		mSavedCD = System.getProperty("user.dir");
+		
+		if( that.mFunctions != null )
+			mFunctions = new FunctionDeclarations( that.mFunctions);
 				
 	}
 	
@@ -165,11 +168,7 @@ public class Shell {
 	public XEnvironment getEnv() {
 		return 	mEnvStack.peek();
 	}
-	public XEnvironment getParentEnv()
-	{
-		return mEnvStack.get(mEnvStack.size()-2);
-	}
-	
+
 
 	
 	
@@ -671,6 +670,19 @@ public class Shell {
 		while( ! mControlStack.empty() )
 			if ( mControlStack.pop() == loop )
 				break ;
+	}
+
+	public void declareFunction(String name, Command body) {
+		if( mFunctions == null )
+			mFunctions = new FunctionDeclarations();
+		mFunctions.add( name , body);
+		
+	}
+
+	public Command getFunction(String name) {
+		if( mFunctions == null )
+			return null;
+		return mFunctions.get(name);
 	}
 	
 	

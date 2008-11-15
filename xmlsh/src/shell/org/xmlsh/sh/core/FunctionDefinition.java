@@ -8,21 +8,37 @@ package org.xmlsh.sh.core;
 
 import java.io.PrintWriter;
 
+import org.xmlsh.core.XIOEnvironment;
 import org.xmlsh.sh.shell.Shell;
 
 public class FunctionDefinition extends Command {
-
+	private String mName;
+	private Command mBody;
+	
+	public FunctionDefinition( String name , Command body )
+	{
+		mName = name;
+		mBody = body;
+	}
+	
+	
+	
 	/* (non-Javadoc)
 	 * @see org.xmlsh.sh.core.Command#print(java.io.PrintWriter)
 	 */
 	@Override
 	public void print(PrintWriter out, boolean bExec) {
-		out.println("function decl");
+		out.println( mName + " ()");
+		if( ! bExec )
+			mBody.print( out , bExec);
 		
 	}
 	@Override
 	public int exec(Shell shell) throws Exception {
-		return shell.getStatus(); // preserve last exit status
+		
+		shell.declareFunction( mName , mBody );	
+		return 0;
+		
 	}
 
 }

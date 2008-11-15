@@ -29,7 +29,7 @@ public class read extends BuiltinCommand {
 			
 		// Unset all args
 		for( XValue arg : args )
-			shell.getParentEnv().unsetVar( arg.toString() );
+			shell.getEnv().unsetVar( arg.toString() );
 		
 			
 			InputStream is = shell.getEnv().getStdin();
@@ -47,7 +47,7 @@ public class read extends BuiltinCommand {
 			while( tok.hasMoreTokens()){
 				String s=tok.nextToken();
 				if( arg < args.size() )
-					shell.getParentEnv().setVar(
+					shell.getEnv().setVar(
 							new XVariable(args.get(arg++).toString(), new XValue(s)));
 				
 			}

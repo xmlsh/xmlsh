@@ -33,7 +33,7 @@ public class xread extends BuiltinCommand {
 		if( args.size() != 1 )
 			throw new InvalidArgumentException("requires 1 argument");
 		
-		shell.getParentEnv().unsetVar(args.get(0).toString());
+		shell.getEnv().unsetVar(args.get(0).toString());
 
 		InputStream is = shell.getEnv().getStdin();
 
@@ -41,7 +41,7 @@ public class xread extends BuiltinCommand {
 		DocumentBuilder builder = proc.newDocumentBuilder();
 
 		XdmNode node = builder.build(new StreamSource( shell.getEnv().getStdin()));
-		shell.getParentEnv().setVar(
+		shell.getEnv().setVar(
 				new XVariable(args.get(0).toString(), new XValue(node)));
 
 

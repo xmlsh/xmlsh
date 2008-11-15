@@ -31,6 +31,7 @@ import org.xmlsh.builtin.xread;
 import org.xmlsh.builtin.xtrue;
 import org.xmlsh.builtin.xversion;
 import org.xmlsh.builtin.xwhich;
+import org.xmlsh.sh.core.Command;
 import org.xmlsh.sh.shell.Shell;
 
 public class CommandFactory 
@@ -82,7 +83,14 @@ public class CommandFactory
 	public ICommand		getCommand(Shell shell , String name) throws IOException
 	{
 		
-		ICommand cmd =  	getBuiltin(shell, name);
+		
+		
+		ICommand cmd = 
+			getFunction( shell , name );
+		
+		
+		if( cmd == null )
+			cmd = getBuiltin(shell, name);
 		if( cmd == null )
 			cmd = getNative(shell,name);
 		if( cmd == null )
@@ -101,6 +109,14 @@ public class CommandFactory
 	 * Gets an External command of given name
 	 * by looking through the External Path
 	 */
+
+	private ICommand getFunction(Shell shell, String name) {
+		
+		Command c = shell.getFunction( name );
+		if( c != null )
+			return new FunctionCommand( name , c );
+		return null;
+	}
 
 	private ICommand getExternal(Shell shell, String name) throws IOException 
 	{

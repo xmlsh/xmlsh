@@ -11,6 +11,7 @@ import java.util.List;
 
 import org.xmlsh.core.CommandFactory;
 import org.xmlsh.core.ICommand;
+import org.xmlsh.core.XIOEnvironment;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.Util;
@@ -61,24 +62,27 @@ public class SimpleCommand extends Command {
 		if(  Util.isEmpty( mCommand ))
 			return execNull( shell );
 		
-		shell.pushEnv();
+		List<XValue>	cmdLine = mSuffix.toCmdLine(shell, mCommand);
+		
+		String cmdName = cmdLine.remove(0).toString();
+		
+		ICommand cmd = CommandFactory.getInstance().getCommand( shell , cmdName );
+		
+		if( cmd == null ){
+			shell.printErr(mCommand + ": not found");
+			return 1;
+			
+		}
+		
+		XIOEnvironment io = shell.getEnv().saveIO();
+			
 		try {
 		
 		
 			if( mPrefix != null )
 				mPrefix.exec( shell );
 			
-			List<XValue>	cmdLine = mSuffix.toCmdLine(shell, mCommand);
 			
-			String cmdName = cmdLine.remove(0).toString();
-			
-			ICommand cmd = CommandFactory.getInstance().getCommand( shell , cmdName );
-			
-			if( cmd == null ){
-				shell.printErr(mCommand + ": not found");
-				return 1;
-				
-			}
 		
 			mSuffix.exec( shell );
 
@@ -87,7 +91,7 @@ public class SimpleCommand extends Command {
 
 			
 		} finally {
-			shell.popEnv();
+			shell.getEnv().restoreIO(io);
 		}
 		
 	}

@@ -27,7 +27,7 @@ public class unset extends BuiltinCommand {
 	public int run( Shell shell,String cmd,  List<XValue> args ) throws Exception {
 		for( XValue arg : args ){
 			if( arg.isString()){
-				shell.getParentEnv().unsetVar( arg.toString() );
+				shell.getEnv().unsetVar( arg.toString() );
 			}
 		}
 		return 0;

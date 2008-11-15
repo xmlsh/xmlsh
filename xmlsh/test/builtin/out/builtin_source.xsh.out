@@ -1,3 +1,4 @@
 top level invocation of builtin_source
 sourced invocation of builtin_source
-_SOURCE is _SOURCE
+_SOURCE is source
+_VAR is var

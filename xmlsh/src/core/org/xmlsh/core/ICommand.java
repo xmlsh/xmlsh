@@ -17,7 +17,8 @@ public interface ICommand {
 		CMD_TYPE_INTERNAL , 
 		CMD_TYPE_USER , 
 		CMD_TYPE_EXTERNAL, 
-		CMD_TYPE_SCRIPT
+		CMD_TYPE_SCRIPT,
+		CMD_TYPE_FUNCTION
 	} ;
 	
 	
@@ -25,6 +26,7 @@ public interface ICommand {
 	public int 	run( Shell shell , String cmd , List<XValue> args )  throws Exception;
 	public 	CommandType	getType();
 	public 	File 	getFile();
+	
 }
 //
 //
