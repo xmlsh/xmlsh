@@ -18,6 +18,7 @@ import java.util.Stack;
 import net.sf.saxon.s9api.Processor;
 import org.xmlsh.core.CommandFactory;
 import org.xmlsh.core.ICommand;
+import org.xmlsh.core.Options;
 import org.xmlsh.core.Path;
 import org.xmlsh.core.XDynamicVariable;
 import org.xmlsh.core.XEnvironment;
@@ -326,51 +327,44 @@ public class Shell {
 	}
 
 	public static void main(String args[]) throws Exception {
-	 	
-		List<String> vargs = Util.toList(args);
+	 	List<XValue> vargs = new ArrayList<XValue>(args.length);
+	 	for( String a : args)
+	 		vargs.add( new XValue(a));
 		
 		Shell shell = new Shell();
 	    
+		Options opts = new Options( "x,v,c:" ,  vargs );
+		opts.parse();
 		
 		
-		if( vargs.size() > 0 &&vargs.get(0).equals("-v") ){
+		
+		if( opts.hasOpt("v") )
     		shell.mOpts.mVerbose = true ;
-    		vargs.remove(0);
-    		
-    		
-    	}
-    	if(vargs.size() > 0 &&vargs.get(0).equals("-x")){
-    		
+
+    	if(opts.hasOpt("x"))
     		shell.mOpts.mExec = true ;
-    		vargs.remove(0);
-    	}
-	    
+    	
+    	String command  = null ;
+    	if( opts.hasOpt("c"))
+    		command = opts.getOpt("c").toString();
 	    
 	    int ret = 0;
-	    if( vargs.size() == 0 ){
+	    vargs = opts.getRemainingArgs();
+	    
+	    
+	    if(  vargs.size() == 0 ){
 	    	ret = shell.interactive();
 	    	
 	    } else {
-	    	
-	    
-	    	
-	    	
+
 	     	
 		    // Run command
-		    if( vargs.get(0).equals("-c"))
+		    if(command != null)
 		    {
-		    	vargs.remove(0);
 
-		    	StringBuffer sb = new StringBuffer(0);
-		    	for( String s : vargs ){
-		    		
-		    		if( sb.length() > 0 )
-		    			sb.append(' ');
-		    		sb.append(s);
-		    	}
+
 		    	
-		    	
-		    	Command cmd = new EvalScriptCommand( sb.toString() );
+		    	Command cmd = new EvalScriptCommand( command );
 	    		ret = shell.exec(cmd);
 		    	
 
@@ -378,7 +372,7 @@ public class Shell {
 		    else // Run script 
 		    {
 		    	
-		    	String scmd = vargs.remove(0);
+		    	String scmd = vargs.get(0).toString();
 		    	ICommand cmd = CommandFactory.getInstance().getScript( shell , scmd, true );
 		    	if( cmd == null )
 		    		shell.printErr( args[0] + ": not found");
@@ -386,7 +380,7 @@ public class Shell {
 		    		
 		    		List<XValue> args2 = new ArrayList<XValue>(vargs.size());
 		    		for( int i = 1 ; i < args.length ; i++ )
-		    			args2.add( new XValue(vargs.get(i)));
+		    			args2.add( vargs.get(i));
 		    		// Run as sourced mode, in this shell ...
 		    		// must set args ourselves
 		    		
