@@ -26,7 +26,7 @@ public class xwhich extends BuiltinCommand {
 
 	
 	private static final String typenames[] = new String[] {
-		"builtin" , "internal" , "user" , "external" , "script"
+		"builtin" , "internal" , "user" , "external" , "script" , "function"
 
 	};
 	
