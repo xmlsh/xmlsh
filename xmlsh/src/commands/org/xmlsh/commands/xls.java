@@ -17,11 +17,9 @@ import org.xml.sax.Attributes;
 import org.xml.sax.helpers.AttributesImpl;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.XCommand;
-import org.xmlsh.core.XEnvironment;
 import org.xmlsh.core.XValue;
 import org.xmlsh.types.XFile;
 import org.xmlsh.util.Util;
-import org.xmlsh.util.XMLException;
 
 public class xls extends XCommand {
 

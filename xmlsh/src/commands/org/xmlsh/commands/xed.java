@@ -27,11 +27,9 @@ import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.tree.DocumentImpl;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.XCommand;
-import org.xmlsh.core.XEnvironment;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.Options.OptionValue;
 import org.xmlsh.util.Util;
-import org.xmlsh.util.XMLException;
 
 
 public class xed extends XCommand {

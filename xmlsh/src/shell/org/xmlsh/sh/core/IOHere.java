@@ -9,10 +9,8 @@ package org.xmlsh.sh.core;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
 
 import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.util.SynchronizedInputStream;
 
 public class IOHere {
 

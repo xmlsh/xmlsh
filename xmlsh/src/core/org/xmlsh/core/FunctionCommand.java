@@ -7,8 +7,6 @@
 package org.xmlsh.core;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.StringBufferInputStream;
 import java.util.List;
 
 import org.xmlsh.sh.core.Command;

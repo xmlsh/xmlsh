@@ -9,14 +9,11 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Random;
 
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
@@ -37,10 +34,6 @@ import org.xmlsh.core.XValue;
  */
 public class Util
 {
-    private static DateFormat sDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-    private static DateFormat sDateTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-    private static DateFormat sTimeFormat = new SimpleDateFormat("HH:mm:ss");
-    private static Random mRand = null;
 
 	public static byte mNewline[];
 	

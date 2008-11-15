@@ -85,7 +85,7 @@ public class CSVFormatter
 		return sb.toString();
 	}
 	
-	public static String encodeRow(CSVRecord rec)
+	public  String encodeRow(CSVRecord rec)
 	{
 		return encodeRow( rec.getFields() );
 	}

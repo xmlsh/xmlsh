@@ -12,7 +12,6 @@ import java.util.List;
 
 import javax.xml.transform.sax.TransformerHandler;
 
-import org.xml.sax.Attributes;
 import org.xml.sax.helpers.AttributesImpl;
 import org.xmlsh.core.BuiltinCommand;
 import org.xmlsh.core.XEnvironment;

@@ -6,20 +6,11 @@
 
 package org.xmlsh.builtin;
 
-import java.io.OutputStream;
-import java.util.Collection;
 import java.util.List;
 
-import javax.xml.transform.sax.TransformerHandler;
-
-import org.xml.sax.Attributes;
-import org.xml.sax.helpers.AttributesImpl;
 import org.xmlsh.core.BuiltinCommand;
-import org.xmlsh.core.XEnvironment;
 import org.xmlsh.core.XValue;
-import org.xmlsh.core.XVariable;
 import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.util.Util;
 
 public class unset extends BuiltinCommand {
 

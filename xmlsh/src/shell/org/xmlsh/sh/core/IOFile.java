@@ -7,14 +7,11 @@
 package org.xmlsh.sh.core;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 
 import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.util.SynchronizedInputStream;
-import org.xmlsh.util.SynchronizedOutputStream;
 
 public class IOFile {
 	private String	mPrefix;

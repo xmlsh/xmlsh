@@ -8,8 +8,6 @@ package org.xmlsh.core;
 
 import java.util.EnumSet;
 
-import org.xmlsh.core.XVariable.XVarFlag;
-
 public abstract class XDynamicVariable extends XVariable {
 
 	public XDynamicVariable(String name, EnumSet<XVarFlag> flags) {

@@ -12,10 +12,28 @@ import java.io.IOException;
 import java.util.HashMap;
 
 import org.apache.log4j.Logger;
-
+import org.xmlsh.builtin.colon;
+import org.xmlsh.builtin.eval;
+import org.xmlsh.builtin.exit;
+import org.xmlsh.builtin.jobs;
+import org.xmlsh.builtin.read;
+import org.xmlsh.builtin.set;
+import org.xmlsh.builtin.shift;
+import org.xmlsh.builtin.source;
+import org.xmlsh.builtin.test;
+import org.xmlsh.builtin.unset;
+import org.xmlsh.builtin.wait;
+import org.xmlsh.builtin.xbreak;
+import org.xmlsh.builtin.xcd;
+import org.xmlsh.builtin.xcontinue;
+import org.xmlsh.builtin.xecho;
+import org.xmlsh.builtin.xfalse;
+import org.xmlsh.builtin.xread;
+import org.xmlsh.builtin.xtrue;
+import org.xmlsh.builtin.xversion;
+import org.xmlsh.builtin.xwhich;
 import org.xmlsh.sh.core.Command;
 import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.builtin.*;
 
 public class CommandFactory 
 {

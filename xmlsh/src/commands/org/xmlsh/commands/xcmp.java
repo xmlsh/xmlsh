@@ -39,7 +39,6 @@ import javax.xml.stream.events.XMLEvent;
 
 import org.xmlsh.core.Options;
 import org.xmlsh.core.XCommand;
-import org.xmlsh.core.XEnvironment;
 import org.xmlsh.core.XValue;
 import org.xmlsh.util.Util;
 

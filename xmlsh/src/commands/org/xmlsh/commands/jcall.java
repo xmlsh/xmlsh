@@ -13,7 +13,6 @@ import java.util.List;
 
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XCommand;
-import org.xmlsh.core.XEnvironment;
 import org.xmlsh.core.XValue;
 import org.xmlsh.util.Util;
 
@@ -32,7 +31,7 @@ public class jcall extends XCommand
 
 	
 	
-	public int run(  List<XValue> args )	throws Exception
+	public synchronized int run(  List<XValue> args )	throws Exception
 	{
 		
 		if( args.size() < 1 )
@@ -55,7 +54,7 @@ public class jcall extends XCommand
 			System.setIn(getStdin()) ;
 		
 			String className = args.remove(0).toString();
-			Class cls = Class.forName(className);
+			Class<?> cls = Class.forName(className);
 			
 			Method method = cls.getMethod("main", String[].class );
 			method.invoke(null, new Object[] { Util.toStringArray(args)} );
