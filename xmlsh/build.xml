@@ -11,7 +11,7 @@
 	
 	<property name="dist" location="_dist"/>
 	 <tstamp prefix="bdate"/>
-	<property name="release" value="pre_${bdate.DSTAMP}"/>
+	<property name="release" value="a1_${bdate.DSTAMP}"/>
 		
 	<target name="clean" description="Clean all">
 		  <delete includeEmptyDirs="true" quiet="true">
