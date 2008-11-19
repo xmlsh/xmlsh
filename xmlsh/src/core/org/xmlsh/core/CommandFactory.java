@@ -89,8 +89,6 @@ public class CommandFactory
 		
 		ICommand cmd = 
 			getFunction( shell , name );
-		
-		
 		if( cmd == null )
 			cmd = getBuiltin(shell, name);
 		if( cmd == null )
@@ -151,9 +149,34 @@ public class CommandFactory
 
 
 	private ICommand getNative(Shell shell,String name) {
-		String cname = "org.xmlsh.commands." + name ;
+		
+		
+		/* 
+		 * First try the builtin package 
+		 */
+		
+		ICommand cls = getCommandClass("org.xmlsh.commands" , name);
+		if( cls != null )
+			return cls ;
+		
+		Path imports = shell.getImportPath();
+		if( imports == null )
+			return null ;
+		
+		for( String pkg : imports ){
+			cls = getCommandClass( pkg , name );
+			if( cls != null )
+				return cls;
+		}
+			
+		return null  ;
+		
+		
+	}
+
+	private ICommand getCommandClass(String pkg , String name) {
 		try {
-			Class<?> cls = Class.forName(cname);
+			Class<?> cls = Class.forName(pkg + "." + name);
 			ICommand cmd = (ICommand) cls.newInstance();
 			return cmd;
 

@@ -19,6 +19,7 @@ import org.xmlsh.sh.shell.Shell;
 
 public class XEnvironment  {
 	
+	@SuppressWarnings("unused")
 	private static Logger mLogger = LogManager.getLogger( XEnvironment.class );
 	private Shell mShell;
 	

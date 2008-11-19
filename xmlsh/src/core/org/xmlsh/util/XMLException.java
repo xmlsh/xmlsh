@@ -8,6 +8,7 @@ package org.xmlsh.util;
 /**
  * @author David A. Lee
  */
+@SuppressWarnings("serial")
 public class XMLException extends Exception
 {
 

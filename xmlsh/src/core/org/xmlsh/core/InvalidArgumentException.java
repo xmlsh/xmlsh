@@ -8,6 +8,11 @@ package org.xmlsh.core;
 
 public class InvalidArgumentException extends Exception {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4670201075104636642L;
+
 	public InvalidArgumentException() {
 		// TODO Auto-generated constructor stub
 	}

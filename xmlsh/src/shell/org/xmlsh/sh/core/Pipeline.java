@@ -6,7 +6,6 @@
 
 package org.xmlsh.sh.core;
 
-import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 
@@ -71,7 +70,6 @@ public class Pipeline extends Command {
 		
 		ArrayList<ShellThread>  threads = new ArrayList<ShellThread>();
 		
-		OutputStream rightOut = null;
 		
 		PipedStream	pipes[] = PipedStream.getPipes(ncmds-1);
 		

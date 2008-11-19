@@ -6,6 +6,7 @@
 
 package org.xmlsh.core;
 
+@SuppressWarnings("serial")
 public class UnimplementedException extends Exception {
 
 	public UnimplementedException() {

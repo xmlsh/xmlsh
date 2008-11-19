@@ -6,6 +6,7 @@
 
 package org.xmlsh.core;
 
+@SuppressWarnings("serial")
 public class UnknownOption extends Exception {
 
 	public UnknownOption() {

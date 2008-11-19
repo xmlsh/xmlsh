@@ -7,12 +7,12 @@
 package org.xmlsh.builtin;
 
 import java.io.InputStream;
-import java.io.StringBufferInputStream;
 import java.util.List;
 
 import org.xmlsh.core.BuiltinCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.util.Util;
 
 public class eval extends BuiltinCommand {
 
@@ -31,7 +31,7 @@ public class eval extends BuiltinCommand {
 				
 				
 			}
-			InputStream is = new StringBufferInputStream(sb.toString());
+			InputStream is = Util.toInputStream(sb.toString());
 			return shell.runScript(is);
 			
 			

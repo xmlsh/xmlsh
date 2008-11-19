@@ -10,10 +10,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.io.StringBufferInputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.util.Util;
 
 public class ScriptCommand implements ICommand {
 	
@@ -31,14 +32,13 @@ public class ScriptCommand implements ICommand {
 		
 	}
 	
-	public ScriptCommand( String script )
+	public ScriptCommand( String script ) throws UnsupportedEncodingException
 	{
-		mScript = new StringBufferInputStream(script);
+		mScript = Util.toInputStream(script);
 		mSourceMode = true ;
 		
 	}
-	
-	
+
 	public int run(Shell shell, String cmd, List<XValue> args) throws Exception {
 		
 		try {

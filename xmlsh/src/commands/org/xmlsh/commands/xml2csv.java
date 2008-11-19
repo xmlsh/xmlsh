@@ -72,7 +72,7 @@ public class xml2csv extends XCommand
 
 		DocumentBuilder builder = processor.newDocumentBuilder();
 		
-		boolean bReadStdin = false ;
+		// boolean bReadStdin = false ;
 		if( ! opts.hasOpt("n" ) ){ // Has XML data input
 			OptionValue ov = opts.getOpt("i");
 
@@ -91,7 +91,6 @@ public class xml2csv extends XCommand
 				if( ov != null && ! ov.getValue().toString().equals("-"))
 					context = builder.build( getFile(ov.getValue()));
 				else {
-					bReadStdin = true ;
 					context = builder.build( new StreamSource( getStdin()));
 				}	
 			}

@@ -9,6 +9,7 @@ package org.xmlsh.sh.core;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 
+@SuppressWarnings("serial")
 public class StringList extends ArrayList<String> {
 
 	public void print(PrintWriter out) {

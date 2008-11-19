@@ -6,7 +6,6 @@
 
 package org.xmlsh.builtin;
 
-import java.io.InputStream;
 import java.util.List;
 
 import javax.xml.transform.stream.StreamSource;
@@ -35,8 +34,7 @@ public class xread extends BuiltinCommand {
 		
 		shell.getEnv().unsetVar(args.get(0).toString());
 
-		InputStream is = shell.getEnv().getStdin();
-
+		
 		Processor proc = Shell.getProcessor();
 		DocumentBuilder builder = proc.newDocumentBuilder();
 

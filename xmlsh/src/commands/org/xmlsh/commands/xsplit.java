@@ -63,7 +63,7 @@ public class xsplit extends XCommand {
 	private		String			mSuffix = "";
 	private		String			mExt 	= ".xml";
 	
-	private		boolean			mNoRoot = false ;
+	// private		boolean			mNoRoot = false ;
 	private		int				mNumChildren = 1;
 	
 	private		List<XMLEvent>	mHeader = new ArrayList<XMLEvent>();
@@ -94,7 +94,6 @@ public class xsplit extends XCommand {
 		
 		
 		if( opts.hasOpt("n") ){ 
-			mNoRoot = true ;
 			mNumChildren = 1;
 		}
 

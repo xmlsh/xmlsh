@@ -44,7 +44,7 @@ public class xpath extends XCommand {
 		XdmNode	context = null;
 		
 		
-		boolean bReadStdin = false ;
+		// boolean bReadStdin = false ;
 		if( ! opts.hasOpt("n" ) ){ // Has XML data input
 			OptionValue ov = opts.getOpt("i");
 			DocumentBuilder builder = processor.newDocumentBuilder();
@@ -62,7 +62,6 @@ public class xpath extends XCommand {
 				if( ov != null && ! ov.getValue().toString().equals("-"))
 					context = builder.build( getFile(ov.getValue()));
 				else {
-					bReadStdin = true ;
 					context = builder.build( new StreamSource( getStdin()));
 				}	
 			}

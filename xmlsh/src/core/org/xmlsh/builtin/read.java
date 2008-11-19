@@ -7,7 +7,6 @@
 package org.xmlsh.builtin;
 
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -40,7 +39,6 @@ public class read extends BuiltinCommand {
 			XValue xifs = shell.getEnv().getVarValue("IFS");
 			String ifs = xifs == null ? " \t" : xifs.toString();
 			
-			ArrayList<String> 	list = new ArrayList<String>();
 			StringTokenizer	tok = new StringTokenizer( line , ifs );
 			
 			int arg = 0;

@@ -1,5 +1,6 @@
 package org.xmlsh.util;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -26,6 +27,7 @@ import javax.xml.transform.stream.StreamResult;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmValue;
 import org.xmlsh.core.XValue;
+import org.xmlsh.sh.shell.Shell;
 
 /**
  * @author DLEE
@@ -34,7 +36,6 @@ import org.xmlsh.core.XValue;
  */
 public class Util
 {
-
 	public static byte mNewline[];
 	
 	private static class FileComparator implements Comparator<File>
@@ -342,7 +343,7 @@ public class Util
 	public static TransformerHandler getTransformerHander(OutputStream stdout)
 	throws TransformerFactoryConfigurationError, TransformerConfigurationException,
 	IllegalArgumentException {
-		return getTransformerHander( new StreamResult(stdout), "UTF-8");
+		return getTransformerHander( new StreamResult(stdout), Shell.getEncoding());
 	
 	}
 	
@@ -479,7 +480,7 @@ public class Util
 	{
 		if( Util.mNewline == null ){
 			try {
-				Util.mNewline = System.getProperty("line.separator").getBytes("UTF-8");
+				Util.mNewline = System.getProperty("line.separator").getBytes(Shell.getEncoding());
 			} catch (UnsupportedEncodingException e) {
 				Util.mNewline = new byte[] { '\n' };
 			} 
@@ -506,6 +507,11 @@ public class Util
 			return null;
 		
 		return sb.toString();
+	}
+
+
+	public static  ByteArrayInputStream toInputStream(String script) throws UnsupportedEncodingException {
+			return new ByteArrayInputStream(script.getBytes(Shell.getEncoding()));
 	}
 	
 }

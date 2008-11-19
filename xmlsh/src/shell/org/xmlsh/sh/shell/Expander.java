@@ -10,7 +10,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.StringBufferInputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -316,7 +315,7 @@ class Expander {
 
 
 		try {
-			InputStream script = new StringBufferInputStream(cmd);
+
 			PipedStream pipe = new PipedStream();
 
 			Shell shell = mShell.clone();
@@ -355,7 +354,7 @@ class Expander {
 		
 	
 		
-		Processor processor = mShell.getProcessor();
+		Processor processor = Shell.getProcessor();
 		
 		XQueryCompiler compiler = processor.newXQueryCompiler();
 		XQueryExecutable expr = null;
@@ -364,7 +363,7 @@ class Expander {
 		
 
 		for( String name : mShell.getEnv().getVarNames() ){
-			XValue value = mShell.getEnv().getVarValue(name);
+			// XValue value = mShell.getEnv().getVarValue(name);
 			
 			sb.append("declare variable $").append(name)
 			.append(" external ;\n");
@@ -406,7 +405,7 @@ class Expander {
 	private String runCmd(String cmd) throws IOException {
 
 		
-		InputStream script = new StringBufferInputStream(cmd);
+		InputStream script = Util.toInputStream(cmd);
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 
 		Shell shell = mShell.clone();

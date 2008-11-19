@@ -119,7 +119,7 @@ public class XValue {
 				ByteArrayOutputStream out = new ByteArrayOutputStream();
 				try {
 					serialize( out );
-					return out.toString("UTF-8");
+					return out.toString(Shell.getEncoding());
 				} catch (Exception e )
 				{
 					mLogger.warn("Exception serializing XML value");
@@ -216,7 +216,7 @@ public class XValue {
 	public void serialize(OutputStream out) throws UnsupportedEncodingException, IOException, SaxonApiException 
 	{
 		if( isString() )
-			out.write( toString().getBytes("UTF-8") );
+			out.write( toString().getBytes(Shell.getEncoding()) );
 		else {
 			Serializer ser = new Serializer();
 			ser.setOutputStream( out );

@@ -15,6 +15,7 @@ import org.w3c.dom.Document;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
+import org.xmlsh.sh.shell.Shell;
 
 /**
  * @author DLEE
@@ -146,7 +147,7 @@ public class XMLFactory
 	public Document parse(String string) throws XMLException, UnsupportedEncodingException
 	{
 
-        return parse( new ByteArrayInputStream( string.getBytes("UTF-8")));
+        return parse( new ByteArrayInputStream( string.getBytes(Shell.getEncoding())));
 	}
 
 	public Document newDocument()

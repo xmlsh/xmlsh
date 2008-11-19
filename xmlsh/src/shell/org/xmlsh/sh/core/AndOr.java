@@ -35,7 +35,7 @@ public class AndOr extends BinaryOpCommand {
 				return leftRet ; 	
 			
 			int rightRet = shell.exec(mRight);
-			return shell.fromBool(Shell.toBool( leftRet ) && 
+			return Shell.fromBool(Shell.toBool( leftRet ) && 
 					Shell.toBool(rightRet) );
 
 		} else

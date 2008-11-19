@@ -15,6 +15,7 @@ import java.util.Properties;
  * 
  * @author David A. Lee
  */
+@SuppressWarnings("serial")
 class SystemProperties extends Properties {
 
 	
@@ -35,8 +36,6 @@ class SystemProperties extends Properties {
 	 */
 	@Override
 	public String getProperty(String key, String defaultValue) {
-		
-		String value  = null;
 		if( key.equals("user.dir"))
 			return SystemEnvironment.getInstance().getProperty(key, defaultValue);
 		

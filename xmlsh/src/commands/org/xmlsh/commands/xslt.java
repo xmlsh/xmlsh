@@ -12,7 +12,6 @@ import java.util.List;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
-import net.sf.saxon.s9api.DocumentBuilder;
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.Serializer;
@@ -50,7 +49,6 @@ public class xslt extends XCommand {
 		boolean bReadStdin = false ;
 		if( ! opts.hasOpt("n" ) ){ // Has XML data input
 			OptionValue ov = opts.getOpt("i");
-			DocumentBuilder builder = processor.newDocumentBuilder();
 			
 			// If -i argument is an XML expression take the first node as the context
 			if( ov != null  && ov.getValue().isXExpr() ){

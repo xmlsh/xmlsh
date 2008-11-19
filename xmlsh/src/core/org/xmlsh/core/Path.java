@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class Path {
+public class Path implements Iterable<String> {
 	List<String>	mPaths = new ArrayList<String>();
 	
 	// Empty path
@@ -37,7 +37,7 @@ public class Path {
 		}
 	}
 	
-	public Iterator<String> iterate() { return mPaths.iterator() ; }
+	public Iterator<String> iterator() { return mPaths.iterator() ; }
 	
 	
 	public String[] getPaths()
@@ -56,6 +56,10 @@ public class Path {
 		return null;
 		
 	}
+
+
+
+
 
 }
 //

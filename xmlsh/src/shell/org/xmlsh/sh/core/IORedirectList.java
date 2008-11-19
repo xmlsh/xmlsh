@@ -11,6 +11,7 @@ import java.util.ArrayList;
 
 import org.xmlsh.sh.shell.Shell;
 
+@SuppressWarnings("serial")
 public class IORedirectList extends ArrayList<IORedirect> {
 
 	public void print(PrintWriter out) {

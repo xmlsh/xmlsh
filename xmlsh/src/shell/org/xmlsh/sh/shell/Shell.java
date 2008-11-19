@@ -178,7 +178,7 @@ public class Shell {
 		
 		InputStream save = mCommandInput;
 		mCommandInput = stream ;
-		ShellParser parser= new ShellParser(mCommandInput);
+		ShellParser parser= new ShellParser(mCommandInput,getEncoding());
 		int ret = 0;
 		try {
 			while( mExitVal == null ){
@@ -202,11 +202,11 @@ public class Shell {
 	       // System.out.println("NOK.");
 	        System.out.println(e.getMessage());
 	        e.printStackTrace(System.out);
-	        parser.ReInit(mCommandInput);
+	        parser.ReInit(mCommandInput,getEncoding());
 	      } catch (Error e) {
 	       //  System.out.println("Error");
 	        System.out.println(e.getMessage());
-	        parser.ReInit(mCommandInput);
+	        parser.ReInit(mCommandInput,getEncoding());
 	
 	     } 
       
@@ -229,7 +229,7 @@ public class Shell {
 		mIsInteractive = true ;
 		int		ret = 0;
 		mCommandInput = System.in;
-		ShellParser parser= new ShellParser(mCommandInput);
+		ShellParser parser= new ShellParser(mCommandInput,Shell.getEncoding());
 		
 		while (mExitVal == null) {
 			
@@ -674,6 +674,19 @@ public class Shell {
 		if( mFunctions == null )
 			return null;
 		return mFunctions.get(name);
+	}
+
+	public Path getImportPath() {
+		XValue	pathVar = getEnv().getVarValue("XIMPORT");
+		if( pathVar == null )
+			return null ;
+		return new Path( pathVar.toString().split( File.pathSeparator ));
+	}
+	
+	public static String getEncoding()
+	{
+		return System.getProperty("file.encoding");
+		
 	}
 	
 	
