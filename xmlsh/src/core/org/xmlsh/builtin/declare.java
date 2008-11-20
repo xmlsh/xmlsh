@@ -7,10 +7,10 @@
 package org.xmlsh.builtin;
 
 import java.util.List;
-import java.util.Properties;
 
 import org.xmlsh.core.BuiltinCommand;
 import org.xmlsh.core.XValue;
+import org.xmlsh.util.NameValueMap;
 import org.xmlsh.util.Util;
 
 public class declare extends BuiltinCommand {
@@ -42,13 +42,13 @@ public class declare extends BuiltinCommand {
 	}
 
 	private int listNamespaces() {
-		Properties ns = mShell.getNamespaces();
+		NameValueMap<String> ns = mShell.getNamespaces();
 		if( ns == null )
 			return 0;
 		
-		for( Object key : ns.keySet() ){
-			String uri = ns.getProperty((String)key);
-			mShell.printOut(key + "=" + uri );
+		for( String name : ns.keySet() ){
+			String uri = ns.get(name);
+			mShell.printOut(name + "=" + uri );
 			
 		}
 		return 0;
@@ -76,8 +76,6 @@ public class declare extends BuiltinCommand {
 				url = s.substring(eqpos+1);
 			}
 			
-			if( url != null && url.startsWith("\""))
-				url = Util.unquote( url );
 			
 			mShell.declareNamespace(prefix,url);
 			

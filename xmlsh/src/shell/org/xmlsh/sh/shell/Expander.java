@@ -31,6 +31,7 @@ import org.xmlsh.core.XValue;
 import org.xmlsh.sh.core.Command;
 import org.xmlsh.sh.core.EvalScriptCommand;
 import org.xmlsh.sh.grammar.ParseException;
+import org.xmlsh.util.NameValueMap;
 import org.xmlsh.util.NullInputStream;
 import org.xmlsh.util.PipedStream;
 import org.xmlsh.util.Util;
@@ -352,6 +353,21 @@ class Expander {
 		Processor processor = Shell.getProcessor();
 		
 		XQueryCompiler compiler = processor.newXQueryCompiler();
+		
+		NameValueMap<String> ns = mShell.getNamespaces();
+		if( ns != null ){
+			for( String prefix : ns.keySet() ){
+				String uri = ns.get(prefix);
+				compiler.declareNamespace(prefix, uri);
+				
+			}
+			
+		}
+			
+		
+		
+		
+		
 		XQueryExecutable expr = null;
 
 		StringBuffer sb = new StringBuffer();

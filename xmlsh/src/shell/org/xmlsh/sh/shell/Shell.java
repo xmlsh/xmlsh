@@ -30,6 +30,7 @@ import org.xmlsh.sh.core.Command;
 import org.xmlsh.sh.core.EvalScriptCommand;
 import org.xmlsh.sh.grammar.ParseException;
 import org.xmlsh.sh.grammar.ShellParser;
+import org.xmlsh.util.NameValueMap;
 import org.xmlsh.util.Util;
 
 public class Shell {
@@ -69,7 +70,7 @@ public class Shell {
 	
 	private		Stack<ControlLoop>  mControlStack = new Stack<ControlLoop>();
 	
-	private		Properties			mNamespaces = null;
+	private		NameValueMap<String>	mNamespaces = null;
 
 	static {
 		
@@ -140,9 +141,9 @@ public class Shell {
 		mSavedCD = System.getProperty("user.dir");
 		
 		if( that.mFunctions != null )
-			mFunctions = new FunctionDeclarations( that.mFunctions);
+			mFunctions = new FunctionDeclarations(that.mFunctions);
 		if( that.mNamespaces != null )	
-			mNamespaces = new Properties( that.mNamespaces );
+			mNamespaces = new NameValueMap<String>( that.mNamespaces );
 	}
 	
 	public Shell clone()
@@ -665,7 +666,7 @@ public class Shell {
 	public void declareFunction(String name, Command body) {
 		if( mFunctions == null )
 			mFunctions = new FunctionDeclarations();
-		mFunctions.add( name , body);
+		mFunctions.put( name , body);
 		
 	}
 
@@ -690,15 +691,19 @@ public class Shell {
 
 	public void declareNamespace(String prefix, String uri ) {
 		if( mNamespaces == null )
-			mNamespaces = new Properties();
+			mNamespaces = new NameValueMap<String>();
 		
-		mNamespaces.setProperty( prefix , uri );
+		if( Util.isEmpty(uri))
+			mNamespaces.remove(prefix);
+		else
+			
+			mNamespaces.put( prefix , uri );
 		
 		
 		
 	}
 	
-	public Properties getNamespaces()
+	public NameValueMap<String> getNamespaces()
 	{
 		return mNamespaces;
 	}

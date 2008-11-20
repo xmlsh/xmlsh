@@ -25,6 +25,7 @@ import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.Options.OptionValue;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.util.NameValueMap;
 import org.xmlsh.util.Util;
 
 
@@ -110,7 +111,22 @@ public class xquery extends XCommand {
 		}
 		
 			
-
+		/*
+		 * Add namespaces
+		 */
+		
+		{
+			NameValueMap<String> ns = getEnv().getShell().getNamespaces();
+			if( ns != null ){
+				for( String prefix : ns.keySet() ){
+					String uri = ns.get(prefix);
+					compiler.declareNamespace(prefix, uri);
+					
+				}
+				
+			}
+		}
+		
 		expr = compiler.compile( query );
 		
 		

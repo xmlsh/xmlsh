@@ -6,66 +6,21 @@
 
 package org.xmlsh.sh.shell;
 
-import java.util.Hashtable;
-
 import org.xmlsh.sh.core.Command;
+import org.xmlsh.util.NameValueMap;
 
-class FunctionDeclarations {
-	
-	// Functions are rare - dont allocate a table unless its usd
-	private Hashtable<String,Command>	mFuncs = null;
-	
-	// Parent/Derived class
-	// Used for efficient push/pop of shell context
-	private FunctionDeclarations mParent = null ; 
-	
-	// Default constructor 
-	FunctionDeclarations()
-	{
-	}
-	
-	// copy constructor
-	FunctionDeclarations(FunctionDeclarations parent)
-	{
-		mParent = parent ;
-	}
-	
-	
-	/*
-	 * Add a function declaration.
-	 * Only adds to the current list, will not modify derived lists
-	 * 
-	 */
-	void	add(String name, Command command)
-	{
-		
-		if( mFuncs == null ){
-			mFuncs = new Hashtable<String,Command>();
+@SuppressWarnings("serial")
+class FunctionDeclarations extends NameValueMap<Command>
+{
 
-		}
-		mFuncs.put(name, command);
-
-	}
-	
-	/*
-	 * Get a declaration if it exists
-	 * First check this list then derived lists
-	 */
-	
-	Command	get(String name)
+	FunctionDeclarations() {}
+	FunctionDeclarations(FunctionDeclarations that) 
 	{
+		super(that);
 		
-		if( mFuncs != null ){
-			Command c = mFuncs.get(name);
-			if( c != null )
-				return c;
-			
-		}
-		
-		if( mParent != null )
-			return mParent.get(name);
-		return null;
 	}
+	
+	
 
 }
 

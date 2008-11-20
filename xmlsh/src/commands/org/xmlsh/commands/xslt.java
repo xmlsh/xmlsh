@@ -26,6 +26,7 @@ import org.xmlsh.core.XValue;
 import org.xmlsh.core.Options.OptionValue;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.sh.shell.ShellURIResolver;
+import org.xmlsh.util.NameValueMap;
 
 
 
@@ -94,6 +95,21 @@ public class xslt extends XCommand {
 			throwInvalidArg("No xslt source specified");
 		}
 		
+		/*
+		 * Add namespaces -- DOESNT WORK FOR XSLT
+
+		{
+			NameValueMap<String> ns = getEnv().getShell().getNamespaces();
+			if( ns != null ){
+				for( String prefix : ns.keySet() ){
+					String uri = ns.get(prefix);
+					compiler.declareNamespace(prefix, uri);
+					
+				}
+				
+			}
+		}
+	  */
 		
 
 		XsltExecutable expr = compiler.compile( source );
