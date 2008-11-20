@@ -10,17 +10,16 @@ import java.util.List;
 
 import org.xmlsh.core.BuiltinCommand;
 import org.xmlsh.core.XValue;
-import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.sh.shell.ShellThread;
 
 public class jobs extends BuiltinCommand {
 
 	
-	public int run( Shell shell,String cmd ,  List<XValue> args ) throws Exception {
+	public int run(  List<XValue> args ) throws Exception {
 			
-			for( ShellThread thread : shell.getChildren() )
+			for( ShellThread thread : mShell.getChildren() )
 			{
-				shell.printErr( "" + thread.getId() + " : " + getCommand(thread) );
+				mShell.printOut( "" + thread.getId() + " : " + getCommand(thread) );
 				
 			}
 			return 0;

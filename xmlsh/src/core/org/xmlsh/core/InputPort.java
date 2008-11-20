@@ -1,35 +1,24 @@
 /**
- * $Id$
- * $Date$
+ * $Id: $
+ * $Date: $
  *
  */
 
-package org.xmlsh.builtin;
+package org.xmlsh.core;
 
-import java.util.List;
-
-import org.xmlsh.core.BuiltinCommand;
-import org.xmlsh.core.XValue;
-import org.xmlsh.util.Util;
-
-public class shift  extends BuiltinCommand {
-
-	
-	public int run( List<XValue> args ) throws Exception {
-		
-		int num = 1;
-		if( args.size() > 0 )
-			num = Util.parseInt( args.get(0) , 1  );
-		
-		
-		mShell.shift( num );
-		return 0;
-				
-	}
+/*
+ * An InputPort represents an input source of data, either Stream (bytes) or XML data
+ * 
+ */
 
 
+public class InputPort 
+{
 
 }
+
+
+
 //
 //
 //Copyright (C) 2008, David A. Lee.

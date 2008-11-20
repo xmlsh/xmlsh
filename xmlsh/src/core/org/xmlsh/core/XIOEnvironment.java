@@ -15,9 +15,22 @@ import org.apache.log4j.Logger;
 import org.xmlsh.util.SynchronizedInputStream;
 import org.xmlsh.util.SynchronizedOutputStream;
 
+
+/*
+ * IO Environment contains a named set of input and output ports.
+ *  
+ */
+
+
+
 public class XIOEnvironment {
 	private static Logger mLogger = LogManager.getLogger( XIOEnvironment.class );
-
+	
+	/**
+	 * @TODO: convert to using InputPort and OutputPort
+	 */
+	
+	
 	/*
 	 * Standard IO
 	 */

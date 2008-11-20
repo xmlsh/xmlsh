@@ -18,7 +18,6 @@ import org.xmlsh.core.CommandFactory;
 import org.xmlsh.core.ICommand;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.XValue;
-import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.Util;
 
 public class xwhich extends BuiltinCommand {
@@ -29,7 +28,7 @@ public class xwhich extends BuiltinCommand {
 
 	};
 	
-	public int run( Shell shell,String cmd ,  List<XValue> args ) throws Exception {
+	public int run(   List<XValue> args ) throws Exception {
 			
 		Options opts = new Options( "n" , args );
 		opts.parse();
@@ -41,12 +40,12 @@ public class xwhich extends BuiltinCommand {
 		List<XValue> xvargs = Util.expandSequences(opts.getRemainingArgs());
 		
 		if( xvargs.size() < 1  ){
-			shell.printErr("usage: " + cmd + " command ...");
+			mShell.printErr("usage: " + mName + " command ...");
 			return 1;
 		}
 		
-		OutputStream stdout = shell.getEnv().getStdout();
-		final  String sDocRoot = cmd;
+		OutputStream stdout = mShell.getEnv().getStdout();
+		final  String sDocRoot =mName;
 	      
 		TransformerHandler hd = null;
 		
@@ -66,7 +65,7 @@ public class xwhich extends BuiltinCommand {
 		for( XValue xname : xvargs ){
 			
 			String name = xname.toString();
-			ICommand command = CommandFactory.getInstance().getCommand(shell , name );
+			ICommand command = CommandFactory.getInstance().getCommand(mShell , name );
 			if( command != null ){
 				
 				if( ! bNoWrite ){

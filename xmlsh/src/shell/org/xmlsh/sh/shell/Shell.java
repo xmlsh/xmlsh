@@ -13,6 +13,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Properties;
 import java.util.Stack;
 
 import net.sf.saxon.s9api.Processor;
@@ -48,7 +49,7 @@ public class Shell {
 	private 	ShellOpts	mOpts;
 	
 	private		FunctionDeclarations mFunctions = null;
-	private		Stack<XEnvironment>	mEnvStack = new Stack<XEnvironment>();
+	private		XEnvironment	mEnv  = null;
 	private		List<XValue> 	mArgs = new ArrayList<XValue>();
 	private		InputStream	mCommandInput = null;
 	private		String	mArg0 = "xmlsh";
@@ -68,6 +69,7 @@ public class Shell {
 	
 	private		Stack<ControlLoop>  mControlStack = new Stack<ControlLoop>();
 	
+	private		Properties			mNamespaces = null;
 
 	static {
 		
@@ -91,7 +93,7 @@ public class Shell {
 	{
 		mOpts = new ShellOpts();
 		mSavedCD = System.getProperty("user.dir");
-		mEnvStack.push( new XEnvironment(this));
+		mEnv =  new XEnvironment(this);
 		
 		setGlobalVars();
 		
@@ -132,14 +134,15 @@ public class Shell {
 	private Shell( Shell that )
 	{
 		mOpts = that.mOpts.clone();
-		mEnvStack.push( that.getEnv().clone(this) );
+		mEnv = that.getEnv().clone(this) ;
 		mCommandInput = that.mCommandInput;
 		mArg0 = that.mArg0;
 		mSavedCD = System.getProperty("user.dir");
 		
 		if( that.mFunctions != null )
 			mFunctions = new FunctionDeclarations( that.mFunctions);
-				
+		if( that.mNamespaces != null )	
+			mNamespaces = new Properties( that.mNamespaces );
 	}
 	
 	public Shell clone()
@@ -150,8 +153,8 @@ public class Shell {
 	
 	public void close()
 	{
-		while( !mEnvStack.isEmpty() )
-			mEnvStack.pop().close();
+		if( mEnv != null )
+			mEnv.close();
 		
 		SystemEnvironment.getInstance().setProperty("user.dir", mSavedCD);
 	}
@@ -167,7 +170,7 @@ public class Shell {
 
 	
 	public XEnvironment getEnv() {
-		return 	mEnvStack.peek();
+		return 	mEnv;
 	}
 
 
@@ -317,6 +320,13 @@ public class Shell {
 		out.flush();
 		
 	}
+	public void printOut(String s) {
+		PrintWriter out = new PrintWriter( getEnv().getStdout() );
+		out.println(s);
+
+		out.flush();
+		
+	}
 	public void printErr(String s,Exception e) {
 		PrintWriter out = new PrintWriter( getEnv().getStderr() );
 		out.println(s);
@@ -414,18 +424,7 @@ public class Shell {
 		return boolVal ? 0 : 1;
 	}
 	
-	public void pushEnv() 
-	{
-		mEnvStack.push( getEnv().clone());
-		
-		
-	}
 
-	public void popEnv() throws IOException {
-		XEnvironment env = mEnvStack.pop();
-		env.close();
-		
-	}
 	
 	public Path getExternalPath(){
 		XValue	pathVar = getEnv().getVarValue("PATH");
@@ -687,6 +686,21 @@ public class Shell {
 	{
 		return System.getProperty("file.encoding");
 		
+	}
+
+	public void declareNamespace(String prefix, String uri ) {
+		if( mNamespaces == null )
+			mNamespaces = new Properties();
+		
+		mNamespaces.setProperty( prefix , uri );
+		
+		
+		
+	}
+	
+	public Properties getNamespaces()
+	{
+		return mNamespaces;
 	}
 	
 	

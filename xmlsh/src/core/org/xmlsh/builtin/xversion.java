@@ -14,17 +14,16 @@ import javax.xml.transform.sax.TransformerHandler;
 import org.xml.sax.helpers.AttributesImpl;
 import org.xmlsh.core.BuiltinCommand;
 import org.xmlsh.core.XValue;
-import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.sh.shell.Version;
 import org.xmlsh.util.Util;
 
 public class xversion extends BuiltinCommand {
 
 	
-	public int run( Shell shell,String cmd ,  List<XValue> args ) throws Exception {
+	public int run(  List<XValue> args ) throws Exception {
 			
 		
-		OutputStream stdout = shell.getEnv().getStdout();
+		OutputStream stdout = mShell.getEnv().getStdout();
 
 	      
 		TransformerHandler hd = null;

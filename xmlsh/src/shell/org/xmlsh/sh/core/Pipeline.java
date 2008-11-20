@@ -97,7 +97,7 @@ public class Pipeline extends Command {
 		}
 		
 		if( ncmds > 1 )
-			shell.pushEnv();
+			shell = shell.clone();
 		try 
 		{
 			if( ncmds > 1 )
@@ -117,7 +117,7 @@ public class Pipeline extends Command {
 			
 		} finally {
 			if( ncmds > 1 )
-				shell.popEnv();
+				shell.close();
 		}
 			
 	}

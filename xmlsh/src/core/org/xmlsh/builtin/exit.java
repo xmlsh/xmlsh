@@ -10,19 +10,18 @@ import java.util.List;
 
 import org.xmlsh.core.BuiltinCommand;
 import org.xmlsh.core.XValue;
-import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.Util;
 
 public class exit extends BuiltinCommand {
 
 
 	
-	public int run( Shell shell,String cmd , List<XValue> args ) throws Exception {
+	public int run(  List<XValue> args ) throws Exception {
 			if( args.size() == 0 ){
-				shell.exit( 0 );
+				mShell.exit( 0 );
 				
 			} else
-				shell.exit( Util.parseInt(args.get(0).toString(),-1));
+				mShell.exit( Util.parseInt(args.get(0).toString(),-1));
 			return 0;
 				
 	}

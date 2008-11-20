@@ -17,25 +17,24 @@ import org.xmlsh.core.BuiltinCommand;
 import org.xmlsh.core.XEnvironment;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.XVariable;
-import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.Util;
 
 public class set extends BuiltinCommand {
 
 	static final String sDocRoot = "env";
-	public int run( Shell shell,String cmd,  List<XValue> args ) throws Exception {
+	public int run(   List<XValue> args ) throws Exception {
 		if( args == null || args.size() == 0 )	
-			printVars( shell );
+			printVars(  );
 		else
 		
-			shell.setArgs(args);
+			mShell.setArgs(args);
 		return 0;
 	}
 
-	private void printVars(Shell shell) throws Exception {
+	private void printVars() throws Exception {
 		
 
-		XEnvironment env = shell.getEnv();
+		XEnvironment env = mShell.getEnv();
 		
 		OutputStream stdout = env.getStdout();
 	      

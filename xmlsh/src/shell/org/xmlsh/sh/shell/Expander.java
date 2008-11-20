@@ -45,22 +45,12 @@ class Expander {
 	private static class Result {
 		StringBuffer	sb = new StringBuffer();
 		List<XValue>	result = new ArrayList<XValue>();
-		boolean			bQuoted;
-		
-		
-		Result( boolean quoted )
-		{
-			bQuoted = quoted ;
-		}
 		
 		void flush() 
 		{
-			if( sb.length() > 0 || (bQuoted && result.isEmpty()) ){
-				// Quoted strings that evaluate to "" get saved as args
+			if( sb.length() > 0 )
 				add(sb.toString());
-				sb.setLength(0);
-			}
-
+			sb.setLength(0);
 			
 		}
 		
@@ -153,12 +143,7 @@ class Expander {
 
 	List<XValue> expand(String arg) throws IOException {
 		
-		// 1a) single quote expansion
-		if( arg.startsWith("'")){
-			List<XValue> 	r = new ArrayList<XValue>(1);
-			r.add( new XValue(arg.substring(1,arg.length()-1)));
-			return r;
-		}
+		
 		
 		// ( XEXPR )
 		if( arg.startsWith("<[") && arg.endsWith("]>")){
@@ -184,27 +169,34 @@ class Expander {
 			
 		}
 		
-		boolean bQuoted = false ;
-		// 1b) double quote expansion 
-		if( arg.startsWith("\"")){
-			bQuoted = true ;
-			arg = arg.substring(1,arg.length()-1);
-		}
-
-		Result	result = new Result(bQuoted);
-
 		
+
+		Result	result = new Result();
+
+		char cQuote = 0;
 		char c;
 		int i;
 		for( i = 0 ; i < arg.length() ; i++){
 			c = arg.charAt(i);
+			
+			// Just detect quotes in this phase, dont strip them
+			// we need them to determine when to do wildcard expansion
+			if( c == '\'' || c == '"'){
+				if( cQuote == c ) // end quote
+					cQuote = 0;
+				else 
+				if(cQuote == 0 )
+					cQuote = c;
+			}
+			
+			
 			// Escape
 			if( c == '\\'){
 				if( i < arg.length())
 					result.append(arg.charAt(++i));
 				continue;
 			}
-			if( c == '$'){
+			if( cQuote != '\'' && c == '$'){
 				if( ++i == arg.length() )
 					break;
 				
@@ -281,13 +273,16 @@ class Expander {
 		result.flush();
 		
 		// If quoted then dont do wildcard expansion
-		if( bQuoted )
-			return result.getResult();
+		// if( bQuoted )
+		//	return result.getResult();
 		
 		
 		
 		ArrayList<XValue> result2 = new ArrayList<XValue>();
 		for( XValue v : result.getResult() ){
+			/*
+			 * If v is an atomic string value then dequote and expand
+			 */
 			List<XValue> r = expandWild( v );
 			if( r != null )
 				result2.addAll( r );
@@ -440,32 +435,57 @@ class Expander {
 		
 	}
 
-	/*
-	 * hasWild - returns true if the string has any wildcard chars "*?[]"
-	 * 
-	 */
-	private boolean hasWild(String s)
-	{
-		// Special case "[" alone
-		if( s.equals("["))
-			return false ;
-		return Util.hasAnyChar( s , "*?[]");
-		
-		
-		
-	}
-	
+
 
 
 	private List<XValue> expandWild(XValue v) {
 		ArrayList<XValue> r = new ArrayList<XValue>();
 		
-		if( v.isXExpr() || ! hasWild(v.toString())){
+		if( v.isXExpr() ){
 			r.add( v);
 			return r;
 		}
 		
 		String vs = v.toString();
+		int vslen = vs.length();
+		StringBuffer sb = new StringBuffer();
+		
+		char cQuote = 0;
+		boolean wildUnQuoted = false ;
+		for( int i = 0 ; i < vslen ; i++ ){
+			char c = vs.charAt(i);
+			if( c == '"' || c == '\''){
+				if( c == cQuote ){
+					cQuote = 0;
+					continue ;
+				}
+				else
+				if( cQuote == 0 ){
+					cQuote = c ;
+					continue ;
+				}
+			}
+			
+			if( cQuote == 0 && ( c == '*' || c == '?' || c == '['))
+				wildUnQuoted = true ;
+			sb.append(c);
+			
+			
+		}
+		
+		if( ! wildUnQuoted ){
+			r.add( new XValue(sb.toString()));
+			return r;
+		}
+		
+		
+		vs = sb.toString();
+		
+		
+		
+		
+		
+		
 		int slash = vs.lastIndexOf('/');
 		File dir = null;
 		String dirName = null;

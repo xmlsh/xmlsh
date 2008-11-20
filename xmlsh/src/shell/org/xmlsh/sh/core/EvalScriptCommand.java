@@ -50,9 +50,10 @@ public class EvalScriptCommand extends Command {
 	@Override
 	public int exec(Shell shell) throws Exception {
 		
+		// Commands run in a sub shell
 		
-				
-		shell.pushEnv();
+		
+		shell = shell.clone();
 		try {
 		
 			
@@ -70,7 +71,7 @@ public class EvalScriptCommand extends Command {
 
 			
 		} finally {
-			shell.popEnv();
+			shell.close();
 		}
 		
 	}

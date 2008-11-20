@@ -1,6 +1,6 @@
 # test core IO, redirect
 
-if [ -z "$TMPDIR" -o ! -d "$TMPDIR"] ; then
+if [ -z "$TMPDIR" -o ! -d "$TMPDIR" ] ; then
 	echo Temp directory required TMPDIR: $TMPDIR
 	exit 1;
 fi

@@ -13,7 +13,6 @@ import java.util.StringTokenizer;
 import org.xmlsh.core.BuiltinCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.XVariable;
-import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.Util;
 
 public class read extends BuiltinCommand {
@@ -24,19 +23,19 @@ public class read extends BuiltinCommand {
 	 */
 	
 	
-	public int run( Shell shell,String cmd,  List<XValue> args ) throws Exception {
+	public int run(  List<XValue> args ) throws Exception {
 			
 		// Unset all args
 		for( XValue arg : args )
-			shell.getEnv().unsetVar( arg.toString() );
+			mShell.getEnv().unsetVar( arg.toString() );
 		
 			
-			InputStream is = shell.getEnv().getStdin();
+			InputStream is = mShell.getEnv().getStdin();
 			String line = Util.readLine( is );
 			if( line == null )
 				return 1; // EOF
 			
-			XValue xifs = shell.getEnv().getVarValue("IFS");
+			XValue xifs = mShell.getEnv().getVarValue("IFS");
 			String ifs = xifs == null ? " \t" : xifs.toString();
 			
 			StringTokenizer	tok = new StringTokenizer( line , ifs );
@@ -45,7 +44,7 @@ public class read extends BuiltinCommand {
 			while( tok.hasMoreTokens()){
 				String s=tok.nextToken();
 				if( arg < args.size() )
-					shell.getEnv().setVar(
+					mShell.getEnv().setVar(
 							new XVariable(args.get(arg++).toString(), new XValue(s)));
 				
 			}

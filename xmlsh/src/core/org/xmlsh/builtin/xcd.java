@@ -12,24 +12,23 @@ import java.util.List;
 import org.xmlsh.core.BuiltinCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.XVariable;
-import org.xmlsh.sh.shell.Shell;
 
 public class xcd extends BuiltinCommand {
 	
 	
 	
 	
-	public int run(Shell shell, String cmd,  List<XValue> args ) throws Exception {
+	public int run(  List<XValue> args ) throws Exception {
 		String sdir = null;
 		if( args.size() < 1 ){
-			XVariable xhome = shell.getEnv().getVar("HOME");
+			XVariable xhome = mShell.getEnv().getVar("HOME");
 			
 			String home = xhome == null ? null : xhome.getValue().toString();
 			if( home == null )
 				home = System.getProperty("user.home");
 			
 			if( home == null ){
-				shell.printErr("Cannot cd to HOME");
+				mShell.printErr("Cannot cd to HOME");
 				return 1;
 			}
 			sdir = home;
@@ -37,13 +36,13 @@ public class xcd extends BuiltinCommand {
 		else
 			sdir = args.get(0).toString();
 		
-		File newDir = shell.getFile( sdir);
+		File newDir = mShell.getFile( sdir);
 		if( newDir.exists() && newDir.isDirectory() && newDir.canRead() ){
-			shell.setCurdir(newDir);
+			mShell.setCurdir(newDir);
 			return 0;
 		}
 		else {
-			shell.printErr("Cannot cd to: " + sdir);
+			mShell.printErr("Cannot cd to: " + sdir);
 			return 1;
 		}
 		

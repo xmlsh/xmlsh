@@ -27,19 +27,19 @@ public class xread extends BuiltinCommand {
 	 */
 
 
-	public int run( Shell shell,String cmd,  List<XValue> args ) throws Exception {
+	public int run( List<XValue> args ) throws Exception {
 
 		if( args.size() != 1 )
 			throw new InvalidArgumentException("requires 1 argument");
 		
-		shell.getEnv().unsetVar(args.get(0).toString());
+		mShell.getEnv().unsetVar(args.get(0).toString());
 
 		
 		Processor proc = Shell.getProcessor();
 		DocumentBuilder builder = proc.newDocumentBuilder();
 
-		XdmNode node = builder.build(new StreamSource( shell.getEnv().getStdin()));
-		shell.getEnv().setVar(
+		XdmNode node = builder.build(new StreamSource( mShell.getEnv().getStdin()));
+		mShell.getEnv().setVar(
 				new XVariable(args.get(0).toString(), new XValue(node)));
 
 

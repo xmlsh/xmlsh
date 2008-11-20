@@ -13,23 +13,22 @@ import org.xmlsh.core.CommandFactory;
 import org.xmlsh.core.ICommand;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
-import org.xmlsh.sh.shell.Shell;
 
 public class source extends BuiltinCommand {
 
 
 	
-	public int run( Shell shell,String cmd,   List<XValue> args ) throws Exception {
+	public int run(   List<XValue> args ) throws Exception {
 			if( args.size() != 1 )
 				throw new UnexpectedException("source expects 1 argument");
 			
-			ICommand icmd = CommandFactory.getInstance().getScript(shell, args.get(0).toString(),true);
+			ICommand icmd = CommandFactory.getInstance().getScript(mShell, args.get(0).toString(),true);
 			if( icmd == null){
-				shell.printErr( args.get(0) + ": not found");
+				mShell.printErr( args.get(0) + ": not found");
 				return 1;
 			}
 			
-			return icmd.run(shell, args.get(0).toString() , null);
+			return icmd.run(mShell, args.get(0).toString() , null);
 			
 	}
 

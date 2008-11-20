@@ -7,10 +7,17 @@
 package org.xmlsh.core;
 
 import java.io.File;
+import java.util.List;
+
+import org.xmlsh.sh.shell.Shell;
 
 
 public abstract class BuiltinCommand implements ICommand {
-
+	
+	protected Shell mShell;
+	protected String mName;
+	
+	
 	/* (non-Javadoc)
 	 * @see org.xmlsh.core.ICommand#getType()
 	 */
@@ -23,7 +30,16 @@ public abstract class BuiltinCommand implements ICommand {
 		return null ; // builtins have no file  
 		
 	}
+	
+	abstract protected int run( List<XValue> args) throws Exception;
 
+	public int 	run( Shell shell , String cmd , List<XValue> args )  throws Exception
+	{
+		mShell = shell;
+		mName  = cmd ;
+		return run(args);
+		
+	}
 
 	
 	

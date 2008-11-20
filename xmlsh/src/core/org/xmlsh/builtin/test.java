@@ -129,7 +129,6 @@ the length of STRING.
 public class test extends BuiltinCommand {
 	
 
-	private		Shell 	mShell;
 	
 	@SuppressWarnings("serial")
 	private static class Error extends Exception
@@ -326,16 +325,15 @@ public class test extends BuiltinCommand {
 	}
 	
 	
-	public int run( Shell shell, String cmd,  List<XValue> args ) throws Exception {
+	public int run(  List<XValue> args ) throws Exception {
 			
-		mShell = shell;  // Used for file resolution
 		
 		List<XValue> av = args;
 
 		
-		if( cmd.equals("[") ){
+		if( mName.equals("[") ){
 			if( av.size() == 0 || !av.remove(av.size()-1).equals("]")){
-				shell.printErr("Unbalanced [");
+				mShell.printErr("Unbalanced [");
 				return 1;
 	
 			}
@@ -380,7 +378,7 @@ public class test extends BuiltinCommand {
 			
 		} catch( Error e ){
 			
-			shell.printErr( cmd + ":"  + e.getMessage());
+			mShell.printErr( mName + ":"  + e.getMessage());
 			return 1;
 		}
 		

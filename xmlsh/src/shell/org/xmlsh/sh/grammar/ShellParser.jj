@@ -14,13 +14,16 @@ options {
   
 } 
 PARSER_BEGIN(ShellParser)
+
 package org.xmlsh.sh.grammar;
 import org.xmlsh.sh.core.*;
  
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import org.xmlsh.core.XEnvironment;
- 
+
+
+
 public class ShellParser {
   
 }
@@ -239,7 +242,7 @@ TOKEN : {
 
 
 <CMD> TOKEN : {
-	< WORD : (~["\t","\n","\r" ," ","\"","'","|","<",">","&",";",")","(","$"] | "\\" ~[] | <VAR_EXPANSION>)+ | <STRING_LITERAL1> | <STRING_LITERAL2>  > 
+	< WORD : (~["\t","\n","\r" ," ","\"","'","|","<",">","&",";",")","(","$"] | "\\" ~[] | <VAR_EXPANSION> | <STRING_LITERAL1> | <STRING_LITERAL2>)+ | <STRING_LITERAL1> | <STRING_LITERAL2>  > 
 |	< IO_NUMBER : ["0"-"9"] >
 |
   < #STRING_LITERAL1:

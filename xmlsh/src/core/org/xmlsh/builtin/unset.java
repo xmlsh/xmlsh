@@ -10,15 +10,14 @@ import java.util.List;
 
 import org.xmlsh.core.BuiltinCommand;
 import org.xmlsh.core.XValue;
-import org.xmlsh.sh.shell.Shell;
 
 public class unset extends BuiltinCommand {
 
 	static final String sDocRoot = "env";
-	public int run( Shell shell,String cmd,  List<XValue> args ) throws Exception {
+	public int run(  List<XValue> args ) throws Exception {
 		for( XValue arg : args ){
 			if( arg.isString()){
-				shell.getEnv().unsetVar( arg.toString() );
+				mShell.getEnv().unsetVar( arg.toString() );
 			}
 		}
 		return 0;

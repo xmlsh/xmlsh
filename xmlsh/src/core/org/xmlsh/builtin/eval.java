@@ -11,7 +11,6 @@ import java.util.List;
 
 import org.xmlsh.core.BuiltinCommand;
 import org.xmlsh.core.XValue;
-import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.Util;
 
 public class eval extends BuiltinCommand {
@@ -22,7 +21,7 @@ public class eval extends BuiltinCommand {
 	 * 
 	 */
 	
-	public int run( Shell shell,String cmd ,  List<XValue> args ) throws Exception {
+	public int run(  List<XValue> args ) throws Exception {
 			StringBuffer sb = new StringBuffer();
 			for( XValue arg : args ){
 				if( sb.length() > 0 )
@@ -32,7 +31,7 @@ public class eval extends BuiltinCommand {
 				
 			}
 			InputStream is = Util.toInputStream(sb.toString());
-			return shell.runScript(is);
+			return mShell.runScript(is);
 			
 			
 				

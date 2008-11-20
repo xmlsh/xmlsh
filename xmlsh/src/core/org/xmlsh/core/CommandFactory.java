@@ -13,6 +13,7 @@ import java.util.HashMap;
 
 import org.apache.log4j.Logger;
 import org.xmlsh.builtin.colon;
+import org.xmlsh.builtin.declare;
 import org.xmlsh.builtin.eval;
 import org.xmlsh.builtin.exit;
 import org.xmlsh.builtin.jobs;
@@ -69,6 +70,7 @@ public class CommandFactory
 		addBuiltin("break" , xbreak.class);
 		addBuiltin("continue", xcontinue.class );
 		addBuiltin("eval", eval.class);
+		addBuiltin("declare" , declare.class);
 	}
 	
 	
