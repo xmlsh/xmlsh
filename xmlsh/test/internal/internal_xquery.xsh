@@ -31,7 +31,23 @@ xquery -n -v 'declare variable $x external ; $x/foo' x <[<bar><foo>text</foo></b
 # more complicated xquery
 
 xquery -f ../query/books.xquery -i books.xml
+echo
+# Namespace query 
+# Without predeclared ns in environment
+echo '<t:test xmlns:t="http://www.example.org/test">Test</t:test>' | 
+xquery -ns t=http://www.example.org/test /t:test
+echo 
+# Redefine the prefix in the query
+echo '<t:test xmlns:t="http://www.example.org/test">Test</t:test>' | 
+xquery   -ns x=http://www.example.org/test /x:test
+echo
+# Query a literal document with namespace predeclared
+declare namespace t=http://www.example.org/test
+xquery  -i <[ <t:test>Test</t:test> ]> .
+echo 
 
+xquery -i <[ document{ <t:test>Test</t:test> } ]> /t:test 
+echo
 
 
 

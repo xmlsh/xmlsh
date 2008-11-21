@@ -32,4 +32,23 @@ xpath -n -v '$x/foo' x <[<bar><foo>text</foo></bar>]>
 xpath -n -v -q '$x/foo' x <[<bar><foo>text</foo></bar>]> && echo Success returned xpath
 xpath -n -v -q '$x/spam' x <[<bar><foo>text</foo></bar>]> || echo Success empty returned xpath
 
+# Namespace query 
+# Without predeclared ns in environment
+echo '<t:test xmlns:t="http://www.example.org/test">Test</t:test>' | 
+xpath  -ns t=http://www.example.org/test /t:test
+
+# Redefine the prefix in the query
+echo '<t:test xmlns:t="http://www.example.org/test">Test</t:test>' | 
+xpath  -ns x=http://www.example.org/test /x:test
+
+# Query a literal document with namespace predeclared
+declare namespace t=http://www.example.org/test
+xquery -i <[ <t:test>Test</t:test> ]> .
+echo 
+
+xquery -i <[ document{ <t:test>Test</t:test> } ]> /t:test 
+echo
+
+
+
 

@@ -70,7 +70,7 @@ public class Shell {
 	
 	private		Stack<ControlLoop>  mControlStack = new Stack<ControlLoop>();
 	
-	private		NameValueMap<String>	mNamespaces = null;
+	private		Namespaces	mNamespaces = null;
 
 	static {
 		
@@ -143,7 +143,7 @@ public class Shell {
 		if( that.mFunctions != null )
 			mFunctions = new FunctionDeclarations(that.mFunctions);
 		if( that.mNamespaces != null )	
-			mNamespaces = new NameValueMap<String>( that.mNamespaces );
+			mNamespaces = new Namespaces( that.mNamespaces );
 	}
 	
 	public Shell clone()
@@ -689,21 +689,15 @@ public class Shell {
 		
 	}
 
-	public void declareNamespace(String prefix, String uri ) {
+	public void declareNamespace(String ns ) {
 		if( mNamespaces == null )
-			mNamespaces = new NameValueMap<String>();
+			mNamespaces = new Namespaces();
 		
-		if( Util.isEmpty(uri))
-			mNamespaces.remove(prefix);
-		else
-			
-			mNamespaces.put( prefix , uri );
-		
-		
+		mNamespaces.declareNamespace( ns );
 		
 	}
 	
-	public NameValueMap<String> getNamespaces()
+	public Namespaces getNamespaces()
 	{
 		return mNamespaces;
 	}

@@ -18,3 +18,7 @@ xpath on xml expression
 <foo>text</foo>
 Success returned xpath
 Success empty returned xpath
+<t:test xmlns:t="http://www.example.org/test">Test</t:test>
+<t:test xmlns:t="http://www.example.org/test">Test</t:test>
+<t:test xmlns:t="http://www.example.org/test">Test</t:test>
+<t:test xmlns:t="http://www.example.org/test">Test</t:test>

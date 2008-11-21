@@ -24,6 +24,7 @@ import org.xmlsh.core.Options;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.Options.OptionValue;
+import org.xmlsh.sh.shell.Namespaces;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.NameValueMap;
 import org.xmlsh.util.Util;
@@ -37,7 +38,7 @@ public class xquery extends XCommand {
 	throws Exception 
 	{
 		
-		Options opts = new Options( "f:,i:,n,q:,v" , args );
+		Options opts = new Options( "f:,i:,n,q:,v,nons,ns:+" , args );
 		opts.parse();
 		
 		Processor  processor  = Shell.getProcessor();
@@ -115,17 +116,34 @@ public class xquery extends XCommand {
 		 * Add namespaces
 		 */
 		
-		{
-			NameValueMap<String> ns = getEnv().getShell().getNamespaces();
-			if( ns != null ){
-				for( String prefix : ns.keySet() ){
-					String uri = ns.get(prefix);
-					compiler.declareNamespace(prefix, uri);
-					
-				}
+
+		Namespaces ns = null ;
+		
+		if( !opts.hasOpt("nons"))
+			ns = getEnv().getShell().getNamespaces();
+		if( opts.hasOpt("ns")){
+			Namespaces ns2 = new Namespaces();
+			if( ns != null )
+				ns2.putAll(ns);
+			
+			// Add custom name spaces
+			for( XValue v : opts.getOpt("ns").getValues() )
+				ns2.declareNamespace(v);
+				
+			
+			ns = ns2;
+		}
+		
+		
+		if( ns != null ){
+			for( String prefix : ns.keySet() ){
+				String uri = ns.get(prefix);
+				compiler.declareNamespace(prefix, uri);
 				
 			}
+			
 		}
+	
 		
 		expr = compiler.compile( query );
 		

@@ -28,10 +28,11 @@ public class Options
 	{
 		String 		flag;
 		boolean		hasArgs;
-		OptionDef() { flag = null ; hasArgs = true ; }
-		public OptionDef( String flag , boolean arg ){
+		boolean 	hasMulti;
+		public OptionDef( String flag , boolean arg , boolean multi ){
 			this.flag = flag;
 			this.hasArgs = arg;
+			this.hasMulti = multi;
 		}
 	}
 	
@@ -40,8 +41,30 @@ public class Options
 	
 	public static class	OptionValue
 	{
-		OptionDef		option;
-		XValue	 		value;
+		private OptionDef		option;
+		private XValue	 		value;
+		private List<XValue>	values; // in the case of multiple values possible
+		
+		OptionValue( OptionDef def ) {
+			option = def ;
+		}
+		
+		// Set a single value
+		void setValue( XValue v )
+		{
+			value = v ;
+		}
+		
+		// Add to a multi value
+		void addValue( XValue v )
+		{
+			if( values == null )
+				values = new ArrayList<XValue>();
+			values.add(v);
+			
+		}
+		
+		
 		/**
 		 * @return the option
 		 */
@@ -53,6 +76,10 @@ public class Options
 		 */
 		public XValue getValue() {
 			return value;
+		}
+		
+		public List<XValue> getValues() {
+			return values;
 		}
 		
 		
@@ -78,11 +105,18 @@ public class Options
 		String[] adefs = sdefs.split(",");
 		for( String sdef : adefs ){
 			boolean bHasArgs = false ;
+			boolean bHasMulti = false ;
 			if( sdef.endsWith(":")){
 				sdef = sdef.substring(0,sdef.length()-1);
 				bHasArgs = true ;
 			}
-			defs.add( new OptionDef(sdef , bHasArgs));
+			else
+			if( sdef.endsWith(":+")){
+				sdef = sdef.substring(0,sdef.length()-2);
+				bHasArgs = true ;
+				bHasMulti = true ;
+			}
+			defs.add( new OptionDef(sdef , bHasArgs,bHasMulti));
 			
 		}
 		
@@ -140,12 +174,15 @@ public class Options
 				OptionDef def = getOptDef(a);
 				if( def == null )
 					throw new UnknownOption("Unknown option: " + arg);
-				OptionValue ov = new OptionValue();
+				OptionValue ov = new OptionValue(def);
 				ov.option = def ;
 				if( def.hasArgs ){
 					if( !I.hasNext() )
 						throw new UnknownOption("Option has no args: " + arg);
-					ov.value = I.next();
+					if( def.hasMulti )
+						ov.addValue(I.next());
+					else
+						ov.setValue( I.next());
 				}
 				mOptions.add(ov);
 				

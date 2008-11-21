@@ -1,0 +1,5 @@
+t2=http://www.example.org/test2
+t1=http://www.example.org/test1
+<t1:test xmlns:t1="http://www.example.org/test1"><t2:test xmlns:t2="http://www.example.org/test2">Test</t2:test></t1:test>
+t1=http://www.example.org/test1
+<t1:test xmlns:t1="http://www.example.org/test1"><test>Test</test></t1:test>

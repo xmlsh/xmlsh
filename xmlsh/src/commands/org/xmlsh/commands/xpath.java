@@ -23,9 +23,10 @@ import org.xmlsh.core.Options;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.Options.OptionValue;
+import org.xmlsh.sh.shell.Namespaces;
 import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.util.NameValueMap;
 import org.xmlsh.util.Util;
+
 
 
 
@@ -36,7 +37,7 @@ public class xpath extends XCommand {
 	throws Exception 
 	{
 		
-		Options opts = new Options( "f:,i:,q:,n,v,e" , args );
+		Options opts = new Options( "f:,i:,q:,n,v,e,nons,ns:+" , args );
 		opts.parse();
 		
 		Processor  processor  = Shell.getProcessor();
@@ -103,19 +104,40 @@ public class xpath extends XCommand {
 		
 		/*
 		 * Add namespaces
+		 * If -nons option then dont use global namespaces
+		 * If -ns options then add additional namespaces
 		 */
+
+
 		
-		{
-			NameValueMap<String> ns = getEnv().getShell().getNamespaces();
-			if( ns != null ){
-				for( String prefix : ns.keySet() ){
-					String uri = ns.get(prefix);
-					compiler.declareNamespace(prefix, uri);
-					
-				}
+		
+		Namespaces ns = null ;
+		
+		if( !opts.hasOpt("nons"))
+			ns = getEnv().getShell().getNamespaces();
+		if( opts.hasOpt("ns")){
+			Namespaces ns2 = new Namespaces();
+			if( ns != null )
+				ns2.putAll(ns);
+			
+			// Add custom name spaces
+			for( XValue v : opts.getOpt("ns").getValues() )
+				ns2.declareNamespace(v);
+				
+			
+			ns = ns2;
+		}
+		
+
+		if( ns != null ){
+			for( String prefix : ns.keySet() ){
+				String uri = ns.get(prefix);
+				compiler.declareNamespace(prefix, uri);
 				
 			}
+			
 		}
+	
 		
 
 		XPathExecutable expr = compiler.compile( xpath );

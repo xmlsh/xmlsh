@@ -67,17 +67,10 @@ public class declare extends BuiltinCommand {
 		// ns=
 		// "url"
 		if( arg.isString() ){
-			String s = arg.toString();
-			String prefix = null;
-			String url = null;
-			int eqpos = s.indexOf('=');
-			if( eqpos >= 0 ){
-				prefix = s.substring(0,eqpos);
-				url = s.substring(eqpos+1);
-			}
+
 			
 			
-			mShell.declareNamespace(prefix,url);
+			mShell.declareNamespace(arg.toString());
 			
 				
 		}
