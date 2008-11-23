@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
@@ -239,13 +240,15 @@ public class Shell {
 	{
 		mIsInteractive = true ;
 		int		ret = 0;
-		mCommandInput = System.in;
+		
+		setCommandInput();
+		
+		
 		ShellParser parser= new ShellParser(mCommandInput,Shell.getEncoding());
 		
 		while (mExitVal == null) {
 			
-
-		      System.out.print("$ ");
+			  System.out.print("$ ");
 		      try {
 		      	Command c = parser.command_line();
 		      	if( c == null )
@@ -280,6 +283,47 @@ public class Shell {
 		if( mExitVal != null )
 			ret = mExitVal.intValue();
 		return ret;
+	}
+
+	/*
+	 * Setup the mCommandInput
+	 * Try to locate jline if its in the classpath and use it
+	 * otherwise default to System.in
+	 */
+	
+	
+	private void setCommandInput() {
+		mCommandInput = null ;
+		try {
+			/*
+			 * import jline.ConsoleReader;
+			 * import jline.ConsoleReaderInputStream;
+			 */
+			Class<?> consoleReaderClass = Class.forName("jline.ConsoleReader");
+
+			if(consoleReaderClass != null  ){
+				Class<?> consoleInputClass = Class.forName("jline.ConsoleReaderInputStream");
+				if( consoleInputClass != null ){
+					// ConsoleReader jline = new ConsoleReader(); 
+					Object jline =  consoleReaderClass.newInstance();
+					
+					Constructor<?> constructor = consoleInputClass.getConstructor( consoleReaderClass );
+					// mCommandInput = new ConsoleReaderInputStream(jline);
+
+					if( constructor != null )
+						mCommandInput = (InputStream) constructor.newInstance(jline);
+				}
+			}
+				
+				
+		} catch (Exception e1) {
+			mLogger.warn("Exception loading jline",e1);
+			
+		}
+		if( mCommandInput == null )
+			mCommandInput = System.in;
+
+	
 	}
 	
 	/*

@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.xmlsh.util.SynchronizedInputStream;
-import org.xmlsh.util.SynchronizedOutputStream;
 
 /*
  * An InputPort represents an input source of data, either Stream (bytes) or XML data

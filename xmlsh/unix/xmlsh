@@ -3,4 +3,6 @@ CLASSPATH=$CLASSPATH:$XMLSH/lib/log4j-1.2.7.jar
 CLASSPATH=$CLASSPATH:$XMLSH/lib/saxon9.jar
 CLASSPATH=$CLASSPATH:$XMLSH/lib/saxon9-dom.jar
 CLASSPATH=$CLASSPATH:$XMLSH/lib/saxon9-s9api.jar
+# Uncomment the next line if you DO NOT want to use jline input editing
+CLASSPATH=$CLASSPATH:$XMLSH/lib/jline-0.9.94.jar
 java -cp $CLASSPATH -Xmx1024m -Xms256m org.xmlsh.sh.shell.Shell   $*

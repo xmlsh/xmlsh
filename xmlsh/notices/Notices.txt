@@ -15,6 +15,9 @@ License notices for log4j are included in notices/log4j
   from http://www.saxonica.com/
 License notices for saxon are included in notices/saxon
 
+* jline version 0.9.94 from http://jline.sourceforge.net/
+License notices for jline are included in notices/jline
+
 xmlsh may be redistributed as long as these notices in their entirty are included,
 and as long as the terms of the relevent licenses are applied.
 
