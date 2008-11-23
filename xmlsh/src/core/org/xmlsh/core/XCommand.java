@@ -64,9 +64,9 @@ public abstract class XCommand implements ICommand {
 
 	protected	XEnvironment getEnv() { return mEnvironment;}
 	
-	protected InputStream getStdin() { return mEnvironment.getStdin();}
-	protected OutputStream getStdout() { return mEnvironment.getStdout();}
-	protected OutputStream getStderr() { return mEnvironment.getStderr();}
+	protected InputStream getStdin() throws IOException { return mEnvironment.getStdin();}
+	protected OutputStream getStdout() throws IOException { return mEnvironment.getStdout();}
+	protected OutputStream getStderr() throws IOException { return mEnvironment.getStderr();}
 	
 
 	/**

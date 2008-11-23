@@ -13,10 +13,11 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.Properties;
 import java.util.Stack;
 
 import net.sf.saxon.s9api.Processor;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.xmlsh.core.CommandFactory;
 import org.xmlsh.core.ICommand;
 import org.xmlsh.core.Options;
@@ -30,11 +31,11 @@ import org.xmlsh.sh.core.Command;
 import org.xmlsh.sh.core.EvalScriptCommand;
 import org.xmlsh.sh.grammar.ParseException;
 import org.xmlsh.sh.grammar.ShellParser;
-import org.xmlsh.util.NameValueMap;
 import org.xmlsh.util.Util;
 
 public class Shell {
 	
+	private static Logger mLogger = LogManager.getLogger(Shell.class);
 	static class ShellOpts 
 	{
 		boolean	mVerbose = false;		// -v
@@ -90,7 +91,7 @@ public class Shell {
 	/*
 	 * New top level shell
 	 */
-	public Shell()
+	public Shell() throws IOException
 	{
 		mOpts = new ShellOpts();
 		mSavedCD = System.getProperty("user.dir");
@@ -132,7 +133,7 @@ public class Shell {
 	/*
 	 * Cloned shell for sub-thread execution
 	 */
-	private Shell( Shell that )
+	private Shell( Shell that ) throws IOException
 	{
 		mOpts = that.mOpts.clone();
 		mEnv = that.getEnv().clone(this) ;
@@ -148,7 +149,13 @@ public class Shell {
 	
 	public Shell clone()
 	{
-		return new Shell( this );
+		try {
+			return new Shell( this );
+		} catch (IOException e) {
+
+			printErr("Exception cloning shell",e);
+			return null;
+		}
 	}
 	
 	
@@ -315,21 +322,39 @@ public class Shell {
 	}
 
 	public void printErr(String s) {
-		PrintWriter out = new PrintWriter( getEnv().getStderr() );
+		PrintWriter out;
+		try {
+			out = new PrintWriter( getEnv().getStderr() );
+		} catch (IOException e) {
+			mLogger.error("Exception printing err:" + s , e );
+			return ;
+		}
 		out.println(s);
 
 		out.flush();
 		
 	}
-	public void printOut(String s) {
-		PrintWriter out = new PrintWriter( getEnv().getStdout() );
+	public void printOut(String s)  {
+		PrintWriter out;
+		try {
+			out = new PrintWriter( getEnv().getStdout() );
+		} catch (IOException e) {
+			mLogger.error("Exception writing output: " + s , e );
+			return;
+		}
 		out.println(s);
 
 		out.flush();
 		
 	}
 	public void printErr(String s,Exception e) {
-		PrintWriter out = new PrintWriter( getEnv().getStderr() );
+		PrintWriter out;
+		try {
+			out = new PrintWriter( getEnv().getStderr() );
+		} catch (IOException e1) {
+			mLogger.error("Exception writing output: " + s , e );
+			return ;
+		}
 		out.println(s);
 		out.println(e.getMessage());
 		

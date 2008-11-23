@@ -6,6 +6,12 @@
 
 package org.xmlsh.core;
 
+import java.io.IOException;
+import java.io.InputStream;
+
+import org.xmlsh.util.SynchronizedInputStream;
+import org.xmlsh.util.SynchronizedOutputStream;
+
 /*
  * An InputPort represents an input source of data, either Stream (bytes) or XML data
  * 
@@ -14,6 +20,44 @@ package org.xmlsh.core;
 
 public class InputPort 
 {
+	// Actual input stream
+	private SynchronizedInputStream	 mStream;
+
+
+	public InputPort( InputStream is ) throws IOException
+	{
+		setInputStream(is);
+	}
+	
+	public void		setInputStream( InputStream is ) throws IOException
+	{
+		if( mStream != null )
+			mStream.close();
+		mStream = new SynchronizedInputStream(is);
+	}
+
+	/*
+	 * Standard input stream - created on first request
+	 */
+	
+	public	InputStream asInputStream() 
+	{
+		
+		return mStream;
+	}
+
+	public void close() throws IOException {
+
+			mStream.close();
+
+		
+	}
+
+	public void addRef() {
+		mStream.addRef();
+
+		
+	}
 
 }
 

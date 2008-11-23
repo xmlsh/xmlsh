@@ -160,14 +160,7 @@ public class xpath extends XCommand {
 				
 			
 		}
-		
-		
-		
-/*
-		Serializer dest = new Serializer();
-		dest.setOutputProperty( Serializer.Property.OMIT_XML_DECLARATION, "yes");
-		dest.setOutputStream(env.getStdout());
-*/		
+				
 		Serializer ser = new Serializer();
 		ser.setOutputStream( getStdout() );
 		ser.setOutputProperty(Serializer.Property.OMIT_XML_DECLARATION, "yes");

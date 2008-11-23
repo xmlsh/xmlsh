@@ -35,10 +35,10 @@ public class XIOEnvironment {
 	 * Standard IO
 	 */
 	
-	private SynchronizedInputStream	 mStdin;
+	private InputPort				 mStdin;
 	private	 boolean				 mStdinRedirected = false;
-	private SynchronizedOutputStream mStdout;
-	private SynchronizedOutputStream mStderr;
+	private OutputPort				 mStdout;
+	private OutputPort				 mStderr;
 	
 	
 
@@ -46,31 +46,31 @@ public class XIOEnvironment {
 	 * Standard input stream - created on first request
 	 */
 	
-	public	InputStream getStdin() 
+	public	InputStream getStdin() throws IOException 
 	{
 		if( mStdin == null )
-			mStdin = new SynchronizedInputStream(System.in);
-		return mStdin;
+			mStdin = new InputPort(System.in);
+		return mStdin.asInputStream();
 	}
 	
 	/*
 	 * Stdandard output stream - created on first request
 	 */
-	public	OutputStream	getStdout() 
+	public	OutputStream	getStdout() throws IOException 
 	{
 		if( mStdout == null )
-			mStdout =  new SynchronizedOutputStream(System.out);
-		return mStdout ;
+			mStdout =  new OutputPort(System.out);
+		return mStdout.asOutputStream() ;
 	}
 	
 	/*
 	 * Standard error stream - created on first request
 	 */
-	public	OutputStream	getStderr() 
+	public	OutputStream	getStderr() throws IOException 
 	{
 		if( mStderr == null )
-			mStderr = new SynchronizedOutputStream(System.err);
-		return mStderr ;
+			mStderr = new OutputPort(System.err);
+		return mStderr.asOutputStream() ;
 	}
 
 	/**
@@ -81,7 +81,7 @@ public class XIOEnvironment {
 		mStdinRedirected = true ;
 		if( mStdin != null )
 			mStdin.close();
-		mStdin = new SynchronizedInputStream(stdin);
+		mStdin = new InputPort(stdin);
 	}
 
 	/**
@@ -91,7 +91,7 @@ public class XIOEnvironment {
 	public void setStdout(OutputStream stdout) throws IOException {
 		if( mStdout != null )
 			mStdout.close();
-		mStdout = new SynchronizedOutputStream(stdout);
+		mStdout = new OutputPort(stdout);
 	}
 
 	/**
@@ -101,7 +101,7 @@ public class XIOEnvironment {
 	public void setStderr(OutputStream stderr) throws IOException {
 		if( mStderr != null )
 			mStderr.close();
-		mStderr = new SynchronizedOutputStream(stderr);
+		mStderr = new OutputPort(stderr);
 	}
 
 

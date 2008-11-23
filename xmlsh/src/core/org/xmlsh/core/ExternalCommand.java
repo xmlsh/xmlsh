@@ -30,16 +30,17 @@ public class ExternalCommand implements ICommand {
 	
 	public int run(Shell shell, String cmd, List<XValue> args) throws Exception 
 	{
-		mLogger.debug("Run external command: " + mCommandFile.getPath());
+		File curdir = shell.getCurdir() ;
+		mLogger.debug("Run external command: " + mCommandFile.getPath() + "in directory: " + curdir.getPath() );
 		
 		
 		ArrayList<XValue> cmdlist = new ArrayList<XValue>();
-		cmdlist.add( new XValue(cmd));
+		cmdlist.add( new XValue(mCommandFile.getPath()));
 		cmdlist.addAll( Util.expandSequences(args));
 		
 		ProcessBuilder	builder = new ProcessBuilder();
 		builder.command( Util.toStringList(cmdlist));
-		builder.directory( shell.getCurdir() );
+		builder.directory( curdir );
 		
 		Process proc = builder.start();
 		

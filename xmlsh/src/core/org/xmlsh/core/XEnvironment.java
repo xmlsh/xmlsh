@@ -39,7 +39,7 @@ public class XEnvironment  {
 	}
 
 
-	public XEnvironment(Shell shell)
+	public XEnvironment(Shell shell) throws IOException
 	{
 		mShell = shell;
 		mVars = new HashMap<String,XVariable>();
@@ -90,7 +90,12 @@ public class XEnvironment  {
 	
 	public XEnvironment clone()
 	{
-		return clone( mShell );
+		try {
+			return clone( mShell );
+		} catch (IOException e) {
+			mShell.printErr("Exception cloning shell", e);
+			return null;
+		}
 	}
 	/*
 	 * Clone an environment for use in a new thread
@@ -98,7 +103,7 @@ public class XEnvironment  {
 	 * @see java.lang.Object#clone()
 	 */
 	
-	public XEnvironment clone(Shell shell)
+	public XEnvironment clone(Shell shell) throws IOException
 	{
 		XEnvironment 	that = new XEnvironment(shell);
 
@@ -216,27 +221,30 @@ public class XEnvironment  {
 
 	/**
 	 * @return
+	 * @throws IOException 
 	 * @see org.xmlsh.core.XIOEnvironment#getStderr()
 	 */
-	public OutputStream getStderr() {
+	public OutputStream getStderr() throws IOException {
 		return mIO.getStderr();
 	}
 
 
 	/**
 	 * @return
+	 * @throws IOException 
 	 * @see org.xmlsh.core.XIOEnvironment#getStdin()
 	 */
-	public InputStream getStdin() {
+	public InputStream getStdin() throws IOException {
 		return mIO.getStdin();
 	}
 
 
 	/**
 	 * @return
+	 * @throws IOException 
 	 * @see org.xmlsh.core.XIOEnvironment#getStdout()
 	 */
-	public OutputStream getStdout() {
+	public OutputStream getStdout() throws IOException {
 		return mIO.getStdout();
 	}
 
