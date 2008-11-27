@@ -43,6 +43,9 @@ version.release=${release}
     	            <fileset dir="src/shell">
     	                <include name="**/*.properties"/>
     	            </fileset>
+    	 			<fileset dir="src/commands">
+    	 				<include name="**/*.xsh"/>
+    	 			</fileset>
     	        </copy>
 
    	</target>

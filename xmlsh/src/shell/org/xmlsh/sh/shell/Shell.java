@@ -96,7 +96,7 @@ public class Shell {
 	{
 		mOpts = new ShellOpts();
 		mSavedCD = System.getProperty("user.dir");
-		mEnv =  new XEnvironment(this);
+		mEnv =  new XEnvironment(this,true);
 		
 		setGlobalVars();
 		

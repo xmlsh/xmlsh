@@ -39,16 +39,18 @@ public class XEnvironment  {
 	}
 
 
-	public XEnvironment(Shell shell) throws IOException
+	public XEnvironment(Shell shell, boolean bInitIO ) throws IOException
 	{
 		mShell = shell;
 		mVars = new HashMap<String,XVariable>();
-		getStdin();
-		getStdout();
-		getStderr();
+	
+		if( bInitIO )
+			mIO.initStdio();
 
 	}
-	
+
+
+
 	/*
 	 * Standard Varibles 
 	 */
@@ -105,7 +107,7 @@ public class XEnvironment  {
 	
 	public XEnvironment clone(Shell shell) throws IOException
 	{
-		XEnvironment 	that = new XEnvironment(shell);
+		XEnvironment 	that = new XEnvironment(shell, false);
 
 		that.mVars.putAll( this.mVars );	// clone variables
 		that.mIO = mIO.clone();
