@@ -33,45 +33,50 @@ public class OutputPort implements IPort
 	private static byte kNEWLINE_BYTES[] = { '\n' };
 	
 	// Actual input stream
-	private SynchronizedOutputStream	 mStream;
+	private OutputStream	 mStream;
 	
+	private int mRef = 1;
 	
 	public OutputPort( OutputStream os ) throws IOException
 	{
-		mStream = new SynchronizedOutputStream(os);
+		mStream = os;
 	}
 
 	/*
 	 * Standard input stream - created on first request
 	 */
 	
-	public	OutputStream asOutputStream() 
+	public	synchronized OutputStream asOutputStream() 
 	{
 		
-		return mStream;
+		return new SynchronizedOutputStream(mStream);
 	}
-	public void close() throws IOException {
+	public synchronized void release() throws IOException {
 		
+		if( --mRef <= 0 && mStream != null )
 			mStream.close();
+		else
+		if( mStream != null )
+			mStream.flush();
 	
 		
 	}
-	public void addRef() 
+	public synchronized void addRef() 
 	{
-		mStream.addRef();
+		mRef++;
 		
 	}
-	public TransformerHandler asTransformerHandler() throws TransformerConfigurationException, IllegalArgumentException, TransformerFactoryConfigurationError
+	public synchronized TransformerHandler asTransformerHandler() throws TransformerConfigurationException, IllegalArgumentException, TransformerFactoryConfigurationError
 	{
 		return Util.getTransformerHander(asOutputStream());
 	}
 	
-	public PrintStream asPrintStream()
+	public synchronized PrintStream asPrintStream()
 	{
 		return new PrintStream(asOutputStream());
 	}
 
-	public Destination asDestination()
+	public synchronized Destination asDestination()
 	{
 		Serializer dest = new Serializer();
 		dest.setOutputProperty( Serializer.Property.OMIT_XML_DECLARATION, "yes");
@@ -80,10 +85,10 @@ public class OutputPort implements IPort
 		return dest;
 	}
 
-	public PrintWriter asPrintWriter() {
+	public synchronized PrintWriter asPrintWriter() {
 		return new PrintWriter( asOutputStream() );
 	}
-	public void writeSequenceSeperator() throws IOException
+	public synchronized void writeSequenceSeperator() throws IOException
 	{
 		asOutputStream().write(kNEWLINE_BYTES  );
 		

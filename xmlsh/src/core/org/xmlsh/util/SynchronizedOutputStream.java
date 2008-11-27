@@ -11,26 +11,19 @@ import java.io.OutputStream;
 
 public class SynchronizedOutputStream extends OutputStream {
 	private		OutputStream	mOutputStream;
-	private		int				mRefCount = 1;
+
 
 	public SynchronizedOutputStream(OutputStream outputStream) {
 		super();
 		mOutputStream = outputStream;
 	}
 
-	public synchronized void addRef() {
-		mRefCount++;
-	}
-	
 	
 	/**
 	 * @throws IOException
 	 * @see java.io.OutputStream#close()
 	 */
 	public synchronized void close() throws IOException {
-		if( --mRefCount <= 0 )
-			mOutputStream.close();
-		else
 			mOutputStream.flush();
 	}
 

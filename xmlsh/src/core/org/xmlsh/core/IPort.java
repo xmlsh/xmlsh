@@ -9,8 +9,8 @@ package org.xmlsh.core;
 import java.io.IOException;
 
 public interface IPort {
-	void close() throws IOException;
 	void addRef();
+	void release() throws IOException;
 	
 
 }

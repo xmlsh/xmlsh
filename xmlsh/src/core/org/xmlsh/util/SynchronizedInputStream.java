@@ -11,15 +11,13 @@ import java.io.InputStream;
 
 public class SynchronizedInputStream  extends InputStream {
 	private		InputStream		mInputStream;
-	private		int				mRefCount = 1;
+
 
 	public SynchronizedInputStream(InputStream inputStream) {
 		super();
 		mInputStream = inputStream;
 	}
-	public synchronized void addRef() {
-		mRefCount++;
-	}
+
 	/**
 	 * @return
 	 * @throws IOException
@@ -34,8 +32,7 @@ public class SynchronizedInputStream  extends InputStream {
 	 * @see java.io.InputStream#close()
 	 */
 	public synchronized void close() throws IOException {
-		if( --mRefCount <= 0 )
-			mInputStream.close();
+		// Dont actually close
 	}
 
 	/**

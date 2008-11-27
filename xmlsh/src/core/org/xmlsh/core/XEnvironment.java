@@ -117,7 +117,7 @@ public class XEnvironment  {
 
 
 	public void close() {
-		mIO.close();
+		mIO.release();
 	}
 	
 	public Shell getShell() { 
@@ -138,7 +138,7 @@ public class XEnvironment  {
 	
 	public void restoreIO( XIOEnvironment io )
 	{
-		mIO.close();
+		mIO.release();
 		mIO = io;
 		
 	}

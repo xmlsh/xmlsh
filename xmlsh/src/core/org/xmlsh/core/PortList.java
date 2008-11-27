@@ -45,14 +45,15 @@ import org.xmlsh.util.Util;
 	void close() throws IOException
 	{
 		for( NamedPort<P> e : this )
-			e.mPort.close();
+			e.mPort.release();
 	}
 	
 	PortList() {} 
 	PortList( PortList<P> that )
 	{
 		for(NamedPort<P> e : that ){
-			add( new NamedPort<P>(e) );
+			e.mPort.addRef();
+			add( e );
 		}
 		
 	}

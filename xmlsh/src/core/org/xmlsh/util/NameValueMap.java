@@ -17,6 +17,7 @@ import java.util.HashMap;
  */
 
 
+@SuppressWarnings("serial")
 public class NameValueMap<T> extends HashMap<String,T> {
 	
 	/*

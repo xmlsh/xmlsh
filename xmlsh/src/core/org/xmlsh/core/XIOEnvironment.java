@@ -76,7 +76,7 @@ public class XIOEnvironment {
 		
 		if( stdin != null ){
 			mInputs.removePort( stdin );
-			stdin.close();
+			stdin.release();
 		}
 			
 		stdin = new InputPort(in);
@@ -94,7 +94,7 @@ public class XIOEnvironment {
 		
 		if( stdout != null ){
 			mOutputs.removePort( stdout );
-			stdout.close();
+			stdout.release();
 		}
 			
 		
@@ -113,7 +113,7 @@ public class XIOEnvironment {
 		
 		if( stderr != null ){
 			mOutputs.removePort( stderr );
-			stderr.close();
+			stderr.release();
 		}
 			
 		
@@ -123,7 +123,7 @@ public class XIOEnvironment {
 	}
 
 
-	public void close() {
+	public void release() {
 		try {
 			mInputs.close();
 			mOutputs.close();

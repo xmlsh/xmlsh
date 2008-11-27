@@ -26,47 +26,49 @@ import org.xmlsh.util.SynchronizedInputStream;
 
 public class InputPort  implements IPort
 {
+	
 	// Actual input stream
-	private SynchronizedInputStream	 mStream;
+	private InputStream	 mStream;
+	private int mRef = 1;
 
 
 	public InputPort( InputStream is ) throws IOException
 	{
-		mStream = new SynchronizedInputStream(is);
+		mStream = is;
 	}
 
 	/*
 	 * Standard input stream - created on first request
 	 */
 	
-	public	InputStream asInputStream() 
+	public	synchronized InputStream asInputStream() 
 	{
 		
-		return mStream;
+		return mStream == null ? null : new SynchronizedInputStream(mStream);
 	}
 
-	public void close() throws IOException {
+	public synchronized void release() throws IOException {
 
+		if( --mRef <= 0 && mStream != null )
 			mStream.close();
-
+		
 		
 	}
 	
-	public Source asSource()
+	public synchronized Source asSource()
 	{
 	
 		return new StreamSource( asInputStream());
 	}
-	public XdmNode asXdmNode() throws SaxonApiException
+	public synchronized XdmNode asXdmNode() throws SaxonApiException
 	{
 		DocumentBuilder builder = Shell.getProcessor().newDocumentBuilder();
 		return builder.build( asSource() );
 	}
 
-	public void addRef() {
-		mStream.addRef();
+	public synchronized void addRef() {
+		mRef++;
 
-		
 	}
 
 }
