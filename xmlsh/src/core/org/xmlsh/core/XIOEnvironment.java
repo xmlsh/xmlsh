@@ -12,8 +12,6 @@ import java.io.OutputStream;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.xmlsh.util.SynchronizedInputStream;
-import org.xmlsh.util.SynchronizedOutputStream;
 
 
 /*
@@ -26,31 +24,27 @@ import org.xmlsh.util.SynchronizedOutputStream;
 public class XIOEnvironment {
 	private static Logger mLogger = LogManager.getLogger( XIOEnvironment.class );
 	
-	/**
-	 * @TODO: convert to using InputPort and OutputPort
-	 */
+	public static final String kSTDERR ="error";
 	
 	
-	/*
-	 * Standard IO
-	 */
 	
-	private InputPort				 mStdin;
-	private	 boolean				 mStdinRedirected = false;
-	private OutputPort				 mStdout;
-	private OutputPort				 mStderr;
-	
+	PortList<InputPort>		mInputs ;
+	PortList<OutputPort>	mOutputs ;
 	
 
-	/*
-	 * Standard input stream - created on first request
-	 */
-	
+	private	 boolean				 mStdinRedirected = false;
+
 	public	InputStream getStdin() throws IOException 
 	{
-		if( mStdin == null )
-			mStdin = new InputPort(System.in);
-		return mStdin.asInputStream();
+		InputPort stdin = mInputs.getDefault();
+		if( stdin == null ){
+			stdin = new InputPort(System.in);
+			mInputs.add( 
+					new NamedPort<InputPort>( null , true , stdin )
+				);
+		}
+			
+		return stdin.asInputStream();
 	}
 	
 	/*
@@ -58,9 +52,14 @@ public class XIOEnvironment {
 	 */
 	public	OutputStream	getStdout() throws IOException 
 	{
-		if( mStdout == null )
-			mStdout =  new OutputPort(System.out);
-		return mStdout.asOutputStream() ;
+		OutputPort stdout = mOutputs.getDefault();
+		if( stdout == null ){
+			stdout = new OutputPort(System.out);
+			mOutputs.add( 
+					new NamedPort<OutputPort>( null , true , stdout )
+				);
+		}
+		return stdout.asOutputStream() ;
 	}
 	
 	/*
@@ -68,57 +67,80 @@ public class XIOEnvironment {
 	 */
 	public	OutputStream	getStderr() throws IOException 
 	{
-		if( mStderr == null )
-			mStderr = new OutputPort(System.err);
-		return mStderr.asOutputStream() ;
+		OutputPort stderr = mOutputs.get(kSTDERR);
+		if( stderr == null ){
+			stderr = new OutputPort(System.err);
+			mOutputs.add( 
+					new NamedPort<OutputPort>( null , false , stderr )
+				);
+		}
+		return stderr.asOutputStream() ;
 	}
 
 	/**
 	 * @param stdin the stdin to set
 	 * @throws IOException 
 	 */
-	public void setStdin(InputStream stdin) throws IOException {
+	public void setStdin(InputStream in) throws IOException {
 		mStdinRedirected = true ;
-		if( mStdin != null )
-			mStdin.close();
-		mStdin = new InputPort(stdin);
+		InputPort stdin = mInputs.getDefault();
+
+		
+		if( stdin != null ){
+			mInputs.removePort( stdin );
+			stdin.close();
+		}
+			
+		stdin = new InputPort(in);
+		mInputs.add( new NamedPort<InputPort>( null , true , stdin ));
 	}
 
 	/**
 	 * @param stdout the stdout to set
 	 * @throws IOException 
 	 */
-	public void setStdout(OutputStream stdout) throws IOException {
-		if( mStdout != null )
-			mStdout.close();
-		mStdout = new OutputPort(stdout);
+	public void setStdout(OutputStream out) throws IOException {
+		
+		OutputPort stdout = mOutputs.getDefault();
+
+		
+		if( stdout != null ){
+			mOutputs.removePort( stdout );
+			stdout.close();
+		}
+			
+		
+		stdout = new OutputPort(out);
+		mOutputs.add(new NamedPort<OutputPort>(null,true,stdout));
+		
 	}
 
 	/**
 	 * @param stderr the stderr to set
 	 * @throws IOException 
 	 */
-	public void setStderr(OutputStream stderr) throws IOException {
-		if( mStderr != null )
-			mStderr.close();
-		mStderr = new OutputPort(stderr);
+	public void setStderr(OutputStream err) throws IOException {
+		OutputPort stderr = mOutputs.get(kSTDERR);
+
+		
+		if( stderr != null ){
+			mOutputs.removePort( stderr );
+			stderr.close();
+		}
+			
+		
+		stderr = new OutputPort(err);
+		mOutputs.add(new NamedPort<OutputPort>(kSTDERR,false,stderr));
+
 	}
 
 
 	public void close() {
 		try {
-			if( this.mStdout != null)
-				this.mStdout.close();
-			
-			if( this.mStderr != null )
-				this.mStderr.close();
-			
-			if( this.mStdin != null )
-				this.mStdin.close();
-			
-			this.mStderr = null;
-			this.mStdout = null;
-			this.mStdin = null;
+			mInputs.close();
+			mOutputs.close();
+			mInputs.clear();
+			mOutputs.clear();
 			
 		} catch (IOException e) {
 			mLogger.error("Exception closing environment",e);
@@ -126,30 +148,32 @@ public class XIOEnvironment {
 	}
 	
 	
-	public boolean isStdinRedirected() { return mStdinRedirected ; }
+	public boolean isStdinRedirected() { 
+		return mStdinRedirected ; 
+		}
+	
+	public XIOEnvironment() {
+
+		
+		mInputs = new PortList<InputPort>();
+		mOutputs = new PortList<OutputPort>();
+		
+		
+		
+	}
+	public XIOEnvironment( XIOEnvironment that )
+	{
+		mInputs = new PortList<InputPort>( that.mInputs );
+		mOutputs = new PortList<OutputPort>( that.mOutputs);
+		mStdinRedirected = that.mStdinRedirected;
+	}
+	
+	
 	
 	public XIOEnvironment clone()
 	{
-		XIOEnvironment that = new XIOEnvironment();
+		return new XIOEnvironment(this);
 		
-		
-		// Copy streams, assume they are thread safe streams
-		that.mStderr = this.mStderr;
-		if( that.mStderr != null )
-			that.mStderr.addRef();
-		
-		
-		that.mStdin  = this.mStdin;
-		if( that.mStdin != null ){
-			that.mStdin.addRef();
-			that.mStdinRedirected = this.mStdinRedirected;
-		}
-		
-		
-		that.mStdout = this.mStdout;
-		if( that.mStdout != null )
-			that.mStdout.addRef();
-		return that;
 	}
 }
 

@@ -17,7 +17,7 @@ import org.xmlsh.util.SynchronizedInputStream;
  */
 
 
-public class InputPort 
+public class InputPort  implements IPort
 {
 	// Actual input stream
 	private SynchronizedInputStream	 mStream;
@@ -25,13 +25,6 @@ public class InputPort
 
 	public InputPort( InputStream is ) throws IOException
 	{
-		setInputStream(is);
-	}
-	
-	public void		setInputStream( InputStream is ) throws IOException
-	{
-		if( mStream != null )
-			mStream.close();
 		mStream = new SynchronizedInputStream(is);
 	}
 

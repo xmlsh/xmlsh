@@ -7,7 +7,6 @@
 package org.xmlsh.sh.shell;
 
 import org.xmlsh.core.XValue;
-import org.xmlsh.sh.core.Command;
 import org.xmlsh.util.NameValueMap;
 import org.xmlsh.util.Util;
 

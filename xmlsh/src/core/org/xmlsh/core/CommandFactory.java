@@ -34,7 +34,6 @@ import org.xmlsh.builtin.xread;
 import org.xmlsh.builtin.xtrue;
 import org.xmlsh.builtin.xversion;
 import org.xmlsh.builtin.xwhich;
-import org.xmlsh.commands.xsplit;
 import org.xmlsh.sh.core.Command;
 import org.xmlsh.sh.shell.Shell;
 

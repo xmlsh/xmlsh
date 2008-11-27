@@ -26,7 +26,6 @@ import org.xmlsh.core.XValue;
 import org.xmlsh.core.Options.OptionValue;
 import org.xmlsh.sh.shell.Namespaces;
 import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.util.NameValueMap;
 import org.xmlsh.util.Util;
 
 

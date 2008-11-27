@@ -4,43 +4,61 @@
  *
  */
 
-package org.xmlsh.util;
+package org.xmlsh.core;
 
-import java.util.HashMap;
+import java.io.IOException;
+import java.util.ArrayList;
 
-/*
- * A Name/Value map that maps String to templated type and has iterators
- * for keys and works like a HashMap
- * 
- * Suports clone method to manage use in the shell stack
- *  
- */
+import org.xmlsh.util.Util;
 
-
-public class NameValueMap<T> extends HashMap<String,T> {
-	
-	/*
-	 * Default Constructor
-	 */
-	public	NameValueMap()
-	{}
-	
-	
-	
-	/*
-	 * Copy constructor 
-	 */
-	public	NameValueMap(NameValueMap<T> that)
+@SuppressWarnings("serial") class PortList<P extends IPort> extends ArrayList<NamedPort<P>>
+{
+	P	getDefault()
 	{
-		putAll(that);
+		for( NamedPort<P> e : this ){
+			if( e.mDefault )
+				return e.mPort;
+			
+		}
+		return null;
 	}
-
-
-
 	
-
+	P 	get( String name ){
+		for( NamedPort<P> e : this ){
+			if( Util.isEqual( e.mName , name ))
+				return e.mPort;
+		}
+		return null;	
+		
+	}
+	
+	void removePort( P port )
+	{
+		for( NamedPort<P> e : this ){
+			if( e.mPort == port){
+				remove( e );
+				return ;
+			}
+		}
+	}
+	
+	void close() throws IOException
+	{
+		for( NamedPort<P> e : this )
+			e.mPort.close();
+	}
+	
+	PortList() {} 
+	PortList( PortList<P> that )
+	{
+		for(NamedPort<P> e : that ){
+			add( new NamedPort<P>(e) );
+		}
+		
+	}
+	
+	
 }
-
 
 
 //

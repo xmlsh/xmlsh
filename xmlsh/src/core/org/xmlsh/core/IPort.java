@@ -4,39 +4,13 @@
  *
  */
 
-package org.xmlsh.util;
+package org.xmlsh.core;
 
-import java.util.HashMap;
+import java.io.IOException;
 
-/*
- * A Name/Value map that maps String to templated type and has iterators
- * for keys and works like a HashMap
- * 
- * Suports clone method to manage use in the shell stack
- *  
- */
-
-
-public class NameValueMap<T> extends HashMap<String,T> {
-	
-	/*
-	 * Default Constructor
-	 */
-	public	NameValueMap()
-	{}
-	
-	
-	
-	/*
-	 * Copy constructor 
-	 */
-	public	NameValueMap(NameValueMap<T> that)
-	{
-		putAll(that);
-	}
-
-
-
+public interface IPort {
+	void close() throws IOException;
+	void addRef();
 	
 
 }

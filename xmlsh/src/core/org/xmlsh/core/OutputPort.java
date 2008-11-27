@@ -7,10 +7,8 @@
 package org.xmlsh.core;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 
-import org.xmlsh.util.SynchronizedInputStream;
 import org.xmlsh.util.SynchronizedOutputStream;
 
 /*
@@ -21,19 +19,15 @@ import org.xmlsh.util.SynchronizedOutputStream;
 
 
 
-public class OutputPort 
+public class OutputPort implements IPort
 {
 
 	// Actual input stream
 	private SynchronizedOutputStream	 mStream;
+	
+	
 	public OutputPort( OutputStream os ) throws IOException
 	{
-		setOutputStream(os);
-	}
-	public void		setOutputStream( OutputStream os ) throws IOException
-	{
-		if( mStream != null )
-			mStream.close();
 		mStream = new SynchronizedOutputStream(os);
 	}
 
