@@ -6,7 +6,6 @@
 
 package org.xmlsh.builtin;
 
-import java.io.OutputStream;
 import java.util.List;
 
 import javax.xml.transform.sax.TransformerHandler;
@@ -15,20 +14,15 @@ import org.xml.sax.helpers.AttributesImpl;
 import org.xmlsh.core.BuiltinCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Version;
-import org.xmlsh.util.Util;
 
 public class xversion extends BuiltinCommand {
 
 	
 	public int run(  List<XValue> args ) throws Exception {
-			
-		
-		OutputStream stdout = mShell.getEnv().getStdout().asOutputStream();
-
+	
 	      
-		TransformerHandler hd = null;
+		TransformerHandler hd = mShell.getEnv().getStdout().asTransformerHandler();
 
-		hd = Util.getTransformerHander(stdout);
 	
 		hd.startDocument();
 			

@@ -394,7 +394,7 @@ public class Shell {
 	public void printErr(String s,Exception e) {
 		PrintWriter out;
 		try {
-			out = new PrintWriter( getEnv().getStderr().asOutputStream() );
+			out = getEnv().getStderr().asPrintWriter();
 		} catch (IOException e1) {
 			mLogger.error("Exception writing output: " + s , e );
 			return ;

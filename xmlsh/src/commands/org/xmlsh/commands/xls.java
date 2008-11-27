@@ -7,7 +7,6 @@
 package org.xmlsh.commands;
 
 import java.io.File;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,9 +31,9 @@ public class xls extends XCommand {
 		args = opts.getRemainingArgs();
 		
 		
-		OutputStream stdout = getStdout().asOutputStream();
+
 	      
-		TransformerHandler hd = Util.getTransformerHander(stdout);
+		TransformerHandler hd = getStdout().asTransformerHandler();
 
 		hd.startDocument();
 		

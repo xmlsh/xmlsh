@@ -7,7 +7,6 @@
 package org.xmlsh.builtin;
 
 import java.io.File;
-import java.io.OutputStream;
 import java.util.List;
 
 import javax.xml.transform.sax.TransformerHandler;
@@ -44,14 +43,13 @@ public class xwhich extends BuiltinCommand {
 			return 1;
 		}
 		
-		OutputStream stdout = mShell.getEnv().getStdout().asOutputStream();
 		final  String sDocRoot =mName;
 	      
 		TransformerHandler hd = null;
 		
 		
 		if( !bNoWrite ){
-			hd = Util.getTransformerHander(stdout);
+			hd = mShell.getEnv().getStdout().asTransformerHandler();
 	
 			hd.startDocument();
 			

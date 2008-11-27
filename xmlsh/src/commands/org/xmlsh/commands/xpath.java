@@ -6,15 +6,12 @@
 
 package org.xmlsh.commands;
 
-import java.io.OutputStream;
 import java.util.List;
 
-import javax.xml.transform.stream.StreamSource;
-
+import net.sf.saxon.s9api.Destination;
 import net.sf.saxon.s9api.DocumentBuilder;
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.QName;
-import net.sf.saxon.s9api.Serializer;
 import net.sf.saxon.s9api.XPathCompiler;
 import net.sf.saxon.s9api.XPathExecutable;
 import net.sf.saxon.s9api.XPathSelector;
@@ -65,7 +62,7 @@ public class xpath extends XCommand {
 				if( ov != null && ! ov.getValue().toString().equals("-"))
 					context = builder.build( getFile(ov.getValue()));
 				else {
-					context = builder.build( new StreamSource( getStdin().asInputStream()));
+					context = getStdin().asXdmNode();
 				}	
 			}
 		}
@@ -162,10 +159,7 @@ public class xpath extends XCommand {
 			
 		}
 				
-		Serializer ser = new Serializer();
-		OutputStream mOutput = getStdout().asOutputStream();
-		ser.setOutputStream( mOutput );
-		ser.setOutputProperty(Serializer.Property.OMIT_XML_DECLARATION, "yes");
+		Destination ser = getStdout().asDestination();
 		boolean bAnyOutput = false ;
 
 		for( XdmItem item : eval ){
@@ -175,7 +169,8 @@ public class xpath extends XCommand {
 				break ;
 			
 			processor.writeXdmValue(item, ser );
-			mOutput.write( Util.getNewline() );
+			getStdout().writeSequenceSeperator();
+
 			
 		}
 

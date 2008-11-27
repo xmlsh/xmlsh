@@ -6,7 +6,6 @@
 
 package org.xmlsh.builtin;
 
-import java.io.OutputStream;
 import java.util.Collection;
 import java.util.List;
 
@@ -17,7 +16,6 @@ import org.xmlsh.core.BuiltinCommand;
 import org.xmlsh.core.XEnvironment;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.XVariable;
-import org.xmlsh.util.Util;
 
 public class set extends BuiltinCommand {
 
@@ -36,9 +34,9 @@ public class set extends BuiltinCommand {
 
 		XEnvironment env = mShell.getEnv();
 		
-		OutputStream stdout = env.getStdout().asOutputStream();
+
 	      
-		TransformerHandler hd = Util.getTransformerHander(stdout);
+		TransformerHandler hd = env.getStdout().asTransformerHandler();
 
 		hd.startDocument();
 		

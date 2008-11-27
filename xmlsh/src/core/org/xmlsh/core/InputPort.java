@@ -9,6 +9,13 @@ package org.xmlsh.core;
 import java.io.IOException;
 import java.io.InputStream;
 
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
+
+import net.sf.saxon.s9api.DocumentBuilder;
+import net.sf.saxon.s9api.SaxonApiException;
+import net.sf.saxon.s9api.XdmNode;
+import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.SynchronizedInputStream;
 
 /*
@@ -43,6 +50,17 @@ public class InputPort  implements IPort
 			mStream.close();
 
 		
+	}
+	
+	public Source asSource()
+	{
+	
+		return new StreamSource( asInputStream());
+	}
+	public XdmNode asXdmNode() throws SaxonApiException
+	{
+		DocumentBuilder builder = Shell.getProcessor().newDocumentBuilder();
+		return builder.build( asSource() );
 	}
 
 	public void addRef() {

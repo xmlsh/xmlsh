@@ -9,12 +9,9 @@ package org.xmlsh.commands;
 import java.io.File;
 import java.util.List;
 
-import javax.xml.transform.stream.StreamSource;
-
 import net.sf.saxon.s9api.DocumentBuilder;
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.QName;
-import net.sf.saxon.s9api.Serializer;
 import net.sf.saxon.s9api.XQueryCompiler;
 import net.sf.saxon.s9api.XQueryEvaluator;
 import net.sf.saxon.s9api.XQueryExecutable;
@@ -65,7 +62,7 @@ public class xquery extends XCommand {
 					context = builder.build( getFile(ov.getValue()));
 				else {
 					bReadStdin = true ;
-					context = builder.build( new StreamSource( getStdin().asInputStream()));
+					context = getStdin().asXdmNode();
 				}	
 			}
 		}
@@ -168,12 +165,8 @@ public class xquery extends XCommand {
 			
 
 		
-		
-		Serializer dest = new Serializer();
-		dest.setOutputProperty( Serializer.Property.OMIT_XML_DECLARATION, "yes");
-		dest.setOutputStream(getStdout().asOutputStream());
-		
-		eval.run(dest);
+			
+		eval.run(getStdout().asDestination());
 
 		
 		return 0;

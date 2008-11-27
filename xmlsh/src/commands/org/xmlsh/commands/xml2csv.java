@@ -11,8 +11,6 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.transform.stream.StreamSource;
-
 import net.sf.saxon.s9api.DocumentBuilder;
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.SaxonApiException;
@@ -96,7 +94,7 @@ public class xml2csv extends XCommand
 				if( ov != null && ! ov.getValue().toString().equals("-"))
 					context = builder.build( getFile(ov.getValue()));
 				else {
-					context = builder.build( new StreamSource( getStdin().asInputStream()));
+					context =  getStdin().asXdmNode();
 				}	
 			}
 		}

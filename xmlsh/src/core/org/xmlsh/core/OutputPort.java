@@ -8,8 +8,17 @@ package org.xmlsh.core;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.PrintStream;
+import java.io.PrintWriter;
 
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerFactoryConfigurationError;
+import javax.xml.transform.sax.TransformerHandler;
+
+import net.sf.saxon.s9api.Destination;
+import net.sf.saxon.s9api.Serializer;
 import org.xmlsh.util.SynchronizedOutputStream;
+import org.xmlsh.util.Util;
 
 /*
  * An OutputPort represents an output sync of data, either Stream (bytes) or XML data
@@ -21,7 +30,8 @@ import org.xmlsh.util.SynchronizedOutputStream;
 
 public class OutputPort implements IPort
 {
-
+	private static byte kNEWLINE_BYTES[] = { '\n' };
+	
 	// Actual input stream
 	private SynchronizedOutputStream	 mStream;
 	
@@ -49,6 +59,33 @@ public class OutputPort implements IPort
 	public void addRef() 
 	{
 		mStream.addRef();
+		
+	}
+	public TransformerHandler asTransformerHandler() throws TransformerConfigurationException, IllegalArgumentException, TransformerFactoryConfigurationError
+	{
+		return Util.getTransformerHander(asOutputStream());
+	}
+	
+	public PrintStream asPrintStream()
+	{
+		return new PrintStream(asOutputStream());
+	}
+
+	public Destination asDestination()
+	{
+		Serializer dest = new Serializer();
+		dest.setOutputProperty( Serializer.Property.OMIT_XML_DECLARATION, "yes");
+		//dest.setOutputProperty(Serializer.Property.INDENT , "yes");
+		dest.setOutputStream(asOutputStream());
+		return dest;
+	}
+
+	public PrintWriter asPrintWriter() {
+		return new PrintWriter( asOutputStream() );
+	}
+	public void writeSequenceSeperator() throws IOException
+	{
+		asOutputStream().write(kNEWLINE_BYTES  );
 		
 	}
 }

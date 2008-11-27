@@ -14,7 +14,6 @@ import javax.xml.transform.stream.StreamSource;
 
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.QName;
-import net.sf.saxon.s9api.Serializer;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XsltCompiler;
@@ -64,7 +63,7 @@ public class xslt extends XCommand {
 					context = new StreamSource( getFile(ov.getValue()));
 				else {
 					bReadStdin = true ;
-					context =  new StreamSource( getStdin().asInputStream());
+					context =  getStdin().asSource();
 				}	
 			}
 		}
@@ -81,7 +80,7 @@ public class xslt extends XCommand {
 				if( bReadStdin )
 					throwInvalidArg( "Cannot read both xslt and context from stdin");
 			
-				source = new StreamSource(getStdin().asInputStream());
+				source = getStdin().asSource();
 			}
 			else
 				source =  new StreamSource( new FileInputStream( getFile(fname)));
@@ -129,10 +128,7 @@ public class xslt extends XCommand {
 			}			
 		}
 			
-		Serializer dest = new Serializer();
-		dest.setOutputProperty( Serializer.Property.OMIT_XML_DECLARATION, "yes");
-		dest.setOutputStream(getStdout().asOutputStream());
-		eval.setDestination(dest);
+		eval.setDestination(getStdout().asDestination());
 		
 		eval.transform();
 

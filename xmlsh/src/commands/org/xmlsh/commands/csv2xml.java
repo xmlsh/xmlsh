@@ -10,7 +10,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.Reader;
 import java.util.List;
 
@@ -62,8 +61,8 @@ public class csv2xml extends XCommand
 		List<XValue> xvargs = opts.getRemainingArgs();
 		
 // Output XML
-		OutputStream stdout = getStdout().asOutputStream();
-		TransformerHandler hd = Util.getTransformerHander(stdout);
+
+		TransformerHandler hd = getStdout().asTransformerHandler();
 		hd.startDocument();
 		Attributes attrs = new AttributesImpl();
 		hd.startElement("", root,root,attrs);

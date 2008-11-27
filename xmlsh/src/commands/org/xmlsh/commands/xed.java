@@ -8,8 +8,6 @@ package org.xmlsh.commands;
 
 import java.util.List;
 
-import javax.xml.transform.stream.StreamSource;
-
 import net.sf.saxon.FeatureKeys;
 import net.sf.saxon.om.MutableNodeInfo;
 import net.sf.saxon.om.NodeInfo;
@@ -18,7 +16,6 @@ import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.SaxonApiUncheckedException;
-import net.sf.saxon.s9api.Serializer;
 import net.sf.saxon.s9api.XPathCompiler;
 import net.sf.saxon.s9api.XPathExecutable;
 import net.sf.saxon.s9api.XPathSelector;
@@ -71,7 +68,7 @@ public class xed extends XCommand {
 				if( ov != null && ! ov.getValue().toString().equals("-"))
 					context = builder.build( getFile(ov.getValue()));
 				else {
-					context = builder.build( new StreamSource( getStdin().asInputStream()));
+					context = getStdin().asXdmNode();
 				}	
 			}
 		}
@@ -152,10 +149,8 @@ public class xed extends XCommand {
 			
 		}
 		
-		Serializer ser = new Serializer();
-		ser.setOutputStream( getStdout().asOutputStream());
-		
-		processor.writeXdmValue(context, ser );
+	
+		processor.writeXdmValue(context, getStdout().asDestination() );
 
 		
 		return 0;
