@@ -64,7 +64,7 @@ public class xslt extends XCommand {
 					context = new StreamSource( getFile(ov.getValue()));
 				else {
 					bReadStdin = true ;
-					context =  new StreamSource( getStdin());
+					context =  new StreamSource( getStdin().asInputStream());
 				}	
 			}
 		}
@@ -81,7 +81,7 @@ public class xslt extends XCommand {
 				if( bReadStdin )
 					throwInvalidArg( "Cannot read both xslt and context from stdin");
 			
-				source = new StreamSource(getStdin());
+				source = new StreamSource(getStdin().asInputStream());
 			}
 			else
 				source =  new StreamSource( new FileInputStream( getFile(fname)));
@@ -131,7 +131,7 @@ public class xslt extends XCommand {
 			
 		Serializer dest = new Serializer();
 		dest.setOutputProperty( Serializer.Property.OMIT_XML_DECLARATION, "yes");
-		dest.setOutputStream(getStdout());
+		dest.setOutputStream(getStdout().asOutputStream());
 		eval.setDestination(dest);
 		
 		eval.transform();

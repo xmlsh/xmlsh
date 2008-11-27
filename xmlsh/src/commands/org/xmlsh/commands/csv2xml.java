@@ -62,7 +62,7 @@ public class csv2xml extends XCommand
 		List<XValue> xvargs = opts.getRemainingArgs();
 		
 // Output XML
-		OutputStream stdout = getStdout();
+		OutputStream stdout = getStdout().asOutputStream();
 		TransformerHandler hd = Util.getTransformerHander(stdout);
 		hd.startDocument();
 		Attributes attrs = new AttributesImpl();
@@ -72,7 +72,7 @@ public class csv2xml extends XCommand
 		
 		InputStream in = null;
 		if( xvargs.size() == 0 || xvargs.get(0).toString().equals("-"))
-			in = getStdin();
+			in = getStdin().asInputStream();
 		else
 			in = new FileInputStream(  getFile(xvargs.get(0)) );
 		

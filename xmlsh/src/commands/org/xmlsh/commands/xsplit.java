@@ -108,7 +108,7 @@ public class xsplit extends XCommand {
 		InputStream is = 
 			xvargs.size() == 1 ? 
 					new FileInputStream(getFile(xvargs.get(0))): 
-					getStdin() ;
+					getStdin().asInputStream() ;
 		split(is );
 		
 		

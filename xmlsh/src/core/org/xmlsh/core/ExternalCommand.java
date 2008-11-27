@@ -50,14 +50,14 @@ public class ExternalCommand implements ICommand {
 		// Start copiers for stdout, stderr
 		
 		
-		StreamCopier outCopier = new StreamCopier( proc.getInputStream() , shell.getEnv().getStdout(),false);
-		StreamCopier errCopier = new StreamCopier( proc.getErrorStream() , shell.getEnv().getStderr(),false);
+		StreamCopier outCopier = new StreamCopier( proc.getInputStream() , shell.getEnv().getStdout().asOutputStream(),false);
+		StreamCopier errCopier = new StreamCopier( proc.getErrorStream() , shell.getEnv().getStderr().asOutputStream(),false);
 		
 		
 		StreamCopier inCopier = null;
 		
 		if( shell.getEnv().isStdinRedirected() )
-			inCopier = new StreamCopier(  shell.getEnv().getStdin() , proc.getOutputStream(), true);
+			inCopier = new StreamCopier(  shell.getEnv().getStdin().asInputStream() , proc.getOutputStream(), true);
 		
 		else
 			proc.getOutputStream().close();

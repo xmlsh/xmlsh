@@ -226,7 +226,7 @@ public class XEnvironment  {
 	 * @throws IOException 
 	 * @see org.xmlsh.core.XIOEnvironment#getStderr()
 	 */
-	public OutputStream getStderr() throws IOException {
+	public OutputPort getStderr() throws IOException {
 		return mIO.getStderr();
 	}
 
@@ -236,7 +236,7 @@ public class XEnvironment  {
 	 * @throws IOException 
 	 * @see org.xmlsh.core.XIOEnvironment#getStdin()
 	 */
-	public InputStream getStdin() throws IOException {
+	public InputPort getStdin() throws IOException {
 		return mIO.getStdin();
 	}
 
@@ -246,7 +246,7 @@ public class XEnvironment  {
 	 * @throws IOException 
 	 * @see org.xmlsh.core.XIOEnvironment#getStdout()
 	 */
-	public OutputStream getStdout() throws IOException {
+	public OutputPort getStdout() throws IOException {
 		return mIO.getStdout();
 	}
 

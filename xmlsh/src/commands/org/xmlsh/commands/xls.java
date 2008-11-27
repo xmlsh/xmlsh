@@ -32,7 +32,7 @@ public class xls extends XCommand {
 		args = opts.getRemainingArgs();
 		
 		
-		OutputStream stdout = getStdout();
+		OutputStream stdout = getStdout().asOutputStream();
 	      
 		TransformerHandler hd = Util.getTransformerHander(stdout);
 

@@ -65,7 +65,7 @@ public class xquery extends XCommand {
 					context = builder.build( getFile(ov.getValue()));
 				else {
 					bReadStdin = true ;
-					context = builder.build( new StreamSource( getStdin()));
+					context = builder.build( new StreamSource( getStdin().asInputStream()));
 				}	
 			}
 		}
@@ -89,7 +89,7 @@ public class xquery extends XCommand {
 				if( bReadStdin )
 					throwInvalidArg(  "Cannot read both query and context from stdin");
 			
-				query = Util.readString(getStdin());
+				query = Util.readString(getStdin().asInputStream());
 			}
 			else {
 				File qfile = getFile(fname);
@@ -171,7 +171,7 @@ public class xquery extends XCommand {
 		
 		Serializer dest = new Serializer();
 		dest.setOutputProperty( Serializer.Property.OMIT_XML_DECLARATION, "yes");
-		dest.setOutputStream(getStdout());
+		dest.setOutputStream(getStdout().asOutputStream());
 		
 		eval.run(dest);
 

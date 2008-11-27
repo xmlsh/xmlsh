@@ -23,7 +23,7 @@ public class xversion extends BuiltinCommand {
 	public int run(  List<XValue> args ) throws Exception {
 			
 		
-		OutputStream stdout = mShell.getEnv().getStdout();
+		OutputStream stdout = mShell.getEnv().getStdout().asOutputStream();
 
 	      
 		TransformerHandler hd = null;

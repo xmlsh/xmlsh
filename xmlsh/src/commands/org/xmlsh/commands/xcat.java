@@ -70,7 +70,7 @@ public class xcat extends XCommand {
 		
 		if( context == null && ! hasFiles ){
 			DocumentBuilder builder = processor.newDocumentBuilder();
-			context = builder.build( new StreamSource( getStdin()));
+			context = builder.build( new StreamSource( getStdin().asInputStream()));
 		}
 		
 		
@@ -145,7 +145,7 @@ public class xcat extends XCommand {
 		
 		Serializer dest = new Serializer();
 		dest.setOutputProperty( Serializer.Property.OMIT_XML_DECLARATION, "yes");
-		dest.setOutputStream(getStdout());
+		dest.setOutputStream(getStdout().asOutputStream());
 		
 		eval.run(dest);
 		

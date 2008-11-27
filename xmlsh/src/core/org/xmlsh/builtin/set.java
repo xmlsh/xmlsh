@@ -36,7 +36,7 @@ public class set extends BuiltinCommand {
 
 		XEnvironment env = mShell.getEnv();
 		
-		OutputStream stdout = env.getStdout();
+		OutputStream stdout = env.getStdout().asOutputStream();
 	      
 		TransformerHandler hd = Util.getTransformerHander(stdout);
 

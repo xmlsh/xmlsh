@@ -49,9 +49,9 @@ public class jcall extends XCommand
 		
 		try {
 			
-			System.setOut(newStdout = new PrintStream(getStdout()));
+			System.setOut(newStdout = new PrintStream(getStdout().asOutputStream()));
 			// System.setErr(newStderr = new PrintStream(env.getStderr()));
-			System.setIn(getStdin()) ;
+			System.setIn(getStdin().asInputStream()) ;
 		
 			String className = args.remove(0).toString();
 			Class<?> cls = Class.forName(className);

@@ -6,6 +6,7 @@
 
 package org.xmlsh.commands;
 
+import java.io.OutputStream;
 import java.util.List;
 
 import javax.xml.transform.stream.StreamSource;
@@ -64,7 +65,7 @@ public class xpath extends XCommand {
 				if( ov != null && ! ov.getValue().toString().equals("-"))
 					context = builder.build( getFile(ov.getValue()));
 				else {
-					context = builder.build( new StreamSource( getStdin()));
+					context = builder.build( new StreamSource( getStdin().asInputStream()));
 				}	
 			}
 		}
@@ -162,7 +163,8 @@ public class xpath extends XCommand {
 		}
 				
 		Serializer ser = new Serializer();
-		ser.setOutputStream( getStdout() );
+		OutputStream mOutput = getStdout().asOutputStream();
+		ser.setOutputStream( mOutput );
 		ser.setOutputProperty(Serializer.Property.OMIT_XML_DECLARATION, "yes");
 		boolean bAnyOutput = false ;
 
@@ -173,7 +175,7 @@ public class xpath extends XCommand {
 				break ;
 			
 			processor.writeXdmValue(item, ser );
-			getStdout().write( Util.getNewline() );
+			mOutput.write( Util.getNewline() );
 			
 		}
 

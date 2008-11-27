@@ -71,7 +71,7 @@ public class xed extends XCommand {
 				if( ov != null && ! ov.getValue().toString().equals("-"))
 					context = builder.build( getFile(ov.getValue()));
 				else {
-					context = builder.build( new StreamSource( getStdin()));
+					context = builder.build( new StreamSource( getStdin().asInputStream()));
 				}	
 			}
 		}
@@ -153,7 +153,7 @@ public class xed extends XCommand {
 		}
 		
 		Serializer ser = new Serializer();
-		ser.setOutputStream( getStdout());
+		ser.setOutputStream( getStdout().asOutputStream());
 		
 		processor.writeXdmValue(context, ser );
 

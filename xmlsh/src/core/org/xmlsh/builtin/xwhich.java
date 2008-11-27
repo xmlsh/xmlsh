@@ -44,7 +44,7 @@ public class xwhich extends BuiltinCommand {
 			return 1;
 		}
 		
-		OutputStream stdout = mShell.getEnv().getStdout();
+		OutputStream stdout = mShell.getEnv().getStdout().asOutputStream();
 		final  String sDocRoot =mName;
 	      
 		TransformerHandler hd = null;

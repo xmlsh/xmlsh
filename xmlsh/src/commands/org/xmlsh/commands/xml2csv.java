@@ -7,6 +7,7 @@
 package org.xmlsh.commands;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,13 +53,17 @@ public class xml2csv extends XCommand
 	private XQueryCompiler mCompiler;
 
 	private CSVFormatter mFormatter;
+	private OutputStream mOutput;
 	
 
-	
+
+
+
+
 	public int run(  List<XValue> args  )	throws Exception
 	{
 		mFormatter = new CSVFormatter();
-		
+		mOutput = getStdout().asOutputStream();
 
 		Options opts = new Options( "header,n,i:,attr" , args );
 		opts.parse();
@@ -91,7 +96,7 @@ public class xml2csv extends XCommand
 				if( ov != null && ! ov.getValue().toString().equals("-"))
 					context = builder.build( getFile(ov.getValue()));
 				else {
-					context = builder.build( new StreamSource( getStdin()));
+					context = builder.build( new StreamSource( getStdin().asInputStream()));
 				}	
 			}
 		}
@@ -151,7 +156,7 @@ public class xml2csv extends XCommand
 		}
 		CSVRecord rec = new CSVRecord(fields);
 		String line = mFormatter.encodeRow(rec);
-		getStdout().write( (line +  "\n") . getBytes());
+		mOutput.write( (line +  "\n") . getBytes());
 		
 		
 		

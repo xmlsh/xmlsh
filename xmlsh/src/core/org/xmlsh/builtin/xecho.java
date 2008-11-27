@@ -17,7 +17,7 @@ import org.xmlsh.util.Util;
 public class xecho extends BuiltinCommand {
 	
 	public int run( List<XValue> args ) throws Exception {
-		OutputStream out =  mShell.getEnv().getStdout();
+		OutputStream out =  mShell.getEnv().getStdout().asOutputStream();
 
 		Options opts = new Options( "n" , args );
 		opts.parse();

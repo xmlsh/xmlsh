@@ -58,7 +58,7 @@ public class xfile extends XCommand
 		}
 		
 		
-		PrintWriter out = new PrintWriter( getStdout() );
+		PrintWriter out = new PrintWriter( getStdout().asOutputStream() );
 		
 		if( opts.hasOpt("b") )
 			out.println( xf.getBaseName());

@@ -9,8 +9,6 @@ package org.xmlsh.core;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.List;
 
 import org.xmlsh.sh.shell.Shell;
@@ -64,9 +62,9 @@ public abstract class XCommand implements ICommand {
 
 	protected	XEnvironment getEnv() { return mEnvironment;}
 	
-	protected InputStream getStdin() throws IOException { return mEnvironment.getStdin();}
-	protected OutputStream getStdout() throws IOException { return mEnvironment.getStdout();}
-	protected OutputStream getStderr() throws IOException { return mEnvironment.getStderr();}
+	protected InputPort getStdin() throws IOException { return mEnvironment.getStdin();}
+	protected OutputPort getStdout() throws IOException { return mEnvironment.getStdout();}
+	protected OutputPort getStderr() throws IOException { return mEnvironment.getStderr();}
 	
 
 	/**

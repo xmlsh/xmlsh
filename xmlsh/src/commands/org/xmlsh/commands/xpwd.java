@@ -30,7 +30,7 @@ public class xpwd extends XCommand
 		XFile file = new XFile(getCurdir());
 		
 
-		OutputStream stdout = getStdout();
+		OutputStream stdout = getStdout().asOutputStream();
 	      
 		TransformerHandler hd = Util.getTransformerHander(stdout);
 

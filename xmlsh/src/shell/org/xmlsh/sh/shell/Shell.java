@@ -368,7 +368,7 @@ public class Shell {
 	public void printErr(String s) {
 		PrintWriter out;
 		try {
-			out = new PrintWriter( getEnv().getStderr() );
+			out = new PrintWriter( getEnv().getStderr().asOutputStream() );
 		} catch (IOException e) {
 			mLogger.error("Exception printing err:" + s , e );
 			return ;
@@ -381,7 +381,7 @@ public class Shell {
 	public void printOut(String s)  {
 		PrintWriter out;
 		try {
-			out = new PrintWriter( getEnv().getStdout() );
+			out = new PrintWriter( getEnv().getStdout().asOutputStream() );
 		} catch (IOException e) {
 			mLogger.error("Exception writing output: " + s , e );
 			return;
@@ -394,7 +394,7 @@ public class Shell {
 	public void printErr(String s,Exception e) {
 		PrintWriter out;
 		try {
-			out = new PrintWriter( getEnv().getStderr() );
+			out = new PrintWriter( getEnv().getStderr().asOutputStream() );
 		} catch (IOException e1) {
 			mLogger.error("Exception writing output: " + s , e );
 			return ;

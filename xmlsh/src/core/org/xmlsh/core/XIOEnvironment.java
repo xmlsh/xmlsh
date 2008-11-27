@@ -34,35 +34,35 @@ public class XIOEnvironment {
 
 	private	 boolean				 mStdinRedirected = false;
 
-	public	InputStream getStdin() throws IOException 
+	public	InputPort getStdin() throws IOException 
 	{
 		InputPort stdin = mInputs.getDefault();
 		if( stdin == null )
 			return null;
 			
-		return stdin.asInputStream();
+		return stdin;
 	}
 	
 	/*
 	 * Stdandard output stream - created on first request
 	 */
-	public	OutputStream	getStdout() throws IOException 
+	public	OutputPort	getStdout() throws IOException 
 	{
 		OutputPort stdout = mOutputs.getDefault();
 		if( stdout == null )
 			return null;
-		return stdout.asOutputStream() ;
+		return stdout ;
 	}
 	
 	/*
 	 * Standard error stream - created on first request
 	 */
-	public	OutputStream	getStderr() throws IOException 
+	public	OutputPort	getStderr() throws IOException 
 	{
 		OutputPort stderr = mOutputs.get(kSTDERR);
 		if( stderr == null )
 			return null;
-		return stderr.asOutputStream() ;
+		return stderr ;
 	}
 
 	/**
@@ -176,7 +176,7 @@ public class XIOEnvironment {
 
 
 		mOutputs.add( 
-				new NamedPort<OutputPort>( null , false , new OutputPort(System.err) )
+				new NamedPort<OutputPort>( kSTDERR , false , new OutputPort(System.err) )
 		);
 
 	}

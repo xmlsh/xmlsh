@@ -30,7 +30,7 @@ public class read extends BuiltinCommand {
 			mShell.getEnv().unsetVar( arg.toString() );
 		
 			
-			InputStream is = mShell.getEnv().getStdin();
+			InputStream is = mShell.getEnv().getStdin().asInputStream();
 			String line = Util.readLine( is );
 			if( line == null )
 				return 1; // EOF
