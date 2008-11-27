@@ -39,6 +39,13 @@ public class ScriptCommand implements ICommand {
 		
 	}
 
+	public ScriptCommand(String name , InputStream is, boolean bSourceMode ) {
+		mScriptName = name;
+		mScript = is;
+		mSourceMode = bSourceMode;
+		
+	}
+
 	public int run(Shell shell, String cmd, List<XValue> args) throws Exception {
 		
 		try {

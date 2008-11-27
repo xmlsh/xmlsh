@@ -9,6 +9,7 @@ package org.xmlsh.core;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 
 import org.apache.log4j.Logger;
@@ -33,6 +34,7 @@ import org.xmlsh.builtin.xread;
 import org.xmlsh.builtin.xtrue;
 import org.xmlsh.builtin.xversion;
 import org.xmlsh.builtin.xwhich;
+import org.xmlsh.commands.xsplit;
 import org.xmlsh.sh.core.Command;
 import org.xmlsh.sh.shell.Shell;
 
@@ -171,10 +173,24 @@ public class CommandFactory
 				return cls;
 		}
 			
+	
+		
+		
 		return null  ;
 		
 		
 	}
+	
+	private InputStream getCommandResource( String pkg , String name )
+	{
+		String resource = "/" + pkg.replace('.','/') + "/" + name ;
+		InputStream is = CommandFactory.class.getResourceAsStream(resource);
+		
+		return is;
+	}
+	
+	
+	
 
 	private ICommand getCommandClass(String pkg , String name) {
 		try {
@@ -183,9 +199,21 @@ public class CommandFactory
 			return cmd;
 
 		} catch (Exception e) {
-			return null;
+			;
 
 		}
+		
+		
+		/*
+		 * Try a script 
+		 */
+		InputStream scriptStream = this.getCommandResource(pkg, name + ".xsh");
+		if( scriptStream != null )
+			return new  ScriptCommand( name , scriptStream , false );
+		return null;
+		
+		
+		
 	}
 
 	public ICommand		getScript( Shell shell , String name, boolean bSourceMode  ) throws IOException
