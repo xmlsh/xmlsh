@@ -129,13 +129,13 @@ public class xcat extends XCommand {
 			eval.setContextItem(context);
 		
 		if( wrapper != null )
-			eval.setExternalVariable( new QName("wrapper"),  wrapper.toXdmValue()  );	
+			eval.setExternalVariable( new QName("wrapper"),  wrapper.asXdmValue()  );	
 		if( hasFiles ){
 			ArrayList<XValue> files = new ArrayList<XValue>();
 			for( XValue a : xvargs ){
 				files.add( new XValue( getFile(a).toURI().toString()));
 			}
-			eval.setExternalVariable( new QName("files"), new XValue(files).toXdmValue());
+			eval.setExternalVariable( new QName("files"), new XValue(files).asXdmValue());
 		
 		}	
 		

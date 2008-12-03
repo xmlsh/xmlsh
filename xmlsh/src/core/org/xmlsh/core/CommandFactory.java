@@ -34,6 +34,8 @@ import org.xmlsh.builtin.xread;
 import org.xmlsh.builtin.xtrue;
 import org.xmlsh.builtin.xversion;
 import org.xmlsh.builtin.xwhich;
+import org.xmlsh.builtin.xreturn;
+
 import org.xmlsh.sh.core.Command;
 import org.xmlsh.sh.shell.Shell;
 
@@ -72,6 +74,7 @@ public class CommandFactory
 		addBuiltin("continue", xcontinue.class );
 		addBuiltin("eval", eval.class);
 		addBuiltin("declare" , declare.class);
+		addBuiltin("return" , xreturn.class);
 	}
 	
 	

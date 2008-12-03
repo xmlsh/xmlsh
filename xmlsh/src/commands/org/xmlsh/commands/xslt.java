@@ -51,7 +51,7 @@ public class xslt extends XCommand {
 			
 			// If -i argument is an XML expression take the first node as the context
 			if( ov != null  && ov.getValue().isXExpr() ){
-				XdmItem item = ov.getValue().toXdmValue().itemAt(0);
+				XdmItem item = ov.getValue().asXdmValue().itemAt(0);
 				if( item instanceof XdmNode )
 					context = ((XdmNode) item).asSource() ; // builder.build(((XdmNode)item).asSource());
 				 // context = (XdmNode) ov.getValue().toXdmValue();
@@ -124,7 +124,7 @@ public class xslt extends XCommand {
 				String name = xvargs.get(i*2).toString();
 				XValue value = xvargs.get(i*2+1);
 				
-				eval.setParameter( new QName(name),  value.toXdmValue() );	
+				eval.setParameter( new QName(name),  value.asXdmValue() );	
 			}			
 		}
 			

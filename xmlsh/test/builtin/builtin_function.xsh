@@ -27,4 +27,16 @@ echo _A is $_A
 echo Test of subpipe
 
 subpipe | xcat 
+echo
+# Functions returning values
+
+ret0()
+{
+  echo in ret 0 ;
+  return 0;
+  echo SNH
+}
+
+ret0 && echo Success of ret0
+ret0 || echo Fail of ret0 
 

@@ -1,1 +1,4 @@
-<root><foo>bar</foo><bletch/></root>
+<root><foo a="attr">bar</foo><bletch/></root>
+Success replace attribute
+Success add element
+Success delete element

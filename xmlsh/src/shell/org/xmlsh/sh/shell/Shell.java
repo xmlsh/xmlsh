@@ -16,6 +16,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Stack;
 
+import net.sf.saxon.FeatureKeys;
 import net.sf.saxon.s9api.Processor;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -59,6 +60,7 @@ public class Shell {
 	
 	// Set to non null until exit or EOF
 	private 	Integer mExitVal = null;
+	private		Integer mReturnVal = null;
 	
 	private		int	    mStatus = 0;	// $? variable
 	private		static Processor	mProcessor = null;
@@ -193,7 +195,7 @@ public class Shell {
 		ShellParser parser= new ShellParser(mCommandInput,getEncoding());
 		int ret = 0;
 		try {
-			while( mExitVal == null ){
+			while( mExitVal == null && mReturnVal == null ){
 		      	Command c = parser.command_line();
 		      	if( c == null )
 		      		break;
@@ -229,6 +231,12 @@ public class Shell {
 		}
 		if( mExitVal != null )
 			ret = mExitVal.intValue();
+		else
+		if( mReturnVal != null ){
+			ret = mReturnVal.intValue();
+			mReturnVal = null ;
+		}
+			
 		return ret;
 		
 	}
@@ -556,6 +564,12 @@ public class Shell {
 		
 	}
 	
+	public void exec_return(int retval) {
+		mReturnVal = new Integer(retval);
+		
+	}
+	
+	
 	/*
 	 * Return TRUE if we should keep running on this shell
 	 * Includes early termination in control stacks
@@ -563,7 +577,7 @@ public class Shell {
 	public boolean keepRunning()
 	{
 		// Hit exit stop 
-		if(  mExitVal != null )
+		if(  mExitVal != null || mReturnVal != null )
 			return false ;
 		
 		// If the top control stack is break then stopi
@@ -770,6 +784,22 @@ public class Shell {
 	{
 		return mNamespaces;
 	}
+
+	/*
+	 * Execute a command as a function body
+	 * Extracts return values from the function if present
+	 */
+	public int execFunction(Command body) throws Exception {
+		int ret = exec(body);
+		if( mReturnVal != null ){
+			ret = mReturnVal.intValue();
+			mReturnVal = null;
+		}
+		return ret ;
+	
+	}
+
+
 	
 	
 }

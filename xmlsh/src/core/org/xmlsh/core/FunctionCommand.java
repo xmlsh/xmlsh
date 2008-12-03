@@ -35,7 +35,8 @@ public class FunctionCommand implements ICommand {
 			
 			shell.setArg0(mName);
 			shell.setArgs(args);
-			return	shell.exec(mBody);
+			int ret =	shell.execFunction(mBody);
+			return ret;
 			
 		
 		} finally {

@@ -256,7 +256,6 @@ class Expander {
 
 					if( var.equals("*")){
 						// Add all positional variables as args 
-						
 						result.add( mArgs );
 					} else
 						value = extractSingle(var);
@@ -364,9 +363,7 @@ class Expander {
 			
 		}
 			
-		
-		
-		
+
 		
 		XQueryExecutable expr = null;
 
@@ -390,11 +387,11 @@ class Expander {
 			XQueryEvaluator eval = expr.load();
 			for( String name : mShell.getEnv().getVarNames() ){
 				XValue value = mShell.getEnv().getVarValue(name);
-				eval.setExternalVariable( new QName(name), value.toXdmValue());
+				eval.setExternalVariable( new QName(name), value.asXdmValue());
 				
 			}
 			
-			eval.setExternalVariable( new QName("_") , new XValue(mShell.getArgs()).toXdmValue() );
+			eval.setExternalVariable( new QName("_") , new XValue(mShell.getArgs()).asXdmValue() );
 			
 			
 			return eval.evaluate();
@@ -551,6 +548,7 @@ class Expander {
 			
 				return new XValue( mShell.getLastThreadId() );
 		}
+		
 			
 		else
 		if( Util.isInt(var,false)){

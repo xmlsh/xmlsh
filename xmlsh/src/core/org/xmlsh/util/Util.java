@@ -466,7 +466,7 @@ public class Util
 			if( arg.isString() )
 				list.add(arg);
 			else {
-				XdmValue xv = arg.toXdmValue();
+				XdmValue xv = arg.asXdmValue();
 				Iterator<XdmItem> iter = xv.iterator();
 				while( iter.hasNext() )
 					list.add( new XValue( iter.next() ));

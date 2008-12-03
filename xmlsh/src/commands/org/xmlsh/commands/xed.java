@@ -10,7 +10,9 @@ import java.util.List;
 
 import net.sf.saxon.FeatureKeys;
 import net.sf.saxon.om.MutableNodeInfo;
+import net.sf.saxon.om.NamePool;
 import net.sf.saxon.om.NodeInfo;
+import net.sf.saxon.om.StandardNames;
 import net.sf.saxon.s9api.DocumentBuilder;
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.QName;
@@ -21,6 +23,8 @@ import net.sf.saxon.s9api.XPathExecutable;
 import net.sf.saxon.s9api.XPathSelector;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
+import net.sf.saxon.s9api.XdmNodeKind;
+import net.sf.saxon.s9api.XdmValue;
 import net.sf.saxon.tree.DocumentImpl;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.XCommand;
@@ -31,23 +35,38 @@ import org.xmlsh.util.Util;
 
 public class xed extends XCommand {
 
+	private DocumentBuilder mBuilder;
+	private XPathCompiler mCompiler;
+	private Processor mProcessor;
+
+	private void setupBuilders()
+	{
+		
+		mProcessor = new Processor(false);
+		mProcessor.setConfigurationProperty(FeatureKeys.TREE_MODEL, net.sf.saxon.event.Builder.LINKED_TREE);
+		mCompiler = mProcessor.newXPathCompiler();
+		mBuilder = mProcessor.newDocumentBuilder();
+		
+	}
+	
+	
+	
 	@Override
 	public int run( List<XValue> args )
 	throws Exception 
 	{
+		boolean 	opt_delete	= false ;
+		XValue		opt_add 	= null;
+		XValue		opt_replace = null;
 		
-		Options opts = new Options( "f:,i:,n,v,r:" , args );
+		
+		Options opts = new Options( "f:,i:,n,v,r:,a:,d" , args );
 		opts.parse();
 		
-		// Use a seperate processor !
-		Processor  processor  = new Processor(false);
-		processor.setConfigurationProperty(FeatureKeys.TREE_MODEL, net.sf.saxon.event.Builder.LINKED_TREE);
-//		Processor processor = env.getShell().getProcessor();
-		
-		XPathCompiler compiler = processor.newXPathCompiler();
+		setupBuilders();
+
 		XdmNode	context = null;
 
-		DocumentBuilder builder = processor.newDocumentBuilder();
 		
 		// boolean bReadStdin = false ;
 		if( ! opts.hasOpt("n" ) ){ // Has XML data input
@@ -56,19 +75,20 @@ public class xed extends XCommand {
 			
 			// If -i argument is an XML expression take the first node as the context
 			if( ov != null  && ov.getValue().isXExpr() ){
-				XdmItem item = ov.getValue().toXdmValue().itemAt(0);
+				XdmItem item = ov.getValue().asXdmValue().itemAt(0);
 				if( item instanceof XdmNode )
 				//   context = (XdmNode) item ; // builder.build(((XdmNode)item).asSource());
-					context = builder.build(((XdmNode)item).asSource());
 				 // context = (XdmNode) ov.getValue().toXdmValue();
+				context = importNode( (XdmNode)item);
+
 			}
 			if( context == null )
 			{
 	
 				if( ov != null && ! ov.getValue().toString().equals("-"))
-					context = builder.build( getFile(ov.getValue()));
+					context = mBuilder.build( getFile(ov.getValue()));
 				else {
-					context = getStdin().asXdmNode();
+					context = mBuilder.build(getStdin().asSource());
 				}	
 			}
 		}
@@ -86,27 +106,24 @@ public class xed extends XCommand {
 			xpath = xvargs.remove(0).toString();
 		
 
-		ov = opts.getOpt("r");
-		if( ov == null )
-			throwInvalidArg("No replacement [-r] specified");
 		
-		XValue replace = ov.getValue();
 		if( opts.hasOpt("v")){
 			// Read pairs from args to set
 			for( int i = 0 ; i < xvargs.size()/2 ; i++ ){
 				String name = xvargs.get(i*2).toString();
-
-				compiler.declareVariable(new QName(name));			
-				
+				mCompiler.declareVariable(new QName(name));			
 			}
-				
-			
 		}
 		
+
+		
+		opt_add		= opts.getOptValue("a");
+		opt_replace = opts.getOptValue("r");
+		opt_delete  = opts.hasOpt("d");
 		
 		
 
-		XPathExecutable expr = compiler.compile( xpath );
+		XPathExecutable expr = mCompiler.compile( xpath );
 		
 		XPathSelector eval = expr.load();
 		if( context != null )
@@ -117,52 +134,102 @@ public class xed extends XCommand {
 			for( int i = 0 ; i < xvargs.size()/2 ; i++ ){
 				String name = xvargs.get(i*2).toString();
 				XValue value = xvargs.get(i*2+1);
-				
-				
-				eval.setVariable( new QName(name),  value.toXdmValue() );	
-					
-				
+				eval.setVariable( new QName(name),  value.asXdmValue() );	
 			}
-				
-			
 		}
 		
 		
 		
-/*
-		Serializer dest = new Serializer();
-		dest.setOutputProperty( Serializer.Property.OMIT_XML_DECLARATION, "yes");
-		dest.setOutputStream(env.getStdout());
-*/		
 	
 		for( XdmItem item : eval ){
 			Object obj = item.getUnderlyingValue();
 			if( obj instanceof MutableNodeInfo ){
 				MutableNodeInfo node = (MutableNodeInfo) obj;
-				if( replace.isXExpr() && ! replace.isAtomic() )
-					node.replace( new NodeInfo[]  { getNodeInfo(builder,replace) } , true );
+				if( opt_replace != null )
+					replace(node, opt_replace);
+				if( opt_add != null )
+					add( node , opt_add );
+				if( opt_delete )
+					delete( node );
 				
-				else
-					node.replaceStringValue( replace.toString() );
+				// else
+				// if( opt_add != null )
+				//	add( builder , )
 			}
 			
 			
 		}
 		
 	
-		processor.writeXdmValue(context, getStdout().asDestination() );
+		mProcessor.writeXdmValue(context, getStdout().asDestination() );
 
 		
 		return 0;
 
 	}
 
-	private NodeInfo getNodeInfo(DocumentBuilder builder , XValue replace) throws IndexOutOfBoundsException,
+	private void delete(MutableNodeInfo node) {
+		node.delete();
+	}
+
+
+
+	private void add(MutableNodeInfo node, XValue add) throws IndexOutOfBoundsException, SaxonApiUncheckedException, SaxonApiException {
+		if( ! add.isAtomic() ){
+			XdmNode xnode = (XdmNode) add.asXdmValue();
+			if( xnode.getNodeKind() == 	XdmNodeKind.ATTRIBUTE ) {
+				NodeInfo anode = xnode.getUnderlyingNode();
+				NamePool pool = node.getNamePool();
+				int nameCode  = pool.allocate( anode.getURI() , anode.getPrefix(),anode.getLocalPart() );
+				node.putAttribute(nameCode,  StandardNames.XS_UNTYPED_ATOMIC, anode.getStringValueCS(), 0);
+			} else {
+				node.insertChildren( new NodeInfo[]  { getNodeInfo(xnode) } , true ,true );
+			}
+		} else
+			node.replaceStringValue(node.getStringValue() + add.toString() );
+		
+	}
+
+
+
+	private void replace(MutableNodeInfo node, XValue replace)
+			throws IndexOutOfBoundsException, SaxonApiUncheckedException, SaxonApiException {
+		if(  ! replace.isAtomic() ){
+			XdmNode xnode = (XdmNode) replace.asXdmValue();
+			if( xnode.getNodeKind() == 	XdmNodeKind.ATTRIBUTE ) {
+				NodeInfo anode = xnode.getUnderlyingNode();
+				
+			
+				NamePool pool = node.getNamePool();
+				int nameCode  = pool.allocate( anode.getURI() , anode.getPrefix(),anode.getLocalPart() );
+				
+				node.putAttribute(nameCode,  StandardNames.XS_UNTYPED_ATOMIC, anode.getStringValueCS(), 0);
+				
+				
+			} else 
+				node.replace( new NodeInfo[]  { getNodeInfo(xnode) } , true );
+				
+			
+		}
+		else
+			node.replaceStringValue( replace.toString() );
+	}
+
+	/*
+	 * Import the node using the builder into this object model
+	 */
+	private XdmNode importNode( XdmNode node ) throws SaxonApiException
+	{
+		return mBuilder.build(node.asSource());
+	}
+
+	
+	private NodeInfo getNodeInfo( XdmNode node) throws IndexOutOfBoundsException,
 		SaxonApiUncheckedException, SaxonApiException {
 		
-		XdmNode node = builder.build(((XdmNode) replace.toXdmValue()).asSource());
+		XdmNode xnode = importNode(node);
 		
-		return ((DocumentImpl) node.getUnderlyingNode().getDocumentRoot()).getDocumentElement();
+		return ((DocumentImpl) xnode.getUnderlyingNode().getDocumentRoot()).getDocumentElement();
 	}
 
 

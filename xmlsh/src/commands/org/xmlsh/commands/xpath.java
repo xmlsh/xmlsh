@@ -51,7 +51,7 @@ public class xpath extends XCommand {
 			
 			// If -i argument is an XML expression take the first node as the context
 			if( ov != null  && ov.getValue().isXExpr() ){
-				XdmItem item = ov.getValue().toXdmValue().itemAt(0);
+				XdmItem item = ov.getValue().asXdmValue().itemAt(0);
 				if( item instanceof XdmNode )
 					context = (XdmNode) item ; // builder.build(((XdmNode)item).asSource());
 				 // context = (XdmNode) ov.getValue().toXdmValue();
@@ -151,7 +151,7 @@ public class xpath extends XCommand {
 				XValue value = xvargs.get(i*2+1);
 				
 				
-				eval.setVariable( new QName(name),  value.toXdmValue() );	
+				eval.setVariable( new QName(name),  value.asXdmValue() );	
 					
 				
 			}

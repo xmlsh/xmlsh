@@ -12,7 +12,10 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 
+import net.sf.saxon.dom.NodeOverNodeInfo;
+import net.sf.saxon.om.NodeInfo;
 import net.sf.saxon.om.ValueRepresentation;
+import net.sf.saxon.s9api.DocumentBuilder;
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.Serializer;
@@ -21,9 +24,12 @@ import net.sf.saxon.s9api.XPathExecutable;
 import net.sf.saxon.s9api.XPathSelector;
 import net.sf.saxon.s9api.XdmAtomicValue;
 import net.sf.saxon.s9api.XdmItem;
+import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XdmValue;
 import net.sf.saxon.value.AtomicValue;
 import org.apache.log4j.Logger;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 import org.xmlsh.sh.shell.Shell;
 
 public class XValue {
@@ -80,7 +86,7 @@ public class XValue {
 	public XValue( Iterable<XValue> args) {
 		ArrayList<XdmItem> items = new ArrayList<XdmItem>();
 		for( XValue arg : args ){
-			XdmValue v = arg.toXdmValue();
+			XdmValue v = arg.asXdmValue();
 			for( XdmItem item : v )
 				items.add( item );
 			
@@ -95,7 +101,7 @@ public class XValue {
 	 * do not modify the variable itself. 
 	 * 
 	 */
-	public XdmValue toXdmValue(){
+	public XdmValue asXdmValue(){
 		return mValue ;
 		
 	}
@@ -223,11 +229,9 @@ public class XValue {
 			ser.setOutputProperty(Serializer.Property.OMIT_XML_DECLARATION, "yes");
 			Shell.getProcessor().writeXdmValue( mValue, ser);
 		}
-			
-			
-		
-		
 	}
+	
+	
 
 	public boolean toBoolean() throws UnexpectedException {
 		if( mValue == null )
@@ -259,6 +263,40 @@ public class XValue {
 		}
 		
 	}
+	
+	/*
+	 * Wrap an XdmValue as a Node in the current processor type (TinyTree)
+	 */
+	public Node asNode() {
+		return NodeOverNodeInfo.wrap( (NodeInfo)mValue.getUnderlyingValue() );
+	}
+	
+	/*
+	 * Wrap a XdmValue as a Node by optionally synthesizing a document
+	 * element for it if it doesnt exist already.
+	 */
+	
+	public Node asNodeWithDoc() throws SaxonApiException 
+	{	
+		NodeInfo nodeinfo = (NodeInfo) mValue.getUnderlyingValue();
+
+		if( nodeinfo.getDocumentRoot() == null ){
+			Processor	processor = Shell.getProcessor();
+			DocumentBuilder builder = processor.newDocumentBuilder();
+			XdmNode xnode = builder.build( ((XdmNode)mValue).asSource()  );
+			NodeInfo docinfo = (NodeInfo) xnode.getUnderlyingNode();
+			
+			return 
+				NodeOverNodeInfo.wrap( docinfo ).getFirstChild() ;
+						
+		}
+		else
+		return 
+			NodeOverNodeInfo.wrap(  nodeinfo  );
+		
+	}
+	
+	
 }
 //
 //

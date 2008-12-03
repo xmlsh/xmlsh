@@ -26,14 +26,16 @@ public class Options
 	
 	public static class	OptionDef
 	{
-		String 		flag;
+		public 		String 		name;
 		boolean		hasArgs;
 		boolean 	hasMulti;
 		public OptionDef( String flag , boolean arg , boolean multi ){
-			this.flag = flag;
+			this.name = flag;
 			this.hasArgs = arg;
 			this.hasMulti = multi;
 		}
+		
+		
 	}
 	
 	
@@ -147,7 +149,7 @@ public class Options
 		
 		for (OptionDef opt : mDefs) {
 
-			if( Util.isEqual( str , opt.flag ) )
+			if( Util.isEqual( str , opt.name ) )
 				return opt;
 			
 		}
@@ -210,7 +212,7 @@ public class Options
 	public OptionValue	getOpt( String opt )
 	{
 		for( OptionValue ov : mOptions ){
-			if( ov.getOption().flag.equals(opt))
+			if( ov.getOption().name.equals(opt))
 				return ov;
 			
 		}
@@ -248,6 +250,15 @@ public class Options
 		if( mRemainingArgs == null )
 			mRemainingArgs = new ArrayList<XValue>(0);
 		return mRemainingArgs;
+	}
+
+
+	public XValue getOptValue(String arg) {
+		OptionValue ov = getOpt(arg);
+		if( ov == null )
+			return null;
+		else
+			return ov.value;
 	}
 }
 

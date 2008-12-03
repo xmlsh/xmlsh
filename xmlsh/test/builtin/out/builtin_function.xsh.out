@@ -4,3 +4,6 @@ Test of setvar
 _A is ABC
 Test of subpipe
 <foo>bar</foo>
+in ret 0
+Success of ret0
+in ret 0

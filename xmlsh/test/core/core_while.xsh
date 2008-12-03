@@ -8,6 +8,9 @@ done
 
 while false ; do echo SNH ; done
 
+
+# test setting of vars in loop
+unset X
 RET=1
 echo before while
 while [ -z "$X" ] ; do
