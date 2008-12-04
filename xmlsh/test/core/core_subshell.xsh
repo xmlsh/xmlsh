@@ -23,6 +23,16 @@ if [ $A = 2 ] ; then
 	echo  Subshell  environment wrong A=$A
 fi
 
+# Make sure $* are propigated to sub shell
+echo
+set A B C
+( echo $* )
+
+# Make sure $() propogates args
+X=$(echo $*)
+echo $X
+
+
 
 
 exit 0

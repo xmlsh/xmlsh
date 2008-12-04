@@ -142,6 +142,11 @@ public class Shell {
 		mEnv = that.getEnv().clone(this) ;
 		mCommandInput = that.mCommandInput;
 		mArg0 = that.mArg0;
+		
+		// clone $1..$N
+		mArgs = new ArrayList<XValue>();
+		mArgs.addAll(that.mArgs);
+		
 		mSavedCD = System.getProperty("user.dir");
 		
 		if( that.mFunctions != null )
