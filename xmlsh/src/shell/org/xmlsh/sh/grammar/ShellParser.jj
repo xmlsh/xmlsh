@@ -134,6 +134,7 @@ TOKEN_MGR_DECLS :
 
 
 <DEFAULT,CMD> TOKEN : {
+	
     < NEWLINE: "\n" >
     : DEFAULT 
 }

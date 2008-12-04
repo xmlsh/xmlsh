@@ -10,13 +10,13 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Stack;
 
-import net.sf.saxon.FeatureKeys;
 import net.sf.saxon.s9api.Processor;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -33,6 +33,7 @@ import org.xmlsh.sh.core.Command;
 import org.xmlsh.sh.core.EvalScriptCommand;
 import org.xmlsh.sh.grammar.ParseException;
 import org.xmlsh.sh.grammar.ShellParser;
+import org.xmlsh.sh.grammar.ShellParserReader;
 import org.xmlsh.util.Util;
 
 public class Shell {
@@ -249,7 +250,7 @@ public class Shell {
 	
 	
 	
-	private		int		interactive()
+	private		int		interactive() throws UnsupportedEncodingException
 	{
 		mIsInteractive = true ;
 		int		ret = 0;
@@ -257,7 +258,8 @@ public class Shell {
 		setCommandInput();
 		
 		
-		ShellParser parser= new ShellParser(mCommandInput,Shell.getEncoding());
+		// ShellParser parser= new ShellParser(mCommandInput,Shell.getEncoding());
+		ShellParser parser= new ShellParser(new ShellParserReader(mCommandInput,Shell.getEncoding()));
 		
 		while (mExitVal == null) {
 			
@@ -284,11 +286,11 @@ public class Shell {
 		        System.out.println("NOK.");
 		        System.out.println(e.getMessage());
 		        e.printStackTrace(System.out);
-		        parser.ReInit(mCommandInput);
+		        parser.ReInit(new ShellParserReader(mCommandInput,Shell.getEncoding()));
 		      } catch (Error e) {
 		        System.out.println("Error");
 		        System.out.println(e.getMessage());
-		        parser.ReInit(mCommandInput);
+		        parser.ReInit(new ShellParserReader(mCommandInput,Shell.getEncoding()));
 
 		      } 
 		      
