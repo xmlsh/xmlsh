@@ -27,8 +27,8 @@ public class Options
 	public static class	OptionDef
 	{
 		public 		String 		name;
-		boolean		hasArgs;
-		boolean 	hasMulti;
+		public 		boolean		hasArgs;
+		public 		boolean 	hasMulti;
 		public OptionDef( String flag , boolean arg , boolean multi ){
 			this.name = flag;
 			this.hasArgs = arg;
@@ -44,8 +44,7 @@ public class Options
 	public static class	OptionValue
 	{
 		private OptionDef		option;
-		private XValue	 		value;
-		private List<XValue>	values; // in the case of multiple values possible
+		private List<XValue>	values = new ArrayList<XValue>(); // in the case of multiple values possible
 		
 		OptionValue( OptionDef def ) {
 			option = def ;
@@ -54,14 +53,14 @@ public class Options
 		// Set a single value
 		void setValue( XValue v )
 		{
-			value = v ;
+			if( ! option.hasMulti )
+				values.clear();
+			values.add( v );
 		}
 		
 		// Add to a multi value
 		void addValue( XValue v )
 		{
-			if( values == null )
-				values = new ArrayList<XValue>();
 			values.add(v);
 			
 		}
@@ -70,14 +69,14 @@ public class Options
 		/**
 		 * @return the option
 		 */
-		public OptionDef getOption() {
+		public OptionDef getOptionDef() {
 			return option;
 		}
 		/**
 		 * @return the arg
 		 */
 		public XValue getValue() {
-			return value;
+			return values.get(0);
 		}
 		
 		public List<XValue> getValues() {
@@ -212,7 +211,7 @@ public class Options
 	public OptionValue	getOpt( String opt )
 	{
 		for( OptionValue ov : mOptions ){
-			if( ov.getOption().name.equals(opt))
+			if( ov.getOptionDef().name.equals(opt))
 				return ov;
 			
 		}
@@ -258,7 +257,7 @@ public class Options
 		if( ov == null )
 			return null;
 		else
-			return ov.value;
+			return ov.values.get(0);
 	}
 }
 
