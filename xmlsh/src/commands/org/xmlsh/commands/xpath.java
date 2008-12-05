@@ -120,7 +120,7 @@ public class xpath extends XCommand {
 			
 			// Add custom name spaces
 			for( XValue v : opts.getOpt("ns").getValues() )
-				ns2.declareNamespace(v);
+				ns2.declare(v);
 				
 			
 			ns = ns2;

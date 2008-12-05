@@ -30,14 +30,17 @@ import org.xmlsh.builtin.xcd;
 import org.xmlsh.builtin.xcontinue;
 import org.xmlsh.builtin.xecho;
 import org.xmlsh.builtin.xfalse;
+import org.xmlsh.builtin.ximport;
 import org.xmlsh.builtin.xread;
+import org.xmlsh.builtin.xreturn;
 import org.xmlsh.builtin.xtrue;
 import org.xmlsh.builtin.xversion;
 import org.xmlsh.builtin.xwhich;
-import org.xmlsh.builtin.xreturn;
-
 import org.xmlsh.sh.core.Command;
+import org.xmlsh.sh.shell.Modules;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.util.StringPair;
+import org.xmlsh.util.Util;
 
 public class CommandFactory 
 {
@@ -75,6 +78,7 @@ public class CommandFactory
 		addBuiltin("eval", eval.class);
 		addBuiltin("declare" , declare.class);
 		addBuiltin("return" , xreturn.class);
+		addBuiltin("import" , ximport.class);
 	}
 	
 	
@@ -156,28 +160,39 @@ public class CommandFactory
 
 	private ICommand getNative(Shell shell,String name) {
 		
+		StringPair 	pair = new StringPair(name,':');
 		
-		/* 
-		 * First try the builtin package 
-		 */
 		
-		ICommand cls = getCommandClass("org.xmlsh.commands" , name);
-		if( cls != null )
-			return cls ;
+
+		Modules modules = shell.getModules();
+
 		
-		Path imports = shell.getImportPath();
-		if( imports == null )
-			return null ;
+		if( pair.hasLeft() ){ // prefix:name , prefix non-empty
+			String pkg = modules.get(pair.getLeft());
+			// Allow C:/xxx/yyy to work 
+			// May look like a namespace but isnt
+			if( ! Util.isEmpty(pkg)){
+				ICommand cls = getCommandClass(pkg , pair.getRight() );
+				if( cls != null )
+					return cls ;
+			
+				return null;
+			}
 		
-		for( String pkg : imports ){
-			cls = getCommandClass( pkg , name );
-			if( cls != null )
-				return cls;
 		}
 			
-	
+		/* 
+		 * Try all default modules 
+		 */
+		for( String pkg : modules.defaultPackages() ){
+
+			ICommand cls = getCommandClass(pkg , name);
+			if( cls != null )
+				return cls ;
+			
+		}
 		
-		
+			
 		return null  ;
 		
 		

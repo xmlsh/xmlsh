@@ -12,7 +12,7 @@ import org.xmlsh.core.BuiltinCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.util.NameValueMap;
 
-public class declare extends BuiltinCommand {
+public class ximport extends BuiltinCommand {
 
 	
 	public int run(  List<XValue> args ) throws Exception {
@@ -20,63 +20,29 @@ public class declare extends BuiltinCommand {
 			return 1;
 		
 		XValue what = args.remove(0);
-		if( what.toString().equals("namespace"))
-			return declareNamespace( args );
 
+		if( what.toString().equals("module"))
+			return declareModule( args );
 		
 		return 2;
 				
 	}
 
-	
-	private int declareNamespace(List<XValue> args) {
+	private int declareModule(List<XValue> args) {
 		if( args.size() == 0 )
-			return listNamespaces();
-		
-		for( XValue arg : args){
-			declareNamespace( arg );
-			
-			
+			return listModules();
+		for( XValue arg : args ){
+			if( arg.isString() ){
+				mShell.importModule(arg.toString());
+			}
 		}
 		return 0;
-
 	}
 
-	private int listNamespaces() {
-		NameValueMap<String> ns = mShell.getNamespaces();
-		if( ns == null )
-			return 0;
-		
-		for( String name : ns.keySet() ){
-			String uri = ns.get(name);
-			mShell.printOut(name + "=" + uri );
-			
-		}
+	private int listModules() {
 		return 0;
-		
 	}
 
-	/*
-	 * Declare a namespace
-	 * 
-	 */
-	
-	
-	private void declareNamespace(XValue arg) {
-		
-		// ns="url"
-		// ns=
-		// "url"
-		if( arg.isString() ){
-
-			
-			
-			mShell.declareNamespace(arg.toString());
-			
-				
-		}
-		
-	}
 
 
 

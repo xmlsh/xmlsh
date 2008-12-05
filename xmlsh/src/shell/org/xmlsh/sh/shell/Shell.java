@@ -76,6 +76,8 @@ public class Shell {
 	private		Stack<ControlLoop>  mControlStack = new Stack<ControlLoop>();
 	
 	private		Namespaces	mNamespaces = null;
+	private		Modules		mModules	= null;
+
 
 	static {
 		
@@ -100,6 +102,9 @@ public class Shell {
 		mOpts = new ShellOpts();
 		mSavedCD = System.getProperty("user.dir");
 		mEnv =  new XEnvironment(this,true);
+		mModules = new Modules();
+		mModules.declare("xmlsh" , "org.xmlsh.commands");
+		mModules.addDefault("xmlsh");
 		
 		setGlobalVars();
 		
@@ -152,8 +157,12 @@ public class Shell {
 		
 		if( that.mFunctions != null )
 			mFunctions = new FunctionDeclarations(that.mFunctions);
+		
 		if( that.mNamespaces != null )	
 			mNamespaces = new Namespaces( that.mNamespaces );
+		
+		mModules = new Modules(that.mModules );
+		
 	}
 	
 	public Shell clone()
@@ -766,11 +775,8 @@ public class Shell {
 		return mFunctions.get(name);
 	}
 
-	public Path getImportPath() {
-		XValue	pathVar = getEnv().getVarValue("XIMPORT");
-		if( pathVar == null )
-			return null ;
-		return new Path( pathVar.toString().split( File.pathSeparator ));
+	public Modules getModules() {
+		return mModules;
 	}
 	
 	public static String getEncoding()
@@ -783,7 +789,7 @@ public class Shell {
 		if( mNamespaces == null )
 			mNamespaces = new Namespaces();
 		
-		mNamespaces.declareNamespace( ns );
+		mNamespaces.declare( ns );
 		
 	}
 	
@@ -804,6 +810,14 @@ public class Shell {
 		}
 		return ret ;
 	
+	}
+
+	/*
+	 * Declare a module using the prefix=value notation
+	 */
+	public void importModule(String moduledef) {
+		mModules.declare(moduledef);
+		
 	}
 
 

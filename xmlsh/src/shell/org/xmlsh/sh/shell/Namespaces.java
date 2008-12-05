@@ -8,6 +8,7 @@ package org.xmlsh.sh.shell;
 
 import org.xmlsh.core.XValue;
 import org.xmlsh.util.NameValueMap;
+import org.xmlsh.util.StringPair;
 import org.xmlsh.util.Util;
 
 @SuppressWarnings("serial")
@@ -18,10 +19,9 @@ public class Namespaces extends NameValueMap<String>
 	Namespaces(Namespaces that) 
 	{
 		super(that);
-		
 	}
 	
-	public void declareNamespace( String prefix , String uri )
+	public void declare( String prefix , String uri )
 	{
 		if( Util.isEmpty(uri))
 			remove(prefix);
@@ -29,22 +29,26 @@ public class Namespaces extends NameValueMap<String>
 			put( prefix , uri );
 	}
 	
-	public void declareNamespace( String ns ){
-		
-
-		String prefix = null;
-		String url = null;
-		int eqpos = ns.indexOf('=');
-		if( eqpos >= 0 ){
-			prefix = ns.substring(0,eqpos);
-			url = ns.substring(eqpos+1);
-		}
-		
-		declareNamespace( prefix , url );
+	/**
+	 * Declare a prefix/uri pair
+	 * 
+	 * prefix=uri			// prefix + uri
+	 * =uri					// default namespace uri
+	 * prefix=				// delete prefix mapping
+	 * uri					// equivilent to =uri
+	 * 
+	 */
+	
+	public void declare( String ns ){
+		StringPair 	pair = new StringPair(ns,'=');
+		if( pair.hasLeft() )
+			declare( pair.getLeft(), pair.getRight() );
+		else
+			declare( null , ns  );
 		
 	}
-	public void declareNamespace(XValue v) {
-		declareNamespace( v.toString() );
+	public void declare(XValue v) {
+		declare( v.toString() );
 		
 	}
 	

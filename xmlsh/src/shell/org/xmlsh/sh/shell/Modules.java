@@ -6,11 +6,64 @@
 
 package org.xmlsh.sh.shell;
 
-import org.xmlsh.util.NameValueMap;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
-public class Modules extends NameValueMap<String>
+import org.xmlsh.util.Util;
+
+/*
+ * Modules are like namespaces.
+ * They map a prefix to a package (instead of a URI)
+ * 
+ * Modules also have a list of default prefixes, (e.g. "xmlsh")
+ */
+
+
+public class Modules extends Namespaces
 {
-
+	private		List<String>		mDefaults = new ArrayList<String>();
+	
+	
+	/*
+	 * Add a prefix to the list of default prefixes
+	 * Resolve this to the actual package name and store that
+	 */
+	void 	addDefault( String def ){
+		String pkg = this.get(def);
+		if( pkg != null )
+			mDefaults.add( pkg );
+	}
+	
+	public Iterable<String> defaultPackages()
+	{
+		return 	mDefaults;
+	}
+	
+	/*
+	 * Override the Namespaces declare
+	 * If prefix is null or "" then just add the uri to the defaults list
+	 * 
+	 */
+	public void declare( String prefix , String uri )
+	{
+		if( Util.isEmpty(prefix))
+			mDefaults.add(uri);
+		else
+		if( Util.isEmpty(uri))
+			remove(prefix);
+		else
+			put( prefix , uri );
+	}
+	
+	Modules() {}
+	
+	
+	Modules( Modules that){
+		super( that );
+		mDefaults.addAll(that.mDefaults);
+	}
+	
 }
 
 
