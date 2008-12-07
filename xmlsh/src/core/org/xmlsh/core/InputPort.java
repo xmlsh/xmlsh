@@ -9,12 +9,16 @@ package org.xmlsh.core;
 import java.io.IOException;
 import java.io.InputStream;
 
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
-import net.sf.saxon.s9api.DocumentBuilder;
+
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XdmNode;
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.SynchronizedInputStream;
 
@@ -62,13 +66,23 @@ public class InputPort  implements IPort
 	}
 	public synchronized XdmNode asXdmNode() throws SaxonApiException
 	{
-		DocumentBuilder builder = Shell.getProcessor().newDocumentBuilder();
+		net.sf.saxon.s9api.DocumentBuilder builder = Shell.getProcessor().newDocumentBuilder();
 		return builder.build( asSource() );
 	}
 
 	public synchronized void addRef() {
 		mRef++;
 
+	}
+	
+	public synchronized Document asDocument() throws ParserConfigurationException, SAXException, IOException
+	{
+		
+	    DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
+	    domFactory.setNamespaceAware(true); // never forget this!
+	    javax.xml.parsers.DocumentBuilder builder = domFactory.newDocumentBuilder();
+	    return  builder.parse(asInputStream());
+	
 	}
 
 }

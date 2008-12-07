@@ -81,6 +81,13 @@ public class OutputPort implements IPort
 		Serializer dest = new Serializer();
 		dest.setOutputProperty( Serializer.Property.OMIT_XML_DECLARATION, "yes");
 		//dest.setOutputProperty(Serializer.Property.INDENT , "yes");
+		// dest.setOutputProperty(Serializer.Property.VERSION,"1.1");
+		dest.setOutputProperty(Serializer.Property.METHOD, "xml");
+
+
+		// dest.setOutputProperty(Serializer.Property.UNDECLARE_PREFIXES,"yes");
+		
+
 		dest.setOutputStream(asOutputStream());
 		return dest;
 	}

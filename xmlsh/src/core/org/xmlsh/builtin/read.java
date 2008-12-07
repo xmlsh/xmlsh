@@ -21,35 +21,38 @@ public class read extends BuiltinCommand {
 	 *  Read a line of text from stdin and assign to variables
 	 *  
 	 */
-	
-	
+
+
 	public int run(  List<XValue> args ) throws Exception {
-			
+
 		// Unset all args
 		for( XValue arg : args )
 			mShell.getEnv().unsetVar( arg.toString() );
+
+
+		InputStream is = mShell.getEnv().getStdin().asInputStream();
+		String line = Util.readLine( is );
+		if( line == null )
+			return 1; // EOF
+
+		String ifs = getIFSRegex();
+		String[] results = line.split(ifs,args.size());
+		for( int i = 0 ; i < args.size() ; i++ )
+			if( i < results.length )
+
+			mShell.getEnv().setVar(
+					new XVariable(args.get(i).toString(), new XValue(results[i])));
+
+
+
+		return 0;
+	}
+
+	private String getIFSRegex() {
+		XValue xifs = mShell.getEnv().getVarValue("IFS");
+		String ifs = xifs == null ? " \t" : xifs.toString();
 		
-			
-			InputStream is = mShell.getEnv().getStdin().asInputStream();
-			String line = Util.readLine( is );
-			if( line == null )
-				return 1; // EOF
-			
-			XValue xifs = mShell.getEnv().getVarValue("IFS");
-			String ifs = xifs == null ? " \t" : xifs.toString();
-			
-			StringTokenizer	tok = new StringTokenizer( line , ifs );
-			
-			int arg = 0;
-			while( tok.hasMoreTokens()){
-				String s=tok.nextToken();
-				if( arg < args.size() )
-					mShell.getEnv().setVar(
-							new XVariable(args.get(arg++).toString(), new XValue(s)));
-				
-			}
-			
-			return 0;
+		return "[" + ifs + "]" ;
 	}
 }
 //

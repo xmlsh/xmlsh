@@ -178,7 +178,8 @@ public class xsplit extends XCommand {
 			
 			else
 			{
-				
+				if( type == XMLStreamConstants.CHARACTERS && Util.isBlank(e.toString()))
+					continue ;
 				printErr("Skipping XML node: " + e.toString());
 			}
 		}

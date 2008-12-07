@@ -28,3 +28,17 @@ read a <<EOF
 EOF
 
 [ -z "$a" ] || echo Failed clearing variable
+
+# Test reading partial data
+read a <<EOF
+foo bar spam
+EOF
+
+[ "$a" = "foo bar spam" ] || echo Failed reading extra data
+
+read a b <<EOF
+foo bar spam
+EOF
+
+[ "$a" = "foo" ] || echo Failed reading extra data
+[ "$b" = "bar spam" ] || echo Failed reading extra data

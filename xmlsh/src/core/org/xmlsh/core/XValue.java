@@ -28,9 +28,9 @@ import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XdmValue;
 import net.sf.saxon.value.AtomicValue;
 import org.apache.log4j.Logger;
-import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.util.Util;
 
 public class XValue {
 	private static Logger mLogger = Logger.getLogger( XValue.class);
@@ -227,13 +227,16 @@ public class XValue {
 			Serializer ser = new Serializer();
 			ser.setOutputStream( out );
 			ser.setOutputProperty(Serializer.Property.OMIT_XML_DECLARATION, "yes");
-			Shell.getProcessor().writeXdmValue( mValue, ser);
+			ser.setOutputProperty(Serializer.Property.METHOD, "xml");
+
+			// Shell.getProcessor().writeXdmValue( mValue, ser);
+			Util.writeXdmValue( mValue , ser );
 		}
 	}
 	
-	
 
-	public boolean toBoolean() throws UnexpectedException {
+
+    public boolean toBoolean() throws UnexpectedException {
 		if( mValue == null )
 			return false ;
 		

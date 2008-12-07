@@ -1,7 +1,64 @@
 Xquery on stdin
-<AUTHOR xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">Jane Austen</AUTHOR><AUTHOR xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">Charlotte Brontë</AUTHOR><AUTHOR xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">Thomas Hardy</AUTHOR><AUTHOR xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">Thomas Hardy</AUTHOR><AUTHOR xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">Jasper Fforde</AUTHOR><AUTHOR xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">Jasper Fforde</AUTHOR>Xquery on file
-<AUTHOR xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">Jane Austen</AUTHOR><AUTHOR xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">Charlotte Brontë</AUTHOR><AUTHOR xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">Thomas Hardy</AUTHOR><AUTHOR xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">Thomas Hardy</AUTHOR><AUTHOR xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">Jasper Fforde</AUTHOR><AUTHOR xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">Jasper Fforde</AUTHOR>Xquery on xml expression
-<bar a2="value2"/><foo>text</foo><book><author><AUTHOR>Jasper Fforde</AUTHOR></author><title><TITLE>The Eyre Affair</TITLE></title></book><book><author><AUTHOR>Thomas Hardy</AUTHOR></author><title><TITLE>Jude the Obscure</TITLE></title></book><book><author><AUTHOR>Charlotte Brontë</AUTHOR></author><title><TITLE>Wuthering Heights</TITLE></title></book><book><author><AUTHOR>Jasper Fforde</AUTHOR></author><title><TITLE>The Big Over Easy</TITLE></title></book><book><author><AUTHOR>Jane Austen</AUTHOR></author><title><TITLE>Pride and Prejudice</TITLE></title></book><book><author><AUTHOR>Thomas Hardy</AUTHOR></author><title><TITLE>Tess of the d'Urbervilles</TITLE></title></book>
+<AUTHOR xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">Jane Austen</AUTHOR>
+<AUTHOR xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">Charlotte Brontë</AUTHOR>
+<AUTHOR xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">Thomas Hardy</AUTHOR>
+<AUTHOR xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">Thomas Hardy</AUTHOR>
+<AUTHOR xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">Jasper Fforde</AUTHOR>
+<AUTHOR xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">Jasper Fforde</AUTHOR>Xquery on file
+<AUTHOR xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">Jane Austen</AUTHOR>
+<AUTHOR xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">Charlotte Brontë</AUTHOR>
+<AUTHOR xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">Thomas Hardy</AUTHOR>
+<AUTHOR xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">Thomas Hardy</AUTHOR>
+<AUTHOR xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">Jasper Fforde</AUTHOR>
+<AUTHOR xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">Jasper Fforde</AUTHOR>Xquery on xml expression
+<bar a2="value2"/><foo>text</foo><book>
+   <author>
+      <AUTHOR>Jasper Fforde</AUTHOR>
+   </author>
+   <title>
+      <TITLE>The Eyre Affair</TITLE>
+   </title>
+</book>
+<book>
+   <author>
+      <AUTHOR>Thomas Hardy</AUTHOR>
+   </author>
+   <title>
+      <TITLE>Jude the Obscure</TITLE>
+   </title>
+</book>
+<book>
+   <author>
+      <AUTHOR>Charlotte Brontë</AUTHOR>
+   </author>
+   <title>
+      <TITLE>Wuthering Heights</TITLE>
+   </title>
+</book>
+<book>
+   <author>
+      <AUTHOR>Jasper Fforde</AUTHOR>
+   </author>
+   <title>
+      <TITLE>The Big Over Easy</TITLE>
+   </title>
+</book>
+<book>
+   <author>
+      <AUTHOR>Jane Austen</AUTHOR>
+   </author>
+   <title>
+      <TITLE>Pride and Prejudice</TITLE>
+   </title>
+</book>
+<book>
+   <author>
+      <AUTHOR>Thomas Hardy</AUTHOR>
+   </author>
+   <title>
+      <TITLE>Tess of the d'Urbervilles</TITLE>
+   </title>
+</book>
 <t:test xmlns:t="http://www.example.org/test">Test</t:test>
 <t:test xmlns:t="http://www.example.org/test">Test</t:test>
 <t:test xmlns:t="http://www.example.org/test">Test</t:test>

@@ -6,6 +6,7 @@
 
 package org.xmlsh.commands;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import net.sf.saxon.FeatureKeys;
@@ -13,6 +14,7 @@ import net.sf.saxon.om.MutableNodeInfo;
 import net.sf.saxon.om.NamePool;
 import net.sf.saxon.om.NodeInfo;
 import net.sf.saxon.om.StandardNames;
+import net.sf.saxon.s9api.Axis;
 import net.sf.saxon.s9api.DocumentBuilder;
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.QName;
@@ -24,7 +26,7 @@ import net.sf.saxon.s9api.XPathSelector;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XdmNodeKind;
-import net.sf.saxon.s9api.XdmValue;
+import net.sf.saxon.s9api.XdmSequenceIterator;
 import net.sf.saxon.tree.DocumentImpl;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.XCommand;
@@ -58,9 +60,10 @@ public class xed extends XCommand {
 		boolean 	opt_delete	= false ;
 		XValue		opt_add 	= null;
 		XValue		opt_replace = null;
+		boolean		opt_matches = false ;
 		
 		
-		Options opts = new Options( "f:,i:,n,v,r:,a:,d" , args );
+		Options opts = new Options( "f:,i:,n,v,r:,a:,d,matches" , args );
 		opts.parse();
 		
 		setupBuilders();
@@ -120,14 +123,17 @@ public class xed extends XCommand {
 		opt_add		= opts.getOptValue("a");
 		opt_replace = opts.getOptValue("r");
 		opt_delete  = opts.hasOpt("d");
+		opt_matches = opts.hasOpt("matches");
 		
 		
-
-		XPathExecutable expr = mCompiler.compile( xpath );
+		XPathExecutable expr;
+		if( !opt_matches )
+		  expr = mCompiler.compile( xpath );
+		else 
+		  expr = mCompiler.compilePattern( xpath );
+		
 		
 		XPathSelector eval = expr.load();
-		if( context != null )
-			eval.setContextItem(context);
 		
 		if( opts.hasOpt("v")){
 			// Read pairs from args to set
@@ -138,10 +144,10 @@ public class xed extends XCommand {
 			}
 		}
 		
-		
+		Iterable<XdmItem>  results = getResults( eval ,  context , opt_matches );
 		
 	
-		for( XdmItem item : eval ){
+		for( XdmItem item : results ){
 			Object obj = item.getUnderlyingValue();
 			if( obj instanceof MutableNodeInfo ){
 				MutableNodeInfo node = (MutableNodeInfo) obj;
@@ -167,6 +173,29 @@ public class xed extends XCommand {
 		return 0;
 
 	}
+
+	private Iterable<XdmItem> getResults(XPathSelector eval, XdmNode root , boolean opt_matches) throws SaxonApiException {
+		
+		if( ! opt_matches ){
+			if( root != null )
+				eval.setContextItem(root);
+			return eval ;
+		}
+		ArrayList<XdmItem>	results = new ArrayList<XdmItem>();
+		if( root == null )
+			return results;
+		
+		XdmSequenceIterator iter = root.axisIterator(Axis.DESCENDANT_OR_SELF);
+		while( iter.hasNext() ){
+			XdmItem item = iter.next();
+			eval.setContextItem(item);
+			if( eval.effectiveBooleanValue())
+				results.add(item);
+		}
+		return results ;
+	}
+
+
 
 	private void delete(MutableNodeInfo node) {
 		node.delete();

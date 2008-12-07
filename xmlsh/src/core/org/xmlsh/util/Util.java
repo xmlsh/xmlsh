@@ -24,8 +24,16 @@ import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.sax.TransformerHandler;
 import javax.xml.transform.stream.StreamResult;
 
+import net.sf.saxon.event.NamespaceReducer;
+import net.sf.saxon.event.Receiver;
+import net.sf.saxon.event.TreeReceiver;
+import net.sf.saxon.om.Item;
+import net.sf.saxon.om.NodeInfo;
+import net.sf.saxon.s9api.Destination;
+import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmValue;
+import net.sf.saxon.trans.XPathException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
 
@@ -512,6 +520,25 @@ public class Util
 
 	public static  ByteArrayInputStream toInputStream(String script) throws UnsupportedEncodingException {
 			return new ByteArrayInputStream(script.getBytes(Shell.getEncoding()));
+	}
+
+
+	public static void writeXdmValue(XdmValue value, Destination destination) throws SaxonApiException {
+	    try {
+	        Receiver out = destination.getReceiver(Shell.getProcessor().getUnderlyingConfiguration());
+	        out = new NamespaceReducer(out);
+	        TreeReceiver tree = new TreeReceiver(out);
+	        tree.open();
+	        tree.startDocument(0);
+	        for (Iterator<XdmItem> it = value.iterator(); it.hasNext();) {
+	            XdmItem item = it.next();
+	            tree.append((Item)item.getUnderlyingValue(), 0, NodeInfo.LOCAL_NAMESPACES ); // NodeInfo.NO_NAMESPACES);//NodeInfo.ALL_NAMESPACES);
+	        }
+	        tree.endDocument();
+	        tree.close();
+	    } catch (XPathException err) {
+	        throw new SaxonApiException(err);
+	    }
 	}
 
 
