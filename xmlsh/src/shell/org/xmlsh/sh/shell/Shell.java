@@ -75,7 +75,7 @@ public class Shell {
 	
 	private		Stack<ControlLoop>  mControlStack = new Stack<ControlLoop>();
 	
-	private		Namespaces	mNamespaces = null;
+
 	private		Modules		mModules	= null;
 
 
@@ -158,8 +158,7 @@ public class Shell {
 		if( that.mFunctions != null )
 			mFunctions = new FunctionDeclarations(that.mFunctions);
 		
-		if( that.mNamespaces != null )	
-			mNamespaces = new Namespaces( that.mNamespaces );
+
 		
 		mModules = new Modules(that.mModules );
 		
@@ -785,18 +784,6 @@ public class Shell {
 		
 	}
 
-	public void declareNamespace(String ns ) {
-		if( mNamespaces == null )
-			mNamespaces = new Namespaces();
-		
-		mNamespaces.declare( ns );
-		
-	}
-	
-	public Namespaces getNamespaces()
-	{
-		return mNamespaces;
-	}
 
 	/*
 	 * Execute a command as a function body

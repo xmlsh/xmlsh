@@ -4,9 +4,8 @@
  *
  */
 
-package org.xmlsh.sh.shell;
+package org.xmlsh.core;
 
-import org.xmlsh.core.XValue;
 import org.xmlsh.util.NameValueMap;
 import org.xmlsh.util.StringPair;
 import org.xmlsh.util.Util;
@@ -16,7 +15,7 @@ public class Namespaces extends NameValueMap<String>
 {
 
 	public Namespaces() {}
-	Namespaces(Namespaces that) 
+	public Namespaces(Namespaces that) 
 	{
 		super(that);
 	}

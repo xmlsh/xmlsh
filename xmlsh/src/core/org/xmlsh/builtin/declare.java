@@ -43,7 +43,7 @@ public class declare extends BuiltinCommand {
 	}
 
 	private int listNamespaces() {
-		NameValueMap<String> ns = mShell.getNamespaces();
+		NameValueMap<String> ns = mShell.getEnv().getNamespaces();
 		if( ns == null )
 			return 0;
 		
@@ -71,7 +71,7 @@ public class declare extends BuiltinCommand {
 
 			
 			
-			mShell.declareNamespace(arg.toString());
+			mShell.getEnv().declareNamespace(arg.toString());
 			
 				
 		}

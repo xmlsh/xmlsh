@@ -17,11 +17,11 @@ import net.sf.saxon.s9api.XPathExecutable;
 import net.sf.saxon.s9api.XPathSelector;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
+import org.xmlsh.core.Namespaces;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.Options.OptionValue;
-import org.xmlsh.sh.shell.Namespaces;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.Util;
 
@@ -112,7 +112,7 @@ public class xpath extends XCommand {
 		Namespaces ns = null ;
 		
 		if( !opts.hasOpt("nons"))
-			ns = getEnv().getShell().getNamespaces();
+			ns = getEnv().getNamespaces();
 		if( opts.hasOpt("ns")){
 			Namespaces ns2 = new Namespaces();
 			if( ns != null )

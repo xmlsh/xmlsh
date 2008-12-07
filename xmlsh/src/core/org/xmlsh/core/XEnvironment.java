@@ -20,13 +20,11 @@ import org.xmlsh.sh.shell.Shell;
 public class XEnvironment  {
 	
 	@SuppressWarnings("unused")
-	private static Logger mLogger = LogManager.getLogger( XEnvironment.class );
-	private Shell mShell;
-	
-	private	XIOEnvironment mIO = new XIOEnvironment();
-	
-	private	  HashMap<String,XVariable>	mVars;
-	
+	private 	static Logger mLogger = LogManager.getLogger( XEnvironment.class );
+	private 	Shell mShell;
+	private		XIOEnvironment mIO = new XIOEnvironment();
+	private		HashMap<String,XVariable>	mVars;
+	private		Namespaces	mNamespaces = null;
 
 
 	
@@ -111,6 +109,9 @@ public class XEnvironment  {
 
 		that.mVars.putAll( this.mVars );	// clone variables
 		that.mIO = mIO.clone();
+		
+		if( that.mNamespaces != null )	
+			mNamespaces = new Namespaces( that.mNamespaces );
 		
 		return that;
 	}
@@ -278,6 +279,19 @@ public class XEnvironment  {
 	 */
 	public void setStdout(OutputStream stdout) throws IOException {
 		mIO.setStdout(stdout);
+	}
+
+	public void declareNamespace(String ns ) {
+		if( mNamespaces == null )
+			mNamespaces = new Namespaces();
+		
+		mNamespaces.declare( ns );
+		
+	}
+	
+	public Namespaces getNamespaces()
+	{
+		return mNamespaces;
 	}
 
 

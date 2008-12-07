@@ -353,7 +353,7 @@ class Expander {
 		
 		XQueryCompiler compiler = processor.newXQueryCompiler();
 		
-		NameValueMap<String> ns = mShell.getNamespaces();
+		NameValueMap<String> ns = mShell.getEnv().getNamespaces();
 		if( ns != null ){
 			for( String prefix : ns.keySet() ){
 				String uri = ns.get(prefix);
