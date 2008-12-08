@@ -30,5 +30,10 @@ A=$(echo '<foo/>' | xcat)
 echo $A 
 
 
+# Test local variable setting for simple commands
+unset A
+A=B eval 'echo A is $A'
+[ -z "$A" ] || echo A should not be set
+
 
 exit 0

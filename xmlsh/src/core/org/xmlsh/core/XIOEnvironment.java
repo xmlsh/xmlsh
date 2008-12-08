@@ -157,12 +157,6 @@ public class XIOEnvironment {
 	}
 	
 	
-	
-	public XIOEnvironment clone()
-	{
-		return new XIOEnvironment(this);
-		
-	}
 
 	public void initStdio() throws IOException {
 

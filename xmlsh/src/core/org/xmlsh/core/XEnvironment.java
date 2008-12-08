@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collection;
-import java.util.HashMap;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -23,7 +22,7 @@ public class XEnvironment  {
 	private 	static Logger mLogger = LogManager.getLogger( XEnvironment.class );
 	private 	Shell mShell;
 	private		XIOEnvironment mIO = new XIOEnvironment();
-	private		HashMap<String,XVariable>	mVars;
+	private		Variables	mVars;
 	private		Namespaces	mNamespaces = null;
 
 
@@ -40,7 +39,7 @@ public class XEnvironment  {
 	public XEnvironment(Shell shell, boolean bInitIO ) throws IOException
 	{
 		mShell = shell;
-		mVars = new HashMap<String,XVariable>();
+		mVars = new Variables();
 	
 		if( bInitIO )
 			mIO.initStdio();
@@ -106,9 +105,9 @@ public class XEnvironment  {
 	public XEnvironment clone(Shell shell) throws IOException
 	{
 		XEnvironment 	that = new XEnvironment(shell, false);
+		that.mVars		= new Variables(this.mVars);
 
-		that.mVars.putAll( this.mVars );	// clone variables
-		that.mIO = mIO.clone();
+		that.mIO = new XIOEnvironment(this.mIO);
 		
 		if( that.mNamespaces != null )	
 			mNamespaces = new Namespaces( that.mNamespaces );
@@ -130,10 +129,14 @@ public class XEnvironment  {
 		return mVars.keySet();
 	}
 
+	/*
+	 * Save the environment by cloning it and pushing it to this
+	 * and return the OLD environment
+	 */
 	public XIOEnvironment saveIO()
 	{
 		XIOEnvironment io = mIO;
-		mIO = mIO.clone();
+		mIO = new XIOEnvironment(io);
 		return io;
 	}
 	
