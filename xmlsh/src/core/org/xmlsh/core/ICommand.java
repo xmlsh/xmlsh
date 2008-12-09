@@ -27,6 +27,7 @@ public interface ICommand {
 	public 	CommandType	getType();
 	public 	File 	getFile();
 	
+	
 }
 //
 //

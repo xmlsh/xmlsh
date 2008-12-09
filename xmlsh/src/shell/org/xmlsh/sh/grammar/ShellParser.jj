@@ -287,7 +287,7 @@ TOKEN : {
 }
 
 <DEFAULT> TOKEN : {
-	< FUNC_DECL : <NAME> (["\t"," "])* "()" >
+	< FUNC_DECL : ("function" (["\t"," "]))? <NAME> (["\t"," "])* "()" >
 }
 
 
@@ -633,10 +633,13 @@ FunctionDefinition function_definition() :
 	{ Token t; CompoundCommand b;}
 {
 	t=<FUNC_DECL> linebreak() b=function_body() 
-	{ String name = t.toString()
-		.replaceFirst("\\s*\\(\\s*\\)\\s*$","");
+	{ String name = t.toString();
+	  boolean subshell = name.startsWith("function");
+	  if( subshell )
+	     name = name.replaceFirst("^function\\s*","");
+	   name = name.replaceFirst("\\s*\\(\\s*\\)\\s*$","");
 		return new 
-		FunctionDefinition(name, b ) ; }
+		FunctionDefinition(name, subshell , b ) ; }
 }
 
 CompoundCommand function_body() : 

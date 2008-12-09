@@ -13,15 +13,44 @@ import org.xmlsh.sh.shell.Shell;
 public class FunctionDefinition extends Command {
 	private String mName;
 	private Command mBody;
+	private boolean mSubShell;
 	
-	public FunctionDefinition( String name , Command body )
+	public FunctionDefinition( String name , boolean subshell , Command body )
 	{
 		mName = name;
+		mSubShell = subshell;
 		mBody = body;
 	}
 	
 	
 	
+	/**
+	 * @return the name
+	 */
+	public String getName() {
+		return mName;
+	}
+
+
+
+	/**
+	 * @return the body
+	 */
+	public Command getBody() {
+		return mBody;
+	}
+
+
+
+	/**
+	 * @return the subShell
+	 */
+	public boolean isSubShell() {
+		return mSubShell;
+	}
+
+
+
 	/* (non-Javadoc)
 	 * @see org.xmlsh.sh.core.Command#print(java.io.PrintWriter)
 	 */
@@ -35,7 +64,7 @@ public class FunctionDefinition extends Command {
 	@Override
 	public int exec(Shell shell) throws Exception {
 		
-		shell.declareFunction( mName , mBody );	
+		shell.declareFunction( this );	
 		return 0;
 		
 	}

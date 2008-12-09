@@ -36,7 +36,7 @@ import org.xmlsh.builtin.xreturn;
 import org.xmlsh.builtin.xtrue;
 import org.xmlsh.builtin.xversion;
 import org.xmlsh.builtin.xwhich;
-import org.xmlsh.sh.core.Command;
+import org.xmlsh.sh.core.FunctionDefinition;
 import org.xmlsh.sh.shell.Modules;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.StringPair;
@@ -122,9 +122,9 @@ public class CommandFactory
 
 	private ICommand getFunction(Shell shell, String name) {
 		
-		Command c = shell.getFunction( name );
-		if( c != null )
-			return new FunctionCommand( name , c );
+		FunctionDefinition func = shell.getFunction( name );
+		if( func != null )
+			return new FunctionCommand( func );
 		return null;
 	}
 

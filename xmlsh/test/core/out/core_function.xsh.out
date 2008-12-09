@@ -1,0 +1,4 @@
+foo: args are arg1 arg2 arg3
+after foo _A is foo
+bar: args are arg1 arg2
+after bar _A is

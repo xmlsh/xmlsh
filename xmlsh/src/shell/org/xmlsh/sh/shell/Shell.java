@@ -31,6 +31,7 @@ import org.xmlsh.core.XVariable;
 import org.xmlsh.core.XVariable.XVarFlag;
 import org.xmlsh.sh.core.Command;
 import org.xmlsh.sh.core.EvalScriptCommand;
+import org.xmlsh.sh.core.FunctionDefinition;
 import org.xmlsh.sh.grammar.ParseException;
 import org.xmlsh.sh.grammar.ShellParser;
 import org.xmlsh.sh.grammar.ShellParserReader;
@@ -53,7 +54,7 @@ public class Shell {
 	
 	private 	ShellOpts	mOpts;
 	
-	private		FunctionDeclarations mFunctions = null;
+	private		FunctionDefinitions mFunctions = null;
 	private		XEnvironment	mEnv  = null;
 	private		List<XValue> 	mArgs = new ArrayList<XValue>();
 	private		InputStream	mCommandInput = null;
@@ -156,7 +157,7 @@ public class Shell {
 		mSavedCD = System.getProperty("user.dir");
 		
 		if( that.mFunctions != null )
-			mFunctions = new FunctionDeclarations(that.mFunctions);
+			mFunctions = new FunctionDefinitions(that.mFunctions);
 		
 
 		
@@ -761,14 +762,14 @@ public class Shell {
 				break ;
 	}
 
-	public void declareFunction(String name, Command body) {
+	public void declareFunction(FunctionDefinition func) {
 		if( mFunctions == null )
-			mFunctions = new FunctionDeclarations();
-		mFunctions.put( name , body);
+			mFunctions = new FunctionDefinitions();
+		mFunctions.put( func.getName() , func);
 		
 	}
 
-	public Command getFunction(String name) {
+	public FunctionDefinition getFunction(String name) {
 		if( mFunctions == null )
 			return null;
 		return mFunctions.get(name);

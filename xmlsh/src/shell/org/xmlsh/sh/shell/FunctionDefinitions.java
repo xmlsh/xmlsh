@@ -6,15 +6,15 @@
 
 package org.xmlsh.sh.shell;
 
-import org.xmlsh.sh.core.Command;
+import org.xmlsh.sh.core.FunctionDefinition;
 import org.xmlsh.util.NameValueMap;
 
 @SuppressWarnings("serial")
-class FunctionDeclarations extends NameValueMap<Command>
+class FunctionDefinitions extends NameValueMap<FunctionDefinition>
 {
 
-	FunctionDeclarations() {}
-	FunctionDeclarations(FunctionDeclarations that) 
+	FunctionDefinitions() {}
+	FunctionDefinitions(FunctionDefinitions that) 
 	{
 		super(that);
 		
