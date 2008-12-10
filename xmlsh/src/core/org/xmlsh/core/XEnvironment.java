@@ -59,9 +59,19 @@ public class XEnvironment  {
 	
 	public void	setVar( XVariable var)
 	{
-		mVars.put(var.getName(), var);
+		/*
+		 * Special variables
+		 */
+		String name = var.getName();
+		if( name.startsWith("xmlns:")){
+			
+			declareNamespace( name.substring(6),var.getValue().toString());
+		} else
+			mVars.put(name , var);
 	}
 	
+
+
 	public void	setVar( String name , XValue value)
 	{
 		/* DO not do this until we have a copy-on-write deep cloning
@@ -291,6 +301,12 @@ public class XEnvironment  {
 		mNamespaces.declare( ns );
 		
 	}
+	private void declareNamespace(String prefix, String uri) {
+		if( mNamespaces == null )
+			mNamespaces = new Namespaces();
+		mNamespaces.declare(prefix, uri);
+	}
+
 	
 	public Namespaces getNamespaces()
 	{
