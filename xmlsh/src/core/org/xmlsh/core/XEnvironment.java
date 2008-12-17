@@ -119,8 +119,8 @@ public class XEnvironment  {
 
 		that.mIO = new XIOEnvironment(this.mIO);
 		
-		if( that.mNamespaces != null )	
-			mNamespaces = new Namespaces( that.mNamespaces );
+		if( this.mNamespaces != null )	
+			that.mNamespaces = new Namespaces( this.mNamespaces );
 		
 		return that;
 	}

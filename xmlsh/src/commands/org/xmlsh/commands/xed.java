@@ -209,7 +209,7 @@ public class xed extends XCommand {
 			if( xnode.getNodeKind() == 	XdmNodeKind.ATTRIBUTE ) {
 				NodeInfo anode = xnode.getUnderlyingNode();
 				NamePool pool = node.getNamePool();
-				int nameCode  = pool.allocate( anode.getURI() , anode.getPrefix(),anode.getLocalPart() );
+				int nameCode  = pool.allocate( anode.getPrefix(), anode.getURI() , anode.getLocalPart() );
 				node.putAttribute(nameCode,  StandardNames.XS_UNTYPED_ATOMIC, anode.getStringValueCS(), 0);
 			} else {
 				node.insertChildren( new NodeInfo[]  { getNodeInfo(xnode) } , true ,true );
