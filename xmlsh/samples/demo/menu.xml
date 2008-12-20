@@ -1,0 +1,6 @@
+<menu> 
+  <command title="Unix shell compatible" dir="unix"/>
+  <command title="XML expression" dir="xml"/>
+  <command title="Core tools" dir="tools"/>
+  <command title="Interesting examples" dir="interest"/>
+</menu>

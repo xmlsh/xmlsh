@@ -6,10 +6,15 @@
 
 package org.xmlsh.commands;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.sf.saxon.FeatureKeys;
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
+
+import net.sf.saxon.AugmentedSource;
+import net.sf.saxon.event.Builder;
 import net.sf.saxon.om.MutableNodeInfo;
 import net.sf.saxon.om.NamePool;
 import net.sf.saxon.om.NodeInfo;
@@ -20,6 +25,7 @@ import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.SaxonApiUncheckedException;
+import net.sf.saxon.s9api.Serializer;
 import net.sf.saxon.s9api.XPathCompiler;
 import net.sf.saxon.s9api.XPathExecutable;
 import net.sf.saxon.s9api.XPathSelector;
@@ -32,6 +38,7 @@ import org.xmlsh.core.Options;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.Options.OptionValue;
+import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.Util;
 
 
@@ -43,9 +50,13 @@ public class xed extends XCommand {
 
 	private void setupBuilders()
 	{
-		
+/*		
 		mProcessor = new Processor(false);
 		mProcessor.setConfigurationProperty(FeatureKeys.TREE_MODEL, net.sf.saxon.event.Builder.LINKED_TREE);
+*/
+		mProcessor = Shell.getProcessor();
+		
+
 		mCompiler = mProcessor.newXPathCompiler();
 		mBuilder = mProcessor.newDocumentBuilder();
 		
@@ -89,9 +100,9 @@ public class xed extends XCommand {
 			{
 	
 				if( ov != null && ! ov.getValue().toString().equals("-"))
-					context = mBuilder.build( getFile(ov.getValue()));
+					context = build( getFile(ov.getValue()));
 				else {
-					context = mBuilder.build(getStdin().asSource());
+					context = build(getStdin().asSource());
 				}	
 			}
 		}
@@ -146,6 +157,7 @@ public class xed extends XCommand {
 		
 		Iterable<XdmItem>  results = getResults( eval ,  context , opt_matches );
 		
+		
 	
 		for( XdmItem item : results ){
 			Object obj = item.getUnderlyingValue();
@@ -166,9 +178,15 @@ public class xed extends XCommand {
 			
 		}
 		
-	
-		mProcessor.writeXdmValue(context, getStdout().asDestination() );
+		// Shell.getProcessor().writeXdmValue( mValue, ser);
+		// Util.writeXdmValue( context , getStdout().asDestination() );
+		Serializer ser = new Serializer();
+		ser.setOutputStream( getStdout().asOutputStream() );
+		ser.setOutputProperty(Serializer.Property.OMIT_XML_DECLARATION, "yes");
+		ser.setOutputProperty(Serializer.Property.METHOD, "xml");
 
+		Util.writeXdmValue( context , ser );
+	
 		
 		return 0;
 
@@ -211,6 +229,10 @@ public class xed extends XCommand {
 				NamePool pool = node.getNamePool();
 				int nameCode  = pool.allocate( anode.getPrefix(), anode.getURI() , anode.getLocalPart() );
 				node.putAttribute(nameCode,  StandardNames.XS_UNTYPED_ATOMIC, anode.getStringValueCS(), 0);
+				if( !Util.isEmpty(anode.getPrefix()) ){
+					int nsCode = pool.allocateNamespaceCode(nameCode);
+					node.addNamespace(nsCode, false);
+				}
 			} else {
 				node.insertChildren( new NodeInfo[]  { getNodeInfo(xnode) } , true ,true );
 			}
@@ -249,7 +271,8 @@ public class xed extends XCommand {
 	 */
 	private XdmNode importNode( XdmNode node ) throws SaxonApiException
 	{
-		return mBuilder.build(node.asSource());
+		Source src = node.asSource();
+		return build(src);
 	}
 
 	
@@ -260,7 +283,25 @@ public class xed extends XCommand {
 		
 		return ((DocumentImpl) xnode.getUnderlyingNode().getDocumentRoot()).getDocumentElement();
 	}
-
+	
+	/*
+	 * Creates/Builds a Tree (LINKED_TREE) type node from any source
+	 */
+	
+	private XdmNode build( Source src ) throws SaxonApiException
+	{
+		AugmentedSource asrc = AugmentedSource.makeAugmentedSource(src); 
+		asrc.setTreeModel(Builder.LINKED_TREE); 
+		return mBuilder.build(asrc);
+		
+	}
+	
+	private XdmNode build( File file ) throws SaxonApiException
+	{
+		Source src = new StreamSource(file);
+		return build(src);
+	}
+	
 
 }
 
