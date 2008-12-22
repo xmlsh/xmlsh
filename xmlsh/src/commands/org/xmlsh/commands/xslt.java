@@ -6,11 +6,9 @@
 
 package org.xmlsh.commands;
 
-import java.io.FileInputStream;
 import java.util.List;
 
 import javax.xml.transform.Source;
-import javax.xml.transform.stream.StreamSource;
 
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.QName;
@@ -60,7 +58,7 @@ public class xslt extends XCommand {
 			{
 	
 				if( ov != null && ! ov.getValue().toString().equals("-"))
-					context = new StreamSource( getFile(ov.getValue()));
+					context =  getSource(ov.getValue());
 				else {
 					bReadStdin = true ;
 					context =  getStdin().asSource();
@@ -83,7 +81,7 @@ public class xslt extends XCommand {
 				source = getStdin().asSource();
 			}
 			else
-				source =  new StreamSource( new FileInputStream( getFile(fname)));
+				source =  getSource(fname);
 	
 
 		}

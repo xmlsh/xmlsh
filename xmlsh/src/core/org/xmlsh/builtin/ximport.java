@@ -10,7 +10,6 @@ import java.util.List;
 
 import org.xmlsh.core.BuiltinCommand;
 import org.xmlsh.core.XValue;
-import org.xmlsh.util.NameValueMap;
 
 public class ximport extends BuiltinCommand {
 

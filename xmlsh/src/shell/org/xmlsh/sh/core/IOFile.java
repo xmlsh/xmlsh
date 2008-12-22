@@ -6,8 +6,6 @@
 
 package org.xmlsh.sh.core;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 
@@ -26,26 +24,27 @@ public class IOFile {
 		out.print(mFile);
 		
 	}
+
+	
+	
 	public void exec(Shell shell) throws IOException {
 		
 		String file = shell.expandString( mFile ).toString();
 		
-		if( mPrefix.equals("<")){
-			shell.getEnv().setStdin( 
-					new FileInputStream(shell.getFile(file)));
-		}
+		if( mPrefix.equals("<"))
+			shell.getEnv().setStdin( shell.getInputStream(file) );
+			
 		else
 		if( mPrefix.equals("2>"))
-				shell.getEnv().setStderr(
-						 new FileOutputStream(shell.getFile(file)));
+				shell.getEnv().setStderr( shell.getOutputStream(file, false));
+		
 		else
 		if( mPrefix.equals(">"))
-			shell.getEnv().setStdout(
-					 new FileOutputStream(shell.getFile(file)));
+			shell.getEnv().setStdout(shell.getOutputStream(file, false));
 		else
 		if( mPrefix.equals(">>"))
-				shell.getEnv().setStdout(
-						new FileOutputStream(shell.getFile(file),true));
+				shell.getEnv().setStdout(shell.getOutputStream(file, true));
+
 		
 		
 	}

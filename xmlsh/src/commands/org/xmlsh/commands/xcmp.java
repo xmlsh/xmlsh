@@ -10,11 +10,9 @@ package org.xmlsh.commands;
 
 
 import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -70,22 +68,15 @@ public class xcmp extends XCommand {
 			return usage();
 		
 		
-		File 	f1 = getFile( argv.get(0));
-		File 	f2 =  getFile( argv.get(1));
+		URL 	u1 = getURI( argv.get(0)).toURL();
+		URL 	u2 =  getURI( argv.get(1)).toURL();
 		
-		if( ! f1.exists() || ! f1.canRead()){
-			printErr("Cannot open or read: " + f1.getName() );
-			return 1;
-		}
-		if( ! f2.exists() || ! f2.canRead()){
-			printErr("Cannot open or read: " + f2.getName() );
-			return 1;
-		}
+		
 			
 		if( xopt )
-			return xml_cmp(  f1 , f2 );
+			return xml_cmp(  u1 , u2 );
 		else
-			return bin_cmp(  f1, f2 );
+			return bin_cmp(  u1, u2 );
 			
 		
 
@@ -104,13 +95,13 @@ public class xcmp extends XCommand {
 
 
 
-	private int bin_cmp(File f1, File f2) throws IOException {
-		BufferedInputStream is1 = new BufferedInputStream(new FileInputStream(f1));
+	private int bin_cmp(URL f1, URL f2) throws IOException {
+		BufferedInputStream is1 = new BufferedInputStream(f1.openStream());
 	
 		
 		BufferedInputStream is2 = null;
 		try {
-			is2 = new BufferedInputStream(new FileInputStream(f2));
+			is2 = new BufferedInputStream(f2.openStream());
 			
 			int b = 0;
 			int c;
@@ -143,16 +134,16 @@ public class xcmp extends XCommand {
 
 
 
-	private int xml_cmp(File f1, File f2) throws FileNotFoundException, XMLStreamException  {
+	private int xml_cmp(URL f1, URL f2) throws XMLStreamException, IOException  {
 		
 		XMLInputFactory inputFactory=XMLInputFactory.newInstance();
 		inputFactory.setProperty(XMLInputFactory.IS_COALESCING, Boolean.valueOf(true));
 		
-		InputStream is1 =new FileInputStream(f1);
+		InputStream is1 = f1.openStream();
 		XMLEventReader  xmlreader1  =inputFactory.createXMLEventReader(is1);
 		
 
-		InputStream is2 =new FileInputStream(f2);
+		InputStream is2 = f2.openStream();
 		XMLEventReader  xmlreader2  =inputFactory.createXMLEventReader(is2);
 		
 		try {

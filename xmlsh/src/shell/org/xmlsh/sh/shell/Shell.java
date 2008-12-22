@@ -7,11 +7,17 @@
 package org.xmlsh.sh.shell;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Constructor;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
@@ -635,6 +641,7 @@ public class Shell {
 		mStatus = status;
 	}
 
+	
 	public File getFile(String fname) throws IOException {
 		return getExplicitFile( fname , false);
 	}
@@ -808,6 +815,37 @@ public class Shell {
 		
 	}
 
+	public URI getURI( String file ) throws IOException, URISyntaxException
+	{
+		if( Util.isURIScheme(file))
+			
+				return new URI(file);
+			
+		 else
+				return getFile(file).toURI();
+			
+	}
+	
+	
+	
+	public InputStream getInputStream(String file) throws IOException {
+		if( Util.isURIScheme(file)){
+			try {
+				return new URI(file).toURL().openStream();
+			} catch (Exception e) {
+				mLogger.debug("Exception converting to URI: " + file , e);
+				return null;
+			}
+			
+		}
+		else
+			return new FileInputStream(getFile(file));
+	}
+
+	public OutputStream getOutputStream(String file, boolean append) throws FileNotFoundException, IOException
+	{
+		return  new FileOutputStream(getFile(file),append);
+	}
 
 	
 	

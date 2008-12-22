@@ -8,8 +8,15 @@ package org.xmlsh.core;
 
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
+
+import javax.xml.transform.Source;
 
 import org.xmlsh.sh.shell.Shell;
 
@@ -75,28 +82,82 @@ public abstract class XCommand implements ICommand {
 		return mEnvironment.getCurdir();
 	}
 
+	
 
 
 	/**
-	 * @param fname
+	 * @param file
 	 * @return
 	 * @throws IOException
-	 * @see org.xmlsh.core.XEnvironment#getFile(java.lang.String)
+	 * @throws URISyntaxException
+	 * @see org.xmlsh.core.XEnvironment#getURI(java.lang.String)
 	 */
-	public File getFile(String fname) throws IOException {
-		return mEnvironment.getFile(fname);
+	public URI getURI(String file) throws IOException, URISyntaxException {
+		return mEnvironment.getURI(file);
+	}
+	public URI getURI(XValue file) throws IOException, URISyntaxException {
+		return mEnvironment.getURI(file.toString());
+	}
+
+
+	/**
+	 * @param file
+	 * @return
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 * @see org.xmlsh.core.XEnvironment#getInputStream(java.lang.String)
+	 */
+	public InputStream getInputStream(String file) throws FileNotFoundException, IOException {
+		return mEnvironment.getInputStream(file);
+	}
+
+	public InputStream getInputStream(XValue file) throws FileNotFoundException, IOException {
+		return mEnvironment.getInputStream(file);
 	}
 
 
 
 	/**
-	 * @param fvalue
+	 * @param file
 	 * @return
 	 * @throws IOException
-	 * @see org.xmlsh.core.XEnvironment#getFile(org.xmlsh.core.XValue)
+	 * @throws URISyntaxException
+	 * @see org.xmlsh.core.XEnvironment#getSource(java.lang.String)
 	 */
-	public File getFile(XValue fvalue) throws IOException {
-		return mEnvironment.getFile(fvalue);
+	public Source getInputSource(String file) throws IOException, URISyntaxException {
+		return mEnvironment.getSource(file);
+	}
+
+
+
+	/**
+	 * @param value
+	 * @return
+	 * @throws URISyntaxException 
+	 * @throws IOException 
+	 * @see org.xmlsh.core.XEnvironment#getSource(org.xmlsh.core.XValue)
+	 */
+	public Source getSource(XValue value) throws IOException, URISyntaxException {
+		return mEnvironment.getSource(value);
+	}
+	 
+	public Source getSource(String value) throws IOException, URISyntaxException {
+			return mEnvironment.getSource(value);
+	}
+
+
+
+	/**
+	 * @param file
+	 * @param append
+	 * @return
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 * @see org.xmlsh.core.XEnvironment#getOutputStream(java.lang.String, boolean)
+	 */
+	public OutputStream getOutputStream(String file, boolean append) throws FileNotFoundException,
+			IOException {
+		return mEnvironment.getOutputStream(file, append);
 	}
 
 

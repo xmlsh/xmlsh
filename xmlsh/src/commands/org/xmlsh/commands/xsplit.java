@@ -23,7 +23,6 @@ package org.xmlsh.commands;
  */
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -107,7 +106,7 @@ public class xsplit extends XCommand {
 		
 		InputStream is = 
 			xvargs.size() == 1 ? 
-					new FileInputStream(getFile(xvargs.get(0))): 
+					getInputStream(xvargs.get(0)): 
 					getStdin().asInputStream() ;
 		split(is );
 		
@@ -250,7 +249,7 @@ public class xsplit extends XCommand {
 
 
 	private File nextFile() throws IOException {
-		File f = getFile( mPrefix + mSeq++ + mSuffix + mExt );
+		File f = getEnv().getShell().getFile( mPrefix + mSeq++ + mSuffix + mExt );
 		return f;
 	}
 

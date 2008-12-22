@@ -8,6 +8,7 @@ package org.xmlsh.core;
 
 import org.xmlsh.util.NameValueMap;
 
+@SuppressWarnings("serial")
 public class Variables extends NameValueMap<XVariable>{
 
 	public Variables() {}

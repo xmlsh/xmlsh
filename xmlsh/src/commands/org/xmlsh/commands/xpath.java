@@ -60,7 +60,7 @@ public class xpath extends XCommand {
 			{
 	
 				if( ov != null && ! ov.getValue().toString().equals("-"))
-					context = builder.build( getFile(ov.getValue()));
+					context = builder.build( getSource(ov.getValue()));
 				else {
 					context = getStdin().asXdmNode();
 				}	
@@ -75,7 +75,7 @@ public class xpath extends XCommand {
 		OptionValue ov = opts.getOpt("f");
 		String xpath = null;
 		if( ov != null )
-			xpath = Util.readString( getFile(ov.getValue().toString()) ) ;
+			xpath = Util.readString( getURI(ov.getValue()) ) ;
 		else {
 			ov = opts.getOpt("q");
 			if( ov != null )

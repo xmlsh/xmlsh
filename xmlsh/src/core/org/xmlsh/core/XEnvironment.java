@@ -7,10 +7,16 @@
 package org.xmlsh.core;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Collection;
+
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -159,25 +165,43 @@ public class XEnvironment  {
 
 	
 
+	
+
 	/**
-	 * @param fname
+	 * @param file
 	 * @return
 	 * @throws IOException
-	 * @see org.xmlsh.sh.shell.Shell#getFile(java.lang.String)
+	 * @throws URISyntaxException
+	 * @see org.xmlsh.sh.shell.Shell#getURI(java.lang.String)
 	 */
-	public File getFile(String fname) throws IOException {
-		return mShell.getFile(fname);
+	public URI getURI(String file) throws IOException, URISyntaxException {
+		return mShell.getURI(file);
 	}
 
 
 	/**
-	 * @param fvalue
+	 * @param file
 	 * @return
+	 * @throws FileNotFoundException
 	 * @throws IOException
-	 * @see org.xmlsh.sh.shell.Shell#getFile(org.xmlsh.core.XValue)
+	 * @see org.xmlsh.sh.shell.Shell#getInputStream(java.lang.String)
 	 */
-	public File getFile(XValue fvalue) throws IOException {
-		return mShell.getFile(fvalue);
+	public InputStream getInputStream(String file) throws FileNotFoundException, IOException {
+		return mShell.getInputStream(file);
+	}
+
+
+	/**
+	 * @param file
+	 * @param append
+	 * @return
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 * @see org.xmlsh.sh.shell.Shell#getOutputStream(java.lang.String, boolean)
+	 */
+	public OutputStream getOutputStream(String file, boolean append) throws FileNotFoundException,
+			IOException {
+		return mShell.getOutputStream(file, append);
 	}
 
 
@@ -313,6 +337,19 @@ public class XEnvironment  {
 		return mNamespaces;
 	}
 
+
+	public InputStream getInputStream(XValue file) throws IOException {
+		return mShell.getInputStream(file.toString());
+	}
+
+	public Source getSource(String  file) throws IOException, URISyntaxException {
+		return new StreamSource( mShell.getURI(file).toASCIIString() );
+	}
+
+	public Source getSource(XValue value) throws IOException, URISyntaxException {
+		return getSource( value.toString());
+
+	}
 
 }
 //

@@ -9,6 +9,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -111,10 +114,21 @@ public class Util
 		return new String( readBytes(is));
 	}
 
-	
+
+
+	public static String readString(URL url) throws IOException
+	{
+		InputStream is = url.openStream();
+		String ret = new String( readBytes(is));
+		is.close();
+		return ret;
+	}
 	public static String readString(File file) throws IOException
 	{
-		return readString(new FileInputStream(file));
+		FileInputStream fis = new FileInputStream(file);
+		String ret = readString(fis);
+		fis.close();
+		return ret;
 	}
 	public static String replace(String str, String pattern, String replace)
 	{
@@ -539,6 +553,18 @@ public class Util
 	    } catch (XPathException err) {
 	        throw new SaxonApiException(err);
 	    }
+	}
+
+
+	public static boolean isURIScheme(String file) {
+		return file.startsWith("http:") ||
+				file.startsWith("https:") ||
+				file.startsWith("ftp:");
+	}
+
+
+	public static String readString(URI uri) throws MalformedURLException, IOException {
+		return readString( uri.toURL());
 	}
 
 

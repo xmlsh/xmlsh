@@ -6,12 +6,10 @@
 
 package org.xmlsh.commands;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.transform.Source;
-import javax.xml.transform.stream.StreamSource;
 
 import net.sf.saxon.AugmentedSource;
 import net.sf.saxon.event.Builder;
@@ -100,7 +98,7 @@ public class xed extends XCommand {
 			{
 	
 				if( ov != null && ! ov.getValue().toString().equals("-"))
-					context = build( getFile(ov.getValue()));
+					context = build( getSource(ov.getValue()));
 				else {
 					context = build(getStdin().asSource());
 				}	
@@ -115,7 +113,7 @@ public class xed extends XCommand {
 		OptionValue ov = opts.getOpt("f");
 		String xpath = null;
 		if( ov != null )
-			xpath = Util.readString( getFile(ov.getValue().toString()) ) ;
+			xpath = Util.readString( getURI(ov.getValue())) ;
 		else 
 			xpath = xvargs.remove(0).toString();
 		
@@ -295,12 +293,7 @@ public class xed extends XCommand {
 		return mBuilder.build(asrc);
 		
 	}
-	
-	private XdmNode build( File file ) throws SaxonApiException
-	{
-		Source src = new StreamSource(file);
-		return build(src);
-	}
+
 	
 
 }

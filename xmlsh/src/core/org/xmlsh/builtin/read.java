@@ -8,7 +8,6 @@ package org.xmlsh.builtin;
 
 import java.io.InputStream;
 import java.util.List;
-import java.util.StringTokenizer;
 
 import org.xmlsh.core.BuiltinCommand;
 import org.xmlsh.core.XValue;

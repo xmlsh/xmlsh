@@ -50,7 +50,8 @@ public class xls extends XCommand {
 		boolean longMode = opts.hasOpt("l");
 		for( XValue arg : args ){
 			
-			File dir = getFile(arg.toString());
+			// Must go to Shell API to get raw files
+			File dir = getEnv().getShell().getFile(arg.toString());
 			if( !dir.isDirectory() ){
 
 				new XFile(dir).serialize(hd, longMode);

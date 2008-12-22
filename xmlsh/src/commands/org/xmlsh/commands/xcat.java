@@ -58,7 +58,7 @@ public class xcat extends XCommand {
 		 */
 		if(  xvargs.size() == 1 ){
 			DocumentBuilder builder = processor.newDocumentBuilder();
-			context = builder.build( getFile(xvargs.remove(0).toString()));
+			context = builder.build( getSource(xvargs.remove(0)));
 
 		}
 
@@ -133,7 +133,7 @@ public class xcat extends XCommand {
 		if( hasFiles ){
 			ArrayList<XValue> files = new ArrayList<XValue>();
 			for( XValue a : xvargs ){
-				files.add( new XValue( getFile(a).toURI().toString()));
+				files.add( new XValue( (a).toString()));
 			}
 			eval.setExternalVariable( new QName("files"), new XValue(files).asXdmValue());
 		
@@ -145,6 +145,7 @@ public class xcat extends XCommand {
 
 
 	}
+
 
 
 }

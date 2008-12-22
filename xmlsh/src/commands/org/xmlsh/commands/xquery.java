@@ -6,7 +6,7 @@
 
 package org.xmlsh.commands;
 
-import java.io.File;
+import java.net.URI;
 import java.util.List;
 
 import net.sf.saxon.s9api.DocumentBuilder;
@@ -59,7 +59,7 @@ public class xquery extends XCommand {
 			{
 	
 				if( ov != null && ! ov.getValue().toString().equals("-"))
-					context = builder.build( getFile(ov.getValue()));
+					context = builder.build( getSource(ov.getValue()));
 				else {
 					bReadStdin = true ;
 					context = getStdin().asXdmNode();
@@ -89,11 +89,11 @@ public class xquery extends XCommand {
 				query = Util.readString(getStdin().asInputStream());
 			}
 			else {
-				File qfile = getFile(fname);
-				query =  Util.readString( qfile);
+				URI  qfile = getURI(fname);
+				query =  Util.readString( qfile.toURL());
 
 				// Set file as base URI for debugging output 
-				compiler.setBaseURI(qfile.toURI());
+				compiler.setBaseURI(qfile);
 			
 			}
 	
