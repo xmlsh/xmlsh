@@ -152,7 +152,17 @@ public class xcmp extends XCommand {
 			while( xmlreader1.hasNext() && xmlreader2.hasNext()   ){
 				
 				XMLEvent e1 = xmlreader1.nextEvent();
+				
+				/*
+				 * DAL: Note: skip START_DOCUMENT tags on either e1 or e2
+				 * StAX only produdes START_DOCUMENT tags if there is an <?xml?> declaration
+				 * which doesnt change the logical meaning of the document wrt to comparison
+				 */
+				if( e1.getEventType() == XMLEvent.START_DOCUMENT && xmlreader1.hasNext() )
+					e1 = xmlreader1.nextEvent();
 				XMLEvent e2 = xmlreader2.nextEvent();
+				if( e2.getEventType() == XMLEvent.START_DOCUMENT && xmlreader2.hasNext() )
+					e2 = xmlreader2.nextEvent();
 
 				
 				if( ! isEqual( e1 , e2 )){
@@ -165,7 +175,10 @@ public class xcmp extends XCommand {
 				}
 			}
 			return ((! xmlreader1.hasNext()) && (! xmlreader2.hasNext())) ? 0 : 1 ;
-		} finally {
+		} 
+		
+		
+		finally {
 			try {
 				xmlreader1.close();
 			} finally {} 
@@ -289,6 +302,16 @@ public class xcmp extends XCommand {
 		return true ;
 	}
 	
+	private boolean isEqual(ProcessingInstruction e1 , ProcessingInstruction e2)
+	{
+		String t1 = e1.getTarget();
+		String t2 = e2.getTarget();
+		if( ! Util.isEqual(t1,t2))
+			return false ;
+		t1 = e1.getData();
+		t2 = e2.getData();
+		return Util.isEqual(t1, t2);
+	}
 	
 
 	private boolean isEqual(XMLEvent e1, XMLEvent e2) {

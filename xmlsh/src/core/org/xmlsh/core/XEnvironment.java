@@ -304,8 +304,8 @@ public class XEnvironment  {
 	 * @throws IOException
 	 * @see org.xmlsh.core.XIOEnvironment#setStdin(java.io.InputStream)
 	 */
-	public void setStdin(InputStream stdin) throws IOException {
-		mIO.setStdin(stdin);
+	public void setStdin(InputStream stdin, String systemid ) throws IOException {
+		mIO.setStdin(stdin,systemid);
 	}
 
 

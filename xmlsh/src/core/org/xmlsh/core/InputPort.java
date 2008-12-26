@@ -33,11 +33,13 @@ public class InputPort  implements IPort
 	// Actual input stream
 	private InputStream	 mStream;
 	private int mRef = 1;
+	private String mSystemid;
 
 
-	public InputPort( InputStream is ) throws IOException
+	public InputPort( InputStream is , String systemid ) throws IOException
 	{
 		mStream = is;
+		mSystemid = systemid;
 	}
 
 	/*
@@ -61,8 +63,15 @@ public class InputPort  implements IPort
 	public synchronized Source asSource()
 	{
 	
-		return new StreamSource( asInputStream());
+		Source s = new StreamSource( asInputStream());
+		s.setSystemId(getSystemId());
+		return s;
 	}
+	private String getSystemId() {
+		// TODO Auto-generated method stub
+		return mSystemid;
+	}
+
 	public synchronized XdmNode asXdmNode() throws SaxonApiException
 	{
 		net.sf.saxon.s9api.DocumentBuilder builder = Shell.getProcessor().newDocumentBuilder();

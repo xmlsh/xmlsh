@@ -2,7 +2,8 @@
 # checking for required externals
 
 EXTERNS=<["pwd","ls","touch","rm","cat","sleep"]>
-
+echo Some of these tests require access to the internet
+echo only files from http://test.xmlsh.org are accessed
 echo Checking for required external tools $EXTERNS
 # echo in path $PATH
 if ! xwhich -n $EXTERNS ; then

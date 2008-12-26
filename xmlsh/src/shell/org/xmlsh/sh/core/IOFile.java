@@ -32,7 +32,7 @@ public class IOFile {
 		String file = shell.expandString( mFile ).toString();
 		
 		if( mPrefix.equals("<"))
-			shell.getEnv().setStdin( shell.getInputStream(file) );
+			shell.getEnv().setStdin( shell.getInputStream(file) , file );
 			
 		else
 		if( mPrefix.equals("2>"))

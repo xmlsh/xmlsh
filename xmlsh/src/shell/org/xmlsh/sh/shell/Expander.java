@@ -315,7 +315,7 @@ class Expander {
 
 			Shell shell = mShell.clone();
 			shell.getEnv().setStdout( pipe.getOutput() );
-			shell.getEnv().setStdin( new NullInputStream() );
+			shell.getEnv().setStdin( new NullInputStream() ,"");
 			
 			Command c = new EvalScriptCommand( cmd );
 			
@@ -420,7 +420,7 @@ class Expander {
 		try {
 		
 			shell.getEnv().setStdout( out );
-			shell.getEnv().setStdin( new NullInputStream() );
+			shell.getEnv().setStdin( new NullInputStream(),"" );
 			shell.runScript(script);
 			
 			

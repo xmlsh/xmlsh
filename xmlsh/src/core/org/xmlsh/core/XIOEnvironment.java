@@ -66,10 +66,11 @@ public class XIOEnvironment {
 	}
 
 	/**
+	 * @param systemid 
 	 * @param stdin the stdin to set
 	 * @throws IOException 
 	 */
-	public void setStdin(InputStream in) throws IOException {
+	public void setStdin(InputStream in, String systemid) throws IOException {
 		mStdinRedirected = true ;
 		InputPort stdin = mInputs.getDefault();
 
@@ -79,8 +80,8 @@ public class XIOEnvironment {
 			stdin.release();
 		}
 			
-		stdin = new InputPort(in);
-		mInputs.add( new NamedPort<InputPort>( null , true , stdin ));
+		stdin = new InputPort(in,systemid);
+		mInputs.add( new NamedPort<InputPort>( null , true , stdin  ));
 	}
 
 	/**
@@ -161,7 +162,7 @@ public class XIOEnvironment {
 	public void initStdio() throws IOException {
 
 		mInputs.add( 
-				new NamedPort<InputPort>( null , true , new InputPort(System.in) )
+				new NamedPort<InputPort>( null , true , new InputPort(System.in,"") )
 		);
 
 		mOutputs.add( 

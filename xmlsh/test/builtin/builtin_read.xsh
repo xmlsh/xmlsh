@@ -42,3 +42,10 @@ EOF
 
 [ "$a" = "foo" ] || echo Failed reading extra data
 [ "$b" = "bar spam" ] || echo Failed reading extra data
+
+# Test reading from HTTP
+(
+IFS="," 
+read title author pub-date < http://test.xmlsh.org/data/books.csv
+echo author is $author
+)

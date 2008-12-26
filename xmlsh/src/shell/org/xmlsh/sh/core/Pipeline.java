@@ -83,7 +83,7 @@ public class Pipeline extends Command {
 			
 			
 			// Set input to pipe
-			sh.getEnv().setStdin( pipes[pi-1].getInput() );
+			sh.getEnv().setStdin( pipes[pi-1].getInput() ,"");
 			
 			// all but last command set output to pipe
 			if( pi < ncmds-1)
