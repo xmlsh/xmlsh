@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.xmlsh.util.StringPair;
 import org.xmlsh.util.Util;
 
 
@@ -27,10 +28,12 @@ public class Options
 	public static class	OptionDef
 	{
 		public 		String 		name;
+		public		String		longname;
 		public 		boolean		hasArgs;
 		public 		boolean 	hasMulti;
-		public OptionDef( String flag , boolean arg , boolean multi ){
-			this.name = flag;
+		public OptionDef( String name , String longname , boolean arg , boolean multi ){
+			this.name = name;
+			this.longname = longname ;
 			this.hasArgs = arg;
 			this.hasMulti = multi;
 		}
@@ -117,7 +120,16 @@ public class Options
 				bHasArgs = true ;
 				bHasMulti = true ;
 			}
-			defs.add( new OptionDef(sdef , bHasArgs,bHasMulti));
+			
+			// Check for optional long-name
+			// a=longer
+			StringPair pair = new StringPair( sdef , '=' );
+			
+			
+			if( pair.hasDelim() )
+				defs.add( new OptionDef(pair.getLeft() ,  pair.getRight(),bHasArgs,bHasMulti));
+			else
+				defs.add( new OptionDef(sdef ,  null , bHasArgs,bHasMulti));
 			
 		}
 		
@@ -148,7 +160,9 @@ public class Options
 		
 		for (OptionDef opt : mDefs) {
 
-			if( Util.isEqual( str , opt.name ) )
+			if( Util.isEqual( str , opt.name ) ||
+				Util.isEqual( str , opt.longname )
+				)
 				return opt;
 			
 		}
@@ -211,7 +225,9 @@ public class Options
 	public OptionValue	getOpt( String opt )
 	{
 		for( OptionValue ov : mOptions ){
-			if( ov.getOptionDef().name.equals(opt))
+			if( Util.isEqual(opt,ov.getOptionDef().name)||
+				Util.isEqual(opt,ov.getOptionDef().longname )
+			)
 				return ov;
 			
 		}

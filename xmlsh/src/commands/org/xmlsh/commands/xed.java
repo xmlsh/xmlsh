@@ -32,6 +32,7 @@ import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XdmNodeKind;
 import net.sf.saxon.s9api.XdmSequenceIterator;
 import net.sf.saxon.tree.DocumentImpl;
+import net.sf.saxon.type.Type;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
@@ -70,9 +71,11 @@ public class xed extends XCommand {
 		XValue		opt_add 	= null;
 		XValue		opt_replace = null;
 		boolean		opt_matches = false ;
+
 		
 		
-		Options opts = new Options( "f:,i:,n,v,r:,a:,d,matches" , args );
+		
+		Options opts = new Options( "f:,i:,n,v,r=replace:,a=add:,d=delete,matches" , args );
 		opts.parse();
 		
 		setupBuilders();
@@ -133,6 +136,7 @@ public class xed extends XCommand {
 		opt_replace = opts.getOptValue("r");
 		opt_delete  = opts.hasOpt("d");
 		opt_matches = opts.hasOpt("matches");
+
 		
 		
 		XPathExecutable expr;
@@ -152,29 +156,27 @@ public class xed extends XCommand {
 				eval.setVariable( new QName(name),  value.asXdmValue() );	
 			}
 		}
-		
-		Iterable<XdmItem>  results = getResults( eval ,  context , opt_matches );
-		
-		
-	
-		for( XdmItem item : results ){
-			Object obj = item.getUnderlyingValue();
-			if( obj instanceof MutableNodeInfo ){
-				MutableNodeInfo node = (MutableNodeInfo) obj;
-				if( opt_replace != null )
-					replace(node, opt_replace);
-				if( opt_add != null )
-					add( node , opt_add );
-				if( opt_delete )
-					delete( node );
+		if( opt_replace != null || opt_delete  || opt_add  != null ){
 				
-				// else
-				// if( opt_add != null )
-				//	add( builder , )
+			
+			Iterable<XdmItem>  results = getResults( eval ,  context , opt_matches );
+			for( XdmItem item : results ){
+				Object obj = item.getUnderlyingValue();
+				if( obj instanceof MutableNodeInfo ){
+					MutableNodeInfo node = (MutableNodeInfo) obj;
+					if( opt_replace != null )
+						replace(node, opt_replace);
+					if( opt_add != null )
+						add( node , opt_add );
+					if( opt_delete )
+						delete( node );
+
+				}
 			}
-			
-			
 		}
+		
+
+		
 		
 		// Shell.getProcessor().writeXdmValue( mValue, ser);
 		// Util.writeXdmValue( context , getStdout().asDestination() );
@@ -190,6 +192,7 @@ public class xed extends XCommand {
 
 	}
 
+	
 	private Iterable<XdmItem> getResults(XPathSelector eval, XdmNode root , boolean opt_matches) throws SaxonApiException {
 		
 		if( ! opt_matches ){
@@ -224,13 +227,7 @@ public class xed extends XCommand {
 			XdmNode xnode = (XdmNode) add.asXdmValue();
 			if( xnode.getNodeKind() == 	XdmNodeKind.ATTRIBUTE ) {
 				NodeInfo anode = xnode.getUnderlyingNode();
-				NamePool pool = node.getNamePool();
-				int nameCode  = pool.allocate( anode.getPrefix(), anode.getURI() , anode.getLocalPart() );
-				node.putAttribute(nameCode,  StandardNames.XS_UNTYPED_ATOMIC, anode.getStringValueCS(), 0);
-				if( !Util.isEmpty(anode.getPrefix()) ){
-					int nsCode = pool.allocateNamespaceCode(nameCode);
-					node.addNamespace(nsCode, false);
-				}
+				addAttribute(node, anode.getPrefix() , anode.getURI() , anode.getLocalPart(), anode.getStringValue() );
 			} else {
 				node.insertChildren( new NodeInfo[]  { getNodeInfo(xnode) } , true ,true );
 			}
@@ -241,20 +238,26 @@ public class xed extends XCommand {
 
 
 
+	private void addAttribute(MutableNodeInfo node, String prefix, String uri , String local , String value ) {
+
+		NamePool pool = node.getNamePool();
+		int nameCode  = pool.allocate(prefix , uri , local  );
+		node.putAttribute(nameCode,  StandardNames.XS_UNTYPED_ATOMIC, value , 0);
+		if( !Util.isEmpty(prefix) ){
+			int nsCode = pool.allocateNamespaceCode(nameCode);
+			node.addNamespace(nsCode, false);
+		}
+	}
+
+
+
 	private void replace(MutableNodeInfo node, XValue replace)
 			throws IndexOutOfBoundsException, SaxonApiUncheckedException, SaxonApiException {
 		if(  ! replace.isAtomic() ){
 			XdmNode xnode = (XdmNode) replace.asXdmValue();
 			if( xnode.getNodeKind() == 	XdmNodeKind.ATTRIBUTE ) {
 				NodeInfo anode = xnode.getUnderlyingNode();
-				
-			
-				NamePool pool = node.getNamePool();
-				int nameCode  = pool.allocate( anode.getURI() , anode.getPrefix(),anode.getLocalPart() );
-				
-				node.putAttribute(nameCode,  StandardNames.XS_UNTYPED_ATOMIC, anode.getStringValueCS(), 0);
-				
-				
+				addAttribute(node, anode.getPrefix() , anode.getURI() , anode.getLocalPart(), anode.getStringValue() );			
 			} else 
 				node.replace( new NodeInfo[]  { getNodeInfo(xnode) } , true );
 				

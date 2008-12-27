@@ -6,7 +6,7 @@
 
 package org.xmlsh.util;
 
-/*
+/**
  * A String which can optionally be a pair of strings delimited by a seperator
  */
 
@@ -70,7 +70,7 @@ public class StringPair {
 
 	public boolean	hasDelim()
 	{
-		return mLeft == null ;
+		return mLeft != null ;
 	}
 	
 	
