@@ -42,7 +42,7 @@ public class xfile extends XCommand
 	
 	public int run(  List<XValue> args  )	throws Exception
 	{
-		Options opts = new Options("n,b,d,a,c,e",args);
+		Options opts = new Options("n,b,d,a,c,e,B,N",args);
 		opts.parse();
 		args = opts.getRemainingArgs();
 		
@@ -63,6 +63,9 @@ public class xfile extends XCommand
 		if( opts.hasOpt("b") )
 			out.println( xf.getBaseName());
 		else
+		if( opts.hasOpt("B"))
+			out.println(xf.noExtention());
+		else
 		if( opts.hasOpt("n") )
 				out.println( xf.getName());
 		else
@@ -77,6 +80,9 @@ public class xfile extends XCommand
 		else
 		if( opts.hasOpt("e"))
 			out.println( xf.getExt());
+		else
+		if( opts.hasOpt("N"))
+			out.println( xf.getPathName());
 		else
 			out.println( xf.getPath());
 		out.flush();

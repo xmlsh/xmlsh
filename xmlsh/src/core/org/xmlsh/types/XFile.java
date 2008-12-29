@@ -76,8 +76,9 @@ public class XFile /* implements XSerializble */ {
 
 	public String getExt() {
 		String name = getName();
+		int slash = name.lastIndexOf( File.pathSeparatorChar);
 		int pos = name.lastIndexOf('.');
-		if (pos >= 0)
+		if (pos >= 0 && pos > slash )
 			return name.substring(pos);
 		else
 			return "";
@@ -121,6 +122,18 @@ public class XFile /* implements XSerializble */ {
 		writer.startElement("", "file", "file", atts);
 		writer.endElement("", "file", "file");
 
+	}
+	
+	// Filename without any extension
+	
+	public String noExtention() {
+		String	path = mFile.getPath();
+		String  ext = getExt();
+		return path.substring(0 , path.length() - ext.length());
+	
+	}
+	public String getPathName() {
+		return mFile.getPath();
 	}
 
 	/*

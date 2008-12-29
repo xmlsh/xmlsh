@@ -137,6 +137,8 @@ public class xbase extends XCommand {
 					String baseURI = node.getBaseURI();
 					if( opt_all ||  ! Util.isEqual( baseURI , parentBaseURI ) )
 						addAttribute( node , "xml" , "http://www.w3.org/XML/1998/namespace", "base" , resolve(parentBaseURI , baseURI, opt_relative) );
+					else
+						removeAttribute( node , "xml" , "http://www.w3.org/XML/1998/namespace", "base");
 					
 					add_child_base( node , opt_all , opt_relative, baseURI );
 					
@@ -154,11 +156,25 @@ public class xbase extends XCommand {
 	
 	
 
+
 	private String resolve(String parentBaseURI, String baseURI, boolean opt_relative) throws URISyntaxException {
 		if(! opt_relative )
 			return baseURI ;
 		
-		URI parent_URI = new URI( parentBaseURI );
+		URI u = new URI( parentBaseURI );
+		// Remove final path component from parent 
+		String path = u.getPath();
+		int slash = path.lastIndexOf('/');
+		if( slash >= 0 )
+			path = path.substring(0,slash);
+		URI parent_URI = 
+			new URI(u.getScheme(),
+			        u.getUserInfo(), u.getHost(), u.getPort(),
+			        path, 
+			        u.getQuery(),
+			        u.getFragment());
+
+		
 		URI base_URI = new URI( baseURI );
 		
 		URI relative = parent_URI.relativize(base_URI);
@@ -198,6 +214,15 @@ public class xbase extends XCommand {
 		node.putAttribute(nameCode,  StandardNames.XS_UNTYPED_ATOMIC, value , 0);
 
 	}
+
+
+	private void removeAttribute(MutableNodeInfo node, String prefix, String uri, String local) {
+		NamePool pool = node.getNamePool();
+		int nameCode  = pool.allocate(prefix , uri , local  );
+		node.removeAttribute(nameCode);
+		
+	}
+
 
 
 
