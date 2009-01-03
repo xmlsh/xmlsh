@@ -21,7 +21,7 @@ TF=$TMPDIR/_xmlsh_temp.xml
 
 # replace all AUTHOR's text with John Doe
 
-xed -i $F -r "John Doe" //AUTHOR > $TF
+xed -i $F -r "John Doe" -e //AUTHOR > $TF
 A=$(xquery -i $TF 'distinct-values(//AUTHOR)')
 [ $A = "John Doe" ] || exit Failed replacement
 
@@ -35,20 +35,20 @@ X=<[
    <foo2>spam</foo2>
 </root>]>
 
-xed -i $X -r <[<bletch/>]> /root/foo2
+xed -i $X -r <[<bletch/>]> -e /root/foo2
 echo 
 # replace attribute
-_X=$<( xed -i $X -r <[ attribute {"a"} {"attr2" } ]> /root/foo )
+_X=$<( xed -i $X -r <[ attribute {"a"} {"attr2" } ]> -e /root/foo )
 equals $_X <[document{ <root><foo a="attr2">bar</foo><foo2>spam</foo2></root>} ]> && 
 echo Success replace attribute
 
 # add element
-_X=$<( xed -i $X -a <[ <child/> ]> /root )
+_X=$<( xed -i $X -a <[ <child/> ]> -xpath /root )
 
 equals $_X <[document{ <root><child/><foo a="attr">bar</foo><foo2>spam</foo2></root> } ]> && 
 echo Success add element
 
-_X=$<( xed -i $X -d /root/foo2 )
+_X=$<( xed -i $X -d -matches foo2 )
 equals $_X  <[document{ <root><foo a="attr">bar</foo></root> } ]> && 
 echo Success delete element
 

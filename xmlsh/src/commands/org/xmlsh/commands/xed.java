@@ -32,7 +32,7 @@ import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XdmNodeKind;
 import net.sf.saxon.s9api.XdmSequenceIterator;
 import net.sf.saxon.tree.DocumentImpl;
-import net.sf.saxon.type.Type;
+import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
@@ -70,12 +70,13 @@ public class xed extends XCommand {
 		boolean 	opt_delete	= false ;
 		XValue		opt_add 	= null;
 		XValue		opt_replace = null;
-		boolean		opt_matches = false ;
+		String		opt_matches = null ;
+		String		opt_xpath	= null ;
 
 		
 		
 		
-		Options opts = new Options( "f:,i:,n,v,r=replace:,a=add:,d=delete,matches" , args );
+		Options opts = new Options( "i:,e=xpath:,n,v,r=replace:,a=add:,d=delete,m=matches:" , args );
 		opts.parse();
 		
 		setupBuilders();
@@ -113,13 +114,6 @@ public class xed extends XCommand {
 		
 
 		
-		OptionValue ov = opts.getOpt("f");
-		String xpath = null;
-		if( ov != null )
-			xpath = Util.readString( getURI(ov.getValue())) ;
-		else 
-			xpath = xvargs.remove(0).toString();
-		
 
 		
 		if( opts.hasOpt("v")){
@@ -135,15 +129,19 @@ public class xed extends XCommand {
 		opt_add		= opts.getOptValue("a");
 		opt_replace = opts.getOptValue("r");
 		opt_delete  = opts.hasOpt("d");
-		opt_matches = opts.hasOpt("matches");
-
+		
+		
+		opt_matches = opts.getOptString("matches",null);
+		opt_xpath 	= opts.getOptString("xpath",null);
+		if( opt_matches == null && opt_xpath == null )
+			throw new InvalidArgumentException("option xpath or matches must be specified");
 		
 		
 		XPathExecutable expr;
-		if( !opt_matches )
-		  expr = mCompiler.compile( xpath );
+		if( opt_matches == null )
+		  expr = mCompiler.compile( opt_xpath );
 		else 
-		  expr = mCompiler.compilePattern( xpath );
+		  expr = mCompiler.compilePattern( opt_matches );
 		
 		
 		XPathSelector eval = expr.load();
@@ -159,7 +157,7 @@ public class xed extends XCommand {
 		if( opt_replace != null || opt_delete  || opt_add  != null ){
 				
 			
-			Iterable<XdmItem>  results = getResults( eval ,  context , opt_matches );
+			Iterable<XdmItem>  results = getResults( eval ,  context , opt_matches != null );
 			for( XdmItem item : results ){
 				Object obj = item.getUnderlyingValue();
 				if( obj instanceof MutableNodeInfo ){
