@@ -9,8 +9,6 @@
       <option name="bool"/>
       <option name="multi">
          <value>Multi 1</value>
-      </option>
-      <option name="multi">
          <value>
             <multi>Multi 2 as XML</multi>
          </value>

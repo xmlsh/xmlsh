@@ -189,7 +189,14 @@ public class Options
 				OptionDef def = getOptDef(a);
 				if( def == null )
 					throw new UnknownOption("Unknown option: " + arg);
-				OptionValue ov = new OptionValue(def);
+				
+				OptionValue ov = this.getOpt(def);
+				boolean bReuse = (ov != null);
+				
+				if( ov != null && ! def.hasMulti )
+					throw new UnknownOption("Unexpected multiple use of option: " + arg);
+				if( ov == null )
+					ov = new OptionValue(def);
 				ov.option = def ;
 				if( def.hasArgs ){
 					if( !I.hasNext() )
@@ -199,7 +206,8 @@ public class Options
 					else
 						ov.setValue( I.next());
 				}
-				mOptions.add(ov);
+				if( ! bReuse )
+					mOptions.add(ov);
 				
 			} else {
 
@@ -222,6 +230,16 @@ public class Options
 		
 	}
 	
+	public OptionValue getOpt(OptionDef def) {
+		for( OptionValue ov : mOptions ){
+			
+			if( ov.option == def )
+				return ov;
+		}
+		return null;
+	}
+
+
 	public OptionValue	getOpt( String opt )
 	{
 		for( OptionValue ov : mOptions ){

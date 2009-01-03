@@ -42,7 +42,7 @@ public class xfile extends XCommand
 	
 	public int run(  List<XValue> args  )	throws Exception
 	{
-		Options opts = new Options("n,b,d,a,c,e,B,N",args);
+		Options opts = new Options("n=name,b=base,d=dir,a=all,c=conanical,e=extension,B=basename,N=pathname",args);
 		opts.parse();
 		args = opts.getRemainingArgs();
 		
