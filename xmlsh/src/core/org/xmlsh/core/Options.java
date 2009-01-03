@@ -293,6 +293,11 @@ public class Options
 		else
 			return ov.values.get(0);
 	}
+
+
+	public boolean hasRemainingArgs() {
+		return mRemainingArgs != null && ! mRemainingArgs.isEmpty();
+	}
 }
 
 //
