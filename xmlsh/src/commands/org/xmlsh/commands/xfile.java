@@ -6,6 +6,7 @@
 
 package org.xmlsh.commands;
 
+import java.io.File;
 import java.io.PrintWriter;
 import java.util.List;
 
@@ -42,7 +43,7 @@ public class xfile extends XCommand
 	
 	public int run(  List<XValue> args  )	throws Exception
 	{
-		Options opts = new Options("n=name,b=base,d=dir,a=all,c=conanical,e=extension,B=basename,N=pathname",args);
+		Options opts = new Options("n=name,b=base,d=dir,a=all,c=conanical,e=extension,B=basename,N=pathname,s=sys",args);
 		opts.parse();
 		args = opts.getRemainingArgs();
 		
@@ -57,40 +58,50 @@ public class xfile extends XCommand
 			
 		}
 		
+		boolean opt_sys = opts.hasOpt("s");
 		
 		PrintWriter out = getStdout().asPrintWriter();
 		
 		if( opts.hasOpt("b") )
-			out.println( xf.getBaseName());
+			out.println( toSys(xf.getBaseName(),opt_sys));
 		else
 		if( opts.hasOpt("B"))
-			out.println(xf.noExtention());
+			out.println( toSys(xf.noExtention(),opt_sys));
 		else
 		if( opts.hasOpt("n") )
-				out.println( xf.getName());
+				out.println( toSys(xf.getName(),opt_sys));
 		else
 		if( opts.hasOpt("d"))
-			out.println(xf.getDirName());
+			out.println(toSys(xf.getDirName(),opt_sys));
 		else
 		if( opts.hasOpt("a"))
-			out.println(xf.getFile().getAbsolutePath());
+			out.println(toSys(xf.getFile().getAbsolutePath(),opt_sys));
 		else
 		if( opts.hasOpt("c"))
-			out.println(xf.getFile().getCanonicalPath());
+			out.println(toSys(xf.getFile().getCanonicalPath(),opt_sys));
 		else
 		if( opts.hasOpt("e"))
 			out.println( xf.getExt());
 		else
 		if( opts.hasOpt("N"))
-			out.println( xf.getPathName());
+			out.println(toSys( xf.getPathName(),opt_sys));
 		else
-			out.println( xf.getPath());
+			out.println( toSys(xf.getPath(),opt_sys));
+		
 		out.flush();
 			
 				
 		return 0;
 		
 		
+	}
+
+	private String toSys(String name, boolean opt_sys) {
+		if( opt_sys && File.separatorChar != '/')
+			return name.replace('/', File.separatorChar);
+		else
+			return name;
+			
 	}
 	
 }

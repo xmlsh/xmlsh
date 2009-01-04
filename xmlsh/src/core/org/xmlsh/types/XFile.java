@@ -16,6 +16,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
+import org.xmlsh.util.Util;
 
 public class XFile /* implements XSerializble */ {
 	private static Logger mLogger = Logger.getLogger( XFile.class);
@@ -53,7 +54,7 @@ public class XFile /* implements XSerializble */ {
 
 
 	public String getName() {
-		return mFile.getName();
+		return Util.toJavaPath(mFile.getName());
 
 	}
 	public File getFile()
@@ -63,14 +64,14 @@ public class XFile /* implements XSerializble */ {
 
 	public String getPath() {
 		try {
-			return mFile.getCanonicalPath();
+			return Util.toJavaPath(mFile.getCanonicalPath());
 		} catch (IOException e) {
 			return "";
 		}
 	}
 
 	public String getDirName() {
-		String dir = mFile.getParent();
+		String dir = Util.toJavaPath(mFile.getParent());
 		return dir == null ? "." : dir;
 	}
 
@@ -127,13 +128,13 @@ public class XFile /* implements XSerializble */ {
 	// Filename without any extension
 	
 	public String noExtention() {
-		String	path = mFile.getPath();
+		String	path = Util.toJavaPath(mFile.getPath());
 		String  ext = getExt();
 		return path.substring(0 , path.length() - ext.length());
 	
 	}
 	public String getPathName() {
-		return mFile.getPath();
+		return Util.toJavaPath(mFile.getPath());
 	}
 
 	/*

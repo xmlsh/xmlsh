@@ -30,15 +30,15 @@ PS1=$(xfile -e foo.bar/spam)
 [ -z "$PS1" ] || echo null extension failed
 
 # get the path seperator 
-_SEP=$(xfile -N /)
+
 
 # -N full name
 PS1=$(xfile -N foo/bar/spam.x)
-[ "$PS1" = "foo${_SEP}bar${_SEP}spam.x" ] || echo Full name failed
+[ "$PS1" = "foo/bar/spam.x" ] || echo Full name failed
 
 
 # -B basename including directory ( no extension )
 PS1=$(xfile -B foo/bar/spam.xml)
-[ "$PS1" = "foo${_SEP}bar${_SEP}spam" ] || echo Full Basename failed
+[ "$PS1" = "foo/bar/spam" ] || echo Full Basename failed
 
 

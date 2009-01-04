@@ -135,7 +135,7 @@ public class Shell {
 				new XDynamicVariable("PWD" , EnumSet.of( XVarFlag.READONLY , XVarFlag.XEXPR )) { 
 					public XValue getValue() 
 					{
-						return new XValue( getEnv().getCurdir().getAbsolutePath() ) ;
+						return new XValue( Util.toJavaPath(getEnv().getCurdir().getAbsolutePath()) ) ;
 					}
 					
 				}

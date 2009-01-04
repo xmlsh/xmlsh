@@ -53,7 +53,7 @@ public class Util
 	{
 
 		public int compare(File o1, File o2) {
-			return o1.getName().compareTo(o2.getName());
+			return toJavaPath(o1.getName()).compareTo(toJavaPath(o2.getName()));
 		}
 		
 	}
@@ -513,6 +513,21 @@ public class Util
 	public static void sortFiles( File[] list )
 	{
 		Arrays.sort(list, new FileComparator() );
+	}
+	
+	/**
+	 * Convert a Path or name in DOS format to Java format
+	 * This means converting \ to / 
+	 */
+	
+	public static String toJavaPath( String path )
+	{
+		if( path == null )
+			return null;
+		if( File.separatorChar != '/')
+			return path.replace(File.separatorChar, '/');
+		else
+			return path;
 	}
 
 
