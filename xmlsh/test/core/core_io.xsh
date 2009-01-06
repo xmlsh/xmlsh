@@ -11,6 +11,7 @@ echo foo > $F
 echo foo >> $F
 cat $F
 cat < $F
+cat < $(echo $F)
 rm $F
 
 

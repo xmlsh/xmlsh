@@ -277,9 +277,7 @@ TOKEN : {
 	 {
 	 	matchedToken.image += readParen();
 	 }
- }
- 	
-  <*> TOKEN : {
+|
  	< VAR_X_SUBPROC :
 	 	"$<(" 
 	 >
