@@ -120,4 +120,9 @@ a=<[ "string" ]>
 b=<[ (1,2,3) ]>
 [ -n $b ] && echo success xexpr var sequence 
 
+# Test URI flags
+[ -u foo ] && echo Test URI Failed 
+[ -u foo.bar/spam ] && echo Test URI Failed
+[ -u http://foo.bar.spam/bletch ] || echo Test URI Failed
+
 exit 0

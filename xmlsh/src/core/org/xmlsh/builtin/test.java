@@ -115,6 +115,10 @@ FILE1 -ot FILE2
 
 -x FILE
    FILE exists and execute (or search) permission is granted
+   
+-u string
+   TRUE if string is formated as an absolute URI (starts with <scheme>:// )
+
 
 Beware	that  parentheses  need  to be escaped (e.g., by back-
 slashes) for shells.  INTEGER may also be -l STRING, which evaluates to
@@ -314,6 +318,9 @@ public class test extends BuiltinCommand {
 			else
 			if( op.equals("-x"))
 				return getFile(value).canExecute();
+			else
+			if( op.equals("-u"))
+				return isURI(value);
 			
 			
 			else {
@@ -325,6 +332,12 @@ public class test extends BuiltinCommand {
 	}
 	
 	
+	private boolean isURI(XValue value) {
+		return
+		value.toString().matches("^[a-z]+://.*");
+	}
+
+
 	public int run(  List<XValue> args ) throws Exception {
 			
 		
