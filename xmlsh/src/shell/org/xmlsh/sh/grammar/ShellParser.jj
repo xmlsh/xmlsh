@@ -271,15 +271,22 @@ TOKEN : {
  }
  
  <*> TOKEN : {
- 	< VAR_SUBPROC :
+ 	< VAR_S_SUBPROC :
  		"$("  
-	 | 	"$<(" 
 	 >
 	 {
 	 	matchedToken.image += readParen();
 	 }
  }
  	
+  <*> TOKEN : {
+ 	< VAR_X_SUBPROC :
+	 	"$<(" 
+	 >
+	 {
+	 	matchedToken.image += readParen();
+	 }
+ }
 
 <*> TOKEN : {
 	< ASSIGN_WORD : <NAME> "=" >
@@ -542,7 +549,8 @@ String wordname() :
 	t=<WORD>  { return t.toString(); }
 | 	t=<NAME>  { return t.toString(); }
 | 	t=<XEXPR> { return t.toString(); }
-|   t=<VAR_SUBPROC> { return t.toString(); }
+|   t=<VAR_S_SUBPROC> { return t.toString(); }
+|   t=<VAR_X_SUBPROC> { return t.toString(); }
 }
 
 StringList	wordlist() : 
@@ -702,7 +710,7 @@ String cmd_name() : {Token t;}
 String cmd_word() : 
 	{Token t;}
 { 
-	( t=<WORD> | t=<NAME>  | t=<XEXPR> | t=<VAR_SUBPROC> )
+	( t=<WORD> | t=<NAME>  | t=<XEXPR> | t=<VAR_S_SUBPROC> | t=<VAR_X_SUBPROC>)
 	{ return t.toString(); }
 	
 }
@@ -786,6 +794,7 @@ String	filename() :
 {
 	t=<WORD> { return t.toString() ; }
 |	t=<NAME> { return t.toString() ; }
+|   t=<VAR_S_SUBPROC> { return t.toString(); }
 }
 
 IOHere	io_here() : 
