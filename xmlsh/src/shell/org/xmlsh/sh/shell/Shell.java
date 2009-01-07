@@ -235,12 +235,13 @@ public class Shell {
 		
 		} catch (Exception e) {
 	       // System.out.println("NOK.");
-	        System.out.println(e.getMessage());
-	        e.printStackTrace(System.out);
+	        printErr(e.getMessage());
+	        mLogger.error("Exception parsing statement" , e );
 	        parser.ReInit(mCommandInput,getEncoding());
 	      } catch (Error e) {
 	       //  System.out.println("Error");
-	        System.out.println(e.getMessage());
+	        printErr(e.getMessage());
+	        mLogger.error("Exception parsing statement" , e );
 	        parser.ReInit(mCommandInput,getEncoding());
 	
 	     } 
@@ -298,13 +299,12 @@ public class Shell {
 		      	//out.flush();
 		      	
 		      } catch (Exception e) {
-		        System.out.println("NOK.");
-		        System.out.println(e.getMessage());
-		        e.printStackTrace(System.out);
+		        printErr(e.getMessage());
+		        mLogger.error("Exception parsing statement",e);
 		        parser.ReInit(new ShellParserReader(mCommandInput,Shell.getEncoding()));
 		      } catch (Error e) {
-		        System.out.println("Error");
-		        System.out.println(e.getMessage());
+		        printErr("Error: e.getMessage()");
+		        mLogger.error("Exception parsing statement",e);
 		        parser.ReInit(new ShellParserReader(mCommandInput,Shell.getEncoding()));
 
 		      } 
@@ -372,17 +372,26 @@ public class Shell {
 			
 		
 		}
-		if( c.isWait())
-			return mStatus = c.exec(this);
 		
-		ShellThread sht = new ShellThread( new Shell(this) , this , c);
+		try {
 		
-		if( isInteractive() )
-			printErr( "" + sht.getId() );
-		sht.start();
-		addJob( sht );
-		return mStatus = 0;
-		
+			if( c.isWait())
+				return mStatus = c.exec(this);
+			
+			ShellThread sht = new ShellThread( new Shell(this) , this , c);
+			
+			if( isInteractive() )
+				printErr( "" + sht.getId() );
+			sht.start();
+			addJob( sht );
+			return mStatus = 0;
+		} catch( Exception e )
+		{
+			printErr("Exception running: " + c.toString(true) + "\n" +  e.toString() );
+			mLogger.error("Exception running command: " + c.toString(false) , e );
+			return mStatus = -1;
+			
+		}
 		
 	}
 

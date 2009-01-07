@@ -39,13 +39,12 @@ public class ShellThread extends Thread {
 	{
 		try {
 			mShell.setCurdir(mIniitalCD); // Populate the current directory in this thread
-			
-			
 			mCommand.exec(mShell);
 		
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			mShell.printErr("Exception running: " + mCommand.toString(true) + "\n" +  e.toString() );
+			mLogger.error("Exception running command: " + mCommand.toString(false) , e );
+		
 		} finally {
 			
 			mShell.close();
