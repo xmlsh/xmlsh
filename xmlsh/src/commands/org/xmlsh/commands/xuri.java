@@ -6,6 +6,7 @@
 
 package org.xmlsh.commands;
 
+import java.io.File;
 import java.io.PrintWriter;
 import java.net.URI;
 import java.util.List;
@@ -48,8 +49,15 @@ public class xuri extends XCommand
 		
 		URI uri = null ;
 		switch( args.size() ){
+		case 	0:
+			uri = getEnv().getCurdir().toURI();
+			break;
 		case	1:
-			uri = new URI( getArg(args,0) ); break ;
+			uri = new URI( getArg(args,0) ); 
+
+			
+			break ;
+			
 		case	2:
 			uri = new URI( getArg(args,0));
 			uri = uri.resolve(getArg(args,1));
@@ -94,6 +102,15 @@ public class xuri extends XCommand
 
 			break ;
 		}
+		
+		/* 
+		 * if there is no scheme
+		 * then treat as a FILE URI
+		 */
+		if( uri.getScheme() == null )
+			uri = new File( getArg(args,0) ).toURI();
+		
+		
 		
 		if( opts.hasOpt("a"))
 			out.println(uri.getAuthority() );

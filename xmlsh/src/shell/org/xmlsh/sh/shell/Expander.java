@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import javax.xml.transform.stream.StreamSource;
@@ -496,30 +497,16 @@ class Expander {
 		
 		
 		
+		List<String>	rs = new ArrayList<String>();
+		String	wilds[] = vs.split("/");
+		expandDir( mShell.getCurdir() , 
+				null , 
+				wilds , 
+				rs );
 		
 		
-		
-		int slash = vs.lastIndexOf('/');
-		File dir = null;
-		String dirName = null;
-		String wild;
-		
-		if( slash >= 0 ){
-			dir = new File( mShell.getCurdir() , dirName = vs.substring(0,slash));
-			wild = vs.substring(slash+1);
-		}
-		else {
-			wild = vs;
-			dir  = mShell.getCurdir(); 
-			
-		}
-
-		
-		String[] files = dir.list();
-		Arrays.sort(files);
-		for( String f : files ){
-			if( Util.wildMatches( wild , f))
-				r.add( new XValue(dirName == null ? f : dirName + "/" + f ));
+		for( String f : rs ){
+				r.add( new XValue(f));
 		}
 		
 		// If no matches then use arg explicitly
@@ -528,9 +515,64 @@ class Expander {
 		
 		return r;
 		
+	}
+	/*
+	 * Expand a single level wildcard rooted at a directory
+	 * Return list of all matches or null if no matches
+	 */
+	
+	private List<String>	expandDir( File dir , String wild, boolean bDirOnly )
+	{
+		ArrayList<String> results = new ArrayList<String>();
+		String[] files = dir.list();
+		for( String f : files ){
+			if( Util.wildMatches( wild , f) &&
+				( bDirOnly ? ( new File( dir , f ).isDirectory() ) : true ) ) 
+				results.add(f);
+		}
+		if( results.size() == 0 )
+			return null;
+		Collections.sort(results);
+		return results;
+	
 		
 	}
+	
+	
+	
+	/*
+	 * Recursively Expand a possibly multi-level wildcard rooted at a directory
+	 * 
+	 */
 
+	private void expandDir( File dir , String parent , String wilds[] , List<String> results )
+	{
+		String wild = wilds[0];
+		if( wilds.length < 2 )
+			wilds = null ;
+		else 
+			wilds = Arrays.copyOfRange(wilds, 1, wilds.length );
+	
+
+		List<String> rs = expandDir( dir , wild, wilds != null   );
+		if( rs == null)
+			return ;
+		for( String r : rs ){
+			String path =  parent == null ? r : parent + "/" + r;
+			
+			if( wilds == null )
+				results.add( path );
+			else 
+				expandDir( 
+						new File( dir , r ) ,
+						path , 
+						wilds ,
+						results );
+		
+		}
+		
+		
+	}
 
 
 	private XValue extractSingle(String var) {

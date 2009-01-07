@@ -67,7 +67,8 @@ public class InputPort  implements IPort
 		s.setSystemId(getSystemId());
 		return s;
 	}
-	private String getSystemId() {
+	
+	public String getSystemId() {
 		// TODO Auto-generated method stub
 		return mSystemid;
 	}
