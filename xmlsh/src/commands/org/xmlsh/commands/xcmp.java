@@ -259,7 +259,10 @@ public class xcmp extends XCommand {
 	
 	private boolean isEqual(Characters e1, Characters e2)
 	{
-		return isEqual(e1.getData(), e2.getData());
+		if( bopt )
+			return isEqual(e1.getData().trim(), e2.getData().trim());
+		else
+			return isEqual(e1.getData(), e2.getData());
 		
 	}
 	

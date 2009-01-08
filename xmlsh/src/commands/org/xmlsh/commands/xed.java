@@ -33,6 +33,7 @@ import net.sf.saxon.s9api.XdmNodeKind;
 import net.sf.saxon.s9api.XdmSequenceIterator;
 import net.sf.saxon.tree.DocumentImpl;
 import org.xmlsh.core.InvalidArgumentException;
+import org.xmlsh.core.Namespaces;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
@@ -58,6 +59,17 @@ public class xed extends XCommand {
 
 		mCompiler = mProcessor.newXPathCompiler();
 		mBuilder = mProcessor.newDocumentBuilder();
+		
+		Namespaces ns = getEnv().getNamespaces();
+		if( ns != null ){
+			for( String prefix : ns.keySet() ){
+				String uri = ns.get(prefix);
+				mCompiler.declareNamespace(prefix, uri);
+				
+			}
+			
+		}
+
 		
 	}
 	
@@ -208,6 +220,16 @@ public class xed extends XCommand {
 			eval.setContextItem(item);
 			if( eval.effectiveBooleanValue())
 				results.add(item);
+			if( item instanceof XdmNode ){
+				XdmSequenceIterator aiter = ((XdmNode)item).axisIterator(Axis.ATTRIBUTE);
+				while( aiter.hasNext() ){
+					XdmItem item2 = aiter.next();
+					eval.setContextItem(item2);
+					if( eval.effectiveBooleanValue())
+						results.add(item2);
+				}
+				
+			}
 		}
 		return results ;
 	}
