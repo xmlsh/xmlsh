@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<test-report xmlns="http://xproc.org/ns/testreport" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xproc.org/ns/testreport testreport.xsd">
+	<title>xmlsh</title>
+	<date>2007-12-20</date>
+	<processor>
+	<name>xproc2xmlsh</name>
+	<episode>1</episode>
+	<language>English</language>
+	<vendor>xmlsh</vendor>
+	<vendor-uri>http://www.xlmsh.org</vendor-uri>
+	<psvi-supported>false</psvi-supported>
+	<version>0.0.1.2</version>
+	<xpath-version>2.0</xpath-version>
+	<xproc-version>unknown</xproc-version>
+	</processor>
+	<test-suite>
+	<title>Required</title>
+	<pass uri="http://tests.xproc.org/tests/required/add-attribute-001.xml">
+	<title>add-attribute-001.xml</title>
+	</pass>
+</test-suite>
+</test-report>
+

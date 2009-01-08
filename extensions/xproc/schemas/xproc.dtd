@@ -1,0 +1,672 @@
+<!-- DTD (non-normative) for the W3C XML Processing Model language
+
+    This is DTD version $Id: xproc.dtd,v 1.2 2008/08/18 15:57:49 ht Exp $
+
+     Minimal provision is made for user-defined steps - Users may override the
+      definition of the parameter entity user-steps and step-option-attrs - see below.
+
+     Minimal provision is made for extension elements and
+       attributes - users may override the definitions of the
+       parameter entities info-model and extra-attrs.
+       info-model must be a complete content model, e.g. "(mystuff)*",
+       and only allows extensions within p:pipeinfo
+
+     Likewise, for documentation, p and div are pre-allowed, others
+      can be added via the entity doc-elts
+
+     Finally, for inline data, users must override the definition of
+     the user-data parameter entity with a complete content model -->
+
+<!ENTITY % p 'p:'> <!-- can be overriden in the internal subset of a
+                         schema document to establish a different
+                         namespace prefix -->
+<!ENTITY % s ':p'> <!-- if %p is defined (e.g. as foo:) then you must
+                         also define %s as the suffix for the appropriate
+                         namespace declaration (e.g. :foo) -->
+<!ENTITY % nds 'xmlns%s;'>
+
+<!ENTITY % pipeline "%p;pipeline">
+<!ENTITY % for-each "%p;for-each">
+<!ENTITY % viewport "%p;viewport">
+<!ENTITY % choose "%p;choose">
+<!ENTITY % xpath-context "%p;xpath-context">
+<!ENTITY % when "%p;when">
+<!ENTITY % otherwise "%p;otherwise">
+<!ENTITY % group "%p;group">
+<!ENTITY % try "%p;try">
+<!ENTITY % catch "%p;catch">
+<!ENTITY % input "%p;input">
+<!ENTITY % iteration-source "%p;iteration-source">
+<!ENTITY % viewport-source "%p;viewport-source">
+<!ENTITY % output "%p;output">
+<!ENTITY % log "%p;log">
+<!ENTITY % serialization "%p;serialization">
+<!ENTITY % variable "%p;variable">
+<!ENTITY % option "%p;option">
+<!ENTITY % with-option "%p;with-option">
+<!ENTITY % with-param "%p;with-param">
+<!ENTITY % namespaces "%p;namespaces">
+<!ENTITY % declare-step "%p;declare-step">
+<!ENTITY % library "%p;library">
+<!ENTITY % import "%p;import">
+<!ENTITY % pipe "%p;pipe">
+<!ENTITY % inline "%p;inline">
+<!ENTITY % document "%p;document">
+<!ENTITY % data "%p;data">
+<!ENTITY % empty "%p;empty">
+<!ENTITY % documentation "%p;documentation">
+<!ENTITY % pipeinfo "%p;pipeinfo">
+
+<!ENTITY % user-steps "">
+<!ENTITY % user-data "EMPTY">
+<!ENTITY % step-option-attrs "">
+<!ENTITY % extra-attrs "">
+<!ENTITY % info-model "EMPTY">
+<!ENTITY % doc-elts "">
+
+<!ENTITY % add-attribute "%p;add-attribute">
+<!ENTITY % add-xml-base "%p;add-xml-base">
+<!ENTITY % compare "%p;compare">
+<!ENTITY % count "%p;count">
+<!ENTITY % delete "%p;delete">
+<!ENTITY % directory-list "%p;directory-list">
+<!ENTITY % error "%p;error">
+<!ENTITY % escape-markup "%p;escape-markup">
+<!ENTITY % filter "%p;filter">
+<!ENTITY % http-request "%p;http-request">
+<!ENTITY % identity "%p;identity">
+<!ENTITY % insert "%p;insert">
+<!ENTITY % label-elements "%p;label-elements">
+<!ENTITY % load "%p;load">
+<!ENTITY % make-absolute-uris "%p;make-absolute-uris">
+<!ENTITY % namespace-rename "%p;namespace-rename">
+<!ENTITY % pack "%p;pack">
+<!ENTITY % parameters "%p;parameters">
+<!ENTITY % rename "%p;rename">
+<!ENTITY % replace "%p;replace">
+<!ENTITY % set-attributes "%p;set-attributes">
+<!ENTITY % sink "%p;sink">
+<!ENTITY % split-sequence "%p;split-sequence">
+<!ENTITY % store "%p;store">
+<!ENTITY % string-replace "%p;string-replace">
+<!ENTITY % unescape-markup "%p;unescape-markup">
+<!ENTITY % unwrap "%p;unwrap">
+<!ENTITY % wrap "%p;wrap">
+<!ENTITY % wrap-sequence "%p;wrap-sequence">
+<!ENTITY % xinclude "%p;xinclude">
+<!ENTITY % xslt "%p;xslt">
+<!ENTITY % exec "%p;exec">
+<!ENTITY % hash "%p;hash">
+<!ENTITY % uuid "%p;uuid">
+<!ENTITY % validate-with-relax-ng "%p;validate-with-relax-ng">
+<!ENTITY % validate-with-schematron "%p;validate-with-schematron">
+<!ENTITY % validate-with-xml-schema "%p;validate-with-xml-schema">
+<!ENTITY % www-form-urldecode "%p;www-form-urldecode">
+<!ENTITY % www-form-urlencode "%p;www-form-urlencode">
+<!ENTITY % xquery "%p;xquery">
+<!ENTITY % xsl-formatter "%p;xsl-formatter">
+
+<!ENTITY % step "(%add-attribute;|%add-xml-base;|%compare;|
+                  %count;|%delete;|%directory-list;|%error;|
+                  %escape-markup;|%filter;|%http-request;|%identity;|
+                  %insert;|%label-elements;|%load;|%make-absolute-uris;|
+                  %namespace-rename;|%pack;|%parameters;|%rename;|
+                  %replace;|%set-attributes;|%sink;|%split-sequence;|
+                  %store;|%string-replace;|%unescape-markup;|%unwrap;|
+                  %wrap;|%wrap-sequence;|%xinclude;|%xslt;|
+                  %exec;|%hash;|%uuid;|%validate-with-relax-ng;|
+                  %validate-with-schematron;|%validate-with-xml-schema;|%www-form-urldecode;|%www-form-urlencode;|
+                  %xquery;|%xsl-formatter; %user-steps;)">
+<!ENTITY % annotation "%documentation;|%pipeinfo;">
+<!ENTITY % component
+ "(%for-each;|%viewport;|%choose;|%group;|%try;|%step;)">
+<!ENTITY % subpipeline
+ "((%variable; , (%annotation;)* )*,
+   (%component; , ( %annotation;)* )+ )">
+<!ENTITY % seqBinding
+ "((%annotation;)*,
+   ( ( %empty;,(%annotation;)* ) |
+     ( (%data;|%document;|%pipe;|%inline;),
+       (%annotation;)* )* ))">
+<!ENTITY % oneBinding
+ "((%annotation;)*,
+   (%empty;|%document;|%pipe;|%inline;|%data;),
+   (%annotation;)*)">
+<!ENTITY % oneReqBinding
+ "((%annotation;)*,
+   (%document;|%pipe;|%inline;|%data;),
+   (%annotation;)*)">
+<!ENTITY % optBinding
+ "((%annotation;|%namespaces;)*,
+   ((%empty;|%document;|%pipe;|%inline;|%data;),
+    (%annotation;|%namespaces;)*)?)">
+
+<!ENTITY % NCName "NMTOKEN">
+<!ENTITY % QName "NMTOKEN">
+<!ENTITY % URIref "CDATA">
+<!ENTITY % XPath_expression "CDATA">
+<!ENTITY % XSLT_match_pattern "CDATA">
+<!ENTITY % regexp "CDATA">
+<!ENTITY % port_name "%NCName;">
+<!ENTITY % step_name "%NCName;">
+<!ENTITY % string "CDATA">
+<!ENTITY % param-spec "CDATA">
+<!ENTITY % integer "NMTOKEN">
+<!ENTITY % boolean "(true|false|0|1)">
+
+<!ENTITY % global-attrs
+  "xml:id NMTOKEN #IMPLIED
+   xml:base %URIref; #IMPLIED
+   %extra-attrs;" >
+
+<!ENTITY % top-attrs
+ "exclude-inline-prefixes NMTOKENS #IMPLIED
+  xpath-version CDATA '1.0'
+  psvi-required %boolean; 'false'">
+
+<!ENTITY % step-model
+ "((%input;)|
+   (%log;) |
+   (%with-option;) |
+   (%with-param;) |
+   (%annotation;))*">
+<!ENTITY % step-attrs
+ "name %NCName; #IMPLIED
+  %global-attrs;
+  %step-option-attrs;" >
+
+<!ENTITY % declProlog1
+ "((%input;) |
+   (%output;) |
+   (%option;) |
+   (%log;) |
+   (%serialization;) |
+   (%annotation;))*">
+
+<!ENTITY % declProlog2
+ " ( ( (%import;) | (%declare-step;) ),
+     (%annotation;)* )*">
+
+<!ELEMENT %pipeline; 
+   (%declProlog1;,
+    %declProlog2;,
+    %subpipeline;)>
+<!ATTLIST %pipeline;
+  name %NCName; #IMPLIED
+  type %QName; #IMPLIED
+  %top-attrs;
+  %global-attrs;
+  %nds; %URIref; #FIXED 'http://www.w3.org/ns/xproc'
+ >
+
+<!ELEMENT %for-each; 
+   ((%annotation;)*,
+    (%iteration-source;,(%annotation;)*)?,
+    (((%output;) |
+      (%log;)),
+      (%annotation;)*)*,
+    %subpipeline;)>
+<!ATTLIST %for-each; 
+  %global-attrs;
+  name %NCName; #IMPLIED
+ >
+
+<!ELEMENT %viewport; 
+   ((%annotation;)*,
+    (%viewport-source;,(%annotation;)*)?,
+    (%output;,(%annotation;)*)?,
+    (%log;,(%annotation;)*)?,
+    %subpipeline;)>
+<!ATTLIST %viewport; 
+  %global-attrs;
+  name %NCName; #IMPLIED
+  match %XSLT_match_pattern;  #REQUIRED
+ >
+
+<!ELEMENT %choose; 
+   ((%annotation;)*,
+    ( %variable; ,(%annotation;)*)*,
+    (%xpath-context;,(%annotation;)*)?,
+    ( %when; ,((%when;) | (%annotation;))*)?,
+    ( %otherwise;, (%annotation;)*)?)>
+<!ATTLIST %choose; 
+  %global-attrs;
+  name %NCName; #IMPLIED
+ >
+
+<!ELEMENT %xpath-context;
+   (%oneBinding;)>
+<!ATTLIST %xpath-context;
+  %global-attrs;>
+
+<!ELEMENT %when; 
+   ((%annotation;)*,
+    (%xpath-context;,(%annotation;)*)?,
+    (((%output;) | (%log;)),
+     (%annotation;)* )?,
+    %subpipeline;)>
+<!ATTLIST %when; 
+  %global-attrs;
+  test %XPath_expression; #REQUIRED
+ >
+
+<!ELEMENT %otherwise; 
+   (((%output;) |
+     (%log;) |
+     (%annotation;) )*,
+    %subpipeline;)>
+<!ATTLIST %otherwise;
+  %global-attrs; >
+
+<!ELEMENT %group; 
+   (((%output;) |
+     (%log;) |
+     (%annotation;) )*,
+    %subpipeline;)>
+<!ATTLIST %group; 
+  %global-attrs;
+  name %NCName; #IMPLIED
+ >
+
+<!ELEMENT %try; 
+   ((%variable;|%annotation;)*,
+    %group;,
+    (%annotation;)*,
+    %catch;,
+    (%annotation;)*)>
+<!ATTLIST %try; 
+  %global-attrs;
+  name %NCName; #IMPLIED
+ >
+
+<!ELEMENT %catch; 
+   (((%output;) |
+     (%log;) |
+     (%annotation;) )*,
+    %subpipeline;)>
+<!ATTLIST %catch; 
+  %global-attrs;
+ >
+
+<!-- this is provided solely
+      for the use of user-defined compound steps,
+      which don't really have a place at all -->
+<!ENTITY % compound-step-model
+  "(((%input;) |
+     (%output;) |
+     (%log;) |
+     (%annotation;))*,
+    %subpipeline;)">
+
+<!ELEMENT %input; (%seqBinding;)?>
+<!ATTLIST %input;  
+  %global-attrs;
+  port %NCName; #REQUIRED
+  sequence %boolean; 'false'
+  primary %boolean; 'false'
+  kind (document|parameter) 'document'
+  select %XPath_expression;  #IMPLIED>
+
+<!ELEMENT %iteration-source; (%seqBinding;)?>
+<!ATTLIST %iteration-source;  
+  %global-attrs;
+  select %XPath_expression;  #IMPLIED>
+
+<!ELEMENT %viewport-source; (%oneReqBinding;)?>
+<!ATTLIST %viewport-source;  
+  %global-attrs;>
+
+<!ELEMENT %output; 
+   (%seqBinding;)?>
+<!ATTLIST %output;  
+  %global-attrs;
+  port %NCName; #REQUIRED
+  sequence %boolean;  'false'
+  primary %boolean; 'false'>
+
+<!ELEMENT %log;
+   (%annotation;)*>
+<!ATTLIST %log;
+  %global-attrs;
+  port %NCName; #REQUIRED
+  href %URIref; #IMPLIED>
+
+<!ELEMENT %serialization; (%annotation;)*>
+<!ATTLIST %serialization;
+  %global-attrs;
+  port %NCName; #REQUIRED
+  byte-order-mark %boolean; #IMPLIED
+  cdata-section-elements NMTOKENS #IMPLIED
+  doctype-public CDATA #IMPLIED
+  doctype-system %URIref; #IMPLIED
+  encoding NMTOKEN #IMPLIED
+  escape-uri-attributes %boolean; #IMPLIED
+  include-content-type %boolean; #IMPLIED
+  indent %boolean; #IMPLIED
+  media-type CDATA #IMPLIED
+  method %QName; #IMPLIED
+  normalization-form NMTOKEN #IMPLIED
+  omit-xml-declaration %boolean; #IMPLIED
+  standalone (true|false|omit) #IMPLIED
+  undeclare-prefixes %boolean; #IMPLIED
+  version CDATA #IMPLIED>
+ <!-- normalization-form: NFC|NFD|NFKC|NFKD|fully-normalized|none|impl-def. . . -->
+
+<!ELEMENT %variable; (%optBinding;)>
+<!ATTLIST %variable;
+  %global-attrs;
+  name %QName; #REQUIRED
+  select %XPath_expression; #REQUIRED>
+
+
+<!ELEMENT %option; (%annotation;)*>
+<!ATTLIST %option;  
+  %global-attrs;
+  name %param-spec; #REQUIRED
+  required %boolean; 'false'
+  select %XPath_expression;  #IMPLIED
+ >
+
+<!ELEMENT %with-option;
+   (%optBinding;)>
+<!ATTLIST %with-option;  
+  %global-attrs;
+  name %param-spec; #REQUIRED
+  select %XPath_expression;  #REQUIRED
+ >
+
+<!ELEMENT %with-param; 
+   (%optBinding;)>
+<!ATTLIST %with-param;  
+  %global-attrs;
+  name %param-spec; #REQUIRED
+  select %XPath_expression;  #REQUIRED
+  port %NCName; #IMPLIED
+ >
+
+<!ELEMENT %namespaces;
+   (%annotation;)*>
+<!ATTLIST %namespaces;
+  %global-attrs;
+  binding %QName; #IMPLIED
+  element %XPath_expression; #IMPLIED
+  except-prefixes NMTOKENS #IMPLIED>
+
+<!ELEMENT %declare-step; 
+    (%declProlog1;,
+     (%declProlog2;,
+      (%subpipeline;))? )>
+<!ATTLIST %declare-step; 
+  %global-attrs;
+  name %NCName; #IMPLIED
+  type %QName; #IMPLIED
+  %top-attrs;
+  %nds; %URIref; #FIXED 'http://www.w3.org/ns/xproc'
+ >
+
+<!ELEMENT %library; 
+   ((%import;) |
+    (%declare-step;) |
+    (%pipeline;) |
+    (%annotation;))*>
+<!ATTLIST %library;
+  %global-attrs;
+  %top-attrs;
+  %nds; %URIref; #FIXED 'http://www.w3.org/ns/xproc'>
+
+<!ELEMENT %import; (%annotation;)*>
+<!ATTLIST %import;
+  %global-attrs;
+  href %URIref; #REQUIRED
+ >
+
+<!ELEMENT %pipe; (%annotation;)*>
+<!ATTLIST %pipe;
+  %global-attrs;
+  step %step_name; #REQUIRED
+  port %port_name; #REQUIRED>
+
+<!ELEMENT %inline; %user-data;>
+<!ATTLIST %inline;
+  %global-attrs;
+  exclude-inline-prefixes NMTOKENS #IMPLIED>
+
+<!ELEMENT %document; (%annotation;)*>
+<!ATTLIST %document;
+  %global-attrs;
+  href %URIref; #REQUIRED>
+
+<!ELEMENT %data; (%annotation;)*>
+<!ATTLIST %data;
+  %global-attrs;
+  href %URIref; #REQUIRED
+  wrapper %QName; #IMPLIED
+  content-type CDATA #IMPLIED>
+
+
+<!ELEMENT %empty; (%annotation;)*>
+<!ATTLIST %empty;
+  %global-attrs;>
+
+<!ELEMENT %documentation; (p | div %doc-elts;)*>
+<!ATTLIST %documentation;
+  %global-attrs;>
+
+<!ELEMENT %pipeinfo; %info-model;>
+<!ATTLIST %pipeinfo;
+  %global-attrs;>
+<!ELEMENT %add-attribute; %step-model;>
+<!ATTLIST %add-attribute; %step-attrs;
+ match %XSLT_match_pattern; #IMPLIED
+ attribute-name %QName; #IMPLIED
+ attribute-value CDATA #IMPLIED>
+<!ELEMENT %add-xml-base; %step-model;>
+<!ATTLIST %add-xml-base; %step-attrs;
+ all %boolean; #IMPLIED
+ relative %boolean; #IMPLIED>
+<!ELEMENT %compare; %step-model;>
+<!ATTLIST %compare; %step-attrs;
+ fail-if-not-equal %boolean; #IMPLIED>
+<!ELEMENT %count; %step-model;>
+<!ATTLIST %count; %step-attrs;
+ limit %integer; #IMPLIED>
+<!ELEMENT %delete; %step-model;>
+<!ATTLIST %delete; %step-attrs;
+ match %XSLT_match_pattern; #IMPLIED>
+<!ELEMENT %directory-list; %step-model;>
+<!ATTLIST %directory-list; %step-attrs;
+ path %URIref; #IMPLIED
+ include-filter %regexp; #IMPLIED
+ exclude-filter %regexp; #IMPLIED>
+<!ELEMENT %error; %step-model;>
+<!ATTLIST %error; %step-attrs;
+ code %QName; #IMPLIED>
+<!ELEMENT %escape-markup; %step-model;>
+<!ATTLIST %escape-markup; %step-attrs;
+ cdata-section-elements NMTOKENS #IMPLIED
+ doctype-public CDATA #IMPLIED
+ doctype-system %URIref; #IMPLIED
+ escape-uri-attributes %boolean; #IMPLIED
+ include-content-type %boolean; #IMPLIED
+ indent %boolean; #IMPLIED
+ media-type CDATA #IMPLIED
+ method %QName; #IMPLIED
+ omit-xml-declaration %boolean; #IMPLIED
+ standalone (true|false|omit) #IMPLIED
+ undeclare-prefixes %boolean; #IMPLIED
+ version CDATA #IMPLIED>
+<!ELEMENT %filter; %step-model;>
+<!ATTLIST %filter; %step-attrs;
+ select %XPath_expression; #IMPLIED>
+<!ELEMENT %http-request; %step-model;>
+<!ATTLIST %http-request; %step-attrs;
+ byte-order-mark %boolean; #IMPLIED
+ cdata-section-elements NMTOKENS #IMPLIED
+ doctype-public CDATA #IMPLIED
+ doctype-system %URIref; #IMPLIED
+ encoding CDATA #IMPLIED
+ escape-uri-attributes %boolean; #IMPLIED
+ include-content-type %boolean; #IMPLIED
+ indent %boolean; #IMPLIED
+ media-type CDATA #IMPLIED
+ method %QName; #IMPLIED
+ normalization-form NMTOKEN #IMPLIED
+ omit-xml-declaration %boolean; #IMPLIED
+ standalone (true|false|omit) #IMPLIED
+ undeclare-prefixes %boolean; #IMPLIED
+ version CDATA #IMPLIED>
+<!ELEMENT %identity; %step-model;>
+<!ATTLIST %identity; %step-attrs;>
+<!ELEMENT %insert; %step-model;>
+<!ATTLIST %insert; %step-attrs;
+ match %XSLT_match_pattern; #IMPLIED
+ position (first-child|last-child|before|after) #IMPLIED>
+<!ELEMENT %label-elements; %step-model;>
+<!ATTLIST %label-elements; %step-attrs;
+ attribute %QName; #IMPLIED
+ label CDATA #IMPLIED
+ match %XSLT_match_pattern; #IMPLIED
+ replace %boolean; #IMPLIED>
+<!ELEMENT %load; %step-model;>
+<!ATTLIST %load; %step-attrs;
+ href %URIref; #IMPLIED
+ dtd-validate %boolean; #IMPLIED>
+<!ELEMENT %make-absolute-uris; %step-model;>
+<!ATTLIST %make-absolute-uris; %step-attrs;
+ match %XSLT_match_pattern; #IMPLIED
+ base-uri %URIref; #IMPLIED>
+<!ELEMENT %namespace-rename; %step-model;>
+<!ATTLIST %namespace-rename; %step-attrs;
+ from %URIref; #IMPLIED
+ to %URIref; #IMPLIED
+ elements-only %boolean; #IMPLIED>
+<!ELEMENT %pack; %step-model;>
+<!ATTLIST %pack; %step-attrs;
+ wrapper %QName; #IMPLIED>
+<!ELEMENT %parameters; %step-model;>
+<!ATTLIST %parameters; %step-attrs;>
+<!ELEMENT %rename; %step-model;>
+<!ATTLIST %rename; %step-attrs;
+ match %XSLT_match_pattern; #IMPLIED
+ new-name %QName; #IMPLIED>
+<!ELEMENT %replace; %step-model;>
+<!ATTLIST %replace; %step-attrs;
+ match %XSLT_match_pattern; #IMPLIED>
+<!ELEMENT %set-attributes; %step-model;>
+<!ATTLIST %set-attributes; %step-attrs;
+ match %XSLT_match_pattern; #IMPLIED>
+<!ELEMENT %sink; %step-model;>
+<!ATTLIST %sink; %step-attrs;>
+<!ELEMENT %split-sequence; %step-model;>
+<!ATTLIST %split-sequence; %step-attrs;
+ initial-only %boolean; #IMPLIED
+ test %XPath_expression; #IMPLIED>
+<!ELEMENT %store; %step-model;>
+<!ATTLIST %store; %step-attrs;
+ href %URIref; #IMPLIED
+ byte-order-mark %boolean; #IMPLIED
+ cdata-section-elements NMTOKENS #IMPLIED
+ doctype-public CDATA #IMPLIED
+ doctype-system %URIref; #IMPLIED
+ encoding CDATA #IMPLIED
+ escape-uri-attributes %boolean; #IMPLIED
+ include-content-type %boolean; #IMPLIED
+ indent %boolean; #IMPLIED
+ media-type CDATA #IMPLIED
+ method %QName; #IMPLIED
+ normalization-form NMTOKEN #IMPLIED
+ omit-xml-declaration %boolean; #IMPLIED
+ standalone (true|false|omit) #IMPLIED
+ undeclare-prefixes %boolean; #IMPLIED
+ version CDATA #IMPLIED>
+<!ELEMENT %string-replace; %step-model;>
+<!ATTLIST %string-replace; %step-attrs;
+ match %XSLT_match_pattern; #IMPLIED
+ replace %XPath_expression; #IMPLIED>
+<!ELEMENT %unescape-markup; %step-model;>
+<!ATTLIST %unescape-markup; %step-attrs;
+ namespace %URIref; #IMPLIED
+ content-type CDATA #IMPLIED
+ encoding CDATA #IMPLIED
+ charset CDATA #IMPLIED>
+<!ELEMENT %unwrap; %step-model;>
+<!ATTLIST %unwrap; %step-attrs;
+ match %XSLT_match_pattern; #IMPLIED>
+<!ELEMENT %wrap; %step-model;>
+<!ATTLIST %wrap; %step-attrs;
+ wrapper %QName; #IMPLIED
+ match %XSLT_match_pattern; #IMPLIED
+ group-adjacent %XPath_expression; #IMPLIED>
+<!ELEMENT %wrap-sequence; %step-model;>
+<!ATTLIST %wrap-sequence; %step-attrs;
+ wrapper %QName; #IMPLIED
+ group-adjacent %XPath_expression; #IMPLIED>
+<!ELEMENT %xinclude; %step-model;>
+<!ATTLIST %xinclude; %step-attrs;
+ fixup-xml-base %boolean; #IMPLIED
+ fixup-xml-lang %boolean; #IMPLIED>
+<!ELEMENT %xslt; %step-model;>
+<!ATTLIST %xslt; %step-attrs;
+ initial-mode %QName; #IMPLIED
+ template-name %QName; #IMPLIED
+ output-base-uri %URIref; #IMPLIED
+ version CDATA #IMPLIED>
+<!ELEMENT %exec; %step-model;>
+<!ATTLIST %exec; %step-attrs;
+ command CDATA #IMPLIED
+ args CDATA #IMPLIED
+ cwd CDATA #IMPLIED
+ source-is-xml %boolean; #IMPLIED
+ result-is-xml %boolean; #IMPLIED
+ wrap-result-lines %boolean; #IMPLIED
+ errors-is-xml %boolean; #IMPLIED
+ wrap-error-lines %boolean; #IMPLIED
+ fix-slashes %boolean; #IMPLIED
+ byte-order-mark %boolean; #IMPLIED
+ cdata-section-elements NMTOKENS #IMPLIED
+ doctype-public CDATA #IMPLIED
+ doctype-system %URIref; #IMPLIED
+ encoding CDATA #IMPLIED
+ escape-uri-attributes %boolean; #IMPLIED
+ include-content-type %boolean; #IMPLIED
+ indent %boolean; #IMPLIED
+ media-type CDATA #IMPLIED
+ method %QName; #IMPLIED
+ normalization-form NMTOKEN #IMPLIED
+ omit-xml-declaration %boolean; #IMPLIED
+ standalone (true|false|omit) #IMPLIED
+ undeclare-prefixes %boolean; #IMPLIED
+ version CDATA #IMPLIED>
+<!ELEMENT %hash; %step-model;>
+<!ATTLIST %hash; %step-attrs;
+ value CDATA #IMPLIED
+ algorithm %QName; #IMPLIED
+ version CDATA #IMPLIED
+ match %XSLT_match_pattern; #IMPLIED>
+<!ELEMENT %uuid; %step-model;>
+<!ATTLIST %uuid; %step-attrs;
+ match %XSLT_match_pattern; #IMPLIED
+ version %integer; #IMPLIED>
+<!ELEMENT %validate-with-relax-ng; %step-model;>
+<!ATTLIST %validate-with-relax-ng; %step-attrs;
+ dtd-compatibility %boolean; #IMPLIED
+ assert-valid %boolean; #IMPLIED>
+<!ELEMENT %validate-with-schematron; %step-model;>
+<!ATTLIST %validate-with-schematron; %step-attrs;
+ assert-valid %boolean; #IMPLIED>
+<!ELEMENT %validate-with-xml-schema; %step-model;>
+<!ATTLIST %validate-with-xml-schema; %step-attrs;
+ assert-valid %boolean; #IMPLIED
+ mode (strict|lax) #IMPLIED>
+<!ELEMENT %www-form-urldecode; %step-model;>
+<!ATTLIST %www-form-urldecode; %step-attrs;
+ value CDATA #IMPLIED>
+<!ELEMENT %www-form-urlencode; %step-model;>
+<!ATTLIST %www-form-urlencode; %step-attrs;
+ match %XSLT_match_pattern; #IMPLIED>
+<!ELEMENT %xquery; %step-model;>
+<!ATTLIST %xquery; %step-attrs;>
+<!ELEMENT %xsl-formatter; %step-model;>
+<!ATTLIST %xsl-formatter; %step-attrs;
+ href %URIref; #IMPLIED
+ content-type CDATA #IMPLIED>

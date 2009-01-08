@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="http://xproc.org/ns/testreport" xmlns:t="http://xproc.org/ns/testreport">
+  <xs:element name="test-report">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="t:title"/>
+        <xs:element ref="t:date"/>
+        <xs:element ref="t:processor"/>
+        <xs:choice maxOccurs="unbounded">
+          <xs:element ref="t:test-suite"/>
+          <xs:element ref="t:Test"/>
+        </xs:choice>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="date" type="xs:date"/>
+  <xs:element name="title" type="xs:string"/>
+  <xs:element name="processor">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="t:name"/>
+        <xs:element ref="t:vendor"/>
+        <xs:element ref="t:vendor-uri"/>
+        <xs:element ref="t:version"/>
+        <xs:element ref="t:episode"/>
+        <xs:element ref="t:language"/>
+        <xs:element ref="t:xproc-version"/>
+        <xs:element ref="t:xpath-version"/>
+        <xs:element ref="t:psvi-supported"/>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="name" type="xs:string"/>
+  <xs:element name="vendor" type="xs:string"/>
+  <xs:element name="vendor-uri" type="xs:string"/>
+  <xs:element name="version" type="xs:string"/>
+  <xs:element name="episode" type="xs:string"/>
+  <xs:element name="language" type="xs:string"/>
+  <xs:element name="xproc-version" type="xs:string"/>
+  <xs:element name="xpath-version" type="xs:string"/>
+  <xs:element name="psvi-supported">
+    <xs:simpleType>
+      <xs:restriction base="xs:token">
+        <xs:enumeration value="true"/>
+        <xs:enumeration value="false"/>
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+  <xs:element name="pass" substitutionGroup="t:Test">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="t:title"/>
+        <xs:element minOccurs="0" ref="t:error"/>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="t:message"/>
+      </xs:sequence>
+      <xs:attribute name="uri" use="required" type="xs:anyURI"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="fail" substitutionGroup="t:Test">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="t:title"/>
+        <xs:element minOccurs="0" ref="t:error"/>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="t:message"/>
+        <xs:sequence minOccurs="0">
+          <xs:element ref="t:expected"/>
+          <xs:element ref="t:actual"/>
+        </xs:sequence>
+      </xs:sequence>
+      <xs:attribute name="uri" use="required" type="xs:anyURI"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="message" type="xs:string"/>
+  <xs:element name="error">
+    <xs:complexType>
+      <xs:simpleContent>
+        <xs:extension base="xs:QName">
+          <xs:attribute name="expected"/>
+        </xs:extension>
+      </xs:simpleContent>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Test" abstract="true"/>
+  <xs:element name="test-suite">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="t:title"/>
+        <xs:element maxOccurs="unbounded" ref="t:Test"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="expected" type="xs:string"/>
+  <xs:element name="actual" type="xs:string"/>
+</xs:schema>

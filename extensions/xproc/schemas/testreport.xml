@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grammar xmlns:t="http://xproc.org/ns/testreport" ns="http://xproc.org/ns/testreport" xmlns="http://relaxng.org/ns/structure/1.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+  <start>
+    <ref name="Report"/>
+  </start>
+  <define name="Report">
+    <element name="t:test-report">
+      <ref name="Title"/>
+      <ref name="Date"/>
+      <ref name="Processor"/>
+      <oneOrMore>
+        <choice>
+          <ref name="TestSuite"/>
+          <ref name="Test"/>
+        </choice>
+      </oneOrMore>
+    </element>
+  </define>
+  <define name="Date">
+    <element name="date">
+      <data type="date"/>
+    </element>
+  </define>
+  <define name="Title">
+    <element name="title">
+      <text/>
+    </element>
+  </define>
+  <define name="Processor">
+    <element name="processor">
+      <interleave>
+        <ref name="Name"/>
+        <ref name="Vendor"/>
+        <ref name="VendorURI"/>
+        <ref name="Version"/>
+        <ref name="Episode"/>
+        <ref name="Language"/>
+        <ref name="XProcVersion"/>
+        <ref name="XPathVersion"/>
+        <ref name="PSVISupported"/>
+      </interleave>
+    </element>
+  </define>
+  <define name="Name">
+    <element name="name">
+      <text/>
+    </element>
+  </define>
+  <define name="Vendor">
+    <element name="vendor">
+      <text/>
+    </element>
+  </define>
+  <define name="VendorURI">
+    <element name="vendor-uri">
+      <text/>
+    </element>
+  </define>
+  <define name="Version">
+    <element name="version">
+      <text/>
+    </element>
+  </define>
+  <define name="Episode">
+    <element name="episode">
+      <text/>
+    </element>
+  </define>
+  <define name="Language">
+    <element name="language">
+      <text/>
+    </element>
+  </define>
+  <define name="XProcVersion">
+    <element name="xproc-version">
+      <text/>
+    </element>
+  </define>
+  <define name="XPathVersion">
+    <element name="xpath-version">
+      <text/>
+    </element>
+  </define>
+  <define name="PSVISupported">
+    <element name="psvi-supported">
+      <choice>
+        <value>true</value>
+        <value>false</value>
+      </choice>
+    </element>
+  </define>
+  <define name="PassedTest">
+    <element name="t:pass">
+      <attribute name="uri">
+        <data type="anyURI"/>
+      </attribute>
+      <ref name="Title"/>
+      <optional>
+        <ref name="Error"/>
+      </optional>
+      <zeroOrMore>
+        <ref name="Message"/>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="FailedTest">
+    <element name="t:fail">
+      <attribute name="uri">
+        <data type="anyURI"/>
+      </attribute>
+      <ref name="Title"/>
+      <optional>
+        <ref name="Error"/>
+      </optional>
+      <zeroOrMore>
+        <ref name="Message"/>
+      </zeroOrMore>
+      <optional>
+        <ref name="Expected"/>
+        <ref name="Actual"/>
+      </optional>
+    </element>
+  </define>
+  <define name="Message">
+    <element name="t:message">
+      <text/>
+    </element>
+  </define>
+  <define name="Error">
+    <element name="t:error">
+      <optional>
+        <attribute name="expected"/>
+      </optional>
+      <data type="QName"/>
+    </element>
+  </define>
+  <define name="Test">
+    <choice>
+      <ref name="PassedTest"/>
+      <ref name="FailedTest"/>
+    </choice>
+  </define>
+  <define name="TestSuite">
+    <element name="t:test-suite">
+      <ref name="Title"/>
+      <oneOrMore>
+        <ref name="Test"/>
+      </oneOrMore>
+    </element>
+  </define>
+  <define name="Expected">
+    <element name="expected">
+      <text/>
+    </element>
+  </define>
+  <define name="Actual">
+    <element name="actual">
+      <text/>
+    </element>
+  </define>
+</grammar>
