@@ -22,6 +22,9 @@ public class Namespaces extends NameValueMap<String>
 	
 	public void declare( String prefix , String uri )
 	{
+		if( Util.isEmpty(prefix))
+			prefix = "";
+		
 		if( Util.isEmpty(uri))
 			remove(prefix);
 		else

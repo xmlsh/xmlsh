@@ -21,6 +21,7 @@ import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.Options.OptionValue;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.util.NameValueMap;
 
 public class xcat extends XCommand {
 
@@ -50,6 +51,18 @@ public class xcat extends XCommand {
 		Processor  processor  = Shell.getProcessor();
 		
 		XQueryCompiler compiler = processor.newXQueryCompiler();
+		NameValueMap<String> ns = getEnv().getNamespaces();
+		if( ns != null ){
+			for( String prefix : ns.keySet() ){
+				String uri = ns.get(prefix);
+				compiler.declareNamespace(prefix, uri);
+				
+			}
+			
+		}
+			
+		
+		
 		XdmNode	context = null;
 		
 		

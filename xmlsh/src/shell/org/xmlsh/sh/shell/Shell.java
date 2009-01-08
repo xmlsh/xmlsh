@@ -663,7 +663,7 @@ public class Shell {
 	public XValue expandString(String value) throws IOException {
 		List<XValue> ret = expand(value,false);
 		if( ret.size() == 0 )
-			return new XValue();
+			return new XValue("");
 		else
 		if( ret.size() == 1 )
 			return ret.get(0);
