@@ -33,7 +33,7 @@ public class xcat extends XCommand {
 		
 
 
-		Options opts = new Options( "w:" , args );
+		Options opts = new Options( "w=wrap:,r=root" , args );
 		opts.parse();
 		
 		// root node
@@ -62,8 +62,12 @@ public class xcat extends XCommand {
 
 		}
 
-
+		// hasFiles means 'has more then one file'
+		// this effects if wrapping by default removes the root element.
 		boolean hasFiles = ( xvargs.size() > 0 );
+		boolean removeRoot = opts.hasOpt("r");
+		
+		
 		
 		if( context == null && ! hasFiles ){
 			context = getStdin().asXdmNode();
@@ -79,40 +83,68 @@ public class xcat extends XCommand {
 		
 		int mode = (hasFiles ? 3 : 0 ) + wrapMode ;
 		
+		
+		// Sub XQuery expression to return the sequence of nodes 
+		// depending on if we remove the root
+		
+		// Query for where files are in a list
+		String qfiles = 
+			removeRoot ? 
+			( wrapper == null ? 
+					"for $f in $files return doc($f)/node()/*[1]" :
+					"for $f in $files return doc($f)/node()/*" ) :
+			"for $f in $files return doc($f)/node()" ;
+		
+		// Query for where files are in context
+		String qcontext = 
+			removeRoot ?
+					(wrapper == null ? "root()/node()/*[1]" :  "root()/node()/*") :
+					"root()";
+					
+		
 		switch(mode){
+		
+		// stdin or 1 file - always maintains the root 
 		case 0:
 			// No files no wrapper
-			query = "root()"; break;
+			query = qcontext ; break;
 		case 1:
 			// No files name wrapper
 			query = "declare variable $wrapper as xs:string external;\n" +
-					"element { $wrapper } { root() }"; 
+					"element { $wrapper } { " + qcontext + " }"; 
 			break;
 			
 		case	2:
 		    // No files Element wrapper
 			query = "declare variable $wrapper as node() external;\n" +
-				    "element { $wrapper/name() } { $wrapper/@* , root() }";
+				    "element { $wrapper/name() } { $wrapper/@* , " + qcontext + " }";
 			break;
+		
+		
+		// File list specified (instead of context)
+		// Optionally strips the root
 		case	3:
 			// files no wrapper
-			query = "declare variable $files as xs:string* external;\n" +
-				"let $wrapper := doc($files[1]) return element {$wrapper/node()/name()} {$wrapper/node()/@* , for $f in $files return doc($f)/node()/* }" ;
+				query = "declare variable $files as xs:string* external;\n" +
+					"let $wrapper := doc($files[1]) return element {$wrapper/node()/name()} {$wrapper/node()/@* , " + qfiles + " }" ;
+				
 			break;
 		case	4:
 			
+			
 			// files string wrapper 
+			
 			query = 
 				"declare variable $files as xs:string* external;\n" +
 				"declare variable $wrapper as xs:string external;\n" +
-				"element { $wrapper } { for $f in $files return doc($f)/node()/* }";
+				"element { $wrapper } { " + qfiles + " }";
 			break;
 		case	5:
 			// files Element wrapper
 			query = 
 				"declare variable $files as xs:string* external;\n" +
 				"declare variable $wrapper as node() external;\n" +
-				"element { $wrapper/name() } { $wrapper/@* , for $f in $files return doc($f)/node()/* }";
+				"element { $wrapper/name() } { $wrapper/@* , " + qfiles + " }";
 			break;
 		}
 		
