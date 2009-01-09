@@ -24,3 +24,10 @@ declare namespace t1=
 #try with inband variable assignment
 xmlns:t3=http://www.example.org/test3 eval 'echo <[ <t3:test><test>Test</test></t3:test> ]>'
 
+# Default namespace
+declare namespace http://test.xmlsh.org/ns
+echo <[ <foo/> ]>
+#
+declare namespace ""
+echo <[ <foo/> ]>
+
