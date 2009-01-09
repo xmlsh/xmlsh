@@ -52,6 +52,17 @@ _X=$<( xed -i $X -d -matches foo2 )
 equals $_X  <[document{ <root><foo a="attr">bar</foo></root> } ]> && 
 echo Success delete element
 
+# Test xproc modes -rx 
+_X=$<(xed -i $X -rx "'text'" -matches foo)
+equals $_X  <[document{ <root>text<foo2>spam</foo2></root> } ]> && 
+echo Success xproc replace text 
+
+_X=$<(xed -i $X -rx "'text'" -matches "@a")
+equals $_X  <[document{ <root><foo a="text">bar</foo><foo2>spam</foo2></root> } ]> && 
+echo Success xproc replace attriubute 
+
+
+
 exit 0
 
 

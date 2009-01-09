@@ -31,7 +31,10 @@ import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XdmNodeKind;
 import net.sf.saxon.s9api.XdmSequenceIterator;
+import net.sf.saxon.trans.XPathException;
 import net.sf.saxon.tree.DocumentImpl;
+import net.sf.saxon.tree.SaxonUtil;
+import net.sf.saxon.type.Type;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Namespaces;
 import org.xmlsh.core.Options;
@@ -84,11 +87,12 @@ public class xed extends XCommand {
 		XValue		opt_replace = null;
 		String		opt_matches = null ;
 		String		opt_xpath	= null ;
+		String		opt_replacex = null ;
 
 		
 		
 		
-		Options opts = new Options( "i:,e=xpath:,n,v,r=replace:,a=add:,d=delete,m=matches:" , args );
+		Options opts = new Options( "i:,e=xpath:,n,v,r=replace:,a=add:,d=delete,m=matches:,rx=replacex:" , args );
 		opts.parse();
 		
 		setupBuilders();
@@ -141,6 +145,7 @@ public class xed extends XCommand {
 		opt_add		= opts.getOptValue("a");
 		opt_replace = opts.getOptValue("r");
 		opt_delete  = opts.hasOpt("d");
+		opt_replacex = opts.getOptString("rx", null );
 		
 		
 		opt_matches = opts.getOptString("matches",null);
@@ -166,7 +171,18 @@ public class xed extends XCommand {
 				eval.setVariable( new QName(name),  value.asXdmValue() );	
 			}
 		}
-		if( opt_replace != null || opt_delete  || opt_add  != null ){
+		
+		XPathSelector replacex = null ;
+		if( opt_replacex != null ){
+			XPathExecutable xe = mCompiler.compile(opt_replacex);
+			replacex = xe.load(); 
+			
+		}
+		
+		
+		
+		
+		if( opt_replace != null || opt_delete  || opt_add  != null || opt_replacex != null ){
 				
 			
 			Iterable<XdmItem>  results = getResults( eval ,  context , opt_matches != null );
@@ -176,6 +192,8 @@ public class xed extends XCommand {
 					MutableNodeInfo node = (MutableNodeInfo) obj;
 					if( opt_replace != null )
 						replace(node, opt_replace);
+					if( replacex != null )
+						replace( item ,  node , replacex );
 					if( opt_add != null )
 						add( node , opt_add );
 					if( opt_delete )
@@ -286,6 +304,64 @@ public class xed extends XCommand {
 		else
 			node.replaceStringValue( replace.toString() );
 	}
+	
+
+	private void replace(XdmItem item , MutableNodeInfo node, XPathSelector replacex)
+			throws IndexOutOfBoundsException, SaxonApiUncheckedException, SaxonApiException, XPathException {
+		
+		replacex.setContextItem(item);
+		
+		// Convert to string and turn into an XdmItem
+		String replace =replacex.evaluateSingle().getUnderlyingValue().getStringValue();
+		if( node.getNodeKind() == Type.ATTRIBUTE )
+			node.replaceStringValue( replace );
+		else {
+			
+			NodeInfo textNode  = createTextNode( replace );
+			node.replace( new NodeInfo[]  { textNode } , true );	
+		}
+		
+			
+}
+
+
+
+
+
+	private NodeInfo createTextNode(String replace) {
+		/*
+		net.sf.saxon.om.Orphan textNode = new net.sf.saxon.om.Orphan(mProcessor.getUnderlyingConfiguration());
+		textNode.setNodeKind( Type.TEXT );
+		textNode.setStringValue( replace );
+		*/
+		
+		/*
+			net.sf.saxon.tree.TextImpl textNode = new net.sf.saxon.tree.TextImpl( null , replace);
+		*/
+		
+		/*
+		try {
+			Class<?> cls = Class.forName("net.sf.saxon.tree.TextImpl");
+			Class<?> parentClass = Class.forName("net.sf.saxon.tree.ParentNodeImpl");
+			Constructor<?> cons = cls.getConstructor(parentClass , String.class );
+			NodeInfo text = (NodeInfo) cons.newInstance(null , replace );
+			return text ;
+			
+			
+			
+		} catch( Exception e ) 
+		{
+			this.printErr("Exception loading textImpl", e);
+			return null;
+		}
+		*/
+		return SaxonUtil.createTextNode(replace);
+		
+		
+
+	}
+
+
 
 	/*
 	 * Import the node using the builder into this object model

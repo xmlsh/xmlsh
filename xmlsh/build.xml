@@ -33,6 +33,7 @@ version.release=${release}
     	        <src path="src/core" />
     	 		<src path="src/shell"/>
         	 	<src path="src/commands"/>
+    	 		<src path="src/saxon"/>
     	 	<classpath>
     				<fileset dir="lib">
     	                  	<include name="**/*.jar"/>

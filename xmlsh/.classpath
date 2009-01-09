@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src/commands"/>
+	<classpathentry kind="src" path="src/saxon"/>
 	<classpathentry kind="src" path="src/core"/>
 	<classpathentry kind="src" path="src/shell"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
