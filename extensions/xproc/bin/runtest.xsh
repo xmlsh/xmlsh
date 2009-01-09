@@ -24,7 +24,7 @@ cat < $_TEST_URI > $_TMP/test.xml
 xread test < $_TEST_URI
 tpipe=<[$test/t:test/t:pipeline]>
 
-ws=<[ if( $test/t:test/@ignore-whitespace-differences eq 'true' ) then "-b" else "" ]>
+ws=<[ if( $test/t:test/@ignore-whitespace-differences eq 'false' ) then "" else "-b" ]>
 
 
 
@@ -39,6 +39,9 @@ fi  > $_TMP/test.xpl
 in=""
 if [ <[ exists( $test/t:test/t:input ) ]> ] ; then 
 	tinput=<[$test/t:test/t:input]>
+	if [ <[ exists( $tinput/t:document ) ]> ] ; then 
+		tinput=<[ $tinput/t:document ]> 
+	fi
 	echo <[ $tinput/node() ]> > $_TMP/input.xml
 	in="< $_TMP/input.xml"
 fi
