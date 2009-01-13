@@ -11,6 +11,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
 
@@ -42,13 +43,13 @@ public class CommandSuffix {
 	 * into runtime argument list 0-n ... 
 	 */
 	
-	public List<XValue> toCmdLine(Shell shell, String command) throws IOException 
+	public List<XValue> toCmdLine(Shell shell, String command) throws IOException, InvalidArgumentException 
 	{
 		ArrayList<XValue>	args = new ArrayList<XValue>();
 				
-		args.addAll( shell.expand(command,false));
+		args.addAll( shell.expand(command,false,true,true));
 		for( String arg : mArgs )
-			args.addAll(shell.expand( arg,false ));
+			args.addAll(shell.expand( arg,false,true,true));
 
 		return args;
 		

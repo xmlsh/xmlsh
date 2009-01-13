@@ -272,14 +272,14 @@ TOKEN : {
  
  <*> TOKEN : {
  	< VAR_S_SUBPROC :
- 		"$("  
+ 		"$(" | "$(|" | "$(<" 
 	 >
 	 {
 	 	matchedToken.image += readParen();
 	 }
 |
  	< VAR_X_SUBPROC :
-	 	"$<(" 
+	 	"$<(" | "$<(|" | "$<(<" 
 	 >
 	 {
 	 	matchedToken.image += readParen();

@@ -9,6 +9,8 @@ package org.xmlsh.sh.core;
 import java.io.IOException;
 import java.io.PrintWriter;
 
+import org.xmlsh.core.InvalidArgumentException;
+import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
 
 public class IOFile {
@@ -27,9 +29,16 @@ public class IOFile {
 
 	
 	
-	public void exec(Shell shell) throws IOException {
+	public void exec(Shell shell) throws IOException, InvalidArgumentException {
 		
-		String file = shell.expandString( mFile ).toString();
+		XValue 	files = shell.expand( mFile , true,true );
+		String file;
+		if( files.isAtomic() )
+			file = files.toString();
+		else 
+			throw new InvalidArgumentException("Invalid expansion for redirection");
+		
+
 		
 		if( mPrefix.equals("<"))
 			shell.getEnv().setStdin( shell.getInputStream(file) , file );

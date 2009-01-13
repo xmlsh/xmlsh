@@ -28,6 +28,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.xmlsh.core.CommandFactory;
 import org.xmlsh.core.ICommand;
+import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.Path;
 import org.xmlsh.core.XDynamicVariable;
@@ -628,9 +629,9 @@ public class Shell {
 		return mArg0;
 	}
 
-	public List<XValue> expand(String s, boolean bExpandSequences ) throws IOException {
+	public List<XValue> expand(String s, boolean bExpandSequences , boolean bExpandWild , boolean bExpandWords  ) throws IOException, InvalidArgumentException {
 		Expander e = new Expander( this );
-		List<XValue> result =  e.expand(s);
+		List<XValue> result =  e.expand(s,bExpandWild, bExpandWords );
 		if( bExpandSequences )
 			result = Util.expandSequences( result );
 		return result;
@@ -660,13 +661,13 @@ public class Shell {
 	}
 	
 
-	public XValue expandString(String value) throws IOException {
-		List<XValue> ret = expand(value,false);
+	public String expandString(String value, boolean bExpandWild ) throws IOException, InvalidArgumentException {
+		List<XValue> ret = expand(value,false,bExpandWild, false );
 		if( ret.size() == 0 )
-			return new XValue("");
+			return "";
 		else
 		if( ret.size() == 1 )
-			return ret.get(0);
+			return ret.get(0).toString();
 		
 		StringBuffer sb = new StringBuffer();
 		for( XValue v : ret ){
@@ -674,10 +675,26 @@ public class Shell {
 				sb.append(' ');
 			sb.append( v.toString() );
 		}
-		return new XValue(sb.toString());
+		return  sb.toString();
 		
 	}
 
+	// Expand a word and return as a single XValue
+	// Preserves sequences and expands 
+	public	XValue	expand( String value , boolean bExpandWild , boolean bExpandWords ) throws IOException, InvalidArgumentException {
+			List<XValue> ret = expand(value,false, bExpandWild , bExpandWords );
+			if( ret.size() == 0 )
+				return new XValue("");
+			else
+			if( ret.size() == 1 )
+				return ret.get(0);
+			
+			return new XValue( ret );
+
+	}
+	
+	
+	
 	public void shift(int num) {
 		while( ! mArgs.isEmpty() && num-- > 0 )
 			mArgs.remove(0);

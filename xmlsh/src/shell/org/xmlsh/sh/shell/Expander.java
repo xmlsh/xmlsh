@@ -28,6 +28,7 @@ import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XdmValue;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.core.Command;
 import org.xmlsh.sh.core.EvalScriptCommand;
@@ -143,7 +144,7 @@ class Expander {
 	}
 	
 
-	List<XValue> expand(String arg) throws IOException {
+	List<XValue> expand(String arg, boolean bExpandWild , boolean bExpandWords ) throws IOException, InvalidArgumentException {
 		
 		
 		
@@ -165,8 +166,12 @@ class Expander {
 		if( arg.startsWith("$(") && arg.endsWith(")"))
 		{
 			List<XValue> 	r = new ArrayList<XValue>(1);
-			for( String w : runCmd(arg.substring(2,arg.length()-1)).split("(\r)?\n") )
-				r.add( new XValue(w));
+			String res = expandSubproc(arg.substring(2,arg.length()-1));
+			if( bExpandWords )
+				for( String w : res.split("(\r)?\n") )
+					r.add( new XValue(w));
+			else
+				r.add(new XValue(res));
 			return r;
 			
 		}
@@ -205,9 +210,13 @@ class Expander {
 				StringBuffer sbv = new StringBuffer();
 				if( arg.charAt(i) == '{') {
 					i = readToMatching( arg , i , sbv ,  '}' );
-					
 				} 
-				
+				else
+				if( arg.charAt(i) == '('){
+					sbv.append('(');
+					i = readToMatching( arg , i , sbv ,  ')' );
+					sbv.append(')');
+				}
 				
 				else { 
 					// Speical case 
@@ -227,14 +236,8 @@ class Expander {
 									i++;
 									bKeepGoing = true ;
 								} 
-									
-									
-								
 							}
-								
-							
 						} while( bKeepGoing );
-						
 					}
 					else
 					{
@@ -259,7 +262,7 @@ class Expander {
 						// Add all positional variables as args 
 						result.add( mArgs );
 					} else
-						value = extractSingle(var);
+						value = extractSingle(var, cQuote != '\0' );
 					
 					
 					if( value != null )
@@ -273,9 +276,9 @@ class Expander {
 		
 		result.flush();
 		
-		// If quoted then dont do wildcard expansion
-		// if( bQuoted )
-		//	return result.getResult();
+		
+		if( ! bExpandWild )
+			return result.getResult();
 		
 		
 		
@@ -405,14 +408,32 @@ class Expander {
 		return null;
 		
 	
-		
-		
-		
-		
 	}
 
-	private String runCmd(String cmd) throws IOException {
+	private String expandSubproc(String cmd) throws IOException, InvalidArgumentException 
+	{
+		String prefix = null;
+		if( cmd.startsWith("|") || cmd.startsWith("<")){
+			prefix = cmd.substring(0,1);
+			cmd = cmd.substring(1);
+			if( prefix.equals("<") ){
+				XValue 	files = mShell.expand( cmd , true,true );
+				String file;
+				if( files.isAtomic() )
+					file = files.toString();
+				else 
+					throw new InvalidArgumentException("Invalid expansion for redirection");
+				
 
+				return Util.readString( mShell.getInputStream(file)).trim();
+				
+				
+			}
+				
+		}
+		
+		
+		
 		
 		InputStream script = Util.toInputStream(cmd);
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -425,7 +446,7 @@ class Expander {
 			shell.runScript(script);
 			
 			
-			return out.toString();
+			return out.toString().trim();
 	
 			
 			
@@ -575,7 +596,17 @@ class Expander {
 	}
 
 
-	private XValue extractSingle(String var) {
+	private XValue extractSingle(String var, boolean quoted) throws IOException, InvalidArgumentException {
+		
+		// $(
+		if( var.startsWith("(") && var.endsWith(")"))
+		{
+
+			String res = expandSubproc(var.substring(1,var.length()-1));
+			return new XValue(res);
+		}
+		
+		
 		if( var.equals("#"))
 			return new XValue( mArgs.size() );
 		else

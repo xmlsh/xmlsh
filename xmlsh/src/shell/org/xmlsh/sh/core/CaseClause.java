@@ -41,8 +41,8 @@ public class CaseClause  extends CompoundCommand {
 		XIOEnvironment io = shell.getEnv().saveIO();
 		try {
 			applyRedirect(shell);
-			XValue wordv = shell.expandString(mWord);
-			String word = wordv.toString();
+			
+			String word =shell.expandString(mWord,false);
 			
 			for( CaseItem item : mList ){
 				

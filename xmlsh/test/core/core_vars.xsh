@@ -1,6 +1,12 @@
 # core_vars.xsh
 # test variables
 
+if [ -z "$TMPDIR" -o ! -d "$TMPDIR" ] ; then
+	echo Temp directory required TMPDIR: $TMPDIR
+	exit 1;
+fi
+
+
 
 # clear just in case they were exported
 unset A AA
@@ -25,9 +31,19 @@ fi
 
 
 # Test $()
-
 A=$(echo '<foo/>' | xcat)
 echo $A 
+
+
+# Test $(<)
+F=$TMPDIR/test_core_vars.txt
+echo foo bar > $F
+echo $(<$F)
+echo spam bletch >> $F
+A=$(<$F)
+echo $A
+
+
 
 
 # Test local variable setting for simple commands

@@ -94,6 +94,12 @@ public class InputPort  implements IPort
 	
 	}
 
+	public 	InputPort	fork()
+	{
+		return null;
+			
+	}
+	
 }
 
 
