@@ -202,6 +202,8 @@ class Expander {
 			
 			// Escape
 			if( c == '\\'){
+				result.append(c);
+				
 				if( i < arg.length())
 					result.append(arg.charAt(++i));
 				continue;
@@ -521,6 +523,12 @@ class Expander {
 		boolean wildUnQuoted = false ;
 		for( int i = 0 ; i < vslen ; i++ ){
 			char c = vs.charAt(i);
+			if( c == '\\' && i < vslen ){
+				c = vs.charAt(++i);
+				sb.append(c);
+				continue;
+				
+			}
 			if( c == '"' || c == '\''){
 				if( c == cQuote ){
 					cQuote = 0;

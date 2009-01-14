@@ -26,7 +26,7 @@ public class ScriptCommand implements ICommand {
 	public ScriptCommand( File script, boolean bSourceMode ) throws FileNotFoundException
 	{
 		mScript = new FileInputStream(script);
-		mScriptName = script.getPath();
+		mScriptName = Util.toJavaPath(script.getPath());
 		mSourceMode = bSourceMode;
 		mScriptFile = script;
 		

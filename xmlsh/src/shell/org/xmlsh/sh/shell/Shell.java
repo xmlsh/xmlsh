@@ -127,7 +127,7 @@ public class Shell {
 	    
 		
 		// Export path to shell path
-	    String path = System.getenv("PATH");
+	    String path = Util.toJavaPath(System.getenv("PATH"));
 	    getEnv().setVar( new XVariable("PATH", new XValue(path)));
 	
 		
@@ -144,7 +144,7 @@ public class Shell {
 				
 		);
 		
-		getEnv().setVar("TMPDIR" , System.getProperty("java.io.tmpdir"));
+		getEnv().setVar("TMPDIR" , Util.toJavaPath(System.getProperty("java.io.tmpdir")));
 	}
 
 	/*
