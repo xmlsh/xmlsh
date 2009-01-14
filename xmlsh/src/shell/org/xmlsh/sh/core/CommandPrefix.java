@@ -11,7 +11,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.xmlsh.core.InvalidArgumentException;
+import org.xmlsh.core.CoreException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.XVariable;
 import org.xmlsh.sh.shell.Shell;
@@ -55,7 +55,7 @@ public class CommandPrefix {
 		
 	}
 
-	public void exec(Shell shell) throws IOException, InvalidArgumentException {
+	public void exec(Shell shell) throws IOException, CoreException {
 		for (Assign ass : mList) {
 			XValue value = shell.expand(ass.mValue,false,false);
 			shell.getEnv().setVar( new XVariable(ass.mVariable, value) );

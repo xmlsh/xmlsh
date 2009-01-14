@@ -1,35 +1,31 @@
 /**
- * $Id$
- * $Date$
+ * $Id: $
+ * $Date: $
  *
  */
 
 package org.xmlsh.core;
 
-@SuppressWarnings("serial")
-public class UnimplementedException extends CoreException {
+public class CoreException extends Exception {
 
-	public UnimplementedException() {
+	public CoreException() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
-	public UnimplementedException(String message, Throwable cause) {
-		super(message, cause);
-		// TODO Auto-generated constructor stub
-	}
-
-	public UnimplementedException(String message) {
+	public CoreException(String message) {
 		super(message);
-		// TODO Auto-generated constructor stub
 	}
 
-	public UnimplementedException(Throwable cause) {
+	public CoreException(Throwable cause) {
 		super(cause);
-		// TODO Auto-generated constructor stub
+	}
+
+	public CoreException(String message, Throwable cause) {
+		super(message, cause);
 	}
 
 }
+
 //
 //
 //Copyright (C) 2008, David A. Lee.

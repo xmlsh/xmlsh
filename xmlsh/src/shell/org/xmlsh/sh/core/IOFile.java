@@ -9,6 +9,7 @@ package org.xmlsh.sh.core;
 import java.io.IOException;
 import java.io.PrintWriter;
 
+import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
@@ -29,7 +30,7 @@ public class IOFile {
 
 	
 	
-	public void exec(Shell shell) throws IOException, InvalidArgumentException {
+	public void exec(Shell shell) throws IOException, CoreException {
 		
 		XValue 	files = shell.expand( mFile , true,true );
 		String file;

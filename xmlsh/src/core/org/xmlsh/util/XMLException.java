@@ -1,4 +1,6 @@
 package org.xmlsh.util;
+
+import org.xmlsh.core.CoreException;
 /**
  * $Id$
  * $Date$
@@ -9,7 +11,7 @@ package org.xmlsh.util;
  * @author David A. Lee
  */
 @SuppressWarnings("serial")
-public class XMLException extends Exception
+public class XMLException extends CoreException
 {
 
 	/**

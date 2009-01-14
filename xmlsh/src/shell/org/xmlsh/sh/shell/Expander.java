@@ -28,6 +28,7 @@ import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XdmValue;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.core.Command;
@@ -37,6 +38,7 @@ import org.xmlsh.util.NameValueMap;
 import org.xmlsh.util.NullInputStream;
 import org.xmlsh.util.PipedStream;
 import org.xmlsh.util.Util;
+import org.xmlsh.util.XMLException;
 
 class Expander {
 	
@@ -144,7 +146,8 @@ class Expander {
 	}
 	
 
-	List<XValue> expand(String arg, boolean bExpandWild , boolean bExpandWords ) throws IOException, InvalidArgumentException {
+	List<XValue> expand(String arg, boolean bExpandWild , boolean bExpandWords ) throws IOException, CoreException
+	{
 		
 		
 		
@@ -307,8 +310,35 @@ class Expander {
 	
 	
 
-	private XdmValue parseXCmd(String cmd) 
+	private XdmValue parseXCmd(String cmd) throws IOException, CoreException
 	{
+		String prefix = null;
+
+		if( cmd.startsWith("|") || cmd.startsWith("<")){
+			prefix = cmd.substring(0,1);
+			cmd = cmd.substring(1);
+			if( prefix.equals("<") ){
+				XValue 	files = mShell.expand( cmd , true,true );
+				String file;
+				if( files.isAtomic() )
+					file = files.toString();
+				else 
+					throw new InvalidArgumentException("Invalid expansion for redirection");
+				
+				try {
+					DocumentBuilder builder = Shell.getProcessor().newDocumentBuilder();
+					XdmNode node = builder.build(new StreamSource(mShell.getInputStream(file)));
+					return node;
+				} catch( Exception e ){
+					throw new XMLException("Exception parsing XML document: " + file , e );
+				}
+				
+				
+			}
+				
+		}
+		
+		
 	
 		ShellThread sht = null;
 
@@ -319,6 +349,8 @@ class Expander {
 
 			Shell shell = mShell.clone();
 			shell.getEnv().setStdout( pipe.getOutput() );
+			
+			
 			shell.getEnv().setStdin( new NullInputStream() ,"");
 			
 			Command c = new EvalScriptCommand( cmd );
@@ -338,9 +370,9 @@ class Expander {
 			 
 		} catch ( Exception e )
 		{
-			mShell.printErr("Exception running command", e); 
-			return null;
-			
+			throw new XMLException("Exception parsing XML command: " + cmd , e );
+
+
 			
 		} 
 		
@@ -410,7 +442,7 @@ class Expander {
 	
 	}
 
-	private String expandSubproc(String cmd) throws IOException, InvalidArgumentException 
+	private String expandSubproc(String cmd) throws IOException, CoreException 
 	{
 		String prefix = null;
 		if( cmd.startsWith("|") || cmd.startsWith("<")){
@@ -596,7 +628,7 @@ class Expander {
 	}
 
 
-	private XValue extractSingle(String var, boolean quoted) throws IOException, InvalidArgumentException {
+	private XValue extractSingle(String var, boolean quoted) throws IOException, CoreException {
 		
 		// $(
 		if( var.startsWith("(") && var.endsWith(")"))

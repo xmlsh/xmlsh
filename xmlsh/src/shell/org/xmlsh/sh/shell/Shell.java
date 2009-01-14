@@ -27,8 +27,8 @@ import net.sf.saxon.s9api.Processor;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.xmlsh.core.CommandFactory;
+import org.xmlsh.core.CoreException;
 import org.xmlsh.core.ICommand;
-import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.Path;
 import org.xmlsh.core.XDynamicVariable;
@@ -629,7 +629,7 @@ public class Shell {
 		return mArg0;
 	}
 
-	public List<XValue> expand(String s, boolean bExpandSequences , boolean bExpandWild , boolean bExpandWords  ) throws IOException, InvalidArgumentException {
+	public List<XValue> expand(String s, boolean bExpandSequences , boolean bExpandWild , boolean bExpandWords  ) throws IOException, CoreException {
 		Expander e = new Expander( this );
 		List<XValue> result =  e.expand(s,bExpandWild, bExpandWords );
 		if( bExpandSequences )
@@ -661,7 +661,7 @@ public class Shell {
 	}
 	
 
-	public String expandString(String value, boolean bExpandWild ) throws IOException, InvalidArgumentException {
+	public String expandString(String value, boolean bExpandWild ) throws IOException, CoreException {
 		List<XValue> ret = expand(value,false,bExpandWild, false );
 		if( ret.size() == 0 )
 			return "";
@@ -681,7 +681,7 @@ public class Shell {
 
 	// Expand a word and return as a single XValue
 	// Preserves sequences and expands 
-	public	XValue	expand( String value , boolean bExpandWild , boolean bExpandWords ) throws IOException, InvalidArgumentException {
+	public	XValue	expand( String value , boolean bExpandWild , boolean bExpandWords ) throws IOException, CoreException {
 			List<XValue> ret = expand(value,false, bExpandWild , bExpandWords );
 			if( ret.size() == 0 )
 				return new XValue("");

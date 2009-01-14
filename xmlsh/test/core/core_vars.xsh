@@ -43,6 +43,13 @@ echo spam bletch >> $F
 A=$(<$F)
 echo $A
 
+rm $F
+F=$TMPDIR/test_core_vars.xml
+# Test $<(<)
+echo <[<foo attr="an attr"><bar>text</bar></foo>]> > $F
+A=$<(<$F)
+echo $A
+
 
 
 

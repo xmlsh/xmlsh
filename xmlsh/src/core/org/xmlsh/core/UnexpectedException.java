@@ -7,7 +7,7 @@
 package org.xmlsh.core;
 
 @SuppressWarnings("serial")
-public class UnexpectedException extends Exception {
+public class UnexpectedException extends CoreException {
 
 	public UnexpectedException() {
 		// TODO Auto-generated constructor stub
