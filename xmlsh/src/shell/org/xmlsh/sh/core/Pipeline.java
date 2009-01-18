@@ -9,6 +9,7 @@ package org.xmlsh.sh.core;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 
+import org.xmlsh.core.XIOEnvironment;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.sh.shell.ShellThread;
 import org.xmlsh.util.PipedStream;
@@ -75,19 +76,19 @@ public class Pipeline extends Command {
 		
 		
 		/*
-		 * Setup all but first command as seperate threads
+		 * Setup all but LAST command as seperate threads
+		 * The last thread runs within the current shell
 		 */
-		for( int pi = ncmds-1 ; pi > 0 ; pi-- ){
+		for(int pi=0 ; pi < ncmds-1 ; pi++ ){
 			Shell sh = shell.clone();	// clone shell for execution
 			Command c = mList.get(pi);
 			
+			if( pi > 0 )
+				// Set input to pipe for all but the first
+				sh.getEnv().setStdin( pipes[pi-1].getInput() ,"");
 			
-			// Set input to pipe
-			sh.getEnv().setStdin( pipes[pi-1].getInput() ,"");
-			
-			// all but last command set output to pipe
-			if( pi < ncmds-1)
-				sh.getEnv().setStdout(pipes[pi].getOutput());
+			// Set the output 
+			sh.getEnv().setStdout(pipes[pi].getOutput());
 				
 			
 			ShellThread sht = new ShellThread( sh , null ,   c );
@@ -96,18 +97,22 @@ public class Pipeline extends Command {
 			threads.add(sht);
 		}
 		
+		XIOEnvironment saved_io = null ;
+		
 		if( ncmds > 1 )
-			shell = shell.clone();
+			saved_io = shell.getEnv().saveIO();
 		try 
 		{
+			
 			if( ncmds > 1 )
-				shell.getEnv().setStdout(pipes[0].getOutput());
-			Command c = mList.get(0);
+				shell.getEnv().setStdin(pipes[ncmds-2].getInput(),"");
+			
+			Command c = mList.get(ncmds-1);
 			
 			int ret = shell.exec(c);
 
-			if( ncmds > 1 )
-				pipes[0].getOutput().close();
+		//	if( ncmds > 1 )
+		//		pipes[0].getOutput().close();
 			
 			for( ShellThread sht : threads )
 				sht.join();
@@ -116,8 +121,9 @@ public class Pipeline extends Command {
 			
 			
 		} finally {
-			if( ncmds > 1 )
-				shell.close();
+			if(saved_io != null )
+				shell.getEnv().restoreIO(saved_io);
+			
 		}
 			
 	}

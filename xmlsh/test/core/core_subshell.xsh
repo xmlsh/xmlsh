@@ -13,6 +13,17 @@
 ( echo '<foo/>' ) | xcat
 echo
 echo '<foo2/>' | ( xcat | xcat )
+echo
+# last cmd in pipeline runs in current shell
+unset A
+echo '<pipe/>' | xcat | xread A
+echo $A
+unset A
+
+# Test exit status of last cmd
+false | true && echo Success of last command
+true | false && Failure of last command
+
  
 
 # ( env does change
@@ -24,7 +35,6 @@ if [ $A = 2 ] ; then
 fi
 
 # Make sure $* are propigated to sub shell
-echo
 set A B C
 ( echo $* )
 
