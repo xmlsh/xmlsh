@@ -7,7 +7,9 @@ foobar
 foobar
 foobar
 foobarspam
+1
 foo bar spam
+1
 foo bar spam
 foobar'spam'bletchbarf
 test
@@ -17,3 +19,12 @@ testfoo
 $_A
 foo$_A
 foo$_Abar
+foobar
+foo\bar
+foo\bar
+foo\bar
+foo\\bar
+foo\\\bar
+foo\bar
+foo\bar
+foo\\bar

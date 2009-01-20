@@ -21,6 +21,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Stack;
 
 import net.sf.saxon.s9api.Processor;
@@ -125,6 +126,20 @@ public class Shell {
 	
 	private void setGlobalVars() {
 	    
+		
+		Map<String,String> 	env = System.getenv();
+		
+
+		for( Map.Entry<String,String > entry : env.entrySet() ){
+			String name = entry.getKey();
+			if( name.equals("PATH") )
+				continue ;
+			
+			getEnv().setVar( new XVariable( name , new XValue(entry.getValue()) , EnumSet.of(XVarFlag.EXPORT )));
+			
+			
+		}
+		
 		
 		// Export path to shell path
 	    String path = Util.toJavaPath(System.getenv("PATH"));

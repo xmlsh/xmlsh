@@ -12,8 +12,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.transform.stream.StreamSource;
 
@@ -31,6 +33,8 @@ import org.apache.log4j.Logger;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
+import org.xmlsh.core.XVariable;
+import org.xmlsh.core.XVariable.XVarFlag;
 import org.xmlsh.sh.core.Command;
 import org.xmlsh.sh.core.EvalScriptCommand;
 import org.xmlsh.sh.grammar.ParseException;
@@ -201,11 +205,34 @@ class Expander {
 			
 			
 			// Escape
+			//  foo\bar		-> 	foobar
+			//  "foo\bar" 	-> "foo\bar"
+			//  "foo\\bar" 	-> "foo\bar"
+			//	'foo\\bar'  -> 'foo\\bar'
+			
+			
 			if( c == '\\'){
-				result.append(c);
+				if( i < arg.length()){
+					char nextc = arg.charAt(++i);
+					if( cQuote == 0 ){ // strip backslash, ignore next 
+						if( nextc == '"' || nextc == '\'' )
+							result.append(c);
+						result.append(nextc);
+					}
+					
+					
+					if( cQuote == '"' ) {// preserve 1, strip 2 
+						result.append(c);
+						if( nextc != '\\' )
+							result.append(nextc);
+					}
+					
+					if( cQuote == '\'') {
+						result.append(c);
+						result.append(nextc);
+					}
 				
-				if( i < arg.length())
-					result.append(arg.charAt(++i));
+				}
 				continue;
 			}
 			if( cQuote != '\'' && c == '$'){
@@ -291,6 +318,7 @@ class Expander {
 		for( XValue v : result.getResult() ){
 			/*
 			 * If v is an atomic string value then dequote and expand
+			 * DO NOT dequote variable expansions
 			 */
 			List<XValue> r = expandWild( v );
 			if( r != null )
@@ -408,11 +436,13 @@ class Expander {
 		StringBuffer sb = new StringBuffer();
 		
 
-		for( String name : mShell.getEnv().getVarNames() ){
-			// XValue value = mShell.getEnv().getVarValue(name);
+		Collection<XVariable> vars = mShell.getEnv().getVars().values();
+		for( XVariable value : vars ){
 			
-			sb.append("declare variable $").append(name)
-			.append(" external ;\n");
+			if( value.getFlags().contains( XVarFlag.EXPORT ))
+			
+				sb.append("declare variable $").append(value.getName())
+				.append(" external ;\n");
 			
 		}
 		sb.append("declare variable $_ external;\n");
@@ -423,9 +453,12 @@ class Expander {
 			expr = compiler.compile( sb.toString() );
 			
 			XQueryEvaluator eval = expr.load();
-			for( String name : mShell.getEnv().getVarNames() ){
-				XValue value = mShell.getEnv().getVarValue(name);
-				eval.setExternalVariable( new QName(name), value.asXdmValue());
+			
+			for( XVariable value : vars ){
+				
+				if( value.getFlags().contains( XVarFlag.EXPORT ))
+			
+					eval.setExternalVariable( new QName(value.getName()), value.getValue().asXdmValue());
 				
 			}
 			
@@ -524,6 +557,7 @@ class Expander {
 		for( int i = 0 ; i < vslen ; i++ ){
 			char c = vs.charAt(i);
 			if( c == '\\' && i < vslen ){
+				sb.append(c);
 				c = vs.charAt(++i);
 				sb.append(c);
 				continue;

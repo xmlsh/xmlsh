@@ -13,8 +13,13 @@ echo "foo"bar
 echo 'foo'bar
 
 echo foo"bar"spam
-echo foo" bar "spam
-echo foo' bar 'spam
+set foo" bar "spam
+echo $#
+echo $*
+set foo' bar 'spam
+echo $#
+echo $*
+
 
 echo foo"bar'spam'bletch"barf
 
@@ -32,5 +37,17 @@ echo "$_A"foo
 echo '$_A'
 echo foo'$_A'
 echo foo'$_A'bar
+
+# Tests of backslashes
+
+echo foo\bar
+echo foo\\bar
+echo foo\\\bar
+echo 'foo\bar'
+echo 'foo\\bar'
+echo 'foo\\\bar'
+echo "foo\bar"
+echo "foo\\bar"
+echo "foo\\\bar"
 
 

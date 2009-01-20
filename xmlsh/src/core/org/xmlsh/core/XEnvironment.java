@@ -105,6 +105,13 @@ public class XEnvironment  {
 	
 	public XEnvironment clone()
 	{
+		
+		// TODO When cloning, only export marked for export vars
+		// Add typeset command
+		
+		
+		
+		
 		try {
 			return clone( mShell );
 		} catch (IOException e) {
@@ -140,6 +147,8 @@ public class XEnvironment  {
 		return mShell;
 	}
 
+	public Variables getVars() { return mVars ; }
+	
 
 	public Collection<String> getVarNames() {
 		return mVars.keySet();

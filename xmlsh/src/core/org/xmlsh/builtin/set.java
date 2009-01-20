@@ -21,6 +21,10 @@ public class set extends BuiltinCommand {
 
 	static final String sDocRoot = "env";
 	public int run(   List<XValue> args ) throws Exception {
+		
+		// TODO implement -x -v args
+		
+		
 		if( args == null || args.size() == 0 )	
 			printVars(  );
 		else

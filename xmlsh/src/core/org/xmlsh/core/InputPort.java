@@ -93,6 +93,11 @@ public class InputPort  implements IPort
 	    return  builder.parse(asInputStream());
 	
 	}
+	
+	/*
+	 * Forks the InputPort and creates an InputPort which is a conceptual copy of the InputPort
+	 * 
+	 */
 
 	public 	InputPort	fork()
 	{
