@@ -224,12 +224,12 @@ public class Shell {
 
 	
 	
-	public		int		runScript( InputStream stream ) throws ParseException
+	public		int		runScript( InputStream stream ) throws ParseException, UnsupportedEncodingException
 	{
 		
 		InputStream save = mCommandInput;
 		mCommandInput = stream ;
-		ShellParser parser= new ShellParser(mCommandInput,getEncoding());
+		ShellParser parser= new ShellParser(new ShellParserReader(mCommandInput,Shell.getEncoding()));
 		int ret = 0;
 		try {
 			while( mExitVal == null && mReturnVal == null ){
@@ -319,7 +319,7 @@ public class Shell {
 		        mLogger.error("Exception parsing statement",e);
 		        parser.ReInit(new ShellParserReader(mCommandInput,Shell.getEncoding()));
 		      } catch (Error e) {
-		        printErr("Error: e.getMessage()");
+		        printErr("Error: " + e.getMessage());
 		        mLogger.error("Exception parsing statement",e);
 		        parser.ReInit(new ShellParserReader(mCommandInput,Shell.getEncoding()));
 

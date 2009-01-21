@@ -51,6 +51,9 @@ class Expander {
 	private 	Shell		mShell;
 	private		List<XValue> 	mArgs;
 	
+
+	
+	
 	private static class Result {
 		StringBuffer	sb = new StringBuffer();
 		List<XValue>	result = new ArrayList<XValue>();

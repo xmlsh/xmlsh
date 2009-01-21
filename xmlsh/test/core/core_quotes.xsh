@@ -50,4 +50,20 @@ echo "foo\bar"
 echo "foo\\bar"
 echo "foo\\\bar"
 
+# Multiline quoting
+
+echo "on a single \
+line"
+
+echo 'on a single \
+line'
+
+echo "line 1
+line 2"
+
+echo 'line 1
+line 2'
+
+
+
 
