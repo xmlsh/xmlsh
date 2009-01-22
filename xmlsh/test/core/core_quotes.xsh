@@ -66,4 +66,6 @@ line 2'
 
 
 
-
+# Test that we strip quotes off of variable assigments
+_A="test"
+echo <[ <foo attr="{$_A}"/> ]>

@@ -310,22 +310,23 @@ class Expander {
 		}
 		
 		result.flush();
-		
-		
-		if( ! bExpandWild )
-			return result.getResult();
-		
-		
-		
+
 		ArrayList<XValue> result2 = new ArrayList<XValue>();
+		
+		
 		for( XValue v : result.getResult() ){
 			/*
 			 * If v is an atomic string value then dequote and expand
 			 * DO NOT dequote variable expansions
 			 */
-			List<XValue> r = expandWild( v );
-			if( r != null )
-				result2.addAll( r );
+			if( ! bExpandWild )
+				result2.add( removeQuotes(v));
+			else {
+			
+				List<XValue> r = expandWild( v );
+				if( r != null )
+					result2.addAll( r );
+			}
 		}
 			
 		
@@ -541,6 +542,43 @@ class Expander {
 	}
 
 
+
+	private XValue removeQuotes(XValue v) {
+		if( v.isXExpr() )
+			return v;
+
+		String vs = v.toString();
+		int vslen = vs.length();
+		StringBuffer sb = new StringBuffer();
+		
+		char cQuote = 0;
+		for( int i = 0 ; i < vslen ; i++ ){
+			char c = vs.charAt(i);
+			if( c == '\\' && i < vslen ){
+				sb.append(c);
+				c = vs.charAt(++i);
+				sb.append(c);
+				continue;
+				
+			}
+			if( c == '"' || c == '\''){
+				if( c == cQuote ){
+					cQuote = 0;
+					continue ;
+				}
+				else
+				if( cQuote == 0 ){
+					cQuote = c ;
+					continue ;
+				}
+			}
+			
+			sb.append(c);
+		}
+		
+		return new XValue(sb.toString());
+		
+	}
 
 
 	private List<XValue> expandWild(XValue v) {
