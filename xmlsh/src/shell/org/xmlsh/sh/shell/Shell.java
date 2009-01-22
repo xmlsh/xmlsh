@@ -131,8 +131,13 @@ public class Shell {
 		
 
 		for( Map.Entry<String,String > entry : env.entrySet() ){
+
 			String name = entry.getKey();
 			if( name.equals("PATH") )
+				continue ;
+			if( Util.isBlank(name))
+				continue ;
+			if( ! name.matches("^[a-zA-Z_0-9]+$"))
 				continue ;
 			
 			getEnv().setVar( new XVariable( name , new XValue(entry.getValue()) , EnumSet.of(XVarFlag.EXPORT )));

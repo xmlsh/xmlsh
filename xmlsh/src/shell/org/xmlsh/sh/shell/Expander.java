@@ -442,7 +442,7 @@ class Expander {
 		Collection<XVariable> vars = mShell.getEnv().getVars().values();
 		for( XVariable value : vars ){
 			
-			if( value.getFlags().contains( XVarFlag.EXPORT ))
+			if( value.getFlags().contains( XVarFlag.XEXPR ))
 			
 				sb.append("declare variable $").append(value.getName())
 				.append(" external ;\n");
@@ -459,7 +459,7 @@ class Expander {
 			
 			for( XVariable value : vars ){
 				
-				if( value.getFlags().contains( XVarFlag.EXPORT ))
+				if( value.getFlags().contains( XVarFlag.XEXPR ))
 			
 					eval.setExternalVariable( new QName(value.getName()), value.getValue().asXdmValue());
 				
@@ -622,6 +622,18 @@ class Expander {
 	private List<String>	expandDir( File dir , String wild, boolean bDirOnly )
 	{
 		ArrayList<String> results = new ArrayList<String>();
+		/*
+		 * special case for "." and ".." as the directory component
+		 * They dont show up in dir.list() so should always be considered an exact match
+		 */
+		if( wild.equals(".") || wild.equals(".."))
+		{
+			results.add(wild);
+			return results;
+		}
+		
+		
+		
 		String[] files = dir.list();
 		for( String f : files ){
 			if( Util.wildMatches( wild , f) &&
