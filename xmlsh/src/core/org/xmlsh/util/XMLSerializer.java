@@ -13,6 +13,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.w3c.dom.Node;
+import org.xmlsh.sh.shell.Shell;
 
 /**
  * @author DLEE
@@ -32,7 +33,7 @@ public class XMLSerializer {
 			mTransformer.setOutputProperty( OutputKeys.INDENT , "yes" );
 			mTransformer.setOutputProperty( OutputKeys.OMIT_XML_DECLARATION , "yes" );
 			//mTransformer.setOutputProperty( OutputKeys.STANDALONE , "no" );
-			mTransformer.setOutputProperty( OutputKeys.ENCODING , "UTF-8");
+			mTransformer.setOutputProperty( OutputKeys.ENCODING , Shell.getXMLEncoding() );
 			        
 		}
 		catch (Exception e)
@@ -93,7 +94,7 @@ public class XMLSerializer {
 
 		}
         try {
-			return out.toString("UTF-8");
+			return out.toString(Shell.getXMLEncoding());
 		} catch (UnsupportedEncodingException e) {
 			throw new XMLException("Exception encoding XML document from UTF-8",e);
 		}

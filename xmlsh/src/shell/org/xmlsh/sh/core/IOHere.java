@@ -28,7 +28,7 @@ public class IOHere {
 	public void exec(Shell shell) throws IOException  {
 		
 		shell.getEnv().setStdin( 
-				new ByteArrayInputStream(mHere.getBytes(Shell.getEncoding())),"");
+				new ByteArrayInputStream(mHere.getBytes(Shell.getTextEncoding())),"");
 		
 	}
 }

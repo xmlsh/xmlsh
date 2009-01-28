@@ -32,7 +32,8 @@ import org.xmlsh.util.Util;
  *  -row		row	 element (default "row")
  *  -col		col	 element (defauilt "col")
  *  -header		read first row for header names
- *  -attr		write in attribute normal format
+ *  -attr		write in attribute normal format\
+ *  -encoding encoding  Read CSV format in the specified encoding, else cp1252 assumed
  */
 
 public class csv2xml extends XCommand

@@ -365,7 +365,7 @@ public class Util
 	public static TransformerHandler getTransformerHander(OutputStream stdout)
 	throws TransformerFactoryConfigurationError, TransformerConfigurationException,
 	IllegalArgumentException {
-		return getTransformerHander( new StreamResult(stdout), Shell.getEncoding());
+		return getTransformerHander( new StreamResult(stdout), Shell.getTextEncoding());
 	
 	}
 	
@@ -502,7 +502,7 @@ public class Util
 	{
 		if( Util.mNewline == null ){
 			try {
-				Util.mNewline = System.getProperty("line.separator").getBytes(Shell.getEncoding());
+				Util.mNewline = System.getProperty("line.separator").getBytes(Shell.getTextEncoding());
 			} catch (UnsupportedEncodingException e) {
 				Util.mNewline = new byte[] { '\n' };
 			} 
@@ -548,7 +548,7 @@ public class Util
 
 
 	public static  ByteArrayInputStream toInputStream(String script) throws UnsupportedEncodingException {
-			return new ByteArrayInputStream(script.getBytes(Shell.getEncoding()));
+			return new ByteArrayInputStream(script.getBytes(Shell.getTextEncoding()));
 	}
 
 

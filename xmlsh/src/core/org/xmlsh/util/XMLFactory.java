@@ -147,7 +147,7 @@ public class XMLFactory
 	public Document parse(String string) throws XMLException, UnsupportedEncodingException
 	{
 
-        return parse( new ByteArrayInputStream( string.getBytes(Shell.getEncoding())));
+        return parse( new ByteArrayInputStream( string.getBytes(Shell.getTextEncoding())));
 	}
 
 	public Document newDocument()

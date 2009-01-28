@@ -234,7 +234,7 @@ public class Shell {
 		
 		InputStream save = mCommandInput;
 		mCommandInput = stream ;
-		ShellParser parser= new ShellParser(new ShellParserReader(mCommandInput,Shell.getEncoding()));
+		ShellParser parser= new ShellParser(new ShellParserReader(mCommandInput,Shell.getTextEncoding()));
 		int ret = 0;
 		try {
 			while( mExitVal == null && mReturnVal == null ){
@@ -258,12 +258,12 @@ public class Shell {
 	       // System.out.println("NOK.");
 	        printErr(e.getMessage());
 	        mLogger.error("Exception parsing statement" , e );
-	        parser.ReInit(mCommandInput,getEncoding());
+	        parser.ReInit(mCommandInput,getTextEncoding());
 	      } catch (Error e) {
 	       //  System.out.println("Error");
 	        printErr(e.getMessage());
 	        mLogger.error("Exception parsing statement" , e );
-	        parser.ReInit(mCommandInput,getEncoding());
+	        parser.ReInit(mCommandInput,getTextEncoding());
 	
 	     } 
       
@@ -296,7 +296,7 @@ public class Shell {
 		
 		
 		// ShellParser parser= new ShellParser(mCommandInput,Shell.getEncoding());
-		ShellParser parser= new ShellParser(new ShellParserReader(mCommandInput,Shell.getEncoding()));
+		ShellParser parser= new ShellParser(new ShellParserReader(mCommandInput,Shell.getTextEncoding()));
 		
 		while (mExitVal == null) {
 			
@@ -322,11 +322,11 @@ public class Shell {
 		      } catch (Exception e) {
 		        printErr(e.getMessage());
 		        mLogger.error("Exception parsing statement",e);
-		        parser.ReInit(new ShellParserReader(mCommandInput,Shell.getEncoding()));
+		        parser.ReInit(new ShellParserReader(mCommandInput,Shell.getTextEncoding()));
 		      } catch (Error e) {
 		        printErr("Error: " + e.getMessage());
 		        mLogger.error("Exception parsing statement",e);
-		        parser.ReInit(new ShellParserReader(mCommandInput,Shell.getEncoding()));
+		        parser.ReInit(new ShellParserReader(mCommandInput,Shell.getTextEncoding()));
 
 		      } 
 		      
@@ -832,10 +832,15 @@ public class Shell {
 		return mModules;
 	}
 	
-	public static String getEncoding()
+	public static String getTextEncoding()
 	{
 		return System.getProperty("file.encoding");
 		
+	}
+	
+	public static String getXMLEncoding()
+	{
+		return "UTF-8";
 	}
 
 
