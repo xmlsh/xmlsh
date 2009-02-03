@@ -205,15 +205,8 @@ public class xed extends XCommand {
 		
 
 		
-		
-		// Shell.getProcessor().writeXdmValue( mValue, ser);
-		// Util.writeXdmValue( context , getStdout().asDestination() );
-		Serializer ser = new Serializer();
-		ser.setOutputStream( getStdout().asOutputStream() );
-		ser.setOutputProperty(Serializer.Property.OMIT_XML_DECLARATION, "yes");
-		ser.setOutputProperty(Serializer.Property.METHOD, "xml");
-
-		Util.writeXdmValue( context , ser );
+	
+		Util.writeXdmValue( context , getStdout().asDestination() );
 	
 		
 		return 0;

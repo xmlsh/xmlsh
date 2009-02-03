@@ -84,11 +84,29 @@ public class XIOEnvironment {
 		mInputs.add( new NamedPort<InputPort>( null , true , stdin  ));
 	}
 
+	public void setStdin(XVariable variable) throws IOException {
+		
+		mStdinRedirected = true ;
+		InputPort stdin = mInputs.getDefault();
+
+		
+		if( stdin != null ){
+			mInputs.removePort( stdin );
+			stdin.release();
+		}
+			
+		stdin = new InputPort(variable);
+		mInputs.add( new NamedPort<InputPort>( null , true , stdin  ));
+	}
+	
+	
+	
 	/**
 	 * @param stdout the stdout to set
 	 * @throws IOException 
+	 * @throws InvalidArgumentException 
 	 */
-	public void setStdout(OutputStream out) throws IOException {
+	public void setStdout(OutputStream out) throws IOException, InvalidArgumentException {
 		
 		OutputPort stdout = mOutputs.getDefault();
 
@@ -104,11 +122,30 @@ public class XIOEnvironment {
 		
 	}
 
+
+	public void setStdout(XVariable xvar) throws InvalidArgumentException, IOException {
+	OutputPort stdout = mOutputs.getDefault();
+
+		
+		if( stdout != null ){
+			mOutputs.removePort( stdout );
+			stdout.release();
+		}
+			
+		
+		stdout = new OutputPort(xvar);
+		mOutputs.add(new NamedPort<OutputPort>(null,true,stdout));
+	}
+
+	
+	
+	
 	/**
 	 * @param stderr the stderr to set
 	 * @throws IOException 
+	 * @throws InvalidArgumentException 
 	 */
-	public void setStderr(OutputStream err) throws IOException {
+	public void setStderr(OutputStream err) throws IOException, InvalidArgumentException {
 		OutputPort stderr = mOutputs.get(kSTDERR);
 
 		
@@ -131,7 +168,7 @@ public class XIOEnvironment {
 			mInputs.clear();
 			mOutputs.clear();
 			
-		} catch (IOException e) {
+		} catch (Exception e) {
 			mLogger.error("Exception closing environment",e);
 		}
 	}
@@ -175,6 +212,7 @@ public class XIOEnvironment {
 		);
 
 	}
+
 }
 
 

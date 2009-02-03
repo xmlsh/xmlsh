@@ -348,7 +348,7 @@ class Expander {
 	{
 		String prefix = null;
 
-		if( cmd.startsWith("|") || cmd.startsWith("<")){
+		if(  cmd.startsWith("<")){
 			prefix = cmd.substring(0,1);
 			cmd = cmd.substring(1);
 			if( prefix.equals("<") ){
@@ -484,7 +484,7 @@ class Expander {
 	private String expandSubproc(String cmd) throws IOException, CoreException 
 	{
 		String prefix = null;
-		if( cmd.startsWith("|") || cmd.startsWith("<")){
+		if( cmd.startsWith("<")){
 			prefix = cmd.substring(0,1);
 			cmd = cmd.substring(1);
 			if( prefix.equals("<") ){

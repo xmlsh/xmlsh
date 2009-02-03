@@ -301,9 +301,10 @@ public class XEnvironment  {
 	/**
 	 * @param stderr
 	 * @throws IOException
+	 * @throws InvalidArgumentException 
 	 * @see org.xmlsh.core.XIOEnvironment#setStderr(java.io.OutputStream)
 	 */
-	public void setStderr(OutputStream stderr) throws IOException {
+	public void setStderr(OutputStream stderr) throws IOException, InvalidArgumentException {
 		mIO.setStderr(stderr);
 	}
 
@@ -317,13 +318,17 @@ public class XEnvironment  {
 		mIO.setStdin(stdin,systemid);
 	}
 
+	public void setStdin(XVariable variable) throws IOException {
+		mIO.setStdin( variable );
+	}
 
 	/**
 	 * @param stdout
 	 * @throws IOException
+	 * @throws InvalidArgumentException 
 	 * @see org.xmlsh.core.XIOEnvironment#setStdout(java.io.OutputStream)
 	 */
-	public void setStdout(OutputStream stdout) throws IOException {
+	public void setStdout(OutputStream stdout) throws IOException, InvalidArgumentException {
 		mIO.setStdout(stdout);
 	}
 
@@ -359,6 +364,14 @@ public class XEnvironment  {
 		return getSource( value.toString());
 
 	}
+
+
+	public void setStdout(XVariable xvar) throws InvalidArgumentException, IOException {
+		mIO.setStdout( xvar );
+		
+	}
+
+
 
 }
 //

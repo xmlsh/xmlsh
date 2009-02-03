@@ -11,11 +11,12 @@ import java.io.OutputStream;
 
 public class SynchronizedOutputStream extends OutputStream {
 	private		OutputStream	mOutputStream;
+	private		boolean			mCloseOnClose;
 
-
-	public SynchronizedOutputStream(OutputStream outputStream) {
+	public SynchronizedOutputStream(OutputStream outputStream, boolean close) {
 		super();
 		mOutputStream = outputStream;
+		mCloseOnClose = close ;
 	}
 
 	
@@ -25,6 +26,8 @@ public class SynchronizedOutputStream extends OutputStream {
 	 */
 	public synchronized void close() throws IOException {
 			mOutputStream.flush();
+			if( false && mCloseOnClose )
+				mOutputStream.close();
 	}
 
 	/**

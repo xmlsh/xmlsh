@@ -6,8 +6,11 @@
 
 package org.xmlsh.core;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -20,6 +23,7 @@ import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.SynchronizedInputStream;
+import org.xmlsh.util.Util;
 
 /*
  * An InputPort represents an input source of data, either Stream (bytes) or XML data
@@ -30,10 +34,14 @@ import org.xmlsh.util.SynchronizedInputStream;
 public class InputPort  implements IPort
 {
 	
-	// Actual input stream
+	// An Input Port may be either a Stream or an XML value
 	private InputStream	 mStream;
+	private	 XVariable	mVariable;
+	
+	
 	private int mRef = 1;
 	private String mSystemid;
+
 
 
 	public InputPort( InputStream is , String systemid ) throws IOException
@@ -46,10 +54,24 @@ public class InputPort  implements IPort
 	 * Standard input stream - created on first request
 	 */
 	
-	public	synchronized InputStream asInputStream() 
-	{
+	public InputPort(XVariable value) {
+		mVariable = value ;
 		
-		return mStream == null ? null : new SynchronizedInputStream(mStream);
+	}
+
+	public	synchronized InputStream asInputStream() throws InvalidArgumentException, SaxonApiException, IOException 
+	{
+		if( mStream != null )
+			return mStream == null ? null : new SynchronizedInputStream(mStream);
+		else {
+			ByteArrayOutputStream buf = new ByteArrayOutputStream();
+			if(  mVariable.getValue().isXExpr() )
+				Util.writeXdmValue( mVariable.getValue().asXdmNode(), Util.streamToDestination(buf));
+			else
+				buf.write(mVariable.getValue().toBytes(Shell.getXMLEncoding()));
+			return new ByteArrayInputStream( buf.toByteArray() )	;	
+		}
+		
 	}
 
 	public synchronized void release() throws IOException {
@@ -60,9 +82,13 @@ public class InputPort  implements IPort
 		
 	}
 	
-	public synchronized Source asSource()
+	public synchronized Source asSource() throws InvalidArgumentException, SaxonApiException, IOException
 	{
-	
+		if( mVariable != null )
+				return mVariable.getValue().asSource();
+
+		
+		
 		Source s = new StreamSource( asInputStream());
 		s.setSystemId(getSystemId());
 		return s;
@@ -73,8 +99,12 @@ public class InputPort  implements IPort
 		return mSystemid;
 	}
 
-	public synchronized XdmNode asXdmNode() throws SaxonApiException
+	public synchronized XdmNode asXdmNode() throws SaxonApiException, InvalidArgumentException, IOException
 	{
+		if( mVariable != null )
+			return mVariable.getValue().asXdmNode() ;
+		
+		
 		net.sf.saxon.s9api.DocumentBuilder builder = Shell.getProcessor().newDocumentBuilder();
 		return builder.build( asSource() );
 	}
@@ -84,7 +114,7 @@ public class InputPort  implements IPort
 
 	}
 	
-	public synchronized Document asDocument() throws ParserConfigurationException, SAXException, IOException
+	public synchronized Document asDocument() throws ParserConfigurationException, SAXException, IOException, InvalidArgumentException, SaxonApiException
 	{
 		
 	    DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
@@ -93,17 +123,27 @@ public class InputPort  implements IPort
 	    return  builder.parse(asInputStream());
 	
 	}
-	
-	/*
-	 * Forks the InputPort and creates an InputPort which is a conceptual copy of the InputPort
-	 * 
-	 */
 
-	public 	InputPort	fork()
+
+	public boolean isStream()
 	{
-		return null;
+		return mStream != null ;
+	}
+
+	public void copyTo(OutputStream out) throws IOException, SaxonApiException, InvalidArgumentException
+	{
+		if( mStream != null )
+			Util.copyStream( mStream , out );
+		else {
+			if(  mVariable.getValue().isXExpr() )
+				Util.writeXdmValue( mVariable.getValue().asXdmNode(), Util.streamToDestination(out));
+			else
+				out.write(  mVariable.getValue().toString().getBytes( Shell.getTextEncoding() ) );
+		}
 			
 	}
+	
+	
 	
 }
 

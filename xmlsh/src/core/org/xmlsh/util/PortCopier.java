@@ -1,33 +1,31 @@
 /**
- * $Id$
- * $Date$
+ * $Id: StreamCopier.java 21 2008-07-04 08:33:47Z daldei $
+ * $Date: 2008-07-04 04:33:47 -0400 (Fri, 04 Jul 2008) $
  *
  */
 
 package org.xmlsh.util;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.xmlsh.core.InputPort;
 
-public class StreamCopier extends Thread
+public class PortCopier extends Thread
 {
-	private 	static 	Logger	mLogger  = LogManager.getLogger(StreamCopier.class);
-	private		InputStream		mIn;
+	private 	static 	Logger	mLogger  = LogManager.getLogger(PortCopier.class);
+	private		InputPort	mIn;
 	private		OutputStream	mOut;
 	private		boolean			mCloseOut;
-	private		Object			mWho;
 
-	public StreamCopier( InputStream in , OutputStream out ,  boolean closeOut , Object who )
+	public PortCopier( InputPort in , OutputStream out ,  boolean closeOut )
 	{
 		mIn = in;
 		mOut = out;
 		
 		mCloseOut = closeOut;
-		mWho = who;
 		
 	}
 	/* (non-Javadoc)
@@ -38,11 +36,13 @@ public class StreamCopier extends Thread
 	{
 
 		try {
-			Util.copyStream(mIn, mOut);
+			
+			mIn.copyTo(mOut);
+			
 			//mIn.close();
 			//mOut.close();
-		} catch (IOException e) {
-			mLogger.warn("IOException copying streams",e);
+		} catch (Exception e) {
+			mLogger.warn("Exception copying streams",e);
 		} finally {
 			if( mCloseOut )
 				try {

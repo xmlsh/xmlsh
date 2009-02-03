@@ -12,6 +12,8 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 
+import javax.xml.transform.Source;
+
 import net.sf.saxon.dom.NodeOverNodeInfo;
 import net.sf.saxon.om.NodeInfo;
 import net.sf.saxon.om.ValueRepresentation;
@@ -116,18 +118,39 @@ public class XValue {
 	}
 
 	
+	public byte[]	toBytes(String encoding)
+	{
+		if( mValue != null ){
+			try {
+			if( isAtomic() )
+				return mValue.toString().getBytes(encoding);
+			else
+			{
+				ByteArrayOutputStream out = new ByteArrayOutputStream();
+					serialize( out );
+					return out.toByteArray();
+				
+				
+			}
+			} catch (Exception e )
+			{
+				mLogger.warn("Exception serializing XML value");
+			}
+			
+			
+		}
+			
+		return null;
+	}
 	public String	toString(){
 		if( mValue != null ){
 			if( isAtomic() )
 				return mValue.toString();
 			else
 			{
-				ByteArrayOutputStream out = new ByteArrayOutputStream();
 				try {
-					serialize( out );
-					return out.toString(Shell.getXMLEncoding());
-				} catch (Exception e )
-				{
+					return new String(toBytes(Shell.getXMLEncoding()),Shell.getXMLEncoding());
+				} catch (UnsupportedEncodingException e) {
 					mLogger.warn("Exception serializing XML value");
 				}
 				
@@ -297,6 +320,21 @@ public class XValue {
 		return 
 			NodeOverNodeInfo.wrap(  nodeinfo  );
 		
+	}
+	public XdmNode asXdmNode() throws InvalidArgumentException
+	{
+		if( isXExpr() )
+			return ((XdmNode)mValue);
+		else
+			throw new InvalidArgumentException("Value is not a Node");
+	
+		
+	}
+	
+	
+	public Source asSource() throws InvalidArgumentException {
+		return asXdmNode().asSource();
+
 	}
 	
 	

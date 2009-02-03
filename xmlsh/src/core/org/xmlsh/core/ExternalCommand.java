@@ -13,6 +13,7 @@ import java.util.List;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.util.PortCopier;
 import org.xmlsh.util.StreamCopier;
 import org.xmlsh.util.Util;
 
@@ -37,41 +38,50 @@ public class ExternalCommand implements ICommand {
 		ArrayList<XValue> cmdlist = new ArrayList<XValue>();
 		cmdlist.add( new XValue(mCommandFile.getPath()));
 		cmdlist.addAll( Util.expandSequences(args));
-		
+		Process proc = null ;
+		synchronized ( this.getClass() ){
 		ProcessBuilder	builder = new ProcessBuilder();
 		builder.command( Util.toStringList(cmdlist));
 		builder.directory( curdir );
 		
-		Process proc = builder.start();
+		proc = builder.start();
 		
 		if( proc == null )
 			return -1;
+		}
 		
 		// Start copiers for stdout, stderr
 		
 		
-		StreamCopier outCopier = new StreamCopier( proc.getInputStream() , shell.getEnv().getStdout().asOutputStream(),false);
-		StreamCopier errCopier = new StreamCopier( proc.getErrorStream() , shell.getEnv().getStderr().asOutputStream(),false);
+		StreamCopier outCopier = new StreamCopier( proc.getInputStream() , shell.getEnv().getStdout().asOutputStream(),true,this);
+		StreamCopier errCopier = new StreamCopier( proc.getErrorStream() , shell.getEnv().getStderr().asOutputStream(),true,this);
 		
 		
-		StreamCopier inCopier = null;
+		PortCopier inCopier = null;
 		
 		if( shell.getEnv().isStdinRedirected() )
-			inCopier = new StreamCopier(  shell.getEnv().getStdin().asInputStream() , proc.getOutputStream(), true);
+			inCopier = new PortCopier(  shell.getEnv().getStdin() , proc.getOutputStream() , true );
 		
 		else
 			proc.getOutputStream().close();
 		
-		outCopier.start();
+	
 		errCopier.start();
 		
 		if( inCopier != null )
 			inCopier.start();
 		
+		
+		// outCopier.start();
+		outCopier.run(); // In place
+		
+		
 		int ret = proc.waitFor();
 		
 		// Kill off the input copier
 		// inCopier.interrupt();
+	
+		
 		if( inCopier != null )
 			inCopier.join();
 		

@@ -4,17 +4,34 @@
  *
  */
 
-package org.xmlsh.core;
+package org.xmlsh.sh.shell;
 
-import java.io.IOException;
-
-public interface IPort {
-	void addRef();
-	void release() throws IOException, InvalidArgumentException;
+class ColoredString
+{
+	public 	static final int kPLAIN 		= 0;
+	public static final int kSINGLE_QUOTE = 1;
+	public static final int kDOUBLE_QUOTE = 2;
+	public static final int kBACKSLASH  	= 4;
+	
+	
+	static class ColoredChar 
+	{
+		byte	color;
+		char	c;
+	}
 	
 
+	
+	
+	ColoredChar		charAt( int i )
+	{
+		return null;
+		
+	}
+	
+	
+	
 }
-
 
 
 //

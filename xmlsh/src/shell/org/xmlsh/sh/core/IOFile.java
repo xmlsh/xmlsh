@@ -11,7 +11,9 @@ import java.io.PrintWriter;
 
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
+import org.xmlsh.core.XEnvironment;
 import org.xmlsh.core.XValue;
+import org.xmlsh.core.XVariable;
 import org.xmlsh.sh.shell.Shell;
 
 public class IOFile {
@@ -31,6 +33,27 @@ public class IOFile {
 	
 	
 	public void exec(Shell shell) throws IOException, CoreException {
+
+		XEnvironment env = shell.getEnv();
+		boolean isPort = 	mFile.startsWith("{") &&
+							mFile.endsWith("}");
+		if( isPort ){
+			String var = mFile.substring(1,mFile.length()-1);
+			
+			
+			if( mPrefix.equals("<"))
+				env.setStdin( env.getVar(var) );
+			else
+			if( mPrefix.equals(">")){
+				XVariable xvar = new XVariable(var,null);
+				env.setVar(xvar);
+				env.setStdout(xvar);
+			}
+			
+			return ;
+		}
+		
+		
 		
 		XValue 	files = shell.expand( mFile , true,true );
 		String file;
@@ -41,19 +64,22 @@ public class IOFile {
 		
 
 		
+		
 		if( mPrefix.equals("<"))
-			shell.getEnv().setStdin( shell.getInputStream(file) , file );
+			env.setStdin( shell.getInputStream(file) , file );
 			
 		else
 		if( mPrefix.equals("2>"))
-				shell.getEnv().setStderr( shell.getOutputStream(file, false));
+				env.setStderr( shell.getOutputStream(file, false));
 		
 		else
 		if( mPrefix.equals(">"))
-			shell.getEnv().setStdout(shell.getOutputStream(file, false));
+			env.setStdout(shell.getOutputStream(file, false));
 		else
 		if( mPrefix.equals(">>"))
-				shell.getEnv().setStdout(shell.getOutputStream(file, true));
+				env.setStdout(shell.getOutputStream(file, true));
+
+				
 
 		
 		

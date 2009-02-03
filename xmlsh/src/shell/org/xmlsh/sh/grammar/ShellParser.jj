@@ -753,13 +753,13 @@ IORedirectList redirect_list() :
 }
 
 IORedirect io_redirect() : 
-	{  IORedirect i;  Token t; IOHere h;}
+	{  IORedirect i;  IOHere h;}
 {
-					i=io_file()	
-						{ return i; }
+	i=io_file()	
+	{ return i; }
 				
-|					h=io_here()
-						{ return new IORedirect( h); }
+|	h=io_here()
+	{ return new IORedirect( h); }
 
 }
 
@@ -769,6 +769,7 @@ IORedirect io_file() :
 {
 	<LESS>			s=filename()
 		{ return new IORedirect( new IOFile( "<" , s )); }
+			
 |	t=<LESSAND>		s=filename()
 		{ return new IORedirect(new IOFile( t.toString() , s )); }
 |	<TGT>				s=filename()

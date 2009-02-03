@@ -20,6 +20,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Result;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerFactoryConfigurationError;
@@ -27,6 +28,7 @@ import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.sax.TransformerHandler;
 import javax.xml.transform.stream.StreamResult;
 
+import net.sf.saxon.FeatureKeys;
 import net.sf.saxon.event.NamespaceReducer;
 import net.sf.saxon.event.Receiver;
 import net.sf.saxon.event.TreeReceiver;
@@ -34,6 +36,7 @@ import net.sf.saxon.om.Item;
 import net.sf.saxon.om.NodeInfo;
 import net.sf.saxon.s9api.Destination;
 import net.sf.saxon.s9api.SaxonApiException;
+import net.sf.saxon.s9api.Serializer;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmValue;
 import net.sf.saxon.trans.XPathException;
@@ -365,16 +368,25 @@ public class Util
 	public static TransformerHandler getTransformerHander(OutputStream stdout)
 	throws TransformerFactoryConfigurationError, TransformerConfigurationException,
 	IllegalArgumentException {
-		return getTransformerHander( new StreamResult(stdout), Shell.getTextEncoding());
+		return getTransformerHander( new StreamResult(stdout));
 	
 	}
 	
+	public static TransformerHandler getTransformerHander(Result result ) throws TransformerConfigurationException, IllegalArgumentException, TransformerFactoryConfigurationError
+	{
+		return getTransformerHander( result,Shell.getXMLEncoding() );
+	}
 	
-	public static TransformerHandler getTransformerHander(StreamResult streamResult, String encoding)
+	
+	public static TransformerHandler getTransformerHander(Result result, String encoding)
 			throws TransformerFactoryConfigurationError, TransformerConfigurationException,
 			IllegalArgumentException {
 	
 		SAXTransformerFactory tf = (SAXTransformerFactory) SAXTransformerFactory.newInstance();
+		tf.setAttribute(FeatureKeys.CONFIGURATION, Shell.getProcessor().getUnderlyingConfiguration());
+		
+		
+		
 		// SAX2.0 ContentHandler.
 		TransformerHandler hd = tf.newTransformerHandler();
 		Transformer serializer = hd.getTransformer();
@@ -382,7 +394,7 @@ public class Util
 		// serializer.setOutputProperty(OutputKeys.DOCTYPE_SYSTEM,"users.dtd");
 		serializer.setOutputProperty(OutputKeys.INDENT,"yes");
 		serializer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION,"yes");
-		hd.setResult(streamResult);
+		hd.setResult(result);
 		return hd;
 	}
 
@@ -580,6 +592,18 @@ public class Util
 
 	public static String readString(URI uri) throws MalformedURLException, IOException {
 		return readString( uri.toURL());
+	}
+
+
+	public static Destination streamToDestination(OutputStream out) {
+		
+		Serializer dest = new Serializer();
+		dest.setOutputProperty( Serializer.Property.OMIT_XML_DECLARATION, "yes");
+		//dest.setOutputProperty(Serializer.Property.INDENT , "yes");
+		// dest.setOutputProperty(Serializer.Property.VERSION,"1.1");
+		dest.setOutputProperty(Serializer.Property.METHOD, "xml");
+		dest.setOutputStream(out);	
+		return dest;
 	}
 
 

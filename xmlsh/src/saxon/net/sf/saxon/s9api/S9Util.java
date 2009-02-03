@@ -4,14 +4,16 @@
  *
  */
 
-package org.xmlsh.core;
+package net.sf.saxon.s9api;
 
-import java.io.IOException;
+import net.sf.saxon.om.NodeInfo;
 
-public interface IPort {
-	void addRef();
-	void release() throws IOException, InvalidArgumentException;
+public class S9Util {
 	
+	public static XdmValue	wrapNode( NodeInfo node)
+	{
+		return XdmNode.wrap(node);
+	}
 
 }
 

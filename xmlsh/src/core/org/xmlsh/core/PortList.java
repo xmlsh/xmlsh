@@ -42,7 +42,7 @@ import org.xmlsh.util.Util;
 		}
 	}
 	
-	void close() throws IOException
+	void close() throws IOException, InvalidArgumentException
 	{
 		for( NamedPort<P> e : this )
 			e.mPort.release();

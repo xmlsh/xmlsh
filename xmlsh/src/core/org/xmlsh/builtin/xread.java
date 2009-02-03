@@ -38,7 +38,7 @@ public class xread extends BuiltinCommand {
 		Processor proc = Shell.getProcessor();
 		DocumentBuilder builder = proc.newDocumentBuilder();
 
-		XdmNode node = builder.build(mShell.getEnv().getStdin().asSource());
+		XdmNode node = mShell.getEnv().getStdin().asXdmNode();
 		mShell.getEnv().setVar(
 				new XVariable(args.get(0).toString(), new XValue(node)));
 
