@@ -43,6 +43,8 @@ import org.xmlsh.sh.core.FunctionDefinition;
 import org.xmlsh.sh.grammar.ParseException;
 import org.xmlsh.sh.grammar.ShellParser;
 import org.xmlsh.sh.grammar.ShellParserReader;
+import org.xmlsh.util.NullInputStream;
+import org.xmlsh.util.NullOutputStream;
 import org.xmlsh.util.Util;
 
 public class Shell {
@@ -880,6 +882,18 @@ public class Shell {
 	
 	
 	public InputStream getInputStream(String file) throws IOException {
+		/*
+		 * Special case to support /dev/null file on Windows systems
+		 * Doesnt hurt on unix either to fake this out instead of using the OS
+		 */
+		if( file.equals("/dev/null") ){
+			
+			return new NullInputStream();
+			
+		}
+		
+		
+		
 		if( Util.isURIScheme(file)){
 			try {
 				return new URI(file).toURL().openStream();
@@ -895,6 +909,12 @@ public class Shell {
 
 	public OutputStream getOutputStream(String file, boolean append) throws FileNotFoundException, IOException
 	{
+		if( file.equals("/dev/null")){
+			return new NullOutputStream();
+		}
+		
+		
+		
 		return  new FileOutputStream(getFile(file),append);
 	}
 

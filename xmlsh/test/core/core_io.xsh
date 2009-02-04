@@ -15,3 +15,9 @@ cat < $(echo $F)
 rm $F
 
 
+# Output to dev null
+echo foo > /dev/null || echo Cant output to /dev/null
+F=notempty
+read F < /dev/null
+
+[ -z "$F" ] || echo read didnt succeed
