@@ -36,14 +36,14 @@ else
     xpath -i $tpipe './node()' 
 fi  > $_TMP/test.xpl
 
-in=""
+in="/dev/null"
 if [ <[ exists( $test/t:test/t:input ) ]> ] ; then 
 	tinput=<[$test/t:test/t:input]>
 	if [ <[ exists( $tinput/t:document ) ]> ] ; then 
 		tinput=<[ $tinput/t:document ]> 
 	fi
 	echo <[ $tinput/node() ]> > $_TMP/input.xml
-	in="< $_TMP/input.xml"
+	in=$_TMP/input.xml
 fi
 
 
@@ -57,7 +57,7 @@ xproc2xmlsh -base $_TEST_URI < $_TMP/test.xpl > $_TMP/test.xsh
 _TEST=$(xfile $_TMP test.xsh)
 
 
-eval $_TEST  $in > $_TMP/output.xml 
+$_TEST  < $in > $_TMP/output.xml 
 _EXIT=$?
 
 
