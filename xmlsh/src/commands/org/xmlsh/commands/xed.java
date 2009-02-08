@@ -13,6 +13,7 @@ import javax.xml.transform.Source;
 
 import net.sf.saxon.AugmentedSource;
 import net.sf.saxon.event.Builder;
+import net.sf.saxon.om.DocumentInfo;
 import net.sf.saxon.om.MutableNodeInfo;
 import net.sf.saxon.om.NamePool;
 import net.sf.saxon.om.NodeInfo;
@@ -23,7 +24,6 @@ import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.SaxonApiUncheckedException;
-import net.sf.saxon.s9api.Serializer;
 import net.sf.saxon.s9api.XPathCompiler;
 import net.sf.saxon.s9api.XPathExecutable;
 import net.sf.saxon.s9api.XPathSelector;
@@ -380,6 +380,9 @@ public class xed extends XCommand {
 	
 	private XdmNode build( Source src ) throws SaxonApiException
 	{
+		if( src instanceof DocumentInfo  )
+			src = (NodeInfo)(((DocumentInfo)src).iterateAxis(net.sf.saxon.om.Axis.CHILD).next());
+			
 		AugmentedSource asrc = AugmentedSource.makeAugmentedSource(src); 
 		asrc.setTreeModel(Builder.LINKED_TREE); 
 		return mBuilder.build(asrc);

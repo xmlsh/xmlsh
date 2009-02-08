@@ -295,7 +295,8 @@ class Expander {
 
 					if( var.equals("*")){
 						// Add all positional variables as args 
-						result.add( mArgs );
+						for( XValue v : mArgs )
+							result.add( quote(v) );
 					} else
 						value = extractSingle(var, cQuote != '\0' );
 					
@@ -598,8 +599,11 @@ class Expander {
 		for( int i = 0 ; i < vslen ; i++ ){
 			char c = vs.charAt(i);
 			if( c == '\\' && i < vslen ){
-				sb.append(c);
+				
+				// sb.append(c);
 				c = vs.charAt(++i);
+				if( c != '"' && c != '\'')
+					sb.append('\\');
 				sb.append(c);
 				continue;
 				
@@ -721,9 +725,54 @@ class Expander {
 		
 		
 	}
-
-
 	private XValue extractSingle(String var, boolean quoted) throws IOException, CoreException {
+	
+		XValue v = extractSingle(var);
+		if( v == null || v.isXExpr() )
+			return v;
+		
+
+			String s = v.toString();
+			
+			if( hasQuotes(s) )
+				return new XValue(quote(s));
+			else
+				return v;
+
+				
+		
+	
+	}
+
+	private String quote(String s) 
+	{
+		
+		StringBuffer sb = new StringBuffer( s.length() );
+		for( int i = 0 ; i < s.length() ; i++ ){
+			char c = s.charAt(i);
+			if( c == '"' || c == '\'' || c == '\\')
+				sb.append('\\');
+			sb.append(c);
+		}
+		return sb.toString();
+		
+	}
+
+	public XValue quote( XValue v)
+	{
+		if( v == null || v.isXExpr() )
+			return v;
+		return new XValue(quote(v.toString()));
+	}
+	
+	
+	private boolean hasQuotes(String s) {
+		return s.indexOf('\'')  >= 0 ||
+		 		s.indexOf('\"') >= 0 ;
+				
+	}
+
+	private XValue extractSingle(String var) throws IOException, CoreException {
 		
 		// $(
 		if( var.startsWith("(") && var.endsWith(")"))

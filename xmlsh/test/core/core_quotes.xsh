@@ -69,3 +69,11 @@ line 2'
 # Test that we strip quotes off of variable assigments
 _A="test"
 echo <[ <foo attr="{$_A}"/> ]>
+
+# Quoting inside variables and $*
+_A='""'
+echo $_A $_A
+set $_A $_A
+echo $#
+echo $*
+echo "$*"
