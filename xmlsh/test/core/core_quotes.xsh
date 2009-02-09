@@ -77,3 +77,10 @@ set $_A $_A
 echo $#
 echo $*
 echo "$*"
+
+# Initial \ or quoted "
+echo \"
+echo \'\"
+echo \''foo bar'\'
+
+
