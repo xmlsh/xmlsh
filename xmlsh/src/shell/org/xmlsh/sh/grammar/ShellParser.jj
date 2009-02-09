@@ -243,8 +243,7 @@ TOKEN : {
 
 
 <CMD> TOKEN : {
-	< WORD : (~["\t","\n","\r" ," ","\"","'","|","<",">","&",";",")","(","$"] | "\\" ~[] | <VAR_EXPANSION> | <STRING_LITERAL1> | <STRING_LITERAL2>)+ > 
-|	< IO_NUMBER : ["0"-"9"] >
+	< WORD : (~["\t","\n","\r" ," ","\"","'","|","<",">","&",";",")","(","$","\\"] | "\\" ~[] | <VAR_EXPANSION> | <STRING_LITERAL1> | <STRING_LITERAL2>)+ > 
 |
   < #STRING_LITERAL1:
       "\""
@@ -272,14 +271,14 @@ TOKEN : {
  
  <*> TOKEN : {
  	< VAR_S_SUBPROC :
- 		"$(" | "$(|" | "$(<" 
+ 		"$(" | "$(<" 
 	 >
 	 {
 	 	matchedToken.image += readParen();
 	 }
 |
  	< VAR_X_SUBPROC :
-	 	"$<(" | "$<(|" | "$<(<" 
+	 	"$<(" | "$<(<" 
 	 >
 	 {
 	 	matchedToken.image += readParen();
