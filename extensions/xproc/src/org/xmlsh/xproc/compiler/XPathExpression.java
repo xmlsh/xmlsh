@@ -24,9 +24,9 @@ class XPathExpression {
 	public void serialize(OutputContext c) 
 		{
 			if( literal )
-				c.addBody(xpath);
+				c.addBody( XProcUtil.quote(xpath));
 			else
-				c.addBody("<["+xpath+"]>");
+				c.addBody(" $(xmlns:p=java:org.xmlsh.xproc.util.XPathFunctions xpath " + XProcUtil.quote(xpath) + "<{_input}) ");
 			
 		}
 	

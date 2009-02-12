@@ -89,7 +89,11 @@ class XProcUtil {
 	}
 
 	public static String quote(String string) {
-		return "\"" + string + "\"";
+		/* return "'" + 
+			string.replace("'",  "'\"'\"'") +
+			"'";
+			*/
+		return "<{{" + string + "}}>";
 	}
 	
 }

@@ -151,9 +151,10 @@ class DeclareStep {
 		for( Namespace ns : namespaces ){
 			c.addPreambleLine("declare namespace " + ns.getPrefix() + "=\"" + ns.getUri() + "\" ");
 		}
+		c.addBodyLine("xread _input");
 		c.addBody(" ( ");
 		subpipeline.serialize(c);
-		c.addBody(" ) ");
+		c.addBody(" )<{_input} ");
 		Input in =	inputs.getPrimary();
 		
 		if( in != null )

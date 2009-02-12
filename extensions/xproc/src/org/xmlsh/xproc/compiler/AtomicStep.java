@@ -68,7 +68,7 @@ class AtomicStep  extends AbstractStep {
 					QName attrName = child.getNodeName();
 					if( attrName.getPrefix().equals("")){
 						
-						withoptions.add(new WithOption( attrName.getLocalName() , XProcUtil.quote(child.getStringValue())));
+						withoptions.add(new WithOption( attrName.getLocalName() , child.getStringValue()));
 						
 					}
 					continue ;
