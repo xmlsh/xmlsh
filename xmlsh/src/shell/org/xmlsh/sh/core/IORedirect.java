@@ -13,17 +13,28 @@ import org.xmlsh.sh.shell.Shell;
 public class IORedirect {
 	IOFile	mFile;
 	IOHere	mHere;
+	IOCommand mCommand;
+
 	
 	public IORedirect( IOFile file ){
 		
 		mFile = file;
 		mHere = null;
+		mCommand = null;
 	}
 	
 	public IORedirect( IOHere here ){
 		
 		mFile = null;
+		mCommand = null;
 		mHere = here;
+	}
+	
+	public IORedirect( IOCommand command ){
+		
+		mFile = null;
+		mCommand = command;
+		mHere = null;
 	}
 
 	public void print(PrintWriter out) {
@@ -32,6 +43,8 @@ public class IORedirect {
 			mFile.print(out);
 		if( mHere != null)
 			mHere.print(out);
+		if( mCommand != null )
+			mCommand.print(out);
 		
 	}
 
@@ -40,6 +53,8 @@ public class IORedirect {
 			mFile.exec(shell);
 		if( mHere != null )
 			mHere.exec( shell);
+		if( mCommand != null )
+			mCommand.exec(shell);
 		
 	}
 }

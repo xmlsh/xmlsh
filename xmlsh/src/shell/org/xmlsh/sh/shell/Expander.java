@@ -156,9 +156,16 @@ class Expander {
 	List<XValue> expand(String arg, boolean bExpandWild , boolean bExpandWords ) throws IOException, CoreException
 	{
 		
+
+		// <{ big quotes }>
+		if( arg.startsWith("<{{") && arg.endsWith("}}>")){
+			List<XValue>	r = new ArrayList<XValue>(1);
+			r.add( new XValue(arg.substring(3,arg.length()-3)) );
+			return r;		
+		}
 		
 		
-		// ( XEXPR )
+		// <[ XEXPR ]>
 		if( arg.startsWith("<[") && arg.endsWith("]>")){
 			List<XValue> 	r = new ArrayList<XValue>(1);
 			r.add( new XValue( parseXExpr(arg.substring(2,arg.length()-2))));
