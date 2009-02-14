@@ -19,8 +19,8 @@ import org.xmlsh.sh.shell.Shell;
 public class CommandPrefix {
 	private class Assign {
 		String	mVariable;
-		String	mValue;
-		public Assign(String variable, String value) {
+		Word	mValue;
+		public Assign(String variable, Word value) {
 			super();
 			mVariable = variable;
 			mValue = value;
@@ -28,7 +28,7 @@ public class CommandPrefix {
 		public void print(PrintWriter out) {
 			out.print(mVariable);
 			out.print("=");
-			out.print(mValue);
+			mValue.print(out);
 			out.print( " ");
 			
 		}
@@ -36,16 +36,12 @@ public class CommandPrefix {
 	
 	private List<Assign>	mList = new ArrayList<Assign>();
 
-	public void add( String var , String value )
+	public void add( String var , Word value )
 	{
 		mList.add( new Assign( var , value ));
 	}
 	
-	public void add( String assign )
-	{
-		int eq = assign.indexOf('=');
-		add( assign.substring(0,eq), assign.substring(eq+1) );
-	}
+
 
 	public void print(PrintWriter out) {
 		for (Assign ass : mList) {
@@ -57,7 +53,7 @@ public class CommandPrefix {
 
 	public void exec(Shell shell) throws IOException, CoreException {
 		for (Assign ass : mList) {
-			XValue value = shell.expand(ass.mValue,false,false);
+			XValue value = ass.mValue.expand(shell,false,false);
 			shell.getEnv().setVar( new XVariable(ass.mVariable, value) );
 			
 		}

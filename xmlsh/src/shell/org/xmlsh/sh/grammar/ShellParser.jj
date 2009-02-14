@@ -590,7 +590,7 @@ StringList	wordlist() :
 
 CaseClause case_clause() : 
 	{
-		String	s;
+		Word	s;
 		CaseList l=null;
 	}
 {
@@ -706,7 +706,7 @@ Command do_group() :
 SimpleCommand simple_command() : 
 	{
 		CommandPrefix p;
-		String c=null;
+		Word c=null;
 		CommandSuffix s=null;
 	}
 {
@@ -731,11 +731,11 @@ String cmd_name() : {Token t;}
 
 }
 
-String cmd_word() : 
+Word cmd_word() : 
 	{Token t;}
 { 
 	( t=<WORD> | t=<NAME>  | t=<XEXPR> | t=<VAR_S_SUBPROC> | t=<VAR_X_SUBPROC> | t=<BIGQUOTE>)
-	{ return t.toString(); }
+	{ return new Word(t.toString()); }
 	
 }
 
@@ -744,11 +744,13 @@ CommandPrefix cmd_prefix() :
 	{ 
 		CommandPrefix p = new CommandPrefix();
 		Token t1;
-		String s1;
+		Word 	w;
 	}
 {
-	( LOOKAHEAD(2) t1=<ASSIGN_WORD> s1=cmd_word()
-		{ p.add( t1.toString() + s1 ); }
+	( LOOKAHEAD(2) t1=<ASSIGN_WORD> w=cmd_word()
+		{ String s=t1.toString();
+			
+			p.add(s.substring(0,s.length()-1)  ,w  ); }
 	
 	)+
 	{
@@ -759,14 +761,14 @@ CommandPrefix cmd_prefix() :
 CommandSuffix cmd_suffix() : 
 	{
 		CommandSuffix s = new CommandSuffix();
-		String str;
+		Word w;
 		IORedirect io;
 		Token t;
 	}
 {
-  ( ( str=cmd_word()
+  ( ( w=cmd_word()
   	 ) 
-      { s.addArg(str);} 
+      { s.addArg(w);} 
   )* (io=io_redirect(){ s.addIO( io);} )*
   { return s;}
 }
@@ -839,9 +841,11 @@ IOHere	io_here() :
 }
 
 String here_end() : 
-	{ String t;}
+	{ Token t;}
 {
-	t=cmd_word() <NEWLINE> { return t ; }
+	t=<WORD> <NEWLINE>{ return t.toString() ; }
+|	t=<NAME> <NEWLINE> { return t.toString() ; }
+ 
 }
 
 void	newline_list() : {}

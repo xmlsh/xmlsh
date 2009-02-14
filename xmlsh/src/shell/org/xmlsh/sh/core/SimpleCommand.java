@@ -18,12 +18,12 @@ import org.xmlsh.util.Util;
 
 public class SimpleCommand extends Command {
 	private CommandPrefix  mPrefix;
-	private String			mCommand;
+	private Word			mCommand;
 	private CommandSuffix	mSuffix;
 	
 	
 	
-	public SimpleCommand(CommandPrefix prefix , String command, CommandSuffix suffix )
+	public SimpleCommand(CommandPrefix prefix , Word command, CommandSuffix suffix )
 	{
 		mPrefix = prefix;
 		mCommand = command;
@@ -40,7 +40,8 @@ public class SimpleCommand extends Command {
 	public void print(PrintWriter out, boolean bExec) {
 		if( mPrefix != null )
 			mPrefix.print(out);
-		out.print( mCommand );
+		mCommand.print(out);
+		
 		if( mSuffix  != null ){
 			out.print(" ");
 
@@ -59,7 +60,7 @@ public class SimpleCommand extends Command {
 		
 		
 		
-		if(  Util.isEmpty( mCommand ))
+		if( mCommand == null || mCommand.isEmpty() )
 			return execNull( shell );
 		
 		List<XValue>	cmdLine = mSuffix.toCmdLine(shell, mCommand);

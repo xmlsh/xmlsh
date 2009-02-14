@@ -13,9 +13,9 @@ import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
 
 public class CaseClause  extends CompoundCommand {
-	String		mWord;
+	Word		mWord;
 	CaseList	mList;
-	public CaseClause(String word, CaseList list) {
+	public CaseClause(Word word, CaseList list) {
 		super();
 		mWord = word;
 		mList = list;
@@ -26,7 +26,9 @@ public class CaseClause  extends CompoundCommand {
 	 */
 	@Override
 	public void print(PrintWriter out, boolean bExec) {
-		out.println("case " + mWord + " in ");
+		out.print("case ");
+		mWord.print(out);
+		out.println( " in ");
 		mList.print(out,bExec);
 		
 		
@@ -42,7 +44,7 @@ public class CaseClause  extends CompoundCommand {
 		try {
 			applyRedirect(shell);
 			
-			String word =shell.expandString(mWord,false);
+			String word = mWord.expandString(shell,false);
 			
 			for( CaseItem item : mList ){
 				

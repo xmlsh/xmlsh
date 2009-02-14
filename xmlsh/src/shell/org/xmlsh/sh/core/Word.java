@@ -1,6 +1,6 @@
 /**
- * $Id$
- * $Date$
+ * $Id: $
+ * $Date: $
  *
  */
 
@@ -8,65 +8,50 @@ package org.xmlsh.sh.core;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
 
-public class CommandSuffix {
-	private WordList		mArgs = new WordList();
-	private	 IORedirectList		mRedirect = new IORedirectList();
-	public CommandSuffix() {
-
+/*
+ * A Value that evaulates to a "cmd_word" which is either a simple string,
+ * or a subprocess expression 
+ * 
+ */
+public class Word {
+	String		mString;	// String value
+	public Word( String s ){
+		mString = s;
 	}
 	
-	public void addArg( String arg){
-		addArg(new Word(arg));
-	}
-	public void addArg( Word arg){
-		mArgs.add(arg);
-	}
-	
-	public void addIO( IORedirect io){
-		mRedirect.add(io);
-	}
-
-	public void print(PrintWriter out) {
-		mArgs.print(out);
-		mRedirect.print(out);
-		
-		
-		
-	}
-
-	/*
-	 * Expand command line argument list
-	 * into runtime argument list 0-n ... 
-	 */
-	
-	public List<XValue> toCmdLine(Shell shell, Word command) throws IOException, CoreException 
+	public void print( PrintWriter out )
 	{
-		ArrayList<XValue>	args = new ArrayList<XValue>();
-				
-		args.addAll( command.expand(shell,false,true,true));
-		for( Word arg : mArgs )
-			args.addAll(arg.expand(shell,false,true,true));
-
-		return args;
-		
+		out.print(mString);
 	}
 
-	public void exec(Shell shell) throws Exception {
-		this.mRedirect.exec(shell);
-		
+	public List<XValue> expand(Shell shell, boolean bExpandSequences , boolean bExpandWild , boolean bExpandWords ) throws IOException, CoreException {
+		return shell.expand(mString,bExpandSequences , bExpandWild , bExpandWords );
+	}
+
+	public XValue expand(Shell shell,boolean bExpandWild , boolean bExpandWords ) throws IOException, CoreException {
+		return shell.expand(mString,bExpandWild ,  bExpandWords );
+	}
+
+	public String expandString(Shell shell, boolean bExpandWild) throws IOException, CoreException {
+		return shell.expandString(mString, bExpandWild);
+	}
+
+	public boolean isEmpty() {
+		return mString.isEmpty();
 	}
 	
-	
-	
-	
+	public String toString()
+	{
+		return mString;
+	}
 }
+
 
 
 //
