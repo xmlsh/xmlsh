@@ -8,7 +8,6 @@ package org.xmlsh.sh.core;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.xmlsh.core.CoreException;
@@ -20,29 +19,37 @@ import org.xmlsh.sh.shell.Shell;
  * or a subprocess expression 
  * 
  */
-public abstract class Word {
+public class StringWord extends Word {
+	private 	String		mString;	// String value
+	public StringWord( String s ){
+		mString = s;
+	}
 	
-	
-	public abstract void print( PrintWriter out );
+	public void print( PrintWriter out )
+	{
+		out.print(mString);
+	}
 
-	public abstract XValue expand(Shell shell,boolean bExpandWild , boolean bExpandWords ) throws IOException, CoreException;
-	
+	public List<XValue> expand(Shell shell, boolean bExpandSequences , boolean bExpandWild , boolean bExpandWords ) throws IOException, CoreException {
+		return shell.expand(mString,bExpandSequences , bExpandWild , bExpandWords );
+	}
+
+	public XValue expand(Shell shell,boolean bExpandWild , boolean bExpandWords ) throws IOException, CoreException {
+		return shell.expand(mString,bExpandWild ,  bExpandWords );
+	}
 
 	public String expandString(Shell shell, boolean bExpandWild) throws IOException, CoreException {
-		return expand(shell,bExpandWild,false).toString();
-	}
-	
-	public List<XValue> expand(Shell shell, boolean bExpandSequences , boolean bExpandWild , boolean bExpandWords ) throws IOException, CoreException {
-		List<XValue> list = new ArrayList<XValue>(1);
-		list.add( expand( shell , false,false));
-		return list;
-		
-		
+		return shell.expandString(mString, bExpandWild);
 	}
 
-	public abstract boolean isEmpty();
+	public boolean isEmpty() {
+		return mString.isEmpty();
+	}
 	
-	public abstract String toString();
+	public String toString()
+	{
+		return mString;
+	}
 }
 
 

@@ -59,5 +59,13 @@ unset A
 A=B eval 'echo A is $A'
 [ -z "$A" ] || echo A should not be set
 
+# Test that $< passes through 
+echo "$<"
+
+# Test that "$(cmd)" passes trough unchanged
+echo "$(cmd)"
+
+
+
 
 exit 0

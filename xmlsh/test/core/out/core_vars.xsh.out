@@ -11,3 +11,5 @@ foo bar
 spam bletch
 <foo attr="an attr"><bar>text</bar></foo>
 A is B
+$<
+$(cmd)

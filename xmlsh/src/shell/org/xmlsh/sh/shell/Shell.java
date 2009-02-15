@@ -386,7 +386,7 @@ public class Shell {
 	 * 3) wildcard expansion
 	 */
 	
-	public int exec(Command c) throws Exception {
+	public int exec(Command c) {
 		
 		if( mOpts.mExec){
 			String out = c.toString(true);

@@ -293,20 +293,18 @@ TOKEN : {
 	>
  }
  
+ 
+ 
+ 
+ 
  <*> TOKEN : {
- 	< VAR_S_SUBPROC :
- 		"$(" | "$(<" 
+ 	< VAR_SUBPROC :
+ 		"$(" | "$<("  
 	 >
-	 {
-	 	matchedToken.image += readParen();
-	 }
 |
- 	< VAR_X_SUBPROC : 
-	 	"$<(" | "$<(<" 
+	  < VAR_SUBPROC_FILE :
+ 		"$(<" |  "$<(<" 
 	 >
-	 {
-	 	matchedToken.image += readParen();
-	 }
  }
  
  
@@ -572,8 +570,6 @@ String wordname() :
 	t=<WORD>  { return t.toString(); }
 | 	t=<NAME>  { return t.toString(); }
 | 	t=<XEXPR> { return t.toString(); }
-|   t=<VAR_S_SUBPROC> { return t.toString(); }
-|   t=<VAR_X_SUBPROC> { return t.toString(); }
 |   t=<BIGQUOTE>	  { return t.toString(); }
 }
 
@@ -732,10 +728,15 @@ String cmd_name() : {Token t;}
 }
 
 Word cmd_word() : 
-	{Token t;}
+	{Token t; String s; Command c; }
 { 
-	( t=<WORD> | t=<NAME>  | t=<XEXPR> | t=<VAR_S_SUBPROC> | t=<VAR_X_SUBPROC> | t=<BIGQUOTE>)
-	{ return new Word(t.toString()); }
+	( t=<WORD> | t=<NAME>  | t=<XEXPR> | t=<BIGQUOTE>)
+	{ return new StringWord(t.toString()); }
+	
+	|   t=<VAR_SUBPROC>   c=compound_list() <RPAREN> 
+	{ return new CommandWord(t.toString() , c ) ; }
+	|   t=<VAR_SUBPROC_FILE>   s=filename()  <RPAREN> 
+	{ return new CommandFileWord(t.toString() , s ) ; }
 	
 }
 
@@ -813,8 +814,8 @@ IORedirect io_file() :
 		{ return new IORedirect(new IOFile(t.toString() , s )); }
 |	t=<CLOBBER>		s=filename()
 		{ return new IORedirect(new IOFile( t.toString() , s )); }
-|	t=<LTPAREN>  c=compound_list() <RPAREN> 
-        { return new IORedirect( new IOCommand( "<(" , c )); }
+// |	t=<LTPAREN>  c=compound_list() <RPAREN> 
+//       { return new IORedirect( new IOCommand( "<(" , c )); }
 }
 
 
@@ -823,7 +824,7 @@ String	filename() :
 {
 	t=<WORD> { return t.toString() ; }
 |	t=<NAME> { return t.toString() ; }
-|   t=<VAR_S_SUBPROC> { return t.toString(); }
+
 }
 
 IOHere	io_here() : 

@@ -21,10 +21,7 @@ public class CommandSuffix {
 	public CommandSuffix() {
 
 	}
-	
-	public void addArg( String arg){
-		addArg(new Word(arg));
-	}
+
 	public void addArg( Word arg){
 		mArgs.add(arg);
 	}

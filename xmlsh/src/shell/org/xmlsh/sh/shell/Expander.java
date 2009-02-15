@@ -172,28 +172,7 @@ class Expander {
 			return r;
 		}
 		
-		// $<(sub comd>)
-		if( arg.startsWith("$<(") && arg.endsWith(")")){
-			List<XValue> 	r = new ArrayList<XValue>(1);
-			r.add( new XValue( parseXCmd(arg.substring(3,arg.length()-1))));
-			return r;
-		}
-		
-
-		if( arg.startsWith("$(") && arg.endsWith(")"))
-		{
-			List<XValue> 	r = new ArrayList<XValue>(1);
-			String res = expandSubproc(arg.substring(2,arg.length()-1));
-			if( bExpandWords )
-				for( String w : res.split("(\r)?\n") )
-					r.add( new XValue(w));
-			else
-				r.add(new XValue(res));
-			return r;
-			
-		}
-		
-		
+				
 
 		Result	result = new Result();
 
@@ -253,12 +232,7 @@ class Expander {
 				if( arg.charAt(i) == '{') {
 					i = readToMatching( arg , i , sbv ,  '}' );
 				} 
-				else
-				if( arg.charAt(i) == '('){
-					sbv.append('(');
-					i = readToMatching( arg , i , sbv ,  ')' );
-					sbv.append(')');
-				}
+				
 				
 				else { 
 					// Speical case 
@@ -310,7 +284,8 @@ class Expander {
 					
 					if( value != null )
 						result.append( value );
-				}
+				} else
+					result.append('$');
 			
 			} else 
 				result.append(c);
@@ -343,84 +318,7 @@ class Expander {
 		
 	}
 
-	/*
-	 * Parse an XML command expression and build the XdmValue by running 
-	 * a sub shell and parsing the XML through a pipe 
-	 * NOTE: Not entirely sure this is better then simply outputting the XML as a string
-	 * then parsing the result text.
-	 */
 	
-	
-
-	private XdmValue parseXCmd(String cmd) throws IOException, CoreException
-	{
-		String prefix = null;
-
-		if(  cmd.startsWith("<")){
-			prefix = cmd.substring(0,1);
-			cmd = cmd.substring(1);
-			if( prefix.equals("<") ){
-				XValue 	files = mShell.expand( cmd , true,true );
-				String file;
-				if( files.isAtomic() )
-					file = files.toString();
-				else 
-					throw new InvalidArgumentException("Invalid expansion for redirection");
-				
-				try {
-					DocumentBuilder builder = Shell.getProcessor().newDocumentBuilder();
-					XdmNode node = builder.build(new StreamSource(mShell.getInputStream(file)));
-					return node;
-				} catch( Exception e ){
-					throw new XMLException("Exception parsing XML document: " + file , e );
-				}
-				
-				
-			}
-				
-		}
-		
-		
-	
-		ShellThread sht = null;
-
-
-		try {
-
-			PipedStream pipe = new PipedStream();
-
-			Shell shell = mShell.clone();
-			shell.getEnv().setStdout( pipe.getOutput() );
-			
-			
-			shell.getEnv().setStdin( new NullInputStream() ,"");
-			
-			Command c = new EvalScriptCommand( cmd );
-			
-			sht = new ShellThread( shell , null ,  c );
-
-
-			 sht.start();
-			
-			 DocumentBuilder builder = Shell.getProcessor().newDocumentBuilder();
-			 XdmNode node = builder.build(new StreamSource(pipe.getInput()));
-			 
-			if( sht != null )
-				sht.join();
-				
-			return node ;
-			 
-		} catch ( Exception e )
-		{
-			throw new XMLException("Exception parsing XML command: " + cmd , e );
-
-
-			
-		} 
-		
-		
-		
-	}
 		
 	private XdmValue parseXExpr(String arg) {
 		
@@ -489,65 +387,6 @@ class Expander {
 	
 	}
 
-	private String expandSubproc(String cmd) throws IOException, CoreException 
-	{
-		String prefix = null;
-		if( cmd.startsWith("<")){
-			prefix = cmd.substring(0,1);
-			cmd = cmd.substring(1);
-			if( prefix.equals("<") ){
-				XValue 	files = mShell.expand( cmd , true,true );
-				String file;
-				if( files.isAtomic() )
-					file = files.toString();
-				else 
-					throw new InvalidArgumentException("Invalid expansion for redirection");
-				
-
-				return Util.readString( mShell.getInputStream(file)).trim();
-				
-				
-			}
-				
-		}
-		
-		
-		
-		
-		InputStream script = Util.toInputStream(cmd);
-		ByteArrayOutputStream out = new ByteArrayOutputStream();
-
-		Shell shell = mShell.clone();
-		try {
-		
-			shell.getEnv().setStdout( out );
-			shell.getEnv().setStdin( new NullInputStream(),"" );
-			shell.runScript(script);
-			
-			
-			return out.toString().trim();
-	
-			
-			
-		} catch (ParseException e) {
-			shell.printErr( e.getMessage() );
-			return "";
-		} 
-	
-		
-		finally {
-			shell.close();
-			try {
-				script.close();
-			} catch ( IOException e) {
-				mLogger.error("IOException closing buffered script",e);
-			}
-			
-			
-		}
-
-		
-	}
 
 
 
@@ -781,13 +620,6 @@ class Expander {
 
 	private XValue extractSingle(String var) throws IOException, CoreException {
 		
-		// $(
-		if( var.startsWith("(") && var.endsWith(")"))
-		{
-
-			String res = expandSubproc(var.substring(1,var.length()-1));
-			return new XValue(res);
-		}
 		
 		
 		if( var.equals("#"))
