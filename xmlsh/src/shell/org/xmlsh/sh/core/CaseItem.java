@@ -35,6 +35,8 @@ public class CaseItem {
 	}
 
 	public int exec(Shell shell) throws Exception {
+		if( mCommand == null )
+			return 0 ;
 		return shell.exec(mCommand);
 	}
 

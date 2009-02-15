@@ -565,9 +565,9 @@ CaseList case_list() :
 }
 
 CaseItem case_item() : 
-	{StringList p; Command c; }
+	{StringList p; Command c = null ; }
 {
-	[<LPAREN>]	p=pattern() <RPAREN>	 c=compound_list() <DSEMI>	linebreak() 
+	[<LPAREN>]	p=pattern() <RPAREN>	[ c=compound_list() ] <DSEMI>	linebreak() 
 	{ return new CaseItem( p , c ); }	
 	
 }

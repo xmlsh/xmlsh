@@ -20,6 +20,19 @@ case foo in
 	
 esac
 
+# Test default and empty commands
+case foo in 
+   foo) ;; # Nothing
+   *) echo Failure wrong default ; exit 1 ;;
+esac
+
+case foo in 
+   oo) ;; # Nothing
+   *) ;; 
+esac
+
+
+
 # Test IO to case
 [ -d $TMPDIR/_xmlsh ] || mkdir $TMPDIR/_xmlsh
 T1=$TMPDIR/_xmlsh/case1.tmp
