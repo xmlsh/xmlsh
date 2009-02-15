@@ -79,51 +79,9 @@ TOKEN_MGR_DECLS :
   	} catch( Exception e ){}
   	return sb.toString();
   }
-  
-  private String readParen()
-  {
-  	StringBuffer sb = new StringBuffer("");
-  	char c;
-  	int endp = 0;
-  	boolean escaped = false;
-  	char quoted = '\0';
-  	try {
-	  	while( (c=input_stream.readChar())> 0 ) {
-	  		sb.append(c);
-	  		
-	  		
-	  		if( c == '\\' ){
-	  			escaped=true;
-	  			continue;
-	  		}
-	  		if( ! escaped ){
-	  			if( quoted == c ){
-	  				quoted = '\0';
-	  				continue;
-	  			}
-	  			
-	  			if( quoted == '\0' ){
-		  			if( c == '"' || c == '\'' )
-		  				quoted = c ;
-		  			
-		  			else
-		  			if( c == '(' )
-		  				endp++;
-		  			else
-		  			if( c == ')' )
-		  			{
-		  				if( endp-- <= 0 )
-		  					break;
-		  			}
-	  			}
-	  		}
-	  		escaped = false ;
-	  	}
-  	} catch( Exception e ){}
-  	return sb.toString();
-  }
-  
+
 }
+
 
 /*
  LEXICAL STATES: 
@@ -300,7 +258,7 @@ TOKEN : {
  <*> TOKEN : {
  	< VAR_SUBPROC :
  		"$(" | "$<("  
-	 >
+	 > 	: DEFAULT
 |
 	  < VAR_SUBPROC_FILE :
  		"$(<" |  "$<(<" 
@@ -794,25 +752,25 @@ IORedirect io_redirect() :
 
 
 IORedirect io_file() : 
-	{ Token t; String s; String num; Command c;}
+	{ Token t; Word s; String num; Command c;}
 {
-	<LESS>			s=filename()
+	<LESS>			s=filename_word()
 		{ return new IORedirect( new IOFile( "<" , s )); }
 			
-|	t=<LESSAND>		s=filename()
+|	t=<LESSAND>		s=filename_word()
 		{ return new IORedirect(new IOFile( t.toString() , s )); }
-|	<TGT>				s=filename()
+|	<TGT>				s=filename_word()
 		{ return new IORedirect(new IOFile( "2>" , s )); }
-|	<GT>				s=filename()
+|	<GT>				s=filename_word()
 		{ return new IORedirect(new IOFile( ">" , s )); }
-|	<DGREAT>				s=filename()
+|	<DGREAT>				s=filename_word()
 		{ return new IORedirect(new IOFile( ">>" , s )); }
-|	t=<GREATAND>	s=filename()
+|	t=<GREATAND>	s=filename_word()
 		{ return new IORedirect(new IOFile( t.toString() , s )); }
 
-|	t=<LESSGREAT>	s=filename()
+|	t=<LESSGREAT>	s=filename_word()
 		{ return new IORedirect(new IOFile(t.toString() , s )); }
-|	t=<CLOBBER>		s=filename()
+|	t=<CLOBBER>		s=filename_word()
 		{ return new IORedirect(new IOFile( t.toString() , s )); }
 // |	t=<LTPAREN>  c=compound_list() <RPAREN> 
 //       { return new IORedirect( new IOCommand( "<(" , c )); }
@@ -826,6 +784,14 @@ String	filename() :
 |	t=<NAME> { return t.toString() ; }
 
 }
+
+Word	filename_word() : 
+	{Word w;}
+{
+	w=cmd_word() 
+	{ return w ; }
+}
+
 
 IOHere	io_here() : 
 	{ Token tless ; String s; }

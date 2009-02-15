@@ -18,15 +18,15 @@ import org.xmlsh.sh.shell.Shell;
 
 public class IOFile {
 	private String	mPrefix;
-	private String	mFile;
-	public IOFile(String prefix, String file) {
+	private Word	mFile;
+	public IOFile(String prefix, Word file) {
 		super();
 		mPrefix = prefix;
 		mFile = file;
 	}
 	public void print(PrintWriter out) {
 		out.print(mPrefix);
-		out.print(mFile);
+		mFile.print(out);
 		
 	}
 
@@ -35,10 +35,13 @@ public class IOFile {
 	public void exec(Shell shell) throws IOException, CoreException {
 
 		XEnvironment env = shell.getEnv();
-		boolean isPort = 	mFile.startsWith("{") &&
-							mFile.endsWith("}");
+		
+		String file = mFile.expandString(shell, false);
+		
+		boolean isPort = 	file.startsWith("{") &&
+							file.endsWith("}");
 		if( isPort ){
-			String var = mFile.substring(1,mFile.length()-1);
+			String var = file.substring(1,file.length()-1);
 			
 			
 			if( mPrefix.equals("<"))
@@ -54,15 +57,7 @@ public class IOFile {
 		}
 		
 		
-		
-		XValue 	files = shell.expand( mFile , true,true );
-		String file;
-		if( files.isAtomic() )
-			file = files.toString();
-		else 
-			throw new InvalidArgumentException("Invalid expansion for redirection");
-		
-
+	
 		
 		
 		if( mPrefix.equals("<"))
