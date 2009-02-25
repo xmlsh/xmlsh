@@ -37,7 +37,7 @@ echo {  not reserved  middle or end of command }
 C=echo
 ${C}
 echo '<foo2/>' | { xcat | xcat;}
-echo 
+
 # io redirection 
 { echo test ; } > $T
 { read a ; echo $a ; } < $T 

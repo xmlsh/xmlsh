@@ -16,6 +16,7 @@ import org.xmlsh.core.BuiltinCommand;
 import org.xmlsh.core.CommandFactory;
 import org.xmlsh.core.ICommand;
 import org.xmlsh.core.Options;
+import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.XValue;
 import org.xmlsh.util.Util;
 
@@ -46,10 +47,11 @@ public class xwhich extends BuiltinCommand {
 		final  String sDocRoot =mName;
 	      
 		TransformerHandler hd = null;
-		
+		OutputPort stdout = mShell.getEnv().getStdout();	
 		
 		if( !bNoWrite ){
-			hd = mShell.getEnv().getStdout().asTransformerHandler();
+
+			hd = stdout.asTransformerHandler();
 	
 			hd.startDocument();
 			
@@ -97,6 +99,7 @@ public class xwhich extends BuiltinCommand {
 		if( ! bNoWrite ){
 			hd.endElement("",sDocRoot,sDocRoot);
 			hd.endDocument();
+			stdout.writeSequenceTerminator();
 		}
 		
 		

@@ -10,6 +10,7 @@ import java.util.List;
 
 import javax.xml.transform.sax.TransformerHandler;
 
+import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.types.XFile;
@@ -28,7 +29,8 @@ public class xpwd extends XCommand
 		XFile file = new XFile(getCurdir());
 		
 
-		TransformerHandler hd = getStdout().asTransformerHandler();
+		OutputPort stdout = getStdout();
+		TransformerHandler hd = stdout.asTransformerHandler();
 		
 		hd.startDocument();
 		
@@ -36,6 +38,7 @@ public class xpwd extends XCommand
 		file.serialize(hd,false);
 		
 		hd.endDocument();
+		stdout.writeSequenceTerminator();
 		
 		
 		

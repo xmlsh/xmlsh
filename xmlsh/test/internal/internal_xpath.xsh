@@ -44,10 +44,9 @@ xpath  -ns x=http://www.example.org/test /x:test
 # Query a literal document with namespace predeclared
 declare namespace t=http://www.example.org/test
 xquery -i <[ <t:test>Test</t:test> ]> .
-echo 
+
 
 xquery -i <[ document{ <t:test>Test</t:test> } ]> /t:test 
-echo
 
 
 

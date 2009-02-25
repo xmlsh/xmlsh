@@ -11,6 +11,7 @@ import java.util.List;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xmlsh.core.Options;
+import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.Options.OptionValue;
@@ -84,8 +85,9 @@ public class xgetopts extends XCommand {
 			eargs.appendChild(eo);
 		}
 		
-		new XMLSerializer().write(doc, getStdout().asOutputStream());
-		
+		OutputPort stdout = getStdout();
+		new XMLSerializer().write(doc, stdout.asOutputStream());
+		stdout.writeSequenceTerminator();
 		
 		
 		return 0;

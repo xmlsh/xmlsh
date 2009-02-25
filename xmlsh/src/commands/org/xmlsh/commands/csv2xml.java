@@ -20,6 +20,7 @@ import org.xml.sax.helpers.AttributesImpl;
 import org.xmlsh.commands.util.CSVParser;
 import org.xmlsh.commands.util.CSVRecord;
 import org.xmlsh.core.Options;
+import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.util.Util;
@@ -62,7 +63,8 @@ public class csv2xml extends XCommand
 		
 // Output XML
 
-		TransformerHandler hd = getStdout().asTransformerHandler();
+		OutputPort stdout = getStdout();
+		TransformerHandler hd = stdout.asTransformerHandler();
 		hd.startDocument();
 		Attributes attrs = new AttributesImpl();
 		hd.startElement("", root,root,attrs);
@@ -95,7 +97,7 @@ public class csv2xml extends XCommand
 		hd.endDocument();
 		
 		ir.close();
-		
+		stdout.writeSequenceTerminator();
 		
 		
 		return 0;

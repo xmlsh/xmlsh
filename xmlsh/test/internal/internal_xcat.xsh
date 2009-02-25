@@ -8,13 +8,11 @@ echo <[<foo><x>spam</x></foo>]> > x2.xml
 
 echo xcat files only
 xcat -r x1.xml x2.xml
-echo
+
 echo xcat text element 
 xcat -w test -r x1.xml x2.xml
-echo
 echo xcat xml element
 xcat -w <[<test/>]> -r x1.xml x2.xml
-echo
 
 
 

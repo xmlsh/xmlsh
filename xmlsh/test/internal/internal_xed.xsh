@@ -36,7 +36,7 @@ X=<[
 </root>]>
 
 xed -i $X -r <[<bletch/>]> -e /root/foo2
-echo 
+ 
 # replace attribute
 _X=$<( xed -i $X -r <[ attribute {"a"} {"attr2" } ]> -e /root/foo )
 equals $_X <[document{ <root><foo a="attr2">bar</foo><foo2>spam</foo2></root>} ]> && 

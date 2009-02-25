@@ -9,6 +9,7 @@ package org.xmlsh.commands;
 import java.net.URI;
 import java.util.List;
 
+import net.sf.saxon.s9api.Destination;
 import net.sf.saxon.s9api.DocumentBuilder;
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.QName;
@@ -19,6 +20,7 @@ import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
 import org.xmlsh.core.Namespaces;
 import org.xmlsh.core.Options;
+import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.Options.OptionValue;
@@ -166,8 +168,25 @@ public class xquery extends XCommand {
 
 		
 			
-		eval.run(getStdout().asDestination());
+	// 	eval.run(getStdout().asDestination());
 
+		OutputPort stdout = getStdout();
+		Destination ser = stdout.asDestination();
+		boolean bFirst = true ;
+		boolean bAnyOut = false ;
+		for( XdmItem item : eval ){
+			bAnyOut = true ;
+			if( ! bFirst )
+				stdout.writeSequenceSeperator(); // Thrashes variable output !
+			bFirst = false ;
+			processor.writeXdmValue(item, ser );
+
+
+			
+		}
+		if( bAnyOut )
+			stdout.writeSequenceTerminator(); // write "\n"
+		
 		
 		return 0;
 		

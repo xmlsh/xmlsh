@@ -1,7 +1,8 @@
 Tabbed
 <foo>
   bar
-</foo>Untabbed
+</foo>
+Untabbed
 <foo>
 bar
 </foo>

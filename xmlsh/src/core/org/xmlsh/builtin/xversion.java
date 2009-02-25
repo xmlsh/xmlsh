@@ -12,6 +12,7 @@ import javax.xml.transform.sax.TransformerHandler;
 
 import org.xml.sax.helpers.AttributesImpl;
 import org.xmlsh.core.BuiltinCommand;
+import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Version;
 
@@ -21,7 +22,8 @@ public class xversion extends BuiltinCommand {
 	public int run(  List<XValue> args ) throws Exception {
 	
 	      
-		TransformerHandler hd = mShell.getEnv().getStdout().asTransformerHandler();
+		OutputPort stdout = mShell.getEnv().getStdout();
+		TransformerHandler hd = stdout.asTransformerHandler();
 
 	
 		hd.startDocument();
@@ -38,6 +40,7 @@ public class xversion extends BuiltinCommand {
 		hd.startElement("", sDocRoot,sDocRoot,attrs);
 		hd.endElement("", sDocRoot, sDocRoot);
 		hd.endDocument();
+		stdout.writeSequenceTerminator();
 		
 		return 0;
 		

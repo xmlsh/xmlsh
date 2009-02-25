@@ -12,9 +12,7 @@ cat <{doc} >{doc2}
 csv2xml <{doc2} >{doc3}
 
 xquery '/root/row[2]/col[3]/string()' <{doc3}
-echo
+
 xquery -i $doc3 '/root/row[2]/col[3]/string()'
 
 unset doc doc2 doc3 xdoc
-
-echo

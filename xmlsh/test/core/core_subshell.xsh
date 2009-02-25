@@ -11,9 +11,7 @@
 
 # xml piping
 ( echo '<foo/>' ) | xcat
-echo
 echo '<foo2/>' | ( xcat | xcat )
-echo
 # last cmd in pipeline runs in current shell
 unset A
 echo '<pipe/>' | xcat | xread A

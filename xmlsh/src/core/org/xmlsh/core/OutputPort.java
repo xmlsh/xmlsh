@@ -18,10 +18,13 @@ import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.sax.TransformerHandler;
 
+import net.sf.saxon.Configuration;
 import net.sf.saxon.event.Builder;
 import net.sf.saxon.event.PipelineConfiguration;
+import net.sf.saxon.event.Receiver;
 import net.sf.saxon.s9api.Destination;
 import net.sf.saxon.s9api.S9Util;
+import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XdmDestination;
 import net.sf.saxon.tinytree.TinyBuilder;
 import org.xmlsh.sh.shell.Shell;
@@ -125,8 +128,21 @@ public class OutputPort implements IPort
 
 	public synchronized Destination asDestination()
 	{
-		if( mVariable != null )
-			return ( mXdmDestination = new XdmDestination());
+		if( mVariable != null ){
+			 mXdmDestination = new XdmDestination();
+			 Configuration config = Shell.getProcessor().getUnderlyingConfiguration();
+			 try {
+				Receiver r = mXdmDestination.getReceiver(config);
+		        PipelineConfiguration pipe = config.makePipelineConfiguration();
+
+				r.setPipelineConfiguration(pipe);
+			} catch (SaxonApiException e) {
+				;
+			}
+		
+			 return mXdmDestination;
+		}
+		
 		else
 			return Util.streamToDestination(asOutputStream());
 	}
@@ -140,7 +156,14 @@ public class OutputPort implements IPort
 	
 	public synchronized void writeSequenceSeperator() throws IOException
 	{
-		asOutputStream().write(kNEWLINE_BYTES  );
+		if( this.mXdmDestination == null )
+			asOutputStream().write(kNEWLINE_BYTES  );
+		
+	}
+
+	public void writeSequenceTerminator() throws IOException {
+		if( this.mXdmDestination == null )
+			asOutputStream().write(kNEWLINE_BYTES  );
 		
 	}
 

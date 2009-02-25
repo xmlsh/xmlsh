@@ -19,6 +19,7 @@ import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
 import org.xmlsh.core.Namespaces;
 import org.xmlsh.core.Options;
+import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.Options.OptionValue;
@@ -159,8 +160,10 @@ public class xpath extends XCommand {
 			
 		}
 				
-		Destination ser = getStdout().asDestination();
+		OutputPort stdout = getStdout();
+		Destination ser = stdout.asDestination();
 		boolean bAnyOutput = false ;
+		boolean bFirst = true ;
 
 		for( XdmItem item : eval ){
 			bAnyOutput = true ;
@@ -168,12 +171,16 @@ public class xpath extends XCommand {
 			if( bQuiet )
 				break ;
 			
+			if( ! bFirst )
+				stdout.writeSequenceSeperator(); // Thrashes variable output !
+			bFirst = false ;
 			processor.writeXdmValue(item, ser );
-			getStdout().writeSequenceSeperator();
+
 
 			
 		}
-
+		if( ! bQuiet && bAnyOutput )
+			stdout.writeSequenceTerminator();
 
 		
 		return bAnyOutput ? 0 : 1 ;

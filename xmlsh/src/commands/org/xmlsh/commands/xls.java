@@ -15,6 +15,7 @@ import javax.xml.transform.sax.TransformerHandler;
 import org.xml.sax.Attributes;
 import org.xml.sax.helpers.AttributesImpl;
 import org.xmlsh.core.Options;
+import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.types.XFile;
@@ -33,7 +34,8 @@ public class xls extends XCommand {
 		
 
 	      
-		TransformerHandler hd = getStdout().asTransformerHandler();
+		OutputPort stdout = getStdout();
+		TransformerHandler hd = stdout.asTransformerHandler();
 
 		hd.startDocument();
 		
@@ -72,6 +74,8 @@ public class xls extends XCommand {
 		}
 		hd.endElement("", sDocRoot,sDocRoot);
 		hd.endDocument();
+		stdout.writeSequenceTerminator();
+		
 		
 		return 0;
 	}

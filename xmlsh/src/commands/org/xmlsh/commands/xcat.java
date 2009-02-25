@@ -17,6 +17,7 @@ import net.sf.saxon.s9api.XQueryEvaluator;
 import net.sf.saxon.s9api.XQueryExecutable;
 import net.sf.saxon.s9api.XdmNode;
 import org.xmlsh.core.Options;
+import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.Options.OptionValue;
@@ -184,7 +185,9 @@ public class xcat extends XCommand {
 		
 		}	
 		
-		eval.run(getStdout().asDestination());
+		OutputPort stdout = getStdout();
+		eval.run(stdout.asDestination());
+		stdout.writeSequenceTerminator();
 		
 		return 0;
 

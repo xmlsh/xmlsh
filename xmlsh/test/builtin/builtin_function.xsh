@@ -27,7 +27,7 @@ echo _A is $_A
 echo Test of subpipe
 
 subpipe | xcat 
-echo
+
 # Functions returning values
 
 ret0()

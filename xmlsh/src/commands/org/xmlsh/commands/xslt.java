@@ -18,6 +18,7 @@ import net.sf.saxon.s9api.XsltCompiler;
 import net.sf.saxon.s9api.XsltExecutable;
 import net.sf.saxon.s9api.XsltTransformer;
 import org.xmlsh.core.Options;
+import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.Options.OptionValue;
@@ -126,10 +127,11 @@ public class xslt extends XCommand {
 			}			
 		}
 			
-		eval.setDestination(getStdout().asDestination());
+		OutputPort stdout = getStdout();
+		eval.setDestination(stdout.asDestination());
 		
 		eval.transform();
-
+		stdout.writeSequenceTerminator();
 		
 		return 0;
 		
