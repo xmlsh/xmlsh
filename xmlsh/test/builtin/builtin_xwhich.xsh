@@ -5,15 +5,12 @@ foo()
 
 # test of builtin
 xwhich echo 
-echo
 
 # test of internal
 xwhich xfile
-echo
 
 # test of function
 xwhich foo 
-echo
 
 # test of script
 F=$<(xwhich builtin_xwhich.xsh)
