@@ -29,6 +29,7 @@ import org.xmlsh.builtin.xbreak;
 import org.xmlsh.builtin.xcd;
 import org.xmlsh.builtin.xcontinue;
 import org.xmlsh.builtin.xecho;
+import org.xmlsh.builtin.echo;
 import org.xmlsh.builtin.xfalse;
 import org.xmlsh.builtin.ximport;
 import org.xmlsh.builtin.xread;
@@ -56,7 +57,8 @@ public class CommandFactory
 	private CommandFactory()
 	{
 		addBuiltin(  "cd" , xcd.class );
-		addBuiltin( "echo" , xecho.class );
+		addBuiltin( "xecho" , xecho.class );
+		addBuiltin( "echo" , echo.class );
 		addBuiltin( "false" , xfalse.class );
 		addBuiltin( "true" , xtrue.class  );
 		addBuiltin( "set", set.class);

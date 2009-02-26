@@ -1,42 +1,44 @@
 /**
- * $Id$
- * $Date$
+ * $Id: xecho.java 88 2008-11-27 17:06:00Z daldei $
+ * $Date: 2008-11-27 12:06:00 -0500 (Thu, 27 Nov 2008) $
  *
  */
 
 package org.xmlsh.builtin;
 
+import java.io.OutputStream;
 import java.util.List;
 
-import net.sf.saxon.s9api.Destination;
-import net.sf.saxon.s9api.Processor;
 import org.xmlsh.core.BuiltinCommand;
 import org.xmlsh.core.Options;
-import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.XValue;
-import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.Util;
 
-public class xecho extends BuiltinCommand {
+public class echo extends BuiltinCommand {
 	
 	public int run( List<XValue> args ) throws Exception {
-		OutputPort stdout = mShell.getEnv().getStdout();
-		Destination dest =  stdout.asDestination();
+		OutputStream out =  mShell.getEnv().getStdout().asOutputStream();
 
-		Processor  processor  = Shell.getProcessor();
+		Options opts = new Options( "n" , args );
+		opts.parse();
+		
+		boolean nolf = opts.hasOpt("n");
+		
+		args = opts.getRemainingArgs();
+
 		
 		args = Util.expandSequences( args);
-		
 		boolean bFirst = true;
 		for ( XValue arg : args ){
 				if( ! bFirst )
-					stdout.writeSequenceSeperator();
+					out.write(' ');
 				
 				bFirst = false;
-				processor.writeXdmValue(arg.asXdmValue(), dest);
+				arg.serialize( out );
 		}
-
-		stdout.writeSequenceTerminator();
+		if( ! nolf )
+			out.write(Util.getNewline());
+		out.flush();
 		return 0;
 	}
 }
