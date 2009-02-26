@@ -52,6 +52,16 @@ public class IOFile {
 				env.setVar(xvar);
 				env.setStdout(xvar);
 			}
+			else
+			if( mPrefix.equals(">>"))
+			{
+				XVariable xvar = env.getVar(var);
+				if( var == null ){
+					xvar = new XVariable(var,null);
+					env.setVar(xvar);
+				}
+				env.setStdout(xvar);				
+			}
 			
 			return ;
 		}

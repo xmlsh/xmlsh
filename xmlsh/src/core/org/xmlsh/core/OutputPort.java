@@ -98,6 +98,8 @@ public class OutputPort implements IPort
 				// mVariable.setValue( new XValue(mXdmDestination.getXdmNode()) );
 				writeSequenceSeperator();
 			
+// TODO: Get appending to work in Stream mode 
+			
 			if( mByteArrayOutputStream != null )
 				mVariable.setValue( new XValue( mByteArrayOutputStream.toString(Shell.getTextEncoding())));
 			if( mBuilder != null )
@@ -134,7 +136,7 @@ public class OutputPort implements IPort
 	public synchronized Destination asDestination() throws InvalidArgumentException
 	{
 		if( mVariable != null ){
-			mVariable.clear();
+			// mVariable.clear();
 			mXdmDestination = newXdmDestination();
 		
 			return mXdmDestination;
@@ -181,10 +183,10 @@ public class OutputPort implements IPort
 	
 	public synchronized void writeSequenceSeperator() throws IOException, InvalidArgumentException
 	{
-		if( this.mXdmDestination == null )
+		if( this.mVariable == null )
 			asOutputStream().write(kNEWLINE_BYTES  );
 		else
-		if( this.mVariable != null ){
+		{
 			XValue value = mVariable.getValue();
 			if( value == null ){
 				mVariable.setValue(new XValue(mXdmDestination.getXdmNode()));

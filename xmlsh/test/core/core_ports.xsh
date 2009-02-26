@@ -22,7 +22,19 @@ xpath -n "1,2,'foo',3" >{_seq}
 echo <[ $_seq[3] ]>
 
 xquery -n "<foo/>,<bar><spam>bletch</spam></bar>,3" >{_seq}
+echo There are <[count($_seq)]> elements
 echo <[ $_seq[2]//spam ]>
+
+# Test appending xml values to ports 
+unset _seq
+xpath -n 1 >{_seq}
+xquery -n "<foo/>,<bar><spam>bletch</spam></bar>" >>{_seq}
+xpath -n 2 >>{_seq}
+echo There are <[count($_seq)]> elements
+echo <[ $_seq[3]//spam ]>
+
+
+
 
 
 
