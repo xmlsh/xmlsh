@@ -13,6 +13,8 @@ import java.io.OutputStreamWriter;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerFactoryConfigurationError;
@@ -26,6 +28,8 @@ import net.sf.saxon.s9api.Destination;
 import net.sf.saxon.s9api.S9Util;
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XdmDestination;
+import net.sf.saxon.s9api.XdmItem;
+import net.sf.saxon.s9api.XdmValue;
 import net.sf.saxon.tinytree.TinyBuilder;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.SynchronizedOutputStream;
@@ -91,7 +95,8 @@ public class OutputPort implements IPort
 			if( mStream != null )
 				mStream.close();
 			if( mVariable != null && mXdmDestination != null )
-				mVariable.setValue( new XValue(mXdmDestination.getXdmNode()) );
+				// mVariable.setValue( new XValue(mXdmDestination.getXdmNode()) );
+				writeSequenceSeperator();
 			
 			if( mByteArrayOutputStream != null )
 				mVariable.setValue( new XValue( mByteArrayOutputStream.toString(Shell.getTextEncoding())));
@@ -126,25 +131,45 @@ public class OutputPort implements IPort
 		return new PrintStream(asOutputStream());
 	}
 
-	public synchronized Destination asDestination()
+	public synchronized Destination asDestination() throws InvalidArgumentException
 	{
 		if( mVariable != null ){
-			 mXdmDestination = new XdmDestination();
-			 Configuration config = Shell.getProcessor().getUnderlyingConfiguration();
-			 try {
-				Receiver r = mXdmDestination.getReceiver(config);
-		        PipelineConfiguration pipe = config.makePipelineConfiguration();
-
-				r.setPipelineConfiguration(pipe);
-			} catch (SaxonApiException e) {
-				;
-			}
+			mVariable.clear();
+			mXdmDestination = newXdmDestination();
 		
-			 return mXdmDestination;
+			return mXdmDestination;
 		}
 		
 		else
 			return Util.streamToDestination(asOutputStream());
+	}
+	
+	private void setupDestination( XdmDestination dest )
+	{
+		 /*
+		  * TODO: Remove this extra code when Saxon is fixed 
+		  * XdmDestinatin shouldn't need the configuration
+		  */
+		 Configuration config = Shell.getProcessor().getUnderlyingConfiguration();
+		 try {
+			Receiver r = dest.getReceiver(config);
+		    PipelineConfiguration pipe = config.makePipelineConfiguration();
+
+			r.setPipelineConfiguration(pipe);
+			;
+		} catch (SaxonApiException e) {
+			;
+		}
+
+	}
+	
+	
+	
+	private XdmDestination newXdmDestination() {
+		XdmDestination dest = new XdmDestination();
+	    setupDestination(dest);
+	    return dest;
+		
 	}
 
 	public synchronized PrintWriter asPrintWriter() throws UnsupportedEncodingException {
@@ -154,10 +179,28 @@ public class OutputPort implements IPort
 	}
 	
 	
-	public synchronized void writeSequenceSeperator() throws IOException
+	public synchronized void writeSequenceSeperator() throws IOException, InvalidArgumentException
 	{
 		if( this.mXdmDestination == null )
 			asOutputStream().write(kNEWLINE_BYTES  );
+		else
+		if( this.mVariable != null ){
+			XValue value = mVariable.getValue();
+			if( value == null ){
+				mVariable.setValue(new XValue(mXdmDestination.getXdmNode()));
+				
+			} else {
+				List<XdmItem> items = new ArrayList<XdmItem>();
+				for( XdmItem item :  value.asXdmValue() )
+					items.add( item );
+				items.add( mXdmDestination.getXdmNode());
+				mVariable.setValue( new XValue(new XdmValue(items)) );
+				
+				
+			}
+			mXdmDestination.reset();
+			setupDestination( mXdmDestination);
+		}
 		
 	}
 

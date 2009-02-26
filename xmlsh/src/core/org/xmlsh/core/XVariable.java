@@ -121,6 +121,13 @@ public class XVariable {
 		writer.endElement("", sVariable, sVariable);
 		
 	}
+
+	public void clear() throws InvalidArgumentException {
+
+		setValue( null );
+
+		
+	}
 	
 	
 }

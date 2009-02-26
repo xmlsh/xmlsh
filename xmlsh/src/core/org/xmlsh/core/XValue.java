@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.transform.Source;
 
@@ -84,6 +85,22 @@ public class XValue {
 	
 	/*
 	 *  Create an XValue by combining a list of XValue objects into a single XValue
+	 * Flattens sequences
+	 *
+	public XValue( List<XdmValue> args) {
+		ArrayList<XdmItem> items = new ArrayList<XdmItem>();
+		for( XdmValue arg : args ){
+			for( XdmItem item : arg )
+				items.add( item );
+			
+		}
+
+		mValue =  new XdmValue(  items);
+		
+	}
+	*/
+	/*
+	 *  Create an XValue by combining a list of XdmValue objects into a single XValue
 	 */
 	public XValue( Iterable<XValue> args) {
 		ArrayList<XdmItem> items = new ArrayList<XdmItem>();
