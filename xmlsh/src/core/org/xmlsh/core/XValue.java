@@ -354,6 +354,27 @@ public class XValue {
 
 	}
 	
+	/*
+	 * Return a new XValue which is an appending of "this" value
+	 * and another XdmValue as a sequence
+	 * If This is null or the empty sequence then return the value
+	 */
+	
+	public XValue append(XdmValue xvalue)
+	{
+		if( mValue == null )
+			return new XValue(xvalue);
+		
+		
+		List<XdmItem> items = new ArrayList<XdmItem>();
+		for (XdmItem item : asXdmValue())
+			items.add(item);
+		for( XdmItem item : xvalue )
+			items.add(item);
+		
+		return new XValue(new XdmValue(items));
+		
+	}
 	
 }
 //

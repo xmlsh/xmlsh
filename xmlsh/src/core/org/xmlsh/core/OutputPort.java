@@ -27,8 +27,10 @@ import net.sf.saxon.event.Receiver;
 import net.sf.saxon.s9api.Destination;
 import net.sf.saxon.s9api.S9Util;
 import net.sf.saxon.s9api.SaxonApiException;
+import net.sf.saxon.s9api.XdmAtomicValue;
 import net.sf.saxon.s9api.XdmDestination;
 import net.sf.saxon.s9api.XdmItem;
+import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XdmValue;
 import net.sf.saxon.tinytree.TinyBuilder;
 import org.xmlsh.sh.shell.Shell;
@@ -94,21 +96,27 @@ public class OutputPort implements IPort
 		if( --mRef <= 0 ){
 			if( mStream != null )
 				mStream.close();
-			if( mVariable != null && mXdmDestination != null )
-				// mVariable.setValue( new XValue(mXdmDestination.getXdmNode()) );
-				writeSequenceSeperator();
+			if( mVariable != null ){
 			
-// TODO: Get appending to work in Stream mode 
-			
-			if( mByteArrayOutputStream != null )
-				mVariable.setValue( new XValue( mByteArrayOutputStream.toString(Shell.getTextEncoding())));
-			if( mBuilder != null )
-				mVariable.setValue( new XValue(S9Util.wrapNode(mBuilder.getCurrentRoot())));
+				if (mXdmDestination != null)
+					appendVar( mXdmDestination.getXdmNode());
+
+				
+				// else
+				if (mByteArrayOutputStream != null)
+					appendVar( mByteArrayOutputStream.toString(Shell.getTextEncoding()) );
+
+				//else
+				if (mBuilder != null)
+					appendVar((XdmNode) S9Util.wrapNode(mBuilder.getCurrentRoot()));
+			}
 		}
 
 	
 		
 	}
+
+
 	public synchronized void addRef() 
 	{
 		mRef++;
@@ -179,7 +187,38 @@ public class OutputPort implements IPort
 				new OutputStreamWriter(asOutputStream() , 
 						Shell.getTextEncoding() ));
 	}
-	
+
+	private void appendVar(String string) throws InvalidArgumentException 
+	{
+
+		XValue value = mVariable.getValue();
+		if (value == null)
+			mVariable.setValue(new XValue(string));
+		else {
+			if (value.isAtomic())
+				mVariable.setValue(new XValue(value.toString() + string));
+			else {
+				mVariable.setValue(value.append(new XdmAtomicValue(string)));
+			}
+		}
+		
+		
+	}
+	/*
+	 * Append an item to the current output
+	 */
+	private void appendVar( XdmItem xitem ) throws InvalidArgumentException
+	{
+
+		
+		XValue value = mVariable.getValue();
+		if (value == null)
+			mVariable.setValue(new XValue(xitem));
+		else {
+			mVariable.setValue( value.append(xitem));
+		}
+
+	}
 	
 	public synchronized void writeSequenceSeperator() throws IOException, InvalidArgumentException
 	{
@@ -187,27 +226,25 @@ public class OutputPort implements IPort
 			asOutputStream().write(kNEWLINE_BYTES  );
 		else
 		{
-			XValue value = mVariable.getValue();
-			if( value == null ){
-				mVariable.setValue(new XValue(mXdmDestination.getXdmNode()));
+			if( mXdmDestination != null ){
+				appendVar(mXdmDestination.getXdmNode() );
 				
-			} else {
-				List<XdmItem> items = new ArrayList<XdmItem>();
-				for( XdmItem item :  value.asXdmValue() )
-					items.add( item );
-				items.add( mXdmDestination.getXdmNode());
-				mVariable.setValue( new XValue(new XdmValue(items)) );
-				
-				
+				mXdmDestination.reset();
+				setupDestination( mXdmDestination);
+			
 			}
-			mXdmDestination.reset();
-			setupDestination( mXdmDestination);
+			else
+			if( mBuilder != null ){
+				appendVar( (XdmNode) S9Util.wrapNode(mBuilder.getCurrentRoot()));
+			
+			}
+	
 		}
 		
 	}
 
 	public void writeSequenceTerminator() throws IOException {
-		if( this.mXdmDestination == null )
+		if( this.mXdmDestination == null && mBuilder == null )
 			asOutputStream().write(kNEWLINE_BYTES  );
 		
 	}

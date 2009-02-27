@@ -34,6 +34,20 @@ echo There are <[count($_seq)]> elements
 echo <[ $_seq[3]//spam ]>
 
 
+# write and append to text 
+unset _seq
+echo -n foo >{_var}
+echo -n bar >>{_var}
+echo $_var should be foobar
+
+# Test mixed string and xml 
+xecho <[ <foo/> ]> >> {_var}
+echo $_var
+
+
+
+
+
 
 
 
