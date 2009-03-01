@@ -4,62 +4,25 @@
  *
  */
 
-package org.xmlsh.core;
+package org.xmlsh.util;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
-import org.xmlsh.util.Util;
+import org.xmlsh.core.InputPort;
+import org.xmlsh.core.OutputPort;
 
-@SuppressWarnings("serial") class PortList<P extends IPort> extends ArrayList<NamedPort<P>>
-{
-	P	getDefault()
-	{
-		for( NamedPort<P> e : this ){
-			if( e.mDefault )
-				return e.mPort;
-			
-		}
-		return null;
-	}
+
+public abstract class PipedPort {
+	public	abstract 	InputPort	getInput() throws IOException ;
+	public abstract	OutputPort	getOutput() throws IOException ;
+	protected	String	mSystemId;
 	
-	P 	get( String name ){
-		for( NamedPort<P> e : this ){
-			if( Util.isEqual( e.mName , name ))
-				return e.mPort;
-		}
-		return null;	
-		
+	protected PipedPort( String systemId ) {
+		mSystemId = systemId;
 	}
-	
-	void removePort( P port )
-	{
-		for( NamedPort<P> e : this ){
-			if( e.mPort == port){
-				remove( e );
-				return ;
-			}
-		}
-	}
-	
-	void close() throws CoreException
-	{
-		for( NamedPort<P> e : this )
-			e.mPort.release();
-	}
-	
-	PortList() {} 
-	PortList( PortList<P> that )
-	{
-		for(NamedPort<P> e : that ){
-			e.mPort.addRef();
-			add( e );
-		}
-		
-	}
-	
 	
 }
+
 
 
 //

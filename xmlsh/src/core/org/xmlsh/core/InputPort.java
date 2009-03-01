@@ -31,20 +31,19 @@ import org.xmlsh.util.Util;
  */
 
 
-public class InputPort  implements IPort
+public class InputPort  extends IPort
 {
 	
 	// An Input Port may be either a Stream or an XML value
 	private InputStream	 mStream;
 	private	 XVariable	mVariable;
 	
-	
-	private int mRef = 1;
+
 	private String mSystemid;
 
 
 
-	public InputPort( InputStream is , String systemid ) throws IOException
+	public InputPort( InputStream is , String systemid ) 
 	{
 		mStream = is;
 		mSystemid = systemid;
@@ -74,9 +73,9 @@ public class InputPort  implements IPort
 		
 	}
 
-	public synchronized void release() throws IOException {
+	public synchronized void close() throws IOException {
 
-		if( --mRef <= 0 && mStream != null )
+		if( mStream != null )
 			mStream.close();
 		
 		
@@ -109,10 +108,7 @@ public class InputPort  implements IPort
 		return builder.build( asSource() );
 	}
 
-	public synchronized void addRef() {
-		mRef++;
 
-	}
 	
 	public synchronized Document asDocument() throws ParserConfigurationException, SAXException, IOException, InvalidArgumentException, SaxonApiException
 	{

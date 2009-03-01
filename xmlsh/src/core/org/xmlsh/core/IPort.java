@@ -8,10 +8,23 @@ package org.xmlsh.core;
 
 import java.io.IOException;
 
-public interface IPort {
-	void addRef();
-	void release() throws IOException, InvalidArgumentException;
+public abstract class IPort {
+	private	int	mRef = 1;
+	final synchronized void addRef() {
+		mRef++;
+
+	}
+	final synchronized void release() throws CoreException 
+	{
+		if( --mRef <= 0 )
+			try {
+				close();
+			} catch (Exception e) {
+				throw new CoreException("Exception closing port");
+			}
+	}
 	
+	abstract void close() throws Exception ;
 
 }
 

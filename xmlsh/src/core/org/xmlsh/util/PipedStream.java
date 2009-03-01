@@ -7,24 +7,26 @@
 package org.xmlsh.util;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 
-public class PipedStream {
+import org.xmlsh.core.InputPort;
+import org.xmlsh.core.OutputPort;
+
+public class PipedStream extends PipedPort {
 	private		PipedInputStream 	mIn;
 	private		PipedOutputStream 	mOut;
 	
-	public PipedStream() throws IOException
+	public PipedStream(String systemId ) throws IOException
 	{
+		super( systemId );
 		mOut = new PipedOutputStream();
 		mIn = new PipedInputStream(mOut);
 		
 	}
 	
-	public	InputStream	getInput() { return mIn ; }
-	public OutputStream getOutput() { return mOut ; }
+	public	InputPort	getInput() throws IOException { return new InputPort(mIn,mSystemId) ; }
+	public OutputPort getOutput() { return new OutputPort(mOut) ; }
 	
 	static public PipedStream[] getPipes(int n ) throws IOException
 	{
@@ -32,7 +34,7 @@ public class PipedStream {
 			return null;
 		PipedStream	streams[] = new PipedStream[n];
 		for( int i = 0 ; i < n ; i++ )
-			streams[i] = new PipedStream();
+			streams[i] = new PipedStream("");
 		return streams;
 		
 	}

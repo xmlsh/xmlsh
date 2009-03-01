@@ -45,7 +45,7 @@ import org.xmlsh.util.Util;
 
 
 
-public class OutputPort implements IPort
+public class OutputPort extends IPort
 {
 	private static byte kNEWLINE_BYTES[] = { '\n' };
 	
@@ -57,9 +57,7 @@ public class OutputPort implements IPort
 	private		XdmDestination	 		mXdmDestination;
 	private		ByteArrayOutputStream 	mByteArrayOutputStream;
 	private		Builder					mBuilder;
-	
-	private int mRef = 1;
-	
+
 	public OutputPort( OutputStream os ) 
 	{
 		mStream = os;
@@ -85,15 +83,11 @@ public class OutputPort implements IPort
 		else
 			return new SynchronizedOutputStream(mStream,mStream != System.out);
 	}
-	
-	
-	
-	public synchronized void release() throws IOException, InvalidArgumentException {
+
+	public synchronized void close() throws IOException, InvalidArgumentException {
 		
-		if( mStream != null )
-			mStream.flush();
-		
-		if( --mRef <= 0 ){
+
+
 			if( mStream != null )
 				mStream.close();
 			if( mVariable != null ){
@@ -110,18 +104,12 @@ public class OutputPort implements IPort
 				if (mBuilder != null)
 					appendVar((XdmNode) S9Util.wrapNode(mBuilder.getCurrentRoot()));
 			}
-		}
-
+		
 	
 		
 	}
 
 
-	public synchronized void addRef() 
-	{
-		mRef++;
-		
-	}
 	public synchronized TransformerHandler asTransformerHandler() throws TransformerConfigurationException, IllegalArgumentException, TransformerFactoryConfigurationError
 	{
 		if( mVariable != null ){

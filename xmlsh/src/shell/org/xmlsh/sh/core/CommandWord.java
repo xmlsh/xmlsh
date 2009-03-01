@@ -50,7 +50,7 @@ public class CommandWord extends Word {
 	}
 	
 
-	private String expandSubproc(Shell shell , Command c ) throws InvalidArgumentException, IOException 
+	private String expandSubproc(Shell shell , Command c ) throws CoreException 
 	{
 		
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -99,7 +99,7 @@ public class CommandWord extends Word {
 
 		try {
 
-			PipedStream pipe = new PipedStream();
+			PipedStream pipe = new PipedStream("");
 
 			shell = shell.clone();
 			shell.getEnv().setStdout( pipe.getOutput() );
@@ -115,7 +115,7 @@ public class CommandWord extends Word {
 			 sht.start();
 			
 			 DocumentBuilder builder = Shell.getProcessor().newDocumentBuilder();
-			 XdmNode node = builder.build(new StreamSource(pipe.getInput()));
+			 XdmNode node = builder.build(pipe.getInput().asSource());
 			 
 			if( sht != null )
 				sht.join();

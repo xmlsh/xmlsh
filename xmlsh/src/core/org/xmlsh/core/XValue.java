@@ -340,8 +340,11 @@ public class XValue {
 	}
 	public XdmNode asXdmNode() throws InvalidArgumentException
 	{
-		if( isXExpr() )
-			return ((XdmNode)mValue);
+		if( isXExpr() ){
+			// If this is a sequence then return the first item
+			return (XdmNode) mValue.itemAt(0);
+			// return ((XdmNode)mValue);
+		}
 		else
 			throw new InvalidArgumentException("Value is not a Node");
 	

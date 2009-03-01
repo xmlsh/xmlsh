@@ -85,7 +85,7 @@ public class Pipeline extends Command {
 			
 			if( pi > 0 )
 				// Set input to pipe for all but the first
-				sh.getEnv().setStdin( pipes[pi-1].getInput() ,"");
+				sh.getEnv().setStdin( pipes[pi-1].getInput());
 			
 			// Set the output 
 			sh.getEnv().setStdout(pipes[pi].getOutput());
@@ -105,7 +105,7 @@ public class Pipeline extends Command {
 		{
 			
 			if( ncmds > 1 )
-				shell.getEnv().setStdin(pipes[ncmds-2].getInput(),"");
+				shell.getEnv().setStdin(pipes[ncmds-2].getInput());
 			
 			Command c = mList.get(ncmds-1);
 			

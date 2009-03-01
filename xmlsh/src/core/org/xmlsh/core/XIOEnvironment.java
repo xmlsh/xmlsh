@@ -70,7 +70,18 @@ public class XIOEnvironment {
 	 * @param stdin the stdin to set
 	 * @throws IOException 
 	 */
-	public void setStdin(InputStream in, String systemid) throws IOException {
+	public void setStdin(InputStream in, String systemid) throws CoreException {
+		setStdin( new InputPort(in,systemid));
+	}
+
+	public void setStdin(XVariable variable) throws CoreException {
+		
+		setStdin( new InputPort(variable));
+	}
+	
+	
+	public void setStdin(InputPort port) throws CoreException {
+		
 		mStdinRedirected = true ;
 		InputPort stdin = mInputs.getDefault();
 
@@ -79,64 +90,39 @@ public class XIOEnvironment {
 			mInputs.removePort( stdin );
 			stdin.release();
 		}
-			
-		stdin = new InputPort(in,systemid);
-		mInputs.add( new NamedPort<InputPort>( null , true , stdin  ));
-	}
 
-	public void setStdin(XVariable variable) throws IOException {
+		mInputs.add( new NamedPort<InputPort>( null , true , port  ));
 		
-		mStdinRedirected = true ;
-		InputPort stdin = mInputs.getDefault();
-
-		
-		if( stdin != null ){
-			mInputs.removePort( stdin );
-			stdin.release();
-		}
-			
-		stdin = new InputPort(variable);
-		mInputs.add( new NamedPort<InputPort>( null , true , stdin  ));
 	}
-	
-	
+		
 	
 	/**
 	 * @param stdout the stdout to set
 	 * @throws IOException 
 	 * @throws InvalidArgumentException 
 	 */
-	public void setStdout(OutputStream out) throws IOException, InvalidArgumentException {
+	public void setStdout(OutputStream out) throws CoreException {
+		setStdout( new OutputPort(out));
 		
+	}
+
+
+	public void setStdout(XVariable xvar) throws CoreException {
+		setStdout( new OutputPort(xvar));
+	}
+
+	public void setStdout(OutputPort port) throws CoreException {
 		OutputPort stdout = mOutputs.getDefault();
 
-		
-		if( stdout != null ){
-			mOutputs.removePort( stdout );
+		if (stdout != null) {
+			mOutputs.removePort(stdout);
 			stdout.release();
 		}
-			
-		
-		stdout = new OutputPort(out);
-		mOutputs.add(new NamedPort<OutputPort>(null,true,stdout));
-		
+
+		mOutputs.add(new NamedPort<OutputPort>(null, true, port));
 	}
 
-
-	public void setStdout(XVariable xvar) throws InvalidArgumentException, IOException {
-	OutputPort stdout = mOutputs.getDefault();
-
-		
-		if( stdout != null ){
-			mOutputs.removePort( stdout );
-			stdout.release();
-		}
-			
-		
-		stdout = new OutputPort(xvar);
-		mOutputs.add(new NamedPort<OutputPort>(null,true,stdout));
-	}
-
+	
 	
 	
 	
@@ -145,7 +131,7 @@ public class XIOEnvironment {
 	 * @throws IOException 
 	 * @throws InvalidArgumentException 
 	 */
-	public void setStderr(OutputStream err) throws IOException, InvalidArgumentException {
+	public void setStderr(OutputStream err) throws CoreException {
 		OutputPort stderr = mOutputs.get(kSTDERR);
 
 		

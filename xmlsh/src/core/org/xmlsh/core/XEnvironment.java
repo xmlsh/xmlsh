@@ -304,7 +304,7 @@ public class XEnvironment  {
 	 * @throws InvalidArgumentException 
 	 * @see org.xmlsh.core.XIOEnvironment#setStderr(java.io.OutputStream)
 	 */
-	public void setStderr(OutputStream stderr) throws IOException, InvalidArgumentException {
+	public void setStderr(OutputStream stderr) throws CoreException {
 		mIO.setStderr(stderr);
 	}
 
@@ -314,12 +314,15 @@ public class XEnvironment  {
 	 * @throws IOException
 	 * @see org.xmlsh.core.XIOEnvironment#setStdin(java.io.InputStream)
 	 */
-	public void setStdin(InputStream stdin, String systemid ) throws IOException {
+	public void setStdin(InputStream stdin, String systemid ) throws CoreException {
 		mIO.setStdin(stdin,systemid);
 	}
 
-	public void setStdin(XVariable variable) throws IOException {
+	public void setStdin(XVariable variable) throws CoreException {
 		mIO.setStdin( variable );
+	}
+	public void setStdin(InputPort port) throws CoreException {
+		mIO.setStdin( port );
 	}
 
 	/**
@@ -328,10 +331,12 @@ public class XEnvironment  {
 	 * @throws InvalidArgumentException 
 	 * @see org.xmlsh.core.XIOEnvironment#setStdout(java.io.OutputStream)
 	 */
-	public void setStdout(OutputStream stdout) throws IOException, InvalidArgumentException {
+	public void setStdout(OutputStream stdout) throws CoreException {
 		mIO.setStdout(stdout);
 	}
-
+	public void setStdout(OutputPort stdout) throws CoreException {
+		mIO.setStdout(stdout);
+	}
 	public void declareNamespace(String ns ) {
 		if( mNamespaces == null )
 			mNamespaces = new Namespaces();
@@ -366,7 +371,7 @@ public class XEnvironment  {
 	}
 
 
-	public void setStdout(XVariable xvar) throws InvalidArgumentException, IOException {
+	public void setStdout(XVariable xvar) throws CoreException {
 		mIO.setStdout( xvar );
 		
 	}

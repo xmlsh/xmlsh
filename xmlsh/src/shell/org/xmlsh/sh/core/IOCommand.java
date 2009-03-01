@@ -60,7 +60,7 @@ public class IOCommand {
 
 
 
-				env.setStdin( pipe.getInput() , "" );
+				env.setStdin( pipe.getInput()  );
 				
 				sht.start();
 				
