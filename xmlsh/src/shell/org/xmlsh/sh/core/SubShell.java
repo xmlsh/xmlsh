@@ -8,6 +8,7 @@ package org.xmlsh.sh.core;
 
 import java.io.PrintWriter;
 
+import org.xmlsh.core.XIOEnvironment;
 import org.xmlsh.sh.shell.Shell;
 
 public class SubShell extends CompoundCommand {
@@ -28,13 +29,28 @@ public class SubShell extends CompoundCommand {
 	 */
 	@Override
 	public int exec(Shell shell) throws Exception {
-		shell = shell.clone();
+
+		/*
+		 * Save the IO environment then redirect before cloning
+		 * the shell so that port redirections take place in the parent shell
+		 */
+		XIOEnvironment io = shell.getEnv().saveIO();
 		try {
 			applyRedirect(shell);
-			return shell.exec( mCommand);
+			
+			// Clone shell to run command inside new shell
+			Shell subshell = shell.clone();
+			try {
+				return subshell.exec( mCommand);
+			} finally {
+				subshell.close();
+			}
 		} finally {
-			shell.close();
+			shell.getEnv().restoreIO(io);
 		}
+		
+		
+		
 	}
 	
 	

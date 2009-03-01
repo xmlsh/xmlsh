@@ -42,8 +42,16 @@ echo $_var should be foobar
 
 # Test mixed string and xml 
 xecho <[ <foo/> ]> >> {_var}
-echo $_var
+xecho $_var
 
+# Test brace group into ports
+unset _var
+{ xecho <[ <foo>brace group</foo> ]>; xecho <[ <bar/> ]>;  } >{_var}
+xecho $_var
+unset _var
+( xecho <[ <foo>sub shell</foo> ]>; xecho <[ <bar/> ]>;  ) >{_var}
+xecho $_var
+unset _var
 
 
 
