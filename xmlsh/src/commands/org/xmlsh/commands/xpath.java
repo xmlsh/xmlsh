@@ -164,7 +164,9 @@ public class xpath extends XCommand {
 		Destination ser = stdout.asDestination();
 		boolean bAnyOutput = false ;
 		boolean bFirst = true ;
-
+		
+		
+		
 		for( XdmItem item : eval ){
 			bAnyOutput = true ;
 
