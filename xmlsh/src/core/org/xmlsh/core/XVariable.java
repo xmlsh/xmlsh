@@ -128,6 +128,10 @@ public class XVariable {
 
 		
 	}
+
+	public boolean isNull() {
+		return mValue == null ;
+	}
 	
 	
 }

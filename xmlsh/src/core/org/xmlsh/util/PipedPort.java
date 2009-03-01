@@ -15,11 +15,8 @@ import org.xmlsh.core.OutputPort;
 public abstract class PipedPort {
 	public	abstract 	InputPort	getInput() throws IOException ;
 	public abstract	OutputPort	getOutput() throws IOException ;
-	protected	String	mSystemId;
-	
-	protected PipedPort( String systemId ) {
-		mSystemId = systemId;
-	}
+
+
 	
 }
 

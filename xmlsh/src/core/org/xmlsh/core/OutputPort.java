@@ -13,8 +13,6 @@ import java.io.OutputStreamWriter;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerFactoryConfigurationError;
@@ -31,7 +29,6 @@ import net.sf.saxon.s9api.XdmAtomicValue;
 import net.sf.saxon.s9api.XdmDestination;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
-import net.sf.saxon.s9api.XdmValue;
 import net.sf.saxon.tinytree.TinyBuilder;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.SynchronizedOutputStream;
@@ -84,26 +81,42 @@ public class OutputPort extends IPort
 			return new SynchronizedOutputStream(mStream,mStream != System.out);
 	}
 
+	public synchronized void flush() throws InvalidArgumentException, IOException
+	{
+		if( mStream != null )
+			mStream.flush();
+		
+		if( mVariable != null ){
+			
+			if (mXdmDestination != null)
+				appendVar( mXdmDestination.getXdmNode());
+
+			
+			// else
+			if (mByteArrayOutputStream != null)
+				appendVar( mByteArrayOutputStream.toString(Shell.getTextEncoding()) );
+
+			//else
+			if (mBuilder != null)
+				appendVar((XdmNode) S9Util.wrapNode(mBuilder.getCurrentRoot()));
+			
+			mXdmDestination = null;
+			mByteArrayOutputStream = null ;
+			mBuilder = null ;
+		
+		}
+	}
+	
+	
+	
 	public synchronized void close() throws IOException, InvalidArgumentException {
 		
-
+			
 
 			if( mStream != null )
 				mStream.close();
-			if( mVariable != null ){
+		
 			
-				if (mXdmDestination != null)
-					appendVar( mXdmDestination.getXdmNode());
-
-				
-				// else
-				if (mByteArrayOutputStream != null)
-					appendVar( mByteArrayOutputStream.toString(Shell.getTextEncoding()) );
-
-				//else
-				if (mBuilder != null)
-					appendVar((XdmNode) S9Util.wrapNode(mBuilder.getCurrentRoot()));
-			}
 		
 	
 		
@@ -197,7 +210,10 @@ public class OutputPort extends IPort
 	 */
 	private void appendVar( XdmItem xitem ) throws InvalidArgumentException
 	{
-
+		if( xitem instanceof XdmNode ){
+			XdmNode node = (XdmNode)xitem;
+			node.getUnderlyingNode().setSystemId(getSystemId());
+		}
 		
 		XValue value = mVariable.getValue();
 		if (value == null)

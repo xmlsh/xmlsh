@@ -39,14 +39,12 @@ public class InputPort  extends IPort
 	private	 XVariable	mVariable;
 	
 
-	private String mSystemid;
 
 
 
-	public InputPort( InputStream is , String systemid ) 
+	public InputPort( InputStream is  ) 
 	{
 		mStream = is;
-		mSystemid = systemid;
 	}
 
 	/*
@@ -93,10 +91,6 @@ public class InputPort  extends IPort
 		return s;
 	}
 	
-	public String getSystemId() {
-		// TODO Auto-generated method stub
-		return mSystemid;
-	}
 
 	public synchronized XdmNode asXdmNode() throws SaxonApiException, InvalidArgumentException, IOException
 	{

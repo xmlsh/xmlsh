@@ -6,10 +6,13 @@
 
 package org.xmlsh.builtin;
 
+import java.net.URI;
 import java.util.List;
 
 import net.sf.saxon.s9api.Destination;
 import net.sf.saxon.s9api.Processor;
+import net.sf.saxon.s9api.XdmNode;
+import net.sf.saxon.s9api.XdmValue;
 import org.xmlsh.core.BuiltinCommand;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
@@ -31,6 +34,16 @@ public class xecho extends BuiltinCommand {
 		for ( XValue arg : args ){
 				if( ! bFirst )
 					stdout.writeSequenceSeperator();
+				
+				else {
+					 XdmValue item = arg.asXdmValue();
+					if( item instanceof XdmNode ){
+						URI uri = ((XdmNode)item).getBaseURI();
+						stdout.setSystemId( uri.toString() );
+					}
+				}
+				
+				
 				
 				bFirst = false;
 				processor.writeXdmValue(arg.asXdmValue(), dest);

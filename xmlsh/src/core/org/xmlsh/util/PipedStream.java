@@ -17,15 +17,15 @@ public class PipedStream extends PipedPort {
 	private		PipedInputStream 	mIn;
 	private		PipedOutputStream 	mOut;
 	
-	public PipedStream(String systemId ) throws IOException
+	public PipedStream()  throws IOException
 	{
-		super( systemId );
+	
 		mOut = new PipedOutputStream();
 		mIn = new PipedInputStream(mOut);
 		
 	}
 	
-	public	InputPort	getInput() throws IOException { return new InputPort(mIn,mSystemId) ; }
+	public	InputPort	getInput() throws IOException { return new InputPort(mIn) ; }
 	public OutputPort getOutput() { return new OutputPort(mOut) ; }
 	
 	static public PipedStream[] getPipes(int n ) throws IOException
@@ -34,7 +34,7 @@ public class PipedStream extends PipedPort {
 			return null;
 		PipedStream	streams[] = new PipedStream[n];
 		for( int i = 0 ; i < n ; i++ )
-			streams[i] = new PipedStream("");
+			streams[i] = new PipedStream();
 		return streams;
 		
 	}

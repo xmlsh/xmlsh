@@ -6,6 +6,7 @@
 
 package org.xmlsh.commands;
 
+import java.net.URI;
 import java.util.List;
 
 import net.sf.saxon.s9api.Destination;
@@ -151,13 +152,8 @@ public class xpath extends XCommand {
 				String name = xvargs.get(i*2).toString();
 				XValue value = xvargs.get(i*2+1);
 				
-				
 				eval.setVariable( new QName(name),  value.asXdmValue() );	
-					
-				
 			}
-				
-			
 		}
 				
 		OutputPort stdout = getStdout();
@@ -175,7 +171,14 @@ public class xpath extends XCommand {
 			
 			if( ! bFirst )
 				stdout.writeSequenceSeperator(); // Thrashes variable output !
+			else {
+				if( item instanceof XdmNode ){
+					URI uri = ((XdmNode)item).getBaseURI();
+					stdout.setSystemId( uri.toString() );
+				}
+			}
 			bFirst = false ;
+			
 			processor.writeXdmValue(item, ser );
 
 

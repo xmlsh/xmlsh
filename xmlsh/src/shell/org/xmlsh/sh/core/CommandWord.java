@@ -59,7 +59,7 @@ public class CommandWord extends Word {
 		try {
 		
 			shell.getEnv().setStdout( out );
-			shell.getEnv().setStdin( new NullInputStream(),"" );
+			shell.getEnv().setStdin( new NullInputStream() );
 			shell.exec(c);
 			
 			
@@ -99,13 +99,13 @@ public class CommandWord extends Word {
 
 		try {
 
-			PipedStream pipe = new PipedStream("");
+			PipedStream pipe = new PipedStream();
 
 			shell = shell.clone();
 			shell.getEnv().setStdout( pipe.getOutput() );
 			
 			
-			shell.getEnv().setStdin( new NullInputStream() ,"");
+			shell.getEnv().setStdin( new NullInputStream() );
 			
 
 			

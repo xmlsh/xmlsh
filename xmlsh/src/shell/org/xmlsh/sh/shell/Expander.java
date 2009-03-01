@@ -349,7 +349,7 @@ class Expander {
 		Collection<XVariable> vars = mShell.getEnv().getVars().values();
 		for( XVariable value : vars ){
 			
-			if( value.getFlags().contains( XVarFlag.XEXPR ))
+			if( ! value.isNull() && value.getFlags().contains( XVarFlag.XEXPR ))
 			
 				sb.append("declare variable $").append(value.getName())
 				.append(" external ;\n");
@@ -366,7 +366,7 @@ class Expander {
 			
 			for( XVariable value : vars ){
 				
-				if( value.getFlags().contains( XVarFlag.XEXPR ))
+				if( !value.isNull() && value.getFlags().contains( XVarFlag.XEXPR ))
 			
 					eval.setExternalVariable( new QName(value.getName()), value.getValue().asXdmValue());
 				

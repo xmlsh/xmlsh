@@ -70,9 +70,10 @@ public class IOFile {
 	
 		
 		
-		if( mPrefix.equals("<"))
-			env.setStdin( shell.getInputStream(file) , file );
-			
+		if( mPrefix.equals("<")){
+			env.setStdin( shell.getInputStream(file)  );
+			env.getStdin().setSystemId(file);
+		}
 		else
 		if( mPrefix.equals("2>"))
 				env.setStderr( shell.getOutputStream(file, false));

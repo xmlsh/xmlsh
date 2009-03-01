@@ -55,7 +55,7 @@ public class IOCommand {
 
 				
 				sh.getEnv().setStdout(  pipe.getOutput() );
-				sh.getEnv().setStdin( new NullInputStream(),"" );
+				sh.getEnv().setStdin( new NullInputStream() );
 				ShellThread sht =  new ShellThread(sh , null ,   mCommand);
 
 

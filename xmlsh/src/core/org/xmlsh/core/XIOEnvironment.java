@@ -70,8 +70,8 @@ public class XIOEnvironment {
 	 * @param stdin the stdin to set
 	 * @throws IOException 
 	 */
-	public void setStdin(InputStream in, String systemid) throws CoreException {
-		setStdin( new InputPort(in,systemid));
+	public void setStdin(InputStream in) throws CoreException {
+		setStdin( new InputPort(in));
 	}
 
 	public void setStdin(XVariable variable) throws CoreException {
@@ -185,7 +185,7 @@ public class XIOEnvironment {
 	public void initStdio() throws IOException {
 
 		mInputs.add( 
-				new NamedPort<InputPort>( null , true , new InputPort(System.in,"") )
+				new NamedPort<InputPort>( null , true , new InputPort(System.in) )
 		);
 
 		mOutputs.add( 

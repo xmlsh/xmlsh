@@ -10,14 +10,30 @@ import java.io.IOException;
 
 public abstract class IPort {
 	private	int	mRef = 1;
+	private String mSystemId = "";
+	
+	public String getSystemId() {
+		// TODO Auto-generated method stub
+		return mSystemId;
+	}
+
+	public void setSystemId(String systemId)
+	{
+		mSystemId = systemId;
+	}
 	final synchronized void addRef() {
 		mRef++;
 
 	}
+
+	public synchronized void flush() throws InvalidArgumentException, IOException {};
+	
 	final synchronized void release() throws CoreException 
-	{
-		if( --mRef <= 0 )
-			try {
+	{		
+		try {
+			flush();
+			if( --mRef <= 0 )
+	
 				close();
 			} catch (Exception e) {
 				throw new CoreException("Exception closing port");
