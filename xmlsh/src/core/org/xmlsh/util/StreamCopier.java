@@ -19,15 +19,14 @@ public class StreamCopier extends Thread
 	private		InputStream		mIn;
 	private		OutputStream	mOut;
 	private		boolean			mCloseOut;
-	private		Object			mWho;
 
-	public StreamCopier( InputStream in , OutputStream out ,  boolean closeOut , Object who )
+
+	public StreamCopier( InputStream in , OutputStream out ,  boolean closeOut )
 	{
 		mIn = in;
 		mOut = out;
 		
 		mCloseOut = closeOut;
-		mWho = who;
 		
 	}
 	/* (non-Javadoc)

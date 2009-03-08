@@ -19,6 +19,8 @@ import javax.xml.transform.sax.TransformerHandler;
 
 import net.sf.saxon.s9api.Destination;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.util.SynchronizedOutputStream;
+import org.xmlsh.util.Util;
 
 /*
  * An OutputPort represents an output sync of data, either Stream (bytes) or XML data
@@ -28,33 +30,73 @@ import org.xmlsh.sh.shell.Shell;
 
 
 
-public abstract class OutputPort extends IPort
+public class StreamOutputPort extends OutputPort
 {
+	private static byte kNEWLINE_BYTES[] = { '\n' };
+	
 
+	private OutputStream	 mStream;
+
+
+	public StreamOutputPort( OutputStream os ) 
+	{
+		mStream = os;
+	}
+
+	
+	
 	
 	/*
 	 * Standard input stream - created on first request
 	 */
 	
-	public	abstract OutputStream asOutputStream() ;
+	public	synchronized OutputStream asOutputStream() 
+	{
+		return new SynchronizedOutputStream(mStream,mStream != System.out);
+	}
 
-	public abstract void flush() throws InvalidArgumentException, IOException;
+	public synchronized void flush() throws InvalidArgumentException, IOException
+	{
+		if( mStream != null )
+			mStream.flush();
+		
+	
+	}
 	
 	
 	
-	public abstract void close() throws IOException, InvalidArgumentException ;
+	public synchronized void close() throws IOException, InvalidArgumentException {
+		
+			
+
+			if( mStream != null )
+				mStream.close();
+		
+			
+		
 	
+		
+	}
 
 
-	public abstract TransformerHandler asTransformerHandler() throws TransformerConfigurationException, IllegalArgumentException, TransformerFactoryConfigurationError;
-	
+	public synchronized TransformerHandler asTransformerHandler() throws TransformerConfigurationException, IllegalArgumentException, TransformerFactoryConfigurationError
+	{
+		return Util.getTransformerHander(asOutputStream());
+	}
 	
 	public synchronized PrintStream asPrintStream()
 	{
 		return new PrintStream(asOutputStream());
 	}
 
-	public abstract Destination asDestination() throws InvalidArgumentException;
+	public synchronized Destination asDestination() throws InvalidArgumentException
+	{
+
+		return Util.streamToDestination(asOutputStream());
+	}
+	
+
+	
 	
 
 	public synchronized PrintWriter asPrintWriter() throws UnsupportedEncodingException {
@@ -63,12 +105,21 @@ public abstract class OutputPort extends IPort
 						Shell.getTextEncoding() ));
 	}
 
-	
-	
-	public abstract void writeSequenceSeperator() throws IOException, InvalidArgumentException;
-	
 
-	public abstract void writeSequenceTerminator() throws IOException ;
+	
+	
+	public synchronized void writeSequenceSeperator() throws IOException, InvalidArgumentException
+	{
+		
+		asOutputStream().write(kNEWLINE_BYTES  );
+		
+		
+	}
+
+	public void writeSequenceTerminator() throws IOException {
+			asOutputStream().write(kNEWLINE_BYTES  );
+		
+	}
 
 }
 

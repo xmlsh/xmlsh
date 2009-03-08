@@ -102,13 +102,13 @@ public class XIOEnvironment {
 	 * @throws InvalidArgumentException 
 	 */
 	public void setStdout(OutputStream out) throws CoreException {
-		setStdout( new OutputPort(out));
+		setStdout( new StreamOutputPort(out));
 		
 	}
 
 
 	public void setStdout(XVariable xvar) throws CoreException {
-		setStdout( new OutputPort(xvar));
+		setStdout( new VariableOutputPort(xvar));
 	}
 
 	public void setStdout(OutputPort port) throws CoreException {
@@ -141,7 +141,7 @@ public class XIOEnvironment {
 		}
 			
 		
-		stderr = new OutputPort(err);
+		stderr = new StreamOutputPort(err);
 		mOutputs.add(new NamedPort<OutputPort>(kSTDERR,false,stderr));
 
 	}
@@ -189,12 +189,12 @@ public class XIOEnvironment {
 		);
 
 		mOutputs.add( 
-				new NamedPort<OutputPort>( null , true , new OutputPort(System.out) )
+				new NamedPort<OutputPort>( null , true , new StreamOutputPort(System.out) )
 		);
 
 
 		mOutputs.add( 
-				new NamedPort<OutputPort>( kSTDERR , false , new OutputPort(System.err) )
+				new NamedPort<OutputPort>( kSTDERR , false , new StreamOutputPort(System.err) )
 		);
 
 	}

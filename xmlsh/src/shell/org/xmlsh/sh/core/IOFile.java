@@ -10,9 +10,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 import org.xmlsh.core.CoreException;
-import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XEnvironment;
-import org.xmlsh.core.XValue;
 import org.xmlsh.core.XVariable;
 import org.xmlsh.sh.shell.Shell;
 

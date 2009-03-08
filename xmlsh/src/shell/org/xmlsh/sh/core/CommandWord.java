@@ -8,24 +8,17 @@ package org.xmlsh.sh.core;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.PrintWriter;
-import java.util.List;
-
-import javax.xml.transform.stream.StreamSource;
 
 import net.sf.saxon.s9api.DocumentBuilder;
 import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XdmValue;
 import org.xmlsh.core.CoreException;
-import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
-import org.xmlsh.sh.grammar.ParseException;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.sh.shell.ShellThread;
 import org.xmlsh.util.NullInputStream;
 import org.xmlsh.util.PipedStream;
-import org.xmlsh.util.Util;
 import org.xmlsh.util.XMLException;
 
 /*

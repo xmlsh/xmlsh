@@ -7,7 +7,6 @@
 package org.xmlsh.commands;
 
 import java.io.PrintWriter;
-import java.net.URL;
 import java.util.List;
 
 import javax.xml.transform.Source;

@@ -12,6 +12,7 @@ import java.io.PipedOutputStream;
 
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.OutputPort;
+import org.xmlsh.core.StreamOutputPort;
 
 public class PipedStream extends PipedPort {
 	private		PipedInputStream 	mIn;
@@ -26,7 +27,7 @@ public class PipedStream extends PipedPort {
 	}
 	
 	public	InputPort	getInput() throws IOException { return new InputPort(mIn) ; }
-	public OutputPort getOutput() { return new OutputPort(mOut) ; }
+	public OutputPort getOutput() { return new StreamOutputPort(mOut) ; }
 	
 	static public PipedStream[] getPipes(int n ) throws IOException
 	{

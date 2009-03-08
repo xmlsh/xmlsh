@@ -14,7 +14,6 @@ import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XdmValue;
 import org.xmlsh.core.BuiltinCommand;
-import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;

@@ -14,7 +14,6 @@ import org.xmlsh.core.ICommand;
 import org.xmlsh.core.XIOEnvironment;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.util.Util;
 
 public class SimpleCommand extends Command {
 	private CommandPrefix  mPrefix;

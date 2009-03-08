@@ -1,11 +1,6 @@
 package org.xmlsh.util;
 
 import org.xmlsh.core.CoreException;
-/**
- * $Id$
- * $Date$
- *
- */
 
 /**
  * @author David A. Lee

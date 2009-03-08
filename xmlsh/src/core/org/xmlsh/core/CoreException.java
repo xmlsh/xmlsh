@@ -6,6 +6,7 @@
 
 package org.xmlsh.core;
 
+@SuppressWarnings("serial")
 public class CoreException extends Exception {
 
 	public CoreException() {

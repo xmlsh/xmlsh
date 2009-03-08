@@ -12,7 +12,6 @@ import java.io.PrintWriter;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XEnvironment;
-import org.xmlsh.sh.grammar.ParseException;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.sh.shell.ShellThread;
 import org.xmlsh.util.NullInputStream;

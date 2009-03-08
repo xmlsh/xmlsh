@@ -8,16 +8,11 @@ package org.xmlsh.builtin;
 
 import java.util.List;
 
-import javax.xml.transform.stream.StreamSource;
-
-import net.sf.saxon.s9api.DocumentBuilder;
-import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.XdmNode;
 import org.xmlsh.core.BuiltinCommand;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.XVariable;
-import org.xmlsh.sh.shell.Shell;
 
 public class xread extends BuiltinCommand {
 
@@ -33,10 +28,6 @@ public class xread extends BuiltinCommand {
 			throw new InvalidArgumentException("requires 1 argument");
 		
 		mShell.getEnv().unsetVar(args.get(0).toString());
-
-		
-		Processor proc = Shell.getProcessor();
-		DocumentBuilder builder = proc.newDocumentBuilder();
 
 		XdmNode node = mShell.getEnv().getStdin().asXdmNode();
 		mShell.getEnv().setVar(

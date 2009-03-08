@@ -6,43 +6,29 @@
 
 package org.xmlsh.sh.shell;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
-import javax.xml.transform.stream.StreamSource;
-
-import net.sf.saxon.s9api.DocumentBuilder;
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XQueryCompiler;
 import net.sf.saxon.s9api.XQueryEvaluator;
 import net.sf.saxon.s9api.XQueryExecutable;
-import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XdmValue;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.xmlsh.core.CoreException;
-import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.XVariable;
 import org.xmlsh.core.XVariable.XVarFlag;
-import org.xmlsh.sh.core.Command;
-import org.xmlsh.sh.core.EvalScriptCommand;
-import org.xmlsh.sh.grammar.ParseException;
 import org.xmlsh.util.NameValueMap;
-import org.xmlsh.util.NullInputStream;
-import org.xmlsh.util.PipedStream;
 import org.xmlsh.util.Util;
-import org.xmlsh.util.XMLException;
 
 class Expander {
 	

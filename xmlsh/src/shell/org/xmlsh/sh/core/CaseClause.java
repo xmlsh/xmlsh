@@ -9,7 +9,6 @@ package org.xmlsh.sh.core;
 import java.io.PrintWriter;
 
 import org.xmlsh.core.XIOEnvironment;
-import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
 
 public class CaseClause  extends CompoundCommand {

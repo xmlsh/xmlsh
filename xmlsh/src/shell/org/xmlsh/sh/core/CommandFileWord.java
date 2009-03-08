@@ -8,8 +8,6 @@ package org.xmlsh.sh.core;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.xml.transform.stream.StreamSource;
 

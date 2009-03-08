@@ -6,7 +6,6 @@
 
 package org.xmlsh.core;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 import org.xmlsh.util.Util;
