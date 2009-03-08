@@ -16,6 +16,15 @@ saxon9-dom.jar
 saxon9-s9api.jar
 
 
+
+OPTIONAL FiLES
+
 jline
 from 
 http://jline.sourceforge.net/
+
+
+Xerces 2.1 from
+http://xerces.apache.org/xerces2-j/install.html
+The only file needed is
+xercesImpl.jar

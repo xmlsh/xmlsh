@@ -21,5 +21,6 @@
 			<attribute name="javadoc_location" value="file:/C:/java/saxon9/doc/javadoc/"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="lib/xercesImpl.jar"/>
 	<classpathentry kind="output" path="_out"/>
 </classpath>

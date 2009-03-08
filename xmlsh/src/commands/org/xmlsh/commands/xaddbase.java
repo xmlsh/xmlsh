@@ -16,6 +16,7 @@ import net.sf.saxon.AugmentedSource;
 import net.sf.saxon.event.Builder;
 import net.sf.saxon.om.Axis;
 import net.sf.saxon.om.AxisIterator;
+import net.sf.saxon.om.DocumentInfo;
 import net.sf.saxon.om.Item;
 import net.sf.saxon.om.MutableNodeInfo;
 import net.sf.saxon.om.NamePool;
@@ -238,6 +239,14 @@ public class xaddbase extends XCommand {
 	
 	private XdmNode build( Source src ) throws SaxonApiException
 	{
+		// @TODO: To get over a bug in Saxon's build() have to use the root element
+		// instead of a document node to force building of a linked tree model
+		// Otherwise the source is just returned unchnaged
+		
+		if( src instanceof DocumentInfo  )
+			src = (NodeInfo)(((DocumentInfo)src).iterateAxis(net.sf.saxon.om.Axis.CHILD).next());
+
+		
 		AugmentedSource asrc = AugmentedSource.makeAugmentedSource(src); 
 		asrc.setTreeModel(Builder.LINKED_TREE); 
 		return mBuilder.build(asrc);

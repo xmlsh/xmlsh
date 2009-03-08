@@ -382,6 +382,10 @@ public class xed extends XCommand {
 	
 	private XdmNode build( Source src ) throws SaxonApiException
 	{
+		// @TODO: To get over a bug in Saxon's build() have to use the root element
+		// instead of a document node to force building of a linked tree model
+		// Otherwise the source is just returned unchnaged
+		
 		if( src instanceof DocumentInfo  )
 			src = (NodeInfo)(((DocumentInfo)src).iterateAxis(net.sf.saxon.om.Axis.CHILD).next());
 			
