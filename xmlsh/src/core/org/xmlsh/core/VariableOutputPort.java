@@ -14,6 +14,11 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 
+import javanet.staxutils.StAXSource;
+import javanet.staxutils.XMLEventStreamWriter;
+
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.sax.TransformerHandler;
@@ -23,6 +28,7 @@ import net.sf.saxon.event.Builder;
 import net.sf.saxon.event.PipelineConfiguration;
 import net.sf.saxon.event.Receiver;
 import net.sf.saxon.s9api.Destination;
+import net.sf.saxon.s9api.DocumentBuilder;
 import net.sf.saxon.s9api.S9Util;
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XdmAtomicValue;
@@ -32,6 +38,7 @@ import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.tinytree.TinyBuilder;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.Util;
+import org.xmlsh.util.XMLEventWriterBuffer;
 
 /*
  * An OutputPort represents an output sync of data, either Stream (bytes) or XML data
@@ -49,8 +56,25 @@ public class VariableOutputPort extends OutputPort
 	private		XdmDestination	 		mXdmDestination;
 	private		ByteArrayOutputStream 	mByteArrayOutputStream;
 	private		Builder					mBuilder;
+	private		XMLEventWriterBuffer	mWriterBuffer;
 
-
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	public VariableOutputPort( XVariable var)
 	{
 		mVariable = var ;
@@ -69,7 +93,7 @@ public class VariableOutputPort extends OutputPort
 			return ( mByteArrayOutputStream = new ByteArrayOutputStream()); 	// BOS is synchroized 
 	}
 
-	public synchronized void flush() throws InvalidArgumentException, IOException
+	public synchronized void flush() throws IOException, CoreException
 	{
 			
 			
@@ -85,10 +109,25 @@ public class VariableOutputPort extends OutputPort
 			if (mBuilder != null)
 				appendVar((XdmNode) S9Util.wrapNode(mBuilder.getCurrentRoot()));
 			
+			if( mWriterBuffer != null ){
+		
+				DocumentBuilder builder = Shell.getProcessor().newDocumentBuilder();
+				XdmNode node;
+				try {
+					node = builder.build( new StAXSource( mWriterBuffer.getReader()));
+				} catch (Exception e) {
+					throw new CoreException( e );
+				}
+				appendVar( node );
+			}
+			
+			
+			
+			
 			mXdmDestination = null;
 			mByteArrayOutputStream = null ;
 			mBuilder = null ;
-		
+			mWriterBuffer = null ;
 		
 	}
 	
@@ -213,6 +252,13 @@ public class VariableOutputPort extends OutputPort
 
 	public void writeSequenceTerminator() throws IOException {
 		
+	}
+
+
+	@Override
+	public XMLStreamWriter asXMLStreamWriter() throws XMLStreamException, TransformerConfigurationException, IllegalArgumentException, TransformerFactoryConfigurationError {
+		mWriterBuffer = new XMLEventWriterBuffer(); 
+		return new XMLEventStreamWriter(mWriterBuffer);
 	}
 
 }

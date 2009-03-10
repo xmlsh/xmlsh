@@ -13,6 +13,11 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 
+import javanet.staxutils.OutputFactory;
+
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.sax.TransformerHandler;
@@ -120,6 +125,24 @@ public class StreamOutputPort extends OutputPort
 			asOutputStream().write(kNEWLINE_BYTES  );
 		
 	}
+
+
+
+
+	@Override
+	public XMLStreamWriter asXMLStreamWriter() throws XMLStreamException {
+		/*
+	    XMLInputFactory inputFactory = XMLInputFactory.newInstance();
+	    XMLEventReader eventReader = inputFactory.createXMLEventReader(in);
+		*/
+	// 	XMLOutputFactory fact = XMLOutputFactory.newInstance();
+		XMLOutputFactory fact = new OutputFactory();
+		return fact.createXMLStreamWriter(asOutputStream(), Shell.getXMLEncoding());
+	
+	
+	}
+	
+	
 
 }
 

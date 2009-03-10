@@ -13,6 +13,8 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.sax.TransformerHandler;
@@ -38,7 +40,7 @@ public abstract class OutputPort extends IPort
 	
 	public	abstract OutputStream asOutputStream() ;
 
-	public abstract void flush() throws InvalidArgumentException, IOException;
+	public abstract void flush() throws IOException, CoreException;
 	
 	
 	
@@ -69,6 +71,8 @@ public abstract class OutputPort extends IPort
 	
 
 	public abstract void writeSequenceTerminator() throws IOException ;
+	public abstract XMLStreamWriter asXMLStreamWriter() throws XMLStreamException, TransformerConfigurationException, IllegalArgumentException, TransformerFactoryConfigurationError;
+	
 
 }
 

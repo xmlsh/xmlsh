@@ -9,7 +9,7 @@ package org.xmlsh.builtin;
 import java.util.Collection;
 import java.util.List;
 
-import javax.xml.transform.sax.TransformerHandler;
+import javax.xml.stream.XMLStreamWriter;
 
 import org.xml.sax.helpers.AttributesImpl;
 import org.xmlsh.core.BuiltinCommand;
@@ -39,25 +39,22 @@ public class set extends BuiltinCommand {
 		XEnvironment env = mShell.getEnv();
 		
 
-	      
-		TransformerHandler hd = env.getStdout().asTransformerHandler();
+	    XMLStreamWriter writer = env.getStdout().asXMLStreamWriter();
 
-		hd.startDocument();
-		
-		AttributesImpl attrs = new AttributesImpl();
-
-		hd.startElement("", sDocRoot,sDocRoot,attrs);
-		
-		
+	   // writer.writeStartDocument();
+	    writer.writeStartElement( sDocRoot );
+	    
 		
 		Collection<String> names = env.getVarNames();
 		for( String name : names ){
 			XVariable var = env.getVar(name);
-			var.serialize(hd);
+			var.serialize(writer);
 			
 		}
-		hd.endElement("",sDocRoot,sDocRoot);
-		hd.endDocument();
+		writer.writeEndElement();
+		writer.writeEndDocument();
+		
+		writer.close();
 		
 		
 	}

@@ -26,7 +26,7 @@ public abstract class IPort {
 
 	}
 
-	public synchronized void flush() throws InvalidArgumentException, IOException {};
+	public synchronized void flush() throws IOException, CoreException {};
 	
 	final synchronized void release() throws CoreException 
 	{		

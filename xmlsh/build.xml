@@ -34,6 +34,7 @@ version.release=${release}
     	 		<src path="src/shell"/>
         	 	<src path="src/commands"/>
     	 		<src path="src/saxon"/>
+    	 		<src path="src/stax-utils"/>
     	 	<classpath>
     				<fileset dir="lib">
     	                  	<include name="**/*.jar"/>

@@ -8,7 +8,8 @@ package org.xmlsh.core;
 
 import java.util.EnumSet;
 
-import javax.xml.transform.sax.TransformerHandler;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
 
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
@@ -98,7 +99,8 @@ public class XVariable {
 	}
 
 	
-	public void serialize(TransformerHandler writer) throws SAXException {
+	public void serialize(XMLStreamWriter writer) throws SAXException, XMLStreamException {
+/*
 		AttributesImpl atts = new AttributesImpl();
 		atts.addAttribute("", sName, sName, "CDATA", getName());
 		XValue value = this.getValue();
@@ -114,14 +116,30 @@ public class XVariable {
 		
 		atts.addAttribute("", sFlags, sFlags, "CDATA", flagStr );
 
+		
+		
 		writer.startElement("", sVariable, sVariable, atts);
 
 		
 		
 		writer.endElement("", sVariable, sVariable);
+*/	
+		XValue value = this.getValue();
+		String flagStr = mFlags.toString();
+		
+		writer.writeStartElement(sVariable);
+		writer.writeAttribute(sName, getName());
+		writer.writeAttribute(sType, (value == null || value.isString()) ? "string" : "xml");
+		writer.writeAttribute(sFlags, flagStr );
+		writer.writeEndElement();
+		
+		
 		
 	}
 
+	
+	
+	
 	public void clear() throws InvalidArgumentException {
 
 		setValue( null );
