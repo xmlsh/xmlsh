@@ -268,7 +268,11 @@ TOKEN : {
  
 
 <*> TOKEN : {
-	< ASSIGN_WORD : <NAME> "=" >
+	< ASSIGN_WORD : <VARNAME> "=" >
+| <#VARNAME : 
+	(["0" - "9" , "a" - "z" , "A" - "Z" , "_"  ])+ |
+	"xmlns:" (["0" - "9" , "a" - "z" , "A" - "Z" , "_"  ])+
+	>
 	
 }
 
