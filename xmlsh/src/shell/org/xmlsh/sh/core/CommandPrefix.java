@@ -44,8 +44,8 @@ public class CommandPrefix {
 
 	public void exec(Shell shell) throws IOException, CoreException {
 		for (Assign ass : mList) {
-			XValue value = ass.mValue.expand(shell,false,false);
-			shell.getEnv().setVar( new XVariable(ass.mVariable, value) );
+			XValue value = ass.expand(shell);
+			shell.getEnv().setVar( new XVariable(ass.getVariable(), value) );
 			
 		}
 		

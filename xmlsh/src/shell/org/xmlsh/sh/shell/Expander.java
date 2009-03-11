@@ -96,12 +96,29 @@ class Expander {
 			
 		}
 
-		public void append(XValue value) {
+		/*
+		 * Append a value to the result buffer
+		 * If currently in-quotes then convert the args to strings and space seperate
+		 */
+		public void append(XValue value, boolean inQuotes ) {
 			if( value.isString() || value.isAtomic() )
 				append( value.toString());
 			else {
-				flush();
-				add(value);
+				if( inQuotes ){
+					// Flatten sequences
+					boolean bFirst = true ;
+					for( XdmValue v : value.asXdmValue() ){
+						if( ! bFirst )
+							append(" ");
+						append( v.toString());
+						bFirst = false ;
+					}
+					
+				} else {
+				
+					flush();
+					add(value);
+				}
 			}
 		}
 		
@@ -269,7 +286,7 @@ class Expander {
 					
 					
 					if( value != null )
-						result.append( value );
+						result.append( value , cQuote != '\0' );
 				} else
 					result.append('$');
 			

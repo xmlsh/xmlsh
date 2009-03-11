@@ -27,10 +27,17 @@ cd $TMPDIR/_varseq || exit 1
 
 echo foo > foo
 echo bar > bar
+# test that sequence expand wildcards
 unset _var
 _var=(*)
-
 echo $_var should be bar foo
+# test quoting sequence
+echo "$_var" should be bar foo
+
+# test that non-seq do NOT expand wildcards
+_var=*
+echo "$_var" should be "*"
+
 cd ..
 rm -rf $TMPDIR/_varseq
 exit 0

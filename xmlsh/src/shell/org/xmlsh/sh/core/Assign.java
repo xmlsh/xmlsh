@@ -6,28 +6,63 @@
 
 package org.xmlsh.sh.core;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 
+import org.xmlsh.core.CoreException;
+import org.xmlsh.core.XValue;
+import org.xmlsh.sh.shell.Shell;
+
 public class Assign {
-	String		mVariable;
-	WordList	mValue;
+	private	 String		mVariable;
+	private Word		mValue;		// a single value a=b
+	private WordList	mValueList; // a sequence constructor a=(b)
 	public Assign(String variable, Word value) {
 		super();
-		mVariable = variable;
-		mValue = new WordList();
-		mValue.add(value);
+		setVariable(variable);
+		mValue = value;
+
 	}
 	public Assign(String variable, WordList value) {
 		super();
-		mVariable = variable;
-		mValue = value;
+		setVariable(variable);
+		mValueList = value;
 	}
 	public void print(PrintWriter out) {
-		out.print(mVariable);
+		out.print(getVariable());
 		out.print("=");
-		mValue.print(out);
+		if( mValue != null )
+			mValue.print(out);
+		else
+		{
+			out.print("(");
+			boolean bFirst = true ;
+			for( Word w: mValueList ){
+				if( ! bFirst )
+					out.print(" ");
+				w.print(out);
+				bFirst = false ;
+				
+			}
+			out.print(")");
+				
+		}
 		out.print( " ");
 		
+	}
+	public void setVariable(String variable) {
+		mVariable = variable;
+	}
+	public String getVariable() {
+		return mVariable;
+	}
+	public XValue expand(Shell shell) throws IOException, CoreException {
+		if( mValue != null )
+			// Single variables dont expand wildcards
+			return mValue.expand(shell, false, false);
+		else
+			// Sequences expand wildcards
+			return mValueList.expand(shell, true, false);
 	}
 }
 
