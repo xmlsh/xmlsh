@@ -378,6 +378,11 @@ public class XValue {
 		return new XValue(new XdmValue(items));
 		
 	}
+
+	public void append(XValue v) {
+		append( v.mValue );
+		
+	}
 	
 }
 //

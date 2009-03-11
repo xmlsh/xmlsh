@@ -706,27 +706,67 @@ Word cmd_word() :
 CommandPrefix cmd_prefix() : 
 	{ 
 		CommandPrefix p = new CommandPrefix();
-		Token t1;
-		Word 	w;
+		Assign a;
 	}
 {
-	( LOOKAHEAD(2) t1=<ASSIGN_WORD> w=cmd_word()
-		{ String s=t1.toString();
-			
-			p.add(s.substring(0,s.length()-1)  ,w  ); }
+	( a=assign() {
+		p.add(a);
+	}
+	) +
 	
-	)+
 	{
 		return p;
 	}
 }
+
+
+Assign assign() : 
+	{ 
+
+		Token t1;
+		Word 	w;
+		WordList ws;
+		String s;
+	}
+{
+	LOOKAHEAD(2) t1=<ASSIGN_WORD> w=cmd_word()
+	 { s=t1.toString();
+		return new Assign(s.substring(0,s.length()-1)  ,w  ); 
+	} 
+	
+ |  
+     t1=<ASSIGN_WORD>  <LPAREN> ws=cmd_words() <RPAREN> 
+     { s=t1.toString();
+		return new Assign(s.substring(0,s.length()-1)  ,ws  ); 
+	}
+	
+}
+
+
+
+
+
+WordList  cmd_words() : 
+{
+	WordList ws = new WordList();
+	Word w;
+}
+{
+	 ( ( w=cmd_word()
+  	 ) 
+      { ws.add(w);} 
+  )* 
+  { return ws;}
+}
+
+
+
 
 CommandSuffix cmd_suffix() : 
 	{
 		CommandSuffix s = new CommandSuffix();
 		Word w;
 		IORedirect io;
-		Token t;
 	}
 {
   ( ( w=cmd_word()

@@ -1,56 +1,34 @@
 /**
- * $Id$
- * $Date$
+ * $Id: $
+ * $Date: $
  *
  */
 
 package org.xmlsh.sh.core;
 
-import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.List;
 
-import org.xmlsh.core.CoreException;
-import org.xmlsh.core.XValue;
-import org.xmlsh.core.XVariable;
-import org.xmlsh.sh.shell.Shell;
-
-public class CommandPrefix {
-	private List<Assign>	mList = new ArrayList<Assign>();
-
-	public void add( Assign a )
-	{
-		mList.add(a);
+public class Assign {
+	String		mVariable;
+	WordList	mValue;
+	public Assign(String variable, Word value) {
+		super();
+		mVariable = variable;
+		mValue = new WordList();
+		mValue.add(value);
 	}
-	public void add( String var , Word value )
-	{
-		mList.add( new Assign( var , value ));
+	public Assign(String variable, WordList value) {
+		super();
+		mVariable = variable;
+		mValue = value;
 	}
-	public void add( String var , WordList value )
-	{
-		mList.add( new Assign( var , value ));
-	}
-	
-
-
 	public void print(PrintWriter out) {
-		for (Assign ass : mList) {
-			ass.print(out);
-			
-		}
+		out.print(mVariable);
+		out.print("=");
+		mValue.print(out);
+		out.print( " ");
 		
 	}
-
-	public void exec(Shell shell) throws IOException, CoreException {
-		for (Assign ass : mList) {
-			XValue value = ass.mValue.expand(shell,false,false);
-			shell.getEnv().setVar( new XVariable(ass.mVariable, value) );
-			
-		}
-		
-	}
-	
 }
 
 

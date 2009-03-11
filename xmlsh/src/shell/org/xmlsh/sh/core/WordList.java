@@ -6,8 +6,15 @@
 
 package org.xmlsh.sh.core;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.List;
+
+import net.sf.saxon.s9api.XdmEmptySequence;
+import org.xmlsh.core.CoreException;
+import org.xmlsh.core.XValue;
+import org.xmlsh.sh.shell.Shell;
 
 @SuppressWarnings("serial")
 public class WordList extends ArrayList<Word> {
@@ -19,6 +26,22 @@ public class WordList extends ArrayList<Word> {
 		}
 		
 	}
+
+	public XValue expand(Shell shell, boolean bExpandWild, boolean bExpandWords) throws IOException, CoreException {
+		if( this.size() == 0 )
+			return new XValue(XdmEmptySequence.getInstance());
+		if( this.size() == 1 )
+			return this.get(0).expand(shell, bExpandWild, bExpandWords);
+		
+		
+		List<XValue>  list = new ArrayList<XValue>( this.size() );
+		
+		for( Word w : this )
+			list.add(w.expand(shell,bExpandWild,bExpandWords) );
+		return new XValue( list );
+		
+	}
+	
 }
 
 
