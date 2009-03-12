@@ -50,18 +50,6 @@ import org.xmlsh.util.Util;
 public class Shell {
 	
 	private static Logger mLogger = LogManager.getLogger(Shell.class);
-	static class ShellOpts 
-	{
-		boolean	mVerbose = false;		// -v
-		boolean mExec	 = false;		// -x
-		public ShellOpts clone() {
-			ShellOpts that = new ShellOpts();
-			that.mVerbose = mVerbose;
-			that.mExec= mExec ;
-			return that;
-		}
-	}
-	
 	private 	ShellOpts	mOpts;
 	
 	private		FunctionDefinitions mFunctions = null;
@@ -918,6 +906,10 @@ public class Shell {
 		return  new FileOutputStream(getFile(file),append);
 	}
 
+	public ShellOpts getOpts()
+	{
+		return mOpts;
+	}
 	
 	
 }

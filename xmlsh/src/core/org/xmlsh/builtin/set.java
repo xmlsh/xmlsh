@@ -11,25 +11,36 @@ import java.util.List;
 
 import javax.xml.stream.XMLStreamWriter;
 
-import org.xml.sax.helpers.AttributesImpl;
 import org.xmlsh.core.BuiltinCommand;
+import org.xmlsh.core.Options;
 import org.xmlsh.core.XEnvironment;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.XVariable;
+import org.xmlsh.core.Options.OptionValue;
 
 public class set extends BuiltinCommand {
 
 	static final String sDocRoot = "env";
 	public int run(   List<XValue> args ) throws Exception {
 		
-		// TODO implement -x -v args
 		
-		
-		if( args == null || args.size() == 0 )	
+		if( args == null || args.size() == 0 )	{
 			printVars(  );
-		else
+			return 0;
+		}
 		
-			mShell.setArgs(args);
+		Options opts = new Options( "+x,+v" , args );
+		
+		for( OptionValue ov : opts.parse() ){
+			
+			mShell.getOpts().set( ov.getOptionDef().name , ov.getFlag() );
+		}
+		
+		
+		
+		args = opts.getRemainingArgs();
+
+		mShell.setArgs(args);
 		return 0;
 	}
 

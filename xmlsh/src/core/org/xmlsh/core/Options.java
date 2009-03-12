@@ -27,15 +27,18 @@ public class Options
 	
 	public static class	OptionDef
 	{
-		public 		String 		name;
-		public		String		longname;
-		public 		boolean		hasArgs;
-		public 		boolean 	hasMulti;
-		public OptionDef( String name , String longname , boolean arg , boolean multi ){
+		public 		String 		name;		// short name typically 1 letter
+		public		String		longname;	// long name/alias
+		public 		boolean		hasArgs;	// expects an argument
+		public 		boolean 	hasMulti;	// may occur multiple times
+		public 		boolean		hasPlus;	// may be preceeded by + 
+		
+		public OptionDef( String name , String longname , boolean arg , boolean multi , boolean plus ){
 			this.name = name;
 			this.longname = longname ;
 			this.hasArgs = arg;
 			this.hasMulti = multi;
+			this.hasPlus = plus;
 		}
 		
 		
@@ -47,14 +50,16 @@ public class Options
 	public static class	OptionValue
 	{
 		private OptionDef		option;
+		private	 boolean		optflag = true; // true if '-' , false if '+'
 		private List<XValue>	values = new ArrayList<XValue>(); // in the case of multiple values possible
 		
-		OptionValue( OptionDef def ) {
+		OptionValue( OptionDef def , boolean flag ) {
 			option = def ;
+			optflag = flag ;
 		}
 		
 		// Set a single value
-		void setValue( XValue v )
+		void setValue( XValue v  )
 		{
 			if( ! option.hasMulti )
 				values.clear();
@@ -86,6 +91,10 @@ public class Options
 			return values;
 		}
 		
+		public boolean getFlag()
+		{
+			return optflag ;
+		}
 		
 	}
 	
@@ -110,6 +119,14 @@ public class Options
 		for( String sdef : adefs ){
 			boolean bHasArgs = false ;
 			boolean bHasMulti = false ;
+			boolean bPlus = false ;
+			
+			if( sdef.startsWith("+")){
+				bPlus = true ;
+				sdef = sdef.substring(1);
+			}
+			else
+			
 			if( sdef.endsWith(":")){
 				sdef = sdef.substring(0,sdef.length()-1);
 				bHasArgs = true ;
@@ -127,9 +144,9 @@ public class Options
 			
 			
 			if( pair.hasDelim() )
-				defs.add( new OptionDef(pair.getLeft() ,  pair.getRight(),bHasArgs,bHasMulti));
+				defs.add( new OptionDef(pair.getLeft() ,  pair.getRight(),bHasArgs,bHasMulti, bPlus));
 			else
-				defs.add( new OptionDef(sdef ,  null , bHasArgs,bHasMulti));
+				defs.add( new OptionDef(sdef ,  null , bHasArgs,bHasMulti, bPlus ));
 			
 		}
 		
@@ -180,15 +197,24 @@ public class Options
 		mOptions = new ArrayList<OptionValue>();
 		
 		
+		
+		
 		for ( Iterator<XValue> I = mArgs.iterator() ; I.hasNext() ; ) {
 			XValue arg = I.next();
 			
-			if( arg.isString() &&  arg.toString().startsWith("-") && ! arg.equals("--")){
-				String a = arg.toString().substring(1);
+			String sarg = ( arg.isString()  ? arg.toString() : null );
+			
+			if( sarg != null &&  (sarg.startsWith("-") || sarg.startsWith("+")) && ! sarg.equals("--")){
+				String a = sarg.substring(1);
+				char flag = sarg.charAt(0);
 				
 				OptionDef def = getOptDef(a);
 				if( def == null )
-					throw new UnknownOption("Unknown option: " + arg);
+					throw new UnknownOption("Unknown option: " + a);
+				
+				if( flag == '+' && ! def.hasPlus )
+					throw new UnknownOption("Option : " + a + " cannot start with +");
+			
 				
 				OptionValue ov = this.getOpt(def);
 				boolean bReuse = (ov != null);
@@ -196,7 +222,7 @@ public class Options
 				if( ov != null && ! def.hasMulti )
 					throw new UnknownOption("Unexpected multiple use of option: " + arg);
 				if( ov == null )
-					ov = new OptionValue(def);
+					ov = new OptionValue(def  , flag == '-');
 				ov.option = def ;
 				if( def.hasArgs ){
 					if( !I.hasNext() )
@@ -228,6 +254,11 @@ public class Options
 		}
 		return mOptions;
 		
+	}
+	
+	public List<OptionValue>	getOpts()
+	{
+		return mOptions ;
 	}
 	
 	public OptionValue getOpt(OptionDef def) {
