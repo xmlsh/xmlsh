@@ -27,6 +27,11 @@ class InputList extends ArrayList<Input>
 		return null;
 	}
 
+	public void serialize(OutputContext c) {
+		for( Input in : this )
+			in.serialize(c);
+	}
+
 }
 
 

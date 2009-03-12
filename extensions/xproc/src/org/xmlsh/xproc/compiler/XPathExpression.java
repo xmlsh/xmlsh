@@ -6,7 +6,7 @@
 
 package org.xmlsh.xproc.compiler;
 
-import java.io.PrintWriter;
+import org.xmlsh.util.Util;
 
 class XPathExpression {
 	String		xpath;		// xpath expression
@@ -26,9 +26,16 @@ class XPathExpression {
 			if( literal )
 				c.addBody( XProcUtil.quote(xpath));
 			else
-				c.addBody(" $(xmlns:p=java:org.xmlsh.xproc.util.XPathFunctions xpath " + XProcUtil.quote(xpath) + "<{_input}) ");
+				c.addBody(" $(xmlns:p=java:org.xmlsh.xproc.util.XPathFunctions xpath " + XProcUtil.quote(xpath) + " <{" + c.getPrimaryInput().getPortVariable()+"} ) ");
 			
 		}
+
+
+
+
+	public boolean isEmpty() {
+		return Util.isEmpty(xpath);
+	}
 	
 	
 }

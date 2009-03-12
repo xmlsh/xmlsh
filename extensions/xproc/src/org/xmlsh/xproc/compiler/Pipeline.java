@@ -31,6 +31,12 @@ import net.sf.saxon.s9api.XdmNode;
 
 class Pipeline extends DeclareStep {
 	
+	static Pipeline create( XdmNode node )
+	{
+		Pipeline step = new Pipeline();
+		step.parse(node);
+		return step;
+	}
 
 	void parse(XdmNode node)
 	{

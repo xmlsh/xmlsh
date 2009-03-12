@@ -146,7 +146,7 @@ class AtomicStep  extends AbstractStep {
 		}
 		
 		// Add Input as "<" or "<<" or "<|" 
-		
+		inputs.serialize( c );
 		
 		
 	}

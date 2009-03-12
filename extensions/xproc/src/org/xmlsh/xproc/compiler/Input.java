@@ -6,14 +6,12 @@
 
 package org.xmlsh.xproc.compiler;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import net.sf.saxon.s9api.Axis;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XdmNodeKind;
 import net.sf.saxon.s9api.XdmSequenceIterator;
+import org.xmlsh.util.Util;
 
 
 /*
@@ -87,9 +85,30 @@ class Input {
 	}
 
 	void serialize(OutputContext c) {
+		
+		if( select == null || select.isEmpty() )
+		{
+			// If this input is the default input and its parent is the same, then dont add
+			// an xread
+			if( ! c.isDerivedInput(this))
+				c.addPreamble("xread " + getPortVariable() );
+			
+		}
+		else
+			c.addPreamble("xpath " + XProcUtil.quote(select.xpath) + " >{" +getPortVariable()  +"}");
+		
+
+		
 		bindings.serialize(c);
+		c.addPreambleLine("");
+		
+		c.addBody(" <{" + getPortVariable() +"}");
 		
 		
+	}
+	String getPortVariable()
+	{
+		return "_" + port;
 	}
 }
 

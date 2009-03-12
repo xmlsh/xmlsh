@@ -17,11 +17,20 @@ public class OutputContext
 	private		StringBuffer	mPreamble = new StringBuffer();
 	private		StringBuffer	mBody= new StringBuffer();
 	private		String			mStepPrefix = "xps";
+	private		Input			mPrimaryInput = null;
+	private 	OutputContext 	mParent = null;
 	
 	
 	public OutputContext()
 	{
 		addPreambleLine("import module " + mStepPrefix + "=org.xmlsh.xproc.steps");
+		
+	}
+	
+	private OutputContext( OutputContext parent )
+	{
+		mParent = parent ;
+		mPrimaryInput = parent.mPrimaryInput;
 		
 	}
 	/*
@@ -32,7 +41,13 @@ public class OutputContext
 		mPreamble.append(s ).append('\n');
 	}
 	
+	public void	addPreamble( String s ){
+		mPreamble.append(s );
+	}
 	
+	/*
+	 * Write line to the body
+	 */
 	public void	addBodyLine(String s ){
 		mBody.append(s ).append('\n');
 	}
@@ -55,6 +70,55 @@ public class OutputContext
 	public String getStepPrefix(){
 		return mStepPrefix;
 	}
+
+	/**
+	 * @return the primaryInput
+	 */
+	public Input getPrimaryInput() {
+		return mPrimaryInput;
+	}
+
+	/**
+	 * @param primaryInput the primaryInput to set
+	 */
+	public void setPrimaryInput(Input primaryInput) {
+		mPrimaryInput = primaryInput;
+	}
+
+	
+	/*
+	 * Push the context to a sub-contest
+	 */
+	OutputContext push() 
+	{
+		OutputContext c = new OutputContext(this);
+		return c;
+	}
+	
+	/*
+	 * Pop the context to its parent
+	 * Both preamble and body get appended to the body of the parent
+	 */
+	OutputContext pop()
+	{
+		mParent.addBody( mPreamble.toString() );
+		mParent.addBody( mBody.toString() );
+		return mParent ;
+		
+	}
+	
+	OutputContext getParent() { return mParent ; }
+	
+	boolean isDerivedInput(Input in) {
+		if( mParent == null )
+			return false ;
+		if( mParent.mPrimaryInput == in)
+			return true ;
+		return false;
+		
+		
+	}
+	
 
 }
 

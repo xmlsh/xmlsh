@@ -33,7 +33,7 @@ class Document extends Binding {
 	@Override
 	void serialize(OutputContext c) {
 		
-		c.addBody("< " + href );
+		c.addPreamble("< " + href );
 		
 	}
 

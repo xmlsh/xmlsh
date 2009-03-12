@@ -10,7 +10,11 @@ _BINDIR=$(xfile -d $0)
 xread suite < $1
 
 for t in <[ $suite/t:test-suite/t:test/@href/string() ]> ; do
-  $_BINDIR/runtest.xsh $t
+  case $t in 
+  required/*)  $_BINDIR/runtest.xsh $t ;;
+  *) : ;;
+  esac
+  
 done
 
 
@@ -22,7 +26,7 @@ pwd
 
 _results=<[ () ]>
 
-for d in required optional ; do
+for d in required  ; do
   cd $d 
   echo <[ <title>{$d}</title> ]> > _title.xml
   xcat -w test-suite _title.xml */result.xml > results.xml 

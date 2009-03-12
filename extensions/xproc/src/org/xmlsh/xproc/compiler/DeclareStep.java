@@ -147,19 +147,28 @@ class DeclareStep {
 
 	void serialize(OutputContext c) {
 		
-
+		Input saveIn = c.getPrimaryInput();
 		for( Namespace ns : namespaces ){
 			c.addPreambleLine("declare namespace " + ns.getPrefix() + "=\"" + ns.getUri() + "\" ");
 		}
-		c.addBodyLine("xread _input");
-		c.addBody(" ( ");
-		subpipeline.serialize(c);
-		c.addBody(" )<{_input} ");
 		Input in =	inputs.getPrimary();
+		c.setPrimaryInput(in);
+//		if( in != null )
+//			c.addBodyLine("xread " + in.getPortVariable() );
+		c.addBody(" ( ");
+		c = c.push();
+		subpipeline.serialize(c);
+		c = c.pop();
+		c.addBody(" )" );
 		
-		if( in != null )
+		if( in != null ){
+			// c.addBody("<{" + in.getPortVariable() +"}");
+
 			in.serialize(c);
+			
+		}
 		
+		c.setPrimaryInput(saveIn);
 			
 		
 	}
