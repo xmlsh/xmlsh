@@ -13,6 +13,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.w3c.dom.Node;
+import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 
 /**
@@ -22,18 +23,20 @@ import org.xmlsh.sh.shell.Shell;
 public class XMLSerializer {
 
     private Transformer mTransformer = null;
+
     
-    public XMLSerializer() throws XMLException  
+    public XMLSerializer(SerializeOpts opts) throws XMLException  
     {
+
 		try
 		{
 			mTransformer = TransformerFactory.newInstance().newTransformer();
 			//mTransformer.setOutputProperty( OutputKeys.DOCTYPE_PUBLIC , "publicID" );
 			//mTransformer.setOutputProperty( OutputKeys.DOCTYPE_SYSTEM , "systemID" );
-			mTransformer.setOutputProperty( OutputKeys.INDENT , "yes" );
-			mTransformer.setOutputProperty( OutputKeys.OMIT_XML_DECLARATION , "yes" );
+			mTransformer.setOutputProperty( OutputKeys.INDENT , opts.isIndent() ? "yes" : "no");
+			mTransformer.setOutputProperty( OutputKeys.OMIT_XML_DECLARATION , opts.isOmit_xml_declaration() ? "yes" : "no" );
 			//mTransformer.setOutputProperty( OutputKeys.STANDALONE , "no" );
-			mTransformer.setOutputProperty( OutputKeys.ENCODING , Shell.getXMLEncoding() );
+			mTransformer.setOutputProperty( OutputKeys.ENCODING , opts.getEncoding() );
 			        
 		}
 		catch (Exception e)
@@ -94,7 +97,7 @@ public class XMLSerializer {
 
 		}
         try {
-			return out.toString(Shell.getXMLEncoding());
+			return out.toString( 	mTransformer.getOutputProperty( OutputKeys.ENCODING ) );
 		} catch (UnsupportedEncodingException e) {
 			throw new XMLException("Exception encoding XML document from UTF-8",e);
 		}

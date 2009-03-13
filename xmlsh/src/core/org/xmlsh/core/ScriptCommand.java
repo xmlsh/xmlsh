@@ -13,6 +13,7 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 
+import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.Util;
 
@@ -32,9 +33,9 @@ public class ScriptCommand implements ICommand {
 		
 	}
 	
-	public ScriptCommand( String script ) throws UnsupportedEncodingException
+	public ScriptCommand( String script , SerializeOpts opts ) throws UnsupportedEncodingException
 	{
-		mScript = Util.toInputStream(script);
+		mScript = Util.toInputStream(script, opts );
 		mSourceMode = true ;
 		
 	}

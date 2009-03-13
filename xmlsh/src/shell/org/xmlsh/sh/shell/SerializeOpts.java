@@ -6,11 +6,16 @@
 
 package org.xmlsh.sh.shell;
 
+import java.nio.charset.Charset;
+
+import org.xmlsh.core.InvalidArgumentException;
+import org.xmlsh.core.XValue;
+
 public class SerializeOpts {
 	private 	boolean		indent	= true ;
 	private		boolean		omit_xml_declaration = true ;
-	private		String		encoding = Shell.getXMLEncoding();
-	
+	private		String		encoding = "UTF-8"; // default encoding
+	private		String 	 	text_encoding = System.getProperty("file.encoding");
 	public SerializeOpts() {}
 	
 	public SerializeOpts( SerializeOpts that ) {
@@ -18,6 +23,7 @@ public class SerializeOpts {
 		indent = that.isIndent();
 		omit_xml_declaration = that.isOmit_xml_declaration();
 		encoding = that.getEncoding();
+		text_encoding = that.text_encoding;
 
 	}
 	
@@ -29,13 +35,7 @@ public class SerializeOpts {
 			indent = value ;
 		
 	}
-	public void set( String name , String value )
-	{
-		if( name.equals("encoding"))
-			encoding = value;
-			
-	}
-
+	
 
 	public boolean isIndent() {
 		return indent;
@@ -50,7 +50,61 @@ public class SerializeOpts {
 	public String getEncoding() {
 		return encoding;
 	}
-	
+
+	/**
+	 * @return the text_encoding
+	 */
+	public String getText_encoding() {
+		return text_encoding;
+	}
+
+
+	public void set(String opt, XValue value) throws InvalidArgumentException {
+		
+		// If 'encoding' set both text and xml encoding
+		// if text-encoding then set text encoding only
+		// if xml-encoding then set xml encoding only 
+		
+		if( opt.equals("text-encoding") || opt.equals("encoding"))
+			setText_encoding(value.toString());
+		
+		if( opt.equals("xml-encoding") || opt.equals("encoding") )
+			setEncoding(value.toString());
+		
+	}
+
+	/**
+	 * @param indent the indent to set
+	 */
+	public void setIndent(boolean indent) {
+		this.indent = indent;
+	}
+
+	/**
+	 * @param omit_xml_declaration the omit_xml_declaration to set
+	 */
+	public void setOmit_xml_declaration(boolean omit_xml_declaration) {
+		this.omit_xml_declaration = omit_xml_declaration;
+	}
+
+	/**
+	 * @param encoding the encoding to set
+	 * @throws InvalidArgumentException 
+	 */
+	public void setEncoding(String enc) throws InvalidArgumentException {
+		
+		if( ! Charset.isSupported(enc))
+			throw new InvalidArgumentException("encoding not supported: " + enc);
+		encoding = enc ;
+
+	}
+	public void setText_encoding(String enc) throws InvalidArgumentException {
+		
+		if( ! Charset.isSupported(enc))
+			throw new InvalidArgumentException("encoding not supported: " + enc);
+		text_encoding = enc ;
+
+	}
 }
 
 

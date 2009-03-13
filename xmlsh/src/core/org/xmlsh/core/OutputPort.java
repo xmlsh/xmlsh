@@ -60,10 +60,9 @@ public abstract class OutputPort extends IPort
 	public abstract Destination asDestination(SerializeOpts opts) throws InvalidArgumentException;
 	
 
-	public synchronized PrintWriter asPrintWriter() throws UnsupportedEncodingException {
+	public synchronized PrintWriter asPrintWriter(SerializeOpts opts) throws UnsupportedEncodingException {
 		return new PrintWriter( 		
-				new OutputStreamWriter(asOutputStream() , 
-						Shell.getTextEncoding() ));
+				new OutputStreamWriter(asOutputStream() , opts.getText_encoding() ));
 	}
 
 	

@@ -104,7 +104,7 @@ public class VariableOutputPort extends OutputPort
 			
 			// else
 			if (mByteArrayOutputStream != null)
-				appendVar( mByteArrayOutputStream.toString(Shell.getTextEncoding()) );
+				appendVar( mByteArrayOutputStream.toString(   ) );
 
 			//else
 			if (mBuilder != null)
@@ -193,10 +193,10 @@ public class VariableOutputPort extends OutputPort
 		
 	}
 
-	public synchronized PrintWriter asPrintWriter() throws UnsupportedEncodingException {
+	public synchronized PrintWriter asPrintWriter(SerializeOpts opts) throws UnsupportedEncodingException {
 		return new PrintWriter( 		
 				new OutputStreamWriter(asOutputStream() , 
-						Shell.getTextEncoding() ));
+						opts.getText_encoding() ));
 	}
 
 	private void appendVar(String string) throws InvalidArgumentException 

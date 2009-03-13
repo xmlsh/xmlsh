@@ -86,7 +86,7 @@ public class xgetopts extends XCommand {
 		}
 		
 		OutputPort stdout = getStdout();
-		new XMLSerializer().write(doc, stdout.asOutputStream());
+		new XMLSerializer(getSerializeOpts() ).write(doc, stdout.asOutputStream());
 		stdout.writeSequenceTerminator();
 		
 		

@@ -4,6 +4,8 @@
 declare namespace t1=http://www.example.org/test1
 declare namespace t2=http://www.example.org/test2
 declare namespace
+# Turn off indentation for this test
+set +indent
 
 echo <[ <t1:test><t2:test>Test</t2:test></t1:test> ]>
 

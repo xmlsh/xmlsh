@@ -45,7 +45,7 @@ public class xuri extends XCommand
 		opts.parse();
 		args = opts.getRemainingArgs();
 		
-		PrintWriter out = getEnv().getStdout().asPrintWriter();
+		PrintWriter out = getEnv().getStdout().asPrintWriter(getSerializeOpts());
 		
 		URI uri = null ;
 		switch( args.size() ){

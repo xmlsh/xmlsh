@@ -30,7 +30,7 @@ public class eval extends BuiltinCommand {
 				
 				
 			}
-			InputStream is = Util.toInputStream(sb.toString());
+			InputStream is = Util.toInputStream(sb.toString(), mShell.getSerializeOpts());
 			return mShell.runScript(is);
 			
 			

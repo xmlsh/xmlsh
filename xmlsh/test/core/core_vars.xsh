@@ -6,6 +6,8 @@ if [ -z "$TMPDIR" -o ! -d "$TMPDIR" ] ; then
 	exit 1;
 fi
 
+# turn off indentation for this test
+set +indent
 
 
 # clear just in case they were exported

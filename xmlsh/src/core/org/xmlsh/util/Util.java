@@ -508,11 +508,11 @@ public class Util
 	}
 
 
-	public static synchronized byte[] getNewline()
+	public static synchronized byte[] getNewline(SerializeOpts opts)
 	{
 		if( Util.mNewline == null ){
 			try {
-				Util.mNewline = System.getProperty("line.separator").getBytes(Shell.getTextEncoding());
+				Util.mNewline = System.getProperty("line.separator").getBytes(opts.getText_encoding());
 			} catch (UnsupportedEncodingException e) {
 				Util.mNewline = new byte[] { '\n' };
 			} 
@@ -557,8 +557,9 @@ public class Util
 	}
 
 
-	public static  ByteArrayInputStream toInputStream(String script) throws UnsupportedEncodingException {
-			return new ByteArrayInputStream(script.getBytes(Shell.getTextEncoding()));
+	public static  ByteArrayInputStream toInputStream(String script,SerializeOpts opts) throws UnsupportedEncodingException {
+			return new ByteArrayInputStream(
+					script.getBytes(opts.getText_encoding()));
 	}
 
 
@@ -595,18 +596,26 @@ public class Util
 
 	public static Destination streamToDestination(OutputStream out, SerializeOpts opts) {
 		
-		Serializer dest = new Serializer();
-		dest.setOutputProperty( Serializer.Property.OMIT_XML_DECLARATION, 
-				opts.isOmit_xml_declaration() ? "yes" : "no");
-		dest.setOutputProperty(Serializer.Property.INDENT , opts.isIndent() ? "yes" : "no");
-		// dest.setOutputProperty(Serializer.Property.VERSION,"1.1");
-		
-		dest.setOutputProperty(Serializer.Property.METHOD, "xml");
-		dest.setOutputProperty(Serializer.Property.ENCODING, opts.getEncoding());
+		Serializer dest = getSerializer(opts);
 		dest.setOutputStream(out);	
 		return dest;
 	}
+	
+	
+	public static Serializer getSerializer(SerializeOpts opts) {
+		
+		Serializer ser = new Serializer();
+		ser.setOutputProperty( Serializer.Property.OMIT_XML_DECLARATION, 
+				opts.isOmit_xml_declaration() ? "yes" : "no");
+		ser.setOutputProperty(Serializer.Property.INDENT , opts.isIndent() ? "yes" : "no");
+		// dest.setOutputProperty(Serializer.Property.VERSION,"1.1");
+		
+		ser.setOutputProperty(Serializer.Property.METHOD, "xml");
+		ser.setOutputProperty(Serializer.Property.ENCODING, opts.getEncoding());
 
+		return ser;
+	}
+	
 
 	
 	

@@ -2,6 +2,8 @@
 
 A=value
 B=attribute
+# turn off indentation for this test
+set +indent
 
 # empty sequence
 echo empty sequence <[()]>

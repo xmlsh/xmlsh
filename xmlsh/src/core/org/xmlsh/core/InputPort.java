@@ -66,7 +66,7 @@ public class InputPort  extends IPort
 			if(  mVariable.getValue().isXExpr() )
 				Util.writeXdmValue( mVariable.getValue().asXdmNode(), Util.streamToDestination(buf,opts));
 			else
-				buf.write(mVariable.getValue().toBytes(Shell.getXMLEncoding()));
+				buf.write(mVariable.getValue().toBytes(opts.getEncoding()));
 			return new ByteArrayInputStream( buf.toByteArray() )	;	
 		}
 		
@@ -129,7 +129,7 @@ public class InputPort  extends IPort
 			if(  mVariable.getValue().isXExpr() )
 				Util.writeXdmValue( mVariable.getValue().asXdmNode(), Util.streamToDestination(out,opts));
 			else
-				out.write(  mVariable.getValue().toString().getBytes( Shell.getTextEncoding() ) );
+				out.write(  mVariable.getValue().toString().getBytes( opts.getText_encoding() ) );
 		}
 			
 	}

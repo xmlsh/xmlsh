@@ -57,7 +57,7 @@ public class EvalScriptCommand extends Command {
 		try {
 		
 			
-			ICommand cmd = new ScriptCommand( mCommand );
+			ICommand cmd = new ScriptCommand( mCommand , shell.getSerializeOpts() );
 			
 			if( cmd == null ){
 				shell.printErr(mCommand + ": not found");

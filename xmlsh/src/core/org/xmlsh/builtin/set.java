@@ -29,11 +29,13 @@ public class set extends BuiltinCommand {
 			return 0;
 		}
 		
-		Options opts = new Options( "+x,+v,+omit-xml-declaration,+indent" , args );
+		Options opts = new Options( "+x,+v,+omit-xml-declaration,+indent,encoding:" , args );
 		
 		for( OptionValue ov : opts.parse() ){
-			
-			mShell.setOption( ov.getOptionDef().name , ov.getFlag() );
+			if( ov.getOptionDef().hasArgs )
+				mShell.setOption( ov.getOptionDef().name , ov.getValue() );
+			else	
+				mShell.setOption( ov.getOptionDef().name , ov.getFlag() );
 		}
 		
 		

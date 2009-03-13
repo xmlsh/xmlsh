@@ -6,10 +6,16 @@
 
 package org.xmlsh.sh.shell;
 
+import java.nio.charset.Charset;
+
+import org.xmlsh.core.InvalidArgumentException;
+import org.xmlsh.core.XValue;
+
 public class ShellOpts 
 {
 	boolean	mVerbose = false;		// -v
 	boolean mExec	 = false;		// -x
+
 	
 	SerializeOpts	 mSerialize;
 	
@@ -21,6 +27,7 @@ public class ShellOpts
 	
 		mVerbose = that.mVerbose;
 		mExec=  that.mExec ;
+
 		mSerialize = new SerializeOpts( that.mSerialize );
 		
 		
@@ -36,6 +43,11 @@ public class ShellOpts
 			mVerbose = on;
 		else
 			mSerialize.set( opt , on);
+		
+	}
+	public void set(String opt, XValue value) throws InvalidArgumentException {
+
+		mSerialize.set( opt , value );
 		
 	}
 	

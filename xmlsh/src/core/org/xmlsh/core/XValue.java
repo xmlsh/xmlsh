@@ -32,6 +32,7 @@ import net.sf.saxon.s9api.XdmValue;
 import net.sf.saxon.value.AtomicValue;
 import org.apache.log4j.Logger;
 import org.w3c.dom.Node;
+import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.Util;
 
@@ -144,8 +145,11 @@ public class XValue {
 			else
 			{
 				ByteArrayOutputStream out = new ByteArrayOutputStream();
-					serialize( out );
-					return out.toByteArray();
+				SerializeOpts opts = new SerializeOpts();
+				opts.setEncoding( encoding );
+				
+				serialize( out , opts );
+				return out.toByteArray();
 				
 				
 			}
@@ -166,7 +170,9 @@ public class XValue {
 			else
 			{
 				try {
-					return new String(toBytes(Shell.getXMLEncoding()),Shell.getXMLEncoding());
+					// The encoding can be anything that is round-tripable the end result
+					// is a String which is encoding neutral
+					return new String(toBytes("UTF-8"),"UTF-8");
 				} catch (UnsupportedEncodingException e) {
 					mLogger.warn("Exception serializing XML value");
 				}
@@ -259,15 +265,13 @@ public class XValue {
 	}
 
 
-	public void serialize(OutputStream out) throws UnsupportedEncodingException, IOException, SaxonApiException 
+	public void serialize(OutputStream out, SerializeOpts opt) throws UnsupportedEncodingException, IOException, SaxonApiException 
 	{
 		if( isString() )
-			out.write( toString().getBytes(Shell.getXMLEncoding()) );
+			out.write( toString().getBytes(opt.getEncoding()) );
 		else {
-			Serializer ser = new Serializer();
+			Serializer ser = Util.getSerializer(opt);
 			ser.setOutputStream( out );
-			ser.setOutputProperty(Serializer.Property.OMIT_XML_DECLARATION, "yes");
-			ser.setOutputProperty(Serializer.Property.METHOD, "xml");
 
 			// Shell.getProcessor().writeXdmValue( mValue, ser);
 			Util.writeXdmValue( mValue , ser );

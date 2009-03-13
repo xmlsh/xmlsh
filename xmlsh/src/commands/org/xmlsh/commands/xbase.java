@@ -90,7 +90,7 @@ public class xbase extends XCommand {
 
 		
 
-		PrintWriter out = getStdout().asPrintWriter();
+		PrintWriter out = getStdout().asPrintWriter(getSerializeOpts());
 		
 		out.println( context.getBaseURI() );
 	

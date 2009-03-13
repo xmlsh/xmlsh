@@ -30,6 +30,7 @@ import org.apache.log4j.Logger;
 import org.xmlsh.core.CommandFactory;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.ICommand;
+import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.Path;
 import org.xmlsh.core.XDynamicVariable;
@@ -224,7 +225,7 @@ public class Shell {
 		
 		InputStream save = mCommandInput;
 		mCommandInput = stream ;
-		ShellParser parser= new ShellParser(new ShellParserReader(mCommandInput,Shell.getTextEncoding()));
+		ShellParser parser= new ShellParser(new ShellParserReader(mCommandInput,getTextEncoding()));
 		int ret = 0;
 		try {
 			while( mExitVal == null && mReturnVal == null ){
@@ -277,6 +278,10 @@ public class Shell {
 	
 	
 	
+	public String getTextEncoding() {
+		return getSerializeOpts().getText_encoding();
+	}
+
 	private		int		interactive() throws UnsupportedEncodingException
 	{
 		mIsInteractive = true ;
@@ -286,7 +291,7 @@ public class Shell {
 		
 		
 		// ShellParser parser= new ShellParser(mCommandInput,Shell.getEncoding());
-		ShellParser parser= new ShellParser(new ShellParserReader(mCommandInput,Shell.getTextEncoding()));
+		ShellParser parser= new ShellParser(new ShellParserReader(mCommandInput,getTextEncoding()));
 		
 		while (mExitVal == null) {
 			
@@ -312,11 +317,11 @@ public class Shell {
 		      } catch (Exception e) {
 		        printErr(e.getMessage());
 		        mLogger.error("Exception parsing statement",e);
-		        parser.ReInit(new ShellParserReader(mCommandInput,Shell.getTextEncoding()));
+		        parser.ReInit(new ShellParserReader(mCommandInput,getTextEncoding()));
 		      } catch (Error e) {
 		        printErr("Error: " + e.getMessage());
 		        mLogger.error("Exception parsing statement",e);
-		        parser.ReInit(new ShellParserReader(mCommandInput,Shell.getTextEncoding()));
+		        parser.ReInit(new ShellParserReader(mCommandInput,getTextEncoding()));
 
 		      } 
 		      
@@ -444,7 +449,7 @@ public class Shell {
 	public void printErr(String s,Exception e) {
 		PrintWriter out;
 		try {
-			out = getEnv().getStderr().asPrintWriter();
+			out = getEnv().getStderr().asPrintWriter(getSerializeOpts());
 		} catch (IOException e1) {
 			mLogger.error("Exception writing output: " + s , e );
 			return ;
@@ -822,16 +827,7 @@ public class Shell {
 		return mModules;
 	}
 	
-	public static String getTextEncoding()
-	{
-		return System.getProperty("file.encoding");
-		
-	}
-	
-	public static String getXMLEncoding()
-	{
-		return "UTF-8";
-	}
+
 
 
 	/*
@@ -914,6 +910,11 @@ public class Shell {
 	public SerializeOpts getSerializeOpts()
 	{
 		return mOpts.mSerialize;
+		
+	}
+
+	public void setOption(String name, XValue value) throws InvalidArgumentException {
+		mOpts.set(name,value);
 		
 	}
 	

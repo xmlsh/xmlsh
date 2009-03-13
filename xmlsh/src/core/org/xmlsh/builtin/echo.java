@@ -34,10 +34,10 @@ public class echo extends BuiltinCommand {
 					out.write(' ');
 				
 				bFirst = false;
-				arg.serialize( out );
+				arg.serialize( out , getSerializeOpts() );
 		}
 		if( ! nolf )
-			out.write(Util.getNewline());
+			out.write(Util.getNewline(getSerializeOpts()));
 		out.flush();
 		return 0;
 	}

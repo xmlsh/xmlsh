@@ -60,7 +60,7 @@ public class xfile extends XCommand
 		
 		boolean opt_sys = opts.hasOpt("s");
 		
-		PrintWriter out = getStdout().asPrintWriter();
+		PrintWriter out = getStdout().asPrintWriter(getSerializeOpts());
 		
 		if( opts.hasOpt("b") )
 			out.println( toSys(xf.getBaseName(),opt_sys));
