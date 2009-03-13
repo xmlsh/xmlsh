@@ -35,7 +35,7 @@ public class xls extends XCommand {
 
 	      
 		OutputPort stdout = getStdout();
-		TransformerHandler hd = stdout.asTransformerHandler();
+		TransformerHandler hd = stdout.asTransformerHandler(getSerializeOpts());
 
 		hd.startDocument();
 		

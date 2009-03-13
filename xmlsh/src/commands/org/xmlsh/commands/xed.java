@@ -121,7 +121,7 @@ public class xed extends XCommand {
 				if( ov != null && ! ov.getValue().toString().equals("-"))
 					context = build( getSource(ov.getValue()));
 				else {
-					context = build(getStdin().asSource());
+					context = build(getStdin().asSource(getSerializeOpts()));
 				}	
 			}
 		}
@@ -208,7 +208,7 @@ public class xed extends XCommand {
 		
 	
 		OutputPort stdout = getStdout();
-		Util.writeXdmValue( context , stdout.asDestination() );
+		Util.writeXdmValue( context , stdout.asDestination(getSerializeOpts()) );
 		stdout.writeSequenceTerminator();
 		
 		return 0;

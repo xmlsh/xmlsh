@@ -108,7 +108,7 @@ public class CommandWord extends Word {
 			 sht.start();
 			
 			 DocumentBuilder builder = Shell.getProcessor().newDocumentBuilder();
-			 XdmNode node = builder.build(pipe.getInput().asSource());
+			 XdmNode node = builder.build(pipe.getInput().asSource(shell.getSerializeOpts()));
 			 
 			if( sht != null )
 				sht.join();

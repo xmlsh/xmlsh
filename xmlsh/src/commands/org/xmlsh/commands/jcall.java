@@ -51,7 +51,7 @@ public class jcall extends XCommand
 			
 			System.setOut(newStdout = getStdout().asPrintStream());
 
-			System.setIn(getStdin().asInputStream()) ;
+			System.setIn(getStdin().asInputStream(getSerializeOpts())) ;
 		
 			String className = args.remove(0).toString();
 			Class<?> cls = Class.forName(className);

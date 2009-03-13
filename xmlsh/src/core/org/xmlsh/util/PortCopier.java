@@ -12,6 +12,7 @@ import java.io.OutputStream;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.xmlsh.core.InputPort;
+import org.xmlsh.sh.shell.SerializeOpts;
 
 public class PortCopier extends Thread
 {
@@ -19,11 +20,12 @@ public class PortCopier extends Thread
 	private		InputPort	mIn;
 	private		OutputStream	mOut;
 	private		boolean			mCloseOut;
-
-	public PortCopier( InputPort in , OutputStream out ,  boolean closeOut )
+	private		SerializeOpts mOpts;
+	public PortCopier( InputPort in , OutputStream out , SerializeOpts opts ,  boolean closeOut )
 	{
 		mIn = in;
 		mOut = out;
+		mOpts = opts;
 		
 		mCloseOut = closeOut;
 		
@@ -37,7 +39,7 @@ public class PortCopier extends Thread
 
 		try {
 			
-			mIn.copyTo(mOut);
+			mIn.copyTo(mOut,mOpts);
 			
 			//mIn.close();
 			//mOut.close();

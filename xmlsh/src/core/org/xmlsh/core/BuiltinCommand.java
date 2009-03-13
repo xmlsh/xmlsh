@@ -9,6 +9,7 @@ package org.xmlsh.core;
 import java.io.File;
 import java.util.List;
 
+import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 
 
@@ -39,6 +40,11 @@ public abstract class BuiltinCommand implements ICommand {
 		mName  = cmd ;
 		return run(args);
 		
+	}
+	
+	protected SerializeOpts getSerializeOpts()
+	{
+		return mShell.getSerializeOpts();
 	}
 
 	

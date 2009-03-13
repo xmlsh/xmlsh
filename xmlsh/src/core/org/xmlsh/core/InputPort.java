@@ -21,6 +21,7 @@ import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XdmNode;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
+import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.SynchronizedInputStream;
 import org.xmlsh.util.Util;
@@ -56,14 +57,14 @@ public class InputPort  extends IPort
 		
 	}
 
-	public	synchronized InputStream asInputStream() throws InvalidArgumentException, SaxonApiException, IOException 
+	public	synchronized InputStream asInputStream(SerializeOpts opts) throws InvalidArgumentException, SaxonApiException, IOException 
 	{
 		if( mStream != null )
 			return mStream == null ? null : new SynchronizedInputStream(mStream);
 		else {
 			ByteArrayOutputStream buf = new ByteArrayOutputStream();
 			if(  mVariable.getValue().isXExpr() )
-				Util.writeXdmValue( mVariable.getValue().asXdmNode(), Util.streamToDestination(buf));
+				Util.writeXdmValue( mVariable.getValue().asXdmNode(), Util.streamToDestination(buf,opts));
 			else
 				buf.write(mVariable.getValue().toBytes(Shell.getXMLEncoding()));
 			return new ByteArrayInputStream( buf.toByteArray() )	;	
@@ -79,38 +80,38 @@ public class InputPort  extends IPort
 		
 	}
 	
-	public synchronized Source asSource() throws InvalidArgumentException, SaxonApiException, IOException
+	public synchronized Source asSource(SerializeOpts opts) throws InvalidArgumentException, SaxonApiException, IOException
 	{
 		if( mVariable != null )
 				return mVariable.getValue().asSource();
 
 		
 		
-		Source s = new StreamSource( asInputStream());
+		Source s = new StreamSource( asInputStream(opts));
 		s.setSystemId(getSystemId());
 		return s;
 	}
 	
 
-	public synchronized XdmNode asXdmNode() throws SaxonApiException, InvalidArgumentException, IOException
+	public synchronized XdmNode asXdmNode(SerializeOpts opts) throws SaxonApiException, InvalidArgumentException, IOException
 	{
 		if( mVariable != null )
 			return mVariable.getValue().asXdmNode() ;
 		
 		
 		net.sf.saxon.s9api.DocumentBuilder builder = Shell.getProcessor().newDocumentBuilder();
-		return builder.build( asSource() );
+		return builder.build( asSource(opts) );
 	}
 
 
 	
-	public synchronized Document asDocument() throws ParserConfigurationException, SAXException, IOException, InvalidArgumentException, SaxonApiException
+	public synchronized Document asDocument(SerializeOpts opts) throws ParserConfigurationException, SAXException, IOException, InvalidArgumentException, SaxonApiException
 	{
 		
 	    DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
 	    domFactory.setNamespaceAware(true); // never forget this!
 	    javax.xml.parsers.DocumentBuilder builder = domFactory.newDocumentBuilder();
-	    return  builder.parse(asInputStream());
+	    return  builder.parse(asInputStream(opts));
 	
 	}
 
@@ -120,13 +121,13 @@ public class InputPort  extends IPort
 		return mStream != null ;
 	}
 
-	public void copyTo(OutputStream out) throws IOException, SaxonApiException, InvalidArgumentException
+	public void copyTo(OutputStream out, SerializeOpts opts ) throws IOException, SaxonApiException, InvalidArgumentException
 	{
 		if( mStream != null )
 			Util.copyStream( mStream , out );
 		else {
 			if(  mVariable.getValue().isXExpr() )
-				Util.writeXdmValue( mVariable.getValue().asXdmNode(), Util.streamToDestination(out));
+				Util.writeXdmValue( mVariable.getValue().asXdmNode(), Util.streamToDestination(out,opts));
 			else
 				out.write(  mVariable.getValue().toString().getBytes( Shell.getTextEncoding() ) );
 		}

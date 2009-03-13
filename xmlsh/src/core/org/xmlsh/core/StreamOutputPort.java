@@ -13,6 +13,7 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 
+import javanet.staxutils.IndentingXMLStreamWriter;
 import javanet.staxutils.OutputFactory;
 
 import javax.xml.stream.XMLOutputFactory;
@@ -23,6 +24,7 @@ import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.sax.TransformerHandler;
 
 import net.sf.saxon.s9api.Destination;
+import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.SynchronizedOutputStream;
 import org.xmlsh.util.Util;
@@ -71,22 +73,14 @@ public class StreamOutputPort extends OutputPort
 	
 	
 	public synchronized void close() throws IOException, InvalidArgumentException {
-		
-			
-
-			if( mStream != null )
-				mStream.close();
-		
-			
-		
-	
-		
+		if( mStream != null )
+			mStream.close();
 	}
 
 
-	public synchronized TransformerHandler asTransformerHandler() throws TransformerConfigurationException, IllegalArgumentException, TransformerFactoryConfigurationError
+	public synchronized TransformerHandler asTransformerHandler(SerializeOpts opts) throws TransformerConfigurationException, IllegalArgumentException, TransformerFactoryConfigurationError
 	{
-		return Util.getTransformerHander(asOutputStream());
+		return Util.getTransformerHander(asOutputStream(), opts );
 	}
 	
 	public synchronized PrintStream asPrintStream()
@@ -94,10 +88,10 @@ public class StreamOutputPort extends OutputPort
 		return new PrintStream(asOutputStream());
 	}
 
-	public synchronized Destination asDestination() throws InvalidArgumentException
+	public synchronized Destination asDestination(SerializeOpts opts) throws InvalidArgumentException
 	{
 
-		return Util.streamToDestination(asOutputStream());
+		return Util.streamToDestination(asOutputStream(), opts);
 	}
 	
 
@@ -130,16 +124,23 @@ public class StreamOutputPort extends OutputPort
 
 
 	@Override
-	public XMLStreamWriter asXMLStreamWriter() throws XMLStreamException {
+	public XMLStreamWriter asXMLStreamWriter(SerializeOpts opts) throws XMLStreamException {
 		/*
 	    XMLInputFactory inputFactory = XMLInputFactory.newInstance();
 	    XMLEventReader eventReader = inputFactory.createXMLEventReader(in);
 		*/
 	// 	XMLOutputFactory fact = XMLOutputFactory.newInstance();
 		XMLOutputFactory fact = new OutputFactory();
-		return fact.createXMLStreamWriter(asOutputStream(), Shell.getXMLEncoding());
+		XMLStreamWriter writer =  fact.createXMLStreamWriter(asOutputStream(), opts.getEncoding() );
 	
-	
+		if( opts.isIndent() )
+			writer = new IndentingXMLStreamWriter(writer);
+		if( opts.isOmit_xml_declaration() )
+			writer = new OmittingXMLStreamWriter( writer );
+		
+		return writer ;
+		
+		
 	}
 	
 	

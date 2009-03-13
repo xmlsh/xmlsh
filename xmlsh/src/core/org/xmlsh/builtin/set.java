@@ -29,11 +29,11 @@ public class set extends BuiltinCommand {
 			return 0;
 		}
 		
-		Options opts = new Options( "+x,+v" , args );
+		Options opts = new Options( "+x,+v,+omit-xml-declaration,+indent" , args );
 		
 		for( OptionValue ov : opts.parse() ){
 			
-			mShell.getOpts().set( ov.getOptionDef().name , ov.getFlag() );
+			mShell.setOption( ov.getOptionDef().name , ov.getFlag() );
 		}
 		
 		
@@ -50,7 +50,7 @@ public class set extends BuiltinCommand {
 		XEnvironment env = mShell.getEnv();
 		
 
-	    XMLStreamWriter writer = env.getStdout().asXMLStreamWriter();
+	    XMLStreamWriter writer = env.getStdout().asXMLStreamWriter(mShell.getSerializeOpts());
 
 	   // writer.writeStartDocument();
 	    writer.writeStartElement( sDocRoot );

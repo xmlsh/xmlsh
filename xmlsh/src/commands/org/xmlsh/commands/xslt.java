@@ -62,7 +62,7 @@ public class xslt extends XCommand {
 					context =  getSource(ov.getValue());
 				else {
 					bReadStdin = true ;
-					context =  getStdin().asSource();
+					context =  getStdin().asSource(getSerializeOpts());
 				}	
 			}
 		}
@@ -79,7 +79,7 @@ public class xslt extends XCommand {
 				if( bReadStdin )
 					throwInvalidArg( "Cannot read both xslt and context from stdin");
 			
-				source = getStdin().asSource();
+				source = getStdin().asSource(getSerializeOpts());
 			}
 			else
 				source =  getSource(fname);
@@ -128,7 +128,7 @@ public class xslt extends XCommand {
 		}
 			
 		OutputPort stdout = getStdout();
-		eval.setDestination(stdout.asDestination());
+		eval.setDestination(stdout.asDestination(getSerializeOpts()));
 		
 		eval.transform();
 		stdout.writeSequenceTerminator();

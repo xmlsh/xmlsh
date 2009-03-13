@@ -41,6 +41,7 @@ import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmValue;
 import net.sf.saxon.trans.XPathException;
 import org.xmlsh.core.XValue;
+import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 
 /**
@@ -365,20 +366,17 @@ public class Util
 		return msg;
 	}
 
-	public static TransformerHandler getTransformerHander(OutputStream stdout)
+	public static TransformerHandler getTransformerHander(OutputStream stdout,SerializeOpts opts)
 	throws TransformerFactoryConfigurationError, TransformerConfigurationException,
 	IllegalArgumentException {
-		return getTransformerHander( new StreamResult(stdout));
+		return getTransformerHander( new StreamResult(stdout),opts);
 	
 	}
 	
-	public static TransformerHandler getTransformerHander(Result result ) throws TransformerConfigurationException, IllegalArgumentException, TransformerFactoryConfigurationError
-	{
-		return getTransformerHander( result,Shell.getXMLEncoding() );
-	}
+
 	
 	
-	public static TransformerHandler getTransformerHander(Result result, String encoding)
+	public static TransformerHandler getTransformerHander(Result result, SerializeOpts opts )
 			throws TransformerFactoryConfigurationError, TransformerConfigurationException,
 			IllegalArgumentException {
 	
@@ -390,10 +388,10 @@ public class Util
 		// SAX2.0 ContentHandler.
 		TransformerHandler hd = tf.newTransformerHandler();
 		Transformer serializer = hd.getTransformer();
-		serializer.setOutputProperty(OutputKeys.ENCODING,encoding	);
+		serializer.setOutputProperty(OutputKeys.ENCODING, opts.getEncoding()	);
 		// serializer.setOutputProperty(OutputKeys.DOCTYPE_SYSTEM,"users.dtd");
-		serializer.setOutputProperty(OutputKeys.INDENT,"yes");
-		serializer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION,"yes");
+		serializer.setOutputProperty(OutputKeys.INDENT, opts.isIndent() ? "yes" : "no");
+		serializer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, opts.isOmit_xml_declaration() ? "yes" : "no");
 		hd.setResult(result);
 		return hd;
 	}
@@ -595,13 +593,16 @@ public class Util
 	}
 
 
-	public static Destination streamToDestination(OutputStream out) {
+	public static Destination streamToDestination(OutputStream out, SerializeOpts opts) {
 		
 		Serializer dest = new Serializer();
-		dest.setOutputProperty( Serializer.Property.OMIT_XML_DECLARATION, "yes");
-		//dest.setOutputProperty(Serializer.Property.INDENT , "yes");
+		dest.setOutputProperty( Serializer.Property.OMIT_XML_DECLARATION, 
+				opts.isOmit_xml_declaration() ? "yes" : "no");
+		dest.setOutputProperty(Serializer.Property.INDENT , opts.isIndent() ? "yes" : "no");
 		// dest.setOutputProperty(Serializer.Property.VERSION,"1.1");
+		
 		dest.setOutputProperty(Serializer.Property.METHOD, "xml");
+		dest.setOutputProperty(Serializer.Property.ENCODING, opts.getEncoding());
 		dest.setOutputStream(out);	
 		return dest;
 	}

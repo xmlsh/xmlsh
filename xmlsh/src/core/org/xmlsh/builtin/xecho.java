@@ -23,7 +23,7 @@ public class xecho extends BuiltinCommand {
 	
 	public int run( List<XValue> args ) throws Exception {
 		OutputPort stdout = mShell.getEnv().getStdout();
-		Destination dest =  stdout.asDestination();
+		Destination dest =  stdout.asDestination(mShell.getSerializeOpts());
 
 		Processor  processor  = Shell.getProcessor();
 		

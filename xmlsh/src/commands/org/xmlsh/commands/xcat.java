@@ -84,7 +84,7 @@ public class xcat extends XCommand {
 		
 		
 		if( context == null && ! hasFiles ){
-			context = getStdin().asXdmNode();
+			context = getStdin().asXdmNode(getSerializeOpts());
 		}
 		
 		
@@ -186,7 +186,7 @@ public class xcat extends XCommand {
 		}	
 		
 		OutputPort stdout = getStdout();
-		eval.run(stdout.asDestination());
+		eval.run(stdout.asDestination(getSerializeOpts()));
 		stdout.writeSequenceTerminator();
 		
 		return 0;

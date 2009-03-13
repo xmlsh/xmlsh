@@ -84,7 +84,7 @@ public class xbase extends XCommand {
 			if( ov != null && ! ov.getValue().toString().equals("-"))
 				context = build( getSource(ov.getValue()));
 			else {
-				context = build(getStdin().asSource());
+				context = build(getStdin().asSource(getSerializeOpts()));
 			}	
 		}
 

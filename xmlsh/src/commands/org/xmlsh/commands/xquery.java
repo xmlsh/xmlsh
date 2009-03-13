@@ -64,7 +64,7 @@ public class xquery extends XCommand {
 					context = builder.build( getSource(ov.getValue()));
 				else {
 					bReadStdin = true ;
-					context = getStdin().asXdmNode();
+					context = getStdin().asXdmNode(getSerializeOpts());
 				}	
 			}
 		}
@@ -88,7 +88,7 @@ public class xquery extends XCommand {
 				if( bReadStdin )
 					throwInvalidArg(  "Cannot read both query and context from stdin");
 			
-				query = Util.readString(getStdin().asInputStream());
+				query = Util.readString(getStdin().asInputStream(getSerializeOpts()));
 			}
 			else {
 				URI  qfile = getURI(fname);
@@ -171,7 +171,7 @@ public class xquery extends XCommand {
 	// 	eval.run(getStdout().asDestination());
 
 		OutputPort stdout = getStdout();
-		Destination ser = stdout.asDestination();
+		Destination ser = stdout.asDestination(getSerializeOpts());
 		boolean bFirst = true ;
 		boolean bAnyOut = false ;
 		for( XdmItem item : eval ){

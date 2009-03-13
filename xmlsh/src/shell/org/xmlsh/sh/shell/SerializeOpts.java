@@ -6,42 +6,53 @@
 
 package org.xmlsh.sh.shell;
 
-public class ShellOpts 
-{
-	boolean	mVerbose = false;		// -v
-	boolean mExec	 = false;		// -x
+public class SerializeOpts {
+	private 	boolean		indent	= true ;
+	private		boolean		omit_xml_declaration = true ;
+	private		String		encoding = Shell.getXMLEncoding();
 	
-	SerializeOpts	 mSerialize;
+	public SerializeOpts() {}
 	
-	public ShellOpts( ) {
-		mSerialize = new SerializeOpts();
+	public SerializeOpts( SerializeOpts that ) {
+		
+		indent = that.isIndent();
+		omit_xml_declaration = that.isOmit_xml_declaration();
+		encoding = that.getEncoding();
+
 	}
-	public ShellOpts( ShellOpts that )
+	
+	public void set( String name , boolean value )
 	{
-	
-		mVerbose = that.mVerbose;
-		mExec=  that.mExec ;
-		mSerialize = new SerializeOpts( that.mSerialize );
-		
+		if( name.equals("omit-xml-declaration" ) )
+			omit_xml_declaration = value;
+		if( name.equals("indent"))
+			indent = value ;
 		
 	}
-	
-	
-	public void set( String opt , boolean on)
+	public void set( String name , String value )
 	{
-		if( opt.equals("x"))
-			mExec = on;
-		else
-		if( opt.equals("v"))
-			mVerbose = on;
-		else
-			mSerialize.set( opt , on);
-		
+		if( name.equals("encoding"))
+			encoding = value;
+			
 	}
+
+
+	public boolean isIndent() {
+		return indent;
+	}
+
 	
-	
+	public boolean isOmit_xml_declaration() {
+		return omit_xml_declaration;
+	}
+
+
+	public String getEncoding() {
+		return encoding;
+	}
 	
 }
+
 
 
 //

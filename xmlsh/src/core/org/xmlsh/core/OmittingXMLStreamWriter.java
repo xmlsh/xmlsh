@@ -1,53 +1,28 @@
 /**
- * $Id$
- * $Date$
+ * $Id: $
+ * $Date: $
  *
  */
 
-package org.xmlsh.commands;
+package org.xmlsh.core;
 
-import java.util.List;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
 
-import javax.xml.transform.sax.TransformerHandler;
+import javanet.staxutils.helpers.StreamWriterDelegate;
 
-import org.xmlsh.core.OutputPort;
-import org.xmlsh.core.XCommand;
-import org.xmlsh.core.XValue;
-import org.xmlsh.types.XFile;
+public class OmittingXMLStreamWriter extends StreamWriterDelegate {
 
-
-public class xpwd extends XCommand
-{
-	
-	
-	
-	
-	public int run(  List<XValue> args )	throws Exception
-	{
-		
-
-		XFile file = new XFile(getCurdir());
-		
-
-		OutputPort stdout = getStdout();
-		TransformerHandler hd = stdout.asTransformerHandler(getSerializeOpts());
-		
-		hd.startDocument();
-		
-		
-		file.serialize(hd,false);
-		
-		hd.endDocument();
-		stdout.writeSequenceTerminator();
-		
-		
-		
-		
-		return 0;
-		
+	protected OmittingXMLStreamWriter(XMLStreamWriter out) {
+		super(out);
+		// TODO Auto-generated constructor stub
 	}
-	
+    public void writeStartDocument() throws XMLStreamException {
+        // 
+    }
 }
+
+
 
 //
 //

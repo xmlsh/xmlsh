@@ -94,7 +94,7 @@ public class xml2csv extends XCommand
 				if( ov != null && ! ov.getValue().toString().equals("-"))
 					context = builder.build( getSource(ov.getValue()));
 				else {
-					context =  getStdin().asXdmNode();
+					context =  getStdin().asXdmNode(getSerializeOpts());
 				}	
 			}
 		}

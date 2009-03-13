@@ -64,7 +64,7 @@ public class xpath extends XCommand {
 				if( ov != null && ! ov.getValue().toString().equals("-"))
 					context = builder.build( getSource(ov.getValue()));
 				else {
-					context = getStdin().asXdmNode();
+					context = getStdin().asXdmNode(getSerializeOpts());
 				}	
 			}
 		}
@@ -157,7 +157,7 @@ public class xpath extends XCommand {
 		}
 				
 		OutputPort stdout = getStdout();
-		Destination ser = stdout.asDestination();
+		Destination ser = stdout.asDestination(getSerializeOpts());
 		boolean bAnyOutput = false ;
 		boolean bFirst = true ;
 		

@@ -29,7 +29,7 @@ public class xread extends BuiltinCommand {
 		
 		mShell.getEnv().unsetVar(args.get(0).toString());
 
-		XdmNode node = mShell.getEnv().getStdin().asXdmNode();
+		XdmNode node = mShell.getEnv().getStdin().asXdmNode(getSerializeOpts());
 		mShell.getEnv().setVar(
 				new XVariable(args.get(0).toString(), new XValue(node)));
 

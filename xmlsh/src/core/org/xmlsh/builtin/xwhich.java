@@ -51,7 +51,7 @@ public class xwhich extends BuiltinCommand {
 		
 		if( !bNoWrite ){
 
-			hd = stdout.asTransformerHandler();
+			hd = stdout.asTransformerHandler(mShell.getSerializeOpts());
 	
 			hd.startDocument();
 			

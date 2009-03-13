@@ -36,6 +36,7 @@ import net.sf.saxon.s9api.XdmDestination;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.tinytree.TinyBuilder;
+import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.Util;
 import org.xmlsh.util.XMLEventWriterBuffer;
@@ -140,14 +141,14 @@ public class VariableOutputPort extends OutputPort
 	}
 
 
-	public synchronized TransformerHandler asTransformerHandler() throws TransformerConfigurationException, IllegalArgumentException, TransformerFactoryConfigurationError
+	public synchronized TransformerHandler asTransformerHandler(SerializeOpts opts) throws TransformerConfigurationException, IllegalArgumentException, TransformerFactoryConfigurationError
 	{
 			
 			mBuilder = new TinyBuilder();
 	        PipelineConfiguration pipe = Shell.getProcessor().getUnderlyingConfiguration().makePipelineConfiguration();
 	        mBuilder.setPipelineConfiguration(pipe);
 	            
-			return Util.getTransformerHander(mBuilder);
+			return Util.getTransformerHander(mBuilder,opts);
 			
 	}
 	
@@ -156,7 +157,7 @@ public class VariableOutputPort extends OutputPort
 		return new PrintStream(asOutputStream());
 	}
 
-	public synchronized Destination asDestination() throws InvalidArgumentException
+	public synchronized Destination asDestination(SerializeOpts opts) throws InvalidArgumentException
 	{
 			// mVariable.clear();
 			mXdmDestination = newXdmDestination();
@@ -256,7 +257,7 @@ public class VariableOutputPort extends OutputPort
 
 
 	@Override
-	public XMLStreamWriter asXMLStreamWriter() throws XMLStreamException, TransformerConfigurationException, IllegalArgumentException, TransformerFactoryConfigurationError {
+	public XMLStreamWriter asXMLStreamWriter(SerializeOpts opts) throws XMLStreamException, TransformerConfigurationException, IllegalArgumentException, TransformerFactoryConfigurationError {
 		mWriterBuffer = new XMLEventWriterBuffer(); 
 		return new XMLEventStreamWriter(mWriterBuffer);
 	}

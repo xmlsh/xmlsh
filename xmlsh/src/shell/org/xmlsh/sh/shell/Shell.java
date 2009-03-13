@@ -162,7 +162,7 @@ public class Shell {
 	 */
 	private Shell( Shell that ) throws IOException
 	{
-		mOpts = that.mOpts.clone();
+		mOpts = new ShellOpts(that.mOpts);
 		mEnv = that.getEnv().clone(this) ;
 		mCommandInput = that.mCommandInput;
 		mArg0 = that.mArg0;
@@ -906,9 +906,15 @@ public class Shell {
 		return  new FileOutputStream(getFile(file),append);
 	}
 
-	public ShellOpts getOpts()
+
+	public void setOption(String name, boolean flag) {
+		mOpts.set(name,flag);
+		
+	}
+	public SerializeOpts getSerializeOpts()
 	{
-		return mOpts;
+		return mOpts.mSerialize;
+		
 	}
 	
 	

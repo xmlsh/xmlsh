@@ -18,6 +18,7 @@ import java.util.List;
 
 import javax.xml.transform.Source;
 
+import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 
 public abstract class XCommand implements ICommand {
@@ -179,6 +180,12 @@ public abstract class XCommand implements ICommand {
 	 */
 	public void printErr(String s) {
 		mEnvironment.printErr(s);
+	}
+
+
+
+	protected SerializeOpts getSerializeOpts() {
+		return mEnvironment.getShell().getSerializeOpts();
 	}
 	
 	

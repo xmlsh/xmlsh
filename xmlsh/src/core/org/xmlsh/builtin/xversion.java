@@ -23,7 +23,7 @@ public class xversion extends BuiltinCommand {
 	
 	      
 		OutputPort stdout = mShell.getEnv().getStdout();
-		TransformerHandler hd = stdout.asTransformerHandler();
+		TransformerHandler hd = stdout.asTransformerHandler(getSerializeOpts());
 
 	
 		hd.startDocument();

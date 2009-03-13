@@ -20,6 +20,7 @@ import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.sax.TransformerHandler;
 
 import net.sf.saxon.s9api.Destination;
+import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 
 /*
@@ -38,7 +39,7 @@ public abstract class OutputPort extends IPort
 	 * Standard input stream - created on first request
 	 */
 	
-	public	abstract OutputStream asOutputStream() ;
+	public	abstract OutputStream asOutputStream();
 
 	public abstract void flush() throws IOException, CoreException;
 	
@@ -48,7 +49,7 @@ public abstract class OutputPort extends IPort
 	
 
 
-	public abstract TransformerHandler asTransformerHandler() throws TransformerConfigurationException, IllegalArgumentException, TransformerFactoryConfigurationError;
+	public abstract TransformerHandler asTransformerHandler(SerializeOpts opts) throws TransformerConfigurationException, IllegalArgumentException, TransformerFactoryConfigurationError;
 	
 	
 	public synchronized PrintStream asPrintStream()
@@ -56,7 +57,7 @@ public abstract class OutputPort extends IPort
 		return new PrintStream(asOutputStream());
 	}
 
-	public abstract Destination asDestination() throws InvalidArgumentException;
+	public abstract Destination asDestination(SerializeOpts opts) throws InvalidArgumentException;
 	
 
 	public synchronized PrintWriter asPrintWriter() throws UnsupportedEncodingException {
@@ -71,7 +72,7 @@ public abstract class OutputPort extends IPort
 	
 
 	public abstract void writeSequenceTerminator() throws IOException ;
-	public abstract XMLStreamWriter asXMLStreamWriter() throws XMLStreamException, TransformerConfigurationException, IllegalArgumentException, TransformerFactoryConfigurationError;
+	public abstract XMLStreamWriter asXMLStreamWriter(SerializeOpts opts) throws XMLStreamException, TransformerConfigurationException, IllegalArgumentException, TransformerFactoryConfigurationError;
 	
 
 }

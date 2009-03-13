@@ -28,7 +28,8 @@ A=$(xquery -i $TF 'distinct-values(//AUTHOR)')
 rm $TF
 
 # Replace a full element from a in-core document
-
+# Turn off indentation for the following tests
+set +indent
 X=<[
 <root>
    <foo a="attr">bar</foo>

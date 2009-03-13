@@ -1,4 +1,6 @@
 # test of xquery
+# Turn off indentation for this test
+set +indent
 
 D1=<[
 document {
