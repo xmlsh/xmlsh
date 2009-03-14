@@ -6,25 +6,18 @@
 
 package org.xmlsh.core;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Source;
-import javax.xml.transform.stream.StreamSource;
 
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XdmNode;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 import org.xmlsh.sh.shell.SerializeOpts;
-import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.util.SynchronizedInputStream;
-import org.xmlsh.util.Util;
 
 /*
  * An InputPort represents an input source of data, either Stream (bytes) or XML data
@@ -32,107 +25,35 @@ import org.xmlsh.util.Util;
  */
 
 
-public class InputPort  extends IPort
+public abstract class InputPort  extends IPort
 {
 	
-	// An Input Port may be either a Stream or an XML value
-	private InputStream	 mStream;
-	private	 XVariable	mVariable;
-	
-
-
-
-
-	public InputPort( InputStream is  ) 
-	{
-		mStream = is;
-	}
-
-	/*
-	 * Standard input stream - created on first request
-	 */
-	
-	public InputPort(XVariable value) {
-		mVariable = value ;
-		
-	}
-
-	public	synchronized InputStream asInputStream(SerializeOpts opts) throws InvalidArgumentException, SaxonApiException, IOException 
-	{
-		if( mStream != null )
-			return mStream == null ? null : new SynchronizedInputStream(mStream);
-		else {
-			ByteArrayOutputStream buf = new ByteArrayOutputStream();
-			if(  mVariable.getValue().isXExpr() )
-				Util.writeXdmValue( mVariable.getValue().asXdmNode(), Util.streamToDestination(buf,opts));
-			else
-				buf.write(mVariable.getValue().toBytes(opts.getEncoding()));
-			return new ByteArrayInputStream( buf.toByteArray() )	;	
-		}
-		
-	}
-
-	public synchronized void close() throws IOException {
-
-		if( mStream != null )
-			mStream.close();
-		
-		
-	}
-	
-	public synchronized Source asSource(SerializeOpts opts) throws InvalidArgumentException, SaxonApiException, IOException
-	{
-		if( mVariable != null )
-				return mVariable.getValue().asSource();
-
-		
-		
-		Source s = new StreamSource( asInputStream(opts));
-		s.setSystemId(getSystemId());
-		return s;
-	}
-	
-
-	public synchronized XdmNode asXdmNode(SerializeOpts opts) throws SaxonApiException, InvalidArgumentException, IOException
-	{
-		if( mVariable != null )
-			return mVariable.getValue().asXdmNode() ;
-		
-		
-		net.sf.saxon.s9api.DocumentBuilder builder = Shell.getProcessor().newDocumentBuilder();
-		return builder.build( asSource(opts) );
-	}
 
 
 	
-	public synchronized Document asDocument(SerializeOpts opts) throws ParserConfigurationException, SAXException, IOException, InvalidArgumentException, SaxonApiException
-	{
-		
-	    DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
-	    domFactory.setNamespaceAware(true); // never forget this!
-	    javax.xml.parsers.DocumentBuilder builder = domFactory.newDocumentBuilder();
-	    return  builder.parse(asInputStream(opts));
+
+	public	abstract InputStream asInputStream(SerializeOpts opts) throws InvalidArgumentException, SaxonApiException, IOException ;
 	
-	}
+
+	public abstract void close() throws IOException ;
+	
+	
+	public abstract Source asSource(SerializeOpts opts) throws InvalidArgumentException, SaxonApiException, IOException;
+	
+
+	public abstract XdmNode asXdmNode(SerializeOpts opts) throws SaxonApiException, InvalidArgumentException, IOException;
+	
 
 
-	public boolean isStream()
-	{
-		return mStream != null ;
-	}
+	
+	public abstract Document asDocument(SerializeOpts opts) throws ParserConfigurationException, SAXException, IOException, InvalidArgumentException, SaxonApiException;
+	
 
-	public void copyTo(OutputStream out, SerializeOpts opts ) throws IOException, SaxonApiException, InvalidArgumentException
-	{
-		if( mStream != null )
-			Util.copyStream( mStream , out );
-		else {
-			if(  mVariable.getValue().isXExpr() )
-				Util.writeXdmValue( mVariable.getValue().asXdmNode(), Util.streamToDestination(out,opts));
-			else
-				out.write(  mVariable.getValue().toString().getBytes( opts.getText_encoding() ) );
-		}
-			
-	}
+
+	public abstract boolean isStream();
+
+	public  abstract void copyTo(OutputStream out, SerializeOpts opts ) throws IOException, SaxonApiException, InvalidArgumentException;
+	
 	
 	
 	

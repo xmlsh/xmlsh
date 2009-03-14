@@ -71,12 +71,12 @@ public class XIOEnvironment {
 	 * @throws IOException 
 	 */
 	public void setStdin(InputStream in) throws CoreException {
-		setStdin( new InputPort(in));
+		setStdin( new StreamInputPort(in));
 	}
 
 	public void setStdin(XVariable variable) throws CoreException {
 		
-		setStdin( new InputPort(variable));
+		setStdin( new VariableInputPort(variable));
 	}
 	
 	
@@ -185,7 +185,7 @@ public class XIOEnvironment {
 	public void initStdio() throws IOException {
 
 		mInputs.add( 
-				new NamedPort<InputPort>( null , true , new InputPort(System.in) )
+				new NamedPort<InputPort>( null , true , new StreamInputPort(System.in) )
 		);
 
 		mOutputs.add( 
