@@ -60,7 +60,7 @@ public class StAXUtils {
 	
 			
 			// Child nodes 
-			iter = node.iterateAxis(Axis.DESCENDANT);
+			iter = node.iterateAxis(Axis.CHILD);
 			while( ( item = iter.next() ) != null ){
 				NodeInfo child = (NodeInfo) item ;
 				copy( child , writer );
@@ -93,7 +93,7 @@ public class StAXUtils {
 		case	Type.DOCUMENT :
 		{
 			// writer.writeStartDocument();
-			AxisIterator iter = node.iterateAxis(Axis.DESCENDANT);
+			AxisIterator iter = node.iterateAxis(Axis.CHILD);
 			Item item;
 			while( ( item = iter.next() ) != null ){
 				NodeInfo child = (NodeInfo) item ;

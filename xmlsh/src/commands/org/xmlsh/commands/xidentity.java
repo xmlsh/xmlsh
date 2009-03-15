@@ -24,7 +24,8 @@ public class xidentity extends XCommand {
 		SerializeOpts opts = getSerializeOpts();
 		XMLEventReader	reader = getStdin().asXMLEventReader(opts);
 		XMLEventWriter  writer = getStdout().asXMLEventWriter(opts);
-	
+		//XdmNode node = getStdin().asXdmNode(opts);
+		//StAXUtils.copy( node.getUnderlyingNode() , writer );
 		writer.add(reader);
 		reader.close();
 		writer.close();

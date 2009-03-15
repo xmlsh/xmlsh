@@ -17,6 +17,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.Source;
 
+import net.sf.saxon.om.NodeInfo;
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XdmNode;
 import org.xmlsh.sh.shell.SerializeOpts;
@@ -98,7 +99,9 @@ public class VariableInputPort extends InputPort {
 		
 		
 		XMLEventWriterBuffer buffer = new XMLEventWriterBuffer();
-		StAXUtils.copy( mVariable.getValue().asXdmNode().getUnderlyingNode(), buffer);
+		NodeInfo node = mVariable.getValue().asXdmNode().getUnderlyingNode();
+		
+		StAXUtils.copy( node , buffer);
 		
 		
 		//return XMLInputFactory.newInstance().createXMLStreamReader( buffer.getReader() );
