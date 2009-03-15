@@ -14,7 +14,13 @@ if [ -f out/${1}.out ] ; then
 	xcmp -b _out.txt out/${1}.out 
 	if [ $? -ne 0 ] ; then
 		echo $1 out/${1}.out different output
-		#/mks/mksnt/mv _out.txt ${1}.txt
+		exit 1
+	fi
+	rm _out.txt
+elif [ -f out/${1}.xml ] ; then 
+	xcmp -x -b _out.txt out/${1}.xml 
+	if [ $? -ne 0 ] ; then
+		echo $1 out/${1}.xml different output
 		exit 1
 	fi
 	rm _out.txt

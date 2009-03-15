@@ -8,15 +8,15 @@ package org.xmlsh.commands;
 
 import java.util.List;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
+
+import net.sf.saxon.s9api.XdmNode;
 import org.xmlsh.core.Options;
-import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.Options.OptionValue;
-import org.xmlsh.util.XMLFactory;
-import org.xmlsh.util.XMLSerializer;
+import org.xmlsh.util.StAXUtils;
 
 public class xgetopts extends XCommand {
 
@@ -33,8 +33,7 @@ public class xgetopts extends XCommand {
 			return 1;
 		}
 		
-		XMLFactory fact = new XMLFactory();
-		Document doc = fact.newDocument();
+		XMLStreamWriter out = this.getStdout().asXMLStreamWriter(getSerializeOpts());
 		
 			
 		String def =  args.remove(0).toString();
@@ -43,54 +42,62 @@ public class xgetopts extends XCommand {
 		List<OptionValue>  options = opts.parse();
 		args = opts.getRemainingArgs();
 		
-		Element root = doc.createElement(kROOT);
-		doc.appendChild(root);
-		
-		Element eoptions = doc.createElement(kOPTIONS);
-		root.appendChild(eoptions);
+		out.writeStartDocument();
+		out.writeStartElement(kROOT);
+
+		out.writeStartElement(kOPTIONS);
 
 		
 		for( OptionValue option : options ){
-			Element eoption = doc.createElement(kOPTION);
-			eoption.setAttribute("name",option.getOptionDef().name);
+			out.writeStartElement(kOPTION);
+			out.writeAttribute("name",option.getOptionDef().name);
+			
 			if( option.getOptionDef().hasArgs  ){
 				for( XValue value : option.getValues() ) {
-					Element evalue = doc.createElement( kVALUE );
+					out.writeStartElement( kVALUE );
 					
 					
 					if( value.isAtomic())
-						evalue.setTextContent( value.toString());
+						out.writeCharacters(value.toString());
 					else
-						evalue.appendChild( doc.importNode(value.asNodeWithDoc(),true) );
+						write( out , value.asXdmNode() );
+					out.writeEndElement();
+					
 
-					eoption.appendChild(evalue);
 				}
 			}
-			eoptions.appendChild(eoption);
+			out.writeEndElement();
 			
 		}
-		
-		Element eargs = doc.createElement(kARGS);
-		root.appendChild(eargs);
+		out.writeEndElement();
+		out.writeStartElement( kARGS );
+
 		
 		for( XValue value : opts.getRemainingArgs() ){
-			Element eo = doc.createElement(kARG );
-			
+			out.writeStartElement(kARG);
+				
 
 			if( value.isAtomic())
-				eo.setTextContent( value.toString());
+				out.writeCharacters( value.toString());
 			else
-				eo.appendChild( doc.importNode(value.asNodeWithDoc(),true) );
+				write( out , value.asXdmNode() );
 			
-			eargs.appendChild(eo);
+			out.writeEndElement();
 		}
 		
-		OutputPort stdout = getStdout();
-		new XMLSerializer(getSerializeOpts() ).write(doc, stdout.asOutputStream());
-		stdout.writeSequenceTerminator();
+		out.writeEndDocument();
+		out.close();
 		
 		
 		return 0;
+	}
+
+	private void write(XMLStreamWriter out, XdmNode node) throws XMLStreamException {
+		
+		StAXUtils.copy( node.getUnderlyingNode() , out );
+		// XMLStreamUtils.copy( node.asSource() , out );
+
+		
 	}
 
 	private void usage() {

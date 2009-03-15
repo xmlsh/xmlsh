@@ -15,7 +15,9 @@ import java.io.UnsupportedEncodingException;
 
 import javanet.staxutils.IndentingXMLStreamWriter;
 import javanet.staxutils.OutputFactory;
+import javanet.staxutils.XMLStreamEventWriter;
 
+import javax.xml.stream.XMLEventWriter;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
@@ -129,8 +131,8 @@ public class StreamOutputPort extends OutputPort
 	    XMLInputFactory inputFactory = XMLInputFactory.newInstance();
 	    XMLEventReader eventReader = inputFactory.createXMLEventReader(in);
 		*/
-	// 	XMLOutputFactory fact = XMLOutputFactory.newInstance();
-		XMLOutputFactory fact = new OutputFactory();
+		XMLOutputFactory fact = XMLOutputFactory.newInstance();
+	// XMLOutputFactory fact = new OutputFactory();
 		XMLStreamWriter writer =  fact.createXMLStreamWriter(asOutputStream(), opts.getEncoding() );
 	
 		if( opts.isIndent() )
@@ -140,6 +142,19 @@ public class StreamOutputPort extends OutputPort
 		
 		return writer ;
 		
+		
+	}
+
+
+
+
+	@Override
+	public XMLEventWriter asXMLEventWriter(SerializeOpts opts) throws InvalidArgumentException {
+		try {
+			return new XMLStreamEventWriter( asXMLStreamWriter(opts));
+		} catch (Exception e) {
+			throw new InvalidArgumentException(e);
+		}
 		
 	}
 	

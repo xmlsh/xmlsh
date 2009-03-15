@@ -4,22 +4,35 @@
  *
  */
 
-package org.xmlsh.core;
+package org.xmlsh.commands;
 
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
+import java.util.List;
 
-import javanet.staxutils.helpers.StreamWriterDelegate;
+import javax.xml.stream.XMLEventReader;
+import javax.xml.stream.XMLEventWriter;
 
-public class OmittingXMLStreamWriter extends StreamWriterDelegate {
+import org.xmlsh.core.XCommand;
+import org.xmlsh.core.XValue;
+import org.xmlsh.sh.shell.SerializeOpts;
 
-	public OmittingXMLStreamWriter(XMLStreamWriter out) {
-		super(out);
-		// TODO Auto-generated constructor stub
+public class xidentity extends XCommand {
+
+
+	@Override
+	public int run(List<XValue> args) throws Exception {
+		
+		SerializeOpts opts = getSerializeOpts();
+		XMLEventReader	reader = getStdin().asXMLEventReader(opts);
+		XMLEventWriter  writer = getStdout().asXMLEventWriter(opts);
+	
+		writer.add(reader);
+		reader.close();
+		writer.close();
+		return 0;
+		
+		
 	}
-    public void writeStartDocument() throws XMLStreamException {
-        // 
-    }
+
 }
 
 

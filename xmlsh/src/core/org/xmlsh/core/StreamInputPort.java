@@ -10,15 +10,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.stream.XMLEventReader;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XdmNode;
-import org.w3c.dom.Document;
-import org.xml.sax.SAXException;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.SynchronizedInputStream;
@@ -68,17 +67,7 @@ public class StreamInputPort extends InputPort {
 		return builder.build(asSource(opts));
 	}
 
-	public synchronized Document asDocument(SerializeOpts opts)
-			throws ParserConfigurationException, SAXException, IOException,
-			InvalidArgumentException, SaxonApiException {
-
-		DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
-		domFactory.setNamespaceAware(true); // never forget this!
-		javax.xml.parsers.DocumentBuilder builder = domFactory.newDocumentBuilder();
-		return builder.parse(asInputStream(opts));
-
-	}
-
+	
 	public boolean isStream() {
 		return true;
 	}
@@ -88,6 +77,26 @@ public class StreamInputPort extends InputPort {
 
 		Util.copyStream(mStream, out);
 
+	}
+
+	@Override
+	public XMLEventReader asXMLEventReader(SerializeOpts opts) throws CoreException {
+		try {
+		return XMLInputFactory.newInstance().createXMLEventReader(asInputStream(opts));
+		} catch (Exception e)
+		{
+			throw new CoreException( e );
+		}
+	}
+
+	@Override
+	public XMLStreamReader asXMLStreamReader(SerializeOpts opts) throws CoreException {
+		try {
+			return XMLInputFactory.newInstance().createXMLStreamReader(asInputStream(opts));
+			} catch (Exception e)
+			{
+				throw new CoreException( e );
+			}
 	}
 
 }

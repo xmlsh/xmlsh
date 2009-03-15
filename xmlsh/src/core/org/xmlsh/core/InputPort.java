@@ -10,13 +10,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.stream.XMLEventReader;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.Source;
 
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XdmNode;
-import org.w3c.dom.Document;
-import org.xml.sax.SAXException;
 import org.xmlsh.sh.shell.SerializeOpts;
 
 /*
@@ -44,15 +44,14 @@ public abstract class InputPort  extends IPort
 	public abstract XdmNode asXdmNode(SerializeOpts opts) throws SaxonApiException, InvalidArgumentException, IOException;
 	
 
-
-	
-	public abstract Document asDocument(SerializeOpts opts) throws ParserConfigurationException, SAXException, IOException, InvalidArgumentException, SaxonApiException;
-	
-
-
 	public abstract boolean isStream();
 
 	public  abstract void copyTo(OutputStream out, SerializeOpts opts ) throws IOException, SaxonApiException, InvalidArgumentException;
+
+
+	public abstract XMLEventReader asXMLEventReader(SerializeOpts opts) throws InvalidArgumentException, CoreException, XMLStreamException ;
+	public abstract XMLStreamReader asXMLStreamReader(SerializeOpts opts) throws InvalidArgumentException, CoreException, XMLStreamException ;
+	
 	
 	
 	

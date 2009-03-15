@@ -12,16 +12,18 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.stream.XMLEventReader;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.Source;
 
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XdmNode;
-import org.w3c.dom.Document;
-import org.xml.sax.SAXException;
 import org.xmlsh.sh.shell.SerializeOpts;
+import org.xmlsh.util.StAXUtils;
 import org.xmlsh.util.Util;
+import org.xmlsh.util.XMLEventStreamReader;
+import org.xmlsh.util.XMLEventWriterBuffer;
 
 /*
  * An InputPort represents an input source of data, either Stream (bytes) or XML
@@ -71,16 +73,7 @@ public class VariableInputPort extends InputPort {
 
 	}
 
-	public synchronized Document asDocument(SerializeOpts opts)
-			throws ParserConfigurationException, SAXException, IOException,
-			InvalidArgumentException, SaxonApiException {
 
-		DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
-		domFactory.setNamespaceAware(true); // never forget this!
-		javax.xml.parsers.DocumentBuilder builder = domFactory.newDocumentBuilder();
-		return builder.parse(asInputStream(opts));
-
-	}
 
 	public boolean isStream() {
 		return false;
@@ -93,6 +86,36 @@ public class VariableInputPort extends InputPort {
 					.streamToDestination(out, opts));
 		else
 			out.write(mVariable.getValue().toString().getBytes(opts.getText_encoding()));
+
+	}
+
+	@Override
+	public XMLEventReader asXMLEventReader(SerializeOpts opts) throws InvalidArgumentException, XMLStreamException
+	{
+		/*
+		 * @TODO: Look at TinyTreeEventIterator and EventIterator and EventToStaxBridge
+		 */
+		
+		
+		XMLEventWriterBuffer buffer = new XMLEventWriterBuffer();
+		StAXUtils.copy( mVariable.getValue().asXdmNode().getUnderlyingNode(), buffer);
+		
+		
+		//return XMLInputFactory.newInstance().createXMLStreamReader( buffer.getReader() );
+		return  buffer.getReader();
+		
+			
+	}
+
+	@Override
+	public XMLStreamReader asXMLStreamReader(SerializeOpts opts) throws InvalidArgumentException,
+			CoreException, XMLStreamException 
+	{
+		XMLEventReader reader = asXMLEventReader(opts);
+		
+			
+		return new XMLEventStreamReader( reader );
+
 
 	}
 

@@ -16,7 +16,9 @@ import java.io.UnsupportedEncodingException;
 
 import javanet.staxutils.StAXSource;
 import javanet.staxutils.XMLEventStreamWriter;
+import javanet.staxutils.XMLStreamEventWriter;
 
+import javax.xml.stream.XMLEventWriter;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.transform.TransformerConfigurationException;
@@ -257,9 +259,23 @@ public class VariableOutputPort extends OutputPort
 
 
 	@Override
-	public XMLStreamWriter asXMLStreamWriter(SerializeOpts opts) throws XMLStreamException, TransformerConfigurationException, IllegalArgumentException, TransformerFactoryConfigurationError {
+	public XMLStreamWriter asXMLStreamWriter(SerializeOpts opts) {
 		mWriterBuffer = new XMLEventWriterBuffer(); 
 		return new XMLEventStreamWriter(mWriterBuffer);
+	}
+
+
+	/* (non-Javadoc)
+	 * @see org.xmlsh.core.OutputPort#asXMLEventWriter(org.xmlsh.sh.shell.SerializeOpts)
+	 */
+	@Override
+	public XMLEventWriter asXMLEventWriter(SerializeOpts opts) throws InvalidArgumentException {
+		try {
+			return new XMLStreamEventWriter( asXMLStreamWriter(opts));
+		} catch (Exception e) {
+			throw new InvalidArgumentException(e);
+		}
+		
 	}
 
 }

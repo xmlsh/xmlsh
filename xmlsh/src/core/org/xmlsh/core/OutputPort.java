@@ -13,6 +13,7 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 
+import javax.xml.stream.XMLEventWriter;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.transform.TransformerConfigurationException;
@@ -71,7 +72,9 @@ public abstract class OutputPort extends IPort
 	
 
 	public abstract void writeSequenceTerminator() throws IOException ;
-	public abstract XMLStreamWriter asXMLStreamWriter(SerializeOpts opts) throws XMLStreamException, TransformerConfigurationException, IllegalArgumentException, TransformerFactoryConfigurationError;
+	public abstract XMLStreamWriter asXMLStreamWriter(SerializeOpts opts) throws InvalidArgumentException, XMLStreamException;
+
+	public abstract XMLEventWriter asXMLEventWriter(SerializeOpts opts) throws InvalidArgumentException;
 	
 
 }
