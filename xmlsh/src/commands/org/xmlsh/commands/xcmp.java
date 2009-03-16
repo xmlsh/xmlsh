@@ -137,14 +137,19 @@ public class xcmp extends XCommand {
 	private int xml_cmp(URL f1, URL f2) throws XMLStreamException, IOException  {
 		
 		XMLInputFactory inputFactory=XMLInputFactory.newInstance();
+		
+		
 		inputFactory.setProperty(XMLInputFactory.IS_COALESCING, Boolean.valueOf(true));
+		inputFactory.setProperty(XMLInputFactory.IS_VALIDATING, Boolean.valueOf(false));
+		inputFactory.setProperty(XMLInputFactory.SUPPORT_DTD, Boolean.valueOf(false));
+		
 		
 		InputStream is1 = f1.openStream();
-		XMLEventReader  xmlreader1  =inputFactory.createXMLEventReader(is1);
+		XMLEventReader  xmlreader1  =inputFactory.createXMLEventReader(f1.toString(), is1);
 		
 
 		InputStream is2 = f2.openStream();
-		XMLEventReader  xmlreader2  =inputFactory.createXMLEventReader(is2);
+		XMLEventReader  xmlreader2  =inputFactory.createXMLEventReader(f2.toString(),is2);
 		
 		try {
 			
@@ -181,9 +186,11 @@ public class xcmp extends XCommand {
 		finally {
 			try {
 				xmlreader1.close();
+				is1.close();
 			} finally {} 
 			try {
 				xmlreader2.close();
+				is2.close();
 			} finally {} 
 		}
 	}

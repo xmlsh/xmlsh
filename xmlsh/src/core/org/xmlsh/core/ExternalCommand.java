@@ -32,7 +32,7 @@ public class ExternalCommand implements ICommand {
 	public int run(Shell shell, String cmd, List<XValue> args) throws Exception 
 	{
 		File curdir = shell.getCurdir() ;
-		mLogger.debug("Run external command: " + mCommandFile.getPath() + "in directory: " + curdir.getPath() );
+		mLogger.debug("Run external command: " + mCommandFile.getPath() + " in directory: " + curdir.getPath() );
 		
 		
 		ArrayList<XValue> cmdlist = new ArrayList<XValue>();

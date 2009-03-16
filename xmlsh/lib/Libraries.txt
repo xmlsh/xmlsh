@@ -28,3 +28,12 @@ Xerces 2.1 from
 http://xerces.apache.org/xerces2-j/install.html
 The only file needed is
 xercesImpl.jar
+
+
+Woodstox StAX library from 
+http://woodstox.codehaus.org/Download
+Apache License version.
+
+woodstox-core-asl-4.0.3.jar
+Stax2-api-3.0.1.jar
+

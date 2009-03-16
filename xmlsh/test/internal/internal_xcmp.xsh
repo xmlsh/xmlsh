@@ -43,8 +43,14 @@ rm f1 f2 f3
 
 # Compare 2 identical remote files
 # xcat a remote xml file
-cat < http://test.xmlsh.org/data/books.xml > $TMPDIR/x3.xml
-xcmp -x http://test.xmlsh.org/data/books.xml  $TMPDIR/x3.xml || echo Failed xcmp of remote URL
+
+cat < http://test.xmlsh.org/data/books.xml > x3.xml
+cat < http://test.xmlsh.org/data/books.dtd > books.dtd
+
+xcmp -x http://test.xmlsh.org/data/books.xml  x3.xml || echo Failed xcmp of remote URL
+
+cd $TMPDIR
+rm -rf $TMPDIR/_xmlsh
 
 exit 0
    

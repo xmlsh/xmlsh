@@ -149,13 +149,19 @@ public class StreamOutputPort extends OutputPort
 
 
 	@Override
-	public XMLEventWriter asXMLEventWriter(SerializeOpts opts) throws InvalidArgumentException {
-		try {
-			return new XMLStreamEventWriter( asXMLStreamWriter(opts));
-		} catch (Exception e) {
-			throw new InvalidArgumentException(e);
-		}
+	public XMLEventWriter asXMLEventWriter(SerializeOpts opts) throws InvalidArgumentException, XMLStreamException {
+		XMLOutputFactory fact = XMLOutputFactory.newInstance();
+		// XMLOutputFactory fact = new OutputFactory();
+		XMLEventWriter writer =  fact.createXMLEventWriter(asOutputStream(), opts.getEncoding() );
 		
+		/*
+			if( opts.isIndent() )
+				writer = new IndentingXMLStreamWriter(writer);
+			if( opts.isOmit_xml_declaration() )
+				writer = new OmittingXMLStreamWriter( writer );
+		*/	
+			return writer ;
+			
 	}
 	
 	

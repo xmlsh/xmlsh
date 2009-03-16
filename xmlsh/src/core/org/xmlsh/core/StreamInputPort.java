@@ -82,7 +82,7 @@ public class StreamInputPort extends InputPort {
 	@Override
 	public XMLEventReader asXMLEventReader(SerializeOpts opts) throws CoreException {
 		try {
-		return XMLInputFactory.newInstance().createXMLEventReader(asInputStream(opts));
+		return XMLInputFactory.newInstance().createXMLEventReader( getSystemId() , asInputStream(opts));
 		} catch (Exception e)
 		{
 			throw new CoreException( e );

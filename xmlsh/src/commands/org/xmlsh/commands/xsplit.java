@@ -110,7 +110,7 @@ public class xsplit extends XCommand {
 					getStdin().asInputStream(getSerializeOpts()) ;
 		split(is );
 		
-		
+		is.close();
 		
 		
 		
@@ -177,7 +177,7 @@ public class xsplit extends XCommand {
 			
 			else
 			{
-				if( type == XMLStreamConstants.CHARACTERS && Util.isBlank(e.toString()))
+				if( type == XMLStreamConstants.CHARACTERS && e.asCharacters().isWhiteSpace())
 					continue ;
 				printErr("Skipping XML node: " + e.toString());
 			}

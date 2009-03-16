@@ -7,6 +7,7 @@
 package org.xmlsh.sh.core;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 
 import javax.xml.transform.stream.StreamSource;
@@ -51,8 +52,12 @@ public class CommandFileWord extends Word {
 			file = files.toString();
 		else 
 			throw new InvalidArgumentException("Invalid expansion for redirection");
-		return Util.readString( shell.getInputStream(file)).trim();
-
+		InputStream is = shell.getInputStream(file);
+		try {
+			return Util.readString( is).trim();
+		} finally {
+			is.close();
+		}
 			
 	}
 	XdmNode	expandXFile( Shell shell , String xfile ) throws IOException, CoreException{
@@ -62,13 +67,17 @@ public class CommandFileWord extends Word {
 			file = files.toString();
 		else 
 			throw new InvalidArgumentException("Invalid expansion for redirection");
-
+		InputStream is = null;
 		try {
 			DocumentBuilder builder = Shell.getProcessor().newDocumentBuilder();
-			XdmNode node = builder.build(new StreamSource(shell.getInputStream(file)));
+			is = shell.getInputStream(file);
+			XdmNode node = builder.build(new StreamSource(is));
 			return node;
 		} catch( Exception e ){
 			throw new XMLException("Exception parsing XML document: " + file , e );
+		} finally {
+			if( is != null )
+				is.close();
 		}
 	}
 
