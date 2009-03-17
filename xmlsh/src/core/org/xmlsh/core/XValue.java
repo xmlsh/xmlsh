@@ -16,6 +16,7 @@ import java.util.List;
 import javax.xml.transform.Source;
 
 import net.sf.saxon.dom.NodeOverNodeInfo;
+import net.sf.saxon.evpull.EventIterator;
 import net.sf.saxon.om.NodeInfo;
 import net.sf.saxon.om.ValueRepresentation;
 import net.sf.saxon.s9api.DocumentBuilder;
@@ -386,6 +387,11 @@ public class XValue {
 	public void append(XValue v) {
 		append( v.mValue );
 		
+	}
+
+	public NodeInfo asNodeInfo() throws InvalidArgumentException {
+		
+		return asXdmNode().getUnderlyingNode();
 	}
 	
 }

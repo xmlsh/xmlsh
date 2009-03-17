@@ -78,12 +78,14 @@ version.release=${release}
 				excludes="**/sh_histo _out/** bin/** _dist/** lib/**"  prefix="xmlsh_${release}"/>
 		</zip>
   	
+  	<!--
 		<tar destfile="${dist}/xmlsh_${release}.tar.gz" compression="gzip">
   		  <zipfileset src="_dist/xmlsh_${release}.zip"/>
   		</tar>
 		<tar destfile="${dist}/xmlsh_src_${release}.tar.gz" compression="gzip">
 		  <zipfileset src="_dist/xmlsh_src_${release}.zip"/>
 		</tar>
+	-->
 
   </target>
 </project>

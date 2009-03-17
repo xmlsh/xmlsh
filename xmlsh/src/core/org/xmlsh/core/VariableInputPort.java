@@ -12,19 +12,22 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLEventReader;
+import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.Source;
 
-import net.sf.saxon.om.NodeInfo;
+import net.sf.saxon.Configuration;
+import net.sf.saxon.event.PipelineConfiguration;
+import net.sf.saxon.evpull.Decomposer;
+import net.sf.saxon.evpull.EventToStaxBridge;
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XdmNode;
 import org.xmlsh.sh.shell.SerializeOpts;
-import org.xmlsh.util.StAXUtils;
+import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.Util;
-import org.xmlsh.util.XMLEventStreamReader;
-import org.xmlsh.util.XMLEventWriterBuffer;
 
 /*
  * An InputPort represents an input source of data, either Stream (bytes) or XML
@@ -91,12 +94,12 @@ public class VariableInputPort extends InputPort {
 	}
 
 	@Override
-	public XMLEventReader asXMLEventReader(SerializeOpts opts) throws InvalidArgumentException, XMLStreamException
+	public XMLEventReader asXMLEventReader(SerializeOpts opts) throws XMLStreamException, CoreException
 	{
 		/*
 		 * @TODO: Look at TinyTreeEventIterator and EventIterator and EventToStaxBridge
 		 */
-		
+		/*
 		
 		XMLEventWriterBuffer buffer = new XMLEventWriterBuffer();
 		NodeInfo node = mVariable.getValue().asXdmNode().getUnderlyingNode();
@@ -106,6 +109,9 @@ public class VariableInputPort extends InputPort {
 		
 		//return XMLInputFactory.newInstance().createXMLStreamReader( buffer.getReader() );
 		return  buffer.getReader();
+		*/
+		return XMLInputFactory.newInstance().createXMLEventReader(asXMLStreamReader(opts));
+		
 		
 			
 	}
@@ -114,12 +120,18 @@ public class VariableInputPort extends InputPort {
 	public XMLStreamReader asXMLStreamReader(SerializeOpts opts) throws InvalidArgumentException,
 			CoreException, XMLStreamException 
 	{
-		XMLEventReader reader = asXMLEventReader(opts);
-		
-			
+		/*
+		XMLEventReader reader = asXMLEventReader(opts);	
 		return new XMLEventStreamReader( reader );
-
-
+		*/
+		// See EventToStaxBridge
+		Configuration config = Shell.getProcessor().getUnderlyingConfiguration();
+		PipelineConfiguration pipe = config.makePipelineConfiguration();
+		pipe.setHostLanguage(Configuration.XQUERY);
+		Decomposer iter = new Decomposer( mVariable.getValue().asNodeInfo() , pipe);
+		
+		XMLStreamReader sr = new EventToStaxBridge(iter, config.getNamePool());
+		return sr;
 	}
 
 }
