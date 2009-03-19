@@ -12,9 +12,14 @@ Saxon B: version 9.0.0.5
 from: http://www.saxonica.com
 
 saxon9.jar
-saxon9-dom.jar
 saxon9-s9api.jar
 
+Stax Utils from
+https://stax-utils.dev.java.net/
+Tested with Stabil release
+StAX utils 20070216
+
+stax-utils.jar
 
 
 OPTIONAL FiLES

@@ -11,11 +11,6 @@
 			<attribute name="javadoc_location" value="file:/C:/java/saxon9/doc/javadoc/"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="lib/saxon9-dom.jar" sourcepath="C:/java/saxon9/src">
-		<attributes>
-			<attribute name="javadoc_location" value="file:/C:/java/saxon9/doc/javadoc/"/>
-		</attributes>
-	</classpathentry>
 	<classpathentry kind="lib" path="lib/saxon9-s9api.jar" sourcepath="C:/java/saxon9/src">
 		<attributes>
 			<attribute name="javadoc_location" value="file:/C:/java/saxon9/doc/javadoc/"/>
@@ -24,6 +19,10 @@
 	<classpathentry kind="lib" path="lib/xercesImpl.jar"/>
 	<classpathentry kind="lib" path="lib/stax2-api-3.0.1.jar"/>
 	<classpathentry kind="lib" path="lib/woodstox-core-asl-4.0.3.jar"/>
-	<classpathentry kind="lib" path="lib/stax-utils.jar" sourcepath="C:/Work/DEI/stax-utils/dist/stax-utils-20090302/stax-utils-src.zip"/>
+	<classpathentry kind="lib" path="lib/stax-utils.jar" sourcepath="C:/java/stax-utils-20071202/stax-utils-src.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="file:/C:/java/stax-utils-20071202/docs/javadoc/"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="_out"/>
 </classpath>

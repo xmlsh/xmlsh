@@ -15,11 +15,8 @@ import java.util.List;
 
 import javax.xml.transform.Source;
 
-import net.sf.saxon.dom.NodeOverNodeInfo;
-import net.sf.saxon.evpull.EventIterator;
 import net.sf.saxon.om.NodeInfo;
 import net.sf.saxon.om.ValueRepresentation;
-import net.sf.saxon.s9api.DocumentBuilder;
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.Serializer;
@@ -32,7 +29,6 @@ import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XdmValue;
 import net.sf.saxon.value.AtomicValue;
 import org.apache.log4j.Logger;
-import org.w3c.dom.Node;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.Util;
@@ -312,37 +308,7 @@ public class XValue {
 		
 	}
 	
-	/*
-	 * Wrap an XdmValue as a Node in the current processor type (TinyTree)
-	 */
-	public Node asNode() {
-		return NodeOverNodeInfo.wrap( (NodeInfo)mValue.getUnderlyingValue() );
-	}
-	
-	/*
-	 * Wrap a XdmValue as a Node by optionally synthesizing a document
-	 * element for it if it doesnt exist already.
-	 */
-	
-	public Node asNodeWithDoc() throws SaxonApiException 
-	{	
-		NodeInfo nodeinfo = (NodeInfo) mValue.getUnderlyingValue();
 
-		if( nodeinfo.getDocumentRoot() == null ){
-			Processor	processor = Shell.getProcessor();
-			DocumentBuilder builder = processor.newDocumentBuilder();
-			XdmNode xnode = builder.build( ((XdmNode)mValue).asSource()  );
-			NodeInfo docinfo = (NodeInfo) xnode.getUnderlyingNode();
-			
-			return 
-				NodeOverNodeInfo.wrap( docinfo ).getFirstChild() ;
-						
-		}
-		else
-		return 
-			NodeOverNodeInfo.wrap(  nodeinfo  );
-		
-	}
 	public XdmNode asXdmNode() throws InvalidArgumentException
 	{
 		if( isXExpr() ){
