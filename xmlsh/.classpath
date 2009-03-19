@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src/commands"/>
-	<classpathentry kind="src" path="src/stax-utils"/>
 	<classpathentry kind="src" path="src/saxon"/>
 	<classpathentry kind="src" path="src/core"/>
 	<classpathentry kind="src" path="src/shell"/>
@@ -25,5 +24,6 @@
 	<classpathentry kind="lib" path="lib/xercesImpl.jar"/>
 	<classpathentry kind="lib" path="lib/stax2-api-3.0.1.jar"/>
 	<classpathentry kind="lib" path="lib/woodstox-core-asl-4.0.3.jar"/>
+	<classpathentry kind="lib" path="lib/stax-utils.jar" sourcepath="C:/Work/DEI/stax-utils/dist/stax-utils-20090302/stax-utils-src.zip"/>
 	<classpathentry kind="output" path="_out"/>
 </classpath>
