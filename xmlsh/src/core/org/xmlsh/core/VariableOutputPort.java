@@ -16,10 +16,8 @@ import java.io.UnsupportedEncodingException;
 
 import javanet.staxutils.StAXSource;
 import javanet.staxutils.XMLEventStreamWriter;
-import javanet.staxutils.XMLStreamEventWriter;
 
 import javax.xml.stream.XMLEventWriter;
-import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerFactoryConfigurationError;
@@ -167,12 +165,14 @@ public class VariableOutputPort extends OutputPort
 			return mXdmDestination;
 	}
 	
+	
+	 /*
+	  * TODO: Remove this extra code when Saxon is fixed 
+	  * XdmDestinatin shouldn't need the configuration
+	  
 	private void setupDestination( XdmDestination dest )
 	{
-		 /*
-		  * TODO: Remove this extra code when Saxon is fixed 
-		  * XdmDestinatin shouldn't need the configuration
-		  */
+
 		 Configuration config = Shell.getProcessor().getUnderlyingConfiguration();
 		 try {
 			Receiver r = dest.getReceiver(config);
@@ -185,12 +185,13 @@ public class VariableOutputPort extends OutputPort
 		}
 
 	}
+	*/
 	
 	
 	
 	private XdmDestination newXdmDestination() {
 		XdmDestination dest = new XdmDestination();
-	    setupDestination(dest);
+	   // setupDestination(dest);
 	    return dest;
 		
 	}
@@ -242,7 +243,7 @@ public class VariableOutputPort extends OutputPort
 				appendVar(mXdmDestination.getXdmNode() );
 				
 				mXdmDestination.reset();
-				setupDestination( mXdmDestination);
+			//	setupDestination( mXdmDestination);
 			
 			}
 			else
@@ -270,11 +271,9 @@ public class VariableOutputPort extends OutputPort
 	 */
 	@Override
 	public XMLEventWriter asXMLEventWriter(SerializeOpts opts) throws InvalidArgumentException {
-		try {
-			return new XMLStreamEventWriter( asXMLStreamWriter(opts));
-		} catch (Exception e) {
-			throw new InvalidArgumentException(e);
-		}
+		
+		mWriterBuffer = new XMLEventWriterBuffer(); 
+		return mWriterBuffer;
 		
 	}
 
