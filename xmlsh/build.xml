@@ -53,7 +53,11 @@ version.release=${release}
   
   <target name="jar" description="Build JAR - jar">
 		<mkdir dir="bin"/>
-        <jar jarfile="bin/xmlsh.jar" basedir="_out" />
+        <jar 
+        jarfile="bin/xmlsh.jar" 
+        basedir="_out" 
+        manifest="src/WEB-INF/MANIFEST.MF"
+        />
 
   </target>
   <target name="test" description="Test Cases">
@@ -87,4 +91,16 @@ version.release=${release}
 	-->
 
   </target>
+  
+  <mkdir dir="bin"/>
+        
+   <target name="combine" description="Create Distribution">
+  	<jar destfile="bin/xmlsh_all.jar" basedir="_out"
+  		index="true"
+  		filesetmanifest="merge">
+  		
+  	    <zipgroupfileset dir="lib" includes="*.jar" />
+  	  </jar>
+  </target>
+
 </project>
