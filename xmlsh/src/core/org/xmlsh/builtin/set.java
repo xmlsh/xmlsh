@@ -54,7 +54,7 @@ public class set extends BuiltinCommand {
 
 	    XMLStreamWriter writer = env.getStdout().asXMLStreamWriter(mShell.getSerializeOpts());
 
-	   // writer.writeStartDocument();
+	    writer.writeStartDocument();
 	    writer.writeStartElement( sDocRoot );
 	    
 		

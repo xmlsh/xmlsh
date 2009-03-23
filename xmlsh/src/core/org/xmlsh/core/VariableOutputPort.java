@@ -15,7 +15,6 @@ import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 
 import javanet.staxutils.StAXSource;
-import javanet.staxutils.XMLEventStreamWriter;
 
 import javax.xml.stream.XMLEventWriter;
 import javax.xml.stream.XMLStreamWriter;
@@ -23,14 +22,13 @@ import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.sax.TransformerHandler;
 
-import net.sf.saxon.Configuration;
 import net.sf.saxon.event.Builder;
 import net.sf.saxon.event.PipelineConfiguration;
 import net.sf.saxon.event.Receiver;
+import net.sf.saxon.event.ReceivingContentHandler;
 import net.sf.saxon.s9api.Destination;
 import net.sf.saxon.s9api.DocumentBuilder;
 import net.sf.saxon.s9api.S9Util;
-import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XdmAtomicValue;
 import net.sf.saxon.s9api.XdmDestination;
 import net.sf.saxon.s9api.XdmItem;
@@ -40,6 +38,8 @@ import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.Util;
 import org.xmlsh.util.XMLEventWriterBuffer;
+import org.xmlsh.util.XMLEventWriterToContentHandler;
+import org.xmlsh.util.XMLStreamWriterToContentHandler;
 
 /*
  * An OutputPort represents an output sync of data, either Stream (bytes) or XML data
@@ -166,26 +166,6 @@ public class VariableOutputPort extends OutputPort
 	}
 	
 	
-	 /*
-	  * TODO: Remove this extra code when Saxon is fixed 
-	  * XdmDestinatin shouldn't need the configuration
-	  
-	private void setupDestination( XdmDestination dest )
-	{
-
-		 Configuration config = Shell.getProcessor().getUnderlyingConfiguration();
-		 try {
-			Receiver r = dest.getReceiver(config);
-		    PipelineConfiguration pipe = config.makePipelineConfiguration();
-
-			r.setPipelineConfiguration(pipe);
-			;
-		} catch (SaxonApiException e) {
-			;
-		}
-
-	}
-	*/
 	
 	
 	
@@ -261,8 +241,31 @@ public class VariableOutputPort extends OutputPort
 
 	@Override
 	public XMLStreamWriter asXMLStreamWriter(SerializeOpts opts) {
+		/*
 		mWriterBuffer = new XMLEventWriterBuffer(); 
-		return new XMLEventStreamWriter(mWriterBuffer);
+		return new XMLEventStreamWriter(mWriterBuffer); */
+		
+		ReceivingContentHandler  rch = new ReceivingContentHandler();
+		Receiver r = null;
+
+
+        Builder b = new TinyBuilder();
+    
+
+        // Set builder properties
+
+        PipelineConfiguration pipe = Shell.getProcessor().getUnderlyingConfiguration().makePipelineConfiguration();
+		b.setPipelineConfiguration(pipe);
+		r = b;
+		rch.setReceiver(r);
+		rch.setPipelineConfiguration(pipe);
+		
+		XMLStreamWriterToContentHandler sw = new XMLStreamWriterToContentHandler( rch);
+		
+		mBuilder = b;
+		return sw;
+		
+		
 	}
 
 
@@ -272,8 +275,30 @@ public class VariableOutputPort extends OutputPort
 	@Override
 	public XMLEventWriter asXMLEventWriter(SerializeOpts opts) throws InvalidArgumentException {
 		
-		mWriterBuffer = new XMLEventWriterBuffer(); 
-		return mWriterBuffer;
+		//mWriterBuffer = new XMLEventWriterBuffer(); 
+		//return mWriterBuffer;
+		// XMLStreamEventWriter sew = new XMLStreamEventWriter( asXMLStreamWriter(opts));
+		// return sew;
+		
+		ReceivingContentHandler  rch = new ReceivingContentHandler();
+		Receiver r = null;
+
+
+        Builder b = new TinyBuilder();
+    
+
+        // Set builder properties
+
+        PipelineConfiguration pipe = Shell.getProcessor().getUnderlyingConfiguration().makePipelineConfiguration();
+		b.setPipelineConfiguration(pipe);
+		r = b;
+		rch.setReceiver(r);
+		rch.setPipelineConfiguration(pipe);
+		
+		XMLEventWriterToContentHandler w = new XMLEventWriterToContentHandler( rch);
+		
+		mBuilder = b;
+		return w;
 		
 	}
 
