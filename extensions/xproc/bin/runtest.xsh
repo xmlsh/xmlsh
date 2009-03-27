@@ -43,7 +43,7 @@ if [ <[ exists( $test/t:test/t:input ) ]> ] ; then
 	if [ <[ exists( $tinput/t:document ) ]> ] ; then 
 		tinput=<[ $tinput/t:document ]> 
 	fi
-	echo <[ $tinput/node() ]> > $_TMP/input.xml
+	xecho <[ $tinput/node() ]> > $_TMP/input.xml
 	in=$_TMP/input.xml
 fi
 
@@ -51,8 +51,7 @@ fi
 if [ <[ exists( $test/t:test/t:output ) ]> ] ; then 
 	toutput=<[$test/t:test/t:output]>
 	set +indent 
-#	xecho <[ $toutput/node() ]> > $_TMP/expected.xml
-	echo <[ $toutput/node() ]> > $_TMP/expected.xml
+	xecho <[ $toutput/node() ]> > $_TMP/expected.xml
 	
 	set -indent
 fi
@@ -73,7 +72,7 @@ expected=$(cat expected.xml)
 
 declare namespace "http://xproc.org/ns/testreport"
 if [ $_EXIT -ne 0 ] ; then 
-   echo <[
+   xecho <[
 	<fail uri="{$_TEST_URI}">
 	   <title>{$title}</title>
 	   <expected>{$expected}</expected>
@@ -81,7 +80,7 @@ if [ $_EXIT -ne 0 ] ; then
 	 </fail>
 	]>
 elif  xcmp $ws -x output.xml expected.xml  ; then
-	echo <[
+	xecho <[
 	<pass uri="{$_TEST_URI}">
 	   <title>{$title}</title>
 	 </pass>
@@ -90,7 +89,7 @@ else
 
     actual=$(cat output.xml)
     
-	echo <[
+	xecho <[
 	<fail uri="{$_TEST_URI}">
 	   <title>{$title}</title>
 	   <expected>{$expected}</expected>
