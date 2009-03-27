@@ -5,6 +5,7 @@ declare namespace p="http://www.w3.org/ns/xproc"
 declare namespace c="http://www.w3.org/ns/xproc-step"
 declare namespace err="http://www.w3.org/ns/xproc-error"
 
+
 # Set global data directory
 _BINDIR=$(xfile -d $0)
 _ROOT=$(xfile -c $_BINDIR/..)
@@ -49,7 +50,11 @@ fi
 
 if [ <[ exists( $test/t:test/t:output ) ]> ] ; then 
 	toutput=<[$test/t:test/t:output]>
+	set +indent 
+#	xecho <[ $toutput/node() ]> > $_TMP/expected.xml
 	echo <[ $toutput/node() ]> > $_TMP/expected.xml
+	
+	set -indent
 fi
 
 #echo running $1

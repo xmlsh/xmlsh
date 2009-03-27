@@ -39,7 +39,7 @@ public class xproc2xmlsh extends XCommand {
 		opts.parse();
 		args = opts.getRemainingArgs();
 		
-		Source input = getStdin().asSource();
+		Source input = getStdin().asSource(getSerializeOpts());
 		String base = opts.getOptString("base", input.getSystemId());
 		
 		input.setSystemId(base);
