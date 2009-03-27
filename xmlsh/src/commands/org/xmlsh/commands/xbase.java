@@ -9,35 +9,23 @@ package org.xmlsh.commands;
 import java.io.PrintWriter;
 import java.util.List;
 
-import javax.xml.transform.Source;
-import javax.xml.transform.stream.StreamSource;
+import javax.xml.namespace.QName;
+import javax.xml.stream.Location;
+import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.events.XMLEvent;
 
-import net.sf.saxon.s9api.DocumentBuilder;
-import net.sf.saxon.s9api.Processor;
-import net.sf.saxon.s9api.SaxonApiException;
-import net.sf.saxon.s9api.XdmItem;
-import net.sf.saxon.s9api.XdmNode;
-import org.xmlsh.core.Options;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
-import org.xmlsh.core.Options.OptionValue;
-import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.sh.shell.SerializeOpts;
+import org.xmlsh.util.Util;
 
 
 public class xbase extends XCommand {
 
-	private DocumentBuilder mBuilder;
-	private Processor mProcessor;
 
-	private void setupBuilders()
-	{
-
-		mProcessor = Shell.getProcessor();	
-
-		mBuilder = mProcessor.newDocumentBuilder();
-		
-	}
+	private static QName mBaseQName = new QName("http://www.w3.org/XML/1998/namespace","base" , "xml");
 	
+
 	
 	
 	@Override
@@ -47,52 +35,37 @@ public class xbase extends XCommand {
 
 		
 		
-		Options opts = new Options( "i:" , args );
-		opts.parse();
-		
-		setupBuilders();
-
-		XdmNode	context = null;
 
 		
-		OptionValue ov = opts.getOpt("i");
+		
 
+		SerializeOpts opts = getSerializeOpts();
+
+		XMLStreamReader reader = getStdin().asXMLStreamReader(opts);
+		do {
+		
+			if( reader.getEventType() == XMLEvent.START_ELEMENT )
+				break;
+			reader.next();
 			
-		// If -i argument is an XML expression take the first node as the context
-		if( ov != null  && ov.getValue().isXExpr() ){
-			XdmItem item = ov.getValue().asXdmValue().itemAt(0);
-			if( item instanceof XdmNode )
-				context = (XdmNode) item;
-
-		}
+		} while( reader.hasNext() );
 		
-		/*
-		 * If any remaining args use it as a URI
-		 */
-		
-		if( context == null && opts.hasRemainingArgs() ){
-			Source src = new StreamSource( opts.getRemainingArgs().get(0).toString());
+	
 			
-			context = build(src);
-			
+	
+		Location loc = reader.getLocation();
+		String sSystemID  = loc.getSystemId();
+		String sBase = reader.getAttributeValue(mBaseQName.getNamespaceURI(), mBaseQName.getLocalPart());
+		if( Util.isEmpty(sBase))
+			sBase = sSystemID ;
 		
-		}
 		
-		if( context == null )
-		{
-
-			if( ov != null && ! ov.getValue().toString().equals("-"))
-				context = build( getSource(ov.getValue()));
-			else {
-				context = build(getStdin().asSource(getSerializeOpts()));
-			}	
-		}
-
 		
-
-		PrintWriter out = getStdout().asPrintWriter(getSerializeOpts());
+		reader.close();
 		
-		out.println( context.getBaseURI() );
+		PrintWriter out = getStdout().asPrintWriter(opts);
+		
+		out.println(sBase );
 	
 		out.flush();
 		
@@ -106,17 +79,6 @@ public class xbase extends XCommand {
 
 	
 
-	
-	/*
-	 * Creates/Builds a Tree (LINKED_TREE) type node from any source
-	 */
-	
-	private XdmNode build( Source src ) throws SaxonApiException
-	{
-
-		return mBuilder.build( src);
-		
-	}
 
 	
 

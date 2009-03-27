@@ -92,8 +92,9 @@ public class StreamInputPort extends InputPort {
 	@Override
 	public XMLStreamReader asXMLStreamReader(SerializeOpts opts) throws CoreException {
 		try {
-			return XMLInputFactory.newInstance().createXMLStreamReader(asInputStream(opts));
-			} catch (Exception e)
+			XMLStreamReader reader =  XMLInputFactory.newInstance().createXMLStreamReader(getSystemId() , asInputStream(opts));
+			return reader;
+		} catch (Exception e)
 			{
 				throw new CoreException( e );
 			}

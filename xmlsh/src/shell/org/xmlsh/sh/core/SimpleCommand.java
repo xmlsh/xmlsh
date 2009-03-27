@@ -39,7 +39,8 @@ public class SimpleCommand extends Command {
 	public void print(PrintWriter out, boolean bExec) {
 		if( mPrefix != null )
 			mPrefix.print(out);
-		mCommand.print(out);
+		if( mCommand != null )
+			mCommand.print(out);
 		
 		if( mSuffix  != null ){
 			out.print(" ");

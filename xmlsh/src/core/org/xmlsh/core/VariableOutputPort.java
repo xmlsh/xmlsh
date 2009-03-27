@@ -22,6 +22,7 @@ import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.sax.TransformerHandler;
 
+import net.sf.saxon.Configuration;
 import net.sf.saxon.event.Builder;
 import net.sf.saxon.event.PipelineConfiguration;
 import net.sf.saxon.event.Receiver;
@@ -29,6 +30,7 @@ import net.sf.saxon.event.ReceivingContentHandler;
 import net.sf.saxon.s9api.Destination;
 import net.sf.saxon.s9api.DocumentBuilder;
 import net.sf.saxon.s9api.S9Util;
+import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XdmAtomicValue;
 import net.sf.saxon.s9api.XdmDestination;
 import net.sf.saxon.s9api.XdmItem;
@@ -171,7 +173,7 @@ public class VariableOutputPort extends OutputPort
 	
 	private XdmDestination newXdmDestination() {
 		XdmDestination dest = new XdmDestination();
-	   // setupDestination(dest);
+	    setupDestination(dest);
 	    return dest;
 		
 	}
@@ -223,7 +225,7 @@ public class VariableOutputPort extends OutputPort
 				appendVar(mXdmDestination.getXdmNode() );
 				
 				mXdmDestination.reset();
-			//	setupDestination( mXdmDestination);
+				setupDestination( mXdmDestination);
 			
 			}
 			else
@@ -302,6 +304,28 @@ public class VariableOutputPort extends OutputPort
 		
 	}
 
+	
+	private void setupDestination( XdmDestination dest )
+	{
+		
+		 /*
+		  * TODO: Remove this extra code when Saxon is fixed 
+		  * XdmDestinatin shouldn't need the configuration
+		  */
+		
+		 Configuration config = Shell.getProcessor().getUnderlyingConfiguration();
+		 try {
+			Receiver r = dest.getReceiver(config);
+		    PipelineConfiguration pipe = config.makePipelineConfiguration();
+
+			r.setPipelineConfiguration(pipe);
+			;
+		} catch (SaxonApiException e) {
+			;
+		}
+		
+
+	}
 }
 
 

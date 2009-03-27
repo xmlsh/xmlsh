@@ -16,9 +16,12 @@ import java.util.List;
 import javax.xml.transform.Source;
 
 import net.sf.saxon.om.NodeInfo;
+import net.sf.saxon.om.SequenceIterator;
+import net.sf.saxon.om.SingletonIterator;
 import net.sf.saxon.om.ValueRepresentation;
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.SaxonApiException;
+import net.sf.saxon.s9api.SaxonApiUncheckedException;
 import net.sf.saxon.s9api.Serializer;
 import net.sf.saxon.s9api.XPathCompiler;
 import net.sf.saxon.s9api.XPathExecutable;
@@ -27,7 +30,9 @@ import net.sf.saxon.s9api.XdmAtomicValue;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XdmValue;
+import net.sf.saxon.trans.XPathException;
 import net.sf.saxon.value.AtomicValue;
+import net.sf.saxon.value.Value;
 import org.apache.log4j.Logger;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
@@ -358,6 +363,20 @@ public class XValue {
 	public NodeInfo asNodeInfo() throws InvalidArgumentException {
 		
 		return asXdmNode().getUnderlyingNode();
+	}
+	
+	public SequenceIterator asSequenceIterator()
+	{
+		try {
+			ValueRepresentation v = this.mValue.getUnderlyingValue();
+			if (v instanceof Value) {
+				return  ((Value)v).iterate();
+			} else {
+				return SingletonIterator.makeIterator((NodeInfo)v);
+			}
+		} catch (XPathException e) {
+			throw new SaxonApiUncheckedException(e);
+		}
 	}
 	
 }

@@ -27,8 +27,13 @@ public class PipedStream extends PipedPort {
 		
 	}
 	
-	public	InputPort	getInput() throws IOException { return new StreamInputPort(mIn) ; }
-	public OutputPort getOutput() { return new StreamOutputPort(mOut) ; }
+	public	InputPort	getInput() throws IOException { 
+		return new StreamInputPort(mIn) ; 
+	}
+	
+	public OutputPort getOutput() { 
+		return new StreamOutputPort(mOut) ; 
+	}
 	
 	static public PipedStream[] getPipes(int n ) throws IOException
 	{

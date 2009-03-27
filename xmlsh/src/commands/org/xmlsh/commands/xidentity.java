@@ -10,7 +10,10 @@ import java.util.List;
 
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLEventWriter;
+import javax.xml.stream.events.XMLEvent;
 
+import org.xmlsh.core.InputPort;
+import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.SerializeOpts;
@@ -22,11 +25,21 @@ public class xidentity extends XCommand {
 	public int run(List<XValue> args) throws Exception {
 		
 		SerializeOpts opts = getSerializeOpts();
-		XMLEventReader	reader = getStdin().asXMLEventReader(opts);
-		XMLEventWriter  writer = getStdout().asXMLEventWriter(opts);
+		InputPort stdin = getStdin();
+		XMLEventReader	reader = stdin.asXMLEventReader(opts);
+		OutputPort stdout = getStdout();
+		XMLEventWriter  writer = stdout.asXMLEventWriter(opts);
 		//XdmNode node = getStdin().asXdmNode(opts);
 		//StAXUtils.copy( node.getUnderlyingNode() , writer );
-		writer.add(reader);
+		
+		stdout.setSystemId(stdin.getSystemId());
+		XMLEvent e;
+		
+		while( reader.hasNext() ){
+			e = (XMLEvent) reader.next();
+			writer.add(e);
+		}
+		// writer.add(reader);
 		reader.close();
 		writer.close();
 		return 0;

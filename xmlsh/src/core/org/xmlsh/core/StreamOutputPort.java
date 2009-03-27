@@ -13,9 +13,8 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 
+import javanet.staxutils.IndentingXMLEventWriter;
 import javanet.staxutils.IndentingXMLStreamWriter;
-import javanet.staxutils.OutputFactory;
-import javanet.staxutils.XMLStreamEventWriter;
 
 import javax.xml.stream.XMLEventWriter;
 import javax.xml.stream.XMLOutputFactory;
@@ -27,7 +26,6 @@ import javax.xml.transform.sax.TransformerHandler;
 
 import net.sf.saxon.s9api.Destination;
 import org.xmlsh.sh.shell.SerializeOpts;
-import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.SynchronizedOutputStream;
 import org.xmlsh.util.Util;
 
@@ -151,16 +149,18 @@ public class StreamOutputPort extends OutputPort
 	@Override
 	public XMLEventWriter asXMLEventWriter(SerializeOpts opts) throws InvalidArgumentException, XMLStreamException {
 		XMLOutputFactory fact = XMLOutputFactory.newInstance();
+		
+		
 		// XMLOutputFactory fact = new OutputFactory();
 		XMLEventWriter writer =  fact.createXMLEventWriter(asOutputStream(), opts.getEncoding() );
 		
-		/*
 			if( opts.isIndent() )
-				writer = new IndentingXMLStreamWriter(writer);
+				writer = new IndentingXMLEventWriter(writer);
+		
 			if( opts.isOmit_xml_declaration() )
-				writer = new OmittingXMLStreamWriter( writer );
-		*/	
-			return writer ;
+				writer = new OmittingXMLEventWriter( writer );
+		
+		return writer ;
 			
 	}
 	

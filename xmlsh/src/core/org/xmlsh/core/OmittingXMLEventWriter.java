@@ -4,22 +4,33 @@
  *
  */
 
-package org.xmlsh.util;
+package org.xmlsh.core;
 
-import java.io.IOException;
+import javanet.staxutils.helpers.EventWriterDelegate;
 
-import org.xmlsh.core.InputPort;
-import org.xmlsh.core.OutputPort;
+import javax.xml.stream.XMLEventWriter;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.events.XMLEvent;
 
+public class OmittingXMLEventWriter extends EventWriterDelegate {
 
-public abstract class PipedPort {
+	public OmittingXMLEventWriter(XMLEventWriter out) {
+		super(out);
+		// TODO Auto-generated constructor stub
+	}
 
+	/* (non-Javadoc)
+	 * @see javanet.staxutils.helpers.EventWriterDelegate#add(javax.xml.stream.events.XMLEvent)
+	 */
+	@Override
+	public void add(XMLEvent event) throws XMLStreamException {
+		
+		if( event.getEventType() == XMLEvent.START_DOCUMENT )
+			return ;
+		super.add( event );
+	}
 	
-	public	abstract 	InputPort	getInput() throws IOException ;
-	public abstract	OutputPort	getOutput() throws IOException ;
 
-
-	
 }
 
 

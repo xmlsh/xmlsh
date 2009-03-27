@@ -14,7 +14,9 @@ import net.sf.saxon.s9api.DocumentBuilder;
 import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XdmValue;
 import org.xmlsh.core.CoreException;
+import org.xmlsh.core.VariableOutputPort;
 import org.xmlsh.core.XValue;
+import org.xmlsh.core.XVariable;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.sh.shell.ShellThread;
 import org.xmlsh.util.NullInputStream;
@@ -74,10 +76,12 @@ public class CommandWord extends Word {
 	
 
 	/*
-	 * Parse an XML command expression and build the XdmValue by running 
-	 * a sub shell and parsing the XML through a pipe 
-	 * NOTE: Not entirely sure this is better then simply outputting the XML as a string
-	 * then parsing the result text.
+	 * Parse an XValue subprocess expression like
+	 *     $<( command )
+	 *     
+	 * Create a temporary output variable and use VariableOutputPort
+	 * run the command to the output then extract the value from the variable
+	 * 
 	 */
 	
 	
@@ -86,42 +90,30 @@ public class CommandWord extends Word {
 	{
 
 		
-	
-		ShellThread sht = null;
+		XVariable var = new XVariable("__temp",null);
+		VariableOutputPort port = new VariableOutputPort( var );
+		
+		
 
-
+		shell = shell.clone();
 		try {
-
-			PipedStream pipe = new PipedStream();
-
-			shell = shell.clone();
-			shell.getEnv().setStdout( pipe.getOutput() );
-			
-			
+		
+			shell.getEnv().setStdout( port );
 			shell.getEnv().setStdin( new NullInputStream() );
+			shell.exec(cmd);
 			
-
 			
-			sht = new ShellThread( shell , null ,  cmd );
-
-
-			 sht.start();
-			
-			 DocumentBuilder builder = Shell.getProcessor().newDocumentBuilder();
-			 XdmNode node = builder.build(pipe.getInput().asSource(shell.getSerializeOpts()));
-			 
-			if( sht != null )
-				sht.join();
-				
-			return node ;
-			 
-		} catch ( Exception e )
-		{
-			throw new XMLException("Exception parsing XML command: " + cmd , e );
-
-
+		
 			
 		} 
+		finally {
+			shell.close();
+
+			
+		}
+		
+		port.close();
+		return var.getValue().asXdmValue();
 		
 		
 		
