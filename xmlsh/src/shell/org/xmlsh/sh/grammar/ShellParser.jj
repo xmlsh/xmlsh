@@ -9,7 +9,7 @@ options {
   
 // DEBUG_PARSER=true;
 // DEBUG_LOOKAHEAD=true;
-// DEBUG_TOKEN_MANAGER=true;
+ // DEBUG_TOKEN_MANAGER=true;
 // FORCE_LA_CHECK=true;
   
 } 
@@ -59,7 +59,24 @@ TOKEN_MGR_DECLS :
   	
   }
   
-    String readHere(String here_end)
+  String readHere()
+  {
+  	// Read up to NL then call readHere( word );
+  	char c;
+  	StringBuffer sb = new StringBuffer();
+  	try{
+  	while( (c=input_stream.readChar())> 0 ) {
+  		if( c == '\r' )
+	  		continue;
+	  	if( c == '\n' )
+	  		break;
+	  	sb.append(c);
+  	}
+  	} catch( Exception e ){}
+  	return readHere( sb.toString().trim() );
+  }
+  
+  String readHere(String here_end)
   {
   	StringBuffer sb = new StringBuffer("");
   	char c;
@@ -132,16 +149,29 @@ TOKEN_MGR_DECLS :
 }
 
 <DEFAULT,CMD> TOKEN : {
-    < DLESS: "<<" >
-|   < DGREAT: ">>" >
+    < DGREAT: ">>" >
 |   < LESSAND: "<&" >
 |   < GREATAND: ">&" >
 |   < LESSGREAT: "<>" >
-|   < DLESSDASH: "<<-" >
 }
 
 <DEFAULT,CMD> TOKEN : {
     < CLOBBER: ">|" >
+}
+
+<DEFAULT,CMD> TOKEN : {
+
+	< DLESSMINUS: "<<-" >
+	{
+		matchedToken.image = readHere();
+	}
+|
+	< DLESS: "<<" >
+	{
+		matchedToken.image = readHere();
+	}
+	
+	
 }
 
 TOKEN : {
@@ -789,7 +819,7 @@ IORedirect io_redirect() :
 	i=io_file()	
 	{ return i; }
 				
-|	h=io_here()
+|	LOOKAHEAD(io_here()) h=io_here()
 	{ return new IORedirect( h); }
 
 }
@@ -840,24 +870,19 @@ Word	filename_word() :
 IOHere	io_here() : 
 	{ Token tless ; String s; }
 {
-	( tless=<DLESS>	| tless=<DLESSDASH> )		s=here_end() { 
-		String body = token_source.readHere(s);
-		
-				
-		return new IOHere(tless.toString(),body);
+	tless=<DLESS>{ 
+		return new IOHere( "<<" , tless.toString());
+	}
+	|
+	tless=<DLESSMINUS>
+	{ 
+		return new IOHere( "<<-" , tless.toString());
 	}
 	
 	
 
 }
 
-String here_end() : 
-	{ Token t;}
-{
-	t=<WORD> <NEWLINE>{ return t.toString() ; }
-|	t=<NAME> <NEWLINE> { return t.toString() ; }
- 
-}
 
 void	newline_list() : {}
 {

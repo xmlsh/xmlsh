@@ -45,7 +45,7 @@ public class xecho extends BuiltinCommand {
 				
 				
 				bFirst = false;
-				processor.writeXdmValue(arg.asXdmValue(), dest);
+				Util.writeXdmValue(arg.asXdmValue(), dest);
 		}
 
 		stdout.writeSequenceTerminator();
