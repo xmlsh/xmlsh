@@ -9,7 +9,7 @@ options {
   
 // DEBUG_PARSER=true;
 // DEBUG_LOOKAHEAD=true;
- // DEBUG_TOKEN_MANAGER=true;
+// DEBUG_TOKEN_MANAGER=true;
 // FORCE_LA_CHECK=true;
   
 } 
@@ -628,7 +628,7 @@ IfClause if_clause() :
 
 Command else_part() : { Command ip=null,tp=null,ep=null; }
 {
- LOOKAHEAD(2)	<ELIF>	ip=compound_list() <THEN> tp=compound_list()  ep=else_part() 
+ LOOKAHEAD(2)	<ELIF>	ip=compound_list() <THEN> tp=compound_list()  [ep=else_part()] 
 	{ return new IfClause( ip , tp , ep ); }
 |LOOKAHEAD(2)	<ELSE>	ep=compound_list() 
 	{ return ep ; }

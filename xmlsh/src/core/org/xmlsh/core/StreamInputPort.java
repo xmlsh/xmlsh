@@ -36,6 +36,7 @@ public class StreamInputPort extends InputPort {
 
 	public StreamInputPort(InputStream is) {
 		mStream = is;
+
 	}
 
 	public synchronized InputStream asInputStream(SerializeOpts opts)
