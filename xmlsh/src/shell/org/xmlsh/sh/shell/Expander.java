@@ -487,9 +487,36 @@ class Expander {
 		
 		
 		List<String>	rs = new ArrayList<String>();
+		
+		// Convert // to /
+		vs = vs.replaceAll("//", "/");
+		
+		
+		/*
+		 * If vs starts with / (or on dos x:) then use that directory as the root
+		 * instead of the current directory
+		 */
+		
+		String root = null ;
+		String parent = null;
+		if( vs.startsWith("/") ){
+			root = "/";
+			parent = "";
+			vs = vs.substring(1);
+		}
+		
+		if( Util.isWindows() && vs.matches("^[a-zA-Z]:.*") ){
+			root = vs.substring(0,2);
+			vs = vs.substring(2);
+			if( vs.startsWith("/") )
+				vs = vs.substring(1);
+			parent = root;
+		}
+		
+		
 		String	wilds[] = vs.split("/");
-		expandDir( mShell.getCurdir() , 
-				null , 
+		expandDir( root == null ? mShell.getCurdir() : new File(root) , 
+				parent , 
 				wilds , 
 				rs );
 		
@@ -524,10 +551,10 @@ class Expander {
 		}
 		
 		
-		
+		boolean caseSensitive = ! Util.isWindows();
 		String[] files = dir.list();
 		for( String f : files ){
-			if( Util.wildMatches( wild , f) &&
+			if( Util.wildMatches( wild , f, caseSensitive ) &&
 				( bDirOnly ? ( new File( dir , f ).isDirectory() ) : true ) ) 
 				results.add(f);
 		}

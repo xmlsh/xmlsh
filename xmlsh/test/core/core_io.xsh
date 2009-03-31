@@ -5,6 +5,8 @@ if [ -z "$TMPDIR" -o ! -d "$TMPDIR" ] ; then
 	exit 1;
 fi
 
+rm -f $TMPDIR/*.core_io
+
 F=$TMPDIR/test.core_io
 
 echo foo > $F
@@ -12,6 +14,10 @@ echo foo >> $F
 cat $F
 cat < $F
 cat < $(echo $F)
+
+# test wildcard expansion
+cat < $TMPDIR/*.core_io
+
 rm $F
 
 

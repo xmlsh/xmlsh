@@ -34,7 +34,7 @@ public class IOFile {
 
 		XEnvironment env = shell.getEnv();
 		
-		String file = mFile.expandString(shell, false);
+		String file = mFile.expandString(shell, true);
 		
 		boolean isPort = 	file.startsWith("{") &&
 							file.endsWith("}");

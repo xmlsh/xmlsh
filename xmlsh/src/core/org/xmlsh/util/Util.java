@@ -18,6 +18,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Result;
@@ -405,7 +406,7 @@ public class Util
 	 * Filename style wildcard matching 
 	 */
 
-	public static boolean wildMatches(String pattern, String word) {
+	public static boolean wildMatches(String pattern, String word, boolean caseSensitive ) {
 		/* 
 		 * Create a java regex that coresponds to pattern
 		 */
@@ -420,10 +421,8 @@ public class Util
 		if( reg.equals("^[$"))
 			reg = "^\\[$";
 		
-		
-		
-		
-		return word.matches(reg);
+		Pattern p = Pattern.compile(reg, caseSensitive ? 0 : Pattern.CASE_INSENSITIVE );
+		return p.matcher(word).matches();
 		
 		
 	}
@@ -616,6 +615,11 @@ public class Util
 		return ser;
 	}
 	
+	
+	public static boolean isWindows()
+	{
+		return System.getProperty("os.name").startsWith("Windows");
+	}
 
 	
 	

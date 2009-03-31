@@ -28,7 +28,7 @@ public class CaseItem {
 
 	public boolean matches(String word) {
 		for( String pattern : mPattern ){
-			if( Util.wildMatches( pattern, word ))
+			if( Util.wildMatches( pattern, word , true ))
 				return true ;
 		}
 		return false;
