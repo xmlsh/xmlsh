@@ -15,6 +15,7 @@ import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XdmSequenceIterator;
+import org.xmlsh.xproc.util.XProcException;
 /*
  
  (p:for-each|p:viewport|p:choose|p:group|p:try|p:standard-step|pfx:user-pipeline)+
@@ -89,7 +90,7 @@ abstract class AbstractStep {
 		
 
 
-	abstract void serialize(OutputContext c);
+	abstract void serialize(OutputContext c) throws XProcException;
 
 }
 

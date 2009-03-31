@@ -54,5 +54,9 @@ echo <[
 </test-report>
 ]> > xmlsh-test-report.xml
 
-echo done
+echo Done tests
+echo Pass: $(xpath 'count(//pass)' < xmlsh-test-report.xml)
+echo Fail: $(xpath 'count(//fail)' < xmlsh-test-report.xml)
+
+
 	

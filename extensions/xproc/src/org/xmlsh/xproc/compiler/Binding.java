@@ -8,6 +8,7 @@ package org.xmlsh.xproc.compiler;
 
 import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.XdmNode;
+import org.xmlsh.xproc.util.XProcException;
 
 abstract class Binding {
 
@@ -40,7 +41,7 @@ abstract class Binding {
 
 	abstract void parse(XdmNode node) ;
 
-	abstract void serialize(OutputContext c);
+	abstract void serialize(OutputContext c) throws XProcException ;
 	
 	abstract boolean isInput();
 

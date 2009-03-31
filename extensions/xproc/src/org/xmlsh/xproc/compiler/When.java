@@ -15,6 +15,7 @@ import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XdmNodeKind;
 import net.sf.saxon.s9api.XdmSequenceIterator;
+import org.xmlsh.xproc.util.XProcException;
 
 
 /*
@@ -88,7 +89,7 @@ class When {
 		}
 	}
 
-	public void serialize(OutputContext c, boolean first) {
+	public void serialize(OutputContext c, boolean first) throws XProcException {
 		// {if/elif} xpath -b {expr} ; then 
 		//     subpipe
 		// 
@@ -100,9 +101,14 @@ class When {
 		c.addBody("xpath -b " + XProcUtil.quote(test) + " ");
 		if( xpath_context != null )
 			xpath_context.serialize(c);
-		else
-			c.addBodyLine("<{" + c.getPrimaryInput().getPortVariable() + "}");
-		c.addBodyLine(" then ");
+		else {
+			Input primaryInput = c.getPrimaryInput();
+			if( primaryInput != null )
+				c.addBodyLine("<{" + primaryInput.getPortVariable() + "}");
+			else
+				c.addBodyLine("<{_context}");
+		}
+		c.addBodyLine("then ");
 		subpipeline.serialize(c);
 		c.addBodyLine("");
 		

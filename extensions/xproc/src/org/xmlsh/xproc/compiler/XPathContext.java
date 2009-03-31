@@ -7,6 +7,7 @@
 package org.xmlsh.xproc.compiler;
 
 import net.sf.saxon.s9api.XdmNode;
+import org.xmlsh.xproc.util.XProcException;
 
 
 class XPathContext {
@@ -25,7 +26,7 @@ class XPathContext {
 
 	}
 
-	public void serialize(OutputContext c) {
+	public void serialize(OutputContext c) throws XProcException {
 		binding.serialize(c);
 		
 	}

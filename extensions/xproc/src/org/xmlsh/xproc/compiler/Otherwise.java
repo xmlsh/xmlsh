@@ -15,6 +15,7 @@ import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XdmNodeKind;
 import net.sf.saxon.s9api.XdmSequenceIterator;
+import org.xmlsh.xproc.util.XProcException;
 
 class Otherwise {
 	List<OutputOrLog>	outputs = new ArrayList<OutputOrLog>();
@@ -67,7 +68,7 @@ class Otherwise {
 		}
 	}
 
-	public void serialize(OutputContext c) {
+	public void serialize(OutputContext c) throws XProcException {
 		c.addBodyLine("else");
 		subpipeline.serialize(c);
 		c.addBodyLine("");

@@ -17,6 +17,7 @@ import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XdmNodeKind;
 import net.sf.saxon.s9api.XdmSequenceIterator;
+import org.xmlsh.xproc.util.XProcException;
 
 
 /*
@@ -119,7 +120,7 @@ class AtomicStep  extends AbstractStep {
 	
 	
 	@Override
-	void serialize(OutputContext c) {
+	void serialize(OutputContext c) throws XProcException {
 		
 		for( Namespace ns : namespaces ){
 

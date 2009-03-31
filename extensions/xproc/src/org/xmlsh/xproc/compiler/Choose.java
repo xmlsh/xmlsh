@@ -15,6 +15,7 @@ import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XdmNodeKind;
 import net.sf.saxon.s9api.XdmSequenceIterator;
+import org.xmlsh.xproc.util.XProcException;
 
 /*
  <p:choose
@@ -78,7 +79,7 @@ class Choose extends AbstractStep {
 	}
 
 	@Override
-	void serialize(OutputContext c ) {
+	void serialize(OutputContext c ) throws XProcException {
 		/*
 		 * choose 
 		 * when 
@@ -97,8 +98,12 @@ class Choose extends AbstractStep {
 		 *    ...
 		 * fi
 		 */
-		if( xpath_context != null )
+		if( xpath_context != null ){
+			
+			c.addBody("xread _context ");
 			xpath_context.serialize(c);
+		}
+		
 		//else
 		//	c.addBodyLine("xread _" + c.getPrimaryInput().getPortVariable() );
 		boolean bFirst = true ;

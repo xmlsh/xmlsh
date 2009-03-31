@@ -12,6 +12,7 @@ import java.util.List;
 
 import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.XdmNode;
+import org.xmlsh.xproc.util.XProcException;
 
 /*
 subpipeline = p:variable*, (p:for-each|p:viewport|p:choose|p:group|p:try|p:standard-step|pfx:user-pipeline)+
@@ -49,7 +50,7 @@ class SubPipeline {
 		
 	}
 
-	public void serialize(OutputContext c) {
+	public void serialize(OutputContext c) throws XProcException {
 		
 		boolean bFirst = true ;
 		

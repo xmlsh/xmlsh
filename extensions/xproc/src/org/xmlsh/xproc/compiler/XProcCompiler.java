@@ -69,7 +69,7 @@ public class XProcCompiler {
 		
 	}
 
-	public void serialize(OutputContext c)
+	public void serialize(OutputContext c) throws Exception
 	{
 
 		mPipeline.serialize( c );

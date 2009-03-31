@@ -7,7 +7,8 @@
 package org.xmlsh.xproc.compiler;
 
 import net.sf.saxon.s9api.XdmNode;
-import org.xmlsh.util.Util;
+import net.sf.saxon.trans.XPathException;
+import org.xmlsh.xproc.util.XProcException;
 /*
  <p:inline
   exclude-inline-prefixes? = prefix list>
@@ -30,9 +31,14 @@ class Inline extends Binding {
 
 
 	@Override
-	void serialize(OutputContext c) {
+	void serialize(OutputContext c) throws XProcException {
 		c.addBodyLine("<<EOF");
-		c.addBody(node.toString());
+		try {
+			c.addBody(XProcUtil.serialize(node));
+		} catch (XPathException e) {
+			throw new XProcException(e);
+		}
+		
 		c.addBodyLine("");
 		c.addBodyLine("EOF");
 

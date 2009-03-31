@@ -6,12 +6,34 @@
 
 package org.xmlsh.xproc.compiler;
 
+import java.io.StringWriter;
+import java.util.Iterator;
+import java.util.Properties;
+
+import javax.xml.transform.Result;
+import javax.xml.transform.stream.StreamResult;
+
+import net.sf.saxon.Configuration;
+import net.sf.saxon.event.NamespaceReducer;
+import net.sf.saxon.event.PipelineConfiguration;
+import net.sf.saxon.event.Receiver;
+import net.sf.saxon.event.SerializerFactory;
+import net.sf.saxon.event.TreeReceiver;
+import net.sf.saxon.om.Item;
+import net.sf.saxon.om.NodeInfo;
+import net.sf.saxon.om.SequenceIterator;
+import net.sf.saxon.om.SingletonIterator;
 import net.sf.saxon.s9api.Axis;
+import net.sf.saxon.s9api.Destination;
 import net.sf.saxon.s9api.QName;
+import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XdmNodeKind;
 import net.sf.saxon.s9api.XdmSequenceIterator;
+import net.sf.saxon.s9api.XdmValue;
+import net.sf.saxon.trans.XPathException;
+import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.Util;
 
 class XProcUtil {
@@ -95,6 +117,39 @@ class XProcUtil {
 			*/
 		return "<{{" + string + "}}>";
 	}
+	
+	
+	 public static String serialize(XdmNode value) throws XPathException {
+	        NodeInfo node = value.getUnderlyingNode();
+		 	StringWriter sw = new StringWriter();
+	        Properties props = new Properties();
+	        props.setProperty("method", "xml");
+	        props.setProperty("indent", "yes");
+	        props.setProperty("omit-xml-declaration", "yes");
+	        SequenceIterator iter = SingletonIterator.makeIterator(node);
+	        
+	        serializeSequence(iter , node.getConfiguration() , new StreamResult(sw), props);
+	        return sw.toString();
+	    }
+	 
+	    public static void serializeSequence(
+	            SequenceIterator iterator, Configuration config, Result result, Properties outputProperties)
+	            throws XPathException {
+	        SerializerFactory sf = config.getSerializerFactory();
+	        PipelineConfiguration pipe = config.makePipelineConfiguration();
+	        Receiver receiver = sf.getReceiver(result, pipe, outputProperties);
+	        TreeReceiver tr = new TreeReceiver(receiver);
+	        tr.open();
+	        while (true) {
+	            Item item = iterator.next();
+	            if (item == null) {
+	                break;
+	            }
+	            tr.append(item, 0, NodeInfo.LOCAL_NAMESPACES);
+	        }
+	        tr.close();
+	    }
+
 	
 }
 

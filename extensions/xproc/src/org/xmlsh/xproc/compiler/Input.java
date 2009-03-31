@@ -11,7 +11,7 @@ import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XdmNodeKind;
 import net.sf.saxon.s9api.XdmSequenceIterator;
-import org.xmlsh.util.Util;
+import org.xmlsh.xproc.util.XProcException;
 
 
 /*
@@ -88,7 +88,7 @@ class Input {
 		}
 	}
 
-	void serialize(OutputContext c) {
+	void serialize(OutputContext c) throws XProcException {
 		
 		boolean bRead = false ;
 		if( select == null || select.isEmpty() )

@@ -4,37 +4,28 @@
  *
  */
 
-package org.xmlsh.xproc.compiler;
+package org.xmlsh.xproc.util;
 
-import java.util.ArrayList;
+public class XProcException extends Exception {
 
-import org.xmlsh.xproc.util.XProcException;
-
-@SuppressWarnings("serial")
-class BindingList extends ArrayList<Binding> {
-
-	/*
-	 * Serialize a binding list
-	 * return TRUE if there were any bindings
-	 */
-	boolean serialize(OutputContext c) throws XProcException {
-		
-		for( Binding binding : this )
-			binding.serialize(c);
-				
-		return ! this.isEmpty();
-			
-			
-		
+	public XProcException() {
+		// TODO Auto-generated constructor stub
 	}
-	
-	boolean hasInputs() {
-		for( Binding binding : this )
-			if( binding.isInput() )
-				return true ;
-		return false ;
+
+	public XProcException(String message) {
+		super(message);
+		// TODO Auto-generated constructor stub
 	}
-	
+
+	public XProcException(Throwable cause) {
+		super(cause);
+		// TODO Auto-generated constructor stub
+	}
+
+	public XProcException(String message, Throwable cause) {
+		super(message, cause);
+		// TODO Auto-generated constructor stub
+	}
 
 }
 

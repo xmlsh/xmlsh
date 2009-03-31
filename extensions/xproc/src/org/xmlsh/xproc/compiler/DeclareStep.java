@@ -145,7 +145,7 @@ class DeclareStep {
 
 
 
-	void serialize(OutputContext c) {
+	void serialize(OutputContext c) throws Exception {
 		
 		Input saveIn = c.getPrimaryInput();
 		for( Namespace ns : namespaces ){

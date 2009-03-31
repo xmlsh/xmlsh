@@ -8,6 +8,8 @@ package org.xmlsh.xproc.compiler;
 
 import java.util.ArrayList;
 
+import org.xmlsh.xproc.util.XProcException;
+
 @SuppressWarnings("serial")
 class InputList extends ArrayList<Input>
 {
@@ -27,7 +29,7 @@ class InputList extends ArrayList<Input>
 		return null;
 	}
 
-	public void serialize(OutputContext c) {
+	public void serialize(OutputContext c) throws XProcException {
 		for( Input in : this )
 			in.serialize(c);
 	}
