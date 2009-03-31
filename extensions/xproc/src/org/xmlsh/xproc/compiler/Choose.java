@@ -6,7 +6,6 @@
 
 package org.xmlsh.xproc.compiler;
 
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -66,6 +65,9 @@ class Choose extends AbstractStep {
 				else
 				if( name.equals(Names.kWHEN))
 					whens.add( When.create(child));
+				else
+				if( name.equals(Names.kOTHERWISE) )
+					otherwise = Otherwise.create(child);
 	
 				
 				
@@ -77,7 +79,39 @@ class Choose extends AbstractStep {
 
 	@Override
 	void serialize(OutputContext c ) {
-		// TODO Auto-generated method stub
+		/*
+		 * choose 
+		 * when 
+		 * when ...
+		 * othterwise
+		 * 
+		 * 
+		 */
+		/*
+		 * _context = choose_context
+		 * if  when1 ; then
+		 * 	..
+		 * elif when2 ; then
+		 * ...
+		 * else
+		 *    ...
+		 * fi
+		 */
+		if( xpath_context != null )
+			xpath_context.serialize(c);
+		//else
+		//	c.addBodyLine("xread _" + c.getPrimaryInput().getPortVariable() );
+		boolean bFirst = true ;
+		
+		for( When w : whens ){
+			w.serialize( c , bFirst );
+			bFirst = false ;
+		}
+		if( this.otherwise != null )
+			otherwise.serialize(c);
+		
+		c.addBodyLine("fi");
+		
 		
 	}
 	

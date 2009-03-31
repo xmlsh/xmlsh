@@ -30,18 +30,10 @@ import net.sf.saxon.s9api.XdmSequenceIterator;
  */
 class When {
 	
-	static class WhenOption extends OutputOrLog
-	{
-		XPathContext	xpath_context;
 
-		WhenOption(XPathContext xpath_context, Output output, Log log) {
-			super( output , log );
-			this.xpath_context = xpath_context;
-		}
+	XPathContext	xpath_context;
 
-	}
-	
-	List<WhenOption>	when_options = new ArrayList<WhenOption>();
+	List<OutputOrLog>	outputs = new ArrayList<OutputOrLog>();
 	SubPipeline 	subpipeline = new SubPipeline();
 	
 	String	test;
@@ -60,7 +52,6 @@ class When {
 	}
 
 	private void parseChildren(XdmNode parent) {
-		XPathContext	xpath_context = null;
 		Output			output = null;
 		Log				log = null ;
 		
@@ -82,10 +73,10 @@ class When {
 				if( name.equals(Names.kLOG))
 					log = Log.create(child);
 				
-				if( xpath_context != null && (output != null || log != null )){
+				if(output != null || log != null ){
 					
-					when_options.add( new WhenOption(xpath_context,output,log));
-					xpath_context = null;
+					outputs.add( new OutputOrLog(output,log));
+
 					output = null;
 					log = null;
 					continue ;
@@ -95,6 +86,26 @@ class When {
 				subpipeline.parse(child);
 			}
 		}
+	}
+
+	public void serialize(OutputContext c, boolean first) {
+		// {if/elif} xpath -b {expr} ; then 
+		//     subpipe
+		// 
+		if( first )
+			c.addBody("if ");
+		else
+			c.addBody("elif ");
+		
+		c.addBody("xpath -b " + XProcUtil.quote(test) + " ");
+		if( xpath_context != null )
+			xpath_context.serialize(c);
+		else
+			c.addBodyLine("<{" + c.getPrimaryInput().getPortVariable() + "}");
+		c.addBodyLine(" then ");
+		subpipeline.serialize(c);
+		c.addBodyLine("");
+		
 	}
 
 }

@@ -35,23 +35,27 @@ class Input {
 	String		port;
 	boolean		sequence;
 	Boolean		primary;		// Use an object for primary to distinguish between unset/true/false
+	boolean		step;			// If true this is a 'step' input as apposed to a 'pipeline' input
+	
 	String 		kind;
 	XPathExpression		select;
 	
 	BindingList	bindings = new BindingList();
 	
-	Input() {} 
+	Input(boolean step) {this.step = step ;} 
 	
-    Input(String port, String kind, boolean primary) 
+    Input(String port, String kind, boolean primary, boolean step ) 
     {
 		this.port = port ;
 		this.kind = kind ;
 		this.primary = primary;
+		this.step = step;
 	}
 
-	static Input create( XdmNode node )
+	static Input create( XdmNode node , boolean step )
 	{
-		Input input = new Input();
+	
+		Input input = new Input(step);
 		input.parse(node);
 		return input;
 	}
@@ -86,23 +90,31 @@ class Input {
 
 	void serialize(OutputContext c) {
 		
+		boolean bRead = false ;
 		if( select == null || select.isEmpty() )
 		{
 			// If this input is the default input and its parent is the same, then dont add
 			// an xread
-			if( ! c.isDerivedInput(this))
+			if( ! step && ! c.isDerivedInput(this)){
 				c.addPreamble("xread " + getPortVariable() );
+				bRead = true ;
+			}
 			
 		}
 		else
+		{
 			c.addPreamble("xpath " + XProcUtil.quote(select.xpath) + " >{" +getPortVariable()  +"}");
+			bRead = true ;
+		}
 		
 
 		
 		bindings.serialize(c);
 		c.addPreambleLine("");
 		
-		c.addBody(" <{" + getPortVariable() +"}");
+		//if(! bindings.hasInputs() )
+		if( bRead )
+			c.addBody(" <{" + getPortVariable() +"}");
 		
 		
 	}

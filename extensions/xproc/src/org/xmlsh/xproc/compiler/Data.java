@@ -31,9 +31,19 @@ class Data extends Binding {
 	@Override
 	void serialize(OutputContext c) {
 		// TODO Auto-generated method stub
-		
+		return ;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.xmlsh.xproc.compiler.Binding#isInput()
+	 */
+	@Override
+	boolean isInput() {
+		
+		return true;
+	}
+
+	
 }
 
 

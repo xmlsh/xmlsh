@@ -53,6 +53,14 @@ class SubPipeline {
 		
 		boolean bFirst = true ;
 		
+		c.addBody(" ( ");
+		c = c.push();
+
+		
+	
+	
+		
+		
 		for( AbstractStep step : steps ){
 			if( ! bFirst )
 				c.addBodyLine(" |");
@@ -60,6 +68,9 @@ class SubPipeline {
 			step.serialize(c);
 			
 		}
+		c = c.pop();
+		c.addBody(" )" );
+		
 			
 		
 	}

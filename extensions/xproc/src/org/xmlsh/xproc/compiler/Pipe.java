@@ -33,7 +33,15 @@ class Pipe extends Binding {
 		// TODO Auto-generated method stub
 		
 	}
-
+	/* (non-Javadoc)
+	 * @see org.xmlsh.xproc.compiler.Binding#isInput()
+	 */
+	@Override
+	boolean isInput() {
+		
+		return false;
+	}
+	
 }
 
 

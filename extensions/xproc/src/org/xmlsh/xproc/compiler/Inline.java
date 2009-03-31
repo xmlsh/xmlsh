@@ -24,20 +24,29 @@ class Inline extends Binding {
 	@Override
 	void parse(XdmNode node) {
 		exclude_inline_prefixes = XProcUtil.getAttrList(node, "exclude-inline-prefixes");
-		node = XProcUtil.getFirstChild(node);
+		this.node = XProcUtil.getFirstChild(node);
 		
 	}
 
 
 	@Override
 	void serialize(OutputContext c) {
-		c.addBody("<<EOF");
+		c.addBodyLine("<<EOF");
 		c.addBody(node.toString());
-		c.addBody("\nEOF\n");
+		c.addBodyLine("");
+		c.addBodyLine("EOF");
 
 		
 	}
-
+	/* (non-Javadoc)
+	 * @see org.xmlsh.xproc.compiler.Binding#isInput()
+	 */
+	@Override
+	boolean isInput() {
+		
+		return true;
+	}
+	
 }
 
 

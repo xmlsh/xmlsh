@@ -97,7 +97,7 @@ class AtomicStep  extends AbstractStep {
 				
 				QName name = child.getNodeName();
 				if( name.equals( Names.kINPUT))
-					inputs.add( Input.create(child));
+					inputs.add( Input.create(child,true));
 				else
 				if( name.equals( Names.kWITH_OPTION))
 					withoptions.add( WithOption.create(child));

@@ -51,8 +51,8 @@ class Pipeline extends DeclareStep {
 
 		 */
 		
-		inputs.add( new Input("source" , null , true ));
-		inputs.add( new Input("parameters" , "parameters" , true ));
+		inputs.add( new Input("source" , null , true ,false));
+		inputs.add( new Input("parameters" , "parameters" , true,false ));
 		outputs.add( new Output("result" , true ));
 		
 	}

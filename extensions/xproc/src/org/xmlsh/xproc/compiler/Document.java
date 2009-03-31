@@ -34,9 +34,18 @@ class Document extends Binding {
 	void serialize(OutputContext c) {
 		
 		c.addPreamble("< " + href );
+
 		
 	}
-
+	/* (non-Javadoc)
+	 * @see org.xmlsh.xproc.compiler.Binding#isInput()
+	 */
+	@Override
+	boolean isInput() {
+		
+		return true;
+	}
+	
 }
 
 

@@ -41,6 +41,8 @@ abstract class Binding {
 	abstract void parse(XdmNode node) ;
 
 	abstract void serialize(OutputContext c);
+	
+	abstract boolean isInput();
 
 }
 

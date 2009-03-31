@@ -25,6 +25,11 @@ class XPathContext {
 
 	}
 
+	public void serialize(OutputContext c) {
+		binding.serialize(c);
+		
+	}
+
 }
 
 

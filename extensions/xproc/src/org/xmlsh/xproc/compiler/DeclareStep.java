@@ -96,7 +96,7 @@ class DeclareStep {
 				QName name = child.getNodeName();
 				
 				if( name.equals(Names.kINPUT))
-					inputs.add( Input.create(child));
+					inputs.add( Input.create(child,false));
 				else
 				if( name.equals(Names.kOUTPUT))
 					outputs.add( Output.create(child));
@@ -153,16 +153,12 @@ class DeclareStep {
 		}
 		Input in =	inputs.getPrimary();
 		c.setPrimaryInput(in);
-//		if( in != null )
-//			c.addBodyLine("xread " + in.getPortVariable() );
-		c.addBody(" ( ");
-		c = c.push();
+
+
 		subpipeline.serialize(c);
-		c = c.pop();
-		c.addBody(" )" );
+
 		
 		if( in != null ){
-			// c.addBody("<{" + in.getPortVariable() +"}");
 
 			in.serialize(c);
 			

@@ -11,13 +11,28 @@ import java.util.ArrayList;
 @SuppressWarnings("serial")
 class BindingList extends ArrayList<Binding> {
 
-	void serialize(OutputContext c) {
+	/*
+	 * Serialize a binding list
+	 * return TRUE if there were any bindings
+	 */
+	boolean serialize(OutputContext c) {
+		
 		for( Binding binding : this )
 			binding.serialize(c);
+				
+		return ! this.isEmpty();
 			
 			
 		
 	}
+	
+	boolean hasInputs() {
+		for( Binding binding : this )
+			if( binding.isInput() )
+				return true ;
+		return false ;
+	}
+	
 
 }
 

@@ -18,10 +18,18 @@ class Empty extends Binding {
 
 	@Override
 	void serialize(OutputContext c) {
-		// TODO Auto-generated method stub
+		c.addBody("< /dev/null");
 		
 	}
-
+	/* (non-Javadoc)
+	 * @see org.xmlsh.xproc.compiler.Binding#isInput()
+	 */
+	@Override
+	boolean isInput() {
+		
+		return true;
+	}
+	
 }
 
 
