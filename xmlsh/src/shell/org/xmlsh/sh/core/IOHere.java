@@ -26,9 +26,9 @@ public class IOHere {
 		out.print(mHere);
 		
 	}
-	public void exec(Shell shell) throws CoreException, UnsupportedEncodingException  {
+	public void exec(Shell shell, String port) throws CoreException, UnsupportedEncodingException  {
 		
-		shell.getEnv().setStdin( 
+		shell.getEnv().setInput( port , 
 				new ByteArrayInputStream(mHere.getBytes(shell.getTextEncoding())));
 		
 	}

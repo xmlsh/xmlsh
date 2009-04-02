@@ -34,7 +34,7 @@ public class IOCommand {
 
 	
 	
-	public void exec(Shell shell) throws IOException, CoreException {
+	public void exec(Shell shell, String port) throws IOException, CoreException {
 
 		XEnvironment env = shell.getEnv();
 		
@@ -59,7 +59,7 @@ public class IOCommand {
 
 
 
-				env.setStdin( pipe.getInput()  );
+				env.setInput( port , pipe.getInput()  );
 				
 				sht.start();
 				

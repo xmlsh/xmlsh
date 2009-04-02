@@ -18,8 +18,10 @@ import java.util.Collection;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
+import net.sf.saxon.s9api.SaxonApiException;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 
 public class XEnvironment  {
@@ -314,29 +316,62 @@ public class XEnvironment  {
 	 * @throws IOException
 	 * @see org.xmlsh.core.XIOEnvironment#setStdin(java.io.InputStream)
 	 */
-	public void setStdin(InputStream stdin) throws CoreException {
-		mIO.setStdin(stdin);
+	
+	public void setStdin(InputStream in) throws CoreException {
+		setInput(null, in );
 	}
 
 	public void setStdin(XVariable variable) throws CoreException {
-		mIO.setStdin( variable );
+		
+		setInput( null , variable );
 	}
-	public void setStdin(InputPort port) throws CoreException {
-		mIO.setStdin( port );
+	public void setStdin(InputPort in ) throws CoreException {
+		
+		setInput( null , in );
+	}
+	
+	public InputPort setInput(String name,InputStream in) throws CoreException {
+		return mIO.setInput( name,new StreamInputPort(in,null));
 	}
 
-	/**
-	 * @param stdout
-	 * @throws IOException
-	 * @throws InvalidArgumentException 
-	 * @see org.xmlsh.core.XIOEnvironment#setStdout(java.io.OutputStream)
-	 */
-	public void setStdout(OutputStream stdout) throws CoreException {
-		mIO.setStdout(stdout);
+	public InputPort setInput(String name, XVariable variable) throws CoreException {
+		
+		return mIO.setInput( name,new VariableInputPort(variable));
 	}
-	public void setStdout(OutputPort stdout) throws CoreException {
-		mIO.setStdout(stdout);
+	
+	public InputPort setInput( String name , InputPort in ) throws CoreException {
+		
+		return mIO.setInput( name  , in );
 	}
+
+
+	public void setStdout(OutputStream out) throws CoreException {
+		setOutput( null ,  new StreamOutputPort(out));
+		
+	}
+	public void setStdout(OutputPort  port) throws CoreException {
+		setOutput( null , port );
+	}
+
+	public void setStdout(XVariable xvar) throws CoreException {
+		setOutput( null ,  new VariableOutputPort(xvar));
+	}
+
+	public void setOutput(String name ,OutputStream out) throws CoreException {
+		setOutput( name,new StreamOutputPort(out));
+		
+	}
+
+
+	public void setOutput(String name ,XVariable xvar) throws CoreException {
+		setOutput( name,new VariableOutputPort(xvar));
+	}
+	
+	public void setOutput(String name , OutputPort out) throws CoreException {
+		mIO.setOutput( name, out );
+	}
+	
+
 	public void declareNamespace(String ns ) {
 		if( mNamespaces == null )
 			mNamespaces = new Namespaces();
@@ -357,22 +392,66 @@ public class XEnvironment  {
 	}
 
 
-	public InputStream getInputStream(XValue file) throws IOException {
-		return mShell.getInputStream(file.toString());
-	}
-
-	public Source getSource(String  file) throws IOException, URISyntaxException {
-		return new StreamSource( mShell.getURI(file).toASCIIString() );
-	}
-
-	public Source getSource(XValue value) throws IOException, URISyntaxException {
-		return getSource( value.toString());
-
+	public InputStream getInputStream(XValue file,SerializeOpts opts) throws InvalidArgumentException, SaxonApiException, IOException {
+		return getInput(file).asInputStream(opts);
 	}
 
 
-	public void setStdout(XVariable xvar) throws CoreException {
-		mIO.setStdout( xvar );
+
+	public Source getSource(XValue value,SerializeOpts opts) throws InvalidArgumentException, SaxonApiException, IOException {
+		return getInput(value).asSource(opts);
+
+	}
+
+
+	
+
+	/*
+	 * Get an input by name or value
+	 * 
+	 * If port is null return stdin
+	 * If port is a string 
+	 * If port is a string 
+	 * 	  if equals to "-" return stdin
+	 *    if looks like "(name)" return port named "name"
+	 *    if looks like "scheme://path" return a port based on an input stream from UI
+	 *    if looks like "name" return a port based on an input stream by filename
+	 *	  if looks like "{name}" returns a port based on a env variable
+	 * if port is a node return an anonymous port based on a value
+	 * 
+	 */
+	public InputPort getInput(XValue port) throws IOException {
+		
+		if( port == null )
+			return getStdin();
+		if( port.isString()){
+			String name = port.toString().trim();
+			if( name.equals("-"))
+				return getStdin();
+			else
+			if( name.startsWith("(") && name.endsWith(")") )
+				return mIO.getInputPort( name.substring(1,name.length()-1));
+			else
+			if( name.startsWith("{") && name.endsWith("}") ){
+				String varname = name.substring(1,name.length()-1);
+				return new VariableInputPort( getVar(varname));
+			}
+				
+			// Get a stream from name
+			InputStream in = getInputStream(name);
+			if( in == null )
+				return null ;
+			
+			InputPort p = new StreamInputPort( in,name );
+			return p;
+			
+			
+		}
+		else
+		{
+			InputPort p = new VariableInputPort(  new XVariable(null,port) );
+			return p;
+		}
 		
 	}
 

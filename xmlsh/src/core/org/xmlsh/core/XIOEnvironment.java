@@ -65,64 +65,46 @@ public class XIOEnvironment {
 		return stderr ;
 	}
 
-	/**
-	 * @param systemid 
-	 * @param stdin the stdin to set
-	 * @throws IOException 
-	 */
-	public void setStdin(InputStream in) throws CoreException {
-		setStdin( new StreamInputPort(in));
-	}
 
-	public void setStdin(XVariable variable) throws CoreException {
-		
-		setStdin( new VariableInputPort(variable));
-	}
-	
-	
-	public void setStdin(InputPort port) throws CoreException {
-		
-		mStdinRedirected = true ;
-		InputPort stdin = mInputs.getDefault();
+	public InputPort setInput(String name, InputPort port) throws CoreException {
+		InputPort in;
+		if( name == null ){
+			in =  mInputs.getDefault();
+			mStdinRedirected = true ;
+		}
+		else
+			in	= mInputs.get(name);
 
 		
-		if( stdin != null ){
-			mInputs.removePort( stdin );
-			stdin.release();
+		if( in != null ){
+			mInputs.removePort( in );
+			in.release();
 		}
 
-		mInputs.add( new NamedPort<InputPort>( null , true , port  ));
+		mInputs.add( new NamedPort<InputPort>( name , name == null  , port  ));
+		return port ;
 		
 	}
 		
 	
-	/**
-	 * @param stdout the stdout to set
-	 * @throws IOException 
-	 * @throws InvalidArgumentException 
-	 */
-	public void setStdout(OutputStream out) throws CoreException {
-		setStdout( new StreamOutputPort(out));
-		
-	}
+	
 
 
-	public void setStdout(XVariable xvar) throws CoreException {
-		setStdout( new VariableOutputPort(xvar));
-	}
 
-	public void setStdout(OutputPort port) throws CoreException {
-		OutputPort stdout = mOutputs.getDefault();
+	public void setOutput(String name , OutputPort port) throws CoreException {
+		OutputPort out ;
+		if( name == null )
+			out =  mOutputs.getDefault();
+		else
+			out = mOutputs.get(name);
 
-		if (stdout != null) {
-			mOutputs.removePort(stdout);
-			stdout.release();
+		if (out != null) {
+			mOutputs.removePort(out);
+			out.release();
 		}
 
-		mOutputs.add(new NamedPort<OutputPort>(null, true, port));
+		mOutputs.add(new NamedPort<OutputPort>(name, name == null , port));
 	}
-
-	
 	
 	
 	
@@ -185,7 +167,7 @@ public class XIOEnvironment {
 	public void initStdio() throws IOException {
 
 		mInputs.add( 
-				new NamedPort<InputPort>( null , true , new StreamInputPort(System.in) )
+				new NamedPort<InputPort>( null , true , new StreamInputPort(System.in,null) )
 		);
 
 		mOutputs.add( 
@@ -199,6 +181,14 @@ public class XIOEnvironment {
 
 	}
 
+	/* return a named input port 
+	 * 
+	 */
+	protected	InputPort	getInputPort( String name )
+	{
+		return mInputs.get(name);
+	}
+	
 }
 
 

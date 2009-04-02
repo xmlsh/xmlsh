@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 import org.xmlsh.core.CoreException;
+import org.xmlsh.core.InputPort;
 import org.xmlsh.core.XEnvironment;
 import org.xmlsh.core.XVariable;
 import org.xmlsh.sh.shell.Shell;
@@ -30,7 +31,7 @@ public class IOFile {
 
 	
 	
-	public void exec(Shell shell) throws IOException, CoreException {
+	public void exec(Shell shell, String port) throws IOException, CoreException {
 
 		XEnvironment env = shell.getEnv();
 		
@@ -43,12 +44,12 @@ public class IOFile {
 			
 			
 			if( mPrefix.equals("<"))
-				env.setStdin( env.getVar(var) );
+				env.setInput( port ,  env.getVar(var) );
 			else
 			if( mPrefix.equals(">")){
 				XVariable xvar = new XVariable(var,null);
 				env.setVar(xvar);
-				env.setStdout(xvar);
+				env.setOutput(port,xvar);
 			}
 			else
 			if( mPrefix.equals(">>"))
@@ -58,7 +59,7 @@ public class IOFile {
 					xvar = new XVariable(var,null);
 					env.setVar(xvar);
 				}
-				env.setStdout(xvar);				
+				env.setOutput(port,xvar);				
 			}
 			
 			return ;
@@ -69,8 +70,8 @@ public class IOFile {
 		
 		
 		if( mPrefix.equals("<")){
-			env.setStdin( shell.getInputStream(file)  );
-			env.getStdin().setSystemId(file);
+			InputPort in = env.setInput(port, shell.getInputStream(file)  );
+			in.setSystemId(file);
 		}
 		else
 		if( mPrefix.equals("2>"))
@@ -78,10 +79,10 @@ public class IOFile {
 		
 		else
 		if( mPrefix.equals(">"))
-			env.setStdout(shell.getOutputStream(file, false));
+			env.setOutput(port,shell.getOutputStream(file, false));
 		else
 		if( mPrefix.equals(">>"))
-				env.setStdout(shell.getOutputStream(file, true));
+				env.setOutput(port,shell.getOutputStream(file, true));
 
 				
 

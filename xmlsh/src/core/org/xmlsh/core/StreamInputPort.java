@@ -34,8 +34,9 @@ public class StreamInputPort extends InputPort {
 	// An Input Port may be either a Stream or an XML value
 	private InputStream mStream;
 
-	public StreamInputPort(InputStream is) {
+	public StreamInputPort(InputStream is, String systemId ) {
 		mStream = is;
+		this.setSystemId(systemId);
 
 	}
 

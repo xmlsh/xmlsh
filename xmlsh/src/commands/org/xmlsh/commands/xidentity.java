@@ -13,6 +13,7 @@ import javax.xml.stream.XMLEventWriter;
 import javax.xml.stream.events.XMLEvent;
 
 import org.xmlsh.core.InputPort;
+import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
@@ -24,24 +25,36 @@ public class xidentity extends XCommand {
 	@Override
 	public int run(List<XValue> args) throws Exception {
 		
-		SerializeOpts opts = getSerializeOpts();
-		InputPort stdin = getStdin();
-		XMLEventReader	reader = stdin.asXMLEventReader(opts);
-		OutputPort stdout = getStdout();
-		XMLEventWriter  writer = stdout.asXMLEventWriter(opts);
-		//XdmNode node = getStdin().asXdmNode(opts);
-		//StAXUtils.copy( node.getUnderlyingNode() , writer );
-		
-		stdout.setSystemId(stdin.getSystemId());
-		XMLEvent e;
-		
-		while( reader.hasNext() ){
-			e = (XMLEvent) reader.next();
-			writer.add(e);
+		InputPort stdin = null;
+		if( args.size() > 0 )
+			stdin = getInput( args.get(0));
+		else
+			stdin = getStdin();
+		if( stdin == null )
+			throw new InvalidArgumentException("Cannot open input");
+		try {
+			
+			SerializeOpts opts = getSerializeOpts();
+			
+			XMLEventReader	reader = stdin.asXMLEventReader(opts);
+			OutputPort stdout = getStdout();
+			XMLEventWriter  writer = stdout.asXMLEventWriter(opts);
+			
+			stdout.setSystemId(stdin.getSystemId());
+			XMLEvent e;
+			
+			while( reader.hasNext() ){
+				e = (XMLEvent) reader.next();
+				writer.add(e);
+			}
+			// writer.add(reader);
+			reader.close();
+			writer.close();
+		} 
+		finally {
+			
+			stdin.close();
 		}
-		// writer.add(reader);
-		reader.close();
-		writer.close();
 		return 0;
 		
 		

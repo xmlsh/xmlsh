@@ -72,7 +72,7 @@ public class csv2xml extends XCommand
 // Input is stdin and/or list of commands
 		
 		InputStream in = null;
-		if( xvargs.size() == 0 || xvargs.get(0).toString().equals("-"))
+		if( xvargs.size() == 0 )
 			in = getStdin().asInputStream(getSerializeOpts());
 		else
 			in = getInputStream( xvargs.get(0) );

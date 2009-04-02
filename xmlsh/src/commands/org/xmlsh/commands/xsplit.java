@@ -40,6 +40,7 @@ import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.XMLEvent;
 
+import org.xmlsh.core.InputPort;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
@@ -104,13 +105,17 @@ public class xsplit extends XCommand {
 			return 1;
 		}
 		
-		InputStream is = 
+		InputPort in = 
 			xvargs.size() == 1 ? 
-					getInputStream(xvargs.get(0)): 
-					getStdin().asInputStream(getSerializeOpts()) ;
+					getInput(xvargs.get(0)): 
+					getStdin();
+			
+		
+		InputStream is = in.asInputStream(getSerializeOpts()) ;
 		split(is );
 		
 		is.close();
+		in.close();
 		
 		
 		

@@ -18,6 +18,7 @@ import java.util.List;
 
 import javax.xml.transform.Source;
 
+import net.sf.saxon.s9api.SaxonApiException;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 
@@ -101,50 +102,21 @@ public abstract class XCommand implements ICommand {
 	}
 
 
-	/**
-	 * @param file
-	 * @return
-	 * @throws FileNotFoundException
-	 * @throws IOException
-	 * @see org.xmlsh.core.XEnvironment#getInputStream(java.lang.String)
-	 */
-	public InputStream getInputStream(String file) throws FileNotFoundException, IOException {
-		return mEnvironment.getInputStream(file);
-	}
 
-	public InputStream getInputStream(XValue file) throws FileNotFoundException, IOException {
-		return mEnvironment.getInputStream(file);
+
+	public InputStream getInputStream(XValue file) throws InvalidArgumentException, SaxonApiException, IOException {
+		return mEnvironment.getInputStream(file,getSerializeOpts());
 	}
 
 
 
-	/**
-	 * @param file
-	 * @return
-	 * @throws IOException
-	 * @throws URISyntaxException
-	 * @see org.xmlsh.core.XEnvironment#getSource(java.lang.String)
-	 */
-	public Source getInputSource(String file) throws IOException, URISyntaxException {
-		return mEnvironment.getSource(file);
-	}
 
 
-
-	/**
-	 * @param value
-	 * @return
-	 * @throws URISyntaxException 
-	 * @throws IOException 
-	 * @see org.xmlsh.core.XEnvironment#getSource(org.xmlsh.core.XValue)
-	 */
-	public Source getSource(XValue value) throws IOException, URISyntaxException {
-		return mEnvironment.getSource(value);
+	public Source getSource(XValue value) throws InvalidArgumentException, SaxonApiException, IOException {
+		return mEnvironment.getSource(value,getSerializeOpts());
 	}
 	 
-	public Source getSource(String value) throws IOException, URISyntaxException {
-			return mEnvironment.getSource(value);
-	}
+
 
 
 
@@ -162,6 +134,12 @@ public abstract class XCommand implements ICommand {
 	}
 
 
+	public	InputPort	getInput( XValue name ) throws IOException
+	{
+		return mEnvironment.getInput( name );
+	}
+	
+	
 
 	/**
 	 * @param s

@@ -8,7 +8,7 @@ options {
   STATIC=false;
   
 // DEBUG_PARSER=true;
-// DEBUG_LOOKAHEAD=true;
+//  DEBUG_LOOKAHEAD=true;
 // DEBUG_TOKEN_MANAGER=true;
 // FORCE_LA_CHECK=true;
   
@@ -195,6 +195,9 @@ TOKEN : {
 | 	< LPAREN: "(" >
 }
 
+<CMD> TOKEN : {
+	< LPAREN2 : "(" >
+}
 
 <DEFAULT> TOKEN : {
 	< RBRACE: "}" >	: CMD	// RESERVED WORD only at beginning of command and starts a command    
@@ -814,38 +817,47 @@ IORedirectList redirect_list() :
 }
 
 IORedirect io_redirect() : 
-	{  IORedirect i;  IOHere h;}
-{
-	i=io_file()	
-	{ return i; }
-				
-|	LOOKAHEAD(io_here()) h=io_here()
-	{ return new IORedirect( h); }
+	{  IOFile i=null;  IOHere h=null; Word port =null ;}
+{ 
+	
+	[<LPAREN2> port=cmd_word() <RPAREN>] ( i=io_file() | h=io_here() )
+	{ 
+		if( i != null )
+			return new IORedirect(port,i);
+		else
+		     return new IORedirect(port, h);
+		
+	}
 
 }
 
+  	
 
-IORedirect io_file() : 
+
+
+
+
+IOFile io_file() : 
 	{ Token t; Word s; String num; Command c;}
 {
 	<LESS>			s=filename_word()
-		{ return new IORedirect( new IOFile( "<" , s )); }
+		{ return new IOFile( "<" , s ); }
 			
 |	t=<LESSAND>		s=filename_word()
-		{ return new IORedirect(new IOFile( t.toString() , s )); }
+		{ return new IOFile( t.toString() , s); }
 |	<TGT>				s=filename_word()
-		{ return new IORedirect(new IOFile( "2>" , s )); }
+		{ return new IOFile( "2>" , s ); }
 |	<GT>				s=filename_word()
-		{ return new IORedirect(new IOFile( ">" , s )); }
+		{ return new IOFile( ">" , s ); }
 |	<DGREAT>				s=filename_word()
-		{ return new IORedirect(new IOFile( ">>" , s )); }
+		{ return new IOFile( ">>" , s ); }
 |	t=<GREATAND>	s=filename_word()
-		{ return new IORedirect(new IOFile( t.toString() , s )); }
+		{ return new IOFile( t.toString() , s ); }
 
 |	t=<LESSGREAT>	s=filename_word()
-		{ return new IORedirect(new IOFile(t.toString() , s )); }
+		{ return new IOFile(t.toString() , s ); }
 |	t=<CLOBBER>		s=filename_word()
-		{ return new IORedirect(new IOFile( t.toString() , s )); }
+		{ return new IOFile( t.toString() , s ); }
 // |	t=<LTPAREN>  c=compound_list() <RPAREN> 
 //       { return new IORedirect( new IOCommand( "<(" , c )); }
 }

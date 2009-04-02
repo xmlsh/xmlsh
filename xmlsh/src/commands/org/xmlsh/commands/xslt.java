@@ -42,49 +42,24 @@ public class xslt extends XCommand {
 		XsltCompiler compiler = processor.newXsltCompiler();
 		Source	context = null;
 		
-		
-
-		boolean bReadStdin = false ;
+	
 		if( ! opts.hasOpt("n" ) ){ // Has XML data input
 			OptionValue ov = opts.getOpt("i");
+			if( ov != null )
+				context = getInput( ov.getValue()).asSource(getSerializeOpts());
+			else
+				context = getStdin().asSource(getSerializeOpts());
 			
-			// If -i argument is an XML expression take the first node as the context
-			if( ov != null  && ov.getValue().isXExpr() ){
-				XdmItem item = ov.getValue().asXdmValue().itemAt(0);
-				if( item instanceof XdmNode )
-					context = ((XdmNode) item).asSource() ; // builder.build(((XdmNode)item).asSource());
-				 // context = (XdmNode) ov.getValue().toXdmValue();
-			}
-			if( context == null )
-			{
-	
-				if( ov != null && ! ov.getValue().toString().equals("-"))
-					context =  getSource(ov.getValue());
-				else {
-					bReadStdin = true ;
-					context =  getStdin().asSource(getSerializeOpts());
-				}	
-			}
 		}
 		
 		Source source = null;
 		
-		
+		try {
 		List<XValue> xvargs = opts.getRemainingArgs();
 		
 		OptionValue ov = opts.getOpt("f");
 		if( ov != null ){
-			String fname = ov.getValue().toString();
-			if( fname.equals("-")){
-				if( bReadStdin )
-					throwInvalidArg( "Cannot read both xslt and context from stdin");
-			
-				source = getStdin().asSource(getSerializeOpts());
-			}
-			else
-				source =  getSource(fname);
-	
-
+			source = getInput(ov.getValue()).asSource(getSerializeOpts());
 		}
 
 		
@@ -132,6 +107,9 @@ public class xslt extends XCommand {
 		
 		eval.transform();
 		stdout.writeSequenceTerminator();
+		} finally {
+			
+		}
 		
 		return 0;
 		

@@ -11,27 +11,29 @@ import java.io.PrintWriter;
 import org.xmlsh.sh.shell.Shell;
 
 public class IORedirect {
-	IOFile	mFile;
-	IOHere	mHere;
-	IOCommand mCommand;
+	Word	mPortname;	// (word)
+	IOFile	mFile;		//  < file
+	IOHere	mHere;		// <<tag ...tag
+	IOCommand mCommand; // <(cmd) // NOT IN USE 
 
 	
-	public IORedirect( IOFile file ){
+	public IORedirect( Word name , IOFile file ){
+		mPortname = name ;
 		
 		mFile = file;
 		mHere = null;
 		mCommand = null;
 	}
 	
-	public IORedirect( IOHere here ){
-		
+	public IORedirect(Word name ,  IOHere here ){
+		mPortname = name ;
 		mFile = null;
 		mCommand = null;
 		mHere = here;
 	}
 	
-	public IORedirect( IOCommand command ){
-		
+	public IORedirect( Word name , IOCommand command ){
+		mPortname = name ;
 		mFile = null;
 		mCommand = command;
 		mHere = null;
@@ -39,6 +41,13 @@ public class IORedirect {
 
 	public void print(PrintWriter out) {
 		
+		if( mPortname != null ){
+			out.print("(");
+			mPortname.print(out);
+			out.print(")");
+			
+		}
+			
 		if( mFile != null)
 			mFile.print(out);
 		if( mHere != null)
@@ -49,12 +58,18 @@ public class IORedirect {
 	}
 
 	public void exec(Shell shell) throws Exception {
+		
+		String port = null;
+		if( mPortname != null )
+			port  = mPortname.expandString(shell, false);
+		
+		
 		if( mFile != null )
-			mFile.exec(shell);
+			mFile.exec(shell,port);
 		if( mHere != null )
-			mHere.exec( shell);
+			mHere.exec( shell,port);
 		if( mCommand != null )
-			mCommand.exec(shell);
+			mCommand.exec(shell,port);
 		
 	}
 }
