@@ -84,7 +84,11 @@ public class StreamInputPort extends InputPort {
 	@Override
 	public XMLEventReader asXMLEventReader(SerializeOpts opts) throws CoreException {
 		try {
-		return XMLInputFactory.newInstance().createXMLEventReader( getSystemId() , asInputStream(opts));
+		XMLInputFactory factory = XMLInputFactory.newInstance();
+		if( ! opts.isSupports_dtd())
+			factory.setProperty(XMLInputFactory.SUPPORT_DTD, "false");
+		
+		return factory.createXMLEventReader( getSystemId() , asInputStream(opts));
 		} catch (Exception e)
 		{
 			throw new CoreException( e );
@@ -94,7 +98,10 @@ public class StreamInputPort extends InputPort {
 	@Override
 	public XMLStreamReader asXMLStreamReader(SerializeOpts opts) throws CoreException {
 		try {
-			XMLStreamReader reader =  XMLInputFactory.newInstance().createXMLStreamReader(getSystemId() , asInputStream(opts));
+			XMLInputFactory factory = XMLInputFactory.newInstance();
+			if( ! opts.isSupports_dtd())
+				factory.setProperty(XMLInputFactory.SUPPORT_DTD, "false");
+			XMLStreamReader reader =  factory.createXMLStreamReader(getSystemId() , asInputStream(opts));
 			return reader;
 		} catch (Exception e)
 			{

@@ -10,7 +10,6 @@ import java.net.URI;
 import java.util.List;
 
 import net.sf.saxon.s9api.Destination;
-import net.sf.saxon.s9api.DocumentBuilder;
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.XPathCompiler;
@@ -18,6 +17,7 @@ import net.sf.saxon.s9api.XPathExecutable;
 import net.sf.saxon.s9api.XPathSelector;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
+import org.xmlsh.core.InputPort;
 import org.xmlsh.core.Namespaces;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
@@ -39,28 +39,16 @@ public class xpath extends XCommand {
 
 		XPathCompiler compiler = processor.newXPathCompiler();
 		XdmNode context = null;
+		InputPort in = null;
 
 		// boolean bReadStdin = false ;
 		if (!opts.hasOpt("n")) { // Has XML data input
 			OptionValue ov = opts.getOpt("i");
-			DocumentBuilder builder = processor.newDocumentBuilder();
-
-			// If -i argument is an XML expression take the first node as the
-			// context
-			if (ov != null && ov.getValue().isXExpr()) {
-				XdmItem item = ov.getValue().asXdmValue().itemAt(0);
-				if (item instanceof XdmNode)
-					context = (XdmNode) item; // builder.build(((XdmNode)item).asSource());
-				// context = (XdmNode) ov.getValue().toXdmValue();
-			}
-			if (context == null) {
-
-				if (ov != null && !ov.getValue().toString().equals("-"))
-					context = builder.build(getSource(ov.getValue()));
-				else {
-					context = getStdin().asXdmNode(getSerializeOpts());
-				}
-			}
+			if( ov != null )
+				in = getInput( ov.getValue());
+			else
+				in = getStdin();
+			context = in.asXdmNode(getSerializeOpts());
 		}
 
 		List<XValue> xvargs = opts.getRemainingArgs();
@@ -175,6 +163,8 @@ public class xpath extends XCommand {
 			if (!bQuiet && bAnyOutput)
 				stdout.writeSequenceTerminator();
 
+			if( in != null )
+				in.close();
 			return bAnyOutput ? 0 : 1;
 		}
 

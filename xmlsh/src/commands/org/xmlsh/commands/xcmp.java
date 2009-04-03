@@ -35,9 +35,14 @@ import javax.xml.stream.events.StartDocument;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 
+import net.sf.saxon.s9api.SaxonApiException;
+import org.xmlsh.core.CoreException;
+import org.xmlsh.core.InputPort;
+import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
+import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.util.Util;
 
 public class xcmp extends XCommand {
@@ -68,16 +73,22 @@ public class xcmp extends XCommand {
 			return usage();
 		
 		
-		URL 	u1 = getURI( argv.get(0)).toURL();
-		URL 	u2 =  getURI( argv.get(1)).toURL();
+		
+		InputPort 	i1 =  getInput( argv.get(0));
+		InputPort 	i2 =  getInput( argv.get(1));
 		
 		
-			
+		try {
 		if( xopt )
-			return xml_cmp(  u1 , u2 );
+			return xml_cmp(  i1 , i2 );
 		else
-			return bin_cmp(  u1, u2 );
-			
+			return bin_cmp(  i1, i2 );
+		} finally {
+			if( i1 != null )
+				i1.close();
+			if( i2 != null )
+				i2.close();
+		}
 		
 
 
@@ -95,13 +106,13 @@ public class xcmp extends XCommand {
 
 
 
-	private int bin_cmp(URL f1, URL f2) throws IOException {
-		BufferedInputStream is1 = new BufferedInputStream(f1.openStream());
+	private int bin_cmp(InputPort f1, InputPort f2) throws IOException, InvalidArgumentException, SaxonApiException {
+		BufferedInputStream is1 = new BufferedInputStream(f1.asInputStream(getSerializeOpts()));
 	
 		
 		BufferedInputStream is2 = null;
 		try {
-			is2 = new BufferedInputStream(f2.openStream());
+			is2 = new BufferedInputStream(f2.asInputStream(getSerializeOpts()));
 			
 			int b = 0;
 			int c;
@@ -134,22 +145,24 @@ public class xcmp extends XCommand {
 
 
 
-	private int xml_cmp(URL f1, URL f2) throws XMLStreamException, IOException  {
+	private int xml_cmp(InputPort f1, InputPort f2) throws InvalidArgumentException, CoreException, XMLStreamException {
 		
+		/*
 		XMLInputFactory inputFactory=XMLInputFactory.newInstance();
 		
 		
 		inputFactory.setProperty(XMLInputFactory.IS_COALESCING, Boolean.valueOf(true));
 		inputFactory.setProperty(XMLInputFactory.IS_VALIDATING, Boolean.valueOf(false));
 		inputFactory.setProperty(XMLInputFactory.SUPPORT_DTD, Boolean.valueOf(false));
+		*/
 		
 		
-		InputStream is1 = f1.openStream();
-		XMLEventReader  xmlreader1  =inputFactory.createXMLEventReader(f1.toString(), is1);
+		SerializeOpts opts = getSerializeOpts().clone();
+		opts.setSupports_dtd(false);
 		
-
-		InputStream is2 = f2.openStream();
-		XMLEventReader  xmlreader2  =inputFactory.createXMLEventReader(f2.toString(),is2);
+		XMLEventReader  xmlreader1  = f1.asXMLEventReader(opts);
+		
+		XMLEventReader  xmlreader2  = f2.asXMLEventReader(opts);
 		
 		try {
 			
@@ -186,11 +199,11 @@ public class xcmp extends XCommand {
 		finally {
 			try {
 				xmlreader1.close();
-				is1.close();
+				
 			} finally {} 
 			try {
 				xmlreader2.close();
-				is2.close();
+				
 			} finally {} 
 		}
 	}

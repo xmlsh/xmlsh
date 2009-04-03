@@ -11,7 +11,6 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.sf.saxon.s9api.DocumentBuilder;
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XQueryCompiler;
@@ -21,10 +20,10 @@ import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
 import org.xmlsh.commands.util.CSVFormatter;
 import org.xmlsh.commands.util.CSVRecord;
+import org.xmlsh.core.InputPort;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
-import org.xmlsh.core.Options.OptionValue;
 import org.xmlsh.sh.shell.Shell;
 
 /*
@@ -63,7 +62,7 @@ public class xml2csv extends XCommand
 		mFormatter = new CSVFormatter();
 		mOutput = getStdout().asOutputStream();
 
-		Options opts = new Options( "header,n,i:,attr" , args );
+		Options opts = new Options( "header,attr" , args );
 		opts.parse();
 		
 		bHeader = opts.hasOpt("header");
@@ -71,33 +70,9 @@ public class xml2csv extends XCommand
 		
 		Processor processor = Shell.getProcessor();
 		mCompiler = processor.newXQueryCompiler();
-		XdmNode	context = null;
+		InputPort  in = getStdin();
+		XdmNode	context = in.asXdmNode(getSerializeOpts());
 
-		DocumentBuilder builder = processor.newDocumentBuilder();
-		
-		// boolean bReadStdin = false ;
-		if( ! opts.hasOpt("n" ) ){ // Has XML data input
-			OptionValue ov = opts.getOpt("i");
-
-			
-			// If -i argument is an XML expression take the first node as the context
-			if( ov != null  && ov.getValue().isXExpr() ){
-				XdmItem item = ov.getValue().asXdmValue().itemAt(0);
-				if( item instanceof XdmNode )
-				//   context = (XdmNode) item ; // builder.build(((XdmNode)item).asSource());
-					context = builder.build(((XdmNode)item).asSource());
-				 // context = (XdmNode) ov.getValue().toXdmValue();
-			}
-			if( context == null )
-			{
-	
-				if( ov != null && ! ov.getValue().toString().equals("-"))
-					context = builder.build( getSource(ov.getValue()));
-				else {
-					context =  getStdin().asXdmNode(getSerializeOpts());
-				}	
-			}
-		}
 		
 
 		// List<XValue> xvargs = opts.getRemainingArgs();

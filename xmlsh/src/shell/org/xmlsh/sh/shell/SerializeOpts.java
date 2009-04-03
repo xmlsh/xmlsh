@@ -16,7 +16,16 @@ public class SerializeOpts {
 	private		boolean		omit_xml_declaration = true ;
 	private		String		encoding = "UTF-8"; // default encoding
 	private		String 	 	text_encoding = System.getProperty("file.encoding");
+	
+	private		boolean		supports_dtd = true ;
+	
+	
 	public SerializeOpts() {}
+	
+	public SerializeOpts clone()
+	{
+		return new SerializeOpts(this);
+	}
 	
 	public SerializeOpts( SerializeOpts that ) {
 		
@@ -26,6 +35,8 @@ public class SerializeOpts {
 		text_encoding = that.text_encoding;
 
 	}
+	
+	
 	
 	public void set( String name , boolean value )
 	{
@@ -105,6 +116,22 @@ public class SerializeOpts {
 		text_encoding = enc ;
 
 	}
+
+	/**
+	 * @return the supports_dtd
+	 */
+	public boolean isSupports_dtd() {
+		return supports_dtd;
+	}
+
+	/**
+	 * @param supports_dtd the supports_dtd to set
+	 */
+	public void setSupports_dtd(boolean supports_dtd) {
+		this.supports_dtd = supports_dtd;
+	}
+	
+	
 }
 
 

@@ -25,8 +25,10 @@ import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.NameValueMap;
 
 public class xcat extends XCommand {
-
-	
+	/*
+	 * TODO: xcat should use the collection() instead of doc()
+	 * so that ports can be used as filenames instead of just files or URI's
+	 */
 
 	
 	
