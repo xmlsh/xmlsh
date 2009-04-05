@@ -6,8 +6,6 @@
 
 package org.xmlsh.sh.shell;
 
-import java.nio.charset.Charset;
-
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
 

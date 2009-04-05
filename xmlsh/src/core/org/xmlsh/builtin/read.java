@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.util.List;
 
 import org.xmlsh.core.BuiltinCommand;
+import org.xmlsh.core.InputPort;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.XVariable;
 import org.xmlsh.util.Util;
@@ -29,7 +30,8 @@ public class read extends BuiltinCommand {
 			mShell.getEnv().unsetVar( arg.toString() );
 
 
-		InputStream is = mShell.getEnv().getStdin().asInputStream(getSerializeOpts());
+		InputPort stdin = mShell.getEnv().getStdin();
+		InputStream is = stdin.asInputStream(getSerializeOpts());
 		String line = Util.readLine( is );
 		if( line == null )
 			return 1; // EOF
@@ -42,7 +44,8 @@ public class read extends BuiltinCommand {
 			mShell.getEnv().setVar(
 					new XVariable(args.get(i).toString(), new XValue(results[i])));
 
-
+		// stdin.close(); // Crashes ... why ?
+		is.close();
 
 		return 0;
 	}

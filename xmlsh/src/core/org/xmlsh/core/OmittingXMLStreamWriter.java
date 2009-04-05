@@ -6,10 +6,10 @@
 
 package org.xmlsh.core;
 
+import javanet.staxutils.helpers.StreamWriterDelegate;
+
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
-
-import javanet.staxutils.helpers.StreamWriterDelegate;
 
 public class OmittingXMLStreamWriter extends StreamWriterDelegate {
 

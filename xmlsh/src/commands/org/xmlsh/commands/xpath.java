@@ -6,18 +6,22 @@
 
 package org.xmlsh.commands;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.util.List;
 
 import net.sf.saxon.s9api.Destination;
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.QName;
+import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XPathCompiler;
 import net.sf.saxon.s9api.XPathExecutable;
 import net.sf.saxon.s9api.XPathSelector;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
 import org.xmlsh.core.InputPort;
+import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Namespaces;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
@@ -61,7 +65,7 @@ public class xpath extends XCommand {
 		OptionValue ov = opts.getOpt("f");
 		String xpath = null;
 		if (ov != null)
-			xpath = Util.readString(getURI(ov.getValue()));
+			xpath = readString(ov.getValue());
 		else {
 			ov = opts.getOpt("q");
 			if (ov != null)
@@ -168,6 +172,17 @@ public class xpath extends XCommand {
 			return bAnyOutput ? 0 : 1;
 		}
 
+	}
+
+	private String readString(XValue v) throws IOException, InvalidArgumentException, SaxonApiException  {
+		
+		InputPort in = getInput( v );
+		InputStream is = in.asInputStream(getSerializeOpts());
+		
+		String s = Util.readString(is);
+		is.close();
+		in.close();
+		return s ;
 	}
 
 }

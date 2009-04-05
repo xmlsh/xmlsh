@@ -12,11 +12,10 @@ import javax.xml.transform.Source;
 
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.QName;
-import net.sf.saxon.s9api.XdmItem;
-import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XsltCompiler;
 import net.sf.saxon.s9api.XsltExecutable;
 import net.sf.saxon.s9api.XsltTransformer;
+import org.xmlsh.core.InputPort;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.XCommand;
@@ -42,13 +41,15 @@ public class xslt extends XCommand {
 		XsltCompiler compiler = processor.newXsltCompiler();
 		Source	context = null;
 		
-	
+		InputPort in = null;
 		if( ! opts.hasOpt("n" ) ){ // Has XML data input
 			OptionValue ov = opts.getOpt("i");
+			
 			if( ov != null )
-				context = getInput( ov.getValue()).asSource(getSerializeOpts());
+				in = getInput( ov.getValue());
 			else
-				context = getStdin().asSource(getSerializeOpts());
+				in = getStdin();
+			context = in.asSource(getSerializeOpts());
 			
 		}
 		
@@ -108,6 +109,8 @@ public class xslt extends XCommand {
 		eval.transform();
 		stdout.writeSequenceTerminator();
 		} finally {
+			if( in != null )
+				in.close();
 			
 		}
 		

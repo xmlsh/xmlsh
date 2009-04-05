@@ -22,7 +22,6 @@ import javax.xml.transform.sax.TransformerHandler;
 
 import net.sf.saxon.s9api.Destination;
 import org.xmlsh.sh.shell.SerializeOpts;
-import org.xmlsh.sh.shell.Shell;
 
 /*
  * An OutputPort represents an output sync of data, either Stream (bytes) or XML data

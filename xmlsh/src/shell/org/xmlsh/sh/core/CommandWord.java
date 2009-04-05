@@ -10,18 +10,13 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-import net.sf.saxon.s9api.DocumentBuilder;
-import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XdmValue;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.VariableOutputPort;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.XVariable;
 import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.sh.shell.ShellThread;
 import org.xmlsh.util.NullInputStream;
-import org.xmlsh.util.PipedStream;
-import org.xmlsh.util.XMLException;
 
 /*
  * A Value that evaulates to a "cmd_word" which is either a simple string,

@@ -19,7 +19,6 @@ import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.Source;
 
 import net.sf.saxon.Configuration;
-import net.sf.saxon.event.PipelineConfiguration;
 import net.sf.saxon.om.SequenceIterator;
 import net.sf.saxon.pull.PullFromIterator;
 import net.sf.saxon.pull.PullToStax;

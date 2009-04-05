@@ -12,7 +12,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 
@@ -84,23 +83,10 @@ public abstract class XCommand implements ICommand {
 		return mEnvironment.getCurdir();
 	}
 
-	
 
-
-	/**
-	 * @param file
-	 * @return
-	 * @throws IOException
-	 * @throws URISyntaxException
-	 * @see org.xmlsh.core.XEnvironment#getURI(java.lang.String)
-	 */
-	public URI getURI(String file) throws IOException, URISyntaxException {
-		return mEnvironment.getURI(file);
+	public String getAbsoluteURI(String sysid) throws URISyntaxException {
+		return mEnvironment.getAbsoluteURI( sysid );
 	}
-	public URI getURI(XValue file) throws IOException, URISyntaxException {
-		return mEnvironment.getURI(file.toString());
-	}
-
 
 
 

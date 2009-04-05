@@ -11,9 +11,7 @@ import java.util.EnumSet;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import net.sf.saxon.evpull.EventIterator;
 import org.xml.sax.SAXException;
-import org.xml.sax.helpers.AttributesImpl;
 
 public class XVariable {
 	

@@ -16,7 +16,6 @@ import java.net.URISyntaxException;
 import java.util.Collection;
 
 import javax.xml.transform.Source;
-import javax.xml.transform.stream.StreamSource;
 
 import net.sf.saxon.s9api.SaxonApiException;
 import org.apache.log4j.LogManager;
@@ -177,19 +176,6 @@ public class XEnvironment  {
 	
 
 	
-
-	/**
-	 * @param file
-	 * @return
-	 * @throws IOException
-	 * @throws URISyntaxException
-	 * @see org.xmlsh.sh.shell.Shell#getURI(java.lang.String)
-	 */
-	public URI getURI(String file) throws IOException, URISyntaxException {
-		return mShell.getURI(file);
-	}
-
-
 	/**
 	 * @param file
 	 * @return
@@ -453,6 +439,24 @@ public class XEnvironment  {
 			return p;
 		}
 		
+	}
+
+
+	public String getAbsoluteURI(String sysid) throws URISyntaxException 
+	{
+		URI uri = new URI(sysid);
+		if( uri.isAbsolute())
+			return sysid ;
+		
+		URI absolute = getBaseURI().resolve(sysid );
+		return absolute.toString();
+		
+		
+	}
+
+
+	public URI getBaseURI() {
+		return getCurdir().toURI();
 	}
 
 

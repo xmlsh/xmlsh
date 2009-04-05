@@ -6,11 +6,11 @@
 
 package org.xmlsh.commands;
 
+import java.io.InputStream;
 import java.net.URI;
 import java.util.List;
 
 import net.sf.saxon.s9api.Destination;
-import net.sf.saxon.s9api.DocumentBuilder;
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.XQueryCompiler;
@@ -18,6 +18,7 @@ import net.sf.saxon.s9api.XQueryEvaluator;
 import net.sf.saxon.s9api.XQueryExecutable;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
+import org.xmlsh.core.InputPort;
 import org.xmlsh.core.Namespaces;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
@@ -45,28 +46,17 @@ public class xquery extends XCommand {
 		XdmNode	context = null;
 		
 		
-		boolean bReadStdin = false ;
+		InputPort in = null;
 		if( ! opts.hasOpt("n" ) ){ // Has XML data input
 			OptionValue ov = opts.getOpt("i");
-			DocumentBuilder builder = processor.newDocumentBuilder();
+			if( ov != null )
+				in = getInput( ov.getValue());
+			else
+				in = getStdin();
 			
-			// If -i argument is an XML expression take the first node as the context
-			if( ov != null  && ov.getValue().isXExpr() ){
-				XdmItem item = ov.getValue().asXdmValue().itemAt(0);
-				if( item instanceof XdmNode )
-					context = (XdmNode) item ; // builder.build(((XdmNode)item).asSource());
-				 // context = (XdmNode) ov.getValue().toXdmValue();
-			}
-			if( context == null )
-			{
-	
-				if( ov != null && ! ov.getValue().toString().equals("-"))
-					context = builder.build( getSource(ov.getValue()));
-				else {
-					bReadStdin = true ;
-					context = getStdin().asXdmNode(getSerializeOpts());
-				}	
-			}
+			context = in.asXdmNode(getSerializeOpts());
+			
+			
 		}
 		
 		String query = null;
@@ -83,23 +73,20 @@ public class xquery extends XCommand {
 		if( ov != null ){
 			if( query != null )
 				throwInvalidArg(  "Cannot specifify both -q and -f");
-			String fname = ov.getValue().toString();
-			if( fname.equals("-")){
-				if( bReadStdin )
-					throwInvalidArg(  "Cannot read both query and context from stdin");
 			
-				query = Util.readString(getStdin().asInputStream(getSerializeOpts()));
-			}
-			else {
-				URI  qfile = getURI(fname);
-				query =  Util.readString( qfile.toURL());
+			InputPort qin = getInput(ov.getValue());
+			InputStream is = qin.asInputStream(getSerializeOpts());
+			query = Util.readString(is);
 
-				// Set file as base URI for debugging output 
-				compiler.setBaseURI(qfile);
+			String sysid = qin.getSystemId();
+			if( !Util.isBlank(sysid)){
+				String uri = getAbsoluteURI(sysid);
+				compiler.setBaseURI(new URI(uri));
+			}
+			is.close();
+			qin.close();
 			
-			}
-	
-
+			
 		}
 
 		
@@ -187,11 +174,15 @@ public class xquery extends XCommand {
 		if( bAnyOut )
 			stdout.writeSequenceTerminator(); // write "\n"
 		
+		if( in != null)
+			in.close();
+		
 		
 		return 0;
 		
 
 	}
+
 
 	
 
