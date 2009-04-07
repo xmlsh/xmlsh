@@ -26,6 +26,7 @@ public interface ICommand {
 	public int 	run( Shell shell , String cmd , List<XValue> args )  throws Exception;
 	public 	CommandType	getType();
 	public 	File 	getFile();
+	public String	getModule();
 	
 	
 }

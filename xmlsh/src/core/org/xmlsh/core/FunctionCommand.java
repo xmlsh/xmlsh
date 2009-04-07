@@ -60,5 +60,12 @@ public class FunctionCommand implements ICommand {
 	public 	File 	getFile() 
 	{ 
 		return null; 
+	}
+
+
+
+	public String getModule() {
+		// TODO Auto-generated method stub
+		return null;
 	}	
 }

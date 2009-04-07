@@ -106,6 +106,12 @@ public class ExternalCommand implements ICommand {
 		
 	}
 
+
+	public String getModule() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 	
 	
 }

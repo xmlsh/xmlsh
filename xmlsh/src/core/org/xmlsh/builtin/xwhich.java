@@ -9,6 +9,7 @@ package org.xmlsh.builtin;
 import java.io.File;
 import java.util.List;
 
+import javax.xml.stream.XMLStreamWriter;
 import javax.xml.transform.sax.TransformerHandler;
 
 import org.xml.sax.helpers.AttributesImpl;
@@ -46,18 +47,15 @@ public class xwhich extends BuiltinCommand {
 		
 		final  String sDocRoot =mName;
 	      
-		TransformerHandler hd = null;
+		XMLStreamWriter 	out = null ;
 		OutputPort stdout = mShell.getEnv().getStdout();	
 		
 		if( !bNoWrite ){
 
-			hd = stdout.asTransformerHandler(mShell.getSerializeOpts());
-	
-			hd.startDocument();
+			out = stdout.asXMLStreamWriter(getSerializeOpts());
+			out.writeStartDocument();
+			out.writeStartElement(sDocRoot);
 			
-			AttributesImpl attrs = new AttributesImpl();
-	
-			hd.startElement("", sDocRoot,sDocRoot,attrs);
 		}
 		
 		int bad = 0;
@@ -69,36 +67,37 @@ public class xwhich extends BuiltinCommand {
 			if( command != null ){
 				
 				if( ! bNoWrite ){
-					AttributesImpl atts = new AttributesImpl();
+			
 					
 					final  String sCmd = "command";
 					final	String sName = "name";
 					final 	String sType = "type";
 					final  String sPath = "path";
+					final String sModule = "module";
 					
-					atts.addAttribute("", sName, sName , "CDATA", name );
+					out.writeStartElement(sCmd);
+					out.writeAttribute(sName, name);
 					
-		
+				
 					
 					String type = typenames[command.getType().ordinal()];
-					
-					atts.addAttribute("", sType, sType, "CDATA", type );
-					
+					out.writeAttribute(sType, type);
+				
 					File file = command.getFile();
 					if( file != null )
-						atts.addAttribute("", sPath, sPath , "CDATA", file.getCanonicalPath() );
-		
-					hd.startElement("", sCmd, sCmd, atts);
-		
-					hd.endElement("", sCmd, sCmd);
+						out.writeAttribute(sPath, file.getCanonicalPath() );
+					String module = command.getModule();
+					if( module != null )
+						out.writeAttribute(sModule, module);
+					
 				}
 			} else
 				bad++;
 		
 		}
 		if( ! bNoWrite ){
-			hd.endElement("",sDocRoot,sDocRoot);
-			hd.endDocument();
+			out.writeEndElement();
+			out.writeEndDocument();
 			stdout.writeSequenceTerminator();
 		}
 		

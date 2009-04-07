@@ -1,59 +1,60 @@
 /**
- * $Id$
- * $Date$
+ * $Id: $
+ * $Date: $
  *
  */
 
-package org.xmlsh.core;
+package org.xmlsh.commands;
 
-import java.io.File;
 import java.util.List;
 
+import org.xmlsh.core.InputPort;
+import org.xmlsh.core.Options;
+import org.xmlsh.core.XCommand;
+import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.SerializeOpts;
-import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.util.XSDValidator;
 
 
-public abstract class BuiltinCommand implements ICommand {
-	
-	protected Shell mShell;
-	protected String mName;
-	
-	
-	/* (non-Javadoc)
-	 * @see org.xmlsh.core.ICommand#getType()
-	 */
-	public CommandType getType() {
-		return CommandType.CMD_TYPE_BUILTIN ;
-	}
+public class xvalidate extends XCommand {
 
 	
-	public File getFile() {
-		return null ; // builtins have no file  
+	@Override
+	public int run( List<XValue> args )
+	throws Exception 
+	{
+
 		
-	}
-	public String getModule()
-	{
-		return this.getClass().getPackage().getName();
-	}
-	
-	abstract protected int run( List<XValue> args) throws Exception;
-
-	public int 	run( Shell shell , String cmd , List<XValue> args )  throws Exception
-	{
-		mShell = shell;
-		mName  = cmd ;
-		return run(args);
+		Options opts = new Options( "xsd:" , args );
+		opts.parse();
 		
+		String schema = opts.getOptStringRequired("xsd");
+		SerializeOpts sopts = getSerializeOpts();
+		args= opts.getRemainingArgs();
+		InputPort in = null;
+		if( args.size() > 0 )
+			in = getInput(args.get(0));
+		else
+			in = getStdin();
+		
+		XSDValidator v = new XSDValidator( schema );
+		v.validate( in.asInputStream(sopts));
+		in.close();
+		
+		return 0;
+
 	}
 	
-	protected SerializeOpts getSerializeOpts()
-	{
-		return mShell.getSerializeOpts();
-	}
+	
+
 
 	
+
+
 	
+
 }
+
 //
 //
 //Copyright (C) 2008, David A. Lee.

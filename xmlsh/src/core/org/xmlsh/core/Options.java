@@ -204,7 +204,7 @@ public class Options
 			
 			String sarg = ( arg.isString()  ? arg.toString() : null );
 			
-			if( sarg != null &&  (sarg.startsWith("-") || sarg.startsWith("+")) && ! sarg.equals("--")){
+			if( sarg != null &&  (sarg.startsWith("-") || sarg.startsWith("+")) && ! sarg.equals("--") && ! Util.isInt(sarg,true) ){
 				String a = sarg.substring(1);
 				char flag = sarg.charAt(0);
 				
@@ -294,6 +294,14 @@ public class Options
 			return getOpt(opt).getValue().toString();
 		else
 			return defValue ;
+		
+	}
+	public String getOptStringRequired( String opt  ) throws InvalidArgumentException 
+	{
+		if(hasOpt(opt))
+			return getOpt(opt).getValue().toString();
+	
+		throw new InvalidArgumentException("Required option: -" + opt );
 		
 	}
 	

@@ -80,5 +80,10 @@ public class ScriptCommand implements ICommand {
 		return mScriptFile ; // may be null 
 		
 	}
+
+	public String getModule() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	
 }

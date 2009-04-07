@@ -33,6 +33,10 @@ public abstract class XCommand implements ICommand {
 				
 	}
 
+	public String getModule()
+	{
+		return this.getClass().getPackage().getName();
+	}
 
 
 	/* (non-Javadoc)
