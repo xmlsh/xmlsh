@@ -15,10 +15,12 @@
 		
 	<target name="clean" description="Clean all">
 		  <delete includeEmptyDirs="true" quiet="true">
-		    <fileset dir="${dist}"/>
+		    <fileset dir="${dist}" includes="*"/>
 		  	<fileset dir="_out" includes="**/*" />
 		  	<fileset dir="test" includes="**/_out.txt"/>
 		  	<fileset dir="src" includes="**/version.properties"/>
+			<fileset dir="bin" includes="**/*" />
+		  	<fileset dir="." includes="xmlsh.log" />
 		  </delete>
 	</target>
 
@@ -73,12 +75,12 @@ version.release=${release}
   		
   		<mkdir dir="${dist}"/>
 		<zip destfile="${dist}/xmlsh_${release}.zip" >
-			<zipfileset dir="." includes="bin/** test/** doc/** win32/** lib/** samples/** unix/** notices/** license.txt README.txt" 
-					excludes="**/sh_histo" prefix="xmlsh_${release}"/>
+			<zipfileset dir="." includes="bin/xmlsh.jar test/** doc/** win32/** lib/** samples/** unix/** notices/** license.txt README.txt" 
+					excludes="**/sh_histo doc/sourceforge/*" prefix="xmlsh_${release}"/>
   		</zip>
 		<zip destfile="${dist}/xmlsh_src_${release}.zip" >
 			<zipfileset dir="." includes="*/**" 
-				excludes="**/sh_histo _out/** bin/** _dist/** lib/**"  prefix="xmlsh_${release}"/>
+				excludes="**/sh_histo _out/** bin/** _dist/** lib/** doc/sourceforge/*"  prefix="xmlsh_${release}"/>
 		</zip>
   	
   	<!--
