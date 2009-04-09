@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/xmlsh"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="lib/xcc.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="file:/C:/Work/DEI/marklogic/markxcc/docs/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/xmlsh/lib/saxon9.jar" sourcepath="C:/java/saxon9/src">
+		<attributes>
+			<attribute name="javadoc_location" value="file:/C:/java/saxon9/doc/javadoc/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/xmlsh/lib/saxon9-s9api.jar" sourcepath="C:/java/saxon9/src">
+		<attributes>
+			<attribute name="javadoc_location" value="file:/C:/java/saxon9/doc/javadoc/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="output" path="_out"/>
+</classpath>
