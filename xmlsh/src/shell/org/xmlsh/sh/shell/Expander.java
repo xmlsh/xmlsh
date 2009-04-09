@@ -31,7 +31,7 @@ import org.xmlsh.util.NameValueMap;
 import org.xmlsh.util.Util;
 
 class Expander {
-	
+	private static final String sSEPSPACE = " ";
 	private static Logger mLogger = LogManager.getLogger( Expander.class);
 	
 	private 	Shell		mShell;
@@ -41,6 +41,7 @@ class Expander {
 	
 	
 	private static class Result {
+
 		StringBuffer	sb = new StringBuffer();
 		List<XValue>	result = new ArrayList<XValue>();
 		
@@ -109,7 +110,7 @@ class Expander {
 					boolean bFirst = true ;
 					for( XdmValue v : value.asXdmValue() ){
 						if( ! bFirst )
-							append(" ");
+							append(sSEPSPACE);
 						append( v.toString());
 						bFirst = false ;
 					}
@@ -254,7 +255,7 @@ class Expander {
 								if( i < arg.length()-1 && Character.isDigit(c=arg.charAt(i+1))){
 									i++;
 									bKeepGoing = true ;
-								} 
+								}
 							}
 						} while( bKeepGoing );
 					}
@@ -279,8 +280,25 @@ class Expander {
 
 					if( var.equals("*")){
 						// Add all positional variables as args 
-						for( XValue v : mArgs )
-							result.add( quote(v) );
+						boolean bFirst = true ;
+						for( XValue v : mArgs ){
+		
+								
+							// result.add( quote(v) );
+							if( cQuote != 0  ){
+								if( ! bFirst )
+									result.append(sSEPSPACE  );
+								
+							
+								result.append(quote(v),true);
+							}
+							else
+								result.add(quote(v));
+							bFirst = false ;
+						}
+							
+						
+						
 					} else
 						value = extractSingle(var, cQuote != '\0' );
 					

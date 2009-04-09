@@ -520,7 +520,7 @@ Command term() :
 
 	first=and_or() (
 	// USE LOOKAHEAD(999999999) here to allow "if true ;\necho foo;\nfi" 
-	LOOKAHEAD(999999999) op=separator() c=and_or()
+	LOOKAHEAD(99999999) op=separator() c=and_or()
 { 
 			if( list == null )
 				list = new CommandList( first , op , c );
