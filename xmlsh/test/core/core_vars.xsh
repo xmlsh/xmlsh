@@ -65,9 +65,12 @@ A=B eval 'echo A is $A'
 echo "$<"
 
 # Test that "$(cmd)" passes trough unchanged
+# NOTE: differes from bsh/ksh
 echo "$(cmd)"
 
-
+# Test that @ can be part of a name
+A=xcc://foo:bar@home:8003/5MCC
+echo $A
 
 
 exit 0

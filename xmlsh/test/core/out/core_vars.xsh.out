@@ -13,3 +13,4 @@ spam bletch
 A is B
 $<
 $(cmd)
+xcc://foo:bar@home:8003/5MCC

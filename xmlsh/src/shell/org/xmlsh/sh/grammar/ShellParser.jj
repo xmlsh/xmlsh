@@ -239,7 +239,7 @@ TOKEN : {
  }
  
 TOKEN : {
-	< NAME : (["A" - "Z","a"-"z","_","0"-"9", "-" , ".", "/", "[", ":","*","?","]","{","}"] | <VAR_EXPANSION>)+  | <STRING_LITERAL1> | <STRING_LITERAL2>  >
+	< NAME : (["A" - "Z","a"-"z","_","0"-"9", "-" , ".", "/", "[", ":","*","?","]","{","}","@"] | <VAR_EXPANSION>)+  | <STRING_LITERAL1> | <STRING_LITERAL2>  >
 	: CMD
 }
 
