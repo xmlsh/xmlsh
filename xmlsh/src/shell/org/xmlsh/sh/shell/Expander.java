@@ -184,6 +184,7 @@ class Expander {
 		char c;
 		int i;
 		for( i = 0 ; i < arg.length() ; i++){
+
 			c = arg.charAt(i);
 			
 			// Just detect quotes in this phase, dont strip them
@@ -282,24 +283,34 @@ class Expander {
 						// Add all positional variables as args 
 						boolean bFirst = true ;
 						for( XValue v : mArgs ){
-		
-								
 							// result.add( quote(v) );
 							if( cQuote != 0  ){
 								if( ! bFirst )
 									result.append(sSEPSPACE  );
-								
-							
 								result.append(quote(v),true);
 							}
 							else
+							{
+								result.flush();
 								result.add(quote(v));
+							}
 							bFirst = false ;
 						}
-							
 						
-						
-					} else
+					} 
+					if( var.equals("@")){
+						// Special case if sb has a single " nuke it
+						if( result.sb.length() == 1 && result.sb.charAt(0) == '"' )
+							result.sb.setLength(0);
+						else
+							result.flush();
+						for( XValue v : mArgs )
+							result.add( quote(v) );
+					}
+
+					
+					
+					else
 						value = extractSingle(var, cQuote != '\0' );
 					
 					
@@ -308,8 +319,18 @@ class Expander {
 				} else
 					result.append('$');
 			
-			} else 
-				result.append(c);
+			} else {
+				
+				// If adding a closing quote and there is nothing in the buffer
+				// then skip adding it.  This lets  "$@" work without adding an empty arg
+				
+				if( c == '"' && cQuote == 0 && result.sb.length() == 0 )
+					;
+				else
+					result.append(c);
+			
+			
+			}
 			
 		}
 		

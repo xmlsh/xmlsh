@@ -42,3 +42,24 @@ line 2
 "
 '"
 'foo bar'
+$# 3
+foo
+""
+bar spam
+$# 1
+foo "" bar spam
+$# 1
+foo "" bar spam bletch
+$# 3
+foo
+""
+bar spam
+$# 3
+foo
+""
+bar spam
+$# 4
+foo
+""
+bar spam
+bletch

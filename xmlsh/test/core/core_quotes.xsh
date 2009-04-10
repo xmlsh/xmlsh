@@ -1,5 +1,16 @@
 # Tests of basic quote parsing
 
+
+# function to help test positional params and expansions
+function args () 
+{
+	echo '$#' $#
+	for a ; do
+	   echo $a
+	done
+}
+
+
 # basic single and double quotes
 echo foo bar
 echo 'foo'
@@ -82,5 +93,15 @@ echo "$*"
 echo \"
 echo \'\"
 echo \''foo bar'\'
+
+# Test $@ "$@" $* "$@" 
+set "foo" '""' "bar spam"
+args $*
+args "$*"
+args "$* bletch"
+args $@
+args "$@"
+args "$@bletch"
+
 
 
