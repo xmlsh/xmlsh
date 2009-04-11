@@ -27,3 +27,23 @@ F=notempty
 read F < /dev/null
 
 [ -z "$F" ] || echo read didnt succeed
+
+#
+# Test 1>&2 and 2>&1 
+#
+F=$TMPDIR/test.core_io
+
+# change stdout to stderr
+echo error 2>$F 1>&2
+read E < $F
+[ $E = "error" ] || echo Failed to redirect to stderr
+rm $F
+
+# change stdout to stderr and then stderr to stdout
+( echo error2 1>&2 ) >$F 2>&1
+read E < $F
+[ $E = "error2" ] || echo Failed to redirect to stdout
+rm $F
+
+
+

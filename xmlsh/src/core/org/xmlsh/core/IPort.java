@@ -21,7 +21,7 @@ public abstract class IPort {
 	{
 		mSystemId = systemId;
 	}
-	final synchronized void addRef() {
+	public final synchronized void addRef() {
 		mRef++;
 
 	}

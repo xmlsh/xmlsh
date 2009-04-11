@@ -150,8 +150,6 @@ TOKEN_MGR_DECLS :
 
 <DEFAULT,CMD> TOKEN : {
     < DGREAT: ">>" >
-|   < LESSAND: "<&" >
-|   < GREATAND: ">&" >
 |   < LESSGREAT: "<>" >
 }
 
@@ -211,6 +209,8 @@ TOKEN : {
 	< LESS : "<" >
 |	< GT   : ">" >
 |   < TGT  : "2>" >
+|   < TGTAND1 : "2>&1" >
+|   < GTAND2 : "1>&2" >
 }
 
 
@@ -820,7 +820,7 @@ IORedirect io_redirect() :
 	{  IOFile i=null;  IOHere h=null; Word port =null ;}
 { 
 	
-	[<LPAREN2> port=cmd_word() <RPAREN>] ( i=io_file() | h=io_here() )
+	[ port=portname() ] ( i=io_file() | h=io_here() )
 	{ 
 		if( i != null )
 			return new IORedirect(port,i);
@@ -829,6 +829,15 @@ IORedirect io_redirect() :
 		
 	}
 
+}
+
+Word portname() :
+{  Word port = null ; }
+{
+	<LPAREN2> port=cmd_word() <RPAREN>
+	{ 
+		return port ;
+	}
 }
 
   	
@@ -841,18 +850,20 @@ IOFile io_file() :
 	{ Token t; Word s; String num; Command c;}
 {
 	<LESS>			s=filename_word()
-		{ return new IOFile( "<" , s ); }
-			
-|	t=<LESSAND>		s=filename_word()
-		{ return new IOFile( t.toString() , s); }
+		{ return new IOFile( "<" , s ); }	
 |	<TGT>				s=filename_word()
 		{ return new IOFile( "2>" , s ); }
+|	<TGTAND1>		
+		{ return new IOFile( "2>&1" , null ); }
+		
+|	<GTAND2>		
+		{ return new IOFile( "1>&2" , null ); }
+			
 |	<GT>				s=filename_word()
 		{ return new IOFile( ">" , s ); }
 |	<DGREAT>				s=filename_word()
 		{ return new IOFile( ">>" , s ); }
-|	t=<GREATAND>	s=filename_word()
-		{ return new IOFile( t.toString() , s ); }
+
 
 |	t=<LESSGREAT>	s=filename_word()
 		{ return new IOFile(t.toString() , s ); }

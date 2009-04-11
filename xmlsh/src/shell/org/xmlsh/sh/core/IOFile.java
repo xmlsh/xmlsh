@@ -11,6 +11,7 @@ import java.io.PrintWriter;
 
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InputPort;
+import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.XEnvironment;
 import org.xmlsh.core.XVariable;
 import org.xmlsh.sh.shell.Shell;
@@ -25,7 +26,8 @@ public class IOFile {
 	}
 	public void print(PrintWriter out) {
 		out.print(mPrefix);
-		mFile.print(out);
+		if( mFile != null )
+			mFile.print(out);
 		
 	}
 
@@ -34,6 +36,39 @@ public class IOFile {
 	public void exec(Shell shell, String port) throws IOException, CoreException {
 
 		XEnvironment env = shell.getEnv();
+		
+		/*
+		 * File-less redirections 1>&2 2>&1 
+		 */
+		if( mFile == null ){
+			
+			/*
+			 * Port Duplication puts the same port in 2 slots
+			 * must manage an extra reference count to avoid over releasing
+			 */
+			
+			if( mPrefix.equals("1>&2")){
+				OutputPort stderr = env.getStderr();
+				stderr.addRef(); // keep stdout from being over released
+				
+				// Duplicate stdout from stderr
+				env.setStdout(  stderr );
+			} else
+			if( mPrefix.equals("2>&1")){
+
+				OutputPort stdout = env.getStdout();
+
+				// Duplicate stderr from stdout
+				
+				stdout.addRef(); // keep stderr from being over released
+				env.setStderr(  stdout );
+				
+			}
+			
+			return ;
+		}
+		
+		
 		
 		String file = mFile.expandString(shell, true);
 		

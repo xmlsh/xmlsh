@@ -295,6 +295,9 @@ public class XEnvironment  {
 	public void setStderr(OutputStream stderr) throws CoreException {
 		mIO.setStderr(stderr);
 	}
+	public void setStderr(OutputPort stderr) throws CoreException {
+		mIO.setStderr(stderr);
+	}
 
 
 	/**
