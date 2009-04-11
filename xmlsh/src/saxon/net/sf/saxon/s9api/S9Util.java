@@ -4,6 +4,14 @@
  *
  */
 
+/** 
+ * Note: This class is in the net.sf.saxon.s9api package so that it can have access 
+ * to package private method XdmNode.wrap() which is otherwise unavailable
+ * 
+ * @TODO: When s9api is changed to export XdmNode.wrap this class can go away
+ * 
+ */
+
 package net.sf.saxon.s9api;
 
 import net.sf.saxon.om.NodeInfo;
@@ -21,7 +29,7 @@ public class S9Util {
 
 //
 //
-//Copyright (C) 2008, David A. Lee.
+//Copyright (C) 2008,2009 , David A. Lee.
 //
 //The contents of this file are subject to the "Simplified BSD License" (the "License");
 //you may not use this file except in compliance with the License. You may obtain a copy of the

@@ -149,7 +149,7 @@ public class XMLEventWriterToContentHandler extends BaseXMLEventWriter {
 
 //
 //
-// Copyright (C) 2008, David A. Lee.
+// Copyright (C) 2008,2009 , David A. Lee.
 //
 // The contents of this file are subject to the "Simplified BSD License" (the
 // "License");

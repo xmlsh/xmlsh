@@ -7,6 +7,14 @@ import net.sf.saxon.om.NodeInfo;
  *
  */
 
+
+/** 
+ * Note: This class is in the net.sf.saxon.tree package so that it can have access 
+ * to package private class TextImpl which is otherwise unavailable
+ * 
+ * @TODO: When saxon is changed to export TextImpl class can go away
+ * 
+ */
 public class SaxonUtil {
 	public static NodeInfo createTextNode(String replace) {
 		net.sf.saxon.tree.TextImpl textNode = new net.sf.saxon.tree.TextImpl( null , replace);
@@ -19,7 +27,7 @@ public class SaxonUtil {
 
 //
 //
-//Copyright (C) 2008, David A. Lee.
+//Copyright (C) 2008,2009 ,2009 David A. Lee.
 //
 //The contents of this file are subject to the "Simplified BSD License" (the "License");
 //you may not use this file except in compliance with the License. You may obtain a copy of the
