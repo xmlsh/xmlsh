@@ -1,58 +1,49 @@
 /**
- * $Id$
- * $Date$
+ * $Id: $
+ * $Date: $
  *
  */
 
-package org.xmlsh.commands;
+package org.xmlsh.util;
 
-import java.util.List;
+import java.io.IOException;
 
-import javax.xml.stream.XMLStreamWriter;
-
+import org.xmlsh.core.InputPort;
 import org.xmlsh.core.OutputPort;
-import org.xmlsh.core.XCommand;
-import org.xmlsh.core.XValue;
-import org.xmlsh.types.XFile;
 
 
-public class xpwd extends XCommand
-{
+/**
+ * 
+ * PipedMultiPort defers selection of a PipedStream or a PipedXMLStream until the 
+ * first request in the port is done
+ * 
+ * @author David A. Lee
+ */
+public class PipedMultiPort extends PipedPort {
+
 	
 	
 	
 	
-	public int run(  List<XValue> args )	throws Exception
-	{
-		
-
-		XFile file = new XFile(getCurdir());
-		
-
-		OutputPort stdout = getStdout();
-		XMLStreamWriter writer = stdout.asXMLStreamWriter(getSerializeOpts());
-		
-		writer.writeStartDocument();
-		
-		file.serialize(writer,false);
-		
-		writer.writeEndDocument();
-		
-		stdout.writeSequenceTerminator();
-		// stdout.close();
-		
-		
-		
-		
-		return 0;
-		
+	@Override
+	public InputPort getInput() throws IOException {
+		// TODO Auto-generated method stub
+		return null;
 	}
-	
+
+	@Override
+	public OutputPort getOutput() throws IOException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }
 
+
+
 //
 //
-//Copyright (C) 2008,2009 , David A. Lee.
+//Copyright (C) 2008,2009 David A. Lee.
 //
 //The contents of this file are subject to the "Simplified BSD License" (the "License");
 //you may not use this file except in compliance with the License. You may obtain a copy of the

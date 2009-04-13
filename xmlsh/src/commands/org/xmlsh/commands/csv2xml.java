@@ -12,6 +12,8 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.List;
 
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
 import javax.xml.transform.sax.TransformerHandler;
 
 import org.xml.sax.Attributes;
@@ -64,10 +66,12 @@ public class csv2xml extends XCommand
 // Output XML
 
 		OutputPort stdout = getStdout();
-		TransformerHandler hd = stdout.asTransformerHandler(getSerializeOpts());
-		hd.startDocument();
-		Attributes attrs = new AttributesImpl();
-		hd.startElement("", root,root,attrs);
+		XMLStreamWriter writer = stdout.asXMLStreamWriter(getSerializeOpts());
+		
+		writer.writeStartDocument();
+		
+		
+		writer.writeStartElement(root);
 		
 // Input is stdin and/or list of commands
 		
@@ -91,10 +95,10 @@ public class csv2xml extends XCommand
 		String line;
 		while( (line = readLine(ir)) != null ){
 			CSVRecord csv = parser.parseLine(line);
-			addElement( hd , csv , row , col , bAttr , header );
+			addElement( writer , csv , row , col , bAttr , header );
 		}
-		hd.endElement("", root,root);
-		hd.endDocument();
+		writer.writeEndElement();
+		writer.writeEndDocument();
 		
 		ir.close();
 		stdout.writeSequenceTerminator();
@@ -107,37 +111,38 @@ public class csv2xml extends XCommand
 
 
 	private void addElement(
-		TransformerHandler hd, 
+		XMLStreamWriter writer, 
 		CSVRecord csv ,
 		String row, 
 		String col, 
 		boolean battr,
-		CSVRecord header) throws SAXException 
+		CSVRecord header) throws  XMLStreamException 
 	{
 		
-		
+		writer.writeStartElement(row);
 		// Attribute normal format
 		if( battr ){
-			AttributesImpl attrs = new AttributesImpl();
 			for( int i = 0 ; i < csv.getNumFields() ; i++ ){
 				String name = getAttrName( i , col , header );
-				attrs.addAttribute("", name , name, "CDATA", csv.getField(i));
+				writer.writeAttribute(name,csv.getField(i));
 			}
-			hd.startElement("", row,row,attrs);
-			hd.endElement("", row, row);
+			
+			
 		} else {
-			AttributesImpl attrs = new AttributesImpl();
-			hd.startElement("", row,row,attrs);
+
 
 			for( int i = 0 ; i < csv.getNumFields() ; i++ ){
 				String name = getColName( i , col , header );
-				hd.startElement("", name, name, attrs);
+				writer.writeStartElement(name);
+				writer.writeCharacters(csv.getField(i));
 				char[] chars = csv.getField(i).toCharArray();
-				hd.characters(chars,0,chars.length);
-				hd.endElement("", name, name);
+				writer.writeEndElement();
+				
 			}
-			hd.endElement("", row,row);
+			
 		}
+		writer.writeEndElement();
+		
 	}
 
 

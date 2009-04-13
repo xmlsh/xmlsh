@@ -6,7 +6,6 @@
 
 package org.xmlsh.core;
 
-import java.io.IOException;
 
 public abstract class IPort {
 	private	int	mRef = 1;
@@ -26,7 +25,7 @@ public abstract class IPort {
 
 	}
 
-	public synchronized void flush() throws IOException, CoreException {};
+	public synchronized void flush() throws  CoreException {};
 	
 	final synchronized void release() throws CoreException 
 	{		
@@ -40,7 +39,7 @@ public abstract class IPort {
 			}
 	}
 	
-	abstract void close() throws Exception ;
+	abstract void close() throws CoreException ;
 
 }
 

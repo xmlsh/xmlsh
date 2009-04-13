@@ -48,30 +48,34 @@ public class VariableInputPort extends InputPort {
 	}
 
 	public synchronized InputStream asInputStream(SerializeOpts opts)
-			throws InvalidArgumentException, SaxonApiException, IOException {
+			throws  CoreException{
 		ByteArrayOutputStream buf = new ByteArrayOutputStream();
-		if (mVariable.getValue().isXExpr())
-			Util.writeXdmValue(mVariable.getValue().asXdmNode(), Util
-					.streamToDestination(buf, opts));
-		else
-			buf.write(mVariable.getValue().toBytes(opts.getEncoding()));
-		return new ByteArrayInputStream(buf.toByteArray());
+		try {
+			if (mVariable.getValue().isXExpr())
+				Util.writeXdmValue(mVariable.getValue().asXdmNode(), Util
+						.streamToDestination(buf, opts));
+			else
+				buf.write(mVariable.getValue().toBytes(opts.getEncoding()));
+			return new ByteArrayInputStream(buf.toByteArray());
+		} catch (SaxonApiException e) {
+			throw new CoreException(e);
+		} catch (IOException e) {
+			throw new CoreException(e);
+		}
 
 	}
 
-	public synchronized void close() throws IOException {
+	public synchronized void close() throws CoreException {
 
 	}
 
-	public synchronized Source asSource(SerializeOpts opts) throws InvalidArgumentException,
-			SaxonApiException, IOException {
+	public synchronized Source asSource(SerializeOpts opts) throws CoreException{
 
 		return mVariable.getValue().asSource();
 
 	}
 
-	public synchronized XdmNode asXdmNode(SerializeOpts opts) throws SaxonApiException,
-			InvalidArgumentException, IOException {
+	public synchronized XdmNode asXdmNode(SerializeOpts opts) throws CoreException {
 		return mVariable.getValue().asXdmNode();
 
 	}
@@ -82,18 +86,21 @@ public class VariableInputPort extends InputPort {
 		return false;
 	}
 
-	public void copyTo(OutputStream out, SerializeOpts opts) throws IOException, SaxonApiException,
-			InvalidArgumentException {
+	public void copyTo(OutputStream out, SerializeOpts opts) throws CoreException , IOException {
 		if (mVariable.getValue().isXExpr())
-			Util.writeXdmValue(mVariable.getValue().asXdmNode(), Util
-					.streamToDestination(out, opts));
+			try {
+				Util.writeXdmValue(mVariable.getValue().asXdmNode(), Util
+						.streamToDestination(out, opts));
+			} catch (SaxonApiException e) {
+				throw new CoreException(e);
+			}
 		else
 			out.write(mVariable.getValue().toString().getBytes(opts.getText_encoding()));
 
 	}
 
 	@Override
-	public XMLEventReader asXMLEventReader(SerializeOpts opts) throws XMLStreamException, CoreException
+	public XMLEventReader asXMLEventReader(SerializeOpts opts) throws CoreException
 	{
 		/*
 		 * @TODO: Look at TinyTreeEventIterator and EventIterator and EventToStaxBridge
@@ -109,7 +116,11 @@ public class VariableInputPort extends InputPort {
 		//return XMLInputFactory.newInstance().createXMLStreamReader( buffer.getReader() );
 		return  buffer.getReader();
 		*/
-		return XMLInputFactory.newInstance().createXMLEventReader(asXMLStreamReader(opts));
+		try {
+			return XMLInputFactory.newInstance().createXMLEventReader(asXMLStreamReader(opts));
+		} catch (Exception e){
+			throw new CoreException(e);
+		}
 		
 		
 			
@@ -117,8 +128,7 @@ public class VariableInputPort extends InputPort {
 	
 
 	@Override
-	public XMLStreamReader asXMLStreamReader(SerializeOpts opts) throws InvalidArgumentException,
-			CoreException, XMLStreamException 
+	public XMLStreamReader asXMLStreamReader(SerializeOpts opts) throws CoreException
 	{
 		
 		
@@ -153,7 +163,11 @@ public class VariableInputPort extends InputPort {
 		// TODO: Bug in Saxon 9.1.0.6 
 		// PullToStax starts in state 0 not state START_DOCUMENT
 		if( ps.getEventType() == 0 )
-			ps.next();
+			try {
+				ps.next();
+			} catch (XMLStreamException e) {
+				throw new CoreException(e);
+			}
 		
 		return ps;
 

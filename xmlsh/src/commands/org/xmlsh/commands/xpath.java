@@ -14,14 +14,13 @@ import java.util.List;
 import net.sf.saxon.s9api.Destination;
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.QName;
-import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XPathCompiler;
 import net.sf.saxon.s9api.XPathExecutable;
 import net.sf.saxon.s9api.XPathSelector;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
+import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InputPort;
-import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Namespaces;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
@@ -174,7 +173,7 @@ public class xpath extends XCommand {
 
 	}
 
-	private String readString(XValue v) throws IOException, InvalidArgumentException, SaxonApiException  {
+	private String readString(XValue v) throws CoreException, IOException  {
 		
 		InputPort in = getInput( v );
 		InputStream is = in.asInputStream(getSerializeOpts());

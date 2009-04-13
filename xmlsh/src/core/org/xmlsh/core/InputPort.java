@@ -11,11 +11,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import javax.xml.stream.XMLEventReader;
-import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.Source;
 
-import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XdmNode;
 import org.xmlsh.sh.shell.SerializeOpts;
 
@@ -32,25 +30,25 @@ public abstract class InputPort  extends IPort
 
 	
 
-	public	abstract InputStream asInputStream(SerializeOpts opts) throws InvalidArgumentException, SaxonApiException, IOException ;
+	public	abstract InputStream asInputStream(SerializeOpts opts) throws CoreException ;
 	
 
-	public abstract void close() throws IOException ;
+	public abstract void close() throws CoreException ;
 	
 	
-	public abstract Source asSource(SerializeOpts opts) throws InvalidArgumentException, SaxonApiException, IOException;
+	public abstract Source asSource(SerializeOpts opts) throws CoreException;
 	
 
-	public abstract XdmNode asXdmNode(SerializeOpts opts) throws SaxonApiException, InvalidArgumentException, IOException;
+	public abstract XdmNode asXdmNode(SerializeOpts opts) throws CoreException;
 	
 
 	public abstract boolean isStream();
 
-	public  abstract void copyTo(OutputStream out, SerializeOpts opts ) throws IOException, SaxonApiException, InvalidArgumentException;
+	public  abstract void copyTo(OutputStream out, SerializeOpts opts ) throws  CoreException, IOException;
 
 
-	public abstract XMLEventReader asXMLEventReader(SerializeOpts opts) throws InvalidArgumentException, CoreException, XMLStreamException ;
-	public abstract XMLStreamReader asXMLStreamReader(SerializeOpts opts) throws InvalidArgumentException, CoreException, XMLStreamException ;
+	public abstract XMLEventReader asXMLEventReader(SerializeOpts opts) throws CoreException;
+	public abstract XMLStreamReader asXMLStreamReader(SerializeOpts opts) throws  CoreException;
 	
 	
 	

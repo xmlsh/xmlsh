@@ -33,7 +33,7 @@ public class XIOEnvironment {
 
 	private	 boolean				 mStdinRedirected = false;
 
-	public	InputPort getStdin() throws IOException 
+	public	InputPort getStdin() 
 	{
 		InputPort stdin = mInputs.getDefault();
 		if( stdin == null )
@@ -45,7 +45,7 @@ public class XIOEnvironment {
 	/*
 	 * Stdandard output stream - created on first request
 	 */
-	public	OutputPort	getStdout() throws IOException 
+	public	OutputPort	getStdout() 
 	{
 		OutputPort stdout = mOutputs.getDefault();
 		if( stdout == null )
@@ -164,7 +164,7 @@ public class XIOEnvironment {
 	
 	
 
-	public void initStdio() throws IOException {
+	public void initStdio()  {
 
 		mInputs.add( 
 				new NamedPort<InputPort>( null , true , new StreamInputPort(System.in,null) )

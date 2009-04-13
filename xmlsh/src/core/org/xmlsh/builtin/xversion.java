@@ -8,7 +8,7 @@ package org.xmlsh.builtin;
 
 import java.util.List;
 
-import javax.xml.transform.sax.TransformerHandler;
+import javax.xml.stream.XMLStreamWriter;
 
 import org.xml.sax.helpers.AttributesImpl;
 import org.xmlsh.core.BuiltinCommand;
@@ -23,23 +23,20 @@ public class xversion extends BuiltinCommand {
 	
 	      
 		OutputPort stdout = mShell.getEnv().getStdout();
-		TransformerHandler hd = stdout.asTransformerHandler(getSerializeOpts());
-
+		XMLStreamWriter writer = stdout.asXMLStreamWriter(getSerializeOpts());
 	
-		hd.startDocument();
+		writer.writeStartDocument();
+
 			
 		final String sBuild = "build";
 		final String sRelease = "relsase";
 		final String sDocRoot = "version";
 	
-		AttributesImpl attrs = new AttributesImpl();
-		attrs.addAttribute("", sBuild, sBuild , "CDATA", Version.getBuildDate() );
-		attrs.addAttribute("", sRelease, sRelease , "CDATA", Version.getRelease() );
-	
-		
-		hd.startElement("", sDocRoot,sDocRoot,attrs);
-		hd.endElement("", sDocRoot, sDocRoot);
-		hd.endDocument();
+		writer.writeStartElement(sDocRoot);
+		writer.writeAttribute(sBuild, Version.getBuildDate());
+		writer.writeAttribute(sRelease, Version.getRelease() );
+		writer.writeEndElement();
+		writer.writeEndDocument();
 		stdout.writeSequenceTerminator();
 		
 		return 0;

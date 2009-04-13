@@ -13,18 +13,17 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 
-import javanet.staxutils.IndentingXMLEventWriter;
-import javanet.staxutils.IndentingXMLStreamWriter;
+import javanet.staxutils.XMLEventStreamWriter;
+import javanet.staxutils.events.EventFactory;
 
+import javax.xml.stream.XMLEventFactory;
 import javax.xml.stream.XMLEventWriter;
-import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
-import javax.xml.transform.sax.TransformerHandler;
+import javax.xml.stream.events.XMLEvent;
 
 import net.sf.saxon.s9api.Destination;
 import org.xmlsh.sh.shell.SerializeOpts;
-import org.xmlsh.util.SynchronizedOutputStream;
 import org.xmlsh.util.Util;
 
 /*
@@ -35,17 +34,63 @@ import org.xmlsh.util.Util;
 
 
 
-public class StreamOutputPort extends OutputPort
+public class XMLEventOutputPort extends OutputPort
 {
-	private static byte kNEWLINE_BYTES[] = { '\n' };
+	private		XMLEventWriter mWriter;
+	private SerializeOpts mOpts;
+	
+	/*
+	 * A special output stream that turns every xmlevent into text
+	 */
+	
+	private class XMLEventOutputStream extends OutputStream
+	{
+		private XMLEventFactory mFactory = EventFactory.newInstance();
+		/* (non-Javadoc)
+		 * @see java.io.OutputStream#write(int)
+		 */
+		@Override
+		public void write(int b) throws IOException {
+			byte bytes[] = new byte[] {(byte)b };
+			write( bytes );
+		}
+
+		/* (non-Javadoc)
+		 * @see java.io.OutputStream#write(byte[], int, int)
+		 */
+		@Override
+		public void write(byte[] b, int off, int len) throws IOException {
+			
+			XMLEvent event = mFactory.createCharacters(new String(b,off,len,mOpts.getText_encoding()));
+			
+			try {
+				mWriter.add(event);
+			} catch (XMLStreamException e) {
+				throw new IOException(e);
+			}
+			
+			
+			
+		}
+
+		/* (non-Javadoc)
+		 * @see java.io.OutputStream#write(byte[])
+		 */
+		@Override
+		public void write(byte[] b) throws IOException {
+			write(b,0,b.length);
+		}
+		
+		
+	}
+	
 	
 
-	private OutputStream	 mStream;
 
-
-	public StreamOutputPort( OutputStream os ) 
+	public XMLEventOutputPort( XMLEventWriter writer , SerializeOpts opts ) 
 	{
-		mStream = os;
+		mWriter = writer;
+		mOpts = opts;
 	}
 
 	
@@ -57,32 +102,28 @@ public class StreamOutputPort extends OutputPort
 	
 	public	synchronized OutputStream asOutputStream() 
 	{
-		return new SynchronizedOutputStream(mStream,mStream != System.out);
+		return new XMLEventOutputStream();
 	}
 
 	public synchronized void flush() throws CoreException
 	{
-		if( mStream != null )
-			try {
-				mStream.flush();
-			} catch (IOException e) {
-				throw new CoreException(e);
-			}
-		
-	
+
+		try {
+			mWriter.flush();
+		} catch (XMLStreamException e) {
+			throw new CoreException(e);
+		}
 	}
 	
 	
 	
 	public synchronized void close() throws CoreException {
-		if( mStream != null )
-			try {
-				mStream.close();
-			} catch (IOException e) {
-				throw new CoreException(e);
-			}
+		try {
+			mWriter.close();
+		} catch (XMLStreamException e) {
+			throw new CoreException(e);
+		}
 	}
-
 
 
 	
@@ -113,13 +154,12 @@ public class StreamOutputPort extends OutputPort
 	public synchronized void writeSequenceSeperator() throws IOException, InvalidArgumentException
 	{
 		
-		asOutputStream().write(kNEWLINE_BYTES  );
 		
 		
 	}
 
 	public void writeSequenceTerminator() throws IOException {
-			asOutputStream().write(kNEWLINE_BYTES  );
+			
 		
 	}
 
@@ -128,21 +168,7 @@ public class StreamOutputPort extends OutputPort
 
 	@Override
 	public XMLStreamWriter asXMLStreamWriter(SerializeOpts opts) throws XMLStreamException {
-		/*
-	    XMLInputFactory inputFactory = XMLInputFactory.newInstance();
-	    XMLEventReader eventReader = inputFactory.createXMLEventReader(in);
-		*/
-		XMLOutputFactory fact = XMLOutputFactory.newInstance();
-	// XMLOutputFactory fact = new OutputFactory();
-		XMLStreamWriter writer =  fact.createXMLStreamWriter(asOutputStream(), opts.getEncoding() );
-	
-		if( opts.isIndent() )
-			writer = new IndentingXMLStreamWriter(writer);
-		if( opts.isOmit_xml_declaration() )
-			writer = new OmittingXMLStreamWriter( writer );
-		
-		return writer ;
-		
+		return new XMLEventStreamWriter(mWriter);
 		
 	}
 
@@ -151,19 +177,7 @@ public class StreamOutputPort extends OutputPort
 
 	@Override
 	public XMLEventWriter asXMLEventWriter(SerializeOpts opts) throws InvalidArgumentException, XMLStreamException {
-		XMLOutputFactory fact = XMLOutputFactory.newInstance();
-		
-		
-		// XMLOutputFactory fact = new OutputFactory();
-		XMLEventWriter writer =  fact.createXMLEventWriter(asOutputStream(), opts.getEncoding() );
-		
-			if( opts.isIndent() )
-				writer = new IndentingXMLEventWriter(writer);
-		
-			if( opts.isOmit_xml_declaration() )
-				writer = new OmittingXMLEventWriter( writer );
-		
-		return writer ;
+		return mWriter;
 			
 	}
 	

@@ -18,8 +18,6 @@ import javanet.staxutils.StAXSource;
 
 import javax.xml.stream.XMLEventWriter;
 import javax.xml.stream.XMLStreamWriter;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.sax.TransformerHandler;
 
 import net.sf.saxon.Configuration;
@@ -96,7 +94,7 @@ public class VariableOutputPort extends OutputPort
 			return ( mByteArrayOutputStream = new ByteArrayOutputStream()); 	// BOS is synchroized 
 	}
 
-	public synchronized void flush() throws IOException, CoreException
+	public synchronized void flush() throws  CoreException
 	{
 			
 			
@@ -136,23 +134,13 @@ public class VariableOutputPort extends OutputPort
 	
 	
 	
-	public synchronized void close() throws IOException, InvalidArgumentException {
+	public synchronized void close() throws CoreException {
 		
 		
 		
 	}
 
 
-	public synchronized TransformerHandler asTransformerHandler(SerializeOpts opts) throws TransformerConfigurationException, IllegalArgumentException, TransformerFactoryConfigurationError
-	{
-			
-			mBuilder = new TinyBuilder();
-	        PipelineConfiguration pipe = Shell.getProcessor().getUnderlyingConfiguration().makePipelineConfiguration();
-	        mBuilder.setPipelineConfiguration(pipe);
-	            
-			return Util.getTransformerHander(mBuilder,opts);
-			
-	}
 	
 	public synchronized PrintStream asPrintStream()
 	{

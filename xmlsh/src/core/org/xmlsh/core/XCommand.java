@@ -17,7 +17,6 @@ import java.util.List;
 
 import javax.xml.transform.Source;
 
-import net.sf.saxon.s9api.SaxonApiException;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 
@@ -94,7 +93,7 @@ public abstract class XCommand implements ICommand {
 
 
 
-	public InputStream getInputStream(XValue file) throws InvalidArgumentException, SaxonApiException, IOException {
+	public InputStream getInputStream(XValue file) throws CoreException {
 		return mEnvironment.getInputStream(file,getSerializeOpts());
 	}
 
@@ -102,7 +101,7 @@ public abstract class XCommand implements ICommand {
 
 
 
-	public Source getSource(XValue value) throws InvalidArgumentException, SaxonApiException, IOException {
+	public Source getSource(XValue value) throws CoreException {
 		return mEnvironment.getSource(value,getSerializeOpts());
 	}
 	 
@@ -124,7 +123,7 @@ public abstract class XCommand implements ICommand {
 	}
 
 
-	public	InputPort	getInput( XValue name ) throws IOException
+	public	InputPort	getInput( XValue name ) throws CoreException
 	{
 		return mEnvironment.getInput( name );
 	}

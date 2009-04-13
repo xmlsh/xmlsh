@@ -1,58 +1,20 @@
 /**
- * $Id$
- * $Date$
+ * $Id: $
+ * $Date: $
  *
  */
 
-package org.xmlsh.commands;
+package org.xmlsh.util;
 
-import java.util.List;
+public class MultiPipe {
 
-import javax.xml.stream.XMLStreamWriter;
-
-import org.xmlsh.core.OutputPort;
-import org.xmlsh.core.XCommand;
-import org.xmlsh.core.XValue;
-import org.xmlsh.types.XFile;
-
-
-public class xpwd extends XCommand
-{
-	
-	
-	
-	
-	public int run(  List<XValue> args )	throws Exception
-	{
-		
-
-		XFile file = new XFile(getCurdir());
-		
-
-		OutputPort stdout = getStdout();
-		XMLStreamWriter writer = stdout.asXMLStreamWriter(getSerializeOpts());
-		
-		writer.writeStartDocument();
-		
-		file.serialize(writer,false);
-		
-		writer.writeEndDocument();
-		
-		stdout.writeSequenceTerminator();
-		// stdout.close();
-		
-		
-		
-		
-		return 0;
-		
-	}
-	
 }
 
+
+
 //
 //
-//Copyright (C) 2008,2009 , David A. Lee.
+//Copyright (C) 2008,2009 David A. Lee.
 //
 //The contents of this file are subject to the "Simplified BSD License" (the "License");
 //you may not use this file except in compliance with the License. You may obtain a copy of the

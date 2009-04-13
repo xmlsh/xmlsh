@@ -10,7 +10,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.transform.sax.TransformerHandler;
+import javax.xml.stream.XMLStreamWriter;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.helpers.AttributesImpl;
@@ -35,13 +35,12 @@ public class xls extends XCommand {
 
 	      
 		OutputPort stdout = getStdout();
-		TransformerHandler hd = stdout.asTransformerHandler(getSerializeOpts());
-
-		hd.startDocument();
+		XMLStreamWriter writer = stdout.asXMLStreamWriter(getSerializeOpts());
+		writer.writeStartDocument();
 		
 		Attributes attrs = new AttributesImpl();
 		String sDocRoot = "dir";
-		hd.startElement("", sDocRoot,sDocRoot,attrs);
+		writer.writeStartElement(sDocRoot);
 		
 		
 		if( args == null )
@@ -56,7 +55,7 @@ public class xls extends XCommand {
 			File dir = getEnv().getShell().getFile(arg.toString());
 			if( !dir.isDirectory() ){
 
-				new XFile(dir).serialize(hd, longMode);
+				new XFile(dir).serialize(writer, longMode);
 			} else {
 	
 				File [] files =  dir.listFiles();
@@ -65,15 +64,15 @@ public class xls extends XCommand {
 		
 					
 		
-					new XFile(f ).serialize(hd,longMode);
+					new XFile(f ).serialize(writer,longMode);
 					
 		
 					
 				}
 			}
 		}
-		hd.endElement("", sDocRoot,sDocRoot);
-		hd.endDocument();
+		writer.writeEndElement();
+		writer.writeEndDocument();
 		stdout.writeSequenceTerminator();
 		
 		

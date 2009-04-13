@@ -16,8 +16,6 @@ import java.io.UnsupportedEncodingException;
 import javax.xml.stream.XMLEventWriter;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.sax.TransformerHandler;
 
 import net.sf.saxon.s9api.Destination;
@@ -41,23 +39,21 @@ public abstract class OutputPort extends IPort
 	
 	public	abstract OutputStream asOutputStream();
 
-	public abstract void flush() throws IOException, CoreException;
+	public abstract void flush() throws  CoreException;
 	
 	
 	
-	public abstract void close() throws IOException, InvalidArgumentException ;
+	public abstract void close() throws CoreException;
 	
 
-
-	public abstract TransformerHandler asTransformerHandler(SerializeOpts opts) throws TransformerConfigurationException, IllegalArgumentException, TransformerFactoryConfigurationError;
 	
 	
-	public synchronized PrintStream asPrintStream()
+	public synchronized PrintStream asPrintStream() 
 	{
 		return new PrintStream(asOutputStream());
 	}
 
-	public abstract Destination asDestination(SerializeOpts opts) throws InvalidArgumentException;
+	public abstract Destination asDestination(SerializeOpts opts) throws CoreException;
 	
 
 	public synchronized PrintWriter asPrintWriter(SerializeOpts opts) throws UnsupportedEncodingException {

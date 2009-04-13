@@ -6,22 +6,23 @@
 
 package org.xmlsh.core;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import javanet.staxutils.io.StreamEventWriter;
+
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.Source;
-import javax.xml.transform.stream.StreamSource;
+import javax.xml.transform.stax.StAXSource;
 
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XdmNode;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.util.SynchronizedInputStream;
-import org.xmlsh.util.Util;
+import org.xmlsh.util.XMLEventInputStream;
 
 /*
  * An InputPort represents an input source of data, either Stream (bytes) or XML
@@ -29,43 +30,49 @@ import org.xmlsh.util.Util;
  * 
  */
 
-public class StreamInputPort extends InputPort {
+public class XMLEventInputPort extends InputPort {
 
 	// An Input Port may be either a Stream or an XML value
-	private InputStream mStream;
+	private XMLEventReader mReader;
 
-	public StreamInputPort(InputStream is, String systemId ) {
-		mStream = is;
+	public XMLEventInputPort(XMLEventReader is, String systemId ) {
+		mReader = is;
 		this.setSystemId(systemId);
 
 	}
 
 	public synchronized InputStream asInputStream(SerializeOpts opts)
-			throws CoreException  {
+			throws CoreException {
 
-		return mStream == null ? null : new SynchronizedInputStream(mStream);
+		return new XMLEventInputStream( mReader , opts );
+		
 
 	}
 
 	public synchronized void close() throws CoreException {
 
-		if (mStream != null)
-			try {
-				mStream.close();
-			} catch (IOException e) {
-				throw new CoreException(e);
-			}
+		try {
+			mReader.close();
+		} catch (XMLStreamException e) {
+			throw new CoreException(e);
+		}
 
 	}
 
 	public synchronized Source asSource(SerializeOpts opts) throws CoreException {
 
-		Source s = new StreamSource(asInputStream(opts));
+		
+		Source s;
+		try {
+			s = new StAXSource( mReader );
+		} catch (XMLStreamException e) {
+			throw new CoreException(e);
+		}
 		s.setSystemId(getSystemId());
 		return s;
 	}
 
-	public synchronized XdmNode asXdmNode(SerializeOpts opts) throws CoreException  {
+	public synchronized XdmNode asXdmNode(SerializeOpts opts) throws CoreException {
 
 		net.sf.saxon.s9api.DocumentBuilder builder = Shell.getProcessor().newDocumentBuilder();
 		try {
@@ -80,24 +87,24 @@ public class StreamInputPort extends InputPort {
 		return true;
 	}
 
-	public void copyTo(OutputStream out, SerializeOpts opts) throws CoreException, IOException {
+	public void copyTo(OutputStream out, SerializeOpts opts) throws CoreException {
 
-		Util.copyStream(mStream, out);
+		StreamEventWriter writer = new StreamEventWriter(out);
+		
+		try {
+			writer.add(mReader);
+			writer.close();
+		} catch (XMLStreamException e) {
+			throw new CoreException(e);
+		}
+	
+		
 
 	}
 
 	@Override
 	public XMLEventReader asXMLEventReader(SerializeOpts opts) throws CoreException {
-		try {
-		XMLInputFactory factory = XMLInputFactory.newInstance();
-		if( ! opts.isSupports_dtd())
-			factory.setProperty(XMLInputFactory.SUPPORT_DTD, "false");
-		
-		return factory.createXMLEventReader( getSystemId() , asInputStream(opts));
-		} catch (Exception e)
-		{
-			throw new CoreException( e );
-		}
+		return mReader;
 	}
 
 	@Override

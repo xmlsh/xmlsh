@@ -9,7 +9,8 @@ package org.xmlsh.types;
 import java.io.File;
 import java.io.IOException;
 
-import javax.xml.transform.sax.TransformerHandler;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.log4j.Logger;
 import org.xml.sax.SAXException;
@@ -105,24 +106,24 @@ public class XFile /* implements XSerializble */ {
 
 	
 
-	public void serialize(TransformerHandler writer, boolean all ) throws SAXException {
-		AttributesImpl atts = new AttributesImpl();
+	public void serialize(XMLStreamWriter writer, boolean all ) throws  XMLStreamException {
 		
-		atts.addAttribute("", "name", "name", "CDATA", getName());
-		atts.addAttribute("", "path", "path", "CDATA", getPath());
+		writer.writeStartElement("file");
+		writer.writeAttribute("name", getName());
+		writer.writeAttribute("path", getPath());
 		if( all ){
 			
-			atts.addAttribute("", "length", "length", "CDATA", String.valueOf(mFile.length()));
-			atts.addAttribute("", "type", "type", "CDATA", mFile.isDirectory() ? "dir" : "file");
-			atts.addAttribute("", "readable", "readable", "CDATA", mFile.canRead()? "true" : "false");
-			atts.addAttribute("", "writable", "writable", "CDATA", mFile.canWrite()? "true" : "false");
-
+			writer.writeAttribute("length", String.valueOf(mFile.length()));
+			writer.writeAttribute("type", mFile.isDirectory() ? "dir" : "file");
+			writer.writeAttribute("readable", mFile.canRead()? "true" : "false");
+			writer.writeAttribute("writable", mFile.canWrite()? "true" : "false");
+	
+	
 			
 		}
 
-		writer.startElement("", "file", "file", atts);
-		writer.endElement("", "file", "file");
-
+	
+		writer.writeEndElement();
 	}
 	
 	// Filename without any extension

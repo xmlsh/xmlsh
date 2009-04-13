@@ -10,9 +10,7 @@ import java.io.File;
 import java.util.List;
 
 import javax.xml.stream.XMLStreamWriter;
-import javax.xml.transform.sax.TransformerHandler;
 
-import org.xml.sax.helpers.AttributesImpl;
 import org.xmlsh.core.BuiltinCommand;
 import org.xmlsh.core.CommandFactory;
 import org.xmlsh.core.ICommand;

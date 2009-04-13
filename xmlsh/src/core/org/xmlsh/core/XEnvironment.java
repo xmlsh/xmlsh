@@ -17,7 +17,6 @@ import java.util.Collection;
 
 import javax.xml.transform.Source;
 
-import net.sf.saxon.s9api.SaxonApiException;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.xmlsh.sh.shell.SerializeOpts;
@@ -179,6 +178,8 @@ public class XEnvironment  {
 	/**
 	 * @param file
 	 * @return
+	 * @throws IOException 
+	 * @throws FileNotFoundException 
 	 * @throws FileNotFoundException
 	 * @throws IOException
 	 * @see org.xmlsh.sh.shell.Shell#getInputStream(java.lang.String)
@@ -271,7 +272,7 @@ public class XEnvironment  {
 	 * @throws IOException 
 	 * @see org.xmlsh.core.XIOEnvironment#getStdin()
 	 */
-	public InputPort getStdin() throws IOException {
+	public InputPort getStdin()  {
 		return mIO.getStdin();
 	}
 
@@ -381,13 +382,13 @@ public class XEnvironment  {
 	}
 
 
-	public InputStream getInputStream(XValue file,SerializeOpts opts) throws InvalidArgumentException, SaxonApiException, IOException {
+	public InputStream getInputStream(XValue file,SerializeOpts opts) throws CoreException {
 		return getInput(file).asInputStream(opts);
 	}
 
 
 
-	public Source getSource(XValue value,SerializeOpts opts) throws InvalidArgumentException, SaxonApiException, IOException {
+	public Source getSource(XValue value,SerializeOpts opts) throws CoreException {
 		return getInput(value).asSource(opts);
 
 	}
@@ -409,7 +410,7 @@ public class XEnvironment  {
 	 * if port is a node return an anonymous port based on a value
 	 * 
 	 */
-	public InputPort getInput(XValue port) throws IOException {
+	public InputPort getInput(XValue port) throws CoreException  {
 		
 		if( port == null )
 			return getStdin();
@@ -427,7 +428,16 @@ public class XEnvironment  {
 			}
 				
 			// Get a stream from name
-			InputStream in = getInputStream(name);
+			InputStream in;
+			try {
+				in = getInputStream(name);
+			} catch (FileNotFoundException e) {
+				throw new CoreException(e);
+			} catch (IOException e) {
+				throw new CoreException(e);
+			}
+			
+			
 			if( in == null )
 				return null ;
 			

@@ -865,7 +865,7 @@ public class Shell {
 	
 	
 	
-	public InputStream getInputStream(String file) throws IOException {
+	public InputStream getInputStream(String file) throws FileNotFoundException, IOException {
 		/*
 		 * Special case to support /dev/null file on Windows systems
 		 * Doesnt hurt on unix either to fake this out instead of using the OS

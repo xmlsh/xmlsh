@@ -33,7 +33,6 @@ import javax.xml.stream.events.StartDocument;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 
-import net.sf.saxon.s9api.SaxonApiException;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.InvalidArgumentException;
@@ -104,7 +103,7 @@ public class xcmp extends XCommand {
 
 
 
-	private int bin_cmp(InputPort f1, InputPort f2) throws IOException, InvalidArgumentException, SaxonApiException {
+	private int bin_cmp(InputPort f1, InputPort f2) throws CoreException, IOException  {
 		BufferedInputStream is1 = new BufferedInputStream(f1.asInputStream(getSerializeOpts()));
 	
 		
