@@ -15,7 +15,7 @@ import org.xmlsh.core.XEnvironment;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.sh.shell.ShellThread;
 import org.xmlsh.util.NullInputStream;
-import org.xmlsh.util.PipedStream;
+import org.xmlsh.util.PipedStreamPort;
 
 public class IOCommand {
 	private String	mPrefix;
@@ -48,7 +48,7 @@ public class IOCommand {
 			
 			Shell sh = shell.clone();	// clone shell for execution
 			
-			PipedStream	pipe = PipedStream.getPipes(1)[0];
+			PipedStreamPort	pipe = PipedStreamPort.getPipes(1)[0];
 			try {
 			
 

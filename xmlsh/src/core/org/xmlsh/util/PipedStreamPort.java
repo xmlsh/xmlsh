@@ -15,11 +15,11 @@ import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.StreamInputPort;
 import org.xmlsh.core.StreamOutputPort;
 
-public class PipedStream extends PipedPort {
+public class PipedStreamPort extends PipedPort {
 	private		PipedInputStream 	mIn;
 	private		PipedOutputStream 	mOut;
 	
-	public PipedStream()  throws IOException
+	public PipedStreamPort()  throws IOException
 	{
 	
 		mOut = new PipedOutputStream();
@@ -35,13 +35,13 @@ public class PipedStream extends PipedPort {
 		return new StreamOutputPort(mOut) ; 
 	}
 	
-	static public PipedStream[] getPipes(int n ) throws IOException
+	static public PipedStreamPort[] getPipes(int n ) throws IOException
 	{
 		if( n == 0 )
 			return null;
-		PipedStream	streams[] = new PipedStream[n];
+		PipedStreamPort	streams[] = new PipedStreamPort[n];
 		for( int i = 0 ; i < n ; i++ )
-			streams[i] = new PipedStream();
+			streams[i] = new PipedStreamPort();
 		return streams;
 		
 	}

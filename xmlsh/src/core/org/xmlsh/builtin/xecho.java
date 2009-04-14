@@ -25,8 +25,6 @@ public class xecho extends BuiltinCommand {
 		OutputPort stdout = mShell.getEnv().getStdout();
 		Destination dest =  stdout.asDestination(mShell.getSerializeOpts());
 
-		Processor  processor  = Shell.getProcessor();
-		
 		args = Util.expandSequences( args);
 		
 		boolean bFirst = true;

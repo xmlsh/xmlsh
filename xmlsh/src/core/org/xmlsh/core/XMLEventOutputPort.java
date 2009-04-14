@@ -13,6 +13,7 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 
+import javanet.staxutils.ContentHandlerToXMLEventWriter;
 import javanet.staxutils.XMLEventStreamWriter;
 import javanet.staxutils.events.EventFactory;
 
@@ -23,8 +24,9 @@ import javax.xml.stream.XMLStreamWriter;
 import javax.xml.stream.events.XMLEvent;
 
 import net.sf.saxon.s9api.Destination;
+import net.sf.saxon.s9api.SAXDestination;
+import org.xml.sax.helpers.DefaultHandler;
 import org.xmlsh.sh.shell.SerializeOpts;
-import org.xmlsh.util.Util;
 
 /*
  * An OutputPort represents an output sync of data, either Stream (bytes) or XML data
@@ -38,6 +40,9 @@ public class XMLEventOutputPort extends OutputPort
 {
 	private		XMLEventWriter mWriter;
 	private SerializeOpts mOpts;
+	
+	
+	
 	
 	/*
 	 * A special output stream that turns every xmlevent into text
@@ -134,8 +139,17 @@ public class XMLEventOutputPort extends OutputPort
 
 	public synchronized Destination asDestination(SerializeOpts opts) throws CoreException
 	{
+		
+		DefaultHandler handler;
+		try {
+			handler = new ContentHandlerToXMLEventWriter( asXMLEventWriter(opts) );
+		} catch (XMLStreamException e) {
+			throw new CoreException(e);
+		}
+		Destination dest = new SAXDestination( handler );
+		return dest ;
+		
 
-		return Util.streamToDestination(asOutputStream(), opts);
 	}
 	
 

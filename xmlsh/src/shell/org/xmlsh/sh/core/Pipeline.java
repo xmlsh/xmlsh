@@ -12,7 +12,9 @@ import java.util.ArrayList;
 import org.xmlsh.core.XIOEnvironment;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.sh.shell.ShellThread;
-import org.xmlsh.util.PipedStream;
+import org.xmlsh.util.PipedPort;
+import org.xmlsh.util.PipedStreamPort;
+import org.xmlsh.util.PipedXMLPort;
 
 public class Pipeline extends Command {
 	
@@ -71,9 +73,17 @@ public class Pipeline extends Command {
 		
 		ArrayList<ShellThread>  threads = new ArrayList<ShellThread>();
 		
-		
-		PipedStream	pipes[] = PipedStream.getPipes(ncmds-1);
-		
+		PipedPort pipes[] = null ;
+		/*
+		 * Use XML Pipes only if XPIPE variable is set
+		 * 
+		 */
+		if( ncmds > 1 ){
+			if( shell.getEnv().getVar("XPIPE") == null )
+				pipes = PipedStreamPort.getPipes(ncmds-1);
+			else
+				pipes= PipedXMLPort.getPipes(ncmds-1,shell.getSerializeOpts());
+		}
 		
 		/*
 		 * Setup all but LAST command as seperate threads

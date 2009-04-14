@@ -6,23 +6,26 @@
 
 package org.xmlsh.core;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import javanet.staxutils.io.StreamEventWriter;
+import javanet.staxutils.StAXSource;
 
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.events.XMLEvent;
 import javax.xml.transform.Source;
-import javax.xml.transform.stax.StAXSource;
 
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XdmNode;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.util.Util;
 import org.xmlsh.util.XMLEventInputStream;
+import org.xmlsh.util.XMLEventStreamReader;
 
 /*
  * An InputPort represents an input source of data, either Stream (bytes) or XML
@@ -44,7 +47,7 @@ public class XMLEventInputPort extends InputPort {
 	public synchronized InputStream asInputStream(SerializeOpts opts)
 			throws CoreException {
 
-		return new XMLEventInputStream( mReader , opts );
+		return new XMLEventInputStream( mReader , opts ,true);
 		
 
 	}
@@ -63,11 +66,7 @@ public class XMLEventInputPort extends InputPort {
 
 		
 		Source s;
-		try {
-			s = new StAXSource( mReader );
-		} catch (XMLStreamException e) {
-			throw new CoreException(e);
-		}
+		s = new StAXSource( asXMLEventReader(opts) );
 		s.setSystemId(getSystemId());
 		return s;
 	}
@@ -88,15 +87,24 @@ public class XMLEventInputPort extends InputPort {
 	}
 
 	public void copyTo(OutputStream out, SerializeOpts opts) throws CoreException {
-
+		InputStream in = new XMLEventInputStream( mReader , opts ,true);
+		try {
+			Util.copyStream(in,out);
+		} catch (IOException e) {
+			throw new CoreException(e);
+		}
+		
+		
+		/*
 		StreamEventWriter writer = new StreamEventWriter(out);
 		
 		try {
-			writer.add(mReader);
+			writer.add(asXMLEventReader(opts));
 			writer.close();
 		} catch (XMLStreamException e) {
 			throw new CoreException(e);
 		}
+		*/
 	
 		
 
@@ -104,21 +112,42 @@ public class XMLEventInputPort extends InputPort {
 
 	@Override
 	public XMLEventReader asXMLEventReader(SerializeOpts opts) throws CoreException {
-		return mReader;
+		/*
+		 * In the case of writer writing text but reader expecting a node.
+		 * Detect this (first event is Charactors) and put a parser between the charactors
+		 * and the event reader.
+		 */
+		try {
+			XMLEvent event = mReader.peek() ;
+			if( event == null )
+				// EOF - let fall through
+				return mReader ;
+			
+			if( event.getEventType() != XMLEvent.CHARACTERS )
+				return mReader ;
+			
+			// Text events in a XML pipe - layer with a InputStream then a parser
+			InputStream 	is = asInputStream(opts);
+			XMLInputFactory factory = XMLInputFactory.newInstance();
+			if( ! opts.isSupports_dtd())
+				factory.setProperty(XMLInputFactory.SUPPORT_DTD, "false");
+			
+			return factory.createXMLEventReader( getSystemId() , is);
+			
+			
+			
+				
+		} catch (XMLStreamException e) {
+			throw new CoreException(e);
+		}
+		// SNH
 	}
 
 	@Override
 	public XMLStreamReader asXMLStreamReader(SerializeOpts opts) throws CoreException {
-		try {
-			XMLInputFactory factory = XMLInputFactory.newInstance();
-			if( ! opts.isSupports_dtd())
-				factory.setProperty(XMLInputFactory.SUPPORT_DTD, "false");
-			XMLStreamReader reader =  factory.createXMLStreamReader(getSystemId() , asInputStream(opts));
-			return reader;
-		} catch (Exception e)
-			{
-				throw new CoreException( e );
-			}
+		return new XMLEventStreamReader(asXMLEventReader(opts));
+		
+		
 	}
 
 }
