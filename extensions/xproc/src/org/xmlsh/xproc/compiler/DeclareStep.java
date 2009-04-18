@@ -96,7 +96,7 @@ class DeclareStep {
 				QName name = child.getNodeName();
 				
 				if( name.equals(Names.kINPUT))
-					inputs.add( Input.create(child,false));
+					inputs.add( Input.create(this.name,child,false));
 				else
 				if( name.equals(Names.kOUTPUT))
 					outputs.add( Output.create(child));
@@ -158,9 +158,9 @@ class DeclareStep {
 		subpipeline.serialize(c);
 
 		
-		if( in != null ){
-
-			in.serialize(c);
+		for( Input i : inputs )
+		{
+			i.serialize(c);
 			
 		}
 		
@@ -175,7 +175,7 @@ class DeclareStep {
 
 //
 //
-//Copyright (C) 2008, David A. Lee.
+//Copyright (C) 2008,2009 , David A. Lee.
 //
 //The contents of this file are subject to the "Simplified BSD License" (the "License");
 //you may not use this file except in compliance with the License. You may obtain a copy of the

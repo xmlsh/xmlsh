@@ -11,6 +11,7 @@ import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XdmNodeKind;
 import net.sf.saxon.s9api.XdmSequenceIterator;
+import org.xmlsh.util.Util;
 import org.xmlsh.xproc.util.XProcException;
 
 
@@ -32,6 +33,8 @@ import org.xmlsh.xproc.util.XProcException;
 
 
 class Input {
+	
+	String		step_name;		// step's name
 	String		port;
 	boolean		sequence;
 	Boolean		primary;		// Use an object for primary to distinguish between unset/true/false
@@ -39,23 +42,25 @@ class Input {
 	
 	String 		kind;
 	XPathExpression		select;
+
 	
 	BindingList	bindings = new BindingList();
 	
-	Input(boolean step) {this.step = step ;} 
+	Input(String step_name , boolean step) {this.step_name = step_name;this.step = step ;} 
 	
-    Input(String port, String kind, boolean primary, boolean step ) 
+    Input(String step_name, String port, String kind, boolean primary, boolean step ) 
     {
-		this.port = port ;
+    	this( step_name , step );
+
 		this.kind = kind ;
 		this.primary = primary;
-		this.step = step;
+		this.port = port;
 	}
 
-	static Input create( XdmNode node , boolean step )
+	static Input create( String step_name , XdmNode node , boolean step )
 	{
 	
-		Input input = new Input(step);
+		Input input = new Input(step_name, step);
 		input.parse(node);
 		return input;
 	}
@@ -106,6 +111,8 @@ class Input {
 			c.addPreamble("xpath " + XProcUtil.quote(select.xpath) + " >{" +getPortVariable()  +"}");
 			bRead = true ;
 		}
+		if(! Util.isEqual(port , "source" ) )
+			c.addPreamble("<(" + port + ")");
 		
 
 		
@@ -120,7 +127,8 @@ class Input {
 	}
 	String getPortVariable()
 	{
-		return "_" + port;
+		
+		return "_" + step_name + "." + port;
 	}
 }
 
@@ -128,7 +136,7 @@ class Input {
 
 //
 //
-//Copyright (C) 2008, David A. Lee.
+//Copyright (C) 2008,2009 , David A. Lee.
 //
 //The contents of this file are subject to the "Simplified BSD License" (the "License");
 //you may not use this file except in compliance with the License. You may obtain a copy of the

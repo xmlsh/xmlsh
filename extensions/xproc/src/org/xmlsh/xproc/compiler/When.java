@@ -65,8 +65,10 @@ class When {
 					continue ;
 				QName name = child.getNodeName();
 				
-				if( name.equals(Names.kXPATH_CONTEXT))
+				if( name.equals(Names.kXPATH_CONTEXT)){
 					xpath_context = XPathContext.create(child);
+					continue;
+				}
 				else
 				if( name.equals(Names.kOUTPUT))
 					output = Output.create(child);
@@ -120,7 +122,7 @@ class When {
 
 //
 //
-//Copyright (C) 2008, David A. Lee.
+//Copyright (C) 2008,2009 , David A. Lee.
 //
 //The contents of this file are subject to the "Simplified BSD License" (the "License");
 //you may not use this file except in compliance with the License. You may obtain a copy of the

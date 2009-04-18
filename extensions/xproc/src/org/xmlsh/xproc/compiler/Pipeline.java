@@ -51,9 +51,9 @@ class Pipeline extends DeclareStep {
 
 		 */
 		
-		inputs.add( new Input("source" , null , true ,false));
-		inputs.add( new Input("parameters" , "parameters" , true,false ));
-		outputs.add( new Output("result" , true ));
+		inputs.add( new Input( this.name , "source" , null , true ,false));
+		//inputs.add( new Input( this.name , "parameters" , "parameters" , true,false ));
+		outputs.add( new Output( this.name , "result" , true ));
 		
 	}
 	
@@ -63,7 +63,7 @@ class Pipeline extends DeclareStep {
 
 //
 //
-//Copyright (C) 2008, David A. Lee.
+//Copyright (C) 2008,2009 , David A. Lee.
 //
 //The contents of this file are subject to the "Simplified BSD License" (the "License");
 //you may not use this file except in compliance with the License. You may obtain a copy of the

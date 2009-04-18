@@ -124,7 +124,7 @@ class XProcUtil {
 		 	StringWriter sw = new StringWriter();
 	        Properties props = new Properties();
 	        props.setProperty("method", "xml");
-	        props.setProperty("indent", "yes");
+	        props.setProperty("indent", "no");
 	        props.setProperty("omit-xml-declaration", "yes");
 	        SequenceIterator iter = SingletonIterator.makeIterator(node);
 	        
@@ -157,7 +157,7 @@ class XProcUtil {
 
 //
 //
-//Copyright (C) 2008, David A. Lee.
+//Copyright (C) 2008,2009 , David A. Lee.
 //
 //The contents of this file are subject to the "Simplified BSD License" (the "License");
 //you may not use this file except in compliance with the License. You may obtain a copy of the

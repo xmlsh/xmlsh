@@ -37,15 +37,27 @@ else
     xpath -i $tpipe './node()' 
 fi  > $_TMP/test.xpl
 
-in="/dev/null"
+in=""
 if [ <[ exists( $test/t:test/t:input ) ]> ] ; then 
 	tinput=<[$test/t:test/t:input]>
-	if [ <[ exists( $tinput/t:document ) ]> ] ; then 
-		tinput=<[ $tinput/t:document ]> 
-	fi
-	xecho <[ $tinput/node() ]> > $_TMP/input.xml
-	in=$_TMP/input.xml
+	for t in $tinput ; do
+		doc=$t
+		if [ <[ exists( $t/t:document) ]> ] ; then 
+		   doc=<[ $t/t:document ]> 
+		fi
+		if [ <[ exists( $t/@port ) and $t/@port != "source" ]> ] ; then
+			port=<[ $t/@port/string() ]>
+			in="$in ($port)<$_TMP/input.${port}.xml"
+			xecho <[ $doc/node() ]> > $_TMP/input.${port}.xml
+		else
+			in="$in <$_TMP/input.xml"
+			xecho <[ $doc/node() ]> > $_TMP/input.xml
+		fi
+	done
 fi
+if [ -z "$in" ] ; then
+   in="< /dev/null";
+fi 
 
 
 if [ <[ exists( $test/t:test/t:output ) ]> ] ; then 
@@ -56,14 +68,13 @@ if [ <[ exists( $test/t:test/t:output ) ]> ] ; then
 	set -indent
 fi
 
-#echo running $1
+echo running $_TEST_URI
 xproc2xmlsh -base $_TEST_URI < $_TMP/test.xpl > $_TMP/test.xsh
 _TEST=$(xfile $_TMP test.xsh)
 
 
-$_TEST  < $in > $_TMP/output.xml 
+eval $_TEST  $in > $_TMP/output.xml 
 _EXIT=$?
-
 
 
 cd $_TMP

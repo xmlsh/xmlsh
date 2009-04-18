@@ -68,8 +68,8 @@ class AtomicStep  extends AbstractStep {
 				if( child.getNodeKind() == XdmNodeKind.ATTRIBUTE){
 					QName attrName = child.getNodeName();
 					if( attrName.getPrefix().equals("")){
-						
-						withoptions.add(new WithOption( attrName.getLocalName() , child.getStringValue()));
+						if( !attrName.getLocalName().equals("name"))
+							withoptions.add(new WithOption( attrName.getLocalName() , child.getStringValue()));
 						
 					}
 					continue ;
@@ -98,7 +98,7 @@ class AtomicStep  extends AbstractStep {
 				
 				QName name = child.getNodeName();
 				if( name.equals( Names.kINPUT))
-					inputs.add( Input.create(child,true));
+					inputs.add( Input.create(getStepName(),child,true));
 				else
 				if( name.equals( Names.kWITH_OPTION))
 					withoptions.add( WithOption.create(child));
@@ -158,7 +158,7 @@ class AtomicStep  extends AbstractStep {
 
 //
 //
-//Copyright (C) 2008, David A. Lee.
+//Copyright (C) 2008,2009 , David A. Lee.
 //
 //The contents of this file are subject to the "Simplified BSD License" (the "License");
 //you may not use this file except in compliance with the License. You may obtain a copy of the

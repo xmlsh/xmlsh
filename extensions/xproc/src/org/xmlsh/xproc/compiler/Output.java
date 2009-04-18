@@ -41,6 +41,7 @@ primary? = boolean />
 
 
 class Output {
+	String step_name;
 	String port;
 	boolean sequence;
 	boolean primary;
@@ -51,7 +52,8 @@ class Output {
 	{
 	}
 	
-	Output(String port, boolean primary) {
+	Output(String step_name,String port, boolean primary) {
+		this.step_name = step_name;
 		this.port = port ;
 		this.primary = primary;
 	}
@@ -90,7 +92,7 @@ class Output {
 
 //
 //
-//Copyright (C) 2008, David A. Lee.
+//Copyright (C) 2008,2009 , David A. Lee.
 //
 //The contents of this file are subject to the "Simplified BSD License" (the "License");
 //you may not use this file except in compliance with the License. You may obtain a copy of the
