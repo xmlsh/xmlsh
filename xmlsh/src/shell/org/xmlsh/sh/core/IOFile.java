@@ -13,6 +13,7 @@ import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.XEnvironment;
+import org.xmlsh.core.XValue;
 import org.xmlsh.core.XVariable;
 import org.xmlsh.sh.shell.Shell;
 
@@ -72,9 +73,14 @@ public class IOFile {
 		
 		String file = mFile.expandString(shell, true);
 		
-		boolean isPort = 	file.startsWith("{") &&
+		
+		/*
+		 * Variable IO syntax   cmd <{var}
+		 * 
+		 */
+		boolean isVar = 	file.startsWith("{") &&
 							file.endsWith("}");
-		if( isPort ){
+		if( isVar ){
 			String var = file.substring(1,file.length()-1);
 			
 			
@@ -100,6 +106,38 @@ public class IOFile {
 			return ;
 		}
 		
+		/*
+		 * Variable IO syntax   cmd <{var}
+		 * 
+		 */
+		boolean isPort = 	file.startsWith("(") &&
+							file.endsWith(")");
+		if( isPort ){
+		
+				
+			if( mPrefix.equals("<")){
+				InputPort inp = env.getInput(new XValue(file));
+			
+				env.setInput( port , inp );
+			}
+			else
+			if( mPrefix.equals(">")){
+				OutputPort outp=env.getOutput( new XValue(file), false );
+				env.setOutput(port,outp);
+			}
+			else
+			if( mPrefix.equals(">>"))
+			{	
+				OutputPort outp=env.getOutput( new XValue(file), true );
+				env.setOutput(port,outp);
+					
+			}
+			
+			return ;
+		}
+		
+		
+	
 		
 	
 		

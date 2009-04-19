@@ -21,6 +21,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.util.NullOutputStream;
 
 public class XEnvironment  {
 	
@@ -284,6 +285,52 @@ public class XEnvironment  {
 	 */
 	public OutputPort getStdout() throws IOException {
 		return mIO.getStdout();
+	}
+	
+	public OutputPort getOutput( XValue port, boolean append ) throws IOException
+	{
+		
+		
+		if( port == null )
+			return getStdout();
+		if( port.isString()){
+			String name = port.toString().trim();
+			if( name.equals("-"))
+				return getStdout();
+			else
+			if( name.startsWith("(") && name.endsWith(")") ){
+				OutputPort outp = mIO.getOutputPort( name.substring(1,name.length()-1));
+				if( outp != null )
+					return outp;
+				// If no output port by this name then use the Null output port
+				return new StreamOutputPort(new NullOutputStream());
+			}
+			else
+			if( name.startsWith("{") && name.endsWith("}") ){
+				String varname = name.substring(1,name.length()-1);
+				return new VariableOutputPort( getVar(varname));
+			}
+				
+			// Get a stream from name
+			OutputStream out;
+			out = getOutputStream(name, append );
+		
+			
+			if( out == null )
+				return null ;
+			
+			OutputPort p = new StreamOutputPort( out );
+			return p;
+			
+			
+		}
+		else
+		{
+			OutputPort p = new VariableOutputPort(  new XVariable(null,port) );
+			return p;
+		}
+		
+		
 	}
 
 

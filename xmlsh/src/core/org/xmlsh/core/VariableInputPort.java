@@ -42,9 +42,10 @@ public class VariableInputPort extends InputPort {
 	 * Standard input stream - created on first request
 	 */
 
-	public VariableInputPort(XVariable value) {
+	public VariableInputPort(XVariable value) throws InvalidArgumentException {
 		mVariable = value;
-
+		if( ! value.getValue().isAtomic() )
+			this.setSystemId( value.getValue().asXdmNode().getBaseURI().toString() );
 	}
 
 	public synchronized InputStream asInputStream(SerializeOpts opts)

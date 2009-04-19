@@ -189,6 +189,13 @@ public class XIOEnvironment {
 		return mInputs.get(name);
 	}
 	
+	/* return a named output port 
+	 * 
+	 */
+	protected	OutputPort	getOutputPort( String name )
+	{
+		return mOutputs.get(name);
+	}
 }
 
 

@@ -215,8 +215,8 @@ TOKEN : {
 
 
 <CMD,DEFAULT> TOKEN : {
-	< LTPAREN :"<(" > 
-|	< RPAREN : ")" >		// Recoginze ")" within command to terminate command (unlike })
+//	< LTPAREN :"<(" > 
+	< RPAREN : ")" >		// Recoginze ")" within command to terminate command (unlike })
 }
 
 <CMD> TOKEN : {
@@ -883,8 +883,11 @@ String	filename() :
 }
 
 Word	filename_word() : 
-	{Word w;}
+	{Word w; Token t;}
 {
+	<LPAREN2> ( t=<WORD> | t=<NAME> )  ")" 
+	{ return new StringWord( "(" + t.toString() + ")" ) ; }
+|
 	w=cmd_word() 
 	{ return w ; }
 }
