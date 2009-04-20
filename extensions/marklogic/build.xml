@@ -76,7 +76,7 @@
 			<zipfileset dir="." includes="bin/** test/** doc/** notices/** license.txt README.txt" 
 					excludes="**/sh_histo" prefix="marklogic_${release}"/>
   		</zip>
-		<zip destfile="${dist}/markllogic_src_${release}.zip" >
+		<zip destfile="${dist}/marklogic_src_${release}.zip" >
 			<zipfileset dir="." includes="src/** license.txt README.txt build.xml" 
 				excludes="**/sh_histo _out/** bin/** _dist/** lib/**"  prefix="marklogic_${release}"/>
 		</zip>

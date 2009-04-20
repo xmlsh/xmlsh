@@ -5,9 +5,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-import net.sf.saxon.s9api.SaxonApiException;
+import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InputPort;
-import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.XValue;
 import org.xmlsh.marklogic.util.MLCommand;
@@ -80,7 +79,7 @@ public class put extends MLCommand {
 		session.insertContent (content);
 	}
 
-	public void load (InputPort port , String uri ) throws RequestException, InvalidArgumentException, IOException, SaxonApiException
+	public void load (InputPort port , String uri ) throws CoreException, IOException, RequestException
 	{
 
 		Content content= ContentFactory.newContent (uri, port.asInputStream(getSerializeOpts()), options);
@@ -98,7 +97,7 @@ public class put extends MLCommand {
 
 //
 //
-//Copyright (C) 2008, David A. Lee.
+//Copyright (C) 2008,2009 , David A. Lee.
 //
 //The contents of this file are subject to the "Simplified BSD License" (the "License");
 //you may not use this file except in compliance with the License. You may obtain a copy of the
