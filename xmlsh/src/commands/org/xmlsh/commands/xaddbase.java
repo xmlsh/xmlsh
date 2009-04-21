@@ -124,8 +124,8 @@ public class xaddbase extends XCommand {
 				parentURI =  mURIs.lastElement() ;
 				
 				
-				
-				if( mURIs.size() == 1 ){ // document root
+				boolean bIsRoot =mURIs.size() == 1; 
+				if( bIsRoot ){ // document root
 					// First element - always set the xml:base attribute
 					addBase = true ;
 				}
@@ -141,7 +141,7 @@ public class xaddbase extends XCommand {
 				
 				
 				if( addBase ){
-					String uri = resolve( parentURI , baseURI , opt_relative);
+					String uri = resolve( parentURI , baseURI , bIsRoot ? false : opt_relative);
 
 					event = add_base_attr(start,uri);
 				}

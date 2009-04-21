@@ -19,9 +19,28 @@ public class Options
 {
 	
 	/*
-	 * Option defines an option by name, for readability including the "-"
-	 * e.g "-a" or "-help"
-	 * 
+	 * A single option is of the form
+	 *   [+]short[=long][:[+]]
+	 *  Multiple options are separated by ","
+	 *  
+	 *  [+]   	If option starts with a "+" then it is a multi-valued option that at runtime can start 
+	 *     	  	with a + or -.   for example  cmd +opt  
+	 *  short 	The short form of the option.  Typically a single letter
+	 *  =long	The long form of the option.  Typically a word
+	 *  [:[+]]   If followed by a ":" then the option is required to have a value which is taken from the next arg
+	 *   		If followed by a ":+" then the option can be specified multiple times 
+	 *  
+	 *  
+	 *  Examples
+	 *  
+	 *  a			Single optional option "-a" 
+	 *  a=all		Long form accepted either "-a" or "-all"
+	 *  +v=verbose	Long or short form may be specified with - or + e.g.  -v  or +verbose
+	 *  i:			Option requires a value.  e.g    -i inputfile
+	 *  i:+			Option may be specified multiple times with values. e.g.  -i input1 -i input2
+	 *  
+	 *  
+	 *  
 	 */
 	
 	
