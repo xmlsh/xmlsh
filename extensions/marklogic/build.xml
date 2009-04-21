@@ -4,7 +4,7 @@
 	
     <target name="main" depends="clean, compile, jar" description="Main target">
         <echo>
-            Building marklogic extension
+            Building marklogic_ext xmlsh extension
         </echo>
     </target>
 	
@@ -55,7 +55,7 @@
   <target name="jar" description="Build JAR - jar">
 		<mkdir dir="bin"/>
         <jar 
-        jarfile="bin/marklogic.jar" 
+        jarfile="bin/marklogic_ext.jar" 
         basedir="_out" 
         />
 

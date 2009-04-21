@@ -1,5 +1,5 @@
 This is an extension module to xmlsh
-To run this module you must include the supplied marklogic.jar
+To run this module you must include the supplied marklogic_ext.jar
 as well as the marklogic xcc.jar in the CLASSPATH with xmlsh.
 
 To get xcc.jar 
