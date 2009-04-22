@@ -196,6 +196,15 @@ public class XIOEnvironment {
 	{
 		return mOutputs.get(name);
 	}
+	
+	protected PortList<InputPort>	getInputPorts()
+	{
+		return mInputs;
+	}
+	protected PortList<OutputPort>	getOutputPorts()
+	{
+		return mOutputs;
+	}
 }
 
 

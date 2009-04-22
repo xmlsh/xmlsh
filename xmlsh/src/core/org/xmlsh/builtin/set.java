@@ -41,8 +41,10 @@ public class set extends BuiltinCommand {
 		
 		
 		args = opts.getRemainingArgs();
-
-		mShell.setArgs(args);
+		// Only set args here if there are any left
+		// could be set +x which would clear $*
+		if( args != null && args.size() > 0 )
+			mShell.setArgs(args);
 		return 0;
 	}
 

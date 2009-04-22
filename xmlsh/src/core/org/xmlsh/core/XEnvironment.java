@@ -500,7 +500,18 @@ public class XEnvironment  {
 		}
 		
 	}
+	
+	/*
+	 * Get an input port explicitly by its name 
+	 */
+	public InputPort getInputPort(String name)
+	{
+		return mIO.getInputPort(name);
+	}
 
+	public OutputPort getOutputPort(String name){
+		return mIO.getOutputPort(name);
+	}
 
 	public String getAbsoluteURI(String sysid) throws URISyntaxException 
 	{
@@ -519,7 +530,14 @@ public class XEnvironment  {
 		return getCurdir().toURI();
 	}
 
-
+	public PortList<InputPort>	getInputPorts()
+	{
+		return mIO.getInputPorts();
+	}
+	public PortList<OutputPort>	getOutputPorts()
+	{
+		return mIO.getOutputPorts();
+	}
 
 }
 //

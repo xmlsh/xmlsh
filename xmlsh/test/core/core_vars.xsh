@@ -76,5 +76,11 @@ echo "$(cmd)"
 A=xcc://foo:bar@home:8003/5MCC
 echo $A
 
+# Test that set -option doesnt clear args
+set ARG
+[ "$1" = "ARG" ] || echo Arg1 should be set
+set +indent
+set -indent
+[ "$1" = "ARG" ] || echo Arg1 should still be set
 
 exit 0

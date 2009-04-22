@@ -114,6 +114,10 @@ public class jcall extends XCommand
 			if( e2 instanceof ExitException )
 				return ((ExitException )e2).mExitCode ;
 			else
+			if( e2 != null && e2 instanceof Exception )
+					throw (Exception) e2;
+			
+			else
 				throw e ;
 		}
 		catch ( ExitException e ){

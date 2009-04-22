@@ -10,7 +10,8 @@ import java.util.ArrayList;
 
 import org.xmlsh.util.Util;
 
-@SuppressWarnings("serial") class PortList<P extends IPort> extends ArrayList<NamedPort<P>>
+@SuppressWarnings("serial") 
+public class PortList<P extends IPort> extends ArrayList<NamedPort<P>>
 {
 	P	getDefault()
 	{
