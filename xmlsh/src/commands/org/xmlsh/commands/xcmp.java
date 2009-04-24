@@ -179,6 +179,19 @@ public class xcmp extends XCommand {
 				if( e2.getEventType() == XMLEvent.START_DOCUMENT && xmlreader2.hasNext() )
 					e2 = xmlreader2.nextEvent();
 
+				/*
+				 * If ignoring blanks then entirely skip any element which is charactors and entirely blank
+				 */
+				if( bopt ){
+					while( e1.getEventType() == XMLEvent.CHARACTERS && isBlank(e1.asCharacters()) && xmlreader1.hasNext() )
+						e1 = xmlreader1.nextEvent();
+					
+					while( e2.getEventType() == XMLEvent.CHARACTERS && isBlank(e2.asCharacters()) && xmlreader2.hasNext() )
+						e2 = xmlreader2.nextEvent();
+						
+				}
+				
+				
 				
 				if( ! isEqual( e1 , e2 )){
 					Location loc = e1.getLocation();
@@ -203,6 +216,15 @@ public class xcmp extends XCommand {
 				
 			} finally {} 
 		}
+	}
+
+	private boolean isBlank(Characters e) {
+		if( e.isIgnorableWhiteSpace() )
+			return true ;
+		return Util.isBlank(e.getData());
+		
+		
+		
 	}
 
 	private boolean isEqual(StartElement e1, StartElement e2)
