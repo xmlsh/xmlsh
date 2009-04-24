@@ -155,7 +155,7 @@ public class xquery extends XCommand {
 
 		
 			
-	// 	eval.run(getStdout().asDestination());
+//	eval.run(getStdout().asDestination(getSerializeOpts()));
 
 		OutputPort stdout = getStdout();
 		Destination ser = stdout.asDestination(getSerializeOpts());
@@ -166,8 +166,8 @@ public class xquery extends XCommand {
 			if( ! bFirst )
 				stdout.writeSequenceSeperator(); // Thrashes variable output !
 			bFirst = false ;
-			processor.writeXdmValue(item, ser );
-
+			//processor.writeXdmValue(item, ser );
+			Util.writeXdmValue(item, ser);
 
 			
 		}
@@ -177,9 +177,8 @@ public class xquery extends XCommand {
 		if( in != null)
 			in.close();
 		
-		
 		return 0;
-		
+
 
 	}
 

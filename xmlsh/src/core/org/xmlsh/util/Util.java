@@ -30,6 +30,7 @@ import javax.xml.transform.sax.TransformerHandler;
 import javax.xml.transform.stream.StreamResult;
 
 import net.sf.saxon.FeatureKeys;
+import net.sf.saxon.event.ComplexContentOutputter;
 import net.sf.saxon.event.NamespaceReducer;
 import net.sf.saxon.event.Receiver;
 import net.sf.saxon.event.TreeReceiver;
@@ -565,8 +566,12 @@ public class Util
 	public static void writeXdmValue(XdmValue value, Destination destination) throws SaxonApiException {
 	    try {
 	        Receiver out = destination.getReceiver(Shell.getProcessor().getUnderlyingConfiguration());
-	        out = new NamespaceReducer(out);
-	        TreeReceiver tree = new TreeReceiver(out);
+	        //out = new NamespaceReducer(out);
+	        ComplexContentOutputter out2 = new ComplexContentOutputter();
+	        out2.setPipelineConfiguration(Shell.getProcessor().getUnderlyingConfiguration().makePipelineConfiguration());
+	        out2.setReceiver(out);
+	  
+		    TreeReceiver tree = new TreeReceiver(out2);
 	        tree.open();
 	        tree.startDocument(0);
 	        for (Iterator<XdmItem> it = value.iterator(); it.hasNext();) {
@@ -575,6 +580,8 @@ public class Util
 	        }
 	        tree.endDocument();
 	        tree.close();
+	      
+	        
 	    } catch (XPathException err) {
 	        throw new SaxonApiException(err);
 	    }
