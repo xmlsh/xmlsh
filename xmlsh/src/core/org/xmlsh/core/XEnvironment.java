@@ -297,11 +297,6 @@ public class XEnvironment  {
 			String name = port.toString().trim();
 			if( name.equals("-"))
 				return getStdout();
-			else
-			if( name.startsWith("{") && name.endsWith("}") ){
-				String varname = name.substring(1,name.length()-1);
-				return new VariableOutputPort( getVar(varname));
-			}
 				
 			// Get a stream from name
 			OutputStream out;
@@ -442,10 +437,8 @@ public class XEnvironment  {
 	 * If port is a string 
 	 * If port is a string 
 	 * 	  if equals to "-" return stdin
-	 *    if looks like "(name)" return port named "name"
 	 *    if looks like "scheme://path" return a port based on an input stream from UI
 	 *    if looks like "name" return a port based on an input stream by filename
-	 *	  if looks like "{name}" returns a port based on a env variable
 	 * if port is a node return an anonymous port based on a value
 	 * 
 	 */
@@ -457,11 +450,7 @@ public class XEnvironment  {
 			String name = port.toString().trim();
 			if( name.equals("-"))
 				return getStdin();
-			else
-			if( name.startsWith("{") && name.endsWith("}") ){
-				String varname = name.substring(1,name.length()-1);
-				return new VariableInputPort( getVar(varname));
-			}
+
 				
 			// Get a stream from name
 			InputStream in;
