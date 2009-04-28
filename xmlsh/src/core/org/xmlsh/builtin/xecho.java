@@ -14,6 +14,7 @@ import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XdmValue;
 import org.xmlsh.core.BuiltinCommand;
+import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
@@ -22,6 +23,15 @@ import org.xmlsh.util.Util;
 public class xecho extends BuiltinCommand {
 	
 	public int run( List<XValue> args ) throws Exception {
+		
+		Options opts = new Options( "n" , args );
+		opts.parse();
+		
+		args = opts.getRemainingArgs();
+		boolean nolf = opts.hasOpt("n");
+	
+		
+		
 		OutputPort stdout = mShell.getEnv().getStdout();
 		Destination dest =  stdout.asDestination(mShell.getSerializeOpts());
 
@@ -45,8 +55,8 @@ public class xecho extends BuiltinCommand {
 				bFirst = false;
 				Util.writeXdmValue(arg.asXdmValue(), dest);
 		}
-
-		stdout.writeSequenceTerminator();
+		if( ! nolf )
+			stdout.writeSequenceTerminator();
 		return 0;
 	}
 }
