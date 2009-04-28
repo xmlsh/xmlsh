@@ -14,6 +14,11 @@ xecho <[ <foo/>,1,"bar" ]> >{_seq}
 xecho <[ 3,"bletch" ]> >>{_seq}
 # should be 5
 echo There are <[ count($_seq) ]> elements in the sequence
+echo -n No Newlines:
+xecho -n <[ 'in this text' ]>
+echo :Between the colons
+
+
 
 
 
