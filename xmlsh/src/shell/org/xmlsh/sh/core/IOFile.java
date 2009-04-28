@@ -12,10 +12,12 @@ import java.io.PrintWriter;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.OutputPort;
+import org.xmlsh.core.StreamOutputPort;
 import org.xmlsh.core.XEnvironment;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.XVariable;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.util.NullOutputStream;
 
 public class IOFile {
 	private String	mPrefix;
@@ -113,16 +115,21 @@ public class IOFile {
 		boolean isPort = 	file.startsWith("(") &&
 							file.endsWith(")");
 		if( isPort ){
-		
+			String portname = file.substring(1,file.length()-1);
 				
 			if( mPrefix.equals("<")){
-				InputPort inp = env.getInput(new XValue(file));
-			
-				env.setInput( port , inp );
+				InputPort inp = env.getInputPort(portname);
+					env.setInput( port , inp );
 			}
 			else
 			if( mPrefix.equals(">")){
-				OutputPort outp=env.getOutput( new XValue(file), false );
+				
+				
+				OutputPort outp=env.getOutputPort( portname , false );
+				if( outp == null )
+					// If no output port by this name then use the Null output port
+					outp = new StreamOutputPort(new NullOutputStream());
+
 				env.setOutput(port,outp);
 			}
 			else

@@ -298,14 +298,6 @@ public class XEnvironment  {
 			if( name.equals("-"))
 				return getStdout();
 			else
-			if( name.startsWith("(") && name.endsWith(")") ){
-				OutputPort outp = mIO.getOutputPort( name.substring(1,name.length()-1));
-				if( outp != null )
-					return outp;
-				// If no output port by this name then use the Null output port
-				return new StreamOutputPort(new NullOutputStream());
-			}
-			else
 			if( name.startsWith("{") && name.endsWith("}") ){
 				String varname = name.substring(1,name.length()-1);
 				return new VariableOutputPort( getVar(varname));
@@ -466,9 +458,6 @@ public class XEnvironment  {
 			if( name.equals("-"))
 				return getStdin();
 			else
-			if( name.startsWith("(") && name.endsWith(")") )
-				return mIO.getInputPort( name.substring(1,name.length()-1));
-			else
 			if( name.startsWith("{") && name.endsWith("}") ){
 				String varname = name.substring(1,name.length()-1);
 				return new VariableInputPort( getVar(varname));
@@ -537,6 +526,12 @@ public class XEnvironment  {
 	public PortList<OutputPort>	getOutputPorts()
 	{
 		return mIO.getOutputPorts();
+	}
+
+
+	public OutputPort getOutputPort(String portname, boolean append) {
+		// TODO: Add append mode to output ports 
+		return mIO.getOutputPort(portname);
 	}
 
 }
