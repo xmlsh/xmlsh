@@ -20,7 +20,6 @@ import javax.xml.stream.XMLEventWriter;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
-import javax.xml.transform.sax.TransformerHandler;
 
 import net.sf.saxon.s9api.Destination;
 import org.xmlsh.sh.shell.SerializeOpts;

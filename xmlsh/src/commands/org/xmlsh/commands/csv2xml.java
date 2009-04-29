@@ -14,11 +14,7 @@ import java.util.List;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
-import javax.xml.transform.sax.TransformerHandler;
 
-import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
-import org.xml.sax.helpers.AttributesImpl;
 import org.xmlsh.commands.util.CSVParser;
 import org.xmlsh.commands.util.CSVRecord;
 import org.xmlsh.core.Options;

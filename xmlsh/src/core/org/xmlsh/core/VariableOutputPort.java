@@ -18,7 +18,6 @@ import javanet.staxutils.StAXSource;
 
 import javax.xml.stream.XMLEventWriter;
 import javax.xml.stream.XMLStreamWriter;
-import javax.xml.transform.sax.TransformerHandler;
 
 import net.sf.saxon.Configuration;
 import net.sf.saxon.event.Builder;
@@ -36,7 +35,6 @@ import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.tinytree.TinyBuilder;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.util.Util;
 import org.xmlsh.util.XMLEventWriterBuffer;
 import org.xmlsh.util.XMLEventWriterToContentHandler;
 import org.xmlsh.util.XMLStreamWriterToContentHandler;

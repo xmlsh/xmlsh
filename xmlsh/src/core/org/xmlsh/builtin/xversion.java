@@ -10,7 +10,6 @@ import java.util.List;
 
 import javax.xml.stream.XMLStreamWriter;
 
-import org.xml.sax.helpers.AttributesImpl;
 import org.xmlsh.core.BuiltinCommand;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.XValue;

@@ -7,9 +7,8 @@
 package org.xmlsh.sh.shell;
 
 import java.util.ArrayList;
-import java.util.List;
 
-import org.xmlsh.core.Namespaces;
+import org.xmlsh.util.StringPair;
 import org.xmlsh.util.Util;
 
 /*
@@ -20,48 +19,59 @@ import org.xmlsh.util.Util;
  */
 
 
-public class Modules extends Namespaces
+@SuppressWarnings("serial")
+public class Modules extends  ArrayList<Module>
 {
-	private		List<String>		mDefaults = new ArrayList<String>();
 	
-	
-	/*
-	 * Add a prefix to the list of default prefixes
-	 * Resolve this to the actual package name and store that
-	 */
-	void 	addDefault( String def ){
-		String pkg = this.get(def);
-		if( pkg != null )
-			mDefaults.add( pkg );
-	}
-	
-	public Iterable<String> defaultPackages()
-	{
-		return 	mDefaults;
-	}
-	
-	/*
-	 * Override the Namespaces declare
+
+	/**
+	 * Declare/Import a module
 	 * If prefix is null or "" then just add the uri to the defaults list
 	 * 
 	 */
 	public void declare( String prefix , String uri )
 	{
-		if( Util.isEmpty(prefix))
-			mDefaults.add(uri);
-		else
-		if( Util.isEmpty(uri))
-			remove(prefix);
-		else
-			put( prefix , uri );
+		Module module = new Module( prefix , uri );
+		
+		// IF module exists by this prefix then redeclare
+		Module exists = getModule( prefix );
+		if( exists != null )
+			remove( exists );
+		
+		this.add(module);
+	
+	
 	}
 	
 	Modules() {}
 	
 	
+	public Module	getModule(String prefix)
+	{
+		for( Module m : this )
+			if( Util.isEqual(m.getPrefix(), prefix ) )
+				return m ;
+		return null;
+		
+	}
 	Modules( Modules that){
-		super( that );
-		mDefaults.addAll(that.mDefaults);
+		this.addAll(that);
+	}
+
+	/*
+	 * Import a module by string value
+	 * 
+	 * prefix=class
+	 * class
+	 * 
+	 */
+	public void declare(String m) {
+		StringPair 	pair = new StringPair(m,'=');
+		if( pair.hasLeft() )
+			declare( pair.getLeft(), pair.getRight() );
+		else
+			declare( null , m  );
+		
 	}
 	
 }

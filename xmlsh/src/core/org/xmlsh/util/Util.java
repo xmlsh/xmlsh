@@ -31,7 +31,6 @@ import javax.xml.transform.stream.StreamResult;
 
 import net.sf.saxon.FeatureKeys;
 import net.sf.saxon.event.ComplexContentOutputter;
-import net.sf.saxon.event.NamespaceReducer;
 import net.sf.saxon.event.Receiver;
 import net.sf.saxon.event.TreeReceiver;
 import net.sf.saxon.om.Item;
@@ -626,6 +625,11 @@ public class Util
 	public static boolean isWindows()
 	{
 		return System.getProperty("os.name").startsWith("Windows");
+	}
+
+
+	public static String blankIfNull(String s) {
+		return s == null ? "" : s ;
 	}
 
 	

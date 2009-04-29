@@ -9,7 +9,6 @@ package org.xmlsh.core;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.HashMap;
 
 import org.apache.log4j.Logger;
@@ -38,10 +37,10 @@ import org.xmlsh.builtin.xtrue;
 import org.xmlsh.builtin.xversion;
 import org.xmlsh.builtin.xwhich;
 import org.xmlsh.sh.core.FunctionDefinition;
+import org.xmlsh.sh.shell.Module;
 import org.xmlsh.sh.shell.Modules;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.StringPair;
-import org.xmlsh.util.Util;
 
 public class CommandFactory 
 {
@@ -170,11 +169,13 @@ public class CommandFactory
 
 		
 		if( pair.hasLeft() ){ // prefix:name , prefix non-empty
-			String pkg = modules.get(pair.getLeft());
+			Module m   = modules.getModule(pair.getLeft());
 			// Allow C:/xxx/yyy to work 
 			// May look like a namespace but isnt
-			if( ! Util.isEmpty(pkg)){
-				ICommand cls = getCommandClass(pkg , pair.getRight() );
+
+			if( m != null ){
+
+				ICommand cls = m.getCommandClass( pair.getRight() );
 				if( cls != null )
 					return cls ;
 			
@@ -186,12 +187,13 @@ public class CommandFactory
 		/* 
 		 * Try all default modules 
 		 */
-		for( String pkg : modules.defaultPackages() ){
-
-			ICommand cls = getCommandClass(pkg , name);
-			if( cls != null )
-				return cls ;
-			
+		for( Module m : modules ){
+			if( m.isDefault() ){
+				
+				ICommand cls = m.getCommandClass( name);
+				if( cls != null )
+					return cls ;
+			}
 		}
 		
 			
@@ -200,41 +202,6 @@ public class CommandFactory
 		
 	}
 	
-	private InputStream getCommandResource( String pkg , String name )
-	{
-		String resource = "/" + pkg.replace('.','/') + "/" + name ;
-		InputStream is = CommandFactory.class.getResourceAsStream(resource);
-		
-		return is;
-	}
-	
-	
-	
-
-	private ICommand getCommandClass(String pkg , String name) {
-		try {
-			Class<?> cls = Class.forName(pkg + "." + name);
-			ICommand cmd = (ICommand) cls.newInstance();
-			return cmd;
-
-		} catch (Exception e) {
-			;
-
-		}
-		
-		
-		/*
-		 * Try a script 
-		 */
-		InputStream scriptStream = this.getCommandResource(pkg, name + ".xsh");
-		if( scriptStream != null )
-			return new  ScriptCommand( name , scriptStream , false );
-		return null;
-		
-		
-		
-	}
-
 	public ICommand		getScript( Shell shell , String name, boolean bSourceMode  ) throws IOException
 	{
 		File scriptFile = null;

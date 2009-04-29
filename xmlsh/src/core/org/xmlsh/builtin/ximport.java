@@ -10,6 +10,8 @@ import java.util.List;
 
 import org.xmlsh.core.BuiltinCommand;
 import org.xmlsh.core.XValue;
+import org.xmlsh.sh.shell.Module;
+import org.xmlsh.sh.shell.Modules;
 
 public class ximport extends BuiltinCommand {
 
@@ -21,15 +23,26 @@ public class ximport extends BuiltinCommand {
 		XValue what = args.remove(0);
 
 		if( what.toString().equals("module"))
-			return declareModule( args );
+			return importModule( args );
 		
 		return 2;
 				
 	}
+	/*
+	 * Implements 
+	 *    import module a.b.c
+	 *    import module foo=a.b.c
+	 *    import module foo=a.b.c at jar-file
+	 *    
+	 */
 
-	private int declareModule(List<XValue> args) {
+	private int importModule(List<XValue> args) {
 		if( args.size() == 0 )
 			return listModules();
+		
+		
+		
+		
 		for( XValue arg : args ){
 			if( arg.isString() ){
 				mShell.importModule(arg.toString());
@@ -39,7 +52,21 @@ public class ximport extends BuiltinCommand {
 	}
 
 	private int listModules() {
+		Modules modules = mShell.getModules();
+		if( modules == null )
+			return 0;
+		
+		for( Module m : modules ){
+			String prefix = m.getPrefix();
+			if( prefix == null )
+				mShell.printOut( m.getPackage() );
+			else
+				mShell.printOut( prefix + "=" + m.getPackage() ); 
+
+			
+		}
 		return 0;
+		
 	}
 
 

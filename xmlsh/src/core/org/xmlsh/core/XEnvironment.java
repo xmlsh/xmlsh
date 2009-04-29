@@ -21,7 +21,6 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.util.NullOutputStream;
 
 public class XEnvironment  {
 	
@@ -50,6 +49,7 @@ public class XEnvironment  {
 	
 		if( bInitIO )
 			mIO.initStdio();
+		
 
 	}
 

@@ -103,8 +103,8 @@ public class Shell {
 		mSavedCD = System.getProperty("user.dir");
 		mEnv =  new XEnvironment(this,true);
 		mModules = new Modules();
-		mModules.declare("xmlsh" , "org.xmlsh.commands");
-		mModules.addDefault("xmlsh");
+		// Add xmlsh commands 
+		mModules.declare( null  , "org.xmlsh.commands");
 		
 		setGlobalVars();
 		
@@ -356,8 +356,11 @@ public class Shell {
 					Constructor<?> constructor = consoleInputClass.getConstructor( consoleReaderClass );
 					// mCommandInput = new ConsoleReaderInputStream(jline);
 
-					if( constructor != null )
+					if( constructor != null ){
 						mCommandInput = (InputStream) constructor.newInstance(jline);
+						// System.err.println("using jline");
+					}
+					
 				}
 			}
 				
