@@ -9,6 +9,7 @@ package org.xmlsh.core;
 import java.io.File;
 import java.util.List;
 
+import org.xmlsh.sh.shell.Module;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 
@@ -31,9 +32,9 @@ public abstract class BuiltinCommand implements ICommand {
 		return null ; // builtins have no file  
 		
 	}
-	public String getModule()
+	public Module getModule()
 	{
-		return this.getClass().getPackage().getName();
+		return null;
 	}
 	
 	abstract protected int run( List<XValue> args) throws Exception;

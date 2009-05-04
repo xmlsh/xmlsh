@@ -10,6 +10,7 @@ import java.io.File;
 import java.util.List;
 
 import org.xmlsh.sh.core.FunctionDefinition;
+import org.xmlsh.sh.shell.Module;
 import org.xmlsh.sh.shell.Shell;
 
 public class FunctionCommand implements ICommand {
@@ -64,8 +65,8 @@ public class FunctionCommand implements ICommand {
 
 
 
-	public String getModule() {
-		// TODO Auto-generated method stub
+	public Module getModule() {
+		// TODO: Return the module of the invoking script
 		return null;
 	}	
 }

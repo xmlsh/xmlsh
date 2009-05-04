@@ -17,12 +17,14 @@ import java.util.List;
 
 import javax.xml.transform.Source;
 
+import org.xmlsh.sh.shell.Module;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 
 public abstract class XCommand implements ICommand {
 	
 	private XEnvironment mEnvironment;
+	private Module mModule;
 	
 	
 	protected void throwInvalidArg(String string)
@@ -32,9 +34,9 @@ public abstract class XCommand implements ICommand {
 				
 	}
 
-	public String getModule()
+	public Module getModule()
 	{
-		return this.getClass().getPackage().getName();
+		return mModule;
 	}
 
 
@@ -154,7 +156,13 @@ public abstract class XCommand implements ICommand {
 	protected SerializeOpts getSerializeOpts() {
 		return mEnvironment.getShell().getSerializeOpts();
 	}
-	
+
+	public void setModule(Module module) {
+		mModule = module ;
+		
+	}
+
+
 	
 	
 }

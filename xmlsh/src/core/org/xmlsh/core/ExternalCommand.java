@@ -12,6 +12,7 @@ import java.util.List;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.xmlsh.sh.shell.Module;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.PortCopier;
 import org.xmlsh.util.StreamCopier;
@@ -107,7 +108,7 @@ public class ExternalCommand implements ICommand {
 	}
 
 
-	public String getModule() {
+	public Module getModule() {
 		// TODO Auto-generated method stub
 		return null;
 	}

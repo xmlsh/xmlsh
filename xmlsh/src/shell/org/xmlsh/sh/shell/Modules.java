@@ -6,8 +6,12 @@
 
 package org.xmlsh.sh.shell;
 
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 
+import org.xmlsh.core.CoreException;
+import org.xmlsh.core.XValue;
 import org.xmlsh.util.StringPair;
 import org.xmlsh.util.Util;
 
@@ -26,20 +30,27 @@ public class Modules extends  ArrayList<Module>
 
 	/**
 	 * Declare/Import a module
-	 * If prefix is null or "" then just add the uri to the defaults list
+	 * If prefix is not null and already used then re-declare the module
+	 * @param init 
+	 * @throws CoreException 
 	 * 
 	 */
-	public void declare( String prefix , String uri )
+	public Module declare(Shell shell, String prefix , String name, String pkg,  List<XValue> init ) throws CoreException
 	{
-		Module module = new Module( prefix , uri );
+		Module module = new Module( prefix , name , pkg );
 		
+		module.init(shell, init);
+		
+		if( ! Util.isEmpty(prefix)){
 		// IF module exists by this prefix then redeclare
-		Module exists = getModule( prefix );
-		if( exists != null )
-			remove( exists );
+			Module exists = getModule( prefix );
+			if( exists != null )
+				remove( exists );
+		}
 		
 		this.add(module);
 	
+		return module ;
 	
 	}
 	
@@ -65,12 +76,12 @@ public class Modules extends  ArrayList<Module>
 	 * class
 	 * 
 	 */
-	public void declare(String m) {
+	public void declare(Shell shell, String m, List<XValue> init) throws CoreException {
 		StringPair 	pair = new StringPair(m,'=');
 		if( pair.hasLeft() )
-			declare( pair.getLeft(), pair.getRight() );
+			declare(shell, pair.getLeft(), pair.getRight() ,  null,init  );
 		else
-			declare( null , m  );
+			declare( shell, null , m  , null, init );
 		
 	}
 	

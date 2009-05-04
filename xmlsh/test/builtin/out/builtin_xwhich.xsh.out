@@ -1,8 +1,8 @@
 <xwhich>
-  <command name="echo" type="builtin" module="org.xmlsh.builtin"/>
+  <command name="echo" type="builtin"/>
 </xwhich>
 <xwhich>
-  <command name="xfile" type="internal" module="org.xmlsh.commands"/>
+  <command name="xfile" type="internal" module="xmlsh"/>
 </xwhich>
 <xwhich>
   <command name="foo" type="function"/>

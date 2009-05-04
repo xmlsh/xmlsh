@@ -6,9 +6,13 @@
 
 package org.xmlsh.builtin;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.util.List;
 
 import org.xmlsh.core.BuiltinCommand;
+import org.xmlsh.core.CoreException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Module;
 import org.xmlsh.sh.shell.Modules;
@@ -36,18 +40,15 @@ public class ximport extends BuiltinCommand {
 	 *    
 	 */
 
-	private int importModule(List<XValue> args) {
+	private int importModule(List<XValue> args) throws CoreException {
 		if( args.size() == 0 )
 			return listModules();
 		
+		String mod = args.remove(0).toString();
 		
 		
-		
-		for( XValue arg : args ){
-			if( arg.isString() ){
-				mShell.importModule(arg.toString());
-			}
-		}
+		mShell.importModule(mod , args );
+
 		return 0;
 	}
 
@@ -59,9 +60,9 @@ public class ximport extends BuiltinCommand {
 		for( Module m : modules ){
 			String prefix = m.getPrefix();
 			if( prefix == null )
-				mShell.printOut( m.getPackage() );
+				mShell.printOut( m.getName() );
 			else
-				mShell.printOut( prefix + "=" + m.getPackage() ); 
+				mShell.printOut( prefix + "=" + m.getName() ); 
 
 			
 		}

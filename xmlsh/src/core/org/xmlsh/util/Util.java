@@ -22,12 +22,14 @@ import java.util.regex.Pattern;
 
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Result;
+import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.sax.TransformerHandler;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 
 import net.sf.saxon.FeatureKeys;
 import net.sf.saxon.event.ComplexContentOutputter;
@@ -39,8 +41,10 @@ import net.sf.saxon.s9api.Destination;
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.Serializer;
 import net.sf.saxon.s9api.XdmItem;
+import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XdmValue;
 import net.sf.saxon.trans.XPathException;
+import org.xmlsh.core.CoreException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
@@ -631,6 +635,30 @@ public class Util
 	public static String blankIfNull(String s) {
 		return s == null ? "" : s ;
 	}
+	
+	
+
+
+	public static XdmNode asXdmNode(URL url) throws IOException, SaxonApiException {
+
+		InputStream is = url.openStream();
+		try {
+		
+			Source s = new StreamSource(is);
+			s.setSystemId(url.toExternalForm());
+			
+			
+			net.sf.saxon.s9api.DocumentBuilder builder = Shell.getProcessor().newDocumentBuilder();
+			
+			return builder.build(s);
+		} finally {
+			is.close();
+		}
+		
+		
+	}
+
+
 
 	
 	

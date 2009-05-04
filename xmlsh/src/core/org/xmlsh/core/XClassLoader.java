@@ -17,6 +17,10 @@ public class XClassLoader extends URLClassLoader {
 		
 	}
 
+	public XClassLoader(URL at, ClassLoader parent ) {
+		super( new URL[] {at} , parent );
+	}
+
 	void add( URL url )
 	{
 		super.addURL(url);

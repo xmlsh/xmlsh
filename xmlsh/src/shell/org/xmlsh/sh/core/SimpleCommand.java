@@ -13,6 +13,7 @@ import org.xmlsh.core.CommandFactory;
 import org.xmlsh.core.ICommand;
 import org.xmlsh.core.XIOEnvironment;
 import org.xmlsh.core.XValue;
+import org.xmlsh.sh.shell.Module;
 import org.xmlsh.sh.shell.Shell;
 
 public class SimpleCommand extends Command {
@@ -77,7 +78,7 @@ public class SimpleCommand extends Command {
 		
 		XIOEnvironment saved_io = null ;
 		Shell		   saved_shell = null;
-		
+		Module		   saved_module = null;
 		
 		/*
 		 * If there is a prefix then clone the shell, otherwise just clone the IO
@@ -87,7 +88,10 @@ public class SimpleCommand extends Command {
 		else {
 			saved_shell = shell ;
 			shell = shell.clone();
+			
 		}
+		
+		saved_module = shell.getModule();
 			
 		try {
 		
@@ -98,7 +102,11 @@ public class SimpleCommand extends Command {
 			
 		
 			mSuffix.exec( shell );
-
+			
+			// Push the current module if its different
+			Module module = cmd.getModule();
+			if( module != null )
+				shell.setModule(module);
 			
 			return cmd.run(  shell, cmdName , cmdLine );
 
@@ -109,6 +117,7 @@ public class SimpleCommand extends Command {
 			else
 			if( saved_shell != null )
 				shell.close();
+			shell.setModule( saved_module );
 		}
 		
 	}

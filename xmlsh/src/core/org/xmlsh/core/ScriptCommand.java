@@ -13,6 +13,7 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 
+import org.xmlsh.sh.shell.Module;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.Util;
@@ -23,6 +24,7 @@ public class ScriptCommand implements ICommand {
 	private InputStream mScript;
 	private boolean mSourceMode;
 	private File	 mScriptFile; // file for script, may be null if internal script
+	private Module mModule;
 	
 	public ScriptCommand( File script, boolean bSourceMode ) throws FileNotFoundException
 	{
@@ -40,10 +42,11 @@ public class ScriptCommand implements ICommand {
 		
 	}
 
-	public ScriptCommand(String name , InputStream is, boolean bSourceMode ) {
+	public ScriptCommand(String name , InputStream is, boolean bSourceMode, Module module ) {
 		mScriptName = name;
 		mScript = is;
 		mSourceMode = bSourceMode;
+		mModule = module ;
 		
 	}
 
@@ -81,9 +84,8 @@ public class ScriptCommand implements ICommand {
 		
 	}
 
-	public String getModule() {
-		// TODO Auto-generated method stub
-		return null;
+	public Module getModule() {
+		return mModule ;
 	}
 	
 }

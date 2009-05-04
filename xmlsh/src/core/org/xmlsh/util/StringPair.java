@@ -57,9 +57,14 @@ public class StringPair {
 		return mRight;
 	}
 	
+	/*
+	 * Return true if the pair had a left side. 
+	 * Note: Returns true even if the left side is blank
+	 */
+	
 	public boolean hasLeft()
 	{
-		return !Util.isEmpty(mLeft);
+		return mLeft != null;
 	}
 
 

@@ -41,6 +41,7 @@ import org.xmlsh.sh.shell.Module;
 import org.xmlsh.sh.shell.Modules;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.StringPair;
+import org.xmlsh.util.Util;
 
 public class CommandFactory 
 {
@@ -169,7 +170,10 @@ public class CommandFactory
 
 		
 		if( pair.hasLeft() ){ // prefix:name , prefix non-empty
-			Module m   = modules.getModule(pair.getLeft());
+			Module m   = 
+				Util.isBlank(pair.getLeft()) ? 
+						shell.getModule() : 
+				modules.getModule(pair.getLeft());
 			// Allow C:/xxx/yyy to work 
 			// May look like a namespace but isnt
 
@@ -179,9 +183,9 @@ public class CommandFactory
 				if( cls != null )
 					return cls ;
 			
-				return null;
+
 			}
-		
+			return null;
 		}
 			
 		/* 
@@ -218,7 +222,7 @@ public class CommandFactory
 		
 		if( scriptFile == null ) {
 		
-			Path path = shell.getPath();
+			Path path = shell.getPath("XPATH");
 			scriptFile = path.getFirstFileInPath(name);
 			if( scriptFile == null && ! name.endsWith(".xsh") )
 				scriptFile = path.getFirstFileInPath(name + ".xsh");

@@ -16,8 +16,10 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Constructor;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
@@ -77,6 +79,9 @@ public class Shell {
 	
 
 	private		Modules		mModules	= null;
+	
+	// current module
+	private		Module	mModule = null;
 
 
 	static {
@@ -97,16 +102,18 @@ public class Shell {
 	/*
 	 * New top level shell
 	 */
-	public Shell() throws IOException
+	public Shell() throws IOException, CoreException
 	{
 		mOpts = new ShellOpts();
 		mSavedCD = System.getProperty("user.dir");
 		mEnv =  new XEnvironment(this,true);
 		mModules = new Modules();
 		// Add xmlsh commands 
-		mModules.declare( null  , "org.xmlsh.commands");
+		mModules.declare( this , null , "xmlsh" , "org.xmlsh.commands",  null );
 		
 		setGlobalVars();
+		
+		mModule = null ; // no current module
 		
 		
 	}
@@ -180,6 +187,8 @@ public class Shell {
 
 		
 		mModules = new Modules(that.mModules );
+		
+		mModule = that.mModule;
 		
 	}
 	
@@ -562,13 +571,19 @@ public class Shell {
 		
 	}
 	
-	public Path getPath(){
-		XValue	pathVar = getEnv().getVarValue("XPATH");
+	
+	public Path getPath(String var){
+		XValue	pathVar = getEnv().getVarValue(var);
 		if( pathVar == null )
 			return new Path();
 		return new Path( pathVar.toString().split( File.pathSeparator ));
 		
 	}
+	
+	
+	
+	
+	
 	/* 
 	 * Current Directory
 	 */
@@ -850,8 +865,11 @@ public class Shell {
 	/*
 	 * Declare a module using the prefix=value notation
 	 */
-	public void importModule(String moduledef) {
-		mModules.declare(moduledef);
+	public void importModule(String moduledef,  List<XValue> init) throws  CoreException {
+
+		
+		
+		mModules.declare(this, moduledef,  init );
 		
 	}
 
@@ -919,6 +937,15 @@ public class Shell {
 	public void setOption(String name, XValue value) throws InvalidArgumentException {
 		mOpts.set(name,value);
 		
+	}
+
+	public void setModule(Module module) {
+		mModule = module ;
+		
+	}
+
+	public Module getModule() {
+		return mModule ;
 	}
 	
 	
