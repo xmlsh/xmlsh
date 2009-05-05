@@ -1,3 +1,2 @@
 # list
-import module ml=org.xmlsh.marklogic 
-ml:query -q 'collection()/base-uri()'
+:query -q 'collection()/base-uri()'

@@ -1,0 +1,8 @@
+<module 
+	module_version="1"
+	name="marklogic"
+	package="org.xmlsh.marklogic"
+	classpath="marklogic_ext.jar;xcc.jar"
+>
+</module>
+
