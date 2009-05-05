@@ -23,6 +23,11 @@ public class Path implements Iterable<String> {
 		addAll( paths );
 	}
 	
+	public Path( String path , String sep )
+	{
+		this( path.split(sep));
+	}
+	
 	
 
 	public void	add( String path )

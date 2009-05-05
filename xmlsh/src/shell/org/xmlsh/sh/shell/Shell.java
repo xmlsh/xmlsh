@@ -109,7 +109,7 @@ public class Shell {
 		mEnv =  new XEnvironment(this,true);
 		mModules = new Modules();
 		// Add xmlsh commands 
-		mModules.declare( this , null , "xmlsh" , "org.xmlsh.commands",  null );
+		mModules.declare( new Module( null , "xmlsh" , "org.xmlsh.commands"));
 		
 		setGlobalVars();
 		

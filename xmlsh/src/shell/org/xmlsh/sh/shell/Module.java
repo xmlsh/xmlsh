@@ -7,7 +7,10 @@
 package org.xmlsh.sh.shell;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,46 +31,69 @@ public class Module {
 	private String 	mPrefix; 			// may be null
 	private String mPackage;			// may NOT be null
 	private ClassLoader mClassLoader;	// Classloader for this module
-
-	public Module(String prefix, String name, String pkg) {
-		super();
-		mPrefix = prefix;
-		mPackage = pkg;
-		mName = name;
+	
+	/*
+	 * Constructor for internal modules like xlmsh
+	 */
+	public Module(String prefix , String name , String pkg )
+	{
+		mName = name ;
+		mPrefix = prefix ;
+		mPackage = pkg ;
+		mClassLoader = getClassLoader( null );
 	}
 	
-	public void init(Shell shell , List<XValue> args) throws CoreException 
-	{
+	
+	/*
+	 * Constructor for external modules
+	 * nameuri can either be a name found in XMODPATH 
+	 * or a full URI/filename of the module.xml file (must end in ".xml")
+	 * 
+	 */
+	public Module(Shell shell, String prefix, String nameuri , List<XValue> args ) throws CoreException {
 		
-		// If package is pre-set then no initializaiton is needed
-		if( mPackage != null ){
-			mClassLoader = getClassLoader( null );
-			return ;
+		try {
+		mPrefix = prefix ;
+		
+		XdmNode configNode ;
+		URL	configURL ;
+		if( nameuri.endsWith(".xml")){
+			configURL = shell.getURI(nameuri).toURL();
+			
+			
+		}
+		else {
+		
+			Path path = shell.getPath("XMODPATH");
+			File modDir  = path.getFirstFileInPath(nameuri);
+			if( modDir == null )
+				throw new InvalidArgumentException("Cannot find module directory: " + mName);
+			
+			File config = new File( modDir , "module.xml");
+			if( !config.exists())
+				throw new InvalidArgumentException("Cannot find module.xml: " + mName);
+			configURL = config.toURI().toURL();
 		}
 
-		
-		Path path = shell.getPath("XMODPATH");
-		File modDir  = path.getFirstFileInPath(mName);
-		if( modDir == null )
-			throw new InvalidArgumentException("Cannot find module directory: " + mName);
-		
-		File config = new File( modDir , "module.xml");
-		if( !config.exists())
-			throw new InvalidArgumentException("Cannot find module.xml: " + mName);
 
-		try {
+			
+			configNode = Util.asXdmNode( configURL );
 			
 			List<URL> classpath = new ArrayList<URL>();
 			
-			XdmNode node = Util.asXdmNode(config.toURI().toURL());
-			XValue xv = new XValue(node);
-			mPackage = xv.xpath("/module/@package/string()").toString();
 			
-			for( File file : modDir.listFiles() ){
-				if( file.getName().endsWith(".jar"))
-					classpath.add( file.toURI().toURL());
+			XValue xv = new XValue(configNode);
+			mPackage = xv.xpath("/module/@package/string()").toString();
+			mName = xv.xpath("/module/@name/string()").toString();
+			
+			String[] path  = xv.xpath("/module/@classpath/string()").toString().split(";");
+			
+			for( String p : path ){
+				URL classurl = new URL(configURL,p);
+				classpath.add( classurl);
 				
 			}
+			
 			
 			mClassLoader = getClassLoader( classpath );
 			

@@ -26,8 +26,14 @@ import org.xmlsh.util.Util;
 @SuppressWarnings("serial")
 public class Modules extends  ArrayList<Module>
 {
+	public void declare(Shell shell, String prefix , String name, List<XValue> init ) throws CoreException
+	{
+		Module module = new Module(shell, prefix , name , init  );
+		declare(module);
+		
+	}
 	
-
+	
 	/**
 	 * Declare/Import a module
 	 * If prefix is not null and already used then re-declare the module
@@ -35,15 +41,13 @@ public class Modules extends  ArrayList<Module>
 	 * @throws CoreException 
 	 * 
 	 */
-	public Module declare(Shell shell, String prefix , String name, String pkg,  List<XValue> init ) throws CoreException
+	public Module declare(Module module) throws CoreException
 	{
-		Module module = new Module( prefix , name , pkg );
+
 		
-		module.init(shell, init);
-		
-		if( ! Util.isEmpty(prefix)){
+		if( ! Util.isEmpty(module.getPrefix())){
 		// IF module exists by this prefix then redeclare
-			Module exists = getModule( prefix );
+			Module exists = getModule( module.getPrefix() );
 			if( exists != null )
 				remove( exists );
 		}
@@ -79,9 +83,9 @@ public class Modules extends  ArrayList<Module>
 	public void declare(Shell shell, String m, List<XValue> init) throws CoreException {
 		StringPair 	pair = new StringPair(m,'=');
 		if( pair.hasLeft() )
-			declare(shell, pair.getLeft(), pair.getRight() ,  null,init  );
+			declare(shell, pair.getLeft(), pair.getRight() ,  init  );
 		else
-			declare( shell, null , m  , null, init );
+			declare( shell, null , m  ,  init );
 		
 	}
 	
