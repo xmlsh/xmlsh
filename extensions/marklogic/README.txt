@@ -10,8 +10,14 @@ Example
     MLCONNECT=xcc://user:pass@host/Database
 
 Import the marklogic extension in xmlsh with an "import module" statement.
+
 e.g.
-   import module ml=org.xmlsh.marklogic
+   XMODPATH=/usr/local/xmlsh/ext
+   import module marklogic
+   
+or
+   import module /usr/local/xmlsh/ext/marklogic/module.xml
+   
 
 
 the following commands are supported

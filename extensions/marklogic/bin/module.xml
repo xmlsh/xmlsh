@@ -2,7 +2,10 @@
 	module_version="1"
 	name="marklogic"
 	package="org.xmlsh.marklogic"
-	classpath="marklogic_ext.jar;xcc.jar"
 >
+<classpath>
+  <file url="marklogic_ext.jar"/>
+  <file url="xcc.jar"/>
+</classpath>
 </module>
 
