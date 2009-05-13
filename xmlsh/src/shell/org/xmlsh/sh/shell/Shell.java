@@ -872,6 +872,12 @@ public class Shell {
 		mModules.declare(this, moduledef,  init );
 		
 	}
+	
+	public void importPackage(String name , String pkg) throws CoreException {
+		
+		
+		mModules.declare( new Module( null , name , pkg ));
+	}
 
 	public URI getURI( String file ) throws IOException, URISyntaxException
 	{
@@ -947,6 +953,16 @@ public class Shell {
 	public Module getModule() {
 		return mModule ;
 	}
+
+	/**
+	 * @return the opts
+	 */
+	public ShellOpts getOpts() {
+		return mOpts;
+	}
+
+
+	
 	
 	
 }

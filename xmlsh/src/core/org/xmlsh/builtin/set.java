@@ -29,7 +29,7 @@ public class set extends BuiltinCommand {
 			return 0;
 		}
 		
-		Options opts = new Options( "+x,+v,+omit-xml-declaration,+indent,encoding:" , args );
+		Options opts = new Options( "+x,+v,+omit-xml-declaration,+indent,encoding:,+xpipe" , args );
 		
 		for( OptionValue ov : opts.parse() ){
 			if( ov.getOptionDef().hasArgs )

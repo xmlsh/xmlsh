@@ -28,6 +28,9 @@ public class ximport extends BuiltinCommand {
 
 		if( what.toString().equals("module"))
 			return importModule( args );
+		else
+		if( what.toString().equals("package"))
+			return importPackage(args);
 		
 		return 2;
 				
@@ -52,6 +55,21 @@ public class ximport extends BuiltinCommand {
 		return 0;
 	}
 
+	private int importPackage(List<XValue> args) throws CoreException {
+		if( args.size() != 2)
+			return -1;
+		
+		String name = args.remove(0).toString(); 
+		String pkg = args.remove(0).toString();
+		
+		
+		mShell.importPackage(name, pkg);
+
+		return 0;
+	}
+
+	
+	
 	private int listModules() {
 		Modules modules = mShell.getModules();
 		if( modules == null )

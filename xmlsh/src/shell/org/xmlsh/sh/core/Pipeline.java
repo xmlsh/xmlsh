@@ -75,11 +75,11 @@ public class Pipeline extends Command {
 		
 		PipedPort pipes[] = null ;
 		/*
-		 * Use XML Pipes only if XPIPE variable is set
+		 * Use XML Pipes only if xpipe option is set
 		 * 
 		 */
 		if( ncmds > 1 ){
-			if( shell.getEnv().getVar("XPIPE") == null )
+			if( ! shell.getOpts().mXPipe )
 				pipes = PipedStreamPort.getPipes(ncmds-1);
 			else
 				pipes= PipedXMLPort.getPipes(ncmds-1,shell.getSerializeOpts());
