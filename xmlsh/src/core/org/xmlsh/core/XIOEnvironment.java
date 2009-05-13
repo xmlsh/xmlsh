@@ -24,6 +24,9 @@ public class XIOEnvironment {
 	private static Logger mLogger = LogManager.getLogger( XIOEnvironment.class );
 	
 	public static final String kSTDERR ="error";
+	public static final String kSTDIN 	 ="input";
+	public static final String kSTDOUT ="output";
+	
 	
 	
 	
@@ -67,7 +70,8 @@ public class XIOEnvironment {
 
 	public InputPort setInput(String name, InputPort port) throws CoreException {
 		InputPort in;
-		if( name == null ){
+		if( name == null || name.equals(kSTDIN) ){
+			name = kSTDIN ;
 			in =  mInputs.getDefault();
 			mStdinRedirected = true ;
 		}
@@ -80,7 +84,7 @@ public class XIOEnvironment {
 			in.release();
 		}
 
-		mInputs.add( new NamedPort<InputPort>( name , name == null  , port  ));
+		mInputs.add( new NamedPort<InputPort>( name , name.equals(kSTDIN)  , port  ));
 		return port ;
 		
 	}
@@ -92,8 +96,10 @@ public class XIOEnvironment {
 
 	public void setOutput(String name , OutputPort port) throws CoreException {
 		OutputPort out ;
-		if( name == null )
+		if( name == null ){
 			out =  mOutputs.getDefault();
+			name = kSTDOUT ;
+		}
 		else
 			out = mOutputs.get(name);
 
@@ -102,7 +108,7 @@ public class XIOEnvironment {
 			out.release();
 		}
 
-		mOutputs.add(new NamedPort<OutputPort>(name, name == null , port));
+		mOutputs.add(new NamedPort<OutputPort>(name, name.equals(kSTDOUT) , port));
 	}
 	
 	
@@ -167,11 +173,11 @@ public class XIOEnvironment {
 	public void initStdio()  {
 
 		mInputs.add( 
-				new NamedPort<InputPort>( null , true , new StreamInputPort(System.in,null) )
+				new NamedPort<InputPort>( kSTDIN , true , new StreamInputPort(System.in,null) )
 		);
 
 		mOutputs.add( 
-				new NamedPort<OutputPort>( null , true , new StreamOutputPort(System.out) )
+				new NamedPort<OutputPort>( kSTDOUT, true , new StreamOutputPort(System.out) )
 		);
 
 
