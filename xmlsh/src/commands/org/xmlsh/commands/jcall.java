@@ -6,13 +6,20 @@
 
 package org.xmlsh.commands;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.security.Permission;
+import java.util.ArrayList;
 import java.util.List;
 
+import net.sf.saxon.s9api.XdmItem;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
@@ -74,13 +81,47 @@ public class jcall extends XCommand
 		
 	}
 
+	/*
+	 * jcall invoke native java main class
+	 * 
+	 * @see org.xmlsh.core.XCommand#run(java.util.List)
+	 */
 	
 	
 	public synchronized int run(  List<XValue> args )	throws Exception
 	{
+		
+		/*
+		 * Do NOT use Options because we need to split out the jcall options differently then the invoked options
+		 * 
+		 */
+		
+		ClassLoader classloader = null;
+		if( args.size() > 1 ){
+			String arg1 = args.get(0).toString();
+			if( arg1.equals("-cp") || arg1.equals("-classpath")){
+				args.remove(0);
+				XValue classpath = args.remove(0);
+				classloader = getClassLoader( classpath );
+			}
+			
+
+		}
+		if( classloader == null )
+			classloader = getClassLoader(null);
+		
+		
+		
+		
 		SecurityManager oldManager = null;
 		if( args.size() < 1 )
-			throw new InvalidArgumentException( "usage: jcall class [args]");
+			throw new InvalidArgumentException( "usage: jcall [-cp classpath] class [args]");
+		
+		
+		
+		
+		
+		
 		
 		PrintStream	stdout = System.out;
 
@@ -102,7 +143,7 @@ public class jcall extends XCommand
 			System.setIn(getStdin().asInputStream(getSerializeOpts())) ;
 		
 			String className = args.remove(0).toString();
-			Class<?> cls = Class.forName(className);
+			Class<?> cls = Class.forName(className,true,classloader);
 			
 			Method method = cls.getMethod("main", String[].class );
 			method.invoke(null, new Object[] { Util.toStringArray(args)} );
@@ -148,6 +189,21 @@ public class jcall extends XCommand
 		
 	}
 	
+	private ClassLoader getClassLoader(XValue classpath) throws MalformedURLException, IOException, URISyntaxException {
+		if( classpath == null )
+			return this.getClass().getClassLoader();
+		List<URL> urls = new ArrayList<URL>();
+		for( XdmItem item : classpath.asXdmValue() ){
+			String cp = item.getStringValue();
+			URL url = getEnv().getShell().getURI(cp).toURL();
+			urls.add(url);
+			
+			
+		}
+		URLClassLoader loader = new URLClassLoader( (URL[]) urls.toArray(new URL[urls.size()]));
+		return loader;
+	}
+
 	/*
 	 * Test for calling jcall or exiting 
 	 */
