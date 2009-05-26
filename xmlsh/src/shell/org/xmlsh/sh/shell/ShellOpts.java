@@ -15,6 +15,7 @@ public class ShellOpts
 	public boolean mExec	 = false;		// -x
 	public boolean	 mXPipe	 = false ;		// -xpipe 
 
+
 	
 	SerializeOpts	 mSerialize;
 	
@@ -27,6 +28,7 @@ public class ShellOpts
 		mVerbose = that.mVerbose;
 		mExec=  that.mExec ;
 		mXPipe = that.mXPipe;
+
 		mSerialize = new SerializeOpts( that.mSerialize );
 		
 		
@@ -44,6 +46,7 @@ public class ShellOpts
 		if( opt.equals("xpipe"))
 			mXPipe = on;
 		else
+
 			mSerialize.set( opt , on);
 		
 	}

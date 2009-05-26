@@ -39,7 +39,6 @@ public class csv2xml extends XCommand
 {
 
 	
-	
 	public int run(  List<XValue> args )	throws Exception
 	{
 

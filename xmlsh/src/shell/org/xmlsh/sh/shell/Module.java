@@ -60,8 +60,8 @@ public class Module {
 
 			} else {
 
-				Path path = shell.getPath("XMODPATH");
-				File modDir = path.getFirstFileInPath(nameuri);
+				Path path = shell.getPath("XMODPATH", true );
+				File modDir = path.getFirstFileInPath(shell,nameuri);
 				if (modDir == null)
 					throw new InvalidArgumentException("Cannot find module directory: " + mName);
 

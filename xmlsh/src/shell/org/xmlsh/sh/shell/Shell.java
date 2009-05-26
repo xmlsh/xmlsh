@@ -567,16 +567,19 @@ public class Shell {
 		XValue	pathVar = getEnv().getVarValue("PATH");
 		if( pathVar == null )
 			return new Path();
-		return new Path( pathVar.toString().split( File.pathSeparator ));
+		return new Path( pathVar.toString() ,  File.pathSeparator);
 		
 	}
 	
 	
-	public Path getPath(String var){
+	public Path getPath(String var, boolean bSeqVar ){
 		XValue	pathVar = getEnv().getVarValue(var);
 		if( pathVar == null )
 			return new Path();
-		return new Path( pathVar.toString().split( File.pathSeparator ));
+		if( bSeqVar )
+			return new Path( pathVar );
+		else
+			return new Path( pathVar.toString().split( File.pathSeparator ));
 		
 	}
 	

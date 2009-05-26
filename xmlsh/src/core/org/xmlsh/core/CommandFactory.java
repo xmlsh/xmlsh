@@ -141,9 +141,9 @@ public class CommandFactory
 		
 		if( cmdFile == null ){
 			Path	path = shell.getExternalPath();
-			cmdFile = path.getFirstFileInPath(name);
+			cmdFile = path.getFirstFileInPath(shell,name);
 			if( cmdFile == null && ! name.endsWith(".exe"))
-				cmdFile = path.getFirstFileInPath( name + ".exe");
+				cmdFile = path.getFirstFileInPath( shell,name + ".exe");
 
 		}
 		
@@ -222,10 +222,10 @@ public class CommandFactory
 		
 		if( scriptFile == null ) {
 		
-			Path path = shell.getPath("XPATH");
-			scriptFile = path.getFirstFileInPath(name);
+			Path path = shell.getPath("XPATH", true );
+			scriptFile = path.getFirstFileInPath(shell,name);
 			if( scriptFile == null && ! name.endsWith(".xsh") )
-				scriptFile = path.getFirstFileInPath(name + ".xsh");
+				scriptFile = path.getFirstFileInPath(shell, name + ".xsh");
 		}
 		
 		if( scriptFile == null )

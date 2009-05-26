@@ -18,6 +18,7 @@ public class SerializeOpts {
 	private		String 	 	text_encoding = System.getProperty("file.encoding");
 	
 	private		boolean		supports_dtd = true ;
+	private 	boolean		xinclude = false ;
 	
 	
 	public SerializeOpts() {}
@@ -33,6 +34,7 @@ public class SerializeOpts {
 		omit_xml_declaration = that.isOmit_xml_declaration();
 		encoding = that.getEncoding();
 		text_encoding = that.text_encoding;
+		xinclude = that.xinclude;
 
 	}
 	
@@ -42,8 +44,13 @@ public class SerializeOpts {
 	{
 		if( name.equals("omit-xml-declaration" ) )
 			omit_xml_declaration = value;
+		else
 		if( name.equals("indent"))
 			indent = value ;
+		else
+		if( name.equals("xinclude"))
+			xinclude = value;
+		
 		
 	}
 	
@@ -129,6 +136,20 @@ public class SerializeOpts {
 	 */
 	public void setSupports_dtd(boolean supports_dtd) {
 		this.supports_dtd = supports_dtd;
+	}
+
+	/**
+	 * @return the xinclude
+	 */
+	public boolean isXinclude() {
+		return xinclude;
+	}
+
+	/**
+	 * @param xinclude the xinclude to set
+	 */
+	public void setXinclude(boolean xinclude) {
+		this.xinclude = xinclude;
 	}
 	
 	

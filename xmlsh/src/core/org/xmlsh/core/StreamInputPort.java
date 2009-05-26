@@ -16,6 +16,7 @@ import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
+import net.sf.saxon.AugmentedSource;
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XdmNode;
 import org.xmlsh.sh.shell.SerializeOpts;
@@ -62,12 +63,27 @@ public class StreamInputPort extends InputPort {
 
 		Source s = new StreamSource(asInputStream(opts));
 		s.setSystemId(getSystemId());
+		
+		
+		/*
+		 * Dont implement XInclude globally yet - problems in Saxon9
+		 * See xinclude instead
+		 *
+		if( opts.isXinclude() ){
+			AugmentedSource as  = AugmentedSource.makeAugmentedSource(s);
+			as.setXIncludeAware(true);
+			s = as;
+		}
+		*/
+		
+		
 		return s;
 	}
 
 	public synchronized XdmNode asXdmNode(SerializeOpts opts) throws CoreException  {
 
 		net.sf.saxon.s9api.DocumentBuilder builder = Shell.getProcessor().newDocumentBuilder();
+		
 		try {
 			return builder.build(asSource(opts));
 		} catch (SaxonApiException e) {

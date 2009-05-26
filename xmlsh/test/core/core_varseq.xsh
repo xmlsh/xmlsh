@@ -22,6 +22,7 @@ echo appended "a" "b" count <[ count($_var) ]> should be 2
 _var=($_var <[ 1,2 , <foo/> ]> )
 echo mixed sequence count <[ count($_var) ]> should be 5
 
+[ -d $TMPDIR/_varseq ] && rm -rf $TMPDIR/_varseq
 mkdir $TMPDIR/_varseq || exit 1
 cd $TMPDIR/_varseq || exit 1
 

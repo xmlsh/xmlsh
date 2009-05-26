@@ -7,9 +7,13 @@
 package org.xmlsh.core;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
+import net.sf.saxon.s9api.XdmValue;
+import org.xmlsh.sh.shell.Shell;
 
 public class Path implements Iterable<String> {
 	List<String>	mPaths = new ArrayList<String>();
@@ -17,10 +21,18 @@ public class Path implements Iterable<String> {
 	// Empty path
 	public Path( ) {}
 	
-	// Path populated with list of paths
-	public Path( String[] paths)
+	// Path populated with list of paths from a XValue which could be a sequence
+	public Path( XValue pathVar)
 	{
-		addAll( paths );
+		for( XdmValue v : pathVar.asXdmValue() ){
+			mPaths.add( v.toString() );
+		}
+	}
+	
+	public Path( String[] vars )
+	{
+		for( String v : vars )
+			mPaths.add(v);
 	}
 	
 	public Path( String path , String sep )
@@ -51,10 +63,11 @@ public class Path implements Iterable<String> {
 	}
 	
 	
-	public 	File	getFirstFileInPath( String fname )
+	public 	File	getFirstFileInPath( Shell shell , String fname ) throws IOException
 	{
 		for ( String path  : mPaths ) {
-			File	target = new File( path , fname );
+			File dir = shell.getFile(path);
+			File	target = new File( dir  , fname );
 			if( target.exists() )
 				return target;
 		}
