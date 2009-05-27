@@ -9,6 +9,8 @@ package org.xmlsh.sh.core;
 import java.io.PrintWriter;
 import java.util.List;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.xmlsh.core.CommandFactory;
 import org.xmlsh.core.ICommand;
 import org.xmlsh.core.XIOEnvironment;
@@ -17,6 +19,10 @@ import org.xmlsh.sh.shell.Module;
 import org.xmlsh.sh.shell.Shell;
 
 public class SimpleCommand extends Command {
+	
+
+	private static Logger mLogger = LogManager.getLogger(SimpleCommand.class);
+	
 	private CommandPrefix  mPrefix;
 	private Word			mCommand;
 	private CommandSuffix	mSuffix;
@@ -111,7 +117,16 @@ public class SimpleCommand extends Command {
 			return cmd.run(  shell, cmdName , cmdLine );
 
 			
-		} finally {
+		} 
+		
+		catch( Exception e ){
+
+			shell.printErr("Exception running: " +  cmdName + "\n" +  e.toString() );
+			mLogger.error("Exception running command: " + cmdName  , e );
+			return -1;
+		}
+		
+		finally {
 			if( saved_io != null )
 				shell.getEnv().restoreIO(saved_io);
 			else

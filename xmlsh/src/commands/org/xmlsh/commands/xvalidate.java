@@ -13,6 +13,8 @@ import org.xmlsh.core.Options;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.SerializeOpts;
+import org.xmlsh.util.DTDValidator;
+import org.xmlsh.util.RNGValidator;
 import org.xmlsh.util.XSDValidator;
 
 
@@ -25,10 +27,22 @@ public class xvalidate extends XCommand {
 	{
 
 		
-		Options opts = new Options( "xsd:" , args );
+		Options opts = new Options( "xsd:,dtd:,rng:" , args );
 		opts.parse();
 		
-		String schema = opts.getOptStringRequired("xsd");
+		
+		
+		String schema = null;
+		String dtd = null;
+		String rng = null;
+		if( opts.hasOpt("dtd"))
+			dtd = opts.getOptStringRequired("dtd");
+		else
+		if( opts.hasOpt("rng"))
+			rng = opts.getOptStringRequired("rng");
+		else
+			schema = opts.getOptStringRequired("xsd");
+		
 		SerializeOpts sopts = getSerializeOpts();
 		args= opts.getRemainingArgs();
 		InputPort in = null;
@@ -37,8 +51,21 @@ public class xvalidate extends XCommand {
 		else
 			in = getStdin();
 		
-		XSDValidator v = new XSDValidator( schema );
-		v.validate( in.asInputStream(sopts));
+		if( schema != null ){
+			XSDValidator v = new XSDValidator( getEnv().getShell().getURI(schema).toString() );
+			v.validate( in.asInputStream(sopts));
+		} else 
+		if( dtd != null )
+		{
+			DTDValidator v = new DTDValidator( getEnv().getShell().getURI(dtd).toURL() );
+			v.validate( in.getSystemId() , in.asInputStream(sopts));
+		}
+		else
+		if( rng != null )
+		{
+			RNGValidator v = new RNGValidator( getEnv().getShell().getURI(rng).toURL() );
+			v.validate( in.asInputStream(sopts));
+		}
 		in.close();
 		
 		return 0;

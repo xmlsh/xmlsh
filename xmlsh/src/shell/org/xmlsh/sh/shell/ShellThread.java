@@ -42,7 +42,7 @@ public class ShellThread extends Thread {
 			mCommand.exec(mShell);
 		
 		} catch (Exception e) {
-			mShell.printErr("Exception running: " + mCommand.toString(true) + "\n" +  e.toString() );
+			// mShell.printErr("Exception running: " + mCommand.toString(true) + "\n" +  e.toString() );
 			mLogger.error("Exception running command: " + mCommand.toString(false) , e );
 		
 		} finally {

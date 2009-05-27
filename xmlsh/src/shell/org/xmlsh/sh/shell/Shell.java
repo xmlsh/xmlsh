@@ -415,7 +415,7 @@ public class Shell {
 			return mStatus = 0;
 		} catch( Exception e )
 		{
-			printErr("Exception running: " + c.toString(true) + "\n" +  e.toString() );
+			// printErr("Exception running: " + c.toString(true) + "\n" +  e.toString() );
 			mLogger.error("Exception running command: " + c.toString(false) , e );
 			return mStatus = -1;
 			

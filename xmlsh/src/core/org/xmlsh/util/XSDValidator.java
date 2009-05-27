@@ -1,10 +1,12 @@
 package org.xmlsh.util;
 
+import java.io.IOException;
 import java.io.InputStream;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -57,6 +59,18 @@ public class XSDValidator {
 			throw new SAXException(message);
 		}
 
+		/* (non-Javadoc)
+		 * @see org.xml.sax.helpers.DefaultHandler#resolveEntity(java.lang.String, java.lang.String)
+		 */
+		@Override
+		public InputSource resolveEntity(String publicId, String systemId) throws IOException,
+				SAXException {
+			if( systemId.toLowerCase().endsWith(".dtd"))
+				return new InputSource( new NullInputStream());
+			else
+				return super.resolveEntity(publicId, systemId);
+		}
+
 	}
 
 	public XSDValidator(String schema) {
@@ -72,17 +86,28 @@ public class XSDValidator {
 	public void validate(InputStream xml ) throws Exception {
 
 		SAXParserFactory f = SAXParserFactory.newInstance();
-		f.setValidating(true);
+		
+		// f.setValidating(true);
 		
 		f.setFeature("http://xml.org/sax/features/validation", true);
 		f.setFeature("http://apache.org/xml/features/validation/schema", true);
+		f.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+		// f.setFeature("http://apache.org/xml/features/nonvalidating/load-dtd-grammer", false);
+		
 		f.setNamespaceAware(true);
+		f.setValidating(true);
 		
 		SAXParser parser = f.newSAXParser();
-
+		
+		parser.setProperty(
+			    "http://java.sun.com/xml/jaxp/properties/schemaLanguage",
+			    "http://www.w3.org/2001/XMLSchema");
 		parser.setProperty(
 				"http://apache.org/xml/properties/schema/external-noNamespaceSchemaLocation",
 				mSchema);
+		
+	    
+		
 		parser.parse(xml, new ValidatorHandler());
 	}
 
