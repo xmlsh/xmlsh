@@ -1,0 +1,206 @@
+<rng:grammar xmlns:rng="http://relaxng.org/ns/structure/1.0" xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0" ns="" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+
+ <rng:start>
+<rng:ref name="BOOKLIST"/>
+</rng:start>
+<rng:define name="BOOKLIST">
+<rng:element name="BOOKLIST">
+  
+   
+    <rng:ref name="BOOKS"/>
+    <rng:ref name="CATEGORIES"/>
+   
+  
+ </rng:element>
+</rng:define>
+
+ <rng:start>
+<rng:ref name="BOOKS"/>
+</rng:start>
+<rng:define name="BOOKS">
+<rng:element name="BOOKS">
+  
+   
+    <rng:oneOrMore>
+<rng:ref name="ITEM"/>
+</rng:oneOrMore>
+   
+  
+ </rng:element>
+</rng:define>
+
+ <rng:start>
+<rng:ref name="CATEGORIES"/>
+</rng:start>
+<rng:define name="CATEGORIES">
+<rng:element name="CATEGORIES">
+  
+   
+    <rng:ref name="CATEGORY"/>
+   
+   <rng:attribute name="DESC">
+<rng:data type="string"/>
+</rng:attribute>
+  
+ </rng:element>
+</rng:define>
+ <rng:start>
+<rng:ref name="CATEGORY"/>
+</rng:start>
+<rng:define name="CATEGORY">
+<rng:element name="CATEGORY">
+  
+   <rng:attribute name="CODE">
+<rng:data type="ID"/>
+</rng:attribute>
+   <rng:attribute name="DESC">
+<rng:data type="string"/>
+</rng:attribute>
+   <rng:optional>
+<rng:attribute name="NOTE">
+<rng:data type="string"/>
+</rng:attribute>
+</rng:optional>
+  
+ </rng:element>
+</rng:define>
+
+ <rng:start>
+<rng:ref name="ITEM"/>
+</rng:start>
+<rng:define name="ITEM">
+<rng:element name="ITEM">
+  
+   
+    <rng:element name="TITLE">
+<rng:data type="string"/>
+</rng:element>
+    <rng:element name="AUTHOR">
+<rng:data type="string"/>
+</rng:element>
+    <rng:element name="PUBLISHER">
+<rng:data type="string"/>
+</rng:element>
+    <rng:element name="PUB-DATE">
+<rng:data type="date"/>
+</rng:element>
+    <rng:element name="LANGUAGE">
+<rng:ref name="languageType"/>
+</rng:element>
+    <rng:element name="PRICE">
+<rng:ref name="moneyType"/>
+</rng:element>
+    <rng:element name="QUANTITY">
+<rng:data type="integer"/>
+</rng:element>
+    <rng:element name="ISBN">
+<rng:ref name="ISBNType"/>
+</rng:element>                      
+    <rng:element name="PAGES">
+<rng:data type="integer"/>
+</rng:element>
+    <rng:element name="DIMENSIONS">
+<rng:ref name="dimensionsType"/>
+</rng:element>
+    <rng:element name="WEIGHT">
+<rng:ref name="weightType"/>
+</rng:element>
+   
+   <rng:attribute name="CAT">
+<rng:data type="IDREF"/>
+</rng:attribute>
+   <a:documentation>
+            default value is : V</a:documentation>
+<rng:optional>
+<rng:attribute xmlns:ns_1="http://relaxng.org/ns/compatibility/annotations/1.0" name="TAX" ns_1:defaultValue="V">
+<rng:data type="NMTOKEN"/>
+</rng:attribute>
+</rng:optional>
+  
+ </rng:element>
+</rng:define>
+ 
+ <rng:define name="languageType">
+  <rng:choice>
+   <rng:value>English</rng:value>
+   <rng:value>French</rng:value>
+   <rng:value>German</rng:value>
+   <rng:value>Spanish</rng:value>
+  </rng:choice>
+ </rng:define>
+ 
+ <rng:define name="moneyType">
+  
+   
+    <rng:attribute name="currency">
+<rng:ref name="currencyType"/>
+</rng:attribute>
+    
+  
+ </rng:define>
+ 
+ <rng:define name="currencyType">
+  <rng:choice>
+   <rng:value>USD</rng:value>
+   <rng:value>GBP</rng:value>
+   <rng:value>EUR</rng:value>
+   <rng:value>CAD</rng:value>
+  </rng:choice>
+ </rng:define> 
+ 
+ <rng:define name="ISBNType">
+  <rng:data type="string">
+   <rng:param name="pattern">[0-9]{9}[0-9X]</rng:param>
+  </rng:data>
+ </rng:define>     
+ 
+ <rng:define name="dimensionsType">
+  
+    
+    <rng:attribute name="UNIT">
+<rng:ref name="lengthUnitType"/>
+</rng:attribute>
+    
+  
+ </rng:define>
+ 
+ <rng:define name="dimensionsContentType">
+  
+   
+    
+        
+   
+  
+ </rng:define>  
+ 
+ <rng:define name="lengthUnitType">
+  <rng:choice>
+   <rng:value>in</rng:value>
+   <rng:value>cm</rng:value>
+  </rng:choice>
+ </rng:define> 
+ 
+ <rng:define name="dimensionType">
+  <rng:data type="decimal">
+   <rng:param name="minExclusive">0.00</rng:param>
+  </rng:data>
+ </rng:define> 
+ 
+ <rng:define name="weightType">
+  
+   
+    <rng:attribute name="UNIT">
+<rng:ref name="weightUnitType"/>
+</rng:attribute>
+    
+  
+ </rng:define>
+ 
+ <rng:define name="weightUnitType">
+  <rng:choice>
+   <rng:value>oz</rng:value>
+   <rng:value>g</rng:value>
+  </rng:choice>
+ </rng:define>    
+    
+</rng:grammar>

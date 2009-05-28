@@ -356,6 +356,11 @@ public class Options
 	public boolean hasRemainingArgs() {
 		return mRemainingArgs != null && ! mRemainingArgs.isEmpty();
 	}
+
+
+	public int getOptInt(String opt, int def) {
+		return Util.parseInt(this.getOptString(opt,""), def);
+	}
 }
 
 //

@@ -32,7 +32,7 @@ public class SynchronizedInputStream  extends InputStream {
 	 * @see java.io.InputStream#close()
 	 */
 	public synchronized void close() throws IOException {
-		// Dont actually close
+		// Dont close except it kills us ! // mInputStream.close();
 	}
 
 	/**

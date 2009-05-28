@@ -16,6 +16,7 @@ import org.xmlsh.core.CoreException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Module;
 import org.xmlsh.sh.shell.Modules;
+import org.xmlsh.util.StringPair;
 
 public class ximport extends BuiltinCommand {
 
@@ -54,17 +55,43 @@ public class ximport extends BuiltinCommand {
 
 		return 0;
 	}
+	
+	/*
+	 * import package name foo.bar.spam
+	 * import package foo.bar.spam
+	 */
 
 	private int importPackage(List<XValue> args) throws CoreException {
-		if( args.size() != 2)
-			return -1;
 		
-		String name = args.remove(0).toString(); 
-		String pkg = args.remove(0).toString();
+		String name = null; 
+		String pkg = null;
+		String prefix = null;
+		
+		if( args.size() == 1 )
+		{
+			pkg = args.get(0).toString();
+			name = pkg ;
+		} 
+		else {
+		
+			if( args.size() != 2)
+				return -1;
+			name = args.remove(0).toString(); 
+			pkg = args.remove(0).toString();
+		}
+		
+		/* parse package for prefix=package */
+		StringPair 	pair = new StringPair(pkg,'=');
+		if( pair.hasLeft() ){
+			prefix = pair.getLeft();
+			pkg = pair.getRight();
+		}
 		
 		
-		mShell.importPackage(name, pkg);
-
+		
+		mShell.importPackage(prefix , name, pkg);
+		
+		
 		return 0;
 	}
 

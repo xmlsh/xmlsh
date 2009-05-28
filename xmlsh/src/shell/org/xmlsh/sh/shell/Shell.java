@@ -876,10 +876,10 @@ public class Shell {
 		
 	}
 	
-	public void importPackage(String name , String pkg) throws CoreException {
+	public void importPackage(String prefix ,String name , String pkg) throws CoreException {
 		
 		
-		mModules.declare( new Module( null , name , pkg ));
+		mModules.declare( new Module( prefix , name , pkg ));
 	}
 
 	public URI getURI( String file ) throws IOException, URISyntaxException

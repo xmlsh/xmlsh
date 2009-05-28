@@ -162,6 +162,13 @@ public abstract class XCommand implements ICommand {
 		
 	}
 
+	protected File getFile(XValue fname) throws IOException {
+		return mEnvironment.getShell().getFile(fname);
+	}
+
+	protected File getFile(String fname) throws IOException {
+		return mEnvironment.getShell().getFile(fname);
+	}
 
 	
 	

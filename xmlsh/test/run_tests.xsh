@@ -1,7 +1,10 @@
 # Runs all tests 
 # checking for required externals
 
-EXTERNS=<["pwd","ls","touch","rm","cat","sleep"]>
+# Use internal posix module
+import package org.xmlsh.commands.posix 
+
+EXTERNS=<["ls","touch","rm","cat","sleep","chmod"]>
 echo Some of these tests require access to the internet
 echo only files from http://test.xmlsh.org are accessed
 echo Checking for required external tools $EXTERNS
