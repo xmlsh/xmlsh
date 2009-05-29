@@ -44,7 +44,6 @@ import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XdmValue;
 import net.sf.saxon.trans.XPathException;
-import org.xmlsh.core.CoreException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;

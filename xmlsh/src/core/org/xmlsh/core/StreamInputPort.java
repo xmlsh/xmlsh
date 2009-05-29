@@ -16,7 +16,6 @@ import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
-import net.sf.saxon.AugmentedSource;
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XdmNode;
 import org.xmlsh.sh.shell.SerializeOpts;

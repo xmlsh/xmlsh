@@ -6,9 +6,6 @@
 
 package org.xmlsh.commands.builtin;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.util.List;
 
 import org.xmlsh.core.BuiltinCommand;

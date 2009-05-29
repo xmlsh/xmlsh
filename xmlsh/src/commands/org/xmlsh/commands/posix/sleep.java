@@ -6,11 +6,8 @@
 
 package org.xmlsh.commands.posix;
 
-import java.io.File;
-import java.util.Date;
 import java.util.List;
 
-import org.xmlsh.core.Options;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
 
