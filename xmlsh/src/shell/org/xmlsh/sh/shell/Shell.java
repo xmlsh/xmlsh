@@ -613,11 +613,18 @@ public class Shell {
 	}
 
 	public File getExplicitFile(String name, boolean mustExist ) throws IOException {
-		File file = new File( name).getCanonicalFile();
-		
-		
-		if(  mustExist && ! file.exists() )
+		File file=null;
+		try {
+			file = new File( name).getCanonicalFile();
+
+			if(  mustExist && ! file.exists() )
+				return null;
+
+		} catch( IOException e ){
+			// Ignore IOExceptions trying to get a file because it is typically
+			// an invalid name like foo:bar
 			return null;
+		}
 		
 		return file;
 	}

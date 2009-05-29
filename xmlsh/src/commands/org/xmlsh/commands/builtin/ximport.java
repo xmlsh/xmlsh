@@ -31,8 +31,10 @@ public class ximport extends BuiltinCommand {
 			return importModule( args );
 		else
 		if( what.toString().equals("package"))
-			return importPackage(args);
-		
+			return importPackage(args,"");
+		else
+			if( what.toString().equals("commands"))
+				return importPackage(args,"org.xmlsh.commands.");
 		return 2;
 				
 	}
@@ -61,7 +63,7 @@ public class ximport extends BuiltinCommand {
 	 * import package foo.bar.spam
 	 */
 
-	private int importPackage(List<XValue> args) throws CoreException {
+	private int importPackage(List<XValue> args, String pkg_prefix) throws CoreException {
 		
 		String name = null; 
 		String pkg = null;
@@ -89,7 +91,7 @@ public class ximport extends BuiltinCommand {
 		
 		
 		
-		mShell.importPackage(prefix , name, pkg);
+		mShell.importPackage(prefix , name, pkg_prefix+pkg);
 		
 		
 		return 0;
