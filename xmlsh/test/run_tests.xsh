@@ -15,7 +15,7 @@ if ! xwhich -n $EXTERNS ; then
 fi
 
 
-for d in core builtin internal; do
+for d in core builtin internal posix; do
    echo "running tests in $d"
    cd $d
    for test in *.xsh ; do

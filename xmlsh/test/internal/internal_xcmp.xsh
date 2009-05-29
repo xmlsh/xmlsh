@@ -13,10 +13,10 @@ another line to test
 EOF
 
 cp f1 f2 
-xcmp f1 f1 && echo Success compared Success
+xcmp f1 f2 && echo Success compared Success
 
 echo another line >> f2
-xcmp f1 f1 && echo Success compared Failed
+xcmp -n f1 f2 || echo Success compared Failed
 
 rm f1 f2
 
