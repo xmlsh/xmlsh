@@ -1,0 +1,21 @@
+<module 
+	module_version="1"
+	name="calabash"
+	package="org.xmlsh.calabash"
+>
+<classpath>
+  <file url="calabash_ext.jar"/>
+  <file url="calabash.jar"/>
+  <file url="commons-httpclient-3.1.jar"/>
+  <file url="commons-logging-1.1.1.jar"/>
+  <file url="commons-logging-api-1.1.1.jar"/>
+  <file url="commons-codec-1.3.jar"/>
+  <file url="isorelax.jar"/>
+  <file url="msv.jar"/>
+  <file url="tagsoup-1.2.jar"/>
+  <file url="xep.jar"/>
+  
+            
+</classpath>
+</module>
+
