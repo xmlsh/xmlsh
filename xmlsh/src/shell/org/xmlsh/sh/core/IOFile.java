@@ -139,7 +139,17 @@ public class IOFile {
 				env.setOutput(port,outp);
 					
 			}
-			
+			else
+			if( mPrefix.equals(">&"))
+			{	
+				
+				// Duplicate port from port
+				OutputPort outp=env.getOutputPort( file );
+
+				outp.addRef(); // keep stderr from being over released
+				env.setOutput(port,outp);
+						
+			}
 			return ;
 		}
 		

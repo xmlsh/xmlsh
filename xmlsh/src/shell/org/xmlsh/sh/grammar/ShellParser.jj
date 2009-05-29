@@ -210,6 +210,7 @@ TOKEN : {
 |	< GT   : ">" >
 |   < TGT  : "2>" >
 |   < TGTAND1 : "2>&1" >
+|   < GTAND : ">&" >
 |   < GTAND2 : "1>&2" >
 }
 
@@ -855,6 +856,8 @@ IOFile io_file() :
 		{ return new IOFile( "2>" , s ); }
 |	<TGTAND1>		
 		{ return new IOFile( "2>&1" , null ); }
+|	<GTAND>		
+		{ return new IOFile( ">&" , null ); }		
 		
 |	<GTAND2>		
 		{ return new IOFile( "1>&2" , null ); }
