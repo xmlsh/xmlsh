@@ -13,9 +13,12 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -56,6 +59,9 @@ import org.xmlsh.sh.shell.Shell;
 public class Util
 {
 	public static byte mNewline[];
+	
+	private static DateFormat sXSDTFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+	  
 	
 	private static class FileComparator implements Comparator<File>
 	{
@@ -653,14 +659,15 @@ public class Util
 		} finally {
 			is.close();
 		}
-		
-		
 	}
 
+	// Format as xs:datetime
 
+	public static String formatXSDateTime(Date date) {
+		// YYYY-MM-DDThh:mm:ss
+		return sXSDTFormat.format(date);
+	}
 
-	
-	
 }
 
 //

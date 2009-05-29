@@ -10,6 +10,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.xml.sax.Attributes;
@@ -24,10 +25,12 @@ import org.xmlsh.util.Util;
 public class xls extends XCommand {
 
 	
-
+	private boolean opt_a = false ;
+	private boolean opt_R = false ;
+	private boolean opt_l = false ;
 	public int run(  List<XValue> args  )	throws Exception
 	{
-		Options opts = new Options("l",args);
+		Options opts = new Options("a=all,l=long,R=recurse",args);
 		opts.parse();
 		args = opts.getRemainingArgs();
 		
@@ -48,28 +51,14 @@ public class xls extends XCommand {
 		if( args.size() == 0 )
 			args.add(new XValue(""));
 		
-		boolean longMode = opts.hasOpt("l");
+		opt_l = opts.hasOpt("l");
+		opt_a = opts.hasOpt("a");
+		opt_R = opts.hasOpt("R");
 		for( XValue arg : args ){
 			
 			// Must go to Shell API to get raw files
 			File dir = getEnv().getShell().getFile(arg.toString());
-			if( !dir.isDirectory() ){
-
-				new XFile(dir).serialize(writer, longMode);
-			} else {
-	
-				File [] files =  dir.listFiles();
-				Util.sortFiles(files);
-				for( File f : files ){
-		
-					
-		
-					new XFile(f ).serialize(writer,longMode);
-					
-		
-					
-				}
-			}
+			ls(writer, dir , true);
 		}
 		writer.writeEndElement();
 		writer.writeEndDocument();
@@ -77,6 +66,36 @@ public class xls extends XCommand {
 		
 		
 		return 0;
+	}
+
+	private void ls(XMLStreamWriter writer, File dir, boolean top ) throws XMLStreamException {
+		if( !dir.isDirectory() ){
+
+			new XFile(dir).serialize(writer, opt_l,true);
+		} else {
+			
+			if( ! top )
+				new XFile(dir).serialize(writer, opt_l,false);
+				
+			
+			if( top || opt_R ){
+				File [] files =  dir.listFiles();
+				
+				
+				Util.sortFiles(files);
+				
+				for( File f : files ){
+					
+					if( ! opt_a && f.getName().startsWith("."))
+						continue;
+					
+					ls( writer  , f , false  );
+	
+				}
+			}
+			if( ! top )
+				writer.writeEndElement();
+		}
 	}
 	
 	

@@ -34,7 +34,7 @@ public class xpwd extends XCommand
 		
 		writer.writeStartDocument();
 		
-		file.serialize(writer,false);
+		file.serialize(writer,false,false);
 		
 		writer.writeEndDocument();
 		
