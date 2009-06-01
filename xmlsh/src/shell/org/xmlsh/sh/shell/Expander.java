@@ -545,7 +545,11 @@ class Expander {
 		}
 		
 		if( Util.isWindows() && vs.matches("^[a-zA-Z]:.*") ){
-			root = vs.substring(0,2);
+			// If windows and matches  <dir>:blah blah
+			// make the root <dir>:/
+			// If no "/" is used then the current directory of that dir is used which is not shell semantics
+			
+			root = vs.substring(0,2) +"/";
 			vs = vs.substring(2);
 			if( vs.startsWith("/") )
 				vs = vs.substring(1);
@@ -625,7 +629,7 @@ class Expander {
 		if( rs == null)
 			return ;
 		for( String r : rs ){
-			String path =  parent == null ? r : parent + "/" + r;
+			String path =  parent == null ? r : parent + (parent.endsWith("/") ? "" : "/") + r;
 			
 			if( wilds == null )
 				results.add( path );
