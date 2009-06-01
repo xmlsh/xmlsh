@@ -491,13 +491,13 @@ public class Shell {
     	
     	String command  = null ;
     	if( opts.hasOpt("c"))
-    		command = opts.getOpt("c").toString();
+    		command = opts.getOptStringRequired("c").toString();
 	    
 	    int ret = 0;
 	    vargs = opts.getRemainingArgs();
 	    
 	    
-	    if(  vargs.size() == 0 ){
+	    if(  vargs.size() == 0 && command == null ){
 	    	ret = shell.interactive();
 	    	
 	    } else {
