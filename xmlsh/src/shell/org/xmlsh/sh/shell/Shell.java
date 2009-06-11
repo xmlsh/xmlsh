@@ -758,6 +758,7 @@ public class Shell {
 
 	public synchronized void removeJob(ShellThread job) {
 		mChildren.remove(job);
+		notify();
 		
 	}
 	
@@ -771,6 +772,23 @@ public class Shell {
 		ArrayList<ShellThread> copy = new ArrayList<ShellThread>();
 		copy.addAll(mChildren);
 		return copy;
+	}
+	
+	/* 
+	 * Waits until there are "at most n" running children of this shell
+	 */
+	public synchronized void waitAtMostChildren(int n)
+	{
+		while( mChildren.size() > n ){
+			try {
+				wait();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+		}
+		
 	}
 
 
