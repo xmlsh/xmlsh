@@ -4,52 +4,20 @@
  *
  */
 
-package org.xmlsh.core;
+package org.xmlsh.util;
 
-import org.xmlsh.util.IManagedObject;
+import org.xmlsh.core.CoreException;
 
-
-public abstract class IPort implements IManagedObject {
-	private	int	mRef = 1;
-	private String mSystemId = "";
-	
-	public String getSystemId() {
-		// TODO Auto-generated method stub
-		return mSystemId;
-	}
-
-	public void setSystemId(String systemId)
-	{
-		mSystemId = systemId;
-	}
-	public final synchronized void addRef() {
-		mRef++;
-
-	}
-
-	public synchronized void flush() throws  CoreException {};
-	
-	public final synchronized void release() throws CoreException 
-	{		
-		try {
-			flush();
-			if( --mRef <= 0 )
-	
-				close();
-			} catch (Exception e) {
-				throw new CoreException("Exception closing port");
-			}
-	}
-	
-	abstract void close() throws CoreException ;
-
+public interface IManagedObject {
+	void	addRef();
+	void	release() throws CoreException;
 }
 
 
 
 //
 //
-//Copyright (C) 2008,2009 , David A. Lee.
+//Copyright (C) 2008,2009 David A. Lee.
 //
 //The contents of this file are subject to the "Simplified BSD License" (the "License");
 //you may not use this file except in compliance with the License. You may obtain a copy of the

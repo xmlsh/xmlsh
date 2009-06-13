@@ -21,6 +21,8 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.util.AutoReleasePool;
+import org.xmlsh.util.IManagedObject;
 
 public class XEnvironment  {
 	
@@ -30,6 +32,9 @@ public class XEnvironment  {
 	private		XIOEnvironment mIO = new XIOEnvironment();
 	private		Variables	mVars;
 	private		Namespaces	mNamespaces = null;
+	private		AutoReleasePool  mAutoRelease = null;
+	
+	
 
 
 	
@@ -53,7 +58,12 @@ public class XEnvironment  {
 
 	}
 
-
+	private void	addAutoRelease( IManagedObject obj )
+	{
+		if( mAutoRelease == null )
+			mAutoRelease = new AutoReleasePool();
+		mAutoRelease.add(obj);
+	}
 
 	/*
 	 * Standard Varibles 
@@ -142,6 +152,10 @@ public class XEnvironment  {
 
 	public void close() {
 		mIO.release();
+		if( mAutoRelease != null ){
+			mAutoRelease.close();
+			mAutoRelease = null;
+		}
 	}
 	
 	public Shell getShell() { 
@@ -467,6 +481,9 @@ public class XEnvironment  {
 				return null ;
 			
 			InputPort p = new StreamInputPort( in,name );
+			// Port is not managed, add to autorelease
+			addAutoRelease( p );
+			
 			return p;
 			
 			
@@ -474,6 +491,8 @@ public class XEnvironment  {
 		else
 		{
 			InputPort p = new VariableInputPort(  new XVariable(null,port) );
+			// Port is not managed, add to autorelease
+			addAutoRelease(p);
 			return p;
 		}
 		
