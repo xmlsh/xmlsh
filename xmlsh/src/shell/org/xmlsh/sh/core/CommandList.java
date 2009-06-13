@@ -32,7 +32,13 @@ public class CommandList extends BinaryOpCommand
 		
 	}
 	
-	// Override setWait to set the wait flag on the rightmost command if it exists
+	/* 
+	 * Override setWait to set the wait flag on the rightmost command if it exists
+	 * This fixes the precidence of "&" applied to command lists such that
+	 * a & b & 
+	 * produces 2 seperate jobs instead of 1 job of "a & b" (which in turn would produce a sub-job of "a")
+	 * 
+	 */
 	@Override
 	public void setWait( boolean flag )
 	{
