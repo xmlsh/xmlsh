@@ -88,6 +88,7 @@ public class xwhich extends BuiltinCommand {
 					Module module = command.getModule();
 					if( module != null )
 						out.writeAttribute(sModule, module.getName());
+					out.writeEndElement();
 					
 				}
 			} else
