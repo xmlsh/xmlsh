@@ -53,17 +53,31 @@ public class chmod extends XCommand {
 		}
 	}
 	
+	private boolean bRecurse ;
 	/*
 	 * Parse a single permission mask [rxx]
 	 */
 	
-	
+	private void applyMode( String mode , File file ) throws InvalidArgumentException
+	{
+		for( String s : mode.split(",")){
+			applyMode2(s,file);
+		}
+		if( bRecurse && file.isDirectory()){
+			for( File child : file.listFiles()){
+				applyMode( mode , child );
+			}
+		}
+			
+		
+		
+	}
 	
 	/*
 	 * Parse a single mode and apply it to a file
 	 *     [aou][-|+|=][rwx]
 	 */
-	private void applyMode( String mode , File file ) throws InvalidArgumentException
+	private void applyMode2( String mode , File file ) throws InvalidArgumentException
 	{
 		
 		boolean bOther = false ;
@@ -130,12 +144,6 @@ public class chmod extends XCommand {
 		
 				
 				
-				
-		
-		
-		
-		
-		
 		
 	}
 	
@@ -148,6 +156,7 @@ public class chmod extends XCommand {
 		Options opts = new Options( "R=recurse" , args );
 		opts.parse();
 		args = opts.getRemainingArgs();
+		bRecurse = opts.hasOpt("R");
 		
 		String mode = args.remove(0).toString();
 		for( XValue arg : args){
