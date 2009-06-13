@@ -32,6 +32,20 @@ public class CommandList extends BinaryOpCommand
 		
 	}
 	
+	// Override setWait to set the wait flag on the rightmost command if it exists
+	@Override
+	public void setWait( boolean flag )
+	{
+		if( mRight != null )
+			mRight.setWait(flag);
+		else
+		if( mLeft != null )
+			mLeft.setWait(flag);
+		else
+			super.setWait(flag);
+		
+	}
+	
 	
 }
 

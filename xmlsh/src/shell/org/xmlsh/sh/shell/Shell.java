@@ -408,8 +408,10 @@ public class Shell {
 			
 			if( isInteractive() )
 				printErr( "" + sht.getId() );
-			sht.start();
+			
 			addJob( sht );
+			sht.start();
+
 			return mStatus = 0;
 		} catch( Exception e )
 		{
