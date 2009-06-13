@@ -722,8 +722,36 @@ class Expander {
 			else
 				return null;	// unfound args, do not get used, 
 		}
-		else
+		else {
+			// ${#var} notation
+			if( var.startsWith("#") ) {
+				var = var.substring(1);
+				XValue val = mShell.getEnv().getVarValue( var );
+				int sz = val.asXdmValue().size();
+				return new XValue( String.valueOf(sz));
+				
+				
+			}
+			
+			
+			// Look for array notation 
+			// ${var[3]}
+			if( var.contains("[")){
+				int as = var.indexOf('[');
+				String ind = var.substring(as+1 , var.indexOf(']'));
+				var = var.substring(0,as);
+				
+				XValue val = mShell.getEnv().getVarValue( var );
+				if( ind.equals("*")) // special case ${var[*]}
+					return val ;
+				
+				XdmValue xval = val.asXdmValue().itemAt( Util.parseInt(ind, 0) - 1 );
+				val = new XValue(xval);
+				return val;
+			}
+			
 			return mShell.getEnv().getVarValue( var );
+		}
 	}
 
 }
