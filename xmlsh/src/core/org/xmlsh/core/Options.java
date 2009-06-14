@@ -121,6 +121,7 @@ public class Options
 	private List<XValue> mArgs;
 	private List<XValue> mRemainingArgs;
 	private List<OptionValue> mOptions;
+	private boolean	  mDashDash = false ;
 	
 	
 	/*
@@ -258,8 +259,10 @@ public class Options
 
 				mRemainingArgs = new ArrayList<XValue>( );
 				
-				if( arg.isString() && arg.equals("--") )
+				if( arg.isString() && arg.equals("--") ){
 						arg = null;
+						mDashDash = true ;
+				}
 				if( arg != null )
 					mRemainingArgs.add(arg);
 				while( I.hasNext() )
@@ -361,6 +364,7 @@ public class Options
 	public int getOptInt(String opt, int def) {
 		return Util.parseInt(this.getOptString(opt,""), def);
 	}
+	public boolean hasDashDash() { return mDashDash ; }
 }
 
 //

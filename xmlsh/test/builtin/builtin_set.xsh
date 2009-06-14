@@ -22,5 +22,11 @@ echo environment is
 set  | xpath '//variable[@name="A"]'
 set  | xpath '//variable[@name="B"]'
 
+# Test set --
+set -- arg1
+[ $# -eq 1 ] || { echo Failed ; exit 1 ; }
+
+set --
+[ $# -eq 0 ] || { echo Failed ; exit 1 ; }
 
 exit 0
