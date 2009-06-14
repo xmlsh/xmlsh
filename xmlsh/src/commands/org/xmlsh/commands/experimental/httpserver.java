@@ -17,6 +17,7 @@ import java.util.List;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.xmlsh.core.CommandFactory;
 import org.xmlsh.core.FunctionCommand;
 import org.xmlsh.core.ICommand;
 import org.xmlsh.core.Options;
@@ -25,6 +26,7 @@ import org.xmlsh.core.XValue;
 import org.xmlsh.sh.core.FunctionDefinition;
 import org.xmlsh.sh.shell.Shell;
 
+import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
@@ -41,9 +43,9 @@ public class httpserver extends XCommand {
 	public class MyHandler implements HttpHandler {
 		private		Shell	 	mShell = null;
 		private	 	File		mInitialCD;
-		private		FunctionDefinition	mGet;
-		private		FunctionDefinition	mPut;
-		private		FunctionDefinition	mPost;
+		private		String	mGet;
+		private		String	mPut;
+		private		String	mPost;
 		
 		MyHandler( Shell shell, String getFunc, String putFunc , String postFunc  )
 		{
@@ -52,9 +54,9 @@ public class httpserver extends XCommand {
 			// need to save the CD so we can restore it in the new thread
 			mInitialCD = mShell.getCurdir();
 			
-			mGet =  mShell.getFunction(getFunc);
-			mPut = mShell.getFunction(putFunc);
-			mPost = mShell.getFunction(postFunc);
+			mGet =  getFunc;
+			mPut =  putFunc;
+			mPost = postFunc;
 			
 
 		}
@@ -70,15 +72,22 @@ public class httpserver extends XCommand {
 		       
 		       String method = http.getRequestMethod();
 		       ICommand ic = null;
+		       Headers headers = http.getRequestHeaders();
+		       
+		   	
+				ICommand icmd = null ;
+				CommandFactory fact = CommandFactory.getInstance();
+	
+				
 					
 		       if( method.equals("GET") && mGet != null )
-				  ic = new FunctionCommand( mGet );
+				  ic = fact.getCommand(mShell, mGet);
 		       else
 			   if( method.equals("PUT") && mPut != null )
-				   ic = new FunctionCommand( mPut );  
+				   ic = fact.getCommand(mShell, mPut);  
 			   else
 		       if( method.equals("POST") && mPost != null )
-					  ic = new FunctionCommand( mPost );
+					  ic = fact.getCommand(mShell, mPost);
 		       
 		       if( ic == null ){
 		    	   http.sendResponseHeaders(405, -1);
