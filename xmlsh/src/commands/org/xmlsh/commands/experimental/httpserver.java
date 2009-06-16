@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.util.ArrayList;
@@ -18,12 +19,12 @@ import java.util.List;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.xmlsh.core.CommandFactory;
-import org.xmlsh.core.FunctionCommand;
+import org.xmlsh.core.CoreException;
 import org.xmlsh.core.ICommand;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
-import org.xmlsh.sh.core.FunctionDefinition;
+import org.xmlsh.sh.core.Command;
 import org.xmlsh.sh.shell.Shell;
 
 import com.sun.net.httpserver.Headers;
@@ -43,20 +44,23 @@ public class httpserver extends XCommand {
 	public class MyHandler implements HttpHandler {
 		private		Shell	 	mShell = null;
 		private	 	File		mInitialCD;
-		private		String	mGet;
-		private		String	mPut;
-		private		String	mPost;
+		private		Command	mGet;
+		private		Command mPut;
+		private		Command mPost;
 		
-		MyHandler( Shell shell, String getFunc, String putFunc , String postFunc  )
+		MyHandler( Shell shell, String getFunc, String putFunc , String postFunc  ) throws CoreException 
 		{
 			mShell = shell.clone();	// clone shell for execution
 			
 			// need to save the CD so we can restore it in the new thread
 			mInitialCD = mShell.getCurdir();
 			
-			mGet =  getFunc;
-			mPut =  putFunc;
-			mPost = postFunc;
+			if(  getFunc != null )
+				mGet =  mShell.parseEval(getFunc);
+			if( putFunc != null )
+				mPut =  mShell.parseEval(putFunc);
+			if( postFunc != null )
+				mPost = mShell.parseEval(postFunc);
 			
 
 		}
@@ -71,25 +75,21 @@ public class httpserver extends XCommand {
 
 		       
 		       String method = http.getRequestMethod();
-		       ICommand ic = null;
 		       Headers headers = http.getRequestHeaders();
 		       
 		   	
-				ICommand icmd = null ;
-				CommandFactory fact = CommandFactory.getInstance();
-	
-				
-					
-		       if( method.equals("GET") && mGet != null )
-				  ic = fact.getCommand(mShell, mGet);
+				Command cmd = null ;
+						
+		       if( method.equals("GET") )
+				  cmd = mGet;
 		       else
-			   if( method.equals("PUT") && mPut != null )
-				   ic = fact.getCommand(mShell, mPut);  
+			   if( method.equals("PUT") )
+					  cmd = mPut;
 			   else
 		       if( method.equals("POST") && mPost != null )
-					  ic = fact.getCommand(mShell, mPost);
+					  cmd = mPost ;
 		       
-		       if( ic == null ){
+		       if( cmd == null ){
 		    	   http.sendResponseHeaders(405, -1);
 		    	   http.close();
 		    	   return ;
@@ -117,7 +117,9 @@ public class httpserver extends XCommand {
 			  args.add( new XValue(path));
 			  args.add( new XValue(query));
 			  
-			  ic.run( mShell, "handler", args);
+			  mShell.setArgs(args);
+			  mShell.exec(cmd);
+			  
 	          os.close();
 	          while( is.read() > 0 )
 	        	  ;
@@ -180,7 +182,7 @@ public class httpserver extends XCommand {
 	}
 
 
-	private int start(Options opts) throws IOException {
+	private int start(Options opts) throws IOException, CoreException {
 		int port = opts.getOptInt("port",8000);
 		String context = opts.getOptString("context", "/");
 		String get = opts.getOptString("get", null);

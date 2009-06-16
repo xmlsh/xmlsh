@@ -668,6 +668,18 @@ public class Util
 		return sXSDTFormat.format(date);
 	}
 
+
+	public static void safeClose(InputStream is) {
+		try {
+			if( is != null )
+				is.close();
+		} catch( Exception e )
+		{
+			
+		}
+		
+	}
+
 }
 
 //

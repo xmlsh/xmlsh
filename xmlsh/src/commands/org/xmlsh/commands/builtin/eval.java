@@ -6,12 +6,11 @@
 
 package org.xmlsh.commands.builtin;
 
-import java.io.InputStream;
 import java.util.List;
 
 import org.xmlsh.core.BuiltinCommand;
 import org.xmlsh.core.XValue;
-import org.xmlsh.util.Util;
+import org.xmlsh.sh.core.Command;
 
 public class eval extends BuiltinCommand {
 
@@ -30,8 +29,9 @@ public class eval extends BuiltinCommand {
 				
 				
 			}
-			InputStream is = Util.toInputStream(sb.toString(), mShell.getSerializeOpts());
-			return mShell.runScript(is);
+			Command c = mShell.parseEval(sb.toString());
+			int ret = mShell.exec(c);
+			return ret ;
 			
 			
 				

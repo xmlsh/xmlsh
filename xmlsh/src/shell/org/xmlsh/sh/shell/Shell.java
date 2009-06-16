@@ -225,6 +225,35 @@ public class Shell {
 	}
 
 
+	public 		Command	parseEval( String scmd ) throws CoreException 
+	{
+
+		InputStream save = mCommandInput;
+		InputStream is = null;
+
+		try {
+			is = Util.toInputStream(scmd, getSerializeOpts());
+			mCommandInput = is ;
+			ShellParser parser= new ShellParser(new ShellParserReader(mCommandInput,getTextEncoding()));
+			
+	      	Command c = parser.script();
+	      	return c;
+			
+		
+		}  catch ( Exception e )
+		{
+			throw new CoreException("Exception parsing command: " + scmd , e );
+		}
+		
+		
+		finally {
+			mCommandInput = save;
+			Util.safeClose(is);
+			
+		}
+
+	
+	}
 	
 	
 	public		int		runScript( InputStream stream ) throws ParseException, UnsupportedEncodingException
