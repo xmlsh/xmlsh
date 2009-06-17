@@ -19,6 +19,7 @@ public class ximport extends BuiltinCommand {
 
 	
 	public int run(  List<XValue> args ) throws Exception {
+		int ret = 0;
 		if( args.size() < 1 )
 			return 1;
 		
@@ -27,11 +28,17 @@ public class ximport extends BuiltinCommand {
 		if( what.toString().equals("module"))
 			return importModule( args );
 		else
-		if( what.toString().equals("package"))
-			return importPackage(args,"");
+		if( what.toString().equals("package")){
+			for( XValue arg : args )
+				ret += importPackage(arg.toString(),"");
+			return ret;
+		}
 		else
-			if( what.toString().equals("commands"))
-				return importPackage(args,"org.xmlsh.commands.");
+		if( what.toString().equals("commands")){
+			for( XValue arg : args )
+				ret += importPackage(arg.toString(),"org.xmlsh.commands.");
+			return ret;
+		}
 		return 2;
 				
 	}
@@ -60,30 +67,19 @@ public class ximport extends BuiltinCommand {
 	 * import package foo.bar.spam
 	 */
 
-	private int importPackage(List<XValue> args, String pkg_prefix) throws CoreException {
+	private int importPackage(String pkg, String pkg_prefix) throws CoreException {
 		
 		String name = null; 
-		String pkg = null;
 		String prefix = null;
 		
-		if( args.size() == 1 )
-		{
-			pkg = args.get(0).toString();
-			name = pkg ;
-		} 
-		else {
-		
-			if( args.size() != 2)
-				return -1;
-			name = args.remove(0).toString(); 
-			pkg = args.remove(0).toString();
-		}
+		name = pkg ;
+	
 		
 		/* parse package for prefix=package */
 		StringPair 	pair = new StringPair(pkg,'=');
 		if( pair.hasLeft() ){
 			prefix = pair.getLeft();
-			pkg = pair.getRight();
+			name = pkg = pair.getRight();
 		}
 		
 		
