@@ -818,10 +818,10 @@ IORedirectList redirect_list() :
 }
 
 IORedirect io_redirect() : 
-	{  IOFile i=null;  IOHere h=null; Word port =null ;}
+	{  IOFile i=null;  Word s; IOHere h=null; Word port =null ;  }
 { 
 	
-	[ port=portname() ] ( i=io_file() | h=io_here() )
+   [ port=portname() ] ( i=io_file() | h=io_here() )
 	{ 
 		if( i != null )
 			return new IORedirect(port,i);
@@ -829,6 +829,16 @@ IORedirect io_redirect() :
 		     return new IORedirect(port, h);
 		
 	}
+	
+	|	<TGT>				s=filename_word()
+		{ return new IORedirect(null , new IOFile( "2>" , s )); }
+|	<TGTAND1>		
+		{ return new IORedirect(null ,new IOFile( "2>&1" , null )); }
+|	<GTAND>		
+		{ return new IORedirect(null ,new IOFile( ">&" , null )); }		
+		
+|	<GTAND2>		
+		{ return new IORedirect(null , new IOFile( "1>&2" , null )); }
 
 }
 
@@ -852,15 +862,7 @@ IOFile io_file() :
 {
 	<LESS>			s=filename_word()
 		{ return new IOFile( "<" , s ); }	
-|	<TGT>				s=filename_word()
-		{ return new IOFile( "2>" , s ); }
-|	<TGTAND1>		
-		{ return new IOFile( "2>&1" , null ); }
-|	<GTAND>		
-		{ return new IOFile( ">&" , null ); }		
-		
-|	<GTAND2>		
-		{ return new IOFile( "1>&2" , null ); }
+
 			
 |	<GT>				s=filename_word()
 		{ return new IOFile( ">" , s ); }
