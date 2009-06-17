@@ -12,6 +12,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
 
+import org.xmlsh.core.InputPort;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.util.Util;
@@ -30,11 +31,22 @@ public class cat extends XCommand {
 		if( args.size() > 0 ){
 			for( XValue arg : args ){
 				
-				// InputStream in = getInputStream(arg);
+				//InputStream in = getInputStream(arg);
 				File inf = getFile(arg);
-				InputStream  in= new FileInputStream( inf );
+				//InputPort ip = this.getInput(arg);
+				// InputStream in = ip.asInputStream(getSerializeOpts());
+				if( ! inf.exists() ){
+					this.printErr("File not found: " + arg.toString());
+					continue;
+				}
+				if( ! inf.canRead() ){
+					this.printErr("File not readable: " + arg.toString());
+					continue;
+				}
+				 InputStream  in= new FileInputStream( inf );
 				Util.copyStream( in , stdout );
 				in.close();
+				// ip.close();
 			}
 		}
 		else
