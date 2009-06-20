@@ -33,7 +33,8 @@ import org.xmlsh.util.Util;
  *  -header		read first row for header names
  *  -attr		write in attribute normal format\
  *  -encoding encoding  Read CSV format in the specified encoding, else cp1252 assumed
- */
+ *  -quote		quoted by (default ")
+*/
 
 public class csv2xml extends XCommand
 {
@@ -44,7 +45,7 @@ public class csv2xml extends XCommand
 
 		
 
-		Options opts = new Options( "root:,row:,col:,header,attr,encoding:,delim:" , args );
+		Options opts = new Options( "root:,row:,col:,header,attr,encoding:,delim:,quote:" , args );
 		opts.parse();
 		
 		// root node
@@ -52,6 +53,7 @@ public class csv2xml extends XCommand
 		String row = opts.getOptString("row", "row");
 		String col = opts.getOptString("col", "col");
 		String delim = opts.getOptString("delim", ",");
+		String quote = opts.getOptString("quote", "\"");
 		String encoding = opts.getOptString("encoding", "Cp1252");
 		boolean bHeader = opts.hasOpt("header");
 		boolean bAttr = opts.hasOpt("attr");
@@ -78,7 +80,7 @@ public class csv2xml extends XCommand
 		
 		
 		Reader ir = new InputStreamReader( in , encoding );
-		CSVParser parser = new CSVParser( delim.charAt(0) );
+		CSVParser parser = new CSVParser( delim.charAt(0), quote.charAt(0) );
 		
 		CSVRecord header = null ;
 		if( bHeader ){

@@ -11,6 +11,7 @@ import java.util.ArrayList;
 public class CSVParser
 {
 	private char mDelim = ','; // csv
+	private char mQuote = '"';
 
 	
 	
@@ -22,9 +23,10 @@ public class CSVParser
 		
 	}
 	
-	public CSVParser( char delim )
+	public CSVParser( char delim , char quote )
 	{
 		mDelim = delim ;
+		mQuote = quote ;
 	}
 	
 	
@@ -49,10 +51,10 @@ public class CSVParser
         		buf = new StringBuffer();
         		continue;
         	}
-        	if( c == '"' ){
+        	if( c == mQuote ){
         		while ( i < len ){
         			c = line.charAt(i++);
-        			if( c == '"' ){
+        			if( c == mQuote ){
         				if( i == len || (i < len && line.charAt(i) == mDelim ) )
         					break;
         				c = line.charAt(i++);

@@ -59,14 +59,23 @@ public class xml2csv extends XCommand
 
 	public int run(  List<XValue> args  )	throws Exception
 	{
-		mFormatter = new CSVFormatter();
-		mOutput = getStdout().asOutputStream();
-
-		Options opts = new Options( "header,attr" , args );
+		
+	
+		Options opts = new Options( "header,attr,delim:,quote:" , args );
 		opts.parse();
+		
 		
 		bHeader = opts.hasOpt("header");
 		bAttr = opts.hasOpt("attr");
+		
+		
+		String delim = opts.getOptString("delim", ",");
+		String quote = opts.getOptString("quote", "\"");
+		
+		mFormatter = new CSVFormatter(delim.charAt(0),quote.charAt(0));
+		mOutput = getStdout().asOutputStream();
+
+	
 		
 		Processor processor = Shell.getProcessor();
 		mCompiler = processor.newXQueryCompiler();
