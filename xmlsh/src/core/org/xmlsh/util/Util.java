@@ -599,7 +599,8 @@ public class Util
 	public static boolean isURIScheme(String file) {
 		return file.startsWith("http:") ||
 				file.startsWith("https:") ||
-				file.startsWith("ftp:");
+				file.startsWith("ftp:") ||
+				file.startsWith("file:") ;
 	}
 
 
