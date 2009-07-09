@@ -509,7 +509,7 @@ public class Shell {
 		
 		Shell shell = new Shell();
 	    
-		Options opts = new Options( "x,v,c:" ,  vargs );
+		Options opts = new Options( "i,x,v,c:" ,  vargs );
 		opts.parse();
 		
 		
