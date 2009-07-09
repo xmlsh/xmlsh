@@ -33,7 +33,7 @@ public class http extends XCommand {
 	throws Exception 
 	{
 		
-		Options opts = new Options( "get,put,post,head,options,delete" , args );
+		Options opts = new Options( "get,put,post,head,options,delete,connectTimeout:,readTimeout:,+useCaches,+followRedirects" , args );
 		opts.parse();
 		String method = "GET";
 		boolean doInput = true ;
@@ -68,6 +68,7 @@ public class http extends XCommand {
 		
 		
 		
+		
 		int ret = 0;
 		if( ! opts.hasRemainingArgs()){
 			usage();
@@ -81,8 +82,15 @@ public class http extends XCommand {
 		URLConnection conn = url.openConnection();
 		if( conn instanceof HttpURLConnection ){
 			
+			
+			
+			
+			
 			HttpURLConnection http = (HttpURLConnection) conn;
 	
+			setOptions( http , opts );
+			
+			
 			http.setRequestMethod(method);
 			
 			http.setDoInput(doInput);
@@ -111,6 +119,24 @@ public class http extends XCommand {
 		
 		
 		return 0;
+	}
+
+
+
+	private void setOptions(HttpURLConnection http, Options opts) {
+		
+		if( opts.hasOpt("connectTimeout"))
+			http.setConnectTimeout( opts.getOptInt("connectTimeout", 0));
+		if( opts.hasOpt("readTimeout"))
+			http.setReadTimeout( opts.getOptInt("readTimeout", 0));
+		if( opts.hasOpt("useCaches"))
+			http.setUseCaches( opts.getOpt("useCaches").getFlag());
+		if( opts.hasOpt("followRedirects"))
+			http.setInstanceFollowRedirects(  opts.getOpt("followRedirects").getFlag());
+			
+		
+			
+		
 	}
 
 

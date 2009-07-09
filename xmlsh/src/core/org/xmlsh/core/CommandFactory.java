@@ -206,6 +206,19 @@ public class CommandFactory
 		
 	}
 	
+	public ICommand getScript(Shell shell, File scriptFile , boolean bSourceMode) {
+		if( scriptFile == null )
+			return null;
+		try {
+			return new ScriptCommand( scriptFile , bSourceMode );
+		} catch (FileNotFoundException e) {
+			shell.printErr("File not found: " + scriptFile.getPath() , e);
+			return null ;
+		}
+		
+	}
+	
+	
 	public ICommand		getScript( Shell shell , String name, boolean bSourceMode  ) throws IOException
 	{
 		File scriptFile = null;
@@ -227,15 +240,7 @@ public class CommandFactory
 			if( scriptFile == null && ! name.endsWith(".xsh") )
 				scriptFile = path.getFirstFileInPath(shell, name + ".xsh");
 		}
-		
-		if( scriptFile == null )
-			return null;
-		try {
-			return new ScriptCommand( scriptFile , bSourceMode );
-		} catch (FileNotFoundException e) {
-			shell.printErr("File not found: " + scriptFile.getPath() , e);
-			return null ;
-		}
+		return getScript( shell , scriptFile , bSourceMode );
 		
 	}
 	
@@ -252,6 +257,8 @@ public class CommandFactory
 		} else
 			return null;
 	}
+
+
 
 }
 //

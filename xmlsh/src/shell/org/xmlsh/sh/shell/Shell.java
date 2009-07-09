@@ -161,6 +161,11 @@ public class Shell {
 		);
 		
 		getEnv().setVar("TMPDIR" , Util.toJavaPath(System.getProperty("java.io.tmpdir")));
+		
+		if( getEnv().getVar("HOME") == null )
+			getEnv().setVar("HOME" , Util.toJavaPath(System.getProperty("user.home")));
+		
+		
 	}
 
 	/*
@@ -318,10 +323,26 @@ public class Shell {
 		return getSerializeOpts().getText_encoding();
 	}
 
-	private		int		interactive() throws UnsupportedEncodingException
+	private		int		interactive(String rcfile ) throws Exception
 	{
 		mIsInteractive = true ;
 		int		ret = 0;
+		
+		
+		// Try to source the rcfile 
+		if( rcfile != null ){
+			
+			File script = this.getFile(rcfile);
+			if( script.exists() && script.canRead() ){
+
+				ICommand icmd = CommandFactory.getInstance().getScript(this, script ,true);
+				if( icmd != null )
+					icmd.run(this, rcfile , null);
+	    	}
+		}
+		
+		
+		
 		
 		setCommandInput();
 		
@@ -509,7 +530,7 @@ public class Shell {
 		
 		Shell shell = new Shell();
 	    
-		Options opts = new Options( "i,x,v,c:" ,  vargs );
+		Options opts = new Options( "x,v,c:,rcfile:" ,  vargs );
 		opts.parse();
 		
 		
@@ -528,8 +549,17 @@ public class Shell {
 	    vargs = opts.getRemainingArgs();
 	    
 	    
+	    
 	    if(  vargs.size() == 0 && command == null ){
-	    	ret = shell.interactive();
+		    String rcfile = opts.getOptString("rcfile", null );
+		    if( rcfile == null ){
+		    	XValue home = shell.getEnv().getVarValue("HOME");
+		    	if( home != null ){
+		    		rcfile = home.toString() + "/.xmlshrc" ;
+		    	}
+		    }	
+		    		
+	    	ret = shell.interactive(rcfile);
 	    	
 	    } else {
 
