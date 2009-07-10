@@ -212,6 +212,7 @@ TOKEN : {
 |   < TGTAND1 : "2>&1" >
 |   < GTAND : ">&" >
 |   < GTAND2 : "1>&2" >
+|   < LTAND : "<&" >
 }
 
 
@@ -818,16 +819,27 @@ IORedirectList redirect_list() :
 }
 
 IORedirect io_redirect() : 
-	{  IOFile i=null;  Word s; IOHere h=null; Word port =null ;  }
+	{  IOFile i=null;  Word s; IOHere h=null; Word port =null ; Word port2=null; }
 { 
-	
-   [ port=portname() ] ( i=io_file() | h=io_here() )
+	/* lookahead enough to disambiguate the next 2 rules */
+    LOOKAHEAD(5) [ port=portname() ] ( i=io_file() | h=io_here() )
 	{ 
 		if( i != null )
 			return new IORedirect(port,i);
 		else
 		     return new IORedirect(port, h);
 		
+	}
+	
+	| LOOKAHEAD(5) port=portname() <GTAND>	 port2=port_word()
+	{  
+
+		return new IORedirect(port ,new IOFile( ">&" , port2) );  
+	}
+	| port=portname() <LTAND>	 port2=port_word()
+	{  
+		  
+		return new IORedirect(port ,new IOFile( "<&" , port2 ));  
 	}
 	
 	|	<TGT>				s=filename_word()
@@ -874,8 +886,6 @@ IOFile io_file() :
 		{ return new IOFile(t.toString() , s ); }
 |	t=<CLOBBER>		s=filename_word()
 		{ return new IOFile( t.toString() , s ); }
-// |	t=<LTPAREN>  c=compound_list() <RPAREN> 
-//       { return new IORedirect( new IOCommand( "<(" , c )); }
 }
 
 
@@ -890,11 +900,20 @@ String	filename() :
 Word	filename_word() : 
 	{Word w; Token t;}
 {
-	<LPAREN2> ( t=<WORD> | t=<NAME> )  ")" 
-	{ return new StringWord( "(" + t.toString() + ")" ) ; }
+	w=port_word()
+	{ return w ; }
 |
 	w=cmd_word() 
 	{ return w ; }
+}
+
+
+Word	port_word() : 
+	{Word w; Token t;}
+{
+	<LPAREN2> ( t=<WORD> | t=<NAME> )  ")" 
+	{ return new StringWord( "(" + t.toString() + ")" ) ; }
+
 }
 
 

@@ -14,7 +14,7 @@ public class IORedirect {
 	Word	mPortname;	// (word)
 	IOFile	mFile;		//  < file
 	IOHere	mHere;		// <<tag ...tag
-	IOCommand mCommand; // <(cmd) // NOT IN USE 
+
 
 	
 	public IORedirect( Word name , IOFile file ){
@@ -22,22 +22,17 @@ public class IORedirect {
 		
 		mFile = file;
 		mHere = null;
-		mCommand = null;
+
 	}
 	
 	public IORedirect(Word name ,  IOHere here ){
 		mPortname = name ;
 		mFile = null;
-		mCommand = null;
+
 		mHere = here;
 	}
 	
-	public IORedirect( Word name , IOCommand command ){
-		mPortname = name ;
-		mFile = null;
-		mCommand = command;
-		mHere = null;
-	}
+	
 
 	public void print(PrintWriter out) {
 		
@@ -52,8 +47,7 @@ public class IORedirect {
 			mFile.print(out);
 		if( mHere != null)
 			mHere.print(out);
-		if( mCommand != null )
-			mCommand.print(out);
+
 		
 	}
 
@@ -68,8 +62,7 @@ public class IORedirect {
 			mFile.exec(shell,port);
 		if( mHere != null )
 			mHere.exec( shell,port);
-		if( mCommand != null )
-			mCommand.exec(shell,port);
+
 		
 	}
 }

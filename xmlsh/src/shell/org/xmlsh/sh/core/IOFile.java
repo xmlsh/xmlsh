@@ -109,7 +109,7 @@ public class IOFile {
 		}
 		
 		/*
-		 * Variable IO syntax   cmd <{var}
+		 * Port IO syntax   cmd <(port)
 		 * 
 		 */
 		boolean isPort = 	file.startsWith("(") &&
