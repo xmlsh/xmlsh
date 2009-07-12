@@ -144,12 +144,23 @@ public class IOFile {
 			{	
 				
 				// Duplicate port from port
-				OutputPort outp=env.getOutputPort( file );
+				OutputPort outp=env.getOutputPort( file.replaceAll("[()]","") );
 
 				outp.addRef(); // keep stderr from being over released
 				env.setOutput(port,outp);
 						
 			}
+			else
+			if( mPrefix.equals("<&"))
+			{	
+					
+					// Duplicate port from port
+					InputPort inp=env.getInputPort( file.replaceAll("[()]","") );
+
+					inp.addRef(); // keep stderr from being over released
+					env.setInput(port,inp);
+							
+				}
 			return ;
 		}
 		
