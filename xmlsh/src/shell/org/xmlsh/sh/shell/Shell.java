@@ -31,7 +31,6 @@ import org.xmlsh.core.CommandFactory;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.ICommand;
 import org.xmlsh.core.InvalidArgumentException;
-import org.xmlsh.core.Options;
 import org.xmlsh.core.Path;
 import org.xmlsh.core.XDynamicVariable;
 import org.xmlsh.core.XEnvironment;
@@ -39,7 +38,6 @@ import org.xmlsh.core.XValue;
 import org.xmlsh.core.XVariable;
 import org.xmlsh.core.XVariable.XVarFlag;
 import org.xmlsh.sh.core.Command;
-import org.xmlsh.sh.core.EvalScriptCommand;
 import org.xmlsh.sh.core.FunctionDefinition;
 import org.xmlsh.sh.grammar.ParseException;
 import org.xmlsh.sh.grammar.ShellParser;
@@ -323,7 +321,7 @@ public class Shell {
 		return getSerializeOpts().getText_encoding();
 	}
 
-	private		int		interactive(String rcfile ) throws Exception
+	public		int		interactive(String rcfile ) throws Exception
 	{
 		mIsInteractive = true ;
 		int		ret = 0;
@@ -528,76 +526,11 @@ public class Shell {
 	 	for( String a : argv)
 	 		vargs.add( new XValue(a));
 		
-		Shell shell = new Shell();
-	    
-		Options opts = new Options( "x,v,c:,rcfile:" ,  vargs );
-		opts.parse();
+		org.xmlsh.commands.builtin.xmlsh cmd = new org.xmlsh.commands.builtin.xmlsh();
 		
 		
-		
-		if( opts.hasOpt("v") )
-    		shell.mOpts.mVerbose = true ;
+		int ret = cmd.run(null , "xmlsh" , vargs);
 
-    	if(opts.hasOpt("x"))
-    		shell.mOpts.mExec = true ;
-    	
-    	String command  = null ;
-    	if( opts.hasOpt("c"))
-    		command = opts.getOptStringRequired("c").toString();
-	    
-	    int ret = 0;
-	    vargs = opts.getRemainingArgs();
-	    
-	    
-	    
-	    if(  vargs.size() == 0 && command == null ){
-		    String rcfile = opts.getOptString("rcfile", null );
-		    if( rcfile == null ){
-		    	XValue home = shell.getEnv().getVarValue("HOME");
-		    	if( home != null ){
-		    		rcfile = home.toString() + "/.xmlshrc" ;
-		    	}
-		    }	
-		    		
-	    	ret = shell.interactive(rcfile);
-	    	
-	    } else {
-
-	     	
-		    // Run command
-		    if(command != null)
-		    {
-
-
-		    	
-		    	Command cmd = new EvalScriptCommand( command );
-	    		ret = shell.exec(cmd);
-		    	
-
-		    }
-		    else // Run script 
-		    {
-		    	
-		    	String scmd = vargs.get(0).toString();
-		    	ICommand cmd = CommandFactory.getInstance().getScript( shell , scmd, true );
-		    	if( cmd == null )
-		    		shell.printErr( scmd + ": not found");
-		    	else {
-		    		
-		    			// Run as sourced mode, in this shell ...
-		    		// must set args ourselves
-		    		
-		    		shell.setArg0( scmd);
-		    		shell.setArgs(vargs );
-		    		ret = cmd.run( shell , scmd , null );
-		    	}
-		    	
-		    	
-		    }
-	    	
-	    }
-	    
-	    
 	   
 	    System.exit(ret);
 	  }

@@ -31,6 +31,7 @@ import org.xmlsh.commands.builtin.xcontinue;
 import org.xmlsh.commands.builtin.xecho;
 import org.xmlsh.commands.builtin.xfalse;
 import org.xmlsh.commands.builtin.ximport;
+import org.xmlsh.commands.builtin.xmlsh;
 import org.xmlsh.commands.builtin.xread;
 import org.xmlsh.commands.builtin.xreturn;
 import org.xmlsh.commands.builtin.xtrue;
@@ -46,6 +47,7 @@ import org.xmlsh.util.Util;
 public class CommandFactory 
 {
 	private static Logger mLogger =  Logger.getLogger( CommandFactory.class);
+	private static CommandFactory _instance = null ;
 	
 	private HashMap<String,Class<?>>		mBuiltins = new HashMap<String,Class<?>>();
 	
@@ -81,13 +83,17 @@ public class CommandFactory
 		addBuiltin("declare" , declare.class);
 		addBuiltin("return" , xreturn.class);
 		addBuiltin("import" , ximport.class);
+		addBuiltin("xmlsh" , xmlsh.class);
+
 	}
 	
 	
 	
-	public static CommandFactory getInstance()
+	public synchronized static CommandFactory getInstance()
 	{
-		return new CommandFactory();
+		if( _instance == null )
+			_instance = new CommandFactory();
+		return _instance ;
 	}
 	
 	
