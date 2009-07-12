@@ -33,48 +33,64 @@ public class http extends XCommand {
 	throws Exception 
 	{
 		
-		Options opts = new Options( "get,put,post,head,options,delete,connectTimeout:,readTimeout:,+useCaches,+followRedirects" , args );
+		Options opts = new Options( "get:,put:,post:,head:,options:,delete:,connectTimeout:,readTimeout:,+useCaches,+followRedirects" , args );
 		opts.parse();
 		String method = "GET";
 		boolean doInput = true ;
 		boolean doOutput = false ;
 		
-		if( opts.hasOpt("get") )
+		String surl = null;
+		
+		if( opts.hasOpt("get") ){
 			method = "GET";
+			surl =  opts.getOptString("get", null);
+		}
 		else
 		if(  opts.hasOpt("put") ){
 			method = "PUT";
 			doInput = false ; 
 			doOutput = true ;
+			surl =  opts.getOptString("put", null);
 		}
 		else
 		if( opts.hasOpt("post") ){
 			method = "POST" ;
 			doOutput = true ;
+			surl =  opts.getOptString("post", null);
 		}
 		else
-		if( opts.hasOpt("head") )
+		if( opts.hasOpt("head") ){
 			method = "HEAD" ;
+			surl =  opts.getOptString("head", null);
+		}
 		else
-		if( opts.hasOpt("options") )
+		if( opts.hasOpt("options") ){
+			surl =  opts.getOptString("options", null);
+		
 			method = "OPTIONS" ;
+		}
 		else
-		if( opts.hasOpt("delete") )
+		if( opts.hasOpt("delete") ){
+			surl =  opts.getOptString("delete", null);
+		
 			method = "DELETE" ;
+		}
 		else
-		if( opts.hasOpt("trace") )
+		if( opts.hasOpt("trace") ){
 			method = "TRACE" ;
+			surl =  opts.getOptString("trace", null);
+		}
 	
 		
-		
+		if( surl == null ){
+			usage();
+			return 1;
+		}
 		
 		
 		int ret = 0;
-		if( ! opts.hasRemainingArgs()){
-			usage();
-			return -1;
-		}
-		String surl = opts.getRemainingArgs().get(0).toString();
+
+		
 		
 	
 		URL url = new URL(surl);
@@ -126,16 +142,16 @@ public class http extends XCommand {
 	private void setOptions(HttpURLConnection http, Options opts) {
 		
 		if( opts.hasOpt("connectTimeout"))
-			http.setConnectTimeout( opts.getOptInt("connectTimeout", 0));
+			http.setConnectTimeout( (int)(opts.getOptDouble("connectTimeout", 0) * 1000.) );
+		
 		if( opts.hasOpt("readTimeout"))
-			http.setReadTimeout( opts.getOptInt("readTimeout", 0));
+			http.setReadTimeout( (int) (opts.getOptDouble("readTimeout", 0) * 1000.));
+		
 		if( opts.hasOpt("useCaches"))
 			http.setUseCaches( opts.getOpt("useCaches").getFlag());
-		if( opts.hasOpt("followRedirects"))
-			http.setInstanceFollowRedirects(  opts.getOpt("followRedirects").getFlag());
-			
 		
-			
+		if( opts.hasOpt("followRedirects"))
+			http.setInstanceFollowRedirects(  opts.getOpt("followRedirects").getFlag());	
 		
 	}
 

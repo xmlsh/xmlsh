@@ -359,8 +359,9 @@ public class Options
 	public boolean hasRemainingArgs() {
 		return mRemainingArgs != null && ! mRemainingArgs.isEmpty();
 	}
-
-
+	public double getOptDouble(String opt, double def) {
+		return Util.parseDouble(this.getOptString(opt,""), def);
+	}
 	public int getOptInt(String opt, int def) {
 		return Util.parseInt(this.getOptString(opt,""), def);
 	}
