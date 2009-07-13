@@ -183,7 +183,7 @@ public class httpserver extends XCommand {
 
 
 	private int start(Options opts) throws IOException, CoreException {
-		int port = opts.getOptInt("port",8000);
+		int port = opts.getOptInt("port",80);
 		String context = opts.getOptString("context", "/");
 		String get = opts.getOptString("get", null);
 		String put = opts.getOptString("put", null);	
