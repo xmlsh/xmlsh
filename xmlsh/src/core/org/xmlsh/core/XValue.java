@@ -378,6 +378,14 @@ public class XValue {
 			throw new SaxonApiUncheckedException(e);
 		}
 	}
+
+	public XValue shift(int n) {
+		if( mValue == null )
+			return this ;
+		
+		XdmItemSubsequence	iter = new XdmItemSubsequence( mValue , n );
+		return new XValue(  new XdmValue(  iter ) );
+	}
 	
 }
 //

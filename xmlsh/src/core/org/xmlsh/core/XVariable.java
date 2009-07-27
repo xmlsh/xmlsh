@@ -155,10 +155,10 @@ public class XVariable {
 		
 		if( n <= 0 || mValue == null )
 			return ;
-		XdmValue v = mValue.asXdmValue();
 		
-		XdmItemSubsequence	iter = new XdmItemSubsequence( v , n );
-		mValue = new XValue(  new XdmValue(  iter ) );
+		mValue = mValue.shift( n );
+		
+
 	}
 
 
