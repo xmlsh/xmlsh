@@ -11,4 +11,9 @@ done
 shift
 echo final args list is $# $*
 
+# Test shift of variable
+a=(foo bar 1 2 3 4 5)
+shift a 2
+[ ${#a} -eq 5 ] || echo Shift Failed
+
 exit 0

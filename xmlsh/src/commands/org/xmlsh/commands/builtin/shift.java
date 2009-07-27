@@ -10,6 +10,7 @@ import java.util.List;
 
 import org.xmlsh.core.BuiltinCommand;
 import org.xmlsh.core.XValue;
+import org.xmlsh.core.XVariable;
 import org.xmlsh.util.Util;
 
 public class shift  extends BuiltinCommand {
@@ -18,13 +19,39 @@ public class shift  extends BuiltinCommand {
 	public int run( List<XValue> args ) throws Exception {
 		
 		int num = 1;
-		if( args.size() > 0 )
-			num = Util.parseInt( args.get(0) , 1  );
 		
+		if( args.size() == 0 ){
+			mShell.shift(1);
+			return 0;
+			
+		}
 		
-		mShell.shift( num );
+		if( args.size() == 1 ){
+			String a1 = args.get(0).toString();
+			if( Util.isInt(a1, false))
+				mShell.shift(Util.parseInt(a1, 1));
+			else
+				shift( a1 ,1 );
+			
+			return 0;
+		}
+		
+		if( args.size() == 2 ){
+			
+			shift( args.get(0).toString() , Util.parseInt(args.get(1), 1));
+			
+			
+		}
+		
 		return 0;
 				
+	}
+
+	private void shift(String name, int n) {
+		XVariable var = mShell.getEnv().getVar(name);
+		if( var != null )
+			var.shift(n);
+		
 	}
 
 

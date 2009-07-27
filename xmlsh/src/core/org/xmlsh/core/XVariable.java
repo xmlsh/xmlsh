@@ -11,6 +11,7 @@ import java.util.EnumSet;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import net.sf.saxon.s9api.XdmValue;
 import org.xml.sax.SAXException;
 
 public class XVariable {
@@ -148,6 +149,16 @@ public class XVariable {
 
 	public boolean isNull() {
 		return mValue == null ;
+	}
+
+	public void shift(int n) {
+		
+		if( n <= 0 || mValue == null )
+			return ;
+		XdmValue v = mValue.asXdmValue();
+		
+		XdmItemSubsequence	iter = new XdmItemSubsequence( v , n );
+		mValue = new XValue(  new XdmValue(  iter ) );
 	}
 
 
