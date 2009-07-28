@@ -8,6 +8,7 @@ package org.xmlsh.commands.experimental;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
@@ -33,7 +34,7 @@ public class http extends XCommand {
 	throws Exception 
 	{
 		
-		Options opts = new Options( "get:,put:,post:,head:,options:,delete:,connectTimeout:,readTimeout:,+useCaches,+followRedirects" , args );
+		Options opts = new Options( "get:,put:,post:,head:,options:,delete:,connectTimeout:,readTimeout:,+useCaches,+followRedirects,user:,password:" , args );
 		opts.parse();
 		String method = "GET";
 		boolean doInput = true ;
@@ -80,6 +81,8 @@ public class http extends XCommand {
 			method = "TRACE" ;
 			surl =  opts.getOptString("trace", null);
 		}
+		else
+			surl = opts.getRemainingArgs().get(0).toString();
 	
 		
 		if( surl == null ){
@@ -134,12 +137,12 @@ public class http extends XCommand {
 		
 		
 		
-		return 0;
+		return ret;
 	}
 
 
 
-	private void setOptions(HttpURLConnection http, Options opts) {
+	private void setOptions(HttpURLConnection http, Options opts) throws UnsupportedEncodingException {
 		
 		if( opts.hasOpt("connectTimeout"))
 			http.setConnectTimeout( (int)(opts.getOptDouble("connectTimeout", 0) * 1000.) );
@@ -152,6 +155,24 @@ public class http extends XCommand {
 		
 		if( opts.hasOpt("followRedirects"))
 			http.setInstanceFollowRedirects(  opts.getOpt("followRedirects").getFlag());	
+		
+		String user = opts.getOptString("user", null);
+		String pass = opts.getOptString("password", null);
+		if( user != null && pass != null ){
+			String up = user + ":" + pass ;
+			
+			 // Encode String
+		       String encoding = new sun.misc.BASE64Encoder().encode (up.getBytes( getEnv().getShell().getSerializeOpts().getEncoding()));
+		       
+		       http.setRequestProperty  ("Authorization", "Basic " + encoding);
+			
+			
+			
+		}
+		
+		
+		
+		
 		
 	}
 
