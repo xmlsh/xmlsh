@@ -14,6 +14,7 @@ import java.util.List;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.util.Util;
 
 /*
  * A Value that evaulates to a "cmd_word" which is either a simple string,
@@ -33,10 +34,12 @@ public abstract class Word {
 	}
 	
 	public List<XValue> expand(Shell shell, boolean bExpandSequences , boolean bExpandWild , boolean bExpandWords ) throws IOException, CoreException {
+		XValue v = expand( shell , false,false);
 		List<XValue> list = new ArrayList<XValue>(1);
-		list.add( expand( shell , false,false));
+		list.add( v );
+		if( bExpandSequences)
+			list = Util.expandSequences(list);
 		return list;
-		
 		
 	}
 

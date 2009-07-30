@@ -17,10 +17,10 @@ import org.xmlsh.sh.shell.Shell;
 
 public class ForClause extends CompoundCommand {
 	String		mName;
-	StringList	mWords;
+	WordList	mWords;
 	Command		mCommand;
 	
-	public ForClause( String name, StringList words, Command c )
+	public ForClause( String name, WordList words, Command c )
 	{
 		mName = name ;
 		mWords = words;
@@ -70,8 +70,9 @@ public class ForClause extends CompoundCommand {
 					
 				}
 			} else
-			for( String in : mWords ) {
-				List<XValue> inList = shell.expand( in , true ,true,true );
+			for( Word in : mWords ) {
+				
+				List<XValue> inList = in.expand( shell , true ,true,true );
 				if( ! shell.keepRunning() )
 					break ;
 				for( XValue inword : inList ) {

@@ -103,4 +103,9 @@ done < $T1 > $T2
 echo Output is 
 cat $T2
 
+# For loop with $() 
+for a in $(echo a1; echo b1 ; echo c1  ) ; do
+   echo arg $a
+done
+
 rm $T1 $T2 

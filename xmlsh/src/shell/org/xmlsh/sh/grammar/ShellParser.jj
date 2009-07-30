@@ -540,7 +540,7 @@ ForClause for_clause() :
 	{
 		Command c;
 		String n;
-		StringList w = null;
+		WordList w = null;
 	}
 {
 
@@ -570,13 +570,13 @@ String wordname() :
 |   t=<BIGQUOTE>	  { return t.toString(); }
 }
 
-StringList	wordlist() : 
+WordList	wordlist() : 
 	{
-		StringList list = new StringList();
-		String s;
+		WordList list = new WordList();
+		Word  w;
 	}
 {
-	(s=wordname()  { list.add(s); } )+
+	(w=cmd_word()  { list.add(w); } )+
 	{ return list;}
 	
 }
