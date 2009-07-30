@@ -9,7 +9,11 @@ package org.xmlsh.sh.core;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
 
+import net.sf.saxon.s9api.XdmAtomicValue;
+import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmValue;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.VariableOutputPort;
@@ -120,7 +124,18 @@ public class CommandWord extends Word {
 		
 		if( mType.equals("$(")){
 			String 	value = expandSubproc( shell , mCommand);
-			return new XValue(value);
+			// Split value by \n's to turn into a sequence
+			String[] words = value.split("\r?\n");
+			if( words.length == 1 )
+				return new XValue(words[0]);
+			
+			List<XdmItem> list = new ArrayList<XdmItem>( words.length );
+			
+			for( String w : words )
+				list.add( new XdmAtomicValue( w ) );
+			return new XValue( new XdmValue(list));
+			
+			
 		} else 
 		if( mType.equals("$<(")){
 			
