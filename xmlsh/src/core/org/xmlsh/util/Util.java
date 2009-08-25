@@ -422,6 +422,8 @@ public class Util
 		
 		String reg = "^" + 
 			pattern.
+			replace("^","\\^").
+			replace("+","\\+").
 			replace(".", "\\.").
 			replace("*", ".*").
 			replace("?" , ".") + "$";
