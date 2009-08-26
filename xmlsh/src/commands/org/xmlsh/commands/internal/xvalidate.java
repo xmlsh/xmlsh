@@ -6,13 +6,19 @@
 
 package org.xmlsh.commands.internal;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
+import org.xmlsh.core.CommandFactory;
+import org.xmlsh.core.ICommand;
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
+import org.xmlsh.sh.core.EvalScriptCommand;
 import org.xmlsh.sh.shell.SerializeOpts;
+import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.DTDValidator;
 import org.xmlsh.util.RNGValidator;
 import org.xmlsh.util.XSDValidator;
@@ -27,7 +33,7 @@ public class xvalidate extends XCommand {
 	{
 
 		
-		Options opts = new Options( "xsd:,dtd:,rng:" , args );
+		Options opts = new Options( "xsd:,dtd:,rng:,schematron:" , args );
 		opts.parse();
 		
 		
@@ -35,17 +41,30 @@ public class xvalidate extends XCommand {
 		String schema = null;
 		String dtd = null;
 		String rng = null;
+		String schematron = null ;
 		if( opts.hasOpt("dtd"))
 			dtd = opts.getOptStringRequired("dtd");
 		else
 		if( opts.hasOpt("rng"))
 			rng = opts.getOptStringRequired("rng");
 		else
+			if( opts.hasOpt("schematron"))
+					schematron = opts.getOptStringRequired("schematron");
+			
+		else
 			schema = opts.getOptStringRequired("xsd");
+
 		
 		SerializeOpts sopts = getSerializeOpts();
 		args= opts.getRemainingArgs();
 		InputPort in = null;
+		
+		// Schematron is a special case, runs as a shell script
+		if( schematron != null){
+			return run_schematron( schematron , args );
+		}
+		
+		
 		if( args.size() > 0 )
 			in = getInput(args.get(0));
 		else
@@ -70,6 +89,20 @@ public class xvalidate extends XCommand {
 		
 		return 0;
 
+	}
+
+	private int run_schematron(String schematron, List<XValue> args) throws Exception {
+		
+		Shell shell = getEnv().getShell();
+		ICommand cmd = CommandFactory.getInstance().getCommand( shell , "schematron");
+		ArrayList<XValue>  al = new ArrayList<XValue>();
+		al.add(new XValue(schematron));
+		al.addAll( args );
+		
+		return cmd.run(shell, "schematron", al);
+		
+		
+		
 	}
 	
 	

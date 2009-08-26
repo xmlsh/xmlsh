@@ -9,8 +9,10 @@ package org.xmlsh.commands.internal;
 import java.io.File;
 import java.io.PrintWriter;
 import java.net.URI;
+import java.net.URL;
 import java.util.List;
 
+import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
@@ -41,13 +43,26 @@ public class xuri extends XCommand
 	
 	public int run(  List<XValue> args  )	throws Exception
 	{
-		Options opts = new Options("a=authority,f=fragment,h=host,p=path,P=port,q=query,s=scheme",args);
+		Options opts = new Options("a=authority,f=fragment,h=host,p=path,P=port,q=query,s=scheme,r=resource:",args);
 		opts.parse();
 		args = opts.getRemainingArgs();
 		
 		PrintWriter out = getEnv().getStdout().asPrintWriter(getSerializeOpts());
 		
 		URI uri = null ;
+
+		if( opts.hasOpt("r")){
+			String res = opts.getOptString("r", "");
+			URL url = this.getEnv().getShell().getClass().getResource(res);
+			if( url == null )
+				throw new InvalidArgumentException("Resource not found: " + res );
+			
+			uri = url.toURI();
+			
+		}
+			
+		
+		if( uri == null )
 		switch( args.size() ){
 		case 	0:
 			uri = getEnv().getCurdir().toURI();

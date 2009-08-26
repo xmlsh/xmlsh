@@ -602,7 +602,8 @@ public class Util
 		return file.startsWith("http:") ||
 				file.startsWith("https:") ||
 				file.startsWith("ftp:") ||
-				file.startsWith("file:") ;
+				file.startsWith("file:") ||
+				file.startsWith("jar:");
 	}
 
 

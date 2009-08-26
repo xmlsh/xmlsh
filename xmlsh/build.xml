@@ -48,6 +48,7 @@ version.release=${release}
     	            </fileset>
     	 			<fileset dir="src/commands">
     	 				<include name="**/*.xsh"/>
+    	 				<include name="**/*.xsl"/>		
     	 			</fileset>
     	        </copy>
 

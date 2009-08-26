@@ -1,6 +1,14 @@
 # Runs all tests 
 # checking for required externals
 
+
+# check for missing TMPDIR
+[ -n "$TMPDIR" ] || { echo TMPDIR must be set to run tests ; exit 1 ; }
+# expand to java cannonical form and check for directory
+TMPDIR=$(xfile $(xfile -c $TMPDIR))
+[ -d "$TMPDIR" ] || { echo TMPDIR must be a directory: $TMPDIR ; exit 1 ; }
+
+
 # Use internal posix module
 import package org.xmlsh.commands.posix 
 
