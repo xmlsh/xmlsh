@@ -29,6 +29,7 @@ import org.xmlsh.core.XValue;
 import org.xmlsh.core.Options.OptionValue;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.Util;
+import org.xmlsh.xpath.XPathFunctions;
 
 public class xpath extends XCommand {
 
@@ -115,61 +116,70 @@ public class xpath extends XCommand {
 
 		}
 
-		XPathExecutable expr = compiler.compile(xpath);
+		Shell saved_shell = XPathFunctions.setShell(getEnv().getShell());
 
-		XPathSelector eval = expr.load();
-		if (context != null)
-			eval.setContextItem(context);
+		try {
+			XPathExecutable expr = compiler.compile(xpath);
 
-		if (opts.hasOpt("v")) {
-			// Read pairs from args to set
-			for (int i = 0; i < xvargs.size() / 2; i++) {
-				String name = xvargs.get(i * 2).toString();
-				XValue value = xvargs.get(i * 2 + 1);
+			XPathSelector eval = expr.load();
+			if (context != null)
+				eval.setContextItem(context);
 
-				eval.setVariable(new QName(name), value.asXdmValue());
-			}
-		}
-		// Return the effective boolean value intead of any output
-		if (bBool) {
-			boolean bRet = eval.effectiveBooleanValue();
-			return bRet ? 0 : 1 ;
-			
+			if (opts.hasOpt("v")) {
+				// Read pairs from args to set
+				for (int i = 0; i < xvargs.size() / 2; i++) {
+					String name = xvargs.get(i * 2).toString();
+					XValue value = xvargs.get(i * 2 + 1);
 
-		} else {
-
-			OutputPort stdout = getStdout();
-			Destination ser = stdout.asDestination(getSerializeOpts());
-			boolean bAnyOutput = false;
-			boolean bFirst = true;
-
-			for (XdmItem item : eval) {
-				bAnyOutput = true;
-
-				if (bQuiet)
-					break;
-
-				if (!bFirst)
-					stdout.writeSequenceSeperator(); // Thrashes variable
-														// output !
-				else {
-					if (item instanceof XdmNode) {
-						URI uri = ((XdmNode) item).getBaseURI();
-						stdout.setSystemId(uri.toString());
-					}
+					eval.setVariable(new QName(name), value.asXdmValue());
 				}
-				bFirst = false;
-
-				processor.writeXdmValue(item, ser);
-
 			}
-			if (!bQuiet && bAnyOutput)
-				stdout.writeSequenceTerminator();
+			// Return the effective boolean value intead of any output
+			if (bBool) {
+				boolean bRet = eval.effectiveBooleanValue();
+				return bRet ? 0 : 1 ;
+				
 
-			if( in != null )
-				in.close();
-			return bAnyOutput ? 0 : 1;
+			} else {
+
+				OutputPort stdout = getStdout();
+				Destination ser = stdout.asDestination(getSerializeOpts());
+				boolean bAnyOutput = false;
+				boolean bFirst = true;
+
+				for (XdmItem item : eval) {
+					bAnyOutput = true;
+
+					if (bQuiet)
+						break;
+
+					if (!bFirst)
+						stdout.writeSequenceSeperator(); // Thrashes variable
+															// output !
+					else {
+						if (item instanceof XdmNode) {
+							URI uri = ((XdmNode) item).getBaseURI();
+							stdout.setSystemId(uri.toString());
+						}
+					}
+					bFirst = false;
+
+					processor.writeXdmValue(item, ser);
+
+				}
+				if (!bQuiet && bAnyOutput)
+					stdout.writeSequenceTerminator();
+
+				if( in != null )
+					in.close();
+				return bAnyOutput ? 0 : 1;
+			}
 		}
+			finally {
+				XPathFunctions.setShell(saved_shell);
+			
+			}
+	
 
 	}
 

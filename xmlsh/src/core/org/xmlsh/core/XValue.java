@@ -15,11 +15,13 @@ import java.util.List;
 
 import javax.xml.transform.Source;
 
+import net.sf.saxon.om.Item;
 import net.sf.saxon.om.NodeInfo;
 import net.sf.saxon.om.SequenceIterator;
 import net.sf.saxon.om.SingletonIterator;
 import net.sf.saxon.om.ValueRepresentation;
 import net.sf.saxon.s9api.Processor;
+import net.sf.saxon.s9api.S9Util;
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.SaxonApiUncheckedException;
 import net.sf.saxon.s9api.Serializer;
@@ -138,6 +140,10 @@ public class XValue {
 	}
 
 	
+	public XValue(Item item) {
+		this( S9Util.wrapItem(item));
+	}
+
 	public byte[]	toBytes(String encoding)
 	{
 		if( mValue != null ){

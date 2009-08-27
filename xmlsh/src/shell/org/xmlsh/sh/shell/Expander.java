@@ -29,6 +29,7 @@ import org.xmlsh.core.XVariable;
 import org.xmlsh.core.XVariable.XVarFlag;
 import org.xmlsh.util.NameValueMap;
 import org.xmlsh.util.Util;
+import org.xmlsh.xpath.XPathFunctions;
 
 class Expander {
 	private static final String sSEPSPACE = " ";
@@ -365,7 +366,6 @@ class Expander {
 	private XdmValue parseXExpr(String arg) {
 		
 		
-	
 		
 		Processor processor = Shell.getProcessor();
 		
@@ -401,6 +401,9 @@ class Expander {
 		
 		
 		sb.append(arg);
+		
+		Shell saved_shell = XPathFunctions.setShell(mShell);
+			
 		try {
 			expr = compiler.compile( sb.toString() );
 			
@@ -422,6 +425,10 @@ class Expander {
 		} catch (SaxonApiException e) {
 			mLogger.warn("Error expanding xml expression: " + arg , e );
 			mShell.printErr("Error expanding xml expression");
+		}
+		finally {
+			XPathFunctions.setShell(saved_shell);
+		
 		}
 
 		return null;

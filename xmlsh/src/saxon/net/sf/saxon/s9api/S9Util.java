@@ -14,6 +14,7 @@
 
 package net.sf.saxon.s9api;
 
+import net.sf.saxon.om.Item;
 import net.sf.saxon.om.NodeInfo;
 
 public class S9Util {
@@ -22,6 +23,12 @@ public class S9Util {
 	{
 		return XdmNode.wrap(node);
 	}
+	
+	public static XdmValue	wrapItem( Item item)
+	{
+		return XdmNode.wrap(item);
+	}
+	
 
 }
 

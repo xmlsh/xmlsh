@@ -27,6 +27,7 @@ import org.xmlsh.core.XValue;
 import org.xmlsh.core.Options.OptionValue;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.Util;
+import org.xmlsh.xpath.XPathFunctions;
 
 
 
@@ -128,60 +129,67 @@ public class xquery extends XCommand {
 			}
 			
 		}
-	
-		
-		expr = compiler.compile( query );
-		
-		
-		XQueryEvaluator eval = expr.load();
-		if( context != null )
-			eval.setContextItem(context);
-		
-		
-		if( opts.hasOpt("v")){
-			// Read pairs from args to set
-			for( int i = 0 ; i < xvargs.size()/2 ; i++ ){
-				String name = xvargs.get(i*2).toString();
-				XValue value = xvargs.get(i*2+1);
-				
-				eval.setExternalVariable( new QName(name),  value.asXdmValue() );	
+		Shell saved_shell = XPathFunctions.setShell(getEnv().getShell());
+
+		try {
+
+			expr = compiler.compile( query );
+			
+			
+			XQueryEvaluator eval = expr.load();
+			if( context != null )
+				eval.setContextItem(context);
+			
+			
+			if( opts.hasOpt("v")){
+				// Read pairs from args to set
+				for( int i = 0 ; i < xvargs.size()/2 ; i++ ){
+					String name = xvargs.get(i*2).toString();
+					XValue value = xvargs.get(i*2+1);
+					
+					eval.setExternalVariable( new QName(name),  value.asXdmValue() );	
+						
+					
+				}
 					
 				
 			}
 				
+
 			
+				
+//		eval.run(getStdout().asDestination(getSerializeOpts()));
+
+			OutputPort stdout = getStdout();
+			Destination ser = stdout.asDestination(getSerializeOpts());
+			boolean bFirst = true ;
+			boolean bAnyOut = false ;
+			for( XdmItem item : eval ){
+				bAnyOut = true ;
+				if( ! bFirst )
+					stdout.writeSequenceSeperator(); // Thrashes variable output !
+				bFirst = false ;
+				//processor.writeXdmValue(item, ser );
+				Util.writeXdmValue(item, ser);
+
+				
+			}
+			if( bAnyOut )
+				stdout.writeSequenceTerminator(); // write "\n"
+			
+			if( in != null)
+				in.close();
+			
+			return 0;
+
+
+		 
+		} finally {
+			XPathFunctions.setShell(saved_shell);
 		}
-			
-
 		
-			
-//	eval.run(getStdout().asDestination(getSerializeOpts()));
-
-		OutputPort stdout = getStdout();
-		Destination ser = stdout.asDestination(getSerializeOpts());
-		boolean bFirst = true ;
-		boolean bAnyOut = false ;
-		for( XdmItem item : eval ){
-			bAnyOut = true ;
-			if( ! bFirst )
-				stdout.writeSequenceSeperator(); // Thrashes variable output !
-			bFirst = false ;
-			//processor.writeXdmValue(item, ser );
-			Util.writeXdmValue(item, ser);
-
-			
-		}
-		if( bAnyOut )
-			stdout.writeSequenceTerminator(); // write "\n"
-		
-		if( in != null)
-			in.close();
-		
-		return 0;
-
 
 	}
-
 
 	
 

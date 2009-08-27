@@ -80,6 +80,8 @@ public class Shell {
 	private		Module	mModule = null;
 
 
+	
+
 	static {
 		
 		Logging.configureLogger();
