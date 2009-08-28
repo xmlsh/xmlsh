@@ -17,6 +17,16 @@ import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.util.Util;
 
+/**
+ * Command: Cat
+ * 
+   <para>In the opinion of this author, the Unix <emphasis role="bold">shell</emphasis> <link ulink:href="http://en.wikipedia.org/wiki/Unix_shell">http://en.wikipedia.org/wiki/Unix_shell</link> is one of the most elegant, practical and powerful command and scripting languages ever written.  It has stood up to 30 years of use and abuse, and while it has been copied, cloned, rewritten, duplicated, "improved" and otherwise mimicked in many variants of unix and other operating systems, the core design, functionality, and syntax has not improved significantly, nor needed to be improved.    Those who grew up using "modern" Windowing systems or primitive CLI's (Command Line Interpreter) <link ulink:href="http://en.wikipedia.org/wiki/Command_line_interpreter">http://en.wikipedia.org/wiki/Command_line_interpreter</link> may not fully appreciate the elegance and functionality of the unix shell (originally the Bourne shell, /bin/sh) and its variations.   </para>
+ * 
+ * @author David A. Lee
+ */
+
+
+
 public class cat extends XCommand {
 
 

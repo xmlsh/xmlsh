@@ -29,7 +29,7 @@ import org.xmlsh.core.XVariable;
 import org.xmlsh.core.XVariable.XVarFlag;
 import org.xmlsh.util.NameValueMap;
 import org.xmlsh.util.Util;
-import org.xmlsh.xpath.XPathFunctions;
+import org.xmlsh.xpath.ShellContext;
 
 class Expander {
 	private static final String sSEPSPACE = " ";
@@ -402,7 +402,7 @@ class Expander {
 		
 		sb.append(arg);
 		
-		Shell saved_shell = XPathFunctions.setShell(mShell);
+		Shell saved_shell = ShellContext.set(mShell);
 			
 		try {
 			expr = compiler.compile( sb.toString() );
@@ -427,7 +427,7 @@ class Expander {
 			mShell.printErr("Error expanding xml expression");
 		}
 		finally {
-			XPathFunctions.setShell(saved_shell);
+			ShellContext.set(saved_shell);
 		
 		}
 

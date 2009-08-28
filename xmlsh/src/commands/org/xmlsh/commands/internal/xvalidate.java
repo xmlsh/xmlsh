@@ -6,7 +6,6 @@
 
 package org.xmlsh.commands.internal;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,11 +15,11 @@ import org.xmlsh.core.InputPort;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
-import org.xmlsh.sh.core.EvalScriptCommand;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.DTDValidator;
 import org.xmlsh.util.RNGValidator;
+import org.xmlsh.util.Util;
 import org.xmlsh.util.XSDValidator;
 
 
@@ -71,7 +70,13 @@ public class xvalidate extends XCommand {
 			in = getStdin();
 		
 		if( schema != null ){
-			XSDValidator v = new XSDValidator( getEnv().getShell().getURI(schema).toString() );
+			XSDValidator v = null ; 
+				
+			if( schema.indexOf(' ') < 0 )
+				v = new XSDValidator( getEnv().getShell().getURI(schema).toString() );
+			else
+				v = new XSDValidator( Util.toList( schema.split(" ") ) );
+				
 			v.validate( in.asInputStream(sopts));
 		} else 
 		if( dtd != null )

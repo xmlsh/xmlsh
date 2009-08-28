@@ -114,8 +114,8 @@ public class xcat extends XCommand {
 		// Query for where files are in context
 		String qcontext = 
 			removeRoot ?
-					(wrapper == null ? "root()/node()/*[1]" :  "root()/node()/*") :
-					"root()";
+					(wrapper == null ? "./node()/*[1]" :  "./node()/*") :
+					".";
 					
 		
 		switch(mode){

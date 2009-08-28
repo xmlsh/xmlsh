@@ -14,10 +14,11 @@ import net.sf.saxon.expr.XPathContext;
 import net.sf.saxon.om.Item;
 import net.sf.saxon.om.SequenceIterator;
 import net.sf.saxon.om.ValueRepresentation;
+import net.sf.saxon.s9api.XdmValue;
 import net.sf.saxon.trans.XPathException;
 import org.xmlsh.core.CoreException;
+import org.xmlsh.core.VariableInputPort;
 import org.xmlsh.core.VariableOutputPort;
-import org.xmlsh.core.XIOEnvironment;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.XVariable;
 import org.xmlsh.sh.core.Command;
@@ -25,37 +26,28 @@ import org.xmlsh.sh.shell.Shell;
 
 public class XPathFunctions {
 
-	
-	/*
-	 * Thread local instance of a Shell
-	 */
-	
-	private static ThreadLocal<Shell>		sInstance = new ThreadLocal<Shell>()
-	{
-         protected synchronized Shell initialValue() {
-             return null;
-         }
-	}
-    ;
-    public static Shell setShell( Shell shell )
-    {
-    	Shell old = sInstance.get();
-    	sInstance.set(shell);
-    	return old;
 
-    }
 	public static ValueRepresentation eval(XPathContext c, String command  ) throws IOException, CoreException, XPathException
 	{
-		return eval( c , command , null );
+		return eval(c.getContextItem()  ,  command , null );
 	}
+	
 	public static ValueRepresentation eval(XPathContext c, String command , SequenceIterator args ) throws IOException, CoreException, XPathException
 	{
-		Shell shell = sInstance.get();
+		return eval( c.getContextItem() , command , args  );
+	}
+	public static ValueRepresentation eval(String command , SequenceIterator args , Item context ) throws IOException, CoreException, XPathException
+	{
+		return eval( context , command , args  );
+	}
+	private static ValueRepresentation eval(Item context , String command , SequenceIterator args ) throws IOException, CoreException, XPathException
+	{
+		Shell shell = ShellContext.get();
 
-		if( shell == null ){
-			return null;
-		}
-		shell = shell.clone();
+		if( shell == null )
+			shell = new Shell();
+		else
+			shell = shell.clone();
 		
 		try {
 			Command cmd = shell.parseEval(command);
@@ -68,15 +60,29 @@ public class XPathFunctions {
 				}
 			}
 			
-			 XValue value = new XValue();
-			 XVariable var = new XVariable("_out" , value);
-			 VariableOutputPort out = new VariableOutputPort(var);
-			 shell.getEnv().setStdout( out );
+			
+			// Capture stdout
+			 XValue oValue = new XValue();
+			 XVariable oVar = new XVariable("_out" , oValue);
+			 VariableOutputPort oPort = new VariableOutputPort(oVar);
+			 shell.getEnv().setStdout( oPort );
+			 
+			// set stdin
+			 if( context != null ){
+				 VariableInputPort iPort = new VariableInputPort( new XVariable("_in", new XValue(context)));
+				 shell.getEnv().setStdin(iPort);
+			 }
+			 
 			 shell.setArgs(shell_args);
 			 shell.exec(cmd);
 			 
-			 value = var.getValue();
-			return value.asXdmValue().getUnderlyingValue();
+			 oValue = oVar.getValue();
+			 if( oValue == null )
+				 return null;
+			 XdmValue oXdm =oValue.asXdmValue();
+			 if( oXdm == null )
+				 return null ;
+			return oXdm.getUnderlyingValue();
 		} finally {
 			shell.close();
 		}

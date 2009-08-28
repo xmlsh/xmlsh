@@ -29,7 +29,7 @@ import org.xmlsh.core.XValue;
 import org.xmlsh.core.Options.OptionValue;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.Util;
-import org.xmlsh.xpath.XPathFunctions;
+import org.xmlsh.xpath.ShellContext;
 
 public class xpath extends XCommand {
 
@@ -116,7 +116,7 @@ public class xpath extends XCommand {
 
 		}
 
-		Shell saved_shell = XPathFunctions.setShell(getEnv().getShell());
+		Shell saved_shell = ShellContext.set(getEnv().getShell());
 
 		try {
 			XPathExecutable expr = compiler.compile(xpath);
@@ -176,7 +176,7 @@ public class xpath extends XCommand {
 			}
 		}
 			finally {
-				XPathFunctions.setShell(saved_shell);
+				ShellContext.set(saved_shell);
 			
 			}
 	

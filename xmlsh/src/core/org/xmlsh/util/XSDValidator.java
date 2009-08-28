@@ -2,6 +2,7 @@ package org.xmlsh.util;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -22,6 +23,7 @@ public class XSDValidator {
 	
 
 	private String mSchema = null;
+	private	 List<String> mSchemaList = null ; 
 
 	private class ValidatorHandler extends DefaultHandler {
 
@@ -77,7 +79,10 @@ public class XSDValidator {
 		mSchema = schema;
 
 	}
+	public XSDValidator(List<String> schemas) {
+		mSchemaList = schemas;
 
+	}
 	/*
 	 * Private method to create a SAXParser; if a schema is supplied, validation
 	 * properties are set in the SAXParserFactory, and the parser's schema is
@@ -102,9 +107,26 @@ public class XSDValidator {
 		parser.setProperty(
 			    "http://java.sun.com/xml/jaxp/properties/schemaLanguage",
 			    "http://www.w3.org/2001/XMLSchema");
-		parser.setProperty(
+		if( mSchema != null )
+			parser.setProperty(
 				"http://apache.org/xml/properties/schema/external-noNamespaceSchemaLocation",
 				mSchema);
+		
+		if( mSchemaList != null ) {
+			StringBuffer sb = new StringBuffer();
+			for( String s : mSchemaList ){
+				if( sb.length() > 0 )
+					sb.append(" ");
+				sb.append( s );
+				
+			}
+			
+
+			parser.setProperty(
+					"http://apache.org/xml/properties/schema/external-schemaLocation",
+					sb.toString() );
+				
+		}
 		
 	    
 		

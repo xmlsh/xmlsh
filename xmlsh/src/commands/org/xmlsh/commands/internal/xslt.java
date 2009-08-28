@@ -23,7 +23,7 @@ import org.xmlsh.core.XValue;
 import org.xmlsh.core.Options.OptionValue;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.sh.shell.ShellURIResolver;
-import org.xmlsh.xpath.XPathFunctions;
+import org.xmlsh.xpath.ShellContext;
 
 
 
@@ -56,7 +56,7 @@ public class xslt extends XCommand {
 
 		Source source = null;
 
-		Shell saved_shell = XPathFunctions.setShell(getEnv().getShell());
+		Shell saved_shell = ShellContext.set(getEnv().getShell());
 
 		try {
 			List<XValue> xvargs = opts.getRemainingArgs();
@@ -113,7 +113,7 @@ public class xslt extends XCommand {
 			eval.transform();
 			stdout.writeSequenceTerminator();
 		} finally {
-			XPathFunctions.setShell(saved_shell);
+			ShellContext.set(saved_shell);
 			if( in != null )
 				in.close();
 
