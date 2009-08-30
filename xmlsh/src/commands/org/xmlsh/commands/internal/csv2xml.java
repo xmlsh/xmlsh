@@ -132,7 +132,6 @@ public class csv2xml extends XCommand
 				String name = getColName( i , col , header );
 				writer.writeStartElement(name);
 				writer.writeCharacters(csv.getField(i));
-				char[] chars = csv.getField(i).toCharArray();
 				writer.writeEndElement();
 				
 			}

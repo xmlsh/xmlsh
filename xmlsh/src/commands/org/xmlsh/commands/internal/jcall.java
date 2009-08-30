@@ -6,20 +6,13 @@
 
 package org.xmlsh.commands.internal;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.security.Permission;
-import java.util.ArrayList;
 import java.util.List;
 
-import net.sf.saxon.s9api.XdmItem;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
@@ -189,21 +182,6 @@ public class jcall extends XCommand
 		
 	}
 	
-	private ClassLoader getClassLoader(XValue classpath) throws MalformedURLException, IOException, URISyntaxException {
-		if( classpath == null )
-			return this.getClass().getClassLoader();
-		List<URL> urls = new ArrayList<URL>();
-		for( XdmItem item : classpath.asXdmValue() ){
-			String cp = item.getStringValue();
-			URL url = getEnv().getShell().getURI(cp).toURL();
-			urls.add(url);
-			
-			
-		}
-		URLClassLoader loader = new URLClassLoader( (URL[]) urls.toArray(new URL[urls.size()]));
-		return loader;
-	}
-
 	/*
 	 * Test for calling jcall or exiting 
 	 */

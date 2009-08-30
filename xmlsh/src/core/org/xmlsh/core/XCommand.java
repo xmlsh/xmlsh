@@ -12,11 +12,16 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.MalformedURLException;
 import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.transform.Source;
 
+import net.sf.saxon.s9api.XdmItem;
 import org.xmlsh.sh.shell.Module;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
@@ -169,6 +174,22 @@ public abstract class XCommand implements ICommand {
 	protected File getFile(String fname) throws IOException {
 		return mEnvironment.getShell().getFile(fname);
 	}
+
+	protected ClassLoader getClassLoader(XValue classpath) throws MalformedURLException, IOException,
+			URISyntaxException {
+				if( classpath == null )
+					return this.getClass().getClassLoader();
+				List<URL> urls = new ArrayList<URL>();
+				for( XdmItem item : classpath.asXdmValue() ){
+					String cp = item.getStringValue();
+					URL url = getEnv().getShell().getURI(cp).toURL();
+					urls.add(url);
+					
+					
+				}
+				URLClassLoader loader = new URLClassLoader( (URL[]) urls.toArray(new URL[urls.size()]));
+				return loader;
+			}
 
 	
 	
