@@ -15,6 +15,7 @@ import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.Source;
 
 import net.sf.saxon.s9api.XdmNode;
+import org.xml.sax.InputSource;
 import org.xmlsh.sh.shell.SerializeOpts;
 
 /*
@@ -37,6 +38,7 @@ public abstract class InputPort  extends IPort
 	
 	
 	public abstract Source asSource(SerializeOpts opts) throws CoreException;
+	public abstract InputSource	asInputSource(SerializeOpts opts) throws CoreException;
 	
 
 	public abstract XdmNode asXdmNode(SerializeOpts opts) throws CoreException;

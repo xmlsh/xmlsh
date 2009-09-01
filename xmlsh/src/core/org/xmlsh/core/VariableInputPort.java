@@ -24,6 +24,7 @@ import net.sf.saxon.pull.PullFromIterator;
 import net.sf.saxon.pull.PullToStax;
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XdmNode;
+import org.xml.sax.InputSource;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.Util;
@@ -75,6 +76,16 @@ public class VariableInputPort extends InputPort {
 		return mVariable.getValue().asSource();
 
 	}
+	
+	public synchronized InputSource asInputSource(SerializeOpts opts) throws CoreException{
+
+		InputSource in = new InputSource(asInputStream(opts));
+		in.setSystemId(this.getSystemId());
+		return in;
+
+	}
+	
+	
 
 	public synchronized XdmNode asXdmNode(SerializeOpts opts) throws CoreException {
 		return mVariable.getValue().asXdmNode();

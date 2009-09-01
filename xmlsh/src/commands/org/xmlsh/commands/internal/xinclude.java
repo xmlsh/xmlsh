@@ -60,8 +60,8 @@ public class xinclude extends XCommand {
 			ContentHandlerToXMLStreamWriter	handler = new ContentHandlerToXMLStreamWriter(w);
 			
 			
-			InputSource	source = new InputSource( stdin.asInputStream( opts)  );
-			source.setSystemId(stdin.getSystemId());
+			InputSource	source = stdin.asInputSource(opts);
+
 			
 			parser.parse( source ,  handler );
 			

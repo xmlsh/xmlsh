@@ -20,3 +20,9 @@ echo Matching Items: $N
 N=$(xvalidate -schematron ../../samples/data/books.sch ../../samples/data/books.xml | xmlns:svrl=http://purl.oclc.org/dsdl/svrl xpath 'count(//svrl:fired-rule)')
 echo Matching Items: $N
 
+echo RNG Validation
+rngvalidate ../../samples/data/books.rng ../../samples/data/books.xml || { echo failed RNG validation ; exit 1 ; }
+xvalidate -rng ../../samples/data/books.rng ../../samples/data/books.xml || { echo failed RNG validation ; exit 1 ; }
+
+
+

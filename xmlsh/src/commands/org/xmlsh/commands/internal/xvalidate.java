@@ -18,7 +18,6 @@ import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.DTDValidator;
-import org.xmlsh.util.RNGValidator;
 import org.xmlsh.util.Util;
 import org.xmlsh.util.XSDValidator;
 
@@ -62,7 +61,11 @@ public class xvalidate extends XCommand {
 		if( schematron != null){
 			return run_schematron( schematron , args );
 		}
-		
+		else
+		if( rng != null )
+		{
+			return run_rng( rng , args );
+		}
 		
 		if( args.size() > 0 )
 			in = getInput(args.get(0));
@@ -84,12 +87,7 @@ public class xvalidate extends XCommand {
 			DTDValidator v = new DTDValidator( getEnv().getShell().getURI(dtd).toURL() );
 			v.validate( in.getSystemId() , in.asInputStream(sopts));
 		}
-		else
-		if( rng != null )
-		{
-			RNGValidator v = new RNGValidator( getEnv().getShell().getURI(rng).toURL() );
-			v.validate( in.asInputStream(sopts));
-		}
+		
 		in.close();
 		
 		return 0;
@@ -110,6 +108,20 @@ public class xvalidate extends XCommand {
 		
 	}
 	
+
+	private int run_rng(String rng ,  List<XValue> args) throws Exception {
+		
+		Shell shell = getEnv().getShell();
+		ICommand cmd = CommandFactory.getInstance().getCommand( shell , "rngvalidate");
+		ArrayList<XValue>  al = new ArrayList<XValue>();
+		al.add(new XValue(rng));
+		al.addAll( args );
+		
+		return cmd.run(shell, "rngvalidate", al);
+		
+		
+		
+	}
 	
 
 

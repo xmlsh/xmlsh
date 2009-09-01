@@ -18,6 +18,7 @@ import javax.xml.transform.stream.StreamSource;
 
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XdmNode;
+import org.xml.sax.InputSource;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.SynchronizedInputStream;
@@ -79,6 +80,16 @@ public class StreamInputPort extends InputPort {
 		return s;
 	}
 
+	public synchronized InputSource asInputSource(SerializeOpts opts) throws CoreException {
+
+		InputSource s = new InputSource(asInputStream(opts));
+		s.setSystemId(getSystemId());
+		
+		return s;
+	}
+
+	
+	
 	public synchronized XdmNode asXdmNode(SerializeOpts opts) throws CoreException  {
 
 		net.sf.saxon.s9api.DocumentBuilder builder = Shell.getProcessor().newDocumentBuilder();

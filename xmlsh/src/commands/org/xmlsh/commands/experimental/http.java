@@ -162,6 +162,7 @@ public class http extends XCommand {
 			String up = user + ":" + pass ;
 			
 			 // Encode String
+			
 		       String encoding = new sun.misc.BASE64Encoder().encode (up.getBytes( getEnv().getShell().getSerializeOpts().getEncoding()));
 		       
 		       http.setRequestProperty  ("Authorization", "Basic " + encoding);

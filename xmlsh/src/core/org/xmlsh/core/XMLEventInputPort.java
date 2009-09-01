@@ -21,6 +21,7 @@ import javax.xml.transform.Source;
 
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XdmNode;
+import org.xml.sax.InputSource;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.Util;
@@ -71,6 +72,17 @@ public class XMLEventInputPort extends InputPort {
 		return s;
 	}
 
+
+	public synchronized InputSource asInputSource(SerializeOpts opts) throws CoreException {
+
+		
+		InputSource in = new InputSource(asInputStream(opts));
+		in.setSystemId(this.getSystemId());
+		return in;
+
+	}
+	
+	
 	public synchronized XdmNode asXdmNode(SerializeOpts opts) throws CoreException {
 
 		net.sf.saxon.s9api.DocumentBuilder builder = Shell.getProcessor().newDocumentBuilder();

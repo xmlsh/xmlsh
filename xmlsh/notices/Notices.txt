@@ -18,6 +18,10 @@ License notices for saxon are included in notices/saxon
 * jline version 0.9.94 from http://jline.sourceforge.net/
 License notices for jline are included in notices/jline
 
+* jing version 20090818 from http://www.thaiopensource.com/relaxng/jing.html
+License notices for jing are included in notices/jing
+Only used for the rngvalidate and xvalidate -rng commands
+
 xmlsh may be redistributed as long as these notices in their entirty are included,
 and as long as the terms of the relevent licenses are applied.
 

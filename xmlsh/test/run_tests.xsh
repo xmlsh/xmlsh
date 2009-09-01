@@ -34,4 +34,5 @@ for d in core builtin internal posix; do
    cd ..
 done
 
+echo Success
          

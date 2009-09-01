@@ -19,6 +19,7 @@ import javax.xml.transform.Source;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.xml.sax.InputSource;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.AutoReleasePool;
@@ -540,6 +541,13 @@ public class XEnvironment  {
 	public OutputPort getOutputPort(String portname, boolean append) {
 		// TODO: Add append mode to output ports 
 		return mIO.getOutputPort(portname);
+	}
+
+
+	public InputSource getInputSource(XValue value, SerializeOpts opts) throws CoreException {
+		InputPort in = getInput(value);
+		return in.asInputSource(opts);
+		
 	}
 
 }
