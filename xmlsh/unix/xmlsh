@@ -8,5 +8,7 @@ CLASSPATH=$CLASSPATH:$XMLSH/lib/jline-0.9.94.jar
 CLASSPATH=$CLASSPATH:$XMLSH/lib/woodstox-core-asl-4.0.3.jar
 CLASSPATH=$CLASSPATH:$XMLSH/lib/stax2-api-3.0.1.jar
 CLASSPATH=$CLASSPATH:$XMLSH/lib/stax-utils.jar
+# jing only used for rngvalidate 
+CLASSPATH=$CLASSPATH:$XMLSH/lib/jing.jar
 
 java -cp $CLASSPATH -Xmx1024m -Xms256m org.xmlsh.sh.shell.Shell   $*
