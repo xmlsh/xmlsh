@@ -8,25 +8,23 @@ package org.xmlsh.commands.internal;
 
 import java.util.List;
 
-import javax.xml.parsers.SAXParserFactory;
-import javax.xml.transform.Source;
-import javax.xml.transform.stream.StreamSource;
+import javanet.staxutils.ContentHandlerToXMLStreamWriter;
 
-import net.sf.saxon.AugmentedSource;
-import net.sf.saxon.s9api.Processor;
-import net.sf.saxon.s9api.XdmNode;
-import org.xml.sax.XMLReader;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+import javax.xml.stream.XMLStreamWriter;
+
+import org.xml.sax.InputSource;
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.SerializeOpts;
-import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.util.Util;
 
 public class xinclude extends XCommand {
 
+	
 	
 	
 	
@@ -46,25 +44,30 @@ public class xinclude extends XCommand {
 			SerializeOpts opts = getSerializeOpts();
 			
 			
-			Processor processor = Shell.getProcessor();
-			
-			
-			// Use a reader manually created so that it doesnt get stuck in the pool
-			// This is to work around a Saxon 9 bug (5/26/2009) where xinclude settings "stick" in the Configurations
-			// even if made to augmented sources.
-			
-			XMLReader reader = SAXParserFactory.newInstance().newSAXParser().getXMLReader();
-			
-			// Force conversion of stdin to a byte stream , xinclude is done at the parsing level
-			Source ssource = new StreamSource(stdin.asInputStream(opts ));
-			ssource.setSystemId( stdin.getSystemId());
-			AugmentedSource source = AugmentedSource.makeAugmentedSource(ssource);
-			source.setXIncludeAware(true);
-			source.setXMLReader(reader);
-			XdmNode node = processor.newDocumentBuilder().build(source);
 
+			SAXParserFactory f = SAXParserFactory.newInstance();
+			
+			f.setValidating(false);
+			f.setNamespaceAware(true);
+			f.setXIncludeAware(true);
+			
+	
+			SAXParser parser = f.newSAXParser();
+			
 			OutputPort stdout = getStdout();
-			Util.writeXdmValue(node, stdout.asDestination(opts));
+			XMLStreamWriter w = stdout.asXMLStreamWriter(opts);
+			
+			ContentHandlerToXMLStreamWriter	handler = new ContentHandlerToXMLStreamWriter(w);
+			
+			
+			InputSource	source = new InputSource( stdin.asInputStream( opts)  );
+			source.setSystemId(stdin.getSystemId());
+			
+			parser.parse( source ,  handler );
+			
+			
+			
+		
 	
 			stdout.writeSequenceTerminator();
 		} 
