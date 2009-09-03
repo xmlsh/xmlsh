@@ -601,12 +601,42 @@ class Expander {
 		}
 		
 		
-		boolean caseSensitive = ! Util.isWindows();
+		boolean bIsWindows = Util.isWindows();
+		boolean caseSensitive = ! bIsWindows;
+		
+		/*
+		 * Hack to handle 8.3 windows file names like "Local~1"
+		 * If not matched and this is windows
+		 * try an exact match to the canonical expanson of the dir and wild
+		 */
+		if(  bIsWindows && wild.indexOf('~') >= 0 ){
+			File fwild = new File( dir , wild );
+			if( fwild.exists() ){
+				results.add(wild);
+				return results ;
+			}
+			
+			
+			
+		}
+		
+		
+		
+		
+		
 		String[] files = dir.list();
 		for( String f : files ){
-			if( Util.wildMatches( wild , f, caseSensitive ) &&
+			
+			
+			boolean bMatched = Util.wildMatches( wild , f, caseSensitive );
+			
+			
+			
+			if( bMatched &&
 				( bDirOnly ? ( new File( dir , f ).isDirectory() ) : true ) ) 
+			{
 				results.add(f);
+			}
 		}
 		if( results.size() == 0 )
 			return null;

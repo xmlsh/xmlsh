@@ -24,5 +24,7 @@
 			<attribute name="javadoc_location" value="file:/C:/java/stax-utils-20071202/docs/javadoc/"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="lib/jing.jar"/>
+	<classpathentry kind="lib" path="lib/resolver.jar"/>
 	<classpathentry kind="output" path="_out"/>
 </classpath>
