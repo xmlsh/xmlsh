@@ -2,9 +2,13 @@
 #
 # Note this is an experimental feature
 #
-declare namespace xmlsh=java:org.xmlsh.xpath.XPathFunctions
-#
+
+# NO need to predeclare for builtin 
 xecho <[ xmlsh:eval("xecho $*" , ("foo" , <bar/> , 1 )  )  ]>
+
+# Need to declare for running xquery 
+declare namespace xmlsh=java:org.xmlsh.xpath.XPathFunctions
+
 xquery -n 'xmlsh:eval("echo -n No Args")'
 var=<[ xmlsh:eval("xecho <[ <foo>bar</foo> ]&gt; ") ]>
 xecho $var

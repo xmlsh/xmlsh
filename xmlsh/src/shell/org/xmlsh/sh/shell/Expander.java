@@ -370,6 +370,10 @@ class Expander {
 		Processor processor = Shell.getProcessor();
 		
 		XQueryCompiler compiler = processor.newXQueryCompiler();
+
+		// Declare the extension function namespace
+		// This can be overridden by user declarations
+		compiler.declareNamespace("xmlsh", "java:org.xmlsh.xpath.XPathFunctions");
 		
 		NameValueMap<String> ns = mShell.getEnv().getNamespaces();
 		if( ns != null ){
@@ -380,7 +384,8 @@ class Expander {
 			}
 			
 		}
-			
+
+		
 
 		
 		XQueryExecutable expr = null;
