@@ -11,7 +11,7 @@ No source for these produces is included or was modified for the creation of xml
 * log4j version 1.2.7
 License notices for log4j are included in notices/log4j
 
-* saxon B 9.0.0.5 "The Saxon XSLT and XQuery Processor from Saxonica Limited", 
+* saxon B 9.1.0.6 "The Saxon XSLT and XQuery Processor from Saxonica Limited", 
   from http://www.saxonica.com/
 License notices for saxon are included in notices/saxon
 
