@@ -6,12 +6,18 @@
 
 package org.xmlsh.commands.internal;
 
+import java.io.PrintStream;
 import java.util.List;
 
+import javax.xml.transform.ErrorListener;
 import javax.xml.transform.Source;
+import javax.xml.transform.SourceLocator;
+import javax.xml.transform.TransformerException;
 
+import net.sf.saxon.s9api.MessageListener;
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.QName;
+import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XsltCompiler;
 import net.sf.saxon.s9api.XsltExecutable;
 import net.sf.saxon.s9api.XsltTransformer;
@@ -29,6 +35,41 @@ import org.xmlsh.xpath.ShellContext;
 
 public class xslt extends XCommand {
 
+	private  class myErrorListener implements ErrorListener 
+	{
+
+		@Override
+		public void error(TransformerException exception) throws TransformerException {
+			printErr("Error: " + exception.getLocalizedMessage() );
+			
+		}
+
+		@Override
+		public void fatalError(TransformerException exception) throws TransformerException {
+			printErr("Fatal Error: " + exception.getLocalizedMessage() );
+			
+		}
+
+		@Override
+		public void warning(TransformerException exception) throws TransformerException {
+			printErr("Warning : " + exception.getLocalizedMessage() );
+			
+			
+		}
+		
+	}
+	private  class myMessageListener implements MessageListener 
+	{
+
+		@Override
+		public void message(XdmNode content, boolean terminate, SourceLocator locator) {
+			printErr( content.getStringValue() );
+			
+			
+		}
+	
+	}
+	
 	@Override
 	public int run( List<XValue> args )
 	throws Exception 
@@ -36,10 +77,11 @@ public class xslt extends XCommand {
 
 		Options opts = new Options( "f:,i:,n,v" , args );
 		opts.parse();
-
+		PrintStream ps;
 		Processor  processor  = Shell.getProcessor();
 
 		XsltCompiler compiler = processor.newXsltCompiler();
+		compiler.setErrorListener( new myErrorListener() );
 		Source	context = null;
 
 		InputPort in = null;
@@ -90,9 +132,12 @@ public class xslt extends XCommand {
 
 
 			XsltExecutable expr = compiler.compile( source );
+			
 
 			compiler.setURIResolver( new ShellURIResolver( compiler.getURIResolver()));
 			XsltTransformer eval = expr.load();
+			eval.setMessageListener( new myMessageListener() );
+			
 			if( context != null )
 				eval.setSource(  context  );
 
@@ -114,8 +159,9 @@ public class xslt extends XCommand {
 			stdout.writeSequenceTerminator();
 		} finally {
 			ShellContext.set(saved_shell);
-			if( in != null )
-				in.close();
+			// Closes stdin and kills xmlsh
+			//if( in != null )
+			//	in.close();
 
 		}
 
