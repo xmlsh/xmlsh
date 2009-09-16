@@ -12,6 +12,7 @@ import java.util.List;
 import org.xmlsh.sh.core.FunctionDefinition;
 import org.xmlsh.sh.shell.Module;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.xpath.ShellContext;
 
 public class FunctionCommand implements ICommand {
 	
@@ -33,6 +34,8 @@ public class FunctionCommand implements ICommand {
 			shell = shell.clone();
 
 		
+		Shell saved_shell = ShellContext.set( shell );
+		
 		try {
 			
 			shell.setArg0(mFunction.getName());
@@ -42,6 +45,8 @@ public class FunctionCommand implements ICommand {
 			
 		
 		} finally {
+			ShellContext.set(saved_shell);
+			
 			if( mFunction.isSubShell() )
 				shell.close();
 			else {

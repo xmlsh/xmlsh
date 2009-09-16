@@ -17,8 +17,6 @@ import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Constructor;
 import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -47,6 +45,7 @@ import org.xmlsh.sh.grammar.ShellParserReader;
 import org.xmlsh.util.NullInputStream;
 import org.xmlsh.util.NullOutputStream;
 import org.xmlsh.util.Util;
+import org.xmlsh.xpath.ShellContext;
 
 public class Shell {
 	
@@ -122,6 +121,7 @@ public class Shell {
 		setGlobalVars();
 		
 		mModule = null ; // no current module
+		ShellContext.set(this);	// cur thread active shell
 		
 		
 	}

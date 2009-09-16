@@ -25,6 +25,7 @@ import net.sf.saxon.s9api.XdmItem;
 import org.xmlsh.sh.shell.Module;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.xpath.ShellContext;
 
 public abstract class XCommand implements ICommand {
 	
@@ -50,9 +51,14 @@ public abstract class XCommand implements ICommand {
 	 */
 	public int run(Shell shell, String cmd, List<XValue> args) throws Exception 
 	{
+		Shell saved_shell = ShellContext.set(shell);
 
 		
-		return run(  args , shell.getEnv() );
+		try {
+			return run(  args , shell.getEnv() );
+		} finally{
+			ShellContext.set(saved_shell);
+		}
 		
 	}
 	

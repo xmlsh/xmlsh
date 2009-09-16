@@ -11,12 +11,13 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
 
+import org.xmlsh.protocols.port.PortURLConnection;
+
 public class Handler extends URLStreamHandler {
 
 	@Override
 	protected URLConnection openConnection(URL u) throws IOException {
-		// TODO Auto-generated method stub
-		return null;
+		return new VarURLConnection(u);
 	}
 
 }

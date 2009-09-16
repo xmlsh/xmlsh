@@ -11,6 +11,7 @@ import java.io.File;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.xmlsh.sh.core.Command;
+import org.xmlsh.xpath.ShellContext;
 
 public class ShellThread extends Thread {
 	
@@ -38,6 +39,7 @@ public class ShellThread extends Thread {
 	public void run() 
 	{
 		try {
+			ShellContext.set( mShell );
 			mShell.setCurdir(mIniitalCD); // Populate the current directory in this thread
 			mCommand.exec(mShell);
 		
@@ -46,7 +48,7 @@ public class ShellThread extends Thread {
 			mLogger.error("Exception running command: " + mCommand.toString(false) , e );
 		
 		} finally {
-			
+			ShellContext.set(null);
 			mShell.close();
 			if( mParent != null )
 				mParent.removeJob( this );

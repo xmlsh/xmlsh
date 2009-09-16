@@ -17,6 +17,7 @@ import org.xmlsh.core.XIOEnvironment;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Module;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.xpath.ShellContext;
 
 public class SimpleCommand extends Command {
 	
@@ -98,7 +99,8 @@ public class SimpleCommand extends Command {
 		}
 		
 		saved_module = shell.getModule();
-			
+		
+		Shell saved_context_shell = ShellContext.set( shell );
 		try {
 		
 		
@@ -127,6 +129,7 @@ public class SimpleCommand extends Command {
 		}
 		
 		finally {
+			ShellContext.set(saved_context_shell);
 			if( saved_io != null )
 				shell.getEnv().restoreIO(saved_io);
 			else

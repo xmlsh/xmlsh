@@ -4,7 +4,7 @@
  *
  */
 
-package org.xmlsh.protocols.port;
+package org.xmlsh.protocols.var;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,12 +13,15 @@ import java.net.URL;
 import java.net.URLConnection;
 
 import org.xmlsh.core.CoreException;
+import org.xmlsh.core.VariableInputPort;
+import org.xmlsh.core.VariableOutputPort;
+import org.xmlsh.core.XVariable;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.xpath.ShellContext;
 
-public class PortURLConnection extends URLConnection {
+public class VarURLConnection extends URLConnection {
 
-	protected PortURLConnection(URL url) {
+	protected VarURLConnection(URL url) {
 		super(url);
 		// TODO Auto-generated constructor stub
 	}
@@ -39,12 +42,13 @@ public class PortURLConnection extends URLConnection {
 		Shell shell = ShellContext.get();
 		if (shell != null)
 			try {
-				return shell.getEnv().getInputPort(name).asInputStream(shell.getSerializeOpts());
+				XVariable var = shell.getEnv().getVar(name);
+				if( var != null )
+					return new VariableInputPort(var).asInputStream(shell.getSerializeOpts());
 			} catch (CoreException e) {
 				return null;
 			}
-		else
-			return null;
+		return null;
 
 	}
 
@@ -56,10 +60,12 @@ public class PortURLConnection extends URLConnection {
 
 		String name = this.getURL().getPath();
 		Shell shell = ShellContext.get();
-		if (shell != null)
-			return shell.getEnv().getOutputPort(name).asOutputStream();
-		else
-			return null;
+		if (shell != null) {
+			XVariable var = shell.getEnv().getVar(name);
+			if( var != null )
+				return new VariableOutputPort(var).asOutputStream();
+		}
+		return null;
 	}
 	
 

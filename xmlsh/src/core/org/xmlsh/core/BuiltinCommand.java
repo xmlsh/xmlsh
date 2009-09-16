@@ -12,6 +12,7 @@ import java.util.List;
 import org.xmlsh.sh.shell.Module;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.xpath.ShellContext;
 
 
 public abstract class BuiltinCommand implements ICommand {
@@ -43,7 +44,12 @@ public abstract class BuiltinCommand implements ICommand {
 	{
 		mShell = shell;
 		mName  = cmd ;
-		return run(args);
+		Shell saved_shell = ShellContext.set( shell );
+		try {
+			return run(args);
+		}  finally {
+			ShellContext.set(saved_shell);
+		}
 		
 	}
 	

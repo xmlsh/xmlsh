@@ -13,9 +13,11 @@ public class ShellURLFactory implements URLStreamHandlerFactory {
 
 	@Override
 	public URLStreamHandler createURLStreamHandler(String protocol) {
-		/*if( protocol.equals("port"))
+		if( protocol.equals("port"))
 			return new org.xmlsh.protocols.port.Handler();
-		else*/
+		if( protocol.equals("var"))
+			return new org.xmlsh.protocols.var.Handler();
+		else
 			return null;
 	}
 

@@ -129,10 +129,7 @@ public class xquery extends XCommand {
 			}
 			
 		}
-		Shell saved_shell = ShellContext.set(getEnv().getShell());
-
-		try {
-
+	
 			expr = compiler.compile( query );
 			
 			
@@ -181,13 +178,6 @@ public class xquery extends XCommand {
 				in.close();
 			
 			return 0;
-
-
-		 
-		} finally {
-			ShellContext.set(saved_shell);
-		}
-		
 
 	}
 

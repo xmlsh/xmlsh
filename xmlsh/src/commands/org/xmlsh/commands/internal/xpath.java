@@ -116,9 +116,8 @@ public class xpath extends XCommand {
 
 		}
 
-		Shell saved_shell = ShellContext.set(getEnv().getShell());
-
-		try {
+	
+		
 			XPathExecutable expr = compiler.compile(xpath);
 
 			XPathSelector eval = expr.load();
@@ -174,11 +173,7 @@ public class xpath extends XCommand {
 					in.close();
 				return bAnyOutput ? 0 : 1;
 			}
-		}
-			finally {
-				ShellContext.set(saved_shell);
-			
-			}
+
 	
 
 	}
