@@ -76,7 +76,7 @@ public class xvalidate extends XCommand {
 			XSDValidator v = null ; 
 				
 			if( schema.indexOf(' ') < 0 )
-				v = new XSDValidator( getEnv().getShell().getURI(schema).toString() );
+				v = new XSDValidator( getEnv().getShell().getURL(schema).toString() );
 			else
 				v = new XSDValidator( Util.toList( schema.split(" ") ) );
 				
@@ -84,7 +84,7 @@ public class xvalidate extends XCommand {
 		} else 
 		if( dtd != null )
 		{
-			DTDValidator v = new DTDValidator( getEnv().getShell().getURI(dtd).toURL() );
+			DTDValidator v = new DTDValidator( getEnv().getShell().getURL(dtd) );
 			v.validate( in.getSystemId() , in.asInputStream(sopts));
 		}
 		

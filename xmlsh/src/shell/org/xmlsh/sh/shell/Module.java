@@ -56,7 +56,7 @@ public class Module {
 			XdmNode configNode;
 			URL configURL;
 			if (nameuri.endsWith(".xml")) {
-				configURL = shell.getURI(nameuri).toURL();
+				configURL = shell.getURL(nameuri);
 
 			} else {
 

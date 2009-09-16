@@ -11,6 +11,7 @@ import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.text.DateFormat;
@@ -21,6 +22,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.xml.transform.OutputKeys;
@@ -59,6 +61,7 @@ import org.xmlsh.sh.shell.Shell;
 public class Util
 {
 	public static byte mNewline[];
+	private static Pattern mURIPattern = Pattern.compile("[a-zA-Z][a-zA-Z0-9\\.+-]+:.*");
 	
 	private static DateFormat sXSDTFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 	  
@@ -597,15 +600,59 @@ public class Util
 	    }
 	}
 
+	/*
+	 * Try to create a URI from a string and return null instead of exception on failure
+	 * 
+	 */
+	public static URI tryURI( String s )
+	{
+		// First check for a-z{2}+
 
+		URI uri = null;
+        Matcher m = mURIPattern.matcher(s);
+        if(  m.matches() )
+			try {
+				uri = new URI(s);
+			} catch (URISyntaxException e) {
+				return null;
+			}
+        
+			return uri ;
+		
+		
+	}
+	
+	public static URL tryURL( String s )
+	{
+		URI uri = tryURI( s );
+		if( uri != null )
+			try {
+				return uri.toURL();
+			} catch (MalformedURLException e) {
+				return null ;
+			}
+		
+		return null;
+		
+	}
+	
+	
+	
+	/*
+	
 	public static boolean isURIScheme(String file) {
+		
 		return file.startsWith("http:") ||
 				file.startsWith("https:") ||
 				file.startsWith("ftp:") ||
 				file.startsWith("file:") ||
 				file.startsWith("jar:");
+				
+		
+		return file.matches("[a-z][a-z]+:.*");
 	}
 
+	*/
 
 	public static String readString(URI uri) throws MalformedURLException, IOException {
 		return readString( uri.toURL());

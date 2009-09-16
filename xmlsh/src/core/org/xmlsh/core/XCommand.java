@@ -182,7 +182,7 @@ public abstract class XCommand implements ICommand {
 				List<URL> urls = new ArrayList<URL>();
 				for( XdmItem item : classpath.asXdmValue() ){
 					String cp = item.getStringValue();
-					URL url = getEnv().getShell().getURI(cp).toURL();
+					URL url = getEnv().getShell().getURL(cp);					
 					urls.add(url);
 					
 					

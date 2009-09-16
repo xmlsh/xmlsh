@@ -68,7 +68,7 @@ public class rngvalidate extends XCommand {
 		if (opts.hasOpt("i"))
 			properties.put(RngProperty.CHECK_ID_IDREF, null);
 		if (opts.hasOpt("C"))
-			catalogUris.add(getEnv().getShell().getURI(opts.getOptStringRequired("C")).toString());
+			catalogUris.add(getEnv().getShell().getURL(opts.getOptStringRequired("C")).toString());
 		if (opts.hasOpt("c"))
 			compact = true;
 

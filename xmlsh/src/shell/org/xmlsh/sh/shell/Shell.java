@@ -16,8 +16,10 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Constructor;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
@@ -90,11 +92,19 @@ public class Shell {
 	     * Workaround a saxon bug - pre-initialize processor
 	     */
 		 getProcessor();
-	
+		 
+		 
+		 URL.setURLStreamHandlerFactory(new ShellURLFactory() );
+		 
+		 
+		 
 		SystemEnvironment.getInstance().setProperty("user.dir", System.getProperty("user.dir"));
 		System.setProperties( new SystemProperties(System.getProperties()));
 		// PropertyConfigurator.configure(Shell.class.getResource("log4j.properties"));
 
+	
+	
+	
 	}
 
 	/*
@@ -901,14 +911,12 @@ public class Shell {
 		mModules.declare( new Module( prefix , name , pkg ));
 	}
 
-	public URI getURI( String file ) throws IOException, URISyntaxException
+	public URL getURL( String file ) throws MalformedURLException, IOException
 	{
-		if( Util.isURIScheme(file))
-			
-				return new URI(file);
-			
-		 else
-				return getFile(file).toURI();
+		URL url = Util.tryURL(file);
+		if( url == null )
+			url = getFile(file).toURI().toURL();
+		return url;
 			
 	}
 	
@@ -925,15 +933,11 @@ public class Shell {
 			
 		}
 		
+		URL url = Util.tryURL(file);
 		
-		
-		if( Util.isURIScheme(file)){
-			try {
-				return new URI(file).toURL().openStream();
-			} catch (Exception e) {
-				mLogger.debug("Exception converting to URI: " + file , e);
-				return null;
-			}
+		if( url != null ){
+
+				return url.openStream();
 			
 		}
 		else
@@ -945,7 +949,15 @@ public class Shell {
 		if( file.equals("/dev/null")){
 			return new NullOutputStream();
 		}
-		
+	
+		else
+		{
+			URL url = Util.tryURL(file);
+			if( url != null )
+
+				return url.openConnection().getOutputStream();
+			
+		}
 		
 		
 		return  new FileOutputStream(getFile(file),append);
