@@ -178,14 +178,18 @@ TOKEN : {
 |   < THEN: "then" >
 |	< ELSE: "else" >
 |   < FI:   "fi" >
-|   < DO:   "do" >
-|   < DONE:  "done" >
+|   < DO:   "do" > : DEFAULT 
 |   < CASE: "case" > 
 |   < ESAC: "esac" >
 |	< WHILE: "while" >
 |	< UNTIL: "until" >
 |	< FOR: "for" > { in_for = true ; }
 }
+
+< DEFAULT , CMD  > TOKEN :{
+   < DONE:  "done" >
+}
+
 
 <DEFAULT> TOKEN : {
     < LBRACE: "{" >			// RESERVED WORD only at beginning of command
