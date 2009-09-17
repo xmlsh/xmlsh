@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Stack;
 
 import net.sf.saxon.s9api.Processor;
@@ -63,13 +64,12 @@ public class Shell {
 	private		Integer mReturnVal = null;
 	
 	private		int	    mStatus = 0;	// $? variable
-	private		static Processor	mProcessor = null;
 	
 	private 	String  mSavedCD = null;
 	
 
 	private		List<ShellThread>	mChildren = new ArrayList<ShellThread>();
-	private boolean mIsInteractive = false ;
+	private 	boolean mIsInteractive = false ;
 	private		long	mLastThreadId = 0;
 	
 	private		Stack<ControlLoop>  mControlStack = new Stack<ControlLoop>();
@@ -80,10 +80,24 @@ public class Shell {
 	// current module
 	private		Module	mModule = null;
 
-
 	
+	/*
+	 * Initializtion statics
+	 */
+	private		static 	boolean			bInitialized = false ;
+	private		static	Properties		mSavedSystemProperties;
+	private		static Processor		mProcessor = null;
+	
+	
+	
+	/**
+	 * Must call initialize atleast once, protects against multiple initializations 
+	 */
+	public	static	void 	initialize()
+	{
 
-	static {
+		if( bInitialized )
+			return ;
 		
 		Logging.configureLogger();
 		
@@ -93,16 +107,43 @@ public class Shell {
 		 getProcessor();
 		 
 		 
-		 URL.setURLStreamHandlerFactory(new ShellURLFactory() );
+		 // Can only be called once per process
+		 try {
+			 URL.setURLStreamHandlerFactory(new ShellURLFactory() );
+		 } catch( Error e )
+		 {
+			 mLogger.warn("Exception trying to seURLStreamHandlerFactory" , e );
+		 }
 		 
 		 
-		 
+		mSavedSystemProperties = System.getProperties();
 		SystemEnvironment.getInstance().setProperty("user.dir", System.getProperty("user.dir"));
 		System.setProperties( new SystemProperties(System.getProperties()));
 		// PropertyConfigurator.configure(Shell.class.getResource("log4j.properties"));
+	
 
+	}
 	
 	
+	public static void uninitialize()
+	{
+		if( ! bInitialized )
+			return ;
+		
+		
+		mProcessor = null ;
+		System.setProperties( mSavedSystemProperties );
+		mSavedSystemProperties = null ;
+		SystemEnvironment.uninitialize();
+		ShellContext.set(null);
+		bInitialized = false ;
+		
+		
+	}
+	
+	
+	static {
+		initialize();
 	
 	}
 

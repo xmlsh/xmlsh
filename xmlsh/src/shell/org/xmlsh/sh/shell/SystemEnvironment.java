@@ -44,6 +44,13 @@ public class SystemEnvironment extends Properties {
 		
 	}
 	
+	public static	void 	uninitialize()
+	{
+		sInstance.get().clear();
+		
+	}
+	
+	
 }
 
 //
