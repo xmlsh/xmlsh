@@ -184,6 +184,10 @@ TOKEN : {
 |	< WHILE: "while" >
 |	< UNTIL: "until" >
 |	< FOR: "for" > { in_for = true ; }
+|   <  TRY: "try" > : DEFAULT 
+|   <  CATCH: "catch" > : DEFAULT 
+|   <  FINALLY: "finally" > : DEFAULT 
+|	<  THROW: "throw" >
 }
 
 < DEFAULT , CMD  > TOKEN :{
@@ -444,7 +448,9 @@ CompoundCommand 	compound_command() :
 	{ return c ;} 
 	
 |	c=if_clause() 
-	{ return c ;} 
+	{ return c ;}
+|   c=trycatch_clause()
+	{  return c;}
 	
 |	c=while_clause() 
 	{ return c ;} 
@@ -554,6 +560,21 @@ ForClause for_clause() :
 	} 
 }
 
+TryCatchFinally trycatch_clause() :
+{
+  Command cTry,cCatch,cFinally=null;
+  String sCatch;}
+{
+  <TRY >  <LBRACE > cTry=compound_list() < RBRACE > ( <NEWLINE>)?
+  < CATCH >  sCatch=name()  {
+    token_source.SwitchTo(DEFAULT);	
+ }
+   <LBRACE >  cCatch=compound_list() < RBRACE > 
+  [ <FINALLY > <LBRACE > cFinally=compound_list()< RBRACE > ]	{	  return new TryCatchFinally( cTry , sCatch , cCatch , cFinally );
+	}
+}
+
+
 
 
 
@@ -630,9 +651,6 @@ IfClause if_clause() :
 {   
 	<IF>	ip=compound_list() <THEN> tp=compound_list() [ LOOKAHEAD(2) ep=else_part()] <FI> 
 	{ return new IfClause( ip , tp , ep ); }
-
-
-
 }
 
 Command else_part() : { Command ip=null,tp=null,ep=null; }
