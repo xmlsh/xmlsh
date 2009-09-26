@@ -16,7 +16,10 @@ import net.sf.saxon.om.SequenceIterator;
 import net.sf.saxon.om.ValueRepresentation;
 import net.sf.saxon.s9api.XdmValue;
 import net.sf.saxon.trans.XPathException;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.xmlsh.core.CoreException;
+import org.xmlsh.core.ThrowException;
 import org.xmlsh.core.VariableInputPort;
 import org.xmlsh.core.VariableOutputPort;
 import org.xmlsh.core.XValue;
@@ -25,6 +28,7 @@ import org.xmlsh.sh.core.Command;
 import org.xmlsh.sh.shell.Shell;
 
 public class XPathFunctions {
+	private static Logger mLogger = LogManager.getLogger(XPathFunctions.class);
 
 
 	public static ValueRepresentation eval(XPathContext c, String command  ) throws IOException, CoreException, XPathException
@@ -74,7 +78,12 @@ public class XPathFunctions {
 			 }
 			 
 			 shell.setArgs(shell_args);
-			 shell.exec(cmd);
+			 try {
+				shell.exec(cmd);
+			} catch (ThrowException e) {
+				mLogger.info("Caught ThrowException within eval" , e  );
+				return null;
+			}
 			 
 			 oValue = oVar.getValue();
 			 if( oValue == null )

@@ -8,6 +8,7 @@ package org.xmlsh.sh.core;
 
 import java.io.PrintWriter;
 
+import org.xmlsh.core.ThrowException;
 import org.xmlsh.core.XIOEnvironment;
 import org.xmlsh.sh.shell.Shell;
 
@@ -58,7 +59,9 @@ public class TryCatchFinally extends CompoundCommand
 			int ret = 0;
 			try {
 				ret = shell.exec( mTryPart  );
-			} catch( Exception e ){
+			} catch( ThrowException e ){
+				shell.getEnv().setVar(mCatchVar, e.getValue() );
+				
 				ret = shell.exec( mCatchPart );
 				
 				

@@ -37,6 +37,7 @@ import org.xmlsh.commands.builtin.xreturn;
 import org.xmlsh.commands.builtin.xtrue;
 import org.xmlsh.commands.builtin.xversion;
 import org.xmlsh.commands.builtin.xwhich;
+import org.xmlsh.commands.builtin.xthrow;
 import org.xmlsh.sh.core.FunctionDefinition;
 import org.xmlsh.sh.shell.Module;
 import org.xmlsh.sh.shell.Modules;
@@ -84,6 +85,7 @@ public class CommandFactory
 		addBuiltin("return" , xreturn.class);
 		addBuiltin("import" , ximport.class);
 		addBuiltin("xmlsh" , xmlsh.class);
+		addBuiltin("throw" , xthrow.class);
 
 	}
 	

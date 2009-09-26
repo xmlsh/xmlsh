@@ -13,6 +13,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.xmlsh.core.CommandFactory;
 import org.xmlsh.core.ICommand;
+import org.xmlsh.core.ThrowException;
 import org.xmlsh.core.XIOEnvironment;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Module;
@@ -120,11 +121,19 @@ public class SimpleCommand extends Command {
 
 			
 		} 
+		catch( ThrowException e )
+		{
+			throw e ;// Rethrow 
+		}
 		
 		catch( Exception e ){
 
 			shell.printErr("Exception running: " +  cmdName + "\n" +  e.toString() );
 			mLogger.error("Exception running command: " + cmdName  , e );
+			/*
+			 * Save exception here ???? 
+			 */
+
 			return -1;
 		}
 		

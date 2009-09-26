@@ -33,6 +33,7 @@ import org.xmlsh.core.CoreException;
 import org.xmlsh.core.ICommand;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Path;
+import org.xmlsh.core.ThrowException;
 import org.xmlsh.core.XDynamicVariable;
 import org.xmlsh.core.XEnvironment;
 import org.xmlsh.core.XValue;
@@ -62,6 +63,7 @@ public class Shell {
 	// Set to non null until exit or EOF
 	private 	Integer mExitVal = null;
 	private		Integer mReturnVal = null;
+
 	
 	private		int	    mStatus = 0;	// $? variable
 	
@@ -320,7 +322,7 @@ public class Shell {
 		ShellParser parser= new ShellParser(new ShellParserReader(mCommandInput,getTextEncoding()));
 		int ret = 0;
 		try {
-			while( mExitVal == null && mReturnVal == null ){
+			while( mExitVal == null && mReturnVal == null  ){
 		      	Command c = parser.command_line();
 		      	if( c == null )
 		      		break;
@@ -490,7 +492,7 @@ public class Shell {
 	 * 3) wildcard expansion
 	 */
 	
-	public int exec(Command c) {
+	public int exec(Command c) throws ThrowException {
 		
 		if( mOpts.mExec){
 			String out = c.toString(true);
@@ -514,7 +516,13 @@ public class Shell {
 			sht.start();
 
 			return mStatus = 0;
-		} catch( Exception e )
+		} 
+		catch( ThrowException e ){
+			mLogger.info("Rethrowing ThrowException",e);
+			throw e ;
+		}
+		
+		catch( Exception e )
 		{
 			// printErr("Exception running: " + c.toString(true) + "\n" +  e.toString() );
 			mLogger.error("Exception running command: " + c.toString(false) , e );
@@ -689,6 +697,7 @@ public class Shell {
 		
 	}
 	
+
 	
 	/*
 	 * Return TRUE if we should keep running on this shell
@@ -697,10 +706,10 @@ public class Shell {
 	public boolean keepRunning()
 	{
 		// Hit exit stop 
-		if(  mExitVal != null || mReturnVal != null )
+		if(  mExitVal != null || mReturnVal != null  )
 			return false ;
 		
-		// If the top control stack is break then stopi
+		// If the top control stack is break then stop
 		if(! mControlStack.empty() ){
 			ControlLoop loop = mControlStack.peek();
 			if( loop.mBreak || loop.mContinue )

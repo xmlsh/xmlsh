@@ -16,6 +16,7 @@ import net.sf.saxon.s9api.XdmAtomicValue;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmValue;
 import org.xmlsh.core.CoreException;
+import org.xmlsh.core.ThrowException;
 import org.xmlsh.core.VariableOutputPort;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.XVariable;
@@ -44,7 +45,7 @@ public class CommandWord extends Word {
 	}
 	
 
-	private String expandSubproc(Shell shell , Command c ) throws CoreException 
+	private String expandSubproc(Shell shell , Command c ) throws CoreException
 	{
 		
 		ByteArrayOutputStream out = new ByteArrayOutputStream();

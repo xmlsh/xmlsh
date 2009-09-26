@@ -186,8 +186,7 @@ TOKEN : {
 |	< FOR: "for" > { in_for = true ; }
 |   <  TRY: "try" > : DEFAULT 
 |   <  CATCH: "catch" > : DEFAULT 
-|   <  FINALLY: "finally" > : DEFAULT 
-|	<  THROW: "throw" >
+|   <  FINALLY: "finally" > : DEFAULT 
 }
 
 < DEFAULT , CMD  > TOKEN :{
@@ -565,12 +564,12 @@ TryCatchFinally trycatch_clause() :
   Command cTry,cCatch,cFinally=null;
   String sCatch;}
 {
-  <TRY >  <LBRACE > cTry=compound_list() < RBRACE > ( <NEWLINE>)?
+  <TRY >  linebreak() <LBRACE > cTry=compound_list() < RBRACE > linebreak()
   < CATCH >  sCatch=name()  {
     token_source.SwitchTo(DEFAULT);	
  }
-   <LBRACE >  cCatch=compound_list() < RBRACE > 
-  [ <FINALLY > <LBRACE > cFinally=compound_list()< RBRACE > ]	{	  return new TryCatchFinally( cTry , sCatch , cCatch , cFinally );
+  linebreak()  <LBRACE >  cCatch=compound_list() < RBRACE > 
+  [ <FINALLY > linebreak() <LBRACE > cFinally=compound_list()< RBRACE > ]	{	  return new TryCatchFinally( cTry , sCatch , cCatch , cFinally );
 	}
 }
 
