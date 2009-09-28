@@ -2,15 +2,21 @@
 # Test throw within a script
 
 if [ $# -gt 0 ] ; then
-	echo In sub-script 
+	echo in script arg count $#
+	if [ $# -gt 1 ] ; then 
+		shift 
+		$0 "$@"
+		exit 0;
+	fi 
+	echo throwing $1 
 	throw $1
 	echo Fail SNH - after throw
 fi
 
 try {
-	$0 test
+	$0 foo bar spam test
 } catch E {
-	echo Successs got $E
+	echo Success caught $E
 } finally {
 	echo Success in finally
 }
