@@ -58,13 +58,18 @@ public class ScriptCommand implements ICommand {
 			} else {
 			
 				Shell sh = shell.clone();
-				if( args != null )
-					sh.setArgs(args);
-				sh.setArg0(mScriptName);
-				int ret = sh.runScript(mScript);
-				sh.close();
-				
-				return ret;
+				try {
+					if( args != null )
+						sh.setArgs(args);
+					sh.setArg0(mScriptName);
+					int ret = sh.runScript(mScript);
+					
+					return ret;
+				} finally {
+					// Close shell - even if exception is thrown through sh.runScript and up
+					sh.close();
+
+				}
 			}
 		} finally {
 			

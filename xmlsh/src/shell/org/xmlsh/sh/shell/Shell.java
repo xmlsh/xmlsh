@@ -314,7 +314,7 @@ public class Shell {
 	}
 	
 	
-	public		int		runScript( InputStream stream ) throws ParseException, UnsupportedEncodingException
+	public		int		runScript( InputStream stream ) throws ParseException, UnsupportedEncodingException, ThrowException
 	{
 		
 		InputStream save = mCommandInput;
@@ -339,7 +339,15 @@ public class Shell {
 					
 			
 		
-		} catch (Exception e) {
+		} 
+		catch( ThrowException e )
+		{
+			mLogger.info("Rethrowing throw exception",e);
+			throw e ;	// rethrow 
+			
+		}
+		
+		catch (Exception e) {
 	       // System.out.println("NOK.");
 	        printErr(e.getMessage());
 	        mLogger.error("Exception parsing statement" , e );
