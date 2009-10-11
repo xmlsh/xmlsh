@@ -21,7 +21,6 @@ N=$(xvalidate -schematron ../../samples/data/books.sch ../../samples/data/books.
 echo Matching Items: $N
 
 echo RNG Validation
-rngvalidate ../../samples/data/books.rng ../../samples/data/books.xml || { echo failed RNG validation ; exit 1 ; }
 xvalidate -rng ../../samples/data/books.rng ../../samples/data/books.xml || { echo failed RNG validation ; exit 1 ; }
 
 
