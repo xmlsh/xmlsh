@@ -1,6 +1,5 @@
 Validating with DTD
 Validating with xsd
-Skipping validating with rng - requires msv library
 validate -rng ../../samples/data/books.rng ../../samples/data/books.xml
 Following should fail
 Successfully trapped invalid schema
