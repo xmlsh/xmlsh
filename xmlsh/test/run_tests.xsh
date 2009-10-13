@@ -22,8 +22,10 @@ if ! xwhich -n $EXTERNS ; then
 	exit 1
 fi
 
+# Extra tests which depend on local environment
+EXTRA=$*
 
-for d in core builtin internal posix; do
+for d in core builtin internal posix $EXTRA; do
    echo "running tests in $d"
    cd $d
    for test in *.xsh ; do

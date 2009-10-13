@@ -1,3 +1,6 @@
+Called into self
+$0 is builtin_xmlsh
+$* is Arg1 Arg2
 In parent shell
 In sub shell
 Exit value is 1

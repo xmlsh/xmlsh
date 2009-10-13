@@ -74,7 +74,7 @@ public class xmlsh extends BuiltinCommand {
 			    else // Run script 
 			    {
 			    	
-			    	String scmd = vargs.get(0).toString();
+			    	String scmd = vargs.remove(0).toString();
 			    	ICommand cmd = CommandFactory.getInstance().getScript( shell , scmd, true );
 			    	if( cmd == null )
 			    		shell.printErr( scmd + ": not found");
