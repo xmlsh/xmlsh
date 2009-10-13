@@ -9,11 +9,12 @@ package org.xmlsh.commands.internal;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
+import java.util.Properties;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
@@ -30,7 +31,10 @@ public class xsql extends XCommand {
 	@Override
 	public int run(List<XValue> args) throws Exception {
 
-		Options opts = new Options( "cp=classpath:,d=driver:,u=user:,p=password:,root:,row:,attr,c=connect:,q=query:" , args );
+		
+		Properties options = null;
+		
+		Options opts = new Options( "cp=classpath:,d=driver:,u=user:,p=password:,root:,row:,attr,c=connect:,q=query:,o=option:+" , args );
 		opts.parse();
 		
 		String root = opts.getOptString("root", "root");
@@ -39,12 +43,27 @@ public class xsql extends XCommand {
 		String connect = opts.getOptStringRequired("c");
 		String query = opts.getOptString("q", null);
 		String driver = opts.getOptStringRequired("driver");
-		String user = opts.getOptString("user","");
-		String password = opts.getOptString("password","");
+		String user = opts.getOptString("user",null);
+		String password = opts.getOptString("password",null);
 
 		boolean bAttr = opts.hasOpt("attr");
 		
 		ClassLoader classloader = getClassLoader(opts.getOptValue("cp"));
+		
+		/*
+		 * Optional properties
+		 */
+		if (opts.hasOpt("o")) {
+			options = new Properties();
+
+
+			// Add custom name spaces
+			for (XValue v : opts.getOpt("o").getValues()){
+				String vs[] = v.toString().split("=",2);
+				options.put(vs[0], vs[1]);
+
+			}
+		}
 		
 
 		
@@ -53,11 +72,12 @@ public class xsql extends XCommand {
 		if( query == null   &&  ! xvargs.isEmpty() )
 			query = xvargs.get(0).toString();
 		
-		Connection conn = getConnection(driver, classloader, connect ,user,password);
-		PreparedStatement pStmt  = null ;
+		Connection conn = getConnection(driver, classloader, connect ,user,password, options );
+		Statement pStmt  = null ;
 		ResultSet rs = null ;
 		try {
-			pStmt = conn.prepareStatement(query);
+			
+			pStmt = conn.createStatement();
 			
 			OutputPort stdout = getStdout();
 			XMLStreamWriter writer = stdout.asXMLStreamWriter(getSerializeOpts());
@@ -66,7 +86,7 @@ public class xsql extends XCommand {
 			writer.writeStartElement(root);
 	
 			
-			rs = pStmt.executeQuery();
+			rs = pStmt.executeQuery(query);
 			ResultSetMetaData meta = rs.getMetaData();
 			
 			while( rs.next()  ){
@@ -95,12 +115,14 @@ public class xsql extends XCommand {
 		
 	}
 	
-	private Connection getConnection(String driver, ClassLoader classloader, String connect, String user, String password) throws SQLException, SecurityException, NoSuchMethodException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+	private Connection getConnection(String driver, ClassLoader classloader, String connect, String user, String password, Properties options) throws SQLException, SecurityException, NoSuchMethodException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		
-		Class cls = loadDriver(driver,classloader);
+		Class<?> cls = loadDriver(driver,classloader);
 	
 		
-	     java.util.Properties info = new java.util.Properties();
+	    java.util.Properties info = new java.util.Properties();
+	    if( options != null )
+	    	info.putAll(options);
 
 	
 		if (user != null) {
@@ -126,7 +148,7 @@ public class xsql extends XCommand {
 	  // returns error string if error occurs by loaded driver
 	  //         if no errors - returns empty string
 	  //--------------------------------
-	  private  Class loadDriver (String driver,ClassLoader classloader) throws SQLException {
+	  private  Class<?> loadDriver (String driver,ClassLoader classloader) throws SQLException {
 
 
 
