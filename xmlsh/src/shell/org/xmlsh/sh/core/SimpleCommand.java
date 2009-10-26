@@ -28,7 +28,8 @@ public class SimpleCommand extends Command {
 	private CommandPrefix  mPrefix;
 	private Word			mCommand;
 	private CommandSuffix	mSuffix;
-	
+	public	boolean		isSimple() { return true ; }
+
 	
 	
 	public SimpleCommand(CommandPrefix prefix , Word command, CommandSuffix suffix )

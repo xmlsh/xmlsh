@@ -12,6 +12,8 @@ import org.xmlsh.sh.shell.Shell;
 
 public class NullCommand extends Command {
 
+	public	boolean		isSimple() { return false ; }
+
 	@Override
 	public void print(PrintWriter out, boolean bExec) {
 	

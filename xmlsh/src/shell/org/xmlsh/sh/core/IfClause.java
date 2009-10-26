@@ -51,8 +51,14 @@ public class IfClause extends CompoundCommand
 		try {
 			applyRedirect(shell);
 			
-			int ret = shell.exec( mIfPart );
-			if( ret == 0 && shell.keepRunning() )
+			/*
+			 * Check condition and execute then part or else part
+			 * Returns 0 if there is no else part
+			 */
+			
+			int cond = shell.execCondition( mIfPart );
+			int ret = 0;
+			if( cond == 0 && shell.keepRunning() )
 				ret = shell.exec( mThenPart );
 			else
 			if( mElsePart != null && shell.keepRunning() )

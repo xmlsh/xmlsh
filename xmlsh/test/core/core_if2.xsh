@@ -26,3 +26,27 @@ elif true
 then
 echo Fail
 fi
+
+# Test return value of if
+
+# should return the exit status of the list if executed
+if true ; then
+   true ;
+fi
+[ $? -eq 0 ] || { echo Fail. Expected 0 exit value ; exit 1; }
+
+
+if false ; then
+   true ;
+fi
+[ $? -eq 0 ] || { echo Fail. Expected 0 exit value ; exit 1; }
+
+if false ; then
+	false 
+else 
+	true 
+fi
+[ $? -eq 0 ] || { echo Fail. Expected 0 exit value ; exit 1 ;}
+
+
+

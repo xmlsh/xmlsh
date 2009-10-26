@@ -22,7 +22,7 @@ public class xmlsh extends BuiltinCommand {
 	
 	public int run( List<XValue> vargs ) throws Exception {
 			
-		Options opts = new Options( "x,v,c:,rcfile:" ,  vargs );
+		Options opts = new Options( "x,v,c:,rcfile:,e" ,  vargs );
 		opts.parse();
 		
 		Shell shell = mShell == null ? new Shell() : mShell.clone();
@@ -32,10 +32,12 @@ public class xmlsh extends BuiltinCommand {
 			if( opts.hasOpt("v") )
 				shell.setOption("v", true);
 	
-	
+			
 	    	if(opts.hasOpt("x"))
 				shell.setOption("x", true);
-	
+	    	
+	    	if( opts.hasOpt("e"))
+	    		shell.setOption("e", true);
 	    	
 	    	String command  = null ;
 	    	if( opts.hasOpt("c"))

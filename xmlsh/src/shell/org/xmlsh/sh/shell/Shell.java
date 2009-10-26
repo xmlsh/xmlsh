@@ -75,7 +75,9 @@ public class Shell {
 	private		long	mLastThreadId = 0;
 	
 	private		Stack<ControlLoop>  mControlStack = new Stack<ControlLoop>();
-	
+	 
+	// Depth of conditions used for 'throw on error'
+	private int 	mConditionDepth = 0;
 
 	private		Modules		mModules	= null;
 	
@@ -164,6 +166,7 @@ public class Shell {
 		setGlobalVars();
 		
 		mModule = null ; // no current module
+		
 		ShellContext.set(this);	// cur thread active shell
 		
 		
@@ -245,6 +248,8 @@ public class Shell {
 		mModules = new Modules(that.mModules );
 		
 		mModule = that.mModule;
+		
+		mConditionDepth = that.mConditionDepth;
 		
 	}
 	
@@ -493,12 +498,17 @@ public class Shell {
 	
 	}
 	
+	
 	/*
-	 * Expand a single string 
-	 * 1) quote expansion
-	 * 2) variable expansion
-	 * 3) wildcard expansion
+	 * Main entry point for executing commands.
+	 * All command execution should go through this entry point
+	 * 
+	 * Handles background shell ("&") 
+	 * Handles "throw on error" (-e) 
+	 * 
+	 * 
 	 */
+
 	
 	public int exec(Command c) throws ThrowException {
 		
@@ -512,8 +522,22 @@ public class Shell {
 		
 		try {
 		
-			if( c.isWait())
-				return mStatus = c.exec(this);
+			if( c.isWait()){
+				// Execute forground command 
+				mStatus = c.exec(this);
+				
+				// If not success then may throw if option 'throw on error' is set (-e)
+				if( mStatus != 0 && mOpts.mThrowOnError && c.isSimple()  ){
+					if( ! isInCommandConndition() )
+						throw new ThrowException( new  XValue(mStatus));
+					
+					
+					
+				}
+				return mStatus ;
+				
+				
+			}
 			
 			ShellThread sht = new ShellThread( new Shell(this) , this , c);
 			
@@ -539,6 +563,26 @@ public class Shell {
 		}
 		
 	}
+	
+	/*
+	 * Returns TRUE if the shell is currently in a condition 
+	 */
+
+	private boolean isInCommandConndition() {
+		return mConditionDepth > 0  ;
+	}
+	// Enter a condition 
+	private void pushCondition()
+	{
+		mConditionDepth++;
+	}
+	private void popCondition()
+	{
+		mConditionDepth--;
+	}
+	
+	
+
 
 	private boolean isInteractive() {
 		return mIsInteractive ;
@@ -1051,6 +1095,21 @@ public class Shell {
 	 */
 	public ShellOpts getOpts() {
 		return mOpts;
+	}
+
+
+	/* Executes a command as a condition so that it doesnt throw 
+	 * an exception if errors
+	 */
+	public int execCondition(Command left) throws ThrowException {
+		
+		pushCondition();
+		try {
+			return exec( left );
+		} finally {
+			popCondition();
+		}
+
 	}
 
 

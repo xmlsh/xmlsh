@@ -36,7 +36,7 @@ public class UntilClause extends CompoundCommand {
 		ControlLoop loop = shell.pushLoop(  );
 		try {
 			applyRedirect(shell);
-			while( !Shell.toBool( shell.exec( mUntil ) ) && shell.keepRunning() ){
+			while( !Shell.toBool( shell.execCondition( mUntil ) ) && shell.keepRunning() ){
 				
 				shell.exec( mDo );
 			}

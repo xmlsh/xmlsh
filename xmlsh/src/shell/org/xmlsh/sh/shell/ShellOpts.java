@@ -11,9 +11,10 @@ import org.xmlsh.core.XValue;
 
 public class ShellOpts 
 {
-	public boolean	 mVerbose = false;		// -v
-	public boolean mExec	 = false;		// -x
-	public boolean	 mXPipe	 = false ;		// -xpipe 
+	public boolean	 mVerbose 		= false;		// -v
+	public boolean mExec	 		= false;		// -x
+	public boolean	 mXPipe	 		= false;		// -xpipe
+	public	boolean	 mThrowOnError 	= false;		// -e
 
 
 	
@@ -28,6 +29,7 @@ public class ShellOpts
 		mVerbose = that.mVerbose;
 		mExec=  that.mExec ;
 		mXPipe = that.mXPipe;
+		mThrowOnError = that.mThrowOnError;
 
 		mSerialize = new SerializeOpts( that.mSerialize );
 		
@@ -46,7 +48,9 @@ public class ShellOpts
 		if( opt.equals("xpipe"))
 			mXPipe = on;
 		else
-
+		if( opt.equals("e"))
+			mThrowOnError = on ;
+		else
 			mSerialize.set( opt , on);
 		
 	}

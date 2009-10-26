@@ -39,7 +39,7 @@ public class WhileClause extends CompoundCommand {
 
 			applyRedirect(shell);	
 
-			while( shell.keepRunning() && Shell.toBool( shell.exec( mWhile ))   ){
+			while( shell.keepRunning() && Shell.toBool( shell.execCondition( mWhile ))   ){
 					
 					shell.exec( mDo );
 					

@@ -22,7 +22,8 @@ import org.xmlsh.sh.shell.Shell;
 public class EvalScriptCommand extends Command {
 	private String			mCommand;
 	
-	
+	public	boolean		isSimple() { return true ; }
+
 	
 	public EvalScriptCommand( String command)
 	{

@@ -13,7 +13,8 @@ public abstract class BinaryOpCommand extends Command {
 	protected 		Command		mLeft;
 	protected		String	 	mOp;
 	protected		Command		mRight;
-	
+	public	boolean		isSimple() { return false ; }
+
 
 	public BinaryOpCommand( Command left, String op , Command right )
 	{

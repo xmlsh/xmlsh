@@ -11,7 +11,8 @@ import org.xmlsh.sh.shell.Shell;
 public abstract 
 class CompoundCommand extends Command {
 	protected	IORedirectList	mRedirect = null;
-	
+	public	boolean		isSimple() { return false ; }
+
 	public void setRedirect( IORedirectList redir ){
 		mRedirect = redir;
 	}

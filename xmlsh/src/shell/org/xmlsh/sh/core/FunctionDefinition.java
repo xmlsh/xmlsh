@@ -15,6 +15,8 @@ public class FunctionDefinition extends Command {
 	private Command mBody;
 	private boolean mSubShell;
 	
+	public	boolean		isSimple() { return false ; }
+
 	public FunctionDefinition( String name , boolean subshell , Command body )
 	{
 		mName = name;

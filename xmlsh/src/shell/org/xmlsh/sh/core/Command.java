@@ -21,6 +21,9 @@ public abstract class Command {
 	public abstract void print( PrintWriter out, boolean bExec);
 	public abstract int exec( Shell shell) throws Exception;
 	
+	// Is a simple command for purposes of throw-on-error
+	public	abstract	boolean		isSimple() ;
+	
 	public String	toString() {
 		
 		return toString(false);

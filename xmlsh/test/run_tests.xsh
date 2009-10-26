@@ -31,7 +31,11 @@ for d in core builtin internal posix $EXTRA; do
    for test in *.xsh ; do
      
      echo Running test $test
-     ../run_test.xsh $test || { echo failed test $test ; exit 1 ; }
+     # run test 
+     ../run_test.xsh $test 
+     if [ $? -ne 0 ] ; then	
+     	echo failed test $test ; exit 1 ;
+     fi
    done
    cd ..
 done

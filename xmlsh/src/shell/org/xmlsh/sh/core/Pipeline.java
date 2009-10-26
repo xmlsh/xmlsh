@@ -19,7 +19,8 @@ import org.xmlsh.util.PipedXMLPort;
 public class Pipeline extends Command {
 	
 	private		ArrayList<Command>	mList = new ArrayList<Command>();
-	
+	public	boolean		isSimple() { return false ; }
+
 	
 	private boolean mBang;
 	public Pipeline( boolean bBang ) {
@@ -119,7 +120,11 @@ public class Pipeline extends Command {
 			
 			Command c = mList.get(ncmds-1);
 			
-			int ret = shell.exec(c);
+			// Protect ! commands as a condition
+			int ret = 
+				mBang ? 
+				shell.execCondition(c) : 
+				shell.exec(c);
 
 		//	if( ncmds > 1 )
 		//		pipes[0].getOutput().close();
