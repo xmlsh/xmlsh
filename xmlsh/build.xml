@@ -4,7 +4,7 @@
 	
     <target name="main" depends="clean, compile, jar" description="Main target">
         <echo>
-            Building xproc
+            Building xmlsh
         </echo>
     </target>
 	
