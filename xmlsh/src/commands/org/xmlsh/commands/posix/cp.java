@@ -26,7 +26,7 @@ public class cp extends XCommand {
 	@Override
 	public int run(List<XValue> args) throws Exception {
 		
-		Options opts = new Options( "f=force" , args );
+		Options opts = new Options( "f=force,r=recurese" , args );
 		opts.parse();
 		
 		
@@ -36,6 +36,8 @@ public class cp extends XCommand {
 			return -1;
 		}
 		boolean bForce = opts.hasOpt("f");
+		boolean bRecurse = opts.hasOpt("r");
+		
 		XValue last = args.remove(args.size()-1);
 		File target = getFile( last );
 		
@@ -43,18 +45,41 @@ public class cp extends XCommand {
 
 			if( ! target.isDirectory() )
 				throw new InvalidArgumentException("Target is not a directory: " + target.getName() );
-			copy( args , target , bForce );
+			copy( args , target , bForce , bRecurse );
 			
 		} else {
 			
-			copy( getFile(args.get(0)) , target , bForce);
+			copy( getFile(args.get(0)) , target , bForce, bRecurse);
 		}
 				
 		return 0;
 	}
 
-	private void copy(File src, File dest, boolean force) throws IOException {
+	private void copy(File src, File dest, boolean force, boolean recurse) throws IOException, InvalidArgumentException {
 
+		if( src.isDirectory() ){
+			if( ! recurse ){
+				this.printErr("Omitting directory: " + src.getPath());
+				return ;
+			}
+			
+			if( ! dest.exists() )
+				dest.mkdirs();
+			else 
+			// Recurse by taking each file in src and copying to dest + src's basename
+			if( ! dest.isDirectory() )
+				throw new InvalidArgumentException("Target is not a directory: " + dest.getPath() );
+			
+			
+			for( File s : src.listFiles() ){
+				copy( s , new File(dest,s.getName()) , force , recurse );
+			}
+			return ;
+			
+		}
+		
+		
+		
 		// Try copy 
 		InputStream in = null;
 		OutputStream out = null;
@@ -74,13 +99,11 @@ public class cp extends XCommand {
 		}
 	}
 
-	private void copy(List<XValue> files, File target, boolean force) throws IOException {
+	private void copy(List<XValue> files, File target, boolean force, boolean recurse) throws IOException, InvalidArgumentException {
 		for( XValue f : files ){
 			File src = getFile(f);
 			File dest = new File( target , src.getName() );
-			copy( src , dest , force );
-			
-			
+			copy( src , dest , force , recurse );
 			
 		}
 	}
