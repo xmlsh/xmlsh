@@ -40,7 +40,13 @@ public class StreamOutputPort extends OutputPort
 	
 
 	private OutputStream	 mStream;
+	private boolean mClose = true ;
 
+	public StreamOutputPort( OutputStream os , boolean bClose ) 
+	{
+		mStream = os;
+		mClose = bClose;
+	}
 
 	public StreamOutputPort( OutputStream os ) 
 	{
@@ -74,7 +80,7 @@ public class StreamOutputPort extends OutputPort
 	
 	
 	public synchronized void close() throws CoreException {
-		if( mStream != null )
+		if( mClose && mStream != null )
 			try {
 				mStream.close();
 			} catch (IOException e) {

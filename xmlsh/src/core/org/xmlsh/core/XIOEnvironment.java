@@ -177,12 +177,12 @@ public class XIOEnvironment {
 		);
 
 		mOutputs.add( 
-				new NamedPort<OutputPort>( kSTDOUT, true , new StreamOutputPort(System.out) )
+				new NamedPort<OutputPort>( kSTDOUT, true , new StreamOutputPort(System.out,false) )
 		);
 
 
 		mOutputs.add( 
-				new NamedPort<OutputPort>( kSTDERR , false , new StreamOutputPort(System.err) )
+				new NamedPort<OutputPort>( kSTDERR , false , new StreamOutputPort(System.err,false) )
 		);
 
 	}

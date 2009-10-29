@@ -12,11 +12,14 @@ import java.io.StringWriter;
 import org.xmlsh.sh.shell.Shell;
 
 public abstract class Command {
-	
+	private		SourceLocation	mLocation = null;
 	private		boolean		mWait = true ;
 	
 	public boolean isWait(){ return mWait ; }
 	public void	setWait(boolean w) { mWait = w ; }
+	public	void	setLocation( SourceLocation loc ) {  mLocation = loc ; }
+	public	void	setLocation( int line , int col  ) {  mLocation = new SourceLocation(line,col) ; }
+	public	SourceLocation	getLocation() { return mLocation ; }
 	
 	public abstract void print( PrintWriter out, boolean bExec);
 	public abstract int exec( Shell shell) throws Exception;

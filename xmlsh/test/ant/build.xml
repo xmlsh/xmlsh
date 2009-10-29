@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+
+<project name="OwnTaskExample" default="main" basedir=".">
+  <taskdef name="xmlsh" 
+  		classname="org.xmlsh.ant.XmlshTask" 
+  		classpath="../../bin/xmlsh.jar"/>
+	
+  <target name="main">
+  	<echo message="Starting"/>
+    <xmlsh>
+ 		xls
+    </xmlsh>
+  	<echo message="Message"/>
+    <xmlsh>
+ 		echo Another run
+    </xmlsh>
+    <xmlsh script="test.xsh">
+		<arg value="arg1"/>
+    	<arg value="arg2"/>
+    </xmlsh>
+  </target>
+</project>
