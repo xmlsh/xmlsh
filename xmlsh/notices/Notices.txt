@@ -22,8 +22,17 @@ License notices for jline are included in notices/jline
 License notices for jing are included in notices/jing
 Only used for the rngvalidate and xvalidate -rng commands
 
+
+* Woodstox core from
+http://woodstox.codehaus.org/
+http://repository.codehaus.org/org/codehaus/woodstox/woodstox-core-asl/4.0.3/
+woodstox-core-asl-4.0.3.jar
+
 xmlsh may be redistributed as long as these notices in their entirty are included,
 and as long as the terms of the relevent licenses are applied.
+
+
+
 
 
 

@@ -11,11 +11,13 @@ import java.util.List;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.Task;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
 
 
-public class XmlshTask {
+public class XmlshTask extends Task {
 	private static Logger mLogger = LogManager.getLogger( XmlshTask.class);
 	private String mScript;		// script file
 	private	 String mText;		// embedded script or attribute
@@ -51,8 +53,9 @@ public class XmlshTask {
 	}
 	
     // The method executing the task
-    public void execute() throws Exception {
+    public void execute() throws BuildException {
     	mLogger.info("executing xmlsh ant task");
+    	// System.out.println("property test: " + getProject().getProperty("test"));
     	
     	try {
     		
@@ -76,9 +79,9 @@ public class XmlshTask {
 			
 			int ret = cmd.run(null , "xmlsh" , vargs);
     	}
-    	catch( Exception e )
+    	catch(  Exception e )
     	{
-    		throw e;
+    		throw new BuildException(e);
     		
     	}
     	

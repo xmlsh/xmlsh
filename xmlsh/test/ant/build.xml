@@ -3,9 +3,18 @@
 <project name="OwnTaskExample" default="main" basedir=".">
   <taskdef name="xmlsh" 
   		classname="org.xmlsh.ant.XmlshTask" 
-  		classpath="../../bin/xmlsh.jar"/>
-	
+  		>
+    <classpath>
+         <fileset dir="../../lib">
+             <include name="*.jar"/>
+         </fileset>
+    	 <fileset dir="../../bin">
+    	 	<include name="*.jar"/>
+    	 	   </fileset>
+     </classpath>
+	</taskdef>
   <target name="main">
+  	<property name="test" value="A String"/>
   	<echo message="Starting"/>
     <xmlsh>
  		xls
@@ -18,5 +27,12 @@
 		<arg value="arg1"/>
     	<arg value="arg2"/>
     </xmlsh>
+	<xmlsh>
+<![CDATA[
+xcat <<EOF
+<foo>bar</foo>
+EOF
+]]>
+	</xmlsh>
   </target>
 </project>
