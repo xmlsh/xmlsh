@@ -43,6 +43,7 @@ import net.sf.saxon.event.TreeReceiver;
 import net.sf.saxon.om.Item;
 import net.sf.saxon.om.NodeInfo;
 import net.sf.saxon.s9api.Destination;
+import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.Serializer;
 import net.sf.saxon.s9api.XdmItem;
@@ -730,6 +731,47 @@ public class Util
 		}
 		
 	}
+	
+	
+	 /**
+	 * DAL: NOTE: Fixed version of the Saxon S9API function of the same name in QName
+	 * Saxon version truncates the namespaceURI by 1 letter
+	 * 
+     * Factory method to construct a QName from a string containing the expanded
+     * QName in Clark notation, that is, <code>{uri}local</code>
+     * <p/>
+     * The prefix part of the <code>QName</code> will be set to an empty string.
+     * </p>
+     *
+     * @param expandedName      The URI in Clark notation: <code>{uri}local</code> if the
+     *                          name is in a namespace, or simply <code>local</code> if not.
+     * @return the QName corresponding to the supplied name in Clark notation. This will always
+     * have an empty prefix.
+     */
+
+    public static QName fromClarkName(String expandedName) {
+        String namespaceURI;
+        String localName;
+        if (expandedName.charAt(0) == '{') {
+            int closeBrace = expandedName.indexOf('}');
+            if (closeBrace < 0) {
+                throw new IllegalArgumentException("No closing '}' in Clark name");
+            }
+            namespaceURI = expandedName.substring(1, closeBrace /* DAL: FIX: WAS: -1 */ );
+            if (closeBrace == expandedName.length()) {
+                throw new IllegalArgumentException("Missing local part in Clark name");
+            }
+            localName = expandedName.substring(closeBrace + 1);
+        } else {
+            namespaceURI = "";
+            localName = expandedName;
+        }
+
+        return new QName("", namespaceURI, localName);
+    }
+
+	
+	
 
 }
 

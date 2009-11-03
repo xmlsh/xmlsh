@@ -143,8 +143,9 @@ public class xquery extends XCommand {
 				for( int i = 0 ; i < xvargs.size()/2 ; i++ ){
 					String name = xvargs.get(i*2).toString();
 					XValue value = xvargs.get(i*2+1);
-					
-					eval.setExternalVariable( new QName(name),  value.asXdmValue() );	
+					// DAL: Bug in 9.1.1 QName vqname = QName.fromClarkName(name );
+					QName vqname = Util.fromClarkName(name);
+					eval.setExternalVariable( vqname ,  value.asXdmValue() );	
 						
 					
 				}
