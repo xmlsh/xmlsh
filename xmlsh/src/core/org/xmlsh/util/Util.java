@@ -50,6 +50,7 @@ import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XdmValue;
 import net.sf.saxon.trans.XPathException;
+import org.xmlsh.core.Namespaces;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
@@ -749,7 +750,7 @@ public class Util
      * have an empty prefix.
      */
 
-    public static QName fromClarkName(String expandedName) {
+    public static QName qnameFromClarkName(String expandedName) {
         String namespaceURI;
         String localName;
         if (expandedName.charAt(0) == '{') {
@@ -769,6 +770,40 @@ public class Util
 
         return new QName("", namespaceURI, localName);
     }
+
+    /*
+     * Resolve a string as a QName
+     * May be 
+     * 	local
+     * 	prefix:local
+     *  {clarknotation}local
+     *  
+     *  Only if prefix:is used is the ns used
+     *  
+     */
+
+    
+	public static QName resolveQName(String name, Namespaces ns) {
+		if( name.startsWith("{"))
+			return qnameFromClarkName(name);
+		
+		int colon = name.indexOf(':');
+		if( colon < 0 )
+			return new QName( name );
+		
+		String prefix = name.substring(0, colon);
+        String local = name.substring(colon + 1);
+        String uri = "";
+        if( prefix.length() > 0 )
+        	uri = ns.get(prefix);
+        if( uri == null ) uri = "";
+        
+        return new QName( prefix , uri , local );
+		
+		
+		
+		
+	}
 
 	
 	
