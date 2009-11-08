@@ -47,6 +47,8 @@
     	            </fileset>
     	 			<fileset dir="src">
     	 				<include name="**/*.xsh"/>
+    	 				<include name="**/*.xquery"/>
+    	 				
     	 			</fileset>
     	        </copy>
 

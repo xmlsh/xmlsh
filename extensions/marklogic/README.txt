@@ -1,4 +1,6 @@
 This is an extension module to xmlsh
+This version requires xmlsh version 0.0.2.0 or greater
+
 To run this module you must include the supplied marklogic_ext.jar
 as well as the marklogic xcc.jar in the CLASSPATH with xmlsh.
 
