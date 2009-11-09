@@ -112,7 +112,7 @@ public class xsplit extends XCommand {
 			
 		
 		InputStream is = in.asInputStream(getSerializeOpts()) ;
-		split(is );
+		split(in.getSystemId() , is );
 		
 		is.close();
 		in.close();
@@ -130,11 +130,14 @@ public class xsplit extends XCommand {
 
 
 
-	private void split(InputStream is) throws XMLStreamException, IOException {
+	private void split(String systemId , InputStream is) throws XMLStreamException, IOException {
 	
+
+		
+		
 		XMLInputFactory inputFactory=XMLInputFactory.newInstance();
 		inputFactory.setProperty(XMLInputFactory.IS_COALESCING, Boolean.valueOf(true));
-		XMLEventReader  xmlreader  =inputFactory.createXMLEventReader(is);
+		XMLEventReader  xmlreader  =inputFactory.createXMLEventReader(systemId, is);
 		
 		
 		/* 

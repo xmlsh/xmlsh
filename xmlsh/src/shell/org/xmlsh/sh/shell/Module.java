@@ -160,6 +160,17 @@ public class Module {
 		return mName;
 	}
 
+	public URL getResource(String res)
+	{
+		/*
+		 * Undocumented: When using a classloader to get a resource, then the
+		 * name should NOT begin with a "/"
+		 * 
+		 */
+		if( res.startsWith("/"))
+			res = res.substring(1);
+		return mClassLoader.getResource(res);
+	}
 }
 
 //

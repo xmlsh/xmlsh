@@ -53,7 +53,7 @@ public class xuri extends XCommand
 
 		if( opts.hasOpt("r")){
 			String res = opts.getOptString("r", "");
-			URL url = this.getEnv().getShell().getClass().getResource(res);
+			URL url = this.getEnv().getShell().getResource(res);
 			if( url == null )
 				throw new InvalidArgumentException("Resource not found: " + res );
 			

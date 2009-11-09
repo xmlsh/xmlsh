@@ -1112,6 +1112,24 @@ public class Shell {
 
 	}
 
+	/*
+	 * Locate a resource in this shell, or in any of the modules
+	 */
+
+	public URL getResource(String res) {
+		URL url = getClass().getResource(res);
+		if( url != null )
+			return url;
+		
+		for( Module m : mModules ){
+			url = m.getResource(res);
+			if( url != null )
+				return url ;
+		}
+		return null;
+	
+	}
+
 
 	
 	
