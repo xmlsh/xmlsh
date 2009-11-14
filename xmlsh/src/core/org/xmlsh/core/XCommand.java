@@ -141,8 +141,13 @@ public abstract class XCommand implements ICommand {
 		return mEnvironment.getInput( name );
 	}
 	
-	
 
+	public	OutputPort	getOutput( XValue name , boolean append ) throws CoreException, IOException
+	{
+		return mEnvironment.getOutput( name , append );
+	}
+	
+	
 	/**
 	 * @param s
 	 * @param e

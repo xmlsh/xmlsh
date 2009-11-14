@@ -13,6 +13,8 @@ from: http://www.saxonica.com
 
 saxon9.jar
 saxon9-s9api.jar
+saxon9-dom.jar
+
 
 Stax Utils from
 https://stax-utils.dev.java.net/

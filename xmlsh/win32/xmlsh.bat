@@ -3,6 +3,7 @@
 @set CLASSPATH=%CLASSPATH%;%XMLSH%\lib\log4j-1.2.7.jar
 @set CLASSPATH=%CLASSPATH%;%XMLSH%\lib\saxon9.jar
 @set CLASSPATH=%CLASSPATH%;%XMLSH%\lib\saxon9-s9api.jar
+@set CLASSPATH=%CLASSPATH%;%XMLSH%\lib\saxon9-dom.jar
 @set CLASSPATH=%CLASSPATH%;%XMLSH%\lib\xercesimpl.jar
 @set CLASSPATH=%CLASSPATH%;%XMLSH%\lib\woodstox-core-asl-4.0.3.jar
 @set CLASSPATH=%CLASSPATH%;%XMLSH%\lib\stax2-api-3.0.1.jar
