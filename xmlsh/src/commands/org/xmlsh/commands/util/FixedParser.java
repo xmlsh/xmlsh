@@ -1,6 +1,6 @@
 package org.xmlsh.commands.util;
 
-import java.util.ArrayList;
+import org.xmlsh.util.Util;
 
 /**
  * Parses lines with fixed width format into CSVRecord format
@@ -10,14 +10,40 @@ import java.util.ArrayList;
  */
 public class FixedParser
 {
-	private		int			widths[];
-	private		boolean	 	normalize;
+	private		ColSpec		mColspecs[];
+	private		boolean	 	bNormalize;
 
-	
-	public FixedParser( int widths[] , boolean normalize )
+	private	 static class ColSpec 
 	{
-		this.widths = widths;
-		this.normalize = normalize;
+		int		start ;
+		int		end   ;
+		
+		ColSpec( int start , int end ){
+			this.start = start ;
+			this.end = end ;
+		}
+		ColSpec( String spec )
+		{
+			String pair[] = spec.split("-");
+			start = Util.parseInt(pair[0],0);
+			end = pair.length > 1 ?  
+				Util.parseInt(pair[1],0) : 0 ;
+			
+		}
+		
+		
+	};
+	
+	
+	
+	public FixedParser( String colspecs[] , boolean normalize )
+	{
+		bNormalize = normalize;
+		mColspecs = new ColSpec[colspecs.length];
+		int i = 0;
+		for( String spec : colspecs )
+			mColspecs[i++] = new ColSpec( spec );
+		
 		
 	}
 	
@@ -28,22 +54,22 @@ public class FixedParser
      
      public CSVRecord parseLine( String line ){
         
-    	 String[] list = new String[ widths.length];
+    	 String[] list = new String[ mColspecs.length];
     	 int col = 0;
-    	 int start = 0;
-    	 while( col < widths.length ){
-    		 int width = widths[col];
-    		 int end = start + width;
+    	 for( ColSpec spec : mColspecs ){
+    		 int start = spec.start - 1;
+    		 int end   = spec.end ;
     		 
-    		 if( end > line.length() )
+    		 if( start < 0 )
+    			 start =0;
+    		 
+    		 if( end <= 0 || end > line.length() )
     			 end = line.length();
     		 String field = line.substring(start , end );
-    		 if( normalize )
+    		 if( bNormalize )
     			 field = field.trim();
     		 
-    		 list[col] = field ;
-    		 start += width;
-    		 col++;
+    		 list[col++] = field ;
     		  
     	 }
     	 

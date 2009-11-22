@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.xml.stream.XMLStreamException;
@@ -30,7 +31,8 @@ import org.xmlsh.util.Util;
  * 	-root		root element (default "root")
  *  -row		row	 element (default "row")
  *  -col		col	 element (defauilt "col")
- *  -cols		<seq>   Column names instead of reading from header
+ *  -colspecs   specs sequence or , delimited list of column specs
+ *  -colnames	<seq> or , seperated list  Column names instead of reading from header
  *  -header		read first row for header names
  *  -attr		write in attribute normal format\
  *  -encoding encoding  Read CSV format in the specified encoding, else cp1252 assumed
@@ -46,7 +48,7 @@ public class fixed2xml extends XCommand
 
 		
 
-		Options opts = new Options( "root:,row:,col:,header,attr,encoding:,cols:,widths:,nonorm=nonormalize" , args );
+		Options opts = new Options( "root:,row:,col:,header,attr,encoding:,colnames:,colspecs:,nonorm=nonormalize" , args );
 		opts.parse();
 		
 		// root node
@@ -81,7 +83,7 @@ public class fixed2xml extends XCommand
 		
 		
 		Reader ir = new InputStreamReader( in , encoding );
-		FixedParser parser = new FixedParser( parseWidths( opts.getOptValueRequired("widths")) , ! bNoNorm);
+		FixedParser parser = new FixedParser( parseWidths( opts.getOptValueRequired("colspecs")) , ! bNoNorm);
 		
 		CSVRecord header = null ;
 		if( bHeader ){
@@ -89,8 +91,8 @@ public class fixed2xml extends XCommand
 			if( line != null )
 				header = parser.parseLine(line);
 		} else 
-		if( opts.hasOpt("cols")){
-			header = parseCols( opts.getOptValue("cols"));
+		if( opts.hasOpt("colnames")){
+			header = parseCols( opts.getOptValue("colnames"));
 		}
 		
 		String line;
@@ -110,15 +112,16 @@ public class fixed2xml extends XCommand
 	}
 
 
+	/*
+	 * Parse either a sequence of column names, or a "," seperated list of column names
+	 */
 
 	private CSVRecord parseCols(XValue cols) {
 		
-		
-		List<String> list = cols.asStringList();
-		
-	
-		
-		return new CSVRecord(list);
+		if( cols.isAtomic() )
+			return new CSVRecord( Arrays.asList( cols.toString().split(",")));
+		else
+			return new CSVRecord(cols.asStringList());
 		
 		
 	}
@@ -126,16 +129,16 @@ public class fixed2xml extends XCommand
 
 
 
-	private int[] parseWidths(XValue widths) {
+	private String[] parseWidths(XValue specs) {
 		
+		if( specs.isAtomic() )
+			return specs.toString().split(",");
 		
-		List<String> list = widths.asStringList();
-		int  ws[] = new int[ list.size()];
-		for( int i = 0 ; i < list.size() ; i++ )
-			ws[i] = Util.parseInt(list.get(i), 0);
-	
+			
+			
+		List<String> list = specs.asStringList();
 		
-		return ws;
+		return list.toArray( new String[list.size()]);
 		
 		
 	}

@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.xml.stream.XMLStreamException;
@@ -46,7 +47,7 @@ public class csv2xml extends XCommand
 
 		
 
-		Options opts = new Options( "root:,row:,col:,header,attr,encoding:,delim:,quote:,cols:" , args );
+		Options opts = new Options( "root:,row:,col:,header,attr,encoding:,delim:,quote:,colnames:,tab" , args );
 		opts.parse();
 		
 		// root node
@@ -58,8 +59,14 @@ public class csv2xml extends XCommand
 		String encoding = opts.getOptString("encoding", "Cp1252");
 		boolean bHeader = opts.hasOpt("header");
 		boolean bAttr = opts.hasOpt("attr");
+		// -tab overrides -delim
+		if( opts.hasOpt("tab"))
+			delim = "\t";
+		
 		
 		List<XValue> xvargs = opts.getRemainingArgs();
+		
+		
 		
 // Output XML
 
@@ -89,8 +96,8 @@ public class csv2xml extends XCommand
 			if( line != null )
 				header = parser.parseLine(line);
 		} else 
-		if( opts.hasOpt("cols")){
-			header = parseCols( opts.getOptValue("cols"));
+		if( opts.hasOpt("colnames")){
+			header = parseCols( opts.getOptValue("colnames"));
 			
 			
 		}
@@ -115,15 +122,14 @@ public class csv2xml extends XCommand
 
 	private CSVRecord parseCols(XValue cols) {
 		
-		
-		List<String> list = cols.asStringList();
-		
-	
-		
-		return new CSVRecord(list);
+		if( cols.isAtomic() )
+			return new CSVRecord( Arrays.asList( cols.toString().split(",")));
+		else
+			return new CSVRecord(cols.asStringList());
 		
 		
 	}
+
 
 
 
