@@ -355,6 +355,12 @@ public class Options
 			return ov.values.get(0);
 	}
 
+	public XValue getOptValueRequired(String arg) throws InvalidArgumentException {
+		OptionValue ov = getOpt(arg);
+		if( ov != null )
+			return ov.values.get(0);
+		throw new InvalidArgumentException("Required option: -" + arg );
+	}
 
 	public boolean hasRemainingArgs() {
 		return mRemainingArgs != null && ! mRemainingArgs.isEmpty();
