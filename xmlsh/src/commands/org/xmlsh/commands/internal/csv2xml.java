@@ -30,6 +30,7 @@ import org.xmlsh.util.Util;
  * 	-root		root element (default "root")
  *  -row		row	 element (default "row")
  *  -col		col	 element (defauilt "col")
+ *  -cols		<seq>   Column names instead of reading from header
  *  -header		read first row for header names
  *  -attr		write in attribute normal format\
  *  -encoding encoding  Read CSV format in the specified encoding, else cp1252 assumed
@@ -45,7 +46,7 @@ public class csv2xml extends XCommand
 
 		
 
-		Options opts = new Options( "root:,row:,col:,header,attr,encoding:,delim:,quote:" , args );
+		Options opts = new Options( "root:,row:,col:,header,attr,encoding:,delim:,quote:,cols:" , args );
 		opts.parse();
 		
 		// root node
@@ -87,6 +88,11 @@ public class csv2xml extends XCommand
 			String line = readLine(ir);
 			if( line != null )
 				header = parser.parseLine(line);
+		} else 
+		if( opts.hasOpt("cols")){
+			header = parseCols( opts.getOptValue("cols"));
+			
+			
 		}
 		
 		String line;
@@ -102,6 +108,20 @@ public class csv2xml extends XCommand
 		
 		
 		return 0;
+		
+	}
+
+
+
+	private CSVRecord parseCols(XValue cols) {
+		
+		
+		List<String> list = cols.asStringList();
+		
+	
+		
+		return new CSVRecord(list);
+		
 		
 	}
 

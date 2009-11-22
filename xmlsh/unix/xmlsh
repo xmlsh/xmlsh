@@ -11,5 +11,7 @@ CLASSPATH=$CLASSPATH:$XMLSH/lib/stax2-api-3.0.1.jar
 CLASSPATH=$CLASSPATH:$XMLSH/lib/stax-utils.jar
 # jing only used for rngvalidate 
 CLASSPATH=$CLASSPATH:$XMLSH/lib/jing.jar
+# saxon only used for xslt1
+CLASSPATH=$CLASSPATH:$XMLSH/lib/saxon.jar
 
 java -cp $CLASSPATH -Xmx1024m -Xms256m org.xmlsh.sh.shell.Shell   $*

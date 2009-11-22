@@ -31,6 +31,7 @@ import net.sf.saxon.s9api.XPathSelector;
 import net.sf.saxon.s9api.XdmAtomicValue;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
+import net.sf.saxon.s9api.XdmSequenceIterator;
 import net.sf.saxon.s9api.XdmValue;
 import net.sf.saxon.trans.XPathException;
 import net.sf.saxon.value.AtomicValue;
@@ -391,6 +392,17 @@ public class XValue {
 		
 		XdmItemSubsequence	iter = new XdmItemSubsequence( mValue , n );
 		return new XValue(  new XdmValue(  iter ) );
+	}
+
+	public List<String> asStringList() {
+		XdmSequenceIterator iter = mValue.iterator();
+		List<String> list = new ArrayList<String>( mValue.size() );
+		while( iter.hasNext()){
+			XdmItem item = iter.next();
+			list.add( item.toString() );
+			
+		}
+		return list;
 	}
 	
 }

@@ -114,7 +114,9 @@ public class Shell {
 		 // Can only be called once per process
 		 try {
 			 URL.setURLStreamHandlerFactory(new ShellURLFactory() );
-		 } catch( Error e )
+		 
+		 } 
+		 catch( Error e )
 		 {
 			 mLogger.warn("Exception trying to seURLStreamHandlerFactory" , e );
 		 }
@@ -154,11 +156,17 @@ public class Shell {
 	/*
 	 * New top level shell
 	 */
-	public Shell() throws IOException, CoreException
+	public Shell( ) throws IOException, CoreException
+	{
+		this( true );
+		
+	}
+	
+	public Shell(boolean bUseStdio) throws IOException, CoreException
 	{
 		mOpts = new ShellOpts();
 		mSavedCD = System.getProperty("user.dir");
-		mEnv =  new XEnvironment(this,true);
+		mEnv =  new XEnvironment(this,bUseStdio);
 		mModules = new Modules();
 		// Add xmlsh commands 
 		mModules.declare( new Module( null , "xmlsh" , "org.xmlsh.commands.internal"));
@@ -269,8 +277,8 @@ public class Shell {
 	{
 		if( mEnv != null )
 			mEnv.close();
-		
-		SystemEnvironment.getInstance().setProperty("user.dir", mSavedCD);
+		if( mSavedCD != null )
+			SystemEnvironment.getInstance().setProperty("user.dir", mSavedCD);
 	}
 	
 
@@ -489,7 +497,7 @@ public class Shell {
 				
 				
 		} catch (Exception e1) {
-			mLogger.warn("Exception loading jline",e1);
+			mLogger.info("Exception loading jline");
 			
 		}
 		if( mCommandInput == null )
@@ -721,11 +729,12 @@ public class Shell {
 		File file=null;
 		try {
 			file = new File( name).getCanonicalFile();
-
 			if(  mustExist && ! file.exists() )
 				return null;
 
-		} catch( IOException e ){
+		} 
+		
+		catch( IOException e ){
 			// Ignore IOExceptions trying to get a file because it is typically
 			// an invalid name like foo:bar
 			return null;

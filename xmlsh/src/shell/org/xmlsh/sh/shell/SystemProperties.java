@@ -36,11 +36,18 @@ class SystemProperties extends Properties {
 	 */
 	@Override
 	public String getProperty(String key, String defaultValue) {
-		if( key.equals("user.dir"))
-			return SystemEnvironment.getInstance().getProperty(key, defaultValue);
 		
+		if( key.equals("user.dir") ){
+			String value = SystemEnvironment.getInstance().getProperty(key);
+			if( value != null )
+				return value ;
 		
-		return super.getProperty(key, defaultValue);
+		}
+		// cant use super.getProperty(key,def) as it recurses !
+		String value = super.getProperty(key);
+		if( value == null )
+			value = defaultValue;
+		return value;
 	}
 
 	/* (non-Javadoc)

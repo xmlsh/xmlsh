@@ -19,7 +19,9 @@ import org.apache.log4j.Logger;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
+import org.xmlsh.util.Base64Coder;
 import org.xmlsh.util.Util;
+
 
 public class http extends XCommand {
 
@@ -163,7 +165,7 @@ public class http extends XCommand {
 			
 			 // Encode String
 			
-		       String encoding = new sun.misc.BASE64Encoder().encode (up.getBytes( getEnv().getShell().getSerializeOpts().getEncoding()));
+		       String encoding = new String(Base64Coder.encode (up.getBytes( getEnv().getShell().getSerializeOpts().getEncoding())));
 		       
 		       http.setRequestProperty  ("Authorization", "Basic " + encoding);
 			

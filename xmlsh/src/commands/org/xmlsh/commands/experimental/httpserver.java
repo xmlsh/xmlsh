@@ -6,11 +6,12 @@
 
 package org.xmlsh.commands.experimental;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.util.ArrayList;
@@ -18,10 +19,9 @@ import java.util.List;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.xmlsh.core.CommandFactory;
 import org.xmlsh.core.CoreException;
-import org.xmlsh.core.ICommand;
 import org.xmlsh.core.Options;
+import org.xmlsh.core.ThrowException;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.core.Command;
@@ -47,10 +47,12 @@ public class httpserver extends XCommand {
 		private		Command	mGet;
 		private		Command mPut;
 		private		Command mPost;
+		private		boolean 	mChunked = false ;
 		
-		MyHandler( Shell shell, String getFunc, String putFunc , String postFunc  ) throws CoreException 
+		MyHandler( Shell shell, boolean chunked , String getFunc, String putFunc , String postFunc  ) throws CoreException 
 		{
 			mShell = shell.clone();	// clone shell for execution
+			mChunked = chunked;
 			
 			// need to save the CD so we can restore it in the new thread
 			mInitialCD = mShell.getCurdir();
@@ -76,7 +78,7 @@ public class httpserver extends XCommand {
 		       
 		       String method = http.getRequestMethod();
 		       Headers headers = http.getRequestHeaders();
-		       
+			       
 		   	
 				Command cmd = null ;
 						
@@ -95,35 +97,60 @@ public class httpserver extends XCommand {
 		    	   return ;
 		       }
 		    	   
-		       InputStream is = http.getRequestBody();
-		       http.sendResponseHeaders(200, 0);
 		       
 		       URI uri = http.getRequestURI();
 
+		       InputStream is = http.getRequestBody();
+		   
+		          
+		       // If chunked mode we can execute directly to the output
+		       if( mChunked ){
 		       
+		    	   http.sendResponseHeaders(200, 0);
 		       
+		           // http.sendResponseHeaders(200, response.length());
+		           OutputStream os = http.getResponseBody();
+		           execute(cmd, uri, is, os);
+;
 
-	           // http.sendResponseHeaders(200, response.length());
-	           OutputStream os = http.getResponseBody();
-	           
-			   mShell.getEnv().setStdin( is );
-			   mShell.getEnv().setStdout( os  );
-			   
-			   
-	
-			  List<XValue> args = new ArrayList<XValue>();
-			  String query = uri.getQuery();
-			  String path = uri.getPath();
-			  args.add( new XValue(path));
-			  args.add( new XValue(query));
+		       
+		       }
+		       
+		       // Otherwise must buffer up the response
+		       else {
+		    	   ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		    	   
+		    	   
+		    	   execute(cmd, uri, is, bos);
+		    	   
+
+			       try {
+				       // Eat the data
+				       while( is.read() > 0 )
+				       	  ;
+
+			       } catch( Exception e )
+			       {
+			    	   
+			       }
+			       
+			       http.getResponseHeaders().add("Connection", "close");
+		
+			       http.sendResponseHeaders(200, bos.size() );
+		    	   
+			       
+		           // http.sendResponseHeaders(200, response.length());
+		           OutputStream os = http.getResponseBody();
+		           os.write(bos.toByteArray());
+
+		    	   os.flush();
+		    	   os.close();
+		    	   
+		    	   
+		       }
 			  
-			  mShell.setArgs(args);
-			  mShell.exec(cmd);
-			  
-	          os.close();
-	          while( is.read() > 0 )
-	        	  ;
-	          is.close();
+
+		       
 	          http.close();
 	          
 	          
@@ -144,6 +171,24 @@ public class httpserver extends XCommand {
 
 		}
 
+		private void execute(Command cmd, URI uri, InputStream is, OutputStream os)
+				throws CoreException, ThrowException, IOException {
+			
+			 mShell.getEnv().setStdin( is );
+			 mShell.getEnv().setStdout( os  );
+			   
+			   
+	
+			  List<XValue> args = new ArrayList<XValue>();
+			  String query = uri.getQuery();
+			  String path = uri.getPath();
+			  args.add( new XValue(path));
+			  args.add( new XValue(query));
+			  
+			  mShell.setArgs(args);
+			  mShell.exec(cmd);
+		}
+
 
 
 	}
@@ -154,7 +199,7 @@ public class httpserver extends XCommand {
 	throws Exception 
 	{
 		
-		Options opts = new Options( "port:,context:,handler:,get:,put:,post:" , args );
+		Options opts = new Options( "port:,context:,handler:,get:,put:,post:,chunk" , args );
 		opts.parse();
 		
 		if( ! opts.hasRemainingArgs() ){
@@ -188,6 +233,7 @@ public class httpserver extends XCommand {
 		String get = opts.getOptString("get", null);
 		String put = opts.getOptString("put", null);	
 		String post = opts.getOptString("post", null);	
+		boolean bChunk = opts.hasOpt("chunk");
 		
 	
 		
@@ -202,7 +248,7 @@ public class httpserver extends XCommand {
 		
 		
 		mServer = HttpServer.create(new InetSocketAddress(port), 10 );
-		mServer.createContext(context, new MyHandler(getEnv().getShell(),get,put,post));
+		mServer.createContext(context, new MyHandler(getEnv().getShell(),bChunk, get,put,post));
 		mServer.setExecutor(null); // creates a default executor
 
 		mServer.start();

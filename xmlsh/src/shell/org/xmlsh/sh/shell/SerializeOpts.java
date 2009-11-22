@@ -16,9 +16,9 @@ public class SerializeOpts {
 	private		boolean		omit_xml_declaration = true ;
 	private		String		encoding = "UTF-8"; // default encoding
 	private		String 	 	text_encoding = System.getProperty("file.encoding");
-	
 	private		boolean		supports_dtd = true ;
 	private 	boolean		xinclude = false ;
+	private		String		content_type = "text/plain";
 	
 	
 	public SerializeOpts() {}
@@ -88,6 +88,9 @@ public class SerializeOpts {
 		
 		if( opt.equals("xml-encoding") || opt.equals("encoding") )
 			setEncoding(value.toString());
+		if( opt.equals("content-type"))
+			setContent_type(value.toString());
+		
 		
 	}
 
@@ -150,6 +153,20 @@ public class SerializeOpts {
 	 */
 	public void setXinclude(boolean xinclude) {
 		this.xinclude = xinclude;
+	}
+
+	/**
+	 * @return the content_type
+	 */
+	public String getContent_type() {
+		return content_type;
+	}
+
+	/**
+	 * @param content_type the content_type to set
+	 */
+	public void setContent_type(String content_type) {
+		this.content_type = content_type;
 	}
 	
 	

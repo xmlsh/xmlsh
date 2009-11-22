@@ -15,6 +15,10 @@ saxon9.jar
 saxon9-s9api.jar
 saxon9-dom.jar
 
+Saxon B: version 6.5.5 (for xslt1 support)
+saxon.jar
+
+
 
 Stax Utils from
 https://stax-utils.dev.java.net/

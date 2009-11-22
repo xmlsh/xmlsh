@@ -40,6 +40,7 @@ public class CSVParser
         int len = line.length();
         char c;
         int i;
+        boolean sof = true ; // start of field
         
         StringBuffer	buf = new StringBuffer();
         for( i = 0 ; i < len ; )
@@ -49,13 +50,15 @@ public class CSVParser
         	if( c == mDelim ){
         		v.add( buf.toString());
         		buf = new StringBuffer();
+        		sof = true ;
         		continue;
         	}
-        	if( c == mQuote ){
+        	// Start quotes only recognized at sof
+        	if( sof && c == mQuote ){
         		while ( i < len ){
         			c = line.charAt(i++);
         			if( c == mQuote ){
-        				if( i == len || (i < len && line.charAt(i) == mDelim ) )
+        				if( i == len || (i < len && line.charAt(i) != mQuote ) )
         					break;
         				c = line.charAt(i++);
         			}
@@ -64,10 +67,14 @@ public class CSVParser
         	}
         	else
         		buf.append(c);
+        	sof=false ;
         }
         
-        if( i>0 )
+        if( i>0 ){
+        	
+        	sof=true;
         	v.add( buf.toString());
+        }
         
         
         
