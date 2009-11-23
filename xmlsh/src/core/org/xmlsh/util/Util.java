@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -677,7 +678,7 @@ public class Util
 		ser.setOutputProperty(Serializer.Property.INDENT , opts.isIndent() ? "yes" : "no");
 		// dest.setOutputProperty(Serializer.Property.VERSION,"1.1");
 		
-		ser.setOutputProperty(Serializer.Property.METHOD, "xml");
+		ser.setOutputProperty(Serializer.Property.METHOD, opts.getMethod() );
 		ser.setOutputProperty(Serializer.Property.ENCODING, opts.getEncoding());
 
 		return ser;
@@ -804,7 +805,49 @@ public class Util
 		
 		
 	}
+	
+	
+	private static void copyFile(File src, File dest, boolean force) throws IOException {
 
+		// Try copy 
+		InputStream in = null;
+		OutputStream out = null;
+		try {
+		
+			in = new FileInputStream(src);
+			
+			// Try deleting dest if we have to
+			if( force && dest.exists() && ! dest.canWrite() )
+				dest.delete();
+			
+			out = new FileOutputStream(dest);
+			Util.copyStream( in , out );
+		} finally {
+			if( in != null ) in.close();
+			if( out != null ) out.close();
+		}
+	}
+
+	
+	/**
+	 * Move a file, possibly renaming it
+	 * 
+	 * @param inFile
+	 * @param file
+	 */
+
+	public static void moveFile(File src, File dest, boolean force) throws IOException {
+		if( dest.exists() && force)
+			dest.delete();
+		
+		// Simple rename
+		if( src.renameTo(dest))
+			return ;
+		
+		copyFile(src,dest,force);
+		src.delete();
+		
+	}
 	
 	
 

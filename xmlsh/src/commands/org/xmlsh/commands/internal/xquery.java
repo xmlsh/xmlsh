@@ -25,6 +25,7 @@ import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.Options.OptionValue;
+import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.Util;
 import org.xmlsh.xpath.ShellContext;
@@ -38,7 +39,7 @@ public class xquery extends XCommand {
 	throws Exception 
 	{
 		
-		Options opts = new Options( "f:,i:,n,q:,v,nons,ns:+" , args );
+		Options opts = new Options( "f:,i:,n,q:,v,nons,ns:+,method:" , args );
 		opts.parse();
 		
 		Processor  processor  = Shell.getProcessor();
@@ -48,6 +49,13 @@ public class xquery extends XCommand {
 		
 		
 		InputPort in = null;
+		
+		// Use a copy of the serialize opts so we can override the method 
+		SerializeOpts serializeOpts = getSerializeOpts().clone();
+		if( opts.hasOpt("method"))
+			serializeOpts.setMethod(opts.getOptString("method", "xml"));
+			
+		
 		if( ! opts.hasOpt("n" ) ){ // Has XML data input
 			OptionValue ov = opts.getOpt("i");
 			if( ov != null )
@@ -55,7 +63,7 @@ public class xquery extends XCommand {
 			else
 				in = getStdin();
 			
-			context = in.asXdmNode(getSerializeOpts());
+			context = in.asXdmNode(serializeOpts);
 			
 			
 		}
@@ -76,7 +84,7 @@ public class xquery extends XCommand {
 				throwInvalidArg(  "Cannot specifify both -q and -f");
 			
 			InputPort qin = getInput(ov.getValue());
-			InputStream is = qin.asInputStream(getSerializeOpts());
+			InputStream is = qin.asInputStream(serializeOpts);
 			query = Util.readString(is);
 
 			String sysid = qin.getSystemId();
@@ -160,7 +168,7 @@ public class xquery extends XCommand {
 //		eval.run(getStdout().asDestination(getSerializeOpts()));
 
 			OutputPort stdout = getStdout();
-			Destination ser = stdout.asDestination(getSerializeOpts());
+			Destination ser = stdout.asDestination(serializeOpts);
 			boolean bFirst = true ;
 			boolean bAnyOut = false ;
 			for( XdmItem item : eval ){

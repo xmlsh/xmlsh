@@ -19,6 +19,7 @@ public class SerializeOpts {
 	private		boolean		supports_dtd = true ;
 	private 	boolean		xinclude = false ;
 	private		String		content_type = "text/plain";
+	private		String		method = "xml";
 	
 	
 	public SerializeOpts() {}
@@ -90,6 +91,8 @@ public class SerializeOpts {
 			setEncoding(value.toString());
 		if( opt.equals("content-type"))
 			setContent_type(value.toString());
+		if(opt.equals("method"))
+			setMethod( value.toString());
 		
 		
 	}
@@ -167,6 +170,25 @@ public class SerializeOpts {
 	 */
 	public void setContent_type(String content_type) {
 		this.content_type = content_type;
+	}
+
+	/**
+	 * @return the method
+	 */
+	public String getMethod() {
+		return method;
+	}
+
+	/**
+	 * @param method the method to set
+	 * @throws InvalidArgumentException 
+	 */
+	public void setMethod(String method) throws InvalidArgumentException {
+		if( method.equals("xml" ) || method.equals("html") || method.equals("xhtml") || method.equals("text"))
+			this.method = method;
+		else
+			throw new InvalidArgumentException("Invalid value for serialization method: must be xml, html, xhtml, text");
+		
 	}
 	
 	

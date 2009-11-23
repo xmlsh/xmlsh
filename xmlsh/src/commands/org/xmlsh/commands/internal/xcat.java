@@ -21,6 +21,7 @@ import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.Options.OptionValue;
+import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.NameValueMap;
 
@@ -37,7 +38,7 @@ public class xcat extends XCommand {
 		
 
 
-		Options opts = new Options( "w=wrap:,r=root" , args );
+		Options opts = new Options( "w=wrap:,r=root,method:" , args );
 		opts.parse();
 		
 		// root node
@@ -85,8 +86,16 @@ public class xcat extends XCommand {
 		
 		
 		
+		
+		// Use a copy of the serialize opts so we can override the method 
+		SerializeOpts serializeOpts = getSerializeOpts().clone();
+		if( opts.hasOpt("method"))
+			serializeOpts.setMethod(opts.getOptString("method", "xml"));
+			
+		
+		
 		if( context == null && ! hasFiles ){
-			context = getStdin().asXdmNode(getSerializeOpts());
+			context = getStdin().asXdmNode(serializeOpts);
 		}
 		
 		
@@ -188,7 +197,7 @@ public class xcat extends XCommand {
 		}	
 		
 		OutputPort stdout = getStdout();
-		eval.run(stdout.asDestination(getSerializeOpts()));
+		eval.run(stdout.asDestination(serializeOpts));
 		stdout.writeSequenceTerminator();
 		
 		return 0;

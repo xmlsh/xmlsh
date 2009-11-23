@@ -15,6 +15,7 @@ import javax.xml.transform.stream.StreamSource;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
+import org.xmlsh.sh.shell.SerializeOpts;
 
 import com.icl.saxon.expr.StringValue;
 
@@ -23,19 +24,25 @@ public class xslt1 extends XCommand {
 	@Override
 	public int run(List<XValue> args) throws Exception {
 
-		Options opts = new Options("f:,v", args);
+		Options opts = new Options("f:,v,method:", args);
 		opts.parse();
 		args = opts.getRemainingArgs();
 		
 		String style = opts.getOptStringRequired("f");
 		
-		Source source = getStdin().asSource(getSerializeOpts());
-		apply( style , source, getStdout().asOutputStream() , opts.hasOpt("v") ? args : null );
+		// Use a copy of the serialize opts so we can override the method 
+		SerializeOpts serializeOpts = getSerializeOpts().clone();
+		if( opts.hasOpt("method"))
+			serializeOpts.setMethod(opts.getOptString("method", "xml"));
+		
+		
+		Source source = getStdin().asSource(serializeOpts);
+		apply( style , source, getStdout().asOutputStream() , opts.hasOpt("v") ? args : null, serializeOpts);
 		return 0;
 
 	}
 
-	private void apply(String style, Source source, OutputStream out, List<XValue> args )
+	private void apply(String style, Source source, OutputStream out, List<XValue> args, SerializeOpts serializeOpts )
 			throws Exception {
 
 
@@ -59,7 +66,7 @@ public class xslt1 extends XCommand {
 			
 
 			
-			
+			transformer.setOutputProperty(javax.xml.transform.OutputKeys.METHOD, serializeOpts.getMethod() );
 			
 			transformer.transform(source, new StreamResult(out));
 		} catch (Exception err) {

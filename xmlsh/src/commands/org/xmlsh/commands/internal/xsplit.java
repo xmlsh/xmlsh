@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.xml.namespace.QName;
@@ -38,6 +39,8 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.events.Namespace;
+import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 
 import org.xmlsh.core.InputPort;
@@ -63,7 +66,7 @@ public class xsplit extends XCommand {
 	private		String			mSuffix = "";
 	private		String			mExt 	= ".xml";
 	
-	// private		boolean			mNoRoot = false ;
+    private		boolean			mNoRoot = false ;
 	private		int				mNumChildren = 1;
 	
 	private		List<XMLEvent>	mHeader = new ArrayList<XMLEvent>();
@@ -73,7 +76,7 @@ public class xsplit extends XCommand {
 	{
 
 
-		Options opts = new Options( "c:,w:,n,p:,e:,s:" , args );
+		Options opts = new Options( "c:,w:,n,p:,e:,s:,n" , args );
 		opts.parse();
 		
 		// root node
@@ -93,8 +96,12 @@ public class xsplit extends XCommand {
 		mPrefix  = opts.getOptString("p",mPrefix);
 		
 		
+		/*
+		 * If not adding a root then must add only 1 child 
+		 */
 		if( opts.hasOpt("n") ){ 
 			mNumChildren = 1;
+			mNoRoot = true ;
 		}
 
 		
@@ -130,6 +137,7 @@ public class xsplit extends XCommand {
 
 
 
+
 	private void split(String systemId , InputStream is) throws XMLStreamException, IOException {
 	
 
@@ -144,6 +152,9 @@ public class xsplit extends XCommand {
 		 * Read up to root elem collecting events to repeat on each file
 		 * 
 		 */
+		
+		List<Namespace>  ns = null;
+		
 		while( xmlreader.hasNext()   ){
 			XMLEvent e = xmlreader.nextEvent();
 			if( e.getEventType() != XMLStreamConstants.START_ELEMENT ){
@@ -151,11 +162,31 @@ public class xsplit extends XCommand {
 				continue;
 			}
 			
-			// Found document root
-			if( mRootNode == null )
-				mHeader.add(e);
-			else
-				mHeader.add( mRootNode );
+			
+			/* 
+			 * If no root then dont add elements to root, but do collect namespaces
+			 */
+			if( mNoRoot ){
+				
+				
+				StartElement se = e.asStartElement();
+				
+				Iterator<?> nsi = se.getNamespaces();
+				ns = new ArrayList<Namespace>();
+				while( nsi.hasNext())
+					ns.add((Namespace) nsi.next());
+
+			}
+			
+			if( ! mNoRoot ){
+				// Found document root
+				if( mRootNode == null )
+					mHeader.add(e);
+				else
+					mHeader.add( mRootNode );
+
+			}
+				
 			break;
 			
 			
@@ -171,7 +202,7 @@ public class xsplit extends XCommand {
 			int type = e.getEventType() ;
 			
 			if( type == XMLStreamConstants.START_ELEMENT ){
-				write( xmlreader , e );
+				write( xmlreader , e ,ns );
 				
 				
 			} else
@@ -205,7 +236,7 @@ public class xsplit extends XCommand {
 
 
 
-	private void write(XMLEventReader xmlreader, XMLEvent first) throws XMLStreamException, IOException {
+	private void write(XMLEventReader xmlreader, XMLEvent first, List<Namespace> ns) throws XMLStreamException, IOException {
 		File fout = nextFile();
 		OutputStream fo = new FileOutputStream(fout); // need to close seperately
 		XMLEventWriter w = mOutputFactory.createXMLEventWriter( fo );
@@ -220,6 +251,13 @@ public class xsplit extends XCommand {
 		
 		
 		w.add(first);
+		/*
+		 * Add namespaces if needed
+		 */
+		
+		if( ns != null )
+			for( Namespace n : ns )
+				w.add(n);
 		
 		int depth = 0;
 		int nchild = 0;
@@ -244,7 +282,7 @@ public class xsplit extends XCommand {
 		/*
 		 * End with end element and end document
 		 */
-		w.add( mEventFactory.createEndElement( first.asStartElement().getName(), null));
+		// w.add( mEventFactory.createEndElement( first.asStartElement().getName(), null));
 		w.add( mEventFactory.createEndDocument());
 		w.close();
 		fo.close();

@@ -27,6 +27,7 @@ import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.Options.OptionValue;
+import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.sh.shell.ShellURIResolver;
 import org.xmlsh.xpath.ShellContext;
@@ -68,7 +69,7 @@ public class xslt extends XCommand {
 	@Override
 	public int run(List<XValue> args) throws Exception {
 
-		Options opts = new Options("f:,i:,n,v", args);
+		Options opts = new Options("f:,i:,n,v,method:", args);
 		opts.parse();
 		PrintStream ps;
 		Processor processor = Shell.getProcessor();
@@ -78,6 +79,17 @@ public class xslt extends XCommand {
 		Source context = null;
 
 		InputPort in = null;
+
+		
+		// Use a copy of the serialize opts so we can override the method 
+		SerializeOpts serializeOpts = getSerializeOpts().clone();
+		if( opts.hasOpt("method"))
+			serializeOpts.setMethod(opts.getOptString("method", "xml"));
+			
+		
+		
+		
+		
 		if (!opts.hasOpt("n")) { // Has XML data input
 			OptionValue ov = opts.getOpt("i");
 
@@ -85,7 +97,7 @@ public class xslt extends XCommand {
 				in = getInput(ov.getValue());
 			else
 				in = getStdin();
-			context = in.asSource(getSerializeOpts());
+			context = in.asSource(serializeOpts);
 
 		}
 
@@ -95,7 +107,7 @@ public class xslt extends XCommand {
 
 		OptionValue ov = opts.getOpt("f");
 		if (ov != null) {
-			source = getInput(ov.getValue()).asSource(getSerializeOpts());
+			source = getInput(ov.getValue()).asSource(serializeOpts);
 		}
 
 		if (source == null) {
@@ -131,7 +143,7 @@ public class xslt extends XCommand {
 		}
 
 		OutputPort stdout = getStdout();
-		eval.setDestination(stdout.asDestination(getSerializeOpts()));
+		eval.setDestination(stdout.asDestination(serializeOpts));
 
 		eval.transform();
 		stdout.writeSequenceTerminator();

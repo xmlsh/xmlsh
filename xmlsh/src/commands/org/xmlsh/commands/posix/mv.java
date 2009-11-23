@@ -7,11 +7,7 @@
 package org.xmlsh.commands.posix;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.List;
 
 import org.xmlsh.core.InvalidArgumentException;
@@ -46,38 +42,18 @@ public class mv extends XCommand {
 			
 		} else {
 			
-			move( getFile(args.get(0)) , target , bForce);
+			Util.moveFile( getFile(args.get(0)) , target , bForce);
 		}
 				
 		return 0;
 	}
 
-	private void copy(File src, File dest, boolean force) throws IOException {
-
-		// Try copy 
-		InputStream in = null;
-		OutputStream out = null;
-		try {
-		
-			in = new FileInputStream(src);
-			
-			// Try deleting dest if we have to
-			if( force && dest.exists() && ! dest.canWrite() )
-				dest.delete();
-			
-			out = new FileOutputStream(dest);
-			Util.copyStream( in , out );
-		} finally {
-			if( in != null ) in.close();
-			if( out != null ) out.close();
-		}
-	}
-
+	
 	private void move(List<XValue> files, File target, boolean force) throws IOException {
 		for( XValue f : files ){
 			File src = getFile(f);
 			File dest = new File( target , src.getName() );
-			move( src , dest , force );
+			Util.moveFile( src , dest , force );
 			
 			
 			
@@ -89,18 +65,7 @@ public class mv extends XCommand {
 		
 	}
 
-	private void move(File src, File dest, boolean force) throws IOException {
-		if( dest.exists() && force)
-			dest.delete();
-		
-		// Simple rename
-		if( src.renameTo(dest))
-			return ;
-		
-		copy(src,dest,force);
-		src.delete();
-		
-	}
+	
 
 
 }

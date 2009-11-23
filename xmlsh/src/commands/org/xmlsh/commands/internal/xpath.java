@@ -27,6 +27,7 @@ import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.Options.OptionValue;
+import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.Util;
 import org.xmlsh.xpath.ShellContext;
@@ -36,7 +37,7 @@ public class xpath extends XCommand {
 	@Override
 	public int run(List<XValue> args) throws Exception {
 
-		Options opts = new Options("f:,i:,q:,n,v,e,b,nons,ns:+", args);
+		Options opts = new Options("f:,i:,q:,n,v,e,b,nons,ns:+,method:", args);
 		opts.parse();
 
 		Processor processor = Shell.getProcessor();
@@ -46,13 +47,23 @@ public class xpath extends XCommand {
 		InputPort in = null;
 
 		// boolean bReadStdin = false ;
+		
+		// Use a copy of the serialize opts so we can override the method 
+		SerializeOpts serializeOpts = getSerializeOpts().clone();
+		if( opts.hasOpt("method"))
+			serializeOpts.setMethod(opts.getOptString("method", "xml"));
+			
+		
+		
+		
+		
 		if (!opts.hasOpt("n")) { // Has XML data input
 			OptionValue ov = opts.getOpt("i");
 			if( ov != null )
 				in = getInput( ov.getValue());
 			else
 				in = getStdin();
-			context = in.asXdmNode(getSerializeOpts());
+			context = in.asXdmNode(serializeOpts);
 		}
 
 		List<XValue> xvargs = opts.getRemainingArgs();
@@ -142,7 +153,7 @@ public class xpath extends XCommand {
 			} else {
 
 				OutputPort stdout = getStdout();
-				Destination ser = stdout.asDestination(getSerializeOpts());
+				Destination ser = stdout.asDestination(serializeOpts);
 				boolean bAnyOutput = false;
 				boolean bFirst = true;
 
