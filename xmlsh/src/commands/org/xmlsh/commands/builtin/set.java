@@ -12,11 +12,12 @@ import java.util.List;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.xmlsh.core.BuiltinCommand;
+import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.XEnvironment;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.XVariable;
-import org.xmlsh.core.Options.OptionValue;
+import org.xmlsh.sh.shell.SerializeOpts;
 
 public class set extends BuiltinCommand {
 
@@ -29,14 +30,10 @@ public class set extends BuiltinCommand {
 			return 0;
 		}
 		
-		Options opts = new Options( "+x,+v,+omit-xml-declaration,+indent,encoding:,text-encoding:,xml-encoding:,+xpipe,+xinclude,+e,content-type:,method:" , args );
+		Options opts = new Options( "+x,+v,+xpipe,+e" , SerializeOpts.getOptionDefs() ,  args );
+		opts.parse();
 		
-		for( OptionValue ov : opts.parse() ){
-			if( ov.getOptionDef().hasArgs )
-				mShell.setOption( ov.getOptionDef().name , ov.getValue() );
-			else	
-				mShell.setOption( ov.getOptionDef().name , ov.getFlag() );
-		}
+		setShellOptions(opts);
 		
 		
 		
@@ -46,6 +43,10 @@ public class set extends BuiltinCommand {
 		if( args != null && (args.size() > 0  || opts.hasDashDash() ))
 			mShell.setArgs(args);
 		return 0;
+	}
+
+	private void setShellOptions(Options opts) throws InvalidArgumentException {
+		mShell.setOptions( opts );
 	}
 
 	private void printVars() throws Exception {

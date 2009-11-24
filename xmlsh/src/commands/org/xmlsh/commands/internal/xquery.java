@@ -39,7 +39,7 @@ public class xquery extends XCommand {
 	throws Exception 
 	{
 		
-		Options opts = new Options( "f:,i:,n,q:,v,nons,ns:+,method:" , args );
+		Options opts = new Options( "f:,i:,n,q:,v,nons,ns:+" ,	SerializeOpts.getOptionDefs(),  args );
 		opts.parse();
 		
 		Processor  processor  = Shell.getProcessor();
@@ -50,10 +50,8 @@ public class xquery extends XCommand {
 		
 		InputPort in = null;
 		
-		// Use a copy of the serialize opts so we can override the method 
-		SerializeOpts serializeOpts = getSerializeOpts().clone();
-		if( opts.hasOpt("method"))
-			serializeOpts.setMethod(opts.getOptString("method", "xml"));
+		SerializeOpts serializeOpts = getSerializeOpts(opts);
+
 			
 		
 		if( ! opts.hasOpt("n" ) ){ // Has XML data input

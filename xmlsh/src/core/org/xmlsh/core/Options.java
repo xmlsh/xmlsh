@@ -181,13 +181,27 @@ public class Options
 	}
 	
 	
-	private Options( List<OptionDef>  options ,  List<XValue> args )
+	public Options( List<OptionDef>  options ,  List<XValue> args )
 	{
 		mDefs = options;
 		mArgs = args;
 		
 	}
 	
+	private Options( List<OptionDef> opt1 , List<OptionDef> opt2 ,  List<XValue> args )
+	{
+		mDefs = new ArrayList<OptionDef>( opt1.size() + opt2.size());
+		mDefs.addAll( opt1 );
+		mDefs.addAll(opt2);
+		mArgs = args;
+		
+	}
+
+	public Options(String option_str, List<OptionDef> option_list, List<XValue> args) 
+	{
+		this( parseDefs(option_str) , option_list , args );
+	}
+
 
 	private OptionDef	getOptDef(String str)
 	{

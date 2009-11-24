@@ -7,9 +7,12 @@
 package org.xmlsh.sh.shell;
 
 import java.nio.charset.Charset;
+import java.util.List;
 
 import org.xmlsh.core.InvalidArgumentException;
+import org.xmlsh.core.Options;
 import org.xmlsh.core.XValue;
+import org.xmlsh.core.Options.OptionValue;
 
 public class SerializeOpts {
 	private 	boolean		indent	= true ;
@@ -22,6 +25,15 @@ public class SerializeOpts {
 	private		String		method = "xml";
 	
 	
+	/*
+	 * Parsed standardized serialization option definitions
+	 */
+	private static final List<Options.OptionDef>  mOptionDefs =		
+		Options.parseDefs("+indent,+omit-xml-declaration,encoding:,text-encoding:,xml-encoding:,+xinclude,content-type:,method:,+supports-dtd" );
+			
+			
+	public static List<Options.OptionDef> getOptionDefs() { return mOptionDefs ; }
+	
 	public SerializeOpts() {}
 	
 	public SerializeOpts clone()
@@ -29,31 +41,33 @@ public class SerializeOpts {
 		return new SerializeOpts(this);
 	}
 	
+	
+	
 	public SerializeOpts( SerializeOpts that ) {
 		
-		indent = that.isIndent();
-		omit_xml_declaration = that.isOmit_xml_declaration();
-		encoding = that.getEncoding();
+		indent = that.indent;
+		omit_xml_declaration = that.omit_xml_declaration;
+		encoding = that.encoding;
 		text_encoding = that.text_encoding;
+		supports_dtd = that.supports_dtd;
 		xinclude = that.xinclude;
+		content_type = that.content_type;
+		method = that.method ;
 
 	}
 	
-	
-	
-	public void set( String name , boolean value )
+	/*
+	 * Set serialize options based on a parsed options 
+	 */
+	public void setOptions( Options opts ) throws InvalidArgumentException
 	{
-		if( name.equals("omit-xml-declaration" ) )
-			omit_xml_declaration = value;
-		else
-		if( name.equals("indent"))
-			indent = value ;
-		else
-		if( name.equals("xinclude"))
-			xinclude = value;
-		
+			for( OptionValue ov : opts.getOpts() )
+				setOption( ov );
 		
 	}
+	
+	
+	
 	
 
 	public boolean isIndent() {
@@ -76,9 +90,39 @@ public class SerializeOpts {
 	public String getText_encoding() {
 		return text_encoding;
 	}
+	
+	
 
+	public void setOption(OptionValue ov) throws InvalidArgumentException {
+		
+		
+		if( ov.getOptionDef().hasArgs )
+			setOption( ov.getOptionDef().name , ov.getValue() );
+		else	
+			setOption( ov.getOptionDef().name , ov.getFlag() );
+		
+	}
+	
+	
+	public void setOption( String name , boolean value )
+	{
+		if( name.equals("omit-xml-declaration" ) )
+			omit_xml_declaration = value;
+		else
+		if( name.equals("indent"))
+			indent = value ;
+		else
+		if( name.equals("xinclude"))
+			xinclude = value;
+		else
+		if( name.equals("supports-dtd"))
+			supports_dtd = value ;
+		
+		
+	}
+	
 
-	public void set(String opt, XValue value) throws InvalidArgumentException {
+	public void setOption(String opt, XValue value) throws InvalidArgumentException {
 		
 		// If 'encoding' set both text and xml encoding
 		// if text-encoding then set text encoding only

@@ -48,6 +48,7 @@ import org.xmlsh.core.Options;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.Options.OptionValue;
+import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.util.Util;
 
 public class xsplit extends XCommand {
@@ -65,6 +66,7 @@ public class xsplit extends XCommand {
 	private		int				mSeq 	= 0;
 	private		String			mSuffix = "";
 	private		String			mExt 	= ".xml";
+	private		File 			mOutputDir = null ;
 	
     private		boolean			mNoRoot = false ;
 	private		int				mNumChildren = 1;
@@ -76,7 +78,7 @@ public class xsplit extends XCommand {
 	{
 
 
-		Options opts = new Options( "c:,w:,n,p:,e:,s:,n" , args );
+		Options opts = new Options( "c=children:,w=wrap:,n,p=prefix:,e=ext:,s=suffix:,n=nowrap,o=output:" ,SerializeOpts.getOptionDefs(), args );
 		opts.parse();
 		
 		// root node
@@ -94,6 +96,8 @@ public class xsplit extends XCommand {
 		mExt 	 = opts.getOptString("e",mExt);
 		mSuffix  = opts.getOptString("s",mSuffix);
 		mPrefix  = opts.getOptString("p",mPrefix);
+		if( opts.hasOpt("o"))
+			mOutputDir = getFile(opts.getOptValue("o"));
 		
 		
 		/*
@@ -118,7 +122,8 @@ public class xsplit extends XCommand {
 					getStdin();
 			
 		
-		InputStream is = in.asInputStream(getSerializeOpts()) ;
+		SerializeOpts serializeOpts = getSerializeOpts(opts);
+		InputStream is = in.asInputStream(serializeOpts) ;
 		split(in.getSystemId() , is );
 		
 		is.close();
@@ -295,7 +300,7 @@ public class xsplit extends XCommand {
 
 
 	private File nextFile() throws IOException {
-		File f = getEnv().getShell().getFile( mPrefix + mSeq++ + mSuffix + mExt );
+		File f = getEnv().getShell().getFile( mOutputDir , mPrefix + mSeq++ + mSuffix + mExt );
 		return f;
 	}
 

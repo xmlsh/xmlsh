@@ -24,6 +24,7 @@ import org.xmlsh.core.InputPort;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
+import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 
 /*
@@ -61,7 +62,7 @@ public class xml2csv extends XCommand
 	{
 		
 	
-		Options opts = new Options( "header,attr,delim:,quote:" , args );
+		Options opts = new Options( "header,attr,delim:,quote:" , SerializeOpts.getOptionDefs(), args );
 		opts.parse();
 		
 		
@@ -80,7 +81,8 @@ public class xml2csv extends XCommand
 		Processor processor = Shell.getProcessor();
 		mCompiler = processor.newXQueryCompiler();
 		InputPort  in = getStdin();
-		XdmNode	context = in.asXdmNode(getSerializeOpts());
+		SerializeOpts serializeOpts = getSerializeOpts(opts);
+		XdmNode	context = in.asXdmNode(serializeOpts);
 
 		
 

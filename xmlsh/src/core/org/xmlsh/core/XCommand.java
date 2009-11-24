@@ -169,10 +169,12 @@ public abstract class XCommand implements ICommand {
 
 
 
-	protected SerializeOpts getSerializeOpts() {
-		return mEnvironment.getShell().getSerializeOpts();
+	protected SerializeOpts getSerializeOpts(Options opts) throws InvalidArgumentException {
+		return mEnvironment.getShell().getSerializeOpts(opts);
 	}
-
+	protected SerializeOpts getSerializeOpts() throws InvalidArgumentException {
+		return mEnvironment.getShell().getSerializeOpts(null);
+	}
 	public void setModule(Module module) {
 		mModule = module ;
 		

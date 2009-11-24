@@ -18,6 +18,7 @@ import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Module;
+import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.util.Util;
 
 public class xwhich extends BuiltinCommand {
@@ -30,7 +31,7 @@ public class xwhich extends BuiltinCommand {
 	
 	public int run(   List<XValue> args ) throws Exception {
 			
-		Options opts = new Options( "n" , args );
+		Options opts = new Options( "n" , SerializeOpts.getOptionDefs(), args );
 		opts.parse();
 		
 		boolean bNoWrite = opts.hasOpt("n");
@@ -51,7 +52,8 @@ public class xwhich extends BuiltinCommand {
 		
 		if( !bNoWrite ){
 
-			out = stdout.asXMLStreamWriter(getSerializeOpts());
+			SerializeOpts serializeOpts = getSerializeOpts();
+			out = stdout.asXMLStreamWriter(serializeOpts);
 			out.writeStartDocument();
 			out.writeStartElement(sDocRoot);
 			

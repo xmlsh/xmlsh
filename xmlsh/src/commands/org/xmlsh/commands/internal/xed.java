@@ -42,6 +42,7 @@ import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.Options.OptionValue;
+import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.Util;
 
@@ -89,11 +90,13 @@ public class xed extends XCommand {
 		String		opt_matches = null ;
 		String		opt_xpath	= null ;
 		String		opt_replacex = null ;
+		String		opt_rename = null;
 
 		
 		
 		
-		Options opts = new Options( "i:,e=xpath:,n,v,r=replace:,a=add:,d=delete,m=matches:,rx=replacex:" , args );
+		Options opts = new Options( "i:,e=xpath:,n,v,r=replace:,a=add:,d=delete,m=matches:,rx=replacex:,ren=rename:" ,  
+					SerializeOpts.getOptionDefs() , args );
 		opts.parse();
 		
 		setupBuilders();
@@ -102,6 +105,7 @@ public class xed extends XCommand {
 
 		
 		// boolean bReadStdin = false ;
+		SerializeOpts serializeOpts = getSerializeOpts(opts);
 		if( ! opts.hasOpt("n" ) ){ // Has XML data input
 			OptionValue ov = opts.getOpt("i");
 
@@ -121,7 +125,7 @@ public class xed extends XCommand {
 				if( ov != null && ! ov.getValue().toString().equals("-"))
 					context = build( getSource(ov.getValue()));
 				else {
-					context = build(getStdin().asSource(getSerializeOpts()));
+					context = build(getStdin().asSource(serializeOpts));
 				}	
 			}
 		}
@@ -147,6 +151,7 @@ public class xed extends XCommand {
 		opt_replace = opts.getOptValue("r");
 		opt_delete  = opts.hasOpt("d");
 		opt_replacex = opts.getOptString("rx", null );
+		opt_rename = opts.getOptString("ren",null);
 		
 		
 		opt_matches = opts.getOptString("matches",null);
@@ -183,7 +188,7 @@ public class xed extends XCommand {
 		
 		
 		
-		if( opt_replace != null || opt_delete  || opt_add  != null || opt_replacex != null ){
+		if( opt_replace != null || opt_delete  || opt_add  != null || opt_replacex != null || opt_rename != null  ){
 				
 			
 			Iterable<XdmItem>  results = getResults( eval ,  context , opt_matches != null );
@@ -199,6 +204,8 @@ public class xed extends XCommand {
 						add( node , opt_add );
 					if( opt_delete )
 						delete( node );
+					if( opt_rename != null )
+						rename( node , opt_rename );
 
 				}
 			}
@@ -208,7 +215,7 @@ public class xed extends XCommand {
 		
 	
 		OutputPort stdout = getStdout();
-		Util.writeXdmValue( context , stdout.asDestination(getSerializeOpts()) );
+		Util.writeXdmValue( context , stdout.asDestination(serializeOpts) );
 		stdout.writeSequenceTerminator();
 		
 		return 0;
@@ -300,7 +307,22 @@ public class xed extends XCommand {
 			node.replaceStringValue( replace.toString() );
 	}
 	
+	
+	private void rename(MutableNodeInfo node, String opt_rename) throws IndexOutOfBoundsException,
+			SaxonApiUncheckedException, SaxonApiException {
+		
 
+		
+		NamePool pool = node.getNamePool();
+		int newNameCode = pool.allocateClarkName( opt_rename );
+		
+			
+		node.rename( newNameCode );
+	
+	}
+
+	
+	
 	private void replace(XdmItem item , MutableNodeInfo node, XPathSelector replacex)
 			throws IndexOutOfBoundsException, SaxonApiUncheckedException, SaxonApiException, XPathException {
 		

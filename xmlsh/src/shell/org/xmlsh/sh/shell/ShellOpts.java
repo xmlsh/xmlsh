@@ -8,6 +8,7 @@ package org.xmlsh.sh.shell;
 
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
+import org.xmlsh.core.Options.OptionValue;
 
 public class ShellOpts 
 {
@@ -37,7 +38,7 @@ public class ShellOpts
 	}
 	
 	
-	public void set( String opt , boolean on)
+	public void setOption( String opt , boolean on)
 	{
 		if( opt.equals("x"))
 			mExec = on;
@@ -51,12 +52,23 @@ public class ShellOpts
 		if( opt.equals("e"))
 			mThrowOnError = on ;
 		else
-			mSerialize.set( opt , on);
+			mSerialize.setOption( opt , on);
 		
 	}
-	public void set(String opt, XValue value) throws InvalidArgumentException {
-
-		mSerialize.set( opt , value );
+	public void setOption(String opt, XValue value) throws InvalidArgumentException {
+		
+		// No shell options take a string value so just defer to serialization options
+		
+		mSerialize.setOption( opt , value );
+		
+	}
+	public void setOption(OptionValue ov) throws InvalidArgumentException {
+		
+		
+		if( ov.getOptionDef().hasArgs )
+			setOption( ov.getOptionDef().name , ov.getValue() );
+		else	
+			setOption( ov.getOptionDef().name , ov.getFlag() );
 		
 	}
 	

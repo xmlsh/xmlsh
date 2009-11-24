@@ -14,6 +14,7 @@ import javax.xml.stream.events.XMLEvent;
 
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.InvalidArgumentException;
+import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
@@ -25,6 +26,11 @@ public class xidentity extends XCommand {
 	@Override
 	public int run(List<XValue> args) throws Exception {
 		
+		Options opts = new Options( SerializeOpts.getOptionDefs() , args );
+		opts.parse();
+		args = opts.getRemainingArgs();
+		
+		
 		InputPort stdin = null;
 		if( args.size() > 0 )
 			stdin = getInput( args.get(0));
@@ -34,11 +40,11 @@ public class xidentity extends XCommand {
 			throw new InvalidArgumentException("Cannot open input");
 		try {
 			
-			SerializeOpts opts = getSerializeOpts();
+			SerializeOpts sopts = getSerializeOpts(opts);
 			
-			XMLEventReader	reader = stdin.asXMLEventReader(opts);
+			XMLEventReader	reader = stdin.asXMLEventReader(sopts);
 			OutputPort stdout = getStdout();
-			XMLEventWriter  writer = stdout.asXMLEventWriter(opts);
+			XMLEventWriter  writer = stdout.asXMLEventWriter(sopts);
 			
 			stdout.setSystemId(stdin.getSystemId());
 			XMLEvent e;

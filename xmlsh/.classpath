@@ -28,6 +28,6 @@
 	<classpathentry kind="lib" path="lib/resolver.jar"/>
 	<classpathentry kind="lib" path="build-lib/ant.jar"/>
 	<classpathentry kind="lib" path="lib/saxon9-dom.jar"/>
-	<classpathentry kind="lib" path="lib/saxon.jar"/>
+	<classpathentry kind="lib" path="lib/saxon.jar" sourcepath="C:/java/saxon6.5/source.zip"/>
 	<classpathentry kind="output" path="_out"/>
 </classpath>

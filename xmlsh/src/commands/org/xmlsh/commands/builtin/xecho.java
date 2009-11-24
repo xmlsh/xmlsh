@@ -16,13 +16,14 @@ import org.xmlsh.core.BuiltinCommand;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.XValue;
+import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.util.Util;
 
 public class xecho extends BuiltinCommand {
 	
 	public int run( List<XValue> args ) throws Exception {
 		
-		Options opts = new Options( "n" , args );
+		Options opts = new Options( "n" , SerializeOpts.getOptionDefs(), args );
 		opts.parse();
 		
 		args = opts.getRemainingArgs();
@@ -31,7 +32,8 @@ public class xecho extends BuiltinCommand {
 		
 		
 		OutputPort stdout = mShell.getEnv().getStdout();
-		Destination dest =  stdout.asDestination(mShell.getSerializeOpts());
+		SerializeOpts serializeOpts = mShell.getSerializeOpts(opts);
+		Destination dest =  stdout.asDestination(serializeOpts);
 
 		args = Util.expandSequences( args);
 		

@@ -38,7 +38,7 @@ public class xcat extends XCommand {
 		
 
 
-		Options opts = new Options( "w=wrap:,r=root,method:" , args );
+		Options opts = new Options( "w=wrap:,r=root,method:" ,  SerializeOpts.getOptionDefs() , args );
 		opts.parse();
 		
 		// root node
@@ -88,10 +88,7 @@ public class xcat extends XCommand {
 		
 		
 		// Use a copy of the serialize opts so we can override the method 
-		SerializeOpts serializeOpts = getSerializeOpts().clone();
-		if( opts.hasOpt("method"))
-			serializeOpts.setMethod(opts.getOptString("method", "xml"));
-			
+		SerializeOpts serializeOpts = getSerializeOpts(opts);
 		
 		
 		if( context == null && ! hasFiles ){

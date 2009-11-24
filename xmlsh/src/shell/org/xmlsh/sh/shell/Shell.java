@@ -32,12 +32,14 @@ import org.xmlsh.core.CommandFactory;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.ICommand;
 import org.xmlsh.core.InvalidArgumentException;
+import org.xmlsh.core.Options;
 import org.xmlsh.core.Path;
 import org.xmlsh.core.ThrowException;
 import org.xmlsh.core.XDynamicVariable;
 import org.xmlsh.core.XEnvironment;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.XVariable;
+import org.xmlsh.core.Options.OptionValue;
 import org.xmlsh.core.XVariable.XVarFlag;
 import org.xmlsh.sh.core.Command;
 import org.xmlsh.sh.core.FunctionDefinition;
@@ -724,11 +726,19 @@ public class Shell {
 		
 		
 	}
-
+	
+	
 	public File getExplicitFile(String name, boolean mustExist ) throws IOException {
+		return getExplicitFile( null , name,mustExist );
+	}
+	
+	
+	public File getExplicitFile(File dir , String name, boolean mustExist ) throws IOException {
+	
+	
 		File file=null;
 		try {
-			file = new File( name).getCanonicalFile();
+			file = new File( dir , name).getCanonicalFile();
 			if(  mustExist && ! file.exists() )
 				return null;
 
@@ -807,6 +817,11 @@ public class Shell {
 	 */
 	public void setStatus(int status) {
 		mStatus = status;
+	}
+
+	
+	public File getFile(File dir, String file) throws IOException {
+		return getExplicitFile( dir, file , false);
 	}
 
 	
@@ -1076,17 +1091,12 @@ public class Shell {
 
 
 	public void setOption(String name, boolean flag) {
-		mOpts.set(name,flag);
-		
-	}
-	public SerializeOpts getSerializeOpts()
-	{
-		return mOpts.mSerialize;
+		mOpts.setOption(name,flag);
 		
 	}
 
 	public void setOption(String name, XValue value) throws InvalidArgumentException {
-		mOpts.set(name,value);
+		mOpts.setOption(name,value);
 		
 	}
 
@@ -1138,6 +1148,37 @@ public class Shell {
 		return null;
 	
 	}
+
+
+	public void setOptions(Options opts) throws InvalidArgumentException {
+		for( OptionValue ov : opts.getOpts()){
+			setOption(ov);
+		}
+		
+	}
+
+
+	private void setOption(OptionValue ov) throws InvalidArgumentException {
+		mOpts.setOption(ov);
+
+	}
+
+
+	public SerializeOpts getSerializeOpts(Options opts) throws InvalidArgumentException {
+		if( opts == null || opts.getOpts() == null )
+			return mOpts.mSerialize;
+		
+		SerializeOpts sopts = mOpts.mSerialize.clone();
+		sopts.setOptions(opts);
+		return sopts;
+	}
+
+	public SerializeOpts getSerializeOpts()
+	{
+		return mOpts.mSerialize;
+		
+	}
+
 
 
 	

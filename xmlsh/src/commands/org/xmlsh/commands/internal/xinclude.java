@@ -17,6 +17,7 @@ import javax.xml.stream.XMLStreamWriter;
 import org.xml.sax.InputSource;
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.InvalidArgumentException;
+import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
@@ -32,6 +33,13 @@ public class xinclude extends XCommand {
 	@Override
 	public int run(List<XValue> args) throws Exception {
 		
+		
+
+		Options opts = new Options( SerializeOpts.getOptionDefs() , args );
+		opts.parse();
+		args = opts.getRemainingArgs();
+		
+		
 		InputPort stdin = null;
 		if( args.size() > 0 )
 			stdin = getInput( args.get(0));
@@ -41,7 +49,7 @@ public class xinclude extends XCommand {
 			throw new InvalidArgumentException("Cannot open input");
 		try {
 			
-			SerializeOpts opts = getSerializeOpts();
+			SerializeOpts sopts = getSerializeOpts(opts);
 			
 			
 
@@ -55,12 +63,12 @@ public class xinclude extends XCommand {
 			SAXParser parser = f.newSAXParser();
 			
 			OutputPort stdout = getStdout();
-			XMLStreamWriter w = stdout.asXMLStreamWriter(opts);
+			XMLStreamWriter w = stdout.asXMLStreamWriter(sopts);
 			
 			ContentHandlerToXMLStreamWriter	handler = new ContentHandlerToXMLStreamWriter(w);
 			
 			
-			InputSource	source = stdin.asInputSource(opts);
+			InputSource	source = stdin.asInputSource(sopts);
 
 			
 			parser.parse( source ,  handler );

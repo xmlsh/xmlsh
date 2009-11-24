@@ -13,6 +13,7 @@ import java.util.List;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
+import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.types.XFile;
 
 
@@ -43,7 +44,7 @@ public class xfile extends XCommand
 	
 	public int run(  List<XValue> args  )	throws Exception
 	{
-		Options opts = new Options("n=name,b=base,d=dir,a=all,c=conanical,e=extension,B=basename,N=pathname,s=sys,u=uri",args);
+		Options opts = new Options("n=name,b=base,d=dir,a=all,c=conanical,e=extension,B=basename,N=pathname,s=sys,u=uri",SerializeOpts.getOptionDefs(),args);
 		opts.parse();
 		args = opts.getRemainingArgs();
 		
@@ -60,7 +61,8 @@ public class xfile extends XCommand
 		
 		boolean opt_sys = opts.hasOpt("s");
 		
-		PrintWriter out = getStdout().asPrintWriter(getSerializeOpts());
+		SerializeOpts serializeOpts = getSerializeOpts(opts);
+		PrintWriter out = getStdout().asPrintWriter(serializeOpts);
 		
 		if( opts.hasOpt("b") )
 			out.println( toSys(xf.getBaseName(),opt_sys));

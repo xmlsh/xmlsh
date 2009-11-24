@@ -53,12 +53,15 @@ public abstract class BuiltinCommand implements ICommand {
 		
 	}
 	
-	protected SerializeOpts getSerializeOpts()
+	protected SerializeOpts getSerializeOpts(Options opts) throws InvalidArgumentException
 	{
-		return mShell.getSerializeOpts();
+		return mShell.getSerializeOpts(opts);
 	}
 
-	
+	protected SerializeOpts getSerializeOpts() throws InvalidArgumentException
+	{
+		return mShell.getSerializeOpts(null);
+	}
 	
 }
 //

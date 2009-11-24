@@ -69,7 +69,7 @@ public class xslt extends XCommand {
 	@Override
 	public int run(List<XValue> args) throws Exception {
 
-		Options opts = new Options("f:,i:,n,v,method:", args);
+		Options opts = new Options("f:,i:,n,v",SerializeOpts.getOptionDefs(), args);
 		opts.parse();
 		PrintStream ps;
 		Processor processor = Shell.getProcessor();
@@ -82,9 +82,8 @@ public class xslt extends XCommand {
 
 		
 		// Use a copy of the serialize opts so we can override the method 
-		SerializeOpts serializeOpts = getSerializeOpts().clone();
-		if( opts.hasOpt("method"))
-			serializeOpts.setMethod(opts.getOptString("method", "xml"));
+		SerializeOpts serializeOpts = getSerializeOpts(opts);
+
 			
 		
 		

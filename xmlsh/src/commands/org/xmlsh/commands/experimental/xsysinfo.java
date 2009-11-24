@@ -15,18 +15,23 @@ import java.util.List;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
+import org.xmlsh.sh.shell.SerializeOpts;
 
 public class xsysinfo extends XCommand {
 
 	
 	public int run(  List<XValue> args ) throws Exception {
 	
-	      
+		Options opts = new Options(SerializeOpts.getOptionDefs() ,args);
+		opts.parse();
+		args = opts.getRemainingArgs();
+	
 		OutputPort stdout = getEnv().getStdout();
-		XMLStreamWriter writer = stdout.asXMLStreamWriter(getSerializeOpts());
+		XMLStreamWriter writer = stdout.asXMLStreamWriter(getSerializeOpts(opts));
 	
 		writer.writeStartDocument();
 

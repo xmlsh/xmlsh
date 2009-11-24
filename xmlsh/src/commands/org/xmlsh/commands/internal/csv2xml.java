@@ -22,6 +22,7 @@ import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
+import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.util.Util;
 
 /*
@@ -47,7 +48,7 @@ public class csv2xml extends XCommand
 
 		
 
-		Options opts = new Options( "root:,row:,col:,header,attr,encoding:,delim:,quote:,colnames:,tab" , args );
+		Options opts = new Options( "root:,row:,col:,header,attr,encoding:,delim:,quote:,colnames:,tab,skip:", SerializeOpts.getOptionDefs() , args );
 		opts.parse();
 		
 		// root node
@@ -59,6 +60,8 @@ public class csv2xml extends XCommand
 		String encoding = opts.getOptString("encoding", "Cp1252");
 		boolean bHeader = opts.hasOpt("header");
 		boolean bAttr = opts.hasOpt("attr");
+		int	skip = Util.parseInt(opts.getOptString("skip", "0"),0);
+		
 		// -tab overrides -delim
 		if( opts.hasOpt("tab"))
 			delim = "\t";
@@ -71,7 +74,8 @@ public class csv2xml extends XCommand
 // Output XML
 
 		OutputPort stdout = getStdout();
-		XMLStreamWriter writer = stdout.asXMLStreamWriter(getSerializeOpts());
+		SerializeOpts serializeOpts = getSerializeOpts(opts);
+		XMLStreamWriter writer = stdout.asXMLStreamWriter(serializeOpts);
 		
 		writer.writeStartDocument();
 		
@@ -82,7 +86,7 @@ public class csv2xml extends XCommand
 		
 		InputStream in = null;
 		if( xvargs.size() == 0 )
-			in = getStdin().asInputStream(getSerializeOpts());
+			in = getStdin().asInputStream(serializeOpts);
 		else
 			in = getInputStream( xvargs.get(0) );
 		
@@ -90,17 +94,23 @@ public class csv2xml extends XCommand
 		Reader ir = new InputStreamReader( in , encoding );
 		CSVParser parser = new CSVParser( delim.charAt(0), quote.charAt(0) );
 		
+		while( skip-- > 0 )
+			readLine(ir);
+		
+		
 		CSVRecord header = null ;
 		if( bHeader ){
 			String line = readLine(ir);
 			if( line != null )
 				header = parser.parseLine(line);
-		} else 
+		} 
+		
+		// Even if bHeader override the colnames
 		if( opts.hasOpt("colnames")){
 			header = parseCols( opts.getOptValue("colnames"));
-			
-			
 		}
+		
+
 		
 		String line;
 		while( (line = readLine(ir)) != null ){

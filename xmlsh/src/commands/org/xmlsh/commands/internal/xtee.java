@@ -15,6 +15,7 @@ import javax.xml.stream.events.XMLEvent;
 
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.InvalidArgumentException;
+import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
@@ -25,6 +26,11 @@ public class xtee extends XCommand {
 
 	@Override
 	public int run(List<XValue> args) throws Exception {
+		
+		Options opts = new Options(	SerializeOpts.getOptionDefs() , args );
+		opts.parse();
+		args = opts.getRemainingArgs();
+		
 		
 		// List of outputs to tee to
 		List<XMLEventWriter>	writers = new ArrayList<XMLEventWriter>();
@@ -39,16 +45,16 @@ public class xtee extends XCommand {
 		
 		try {
 			
-			SerializeOpts opts = getSerializeOpts();
+			SerializeOpts sopts = getSerializeOpts(opts);
 			
-			XMLEventReader	reader = stdin.asXMLEventReader(opts);
+			XMLEventReader	reader = stdin.asXMLEventReader(sopts);
 			OutputPort stdout = getStdout();
 			
-			writers.add(stdout.asXMLEventWriter(opts));
+			writers.add(stdout.asXMLEventWriter(sopts));
 			
 			for( XValue arg : args ){
 				OutputPort output = getEnv().getOutput(arg, false);
-				writers.add( output.asXMLEventWriter(opts));
+				writers.add( output.asXMLEventWriter(sopts));
 				closeme.add(output);
 			}
 		

@@ -31,7 +31,7 @@ public class xvalidate extends XCommand {
 	{
 
 		
-		Options opts = new Options( "xsd:,dtd:,rng:,schematron:" , args );
+		Options opts = new Options( "xsd:,dtd:,rng:,schematron:" , SerializeOpts.getOptionDefs() ,args );
 		opts.parse();
 		
 		
@@ -53,7 +53,7 @@ public class xvalidate extends XCommand {
 			schema = opts.getOptStringRequired("xsd");
 
 		
-		SerializeOpts sopts = getSerializeOpts();
+		SerializeOpts sopts = getSerializeOpts(opts);
 		args= opts.getRemainingArgs();
 		InputPort in = null;
 		

@@ -16,6 +16,7 @@ import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
+import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.util.Util;
 
 
@@ -43,11 +44,13 @@ public class xuri extends XCommand
 	
 	public int run(  List<XValue> args  )	throws Exception
 	{
-		Options opts = new Options("a=authority,f=fragment,h=host,p=path,P=port,q=query,s=scheme,r=resource:",args);
+		
+		Options opts = new Options("a=authority,f=fragment,h=host,p=path,P=port,q=query,s=scheme,r=resource:",SerializeOpts.getOptionDefs() ,args);
 		opts.parse();
 		args = opts.getRemainingArgs();
 		
-		PrintWriter out = getEnv().getStdout().asPrintWriter(getSerializeOpts());
+		SerializeOpts serializeOpts = getSerializeOpts(opts);
+		PrintWriter out = getEnv().getStdout().asPrintWriter(serializeOpts);
 		
 		URI uri = null ;
 

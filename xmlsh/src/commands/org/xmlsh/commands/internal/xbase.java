@@ -14,6 +14,7 @@ import javax.xml.stream.Location;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.events.XMLEvent;
 
+import org.xmlsh.core.Options;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.SerializeOpts;
@@ -35,13 +36,15 @@ public class xbase extends XCommand {
 
 		
 		
-
+		Options opts = new Options( SerializeOpts.getOptionDefs() , args );
+		opts.parse();
+		args = opts.getRemainingArgs();
 		
 		
 
-		SerializeOpts opts = getSerializeOpts();
+		SerializeOpts sopts = getSerializeOpts(opts);
 
-		XMLStreamReader reader = getStdin().asXMLStreamReader(opts);
+		XMLStreamReader reader = getStdin().asXMLStreamReader(sopts);
 		do {
 		
 			if( reader.getEventType() == XMLEvent.START_ELEMENT )
@@ -63,7 +66,7 @@ public class xbase extends XCommand {
 		
 		reader.close();
 		
-		PrintWriter out = getStdout().asPrintWriter(opts);
+		PrintWriter out = getStdout().asPrintWriter(sopts);
 		
 		out.println(sBase );
 	

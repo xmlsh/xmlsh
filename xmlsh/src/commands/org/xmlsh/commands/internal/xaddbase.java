@@ -27,6 +27,7 @@ import javax.xml.stream.events.XMLEvent;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
+import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.util.Util;
 
 
@@ -44,12 +45,13 @@ public class xaddbase extends XCommand {
 		boolean		opt_relative = false ;
 		
 		
-		Options opts = new Options( "a=all,r=relative" , args );
+		Options opts = new Options( "a=all,r=relative" , SerializeOpts.getOptionDefs() , args );
 		opts.parse();
 	
 		
-		XMLEventReader reader = getStdin().asXMLEventReader(getSerializeOpts());
-		XMLEventWriter writer = getStdout().asXMLEventWriter(getSerializeOpts());
+		SerializeOpts serializeOpts = getSerializeOpts(opts);
+		XMLEventReader reader = getStdin().asXMLEventReader(serializeOpts);
+		XMLEventWriter writer = getStdout().asXMLEventWriter(serializeOpts);
 		
 		opt_all 	= opts.hasOpt("all");
 		opt_relative = opts.hasOpt("relative");

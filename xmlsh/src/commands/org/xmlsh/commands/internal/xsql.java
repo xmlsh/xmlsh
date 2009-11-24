@@ -23,6 +23,7 @@ import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
+import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.util.Util;
 
 public class xsql extends XCommand {
@@ -34,7 +35,7 @@ public class xsql extends XCommand {
 		
 		Properties options = null;
 		
-		Options opts = new Options( "cp=classpath:,d=driver:,u=user:,p=password:,root:,row:,attr,c=connect:,q=query:,o=option:+" , args );
+		Options opts = new Options( "cp=classpath:,d=driver:,u=user:,p=password:,root:,row:,attr,c=connect:,q=query:,o=option:+" ,SerializeOpts.getOptionDefs(), args );
 		opts.parse();
 		
 		String root = opts.getOptString("root", "root");
@@ -80,7 +81,8 @@ public class xsql extends XCommand {
 			pStmt = conn.createStatement();
 			
 			OutputPort stdout = getStdout();
-			XMLStreamWriter writer = stdout.asXMLStreamWriter(getSerializeOpts());
+			SerializeOpts serializeOpts = getSerializeOpts(opts);
+			XMLStreamWriter writer = stdout.asXMLStreamWriter(serializeOpts);
 			
 			writer.writeStartDocument();		
 			writer.writeStartElement(root);

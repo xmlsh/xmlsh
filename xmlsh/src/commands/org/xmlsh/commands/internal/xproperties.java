@@ -22,6 +22,7 @@ import javax.xml.stream.XMLStreamException;
 
 import net.sf.saxon.s9api.SaxonApiException;
 import org.xmlsh.core.CoreException;
+import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XCommand;
@@ -43,7 +44,7 @@ public class xproperties extends XCommand
 
 		
 
-		Options opts = new Options( "in:,inxml:,text,xml,d=delete:+,v=var:+,a=add:+,c=comment:" , args );
+		Options opts = new Options( "in:,inxml:,text,xml,d=delete:+,v=var:+,a=add:+,c=comment:" , SerializeOpts.getOptionDefs() , args );
 		opts.parse();
 	
 		XValue optIn 		= opts.getOptValue("in");
@@ -69,7 +70,7 @@ public class xproperties extends XCommand
 		
 		
 		Properties props = new Properties();
-		SerializeOpts serializeOpts = getSerializeOpts();
+		SerializeOpts serializeOpts = getSerializeOpts(opts);
 		if( optInXml != null  )
 			props.loadFromXML(getInput(optInXml).asInputStream(serializeOpts));
 		else
@@ -122,7 +123,7 @@ public class xproperties extends XCommand
 		
 	}
 
-	private void writeVars(Properties props, List<String> vars ) throws UnsupportedEncodingException, IOException {
+	private void writeVars(Properties props, List<String> vars ) throws UnsupportedEncodingException, IOException, InvalidArgumentException {
 		
 		PrintWriter out = getStdout().asPrintWriter(getSerializeOpts());
 		for( String var : vars )
