@@ -105,7 +105,7 @@ public class xfile extends XCommand
 		if( opt_sys && File.separatorChar != '/')
 			return name.replace('/', File.separatorChar);
 		else
-			return name;
+			return name.replace(File.separatorChar, '/');
 			
 	}
 	

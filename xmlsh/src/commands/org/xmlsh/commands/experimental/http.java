@@ -36,7 +36,7 @@ public class http extends XCommand {
 	throws Exception 
 	{
 		
-		Options opts = new Options( "get:,put:,post:,head:,options:,delete:,connectTimeout:,readTimeout:,+useCaches,+followRedirects,user:,password:" , args );
+		Options opts = new Options( "get:,put:,post:,head:,options:,delete:,connectTimeout:,contentType:,readTimeout:,+useCaches,+followRedirects,user:,password:" , args );
 		opts.parse();
 		String method = "GET";
 		boolean doInput = true ;
@@ -157,6 +157,11 @@ public class http extends XCommand {
 		
 		if( opts.hasOpt("followRedirects"))
 			http.setInstanceFollowRedirects(  opts.getOpt("followRedirects").getFlag());	
+		
+
+		if( opts.hasOpt("contentType"))
+			http.setRequestProperty("Content-Type", opts.getOptString("contentType", "text/xml"));
+
 		
 		String user = opts.getOptString("user", null);
 		String pass = opts.getOptString("password", null);

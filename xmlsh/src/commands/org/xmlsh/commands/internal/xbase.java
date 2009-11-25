@@ -33,8 +33,6 @@ public class xbase extends XCommand {
 	public int run( List<XValue> args )
 	throws Exception 
 	{
-
-		
 		
 		Options opts = new Options( SerializeOpts.getOptionDefs() , args );
 		opts.parse();
@@ -44,7 +42,11 @@ public class xbase extends XCommand {
 
 		SerializeOpts sopts = getSerializeOpts(opts);
 
-		XMLStreamReader reader = getStdin().asXMLStreamReader(sopts);
+		XMLStreamReader reader = 
+			args.isEmpty() ?	getStdin().asXMLStreamReader(sopts) :
+			getInput(args.get(0)).asXMLStreamReader(sopts);
+				
+		
 		do {
 		
 			if( reader.getEventType() == XMLEvent.START_ELEMENT )

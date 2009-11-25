@@ -17,6 +17,7 @@ import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.XPathCompiler;
 import net.sf.saxon.s9api.XPathExecutable;
 import net.sf.saxon.s9api.XPathSelector;
+import net.sf.saxon.s9api.XdmAtomicValue;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
 import org.xmlsh.core.CoreException;
@@ -37,9 +38,12 @@ public class xpath extends XCommand {
 	@Override
 	public int run(List<XValue> args) throws Exception {
 
-		Options opts = new Options("f:,i:,q:,n,v,e,b,nons,ns:+", SerializeOpts.getOptionDefs(), args);
+		Options opts = new Options("f=file:,i=input:,q=query:,n,v,e=exists,b=bool,nons,ns:+,s=string", SerializeOpts.getOptionDefs(), args);
 		opts.parse();
 
+		
+		boolean bString = 	opts.hasOpt("s");
+		
 		Processor processor = Shell.getProcessor();
 
 		XPathCompiler compiler = processor.newXPathCompiler();
@@ -167,6 +171,9 @@ public class xpath extends XCommand {
 					}
 					bFirst = false;
 
+					if( bString && item instanceof XdmNode )
+						item = new XdmAtomicValue( ((XdmNode) item).getStringValue());
+					
 					processor.writeXdmValue(item, ser);
 
 				}

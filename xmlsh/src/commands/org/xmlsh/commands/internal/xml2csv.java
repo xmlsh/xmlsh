@@ -68,6 +68,7 @@ public class xml2csv extends XCommand
 		
 		bHeader = opts.hasOpt("header");
 		bAttr = opts.hasOpt("attr");
+	
 		
 		
 		String delim = opts.getOptString("delim", ",");
