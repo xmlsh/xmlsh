@@ -82,7 +82,7 @@ public class put extends MLCommand {
 	public void load (InputPort port , String uri ) throws CoreException, IOException, RequestException
 	{
 
-		Content content= ContentFactory.newContent (uri, port.asInputStream(getSerializeOpts()), options);
+		Content content= ContentFactory.newUnBufferedContent (uri, port.asInputStream(getSerializeOpts()), options);
 		
 
 		session.insertContent (content);
