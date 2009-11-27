@@ -231,8 +231,10 @@ class Expander {
 				continue;
 			}
 			if( cQuote != '\'' && c == '$'){
-				if( ++i == arg.length() )
+				if( ++i == arg.length() ){
+					result.append('$'); // Special case of a single "$"
 					break;
+				}
 				
 				StringBuffer sbv = new StringBuffer();
 				if( arg.charAt(i) == '{') {

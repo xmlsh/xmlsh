@@ -83,4 +83,8 @@ set +indent
 set -indent
 [ "$1" = "ARG" ] || echo Arg1 should still be set
 
+# Test echo $
+a=$(echo $)
+[ "$a" = "$" ] || echo Failed echo of $
+
 exit 0
