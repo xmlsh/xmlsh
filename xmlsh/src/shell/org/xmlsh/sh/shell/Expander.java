@@ -435,22 +435,7 @@ class Expander {
 
 			ArrayList<XdmItem> items = new ArrayList<XdmItem>(result.size());
 			
-			// Convert any bare attribute values to strings
-			{
-				boolean bConverted = false ;
-				for( XdmItem item : result ){
-					if( item instanceof XdmNode ){
-						XdmNode node = (XdmNode) item ;
-						if( node.getNodeKind() == XdmNodeKind.ATTRIBUTE ){
-							item = new XdmAtomicValue( node.getStringValue());
-							bConverted = true ;
-						}	
-					}
-					items.add(item);
-				}
-				if( bConverted ) result = new XdmValue( items );
-				
-			}
+			
 			return result ;
 			
 			

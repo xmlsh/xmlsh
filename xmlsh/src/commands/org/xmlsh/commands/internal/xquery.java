@@ -186,7 +186,7 @@ public class xquery extends XCommand {
 				
 				if( item instanceof XdmNode ){
 					XdmNode node = (XdmNode) item ;
-					if( bString  || node.getNodeKind() == XdmNodeKind.ATTRIBUTE )
+					if( bString  )
 						item = new XdmAtomicValue( node.getStringValue());
 					
 				}

@@ -11,6 +11,7 @@ import java.util.List;
 
 import net.sf.saxon.s9api.Destination;
 import net.sf.saxon.s9api.XdmNode;
+import net.sf.saxon.s9api.XdmNodeKind;
 import net.sf.saxon.s9api.XdmValue;
 import org.xmlsh.core.BuiltinCommand;
 import org.xmlsh.core.Options;
@@ -45,8 +46,12 @@ public class xecho extends BuiltinCommand {
 				else {
 					 XdmValue item = arg.asXdmValue();
 					if( item instanceof XdmNode ){
-						URI uri = ((XdmNode)item).getBaseURI();
-						stdout.setSystemId( uri.toString() );
+						XdmNode xdmNode = ((XdmNode)item);
+						// DAL: Note workaround bug in Saxon, crashes if getBaseURI on Attribute
+						if( xdmNode.getNodeKind() != XdmNodeKind.ATTRIBUTE ){
+							URI uri = xdmNode.getBaseURI();
+							stdout.setSystemId( uri.toString() );
+						}
 					}
 				}
 				

@@ -172,7 +172,7 @@ public class xpath extends XCommand {
 					bFirst = false;
 					if( item instanceof XdmNode ){
 						XdmNode node = (XdmNode) item ;
-						if( bString  || node.getNodeKind() == XdmNodeKind.ATTRIBUTE )
+						if( bString  )
 							item = new XdmAtomicValue( node.getStringValue());
 						
 					}

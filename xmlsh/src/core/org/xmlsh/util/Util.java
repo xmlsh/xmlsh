@@ -47,8 +47,10 @@ import net.sf.saxon.s9api.Destination;
 import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.Serializer;
+import net.sf.saxon.s9api.XdmAtomicValue;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
+import net.sf.saxon.s9api.XdmNodeKind;
 import net.sf.saxon.s9api.XdmValue;
 import net.sf.saxon.trans.XPathException;
 import org.xmlsh.core.Namespaces;
@@ -581,6 +583,16 @@ public class Util
 
 	public static void writeXdmValue(XdmValue value, Destination destination) throws SaxonApiException {
 	    try {
+	    	
+	    	if( value instanceof XdmNode ){
+				XdmNode node = (XdmNode) value ;
+				if( node.getNodeKind() == XdmNodeKind.ATTRIBUTE )
+					value = new XdmAtomicValue( node.getStringValue());
+				
+			}
+	    	
+	    	
+	    	
 	        Receiver out = destination.getReceiver(Shell.getProcessor().getUnderlyingConfiguration());
 	        //out = new NamespaceReducer(out);
 	        ComplexContentOutputter out2 = new ComplexContentOutputter();
