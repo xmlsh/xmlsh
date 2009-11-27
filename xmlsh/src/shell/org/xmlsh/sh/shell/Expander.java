@@ -20,6 +20,10 @@ import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XQueryCompiler;
 import net.sf.saxon.s9api.XQueryEvaluator;
 import net.sf.saxon.s9api.XQueryExecutable;
+import net.sf.saxon.s9api.XdmAtomicValue;
+import net.sf.saxon.s9api.XdmItem;
+import net.sf.saxon.s9api.XdmNode;
+import net.sf.saxon.s9api.XdmNodeKind;
 import net.sf.saxon.s9api.XdmValue;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -427,7 +431,30 @@ class Expander {
 			eval.setExternalVariable( new QName("_") , new XValue(mShell.getArgs()).asXdmValue() );
 			
 			
-			return eval.evaluate();
+			XdmValue result =  eval.evaluate();
+
+			ArrayList<XdmItem> items = new ArrayList<XdmItem>(result.size());
+			
+			// Convert any bare attribute values to strings
+			{
+				boolean bConverted = false ;
+				for( XdmItem item : result ){
+					if( item instanceof XdmNode ){
+						XdmNode node = (XdmNode) item ;
+						if( node.getNodeKind() == XdmNodeKind.ATTRIBUTE ){
+							item = new XdmAtomicValue( node.getStringValue());
+							bConverted = true ;
+						}	
+					}
+					items.add(item);
+				}
+				if( bConverted ) result = new XdmValue( items );
+				
+			}
+			return result ;
+			
+			
+			
 			
 		} catch (SaxonApiException e) {
 			mLogger.warn("Error expanding xml expression: " + arg , e );

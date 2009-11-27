@@ -20,6 +20,7 @@ import net.sf.saxon.s9api.XPathSelector;
 import net.sf.saxon.s9api.XdmAtomicValue;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
+import net.sf.saxon.s9api.XdmNodeKind;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.Namespaces;
@@ -31,7 +32,6 @@ import org.xmlsh.core.Options.OptionValue;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.Util;
-import org.xmlsh.xpath.ShellContext;
 
 public class xpath extends XCommand {
 
@@ -170,11 +170,14 @@ public class xpath extends XCommand {
 						}
 					}
 					bFirst = false;
-
-					if( bString && item instanceof XdmNode )
-						item = new XdmAtomicValue( ((XdmNode) item).getStringValue());
+					if( item instanceof XdmNode ){
+						XdmNode node = (XdmNode) item ;
+						if( bString  || node.getNodeKind() == XdmNodeKind.ATTRIBUTE )
+							item = new XdmAtomicValue( node.getStringValue());
+						
+					}
 					
-					processor.writeXdmValue(item, ser);
+					Util.writeXdmValue(item, ser);
 
 				}
 				if (!bQuiet && bAnyOutput)
