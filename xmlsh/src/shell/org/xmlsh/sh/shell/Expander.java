@@ -20,10 +20,7 @@ import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XQueryCompiler;
 import net.sf.saxon.s9api.XQueryEvaluator;
 import net.sf.saxon.s9api.XQueryExecutable;
-import net.sf.saxon.s9api.XdmAtomicValue;
 import net.sf.saxon.s9api.XdmItem;
-import net.sf.saxon.s9api.XdmNode;
-import net.sf.saxon.s9api.XdmNodeKind;
 import net.sf.saxon.s9api.XdmValue;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -33,6 +30,7 @@ import org.xmlsh.core.XVariable;
 import org.xmlsh.core.XVariable.XVarFlag;
 import org.xmlsh.util.NameValueMap;
 import org.xmlsh.util.Util;
+import org.xmlsh.xpath.EvalDefinition;
 import org.xmlsh.xpath.ShellContext;
 
 class Expander {
@@ -379,7 +377,7 @@ class Expander {
 
 		// Declare the extension function namespace
 		// This can be overridden by user declarations
-		compiler.declareNamespace("xmlsh", "java:org.xmlsh.xpath.XPathFunctions");
+		compiler.declareNamespace("xmlsh", EvalDefinition.kXMLSH_EXT_NAMESPACE);
 		
 		NameValueMap<String> ns = mShell.getEnv().getNamespaces();
 		if( ns != null ){

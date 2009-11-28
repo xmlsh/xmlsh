@@ -21,7 +21,6 @@ import net.sf.saxon.om.SequenceIterator;
 import net.sf.saxon.om.SingletonIterator;
 import net.sf.saxon.om.ValueRepresentation;
 import net.sf.saxon.s9api.Processor;
-import net.sf.saxon.s9api.S9Util;
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.SaxonApiUncheckedException;
 import net.sf.saxon.s9api.Serializer;
@@ -39,6 +38,7 @@ import net.sf.saxon.value.Value;
 import org.apache.log4j.Logger;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.util.S9Util;
 import org.xmlsh.util.Util;
 
 public class XValue {

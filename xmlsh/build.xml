@@ -69,7 +69,7 @@ version.release=${release}
   <target name="test" description="Test Cases">
   	<java 
   		classname="org.xmlsh.sh.shell.Shell"
-  		classpath="bin/xmlsh.jar;lib/log4j-1.2.7.jar;lib/saxon9.jar;lib/saxon9-s9api.jar;lib/saxon9-dom.jar;lib/xercesImpl.jar;lib/woodstox-core-asl-4.0.3.jar;lib/stax2-api-3.0.1.jar;lib/stax-utils.jar"
+  		classpath="bin/xmlsh.jar;lib/log4j-1.2.7.jar;lib/saxon9he.jar;lib/xercesImpl.jar;lib/woodstox-core-asl-4.0.3.jar;lib/stax2-api-3.0.1.jar;lib/stax-utils.jar"
   		fork="true"
   	    dir="test">
   			<arg value="./run_tests.xsh"/>

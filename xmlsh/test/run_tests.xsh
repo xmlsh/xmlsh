@@ -10,7 +10,10 @@ TMPDIR=$(xfile $(xfile -c $TMPDIR))
 
 
 # Use internal posix module
-import package org.xmlsh.commands.posix 
+import commands posix
+
+passed=<[ 0 ]>
+failed=<[ 0 ]>
 
 EXTERNS=<["ls","touch","rm","cat","sleep","chmod"]>
 echo Some of these tests require access to the internet
@@ -34,11 +37,15 @@ for d in core builtin internal posix $EXTRA; do
      # run test 
      ../run_test.xsh $test 
      if [ $? -ne 0 ] ; then	
-     	echo failed test $test ; exit 1 ;
+     	echo failed test $test ;
+     	failed=<[  $failed + 1 ]>
+     else
+     	passed=<[ $passed + 1 ]>
      fi
    done
    cd ..
 done
 
-echo Success
+echo Passed: <[ $passed ]>
+echo Failed: <[ $failed ]>
          

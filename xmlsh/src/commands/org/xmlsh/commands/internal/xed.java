@@ -11,13 +11,14 @@ import java.util.List;
 
 import javax.xml.transform.Source;
 
-import net.sf.saxon.AugmentedSource;
-import net.sf.saxon.event.Builder;
+import net.sf.saxon.om.AxisIterator;
 import net.sf.saxon.om.DocumentInfo;
+import net.sf.saxon.om.Item;
 import net.sf.saxon.om.MutableNodeInfo;
 import net.sf.saxon.om.NamePool;
 import net.sf.saxon.om.NodeInfo;
 import net.sf.saxon.om.StandardNames;
+import net.sf.saxon.om.TreeModel;
 import net.sf.saxon.s9api.Axis;
 import net.sf.saxon.s9api.DocumentBuilder;
 import net.sf.saxon.s9api.Processor;
@@ -33,7 +34,6 @@ import net.sf.saxon.s9api.XdmNodeKind;
 import net.sf.saxon.s9api.XdmSequenceIterator;
 import net.sf.saxon.trans.XPathException;
 import net.sf.saxon.tree.DocumentImpl;
-import net.sf.saxon.tree.SaxonUtil;
 import net.sf.saxon.type.Type;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Namespaces;
@@ -64,6 +64,7 @@ public class xed extends XCommand {
 
 		mCompiler = mProcessor.newXPathCompiler();
 		mBuilder = mProcessor.newDocumentBuilder();
+		mBuilder.setTreeModel(TreeModel.LINKED_TREE);
 		
 		Namespaces ns = getEnv().getNamespaces();
 		if( ns != null ){
@@ -282,9 +283,9 @@ public class xed extends XCommand {
 
 		NamePool pool = node.getNamePool();
 		int nameCode  = pool.allocate(prefix , uri , local  );
-		node.putAttribute(nameCode,  StandardNames.XS_UNTYPED_ATOMIC, value , 0);
+		node.addAttribute(nameCode,  StandardNames.XS_UNTYPED_ATOMIC, value , 0);
 		if( !Util.isEmpty(prefix) ){
-			int nsCode = pool.allocateNamespaceCode(nameCode);
+			int nsCode = pool.allocateNamespaceCode(prefix,uri);
 			node.addNamespace(nsCode, false);
 		}
 	}
@@ -297,6 +298,12 @@ public class xed extends XCommand {
 			XdmNode xnode = (XdmNode) replace.asXdmValue();
 			if( xnode.getNodeKind() == 	XdmNodeKind.ATTRIBUTE ) {
 				NodeInfo anode = xnode.getUnderlyingNode();
+				
+				NodeInfo existsAttr = this.findAttribute(node , anode );
+				if( existsAttr  != null )
+					node.removeAttribute(existsAttr);
+				
+				
 				addAttribute(node, anode.getPrefix() , anode.getURI() , anode.getLocalPart(), anode.getStringValue() );			
 			} else 
 				node.replace( new NodeInfo[]  { getNodeInfo(xnode) } , true );
@@ -307,7 +314,8 @@ public class xed extends XCommand {
 			node.replaceStringValue( replace.toString() );
 	}
 	
-	
+
+
 	private void rename(MutableNodeInfo node, String opt_rename) throws IndexOutOfBoundsException,
 			SaxonApiUncheckedException, SaxonApiException {
 		
@@ -334,7 +342,7 @@ public class xed extends XCommand {
 			node.replaceStringValue( replace );
 		else {
 			
-			NodeInfo textNode  = createTextNode( replace );
+			NodeInfo textNode  = createTextNode( node , replace );
 			node.replace( new NodeInfo[]  { textNode } , true );	
 		}
 		
@@ -345,7 +353,7 @@ public class xed extends XCommand {
 
 
 
-	private NodeInfo createTextNode(String replace) {
+	private NodeInfo createTextNode(MutableNodeInfo parent , String replace) {
 		/*
 		net.sf.saxon.om.Orphan textNode = new net.sf.saxon.om.Orphan(mProcessor.getUnderlyingConfiguration());
 		textNode.setNodeKind( Type.TEXT );
@@ -372,7 +380,17 @@ public class xed extends XCommand {
 			return null;
 		}
 		*/
-		return SaxonUtil.createTextNode(replace);
+		// return SaxonUtil.createTextNode(replace);
+		
+		/*
+		 * TOTAL HACK BECAUSE WE CANT CREATE A TEXT NODE !!!!
+		 */
+		// Make the children a text node 
+		parent.replaceStringValue(replace);
+		
+		Item item  = parent.iterateAxis( net.sf.saxon.om.Axis.CHILD ).next();
+		return (NodeInfo) item ;
+		
 		
 		
 
@@ -410,11 +428,31 @@ public class xed extends XCommand {
 		
 		if( src instanceof DocumentInfo  )
 			src = (NodeInfo)(((DocumentInfo)src).iterateAxis(net.sf.saxon.om.Axis.CHILD).next());
-			
-		AugmentedSource asrc = AugmentedSource.makeAugmentedSource(src); 
-		asrc.setTreeModel(Builder.LINKED_TREE); 
-		return mBuilder.build(asrc);
+		return mBuilder.build(src);
 		
+	}
+	
+	
+	/*
+	 * Find a matching attribute to a passed in one
+	 * Compare URI and local part
+	 */
+	
+	private NodeInfo findAttribute( NodeInfo node , NodeInfo attr )
+	{
+		
+		// Write attributes
+		AxisIterator iter = node.iterateAxis(net.sf.saxon.om.Axis.ATTRIBUTE);
+		Item item;
+		while( ( item = iter.next() ) != null ){
+			NodeInfo a = (NodeInfo) item;
+			if( a.getURI().equals(attr.getURI()) &&
+			    a.getLocalPart().equals( attr.getLocalPart()) )
+				
+			    return a;
+			
+		}
+		return null;
 	}
 
 	

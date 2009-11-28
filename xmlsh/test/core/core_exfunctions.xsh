@@ -7,7 +7,7 @@
 xecho <[ xmlsh:eval("xecho $*" , ("foo" , <bar/> , 1 )  )  ]>
 
 # Need to declare for running xquery 
-declare namespace xmlsh=java:org.xmlsh.xpath.XPathFunctions
+declare namespace xmlsh=http://www.xmlsh.org/extfuncs
 
 xquery -n 'xmlsh:eval("echo -n No Args")'
 var=<[ xmlsh:eval("xecho <[ <foo>bar</foo> ]&gt; ") ]>

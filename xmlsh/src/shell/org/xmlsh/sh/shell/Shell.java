@@ -49,6 +49,7 @@ import org.xmlsh.sh.grammar.ShellParserReader;
 import org.xmlsh.util.NullInputStream;
 import org.xmlsh.util.NullOutputStream;
 import org.xmlsh.util.Util;
+import org.xmlsh.xpath.EvalDefinition;
 import org.xmlsh.xpath.ShellContext;
 
 public class Shell {
@@ -883,6 +884,9 @@ public class Shell {
 		if( mProcessor == null ){
 			mProcessor  = new Processor(false);
 			// mProcessor.setConfigurationProperty(FeatureKeys.TREE_MODEL, net.sf.saxon.event.Builder.LINKED_TREE);
+			mProcessor.registerExtensionFunction(new EvalDefinition() );
+			
+			
 		}
 		
 		return mProcessor;

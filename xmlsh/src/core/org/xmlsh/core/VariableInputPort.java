@@ -19,9 +19,8 @@ import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.Source;
 
 import net.sf.saxon.Configuration;
-import net.sf.saxon.om.SequenceIterator;
-import net.sf.saxon.pull.PullFromIterator;
-import net.sf.saxon.pull.PullToStax;
+import net.sf.saxon.evpull.Decomposer;
+import net.sf.saxon.evpull.EventToStaxBridge;
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XdmNode;
 import org.xml.sax.InputSource;
@@ -165,12 +164,16 @@ public class VariableInputPort extends InputPort {
 	
 		Configuration config = Shell.getProcessor().getUnderlyingConfiguration();
 
-
-		SequenceIterator iter = value.asSequenceIterator();
+								
+		// SequenceIterator iter = value.asSequenceIterator();
+		Decomposer decomposed = new Decomposer( value.asNodeInfo() , config.makePipelineConfiguration()  );
 		
-		PullFromIterator pull = new PullFromIterator(	iter );
-		pull.setPipelineConfiguration( config.makePipelineConfiguration());
-		PullToStax ps = new PullToStax(  pull );
+		// EventIteratorOverSequence eviter = new EventIteratorOverSequence(iter);
+		
+		
+		EventToStaxBridge ps = new EventToStaxBridge(	decomposed , config.makePipelineConfiguration() );
+		
+		
 		
 		// TODO: Bug in Saxon 9.1.0.6 
 		// PullToStax starts in state 0 not state START_DOCUMENT
@@ -180,6 +183,7 @@ public class VariableInputPort extends InputPort {
 			} catch (XMLStreamException e) {
 				throw new CoreException(e);
 			}
+		
 		
 		return ps;
 

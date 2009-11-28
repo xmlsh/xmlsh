@@ -12,21 +12,29 @@
  * 
  */
 
-package net.sf.saxon.s9api;
+package org.xmlsh.util;
 
 import net.sf.saxon.om.Item;
 import net.sf.saxon.om.NodeInfo;
+import net.sf.saxon.s9api.XdmItem;
+import net.sf.saxon.s9api.XdmNode;
+import net.sf.saxon.s9api.XdmValue;
 
-public class S9Util {
+public class S9Util extends XdmNode {
 	
+	protected S9Util(NodeInfo node) {
+		super(node);
+		// TODO Auto-generated constructor stub
+	}
+
 	public static XdmValue	wrapNode( NodeInfo node)
 	{
 		return XdmNode.wrap(node);
 	}
 	
-	public static XdmValue	wrapItem( Item item)
+	public static XdmItem	wrapItem( Item item)
 	{
-		return XdmNode.wrap(item);
+		return XdmNode.wrapItem(item);
 	}
 	
 
