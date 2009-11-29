@@ -4,3 +4,6 @@ ant.jar
 From apache-ant 1.7.1 or greater
 http://ant.apache.org
 
+servlet-api.jar
+From Tomcat 6
+
