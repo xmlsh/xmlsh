@@ -107,7 +107,25 @@ public class XEnvironment  {
 		setVar( var );
 	}
 	
+	
+	/*
+	 * Append to a variable as a sequence 
+	 */
+	public void appendVar(String name, XValue value) throws InvalidArgumentException {
+		
 
+		XVariable var = mVars.get(name);
+		if( var == null ){
+			// If no existing variable then dont touch
+			setVar(new XVariable( name , value ));
+		}
+		var = var.clone();
+		var.setValue(  new XValue(var.getValue().asXdmValue().append(value.asXdmValue())));
+		setVar( var );
+		
+	}
+		
+	
 
 	public void setVar(String name, String value) throws InvalidArgumentException {
 		setVar( name , new XValue(value));
@@ -560,7 +578,9 @@ public class XEnvironment  {
 		var.tie(shell,expr);
 	
 	}
-		
+
+
+
 
 }
 //

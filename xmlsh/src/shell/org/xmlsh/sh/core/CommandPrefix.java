@@ -25,11 +25,11 @@ public class CommandPrefix {
 	}
 	public void add( String var , Word value )
 	{
-		mList.add( new Assign( var , value ));
+		mList.add( new Assign( var , "=" ,  value ));
 	}
 	public void add( String var , WordList value )
 	{
-		mList.add( new Assign( var , value ));
+		mList.add( new Assign( var , "=" , value ));
 	}
 	
 
@@ -45,7 +45,11 @@ public class CommandPrefix {
 	public void exec(Shell shell) throws IOException, CoreException {
 		for (Assign ass : mList) {
 			XValue value = ass.expand(shell);
-			shell.getEnv().setVar( ass.getVariable(), value );
+			if( ass.getOp().equals("+="))
+					shell.getEnv().appendVar( ass.getVariable(), value );
+			else
+				shell.getEnv().setVar( ass.getVariable(), value );
+				
 			
 		}
 		

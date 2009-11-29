@@ -15,22 +15,23 @@ import org.xmlsh.sh.shell.Shell;
 
 public class Assign {
 	private	 String		mVariable;
+	private String		mOp;		// "=" or "+-" 
 	private Word		mValue;		// a single value a=b
 	private WordList	mValueList; // a sequence constructor a=(b)
-	public Assign(String variable, Word value) {
-		super();
-		setVariable(variable);
+	public Assign(String variable, String op , Word value) {
+		mVariable = variable;
+		mOp = op ;
 		mValue = value;
 
 	}
-	public Assign(String variable, WordList value) {
-		super();
-		setVariable(variable);
+	public Assign(String variable, String op , WordList value) {
+		mVariable = variable;
+		mOp = op;
 		mValueList = value;
 	}
 	public void print(PrintWriter out) {
 		out.print(getVariable());
-		out.print("=");
+		out.print(mOp);
 		if( mValue != null )
 			mValue.print(out);
 		else
@@ -50,8 +51,9 @@ public class Assign {
 		out.print( " ");
 		
 	}
-	public void setVariable(String variable) {
-		mVariable = variable;
+	public String getOp() 
+	{
+		return mOp ;
 	}
 	public String getVariable() {
 		return mVariable;

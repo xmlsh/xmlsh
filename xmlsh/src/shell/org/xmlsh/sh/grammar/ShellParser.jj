@@ -312,6 +312,7 @@ TOKEN : {
 
 <*> TOKEN : {
 	< ASSIGN_WORD : <VARNAME> "=" >
+|   < ASSIGN_WORDPE : <VARNAME > "+=" >
 | <#VARNAME : 
 	(["0" - "9" , "a" - "z" , "A" - "Z" , "_"  ])+ |
 	"xmlns:" (["0" - "9" , "a" - "z" , "A" - "Z" , "_"  ])+
@@ -788,13 +789,23 @@ Assign assign() :
 {
 	LOOKAHEAD(2) t1=<ASSIGN_WORD> w=cmd_word()
 	 { s=t1.toString();
-		return new Assign(s.substring(0,s.length()-1)  ,w  ); 
+		return new Assign(s.substring(0,s.length()-1)  , "=" , w  );
+	} 
+
+| 	LOOKAHEAD(2) t1=<ASSIGN_WORDPE> w=cmd_word()
+	 { s=t1.toString();
+		return new Assign(s.substring(0,s.length()-2)  , "+=" , w  );
 	} 
 	
  |  
      t1=<ASSIGN_WORD>  <LPAREN> ws=cmd_words() <RPAREN> 
      { s=t1.toString();
-		return new Assign(s.substring(0,s.length()-1)  ,ws  ); 
+		return new Assign(s.substring(0,s.length()-1)  , "=" , ws  ); 
+	}
+ |  
+     t1=<ASSIGN_WORDPE>  <LPAREN> ws=cmd_words() <RPAREN> 
+     { s=t1.toString();
+		return new Assign(s.substring(0,s.length()-2)  , "+=" , ws  ); 
 	}
 	
 }
