@@ -6,13 +6,27 @@
 
 package org.xmlsh.core;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.EnumSet;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import net.sf.saxon.s9api.Processor;
+import net.sf.saxon.s9api.QName;
+import net.sf.saxon.s9api.SaxonApiException;
+import net.sf.saxon.s9api.XQueryCompiler;
+import net.sf.saxon.s9api.XQueryEvaluator;
+import net.sf.saxon.s9api.XQueryExecutable;
+import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmValue;
 import org.xml.sax.SAXException;
+import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.util.NameValueMap;
+import org.xmlsh.util.Util;
+import org.xmlsh.xpath.EvalDefinition;
+import org.xmlsh.xpath.ShellContext;
 
 public class XVariable {
 	
@@ -33,6 +47,7 @@ public class XVariable {
 	private		String	mName;
 	private		XValue	mValue;
 	private		EnumSet<XVarFlag>	mFlags;
+	private		XQueryExecutable		mTieExpr;	// Tie expression
 
 	public XVariable( String name , XValue value , EnumSet<XVarFlag> flags)
 	{
@@ -41,7 +56,13 @@ public class XVariable {
 		mFlags = flags;
 		
 	}
-	
+	public XVariable clone()
+	{
+		XVariable that = new XVariable(mName,mValue,mFlags);
+		that.mTieExpr = mTieExpr ;
+		return that ;
+		
+	}
 	public XVariable( String name , XValue value )
 	{
 		this( name , value , EnumSet.of( XVarFlag.EXPORT , XVarFlag.XEXPR ));
@@ -159,6 +180,111 @@ public class XVariable {
 		mValue = mValue.shift( n );
 		
 
+	}
+
+	public void tie(Shell shell , String expr) throws SaxonApiException {
+
+		Processor processor = Shell.getProcessor();
+		
+		XQueryCompiler compiler = processor.newXQueryCompiler();
+
+		// Declare the extension function namespace
+		// This can be overridden by user declarations
+		compiler.declareNamespace("xmlsh", EvalDefinition.kXMLSH_EXT_NAMESPACE);
+		
+		NameValueMap<String> ns = shell.getEnv().getNamespaces();
+		if( ns != null ){
+			for( String prefix : ns.keySet() ){
+				String uri = ns.get(prefix);
+				compiler.declareNamespace(prefix, uri);
+				
+			}
+			
+		}
+		
+
+		StringBuffer sb = new StringBuffer();
+
+		sb.append("declare variable $_ external;\n");
+		sb.append(expr);
+			
+		mTieExpr = compiler.compile( sb.toString() );
+			
+		
+		
+		
+	}
+	
+	private  XValue	 getTiedValue( Shell shell , XdmItem  item  , XValue arg)
+	{
+		
+
+		
+		
+		Shell saved_shell = ShellContext.set(shell);
+
+		XQueryEvaluator eval = mTieExpr.load();
+			
+			
+		try {
+					
+			eval.setExternalVariable( new QName("_") , arg.asXdmValue() );
+			eval.setContextItem(item);
+			
+			XdmValue result =  eval.evaluate();
+
+			
+			return new XValue(result) ;
+			
+			
+			
+			
+		} catch (SaxonApiException e) {
+			shell.printErr("Error expanding xml expression",e);
+		}
+		finally {
+			ShellContext.set(saved_shell);
+		
+		}
+
+		return null;
+		
+		
+	}
+	
+	/*
+	 * Get a variable value with an optional index and tie expression
+	 */
+
+	public XValue getValue(Shell shell, String ind, XValue arg) {
+	
+		XdmValue value = getValue().asXdmValue();
+		
+		/*
+		 * parse [ind] 
+		 */
+		if( ind != null ){
+		
+			if( ind.equals("*")) // special case ${var[*]}
+				 ;
+			else 
+				value = value.itemAt( Util.parseInt(ind, 0) - 1 );
+		}
+		
+		if( value == null )
+			return null ;
+		
+		// TIE expression
+		if( arg != null &&  mTieExpr != null  ){
+			if( value instanceof XdmItem )
+				return this.getTiedValue(shell, (XdmItem)value , arg);
+			
+			
+		}
+		return new XValue(value);
+				
+		
+		
 	}
 
 

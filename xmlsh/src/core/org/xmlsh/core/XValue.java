@@ -323,17 +323,19 @@ public class XValue {
 
 	public XdmNode asXdmNode() throws InvalidArgumentException
 	{
-		if( isXExpr() ){
-			// If this is a sequence then return the first item
-			return (XdmNode) mValue.itemAt(0);
-			// return ((XdmNode)mValue);
-		}
+		XdmItem item = asXdmItem();
+		if( item instanceof XdmNode )
+			return (XdmNode) item ;
 		else
 			throw new InvalidArgumentException("Value is not a Node");
-	
-		
 	}
 	
+	public XdmItem asXdmItem() throws InvalidArgumentException
+	{
+		
+			return  mValue.itemAt(0);
+
+	}
 	
 	public Source asSource() throws InvalidArgumentException {
 		return asXdmNode().asSource();

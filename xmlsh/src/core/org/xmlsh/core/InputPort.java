@@ -14,6 +14,7 @@ import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.Source;
 
+import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
 import org.xml.sax.InputSource;
 import org.xmlsh.sh.shell.SerializeOpts;
@@ -51,6 +52,9 @@ public abstract class InputPort  extends IPort
 
 	public abstract XMLEventReader asXMLEventReader(SerializeOpts opts) throws CoreException;
 	public abstract XMLStreamReader asXMLStreamReader(SerializeOpts opts) throws  CoreException;
+
+
+	public abstract XdmItem asXdmItem(SerializeOpts serializeOpts) throws CoreException;
 	
 	
 	

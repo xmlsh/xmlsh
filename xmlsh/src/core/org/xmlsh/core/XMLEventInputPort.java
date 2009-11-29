@@ -20,6 +20,7 @@ import javax.xml.stream.events.XMLEvent;
 import javax.xml.transform.Source;
 
 import net.sf.saxon.s9api.SaxonApiException;
+import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
 import org.xml.sax.InputSource;
 import org.xmlsh.sh.shell.SerializeOpts;
@@ -92,8 +93,17 @@ public class XMLEventInputPort extends InputPort {
 			throw new CoreException(e);
 		}
 	}
+	
 
 	
+	/* (non-Javadoc)
+	 * @see org.xmlsh.core.InputPort#asXdmItem(org.xmlsh.sh.shell.SerializeOpts)
+	 */
+	@Override
+	public XdmItem asXdmItem(SerializeOpts serializeOpts) throws CoreException {
+		return asXdmNode(serializeOpts);
+	}
+
 	public boolean isStream() {
 		return true;
 	}

@@ -48,7 +48,7 @@ public class xquery extends XCommand {
 		Processor  processor  = Shell.getProcessor();
 		
 		XQueryCompiler compiler = processor.newXQueryCompiler();
-		XdmNode	context = null;
+		XdmItem	context = null;
 		
 		
 		InputPort in = null;
@@ -65,7 +65,7 @@ public class xquery extends XCommand {
 			else
 				in = getStdin();
 			
-			context = in.asXdmNode(serializeOpts);
+			context = in.asXdmItem(serializeOpts);
 			
 			
 			// For XQuery the context has to be a document

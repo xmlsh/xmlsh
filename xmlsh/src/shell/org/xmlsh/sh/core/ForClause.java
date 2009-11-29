@@ -62,6 +62,7 @@ public class ForClause extends CompoundCommand {
 				for( XValue inword : shell.getArgs() ){
 					if( ! shell.keepRunning() )
 						break ;
+					// Forcibly use a new variable every iteration
 					shell.getEnv().setVar( new XVariable(mName, inword));
 					shell.exec( mCommand );	
 					if( loop.mContinue ) // continue clause - clear out  continue & keep going
@@ -78,6 +79,7 @@ public class ForClause extends CompoundCommand {
 				for( XValue inword : inList ) {
 					if( ! shell.keepRunning() )
 						break ;
+					// Forcibly use a new variable every iteration
 					shell.getEnv().setVar( new XVariable(mName, inword));
 					shell.exec( mCommand );
 					if( loop.mContinue ) // continue clause - clear out  continue & keep going

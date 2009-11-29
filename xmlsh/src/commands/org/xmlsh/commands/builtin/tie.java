@@ -1,59 +1,45 @@
 /**
- * $Id$
- * $Date$
+ * $Id: colon.java 245 2009-05-29 11:44:01Z daldei $
+ * $Date: 2009-05-29 07:44:01 -0400 (Fri, 29 May 2009) $
  *
  */
 
-package org.xmlsh.sh.core;
+package org.xmlsh.commands.builtin;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.List;
 
-import org.xmlsh.core.CoreException;
+import org.xmlsh.core.BuiltinCommand;
+import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
-import org.xmlsh.core.XVariable;
-import org.xmlsh.sh.shell.Shell;
 
-public class CommandPrefix {
-	private List<Assign>	mList = new ArrayList<Assign>();
+/*
+ * Ties variables to an expression
+ */
+public class tie extends BuiltinCommand {
 
-	public void add( Assign a )
-	{
-		mList.add(a);
-	}
-	public void add( String var , Word value )
-	{
-		mList.add( new Assign( var , value ));
-	}
-	public void add( String var , WordList value )
-	{
-		mList.add( new Assign( var , value ));
+	
+	public int run( List<XValue> args ) throws Exception {
+			
+			if( args.size() != 2 )
+				usage();
+			String var = args.get(0).toString();
+			String expr = args.get(1).toString();
+			mShell.getEnv().tie( mShell , var , expr );
+			return 0;
+				
 	}
 	
-
-
-	public void print(PrintWriter out) {
-		for (Assign ass : mList) {
-			ass.print(out);
-			
-		}
+	private void usage() throws InvalidArgumentException
+	{
+		this.mShell.printErr("Usage: tie variable 'expression'"); 
+		throw new InvalidArgumentException("Usage: tie variable 'expression'");
+		
 		
 	}
 
-	public void exec(Shell shell) throws IOException, CoreException {
-		for (Assign ass : mList) {
-			XValue value = ass.expand(shell);
-			shell.getEnv().setVar( ass.getVariable(), value );
-			
-		}
-		
-	}
-	
+
+
 }
-
-
 //
 //
 //Copyright (C) 2008,2009 , David A. Lee.

@@ -745,29 +745,29 @@ class Expander {
 				
 	}
 
-	private XValue extractSingle(String var) throws IOException, CoreException {
+	private XValue extractSingle(String varname) throws IOException, CoreException {
 		
 		
 		
-		if( var.equals("#"))
+		if( varname.equals("#"))
 			return new XValue( mArgs.size() );
 		else
 		// Special vars
-		if( var.equals("$"))
+		if( varname.equals("$"))
 			return new XValue(Thread.currentThread().getId());
 		else
-		if( var.equals("?"))
+		if( varname.equals("?"))
 			return new XValue( mShell.getStatus());
 		else
-		if( var.equals("!")){
+		if( varname.equals("!")){
 			
 				return new XValue( mShell.getLastThreadId() );
 		}
 		
 			
 		else
-		if( Util.isInt(var,false)){
-			int n = Util.parseInt(var, -1);
+		if( Util.isInt(varname,false)){
+			int n = Util.parseInt(varname, -1);
 			if( n == 0 )
 				return new XValue(mShell.getArg0());
 			else
@@ -778,33 +778,48 @@ class Expander {
 		}
 		else {
 			// ${#var} notation
-			if( var.startsWith("#") ) {
-				var = var.substring(1);
-				XValue val = mShell.getEnv().getVarValue( var );
+			if( varname.startsWith("#") ) {
+				varname = varname.substring(1);
+				XValue val = mShell.getEnv().getVarValue( varname );
 				int sz = val.asXdmValue().size();
 				return new XValue( String.valueOf(sz));
 				
 				
 			}
 			
+			// Get the XVariable
+			String ind = null; // [ind] expr
+			String tie = null; // :tie expr
+			
+			// Strip off tie expr
+			if( varname.contains(":")) {
+				int as = varname.indexOf(':');
+				if( as > 0 ){
+					tie = varname.substring(as+1 );
+					varname = varname.substring( 0 , as );
+				}
+				
+			}
+			
+					
 			
 			// Look for array notation 
 			// ${var[3]}
-			if( var.contains("[")){
-				int as = var.indexOf('[');
-				String ind = var.substring(as+1 , var.indexOf(']'));
-				var = var.substring(0,as);
+			if( varname.contains("[")){
+				int as = varname.indexOf('[');
+				ind = varname.substring(as+1 , varname.indexOf(']'));
+				varname = varname.substring(0,as);
 				
-				XValue val = mShell.getEnv().getVarValue( var );
-				if( ind.equals("*")) // special case ${var[*]}
-					return val ;
-				
-				XdmValue xval = val.asXdmValue().itemAt( Util.parseInt(ind, 0) - 1 );
-				val = new XValue(xval);
-				return val;
 			}
 			
-			return mShell.getEnv().getVarValue( var );
+			XVariable var = mShell.getEnv().getVar(varname);
+			if( var == null )
+				return null;
+
+			
+			
+			return var.getValue(  mShell, ind ,
+					tie == null ? null : new XValue(tie) );
 		}
 	}
 

@@ -17,6 +17,7 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
 import net.sf.saxon.s9api.SaxonApiException;
+import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
 import org.xml.sax.InputSource;
 import org.xmlsh.sh.shell.SerializeOpts;
@@ -138,6 +139,11 @@ public class StreamInputPort extends InputPort {
 			{
 				throw new CoreException( e );
 			}
+	}
+
+	public  XdmItem asXdmItem(SerializeOpts serializeOpts) throws CoreException
+	{
+		return asXdmNode(serializeOpts);
 	}
 
 }

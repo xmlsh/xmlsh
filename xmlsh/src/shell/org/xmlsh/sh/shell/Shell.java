@@ -187,7 +187,7 @@ public class Shell {
 	 * Populate the environment with any global variables
 	 */
 	
-	private void setGlobalVars() {
+	private void setGlobalVars() throws InvalidArgumentException {
 	    
 		
 		Map<String,String> 	env = System.getenv();

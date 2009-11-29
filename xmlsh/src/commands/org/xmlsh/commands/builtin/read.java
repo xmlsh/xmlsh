@@ -41,8 +41,7 @@ public class read extends BuiltinCommand {
 		for( int i = 0 ; i < args.size() ; i++ )
 			if( i < results.length )
 
-			mShell.getEnv().setVar(
-					new XVariable(args.get(i).toString(), new XValue(results[i])));
+			mShell.getEnv().setVar( args.get(i).toString(), new XValue(results[i]));
 
 		// stdin.close(); // Crashes ... why ?
 		is.close();

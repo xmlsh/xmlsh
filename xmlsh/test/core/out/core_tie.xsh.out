@@ -1,0 +1,9 @@
+foo value
+bar value
+a.b value
+a value
+<CATEGORIES DESC="Miscellaneous categories">
+   <CATEGORY CODE="P" DESC="Paperback"/>
+   <CATEGORY CODE="MMP" DESC="Mass-market Paperback"/>
+   <CATEGORY CODE="H" DESC="Hard Cover"/>
+</CATEGORIES>

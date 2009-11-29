@@ -17,6 +17,7 @@ import java.util.Collection;
 
 import javax.xml.transform.Source;
 
+import net.sf.saxon.s9api.SaxonApiException;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.xml.sax.InputSource;
@@ -90,26 +91,25 @@ public class XEnvironment  {
 	
 
 
-	public void	setVar( String name , XValue value)
+	public void	setVar( String name , XValue value) throws InvalidArgumentException 
 	{
-		/* DO not do this until we have a copy-on-write deep cloning
-		 * of the environment
-		 * 
-		 */
-		/*
+
+		
 		XVariable var = mVars.get(name);
 		if( var == null )
-			setVar( new XVariable( name , value ));
+			var = new XVariable( name , value );
 		else
-			var.setValue(value);
-			*/
+			var = var.clone();
 		
-		setVar( new XVariable( name , value ));
+		var.setValue(value);
+		
+		
+		setVar( var );
 	}
 	
 
 
-	public void setVar(String name, String value) {
+	public void setVar(String name, String value) throws InvalidArgumentException {
 		setVar( name , new XValue(value));
 		
 	}
@@ -549,6 +549,18 @@ public class XEnvironment  {
 		return in.asInputSource(opts);
 		
 	}
+
+
+	public void tie(Shell shell, String varname, String expr) throws InvalidArgumentException, SaxonApiException {
+		
+		XVariable var = mVars.get(varname);
+		if( var == null )
+			throw new InvalidArgumentException("Unknown variable: " + varname);
+		
+		var.tie(shell,expr);
+	
+	}
+		
 
 }
 //

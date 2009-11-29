@@ -90,8 +90,15 @@ public class IOFile {
 				env.setInput( port ,  env.getVar(var) );
 			else
 			if( mPrefix.equals(">")){
-				XVariable xvar = new XVariable(var,null);
-				env.setVar(xvar);
+
+				XVariable xvar = env.getVar(var);
+				if( xvar == null ){
+					xvar = new XVariable(var,null);
+					env.setVar(xvar);
+				}
+				else
+					xvar.clear();
+				
 				env.setOutput(port,xvar);
 			}
 			else

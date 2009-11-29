@@ -22,6 +22,7 @@ import net.sf.saxon.Configuration;
 import net.sf.saxon.evpull.Decomposer;
 import net.sf.saxon.evpull.EventToStaxBridge;
 import net.sf.saxon.s9api.SaxonApiException;
+import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
 import org.xml.sax.InputSource;
 import org.xmlsh.sh.shell.SerializeOpts;
@@ -90,6 +91,12 @@ public class VariableInputPort extends InputPort {
 		return mVariable.getValue().asXdmNode();
 
 	}
+	
+	public  synchronized XdmItem asXdmItem(SerializeOpts serializeOpts) throws CoreException
+	{
+		return mVariable.getValue().asXdmItem();
+	}
+
 
 
 
