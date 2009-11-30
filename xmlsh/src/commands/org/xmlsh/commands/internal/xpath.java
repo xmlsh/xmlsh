@@ -20,7 +20,6 @@ import net.sf.saxon.s9api.XPathSelector;
 import net.sf.saxon.s9api.XdmAtomicValue;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
-import net.sf.saxon.s9api.XdmNodeKind;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.Namespaces;
@@ -38,7 +37,7 @@ public class xpath extends XCommand {
 	@Override
 	public int run(List<XValue> args) throws Exception {
 
-		Options opts = new Options("f=file:,i=input:,q=query:,n,v,e=exists,b=bool,nons,ns:+,s=string", SerializeOpts.getOptionDefs(), args);
+		Options opts = new Options("c=context:,cf=context-file:,f=file:,i=input:,q=query:,n,v,e=exists,b=bool,nons,ns:+,s=string", SerializeOpts.getOptionDefs(), args);
 		opts.parse();
 
 		
@@ -47,20 +46,29 @@ public class xpath extends XCommand {
 		Processor processor = Shell.getProcessor();
 
 		XPathCompiler compiler = processor.newXPathCompiler();
-		XdmNode context = null;
+		XdmItem context = null;
 		InputPort in = null;
 
 		// boolean bReadStdin = false ;
 		
 		SerializeOpts serializeOpts = getSerializeOpts(opts);
-		
-		if (!opts.hasOpt("n")) { // Has XML data input
-			OptionValue ov = opts.getOpt("i");
-			if( ov != null )
-				in = getInput( ov.getValue());
+		if( ! opts.hasOpt("n" ) ){ // Has XML data input
+			// Order of prevelence 
+			// -context
+			// -context-file
+			// -i
+			
+			if( opts.hasOpt("c") )
+				context = opts.getOptValue("c").asXdmItem();
 			else
-				in = getStdin();
-			context = in.asXdmNode(serializeOpts);
+			if( opts.hasOpt("cf"))
+				context = (in=getInput( new XValue(opts.getOptString("cf", "-")))).asXdmItem(serializeOpts);
+			else
+			if( opts.hasOpt("i") )
+				context = (in=getInput( opts.getOptValue("i"))).asXdmItem(serializeOpts);
+			else
+				context = (in=getStdin()).asXdmItem(serializeOpts);
+			
 		}
 
 		List<XValue> xvargs = opts.getRemainingArgs();

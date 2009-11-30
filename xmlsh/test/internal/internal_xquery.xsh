@@ -49,5 +49,13 @@ xquery  -i <[ <t:test>Test</t:test> ]> .
 
 xquery -i <[ document{ <t:test>Test</t:test> } ]> /t:test 
 
+# Test explicit context which is a string
+xquery -context "A String" .
+
+# Test explicit context which is a file
+xquery -context-file books.xml -q '(//AUTHOR)[1]' 
+
+
+
 
 

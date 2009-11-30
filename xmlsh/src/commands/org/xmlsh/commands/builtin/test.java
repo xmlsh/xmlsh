@@ -60,6 +60,9 @@ STRING equivalent to -n STRING
 -X value
 	true if the value/argument is an xml type
 	
+-D name
+	true if the environment variable "name" is defined
+	
 
 STRING1 = STRING2
    the strings are equal
@@ -284,6 +287,9 @@ public class test extends BuiltinCommand {
 		else
 		if(op.equals("-S"))
 			return value.isString();
+		else
+		if( op.equals("-D"))
+			return mShell.getEnv().isDefined( value.toString() );
 	
 
 			if( op.equals("-n")){

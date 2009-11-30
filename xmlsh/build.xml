@@ -2,7 +2,7 @@
 <project default="main">
 
 	
-    <target name="main" depends="clean, compile, jar" description="Main target">
+    <target name="main" depends="clean, compile, jar,test,dist" description="Main target">
         <echo>
             Building xmlsh
         </echo>
@@ -11,7 +11,7 @@
 	
 	<property name="dist" location="_dist"/>
 	 <tstamp prefix="bdate"/>
-	<property name="release" value="b1_${bdate.DSTAMP}"/>
+	<property name="release" value="r1_${bdate.DSTAMP}"/>
 		
 	<target name="clean" description="Clean all">
 		  <delete includeEmptyDirs="true" quiet="true">

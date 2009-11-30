@@ -184,6 +184,15 @@ public class XVariable {
 
 	public void tie(Shell shell , String expr) throws SaxonApiException {
 
+		if( expr == null )
+		{
+			mTieExpr = null ;
+			return ;
+			
+		}
+		
+		
+		
 		Processor processor = Shell.getProcessor();
 		
 		XQueryCompiler compiler = processor.newXQueryCompiler();

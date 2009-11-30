@@ -15,13 +15,15 @@ Xquery on file
 Xquery on xml expression
 <bar a2="value2"/>
 <foo>text</foo>
-<book><author><AUTHOR>Jasper Fforde</AUTHOR></author><title><TITLE>The Eyre Affair</TITLE></title></book>
-<book><author><AUTHOR>Thomas Hardy</AUTHOR></author><title><TITLE>Jude the Obscure</TITLE></title></book>
-<book><author><AUTHOR>Charlotte Brontë</AUTHOR></author><title><TITLE>Wuthering Heights</TITLE></title></book>
-<book><author><AUTHOR>Jasper Fforde</AUTHOR></author><title><TITLE>The Big Over Easy</TITLE></title></book>
-<book><author><AUTHOR>Jane Austen</AUTHOR></author><title><TITLE>Pride and Prejudice</TITLE></title></book>
-<book><author><AUTHOR>Thomas Hardy</AUTHOR></author><title><TITLE>Tess of the d'Urbervilles</TITLE></title></book>
+<book><author>Jasper Fforde</author><title>The Eyre Affair</title></book>
+<book><author>Thomas Hardy</author><title>Jude the Obscure</title></book>
+<book><author>Charlotte Brontë</author><title>Wuthering Heights</title></book>
+<book><author>Jasper Fforde</author><title>The Big Over Easy</title></book>
+<book><author>Jane Austen</author><title>Pride and Prejudice</title></book>
+<book><author>Thomas Hardy</author><title>Tess of the d'Urbervilles</title></book>
 <t:test xmlns:t="http://www.example.org/test">Test</t:test>
 <t:test xmlns:t="http://www.example.org/test">Test</t:test>
 <t:test xmlns:t="http://www.example.org/test">Test</t:test>
 <t:test xmlns:t="http://www.example.org/test">Test</t:test>
+A String
+<AUTHOR>Jane Austen</AUTHOR>

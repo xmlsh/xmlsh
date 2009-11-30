@@ -6,7 +6,6 @@
 
 package org.xmlsh.commands.internal;
 
-import java.io.PrintStream;
 import java.util.List;
 
 import javax.xml.transform.ErrorListener;
@@ -30,7 +29,6 @@ import org.xmlsh.core.Options.OptionValue;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.sh.shell.ShellURIResolver;
-import org.xmlsh.xpath.ShellContext;
 
 public class xslt extends XCommand {
 
@@ -69,9 +67,9 @@ public class xslt extends XCommand {
 	@Override
 	public int run(List<XValue> args) throws Exception {
 
-		Options opts = new Options("f:,i:,n,v",SerializeOpts.getOptionDefs(), args);
+		Options opts = new Options("c=context:,cf=context-file:,f=file:,i=input:,n,v",SerializeOpts.getOptionDefs(), args);
 		opts.parse();
-		PrintStream ps;
+
 		Processor processor = Shell.getProcessor();
 
 		XsltCompiler compiler = processor.newXsltCompiler();
@@ -89,15 +87,23 @@ public class xslt extends XCommand {
 		
 		
 		
-		if (!opts.hasOpt("n")) { // Has XML data input
-			OptionValue ov = opts.getOpt("i");
-
-			if (ov != null)
-				in = getInput(ov.getValue());
+		if( ! opts.hasOpt("n" ) ){ // Has XML data input
+			// Order of prevelence 
+			// -context
+			// -context-file
+			// -i
+			
+			if( opts.hasOpt("c") )
+				context = opts.getOptValue("c").asSource();
 			else
-				in = getStdin();
-			context = in.asSource(serializeOpts);
-
+			if( opts.hasOpt("cf"))
+				context = (in=getInput( new XValue(opts.getOptString("cf", "-")))).asSource(serializeOpts);
+			else
+			if( opts.hasOpt("i") )
+				context = (in=getInput( opts.getOptValue("i"))).asSource(serializeOpts);
+			else
+				context = (in=getStdin()).asSource(serializeOpts);
+			
 		}
 
 		Source source = null;
@@ -146,6 +152,9 @@ public class xslt extends XCommand {
 
 		eval.transform();
 		stdout.writeSequenceTerminator();
+		
+		if( in != null )
+			in.close();
 
 		return 0;
 

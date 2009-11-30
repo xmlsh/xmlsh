@@ -8,7 +8,6 @@ package org.xmlsh.commands.internal;
 
 import java.io.InputStream;
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.List;
 
 import net.sf.saxon.s9api.Destination;
@@ -20,7 +19,6 @@ import net.sf.saxon.s9api.XQueryExecutable;
 import net.sf.saxon.s9api.XdmAtomicValue;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
-import net.sf.saxon.s9api.XdmNodeKind;
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.Namespaces;
 import org.xmlsh.core.Options;
@@ -31,7 +29,6 @@ import org.xmlsh.core.Options.OptionValue;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.Util;
-import org.xmlsh.xpath.ShellContext;
 
 
 
@@ -42,7 +39,7 @@ public class xquery extends XCommand {
 	throws Exception 
 	{
 		
-		Options opts = new Options( "f:,i:,n,q:,v,nons,ns:+,s=string" ,	SerializeOpts.getOptionDefs(),  args );
+		Options opts = new Options( "c=context:,cf=context-file:,f=file:,i=input:,n,q:,v,nons,ns:+,s=string" ,	SerializeOpts.getOptionDefs(),  args );
 		opts.parse();
 		
 		Processor  processor  = Shell.getProcessor();
@@ -51,26 +48,27 @@ public class xquery extends XCommand {
 		XdmItem	context = null;
 		
 		
-		InputPort in = null;
-		
 		SerializeOpts serializeOpts = getSerializeOpts(opts);
-
+		InputPort in = null ; // Save to close 
 
 		boolean bString = 	opts.hasOpt("s");
 		
 		if( ! opts.hasOpt("n" ) ){ // Has XML data input
-			OptionValue ov = opts.getOpt("i");
-			if( ov != null )
-				in = getInput( ov.getValue());
+			// Order of prevelence 
+			// -context
+			// -context-file
+			// -i
+			
+			if( opts.hasOpt("c") )
+				context = opts.getOptValue("c").asXdmItem();
 			else
-				in = getStdin();
-			
-			context = in.asXdmItem(serializeOpts);
-			
-			
-			// For XQuery the context has to be a document
-			//@TODO Wrap context in a document node if needed
-			
+			if( opts.hasOpt("cf"))
+				context = (in=getInput( new XValue(opts.getOptString("cf", "-")))).asXdmItem(serializeOpts);
+			else
+			if( opts.hasOpt("i") )
+				context = (in=getInput( opts.getOptValue("i"))).asXdmItem(serializeOpts);
+			else
+				context = (in=getStdin()).asXdmItem(serializeOpts);
 			
 		}
 		
@@ -200,8 +198,9 @@ public class xquery extends XCommand {
 			if( bAnyOut )
 				stdout.writeSequenceTerminator(); // write "\n"
 			
-			if( in != null)
+			if( in != null )
 				in.close();
+
 			
 			return 0;
 

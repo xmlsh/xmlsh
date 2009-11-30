@@ -20,10 +20,10 @@ public class tie extends BuiltinCommand {
 	
 	public int run( List<XValue> args ) throws Exception {
 			
-			if( args.size() != 2 )
+			if( args.size() < 1 )
 				usage();
 			String var = args.get(0).toString();
-			String expr = args.get(1).toString();
+			String expr = args.size() > 1 ? args.get(1).toString() : null ;
 			mShell.getEnv().tie( mShell , var , expr );
 			return 0;
 				
@@ -31,7 +31,8 @@ public class tie extends BuiltinCommand {
 	
 	private void usage() throws InvalidArgumentException
 	{
-		this.mShell.printErr("Usage: tie variable 'expression'"); 
+		this.mShell.printErr("Usage: tie variable ['expression']"); 
+		
 		throw new InvalidArgumentException("Usage: tie variable 'expression'");
 		
 		

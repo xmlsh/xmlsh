@@ -580,6 +580,12 @@ public class XEnvironment  {
 	}
 
 
+	public boolean isDefined(String name) {
+		return mVars.containsKey(name);
+		
+	}
+
+
 
 
 }
