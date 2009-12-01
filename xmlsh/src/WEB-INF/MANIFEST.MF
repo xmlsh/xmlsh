@@ -1,3 +1,4 @@
 Manifest-Version: 1.0
 Created-By: 1.6.0 (Sun Microsystems Inc.)
-Class-Path: ../lib/xcc.jar
+Main-Class: org.xmlsh.sh.shell.Shell
+Class-Path: ../lib/log4j-1.2.7.jar ../lib/saxon9he.jar ../lib/xercesimpl.jar ../lib/woodstox-core-asl-4.0.3.jar ../lib/stax2-api-3.0.1.jar ../lib/stax-utils.jar
