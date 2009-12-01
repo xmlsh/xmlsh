@@ -14,7 +14,6 @@ options {
  
 } 
 PARSER_BEGIN(ShellParser)
-
 package org.xmlsh.sh.grammar;
 import org.xmlsh.sh.core.*;
  
