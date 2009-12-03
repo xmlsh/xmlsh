@@ -49,10 +49,10 @@ public class xwhich extends BuiltinCommand {
 	      
 		XMLStreamWriter 	out = null ;
 		OutputPort stdout = mShell.getEnv().getStdout();	
-		
+
+		SerializeOpts serializeOpts = getSerializeOpts();
 		if( !bNoWrite ){
 
-			SerializeOpts serializeOpts = getSerializeOpts();
 			out = stdout.asXMLStreamWriter(serializeOpts);
 			out.writeStartDocument();
 			out.writeStartElement(sDocRoot);
@@ -100,7 +100,7 @@ public class xwhich extends BuiltinCommand {
 		if( ! bNoWrite ){
 			out.writeEndElement();
 			out.writeEndDocument();
-			stdout.writeSequenceTerminator();
+			stdout.writeSequenceTerminator(serializeOpts);
 		}
 		
 		

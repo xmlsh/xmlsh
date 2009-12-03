@@ -36,7 +36,6 @@ import org.xmlsh.util.Util;
 
 public class StreamOutputPort extends OutputPort
 {
-	private static byte kNEWLINE_BYTES[] = { '\n' };
 	
 
 	private OutputStream	 mStream;
@@ -115,16 +114,16 @@ public class StreamOutputPort extends OutputPort
 
 	
 	
-	public synchronized void writeSequenceSeperator() throws IOException, InvalidArgumentException
+	public synchronized void writeSequenceSeperator(SerializeOpts opts ) throws IOException, InvalidArgumentException
 	{
 		
-		asOutputStream().write(kNEWLINE_BYTES  );
+		asOutputStream().write( opts.getSequence_sep().getBytes( opts.getText_encoding()) );
 		
 		
 	}
 
-	public void writeSequenceTerminator() throws IOException {
-			asOutputStream().write(kNEWLINE_BYTES  );
+	public void writeSequenceTerminator(SerializeOpts opts) throws IOException {
+			asOutputStream().write(  opts.getSequence_term().getBytes(opts.getText_encoding()) );
 		
 	}
 

@@ -151,7 +151,7 @@ public class xslt extends XCommand {
 		eval.setDestination(stdout.asDestination(serializeOpts));
 
 		eval.transform();
-		stdout.writeSequenceTerminator();
+		stdout.writeSequenceTerminator(serializeOpts);
 		
 		if( in != null )
 			in.close();

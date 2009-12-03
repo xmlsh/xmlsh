@@ -98,7 +98,7 @@ public class xsql extends XCommand {
 			writer.writeEndElement();
 			writer.writeEndDocument();
 			
-			stdout.writeSequenceTerminator();
+			stdout.writeSequenceTerminator(serializeOpts);
 			
 		
 		} finally {

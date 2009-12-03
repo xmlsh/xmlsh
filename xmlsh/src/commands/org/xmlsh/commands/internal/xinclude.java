@@ -77,7 +77,7 @@ public class xinclude extends XCommand {
 			
 		
 	
-			stdout.writeSequenceTerminator();
+			stdout.writeSequenceTerminator(sopts);
 		} 
 		finally {
 			

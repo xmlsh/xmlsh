@@ -178,7 +178,7 @@ public class xquery extends XCommand {
 			for( XdmItem item : eval ){
 				bAnyOut = true ;
 				if( ! bFirst )
-					stdout.writeSequenceSeperator(); // Thrashes variable output !
+					stdout.writeSequenceSeperator(serializeOpts); // Thrashes variable output !
 				bFirst = false ;
 				
 				
@@ -196,7 +196,7 @@ public class xquery extends XCommand {
 				
 			}
 			if( bAnyOut )
-				stdout.writeSequenceTerminator(); // write "\n"
+				stdout.writeSequenceTerminator(serializeOpts); // write "\n"
 			
 			if( in != null )
 				in.close();

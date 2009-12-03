@@ -1,0 +1,6 @@
+<foo>bar</foo>
+1
+hi
+<foo>bar</foo>,1,hi
+<foo>bar</foo>:1:hi
+EOF

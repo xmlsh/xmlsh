@@ -62,10 +62,10 @@ public abstract class OutputPort extends IPort
 
 	
 	
-	public abstract void writeSequenceSeperator() throws IOException, InvalidArgumentException;
+	public abstract void writeSequenceSeperator(SerializeOpts serializeOpts) throws IOException, InvalidArgumentException;
 	
 
-	public abstract void writeSequenceTerminator() throws IOException ;
+	public abstract void writeSequenceTerminator(SerializeOpts serializeOpts) throws IOException ;
 	public abstract XMLStreamWriter asXMLStreamWriter(SerializeOpts opts) throws InvalidArgumentException, XMLStreamException;
 
 	public abstract XMLEventWriter asXMLEventWriter(SerializeOpts opts) throws InvalidArgumentException, XMLStreamException;

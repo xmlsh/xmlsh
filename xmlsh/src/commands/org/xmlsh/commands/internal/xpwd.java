@@ -43,7 +43,7 @@ public class xpwd extends XCommand
 		
 		writer.writeEndDocument();
 		
-		stdout.writeSequenceTerminator();
+		stdout.writeSequenceTerminator(serializeOpts);
 		// stdout.close();
 		
 		

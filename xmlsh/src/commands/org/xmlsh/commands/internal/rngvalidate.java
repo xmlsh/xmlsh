@@ -18,12 +18,9 @@ import org.xmlsh.core.XValue;
 
 import com.thaiopensource.resolver.catalog.CatalogResolver;
 import com.thaiopensource.util.Localizer;
-import com.thaiopensource.util.OptionParser;
 import com.thaiopensource.util.PropertyMapBuilder;
-import com.thaiopensource.util.UriOrFile;
 import com.thaiopensource.validate.Flag;
 import com.thaiopensource.validate.FlagOption;
-import com.thaiopensource.validate.OptionArgumentException;
 import com.thaiopensource.validate.SchemaReader;
 import com.thaiopensource.validate.StringOption;
 import com.thaiopensource.validate.ValidateProperty;

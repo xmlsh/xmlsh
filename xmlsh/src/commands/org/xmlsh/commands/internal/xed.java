@@ -217,7 +217,7 @@ public class xed extends XCommand {
 	
 		OutputPort stdout = getStdout();
 		Util.writeXdmValue( context , stdout.asDestination(serializeOpts) );
-		stdout.writeSequenceTerminator();
+		stdout.writeSequenceTerminator(serializeOpts);
 		
 		return 0;
 

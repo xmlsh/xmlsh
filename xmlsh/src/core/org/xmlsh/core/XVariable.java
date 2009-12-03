@@ -6,8 +6,6 @@
 
 package org.xmlsh.core;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.EnumSet;
 
 import javax.xml.stream.XMLStreamException;

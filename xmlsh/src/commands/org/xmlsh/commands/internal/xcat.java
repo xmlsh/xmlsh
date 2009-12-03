@@ -195,7 +195,7 @@ public class xcat extends XCommand {
 		
 		OutputPort stdout = getStdout();
 		eval.run(stdout.asDestination(serializeOpts));
-		stdout.writeSequenceTerminator();
+		stdout.writeSequenceTerminator(serializeOpts);
 		
 		return 0;
 

@@ -169,7 +169,7 @@ public class xpath extends XCommand {
 						break;
 
 					if (!bFirst)
-						stdout.writeSequenceSeperator(); // Thrashes variable
+						stdout.writeSequenceSeperator(serializeOpts); // Thrashes variable
 															// output !
 					else {
 						if (item instanceof XdmNode) {
@@ -189,7 +189,7 @@ public class xpath extends XCommand {
 
 				}
 				if (!bQuiet && bAnyOutput)
-					stdout.writeSequenceTerminator();
+					stdout.writeSequenceTerminator(serializeOpts);
 
 				if( in != null )
 					in.close();

@@ -13,7 +13,6 @@ import org.xmlsh.core.BuiltinCommand;
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
-import org.xmlsh.core.XVariable;
 
 public class xread extends BuiltinCommand {
 

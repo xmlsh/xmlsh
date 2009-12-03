@@ -41,7 +41,7 @@ public class xecho extends BuiltinCommand {
 		boolean bFirst = true;
 		for ( XValue arg : args ){
 				if( ! bFirst )
-					stdout.writeSequenceSeperator();
+					stdout.writeSequenceSeperator(serializeOpts);
 				
 				else {
 					 XdmValue item = arg.asXdmValue();
@@ -61,7 +61,7 @@ public class xecho extends BuiltinCommand {
 				Util.writeXdmValue(arg.asXdmValue(), dest);
 		}
 		if( ! nolf )
-			stdout.writeSequenceTerminator();
+			stdout.writeSequenceTerminator(serializeOpts);
 		return 0;
 	}
 }

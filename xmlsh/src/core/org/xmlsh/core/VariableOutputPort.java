@@ -205,7 +205,7 @@ public class VariableOutputPort extends OutputPort
 
 	}
 	
-	public synchronized void writeSequenceSeperator() throws IOException, InvalidArgumentException
+	public synchronized void writeSequenceSeperator(SerializeOpts opts) throws IOException, InvalidArgumentException
 	{
 			if( mXdmDestination != null ){
 				appendVar(mXdmDestination.getXdmNode() );
@@ -222,7 +222,7 @@ public class VariableOutputPort extends OutputPort
 		
 	}
 
-	public void writeSequenceTerminator() throws IOException {
+	public void writeSequenceTerminator(SerializeOpts opts) throws IOException {
 		
 	}
 

@@ -42,7 +42,7 @@ public class xversion extends BuiltinCommand {
 		writer.writeAttribute(sRelease, Version.getRelease() );
 		writer.writeEndElement();
 		writer.writeEndDocument();
-		stdout.writeSequenceTerminator();
+		stdout.writeSequenceTerminator(serializeOpts);
 		
 		return 0;
 		

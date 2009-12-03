@@ -14,7 +14,6 @@ import javax.xml.stream.XMLEventWriter;
 import javax.xml.stream.events.XMLEvent;
 
 import org.xmlsh.core.InputPort;
-import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.XCommand;

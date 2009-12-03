@@ -12,7 +12,6 @@ import java.io.IOException;
 import java.util.HashMap;
 
 import org.apache.log4j.Logger;
-import org.xmlsh.commands.builtin.tie;
 import org.xmlsh.commands.builtin.colon;
 import org.xmlsh.commands.builtin.declare;
 import org.xmlsh.commands.builtin.echo;
@@ -24,6 +23,7 @@ import org.xmlsh.commands.builtin.set;
 import org.xmlsh.commands.builtin.shift;
 import org.xmlsh.commands.builtin.source;
 import org.xmlsh.commands.builtin.test;
+import org.xmlsh.commands.builtin.tie;
 import org.xmlsh.commands.builtin.unset;
 import org.xmlsh.commands.builtin.wait;
 import org.xmlsh.commands.builtin.xbreak;

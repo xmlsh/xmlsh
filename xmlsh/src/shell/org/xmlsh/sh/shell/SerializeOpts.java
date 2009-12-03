@@ -23,13 +23,17 @@ public class SerializeOpts {
 	private 	boolean		xinclude = false ;
 	private		String		content_type = "text/plain";
 	private		String		method = "xml";
+	private		String		sequence_sep = "\n";
+	private		String		sequence_term = "\n";
+	
+
 	
 	
 	/*
 	 * Parsed standardized serialization option definitions
 	 */
 	private static final List<Options.OptionDef>  mOptionDefs =		
-		Options.parseDefs("+indent,+omit-xml-declaration,encoding:,text-encoding:,xml-encoding:,+xinclude,content-type:,method:,+supports-dtd" );
+		Options.parseDefs("+indent,+omit-xml-declaration,encoding:,text-encoding:,xml-encoding:,+xinclude,content-type:,method:,+supports-dtd,sequence-sep:,sequence-term:" );
 			
 			
 	public static List<Options.OptionDef> getOptionDefs() { return mOptionDefs ; }
@@ -53,6 +57,8 @@ public class SerializeOpts {
 		xinclude = that.xinclude;
 		content_type = that.content_type;
 		method = that.method ;
+		sequence_sep = that.sequence_sep;
+		sequence_term = that.sequence_term;
 
 	}
 	
@@ -133,11 +139,19 @@ public class SerializeOpts {
 		
 		if( opt.equals("xml-encoding") || opt.equals("encoding") )
 			setEncoding(value.toString());
+		
 		if( opt.equals("content-type"))
 			setContent_type(value.toString());
+		else
 		if(opt.equals("method"))
 			setMethod( value.toString());
-		
+		else
+		if(opt.equals("sequence-sep"))
+			setSequence_sep( value.toString() );
+		else
+		if(opt.equals("sequence-term"))
+			setSequence_term( value.toString() );
+			
 		
 	}
 
@@ -233,6 +247,34 @@ public class SerializeOpts {
 		else
 			throw new InvalidArgumentException("Invalid value for serialization method: must be xml, html, xhtml, text");
 		
+	}
+
+	/**
+	 * @return the sequence_sep
+	 */
+	public String getSequence_sep() {
+		return sequence_sep;
+	}
+
+	/**
+	 * @param sequenceSep the sequence_sep to set
+	 */
+	public void setSequence_sep(String sequenceSep) {
+		sequence_sep = sequenceSep;
+	}
+
+	/**
+	 * @return the sequence_term
+	 */
+	public String getSequence_term() {
+		return sequence_term;
+	}
+
+	/**
+	 * @param sequenceTerm the sequence_term to set
+	 */
+	public void setSequence_term(String sequenceTerm) {
+		sequence_term = sequenceTerm;
 	}
 	
 	

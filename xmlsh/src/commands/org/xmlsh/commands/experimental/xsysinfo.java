@@ -31,7 +31,8 @@ public class xsysinfo extends XCommand {
 		args = opts.getRemainingArgs();
 	
 		OutputPort stdout = getEnv().getStdout();
-		XMLStreamWriter writer = stdout.asXMLStreamWriter(getSerializeOpts(opts));
+		SerializeOpts serializeOpts = getSerializeOpts(opts);
+		XMLStreamWriter writer = stdout.asXMLStreamWriter(serializeOpts);
 	
 		writer.writeStartDocument();
 
@@ -44,7 +45,7 @@ public class xsysinfo extends XCommand {
 		
 		writer.writeEndElement();
 		writer.writeEndDocument();
-		stdout.writeSequenceTerminator();
+		stdout.writeSequenceTerminator(serializeOpts);
 		
 		return 0;
 		

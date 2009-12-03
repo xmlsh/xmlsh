@@ -106,7 +106,7 @@ public class fixed2xml extends XCommand
 		writer.writeEndDocument();
 		
 		ir.close();
-		stdout.writeSequenceTerminator();
+		stdout.writeSequenceTerminator(serializeOpts);
 		
 		
 		return 0;

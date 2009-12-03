@@ -165,14 +165,14 @@ public class XMLEventOutputPort extends OutputPort
 
 	
 	
-	public synchronized void writeSequenceSeperator() throws IOException, InvalidArgumentException
+	public synchronized void writeSequenceSeperator(SerializeOpts opts) throws IOException, InvalidArgumentException
 	{
 		
 		
 		
 	}
 
-	public void writeSequenceTerminator() throws IOException {
+	public void writeSequenceTerminator(SerializeOpts opts) throws IOException {
 			
 		
 	}
