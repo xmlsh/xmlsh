@@ -1,5 +1,5 @@
 @setlocal
-@set CLASSPATH=%XMLSH%\bin\xmlsh.jar
+@set CLASSPATH=%XMLSH%\bin\xmlsh-1.0.jar
 @set CLASSPATH=%CLASSPATH%;%XMLSH%\lib\log4j-1.2.7.jar
 @set CLASSPATH=%CLASSPATH%;%XMLSH%\lib\saxon9he.jar
 @set CLASSPATH=%CLASSPATH%;%XMLSH%\lib\xercesimpl.jar

@@ -12,6 +12,7 @@
 	<property name="dist" location="_dist"/>
 	 <tstamp prefix="bdate"/>
 	<property name="release" value="r1_${bdate.DSTAMP}"/>
+	<property name="jar" value="xmlsh-1.0.jar"/>
 		
 	<target name="clean" description="Clean all">
 		  <delete includeEmptyDirs="true" quiet="true">
@@ -59,7 +60,7 @@ version.release=${release}
   <target name="jar" description="Build JAR - jar">
 		<mkdir dir="bin"/>
         <jar 
-        jarfile="bin/xmlsh.jar" 
+        jarfile="bin/${jar}" 
         basedir="_out" 
         manifest="src/WEB-INF/MANIFEST.MF"
         />
@@ -68,7 +69,7 @@ version.release=${release}
   <target name="test" description="Test Cases">
   	<java 
   		classname="org.xmlsh.sh.shell.Shell"
-  		classpath="bin/xmlsh.jar;lib/log4j-1.2.7.jar;lib/saxon9he.jar;lib/xercesImpl.jar;lib/woodstox-core-asl-4.0.3.jar;lib/stax2-api-3.0.1.jar;lib/stax-utils.jar"
+  		classpath="bin/${jar};lib/log4j-1.2.7.jar;lib/saxon9he.jar;lib/xercesImpl.jar;lib/woodstox-core-asl-4.0.3.jar;lib/stax2-api-3.0.1.jar;lib/stax-utils.jar"
   		fork="true"
   	    dir="test">
   			<arg value="./run_tests.xsh"/>
@@ -79,7 +80,7 @@ version.release=${release}
   		
   		<mkdir dir="${dist}"/>
 		<zip destfile="${dist}/xmlsh_${release}.zip" >
-			<zipfileset dir="." includes="bin/xmlsh.jar test/** win32/** lib/** samples/** unix/** notices/** license.txt README.txt" 
+			<zipfileset dir="." includes="bin/${jar}$ test/** win32/** lib/** samples/** unix/** notices/** license.txt README.txt" 
 					excludes="**/sh_histo" prefix="xmlsh_${release}"/>
 			
   		</zip>
