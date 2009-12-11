@@ -88,7 +88,7 @@ public abstract class MLCommand extends XCommand {
 			        	xmlItem.close();
 			        }
 			        
-			      out.writeSequenceSeperator();
+			      out.writeSequenceSeperator(sopts);
 			    }
 			}
 

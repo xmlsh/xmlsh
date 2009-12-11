@@ -3,6 +3,7 @@ package org.xmlsh.marklogic;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.xmlsh.core.CoreException;
@@ -10,6 +11,7 @@ import org.xmlsh.core.InputPort;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.XValue;
 import org.xmlsh.marklogic.util.MLCommand;
+import org.xmlsh.util.Util;
 
 import com.marklogic.xcc.Content;
 import com.marklogic.xcc.ContentCreateOptions;
@@ -27,28 +29,55 @@ public class put extends MLCommand {
 	@Override
 	public int run(List<XValue> args) throws Exception {
 		
-		Options opts = new Options("c=connect:,uri:",args);
+		Options opts = new Options("c=connect:,uri:,baseuri:,m=maxfiles:",args);
 		opts.parse();
 		args = opts.getRemainingArgs();
 		
 		String uri = opts.getOptString("uri", null);
+		String baseUri = opts.getOptString("baseuri", "");
+		int  maxFiles = Util.parseInt(opts.getOptString("m", "1"),1);
 		
-		InputPort in = null;
-		if( args.size() > 0 )
-			in = getInput( args.get(0));
-		else
-			in = getStdin();
 		
-		if( uri == null )
-			uri = in.getSystemId();
-		
+		if(! baseUri.equals("") && ! baseUri.endsWith("/") )
+			baseUri = baseUri + "/";
 		
 		ContentSource cs = getConnection(opts);
 	
-	
+		// printErr("maxfiles is " + maxFiles );
 
 		session = cs.newSession();
-		this.load(in, uri);
+		
+		if( args.size() <= 1 ){
+			InputPort in = null;
+			if( args.size() > 0 )
+				in = getInput( args.get(0));
+			else
+				in = getStdin();
+			
+			if( uri == null )
+				uri = in.getSystemId();
+			this.load(in, uri);
+		}
+		else {
+			
+			int start = 0 ;
+			int end = args.size() ;
+			
+			while( start < end ){
+				int last = start + maxFiles;
+				if( last > end )
+					last = end ;
+				
+				load( args.subList(start, last), baseUri );
+				start += maxFiles ;
+				
+				
+			}
+			
+			
+		
+		}
+
 		session.close();
 		
 		
@@ -88,7 +117,21 @@ public class put extends MLCommand {
 		session.insertContent (content);
 	}
 
-	
+	public void load (List<XValue> files , String baseUri ) throws CoreException, IOException, RequestException
+	{
+		printErr("Putting " + files.size() + " files");
+		Content[]	contents = new Content[files.size()];
+		int i = 0;
+		for( XValue v : files ){	
+
+			File file = getFile(v);
+			String uri = baseUri + file.getName();
+			Content content= ContentFactory.newContent (uri, file, options);
+			contents[i++] = content;
+		}
+
+		session.insertContent (contents);
+	}
 
 
 }

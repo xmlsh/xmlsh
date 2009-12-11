@@ -2,7 +2,7 @@
 <project default="main">
 
 	
-    <target name="main" depends="clean, compile, jar" description="Main target">
+    <target name="main" depends="clean, compile, jar,dist" description="Main target">
         <echo>
             Building marklogic_ext xmlsh extension
         </echo>
