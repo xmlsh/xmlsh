@@ -18,6 +18,7 @@ import java.util.Collection;
 import javax.xml.transform.Source;
 
 import net.sf.saxon.s9api.SaxonApiException;
+import net.sf.saxon.s9api.XdmValue;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.xml.sax.InputSource;
@@ -118,9 +119,16 @@ public class XEnvironment  {
 		if( var == null ){
 			// If no existing variable then dont touch
 			setVar(new XVariable( name , value ));
+			return ;
 		}
+		
+		
 		var = var.clone();
-		var.setValue(  new XValue(var.getValue().asXdmValue().append(value.asXdmValue())));
+		XdmValue xvalue = value.asXdmValue();
+		if( xvalue == null )
+			return ;
+		
+		var.setValue(  new XValue(var.getValue().asXdmValue().append(xvalue)));
 		setVar( var );
 		
 	}

@@ -569,7 +569,13 @@ public class Shell {
 		{
 			// printErr("Exception running: " + c.toString(true) + "\n" +  e.toString() );
 			mLogger.error("Exception running command: " + c.toString(false) , e );
-			return mStatus = -1;
+			mStatus = -1;
+			// If not success then may throw if option 'throw on error' is set (-e)
+			if( mStatus != 0 && mOpts.mThrowOnError && c.isSimple()  ){
+				if( ! isInCommandConndition() )
+					throw new ThrowException( new  XValue(mStatus));
+			}
+			return mStatus ;
 			
 		}
 		
