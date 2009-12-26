@@ -18,6 +18,7 @@ import org.xmlsh.commands.builtin.echo;
 import org.xmlsh.commands.builtin.eval;
 import org.xmlsh.commands.builtin.exit;
 import org.xmlsh.commands.builtin.jobs;
+import org.xmlsh.commands.builtin.log;
 import org.xmlsh.commands.builtin.read;
 import org.xmlsh.commands.builtin.set;
 import org.xmlsh.commands.builtin.shift;
@@ -66,7 +67,10 @@ public class CommandFactory
 		addBuiltin( "false" , xfalse.class );
 		addBuiltin( "true" , xtrue.class  );
 		addBuiltin( "set", set.class);
+
 		addBuiltin( "." , source.class);
+		addBuiltin( "source" , source.class);
+
 		addBuiltin("exit" , exit.class);
 		addBuiltin( ":" , colon.class);
 		addBuiltin( "[" , test.class );
@@ -88,6 +92,7 @@ public class CommandFactory
 		addBuiltin("xmlsh" , xmlsh.class);
 		addBuiltin("throw" , xthrow.class);
 		addBuiltin("tie" , tie.class);
+		addBuiltin("log",log.class);
 
 	}
 	
@@ -234,7 +239,7 @@ public class CommandFactory
 		File scriptFile = null;
 		
 		// If ends with .xsh try it
-		if( name.endsWith(".xsh"))
+		if( name.endsWith(".xsh") || bSourceMode )
 			scriptFile = shell.getExplicitFile(name,true);
 		
 		
