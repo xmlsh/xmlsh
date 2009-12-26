@@ -107,6 +107,8 @@ public class Shell {
 			return ;
 		
 		Logging.configureLogger();
+
+		mLogger.info("xmlsh initialize");
 		
 		/*
 	     * Workaround a saxon bug - pre-initialize processor

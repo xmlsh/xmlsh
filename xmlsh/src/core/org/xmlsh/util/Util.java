@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -53,6 +54,8 @@ import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XdmNodeKind;
 import net.sf.saxon.s9api.XdmValue;
 import net.sf.saxon.trans.XPathException;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.xmlsh.core.Namespaces;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.SerializeOpts;
@@ -861,7 +864,8 @@ public class Util
 		
 	}
 	
-	
+
+		
 
 }
 
