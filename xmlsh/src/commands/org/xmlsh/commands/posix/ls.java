@@ -56,19 +56,27 @@ public class ls extends XCommand {
 		opt_l = opts.hasOpt("l");
 		opt_a = opts.hasOpt("a");
 		opt_R = opts.hasOpt("R");
+		int ret = 0;
 		for( XValue arg : args ){
 			
 			// Must go to Shell API to get raw files
-			File dir = getEnv().getShell().getFile(arg.toString());
-			ls(writer, dir , null);
+			String sArg = arg.toString();
+			File dir = getEnv().getShell().getFile(sArg);
+			if( ! dir.exists() ){
+				this.printErr("xls: cannot access " + sArg + " : No such file or directory" );
+				ret++;
+				continue;
+			}
+			
+			list(writer, dir , null);
 		}
 		// writer.write(serializeOpts.getSequence_term());
 		writer.close();
 		
-		return 0;
+		return ret;
 	}
 
-	private void ls(PrintWriter writer, File dir, String parent ) throws XMLStreamException, InvalidArgumentException {
+	private void list(PrintWriter writer, File dir, String parent ) throws XMLStreamException, InvalidArgumentException {
 		if( !dir.isDirectory() ){
 
 			serialize(dir, writer, opt_l,parent);
@@ -90,7 +98,7 @@ public class ls extends XCommand {
 					if( ! opt_a && f.getName().startsWith("."))
 						continue;
 					
-					ls( writer  , f , p    );
+					list( writer  , f , p    );
 	
 				}
 			}

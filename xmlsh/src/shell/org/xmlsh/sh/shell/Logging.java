@@ -41,8 +41,7 @@ class Logging {
 			} catch( Exception e ) 
 			{}
 		}
-			
-		
+
 		// If none found log to XLOGFILE
 		String filename = System.getenv("XLOGFILE");
 		
