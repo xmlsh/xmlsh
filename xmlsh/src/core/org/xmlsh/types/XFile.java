@@ -41,11 +41,25 @@ public class XFile /* implements XSerializble */ {
 	}
 
 	public XFile(String dir, String base) {
-		this(new File(dir, base));
+		this(resolve(dir, base));
+	}
+	/* 
+	 * Resolves a base against a directory
+	 * Similar to URI Resolution, if base is an absolute path
+	 * then ignore the directory
+	 */
+	private static File resolve(String dir, String base) {
+		File fbase = new File(base);
+		if( fbase.isAbsolute())
+			return fbase;
+		else
+			return new File(dir, base);
+		
+		
 	}
 
 	public XFile(String dir, String base, String ext) {
-		this(new File(dir, base + ext));
+		this(resolve(dir, base + ext));
 	}
 
 	public XFile(File file) {
