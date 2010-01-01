@@ -13,8 +13,6 @@ import java.util.List;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.xml.sax.Attributes;
-import org.xml.sax.helpers.AttributesImpl;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.XCommand;
@@ -43,7 +41,6 @@ public class xls extends XCommand {
 		XMLStreamWriter writer = stdout.asXMLStreamWriter(serializeOpts);
 		writer.writeStartDocument();
 		
-		Attributes attrs = new AttributesImpl();
 		String sDocRoot = "dir";
 		writer.writeStartElement(sDocRoot);
 		

@@ -76,7 +76,7 @@ public class httpserver extends XCommand {
 
 		       
 		       String method = http.getRequestMethod();
-		       Headers headers = http.getRequestHeaders();
+		       // TBD: Headers headers = http.getRequestHeaders();
 			       
 		   	
 				Command cmd = null ;

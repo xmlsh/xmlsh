@@ -22,8 +22,7 @@ public class chmod extends XCommand {
 		boolean		bWrite = false;
 		boolean		bExecute = false ;
 
-		Perm() {
-		}
+
 		Perm( File f ){
 			bRead = f.canRead();
 			bWrite = f.canWrite();

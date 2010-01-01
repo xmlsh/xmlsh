@@ -94,11 +94,7 @@ public class xproperties extends XCommand
 		
 		
 	
-		/*
-		 * Add values from remaining args
-		 */
-		List<XValue> xvargs = opts.getRemainingArgs();
-		
+		// Add value 
 
 		if (opts.hasOpt("a")) {
 			for (XValue add : opts.getOpt("a").getValues()){

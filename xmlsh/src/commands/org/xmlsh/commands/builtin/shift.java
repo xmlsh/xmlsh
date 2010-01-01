@@ -18,8 +18,6 @@ public class shift  extends BuiltinCommand {
 	
 	public int run( List<XValue> args ) throws Exception {
 		
-		int num = 1;
-		
 		if( args.size() == 0 ){
 			mShell.shift(1);
 			return 0;

@@ -3,7 +3,6 @@ package org.xmlsh.commands.internal;
 import java.io.File;
 import java.io.OutputStream;
 import java.util.List;
-import java.util.Properties;
 
 import javax.xml.transform.Source;
 import javax.xml.transform.Templates;
@@ -48,7 +47,7 @@ public class xslt1 extends XCommand {
 		try {
 			Templates pss = tryCache(style);
 			Transformer transformer = pss.newTransformer();
-			Properties details = pss.getOutputProperties();
+			// Properties details = pss.getOutputProperties();
 
 			
 			if (args != null ) {
