@@ -34,8 +34,8 @@ public class xbase extends XCommand {
 	throws Exception 
 	{
 		
-		Options opts = new Options( SerializeOpts.getOptionDefs() , args );
-		opts.parse();
+		Options opts = new Options( SerializeOpts.getOptionDefs()  );
+		opts.parse(args);
 		args = opts.getRemainingArgs();
 		
 		

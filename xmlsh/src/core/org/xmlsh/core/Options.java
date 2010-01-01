@@ -118,7 +118,6 @@ public class Options
 	}
 	
 	private List<OptionDef> mDefs;
-	private List<XValue> mArgs;
 	private List<XValue> mRemainingArgs;
 	private List<OptionValue> mOptions;
 	private boolean	  mDashDash = false ;
@@ -175,31 +174,29 @@ public class Options
 	}
 	
 	
-	public Options( String  options ,  List<XValue> args )
+	public Options( String  options  )
 	{
-		this( parseDefs(options) , args);
+		this( parseDefs(options) );
 	}
 	
 	
-	public Options( List<OptionDef>  options ,  List<XValue> args )
+	public Options( List<OptionDef>  options  )
 	{
 		mDefs = options;
-		mArgs = args;
 		
 	}
 	
-	private Options( List<OptionDef> opt1 , List<OptionDef> opt2 ,  List<XValue> args )
+	private Options( List<OptionDef> opt1 , List<OptionDef> opt2 )
 	{
 		mDefs = new ArrayList<OptionDef>( opt1.size() + opt2.size());
 		mDefs.addAll( opt1 );
 		mDefs.addAll(opt2);
-		mArgs = args;
 		
 	}
 
-	public Options(String option_str, List<OptionDef> option_list, List<XValue> args) 
+	public Options(String option_str, List<OptionDef> option_list) 
 	{
-		this( parseDefs(option_str) , option_list , args );
+		this( parseDefs(option_str) , option_list );
 	}
 
 
@@ -221,7 +218,7 @@ public class Options
 	}
 	
 	
-	public List<OptionValue>	parse() throws UnknownOption
+	public List<OptionValue>	parse(List<XValue> args) throws UnknownOption
 	{
 		if( mOptions != null )
 			return mOptions;
@@ -233,7 +230,7 @@ public class Options
 		
 		
 		
-		for ( Iterator<XValue> I = mArgs.iterator() ; I.hasNext() ; ) {
+		for ( Iterator<XValue> I = args.iterator() ; I.hasNext() ; ) {
 			XValue arg = I.next();
 			
 			String sarg = ( arg.isString()  ? arg.toString() : null );

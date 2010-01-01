@@ -34,8 +34,8 @@ public class xmove extends XCommand {
 	public int run( List<XValue> args )
 	throws Exception 
 	{
-		Options opts = new Options("x=xpath:,d=dir:,e=ext:,ns:+,f=force,q", args);
-		opts.parse();
+		Options opts = new Options("x=xpath:,d=dir:,e=ext:,ns:+,f=force,q");
+		opts.parse(args);
 		
 		String xpath = opts.getOptStringRequired("x");
 		String dir = opts.getOptString("d",".");

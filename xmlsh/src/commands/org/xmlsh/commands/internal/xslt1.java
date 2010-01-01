@@ -24,8 +24,8 @@ public class xslt1 extends XCommand {
 	@Override
 	public int run(List<XValue> args) throws Exception {
 
-		Options opts = new Options("f:,v", SerializeOpts.getOptionDefs(), args);
-		opts.parse();
+		Options opts = new Options("f:,v", SerializeOpts.getOptionDefs());
+		opts.parse(args);
 		args = opts.getRemainingArgs();
 		
 		String style = opts.getOptStringRequired("f");

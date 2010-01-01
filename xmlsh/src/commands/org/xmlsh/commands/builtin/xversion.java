@@ -24,7 +24,8 @@ public class xversion extends BuiltinCommand {
 	
 	      
 		OutputPort stdout = mShell.getEnv().getStdout();
-		Options opts = new Options(SerializeOpts.getOptionDefs(),args);
+		Options opts = new Options(SerializeOpts.getOptionDefs());
+		opts.parse(args);
 		SerializeOpts serializeOpts = getSerializeOpts(opts);
 		
 		

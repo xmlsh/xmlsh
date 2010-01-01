@@ -49,8 +49,8 @@ public class fixed2xml extends XCommand
 
 		
 
-		Options opts = new Options( "root:,row:,col:,header,attr,encoding:,colnames:,colspecs:,nonorm=nonormalize",SerializeOpts.getOptionDefs(), args );
-		opts.parse();
+		Options opts = new Options( "root:,row:,col:,header,attr,encoding:,colnames:,colspecs:,nonorm=nonormalize",SerializeOpts.getOptionDefs());
+		opts.parse(args);
 		
 		// root node
 		String root = opts.getOptString("root", "root");

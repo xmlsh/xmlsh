@@ -38,8 +38,8 @@ public class xcat extends XCommand {
 		
 
 
-		Options opts = new Options( "w=wrap:,r=root" ,  SerializeOpts.getOptionDefs() , args );
-		opts.parse();
+		Options opts = new Options( "w=wrap:,r=root" ,  SerializeOpts.getOptionDefs() );
+		opts.parse(args);
 		
 		// root node
 		OptionValue ow = opts.getOpt("w");

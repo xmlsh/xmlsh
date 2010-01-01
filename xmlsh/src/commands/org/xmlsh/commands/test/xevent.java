@@ -30,8 +30,8 @@ public class xevent extends XCommand {
 		
 		
 		
-		Options opts = new Options( "r,s,n:" , args );
-		opts.parse();
+		Options opts = new Options( "r,s,n:" );
+		opts.parse(args);
 		
 		if( opts.hasOpt("r"))
 			receive();

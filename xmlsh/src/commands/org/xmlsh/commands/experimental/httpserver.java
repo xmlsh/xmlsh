@@ -198,8 +198,8 @@ public class httpserver extends XCommand {
 	throws Exception 
 	{
 		
-		Options opts = new Options( "port:,context:,handler:,get:,put:,post:,chunk" , args );
-		opts.parse();
+		Options opts = new Options( "port:,context:,handler:,get:,put:,post:,chunk" );
+		opts.parse(args);
 		
 		if( ! opts.hasRemainingArgs() ){
 			usage();

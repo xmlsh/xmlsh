@@ -37,8 +37,8 @@ public class xpath extends XCommand {
 	@Override
 	public int run(List<XValue> args) throws Exception {
 
-		Options opts = new Options("c=context:,cf=context-file:,f=file:,i=input:,q=query:,n,v,e=exists,b=bool,nons,ns:+,s=string", SerializeOpts.getOptionDefs(), args);
-		opts.parse();
+		Options opts = new Options("c=context:,cf=context-file:,f=file:,i=input:,q=query:,n,v,e=exists,b=bool,nons,ns:+,s=string", SerializeOpts.getOptionDefs());
+		opts.parse(args);
 
 		
 		boolean bString = 	opts.hasOpt("s");

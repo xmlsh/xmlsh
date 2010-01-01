@@ -67,8 +67,8 @@ public class xslt extends XCommand {
 	@Override
 	public int run(List<XValue> args) throws Exception {
 
-		Options opts = new Options("c=context:,cf=context-file:,f=file:,i=input:,n,v",SerializeOpts.getOptionDefs(), args);
-		opts.parse();
+		Options opts = new Options("c=context:,cf=context-file:,f=file:,i=input:,n,v",SerializeOpts.getOptionDefs());
+		opts.parse(args);
 
 		Processor processor = Shell.getProcessor();
 

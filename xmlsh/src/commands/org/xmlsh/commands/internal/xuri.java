@@ -45,8 +45,8 @@ public class xuri extends XCommand
 	public int run(  List<XValue> args  )	throws Exception
 	{
 		
-		Options opts = new Options("a=authority,f=fragment,h=host,p=path,P=port,q=query,s=scheme,r=resource:",SerializeOpts.getOptionDefs() ,args);
-		opts.parse();
+		Options opts = new Options("a=authority,f=fragment,h=host,p=path,P=port,q=query,s=scheme,r=resource:",SerializeOpts.getOptionDefs());
+		opts.parse(args);
 		args = opts.getRemainingArgs();
 		
 		SerializeOpts serializeOpts = getSerializeOpts(opts);

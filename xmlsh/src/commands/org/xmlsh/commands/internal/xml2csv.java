@@ -62,8 +62,8 @@ public class xml2csv extends XCommand
 	{
 		
 	
-		Options opts = new Options( "header,attr,delim:,quote:" , SerializeOpts.getOptionDefs(), args );
-		opts.parse();
+		Options opts = new Options( "header,attr,delim:,quote:" , SerializeOpts.getOptionDefs() );
+		opts.parse(args);
 		
 		
 		bHeader = opts.hasOpt("header");

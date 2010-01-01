@@ -26,8 +26,8 @@ public class cp extends XCommand {
 	@Override
 	public int run(List<XValue> args) throws Exception {
 		
-		Options opts = new Options( "f=force,r=recurese" , args );
-		opts.parse();
+		Options opts = new Options( "f=force,r=recurese" );
+		opts.parse(args);
 		
 		
 		args = opts.getRemainingArgs();

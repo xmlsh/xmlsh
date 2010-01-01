@@ -36,8 +36,8 @@ public class http extends XCommand {
 	throws Exception 
 	{
 		
-		Options opts = new Options( "get:,put:,post:,head:,options:,delete:,connectTimeout:,contentType:,readTimeout:,+useCaches,+followRedirects,user:,password:" , args );
-		opts.parse();
+		Options opts = new Options( "get:,put:,post:,head:,options:,delete:,connectTimeout:,contentType:,readTimeout:,+useCaches,+followRedirects,user:,password:" );
+		opts.parse(args);
 		String method = "GET";
 		boolean doInput = true ;
 		boolean doOutput = false ;

@@ -35,8 +35,8 @@ public class rm extends XCommand {
 	@Override
 	public int run(List<XValue> args) throws Exception {
 		
-		Options opts = new Options( "f,r,rf" , args );
-		opts.parse();
+		Options opts = new Options( "f,r,rf" );
+		opts.parse(args);
 		args = opts.getRemainingArgs();
 		
 		boolean bForce = opts.hasOpt("f") || opts.hasOpt("rf");

@@ -44,8 +44,8 @@ public class xproperties extends XCommand
 
 		
 
-		Options opts = new Options( "in:,inxml:,text,xml,d=delete:+,v=var:+,a=add:+,c=comment:" , SerializeOpts.getOptionDefs() , args );
-		opts.parse();
+		Options opts = new Options( "in:,inxml:,text,xml,d=delete:+,v=var:+,a=add:+,c=comment:" , SerializeOpts.getOptionDefs()  );
+		opts.parse(args);
 	
 		XValue optIn 		= opts.getOptValue("in");
 		XValue optInXml		= opts.getOptValue("inxml");

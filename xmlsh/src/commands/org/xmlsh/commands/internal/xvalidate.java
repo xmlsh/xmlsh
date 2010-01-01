@@ -31,8 +31,8 @@ public class xvalidate extends XCommand {
 	{
 
 		
-		Options opts = new Options( "xsd:,dtd:,rng:,schematron:" , SerializeOpts.getOptionDefs() ,args );
-		opts.parse();
+		Options opts = new Options( "xsd:,dtd:,rng:,schematron:" , SerializeOpts.getOptionDefs() );
+		opts.parse(args);
 		
 		
 		

@@ -97,8 +97,8 @@ public class xed extends XCommand {
 		
 		
 		Options opts = new Options( "i=input:,e=xpath:,n,v,r=replace:,a=add:,d=delete,m=matches:,rx=replacex:,ren=rename:" ,  
-					SerializeOpts.getOptionDefs() , args );
-		opts.parse();
+					SerializeOpts.getOptionDefs()  );
+		opts.parse(args);
 		
 		setupBuilders();
 

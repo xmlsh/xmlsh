@@ -31,8 +31,8 @@ public class xwhich extends BuiltinCommand {
 	
 	public int run(   List<XValue> args ) throws Exception {
 			
-		Options opts = new Options( "n" , SerializeOpts.getOptionDefs(), args );
-		opts.parse();
+		Options opts = new Options( "n" , SerializeOpts.getOptionDefs());
+		opts.parse(args);
 		
 		boolean bNoWrite = opts.hasOpt("n");
 

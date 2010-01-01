@@ -63,8 +63,8 @@ public class xml2json extends XCommand
 		mFormatter = new CSVFormatter();
 		mOutput = getStdout().asOutputStream();
 
-		Options opts = new Options( "header,n,i:,attr" , args );
-		opts.parse();
+		Options opts = new Options( "header,n,i:,attr" );
+		opts.parse(args);
 		
 		bHeader = opts.hasOpt("header");
 		bAttr = opts.hasOpt("attr");

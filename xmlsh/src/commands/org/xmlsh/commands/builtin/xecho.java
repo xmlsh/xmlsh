@@ -24,8 +24,8 @@ public class xecho extends BuiltinCommand {
 	
 	public int run( List<XValue> args ) throws Exception {
 		
-		Options opts = new Options( "n" , SerializeOpts.getOptionDefs(), args );
-		opts.parse();
+		Options opts = new Options( "n" , SerializeOpts.getOptionDefs() );
+		opts.parse(args);
 		
 		args = opts.getRemainingArgs();
 		boolean nolf = opts.hasOpt("n");

@@ -20,8 +20,8 @@ public class touch extends XCommand {
 	@Override
 	public int run(List<XValue> args) throws Exception {
 		
-		Options opts = new Options( "r=reference:" , args );
-		opts.parse();
+		Options opts = new Options( "r=reference:" );
+		opts.parse(args);
 		
 		args = opts.getRemainingArgs();
 		String sRefFile = opts.getOptString("r", null);

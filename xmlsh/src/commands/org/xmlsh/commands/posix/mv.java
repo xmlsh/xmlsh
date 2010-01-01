@@ -21,8 +21,8 @@ public class mv extends XCommand {
 	@Override
 	public int run(List<XValue> args) throws Exception {
 		
-		Options opts = new Options( "f=force" , args );
-		opts.parse();
+		Options opts = new Options( "f=force" );
+		opts.parse(args);
 		
 		
 		args = opts.getRemainingArgs();

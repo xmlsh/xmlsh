@@ -19,8 +19,8 @@ public class echo extends BuiltinCommand {
 	public int run( List<XValue> args ) throws Exception {
 		OutputStream out =  mShell.getEnv().getStdout().asOutputStream();
 
-		Options opts = new Options( "n" , args );
-		opts.parse();
+		Options opts = new Options( "n"  );
+		opts.parse(args);
 		
 		boolean nolf = opts.hasOpt("n");
 		

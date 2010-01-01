@@ -30,8 +30,8 @@ public class set extends BuiltinCommand {
 			return 0;
 		}
 		
-		Options opts = new Options( "+x,+v,+xpipe,+e" , SerializeOpts.getOptionDefs() ,  args );
-		opts.parse();
+		Options opts = new Options( "+x,+v,+xpipe,+e" , SerializeOpts.getOptionDefs()  );
+		opts.parse(args);
 		
 		setShellOptions(opts);
 		

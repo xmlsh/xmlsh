@@ -45,8 +45,8 @@ public class xaddbase extends XCommand {
 		boolean		opt_relative = false ;
 		
 		
-		Options opts = new Options( "a=all,r=relative" , SerializeOpts.getOptionDefs() , args );
-		opts.parse();
+		Options opts = new Options( "a=all,r=relative" , SerializeOpts.getOptionDefs()  );
+		opts.parse(args);
 	
 		
 		SerializeOpts serializeOpts = getSerializeOpts(opts);

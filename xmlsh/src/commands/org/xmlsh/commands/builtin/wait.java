@@ -19,8 +19,8 @@ public class wait extends BuiltinCommand {
 
 	public int run(  List<XValue> args ) throws Exception {
 
-		Options opts = new Options( "m=atmost:" , args );
-		opts.parse();
+		Options opts = new Options( "m=atmost:"  );
+		opts.parse(args);
 		
 		args = opts.getRemainingArgs();
 		

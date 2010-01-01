@@ -37,9 +37,9 @@ public class xgetopts extends XCommand {
 		
 			
 		String def =  args.remove(0).toString();
-		Options opts = new Options(def,args);
+		Options opts = new Options(def);
 		
-		List<OptionValue>  options = opts.parse();
+		List<OptionValue>  options = opts.parse(args);
 		args = opts.getRemainingArgs();
 		
 		out.writeStartDocument();

@@ -48,8 +48,8 @@ public class csv2xml extends XCommand
 
 		
 
-		Options opts = new Options( "root:,row:,col:,header,attr,encoding:,delim:,quote:,colnames:,tab,skip:", SerializeOpts.getOptionDefs() , args );
-		opts.parse();
+		Options opts = new Options( "root:,row:,col:,header,attr,encoding:,delim:,quote:,colnames:,tab,skip:", SerializeOpts.getOptionDefs() );
+		opts.parse(args);
 		
 		// root node
 		String root = opts.getOptString("root", "root");

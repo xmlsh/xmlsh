@@ -26,8 +26,8 @@ public class xidentity extends XCommand {
 	@Override
 	public int run(List<XValue> args) throws Exception {
 		
-		Options opts = new Options( SerializeOpts.getOptionDefs() , args );
-		opts.parse();
+		Options opts = new Options( SerializeOpts.getOptionDefs() );
+		opts.parse(args);
 		args = opts.getRemainingArgs();
 		
 		

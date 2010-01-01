@@ -26,8 +26,8 @@ public class xpwd extends XCommand
 	
 	public int run(  List<XValue> args )	throws Exception
 	{
-		Options opts = new Options(	SerializeOpts.getOptionDefs() , args );
-		opts.parse();
+		Options opts = new Options(	SerializeOpts.getOptionDefs() );
+		opts.parse(args);
 		args = opts.getRemainingArgs();
 
 		XFile file = new XFile(getCurdir());

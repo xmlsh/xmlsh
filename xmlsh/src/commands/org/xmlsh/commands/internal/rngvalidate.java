@@ -51,8 +51,8 @@ public class rngvalidate extends XCommand {
 
 		ErrorHandlerImpl eh = new ErrorHandlerImpl(System.out);
 
-		Options opts = new Options("i,t,c,d,f,e:,p:,s,C:", args);
-		opts.parse();
+		Options opts = new Options("i,t,c,d,f,e:,p:,s,C:");
+		opts.parse(args);
 
 		PropertyMapBuilder properties = new PropertyMapBuilder();
 		properties.put(ValidateProperty.ERROR_HANDLER, eh);

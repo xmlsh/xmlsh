@@ -78,8 +78,8 @@ public class xsplit extends XCommand {
 	{
 
 
-		Options opts = new Options( "c=children:,w=wrap:,n,p=prefix:,e=ext:,s=suffix:,n=nowrap,o=output:" ,SerializeOpts.getOptionDefs(), args );
-		opts.parse();
+		Options opts = new Options( "c=children:,w=wrap:,n,p=prefix:,e=ext:,s=suffix:,n=nowrap,o=output:" ,SerializeOpts.getOptionDefs() );
+		opts.parse(args);
 		
 		// root node
 		OptionValue ow = opts.getOpt("w");

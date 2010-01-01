@@ -20,8 +20,8 @@ public class log extends BuiltinCommand {
 	
 	public int run( List<XValue> args ) throws Exception {
 
-		Options opts = new Options( "c=class:,p=priority:" , args );
-		opts.parse();
+		Options opts = new Options( "c=class:,p=priority:"  );
+		opts.parse(args);
 		
 
 		String sClass = opts.getOptString("c", log.class.getName());

@@ -39,8 +39,8 @@ public class xquery extends XCommand {
 	throws Exception 
 	{
 		
-		Options opts = new Options( "c=context:,cf=context-file:,f=file:,i=input:,n,q:,v,nons,ns:+,s=string" ,	SerializeOpts.getOptionDefs(),  args );
-		opts.parse();
+		Options opts = new Options( "c=context:,cf=context-file:,f=file:,i=input:,n,q:,v,nons,ns:+,s=string" ,	SerializeOpts.getOptionDefs() );
+		opts.parse(args);
 		
 		Processor  processor  = Shell.getProcessor();
 		

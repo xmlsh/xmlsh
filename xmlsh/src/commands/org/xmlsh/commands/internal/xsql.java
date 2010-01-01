@@ -35,8 +35,8 @@ public class xsql extends XCommand {
 		
 		Properties options = null;
 		
-		Options opts = new Options( "cp=classpath:,d=driver:,u=user:,p=password:,root:,row:,attr,c=connect:,q=query:,o=option:+" ,SerializeOpts.getOptionDefs(), args );
-		opts.parse();
+		Options opts = new Options( "cp=classpath:,d=driver:,u=user:,p=password:,root:,row:,attr,c=connect:,q=query:,o=option:+" ,SerializeOpts.getOptionDefs() );
+		opts.parse(args);
 		
 		String root = opts.getOptString("root", "root");
 		String row = opts.getOptString("row", "row");

@@ -31,8 +31,8 @@ public class xls extends XCommand {
 	private boolean opt_l = false ;
 	public int run(  List<XValue> args  )	throws Exception
 	{
-		Options opts = new Options("a=all,l=long,R=recurse", SerializeOpts.getOptionDefs() ,args);
-		opts.parse();
+		Options opts = new Options("a=all,l=long,R=recurse", SerializeOpts.getOptionDefs() );
+		opts.parse(args);
 		args = opts.getRemainingArgs();
 		
 		

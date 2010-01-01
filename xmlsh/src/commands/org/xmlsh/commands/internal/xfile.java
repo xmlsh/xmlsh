@@ -44,8 +44,8 @@ public class xfile extends XCommand
 	
 	public int run(  List<XValue> args  )	throws Exception
 	{
-		Options opts = new Options("n=name,b=base,d=dir,a=all,c=conanical,e=extension,B=basename,N=pathname,s=sys,u=uri",SerializeOpts.getOptionDefs(),args);
-		opts.parse();
+		Options opts = new Options("n=name,b=base,d=dir,a=all,c=conanical,e=extension,B=basename,N=pathname,s=sys,u=uri",SerializeOpts.getOptionDefs());
+		opts.parse(args);
 		args = opts.getRemainingArgs();
 		
 		XFile xf = null ;

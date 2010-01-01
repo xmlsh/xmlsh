@@ -35,8 +35,8 @@ public class xinclude extends XCommand {
 		
 		
 
-		Options opts = new Options( SerializeOpts.getOptionDefs() , args );
-		opts.parse();
+		Options opts = new Options( SerializeOpts.getOptionDefs() );
+		opts.parse(args);
 		args = opts.getRemainingArgs();
 		
 		

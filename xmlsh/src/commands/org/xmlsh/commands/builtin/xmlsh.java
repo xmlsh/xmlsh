@@ -20,10 +20,10 @@ import org.xmlsh.sh.shell.Shell;
 public class xmlsh extends BuiltinCommand {
 
 	
-	public int run( List<XValue> vargs ) throws Exception {
+	public int run( List<XValue> args ) throws Exception {
 			
-		Options opts = new Options( "x,v,c:,rcfile:,e" ,  vargs );
-		opts.parse();
+		Options opts = new Options( "x,v,c:,rcfile:,e"  );
+		opts.parse(args);
 		
 		Shell shell = mShell == null ? new Shell() : mShell.clone();
 		
@@ -44,11 +44,11 @@ public class xmlsh extends BuiltinCommand {
 	    		command = opts.getOptStringRequired("c").toString();
 		    
 	
-		    vargs = opts.getRemainingArgs();
+		    args = opts.getRemainingArgs();
 		    
 		    
 		    
-		    if(  vargs.size() == 0 && command == null ){
+		    if(  args.size() == 0 && command == null ){
 			    String rcfile = opts.getOptString("rcfile", null );
 			    if( rcfile == null ){
 			    	XValue home = shell.getEnv().getVarValue("HOME");
@@ -76,7 +76,7 @@ public class xmlsh extends BuiltinCommand {
 			    else // Run script 
 			    {
 			    	
-			    	String scmd = vargs.remove(0).toString();
+			    	String scmd = args.remove(0).toString();
 			    	ICommand cmd = CommandFactory.getInstance().getScript( shell , scmd, true );
 			    	if( cmd == null )
 			    		shell.printErr( scmd + ": not found");
@@ -86,7 +86,7 @@ public class xmlsh extends BuiltinCommand {
 			    		// must set args ourselves
 			    		
 			    		shell.setArg0( scmd);
-			    		shell.setArgs(vargs );
+			    		shell.setArgs(args );
 			    		ret = cmd.run( shell , scmd , null );
 			    	}
 			    	

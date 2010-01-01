@@ -35,8 +35,8 @@ public class rmdir extends XCommand {
 	@Override
 	public int run(List<XValue> args) throws Exception {
 		
-		Options opts = new Options( "" , args );
-		opts.parse();
+		Options opts = new Options( ""  );
+		opts.parse(args);
 		args = opts.getRemainingArgs();
 		int ret = 0;
 		for( XValue arg : args ){

@@ -54,8 +54,8 @@ public class xcmp extends XCommand {
 	{
 		
 
-		Options opts = new Options( "x,b,n" , args );
-		opts.parse();
+		Options opts = new Options( "x,b,n"  );
+		opts.parse(args);
 		
 		
 		xopt = opts.hasOpt("x");
