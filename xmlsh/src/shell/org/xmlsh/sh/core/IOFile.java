@@ -11,13 +11,12 @@ import java.io.PrintWriter;
 
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InputPort;
+import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.OutputPort;
-import org.xmlsh.core.StreamOutputPort;
 import org.xmlsh.core.XEnvironment;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.XVariable;
 import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.util.NullOutputStream;
 
 public class IOFile {
 	private String	mPrefix;
@@ -126,6 +125,9 @@ public class IOFile {
 				
 			if( mPrefix.equals("<")){
 				InputPort inp = env.getInputPort(portname);
+				if( inp == null )
+					throw new InvalidArgumentException("Input port not found: " + portname );
+
 					env.setInput( port , inp );
 			}
 			else
@@ -134,15 +136,17 @@ public class IOFile {
 				
 				OutputPort outp=env.getOutputPort( portname , false );
 				if( outp == null )
-					// If no output port by this name then use the Null output port
-					outp = new StreamOutputPort(new NullOutputStream());
-
+					throw new InvalidArgumentException("Output port not found: " + portname );
+				
 				env.setOutput(port,outp);
 			}
 			else
 			if( mPrefix.equals(">>"))
 			{	
-				OutputPort outp=env.getOutput( new XValue(file), true );
+				OutputPort outp=env.getOutputPort( portname , true );
+				if( outp == null )
+					throw new InvalidArgumentException("Output port not found: " + portname );
+
 				env.setOutput(port,outp);
 					
 			}
@@ -151,7 +155,10 @@ public class IOFile {
 			{	
 				
 				// Duplicate port from port
-				OutputPort outp=env.getOutputPort( file.replaceAll("[()]","") );
+				OutputPort outp=env.getOutputPort( portname );
+				if( outp == null )
+					throw new InvalidArgumentException("Output port not found: " + portname );
+
 
 				outp.addRef(); // keep stderr from being over released
 				env.setOutput(port,outp);
@@ -162,7 +169,10 @@ public class IOFile {
 			{	
 					
 					// Duplicate port from port
-					InputPort inp=env.getInputPort( file.replaceAll("[()]","") );
+					InputPort inp=env.getInputPort( portname );
+					if( inp == null )
+						throw new InvalidArgumentException("Input port not found: " + portname );
+
 
 					inp.addRef(); // keep stderr from being over released
 					env.setInput(port,inp);

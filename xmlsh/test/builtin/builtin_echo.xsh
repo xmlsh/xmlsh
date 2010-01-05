@@ -23,6 +23,12 @@ echo '$A$C$B'
 # Echo -n
 echo -n foo ; echo bar
 
+# Echo to a named port
+echo -p output to output
+echo -p xxx to xxx (xxx)>&(output)
+
+
+
 
 
 

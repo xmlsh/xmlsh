@@ -10,23 +10,37 @@ import java.io.OutputStream;
 import java.util.List;
 
 import org.xmlsh.core.BuiltinCommand;
+import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
+import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.XValue;
+import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.util.Util;
 
 public class echo extends BuiltinCommand {
 	
 	public int run( List<XValue> args ) throws Exception {
-		OutputStream out =  mShell.getEnv().getStdout().asOutputStream();
 
-		Options opts = new Options( "n"  );
+		Options opts = new Options( "n,p=port:" ,  SerializeOpts.getOptionDefs());
 		opts.parse(args);
 		
 		boolean nolf = opts.hasOpt("n");
+		String port = opts.getOptString("p", null);
+		
+		
+		OutputPort stdout = 
+			port != null ? mShell.getEnv().getOutputPort(port) : 
+			mShell.getEnv().getStdout();
+			
+		if( stdout == null )
+			throw new InvalidArgumentException("Output port not found: " + port );
+			
+			
+		OutputStream out = stdout.asOutputStream();
+	
 		
 		args = opts.getRemainingArgs();
-
-		
+	
 		args = Util.expandSequences( args);
 		boolean bFirst = true;
 		for ( XValue arg : args ){
@@ -34,10 +48,10 @@ public class echo extends BuiltinCommand {
 					out.write(' ');
 				
 				bFirst = false;
-				arg.serialize( out , getSerializeOpts() );
+				arg.serialize( out , getSerializeOpts(opts) );
 		}
 		if( ! nolf )
-			out.write(Util.getNewline(getSerializeOpts()));
+			out.write(Util.getNewline(getSerializeOpts(opts)));
 		out.flush();
 		return 0;
 	}
