@@ -18,6 +18,7 @@ import net.sf.saxon.s9api.XdmAtomicValue;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
 import org.xmlsh.core.BuiltinCommand;
+import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.SerializeOpts;
@@ -28,6 +29,8 @@ import org.xmlsh.util.Util;
 public class xtype extends BuiltinCommand {
 	public int run(  List<XValue> args ) throws Exception 
 	{
+		Options opts = new Options( SerializeOpts.getOptionDefs());
+		opts.parse(args);
 		
 		Processor  processor  = Shell.getProcessor();
 		
@@ -49,7 +52,7 @@ public class xtype extends BuiltinCommand {
 		
 		QName vqname = Util.resolveQName( "A", null );
 		
-		SerializeOpts serializeOpts = mShell.getSerializeOpts();
+		SerializeOpts serializeOpts = mShell.getSerializeOpts(opts);
 		OutputPort stdout = mShell.getEnv().getStdout();
 		Destination ser = stdout.asDestination(serializeOpts);
 		boolean bFirst = true ;
