@@ -27,3 +27,4 @@ Xquery on xml expression
 <t:test xmlns:t="http://www.example.org/test">Test</t:test>
 A String
 <AUTHOR>Jane Austen</AUTHOR>
+element()

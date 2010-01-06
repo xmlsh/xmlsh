@@ -55,6 +55,15 @@ xquery -context "A String" .
 # Test explicit context which is a file
 xquery -context-file books.xml -q '(//AUTHOR)[1]' 
 
+# Test functx support
+xquery -n -q <{{
+import module namespace functx = "http://www.functx.com" ;
+declare variable $A external;
+functx:sequence-type($A)
+}}> -v A <[ <foo/> ]>
+
+
+
 
 
 

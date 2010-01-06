@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Stack;
 
+import net.sf.saxon.query.ModuleURIResolver;
 import net.sf.saxon.s9api.Processor;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -94,7 +95,7 @@ public class Shell {
 	private		static 	boolean			bInitialized = false ;
 	private		static	Properties		mSavedSystemProperties;
 	private		static Processor		mProcessor = null;
-	
+	private		static	ModuleURIResolver	mModuleURIResolver = null ;
 	
 	
 	/**
@@ -893,6 +894,7 @@ public class Shell {
 			mProcessor  = new Processor(false);
 			// mProcessor.setConfigurationProperty(FeatureKeys.TREE_MODEL, net.sf.saxon.event.Builder.LINKED_TREE);
 			mProcessor.registerExtensionFunction(new EvalDefinition() );
+
 			
 			
 		}
@@ -1190,6 +1192,7 @@ public class Shell {
 		return mOpts.mSerialize;
 		
 	}
+
 
 
 

@@ -374,7 +374,11 @@ class Expander {
 		Processor processor = Shell.getProcessor();
 		
 		XQueryCompiler compiler = processor.newXQueryCompiler();
+		compiler.setModuleURIResolver(new ShellModuleURIResolver(mShell));
 
+		
+		
+		
 		// Declare the extension function namespace
 		// This can be overridden by user declarations
 		compiler.declareNamespace("xmlsh", EvalDefinition.kXMLSH_EXT_NAMESPACE);

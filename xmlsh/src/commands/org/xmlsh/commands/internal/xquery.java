@@ -28,6 +28,7 @@ import org.xmlsh.core.XValue;
 import org.xmlsh.core.Options.OptionValue;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.sh.shell.ShellModuleURIResolver;
 import org.xmlsh.util.Util;
 
 
@@ -45,6 +46,7 @@ public class xquery extends XCommand {
 		Processor  processor  = Shell.getProcessor();
 		
 		XQueryCompiler compiler = processor.newXQueryCompiler();
+		compiler.setModuleURIResolver(new ShellModuleURIResolver(getEnv().getShell()));
 		XdmItem	context = null;
 		
 		

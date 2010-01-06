@@ -48,10 +48,13 @@ version.release=${release}
     	 <copy todir="_out" filtering="on">
     	            <fileset dir="src/shell">
     	                <include name="**/*.properties"/>
+    	                <include name="**/*.xquery"/>
+    	                
     	            </fileset>
     	 			<fileset dir="src/commands">
     	 				<include name="**/*.xsh"/>
-    	 				<include name="**/*.xsl"/>		
+    	 				<include name="**/*.xsl"/>
+    	 						
     	 			</fileset>
     	        </copy>
 
