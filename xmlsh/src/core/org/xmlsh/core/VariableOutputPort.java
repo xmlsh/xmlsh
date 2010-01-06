@@ -159,7 +159,7 @@ public class VariableOutputPort extends OutputPort
 	
 	private XdmDestination newXdmDestination() {
 		XdmDestination dest = new XdmDestination();
-	    setupDestination(dest);
+	    // setupDestination(dest);
 	    return dest;
 		
 	}
@@ -211,7 +211,6 @@ public class VariableOutputPort extends OutputPort
 				appendVar(mXdmDestination.getXdmNode() );
 				
 				mXdmDestination.reset();
-				setupDestination( mXdmDestination);
 			
 			}
 			else
@@ -291,27 +290,6 @@ public class VariableOutputPort extends OutputPort
 	}
 
 	
-	private void setupDestination( XdmDestination dest )
-	{
-		
-		 /*
-		  * TODO: Remove this extra code when Saxon is fixed 
-		  * XdmDestinatin shouldn't need the configuration
-		  */
-		
-		 Configuration config = Shell.getProcessor().getUnderlyingConfiguration();
-		 try {
-			Receiver r = dest.getReceiver(config);
-		    PipelineConfiguration pipe = config.makePipelineConfiguration();
-
-			r.setPipelineConfiguration(pipe);
-			;
-		} catch (SaxonApiException e) {
-			;
-		}
-		
-
-	}
 }
 
 
