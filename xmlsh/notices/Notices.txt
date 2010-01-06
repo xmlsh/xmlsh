@@ -28,8 +28,13 @@ http://woodstox.codehaus.org/
 http://repository.codehaus.org/org/codehaus/woodstox/woodstox-core-asl/4.0.3/
 woodstox-core-asl-4.0.3.jar
 
-xmlsh may be redistributed as long as these notices in their entirty are included,
-and as long as the terms of the relevent licenses are applied.
+* functx library from 
+http://www.xqueryfunctions.com/xq/
+http://www.xqueryfunctions.com/xq/functx-1.0-nodoc-2007-01.xq
+
+
+xmlsh may be redistributed as long as these notices in their entirety are included,
+and as long as the terms of the relevant licenses are applied.
 
 
 

@@ -40,6 +40,7 @@ import org.xmlsh.commands.builtin.xthrow;
 import org.xmlsh.commands.builtin.xtrue;
 import org.xmlsh.commands.builtin.xversion;
 import org.xmlsh.commands.builtin.xwhich;
+import org.xmlsh.commands.builtin.xtype;
 import org.xmlsh.sh.core.FunctionDefinition;
 import org.xmlsh.sh.shell.Module;
 import org.xmlsh.sh.shell.Modules;
@@ -93,6 +94,7 @@ public class CommandFactory
 		addBuiltin("throw" , xthrow.class);
 		addBuiltin("tie" , tie.class);
 		addBuiltin("log",log.class);
+		addBuiltin("xtype", xtype.class);
 
 	}
 	
