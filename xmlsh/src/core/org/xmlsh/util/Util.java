@@ -852,6 +852,9 @@ public class Util
 		if( dest.exists() && force)
 			dest.delete();
 		
+		
+		
+		
 		// Simple rename
 		if( src.renameTo(dest))
 			return ;

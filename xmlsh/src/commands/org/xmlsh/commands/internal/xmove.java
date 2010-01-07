@@ -34,7 +34,7 @@ public class xmove extends XCommand {
 	public int run( List<XValue> args )
 	throws Exception 
 	{
-		Options opts = new Options("x=xpath:,d=dir:,e=ext:,ns:+,f=force,q");
+		Options opts = new Options("x=xpath:,d=dir:,e=ext:,ns:+,f=force,mkdir,q");
 		opts.parse(args);
 		
 		String xpath = opts.getOptStringRequired("x");
@@ -42,6 +42,7 @@ public class xmove extends XCommand {
 		String ext = opts.getOptString("e",null);
 		boolean bForce = opts.hasOpt("f");
 		boolean bQuiet = opts.hasOpt("q");
+		boolean bMkdir = opts.hasOpt("mkdir");
 		
 		
 		List<XValue> xargs = opts.getRemainingArgs();
@@ -91,7 +92,7 @@ public class xmove extends XCommand {
 			if( extension == null )
 				extension = inFile.getExt();
 			
-			if( !move( inFile.getFile() , expr , dir , extension,bForce ,bQuiet) )
+			if( !move( inFile.getFile() , expr , dir , extension,bForce ,bQuiet,bMkdir ) )
 				failed++;
 			
 			
@@ -110,7 +111,7 @@ public class xmove extends XCommand {
 	 * @throws SaxonApiException 
 	 */
 
-	private boolean move(File inFile, XPathExecutable expr, String dir, String ext, boolean force, boolean bQuiet ) throws IOException, SaxonApiException {
+	private boolean move(File inFile, XPathExecutable expr, String dir, String ext, boolean force, boolean bQuiet , boolean bMkdir ) throws IOException, SaxonApiException {
 		
 		expr.load();
 		
@@ -134,6 +135,14 @@ public class xmove extends XCommand {
 		File toFile =  new File( getFile(dir) , toName );
 		if( ! bQuiet )
 			printErr("Moving " + inFile.getName() + " to " + toFile.getAbsolutePath() );  
+		
+		if( bMkdir ){
+			File parent = toFile.getParentFile();
+			if( parent !=null && ! parent.exists() )
+				parent.mkdirs();
+				
+		}
+		
 		
 		Util.moveFile( inFile ,toFile,force);
 

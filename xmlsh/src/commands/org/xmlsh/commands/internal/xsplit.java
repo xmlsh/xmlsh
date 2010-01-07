@@ -70,6 +70,8 @@ public class xsplit extends XCommand {
 	
     private		boolean			mNoRoot = false ;
 	private		int				mNumChildren = 1;
+	private		boolean			mNoDTD = false ;
+	private		boolean			mNoPI  = false ;
 	
 	private		List<XMLEvent>	mHeader = new ArrayList<XMLEvent>();
 
@@ -78,7 +80,7 @@ public class xsplit extends XCommand {
 	{
 
 
-		Options opts = new Options( "c=children:,w=wrap:,n,p=prefix:,e=ext:,s=suffix:,n=nowrap,o=output:" ,SerializeOpts.getOptionDefs() );
+		Options opts = new Options( "c=children:,w=wrap:,n,p=prefix:,e=ext:,s=suffix:,n=nowrap,o=output:,nopi,nodtd" ,SerializeOpts.getOptionDefs() );
 		opts.parse(args);
 		
 		// root node
@@ -98,6 +100,9 @@ public class xsplit extends XCommand {
 		mPrefix  = opts.getOptString("p",mPrefix);
 		if( opts.hasOpt("o"))
 			mOutputDir = getFile(opts.getOptValue("o"));
+		mNoDTD = opts.hasOpt("nodtd");
+		mNoPI  = opts.hasOpt("nopi");
+		
 		
 		
 		/*
@@ -163,6 +168,12 @@ public class xsplit extends XCommand {
 		while( xmlreader.hasNext()   ){
 			XMLEvent e = xmlreader.nextEvent();
 			if( e.getEventType() != XMLStreamConstants.START_ELEMENT ){
+				if( mNoDTD && e.getEventType() == XMLStreamConstants.DTD )
+					continue;
+				if( mNoPI && e.getEventType() == XMLStreamConstants.PROCESSING_INSTRUCTION )
+					continue;
+				
+				
 				mHeader.add(e);
 				continue;
 			}
