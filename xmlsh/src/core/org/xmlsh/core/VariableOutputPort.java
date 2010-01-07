@@ -35,6 +35,7 @@ import net.sf.saxon.tinytree.TinyBuilder;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.S9Util;
+import org.xmlsh.util.Util;
 import org.xmlsh.util.XMLEventWriterBuffer;
 import org.xmlsh.util.XMLEventWriterToContentHandler;
 import org.xmlsh.util.XMLStreamWriterToContentHandler;
@@ -49,6 +50,25 @@ import org.xmlsh.util.XMLStreamWriterToContentHandler;
 
 public class VariableOutputPort extends OutputPort
 {
+
+	
+	
+	private class VariableXdmItemOutputStream implements IXdmItemOutputStream
+	{
+		
+		@Override
+		public void write(XdmItem item) throws CoreException {
+			appendVar(item);
+			
+		}
+	}
+	
+	
+	
+	
+	
+	
+	
 	private	 XVariable		 mVariable;
 
 	// Transient classes 
@@ -289,6 +309,12 @@ public class VariableOutputPort extends OutputPort
 		
 	}
 
+	
+	public	IXdmItemOutputStream	asXdmItemOutputStream(SerializeOpts opts) throws CoreException
+	{
+		return new VariableXdmItemOutputStream(  );
+	}
+	
 	
 }
 

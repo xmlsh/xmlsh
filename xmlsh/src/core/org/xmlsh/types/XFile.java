@@ -25,7 +25,7 @@ public class XFile /* implements XSerializble */ {
 	
 	public XFile( XValue xv )
 	{
-		if( ! xv.isString() ){
+		if( ! xv.isAtomic() ){
 			try {
 				xv = xv.xpath("/file/@path/string()");
 			} catch (UnexpectedException e) {

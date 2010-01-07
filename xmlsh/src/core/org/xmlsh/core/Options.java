@@ -233,7 +233,7 @@ public class Options
 		for ( Iterator<XValue> I = args.iterator() ; I.hasNext() ; ) {
 			XValue arg = I.next();
 			
-			String sarg = ( arg.isString()  ? arg.toString() : null );
+			String sarg = ( arg.isAtomic()  ? arg.toString() : null );
 			
 			if( sarg != null &&  (sarg.startsWith("-") || sarg.startsWith("+")) && ! sarg.equals("--") && ! Util.isInt(sarg,true) ){
 				String a = sarg.substring(1);
@@ -270,7 +270,7 @@ public class Options
 
 				mRemainingArgs = new ArrayList<XValue>( );
 				
-				if( arg.isString() && arg.equals("--") ){
+				if( arg.isAtomic() && arg.equals("--") ){
 						arg = null;
 						mDashDash = true ;
 				}

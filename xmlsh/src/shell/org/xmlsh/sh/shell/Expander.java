@@ -46,10 +46,17 @@ class Expander {
 	private static class Result {
 
 		StringBuffer	sb = new StringBuffer();
+		XValue			cur = null;		// Current XValue if its unknown to convert to string, only atomic values
 		List<XValue>	result = new ArrayList<XValue>();
 		
 		void flush() 
 		{
+			if( cur != null ){
+				result.add(cur); // dont call ajoin adds twice
+				cur = null;
+			}
+				
+			
 			if( sb.length() > 0 )
 				add(sb.toString());
 			sb.setLength(0);
@@ -58,28 +65,28 @@ class Expander {
 		
 		void add( String s )
 		{
+			ajoin();
 			result.add(new XValue(s));
 		}
 		
 		void add( XValue v )
 		{
+			ajoin();
 			result.add(v);
 		}
 		void append( String s )
 		{
+			ajoin();
 			sb.append(s);
 		}
 		
 		void append( char c )
 		{
+			ajoin();
 			sb.append(c);
 		}
 		
-		void add( List<XValue> args )
-		{
-			flush();
-			result.addAll( args );
-		}
+
 		
 		List<XValue> 	getResult()
 		{
@@ -87,26 +94,32 @@ class Expander {
 			return result ;
 		}
 
-		public void append(String[] args) {
-			// @TODO : BROKEN !   $*foo doesnt concat the last arg
-			for( String a : args ){
-				if( sb.length() > 0 ){
-					sb.append(a);
-					add(sb.toString());
-					sb = new StringBuffer();
-				} else
-					add(a);
-			}
-			
-		}
-
+	
 		/*
 		 * Append a value to the result buffer
 		 * If currently in-quotes then convert the args to strings and space seperate
 		 */
 		public void append(XValue value, boolean inQuotes ) {
-			if( value.isString() || value.isAtomic() )
-				append( value.toString());
+			if( value.isAtomic() ){
+				
+				
+				
+				// If in quotes or this is an ajoining value then concatenate 
+				if( inQuotes || cur != null ){
+
+					// Unquoted empty atomic values are ignored 
+					String str = value.toString();
+
+					if(!inQuotes && Util.isEmpty(str) )
+						return ;
+
+					
+					ajoin();
+					sb.append( str );
+					
+				} else
+					cur = value ;
+			}
 			else {
 				if( inQuotes ){
 					// Flatten sequences
@@ -123,6 +136,13 @@ class Expander {
 					flush();
 					add(value);
 				}
+			}
+		}
+
+		private void ajoin() {
+			if( cur != null ){
+				sb.append(cur.toString());
+				cur = null;
 			}
 		}
 		
@@ -434,8 +454,6 @@ class Expander {
 			
 			
 			XdmValue result =  eval.evaluate();
-
-			ArrayList<XdmItem> items = new ArrayList<XdmItem>(result.size());
 			
 			
 			return result ;
@@ -544,7 +562,12 @@ class Expander {
 		}
 		
 		if( ! wildUnQuoted ){
-			r.add( new XValue(sb.toString()));
+			String sbs = sb.toString();
+			// IF we havent unquoted or changed any value then preserve the original type/value
+			if( sbs.equals(vs))
+				r.add( v );
+			else
+				r.add( new XValue(sbs));
 			return r;
 		}
 		
@@ -705,11 +728,14 @@ class Expander {
 	private XValue extractSingle(String var, boolean quoted) throws IOException, CoreException {
 	
 		XValue v = extractSingle(var);
-		if( v == null || v.isXExpr() )
+		if( v == null || ! v.isAtomic() )
 			return v;
 		
 
-			String s = v.toString();
+		String s = v.toString();
+			
+		if( ! quoted && Util.isEmpty(s))
+			return null ;
 			
 			if( hasQuotes(s) )
 				return new XValue(quote(s));

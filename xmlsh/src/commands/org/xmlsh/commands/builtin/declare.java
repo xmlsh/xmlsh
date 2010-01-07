@@ -67,7 +67,7 @@ public class declare extends BuiltinCommand {
 		// ns="url"
 		// ns=
 		// "url"
-		if( arg.isString() ){
+		if( arg.isAtomic() ){
 
 			
 			

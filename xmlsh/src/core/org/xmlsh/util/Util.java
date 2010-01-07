@@ -513,7 +513,7 @@ public class Util
 	{
 		ArrayList<XValue> list = new ArrayList<XValue>( values.size());
 		for( XValue arg : values ){
-			if( arg.isString() )
+			if( arg.isAtomic() )
 				list.add(arg);
 			else {
 				XdmValue xv = arg.asXdmValue();

@@ -1,31 +1,42 @@
 /**
- * $Id$
- * $Date$
+ * $Id: $
+ * $Date: $
  *
  */
 
-package org.xmlsh.commands.builtin;
+package org.xmlsh.core;
 
-import java.util.List;
+import net.sf.saxon.s9api.Destination;
+import net.sf.saxon.s9api.SaxonApiException;
+import net.sf.saxon.s9api.XdmItem;
+import org.xmlsh.util.Util;
 
-import org.xmlsh.core.BuiltinCommand;
-import org.xmlsh.core.XValue;
-
-public class unset extends BuiltinCommand {
-
-	static final String sDocRoot = "env";
-	public int run(  List<XValue> args ) throws Exception {
-		for( XValue arg : args ){
-			if( arg.isAtomic()){
-				mShell.getEnv().unsetVar( arg.toString() );
-			}
+class DestinationXdmItemOutputStream implements IXdmItemOutputStream
+{
+	Destination 	mDest;
+	
+	
+	DestinationXdmItemOutputStream( Destination dest ) throws CoreException
+	{
+		mDest = dest ;
+		
+		
+	}
+	@Override
+	public void write(XdmItem item) throws CoreException {
+		try {
+			Util.writeXdmValue(item, mDest);
+		} catch (SaxonApiException e) {
+			throw new CoreException("Exception writing XdmItem to output",e);
 		}
-		return 0;
+		
 	}
 }
+
+
 //
 //
-//Copyright (C) 2008,2009 , David A. Lee.
+//Copyright (C) 2008,2009 David A. Lee.
 //
 //The contents of this file are subject to the "Simplified BSD License" (the "License");
 //you may not use this file except in compliance with the License. You may obtain a copy of the

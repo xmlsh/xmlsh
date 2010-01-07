@@ -101,7 +101,7 @@ public class xcat extends XCommand {
 		String query = "";
 		
 		int wrapMode = 
-			(wrapper == null ? 0 : wrapper.isString() ? 1 : 2 );
+			(wrapper == null ? 0 : wrapper.isAtomic() ? 1 : 2 );
 		
 		int mode = (hasFiles ? 3 : 0 ) + wrapMode ;
 		

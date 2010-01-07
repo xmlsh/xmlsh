@@ -168,7 +168,7 @@ public class test extends BuiltinCommand {
 		if( av.size() == 0 || av.get(0).equals(")") )
 			return evalUnary("-n" , av1);
 		
-		if( av1.isString() ){
+		if( av1.isAtomic() ){
 
 
 			String a1 = av1.toString();
@@ -201,7 +201,7 @@ public class test extends BuiltinCommand {
 		}
 		
 		XValue op  = av.remove(0);
-		if( op.isString() )
+		if( op.isAtomic() )
 			return evalBinary( av1 ,  op.toString() , av.remove(0 ) );
 		else
 				throw new Error("Unexpected xml value operator");
@@ -286,7 +286,7 @@ public class test extends BuiltinCommand {
 			return value.isXExpr();
 		else
 		if(op.equals("-S"))
-			return value.isString();
+			return value.isAtomic();
 		else
 		if( op.equals("-D"))
 			return mShell.getEnv().isDefined( value.toString() );
@@ -369,7 +369,7 @@ public class test extends BuiltinCommand {
 			while( av.size() > 0 ){
 				String op = null;
 				XValue a1 = av.get(0);
-				if( ! bFirst &&  a1.isString() && ( a1.equals("-a") || a1.equals("-o"))){
+				if( ! bFirst &&  a1.isAtomic() && ( a1.equals("-a") || a1.equals("-o"))){
 					op = a1.toString();
 					av.remove(0);
 				}

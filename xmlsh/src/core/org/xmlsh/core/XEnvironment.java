@@ -334,7 +334,7 @@ public class XEnvironment  {
 		
 		if( port == null )
 			return getStdout();
-		if( port.isString()){
+		if( port.isAtomic()){
 			String name = port.toString().trim();
 			if( name.equals("-"))
 				return getStdout();
@@ -487,7 +487,7 @@ public class XEnvironment  {
 		
 		if( port == null )
 			return getStdin();
-		if( port.isString()){
+		if( port.isAtomic()){
 			String name = port.toString().trim();
 			if( name.equals("-"))
 				return getStdin();

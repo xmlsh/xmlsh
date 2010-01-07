@@ -8,3 +8,5 @@ xs:string
 xs:string+
 xs:string
 empty-sequence()
+xs:integer
+xs:decimal

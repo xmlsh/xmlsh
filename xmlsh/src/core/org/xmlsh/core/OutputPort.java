@@ -31,11 +31,6 @@ import org.xmlsh.sh.shell.SerializeOpts;
 public abstract class OutputPort extends IPort
 {
 
-	
-	/*
-	 * Standard input stream - created on first request
-	 */
-	
 	public	abstract OutputStream asOutputStream();
 
 	public abstract void flush() throws  CoreException;
@@ -61,14 +56,19 @@ public abstract class OutputPort extends IPort
 	}
 
 	
-	
+	// These 2 shouldnt really go on the port 
 	public abstract void writeSequenceSeperator(SerializeOpts serializeOpts) throws IOException, InvalidArgumentException;
-	
-
 	public abstract void writeSequenceTerminator(SerializeOpts serializeOpts) throws IOException ;
-	public abstract XMLStreamWriter asXMLStreamWriter(SerializeOpts opts) throws InvalidArgumentException, XMLStreamException;
 
+	
+	
+	public abstract XMLStreamWriter asXMLStreamWriter(SerializeOpts opts) throws InvalidArgumentException, XMLStreamException;
 	public abstract XMLEventWriter asXMLEventWriter(SerializeOpts opts) throws InvalidArgumentException, XMLStreamException;
+	
+	public	IXdmItemOutputStream	asXdmItemOutputStream(SerializeOpts opts) throws CoreException
+	{
+		return new DestinationXdmItemOutputStream( asDestination(opts) );
+	}
 	
 
 }

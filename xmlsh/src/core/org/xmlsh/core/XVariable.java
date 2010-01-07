@@ -148,7 +148,7 @@ public class XVariable {
 		
 		writer.writeStartElement(sVariable);
 		writer.writeAttribute(sName, getName());
-		writer.writeAttribute(sType, (value == null || value.isString()) ? "string" : "xml");
+		writer.writeAttribute(sType, (value == null || value.isAtomic()) ? "string" : "xml");
 		writer.writeAttribute(sFlags, flagStr );
 		writer.writeEndElement();
 		

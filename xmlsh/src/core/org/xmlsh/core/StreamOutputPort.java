@@ -22,6 +22,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import net.sf.saxon.s9api.Destination;
+import net.sf.saxon.s9api.XdmItem;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.util.SynchronizedOutputStream;
 import org.xmlsh.util.Util;
@@ -36,6 +37,11 @@ import org.xmlsh.util.Util;
 
 public class StreamOutputPort extends OutputPort
 {
+	
+	
+	
+	
+	
 	
 
 	private OutputStream	 mStream;

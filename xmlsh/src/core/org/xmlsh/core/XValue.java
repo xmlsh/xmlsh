@@ -195,14 +195,6 @@ public class XValue {
 	}
 
 	
-	/**
-	 * Variables are considered pure strings
-	 * if the string element is not null
-	 * @depreciated
-	 */
-	public boolean isString() {
-		return isAtomic();
-	}	
 	
 	
 	public XValue	xpath( String expr ) throws UnexpectedException 
@@ -259,7 +251,8 @@ public class XValue {
 			return true ;
 		
 		ValueRepresentation value = mValue.getUnderlyingValue();
-		return value instanceof AtomicValue ;
+		boolean isAtom = ( value instanceof AtomicValue) ;
+		return isAtom;
 	
 		
 	}
@@ -276,7 +269,7 @@ public class XValue {
 
 	public void serialize(OutputStream out, SerializeOpts opt) throws UnsupportedEncodingException, IOException, SaxonApiException 
 	{
-		if( isString() )
+		if( isAtomic() )
 			out.write( toString().getBytes(opt.getEncoding()) );
 		else {
 			Serializer ser = Util.getSerializer(opt);
