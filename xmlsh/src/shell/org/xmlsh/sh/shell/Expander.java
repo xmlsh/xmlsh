@@ -105,7 +105,7 @@ class Expander {
 				
 				
 				// If in quotes or this is an ajoining value then concatenate 
-				if( inQuotes || cur != null ){
+				if( inQuotes || cur != null || sb.length() > 0 ){
 
 					// Unquoted empty atomic values are ignored 
 					String str = value.toString();

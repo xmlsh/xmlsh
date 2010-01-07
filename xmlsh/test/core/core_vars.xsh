@@ -87,4 +87,11 @@ set -indent
 a=$(echo $)
 [ "$a" = "$" ] || echo Failed echo of $
 
+# Test that variable assignment concatenates property 
+a=pre
+b=post
+
+[ $a/$b = "pre/post" ] || echo Failed variable concat
+
+
 exit 0
