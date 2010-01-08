@@ -510,8 +510,12 @@ class Expander {
 			
 			sb.append(c);
 		}
-		
-		return new XValue(sb.toString());
+		String sbs = sb.toString();
+		// Preserve original value/type of no dequoting was done
+		if( vs.equals(sbs))
+			return v;
+		else
+		return new XValue(sbs);
 		
 	}
 
