@@ -37,7 +37,7 @@
     				    <include name="**/*.jar"/>
     				   </fileset>
     				   <fileset dir="../../trunk/bin">
-    				    <include name="xmlsh.jar"/>
+    				    <include name="xmlsh-1.0.jar"/>
     				   </fileset>
     	     </classpath>
     	 </javac>
@@ -66,7 +66,7 @@
   <target name="test" description="Test Cases">
   	<java 
   		classname="org.xmlsh.sh.shell.Shell"
-  		classpath="bin/xmlsh.jar;lib/log4j-1.2.7.jar;lib/saxon9.jar;lib/saxon9-s9api.jar;lib/xercesImpl.jar;lib/woodstox-core-asl-4.0.3.jar;lib/stax2-api-3.0.1.jar;lib/stax-utils.jar"
+  		classpath="bin/xmlsh-1.0.jar;lib/log4j-1.2.7.jar;lib/saxon9.jar;lib/saxon9-s9api.jar;lib/xercesImpl.jar;lib/woodstox-core-asl-4.0.3.jar;lib/stax2-api-3.0.1.jar;lib/stax-utils.jar"
   		fork="true"
   	    dir="test">
   			<arg value="./run_tests.xsh"/>

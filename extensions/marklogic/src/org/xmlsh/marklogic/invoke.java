@@ -10,7 +10,6 @@ import org.xmlsh.marklogic.util.MLCommand;
 
 import com.marklogic.xcc.ContentSource;
 import com.marklogic.xcc.Request;
-import com.marklogic.xcc.RequestOptions;
 import com.marklogic.xcc.ResultSequence;
 import com.marklogic.xcc.Session;
 import com.marklogic.xcc.ValueFactory;
@@ -24,8 +23,8 @@ public class invoke extends MLCommand {
 	@Override
 	public int run(List<XValue> args) throws Exception {
 		
-		Options opts = new Options("c=connect:,v,t",args);
-		opts.parse();
+		Options opts = new Options("c=connect:,v,t");
+		opts.parse(args);
 		args = opts.getRemainingArgs();
 		boolean asText = opts.hasOpt("t");
 

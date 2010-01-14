@@ -13,10 +13,12 @@ import org.xmlsh.core.XValue;
 import org.xmlsh.marklogic.util.MLCommand;
 import org.xmlsh.util.Util;
 
+import com.marklogic.xcc.AdhocQuery;
 import com.marklogic.xcc.Content;
 import com.marklogic.xcc.ContentCreateOptions;
 import com.marklogic.xcc.ContentFactory;
 import com.marklogic.xcc.ContentSource;
+import com.marklogic.xcc.ResultSequence;
 import com.marklogic.xcc.Session;
 import com.marklogic.xcc.exceptions.RequestException;
 
@@ -29,13 +31,14 @@ public class put extends MLCommand {
 	@Override
 	public int run(List<XValue> args) throws Exception {
 		
-		Options opts = new Options("c=connect:,uri:,baseuri:,m=maxfiles:",args);
-		opts.parse();
+		Options opts = new Options("c=connect:,uri:,baseuri:,m=maxfiles:,r=recurse");
+		opts.parse(args);
 		args = opts.getRemainingArgs();
 		
 		String uri = opts.getOptString("uri", null);
 		String baseUri = opts.getOptString("baseuri", "");
 		int  maxFiles = Util.parseInt(opts.getOptString("m", "1"),1);
+		boolean bRecurse = opts.hasOpt("r");
 		
 		
 		if(! baseUri.equals("") && ! baseUri.endsWith("/") )
@@ -47,12 +50,9 @@ public class put extends MLCommand {
 
 		session = cs.newSession();
 		
-		if( args.size() <= 1 ){
+		if( args.size() == 0 ){
 			InputPort in = null;
-			if( args.size() > 0 )
-				in = getInput( args.get(0));
-			else
-				in = getStdin();
+			in = getStdin();
 			
 			if( uri == null )
 				uri = in.getSystemId();
@@ -68,7 +68,7 @@ public class put extends MLCommand {
 				if( last > end )
 					last = end ;
 				
-				load( args.subList(start, last), baseUri );
+				load( args.subList(start, last), baseUri , bRecurse );
 				start += maxFiles ;
 				
 				
@@ -117,20 +117,48 @@ public class put extends MLCommand {
 		session.insertContent (content);
 	}
 
-	public void load (List<XValue> files , String baseUri ) throws CoreException, IOException, RequestException
+	public void load (List<XValue> files , String baseUri,  boolean bRecurse ) throws CoreException, IOException, RequestException
 	{
-		printErr("Putting " + files.size() + " files");
-		Content[]	contents = new Content[files.size()];
+		printErr("Putting " + files.size() + " files to " + baseUri );
+		List<Content>	contents = new ArrayList<Content>(files.size());
 		int i = 0;
 		for( XValue v : files ){	
+			
+			String fname = v.toString();
+			File file = getFile(fname);
+			String uri = baseUri + file.getName() + "/";
 
-			File file = getFile(v);
-			String uri = baseUri + file.getName();
+			if( file.isDirectory() ){
+				if( ! bRecurse ){
+					printErr("Skipping directory: " + file.getName() );
+					continue;
+				}
+				List<XValue> sub = new ArrayList<XValue>();
+				for( String fn : file.list() ){
+					sub.add(new XValue(fname + "/" + fn));
+				}
+				createDir( uri );
+				if( ! sub.isEmpty() )
+					load( sub , uri , bRecurse );
+				continue ;
+				
+			}
 			Content content= ContentFactory.newContent (uri, file, options);
-			contents[i++] = content;
+			contents.add(content);
 		}
+		
+		if( ! contents.isEmpty() )
+			session.insertContent (contents.toArray(new Content[ contents.size()]));
+	}
 
-		session.insertContent (contents);
+
+	private void createDir(String uri) throws RequestException {
+		printErr("Making directory: " + uri );
+		AdhocQuery request = session.newAdhocQuery ("xdmp:directory-create('" + uri + "')" );
+		ResultSequence rs = session.submitRequest (request);
+
+        // writeResult(rs, out, asText );
+		
 	}
 
 

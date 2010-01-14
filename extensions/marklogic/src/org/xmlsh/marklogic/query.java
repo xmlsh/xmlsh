@@ -2,7 +2,6 @@ package org.xmlsh.marklogic;
 
 
 import java.io.InputStream;
-import java.net.URI;
 import java.util.List;
 
 import org.xmlsh.core.InputPort;
@@ -32,8 +31,8 @@ public class query extends MLCommand {
 	@Override
 	public int run(List<XValue> args) throws Exception {
 		
-		Options opts = new Options("c=connect:,q:,v,f:,t",args);
-		opts.parse();
+		Options opts = new Options("c=connect:,q:,v,f:,t");
+		opts.parse(args);
 		args = opts.getRemainingArgs();
 		
 		ContentSource cs = getConnection(opts);
