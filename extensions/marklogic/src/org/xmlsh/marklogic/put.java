@@ -126,7 +126,7 @@ public class put extends MLCommand {
 			
 			String fname = v.toString();
 			File file = getFile(fname);
-			String uri = baseUri + file.getName() + "/";
+			String uri = baseUri + file.getName() ;
 
 			if( file.isDirectory() ){
 				if( ! bRecurse ){
@@ -137,9 +137,9 @@ public class put extends MLCommand {
 				for( String fn : file.list() ){
 					sub.add(new XValue(fname + "/" + fn));
 				}
-				createDir( uri );
+				createDir( uri + "/" );
 				if( ! sub.isEmpty() )
-					load( sub , uri , bRecurse );
+					load( sub , uri + "/" , bRecurse );
 				continue ;
 				
 			}
