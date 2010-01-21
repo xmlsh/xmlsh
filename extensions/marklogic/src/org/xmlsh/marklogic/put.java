@@ -31,7 +31,7 @@ public class put extends MLCommand {
 	@Override
 	public int run(List<XValue> args) throws Exception {
 		
-		Options opts = new Options("c=connect:,uri:,baseuri:,m=maxfiles:,r=recurse");
+		Options opts = new Options("c=connect:,uri:,baseuri:,m=maxfiles:,r=recurse,d=mkdirs");
 		opts.parse(args);
 		args = opts.getRemainingArgs();
 		
@@ -39,26 +39,37 @@ public class put extends MLCommand {
 		String baseUri = opts.getOptString("baseuri", "");
 		int  maxFiles = Util.parseInt(opts.getOptString("m", "1"),1);
 		boolean bRecurse = opts.hasOpt("r");
+		boolean bMkdirs = opts.hasOpt("d");
 		
 		
-		if(! baseUri.equals("") && ! baseUri.endsWith("/") )
-			baseUri = baseUri + "/";
-		
+			
 		ContentSource cs = getConnection(opts);
 	
 		// printErr("maxfiles is " + maxFiles );
 
 		session = cs.newSession();
 		
-		if( args.size() == 0 ){
+		if( args.size() == 0 || (args.size() == 1 && baseUri.equals("") ) ){
 			InputPort in = null;
-			in = getStdin();
+			if( args.size() > 0 )
+				in = this.getInput(args.get(0));
+			else
+				in = getStdin();
 			
 			if( uri == null )
 				uri = in.getSystemId();
-			this.load(in, uri);
+			try {
+				this.load(in, uri);
+			} finally {
+				in.close();
+			}
+			
 		}
 		else {
+			
+			if(! baseUri.equals("") && ! baseUri.endsWith("/") )
+				baseUri = baseUri + "/";
+
 			
 			int start = 0 ;
 			int end = args.size() ;
@@ -68,7 +79,7 @@ public class put extends MLCommand {
 				if( last > end )
 					last = end ;
 				
-				load( args.subList(start, last), baseUri , bRecurse );
+				load( args.subList(start, last), baseUri , bRecurse, bMkdirs );
 				start += maxFiles ;
 				
 				
@@ -117,7 +128,7 @@ public class put extends MLCommand {
 		session.insertContent (content);
 	}
 
-	public void load (List<XValue> files , String baseUri,  boolean bRecurse ) throws CoreException, IOException, RequestException
+	public void load (List<XValue> files , String baseUri,  boolean bRecurse, boolean bMkdirs ) throws CoreException, IOException, RequestException
 	{
 		printErr("Putting " + files.size() + " files to " + baseUri );
 		List<Content>	contents = new ArrayList<Content>(files.size());
@@ -137,9 +148,10 @@ public class put extends MLCommand {
 				for( String fn : file.list() ){
 					sub.add(new XValue(fname + "/" + fn));
 				}
-				createDir( uri + "/" );
+				if( bMkdirs )
+					createDir( uri + "/" );
 				if( ! sub.isEmpty() )
-					load( sub , uri + "/" , bRecurse );
+					load( sub , uri + "/" , bRecurse , bMkdirs );
 				continue ;
 				
 			}

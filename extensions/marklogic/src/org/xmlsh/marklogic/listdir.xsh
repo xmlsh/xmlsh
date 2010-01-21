@@ -9,5 +9,13 @@ return $d
 	
 }}>
 else
-	:query -q "xdmp:directory-properties('$1')/base-uri()"
+	for dir in $* ; do
+	:query -q <{{
+declare variable $dir external;
+for $d in 
+	xdmp:directory-properties($dir)/base-uri()
+order by $d
+return $d
+}}> -v dir $dir
+done
 fi

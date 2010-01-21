@@ -6,7 +6,10 @@ elif [ "$1" = "-r" ] ; then
 	for dir in $* ; do
 		:query -q <{{
 declare variable $dir external;
-xdmp:directory($dir,"infinity")/base-uri()
+for $d in xdmp:directory($dir,"infinity")/base-uri()
+order by $d
+return $d
+
 }}> -v dir $dir
 done
 
@@ -14,7 +17,9 @@ else
 	for dir in $* ; do
 		:query -q <{{
 declare variable $dir external;
-xdmp:directory($dir)/base-uri()
+for $d in xdmp:directory($dir)/base-uri()
+order by $d
+return $d
 }}> -v dir $dir
 done
 
