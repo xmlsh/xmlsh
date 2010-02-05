@@ -31,6 +31,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.xmlsh.core.CommandFactory;
 import org.xmlsh.core.CoreException;
+import org.xmlsh.core.ExitOnErrorException;
 import org.xmlsh.core.ICommand;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
@@ -263,7 +264,8 @@ public class Shell {
 		
 		mModule = that.mModule;
 		
-		mConditionDepth = that.mConditionDepth;
+		// Cloning shells doesnt save the condition depth
+		// mConditionDepth = that.mConditionDepth;
 		
 	}
 	
@@ -361,10 +363,17 @@ public class Shell {
 		} 
 		catch( ThrowException e )
 		{
-			mLogger.info("Rethrowing throw exception",e);
+			// mLogger.info("Rethrowing throw exception",e);
 			throw e ;	// rethrow 
 			
 		}
+		catch( ExitOnErrorException e )
+		{
+			// Caught Exit on error from a script
+			ret = e.getValue();
+			
+		}
+		
 		
 		catch (Exception e) {
 	       // System.out.println("NOK.");
@@ -451,7 +460,13 @@ public class Shell {
 		      	//s.print(out);
 		      	//out.flush();
 		      	
-		      } catch (Exception e) {
+		      } 
+		      catch (ThrowException e) {
+		        printErr("Ignoring thrown value: " + e.getMessage());
+		        mLogger.error("Ignoring throw value",e);
+		        parser.ReInit(new ShellParserReader(mCommandInput,getTextEncoding()));
+		      }
+		      catch (Exception e) {
 		        printErr(e.getMessage());
 		        mLogger.error("Exception parsing statement",e);
 		        parser.ReInit(new ShellParserReader(mCommandInput,getTextEncoding()));
@@ -524,7 +539,7 @@ public class Shell {
 	 */
 
 	
-	public int exec(Command c) throws ThrowException {
+	public int exec(Command c) throws ThrowException, ExitOnErrorException {
 		
 		if( mOpts.mExec){
 			String out = c.toString(true);
@@ -543,7 +558,7 @@ public class Shell {
 				// If not success then may throw if option 'throw on error' is set (-e)
 				if( mStatus != 0 && mOpts.mThrowOnError && c.isSimple()  ){
 					if( ! isInCommandConndition() )
-						throw new ThrowException( new  XValue(mStatus));
+						throw new ExitOnErrorException( mStatus);
 					
 					
 					
@@ -564,7 +579,11 @@ public class Shell {
 			return mStatus = 0;
 		} 
 		catch( ThrowException e ){
-			mLogger.info("Rethrowing ThrowException",e);
+			// mLogger.info("Rethrowing ThrowException",e);
+			throw e ;
+		}
+		catch( ExitOnErrorException e ){
+			// rethrow 
 			throw e ;
 		}
 		
@@ -588,7 +607,7 @@ public class Shell {
 	 * Returns TRUE if the shell is currently in a condition 
 	 */
 
-	private boolean isInCommandConndition() {
+	public boolean isInCommandConndition() {
 		return mConditionDepth > 0  ;
 	}
 	// Enter a condition 
@@ -1134,12 +1153,15 @@ public class Shell {
 	/* Executes a command as a condition so that it doesnt throw 
 	 * an exception if errors
 	 */
-	public int execCondition(Command left) throws ThrowException {
+	public int execCondition(Command left) throws ThrowException, ExitOnErrorException {
 		
 		pushCondition();
 		try {
 			return exec( left );
-		} finally {
+		} 
+		
+		
+		finally {
 			popCondition();
 		}
 

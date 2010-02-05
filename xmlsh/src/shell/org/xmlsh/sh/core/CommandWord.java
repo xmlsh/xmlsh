@@ -112,7 +112,9 @@ public class CommandWord extends Word {
 		}
 		
 		port.close();
-		return var.getValue().asXdmValue();
+		
+		XValue value = var.getValue();
+		return value == null ? null : value.asXdmValue();
 		
 		
 		

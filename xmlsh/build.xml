@@ -1,7 +1,16 @@
 <?xml version="1.0" ?>
 <project default="main">
 
-	
+<!-- Global properties 
+     Edit these for every release
+-->
+	<property name="release" value="1_0_1"/>
+	<property name="version" value="1.0.1"/>
+	<property name="jar" value="xmlsh-1.0.jar"/>
+
+
+	<property name="dist" location="_dist"/>
+
     <target name="main" depends="clean, compile, jar,test,dist" description="Main target">
         <echo>
             Building xmlsh
@@ -9,10 +18,12 @@
     </target>
 	
 	
-	<property name="dist" location="_dist"/>
-	 <tstamp prefix="bdate"/>
-	<property name="release" value="r1_${bdate.DSTAMP}"/>
-	<property name="jar" value="xmlsh-1.0.jar"/>
+
+
+	<tstamp>
+	   <format property="bdate.date" pattern="yyyy-MM-dd"/>
+	   <format property="bdate.datetime" pattern="yyyy-MM-dd'T'HH:mm:ss"/>
+	</tstamp>
 		
 	<target name="clean" description="Clean all">
 		  <delete includeEmptyDirs="true" quiet="true">
@@ -29,8 +40,9 @@
     <target name="compile" description="Compilation target">
   		<mkdir dir="_out"/>
     	<echo file="src/shell/org/xmlsh/sh/shell/version.properties" append="false">
-version.build_date=${bdate.DSTAMP} ${bdate.TSTAMP}
+version.build_date=${bdate.datetime}
 version.release=${release}
+version.version=${version}
 </echo>
     	 <javac destdir="_out" debug="on" source="1.6" target="1.6">
     	        <src path="src/core" />

@@ -7,6 +7,7 @@
 package org.xmlsh.sh.shell;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Properties;
 
 import org.apache.log4j.Logger;
@@ -18,7 +19,9 @@ public class Version {
 	static {
 		mProperties = new Properties();
 		try {
-			mProperties.load( Version.class.getResourceAsStream("version.properties"));
+			InputStream stream = Version.class.getResourceAsStream("version.properties");
+			mProperties.load( stream);
+			stream.close();
 		} catch (IOException e) {
 			mLogger.debug("Exception loading version.properties",e);
 		}
@@ -44,5 +47,16 @@ public class Version {
 		else
 			return mProperties.getProperty("version.release");
 	}
+	
+	public static String getVersion()
+	{
+		if( mProperties == null )
+			
+			return "";
+		else
+			return mProperties.getProperty("version.version");
+	}
+	
+	
 	
 }

@@ -1,5 +1,5 @@
 /**
- * $Id: xls.java 346 2009-12-03 13:14:51Z daldei $
+ * $Id: ls.java 346 2009-12-03 13:14:51Z daldei $
  * $Date: 2009-12-03 08:14:51 -0500 (Thu, 03 Dec 2009) $
  *
  */
@@ -62,8 +62,8 @@ public class ls extends XCommand {
 			// Must go to Shell API to get raw files
 			String sArg = arg.toString();
 			File dir = getEnv().getShell().getFile(sArg);
-			if( ! dir.exists() ){
-				this.printErr("xls: cannot access " + sArg + " : No such file or directory" );
+			if( dir == null || ! dir.exists() ){
+				this.printErr("ls: cannot access " + sArg + " : No such file or directory" );
 				ret++;
 				continue;
 			}

@@ -35,12 +35,15 @@ public class xversion extends BuiltinCommand {
 
 			
 		final String sBuild = "build";
-		final String sRelease = "relsase";
-		final String sDocRoot = "version";
+		final String sRelease = "release";
+		final String sVersion = "version";
+		final String sDocRoot = sVersion;
 	
 		writer.writeStartElement(sDocRoot);
 		writer.writeAttribute(sBuild, Version.getBuildDate());
 		writer.writeAttribute(sRelease, Version.getRelease() );
+		writer.writeAttribute(sVersion, Version.getVersion() );
+		
 		writer.writeEndElement();
 		writer.writeEndDocument();
 		stdout.writeSequenceTerminator(serializeOpts);

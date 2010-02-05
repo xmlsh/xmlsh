@@ -24,7 +24,7 @@ for e in <[1,"string",<simple/>,$X]> <[2,3,4]>; do
    echo for: $e
 done
 
-# Positional paramters as expressions
+# Positional parameters as expressions
 set $X <["second","arg"]>
 
 echo Number of params: $#
@@ -33,8 +33,11 @@ if [ $# -ne 2 ] ; then
    exit 1
 fi
 
-echo $1
-echo $2
+
+# Test $_1 $_2 in xexprs
+
+echo <[ $_1 ]>
+echo <[ $_2 ]> 
 
 exit 0
 

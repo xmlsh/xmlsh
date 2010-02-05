@@ -430,8 +430,20 @@ class Expander {
 				.append(" external ;\n");
 			
 		}
-		sb.append("declare variable $_ external;\n");
 		
+		List<XValue> args = mShell.getArgs();
+		
+		/*
+		// Legacy support a single sequence $_ with all args
+		sb.append("declare variable $_ external;\n");
+		*/
+		
+		
+		// 2010-02-04
+		// Express each positional parameter as $_1 $_2 ...
+		for( int i = 1 ; i <= args.size() ; i++ )
+			sb.append("declare variable $_" + i + " external;\n");
+
 		
 		sb.append(arg);
 		
@@ -449,9 +461,17 @@ class Expander {
 					eval.setExternalVariable( new QName(value.getName()), value.getValue().asXdmValue());
 				
 			}
+
 			
-			eval.setExternalVariable( new QName("_") , new XValue(mShell.getArgs()).asXdmValue() );
+			/*
+			 * Legacy support for $_ 
+			 *
+			eval.setExternalVariable( new QName("_") , new XValue(args).asXdmValue() );
+			*/
 			
+			
+			for( int i = 1 ; i <= args.size() ; i++ )
+				eval.setExternalVariable( new QName("_" + i) , args.get(i-1).asXdmValue() );
 			
 			XdmValue result =  eval.evaluate();
 			

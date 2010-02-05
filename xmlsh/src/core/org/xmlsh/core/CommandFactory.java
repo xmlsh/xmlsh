@@ -20,6 +20,7 @@ import org.xmlsh.commands.builtin.exit;
 import org.xmlsh.commands.builtin.jobs;
 import org.xmlsh.commands.builtin.log;
 import org.xmlsh.commands.builtin.read;
+import org.xmlsh.commands.builtin.require;
 import org.xmlsh.commands.builtin.set;
 import org.xmlsh.commands.builtin.shift;
 import org.xmlsh.commands.builtin.source;
@@ -38,9 +39,9 @@ import org.xmlsh.commands.builtin.xread;
 import org.xmlsh.commands.builtin.xreturn;
 import org.xmlsh.commands.builtin.xthrow;
 import org.xmlsh.commands.builtin.xtrue;
+import org.xmlsh.commands.builtin.xtype;
 import org.xmlsh.commands.builtin.xversion;
 import org.xmlsh.commands.builtin.xwhich;
-import org.xmlsh.commands.builtin.xtype;
 import org.xmlsh.sh.core.FunctionDefinition;
 import org.xmlsh.sh.shell.Module;
 import org.xmlsh.sh.shell.Modules;
@@ -95,6 +96,8 @@ public class CommandFactory
 		addBuiltin("tie" , tie.class);
 		addBuiltin("log",log.class);
 		addBuiltin("xtype", xtype.class);
+		addBuiltin("require", require.class);
+		
 
 	}
 	

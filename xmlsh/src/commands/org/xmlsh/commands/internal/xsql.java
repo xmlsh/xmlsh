@@ -74,6 +74,12 @@ public class xsql extends XCommand {
 			query = xvargs.get(0).toString();
 		
 		Connection conn = getConnection(driver, classloader, connect ,user,password, options );
+		if( conn == null ){
+			
+			printErr("Cannot establish connection");
+			return(1);
+		}
+		
 		Statement pStmt  = null ;
 		ResultSet rs = null ;
 		try {
