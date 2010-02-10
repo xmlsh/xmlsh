@@ -44,14 +44,27 @@ public class StreamCopier extends Thread
 			mLogger.warn("IOException copying streams",e);
 		} finally {
 			if( mCloseOut )
-				try {
-					mOut.close();
-				} catch (IOException e) {
-					mLogger.warn("IOException closing streams",e);
-				}
+				closeOut();
 		}
 		
 	}
+	public void closeOut() {
+		try {
+			mOut.close();
+		} catch (IOException e) {
+			mLogger.warn("IOException closing streams",e);
+		}
+	}
+	public void closeIn() {
+		try {
+			mIn.close();
+		} catch (IOException e) {
+			mLogger.warn("IOException closing streams",e);
+		}
+	}
+	 
+	 
+	 
 }
 //
 //

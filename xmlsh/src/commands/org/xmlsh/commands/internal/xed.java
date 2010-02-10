@@ -35,6 +35,7 @@ import net.sf.saxon.s9api.XdmSequenceIterator;
 import net.sf.saxon.trans.XPathException;
 import net.sf.saxon.tree.DocumentImpl;
 import net.sf.saxon.type.Type;
+import org.xmlsh.core.InputPort;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Namespaces;
 import org.xmlsh.core.Options;
@@ -122,12 +123,18 @@ public class xed extends XCommand {
 			}
 			if( context == null )
 			{
-	
+				Source src = null ;
+				InputPort insrc = null ;
 				if( ov != null && ! ov.getValue().toString().equals("-"))
-					context = build( getSource(ov.getValue()));
+					insrc = getInput(ov.getValue());
 				else {
-					context = build(getStdin().asSource(serializeOpts));
+					insrc = getStdin();
 				}	
+				try {
+					context = build(insrc.asSource(serializeOpts));
+				} finally {
+					insrc.close();
+				}
 			}
 		}
 		

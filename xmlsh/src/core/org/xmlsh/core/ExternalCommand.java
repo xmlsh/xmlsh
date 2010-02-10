@@ -76,6 +76,8 @@ public class ExternalCommand implements ICommand {
 		// outCopier.start();
 		outCopier.run(); // In place
 		
+		// Close input just in case we have a broken pipe
+		outCopier.closeIn();
 		
 		int ret = proc.waitFor();
 		
