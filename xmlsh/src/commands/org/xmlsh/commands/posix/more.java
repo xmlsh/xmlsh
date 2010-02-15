@@ -6,18 +6,23 @@
 
 package org.xmlsh.commands.posix;
 
+import java.io.Console;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Reader;
 import java.util.List;
 
+import org.xmlsh.core.Options;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
+import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.util.Util;
 
 /**
- * Command: Cat
+ * Command: more
  * 
  * 
  * @author David A. Lee
@@ -25,16 +30,31 @@ import org.xmlsh.util.Util;
 
 
 
-public class cat extends XCommand {
+public class more extends XCommand {
 
+	int mLines = 23;
+	SerializeOpts	mSerial;
 
 	@Override
 	public int run(List<XValue> args) throws Exception {
 		
-		/* Options opts = new Options( "" , args );
-		 * opts.parse();
-		 * args = opts.getRemainingArgs();
-		 */ 
+		
+		Options opts = new Options( "l=lines:" , SerializeOpts.getOptionDefs() );
+		opts.parse(args);
+		args = opts.getRemainingArgs();
+		
+		mSerial = this.getSerializeOpts(opts);
+		
+		
+		XValue vlines = getEnv().getVarValue("LINES");
+		if( vlines != null )
+			mLines = (int) vlines.toLong();
+		
+		mLines = opts.getOptInt("l", mLines);
+		
+		
+		
+		 
 		OutputStream 	stdout = getStdout().asOutputStream();
 		if( args.size() > 0 ){
 			for( XValue arg : args ){
@@ -51,16 +71,62 @@ public class cat extends XCommand {
 					this.printErr("File not readable: " + arg.toString());
 					continue;
 				}
-				 InputStream  in= new FileInputStream( inf );
-				Util.copyStream( in , stdout );
+				InputStream  in= new FileInputStream( inf );
+				boolean bQuit = page(in, stdout);
 				in.close();
 				// ip.close();
+				if( bQuit )
+					break;
 			}
 		}
 		else
-			Util.copyStream( getStdin().asInputStream(getSerializeOpts()) , stdout );
+			page( getStdin().asInputStream(getSerializeOpts()) , stdout );
 		
 		return 0;
+	}
+
+	// pagenate, return true on EOF false on quit
+	private boolean page(InputStream in, OutputStream stdout) throws IOException {
+		
+		
+		
+		Console con = System.console();
+		if( con == null ){
+			Util.copyStream( in , stdout );
+			return false;
+		}
+		
+		Reader r = con.reader();
+		
+		int lines = mLines;
+		do {
+			for( int i =0 ; i < lines ; i++ ){
+				String l = Util.readLine(in);
+				if( l == null )
+					return false;
+				stdout.write(l.getBytes(mSerial.getText_encoding()));
+				stdout.write( '\n');
+				
+			}
+			
+			//if( r.read() == 'q')
+			//	return ;
+			//InputStream is = new FileInputStream(FileDescriptor.in);
+			//is.read();
+			//is.close();
+			
+			char[] ret = con.readPassword("---More---");
+			if( ret == null )
+				return false; // EOF
+			if( ret.length == 0 )
+				continue;
+		
+			if( ret[0] == 'q' || ret[0] == 'Q')
+				return true ;
+			
+		
+		} while(true);
+		
 	}
 
 }
