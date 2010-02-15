@@ -293,6 +293,9 @@ public class XVariable {
 		
 		
 	}
+	public boolean isExport() {
+		return getFlags().contains(XVarFlag.EXPORT);
+	}
 
 
 	

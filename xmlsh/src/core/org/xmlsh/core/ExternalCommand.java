@@ -8,7 +8,10 @@ package org.xmlsh.core;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -44,6 +47,8 @@ public class ExternalCommand implements ICommand {
 		ProcessBuilder	builder = new ProcessBuilder();
 		builder.command( Util.toStringList(cmdlist));
 		builder.directory( curdir );
+		
+		setEnvironment(shell, builder );
 		
 		proc = builder.start();
 		
@@ -97,6 +102,70 @@ public class ExternalCommand implements ICommand {
 		
 	}
 	
+	/*
+	 * Set the environment for a subprocess by the following
+	 * 
+	 * 1) If a variable does not exist in the shell then delete it
+	 * 2) For any "EXPORT" variables which are atomic Update any existing variables with new content from the shell
+	 * 3) Add any unset "EXPORT" atomic variables
+	 * 4) PATH and XPATH are re-set by re-serializing the sequence using the path seperator
+	 *    and the native directory seperator
+	 */
+	private void setEnvironment(Shell shell, ProcessBuilder builder) {
+		XEnvironment xenv = shell.getEnv();
+		Map<String,String> env = builder.environment();
+		if( env == null )
+			return ;
+		
+		// 1) delete any env vars not in the shell 
+		// Use Iterator so we can call remove
+		Iterator<Entry<String,String>> iter = env.entrySet().iterator();
+		while( iter.hasNext() ){
+			Entry<String,String> e = iter.next();
+			String name = e.getKey();
+			
+			// Remove PATH and XPATH as well as non-defined names
+			if( Util.isPath(name) || ! xenv.isDefined(name) )
+				iter.remove();
+		}
+		
+		
+		
+		/*
+		 *  2) For any "EXPORT" variables Update any existing variables with new content from the shell
+		 * 3) Add any unset "EXPORT" variables of type string
+		 */
+		
+		for( String name : xenv.getVarNames() ){
+			if( Util.isPath(name) ){
+				XVariable var = xenv.getVar(name);
+				if( var.isExport() && var.getValue().isAtomic() )
+					env.put(name , var.getValue().toString() );
+			}
+			
+			
+		}
+		
+		// Special case for PATH and XPATH
+		XVariable vpath = xenv.getVar("PATH");
+		if( vpath != null  && vpath.isExport() ){
+			Path p = new Path( vpath.getValue() );
+			String ps = p.toOSString();
+			env.put("PATH", ps);
+		}
+		
+		XVariable vxpath = xenv.getVar("XPATH");
+		if( vxpath != null && vxpath.isExport() ){
+			Path p = new Path( vxpath.getValue() );
+			String ps = p.toOSString();
+			env.put("XPATH", ps);
+		}
+		
+		
+		
+		
+		
+	}
 	/* (non-Javadoc)
 	 * @see org.xmlsh.core.ICommand#getType()
 	 */

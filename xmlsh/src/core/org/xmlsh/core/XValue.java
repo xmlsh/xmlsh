@@ -63,6 +63,22 @@ public class XValue {
 	{
 		mValue = new XdmAtomicValue( s );
 	}
+	
+	// Create XValue from an array of strings
+	public XValue( String[] astring )
+	{
+		ArrayList<XdmItem> items = new ArrayList<XdmItem>(astring.length);
+		for( String s: astring ){
+			items.add(new XdmAtomicValue(s));
+			
+		}
+		mValue = new XdmValue(items);
+		
+		
+	}
+	
+	
+	
 	/*
 	 * Create an XValue from an XdmValue 
 	 */

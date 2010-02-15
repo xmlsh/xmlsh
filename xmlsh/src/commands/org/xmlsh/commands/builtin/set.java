@@ -6,7 +6,9 @@
 
 package org.xmlsh.commands.builtin;
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import javax.xml.stream.XMLStreamWriter;
@@ -62,7 +64,11 @@ public class set extends BuiltinCommand {
 	    
 		
 		Collection<String> names = env.getVarNames();
-		for( String name : names ){
+		String[] anames = names.toArray( new String[names.size()]);
+		Arrays.sort(anames);
+		
+
+		for( String name : anames ){
 			XVariable var = env.getVar(name);
 			var.serialize(writer);
 			

@@ -200,7 +200,7 @@ public class Shell {
 		for( Map.Entry<String,String > entry : env.entrySet() ){
 
 			String name = entry.getKey();
-			if( name.equals("PATH") )
+			if( Util.isPath(name) )
 				continue ;
 			if( Util.isBlank(name))
 				continue ;
@@ -215,9 +215,13 @@ public class Shell {
 		
 		// Export path to shell path
 	    String path = Util.toJavaPath(System.getenv("PATH"));
-	    getEnv().setVar( new XVariable("PATH", new XValue(path)));
+	    	getEnv().setVar( new XVariable("PATH", 
+	    			Util.isBlank(path) ? new XValue() : new XValue(path.split(File.pathSeparator))));
 	
-		
+	    String xpath = Util.toJavaPath(System.getenv("XPATH"));
+	    getEnv().setVar( new XVariable("XPATH", 
+	    		Util.isBlank(xpath) ? new XValue() : new XValue(xpath.split(File.pathSeparator))));
+	
 		
 		getEnv().setVar(
 				new XDynamicVariable("PWD" , EnumSet.of( XVarFlag.READONLY , XVarFlag.XEXPR )) { 
@@ -708,11 +712,7 @@ public class Shell {
 
 	
 	public Path getExternalPath(){
-		XValue	pathVar = getEnv().getVarValue("PATH");
-		if( pathVar == null )
-			return new Path();
-		return new Path( pathVar.toString() ,  File.pathSeparator);
-		
+		return getPath("PATH",true);
 	}
 	
 	

@@ -14,6 +14,7 @@ import java.util.List;
 
 import net.sf.saxon.s9api.XdmValue;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.util.Util;
 
 public class Path implements Iterable<String> {
 	List<String>	mPaths = new ArrayList<String>();
@@ -24,6 +25,8 @@ public class Path implements Iterable<String> {
 	// Path populated with list of paths from a XValue which could be a sequence
 	public Path( XValue pathVar)
 	{
+		if( pathVar == null || pathVar.isNull())
+			return ;
 		for( XdmValue v : pathVar.asXdmValue() ){
 			mPaths.add( v.toString() );
 		}
@@ -75,9 +78,23 @@ public class Path implements Iterable<String> {
 		
 	}
 
-
-
-
+	/*
+	 * Convert to OS format string 
+	 * 1) Convert directory seperator to \ (windows)
+	 * 2) concatenate with path seperator 
+	 */
+	String 	toOSString()
+	{
+		StringBuffer sb = new StringBuffer();
+		for( String ps : mPaths ){
+			String s = Util.fromJavaPath(ps);
+			if( sb.length() > 0 )
+				sb.append(File.pathSeparator);
+			sb.append(s);
+			
+		}
+		return sb.toString();
+	}
 
 }
 //

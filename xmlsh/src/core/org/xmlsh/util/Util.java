@@ -558,6 +558,18 @@ public class Util
 			return path;
 	}
 
+	/*
+	 * Reverse the conversion of toJavaPath
+	 */
+	public static String fromJavaPath( String path )
+	{
+		if( path == null )
+			return null;
+		if( File.separatorChar != '/')
+			return path.replace('/' , File.separatorChar);
+		else
+			return path;
+	}
 
 	public static String readLine(Reader ir) throws IOException {
 		StringBuffer sb = new StringBuffer();
@@ -862,6 +874,22 @@ public class Util
 		copyFile(src,dest,force);
 		src.delete();
 		
+	}
+
+
+	/*
+	 * Return true if variable is PATH or XPATH
+	 * On Windows env variables are case InSensitive 
+	 * 
+	 */
+	public static boolean isPath(String var)
+	{ 
+		if( isWindows())
+			return var.equalsIgnoreCase("PATH")||var.equalsIgnoreCase("XPATH");
+		else	
+			return var.equals("PATH")||var.equals("XPATH");
+
+	
 	}
 	
 
