@@ -1,41 +1,25 @@
 /**
- * $Id$
- * $Date$
+ * $Id: $
+ * $Date: $
  *
  */
 
 package org.xmlsh.core;
 
-import java.io.File;
-import java.util.List;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
-import org.xmlsh.sh.shell.Module;
-import org.xmlsh.sh.shell.Shell;
+@Retention(RetentionPolicy.RUNTIME)
+public @interface usage {
+	String value();
 
-public interface ICommand {
-	enum CommandType {
-		CMD_TYPE_BUILTIN ,
-		CMD_TYPE_INTERNAL , 
-		CMD_TYPE_USER , 
-		CMD_TYPE_EXTERNAL, 
-		CMD_TYPE_SCRIPT,
-		CMD_TYPE_FUNCTION
-	} ;
-	
-	
-	
-	public int 	run( Shell shell , String cmd , List<XValue> args )  throws Exception;
-	public 	CommandType	getType();
-	public 	File 	getFile();
-	public 	Module	getModule();
-	public	String	getUsage();
-	public void		close();
-	
-	
 }
+
+
+
 //
 //
-//Copyright (C) 2008,2009 , David A. Lee.
+//Copyright (C) 2008,2009 David A. Lee.
 //
 //The contents of this file are subject to the "Simplified BSD License" (the "License");
 //you may not use this file except in compliance with the License. You may obtain a copy of the

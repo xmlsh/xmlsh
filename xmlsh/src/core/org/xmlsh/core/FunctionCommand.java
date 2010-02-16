@@ -73,5 +73,25 @@ public class FunctionCommand implements ICommand {
 	public Module getModule() {
 		// TODO: Return the module of the invoking script
 		return null;
+	}
+
+
+
+	@Override
+	public String getUsage() {
+		return mFunction.getName() + " ...";
+	}
+
+
+
+	/* (non-Javadoc)
+	 * @see org.xmlsh.core.ICommand#close()
+	 */
+	@Override
+	public void close() {
+		// TODO Auto-generated method stub
+		
 	}	
+	
+	
 }

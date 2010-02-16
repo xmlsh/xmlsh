@@ -62,6 +62,30 @@ public abstract class BuiltinCommand implements ICommand {
 	{
 		return mShell.getSerializeOpts(null);
 	}
+
+
+	/* (non-Javadoc)
+	 * @see org.xmlsh.core.ICommand#getUsage()
+	 */
+	@Override
+	public String getUsage() {
+		usage u = this.getClass().getAnnotation(usage.class);
+		if( u != null )
+			return u.value();
+		else
+			return this.getClass().getSimpleName().replaceFirst("^*\\.", "") + " ...";
+		
+	}
+
+
+	/* (non-Javadoc)
+	 * @see org.xmlsh.core.ICommand#close()
+	 */
+	@Override
+	public void close() {
+		// TODO Auto-generated method stub
+		
+	}
 	
 }
 //

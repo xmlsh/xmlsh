@@ -124,6 +124,7 @@ public class SimpleCommand extends Command {
 		} 
 		catch( ThrowException e )
 		{
+			cmd.close();
 			throw e ;// Rethrow 
 		}
 		

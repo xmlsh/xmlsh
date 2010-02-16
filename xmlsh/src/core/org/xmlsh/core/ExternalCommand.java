@@ -184,6 +184,22 @@ public class ExternalCommand implements ICommand {
 		return null;
 	}
 
+
+	@Override
+	public String getUsage() {
+		return mCommandFile.getName() + " ...";
+	}
+
+
+	/* (non-Javadoc)
+	 * @see org.xmlsh.core.ICommand#close()
+	 */
+	@Override
+	public void close() {
+		// TODO Auto-generated method stub
+		
+	}
+
 	
 	
 }

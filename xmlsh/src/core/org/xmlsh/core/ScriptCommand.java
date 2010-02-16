@@ -9,10 +9,12 @@ package org.xmlsh.core;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.xmlsh.sh.shell.Module;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
@@ -20,11 +22,19 @@ import org.xmlsh.util.Util;
 
 public class ScriptCommand implements ICommand {
 	
+	private static Logger mLogger = Logger.getLogger(ScriptCommand.class);
 	private String	mScriptName;
 	private InputStream mScript;
 	private boolean mSourceMode;
 	private File	 mScriptFile; // file for script, may be null if internal script
 	private Module mModule;
+	
+	
+	// Finalize script command make sure to close
+	protected void finalize()
+	{
+		close();
+	}
 	
 	public ScriptCommand( File script, boolean bSourceMode ) throws FileNotFoundException
 	{
@@ -72,11 +82,22 @@ public class ScriptCommand implements ICommand {
 				}
 			}
 		} finally {
-			
-			mScript.close();
+			close();
 		}
 	}
 	
+	public void close() {
+		if( mScript != null ){
+			try {
+				mScript.close();
+			} catch (IOException e) {
+				mLogger.warn("Exception closing script" , e );
+			}
+			mScript = null ;
+		}
+		
+	}
+
 	/* (non-Javadoc)
 	 * @see org.xmlsh.core.ICommand#getType()
 	 */
@@ -91,6 +112,11 @@ public class ScriptCommand implements ICommand {
 
 	public Module getModule() {
 		return mModule ;
+	}
+
+	@Override
+	public String getUsage() {
+		return mScriptName + " ...";
 	}
 	
 }
