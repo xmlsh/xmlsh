@@ -51,7 +51,7 @@ public class http extends XCommand {
 		else
 		if(  opts.hasOpt("put") ){
 			method = "PUT";
-			doInput = false ; 
+			doInput = true ; 
 			doOutput = true ;
 			surl =  opts.getOptString("put", null);
 		}
