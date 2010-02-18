@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<commands>
+<command name="invoke" url="http://www.xmlsh.org/MarkLogicInvoke"/>
+<command name="put" url="http://www.xmlsh.org/MarkLogicPut"/>
+<command name="query" url="http://www.xmlsh.org/MarkLogicQuery"/>
+<command name="createdir" url="http://www.xmlsh.org/MarkLogicCreatedir"/>
+<command name="del" url="http://www.xmlsh.org/MarkLogicDel"/>
+<command name="deldir" url="http://www.xmlsh.org/MarkLogicDeldir"/>
+<command name="get" url="http://www.xmlsh.org/MarkLogicGet"/>
+<command name="list" url="http://www.xmlsh.org/MarkLogicList"/>
+<command name="listdir" url="http://www.xmlsh.org/MarkLogicListdir"/>
+<command name="rename" url="http://www.xmlsh.org/MarkLogicRename"/>
+</commands>

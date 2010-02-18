@@ -44,10 +44,9 @@
     	 <copy todir="_out" filtering="on">
     	            <fileset dir="src">
     	                <include name="**/*.properties"/>
-    	            </fileset>
-    	 			<fileset dir="src">
     	 				<include name="**/*.xsh"/>
     	 				<include name="**/*.xquery"/>
+    	 				<include name="**/*.xml"/>
     	 				
     	 			</fileset>
     	        </copy>
