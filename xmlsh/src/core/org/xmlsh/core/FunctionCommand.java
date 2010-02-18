@@ -77,12 +77,6 @@ public class FunctionCommand implements ICommand {
 
 
 
-	@Override
-	public String getUsage() {
-		return mFunction.getName() + " ...";
-	}
-
-
 
 	/* (non-Javadoc)
 	 * @see org.xmlsh.core.ICommand#close()

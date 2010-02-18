@@ -30,7 +30,7 @@
 		    <fileset dir="${dist}" includes="*"/>
 		  	<fileset dir="_out" includes="**/*" />
 		  	<fileset dir="test" includes="**/_out.txt"/>
-		  	<fileset dir="src" includes="**/version.properties"/>
+		  	<fileset dir="src" includes="**/version.properties **/*.bak"/>
 			<fileset dir="bin" includes="**/*" />
 		  	<fileset dir="." includes="xmlsh.log" />
 		  </delete>
@@ -66,6 +66,8 @@ version.version=${version}
     	 			<fileset dir="src/commands">
     	 				<include name="**/*.xsh"/>
     	 				<include name="**/*.xsl"/>
+    	 				<include name="**/*.xml"/>
+    	 				
     	 						
     	 			</fileset>
     	        </copy>

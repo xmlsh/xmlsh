@@ -30,15 +30,17 @@ public class Module {
 	private String mPrefix; // may be null
 	private String mPackage; // may NOT be null
 	private ClassLoader mClassLoader; // Classloader for this module
+	private	 URL mHelpURL = null ; 
 
 	/*
 	 * Constructor for internal modules like xlmsh
 	 */
-	public Module(String prefix, String name, String pkg) {
+	public Module(String prefix, String name, String pkg, String helpURL) {
 		mName = name;
 		mPrefix = prefix;
 		mPackage = pkg;
 		mClassLoader = getClassLoader(null);
+		mHelpURL = mClassLoader.getResource(helpURL) ;
 	}
 
 	/*
@@ -90,6 +92,10 @@ public class Module {
 			}
 
 			mClassLoader = getClassLoader(classpath);
+			mHelpURL = mClassLoader.getResource(toResourceName("commands.xml"));
+			
+			
+			
 
 		} catch (Exception e) {
 			throw new CoreException(e);
@@ -114,11 +120,22 @@ public class Module {
 		 * name should NOT begin with a "/"
 		 * 
 		 */
-		String resource = /* "/" + */
-		mPackage.replace('.', '/') + "/" + name;
+		String resource = toResourceName(name);
 		InputStream is = mClassLoader.getResourceAsStream(resource);
 
 		return is;
+	}
+
+	private String toResourceName(String name) {
+		String resource = /* "/" + */
+		mPackage.replace('.', '/') + "/" + name;
+		return resource;
+	}
+	
+	private boolean hasCommandResource(String name) {
+		String resource = toResourceName(name);
+		return ( mClassLoader.getResource(resource)  != null );
+
 	}
 
 	public ICommand getCommandClass(String name) {
@@ -171,6 +188,34 @@ public class Module {
 			res = res.substring(1);
 		return mClassLoader.getResource(res);
 	}
+	
+	public boolean hasCommand( String name )
+	{
+		ClassLoader cl = mClassLoader;
+
+		try {
+
+			Class<?> cls = Class.forName(mPackage + "." + name, true, cl);
+			
+			return cls != null ;
+
+		} catch (Exception e) {
+			;
+
+		}
+
+		return hasCommandResource(name + ".xsh");
+		
+
+	}
+	
+	public URL getHelpURL()
+	{
+		return mHelpURL;
+	}
+	
+	
+	
 }
 
 //

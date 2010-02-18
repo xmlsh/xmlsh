@@ -176,7 +176,7 @@ public class Shell {
 		mEnv =  new XEnvironment(this,bUseStdio);
 		mModules = new Modules();
 		// Add xmlsh commands 
-		mModules.declare( new Module( null , "xmlsh" , "org.xmlsh.commands.internal"));
+		mModules.declare( new Module( null , "xmlsh" , "org.xmlsh.commands.internal", CommandFactory.kCOMMANDS_HELP_XML));
 		
 		setGlobalVars();
 		
@@ -1064,10 +1064,10 @@ public class Shell {
 		
 	}
 	
-	public void importPackage(String prefix ,String name , String pkg) throws CoreException {
+	public void importPackage(String prefix ,String name , String pkg ) throws CoreException {
+		String sHelp = pkg.replace('.', '/') + "/commands.xml";
 		
-		
-		mModules.declare( new Module( prefix , name , pkg ));
+		mModules.declare( new Module( prefix , name , pkg ,  sHelp));
 	}
 
 	public URL getURL( String file ) throws MalformedURLException, IOException

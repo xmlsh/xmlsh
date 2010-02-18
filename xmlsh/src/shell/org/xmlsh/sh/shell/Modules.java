@@ -81,10 +81,7 @@ public class Modules extends  ArrayList<Module>
 	 */
 	public void declare(Shell shell, String m, List<XValue> init) throws CoreException {
 		StringPair 	pair = new StringPair(m,'=');
-		if( pair.hasLeft() )
-			declare(shell, pair.getLeft(), pair.getRight() ,  init  );
-		else
-			declare( shell, null , m  ,  init );
+		declare(shell, pair.getLeft(), pair.getRight() ,  init  );
 		
 	}
 	

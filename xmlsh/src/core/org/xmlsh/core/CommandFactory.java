@@ -9,6 +9,7 @@ package org.xmlsh.core;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.URL;
 import java.util.HashMap;
 
 import org.apache.log4j.Logger;
@@ -52,6 +53,7 @@ import org.xmlsh.util.Util;
 
 public class CommandFactory 
 {
+	public static final String kCOMMANDS_HELP_XML = "/org/xmlsh/resources/help/commands.xml";
 	private static Logger mLogger =  Logger.getLogger( CommandFactory.class);
 	private static CommandFactory _instance = null ;
 	
@@ -281,6 +283,69 @@ public class CommandFactory
 	}
 
 
+	
+	public URL getHelpURL( Shell shell , String name )
+	{
+		
+		URL url = null ;
+		
+		
+		if( url == null )
+			url = getBuiltinHelpURL(shell, name);
+		
+		if( url == null )
+			url = getNativeHelpURL(shell,name);
+
+		return url ;
+		
+	}
+
+	private URL getNativeHelpURL(Shell shell, String name) {
+
+		
+		StringPair 	pair = new StringPair(name,':');
+		Modules modules = shell.getModules();
+
+		
+		if( pair.hasLeft() ){ // prefix:name , prefix non-empty
+			Module m   = 
+				Util.isBlank(pair.getLeft()) ? 
+						shell.getModule() : 
+				modules.getModule(pair.getLeft());
+			// Allow C:/xxx/yyy to work 
+			// May look like a namespace but isnt
+
+			if( m != null && m.hasCommand( pair.getRight() ) )
+				return m.getHelpURL( );
+			return null;
+		}
+			
+		/* 
+		 * Try all default modules 
+		 */
+		for( Module m : modules ){
+			if( m.isDefault() ){
+				
+				if( m != null && m.hasCommand( name ) )
+					return m.getHelpURL( );
+			}
+		}
+		
+			
+		return null  ;
+		
+		
+	}
+
+	private URL getBuiltinHelpURL(Shell shell, String name) {
+		if( mBuiltins.containsKey(name) )
+			return shell.getResource(kCOMMANDS_HELP_XML);
+		else
+			return null ;
+	}
+	
+	
+	
 
 }
 //

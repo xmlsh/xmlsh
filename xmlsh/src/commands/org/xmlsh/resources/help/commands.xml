@@ -1,0 +1,77 @@
+<?xml version="1.0"?>
+<commands>
+<command name="colon" url="http://www.xmlsh.org/CommandColon">
+	<usage><para>Usage: is the null command.</para></usage>
+</command>
+
+<command name="declare" url="http://www.xmlsh.org/CommandDeclare">
+<usage><para>declare Declares or lists namespaces</para>
+<para>declare</para>
+<para>declare namespace [prefix=[uri]]</para>
+</usage>
+</command>
+<command name="echo" url="http://www.xmlsh.org/CommandEcho"/>
+<command name="eval" url="http://www.xmlsh.org/CommandEval"/>
+<command name="exit" url="http://www.xmlsh.org/CommandExit"/>
+<command name="help" url="http://www.xmlsh.org/CommandHelp">
+	<synopsis>help for xlmsh commands</synopsis>
+	<usage><para>help commands</para>
+		   <para>help command</para>
+	</usage>
+</command>
+
+<command name="jobs" url="http://www.xmlsh.org/CommandJobs"/>
+<command name="log" url="http://www.xmlsh.org/CommandLog"/>
+<command name="read" url="http://www.xmlsh.org/CommandRead"/>
+<command name="require" url="http://www.xmlsh.org/CommandRequire"/>
+<command name="set" url="http://www.xmlsh.org/CommandSet"/>
+<command name="shift" url="http://www.xmlsh.org/CommandShift"/>
+<command name="source" url="http://www.xmlsh.org/CommandSource"/>
+<command name="test" url="http://www.xmlsh.org/CommandTest"/>
+<command name="tie" url="http://www.xmlsh.org/CommandTie"/>
+<command name="unset" url="http://www.xmlsh.org/CommandUnset"/>
+<command name="wait" url="http://www.xmlsh.org/CommandWait"/>
+<command name="break" url="http://www.xmlsh.org/CommandBreak"/>
+<command name="cd" url="http://www.xmlsh.org/CommandCd"/>
+<command name="continue" url="http://www.xmlsh.org/CommandContinue"/>
+<command name="xecho" url="http://www.xmlsh.org/CommandXEcho"/>
+<command name="false" url="http://www.xmlsh.org/CommandFalse"/>
+<command name="import" url="http://www.xmlsh.org/CommandImport"/>
+<command name="xmlsh" url="http://www.xmlsh.org/CommandXmlsh"/>
+<command name="xread" url="http://www.xmlsh.org/CommandXread"/>
+<command name="xreturn" url="http://www.xmlsh.org/CommandReturn"/>
+<command name="throw" url="http://www.xmlsh.org/CommandThrow"/>
+<command name="true" url="http://www.xmlsh.org/CommandTrue"/>
+<command name="xtype" url="http://www.xmlsh.org/CommandXtype"/>
+<command name="xversion" url="http://www.xmlsh.org/CommandXversion"/>
+<command name="xwhich" url="http://www.xmlsh.org/CommandXwhich"/>
+
+<command name="csv2xml" url="http://www.xmlsh.org/CommandCsv2xml"/>
+<command name="fixed2xml" url="http://www.xmlsh.org/CommandFixed2xml"/>
+<command name="jcall" url="http://www.xmlsh.org/CommandJcall"/>
+<command name="rngvalidate" url="http://www.xmlsh.org/CommandRngvalidate"/>
+<command name="xaddbase" url="http://www.xmlsh.org/CommandXaddbase"/>
+<command name="xbase" url="http://www.xmlsh.org/CommandXbase"/>
+<command name="xcat" url="http://www.xmlsh.org/CommandXcat"/>
+<command name="xcmp" url="http://www.xmlsh.org/CommandXcmp"/>
+<command name="xed" url="http://www.xmlsh.org/CommandXed"/>
+<command name="xfile" url="http://www.xmlsh.org/CommandXfile"/>
+<command name="xgetopts" url="http://www.xmlsh.org/CommandXgetopts"/>
+<command name="xidentity" url="http://www.xmlsh.org/CommandXidentity"/>
+<command name="xinclude" url="http://www.xmlsh.org/CommandXinclude"/>
+<command name="xls" url="http://www.xmlsh.org/CommandXls"/>
+<command name="xml2csv" url="http://www.xmlsh.org/CommandXml2csv"/>
+<command name="xmove" url="http://www.xmlsh.org/CommandXmove"/>
+<command name="xpath" url="http://www.xmlsh.org/CommandXpath"/>
+<command name="xproperties" url="http://www.xmlsh.org/CommandXproperties"/>
+<command name="xpwd" url="http://www.xmlsh.org/CommandXpwd"/>
+<command name="xquery" url="http://www.xmlsh.org/CommandXquery"/>
+<command name="xslt" url="http://www.xmlsh.org/CommandXslt"/>
+<command name="xslt1" url="http://www.xmlsh.org/CommandXslt1"/>
+<command name="xsplit" url="http://www.xmlsh.org/CommandXsplit"/>
+<command name="xsql" url="http://www.xmlsh.org/CommandXsql"/>
+<command name="xtee" url="http://www.xmlsh.org/CommandXtee"/>
+<command name="xuri" url="http://www.xmlsh.org/CommandXuri"/>
+<command name="xvalidate" url="http://www.xmlsh.org/CommandXvalidate"/>
+</commands>
+	

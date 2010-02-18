@@ -43,10 +43,7 @@ public class Namespaces extends NameValueMap<String>
 	
 	public void declare( String ns ){
 		StringPair 	pair = new StringPair(ns,'=');
-		if( pair.hasLeft() )
-			declare( pair.getLeft(), pair.getRight() );
-		else
-			declare( null , ns  );
+		declare( pair.getLeft(), pair.getRight() );
 		
 	}
 	public void declare(XValue v) {

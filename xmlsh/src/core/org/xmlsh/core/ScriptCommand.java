@@ -114,9 +114,6 @@ public class ScriptCommand implements ICommand {
 		return mModule ;
 	}
 
-	@Override
-	public String getUsage() {
-		return mScriptName + " ...";
-	}
+
 	
 }

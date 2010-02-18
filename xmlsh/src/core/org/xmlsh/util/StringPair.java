@@ -24,7 +24,8 @@ public class StringPair {
 			mLeft = string.substring(0,cpos);
 			mRight = string.substring(cpos+1);
 			
-		}
+		} else
+			mRight = string ;
 	}
 
 

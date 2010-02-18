@@ -28,7 +28,6 @@ public interface ICommand {
 	public 	CommandType	getType();
 	public 	File 	getFile();
 	public 	Module	getModule();
-	public	String	getUsage();
 	public void		close();
 	
 	

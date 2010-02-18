@@ -185,10 +185,6 @@ public class ExternalCommand implements ICommand {
 	}
 
 
-	@Override
-	public String getUsage() {
-		return mCommandFile.getName() + " ...";
-	}
 
 
 	/* (non-Javadoc)
