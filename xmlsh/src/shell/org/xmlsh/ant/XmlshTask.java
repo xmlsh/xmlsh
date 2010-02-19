@@ -56,9 +56,10 @@ public class XmlshTask extends Task {
     public void execute() throws BuildException {
     	mLogger.info("executing xmlsh ant task");
     	// System.out.println("property test: " + getProject().getProperty("test"));
-    	
+
+		Shell shell = null ;
     	try {
-    		
+    		shell = new Shell();
     		
     		
 	     	List<XValue> vargs = new ArrayList<XValue>();
@@ -74,15 +75,18 @@ public class XmlshTask extends Task {
 		 			vargs.add( new XValue( arg.mValue));
 		 	}
 		 	
-			org.xmlsh.commands.builtin.xmlsh cmd = new org.xmlsh.commands.builtin.xmlsh();
+			org.xmlsh.commands.builtin.xmlsh cmd = new org.xmlsh.commands.builtin.xmlsh(true);
 			
-			
-			int ret = cmd.run(null , "xmlsh" , vargs);
+
+			int ret = cmd.run(shell, "xmlsh" , vargs);
     	}
     	catch(  Exception e )
     	{
+    		
     		throw new BuildException(e);
     		
+    	} finally {
+    		if( shell != null ) shell.close();
     	}
     	
 

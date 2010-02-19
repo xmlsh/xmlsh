@@ -41,11 +41,11 @@ public class xwhich extends BuiltinCommand {
 		List<XValue> xvargs = Util.expandSequences(opts.getRemainingArgs());
 		
 		if( xvargs.size() < 1  ){
-			mShell.printErr("usage: " + mName + " command ...");
+			mShell.printErr("usage: " + getName() + " command ...");
 			return 1;
 		}
 		
-		final  String sDocRoot =mName;
+		final  String sDocRoot = getName();
 	      
 		XMLStreamWriter 	out = null ;
 		OutputPort stdout = mShell.getEnv().getStdout();	

@@ -10,16 +10,18 @@ import java.io.File;
 import java.util.List;
 
 import org.xmlsh.sh.shell.Module;
-import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.xpath.ShellContext;
 
 
-public abstract class BuiltinCommand implements ICommand {
+public abstract class BuiltinCommand extends AbstractCommand implements ICommand {
 	
-	protected Shell mShell;
-	protected String mName;
-	
+	private String mName;
+
+	public String getName()
+	{
+		return mName;
+	}
 	
 	/* (non-Javadoc)
 	 * @see org.xmlsh.core.ICommand#getType()
@@ -42,7 +44,10 @@ public abstract class BuiltinCommand implements ICommand {
 
 	public int 	run( Shell shell , String cmd , List<XValue> args )  throws Exception
 	{
-		mShell = shell;
+		
+		
+		mShell 		 = shell;
+		mEnvironment = shell.getEnv();
 		mName  = cmd ;
 		Shell saved_shell = ShellContext.set( shell );
 		try {
@@ -53,27 +58,6 @@ public abstract class BuiltinCommand implements ICommand {
 		
 	}
 	
-	protected SerializeOpts getSerializeOpts(Options opts) throws InvalidArgumentException
-	{
-		return mShell.getSerializeOpts(opts);
-	}
-
-	protected SerializeOpts getSerializeOpts() throws InvalidArgumentException
-	{
-		return mShell.getSerializeOpts(null);
-	}
-
-
-
-
-	/* (non-Javadoc)
-	 * @see org.xmlsh.core.ICommand#close()
-	 */
-	@Override
-	public void close() {
-		// TODO Auto-generated method stub
-		
-	}
 	
 }
 //

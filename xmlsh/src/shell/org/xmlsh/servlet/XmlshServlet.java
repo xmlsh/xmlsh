@@ -43,7 +43,7 @@ public class XmlshServlet extends HttpServlet {
 	
 			OutputStream out = null ;
 			
-	 
+			Shell shell = null ;
 			try {
 				// String command = request.getParameter("command");
 			       String cpath  = request.getContextPath(); // "/odd_store
@@ -55,7 +55,7 @@ public class XmlshServlet extends HttpServlet {
 		     	List<XValue> vargs = new ArrayList<XValue>();
 		 		
 		 		
-		 		Shell shell = new Shell(false);
+		 		shell = new Shell(false);
 				shell.setCurdir( new File(mRoot));
 			 			 	
 				ICommand	script = CommandFactory.getInstance().getScript( shell , path , true );
@@ -84,6 +84,8 @@ public class XmlshServlet extends HttpServlet {
 			}
 			
 			finally {
+				if( shell != null )
+					shell.close();
 
 			}
 	

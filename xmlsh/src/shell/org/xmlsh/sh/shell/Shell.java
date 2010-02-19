@@ -682,13 +682,19 @@ public class Shell {
 	 	for( String a : argv)
 	 		vargs.add( new XValue(a));
 		
-		org.xmlsh.commands.builtin.xmlsh cmd = new org.xmlsh.commands.builtin.xmlsh();
+		org.xmlsh.commands.builtin.xmlsh cmd = new org.xmlsh.commands.builtin.xmlsh(true);
 		
+		Shell shell = new Shell();
+		int ret = -1;
+		try {
+			ret = cmd.run(shell , "xmlsh" , vargs);
+		} finally {
+			shell.close();
+		}
 		
-		int ret = cmd.run(null , "xmlsh" , vargs);
+	    System.exit(ret);
 
 	   
-	    System.exit(ret);
 	  }
 	
 	

@@ -20,12 +20,34 @@ import org.xmlsh.sh.shell.Shell;
 public class xmlsh extends BuiltinCommand {
 
 	
+	boolean mTopShell = false ;
+	
+	
+	public xmlsh()
+	{
+		
+	}
+	
+	
+	/*
+	 * Special constructor for a top level shell which doesnt clone
+	 */
+	public xmlsh( boolean bTopShell )
+	{
+		mTopShell = bTopShell ;
+	}
+	
+	
+	
 	public int run( List<XValue> args ) throws Exception {
 			
 		Options opts = new Options( "x,v,c:,rcfile:,e"  );
 		opts.parse(args);
+		Shell shell = getShell();
 		
-		Shell shell = mShell == null ? new Shell() : mShell.clone();
+		if( ! mTopShell )
+			shell = shell.clone();
+		
 		
 	    int ret = 0;
 		try {
@@ -95,7 +117,8 @@ public class xmlsh extends BuiltinCommand {
 		    	
 		    }
 		} finally {
-			shell.close();
+			if( ! mTopShell )
+				shell.close();
 			
 		}
 	    return ret ;

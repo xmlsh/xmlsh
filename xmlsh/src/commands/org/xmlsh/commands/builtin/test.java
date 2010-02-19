@@ -147,18 +147,9 @@ public class test extends BuiltinCommand {
 		
 	};
 
+
 	
-	private File 	getFile( XValue value ) throws Error
-	{
-		try {
-			return mShell.getFile(value).getCanonicalFile();
-		} catch (IOException e) {
-			throw new Error("IOException resolving file: " + value );
-		}
-	}
-	
-	
-	private 	boolean		eval( List<XValue> av) throws Error, UnexpectedException
+	private 	boolean		eval( List<XValue> av) throws Error, UnexpectedException, IOException
 	{
 		if( av.size() == 0 )
 			return false;
@@ -215,7 +206,7 @@ public class test extends BuiltinCommand {
 	
 	
 	
-	private boolean evalBinary(XValue av1, String op, XValue value) throws Error {
+	private boolean evalBinary(XValue av1, String op, XValue value) throws Error, IOException {
 		if( op.equals("="))
 			return av1.equals(value);
 		else
@@ -277,7 +268,7 @@ public class test extends BuiltinCommand {
  
 	}
 
-	private boolean evalUnary(String op, XValue value) throws Error, UnexpectedException {
+	private boolean evalUnary(String op, XValue value) throws Error, UnexpectedException, IOException {
 		
 		
 		/* try type tests first */
@@ -350,7 +341,7 @@ public class test extends BuiltinCommand {
 		List<XValue> av = args;
 
 		
-		if( mName.equals("[") ){
+		if( getName().equals("[") ){
 			if( av.size() == 0 || !av.remove(av.size()-1).equals("]")){
 				mShell.printErr("Unbalanced [");
 				return 1;
@@ -397,7 +388,7 @@ public class test extends BuiltinCommand {
 			
 		} catch( Error e ){
 			
-			mShell.printErr( mName + ":"  + e.getMessage());
+			mShell.printErr( getName() + ":"  + e.getMessage());
 			return 1;
 		}
 		
