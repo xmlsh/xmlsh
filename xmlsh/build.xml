@@ -67,8 +67,7 @@ version.version=${version}
     	 				<include name="**/*.xsh"/>
     	 				<include name="**/*.xsl"/>
     	 				<include name="**/*.xml"/>
-    	 				
-    	 						
+    	                <include name="**/*.xquery"/>
     	 			</fileset>
     	        </copy>
 

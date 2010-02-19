@@ -40,7 +40,8 @@ public class Module {
 		mPrefix = prefix;
 		mPackage = pkg;
 		mClassLoader = getClassLoader(null);
-		mHelpURL = mClassLoader.getResource(helpURL) ;
+		// Undocumented - if you use a class loader to find a resource dont start it with "/"
+		mHelpURL = mClassLoader.getResource(helpURL.replaceFirst("^/", "")) ;
 	}
 
 	/*

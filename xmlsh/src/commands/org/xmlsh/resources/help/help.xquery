@@ -2,7 +2,8 @@
  : Format the help text for a command
  :)
 
-declare variable $command as xs:string external ;
+declare variable $command := ./@name/string();
+
 declare variable $lf := "&#xA;";
 
 declare function local:print( $es as node()* , $indent as xs:string  ) as xs:string*
@@ -19,9 +20,8 @@ declare function local:print( $es as node()* , $indent as xs:string  ) as xs:str
 
 };
 
-let $c := //command[@name eq $command]
-return
-fn:string-join((local:print( $c/node() ,"" ),$lf,"For more information see: " ,$lf, $c/@url/string() ),"")
+
+fn:string-join((local:print( ./node() ,"" ),$lf,"For more information see: " ,$lf, ./@url/string() ),"")
 (: Stylus Studio meta-information - (c) 2004-2009. Progress Software Corporation. All rights reserved.
 
 <metaInformation>
