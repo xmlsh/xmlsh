@@ -254,17 +254,7 @@ public class httpserver extends XCommand {
 		return 0;
 	}
 
-
-	private void usage() {
-		printErr("usage: httpserver [options] start|stop");
-		
-	}
-	
-	
-	
-
 }
-
 
 
 //

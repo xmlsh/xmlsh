@@ -56,8 +56,10 @@ public class xproperties extends XCommand
 		
 		
 
-		if( optIn != null && optInXml != null )
+		if( optIn != null && optInXml != null ){
 			usage("Only one of -in and -inxml allowed");
+			return -1;
+		}
 		
 		
 		
@@ -130,12 +132,7 @@ public class xproperties extends XCommand
 		
 	}
 
-	private void usage(String string) throws UnexpectedException {
-		this.printErr(string);
-		this.printErr("Usage: xproperites [-in file | -inxml file] [-out file | -outxml file]");
-		throw new UnexpectedException(string);
-		
-	}
+
 
 	private void writeText(Properties props, String comment) throws IOException {
 		props.store(getEnv().getStdout().asOutputStream(), comment);

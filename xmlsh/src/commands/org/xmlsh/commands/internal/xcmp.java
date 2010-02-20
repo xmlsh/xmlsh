@@ -64,8 +64,10 @@ public class xcmp extends XCommand {
 		
 
 		List<XValue> argv;
-		if( (argv=opts.getRemainingArgs()).size() != 2 )
-			return usage();
+		if( (argv=opts.getRemainingArgs()).size() != 2 ){
+			usage();
+			return -1;
+		}
 		
 		
 		
@@ -403,12 +405,6 @@ public class xcmp extends XCommand {
 	}
 
 
-
-
-	private int usage(  ) {
-		printErr("Usage: xcmp [-x] [-b]  [-n] file1 file2");
-		return 1;
-	}
 
 
 }

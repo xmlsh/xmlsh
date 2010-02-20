@@ -15,11 +15,17 @@ import java.net.URISyntaxException;
 
 import javax.xml.transform.Source;
 
+import net.sf.saxon.s9api.SaxonApiException;
+import org.apache.log4j.Logger;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.util.HelpUsage;
+import org.xmlsh.util.Util;
 
 public abstract class AbstractCommand implements ICommand {
 
+	private static Logger mLogger = Logger.getLogger(AbstractCommand.class);
+	
 	protected	Shell mShell;
 	protected XEnvironment mEnvironment;
 	
@@ -122,6 +128,24 @@ public abstract class AbstractCommand implements ICommand {
 	
 	protected Shell getShell() {
 		return mShell;
+	}
+
+	public void usage(String message)
+	{
+		if( !Util.isBlank(message))
+			mShell.printErr(message);
+		String cmdName = getName();
+		HelpUsage helpUsage = new HelpUsage( getShell() );
+		try {
+			helpUsage.doUsage(mEnvironment.getStdout(), cmdName);
+		} catch (Exception e) {
+			mLogger.warn("Exception printing usage" , e );
+			mShell.printErr("Usaage: <unknown>");
+		}
+	}
+	public void usage()
+	{
+		usage(null);
 	}
 
 }

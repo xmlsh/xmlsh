@@ -46,11 +46,7 @@ public class xevent extends XCommand {
 			
 		}
 
-	private void usage() {
-		this.printErr("usage: xevent [-r|-s =n]");
-		
-		
-	}
+
 
 	private void send(int n) throws InvalidArgumentException, XMLStreamException, IOException {
 		

@@ -185,12 +185,6 @@ public class http extends XCommand {
 	}
 
 
-
-	private void usage() {
-		printErr("usage: http [-get|-put|-post url");
-		
-	}
-	
 	
 	
 

@@ -61,7 +61,16 @@ public abstract class XCommand extends AbstractCommand {
 		
 		try {
 			return run(  args , shell.getEnv() );
-		} finally{
+		} 
+		catch( UnknownOption e )
+		{
+			usage( e.getMessage() );
+			return -1;
+		}
+		
+		
+		
+		finally{
 			ShellContext.set(saved_shell);
 		}
 		

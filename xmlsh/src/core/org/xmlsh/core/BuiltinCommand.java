@@ -52,11 +52,20 @@ public abstract class BuiltinCommand extends AbstractCommand implements ICommand
 		Shell saved_shell = ShellContext.set( shell );
 		try {
 			return run(args);
-		}  finally {
+		}  
+		catch( UnknownOption e )
+		{
+			usage( e.getMessage() );
+			return -1;
+		}
+		
+		finally {
 			ShellContext.set(saved_shell);
 		}
 		
 	}
+
+
 	
 	
 }

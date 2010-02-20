@@ -38,10 +38,6 @@ public class sleep extends XCommand {
 		return 0;
 	}
 
-	private void usage() {
-		printErr("usage: sleep delay");
-		
-	}
 
 }
 

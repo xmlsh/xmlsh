@@ -100,10 +100,7 @@ public class xgetopts extends XCommand {
 		
 	}
 
-	private void usage() {
-		this.getEnv().printErr("usage: xargs \"option def\" $*");
-		
-	}
+
 
 }
 

@@ -108,10 +108,7 @@ public class cp extends XCommand {
 		}
 	}
 
-	private void usage() {
-		printErr("usage: cp [-f] file1 [file2 ....] dest");
-		
-	}
+
 
 }
 

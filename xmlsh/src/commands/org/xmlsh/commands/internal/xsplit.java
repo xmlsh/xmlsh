@@ -316,15 +316,6 @@ public class xsplit extends XCommand {
 	}
 
 
-
-
-
-	private int usage( ) {
-		printErr("Usage: xsplit [-w wrap] [-c children] [-n]  [-p prefix] [file]");
-		return 1;
-	}
-
-
 }
 
 //
