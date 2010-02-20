@@ -108,12 +108,19 @@ public class HelpUsage {
 		
 		XdmNode root = loadHelp( helpUrl );
 		
+		// Special case for : 
+		if( name.equals(":"))
+			nonsName = ":";
+		
 				
 			
 			XValue v = new XValue(root);
 			XValue xcmd = v.xpath("//command[@name='" + nonsName + "']");
 			
-			
+			if( xcmd.isEmpty() ){
+				mShell.printErr("No help for: " + name );
+				return ;
+			}
 			
 			
 			
@@ -150,8 +157,19 @@ public class HelpUsage {
 		
 		XdmNode root = loadHelp( helpUrl );
 		
+		
+		// Special case for : 
+		if( name.equals(":"))
+			nonsName = ":";
+		
 		XValue v = new XValue(root);
 		XValue xcmd = v.xpath("//command[@name='" + nonsName + "']");
+		
+		if( xcmd.isEmpty() ){
+			mShell.printErr("No help for: " + name );
+			return ;
+		}
+		
 		
 		print( xcmd.asXdmNode(), stdout,kUSAGE_XQUERY );
 		

@@ -415,6 +415,12 @@ public class XValue {
 		}
 		return list;
 	}
+
+	public boolean isEmpty() {
+		if( this.isNull() )
+			return true ;
+		return mValue.size() == 0 ;
+	}
 	
 }
 //

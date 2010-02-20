@@ -14,6 +14,7 @@ declare function local:print( $es as node()* , $indent as xs:string  ) as xs:str
 	case element(synopsis) return ($command," - " , local:print($e/node(),$indent),$lf)
 	case element(usage)	   return ("Usage:" ,$lf, local:print($e/node() , "  "))
 	case element(para)	   return ($indent , fn:normalize-space($e/text()) , $lf )
+	case element(options)  return ()
 	case text() return fn:normalize-space($e)
 	default	return local:print( $e/node() , $indent )
 	

@@ -5,17 +5,36 @@
 declare variable $command := ./@name/string();
 
 declare variable $lf := "&#xA;";
+declare variable $longest-option := fn:max( .//option/arg/string-length(.) );
+
+
+declare function local:pad( $s as xs:string? , $w as xs:integer )
+{
+	if( empty($s)) then "" else 
+	let $p := $w - fn:string-length($s)
+	return
+		fn:string-join((
+			$s,
+			for $i in 1 to $p return " " ),"")
+
+
+};
 
 declare function local:print( $es as node()* , $indent as xs:string  ) as xs:string*
 {
 	for $e in $es
 	return 
 	typeswitch( $e )
-	case element(synopsis) return ($command," - " , local:print($e/node(),$indent),$lf)
-	case element(usage)	   return ("Usage:" ,$lf, local:print($e/node() , "  "))
-	case element(para)	   return ($indent , fn:normalize-space($e/text()) , $lf )
-	case text() return fn:normalize-space($e)
-	default	return local:print( $e/node() , $indent )
+	case element(synopsis) return ( $command," - " , local:print($e/node(),$indent),$lf)
+	case element(usage)	   return ( "Usage:" ,$lf, local:print($e/node() , "  "))
+	case element(para)	   return ( $indent , fn:normalize-space($e/text()) , $lf )
+	case element(options)  return ( $lf,"Options:", $lf , local:print( $e/* , " ") , $lf )
+	case element(arg)      return  ( $indent , local:pad( string($e) , $longest-option + 1 )  )
+	case element(option)   return  local:print( $e/* , " " )
+	case element(command)  return local:print($e/* , $indent )
+	case text() 		   return fn:normalize-space($e)
+   
+	default	return ()
 	
 
 };

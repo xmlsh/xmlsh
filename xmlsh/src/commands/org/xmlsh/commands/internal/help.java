@@ -1,16 +1,10 @@
-package org.xmlsh.commands.builtin;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.URL;
+package org.xmlsh.commands.internal;
 import java.util.List;
 
-import net.sf.saxon.s9api.SaxonApiException;
-import org.xmlsh.core.BuiltinCommand;
-import org.xmlsh.core.CoreException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
+import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
-import org.xmlsh.sh.shell.Module;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.util.HelpUsage;
 import org.xmlsh.util.Util;
@@ -21,7 +15,7 @@ import org.xmlsh.util.Util;
  *
  */
 
-public class help extends BuiltinCommand {
+public class help extends XCommand {
 
 	
 	

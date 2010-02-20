@@ -1,23 +1,29 @@
 <?xml version="1.0"?>
 <commands>
-<command name="colon" url="http://www.xmlsh.org/CommandColon">
-	<usage><para>Usage: is the null command.</para></usage>
+<command name=":" url="http://www.xmlsh.org/CommandColon">
+	<synopsis>the null command</synopsis>
+	<usage><para>: ignored arguments</para></usage>
 </command>
 
 <command name="declare" url="http://www.xmlsh.org/CommandDeclare">
-<usage><para>declare Declares or lists namespaces</para>
+<synopsis>declare Declares or lists namespaces</synopsis>
 <para>declare</para>
 <para>declare namespace [prefix=[uri]]</para>
-</usage>
 </command>
-<command name="echo" url="http://www.xmlsh.org/CommandEcho"/>
+<command name="echo" url="http://www.xmlsh.org/CommandEcho">
+<synopsis>prints arguments as text</synopsis>
+</command>
 <command name="eval" url="http://www.xmlsh.org/CommandEval"/>
 <command name="exit" url="http://www.xmlsh.org/CommandExit"/>
 <command name="help" url="http://www.xmlsh.org/CommandHelp">
 	<synopsis>help for xlmsh commands</synopsis>
-	<usage><para>help commands</para>
-		   <para>help command</para>
+	<usage><para>help [-n] commands</para>
+		   <para>help [-n] command</para>
 	</usage>
+	<options>
+		<option><arg>-n</arg><para>Do not launch a browser for details</para></option>
+		<option><arg>-xml</arg><para>Outputs the xml format</para></option>
+	</options>
 </command>
 
 <command name="jobs" url="http://www.xmlsh.org/CommandJobs"/>
@@ -28,6 +34,7 @@
 <command name="shift" url="http://www.xmlsh.org/CommandShift"/>
 <command name="source" url="http://www.xmlsh.org/CommandSource"/>
 <command name="test" url="http://www.xmlsh.org/CommandTest"/>
+<command name="[" url="http://www.xmlsh.org/CommandTest"/>
 <command name="tie" url="http://www.xmlsh.org/CommandTie"/>
 <command name="unset" url="http://www.xmlsh.org/CommandUnset"/>
 <command name="wait" url="http://www.xmlsh.org/CommandWait"/>

@@ -18,7 +18,6 @@ import org.xmlsh.commands.builtin.declare;
 import org.xmlsh.commands.builtin.echo;
 import org.xmlsh.commands.builtin.eval;
 import org.xmlsh.commands.builtin.exit;
-import org.xmlsh.commands.builtin.help;
 import org.xmlsh.commands.builtin.jobs;
 import org.xmlsh.commands.builtin.log;
 import org.xmlsh.commands.builtin.read;
@@ -100,7 +99,7 @@ public class CommandFactory
 		addBuiltin("log",log.class);
 		addBuiltin("xtype", xtype.class);
 		addBuiltin("require", require.class);
-		addBuiltin("help", help.class);
+
 		
 
 	}

@@ -16,7 +16,7 @@ require || echo Require with no args should have succeeded
 require && echo Require succeeded with no args 
 require 1.0.1 
 require 1.0.1 && echo Require 1.0.1 succeeded
-require 1.0.2 || echo Require 1.0.2 failed correctly
+require 9.0.2 || echo Require 9.0.2 failed correctly
 
 # should fail - trap it
 try {
