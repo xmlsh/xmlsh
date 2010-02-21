@@ -1,13 +1,33 @@
 <?xml version="1.0"?>
 <commands>
-<command name="invoke" url="http://www.xmlsh.org/MarkLogicInvoke"/>
-<command name="put" url="http://www.xmlsh.org/MarkLogicPut"/>
-<command name="query" url="http://www.xmlsh.org/MarkLogicQuery"/>
-<command name="createdir" url="http://www.xmlsh.org/MarkLogicCreatedir"/>
-<command name="del" url="http://www.xmlsh.org/MarkLogicDel"/>
-<command name="deldir" url="http://www.xmlsh.org/MarkLogicDeldir"/>
-<command name="get" url="http://www.xmlsh.org/MarkLogicGet"/>
-<command name="list" url="http://www.xmlsh.org/MarkLogicList"/>
-<command name="listdir" url="http://www.xmlsh.org/MarkLogicListdir"/>
-<command name="rename" url="http://www.xmlsh.org/MarkLogicRename"/>
+<command name="invoke" url="http://www.xmlsh.org/MarkLogicInvoke">
+	<synopsis>Invokes a remotely stored query</synopsis>
+</command>
+<command name="put" url="http://www.xmlsh.org/MarkLogicPut">
+	<synopsis>Puts one or more files to the server</synopsis>
+</command>
+<command name="query" url="http://www.xmlsh.org/MarkLogicQuery">
+	<synopsis>Invokes an ad-hoc query</synopsis>
+</command>
+<command name="createdir" url="http://www.xmlsh.org/MarkLogicCreatedir">
+	<synopsis>Creates directories</synopsis>
+</command>
+<command name="del" url="http://www.xmlsh.org/MarkLogicDel">
+	<synopsis>Deletes documents</synopsis>
+</command>
+<command name="deldir" url="http://www.xmlsh.org/MarkLogicDeldir">
+	<synopsis>Deletes directories</synopsis>
+</command>
+<command name="get" url="http://www.xmlsh.org/MarkLogicGet">
+	<synopsis>Gets documents from the server</synopsis>
+</command>
+<command name="list" url="http://www.xmlsh.org/MarkLogicList">
+	<synopsis>Lists documents</synopsis>
+</command>
+<command name="listdir" url="http://www.xmlsh.org/MarkLogicListdir">
+	<synopsis>Lists directories</synopsis>
+</command>
+<command name="rename" url="http://www.xmlsh.org/MarkLogicRename">
+	<synopsis>Renames (moves) a document</synopsis>
+</command>
 </commands>
