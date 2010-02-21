@@ -4,7 +4,7 @@
  *
  */
 
-package org.xmlsh.commands.experimental;
+package org.xmlsh.commands.internal;
 
 import java.io.InputStream;
 import java.io.OutputStream;

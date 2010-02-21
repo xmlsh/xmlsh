@@ -45,10 +45,9 @@ fn:string-join((local:print( ./node() ,"" ),$lf,"For more information see: " ,$l
 
 <metaInformation>
 	<scenarios>
-		<scenario default="yes" name="Scenario1" userelativepaths="yes" externalpreview="no" useresolver="yes" url="..\..\commands\builtin\help.xml" outputurl="" processortype="saxon" tcpport="0" profilemode="0" profiledepth="" profilelength=""
-		          urlprofilexml="" commandline="" additionalpath="" additionalclasspath="" postprocessortype="none" postprocesscommandline="" postprocessadditionalpath="" postprocessgeneratedext="" host="" port="6619244" user="" password=""
-		          validateoutput="no" validator="internal" customvalidator="">
-			<parameterValue name="command" value="'help'"/>
+		<scenario default="yes" name="Scenario1" userelativepaths="yes" externalpreview="no" useresolver="yes" url="commands.xml" outputurl="" processortype="saxon" tcpport="0" profilemode="0" profiledepth="" profilelength="" urlprofilexml=""
+		          commandline="" additionalpath="" additionalclasspath="" postprocessortype="none" postprocesscommandline="" postprocessadditionalpath="" postprocessgeneratedext="" host="" port="1759511456" user="" password="" validateoutput="no"
+		          validator="internal" customvalidator="">
 			<advancedProperties name="DocumentURIResolver" value=""/>
 			<advancedProperties name="bSchemaAware" value="false"/>
 			<advancedProperties name="bXml11" value="false"/>

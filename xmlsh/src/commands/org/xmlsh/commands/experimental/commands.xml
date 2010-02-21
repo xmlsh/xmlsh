@@ -1,7 +1,6 @@
 <?xml version="1.0"?>
 <commands>
-<command name="http" url="http://www.xmlsh.org/CommandHttp"/>
-<command name="httpserver" url="http://www.xmlsh.org/CommandHttpserver"/>
+
 <command name="xml2json" url="http://www.xmlsh.org/CommandXmlsh2json"/>
 <command name="xobsufcate" url="http://www.xmlsh.org/CommandXobsufcate"/>
 <command name="xsysinfo" url="http://www.xmlsh.org/CommandXsysinfo"/>

@@ -1,17 +1,39 @@
 <?xml version="1.0"?>
 <commands>
 
-<command name="cat" url="http://www.xmlsh.org/CommandCat"/>
-<command name="chmod" url="http://www.xmlsh.org/CommandChmod"/>
-<command name="cp" url="http://www.xmlsh.org/CommandCp"/>
-<command name="ls" url="http://www.xmlsh.org/CommandLs"/>
-<command name="mkdir" url="http://www.xmlsh.org/CommandMkdir"/>
-<command name="more" url="http://www.xmlsh.org/CommandMore"/>
-<command name="mv" url="http://www.xmlsh.org/CommandMv"/>
-<command name="rm" url="http://www.xmlsh.org/CommandRm"/>
-<command name="rmdir" url="http://www.xmlsh.org/CommandRmdir"/>
-<command name="sleep" url="http://www.xmlsh.org/CommandSleep"/>
-<command name="touch" url="http://www.xmlsh.org/CommandTouch"/>
+<command name="cat" url="http://www.xmlsh.org/CommandCat">
+	<snopsis>copy or concatenate files</snopsis>
+</command>
+<command name="chmod" url="http://www.xmlsh.org/CommandChmod">
+	<synopsis>Change file permissions</synopsis>
+</command>
+<command name="cp" url="http://www.xmlsh.org/CommandCp">
+	<synopsis>copy one or more files</synopsis>
+</command>
+<command name="ls" url="http://www.xmlsh.org/CommandLs">
+	<synopsis>list files in a directory</synopsis>
+</command>
+<command name="mkdir" url="http://www.xmlsh.org/CommandMkdir">
+	<synopsis>Create directories</synopsis>
+</command>
+<command name="more" url="http://www.xmlsh.org/CommandMore">
+	<synopsis>Simple pagenator</synopsis>
+</command>
+<command name="mv" url="http://www.xmlsh.org/CommandMv">
+	<synopsis>Move/Rename files</synopsis>
+</command>
+<command name="rm" url="http://www.xmlsh.org/CommandRm">
+	<synopsis>Remove/Delete files</synopsis>
+</command>
+<command name="rmdir" url="http://www.xmlsh.org/CommandRmdir">
+	<synopsis>Remove/Delete directories</synopsis>
+</command>
+<command name="sleep" url="http://www.xmlsh.org/CommandSleep">
+	<synopsis>Delay execution</synopsis>
+</command>
+<command name="touch" url="http://www.xmlsh.org/CommandTouch" >
+	<synopsis>create and update timestamp of a file</synopsis>
+</command>
 
 </commands>
 	
