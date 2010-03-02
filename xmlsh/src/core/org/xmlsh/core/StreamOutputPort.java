@@ -22,7 +22,6 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import net.sf.saxon.s9api.Destination;
-import net.sf.saxon.s9api.XdmItem;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.util.SynchronizedOutputStream;
 import org.xmlsh.util.Util;
@@ -176,6 +175,18 @@ public class StreamOutputPort extends OutputPort
 		return writer ;
 			
 	}
+
+	/* (non-Javadoc)
+	 * @see org.xmlsh.core.OutputPort#asXdmItemOutputStream(org.xmlsh.sh.shell.SerializeOpts)
+	 */
+	@Override
+	public IXdmValueOutputStream asXdmItemOutputStream(SerializeOpts opts) throws CoreException {
+		
+		return new DestinationXdmValueOutputStream( asDestination(opts) );
+		
+	}
+	
+	
 	
 	
 

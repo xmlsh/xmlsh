@@ -6,15 +6,14 @@
 
 package org.xmlsh.commands.builtin;
 
-import java.io.OutputStream;
 import java.net.URI;
 import java.util.List;
 
-import net.sf.saxon.s9api.Destination;
 import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XdmNodeKind;
 import net.sf.saxon.s9api.XdmValue;
 import org.xmlsh.core.BuiltinCommand;
+import org.xmlsh.core.IXdmValueOutputStream;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
@@ -41,13 +40,13 @@ public class xecho extends BuiltinCommand {
 		if( stdout == null )
 			throw new InvalidArgumentException("Output port not found: " + port );
 		
-		
+
 		
 		
 		SerializeOpts serializeOpts = mShell.getSerializeOpts(opts);
-		Destination dest =  stdout.asDestination(serializeOpts);
+		IXdmValueOutputStream dest =  stdout.asXdmItemOutputStream(serializeOpts);
 
-		args = Util.expandSequences( args);
+		args = Util.expandSequences(args);
 		
 		boolean bFirst = true;
 		for ( XValue arg : args ){
@@ -65,11 +64,10 @@ public class xecho extends BuiltinCommand {
 						}
 					}
 				}
-				
-				
-				
+					
 				bFirst = false;
-				Util.writeXdmValue(arg.asXdmValue(), dest);
+				dest.write( arg.asXdmValue() );
+				
 		}
 		if( ! nolf )
 			stdout.writeSequenceTerminator(serializeOpts);

@@ -6,20 +6,32 @@
 
 package org.xmlsh.core;
 
-import net.sf.saxon.s9api.XdmItem;
+import net.sf.saxon.s9api.Destination;
+import net.sf.saxon.s9api.SaxonApiException;
+import net.sf.saxon.s9api.XdmValue;
+import org.xmlsh.util.Util;
 
-/**
- * IXdmItemOutputStream is a interface which accepts XdmItems as individual objects
- * @author David A. Lee
- */
-
-public interface IXdmItemOutputStream 
+class DestinationXdmValueOutputStream implements IXdmValueOutputStream
 {
+	Destination 	mDest;
 	
-	void	write( XdmItem item ) throws CoreException;
 	
+	DestinationXdmValueOutputStream( Destination dest ) throws CoreException
+	{
+		mDest = dest ;
+		
+		
+	}
+	@Override
+	public void write(XdmValue value) throws CoreException {
+		try {
+			Util.writeXdmValue(value , mDest);
+		} catch (SaxonApiException e) {
+			throw new CoreException("Exception writing XdmItem to output",e);
+		}
+		
+	}
 }
-
 
 
 //

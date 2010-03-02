@@ -39,7 +39,7 @@ import org.xmlsh.sh.shell.SerializeOpts;
 public class XMLEventOutputPort extends OutputPort
 {
 	private		XMLEventWriter mWriter;
-	private SerializeOpts mOpts;
+	private 	SerializeOpts mOpts;
 	
 	
 	
@@ -195,7 +195,15 @@ public class XMLEventOutputPort extends OutputPort
 			
 	}
 	
-	
+	/* (non-Javadoc)
+	 * @see org.xmlsh.core.OutputPort#asXdmItemOutputStream(org.xmlsh.sh.shell.SerializeOpts)
+	 */
+	@Override
+	public IXdmValueOutputStream asXdmItemOutputStream(SerializeOpts opts) throws CoreException {
+		
+		return new DestinationXdmValueOutputStream( asDestination(opts) );
+		
+	}
 
 }
 

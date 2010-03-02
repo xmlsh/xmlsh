@@ -16,6 +16,7 @@ import org.xmlsh.core.Options;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.Options.OptionValue;
+import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.util.StAXUtils;
 
 public class xgetopts extends XCommand {
@@ -28,23 +29,36 @@ public class xgetopts extends XCommand {
 	private static final String kVALUE 	= "value";
 	@Override
 	public int run(List<XValue> args) throws Exception {
-		if( args.isEmpty() ){
-			usage();
-			return 1;
+		Options opts = new Options("o=optdef:,c=command:,noargs,novalues",SerializeOpts.getOptionDefs());
+		opts.parse(args);
+		
+		String command = opts.getOptString("c", getShell().getArg0());
+		String optdef = opts.getOptString("o", null);
+		args = opts.getRemainingArgs();
+		
+		// Backwards compatible - arg[0] is optdef
+		if( optdef == null ){
+			if( args.size() == 0 ){
+				usage();
+				return 1;
+			}
+		
+			optdef = args.remove(0).toString();
 		}
 		
-		XMLStreamWriter out = this.getStdout().asXMLStreamWriter(getSerializeOpts());
+		boolean bNoArgs = opts.hasOpt("noargs");
+		boolean bNoValues = opts.hasOpt("novalues");
 		
-			
-		String def =  args.remove(0).toString();
-		Options opts = new Options(def);
 		
-		List<OptionValue>  options = opts.parse(args);
-		args = opts.getRemainingArgs();
+		XMLStreamWriter out = this.getStdout().asXMLStreamWriter(getSerializeOpts(opts));
+		
+		Options copts = new Options(optdef);
+		
+		List<OptionValue>  options = copts.parse(args);
+
 		
 		out.writeStartDocument();
 		out.writeStartElement(kROOT);
-
 		out.writeStartElement(kOPTIONS);
 
 		
@@ -53,14 +67,26 @@ public class xgetopts extends XCommand {
 			out.writeAttribute("name",option.getOptionDef().name);
 			
 			if( option.getOptionDef().hasArgs  ){
+				
+				
+				
 				for( XValue value : option.getValues() ) {
+					
+					int index = args.indexOf(value);
 					out.writeStartElement( kVALUE );
 					
 					
-					if( value.isAtomic())
-						out.writeCharacters(value.toString());
-					else
-						write( out , value.asXdmNode() );
+					
+					out.writeAttribute("index", String.valueOf(index) );
+					
+					
+					if( ! bNoValues ){
+						if( value.isAtomic())
+							out.writeCharacters(value.toString());
+						else
+							write( out , value.asXdmNode() );
+						
+					}
 					out.writeEndElement();
 					
 
@@ -70,20 +96,32 @@ public class xgetopts extends XCommand {
 			
 		}
 		out.writeEndElement();
-		out.writeStartElement( kARGS );
-
 		
-		for( XValue value : opts.getRemainingArgs() ){
-			out.writeStartElement(kARG);
-				
-
-			if( value.isAtomic())
-				out.writeCharacters( value.toString());
-			else
-				write( out , value.asXdmNode() );
+		
+		if( ! bNoArgs ){
+			out.writeStartElement( kARGS );
+	
 			
+			for( XValue value : copts.getRemainingArgs() ){
+				out.writeStartElement(kARG);
+				int index = args.indexOf(value);
+				out.writeAttribute("index", String.valueOf(index) );
+				
+				
+				if( ! bNoValues ){
+			
+	
+					if( value.isAtomic())
+						out.writeCharacters( value.toString());
+					else
+						write( out , value.asXdmNode() );
+				}
+				
+				out.writeEndElement();
+			}
 			out.writeEndElement();
 		}
+		
 		
 		out.writeEndDocument();
 		out.close();

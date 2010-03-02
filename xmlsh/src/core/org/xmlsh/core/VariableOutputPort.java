@@ -19,23 +19,21 @@ import javanet.staxutils.StAXSource;
 import javax.xml.stream.XMLEventWriter;
 import javax.xml.stream.XMLStreamWriter;
 
-import net.sf.saxon.Configuration;
 import net.sf.saxon.event.Builder;
 import net.sf.saxon.event.PipelineConfiguration;
 import net.sf.saxon.event.Receiver;
 import net.sf.saxon.event.ReceivingContentHandler;
 import net.sf.saxon.s9api.Destination;
 import net.sf.saxon.s9api.DocumentBuilder;
-import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XdmAtomicValue;
 import net.sf.saxon.s9api.XdmDestination;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
+import net.sf.saxon.s9api.XdmValue;
 import net.sf.saxon.tinytree.TinyBuilder;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.S9Util;
-import org.xmlsh.util.Util;
 import org.xmlsh.util.XMLEventWriterBuffer;
 import org.xmlsh.util.XMLEventWriterToContentHandler;
 import org.xmlsh.util.XMLStreamWriterToContentHandler;
@@ -53,12 +51,13 @@ public class VariableOutputPort extends OutputPort
 
 	
 	
-	private class VariableXdmItemOutputStream implements IXdmItemOutputStream
+	private class VariableXdmItemOutputStream implements IXdmValueOutputStream
 	{
 		
 		@Override
-		public void write(XdmItem item) throws CoreException {
-			appendVar(item);
+		public void write(XdmValue value) throws CoreException {
+			for( XdmItem it : value )
+				appendVar(it);
 			
 		}
 	}
@@ -310,7 +309,7 @@ public class VariableOutputPort extends OutputPort
 	}
 
 	
-	public	IXdmItemOutputStream	asXdmItemOutputStream(SerializeOpts opts) throws CoreException
+	public	IXdmValueOutputStream	asXdmItemOutputStream(SerializeOpts opts) throws CoreException
 	{
 		return new VariableXdmItemOutputStream(  );
 	}
