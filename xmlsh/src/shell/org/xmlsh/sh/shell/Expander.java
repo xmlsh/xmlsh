@@ -38,7 +38,7 @@ class Expander {
 	private static Logger mLogger = LogManager.getLogger( Expander.class);
 	
 	private 	Shell		mShell;
-	private		List<XValue> 	mArgs;
+
 	
 
 	
@@ -153,8 +153,6 @@ class Expander {
 	Expander( Shell shell )
 	{
 		mShell = shell;
-		mArgs = shell.getArgs();
-		
 		
 	}
 	
@@ -307,7 +305,7 @@ class Expander {
 					if( var.equals("*")){
 						// Add all positional variables as args 
 						boolean bFirst = true ;
-						for( XValue v : mArgs ){
+						for( XValue v : mShell.getArgs() ){
 							// result.add( quote(v) );
 							if( cQuote != 0  ){
 								if( ! bFirst )
@@ -329,7 +327,7 @@ class Expander {
 							result.sb.setLength(0);
 						else
 							result.flush();
-						for( XValue v : mArgs )
+						for( XValue v : mShell.getArgs() )
 							result.add( quote(v) );
 					}
 
@@ -804,7 +802,7 @@ class Expander {
 		
 		
 		if( varname.equals("#"))
-			return new XValue( mArgs.size() );
+			return new XValue( mShell.getArgs().size() );
 		else
 		// Special vars
 		if( varname.equals("$"))
@@ -819,17 +817,7 @@ class Expander {
 		}
 		
 			
-		else
-		if( Util.isInt(varname,false)){
-			int n = Util.parseInt(varname, -1);
-			if( n == 0 )
-				return new XValue(mShell.getArg0());
-			else
-			if( n > 0 && n <= mArgs.size() )
-				return mArgs.get(n-1);
-			else
-				return null;	// unfound args, do not get used, 
-		}
+		
 		else {
 			// ${#var} notation
 			if( varname.startsWith("#") ) {
@@ -865,6 +853,24 @@ class Expander {
 				varname = varname.substring(0,as);
 				
 			}
+			
+			
+			if( Util.isInt(varname,false)){
+					int n = Util.parseInt(varname, -1);
+					if( n == 0 )
+						return new XValue(mShell.getArg0());
+					else
+					if( n > 0 && n <= mShell.getArgs().size() ){
+						XValue value = mShell.getArgs().get(n-1);
+						return ind == null ? value : new XValue( value.asXdmValue(ind) ) ;
+						
+					}
+					else
+						return null;	// unfound args, do not get used, 
+			}
+			
+
+			
 			
 			XVariable var = mShell.getEnv().getVar(varname);
 			if( var == null )

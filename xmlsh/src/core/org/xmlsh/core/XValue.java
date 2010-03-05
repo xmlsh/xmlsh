@@ -421,6 +421,21 @@ public class XValue {
 			return true ;
 		return mValue.size() == 0 ;
 	}
+
+	/*
+	 * Gets a value with optional indice
+	 */
+	public XdmValue asXdmValue(String ind) {
+		if( mValue == null )
+			return null ;
+		else
+		if( ind == null || ind.equals("*") )
+			return mValue ;
+		else 
+			return mValue.itemAt( Util.parseInt(ind, 0) - 1 );
+	
+		
+	}
 	
 }
 //

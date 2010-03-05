@@ -265,18 +265,9 @@ public class XVariable {
 
 	public XValue getValue(Shell shell, String ind, XValue arg) {
 	
-		XdmValue value = getValue().asXdmValue();
+		XdmValue value = getValue().asXdmValue(ind);
 		
-		/*
-		 * parse [ind] 
-		 */
-		if( ind != null ){
-		
-			if( ind.equals("*")) // special case ${var[*]}
-				 ;
-			else 
-				value = value.itemAt( Util.parseInt(ind, 0) - 1 );
-		}
+
 		
 		if( value == null )
 			return null ;
