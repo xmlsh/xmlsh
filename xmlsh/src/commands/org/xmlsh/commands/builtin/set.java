@@ -20,6 +20,7 @@ import org.xmlsh.core.XEnvironment;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.XVariable;
 import org.xmlsh.sh.shell.SerializeOpts;
+import org.xmlsh.util.Util;
 
 public class set extends BuiltinCommand {
 
@@ -32,8 +33,9 @@ public class set extends BuiltinCommand {
 			return 0;
 		}
 		
-		Options opts = new Options( "+x,+v,+xpipe,+e" , SerializeOpts.getOptionDefs()  );
+		Options opts = new Options( "+x,+v,+xpipe,+e,E=expand" , SerializeOpts.getOptionDefs()  );
 		opts.parse(args);
+		boolean bFlatten = opts.hasOpt("E");
 		
 		setShellOptions(opts);
 		
@@ -42,8 +44,12 @@ public class set extends BuiltinCommand {
 		args = opts.getRemainingArgs();
 		// Only set args here if there are any left
 		// could be set +x which would clear $*
-		if( args != null && (args.size() > 0  || opts.hasDashDash() ))
+		if( args != null && (args.size() > 0  || opts.hasDashDash() )){
+			if( bFlatten )
+				args = Util.expandSequences(args);
 			mShell.setArgs(args);
+			
+		}
 		return 0;
 	}
 
@@ -83,7 +89,7 @@ public class set extends BuiltinCommand {
 }
 //
 //
-//Copyright (C) 2008,2009 , David A. Lee.
+//Copyright (C) 2008,2009,2010 , David A. Lee.
 //
 //The contents of this file are subject to the "Simplified BSD License" (the "License");
 //you may not use this file except in compliance with the License. You may obtain a copy of the

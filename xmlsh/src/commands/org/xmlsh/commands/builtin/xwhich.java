@@ -50,7 +50,7 @@ public class xwhich extends BuiltinCommand {
 		XMLStreamWriter 	out = null ;
 		OutputPort stdout = mShell.getEnv().getStdout();	
 
-		SerializeOpts serializeOpts = getSerializeOpts();
+		SerializeOpts serializeOpts = getSerializeOpts(opts);
 		if( !bNoWrite ){
 
 			out = stdout.asXMLStreamWriter(serializeOpts);
@@ -115,7 +115,7 @@ public class xwhich extends BuiltinCommand {
 }
 //
 //
-//Copyright (C) 2008,2009 , David A. Lee.
+//Copyright (C) 2008,2009,2010 , David A. Lee.
 //
 //The contents of this file are subject to the "Simplified BSD License" (the "License");
 //you may not use this file except in compliance with the License. You may obtain a copy of the
