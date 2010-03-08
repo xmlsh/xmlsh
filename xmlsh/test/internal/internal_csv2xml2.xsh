@@ -1,7 +1,7 @@
 # test of csv2xml using our own supplied column names
 # Try with one row that exceeds the limit
 
-csv2xml -colnames <["col1","col2","col3"]> <<EOF
+csv2xml -colnames {<["col1","col2","col3"]>} <<EOF
 a,b,c
 d,e,f
 g,h,"i"

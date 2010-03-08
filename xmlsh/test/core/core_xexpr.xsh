@@ -25,7 +25,7 @@ for e in <[1,"string",<simple/>,$X]> <[2,3,4]>; do
 done
 
 # Positional parameters as expressions
-set $X <["second","arg"]>
+set $X {<["second","arg"]>}
 
 echo Number of params: $#
 if [ $# -ne 2 ] ; then 

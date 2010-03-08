@@ -6,9 +6,8 @@ options {
   JDK_VERSION = "1.5";
 
   STATIC=false;
-  
-// DEBUG_PARSER=true;
-//  DEBUG_LOOKAHEAD=true;
+//   DEBUG_PARSER=true ;  
+// DEBUG_LOOKAHEAD=true;
 // DEBUG_TOKEN_MANAGER=true;
 // FORCE_LA_CHECK=true;
  
@@ -199,8 +198,11 @@ TOKEN : {
 | 	< LPAREN: "(" >
 }
 
+
 <CMD> TOKEN : {
 	< LPAREN2 : "(" >
+| 	< LBRACE2 : "{" >
+| 	< RBRACE2 : "}" >
 }
 
 <DEFAULT> TOKEN : {
@@ -247,7 +249,7 @@ TOKEN : {
  }
  
 TOKEN : {
-	< NAME : (["A" - "Z","a"-"z","_","0"-"9", "-" , ".", "/", "[", ":","*","?","]","{","}","@"] | <VAR_EXPANSION>)+  | <STRING_LITERAL1> | <STRING_LITERAL2>  >
+	< NAME : (["A" - "Z","a"-"z","_","0"-"9", "-" , ".", "/", "[", ":","*","?","]","@"] | <VAR_EXPANSION>)+  | <STRING_LITERAL1> | <STRING_LITERAL2>  >
 	: CMD
 }
 
@@ -266,7 +268,7 @@ TOKEN : {
  	
 
 <CMD> TOKEN : {
-	< WORD : (~["\t","\n","\r" ," ","\"","'","|","<",">","&",";",")","(","$","\\"] | "\\" ~[] | <VAR_EXPANSION> | <STRING_LITERAL1> | <STRING_LITERAL2>)+ > 
+	< WORD : (~["\t","\n","\r" ," ","\"","'","|","<",">","&",";",")","(","$","\\","{","}"] | "\\" ~[] | <VAR_EXPANSION> | <STRING_LITERAL1> | <STRING_LITERAL2>)+ > 
 |
   < #STRING_LITERAL1:
       "\""
@@ -747,7 +749,7 @@ String cmd_name() : {Token t;}
 }
 
 Word cmd_word() : 
-	{Token t; String s; Command c; }
+	{Token t; String s; Command c; Word w; }
 { 
 	( t=<WORD> | t=<NAME>  | t=<XEXPR> | t=<BIGQUOTE>)
 	{ return new StringWord(t.toString()); }
@@ -756,6 +758,10 @@ Word cmd_word() :
 	{ return new CommandWord(t.toString() , c ) ; }
 	|   t=<VAR_SUBPROC_FILE>   s=filename()  <RPAREN> 
 	{ return new CommandFileWord(t.toString() , s ) ; }
+| LOOKAHEAD(5) <LBRACE2 > w=cmd_word() < RBRACE2 >{  w.setExpand( false ) ; return w  ; }
+| < LBRACE2 >{ return new StringWord("{"); }| < RBRACE2 >
+{ return new StringWord("}"); }
+  
 	
 }
 
@@ -930,13 +936,22 @@ String	filename() :
 }
 
 Word	filename_word() : 
-	{Word w; Token t;}
+	{Word w; Token t;String s; Command c;}
 {
 	w=port_word()
 	{ return w ; }
-|
-	w=cmd_word() 
-	{ return w ; }
+| 
+( t=<WORD> | t=<NAME>  | t=<XEXPR> | t=<BIGQUOTE>)
+	{ return new StringWord(t.toString()); }
+	
+	|   t=<VAR_SUBPROC>   c=compound_list() <RPAREN> 
+	{ return new CommandWord(t.toString() , c ) ; }
+	|   t=<VAR_SUBPROC_FILE>   s=filename()  <RPAREN> 
+	{ return new CommandFileWord(t.toString() , s ) ; }
+| (<LBRACE >|< LBRACE2 >) ( t=<WORD> | t=<NAME>   ) (< RBRACE2 >|< RBRACE >)
+{
+  return new StringWord("{" + t.toString() + "}");  
+}
 }
 
 

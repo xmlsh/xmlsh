@@ -23,6 +23,7 @@ import org.xmlsh.util.Util;
  */
 public abstract class Word {
 	
+	private		boolean 	bExpand = true ;
 	
 	public abstract void print( PrintWriter out );
 
@@ -46,6 +47,14 @@ public abstract class Word {
 	public abstract boolean isEmpty();
 	
 	public abstract String toString();
+
+	public boolean isExpand() {
+		
+		return bExpand;
+	}
+	public void setExpand( boolean expand ){
+		bExpand = expand ;
+	}
 }
 
 

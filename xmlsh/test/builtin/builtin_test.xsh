@@ -105,7 +105,7 @@ chmod a-w $TDIR/notempty
 [ <[ fn:true() ]> ]&& echo success xexpr true
 [ <[ fn:false() ]> ]&& echo failed xexpr false
 
-[ <[ (0,0,0) ]> ] && echo success sequence
+[ { <[ (0,0,0) ]>  } ] && echo success sequence
 
 [ -z <[ fn:false() ]> ] && echo success -z xexpr false
 
@@ -118,7 +118,7 @@ a=<[ "string" ]>
 [ $a ] && echo success xexpr string 
 
 b=<[ (1,2,3) ]>
-[ -n $b ] && echo success xexpr var sequence 
+[ -n {$b} ] && echo success xexpr var sequence 
 
 # Test URI flags
 [ -u foo ] && echo Test URI Failed 
