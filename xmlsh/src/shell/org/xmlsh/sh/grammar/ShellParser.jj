@@ -749,21 +749,27 @@ String cmd_name() : {Token t;}
 }
 
 Word cmd_word() : 
-	{Token t; String s; Command c; Word w; }
+	{ Word w; }
 { 
-	( t=<WORD> | t=<NAME>  | t=<XEXPR> | t=<BIGQUOTE>)
+	w=cmd_word_expr()	{	  return w;	}
+|  <LBRACE2 > w=cmd_word_expr() < RBRACE2 >{  w.setExpand( false ) ; return w  ; }
+
+}
+
+Word cmd_word_expr() :
+	{Token t; String s; Command c;  }
+{
+
+    ( t=<WORD> | t=<NAME>  | t=<XEXPR> | t=<BIGQUOTE>)
 	{ return new StringWord(t.toString()); }
 	
 	|   t=<VAR_SUBPROC>   c=compound_list() <RPAREN> 
 	{ return new CommandWord(t.toString() , c ) ; }
 	|   t=<VAR_SUBPROC_FILE>   s=filename()  <RPAREN> 
 	{ return new CommandFileWord(t.toString() , s ) ; }
-| LOOKAHEAD(5) <LBRACE2 > w=cmd_word() < RBRACE2 >{  w.setExpand( false ) ; return w  ; }
-| < LBRACE2 >{ return new StringWord("{"); }| < RBRACE2 >
-{ return new StringWord("}"); }
-  
-	
+
 }
+
 
 
 CommandPrefix cmd_prefix() : 

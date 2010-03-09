@@ -837,6 +837,8 @@ public class Shell {
 		List<XValue> result =  e.expand(s,bExpandWild, bExpandWords );
 		if( bExpandSequences )
 			result = Util.expandSequences( result );
+		else
+			result = Util.combineSequence( result );
 		return result;
 	}
 

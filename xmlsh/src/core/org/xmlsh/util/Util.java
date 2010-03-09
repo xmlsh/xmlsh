@@ -511,6 +511,15 @@ public class Util
 
 	public static List<XValue> expandSequences(List<XValue> values)
 	{
+		/*
+		 * Avoid making a new list if this list is a single element
+		 */
+		if( values.isEmpty() )
+			return values ;
+		if( values.size() == 1 && values.get(0).asXdmValue().size() < 2 )
+			return values ;
+		
+		
 		ArrayList<XValue> list = new ArrayList<XValue>( values.size());
 		for( XValue arg : values ){
 			if( arg.isAtomic() )
@@ -890,6 +899,20 @@ public class Util
 			return var.equals("PATH")||var.equals("XPATH");
 
 	
+	}
+
+
+	public static List<XValue> combineSequence(List<XValue> result) {
+		if( result.size() < 2 )
+			return result ;
+		
+		XValue value = new XValue(result);
+		
+		List<XValue> v = new ArrayList<XValue>(1);
+		v.add(value);
+		return v;
+		
+		
 	}
 	
 

@@ -24,8 +24,8 @@ true && {
 }
 
 # simple output
-
-echo {  not reserved  middle or end of command }
+# braces are now reserved chars must be quoted 
+# echo {  not reserved  middle or end of command }
 
 
 { echo true ;  }
