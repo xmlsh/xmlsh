@@ -35,7 +35,7 @@ public abstract class Word {
 	}
 	
 	public List<XValue> expand(Shell shell, boolean bExpandSequences , boolean bExpandWild , boolean bExpandWords ) throws IOException, CoreException {
-		XValue v = expand( shell , false,false);
+		XValue v = expand( shell , bExpandWild,bExpandWords);
 		List<XValue> list = new ArrayList<XValue>(1);
 		list.add( v );
 		if( bExpandSequences)
