@@ -188,10 +188,16 @@ public class Options
 	
 	private Options( List<OptionDef> opt1 , List<OptionDef> opt2 )
 	{
-		mDefs = new ArrayList<OptionDef>( opt1.size() + opt2.size());
-		mDefs.addAll( opt1 );
-		mDefs.addAll(opt2);
+		if( opt2 == null )
+			mDefs = opt1; 
 		
+		else {
+		
+			mDefs = new ArrayList<OptionDef>( opt1.size() + opt2.size());
+			mDefs.addAll( opt1 );
+			mDefs.addAll(opt2);
+
+		}
 	}
 
 	public Options(String option_str, List<OptionDef> option_list) 
@@ -383,6 +389,14 @@ public class Options
 		return Util.parseInt(this.getOptString(opt,""), def);
 	}
 	public boolean hasDashDash() { return mDashDash ; }
+
+
+	/**
+	 * @return the defs
+	 */
+	public List<OptionDef> getOptDefs() {
+		return mDefs;
+	}
 }
 
 //

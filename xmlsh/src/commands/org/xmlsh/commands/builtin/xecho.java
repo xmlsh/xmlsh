@@ -44,7 +44,7 @@ public class xecho extends BuiltinCommand {
 		
 		
 		SerializeOpts serializeOpts = mShell.getSerializeOpts(opts);
-		IXdmValueOutputStream dest =  stdout.asXdmItemOutputStream(serializeOpts);
+		IXdmValueOutputStream dest =  stdout.asXdmValueOutputStream(serializeOpts);
 
 		args = Util.expandSequences(args);
 		

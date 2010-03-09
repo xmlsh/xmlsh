@@ -199,7 +199,7 @@ public class XMLEventOutputPort extends OutputPort
 	 * @see org.xmlsh.core.OutputPort#asXdmItemOutputStream(org.xmlsh.sh.shell.SerializeOpts)
 	 */
 	@Override
-	public IXdmValueOutputStream asXdmItemOutputStream(SerializeOpts opts) throws CoreException {
+	public IXdmValueOutputStream asXdmValueOutputStream(SerializeOpts opts) throws CoreException {
 		
 		return new DestinationXdmValueOutputStream( asDestination(opts) );
 		

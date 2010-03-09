@@ -4,33 +4,33 @@
  *
  */
 
-package org.xmlsh.core;
+package org.xmlsh.util;
 
-import net.sf.saxon.s9api.Destination;
-import net.sf.saxon.s9api.SaxonApiException;
-import net.sf.saxon.s9api.XdmValue;
-import org.xmlsh.util.Util;
+public class MutableInteger {
+	int		mValue ;
 
-class DestinationXdmValueOutputStream implements IXdmValueOutputStream
-{
-	Destination 	mDest;
-	
-	
-	DestinationXdmValueOutputStream( Destination dest ) throws CoreException
-	{
-		mDest = dest ;
-		
+	public MutableInteger(int value) {
+		super();
+		mValue = value;
 	}
-	@Override
-	public void write(XdmValue value) throws CoreException {
-		try {
-			Util.writeXdmValue(value , mDest);
-		} catch (SaxonApiException e) {
-			throw new CoreException("Exception writing XdmItem to output",e);
-		}
-		
+
+	/**
+	 * @return the value
+	 */
+	public int getValue() {
+		return mValue;
 	}
+
+	/**
+	 * @param value the value to set
+	 */
+	public void setValue(int value) {
+		mValue = value;
+	}
+	
+
 }
+
 
 
 //

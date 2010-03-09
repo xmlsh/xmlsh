@@ -159,7 +159,7 @@ public class xpath extends XCommand {
 			} else {
 
 				OutputPort stdout = getStdout();
-				IXdmValueOutputStream ser = stdout.asXdmItemOutputStream(serializeOpts);
+				IXdmValueOutputStream ser = stdout.asXdmValueOutputStream(serializeOpts);
 				boolean bAnyOutput = false;
 				boolean bFirst = true;
 

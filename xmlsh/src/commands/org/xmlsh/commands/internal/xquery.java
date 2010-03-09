@@ -174,7 +174,7 @@ public class xquery extends XCommand {
 //		eval.run(getStdout().asDestination(getSerializeOpts()));
 
 			OutputPort stdout = getStdout();
-			IXdmValueOutputStream ser = stdout.asXdmItemOutputStream(serializeOpts);
+			IXdmValueOutputStream ser = stdout.asXdmValueOutputStream(serializeOpts);
 			boolean bFirst = true ;
 			boolean bAnyOut = false ;
 			for( XdmItem item : eval ){

@@ -309,7 +309,7 @@ public class VariableOutputPort extends OutputPort
 	}
 
 	
-	public	IXdmValueOutputStream	asXdmItemOutputStream(SerializeOpts opts) throws CoreException
+	public	IXdmValueOutputStream	asXdmValueOutputStream(SerializeOpts opts) throws CoreException
 	{
 		return new VariableXdmItemOutputStream(  );
 	}
