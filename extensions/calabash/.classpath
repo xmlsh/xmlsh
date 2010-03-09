@@ -4,16 +4,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/xmlsh"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="/xmlsh/lib/log4j-1.2.7.jar"/>
-	<classpathentry kind="lib" path="/xmlsh/lib/saxon9.jar" sourcepath="C:/java/saxon9/src">
-		<attributes>
-			<attribute name="javadoc_location" value="file:/C:/java/saxon9/doc/javadoc/"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/xmlsh/lib/saxon9-s9api.jar" sourcepath="C:/java/saxon9/src">
-		<attributes>
-			<attribute name="javadoc_location" value="file:/C:/java/saxon9/doc/javadoc/"/>
-		</attributes>
-	</classpathentry>
 	<classpathentry kind="lib" path="/xmlsh/lib/stax2-api-3.0.1.jar"/>
 	<classpathentry kind="lib" path="/xmlsh/lib/stax-utils.jar" sourcepath="C:/java/stax-utils-20071202/stax-utils-src.zip">
 		<attributes>
@@ -23,5 +13,6 @@
 	<classpathentry kind="lib" path="/xmlsh/lib/woodstox-core-asl-4.0.3.jar"/>
 	<classpathentry kind="lib" path="/xmlsh/lib/xercesImpl.jar"/>
 	<classpathentry kind="lib" path="lib/calabash.jar" sourcepath="/calabash"/>
+	<classpathentry kind="lib" path="/xmlsh/lib/saxon9he.jar" sourcepath="C:/java/saxonhe9-2-0-3/saxonhe9-2-0-3source.zip"/>
 	<classpathentry kind="output" path="_out"/>
 </classpath>

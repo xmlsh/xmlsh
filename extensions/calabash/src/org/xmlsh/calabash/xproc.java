@@ -27,7 +27,6 @@ import net.sf.saxon.s9api.DocumentBuilder;
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.SaxonApiException;
-import net.sf.saxon.s9api.Serializer;
 import net.sf.saxon.s9api.XQueryCompiler;
 import net.sf.saxon.s9api.XQueryEvaluator;
 import net.sf.saxon.s9api.XQueryExecutable;
@@ -37,7 +36,6 @@ import net.sf.saxon.s9api.XdmValue;
 import net.sf.saxon.trans.XPathException;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InputPort;
-import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.NamedPort;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
@@ -81,8 +79,8 @@ public class xproc extends XCommand {
 		Hashtable<QName, String> parameters = new Hashtable<QName,String>();
 		Hashtable<QName, String> options = new Hashtable<QName,String>();
 
-		Options opts = new Options("b=base:,n,iw=iwrap,ow=owrap,o=option:+",args);
-		opts.parse();
+		Options opts = new Options("b=base:,n,iw=iwrap,ow=owrap,o=option:+");
+		opts.parse(args);
 		args = opts.getRemainingArgs();
 		
 		boolean noInput = opts.hasOpt("n");
@@ -131,7 +129,7 @@ public class xproc extends XCommand {
 		
 		for( NamedPort<InputPort> input : getEnv().getInputPorts() ){
 			String name = input.getName();
-			if( ! Util.isBlank(name)){
+			if( ! Util.isBlank(name) && ! "input".equals(name)){
 				InputStream in = input.getPort().asInputStream(getSerializeOpts());
 
 				XdmNode root = builder.build(new StreamSource(in));
@@ -156,10 +154,6 @@ public class xproc extends XCommand {
 		
 	}
 
-
-	private void usage() throws InvalidArgumentException {
-		throw new InvalidArgumentException("Usage: xproc [-b|-base base_uri] [-n] [-iw|-iwrap] [-o opt=value ...] xprocfile");
-	}
 
 
 	/*

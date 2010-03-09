@@ -1,4 +1,4 @@
-y This is an extension module to xmlsh
+This is an extension module to xmlsh
 To run this module you must include the supplied calabash_ext.jar
 as well as the following jar files required for calabash
 

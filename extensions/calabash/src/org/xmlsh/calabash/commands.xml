@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<commands>
+	<command name="xproc" url="http://www.xmlsh.org/CalabashXproc">
+		<synopsis>Executes an xproc pipeline</synopsis>
+		<usage>
+			<para>xproc [options] pipeline</para>
+		</usage>
+		<options>
+			<option>
+				<arg>-b,-base uri</arg>
+				<para>Override the base-uri of the xproc pipeline file (to simulate executing a remote pipeline from a local file)</para>
+			</option>
+			<option>
+				<arg>-n</arg>
+				<para>No input.  Do not read any input ports for pipeline input</para>
+			</option>
+			<option>
+				<arg>-iw,-iwrap</arg>
+				<para>Expect input documents to be wrapped by a root node.  This allows a sequence of documents on an input port.</para>
+			</option>
+			<option>
+				<arg>-ow,-owrap</arg>
+				<para>Wrap output documents with a root node "wrap".  This allows a sequence of documents on an output port</para>
+			</option>
+
+			<option>
+				<arg>-o,-option name=value</arg>
+				<para>Pass an option to the pipeline.  May occur multiple times</para>
+			</option>
+
+
+			<option>
+				<arg>pipeline</arg>
+				<para>path to xproc pipeline file</para>
+			</option>
+
+		</options>
+	</command>
+	
+</commands>
