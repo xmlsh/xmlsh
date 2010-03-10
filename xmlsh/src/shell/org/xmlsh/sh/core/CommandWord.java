@@ -20,6 +20,7 @@ import org.xmlsh.core.VariableOutputPort;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.XVariable;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.util.MutableInteger;
 import org.xmlsh.util.NullInputStream;
 
 /*
@@ -44,7 +45,7 @@ public class CommandWord extends Word {
 	}
 	
 
-	private String expandSubproc(Shell shell , Command c ) throws CoreException
+	private String expandSubproc(Shell shell , Command c , MutableInteger retValue ) throws CoreException
 	{
 		
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -54,9 +55,9 @@ public class CommandWord extends Word {
 		
 			shell.getEnv().setStdout( out );
 			shell.getEnv().setStdin( new NullInputStream() );
-			shell.exec(c);
-			
-			
+			int ret = shell.exec(c);
+			if( retValue != null )
+					retValue.setValue(ret);
 			return out.toString().trim();
 	
 			
@@ -85,7 +86,7 @@ public class CommandWord extends Word {
 	
 	
 
-	private XdmValue parseXCmd(Shell shell , Command cmd) throws IOException, CoreException
+	private XdmValue parseXCmd(Shell shell , Command cmd, MutableInteger retValue ) throws IOException, CoreException
 	{
 
 		
@@ -99,8 +100,9 @@ public class CommandWord extends Word {
 		
 			shell.getEnv().setStdout( port );
 			shell.getEnv().setStdin( new NullInputStream() );
-			shell.exec(cmd);
-			
+			int ret= shell.exec(cmd);
+			if( retValue != null )
+				retValue.setValue(ret);
 			
 		
 			
@@ -120,12 +122,12 @@ public class CommandWord extends Word {
 		
 	}
 		
-
-	public XValue expand(Shell shell,boolean bExpandWild , boolean bExpandWords ) throws IOException, CoreException {
+	@Override
+	public XValue expand(Shell shell,boolean bExpandWild , boolean bExpandWords, MutableInteger retValue ) throws IOException, CoreException {
 		
 		
 		if( mType.equals("$(")){
-			String 	value = expandSubproc( shell , mCommand);
+			String 	value = expandSubproc( shell , mCommand, retValue);
 			// Split value by \n's to turn into a sequence
 			String[] words = value.split("\r?\n");
 			if( words.length == 1 )
@@ -141,7 +143,7 @@ public class CommandWord extends Word {
 		} else 
 		if( mType.equals("$<(")){
 			
-			XdmValue v = parseXCmd( shell , mCommand );
+			XdmValue v = parseXCmd( shell , mCommand , retValue );
 			return new XValue(v);
 		}
 

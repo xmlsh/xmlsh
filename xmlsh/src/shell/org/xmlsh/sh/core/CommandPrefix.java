@@ -14,6 +14,7 @@ import java.util.List;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.util.MutableInteger;
 
 public class CommandPrefix {
 	private List<Assign>	mList = new ArrayList<Assign>();
@@ -41,9 +42,11 @@ public class CommandPrefix {
 		
 	}
 
-	public void exec(Shell shell) throws IOException, CoreException {
+	public int  exec(Shell shell) throws IOException, CoreException {
+		MutableInteger retValue = new MutableInteger(0);
 		for (Assign ass : mList) {
-			XValue value = ass.expand(shell);
+			XValue value = ass.expand(shell,retValue);
+			
 			if( ass.getOp().equals("+="))
 					shell.getEnv().appendVar( ass.getVariable(), value );
 			else
@@ -51,6 +54,7 @@ public class CommandPrefix {
 				
 			
 		}
+		return retValue.getValue();
 		
 	}
 	

@@ -18,6 +18,7 @@ import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.util.MutableInteger;
 import org.xmlsh.util.Util;
 import org.xmlsh.util.XMLException;
 
@@ -82,8 +83,8 @@ public class CommandFileWord extends Word {
 	}
 
 
-
-	public XValue expand(Shell shell,boolean bExpandWild , boolean bExpandWords ) throws IOException, CoreException {
+	@Override
+	public XValue expand(Shell shell,boolean bExpandWild , boolean bExpandWords, MutableInteger retValue ) throws IOException, CoreException {
 
 		if(mType.equals("$(<")){
 			

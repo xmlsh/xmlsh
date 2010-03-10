@@ -12,3 +12,11 @@ b=$(echo a1 ; echo b1 ; echo c1 ; )
 for c in $b ; do
 	echo Arg $c
 done
+
+# Test return values in $()
+A=$(true)  || echo FAIL true should be success
+A=$(false) || echo Success expected false
+A=$(true;false)
+echo retval is $?
+unset A
+

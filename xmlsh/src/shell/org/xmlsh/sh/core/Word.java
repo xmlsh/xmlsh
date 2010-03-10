@@ -14,6 +14,7 @@ import java.util.List;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.util.MutableInteger;
 import org.xmlsh.util.Util;
 
 /*
@@ -27,8 +28,12 @@ public abstract class Word {
 	
 	public abstract void print( PrintWriter out );
 
-	public abstract XValue expand(Shell shell,boolean bExpandWild , boolean bExpandWords ) throws IOException, CoreException;
+	public abstract XValue expand(Shell shell,boolean bExpandWild , boolean bExpandWords , MutableInteger retValue ) throws IOException, CoreException;
 	
+	public  XValue expand(Shell shell,boolean bExpandWild , boolean bExpandWords ) throws IOException, CoreException
+	{
+		return expand( shell , bExpandWild , bExpandWords , null);
+	}
 
 	public String expandString(Shell shell, boolean bExpandWild) throws IOException, CoreException {
 		return expand(shell,bExpandWild,false).toString();

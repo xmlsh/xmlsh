@@ -12,6 +12,7 @@ import java.io.PrintWriter;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.util.MutableInteger;
 
 public class Assign {
 	private	 String		mVariable;
@@ -58,10 +59,10 @@ public class Assign {
 	public String getVariable() {
 		return mVariable;
 	}
-	public XValue expand(Shell shell) throws IOException, CoreException {
+	public XValue expand(Shell shell, MutableInteger retVal) throws IOException, CoreException {
 		if( mValue != null )
 			// Single variables dont expand wildcards
-			return mValue.expand(shell, false, false);
+			return mValue.expand(shell, false, false,retVal);
 		else
 			// Sequences expand wildcards
 			return mValueList.expand(shell, true, false);

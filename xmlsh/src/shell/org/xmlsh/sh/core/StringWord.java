@@ -13,6 +13,7 @@ import java.util.List;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.util.MutableInteger;
 
 /*
  * A Value that evaulates to a "cmd_word" which is either a simple string,
@@ -34,7 +35,8 @@ public class StringWord extends Word {
 		return shell.expand(mString,bExpandSequences , bExpandWild , bExpandWords );
 	}
 
-	public XValue expand(Shell shell,boolean bExpandWild , boolean bExpandWords ) throws IOException, CoreException {
+	@Override
+	public XValue expand(Shell shell,boolean bExpandWild , boolean bExpandWords, MutableInteger retValue  ) throws IOException, CoreException {
 		return shell.expand(mString,bExpandWild ,  bExpandWords );
 	}
 

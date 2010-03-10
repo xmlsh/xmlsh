@@ -155,14 +155,15 @@ public class SimpleCommand extends Command {
 
 	private int execNull(Shell shell) throws Exception {
 
+		int ret = 0;
 		if( mPrefix != null )
-			mPrefix.exec( shell );
+			ret = mPrefix.exec( shell );
 		
 		
 		if( mSuffix != null )
 			mSuffix.exec( shell );
 		
-		return 0;
+		return ret;
 	}
 
 
