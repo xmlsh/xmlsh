@@ -327,18 +327,29 @@ public class Options
 		
 	}
 	
+	public boolean getOptFlag( String opt, boolean defValue )
+	{
+		OptionValue value = getOpt(opt);
+		if( value == null)
+			return defValue;
+		else
+			return value.getFlag();
+	}
+	
 	public String getOptString( String opt , String defValue )
 	{
-		if( hasOpt(opt))
-			return getOpt(opt).getValue().toString();
+		OptionValue value = getOpt(opt);
+		if( value != null )
+			return value.getValue().toString();
 		else
 			return defValue ;
 		
 	}
 	public String getOptStringRequired( String opt  ) throws InvalidArgumentException 
 	{
-		if(hasOpt(opt))
-			return getOpt(opt).getValue().toString();
+		OptionValue value = getOpt(opt);
+		if(value != null)
+			return value.getValue().toString();
 	
 		throw new InvalidArgumentException("Required option: -" + opt );
 		
@@ -346,9 +357,10 @@ public class Options
 	
 	public boolean getOptBool( String opt, boolean defValue )
 	{
-		if( hasOpt(opt))
+		OptionValue value = getOpt(opt);
+		if( value != null )
 			try {
-				return getOpt(opt).getValue().toBoolean();
+				return value.getValue().toBoolean();
 			} catch (UnexpectedException e) {
 				return false ;
 			}

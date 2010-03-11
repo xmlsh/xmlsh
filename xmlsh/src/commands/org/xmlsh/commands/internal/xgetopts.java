@@ -44,7 +44,7 @@ public class xgetopts extends XCommand {
 		String optdef = opts.getOptString("o", null);
 		String passthrough = opts.getOptString("p", null);
 		boolean bSerialize = opts.getOptBool("s", true);
-		boolean bPassSerialize = opts.getOptBool("ps", true);
+		boolean bPassSerialize = opts.getOptFlag("ps", true);
 		boolean bArgIndex = opts.hasOpt("a");
 		
 		args = opts.getRemainingArgs();
@@ -81,7 +81,7 @@ public class xgetopts extends XCommand {
 		
 
 		if( passthrough == null )
-			writeOptions(args, opts, bNoArgs, bNoValues, prog_opts, prog_optvalues);
+			writeOptions( opts, bNoArgs, bNoValues, prog_opts, prog_optvalues);
 		
 		else  
 		{
@@ -135,7 +135,7 @@ public class xgetopts extends XCommand {
 		
 	}
 
-	private void writeOptions(List<XValue> args, Options opts, boolean bNoArgs, boolean bNoValues,
+	private void writeOptions( Options opts, boolean bNoArgs, boolean bNoValues,
 			Options prog_opts, List<OptionValue> prog_optvalues) throws InvalidArgumentException,
 			XMLStreamException, IOException {
 		XMLStreamWriter out = getStdout().asXMLStreamWriter(getSerializeOpts(opts));
@@ -155,12 +155,9 @@ public class xgetopts extends XCommand {
 				
 				for( XValue value : option.getValues() ) {
 					
-					int index = args.indexOf(value);
 					out.writeStartElement( kVALUE );
 					
-					
-					
-					out.writeAttribute("index", String.valueOf(index) );
+
 					
 					
 					if( ! bNoValues ){
@@ -187,9 +184,6 @@ public class xgetopts extends XCommand {
 			
 			for( XValue value : prog_opts.getRemainingArgs() ){
 				out.writeStartElement(kARG);
-				int index = args.indexOf(value);
-				out.writeAttribute("index", String.valueOf(index) );
-				
 				
 				if( ! bNoValues ){
 			
