@@ -18,8 +18,6 @@ import com.marklogic.xcc.ContentSource;
 import com.marklogic.xcc.RequestOptions;
 import com.marklogic.xcc.ResultSequence;
 import com.marklogic.xcc.Session;
-import com.marklogic.xcc.ValueFactory;
-import com.marklogic.xcc.types.XName;
 import com.marklogic.xcc.types.XSString;
 import com.marklogic.xcc.types.XdmVariable;
 
@@ -81,9 +79,7 @@ public class query extends MLCommand {
 				
 				String name = args.get(i*2).toString();
 				XValue value = args.get(i*2+1);
-				XName xname = new XName(name);
-				XSString svalue = ValueFactory.newXSString( value.toString() );
-				XdmVariable var = ValueFactory.newVariable( xname , svalue );
+				XdmVariable var = newVariable(name, value, serializeOpts);
 				request.setVariable(var);
 					
 				

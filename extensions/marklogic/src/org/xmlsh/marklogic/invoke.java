@@ -28,7 +28,7 @@ public class invoke extends MLCommand {
 		opts.parse(args);
 		args = opts.getRemainingArgs();
 		boolean asText = opts.hasOpt("t");
-
+        SerializeOpts serializeOpts = getSerializeOpts(opts);
 		
 		ContentSource cs = getConnection(opts);
 	
@@ -50,20 +50,19 @@ public class invoke extends MLCommand {
       			for( int i = 0 ; i < args.size()/2 ; i++ ){
       				
       				
-      				String name = args.get(i*2).toString();
-      				XValue value = args.get(i*2+1);
-      				XName xname = new XName(name);
-      				XSString svalue = ValueFactory.newXSString( value.toString() );
-      				XdmVariable var = ValueFactory.newVariable( xname , svalue );
-      				request.setVariable(var);
-      					
+      				
+    				String name = args.get(i*2).toString();
+    				XValue value = args.get(i*2+1);
+    				XdmVariable var = newVariable(name, value, serializeOpts);
+    				request.setVariable(var);
       				
       			}
       				
       			
       		}
             ResultSequence rs = session.submitRequest (request);
-            writeResult(  rs  , out , getSerializeOpts(opts),asText );
+
+			writeResult(  rs  , out , serializeOpts,asText );
            // out.close();
 		
             return 0;

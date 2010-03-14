@@ -46,6 +46,8 @@ public class put extends MLCommand {
 		}
 		
 	}
+	
+	
 
 	@Override
 	public int run(List<XValue> args) throws Exception {
@@ -141,8 +143,8 @@ public class put extends MLCommand {
 
 	private void createDirectories(List<XValue> args, String baseUri , boolean bRecurse) throws IOException, RequestException {
 		
-		List<XdmValue> dirs = new LinkedList<XdmValue>();
-		getDirs( dirs , args , baseUri , bRecurse );
+		List<String> dirs = new LinkedList<String>();
+		getFiles( dirs , args , baseUri , bRecurse );
 		if( dirs.isEmpty())
 			return ;
 		
@@ -152,7 +154,7 @@ public class put extends MLCommand {
 	}
 
 
-	private void getDirs(List<XdmValue> dirs , List<XValue> files, String baseUri , boolean bRecurse) throws IOException {
+	private void getFiles(List<String> result , List<XValue> files, String baseUri , boolean bRecurse) throws IOException {
 		for( XValue v : files ){	
 			
 			String fname = v.toString();
@@ -160,16 +162,14 @@ public class put extends MLCommand {
 			
 			if( file.isDirectory() ){
 				String uri = baseUri + file.getName();
-			
-				XdmValue xdm = ValueFactory.newValue(ValueType.XS_STRING, uri + "/");
-				dirs.add(xdm);
+				result.add(uri + "/");
 			
 				if( bRecurse ){
 					List<XValue> sub = new ArrayList<XValue>();
 					for( String fn : file.list() ){
 						sub.add(new XValue(fname + "/" + fn ));
 					}
-					getDirs( dirs , sub ,  uri + "/"  , bRecurse  );
+					getFiles( result , sub ,  uri + "/"  , bRecurse  );
 					
 				}
 			}
@@ -320,12 +320,12 @@ public class put extends MLCommand {
 	}
 
 
-	private void createDirs( List<XdmValue> dirs ) throws RequestException {
+	private void createDirs( List<String> dirs ) throws RequestException {
 		printErr("Creating " + dirs.size() + " directories ...");
 		StringBuffer sReq = new StringBuffer();
-		for( XdmValue d : dirs ){
+		for( String d : dirs ){
 			
-			sReq.append("xdmp:directory-create(" + quote(d.asString()) + ");\n");
+			sReq.append("xdmp:directory-create(" + quote(d) + ");\n");
 			
 			
 		}
