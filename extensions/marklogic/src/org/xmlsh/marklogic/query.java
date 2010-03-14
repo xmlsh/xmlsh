@@ -10,6 +10,7 @@ import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.Options.OptionValue;
 import org.xmlsh.marklogic.util.MLCommand;
+import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.util.Util;
 
 import com.marklogic.xcc.AdhocQuery;
@@ -31,7 +32,7 @@ public class query extends MLCommand {
 	@Override
 	public int run(List<XValue> args) throws Exception {
 		
-		Options opts = new Options("c=connect:,q:,v,f:,t");
+		Options opts = new Options("c=connect:,q:,v,f:,t=text",SerializeOpts.getOptionDefs());
 		opts.parse(args);
 		args = opts.getRemainingArgs();
 		
@@ -47,18 +48,26 @@ public class query extends MLCommand {
 		request = session.newAdhocQuery (null);
 
 		OptionValue ov = opts.getOpt("f");
+		SerializeOpts serializeOpts = getSerializeOpts(opts);
 		if( ov != null ){
 			if( query != null )
 				throwInvalidArg(  "Cannot specifify both -q and -f");
 			
 			InputPort qin = getInput(ov.getValue());
-			InputStream is = qin.asInputStream(getSerializeOpts());
+			InputStream is = qin.asInputStream(serializeOpts);
 			query = Util.readString(is);
 			is.close();
 			qin.close();
 			
 			
 		}
+		if( query == null && args.size() < 1 )
+			throwInvalidArg("No query specified");
+		else
+		if( query == null )
+			query = args.remove(0).toString();
+			
+			
 		
 
       /*
@@ -90,7 +99,7 @@ public class query extends MLCommand {
 	    ResultSequence rs = session.submitRequest (request);
 
 
-        writeResult(rs, out, asText );
+        writeResult(rs, out, serializeOpts,asText );
         rs.close();
 		
         session.close();
@@ -113,7 +122,7 @@ public class query extends MLCommand {
 
 //
 //
-//Copyright (C) 2008,2009 , David A. Lee.
+//Copyright (C) 2008,2009,2010 , David A. Lee.
 //
 //The contents of this file are subject to the "Simplified BSD License" (the "License");
 //you may not use this file except in compliance with the License. You may obtain a copy of the

@@ -1,4 +1,7 @@
-# delete uri ...
+# create  uri ...
+_opts=$<(xgetopts -p "c=connect:,t=text" -ps -- "$@")
+shift $?
+
 for uri ; do
-   :query -q "xdmp:directory-create(\"$uri\")"
+   :query $_opts -q "xdmp:directory-create(\"$uri\")"
 done

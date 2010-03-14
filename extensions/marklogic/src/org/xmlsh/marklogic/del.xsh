@@ -1,4 +1,7 @@
 # delete uri ...
+_opts=$<(xgetopts -p "c=connect:,t=text" -ps -- "$@")
+shift $?
+
 for uri ; do
-   :query -q "xdmp:document-delete(\"$uri\")"
+   :query $_opts -q "xdmp:document-delete(\"$uri\")"
 done

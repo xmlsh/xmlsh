@@ -1,33 +1,235 @@
 <?xml version="1.0"?>
 <commands>
-<command name="invoke" url="http://www.xmlsh.org/MarkLogicInvoke">
-	<synopsis>Invokes a remotely stored query</synopsis>
-</command>
-<command name="put" url="http://www.xmlsh.org/MarkLogicPut">
-	<synopsis>Puts one or more files to the server</synopsis>
-</command>
-<command name="query" url="http://www.xmlsh.org/MarkLogicQuery">
-	<synopsis>Invokes an ad-hoc query</synopsis>
-</command>
-<command name="createdir" url="http://www.xmlsh.org/MarkLogicCreatedir">
-	<synopsis>Creates directories</synopsis>
-</command>
-<command name="del" url="http://www.xmlsh.org/MarkLogicDel">
-	<synopsis>Deletes documents</synopsis>
-</command>
-<command name="deldir" url="http://www.xmlsh.org/MarkLogicDeldir">
-	<synopsis>Deletes directories</synopsis>
-</command>
-<command name="get" url="http://www.xmlsh.org/MarkLogicGet">
-	<synopsis>Gets documents from the server</synopsis>
-</command>
-<command name="list" url="http://www.xmlsh.org/MarkLogicList">
-	<synopsis>Lists documents</synopsis>
-</command>
-<command name="listdir" url="http://www.xmlsh.org/MarkLogicListdir">
-	<synopsis>Lists directories</synopsis>
-</command>
-<command name="rename" url="http://www.xmlsh.org/MarkLogicRename">
-	<synopsis>Renames (moves) a document</synopsis>
-</command>
+	<command name="invoke" url="http://www.xmlsh.org/MarkLogicInvoke">
+		<synopsis>Invokes a remotely stored query</synopsis>
+		<usage>
+			<para>invoke [options] script [varname value [varname value ...]]</para>
+		</usage>
+		<options>
+			<option>
+				<arg>-c,connect uri</arg>
+				<para>Use the connection string instead of $MLCONNECT</para>
+			</option>
+			<option>
+				<arg>-t,-text</arg>
+				<para>Output result as text (instead of xml).</para>
+			</option>
+			<option>
+				<arg>-v</arg>
+				<para>Assign variables (parameters) from the remaining arguments</para>
+			</option>
+			<option>
+				<arg>script</arg>
+				<para>path to script on the marklogic server</para>
+			</option>
+
+		</options>
+	</command>
+	<command name="put" url="http://www.xmlsh.org/MarkLogicPut">
+		<synopsis>Puts one or more files to the server</synopsis>
+		<usage>
+			<para>put  [options] script [file | expression]</para>
+		</usage>
+		<options>
+			<option>
+				<arg>-c,connect uri</arg>
+				<para>Use the connection string instead of $MLCONNECT</para>
+			</option>
+
+			<option>
+				<arg>-t,-text</arg>
+				<para>Stores the document as "text" content type</para>
+			</option>
+
+			<option>
+				<arg>-b,-binary</arg>
+				<para>Stores the document as "binary" content type</para>
+			</option>
+
+		<option>
+				<arg>-x,-xml</arg>
+				<para>Stores the document as "xml" content type</para>
+			</option>
+
+
+			<option>
+				<arg>-uri uri</arg>
+				<para>Use the specified uri as the uri of the destination document</para>
+				<para>Otherwise uses the base uri of the file or expression.</para>
+			</option>
+			<option>
+				<arg>-r,recurse</arg>
+				<para>Recursively put directories. If any argument is a directory then it is recursed</para>
+			</option>
+			<option>
+				<arg>-m,-maxfiles num</arg>
+				<para>Send files in batch at must num files in one transaction</para>
+			</option>
+			<option>
+				<arg>file | expression</arg>
+				<para>Local file or xml expression to put</para>
+			</option>
+
+		</options>
+	</command>
+	<command name="query" url="http://www.xmlsh.org/MarkLogicQuery">
+		<synopsis>Invokes an ad-hoc query</synopsis>
+		<usage>
+			<para>query [options] [varname value [varname value ...]]</para>
+		</usage>
+		<options>
+			<option>
+				<arg>-c,connect uri</arg>
+				<para>Use the connection string instead of $MLCONNECT</para>
+			</option>
+			<option>
+				<arg>-t,text</arg>
+				<para>Output result as text (instead of xml).</para>
+			</option>
+			<option>
+				<arg>-v</arg>
+				<para>Assign variables (parameters) from the remaining arguments</para>
+			</option>
+			<option>
+				<arg>-q script</arg>
+				<para>xquery script to run</para>
+			</option>
+			<option>
+				<arg>-f scriptfile</arg>
+				<para>local file containing xquery script to run</para>
+			</option>
+		</options>
+	</command>
+	<command name="createdir" url="http://www.xmlsh.org/MarkLogicCreatedir">
+		<synopsis>Creates directories</synopsis>
+		<usage>
+			<para>createdir [options] directory</para>
+		</usage>
+		<options>
+			<option>
+				<arg>-c,connect uri</arg>
+				<para>Use the connection string instead of $MLCONNECT</para>
+			</option>
+			<option>
+				<arg>directory</arg>
+				<para>Directory to create.</para>
+			</option>
+		</options>
+	</command>
+	<command name="del" url="http://www.xmlsh.org/MarkLogicDel">
+		<synopsis>Deletes documents</synopsis>
+		<usage>
+			<para>del [options] document ...</para>
+		</usage>
+		<options>
+			<option>
+				<arg>-c,connect uri</arg>
+				<para>Use the connection string instead of $MLCONNECT</para>
+			</option>
+			<option>
+				<arg>document ...</arg>
+				<para>One or more document to delete as a URI</para>
+			</option>
+		</options>
+	</command>
+
+	<command name="deldir" url="http://www.xmlsh.org/MarkLogicDeldir">
+		<synopsis>Deletes directories</synopsis>
+		<usage>
+			<para>deldir [options] dir ...</para>
+		</usage>
+		<options>
+			<option>
+				<arg>-c,connect uri</arg>
+				<para>Use the connection string instead of $MLCONNECT</para>
+			</option>
+			<option>
+				<arg>dir ...</arg>
+				<para>One or more directories to delete as a URI</para>
+			</option>
+		</options>
+		<para>Directories should end in /</para>
+	</command>
+	<command name="get" url="http://www.xmlsh.org/MarkLogicGet">
+		<synopsis>Gets documents from the server</synopsis>
+		<usage>
+			<para>get [options] uri [uri...]</para>
+		</usage>
+		<options>
+			<option>
+				<arg>-c,connect uri</arg>
+				<para>Use the connection string instead of $MLCONNECT</para>
+			</option>
+			<option>
+				<arg>-t,-text</arg>
+				<para>Use text for serialization instead of XML. Required for non-xml documents</para>
+			</option>
+			
+
+			<option>
+				<arg>uri ...</arg>
+				<para>One or more document URI's</para>
+			</option>
+		</options>
+	</command>
+	<command name="list" url="http://www.xmlsh.org/MarkLogicList">
+		<synopsis>Lists documents</synopsis>
+		<usage>
+			<para>list [options] uri [uri...]</para>
+		</usage>
+		<options>
+			<option>
+				<arg>-c,connect uri</arg>
+				<para>Use the connection string instead of $MLCONNECT</para>
+			</option>
+			<option>
+				<arg>-r</arg>
+				<para>recurse to all sub directories</para>
+			</option>
+
+			<option>
+				<arg>uri ...</arg>
+				<para>One or more document URI's</para>
+			</option>
+		</options>
+	</command>
+	<command name="listdir" url="http://www.xmlsh.org/MarkLogicListdir">
+		<synopsis>Lists directories</synopsis>
+		<usage>
+			<para>listdir [options] uri [uri...]</para>
+		</usage>
+		<options>
+			<option>
+				<arg>-c,connect uri</arg>
+				<para>Use the connection string instead of $MLCONNECT</para>
+			</option>
+
+			<option>
+				<arg>uri ...</arg>
+				<para>One or more directory URI's</para>
+			</option>
+		</options>
+	</command>
+	<command name="rename" url="http://www.xmlsh.org/MarkLogicRename">
+		<synopsis>Renames (moves) a document</synopsis>
+
+		<usage>
+			<para>rename [options] src target </para>
+		</usage>
+		<options>
+			<option>
+				<arg>-c,connect uri</arg>
+				<para>Use the connection string instead of $MLCONNECT</para>
+			</option>
+
+			<option>
+				<arg>src</arg>
+				<para>URI of the document to move</para>
+			</option>
+						<option>
+				<arg>target</arg>
+				<para>URI of the target</para>
+			</option>
+		</options>
+	</command>
 </commands>

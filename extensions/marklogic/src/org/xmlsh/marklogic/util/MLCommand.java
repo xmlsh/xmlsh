@@ -32,6 +32,8 @@ import com.marklogic.xcc.ResultItem;
 import com.marklogic.xcc.ResultSequence;
 import com.marklogic.xcc.exceptions.XccConfigException;
 import com.marklogic.xcc.types.ItemType;
+import com.marklogic.xcc.types.XdmAttribute;
+import com.marklogic.xcc.types.XdmItem;
 
 public abstract class MLCommand extends XCommand {
 
@@ -60,9 +62,9 @@ public abstract class MLCommand extends XCommand {
 
 
 
-	protected void writeResult(ResultSequence rs, OutputPort out, boolean asText) throws FactoryConfigurationError,
+	protected void writeResult(ResultSequence rs, OutputPort out, SerializeOpts sopts , boolean asText) throws FactoryConfigurationError,
 			IOException, InvalidArgumentException, XMLStreamException {
-				SerializeOpts sopts = getSerializeOpts();
+
 			
 			    XMLInputFactory factory = XMLInputFactory.newInstance();
 			    
@@ -72,8 +74,14 @@ public abstract class MLCommand extends XCommand {
 			        
 			          
 			        ItemType type = rsItem.getItemType();
-			        if( asText || type.isAtomic() ){
+			        XdmItem it = rsItem.getItem();
+			        
+			        // NOTE: The following test doesnt work for attributes, known XCC bug as of 2010-03-01
+			        
+			        if( asText || type.isAtomic() || (type.isNode() && it instanceof XdmAttribute)  ){
 			        	OutputStream os = out.asOutputStream();
+			        	
+			        	
 			        	rsItem.writeTo(os);
 			        	os.close();
 			        } else {
@@ -88,7 +96,8 @@ public abstract class MLCommand extends XCommand {
 			        	xmlItem.close();
 			        }
 			        
-			      out.writeSequenceSeperator(sopts);
+			      if( ! asText )
+			    	  out.writeSequenceSeperator(sopts);
 			    }
 			}
 
@@ -96,7 +105,7 @@ public abstract class MLCommand extends XCommand {
 
 //
 //
-//Copyright (C) 2008,2009 , David A. Lee.
+//Copyright (C) 2008,2009,2010 , David A. Lee.
 //
 //The contents of this file are subject to the "Simplified BSD License" (the "License");
 //you may not use this file except in compliance with the License. You may obtain a copy of the

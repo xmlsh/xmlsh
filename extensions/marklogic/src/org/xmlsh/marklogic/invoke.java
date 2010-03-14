@@ -7,6 +7,7 @@ import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.XValue;
 import org.xmlsh.marklogic.util.MLCommand;
+import org.xmlsh.sh.shell.SerializeOpts;
 
 import com.marklogic.xcc.ContentSource;
 import com.marklogic.xcc.Request;
@@ -23,7 +24,7 @@ public class invoke extends MLCommand {
 	@Override
 	public int run(List<XValue> args) throws Exception {
 		
-		Options opts = new Options("c=connect:,v,t");
+		Options opts = new Options("c=connect:,v,t=text",SerializeOpts.getOptionDefs());
 		opts.parse(args);
 		args = opts.getRemainingArgs();
 		boolean asText = opts.hasOpt("t");
@@ -62,7 +63,7 @@ public class invoke extends MLCommand {
       			
       		}
             ResultSequence rs = session.submitRequest (request);
-            writeResult(  rs  , out , asText );
+            writeResult(  rs  , out , getSerializeOpts(opts),asText );
            // out.close();
 		
             return 0;
@@ -80,7 +81,7 @@ public class invoke extends MLCommand {
 
 //
 //
-//Copyright (C) 2008,2009 , David A. Lee.
+//Copyright (C) 2008,2009,2010 , David A. Lee.
 //
 //The contents of this file are subject to the "Simplified BSD License" (the "License");
 //you may not use this file except in compliance with the License. You may obtain a copy of the

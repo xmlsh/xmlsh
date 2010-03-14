@@ -2,10 +2,13 @@ package org.xmlsh.marklogic;
 
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.xmlsh.commands.util.Checksum;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.Options;
@@ -26,12 +29,23 @@ public class put extends MLCommand {
 
 	private Session session;
 
-	private ContentCreateOptions options;
+	private ContentCreateOptions mCreateOptions;
+	
+	private static class SumContent
+	{
+		String		mURI;
+		Checksum mSum;
+		public SumContent( String uri, Checksum sum) {
+			mURI  = uri ;
+			mSum = sum;
+		}
+		
+	}
 
 	@Override
 	public int run(List<XValue> args) throws Exception {
 		
-		Options opts = new Options("c=connect:,uri:,baseuri:,m=maxfiles:,r=recurse,d=mkdirs");
+		Options opts = new Options("c=connect:,md5,uri:,baseuri:,m=maxfiles:,r=recurse,d=mkdirs,t=text,b=binary,x=xml");
 		opts.parse(args);
 		args = opts.getRemainingArgs();
 		
@@ -40,7 +54,25 @@ public class put extends MLCommand {
 		int  maxFiles = Util.parseInt(opts.getOptString("m", "1"),1);
 		boolean bRecurse = opts.hasOpt("r");
 		boolean bMkdirs = opts.hasOpt("d");
+		boolean bMD5    = opts.hasOpt("md5");
 		
+		
+		/*
+		 * If content type is speciried the use it otherwise default to system defaults
+		 * 
+		 */
+		boolean bText = opts.hasOpt("t");
+		boolean bBinary = opts.hasOpt("b");
+		boolean bXml = opts.hasOpt("x");
+		
+		if( bText )
+			mCreateOptions = ContentCreateOptions.newTextInstance();
+		else
+		if( bBinary )
+			mCreateOptions = ContentCreateOptions.newBinaryInstance();
+		else
+		if( bXml )
+			mCreateOptions = ContentCreateOptions.newXmlInstance();
 		
 			
 		ContentSource cs = getConnection(opts);
@@ -59,7 +91,7 @@ public class put extends MLCommand {
 			if( uri == null )
 				uri = in.getSystemId();
 			try {
-				this.load(in, uri);
+				this.load(in, uri,bMD5);
 			} finally {
 				in.close();
 			}
@@ -79,7 +111,7 @@ public class put extends MLCommand {
 				if( last > end )
 					last = end ;
 				
-				load( args.subList(start, last), baseUri , bRecurse, bMkdirs );
+				load( args.subList(start, last), baseUri , bRecurse, bMkdirs , bMD5 );
 				start += maxFiles ;
 				
 				
@@ -113,25 +145,67 @@ public class put extends MLCommand {
 	public void load (File file , String uri ) throws RequestException
 	{
 
-		Content content= ContentFactory.newContent (uri, file, options);
+		Content content= ContentFactory.newContent (uri, file, mCreateOptions);
 		
 
 		session.insertContent (content);
 	}
 
-	public void load (InputPort port , String uri ) throws CoreException, IOException, RequestException
+	public void load (InputPort port , String uri , boolean bMD5 ) throws CoreException, IOException, RequestException
 	{
-
-		Content content= ContentFactory.newUnBufferedContent (uri, port.asInputStream(getSerializeOpts()), options);
 		
+		InputStream is = port.asInputStream(getSerializeOpts());
+		
+		try {
+			/*
+			 * if Not rewindable then make a temp file
+			 * 
+			 */
+			Checksum sum = null ;
+			Content content = null ;
+			File tempf = null;
+			if( ! is.markSupported() ){
 
-		session.insertContent (content);
+				tempf = File.createTempFile("mlput", null);
+				FileOutputStream out = new FileOutputStream(tempf);
+				if( bMD5 )
+					sum = Checksum.calcChecksum(is, out);
+				else
+					Util.copyStream(is,out);
+				is.close();
+				is = null;
+				out.close();
+				
+				content= ContentFactory.newContent (uri, tempf, mCreateOptions);
+
+			} else {
+				if( bMD5 ){
+					is.mark(Integer.MAX_VALUE);
+					sum = Checksum.calcChecksum(is);
+					is.reset();
+				}
+				content = ContentFactory.newContent(uri, is, mCreateOptions);
+			}
+			
+
+			session.insertContent (content);
+				
+			if( bMD5 && sum != null )
+				setChecksum(uri,sum);
+		} finally {
+			Util.safeClose(is);
+				
+		}
+		
 	}
 
-	public void load (List<XValue> files , String baseUri,  boolean bRecurse, boolean bMkdirs ) throws CoreException, IOException, RequestException
+	public void load (List<XValue> files , String baseUri,  boolean bRecurse, boolean bMkdirs, boolean bMD5 ) throws CoreException, IOException, RequestException
 	{
 		printErr("Putting " + files.size() + " files to " + baseUri );
 		List<Content>	contents = new ArrayList<Content>(files.size());
+		List<SumContent> sums = bMD5 ? new ArrayList<SumContent>(files.size()) : null ;
+		
+		
 		int i = 0;
 		for( XValue v : files ){	
 			
@@ -151,16 +225,50 @@ public class put extends MLCommand {
 				if( bMkdirs )
 					createDir( uri + "/" );
 				if( ! sub.isEmpty() )
-					load( sub , uri + "/" , bRecurse , bMkdirs );
+					load( sub , uri + "/" , bRecurse , bMkdirs ,  bMD5 );
 				continue ;
 				
 			}
-			Content content= ContentFactory.newContent (uri, file, options);
+			Content content= ContentFactory.newContent (uri, file, mCreateOptions);
 			contents.add(content);
+			if( bMD5 )
+				sums.add( new SumContent(  uri , Checksum.calcChecksum(file)));
+			
 		}
 		
 		if( ! contents.isEmpty() )
 			session.insertContent (contents.toArray(new Content[ contents.size()]));
+
+		if( bMD5 && ! sums.isEmpty())
+			setChecksum( sums );
+		
+	}
+
+
+	private void setChecksum(List<SumContent> sums) throws RequestException {
+		for( SumContent  sum : sums )
+			setChecksum( sum.mURI , sum.mSum);
+		
+	}
+
+
+	private void setChecksum(String uri , Checksum sum) throws RequestException {
+		
+		AdhocQuery request = session.newAdhocQuery (
+"declare variable $uri  as xs:string external ;\n" +
+"declare variable $md5 as xs:string external;\n" +
+"declare variable $length as xs:integer external;\n" +
+"xdmp:document-set-property( $uri , <xmd5 md5='{$md5}' length='{$length}'/>)"
+);
+
+
+		request.setNewStringVariable("uri", uri );
+		request.setNewStringVariable("md5" , sum.getMD5() );
+		request.setNewIntegerVariable("length", sum.getLength() );
+		session.submitRequest(request);
+		
+		
+		
 	}
 
 
@@ -180,7 +288,7 @@ public class put extends MLCommand {
 
 //
 //
-//Copyright (C) 2008,2009 , David A. Lee.
+//Copyright (C) 2008,2009,2010 , David A. Lee.
 //
 //The contents of this file are subject to the "Simplified BSD License" (the "License");
 //you may not use this file except in compliance with the License. You may obtain a copy of the

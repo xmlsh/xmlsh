@@ -1,4 +1,8 @@
 # delete uri ...
+_opts=$<(xgetopts -p "c=connect:,t=text" -ps -- "$@")
+shift $?
+
+
 for uri ; do
-   :query -q "doc(\"$uri\")"
+   :query $_opts -q "doc(\"$uri\")"
 done
