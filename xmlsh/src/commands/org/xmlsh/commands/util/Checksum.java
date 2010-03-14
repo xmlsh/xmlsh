@@ -12,6 +12,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -58,13 +59,18 @@ public class Checksum
 
 	}
 
+	public static Checksum calcChecksum(InputStream in) throws CoreException, IOException  
+	{
+		return calcChecksum( in , null );
+		
+	}
 	/**
 	 * @param file
 	 * @return
 	 * @throws CoreException 
 	 * @throws IOException 
 	 */
-	public static Checksum calcChecksum(InputStream in) throws CoreException, IOException  
+	public static Checksum calcChecksum(InputStream in, OutputStream out) throws CoreException, IOException  
 	{
 		long totlen = 0;
 		try
@@ -79,9 +85,10 @@ public class Checksum
 			while ((len = in.read(buf)) > 0){
 				digest.update(buf, 0, len);
 				totlen += len ;
+				if( out != null )
+					out.write(buf , 0 , len );
 			}
 
-			in.close();
 			return new Checksum( toHexString(digest.digest()) , totlen );
 		}
 		catch (NoSuchAlgorithmException e)
