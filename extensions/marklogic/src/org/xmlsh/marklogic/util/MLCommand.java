@@ -101,6 +101,10 @@ public abstract class MLCommand extends XCommand {
 			    }
 			}
 
+	protected String quote(String s) {
+		return "'" + s + "'" ;
+	}
+
 }
 
 //

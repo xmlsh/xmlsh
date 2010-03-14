@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.xmlsh.commands.util.Checksum;
@@ -23,7 +24,11 @@ import com.marklogic.xcc.ContentFactory;
 import com.marklogic.xcc.ContentSource;
 import com.marklogic.xcc.ResultSequence;
 import com.marklogic.xcc.Session;
+import com.marklogic.xcc.ValueFactory;
 import com.marklogic.xcc.exceptions.RequestException;
+import com.marklogic.xcc.types.ValueType;
+import com.marklogic.xcc.types.XName;
+import com.marklogic.xcc.types.XdmValue;
 
 public class put extends MLCommand {
 
@@ -104,6 +109,12 @@ public class put extends MLCommand {
 
 			
 			int start = 0 ;
+			
+			if( bMkdirs )
+				createDirectories(args ,baseUri , bRecurse  );
+			
+			
+			
 			int end = args.size() ;
 			
 			while( start < end ){
@@ -111,7 +122,7 @@ public class put extends MLCommand {
 				if( last > end )
 					last = end ;
 				
-				load( args.subList(start, last), baseUri , bRecurse, bMkdirs , bMD5 );
+				load( args.subList(start, last), baseUri , bRecurse, bMD5 );
 				start += maxFiles ;
 				
 				
@@ -125,6 +136,45 @@ public class put extends MLCommand {
 		
 		
 		return 0;
+	}
+
+
+	private void createDirectories(List<XValue> args, String baseUri , boolean bRecurse) throws IOException, RequestException {
+		
+		List<XdmValue> dirs = new LinkedList<XdmValue>();
+		getDirs( dirs , args , baseUri , bRecurse );
+		if( dirs.isEmpty())
+			return ;
+		
+		createDirs(dirs);
+
+		
+	}
+
+
+	private void getDirs(List<XdmValue> dirs , List<XValue> files, String baseUri , boolean bRecurse) throws IOException {
+		for( XValue v : files ){	
+			
+			String fname = v.toString();
+			File file = getFile(fname);
+			
+			if( file.isDirectory() ){
+				String uri = baseUri + file.getName();
+			
+				XdmValue xdm = ValueFactory.newValue(ValueType.XS_STRING, uri + "/");
+				dirs.add(xdm);
+			
+				if( bRecurse ){
+					List<XValue> sub = new ArrayList<XValue>();
+					for( String fn : file.list() ){
+						sub.add(new XValue(fname + "/" + fn ));
+					}
+					getDirs( dirs , sub ,  uri + "/"  , bRecurse  );
+					
+				}
+			}
+		}
+			
 	}
 
 
@@ -199,14 +249,13 @@ public class put extends MLCommand {
 		
 	}
 
-	public void load (List<XValue> files , String baseUri,  boolean bRecurse, boolean bMkdirs, boolean bMD5 ) throws CoreException, IOException, RequestException
+	public void load (List<XValue> files , String baseUri,  boolean bRecurse,  boolean bMD5 ) throws CoreException, IOException, RequestException
 	{
 		printErr("Putting " + files.size() + " files to " + baseUri );
 		List<Content>	contents = new ArrayList<Content>(files.size());
 		List<SumContent> sums = bMD5 ? new ArrayList<SumContent>(files.size()) : null ;
 		
 		
-		int i = 0;
 		for( XValue v : files ){	
 			
 			String fname = v.toString();
@@ -222,10 +271,9 @@ public class put extends MLCommand {
 				for( String fn : file.list() ){
 					sub.add(new XValue(fname + "/" + fn));
 				}
-				if( bMkdirs )
-					createDir( uri + "/" );
+
 				if( ! sub.isEmpty() )
-					load( sub , uri + "/" , bRecurse , bMkdirs ,  bMD5 );
+					load( sub , uri + "/" , bRecurse ,  bMD5 );
 				continue ;
 				
 			}
@@ -265,19 +313,50 @@ public class put extends MLCommand {
 		request.setNewStringVariable("uri", uri );
 		request.setNewStringVariable("md5" , sum.getMD5() );
 		request.setNewIntegerVariable("length", sum.getLength() );
-		session.submitRequest(request);
+		session.submitRequest(request).close();
 		
 		
 		
 	}
 
 
-	private void createDir(String uri) throws RequestException {
-		printErr("Making directory: " + uri );
-		AdhocQuery request = session.newAdhocQuery ("xdmp:directory-create('" + uri + "')" );
+	private void createDirs( List<XdmValue> dirs ) throws RequestException {
+		printErr("Creating " + dirs.size() + " directories ...");
+		StringBuffer sReq = new StringBuffer();
+		for( XdmValue d : dirs ){
+			
+			sReq.append("xdmp:directory-create(" + quote(d.asString()) + ");\n");
+			
+			
+		}
+		sReq.append("0");
+/*		
+		AdhocQuery request = session.newAdhocQuery (
+"declare variable $dirs as xs:string+ external;\n" +
+"for $d in $dirs " +
+"return xdmp:directory-create($d) \n" 
+);
+*/
+	/*
+		for( XdmValue d : dirs ){
+			request.setNewVariable("dirs", ValueType.XS_STRING , d.asString() );
+			ResultSequence rs = session.submitRequest (request);
+			rs.close();
+			
+		}
+		*/
+/*
+		
+		request.setNewVariable( new XName("", "dirs"),  ValueFactory.newSequence(dirs.toArray(new XdmValue[dirs.size()])));
+		
+
+		// SequenceImpl seq = new SequenceImpl( dirs.toArray(new XdmValue[dirs.size()]));
+	//	request.setNewVariable("dirs", ValueType.SEQUENCE, seq );
+*/		
+		AdhocQuery request = session.newAdhocQuery ( sReq.toString() );
 		ResultSequence rs = session.submitRequest (request);
 
-        // writeResult(rs, out, asText );
+		rs.close();
 		
 	}
 
