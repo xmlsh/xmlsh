@@ -44,13 +44,19 @@ class Logging {
 
 		// If none found log to XLOGFILE
 		String filename = System.getenv("XLOGFILE");
-		
+	
+/*	
+ 	Dont log to $XMLSH by default
+ 	
+ 
 		// If not found log to XMLSH
 		if( filename == null ){
 			String xmlsh = System.getenv("XMLSH");
 			if( xmlsh != null )
 				filename = System.getenv("XMLSH") + "/xmlsh.log" ;
 		}
+		
+*/
 		if( filename == null ){
 			String home = System.getProperty("user.home");
 			if( home == null )

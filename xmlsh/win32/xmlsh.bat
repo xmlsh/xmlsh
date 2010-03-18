@@ -10,4 +10,4 @@
 @set CLASSPATH=%CLASSPATH%;%XMLSH%\lib\saxon.jar
 @REM Uncomment below to use jline input editing
 @REM @set CLASSPATH=%CLASSPATH%;%XMLSH%\lib\jline-0.9.94.jar
-@java -Xmx1024m -Xms256m org.xmlsh.sh.shell.Shell   %*
+@java -XX:+UseConcMarkSweepGC  -XX:-PrintGC -Xmx1024m -Xms256m org.xmlsh.sh.shell.Shell   %*

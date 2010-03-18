@@ -137,9 +137,9 @@ public class ExternalCommand implements ICommand {
 		 */
 		
 		for( String name : xenv.getVarNames() ){
-			if( Util.isPath(name) ){
+			if( !Util.isPath(name) ){
 				XVariable var = xenv.getVar(name);
-				if( var.isExport() && var.getValue().isAtomic() )
+				if( var.isExport() && var.getValue() != null && var.getValue().isAtomic() )
 					env.put(name , var.getValue().toString() );
 			}
 			

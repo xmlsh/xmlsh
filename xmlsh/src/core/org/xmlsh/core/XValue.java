@@ -339,10 +339,16 @@ public class XValue {
 			throw new InvalidArgumentException("Value is not a Node");
 	}
 	
-	public XdmItem asXdmItem() throws InvalidArgumentException
+	public XdmItem asXdmItem()
 	{
 		
+		try {
 			return  mValue.itemAt(0);
+		} catch (IndexOutOfBoundsException e) {
+			return null;
+		} catch (SaxonApiUncheckedException e) {
+			return null;
+		}
 
 	}
 	

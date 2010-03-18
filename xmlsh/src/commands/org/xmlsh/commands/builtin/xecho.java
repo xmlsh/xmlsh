@@ -57,8 +57,9 @@ public class xecho extends BuiltinCommand {
 					 XdmValue item = arg.asXdmValue();
 					if( item instanceof XdmNode ){
 						XdmNode xdmNode = ((XdmNode)item);
-						// DAL: Note workaround bug in Saxon, crashes if getBaseURI on Attribute
-						if( xdmNode.getNodeKind() != XdmNodeKind.ATTRIBUTE ){
+						// DAL: Note workaround bug in Saxon, crashes if getBaseURI on Attribute or text
+						if( xdmNode.getNodeKind() != XdmNodeKind.ATTRIBUTE &&
+								xdmNode.getNodeKind() != XdmNodeKind.TEXT ){
 							URI uri = xdmNode.getBaseURI();
 							stdout.setSystemId( uri.toString() );
 						}
