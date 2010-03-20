@@ -26,6 +26,7 @@ import org.xmlsh.core.CoreException;
 import org.xmlsh.core.ICommand;
 import org.xmlsh.core.StreamOutputPort;
 import org.xmlsh.core.VariableOutputPort;
+import org.xmlsh.core.XEnvironment;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.XVariable;
 import org.xmlsh.sh.shell.Shell;
@@ -54,17 +55,17 @@ public class XmlshServlet extends HttpServlet {
 			Shell shell = null ;
 			try {
 				// String command = request.getParameter("command");
-			       String cpath  = request.getContextPath(); // "/odd_store
+			    //    String cpath  = request.getContextPath(); // "/odd_store
 		            String spath  = request.getServletPath();
-		            String ruri  = request.getRequestURI();
-		            String qstring  = request.getQueryString();
+		        //    String ruri  = request.getRequestURI();
+		        //    String qstring  = request.getQueryString();
 
 		        String path = spath.substring(1);
 		        if(Util.isBlank(path) || path.equals("/") )
 		        	path = "index.xsh";
 		        		
-		        Map params = request.getParameterMap();
-		        XVariable xp = parseParams( params );
+		        XVariable xp 		= parseParams( request );
+		        XVariable headers 	= parseHeaders( request );
 		        
 		        
 		     	List<XValue> vargs = new ArrayList<XValue>();
@@ -75,13 +76,16 @@ public class XmlshServlet extends HttpServlet {
 				ICommand	script = CommandFactory.getInstance().getScript( shell , path , true );
 				if( script != null ){
 					ByteArrayOutputStream bos = new ByteArrayOutputStream();
-					shell.getEnv().setStdout( new StreamOutputPort(bos ,false) );
-					shell.getEnv().setStderr( new StreamOutputPort(new NullOutputStream(),false) );
+					XEnvironment env = shell.getEnv();
+					
+					env.setStdout( new StreamOutputPort(bos ,false) );
+					env.setStderr( new StreamOutputPort(new NullOutputStream(),false) );
 					
 					// Set properties
 					if( xp != null )
-						shell.getEnv().setVar(xp);
-				
+						env.setVar(xp);
+					if( headers != null )
+						env.setVar(headers);
 					/*
 					// Set HTTP_SESSION variable
 					Object hs = request.getSession().getAttribute("XMLSH_SESSION");
@@ -131,7 +135,7 @@ public class XmlshServlet extends HttpServlet {
 	 * Format is
 	 * 
 	 * <parameters>
-	 * 	<param key="key">
+	 * 	<param name="key">
 	 * 		<value>value1</value>
 	 * 		<value>value2</value>
 	 * 	....
@@ -139,8 +143,12 @@ public class XmlshServlet extends HttpServlet {
 	 * 
 	 * 
 	 */
-	private XVariable parseParams(Map params) throws XMLStreamException, CoreException {
+	@SuppressWarnings("unchecked")
+	private XVariable parseParams(HttpServletRequest request) throws XMLStreamException, CoreException {
 
+
+        Map params = request.getParameterMap();
+        
 		XVariable var = new XVariable("HTTP_PARAMETERS",null);
 		VariableOutputPort port = new VariableOutputPort( var );
 		XMLStreamWriter writer = port.asXMLStreamWriter(null);
@@ -148,17 +156,20 @@ public class XmlshServlet extends HttpServlet {
 		
 		writer.writeStartDocument();
 		writer.writeStartElement("parameters");
-		Iterator<Entry<String,String[]>> iter = params.entrySet().iterator();
-		while( iter.hasNext() ){
-			Entry<String,String[]> e = iter.next();
-			writer.writeStartElement("param");
-			writer.writeAttribute("key", e.getKey() );
-			for( String v : e.getValue() ){
-				writer.writeStartElement("value");
-				writer.writeCharacters(v);
+		
+		if( params != null ){
+			Iterator<Entry<String,String[]>> iter = params.entrySet().iterator();
+			while( iter.hasNext() ){
+				Entry<String,String[]> e = iter.next();
+				writer.writeStartElement("param");
+				writer.writeAttribute("name", e.getKey() );
+				for( String v : e.getValue() ){
+					writer.writeStartElement("value");
+					writer.writeCharacters(v);
+					writer.writeEndElement();
+				}
 				writer.writeEndElement();
 			}
-			writer.writeEndElement();
 		}
 		writer.writeEndElement();
 		writer.writeEndDocument();
@@ -169,6 +180,65 @@ public class XmlshServlet extends HttpServlet {
 	
 	
 	}
+	
+	/*
+	 * Create a document from a paramater map
+	 * Map is  String: String[]
+	 * 
+	 * Format is
+	 * 
+	 * <headers>
+	 * 	<header key="key">
+	 * 		<value>value1</value>
+	 * 		<value>value2</value>
+	 * 	....
+	 * </parameters>
+	 * 
+	 * 
+	 */
+	@SuppressWarnings("unchecked")
+	private XVariable parseHeaders(HttpServletRequest request) throws XMLStreamException, CoreException {
+
+        
+		XVariable var = new XVariable("HTTP_HEADERS",null);
+		VariableOutputPort port = new VariableOutputPort( var );
+		XMLStreamWriter writer = port.asXMLStreamWriter(null);
+		
+		
+		writer.writeStartDocument();
+		writer.writeStartElement("headers");
+		
+		
+		Enumeration names = request.getHeaderNames();
+		if( names != null ){
+			while( names.hasMoreElements() ){
+				String name = (String) names.nextElement();
+				Enumeration values = request.getHeaders(name);
+				
+				
+				writer.writeStartElement("header");
+				writer.writeAttribute("name", name );
+				
+				while( values.hasMoreElements() ){
+					String value = (String) values.nextElement();
+					writer.writeStartElement("value");
+					writer.writeCharacters(value);
+					writer.writeEndElement();
+				}
+				writer.writeEndElement();
+			}
+		}
+		writer.writeEndElement();
+		writer.writeEndDocument();
+		writer.close();
+		port.flush();
+		return var ;
+	
+	
+	
+	}
+	
+	
 
 	/* (non-Javadoc)
 	 * @see javax.servlet.http.HttpServlet#doPost(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
@@ -196,7 +266,7 @@ public class XmlshServlet extends HttpServlet {
 	 		Shell shell = new Shell(false);
 			shell.setCurdir( new File(mRoot));
 		 	
-			Enumeration names = request.getParameterNames();
+			Enumeration<?> names = request.getParameterNames();
 			while( names.hasMoreElements() ){
 				String name = (String) names.nextElement();
 				String value = (String) request.getParameter(name);

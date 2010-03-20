@@ -21,13 +21,25 @@ import java.util.Properties;
 @SuppressWarnings("serial")
 public class SystemEnvironment extends Properties {
 	
-	private static ThreadLocal<SystemEnvironment>		sInstance = new ThreadLocal<SystemEnvironment>()
+	private static ThreadLocal<SystemEnvironment>		sInstance ;
+	
+	/*
+	 * When tomcat re-loads a servlet it doesnt always re-initialize static vars !!!
+	 * 
+	 */
+	
+	private static synchronized ThreadLocal<SystemEnvironment> _this()
 	{
-         protected synchronized SystemEnvironment initialValue() {
-             return new SystemEnvironment();
-         }
+		if( sInstance == null )
+			sInstance 		= new ThreadLocal<SystemEnvironment>()
+				{
+			         protected synchronized SystemEnvironment initialValue() {
+			             return new SystemEnvironment();
+			         }
+				};
+			    
+		return sInstance ;
 	}
-    ;
 	
 	
 	/**
@@ -40,13 +52,13 @@ public class SystemEnvironment extends Properties {
 	
 	static SystemEnvironment getInstance()
 	{
-		return sInstance.get();
+		return _this().get();
 		
 	}
 	
 	public static	void 	uninitialize()
 	{
-		sInstance.get().clear();
+		_this().get().clear();
 		
 	}
 	
