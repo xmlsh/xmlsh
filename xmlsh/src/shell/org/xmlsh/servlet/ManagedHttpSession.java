@@ -4,14 +4,40 @@
  *
  */
 
-package org.xmlsh.util;
+package org.xmlsh.servlet;
+
+import javax.servlet.http.HttpSession;
+
+import org.xmlsh.util.ManagedObject;
+
+public class ManagedHttpSession extends ManagedObject
+{
+	private		HttpSession 	mSession ;
+
+	
+	public ManagedHttpSession(HttpSession session) {
+		super();
+		mSession = session;
+	}
 
 
-public interface IManagedObject {
-	void	addRef();
-	void	release() ;
+	@Override
+	protected void close() {
+		mSession = null ;
+		
+	}
+
+
+	/**
+	 * @return the session
+	 */
+	public HttpSession getSession() {
+		return mSession;
+	}
+	
+	
+	
 }
-
 
 
 //

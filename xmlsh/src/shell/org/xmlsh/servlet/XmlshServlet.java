@@ -39,9 +39,21 @@ import org.xmlsh.util.Util;
  *
  */
 
+@SuppressWarnings("serial")
 public class XmlshServlet extends HttpServlet {
 	
+	
 	private	 String mRoot = null ;
+
+	/* (non-Javadoc)
+	 * @see javax.servlet.GenericServlet#destroy()
+	 */
+	@Override
+	public void destroy() {
+		Shell.uninitialize();
+		super.destroy();
+		
+	}
 
 	/* (non-Javadoc)
 	 * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
@@ -99,6 +111,10 @@ public class XmlshServlet extends HttpServlet {
 					*/
 					
 					
+					ManagedHttpSession mhs = new ManagedHttpSession( request.getSession());
+					shell.getSession().setVar("HTTP_SESSION", mhs);
+					mhs.release();
+					
 					int ret = script.run(shell, path , vargs);
 					
 					
@@ -127,60 +143,121 @@ public class XmlshServlet extends HttpServlet {
 			}
 	
 	}
-
-	/*
-	 * Create a document from a paramater map
-	 * Map is  String: String[]
-	 * 
-	 * Format is
-	 * 
-	 * <parameters>
-	 * 	<param name="key">
-	 * 		<value>value1</value>
-	 * 		<value>value2</value>
-	 * 	....
-	 * </parameters>
-	 * 
-	 * 
+	
+	/* (non-Javadoc)
+	 * @see javax.servlet.http.HttpServlet#doPost(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
 	 */
-	@SuppressWarnings("unchecked")
-	private XVariable parseParams(HttpServletRequest request) throws XMLStreamException, CoreException {
+	@Override
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+	    
 
+		OutputStream out = null ;
+		InputStream in = null ;
 
-        Map params = request.getParameterMap();
-        
-		XVariable var = new XVariable("HTTP_PARAMETERS",null);
-		VariableOutputPort port = new VariableOutputPort( var );
-		XMLStreamWriter writer = port.asXMLStreamWriter(null);
-		
-		
-		writer.writeStartDocument();
-		writer.writeStartElement("parameters");
-		
-		if( params != null ){
-			Iterator<Entry<String,String[]>> iter = params.entrySet().iterator();
-			while( iter.hasNext() ){
-				Entry<String,String[]> e = iter.next();
-				writer.writeStartElement("param");
-				writer.writeAttribute("name", e.getKey() );
-				for( String v : e.getValue() ){
-					writer.writeStartElement("value");
-					writer.writeCharacters(v);
-					writer.writeEndElement();
-				}
-				writer.writeEndElement();
+		Shell shell = null ;
+		try {
+			// String command = request.getParameter("command");
+		     // String cpath  = request.getContextPath(); // "/odd_store
+	            String spath  = request.getServletPath();
+	        //    String ruri  = request.getRequestURI();
+	        //    String qstring  = request.getQueryString();
+
+	        
+	        String path = spath.substring(1);
+	        if(Util.isBlank(path) || path.equals("/") )
+	        	path = "index.xsh";
+	        		
+	        XVariable xp 		= parseParams( request );
+	        XVariable headers 	= parseHeaders( request );
+	        
+	        
+	        
+	        
+	        
+	     	List<XValue> vargs = new ArrayList<XValue>();
+	 		
+	     	
+	     	
+	 		shell = new Shell(false);
+			shell.setCurdir( new File(mRoot));
+		 	
+			Enumeration<?> names = request.getParameterNames();
+			XEnvironment env = shell.getEnv();
+			while( names.hasMoreElements() ){
+				String name = (String) names.nextElement();
+				String value = (String) request.getParameter(name);
+				env.setVar(name, value);
 			}
+			
+			
+			
+			ICommand	script = CommandFactory.getInstance().getScript( shell , path , true );
+			if( script != null ){
+				ByteArrayOutputStream bos = new ByteArrayOutputStream();
+				env.setStdout( new StreamOutputPort(bos ,false) );
+				env.setStderr( new StreamOutputPort(new NullOutputStream(),false) );
+				
+				InputStream is = readInput( request.getInputStream());
+				env.setStdin(is );
+				
+				
+				
+				// Set properties
+				if( xp != null )
+					env.setVar(xp);
+				if( headers != null )
+					env.setVar(headers);
+				
+				
+				ManagedHttpSession mhs = new ManagedHttpSession( request.getSession());
+				shell.getSession().setVar("HTTP_SESSION", mhs);
+				mhs.release();
+				
+				int ret = script.run(shell, path , vargs);
+			
+				String ct = shell.getSerializeOpts().getContent_type() + "; " + shell.getSerializeOpts().getEncoding();
+				response.setContentType(ct);
+
+				
+				OutputStream os = response.getOutputStream();
+				Util.copyStream( new ByteArrayInputStream(bos.toByteArray()), os);
+
+			
+			
+			}
+			
+
+		} 
+		catch( Exception e )
+		{
+			throw new ServletException(e);
 		}
-		writer.writeEndElement();
-		writer.writeEndDocument();
-		writer.close();
-		port.flush();
-		return var ;
-	
-	
-	
+		
+		finally {
+			if( shell != null )
+				shell.close();
+		}
+		
 	}
 	
+	
+
+	/* (non-Javadoc)
+	 * @see javax.servlet.GenericServlet#init(javax.servlet.ServletConfig)
+	 */
+	@Override
+	public void init(ServletConfig config) throws ServletException {
+		// TODO Auto-generated method stub
+		super.init(config);
+		
+		mRoot = config.getInitParameter("root");
+	
+		// Pre-initialize shell so logging can work before executing first task
+		Shell.initialize();
+		
+	}
+
 	/*
 	 * Create a document from a paramater map
 	 * Map is  String: String[]
@@ -237,78 +314,58 @@ public class XmlshServlet extends HttpServlet {
 	
 	
 	}
-	
-	
 
-	/* (non-Javadoc)
-	 * @see javax.servlet.http.HttpServlet#doPost(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
+	/*
+	 * Create a document from a paramater map
+	 * Map is  String: String[]
+	 * 
+	 * Format is
+	 * 
+	 * <parameters>
+	 * 	<param name="key">
+	 * 		<value>value1</value>
+	 * 		<value>value2</value>
+	 * 	....
+	 * </parameters>
+	 * 
+	 * 
 	 */
-	@Override
-	protected void doPost(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-	    
+	@SuppressWarnings("unchecked")
+	private XVariable parseParams(HttpServletRequest request) throws XMLStreamException, CoreException {
 
-		OutputStream out = null ;
-		InputStream in = null ;
- 
-		try {
-			// String command = request.getParameter("command");
-		       String cpath  = request.getContextPath(); // "/odd_store
-	            String spath  = request.getServletPath();
-	            String ruri  = request.getRequestURI();
-	            String qstring  = request.getQueryString();
 
-	        String path = spath.substring(1);
-	     	List<XValue> vargs = new ArrayList<XValue>();
-	 		
-	     	
-	     	
-	 		Shell shell = new Shell(false);
-			shell.setCurdir( new File(mRoot));
-		 	
-			Enumeration<?> names = request.getParameterNames();
-			while( names.hasMoreElements() ){
-				String name = (String) names.nextElement();
-				String value = (String) request.getParameter(name);
-				shell.getEnv().setVar(name, value);
-			}
-			
-			
-			
-			ICommand	script = CommandFactory.getInstance().getScript( shell , path , true );
-			if( script != null ){
-				ByteArrayOutputStream bos = new ByteArrayOutputStream();
-				shell.getEnv().setStdout( new StreamOutputPort(bos ,false) );
-				shell.getEnv().setStderr( new StreamOutputPort(new NullOutputStream(),false) );
-				
-				InputStream is = readInput( request.getInputStream());
-				shell.getEnv().setStdin(is );
-				
-				
-				int ret = script.run(shell, path , vargs);
-			
-				String ct = shell.getSerializeOpts().getContent_type() + "; " + shell.getSerializeOpts().getEncoding();
-				response.setContentType(ct);
-
-				
-				OutputStream os = response.getOutputStream();
-				Util.copyStream( new ByteArrayInputStream(bos.toByteArray()), os);
-
-			
-			
-			}
-			
-
-		} 
-		catch( Exception e )
-		{
-			throw new ServletException(e);
-		}
+        Map params = request.getParameterMap();
+        
+		XVariable var = new XVariable("HTTP_PARAMETERS",null);
+		VariableOutputPort port = new VariableOutputPort( var );
+		XMLStreamWriter writer = port.asXMLStreamWriter(null);
 		
-		finally {
-
-		}
 		
+		writer.writeStartDocument();
+		writer.writeStartElement("parameters");
+		
+		if( params != null ){
+			Iterator<Entry<String,String[]>> iter = params.entrySet().iterator();
+			while( iter.hasNext() ){
+				Entry<String,String[]> e = iter.next();
+				writer.writeStartElement("param");
+				writer.writeAttribute("name", e.getKey() );
+				for( String v : e.getValue() ){
+					writer.writeStartElement("value");
+					writer.writeCharacters(v);
+					writer.writeEndElement();
+				}
+				writer.writeEndElement();
+			}
+		}
+		writer.writeEndElement();
+		writer.writeEndDocument();
+		writer.close();
+		port.flush();
+		return var ;
+	
+	
+	
 	}
 
 	private InputStream readInput(ServletInputStream inputStream) throws IOException {
@@ -318,31 +375,6 @@ public class XmlshServlet extends HttpServlet {
 		return new ByteArrayInputStream( bos.toByteArray() );
 		
 		
-		
-	}
-
-	/* (non-Javadoc)
-	 * @see javax.servlet.GenericServlet#destroy()
-	 */
-	@Override
-	public void destroy() {
-		Shell.uninitialize();
-		super.destroy();
-		
-	}
-
-	/* (non-Javadoc)
-	 * @see javax.servlet.GenericServlet#init(javax.servlet.ServletConfig)
-	 */
-	@Override
-	public void init(ServletConfig config) throws ServletException {
-		// TODO Auto-generated method stub
-		super.init(config);
-		
-		mRoot = config.getInitParameter("root");
-	
-		// Pre-initialize shell so logging can work before executing first task
-		Shell.initialize();
 		
 	}
 

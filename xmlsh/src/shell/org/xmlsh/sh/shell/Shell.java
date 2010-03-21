@@ -50,6 +50,7 @@ import org.xmlsh.sh.grammar.ShellParser;
 import org.xmlsh.sh.grammar.ShellParserReader;
 import org.xmlsh.util.NullInputStream;
 import org.xmlsh.util.NullOutputStream;
+import org.xmlsh.util.SessionEnvironment;
 import org.xmlsh.util.Util;
 import org.xmlsh.xpath.EvalDefinition;
 import org.xmlsh.xpath.ShellContext;
@@ -64,6 +65,7 @@ public class Shell {
 	private		List<XValue> 	mArgs = new ArrayList<XValue>();
 	private		InputStream	mCommandInput = null;
 	private		String	mArg0 = "xmlsh";
+	private		SessionEnvironment mSession = null ;
 	
 	// Set to non null until exit or EOF
 	private 	Integer mExitVal = null;
@@ -175,6 +177,7 @@ public class Shell {
 		mSavedCD = System.getProperty("user.dir");
 		mEnv =  new XEnvironment(this,bUseStdio);
 		mModules = new Modules();
+		mSession = new SessionEnvironment();
 		// Add xmlsh commands 
 		mModules.declare( new Module( null , "xmlsh" , "org.xmlsh.commands.internal", CommandFactory.kCOMMANDS_HELP_XML));
 		
@@ -268,6 +271,11 @@ public class Shell {
 		
 		mModule = that.mModule;
 		
+		// Pass through the Session Enviornment, keep a reference
+		mSession = that.mSession;
+		mSession.addRef();
+		
+		
 		// Cloning shells doesnt save the condition depth
 		// mConditionDepth = that.mConditionDepth;
 		
@@ -287,10 +295,18 @@ public class Shell {
 	
 	public void close()
 	{
-		if( mEnv != null )
+		if( mEnv != null ){
 			mEnv.close();
+			mEnv = null ;
+		}
 		if( mSavedCD != null )
 			SystemEnvironment.getInstance().setProperty("user.dir", mSavedCD);
+		if( mSession != null ){
+			mSession.release();
+			mSession = null ;
+		}
+	
+	
 	}
 	
 
@@ -307,6 +323,10 @@ public class Shell {
 		return 	mEnv;
 	}
 
+	public SessionEnvironment getSession()
+	{
+		return mSession ;
+	}
 
 	public 		Command	parseEval( String scmd ) throws CoreException 
 	{

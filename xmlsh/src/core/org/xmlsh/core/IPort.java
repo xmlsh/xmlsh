@@ -6,6 +6,7 @@
 
 package org.xmlsh.core;
 
+import org.apache.log4j.LogManager;
 import org.xmlsh.util.IManagedObject;
 
 
@@ -29,7 +30,7 @@ public abstract class IPort implements IManagedObject {
 
 	public synchronized void flush() throws  CoreException {};
 	
-	public final synchronized void release() throws CoreException 
+	public final synchronized void release()
 	{		
 		try {
 			flush();
@@ -37,7 +38,7 @@ public abstract class IPort implements IManagedObject {
 	
 				close();
 			} catch (Exception e) {
-				throw new CoreException("Exception closing port");
+				LogManager.getLogger(getClass()).error("Exception closing port",e);
 			}
 	}
 	

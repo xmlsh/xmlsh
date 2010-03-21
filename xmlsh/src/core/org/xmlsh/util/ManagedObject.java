@@ -7,9 +7,33 @@
 package org.xmlsh.util;
 
 
-public interface IManagedObject {
-	void	addRef();
-	void	release() ;
+/*
+ * Default implementation of a managed object
+ * 
+ */
+public abstract class ManagedObject implements IManagedObject {
+
+	private		int mRef = 1;
+
+	protected void finalize()
+	{
+		close();
+	}
+	
+	@Override
+	public synchronized void addRef() {
+		mRef++;
+
+	}
+
+	@Override
+	public synchronized void release()  {
+		if( --mRef <= 0 )
+			close();
+
+	}
+	
+	 abstract protected void close();
 }
 
 

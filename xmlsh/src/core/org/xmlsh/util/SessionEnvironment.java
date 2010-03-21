@@ -6,10 +6,52 @@
 
 package org.xmlsh.util;
 
+import java.util.HashMap;
+import java.util.Map;
 
-public interface IManagedObject {
-	void	addRef();
-	void	release() ;
+public class SessionEnvironment extends ManagedObject {
+
+	private		Map<String, IManagedObject>		mVars;
+	
+	protected void close()
+	{
+		if( mVars != null ){
+			for( IManagedObject obj : mVars.values() )
+				obj.release();
+			mVars.clear();
+			mVars = null;
+		}
+		
+	}
+	
+	/*
+	 * Get a managed object and adds a reference to it
+	 */
+	
+	public synchronized IManagedObject	getVar(String key)
+	{
+		if( mVars == null )
+			return null;
+		IManagedObject obj = mVars.get(key);
+		if( obj != null )
+			obj.addRef();
+		return obj;
+	}
+	
+	/*
+	 * Sets a Session object and adds a reference
+	 */
+	public synchronized void setVar( String key , IManagedObject obj )
+	{
+		if( mVars == null )
+			mVars = new HashMap<String,IManagedObject>();
+		
+		obj.addRef();
+		mVars.put( key , obj );
+		
+		
+	}
+
 }
 
 

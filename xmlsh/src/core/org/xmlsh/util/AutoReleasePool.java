@@ -18,11 +18,7 @@ public class AutoReleasePool extends ArrayList<IManagedObject> {
 	}
 	public void	close() {
 		for( IManagedObject obj : this )
-			try {
 				obj.release();
-			} catch (CoreException e) {
-
-			}
 		this.clear();
 	}
 }
