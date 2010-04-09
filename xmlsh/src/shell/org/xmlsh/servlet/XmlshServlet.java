@@ -30,6 +30,7 @@ import org.xmlsh.core.XEnvironment;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.XVariable;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.util.NullInputStream;
 import org.xmlsh.util.NullOutputStream;
 import org.xmlsh.util.Util;
 
@@ -92,24 +93,14 @@ public class XmlshServlet extends HttpServlet {
 					
 					env.setStdout( new StreamOutputPort(bos ,false) );
 					env.setStderr( new StreamOutputPort(new NullOutputStream(),false) );
+					env.setStdin( new NullInputStream() );
 					
 					// Set properties
 					if( xp != null )
 						env.setVar(xp);
 					if( headers != null )
 						env.setVar(headers);
-					/*
-					// Set HTTP_SESSION variable
-					Object hs = request.getSession().getAttribute("XMLSH_SESSION");
-					if( hs == null ){
-						hs = new XVariable("HTTP_SESSION",new XValue());
-						request.getSession().setAttribute("XMLSH_SESSION", hs );
-					}
-					
-					shell.getEnv().setVar((XVariable) hs);
-					
-					*/
-					
+	
 					
 					ManagedHttpSession mhs = new ManagedHttpSession( request.getSession());
 					shell.getSession().setVar("HTTP_SESSION", mhs);

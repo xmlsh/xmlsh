@@ -3,7 +3,7 @@
 # call with > 1 args to run as a sub-test with $*
 
 
-# man call
+# mian call
 if [ $# -eq 0 ] ; then
 	$0 10 a b c e f g h i j || {
 		echo Failed args 10 test ;

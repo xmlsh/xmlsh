@@ -39,6 +39,12 @@ echo "$_var" should be bar foo
 _var=*
 echo "$_var" should be "*"
 
+# test that empty sequences expand to nothing
+_var=()
+set FOO $_var BAR
+[ $# -eq 2 ] || echo FAIL should be 2 
+
+
 cd ..
 rm -rf $TMPDIR/_varseq
 exit 0

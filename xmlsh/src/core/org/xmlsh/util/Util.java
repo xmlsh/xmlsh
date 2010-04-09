@@ -516,9 +516,7 @@ public class Util
 		 */
 		if( values.isEmpty() )
 			return values ;
-		if( values.size() == 1 && values.get(0).asXdmValue().size() < 2 )
-			return values ;
-		
+	
 		
 		ArrayList<XValue> list = new ArrayList<XValue>( values.size());
 		for( XValue arg : values ){

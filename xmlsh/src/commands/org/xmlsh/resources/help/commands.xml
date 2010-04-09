@@ -75,6 +75,12 @@
 	<command name="httpserver" url="http://www.xmlsh.org/CommandHttpserver">
 		<synopsis>Http server</synopsis>
 	</command>
+   <command name="httpsession" url="http://www.xmlsh.org/CommandHttpsession">
+		<synopsis>Http session control</synopsis>
+	</command>
+   
+   
+   
    <command name="import" url="http://www.xmlsh.org/CommandImport">
    
        <synopsis>Import modules, packages and commands</synopsis>
