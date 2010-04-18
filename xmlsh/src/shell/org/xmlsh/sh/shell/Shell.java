@@ -210,6 +210,10 @@ public class Shell {
 			if( ! name.matches("^[a-zA-Z_0-9]+$"))
 				continue ;
 			
+			// Ignore PS1
+			if( name.equals("PS1"))
+				continue ;
+			
 			getEnv().setVar( new XVariable( name , new XValue(entry.getValue()) , EnumSet.of(XVarFlag.EXPORT )));
 			
 			
@@ -465,7 +469,7 @@ public class Shell {
 		
 		while (mExitVal == null) {
 			
-			  System.out.print("$ ");
+			  System.out.print(getPS1());
 		      try {
 		      	Command c = parser.command_line();
 		      	if( c == null )
@@ -505,6 +509,23 @@ public class Shell {
 		if( mExitVal != null )
 			ret = mExitVal.intValue();
 		return ret;
+	}
+
+
+	private String getPS1() throws IOException, CoreException {
+		
+		XValue ps1 = getEnv().getVarValue("PS1");
+		if( ps1 == null )
+			return "$ ";
+		String sps1 = ps1.toString();
+		if( !Util.isBlank(sps1))
+			sps1 = expandString(sps1, false);
+		
+		return sps1;
+
+		
+		
+		
 	}
 
 	/*
