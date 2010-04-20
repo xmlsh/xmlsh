@@ -8,7 +8,6 @@ package org.xmlsh.types;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Date;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
@@ -133,7 +132,7 @@ public class XFile /* implements XSerializble */ {
 			writer.writeAttribute("readable", mFile.canRead()? "true" : "false");
 			writer.writeAttribute("writable", mFile.canWrite()? "true" : "false");
 			writer.writeAttribute("executable", mFile.canExecute() ? "true" : "false");
-			writer.writeAttribute("mtime", formatTime(mFile.lastModified()));
+			writer.writeAttribute("mtime", Util.formatXSDateTime(mFile.lastModified()));
 			
 	
 			
@@ -142,20 +141,6 @@ public class XFile /* implements XSerializble */ {
 			writer.writeEndElement();
 	}
 	
-	// Format time as xs:datetime
-	private String formatTime(long lastModified) 
-	{
-		Date date = new Date(lastModified);
-		return Util.formatXSDateTime( date );
-		
-		
-		
-		
-		
-	}
-	
-	// Filename without any extension
-
 	public String noExtention() {
 		String	path = Util.toJavaPath(mFile.getPath());
 		String  ext = getExt();

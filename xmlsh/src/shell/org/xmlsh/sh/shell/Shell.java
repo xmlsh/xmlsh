@@ -127,7 +127,7 @@ public class Shell {
 		 } 
 		 catch( Error e )
 		 {
-			 mLogger.warn("Exception trying to seURLStreamHandlerFactory" , e );
+			 // mLogger.debug("Exception trying to seURLStreamHandlerFactory" , e );
 		 }
 		 
 		 

@@ -912,6 +912,17 @@ public class Util
 		
 		
 	}
+
+
+	// Format time as xs:datetime
+	public static String formatXSDateTime(long lastModified) 
+	{
+		Date date = new Date(lastModified);
+		return formatXSDateTime( date );
+		
+	
+		
+	}
 	
 
 		
