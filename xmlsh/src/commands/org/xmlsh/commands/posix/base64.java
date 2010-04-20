@@ -6,11 +6,14 @@
 
 package org.xmlsh.commands.posix;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
 
+import org.xmlsh.core.InputPort;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
@@ -41,15 +44,27 @@ public class base64 extends XCommand {
 		boolean bDecode = opts.hasOpt("d");
 		boolean bWrap   = opts.hasOpt("w");
 		
-		
-		InputStream is = (args.isEmpty() ? getStdin().asInputStream(getSerializeOpts()) : getInputStream(args.get(0)));
+		InputPort iport = (args.isEmpty() ? getStdin() : getInput(args.get(0)));
+		InputStream is = iport.asInputStream(getSerializeOpts()); 
 		OutputStream os = getStdout().asOutputStream();
 		
-		if( bDecode )
-			decode( is , os);
-		else
-			encode( is , os , bWrap );
+		/*
+		 * Need to buffer the streams because the B64 code does 1 byte IO 
+		 */
+		is = new BufferedInputStream(is);
+		os = new BufferedOutputStream(os);
 		
+		try {
+			if( bDecode )
+				decode( is , os);
+			else
+				encode( is , os , bWrap );
+		} finally {
+			is.close(); // Unnecessary 
+			os.close(); // Unnecessary 
+			iport.release(); // Needed else file handle gets left open
+
+		}
 				
 		return 0;
 	}

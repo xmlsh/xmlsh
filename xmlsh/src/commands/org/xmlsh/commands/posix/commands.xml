@@ -1,6 +1,10 @@
 <?xml version="1.0"?>
 <commands>
 
+<command name="base64" url="http://www.xmlsh.org/CommandBase64">
+	<snopsis>Encodes/Decodes files to/from base64</snopsis>
+</command>
+
 <command name="cat" url="http://www.xmlsh.org/CommandCat">
 	<snopsis>copy or concatenate files</snopsis>
 </command>

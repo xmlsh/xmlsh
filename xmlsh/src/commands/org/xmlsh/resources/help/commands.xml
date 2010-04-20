@@ -9,6 +9,10 @@
    	<synopsis>Evaluates expressions</synopsis>
 	</command>
 
+   <command name="xmd5sum" url="http://www.xmlsh.org/CommandXmd5sum">
+   <synopsis>Calculates the md5 sum of files</synopsis>
+   </command>
+
    <command name="break" url="http://www.xmlsh.org/CommandBreak">
    <synopsis>Exits one level of a while, for or until</synopsis>
    </command>
