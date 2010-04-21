@@ -7,18 +7,17 @@
 package org.xmlsh.commands.internal;
 
 import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+import java.util.zip.ZipOutputStream;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.xmlsh.core.InputPort;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
@@ -27,48 +26,41 @@ import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.util.Util;
 
-public class xunzip extends XCommand {
+public class xzip extends XCommand {
+
+	
 	
 	public int run( List<XValue> args )	throws Exception
 	{
 		
 
 
-		Options opts = new Options( "f=file:,l=list,d=dest:" ,  SerializeOpts.getOptionDefs() );
+		Options opts = new Options( "f=file:" ,  SerializeOpts.getOptionDefs() );
 		opts.parse(args);
 		
-		boolean bList = opts.hasOpt("l");
-		String dest = opts.getOptString("d", ".");
 		XValue zipfile = opts.getOptValue("f");
 		
 		args = opts.getRemainingArgs();
 		
 		SerializeOpts serializeOpts = getSerializeOpts(opts);
 
-		InputPort iport = (zipfile == null ? getStdin() : getInput(zipfile));
-		InputStream is = iport.asInputStream(serializeOpts); 
+		ZipOutputStream zos = new ZipOutputStream( 
+				zipfile == null ?
+				getStdout().asOutputStream() :
+				this.getOutputStream( zipfile.toString(), false)
+		);
 		
-		ZipInputStream zis = new ZipInputStream(is);
 		
 		try {
 		
-		int ret = 0;
-		if( bList ){
-			ret = list(zis,serializeOpts,args);
-			while( is.read() >= 0 )
-				;
-		}
-		else
-			ret = unzip( zis , getFile(dest) , args );
-		
-		zis.close();
-		
+			int ret = 0;
+			ret = zip( zos ,  args );
+			
+			zos.finish();
 		
 		
 		} finally {
-			zis.close();
-			is.close();
-			iport.close();
+			zos.close();
 		}
 		
 		return 0;
@@ -76,6 +68,63 @@ public class xunzip extends XCommand {
 
 
 	}
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	private int zip(ZipOutputStream zos, List<XValue> args) throws IOException 
+	{
+		int ret ;
+		for( XValue v : args )
+			if( (ret = zip( zos , v.toString() )) != 0 ) 
+					return ret ;
+		return 0;
+		
+		
+	}
+
+
+	private int zip(ZipOutputStream zos, String fname) throws IOException 
+	{
+		int ret ;
+		File file = getFile(fname);
+		if( file.isDirectory() ){
+			String[] files = file.list();
+			for( String f : files ){
+				if( ( ret = zip(zos, fname + "/" + f )) != 0 )
+					return ret ;
+				
+			}
+			return 0;
+		}
+		
+		
+		ZipEntry entry = new ZipEntry(fname);
+		entry.setTime(file.lastModified());
+		zos.putNextEntry(entry);
+		
+		FileInputStream fis = new FileInputStream( file );
+		Util.copyStream(fis, zos);
+		fis.close();
+		zos.closeEntry();
+		
+		return 0;
+	}
+
+
+
+
+
+
+
+
+
 
 	private int unzip(ZipInputStream zis, File dest, List<XValue> args) throws IOException {
 		
@@ -126,46 +175,6 @@ public class xunzip extends XCommand {
 		
 		
 	}
-
-	private int list(ZipInputStream zis,SerializeOpts serializeOpts, List<XValue> args) throws IOException, XMLStreamException, InvalidArgumentException {
-		OutputPort stdout = getStdout();
-		XMLStreamWriter writer = stdout.asXMLStreamWriter(serializeOpts);
-		writer.writeStartDocument();
-		
-		
-		writer.writeStartElement("zip");
-	
-		
-		ZipEntry entry ;
-		while( (entry = zis.getNextEntry()) != null ){
-			
-			if( matches( entry.getName() , args )){
-
-				
-				writer.writeStartElement("entry");
-				writer.writeAttribute("name", entry.getName());
-				if( entry.getComment() != null )
-					writer.writeAttribute("comment", entry.getComment());
-				writer.writeAttribute("size", String.valueOf(entry.getSize()));
-				writer.writeAttribute("compressed_size", String.valueOf(entry.getCompressedSize()));
-				writer.writeAttribute("directory", String.valueOf(entry.isDirectory()));
-				
-	
-				
-				writer.writeAttribute("time", Util.formatXSDateTime( entry.getTime()));
-				writer.writeEndElement();
-			}
-			zis.closeEntry();
-			
-		}
-		writer.writeEndElement();
-		writer.writeEndDocument();
-		writer.close();
-		stdout.release();
-		return 0;
-	}
-
-
 
 }
 

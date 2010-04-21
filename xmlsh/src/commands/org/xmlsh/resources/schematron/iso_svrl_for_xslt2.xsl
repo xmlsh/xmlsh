@@ -30,6 +30,9 @@
   
 
   History: 
+    2010-04-14
+        * Add command line parameter 'terminate' which will terminate on first failed 
+        assert and (optionally) successful report. 
     2009-03-18
     	* Fix atrribute with space "see " which generates wrong name in some processors
     	* rename allow-foreign to allow-rich
@@ -99,7 +102,7 @@
 <!--
  Derived from Conformance1-5.xsl.
 
- Copyright (c) 2001, 2006 Rick Jelliffe and Academia Sinica Computing Center, Taiwan
+ Copyright (c) 2001-2010 Rick Jelliffe and Academia Sinica Computing Center, Taiwan
 
  This software is provided 'as-is', without any express or implied warranty. 
  In no event will the authors be held liable for any damages arising from 
@@ -131,7 +134,8 @@
             sch.exslt.imports semi-colon delimited string of filenames for some EXSLT implementations          
    		 optimize        "visit-no-attributes"     Use only when the schema has no attributes as the context nodes
 		 generate-fired-rule "true"(default) | "false"  Generate fired-rule elements
-            
+             terminate= yes | no | true | false | assert  Terminate on the first failed assertion or successful report
+                                         Note: whether any output at all is generated depends on the XSLT implementation.
 -->
 
 <xsl:stylesheet
@@ -179,6 +183,8 @@
 <xsl:param name="optimize" />
 <!-- e.g. saxon file.xml file.xsl "sch.exslt.imports=.../string.xsl;.../math.xsl" -->
 <xsl:param name="sch.exslt.imports" />
+
+<xsl:param name="terminate" >false</xsl:param>
 
 <!-- Set the language code for messages -->
 <xsl:param name="langCode">default</xsl:param>
@@ -307,6 +313,14 @@
 			</xsl:if>
 			
 	</svrl:failed-assert>
+	
+	
+		<xsl:if test=" $terminate = 'yes' or $terminate = 'true' ">
+		   <axsl:message terminate="yes">TERMINATING</axsl:message>
+		</xsl:if>
+	    <xsl:if test=" $terminate = 'assert' ">
+		   <axsl:message terminate="yes">TERMINATING</axsl:message>
+		</xsl:if>
 </xsl:template>
 
 <xsl:template name="process-report">
@@ -376,6 +390,11 @@
 			 
 			
 	</svrl:successful-report>
+	
+	
+		<xsl:if test=" $terminate = 'yes' or $terminate = 'true' ">
+		   <axsl:message terminate="yes"  >TERMINATING</axsl:message>
+		</xsl:if>
 </xsl:template>
 
 
@@ -663,31 +682,3 @@
 
 </xsl:stylesheet>
 
-<!-- Stylus Studio meta-information - (c) 2004-2009. Progress Software Corporation. All rights reserved.
-
-<metaInformation>
-	<scenarios>
-		<scenario default="yes" name="Scenario1" userelativepaths="yes" externalpreview="no" url="test2.sch" htmlbaseurl="" outputurl="" processortype="saxon8" useresolver="yes" profilemode="0" profiledepth="" profilelength="" urlprofilexml=""
-		          commandline="" additionalpath="" additionalclasspath="" postprocessortype="none" postprocesscommandline="" postprocessadditionalpath="" postprocessgeneratedext="" validateoutput="no" validator="internal" customvalidator="">
-			<advancedProp name="sInitialMode" value=""/>
-			<advancedProp name="bXsltOneIsOkay" value="true"/>
-			<advancedProp name="bSchemaAware" value="false"/>
-			<advancedProp name="bXml11" value="false"/>
-			<advancedProp name="iValidation" value="0"/>
-			<advancedProp name="bExtensions" value="true"/>
-			<advancedProp name="iWhitespace" value="0"/>
-			<advancedProp name="sInitialTemplate" value=""/>
-			<advancedProp name="bTinyTree" value="true"/>
-			<advancedProp name="bWarnings" value="true"/>
-			<advancedProp name="bUseDTD" value="false"/>
-			<advancedProp name="iErrorHandling" value="0"/>
-		</scenario>
-	</scenarios>
-	<MapperMetaTag>
-		<MapperInfo srcSchemaPathIsRelative="yes" srcSchemaInterpretAsXML="no" destSchemaPath="" destSchemaRoot="" destSchemaPathIsRelative="yes" destSchemaInterpretAsXML="no"/>
-		<MapperBlockPosition></MapperBlockPosition>
-		<TemplateContext></TemplateContext>
-		<MapperFilter side="source"></MapperFilter>
-	</MapperMetaTag>
-</metaInformation>
--->
