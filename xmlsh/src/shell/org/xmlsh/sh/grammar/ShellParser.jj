@@ -177,7 +177,7 @@ TOKEN : {
 |	< ELSE: "else" >
 |   < FI:   "fi" >
 |   < DO:   "do" > : DEFAULT 
-|   < CASE: "case" > 
+|   < CASE: "case" > { in_for = true ; }
 |   < ESAC: "esac" >
 |	< WHILE: "while" >
 |	< UNTIL: "until" >
