@@ -793,7 +793,7 @@ Assign assign() :
 	{ 
 
 		Token t1;
-		Word 	w;
+		Word 	w=null;
 		WordList ws;
 		String s;
 	}
@@ -803,21 +803,30 @@ Assign assign() :
 		return new Assign(s.substring(0,s.length()-1)  , "=" , w  );
 	} 
 
+
+
+
 | 	LOOKAHEAD(2) t1=<ASSIGN_WORDPE> w=cmd_word()
 	 { s=t1.toString();
 		return new Assign(s.substring(0,s.length()-2)  , "+=" , w  );
 	} 
 	
  |  
-     t1=<ASSIGN_WORD>  <LPAREN> ws=cmd_words() <RPAREN> 
+   LOOKAHEAD(2)  t1=<ASSIGN_WORD>  <LPAREN> ws=cmd_words() <RPAREN> 
      { s=t1.toString();
 		return new Assign(s.substring(0,s.length()-1)  , "=" , ws  ); 
 	}
  |  
-     t1=<ASSIGN_WORDPE>  <LPAREN> ws=cmd_words() <RPAREN> 
+   LOOKAHEAD(2)  t1=<ASSIGN_WORDPE>  <LPAREN> ws=cmd_words() <RPAREN> 
      { s=t1.toString();
 		return new Assign(s.substring(0,s.length()-2)  , "+=" , ws  ); 
 	}
+
+| 
+	t1=<ASSIGN_WORD>
+	 { s=t1.toString();
+		return new Assign(s.substring(0,s.length()-1)  , "=" , new StringWord(""));
+	} 
 	
 }
 

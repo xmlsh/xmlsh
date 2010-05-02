@@ -93,5 +93,9 @@ b=post
 
 [ $a/$b = "pre/post" ] || echo Failed variable concat
 
+# Test var= to set null
+a=
+[ "x${a}" = "x" ] || echo Failed assign to empty string
+
 
 exit 0
