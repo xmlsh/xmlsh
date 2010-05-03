@@ -8,12 +8,10 @@ from: http://logging.apache.org/log4j/1.2/index.html
 
 log4j-1.2.7.jar
 
-Saxon B: version 9.0.0.5
+Saxon HE: version 9.2.0.3
 from: http://www.saxonica.com
 
-saxon9.jar
-saxon9-s9api.jar
-saxon9-dom.jar
+saxon9he.jar
 
 Saxon B: version 6.5.5 (for xslt1 support)
 saxon.jar
@@ -33,6 +31,17 @@ OPTIONAL FiLES
 jline
 from 
 http://jline.sourceforge.net/
+
+
+jing  version 20091111 (for rngvalidate) from
+http://www.thaiopensource.com/relaxng/jing.html
+http://code.google.com/p/jing-trang/downloads/list
+jing.jar
+
+trang version 20091111 (for rng2(xxx) ) from
+http://www.thaiopensource.com/relaxng/trang.html
+http://code.google.com/p/jing-trang/downloads/list
+
 
 
 Xerces 2.1 from
