@@ -235,6 +235,7 @@ public class VariableOutputPort extends OutputPort
 			else
 			if( mBuilder != null ){
 				appendVar( (XdmNode) S9Util.wrapNode(mBuilder.getCurrentRoot()));
+				mBuilder.reset();
 			
 			}
 		

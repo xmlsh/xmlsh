@@ -105,6 +105,10 @@
    <command name="require" url="http://www.xmlsh.org/CommandRequire">
    		<synopsis>Checks the current shell for a specified minimum version</synopsis>
    </command>
+   <command name="rngconvert" url="http://www.xmlsh.org/CommandRngconvert">
+   		<synopsis>Converts to and from RNG and other schema formats</synopsis>
+   </command>
+
    <command name="rngvalidate" url="http://www.xmlsh.org/CommandRngvalidate">
    		<synopsis>Validates with an RNG schema</synopsis>
    </command>
