@@ -21,3 +21,14 @@ echo after foo _A is $_A
 unset _A
 bar arg1 arg2
 echo after bar _A is $_A
+
+# Test that functions don't thrash $*
+
+set A B C
+bar arg1 arg2 
+[  $# -eq 3 ] || { echo FAIL : expected to preserve args ; }
+foo arg1 arg2
+[  $# -eq 3 ] || { echo FAIL : expected to preserve args ; }
+
+
+

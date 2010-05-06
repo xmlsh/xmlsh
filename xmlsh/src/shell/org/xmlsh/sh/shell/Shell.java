@@ -797,8 +797,7 @@ public class Shell {
 	}
 
 	public void setArgs(List<XValue> args) {
-		mArgs.clear();
-		mArgs.addAll(args);
+		mArgs = args ;
 		
 		
 	}
