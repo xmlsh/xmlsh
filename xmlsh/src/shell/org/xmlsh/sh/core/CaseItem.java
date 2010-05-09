@@ -6,8 +6,10 @@
 
 package org.xmlsh.sh.core;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 
+import org.xmlsh.core.CoreException;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.Util;
 
@@ -26,9 +28,13 @@ public class CaseItem {
 		mCommand.print(out, bExec);
 	}
 
-	public boolean matches(String word) {
+	public boolean matches(Shell shell , String word) throws IOException, CoreException {
 		for( String pattern : mPattern ){
-			if( Util.wildMatches( pattern, word , true ))
+			
+			String p = shell.expandString(pattern, false);
+			
+			
+			if( Util.wildMatches( p, word , true ))
 				return true ;
 		}
 		return false;

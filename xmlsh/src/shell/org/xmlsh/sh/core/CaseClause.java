@@ -47,7 +47,7 @@ public class CaseClause  extends CompoundCommand {
 			
 			for( CaseItem item : mList ){
 				
-				if( item.matches( word )){
+				if( item.matches( shell,  word )){
 					return item.exec( shell );
 					
 				}
