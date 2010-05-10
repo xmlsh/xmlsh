@@ -29,7 +29,7 @@ import org.xmlsh.util.NullInputStream;
  * 
  */
 public class CommandWord extends Word {
-	String		mType;	// $( $(< $<( $<(< 
+	String		mType;	// $( $(< $<( $<(<  `
 	Command		mCommand;
 	
 	public CommandWord( String type , Command c){
@@ -126,7 +126,7 @@ public class CommandWord extends Word {
 	public XValue expand(Shell shell,boolean bExpandWild , boolean bExpandWords, MutableInteger retValue ) throws IOException, CoreException {
 		
 		
-		if( mType.equals("$(")){
+		if( mType.equals("$(") || mType.equals("`") ){
 			String 	value = expandSubproc( shell , mCommand, retValue);
 			// Split value by \n's to turn into a sequence
 			String[] words = value.split("\r?\n");

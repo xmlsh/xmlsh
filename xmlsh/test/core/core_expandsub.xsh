@@ -20,3 +20,7 @@ A=$(true;false)
 echo retval is $?
 unset A
 
+# Test backticks
+A=`echo foo1`
+[ "$A" = "foo1" ] || echo FAIL should be foo1
+ 

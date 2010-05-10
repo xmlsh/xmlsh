@@ -30,6 +30,7 @@ PARSER_END(ShellParser)
 TOKEN_MGR_DECLS :
 {
   boolean in_for = false ;
+  boolean in_backtick =false ;
     
     
   private String readUntil(String end)
@@ -268,7 +269,7 @@ TOKEN : {
  	
 
 <CMD> TOKEN : {
-	< WORD : (~["\t","\n","\r" ," ","\"","'","|","<",">","&",";",")","(","$","\\","{","}"] | "\\" ~[] | <VAR_EXPANSION> | <STRING_LITERAL1> | <STRING_LITERAL2>)+ > 
+	< WORD : (~["\t","\n","\r" ," ","\"","'","|","<",">","&",";",")","(","$","\\","{","}","`"] | "\\" ~[] | <VAR_EXPANSION> | <STRING_LITERAL1> | <STRING_LITERAL2>)+ > 
 |
   < #STRING_LITERAL1:
       "\""
@@ -307,8 +308,21 @@ TOKEN : {
 	  < VAR_SUBPROC_FILE :
  		"$(<" |  "$<(<" 
 	 >
+}
+<CMD,DEFAULT > TOKEN :{  
+   <  BACKTICK1 : "`" >{
+  if( in_backtick )  {    
+  	matchedToken.kind = BACKTICK2 ;
+  	in_backtick = false ;
+ } else  in_backtick = true ;
+} : DEFAULT 
+
+
  }
- 
+
+< NEVER > TOKEN :{
+ <  BACKTICK2 :  "`" >
+}
  
 
 <*> TOKEN : {
@@ -767,6 +781,8 @@ Word cmd_word_expr() :
 	{ return new CommandWord(t.toString() , c ) ; }
 	|   t=<VAR_SUBPROC_FILE>   s=filename()  <RPAREN> 
 	{ return new CommandFileWord(t.toString() , s ) ; }
+| 	< BACKTICK1 > c=compound_list() < BACKTICK2 >
+	{	   return new CommandWord( "`" , c ) ;	 }	 
 
 }
 
