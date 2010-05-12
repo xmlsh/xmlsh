@@ -1,3 +1,4 @@
+xquery version "1.0-ml";
 declare variable $src as xs:string external ;
 declare variable $target as xs:string external ;
 

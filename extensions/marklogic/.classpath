@@ -9,5 +9,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="/xmlsh/lib/saxon9he.jar" sourcepath="C:/java/saxonhe9-2-0-3/saxonhe9-2-0-3source.zip"/>
+	<classpathentry kind="lib" path="/xmlsh/lib/log4j-1.2.7.jar"/>
 	<classpathentry kind="output" path="_out"/>
 </classpath>

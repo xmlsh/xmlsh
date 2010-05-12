@@ -5,16 +5,24 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
+import java.rmi.UnexpectedException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.xmlsh.commands.util.Checksum;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.XValue;
 import org.xmlsh.marklogic.util.MLCommand;
+import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.util.Util;
 
 import com.marklogic.xcc.AdhocQuery;
@@ -24,45 +32,87 @@ import com.marklogic.xcc.ContentFactory;
 import com.marklogic.xcc.ContentSource;
 import com.marklogic.xcc.ResultSequence;
 import com.marklogic.xcc.Session;
-import com.marklogic.xcc.ValueFactory;
 import com.marklogic.xcc.exceptions.RequestException;
-import com.marklogic.xcc.types.ValueType;
-import com.marklogic.xcc.types.XName;
-import com.marklogic.xcc.types.XdmValue;
 
 public class put extends MLCommand {
 
 	private Session session;
-
+	private static Logger mLogger = LogManager.getLogger(put.class);
 	private ContentCreateOptions mCreateOptions;
+	private ExecutorService mPool = null;
+	private PrintWriter		mOutput = null;
+	private boolean 		bVerbose = false ;
 	
 	private static class SumContent
 	{
 		String		mURI;
-		Checksum mSum;
-		public SumContent( String uri, Checksum sum) {
+		Content		mContent ; 
+		Checksum 	mSum; // Optional
+		
+		
+		public SumContent( String uri, Content content , Checksum sum) {
 			mURI  = uri ;
+			mContent = content ;
 			mSum = sum;
 		}
 		
 	}
 	
 	
+	private  class PutContent implements Runnable
+	{
+		List<SumContent> mContents;
+		Session mSession;
+		public PutContent(Session session, List<SumContent> contents) {
+			mContents = contents ;
+			mSession = session ;
+		}
+
+		@Override
+		public void run() {
+			 print("Thread: " + Thread.currentThread().getName() + " Writing " + mContents.size() + " files");
+
+			Content[] contents = new Content[ mContents.size()];
+			int i = 0;
+			for( SumContent sc : mContents )
+				contents[i++] = sc.mContent;
+				
+			try {
+				mSession.insertContent( contents );
+
+				setChecksums( mSession ,  mContents );
+			} catch (RequestException e) {
+				printError("Exception submitting data",e);
+			}
+
+			
+			
+		}
+		
+	}
+	
+	private 	List<SumContent> 	mContents = null;
+	private		int					mMaxFiles = 1;
+	
 
 	@Override
 	public int run(List<XValue> args) throws Exception {
 		
-		Options opts = new Options("c=connect:,md5,uri:,baseuri:,m=maxfiles:,r=recurse,d=mkdirs,t=text,b=binary,x=xml");
+		Options opts = new Options("v=verbose,c=connect:,md5,uri:,baseuri:,m=maxfiles:,r=recurse,d=mkdirs,t=text,b=binary,x=xml,maxthreads:");
 		opts.parse(args);
 		args = opts.getRemainingArgs();
 		
 		String uri = opts.getOptString("uri", null);
 		String baseUri = opts.getOptString("baseuri", "");
-		int  maxFiles = Util.parseInt(opts.getOptString("m", "1"),1);
+		mMaxFiles = Util.parseInt(opts.getOptString("m", "1"),1);
 		boolean bRecurse = opts.hasOpt("r");
 		boolean bMkdirs = opts.hasOpt("d");
 		boolean bMD5    = opts.hasOpt("md5");
+		bVerbose = opts.hasOpt("v");
+		int maxThreads = Util.parseInt(opts.getOptString("maxthreads", "1"),1);
 		
+		
+		SerializeOpts serializeOpts = getSerializeOpts( opts );
 		
 		/*
 		 * If content type is speciried the use it otherwise default to system defaults
@@ -88,6 +138,11 @@ public class put extends MLCommand {
 
 		session = cs.newSession();
 		
+		
+		mOutput = getEnv().getStderr().asPrintWriter(serializeOpts);
+
+		
+		
 		if( args.size() == 0 || (args.size() == 1 && baseUri.equals("") ) ){
 			InputPort in = null;
 			if( args.size() > 0 )
@@ -109,33 +164,41 @@ public class put extends MLCommand {
 			if(! baseUri.equals("") && ! baseUri.endsWith("/") )
 				baseUri = baseUri + "/";
 
-			
-			int start = 0 ;
-			
 			if( bMkdirs )
 				createDirectories(args ,baseUri , bRecurse  );
 			
 			
 			
-			int end = args.size() ;
+			/*
+			BlockingQueue<Runnable> q = new ArrayBlockingQueue<Runnable>(maxThreads);
+			mPool = new ThreadPoolExecutor(maxThreads, maxThreads, Integer.MAX_VALUE, TimeUnit.SECONDS, q);
+			*/
 			
-			while( start < end ){
-				int last = start + maxFiles;
-				if( last > end )
-					last = end ;
-				
-				load( args.subList(start, last), baseUri , bRecurse, bMD5 );
-				start += maxFiles ;
-				
-				
-			}
-			
-			
+	
+				print("Starting thread pool of " + maxThreads + " threads");
+				mPool = Executors.newFixedThreadPool(maxThreads);
+
+				load( args , baseUri , bRecurse , bMD5 );
+				flushContent();
+
 		
 		}
-
-		session.close();
 		
+		
+		/* 
+		 * Wait for all tasks to complete
+		 */
+		if( mPool != null ){
+			print("Waiting for tasks to complete");
+			mPool.shutdown();
+		
+			mPool.awaitTermination(Integer.MAX_VALUE, TimeUnit.SECONDS ) ;
+		}
+		
+		
+		session.close();
+		print("Complete");
+		mOutput.close();
 		
 		return 0;
 	}
@@ -251,10 +314,6 @@ public class put extends MLCommand {
 
 	public void load (List<XValue> files , String baseUri,  boolean bRecurse,  boolean bMD5 ) throws CoreException, IOException, RequestException
 	{
-		printErr("Putting " + files.size() + " files to " + baseUri );
-		List<Content>	contents = new ArrayList<Content>(files.size());
-		List<SumContent> sums = bMD5 ? new ArrayList<SumContent>(files.size()) : null ;
-		
 		
 		for( XValue v : files ){	
 			
@@ -264,7 +323,7 @@ public class put extends MLCommand {
 
 			if( file.isDirectory() ){
 				if( ! bRecurse ){
-					printErr("Skipping directory: " + file.getName() );
+					print("Skipping directory: " + file.getName() );
 					continue;
 				}
 				List<XValue> sub = new ArrayList<XValue>();
@@ -278,42 +337,78 @@ public class put extends MLCommand {
 				
 			}
 			Content content= ContentFactory.newContent (uri, file, mCreateOptions);
-			contents.add(content);
-			if( bMD5 )
-				sums.add( new SumContent(  uri , Checksum.calcChecksum(file)));
+			
+			putContent( uri , content , bMD5 ?Checksum.calcChecksum(file): null );
 			
 		}
 		
-		if( ! contents.isEmpty() )
-			session.insertContent (contents.toArray(new Content[ contents.size()]));
-
-		if( bMD5 && ! sums.isEmpty())
-			setChecksum( sums );
 		
 	}
 
 
-	private void setChecksum(List<SumContent> sums) throws RequestException {
-		for( SumContent  sum : sums )
-			setChecksum( sum.mURI , sum.mSum);
+	private void putContent(String uri, Content content, Checksum checksum) throws RequestException, UnexpectedException {
+		if( mContents == null )
+			mContents = 	new ArrayList<SumContent>( mMaxFiles );
+
+		
+		
+		mContents.add( new SumContent( uri , content , checksum ));
+		if( mContents.size() >= mMaxFiles )
+			flushContent();
+		
+		
+		
+	}
+
+	
+	private void flushContent() throws RequestException 
+	{
+		if( mContents == null )
+			return ;
+		
+		if( ! mContents.isEmpty()){
+			
+			print("Submitting contents");
+			mPool.execute(new PutContent(session , mContents) );
+
+			
+			
+			
+		}
+		
+		mContents = null ;
+		
 		
 	}
 
 
-	private void setChecksum(String uri , Checksum sum) throws RequestException {
+	private  static  void setChecksums( Session session , List<SumContent> list ) throws RequestException
+	{
+		StringBuffer sQuery = new StringBuffer();
+		for( SumContent sc : list )
+			if( sc.mSum != null )
+				sQuery.append( setChecksum( sc.mURI , sc.mSum ));
+			
+		if( sQuery.length() == 0 )
+			return ;
+		sQuery.append("0");
 		
-		AdhocQuery request = session.newAdhocQuery (
-"declare variable $uri  as xs:string external ;\n" +
-"declare variable $md5 as xs:string external;\n" +
-"declare variable $length as xs:integer external;\n" +
-"xdmp:document-set-property( $uri , <xmd5 md5='{$md5}' length='{$length}'/>)"
-);
-
-
-		request.setNewStringVariable("uri", uri );
-		request.setNewStringVariable("md5" , sum.getMD5() );
-		request.setNewIntegerVariable("length", sum.getLength() );
+		AdhocQuery request = session.newAdhocQuery ( sQuery.toString() );
 		session.submitRequest(request).close();
+		
+		
+	}
+	
+	
+
+	private static String setChecksum(String uri , Checksum sum) throws RequestException {
+		
+		return 
+			"xdmp:document-set-property( " + quote(uri) +
+			", <xmd5 md5='" + sum.getMD5() + 
+			"' length='"+ String.valueOf(sum.getLength()) + "'/>),\n" ;
+			
+					
 		
 		
 		
@@ -330,6 +425,8 @@ public class put extends MLCommand {
 			
 		}
 		sReq.append("0");
+		
+		printErr( sReq.toString() );
 /*		
 		AdhocQuery request = session.newAdhocQuery (
 "declare variable $dirs as xs:string+ external;\n" +
@@ -358,6 +455,28 @@ public class put extends MLCommand {
 
 		rs.close();
 		
+	}
+	
+	
+	
+	
+	protected void print( String str )
+	{
+		if( bVerbose ){
+			mOutput.println(str);
+			mOutput.flush();
+		}
+			
+	}
+
+	
+	protected synchronized void printError( String error , Exception e )
+	{		
+		mOutput.println(error);
+		if( e != null )
+			mLogger.error( error , e );
+		
+		mOutput.flush();
 	}
 
 

@@ -10,7 +10,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.Reader;
+import java.io.Writer;
 import java.math.BigInteger;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -85,12 +86,12 @@ public abstract class MLCommand extends XCommand {
 			// bug as of 2010-03-01
 
 			if (asText || type.isAtomic() || (type.isNode() && it instanceof XdmAttribute)) {
-				OutputStream os = out.asOutputStream();
+				Writer os = out.asPrintWriter(sopts);
 
 				rsItem.writeTo(os);
 				os.close();
 			} else {
-				InputStream isItem = rsItem.asInputStream();
+				Reader isItem = rsItem.asReader();
 
 				XMLEventWriter writer = out.asXMLEventWriter(sopts);
 
@@ -106,9 +107,9 @@ public abstract class MLCommand extends XCommand {
 		}
 	}
 
-	protected String quote(String s) {
+	protected static String quote(String s) {
 
-		return "'" + s.replace("'", "\\'") + "'";
+		return "'" + s.replace("'", "''").replace("&","&amp;").replace("<", "&lt;") + "'";
 	}
 
 	protected XdmVariable newVariable(String name, XValue value,SerializeOpts opts) throws XPathException, InvalidArgumentException, SaxonApiException {

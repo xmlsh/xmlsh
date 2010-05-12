@@ -28,7 +28,7 @@
 	<command name="put" url="http://www.xmlsh.org/MarkLogicPut">
 		<synopsis>Puts one or more files to the server</synopsis>
 		<usage>
-			<para>put  [options] script [file | expression]</para>
+			<para>put  [options] [file | expression]</para>
 		</usage>
 		<options>
 			<option>
