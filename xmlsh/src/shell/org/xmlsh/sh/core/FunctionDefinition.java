@@ -13,14 +13,12 @@ import org.xmlsh.sh.shell.Shell;
 public class FunctionDefinition extends Command {
 	private String mName;
 	private Command mBody;
-	private boolean mSubShell;
 	
 	public	boolean		isSimple() { return false ; }
 
-	public FunctionDefinition( String name , boolean subshell , Command body )
+	public FunctionDefinition( String name , Command body )
 	{
 		mName = name;
-		mSubShell = subshell;
 		mBody = body;
 	}
 	
@@ -43,13 +41,6 @@ public class FunctionDefinition extends Command {
 	}
 
 
-
-	/**
-	 * @return the subShell
-	 */
-	public boolean isSubShell() {
-		return mSubShell;
-	}
 
 
 

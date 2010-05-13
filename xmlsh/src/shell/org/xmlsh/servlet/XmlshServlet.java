@@ -97,9 +97,9 @@ public class XmlshServlet extends HttpServlet {
 					
 					// Set properties
 					if( xp != null )
-						env.setVar(xp);
+						env.setVar(xp,false);
 					if( headers != null )
-						env.setVar(headers);
+						env.setVar(headers,false);
 	
 					
 					ManagedHttpSession mhs = new ManagedHttpSession( request.getSession());
@@ -178,7 +178,7 @@ public class XmlshServlet extends HttpServlet {
 			while( names.hasMoreElements() ){
 				String name = (String) names.nextElement();
 				String value = (String) request.getParameter(name);
-				env.setVar(name, value);
+				env.setVar(name, value,false);
 			}
 			
 			
@@ -196,9 +196,9 @@ public class XmlshServlet extends HttpServlet {
 				
 				// Set properties
 				if( xp != null )
-					env.setVar(xp);
+					env.setVar(xp,false);
 				if( headers != null )
-					env.setVar(headers);
+					env.setVar(headers,false);
 				
 				
 				ManagedHttpSession mhs = new ManagedHttpSession( request.getSession());

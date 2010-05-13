@@ -6,7 +6,7 @@ options {
   JDK_VERSION = "1.5";
 
   STATIC=false;
-//   DEBUG_PARSER=true ;  
+//  DEBUG_PARSER=true ;  
 // DEBUG_LOOKAHEAD=true;
 // DEBUG_TOKEN_MANAGER=true;
 // FORCE_LA_CHECK=true;
@@ -326,7 +326,11 @@ TOKEN : {
  
 
 <*> TOKEN : {
-	< ASSIGN_WORD : <VARNAME> "=" >
+	< ASSIGN_WORD :
+		(  ("local" (["\t"," "])+ <VARNAME> ("=")?) | (< VARNAME > "=")) >
+			{		if( matchedToken.image.startsWith("local") &&  ! matchedToken.image.endsWith("=") )
+			matchedToken.image = matchedToken.image + "=";
+	}
 |   < ASSIGN_WORDPE : <VARNAME > "+=" >
 | <#VARNAME : 
 	(["0" - "9" , "a" - "z" , "A" - "Z" , "_"  ])+ |
@@ -336,7 +340,9 @@ TOKEN : {
 }
 
 <DEFAULT> TOKEN : {
-	< FUNC_DECL : ("function" (["\t"," "]))? <NAME> (["\t"," "])* "()" >
+	< FUNC_DECL : "function" (["\t"," "])+ <NAME> (["\t"," "])* ("()")?
+		|  <NAME> (["\t"," "])* "()"
+	>
 }
 
 
@@ -697,12 +703,11 @@ FunctionDefinition function_definition() :
 {
 	t=<FUNC_DECL> linebreak() b=function_body() 
 	{ String name = t.toString();
-	  boolean subshell = name.startsWith("function");
-	  if( subshell )
+	  if( name.startsWith("function") )
 	     name = name.replaceFirst("^function\\s*","");
 	   name = name.replaceFirst("\\s*\\(\\s*\\)\\s*$","");
-		return new 
-		FunctionDefinition(name, subshell , b ) ; }
+	return new 
+		FunctionDefinition(name.trim(), b ) ; }
 }
 
 CompoundCommand function_body() : 
@@ -815,7 +820,7 @@ Assign assign() :
 	}
 {
 	LOOKAHEAD(2) t1=<ASSIGN_WORD> w=cmd_word()
-	 { s=t1.toString();
+	 { 	s=t1.toString();
 		return new Assign(s.substring(0,s.length()-1)  , "=" , w  );
 	} 
 
@@ -839,7 +844,7 @@ Assign assign() :
 	}
 
 | 
-	t1=<ASSIGN_WORD>
+	t1=<ASSIGN_WORD> (< CSEMI >)?
 	 { s=t1.toString();
 		return new Assign(s.substring(0,s.length()-1)  , "=" , new StringWord(""));
 	} 

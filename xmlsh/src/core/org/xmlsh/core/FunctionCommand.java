@@ -30,11 +30,9 @@ public class FunctionCommand implements ICommand {
 		List<XValue> saveArgs = shell.getArgs();
 		String saveArg0 = shell.getArg0();
 
-		if( mFunction.isSubShell() )
-			shell = shell.clone();
+		Variables save_vars = shell.pushLocalVars();
 
 		
-		Shell saved_shell = ShellContext.set( shell );
 		
 		try {
 			
@@ -45,14 +43,10 @@ public class FunctionCommand implements ICommand {
 			
 		
 		} finally {
-			ShellContext.set(saved_shell);
+			shell.popLocalVars(save_vars);
 			
-			if( mFunction.isSubShell() )
-				shell.close();
-			else {
-				shell.setArg0(saveArg0);
-				shell.setArgs(saveArgs);
-			}
+			shell.setArg0(saveArg0);
+			shell.setArgs(saveArgs);
 		}
 	}
 	

@@ -15,11 +15,16 @@ import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.MutableInteger;
 
 public class Assign {
+	private boolean	mLocal = false ;
 	private	 String		mVariable;
 	private String		mOp;		// "=" or "+-" 
 	private Word		mValue;		// a single value a=b
 	private WordList	mValueList; // a sequence constructor a=(b)
 	public Assign(String variable, String op , Word value) {
+		if( variable.startsWith("local ")){
+			mLocal = true ;
+			variable = variable.replaceFirst("local\\s*", "");
+		}
 		mVariable = variable;
 		mOp = op ;
 		mValue = value;
@@ -31,6 +36,8 @@ public class Assign {
 		mValueList = value;
 	}
 	public void print(PrintWriter out) {
+		if( mLocal )
+			out.print("local ");
 		out.print(getVariable());
 		out.print(mOp);
 		if( mValue != null )
@@ -59,13 +66,19 @@ public class Assign {
 	public String getVariable() {
 		return mVariable;
 	}
+	public boolean isLocal () {
+		return mLocal ;
+	}
 	public XValue expand(Shell shell, MutableInteger retVal) throws IOException, CoreException {
 		if( mValue != null )
 			// Single variables dont expand wildcards
 			return mValue.expand(shell, false, false,retVal);
 		else
+		if( mValueList != null )
 			// Sequences expand wildcards
 			return mValueList.expand(shell, true, false);
+		else
+			return null ;
 	}
 }
 

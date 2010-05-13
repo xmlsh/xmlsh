@@ -48,9 +48,9 @@ public class CommandPrefix {
 			XValue value = ass.expand(shell,retValue);
 			
 			if( ass.getOp().equals("+="))
-					shell.getEnv().appendVar( ass.getVariable(), value );
+					shell.getEnv().appendVar( ass.getVariable(), value , ass.isLocal());
 			else
-				shell.getEnv().setVar( ass.getVariable(), value );
+				shell.getEnv().setVar( ass.getVariable(), value , ass.isLocal());
 				
 			
 		}

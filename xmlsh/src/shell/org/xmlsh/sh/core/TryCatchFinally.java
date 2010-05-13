@@ -62,14 +62,14 @@ public class TryCatchFinally extends CompoundCommand
 			try {
 				ret = shell.exec( mTryPart  );
 			} catch( ThrowException e ){
-				shell.getEnv().setVar(mCatchVar, e.getValue() );
+				shell.getEnv().setVar(mCatchVar, e.getValue() , false );
 				
 				ret = shell.exec( mCatchPart );
 				
 				
 		
 			} catch( ExitOnErrorException e ){
-				shell.getEnv().setVar(mCatchVar, new XValue(e.getValue()) );
+				shell.getEnv().setVar(mCatchVar, new XValue(e.getValue()) , false );
 				
 				ret = shell.exec( mCatchPart );
 				

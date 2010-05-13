@@ -31,7 +31,7 @@ public class xread extends BuiltinCommand {
 
 		InputPort stdin = mShell.getEnv().getStdin();
 		XdmNode node = stdin.asXdmNode(getSerializeOpts());
-		mShell.getEnv().setVar(args.get(0).toString(), new XValue(node));
+		mShell.getEnv().setVar(args.get(0).toString(), new XValue(node),false);
 
 
 		return 0;

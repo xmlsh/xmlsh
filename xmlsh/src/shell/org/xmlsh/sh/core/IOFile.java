@@ -93,7 +93,7 @@ public class IOFile {
 				XVariable xvar = env.getVar(var);
 				if( xvar == null ){
 					xvar = new XVariable(var,null);
-					env.setVar(xvar);
+					env.setVar(xvar, false );
 				}
 				else
 					xvar.clear();
@@ -106,7 +106,7 @@ public class IOFile {
 				XVariable xvar = env.getVar(var);
 				if( var == null ){
 					xvar = new XVariable(var,null);
-					env.setVar(xvar);
+					env.setVar(xvar, false );
 				}
 				env.setOutput(port,xvar);				
 			}

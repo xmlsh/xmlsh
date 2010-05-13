@@ -25,6 +25,7 @@ import net.sf.saxon.s9api.XdmValue;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.xmlsh.core.CoreException;
+import org.xmlsh.core.Variables;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.XVariable;
 import org.xmlsh.core.XVariable.XVarFlag;
@@ -419,9 +420,10 @@ class Expander {
 		StringBuffer sb = new StringBuffer();
 		
 
-		Collection<XVariable> vars = mShell.getEnv().getVars().values();
-		for( XVariable value : vars ){
-			
+		Variables variables = mShell.getEnv().getVars();
+		Collection<String> varnames = variables.getVarNames();
+		for( String name : varnames ) {
+			XVariable value = variables.get(name);
 			if( ! value.isNull() && value.getFlags().contains( XVarFlag.XEXPR ))
 			
 				sb.append("declare variable $").append(value.getName())
@@ -452,8 +454,8 @@ class Expander {
 			
 			XQueryEvaluator eval = expr.load();
 			
-			for( XVariable value : vars ){
-				
+			for( String name : varnames ) {
+				XVariable value = variables.get(name);
 				if( !value.isNull() && value.getFlags().contains( XVarFlag.XEXPR ))
 			
 					eval.setExternalVariable( new QName(value.getName()), value.getValue().asXdmValue());

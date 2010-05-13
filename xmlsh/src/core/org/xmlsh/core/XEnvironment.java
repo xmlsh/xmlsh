@@ -77,7 +77,7 @@ public class XEnvironment  {
 		return mVars.get(name);
 	}
 	
-	public void	setVar( XVariable var)
+	public void	setVar( XVariable var, boolean local )
 	{
 		/*
 		 * Special variables
@@ -87,12 +87,12 @@ public class XEnvironment  {
 			
 			declareNamespace( name.substring(6),var.getValue().toString());
 		} else
-			mVars.put(name , var);
+			mVars.put(name , var, local );
 	}
 	
 
 
-	public void	setVar( String name , XValue value) throws InvalidArgumentException 
+	public void	setVar( String name , XValue value, boolean local ) throws InvalidArgumentException 
 	{
 
 		
@@ -105,20 +105,20 @@ public class XEnvironment  {
 		var.setValue(value);
 		
 		
-		setVar( var );
+		setVar( var , local );
 	}
 	
 	
 	/*
 	 * Append to a variable as a sequence 
 	 */
-	public void appendVar(String name, XValue value) throws InvalidArgumentException {
+	public void appendVar(String name, XValue value, boolean local ) throws InvalidArgumentException {
 		
 
 		XVariable var = mVars.get(name);
 		if( var == null ){
 			// If no existing variable then dont touch
-			setVar(new XVariable( name , value ));
+			setVar(new XVariable( name , value ) , local );
 			return ;
 		}
 		
@@ -129,14 +129,14 @@ public class XEnvironment  {
 			return ;
 		
 		var.setValue(  new XValue(var.getValue().asXdmValue().append(xvalue)));
-		setVar( var );
+		setVar( var , local);
 		
 	}
 		
 	
 
-	public void setVar(String name, String value) throws InvalidArgumentException {
-		setVar( name , new XValue(value));
+	public void setVar(String name, String value , boolean local ) throws InvalidArgumentException {
+		setVar( name , new XValue(value),local);
 		
 	}
 	
@@ -193,7 +193,7 @@ public class XEnvironment  {
 	
 
 	public Collection<String> getVarNames() {
-		return mVars.keySet();
+		return mVars.getVarNames();
 	}
 
 	/*
@@ -592,6 +592,21 @@ public class XEnvironment  {
 		return mVars.containsKey(name);
 		
 	}
+
+
+	public Variables pushLocalVars() {
+		Variables current = mVars ;
+		mVars = mVars.pushLocals();
+		return current ;
+		
+	}
+
+
+	public void popLocalVars(Variables vars) {
+		mVars = vars ;
+		
+	}
+
 
 
 

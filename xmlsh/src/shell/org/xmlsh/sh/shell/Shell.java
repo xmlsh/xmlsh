@@ -37,6 +37,7 @@ import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.Path;
 import org.xmlsh.core.ThrowException;
+import org.xmlsh.core.Variables;
 import org.xmlsh.core.XDynamicVariable;
 import org.xmlsh.core.XEnvironment;
 import org.xmlsh.core.XValue;
@@ -214,7 +215,7 @@ public class Shell {
 			if( name.equals("PS1"))
 				continue ;
 			
-			getEnv().setVar( new XVariable( name , new XValue(entry.getValue()) , EnumSet.of(XVarFlag.EXPORT )));
+			getEnv().setVar( new XVariable( name , new XValue(entry.getValue()) , EnumSet.of(XVarFlag.EXPORT )),false );
 			
 			
 		}
@@ -223,11 +224,11 @@ public class Shell {
 		// Export path to shell path
 	    String path = Util.toJavaPath(System.getenv("PATH"));
 	    	getEnv().setVar( new XVariable("PATH", 
-	    			Util.isBlank(path) ? new XValue() : new XValue(path.split(File.pathSeparator))));
+	    			Util.isBlank(path) ? new XValue() : new XValue(path.split(File.pathSeparator))) , false );
 	
 	    String xpath = Util.toJavaPath(System.getenv("XPATH"));
 	    getEnv().setVar( new XVariable("XPATH", 
-	    		Util.isBlank(xpath) ? new XValue() : new XValue(xpath.split(File.pathSeparator))));
+	    		Util.isBlank(xpath) ? new XValue() : new XValue(xpath.split(File.pathSeparator))) , false );
 	
 		
 		getEnv().setVar(
@@ -239,13 +240,13 @@ public class Shell {
 					
 				}
 				
-				
+				, false 
 		);
 		
-		getEnv().setVar("TMPDIR" , Util.toJavaPath(System.getProperty("java.io.tmpdir")));
+		getEnv().setVar("TMPDIR" , Util.toJavaPath(System.getProperty("java.io.tmpdir")), false );
 		
 		if( getEnv().getVar("HOME") == null )
-			getEnv().setVar("HOME" , Util.toJavaPath(System.getProperty("user.home")));
+			getEnv().setVar("HOME" , Util.toJavaPath(System.getProperty("user.home")), false );
 		
 		
 	}
@@ -1260,6 +1261,18 @@ public class Shell {
 	public SerializeOpts getSerializeOpts()
 	{
 		return mOpts.mSerialize;
+		
+	}
+
+
+	public Variables pushLocalVars() {
+		return mEnv.pushLocalVars();
+		
+	}
+
+
+	public void popLocalVars(Variables vars ) {
+		mEnv.popLocalVars( vars );
 		
 	}
 
