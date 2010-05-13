@@ -36,19 +36,20 @@ public class xslt extends XCommand {
 
 		@Override
 		public void error(TransformerException exception) throws TransformerException {
-			printErr("Error: " + exception.getLocalizedMessage());
+			printErr("Error: " + exception.getMessageAndLocation());
 
 		}
 
 		@Override
 		public void fatalError(TransformerException exception) throws TransformerException {
-			printErr("Fatal Error: " + exception.getLocalizedMessage());
+			printErr("Fatal Error: " + exception.getMessageAndLocation());
+
 
 		}
 
 		@Override
 		public void warning(TransformerException exception) throws TransformerException {
-			printErr("Warning : " + exception.getLocalizedMessage());
+			printErr("Warning : " + exception.getMessageAndLocation());
 
 		}
 
