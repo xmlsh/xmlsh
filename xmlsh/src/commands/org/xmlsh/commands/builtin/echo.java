@@ -35,8 +35,9 @@ public class echo extends BuiltinCommand {
 		if( stdout == null )
 			throw new InvalidArgumentException("Output port not found: " + port );
 			
+		SerializeOpts serializeOpts = getSerializeOpts(opts);
 			
-		OutputStream out = stdout.asOutputStream();
+		OutputStream out = stdout.asOutputStream(serializeOpts);
 	
 		
 		args = opts.getRemainingArgs();
@@ -48,10 +49,10 @@ public class echo extends BuiltinCommand {
 					out.write(' ');
 				
 				bFirst = false;
-				arg.serialize( out , getSerializeOpts(opts) );
+				arg.serialize( out , serializeOpts );
 		}
 		if( ! nolf )
-			out.write(Util.getNewline(getSerializeOpts(opts)));
+			out.write(Util.getNewline(serializeOpts));
 		out.flush();
 		return 0;
 	}

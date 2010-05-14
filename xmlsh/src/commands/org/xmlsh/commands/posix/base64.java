@@ -45,8 +45,9 @@ public class base64 extends XCommand {
 		boolean bWrap   = opts.hasOpt("w");
 		
 		InputPort iport = (args.isEmpty() ? getStdin() : getInput(args.get(0)));
-		InputStream is = iport.asInputStream(getSerializeOpts(opts)); 
-		OutputStream os = getStdout().asOutputStream();
+		SerializeOpts serializeOpts = getSerializeOpts(opts);
+		InputStream is = iport.asInputStream(serializeOpts); 
+		OutputStream os = getStdout().asOutputStream(serializeOpts);
 		
 		/*
 		 * Need to buffer the streams because the B64 code does 1 byte IO 

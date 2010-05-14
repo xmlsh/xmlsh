@@ -31,7 +31,7 @@ public class read extends BuiltinCommand {
 
 		InputPort stdin = mShell.getEnv().getStdin();
 		InputStream is = stdin.asInputStream(getSerializeOpts());
-		String line = Util.readLine( is );
+		String line = Util.readLine( is , getSerializeOpts().getText_encoding() );
 		if( line == null )
 			return 1; // EOF
 

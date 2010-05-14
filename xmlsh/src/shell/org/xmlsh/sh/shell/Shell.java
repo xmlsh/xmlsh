@@ -6,6 +6,7 @@
 
 package org.xmlsh.sh.shell;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -13,6 +14,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Constructor;
@@ -681,7 +683,11 @@ public class Shell {
 	public void printErr(String s) {
 		PrintWriter out;
 		try {
-			out = new PrintWriter( getEnv().getStderr().asOutputStream() );
+			out = new PrintWriter( 
+					new BufferedWriter(
+							new OutputStreamWriter(getEnv().getStderr().asOutputStream(getSerializeOpts()), getSerializeOpts().getText_encoding())
+						)
+					 );
 		} catch (IOException e) {
 			mLogger.error("Exception printing err:" + s , e );
 			return ;
@@ -694,7 +700,11 @@ public class Shell {
 	public void printOut(String s)  {
 		PrintWriter out;
 		try {
-			out = new PrintWriter( getEnv().getStdout().asOutputStream() );
+			out = new PrintWriter( 
+					new BufferedWriter(
+							new OutputStreamWriter(getEnv().getStdout().asOutputStream(getSerializeOpts()), getSerializeOpts().getText_encoding())
+						)
+					 );
 		} catch (IOException e) {
 			mLogger.error("Exception writing output: " + s , e );
 			return;

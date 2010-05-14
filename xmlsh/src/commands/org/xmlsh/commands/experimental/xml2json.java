@@ -61,10 +61,13 @@ public class xml2json extends XCommand
 	public int run(  List<XValue> args  )	throws Exception
 	{
 		mFormatter = new CSVFormatter();
-		mOutput = getStdout().asOutputStream();
 
 		Options opts = new Options( "header,n,i:,attr" );
 		opts.parse(args);
+		
+
+		mOutput = getStdout().asOutputStream( getSerializeOpts() );
+
 		
 		bHeader = opts.hasOpt("header");
 		bAttr = opts.hasOpt("attr");

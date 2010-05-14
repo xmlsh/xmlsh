@@ -28,6 +28,9 @@ public class httpsession extends XCommand {
 		Options opts = new Options( "getvar:,setvar:,n", SerializeOpts.getOptionDefs()  );
 		opts.parse(args);
 		
+
+		SerializeOpts serializeOpts = getSerializeOpts(opts);
+		
 		String 	getVar = opts.getOptString("getvar", null);
 		String  setVar = opts.getOptString("setvar", null);
 		Boolean noErr  = opts.hasOpt("n");
@@ -43,7 +46,6 @@ public class httpsession extends XCommand {
 		}
 		try {
 			
-			SerializeOpts serializeOpts = getSerializeOpts(opts);
 		
 			
 			if( getVar != null )
@@ -92,7 +94,7 @@ public class httpsession extends XCommand {
 		} else
 		{
 			String svalue = value.toString();
-			getStdout().asPrintStream().print(svalue);
+			getStdout().asPrintStream(serializeOpts).print(svalue);
 			
 		}
 		

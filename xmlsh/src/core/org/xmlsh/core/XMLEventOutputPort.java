@@ -105,7 +105,7 @@ public class XMLEventOutputPort extends OutputPort
 	 * Standard input stream - created on first request
 	 */
 	
-	public	synchronized OutputStream asOutputStream() 
+	public	synchronized OutputStream asOutputStream(SerializeOpts serializeOpts) 
 	{
 		return new XMLEventOutputStream();
 	}
@@ -134,7 +134,7 @@ public class XMLEventOutputPort extends OutputPort
 	
 	public synchronized PrintStream asPrintStream()
 	{
-		return new PrintStream(asOutputStream());
+		return new PrintStream(asOutputStream(mOpts));
 	}
 
 	public synchronized Destination asDestination(SerializeOpts opts) throws CoreException
@@ -158,7 +158,7 @@ public class XMLEventOutputPort extends OutputPort
 
 	public synchronized PrintWriter asPrintWriter(SerializeOpts opts) throws UnsupportedEncodingException {
 		return new PrintWriter( 		
-				new OutputStreamWriter(asOutputStream() , 
+				new OutputStreamWriter(asOutputStream(mOpts) , 
 						opts.getText_encoding() ));
 	}
 

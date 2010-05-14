@@ -63,7 +63,7 @@ public class VarURLConnection extends URLConnection {
 		if (shell != null) {
 			XVariable var = shell.getEnv().getVar(name);
 			if( var != null )
-				return new VariableOutputPort(var).asOutputStream();
+				return new VariableOutputPort(var).asOutputStream(shell.getSerializeOpts());
 		}
 		return null;
 	}

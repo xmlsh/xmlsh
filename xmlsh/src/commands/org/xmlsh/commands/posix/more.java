@@ -54,8 +54,7 @@ public class more extends XCommand {
 		
 		
 		
-		 
-		OutputStream 	stdout = getStdout().asOutputStream();
+		OutputStream 	stdout = getStdout().asOutputStream(mSerial);
 		if( args.size() > 0 ){
 			for( XValue arg : args ){
 				
@@ -78,15 +77,16 @@ public class more extends XCommand {
 				if( bQuit )
 					break;
 			}
+		} else {
+
+			page( getStdin().asInputStream(mSerial) , stdout );
 		}
-		else
-			page( getStdin().asInputStream(getSerializeOpts()) , stdout );
 		
 		return 0;
 	}
 
 	// pagenate, return true on EOF false on quit
-	private boolean page(InputStream in, OutputStream stdout) throws IOException {
+	private boolean page(InputStream in, OutputStream stdout ) throws IOException {
 		
 		
 		
@@ -101,7 +101,7 @@ public class more extends XCommand {
 		int lines = mLines;
 		do {
 			for( int i =0 ; i < lines ; i++ ){
-				String l = Util.readLine(in);
+				String l = Util.readLine(in,mSerial.getText_encoding());
 				if( l == null )
 					return false;
 				stdout.write(l.getBytes(mSerial.getText_encoding()));

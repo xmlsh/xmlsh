@@ -33,7 +33,7 @@ public class xslt1 extends XCommand {
 		
 		
 		Source source = getStdin().asSource(serializeOpts);
-		apply( style , source, getStdout().asOutputStream() , opts.hasOpt("v") ? args : null, serializeOpts);
+		apply( style , source, getStdout().asOutputStream(serializeOpts) , opts.hasOpt("v") ? args : null, serializeOpts);
 		return 0;
 
 	}

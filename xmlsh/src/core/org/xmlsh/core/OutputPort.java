@@ -31,7 +31,7 @@ import org.xmlsh.sh.shell.SerializeOpts;
 public abstract class OutputPort extends IPort
 {
 
-	public	abstract OutputStream asOutputStream();
+	public	abstract OutputStream asOutputStream(SerializeOpts opts);
 
 	public abstract void flush() throws  CoreException;
 	
@@ -42,9 +42,9 @@ public abstract class OutputPort extends IPort
 
 	
 	
-	public synchronized PrintStream asPrintStream() 
+	public synchronized PrintStream asPrintStream(SerializeOpts opts) 
 	{
-		return new PrintStream(asOutputStream());
+		return new PrintStream(asOutputStream(opts));
 	}
 
 	public abstract Destination asDestination(SerializeOpts opts) throws CoreException;
@@ -52,7 +52,7 @@ public abstract class OutputPort extends IPort
 
 	public synchronized PrintWriter asPrintWriter(SerializeOpts opts) throws UnsupportedEncodingException {
 		return new PrintWriter( 		
-				new OutputStreamWriter(asOutputStream() , opts.getText_encoding() ));
+				new OutputStreamWriter(asOutputStream(opts) , opts.getText_encoding() ));
 	}
 
 	

@@ -57,7 +57,6 @@ import org.xmlsh.core.Namespaces;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
-
 /**
  * @author DLEE
  *
@@ -493,19 +492,22 @@ public class Util
 	}
 
 
-	public static String readLine(InputStream is) throws IOException {
-		StringBuffer sb = new StringBuffer();
+	public static String readLine(InputStream is, String encoding) throws IOException {
+
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		int c;
+		
+		
 		boolean bAny = false ;
 		while( (c=is.read()) > 0 && c != '\n' ){
 			bAny = true;
 			if( c != '\r' )
-				sb.append((char)c);
+				bos.write( c);
 		}
 		if( c == -1 && ! bAny )
 			return null;
-		
-		return sb.toString();
+		bos.close();
+		return bos.toString(encoding);
 	}
 
 

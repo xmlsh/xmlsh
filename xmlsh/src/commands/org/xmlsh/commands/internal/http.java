@@ -19,7 +19,10 @@ import org.apache.log4j.Logger;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
+import org.xmlsh.core.Options.OptionValue;
+import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.util.Base64Coder;
+import org.xmlsh.util.StringPair;
 import org.xmlsh.util.Util;
 
 
@@ -36,8 +39,13 @@ public class http extends XCommand {
 	throws Exception 
 	{
 		
-		Options opts = new Options( "get:,put:,post:,head:,options:,delete:,connectTimeout:,contentType:,readTimeout:,+useCaches,+followRedirects,user:,password:" );
+		Options opts = new Options( "get:,put:,post:,head:,options:,delete:,connectTimeout:,contentType:,readTimeout:,+useCaches,+followRedirects,user:,password:,add-header:+" );
 		opts.parse(args);
+		
+		SerializeOpts serializeOpts = getSerializeOpts();  // Use args ?
+
+		
+		
 		String method = "GET";
 		boolean doInput = true ;
 		boolean doOutput = false ;
@@ -113,6 +121,17 @@ public class http extends XCommand {
 			
 			
 			http.setRequestMethod(method);
+			OptionValue headers = opts.getOpt("header");
+			if( headers != null ){
+				
+				for( XValue v : headers.getValues() ){
+					StringPair pair = new StringPair( v.toString() , '=');
+
+					http.addRequestProperty(pair.getLeft(), pair.getRight());
+				}
+				
+			}
+			
 			
 			http.setDoInput(doInput);
 			http.setDoOutput(doOutput);
@@ -120,7 +139,7 @@ public class http extends XCommand {
 			if( doOutput ){
 				conn.connect();
 				OutputStream out = http.getOutputStream();
-				Util.copyStream( getStdin().asInputStream(getSerializeOpts()) , out );
+				Util.copyStream( getStdin().asInputStream(serializeOpts) , out );
 				out.close();
 				
 				
@@ -132,7 +151,7 @@ public class http extends XCommand {
 		
 		if( doInput ){
 			InputStream in = conn.getInputStream();
-			Util.copyStream(in, getStdout().asOutputStream());
+			Util.copyStream(in, getStdout().asOutputStream(serializeOpts));
 			in.close();
 			
 		}

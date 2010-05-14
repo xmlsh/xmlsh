@@ -35,7 +35,7 @@ public class cat extends XCommand {
 		 * opts.parse();
 		 * args = opts.getRemainingArgs();
 		 */ 
-		OutputStream 	stdout = getStdout().asOutputStream();
+		OutputStream 	stdout = getStdout().asOutputStream(getSerializeOpts());
 		if( args.size() > 0 ){
 			for( XValue arg : args ){
 				

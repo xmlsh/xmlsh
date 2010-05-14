@@ -16,6 +16,7 @@ import java.util.List;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
+import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.util.Util;
 
 /*
@@ -84,6 +85,8 @@ public class jcall extends XCommand
 	public synchronized int run(  List<XValue> args )	throws Exception
 	{
 		
+
+		SerializeOpts serializeOpts = getSerializeOpts();
 		/*
 		 * Do NOT use Options because we need to split out the jcall options differently then the invoked options
 		 * 
@@ -131,9 +134,9 @@ public class jcall extends XCommand
 			System.setSecurityManager(new NoExitSecurityManager(oldManager));
 			
 			
-			System.setOut(newStdout = getStdout().asPrintStream());
+			System.setOut(newStdout = getStdout().asPrintStream(serializeOpts));
 
-			System.setIn(getStdin().asInputStream(getSerializeOpts())) ;
+			System.setIn(getStdin().asInputStream(serializeOpts)) ;
 		
 			String className = args.remove(0).toString();
 			Class<?> cls = Class.forName(className,true,classloader);

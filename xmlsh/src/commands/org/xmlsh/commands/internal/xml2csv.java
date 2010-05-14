@@ -64,6 +64,7 @@ public class xml2csv extends XCommand
 	
 		Options opts = new Options( "header,attr,delim:,quote:" , SerializeOpts.getOptionDefs() );
 		opts.parse(args);
+		SerializeOpts serializeOpts = getSerializeOpts(opts);
 		
 		
 		bHeader = opts.hasOpt("header");
@@ -75,14 +76,13 @@ public class xml2csv extends XCommand
 		String quote = opts.getOptString("quote", "\"");
 		
 		mFormatter = new CSVFormatter(delim.charAt(0),quote.charAt(0));
-		mOutput = getStdout().asOutputStream();
+		mOutput = getStdout().asOutputStream(serializeOpts);
 
 	
 		
 		Processor processor = Shell.getProcessor();
 		mCompiler = processor.newXQueryCompiler();
 		InputPort  in = getStdin();
-		SerializeOpts serializeOpts = getSerializeOpts(opts);
 		XdmNode	context = in.asXdmNode(serializeOpts);
 
 		

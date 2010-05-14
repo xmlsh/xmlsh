@@ -46,7 +46,7 @@ public class xproperties extends XCommand
 
 		Options opts = new Options( "in:,inxml:,text,xml,d=delete:+,v=var:+,a=add:+,c=comment:" , SerializeOpts.getOptionDefs()  );
 		opts.parse(args);
-	
+		SerializeOpts serializeOpts = getSerializeOpts(opts);
 		XValue optIn 		= opts.getOptValue("in");
 		XValue optInXml		= opts.getOptValue("inxml");
 
@@ -72,7 +72,7 @@ public class xproperties extends XCommand
 		
 		
 		Properties props = new Properties();
-		SerializeOpts serializeOpts = getSerializeOpts(opts);
+
 		if( optInXml != null  )
 			props.loadFromXML(getInput(optInXml).asInputStream(serializeOpts));
 		else
@@ -107,12 +107,12 @@ public class xproperties extends XCommand
 		
 		
 		if( printVars != null )
-			writeVars( props, printVars );
+			writeVars( props, printVars , serializeOpts);
 		else
 		if( ! bOutText)
 			writeXML(props, comment);
 		else
-			writeText(props,comment);
+			writeText(props,comment,serializeOpts);
 		
 		
 
@@ -121,9 +121,9 @@ public class xproperties extends XCommand
 		
 	}
 
-	private void writeVars(Properties props, List<String> vars ) throws UnsupportedEncodingException, IOException, InvalidArgumentException {
+	private void writeVars(Properties props, List<String> vars , SerializeOpts serializeOpts) throws UnsupportedEncodingException, IOException, InvalidArgumentException {
 		
-		PrintWriter out = getStdout().asPrintWriter(getSerializeOpts());
+		PrintWriter out = getStdout().asPrintWriter(serializeOpts);
 		for( String var : vars )
 			out.println( props.getProperty(var, "") );
 	
@@ -134,8 +134,8 @@ public class xproperties extends XCommand
 
 
 
-	private void writeText(Properties props, String comment) throws IOException {
-		props.store(getEnv().getStdout().asOutputStream(), comment);
+	private void writeText(Properties props, String comment , SerializeOpts serializeOpts) throws IOException {
+		props.store(getEnv().getStdout().asOutputStream(serializeOpts), comment);
 		
 	}
 

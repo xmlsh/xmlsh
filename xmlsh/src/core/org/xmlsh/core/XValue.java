@@ -368,10 +368,13 @@ public class XValue {
 		if( mValue == null )
 			return new XValue(xvalue);
 		
+		if( xvalue == null )
+			return this ;
 		
 		List<XdmItem> items = new ArrayList<XdmItem>();
 		for (XdmItem item : asXdmValue())
 			items.add(item);
+		
 		for( XdmItem item : xvalue )
 			items.add(item);
 		

@@ -75,7 +75,7 @@ public class VariableOutputPort extends OutputPort
 	private		ByteArrayOutputStream 	mByteArrayOutputStream;
 	private		Builder					mBuilder;
 	private		XMLEventWriterBuffer	mWriterBuffer;
-
+	private		SerializeOpts 			mSerializeOpts; 	// for converting from ByteArray to string  
 	
 	
 	
@@ -103,12 +103,13 @@ public class VariableOutputPort extends OutputPort
 	 * Standard input stream - created on first request
 	 */
 	
-	public	synchronized OutputStream asOutputStream() 
+	public	synchronized OutputStream asOutputStream(	SerializeOpts serializeOpts  )
 	{
 		/*
 		 * If going to a variable, then create a variable stream
 		 */
-			return ( mByteArrayOutputStream = new ByteArrayOutputStream()); 	// BOS is synchroized 
+		mSerializeOpts = serializeOpts ;
+		return ( mByteArrayOutputStream = new ByteArrayOutputStream()); 	// BOS is synchroized 
 	}
 
 	public synchronized void flush() throws  CoreException
@@ -121,7 +122,11 @@ public class VariableOutputPort extends OutputPort
 			
 			// else
 			if (mByteArrayOutputStream != null)
-				appendVar( mByteArrayOutputStream.toString(   ) );
+				try {
+					appendVar( mByteArrayOutputStream.toString(mSerializeOpts.getText_encoding()   ) );
+				} catch (UnsupportedEncodingException e1) {
+					throw new CoreException( e1 );
+				}
 
 			//else
 			if (mBuilder != null)
@@ -159,9 +164,9 @@ public class VariableOutputPort extends OutputPort
 
 
 	
-	public synchronized PrintStream asPrintStream()
+	public synchronized PrintStream asPrintStream(SerializeOpts opts)
 	{
-		return new PrintStream(asOutputStream());
+		return new PrintStream(asOutputStream(opts));
 	}
 
 	public synchronized Destination asDestination(SerializeOpts opts) throws InvalidArgumentException
@@ -185,7 +190,7 @@ public class VariableOutputPort extends OutputPort
 
 	public synchronized PrintWriter asPrintWriter(SerializeOpts opts) throws UnsupportedEncodingException {
 		return new PrintWriter( 		
-				new OutputStreamWriter(asOutputStream() , 
+				new OutputStreamWriter(asOutputStream(opts) , 
 						opts.getText_encoding() ));
 	}
 
