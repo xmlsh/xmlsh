@@ -12,3 +12,4 @@ for: 4
 Number of params: 2
 <foo a1="attribute">value</foo>
 second arg
+foo barspam

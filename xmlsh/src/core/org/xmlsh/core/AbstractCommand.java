@@ -140,7 +140,7 @@ public abstract class AbstractCommand implements ICommand {
 			helpUsage.doUsage(mEnvironment.getStdout(), cmdName);
 		} catch (Exception e) {
 			mLogger.warn("Exception printing usage" , e );
-			mShell.printErr("Usaage: <unknown>");
+			mShell.printErr("Usage: <unknown>");
 		}
 	}
 	public void usage()

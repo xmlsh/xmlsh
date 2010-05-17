@@ -39,6 +39,14 @@ fi
 echo <[ $_1 ]>
 echo <[ $_2 ]> 
 
+
+# Test that text nodes concatenate like strings
+
+a="foo bar"
+b=<[ text { "spam" } ]>
+echo $a$b
+
+
 exit 0
 
 

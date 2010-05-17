@@ -267,7 +267,7 @@ public class XValue {
 			return true ;
 		
 		ValueRepresentation value = mValue.getUnderlyingValue();
-		boolean isAtom = ( value instanceof AtomicValue) ;
+		boolean isAtom = ( value instanceof AtomicValue ) || ( value instanceof NodeInfo && ((NodeInfo)value).getNodeKind() == net.sf.saxon.type.Type.TEXT ) ;
 		return isAtom;
 	
 		
