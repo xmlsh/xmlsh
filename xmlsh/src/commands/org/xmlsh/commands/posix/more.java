@@ -96,8 +96,6 @@ public class more extends XCommand {
 			return false;
 		}
 		
-		Reader r = con.reader();
-		
 		int lines = mLines;
 		do {
 			for( int i =0 ; i < lines ; i++ ){

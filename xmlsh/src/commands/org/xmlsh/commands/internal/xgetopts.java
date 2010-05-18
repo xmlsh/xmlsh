@@ -40,7 +40,7 @@ public class xgetopts extends XCommand {
 		Options opts = new Options("a=argindex,o=optdef:,c=command:,p=passthrough:,+s=seralize,+ps=pass-serialize,noargs,novalues",SerializeOpts.getOptionDefs());
 		opts.parse(args);
 		
-		String command = opts.getOptString("c", getShell().getArg0());
+		// String command = opts.getOptString("c", getShell().getArg0());
 		String optdef = opts.getOptString("o", null);
 		String passthrough = opts.getOptString("p", null);
 		boolean bSerialize = opts.getOptBool("s", true);

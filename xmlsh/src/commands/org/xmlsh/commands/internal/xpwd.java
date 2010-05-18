@@ -28,7 +28,7 @@ public class xpwd extends XCommand
 	{
 		Options opts = new Options(	SerializeOpts.getOptionDefs() );
 		opts.parse(args);
-		args = opts.getRemainingArgs();
+		// args = opts.getRemainingArgs();
 
 		XFile file = new XFile(getCurdir());
 		

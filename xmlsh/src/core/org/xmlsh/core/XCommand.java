@@ -13,7 +13,9 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.security.AccessController;
 import java.util.ArrayList;
+import java.security.PrivilegedAction;
 import java.util.List;
 
 
@@ -108,7 +110,7 @@ public abstract class XCommand extends AbstractCommand {
 			URISyntaxException {
 				if( classpath == null )
 					return this.getClass().getClassLoader();
-				List<URL> urls = new ArrayList<URL>();
+				final List<URL> urls = new ArrayList<URL>();
 				for( XdmItem item : classpath.asXdmValue() ){
 					String cp = item.getStringValue();
 					URL url = getShell().getURL(cp);					
@@ -116,7 +118,11 @@ public abstract class XCommand extends AbstractCommand {
 					
 					
 				}
-				URLClassLoader loader = new URLClassLoader( (URL[]) urls.toArray(new URL[urls.size()]));
+				URLClassLoader loader = AccessController.doPrivileged(new PrivilegedAction<URLClassLoader>() {
+					public URLClassLoader run() {
+						return new URLClassLoader( (URL[]) urls.toArray(new URL[urls.size()]));
+					}
+				});
 				return loader;
 			}
 

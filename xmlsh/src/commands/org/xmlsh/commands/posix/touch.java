@@ -34,10 +34,7 @@ public class touch extends XCommand {
 			
 			// create as needed
 			file.createNewFile();
-			if( refFile != null )
-				file.setLastModified( modtime );
-			else
-				file.setLastModified( modtime );
+			file.setLastModified( modtime );
 			
 			
 		}

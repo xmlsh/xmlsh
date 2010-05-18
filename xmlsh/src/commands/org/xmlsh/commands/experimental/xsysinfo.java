@@ -28,7 +28,7 @@ public class xsysinfo extends XCommand {
 	
 		Options opts = new Options(SerializeOpts.getOptionDefs() );
 		opts.parse(args);
-		args = opts.getRemainingArgs();
+		// args = opts.getRemainingArgs();
 	
 		OutputPort stdout = getEnv().getStdout();
 		SerializeOpts serializeOpts = getSerializeOpts(opts);
@@ -39,10 +39,6 @@ public class xsysinfo extends XCommand {
 		
 		writer.writeStartElement("systeminfo");
 		writeNetwork( writer );
-		
-		
-		
-		
 		writer.writeEndElement();
 		writer.writeEndDocument();
 		stdout.writeSequenceTerminator(serializeOpts);

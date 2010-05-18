@@ -695,6 +695,7 @@ public class Shell {
 		out.println(s);
 
 		out.flush();
+		out.close();
 		
 	}
 	public void printOut(String s)  {
@@ -710,8 +711,8 @@ public class Shell {
 			return;
 		}
 		out.println(s);
-
 		out.flush();
+		out.close();
 		
 	}
 	public void printErr(String s,Exception e) {
@@ -726,7 +727,7 @@ public class Shell {
 		out.println(e.getMessage());
 		
 		out.flush();
-		
+		out.close();
 	}
 
 	public static void main(String argv[]) throws Exception {

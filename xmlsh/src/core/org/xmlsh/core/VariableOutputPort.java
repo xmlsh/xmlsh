@@ -252,7 +252,7 @@ public class VariableOutputPort extends OutputPort
 
 
 	@Override
-	public XMLStreamWriter asXMLStreamWriter(SerializeOpts opts) {
+	public synchronized XMLStreamWriter asXMLStreamWriter(SerializeOpts opts) {
 		/*
 		mWriterBuffer = new XMLEventWriterBuffer(); 
 		return new XMLEventStreamWriter(mWriterBuffer); */
