@@ -1,4 +1,6 @@
-<?xml version='1.0' encoding='UTF-8'?><?xml-stylesheet type="text/xsl" href="../styles/books.xsl"?><!DOCTYPE BOOKLIST SYSTEM "books.dtd" []><BOOKLIST xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="books.xsd">
+<?xml-stylesheet type="text/xsl" href="../styles/books.xsl"?>
+<!DOCTYPE BOOKLIST SYSTEM "books.dtd" []>
+<BOOKLIST xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 <BOOKS>
 	<ITEM CAT="MMP">
     	<TITLE>Pride and Prejudice</TITLE>
