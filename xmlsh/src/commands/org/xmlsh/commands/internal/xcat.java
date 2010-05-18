@@ -1,5 +1,5 @@
 /**
- * $Id$
+y * $Id$
  * $Date$
  *
  */
@@ -83,8 +83,6 @@ public class xcat extends XCommand {
 		// this effects if wrapping by default removes the root element.
 		boolean hasFiles = ( xvargs.size() > 0 );
 		boolean removeRoot = opts.hasOpt("r");
-		
-		
 		
 		
 		// Use a copy of the serialize opts so we can override the method 

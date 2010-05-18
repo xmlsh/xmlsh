@@ -21,6 +21,7 @@ import javax.xml.transform.Source;
 import net.sf.saxon.Configuration;
 import net.sf.saxon.evpull.Decomposer;
 import net.sf.saxon.evpull.EventToStaxBridge;
+import net.sf.saxon.om.NodeInfo;
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
@@ -171,9 +172,23 @@ public class VariableInputPort extends InputPort {
 	
 		Configuration config = Shell.getProcessor().getUnderlyingConfiguration();
 
+		
+		
+		
 								
 		// SequenceIterator iter = value.asSequenceIterator();
-		Decomposer decomposed = new Decomposer( value.asNodeInfo() , config.makePipelineConfiguration()  );
+		NodeInfo nodeInfo = value.asNodeInfo();
+		
+		/*
+		 * 2010-05-19 - EventReaders assume documents, if not a document then wrap with one
+		 */
+		if( nodeInfo.getNodeKind() != net.sf.saxon.type.Type.DOCUMENT )
+			nodeInfo = Util.wrapDocument( nodeInfo ) ;
+	
+		
+		
+		
+		Decomposer decomposed = new Decomposer( nodeInfo , config.makePipelineConfiguration()  );
 		
 		// EventIteratorOverSequence eviter = new EventIteratorOverSequence(iter);
 		

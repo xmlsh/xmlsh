@@ -6,7 +6,7 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/log4j-1.2.7.jar"/>
 	<classpathentry kind="lib" path="lib/xercesImpl.jar"/>
-	<classpathentry kind="lib" path="lib/stax2-api-3.0.1.jar"/>
+	<classpathentry kind="lib" path="lib/stax2-api-3.0.1.jar" sourcepath="/stax-utils/src"/>
 	<classpathentry kind="lib" path="lib/woodstox-core-asl-4.0.3.jar"/>
 	<classpathentry kind="lib" path="lib/stax-utils.jar" sourcepath="C:/java/stax-utils-20071202/stax-utils-src.zip">
 		<attributes>

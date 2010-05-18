@@ -46,7 +46,7 @@ TOKEN_MGR_DECLS :
   	} catch( Exception e ){}
   	return sb.toString();
   }
-  
+    
   private String readXExpr()
   {
   	return "<[" + readUntil( "]>" );
