@@ -37,13 +37,14 @@ public class xgetopts extends XCommand {
 	@Override
 	public int run(List<XValue> args) throws Exception {
 		
-		Options opts = new Options("a=argindex,o=optdef:,c=command:,p=passthrough:,+s=seralize,+ps=pass-serialize,noargs,novalues",SerializeOpts.getOptionDefs());
+		Options opts = new Options("i=ignore:,a=argindex,o=optdef:,c=command:,p=passthrough:,+s=seralize,+ps=pass-serialize,noargs,novalues",SerializeOpts.getOptionDefs());
 		opts.parse(args);
 		
 		// String command = opts.getOptString("c", getShell().getArg0());
 		String optdef = opts.getOptString("o", null);
 		String passthrough = opts.getOptString("p", null);
-		boolean bSerialize = opts.getOptBool("s", true);
+		String ignore = opts.getOptString("i", null);
+		boolean bSerialize = opts.getOptFlag("s", true);
 		boolean bPassSerialize = opts.getOptFlag("ps", true);
 		boolean bArgIndex = opts.hasOpt("a");
 		
@@ -67,9 +68,20 @@ public class xgetopts extends XCommand {
 		
 		
 		
+		List<OptionDef> ignore_opts = null ;
 		
 		
 		Options prog_opts = new Options(optdef , bSerialize ? SerializeOpts.getOptionDefs() : null );
+		if( ignore != null )
+			ignore_opts = prog_opts.addOptionDefs(ignore );
+		
+		
+		if( passthrough != null && passthrough != optdef )
+			prog_opts.addOptionDefs(passthrough);
+			
+		
+		
+		
 		List<OptionValue>  prog_optvalues = prog_opts.parse(args);
 		
 		SerializeOpts serializeOpts = this.getSerializeOpts(opts);
@@ -81,7 +93,7 @@ public class xgetopts extends XCommand {
 		
 
 		if( passthrough == null )
-			writeOptions( opts, bNoArgs, bNoValues, prog_opts, prog_optvalues);
+			writeOptions( opts, bNoArgs, bNoValues, prog_opts, prog_optvalues, ignore_opts);
 		
 		else  
 		{
@@ -136,7 +148,7 @@ public class xgetopts extends XCommand {
 	}
 
 	private void writeOptions( Options opts, boolean bNoArgs, boolean bNoValues,
-			Options prog_opts, List<OptionValue> prog_optvalues) throws InvalidArgumentException,
+			Options prog_opts, List<OptionValue> prog_optvalues, List<OptionDef> ignore_list) throws InvalidArgumentException,
 			XMLStreamException, IOException {
 		XMLStreamWriter out = getStdout().asXMLStreamWriter(getSerializeOpts(opts));
 
@@ -144,8 +156,13 @@ public class xgetopts extends XCommand {
 		out.writeStartElement(kROOT);
 		out.writeStartElement(kOPTIONS);
 
+		Options ignoreOpts = ignore_list == null ? null : new Options( ignore_list );
+		
 		
 		for( OptionValue option : prog_optvalues ){
+			if( ignoreOpts != null && ignoreOpts.getOptDef(option.getOptionDef().name) != null )
+				continue ;
+			
 			out.writeStartElement(kOPTION);
 			out.writeAttribute("name",option.getOptionDef().name);
 			

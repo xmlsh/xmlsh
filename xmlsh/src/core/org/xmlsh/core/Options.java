@@ -194,8 +194,8 @@ public class Options
 		else {
 		
 			mDefs = new ArrayList<OptionDef>( opt1.size() + opt2.size());
-			mDefs.addAll( opt1 );
-			mDefs.addAll(opt2);
+			addOptionDefs( opt1 );
+			addOptionDefs( opt2 );
 
 		}
 	}
@@ -205,8 +205,29 @@ public class Options
 		this( parseDefs(option_str) , option_list );
 	}
 
+	
+	public	List<OptionDef> addOptionDefs( String option_str )
+	{
+		List<OptionDef> option_list =  parseDefs( option_str );
+		addOptionDefs(option_list);
+		return option_list ;
+		
+	}
+	public	void addOptionDefs(  List<OptionDef> option_list )
+	{
+		// 	mDefs.addAll( option_list ); - Dont duplicate !
+		for( OptionDef def : option_list ){
+			OptionDef exists = getOptDef( def.name );
+			if( exists != null )
+				mDefs.remove(exists);
+			mDefs.add(def);
+						
+		}
+		
+	}
+	
 
-	private OptionDef	getOptDef(String str)
+	public OptionDef	getOptDef(String str)
 	{
 		
 		if( mDefs == null )

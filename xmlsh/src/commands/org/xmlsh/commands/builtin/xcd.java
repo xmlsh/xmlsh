@@ -28,7 +28,7 @@ public class xcd extends BuiltinCommand {
 				home = System.getProperty("user.home");
 			
 			if( home == null ){
-				mShell.printErr("Cannot cd to HOME");
+				mShell.printErr("cd: Cannot cd to HOME");
 				return 1;
 			}
 			sdir = home;
@@ -42,7 +42,7 @@ public class xcd extends BuiltinCommand {
 			return 0;
 		}
 		else {
-			mShell.printErr("Cannot cd to: " + sdir);
+			mShell.printErr("cd: Cannot cd to: " + sdir);
 			return 1;
 		}
 		

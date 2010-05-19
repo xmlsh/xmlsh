@@ -133,12 +133,14 @@ public abstract class AbstractCommand implements ICommand {
 
 	public void usage(String message)
 	{
+		String cmdName = this.getName();
 		SourceLocation sloc = getLocation();
 		if( sloc != null )
 			mShell.printErr(sloc.toString());
 		if( !Util.isBlank(message))
-			mShell.printErr(message);
-		String cmdName = getName();
+			mShell.printErr(cmdName + ": " + message);
+		else
+			mShell.printErr(cmdName + ":" );
 		HelpUsage helpUsage = new HelpUsage( getShell() );
 		try {
 			helpUsage.doUsage(mEnvironment.getStdout(), cmdName);
