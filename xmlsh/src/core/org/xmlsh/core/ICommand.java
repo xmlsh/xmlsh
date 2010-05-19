@@ -9,6 +9,7 @@ package org.xmlsh.core;
 import java.io.File;
 import java.util.List;
 
+import org.xmlsh.sh.core.SourceLocation;
 import org.xmlsh.sh.shell.Module;
 import org.xmlsh.sh.shell.Shell;
 
@@ -29,6 +30,9 @@ public interface ICommand {
 	public 	File 	getFile();
 	public 	Module	getModule();
 	public void		close();
+	public SourceLocation getLocation();
+	public void setLocation( SourceLocation loc);
+	
 	
 	
 }

@@ -56,7 +56,10 @@ public class xfile extends XCommand
 			xf = new XFile( args.get(0) ); break;
 		case	2:
 			xf = new XFile( args.get(0).toString(), args.get(1).toString() ); break;
+		default : 
 			
+			usage("Unexpected argument");
+			return 1;
 		}
 		
 		boolean opt_sys = opts.hasOpt("s");

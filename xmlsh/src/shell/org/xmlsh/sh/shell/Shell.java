@@ -465,7 +465,7 @@ public class Shell {
 			File script = this.getFile(rcfile);
 			if( script.exists() && script.canRead() ){
 
-				ICommand icmd = CommandFactory.getInstance().getScript(this, script ,true);
+				ICommand icmd = CommandFactory.getInstance().getScript(this, script ,true, null );
 				if( icmd != null )
 					icmd.run(this, rcfile , null);
 	    	}

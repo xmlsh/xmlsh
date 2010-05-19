@@ -99,7 +99,7 @@ public class xmlsh extends BuiltinCommand {
 			    {
 			    	
 			    	String scmd = args.remove(0).toString();
-			    	ICommand cmd = CommandFactory.getInstance().getScript( shell , scmd, true );
+			    	ICommand cmd = CommandFactory.getInstance().getScript( shell , scmd, true,getLocation() );
 			    	if( cmd == null )
 			    		shell.printErr( scmd + ": not found");
 			    	else {

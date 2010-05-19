@@ -15,6 +15,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.xmlsh.sh.core.SourceLocation;
 import org.xmlsh.sh.shell.Module;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
@@ -28,6 +29,7 @@ public class ScriptCommand implements ICommand {
 	private boolean mSourceMode;
 	private File	 mScriptFile; // file for script, may be null if internal script
 	private Module mModule;
+	private SourceLocation mLocation;
 	
 	
 	// Finalize script command make sure to close
@@ -36,12 +38,13 @@ public class ScriptCommand implements ICommand {
 		close();
 	}
 	
-	public ScriptCommand( File script, boolean bSourceMode ) throws FileNotFoundException
+	public ScriptCommand( File script, boolean bSourceMode , SourceLocation location) throws FileNotFoundException
 	{
 		mScript = new FileInputStream(script);
 		mScriptName = Util.toJavaPath(script.getPath());
 		mSourceMode = bSourceMode;
 		mScriptFile = script;
+		mLocation = location ;
 		
 	}
 	
@@ -112,6 +115,17 @@ public class ScriptCommand implements ICommand {
 
 	public Module getModule() {
 		return mModule ;
+	}
+
+	@Override
+	public SourceLocation getLocation() {
+		return mLocation ;
+	}
+
+	@Override
+	public void setLocation(SourceLocation loc) {
+		mLocation = loc ;
+		
 	}
 
 

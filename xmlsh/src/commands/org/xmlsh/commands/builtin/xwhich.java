@@ -64,7 +64,7 @@ public class xwhich extends BuiltinCommand {
 		for( XValue xname : xvargs ){
 			
 			String name = xname.toString();
-			ICommand command = CommandFactory.getInstance().getCommand(mShell , name );
+			ICommand command = CommandFactory.getInstance().getCommand(mShell , name , getLocation() );
 			if( command != null ){
 				
 				if( ! bNoWrite ){

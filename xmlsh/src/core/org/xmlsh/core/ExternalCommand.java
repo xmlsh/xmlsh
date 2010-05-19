@@ -15,6 +15,7 @@ import java.util.Map.Entry;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.xmlsh.sh.core.SourceLocation;
 import org.xmlsh.sh.shell.Module;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.PortCopier;
@@ -23,13 +24,15 @@ import org.xmlsh.util.Util;
 
 public class ExternalCommand implements ICommand {
 
-	private 	static		Logger		mLogger = LogManager.getLogger( ExternalCommand.class );
+	private 	static			Logger		mLogger = LogManager.getLogger( ExternalCommand.class );
 	
-	private		File		mCommandFile;		// command path
+	private		File			mCommandFile;		// command path
+	private		SourceLocation 	mLocation ;
 	
-	public ExternalCommand( File cmd )
+	public ExternalCommand( File cmd , SourceLocation location )
 	{
 		mCommandFile = cmd;
+		mLocation = location ;
 	}
 	
 	
@@ -194,6 +197,18 @@ public class ExternalCommand implements ICommand {
 	public void close() {
 		// TODO Auto-generated method stub
 		
+	}
+
+
+	@Override
+	public SourceLocation getLocation() {
+		return mLocation ;
+	}
+
+
+	@Override
+	public void setLocation(SourceLocation loc) {
+		mLocation = loc ;
 	}
 
 	

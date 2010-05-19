@@ -77,7 +77,7 @@ public class SimpleCommand extends Command {
 		
 		String cmdName = cmdLine.remove(0).toString();
 		
-		ICommand cmd = CommandFactory.getInstance().getCommand( shell , cmdName );
+		ICommand cmd = CommandFactory.getInstance().getCommand( shell , cmdName , getLocation() );
 		
 		if( cmd == null ){
 			shell.printErr(mCommand + ": not found");

@@ -15,8 +15,8 @@ import java.net.URISyntaxException;
 
 import javax.xml.transform.Source;
 
-import net.sf.saxon.s9api.SaxonApiException;
 import org.apache.log4j.Logger;
+import org.xmlsh.sh.core.SourceLocation;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.HelpUsage;
@@ -28,6 +28,7 @@ public abstract class AbstractCommand implements ICommand {
 	
 	protected	Shell mShell;
 	protected XEnvironment mEnvironment;
+	protected SourceLocation		mLocation ;
 	
 	public AbstractCommand() {
 		
@@ -132,6 +133,9 @@ public abstract class AbstractCommand implements ICommand {
 
 	public void usage(String message)
 	{
+		SourceLocation sloc = getLocation();
+		if( sloc != null )
+			mShell.printErr(sloc.toString());
 		if( !Util.isBlank(message))
 			mShell.printErr(message);
 		String cmdName = getName();
@@ -147,6 +151,9 @@ public abstract class AbstractCommand implements ICommand {
 	{
 		usage(null);
 	}
+	
+	public SourceLocation  getLocation() { return mLocation ; }
+	public void setLocation(SourceLocation source) { mLocation = source ; }
 
 }
 

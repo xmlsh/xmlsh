@@ -44,6 +44,7 @@ import org.xmlsh.commands.builtin.xtype;
 import org.xmlsh.commands.builtin.xversion;
 import org.xmlsh.commands.builtin.xwhich;
 import org.xmlsh.sh.core.FunctionDefinition;
+import org.xmlsh.sh.core.SourceLocation;
 import org.xmlsh.sh.shell.Module;
 import org.xmlsh.sh.shell.Modules;
 import org.xmlsh.sh.shell.Shell;
@@ -117,21 +118,21 @@ public class CommandFactory
 		
 	
 	
-	public ICommand		getCommand(Shell shell , String name) throws IOException
+	public ICommand		getCommand(Shell shell , String name, SourceLocation loc ) throws IOException
 	{
 		
 		
 		
 		ICommand cmd = 
-			getFunction( shell , name );
+			getFunction( shell , name , loc  );
 		if( cmd == null )
-			cmd = getBuiltin(shell, name);
+			cmd = getBuiltin(shell, name , loc );
 		if( cmd == null )
-			cmd = getNative(shell,name);
+			cmd = getNative(shell,name , loc );
 		if( cmd == null )
-			cmd = getScript( shell , name , false );
+			cmd = getScript( shell , name , false , loc  );
 		if( cmd == null )
-			cmd = getExternal(shell,name);
+			cmd = getExternal(shell,name , loc );
 		
 		return cmd ;
 		
@@ -145,15 +146,15 @@ public class CommandFactory
 	 * by looking through the External Path
 	 */
 
-	private ICommand getFunction(Shell shell, String name) {
+	private ICommand getFunction(Shell shell, String name,  SourceLocation loc) {
 		
 		FunctionDefinition func = shell.getFunction( name );
 		if( func != null )
-			return new FunctionCommand( func );
+			return new FunctionCommand( func  , loc );
 		return null;
 	}
 
-	private ICommand getExternal(Shell shell, String name) throws IOException 
+	private ICommand getExternal(Shell shell, String name, SourceLocation loc ) throws IOException 
 	{
 		File	cmdFile = null;
 		
@@ -174,7 +175,7 @@ public class CommandFactory
 		if( cmdFile == null )
 			return null;
 		
-		return new ExternalCommand( cmdFile );
+		return new ExternalCommand( cmdFile, loc  );
 		
 		
 		
@@ -183,7 +184,7 @@ public class CommandFactory
 
 
 
-	private ICommand getNative(Shell shell,String name) {
+	private ICommand getNative(Shell shell,String name, SourceLocation loc) {
 		
 		StringPair 	pair = new StringPair(name,':');
 		
@@ -203,9 +204,11 @@ public class CommandFactory
 			if( m != null ){
 
 				ICommand cls = m.getCommandClass( pair.getRight() );
-				if( cls != null )
+				if( cls != null ){
+					cls.setLocation( loc );
+				
 					return cls ;
-			
+				}
 
 			}
 			return null;
@@ -218,8 +221,10 @@ public class CommandFactory
 			if( m.isDefault() ){
 				
 				ICommand cls = m.getCommandClass( name);
-				if( cls != null )
+				if( cls != null ){
+					cls.setLocation(loc);
 					return cls ;
+				}
 			}
 		}
 		
@@ -229,11 +234,11 @@ public class CommandFactory
 		
 	}
 	
-	public ICommand getScript(Shell shell, File scriptFile , boolean bSourceMode) {
+	public ICommand getScript(Shell shell, File scriptFile , boolean bSourceMode , SourceLocation loc ) {
 		if( scriptFile == null )
 			return null;
 		try {
-			return new ScriptCommand( scriptFile , bSourceMode );
+			return new ScriptCommand( scriptFile , bSourceMode , loc );
 		} catch (FileNotFoundException e) {
 			shell.printErr("File not found: " + scriptFile.getPath() , e);
 			return null ;
@@ -242,7 +247,7 @@ public class CommandFactory
 	}
 	
 	
-	public ICommand		getScript( Shell shell , String name, boolean bSourceMode  ) throws IOException
+	public ICommand		getScript( Shell shell , String name, boolean bSourceMode , SourceLocation loc ) throws IOException
 	{
 		File scriptFile = null;
 		
@@ -263,16 +268,18 @@ public class CommandFactory
 			if( scriptFile == null && ! name.endsWith(".xsh") )
 				scriptFile = path.getFirstFileInPath(shell, name + ".xsh");
 		}
-		return getScript( shell , scriptFile , bSourceMode );
+		return getScript( shell , scriptFile , bSourceMode , loc );
 		
 	}
 	
 
-	private ICommand getBuiltin(Shell shell, String name) {
+	private ICommand getBuiltin(Shell shell, String name, SourceLocation loc) {
 		Class<?> cls =  mBuiltins.get(name);
 		if( cls != null ){
 			try {
-				return (ICommand) cls.newInstance();
+				BuiltinCommand b =  (BuiltinCommand) cls.newInstance();
+				b.setLocation( loc );
+				return b;
 			} catch (Exception e) {
 				mLogger.error("Exception creating class: " + cls.toString() );
 				return null;

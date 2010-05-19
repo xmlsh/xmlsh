@@ -10,6 +10,7 @@ import java.io.File;
 import java.util.List;
 
 import org.xmlsh.sh.core.FunctionDefinition;
+import org.xmlsh.sh.core.SourceLocation;
 import org.xmlsh.sh.shell.Module;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.xpath.ShellContext;
@@ -17,10 +18,12 @@ import org.xmlsh.xpath.ShellContext;
 public class FunctionCommand implements ICommand {
 	
 	FunctionDefinition 	mFunction;
+	SourceLocation  	mLocation;
 	
-	public FunctionCommand( FunctionDefinition func )
+	public FunctionCommand( FunctionDefinition func ,  SourceLocation loc )
 	{
 		mFunction = func ;
+		mLocation = loc ;
 	}
 	
 	
@@ -79,6 +82,20 @@ public class FunctionCommand implements ICommand {
 	public void close() {
 		// TODO Auto-generated method stub
 		
+	}
+
+
+
+	@Override
+	public SourceLocation getLocation() {
+		return mLocation ;
+	}
+
+
+
+	@Override
+	public void setLocation(SourceLocation loc) {
+		mLocation = loc ;
 	}	
 	
 	
