@@ -12,10 +12,11 @@ import org.xmlsh.core.XIOEnvironment;
 import org.xmlsh.sh.shell.Shell;
 
 public class SubShell extends CompoundCommand {
-	private Command	mCommand;
+	private Command		mCommand;
 	public SubShell( Command c )
 	{
 		mCommand = c;
+		setLocation(c);
 	}
 	public void print( PrintWriter out, boolean bExec ){
 		out.print("(");

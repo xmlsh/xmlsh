@@ -20,6 +20,7 @@ public class CaseItem {
 
 		mPattern = pattern;
 		mCommand = command;
+	
 	}
 	
 	public void print(PrintWriter out,boolean bExec){

@@ -22,6 +22,8 @@ public class IfClause extends CompoundCommand
 		mIfPart = ifPart;
 		mThenPart = thenPart;
 		mElsePart = elsePart;
+		setLocation( ifPart );
+
 	}
 
 	/* (non-Javadoc)

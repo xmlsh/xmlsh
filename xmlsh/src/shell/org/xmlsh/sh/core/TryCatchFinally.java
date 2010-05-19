@@ -27,6 +27,7 @@ public class TryCatchFinally extends CompoundCommand
 		mCatchVar		= 	catchVar;
 		mCatchPart 		= 	catchPart;
 		mFinallyPart 	= 	finallyPart;
+		setLocation( tryPart );
 	}
 
 	/* (non-Javadoc)

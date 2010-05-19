@@ -67,11 +67,11 @@ import org.xmlsh.sh.shell.Shell;
  */
 public class Util
 {
+	private static final String sXSDT_FORMAT_STR = "yyyy-MM-dd'T'HH:mm:ss";
 	public static byte mNewline[];
 	private static Pattern mURIPattern = Pattern.compile("[a-zA-Z][a-zA-Z0-9\\.+-]+:.*");
 	
-	private static DateFormat sXSDTFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-	  
+  
 	
 	private static class FileComparator implements Comparator<File>
 	{
@@ -755,7 +755,7 @@ public class Util
 
 	public static String formatXSDateTime(Date date) {
 		// YYYY-MM-DDThh:mm:ss
-		return sXSDTFormat.format(date);
+		return (new SimpleDateFormat(sXSDT_FORMAT_STR)).format(date);
 	}
 
 

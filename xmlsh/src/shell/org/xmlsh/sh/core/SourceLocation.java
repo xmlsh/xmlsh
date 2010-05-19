@@ -6,14 +6,90 @@
 
 package org.xmlsh.sh.core;
 
+import org.xmlsh.sh.grammar.Token;
+
 public class SourceLocation {
-	public	int		line;
-	public	int		column;
-	public SourceLocation(int line, int column) {
-		this.line = line;
-		this.column = column;
+	private		String	mSource;
+	private		int		mStartLine;
+	private		int		mStartColumn;
+	private		int		mEndLine;
+	private		int		mEndColumn;
+	public SourceLocation(String source, int startline, int startColumn, int endLine, int endColumn) {
+		mSource = source;
+		mStartLine = startline;
+		mStartColumn = startColumn;
+		mEndLine = endLine;
+		mEndColumn = endColumn;
 	}
 	
+	public SourceLocation( String source , Token token )
+	{
+		mSource = source ;
+		if( token != null ){
+			mStartLine = token.beginLine;
+			mEndLine = token.endLine;
+			mStartColumn = token.beginColumn;
+			mEndColumn = token.endColumn;
+		}
+	}
+	
+	
+	/**
+	 * @return the source
+	 */
+	public String getSource() {
+		return mSource;
+	}
+	/**
+	 * @return the startline
+	 */
+	public int getStartline() {
+		return mStartLine;
+	}
+	/**
+	 * @return the startColumn
+	 */
+	public int getStartColumn() {
+		return mStartColumn;
+	}
+	/**
+	 * @return the endLine
+	 */
+	public int getEndLine() {
+		return mEndLine;
+	}
+	/**
+	 * @return the endColumn
+	 */
+	public int getEndColumn() {
+		return mEndColumn;
+	}
+	
+	public String toString()
+	{
+		StringBuffer sb = new StringBuffer();
+		sb.append("[");
+		if( mSource != null )
+			sb.append( mSource );
+		else
+			sb.append("stdin");
+		
+		//sb.append("] ");
+		// sb.append("Start (line,col): ");
+		sb.append(" line: ");
+		sb.append( String.valueOf(mStartLine) );
+		/*
+		sb.append( "," );
+		sb.append( String.valueOf(mStartColumn));
+		sb.append("  End:");
+		sb.append( String.valueOf(mEndLine) );
+		sb.append( "," );
+		sb.append( String.valueOf(mEndColumn));
+		*/
+		sb.append("]");
+
+		return sb.toString();
+	}
 	
 }
 

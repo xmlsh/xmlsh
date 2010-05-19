@@ -132,6 +132,14 @@ public class SimpleCommand extends Command {
 
 			shell.printErr("Exception running: " +  cmdName + "\n" +  e.toString() );
 			mLogger.error("Exception running command: " + cmdName  , e );
+			SourceLocation loc = getLocation();
+			if( loc != null ){
+				String sLoc = loc.toString();
+				mLogger.info( sLoc );
+				shell.printErr(sLoc );
+				
+				
+			}
 			/*
 			 * Save exception here ???? 
 			 */

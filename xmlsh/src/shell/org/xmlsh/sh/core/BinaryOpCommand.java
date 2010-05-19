@@ -21,6 +21,10 @@ public abstract class BinaryOpCommand extends Command {
 		mLeft = left;
 		mOp = op ;
 		mRight = right;
+		if( mLeft != null )
+			setLocation( mLeft );
+		else
+			setLocation( mRight );
 	}
 
 	public void print( PrintWriter out, boolean bExec ){

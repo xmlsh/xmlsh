@@ -48,6 +48,7 @@ import org.xmlsh.core.Options.OptionValue;
 import org.xmlsh.core.XVariable.XVarFlag;
 import org.xmlsh.sh.core.Command;
 import org.xmlsh.sh.core.FunctionDefinition;
+import org.xmlsh.sh.core.SourceLocation;
 import org.xmlsh.sh.grammar.ParseException;
 import org.xmlsh.sh.grammar.ShellParser;
 import org.xmlsh.sh.grammar.ShellParserReader;
@@ -366,12 +367,12 @@ public class Shell {
 	}
 	
 	
-	public		int		runScript( InputStream stream ) throws ParseException, UnsupportedEncodingException, ThrowException
+	public		int		runScript( InputStream stream, String source ) throws ParseException, UnsupportedEncodingException, ThrowException
 	{
 		
 		InputStream save = mCommandInput;
 		mCommandInput = stream ;
-		ShellParser parser= new ShellParser(new ShellParserReader(mCommandInput,getTextEncoding()));
+		ShellParser parser= new ShellParser(new ShellParserReader(mCommandInput,getTextEncoding()), source );
 		int ret = 0;
 		try {
 			while( mExitVal == null && mReturnVal == null  ){
@@ -382,8 +383,17 @@ public class Shell {
 		    	
 		      	if( mOpts.mVerbose ){
 		      		String s  = c.toString(false);
-		      		if( s.length() > 0)
-		      			printErr( "- " + s );
+		      		if( s.length() > 0){
+		      			SourceLocation loc = c.getLocation();
+		      			if( loc != null ){
+		      				String sLoc = loc.toString();
+		      				mLogger.info(sLoc);
+		      				printErr( "- " + sLoc );
+		      				printErr(s );
+		      			} else 
+		      		
+		      				printErr( "- " + s );
+		      		}
 		      	}
 		      	
 		      	ret = exec( c );
@@ -410,12 +420,12 @@ public class Shell {
 	       // System.out.println("NOK.");
 	        printErr(e.getMessage());
 	        mLogger.error("Exception parsing statement" , e );
-	        parser.ReInit(mCommandInput,getTextEncoding());
+	        parser.ReInit(new ShellParserReader(mCommandInput,getTextEncoding()), source );
 	      } catch (Error e) {
 	       //  System.out.println("Error");
 	        printErr(e.getMessage());
 	        mLogger.error("Exception parsing statement" , e );
-	        parser.ReInit(mCommandInput,getTextEncoding());
+	        parser.ReInit(new ShellParserReader(mCommandInput,getTextEncoding()), source);
 	
 	     } 
       
@@ -473,15 +483,22 @@ public class Shell {
 		while (mExitVal == null) {
 			
 			  System.out.print(getPS1());
+			  Command c = null ;
 		      try {
-		      	Command c = parser.command_line();
+		      	c = parser.command_line();
 		      	if( c == null )
 		      		break;
 		      	
 		      	if( mOpts.mVerbose ){
 		      		String s  = c.toString(false);
-		      		if( s.length() > 0)
-		      			printErr( "- " + s );
+		      		if( s.length() > 0){
+		      			SourceLocation loc  = c.getLocation();
+		      			if( loc != null )	{
+		      				printErr("- " + loc.toString());
+		      				printErr(s);
+		      			} else
+		      				printErr( "- " + s );
+		      		}
 		      	}
 		      	
 		      	
@@ -498,12 +515,27 @@ public class Shell {
 		        parser.ReInit(new ShellParserReader(mCommandInput,getTextEncoding()));
 		      }
 		      catch (Exception e) {
+		    	
 		        printErr(e.getMessage());
+		        SourceLocation loc = c != null ? c.getLocation() : null ;
 		        mLogger.error("Exception parsing statement",e);
+		        if( loc != null ){
+		        	String sLoc = loc.toString();
+		        
+		        	mLogger.info(loc.toString());
+		        	printErr( sLoc );
+		        }
 		        parser.ReInit(new ShellParserReader(mCommandInput,getTextEncoding()));
 		      } catch (Error e) {
 		        printErr("Error: " + e.getMessage());
+		        SourceLocation loc = c != null ? c.getLocation() : null ;
 		        mLogger.error("Exception parsing statement",e);
+		        if( loc != null ){
+		        	String sLoc = loc.toString();
+		        
+		        	mLogger.info(loc.toString());
+		        	printErr( sLoc );
+		        }
 		        parser.ReInit(new ShellParserReader(mCommandInput,getTextEncoding()));
 
 		      } 
@@ -591,8 +623,17 @@ public class Shell {
 		
 		if( mOpts.mExec){
 			String out = c.toString(true);
-			if( out.length() > 0 )
-				printErr("+ " + out);
+			if( out.length() > 0 ){
+				SourceLocation loc = c.getLocation();
+				
+				if( loc != null ) {
+					printErr("+ " + loc.toString());
+					printErr( out );
+				}
+				
+				else
+					printErr("+ " + out);
+			}
 			
 		
 		}

@@ -25,6 +25,7 @@ public class ForClause extends CompoundCommand {
 		mName = name ;
 		mWords = words;
 		mCommand = c;
+		setLocation(c);
 	}
 	public ForClause( String name,  Command c )
 	{

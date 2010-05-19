@@ -23,7 +23,38 @@ import org.xmlsh.core.XEnvironment;
 
 
 public class ShellParser {
+	private		String		mSource;
+	public ShellParser(java.io.InputStream stream, String encoding , String source )
+	{
+		this( stream , encoding );
+		mSource = source ;
+	}
+	public ShellParser(java.io.Reader stream , String source ) {
+		this( stream ) ;
+		mSource = source ;
+	}
+	public	String 	getSource() { return mSource ; }
+	public void ReInit(java.io.InputStream stream, String encoding , String source )
+	{
+		this.ReInit( stream , encoding );
+		mSource = source ;
+	}
+	public void ReInit(java.io.Reader stream, String source )
+	{	
+		this.ReInit( stream ) ;
+		mSource = source ;
+	
+	}
+	
+	public void setLocation( Command command , Token t )
+	{
+		command.setLocation( new SourceLocation( getSource() , t == null ? token : t) );
+	}
   
+  	public void setLocation( Command command )
+  	{
+  		setLocation( command , token ) ;
+  	}
 }
 PARSER_END(ShellParser)
 
@@ -31,6 +62,7 @@ TOKEN_MGR_DECLS :
 {
   boolean in_for = false ;
   boolean in_backtick =false ;
+
     
     
   private String readUntil(String end)
@@ -96,6 +128,7 @@ TOKEN_MGR_DECLS :
   	return sb.toString();
   }
 
+  
 }
 
 
@@ -352,13 +385,16 @@ Command script() :
 }
 {
 	c=compound_list() <EOF>
-	{ return c; }
+	{ 
+		return c; 
+	}
 }
 
 Command command_line() : 
 {
 	Command c;
 	 String op="";
+	 Token t;
 }
 { 
 	 c=complete_command() [ op=separator_op() ] (<NEWLINE>|<EOF>) { 
@@ -367,7 +403,7 @@ Command command_line() :
 		return c; 
 		
 		} |
-	<NEWLINE> { return new NullCommand() ; }
+	t=<NEWLINE> { c = new NullCommand() ; setLocation(c,t); return c ;}
 |	<EOF>	{ return null ; }
 
 
@@ -485,7 +521,7 @@ CompoundCommand 	compound_command() :
 SubShell subshell() : 
 { Command c ;}
 {
-	<LPAREN> c=compound_list() <RPAREN> {return new SubShell(c);}
+	<LPAREN> c=compound_list() <RPAREN> {return  new SubShell(c);   }
 }
 
 
@@ -573,12 +609,16 @@ ForClause for_clause() :
 		Command c;
 		String n;
 		WordList w = null;
+		Token t;
+		ForClause f;
 	}
 {
 
-	<FOR> n=name()  ( (<NEWLINE>|<SEMI>) {token_source.in_for=false;}  |   <IN> w=wordlist()  sequential_sep() )  c=do_group()
+	t=<FOR> n=name()  ( (<NEWLINE>|<SEMI>) {token_source.in_for=false;}  |   <IN> w=wordlist()  sequential_sep() )  c=do_group()
 	{
-		return new ForClause( n ,w, c );
+		f =  new ForClause( n ,w, c );
+		setLocation( f , t );
+		return f; 
 	} 
 }
 
@@ -669,10 +709,13 @@ StringList pattern() :
 
 
 IfClause if_clause() : 
-	{ Command ip=null,tp=null,ep=null; }
+	{ Command ip=null,tp=null,ep=null; 
+		Token t;
+		IfClause ifc;
+	}
 {   
-	<IF>	ip=compound_list() <THEN> tp=compound_list() [ LOOKAHEAD(2) ep=else_part()] <FI> 
-	{ return new IfClause( ip , tp , ep ); }
+	t=<IF>	ip=compound_list() <THEN> tp=compound_list() [ LOOKAHEAD(2) ep=else_part()] <FI> 
+	{ ifc =  new IfClause( ip , tp , ep ); setLocation(ifc,t); return ifc ;}
 }
 
 Command else_part() : { Command ip=null,tp=null,ep=null; }
@@ -744,19 +787,22 @@ SimpleCommand simple_command() :
 		CommandPrefix p;
 		Word c=null;
 		CommandSuffix s=null;
+		SimpleCommand sc = null ;
+		Token t = null;
+		
 	}
 {
 
 
-LOOKAHEAD(2)	 p=cmd_prefix()  [LOOKAHEAD(2) c=cmd_word()] s=cmd_suffix()
-	{ return new SimpleCommand( p , c ,s ); } 
+LOOKAHEAD(2)	 p=cmd_prefix()  [LOOKAHEAD(2) c=cmd_word() { t = token;} ] s=cmd_suffix()
+	{ sc = new SimpleCommand( p , c ,s );  setLocation(sc,t); return sc;  } 
 
 
-|LOOKAHEAD(2)	c=cmd_word() s=cmd_suffix() 
-	{ return new SimpleCommand( null , c , s); } 
+|LOOKAHEAD(2)	c=cmd_word() { t=token; } s=cmd_suffix() 
+	{ sc =  new SimpleCommand( null , c , s); setLocation(sc, t ) ; return sc ;  } 
 
-|LOOKAHEAD(2)	c=cmd_word()
-		{ return new SimpleCommand( null , c , null  ); } 
+|LOOKAHEAD(2)	c=cmd_word() 
+	{ sc = new SimpleCommand( null , c , null  ); setLocation(sc) ; return sc ; } 
 
 }
 

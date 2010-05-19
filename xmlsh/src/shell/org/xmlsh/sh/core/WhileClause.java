@@ -19,6 +19,7 @@ public class WhileClause extends CompoundCommand {
 		super();
 		mWhile = while1;
 		mDo = do1;
+		setLocation(do1);
 	}
 	
 	public void print(PrintWriter out, boolean bExec)

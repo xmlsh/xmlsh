@@ -15,6 +15,7 @@ public class AndOr extends BinaryOpCommand {
 		super(left, op, right);
 	
 	}
+
 	/* (non-Javadoc)
 	 * @see org.xmlsh.sh.core.Command#exec(org.xmlsh.sh.shell.Shell)
 	 */

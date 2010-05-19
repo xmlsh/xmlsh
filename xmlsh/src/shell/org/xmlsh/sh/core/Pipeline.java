@@ -42,6 +42,8 @@ public class Pipeline extends Command {
 	 * @see java.util.ArrayList#add(java.lang.Object)
 	 */
 	public boolean add(Command e) {
+		if( getLocation() == null )
+			setLocation(e);
 		return mList.add(e);
 	}
 	public void print( PrintWriter out, boolean bExec ){
