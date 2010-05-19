@@ -61,6 +61,10 @@ public class EvalScriptCommand extends Command {
 			ICommand cmd = new ScriptCommand( mCommand , shell.getSerializeOpts() );
 			
 			if( cmd == null ){
+				SourceLocation loc = getLocation();
+				if( loc != null )
+					shell.printErr(loc.toString());
+				
 				shell.printErr(mCommand + ": not found");
 				return 1;
 				

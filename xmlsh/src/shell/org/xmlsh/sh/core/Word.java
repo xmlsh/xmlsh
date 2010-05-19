@@ -28,19 +28,19 @@ public abstract class Word {
 	
 	public abstract void print( PrintWriter out );
 
-	public abstract XValue expand(Shell shell,boolean bExpandWild , boolean bExpandWords , MutableInteger retValue ) throws IOException, CoreException;
+	public abstract XValue expand(Shell shell,boolean bExpandWild , boolean bExpandWords , MutableInteger retValue , SourceLocation loc ) throws IOException, CoreException;
 	
-	public  XValue expand(Shell shell,boolean bExpandWild , boolean bExpandWords ) throws IOException, CoreException
+	public  XValue expand(Shell shell,boolean bExpandWild , boolean bExpandWords , SourceLocation loc ) throws IOException, CoreException
 	{
-		return expand( shell , bExpandWild , bExpandWords , null);
+		return expand( shell , bExpandWild , bExpandWords , null, loc );
 	}
 
-	public String expandString(Shell shell, boolean bExpandWild) throws IOException, CoreException {
-		return expand(shell,bExpandWild,false).toString();
+	public String expandString(Shell shell, boolean bExpandWild, SourceLocation loc ) throws IOException, CoreException {
+		return expand(shell,bExpandWild,false,loc).toString();
 	}
 	
-	public List<XValue> expand(Shell shell, boolean bExpandSequences , boolean bExpandWild , boolean bExpandWords ) throws IOException, CoreException {
-		XValue v = expand( shell , bExpandWild,bExpandWords);
+	public List<XValue> expand(Shell shell, boolean bExpandSequences , boolean bExpandWild , boolean bExpandWords , SourceLocation loc ) throws IOException, CoreException {
+		XValue v = expand( shell , bExpandWild,bExpandWords,loc);
 		List<XValue> list = new ArrayList<XValue>(1);
 		list.add( v );
 		if( bExpandSequences)

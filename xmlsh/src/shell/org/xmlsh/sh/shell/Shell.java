@@ -554,7 +554,7 @@ public class Shell {
 			return "$ ";
 		String sps1 = ps1.toString();
 		if( !Util.isBlank(sps1))
-			sps1 = expandString(sps1, false);
+			sps1 = expandString(sps1, false,null);
 		
 		return sps1;
 
@@ -925,8 +925,8 @@ public class Shell {
 		return mArg0;
 	}
 
-	public List<XValue> expand(String s, boolean bExpandSequences , boolean bExpandWild , boolean bExpandWords  ) throws IOException, CoreException {
-		Expander e = new Expander( this );
+	public List<XValue> expand(String s, boolean bExpandSequences , boolean bExpandWild , boolean bExpandWords  , SourceLocation loc  ) throws IOException, CoreException {
+		Expander e = new Expander( this , loc );
 		List<XValue> result =  e.expand(s,bExpandWild, bExpandWords );
 		if( bExpandSequences )
 			result = Util.expandSequences( result );
@@ -964,8 +964,8 @@ public class Shell {
 	}
 	
 
-	public String expandString(String value, boolean bExpandWild ) throws IOException, CoreException {
-		List<XValue> ret = expand(value,false,bExpandWild, false );
+	public String expandString(String value, boolean bExpandWild , SourceLocation loc ) throws IOException, CoreException {
+		List<XValue> ret = expand(value,false,bExpandWild, false, loc  );
 		if( ret.size() == 0 )
 			return "";
 		else
@@ -984,8 +984,8 @@ public class Shell {
 
 	// Expand a word and return as a single XValue
 	// Preserves sequences and expands 
-	public	XValue	expand( String value , boolean bExpandWild , boolean bExpandWords ) throws IOException, CoreException {
-			List<XValue> ret = expand(value,false, bExpandWild , bExpandWords );
+	public	XValue	expand( String value , boolean bExpandWild , boolean bExpandWords , SourceLocation loc ) throws IOException, CoreException {
+			List<XValue> ret = expand(value,false, bExpandWild , bExpandWords, loc  );
 			if( ret.size() == 0 )
 				return new XValue("");
 			else

@@ -69,14 +69,14 @@ public class Assign {
 	public boolean isLocal () {
 		return mLocal ;
 	}
-	public XValue expand(Shell shell, MutableInteger retVal) throws IOException, CoreException {
+	public XValue expand(Shell shell, MutableInteger retVal,SourceLocation loc) throws IOException, CoreException {
 		if( mValue != null )
 			// Single variables dont expand wildcards
-			return mValue.expand(shell, false, false,retVal);
+			return mValue.expand(shell, false, false,retVal,loc);
 		else
 		if( mValueList != null )
 			// Sequences expand wildcards
-			return mValueList.expand(shell, true, false);
+			return mValueList.expand(shell, true, false,loc);
 		else
 			return null ;
 	}

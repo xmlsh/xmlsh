@@ -31,17 +31,17 @@ public class StringWord extends Word {
 		out.print(mString);
 	}
 
-	public List<XValue> expand(Shell shell, boolean bExpandSequences , boolean bExpandWild , boolean bExpandWords ) throws IOException, CoreException {
-		return shell.expand(mString,bExpandSequences , bExpandWild , bExpandWords );
+	public List<XValue> expand(Shell shell, boolean bExpandSequences , boolean bExpandWild , boolean bExpandWords, SourceLocation loc ) throws IOException, CoreException {
+		return shell.expand(mString,bExpandSequences , bExpandWild , bExpandWords , loc );
 	}
 
 	@Override
-	public XValue expand(Shell shell,boolean bExpandWild , boolean bExpandWords, MutableInteger retValue  ) throws IOException, CoreException {
-		return shell.expand(mString,bExpandWild ,  bExpandWords );
+	public XValue expand(Shell shell,boolean bExpandWild , boolean bExpandWords, MutableInteger retValue , SourceLocation loc ) throws IOException, CoreException {
+		return shell.expand(mString,bExpandWild ,  bExpandWords, loc );
 	}
 
-	public String expandString(Shell shell, boolean bExpandWild) throws IOException, CoreException {
-		return shell.expandString(mString, bExpandWild);
+	public String expandString(Shell shell, boolean bExpandWild, SourceLocation loc) throws IOException, CoreException {
+		return shell.expandString(mString, bExpandWild, loc );
 	}
 
 	public boolean isEmpty() {

@@ -15,6 +15,7 @@ import org.xmlsh.core.Options;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.core.Command;
 import org.xmlsh.sh.core.EvalScriptCommand;
+import org.xmlsh.sh.core.SourceLocation;
 import org.xmlsh.sh.shell.Shell;
 
 public class xmlsh extends BuiltinCommand {
@@ -100,8 +101,13 @@ public class xmlsh extends BuiltinCommand {
 			    	
 			    	String scmd = args.remove(0).toString();
 			    	ICommand cmd = CommandFactory.getInstance().getScript( shell , scmd, true,getLocation() );
-			    	if( cmd == null )
+			    	if( cmd == null ){
+			    		SourceLocation loc = getLocation();
+						if( loc != null )
+							shell.printErr(loc.toString());
+						
 			    		shell.printErr( scmd + ": not found");
+			    	}
 			    	else {
 			    		
 			    			// Run as sourced mode, in this shell ...

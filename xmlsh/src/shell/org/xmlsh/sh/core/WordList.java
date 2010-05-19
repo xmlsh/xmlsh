@@ -27,17 +27,17 @@ public class WordList extends ArrayList<Word> {
 		
 	}
 
-	public XValue expand(Shell shell, boolean bExpandWild, boolean bExpandWords) throws IOException, CoreException {
+	public XValue expand(Shell shell, boolean bExpandWild, boolean bExpandWords, SourceLocation loc) throws IOException, CoreException {
 		if( this.size() == 0 )
 			return new XValue(XdmEmptySequence.getInstance());
 		if( this.size() == 1 )
-			return this.get(0).expand(shell, bExpandWild, bExpandWords);
+			return this.get(0).expand(shell, bExpandWild, bExpandWords,loc);
 		
 		
 		List<XValue>  list = new ArrayList<XValue>( this.size() );
 		
 		for( Word w : this )
-			list.add(w.expand(shell,bExpandWild,bExpandWords) );
+			list.add(w.expand(shell,bExpandWild,bExpandWords,loc) );
 		return new XValue( list );
 		
 	}

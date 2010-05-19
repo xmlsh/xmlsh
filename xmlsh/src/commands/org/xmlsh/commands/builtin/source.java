@@ -13,6 +13,7 @@ import org.xmlsh.core.CommandFactory;
 import org.xmlsh.core.ICommand;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
+import org.xmlsh.sh.core.SourceLocation;
 
 public class source extends BuiltinCommand {
 
@@ -24,6 +25,9 @@ public class source extends BuiltinCommand {
 			
 			ICommand icmd = CommandFactory.getInstance().getScript(mShell, args.get(0).toString(),true,getLocation());
 			if( icmd == null){
+				SourceLocation loc = getLocation();
+				if( loc != null )
+					mShell.printErr(loc.toString());
 				mShell.printErr( args.get(0) + ": not found");
 				return 1;
 			}

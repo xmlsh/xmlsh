@@ -17,10 +17,10 @@ class CompoundCommand extends Command {
 		mRedirect = redir;
 	}
 	
-	protected	void	applyRedirect( Shell shell ) throws Exception
+	protected	void	applyRedirect( Shell shell) throws Exception
 	{
 		if( mRedirect != null )
-			mRedirect.exec(shell);
+			mRedirect.exec(shell, getLocation());
 		
 	}
 	

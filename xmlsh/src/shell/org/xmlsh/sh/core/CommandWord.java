@@ -123,7 +123,7 @@ public class CommandWord extends Word {
 	}
 		
 	@Override
-	public XValue expand(Shell shell,boolean bExpandWild , boolean bExpandWords, MutableInteger retValue ) throws IOException, CoreException {
+	public XValue expand(Shell shell,boolean bExpandWild , boolean bExpandWords, MutableInteger retValue, SourceLocation loc ) throws IOException, CoreException {
 		
 		
 		if( mType.equals("$(") || mType.equals("`") ){

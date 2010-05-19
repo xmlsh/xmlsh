@@ -35,7 +35,7 @@ public class IOFile {
 
 	
 	
-	public void exec(Shell shell, String port) throws IOException, CoreException {
+	public void exec(Shell shell, String port, SourceLocation loc ) throws IOException, CoreException {
 
 		XEnvironment env = shell.getEnv();
 		
@@ -72,7 +72,7 @@ public class IOFile {
 		
 		
 		
-		String file = mFile.expandString(shell, true);
+		String file = mFile.expandString(shell, true,loc);
 		
 		
 		/*

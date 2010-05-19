@@ -22,9 +22,9 @@ public class IORedirectList extends ArrayList<IORedirect> {
 		
 	}
 
-	public void exec(Shell shell) throws Exception {
+	public void exec(Shell shell,SourceLocation loc) throws Exception {
 		for( IORedirect io : this ){
-			io.exec( shell );
+			io.exec( shell,loc );
 		}
 		
 	}

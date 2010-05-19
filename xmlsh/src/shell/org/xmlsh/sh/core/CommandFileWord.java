@@ -43,11 +43,11 @@ public class CommandFileWord extends Word {
 	}
 	
 	
-	private String expandFile( Shell shell , String cmd ) throws IOException, CoreException
+	private String expandFile( Shell shell , String cmd , SourceLocation loc) throws IOException, CoreException
 	{
 
 
-		XValue 	files = shell.expand( cmd , true,true );
+		XValue 	files = shell.expand( cmd , true,true , loc );
 		String file;
 		if( files.isAtomic() )
 			file = files.toString();
@@ -61,8 +61,8 @@ public class CommandFileWord extends Word {
 		}
 			
 	}
-	XdmNode	expandXFile( Shell shell , String xfile ) throws IOException, CoreException{
-		XValue 	files = shell.expand( xfile , true,true );
+	XdmNode	expandXFile( Shell shell , String xfile, SourceLocation loc ) throws IOException, CoreException{
+		XValue 	files = shell.expand( xfile , true,true , loc );
 		String file;
 		if( files.isAtomic() )
 			file = files.toString();
@@ -84,15 +84,15 @@ public class CommandFileWord extends Word {
 
 
 	@Override
-	public XValue expand(Shell shell,boolean bExpandWild , boolean bExpandWords, MutableInteger retValue ) throws IOException, CoreException {
+	public XValue expand(Shell shell,boolean bExpandWild , boolean bExpandWords, MutableInteger retValue , SourceLocation loc ) throws IOException, CoreException {
 
 		if(mType.equals("$(<")){
 			
-			String s = expandFile( shell , mFile );
+			String s = expandFile( shell , mFile,loc );
 			return new XValue(s);
 		} else
 		if( mType.equals("$<(<")){
-			XdmNode node = expandXFile(shell , mFile);
+			XdmNode node = expandXFile(shell , mFile,loc);
 			return new XValue(node);
 			
 		}

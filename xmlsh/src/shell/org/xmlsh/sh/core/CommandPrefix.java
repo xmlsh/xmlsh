@@ -42,10 +42,10 @@ public class CommandPrefix {
 		
 	}
 
-	public int  exec(Shell shell) throws IOException, CoreException {
+	public int  exec(Shell shell, SourceLocation loc) throws IOException, CoreException {
 		MutableInteger retValue = new MutableInteger(0);
 		for (Assign ass : mList) {
-			XValue value = ass.expand(shell,retValue);
+			XValue value = ass.expand(shell,retValue, loc );
 			
 			if( ass.getOp().equals("+="))
 					shell.getEnv().appendVar( ass.getVariable(), value , ass.isLocal());

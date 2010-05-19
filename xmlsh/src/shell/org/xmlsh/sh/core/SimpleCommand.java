@@ -73,13 +73,17 @@ public class SimpleCommand extends Command {
 		if( mCommand == null || mCommand.isEmpty() )
 			return execNull( shell );
 		
-		List<XValue>	cmdLine = mSuffix.toCmdLine(shell, mCommand);
+		List<XValue>	cmdLine = mSuffix.toCmdLine(shell, mCommand , getLocation() );
 		
 		String cmdName = cmdLine.remove(0).toString();
 		
 		ICommand cmd = CommandFactory.getInstance().getCommand( shell , cmdName , getLocation() );
 		
 		if( cmd == null ){
+			SourceLocation loc = getLocation();
+			if( loc != null )
+				shell.printErr(loc.toString());
+			
 			shell.printErr(mCommand + ": not found");
 			return 1;
 			
@@ -107,11 +111,11 @@ public class SimpleCommand extends Command {
 		
 		
 			if( mPrefix != null )
-				mPrefix.exec( shell );
+				mPrefix.exec( shell, getLocation() );
 			
 			
 		
-			mSuffix.exec( shell );
+			mSuffix.exec( shell, getLocation() );
 			
 			// Push the current module if its different
 			Module module = cmd.getModule();
@@ -165,11 +169,11 @@ public class SimpleCommand extends Command {
 
 		int ret = 0;
 		if( mPrefix != null )
-			ret = mPrefix.exec( shell );
+			ret = mPrefix.exec( shell, getLocation() );
 		
 		
 		if( mSuffix != null )
-			mSuffix.exec( shell );
+			mSuffix.exec( shell, getLocation() );
 		
 		return ret;
 	}

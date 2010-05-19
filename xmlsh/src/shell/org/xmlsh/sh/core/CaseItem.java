@@ -14,12 +14,14 @@ import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.Util;
 
 public class CaseItem {
-	private		StringList	mPattern;
-	private		Command		mCommand;
-	public CaseItem(StringList pattern, Command command) {
+	private		StringList		mPattern;
+	private		Command			mCommand;
+	private		SourceLocation  mLocation ;
+	public CaseItem(StringList pattern, Command command, SourceLocation location ) {
 
 		mPattern = pattern;
 		mCommand = command;
+		mLocation = location;
 	
 	}
 	
@@ -32,7 +34,7 @@ public class CaseItem {
 	public boolean matches(Shell shell , String word) throws IOException, CoreException {
 		for( String pattern : mPattern ){
 			
-			String p = shell.expandString(pattern, false);
+			String p = shell.expandString(pattern, false, mLocation );
 			
 			
 			if( Util.wildMatches( p, word , true ))

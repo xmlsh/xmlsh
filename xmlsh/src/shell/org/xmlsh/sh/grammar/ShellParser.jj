@@ -45,10 +45,13 @@ public class ShellParser {
 		mSource = source ;
 	
 	}
-	
+	public SourceLocation getLocation( Token t )
+	{
+	 	return new SourceLocation( getSource() , t == null ? token : t) ;
+	}
 	public void setLocation( Command command , Token t )
 	{
-		command.setLocation( new SourceLocation( getSource() , t == null ? token : t) );
+		command.setLocation( getLocation(t));
 	}
   
   	public void setLocation( Command command )
@@ -691,10 +694,10 @@ CaseList case_list() :
 }
 
 CaseItem case_item() : 
-	{StringList p; Command c = null ; }
+	{StringList p; Command c = null ; Token t ;}
 {
-	[<LPAREN>]	p=pattern() <RPAREN>	[ c=compound_list() ] <DSEMI>	linebreak() 
-	{ return new CaseItem( p , c ); }	
+	[<LPAREN>]	p=pattern() t=<RPAREN>	[ c=compound_list() ] <DSEMI>	linebreak() 
+	{ return new CaseItem( p , c , getLocation(t) ); }	
 	
 }
 

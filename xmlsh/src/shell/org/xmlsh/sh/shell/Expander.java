@@ -20,7 +20,6 @@ import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XQueryCompiler;
 import net.sf.saxon.s9api.XQueryEvaluator;
 import net.sf.saxon.s9api.XQueryExecutable;
-import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmValue;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -29,6 +28,7 @@ import org.xmlsh.core.Variables;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.XVariable;
 import org.xmlsh.core.XVariable.XVarFlag;
+import org.xmlsh.sh.core.SourceLocation;
 import org.xmlsh.util.NameValueMap;
 import org.xmlsh.util.Util;
 import org.xmlsh.xpath.EvalDefinition;
@@ -38,8 +38,8 @@ class Expander {
 	private static final String sSEPSPACE = " ";
 	private static Logger mLogger = LogManager.getLogger( Expander.class);
 	
-	private 	Shell		mShell;
-
+	private 	Shell			mShell;
+	private		SourceLocation 	mLocation ;
 	
 
 	
@@ -151,9 +151,10 @@ class Expander {
 	
 	
 	
-	Expander( Shell shell )
+	Expander( Shell shell, SourceLocation loc )
 	{
 		mShell = shell;
+		mLocation = loc ;
 		
 	}
 	
@@ -483,6 +484,8 @@ class Expander {
 			
 		} catch (SaxonApiException e) {
 			mLogger.warn("Error expanding xml expression: " + arg , e );
+			if( mLocation != null )
+				mShell.printErr( mLocation.toString());
 			mShell.printErr("Error expanding xml expression");
 		}
 		finally {

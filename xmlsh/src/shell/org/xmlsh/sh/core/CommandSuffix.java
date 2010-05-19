@@ -43,19 +43,19 @@ public class CommandSuffix {
 	 * into runtime argument list 0-n ... 
 	 */
 	
-	public List<XValue> toCmdLine(Shell shell, Word command) throws IOException, CoreException 
+	public List<XValue> toCmdLine(Shell shell, Word command, SourceLocation loc ) throws IOException, CoreException 
 	{
 		ArrayList<XValue>	args = new ArrayList<XValue>();
 				
-		args.addAll( command.expand(shell,false,true,true));
+		args.addAll( command.expand(shell,false,true,true,loc));
 		for( Word arg : mArgs )
-			args.addAll(arg.expand(shell,arg.isExpand(),true,true));
+			args.addAll(arg.expand(shell,arg.isExpand(),true,true,loc));
 
 		return args;
 	}
 
-	public void exec(Shell shell) throws Exception {
-		this.mRedirect.exec(shell);
+	public void exec(Shell shell, SourceLocation loc) throws Exception {
+		this.mRedirect.exec(shell, loc );
 		
 	}
 	

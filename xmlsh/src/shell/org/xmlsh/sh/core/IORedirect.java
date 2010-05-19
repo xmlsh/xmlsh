@@ -51,15 +51,15 @@ public class IORedirect {
 		
 	}
 
-	public void exec(Shell shell) throws Exception {
+	public void exec(Shell shell,SourceLocation loc ) throws Exception {
 		
 		String port = null;
 		if( mPortname != null )
-			port  = mPortname.expandString(shell, false);
+			port  = mPortname.expandString(shell, false, loc );
 		
 		
 		if( mFile != null )
-			mFile.exec(shell,port);
+			mFile.exec(shell,port,loc);
 		if( mHere != null )
 			mHere.exec( shell,port);
 
