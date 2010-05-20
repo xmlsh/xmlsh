@@ -1,0 +1,6 @@
+<permissions uri="/test1.xml">
+  <permission capability="execute" role="test"/>
+  <permission capability="update" role="test"/>
+  <permission capability="insert" role="test"/>
+  <permission capability="read" role="test"/>
+</permissions>

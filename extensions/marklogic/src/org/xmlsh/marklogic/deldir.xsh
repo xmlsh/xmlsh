@@ -1,5 +1,5 @@
 # create uri ...
-_opts=$<(xgetopts -p "c=connect:,t=text" -ps -- "$@")
+_opts=$<(xgetopts -a -p "c=connect:,t=text" -ps -- "$@")
 shift $?
 
 

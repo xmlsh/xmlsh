@@ -1,0 +1,9 @@
+Created 2 files 3 dirs
+/test/dir1/
+/test/dir2/
+/test/dir3/
+/test/dir1/test1.xml
+/test/dir2/test2.xml
+Deleted dir1
+/test/dir2/test2.xml
+Success

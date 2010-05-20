@@ -10,6 +10,7 @@
 	
 	
 	<property name="dist" location="_dist"/>
+	<property name="xmlsh" location="../../trunk"/>
 	 <tstamp prefix="bdate"/>
 	<property name="release" value="${bdate.DSTAMP}"/>
 		
@@ -65,9 +66,10 @@
   <target name="test" description="Test Cases">
   	<java 
   		classname="org.xmlsh.sh.shell.Shell"
-  		classpath="bin/xmlsh-1.0.jar;lib/log4j-1.2.7.jar;lib/saxon9.jar;lib/saxon9-s9api.jar;lib/xercesImpl.jar;lib/woodstox-core-asl-4.0.3.jar;lib/stax2-api-3.0.1.jar;lib/stax-utils.jar"
+ 		classpath="${xmlsh}/bin/xmlsh-1.0.jar;${xmlsh}/lib/log4j-1.2.7.jar;${xmlsh}/lib/saxon9he.jar;${xmlsh}/lib/xercesImpl.jar;${xmlsh}/lib/woodstox-core-asl-4.0.3.jar;${xmlsh}/lib/stax2-api-3.0.1.jar;${xmlsh}/lib/stax-utils.jar;${xmlsh}/lib/jing.jar;${xmlsh}/lib/trang.jar;"
   		fork="true"
   	    dir="test">
+  	    	<arg value="-norc"/>
   			<arg value="./run_tests.xsh"/>
   	</java>
   </target>
