@@ -33,4 +33,6 @@ return
 </permissions>
 }}> -v uri $uri
  
-done
+done  >{_out}
+
+xecho <[ <get-permissions>{ $_out}</get-permissions> ]>

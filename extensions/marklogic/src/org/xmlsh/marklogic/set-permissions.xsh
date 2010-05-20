@@ -1,10 +1,10 @@
 # set permissions
-_optstr="x=execute:+,r=read:+,u=update:+,i=insert:+"
+_optstr="x=execute:+,r=read:+,u=update:+,i=insert:+,R=recurse"
 _opts=$<(xgetopts -i "c=connect:,t=text" -s -o $_optstr -- "$@")
 _popts=$<(xgetopts -a -p "c=connect:,t=text" -ps  -i $_optstr -- "$@")
 shift $?
 
-
+_hasr=<[ $_opts//option[@name="R"] ]>
 
 # Construct access list
 _read=<[ for $u in $_opts//option[@name="r"]/value/string() 	return concat( "xdmp:permission('" , $u , "', 'read')" )]>
@@ -15,11 +15,15 @@ _execute=<[ for $u in $_opts//option[@name="x"]/value/string() 	return concat( "
 
 _query=<[ concat(
     "declare variable $uri external ; ",
-	"xdmp:document-set-permissions( $uri , 
-	( " ,  fn:string-join( ( $_read , $_write , $_update , $_execute ) , "," ) , "))" ) 
+	"xdmp:document-set-permissions( ( $uri " ,
+	if( $_hasr) then ",xdmp:directory($uri,'infinity')/base-uri())" else ")" ,
+	",(",  fn:string-join( ( $_read , $_write , $_update , $_execute ) , "," ) , "))" ) 
 ]>
 
+
 for uri ; do
-	# echo {$_query}
-	:query $_pots -q {$_query} -v uri $uri 
+	#echo {$_query}
+	:query $_pots -q {$_query} -v uri $uri
 done
+
+
