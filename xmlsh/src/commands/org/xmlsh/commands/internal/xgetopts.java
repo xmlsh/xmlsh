@@ -52,14 +52,17 @@ public class xgetopts extends XCommand {
 		
 		// Backwards compatible - arg[0] is optdef
 		if( optdef == null ){
-			if( args.size() == 0 ){
-				usage();
-				return 1;
-			}
+
 			if( passthrough != null )
 				optdef = passthrough ;
-			else // backwards compatiblity take first arg as optdef
+			else
+			{// backwards compatiblity take first arg as optdef
+				if( args.size() == 0 ){
+					usage();
+					return 1;
+				}
 				optdef = args.remove(0).toString();
+			}
 		}
 		
 		boolean bNoArgs = opts.hasOpt("noargs");

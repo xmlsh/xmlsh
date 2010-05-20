@@ -63,3 +63,7 @@ foo
 ""
 bar spam
 bletch
+<foo bletch="abc" bar="spam">"Text Here in Quotes"</foo>
+<foo bletch="abc" bar="spam">"Text Here in Quotes"</foo>
+<foo bletch="abc" bar="spam">"Text Here in Quotes"</foo>
+foo<foo bletch="abc" bar="spam">"Text Here in Quotes"</foo>bar

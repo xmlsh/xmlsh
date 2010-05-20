@@ -42,7 +42,7 @@ public class xmlsh extends BuiltinCommand {
 	
 	public int run( List<XValue> args ) throws Exception {
 			
-		Options opts = new Options( "x,v,c:,rcfile:,e"  );
+		Options opts = new Options( "x,v,c:,rcfile:,e,norc"  );
 		opts.parse(args);
 		Shell shell = getShell();
 		
@@ -66,13 +66,13 @@ public class xmlsh extends BuiltinCommand {
 	    	if( opts.hasOpt("c"))
 	    		command = opts.getOptStringRequired("c").toString();
 		    
-	
+	    	boolean bNoRc = opts.hasOpt("norc");
 		    args = opts.getRemainingArgs();
 		    
 		    
 		    
 		    if(  args.size() == 0 && command == null ){
-			    String rcfile = opts.getOptString("rcfile", null );
+			    String rcfile =  opts.getOptString("rcfile", null );
 			    if( rcfile == null ){
 			    	XValue home = shell.getEnv().getVarValue("HOME");
 			    	if( home != null ){
@@ -80,7 +80,7 @@ public class xmlsh extends BuiltinCommand {
 			    	}
 			    }	
 			    		
-		    	ret = shell.interactive(rcfile);
+		    	ret = shell.interactive(bNoRc ? null : rcfile);
 		    	
 		    } else {
 	

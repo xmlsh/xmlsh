@@ -128,7 +128,11 @@ class Expander {
 					for( XdmValue v : value.asXdmValue() ){
 						if( ! bFirst )
 							append(sSEPSPACE);
-						append( v.toString());
+						
+						// DAL: Need to escape quotes if converting XML to string inside quotes
+						String sv = v.toString();
+						
+						append(escapeQuotes(sv));
 						bFirst = false ;
 					}
 					
@@ -138,6 +142,23 @@ class Expander {
 					add(value);
 				}
 			}
+		}
+
+		/*
+		 * Escape any double quotes with \
+		 */
+		private String escapeQuotes(String sv) {
+			StringBuffer sb = new StringBuffer();
+			int len = sv.length();
+			for( int i = 0 ; i < len ; i++ ){
+				char c = sv.charAt(i) ;
+				if( c == '"')
+					sb.append('\\');
+				sb.append(c);
+				
+				
+			}
+			return sb.toString();
 		}
 
 		private void ajoin() {

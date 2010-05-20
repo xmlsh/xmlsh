@@ -104,4 +104,11 @@ args "$@"
 args "$@bletch"
 
 
+# Test preserving quotes in XML expressoins
+a=<[ <foo bar="spam" bletch='abc'>"Text Here in Quotes"</foo> ]>
+echo $a
+xecho $a
+echo "$a"
+echo "foo${a}bar"
+
 
