@@ -134,7 +134,6 @@ public class SimpleCommand extends Command {
 		
 		catch( Exception e ){
 
-			shell.printErr("Exception running: " +  cmdName + "\n" +  e.toString() );
 			mLogger.error("Exception running command: " + cmdName  , e );
 			SourceLocation loc = getLocation();
 			if( loc != null ){
@@ -144,6 +143,8 @@ public class SimpleCommand extends Command {
 				
 				
 			}
+			shell.printErr("Exception running: " +  cmdName + "\n" +  e.toString() );
+
 			/*
 			 * Save exception here ???? 
 			 */

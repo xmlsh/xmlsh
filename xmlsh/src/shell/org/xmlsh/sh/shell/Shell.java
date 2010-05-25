@@ -516,15 +516,17 @@ public class Shell {
 		      }
 		      catch (Exception e) {
 		    	
-		        printErr(e.getMessage());
+
 		        SourceLocation loc = c != null ? c.getLocation() : null ;
-		        mLogger.error("Exception parsing statement",e);
+		        
 		        if( loc != null ){
 		        	String sLoc = loc.toString();
-		        
 		        	mLogger.info(loc.toString());
 		        	printErr( sLoc );
 		        }
+
+		        printErr(e.getMessage());
+		        mLogger.error("Exception parsing statement",e);
 		        parser.ReInit(new ShellParserReader(mCommandInput,getTextEncoding()));
 		      } catch (Error e) {
 		        printErr("Error: " + e.getMessage());

@@ -172,7 +172,25 @@ public class VariableInputPort extends InputPort {
 	
 		Configuration config = Shell.getProcessor().getUnderlyingConfiguration();
 
+		/*
+		 * IF variable is an atomic value then treat as string and parse to XML
+		 */
 		
+		if( value.isAtomic() ){
+			
+			try {
+				XMLInputFactory factory = XMLInputFactory.newInstance();
+				if( ! opts.isSupports_dtd())
+					factory.setProperty(XMLInputFactory.SUPPORT_DTD, "false");
+				XMLStreamReader reader =  factory.createXMLStreamReader(getSystemId() , asInputStream(opts));
+				return reader;
+			} catch (Exception e)
+				{
+					throw new CoreException( e );
+				}
+			
+			
+		}
 		
 		
 								

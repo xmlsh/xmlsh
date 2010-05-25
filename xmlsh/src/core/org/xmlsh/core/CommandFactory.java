@@ -43,6 +43,7 @@ import org.xmlsh.commands.builtin.xtrue;
 import org.xmlsh.commands.builtin.xtype;
 import org.xmlsh.commands.builtin.xversion;
 import org.xmlsh.commands.builtin.xwhich;
+import org.xmlsh.commands.internal.xquote;
 import org.xmlsh.sh.core.FunctionDefinition;
 import org.xmlsh.sh.core.SourceLocation;
 import org.xmlsh.sh.shell.Module;
