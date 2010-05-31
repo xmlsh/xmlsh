@@ -48,7 +48,7 @@ public class csv2xml extends XCommand
 
 		
 
-		Options opts = new Options( "root:,row:,col:,header,attr,encoding:,delim:,quote:,colnames:,tab,skip:", SerializeOpts.getOptionDefs() );
+		Options opts = new Options( "root:,row:,col:,header,attr,encoding:,delim:,quote:,colnames:,tab,skip:,trim", SerializeOpts.getOptionDefs() );
 		opts.parse(args);
 		
 		// root node
@@ -61,6 +61,7 @@ public class csv2xml extends XCommand
 		boolean bHeader = opts.hasOpt("header");
 		boolean bAttr = opts.hasOpt("attr");
 		int	skip = Util.parseInt(opts.getOptString("skip", "0"),0);
+		boolean bTrim = opts.hasOpt("trim"); 
 		
 		// -tab overrides -delim
 		if( opts.hasOpt("tab"))
@@ -115,7 +116,7 @@ public class csv2xml extends XCommand
 		String line;
 		while( (line = readLine(ir)) != null ){
 			CSVRecord csv = parser.parseLine(line);
-			addElement( writer , csv , row , col , bAttr , header );
+			addElement( writer , csv , row , col , bAttr , header,bTrim );
 		}
 		writer.writeEndElement();
 		writer.writeEndDocument();
@@ -149,15 +150,18 @@ public class csv2xml extends XCommand
 		String row, 
 		String col, 
 		boolean battr,
-		CSVRecord header) throws  XMLStreamException 
+		CSVRecord header, 
+		boolean bTrim
+	) throws  XMLStreamException 
 	{
 		
 		writer.writeStartElement(row);
 		// Attribute normal format
 		if( battr ){
 			for( int i = 0 ; i < csv.getNumFields() ; i++ ){
-				String name = getAttrName( i , col , header );
-				writer.writeAttribute(name,csv.getField(i));
+				String name = getAttrName( i , col , header,bTrim);
+				if( name != null )
+					writer.writeAttribute(name,csv.getField(i));
 			}
 			
 			
@@ -165,10 +169,12 @@ public class csv2xml extends XCommand
 
 
 			for( int i = 0 ; i < csv.getNumFields() ; i++ ){
-				String name = getColName( i , col , header );
-				writer.writeStartElement(name);
-				writer.writeCharacters(csv.getField(i));
-				writer.writeEndElement();
+				String name = getColName( i , col , header,bTrim );
+				if( name != null ){
+					writer.writeStartElement(name);
+					writer.writeCharacters(csv.getField(i));
+					writer.writeEndElement();
+				}
 				
 			}
 			
@@ -178,9 +184,13 @@ public class csv2xml extends XCommand
 	}
 
 
-	private String getColName(int i, String col, CSVRecord header) {
-		if( header != null && header.getNumFields() > i )
+	private String getColName(int i, String col, CSVRecord header, boolean bTrim ) {
+		if( header != null  ){
+			if( header.getNumFields() <= i )
+				return bTrim ? null : col ;
+		
 			return toXmlName( header.getField(i));
+		}
 		else
 			return col ;
 	}
@@ -188,9 +198,14 @@ public class csv2xml extends XCommand
 
 
 	// Get an attribute name 
-	private String getAttrName(int i, String col, CSVRecord header) {
-		if( header != null && header.getNumFields() > i )
+	private String getAttrName(int i, String col, CSVRecord header, boolean bTrim ) {
+		if( header != null ){
+			if( header.getNumFields() <= i )
+				return bTrim ? null : col + (i + 1) ;
+
 			return toXmlName( header.getField(i));
+		}
+		
 		else
 			return col + (i + 1)  ;
 		
