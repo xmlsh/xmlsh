@@ -6,20 +6,27 @@ y * $Id$
 
 package org.xmlsh.commands.internal;
 
-import java.util.ArrayList;
 import java.util.List;
+
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLEventFactory;
+import javax.xml.stream.XMLEventReader;
+import javax.xml.stream.XMLEventWriter;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.events.XMLEvent;
 
 import net.sf.saxon.s9api.DocumentBuilder;
 import net.sf.saxon.s9api.Processor;
-import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.XQueryCompiler;
-import net.sf.saxon.s9api.XQueryEvaluator;
-import net.sf.saxon.s9api.XQueryExecutable;
 import net.sf.saxon.s9api.XdmNode;
+import org.xmlsh.core.CoreException;
+import org.xmlsh.core.InputPort;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
+import org.xmlsh.core.VariableInputPort;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
+import org.xmlsh.core.XVariable;
 import org.xmlsh.core.Options.OptionValue;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
@@ -31,6 +38,7 @@ public class xcat extends XCommand {
 	 * so that ports can be used as filenames instead of just files or URI's
 	 */
 
+	private XMLEventFactory mFactory = XMLEventFactory.newInstance();
 	
 	
 	public int run( List<XValue> args )	throws Exception
@@ -67,138 +75,147 @@ public class xcat extends XCommand {
 			
 		
 		
-		XdmNode	context = null;
-		
-		
-		/*
-		 *  Special case, single file is taken as the context
-		 */
-		if(  xvargs.size() == 1 ){
-			DocumentBuilder builder = processor.newDocumentBuilder();
-			context = builder.build( getSource(xvargs.remove(0)));
-
-		}
-
 		// hasFiles means 'has more then one file'
 		// this effects if wrapping by default removes the root element.
-		boolean hasFiles = ( xvargs.size() > 0 );
-		boolean removeRoot = opts.hasOpt("r");
+		boolean bHasFiles = ( xvargs.size() > 0 );
+		boolean bRemoveRoot = opts.hasOpt("r");
 		
 		
 		// Use a copy of the serialize opts so we can override the method 
 		SerializeOpts serializeOpts = getSerializeOpts(opts);
 		
 		
-		if( context == null && ! hasFiles ){
-			context = getStdin().asXdmNode(serializeOpts);
-		}
-		
-		
-		
-		
-		String query = "";
-		
-		int wrapMode = 
-			(wrapper == null ? 0 : wrapper.isAtomic() ? 1 : 2 );
-		
-		int mode = (hasFiles ? 3 : 0 ) + wrapMode ;
-		
-		
-		// Sub XQuery expression to return the sequence of nodes 
-		// depending on if we remove the root
-		
-		// Query for where files are in a list
-		String qfiles = 
-			removeRoot ? 
-			( wrapper == null ? 
-					"for $f in $files return doc($f)/node()/*[1]" :
-					"for $f in $files return doc($f)/node()/*" ) :
-			"for $f in $files return doc($f)/node()" ;
-		
-		// Query for where files are in context
-		String qcontext = 
-			removeRoot ?
-					(wrapper == null ? "./node()/*[1]" :  "./node()/*") :
-					".";
-					
-		
-		switch(mode){
-		
-		// stdin or 1 file - always maintains the root 
-		case 0:
-			// No files no wrapper
-			query = qcontext ; break;
-		case 1:
-			// No files name wrapper
-			query = "declare variable $wrapper as xs:string external;\n" +
-					"element { $wrapper } { " + qcontext + " }"; 
-			break;
-			
-		case	2:
-		    // No files Element wrapper
-			query = "declare variable $wrapper as node() external;\n" +
-				    "element { $wrapper/name() } { $wrapper/@* , " + qcontext + " }";
-			break;
-		
-		
-		// File list specified (instead of context)
-		// Optionally strips the root
-		case	3:
-			// files no wrapper
-				query = "declare variable $files as xs:string* external;\n" +
-					"let $wrapper := doc($files[1]) return element {$wrapper/node()/name()} {$wrapper/node()/@* , " + qfiles + " }" ;
-				
-			break;
-		case	4:
-			
-			
-			// files string wrapper 
-			
-			query = 
-				"declare variable $files as xs:string* external;\n" +
-				"declare variable $wrapper as xs:string external;\n" +
-				"element { $wrapper } { " + qfiles + " }";
-			break;
-		case	5:
-			// files Element wrapper
-			query = 
-				"declare variable $files as xs:string* external;\n" +
-				"declare variable $wrapper as node() external;\n" +
-				"element { $wrapper/name() } { $wrapper/@* , " + qfiles + " }";
-			break;
-		}
-		
-		
-
-		
-		XQueryExecutable expr = null;
-
-		expr = compiler.compile( query );
-		
-		
-		XQueryEvaluator eval = expr.load();
-		if( context != null )
-			eval.setContextItem(context);
-		
-		if( wrapper != null )
-			eval.setExternalVariable( new QName("wrapper"),  wrapper.asXdmValue()  );	
-		if( hasFiles ){
-			ArrayList<XValue> files = new ArrayList<XValue>();
-			for( XValue a : xvargs ){
-				files.add( new XValue( (a).toString()));
-			}
-			eval.setExternalVariable( new QName("files"), new XValue(files).asXdmValue());
-		
-		}	
 		
 		OutputPort stdout = getStdout();
-		eval.run(stdout.asDestination(serializeOpts));
+		XMLEventWriter writer = stdout.asXMLEventWriter(serializeOpts);
+		
+		
+		writer.add( mFactory.createStartDocument(serializeOpts.getEncoding()));
+		
+		
+		
+		if( wrapper != null )
+			writeWrapperStart(wrapper, writer , serializeOpts );
+		
+		 if( !bHasFiles ){
+			 InputPort in = getStdin();
+			 write(in,writer,bRemoveRoot,serializeOpts);
+			 in.release();
+			 
+		 } else {
+			 for( XValue xf : xvargs ){
+				 	InputPort in = getInput(xf);
+				 	write(in,writer,bRemoveRoot,serializeOpts);
+				 	in.release();
+			 }
+		 }
+		 if( wrapper != null )
+			 writeWrapperEnd( wrapper , writer , serializeOpts);
+		 
+		 writer.add( mFactory.createEndDocument() );
+		
+		writer.flush();
+		writer.close();
 		stdout.writeSequenceTerminator(serializeOpts);
 		
 		return 0;
 
 
 	}
+
+
+	private void write(InputPort in, XMLEventWriter writer, boolean bRemoveRoot,SerializeOpts opts) throws CoreException, XMLStreamException {
+		
+		XMLEventReader reader = in.asXMLEventReader(opts);
+		XMLEvent event ;
+		int depth = 0;
+		while( reader.hasNext() ){
+			event = reader.nextEvent();
+			if( event.isStartDocument() || event.isEndDocument() )
+				continue;
+			else
+			if( event.isStartElement() ){
+				if( bRemoveRoot && depth == 0 )
+					;
+				else
+					writer.add( event );
+					
+				depth++;	
+			}
+			else
+			if( event.isEndElement()){
+				depth--;
+				if( bRemoveRoot && depth == 0 )
+					;
+				else
+					writer.add( event );
+			}
+			else
+			if( depth == 1 && bRemoveRoot && event.isCharacters() && event.asCharacters().isWhiteSpace() )
+				;
+			else
+				writer.add( event );
+			
+			
+		}
+
+		
+	}
+
+
+	private void writeWrapperStart(XValue wrapper, XMLEventWriter writer, SerializeOpts opts) throws XMLStreamException, CoreException {
+		if( wrapper.isAtomic() )
+			writer.add( mFactory.createStartElement(new QName(wrapper.toString()), null, null));
+		
+		else
+		{
+			XVariable var = new XVariable( "_unnamed" , wrapper );
+			VariableInputPort nodep = new VariableInputPort( var );
+			XMLEventReader reader = nodep.asXMLEventReader(opts);
+			XMLEvent event ;
+			while( reader.hasNext() ){
+				event = reader.nextEvent();
+				if( event.isAttribute() ||  event.isStartElement()){
+					writer.add(event);
+				}
+				
+				
+				
+			}
+			reader.close();
+			nodep.close();
+			
+			
+		}
+	}
+
+	private void writeWrapperEnd(XValue wrapper, XMLEventWriter writer, SerializeOpts opts) throws XMLStreamException, CoreException {
+		if( wrapper.isAtomic() )
+			writer.add( mFactory.createEndElement(new QName(wrapper.toString()), null));
+		
+		else
+		{
+			XVariable var = new XVariable( "_unnamed" , wrapper );
+			VariableInputPort nodep = new VariableInputPort( var );
+			XMLEventReader reader = nodep.asXMLEventReader(opts);
+			XMLEvent event ;
+			while( reader.hasNext() ){
+				event = reader.nextEvent();
+				if( event.isEndElement() ){
+					writer.add(event);
+				}
+				
+				
+				
+			}
+			reader.close();
+			nodep.close();
+			
+			
+		}
+	}
+
+
 
 
 

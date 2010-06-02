@@ -1,15 +1,15 @@
 xcat files only
 <foo>
-   <x>bar</x>
-   <x>spam</x>
+  <x>bar</x>
+  <x>spam</x>
 </foo>
 xcat text element
 <test>
-   <x>bar</x>
-   <x>spam</x>
+  <x>bar</x>
+  <x>spam</x>
 </test>
 xcat xml element
 <test>
-   <x>bar</x>
-   <x>spam</x>
+  <x>bar</x>
+  <x>spam</x>
 </test>

@@ -13,5 +13,5 @@ xquery -n 'xmlsh:eval("echo -n No Args")'
 var=<[ xmlsh:eval("xecho <[ <foo>bar</foo> ]&gt; ") ]>
 xecho $var
 xread a < ../../samples/data/books.xml
-xecho <[ $a//BOOKS[1]/ITEM[1]/xmlsh:eval("xcat")/ISBN ]>
-xecho <[ xmlsh:eval("xcat",(),$a//BOOKS[1]/ITEM[1])/ISBN ]>
+xecho <[ $a//BOOKS[1]/ITEM[1]/xmlsh:eval("xcat")//ISBN ]>
+xecho <[ xmlsh:eval("xcat",(),$a//BOOKS[1]/ITEM[1])//ISBN ]>
