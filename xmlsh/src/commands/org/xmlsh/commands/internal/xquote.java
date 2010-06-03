@@ -22,7 +22,7 @@ public class xquote extends XCommand {
 	
 	public int run( List<XValue> args ) throws Exception {
 
-		Options opts = new Options( "p=port:" ,  SerializeOpts.getOptionDefs());
+		Options opts = new Options( "n,p=port:" ,  SerializeOpts.getOptionDefs());
 		opts.parse(args);
 		
 		boolean nolf = opts.hasOpt("n");

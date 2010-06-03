@@ -8,7 +8,8 @@ package org.xmlsh.commands.internal;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.net.URI;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 import javax.xml.stream.XMLEventReader;
@@ -17,9 +18,6 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.XMLEvent;
 
-import net.sf.saxon.s9api.XdmNode;
-import net.sf.saxon.s9api.XdmNodeKind;
-import net.sf.saxon.s9api.XdmValue;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
@@ -29,6 +27,75 @@ import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.util.Util;
 
 public class xunquote extends XCommand {
+	
+	static class UnquotingInputStream extends InputStream
+	{
+		private		byte[]  	mBytes;
+		int			pos = 0;
+		int 		end = 0;
+		
+		
+		public UnquotingInputStream(byte[] bytes) {
+			super();
+			mBytes = bytes;
+			end = mBytes.length;
+		}
+
+		
+		private int next()
+		{
+			if( pos >= end )
+				return -1;
+			return mBytes[pos++];
+		}
+
+		private String readToSemi()
+		{
+			StringBuffer sb = new StringBuffer();
+			int c ;
+			while( ( c = next()) >= 0  && c != ';')
+				sb.append((char)c);
+			return sb.toString();
+			
+		}
+		
+
+		@Override
+		public int read() throws IOException {
+			int c = next();
+			if( c == -1 )
+				return c;
+			if( c == '&' ){
+				String s = readToSemi();
+				if( s.length() == 0 )
+					return -1;
+				if( s.equals("lt"))
+					return '<' ;
+				if( s.equals("gt"))
+					return '>';
+				if( s.equals("quot"))
+					return '"' ;
+				if( s.equals("apos"))
+					return '\'';
+				if( s.equals("amp"))
+					return '&';
+				
+				if( s.startsWith("#")){
+					if( s.charAt(1) == 'x' )
+						return Integer.parseInt(s.substring(2), 16);
+					else
+						return Integer.parseInt(s.substring(1), 10);
+				}
+				else 
+					throw new IOException("Unexepcted entity: &" + s + ";");
+					
+			} else
+				return c;
+			
+		}
+		
+	};
+	
 	
 	public int run( List<XValue> args ) throws Exception {
 		
@@ -72,7 +139,8 @@ public class xunquote extends XCommand {
 				
 				ByteArrayOutputStream	tempBuf = new ByteArrayOutputStream(  );
 				arg.serialize( tempBuf , serializeOpts );
-				ByteArrayInputStream  	in = new ByteArrayInputStream( tempBuf.toByteArray() );
+				UnquotingInputStream  	in = new UnquotingInputStream( tempBuf.toByteArray() );
+				
 				XMLInputFactory factory = XMLInputFactory.newInstance();
 				XMLEventReader reader = factory.createXMLEventReader( in , serializeOpts.getEncoding() );
 				

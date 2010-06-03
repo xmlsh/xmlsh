@@ -10,3 +10,4 @@ document-node()
 <test>&lt;foo&gt;bar&lt;/foo&gt;&#xD;
 </test>
 <foo>bar</foo>
+<foo>bar</foo>

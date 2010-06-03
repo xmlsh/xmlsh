@@ -26,4 +26,5 @@ xecho <[ $e/test ]>
 echo <[ $e/test/string() ]> >{f}
 xunquote "$f"
 
+xunquote "&lt;foo&gt;bar&lt;/foo&gt;"
 
