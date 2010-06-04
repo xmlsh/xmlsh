@@ -28,3 +28,5 @@ Xquery on xml expression
 A String
 <AUTHOR>Jane Austen</AUTHOR>
 element()
+Success fn:true
+Success fn:false

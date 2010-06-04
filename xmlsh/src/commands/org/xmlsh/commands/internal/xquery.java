@@ -40,7 +40,7 @@ public class xquery extends XCommand {
 	throws Exception 
 	{
 		
-		Options opts = new Options( "c=context:,cf=context-file:,f=file:,i=input:,n,q:,v,nons,ns:+,s=string" ,	SerializeOpts.getOptionDefs() );
+		Options opts = new Options( "c=context:,cf=context-file:,f=file:,i=input:,n,q:,v,nons,ns:+,s=string,b=bool" ,	SerializeOpts.getOptionDefs() );
 		opts.parse(args);
 		
 		Processor  processor  = Shell.getProcessor();
@@ -54,6 +54,8 @@ public class xquery extends XCommand {
 		InputPort in = null ; // Save to close 
 
 		boolean bString = 	opts.hasOpt("s");
+		boolean bBool   =  opts.hasOpt("b");
+
 		
 		if( ! opts.hasOpt("n" ) ){ // Has XML data input
 			// Order of prevelence 
@@ -167,6 +169,16 @@ public class xquery extends XCommand {
 					
 				
 			}
+			
+			if( in != null )
+				in.close();
+			
+			if( bBool ){
+				XValue value = new XValue(eval.evaluate());
+				return value.toBoolean() ? 0 : 1 ;
+				
+		
+			} 
 				
 
 			
@@ -199,9 +211,7 @@ public class xquery extends XCommand {
 			}
 			if( bAnyOut )
 				stdout.writeSequenceTerminator(serializeOpts); // write "\n"
-			
-			if( in != null )
-				in.close();
+
 
 			
 			return 0;

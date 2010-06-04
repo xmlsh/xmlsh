@@ -63,6 +63,11 @@ functx:sequence-type($A)
 }}> -v A <[ <foo/> ]>
 
 
+# Test boolean return
+xquery -n -b -q 'fn:true()' && echo Success fn:true
+xquery -n -b -q 'fn:false()' || echo Success fn:false
+
+
 
 
 
