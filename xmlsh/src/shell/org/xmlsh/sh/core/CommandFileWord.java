@@ -55,7 +55,7 @@ public class CommandFileWord extends Word {
 			throw new InvalidArgumentException("Invalid expansion for redirection");
 		InputStream is = shell.getInputStream(file);
 		try {
-			return Util.readString( is).trim();
+			return Util.readString( is, shell.getSerializeOpts().getText_encoding()).trim();
 		} finally {
 			is.close();
 		}

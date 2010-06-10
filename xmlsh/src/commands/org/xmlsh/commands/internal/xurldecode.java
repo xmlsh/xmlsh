@@ -8,6 +8,7 @@ package org.xmlsh.commands.internal;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.List;
 
@@ -19,7 +20,7 @@ import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.util.Util;
 
-public class xurlencode extends XCommand {
+public class xurldecode extends XCommand {
 	
 	public int run( List<XValue> args ) throws Exception {
 
@@ -51,11 +52,11 @@ public class xurlencode extends XCommand {
 			boolean bFirst = true;
 			for ( XValue arg : args ){
 					if( ! bFirst )
-						out.write('&');
+						out.write(' ');
 					
 					bFirst = false;
 					String value = arg.toString();
-					value = URLEncoder.encode(value,serializeOpts.getEncoding());
+					value = URLDecoder.decode(value,serializeOpts.getEncoding());
 					
 					out.write(value.getBytes(serializeOpts.getEncoding()));
 			}
@@ -67,7 +68,7 @@ public class xurlencode extends XCommand {
 			
 			InputStream is = getStdin().asInputStream(serializeOpts);
 			String data = Util.readString(is,serializeOpts.getEncoding());
-			String value = URLEncoder.encode(data,serializeOpts.getEncoding());
+			String value = URLDecoder.decode(data,serializeOpts.getEncoding());
 			out.write(value.getBytes(serializeOpts.getEncoding()));
 			is.close();
 			

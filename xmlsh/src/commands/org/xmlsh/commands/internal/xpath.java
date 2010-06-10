@@ -82,7 +82,7 @@ public class xpath extends XCommand {
 		OptionValue ov = opts.getOpt("f");
 		String xpath = null;
 		if (ov != null)
-			xpath = readString(ov.getValue());
+			xpath = readString(ov.getValue(),serializeOpts);
 		else {
 			ov = opts.getOpt("q");
 			if (ov != null)
@@ -202,12 +202,12 @@ public class xpath extends XCommand {
 
 	}
 
-	private String readString(XValue v) throws CoreException, IOException  {
+	private String readString(XValue v, SerializeOpts opts) throws CoreException, IOException  {
 		
 		InputPort in = getInput( v );
-		InputStream is = in.asInputStream(getSerializeOpts());
+		InputStream is = in.asInputStream(opts);
 		
-		String s = Util.readString(is);
+		String s = Util.readString(is,opts.getEncoding());
 		is.close();
 		in.close();
 		return s ;

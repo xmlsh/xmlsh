@@ -133,24 +133,24 @@ public class Util
 
 	}
 	
-	public static String readString(InputStream is) throws IOException
+	public static String readString(InputStream is, String encoding) throws IOException
 	{
-		return new String( readBytes(is));
+		return new String( readBytes(is), encoding );
 	}
 
 
 
-	public static String readString(URL url) throws IOException
+	public static String readString(URL url, String encoding ) throws IOException
 	{
 		InputStream is = url.openStream();
 		String ret = new String( readBytes(is));
 		is.close();
 		return ret;
 	}
-	public static String readString(File file) throws IOException
+	public static String readString(File file, String encoding ) throws IOException
 	{
 		FileInputStream fis = new FileInputStream(file);
-		String ret = readString(fis);
+		String ret = readString(fis, encoding );
 		fis.close();
 		return ret;
 	}
@@ -693,8 +693,8 @@ public class Util
 
 	*/
 
-	public static String readString(URI uri) throws MalformedURLException, IOException {
-		return readString( uri.toURL());
+	public static String readString(URI uri, String encoding) throws MalformedURLException, IOException {
+		return readString( uri.toURL(),encoding);
 	}
 
 
