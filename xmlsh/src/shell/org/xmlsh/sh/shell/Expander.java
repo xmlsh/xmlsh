@@ -533,10 +533,13 @@ class Expander {
 		char cQuote = 0;
 		for( int i = 0 ; i < vslen ; i++ ){
 			char c = vs.charAt(i);
-			if( c == '\\' && i < vslen ){
-				sb.append(c);
+			if( c == '\\' && i < vslen -1 ){
 				c = vs.charAt(++i);
+				if( c != '"' && c != '\'' )
+					sb.append('\\');
+					
 				sb.append(c);
+				
 				continue;
 				
 			}
@@ -580,11 +583,11 @@ class Expander {
 		boolean wildUnQuoted = false ;
 		for( int i = 0 ; i < vslen ; i++ ){
 			char c = vs.charAt(i);
-			if( c == '\\' && i < vslen ){
+			if( c == '\\' && i < vslen-1 ){
 				
 				// sb.append(c);
 				c = vs.charAt(++i);
-				if( c != '"' && c != '\'')
+				if( c != '"' && c != '\'' )
 					sb.append('\\');
 				sb.append(c);
 				continue;

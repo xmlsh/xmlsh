@@ -1,0 +1,69 @@
+foo bar
+foo
+foo bar
+foo bar
+foobar
+foobar
+foobar
+foobar
+foobarspam
+1
+foo bar spam
+1
+foo bar spam
+foobar'spam'bletchbarf
+test
+footest
+footestbar
+testfoo
+$_A
+foo$_A
+foo$_Abar
+foobar
+foo\bar
+foo\bar
+foo\bar
+foo\bar
+foo\\bar
+foo\bar
+foo\bar
+foo\bar
+on a single line
+on a single line
+line 1
+line 2
+line 1
+line 2
+<foo attr="test"/>
+"" ""
+2
+"" ""
+"" ""
+"
+'"
+'foo bar'
+$# 3
+foo
+""
+bar spam
+$# 1
+foo "" bar spam
+$# 1
+foo "" bar spam bletch
+$# 3
+foo
+""
+bar spam
+$# 3
+foo
+""
+bar spam
+$# 4
+foo
+""
+bar spam
+bletch
+<foo bletch="abc" bar="spam">"Text Here in Quotes"</foo>
+<foo bletch="abc" bar="spam">"Text Here in Quotes"</foo>
+<foo bletch="abc" bar="spam">"Text Here in Quotes"</foo>
+foo<foo bletch="abc" bar="spam">"Text Here in Quotes"</foo>bar
