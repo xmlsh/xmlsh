@@ -41,6 +41,9 @@ import com.marklogic.xcc.ValueFactory;
 import com.marklogic.xcc.exceptions.XccConfigException;
 import com.marklogic.xcc.types.ItemType;
 import com.marklogic.xcc.types.XName;
+import com.marklogic.xcc.types.XSBoolean;
+import com.marklogic.xcc.types.XSInteger;
+import com.marklogic.xcc.types.XSString;
 import com.marklogic.xcc.types.XdmAttribute;
 import com.marklogic.xcc.types.XdmItem;
 import com.marklogic.xcc.types.XdmVariable;
@@ -212,6 +215,44 @@ public abstract class MLCommand extends XCommand {
 		
 		return ValueFactory.newElement(is);
 
+	}
+
+    /**
+     * Get the effective boolean value of the expression. This returns false if the value
+     * is the empty sequence, a zero-length string, a number equal to zero, or the boolean
+     * false. Otherwise it returns true.
+     * @throws InvalidArgumentException 
+     */
+	
+	protected boolean effectiveBoolean(ResultSequence rs) throws InvalidArgumentException {
+		// Empty sequence
+		if( rs.isEmpty() )
+			return false ;
+		
+		if( rs.size() > 1 )
+			throw new InvalidArgumentException("Boolean value undefined for sequence of > 1 item");
+		
+		XdmItem item = rs.itemAt(0);
+		ItemType type = item.getItemType();
+		
+
+		if (type.isAtomic() ) {
+			// Zero length string
+			if( item instanceof XSString )
+				return ((XSString)item).asString().length() == 0 ? false : true ;
+			
+			// Numeber eq 
+			if( item instanceof XSInteger )
+				return ((XSInteger)item).asPrimitiveInt() == 0 ? false : true ;
+			
+			// Boolean
+			if( item instanceof XSBoolean )
+				return ((XSBoolean )item).asPrimitiveBoolean() ;
+				
+			
+		} 
+		
+		return true ;
 	}
 
 }

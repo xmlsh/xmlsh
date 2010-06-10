@@ -1,5 +1,5 @@
 This is an extension module to xmlsh
-This version requires xmlsh version 1.0.3 or greater
+This version requires xmlsh version 1.0.5 or greater
 
 To run this module you must include the supplied marklogic_ext.jar
 as well as the marklogic xcc.jar in the CLASSPATH with xmlsh.
@@ -22,16 +22,13 @@ or
    
 
 
-the following commands are supported
-  ml:invoke
-  ml:put
-  ml:query
-  ml:del
-  ml:get
-  ml:list
-  
+Full documentation on using the MarkLogic extension module is at
 
-Installation and getting started instructions are available at 
+http://www.xmlsh.org/ModuleMarkLogic
+
+
+
+Installation and getting started instructions for XMLSH are available at 
 
 http://www.xmlsh.org
 

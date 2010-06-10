@@ -419,8 +419,9 @@ public class put extends MLCommand {
 		printErr("Creating " + dirs.size() + " directories ...");
 		StringBuffer sReq = new StringBuffer();
 		for( String d : dirs ){
+			String qd =  quote(d);
 			
-			sReq.append("xdmp:directory-create(" + quote(d) + ");\n");
+			sReq.append("if( exists(xdmp:document-properties(" + qd+ ")//prop:directory)) then () else xdmp:directory-create(" +qd + ");\n");
 			
 			
 		}

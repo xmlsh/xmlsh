@@ -232,4 +232,10 @@
 			</option>
 		</options>
 	</command>
+	<command name="get-permissions" url="http://www.xmlsh.org/MarkLogicGetPermissions">
+		<synopsis>Lists the permissions for the specified documents</synopsis>
+	</command>
+	<command name="set-permissions" url="http://www.xmlsh.org/MarkLogicSetPermissions">
+		<synopsis>Sets permissions for the specified documents</synopsis>
+	</command>
 </commands>

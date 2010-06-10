@@ -12,18 +12,27 @@ _write=<[ for $u in $_opts//option[@name="i"]/value/string() 	return concat( "xd
 _update=<[ for $u in $_opts//option[@name="u"]/value/string() 	return concat( "xdmp:permission('" , $u , "', 'update')" )]>
 _execute=<[ for $u in $_opts//option[@name="x"]/value/string() 	return concat( "xdmp:permission('" , $u , "', 'execute')" )]>
 
-
+echo query is 
 _query=<[ concat(
     "declare variable $uri external ; ",
-	"xdmp:document-set-permissions( ( $uri " ,
-	if( $_hasr) then ",xdmp:directory($uri,'infinity')/base-uri())" else ")" ,
+    "declare function local:all( $uri as xs:string? ) as xs:string* ",
+    "{ ",
+    "	$uri ,  ",
+    "	xdmp:directory( $uri )/base-uri(),",
+    "	for $d in  xdmp:directory-properties($uri)//prop:directory/base-uri() ",
+    "    	return local:all( $d ) ",
+	"}; ",
+	"xdmp:document-set-permissions( " ,
+	if( $_hasr) then "local:all($uri)" else "$uri" ,
 	",(",  fn:string-join( ( $_read , $_write , $_update , $_execute ) , "," ) , "))" ) 
 ]>
 
 
+
 for uri ; do
-	#echo {$_query}
-	:query $_pots -q {$_query} -v uri $uri
+	#echo query is "$_query"
+	:query $_pots -q "$_query" -v uri $uri
+	echo $uri
 done
 
 

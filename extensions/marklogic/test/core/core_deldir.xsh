@@ -10,6 +10,7 @@ ml:list -r /test/
 ml:deldir /test/dir1/
 echo Deleted dir1
 ml:list -r /test/
+ml:direxists /test/ || echo Fail - directory /test/ should exist
 ml:deldir /test/
 ml:listdir /
 echo Success
