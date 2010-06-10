@@ -14,15 +14,22 @@ import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
+import java.util.Set;
+
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.ThrowException;
+import org.xmlsh.core.VariableOutputPort;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
+import org.xmlsh.core.XVariable;
 import org.xmlsh.sh.core.Command;
 import org.xmlsh.sh.shell.Shell;
 
@@ -68,9 +75,11 @@ public class httpserver extends XCommand {
 		
 		public void handle(HttpExchange http) throws IOException {
 				
-			
+
 			try {
-				
+
+		         XVariable headers 	= parseHeaders( http );
+		           
 				mShell.setCurdir(mInitialCD);
 			  //  System.out.println("Got request in thread: " + Thread.currentThread().getName() );
 
@@ -109,7 +118,10 @@ public class httpserver extends XCommand {
 		       
 		           // http.sendResponseHeaders(200, response.length());
 		           OutputStream os = http.getResponseBody();
-		           execute(cmd, uri, is, os);
+		           
+
+		           
+		           execute(cmd, uri, is, os, headers );
 ;
 
 		       
@@ -120,7 +132,7 @@ public class httpserver extends XCommand {
 		    	   ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		    	   
 		    	   
-		    	   execute(cmd, uri, is, bos);
+		    	   execute(cmd, uri, is, bos,headers);
 		    	   
 
 			       try {
@@ -170,24 +182,82 @@ public class httpserver extends XCommand {
 
 		}
 
-		private void execute(Command cmd, URI uri, InputStream is, OutputStream os)
+		private void execute(Command cmd, URI uri, InputStream is, OutputStream os, XVariable headers)
 				throws CoreException, ThrowException, IOException {
 			
 			 mShell.getEnv().setStdin( is );
 			 mShell.getEnv().setStdout( os  );
-			   
-			   
-	
+			  
+			  
+			 
 			  List<XValue> args = new ArrayList<XValue>();
 			  String query = uri.getQuery();
 			  String path = uri.getPath();
 			  args.add( new XValue(path));
 			  args.add( new XValue(query));
 			  
+				if( headers != null )
+					mShell.getEnv().setVar(headers,false);
+			  
 			  mShell.setArgs(args);
 			  mShell.exec(cmd);
 		}
 
+		/*
+		 * Create a document from a paramater map
+		 * Map is  String: String[]
+		 * 
+		 * Format is
+		 * 
+		 * <headers>
+		 * 	<header key="key">
+		 * 		<value>value1</value>
+		 * 		<value>value2</value>
+		 * 	....
+		 * </parameters>
+		 * 
+		 * 
+		 */
+		@SuppressWarnings("unchecked")
+		private XVariable parseHeaders(HttpExchange request) throws XMLStreamException, CoreException {
+
+	        
+			XVariable var = new XVariable("HTTP_HEADERS",null);
+			VariableOutputPort port = new VariableOutputPort( var );
+			XMLStreamWriter writer = port.asXMLStreamWriter(null);
+			
+			
+			writer.writeStartDocument();
+			writer.writeStartElement("headers");
+			
+			Headers headers = request.getRequestHeaders();
+			Set<String> names = headers.keySet();
+			
+			for( String name : names ){
+
+				List<String> values = headers.get(name);
+				
+				
+				writer.writeStartElement("header");
+				writer.writeAttribute("name", name );
+				
+				for( String value : values ){
+					writer.writeStartElement("value");
+					writer.writeCharacters(value);
+					writer.writeEndElement();
+				}
+				writer.writeEndElement();
+				
+			}
+			writer.writeEndElement();
+			writer.writeEndDocument();
+			writer.close();
+			port.flush();
+			return var ;
+		
+		
+		
+		}
 
 
 	}

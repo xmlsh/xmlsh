@@ -48,7 +48,9 @@ import org.xmlsh.util.XMLStreamWriterToContentHandler;
 
 public class VariableOutputPort extends OutputPort
 {
-
+	
+	// Set to true if any asXXX method was caused which used a non-xml stream or access 
+	private		boolean		mAsText = false ;
 	
 	
 	private class VariableXdmItemOutputStream implements IXdmValueOutputStream
@@ -105,6 +107,7 @@ public class VariableOutputPort extends OutputPort
 	
 	public	synchronized OutputStream asOutputStream(	SerializeOpts serializeOpts  )
 	{
+		mAsText = true ;
 		/*
 		 * If going to a variable, then create a variable stream
 		 */
@@ -166,6 +169,7 @@ public class VariableOutputPort extends OutputPort
 	
 	public synchronized PrintStream asPrintStream(SerializeOpts opts)
 	{
+		mAsText = true ;
 		return new PrintStream(asOutputStream(opts));
 	}
 
@@ -189,6 +193,8 @@ public class VariableOutputPort extends OutputPort
 	}
 
 	public synchronized PrintWriter asPrintWriter(SerializeOpts opts) throws UnsupportedEncodingException {
+		mAsText = true ;
+		
 		return new PrintWriter( 		
 				new OutputStreamWriter(asOutputStream(opts) , 
 						opts.getText_encoding() ));
@@ -318,6 +324,14 @@ public class VariableOutputPort extends OutputPort
 	public	IXdmValueOutputStream	asXdmValueOutputStream(SerializeOpts opts) throws CoreException
 	{
 		return new VariableXdmItemOutputStream(  );
+	}
+
+
+	/**
+	 * @return the asText
+	 */
+	public boolean isAsText() {
+		return mAsText;
 	}
 	
 	

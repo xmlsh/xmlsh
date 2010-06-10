@@ -97,5 +97,10 @@ b=post
 a=
 [ "x${a}" = "x" ] || echo Failed assign to empty string
 
+# Test that $<() parses text
+
+a=$<(echo "<foo/>") 
+[ $(xtype $a) = "document-node()" ] || echo Failed to parse text as XML
+
 
 exit 0

@@ -9,11 +9,18 @@ package org.xmlsh.sh.core;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
+
+import net.sf.saxon.s9api.DocumentBuilder;
+import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XdmAtomicValue;
 import net.sf.saxon.s9api.XdmItem;
+import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XdmValue;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.VariableOutputPort;
@@ -101,9 +108,12 @@ public class CommandWord extends Word {
 			shell.getEnv().setStdout( port );
 			shell.getEnv().setStdin( new NullInputStream() );
 			int ret= shell.exec(cmd);
-			if( retValue != null )
-				retValue.setValue(ret);
+			if( retValue != null ){
+				
+				
 			
+				retValue.setValue(ret);
+			}
 		
 			
 		} 
@@ -115,7 +125,33 @@ public class CommandWord extends Word {
 		
 		port.close();
 		
+	
+		
+		
 		XValue value = var.getValue();
+		/*
+		 * If port was written to as a text stream then need to reparse it as a document
+		 */
+		if( value != null && port.isAsText() ){
+			String sDoc = value.toString();
+			
+			
+			DocumentBuilder builder = Shell.getProcessor().newDocumentBuilder();
+			Source source = new StreamSource( new StringReader(sDoc));
+			XdmNode node;
+			try {
+				node = builder.build(source);
+			} catch (SaxonApiException e) {
+				throw new CoreException("Exception parsing as XML Document",e);
+			}
+			return node ;
+			
+			
+			
+			
+		}
+		
+		
 		return value == null ? null : value.asXdmValue();
 		
 		

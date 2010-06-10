@@ -39,7 +39,7 @@ public class http extends XCommand {
 	throws Exception 
 	{
 		
-		Options opts = new Options( "get:,put:,post:,head:,options:,delete:,connectTimeout:,contentType:,readTimeout:,+useCaches,+followRedirects,user:,password:,add-header:+" );
+		Options opts = new Options( "get:,put:,post:,head:,options:,delete:,connectTimeout:,contentType:,readTimeout:,+useCaches,+followRedirects,user:,password:,H=add-header:+" );
 		opts.parse(args);
 		
 		SerializeOpts serializeOpts = getSerializeOpts();  // Use args ?
@@ -121,7 +121,7 @@ public class http extends XCommand {
 			
 			
 			http.setRequestMethod(method);
-			OptionValue headers = opts.getOpt("header");
+			OptionValue headers = opts.getOpt("H");
 			if( headers != null ){
 				
 				for( XValue v : headers.getValues() ){
