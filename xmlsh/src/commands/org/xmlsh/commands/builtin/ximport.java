@@ -8,16 +8,19 @@ package org.xmlsh.commands.builtin;
 
 import java.util.List;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.xmlsh.core.BuiltinCommand;
 import org.xmlsh.core.CoreException;
+import org.xmlsh.core.InvalidArgumentException;
+import org.xmlsh.core.ThrowException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Module;
 import org.xmlsh.sh.shell.Modules;
 import org.xmlsh.util.StringPair;
 
 public class ximport extends BuiltinCommand {
-
-	
+	private static Logger mLogger = LogManager.getLogger(ximport.class);
 	public int run(  List<XValue> args ) throws Exception {
 		int ret = 0;
 		if( args.size() < 1 )
@@ -25,19 +28,37 @@ public class ximport extends BuiltinCommand {
 		
 		XValue what = args.remove(0);
 
-		if( what.toString().equals("module"))
-			return importModule( args );
-		else
-		if( what.toString().equals("package")){
-			for( XValue arg : args )
-				ret += importPackage(arg.toString(),"");
-			return ret;
+		try {
+			if( what.toString().equals("module"))
+				return importModule( args );
+			else
+			if( what.toString().equals("package")){
+				for( XValue arg : args )
+					ret += importPackage(arg.toString(),"");
+				return ret;
+			}
+			else
+			if( what.toString().equals("commands")){
+				for( XValue arg : args )
+					ret += importPackage(arg.toString(),"org.xmlsh.commands.");
+				return ret;
+			}
+		} 
+
+		catch (InvalidArgumentException e){
+			mLogger.info("invalid argument exception importing: " + what.toString() , e);
+			if( mShell.isInCommandConndition() )
+				return -1 ;
+			// mShell.printErr("invalid argument exception importing: "+ what.toString()  ,e );
+			throw e ;
+			
 		}
-		else
-		if( what.toString().equals("commands")){
-			for( XValue arg : args )
-				ret += importPackage(arg.toString(),"org.xmlsh.commands.");
-			return ret;
+		
+		
+		
+		catch (Exception e) {
+			mLogger.warn("Uncaught exception: " + e );
+			throw e ;
 		}
 		return 2;
 				

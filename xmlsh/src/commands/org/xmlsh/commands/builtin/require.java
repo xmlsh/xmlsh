@@ -26,48 +26,22 @@ public class require extends BuiltinCommand {
 		
 		String sreq = args.get(0).toString();
 		
-		// Creates a 3-4 element array  [ "1" , "0" , "1" , ? ]
-		String aver[] = Version.getVersion().split("\\.");
-		String areq[] = sreq.split("\\.");
+		int ret = mShell.requireVersion(null,sreq);
+		if( ret == 0 )
+			return 0;
 		
-		// Start with major and go down
-		for( int i = 0 ; i < Math.max(aver.length,areq.length) ; i++ ){
-			if( i >= areq.length )
-				break ;
-			int ireq = Util.parseInt(areq[i], 0);
-			int iver = i >= aver.length ? 0 : Util.parseInt(aver[i], 0);
-			
-			// Same version OK check minor
-			if( ireq == iver )
-				continue ;
-			else
-			if( ireq < iver )
-				break ;
-			else
-			if( ireq > iver )
-				return fail(sreq);
-			
-			
-			
-			
-		}
-			
-		
-		return 0;
-		
-		
-		
-		
-	}
-
-	private int fail(String sreq) throws ThrowException {
 		if( mShell.isInCommandConndition() )
 			return 1;
-		this.mShell.printErr("requires version: " + sreq );
-		throw new ThrowException(new XValue("requires version: " + sreq) );
+		
+		
+		String err = "requires version: " + sreq ;  
+		printErr(err);
+		
+		throw new ThrowException(new XValue(err) );
+		
+		
 		
 	}
-
 }
 
 

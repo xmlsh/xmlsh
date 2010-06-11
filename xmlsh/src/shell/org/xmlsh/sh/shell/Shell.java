@@ -1335,6 +1335,37 @@ public class Shell {
 
 
 
+	public int requireVersion(String module, String sreq) {
+		// Creates a 3-4 element array  [ "1" , "0" , "1" , ? ]
+		String aver[] = Version.getVersion().split("\\.");
+		String areq[] = sreq.split("\\.");
+		
+		// Start with major and go down
+		for( int i = 0 ; i < Math.max(aver.length,areq.length) ; i++ ){
+			if( i >= areq.length )
+				break ;
+			int ireq = Util.parseInt(areq[i], 0);
+			int iver = i >= aver.length ? 0 : Util.parseInt(aver[i], 0);
+			
+			// Same version OK check minor
+			if( ireq == iver )
+				continue ;
+			else
+			if( ireq < iver )
+				break ;
+			else
+			if( ireq > iver ) {
+				return -1 ;
+			}
+			
+			
+			
+			
+		}
+		return 0;
+	}
+
+
 
 	
 	

@@ -20,6 +20,7 @@ import org.xmlsh.core.ICommand;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Path;
 import org.xmlsh.core.ScriptCommand;
+import org.xmlsh.core.ThrowException;
 import org.xmlsh.core.XClassLoader;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
@@ -66,11 +67,11 @@ public class Module {
 				Path path = shell.getPath("XMODPATH", true );
 				File modDir = path.getFirstFileInPath(shell,nameuri);
 				if (modDir == null)
-					throw new InvalidArgumentException("Cannot find module directory: " + mName);
+					throw new InvalidArgumentException("Cannot find module directory for : " + nameuri);
 
 				File config = new File(modDir, "module.xml");
 				if (!config.exists())
-					throw new InvalidArgumentException("Cannot find module.xml: " + mName);
+					throw new InvalidArgumentException("Cannot find module.xml in directory : " + modDir.getAbsolutePath() );
 				configURL = config.toURI().toURL();
 			}
 
@@ -81,6 +82,14 @@ public class Module {
 			XValue xv = new XValue(configNode);
 			mPackage = xv.xpath("/module/@package/string()").toString();
 			mName = xv.xpath("/module/@name/string()").toString();
+			String require = xv.xpath("/module/@require/string()").toString();
+			if( !Util.isBlank(require)){
+				int ret = shell.requireVersion(mName,require);
+				if( ret != 0 )
+					throw new InvalidArgumentException("Module " + mName + " requires version " + require );
+			}
+			
+			
 
 			for (XdmItem item : xv.xpath("/module/classpath/file").asXdmValue()) {
 				if (item instanceof XdmNode) {
@@ -98,7 +107,14 @@ public class Module {
 			
 			
 
-		} catch (Exception e) {
+		} 
+		catch( CoreException e )
+		{
+			throw e ;
+			
+		}
+		
+		catch (Exception e) {
 			throw new CoreException(e);
 		}
 
