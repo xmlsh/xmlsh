@@ -54,7 +54,7 @@ public class query extends MLCommand {
 			
 			InputPort qin = getInput(ov.getValue());
 			InputStream is = qin.asInputStream(serializeOpts);
-			query = Util.readString(is);
+			query = Util.readString(is,serializeOpts.getEncoding());
 			is.close();
 			qin.close();
 			

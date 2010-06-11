@@ -12,7 +12,6 @@ _write=<[ for $u in $_opts//option[@name="i"]/value/string() 	return concat( "xd
 _update=<[ for $u in $_opts//option[@name="u"]/value/string() 	return concat( "xdmp:permission('" , $u , "', 'update')" )]>
 _execute=<[ for $u in $_opts//option[@name="x"]/value/string() 	return concat( "xdmp:permission('" , $u , "', 'execute')" )]>
 
-echo query is 
 _query=<[ concat(
     "declare variable $uri external ; ",
     "declare function local:all( $uri as xs:string? ) as xs:string* ",
@@ -30,9 +29,7 @@ _query=<[ concat(
 
 
 for uri ; do
-	#echo query is "$_query"
 	:query $_pots -q "$_query" -v uri $uri
-	echo $uri
 done
 
 
