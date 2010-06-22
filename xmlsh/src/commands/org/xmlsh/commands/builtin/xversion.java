@@ -15,6 +15,7 @@ import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.SerializeOpts;
+import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.sh.shell.Version;
 
 public class xversion extends BuiltinCommand {
@@ -38,11 +39,18 @@ public class xversion extends BuiltinCommand {
 		final String sRelease = "release";
 		final String sVersion = "version";
 		final String sDocRoot = sVersion;
+		final String sSaxon = "saxon_version";
+		final String sSaxonEdition = "saxon_edition";
+		
 	
 		writer.writeStartElement(sDocRoot);
 		writer.writeAttribute(sBuild, Version.getBuildDate());
 		writer.writeAttribute(sRelease, Version.getRelease() );
 		writer.writeAttribute(sVersion, Version.getVersion() );
+		writer.writeAttribute(sSaxon, Shell.getProcessor().getSaxonProductVersion() );
+		writer.writeAttribute(sSaxonEdition, Shell.getProcessor().getUnderlyingConfiguration().getEditionCode() );
+		
+
 		
 		writer.writeEndElement();
 		writer.writeEndDocument();

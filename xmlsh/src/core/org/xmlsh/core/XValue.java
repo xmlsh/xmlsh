@@ -149,11 +149,11 @@ public class XValue {
 
 	
 	public XValue(int n) {
-		this( Integer.toString(n));
+		mValue = new XdmAtomicValue(  n  );
 	}
 
 	public XValue(long n) {
-		this(Long.toString(n));
+		mValue = new XdmAtomicValue( n );
 	}
 
 	

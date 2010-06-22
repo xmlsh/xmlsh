@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Stack;
 
+import net.sf.saxon.FeatureKeys;
 import net.sf.saxon.query.ModuleURIResolver;
 import net.sf.saxon.s9api.Processor;
 import org.apache.log4j.LogManager;
@@ -102,7 +103,7 @@ public class Shell {
 	private		static 	boolean			bInitialized = false ;
 	private		static	Properties		mSavedSystemProperties;
 	private		static Processor		mProcessor = null;
-	private		static	ModuleURIResolver	mModuleURIResolver = null ;
+	// private		static	ModuleURIResolver	mModuleURIResolver = null ;
 	
 	
 	/**
@@ -121,7 +122,7 @@ public class Shell {
 		/*
 	     * Workaround a saxon bug - pre-initialize processor
 	     */
-		 getProcessor();
+		// getProcessor();
 		 
 		 
 		 // Can only be called once per process
@@ -422,7 +423,6 @@ public class Shell {
 	        mLogger.error("Exception parsing statement" , e );
 	        parser.ReInit(new ShellParserReader(mCommandInput,getTextEncoding()), source );
 	      } catch (Error e) {
-	       //  System.out.println("Error");
 	        printErr(e.getMessage());
 	        mLogger.error("Exception parsing statement" , e );
 	        parser.ReInit(new ShellParserReader(mCommandInput,getTextEncoding()), source);
@@ -1013,7 +1013,20 @@ public class Shell {
 	public static synchronized Processor getProcessor()
 	{
 		if( mProcessor == null ){
-			mProcessor  = new Processor(false);
+			String saxon_ee = System.getenv("XMLSH_SAXON_EE");
+			boolean bEE = Util.isEmpty(saxon_ee) ? true : Util.parseBoolean(saxon_ee);
+			mProcessor  = new Processor( bEE  );
+			
+			
+			/*
+			mProcessor.getUnderlyingConfiguration().getEditionCode();
+			
+			System.err.println("Version " + mProcessor.getSaxonProductVersion() );
+			System.err.println("XQuery " + mProcessor.getConfigurationProperty(FeatureKeys.XQUERY_SCHEMA_AWARE) );
+			System.err.println("XSLT " + mProcessor.getConfigurationProperty(FeatureKeys.XSLT_SCHEMA_AWARE) );
+			System.err.println("Schema " + mProcessor.getConfigurationProperty(FeatureKeys.SCHEMA_VALIDATION ));
+			*/
+			
 			// mProcessor.setConfigurationProperty(FeatureKeys.TREE_MODEL, net.sf.saxon.event.Builder.LINKED_TREE);
 			mProcessor.registerExtensionFunction(new EvalDefinition() );
 

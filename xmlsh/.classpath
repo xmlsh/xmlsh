@@ -17,9 +17,9 @@
 	<classpathentry kind="lib" path="lib/resolver.jar"/>
 	<classpathentry kind="lib" path="build-lib/ant.jar"/>
 	<classpathentry kind="lib" path="lib/saxon.jar" sourcepath="C:/java/saxon6.5/source.zip"/>
-	<classpathentry kind="lib" path="lib/saxon9he.jar" sourcepath="C:/java/saxonhe9-2-0-3/saxonhe9-2-0-3source.zip"/>
 	<classpathentry kind="lib" path="build-lib/servlet-api.jar"/>
 	<classpathentry kind="lib" path="lib/trang.jar" sourcepath="C:/java/trang-20091111/src.zip"/>
 	<classpathentry kind="lib" path="lib/tagsoup-1.2.jar" sourcepath="C:/java/tagsoup/tagsoup-1.2-src.zip"/>
+	<classpathentry kind="lib" path="lib/saxon9he.jar" sourcepath="C:/java/saxonhe9-2-0-3/saxonhe9-2-0-3source.zip"/>
 	<classpathentry kind="output" path="_out"/>
 </classpath>
