@@ -83,7 +83,7 @@ public class FunctionCallWord extends Word {
 			shell.setArg0(mFunction);
 			shell.setArgs(args);
 			int ret =	shell.exec(def.getBody());
-			return shell.getReturnValue();
+			return shell.getReturnValue(true);
 			
 			
 		

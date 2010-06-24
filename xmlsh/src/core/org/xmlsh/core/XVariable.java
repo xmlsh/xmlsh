@@ -265,7 +265,10 @@ public class XVariable {
 
 	public XValue getValue(Shell shell, String ind, XValue arg) {
 	
-		XdmValue value = getValue().asXdmValue(ind);
+		XValue xvalue = getValue();
+		if( xvalue == null )
+			return null;
+		XdmValue value = xvalue.asXdmValue(ind);
 		
 
 		

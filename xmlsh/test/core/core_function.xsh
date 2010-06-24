@@ -64,4 +64,4 @@ function f2
 
 echo _A is $_A
 f2
-echo $_A is $_A
+echo _A is $_A

@@ -1426,8 +1426,11 @@ public class Shell {
 	/*
 	 * Get the return value of the last return statement
 	 */
-	public XValue getReturnValue() {
-		return mReturnVal;
+	public XValue getReturnValue(boolean bClear) {
+		XValue ret = mReturnVal;
+		if( bClear )
+			mReturnVal = null ;
+		return ret;
 	}
 
 
