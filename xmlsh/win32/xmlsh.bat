@@ -2,7 +2,7 @@
 @echo off
 @set CLASSPATH=%XMLSH%\bin\xmlsh-1.0.jar
 @set CLASSPATH=%CLASSPATH%;%XMLSH%\lib\log4j-1.2.7.jar
-@REM Choose which saxon you wish o use
+@REM Choose which saxon you wish to use
 @set CLASSPATH=%CLASSPATH%;%XMLSH%\lib\saxon9he.jar
 @REM @set CLASSPATH=%CLASSPATH%;%XMLSH%\lib\saxon9ee.jar
 @set CLASSPATH=%CLASSPATH%;%XMLSH%\lib\xercesimpl.jar

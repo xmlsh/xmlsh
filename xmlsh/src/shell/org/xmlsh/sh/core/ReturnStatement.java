@@ -1,32 +1,49 @@
 /**
- * $Id: exit.java 80 2008-11-20 16:17:37Z daldei $
- * $Date: 2008-11-20 11:17:37 -0500 (Thu, 20 Nov 2008) $
+ * $Id: NullCommand.java 388 2010-03-08 12:27:19Z daldei $
+ * $Date: 2010-03-08 07:27:19 -0500 (Mon, 08 Mar 2010) $
  *
  */
 
-package org.xmlsh.commands.builtin;
+package org.xmlsh.sh.core;
 
-import java.util.List;
+import java.io.PrintWriter;
 
-import org.xmlsh.core.BuiltinCommand;
 import org.xmlsh.core.XValue;
-import org.xmlsh.util.Util;
+import org.xmlsh.sh.shell.Shell;
 
-public class xreturn extends BuiltinCommand {
+public class ReturnStatement extends Command {
 
+	private		Word	mArg;
+	public	boolean		isSimple() { return false ; }
 
+	public ReturnStatement( Word arg )
+	{
+		mArg = arg ;
+	}
 	
-	public int run(  List<XValue> args ) throws Exception {
-			if( args.size() == 0 ){
-				mShell.exec_return( 0 );
-				
-			} else
-				mShell.exec_return( Util.parseInt(args.get(0).toString(),-1));
-			return 0;
-				
+	@Override
+	public void print(PrintWriter out, boolean bExec) {
+		out.print("return " );
+		mArg.print(out);
+
 	}
 
-
+	@Override
+	public int exec(Shell shell) throws Exception {
+		
+		XValue ret = null ;
+		
+		
+		if( mArg == null )
+			ret = new XValue(0);
+		else	
+			ret = mArg.expand(shell, false , false , false , getLocation() ).get(0);
+		
+			
+		shell.exec_return( ret );
+		return 0;
+		
+	}
 
 }
 //

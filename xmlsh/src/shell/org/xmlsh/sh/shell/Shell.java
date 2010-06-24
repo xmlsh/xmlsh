@@ -40,6 +40,7 @@ import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.Path;
 import org.xmlsh.core.ThrowException;
+import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.Variables;
 import org.xmlsh.core.XDynamicVariable;
 import org.xmlsh.core.XEnvironment;
@@ -74,7 +75,7 @@ public class Shell {
 	
 	// Set to non null until exit or EOF
 	private 	Integer mExitVal = null;
-	private		Integer mReturnVal = null;
+	private		XValue  mReturnVal = null;
 
 	
 	private		int	    mStatus = 0;	// $? variable
@@ -438,7 +439,12 @@ public class Shell {
 			ret = mExitVal.intValue();
 		else
 		if( mReturnVal != null ){
-			ret = mReturnVal.intValue();
+			try {
+				ret = mReturnVal.toBoolean() ? 0 : 1;
+			} catch (UnexpectedException e) {
+				mLogger.error("Exception converting return value to boolean", e );
+				ret = -1;
+			}
 			mReturnVal = null ;
 		}
 			
@@ -893,8 +899,8 @@ public class Shell {
 		
 	}
 	
-	public void exec_return(int retval) {
-		mReturnVal = new Integer(retval);
+	public void exec_return(XValue retval) {
+		mReturnVal = retval ;
 		
 	}
 	
@@ -1162,12 +1168,50 @@ public class Shell {
 	public int execFunction(Command body) throws Exception {
 		int ret = exec(body);
 		if( mReturnVal != null ){
-			ret = mReturnVal.intValue();
+			ret = convertReturnValueToExitValue( mReturnVal) ;
 			mReturnVal = null;
 		}
 		return ret ;
 	
 	}
+
+	/*
+	 * Convert return value to exit value
+	 */
+	private int convertReturnValueToExitValue(XValue value) {
+		
+		// Null is true (0)
+		if( value.isNull() )
+			return 0;
+		if( value.isAtomic() ){
+			// Check if native boolean
+			
+			String s = value.toString();
+			// Empty string is false 
+			if( Util.isBlank(s))
+				return 0;
+			
+			if( Util.isInt(s, true) )
+				return Integer.parseInt(s);
+			else
+			if( s.equals("true"))
+				return 0;
+			else
+				return 1; // False
+			
+		}
+		
+		// Non atomic
+		try {
+			return value.toBoolean() ? 0 : 1 ;
+		} catch (UnexpectedException e) {
+			mLogger.error("Exception parsing value as boolean",e);
+			return -1;
+		} 
+		
+		
+	}
+
 
 	/*
 	 * Declare a module using the prefix=value notation
@@ -1376,6 +1420,14 @@ public class Shell {
 			
 		}
 		return 0;
+	}
+
+
+	/*
+	 * Get the return value of the last return statement
+	 */
+	public XValue getReturnValue() {
+		return mReturnVal;
 	}
 
 
