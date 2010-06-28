@@ -6,12 +6,17 @@
 
 package org.xmlsh.commands.internal;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.List;
 
+import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.xmlsh.commands.util.Checksum;
+import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
@@ -23,6 +28,12 @@ import org.xmlsh.util.Util;
 
 public class xmd5sum extends XCommand
 {
+	
+	
+	private static final  String sFile = "file";
+	private static final	String sName = "name";
+	private static final 	String sMd5 = "md5";
+	private static final   String sLen = "length";
 	private static String sDocRoot = "xmd5";
 	
 	
@@ -42,11 +53,6 @@ public class xmd5sum extends XCommand
 		out.writeStartDocument();
 		out.writeStartElement(sDocRoot);
 			
-		
-		final  String sFile = "file";
-		final	String sName = "name";
-		final 	String sMd5 = "md5";
-		final   String sLen = "length";
 
 		
 		if( args.isEmpty() )
@@ -56,28 +62,8 @@ public class xmd5sum extends XCommand
 		
 		for( XValue arg : args ){
 	
-			InputPort inp = null;
-			InputStream in;
-			try {
-				inp =  getInput(arg);
-				in = inp.asInputStream(serializeOpts);
-			} catch (Exception e) {
-				printErr("Error reading uri: " + arg.toString());
-				continue;
-			}
-			
-			
-			Checksum cs = Checksum.calcChecksum(in);
-			in.close();
-			
-			out.writeStartElement(sFile);
-			String name = inp.getSystemId();
-			if( !Util.isBlank(name))
-				out.writeAttribute(sName, name);
-			out.writeAttribute(sMd5, cs.getMD5());
-			out.writeAttribute(sLen , String.valueOf( cs.getLength()) );
-			out.writeEndElement();
-			inp.close();
+			writeMD5(arg, out, serializeOpts);
+	
 			
 		}
 		out.writeEndElement();
@@ -88,6 +74,56 @@ public class xmd5sum extends XCommand
 		return 0;
 		
 		
+	}
+
+
+	private void writeMD5(XValue arg, XMLStreamWriter out, SerializeOpts serializeOpts)
+			throws CoreException, IOException, XMLStreamException 
+	{
+		
+		
+		/*
+		 * Attempt to safely recurse if a file/directory
+		 */
+		String sArg = arg.toString();
+		URL url = Util.tryURL(sArg);
+		if( url == null ){
+			File file = mShell.getFile(arg);
+			if( file != null && file.exists() && file.isDirectory() ){
+				for( String child : file.list() )
+					// Use / not File.seperator so that we keep java paths 
+					writeMD5( new XValue( sArg + "/" + child  ),
+							out , 
+							serializeOpts
+					);
+				
+				return ;
+			}
+			
+			
+		}
+		
+		InputPort inp;
+		InputStream in;
+		try {
+			inp = getInput(arg);
+			in = inp.asInputStream(serializeOpts);
+		} catch (CoreException e) {
+			mShell.printErr("Exception accessing file",e);
+			return ;
+		
+		}
+		Checksum cs = Checksum.calcChecksum(in);
+		in.close();
+		
+		out.writeStartElement(sFile);
+		String name = inp.getSystemId();
+		if( !Util.isBlank(name))
+			out.writeAttribute(sName, Util.toJavaPath(name));
+		out.writeAttribute(sMd5, cs.getMD5());
+		out.writeAttribute(sLen , String.valueOf( cs.getLength()) );
+		out.writeEndElement();
+		inp.close();
 	}
 
 

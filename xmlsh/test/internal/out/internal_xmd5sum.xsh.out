@@ -2,12 +2,24 @@
   <file md5="3579c8da7f1e0ad94656e76c886e5125" length="13"/>
 </xmd5>
 <xmd5>
-  <file name="../../samples/data/REC-xml-20060816.xml" md5="8fac09521dfbbf3509024a924351f49f" length="199019"/>
-  <file name="../../samples/data/books.xml" md5="dbd4c7ab88e5092f7ca83643cef2fd86" length="2841"/>
-  <file name="../../samples/data/intl.xml" md5="73696927038bcac47b0c87d3aec16bc2" length="418"/>
-  <file name="../../samples/data/othello.xml" md5="7dd2133a6e6104d79e017cd7062aa939" length="248777"/>
-  <file name="../../samples/data/xi_doc1.xml" md5="80e03792e5d21285672ad5295f54c989" length="297"/>
-  <file name="../../samples/data/xi_sub1.xml" md5="57024d1dc619fc7db898f10083d62a93" length="212"/>
-  <file name="../../samples/data/xml-base-chap.xml" md5="3b2cf4f7c2b22090de0def548967b97e" length="101"/>
-  <file name="../../samples/data/xml-base-test.xml" md5="09d39f674b7d2ce9c7b967d408d185bf" length="203"/>
+  <file name="data/books.csv" md5="2e596c096204a9ec936d8a4508dd3a0b" length="303"/>
+  <file name="data/books.dtd" md5="dde64d43a419b6ff6b5b4bded90b8549" length="1069"/>
+  <file name="data/books.mysql" md5="63112db8b5da7bec88e2a7de99e84930" length="2275"/>
+  <file name="data/books.rng" md5="516064df0fbfa6657d776f0d80fb5a66" length="5624"/>
+  <file name="data/books.sch" md5="6bb0b0db21496ae43ea6d27bb658c69f" length="420"/>
+  <file name="data/books.xml" md5="dbd4c7ab88e5092f7ca83643cef2fd86" length="2841"/>
+  <file name="data/books.xsd" md5="99709d67eddbe944d11aa4eb9a410fac" length="3961"/>
+  <file name="data/books.xsh" md5="d41d8cd98f00b204e9800998ecf8427e" length="0"/>
+  <file name="data/diffspec.xsl" md5="d19a7123cf0d87e94e26bbbd911fadb5" length="11843"/>
+  <file name="data/intl.xml" md5="73696927038bcac47b0c87d3aec16bc2" length="418"/>
+  <file name="data/othello.xml" md5="7dd2133a6e6104d79e017cd7062aa939" length="248777"/>
+  <file name="data/play.dtd" md5="156fb2b596b4eb849971d62927b62c7c" length="1078"/>
+  <file name="data/REC-xml-20060816.xml" md5="8fac09521dfbbf3509024a924351f49f" length="199019"/>
+  <file name="data/REC-xml.xsl" md5="d556b42ef1fc5dd434bd09abae8d45c2" length="11640"/>
+  <file name="data/xi_doc1.xml" md5="80e03792e5d21285672ad5295f54c989" length="297"/>
+  <file name="data/xi_sub1.xml" md5="57024d1dc619fc7db898f10083d62a93" length="212"/>
+  <file name="data/xml-base-chap.xml" md5="3b2cf4f7c2b22090de0def548967b97e" length="101"/>
+  <file name="data/xml-base-test.xml" md5="09d39f674b7d2ce9c7b967d408d185bf" length="203"/>
+  <file name="data/xmlspec.dtd" md5="9394149877a1d8384f48ba3ded07b1eb" length="80741"/>
+  <file name="data/xmlspec.xsl" md5="53efce206c35841871791c663b17402b" length="92868"/>
 </xmd5>
