@@ -1,5 +1,5 @@
 # return true if document exists else return false
-_opts=$<(xgetopts -a -p "c=connect:,t=text" -ps -- "$@")
+_opts=$<(xgetopts -a -p "c=connect:" -ps -- "$@")
 shift $?
 
 :query $_opts -b -q <{{

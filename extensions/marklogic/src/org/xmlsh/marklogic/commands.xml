@@ -241,7 +241,7 @@
 	<command name="exists" url="http://www.xmlsh.org/MarkLogicExists">
 		<synopsis>returns success (0) if document exists and is a plain document</synopsis>
 	</command>
-	<command name="direxists" url="http://www.xmlsh.org/MarkLogicDirExists">
+	<command name="direxists" url="http://www.xmlsh.org/MarkLogicDirexists">
 		<synopsis>returns success (0) if directory exists and is a directory</synopsis>
 	</command>
 

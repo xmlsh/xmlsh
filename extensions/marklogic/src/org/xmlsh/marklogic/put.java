@@ -303,8 +303,14 @@ public class put extends MLCommand {
 
 			session.insertContent (content);
 				
-			if( bMD5 && sum != null )
-				setChecksum(uri,sum);
+			if( bMD5 && sum != null ){
+				List<SumContent> sc = new ArrayList<SumContent>(1);
+				sc.add( new SumContent( uri , content , sum ));
+				setChecksums( session, sc );
+				
+				
+			}
+			
 		} finally {
 			Util.safeClose(is);
 				
@@ -387,7 +393,7 @@ public class put extends MLCommand {
 		StringBuffer sQuery = new StringBuffer();
 		for( SumContent sc : list )
 			if( sc.mSum != null )
-				sQuery.append( setChecksum( sc.mURI , sc.mSum ));
+				sQuery.append( getChecksumString( sc.mURI , sc.mSum ));
 			
 		if( sQuery.length() == 0 )
 			return ;
@@ -401,7 +407,7 @@ public class put extends MLCommand {
 	
 	
 
-	private static String setChecksum(String uri , Checksum sum) throws RequestException {
+	private static String getChecksumString(String uri , Checksum sum) throws RequestException {
 		
 		return 
 			"xdmp:document-set-property( " + quote(uri) +
