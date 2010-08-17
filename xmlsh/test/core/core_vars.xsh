@@ -102,5 +102,9 @@ a=
 a=$<(echo "<foo/>") 
 [ $(xtype $a) = "document-node()" ] || echo Failed to parse text as XML
 
+# Test local var=() syntax 
+local foo=(1)
+[ "$foo" -eq 1 ] || echo Failed to assign local variable foo
+
 
 exit 0

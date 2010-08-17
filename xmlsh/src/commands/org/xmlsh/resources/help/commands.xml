@@ -239,4 +239,14 @@
    <command name="xwhich" url="http://www.xmlsh.org/CommandXwhich">
    	<synopsis>Locates commands</synopsis>
    </command>
+
+   <command name="xunzip" url="http://www.xmlsh.org/CommandXunzip">
+   	<synopsis>Extracts or lists contents from a zip file</synopsis>
+   </command>
+
+
+   <command name="xzip" url="http://www.xmlsh.org/CommandXunzip">
+   	<synopsis>Extracts or lists contents from a zip file</synopsis>
+   </command>
+
 </commands>

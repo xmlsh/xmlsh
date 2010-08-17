@@ -121,61 +121,6 @@ public class xzip extends XCommand {
 
 
 
-
-
-
-
-
-	private int unzip(ZipInputStream zis, File dest, List<XValue> args) throws IOException {
-		
-	
-		
-		ZipEntry entry ;
-		while( (entry = zis.getNextEntry()) != null ){
-			
-			if( matches( entry.getName() , args )){
-				File outf = getShell().getFile( dest , entry.getName());
-				// printErr(outf.getAbsolutePath());
-				if( entry.isDirectory())
-					outf.mkdirs();
-				else
-				{
-					// In matching case dir may not exist
-					File dir = outf.getParentFile();
-					if( ! dir.exists() )
-						dir.mkdirs();
-					
-					
-					FileOutputStream fos = new FileOutputStream(outf);
-					Util.copyStream(zis, fos);
-					fos.close();
-					outf.setLastModified(entry.getTime());
-					
-				}
-			
-			}
-			zis.closeEntry();
-			
-			
-		}
-
-		return 0;
-	}
-
-	private boolean matches(String name, List<XValue> args) {
-		if( args == null || args.size() == 0)
-			return true ; // 0 args matches all
-		
-		for( XValue v : args )
-			if( Util.isEqual(name, v.toString()))
-				return true ;
-		return false ;
-		
-		
-		
-		
-	}
-
 }
 
 //

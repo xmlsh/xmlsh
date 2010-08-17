@@ -31,6 +31,11 @@ public class Assign {
 
 	}
 	public Assign(String variable, String op , WordList value) {
+		if( variable.startsWith("local ")){
+			mLocal = true ;
+			variable = variable.replaceFirst("local\\s*", "");
+		}
+		
 		mVariable = variable;
 		mOp = op;
 		mValueList = value;
