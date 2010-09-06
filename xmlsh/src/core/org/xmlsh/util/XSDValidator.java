@@ -4,8 +4,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
+import javax.xml.XMLConstants;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+import javax.xml.validation.Validator;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -88,8 +93,65 @@ public class XSDValidator {
 	 * properties are set in the SAXParserFactory, and the parser's schema is
 	 * set after creation
 	 */
-	public void validate(InputStream xml ) throws Exception {
+	private void validate_test(InputStream xml ) throws Exception {
 
+		SchemaFactory f = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+
+		
+		
+		
+		
+		
+		// f.setFeature("http://xml.org/sax/features/validation", true);
+		// f.setFeature("http://apache.org/xml/features/validation/schema", true);
+		//f.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+		// f.setFeature("http://apache.org/xml/features/nonvalidating/load-dtd-grammer", false);
+		
+		// f.setNamespaceAware(true);
+		// f.setValidating(true);
+		
+
+		/*
+		f.setProperty(
+			    "http://java.sun.com/xml/jaxp/properties/schemaLanguage",
+			    "http://www.w3.org/2001/XMLSchema");
+		*/
+		if( mSchema != null )
+			f.setProperty(
+				"http://apache.org/xml/properties/schema/external-noNamespaceSchemaLocation",
+				mSchema);
+		
+		if( mSchemaList != null ) {
+			StringBuffer sb = new StringBuffer();
+			for( String s : mSchemaList ){
+				if( sb.length() > 0 )
+					sb.append(" ");
+				sb.append( s );
+				
+			}
+			
+
+			f.setProperty(
+					"http://apache.org/xml/properties/schema/external-schemaLocation",
+					sb.toString() );
+				
+		}
+		
+	    
+		Schema s = f.newSchema();
+		Validator v = s.newValidator();
+		v.setErrorHandler(new ValidatorHandler());
+		v.validate( new StreamSource(xml));
+		
+
+	}
+	/*
+	 * Private method to create a SAXParser; if a schema is supplied, validation
+	 * properties are set in the SAXParserFactory, and the parser's schema is
+	 * set after creation
+	 */
+	public void validate(InputStream xml ) throws Exception {
+	
 		SAXParserFactory f = SAXParserFactory.newInstance();
 		
 		// f.setValidating(true);
@@ -121,7 +183,7 @@ public class XSDValidator {
 				
 			}
 			
-
+	
 			parser.setProperty(
 					"http://apache.org/xml/properties/schema/external-schemaLocation",
 					sb.toString() );
@@ -131,6 +193,7 @@ public class XSDValidator {
 	    
 		
 		parser.parse(xml, new ValidatorHandler());
+	
 	}
 
 

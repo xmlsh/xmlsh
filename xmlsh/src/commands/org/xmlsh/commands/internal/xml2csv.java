@@ -103,18 +103,21 @@ public class xml2csv extends XCommand
 		if( context != null )
 			eval.setContextItem(context);
 		
+		XQueryExecutable headerExpr = mCompiler.compile( mHeaderXPath );
+		XQueryEvaluator headerEval = headerExpr.load();
+
+		
+		XQueryExecutable fieldExpr = mCompiler.compile( mFieldXPath );
+		XQueryEvaluator fieldEval = fieldExpr.load();
 		
 		
 		boolean bFirst = true ;
 		for( XdmItem row : eval ){
 			if( bFirst && bHeader ){
-				writeHeader(row);
+				writeHeader(row,headerEval);
 				bFirst = false ;
 			}
-			writeLine(row, mFieldXPath );
-			
-			
-			
+			writeLine(row, fieldEval );
 			
 		}
 		return 0;
@@ -125,13 +128,13 @@ public class xml2csv extends XCommand
 
 
 
-	private void writeLine(XdmItem row, String xpath ) throws SaxonApiException, IOException {
-		XQueryExecutable expr = mCompiler.compile( xpath );
+	private void writeLine(XdmItem row,  XQueryEvaluator eval ) throws SaxonApiException, IOException {
+		
 		
 
 		List<String> fields = new ArrayList<String>();
 		
-		XQueryEvaluator eval = expr.load();
+		
 		if( row != null )
 			eval.setContextItem(row);
 		
@@ -149,9 +152,9 @@ public class xml2csv extends XCommand
 
 
 
-	private void writeHeader(XdmItem row) throws SaxonApiException, IOException 
+	private void writeHeader(XdmItem row, XQueryEvaluator eval) throws SaxonApiException, IOException 
 	{
-		writeLine(row,mHeaderXPath);
+		writeLine(row,eval);
 		
 		
 	}
