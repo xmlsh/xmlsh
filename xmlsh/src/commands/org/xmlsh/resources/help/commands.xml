@@ -233,6 +233,10 @@
    <command name="xvalidate" url="http://www.xmlsh.org/CommandXvalidate">
    	<synopsis>validate a document against a schema</synopsis>
    </command>
+   <command name="xsdvalidate" url="http://www.xmlsh.org/CommandXsdvalidate">
+   	<synopsis>validate a document against a W3C XSD schema</synopsis>
+   </command>
+  
    <command name="xversion" url="http://www.xmlsh.org/CommandXversion">
    	<synopsis>prints the shell version</synopsis>
    </command>

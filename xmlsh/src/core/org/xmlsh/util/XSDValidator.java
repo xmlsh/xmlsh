@@ -12,6 +12,9 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
+import org.apache.xerces.xs.ElementPSVI;
+import org.apache.xerces.xs.PSVIProvider;
+import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
@@ -31,6 +34,16 @@ public class XSDValidator {
 	private	 List<String> mSchemaList = null ; 
 
 	private class ValidatorHandler extends DefaultHandler {
+
+		private SAXParser 	mParser;
+		
+		
+		
+		
+		public ValidatorHandler(SAXParser parser) {
+			super();
+			mParser = parser;
+		}
 
 		/**
 		 * Returns a string describing parse exception details
@@ -78,6 +91,27 @@ public class XSDValidator {
 				return super.resolveEntity(publicId, systemId);
 		}
 
+		/* (non-Javadoc)
+		 * @see org.xml.sax.helpers.DefaultHandler#startElement(java.lang.String, java.lang.String, java.lang.String, org.xml.sax.Attributes)
+		 */
+		@Override
+		public void startElement(String uri, String localName, String qName, Attributes attributes)
+				throws SAXException {
+
+			super.startElement(uri, localName, qName, attributes);
+			
+			/*
+			 * THIS WORKS !!!!!!!!!!!!!
+			PSVIProvider psvi = (PSVIProvider) mParser;
+			ElementPSVI elem = psvi.getElementPSVI();
+			
+			System.out.println("PSVI for: " + elem.getElementDeclaration().getName() );
+			*/
+			
+			
+			
+		}
+
 	}
 
 	public XSDValidator(String schema) {
@@ -96,11 +130,6 @@ public class XSDValidator {
 	private void validate_test(InputStream xml ) throws Exception {
 
 		SchemaFactory f = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-
-		
-		
-		
-		
 		
 		// f.setFeature("http://xml.org/sax/features/validation", true);
 		// f.setFeature("http://apache.org/xml/features/validation/schema", true);
@@ -140,7 +169,7 @@ public class XSDValidator {
 	    
 		Schema s = f.newSchema();
 		Validator v = s.newValidator();
-		v.setErrorHandler(new ValidatorHandler());
+		v.setErrorHandler(new ValidatorHandler(null));
 		v.validate( new StreamSource(xml));
 		
 
@@ -192,7 +221,7 @@ public class XSDValidator {
 		
 	    
 		
-		parser.parse(xml, new ValidatorHandler());
+		parser.parse(xml, new ValidatorHandler(parser));
 	
 	}
 

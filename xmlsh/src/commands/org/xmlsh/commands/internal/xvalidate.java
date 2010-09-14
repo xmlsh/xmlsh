@@ -73,14 +73,7 @@ public class xvalidate extends XCommand {
 			in = getStdin();
 		
 		if( schema != null ){
-			XSDValidator v = null ; 
-				
-			if( schema.indexOf(' ') < 0 )
-				v = new XSDValidator( getEnv().getShell().getURL(schema).toString() );
-			else
-				v = new XSDValidator( Util.toList( schema.split(" ") ) );
-				
-			v.validate( in.asInputStream(sopts));
+			return run_xsd(schema,args);
 		} else 
 		if( dtd != null )
 		{
@@ -92,6 +85,21 @@ public class xvalidate extends XCommand {
 		
 		return 0;
 
+	}
+	
+	
+	private int run_xsd(String xsd, List<XValue> args) throws Exception {
+		
+		Shell shell = getEnv().getShell();
+		ICommand cmd = CommandFactory.getInstance().getCommand( shell , "xsdvalidate", getLocation());
+		ArrayList<XValue>  al = new ArrayList<XValue>();
+		al.add(new XValue(xsd));
+		al.addAll( args );
+		
+		return cmd.run(shell, "xsdvalidate", al);
+		
+		
+		
 	}
 
 	private int run_schematron(String schematron, List<XValue> args) throws Exception {

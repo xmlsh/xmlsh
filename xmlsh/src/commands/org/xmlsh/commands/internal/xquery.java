@@ -6,6 +6,7 @@
 
 package org.xmlsh.commands.internal;
 
+import java.io.File;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.List;
@@ -40,7 +41,7 @@ public class xquery extends XCommand {
 	throws Exception 
 	{
 		
-		Options opts = new Options( "c=context:,cf=context-file:,f=file:,i=input:,n,q:,v,nons,ns:+,s=string,b=bool" ,	SerializeOpts.getOptionDefs() );
+		Options opts = new Options( "c=context:,cf=context-file:,f=file:,i=input:,n,q:,v,nons,ns:+,s=string,b=bool,baseuri:" ,	SerializeOpts.getOptionDefs() );
 		opts.parse(args);
 		
 		Processor  processor  = Shell.getProcessor();
@@ -55,6 +56,9 @@ public class xquery extends XCommand {
 
 		boolean bString = 	opts.hasOpt("s");
 		boolean bBool   =  opts.hasOpt("b");
+		String baseURI = opts.getOptString("baseuri", null );
+		if( baseURI != null )
+			baseURI = getAbsoluteURI( baseURI );
 
 		
 		if( ! opts.hasOpt("n" ) ){ // Has XML data input
@@ -95,16 +99,26 @@ public class xquery extends XCommand {
 			InputStream is = qin.asInputStream(serializeOpts);
 			query = Util.readString(is, serializeOpts.getText_encoding());
 
-			String sysid = qin.getSystemId();
-			if( !Util.isBlank(sysid)){
-				String uri = getAbsoluteURI(sysid);
-				compiler.setBaseURI(new URI(uri));
+			if( baseURI == null ){
+				String sysid = qin.getSystemId();
+				
+				if( !Util.isBlank(sysid)){
+					String uri = getAbsoluteURI(sysid);
+					baseURI = uri ;
+				}
 			}
 			is.close();
 			qin.close();
 			
 			
 		}
+		
+		if( baseURI == null )
+			compiler.setBaseURI(getShell().getEnv().getBaseURI());
+		
+		else
+			compiler.setBaseURI(new URI(baseURI));
+
 
 		
 		if( query == null ){

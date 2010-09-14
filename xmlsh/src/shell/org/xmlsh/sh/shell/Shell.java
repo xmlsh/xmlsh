@@ -19,6 +19,7 @@ import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Constructor;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -27,8 +28,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Stack;
 
-import net.sf.saxon.FeatureKeys;
-import net.sf.saxon.query.ModuleURIResolver;
 import net.sf.saxon.s9api.Processor;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -1238,6 +1237,18 @@ public class Shell {
 		return url;
 			
 	}
+	
+	
+
+	public URI getURI( String file ) throws MalformedURLException, IOException
+	{
+		URI uri = Util.tryURI(file);
+		if( uri == null )
+			uri = getFile(file).toURI();
+		return uri;
+			
+	}
+	
 	
 	
 	

@@ -1,2 +1,0 @@
-# xsd validation
-xvalidate -xsd "$@"
