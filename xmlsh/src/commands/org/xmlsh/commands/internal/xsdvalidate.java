@@ -67,7 +67,7 @@ public class xsdvalidate extends XCommand {
 			else
 				v = new XSDValidator( Util.toList( schema.split(" ") ) );
 				
-			v.validate( in.asInputStream(sopts));
+			v.validate( in.asInputSource(sopts));
 		} 
 		
 		

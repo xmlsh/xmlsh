@@ -1,0 +1,14 @@
+<root>
+  <row>
+    <Dosing_ID>1</Dosing_ID>
+    <Drug_ID>2</Drug_ID>
+    <Drug_Name>3</Drug_Name>
+    <Generic_Name>4</Generic_Name>
+    <Adult_Dose_String>5</Adult_Dose_String>
+    <Peds_Dose_String>6</Peds_Dose_String>
+    <Dosage_Form>7</Dosage_Form>
+    <Strength>8</Strength>
+    <Dose_Units>9</Dose_Units>
+    <Route>10</Route>
+  </row>
+</root>
