@@ -61,7 +61,7 @@ public class xsql extends XCommand {
 		
 		Properties options = null;
 		
-		Options opts = new Options( "cp=classpath:,d=driver:,u=user:,p=password:,root:,row:,attr,c=connect:,q=query:,o=option:+,insert,update=execute,tableAttr:,fieldAttr:" ,SerializeOpts.getOptionDefs() );
+		Options opts = new Options( "cp=classpath:,d=driver:,u=user:,p=password:,root:,row:,attr,c=connect:,q=query:,o=option:+,insert,update=execute,tableAttr:,fieldAttr:,fetch:" ,SerializeOpts.getOptionDefs() );
 		opts.parse(args);
 		
 		String root = opts.getOptString("root", "root");
@@ -77,6 +77,8 @@ public class xsql extends XCommand {
 		String tableAttr = opts.getOptString("tableAttr", null);
 		if( tableAttr != null )
 			tableNameXPath = "string(@" + tableAttr +")";
+
+		String fetch = opts.getOptString("fetch", null );
 		
 		String fieldAttr = opts.getOptString("fieldAttr",null);
 		if( fieldAttr != null )
@@ -129,7 +131,7 @@ public class xsql extends XCommand {
 		
 			}
 			else
-				runQuery(conn,  getSerializeOpts(opts), root, row, query, bAttr );
+				runQuery(conn,  getSerializeOpts(opts), root, row, query, bAttr , fetch );
 		}
 		finally {
 			conn.close();
@@ -350,20 +352,24 @@ public class xsql extends XCommand {
 	}
 
 	private void runQuery(Connection conn,SerializeOpts serializeOpts, String root, String row, String query,
-			boolean bAttr) throws SQLException, IOException, InvalidArgumentException,
+			boolean bAttr, String fetch) throws SQLException, IOException, InvalidArgumentException,
 			XMLStreamException {
 		Statement pStmt  = null ;
 		ResultSet rs = null ;
 		try {
 			
 			pStmt = conn.createStatement();
+			if( fetch != null )
+				pStmt.setFetchSize( Util.parseInt(fetch, 1));
+			
 			
 			OutputPort stdout = getStdout();
 			XMLStreamWriter writer = stdout.asXMLStreamWriter(serializeOpts);
 			
 			writer.writeStartDocument();		
 			writer.writeStartElement(root);
-	
+			
+			
 			
 			rs = pStmt.executeQuery(query);
 			ResultSetMetaData meta = rs.getMetaData();

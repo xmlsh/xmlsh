@@ -13,16 +13,19 @@ import java.io.OutputStreamWriter;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.util.Properties;
 
 import javanet.staxutils.StAXSource;
 
 import javax.xml.stream.XMLEventWriter;
 import javax.xml.stream.XMLStreamWriter;
 
+import net.sf.saxon.Configuration;
 import net.sf.saxon.event.Builder;
 import net.sf.saxon.event.PipelineConfiguration;
 import net.sf.saxon.event.Receiver;
 import net.sf.saxon.event.ReceivingContentHandler;
+import net.sf.saxon.event.XMLEmitter;
 import net.sf.saxon.s9api.Destination;
 import net.sf.saxon.s9api.DocumentBuilder;
 import net.sf.saxon.s9api.XdmAtomicValue;
@@ -31,6 +34,8 @@ import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XdmValue;
 import net.sf.saxon.tinytree.TinyBuilder;
+import net.sf.saxon.trans.XPathException;
+import org.xml.sax.ContentHandler;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.S9Util;
@@ -78,11 +83,6 @@ public class VariableOutputPort extends OutputPort
 	private		Builder					mBuilder;
 	private		XMLEventWriterBuffer	mWriterBuffer;
 	private		SerializeOpts 			mSerializeOpts; 	// for converting from ByteArray to string  
-	
-	
-	
-	
-	
 	
 	
 	
@@ -332,6 +332,34 @@ public class VariableOutputPort extends OutputPort
 	 */
 	public boolean isAsText() {
 		return mAsText;
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.xmlsh.core.OutputPort#asContentHandler(org.xmlsh.sh.shell.SerializeOpts)
+	 */
+	@Override
+	public ContentHandler asContentHandler(SerializeOpts opts) throws XPathException {
+	
+		ReceivingContentHandler  rch = new ReceivingContentHandler();
+		Receiver r = null;
+
+
+        Builder b = new TinyBuilder();
+    
+
+        // Set builder properties
+
+        PipelineConfiguration pipe = Shell.getProcessor().getUnderlyingConfiguration().makePipelineConfiguration();
+		b.setPipelineConfiguration(pipe);
+		r = b;
+		rch.setReceiver(r);
+		rch.setPipelineConfiguration(pipe);
+		mBuilder = b ;
+
+       
+       
+       return rch;
+		
 	}
 	
 	

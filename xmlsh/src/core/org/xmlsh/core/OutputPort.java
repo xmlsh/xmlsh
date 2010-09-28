@@ -18,6 +18,8 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import net.sf.saxon.s9api.Destination;
+import net.sf.saxon.trans.XPathException;
+import org.xml.sax.ContentHandler;
 import org.xmlsh.sh.shell.SerializeOpts;
 
 /*
@@ -67,7 +69,7 @@ public abstract class OutputPort extends IPort
 	
 	public abstract	IXdmValueOutputStream	asXdmValueOutputStream(SerializeOpts opts) throws CoreException;
 	
-	
+	public abstract	ContentHandler			asContentHandler( SerializeOpts opts) throws XPathException;
 	
 
 }

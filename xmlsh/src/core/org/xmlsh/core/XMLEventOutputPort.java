@@ -14,6 +14,7 @@ import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 
 import javanet.staxutils.ContentHandlerToXMLEventWriter;
+import javanet.staxutils.StAXEventContentHandler;
 import javanet.staxutils.XMLEventStreamWriter;
 import javanet.staxutils.events.EventFactory;
 
@@ -25,6 +26,8 @@ import javax.xml.stream.events.XMLEvent;
 
 import net.sf.saxon.s9api.Destination;
 import net.sf.saxon.s9api.SAXDestination;
+import net.sf.saxon.trans.XPathException;
+import org.xml.sax.ContentHandler;
 import org.xml.sax.helpers.DefaultHandler;
 import org.xmlsh.sh.shell.SerializeOpts;
 
@@ -204,6 +207,20 @@ public class XMLEventOutputPort extends OutputPort
 		return new DestinationXdmValueOutputStream( asDestination(opts) );
 		
 	}
+	
+	
+	/* (non-Javadoc)
+	 * @see org.xmlsh.core.OutputPort#asContentHandler(org.xmlsh.sh.shell.SerializeOpts)
+	 */
+	@Override
+	public ContentHandler asContentHandler(SerializeOpts opts) throws XPathException {
+		
+		
+		return new StAXEventContentHandler( mWriter );
+		
+	}
+	
+	
 
 }
 

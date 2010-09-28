@@ -6,12 +6,14 @@
 
 package org.xmlsh.core;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.util.Properties;
 
 import javanet.staxutils.IndentingXMLEventWriter;
 import javanet.staxutils.IndentingXMLStreamWriter;
@@ -21,8 +23,16 @@ import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import net.sf.saxon.Configuration;
+import net.sf.saxon.event.NamespaceReducer;
+import net.sf.saxon.event.PipelineConfiguration;
+import net.sf.saxon.event.ReceivingContentHandler;
+import net.sf.saxon.event.XMLEmitter;
 import net.sf.saxon.s9api.Destination;
+import net.sf.saxon.trans.XPathException;
+import org.xml.sax.ContentHandler;
 import org.xmlsh.sh.shell.SerializeOpts;
+import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.SynchronizedOutputStream;
 import org.xmlsh.util.Util;
 
@@ -183,6 +193,28 @@ public class StreamOutputPort extends OutputPort
 	public IXdmValueOutputStream asXdmValueOutputStream(SerializeOpts opts) throws CoreException {
 		
 		return new DestinationXdmValueOutputStream( asDestination(opts) );
+		
+	}
+
+	/* (non-Javadoc)
+	 * @see org.xmlsh.core.OutputPort#asContentHandler(org.xmlsh.sh.shell.SerializeOpts)
+	 */
+	@Override
+	public ContentHandler asContentHandler(SerializeOpts opts) throws XPathException {
+	
+		ReceivingContentHandler  handler = new ReceivingContentHandler();
+		Configuration config = Shell.getProcessor().getUnderlyingConfiguration();
+	    PipelineConfiguration pipe = config.makePipelineConfiguration();
+		handler.setPipelineConfiguration(pipe);
+
+		
+	   XMLEmitter emitter = new XMLEmitter();
+       emitter.setPipelineConfiguration(pipe);
+       emitter.setOutputProperties(new Properties());
+       emitter.setOutputStream( asOutputStream(opts));
+       
+       handler.setReceiver(emitter);
+       return handler;
 		
 	}
 	
