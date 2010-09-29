@@ -3,7 +3,6 @@
 
 _TEST=<[
 document {
-<root>
  <test>
   <row>
     <TITLE>Pride and Prejudice</TITLE>
@@ -32,7 +31,7 @@ document {
     <WEIGHT>11.20</WEIGHT>
   </row>
   </test>
-</root>
+
 }
 ]>
 

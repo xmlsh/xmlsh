@@ -24,7 +24,6 @@ CREATE TABLE `books` (
 
 _TEST=<[
 document {
-<root>
  <books>
   <row>
     <TITLE>Pride and Prejudice</TITLE>
@@ -53,7 +52,6 @@ document {
     <WEIGHT>11.20</WEIGHT>
   </row>
   </books>
-</root>
 }
 ]>
 

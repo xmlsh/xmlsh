@@ -1,8 +1,7 @@
 # Test a sqlite insert and create and select using jdbc driver for sqlite from 
 # http://www.zentus.com/sqlitejdbc/
 
-xread _TEST <<EOF
-<RESULTS entrytag="ROW" fieldtag="COLUMN">      
+xread _TEST1 <<EOF
       <table name="dosing">
             <ROW>
                   <COLUMN NAME="Dosing_ID"><![CDATA[1]]></COLUMN>
@@ -17,25 +16,29 @@ xread _TEST <<EOF
                   <COLUMN NAME="Route"><![CDATA[10]]></COLUMN>          
             </ROW>
       </table>
-      <table name="class">
+EOF
+
+xread _TEST2 <<EOF
+      <class>
             <ROW>
-                  <COLUMN NAME="CLASS_ID"><![CDATA[1]]></COLUMN>
-                  <COLUMN NAME="CLASS_NAME"><![CDATA[My Test Class]]></COLUMN>
+                  <CLASS_ID><![CDATA[1]]></CLASS_ID>
+                  <CLASS_NAME><![CDATA[My Test Class]]></CLASS_NAME>
             </ROW>
-      </table>
-      <table name="drug_class_indexed">
-            <ROW>
-                  <COLUMN NAME="DRUG_ID"><![CDATA[2]]></COLUMN>
-                  <COLUMN NAME="SUB_CLASS_ID"><![CDATA[1]]></COLUMN>
-            </ROW>
-      </table>
-</RESULTS>
+      </class>
+EOF
+
+xread _TEST3 <<EOF
+     <unknown>
+            <ROW  DRUG_ID="2" SUB_CLASS_ID="1" />
+      </unknown>
+
 EOF
 
 
 
 
 CP=/java/sqlitejdbc/sqlitejdbc-v056.jar
+[ -d $TMPDIR/_xmlsh ] && rm -rf $TMPDIR/_xmlsh
 mkdir $TMPDIR/_xmlsh
 cd $TMPDIR/_xmlsh
 
@@ -45,11 +48,18 @@ xsql -cp $CP -c jdbc:sqlite:sqlite.db -d org.sqlite.JDBC -execute 'CREATE table 
 xsql -cp $CP -c jdbc:sqlite:sqlite.db -d org.sqlite.JDBC -execute 'CREATE table class (CLASS_ID , CLASS_NAME )' > /dev/null
 xsql -cp $CP -c jdbc:sqlite:sqlite.db -d org.sqlite.JDBC -execute 'CREATE table drug_class_indexed (DRUG_ID , SUB_CLASS_ID )' > /dev/null
 
-# Add data
-xsql -cp $CP -c jdbc:sqlite:sqlite.db -d org.sqlite.JDBC -insert -tableAttr name -fieldAttr NAME <{_TEST}> /dev/null
+# Add data TEST1
+xsql -cp $CP -c jdbc:sqlite:sqlite.db -d org.sqlite.JDBC -insert -tableAttr name -fieldAttr NAME <{_TEST1}> /dev/null
+xsql -cp $CP -c jdbc:sqlite:sqlite.db -d org.sqlite.JDBC -insert <{_TEST2}> /dev/null
+xsql -cp $CP -c jdbc:sqlite:sqlite.db -d org.sqlite.JDBC -insert -table drug_class_indexed -attr <{_TEST3}> /dev/null
 
 # query data
-xsql -cp $CP -c jdbc:sqlite:sqlite.db -d org.sqlite.JDBC -q 'select * from dosing'
+
+_OUT=()
+xsql -cp $CP -c jdbc:sqlite:sqlite.db -d org.sqlite.JDBC -root dosing -q 'select * from dosing' >{_OUT}
+xsql -cp $CP -c jdbc:sqlite:sqlite.db -d org.sqlite.JDBC -root class -q 'select * from class' >>{_OUT}
+xsql -cp $CP -c jdbc:sqlite:sqlite.db -d org.sqlite.JDBC -root drug_class_indexed -attr -q 'select * from drug_class_indexed' >>{_OUT}
+xecho <[ <all>{$_OUT}</all> ]>
 
 cd ..
 rm -r -f $TMPDIR/_xmlsh
