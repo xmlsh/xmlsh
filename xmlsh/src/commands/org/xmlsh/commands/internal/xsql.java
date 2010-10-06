@@ -34,6 +34,8 @@ import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 
 import net.sf.saxon.s9api.SaxonApiException;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.InvalidArgumentException;
@@ -45,7 +47,8 @@ import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.util.Util;
 
 public class xsql extends XCommand {
-
+	
+	private static Logger mLogger = LogManager.getLogger(xsql.class);
 		
 	private static abstract class IDriver 
 	{
@@ -781,9 +784,14 @@ public class xsql extends XCommand {
 			try {
 				if( rs != null ) rs.close();
 				if( pStmt != null ) pStmt.close();
-				if( conn != null ) conn.close();
+				
 			} catch( Exception e )
-			{}
+			{
+				mLogger.error("Exception closing resultset or statement",e);
+				
+				
+				
+			}
 			
 		}
 	}
@@ -794,7 +802,7 @@ public class xsql extends XCommand {
 			boolean bAttr, int batch) throws SQLException, IOException, InvalidArgumentException,
 			XMLStreamException {
 		Statement pStmt  = null ;
-		ResultSet rs = null ;
+
 		try {
 			
 			pStmt = conn.createStatement();
@@ -821,11 +829,16 @@ public class xsql extends XCommand {
 		
 		} finally {
 			try {
-				if( rs != null ) rs.close();
+				
 				if( pStmt != null ) pStmt.close();
-				if( conn != null ) conn.close();
+				
 			} catch( Exception e )
-			{}
+			{
+				mLogger.error("Exception closing statement",e);
+				
+				
+				
+			}
 			
 		}
 	}

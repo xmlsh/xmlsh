@@ -81,7 +81,6 @@ public class VariableOutputPort extends OutputPort
 	private		XdmDestination	 		mXdmDestination;
 	private		ByteArrayOutputStream 	mByteArrayOutputStream;
 	private		Builder					mBuilder;
-	private		XMLEventWriterBuffer	mWriterBuffer;
 	private		SerializeOpts 			mSerializeOpts; 	// for converting from ByteArray to string  
 	
 	
@@ -135,25 +134,10 @@ public class VariableOutputPort extends OutputPort
 			if (mBuilder != null)
 				appendVar((XdmNode) S9Util.wrapNode(mBuilder.getCurrentRoot()));
 			
-			if( mWriterBuffer != null ){
 		
-				DocumentBuilder builder = Shell.getProcessor().newDocumentBuilder();
-				XdmNode node;
-				try {
-					node = builder.build( new StAXSource( mWriterBuffer.getReader()));
-				} catch (Exception e) {
-					throw new CoreException( e );
-				}
-				appendVar( node );
-			}
-			
-			
-			
-			
 			mXdmDestination = null;
 			mByteArrayOutputStream = null ;
 			mBuilder = null ;
-			mWriterBuffer = null ;
 		
 	}
 	
@@ -259,10 +243,7 @@ public class VariableOutputPort extends OutputPort
 
 	@Override
 	public synchronized XMLStreamWriter asXMLStreamWriter(SerializeOpts opts) {
-		/*
-		mWriterBuffer = new XMLEventWriterBuffer(); 
-		return new XMLEventStreamWriter(mWriterBuffer); */
-		
+	
 		ReceivingContentHandler  rch = new ReceivingContentHandler();
 		Receiver r = null;
 
@@ -338,7 +319,7 @@ public class VariableOutputPort extends OutputPort
 	 * @see org.xmlsh.core.OutputPort#asContentHandler(org.xmlsh.sh.shell.SerializeOpts)
 	 */
 	@Override
-	public ContentHandler asContentHandler(SerializeOpts opts) throws XPathException {
+	public synchronized ContentHandler asContentHandler(SerializeOpts opts) throws XPathException {
 	
 		ReceivingContentHandler  rch = new ReceivingContentHandler();
 		Receiver r = null;

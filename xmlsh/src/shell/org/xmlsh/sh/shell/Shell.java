@@ -906,7 +906,7 @@ public class Shell {
 	
 	
 	public void exit(int retval) {
-		mExitVal = new Integer(retval);
+		mExitVal = Integer.valueOf(retval);
 		
 	}
 	

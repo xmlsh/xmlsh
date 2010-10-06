@@ -78,7 +78,9 @@ public class XmlshTask extends Task {
 			org.xmlsh.commands.builtin.xmlsh cmd = new org.xmlsh.commands.builtin.xmlsh(true);
 			
 
+			@SuppressWarnings("unused")
 			int ret = cmd.run(shell, "xmlsh" , vargs);
+			
     	}
     	catch(  Exception e )
     	{

@@ -45,7 +45,7 @@ public class DTDValidator {
 		// step 3: construct stream reader
 		XMLInputFactory2 ifact = (XMLInputFactory2)XMLInputFactory.newInstance();
 		ifact.setProperty(XMLInputFactory2.P_DTD_OVERRIDE, null );
-		ifact.setProperty(XMLInputFactory.SUPPORT_DTD , new Boolean(false) );
+		ifact.setProperty(XMLInputFactory.SUPPORT_DTD , Boolean.valueOf(false) );
 			
 
 		XMLStreamReader2 sr = (XMLStreamReader2) ifact.createXMLStreamReader(systemid , xml);

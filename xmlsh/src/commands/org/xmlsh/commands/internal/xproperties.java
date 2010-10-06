@@ -154,7 +154,7 @@ public class xproperties extends XCommand
 		ByteArrayInputStream iss = new ByteArrayInputStream( oss.toByteArray());
 		
 		XMLInputFactory factory = XMLInputFactory.newInstance();
-		factory.setProperty(XMLInputFactory.SUPPORT_DTD, new Boolean(false)); // Dont try to reference http://java.sun.com/dtd/properties.dtd !!!
+		factory.setProperty(XMLInputFactory.SUPPORT_DTD, Boolean.valueOf(false)); // Dont try to reference http://java.sun.com/dtd/properties.dtd !!!
 		XMLEventReader reader = factory.createXMLEventReader( null , iss);
 		XMLEventWriter writer = getStdout().asXMLEventWriter(serializeOpts);
 		writer.add(reader);

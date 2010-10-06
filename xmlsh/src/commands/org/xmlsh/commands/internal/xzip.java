@@ -57,13 +57,13 @@ public class xzip extends XCommand {
 			ret = zip( zos ,  args );
 			
 			zos.finish();
-		
+			return ret;
 		
 		} finally {
 			zos.close();
 		}
 		
-		return 0;
+
 		
 
 

@@ -63,15 +63,13 @@ public class xunzip extends XCommand {
 		
 		zis.close();
 		
-		
+		return ret;
 		
 		} finally {
 			zis.close();
 			is.close();
 			iport.close();
 		}
-		
-		return 0;
 		
 
 

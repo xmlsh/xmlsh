@@ -106,6 +106,7 @@ public class XmlshServlet extends HttpServlet {
 					shell.getSession().setVar("HTTP_SESSION", mhs);
 					mhs.release();
 					
+					@SuppressWarnings("unused")
 					int ret = script.run(shell, path , vargs);
 					
 					
@@ -205,6 +206,7 @@ public class XmlshServlet extends HttpServlet {
 				shell.getSession().setVar("HTTP_SESSION", mhs);
 				mhs.release();
 				
+				@SuppressWarnings("unused")
 				int ret = script.run(shell, path , vargs);
 			
 				String ct = shell.getSerializeOpts().getContent_type() + "; " + shell.getSerializeOpts().getEncoding();

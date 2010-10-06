@@ -224,6 +224,15 @@ public class XValue {
 	{
 		return isAtomic() && toString().equals(s);
 	}
+	
+	public boolean equals( Object that )
+	{
+		if( this == that )
+			return true ;
+		
+		return super.equals(that);
+	}
+	
 	public boolean equals( XValue that )
 	{
 		if( this == that )
@@ -236,6 +245,14 @@ public class XValue {
 			return mValue.equals( that.mValue );
 		return false ;
 	}
+	
+	public int hashCode()
+	{
+		if( mValue == null )
+			return 0;
+		return mValue.hashCode();
+	}
+	
 
 	public boolean isAtomic() {
 		if( mValue == null )
