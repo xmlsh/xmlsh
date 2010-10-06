@@ -37,28 +37,29 @@ EOF
 
 
 
-CP=/java/sqlitejdbc/sqlitejdbc-v056.jar
+import java /java/sqlitejdbc/*.jar
+
 [ -d $TMPDIR/_xmlsh ] && rm -rf $TMPDIR/_xmlsh
 mkdir $TMPDIR/_xmlsh
 cd $TMPDIR/_xmlsh
 
 # create sqlite DB 
 
-xsql -cp $CP -c jdbc:sqlite:sqlite.db -d org.sqlite.JDBC -execute 'CREATE table dosing (Dosing_ID , Drug_ID , Drug_Name , Generic_Name , Adult_Dose_String, Peds_Dose_String , Dosage_Form , Strength ,Dose_Units ,  Route)' > /dev/null
-xsql -cp $CP -c jdbc:sqlite:sqlite.db -d org.sqlite.JDBC -execute 'CREATE table class (CLASS_ID , CLASS_NAME )' > /dev/null
-xsql -cp $CP -c jdbc:sqlite:sqlite.db -d org.sqlite.JDBC -execute 'CREATE table drug_class_indexed (DRUG_ID , SUB_CLASS_ID )' > /dev/null
+xsql -c jdbc:sqlite:sqlite.db -d org.sqlite.JDBC -execute 'CREATE table dosing (Dosing_ID , Drug_ID , Drug_Name , Generic_Name , Adult_Dose_String, Peds_Dose_String , Dosage_Form , Strength ,Dose_Units ,  Route)' > /dev/null
+xsql -c jdbc:sqlite:sqlite.db -d org.sqlite.JDBC -execute 'CREATE table class (CLASS_ID , CLASS_NAME )' > /dev/null
+xsql -c jdbc:sqlite:sqlite.db -d org.sqlite.JDBC -execute 'CREATE table drug_class_indexed (DRUG_ID , SUB_CLASS_ID )' > /dev/null
 
 # Add data TEST1
-xsql -cp $CP -c jdbc:sqlite:sqlite.db -d org.sqlite.JDBC -insert -tableAttr name -fieldAttr NAME <{_TEST1}> /dev/null
-xsql -cp $CP -c jdbc:sqlite:sqlite.db -d org.sqlite.JDBC -insert <{_TEST2}> /dev/null
-xsql -cp $CP -c jdbc:sqlite:sqlite.db -d org.sqlite.JDBC -insert -table drug_class_indexed -attr <{_TEST3}> /dev/null
+xsql -c jdbc:sqlite:sqlite.db -d org.sqlite.JDBC -insert -tableAttr name -fieldAttr NAME <{_TEST1}> /dev/null
+xsql -c jdbc:sqlite:sqlite.db -d org.sqlite.JDBC -insert <{_TEST2}> /dev/null
+xsql -c jdbc:sqlite:sqlite.db -d org.sqlite.JDBC -insert -table drug_class_indexed -attr <{_TEST3}> /dev/null
 
 # query data
 
 _OUT=()
-xsql -cp $CP -c jdbc:sqlite:sqlite.db -d org.sqlite.JDBC -root dosing -q 'select * from dosing' >{_OUT}
-xsql -cp $CP -c jdbc:sqlite:sqlite.db -d org.sqlite.JDBC -root class -q 'select * from class' >>{_OUT}
-xsql -cp $CP -c jdbc:sqlite:sqlite.db -d org.sqlite.JDBC -root drug_class_indexed -attr -q 'select * from drug_class_indexed' >>{_OUT}
+xsql -c jdbc:sqlite:sqlite.db -d org.sqlite.JDBC -root dosing -q 'select * from dosing' >{_OUT}
+xsql -c jdbc:sqlite:sqlite.db -d org.sqlite.JDBC -root class -q 'select * from class' >>{_OUT}
+xsql -c jdbc:sqlite:sqlite.db -d org.sqlite.JDBC -root drug_class_indexed -attr -q 'select * from drug_class_indexed' >>{_OUT}
 xecho <[ <all>{$_OUT}</all> ]>
 
 cd ..

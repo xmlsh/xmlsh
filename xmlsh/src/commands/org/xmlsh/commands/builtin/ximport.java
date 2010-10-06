@@ -6,6 +6,11 @@
 
 package org.xmlsh.commands.builtin;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.List;
 
 import org.apache.log4j.LogManager;
@@ -13,7 +18,6 @@ import org.apache.log4j.Logger;
 import org.xmlsh.core.BuiltinCommand;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
-import org.xmlsh.core.ThrowException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Module;
 import org.xmlsh.sh.shell.Modules;
@@ -43,6 +47,9 @@ public class ximport extends BuiltinCommand {
 					ret += importPackage(arg.toString(),"org.xmlsh.commands.");
 				return ret;
 			}
+			else
+			if( what.toString().equals("java"))
+				return importJava( args );
 		} 
 
 		catch (InvalidArgumentException e){
@@ -83,10 +90,45 @@ public class ximport extends BuiltinCommand {
 		return 0;
 	}
 	
+	
+	/*
+	 * Implements 
+	 *    import java
+	 *    import java a.jar b.jar c.jar
+	 *    
+	 */
+
+	private int importJava(List<XValue> args) throws CoreException {
+		if( args.size() == 0 )
+			return listClasspaths();
+		
+		
+		
+		mShell.importJava( new XValue(args) );
+
+		return 0;
+	}
+	
+	
 	/*
 	 * import package name foo.bar.spam
 	 * import package foo.bar.spam
 	 */
+
+	private int listClasspaths() throws CoreException  {
+		ClassLoader cl = mShell.getClassLoader(null);
+		while( cl != null ){
+			if( cl instanceof URLClassLoader ){
+				for( URL url : ((URLClassLoader)cl).getURLs() )
+					mShell.printOut(url.toString());
+				
+			}
+			cl = cl.getParent();
+		}
+		return 0;
+		
+		
+	}
 
 	private int importPackage(String pkg, String pkg_prefix) throws CoreException {
 		

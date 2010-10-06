@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+import java.sql.Driver;
+import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -79,6 +81,7 @@ public class xsql extends XCommand {
 		String mPassword;
 		Properties mOptions;
 		Class<?>	mClass ;
+		Driver		mDriver;
 		
 		JDBCDriver( String driver, ClassLoader classloader, String connect, String user, String password, Properties options ) throws SQLException
 		{
@@ -97,7 +100,7 @@ public class xsql extends XCommand {
 		{
 					
 			
-				
+
 		    java.util.Properties info = new java.util.Properties();
 		    if( mOptions != null )
 		    	info.putAll(mOptions);
@@ -109,11 +112,12 @@ public class xsql extends XCommand {
 			if (mPassword != null) 
 			    info.put("password", mPassword);
 			 
-			
-			 Method mConn = mClass.getMethod("connect" , String.class , info.getClass() );
-			 Object obj = mClass.newInstance();
-			 Connection c = (Connection) mConn.invoke(obj, mConnect , info );
-		    
+			 
+			 mDriver  = (Driver) mClass.newInstance();
+			 if( mDriver == null )
+				 return null ;
+			 Connection c = mDriver.connect(mConnect,info);
+		     	
 			 return c;
 		
 		}
@@ -124,6 +128,11 @@ public class xsql extends XCommand {
 		{
 			try {
 				c.close();
+				
+				// Doesnt seem to do much good 
+				if( mDriver != null )
+					DriverManager.deregisterDriver(mDriver);
+				
 			} 
 			finally {} 
 			
@@ -168,6 +177,127 @@ public class xsql extends XCommand {
 		
 	}
 	
+	private static class DirectDriver extends IDriver
+	{
+		
+		Properties mOptions;
+		Connection mConnection ;
+		
+		DirectDriver( Connection conn , Properties options )
+		{
+			mOptions = options ;
+			
+			mConnection = conn ;
+		}
+		
+		
+		
+		@Override
+		public Connection getConnection() throws Exception {
+			return mConnection ;
+			
+		}
+
+		@Override
+		public void releaseConnection(Connection c) throws Exception {
+			
+			
+		}
+		
+	}
+	
+	
+	/**
+	 * StatementCache holds a cache of PreparedStatement objects to provide efficient reuse of prepared statements.
+	 * Cache is specific to a single open connection, which is enforced by storing the connection reference.
+	 * 
+	 */
+	@SuppressWarnings("unchecked")
+	static class StatementCache
+	{
+	    private HashMap mStatements = new HashMap();
+	    
+	    private Connection mConnection;
+	    
+	    public StatementCache( Connection conn )
+	    {
+	        mConnection = conn;
+	    }
+	    
+	    public Connection getConnection( )
+	    {
+	        return mConnection;
+	    }
+	    
+	    public PreparedStatement   prepare(  String sql ) throws SQLException
+	    {
+	        PreparedStatement pStmt = (PreparedStatement) mStatements.get(sql);
+	        if( pStmt == null ) {
+	            pStmt = mConnection.prepareStatement(sql);
+	            mStatements.put( sql , pStmt );
+	        }                
+	        return pStmt;
+	        
+	    }
+	    
+	  
+	    
+	    public Iterator    iterStatements()
+	    {
+	        return mStatements.values().iterator();
+	    }
+	    
+	     
+
+	    
+	    public int getNumStatements()
+	    {
+	        return mStatements.size();
+	    }
+
+
+	    /*
+	     *  Close all statements 
+	     */
+	     
+	    public void close()
+	    {
+	        Iterator iter = iterStatements();
+	        while( iter.hasNext() ){
+	            PreparedStatement pStmt = (PreparedStatement) iter.next();
+	            try {
+	            	pStmt.close();
+	            } catch( Exception e ) {
+	            }
+	        }
+	        mStatements.clear();
+	    }
+
+
+
+	    public void executeAll() throws SQLException
+	    {
+	        int n =  getNumStatements() ;
+	        if( n > 0 ){
+	            Iterator iter = iterStatements();
+	            while( iter.hasNext() ){
+	                
+	                PreparedStatement pStmt = (PreparedStatement) iter.next();
+	               
+	                
+	                int[] sizes = pStmt.executeBatch();
+	                pStmt.clearBatch();
+	                
+	            }
+	            
+	        }
+	        close();
+	        
+	    }
+	    
+	    
+	}
+
 	
 	
 	private boolean bAttr = false ;
@@ -176,20 +306,17 @@ public class xsql extends XCommand {
 	@Override
 	public int run(List<XValue> args) throws Exception {
 
-		String fieldXPath  = "name()";
-		String tableNameXPath = "name()";
-
 
 		
 		Properties options = null;
 		
-		Options opts = new Options( "cp=classpath:,pool=pooldriver:,d=driver:,u=user:,p=password:,root:,row:,attr,c=connect:,q=query:,o=option:+,insert,update=execute,tableAttr:,fieldAttr:,fetch:,table:" ,SerializeOpts.getOptionDefs() );
+		Options opts = new Options( "cp=classpath:,pool=pooldriver:,d=driver:,u=user:,p=password:,root:,row:,attr,c=connect:,jdbc=jdbcconnection:,q=query:,o=option:+,insert,update=execute,tableAttr:,fieldAttr:,fetch:,table:,batch:" ,SerializeOpts.getOptionDefs() );
 		opts.parse(args);
 		
 		String root = opts.getOptString("root", "root");
 		String row = opts.getOptString("row", "row");
 		
-		String connect = opts.getOptStringRequired("c");
+		String connect = opts.getOptString("c",null);
 		String query = opts.getOptString("q", null);
 		String driver = opts.getOptString("driver",null);
 		String user = opts.getOptString("user",null);
@@ -200,14 +327,22 @@ public class xsql extends XCommand {
 		String tableAttr = opts.getOptString("tableAttr", null);
 		String fetch = opts.getOptString("fetch", null );
 		String tableName = opts.getOptString("table", null );
-		
+		String sbatch = opts.getOptString("batch", "1" );
+		int batch = Util.parseInt( sbatch , 1 );
 		String fieldAttr = opts.getOptString("fieldAttr",null);
-			
+		XValue jdbc = opts.getOptValue("jdbc");
 
-		if( pooldriver == null && driver == null ){
-			usage("Expected -pool or -driver");
+		if( pooldriver == null && driver == null && jdbc ==  null){
+			usage("Expected -pool or -driver or -jdbc");
 			return 1;
 		}
+		
+		if( driver != null && connect == null ){
+			usage("Required -c connect-string if -d is supplied");
+			return 1;
+			
+		}
+		
 		
 		boolean bAttr = opts.hasOpt("attr");
 		
@@ -240,8 +375,20 @@ public class xsql extends XCommand {
 		IDriver dbdriver = null;
 		if( driver != null ) 
 			dbdriver = new JDBCDriver(driver,  classloader, connect ,user,password, options );
-		else
+		if( pooldriver != null )
 			dbdriver = new PoolDriver( pooldriver , classloader , options  );
+		else
+		if( jdbc != null ){
+			
+			
+			if( ! jdbc.isObject() || ! (jdbc.asObject() instanceof Connection ))
+			{
+				usage("Connection is not a " + Connection.class.getName() + " - supplied: " + jdbc.asObject().getClass().getName() );
+				return 1;
+			}
+			dbdriver = new DirectDriver( (Connection) jdbc.asObject(), options );
+			
+		}
 		
 		Connection conn = dbdriver.getConnection();
 		
@@ -253,13 +400,13 @@ public class xsql extends XCommand {
 		
 		try {
 			if( bUpdate )
-				runUpdate(conn,  getSerializeOpts(opts), root, row, query, bAttr );
+				runUpdate(conn,  getSerializeOpts(opts), root, row, query, bAttr , batch  );
 			
 			else
 			if( bInsert ){
 				InputPort  in = getStdin();
 
-				runInsert( conn ,  in, bAttr , tableName , tableAttr , fieldAttr) ;
+				runInsert( conn ,  in, bAttr , tableName , tableAttr , fieldAttr , batch ) ;
 		
 			}
 			else
@@ -288,7 +435,7 @@ public class xsql extends XCommand {
 	
 	
 	
-	private void runInsert(Connection conn,  InputPort input , boolean bAttr , String tableName , String tableNameAttr, String fieldNameAttr) throws SaxonApiException, SQLException, XMLStreamException, IOException, CoreException {
+	private void runInsert(Connection conn,  InputPort input , boolean bAttr , String tableName , String tableNameAttr, String fieldNameAttr, int batch) throws SaxonApiException, SQLException, XMLStreamException, IOException, CoreException {
 		
 
 		OutputPort stdout = getStdout();
@@ -297,6 +444,14 @@ public class xsql extends XCommand {
 		
 		writer.writeStartDocument();		
 		writer.writeStartElement("results");
+
+		
+		
+		int nbatch = 0;
+
+
+		conn.setAutoCommit(false );
+		StatementCache batchCache = new StatementCache( conn );
 		
 		
 		XMLEventReader reader = input.asXMLEventReader(mSerializeOpts);
@@ -334,8 +489,9 @@ public class xsql extends XCommand {
 
 			StartElement	rowElement ;
 			int allRows = 0;
+			int nrows = 0;
 			while( (rowElement = readStartElement( reader ) ) != null ){
-
+				
 				/*
 				 * Process rows as insrt
 				 */
@@ -368,16 +524,23 @@ public class xsql extends XCommand {
 				String sql = "INSERT INTO `" + tableName + "` (" + sNames.toString() + ") VALUES(" +sQuestions.toString() + ")" ;
 				// printErr(sql);
 
-				PreparedStatement pStmt = conn.prepareStatement(sql);
+				
+				PreparedStatement pStmt = batchCache.prepare(sql);
+				
 				int i = 1;
 				for( String v : values )
 					pStmt.setString(i++, v);
 
 
-				int ret = pStmt.executeUpdate();
-				allRows += ret ;
-
-
+				pStmt.addBatch();
+	
+				
+				if( nrows++ > batch ){
+					batchCache.executeAll();
+					conn.commit();
+					allRows += nrows ;
+					nrows = 0;
+				}
 
 				/*
 				 * 					
@@ -425,9 +588,14 @@ public class xsql extends XCommand {
 
 				 */					
 
-
+			
 			}
 
+			if( nrows > 0  ){
+				batchCache.executeAll();
+				conn.commit();
+				allRows += nrows ;
+			}
 
 
 
@@ -438,6 +606,8 @@ public class xsql extends XCommand {
 		} finally {
 			if( reader != null )
 				reader.close();
+
+			conn.setAutoCommit(true);
 		}
 
 			
@@ -621,7 +791,7 @@ public class xsql extends XCommand {
 
 
 	private void runUpdate(Connection conn,SerializeOpts serializeOpts, String root, String row, String query,
-			boolean bAttr) throws SQLException, IOException, InvalidArgumentException,
+			boolean bAttr, int batch) throws SQLException, IOException, InvalidArgumentException,
 			XMLStreamException {
 		Statement pStmt  = null ;
 		ResultSet rs = null ;

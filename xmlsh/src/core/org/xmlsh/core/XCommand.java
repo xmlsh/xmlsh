@@ -8,18 +8,9 @@ package org.xmlsh.core;
 
 
 import java.io.File;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.security.AccessController;
-import java.util.ArrayList;
-import java.security.PrivilegedAction;
 import java.util.List;
 
 
-import net.sf.saxon.s9api.XdmItem;
 import org.xmlsh.core.ICommand.CommandType;
 import org.xmlsh.sh.shell.Module;
 import org.xmlsh.sh.shell.Shell;
@@ -105,26 +96,6 @@ public abstract class XCommand extends AbstractCommand {
 		mModule = module ;
 		
 	}
-
-	protected ClassLoader getClassLoader(XValue classpath) throws MalformedURLException, IOException,
-			URISyntaxException {
-				if( classpath == null )
-					return this.getClass().getClassLoader();
-				final List<URL> urls = new ArrayList<URL>();
-				for( XdmItem item : classpath.asXdmValue() ){
-					String cp = item.getStringValue();
-					URL url = getShell().getURL(cp);					
-					urls.add(url);
-					
-					
-				}
-				URLClassLoader loader = AccessController.doPrivileged(new PrivilegedAction<URLClassLoader>() {
-					public URLClassLoader run() {
-						return new URLClassLoader( (URL[]) urls.toArray(new URL[urls.size()]));
-					}
-				});
-				return loader;
-			}
 
 
 

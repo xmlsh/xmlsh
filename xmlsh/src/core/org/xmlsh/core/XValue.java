@@ -45,8 +45,7 @@ public class XValue {
 	private static Logger mLogger = Logger.getLogger( XValue.class);
 	
 	
-	private XdmValue	mValue;			// s9 value
-
+	private		Object	mValue;		// String , XdmValue , Object 
 	
 	
 	
@@ -84,43 +83,9 @@ public class XValue {
 	 */
 	public XValue( XdmValue v )
 	{
-		/*
-		 * If value is an atomic type, then coerce to string
-		 */
-/*		
-		ValueRepresentation value = v.getUnderlyingValue();
-		if( value instanceof AtomicValue ){
-			AtomicValue atom = (AtomicValue) value;
-			try {
-				mString = value.getStringValue();
-			} catch (XPathException e) {
-				
-				// Any error then dont convert
-				mValue = v ;
-			}
-			return ;
-		}
-*/		
-		
 		mValue = v;
 	}
 	
-	/*
-	 *  Create an XValue by combining a list of XValue objects into a single XValue
-	 * Flattens sequences
-	 *
-	public XValue( List<XdmValue> args) {
-		ArrayList<XdmItem> items = new ArrayList<XdmItem>();
-		for( XdmValue arg : args ){
-			for( XdmItem item : arg )
-				items.add( item );
-			
-		}
-
-		mValue =  new XdmValue(  items);
-		
-	}
-	*/
 	/*
 	 *  Create an XValue by combining a list of XdmValue objects into a single XValue
 	 */
@@ -137,13 +102,22 @@ public class XValue {
 		
 	}
 	
+	public XValue( Object obj )
+	{
+		mValue = obj ;
+	}
+	
+	
 	/*
 	 * Return (cast) the variable to an XdmValue
 	 * do not modify the variable itself. 
 	 * 
 	 */
 	public XdmValue asXdmValue(){
-		return mValue ;
+		if( mValue != null && mValue instanceof XdmValue )
+			return (XdmValue) mValue ;
+		else
+			return null ;
 		
 	}
 
@@ -215,7 +189,8 @@ public class XValue {
 	
 	public XValue	xpath( String expr ) throws UnexpectedException 
 	{
-		
+		if( mValue == null || ! (mValue instanceof XdmValue) )
+			return null ;
 		
 		Processor  processor  = Shell.getProcessor();
 	
@@ -226,7 +201,7 @@ public class XValue {
 			XPathExecutable exec = compiler.compile( expr );
 
 			XPathSelector eval = exec.load();
-			eval.setContextItem( mValue.itemAt(0) );
+			eval.setContextItem( ((XdmValue)mValue).itemAt(0) );
 			return new XValue( eval.evaluate());
 			
 		
@@ -265,8 +240,10 @@ public class XValue {
 	public boolean isAtomic() {
 		if( mValue == null )
 			return true ;
+		if( ! (mValue instanceof XdmValue ))
+			return true ;
 		
-		ValueRepresentation value = mValue.getUnderlyingValue();
+		ValueRepresentation value = asXdmValue().getUnderlyingValue();
 		boolean isAtom = ( value instanceof AtomicValue ) || ( value instanceof NodeInfo && ((NodeInfo)value).getNodeKind() == net.sf.saxon.type.Type.TEXT ) ;
 		return isAtom;
 	
@@ -287,12 +264,15 @@ public class XValue {
 	{
 		if( isAtomic() )
 			out.write( toString().getBytes(opt.getEncoding()) );
-		else {
+		else 
+		if( mValue instanceof XdmValue )
+		
+		{
 			Serializer ser = Util.getSerializer(opt);
 			ser.setOutputStream( out );
 
 			// Shell.getProcessor().writeXdmValue( mValue, ser);
-			Util.writeXdmValue( mValue , ser );
+			Util.writeXdmValue( asXdmValue(), ser );
 		}
 	}
 	
@@ -302,11 +282,15 @@ public class XValue {
 		if( mValue == null )
 			return false ;
 		
+		XdmValue value = asXdmValue();
+		if( value == null )
+			return false ;
+				
 		// Sequence of > 1 length 
-		if( mValue.size() > 1 )
+		if( value.size() > 1 )
 			return true ;
 		// Sequence of 0 length 
-		if( mValue.size() == 0 )
+		if( value.size() == 0 )
 			return false ;
 		
 
@@ -319,7 +303,7 @@ public class XValue {
 			XPathExecutable exec = compiler.compile( "." );
 
 			XPathSelector eval = exec.load();
-			eval.setContextItem( mValue.itemAt(0) );
+			eval.setContextItem( value.itemAt(0) );
 			return eval.effectiveBooleanValue();
 			
 		
@@ -341,9 +325,12 @@ public class XValue {
 	
 	public XdmItem asXdmItem()
 	{
+		XdmValue value = asXdmValue();
+		if( value == null)
+			return null  ;
 		
 		try {
-			return  mValue.itemAt(0);
+			return  value.itemAt(0);
 		} catch (IndexOutOfBoundsException e) {
 			return null;
 		} catch (SaxonApiUncheckedException e) {
@@ -383,7 +370,7 @@ public class XValue {
 	}
 
 	public void append(XValue v) {
-		append( v.mValue );
+		append( v.asXdmValue() );
 		
 	}
 
@@ -394,8 +381,12 @@ public class XValue {
 	
 	public SequenceIterator asSequenceIterator()
 	{
+		XdmValue value = asXdmValue();
+		if( value == null )
+			return null ;
+		
 		try {
-			ValueRepresentation v = this.mValue.getUnderlyingValue();
+			ValueRepresentation v = value.getUnderlyingValue();
 			if (v instanceof Value) {
 				return  ((Value)v).iterate();
 			} else {
@@ -409,14 +400,22 @@ public class XValue {
 	public XValue shift(int n) {
 		if( mValue == null )
 			return this ;
+		XdmValue value = asXdmValue();
+		if( value == null )
+			return this ;
 		
-		XdmItemSubsequence	iter = new XdmItemSubsequence( mValue , n );
+		XdmItemSubsequence	iter = new XdmItemSubsequence( value , n );
 		return new XValue(  new XdmValue(  iter ) );
 	}
 
 	public List<String> asStringList() {
-		XdmSequenceIterator iter = mValue.iterator();
-		List<String> list = new ArrayList<String>( mValue.size() );
+		XdmValue value = asXdmValue();
+		if( value == null )
+			return null ;
+		
+		
+		XdmSequenceIterator iter = value.iterator();
+		List<String> list = new ArrayList<String>( value.size() );
 		while( iter.hasNext()){
 			XdmItem item = iter.next();
 			list.add( item.toString() );
@@ -426,9 +425,14 @@ public class XValue {
 	}
 
 	public boolean isEmpty() {
+		
 		if( this.isNull() )
 			return true ;
-		return mValue.size() == 0 ;
+		XdmValue value = asXdmValue();
+		if( value == null )
+			return true ;
+		
+		return value.size() == 0 ;
 	}
 
 	/*
@@ -438,12 +442,34 @@ public class XValue {
 		if( mValue == null )
 			return null ;
 		else
+		if( ! ( mValue instanceof XdmValue) )
+			return null;
+		else
 		if( ind == null || ind.equals("*") )
-			return mValue ;
+			return (XdmValue) mValue ;
 		else 
-			return mValue.itemAt( Util.parseInt(ind, 0) - 1 );
+			return ((XdmValue)mValue).itemAt( Util.parseInt(ind, 0) - 1 );
 	
 		
+	}
+	
+	public boolean isObject()
+	{
+		return ( mValue != null && !(mValue instanceof XdmValue)  );
+	}
+	public	Object	asObject()
+	{
+		return mValue;
+	}
+
+	public boolean canConvert(Class<?> c) {
+		return Util.canConvert( mValue ,  c);
+		
+		
+	}
+	
+	public Object convert( Class<?> c){
+		return Util.convert( mValue , c );
 	}
 	
 }

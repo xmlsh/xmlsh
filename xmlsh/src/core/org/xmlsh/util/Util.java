@@ -944,6 +944,52 @@ public class Util
 	}
 
 
+	public static boolean canConvert(Object value, Class<?> c) {
+		if( value == null )
+			return true ;
+		
+		if( value.getClass().equals(c))
+			return true ;
+		
+		if( c.isAssignableFrom(value.getClass()))
+			return true ;
+		
+		// Try converting 
+		if( value instanceof XdmValue )
+			if( c.isAssignableFrom(String.class))
+				return true ;
+			
+		
+		
+		
+		
+		return false ;
+		
+		
+		
+	}
+
+
+	public static Object convert(Object value, Class<?> c) {
+		if( value == null )
+			return null;
+		
+		if( c.isInstance(value))
+			return c.cast(value);
+		
+		
+		if( value instanceof XdmValue && ! XdmValue.class.equals(c))
+			value =( (XdmValue)value).toString();
+		
+		else
+		// Convert to XdmValue
+		if( c.equals(XdmValue.class) )
+			value = new XdmAtomicValue( value.toString() );
+		
+		return c.cast(value);
+	}
+
+
 
 		
 

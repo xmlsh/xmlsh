@@ -11,10 +11,18 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.MalformedURLException;
 import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.transform.Source;
 
+import net.sf.saxon.s9api.XdmItem;
 import org.apache.log4j.Logger;
 import org.xmlsh.sh.core.SourceLocation;
 import org.xmlsh.sh.shell.SerializeOpts;
@@ -156,6 +164,13 @@ public abstract class AbstractCommand implements ICommand {
 	
 	public SourceLocation  getLocation() { return mLocation ; }
 	public void setLocation(SourceLocation source) { mLocation = source ; }
+
+	protected ClassLoader getClassLoader(XValue classpath) throws CoreException
+	{
+		return mShell.getClassLoader(classpath);
+	}
+	
+
 
 }
 

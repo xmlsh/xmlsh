@@ -111,7 +111,7 @@ public class jcall extends XCommand
 		
 		SecurityManager oldManager = null;
 		if( args.size() < 1 )
-			throw new InvalidArgumentException( "usage: jcall [-cp classpath] class [args]");
+			throw new InvalidArgumentException( "usage: jcall [-cp classpath] [class|object] [args]");
 		
 		
 		

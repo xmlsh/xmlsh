@@ -88,7 +88,10 @@ version.version=${version}
   		classname="org.xmlsh.sh.shell.Shell"
   		classpath="bin/${jar};lib/log4j-1.2.7.jar;lib/saxon9he.jar;lib/xercesImpl.jar;lib/woodstox-core-asl-4.0.3.jar;lib/stax2-api-3.0.1.jar;lib/stax-utils.jar;lib/jing.jar;lib/trang.jar"
   		fork="true"
-  	    dir="test">
+  		dir="test">
+  		<!--
+  	    	<jvmarg value="-XX:MaxPermSize=128m"/>
+		-->  	    	
   			<arg value="./run_tests.xsh"/>
   			<arg value="extra"/>
   	</java>

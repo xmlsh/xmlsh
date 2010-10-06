@@ -20,7 +20,11 @@ import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Constructor;
 import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URLClassLoader;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
@@ -29,6 +33,7 @@ import java.util.Properties;
 import java.util.Stack;
 
 import net.sf.saxon.s9api.Processor;
+import net.sf.saxon.s9api.XdmItem;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.xmlsh.core.CommandFactory;
@@ -96,6 +101,10 @@ public class Shell {
 	// current module
 	private		Module	mModule = null;
 
+	
+	// Current classloader
+	private		ClassLoader		mClassLoader = null ;
+	
 	
 	/*
 	 * Initializtion statics
@@ -283,6 +292,9 @@ public class Shell {
 		// Pass through the Session Enviornment, keep a reference
 		mSession = that.mSession;
 		mSession.addRef();
+		
+		// Reference the parent classloader
+		mClassLoader = that.mClassLoader;
 		
 		
 		// Cloning shells doesnt save the condition depth
@@ -1229,11 +1241,23 @@ public class Shell {
 		mModules.declare( new Module( prefix , name , pkg ,  sHelp));
 	}
 
-	public URL getURL( String file ) throws MalformedURLException, IOException
+	public void	importJava( XValue uris ) throws CoreException
+	{
+		mClassLoader = getClassLoader( uris );
+		
+	}
+	
+	public URL getURL( String file ) throws CoreException
 	{
 		URL url = Util.tryURL(file);
 		if( url == null )
-			url = getFile(file).toURI().toURL();
+			try {
+				url = getFile(file).toURI().toURL();
+			} catch (MalformedURLException e) {
+				throw new CoreException( e );
+			} catch (IOException e) {
+				throw new CoreException(e);
+			}
 		return url;
 			
 	}
@@ -1445,9 +1469,33 @@ public class Shell {
 	}
 
 
+	public ClassLoader getClassLoader(XValue classpath) throws CoreException  
+	{
 
-	
-	
+		// No class path sent, use this shells or this class
+		if( classpath == null ){
+			if( mClassLoader != null )
+				return mClassLoader ;
+			else
+				return this.getClass().getClassLoader();
+		}
+				
+		final List<URL> urls = new ArrayList<URL>();
+		for( XdmItem item : classpath.asXdmValue() ){
+			String cp = item.getStringValue();
+			URL url = getURL(cp);					
+			urls.add(url);
+		}
+
+		final ClassLoader parent = getClass().getClassLoader();
+
+		URLClassLoader loader = AccessController.doPrivileged(new PrivilegedAction<URLClassLoader>() {
+			public URLClassLoader run() {
+				return new URLClassLoader( (URL[]) urls.toArray(new URL[urls.size()]), parent );
+			}
+		});
+		return loader;
+	}
 	
 }
 //

@@ -59,26 +59,34 @@ public class xtype extends BuiltinCommand {
 		boolean bAnyOut = false ;
 		
 		for( XValue arg : args ){
-			eval.setExternalVariable( vqname , arg.asXdmValue()  );
 			
-		
-			for( XdmItem item : eval ){
+			if( arg.isObject() ){
+				Util.writeXdmValue(new XValue(arg.asObject().getClass().getName()).asXdmValue(), ser);
 				bAnyOut = true ;
-				if( ! bFirst )
-					stdout.writeSequenceSeperator(serializeOpts); // Thrashes variable output !
-				bFirst = false ;
+			}
 				
+			else {
+				eval.setExternalVariable( vqname , arg.asXdmValue()  );
 				
-				if( item instanceof XdmNode ){
-					XdmNode node = (XdmNode) item ;
+			
+				for( XdmItem item : eval ){
+					bAnyOut = true ;
+					if( ! bFirst )
+						stdout.writeSequenceSeperator(serializeOpts); // Thrashes variable output !
+					bFirst = false ;
+					
+					
+					if( item instanceof XdmNode ){
+						XdmNode node = (XdmNode) item ;
+						
+					}
+					
+					
+					//processor.writeXdmValue(item, ser );
+					Util.writeXdmValue(item, ser);
+		
 					
 				}
-				
-				
-				//processor.writeXdmValue(item, ser );
-				Util.writeXdmValue(item, ser);
-	
-				
 			}
 				
 		}

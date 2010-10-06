@@ -148,7 +148,20 @@ public class XVariable {
 		
 		writer.writeStartElement(sVariable);
 		writer.writeAttribute(sName, getName());
-		writer.writeAttribute(sType, (value == null || value.isAtomic()) ? "string" : "xml");
+		String type ;
+		if( value == null )
+			type = "null";
+		else
+		if( value.isObject() )
+			type = value.asObject().getClass().getName();
+		else
+		if( value.isAtomic())
+			type = "string";
+		else
+			type = "xml"; 
+		
+		
+		writer.writeAttribute(sType,type);
 		writer.writeAttribute(sFlags, flagStr );
 		writer.writeEndElement();
 		
@@ -268,6 +281,12 @@ public class XVariable {
 		XValue xvalue = getValue();
 		if( xvalue == null )
 			return null;
+		
+		if( xvalue.isObject())
+			return xvalue ;
+		
+		
+		
 		XdmValue value = xvalue.asXdmValue(ind);
 		
 

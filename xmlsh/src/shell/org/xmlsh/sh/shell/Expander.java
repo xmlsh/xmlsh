@@ -478,10 +478,13 @@ class Expander {
 			
 			for( String name : varnames ) {
 				XVariable value = variables.get(name);
-				if( !value.isNull() && value.getFlags().contains( XVarFlag.XEXPR ))
-			
-					eval.setExternalVariable( new QName(value.getName()), value.getValue().asXdmValue());
-				
+				if( !value.isNull() && value.getFlags().contains( XVarFlag.XEXPR )){
+					XValue v = value.getValue();
+					if( v.isObject() )
+						v = new XValue( (XdmValue) Util.convert(v.asObject(), XdmValue.class));
+					
+					eval.setExternalVariable( new QName(value.getName()), v.asXdmValue());
+				}
 			}
 
 			
