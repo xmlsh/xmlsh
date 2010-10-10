@@ -7,3 +7,4 @@ Length: 8
 org.xmlsh.test.TestTypes
 TestTypes(String)
 TestTypes(Integer)
+TestTypes(Long,String)

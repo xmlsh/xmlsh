@@ -32,13 +32,22 @@ jset -v t1 -c org.xmlsh.test.TestTypes
 xtype $t1
 jset -v m1 -o $t1 -m getConstructor
 
+# String constructor
 jset -v t1 -c org.xmlsh.test.TestTypes "String"
 jset -v m1 -o $t1 -m getConstructor
 echo $m1
 
+# Integer constructor
 jset -v t1 -c org.xmlsh.test.TestTypes $i1
 jset -v m1 -o $t1 -m getConstructor
 echo $m1
+
+
+# Overloaded multi arg constructors
+jset -v t2 -c org.xmlsh.test.TestTypes <[ 1 ]> "String"
+jset -v m2 -o $t2 -m getConstructor
+echo $m2
+
 
 
 

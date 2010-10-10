@@ -54,7 +54,7 @@ public class jset extends BuiltinCommand {
 		Constructor<?>[] constructors = cls.getConstructors();
 		Constructor<?> c = getBestMatch(args, constructors);
 		if (c == null) {
-			mShell.printErr("No construtor match found for: " + classname);
+			mShell.printErr("No construtor match found for: " + classname  + "(" + getArgClassesString(args) + ")");
 			return null;
 		}
 
@@ -69,12 +69,23 @@ public class jset extends BuiltinCommand {
 		Method m = getBestMatch(methodName, args, methods,true);
 
 		if (m == null) {
-			mShell.printErr("No method match found for: " + classname + "." + methodName);
+			mShell.printErr("No method match found for: " + classname + "." + methodName + "(" + getArgClassesString(args) + ")");
 			return null;
 		}
 
 		Object obj = m.invoke(null, getArgs(m.getParameterTypes(), args));
 		return obj;
+	}
+
+	private String getArgClassesString(List<XValue> args) {
+		StringBuffer sb = new StringBuffer();
+		for( XValue arg : args ){
+			if( sb.length() > 0 )
+				sb.append(",");
+			sb.append( arg.asObject().getClass().getName() );
+			
+		}
+		return sb.toString();
 	}
 
 	private Object callMethod(XValue instance, String methodName, List<XValue> args,

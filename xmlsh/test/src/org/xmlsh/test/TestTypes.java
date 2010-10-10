@@ -9,6 +9,7 @@ package org.xmlsh.test;
 public class TestTypes {
 	
 	private		Object	mValue1;
+	private		Object  mValue2;
 	private		String	mMethod;
 	private		String 	mConstructor;
 
@@ -46,9 +47,33 @@ public class TestTypes {
 		mValue1 = x;
 	}
 	
-	
+	public TestTypes(int x , String y)
+	{
+		mConstructor = "TestTypes(int,String)";
+		mValue1 = Integer.valueOf(x);
+		mValue2 = y ;
+	}
 
 	
+	public TestTypes(long x , String y)
+	{
+		mConstructor = "TestTypes(long,String)";
+		mValue1 = Long.valueOf(x);
+		mValue2 = y ;
+	}
+	public TestTypes(Long x , String y)
+	{
+		mConstructor = "TestTypes(Long,String)";
+		mValue1 = x ;
+		mValue2 = y ;
+	}
+
+	public TestTypes(Integer x , String y)
+	{
+		mConstructor = "TestTypes(Integer,String)";
+		mValue1 = x ;
+		mValue2 = y ;
+	}
 	
 	public Object getValue1() { 
 		return mValue1;
