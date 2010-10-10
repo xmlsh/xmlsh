@@ -45,5 +45,11 @@ read E < $F
 [ $E = "error2" ] || echo Failed to redirect to stdout
 rm $F
 
+# Test append to stderr
+echo -p error line1 2>$F
+echo -p error line2 2>>$F
+
+cat $F
+rm $F
 
 

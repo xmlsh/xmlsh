@@ -194,6 +194,9 @@ public class IOFile {
 		else
 		if( mPrefix.equals("2>"))
 				env.setStderr( shell.getOutputStream(file, false));
+		else
+		if( mPrefix.equals("2>>"))
+				env.setStderr( shell.getOutputStream(file, true));
 		
 		else
 		if( mPrefix.equals(">"))
