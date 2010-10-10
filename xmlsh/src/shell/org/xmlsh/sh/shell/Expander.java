@@ -21,6 +21,7 @@ import net.sf.saxon.s9api.XQueryCompiler;
 import net.sf.saxon.s9api.XQueryEvaluator;
 import net.sf.saxon.s9api.XQueryExecutable;
 import net.sf.saxon.s9api.XdmValue;
+import net.sf.saxon.trans.XPathException;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.xmlsh.core.CoreException;
@@ -408,7 +409,7 @@ class Expander {
 
 	
 		
-	private XdmValue parseXExpr(String arg) {
+	private XdmValue parseXExpr(String arg) throws CoreException {
 		
 		
 		
@@ -481,7 +482,11 @@ class Expander {
 				if( !value.isNull() && value.getFlags().contains( XVarFlag.XEXPR )){
 					XValue v = value.getValue();
 					if( v.isObject() )
-						v = new XValue( (XdmValue) Util.convert(v.asObject(), XdmValue.class));
+						try {
+							v = new XValue( v.convert(XdmValue.class));
+						} catch (XPathException e) {
+							throw new CoreException(e);
+						}
 					
 					eval.setExternalVariable( new QName(value.getName()), v.asXdmValue());
 				}

@@ -1,0 +1,9 @@
+String Value:
+String Value: (init) Hi
+String Value: (concat) Hi There
+String Value: (replace) Bye There
+java.lang.Integer
+Length: 8
+org.xmlsh.test.TestTypes
+TestTypes(String)
+TestTypes(Integer)

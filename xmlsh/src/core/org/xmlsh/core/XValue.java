@@ -479,15 +479,97 @@ public class XValue {
 		return mValue;
 	}
 
-	public boolean canConvert(Class<?> c) {
-		return Util.canConvert( mValue ,  c);
+	/*
+	 * Returns 0 if there is an exact match between value.class and c
+	 * Returns 1 if value can be converted to c
+	 * Returns -1 if value can not be converted to c
+	 */
+
+
+	public  int canConvert( Class<?> c) throws XPathException {
+		Object value = mValue ;
+		if( value == null )
+			return 0 ;
+		
+		if( value.getClass().equals(c))
+			return 0 ;
+		
+		if( c.isAssignableFrom(value.getClass()))
+			return 1 ;
+		
+		// Try converting 
+		if( value instanceof XdmValue ){
+			value = getJavaNative();
+
+			if( value.getClass().equals(c))
+				return 0 ;
+			
+			if( c.isAssignableFrom(value.getClass()))
+				return 1 ;
+		}
 		
 		
+		
+		
+		return -1 ;
+		
+		
+		
+	}
+
+
+	
+	public Object convert( Class<?> c) throws XPathException{
+		Object value = mValue ;
+			if( value == null )
+				return null;
+			
+			if( c.isInstance(value))
+				return c.cast(value);
+			
+			
+			if( mValue instanceof XdmValue && ! XdmValue.class.equals(c))
+				value = getJavaNative();
+			
+			else
+			// Convert to XdmValue
+			if( c.equals(XdmValue.class) )
+				value = new XdmAtomicValue( value.toString() );
+			
+			return c.cast(value);
+		
+
 	}
 	
-	public Object convert( Class<?> c){
-		return Util.convert( mValue , c );
+	public Object getJavaNative() throws XPathException
+	{
+		if( mValue == null )
+			return null ;
+		
+		// Already a java type 
+		if( !( mValue instanceof XdmValue) )
+			return mValue ;
+		
+		XdmValue xv = (XdmValue)mValue ;
+		
+		ValueRepresentation value = xv.getUnderlyingValue();
+		// Special case for text nodes treat as String
+		if( value instanceof NodeInfo &&  ((NodeInfo)value).getNodeKind() == net.sf.saxon.type.Type.TEXT ) 
+			return value.getStringValue();
+		
+		if( ! ( value instanceof AtomicValue ))
+			return value ;
+		
+		AtomicValue av = (AtomicValue) value ;
+		Object java = AtomicValue.convertToJava(av);
+			
+		
+		return java;
 	}
+
+	
+	
+	
 	
 }
 //

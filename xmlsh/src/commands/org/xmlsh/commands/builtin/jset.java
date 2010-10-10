@@ -11,6 +11,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.List;
 
+import net.sf.saxon.trans.XPathException;
 import org.xmlsh.core.BuiltinCommand;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.XValue;
@@ -91,9 +92,14 @@ public class jset extends BuiltinCommand {
 		return obj ;
 	}
 
-	private Method getBestMatch(String methodName, List<XValue> args, Method[] methods , boolean bStatic ) {
+	private Method getBestMatch(String methodName, List<XValue> args, Method[] methods , boolean bStatic ) throws XPathException {
 
+		
+		Method best = null;
+		int bestConversions = 0;
+		
 		for (Method m : methods) {
+			int conversions = 0;
 			if (m.getName().equals(methodName)) {
 				boolean isStatic = (m.getModifiers() & Modifier.STATIC) == Modifier.STATIC   ;
 				if( bStatic && ! isStatic )
@@ -103,23 +109,30 @@ public class jset extends BuiltinCommand {
 				if (params.length == args.size()) {
 					int i = 0;
 					for (XValue arg : args) {
-						if (!arg.canConvert(params[i]))
+						int conversion = arg.canConvert(params[i]);
+						if( conversion < 0 )
 							break;
 						i++;
+						conversions += conversion ;
 					}
-					if (i == params.length)
-						return m;
+					if (i == params.length){
+						
+						if( best == null || conversions < bestConversions ){
+							best = m;
+							bestConversions = conversions ;
+						}
+					}
 
 				}
 
 			}
 
 		}
-		return null;
+		return best;
 
 	}
 
-	private Object[] getArgs(Class<?>[] params, List<XValue> args) {
+	private Object[] getArgs(Class<?>[] params, List<XValue> args) throws XPathException {
 
 		Object[] ret = new Object[params.length];
 		int i = 0;
@@ -132,23 +145,41 @@ public class jset extends BuiltinCommand {
 
 	}
 
-	private Constructor<?> getBestMatch(List<XValue> args, Constructor<?>[] constructors) {
-		for (Constructor<?> c : constructors) {
+	private Constructor<?> getBestMatch(List<XValue> args, Constructor<?>[] constructors) throws XPathException {
+		
+		Constructor<?> best = null;
+		int bestConversions = 0;
+		
+		// TODO how to choose best match
+		
+		for (Constructor<?> c : constructors) 
+		{
 			Class<?>[] params = c.getParameterTypes();
 			if (params.length == args.size()) {
+				int conversions = 0;
 				int i = 0;
 				for (XValue arg : args) {
-					if (!arg.canConvert(params[i]))
+					int convert = arg.canConvert(params[i]);
+					if( convert < 0 )
 						break;
+					conversions += convert;
 					i++;
 				}
-				if (i == params.length)
-					return c;
+				if (i == params.length){
+					// Find best match
+					if( best == null || conversions < bestConversions ){
+						best = c ;
+						bestConversions = conversions;
+						
+					}
+				
+
+				}
 
 			}
 
 		}
-		return null;
+		return best;
 
 	}
 }

@@ -1,0 +1,51 @@
+<?xml version="1.0" ?>
+<project default="main">
+
+<!-- Global properties 
+     Edit these for every release
+-->
+	<property name="jar" value="xmlsh-test.jar"/>
+
+
+	
+    <target name="main" depends="clean, compile, jar" description="Main target">
+        <echo>
+            Building xmlsh-test.jar
+        </echo>
+    </target>
+	
+	
+
+
+	
+	<target name="clean" description="Clean all">
+		  <delete includeEmptyDirs="true" quiet="true">
+		  	<fileset dir="_out" />
+			
+		  </delete>
+	</target>
+
+  
+    <target name="compile" description="Compilation target">
+  		<mkdir dir="_out"/>
+ 
+    	 <javac destdir="_out" debug="on" source="1.6" target="1.6">
+    	        <src path="." />
+
+    	        </javac>
+   
+
+   	</target>
+  
+  <target name="jar" description="Build JAR - xmlsh-test.jar">
+		<mkdir dir="../bin"/>
+        <jar 
+        jarfile="../bin/${jar}" 
+        basedir="_out" 
+  
+        />
+
+  </target>
+  
+
+</project>
