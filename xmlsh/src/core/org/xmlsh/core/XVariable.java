@@ -282,8 +282,22 @@ public class XVariable {
 		if( xvalue == null )
 			return null;
 		
-		if( xvalue.isObject())
+		if( xvalue.isObject()){
+			if( arg == null )
+				return xvalue ;
+			
+			/*
+			 * Get method and args by evaluating arg
+			 */
+			
+			
+			
+			
 			return xvalue ;
+			
+			
+			
+		}
 		
 		
 		

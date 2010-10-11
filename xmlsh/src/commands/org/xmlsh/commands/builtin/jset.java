@@ -6,15 +6,12 @@
 
 package org.xmlsh.commands.builtin;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.util.List;
 
-import net.sf.saxon.trans.XPathException;
 import org.xmlsh.core.BuiltinCommand;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.XValue;
+import org.xmlsh.util.JavaUtils;
 
 public class jset extends BuiltinCommand {
 
@@ -36,163 +33,17 @@ public class jset extends BuiltinCommand {
 
 		Object obj = null;
 		if (method == null)
-			obj = newObject(classname, args, classloader);
+			obj = JavaUtils.newObject(classname, args, classloader);
 		else if (instance == null)
-			obj = callStatic(classname, method, args, classloader);
+			obj = JavaUtils.callStatic(classname, method, args, classloader);
 		else
-			obj = callMethod(instance, method, args, classloader);
+			obj = JavaUtils.callMethod(instance, method, args, classloader);
 
 		mShell.getEnv().setVar(varname, new XValue(obj), false);
 
 		return 0;
 	}
 
-	private Object newObject(String classname, List<XValue> args, ClassLoader classloader)
-			throws Exception {
-		Class<?> cls = Class.forName(classname, true, classloader);
-
-		Constructor<?>[] constructors = cls.getConstructors();
-		Constructor<?> c = getBestMatch(args, constructors);
-		if (c == null) {
-			mShell.printErr("No construtor match found for: " + classname  + "(" + getArgClassesString(args) + ")");
-			return null;
-		}
-
-		Object obj = c.newInstance(getArgs(c.getParameterTypes(), args));
-		return obj;
-	}
-
-	private Object callStatic(String classname, String methodName, List<XValue> args,
-			ClassLoader classloader) throws Exception {
-		Class<?> cls = Class.forName(classname, true, classloader);
-		Method[] methods = cls.getMethods();
-		Method m = getBestMatch(methodName, args, methods,true);
-
-		if (m == null) {
-			mShell.printErr("No method match found for: " + classname + "." + methodName + "(" + getArgClassesString(args) + ")");
-			return null;
-		}
-
-		Object obj = m.invoke(null, getArgs(m.getParameterTypes(), args));
-		return obj;
-	}
-
-	private String getArgClassesString(List<XValue> args) {
-		StringBuffer sb = new StringBuffer();
-		for( XValue arg : args ){
-			if( sb.length() > 0 )
-				sb.append(",");
-			sb.append( arg.asObject().getClass().getName() );
-			
-		}
-		return sb.toString();
-	}
-
-	private Object callMethod(XValue instance, String methodName, List<XValue> args,
-			ClassLoader classloader) throws Exception {
-		Class<?> cls = instance.asObject().getClass();
-		Method[] methods = cls.getMethods();
-		Method m = getBestMatch(methodName, args, methods,false);
-
-		if (m == null) {
-			mShell.printErr("No method match found for: " + cls.getName() + "." + methodName);
-			return null;
-		}
-
-		Object obj = m.invoke(instance.asObject(), getArgs(m.getParameterTypes(), args));
-		return obj ;
-	}
-
-	private Method getBestMatch(String methodName, List<XValue> args, Method[] methods , boolean bStatic ) throws XPathException {
-
-		
-		Method best = null;
-		int bestConversions = 0;
-		
-		for (Method m : methods) {
-			int conversions = 0;
-			if (m.getName().equals(methodName)) {
-				boolean isStatic = (m.getModifiers() & Modifier.STATIC) == Modifier.STATIC   ;
-				if( bStatic && ! isStatic )
-					continue ;
-				
-				Class<?>[] params = m.getParameterTypes();
-				if (params.length == args.size()) {
-					int i = 0;
-					for (XValue arg : args) {
-						int conversion = arg.canConvert(params[i]);
-						if( conversion < 0 )
-							break;
-						i++;
-						conversions += conversion ;
-					}
-					if (i == params.length){
-						
-						if( best == null || conversions < bestConversions ){
-							best = m;
-							bestConversions = conversions ;
-						}
-					}
-
-				}
-
-			}
-
-		}
-		return best;
-
-	}
-
-	private Object[] getArgs(Class<?>[] params, List<XValue> args) throws XPathException {
-
-		Object[] ret = new Object[params.length];
-		int i = 0;
-		for (XValue arg : args) {
-			ret[i] = arg.convert(params[i]);
-			i++;
-		}
-
-		return ret;
-
-	}
-
-	private Constructor<?> getBestMatch(List<XValue> args, Constructor<?>[] constructors) throws XPathException {
-		
-		Constructor<?> best = null;
-		int bestConversions = 0;
-		
-		// TODO how to choose best match
-		
-		for (Constructor<?> c : constructors) 
-		{
-			Class<?>[] params = c.getParameterTypes();
-			if (params.length == args.size()) {
-				int conversions = 0;
-				int i = 0;
-				for (XValue arg : args) {
-					int convert = arg.canConvert(params[i]);
-					if( convert < 0 )
-						break;
-					conversions += convert;
-					i++;
-				}
-				if (i == params.length){
-					// Find best match
-					if( best == null || conversions < bestConversions ){
-						best = c ;
-						bestConversions = conversions;
-						
-					}
-				
-
-				}
-
-			}
-
-		}
-		return best;
-
-	}
 }
 //
 //
