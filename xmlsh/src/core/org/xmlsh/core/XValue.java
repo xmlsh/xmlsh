@@ -164,7 +164,7 @@ public class XValue {
 	}
 	public String	toString(){
 		if( mValue != null ){
-			if( isAtomic() )
+			if( isAtomic() || isObject() )
 				return mValue.toString();
 			else
 			{
@@ -257,8 +257,11 @@ public class XValue {
 	public boolean isAtomic() {
 		if( mValue == null )
 			return true ;
+		
+		// Non-XdmValues not considered atomic.
 		if( ! (mValue instanceof XdmValue ))
-			return true ;
+			return false ;
+		
 		
 		ValueRepresentation value = asXdmValue().getUnderlyingValue();
 		boolean isAtom = ( value instanceof AtomicValue ) || ( value instanceof NodeInfo && ((NodeInfo)value).getNodeKind() == net.sf.saxon.type.Type.TEXT ) ;
@@ -279,7 +282,7 @@ public class XValue {
 
 	public void serialize(OutputStream out, SerializeOpts opt) throws UnsupportedEncodingException, IOException, SaxonApiException 
 	{
-		if( isAtomic() )
+		if( isAtomic() || isObject() )
 			out.write( toString().getBytes(opt.getEncoding()) );
 		else 
 		if( mValue instanceof XdmValue )

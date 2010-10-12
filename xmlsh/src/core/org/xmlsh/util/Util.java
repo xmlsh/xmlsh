@@ -525,7 +525,7 @@ public class Util
 		
 		ArrayList<XValue> list = new ArrayList<XValue>( values.size());
 		for( XValue arg : values ){
-			if( arg.isAtomic() )
+			if( arg.isAtomic() || arg.isObject() )
 				list.add(arg);
 			else {
 				XdmValue xv = arg.asXdmValue();

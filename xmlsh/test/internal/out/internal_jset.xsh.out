@@ -1,4 +1,5 @@
-String Value:
+java.lang.String
+String Value: 
 String Value: (init) Hi
 String Value: (concat) Hi There
 String Value: (replace) Bye There

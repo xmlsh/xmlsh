@@ -102,7 +102,7 @@ class Expander {
 		 * If currently in-quotes then convert the args to strings and space seperate
 		 */
 		public void append(XValue value, boolean inQuotes ) {
-			if( value.isAtomic() ){
+			if( value.isAtomic()  ){
 				
 				
 				
@@ -578,7 +578,7 @@ class Expander {
 	private List<XValue> expandWild(XValue v) {
 		ArrayList<XValue> r = new ArrayList<XValue>();
 		
-		if( v.isXExpr() ){
+		if( v.isXExpr() || v.isObject() ){
 			r.add( v);
 			return r;
 		}
@@ -790,6 +790,9 @@ class Expander {
 		if( v == null || ! v.isAtomic() )
 			return v;
 		
+		// Java objects are not mucked with
+		if( v.isObject() )
+			return v;
 
 		String s = v.toString();
 			

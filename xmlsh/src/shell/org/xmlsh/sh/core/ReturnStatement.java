@@ -7,6 +7,7 @@
 package org.xmlsh.sh.core;
 
 import java.io.PrintWriter;
+import java.util.List;
 
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
@@ -36,9 +37,13 @@ public class ReturnStatement extends Command {
 		
 		if( mArg == null )
 			ret = new XValue(0);
-		else	
-			ret = mArg.expand(shell, false , false , false , getLocation() ).get(0);
-		
+		else	{
+			List<XValue> vret = mArg.expand(shell, false , false , false , getLocation() );
+			if( vret == null || vret.isEmpty() )
+				ret = new XValue();
+			else
+				ret = vret.get(0);
+		}
 			
 		shell.exec_return( ret );
 		return 0;

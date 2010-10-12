@@ -5,7 +5,7 @@
 [ -f _out.txt ] && rm _out.txt
 [ -f _err.txt ] && rm _err.txt
 
-
+log running $1
 $1  > _out.txt 2> _err.txt
 RET=$?
 if [ $RET -ne 0 ] ; then

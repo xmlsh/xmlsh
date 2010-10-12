@@ -104,7 +104,8 @@ a=$<(echo "<foo/>")
 
 # Test local var=() syntax 
 local foo=(1)
-[ "$foo" -eq 1 ] || echo Failed to assign local variable foo
+[ "$foo" -eq 1 ] || echo "Failed to assign local variable foo"
 
+fun
 
 exit 0
