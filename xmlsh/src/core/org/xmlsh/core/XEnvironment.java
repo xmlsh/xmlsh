@@ -244,7 +244,9 @@ public class XEnvironment  {
 		return mShell.getOutputStream(file, append);
 	}
 
-
+	public OutputStream getOutputStream(File file, boolean append) throws FileNotFoundException {
+		return mShell.getOutputStream(file, append);
+	}
 	/**
 	 * @param s
 	 * @param e
@@ -358,6 +360,25 @@ public class XEnvironment  {
 			return p;
 		}
 		
+		
+	}
+
+	
+	public OutputPort getOutput( File file , boolean append ) throws IOException
+	{
+		
+		// Get a stream from name
+		OutputStream out;
+		out = getOutputStream(file, append );
+	
+		
+		if( out == null )
+			return null ;
+		
+		OutputPort p = new StreamOutputPort( out );
+		return p;
+			
+			
 		
 	}
 

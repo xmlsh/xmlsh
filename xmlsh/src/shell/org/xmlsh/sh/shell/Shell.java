@@ -1316,6 +1316,14 @@ public class Shell {
 		
 		return  new FileOutputStream(getFile(file),append);
 	}
+	
+	
+	public OutputStream getOutputStream(File file, boolean append) throws FileNotFoundException {
+		
+		
+		return  new FileOutputStream(file,append);
+	}
+	
 
 
 	public void setOption(String name, boolean flag) {
@@ -1496,7 +1504,9 @@ public class Shell {
 		});
 		return loader;
 	}
-	
+
+
+
 }
 //
 //
