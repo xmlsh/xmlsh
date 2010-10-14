@@ -4,31 +4,21 @@
  *
  */
 
-package org.xmlsh.sh.shell;
+package org.xmlsh.core;
 
-import org.xmlsh.sh.core.FunctionDeclaration;
-import org.xmlsh.util.NameValueMap;
+import org.xmlsh.sh.core.Command;
 
-@SuppressWarnings("serial")
-class FunctionDefinitions extends NameValueMap<FunctionDeclaration>
-{
-
-	FunctionDefinitions() {}
-	FunctionDefinitions(FunctionDefinitions that) 
-	{
-		super(that);
-		
-	}
+public interface IFunction {
+	String	getName();
+	Command	getBody();
 	
-	
-
 }
 
 
 
 //
 //
-//Copyright (C) 2008,2009,2010 , David A. Lee.
+//Copyright (C) 2008,2009,2010 David A. Lee.
 //
 //The contents of this file are subject to the "Simplified BSD License" (the "License");
 //you may not use this file except in compliance with the License. You may obtain a copy of the

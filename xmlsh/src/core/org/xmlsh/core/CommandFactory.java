@@ -43,7 +43,7 @@ import org.xmlsh.commands.builtin.xtrue;
 import org.xmlsh.commands.builtin.xtype;
 import org.xmlsh.commands.builtin.xversion;
 import org.xmlsh.commands.builtin.xwhich;
-import org.xmlsh.sh.core.FunctionDefinition;
+import org.xmlsh.sh.core.FunctionDeclaration;
 import org.xmlsh.sh.core.SourceLocation;
 import org.xmlsh.sh.shell.Module;
 import org.xmlsh.sh.shell.Modules;
@@ -58,6 +58,8 @@ public class CommandFactory
 	private static CommandFactory _instance = null ;
 	
 	private HashMap<String,Class<?>>		mBuiltins = new HashMap<String,Class<?>>();
+	
+	private	 HashMap<String,BuiltinFunctionCommand>	mFunctions = new HashMap<String,BuiltinFunctionCommand>();
 	
 	private void addBuiltin( String name , Class<?> cls)
 	{
@@ -101,11 +103,19 @@ public class CommandFactory
 		addBuiltin("require", require.class);
 		addBuiltin("jset" , jset.class );
 		
+		
+		addFunction( new org.xmlsh.functions.string() );
+		
 
 	}
 	
 	
 	
+	private  void addFunction(BuiltinFunctionCommand cmd  ) {
+		mFunctions.put(cmd.getName(), cmd );
+		
+	}
+
 	public synchronized static CommandFactory getInstance()
 	{
 		if( _instance == null )
@@ -147,9 +157,9 @@ public class CommandFactory
 
 	private ICommand getFunction(Shell shell, String name,  SourceLocation loc) {
 		
-		FunctionDefinition func = shell.getFunction( name );
+		FunctionDeclaration func = shell.getFunction( name );
 		if( func != null )
-			return new FunctionCommand( func  , loc );
+			return new FunctionCommand( func.getName() , func.getBody()  , loc );
 		return null;
 	}
 
@@ -347,6 +357,10 @@ public class CommandFactory
 			return shell.getResource(kCOMMANDS_HELP_XML);
 		else
 			return null ;
+	}
+
+	public BuiltinFunctionCommand getBuiltinFunction(String name) {
+		return mFunctions.get(name);
 	}
 	
 	

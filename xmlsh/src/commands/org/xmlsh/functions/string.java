@@ -4,23 +4,25 @@
  *
  */
 
-package org.xmlsh.sh.shell;
+package org.xmlsh.functions;
 
-import org.xmlsh.sh.core.FunctionDeclaration;
-import org.xmlsh.util.NameValueMap;
+import java.util.List;
 
-@SuppressWarnings("serial")
-class FunctionDefinitions extends NameValueMap<FunctionDeclaration>
-{
+import org.xmlsh.core.BuiltinFunctionCommand;
+import org.xmlsh.core.XValue;
+import org.xmlsh.sh.shell.Shell;
 
-	FunctionDefinitions() {}
-	FunctionDefinitions(FunctionDefinitions that) 
+public class string extends BuiltinFunctionCommand {
+
+	public string()
 	{
-		super(that);
-		
+		super("string");
 	}
 	
-	
+	@Override
+	public XValue run(Shell shell, List<XValue> args) {
+		return new XValue( args.get(0).toString() );
+	}
 
 }
 
@@ -28,7 +30,7 @@ class FunctionDefinitions extends NameValueMap<FunctionDeclaration>
 
 //
 //
-//Copyright (C) 2008,2009,2010 , David A. Lee.
+//Copyright (C) 2008,2009,2010 David A. Lee.
 //
 //The contents of this file are subject to the "Simplified BSD License" (the "License");
 //you may not use this file except in compliance with the License. You may obtain a copy of the

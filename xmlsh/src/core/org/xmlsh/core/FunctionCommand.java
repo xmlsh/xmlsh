@@ -9,19 +9,20 @@ package org.xmlsh.core;
 import java.io.File;
 import java.util.List;
 
-import org.xmlsh.sh.core.FunctionDefinition;
+import org.xmlsh.sh.core.Command;
 import org.xmlsh.sh.core.SourceLocation;
 import org.xmlsh.sh.shell.Module;
 import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.xpath.ShellContext;
 
 public class FunctionCommand implements ICommand {
 	
-	FunctionDefinition 	mFunction;
+	String				mName;
+	Command			 	mFunction;
 	SourceLocation  	mLocation;
 	
-	public FunctionCommand( FunctionDefinition func ,  SourceLocation loc )
+	public FunctionCommand( String name , Command func ,  SourceLocation loc )
 	{
+		mName = name ;
 		mFunction = func ;
 		mLocation = loc ;
 	}
@@ -39,9 +40,9 @@ public class FunctionCommand implements ICommand {
 		
 		try {
 			
-			shell.setArg0(mFunction.getName());
+			shell.setArg0(mName);
 			shell.setArgs(args);
-			int ret =	shell.execFunction(mFunction.getBody());
+			int ret =	shell.execFunction(mFunction);
 			return ret;
 			
 		

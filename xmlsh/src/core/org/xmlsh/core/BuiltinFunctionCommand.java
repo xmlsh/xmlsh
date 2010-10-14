@@ -1,72 +1,63 @@
 /**
- * $Id$
- * $Date$
+ * $Id: $
+ * $Date: $
  *
  */
 
-package org.xmlsh.sh.core;
+package org.xmlsh.core;
 
 import java.io.PrintWriter;
+import java.util.List;
 
+import org.xmlsh.sh.core.Command;
 import org.xmlsh.sh.shell.Shell;
 
-public class FunctionDefinition extends Command {
-	private String mName;
-	private Command mBody;
-	
-	public	boolean		isSimple() { return false ; }
+public abstract class BuiltinFunctionCommand extends Command implements IFunction {
 
-	public FunctionDefinition( String name , Command body )
-	{
-		mName = name;
-		mBody = body;
+	public abstract	XValue	run( Shell shell , List<XValue> args );
+	private	   String mName ;
+	
+	protected BuiltinFunctionCommand( String name )
+	{ 
+		mName = name ;
 	}
 	
 	
-	
-	/**
-	 * @return the name
-	 */
+	@Override
+	public int exec(Shell shell) throws Exception {
+		XValue retVal = run( shell , shell.getArgs());
+		shell.exec_return(retVal);
+		return 0;
+	}
+
+	@Override
+	public boolean isSimple() {
+		
+		return true;
+	}
+
+	@Override
+	public void print(PrintWriter out, boolean bExec) {
+		out.print(mName);
+
+	}
+
+
 	public String getName() {
 		return mName;
 	}
-
-
-
-	/**
-	 * @return the body
-	 */
-	public Command getBody() {
-		return mBody;
+	
+	public Command getBody()
+	{
+		return this ;
 	}
-
-
-
-
-
-	/* (non-Javadoc)
-	 * @see org.xmlsh.sh.core.Command#print(java.io.PrintWriter)
-	 */
-	@Override
-	public void print(PrintWriter out, boolean bExec) {
-		out.println( mName + " ()");
-		if( ! bExec )
-			mBody.print( out , bExec);
-		
-	}
-	@Override
-	public int exec(Shell shell) throws Exception {
-		
-		shell.declareFunction( this );	
-		return 0;
-		
-	}
-
 }
 
+
+
 //
 //
-//Copyright (C) 2008,2009,2010 , David A. Lee.
+//Copyright (C) 2008,2009,2010 David A. Lee.
 //
 //The contents of this file are subject to the "Simplified BSD License" (the "License");
 //you may not use this file except in compliance with the License. You may obtain a copy of the

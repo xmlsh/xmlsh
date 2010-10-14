@@ -80,9 +80,7 @@ public class SimpleCommand extends Command {
 		ICommand cmd = CommandFactory.getInstance().getCommand( shell , cmdName , getLocation() );
 		
 		if( cmd == null ){
-			SourceLocation loc = getLocation();
-			if( loc != null )
-				shell.printErr(loc.toString());
+			printLoc(shell);
 			
 			shell.printErr(mCommand + ": not found");
 			return 1;
@@ -135,14 +133,7 @@ public class SimpleCommand extends Command {
 		catch( Exception e ){
 
 			mLogger.error("Exception running command: " + cmdName  , e );
-			SourceLocation loc = getLocation();
-			if( loc != null ){
-				String sLoc = loc.toString();
-				mLogger.info( sLoc );
-				shell.printErr(sLoc );
-				
-				
-			}
+			printLoc(shell);
 			shell.printErr("Exception running: " +  cmdName + "\n" +  e.toString() );
 
 			/*
@@ -162,6 +153,12 @@ public class SimpleCommand extends Command {
 			shell.setModule( saved_module );
 		}
 		
+	}
+
+
+
+	private void printLoc(Shell shell) {
+		shell.printLoc( mLogger , getLocation() );
 	}
 
 

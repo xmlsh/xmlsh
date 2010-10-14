@@ -53,7 +53,7 @@ import org.xmlsh.core.XVariable;
 import org.xmlsh.core.Options.OptionValue;
 import org.xmlsh.core.XVariable.XVarFlag;
 import org.xmlsh.sh.core.Command;
-import org.xmlsh.sh.core.FunctionDefinition;
+import org.xmlsh.sh.core.FunctionDeclaration;
 import org.xmlsh.sh.core.SourceLocation;
 import org.xmlsh.sh.grammar.ParseException;
 import org.xmlsh.sh.grammar.ShellParser;
@@ -636,14 +636,17 @@ public class Shell {
 	 * 
 	 * 
 	 */
-
-	
 	public int exec(Command c) throws ThrowException, ExitOnErrorException {
+		return exec(c,null);
+	}
+	
+	public int exec(Command c, SourceLocation loc) throws ThrowException, ExitOnErrorException {
+		if( loc == null )
+			loc = c.getLocation();
 		
 		if( mOpts.mExec){
 			String out = c.toString(true);
 			if( out.length() > 0 ){
-				SourceLocation loc = c.getLocation();
 				
 				if( loc != null ) {
 					printErr("+ " + loc.toString());
@@ -697,7 +700,14 @@ public class Shell {
 		
 		catch( Exception e )
 		{
-			// printErr("Exception running: " + c.toString(true) + "\n" +  e.toString() );
+			
+			printLoc( mLogger , loc );
+			
+			printErr("Exception running: " + c.toString(true) );
+			printErr(e.toString());
+			
+			
+			
 			mLogger.error("Exception running command: " + c.toString(false) , e );
 			mStatus = -1;
 			// If not success then may throw if option 'throw on error' is set (-e)
@@ -1152,14 +1162,16 @@ public class Shell {
 				break ;
 	}
 
-	public void declareFunction(FunctionDefinition func) {
+	public void declareFunction(FunctionDeclaration func) {
 		if( mFunctions == null )
 			mFunctions = new FunctionDefinitions();
 		mFunctions.put( func.getName() , func);
 		
 	}
 
-	public FunctionDefinition getFunction(String name) {
+	public FunctionDeclaration getFunction(String name) {
+		
+		
 		if( mFunctions == null )
 			return null;
 		return mFunctions.get(name);
@@ -1503,6 +1515,17 @@ public class Shell {
 			}
 		});
 		return loader;
+	}
+
+	
+	public void printLoc(Logger logger, SourceLocation loc) {
+
+		if( loc != null ){
+			String sLoc = loc.toString();
+			logger.info( sLoc );
+			printErr(sLoc );
+			
+		}
 	}
 
 

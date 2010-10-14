@@ -13,11 +13,9 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.sf.saxon.s9api.XdmAtomicValue;
-import net.sf.saxon.s9api.XdmItem;
-import net.sf.saxon.s9api.XdmValue;
+import org.xmlsh.core.CommandFactory;
 import org.xmlsh.core.CoreException;
-import org.xmlsh.core.FunctionCommand;
+import org.xmlsh.core.IFunction;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Variables;
 import org.xmlsh.core.XValue;
@@ -60,8 +58,15 @@ public class FunctionCallWord extends Word {
 	public XValue expand(Shell shell,boolean bExpandWild , boolean bExpandWords, MutableInteger retValue, SourceLocation loc ) throws IOException, CoreException {
 		
 		
-		FunctionDefinition  def = shell.getFunction(mFunction);
-		if( def == null )
+		// Try builtin functions first
+		IFunction func = CommandFactory.getInstance().getBuiltinFunction( mFunction );
+
+		
+		if( func == null )
+			func = shell.getFunction(mFunction);
+		
+		
+		if( func == null )
 			throw new InvalidArgumentException("Unknown function: " + mFunction);
 		
 
@@ -82,11 +87,9 @@ public class FunctionCallWord extends Word {
 			
 			shell.setArg0(mFunction);
 			shell.setArgs(args);
-			int ret =	shell.exec(def.getBody());
+			int ret =	shell.exec(func.getBody(), loc);
 			return shell.getReturnValue(true);
-			
-			
-		
+
 		} catch (Exception e) {
 			if( e instanceof CoreException )
 				throw (CoreException)e ;
