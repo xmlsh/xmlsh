@@ -15,7 +15,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -39,6 +38,7 @@ import javax.xml.transform.stream.StreamSource;
 
 import net.sf.saxon.FeatureKeys;
 import net.sf.saxon.event.ComplexContentOutputter;
+import net.sf.saxon.event.NamespaceReducer;
 import net.sf.saxon.event.Receiver;
 import net.sf.saxon.event.TreeReceiver;
 import net.sf.saxon.om.Item;
@@ -54,7 +54,6 @@ import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XdmNodeKind;
 import net.sf.saxon.s9api.XdmValue;
 import net.sf.saxon.trans.XPathException;
-import net.sf.saxon.tree.DocumentImpl;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.Namespaces;
 import org.xmlsh.core.XValue;
@@ -618,7 +617,13 @@ public class Util
 	    	
 	    	
 	        Receiver out = destination.getReceiver(Shell.getProcessor().getUnderlyingConfiguration());
-	        //out = new NamespaceReducer(out);
+	        
+	        // DAL: 2010-10-15 - 
+	        // Added in namespace reducer in order to filter out duplicate and redundant namespaces
+	        out = new NamespaceReducer(out);
+	        
+	        
+	        
 	        ComplexContentOutputter out2 = new ComplexContentOutputter();
 	        out2.setPipelineConfiguration(Shell.getProcessor().getUnderlyingConfiguration().makePipelineConfiguration());
 	        out2.setReceiver(out);
