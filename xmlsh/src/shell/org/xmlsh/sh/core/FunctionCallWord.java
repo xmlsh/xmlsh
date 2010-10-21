@@ -59,7 +59,7 @@ public class FunctionCallWord extends Word {
 		
 		
 		// Try builtin functions first
-		IFunction func = CommandFactory.getInstance().getBuiltinFunction( mFunction );
+		IFunction func = CommandFactory.getInstance().getBuiltinFunction(shell, mFunction ,  loc );
 
 		
 		if( func == null )

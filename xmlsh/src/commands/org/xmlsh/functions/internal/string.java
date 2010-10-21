@@ -4,7 +4,7 @@
  *
  */
 
-package org.xmlsh.functions;
+package org.xmlsh.functions.internal;
 
 import java.util.List;
 

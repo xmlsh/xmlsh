@@ -8,6 +8,7 @@ package org.xmlsh.sh.shell;
 
 import java.io.File;
 import java.io.InputStream;
+import java.lang.reflect.Constructor;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,10 +18,10 @@ import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.ICommand;
+import org.xmlsh.core.IFunction;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Path;
 import org.xmlsh.core.ScriptCommand;
-import org.xmlsh.core.ThrowException;
 import org.xmlsh.core.XClassLoader;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
@@ -162,9 +163,18 @@ public class Module {
 		try {
 
 			Class<?> cls = Class.forName(mPackage + "." + name, true, cl);
-			XCommand cmd = (XCommand) cls.newInstance();
-			cmd.setModule(this);
-			return cmd;
+			if( cls != null ){
+				Constructor<?> constructor = cls.getConstructor();
+				if( constructor != null ){
+					Object obj = constructor.newInstance();
+					if( obj instanceof XCommand ){
+						XCommand cmd = (XCommand) obj ;
+						cmd.setModule(this);
+						return cmd;
+					}
+				}
+			}
+		
 
 		} catch (Exception e) {
 			;
@@ -178,6 +188,34 @@ public class Module {
 		if (scriptStream != null)
 			return new ScriptCommand(name, scriptStream, false, this);
 		return null;
+
+	}
+	
+
+	public IFunction getFunctionClass(String name) {
+
+		ClassLoader cl = mClassLoader;
+
+		try {
+
+			Class<?> cls = Class.forName(mPackage + "." + name, true, cl);
+			if( cls != null ){
+				Constructor<?> constructor = cls.getConstructor();
+				if( constructor != null ){
+					Object obj = constructor.newInstance();
+					if( obj instanceof IFunction ){
+						IFunction cmd = (IFunction) obj ;
+						
+						return cmd;
+					}
+				}
+			}
+
+		} catch (Exception e) {
+			;
+
+		}
+		return null ;
 
 	}
 

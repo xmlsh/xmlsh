@@ -59,8 +59,6 @@ public class CommandFactory
 	
 	private HashMap<String,Class<?>>		mBuiltins = new HashMap<String,Class<?>>();
 	
-	private	 HashMap<String,BuiltinFunctionCommand>	mFunctions = new HashMap<String,BuiltinFunctionCommand>();
-	
 	private void addBuiltin( String name , Class<?> cls)
 	{
 		mBuiltins.put( name , cls);
@@ -104,18 +102,10 @@ public class CommandFactory
 		addBuiltin("jset" , jset.class );
 		
 		
-		addFunction( new org.xmlsh.functions.string() );
-		
 
 	}
 	
 	
-	
-	private  void addFunction(BuiltinFunctionCommand cmd  ) {
-		mFunctions.put(cmd.getName(), cmd );
-		
-	}
-
 	public synchronized static CommandFactory getInstance()
 	{
 		if( _instance == null )
@@ -359,8 +349,52 @@ public class CommandFactory
 			return null ;
 	}
 
-	public BuiltinFunctionCommand getBuiltinFunction(String name) {
-		return mFunctions.get(name);
+	public IFunction getBuiltinFunction(Shell shell, String name,SourceLocation loc) {
+		
+		StringPair 	pair = new StringPair(name,':');
+		
+		
+
+		Modules modules = shell.getModules();
+
+		
+		if( pair.hasLeft() ){ // prefix:name , prefix non-empty
+			Module m   = 
+				Util.isBlank(pair.getLeft()) ? 
+						shell.getModule() : 
+				modules.getModule(pair.getLeft());
+			// Allow C:/xxx/yyy to work 
+			// May look like a namespace but isnt
+
+			if( m != null ){
+
+				IFunction cls = m.getFunctionClass( pair.getRight() );
+				if( cls != null ){
+					// cls.setLocation( loc );
+				
+					return cls ;
+				}
+
+			}
+			return null;
+		}
+			
+		/* 
+		 * Try all default modules 
+		 */
+		for( Module m : modules ){
+			if( m.isDefault() ){
+				
+				IFunction cls = m.getFunctionClass( name);
+				if( cls != null ){
+					// cls.setLocation(loc);
+					return cls ;
+				}
+			}
+		}
+		
+			
+		return null  ;	
 	}
 	
 	
