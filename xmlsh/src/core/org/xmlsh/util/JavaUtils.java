@@ -11,6 +11,8 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.List;
 
+import net.sf.saxon.s9api.XdmAtomicValue;
+import net.sf.saxon.s9api.XdmValue;
 import net.sf.saxon.trans.XPathException;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
@@ -156,6 +158,89 @@ public class JavaUtils {
 		}
 		return best;
 
+	}
+
+	public static boolean isIntClass(Class<?> c) {
+		if( c == Integer.class ||
+			c == Long.class ||
+			c == Byte.class ||
+			c == Short.class ||
+			
+			c == Integer.TYPE ||
+			c == Long.TYPE ||
+			c == Byte.TYPE || 
+			c == Short.TYPE )
+				return true ;
+		return false;
+	
+	
+	}
+
+	public static Object convert(Object value, Class<?> c) throws XPathException {
+		if( c.isInstance(value))
+			return c.cast(value);
+		
+		else
+		// Convert to XdmValue
+		if( c.equals(XdmValue.class) )
+			value = new XdmAtomicValue( value.toString() );
+		
+		if( c.isInstance(value))
+			return c.cast(value);
+		
+		if( c.isPrimitive() ){
+			/*
+			 * Try to match non-primative types
+			 */
+			if( c == Integer.TYPE ){
+				if( value.getClass() == Long.class )
+					value = Integer.valueOf(((Long)value).intValue());
+				else
+				if( value.getClass() == Short.class )
+					value = Integer.valueOf( ((Short)value).intValue() );
+				else
+				if( value.getClass() == Byte.class )
+					value = Integer.valueOf( ((Byte)value).intValue() );
+			}
+			else
+			if( c == Long.TYPE ){
+				if( value.getClass() == Integer.class )
+					value = Long.valueOf(((Integer)value).intValue());
+				else
+				if( value.getClass() == Short.class )
+					value = Long.valueOf( ((Short)value).intValue() );
+				else
+				if( value.getClass() == Byte.class )
+					value = Long.valueOf( ((Byte)value).intValue() );
+			}
+			
+			else
+			if( c == Short.TYPE ){
+				if( value.getClass() == Integer.class )
+					value = Short.valueOf((short)((Integer)value).intValue());
+				else
+				if( value.getClass() == Long.class )
+					value = Short.valueOf((short) ((Long)value).intValue() );
+				else
+				if( value.getClass() == Byte.class )
+					value = Short.valueOf((short) ((Byte)value).intValue() );
+			}
+				
+			else
+			if( c == Byte.TYPE ){
+				if( value.getClass() == Integer.class )
+					value = Byte.valueOf((byte)((Integer)value).intValue());
+				else
+				if( value.getClass() == Long.class )
+					value = Byte.valueOf((byte) ((Long)value).intValue() );
+				else
+				if( value.getClass() == Short.class )
+					value = Byte.valueOf((byte) ((Short)value).intValue() );
+			}
+				
+			
+		}
+		return value ;
 	}
 	
 	

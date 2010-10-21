@@ -38,6 +38,7 @@ import net.sf.saxon.value.Value;
 import org.apache.log4j.Logger;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.util.JavaUtils;
 import org.xmlsh.util.S9Util;
 import org.xmlsh.util.Util;
 
@@ -492,58 +493,89 @@ public class XValue {
 	public  int canConvert( Class<?> c) throws XPathException {
 		Object value = mValue ;
 		if( value == null )
-			return 0 ;
+			return -1;
 		
-		if( value.getClass().equals(c))
-			return 0 ;
-		
-		if( c.isAssignableFrom(value.getClass()))
-			return 1 ;
+		Class<? extends Object> vclass = value.getClass();
+
+		int ret = canConvert( vclass , c );
+		if( ret >= 0 )
+			return ret ;
 		
 		// Try converting 
 		if( value instanceof XdmValue ){
 			value = getJavaNative();
-
-			if( value.getClass().equals(c))
-				return 0 ;
-			
-			if( c.isAssignableFrom(value.getClass()))
-				return 1 ;
+			if( value == null )
+				return -1 ;
+			 vclass = value.getClass();
+			ret = canConvert( vclass , c );
+		
 		}
 		
 		
-		
-		
-		return -1 ;
+		return ret ;
 		
 		
 		
 	}
 
+	
+	/*
+	 * Returns 0 if there is an exact match between source and target
+	 * Returns 1 if source can be converted to target
+	 * Returns -1 if source can not be converted to target
+	 */
+
+
+	private static  int canConvert( Class<?> sourceClass ,  Class<?> targetClass) throws XPathException {
+
+		// Equal class
+		if( sourceClass.equals(targetClass))
+			return 0 ;
+	
+		// Directly assignable
+		if( targetClass.isAssignableFrom(sourceClass))
+			return 1 ;
+	
+		
+		// Boxable 
+		// int <-> Integer
+		if( JavaUtils.isIntClass(sourceClass) && JavaUtils.isIntClass(targetClass))
+			return 2 ;
+		
+		
+		
+		
+		return -1;
+		
+		
+	}
 
 	
+	/*
+	 * Returns true if the class is an Integer like class
+	 */
+	
 	public Object convert( Class<?> c) throws XPathException{
-		Object value = mValue ;
+			
+			Object value = mValue ;
 			if( value == null )
 				return null;
 			
+
 			if( c.isInstance(value))
 				return c.cast(value);
 			
-			
-			if( mValue instanceof XdmValue && ! XdmValue.class.equals(c))
+			if( value instanceof XdmValue && ! XdmValue.class.equals(c))
 				value = getJavaNative();
 			
-			else
-			// Convert to XdmValue
-			if( c.equals(XdmValue.class) )
-				value = new XdmAtomicValue( value.toString() );
 			
-			return c.cast(value);
-		
+			
+			return JavaUtils.convert(value, c);
+			
+			
 
 	}
-	
+
 	public Object getJavaNative() throws XPathException
 	{
 		if( mValue == null )
