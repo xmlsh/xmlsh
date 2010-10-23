@@ -14,7 +14,7 @@ import org.xmlsh.sh.shell.Shell;
 
 public abstract class BuiltinFunctionCommand extends Command implements IFunction {
 
-	public abstract	XValue	run( Shell shell , List<XValue> args );
+	public abstract	XValue	run( Shell shell , List<XValue> args ) throws Exception;
 	private	   String mName ;
 	
 	protected BuiltinFunctionCommand( String name )

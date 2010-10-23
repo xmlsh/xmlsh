@@ -54,6 +54,8 @@ import org.xmlsh.util.Util;
 public class CommandFactory 
 {
 	public static final String kCOMMANDS_HELP_XML = "/org/xmlsh/resources/help/commands.xml";
+	public static final String kFUNCTIONS_HELP_XML = "/org/xmlsh/resources/help/functions.xml";
+
 	private static Logger mLogger =  Logger.getLogger( CommandFactory.class);
 	private static CommandFactory _instance = null ;
 	

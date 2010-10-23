@@ -22,6 +22,7 @@ import org.xmlsh.core.IFunction;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Path;
 import org.xmlsh.core.ScriptCommand;
+import org.xmlsh.core.ScriptFunctionCommand;
 import org.xmlsh.core.XClassLoader;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
@@ -215,8 +216,16 @@ public class Module {
 			;
 
 		}
-		return null ;
+		
+		/*
+		 * Try a script
+		 */
+		InputStream scriptStream = getCommandResource(name + ".xsh");
+		if (scriptStream != null)
+			return new ScriptFunctionCommand(name, scriptStream,  this );
+		return null;
 
+		
 	}
 
 	private ClassLoader getClassLoader(List<URL> classpath) {

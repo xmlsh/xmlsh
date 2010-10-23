@@ -67,7 +67,7 @@ public class ScriptCommand implements ICommand {
 		
 		try {
 			if( mSourceMode ){
-				return shell.runScript(mScript,mScriptName);
+				return shell.runScript(mScript,mScriptName,true);
 			} else {
 			
 				Shell sh = shell.clone();
@@ -75,7 +75,7 @@ public class ScriptCommand implements ICommand {
 					if( args != null )
 						sh.setArgs(args);
 					sh.setArg0(mScriptName);
-					int ret = sh.runScript(mScript,mScriptName);
+					int ret = sh.runScript(mScript,mScriptName,true);
 					
 					return ret;
 				} finally {

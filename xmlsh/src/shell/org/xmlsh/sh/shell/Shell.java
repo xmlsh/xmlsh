@@ -195,7 +195,7 @@ public class Shell {
 		// Add xmlsh commands 
 		mModules.declare( new Module( null , "xmlsh" , "org.xmlsh.commands.internal", CommandFactory.kCOMMANDS_HELP_XML));
 		
-		mModules.declare( new Module( null , "xmlsh" , "org.xmlsh.functions.internal", CommandFactory.kCOMMANDS_HELP_XML));
+		mModules.declare( new Module( null , "xmlsh" , "org.xmlsh.functions.internal", CommandFactory.kFUNCTIONS_HELP_XML));
 		
 		
 		setGlobalVars();
@@ -383,7 +383,7 @@ public class Shell {
 	}
 	
 	
-	public		int		runScript( InputStream stream, String source ) throws ParseException, UnsupportedEncodingException, ThrowException
+	public		int		runScript( InputStream stream, String source, boolean convertReturn ) throws ParseException, UnsupportedEncodingException, ThrowException
 	{
 		
 		InputStream save = mCommandInput;
@@ -452,7 +452,7 @@ public class Shell {
 		if( mExitVal != null )
 			ret = mExitVal.intValue();
 		else
-		if( mReturnVal != null ){
+		if( convertReturn &&  mReturnVal != null ){
 			try {
 				ret = mReturnVal.toBoolean() ? 0 : 1;
 			} catch (UnexpectedException e) {

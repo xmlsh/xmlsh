@@ -1,0 +1,1 @@
+return <[ xs:integer( $_1 ) ]>
