@@ -131,7 +131,9 @@ public class XValue {
 		mValue = new XdmAtomicValue( n );
 	}
 
-	
+	public XValue(boolean n) {
+		mValue = new XdmAtomicValue( n );
+	}
 	public XValue(Item item) {
 		this( S9Util.wrapItem(item));
 	}
@@ -299,9 +301,29 @@ public class XValue {
 	
 
 
-    public boolean toBoolean() throws UnexpectedException {
+    public boolean toBoolean() throws UnexpectedException, XPathException {
 		if( mValue == null )
 			return false ;
+		
+		
+		/*
+		 * Check for Java boolean and integer values
+		 */
+		if( mValue == null )
+			return false ;
+		if( ! (mValue instanceof XdmValue ) ){
+			
+			if( canConvert( mValue.getClass() , Boolean.class ) >= 0 )
+				 return ((Boolean)convert(Boolean.class)).booleanValue() ;
+			
+			if( canConvert( mValue.getClass() , Long.class ) >= 0 )
+				return ((Long)convert(Long.class)).longValue() != 0L ;
+			
+
+		}
+		
+		
+		
 		
 		XdmValue value = asXdmValue();
 		if( value == null )

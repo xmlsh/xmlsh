@@ -455,7 +455,7 @@ public class Shell {
 		if( convertReturn &&  mReturnVal != null ){
 			try {
 				ret = mReturnVal.toBoolean() ? 0 : 1;
-			} catch (UnexpectedException e) {
+			} catch (Exception e) {
 				mLogger.error("Exception converting return value to boolean", e );
 				ret = -1;
 			}
@@ -1230,7 +1230,7 @@ public class Shell {
 		// Non atomic
 		try {
 			return value.toBoolean() ? 0 : 1 ;
-		} catch (UnexpectedException e) {
+		} catch (Exception e) {
 			mLogger.error("Exception parsing value as boolean",e);
 			return -1;
 		} 

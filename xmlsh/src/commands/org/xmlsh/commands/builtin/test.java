@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+import net.sf.saxon.trans.XPathException;
 import org.xmlsh.core.BuiltinCommand;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
@@ -149,7 +150,7 @@ public class test extends BuiltinCommand {
 
 
 	
-	private 	boolean		eval( List<XValue> av) throws Error, UnexpectedException, IOException
+	private 	boolean		eval( List<XValue> av) throws Error, UnexpectedException, IOException, XPathException
 	{
 		if( av.size() == 0 )
 			return false;
@@ -268,7 +269,7 @@ public class test extends BuiltinCommand {
  
 	}
 
-	private boolean evalUnary(String op, XValue value) throws Error, UnexpectedException, IOException {
+	private boolean evalUnary(String op, XValue value) throws Error, UnexpectedException, IOException, XPathException {
 		
 		
 		/* try type tests first */

@@ -4,7 +4,7 @@
  *
  */
 
-package org.xmlsh.functions.internal;
+package org.xmlsh.functions.xs;
 
 import java.util.List;
 
@@ -12,16 +12,16 @@ import org.xmlsh.core.BuiltinFunctionCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
 
-public class string extends BuiltinFunctionCommand {
+public class integer extends BuiltinFunctionCommand {
 
-	public string()
+	public integer()
 	{
-		super("string");
+		super("integer");
 	}
 	
 	@Override
 	public XValue run(Shell shell, List<XValue> args) {
-		return new XValue( args.get(0).toString() );
+		return new XValue( args.get(0).toLong() );
 	}
 
 }

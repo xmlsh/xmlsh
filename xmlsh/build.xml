@@ -48,6 +48,7 @@ version.version=${version}
     	        <src path="src/core" />
     	 		<src path="src/shell"/>
         	 	<src path="src/commands"/>
+        	 	<src path="src/3rdparty" />
     	 	<classpath>
     				<fileset dir="lib">
     	                  	<include name="**/*.jar"/>

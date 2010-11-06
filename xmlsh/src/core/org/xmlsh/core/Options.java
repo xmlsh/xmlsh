@@ -382,7 +382,7 @@ public class Options
 		if( value != null )
 			try {
 				return value.getValue().toBoolean();
-			} catch (UnexpectedException e) {
+			} catch (Exception e) {
 				return false ;
 			}
 		return defValue ;
