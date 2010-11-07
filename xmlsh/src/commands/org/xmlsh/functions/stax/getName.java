@@ -24,7 +24,7 @@ public class getName extends BuiltinFunctionCommand {
 	
 	public getName()
 	{
-		super("nextEvent");
+		super("getName");
 	}
 	
 	@Override

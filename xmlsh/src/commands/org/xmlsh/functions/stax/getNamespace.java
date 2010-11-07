@@ -24,7 +24,7 @@ public class getNamespace extends BuiltinFunctionCommand {
 	
 	public getNamespace()
 	{
-		super("nextEvent");
+		super("getNamespace");
 	}
 	
 	@Override

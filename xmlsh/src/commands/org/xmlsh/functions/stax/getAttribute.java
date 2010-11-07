@@ -8,7 +8,7 @@ package org.xmlsh.functions.stax;
 
 import java.util.List;
 
-import javax.xml.stream.XMLStreamConstants;
+import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.XMLEvent;
 
@@ -18,45 +18,33 @@ import org.xmlsh.core.CoreException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
 
-public class getEventType extends BuiltinFunctionCommand {
+public class getAttribute extends BuiltinFunctionCommand {
 
-	static String eventTypes[] = {
-		"UNKNOWN",
-		"START_ELEMENT",
-		"END_ELEMENT",
-		"PROCESSING_INSTRUCTION",
-		"CHARACTERS",
-		"COMMENT",
-		"SPACE",
-		"START_DOCUMENT",
-		"END_DOCUMENT",
-		"ENTITY_REFERENCE",
-		"ATTRIBUTE",
-		"DTD",
-		"CDATA",
-		"NAMESPACE",
-		"NOTATION_DECLARATION",
-		"ENTITY_DECLARATION"
-		
-		
-	};
 	
-	public getEventType()
+	
+	public getAttribute()
 	{
-		super("getEventType");
+		super("getAttribute");
 	}
 	
 	@Override
 	public XValue run(Shell shell, List<XValue> args) throws CoreException, XPathException, XMLStreamException {
-		if( args.size() == 0 )
+		if( args.size()  < 2  )
 			return null;
-		else {
-			int type = ((XMLEvent) args.get(0).getJavaNative()).getEventType();
-			return new XValue( eventTypes[type]);
+		Object arg = args.get(0).asObject();
+		String attr = args.get(1).toString(); 
 		
-			
+		if( arg instanceof XMLEvent )
+		{
+			XMLEvent event = (XMLEvent) arg;
+			if( event.isStartElement())
+				return new XValue( event.asStartElement().getAttributeByName(new QName(attr)) );
+			else
+				return null ;
 		}
-			
+		else
+			return null ;
+		
 	}
 
 }
