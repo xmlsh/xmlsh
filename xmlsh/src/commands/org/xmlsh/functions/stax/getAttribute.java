@@ -38,7 +38,7 @@ public class getAttribute extends BuiltinFunctionCommand {
 		{
 			XMLEvent event = (XMLEvent) arg;
 			if( event.isStartElement())
-				return new XValue( event.asStartElement().getAttributeByName(new QName(attr)) );
+				return new XValue( event.asStartElement().getAttributeByName(new QName(attr)).getValue() );
 			else
 				return null ;
 		}

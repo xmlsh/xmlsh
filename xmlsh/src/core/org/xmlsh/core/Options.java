@@ -134,7 +134,7 @@ public class Options
 	{
 		ArrayList<OptionDef>	defs = new ArrayList<OptionDef>();
 		
-		String[] adefs = sdefs.split(",");
+		String[] adefs = sdefs.trim().split("\\s*,\\s*");
 		for( String sdef : adefs ){
 			boolean bHasArgs = false ;
 			boolean bHasMulti = false ;
