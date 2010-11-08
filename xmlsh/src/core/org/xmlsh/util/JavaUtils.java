@@ -9,8 +9,11 @@ package org.xmlsh.util;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.math.BigDecimal;
+import java.net.URI;
 import java.util.List;
 
+import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.XdmAtomicValue;
 import net.sf.saxon.s9api.XdmValue;
 import net.sf.saxon.trans.XPathException;
@@ -177,64 +180,97 @@ public class JavaUtils {
 	}
 
 	public static Object convert(Object value, Class<?> c) throws XPathException {
+		
 		if( c.isInstance(value))
 			return c.cast(value);
 		
-		else
-		// Convert to XdmValue
-		if( c.equals(XdmValue.class) )
-			value = new XdmAtomicValue( value.toString() );
 		
+		
+		// Convert to XdmValue
+		if( c.equals(XdmValue.class) ){
+			// Try some smart conversions of all types XdmAtomicValue knows
+			if( value instanceof Boolean )
+				return new XdmAtomicValue( ((Boolean)value).booleanValue() );
+			else
+			if( value instanceof Double)
+				return new XdmAtomicValue( ((Double)value).doubleValue() );
+			else
+			if( value instanceof Float)
+				return new XdmAtomicValue( ((Float)value).floatValue() );
+			
+			else
+			if( value instanceof BigDecimal)
+				return new XdmAtomicValue( (BigDecimal) value );
+			else
+			if( value instanceof BigDecimal)
+				return new XdmAtomicValue( (BigDecimal) value );
+			
+			else
+			if( value instanceof URI )
+				return new XdmAtomicValue( (URI) value );
+			else
+			if( value instanceof Long)
+				return new XdmAtomicValue( (Long) value );
+			else
+			if( value instanceof QName)
+				return new XdmAtomicValue( (QName) value );
+			else
+				value = new XdmAtomicValue( value.toString() );
+		}
 		if( c.isInstance(value))
 			return c.cast(value);
 		
 		if( c.isPrimitive() ){
+			
+			Class<?> vclass = value.getClass();
+			
+			
 			/*
 			 * Try to match non-primative types
 			 */
 			if( c == Integer.TYPE ){
-				if( value.getClass() == Long.class )
+				if( vclass == Long.class )
 					value = Integer.valueOf(((Long)value).intValue());
 				else
-				if( value.getClass() == Short.class )
+				if( vclass == Short.class )
 					value = Integer.valueOf( ((Short)value).intValue() );
 				else
-				if( value.getClass() == Byte.class )
+				if( vclass== Byte.class )
 					value = Integer.valueOf( ((Byte)value).intValue() );
 			}
 			else
 			if( c == Long.TYPE ){
-				if( value.getClass() == Integer.class )
+				if(vclass == Integer.class )
 					value = Long.valueOf(((Integer)value).intValue());
 				else
-				if( value.getClass() == Short.class )
+				if( vclass == Short.class )
 					value = Long.valueOf( ((Short)value).intValue() );
 				else
-				if( value.getClass() == Byte.class )
+				if( vclass == Byte.class )
 					value = Long.valueOf( ((Byte)value).intValue() );
 			}
 			
 			else
 			if( c == Short.TYPE ){
-				if( value.getClass() == Integer.class )
+				if( vclass == Integer.class )
 					value = Short.valueOf((short)((Integer)value).intValue());
 				else
-				if( value.getClass() == Long.class )
+				if( vclass == Long.class )
 					value = Short.valueOf((short) ((Long)value).intValue() );
 				else
-				if( value.getClass() == Byte.class )
+				if( vclass== Byte.class )
 					value = Short.valueOf((short) ((Byte)value).intValue() );
 			}
 				
 			else
 			if( c == Byte.TYPE ){
-				if( value.getClass() == Integer.class )
+				if( vclass == Integer.class )
 					value = Byte.valueOf((byte)((Integer)value).intValue());
 				else
-				if( value.getClass() == Long.class )
+				if(vclass == Long.class )
 					value = Byte.valueOf((byte) ((Long)value).intValue() );
 				else
-				if( value.getClass() == Short.class )
+				if( vclass == Short.class )
 					value = Byte.valueOf((byte) ((Short)value).intValue() );
 			}
 				

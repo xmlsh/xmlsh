@@ -411,6 +411,25 @@ public class Options
 			return ov.values.get(0);
 		throw new InvalidArgumentException("Required option: -" + arg );
 	}
+	
+	public List<XValue> getOptValuesRequired(String arg) throws InvalidArgumentException {
+		OptionValue ov = getOpt(arg);
+		if( ov != null )
+			return ov.values;
+		throw new InvalidArgumentException("Required option: -" + arg );
+	}
+	
+	
+	public List<XValue> getOptValues(String arg) throws InvalidArgumentException {
+		OptionValue ov = getOpt(arg);
+		if( ov != null )
+			return ov.values;
+		else
+			return null ;
+	}
+	
+	
+	
 
 	public boolean hasRemainingArgs() {
 		return mRemainingArgs != null && ! mRemainingArgs.isEmpty();

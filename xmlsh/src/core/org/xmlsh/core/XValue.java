@@ -21,6 +21,7 @@ import net.sf.saxon.om.SequenceIterator;
 import net.sf.saxon.om.SingletonIterator;
 import net.sf.saxon.om.ValueRepresentation;
 import net.sf.saxon.s9api.Processor;
+import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.SaxonApiUncheckedException;
 import net.sf.saxon.s9api.Serializer;
@@ -622,6 +623,18 @@ public class XValue {
 			
 		
 		return java;
+	}
+
+	public QName asQName() {
+		if( mValue == null )
+			return null ;
+		
+		if( mValue instanceof QName )
+			return (QName) mValue ;
+		
+		return Util.qnameFromClarkName( mValue.toString() );
+		
+		
 	}
 
 	
