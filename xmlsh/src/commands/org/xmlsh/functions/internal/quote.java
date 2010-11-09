@@ -4,39 +4,53 @@
  *
  */
 
-package org.xmlsh.functions.stax;
+package org.xmlsh.functions.internal;
 
 import java.util.List;
 
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.events.XMLEvent;
-
-import net.sf.saxon.trans.XPathException;
 import org.xmlsh.core.BuiltinFunctionCommand;
-import org.xmlsh.core.CoreException;
+import org.xmlsh.core.Options;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.util.StAXUtils;
+import org.xmlsh.util.JavaUtils;
 
-public class getEventType extends BuiltinFunctionCommand {
+public class quote extends BuiltinFunctionCommand {
 
-	public getEventType()
-	{
-		super("getEventType");
-	}
+	public quote() {
+		super("quote");
 	
-	@Override
-	public XValue run(Shell shell, List<XValue> args) throws CoreException, XPathException, XMLStreamException {
-		if( args.size() == 0 )
-			return null;
-		else {
-			int type = ((XMLEvent) args.get(0).getJavaNative()).getEventType();
-			return new XValue( StAXUtils.getEventTypeName(type));
-		
-			
-		}
-			
 	}
+
+	@Override
+	public XValue run(Shell shell, List<XValue> args) throws Exception {
+		
+		StringBuffer	sb = new StringBuffer("\"");
+		for( XValue arg : args )
+			sb.append( escape( arg.toString() ) );
+		sb.append("\"");
+		return new XValue( sb.toString());
+
+		
+	}
+
+	private String escape(String string) 
+	{
+		if( string.indexOf('"') < 0 && string.indexOf('\\') < 0 ) 
+				return string ;
+		StringBuffer sb = new StringBuffer();
+		char c;
+		for( int i = 0 ; i < string.length() ; i++ ){
+			c = string.charAt(i);
+			if( c == '"' || c == '\\' )
+				sb.append('\\');
+			sb.append(c);
+			
+				
+		}
+		return sb.toString();
+		
+	}
+
 }
 
 

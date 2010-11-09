@@ -8,10 +8,11 @@ package org.xmlsh.functions.stax;
 
 import java.util.List;
 
-import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 
+import net.sf.saxon.s9api.QName;
 import net.sf.saxon.trans.XPathException;
 import org.xmlsh.core.BuiltinFunctionCommand;
 import org.xmlsh.core.CoreException;
@@ -37,9 +38,14 @@ public class getName extends BuiltinFunctionCommand {
 		if( arg instanceof XMLEvent )
 		{
 			XMLEvent event = (XMLEvent) arg;
-			if( event.isStartElement())
-				return new XValue( event.asStartElement().getName().getLocalPart() );
-			else
+			if( event.isStartElement()) {
+				StartElement se = event.asStartElement();
+				return new XValue( 
+						new QName( 
+								se.getName().getPrefix(),
+								se.getName().getNamespaceURI(),
+								se.getName().getLocalPart() ));
+			} else
 				return null ;
 		}
 		else

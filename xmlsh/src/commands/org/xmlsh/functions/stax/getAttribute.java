@@ -10,6 +10,7 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.XMLEvent;
 
 import net.sf.saxon.trans.XPathException;
@@ -32,14 +33,15 @@ public class getAttribute extends BuiltinFunctionCommand {
 		if( args.size()  < 2  )
 			return null;
 		Object arg = args.get(0).asObject();
-		String attr = args.get(1).toString(); 
+		String attrName = args.get(1).toString(); 
 		
 		if( arg instanceof XMLEvent )
 		{
 			XMLEvent event = (XMLEvent) arg;
-			if( event.isStartElement())
-				return new XValue( event.asStartElement().getAttributeByName(new QName(attr)).getValue() );
-			else
+			if( event.isStartElement()) {
+				Attribute attr = event.asStartElement().getAttributeByName(new QName(attrName));
+				return new XValue( attr == null ? null : attr.getValue() );
+			} else
 				return null ;
 		}
 		else

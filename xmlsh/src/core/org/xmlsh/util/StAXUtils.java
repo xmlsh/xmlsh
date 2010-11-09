@@ -126,6 +126,35 @@ public class StAXUtils {
 		copy( node ,(XMLStreamWriter) new XMLEventStreamWriter( writer) );
 		
 	}
+
+	private static String eventTypes[] = {
+		"UNKNOWN",
+		"START_ELEMENT",
+		"END_ELEMENT",
+		"PROCESSING_INSTRUCTION",
+		"CHARACTERS",
+		"COMMENT",
+		"SPACE",
+		"START_DOCUMENT",
+		"END_DOCUMENT",
+		"ENTITY_REFERENCE",
+		"ATTRIBUTE",
+		"DTD",
+		"CDATA",
+		"NAMESPACE",
+		"NOTATION_DECLARATION",
+		"ENTITY_DECLARATION"
+		
+		
+	};
+
+	public static String getEventTypeName(int type) {
+		if( type >= 0 && type <= eventTypes.length )
+			return eventTypes[type];
+		return "";
+		
+		
+	}
 	
 	
 

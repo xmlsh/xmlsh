@@ -10,11 +10,11 @@ import java.util.List;
 
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.events.XMLEvent;
 
 import net.sf.saxon.trans.XPathException;
 import org.xmlsh.core.BuiltinFunctionCommand;
 import org.xmlsh.core.CoreException;
+import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
 
@@ -28,11 +28,30 @@ public class hasNext extends BuiltinFunctionCommand {
 	}
 	
 	@Override
-	public XValue run(Shell shell, List<XValue> args) throws CoreException, XPathException, XMLStreamException {
+	public XValue run(Shell shell, List<XValue> args) throws InvalidArgumentException  {
+		
+		
 		if( args.size() == 0 )
 			return null;
-		else
-			return new XValue( ((XMLEventReader) args.get(0).getJavaNative()).hasNext() );
+		
+		XValue a0 = args.get(0);
+		if(! (a0.asObject() instanceof XMLEventReader ) )
+				throw new InvalidArgumentException("Expected XMLEventReader as args[0]");
+		XMLEventReader reader = (XMLEventReader) a0.asObject();
+		
+		
+		switch( args.size() ){
+		case	1:
+		
+			return new XValue( reader.hasNext() );
+		
+		case	2: 	// type 
+			
+		case	3: 	// type name
+		
+		default:
+			return null;
+		}
 	}
 
 }
