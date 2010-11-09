@@ -124,17 +124,22 @@ class Expander {
 			}
 			else {
 				if( inQuotes ){
-					// Flatten sequences
-					boolean bFirst = true ;
-					for( XdmValue v : value.asXdmValue() ){
-						if( ! bFirst )
-							append(sSEPSPACE);
-						
-						// DAL: Need to escape quotes if converting XML to string inside quotes
-						String sv = v.toString();
-						
-						append(escapeQuotes(sv));
-						bFirst = false ;
+					
+					if( value.isObject() )
+						append(escapeQuotes(value.toString()));
+					else {
+						// Flatten sequences
+						boolean bFirst = true ;
+						for( XdmValue v : value.asXdmValue() ){
+							if( ! bFirst )
+								append(sSEPSPACE);
+							
+							// DAL: Need to escape quotes if converting XML to string inside quotes
+							String sv = v.toString();
+							
+							append(escapeQuotes(sv));
+							bFirst = false ;
+						}
 					}
 					
 				} else {

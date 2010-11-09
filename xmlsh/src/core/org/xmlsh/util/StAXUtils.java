@@ -6,6 +6,8 @@
 
 package org.xmlsh.util;
 
+import java.util.Arrays;
+
 import javanet.staxutils.XMLEventStreamWriter;
 
 import javax.xml.stream.XMLEventWriter;
@@ -154,6 +156,13 @@ public class StAXUtils {
 		return "";
 		
 		
+	}
+
+	public static int getEventTypeByName(String typeName) {
+		for( int i = 1 ; i < eventTypes.length ; i++ )
+			if( eventTypes[i].equals(typeName))
+				return i;
+		return -1;
 	}
 	
 	

@@ -17,6 +17,7 @@ import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.util.StAXUtils;
 
 public class hasNext extends BuiltinFunctionCommand {
 
@@ -28,7 +29,7 @@ public class hasNext extends BuiltinFunctionCommand {
 	}
 	
 	@Override
-	public XValue run(Shell shell, List<XValue> args) throws InvalidArgumentException  {
+	public XValue run(Shell shell, List<XValue> args) throws InvalidArgumentException, XMLStreamException  {
 		
 		
 		if( args.size() == 0 )
@@ -46,6 +47,14 @@ public class hasNext extends BuiltinFunctionCommand {
 			return new XValue( reader.hasNext() );
 		
 		case	2: 	// type 
+			int type = StAXUtils.getEventTypeByName( args.get(1).toString() );
+			if( type < 0)
+				return new XValue(false);
+			
+			while( reader.hasNext() && reader.peek().getEventType() != type )
+				reader.nextEvent();
+			
+			return new XValue( reader.hasNext() );
 			
 		case	3: 	// type name
 		
