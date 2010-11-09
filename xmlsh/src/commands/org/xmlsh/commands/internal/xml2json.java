@@ -57,7 +57,7 @@ public class xml2json extends XCommand
 
 		SerializeOpts serializeOpts = getSerializeOpts(opts);
 		XMLEventReader reader = inp.asXMLEventReader(serializeOpts);
-
+		
 		PrintWriter writer = stdout.asPrintWriter(serializeOpts);
 		
 		
@@ -65,6 +65,13 @@ public class xml2json extends XCommand
 		parse( reader , writer, false  );
 		writer.flush();
 		writer.close();
+
+		
+		// Consume input or we can get a Piped Close
+		while( reader.hasNext() )
+			reader.nextEvent();
+		
+		
 		reader.close();
 		inp.release();
 		
