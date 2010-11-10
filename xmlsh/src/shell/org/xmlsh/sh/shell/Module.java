@@ -11,6 +11,7 @@ import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import net.sf.saxon.s9api.QName;
@@ -34,6 +35,11 @@ public class Module {
 	private String mPackage; // may NOT be null
 	private ClassLoader mClassLoader; // Classloader for this module
 	private	 URL mHelpURL = null ; 
+	
+	private		HashMap<String , Class<?>>		mClassCache = new HashMap<String,Class<?>>();
+	private		HashMap<String , Boolean>	mScriptCache = new HashMap<String,Boolean>();
+	
+	
 
 	/*
 	 * Constructor for internal modules like xlmsh
@@ -139,9 +145,24 @@ public class Module {
 		 * name should NOT begin with a "/"
 		 * 
 		 */
+		
+		
+		/*
+		 * Get cached indication of if there is a resource by this name
+		 */
+		
+		Boolean hasResource = mScriptCache.get(name);
+		if( hasResource != null && ! hasResource.booleanValue() )
+			return null ;
+		
+		
+		
+		
 		String resource = toResourceName(name);
 		InputStream is = mClassLoader.getResourceAsStream(resource);
 
+		mScriptCache.put( name , is != null );
+		
 		return is;
 	}
 
@@ -159,11 +180,14 @@ public class Module {
 
 	public ICommand getCommandClass(String name) {
 
-		ClassLoader cl = mClassLoader;
+		
+		/*
+		 * First try to find a class that matches name
+		 */
 
 		try {
 
-			Class<?> cls = Class.forName(mPackage + "." + name, true, cl);
+			Class<?> cls = findClass(name);
 			if( cls != null ){
 				Constructor<?> constructor = cls.getConstructor();
 				if( constructor != null ){
@@ -183,23 +207,56 @@ public class Module {
 		}
 
 		/*
-		 * Try a script
+		 * Second 
+		 * Try a script stored as a resource
 		 */
-		InputStream scriptStream = getCommandResource(name + ".xsh");
+		
+		
+		// mScriptCache caches a Boolean indicating whether the resource is found or not
+		// No entry in cache means it has not been tested yet
+		
+		// Failures are cached with a null command
+		String scriptName = name + ".xsh";
+		
+		InputStream scriptStream = getCommandResource(scriptName);
 		if (scriptStream != null)
-			return new ScriptCommand(name, scriptStream, false, this);
-		return null;
 
+			return new ScriptCommand(name, scriptStream, false, this);
+
+		return null ;
+		
+	}
+
+	private Class<?> findClass(String name)  {
+		
+		
+		String 	className = mPackage + "." + name;
+		
+		// Find cached class name even if null 
+		// This caches failures as well as successes
+		// Consider changing to a WeakHashMap<> if this uses up too much memory caching failed lookups
+		if( mClassCache.containsKey(className))
+			return mClassCache.get(className);
+		
+		Class<?> cls = null;
+		try {
+			cls = Class.forName(className, true, mClassLoader);
+		} catch (ClassNotFoundException e) {
+			
+		}
+		// Store class in cache even if null
+		mClassCache.put(className , cls );
+		return cls;
+		
+		
 	}
 	
 
 	public IFunction getFunctionClass(String name) {
 
-		ClassLoader cl = mClassLoader;
-
 		try {
 
-			Class<?> cls = Class.forName(mPackage + "." + name, true, cl);
+			Class<?> cls = findClass(name);
 			if( cls != null ){
 				Constructor<?> constructor = cls.getConstructor();
 				if( constructor != null ){
@@ -255,11 +312,10 @@ public class Module {
 	
 	public boolean hasCommand( String name )
 	{
-		ClassLoader cl = mClassLoader;
-
+	
 		try {
 
-			Class<?> cls = Class.forName(mPackage + "." + name, true, cl);
+			Class<?> cls = findClass(name);
 			
 			return cls != null ;
 

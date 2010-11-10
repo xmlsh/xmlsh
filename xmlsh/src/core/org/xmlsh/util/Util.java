@@ -333,17 +333,24 @@ public class Util
 	 * @param string2
 	 * @return
 	 */
-	public static boolean isEqual(String string, String string2)
+	public static boolean isEqual(String string1, String string2)
 	{
+		// DAL: 2010-11-10  Optimize out multiple calls to isEmpty
+		
+		boolean bIsEmpty1 = (string1 == null || string1.length() == 0 );
+		boolean bIsEmpty2 = (string2 == null || string2.length() == 0 );
+		
+		
+		
         // both null/"" true
-        if( isEmpty( string ) && isEmpty( string2 ))
+        if( bIsEmpty1 && bIsEmpty2 )
             return true ;
         
-        // either null/"" false
-        if( isEmpty( string )|| isEmpty(string2))
+        // either null/"" but not both = false 
+        if( bIsEmpty1 || bIsEmpty2 )
             return false ;
         
-        return string.equals(string2);            
+        return string1.equals(string2);            
 
 	}
 
