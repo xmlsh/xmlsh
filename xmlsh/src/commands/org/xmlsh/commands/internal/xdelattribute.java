@@ -25,7 +25,7 @@ import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.SerializeOpts;
-import org.xmlsh.util.Util;
+import org.xmlsh.util.StAXUtils;
 
 public class xdelattribute extends XCommand {
 
@@ -140,8 +140,7 @@ public class xdelattribute extends XCommand {
 	private boolean matches(javax.xml.namespace.QName name, List<QName> names, boolean bExcept) 
 	{
 		for( QName qname : names ){
-			if( Util.isEqual(name.getNamespaceURI(), qname.getNamespaceURI() ) &&
-				Util.isEqual(name.getLocalPart(), qname.getLocalName() ) ) 
+			if( StAXUtils.matchesQName(name, qname) ) 
 					return bExcept ? false : true ;
 			
 		}

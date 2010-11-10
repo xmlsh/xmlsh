@@ -10,10 +10,10 @@ import java.util.List;
 
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.events.XMLEvent;
 
-import net.sf.saxon.trans.XPathException;
+import net.sf.saxon.s9api.QName;
 import org.xmlsh.core.BuiltinFunctionCommand;
-import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
@@ -46,7 +46,8 @@ public class hasNext extends BuiltinFunctionCommand {
 		
 			return new XValue( reader.hasNext() );
 		
-		case	2: 	// type 
+		case	2: 	// type
+		{
 			int type = StAXUtils.getEventTypeByName( args.get(1).toString() );
 			if( type < 0)
 				return new XValue(false);
@@ -55,9 +56,26 @@ public class hasNext extends BuiltinFunctionCommand {
 				reader.nextEvent();
 			
 			return new XValue( reader.hasNext() );
-			
+		}	
 		case	3: 	// type name
-		
+		{	
+			int type = StAXUtils.getEventTypeByName( args.get(1).toString() );
+			if( type < 0)
+				return new XValue(false);
+			QName name = args.get(2).asQName();
+			
+			while( reader.hasNext() ){
+				XMLEvent event = reader.peek();
+				if( event.getEventType() == type ){
+						
+					if( type == XMLEvent.START_ELEMENT && StAXUtils.matchesQName(reader.peek().asStartElement().getName() , name ) )
+						return new XValue( true );
+				}
+				reader.nextEvent();
+			}
+				
+			return new XValue( false  );
+		}
 		default:
 			return null;
 		}

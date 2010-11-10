@@ -19,6 +19,7 @@ import net.sf.saxon.om.AxisIterator;
 import net.sf.saxon.om.Item;
 import net.sf.saxon.om.NamePool;
 import net.sf.saxon.om.NodeInfo;
+import net.sf.saxon.s9api.QName;
 import net.sf.saxon.type.Type;
 
 /*
@@ -163,6 +164,11 @@ public class StAXUtils {
 			if( eventTypes[i].equals(typeName))
 				return i;
 		return -1;
+	}
+
+	public static boolean matchesQName(javax.xml.namespace.QName name, QName qname) {
+		return Util.isEqual(name.getNamespaceURI(), qname.getNamespaceURI() ) &&
+			Util.isEqual(name.getLocalPart(), qname.getLocalName() );
 	}
 	
 	
