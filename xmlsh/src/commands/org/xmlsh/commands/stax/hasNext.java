@@ -4,7 +4,7 @@
  *
  */
 
-package org.xmlsh.functions.stax;
+package org.xmlsh.commands.stax;
 
 import java.util.List;
 

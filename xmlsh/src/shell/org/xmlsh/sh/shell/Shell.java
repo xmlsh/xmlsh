@@ -195,8 +195,6 @@ public class Shell {
 		// Add xmlsh commands 
 		mModules.declare( new Module( null , "xmlsh" , "org.xmlsh.commands.internal", CommandFactory.kCOMMANDS_HELP_XML));
 		
-		mModules.declare( new Module( null , "xmlsh" , "org.xmlsh.functions.internal", CommandFactory.kFUNCTIONS_HELP_XML));
-		
 		
 		setGlobalVars();
 		

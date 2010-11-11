@@ -4,46 +4,38 @@
  *
  */
 
-package org.xmlsh.functions.stax;
+package org.xmlsh.commands.xs;
 
 import java.util.List;
 
-import javax.xml.stream.XMLEventReader;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.events.XMLEvent;
-
-import net.sf.saxon.trans.XPathException;
 import org.xmlsh.core.BuiltinFunctionCommand;
-import org.xmlsh.core.CoreException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.util.Util;
 
-public class getData extends BuiltinFunctionCommand {
+public class QName extends BuiltinFunctionCommand {
 
-	
-	
-	public getData()
+	public QName()
 	{
-		super("getData");
+		super("qname");
 	}
 	
 	@Override
-	public XValue run(Shell shell, List<XValue> args) throws CoreException, XPathException, XMLStreamException {
-		if( args.size() == 0 )
-			return null;
-		Object arg = args.get(0).asObject();
-		
-		
-		if( arg instanceof XMLEvent )
+	public XValue run(Shell shell, List<XValue> args) {
+		switch( args.size())
 		{
-			XMLEvent event = (XMLEvent) arg;
-			if( event.isCharacters())
-				return new XValue( event.asCharacters().getData() );
-			else
-				return null ;
-		}
-		else
+		case	1: // Clarke or local ?
+			return new XValue( args.get(0).asQName() );
+		case	2:
+			return new XValue( new net.sf.saxon.s9api.QName(args.get(0).toString() , args.get(1).toString()) );
+		case	3 :
+			return new XValue( new net.sf.saxon.s9api.QName(args.get(0).toString() , args.get(1).toString() , args.get(2).toString() ) );
+
+
+		default:
 			return null ;
+		
+		}
 		
 	}
 

@@ -4,24 +4,51 @@
  *
  */
 
-package org.xmlsh.functions.xs;
+package org.xmlsh.commands.internal;
 
 import java.util.List;
 
 import org.xmlsh.core.BuiltinFunctionCommand;
+import org.xmlsh.core.Options;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.util.JavaUtils;
 
-public class integer extends BuiltinFunctionCommand {
+public class quote extends BuiltinFunctionCommand {
 
-	public integer()
-	{
-		super("integer");
-	}
+	public quote() {
+		super("quote");
 	
+	}
+
 	@Override
-	public XValue run(Shell shell, List<XValue> args) {
-		return new XValue( args.get(0).toLong() );
+	public XValue run(Shell shell, List<XValue> args) throws Exception {
+		
+		StringBuffer	sb = new StringBuffer("\"");
+		for( XValue arg : args )
+			sb.append( escape( arg.toString() ) );
+		sb.append("\"");
+		return new XValue( sb.toString());
+
+		
+	}
+
+	private String escape(String string) 
+	{
+		if( string.indexOf('"') < 0 && string.indexOf('\\') < 0 ) 
+				return string ;
+		StringBuffer sb = new StringBuffer();
+		char c;
+		for( int i = 0 ; i < string.length() ; i++ ){
+			c = string.charAt(i);
+			if( c == '"' || c == '\\' )
+				sb.append('\\');
+			sb.append(c);
+			
+				
+		}
+		return sb.toString();
+		
 	}
 
 }

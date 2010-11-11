@@ -4,26 +4,39 @@
  *
  */
 
-package org.xmlsh.functions.xs;
+package org.xmlsh.commands.stax;
 
 import java.util.List;
 
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.events.XMLEvent;
+
+import net.sf.saxon.trans.XPathException;
 import org.xmlsh.core.BuiltinFunctionCommand;
+import org.xmlsh.core.CoreException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.util.StAXUtils;
 
-public class string extends BuiltinFunctionCommand {
+public class getEventType extends BuiltinFunctionCommand {
 
-	public string()
+	public getEventType()
 	{
-		super("string");
+		super("getEventType");
 	}
 	
 	@Override
-	public XValue run(Shell shell, List<XValue> args) {
-		return new XValue( args.get(0).toString() );
+	public XValue run(Shell shell, List<XValue> args) throws CoreException, XPathException, XMLStreamException {
+		if( args.size() == 0 )
+			return null;
+		else {
+			int type = ((XMLEvent) args.get(0).getJavaNative()).getEventType();
+			return new XValue( StAXUtils.getEventTypeName(type));
+		
+			
+		}
+			
 	}
-
 }
 
 

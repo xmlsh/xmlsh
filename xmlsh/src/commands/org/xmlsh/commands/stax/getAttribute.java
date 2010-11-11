@@ -4,50 +4,48 @@
  *
  */
 
-package org.xmlsh.functions.internal;
+package org.xmlsh.commands.stax;
 
 import java.util.List;
 
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.events.Attribute;
+import javax.xml.stream.events.XMLEvent;
+
+import net.sf.saxon.trans.XPathException;
 import org.xmlsh.core.BuiltinFunctionCommand;
-import org.xmlsh.core.Options;
+import org.xmlsh.core.CoreException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.util.JavaUtils;
 
-public class quote extends BuiltinFunctionCommand {
+public class getAttribute extends BuiltinFunctionCommand {
 
-	public quote() {
-		super("quote");
 	
-	}
-
-	@Override
-	public XValue run(Shell shell, List<XValue> args) throws Exception {
-		
-		StringBuffer	sb = new StringBuffer("\"");
-		for( XValue arg : args )
-			sb.append( escape( arg.toString() ) );
-		sb.append("\"");
-		return new XValue( sb.toString());
-
-		
-	}
-
-	private String escape(String string) 
+	
+	public getAttribute()
 	{
-		if( string.indexOf('"') < 0 && string.indexOf('\\') < 0 ) 
-				return string ;
-		StringBuffer sb = new StringBuffer();
-		char c;
-		for( int i = 0 ; i < string.length() ; i++ ){
-			c = string.charAt(i);
-			if( c == '"' || c == '\\' )
-				sb.append('\\');
-			sb.append(c);
-			
-				
+		super("getAttribute");
+	}
+	
+	@Override
+	public XValue run(Shell shell, List<XValue> args) throws CoreException, XPathException, XMLStreamException {
+		if( args.size()  < 2  )
+			return null;
+		Object arg = args.get(0).asObject();
+		String attrName = args.get(1).toString(); 
+		
+		if( arg instanceof XMLEvent )
+		{
+			XMLEvent event = (XMLEvent) arg;
+			if( event.isStartElement()) {
+				Attribute attr = event.asStartElement().getAttributeByName(new QName(attrName));
+				return new XValue( attr == null ? null : attr.getValue() );
+			} else
+				return null ;
 		}
-		return sb.toString();
+		else
+			return null ;
 		
 	}
 

@@ -4,39 +4,35 @@
  *
  */
 
-package org.xmlsh.functions.internal;
+package org.xmlsh.commands.stax;
 
 import java.util.List;
 
+import javax.xml.stream.XMLEventReader;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.events.XMLEvent;
+
+import net.sf.saxon.trans.XPathException;
 import org.xmlsh.core.BuiltinFunctionCommand;
-import org.xmlsh.core.Options;
+import org.xmlsh.core.CoreException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.util.JavaUtils;
 
-public class jnew extends BuiltinFunctionCommand {
+public class nextEvent extends BuiltinFunctionCommand {
 
-	public jnew() {
-		super("jnew");
 	
+	
+	public nextEvent()
+	{
+		super("nextEvent");
 	}
-
+	
 	@Override
-	public XValue run(Shell shell, List<XValue> args) throws Exception {
-		
-		
-		
-		String classname = args.remove(0).toString();
-		
-
-		ClassLoader classloader =shell.getClassLoader(null);
-		
-
-		Object obj = null;
-		obj = JavaUtils.newObject(classname, args, classloader);
-		return new XValue(obj);
-
-		
+	public XValue run(Shell shell, List<XValue> args) throws CoreException, XPathException, XMLStreamException {
+		if( args.size() == 0 )
+			return null;
+		else
+			return new XValue( ((XMLEventReader) args.get(0).getJavaNative()).nextEvent() );
 	}
 
 }

@@ -4,13 +4,12 @@
  *
  */
 
-package org.xmlsh.functions.stax;
+package org.xmlsh.commands.stax;
 
 import java.util.List;
 
-import javax.xml.namespace.QName;
+import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.XMLEvent;
 
 import net.sf.saxon.trans.XPathException;
@@ -19,29 +18,28 @@ import org.xmlsh.core.CoreException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
 
-public class getAttribute extends BuiltinFunctionCommand {
+public class getNamespace extends BuiltinFunctionCommand {
 
 	
 	
-	public getAttribute()
+	public getNamespace()
 	{
-		super("getAttribute");
+		super("getNamespace");
 	}
 	
 	@Override
 	public XValue run(Shell shell, List<XValue> args) throws CoreException, XPathException, XMLStreamException {
-		if( args.size()  < 2  )
+		if( args.size() == 0 )
 			return null;
 		Object arg = args.get(0).asObject();
-		String attrName = args.get(1).toString(); 
+		
 		
 		if( arg instanceof XMLEvent )
 		{
 			XMLEvent event = (XMLEvent) arg;
-			if( event.isStartElement()) {
-				Attribute attr = event.asStartElement().getAttributeByName(new QName(attrName));
-				return new XValue( attr == null ? null : attr.getValue() );
-			} else
+			if( event.isStartElement())
+				return new XValue( event.asStartElement().getName().getNamespaceURI() );
+			else
 				return null ;
 		}
 		else
