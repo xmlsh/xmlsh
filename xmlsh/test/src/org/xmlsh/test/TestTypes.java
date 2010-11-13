@@ -87,6 +87,7 @@ public class TestTypes {
 		return mConstructor;
 	}
 
+
 	public static	String staticAsString( )
 	{
 		return "String";

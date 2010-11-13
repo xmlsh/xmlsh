@@ -1,0 +1,9 @@
+TestTypes()
+TestTypes(String)
+TestTypes(Object)
+TestTypes(Integer)
+TestTypes(Integer,String)
+TestTypes(Long,String)
+null
+String
+java.lang.String

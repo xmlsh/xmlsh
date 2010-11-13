@@ -1,4 +1,4 @@
-import package stax=org.xmlsh.functions.stax
+import commands stax=stax
 
 
 r=stax:newEventReader(../../samples/data/books.xml)
@@ -24,5 +24,5 @@ do
 	
 done
 
-echo r.close()
+: r.close()
 
