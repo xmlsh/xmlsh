@@ -23,7 +23,7 @@ import org.xmlsh.core.XValue;
 public class JavaUtils {
 
 
-	public static Object newObject(String classname, List<XValue> args, ClassLoader classloader) throws Exception {
+	public static XValue newObject(String classname, List<XValue> args, ClassLoader classloader) throws Exception {
 		Class<?> cls = Class.forName(classname, true, classloader);
 
 		Constructor<?>[] constructors = cls.getConstructors();
@@ -32,10 +32,10 @@ public class JavaUtils {
 			throw new InvalidArgumentException("No construtor match found for: " + classname  + "(" + getArgClassesString(args) + ")");
 
 		Object obj = c.newInstance(getArgs(c.getParameterTypes(), args));
-		return obj;
+		return new XValue(obj);
 	}
 
-	public static Object callStatic(String classname, String methodName, List<XValue> args,
+	public static XValue callStatic(String classname, String methodName, List<XValue> args,
 			ClassLoader classloader) throws Exception {
 		Class<?> cls = Class.forName(classname, true, classloader);
 		Method[] methods = cls.getMethods();
@@ -45,7 +45,20 @@ public class JavaUtils {
 			throw new InvalidArgumentException("No method match found for: " + classname + "." + methodName + "(" + getArgClassesString(args) + ")");
 
 		Object obj = m.invoke(null, getArgs(m.getParameterTypes(), args));
-		return obj;
+		
+		// Special case for null - use formal return type to cast to right XValue type
+		if( obj == null ){
+			if( String.class.isAssignableFrom(m.getReturnType()) )
+				return new XValue( (String) null );
+			else
+				return new XValue( (Object) null);
+			
+			
+		}
+			
+		
+		
+		return new XValue(obj);
 	}
 
 	public static String getArgClassesString(List<XValue> args) {
@@ -59,7 +72,7 @@ public class JavaUtils {
 		return sb.toString();
 	}
 
-	public static Object callMethod(XValue instance, String methodName, List<XValue> args,
+	public static XValue callMethod(XValue instance, String methodName, List<XValue> args,
 			ClassLoader classloader) throws Exception {
 		Class<?> cls = instance.asObject().getClass();
 		Method[] methods = cls.getMethods();
@@ -69,7 +82,19 @@ public class JavaUtils {
 			throw new InvalidArgumentException("No method match found for: " + cls.getName() + "." + methodName);
 
 		Object obj = m.invoke(instance.asObject(), getArgs(m.getParameterTypes(), args));
-		return obj ;
+		
+		// Special case for null - use formal return type to cast to right XValue type
+		if( obj == null ){
+			if( String.class.isAssignableFrom(m.getReturnType()) )
+				return new XValue( (String) null );
+			else
+				return new XValue( (Object) null);
+			
+			
+		}
+		
+		
+		return new XValue(obj) ;
 	}
 
 	public static Method getBestMatch(String methodName, List<XValue> args, Method[] methods , boolean bStatic ) throws XPathException {

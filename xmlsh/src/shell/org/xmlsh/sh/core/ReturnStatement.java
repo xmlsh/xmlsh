@@ -9,6 +9,7 @@ package org.xmlsh.sh.core;
 import java.io.PrintWriter;
 import java.util.List;
 
+import net.sf.saxon.s9api.XdmEmptySequence;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
 
@@ -40,7 +41,7 @@ public class ReturnStatement extends Command {
 		else	{
 			List<XValue> vret = mArg.expand(shell, false , false , false , getLocation() );
 			if( vret == null || vret.isEmpty() )
-				ret = new XValue();
+				ret = new XValue(XdmEmptySequence.getInstance() );
 			else
 				ret = vret.get(0);
 		}

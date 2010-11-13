@@ -78,10 +78,10 @@ public class MethodCallWord extends Word {
 		try {
 			
 			
-			Object obj = JavaUtils.callMethod(var.getValue(), mMethod, args, shell.getClassLoader(null));
+			XValue obj = JavaUtils.callMethod(var.getValue(), mMethod, args, shell.getClassLoader(null));
 			
 			
-			return new XValue(obj);
+			return obj;
 			
 		
 		} catch (Exception e) {

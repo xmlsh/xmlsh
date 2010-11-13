@@ -282,7 +282,7 @@ public class XVariable {
 		if( xvalue == null )
 			return null;
 		
-		if( xvalue.isObject()){
+		if( xvalue.isObject() || xvalue.isNull() ){
 			if( arg == null )
 				return xvalue ;
 			

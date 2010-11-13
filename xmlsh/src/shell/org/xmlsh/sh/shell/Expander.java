@@ -796,7 +796,7 @@ class Expander {
 			return v;
 		
 		// Java objects are not mucked with
-		if( v.isObject() )
+		if( v.isObject() || v.isNull() )
 			return v;
 
 		String s = v.toString();

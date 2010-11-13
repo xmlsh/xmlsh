@@ -31,7 +31,7 @@ public class jset extends BuiltinCommand {
 
 		ClassLoader classloader = getClassLoader(null);
 
-		Object obj = null;
+		XValue obj = null;
 		if (method == null)
 			obj = JavaUtils.newObject(classname, args, classloader);
 		else if (instance == null)
@@ -39,7 +39,7 @@ public class jset extends BuiltinCommand {
 		else
 			obj = JavaUtils.callMethod(instance, method, args, classloader);
 
-		mShell.getEnv().setVar(varname, new XValue(obj), false);
+		mShell.getEnv().setVar(varname, obj, false);
 
 		return 0;
 	}

@@ -60,12 +60,14 @@ public class xtype extends BuiltinCommand {
 		
 		for( XValue arg : args ){
 			
-			if( arg.isObject() ){
+			if( arg.isObject() || arg.isNull() ){
 				if( ! bFirst )
 					stdout.writeSequenceSeperator(serializeOpts); // Thrashes variable output !
 				bFirst = false ;
-
-				Util.writeXdmValue(new XValue(arg.asObject().getClass().getName()).asXdmValue(), ser);
+				if( arg.isNull() )
+					Util.writeXdmValue(new XValue("null").asXdmValue(), ser);
+				else
+					Util.writeXdmValue(new XValue(arg.asObject().getClass().getName()).asXdmValue(), ser);
 				bAnyOut = true ;
 			}
 				

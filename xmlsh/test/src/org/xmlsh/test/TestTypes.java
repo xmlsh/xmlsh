@@ -92,6 +92,10 @@ public class TestTypes {
 		return "String";
 	}
 	
+	public Object asNull()
+	{
+		return null;
+	}
 	
 }
 

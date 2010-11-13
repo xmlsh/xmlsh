@@ -32,9 +32,9 @@ public class jnew extends BuiltinFunctionCommand {
 		ClassLoader classloader =shell.getClassLoader(null);
 		
 
-		Object obj = null;
+		XValue obj = null;
 		obj = JavaUtils.newObject(classname, args, classloader);
-		return new XValue(obj);
+		return obj;
 
 		
 	}
