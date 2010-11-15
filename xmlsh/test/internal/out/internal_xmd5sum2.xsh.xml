@@ -1,9 +1,8 @@
 <xmd5>
-  <file md5="3579c8da7f1e0ad94656e76c886e5125" length="13"/>
-</xmd5>
-<xmd5>
   <file name="data/books.csv" md5="2e596c096204a9ec936d8a4508dd3a0b" length="303"/>
   <file name="data/books.dtd" md5="dde64d43a419b6ff6b5b4bded90b8549" length="1069"/>
+  <file name="data/books.json" md5="2adcac5f22612c350b953c0bedcac3bd" length="3587"/>
+  <file name="data/books.jxml" md5="a1abf1118352569f7bf74f0b7992a145" length="62974"/>
   <file name="data/books.mysql" md5="63112db8b5da7bec88e2a7de99e84930" length="2275"/>
   <file name="data/books.rng" md5="516064df0fbfa6657d776f0d80fb5a66" length="5624"/>
   <file name="data/books.sch" md5="6bb0b0db21496ae43ea6d27bb658c69f" length="420"/>

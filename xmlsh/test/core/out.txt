@@ -1,0 +1,10 @@
+xs:string
+xs:string
+xs:string
+xs:string
+xs:string
+next
+xs:integer+
+empty 
+hello world
+80
