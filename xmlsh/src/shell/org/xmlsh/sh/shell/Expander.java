@@ -625,8 +625,18 @@ class Expander {
 			
 		}
 		
+		
+		String sbs = sb.toString();
+		
+		
+		/*
+		 * Special case if wildUnQuoted but string == "[" then this is just the test command
+		 */
+		if( wildUnQuoted && sbs.equals("["))
+			wildUnQuoted = false ;
+		
 		if( ! wildUnQuoted ){
-			String sbs = sb.toString();
+
 			// IF we havent unquoted or changed any value then preserve the original type/value
 			if( sbs.equals(vs))
 				r.add( v );
@@ -636,7 +646,7 @@ class Expander {
 		}
 		
 		
-		vs = sb.toString();
+		vs = sbs;
 		
 		
 		
@@ -894,7 +904,18 @@ class Expander {
 			// ${var[3]}
 			if( varname.contains("[")){
 				int as = varname.indexOf('[');
-				ind = varname.substring(as+1 , varname.indexOf(']'));
+				ind = varname.substring(as+1 , varname.indexOf(']')).trim();
+				/*
+				 * Expand index if it starts with "$"
+				 */
+				if( ind.startsWith("$")){
+					XValue indv = extractSingle( ind.substring(1) );
+					if( indv != null )
+						ind = indv.toString();
+					
+				}
+				
+				
 				varname = varname.substring(0,as);
 				
 			}

@@ -14,5 +14,8 @@ do
 	
 done
 
-: r.close()
+
+stax:closeReader( $r )
+
+
 
