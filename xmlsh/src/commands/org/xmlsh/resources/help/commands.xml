@@ -252,18 +252,10 @@
    <command name="xzip" url="http://www.xmlsh.org/CommandXunzip">
    	<synopsis>Extracts or lists contents from a zip file</synopsis>
    </command>
-
-   <command name="string" url="http://www.xmlsh.org/FunctionString">
-		    <synopsis>Convert to string</synopsis>
-		    <usage>
-			      <para>string( args )</para>
-		    </usage>
-	  </command>
-   
-   <command name="quote" url="http://www.xmlsh.org/FunctionQuote">
+   <function name="quote" url="http://www.xmlsh.org/FunctionQuote">
 		    <synopsis>Quote argument</synopsis>
 		    <usage>
 			      <para>quote( args )</para>
 		    </usage>
-	  </command>
+	  </function>
 </commands>

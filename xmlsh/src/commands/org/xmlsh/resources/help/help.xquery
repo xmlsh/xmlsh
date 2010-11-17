@@ -32,6 +32,8 @@ declare function local:print( $es as node()* , $indent as xs:string  ) as xs:str
 	case element(arg)      return  ( $indent , local:pad( string($e) , $longest-option + 1 )  )
 	case element(option)   return  local:print( $e/* , " " )
 	case element(command)  return local:print($e/* , $indent )
+	case element(function)  return local:print($e/* , $indent )
+
 	case text() 		   return fn:normalize-space($e)
    
 	default	return ()

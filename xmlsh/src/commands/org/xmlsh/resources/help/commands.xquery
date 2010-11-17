@@ -18,9 +18,9 @@ declare function local:name( $c )
 
 declare function local:commands($root) as xs:string*
 {
- for $c in $root//command 
+ for $c in $root//(command|function) 
    order by $c/@name
-   return local:name($c/@name)
+   return concat(local:name($c/@name),if( local-name($c) eq "function" ) then "()" else "" )
 };
 
 declare function local:pad( $s as xs:string? , $w as xs:integer )
