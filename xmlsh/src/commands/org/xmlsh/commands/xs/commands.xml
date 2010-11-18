@@ -14,15 +14,6 @@
 		    </usage>
 	  </function>
 	  
-	     <function name="QName" url="http://www.xmlsh.org/FunctionQName">
-		    <synopsis>Convert to QName</synopsis>
-		    <usage>
-			      <para>QName( qname )</para>
-			      <para>QName( uri lexical )</para>
-			      <para>QName( prefix uri lexical)</para>
-
-		    </usage>
-	  </function>
 	  
 	  
 </commands>

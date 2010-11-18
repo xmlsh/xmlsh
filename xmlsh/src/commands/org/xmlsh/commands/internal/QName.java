@@ -4,7 +4,7 @@
  *
  */
 
-package org.xmlsh.commands.xs;
+package org.xmlsh.commands.internal;
 
 import java.util.List;
 
