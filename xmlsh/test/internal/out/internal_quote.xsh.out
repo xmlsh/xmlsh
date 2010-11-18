@@ -1,0 +1,4 @@
+"hi\"there"
+"<foo>bar</foo>"
+"abc123<foo a=\"b\"/>"
+"a\\b"
