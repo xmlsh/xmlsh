@@ -433,7 +433,7 @@ public class put extends MLCommand {
 		}
 		sReq.append("0");
 		
-		printErr( sReq.toString() );
+		// printErr( sReq.toString() );
 /*		
 		AdhocQuery request = session.newAdhocQuery (
 "declare variable $dirs as xs:string+ external;\n" +
