@@ -23,3 +23,12 @@ A=(a b c)
 I=2
 
 echo "A[2] is" ${A[$I]} 
+
+# Test empty variables expand to nothing
+A=
+B=test
+C=
+
+echo $A $B $C
+set $A $B $C
+echo $#
