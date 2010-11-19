@@ -37,7 +37,7 @@
     				    <include name="**/*.jar"/>
     				   </fileset>
     				   <fileset dir="../../trunk/bin">
-    				    <include name="xmlsh-1.0.jar"/>
+    				    <include name="xmlsh-1.1.jar"/>
     				   </fileset>
     	     </classpath>
     	 </javac>
