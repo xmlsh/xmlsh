@@ -1,13 +1,13 @@
 <commands>
  
-   <function name="string" url="http://www.xmlsh.org/FunctionString">
+   <function name="string" url="http://www.xmlsh.org/FunctionXSString">
 		    <synopsis>Convert to string</synopsis>
 		    <usage>
 			      <para>string( args )</para>
 		    </usage>
 	  </function>
    
-   <function name="integer" url="http://www.xmlsh.org/FunctionInteger">
+   <function name="integer" url="http://www.xmlsh.org/FunctionXSInteger">
 		    <synopsis>Convert to integer</synopsis>
 		    <usage>
 			      <para>integer( arg )</para>

@@ -51,7 +51,7 @@
 	</function>
 
 	<function name="nextEvent" url="http://www.xmlsh.org/FunctionStAXnextEvent">
-		<synopsis>Advances the StAX Stream to the next matching event</synopsis>
+		<synopsis>Returns the next event</synopsis>
 		<usage>
 			<para>nextEvent($reader)</para>
 			<para>nextEvent($reader event_type)</para>

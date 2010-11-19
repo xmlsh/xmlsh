@@ -34,8 +34,8 @@ types=jnew(org.xmlsh.test.TestTypes $i HI)
 echo types.getConstructor()
 
 #Null
-null=types.asNull()
-xtype $null
+#null=types.asNull()
+#xtype {$null}
 
 # static method
 jset -v types -c org.xmlsh.test.TestTypes -m staticAsString
