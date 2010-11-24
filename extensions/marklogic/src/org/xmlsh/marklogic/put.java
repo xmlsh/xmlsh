@@ -6,10 +6,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.math.BigInteger;
 import java.rmi.UnexpectedException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -19,17 +21,21 @@ import org.apache.log4j.Logger;
 import org.xmlsh.commands.util.Checksum;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InputPort;
+import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.XValue;
 import org.xmlsh.marklogic.util.MLCommand;
 import org.xmlsh.sh.shell.SerializeOpts;
+import org.xmlsh.util.StringPair;
 import org.xmlsh.util.Util;
 
 import com.marklogic.xcc.AdhocQuery;
 import com.marklogic.xcc.Content;
 import com.marklogic.xcc.ContentCreateOptions;
 import com.marklogic.xcc.ContentFactory;
+import com.marklogic.xcc.ContentPermission;
 import com.marklogic.xcc.ContentSource;
+import com.marklogic.xcc.DocumentRepairLevel;
 import com.marklogic.xcc.ResultSequence;
 import com.marklogic.xcc.Session;
 import com.marklogic.xcc.exceptions.RequestException;
@@ -98,7 +104,7 @@ public class put extends MLCommand {
 	@Override
 	public int run(List<XValue> args) throws Exception {
 		
-		Options opts = new Options("v=verbose,c=connect:,md5,uri:,baseuri:,m=maxfiles:,r=recurse,d=mkdirs,t=text,b=binary,x=xml,maxthreads:");
+		Options opts = new Options("v=verbose,c=connect:,md5,uri:,baseuri:,m=maxfiles:,r=recurse,d=mkdirs,t=text,b=binary,x=xml,maxthreads:,collection:+,forest:+,perm=permission:+,repair:,buffer:,language:,namespace:,quality:,+resolve,locale:");
 		opts.parse(args);
 		args = opts.getRemainingArgs();
 		
@@ -130,6 +136,51 @@ public class put extends MLCommand {
 		else
 		if( bXml )
 			mCreateOptions = ContentCreateOptions.newXmlInstance();
+		else
+			mCreateOptions = new ContentCreateOptions();
+		
+		/*
+		 * Set additional create options
+		 */
+		List<XValue> collections = opts.getOptValues("collection");
+		if( collections != null )
+			mCreateOptions.setCollections( Util.toStringArray(collections));
+		
+		List<XValue> forests = opts.getOptValues("forest");
+		if( forests != null)
+			mCreateOptions.setPlaceKeys( toBigIntArray(forests));
+		
+		List<XValue> perms = opts.getOptValues("permission");
+		if( perms != null )
+			mCreateOptions.setPermissions(toPermissionArray(perms));
+		
+		if( opts.hasOpt("repair"))
+			mCreateOptions.setRepairLevel(parseRepair(opts.getOptStringRequired("repair")));
+		
+		if( opts.hasOpt("buffer"))
+			mCreateOptions.setBufferSize(opts.getOptInt("buffer", ContentCreateOptions.MIN_BUFFER_SIZE));
+		
+		if( opts.hasOpt("language"))
+			mCreateOptions.setLanguage(opts.getOptStringRequired("language"));
+		
+		if( opts.hasOpt("namespace"))
+			mCreateOptions.setNamespace(opts.getOptStringRequired("namespace"));
+		
+		if( opts.hasOpt("resolve"))
+			mCreateOptions.setResolveEntities(opts.getOptFlag("resolve", false));
+		
+		if( opts.hasOpt("quality"))
+			mCreateOptions.setQuality(opts.getOptInt("quality", 0));
+		
+		if( opts.hasOpt("locale"))
+			mCreateOptions.setLocale(new Locale( opts.getOptStringRequired("locale")));
+		
+		
+		
+		
+
+		
+		
 		
 			
 		ContentSource cs = getConnection(opts);
@@ -201,6 +252,65 @@ public class put extends MLCommand {
 		mOutput.close();
 		
 		return 0;
+	}
+
+
+	private DocumentRepairLevel parseRepair(String repair) throws InvalidArgumentException {
+		
+		if( "none".equalsIgnoreCase(repair))
+			return DocumentRepairLevel.NONE ;
+		else
+		if( "full".equalsIgnoreCase(repair))
+			return DocumentRepairLevel.FULL ;
+		else
+		if( "default".equalsIgnoreCase(repair))
+			return DocumentRepairLevel.DEFAULT ;
+		else
+			throw new InvalidArgumentException("Unknown repair level: " + repair + " expected none|full|default" );
+		
+	}
+
+
+	private ContentPermission[] toPermissionArray(List<XValue> values) throws InvalidArgumentException {
+		ContentPermission[] perms = new ContentPermission[values.size()];
+		int i = 0;
+		for( XValue v : values )
+			perms[i++] = parsePermission( v.toString() );
+		return perms;
+	}
+
+
+	private ContentPermission parsePermission(String string) throws InvalidArgumentException {
+		
+		StringPair pair = new StringPair(string,':');
+		if( "r".equals(pair.getLeft()) || "read".equals(pair.getLeft()) )
+			return ContentPermission.newReadPermission(pair.getRight());
+		else
+		if( "x".equals(pair.getLeft()) || "execute".equals(pair.getLeft()) )
+			return ContentPermission.newExecutePermission(pair.getRight());
+		else
+		if( "u".equals(pair.getLeft()) || "update".equals(pair.getLeft()) )
+			return ContentPermission.newUpdatePermission(pair.getRight());
+		else
+		if( "i".equals(pair.getLeft()) || "insert".equals(pair.getLeft()) )
+			return ContentPermission.newInsertPermission(pair.getRight());
+		else
+			throw new InvalidArgumentException("Unable to parse permissin: " + string);
+		
+		
+		
+		
+	}
+
+
+	private BigInteger[] toBigIntArray(List<XValue> values) {
+		BigInteger bi[] = new BigInteger[ values.size() ];
+		int i = 0;
+		for( XValue v : values )
+			bi[i++] = new BigInteger( v.toString() );
+		return bi;
+		
+		
 	}
 
 

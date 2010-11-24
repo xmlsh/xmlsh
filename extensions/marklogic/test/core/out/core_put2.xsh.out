@@ -1,0 +1,11 @@
+foo,bar
+/test1.xml
+/test2.xml
+/test3.xml
+foo
+/test1.xml
+/test2.xml
+bar
+/test1.xml
+/test3.xml
+none
