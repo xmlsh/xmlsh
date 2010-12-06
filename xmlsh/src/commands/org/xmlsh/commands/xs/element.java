@@ -8,23 +8,38 @@ package org.xmlsh.commands.xs;
 
 import java.util.List;
 
+import net.sf.saxon.s9api.QName;
 import org.xmlsh.core.BuiltinFunctionCommand;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.util.S9Util;
 
-public class integer extends BuiltinFunctionCommand {
+public class element extends BuiltinFunctionCommand {
 
-	public integer()
+	
+	
+	public element()
 	{
-		super("integer");
+		super("element");
 	}
 	
 	@Override
-	public XValue run(Shell shell, List<XValue> args) throws InvalidArgumentException {
-		if( args.size() != 1 )
-			throw new InvalidArgumentException("integer(): Expected 1 argument");
-		return new XValue( args.get(0).toLong() );
+	public XValue run(Shell shell, List<XValue> args) throws InvalidArgumentException 
+	{
+		if( args.size() < 1 )
+			throw new InvalidArgumentException("Expected name value");
+		
+
+		QName name = args.remove(0).asQName();
+		
+		return S9Util.createElement(shell, name ,  args);
+		
+	
+		
+		
+		
+		
 	}
 
 }

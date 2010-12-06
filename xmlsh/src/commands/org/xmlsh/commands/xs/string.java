@@ -21,7 +21,16 @@ public class string extends BuiltinFunctionCommand {
 	
 	@Override
 	public XValue run(Shell shell, List<XValue> args) {
-		return new XValue( args.get(0).toString() );
+		StringBuffer sb = new StringBuffer();
+		for( XValue arg : args ){
+			if( sb.length() > 0 )
+				sb.append(" ");
+			sb.append( arg.toString());
+		}
+		
+		
+		
+		return new XValue( sb.toString() );
 	}
 
 }

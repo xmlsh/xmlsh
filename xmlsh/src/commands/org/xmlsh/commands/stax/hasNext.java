@@ -70,6 +70,11 @@ public class hasNext extends BuiltinFunctionCommand {
 						
 					if( type == XMLEvent.START_ELEMENT && StAXUtils.matchesQName(reader.peek().asStartElement().getName() , name ) )
 						return new XValue( true );
+					else
+					if( type == XMLEvent.END_ELEMENT && StAXUtils.matchesQName(reader.peek().asEndElement().getName() , name ) )
+						return new XValue( true );
+					
+					
 				}
 				reader.nextEvent();
 			}

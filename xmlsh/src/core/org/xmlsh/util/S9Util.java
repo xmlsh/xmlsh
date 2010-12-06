@@ -14,13 +14,28 @@
 
 package org.xmlsh.util;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import net.sf.saxon.om.Item;
 import net.sf.saxon.om.NodeInfo;
+import net.sf.saxon.s9api.Processor;
+import net.sf.saxon.s9api.QName;
+import net.sf.saxon.s9api.SaxonApiException;
+import net.sf.saxon.s9api.XQueryCompiler;
+import net.sf.saxon.s9api.XQueryEvaluator;
+import net.sf.saxon.s9api.XQueryExecutable;
+import net.sf.saxon.s9api.XdmAtomicValue;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XdmValue;
+import org.apache.log4j.Logger;
+import org.xmlsh.commands.xs.element;
+import org.xmlsh.core.XValue;
+import org.xmlsh.sh.shell.Shell;
 
 public class S9Util extends XdmNode {
+	private static Logger mLogger = Logger.getLogger(element.class);
 	
 	protected S9Util(NodeInfo node) {
 		super(node);
@@ -37,6 +52,123 @@ public class S9Util extends XdmNode {
 		return XdmNode.wrapItem(item);
 	}
 	
+
+
+
+	public static XValue createAttribute(Shell shell, QName name, String value) {
+		Processor processor = Shell.getProcessor();
+		
+		XQueryCompiler compiler = processor.newXQueryCompiler();
+
+		
+		NameValueMap<String> ns = shell.getEnv().getNamespaces();
+		if( ns != null ){
+			for( String prefix : ns.keySet() ){
+				String uri = ns.get(prefix);
+				compiler.declareNamespace(prefix, uri);
+				
+			}
+			
+		}
+
+
+		
+		XQueryExecutable expr = null;
+
+		StringBuffer sb = new StringBuffer();
+		sb.append("declare variable $name external ; \n");
+		sb.append("declare variable $value external ; \n");
+		sb.append("attribute { $name } { $value } ");
+		
+		try {
+			expr = compiler.compile( sb.toString() );
+			
+			XQueryEvaluator eval = expr.load();
+
+			
+			eval.setExternalVariable( new QName("name" ) , new XdmAtomicValue(name) );
+			eval.setExternalVariable( new QName("value"),  new XdmAtomicValue(value) );
+			
+			
+			XdmValue result =  eval.evaluate();
+			
+			
+			return new XValue(result) ;
+			
+			
+			
+			
+		} catch (SaxonApiException e) {
+			mLogger.warn("Error creating attribute"  , e );
+
+			shell.printErr("Error expanding xml expression");
+		}
+		return null;
+	}
+	
+	
+	public static XValue createElement(Shell shell, QName name , List<XValue> args) {
+		Processor processor = Shell.getProcessor();
+		
+		XQueryCompiler compiler = processor.newXQueryCompiler();
+
+		
+		NameValueMap<String> ns = shell.getEnv().getNamespaces();
+		if( ns != null ){
+			for( String prefix : ns.keySet() ){
+				String uri = ns.get(prefix);
+				compiler.declareNamespace(prefix, uri);
+				
+			}
+			
+		}
+
+
+		
+		XQueryExecutable expr = null;
+
+		StringBuffer sb = new StringBuffer();
+		sb.append("declare variable $name external ; \n");
+		sb.append("declare variable $value external ; \n");
+		sb.append("element { $name } { $value } ");
+		
+		try {
+			expr = compiler.compile( sb.toString() );
+			
+			XQueryEvaluator eval = expr.load();
+
+			
+			List<XdmItem> items = new ArrayList<XdmItem>();
+			for( XValue arg : args ){
+				for (XdmItem item : arg.asXdmValue())
+					items.add(item);
+				
+			}
+			XdmValue value = new XdmValue(items);
+			
+			
+			
+			
+			
+			eval.setExternalVariable( new QName("name" ) , new XdmAtomicValue(name) );
+			eval.setExternalVariable( new QName("value") , value  );
+			
+			
+			XdmValue result =  eval.evaluate();
+			
+			
+			return new XValue(result) ;
+			
+			
+			
+			
+		} catch (SaxonApiException e) {
+			mLogger.warn("Error creating attribute"  , e );
+
+			shell.printErr("Error expanding xml expression");
+		}
+		return null;
+	}
 
 }
 
