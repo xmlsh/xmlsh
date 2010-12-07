@@ -28,6 +28,7 @@ import net.sf.saxon.s9api.XdmNode;
 import org.xml.sax.InputSource;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.util.S9Util;
 import org.xmlsh.util.Util;
 
 /*
@@ -201,7 +202,7 @@ public class VariableInputPort extends InputPort {
 		 * 2010-05-19 - EventReaders assume documents, if not a document then wrap with one
 		 */
 		if( nodeInfo.getNodeKind() != net.sf.saxon.type.Type.DOCUMENT )
-			nodeInfo = Util.wrapDocument( nodeInfo ) ;
+			nodeInfo = S9Util.wrapDocument( nodeInfo ).getUnderlyingNode(); ;
 	
 		
 		

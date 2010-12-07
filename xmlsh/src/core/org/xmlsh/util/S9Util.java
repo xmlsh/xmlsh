@@ -19,6 +19,7 @@ import java.util.List;
 
 import net.sf.saxon.om.Item;
 import net.sf.saxon.om.NodeInfo;
+import net.sf.saxon.s9api.DocumentBuilder;
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.SaxonApiException;
@@ -29,11 +30,18 @@ import net.sf.saxon.s9api.XdmAtomicValue;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XdmValue;
+import net.sf.saxon.type.Type;
 import org.apache.log4j.Logger;
 import org.xmlsh.commands.xs.element;
+import org.xmlsh.core.CoreException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
 
+
+/*
+ * S0Util extends from XdmNode so that we can gain access to protected methods
+ * 
+ */
 public class S9Util extends XdmNode {
 	private static Logger mLogger = Logger.getLogger(element.class);
 	
@@ -168,6 +176,36 @@ public class S9Util extends XdmNode {
 			shell.printErr("Error expanding xml expression");
 		}
 		return null;
+	}
+
+	
+	public static XdmNode wrapDocument(XdmNode node) throws CoreException  {
+		if( node.getUnderlyingNode().getNodeKind() == Type.DOCUMENT  )
+			return node ;
+		return wrapDocument( node.getUnderlyingNode() );
+		
+		
+	}
+		
+	
+	public static XdmNode wrapDocument(NodeInfo nodeInfo) throws CoreException  {
+		
+
+		// If is document already 
+		if( nodeInfo.getNodeKind() == Type.DOCUMENT )
+				return (XdmNode) XdmNode.wrap( nodeInfo );
+		
+			
+		DocumentBuilder builder = Shell.getProcessor().newDocumentBuilder();
+		XdmNode xnode;
+		try {
+			xnode = builder.build(nodeInfo);
+		} catch (SaxonApiException e) {
+			throw new CoreException("Exception creating document from node", e );
+		}
+		return xnode;
+		
+		
 	}
 
 }

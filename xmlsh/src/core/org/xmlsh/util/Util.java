@@ -44,7 +44,6 @@ import net.sf.saxon.event.TreeReceiver;
 import net.sf.saxon.om.Item;
 import net.sf.saxon.om.NodeInfo;
 import net.sf.saxon.s9api.Destination;
-import net.sf.saxon.s9api.DocumentBuilder;
 import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.Serializer;
@@ -54,7 +53,7 @@ import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XdmNodeKind;
 import net.sf.saxon.s9api.XdmValue;
 import net.sf.saxon.trans.XPathException;
-import org.xmlsh.core.CoreException;
+import net.sf.saxon.type.Type;
 import org.xmlsh.core.Namespaces;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.SerializeOpts;
@@ -938,20 +937,6 @@ public class Util
 		return formatXSDateTime( date );
 		
 	
-		
-	}
-
-
-	public static NodeInfo wrapDocument(NodeInfo nodeInfo) throws CoreException  {
-		DocumentBuilder builder = Shell.getProcessor().newDocumentBuilder();
-		XdmNode xnode;
-		try {
-			xnode = builder.build(nodeInfo);
-		} catch (SaxonApiException e) {
-			throw new CoreException("Exception creating document from node", e );
-		}
-		return xnode.getUnderlyingNode();
-		
 		
 	}
 	
