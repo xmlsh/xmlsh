@@ -68,6 +68,8 @@ public class xls extends XCommand {
 		}
 		writer.writeEndElement();
 		writer.writeEndDocument();
+		writer.flush();
+		writer.close();
 		stdout.writeSequenceTerminator(serializeOpts);
 		
 		

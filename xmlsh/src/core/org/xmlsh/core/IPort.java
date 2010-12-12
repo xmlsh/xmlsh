@@ -6,6 +6,7 @@
 
 package org.xmlsh.core;
 
+import net.sf.saxon.s9api.SaxonApiException;
 import org.apache.log4j.LogManager;
 import org.xmlsh.util.IManagedObject;
 
@@ -28,7 +29,7 @@ public abstract class IPort implements IManagedObject {
 
 	}
 
-	public synchronized void flush() throws  CoreException {};
+	public synchronized void flush() throws  CoreException, SaxonApiException {};
 	
 	public final synchronized void release()
 	{		

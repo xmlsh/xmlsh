@@ -36,11 +36,11 @@ import javax.xml.transform.sax.TransformerHandler;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
-import net.sf.saxon.FeatureKeys;
 import net.sf.saxon.event.ComplexContentOutputter;
 import net.sf.saxon.event.NamespaceReducer;
 import net.sf.saxon.event.Receiver;
 import net.sf.saxon.event.TreeReceiver;
+import net.sf.saxon.lib.FeatureKeys;
 import net.sf.saxon.om.Item;
 import net.sf.saxon.om.NodeInfo;
 import net.sf.saxon.s9api.Destination;
@@ -53,7 +53,6 @@ import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XdmNodeKind;
 import net.sf.saxon.s9api.XdmValue;
 import net.sf.saxon.trans.XPathException;
-import net.sf.saxon.type.Type;
 import org.xmlsh.core.Namespaces;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.SerializeOpts;
@@ -719,7 +718,7 @@ public class Util
 	
 	public static Serializer getSerializer(SerializeOpts opts) {
 		
-		Serializer ser = new Serializer();
+		Serializer ser = Shell.getProcessor().newSerializer();
 		ser.setOutputProperty( Serializer.Property.OMIT_XML_DECLARATION, 
 				opts.isOmit_xml_declaration() ? "yes" : "no");
 		ser.setOutputProperty(Serializer.Property.INDENT , opts.isIndent() ? "yes" : "no");

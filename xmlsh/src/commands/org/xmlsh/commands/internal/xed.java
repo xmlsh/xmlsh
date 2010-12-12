@@ -11,7 +11,6 @@ import java.util.List;
 
 import javax.xml.transform.Source;
 
-import net.sf.saxon.om.AxisIterator;
 import net.sf.saxon.om.DocumentInfo;
 import net.sf.saxon.om.Item;
 import net.sf.saxon.om.MutableNodeInfo;
@@ -33,7 +32,8 @@ import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XdmNodeKind;
 import net.sf.saxon.s9api.XdmSequenceIterator;
 import net.sf.saxon.trans.XPathException;
-import net.sf.saxon.tree.DocumentImpl;
+import net.sf.saxon.tree.iter.AxisIterator;
+import net.sf.saxon.tree.linked.DocumentImpl;
 import net.sf.saxon.type.Type;
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.InvalidArgumentException;

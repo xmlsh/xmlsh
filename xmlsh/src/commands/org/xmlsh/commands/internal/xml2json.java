@@ -413,7 +413,7 @@ public class xml2json extends XCommand
 	{
 		
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		Serializer ser = new Serializer();
+		Serializer ser = Shell.getProcessor().newSerializer();
 		ser.setOutputProperty( Serializer.Property.OMIT_XML_DECLARATION, "yes" );
 		ser.setOutputProperty(Serializer.Property.INDENT , "no");
 		

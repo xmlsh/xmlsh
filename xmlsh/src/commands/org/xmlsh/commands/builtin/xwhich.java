@@ -100,6 +100,8 @@ public class xwhich extends BuiltinCommand {
 		if( ! bNoWrite ){
 			out.writeEndElement();
 			out.writeEndDocument();
+			out.flush();
+			out.close();
 			stdout.writeSequenceTerminator(serializeOpts);
 		}
 		

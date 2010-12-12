@@ -18,6 +18,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import net.sf.saxon.s9api.Destination;
+import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.trans.XPathException;
 import org.xml.sax.ContentHandler;
 import org.xmlsh.sh.shell.SerializeOpts;
@@ -35,7 +36,7 @@ public abstract class OutputPort extends IPort
 
 	public	abstract OutputStream asOutputStream(SerializeOpts opts);
 
-	public abstract void flush() throws  CoreException;
+	public abstract void flush() throws  CoreException, SaxonApiException;
 	
 	
 	
@@ -59,17 +60,17 @@ public abstract class OutputPort extends IPort
 
 	
 	// These 2 shouldnt really go on the port 
-	public abstract void writeSequenceSeperator(SerializeOpts serializeOpts) throws IOException, InvalidArgumentException;
+	public abstract void writeSequenceSeperator(SerializeOpts serializeOpts) throws IOException, InvalidArgumentException, SaxonApiException;
 	public abstract void writeSequenceTerminator(SerializeOpts serializeOpts) throws IOException ;
 
 	
 	
-	public abstract XMLStreamWriter asXMLStreamWriter(SerializeOpts opts) throws InvalidArgumentException, XMLStreamException;
-	public abstract XMLEventWriter asXMLEventWriter(SerializeOpts opts) throws InvalidArgumentException, XMLStreamException;
+	public abstract XMLStreamWriter asXMLStreamWriter(SerializeOpts opts) throws InvalidArgumentException, XMLStreamException, SaxonApiException;
+	public abstract XMLEventWriter asXMLEventWriter(SerializeOpts opts) throws InvalidArgumentException, XMLStreamException, SaxonApiException;
 	
 	public abstract	IXdmValueOutputStream	asXdmValueOutputStream(SerializeOpts opts) throws CoreException;
 	
-	public abstract	ContentHandler			asContentHandler( SerializeOpts opts) throws XPathException;
+	public abstract	ContentHandler			asContentHandler( SerializeOpts opts) throws XPathException, SaxonApiException;
 	
 
 }

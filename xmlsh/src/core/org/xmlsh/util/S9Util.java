@@ -52,7 +52,7 @@ public class S9Util extends XdmNode {
 
 	public static XdmValue	wrapNode( NodeInfo node)
 	{
-		return XdmNode.wrap(node);
+		return new XdmNode(node); // New constructor in 9.3
 	}
 	
 	public static XdmItem	wrapItem( Item item)

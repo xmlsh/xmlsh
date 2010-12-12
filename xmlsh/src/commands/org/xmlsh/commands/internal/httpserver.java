@@ -21,6 +21,7 @@ import java.util.Set;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import net.sf.saxon.s9api.SaxonApiException;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.xmlsh.core.CoreException;
@@ -219,7 +220,7 @@ public class httpserver extends XCommand {
 		 * 
 		 */
 		@SuppressWarnings("unchecked")
-		private XVariable parseHeaders(HttpExchange request) throws XMLStreamException, CoreException {
+		private XVariable parseHeaders(HttpExchange request) throws XMLStreamException, CoreException, SaxonApiException {
 
 	        
 			XVariable var = new XVariable("HTTP_HEADERS",null);

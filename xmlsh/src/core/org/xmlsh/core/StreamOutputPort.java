@@ -6,7 +6,6 @@
 
 package org.xmlsh.core;
 
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -16,7 +15,6 @@ import java.io.UnsupportedEncodingException;
 import java.util.Properties;
 
 import javanet.staxutils.IndentingXMLEventWriter;
-import javanet.staxutils.IndentingXMLStreamWriter;
 
 import javax.xml.stream.XMLEventWriter;
 import javax.xml.stream.XMLOutputFactory;
@@ -24,11 +22,12 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import net.sf.saxon.Configuration;
-import net.sf.saxon.event.NamespaceReducer;
 import net.sf.saxon.event.PipelineConfiguration;
 import net.sf.saxon.event.ReceivingContentHandler;
-import net.sf.saxon.event.XMLEmitter;
 import net.sf.saxon.s9api.Destination;
+import net.sf.saxon.s9api.SaxonApiException;
+import net.sf.saxon.s9api.Serializer;
+import net.sf.saxon.serialize.XMLEmitter;
 import net.sf.saxon.trans.XPathException;
 import org.xml.sax.ContentHandler;
 import org.xmlsh.sh.shell.SerializeOpts;
@@ -146,21 +145,14 @@ public class StreamOutputPort extends OutputPort
 
 
 	@Override
-	public XMLStreamWriter asXMLStreamWriter(SerializeOpts opts) throws XMLStreamException {
-		/*
-	    XMLInputFactory inputFactory = XMLInputFactory.newInstance();
-	    XMLEventReader eventReader = inputFactory.createXMLEventReader(in);
-		*/
-		XMLOutputFactory fact = XMLOutputFactory.newInstance();
-	// XMLOutputFactory fact = new OutputFactory();
-		XMLStreamWriter writer =  fact.createXMLStreamWriter(asOutputStream(opts), opts.getEncoding() );
-	
-		if( opts.isIndent() )
-			writer = new IndentingXMLStreamWriter(writer);
-		if( opts.isOmit_xml_declaration() )
-			writer = new OmittingXMLStreamWriter( writer );
+	public XMLStreamWriter asXMLStreamWriter(SerializeOpts opts) throws SaxonApiException {
 		
-		return writer ;
+		// Saxon 9.3 supports serialization as a StreamWriter
+		Serializer ser = Util.getSerializer(opts);
+		ser.setOutputStream(asOutputStream(opts));
+		return ser.getXMLStreamWriter();
+		
+		
 		
 		
 	}

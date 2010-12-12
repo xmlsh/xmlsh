@@ -1,10 +1,10 @@
 <document xmlns:xi="http://www.w3.org/2001/XInclude">
   <p>120 Mz is adequate for an average home user.</p>
   <disclaimer xml:base="xi_sub1.xml">
-  <p>The opinions represented herein represent those of the individual
+      <p>The opinions represented herein represent those of the individual
   and should not be interpreted as official policy endorsed by this
   organization.</p>
-</disclaimer>
+   </disclaimer>
   
   
   <p>Fallback OK</p>
@@ -13,10 +13,10 @@
 <document xmlns:xi="http://www.w3.org/2001/XInclude">
   <p>120 Mz is adequate for an average home user.</p>
   <disclaimer xml:base="xi_sub1.xml">
-  <p>The opinions represented herein represent those of the individual
+      <p>The opinions represented herein represent those of the individual
   and should not be interpreted as official policy endorsed by this
   organization.</p>
-</disclaimer>
+   </disclaimer>
   
   
   <p>Fallback OK</p>

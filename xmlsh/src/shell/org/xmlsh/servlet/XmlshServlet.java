@@ -21,6 +21,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import net.sf.saxon.s9api.SaxonApiException;
 import org.xmlsh.core.CommandFactory;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.ICommand;
@@ -267,7 +268,7 @@ public class XmlshServlet extends HttpServlet {
 	 * 
 	 */
 	@SuppressWarnings("unchecked")
-	private XVariable parseHeaders(HttpServletRequest request) throws XMLStreamException, CoreException {
+	private XVariable parseHeaders(HttpServletRequest request) throws XMLStreamException, CoreException, SaxonApiException {
 
         
 		XVariable var = new XVariable("HTTP_HEADERS",null);
@@ -324,7 +325,7 @@ public class XmlshServlet extends HttpServlet {
 	 * 
 	 */
 	@SuppressWarnings("unchecked")
-	private XVariable parseParams(HttpServletRequest request) throws XMLStreamException, CoreException {
+	private XVariable parseParams(HttpServletRequest request) throws XMLStreamException, CoreException, SaxonApiException {
 
 
         Map params = request.getParameterMap();

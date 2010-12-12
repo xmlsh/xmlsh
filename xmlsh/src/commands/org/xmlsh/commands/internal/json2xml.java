@@ -67,6 +67,8 @@ public class json2xml extends XCommand {
 
 		write(obj, sw);
 		sw.writeEndDocument();
+		sw.flush();
+		sw.close();
 
 		inr.close();
 

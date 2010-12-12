@@ -6,8 +6,6 @@
 
 package org.xmlsh.util;
 
-import java.util.Arrays;
-
 import javanet.staxutils.XMLEventStreamWriter;
 
 import javax.xml.stream.XMLEventWriter;
@@ -15,11 +13,11 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import net.sf.saxon.om.Axis;
-import net.sf.saxon.om.AxisIterator;
 import net.sf.saxon.om.Item;
 import net.sf.saxon.om.NamePool;
 import net.sf.saxon.om.NodeInfo;
 import net.sf.saxon.s9api.QName;
+import net.sf.saxon.tree.iter.AxisIterator;
 import net.sf.saxon.type.Type;
 
 /*

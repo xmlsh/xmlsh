@@ -1,11 +1,11 @@
 <xwhich>
-  <command name="echo" type="builtin"/>
+   <command name="echo" type="builtin"/>
 </xwhich>
 <xwhich>
-  <command name="xfile" type="internal" module="xmlsh"/>
+   <command name="xfile" type="internal" module="xmlsh"/>
 </xwhich>
 <xwhich>
-  <command name="foo" type="function"/>
+   <command name="foo" type="function"/>
 </xwhich>
 xwhich is builtin_xwhich.xsh
 rm is rm

@@ -12,6 +12,7 @@ import java.util.List;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XdmValue;
 import org.xmlsh.core.CoreException;
@@ -129,7 +130,7 @@ public class xgetopts extends XCommand {
 		return bArgIndex ? arg_index : 0 ;
 	}
 
-	private void writeOption(OutputPort stdout, SerializeOpts serializeOpts, IXdmValueOutputStream out, OptionValue value) throws CoreException, IOException {
+	private void writeOption(OutputPort stdout, SerializeOpts serializeOpts, IXdmValueOutputStream out, OptionValue value) throws CoreException, IOException, SaxonApiException {
 		XdmValue argFlag = (new XValue((value.getFlag() ? "-" : "+") + value.getOptionDef().name)).asXdmValue();
 		
 
@@ -152,7 +153,7 @@ public class xgetopts extends XCommand {
 
 	private void writeOptions( Options opts, boolean bNoArgs, boolean bNoValues,
 			Options prog_opts, List<OptionValue> prog_optvalues, List<OptionDef> ignore_list) throws InvalidArgumentException,
-			XMLStreamException, IOException {
+			XMLStreamException, IOException, SaxonApiException {
 		XMLStreamWriter out = getStdout().asXMLStreamWriter(getSerializeOpts(opts));
 
 		out.writeStartDocument();

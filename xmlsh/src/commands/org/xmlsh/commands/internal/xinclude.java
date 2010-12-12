@@ -72,10 +72,11 @@ public class xinclude extends XCommand {
 
 			
 			parser.parse( source ,  handler );
+			w.flush();
+			w.close();
 			
 			
 			
-		
 	
 			stdout.writeSequenceTerminator(sopts);
 		} 

@@ -13,35 +13,26 @@ import java.io.OutputStreamWriter;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
-import java.util.Properties;
 
-import javanet.staxutils.StAXSource;
+import javanet.staxutils.ContentHandlerToXMLStreamWriter;
+import javanet.staxutils.XMLStreamEventWriter;
 
 import javax.xml.stream.XMLEventWriter;
 import javax.xml.stream.XMLStreamWriter;
 
-import net.sf.saxon.Configuration;
-import net.sf.saxon.event.Builder;
-import net.sf.saxon.event.PipelineConfiguration;
-import net.sf.saxon.event.Receiver;
-import net.sf.saxon.event.ReceivingContentHandler;
-import net.sf.saxon.event.XMLEmitter;
+import net.sf.saxon.s9api.BuildingStreamWriter;
 import net.sf.saxon.s9api.Destination;
-import net.sf.saxon.s9api.DocumentBuilder;
+import net.sf.saxon.s9api.Processor;
+import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XdmAtomicValue;
 import net.sf.saxon.s9api.XdmDestination;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XdmValue;
-import net.sf.saxon.tinytree.TinyBuilder;
 import net.sf.saxon.trans.XPathException;
 import org.xml.sax.ContentHandler;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.util.S9Util;
-import org.xmlsh.util.XMLEventWriterBuffer;
-import org.xmlsh.util.XMLEventWriterToContentHandler;
-import org.xmlsh.util.XMLStreamWriterToContentHandler;
 
 /*
  * An OutputPort represents an output sync of data, either Stream (bytes) or XML data
@@ -80,7 +71,7 @@ public class VariableOutputPort extends OutputPort
 	// Transient classes 
 	private		XdmDestination	 		mXdmDestination;
 	private		ByteArrayOutputStream 	mByteArrayOutputStream;
-	private		Builder					mBuilder;
+	private		BuildingStreamWriter	mBuilder;
 	private		SerializeOpts 			mSerializeOpts; 	// for converting from ByteArray to string  
 	
 	
@@ -114,7 +105,7 @@ public class VariableOutputPort extends OutputPort
 		return ( mByteArrayOutputStream = new ByteArrayOutputStream()); 	// BOS is synchroized 
 	}
 
-	public synchronized void flush() throws  CoreException
+	public synchronized void flush() throws  CoreException, SaxonApiException
 	{
 			
 			
@@ -132,8 +123,8 @@ public class VariableOutputPort extends OutputPort
 
 			//else
 			if (mBuilder != null)
-				appendVar((XdmNode) S9Util.wrapNode(mBuilder.getCurrentRoot()));
-			
+				appendVar(mBuilder.getDocumentNode());
+				
 		
 			mXdmDestination = null;
 			mByteArrayOutputStream = null ;
@@ -219,7 +210,7 @@ public class VariableOutputPort extends OutputPort
 
 	}
 	
-	public synchronized void writeSequenceSeperator(SerializeOpts opts) throws IOException, InvalidArgumentException
+	public synchronized void writeSequenceSeperator(SerializeOpts opts) throws IOException, InvalidArgumentException, SaxonApiException
 	{
 			if( mXdmDestination != null ){
 				appendVar(mXdmDestination.getXdmNode() );
@@ -229,8 +220,8 @@ public class VariableOutputPort extends OutputPort
 			}
 			else
 			if( mBuilder != null ){
-				appendVar( (XdmNode) S9Util.wrapNode(mBuilder.getCurrentRoot()));
-				mBuilder.reset();
+				appendVar( mBuilder.getDocumentNode() );
+				// How to reopen ?
 			
 			}
 		
@@ -242,27 +233,14 @@ public class VariableOutputPort extends OutputPort
 
 
 	@Override
-	public synchronized XMLStreamWriter asXMLStreamWriter(SerializeOpts opts) {
+	public synchronized XMLStreamWriter asXMLStreamWriter(SerializeOpts opts) throws SaxonApiException {
 	
-		ReceivingContentHandler  rch = new ReceivingContentHandler();
-		Receiver r = null;
-
-
-        Builder b = new TinyBuilder();
-    
-
-        // Set builder properties
-
-        PipelineConfiguration pipe = Shell.getProcessor().getUnderlyingConfiguration().makePipelineConfiguration();
-		b.setPipelineConfiguration(pipe);
-		r = b;
-		rch.setReceiver(r);
-		rch.setPipelineConfiguration(pipe);
+		Processor proc = Shell.getProcessor();
+		BuildingStreamWriter bw = proc.newDocumentBuilder().newBuildingStreamWriter();
 		
-		XMLStreamWriterToContentHandler sw = new XMLStreamWriterToContentHandler( rch);
 		
-		mBuilder = b;
-		return sw;
+		mBuilder = bw;
+		return bw;
 		
 		
 	}
@@ -272,32 +250,14 @@ public class VariableOutputPort extends OutputPort
 	 * @see org.xmlsh.core.OutputPort#asXMLEventWriter(org.xmlsh.sh.shell.SerializeOpts)
 	 */
 	@Override
-	public XMLEventWriter asXMLEventWriter(SerializeOpts opts) throws InvalidArgumentException {
+	public XMLEventWriter asXMLEventWriter(SerializeOpts opts) throws InvalidArgumentException, SaxonApiException {
 		
-		//mWriterBuffer = new XMLEventWriterBuffer(); 
-		//return mWriterBuffer;
-		// XMLStreamEventWriter sew = new XMLStreamEventWriter( asXMLStreamWriter(opts));
-		// return sew;
+		XMLStreamWriter sw = asXMLStreamWriter(opts);
+		return new XMLStreamEventWriter( sw );
 		
-		ReceivingContentHandler  rch = new ReceivingContentHandler();
-		Receiver r = null;
-
-
-        Builder b = new TinyBuilder();
-    
-
-        // Set builder properties
-
-        PipelineConfiguration pipe = Shell.getProcessor().getUnderlyingConfiguration().makePipelineConfiguration();
-		b.setPipelineConfiguration(pipe);
-		r = b;
-		rch.setReceiver(r);
-		rch.setPipelineConfiguration(pipe);
 		
-		XMLEventWriterToContentHandler w = new XMLEventWriterToContentHandler( rch);
 		
-		mBuilder = b;
-		return w;
+		
 		
 	}
 
@@ -319,27 +279,12 @@ public class VariableOutputPort extends OutputPort
 	 * @see org.xmlsh.core.OutputPort#asContentHandler(org.xmlsh.sh.shell.SerializeOpts)
 	 */
 	@Override
-	public synchronized ContentHandler asContentHandler(SerializeOpts opts) throws XPathException {
+	public synchronized ContentHandler asContentHandler(SerializeOpts opts) throws XPathException, SaxonApiException {
 	
-		ReceivingContentHandler  rch = new ReceivingContentHandler();
-		Receiver r = null;
-
-
-        Builder b = new TinyBuilder();
-    
-
-        // Set builder properties
-
-        PipelineConfiguration pipe = Shell.getProcessor().getUnderlyingConfiguration().makePipelineConfiguration();
-		b.setPipelineConfiguration(pipe);
-		r = b;
-		rch.setReceiver(r);
-		rch.setPipelineConfiguration(pipe);
-		mBuilder = b ;
+		XMLStreamWriter sw = asXMLStreamWriter(opts);
+		return new ContentHandlerToXMLStreamWriter(sw);
 
        
-       
-       return rch;
 		
 	}
 	

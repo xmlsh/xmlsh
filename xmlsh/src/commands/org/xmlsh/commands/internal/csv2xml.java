@@ -120,6 +120,8 @@ public class csv2xml extends XCommand
 		}
 		writer.writeEndElement();
 		writer.writeEndDocument();
+		writer.flush();
+		writer.close();
 		
 		ir.close();
 		stdout.writeSequenceTerminator(serializeOpts);

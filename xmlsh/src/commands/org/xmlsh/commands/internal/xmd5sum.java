@@ -68,6 +68,8 @@ public class xmd5sum extends XCommand
 		}
 		out.writeEndElement();
 		out.writeEndDocument();
+		out.flush();
+		out.close();
 		
 		stdout.writeSequenceTerminator(serializeOpts);
 				

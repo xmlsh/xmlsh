@@ -7,12 +7,11 @@
 package org.xmlsh.sh.shell;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 
 import javax.xml.transform.stream.StreamSource;
 
-import net.sf.saxon.query.ModuleURIResolver;
+import net.sf.saxon.lib.ModuleURIResolver;
 import net.sf.saxon.trans.XPathException;
 
 public class ShellModuleURIResolver implements ModuleURIResolver {

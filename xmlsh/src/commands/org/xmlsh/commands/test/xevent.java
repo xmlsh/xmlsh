@@ -13,6 +13,7 @@ import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import net.sf.saxon.s9api.SaxonApiException;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
@@ -48,7 +49,7 @@ public class xevent extends XCommand {
 
 
 
-	private void send(int n) throws InvalidArgumentException, XMLStreamException, IOException {
+	private void send(int n) throws InvalidArgumentException, XMLStreamException, IOException, SaxonApiException {
 		
 		XMLStreamWriter	writer = getStdout().asXMLStreamWriter(getSerializeOpts());
 		writer.writeStartDocument();
