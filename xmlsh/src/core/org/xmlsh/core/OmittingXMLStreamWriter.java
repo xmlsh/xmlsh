@@ -17,7 +17,24 @@ public class OmittingXMLStreamWriter extends StreamWriterDelegate {
 		super(out);
 		// TODO Auto-generated constructor stub
 	}
+	
+	 public void writeStartDocument(String version) throws XMLStreamException {
+	       
+	    }
+
+	    public void writeStartDocument(String encoding, String version) throws XMLStreamException {
+	       
+	    }
+
+	    public void writeDTD(String dtd) throws XMLStreamException {
+	       
+	    }
+
+	
     public void writeStartDocument() throws XMLStreamException {
+        // 
+    }
+    public void writeEndDocument() throws XMLStreamException {
         // 
     }
 }

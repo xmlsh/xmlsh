@@ -199,7 +199,7 @@ public class XValue {
 		Processor  processor  = Shell.getProcessor();
 	
 		XPathCompiler compiler = processor.newXPathCompiler();
-
+		
 		
 		try {
 			XPathExecutable exec = compiler.compile( expr );

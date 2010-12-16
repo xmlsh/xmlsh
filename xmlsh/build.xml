@@ -4,8 +4,8 @@
 <!-- Global properties 
      Edit these for every release
 -->
-	<property name="release" value="1_1_0"/>
-	<property name="version" value="1.1.0"/>
+	<property name="release" value="1_1_1"/>
+	<property name="version" value="1.1.1"/>
 	<property name="jar" value="xmlsh-1.1.jar"/>
 
 
