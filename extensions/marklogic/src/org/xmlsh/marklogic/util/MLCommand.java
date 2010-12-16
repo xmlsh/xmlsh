@@ -75,7 +75,7 @@ public abstract class MLCommand extends XCommand {
 
 	protected void writeResult(ResultSequence rs, OutputPort out, SerializeOpts sopts,
 			boolean asText) throws FactoryConfigurationError, IOException,
-			InvalidArgumentException, XMLStreamException {
+			InvalidArgumentException, XMLStreamException, SaxonApiException {
 
 		XMLInputFactory factory = XMLInputFactory.newInstance();
 
