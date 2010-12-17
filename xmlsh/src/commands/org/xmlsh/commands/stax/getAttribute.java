@@ -8,16 +8,17 @@ package org.xmlsh.commands.stax;
 
 import java.util.List;
 
-import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.XMLEvent;
 
+import net.sf.saxon.s9api.QName;
 import net.sf.saxon.trans.XPathException;
 import org.xmlsh.core.BuiltinFunctionCommand;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.util.StAXUtils;
 
 public class getAttribute extends BuiltinFunctionCommand {
 
@@ -33,13 +34,13 @@ public class getAttribute extends BuiltinFunctionCommand {
 		if( args.size()  < 2  )
 			return null;
 		Object arg = args.get(0).asObject();
-		String attrName = args.get(1).toString(); 
+		QName attrName = args.get(1).asQName();
 		
 		if( arg instanceof XMLEvent )
 		{
 			XMLEvent event = (XMLEvent) arg;
 			if( event.isStartElement()) {
-				Attribute attr = event.asStartElement().getAttributeByName(new QName(attrName));
+				Attribute attr = event.asStartElement().getAttributeByName(StAXUtils.getQName(attrName));
 				return new XValue( attr == null ? null : attr.getValue() );
 			} else
 				return null ;

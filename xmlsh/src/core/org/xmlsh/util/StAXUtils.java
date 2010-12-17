@@ -168,6 +168,11 @@ public class StAXUtils {
 		return Util.isEqual(name.getNamespaceURI(), qname.getNamespaceURI() ) &&
 			Util.isEqual(name.getLocalPart(), qname.getLocalName() );
 	}
+
+	public static javax.xml.namespace.QName getQName(QName name) {
+		return new javax.xml.namespace.QName(name.getNamespaceURI(), name.getLocalName(), name.getPrefix());
+
+	}
 	
 	
 
