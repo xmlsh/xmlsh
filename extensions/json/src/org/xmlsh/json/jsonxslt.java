@@ -35,6 +35,7 @@ import org.apache.xerces.xs.XSAnnotation;
 import org.apache.xerces.xs.XSAttributeDeclaration;
 import org.apache.xerces.xs.XSAttributeUse;
 import org.apache.xerces.xs.XSComplexTypeDefinition;
+import org.apache.xerces.xs.XSConstants;
 import org.apache.xerces.xs.XSElementDeclaration;
 import org.apache.xerces.xs.XSModel;
 import org.apache.xerces.xs.XSModelGroup;
@@ -61,7 +62,6 @@ import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.Util;
 
-import com.sun.org.apache.xerces.internal.xs.XSConstants;
 
 
 
