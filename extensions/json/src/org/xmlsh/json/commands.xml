@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<commands>
+	<command name="json2xml" url="http://www.xmlsh.org/JSONjson2xml">
+		<synopsis>Converts JSON to XML</synopsis>
+	</command>
+	<command name="xml2json" url="http://www.xmlsh.org/JSOINXml2json">
+		<synopsis>Converts XML to JSON</synopsis>
+	</command>
+</commands>
