@@ -1,0 +1,493 @@
+<OBJECT>
+   <MEMBER name="BOOKLIST">
+      <OBJECT>
+         <MEMBER name="_children">
+            <ARRAY>
+               <OBJECT>
+                  <MEMBER name="BOOKS">
+                     <OBJECT>
+                        <MEMBER name="_children">
+                           <ARRAY>
+                              <OBJECT>
+                                 <MEMBER name="ITEM">
+                                    <OBJECT>
+                                       <MEMBER name="CAT">
+                                          <STRING>MMP</STRING>
+                                       </MEMBER>
+                                       <MEMBER name="TITLE">
+                                          <OBJECT>
+                                             <MEMBER name="_children">
+                                                <ARRAY>
+                                                   <STRING>Pride and Prejudice</STRING>
+                                                </ARRAY>
+                                             </MEMBER>
+                                          </OBJECT>
+                                       </MEMBER>
+                                       <MEMBER name="AUTHOR">
+                                          <STRING>Jane Austen</STRING>
+                                       </MEMBER>
+                                       <MEMBER name="PUBLISHER">
+                                          <STRING>Modern Library</STRING>
+                                       </MEMBER>
+                                       <MEMBER name="PUB-DATE">
+                                          <STRING>2002-12-31</STRING>
+                                       </MEMBER>
+                                       <MEMBER name="LANGUAGE">
+                                          <STRING>English</STRING>
+                                       </MEMBER>
+                                       <MEMBER name="PRICE">
+                                          <OBJECT>
+                                             <MEMBER name="_children">
+                                                <ARRAY>
+                                                   <STRING>4.95</STRING>
+                                                </ARRAY>
+                                             </MEMBER>
+                                          </OBJECT>
+                                       </MEMBER>
+                                       <MEMBER name="QUANTITY">
+                                          <STRING>187</STRING>
+                                       </MEMBER>
+                                       <MEMBER name="ISBN">
+                                          <STRING>0679601686</STRING>
+                                       </MEMBER>
+                                       <MEMBER name="PAGES">
+                                          <STRING>352</STRING>
+                                       </MEMBER>
+                                       <MEMBER name="DIMENSIONS">
+                                          <OBJECT>
+                                             <MEMBER name="UNIT">
+                                                <STRING>in</STRING>
+                                             </MEMBER>
+                                             <MEMBER name="_text">
+                                                <STRING>8.3 5.7 1.1</STRING>
+                                             </MEMBER>
+                                          </OBJECT>
+                                       </MEMBER>
+                                       <MEMBER name="WEIGHT">
+                                          <OBJECT>
+                                             <MEMBER name="UNIT">
+                                                <STRING>oz</STRING>
+                                             </MEMBER>
+                                             <MEMBER name="_text">
+                                                <STRING>6.1</STRING>
+                                             </MEMBER>
+                                          </OBJECT>
+                                       </MEMBER>
+                                    </OBJECT>
+                                 </MEMBER>
+                              </OBJECT>
+                              <OBJECT>
+                                 <MEMBER name="ITEM">
+                                    <OBJECT>
+                                       <MEMBER name="CAT">
+                                          <STRING>P</STRING>
+                                       </MEMBER>
+                                       <MEMBER name="TITLE">
+                                          <OBJECT>
+                                             <MEMBER name="_children">
+                                                <ARRAY>
+                                                   <STRING>Wuthering Heights</STRING>
+                                                </ARRAY>
+                                             </MEMBER>
+                                          </OBJECT>
+                                       </MEMBER>
+                                       <MEMBER name="AUTHOR">
+                                          <STRING>Charlotte Brontë</STRING>
+                                       </MEMBER>
+                                       <MEMBER name="PUBLISHER">
+                                          <STRING>Penguin Classics</STRING>
+                                       </MEMBER>
+                                       <MEMBER name="PUB-DATE">
+                                          <STRING>2002-12-31</STRING>
+                                       </MEMBER>
+                                       <MEMBER name="LANGUAGE">
+                                          <STRING>English</STRING>
+                                       </MEMBER>
+                                       <MEMBER name="PRICE">
+                                          <OBJECT>
+                                             <MEMBER name="_children">
+                                                <ARRAY>
+                                                   <STRING>6.58</STRING>
+                                                </ARRAY>
+                                             </MEMBER>
+                                          </OBJECT>
+                                       </MEMBER>
+                                       <MEMBER name="QUANTITY">
+                                          <STRING>113</STRING>
+                                       </MEMBER>
+                                       <MEMBER name="ISBN">
+                                          <STRING>0141439556</STRING>
+                                       </MEMBER>
+                                       <MEMBER name="PAGES">
+                                          <STRING>430</STRING>
+                                       </MEMBER>
+                                       <MEMBER name="DIMENSIONS">
+                                          <OBJECT>
+                                             <MEMBER name="UNIT">
+                                                <STRING>in</STRING>
+                                             </MEMBER>
+                                             <MEMBER name="_text">
+                                                <STRING>1.0 5.2 7.8</STRING>
+                                             </MEMBER>
+                                          </OBJECT>
+                                       </MEMBER>
+                                       <MEMBER name="WEIGHT">
+                                          <OBJECT>
+                                             <MEMBER name="UNIT">
+                                                <STRING>oz</STRING>
+                                             </MEMBER>
+                                             <MEMBER name="_text">
+                                                <STRING>11.2</STRING>
+                                             </MEMBER>
+                                          </OBJECT>
+                                       </MEMBER>
+                                    </OBJECT>
+                                 </MEMBER>
+                              </OBJECT>
+                              <OBJECT>
+                                 <MEMBER name="ITEM">
+                                    <OBJECT>
+                                       <MEMBER name="CAT">
+                                          <STRING>P</STRING>
+                                       </MEMBER>
+                                       <MEMBER name="TITLE">
+                                          <OBJECT>
+                                             <MEMBER name="_children">
+                                                <ARRAY>
+                                                   <STRING>Tess of the d'Urbervilles</STRING>
+                                                </ARRAY>
+                                             </MEMBER>
+                                          </OBJECT>
+                                       </MEMBER>
+                                       <MEMBER name="AUTHOR">
+                                          <STRING>Thomas Hardy</STRING>
+                                       </MEMBER>
+                                       <MEMBER name="PUBLISHER">
+                                          <STRING>Bantam Classics</STRING>
+                                       </MEMBER>
+                                       <MEMBER name="PUB-DATE">
+                                          <STRING>1984-05-01</STRING>
+                                       </MEMBER>
+                                       <MEMBER name="LANGUAGE">
+                                          <STRING>English</STRING>
+                                       </MEMBER>
+                                       <MEMBER name="PRICE">
+                                          <OBJECT>
+                                             <MEMBER name="_children">
+                                                <ARRAY>
+                                                   <STRING>4.95</STRING>
+                                                </ARRAY>
+                                             </MEMBER>
+                                          </OBJECT>
+                                       </MEMBER>
+                                       <MEMBER name="QUANTITY">
+                                          <STRING>85</STRING>
+                                       </MEMBER>
+                                       <MEMBER name="ISBN">
+                                          <STRING>0553211684</STRING>
+                                       </MEMBER>
+                                       <MEMBER name="PAGES">
+                                          <STRING>480</STRING>
+                                       </MEMBER>
+                                       <MEMBER name="DIMENSIONS">
+                                          <OBJECT>
+                                             <MEMBER name="UNIT">
+                                                <STRING>in</STRING>
+                                             </MEMBER>
+                                             <MEMBER name="_text">
+                                                <STRING>6.8 4.2 0.8</STRING>
+                                             </MEMBER>
+                                          </OBJECT>
+                                       </MEMBER>
+                                       <MEMBER name="WEIGHT">
+                                          <OBJECT>
+                                             <MEMBER name="UNIT">
+                                                <STRING>oz</STRING>
+                                             </MEMBER>
+                                             <MEMBER name="_text">
+                                                <STRING>7.7</STRING>
+                                             </MEMBER>
+                                          </OBJECT>
+                                       </MEMBER>
+                                    </OBJECT>
+                                 </MEMBER>
+                              </OBJECT>
+                              <OBJECT>
+                                 <MEMBER name="ITEM">
+                                    <OBJECT>
+                                       <MEMBER name="CAT">
+                                          <STRING>P</STRING>
+                                       </MEMBER>
+                                       <MEMBER name="TITLE">
+                                          <OBJECT>
+                                             <MEMBER name="_children">
+                                                <ARRAY>
+                                                   <STRING>Jude the Obscure</STRING>
+                                                </ARRAY>
+                                             </MEMBER>
+                                          </OBJECT>
+                                       </MEMBER>
+                                       <MEMBER name="AUTHOR">
+                                          <STRING>Thomas Hardy</STRING>
+                                       </MEMBER>
+                                       <MEMBER name="PUBLISHER">
+                                          <STRING>Penguin Classics</STRING>
+                                       </MEMBER>
+                                       <MEMBER name="PUB-DATE">
+                                          <STRING>1998-09-01</STRING>
+                                       </MEMBER>
+                                       <MEMBER name="LANGUAGE">
+                                          <STRING>English</STRING>
+                                       </MEMBER>
+                                       <MEMBER name="PRICE">
+                                          <OBJECT>
+                                             <MEMBER name="_children">
+                                                <ARRAY>
+                                                   <STRING>4.95</STRING>
+                                                </ARRAY>
+                                             </MEMBER>
+                                          </OBJECT>
+                                       </MEMBER>
+                                       <MEMBER name="QUANTITY">
+                                          <STRING>129</STRING>
+                                       </MEMBER>
+                                       <MEMBER name="ISBN">
+                                          <STRING>0140435387</STRING>
+                                       </MEMBER>
+                                       <MEMBER name="PAGES">
+                                          <STRING>528</STRING>
+                                       </MEMBER>
+                                       <MEMBER name="DIMENSIONS">
+                                          <OBJECT>
+                                             <MEMBER name="UNIT">
+                                                <STRING>in</STRING>
+                                             </MEMBER>
+                                             <MEMBER name="_text">
+                                                <STRING>7.8 5.2 0.9</STRING>
+                                             </MEMBER>
+                                          </OBJECT>
+                                       </MEMBER>
+                                       <MEMBER name="WEIGHT">
+                                          <OBJECT>
+                                             <MEMBER name="UNIT">
+                                                <STRING>oz</STRING>
+                                             </MEMBER>
+                                             <MEMBER name="_text">
+                                                <STRING>10.9</STRING>
+                                             </MEMBER>
+                                          </OBJECT>
+                                       </MEMBER>
+                                    </OBJECT>
+                                 </MEMBER>
+                              </OBJECT>
+                              <OBJECT>
+                                 <MEMBER name="ITEM">
+                                    <OBJECT>
+                                       <MEMBER name="CAT">
+                                          <STRING>H</STRING>
+                                       </MEMBER>
+                                       <MEMBER name="TITLE">
+                                          <OBJECT>
+                                             <MEMBER name="_children">
+                                                <ARRAY>
+                                                   <STRING>The Big Over Easy</STRING>
+                                                </ARRAY>
+                                             </MEMBER>
+                                          </OBJECT>
+                                       </MEMBER>
+                                       <MEMBER name="AUTHOR">
+                                          <STRING>Jasper Fforde</STRING>
+                                       </MEMBER>
+                                       <MEMBER name="PUBLISHER">
+                                          <STRING>Hodder &amp; Stoughton</STRING>
+                                       </MEMBER>
+                                       <MEMBER name="PUB-DATE">
+                                          <STRING>2005-07-11</STRING>
+                                       </MEMBER>
+                                       <MEMBER name="LANGUAGE">
+                                          <STRING>English</STRING>
+                                       </MEMBER>
+                                       <MEMBER name="PRICE">
+                                          <OBJECT>
+                                             <MEMBER name="_children">
+                                                <ARRAY>
+                                                   <STRING>16.47</STRING>
+                                                </ARRAY>
+                                             </MEMBER>
+                                          </OBJECT>
+                                       </MEMBER>
+                                       <MEMBER name="QUANTITY">
+                                          <STRING>129</STRING>
+                                       </MEMBER>
+                                       <MEMBER name="ISBN">
+                                          <STRING>0340835672</STRING>
+                                       </MEMBER>
+                                       <MEMBER name="PAGES">
+                                          <STRING>346</STRING>
+                                       </MEMBER>
+                                       <MEMBER name="DIMENSIONS">
+                                          <OBJECT>
+                                             <MEMBER name="UNIT">
+                                                <STRING>cm</STRING>
+                                             </MEMBER>
+                                             <MEMBER name="_text">
+                                                <STRING>22.5 18.0 3.5</STRING>
+                                             </MEMBER>
+                                          </OBJECT>
+                                       </MEMBER>
+                                       <MEMBER name="WEIGHT">
+                                          <OBJECT>
+                                             <MEMBER name="UNIT">
+                                                <STRING>g</STRING>
+                                             </MEMBER>
+                                             <MEMBER name="_text">
+                                                <STRING>390</STRING>
+                                             </MEMBER>
+                                          </OBJECT>
+                                       </MEMBER>
+                                    </OBJECT>
+                                 </MEMBER>
+                              </OBJECT>
+                              <OBJECT>
+                                 <MEMBER name="ITEM">
+                                    <OBJECT>
+                                       <MEMBER name="CAT">
+                                          <STRING>P</STRING>
+                                       </MEMBER>
+                                       <MEMBER name="TITLE">
+                                          <OBJECT>
+                                             <MEMBER name="_children">
+                                                <ARRAY>
+                                                   <STRING>The Eyre Affair</STRING>
+                                                </ARRAY>
+                                             </MEMBER>
+                                          </OBJECT>
+                                       </MEMBER>
+                                       <MEMBER name="AUTHOR">
+                                          <STRING>Jasper Fforde</STRING>
+                                       </MEMBER>
+                                       <MEMBER name="PUBLISHER">
+                                          <STRING>Penguin</STRING>
+                                       </MEMBER>
+                                       <MEMBER name="PUB-DATE">
+                                          <STRING>2003-02-25</STRING>
+                                       </MEMBER>
+                                       <MEMBER name="LANGUAGE">
+                                          <STRING>English</STRING>
+                                       </MEMBER>
+                                       <MEMBER name="PRICE">
+                                          <OBJECT>
+                                             <MEMBER name="_children">
+                                                <ARRAY>
+                                                   <STRING>16.47</STRING>
+                                                </ARRAY>
+                                             </MEMBER>
+                                          </OBJECT>
+                                       </MEMBER>
+                                       <MEMBER name="QUANTITY">
+                                          <STRING>129</STRING>
+                                       </MEMBER>
+                                       <MEMBER name="ISBN">
+                                          <STRING>0142001805</STRING>
+                                       </MEMBER>
+                                       <MEMBER name="PAGES">
+                                          <STRING>384</STRING>
+                                       </MEMBER>
+                                       <MEMBER name="DIMENSIONS">
+                                          <OBJECT>
+                                             <MEMBER name="UNIT">
+                                                <STRING>in</STRING>
+                                             </MEMBER>
+                                             <MEMBER name="_text">
+                                                <STRING>7.8 5.0 0.9</STRING>
+                                             </MEMBER>
+                                          </OBJECT>
+                                       </MEMBER>
+                                       <MEMBER name="WEIGHT">
+                                          <OBJECT>
+                                             <MEMBER name="UNIT">
+                                                <STRING>oz</STRING>
+                                             </MEMBER>
+                                             <MEMBER name="_text">
+                                                <STRING>9.0</STRING>
+                                             </MEMBER>
+                                          </OBJECT>
+                                       </MEMBER>
+                                    </OBJECT>
+                                 </MEMBER>
+                              </OBJECT>
+                           </ARRAY>
+                        </MEMBER>
+                     </OBJECT>
+                  </MEMBER>
+               </OBJECT>
+               <OBJECT>
+                  <MEMBER name="CATEGORIES">
+                     <OBJECT>
+                        <MEMBER name="_attributes">
+                           <OBJECT>
+                              <MEMBER name="DESC">
+                                 <STRING>Miscellaneous categories</STRING>
+                              </MEMBER>
+                           </OBJECT>
+                        </MEMBER>
+                        <MEMBER name="_children">
+                           <ARRAY>
+                              <OBJECT>
+                                 <MEMBER name="CATEGORY">
+                                    <OBJECT>
+                                       <MEMBER name="_attributes">
+                                          <OBJECT>
+                                             <MEMBER name="CODE">
+                                                <STRING>P</STRING>
+                                             </MEMBER>
+                                             <MEMBER name="DESC">
+                                                <STRING>Paperback</STRING>
+                                             </MEMBER>
+                                          </OBJECT>
+                                       </MEMBER>
+                                    </OBJECT>
+                                 </MEMBER>
+                              </OBJECT>
+                              <OBJECT>
+                                 <MEMBER name="CATEGORY">
+                                    <OBJECT>
+                                       <MEMBER name="_attributes">
+                                          <OBJECT>
+                                             <MEMBER name="CODE">
+                                                <STRING>MMP</STRING>
+                                             </MEMBER>
+                                             <MEMBER name="DESC">
+                                                <STRING>Mass-market Paperback</STRING>
+                                             </MEMBER>
+                                          </OBJECT>
+                                       </MEMBER>
+                                    </OBJECT>
+                                 </MEMBER>
+                              </OBJECT>
+                              <OBJECT>
+                                 <MEMBER name="CATEGORY">
+                                    <OBJECT>
+                                       <MEMBER name="_attributes">
+                                          <OBJECT>
+                                             <MEMBER name="CODE">
+                                                <STRING>H</STRING>
+                                             </MEMBER>
+                                             <MEMBER name="DESC">
+                                                <STRING>Hard Cover</STRING>
+                                             </MEMBER>
+                                          </OBJECT>
+                                       </MEMBER>
+                                    </OBJECT>
+                                 </MEMBER>
+                              </OBJECT>
+                           </ARRAY>
+                        </MEMBER>
+                     </OBJECT>
+                  </MEMBER>
+               </OBJECT>
+            </ARRAY>
+         </MEMBER>
+      </OBJECT>
+   </MEMBER>
+</OBJECT>
