@@ -1,16 +1,32 @@
 module namespace common="http://www.xmlsh.org/jsonxml/common" ;
 
-declare function common:match_elem( $name as element() , $path as element(path)? ) as xs:string
+declare function common:priority( $e as element( ) )
 {
-	fn:string-join( ($path/name/@localname , $name/@localname) , "/" )
+	count( $e/ancestor::*/name )
+};
+
+
+(: Get the seklf or nearest parents <json> element :)
+
+declare function common:getjson( $e as element() ) as element(json)
+{
+	($e/ancestor-or-self::*/json)[last()]
+
+};
+
+
+declare function common:match_elem( $name as element() , $e as element() ) as xs:string
+{
+
+	fn:string-join( ($e/ancestor::*/name/@localname , $name/@localname) , "/" )
 
 
 };
 
 
-declare function common:match_attr( $name as element() , $path as element(path)? ) as xs:string
+declare function common:match_attr( $name as element() , $e as element() ) as xs:string
 {
-	fn:string-join( ($path/name/@localname , concat("@" , $name/@localname)) , "/" )
+	fn:string-join( ($e/ancestor::*/name/@localname , concat("@" , $name/@localname)) , "/" )
 
 
 };
@@ -24,16 +40,17 @@ declare function common:member_name( $name  ) as xs:string  ?
 		()
 };
 
-declare function common:match_json( $name as element()? , $path as element(path)? ) as xs:string
+declare function common:match_json( $name as element()? , $e as element() ) as xs:string
 {
 	fn:string-join( (
-		for $n in $path/name
+		for $n in $e/ancestor::*/name
 		return common:member_name( $n  ) , 
 		common:member_name( $name ) ) , 
 		"/OBJECT/" )
 
 
 };
+
 (: Stylus Studio meta-information - (c) 2004-2009. Progress Software Corporation. All rights reserved.
 
 <metaInformation>

@@ -5,11 +5,11 @@ import module namespace common = "http://www.xmlsh.org/jsonxml/common"  at "comm
 declare function full:tojson_element( $e as element(element) )
 {
 
-let $match := common:match_elem( $e/name , $e/path )
+let $match := common:match_elem( $e/name , $e )
 return (
 
 comment { "full:tojson_element" } ,
-<xsl:template match="{$match}" priority="{$e/@priority}">
+<xsl:template match="{$match}" priority="{common:priority($e)}">
 		<MEMBER name="{{local-name(.)}}">
 			<OBJECT>
 			<xsl:if test="@*">
@@ -33,14 +33,14 @@ comment { "full:tojson_element" } ,
 		</MEMBER>
 	</xsl:template>
 	,
-	<xsl:template match="{$match}" mode="wrap" priority="{$e/@priority}">
+	<xsl:template match="{$match}" mode="wrap" priority="{common:priority($e)}">
 		<OBJECT>
 			<xsl:apply-templates select="."/>	
 		
 		</OBJECT>
 	</xsl:template> 
 	,
-	<xsl:template match="{$match}/text()" mode="#all" priority="{$e/@priority}">
+	<xsl:template match="{$match}/text()" mode="#all" priority="{common:priority($e)}">
 		<STRING>
 			<xsl:value-of select="."/>
 		</STRING>
@@ -52,11 +52,11 @@ comment { "full:tojson_element" } ,
 declare function full:tojson_attribute( $e as element(attribute) )
 {	
 
-let $match := common:match_attr( $e/name , $e/path )
+let $match := common:match_attr( $e/name , $e )
 return 
 (
 comment { "full:tojson_attribute" } ,
-	<xsl:template match="{$match}" mode="#all"  priority="{$e/@priority}">
+	<xsl:template match="{$match}" mode="#all"  priority="{common:priority($e)}">
 		<MEMBER name="{{local-name(.)}}">
 			<STRING>
 				<xsl:value-of select="."/>
@@ -97,7 +97,7 @@ declare function full:tojson( $node as element() ) as node()*
 declare function full:toxml_element( $e as element(element) )
 {
 	comment { concat(" full:toxml_element for " , $e/name/@localname ) },
-	let $match := common:match_json( $e/name , $e/path )
+	let $match := common:match_json( $e/name , $e )
 	return 
 	(
 	<xsl:template match="{$match}/OBJECT" >
@@ -128,7 +128,7 @@ declare function full:toxml_attribute( $e as element(attribute) )
 
   comment { concat(" full:toxml_attribute for " , $e/name/@localname ) },
   	text{ "&#x0a;" } , 
-	let $match := common:match_json( () , $e/path )
+	let $match := common:match_json( () , $e )
 	return 
 		<xsl:template match="{$match}/OBJECT/MEMBER[@name eq '_attributes']/OBJECT/{common:member_name($e/name)}">
 			<xsl:attribute name="{{@name}}">

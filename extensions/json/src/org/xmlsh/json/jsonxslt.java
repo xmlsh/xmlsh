@@ -60,6 +60,7 @@ import org.xmlsh.core.XVariable;
 import org.xmlsh.schema.Schema;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.util.StAXUtils;
 import org.xmlsh.util.Util;
 
 
@@ -153,62 +154,44 @@ public class jsonxslt  extends XCommand{
 		}
 		
 		
-		@SuppressWarnings("serial")
-		private	 class	Path extends ArrayList<QName>
-		{
-
-			public Path(QName name) {
-				super();
-				add(name);
-			}
-
-			public Path(Path parent, QName name) {
-				super( parent.size() + 1 );
-				this.addAll(parent);
-				this.add(name);
-				
-				
-			}
-
-			void serialize( XMLStreamWriter sw ) throws XMLStreamException{
-				sw.writeStartElement("path");
-				for( QName q : this ){
-					writeQName( sw , "name" , q );
-							
-				}
-				sw.writeEndElement();
-			}
-			
-		};
-		
-		
 		
 		private class	AnnotationEntry 
 		{
 			QName 				mName;			// required
-			int					mPriority;		// required 
-			Path				mPath;			// may be null
 			String 				mContext;		// required
 			QName				mType; 			// may be null 
 			AnnotationList		mAnnotation;	// required
-			public AnnotationEntry(String context , int priority , QName name , Path path , QName type, AnnotationList annotation) {
+			AnnotationEntryList	mChildren;		// optional
+			public AnnotationEntry(String context , QName name , AnnotationEntry parent , QName type, AnnotationList annotation) {
 				super();
 				mName = name ;
-				mPriority = priority ;
-				mPath = path ;
+				
 				
 				mContext = context ;
 				mType = type;
 				mAnnotation = annotation;
+				
+				if( parent != null )
+					parent.add( this );
 			}
 			
+		
 			
+			
+			private void add(AnnotationEntry annotationEntry) {
+				if( mChildren == null )
+					mChildren = new AnnotationEntryList();
+				mChildren.add(annotationEntry);
+				
+			}
+
+
+
+
 			public void  serialize( XMLStreamWriter sw ) throws SaxonApiException, XMLStreamException, XPathException, CoreException
 			{
 
 				sw.writeStartElement(mContext);
-				sw.writeAttribute("priority" , String.valueOf(mPriority));
-				
 				
 				if( ! mContext.equals(CONTEXT_DOCUMENT)){
 					writeQName( sw , "name" , mName );
@@ -216,29 +199,22 @@ public class jsonxslt  extends XCommand{
 					if( mType != null )
 						writeQName( sw , "type" , mType );
 				}
-				if( mPath != null ){
-					mPath.serialize(sw);
-					
-				}
+				
 
 				if( mAnnotation != null ){
 						
 					for( Annotation a : mAnnotation ){
 
+						StAXUtils.copy( a.asNodeInfo() , sw );
 
-						XVariable var = new XVariable("anon", a );
-						VariableInputPort inp = new VariableInputPort( var );
-						XMLStreamReader sr = inp.asXMLStreamReader(mSerializeOpts);
-						
-						XMLStreamUtils.copy( sr , new OmittingXMLStreamWriter(sw) );
-						sr.close();
-						
-						
-						
 						
 					}
 				}
 				
+				if( mChildren != null ){
+					mChildren.serialize(sw);
+					
+				}
 				sw.writeEndElement();
 				
 			}
@@ -252,18 +228,15 @@ public class jsonxslt  extends XCommand{
 
 			
 			
-			public void serialize(XMLStreamWriter sw) throws SaxonApiException, XMLStreamException, XPathException, CoreException
+			public void serialize(XMLStreamWriter sw ) throws SaxonApiException, XMLStreamException, XPathException, CoreException
 			{
-				sw.writeStartDocument();
-				sw.writeStartElement("annotations");
-				sw.flush();
 				
 				for( AnnotationEntry a : this ){
 					a.serialize(sw);
 					
 				}
-				sw.writeEndElement();
-				sw.writeEndDocument();
+				
+				
 			}
 			
 			
@@ -271,8 +244,6 @@ public class jsonxslt  extends XCommand{
 		
 		
 		
-		private AnnotationEntryList mAnnotations = new AnnotationEntryList();
-
 	
 		private SerializeOpts 	  mSerializeOpts ;
 	
@@ -294,11 +265,11 @@ public class jsonxslt  extends XCommand{
 			
 			
 			
-			AnnotationList globalAnnos = getGlobalAnnotations(schema);
+			AnnotationEntry docEntry = getGlobalAnnotations(schema);
 			
 			
-			getTypeAnnotations(schema,globalAnnos );
-			getElementAnnotations(schema, null,globalAnnos);
+			getTypeAnnotations(schema , docEntry);
+			getElementAnnotations(schema, docEntry );
 						
 			File	outputDir = shell.getExplicitFile(output,false);
 			if( ! outputDir.exists() )
@@ -313,7 +284,7 @@ public class jsonxslt  extends XCommand{
 			if( opts.hasOpt("v")){
 				XMLStreamWriter sw = this.getStdout().asXMLStreamWriter(mSerializeOpts);
 				
-				serialize( sw );
+				serialize( sw , docEntry);
 				sw.close();
 				
 				
@@ -326,12 +297,12 @@ public class jsonxslt  extends XCommand{
 		
 				BuildingStreamWriter b = Shell.getProcessor().newDocumentBuilder().newBuildingStreamWriter();
 				
-				serialize( b );
+				serialize( b , docEntry );
 				
 
 				
-				createXSLT( b.getDocumentNode() , "create_xml.xquery" , xml_port );
-				createXSLT( b.getDocumentNode() , "create_json.xquery" , json_port );
+				createXSLT( b.getDocumentNode() , "patterns/create_xml.xquery" , xml_port );
+				createXSLT( b.getDocumentNode() , "patterns/create_json.xquery" , json_port );
 				
 				
 				
@@ -349,10 +320,10 @@ public class jsonxslt  extends XCommand{
 			
 	}
 
-		private void serialize(XMLStreamWriter sw) throws XMLStreamException, SaxonApiException, XPathException, CoreException 
+		private void serialize(XMLStreamWriter sw, AnnotationEntry entry ) throws XMLStreamException, SaxonApiException, XPathException, CoreException 
 		{
 		
-			mAnnotations.serialize(sw);
+			entry.serialize(sw);
 			
 			
 			
@@ -379,21 +350,21 @@ public class jsonxslt  extends XCommand{
 			
 		}
 
-		private AnnotationList getGlobalAnnotations(Schema schema) throws XPathException,
+		private AnnotationEntry getGlobalAnnotations(Schema schema) throws XPathException,
 				XMLStreamException, CoreException, SaxonApiException {
 			XSObjectList annotations = schema.getAnnotations();
 			
 			AnnotationList value = getAnnotations( annotations );
-			if( value != null )
-				mAnnotations.add( new AnnotationEntry( CONTEXT_DOCUMENT , 0 , null , null , null , value));
-			return value ;
+			AnnotationEntry self = new AnnotationEntry( CONTEXT_DOCUMENT ,  null , null , null , value);
+
+			return self ;
 		
 		}
 
 
 
-		private void getAnnotations(XSParticle particle, Path parent,  AnnotationList parentAnnos ) throws XPathException,
-				XMLStreamException, CoreException, SaxonApiException {
+		private void getAnnotations(XSParticle particle, AnnotationEntry parent ) throws XPathException,	
+			XMLStreamException, CoreException, SaxonApiException {
 			if( particle == null )
 				return ;
 			XSTerm term = particle.getTerm() ;
@@ -404,7 +375,7 @@ public class jsonxslt  extends XCommand{
 			case	XSConstants.ELEMENT_DECLARATION :
 			{
 				XSElementDeclaration child = (XSElementDeclaration) term ;
-				getAnnotations( child , parent , parentAnnos );
+				getAnnotations( child , parent  );
 				break ;
 			}
 			
@@ -416,7 +387,7 @@ public class jsonxslt  extends XCommand{
 				XSObjectList particles = group.getParticles();
 				for( int i = 0 ; i < particles.getLength() ; i++ ){
 					XSParticle p = (XSParticle) particles.item(i);
-					getAnnotations( p , parent, parentAnnos  );
+					getAnnotations( p , parent   );
 				}
 				
 				break;
@@ -431,25 +402,9 @@ public class jsonxslt  extends XCommand{
 			}
 		
 		}
-
-		private Path getPath(Path parent, XSAttributeDeclaration child) {
-			if( parent == null )
-				return new Path( getName(child) ) ;
-			else
-				return new Path(parent , getName( child ) ) ;
-		}
-		
-		
-		private Path getPath(Path parent, QName child ) {
-			if( parent == null )
-				return new Path( child );
-			else
-				return new Path( parent , child ) ;
-		}
-		
 		
 
-		private void getElementAnnotations(Schema schema, Path parent, AnnotationList globalAnnos ) throws XPathException,
+		private void getElementAnnotations(Schema schema, AnnotationEntry parent ) throws XPathException,
 				XMLStreamException, CoreException, SaxonApiException {
 			
 			
@@ -459,34 +414,31 @@ public class jsonxslt  extends XCommand{
 				XSObject obj = types.item(i);
 
 				if( obj instanceof XSElementDeclaration )
-					getAnnotations((XSElementDeclaration)obj, parent, globalAnnos );
+					getAnnotations((XSElementDeclaration)obj, parent );
 				
 			}
 		}
 
-		private void getAnnotations(XSElementDeclaration obj, Path parent ,  AnnotationList parentAnnos ) throws XPathException,
+		private void getAnnotations(XSElementDeclaration obj, AnnotationEntry parent ) throws XPathException,
 				XMLStreamException, CoreException, SaxonApiException {
 			{
 
 				
-				 AnnotationList annotation = getAnnotations( obj.getAnnotations() );
+				AnnotationList annotation = getAnnotations( obj.getAnnotations() );
 				
-				if( annotation == null )
-					annotation = parentAnnos;
 				
 				XSTypeDefinition type = obj.getTypeDefinition();	
 				
 				QName elemName = getName(obj);
 				
 				
-				if( annotation != null )
-					mAnnotations.add( new AnnotationEntry( CONTEXT_ELEMENT , parent == null ? 0 : parent.size() ,  elemName,  parent ,  getName(type) , annotation  ));
+				AnnotationEntry self = new AnnotationEntry( CONTEXT_ELEMENT ,   elemName,  parent ,  getName(type) , annotation  );
+
 				
 				
 				if( type instanceof XSComplexTypeDefinition ){
 					XSComplexTypeDefinition ctype = (XSComplexTypeDefinition) type ;
 					XSObjectList attrList = ctype.getAttributeUses();
-					Path elemPath = getPath(parent,elemName);
 
 					/*
 					 * Recurse to attributes
@@ -509,24 +461,12 @@ public class jsonxslt  extends XCommand{
 							 AnnotationList declAnno = getAnnotations( attrDecl.getAnnotations() );
 							
 							 /*
-							  * Merge the annotations from use and type definitions 	
+							  * If there is both a use and a declaraition annotation then use the use 
+							  *  	
 							  */
 							 
-							 AnnotationList 	a = null ;
-							 if( useAnno != null || declAnno != null ){
-								 a = new AnnotationList();
-								 
-								 if( useAnno != null )
-									 a.addAll(useAnno);
-								 if( declAnno != null )
-									 a.addAll( declAnno );
-									 
-							 } else
-								 a = annotation ;
-									
-							 
-
-							mAnnotations.add( new AnnotationEntry( CONTEXT_ATTRIBUTE  , elemPath == null ? 0 : elemPath.size() , getName(attrDecl) , elemPath , getName(type) , a   ));
+							 		 
+							new AnnotationEntry( CONTEXT_ATTRIBUTE  , getName(attrDecl) , self , getName(type) , useAnno != null ? useAnno : declAnno  );
 					
 							
 						}
@@ -539,14 +479,14 @@ public class jsonxslt  extends XCommand{
 					 */
 					
 					XSParticle particle = ctype.getParticle();
-					getAnnotations( particle , elemPath , annotation );
+					getAnnotations( particle , self );
 				}
 			}
 		}
 
 
 
-		private void getTypeAnnotations(Schema schema,  AnnotationList parentAnnos) throws XPathException,	XMLStreamException, CoreException, SaxonApiException {
+		private void getTypeAnnotations(Schema schema,  AnnotationEntry parent) throws XPathException,	XMLStreamException, CoreException, SaxonApiException {
 			XSModel model = schema.getModel();
 			XSNamedMap types  = model.getComponents(XSConstants.TYPE_DEFINITION);
 			for( int i = 0 ; i < types.getLength() ; i++ ){
@@ -562,14 +502,11 @@ public class jsonxslt  extends XCommand{
 						if( type instanceof XSSimpleTypeDefinition )
 							value = getAnnotations( ((XSSimpleTypeDefinition)type).getAnnotations() );
 
-					if( value == null )
-						value = parentAnnos ;
 					
 					XSTypeDefinition baseType = type.getBaseType();
 					
 					
-					if( value != null )
-						mAnnotations.add( new AnnotationEntry(  CONTEXT_TYPE, 0 , getName(type) , null , getName(baseType) , value  ));
+					new AnnotationEntry(  CONTEXT_TYPE,  getName(type) , parent , getName(baseType) , value  );
 
 
 				}

@@ -1,23 +1,35 @@
 declare namespace json='http://www.xmlsh.org/jsonxml';
 declare namespace xsl='http://www.w3.org/1999/XSL/Transform';
+import module namespace common = "http://www.xmlsh.org/jsonxml/common"  at "common.xquery" ;
+import module namespace full = "http://www.xmlsh.org/jsonxml/full" at "full.xquery" ;
+import module namespace simple = "http://www.xmlsh.org/jsonxml/simple" at "simple.xquery" ;
 
-import module namespace full = "http://www.xmlsh.org/jsonxml/full" at "patterns/full.xquery" ;
-import module namespace simple = "http://www.xmlsh.org/jsonxml/simple" at "patterns/simple.xquery" ;
 
+
+
+(: Dynamic dispatch  :)
+declare function local:toxml( $es as element()* )
+{
+	for $e in $es
+	return (
+		let $json := common:getjson( $e ) , 
+			 $pattern := $json/@pattern/string()
+		return
+		if( $pattern eq 'full' ) then
+			full:toxml( $e )
+		else
+		if( $pattern eq 'simple' ) then
+			simple:toxml( $e )
+		else 
+			(),
+		local:toxml( $e/element | $e/attribute )
+	)
+};
 
 document {
 	<xsl:stylesheet version="2.0" >
 	{
-		for $e in /annotations/*
-		let $pattern := $e/json[1]/@pattern/string()
-		return
-		if( $pattern eq 'full' ) then
-			full:tojson( $e )
-		else
-		if( $pattern eq 'simple' ) then
-			simple:tojson( $e )
-		else 
-			()
+		local:toxml( /document )
 
 	}
 	</xsl:stylesheet>
@@ -29,9 +41,9 @@ document {
 
 <metaInformation>
 	<scenarios>
-		<scenario default="yes" name="tojson" userelativepaths="yes" externalpreview="no" useresolver="yes" url="..\..\..\..\..\..\..\jsonxml\playing\all.xml" outputurl="" processortype="saxon" tcpport="0" profilemode="0" profiledepth="" profilelength=""
-		          urlprofilexml="" commandline="" additionalpath="" additionalclasspath="" postprocessortype="none" postprocesscommandline="" postprocessadditionalpath="" postprocessgeneratedext="" host="" port="538976288" user="" password=""
-		          validateoutput="no" validator="internal" customvalidator="">
+		<scenario default="yes" name="tojson" userelativepaths="yes" externalpreview="no" useresolver="yes" url="..\..\..\..\..\..\..\..\jsonxml\playing\all.xml" outputurl="" processortype="saxon" tcpport="0" profilemode="0" profiledepth=""
+		          profilelength="" urlprofilexml="" commandline="" additionalpath="" additionalclasspath="" postprocessortype="none" postprocesscommandline="" postprocessadditionalpath="" postprocessgeneratedext="" host="" port="538976288" user=""
+		          password="" validateoutput="no" validator="internal" customvalidator="">
 			<advancedProperties name="DocumentURIResolver" value=""/>
 			<advancedProperties name="bSchemaAware" value="false"/>
 			<advancedProperties name="bXml11" value="false"/>
@@ -40,8 +52,8 @@ document {
 			<advancedProperties name="bExtensions" value="true"/>
 			<advancedProperties name="iWhitespace" value="0"/>
 			<advancedProperties name="bTinyTree" value="false"/>
-			<advancedProperties name="bWarnings" value="true"/>
 			<advancedProperties name="bUseDTD" value="false"/>
+			<advancedProperties name="bWarnings" value="true"/>
 			<advancedProperties name="ModuleURIResolver" value=""/>
 		</scenario>
 	</scenarios>

@@ -5,12 +5,12 @@ declare namespace xsl='http://www.w3.org/1999/XSL/Transform';
 declare function simple:tojson_element( $e as element(element) )
 {
 
-let $match := common:match_elem( $e/name , $e/path )
+let $match := common:match_elem( $e/name , $e )
 return (
 comment { "simple:tojson_element" } ,
 
 (: Top objects which needs wrapping in an OBJECT :)
-<xsl:template match="{$match}" mode="wrap" priority="{$e/@priority}">
+<xsl:template match="{$match}" mode="wrap" priority="{common:priority($e)}">
 		<OBJECT>
 			<xsl:apply-templates select="."/>	
 		
@@ -18,7 +18,7 @@ comment { "simple:tojson_element" } ,
 	</xsl:template>
 ,
 (: Unwrapped elements turn into MEMBER :)
-	<xsl:template  match="{$match}" priority="{$e/@priority}">
+	<xsl:template  match="{$match}" priority="{common:priority($e)}">
 		<MEMBER name="{{local-name(.)}}">
 			<xsl:choose>
 				<!-- No attributes or child elements - jump to text  -->
@@ -46,14 +46,14 @@ comment { "simple:tojson_element" } ,
 		</MEMBER>
 	</xsl:template>
 ,
-	<xsl:template  match="{$match}[ not(attribute()) and not(element()) ]" priority="{$e/@priority + 1 }">
+	<xsl:template  match="{$match}[ not(attribute()) and not(element()) ]" priority="{common:priority($e) + 1 }">
 		<MEMBER name="{{local-name(.)}}">
 			<xsl:apply-templates select="node()"/>
 			
 		</MEMBER>
 	</xsl:template>,
 	
-	<xsl:template match="{$match}/text()" mode="#all" priority="{$e/@priority}">
+	<xsl:template match="{$match}/text()" mode="#all" priority="{common:priority($e)}">
 		<STRING>
 			<xsl:value-of select="."/>
 		</STRING>
@@ -66,12 +66,12 @@ comment { "simple:tojson_element" } ,
 declare function simple:tojson_attribute( $e as element(attribute) )
 {	
 
-let $match := common:match_attr( $e/name , $e/path )
+let $match := common:match_attr( $e/name , $e )
 return 
 (
 comment { "simple:tojson_attribute" } ,
 (: All attribute values turn into members of the same name :)
-	<xsl:template match="{$match}" mode="#all"  priority="{$e/@priority}">
+	<xsl:template match="{$match}" mode="#all"  priority="{common:priority($e)}">
 		<MEMBER name="{{local-name(.)}}">
 			<STRING>
 				<xsl:value-of select="."/>
@@ -125,7 +125,7 @@ declare function simple:toxml_element( $e as element(element) )
 {
   comment { concat(" simple:toxml_element for " , $e/name/@localname ) },
   	text{ "&#x0a;" } , 
-	let $match := common:match_json( $e/name , $e/path )
+	let $match := common:match_json( $e/name , $e )
 	return 
 	(
 	<xsl:template match="{$match}/OBJECT" >
@@ -154,7 +154,7 @@ declare function simple:toxml_attribute( $e as element(attribute) )
 {	
   comment { concat(" simple:toxml_attribute for " , $e/name/@localname ) },
   	text{ "&#x0a;" } , 
-	let $match := common:match_json( $e/name , $e/path )
+	let $match := common:match_json( $e/name , $e )
 	return 
 (
 	<xsl:template match="{$match}/OBJECT" >
