@@ -2,6 +2,13 @@ module namespace full="http://www.xmlsh.org/jsonxml/full" ;
 declare namespace xsl='http://www.w3.org/1999/XSL/Transform';
 import module namespace common = "http://www.xmlsh.org/jsonxml/common"  at "common.xquery" ;
 
+
+declare function full:tojson_name( $e as element(name) ) as xs:string
+{
+	common:json_name( $e   ) 
+};
+
+
 declare function full:tojson_element( $e as element(element) )
 {
 
@@ -10,17 +17,27 @@ return (
 
 comment { "full:tojson_element" } ,
 <xsl:template match="{$match}" priority="{common:priority($e)}">
-		<MEMBER name="{{local-name(.)}}">
+		<MEMBER name="{full:tojson_name($e/name)}">
 			<OBJECT>
 			<xsl:if test="@*">
 				<MEMBER name="_attributes">
 					<OBJECT>
-						<xsl:for-each select="@*">
-							<xsl:apply-templates select="."/>
-						</xsl:for-each>
+						{ (: Only apply to attributes which are marked as full :) 
+						   for $a in $e/attribute[ common:getjson( . )/@pattern eq 'full' ]
+						   return
+						   	<xsl:apply-templates select="{  common:attr_name( $a/name ) }"/>
+						}							
 					</OBJECT>
 				</MEMBER>
 			</xsl:if>
+			{ (: Apply attributes which are not full  :)
+			   for $a in $e/attribute[ common:getjson( . )/@pattern ne 'full' ]
+			   return
+			   	<xsl:apply-templates select="{  common:attr_name( $a/name ) }"/>
+			}							
+
+
+
 			<xsl:if test="node() except @*">	
 				
 				<MEMBER name="_children">
@@ -57,7 +74,7 @@ return
 (
 comment { "full:tojson_attribute" } ,
 	<xsl:template match="{$match}" mode="#all"  priority="{common:priority($e)}">
-		<MEMBER name="{{local-name(.)}}">
+		<MEMBER name="{full:tojson_name($e/name) }">
 			<STRING>
 				<xsl:value-of select="."/>
 			</STRING>
@@ -113,7 +130,7 @@ declare function full:toxml_element( $e as element(element) )
 			<xsl:value-of select="string()"/>
 	</xsl:template>,
 	<xsl:template match="{$match}">
-		<xsl:element name="{{@name}}">
+		<xsl:element name="{$e/name/@localname}" namespace="{$e/name/@uri}">
 			<xsl:apply-templates select="*"/>
 		</xsl:element>
 
@@ -131,7 +148,7 @@ declare function full:toxml_attribute( $e as element(attribute) )
 	let $match := common:match_json( () , $e )
 	return 
 		<xsl:template match="{$match}/OBJECT/MEMBER[@name eq '_attributes']/OBJECT/{common:member_name($e/name)}">
-			<xsl:attribute name="{{@name}}">
+			<xsl:attribute name="{$e/name/@localname}" namespace="{$e/name/@uri}">
 					<xsl:apply-templates select="*"/>
 			</xsl:attribute>
 		</xsl:template>
@@ -142,7 +159,7 @@ declare function full:toxml_attribute( $e as element(attribute) )
 
 declare function full:toxml_document( $e as element(document) )
 {
-	<xsl:strip-space elements="*"/>,
+
 	<xsl:template  match="/OBJECT">
 		<xsl:apply-templates select="*"/>
 	</xsl:template>,

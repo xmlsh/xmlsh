@@ -28,6 +28,7 @@ declare function local:toxml( $es as element()* )
 
 document {
 	<xsl:stylesheet version="2.0" >
+	   <xsl:strip-space elements="*"/>
 	{
 		local:toxml( /document )
 
@@ -52,8 +53,8 @@ document {
 			<advancedProperties name="bExtensions" value="true"/>
 			<advancedProperties name="iWhitespace" value="0"/>
 			<advancedProperties name="bTinyTree" value="false"/>
-			<advancedProperties name="bUseDTD" value="false"/>
 			<advancedProperties name="bWarnings" value="true"/>
+			<advancedProperties name="bUseDTD" value="false"/>
 			<advancedProperties name="ModuleURIResolver" value=""/>
 		</scenario>
 	</scenarios>

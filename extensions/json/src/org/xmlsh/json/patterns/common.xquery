@@ -10,7 +10,8 @@ declare function common:priority( $e as element( ) )
 
 declare function common:getjson( $e as element() ) as element(json)
 {
-	($e/ancestor-or-self::*/json)[last()]
+	let $json := ($e/ancestor-or-self::*/json)[last()]
+	return $json
 
 };
 
@@ -23,19 +24,35 @@ declare function common:match_elem( $name as element() , $e as element() ) as xs
 
 };
 
-
-declare function common:match_attr( $name as element() , $e as element() ) as xs:string
+declare function common:attr_name( $name as element(name) )
 {
-	fn:string-join( ($e/ancestor::*/name/@localname , concat("@" , $name/@localname)) , "/" )
-
+	concat( "@" , $name/@localname  )
 
 };
 
 
-declare function common:member_name( $name  ) as xs:string  ?
+declare function common:match_attr( $name as element() , $e as element() ) as xs:string
 {
-	if( exists( $name) and $name/@localname ne '' ) then 
-		concat("MEMBER[@name='" , $name/@localname , "']")
+	fn:string-join( ($e/ancestor::*/name/@localname , common:attr_name($name) ) , "/" )
+
+
+};
+
+declare function common:json_name( $e as element(name)?  )
+{
+	if( empty( $e ) ) 
+		then () 
+	else
+		$e/@localname 
+};
+
+
+declare function common:member_name( $e as element(name) ?  ) as xs:string  ?
+{
+	let $name := common:json_name( $e )
+	return
+	if( $name ne '' ) then 
+		concat("MEMBER[@name='" , $name , "']")
 	else 
 		()
 };

@@ -2,6 +2,14 @@ module namespace simple="http://www.xmlsh.org/jsonxml/simple" ;
 import module namespace common = "http://www.xmlsh.org/jsonxml/common"  at "common.xquery" ;
 declare namespace xsl='http://www.w3.org/1999/XSL/Transform';
 
+
+declare function simple:tojson_name( $e as element(name) ) as xs:string
+{
+	common:json_name( $e   ) 
+
+};
+
+
 declare function simple:tojson_element( $e as element(element) )
 {
 
@@ -19,7 +27,7 @@ comment { "simple:tojson_element" } ,
 ,
 (: Unwrapped elements turn into MEMBER :)
 	<xsl:template  match="{$match}" priority="{common:priority($e)}">
-		<MEMBER name="{{local-name(.)}}">
+		<MEMBER name="{simple:tojson_name($e/name)}">
 			<xsl:choose>
 				<!-- No attributes or child elements - jump to text  -->
 				<xsl:when test="empty(@*|*)">
@@ -37,7 +45,9 @@ comment { "simple:tojson_element" } ,
 						<!-- Wrap text in a _text node -->
 						<xsl:if test="text()">
 							<MEMBER name="_text">
-								<xsl:apply-templates select="text()"/>
+								
+									<xsl:apply-templates select="text()"/>
+							
 							</MEMBER>
 						</xsl:if>
 					</OBJECT>
@@ -47,17 +57,19 @@ comment { "simple:tojson_element" } ,
 	</xsl:template>
 ,
 	<xsl:template  match="{$match}[ not(attribute()) and not(element()) ]" priority="{common:priority($e) + 1 }">
-		<MEMBER name="{{local-name(.)}}">
+		<MEMBER name="{simple:tojson_name($e/name)}">
 			<xsl:apply-templates select="node()"/>
 			
 		</MEMBER>
-	</xsl:template>,
-	
+	</xsl:template>
+	,
 	<xsl:template match="{$match}/text()" mode="#all" priority="{common:priority($e)}">
 		<STRING>
 			<xsl:value-of select="."/>
 		</STRING>
 	</xsl:template>
+	
+	
 
 )
 
@@ -72,7 +84,7 @@ return
 comment { "simple:tojson_attribute" } ,
 (: All attribute values turn into members of the same name :)
 	<xsl:template match="{$match}" mode="#all"  priority="{common:priority($e)}">
-		<MEMBER name="{{local-name(.)}}">
+		<MEMBER name="{simple:tojson_name($e/name)}">
 			<STRING>
 				<xsl:value-of select="."/>
 			</STRING>
@@ -138,7 +150,7 @@ declare function simple:toxml_element( $e as element(element) )
 			<xsl:value-of select="string()"/>
 	</xsl:template>,
 	<xsl:template match="{$match}">
-		<xsl:element name="{{@name}}">
+		<xsl:element name="{$e/name/@localname}" namespace="{$e/name/@uri}">
 			<xsl:apply-templates select="*"/>
 		</xsl:element>
 
@@ -167,7 +179,7 @@ declare function simple:toxml_attribute( $e as element(attribute) )
 			<xsl:value-of select="string()"/>
 	</xsl:template>,
 	<xsl:template match="{$match}">
-		<xsl:attribute name="{{@name}}">
+		<xsl:attribute name="{$e/name/@localname}" namespace="{$e/name/@uri}" >
 			<xsl:apply-templates select="*"/>
 		</xsl:attribute>
 
