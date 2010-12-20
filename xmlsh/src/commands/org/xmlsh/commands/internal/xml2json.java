@@ -266,11 +266,12 @@ public class xml2json extends XCommand
 	 * Parse an HTML element as XML and reserialize as HTML, store as a JSON string
 	 */
 
-	private String readString(XMLEventReader reader, boolean bHTML ) throws TransformException, XMLStreamException, UnsupportedEncodingException, SaxonApiException
+	private String readString(XMLEventReader reader, boolean bHTML ) throws TransformException, XMLStreamException, SaxonApiException, IOException
 	{
 	
 		
-		byte[]	bytes =  	serialize( reader );
+		byte[]	bytes =  bHTML ?	serializeAsXML( reader ) : serializeAsString(reader);
+		
 		// String xs = new String(xhtml,klENCODING_UTF_8);
 		if( bHTML )
 			return formatAsHtml( bytes );
@@ -431,7 +432,11 @@ public class xml2json extends XCommand
 		
 	}
 
-	private byte[] serialize(XMLEventReader reader ) throws XMLStreamException
+	
+	/*
+	 * Serialize as XML
+	 */
+	private byte[] serializeAsXML(XMLEventReader reader ) throws XMLStreamException
 	{
 		
 		ByteArrayOutputStream	bos = new ByteArrayOutputStream();
@@ -450,10 +455,27 @@ public class xml2json extends XCommand
 		writer.close();
 		return bos.toByteArray();
 
-
-		
 	}
 
+	private byte[] serializeAsString(XMLEventReader reader ) throws XMLStreamException, UnsupportedEncodingException, IOException
+	{
+		
+		ByteArrayOutputStream	bos = new ByteArrayOutputStream();
+		
+		
+		while( reader.hasNext() ){
+			XMLEvent event = reader.nextEvent();
+			
+			if( event.isEndElement() && event.asEndElement().getName().equals(kELEM_STRING))
+				break ;
+			if( event.isCharacters() )
+				bos.write( event.asCharacters().getData().getBytes( "UTF-8" ));
+		}
+		
+	
+		return bos.toByteArray();
+
+	}
 	
 
 	private void indent(PrintWriter writer) {
