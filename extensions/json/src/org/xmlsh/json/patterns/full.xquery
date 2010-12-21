@@ -136,7 +136,8 @@ declare function full:toxml_element( $e as element(element) )
 
 	</xsl:template>
 	
-    )
+	
+	)
 
 };
 

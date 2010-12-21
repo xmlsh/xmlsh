@@ -159,10 +159,10 @@ public class jsonxslt  extends XCommand{
 		{
 			QName 				mName;			// required
 			String 				mContext;		// required
-			QName				mType; 			// may be null 
+			XSTypeDefinition	mType; 			// may be null 
 			AnnotationList		mAnnotation;	// required
 			AnnotationEntryList	mChildren;		// optional
-			public AnnotationEntry(String context , QName name , AnnotationEntry parent , QName type, AnnotationList annotation) {
+			public AnnotationEntry(String context , QName name , AnnotationEntry parent , XSTypeDefinition type, AnnotationList annotation) {
 				super();
 				mName = name ;
 				
@@ -192,12 +192,29 @@ public class jsonxslt  extends XCommand{
 			{
 
 				sw.writeStartElement(mContext);
+				if( mType != null ){
+					sw.writeAttribute("typeCategory", getTypeCategory(mType));
+					if( mType.getTypeCategory() == XSTypeDefinition.COMPLEX_TYPE ){
+						XSComplexTypeDefinition ctd = (XSComplexTypeDefinition) mType ;
+						sw.writeAttribute( "contentType" , getTypeContentType( ctd ) );
+						
+					}
+					
+					
+				}
+				
 				
 				if( ! mContext.equals(CONTEXT_DOCUMENT)){
 					writeQName( sw , "name" , mName );
 					
-					if( mType != null )
-						writeQName( sw , "type" , mType );
+					if( mType != null ){
+						if( mContext.equals(CONTEXT_TYPE ))
+							writeQName( sw , "basetype" , getName(mType.getBaseType()) );
+						else
+							writeQName( sw , "type" , getName(mType) );
+						
+						
+					}
 				}
 				
 
@@ -217,6 +234,41 @@ public class jsonxslt  extends XCommand{
 				}
 				sw.writeEndElement();
 				
+			}
+
+
+
+
+			private String getTypeContentType(XSComplexTypeDefinition type) {
+				switch( type.getContentType() ){
+				case	XSComplexTypeDefinition.CONTENTTYPE_ELEMENT :
+					return "element" ;
+				case	XSComplexTypeDefinition.CONTENTTYPE_EMPTY :
+					return "empty" ;
+				case	XSComplexTypeDefinition.CONTENTTYPE_MIXED :
+					return "mixed" ;
+				case	XSComplexTypeDefinition.CONTENTTYPE_SIMPLE:
+					return "simple" ;
+				default: 
+					return "";
+				
+				}
+			}
+
+
+
+
+			private String getTypeCategory(XSTypeDefinition type) {
+				switch( type.getTypeCategory()){
+				case	XSTypeDefinition.COMPLEX_TYPE :
+					return "complex";
+				case	XSTypeDefinition.SIMPLE_TYPE :
+					return "simple" ;
+				default:
+					return "";
+				
+				
+				}
 			}
 			
 			
@@ -286,6 +338,7 @@ public class jsonxslt  extends XCommand{
 				
 				serialize( sw , docEntry);
 				sw.close();
+				this.getStdout().flush();
 				
 				
 			}
@@ -324,6 +377,7 @@ public class jsonxslt  extends XCommand{
 		{
 		
 			entry.serialize(sw);
+			sw.flush();
 			
 			
 			
@@ -432,7 +486,7 @@ public class jsonxslt  extends XCommand{
 				QName elemName = getName(obj);
 				
 				
-				AnnotationEntry self = new AnnotationEntry( CONTEXT_ELEMENT ,   elemName,  parent ,  getName(type) , annotation  );
+				AnnotationEntry self = new AnnotationEntry( CONTEXT_ELEMENT ,   elemName,  parent ,  type , annotation  );
 
 				
 				
@@ -466,7 +520,7 @@ public class jsonxslt  extends XCommand{
 							  */
 							 
 							 		 
-							new AnnotationEntry( CONTEXT_ATTRIBUTE  , getName(attrDecl) , self , getName(type) , useAnno != null ? useAnno : declAnno  );
+							new AnnotationEntry( CONTEXT_ATTRIBUTE  , getName(attrDecl) , self , type , useAnno != null ? useAnno : declAnno  );
 					
 							
 						}
@@ -503,10 +557,9 @@ public class jsonxslt  extends XCommand{
 							value = getAnnotations( ((XSSimpleTypeDefinition)type).getAnnotations() );
 
 					
-					XSTypeDefinition baseType = type.getBaseType();
 					
 					
-					new AnnotationEntry(  CONTEXT_TYPE,  getName(type) , parent , getName(baseType) , value  );
+					new AnnotationEntry(  CONTEXT_TYPE,  getName(type) , parent , type , value  );
 
 
 				}
@@ -572,7 +625,12 @@ public class jsonxslt  extends XCommand{
 
 		private void writeQName( XMLStreamWriter sw , String name , QName q ) throws XMLStreamException
 		{
-
+			if( q == null )
+				return ;
+			
+			if( Util.isBlank(q.getLocalName()))
+				return ;
+			
 			sw.writeStartElement(name);
 			// sw.writeAttribute("prefix", q.getPrefix() );
 			sw.writeAttribute("uri" , q.getNamespaceURI());

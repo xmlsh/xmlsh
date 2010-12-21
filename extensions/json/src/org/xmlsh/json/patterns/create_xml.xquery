@@ -28,7 +28,7 @@ declare function local:toxml( $es as element()* )
 
 document {
 	<xsl:stylesheet version="2.0" >
-	   <xsl:strip-space elements="*"/>
+	<xsl:strip-space elements="OBJECT MEMBER ARRAY" />
 	{
 		local:toxml( /document )
 

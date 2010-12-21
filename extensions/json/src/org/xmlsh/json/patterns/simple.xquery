@@ -42,14 +42,19 @@ comment { "simple:tojson_element" } ,
 							<xsl:apply-templates select="."/>
 						</xsl:for-each>
 						
-						<!-- Wrap text in a _text node -->
-						<xsl:if test="text()">
-							<MEMBER name="_text">
+						<!-- Wrap text in a _text node only for simple types -->
+						{ 
+							if( $e/@contentType eq "simple" )  then 
+								<xsl:if test="text()">
+								<MEMBER name="_text">
 								
-									<xsl:apply-templates select="text()"/>
+										<xsl:apply-templates select="text()"/>
 							
-							</MEMBER>
-						</xsl:if>
+								</MEMBER>
+							</xsl:if>
+							else
+								()
+						}
 					</OBJECT>
 				</xsl:otherwise>
 			</xsl:choose>
@@ -63,12 +68,12 @@ comment { "simple:tojson_element" } ,
 		</MEMBER>
 	</xsl:template>
 	,
+
 	<xsl:template match="{$match}/text()" mode="#all" priority="{common:priority($e)}">
 		<STRING>
 			<xsl:value-of select="."/>
 		</STRING>
 	</xsl:template>
-	
 	
 
 )
@@ -158,6 +163,7 @@ declare function simple:toxml_element( $e as element(element) )
 	<xsl:template match="{$match}/OBJECT/MEMBER[@name='_text']">
 			<xsl:value-of select="string()" />
 	</xsl:template>
+
 	
     )
 
