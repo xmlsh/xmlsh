@@ -3,7 +3,7 @@
 	<xsd:element name="OBJECT">
 		<xsd:complexType>
 			<xsd:sequence minOccurs="0" maxOccurs="unbounded">
-				<xsd:element name="MEMBER"/>
+				<xsd:element ref="MEMBER"/>
 			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
