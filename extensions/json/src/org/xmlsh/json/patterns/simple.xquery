@@ -70,9 +70,7 @@ comment { "simple:tojson_element" } ,
 	,
 
 	<xsl:template match="{$match}/text()" mode="#all" priority="{common:priority($e)}">
-		<STRING>
-			<xsl:value-of select="."/>
-		</STRING>
+		{ common:json_text_value($e) }
 	</xsl:template>
 	
 
@@ -90,9 +88,7 @@ comment { "simple:tojson_attribute" } ,
 (: All attribute values turn into members of the same name :)
 	<xsl:template match="{$match}" mode="#all"  priority="{common:priority($e)}">
 		<MEMBER name="{simple:tojson_name($e/name)}">
-			<STRING>
-				<xsl:value-of select="."/>
-			</STRING>
+			{ common:json_text_value( $e ) } 
 		</MEMBER>
 	</xsl:template>
 )

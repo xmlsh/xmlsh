@@ -58,9 +58,7 @@ comment { "full:tojson_element" } ,
 	</xsl:template> 
 	,
 	<xsl:template match="{$match}/text()" mode="#all" priority="{common:priority($e)}">
-		<STRING>
-			<xsl:value-of select="."/>
-		</STRING>
+		{ common:json_text_value( $e ) }
 	</xsl:template>
 )
 
@@ -75,9 +73,7 @@ return
 comment { "full:tojson_attribute" } ,
 	<xsl:template match="{$match}" mode="#all"  priority="{common:priority($e)}">
 		<MEMBER name="{full:tojson_name($e/name) }">
-			<STRING>
-				<xsl:value-of select="."/>
-			</STRING>
+			{ common:json_text_value( $e ) }
 		</MEMBER>
 	</xsl:template>
 

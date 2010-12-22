@@ -391,8 +391,10 @@ public class jsonxslt  extends XCommand{
 			XQueryEvaluator eval = exe.load();
 			
 			// pass nodes as a sequence of items 
-			eval.setContextItem( annos.itemAt(0) );
 			eval.setDestination( xmlPort.asDestination(mSerializeOpts));
+			eval.setExternalVariable( new QName("http://www.xmlsh.org/jsonxml/common","annotations"), annos);
+			eval.setExternalVariable( new QName("http://www.xmlsh.org/jsonxml/common","patterns"), null );
+			
 			
 			eval.run();
 			
