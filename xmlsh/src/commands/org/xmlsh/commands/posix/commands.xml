@@ -38,6 +38,9 @@
 <command name="touch" url="http://www.xmlsh.org/CommandTouch" >
 	<synopsis>create and update timestamp of a file</synopsis>
 </command>
+<command name="tee" url="http://www.xmlsh.org/CommandTee" >
+	<synopsis>Read from standard input and write to standard output and files</synopsis>
+</command>
 
 </commands>
 	
