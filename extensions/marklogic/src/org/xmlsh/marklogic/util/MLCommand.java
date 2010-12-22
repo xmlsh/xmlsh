@@ -14,8 +14,12 @@ import java.io.Reader;
 import java.io.Writer;
 import java.math.BigInteger;
 import java.net.URI;
-import java.net.URISyntaxException;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLEventWriter;
@@ -26,10 +30,10 @@ import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.trans.XPathException;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
+import org.xmlsh.core.Options.OptionValue;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
-import org.xmlsh.core.Options.OptionValue;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.util.Util;
 
@@ -37,8 +41,8 @@ import com.marklogic.xcc.ContentSource;
 import com.marklogic.xcc.ContentSourceFactory;
 import com.marklogic.xcc.ResultItem;
 import com.marklogic.xcc.ResultSequence;
+import com.marklogic.xcc.SecurityOptions;
 import com.marklogic.xcc.ValueFactory;
-import com.marklogic.xcc.exceptions.XccConfigException;
 import com.marklogic.xcc.types.ItemType;
 import com.marklogic.xcc.types.XName;
 import com.marklogic.xcc.types.XSBoolean;
@@ -54,8 +58,46 @@ public abstract class MLCommand extends XCommand {
 		super();
 	}
 
-	protected ContentSource getConnection(Options opts) throws URISyntaxException,
-			XccConfigException, InvalidArgumentException {
+	protected SecurityOptions newTrustOptions() throws Exception
+	{
+		TrustManager[] trust = new TrustManager[] 
+		  { 
+				
+				
+			new X509TrustManager() {
+				public void checkClientTrusted(
+						X509Certificate[] x509Certificates, 
+						String s)
+				throws CertificateException 
+					// nothing to do
+					{
+					
+					}
+					
+					public void checkServerTrusted(
+								X509Certificate[] x509Certificates, 
+								String s)
+						throws CertificateException {
+							// nothing to do
+					}
+								
+					public X509Certificate[] getAcceptedIssuers() {
+									return null;
+			
+					}
+			}
+			};
+			
+			SSLContext sslContext = SSLContext.getInstance("SSLv3");
+			sslContext.init(null, trust, null);
+			return new SecurityOptions(sslContext);
+
+					
+				
+	}
+			
+	
+	protected ContentSource getConnection(Options opts) throws Exception  {
 		XValue vc = null;
 		String connect;
 		OptionValue ov = opts.getOpt("c");
@@ -69,7 +111,7 @@ public abstract class MLCommand extends XCommand {
 		connect = vc.toString();
 
 		URI serverUri = new URI(connect);
-		ContentSource cs = ContentSourceFactory.newContentSource(serverUri);
+		ContentSource cs = ContentSourceFactory.newContentSource(serverUri,newTrustOptions());
 		return cs;
 	}
 
@@ -112,15 +154,15 @@ public abstract class MLCommand extends XCommand {
 
 	protected static String quote(String s) {
 
-		return "'" + s.replace("'", "''").replace("&","&amp;").replace("<", "&lt;") + "'";
+		return "'" + s.replace("'", "''").replace("&", "&amp;").replace("<", "&lt;") + "'";
 	}
 
-	protected XdmVariable newVariable(String name, XValue value,SerializeOpts opts) throws XPathException, InvalidArgumentException, SaxonApiException {
+	protected XdmVariable newVariable(String name, XValue value, SerializeOpts opts)
+			throws XPathException, InvalidArgumentException, SaxonApiException {
 		XName xname = new XName(name);
 
 		com.marklogic.xcc.types.XdmValue xvalue = newValue(value, opts);
 
-		
 		XdmVariable var = ValueFactory.newVariable(xname, xvalue);
 		return var;
 	}
@@ -129,130 +171,108 @@ public abstract class MLCommand extends XCommand {
 	 * Create a marklogic XdmValue from an XValue
 	 * 
 	 * Truncates sequences to 1 element because ML doesnt support sequences
-	 * 
 	 */
-	protected com.marklogic.xcc.types.XdmValue newValue(XValue value,SerializeOpts opts) throws XPathException, InvalidArgumentException, SaxonApiException 
-	{
-		
+	protected com.marklogic.xcc.types.XdmValue newValue(XValue value, SerializeOpts opts)
+			throws XPathException, InvalidArgumentException, SaxonApiException {
+
 		net.sf.saxon.s9api.XdmItem item = value.asXdmItem();
-		if( item.isAtomicValue()){
-			net.sf.saxon.value.AtomicValue atom = (net.sf.saxon.value.AtomicValue) item.getUnderlyingValue();
+		if (item.isAtomicValue()) {
+			net.sf.saxon.value.AtomicValue atom = (net.sf.saxon.value.AtomicValue) item
+					.getUnderlyingValue();
 			// int type = atom.getItemType(null).getPrimitiveType();
-			
-			if( atom instanceof net.sf.saxon.value.Base64BinaryValue  ){
-				byte[] v = ((net.sf.saxon.value.Base64BinaryValue)atom).getBinaryValue();
+
+			if (atom instanceof net.sf.saxon.value.Base64BinaryValue) {
+				byte[] v = ((net.sf.saxon.value.Base64BinaryValue) atom).getBinaryValue();
 				return ValueFactory.newBinaryNode(v);
-				
-			} else
-			if( atom instanceof net.sf.saxon.value.BooleanValue  ){
-				boolean v = ((net.sf.saxon.value.BooleanValue)atom).effectiveBooleanValue();
+
+			} else if (atom instanceof net.sf.saxon.value.BooleanValue) {
+				boolean v = ((net.sf.saxon.value.BooleanValue) atom).effectiveBooleanValue();
 				return ValueFactory.newXSBoolean(v);
-			}
-			else
-			if( atom instanceof net.sf.saxon.value.DateTimeValue  ){
-				String v = ((net.sf.saxon.value.DateTimeValue)atom).toString();
-				
+			} else if (atom instanceof net.sf.saxon.value.DateTimeValue) {
+				String v = ((net.sf.saxon.value.DateTimeValue) atom).toString();
+
 				return ValueFactory.newXSDateTime(v, null, null);
-			}
-			else
-				if( atom instanceof net.sf.saxon.value.GDateValue  ){
-					String v = ((net.sf.saxon.value.GDateValue)atom).toString();
-					return  ValueFactory.newXSDate(v, null,null) ;
-				}
-				else
-					if( atom instanceof net.sf.saxon.value.TimeValue  ){
-						String v = (( net.sf.saxon.value.TimeValue)atom).toString();
-						return  ValueFactory.newXSTime(v, null,null) ;
-					}
-					else
-			if( atom instanceof net.sf.saxon.value.DurationValue  ){
-				
-				String v = (( net.sf.saxon.value.DurationValue)atom).toString();
-				return  ValueFactory.newXSDuration(v) ;
-			}
-			else
-			if( atom instanceof net.sf.saxon.value.HexBinaryValue  ){
-				byte b[] = (( net.sf.saxon.value.HexBinaryValue )atom).getBinaryValue() ;
+			} else if (atom instanceof net.sf.saxon.value.GDateValue) {
+				String v = ((net.sf.saxon.value.GDateValue) atom).toString();
+				return ValueFactory.newXSDate(v, null, null);
+			} else if (atom instanceof net.sf.saxon.value.TimeValue) {
+				String v = ((net.sf.saxon.value.TimeValue) atom).toString();
+				return ValueFactory.newXSTime(v, null, null);
+			} else if (atom instanceof net.sf.saxon.value.DurationValue) {
+
+				String v = ((net.sf.saxon.value.DurationValue) atom).toString();
+				return ValueFactory.newXSDuration(v);
+			} else if (atom instanceof net.sf.saxon.value.HexBinaryValue) {
+				byte b[] = ((net.sf.saxon.value.HexBinaryValue) atom).getBinaryValue();
 				return ValueFactory.newBinaryNode(b);
-				
-			}
-			else
-				if( atom instanceof net.sf.saxon.value.IntegerValue  ){
-					
-			
-					BigInteger v = ((net.sf.saxon.value.IntegerValue)atom).asBigInteger();
 
-					return ValueFactory.newXSInteger(v); 
-					
-						
-				}
-			
-			else
-			if( atom instanceof net.sf.saxon.value.NumericValue  ){
-				long v = ((net.sf.saxon.value.IntegerValue)atom).longValue();
+			} else if (atom instanceof net.sf.saxon.value.IntegerValue) {
 
-				return ValueFactory.newXSInteger(v); 
-					
+				BigInteger v = ((net.sf.saxon.value.IntegerValue) atom).asBigInteger();
+
+				return ValueFactory.newXSInteger(v);
+
 			}
-			else
-			{
-				return ValueFactory.newXSString( atom.getStringValue() );
-						
+
+			else if (atom instanceof net.sf.saxon.value.NumericValue) {
+				long v = ((net.sf.saxon.value.IntegerValue) atom).longValue();
+
+				return ValueFactory.newXSInteger(v);
+
+			} else {
+				return ValueFactory.newXSString(atom.getStringValue());
+
 			}
-			
-			
-	
-			
-			
+
 		}
-		
-		// Node node = NodeOverNodeInfo.wrap(value.asXdmNode().getUnderlyingNode());
+
+		// Node node =
+		// NodeOverNodeInfo.wrap(value.asXdmNode().getUnderlyingNode());
 		ByteArrayOutputStream buf = new ByteArrayOutputStream();
 
 		Util.writeXdmValue(value.asXdmNode(), Util.streamToDestination(buf, opts));
 
 		InputStream is = new ByteArrayInputStream(buf.toByteArray());
-		
+
 		return ValueFactory.newElement(is);
 
 	}
 
-    /**
-     * Get the effective boolean value of the expression. This returns false if the value
-     * is the empty sequence, a zero-length string, a number equal to zero, or the boolean
-     * false. Otherwise it returns true.
-     * @throws InvalidArgumentException 
-     */
-	
+	/**
+	 * Get the effective boolean value of the expression. This returns false if
+	 * the value is the empty sequence, a zero-length string, a number equal to
+	 * zero, or the boolean false. Otherwise it returns true.
+	 * 
+	 * @throws InvalidArgumentException
+	 */
+
 	protected boolean effectiveBoolean(ResultSequence rs) throws InvalidArgumentException {
 		// Empty sequence
-		if( rs.isEmpty() )
-			return false ;
-		
-		if( rs.size() > 1 )
+		if (rs.isEmpty())
+			return false;
+
+		if (rs.size() > 1)
 			throw new InvalidArgumentException("Boolean value undefined for sequence of > 1 item");
-		
+
 		XdmItem item = rs.itemAt(0);
 		ItemType type = item.getItemType();
-		
 
-		if (type.isAtomic() ) {
+		if (type.isAtomic()) {
 			// Zero length string
-			if( item instanceof XSString )
-				return ((XSString)item).asString().length() == 0 ? false : true ;
-			
-			// Numeber eq 
-			if( item instanceof XSInteger )
-				return ((XSInteger)item).asPrimitiveInt() == 0 ? false : true ;
-			
+			if (item instanceof XSString)
+				return ((XSString) item).asString().length() == 0 ? false : true;
+
+			// Numeber eq
+			if (item instanceof XSInteger)
+				return ((XSInteger) item).asPrimitiveInt() == 0 ? false : true;
+
 			// Boolean
-			if( item instanceof XSBoolean )
-				return ((XSBoolean )item).asPrimitiveBoolean() ;
-				
-			
-		} 
-		
-		return true ;
+			if (item instanceof XSBoolean)
+				return ((XSBoolean) item).asPrimitiveBoolean();
+
+		}
+
+		return true;
 	}
 
 }
