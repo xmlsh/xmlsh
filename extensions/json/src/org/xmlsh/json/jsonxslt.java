@@ -20,6 +20,8 @@ import javanet.staxutils.XMLStreamUtils;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
 
 import net.sf.saxon.s9api.BuildingStreamWriter;
 import net.sf.saxon.s9api.QName;
@@ -298,6 +300,7 @@ public class jsonxslt  extends XCommand{
 		
 	
 		private SerializeOpts 	  mSerializeOpts ;
+		private	 XdmNode				  mPatterns;
 	
 		
 		public int run(List<XValue> args) throws Exception {
@@ -314,6 +317,12 @@ public class jsonxslt  extends XCommand{
 			
 			Shell shell = getShell();
 			Schema schema = new Schema(   shell.getURI( xsd ).toString()  );
+			
+			
+			URL patterns_url =  mShell.getResource("/org/xmlsh/json/patterns/patterns.xml");
+			mPatterns = Util.asXdmNode( patterns_url);
+			
+			
 			
 			
 			
@@ -393,7 +402,7 @@ public class jsonxslt  extends XCommand{
 			// pass nodes as a sequence of items 
 			eval.setDestination( xmlPort.asDestination(mSerializeOpts));
 			eval.setExternalVariable( new QName("http://www.xmlsh.org/jsonxml/common","annotations"), annos);
-			eval.setExternalVariable( new QName("http://www.xmlsh.org/jsonxml/common","patterns"), null );
+			eval.setExternalVariable( new QName("http://www.xmlsh.org/jsonxml/common","patterns"), mPatterns );
 			
 			
 			eval.run();

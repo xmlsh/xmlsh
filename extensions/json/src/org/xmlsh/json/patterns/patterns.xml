@@ -1,11 +1,13 @@
 <patterns>
 	<pattern name="full">
-		
+		<children>_children</children>
+		<attributes>_attributes</attributes>
 	</pattern>
 
 
 
 	<pattern name="simple">
+		<text>_text</text>
 	</pattern>
 
 </patterns>

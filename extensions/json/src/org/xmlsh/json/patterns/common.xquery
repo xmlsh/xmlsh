@@ -22,23 +22,43 @@ declare function common:getjson( $e as element() ) as element(json)
 
 };
 
-(: construct a QName from a name :)
-declare function common:qname( $name as element() ) as xs:QName 
+(: Get the configuration pattern element coresponding to this pattern :)
+declare function common:getconfig( $j as element(json) ) as element(pattern)
 {
+	$common:patterns/patterns/pattern[@name eq $j/@pattern]
+
+};
+
+
+
+(: construct a QName from a name :)
+declare function common:qname( $name as element()? ) as xs:QName  ?
+{
+	if( empty( $name ) ) then () else 
 	fn:QName( $name/@uri , $name/@localname )
 };
 
-declare function common:json_type( $e as element(json) , $type as xs:QName ) as xs:string
+declare function common:parent_type( $type as xs:QName ) as xs:QName?
 {
+	common:qname(   $common:annotations/document/type[common:qname(name) eq $type]/basetype )
+
+};
+
+
+
+declare function common:json_type( $e as element(json) , $type as xs:QName? ) as xs:string
+{
+	if( empty($type) ) then
+		"STRING"
+	else
 	if( $type = 
 	   ( xs:QName("xs:decimal") , 
 	     xs:QName("xs:integer" ) ,
 		 xs:QName("xs:float") ) )
 	 then
 	 	"NUMBER"
-	else
-		"STRING"   	
-
+	else 
+		common:json_type( $e , common:parent_type( $type ) )
 
 };
 
@@ -49,7 +69,7 @@ declare function common:json_type( $e as element(json) , $type as xs:QName ) as 
 
 declare function common:json_text_type( $e as element() ) as xs:string
 {
-	if( $e/@contentType ne "simple" or empty($e/type ) ) then
+	if( empty($e/type ) ) then
 		"STRING" 
 	else
 	let $name := common:qname( $e/type )

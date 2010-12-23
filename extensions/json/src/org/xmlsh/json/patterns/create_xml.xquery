@@ -45,6 +45,8 @@ document {
 		<scenario default="yes" name="tojson" userelativepaths="yes" externalpreview="no" useresolver="yes" url="..\..\..\..\..\..\..\..\jsonxml\playing\all.xml" outputurl="" processortype="saxon" tcpport="0" profilemode="0" profiledepth=""
 		          profilelength="" urlprofilexml="" commandline="" additionalpath="" additionalclasspath="" postprocessortype="none" postprocesscommandline="" postprocessadditionalpath="" postprocessgeneratedext="" host="" port="538976288" user=""
 		          password="" validateoutput="no" validator="internal" customvalidator="">
+			<parameterValue name="{http://www.xmlsh.org/jsonxml/common}patterns" value="doc('patterns.xml')"/>
+			<parameterValue name="{http://www.xmlsh.org/jsonxml/common}annotations" value="doc('..\..\..\..\..\..\..\..\jsonxml\playing\all.xml')"/>
 			<advancedProperties name="DocumentURIResolver" value=""/>
 			<advancedProperties name="bSchemaAware" value="false"/>
 			<advancedProperties name="bXml11" value="false"/>
@@ -53,8 +55,8 @@ document {
 			<advancedProperties name="bExtensions" value="true"/>
 			<advancedProperties name="iWhitespace" value="0"/>
 			<advancedProperties name="bTinyTree" value="false"/>
-			<advancedProperties name="bUseDTD" value="false"/>
 			<advancedProperties name="bWarnings" value="true"/>
+			<advancedProperties name="bUseDTD" value="false"/>
 			<advancedProperties name="ModuleURIResolver" value=""/>
 		</scenario>
 	</scenarios>

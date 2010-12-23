@@ -13,7 +13,9 @@ declare function simple:tojson_name( $e as element(name) ) as xs:string
 declare function simple:tojson_element( $e as element(element) )
 {
 
-let $match := common:match_elem( $e/name , $e )
+let $match := common:match_elem( $e/name , $e ),
+    $json :=  common:getjson( $e ),
+	$config := common:getconfig( $json )
 return (
 comment { "simple:tojson_element" } ,
 
@@ -46,7 +48,7 @@ comment { "simple:tojson_element" } ,
 						{ 
 							if( $e/@contentType eq "simple" )  then 
 								<xsl:if test="text()">
-								<MEMBER name="_text">
+								<MEMBER name="{$config/text/string()}">
 								
 										<xsl:apply-templates select="text()"/>
 							
@@ -136,6 +138,12 @@ declare function simple:toxml_document( $e as element(document) )
 
 declare function simple:toxml_element( $e as element(element) )
 {
+	let 
+    	$json :=  common:getjson( $e ),
+		$config := common:getconfig( $json )
+	return (
+
+
   comment { concat(" simple:toxml_element for " , $e/name/@localname ) },
   	text{ "&#x0a;" } , 
 	let $match := common:match_json( $e/name , $e )
@@ -156,12 +164,14 @@ declare function simple:toxml_element( $e as element(element) )
 		</xsl:element>
 
 	</xsl:template>,
-	<xsl:template match="{$match}/OBJECT/MEMBER[@name='_text']">
+	<xsl:template match="{$match}/OBJECT/MEMBER[@name='{$config/text/string()}']">
 			<xsl:value-of select="string()" />
 	</xsl:template>
 
 	
     )
+
+	)
 
 };
 declare function simple:toxml_attribute( $e as element(attribute) )
