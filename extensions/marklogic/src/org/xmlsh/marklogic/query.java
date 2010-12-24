@@ -96,6 +96,7 @@ public class query extends MLCommand {
 	    ResultSequence rs = session.submitRequest (request);
 	    
 	    int ret = 0;
+	    boolean bOutput = false ;
 	    if( bBool ){
 	    	// Effective boolean value : 
 	    	ret = effectiveBoolean(rs) ? 0 : 1;
@@ -103,12 +104,13 @@ public class query extends MLCommand {
 	    	
 	    }
 	    else
-	    	writeResult(rs, out, serializeOpts,asText );
+	    	bOutput = writeResult(rs, out, serializeOpts,asText );
         rs.close();
 		
         session.close();
 
-        // out.release();
+        if( !bBool  && ! asText && bOutput  )
+        	out.writeSequenceTerminator(serializeOpts);
 	
 		
 		return ret;

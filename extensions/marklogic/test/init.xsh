@@ -3,5 +3,6 @@
 # WARNING : DO NOT SET THIS TO A LIVE DATABASE YOU WILL LOSE EVERYTHING
 
 MLCONNECT="xcc://test:test@home:8020"
+MLCONNECT_SSL="xccs://test:test@home:8021"
 ML_ROLE="test"
 import module ml=marklogic

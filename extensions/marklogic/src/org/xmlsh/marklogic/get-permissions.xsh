@@ -6,6 +6,9 @@ shift $?
 
 for uri ; do
    :query $_popts -q <{{
+xquery version "1.0-ml";
+
+declare option xdmp:mapping "false";
 
 declare function local:rolename( $id ) 
 {

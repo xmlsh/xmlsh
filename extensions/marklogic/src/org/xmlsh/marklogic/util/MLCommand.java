@@ -58,8 +58,14 @@ public abstract class MLCommand extends XCommand {
 		super();
 	}
 
-	protected SecurityOptions newTrustOptions() throws Exception
+	protected SecurityOptions newTrustOptions(URI uri) throws Exception
 	{
+		
+		String scheme = uri.getScheme();
+		if( !scheme.equals("xccs"))
+			return null ;
+		
+		
 		TrustManager[] trust = new TrustManager[] 
 		  { 
 				
@@ -111,16 +117,16 @@ public abstract class MLCommand extends XCommand {
 		connect = vc.toString();
 
 		URI serverUri = new URI(connect);
-		ContentSource cs = ContentSourceFactory.newContentSource(serverUri,newTrustOptions());
+		ContentSource cs = ContentSourceFactory.newContentSource(serverUri,newTrustOptions(serverUri));
 		return cs;
 	}
 
-	protected void writeResult(ResultSequence rs, OutputPort out, SerializeOpts sopts,
+	protected boolean writeResult(ResultSequence rs, OutputPort out, SerializeOpts sopts,
 			boolean asText) throws FactoryConfigurationError, IOException,
 			InvalidArgumentException, XMLStreamException, SaxonApiException {
 
 		XMLInputFactory factory = XMLInputFactory.newInstance();
-
+		boolean bOutput = false ;
 		while (rs.hasNext()) {
 			ResultItem rsItem = rs.next();
 
@@ -147,9 +153,11 @@ public abstract class MLCommand extends XCommand {
 				xmlItem.close();
 			}
 
-			if (!asText)
+			if (!asText && rs.hasNext())
 				out.writeSequenceSeperator(sopts);
+			bOutput= true ;
 		}
+		return bOutput;
 	}
 
 	protected static String quote(String s) {
