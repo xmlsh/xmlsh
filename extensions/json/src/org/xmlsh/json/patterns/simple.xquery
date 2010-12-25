@@ -33,7 +33,7 @@ comment { "simple:tojson_element" } ,
 			<xsl:choose>
 				<!-- No attributes or child elements - jump to text  -->
 				<xsl:when test="empty(@*|*)">
-					<xsl:apply-templates select="node()"/>
+					{ common:json_text_value($e) }
 				</xsl:when>
 				<!-- Otherwise need to make an object out of this -->
 				<xsl:otherwise>
@@ -47,11 +47,9 @@ comment { "simple:tojson_element" } ,
 						<!-- Wrap text in a _text node only for simple types -->
 						{ 
 							if( $e/@contentType eq "simple" )  then 
-								<xsl:if test="text()">
+								<xsl:if test="string(.)">
 								<MEMBER name="{$config/text/string()}">
-								
-										<xsl:apply-templates select="text()"/>
-							
+										{ common:json_text_value($e) }
 								</MEMBER>
 							</xsl:if>
 							else
@@ -62,18 +60,7 @@ comment { "simple:tojson_element" } ,
 			</xsl:choose>
 		</MEMBER>
 	</xsl:template>
-,
-	<xsl:template  match="{$match}[ not(attribute()) and not(element()) ]" priority="{common:priority($e) + 1 }">
-		<MEMBER name="{simple:tojson_name($e/name)}">
-			<xsl:apply-templates select="node()"/>
-			
-		</MEMBER>
-	</xsl:template>
-	,
-
-	<xsl:template match="{$match}/text()" mode="#all" priority="{common:priority($e)}">
-		{ common:json_text_value($e) }
-	</xsl:template>
+	
 	
 
 )
