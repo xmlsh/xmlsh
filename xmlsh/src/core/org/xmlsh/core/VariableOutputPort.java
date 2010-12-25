@@ -221,7 +221,7 @@ public class VariableOutputPort extends OutputPort
 			else
 			if( mBuilder != null ){
 				appendVar( mBuilder.getDocumentNode() );
-				// How to reopen ?
+				mBuilder = null ; // close ?
 			
 			}
 		

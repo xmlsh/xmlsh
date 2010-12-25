@@ -15,6 +15,7 @@ import javax.xml.stream.XMLStreamWriter;
 import org.apache.log4j.Logger;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
+import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.Util;
 
 public class XFile /* implements XSerializble */ {
@@ -22,11 +23,11 @@ public class XFile /* implements XSerializble */ {
 	private File mFile;
 
 	
-	public XFile( XValue xv )
+	public XFile(Shell shell , XValue xv )
 	{
 		if( ! xv.isAtomic() ){
 			try {
-				xv = xv.xpath("/file/@path/string()");
+				xv = xv.xpath(shell, "/file/@path/string()");
 			} catch (UnexpectedException e) {
 				mLogger.debug("Ingorning exception converting xvalue to file",e);
 			}

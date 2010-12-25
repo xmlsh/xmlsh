@@ -88,9 +88,9 @@ public class Module {
 			List<URL> classpath = new ArrayList<URL>();
 
 			XValue xv = new XValue(configNode);
-			mPackage = xv.xpath("/module/@package/string()").toString();
-			mName = xv.xpath("/module/@name/string()").toString();
-			String require = xv.xpath("/module/@require/string()").toString();
+			mPackage = xv.xpath(shell,"/module/@package/string()").toString();
+			mName = xv.xpath(shell,"/module/@name/string()").toString();
+			String require = xv.xpath(shell,"/module/@require/string()").toString();
 			if( !Util.isBlank(require)){
 				int ret = shell.requireVersion(mName,require);
 				if( ret != 0 )
@@ -99,7 +99,7 @@ public class Module {
 			
 			
 
-			for (XdmItem item : xv.xpath("/module/classpath/file").asXdmValue()) {
+			for (XdmItem item : xv.xpath(shell,"/module/classpath/file").asXdmValue()) {
 				if (item instanceof XdmNode) {
 					String file = ((XdmNode) item).getAttributeValue(new QName("url"));
 					URL classurl = new URL(configURL, file);

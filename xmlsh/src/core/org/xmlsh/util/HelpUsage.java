@@ -115,7 +115,7 @@ public class HelpUsage {
 				
 			
 			XValue v = new XValue(root);
-			XValue xcmd = v.xpath("//(command|function)[@name='" + nonsName + "']");
+			XValue xcmd = v.xpath(mShell,"//(command|function)[@name='" + nonsName + "']");
 			
 			if( xcmd.isEmpty() ){
 				mShell.printErr("No help for: " + name );
@@ -125,7 +125,7 @@ public class HelpUsage {
 			
 			
 			if( bLaunch ){
-				String uri = xcmd.xpath("./@url/string()").toString();
+				String uri = xcmd.xpath(mShell,"./@url/string()").toString();
 				launchBrowser(uri);
 			}
 			
@@ -163,7 +163,7 @@ public class HelpUsage {
 			nonsName = ":";
 		
 		XValue v = new XValue(root);
-		XValue xcmd = v.xpath("//command[@name='" + nonsName + "']");
+		XValue xcmd = v.xpath(mShell,"//command[@name='" + nonsName + "']");
 		
 		if( xcmd.isEmpty() ){
 			mShell.printErr("No help for: " + name );

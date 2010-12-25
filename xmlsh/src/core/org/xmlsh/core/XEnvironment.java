@@ -465,7 +465,7 @@ public class XEnvironment  {
 		mNamespaces.declare( ns );
 		
 	}
-	private void declareNamespace(String prefix, String uri) {
+	public void declareNamespace(String prefix, String uri) {
 		if( mNamespaces == null )
 			mNamespaces = new Namespaces();
 		mNamespaces.declare(prefix, uri);

@@ -53,7 +53,7 @@ public class xfile extends XCommand
 		case	0:
 			xf = new XFile( getCurdir() ); break;
 		case	1:
-			xf = new XFile( args.get(0) ); break;
+			xf = new XFile( mShell, args.get(0) ); break;
 		case	2:
 			xf = new XFile( args.get(0).toString(), args.get(1).toString() ); break;
 		default : 

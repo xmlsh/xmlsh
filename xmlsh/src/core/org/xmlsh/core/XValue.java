@@ -191,7 +191,7 @@ public class XValue {
 	
 	
 	
-	public XValue	xpath( String expr ) throws UnexpectedException 
+	public XValue	xpath( Shell shell , String expr ) throws UnexpectedException 
 	{
 		if( mValue == null || ! (mValue instanceof XdmValue) )
 			return null ;
@@ -199,6 +199,16 @@ public class XValue {
 		Processor  processor  = Shell.getProcessor();
 	
 		XPathCompiler compiler = processor.newXPathCompiler();
+		
+		Namespaces ns = shell.getEnv().getNamespaces(); 
+		if (ns != null) {
+			for (String prefix : ns.keySet()) {
+				String uri = ns.get(prefix);
+				compiler.declareNamespace(prefix, uri);
+
+			}
+
+		}
 		
 		
 		try {
