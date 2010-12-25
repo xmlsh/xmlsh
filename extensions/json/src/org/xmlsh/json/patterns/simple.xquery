@@ -1,5 +1,6 @@
 module namespace simple="http://www.xmlsh.org/jsonxml/simple" ;
 import module namespace common = "http://www.xmlsh.org/jsonxml/common"  at "common.xquery" ;
+declare namespace jxon='http://www.xmlsh.org/jxon';
 declare namespace xsl='http://www.w3.org/1999/XSL/Transform';
 
 

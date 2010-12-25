@@ -1,5 +1,6 @@
 declare namespace json='http://www.xmlsh.org/jsonxml';
 declare namespace xsl='http://www.w3.org/1999/XSL/Transform';
+declare namespace jxon='http://www.xmlsh.org/jxon';
 import module namespace common = "http://www.xmlsh.org/jsonxml/common"  at "common.xquery" ;
 import module namespace full = "http://www.xmlsh.org/jsonxml/full" at "full.xquery" ;
 import module namespace simple = "http://www.xmlsh.org/jsonxml/simple" at "simple.xquery" ;
@@ -13,7 +14,7 @@ declare function local:toxml( $es as element()* )
 	for $e in $es
 	return (
 		let $json := common:getjson( $e ) , 
-			 $pattern := $json/@pattern/string()
+			 $pattern := $json/@name/string()
 		return
 		if( $pattern eq 'full' ) then
 			full:toxml( $e )
@@ -55,8 +56,8 @@ document {
 			<advancedProperties name="bExtensions" value="true"/>
 			<advancedProperties name="iWhitespace" value="0"/>
 			<advancedProperties name="bTinyTree" value="false"/>
-			<advancedProperties name="bWarnings" value="true"/>
 			<advancedProperties name="bUseDTD" value="false"/>
+			<advancedProperties name="bWarnings" value="true"/>
 			<advancedProperties name="ModuleURIResolver" value=""/>
 		</scenario>
 	</scenarios>

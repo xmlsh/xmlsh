@@ -1,5 +1,6 @@
 module namespace common="http://www.xmlsh.org/jsonxml/common" ;
 declare namespace xsl='http://www.w3.org/1999/XSL/Transform';
+declare namespace jxon='http://www.xmlsh.org/jxon';
 
 declare variable $common:annotations as document-node() external ;
 declare variable $common:patterns    as document-node() external ;
@@ -15,17 +16,17 @@ declare function common:priority( $e as element( ) )
 
 (: Get the self or nearest parents <json> element :)
 
-declare function common:getjson( $e as element() ) as element(json)
+declare function common:getjson( $e as element() ) as element(jxon:pattern)
 {
-	let $json := ($e/ancestor-or-self::*/json)[last()]
+	let $json := ($e/ancestor-or-self::*/jxon:pattern)[last()]
 	return $json
 
 };
 
 (: Get the configuration pattern element coresponding to this pattern :)
-declare function common:getconfig( $j as element(json) ) as element(pattern)
+declare function common:getconfig( $j as element(jxon:pattern) ) as element(pattern)
 {
-	$common:patterns/patterns/pattern[@name eq $j/@pattern]
+	$common:patterns/patterns/pattern[@name eq $j/@name]
 
 };
 
@@ -46,7 +47,7 @@ declare function common:parent_type( $type as xs:QName ) as xs:QName?
 
 
 
-declare function common:json_type( $e as element(json) , $type as xs:QName? ) as xs:string
+declare function common:json_type( $e as element(jxon:pattern) , $type as xs:QName? ) as xs:string
 {
 	if( empty($type) ) then
 		"STRING"

@@ -1,5 +1,7 @@
 module namespace full="http://www.xmlsh.org/jsonxml/full" ;
 declare namespace xsl='http://www.w3.org/1999/XSL/Transform';
+
+declare namespace jxon='http://www.xmlsh.org/jxon';
 import module namespace common = "http://www.xmlsh.org/jsonxml/common"  at "common.xquery" ;
 
 
@@ -25,7 +27,7 @@ comment { "full:tojson_element" } ,
 				<MEMBER name="{$config/attributes/string()}">
 					<OBJECT>
 						{ (: Only apply to attributes which are marked as full :) 
-						   for $a in $e/attribute[ common:getjson( . )/@pattern eq 'full' ]
+						   for $a in $e/attribute[ common:getjson( . )/@name eq 'full' ]
 						   return
 						   	<xsl:apply-templates select="{  common:attr_name( $a/name ) }"/>
 						}							
@@ -33,7 +35,7 @@ comment { "full:tojson_element" } ,
 				</MEMBER>
 			</xsl:if>
 			{ (: Apply attributes which are not full  :)
-			   for $a in $e/attribute[ common:getjson( . )/@pattern ne 'full' ]
+			   for $a in $e/attribute[ common:getjson( . )/@name ne 'full' ]
 			   return
 			   	<xsl:apply-templates select="{  common:attr_name( $a/name ) }"/>
 			}							

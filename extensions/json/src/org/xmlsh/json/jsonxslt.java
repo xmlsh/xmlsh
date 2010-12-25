@@ -75,9 +75,11 @@ public class jsonxslt  extends XCommand{
 		private static final String CONTEXT_ATTRIBUTE = "attribute";
 		private static final String CONTEXT_ELEMENT = "element";
 		private static final String CONTEXT_DOCUMENT = "document";
+		
+		private static final QName   JXON_PATTERN = new QName("http://www.xmlsh.org/jxon" , "pattern");
 
 		
-		private static XdmNode 	parse( XSAnnotation xanno , SerializeOpts opts ) throws XPathException, SaxonApiException, CoreException
+		private  XdmNode 	parse( XSAnnotation xanno , SerializeOpts opts ) throws XPathException, SaxonApiException, CoreException
 		{
 			
 			
@@ -90,7 +92,7 @@ public class jsonxslt  extends XCommand{
 			out.close();
 			
 			
-			XdmValue xv = var.getValue().xpath("//json").asXdmValue();
+			XdmValue xv = var.getValue().xpath( getShell() , "//jxon:pattern").asXdmValue();
 			
 			/*
 			 * Reserialize with a namespacer reduicer
@@ -194,6 +196,7 @@ public class jsonxslt  extends XCommand{
 			{
 
 				sw.writeStartElement(mContext);
+				sw.writeNamespace("jxon", "http://www.xmlsh.org/jxon");
 				if( mType != null ){
 					sw.writeAttribute("typeCategory", getTypeCategory(mType));
 					if( mType.getTypeCategory() == XSTypeDefinition.COMPLEX_TYPE ){
@@ -316,6 +319,7 @@ public class jsonxslt  extends XCommand{
 			
 			
 			Shell shell = getShell();
+			shell.getEnv().declareNamespace("jxon","http://www.xmlsh.org/jxon");
 			Schema schema = new Schema(   shell.getURI( xsd ).toString()  );
 			
 			
@@ -384,7 +388,7 @@ public class jsonxslt  extends XCommand{
 
 		private void serialize(XMLStreamWriter sw, AnnotationEntry entry ) throws XMLStreamException, SaxonApiException, XPathException, CoreException 
 		{
-		
+
 			entry.serialize(sw);
 			sw.flush();
 			
