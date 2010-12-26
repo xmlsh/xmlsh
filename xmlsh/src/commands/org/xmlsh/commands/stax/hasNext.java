@@ -62,7 +62,7 @@ public class hasNext extends BuiltinFunctionCommand {
 			int type = StAXUtils.getEventTypeByName( args.get(1).toString() );
 			if( type < 0)
 				return new XValue(false);
-			QName name = args.get(2).asQName();
+			QName name = args.get(2).asQName(shell);
 			
 			while( reader.hasNext() ){
 				XMLEvent event = reader.peek();

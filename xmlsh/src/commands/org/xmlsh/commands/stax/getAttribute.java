@@ -34,7 +34,7 @@ public class getAttribute extends BuiltinFunctionCommand {
 		if( args.size()  < 2  )
 			return null;
 		Object arg = args.get(0).asObject();
-		QName attrName = args.get(1).asQName();
+		QName attrName = args.get(1).asQName(shell);
 		
 		if( arg instanceof XMLEvent )
 		{

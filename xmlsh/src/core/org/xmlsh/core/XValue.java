@@ -41,6 +41,7 @@ import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.JavaUtils;
 import org.xmlsh.util.S9Util;
+import org.xmlsh.util.StringPair;
 import org.xmlsh.util.Util;
 
 public class XValue {
@@ -635,14 +636,22 @@ public class XValue {
 		return java;
 	}
 
-	public QName asQName() {
+	public QName asQName(Shell shell) {
 		if( mValue == null )
 			return null ;
 		
 		if( mValue instanceof QName )
 			return (QName) mValue ;
 		
-		return Util.qnameFromClarkName( mValue.toString() );
+		String qn = mValue.toString();
+		if( qn.startsWith("{") || qn.indexOf(':' ) <= 0 )
+			return Util.qnameFromClarkName( mValue.toString() );
+		
+		StringPair pair = new StringPair(qn,':');
+			
+		String uri = shell.getEnv().getNamespaces().get(pair.getLeft());
+		return new QName( pair.getLeft() , uri , pair.getRight() );
+		
 		
 		
 	}

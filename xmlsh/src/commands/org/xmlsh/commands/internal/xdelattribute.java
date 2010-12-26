@@ -157,7 +157,7 @@ public class xdelattribute extends XCommand {
 		List<QName>		names = new ArrayList<QName>();
 		
 		for( XValue v : opts ){
-			names.add( v.asQName() );
+			names.add( v.asQName(getShell()) );
 			
 		}
 		

@@ -25,7 +25,7 @@ public class QName extends BuiltinFunctionCommand {
 		switch( args.size())
 		{
 		case	1: // Clarke or local ?
-			return new XValue( args.get(0).asQName() );
+			return new XValue( args.get(0).asQName(shell) );
 		case	2:
 			return new XValue( new net.sf.saxon.s9api.QName(args.get(0).toString() , args.get(1).toString()) );
 		case	3 :

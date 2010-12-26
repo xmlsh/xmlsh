@@ -29,7 +29,7 @@ public class attribute extends BuiltinFunctionCommand {
 		if( args.size() != 2 )
 			throw new InvalidArgumentException("Expected name value");
 
-		QName name = args.get(0).asQName();
+		QName name = args.get(0).asQName(shell);
 		
 		
 		return S9Util.createAttribute(shell, name, args.get(1).toString() );

@@ -31,7 +31,7 @@ public class element extends BuiltinFunctionCommand {
 			throw new InvalidArgumentException("Expected name value");
 		
 
-		QName name = args.remove(0).asQName();
+		QName name = args.remove(0).asQName(shell);
 		
 		return S9Util.createElement(shell, name ,  args);
 		
