@@ -6,10 +6,10 @@ declare namespace xsl='http://www.w3.org/1999/XSL/Transform';
 
 
 
-declare function simple:tojson_element( $e as element(element) )
+declare function simple:tojson_element( $e as element(jxon:element) )
 {
 
-let $match := common:match_elem( $e/name , $e ),
+let $match := common:match_elem( $e/jxon:name , $e ),
     $json :=  common:getjson( $e ),
 	$config := common:getconfig( $json )
 return (
@@ -25,7 +25,7 @@ comment { "simple:tojson_element" } ,
 ,
 (: Unwrapped elements turn into MEMBER :)
 	<xsl:template  match="{$match}" priority="{common:priority($e)}">
-		<MEMBER name="{common:json_name($e/name)}">
+		<MEMBER name="{common:json_name($e/jxon:name)}">
 			<xsl:choose>
 				<!-- No attributes or child elements - jump to text  -->
 				<xsl:when test="empty(@*|*)">
@@ -44,7 +44,7 @@ comment { "simple:tojson_element" } ,
 						{ 
 							if( $e/@contentType eq "simple" )  then 
 								<xsl:if test="string(.)">
-								<MEMBER name="{$config/text/string()}">
+								<MEMBER name="{$config/jxon:text/string()}">
 										{ common:json_text_value($e) }
 								</MEMBER>
 							</xsl:if>
@@ -63,16 +63,16 @@ comment { "simple:tojson_element" } ,
 
 };
 
-declare function simple:tojson_attribute( $e as element(attribute) )
+declare function simple:tojson_attribute( $e as element(jxon:attribute) )
 {	
 
-let $match := common:match_attr( $e/name , $e )
+let $match := common:match_attr( $e/jxon:name , $e )
 return 
 (
 comment { "simple:tojson_attribute" } ,
 (: All attribute values turn into members of the same name :)
 	<xsl:template match="{$match}" mode="#all"  priority="{common:priority($e)}">
-		<MEMBER name="{common:json_name($e/name)}">
+		<MEMBER name="{common:json_name($e/jxon:name)}">
 			{ common:json_text_value( $e ) } 
 		</MEMBER>
 	</xsl:template>
@@ -85,7 +85,7 @@ comment { "simple:tojson_attribute" } ,
 
 
 
-declare function simple:toxml_element( $e as element(element) )
+declare function simple:toxml_element( $e as element(jxon:element) )
 {
 	let 
     	$json :=  common:getjson( $e ),
@@ -93,9 +93,9 @@ declare function simple:toxml_element( $e as element(element) )
 	return (
 
 
-  comment { concat(" simple:toxml_element for " , $e/name/@localname ) },
+  comment { concat(" simple:toxml_element for " , $e/jxon:name/@localname ) },
   	text{ "&#x0a;" } , 
-	let $match := common:match_json( $e/name , $e )
+	let $match := common:match_json( $e/jxon:name , $e )
 	return 
 	(
 	<xsl:template match="{$match}/OBJECT" >
@@ -108,12 +108,12 @@ declare function simple:toxml_element( $e as element(element) )
 			<xsl:value-of select="string()"/>
 	</xsl:template>,
 	<xsl:template match="{$match}">
-		<xsl:element name="{$e/name/@localname}" namespace="{$e/name/@uri}">
+		<xsl:element name="{$e/jxon:name/@localname}" namespace="{$e/jxon:name/@uri}">
 			<xsl:apply-templates select="*"/>
 		</xsl:element>
 
 	</xsl:template>,
-	<xsl:template match="{$match}/OBJECT/MEMBER[@name='{$config/text/string()}']">
+	<xsl:template match="{$match}/OBJECT/MEMBER[@name='{$config/jxon:text/string()}']">
 			<xsl:value-of select="string()" />
 	</xsl:template>
 
@@ -123,11 +123,11 @@ declare function simple:toxml_element( $e as element(element) )
 	)
 
 };
-declare function simple:toxml_attribute( $e as element(attribute) )
+declare function simple:toxml_attribute( $e as element(jxon:attribute) )
 {	
-  comment { concat(" simple:toxml_attribute for " , $e/name/@localname ) },
+  comment { concat(" simple:toxml_attribute for " , $e/jxon:name/@localname ) },
   	text{ "&#x0a;" } , 
-	let $match := common:match_json( $e/name , $e )
+	let $match := common:match_json( $e/jxon:name , $e )
 	return 
 (
 	<xsl:template match="{$match}/OBJECT" >
@@ -140,7 +140,7 @@ declare function simple:toxml_attribute( $e as element(attribute) )
 			<xsl:value-of select="string()"/>
 	</xsl:template>,
 	<xsl:template match="{$match}">
-		<xsl:attribute name="{$e/name/@localname}" namespace="{$e/name/@uri}" >
+		<xsl:attribute name="{$e/jxon:name/@localname}" namespace="{$e/jxon:name/@uri}" >
 			<xsl:apply-templates select="*"/>
 		</xsl:attribute>
 

@@ -75,8 +75,9 @@ public class jsonxslt  extends XCommand{
 		private static final String CONTEXT_ATTRIBUTE = "attribute";
 		private static final String CONTEXT_ELEMENT = "element";
 		private static final String CONTEXT_DOCUMENT = "document";
+		private static final String  JXON_NS = "http://www.xmlsh.org/jxon";
 		
-		private static final QName   JXON_PATTERN = new QName("http://www.xmlsh.org/jxon" , "pattern");
+		private static final QName   JXON_PATTERN = new QName( JXON_NS , "pattern");
 
 		
 		private  XdmNode 	parse( XSAnnotation xanno , SerializeOpts opts ) throws XPathException, SaxonApiException, CoreException
@@ -195,8 +196,8 @@ public class jsonxslt  extends XCommand{
 			public void  serialize( XMLStreamWriter sw ) throws SaxonApiException, XMLStreamException, XPathException, CoreException
 			{
 
-				sw.writeStartElement(mContext);
-				sw.writeNamespace("jxon", "http://www.xmlsh.org/jxon");
+				sw.writeStartElement(JXON_NS, mContext);
+				sw.writeNamespace("jxon", JXON_NS );
 				if( mType != null ){
 					sw.writeAttribute("typeCategory", getTypeCategory(mType));
 					if( mType.getTypeCategory() == XSTypeDefinition.COMPLEX_TYPE ){
@@ -319,7 +320,7 @@ public class jsonxslt  extends XCommand{
 			
 			
 			Shell shell = getShell();
-			shell.getEnv().declareNamespace("jxon","http://www.xmlsh.org/jxon");
+			shell.getEnv().declareNamespace("jxon",JXON_NS );
 			Schema schema = new Schema(   shell.getURI( xsd ).toString()  );
 			
 			
@@ -646,7 +647,7 @@ public class jsonxslt  extends XCommand{
 			if( Util.isBlank(q.getLocalName()))
 				return ;
 			
-			sw.writeStartElement(name);
+			sw.writeStartElement(JXON_NS, name);
 			// sw.writeAttribute("prefix", q.getPrefix() );
 			sw.writeAttribute("uri" , q.getNamespaceURI());
 			sw.writeAttribute("localname", q.getLocalName());

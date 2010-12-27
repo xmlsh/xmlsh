@@ -10,7 +10,7 @@ declare variable $common:patterns    as document-node() external ;
 (: Priority of match string for an element - use the depth of the element :)
 declare function common:priority( $e as element( ) )
 {
-	count( $e/ancestor::*/name )
+	count( $e/ancestor::*/jxon:name )
 };
 
 
@@ -24,9 +24,9 @@ declare function common:getjson( $e as element() ) as element(jxon:pattern)
 };
 
 (: Get the configuration pattern element coresponding to this pattern :)
-declare function common:getconfig( $j as element(jxon:pattern) ) as element(pattern)
+declare function common:getconfig( $j as element(jxon:pattern) ) as element(jxon:pattern)
 {
-	$common:patterns/patterns/pattern[@name eq $j/@name]
+	$common:patterns/jxon:patterns/jxon:pattern[@name eq $j/@name]
 
 };
 
@@ -95,13 +95,13 @@ declare function common:json_text_value( $e as element() )
 declare function common:match_elem( $name as element() , $e as element() ) as xs:string
 {
 
-	fn:string-join( ($e/ancestor::*/name/@localname , $name/@localname) , "/" )
+	fn:string-join( ($e/ancestor::*/jxon:name/@localname , $name/@localname) , "/" )
 
 
 };
 
 (: The Attribute name for use in match or select strings :)
-declare function common:attr_name( $name as element(name) )
+declare function common:attr_name( $name as element(jxon:name) )
 {
 	concat( "@" , $name/@localname  )
 
@@ -111,14 +111,14 @@ declare function common:attr_name( $name as element(name) )
 (: Generate a match string for an attribute :)
 declare function common:match_attr( $name as element() , $e as element() ) as xs:string
 {
-	fn:string-join( ($e/ancestor::*/name/@localname , common:attr_name($name) ) , "/" )
+	fn:string-join( ($e/ancestor::*/jxon:name/@localname , common:attr_name($name) ) , "/" )
 
 
 };
 
 
 (: Construct the JSON name for an element or attribute :)
-declare function common:json_name( $e as element(name)?  )
+declare function common:json_name( $e as element(jxon:name)?  )
 {
 	if( empty( $e ) ) 
 		then () 
@@ -127,7 +127,7 @@ declare function common:json_name( $e as element(name)?  )
 };
 
 (: Construct a match string for a json member :)
-declare function common:member_name( $e as element(name) ?  ) as xs:string  ?
+declare function common:member_name( $e as element(jxon:name) ?  ) as xs:string  ?
 {
 	let $name := common:json_name( $e )
 	return
@@ -138,10 +138,10 @@ declare function common:member_name( $e as element(name) ?  ) as xs:string  ?
 };
 
 (: Construct a match string for a json object :)
-declare function common:match_json( $name as element()? , $e as element() ) as xs:string
+declare function common:match_json( $name as element(jxon:name)? , $e as element() ) as xs:string
 {
 	fn:string-join( (
-		for $n in $e/ancestor::*/name
+		for $n in $e/ancestor::*/jxon:name
 		return common:member_name( $n  ) , 
 		common:member_name( $name ) ) , 
 		"/OBJECT/" )

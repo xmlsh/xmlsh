@@ -1,4 +1,4 @@
-<patterns>
+<patterns xmlns="http://www.xmlsh.org/jxon">
 	<pattern name="full">
 		<children>_children</children>
 		<attributes>_attributes</attributes>

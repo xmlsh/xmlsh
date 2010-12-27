@@ -7,40 +7,40 @@ import module namespace common = "http://www.xmlsh.org/jsonxml/common"  at "comm
 
 
 
-declare function full:tojson_element( $e as element(element) )
+declare function full:tojson_element( $e as element(jxon:element) )
 {
 
-let $match := common:match_elem( $e/name , $e ),
+let $match := common:match_elem( $e/jxon:name , $e ),
     $json :=  common:getjson( $e ),
 	$config := common:getconfig( $json ) 
 return (
 
 comment { "full:tojson_element" } ,
 <xsl:template match="{$match}" priority="{common:priority($e)}">
-		<MEMBER name="{common:json_name($e/name)}">
+		<MEMBER name="{common:json_name($e/jxon:name)}">
 			<OBJECT>
 			<xsl:if test="@*">
-				<MEMBER name="{$config/attributes/string()}">
+				<MEMBER name="{$config/jxon:attributes/string()}">
 					<OBJECT>
 						{ (: Only apply to attributes which are marked as full :) 
-						   for $a in $e/attribute[ common:getjson( . )/@name eq 'full' ]
+						   for $a in $e/jxon:attribute[ common:getjson( . )/@name eq 'full' ]
 						   return
-						   	<xsl:apply-templates select="{  common:attr_name( $a/name ) }"/>
+						   	<xsl:apply-templates select="{  common:attr_name( $a/jxon:name ) }"/>
 						}							
 					</OBJECT>
 				</MEMBER>
 			</xsl:if>
 			{ (: Apply attributes which are not full  :)
-			   for $a in $e/attribute[ common:getjson( . )/@name ne 'full' ]
+			   for $a in $e/jxon:attribute[ common:getjson( . )/@name ne 'full' ]
 			   return
-			   	<xsl:apply-templates select="{  common:attr_name( $a/name ) }"/>
+			   	<xsl:apply-templates select="{  common:attr_name( $a/jxon:name ) }"/>
 			}							
 
 
 
 			<xsl:if test="node() except @*">	
 				
-				<MEMBER name="{$config/children/string()}">
+				<MEMBER name="{$config/jxon:children/string()}">
 					<ARRAY>
 						<xsl:apply-templates select="node() except @*" mode="wrap"/>
 					</ARRAY>
@@ -64,15 +64,15 @@ comment { "full:tojson_element" } ,
 
 };
 
-declare function full:tojson_attribute( $e as element(attribute) )
+declare function full:tojson_attribute( $e as element(jxon:attribute) )
 {	
 
-let $match := common:match_attr( $e/name , $e )
+let $match := common:match_attr( $e/jxon:name , $e )
 return 
 (
 comment { "full:tojson_attribute" } ,
 	<xsl:template match="{$match}" mode="#all"  priority="{common:priority($e)}">
-		<MEMBER name="{common:json_name($e/name) }">
+		<MEMBER name="{common:json_name($e/jxon:name) }">
 			{ common:json_text_value( $e ) }
 		</MEMBER>
 	</xsl:template>
@@ -84,15 +84,15 @@ comment { "full:tojson_attribute" } ,
 
 
 
-declare function full:toxml_element( $e as element(element) )
+declare function full:toxml_element( $e as element(jxon:element) )
 {
     let
 		$json :=  common:getjson( $e ) ,
 		$config := common:getconfig( $json ) 
 	return (
 
-	comment { concat(" full:toxml_element for " , $e/name/@localname ) },
-	let $match := common:match_json( $e/name , $e )
+	comment { concat(" full:toxml_element for " , $e/jxon:name/@localname ) },
+	let $match := common:match_json( $e/jxon:name , $e )
 	return 
 	(
 	<xsl:template match="{$match}/OBJECT" >
@@ -100,7 +100,7 @@ declare function full:toxml_element( $e as element(element) )
 	</xsl:template>
 	,
 
-	<xsl:template match="{$match}/OBJECT/MEMBER[@name eq '{$config/children/string()}']">
+	<xsl:template match="{$match}/OBJECT/MEMBER[@name eq '{$config/jxon:children/string()}']">
 		<xsl:apply-templates select="ARRAY/*"/>
 	</xsl:template>,
 	
@@ -108,7 +108,7 @@ declare function full:toxml_element( $e as element(element) )
 			<xsl:value-of select="string()"/>
 	</xsl:template>,
 	<xsl:template match="{$match}">
-		<xsl:element name="{$e/name/@localname}" namespace="{$e/name/@uri}">
+		<xsl:element name="{$e/jxon:name/@localname}" namespace="{$e/jxon:name/@uri}">
 			<xsl:apply-templates select="*"/>
 		</xsl:element>
 
@@ -120,18 +120,18 @@ declare function full:toxml_element( $e as element(element) )
 
 };
 
-declare function full:toxml_attribute( $e as element(attribute) )
+declare function full:toxml_attribute( $e as element(jxon:attribute) )
 {	
 	let
 		$json :=  common:getjson( $e ),
 		$config := common:getconfig( $json )
 return (
-  comment { concat(" full:toxml_attribute for " , $e/name/@localname ) },
+  comment { concat(" full:toxml_attribute for " , $e/jxon:name/@localname ) },
   	text{ "&#x0a;" } , 
 	let $match := common:match_json( () , $e )
 	return 
-		<xsl:template match="{$match}/OBJECT/MEMBER[@name eq '{$config/attributes/string()}']/OBJECT/{common:member_name($e/name)}">
-			<xsl:attribute name="{$e/name/@localname}" namespace="{$e/name/@uri}">
+		<xsl:template match="{$match}/OBJECT/MEMBER[@name eq '{$config/jxon:attributes/string()}']/OBJECT/{common:member_name($e/jxon:name)}">
+			<xsl:attribute name="{$e/jxon:name/@localname}" namespace="{$e/jxon:name/@uri}">
 					<xsl:apply-templates select="*"/>
 			</xsl:attribute>
 		</xsl:template>

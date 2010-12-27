@@ -8,7 +8,7 @@ import module namespace simple = "http://www.xmlsh.org/jsonxml/simple" at "simpl
 
 
 
-declare function local:tojson_element( $e as element(element) , $config as element(pattern) )
+declare function local:tojson_element( $e as element(jxon:element) , $config as element(jxon:pattern) )
 {
 	if( $config/@name eq 'full' ) then
 		full:tojson_element($e )
@@ -17,7 +17,7 @@ declare function local:tojson_element( $e as element(element) , $config as eleme
 	
 };
 
-declare function local:tojson_attribute( $e as element(attribute) , $config as element(pattern) )
+declare function local:tojson_attribute( $e as element(jxon:attribute) , $config as element(jxon:pattern) )
 {
 	if( $config/@name eq 'full' ) then
 		full:tojson_attribute($e )
@@ -26,7 +26,7 @@ declare function local:tojson_attribute( $e as element(attribute) , $config as e
 	
 };
 
-declare function local:tojson_document( $e as element(document) , $config as element(pattern) )
+declare function local:tojson_document( $e as element(jxon:document) , $config as element(jxon:pattern) )
 {
 	<xsl:template match="document-node()">
 			<xsl:apply-templates select="*" mode="wrap"/>
@@ -47,24 +47,24 @@ declare function local:tojson( $es as element()* )
 	return
 	(
 	typeswitch( $e ) 
-	case	$elem as element(element)
+	case	$elem as element(jxon:element)
 		return local:tojson_element( $elem , $config ) 
-	case	$a as element(attribute)
+	case	$a as element(jxon:attribute)
 		return local:tojson_attribute($a , $config )
-	case	$d as element(document)
+	case	$d as element(jxon:document)
 		return local:tojson_document( $d , $config )
 	default
 		return ()
 	,
 
-	local:tojson( $e/element | $e/attribute )
+	local:tojson( $e/jxon:element | $e/jxon:attribute )
 	)
 };
 
 document {
 	<xsl:stylesheet version="2.0" >
 	{
-		local:tojson( $common:annotations/document )
+		local:tojson( $common:annotations/jxon:document )
 
 	}
 	</xsl:stylesheet>
@@ -89,8 +89,8 @@ document {
 			<advancedProperties name="bExtensions" value="true"/>
 			<advancedProperties name="iWhitespace" value="0"/>
 			<advancedProperties name="bTinyTree" value="false"/>
-			<advancedProperties name="bUseDTD" value="false"/>
 			<advancedProperties name="bWarnings" value="true"/>
+			<advancedProperties name="bUseDTD" value="false"/>
 			<advancedProperties name="ModuleURIResolver" value=""/>
 		</scenario>
 	</scenarios>
