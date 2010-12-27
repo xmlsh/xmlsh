@@ -8,23 +8,56 @@ import module namespace simple = "http://www.xmlsh.org/jsonxml/simple" at "simpl
 
 
 
+declare function local:tojson_element( $e as element(element) , $config as element(pattern) )
+{
+	if( $config/@name eq 'full' ) then
+		full:tojson_element($e )
+	else
+		simple:tojson_element($e)
+	
+};
+
+declare function local:tojson_attribute( $e as element(attribute) , $config as element(pattern) )
+{
+	if( $config/@name eq 'full' ) then
+		full:tojson_attribute($e )
+	else
+		simple:tojson_attribute($e)
+	
+};
+
+declare function local:tojson_document( $e as element(document) , $config as element(pattern) )
+{
+	<xsl:template match="document-node()">
+			<xsl:apply-templates select="*" mode="wrap"/>
+	</xsl:template>
+
+
+
+};
+
+
 
 (: Dynamic dispatch  :)
 declare function local:tojson( $es as element()* )
 {
 	for $e in $es 
-	return (
-		let $json := common:getjson( $e ) , 
-			$pattern := $json/@name/string()
-		return
-		if( $pattern eq 'full' ) then
-			full:tojson( $e )
-		else
-		if( $pattern eq 'simple' ) then
-			simple:tojson( $e )
-		else 
-			(),
-		local:tojson( $e/element | $e/attribute )
+	let  $json := common:getjson( $e ) , 
+		 $config  := common:getconfig( $json )
+	return
+	(
+	typeswitch( $e ) 
+	case	$elem as element(element)
+		return local:tojson_element( $elem , $config ) 
+	case	$a as element(attribute)
+		return local:tojson_attribute($a , $config )
+	case	$d as element(document)
+		return local:tojson_document( $d , $config )
+	default
+		return ()
+	,
+
+	local:tojson( $e/element | $e/attribute )
 	)
 };
 
@@ -56,8 +89,8 @@ document {
 			<advancedProperties name="bExtensions" value="true"/>
 			<advancedProperties name="iWhitespace" value="0"/>
 			<advancedProperties name="bTinyTree" value="false"/>
-			<advancedProperties name="bWarnings" value="true"/>
 			<advancedProperties name="bUseDTD" value="false"/>
+			<advancedProperties name="bWarnings" value="true"/>
 			<advancedProperties name="ModuleURIResolver" value=""/>
 		</scenario>
 	</scenarios>

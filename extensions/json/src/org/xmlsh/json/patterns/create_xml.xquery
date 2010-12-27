@@ -8,24 +8,69 @@ import module namespace simple = "http://www.xmlsh.org/jsonxml/simple" at "simpl
 
 
 
+declare function local:toxml_element( $e as element(element) , $config as element(pattern) )
+{
+	if( $config/@name eq 'full' ) then
+		full:toxml_element($e )
+	else
+		simple:toxml_element($e)
+	
+};
+
+declare function local:toxml_attribute( $e as element(attribute) , $config as element(pattern) )
+{
+	if( $config/@name eq 'full' ) then
+		full:toxml_attribute($e )
+	else
+		simple:toxml_attribute($e)
+	
+};
+
+declare function local:toxml_document( $e as element(document) , $config as element(pattern) )
+{
+
+	<xsl:template  match="/OBJECT">
+		<xsl:apply-templates select="*"/>
+	</xsl:template>,
+
+	<xsl:template  match="ARRAY">
+	
+	</xsl:template>
+
+
+
+};
+
+
+
 (: Dynamic dispatch  :)
 declare function local:toxml( $es as element()* )
 {
-	for $e in $es
-	return (
-		let $json := common:getjson( $e ) , 
-			 $pattern := $json/@name/string()
-		return
-		if( $pattern eq 'full' ) then
-			full:toxml( $e )
-		else
-		if( $pattern eq 'simple' ) then
-			simple:toxml( $e )
-		else 
-			(),
-		local:toxml( $e/element | $e/attribute )
+	for $e in $es 
+	let  $json := common:getjson( $e ) , 
+		 $config  := common:getconfig( $json )
+	return
+	(
+	typeswitch( $e ) 
+	case	$elem as element(element)
+		return local:toxml_element( $elem , $config ) 
+	case	$a as element(attribute)
+		return local:toxml_attribute($a , $config )
+	case	$d as element(document)
+		return local:toxml_document( $d , $config )
+	default
+		return ()
+	,
+
+	local:toxml( $e/element | $e/attribute )
 	)
 };
+
+
+
+
+
+
 
 document {
 	<xsl:stylesheet version="2.0" >
@@ -56,8 +101,8 @@ document {
 			<advancedProperties name="bExtensions" value="true"/>
 			<advancedProperties name="iWhitespace" value="0"/>
 			<advancedProperties name="bTinyTree" value="false"/>
-			<advancedProperties name="bUseDTD" value="false"/>
 			<advancedProperties name="bWarnings" value="true"/>
+			<advancedProperties name="bUseDTD" value="false"/>
 			<advancedProperties name="ModuleURIResolver" value=""/>
 		</scenario>
 	</scenarios>

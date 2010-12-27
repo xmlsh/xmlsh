@@ -4,11 +4,6 @@ declare namespace jxon='http://www.xmlsh.org/jxon';
 declare namespace xsl='http://www.w3.org/1999/XSL/Transform';
 
 
-declare function simple:tojson_name( $e as element(name) ) as xs:string
-{
-	common:json_name( $e   ) 
-
-};
 
 
 declare function simple:tojson_element( $e as element(element) )
@@ -30,7 +25,7 @@ comment { "simple:tojson_element" } ,
 ,
 (: Unwrapped elements turn into MEMBER :)
 	<xsl:template  match="{$match}" priority="{common:priority($e)}">
-		<MEMBER name="{simple:tojson_name($e/name)}">
+		<MEMBER name="{common:json_name($e/name)}">
 			<xsl:choose>
 				<!-- No attributes or child elements - jump to text  -->
 				<xsl:when test="empty(@*|*)">
@@ -77,7 +72,7 @@ return
 comment { "simple:tojson_attribute" } ,
 (: All attribute values turn into members of the same name :)
 	<xsl:template match="{$match}" mode="#all"  priority="{common:priority($e)}">
-		<MEMBER name="{simple:tojson_name($e/name)}">
+		<MEMBER name="{common:json_name($e/name)}">
 			{ common:json_text_value( $e ) } 
 		</MEMBER>
 	</xsl:template>
@@ -85,43 +80,9 @@ comment { "simple:tojson_attribute" } ,
 };
 
 
-declare function simple:tojson_document( $e as element(document) )
-{
-	<xsl:template match="document-node()">
-			<xsl:apply-templates select="*" mode="wrap"/>
-	</xsl:template>
-
-};
-
-
-declare function simple:tojson( $node as element() ) as node()*
-{
-	typeswitch( $node) 
-	case	$e as element(element) 
-		return simple:tojson_element( $e ) 
-	case	$a as element(attribute)
-		return simple:tojson_attribute($a )
-	case	$d as element(document)
-		return simple:tojson_document( $d )
-	default
-		return ()
-		
-};
 
 
 
-
-declare function simple:toxml_document( $e as element(document) )
-{
-
-	<xsl:template  match="/OBJECT">
-		<xsl:apply-templates select="*"/>
-	</xsl:template>,
-
-	<xsl:template  match="ARRAY">
-	
-	</xsl:template>
-};
 
 
 declare function simple:toxml_element( $e as element(element) )
@@ -187,21 +148,6 @@ declare function simple:toxml_attribute( $e as element(attribute) )
     )
 
 };
-declare function simple:toxml( $node as element() ) as node()*
-{
-	typeswitch( $node) 
-	case	$e as element(element) 
-		return simple:toxml_element( $e ) 
-	case	$a as element(attribute)
-		return simple:toxml_attribute($a )
-	case	$d as element(document)
-		return simple:toxml_document( $d )
-	default
-		return ()
-		
-};
-
-
 
 (: Stylus Studio meta-information - (c) 2004-2009. Progress Software Corporation. All rights reserved.
 

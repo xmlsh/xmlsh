@@ -5,10 +5,6 @@ declare namespace jxon='http://www.xmlsh.org/jxon';
 import module namespace common = "http://www.xmlsh.org/jsonxml/common"  at "common.xquery" ;
 
 
-declare function full:tojson_name( $e as element(name) ) as xs:string
-{
-	common:json_name( $e   ) 
-};
 
 
 declare function full:tojson_element( $e as element(element) )
@@ -21,7 +17,7 @@ return (
 
 comment { "full:tojson_element" } ,
 <xsl:template match="{$match}" priority="{common:priority($e)}">
-		<MEMBER name="{full:tojson_name($e/name)}">
+		<MEMBER name="{common:json_name($e/name)}">
 			<OBJECT>
 			<xsl:if test="@*">
 				<MEMBER name="{$config/attributes/string()}">
@@ -76,7 +72,7 @@ return
 (
 comment { "full:tojson_attribute" } ,
 	<xsl:template match="{$match}" mode="#all"  priority="{common:priority($e)}">
-		<MEMBER name="{full:tojson_name($e/name) }">
+		<MEMBER name="{common:json_name($e/name) }">
 			{ common:json_text_value( $e ) }
 		</MEMBER>
 	</xsl:template>
@@ -84,29 +80,6 @@ comment { "full:tojson_attribute" } ,
 )
 };
 
-
-declare function full:tojson_document( $e as element(document) )
-{
-	<xsl:template match="document-node()">
-			<xsl:apply-templates select="*" mode="wrap"/>
-	</xsl:template>
-
-};
-
-
-declare function full:tojson( $node as element() ) as node()*
-{
-	typeswitch( $node) 
-	case	$e as element(element) 
-		return full:tojson_element( $e ) 
-	case	$a as element(attribute)
-		return full:tojson_attribute($a )
-	case	$d as element(document)
-		return full:tojson_document( $d )
-	default
-		return ()
-		
-};
 
 
 
@@ -164,34 +137,6 @@ return (
 		</xsl:template>
 
 	)
-};
-
-
-declare function full:toxml_document( $e as element(document) )
-{
-
-	<xsl:template  match="/OBJECT">
-		<xsl:apply-templates select="*"/>
-	</xsl:template>,
-
-	<xsl:template  match="ARRAY">
-	
-	</xsl:template>
-
-};
-
-declare function full:toxml( $node as element() ) as node()*
-{
-	typeswitch( $node) 
-	case	$e as element(element) 
-		return full:toxml_element( $e ) 
-	case	$a as element(attribute)
-		return full:toxml_attribute($a )
-	case	$d as element(document)
-		return full:toxml_document( $d )
-	default
-		return ()
-		
 };
 
 
