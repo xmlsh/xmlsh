@@ -54,6 +54,7 @@ public class xversion extends BuiltinCommand {
 		
 		writer.writeEndElement();
 		writer.writeEndDocument();
+		writer.close();
 		stdout.writeSequenceTerminator(serializeOpts);
 		
 		return 0;

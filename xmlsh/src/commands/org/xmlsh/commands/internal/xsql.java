@@ -774,10 +774,10 @@ public class xsql extends XCommand {
 			}
 			writer.writeEndElement();
 			writer.writeEndDocument();
+			writer.close();
 			
 			stdout.writeSequenceTerminator(serializeOpts);
 			
-			writer.close();
 			
 		
 		} finally {
@@ -821,10 +821,10 @@ public class xsql extends XCommand {
 			
 			writer.writeEndElement();
 			writer.writeEndDocument();
+
+			writer.close();
 			
 			stdout.writeSequenceTerminator(serializeOpts);
-			
-			writer.close();
 			
 		
 		} finally {

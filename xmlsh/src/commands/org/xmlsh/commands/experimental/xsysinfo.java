@@ -41,6 +41,7 @@ public class xsysinfo extends XCommand {
 		writeNetwork( writer );
 		writer.writeEndElement();
 		writer.writeEndDocument();
+		writer.close();
 		stdout.writeSequenceTerminator(serializeOpts);
 		
 		return 0;
