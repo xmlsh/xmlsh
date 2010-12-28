@@ -42,8 +42,8 @@ declare function local:tojson_document( $e as element(jxon:document) , $config a
 declare function local:tojson( $es as element()* )
 {
 	for $e in $es 
-	let  $json := common:getjson( $e ) , 
-		 $config  := common:getconfig( $json )
+	let  
+		 $config  := common:getconfig( $e )
 	return
 	(
 	typeswitch( $e ) 
@@ -89,8 +89,8 @@ document {
 			<advancedProperties name="bExtensions" value="true"/>
 			<advancedProperties name="iWhitespace" value="0"/>
 			<advancedProperties name="bTinyTree" value="false"/>
-			<advancedProperties name="bWarnings" value="true"/>
 			<advancedProperties name="bUseDTD" value="false"/>
+			<advancedProperties name="bWarnings" value="true"/>
 			<advancedProperties name="ModuleURIResolver" value=""/>
 		</scenario>
 	</scenarios>

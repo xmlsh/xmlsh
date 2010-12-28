@@ -10,8 +10,7 @@ declare function simple:tojson_element( $e as element(jxon:element) )
 {
 
 let $match := common:match_elem( $e/jxon:name , $e ),
-    $json :=  common:getjson( $e ),
-	$config := common:getconfig( $json )
+	$config := common:getconfig( $e )
 return (
 comment { "simple:tojson_element" } ,
 
@@ -88,8 +87,7 @@ comment { "simple:tojson_attribute" } ,
 declare function simple:toxml_element( $e as element(jxon:element) )
 {
 	let 
-    	$json :=  common:getjson( $e ),
-		$config := common:getconfig( $json )
+		$config := common:getconfig( $e )
 	return (
 
 

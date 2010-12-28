@@ -13,20 +13,38 @@ declare function common:priority( $e as element( ) )
 	count( $e/ancestor::*/jxon:name )
 };
 
-
-(: Get the self or nearest parents <json> element :)
-
-declare function common:getjson( $e as element() ) as element(jxon:pattern)
+(: Given a prototype (root) and a list of parent/derived patterns generate a single pattern :)
+declare function common:inherit( $prototype as element(jxon:pattern) , $ps as element(jxon:pattern)+ ) as element(jxon:pattern)
 {
-	let $json := ($e/ancestor-or-self::*/jxon:pattern)[last()]
-	return $json
+	<jxon:pattern>
+	{
+		for $attr in $prototype/@*
+		return
+			( $attr , $ps/@*[ fn:node-name( . ) eq fn:node-name( $attr ) ] )[last()]
+	
+		,
+		for $elem in $prototype/*
+		return
+			( $elem , $ps/*[ fn:node-name( . ) eq fn:node-name( $elem ) ] )[last()]
+	}
+
+	</jxon:pattern>
+	
+	
 
 };
 
+
 (: Get the configuration pattern element coresponding to this pattern :)
-declare function common:getconfig( $j as element(jxon:pattern) ) as element(jxon:pattern)
+declare function common:getconfig( $e as element() ) as element(jxon:pattern)
 {
-	$common:patterns/jxon:patterns/jxon:pattern[@name eq $j/@name]
+
+	(: Get the self or nearest parents <pattern> element :)
+	
+	let $json := ($e/ancestor-or-self::*/jxon:pattern)
+	return 
+		common:inherit( $common:patterns/jxon:patterns/jxon:pattern[@name eq $json[last()]/@name] , $json )
+
 
 };
 
@@ -41,7 +59,7 @@ declare function common:qname( $name as element()? ) as xs:QName  ?
 
 declare function common:parent_type( $type as xs:QName ) as xs:QName?
 {
-	common:qname(   $common:annotations/document/type[common:qname(name) eq $type]/basetype )
+	common:qname(   $common:annotations/jxon:document/jxon:type[common:qname(name) eq $type]/basetype )
 
 };
 
@@ -70,12 +88,12 @@ declare function common:json_type( $e as element(jxon:pattern) , $type as xs:QNa
 
 declare function common:json_text_type( $e as element() ) as xs:string
 {
-	if( empty($e/type ) ) then
+	if( empty($e/jxon:type ) ) then
 		"STRING" 
 	else
-	let $name := common:qname( $e/type )
+	let $name := common:qname( $e/jxon:type )
 	return
-		common:json_type( common:getjson($e) , $name )
+		common:json_type( common:getconfig($e) , $name )
 
 
 };

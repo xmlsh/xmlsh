@@ -47,8 +47,8 @@ declare function local:toxml_document( $e as element(jxon:document) , $config as
 declare function local:toxml( $es as element()* )
 {
 	for $e in $es 
-	let  $json := common:getjson( $e ) , 
-		 $config  := common:getconfig( $json )
+	let  
+		 $config  := common:getconfig( $e )
 	return
 	(
 	typeswitch( $e ) 
@@ -101,8 +101,8 @@ document {
 			<advancedProperties name="bExtensions" value="true"/>
 			<advancedProperties name="iWhitespace" value="0"/>
 			<advancedProperties name="bTinyTree" value="false"/>
-			<advancedProperties name="bUseDTD" value="false"/>
 			<advancedProperties name="bWarnings" value="true"/>
+			<advancedProperties name="bUseDTD" value="false"/>
 			<advancedProperties name="ModuleURIResolver" value=""/>
 		</scenario>
 	</scenarios>

@@ -11,8 +11,7 @@ declare function full:tojson_element( $e as element(jxon:element) )
 {
 
 let $match := common:match_elem( $e/jxon:name , $e ),
-    $json :=  common:getjson( $e ),
-	$config := common:getconfig( $json ) 
+	$config := common:getconfig( $e ) 
 return (
 
 comment { "full:tojson_element" } ,
@@ -23,7 +22,7 @@ comment { "full:tojson_element" } ,
 				<MEMBER name="{$config/jxon:attributes/string()}">
 					<OBJECT>
 						{ (: Only apply to attributes which are marked as full :) 
-						   for $a in $e/jxon:attribute[ common:getjson( . )/@name eq 'full' ]
+						   for $a in $e/jxon:attribute[ common:getconfig( . )/@name eq 'full' ]
 						   return
 						   	<xsl:apply-templates select="{  common:attr_name( $a/jxon:name ) }"/>
 						}							
@@ -31,7 +30,7 @@ comment { "full:tojson_element" } ,
 				</MEMBER>
 			</xsl:if>
 			{ (: Apply attributes which are not full  :)
-			   for $a in $e/jxon:attribute[ common:getjson( . )/@name ne 'full' ]
+			   for $a in $e/jxon:attribute[ common:getconfig( . )/@name ne 'full' ]
 			   return
 			   	<xsl:apply-templates select="{  common:attr_name( $a/jxon:name ) }"/>
 			}							
@@ -87,8 +86,7 @@ comment { "full:tojson_attribute" } ,
 declare function full:toxml_element( $e as element(jxon:element) )
 {
     let
-		$json :=  common:getjson( $e ) ,
-		$config := common:getconfig( $json ) 
+		$config := common:getconfig( $e) 
 	return (
 
 	comment { concat(" full:toxml_element for " , $e/jxon:name/@localname ) },
@@ -123,8 +121,7 @@ declare function full:toxml_element( $e as element(jxon:element) )
 declare function full:toxml_attribute( $e as element(jxon:attribute) )
 {	
 	let
-		$json :=  common:getjson( $e ),
-		$config := common:getconfig( $json )
+		$config := common:getconfig( $e)
 return (
   comment { concat(" full:toxml_attribute for " , $e/jxon:name/@localname ) },
   	text{ "&#x0a;" } , 
