@@ -34,16 +34,31 @@ declare function common:inherit( $prototype as element(jxon:pattern) , $ps as el
 
 };
 
+(: Get a list of all type and parent type patterns :)
+declare function common:gettypepatterns( $typename as xs:QName? ) as element(jxon:pattern)*
+{
+	if( empty($typename) ) then () else
+	
+	let 
+		$pattern :=  $common:annotations/jxon:document/jxon:type_decl[ common:qname(name) eq $typename ]/jxon:pattern
+	return
+		( common:gettypepatterns( common:parent_type( $typename ) ) , $pattern )
+
+};
+
 
 (: Get the configuration pattern element coresponding to this pattern :)
 declare function common:getconfig( $e as element() ) as element(jxon:pattern)
 {
 
-	(: Get the self or nearest parents <pattern> element :)
-	
-	let $json := ($e/ancestor-or-self::*/jxon:pattern)
+	(: Get the self or nearest parents <pattern> element or types :)
+	let $json := $e/ancestor-or-self::*,
+		$patterns :=
+		for $n in $json return
+			( common:gettypepatterns( common:qname( $n/jxon:type )  ) , $n/jxon:pattern )
+
 	return 
-		common:inherit( $common:patterns/jxon:patterns/jxon:pattern[@name eq $json[last()]/@name] , $json )
+		common:inherit( $common:patterns/jxon:patterns/jxon:pattern[@name eq $patterns[last()]/@name] , $patterns )
 
 
 };
@@ -59,7 +74,7 @@ declare function common:qname( $name as element()? ) as xs:QName  ?
 
 declare function common:parent_type( $type as xs:QName ) as xs:QName?
 {
-	common:qname(   $common:annotations/jxon:document/jxon:type[common:qname(name) eq $type]/basetype )
+	common:qname(   $common:annotations/jxon:document/jxon:type_decl[common:qname(jxon:name) eq $type]/jxon:basetype )
 
 };
 

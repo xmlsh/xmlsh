@@ -71,7 +71,7 @@ import org.xmlsh.util.Util;
 public class jsonxslt  extends XCommand{
 
 		
-		private static final String CONTEXT_TYPE = "type";
+		private static final String CONTEXT_TYPE = "type_decl";
 		private static final String CONTEXT_ATTRIBUTE = "attribute";
 		private static final String CONTEXT_ELEMENT = "element";
 		private static final String CONTEXT_DOCUMENT = "document";
