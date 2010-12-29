@@ -62,7 +62,7 @@ public class xevent extends XCommand {
 			
 		}
 		writer.writeEndElement();
-		writer.writeStartDocument();
+		writer.writeEndDocument();
 		writer.close();
 		
 		
