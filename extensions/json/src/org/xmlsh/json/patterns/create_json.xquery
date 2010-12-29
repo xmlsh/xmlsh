@@ -3,28 +3,10 @@ declare namespace xsl='http://www.w3.org/1999/XSL/Transform';
 declare namespace jxon='http://www.xmlsh.org/jxon';
 
 import module namespace common = "http://www.xmlsh.org/jsonxml/common"  at "common.xquery" ;
-import module namespace full = "http://www.xmlsh.org/jsonxml/full" at "full.xquery" ;
-import module namespace simple = "http://www.xmlsh.org/jsonxml/simple" at "simple.xquery" ;
 
 
 
-declare function local:tojson_element( $e as element(jxon:element) , $config as element(jxon:pattern) )
-{
-	if( $config/@name eq 'full' ) then
-		full:tojson_element($e )
-	else
-		simple:tojson_element($e)
-	
-};
 
-declare function local:tojson_attribute( $e as element(jxon:attribute) , $config as element(jxon:pattern) )
-{
-	if( $config/@name eq 'full' ) then
-		full:tojson_attribute($e )
-	else
-		simple:tojson_attribute($e)
-	
-};
 
 declare function local:tojson_document( $e as element(jxon:document) , $config as element(jxon:pattern) )
 {
@@ -35,6 +17,119 @@ declare function local:tojson_document( $e as element(jxon:document) , $config a
 
 
 };
+
+
+declare function local:tojson_attribute( $e as element(jxon:attribute), $config as element(jxon:pattern) )
+{	
+
+let $match := common:match_attr( $e/jxon:name , $e )
+return 
+(
+	<xsl:template match="{$match}" mode="#all"  priority="{common:priority($e)}">
+		<MEMBER name="{common:json_name($e/jxon:name) }">
+			{ common:json_text_value( $e ) }
+		</MEMBER>
+	</xsl:template>
+
+)
+};
+
+
+
+
+declare function local:tojson_element( $e as element(jxon:element) , $config as element(jxon:pattern) )
+{
+
+let $match := common:match_elem( $e/jxon:name , $e )
+
+return (
+
+comment { "full:tojson_element" } ,
+<xsl:template match="{$match}" priority="{common:priority($e)}">
+		<MEMBER name="{common:json_name($e/jxon:name)}">
+		{		
+			(: If we wrap attributes or children in their own child object :)
+			if( $config/jxon:attributes or $config/jxon:children ) then 
+				<OBJECT>
+				<xsl:if test="@*">
+					<MEMBER name="{$config/jxon:attributes/string()}">
+						<OBJECT>
+							{ (: Only apply to attributes which are marked as full :) 
+							   for $a in $e/jxon:attribute[ common:getconfig( . )/@name eq 'full' ]
+							   return
+							   	<xsl:apply-templates select="{  common:attr_name( $a/jxon:name ) }"/>
+							}							
+						</OBJECT>
+					</MEMBER>
+				</xsl:if>
+				{ 
+					(: Apply attributes which are not wrapped :)
+				   for $a in $e/jxon:attribute[ common:getconfig( . )/@name ne 'full'  ]
+				   return
+				   	<xsl:apply-templates select="{  common:attr_name( $a/jxon:name ) }"/>
+				}							
+
+
+
+				<xsl:if test="node() except @*">	
+				
+					<MEMBER name="{$config/jxon:children/string()}">
+						<ARRAY>
+							<xsl:apply-templates select="node() except @*" mode="wrap"/>
+						</ARRAY>
+					</MEMBER>
+				</xsl:if>
+				</OBJECT>
+			(: "simple" mode do not wrap children :)
+			else 
+			<xsl:choose>
+				<!-- No attributes or child elements - jump to text  -->
+				<xsl:when test="empty(@*|*)">
+					{ common:json_text_value($e) }
+				</xsl:when>
+				<!-- Otherwise need to make an object out of this -->
+				<xsl:otherwise>
+					<OBJECT>
+
+						<!-- For each element and attribute make a member -->
+						<xsl:for-each select="@*|*">
+							<xsl:apply-templates select="."/>
+						</xsl:for-each>
+						
+						<!-- Wrap text in a _text node only for simple types -->
+						{ 
+							if( $e/@contentType eq "simple" )  then 
+								<xsl:if test="string(.)">
+								<MEMBER name="{$config/jxon:text/string()}">
+										{ common:json_text_value($e) }
+								</MEMBER>
+							</xsl:if>
+							else
+								()
+						}
+					</OBJECT>
+				</xsl:otherwise>
+			</xsl:choose>
+		
+		}
+		</MEMBER>
+	</xsl:template>
+	,
+	<xsl:template match="{$match}" mode="wrap" priority="{common:priority($e)}">
+		<OBJECT>
+			<xsl:apply-templates select="."/>	
+		
+		</OBJECT>
+	</xsl:template> 
+	,
+	<xsl:template match="{$match}/text()" mode="#all" priority="{common:priority($e)}">
+		{ common:json_text_value( $e ) }
+	</xsl:template>
+)
+
+};
+
+
 
 
 
@@ -89,8 +184,8 @@ document {
 			<advancedProperties name="bExtensions" value="true"/>
 			<advancedProperties name="iWhitespace" value="0"/>
 			<advancedProperties name="bTinyTree" value="false"/>
-			<advancedProperties name="bUseDTD" value="false"/>
 			<advancedProperties name="bWarnings" value="true"/>
+			<advancedProperties name="bUseDTD" value="false"/>
 			<advancedProperties name="ModuleURIResolver" value=""/>
 		</scenario>
 	</scenarios>

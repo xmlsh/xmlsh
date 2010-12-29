@@ -2,29 +2,8 @@ declare namespace json='http://www.xmlsh.org/jsonxml';
 declare namespace xsl='http://www.w3.org/1999/XSL/Transform';
 declare namespace jxon='http://www.xmlsh.org/jxon';
 import module namespace common = "http://www.xmlsh.org/jsonxml/common"  at "common.xquery" ;
-import module namespace full = "http://www.xmlsh.org/jsonxml/full" at "full.xquery" ;
-import module namespace simple = "http://www.xmlsh.org/jsonxml/simple" at "simple.xquery" ;
 
 
-
-
-declare function local:toxml_element( $e as element(jxon:element) , $config as element(jxon:pattern) )
-{
-	if( $config/@name eq 'full' ) then
-		full:toxml_element($e )
-	else
-		simple:toxml_element($e)
-	
-};
-
-declare function local:toxml_attribute( $e as element(jxon:attribute) , $config as element(jxon:pattern) )
-{
-	if( $config/@name eq 'full' ) then
-		full:toxml_attribute($e )
-	else
-		simple:toxml_attribute($e)
-	
-};
 
 declare function local:toxml_document( $e as element(jxon:document) , $config as element(jxon:pattern) )
 {
@@ -40,6 +19,87 @@ declare function local:toxml_document( $e as element(jxon:document) , $config as
 
 
 };
+
+
+
+
+
+
+
+declare function local:toxml_attribute( $e as element(jxon:attribute),$config as element(jxon:pattern)  )
+{	
+	if( $config/jxon:attributes ) then 
+		let $match := common:match_json( () , $e )
+		return 
+			<xsl:template match="{$match}/OBJECT/MEMBER[@name eq '{$config/jxon:attributes/string()}']/OBJECT/{common:member_name($e/jxon:name)}">
+				<xsl:attribute name="{$e/jxon:name/@localname}" namespace="{$e/jxon:name/@uri}">
+						<xsl:apply-templates select="*"/>
+				</xsl:attribute>
+			</xsl:template>
+	else	
+		let $match := common:match_json( $e/jxon:name , $e )
+		return 
+		(
+			<xsl:template match="{$match}/OBJECT" >
+					<xsl:apply-templates select="*" />
+			</xsl:template>
+			,
+
+	
+			<xsl:template match="{$match}/STRING | {$match}/NUMBER">
+					<xsl:value-of select="string()"/>
+			</xsl:template>,
+			<xsl:template match="{$match}">
+				<xsl:attribute name="{$e/jxon:name/@localname}" namespace="{$e/jxon:name/@uri}" >
+					<xsl:apply-templates select="*"/>
+				</xsl:attribute>
+
+			</xsl:template>
+		  )
+
+};
+
+
+
+
+
+
+
+declare function local:toxml_element( $e as element(jxon:element) , $config as element(jxon:pattern) )
+{
+
+	let $match := common:match_json( $e/jxon:name , $e )
+	return 
+	(
+	<xsl:template match="{$match}/OBJECT" >
+			<xsl:apply-templates select="*" />
+	</xsl:template>
+	,
+
+	
+	<xsl:template match="{$match}/STRING | {$match}/NUMBER">
+			<xsl:value-of select="string()"/>
+	</xsl:template>,
+	<xsl:template match="{$match}">
+		<xsl:element name="{$e/jxon:name/@localname}" namespace="{$e/jxon:name/@uri}">
+			<xsl:apply-templates select="*"/>
+		</xsl:element>
+
+	</xsl:template>,
+	if( $config/jxon:text )  then 
+	<xsl:template match="{$match}/OBJECT/MEMBER[@name='{$config/jxon:text/string()}']">
+			<xsl:value-of select="string()" />
+	</xsl:template> else () ,
+	if( $config/jxon:children ) then 
+	<xsl:template match="{$match}/OBJECT/MEMBER[@name eq '{$config/jxon:children/string()}']">
+		<xsl:apply-templates select="ARRAY/*"/>
+	</xsl:template>
+	else () 
+    )
+
+
+};
+
 
 
 
@@ -101,8 +161,8 @@ document {
 			<advancedProperties name="bExtensions" value="true"/>
 			<advancedProperties name="iWhitespace" value="0"/>
 			<advancedProperties name="bTinyTree" value="false"/>
-			<advancedProperties name="bWarnings" value="true"/>
 			<advancedProperties name="bUseDTD" value="false"/>
+			<advancedProperties name="bWarnings" value="true"/>
 			<advancedProperties name="ModuleURIResolver" value=""/>
 		</scenario>
 	</scenarios>
