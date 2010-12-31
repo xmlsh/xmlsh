@@ -9,7 +9,8 @@ import module namespace common = "http://www.xmlsh.org/jsonxml/common"  at "comm
 
 
 declare function local:tojson_document( $e as element(jxon:document) , $config as element(jxon:pattern) )
-{
+{	
+	$common:nl,
 	<xsl:template match="document-node()">
 			<xsl:apply-templates select="*" mode="wrap"/>
 	</xsl:template>
@@ -25,6 +26,7 @@ declare function local:tojson_attribute( $e as element(jxon:attribute), $config 
 let $match := common:match_attr( $e/jxon:name , $e )
 return 
 (
+	$common:nl,
 	<xsl:template match="{$match}" mode="#all"  priority="{common:priority($e)}">
 		<MEMBER name="{common:json_name($e/jxon:name) }">
 			{ common:json_text_value( $e ) }
@@ -43,42 +45,40 @@ declare function local:tojson_element( $e as element(jxon:element) , $config as 
 let $match := common:match_elem( $e/jxon:name , $e )
 
 return (
-
-comment { "full:tojson_element" } ,
+common:dump( $e ,$config ),
+$common:nl,
 <xsl:template match="{$match}" priority="{common:priority($e)}">
 		<MEMBER name="{common:json_name($e/jxon:name)}">
 		{		
 			(: If we wrap attributes or children in their own child object :)
 			if( $config/jxon:attributes or $config/jxon:children ) then 
 				<OBJECT>
-				<xsl:if test="@*">
-					<MEMBER name="{$config/jxon:attributes/string()}">
-						<OBJECT>
-							{ (: Only apply to attributes which are marked as full :) 
-							   for $a in $e/jxon:attribute[ common:getconfig( . )/@name eq 'full' ]
-							   return
-							   	<xsl:apply-templates select="{  common:attr_name( $a/jxon:name ) }"/>
-							}							
-						</OBJECT>
-					</MEMBER>
-				</xsl:if>
-				{ 
-					(: Apply attributes which are not wrapped :)
-				   for $a in $e/jxon:attribute[ common:getconfig( . )/@name ne 'full'  ]
-				   return
-				   	<xsl:apply-templates select="{  common:attr_name( $a/jxon:name ) }"/>
-				}							
+					<xsl:if test="@*">
+						<MEMBER name="{$config/jxon:attributes/string()}">
+							<OBJECT>
+								{ (: Only apply to attributes which are marked as full :) 
+								   for $a in $e/jxon:attribute[ common:getconfig( . )/@name eq 'full' ]
+								   return
+								   	<xsl:apply-templates select="{  common:attr_name( $a/jxon:name ) }"/>
+								}							
+							</OBJECT>
+						</MEMBER>
+					</xsl:if>
+					{ 
+						(: Apply attributes which are not wrapped :)
+					   for $a in $e/jxon:attribute[ common:getconfig( . )/@name ne 'full'  ]
+					   return
+					   	<xsl:apply-templates select="{  common:attr_name( $a/jxon:name ) }"/>
+					}							
 
-
-
-				<xsl:if test="node() except @*">	
+					<xsl:if test="node() except @*">	
 				
-					<MEMBER name="{$config/jxon:children/string()}">
-						<ARRAY>
-							<xsl:apply-templates select="node() except @*" mode="wrap"/>
-						</ARRAY>
-					</MEMBER>
-				</xsl:if>
+						<MEMBER name="{$config/jxon:children/string()}">
+							<ARRAY>
+								<xsl:apply-templates select="node() except @*" mode="wrap"/>
+							</ARRAY>
+						</MEMBER>
+					</xsl:if>
 				</OBJECT>
 			(: "simple" mode do not wrap children :)
 			else 
@@ -115,13 +115,14 @@ comment { "full:tojson_element" } ,
 		</MEMBER>
 	</xsl:template>
 	,
+	$common:nl,
 	<xsl:template match="{$match}" mode="wrap" priority="{common:priority($e)}">
 		<OBJECT>
 			<xsl:apply-templates select="."/>	
 		
 		</OBJECT>
 	</xsl:template> 
-	,
+	, $common:nl,
 	<xsl:template match="{$match}/text()" mode="#all" priority="{common:priority($e)}">
 		{ common:json_text_value( $e ) }
 	</xsl:template>
@@ -184,8 +185,8 @@ document {
 			<advancedProperties name="bExtensions" value="true"/>
 			<advancedProperties name="iWhitespace" value="0"/>
 			<advancedProperties name="bTinyTree" value="false"/>
-			<advancedProperties name="bWarnings" value="true"/>
 			<advancedProperties name="bUseDTD" value="false"/>
+			<advancedProperties name="bWarnings" value="true"/>
 			<advancedProperties name="ModuleURIResolver" value=""/>
 		</scenario>
 	</scenarios>

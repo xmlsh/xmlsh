@@ -4,8 +4,30 @@ declare namespace jxon='http://www.xmlsh.org/jxon';
 
 declare variable $common:annotations as document-node() external ;
 declare variable $common:patterns    as document-node() external ;
+declare variable $common:nl := "&#xA;" ;
+
+declare function common:dump( $e as element() , $config as element(jxon:pattern) ) 
+{
+	comment { 
+	concat( $common:nl,
+			local-name($e) , ": " , common:qname($e/jxon:name ), $common:nl , 
+			"Config : " , $common:nl ,
+			fn:string-join(
+				for $a in $config/@* return
+				concat("@" , node-name($a) , ": " , $a/string()) , $common:nl ),
+			$common:nl,
+			fn:string-join(
+				for $c in $config/* return
+					concat(node-name($c) , ": " , $c/string()), $common:nl),
+			$common:nl
+		)
+
+	}
+			
 
 
+
+};
 
 (: Priority of match string for an element - use the depth of the element :)
 declare function common:priority( $e as element( ) )
