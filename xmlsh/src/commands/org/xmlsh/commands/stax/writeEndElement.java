@@ -8,30 +8,36 @@ package org.xmlsh.commands.stax;
 
 import java.util.List;
 
-import javax.xml.stream.XMLEventReader;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
 
-import org.xmlsh.core.InvalidArgumentException;
+import net.sf.saxon.trans.XPathException;
+import org.xmlsh.core.CoreException;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
+import org.xmlsh.sh.shell.Shell;
 
-public class closeReader extends XCommand {
+public class writeEndElement extends XCommand {
 
-	public closeReader() {
-		// TODO Auto-generated constructor stub
+	
+	
+	public writeEndElement()
+	{
+		
 	}
-
+	
 	@Override
-	public int run(List<XValue> args) throws Exception {
-		if( args.size() != 1)
-			throw new InvalidArgumentException("Expected XMLEventReader");
+	public int run( List<XValue> args) throws CoreException, XPathException, XMLStreamException {
+		if( args.size()  != 1  )
+			return -1;
 		
-		Object obj = args.get(0).asObject();
-		if(! (obj instanceof XMLEventReader))
-			throw new InvalidArgumentException("Expected XMLEventReader");
-		
-		((XMLEventReader)obj).close();
+		XValue arg0 = args.get(0);
+		Object arg = arg0.asObject();
+		if( arg instanceof XMLStreamWriter )
+			((XMLStreamWriter)arg).writeEndElement();
 		
 		return 0;
+		
 	}
 
 }

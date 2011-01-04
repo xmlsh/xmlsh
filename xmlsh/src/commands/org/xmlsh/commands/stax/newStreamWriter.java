@@ -6,32 +6,37 @@
 
 package org.xmlsh.commands.stax;
 
+import java.io.IOException;
 import java.util.List;
 
 import javax.xml.stream.XMLEventReader;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.events.XMLEvent;
 
-import org.xmlsh.core.InvalidArgumentException;
-import org.xmlsh.core.XCommand;
+import net.sf.saxon.s9api.SaxonApiException;
+import org.xmlsh.core.BuiltinFunctionCommand;
+import org.xmlsh.core.CoreException;
 import org.xmlsh.core.XValue;
+import org.xmlsh.sh.shell.Shell;
 
-public class closeReader extends XCommand {
+public class newStreamWriter extends BuiltinFunctionCommand {
 
-	public closeReader() {
-		// TODO Auto-generated constructor stub
+	
+	
+	public newStreamWriter()
+	{
+		super("newEventWriter");
 	}
-
+	
 	@Override
-	public int run(List<XValue> args) throws Exception {
-		if( args.size() != 1)
-			throw new InvalidArgumentException("Expected XMLEventReader");
+	public XValue run(Shell shell, List<XValue> args) throws CoreException, XMLStreamException, SaxonApiException, IOException {
+		if( args.size() == 0 )
+			return new XValue(shell.getEnv().getStdout().asXMLStreamWriter(shell.getSerializeOpts()));
+		else
+			return new XValue(shell.getEnv().getOutput(args.get(0),false).asXMLStreamWriter(shell.getSerializeOpts()));
 		
-		Object obj = args.get(0).asObject();
-		if(! (obj instanceof XMLEventReader))
-			throw new InvalidArgumentException("Expected XMLEventReader");
 		
-		((XMLEventReader)obj).close();
 		
-		return 0;
 	}
 
 }

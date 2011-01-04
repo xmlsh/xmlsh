@@ -8,30 +8,38 @@ package org.xmlsh.commands.stax;
 
 import java.util.List;
 
-import javax.xml.stream.XMLEventReader;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
 
-import org.xmlsh.core.InvalidArgumentException;
+import net.sf.saxon.s9api.QName;
+import net.sf.saxon.trans.XPathException;
+import org.xmlsh.core.BuiltinFunctionCommand;
+import org.xmlsh.core.CoreException;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
+import org.xmlsh.sh.shell.Shell;
 
-public class closeReader extends XCommand {
+public class writeStartElement extends XCommand {
 
-	public closeReader() {
-		// TODO Auto-generated constructor stub
+	
+	
+	public writeStartElement()
+	{
+		
 	}
-
+	
 	@Override
-	public int run(List<XValue> args) throws Exception {
-		if( args.size() != 1)
-			throw new InvalidArgumentException("Expected XMLEventReader");
-		
-		Object obj = args.get(0).asObject();
-		if(! (obj instanceof XMLEventReader))
-			throw new InvalidArgumentException("Expected XMLEventReader");
-		
-		((XMLEventReader)obj).close();
+	public int run( List<XValue> args) throws CoreException, XPathException, XMLStreamException {
+		if( args.size()  != 2  )
+			return -1;
+		QName name = args.get(1).asQName(getShell());
+		XValue arg0 = args.get(0);
+		Object arg = arg0.asObject();
+		if( arg instanceof XMLStreamWriter )
+			((XMLStreamWriter)arg).writeStartElement(name.getPrefix() , name.getLocalName(), name.getNamespaceURI() );
 		
 		return 0;
+		
 	}
 
 }
