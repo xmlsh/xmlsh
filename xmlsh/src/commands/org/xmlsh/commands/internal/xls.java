@@ -59,7 +59,7 @@ public class xls extends XCommand {
 			// Must go to Shell API to get raw files
 			String sArg = arg.toString();
 			File dir = getEnv().getShell().getFile(sArg);
-			if( ! dir.exists() ){
+			if( dir == null ||  ! dir.exists() ){
 				this.printErr("ls: cannot access " + sArg + " : No such file or directory" );
 				ret++;
 				continue;

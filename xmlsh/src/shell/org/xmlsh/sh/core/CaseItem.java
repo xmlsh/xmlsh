@@ -28,7 +28,8 @@ public class CaseItem {
 	public void print(PrintWriter out,boolean bExec){
 		mPattern.print(out);
 		out.print(") ");
-		mCommand.print(out, bExec);
+		if( mCommand != null )
+			mCommand.print(out, bExec);
 	}
 
 	public boolean matches(Shell shell , String word) throws IOException, CoreException {
