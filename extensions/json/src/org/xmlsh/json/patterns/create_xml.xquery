@@ -5,7 +5,7 @@ import module namespace common = "http://www.xmlsh.org/jsonxml/common"  at "comm
 
 
 
-declare function local:toxml_document( $e as element(jxon:document) , $config as element(jxon:pattern) )
+declare function local:toxml_document( $e as element(jxon:document) , $pattern as element(jxon:pattern) )
 {
 
 	<xsl:template  match="/OBJECT">
@@ -26,12 +26,12 @@ declare function local:toxml_document( $e as element(jxon:document) , $config as
 
 
 
-declare function local:toxml_attribute( $e as element(jxon:attribute),$config as element(jxon:pattern)  )
+declare function local:toxml_attribute( $e as element(jxon:attribute),$pattern as element(jxon:pattern)  )
 {	
-	if( xs:boolean($config/jxon:attributes/@wrap) ) then 
+	if( xs:boolean($pattern/jxon:attributes/@wrap) ) then 
 		let $match := common:match_json( () , $e )
 		return 
-			<xsl:template match="{$match}/OBJECT/MEMBER[@name eq '{$config/jxon:attributes/@name}']/OBJECT/{common:member_name($e/jxon:name)}">
+			<xsl:template match="{$match}/OBJECT/MEMBER[@name eq '{$pattern/jxon:attributes/@name}']/OBJECT/{common:member_name($e/jxon:name)}">
 				<xsl:attribute name="{$e/jxon:name/@localname}" namespace="{$e/jxon:name/@uri}">
 						<xsl:apply-templates select="*"/>
 				</xsl:attribute>
@@ -65,7 +65,7 @@ declare function local:toxml_attribute( $e as element(jxon:attribute),$config as
 
 
 
-declare function local:toxml_element( $e as element(jxon:element) , $config as element(jxon:pattern) )
+declare function local:toxml_element( $e as element(jxon:element) , $pattern as element(jxon:pattern) )
 {
 
 	let $match := common:match_json( $e/jxon:name , $e )
@@ -86,12 +86,12 @@ declare function local:toxml_element( $e as element(jxon:element) , $config as e
 		</xsl:element>
 
 	</xsl:template>,
-	if( xs:boolean($config/jxon:text/@wrap) )  then 
-	<xsl:template match="{$match}/OBJECT/MEMBER[@name='{$config/jxon:text/@name}']">
+	if( xs:boolean($pattern/jxon:text/@wrap) )  then 
+	<xsl:template match="{$match}/OBJECT/MEMBER[@name='{$pattern/jxon:text/@name}']">
 			<xsl:value-of select="string()" />
 	</xsl:template> else () ,
-	if( xs:boolean($config/jxon:children/@wrap) ) then 
-	<xsl:template match="{$match}/OBJECT/MEMBER[@name eq '{$config/jxon:children/@name}']">
+	if( xs:boolean($pattern/jxon:children/@wrap) ) then 
+	<xsl:template match="{$match}/OBJECT/MEMBER[@name eq '{$pattern/jxon:children/@name}']">
 		<xsl:apply-templates select="ARRAY/*"/>
 	</xsl:template>
 	else () 
@@ -108,16 +108,16 @@ declare function local:toxml( $es as element()* )
 {
 	for $e in $es 
 	let  
-		 $config  := common:getconfig( $e )
+		 $pattern  := common:getpattern( $e )
 	return
 	(
 	typeswitch( $e ) 
 	case	$elem as element(jxon:element)
-		return local:toxml_element( $elem , $config ) 
+		return local:toxml_element( $elem , $pattern ) 
 	case	$a as element(jxon:attribute)
-		return local:toxml_attribute($a , $config )
+		return local:toxml_attribute($a , $pattern )
 	case	$d as element(jxon:document)
-		return local:toxml_document( $d , $config )
+		return local:toxml_document( $d , $pattern )
 	default
 		return ()
 	,

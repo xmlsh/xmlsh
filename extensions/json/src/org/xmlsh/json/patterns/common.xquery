@@ -6,18 +6,18 @@ declare variable $common:annotations as document-node() external ;
 declare variable $common:patterns    as document-node() external ;
 declare variable $common:nl := "&#xA;" ;
 
-declare function common:dump( $e as element() , $config as element(jxon:pattern) ) 
+declare function common:dump( $e as element() , $pattern as element(jxon:pattern) ) 
 {
 	comment { 
 	concat( $common:nl,
 			local-name($e) , ": " , common:qname($e/jxon:name ), $common:nl , 
 			"Config : " , $common:nl ,
 			fn:string-join(
-				for $a in $config/@* return
+				for $a in $pattern/@* return
 				concat("@" , node-name($a) , ": " , $a/string()) , $common:nl ) ,
 			$common:nl ),
 			fn:string-join(
-				for $c in $config/* return
+				for $c in $pattern/* return
 				  concat(node-name($c) , ": " , $c/string(), $common:nl ,
 					 fn:string-join(
 					 	for $ca in $c/@* return
@@ -69,7 +69,7 @@ declare function common:gettypepatterns( $typename as xs:QName? ) as element(jxo
 
 
 (: Get the configuration pattern element coresponding to this pattern :)
-declare function common:getconfig( $e as element() ) as element(jxon:pattern)
+declare function common:getpattern( $e as element() ) as element(jxon:pattern)
 {
 
 	(: Get the self or nearest parents <pattern> element or types :)
@@ -101,7 +101,7 @@ declare function common:parent_type( $type as xs:QName ) as xs:QName?
 
 
 
-declare function common:json_type( $e as element(jxon:pattern) , $type as xs:QName? ) as xs:string
+declare function common:json_type( $pattern as element(jxon:pattern) , $type as xs:QName? ) as xs:string
 {
 	if( empty($type) ) then
 		"STRING"
@@ -113,7 +113,7 @@ declare function common:json_type( $e as element(jxon:pattern) , $type as xs:QNa
 	 then
 	 	"NUMBER"
 	else 
-		common:json_type( $e , common:parent_type( $type ) )
+		common:json_type( $pattern , common:parent_type( $type ) )
 
 };
 
@@ -129,7 +129,7 @@ declare function common:json_text_type( $e as element() ) as xs:string
 	else
 	let $name := common:qname( $e/jxon:type )
 	return
-		common:json_type( common:getconfig($e) , $name )
+		common:json_type( common:getpattern($e) , $name )
 
 
 };

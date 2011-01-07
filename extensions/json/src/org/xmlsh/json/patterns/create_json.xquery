@@ -57,7 +57,7 @@ $common:nl,
 						<MEMBER name="{$config/jxon:attributes/@name}">
 							<OBJECT>
 								{ (: Only apply to attributes which are marked as full :) 
-								   for $a in $e/jxon:attribute[ xs:boolean(common:getconfig( . )/jxon:attributes/@wrap)  ]
+								   for $a in $e/jxon:attribute[ xs:boolean(common:getpattern( . )/jxon:attributes/@wrap)  ]
 								   return
 								   	<xsl:apply-templates select="{  common:attr_name( $a/jxon:name ) }"/>
 								}							
@@ -66,7 +66,7 @@ $common:nl,
 					</xsl:if>
 					{ 
 						(: Apply attributes which are not wrapped :)
-					   for $a in $e/jxon:attribute[ fn:not(xs:boolean(common:getconfig( . )/jxon:attributes/@wrap)) ]
+					   for $a in $e/jxon:attribute[ fn:not(xs:boolean(common:getpattern( . )/jxon:attributes/@wrap)) ]
 					   return
 					   	<xsl:apply-templates select="{  common:attr_name( $a/jxon:name ) }"/>
 					}							
@@ -139,16 +139,16 @@ declare function local:tojson( $es as element()* )
 {
 	for $e in $es 
 	let  
-		 $config  := common:getconfig( $e )
+		 $pattern  := common:getpattern( $e )
 	return
 	(
 	typeswitch( $e ) 
 	case	$elem as element(jxon:element)
-		return local:tojson_element( $elem , $config ) 
+		return local:tojson_element( $elem , $pattern ) 
 	case	$a as element(jxon:attribute)
-		return local:tojson_attribute($a , $config )
+		return local:tojson_attribute($a , $pattern )
 	case	$d as element(jxon:document)
-		return local:tojson_document( $d , $config )
+		return local:tojson_document( $d , $pattern )
 	default
 		return ()
 	,
