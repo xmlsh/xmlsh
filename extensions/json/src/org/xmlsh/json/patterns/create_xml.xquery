@@ -28,10 +28,10 @@ declare function local:toxml_document( $e as element(jxon:document) , $config as
 
 declare function local:toxml_attribute( $e as element(jxon:attribute),$config as element(jxon:pattern)  )
 {	
-	if( $config/jxon:attributes ) then 
+	if( xs:boolean($config/jxon:attributes/@wrap) ) then 
 		let $match := common:match_json( () , $e )
 		return 
-			<xsl:template match="{$match}/OBJECT/MEMBER[@name eq '{$config/jxon:attributes/string()}']/OBJECT/{common:member_name($e/jxon:name)}">
+			<xsl:template match="{$match}/OBJECT/MEMBER[@name eq '{$config/jxon:attributes/@name}']/OBJECT/{common:member_name($e/jxon:name)}">
 				<xsl:attribute name="{$e/jxon:name/@localname}" namespace="{$e/jxon:name/@uri}">
 						<xsl:apply-templates select="*"/>
 				</xsl:attribute>
@@ -86,12 +86,12 @@ declare function local:toxml_element( $e as element(jxon:element) , $config as e
 		</xsl:element>
 
 	</xsl:template>,
-	if( $config/jxon:text )  then 
-	<xsl:template match="{$match}/OBJECT/MEMBER[@name='{$config/jxon:text/string()}']">
+	if( xs:boolean($config/jxon:text/@wrap) )  then 
+	<xsl:template match="{$match}/OBJECT/MEMBER[@name='{$config/jxon:text/@name}']">
 			<xsl:value-of select="string()" />
 	</xsl:template> else () ,
-	if( $config/jxon:children ) then 
-	<xsl:template match="{$match}/OBJECT/MEMBER[@name eq '{$config/jxon:children/string()}']">
+	if( xs:boolean($config/jxon:children/@wrap) ) then 
+	<xsl:template match="{$match}/OBJECT/MEMBER[@name eq '{$config/jxon:children/@name}']">
 		<xsl:apply-templates select="ARRAY/*"/>
 	</xsl:template>
 	else () 
@@ -161,8 +161,8 @@ document {
 			<advancedProperties name="bExtensions" value="true"/>
 			<advancedProperties name="iWhitespace" value="0"/>
 			<advancedProperties name="bTinyTree" value="false"/>
-			<advancedProperties name="bUseDTD" value="false"/>
 			<advancedProperties name="bWarnings" value="true"/>
+			<advancedProperties name="bUseDTD" value="false"/>
 			<advancedProperties name="ModuleURIResolver" value=""/>
 		</scenario>
 	</scenarios>

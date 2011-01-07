@@ -1,13 +1,17 @@
 <patterns xmlns="http://www.xmlsh.org/jxon">
 	<pattern name="full">
-		<children>_children</children>
-		<attributes>_attributes</attributes>
+		<children wrap="true" name="_children"/>
+		<attributes wrap="true" name="_attributes"/>
+		<text wrap="false"/>
+
 	</pattern>
 
 
 
 	<pattern name="simple">
-		<text>_text</text>
+		<children wrap="false" />
+		<attributes wrap="false"/>
+		<text wrap="true" name="_text"/>
 	</pattern>
 
 </patterns>

@@ -51,13 +51,13 @@ $common:nl,
 		<MEMBER name="{common:json_name($e/jxon:name)}">
 		{		
 			(: If we wrap attributes or children in their own child object :)
-			if( $config/jxon:attributes or $config/jxon:children ) then 
+			if( xs:boolean($config/jxon:attributes/@wrap)  or xs:boolean($config/jxon:children/@wrap) ) then 
 				<OBJECT>
 					<xsl:if test="@*">
-						<MEMBER name="{$config/jxon:attributes/string()}">
+						<MEMBER name="{$config/jxon:attributes/@name}">
 							<OBJECT>
 								{ (: Only apply to attributes which are marked as full :) 
-								   for $a in $e/jxon:attribute[ common:getconfig( . )/@name eq 'full' ]
+								   for $a in $e/jxon:attribute[ xs:boolean(common:getconfig( . )/jxon:attributes/@wrap)  ]
 								   return
 								   	<xsl:apply-templates select="{  common:attr_name( $a/jxon:name ) }"/>
 								}							
@@ -66,14 +66,14 @@ $common:nl,
 					</xsl:if>
 					{ 
 						(: Apply attributes which are not wrapped :)
-					   for $a in $e/jxon:attribute[ common:getconfig( . )/@name ne 'full'  ]
+					   for $a in $e/jxon:attribute[ fn:not(xs:boolean(common:getconfig( . )/jxon:attributes/@wrap)) ]
 					   return
 					   	<xsl:apply-templates select="{  common:attr_name( $a/jxon:name ) }"/>
 					}							
 
 					<xsl:if test="node() except @*">	
 				
-						<MEMBER name="{$config/jxon:children/string()}">
+						<MEMBER name="{$config/jxon:children/@name}">
 							<ARRAY>
 								<xsl:apply-templates select="node() except @*" mode="wrap"/>
 							</ARRAY>
@@ -98,9 +98,9 @@ $common:nl,
 						
 						<!-- Wrap text in a _text node only for simple types -->
 						{ 
-							if( $e/@contentType eq "simple" )  then 
+							if( $e/@contentType eq "simple" and xs:boolean($config/jxon:text/@wrap))  then 
 								<xsl:if test="string(.)">
-								<MEMBER name="{$config/jxon:text/string()}">
+								<MEMBER name="{$config/jxon:text/@name}">
 										{ common:json_text_value($e) }
 								</MEMBER>
 							</xsl:if>
@@ -185,8 +185,8 @@ document {
 			<advancedProperties name="bExtensions" value="true"/>
 			<advancedProperties name="iWhitespace" value="0"/>
 			<advancedProperties name="bTinyTree" value="false"/>
-			<advancedProperties name="bUseDTD" value="false"/>
 			<advancedProperties name="bWarnings" value="true"/>
+			<advancedProperties name="bUseDTD" value="false"/>
 			<advancedProperties name="ModuleURIResolver" value=""/>
 		</scenario>
 	</scenarios>

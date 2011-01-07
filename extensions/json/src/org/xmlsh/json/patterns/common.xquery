@@ -14,19 +14,18 @@ declare function common:dump( $e as element() , $config as element(jxon:pattern)
 			"Config : " , $common:nl ,
 			fn:string-join(
 				for $a in $config/@* return
-				concat("@" , node-name($a) , ": " , $a/string()) , $common:nl ),
-			$common:nl,
+				concat("@" , node-name($a) , ": " , $a/string()) , $common:nl ) ,
+			$common:nl ),
 			fn:string-join(
 				for $c in $config/* return
-					concat(node-name($c) , ": " , $c/string()), $common:nl),
-			$common:nl
-		)
-
+				  concat(node-name($c) , ": " , $c/string(), $common:nl ,
+					 fn:string-join(
+					 	for $ca in $c/@* return
+					    concat("  @" , node-name($ca) , ": " , $ca/string() ) , $common:nl ))
+			  , $common:nl 
+	)
+				
 	}
-			
-
-
-
 };
 
 (: Priority of match string for an element - use the depth of the element :)
