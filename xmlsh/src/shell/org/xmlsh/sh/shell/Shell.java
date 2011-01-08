@@ -20,7 +20,6 @@ import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Constructor;
 import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.security.AccessController;
@@ -30,6 +29,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Random;
 import java.util.Stack;
 
 import net.sf.saxon.s9api.Processor;
@@ -42,15 +42,14 @@ import org.xmlsh.core.ExitOnErrorException;
 import org.xmlsh.core.ICommand;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
+import org.xmlsh.core.Options.OptionValue;
 import org.xmlsh.core.Path;
 import org.xmlsh.core.ThrowException;
-import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.Variables;
 import org.xmlsh.core.XDynamicVariable;
 import org.xmlsh.core.XEnvironment;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.XVariable;
-import org.xmlsh.core.Options.OptionValue;
 import org.xmlsh.core.XVariable.XVarFlag;
 import org.xmlsh.sh.core.Command;
 import org.xmlsh.sh.core.FunctionDeclaration;
@@ -244,7 +243,7 @@ public class Shell {
 	    getEnv().setVar( new XVariable("XPATH", 
 	    		Util.isBlank(xpath) ? new XValue() : new XValue(xpath.split(File.pathSeparator))) , false );
 	
-		
+		// PWD 
 		getEnv().setVar(
 				new XDynamicVariable("PWD" , EnumSet.of( XVarFlag.READONLY , XVarFlag.XEXPR )) { 
 					public XValue getValue() 
@@ -256,6 +255,25 @@ public class Shell {
 				
 				, false 
 		);
+		
+		// RANDOM
+		getEnv().setVar(
+				new XDynamicVariable("RANDOM" , EnumSet.of(  XVarFlag.READONLY , XVarFlag.XEXPR )) { 
+					 Random mRand = new Random();
+					public XValue getValue() 
+					{
+						return new XValue( mRand.nextInt(0x7FFF) );
+					}
+					
+					
+				
+				}
+				
+				, false 
+		);
+		
+		
+		
 		
 		getEnv().setVar("TMPDIR" , Util.toJavaPath(System.getProperty("java.io.tmpdir")), false );
 		
