@@ -6,7 +6,17 @@ bar)
 	echo SNH	
 	;;
 foo)
-	echo SUCCESS
+	case "a()" in
+	"b()" ) 
+		echo FAIL
+		;;
+	"a()" )
+		echo SUCCESS
+		;;
+	*) 
+		echo FAIL 
+		;;
+	esac
 	;;
 esac
 

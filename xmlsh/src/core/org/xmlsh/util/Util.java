@@ -440,7 +440,9 @@ public class Util
 			replace("+","\\+").
 			replace(".", "\\.").
 			replace("*", ".*").
-			replace("?" , ".") + "$";
+			replace("?" , ".").
+			replace("(","\\(").
+			replace(")","\\)") + "$";
 		
 		// Special case, single "[" (test)
 		if( reg.equals("^[$"))
