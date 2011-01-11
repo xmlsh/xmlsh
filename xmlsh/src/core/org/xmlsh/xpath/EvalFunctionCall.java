@@ -90,7 +90,7 @@ public class EvalFunctionCall extends ExtensionFunctionCall {
 			mLogger.info("Caught ThrowException within eval" , e  );
 			return null;
 		}
-		 
+		 oPort.release();
 		 oValue = oVar.getValue();
 		 if( oValue == null )
 			 return null;

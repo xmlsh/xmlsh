@@ -34,10 +34,11 @@ public abstract class IPort implements IManagedObject {
 	public final synchronized void release()
 	{		
 		try {
-			flush();
-			if( --mRef <= 0 )
-	
+			if( --mRef <= 0 ) {
+				flush();
 				close();
+			}
+			
 			} catch (Exception e) {
 				LogManager.getLogger(getClass()).error("Exception closing port",e);
 			}
