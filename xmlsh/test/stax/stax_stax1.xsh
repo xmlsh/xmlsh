@@ -24,6 +24,6 @@ do
 	
 done
 
-stax:closeReader( $r )
+stax:closeReader $r 
 
 

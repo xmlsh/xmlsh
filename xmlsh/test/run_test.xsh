@@ -41,6 +41,10 @@ if [ -f _err.txt -a -f out/${1}.err ] ; then
 		echo $1 out/${1}.err different output
 		exit 1
 	fi
+elif [ -s _err.txt ] ; then 
+	echo Unexpected Errors in test
+	exit 1  
+		
 fi
 	
 [ -f _err.txt ] && rm _err.txt
