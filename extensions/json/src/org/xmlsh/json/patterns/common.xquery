@@ -37,9 +37,9 @@ declare function common:priority( $e as element( ) )
 (: Given a prototype (root) and a list of parent/derived patterns generate a single pattern :)
 declare function common:inherit( $prototype as element(jxon:pattern) , $ps as element(jxon:pattern)+ ) as element(jxon:pattern)
 {
-	<jxon:pattern>
+	<jxon:pattern name="{$prototype/@name}" >
 	{
-		for $attr in $prototype/@*
+		for $attr in $prototype/@* except $prototype/@name 
 		return
 			( $attr , $ps/@*[ fn:node-name( . ) eq fn:node-name( $attr ) ] )[last()]
 	
@@ -76,10 +76,17 @@ declare function common:getpattern( $e as element() ) as element(jxon:pattern)
 	let $json := $e/ancestor-or-self::*,
 		$patterns :=
 		for $n in $json return
-			( common:gettypepatterns( common:qname( $n/jxon:type )  ) , $n/jxon:pattern )
+			( common:gettypepatterns( common:qname( $n/jxon:type )  ) , $n/jxon:pattern ,
+				(: Synthesize a nameless pattern element for all other children :)
+				let $c := $n/jxon:* except ($n/jxon:type|$n/jxon:pattern)
+				return
+				if( exists($c) ) then
+					<jxon:pattern>{$c}</jxon:pattern>
+				else ()
+			 )
 
 	return 
-		common:inherit( $common:patterns/jxon:patterns/jxon:pattern[@name eq $patterns[last()]/@name] , $patterns )
+		common:inherit( $common:patterns/jxon:patterns/jxon:pattern[@name eq ($patterns/@name)[last()]] , $patterns )
 
 
 };
@@ -103,6 +110,10 @@ declare function common:parent_type( $type as xs:QName ) as xs:QName?
 
 declare function common:json_type( $pattern as element(jxon:pattern) , $type as xs:QName? ) as xs:string
 {
+	if( $pattern/jxon:value/@type ne 'schema' ) then
+		$pattern/jxon:value/@type 
+
+	else
 	if( empty($type) ) then
 		"STRING"
 	else

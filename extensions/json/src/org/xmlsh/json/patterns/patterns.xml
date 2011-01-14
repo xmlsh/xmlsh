@@ -1,8 +1,10 @@
 <patterns xmlns="http://www.xmlsh.org/jxon">
 	<pattern name="full">
+		
 		<children wrap="true" name="_children"/>
 		<attributes wrap="true" name="_attributes"/>
 		<text wrap="false"/>
+		<value type="schema"/>
 
 	</pattern>
 
@@ -12,6 +14,8 @@
 		<children wrap="false" />
 		<attributes wrap="false"/>
 		<text wrap="true" name="_text"/>
+		<value type="schema"/>
+
 	</pattern>
 
 </patterns>
