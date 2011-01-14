@@ -365,20 +365,13 @@ public class put extends MLCommand {
 	 *  thrown, none of the documents will have been committed to the
 	 *  contentbase.
 	 */
-	public void load (File file , String uri ) throws RequestException
-	{
 
-		Content content= ContentFactory.newContent (uri, file, mCreateOptions);
-		
 
-		session.insertContent (content);
-	}
-
-	public void load (InputPort port , String uri , boolean bMD5 ) throws CoreException, IOException, RequestException
+	public void load (InputPort port , String uri , boolean bMD5 ) throws CoreException, IOException
 	{
 		
 		InputStream is = port.asInputStream(getSerializeOpts());
-		
+
 		try {
 			/*
 			 * if Not rewindable then make a temp file
@@ -387,14 +380,12 @@ public class put extends MLCommand {
 			Checksum sum = null ;
 			Content content = null ;
 			File tempf = null;
-			if( ! is.markSupported() ){
+			if( bMD5 && ! is.markSupported() ){
 
 				tempf = File.createTempFile("mlput", null);
 				FileOutputStream out = new FileOutputStream(tempf);
-				if( bMD5 )
-					sum = Checksum.calcChecksum(is, out);
-				else
-					Util.copyStream(is,out);
+				sum = Checksum.calcChecksum(is, out);
+
 				is.close();
 				is = null;
 				out.close();
@@ -410,16 +401,30 @@ public class put extends MLCommand {
 				content = ContentFactory.newContent(uri, is, mCreateOptions);
 			}
 			
+			try {
+				// boolean bIsRewind = content.isRewindable();
 
-			session.insertContent (content);
+				session.insertContent (content);
+
 				
-			if( bMD5 && sum != null ){
-				List<SumContent> sc = new ArrayList<SumContent>(1);
-				sc.add( new SumContent( uri , content , sum ));
-				setChecksums( session, sc );
+				if( bMD5 && sum != null ){
+					List<SumContent> sc = new ArrayList<SumContent>(1);
+					sc.add( new SumContent( uri , content , sum ));
+					setChecksums( session, sc );
+					
+					
+				}
+
+			
+			} catch (RequestException e) {
+				printError("Exception submitting data",e);
+			} finally {
 				
-				
+				if( tempf != null )
+					tempf.delete();
 			}
+
+				
 			
 		} finally {
 			Util.safeClose(is);
@@ -428,7 +433,7 @@ public class put extends MLCommand {
 		
 	}
 
-	public void load (List<XValue> files , String baseUri,  boolean bRecurse,  boolean bMD5 ) throws CoreException, IOException, RequestException
+	public void load (List<XValue> files , String baseUri,  boolean bRecurse,  boolean bMD5 ) throws CoreException, IOException
 	{
 		
 		for( XValue v : files ){	
@@ -462,7 +467,7 @@ public class put extends MLCommand {
 	}
 
 
-	private void putContent(String uri, Content content, Checksum checksum) throws RequestException, UnexpectedException {
+	private void putContent(String uri, Content content, Checksum checksum) throws  UnexpectedException {
 		if( mContents == null )
 			mContents = 	new ArrayList<SumContent>( mMaxFiles );
 
@@ -477,7 +482,7 @@ public class put extends MLCommand {
 	}
 
 	
-	private void flushContent() throws RequestException 
+	private void flushContent()  
 	{
 		if( mContents == null )
 			return ;
