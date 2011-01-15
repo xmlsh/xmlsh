@@ -155,7 +155,7 @@ public class xslt extends XCommand {
 		stdout.writeSequenceTerminator(serializeOpts);
 		
 		if( in != null )
-			in.close();
+			in.release();
 
 		return 0;
 

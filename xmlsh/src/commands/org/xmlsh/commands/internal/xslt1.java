@@ -11,6 +11,7 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
+import org.xmlsh.core.InputPort;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
@@ -23,7 +24,7 @@ public class xslt1 extends XCommand {
 	@Override
 	public int run(List<XValue> args) throws Exception {
 
-		Options opts = new Options("f:,v", SerializeOpts.getOptionDefs());
+		Options opts = new Options("i:,f:,v", SerializeOpts.getOptionDefs());
 		opts.parse(args);
 		args = opts.getRemainingArgs();
 		
@@ -31,9 +32,25 @@ public class xslt1 extends XCommand {
 		
 		SerializeOpts serializeOpts = getSerializeOpts(opts);
 		
+
+		InputPort in = null;
+
 		
-		Source source = getStdin().asSource(serializeOpts);
+		Source source = null;
+		
+		if( opts.hasOpt("i") )
+			source = (in=getInput( opts.getOptValue("i"))).asSource(serializeOpts);
+		else
+			source = (in=getStdin()).asSource(serializeOpts);
+		
 		apply( style , source, getStdout().asOutputStream(serializeOpts) , opts.hasOpt("v") ? args : null, serializeOpts);
+		
+
+		if( in != null )
+			in.release();
+
+		
+		
 		return 0;
 
 	}
