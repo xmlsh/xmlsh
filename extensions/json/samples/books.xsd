@@ -1,8 +1,8 @@
 
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:jxon="http://www.xmlsh.org/jxon">
 	<xs:annotation>
 		<xs:appinfo>
-			<json pattern="full"/>
+			<jxon:pattern  name="full"/>
 		</xs:appinfo>
 	</xs:annotation>
 	<xs:element name="BOOKLIST">
@@ -36,7 +36,8 @@
 			<xs:attribute name="DESC" type="xs:string" use="required">
 				<xs:annotation>
 						<xs:appinfo>
-							<json pattern="simple"/>
+							<jxon:pattern  name="simple">
+							</jxon:pattern>
 						</xs:appinfo>
 					</xs:annotation>
 			</xs:attribute>
@@ -47,7 +48,7 @@
 	<xs:element name="ITEM">
 		<xs:annotation>
 			<xs:appinfo>
-				<json pattern="simple"/>
+				<jxon:pattern  name="simple"/>
 			</xs:appinfo>
 		</xs:annotation>
 		<xs:complexType>
@@ -55,7 +56,7 @@
 				<xs:element name="TITLE" type="xs:string" minOccurs="1">
 					<xs:annotation>
 						<xs:appinfo>
-							<json pattern="full"/>
+							<jxon:pattern  name="full"/>
 						</xs:appinfo>
 					</xs:annotation>
 				</xs:element>
@@ -66,20 +67,34 @@
 				<xs:element name="PRICE" type="moneyType">
 									<xs:annotation>
 						<xs:appinfo>
-							<json pattern="full"/>
+							<jxon:pattern  name="full"/>
 						</xs:appinfo>
 					</xs:annotation>
 				</xs:element>
 				<xs:element name="QUANTITY" type="xs:integer"/>
 				<xs:element name="ISBN" type="ISBNType"/>
-				<xs:element name="PAGES" type="xs:integer"/>
+				<xs:element name="PAGES" type="xs:integer">
+				<xs:annotation>
+						<xs:appinfo>
+							<jxon:value  type="STRING"/>
+						</xs:appinfo>
+				</xs:annotation>
+				</xs:element>
 				<xs:element name="DIMENSIONS" type="dimensionsType"/>
-				<xs:element name="WEIGHT" type="weightType"/>
+				<xs:element name="WEIGHT" type="weightType">
+					<xs:annotation>
+					<xs:appinfo>
+						<jxon:pattern>
+							<jxon:text wrap="true" name="amount"/>
+						</jxon:pattern>
+					</xs:appinfo>
+				</xs:annotation>
+				</xs:element>
 			</xs:sequence>
 			<xs:attribute name="CAT" type="xs:IDREF" use="required">
 				<xs:annotation>
 					<xs:appinfo>
-						<json pattern="simple"/>
+						<jxon:pattern  name="simple"/>
 					</xs:appinfo>
 				</xs:annotation>
 			</xs:attribute>
@@ -151,14 +166,11 @@
 
 	<xs:complexType name="weightType">
 		<xs:simpleContent>
+					
 			<xs:extension base="xs:decimal">
 				<xs:attribute name="UNIT" type="weightUnitType">
-				<xs:annotation>
-					<xs:appinfo>
-						<json pattern="simple"/>
-					</xs:appinfo>
-				</xs:annotation>
 				</xs:attribute>
+
 			</xs:extension>
 		</xs:simpleContent>
 	</xs:complexType>
