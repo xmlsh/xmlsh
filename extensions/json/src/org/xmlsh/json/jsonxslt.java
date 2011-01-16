@@ -198,11 +198,20 @@ public class jsonxslt  extends XCommand{
 
 				sw.writeStartElement(JXON_NS, mContext);
 				sw.writeNamespace("jxon", JXON_NS );
+				
+				XSSimpleTypeDefinition itemType = null ;
 				if( mType != null ){
 					sw.writeAttribute("typeCategory", getTypeCategory(mType));
 					if( mType.getTypeCategory() == XSTypeDefinition.COMPLEX_TYPE ){
 						XSComplexTypeDefinition ctd = (XSComplexTypeDefinition) mType ;
 						sw.writeAttribute( "contentType" , getTypeContentType( ctd ) );
+						
+					}
+					else
+					if( mType.getTypeCategory() == XSTypeDefinition.SIMPLE_TYPE ){
+						XSSimpleTypeDefinition std = (XSSimpleTypeDefinition) mType ;
+						sw.writeAttribute( "variety" , getVariety( std ) );
+						itemType = std.getItemType();
 						
 					}
 					
@@ -214,8 +223,11 @@ public class jsonxslt  extends XCommand{
 					writeQName( sw , "name" , mName );
 					
 					if( mType != null ){
-						if( mContext.equals(CONTEXT_TYPE ))
+						if( mContext.equals(CONTEXT_TYPE )){
 							writeQName( sw , "basetype" , getName(mType.getBaseType()) );
+							if( itemType != null )
+								writeQName( sw , "itemtype" , getName( itemType ));
+						}
 						else
 							writeQName( sw , "type" , getName(mType) );
 						
@@ -240,6 +252,25 @@ public class jsonxslt  extends XCommand{
 				}
 				sw.writeEndElement();
 				
+			}
+
+
+
+
+			private String getVariety(XSSimpleTypeDefinition std) {
+				switch( std.getVariety()) {
+				case	XSSimpleTypeDefinition.VARIETY_ABSENT :
+					return "absent" ; 
+				case	XSSimpleTypeDefinition.VARIETY_ATOMIC:
+					return "atomic" ; 
+				case	XSSimpleTypeDefinition.VARIETY_LIST :
+					return "list" ; 
+				case	XSSimpleTypeDefinition.VARIETY_UNION:
+					return "union" ; 
+				default :
+					return "absent" ;
+					
+				}
 			}
 
 
@@ -588,7 +619,20 @@ public class jsonxslt  extends XCommand{
 			if( type == null )
 				return null ;
 			
-			QName qname = new QName(Util.blankIfNull(type.getNamespace()), Util.blankIfNull(type.getName()) );
+			String namespace = type.getNamespace();
+			String name = type.getName();
+			QName qname = new QName(Util.blankIfNull(namespace), Util.blankIfNull(name) );
+			return qname;
+		
+		
+		}
+		private QName getName(XSSimpleTypeDefinition type) {
+			if( type == null )
+				return null ;
+			
+			String namespace = type.getNamespace();
+			String name = type.getName();
+			QName qname = new QName(Util.blankIfNull(namespace), Util.blankIfNull(name) );
 			return qname;
 		
 		
