@@ -5,6 +5,7 @@ declare namespace jxon='http://www.xmlsh.org/jxon';
 declare variable $common:annotations as document-node() external ;
 declare variable $common:patterns    as document-node() external ;
 declare variable $common:nl := "&#xA;" ;
+declare variable $common:default_pattern as element(jxon:pattern) :=  $common:patterns/jxon:patterns/jxon:pattern[@name eq $common:patterns/jxon:patterns/@default];
 
 declare function common:dump( $e as element() , $pattern as element(jxon:pattern) ) 
 {
@@ -74,9 +75,10 @@ declare function common:getpattern( $e as element() ) as element(jxon:pattern)
 
 	(: Get the self or nearest parents <pattern> element or types :)
 	let $json := $e/ancestor-or-self::*,
-		$patterns :=
+		$patterns := 
 		for $n in $json return
-			( common:gettypepatterns( common:qname( $n/jxon:type )  ) , $n/jxon:pattern ,
+			( 
+				common:gettypepatterns( common:qname( $n/jxon:type )  ) , $n/jxon:pattern ,
 				(: Synthesize a nameless pattern element for all other children :)
 				let $c := $n/jxon:* except ($n/jxon:type|$n/jxon:pattern)
 				return
@@ -84,9 +86,10 @@ declare function common:getpattern( $e as element() ) as element(jxon:pattern)
 					<jxon:pattern>{$c}</jxon:pattern>
 				else ()
 			 )
+		
 
 	return 
-		common:inherit( $common:patterns/jxon:patterns/jxon:pattern[@name eq ($patterns/@name)[last()]] , $patterns )
+		common:inherit(  $common:patterns/jxon:patterns/jxon:pattern[@name eq ($common:default_pattern/@name , $patterns/@name)[last()]] , $patterns )
 
 
 };

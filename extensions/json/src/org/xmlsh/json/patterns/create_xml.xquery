@@ -28,7 +28,7 @@ declare function local:toxml_document( $e as element(jxon:document) , $pattern a
 
 declare function local:toxml_attribute( $e as element(jxon:attribute),$pattern as element(jxon:pattern)  )
 {	
-	if( xs:boolean($pattern/jxon:attributes/@wrap) ) then 
+	if( $pattern/jxon:attributes/@wrap eq 'object' ) then 
 		let $match := common:match_json( () , $e )
 		return 
 			<xsl:template match="{$match}/OBJECT/MEMBER[@name eq '{$pattern/jxon:attributes/@name}']/OBJECT/{common:member_name($e/jxon:name)}">
@@ -86,11 +86,11 @@ declare function local:toxml_element( $e as element(jxon:element) , $pattern as 
 		</xsl:element>
 
 	</xsl:template>,
-	if( xs:boolean($pattern/jxon:text/@wrap) )  then 
+	if( $pattern/jxon:text/@wrap eq 'object' )  then 
 	<xsl:template match="{$match}/OBJECT/MEMBER[@name='{$pattern/jxon:text/@name}']">
 			<xsl:value-of select="string()" />
 	</xsl:template> else () ,
-	if( xs:boolean($pattern/jxon:children/@wrap) ) then 
+	if( $pattern/jxon:children/@wrap eq 'object' ) then 
 	<xsl:template match="{$match}/OBJECT/MEMBER[@name eq '{$pattern/jxon:children/@name}']">
 		<xsl:apply-templates select="ARRAY/*"/>
 	</xsl:template>
@@ -161,8 +161,8 @@ document {
 			<advancedProperties name="bExtensions" value="true"/>
 			<advancedProperties name="iWhitespace" value="0"/>
 			<advancedProperties name="bTinyTree" value="false"/>
-			<advancedProperties name="bWarnings" value="true"/>
 			<advancedProperties name="bUseDTD" value="false"/>
+			<advancedProperties name="bWarnings" value="true"/>
 			<advancedProperties name="ModuleURIResolver" value=""/>
 		</scenario>
 	</scenarios>
