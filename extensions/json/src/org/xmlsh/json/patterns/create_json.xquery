@@ -20,16 +20,17 @@ declare function local:tojson_document( $e as element(jxon:document) , $config a
 };
 
 
-declare function local:tojson_attribute( $e as element(jxon:attribute), $config as element(jxon:pattern) )
+declare function local:tojson_attribute( $e as element(jxon:attribute), $pattern as element(jxon:pattern) )
 {	
 
 let $match := common:match_attr( $e/jxon:name , $e )
 return 
 (
+	common:dump( $e ,$pattern ),
 	$common:nl,
 	<xsl:template match="{$match}" mode="#all"  priority="{common:priority($e)}">
 		<MEMBER name="{common:json_name($e/jxon:name) }">
-			{ common:json_text_value( $e ) }
+			{ common:json_text_value( $e, $pattern ) }
 		</MEMBER>
 	</xsl:template>
 
@@ -39,22 +40,22 @@ return
 
 
 
-declare function local:tojson_element( $e as element(jxon:element) , $config as element(jxon:pattern) )
+declare function local:tojson_element( $e as element(jxon:element) , $pattern as element(jxon:pattern) )
 {
 
 let $match := common:match_elem( $e/jxon:name , $e )
 
 return (
-common:dump( $e ,$config ),
+common:dump( $e ,$pattern ),
 $common:nl,
 <xsl:template match="{$match}" priority="{common:priority($e)}">
 		<MEMBER name="{common:json_name($e/jxon:name)}">
 		{		
 			(: If we wrap attributes or children in their own child object :)
-			if( $config/jxon:attributes/@wrap eq 'object'  or $config/jxon:children/@wrap eq 'object' ) then 
+			if( $pattern/jxon:attributes/@wrap eq 'object'  or $pattern/jxon:children/@wrap eq 'object' ) then 
 				<OBJECT>
 					<xsl:if test="@*">
-						<MEMBER name="{$config/jxon:attributes/@name}">
+						<MEMBER name="{$pattern/jxon:attributes/@name}">
 							<OBJECT>
 								{ (: Only apply to attributes which are marked as full :) 
 								   for $a in $e/jxon:attribute[ common:getpattern( . )/jxon:attributes/@wrap eq 'object'  ]
@@ -73,7 +74,7 @@ $common:nl,
 
 					<xsl:if test="node() except @*">	
 				
-						<MEMBER name="{$config/jxon:children/@name}">
+						<MEMBER name="{$pattern/jxon:children/@name}">
 							<!-- Applies element and text templates -->
 							<ARRAY>
 								<xsl:apply-templates select="node() except @*" mode="wrap"/>
@@ -86,7 +87,7 @@ $common:nl,
 			<xsl:choose>
 				<!-- No attributes or child elements - jump to text  -->
 				<xsl:when test="empty(@*|*)">
-					{ common:json_text_value($e) }
+					{ common:json_text_value($e,$pattern) }
 				</xsl:when>
 				<!-- Otherwise need to make an object out of this -->
 				<xsl:otherwise>
@@ -99,10 +100,10 @@ $common:nl,
 						
 						<!-- Wrap text in a _text node only for simple types -->
 						{ 
-							if( $e/@contentType eq "simple" and $config/jxon:text/@wrap eq 'object' )  then 
+							if( $e/@contentType eq "simple" and $pattern/jxon:text/@wrap eq 'object' )  then 
 								<xsl:if test="string(.)">
-								<MEMBER name="{$config/jxon:text/@name}">
-										{ common:json_text_value($e) }
+								<MEMBER name="{$pattern/jxon:text/@name}">
+										{ common:json_text_value($e,$pattern) }
 								</MEMBER>
 							</xsl:if>
 							else
@@ -125,7 +126,7 @@ $common:nl,
 	</xsl:template> 
 	, $common:nl,
 	<xsl:template match="{$match}/text()" mode="#all" priority="{common:priority($e)}">
-		{ common:json_text_value( $e ) }
+		{ common:json_text_value( $e ,$pattern) }
 	</xsl:template>
 )
 
@@ -186,8 +187,8 @@ document {
 			<advancedProperties name="bExtensions" value="true"/>
 			<advancedProperties name="iWhitespace" value="0"/>
 			<advancedProperties name="bTinyTree" value="false"/>
-			<advancedProperties name="bUseDTD" value="false"/>
 			<advancedProperties name="bWarnings" value="true"/>
+			<advancedProperties name="bUseDTD" value="false"/>
 			<advancedProperties name="ModuleURIResolver" value=""/>
 		</scenario>
 	</scenarios>

@@ -88,7 +88,12 @@ declare function local:toxml_element( $e as element(jxon:element) , $pattern as 
 	</xsl:template>,
 	if( $pattern/jxon:text/@wrap eq 'object' )  then 
 	<xsl:template match="{$match}/OBJECT/MEMBER[@name='{$pattern/jxon:text/@name}']">
-			<xsl:value-of select="string()" />
+		{
+			if( $pattern/jxon:value/@wrap eq 'array' )  then
+				<xsl:copy-of select="string-join( ARRAY/(NUMBER|STRING) , ' ')"/>			
+			else
+				<xsl:value-of select="string()" />
+		}
 	</xsl:template> else () ,
 	if( $pattern/jxon:children/@wrap eq 'object' ) then 
 	<xsl:template match="{$match}/OBJECT/MEMBER[@name eq '{$pattern/jxon:children/@name}']">
@@ -161,8 +166,8 @@ document {
 			<advancedProperties name="bExtensions" value="true"/>
 			<advancedProperties name="iWhitespace" value="0"/>
 			<advancedProperties name="bTinyTree" value="false"/>
-			<advancedProperties name="bUseDTD" value="false"/>
 			<advancedProperties name="bWarnings" value="true"/>
+			<advancedProperties name="bUseDTD" value="false"/>
 			<advancedProperties name="ModuleURIResolver" value=""/>
 		</scenario>
 	</scenarios>

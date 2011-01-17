@@ -200,6 +200,7 @@ public class jsonxslt  extends XCommand{
 				sw.writeNamespace("jxon", JXON_NS );
 				
 				XSSimpleTypeDefinition itemType = null ;
+				XSObjectList memberTypes = null ;
 				if( mType != null ){
 					sw.writeAttribute("typeCategory", getTypeCategory(mType));
 					if( mType.getTypeCategory() == XSTypeDefinition.COMPLEX_TYPE ){
@@ -212,7 +213,7 @@ public class jsonxslt  extends XCommand{
 						XSSimpleTypeDefinition std = (XSSimpleTypeDefinition) mType ;
 						sw.writeAttribute( "variety" , getVariety( std ) );
 						itemType = std.getItemType();
-						
+						memberTypes = std.getMemberTypes();
 					}
 					
 					
@@ -227,6 +228,14 @@ public class jsonxslt  extends XCommand{
 							writeQName( sw , "basetype" , getName(mType.getBaseType()) );
 							if( itemType != null )
 								writeQName( sw , "itemtype" , getName( itemType ));
+							if( memberTypes != null ){
+								for( int i = 0 ; i < memberTypes.getLength() ; i++ ){
+									XSSimpleTypeDefinition member = (XSSimpleTypeDefinition ) memberTypes.item(i);
+									writeQName( sw , "membertype" , getName( member ));
+								}
+								
+								
+							}
 						}
 						else
 							writeQName( sw , "type" , getName(mType) );
@@ -403,11 +412,7 @@ public class jsonxslt  extends XCommand{
 				createXSLT( b.getDocumentNode() , "patterns/create_json.xquery" , json_port );
 				
 				
-				
-				xml_port.close();
-				
-				
-				json_port.close();
+	
 			}
 			
 			

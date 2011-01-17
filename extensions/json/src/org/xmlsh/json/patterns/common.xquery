@@ -109,23 +109,29 @@ declare function common:parent_type( $type as xs:QName ) as xs:QName?
 
 };
 
+declare function common:json_value( $type as xs:string , $wrap as xs:string ) as element(jxon:value)
+{
+	<jxon:value type="{$type}" wrap="{$wrap}" />
+
+};
 
 
-declare function common:json_type( $pattern as element(jxon:pattern) , $type as xs:QName? ) as xs:string
+
+declare function common:json_type( $pattern as element(jxon:pattern) , $type as xs:QName? ) as element(jxon:value)
 {
 	if( $pattern/jxon:value/@type ne 'schema' ) then
-		$pattern/jxon:value/@type 
+		$pattern/jxon:value
 
 	else
 	if( empty($type) ) then
-		"STRING"
+		common:json_value("STRING" , "none")
 	else
 	if( $type = 
 	   ( xs:QName("xs:decimal") , 
 	     xs:QName("xs:integer" ) ,
 		 xs:QName("xs:float") ) )
 	 then
-	 	"NUMBER"
+	 	common:json_value("NUMBER" , "none" )
 	else 
 		common:json_type( $pattern , common:parent_type( $type ) )
 
@@ -136,26 +142,42 @@ declare function common:json_type( $pattern as element(jxon:pattern) , $type as 
 
 (: Get the JSON or overridden type for an element/attribute :)
 
-declare function common:json_text_type( $e as element() ) as xs:string
+declare function common:json_text_type( $e as element(),  $pattern as element(jxon:pattern) ) as element(jxon:value)
 {
 	if( empty($e/jxon:type ) ) then
-		"STRING" 
+		common:json_value("STRING" , "none" )
 	else
 	let $name := common:qname( $e/jxon:type )
 	return
-		common:json_type( common:getpattern($e) , $name )
+		common:json_type( $pattern , $name )
 
 
 };
 
 (: Format a basic json text value for a text node :)
-declare function common:json_text_value( $e as element() )
+declare function common:json_text_value( $e as element() , $pattern as element(jxon:pattern) )
 {
+	let $type := common:json_text_type( $e , $pattern )
+	return 
+	if( $type/@wrap eq 'array' ) then 
+		<ARRAY>
+			<xsl:for-each select="tokenize(.,' ')">
+			{
+				element { $type/@type/string() } 
+				{
+					<xsl:value-of select="."/>
+				}
+			}
+			</xsl:for-each>
+		</ARRAY>
 
-		element { common:json_text_type( $e ) } 
+	else
+		element { $type/@type/string() } 
 		{
 			<xsl:value-of select="."/>
 		}
+
+	
 
 };
 

@@ -4,7 +4,7 @@
 		<children wrap="object" name="_children"/>
 		<attributes wrap="object" name="_attributes"/>
 		<text wrap="none"/>
-		<value type="schema"/>
+		<value wrap="schema" type="schema"/>
 
 	</pattern>
 
@@ -14,7 +14,7 @@
 		<children wrap="none" />
 		<attributes wrap="none"/>
 		<text wrap="object" name="_text"/>
-		<value type="schema"/>
+		<value wrap="schema" type="schema"/>
 
 	</pattern>
 

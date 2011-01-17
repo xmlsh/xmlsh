@@ -2,7 +2,7 @@
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:jxon="http://www.xmlsh.org/jxon">
 	<xs:annotation>
 		<xs:appinfo>
-			<jxon:pattern  name="full"/>
+			<!-- <jxon:pattern  name="full"/> -->
 		</xs:appinfo>
 	</xs:annotation>
 	<xs:element name="BOOKLIST">
@@ -80,12 +80,21 @@
 						</xs:appinfo>
 				</xs:annotation>
 				</xs:element>
-				<xs:element name="DIMENSIONS" type="dimensionsType"/>
+				<xs:element name="DIMENSIONS" type="dimensionsType">
+					<xs:annotation>
+						<xs:appinfo>
+						<jxon:pattern>
+								<jxon:value type="NUMBER" wrap="array"/>
+						</jxon:pattern>
+						</xs:appinfo>
+					</xs:annotation>
+					
+				</xs:element>
 				<xs:element name="WEIGHT" type="weightType">
 					<xs:annotation>
 					<xs:appinfo>
 						<jxon:pattern>
-							<jxon:text wrap="true" name="amount"/>
+							<jxon:text wrap="object" name="amount"/>
 						</jxon:pattern>
 					</xs:appinfo>
 				</xs:annotation>
@@ -137,7 +146,15 @@
 	<xs:complexType name="dimensionsType">
 		<xs:simpleContent>
 			<xs:extension base="dimensionsContentType">
-				<xs:attribute name="UNIT" type="lengthUnitType"/>
+				<xs:attribute name="UNIT" type="lengthUnitType">
+						<xs:annotation>
+						<xs:appinfo>
+						<jxon:pattern>
+								<jxon:value type="STRING" wrap="none"/>
+						</jxon:pattern>
+						</xs:appinfo>
+					</xs:annotation>
+				</xs:attribute>
 			</xs:extension>
 		</xs:simpleContent>
 	</xs:complexType>
