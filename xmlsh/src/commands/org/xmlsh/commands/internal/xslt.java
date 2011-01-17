@@ -108,12 +108,14 @@ public class xslt extends XCommand {
 		}
 
 		Source source = null;
-
+		InputPort closePort = null ;
 		List<XValue> xvargs = opts.getRemainingArgs();
 
 		OptionValue ov = opts.getOpt("f");
 		if (ov != null) {
-			source = getInput(ov.getValue()).asSource(serializeOpts);
+			closePort = getInput(ov.getValue());
+			if( closePort != null)
+				source = closePort.asSource(serializeOpts);
 		}
 
 		if (source == null) {
@@ -156,6 +158,8 @@ public class xslt extends XCommand {
 		
 		if( in != null )
 			in.release();
+		if( closePort != null )
+			closePort.release();
 
 		return 0;
 
