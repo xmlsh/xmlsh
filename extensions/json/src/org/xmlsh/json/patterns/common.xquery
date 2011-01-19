@@ -36,18 +36,20 @@ declare function common:priority( $e as element( ) )
 };
 
 (: Given a prototype (root) and a list of parent/derived patterns generate a single pattern :)
-declare function common:inherit( $prototype as element(jxon:pattern) , $ps as element(jxon:pattern)+ ) as element(jxon:pattern)
+declare function common:inherit( $e as element() , $prototype as element(jxon:pattern) , $ps as element(jxon:pattern)* ) as element(jxon:pattern)
 {
+	if( empty( $ps ) ) then 
+		<jxon:pattern name="{$prototype/@name}" >
+			{$prototype/*[fn:node-name(.) eq fn:node-name($e)]/*}
+		</jxon:pattern>
+	else
+
 	<jxon:pattern name="{$prototype/@name}" >
 	{
-		for $attr in $prototype/@* except $prototype/@name 
+		
+		for $elem in $prototype/*[fn:node-name(.) eq fn:node-name($e)]/*
 		return
-			( $attr , $ps/@*[ fn:node-name( . ) eq fn:node-name( $attr ) ] )[last()]
-	
-		,
-		for $elem in $prototype/*
-		return
-			( $elem , $ps/*[ fn:node-name( . ) eq fn:node-name( $elem ) ] )[last()]
+			( $elem , $ps/*[fn:node-name(.) eq fn:node-name($e)]/*[ (fn:node-name( . ) eq fn:node-name( $elem )) ] )[last()]
 	}
 
 	</jxon:pattern>
@@ -75,22 +77,30 @@ declare function common:getpattern( $e as element() ) as element(jxon:pattern)
 
 	(: Get the self or nearest parents <pattern> element or types :)
 	let $json := $e/ancestor-or-self::*,
-		$patterns := 
+		$patterns := (
 		for $n in $json return
 			( 
-				common:gettypepatterns( common:qname( $n/jxon:type )  ) , $n/jxon:pattern ,
-				(: Synthesize a nameless pattern element for all other children :)
-				let $c := $n/jxon:* except ($n/jxon:type|$n/jxon:pattern)
-				return
-				if( exists($c) ) then
-					<jxon:pattern>{$c}</jxon:pattern>
-				else ()
-			 )
+				common:gettypepatterns( common:qname( $n/jxon:type )  ) ,  $n/jxon:pattern 
+			),
+			(: Synthesize a nameless pattern element for all direct children :)
+			let $c := ($e/jxon:value|$e/jxon:text)
+			return
+			if( exists($c) ) then
+				<jxon:pattern>
+				{
+					element { node-name($e) } { $c } 
+				}				
+				</jxon:pattern>
+			else 
+				()
+				
+				
+		 )
 		
 
 	return 
-		common:inherit(  $common:patterns/jxon:patterns/jxon:pattern[@name eq ($common:default_pattern/@name , $patterns/@name)[last()]] , $patterns )
-
+		common:inherit( $e , $common:patterns/jxon:patterns/jxon:pattern[@name eq ($common:default_pattern/@name , $patterns/@name)[last()]] , $patterns )
+	
 
 };
 

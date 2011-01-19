@@ -52,13 +52,13 @@ $common:nl,
 		<MEMBER name="{common:json_name($e/jxon:name)}">
 		{		
 			(: If we wrap attributes or children in their own child object :)
-			if( $pattern/jxon:attributes/@wrap eq 'object'  or $pattern/jxon:children/@wrap eq 'object' ) then 
+			if( $pattern/jxon:attributes/@wrap eq 'object'  or $pattern/jxon:children/jxon:value/@wrap eq 'object' ) then 
 				<OBJECT>
 					<xsl:if test="@*">
 						<MEMBER name="{$pattern/jxon:attributes/@name}">
 							<OBJECT>
 								{ (: Only apply to attributes which are marked as full :) 
-								   for $a in $e/jxon:attribute[ common:getpattern( . )/jxon:attributes/@wrap eq 'object'  ]
+								   for $a in $e/jxon:attribute[ common:getpattern( . )/jxon:value/@wrap ne 'none'  ]
 								   return
 								   	<xsl:apply-templates select="{  common:attr_name( $a/jxon:name ) }"/>
 								}							
@@ -67,7 +67,7 @@ $common:nl,
 					</xsl:if>
 					{ 
 						(: Apply attributes which are not wrapped :)
-					   for $a in $e/jxon:attribute[ common:getpattern( . )/jxon:attributes/@wrap eq 'none' ]
+					   for $a in $e/jxon:attribute[ common:getpattern( . )/@wrap eq 'none' ]
 					   return
 					   	<xsl:apply-templates select="{  common:attr_name( $a/jxon:name ) }"/>
 					}							
@@ -187,8 +187,8 @@ document {
 			<advancedProperties name="bExtensions" value="true"/>
 			<advancedProperties name="iWhitespace" value="0"/>
 			<advancedProperties name="bTinyTree" value="false"/>
-			<advancedProperties name="bWarnings" value="true"/>
 			<advancedProperties name="bUseDTD" value="false"/>
+			<advancedProperties name="bWarnings" value="true"/>
 			<advancedProperties name="ModuleURIResolver" value=""/>
 		</scenario>
 	</scenarios>

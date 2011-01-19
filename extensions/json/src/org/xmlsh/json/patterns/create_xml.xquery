@@ -28,10 +28,21 @@ declare function local:toxml_document( $e as element(jxon:document) , $pattern a
 
 declare function local:toxml_attribute( $e as element(jxon:attribute),$pattern as element(jxon:pattern)  )
 {	
-	if( $pattern/jxon:attributes/@wrap eq 'object' ) then 
+	common:dump($e ,$pattern ),
+	$common:nl,
+
+	let $ppattern := common:getpattern( $e/.. )
+	return
+	( <!-- parent element -->,
+		$common:nl,
+		common:dump($e/..,$ppattern) ,
+		$common:nl,
+
+
+	if( $ppattern/jxon:attributes/@wrap ne 'none' ) then 
 		let $match := common:match_json( () , $e )
 		return 
-			<xsl:template match="{$match}/OBJECT/MEMBER[@name eq '{$pattern/jxon:attributes/@name}']/OBJECT/{common:member_name($e/jxon:name)}">
+			<xsl:template match="{$match}/OBJECT/MEMBER[@name eq '{$ppattern/jxon:attributes/@name}']/OBJECT/{common:member_name($e/jxon:name)}">
 				<xsl:attribute name="{$e/jxon:name/@localname}" namespace="{$e/jxon:name/@uri}">
 						<xsl:apply-templates select="*"/>
 				</xsl:attribute>
@@ -56,7 +67,7 @@ declare function local:toxml_attribute( $e as element(jxon:attribute),$pattern a
 
 			</xsl:template>
 		  )
-
+	)
 };
 
 
@@ -67,6 +78,10 @@ declare function local:toxml_attribute( $e as element(jxon:attribute),$pattern a
 
 declare function local:toxml_element( $e as element(jxon:element) , $pattern as element(jxon:pattern) )
 {
+	common:dump( $e ,$pattern ),
+	$common:nl,
+	let $ppattern := common:getpattern( $e/.. )
+	return
 
 	let $match := common:match_json( $e/jxon:name , $e )
 	return 
@@ -154,8 +169,8 @@ document {
 <metaInformation>
 	<scenarios>
 		<scenario default="yes" name="tojson" userelativepaths="yes" externalpreview="no" useresolver="yes" url="..\..\..\..\..\..\..\..\jsonxml\playing\all.xml" outputurl="" processortype="saxon" tcpport="0" profilemode="0" profiledepth=""
-		          profilelength="" urlprofilexml="" commandline="" additionalpath="" additionalclasspath="" postprocessortype="none" postprocesscommandline="" postprocessadditionalpath="" postprocessgeneratedext="" host="" port="538976288" user=""
-		          password="" validateoutput="no" validator="internal" customvalidator="">
+		          profilelength="" urlprofilexml="" commandline="" additionalpath="" additionalclasspath="" postprocessortype="none" postprocesscommandline="" postprocessadditionalpath="" postprocessgeneratedext="" host="" port="0" user="" password=""
+		          validateoutput="no" validator="internal" customvalidator="">
 			<parameterValue name="{http://www.xmlsh.org/jsonxml/common}patterns" value="doc('patterns.xml')"/>
 			<parameterValue name="{http://www.xmlsh.org/jsonxml/common}annotations" value="doc('..\..\..\..\..\..\..\..\jsonxml\playing\all.xml')"/>
 			<advancedProperties name="DocumentURIResolver" value=""/>

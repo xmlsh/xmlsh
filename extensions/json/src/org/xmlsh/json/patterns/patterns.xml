@@ -1,21 +1,30 @@
 <patterns xmlns="http://www.xmlsh.org/jxon" default="full">
 	<pattern name="full">
-		
-		<children wrap="object" name="_children"/>
-		<attributes wrap="object" name="_attributes"/>
-		<text wrap="none"/>
-		<value wrap="schema" type="schema"/>
+		<element>
+			<children wrap="object" name="_children" />
+			<attributes wrap="object" name="_attributes" />
+			<text wrap="none"/>
+			<value wrap="schema" type="schema" />
+		</element>
+		<attribute>
+			<value wrap="schema" type="schema" />
+		</attribute>
 
 	</pattern>
 
 
 
 	<pattern name="simple">
-		<children wrap="none" />
-		<attributes wrap="none"/>
-		<text wrap="object" name="_text"/>
-		<value wrap="schema" type="schema"/>
+		<element>
+			<children wrap="none" />
+			<attributes wrap="none" />
+			<text wrap="object" name="_text" />
+			<value wrap="schema" type="schema" />
+		</element>
+		<attribute>
+			<value wrap="schema" type="schema" />
+		</attribute>
 
 	</pattern>
 
-</patterns>
+</patterns> 
