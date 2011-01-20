@@ -1,11 +1,22 @@
 <patterns xmlns="http://www.xmlsh.org/jxon" default="full">
 	<pattern name="full">
 		<element>
+			<!-- Wrap all child text and elements in an object -->
 			<children wrap="object" name="_children" />
+			
+			<!-- Wrap all attributes in an object -->
 			<attributes wrap="object" name="_attributes" />
+
+			<!-- Do not wrap text by itself, it is in the _children -->
 			<text wrap="none"/>
+
+			<!-- Values are typed and wrapped according to schema -->
 			<value wrap="schema" type="schema" />
+		
+
 		</element>
+
+
 		<attribute>
 			<value wrap="schema" type="schema" />
 		</attribute>
@@ -20,6 +31,7 @@
 			<attributes wrap="none" />
 			<text wrap="object" name="_text" />
 			<value wrap="schema" type="schema" />
+			<override/>
 		</element>
 		<attribute>
 			<value wrap="schema" type="schema" />
