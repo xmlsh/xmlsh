@@ -1,4 +1,5 @@
 module namespace common="http://www.xmlsh.org/jsonxml/common" ;
+declare default element namespace 'http://www.xmlsh.org/jxml';
 declare namespace xsl='http://www.w3.org/1999/XSL/Transform';
 declare namespace jxon='http://www.xmlsh.org/jxon';
 

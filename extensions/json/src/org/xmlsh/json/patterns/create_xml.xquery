@@ -1,6 +1,7 @@
 declare namespace json='http://www.xmlsh.org/jsonxml';
 declare namespace xsl='http://www.w3.org/1999/XSL/Transform';
 declare namespace jxon='http://www.xmlsh.org/jxon';
+declare default element namespace 'http://www.xmlsh.org/jxml';
 import module namespace common = "http://www.xmlsh.org/jsonxml/common"  at "common.xquery" ;
 
 
@@ -153,7 +154,7 @@ declare function local:toxml( $es as element()* )
 
 
 document {
-	<xsl:stylesheet version="2.0" >
+	<xsl:stylesheet version="2.0" xmlns="http://www.xmlsh.org/jxml"  xpath-default-namespace="http://www.xmlsh.org/jxml">
 	<xsl:strip-space elements="OBJECT MEMBER ARRAY" />
 	{
 		local:toxml( $common:annotations/jxon:document )
@@ -181,8 +182,8 @@ document {
 			<advancedProperties name="bExtensions" value="true"/>
 			<advancedProperties name="iWhitespace" value="0"/>
 			<advancedProperties name="bTinyTree" value="false"/>
-			<advancedProperties name="bUseDTD" value="false"/>
 			<advancedProperties name="bWarnings" value="true"/>
+			<advancedProperties name="bUseDTD" value="false"/>
 			<advancedProperties name="ModuleURIResolver" value=""/>
 		</scenario>
 	</scenarios>

@@ -1,7 +1,7 @@
 declare namespace json='http://www.xmlsh.org/jsonxml';
 declare namespace xsl='http://www.w3.org/1999/XSL/Transform';
 declare namespace jxon='http://www.xmlsh.org/jxon';
-
+declare default element namespace 'http://www.xmlsh.org/jxml';
 import module namespace common = "http://www.xmlsh.org/jsonxml/common"  at "common.xquery" ;
 
 
@@ -52,7 +52,7 @@ $common:nl,
 		<MEMBER name="{common:json_name($e/jxon:name)}">
 		{		
 			(: If we wrap attributes or children in their own child object :)
-			if( $pattern/jxon:attributes/@wrap eq 'object' )
+			if( $pattern/jxon:attributes/@wrap eq 'object' 
 			 or $pattern/jxon:children/jxon:value/@wrap eq 'object' ) then 
 				<OBJECT>
 					<xsl:if test="@*">
@@ -114,7 +114,7 @@ $common:nl,
 	,
 	$common:nl,
 	<xsl:template match="{$match}" mode="wrap" priority="{common:priority($e)}">
-		<OBJECT>
+		<OBJECT xmlns="http://www.xmlsh.org/jxml">
 			<xsl:apply-templates select="."/>	
 		
 		</OBJECT>
@@ -155,7 +155,7 @@ declare function local:tojson( $es as element()* )
 };
 
 document {
-	<xsl:stylesheet version="2.0" >
+	<xsl:stylesheet version="2.0"  xmlns="http://www.xmlsh.org/jxml">
 	{
 		local:tojson( $common:annotations/jxon:document )
 
@@ -182,8 +182,8 @@ document {
 			<advancedProperties name="bExtensions" value="true"/>
 			<advancedProperties name="iWhitespace" value="0"/>
 			<advancedProperties name="bTinyTree" value="false"/>
-			<advancedProperties name="bWarnings" value="true"/>
 			<advancedProperties name="bUseDTD" value="false"/>
+			<advancedProperties name="bWarnings" value="true"/>
 			<advancedProperties name="ModuleURIResolver" value=""/>
 		</scenario>
 	</scenarios>
