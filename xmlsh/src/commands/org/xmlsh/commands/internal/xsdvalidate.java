@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.xmlsh.core.CommandFactory;
+import org.xmlsh.core.CoreException;
 import org.xmlsh.core.ICommand;
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.Options;
@@ -65,7 +66,7 @@ public class xsdvalidate extends XCommand {
 			if( schema.indexOf(' ') < 0 )
 				v = new XSDValidator( getEnv().getShell().getURL(schema).toString() );
 			else
-				v = new XSDValidator( Util.toList( schema.split(" ") ) );
+				v = new XSDValidator( getSchemaList(schema) );
 				
 			v.validate( in.asInputSource(sopts));
 		} 
@@ -76,6 +77,21 @@ public class xsdvalidate extends XCommand {
 		
 		return 0;
 
+	}
+	/*
+	 * Return a list of  
+	 *     namespace-uri  schema-uri
+	 * Resovle any schema-uri's to pats relative to this
+	 */
+	private List<String> getSchemaList(String schema) throws CoreException {
+		ArrayList<String>  list = new ArrayList<String>();
+		for( String s : schema.split(" ")  ){
+			if( (list.size() & 1) == 1  ) // odd elements are URI's that need resolving
+				list.add(getEnv().getShell().getURL(s).toString() );
+			else
+				list.add(s);
+		}
+		return list ;	
 	}
 
 
