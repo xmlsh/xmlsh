@@ -69,6 +69,7 @@ public class xml2json extends XCommand
 	private		SerializeOpts mSerializeOpts;
 	
 	private 	static	final	String kENCODING_UTF_8 = "UTF-8";
+	private		static	final	String	kJXML_URI = "http://www.xmlsh.org/jxml";
 
 	
 	private 	static final 	QName 	kATTR_ENCODING 	= new QName("encoding");
@@ -79,15 +80,15 @@ public class xml2json extends XCommand
 	private		static	final 	QName	kATTR_HTML		= new QName( "html" );		// A String formated as XHTML 
 	
 	
-	private		static	final 	QName	kELEM_XJSON 	= new QName( "XJSON" );	
-	private		static	final 	QName	kELEM_FILE 	   	= new QName( "FILE" );	
-	private		static	final 	QName	kELEM_OBJECT	= new QName( "OBJECT" );	// A JSON Object
-	private		static	final 	QName	kELEM_MEMBER	= new QName( "MEMBER" );	// A JSON Object Member
-	private		static	final 	QName	kELEM_STRING 	= new QName( "STRING" );	// A JSON STRING
-	private		static	final 	QName	kELEM_NUMBER	= new QName( "NUMBER" );	// A JSON NUMBER	
-	private		static	final 	QName	kELEM_ARRAY		= new QName( "ARRAY" );		// A JSON ARRAY
-	private		static	final 	QName	kELEM_BOOLEAN	= new QName( "BOOLEAN" );	// A JSON Literal (true,false)
-	private		static	final 	QName	kELEM_NULL		= new QName( "NULL" );		// A JSON Literal null
+	private		static	final 	QName	kELEM_XJSON 	= new QName(kJXML_URI, "XJSON" );	
+	private		static	final 	QName	kELEM_FILE 	   	= new QName(kJXML_URI, "FILE" );	
+	private		static	final 	QName	kELEM_OBJECT	= new QName(kJXML_URI, "OBJECT" );	// A JSON Object
+	private		static	final 	QName	kELEM_MEMBER	= new QName(kJXML_URI, "MEMBER" );	// A JSON Object Member
+	private		static	final 	QName	kELEM_STRING 	= new QName(kJXML_URI, "STRING" );	// A JSON STRING
+	private		static	final 	QName	kELEM_NUMBER	= new QName(kJXML_URI, "NUMBER" );	// A JSON NUMBER	
+	private		static	final 	QName	kELEM_ARRAY		= new QName(kJXML_URI, "ARRAY" );		// A JSON ARRAY
+	private		static	final 	QName	kELEM_BOOLEAN	= new QName(kJXML_URI, "BOOLEAN" );	// A JSON Literal (true,false)
+	private		static	final 	QName	kELEM_NULL		= new QName(kJXML_URI, "NULL" );		// A JSON Literal null
 
 	
 	

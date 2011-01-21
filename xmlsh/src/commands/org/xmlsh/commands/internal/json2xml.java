@@ -39,7 +39,10 @@ import org.xmlsh.sh.shell.SerializeOpts;
  */
 
 public class json2xml extends XCommand {
-
+	private		static	final	String	kJXML_URI = "http://www.xmlsh.org/jxml";
+	
+	private		boolean bFirstElement = true ;
+	
 	public int run(List<XValue> args) throws Exception {
 		Options opts = new Options(SerializeOpts.getOptionDefs());
 		opts.parse(args);
@@ -81,15 +84,17 @@ public class json2xml extends XCommand {
 
 	private void write(JSONObject obj, XMLStreamWriter writer) throws XMLStreamException,
 			InvalidArgumentException, JSONException {
-		writer.writeStartElement("OBJECT");
+		writer.writeStartElement("" , "OBJECT",  kJXML_URI );
+		if( bFirstElement )
+			writer.writeDefaultNamespace(kJXML_URI);
 
-
+		bFirstElement = false ;
 		Iterator<?> keys = obj.keys();
 
 		while (keys.hasNext()) {
 
 			Object k = keys.next();
-			writer.writeStartElement("MEMBER");
+			writer.writeStartElement("" , "MEMBER" ,  kJXML_URI );
 
 			String name = k.toString();
 			writer.writeAttribute("name", name);
@@ -103,7 +108,7 @@ public class json2xml extends XCommand {
 	}
 
 	private void writeBoolean(Boolean b, XMLStreamWriter writer) throws XMLStreamException {
-		writer.writeStartElement("BOOLEAN");
+		writer.writeStartElement("" ,"BOOLEAN",  kJXML_URI );
 		// writer.writeAttribute("value", b.booleanValue() ? "true" : "false");
 		writer.writeCharacters(b.booleanValue() ? "true" : "false");
 		writer.writeEndElement();
@@ -112,12 +117,12 @@ public class json2xml extends XCommand {
 
 	
 	private void writeNull( XMLStreamWriter writer) throws XMLStreamException {
-		writer.writeStartElement("NULL");
+		writer.writeStartElement("" , "NULL" ,  kJXML_URI );
 		writer.writeEndElement();
 
 	}
 	private void write(Number v, XMLStreamWriter writer) throws XMLStreamException, JSONException {
-		writer.writeStartElement("NUMBER");
+		writer.writeStartElement("", "NUMBER",  kJXML_URI );
 		// writer.writeAttribute("value", JSONObject.numberToString(v));
 		writer.writeCharacters( JSONObject.numberToString(v));
 		writer.writeEndElement();
@@ -126,7 +131,7 @@ public class json2xml extends XCommand {
 
 	private void write(String s, XMLStreamWriter writer) throws XMLStreamException {
 
-		writer.writeStartElement("STRING");
+		writer.writeStartElement("" , "STRING",  kJXML_URI );
 		// writer.writeAttribute("value", s);
 		writer.writeCharacters(s);
 		writer.writeEndElement();
@@ -139,7 +144,7 @@ public class json2xml extends XCommand {
 		boolean b = false;
 		int len = array.length();
 
-		writer.writeStartElement("ARRAY");
+		writer.writeStartElement("" , "ARRAY" ,  kJXML_URI );
 
 		for (int i = 0; i < len; i += 1) {
 

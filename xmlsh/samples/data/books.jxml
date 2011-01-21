@@ -1,4 +1,4 @@
-<OBJECT xmlns:json="http://www.xmlsh.org/jsonxml">
+<OBJECT xmlns="http://www.xmlsh.org/jxml">
    <MEMBER name="BOOKLIST">
       <OBJECT>
          <MEMBER name="_children">
