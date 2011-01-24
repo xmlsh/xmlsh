@@ -93,7 +93,8 @@ public class jsonxslt  extends XCommand{
 			out.close();
 			
 			
-			XdmValue xv = var.getValue().xpath( getShell() , "//jxon:*").asXdmValue();
+			XdmValue xv = var.getValue().xpath( getShell() , "/xs:annotation/xs:appinfo/jxon:*").asXdmValue();
+//			XdmValue xv = var.getValue().xpath( getShell() , "//jxon:*").asXdmValue();
 			
 			/*
 			 * Reserialize with a namespacer reduicer

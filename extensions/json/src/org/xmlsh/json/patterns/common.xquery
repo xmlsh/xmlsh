@@ -47,7 +47,6 @@ declare function common:inherit( $e as element() , $prototype as element(jxon:pa
 
 	<jxon:pattern name="{$prototype/@name}" >
 	{
-		
 		for $elem in $prototype/*[fn:node-name(.) eq fn:node-name($e)]/*
 		return
 			( $elem , $ps/*[fn:node-name(.) eq fn:node-name($e)]/*[ (fn:node-name( . ) eq fn:node-name( $elem )) ] )[last()]
@@ -77,7 +76,7 @@ declare function common:getpattern( $e as element() ) as element(jxon:pattern)
 {
 
 	(: Get the self or nearest parents <pattern> element or types :)
-	let $json := $e/ancestor-or-self::*,
+	let $json := $e/ancestor-or-self::jxon:element|$e/ancestor-or-self::jxon:attribute,
 		$patterns := (
 		for $n in $json return
 			( 
@@ -238,8 +237,33 @@ declare function common:member_name( $e as element(jxon:name) ?  ) as xs:string 
 		()
 };
 
-(: Construct a match string for a json object :)
+(: 
+  Construct a match string for a json object 
+  For each level of nested (local) elements join with either /OBJECT/ or /OBJECT/ARRAY/
+
+:)
 declare function common:match_json( $name as element(jxon:name)? , $e as element() ) as xs:string
+{
+	fn:string-join( (
+		for $a in $e/ancestor::jxon:element
+		let $n := $a/jxon:name ,
+		    $pattern := common:getpattern( $a )
+		return (
+			common:member_name( $n  ) , 
+			if( $pattern/jxon:children/@wrap eq 'object' )
+				then concat("/OBJECT/MEMBER[@name eq '" , $pattern/jxon:children/@name,"']/ARRAY/OBJECT/" )
+			else	"/OBJECT/"
+		),
+			common:member_name( $name ) 
+		
+	) , "" )
+
+
+};
+
+
+(: Construct a match string for a json object :)
+declare function common:match_json_attribute( $name as element(jxon:name)? , $e as element() ) as xs:string
 {
 	fn:string-join( (
 		for $n in $e/ancestor::*/jxon:name

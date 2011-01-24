@@ -83,9 +83,13 @@
 				<xs:element name="DIMENSIONS" type="dimensionsType">
 					<xs:annotation>
 						<xs:appinfo>
-						<jxon:pattern>
+						<jxon:pattern name="simple">
+							<jxon:element>
+								<jxon:text wrap="object" name="value" />
 								<jxon:value type="NUMBER" wrap="array"/>
+							</jxon:element>
 						</jxon:pattern>
+						
 						</xs:appinfo>
 					</xs:annotation>
 					
@@ -94,7 +98,9 @@
 					<xs:annotation>
 					<xs:appinfo>
 						<jxon:pattern>
-							<jxon:text wrap="object" name="amount"/>
+							<jxon:element>
+								<jxon:text wrap="object" name="amount"/>
+							</jxon:element>
 						</jxon:pattern>
 					</xs:appinfo>
 				</xs:annotation>

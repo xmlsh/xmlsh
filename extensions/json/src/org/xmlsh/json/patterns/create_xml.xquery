@@ -32,7 +32,9 @@ declare function local:toxml_attribute( $e as element(jxon:attribute),$pattern a
 	common:dump($e ,$pattern ),
 	$common:nl,
 
-	let $ppattern := common:getpattern( $e/.. )
+	let $parent := $e/..,
+		$ppattern := common:getpattern( $parent ),
+		$pmatch := common:match_json( $parent/jxon:name , $parent )
 	return
 	( <!-- parent element -->,
 		$common:nl,
@@ -41,28 +43,24 @@ declare function local:toxml_attribute( $e as element(jxon:attribute),$pattern a
 
 
 	if( $ppattern/jxon:attributes/@wrap ne 'none' ) then 
-		let $match := common:match_json( () , $e )
-		return 
-			<xsl:template match="{$match}/OBJECT/MEMBER[@name eq '{$ppattern/jxon:attributes/@name}']/OBJECT/{common:member_name($e/jxon:name)}">
+			<xsl:template match="{$pmatch}/OBJECT/MEMBER[@name eq '{$ppattern/jxon:attributes/@name}']/OBJECT/{common:member_name($e/jxon:name)}" priority="{common:priority($e)}">
 				<xsl:attribute name="{$e/jxon:name/@localname}" namespace="{$e/jxon:name/@uri}">
 						<xsl:apply-templates select="*"/>
 				</xsl:attribute>
 			</xsl:template>
 	else	
-		let $match := common:match_json( $e/jxon:name , $e )
-		return 
-		(
-			<xsl:template match="{$match}/OBJECT" >
-					<xsl:apply-templates select="*" />
-			</xsl:template>
-			,
 
-	
-			<xsl:template match="{$match}/STRING | {$match}/NUMBER">
+		let $match := concat( $pmatch , "/OBJECT/", common:member_name($e/jxon:name) )
+		return 
+		(	
+			
+			
+			<xsl:template match="{$match}/STRING | {$match}/NUMBER" priority="{common:priority($e)}">
 					<xsl:value-of select="string()"/>
 			</xsl:template>,
-			<xsl:template match="{$match}">
-				<xsl:attribute name="{$e/jxon:name/@localname}" namespace="{$e/jxon:name/@uri}" >
+			$common:nl,
+			<xsl:template match="{$match}" priority="{common:priority($e)}">
+				<xsl:attribute name="{$e/jxon:name/@localname}" namespace="{$e/jxon:name/@uri}">
 					<xsl:apply-templates select="*"/>
 				</xsl:attribute>
 
@@ -87,23 +85,25 @@ declare function local:toxml_element( $e as element(jxon:element) , $pattern as 
 	let $match := common:match_json( $e/jxon:name , $e )
 	return 
 	(
-	<xsl:template match="{$match}/OBJECT" >
+	<xsl:template match="{$match}/OBJECT" priority="{common:priority($e)}" >
 			<xsl:apply-templates select="*" />
 	</xsl:template>
 	,
+	$common:nl,
 
 	
-	<xsl:template match="{$match}/STRING | {$match}/NUMBER">
+	<xsl:template match="{$match}/STRING | {$match}/NUMBER" priority="{common:priority($e)}">
 			<xsl:value-of select="string()"/>
 	</xsl:template>,
-	<xsl:template match="{$match}">
-		<xsl:element name="{$e/jxon:name/@localname}" namespace="{$e/jxon:name/@uri}">
+	<xsl:template match="{$match}" priority="{common:priority($e)}">
+		<xsl:element name="{$e/jxon:name/@localname}" namespace="{$e/jxon:name/@uri}" >
 			<xsl:apply-templates select="*"/>
 		</xsl:element>
 
 	</xsl:template>,
+	$common:nl,
 	if( $pattern/jxon:text/@wrap eq 'object' )  then 
-	<xsl:template match="{$match}/OBJECT/MEMBER[@name='{$pattern/jxon:text/@name}']">
+	<xsl:template match="{$match}/OBJECT/MEMBER[@name='{$pattern/jxon:text/@name}']" priority="{common:priority($e)}">
 		{
 			if( $pattern/jxon:value/@wrap eq 'array' )  then
 				<xsl:copy-of select="string-join( ARRAY/(NUMBER|STRING) , ' ')"/>			
@@ -112,7 +112,7 @@ declare function local:toxml_element( $e as element(jxon:element) , $pattern as 
 		}
 	</xsl:template> else () ,
 	if( $pattern/jxon:children/@wrap eq 'object' ) then 
-	<xsl:template match="{$match}/OBJECT/MEMBER[@name eq '{$pattern/jxon:children/@name}']">
+	<xsl:template match="{$match}/OBJECT/MEMBER[@name eq '{$pattern/jxon:children/@name}']" priority="{common:priority($e)}">
 		<xsl:apply-templates select="ARRAY/*"/>
 	</xsl:template>
 	else () 
