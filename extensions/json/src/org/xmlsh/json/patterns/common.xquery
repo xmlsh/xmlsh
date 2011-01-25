@@ -203,7 +203,7 @@ declare function common:match_elem( $name as element() , $e as element() ) as xs
 (: The Attribute name for use in match or select strings :)
 declare function common:attr_name( $name as element(jxon:name) )
 {
-	concat( "@" , $name/@localname  )
+	concat( "@" , common:xml_qname($name)  )
 
 };
 
@@ -211,30 +211,41 @@ declare function common:attr_name( $name as element(jxon:name) )
 (: Generate a match string for an attribute :)
 declare function common:match_attr( $name as element() , $e as element() ) as xs:string
 {
-	fn:string-join( ($e/ancestor::*/jxon:name/@localname , common:attr_name($name) ) , "/" )
+	fn:string-join( (
+
+	for $parent in $e/ancestor::*/jxon:name
+	return common:xml_qname($parent) , 
+	
+	common:attr_name($name) ) , "/" )
 
 
 };
+
+(: Full xmlname with prefix for matching names and attributes :)
+declare function common:xml_qname( $name as element(jxon:name) ) as xs:string
+{
+	$name/@localname 
+
+
+};
+
 
 
 (: Construct the JSON name for an element or attribute :)
-declare function common:json_name( $e as element(jxon:name)?  )
+declare function common:json_name( $e as element(jxon:name)  ) as xs:string
 {
-	if( empty( $e ) ) 
-		then () 
-	else
 		$e/@localname 
 };
 
+
+
+
 (: Construct a match string for a json member :)
-declare function common:member_name( $e as element(jxon:name) ?  ) as xs:string  ?
+declare function common:member_name( $e as element(jxon:name) ?  ) as xs:string 
 {
 	let $name := common:json_name( $e )
-	return
-	if( $name ne '' ) then 
+	return 
 		concat("MEMBER[@name='" , $name , "']")
-	else 
-		()
 };
 
 (: 

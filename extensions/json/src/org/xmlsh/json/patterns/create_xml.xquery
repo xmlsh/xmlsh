@@ -96,7 +96,7 @@ declare function local:toxml_element( $e as element(jxon:element) , $pattern as 
 			<xsl:value-of select="string()"/>
 	</xsl:template>,
 	<xsl:template match="{$match}" priority="{common:priority($e)}">
-		<xsl:element name="{$e/jxon:name/@localname}" namespace="{$e/jxon:name/@uri}" >
+		<xsl:element name="{$e/jxon:name/@localname }" namespace="{ $e/jxon:name/@uri }" >
 			<xsl:apply-templates select="*"/>
 		</xsl:element>
 
@@ -182,8 +182,8 @@ document {
 			<advancedProperties name="bExtensions" value="true"/>
 			<advancedProperties name="iWhitespace" value="0"/>
 			<advancedProperties name="bTinyTree" value="false"/>
-			<advancedProperties name="bWarnings" value="true"/>
 			<advancedProperties name="bUseDTD" value="false"/>
+			<advancedProperties name="bWarnings" value="true"/>
 			<advancedProperties name="ModuleURIResolver" value=""/>
 		</scenario>
 	</scenarios>
