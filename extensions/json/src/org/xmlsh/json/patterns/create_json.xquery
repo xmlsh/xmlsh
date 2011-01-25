@@ -29,7 +29,7 @@ return
 	common:dump( $e ,$pattern ),
 	$common:nl,
 	<xsl:template match="{$match}" mode="#all"  priority="{common:priority($e)}">
-		<MEMBER name="{common:json_name($e/jxon:name) }">
+		<MEMBER name="{common:json_name($e/jxon:name , $pattern ) }">
 			{ common:json_text_value( $e, $pattern ) }
 		</MEMBER>
 	</xsl:template>
@@ -49,7 +49,7 @@ return (
 common:dump( $e ,$pattern ),
 $common:nl,
 <xsl:template match="{$match}" priority="{common:priority($e)}">
-		<MEMBER name="{common:json_name($e/jxon:name)}">
+		<MEMBER name="{common:json_name($e/jxon:name, $pattern )}">
 		{		
 			(: If we wrap attributes or children in their own child object :)
 			if( $pattern/jxon:attributes/@wrap eq 'object' 
@@ -182,8 +182,8 @@ document {
 			<advancedProperties name="bExtensions" value="true"/>
 			<advancedProperties name="iWhitespace" value="0"/>
 			<advancedProperties name="bTinyTree" value="false"/>
-			<advancedProperties name="bUseDTD" value="false"/>
 			<advancedProperties name="bWarnings" value="true"/>
+			<advancedProperties name="bUseDTD" value="false"/>
 			<advancedProperties name="ModuleURIResolver" value=""/>
 		</scenario>
 	</scenarios>

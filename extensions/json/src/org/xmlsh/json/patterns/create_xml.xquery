@@ -43,14 +43,14 @@ declare function local:toxml_attribute( $e as element(jxon:attribute),$pattern a
 
 
 	if( $ppattern/jxon:attributes/@wrap ne 'none' ) then 
-			<xsl:template match="{$pmatch}/OBJECT/MEMBER[@name eq '{$ppattern/jxon:attributes/@name}']/OBJECT/{common:member_name($e/jxon:name)}" priority="{common:priority($e)}">
+			<xsl:template match="{$pmatch}/OBJECT/MEMBER[@name eq '{$ppattern/jxon:attributes/@name}']/OBJECT/{common:member_name($e/jxon:name, $pattern )}" priority="{common:priority($e)}">
 				<xsl:attribute name="{$e/jxon:name/@localname}" namespace="{$e/jxon:name/@uri}">
 						<xsl:apply-templates select="*"/>
 				</xsl:attribute>
 			</xsl:template>
 	else	
 
-		let $match := concat( $pmatch , "/OBJECT/", common:member_name($e/jxon:name) )
+		let $match := concat( $pmatch , "/OBJECT/", common:member_name($e/jxon:name, $pattern ) )
 		return 
 		(	
 			

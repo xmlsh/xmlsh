@@ -83,7 +83,7 @@ declare function common:getpattern( $e as element() ) as element(jxon:pattern)
 				common:gettypepatterns( common:qname( $n/jxon:type )  ) ,  $n/jxon:pattern 
 			),
 			(: Synthesize a nameless pattern element for all direct children :)
-			let $c := ($e/jxon:value|$e/jxon:text)
+			let $c := ($e/jxon:value|$e/jxon:text|$e/jxon:json_name)
 			return
 			if( exists($c) ) then
 				<jxon:pattern>
@@ -229,21 +229,37 @@ declare function common:xml_qname( $name as element(jxon:name) ) as xs:string
 
 };
 
+declare function common:clark_name( $name as element(jxon:name) ) as xs:string 
+{
+	if( exists($name/@uri) and $name/@uri ne ''  ) then 
+		concat("{",$name/@uri,"}", $name/@localname )
+	else
+		$name/@localname
+
+
+};
+
 
 
 (: Construct the JSON name for an element or attribute :)
-declare function common:json_name( $e as element(jxon:name)  ) as xs:string
+declare function common:json_name( $name as element(jxon:name) , $pattern as element(jxon:pattern) ) as xs:string
 {
-		$e/@localname 
+	if( $pattern/jxon:json_name ) then
+		if( $pattern/jxon:json_name/@name ) then 
+			$pattern/jxon:json_name/@name 
+		else
+			fn:replace( common:clark_name( $name ) , $pattern/jxon:json_name/@search , $pattern/jxon:json_name/@replace )
+	else
+		$name/@localname 
 };
 
 
 
 
 (: Construct a match string for a json member :)
-declare function common:member_name( $e as element(jxon:name) ?  ) as xs:string 
+declare function common:member_name( $e as element(jxon:name) , $pattern as element(jxon:pattern)  ) as xs:string 
 {
-	let $name := common:json_name( $e )
+	let $name := common:json_name( $e , $pattern )
 	return 
 		concat("MEMBER[@name='" , $name , "']")
 };
@@ -260,12 +276,12 @@ declare function common:match_json( $name as element(jxon:name)? , $e as element
 		let $n := $a/jxon:name ,
 		    $pattern := common:getpattern( $a )
 		return (
-			common:member_name( $n  ) , 
+			common:member_name( $n  , $pattern ) , 
 			if( $pattern/jxon:children/@wrap eq 'object' )
 				then concat("/OBJECT/MEMBER[@name eq '" , $pattern/jxon:children/@name,"']/ARRAY/OBJECT/" )
 			else	"/OBJECT/"
 		),
-			common:member_name( $name ) 
+			common:member_name( $name , common:getpattern($e) ) 
 		
 	) , "" )
 
@@ -277,9 +293,9 @@ declare function common:match_json( $name as element(jxon:name)? , $e as element
 declare function common:match_json_attribute( $name as element(jxon:name)? , $e as element() ) as xs:string
 {
 	fn:string-join( (
-		for $n in $e/ancestor::*/jxon:name
-		return common:member_name( $n  ) , 
-		common:member_name( $name ) ) , 
+		for $parent in $e/ancestor::*[jxon:name]
+		return common:member_name( $parent/jxon:name  , common:getpattern($parent) ) , 
+		common:member_name( $name , common:getpattern($e) ) ) , 
 		"/OBJECT/" )
 
 

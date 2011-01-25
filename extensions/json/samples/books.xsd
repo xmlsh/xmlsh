@@ -49,6 +49,7 @@
 		<xs:annotation>
 			<xs:appinfo>
 				<jxon:pattern  name="simple"/>
+				<jxon:json_name name="BOOK"/>
 			</xs:appinfo>
 		</xs:annotation>
 		<xs:complexType>
