@@ -6,7 +6,7 @@ OUT=$(mktemp -d)
 cd ../../samples
 
 
-j:jsonxslt -o $OUT -v -xsd books.xsd > $OUT/all.xml 
+j:jsonxslt -o $OUT -v -xsd books1.xsd > $OUT/all.xml 
 xslt -f $OUT/tojson.xsl < books.xml > $OUT/books.jxml
 xsdvalidate "http://www.xmlsh.org/jxml ../schemas/jxml.xsd" $OUT/books.jxml && xml2json -p < $OUT/books.jxml > $OUT/books.json
 
