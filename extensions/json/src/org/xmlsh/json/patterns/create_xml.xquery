@@ -79,7 +79,9 @@ declare function local:toxml_element( $e as element(jxon:element) , $pattern as 
 {
 	common:dump( $e ,$pattern ),
 	$common:nl,
-	let $ppattern := common:getpattern( $e/.. )
+	let $ppattern := common:getpattern( $e/.. ),
+		$value := common:json_text_type( $e , $pattern )
+	
 	return
 
 	let $match := common:match_json( $e/jxon:name , $e )
@@ -103,18 +105,25 @@ declare function local:toxml_element( $e as element(jxon:element) , $pattern as 
 	</xsl:template>,
 	$common:nl,
 	if( $pattern/jxon:text/@wrap eq 'object' )  then 
-	<xsl:template match="{$match}/OBJECT/MEMBER[@name='{$pattern/jxon:text/@name}']" priority="{common:priority($e)}">
+		<xsl:template match="{$match}/OBJECT/MEMBER[@name='{$pattern/jxon:text/@name}']" priority="{common:priority($e)}">
 		{
-			if( $pattern/jxon:value/@wrap eq 'array' )  then
+			if( $value/@wrap eq 'array' )  then
 				<xsl:copy-of select="string-join( ARRAY/(NUMBER|STRING) , ' ')"/>			
 			else
 				<xsl:value-of select="string()" />
 		}
-	</xsl:template> else () ,
-	if( $pattern/jxon:children/@wrap eq 'object' ) then 
-	<xsl:template match="{$match}/OBJECT/MEMBER[@name eq '{$pattern/jxon:children/@name}']" priority="{common:priority($e)}">
-		<xsl:apply-templates select="ARRAY/*"/>
-	</xsl:template>
+		</xsl:template> else () ,
+	if( $pattern/jxon:children/@wrap eq 'object' ) then  (
+		<xsl:template match="{$match}/OBJECT/MEMBER[@name eq '{$pattern/jxon:children/@name}']" priority="{common:priority($e)}">
+			<xsl:apply-templates select="ARRAY/*"/>
+		</xsl:template>,
+		if( $value/@wrap eq 'array' )  then
+			<xsl:template match="{$match}/OBJECT/MEMBER[@name eq '{$pattern/jxon:children/@name}']/ARRAY/ARRAY" priority="{common:priority($e)}">
+				<xsl:copy-of select="string-join( (NUMBER|STRING) , ' ')"/>	
+			</xsl:template>
+		else ()
+	)
+			
 	else () 
     )
 

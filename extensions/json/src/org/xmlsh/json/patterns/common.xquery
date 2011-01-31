@@ -113,17 +113,85 @@ declare function common:qname( $name as element()? ) as xs:QName  ?
 	fn:QName( $name/@uri , $name/@localname )
 };
 
+
+declare function common:type_decl( $type as xs:QName ) as element(jxon:type_decl)
+{
+	$common:annotations/jxon:document/jxon:type_decl[common:qname(jxon:name) eq $type]
+
+};
 declare function common:parent_type( $type as xs:QName ) as xs:QName?
 {
-	common:qname(   $common:annotations/jxon:document/jxon:type_decl[common:qname(jxon:name) eq $type]/jxon:basetype )
+	common:qname(   common:type_decl($type)/jxon:basetype ) 
+
+};
+
+declare function common:item_type( $type as xs:QName ) as xs:QName?
+{
+	common:qname(   common:type_decl($type)/jxon:itemtype ) 
 
 };
 
 declare function common:json_value( $type as xs:string , $wrap as xs:string ) as element(jxon:value)
 {
+	
 	<jxon:value type="{$type}" wrap="{$wrap}" />
 
 };
+
+declare function common:json_wrap_type( $pattern as element( jxon:pattern )  , $type as xs:QName?) as xs:string 
+{
+	if( $pattern/jxon:value/@wrap ne 'schema' ) then
+		$pattern/jxon:value/@wrap 
+	else
+	if( empty($type) ) then
+		"none"
+	else
+	let $decl := common:type_decl( $type )
+	return
+		if( $decl/@variety eq 'atomic' ) then 'none'
+		else
+		if( $decl/@variety eq 'list' ) then 'array'
+		else
+		if( exists($decl/jxon:basetype ) ) then 
+			common:json_wrap_type( $pattern , common:parent_type( $type ) )
+		else
+		if( exists( $decl/jxon:itemtype ) ) then
+			common:json_wrap_type( $pattern , common:item_type($type ) )
+		else
+			'none'
+
+};
+
+declare function common:json_atomic_type( $pattern as element(jxon:pattern) , $type as xs:QName? ) as xs:string
+{
+
+	if( $pattern/jxon:value/@type ne 'schema' ) then
+		$pattern/jxon:value/@type 
+
+	else
+	if( empty($type) ) then
+		"STRING"
+	else
+	if( $type = 
+	   ( xs:QName("xs:decimal") , 
+	     xs:QName("xs:integer" ) ,
+		 xs:QName("xs:float") ) )
+	 then
+	 	"NUMBER"
+	else 
+	let
+		$decl := common:type_decl($type) 
+		return
+		if( exists($decl/jxon:basetype ) ) then 
+			common:json_atomic_type( $pattern , common:parent_type( $type ) )
+		else
+		if( exists( $decl/jxon:itemtype ) ) then
+			common:json_atomic_type( $pattern , common:item_type($type ) )
+		else
+			'STRING'
+};
+
+
 
 
 
@@ -136,14 +204,8 @@ declare function common:json_type( $pattern as element(jxon:pattern) , $type as 
 	if( empty($type) ) then
 		common:json_value("STRING" , "none")
 	else
-	if( $type = 
-	   ( xs:QName("xs:decimal") , 
-	     xs:QName("xs:integer" ) ,
-		 xs:QName("xs:float") ) )
-	 then
-	 	common:json_value("NUMBER" , "none" )
-	else 
-		common:json_type( $pattern , common:parent_type( $type ) )
+		common:json_value( common:json_atomic_type($pattern,$type) , common:json_wrap_type($pattern,$type) )
+
 
 };
 
@@ -158,8 +220,9 @@ declare function common:json_text_type( $e as element(),  $pattern as element(jx
 		common:json_value("STRING" , "none" )
 	else
 	let $name := common:qname( $e/jxon:type )
-	return
+	return 
 		common:json_type( $pattern , $name )
+	
 
 
 };
