@@ -10,7 +10,7 @@ T2=$(mktemp -suffix .xml)
 json2xml < $1 > $T1
 json2xml < $2 > $T2
 
-xcmp -x -b $T1 $T1
+xcmp -x -b $T1 $T2
 _RET=$?
 
 rm -f $T1 $T2
