@@ -36,6 +36,10 @@ http://www.xqueryfunctions.com/xq/functx-1.0-nodoc-2007-01.xq
 * stax-utils from
 https://stax-utils.dev.java.net/
 
+* xom 1.2.6 from
+http://www.xom.nu/
+Used only for the xinclude command
+
 
 xmlsh may be redistributed as long as these notices in their entirety are included,
 and as long as the terms of the relevant licenses are applied.

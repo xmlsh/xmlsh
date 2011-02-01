@@ -4,4 +4,4 @@
 xinclude  < ../../samples/data/xi_doc1.xml
 
 # This should work too but dont test it now
-xinclude   ../../samples/data/xi_doc1.xml
+#xinclude   ../../samples/data/xi_doc1.xml

@@ -13,4 +13,6 @@ CLASSPATH=$CLASSPATH:$XMLSH/lib/jing.jar
 CLASSPATH=$CLASSPATH:$XMLSH/lib/trang.jar
 # saxon only used for xslt1
 CLASSPATH=$CLASSPATH:$XMLSH/lib/saxon.jar
+# xom used only for xinclude
+CLASSPATH=$CLASSPATH:$XMLSH/lib/xom-1.2.6.jar
 java -cp $CLASSPATH -Xmx1024m -Xms256m -XX:+UseConcMarkSweepGC org.xmlsh.sh.shell.Shell   "$@"

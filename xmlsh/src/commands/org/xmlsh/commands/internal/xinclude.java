@@ -10,11 +10,12 @@ import java.util.List;
 
 import javanet.staxutils.ContentHandlerToXMLStreamWriter;
 
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.xml.sax.InputSource;
+import nu.xom.Builder;
+import nu.xom.Document;
+import nu.xom.converters.SAXConverter;
+import nu.xom.xinclude.XIncluder;
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
@@ -50,28 +51,23 @@ public class xinclude extends XCommand {
 		try {
 			
 			SerializeOpts sopts = getSerializeOpts(opts);
-			
-			
+			Builder builder = new Builder();
 
-			SAXParserFactory f = SAXParserFactory.newInstance();
+			Document input = builder.build( stdin.asInputStream(sopts) , stdin.getSystemId() );
+			XIncluder.resolveInPlace(input, builder);
 			
-			f.setValidating(false);
-			f.setNamespaceAware(true);
-			f.setXIncludeAware(true);
 			
-	
-			SAXParser parser = f.newSAXParser();
+			
+			
 			
 			OutputPort stdout = getStdout();
 			XMLStreamWriter w = stdout.asXMLStreamWriter(sopts);
 			
 			ContentHandlerToXMLStreamWriter	handler = new ContentHandlerToXMLStreamWriter(w);
 			
+			SAXConverter sax = new SAXConverter( handler );
+			sax.convert(input);
 			
-			InputSource	source = stdin.asInputSource(sopts);
-
-			
-			parser.parse( source ,  handler );
 			w.flush();
 			w.close();
 			

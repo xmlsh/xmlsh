@@ -22,5 +22,6 @@
 	<classpathentry kind="lib" path="lib/trang.jar" sourcepath="C:/java/trang-20091111/src.zip"/>
 	<classpathentry kind="lib" path="lib/tagsoup-1.2.jar" sourcepath="C:/java/tagsoup/tagsoup-1.2-src.zip"/>
 	<classpathentry kind="lib" path="lib/saxon9he.jar" sourcepath="C:/java/saxonhe9-3-02/src"/>
+	<classpathentry kind="lib" path="lib/xom-1.2.6.jar"/>
 	<classpathentry kind="output" path="_out"/>
 </classpath>
