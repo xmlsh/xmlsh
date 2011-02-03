@@ -77,7 +77,7 @@
 				<xs:element name="PAGES" type="xs:integer">
 				<xs:annotation>
 						<xs:appinfo>
-							<jxon:value  type="STRING"/>
+							<jxon:value  type="string"/>
 						</xs:appinfo>
 				</xs:annotation>
 				</xs:element>
@@ -87,7 +87,7 @@
 						<jxon:pattern name="simple">
 							<jxon:element>
 								<jxon:text wrap="object" name="value" />
-								<jxon:value type="NUMBER" wrap="array"/>
+								<jxon:value type="number" wrap="array"/>
 							</jxon:element>
 						</jxon:pattern>
 						
@@ -157,7 +157,7 @@
 						<xs:annotation>
 						<xs:appinfo>
 						<jxon:pattern>
-								<jxon:value type="STRING" wrap="none"/>
+								<jxon:value type="string" wrap="none"/>
 						</jxon:pattern>
 						</xs:appinfo>
 					</xs:annotation>

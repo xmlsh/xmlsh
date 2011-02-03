@@ -1,47 +1,35 @@
 <?xml version="1.0"?>
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="http://www.xmlsh.org/jxml" xmlns="http://www.xmlsh.org/jxml">
-	<xsd:element name="OBJECT">
+	<xsd:element name="object" substitutionGroup="value">
 		<xsd:complexType>
 			<xsd:sequence minOccurs="0" maxOccurs="unbounded">
-				<xsd:element ref="MEMBER"/>
+				<xsd:element ref="member"/>
 			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
-	<xsd:element name="MEMBER">
+	<xsd:element name="member">
 		<xsd:complexType>
-			<xsd:sequence >
-				<xsd:group ref="value"/>
+			<xsd:sequence>
+				<xsd:element ref="value"/>
 			</xsd:sequence>
 			<xsd:attribute name="name" use="required"/>
 		</xsd:complexType>
 	</xsd:element>
-	<xsd:element name="ARRAY">
+	<xsd:element name="array" substitutionGroup="value">
 		<xsd:complexType>
 			<xsd:sequence maxOccurs="unbounded" minOccurs="0">
-				<xsd:group ref="value"/>
+				<xsd:element ref="value"/>
 			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
-	<xsd:element name="STRING">
-		<xsd:simpleType>
-			<xsd:restriction base="xsd:string"/>
-		</xsd:simpleType>
+	<xsd:element name="string" type="xsd:string" substitutionGroup="value"/>
+	<xsd:element name="number" type="xsd:double" substitutionGroup="value"/>
+	<xsd:element name="boolean" type="xsd:boolean" substitutionGroup="value"/>
+	<xsd:element name="null" substitutionGroup="value">
+		<xsd:complexType>
+		</xsd:complexType>
 	</xsd:element>
-	<xsd:element name="NUMBER">
-		<xsd:simpleType>
-			<xsd:restriction base="xsd:double"/>
-		</xsd:simpleType>
-	</xsd:element>
-	<xsd:element name="NULL"/>
-	<xsd:group name="value">
-		<xsd:choice>
-				<xsd:element ref="STRING"/>
-				<xsd:element ref="NUMBER"/>
-				<xsd:element ref="NULL"/>
-				<xsd:element ref="OBJECT"/>
-				<xsd:element ref="ARRAY"/>
-		</xsd:choice>
-	</xsd:group>
+	<xsd:element name="value" abstract="true"/>
 
 
 </xsd:schema>

@@ -170,14 +170,14 @@ declare function common:json_atomic_type( $pattern as element(jxon:pattern) , $t
 
 	else
 	if( empty($type) ) then
-		"STRING"
+		"string"
 	else
 	if( $type = 
 	   ( xs:QName("xs:decimal") , 
 	     xs:QName("xs:integer" ) ,
 		 xs:QName("xs:float") ) )
 	 then
-	 	"NUMBER"
+	 	"number"
 	else 
 	let
 		$decl := common:type_decl($type) 
@@ -188,7 +188,7 @@ declare function common:json_atomic_type( $pattern as element(jxon:pattern) , $t
 		if( exists( $decl/jxon:itemtype ) ) then
 			common:json_atomic_type( $pattern , common:item_type($type ) )
 		else
-			'STRING'
+			'string'
 };
 
 
@@ -202,7 +202,7 @@ declare function common:json_type( $pattern as element(jxon:pattern) , $type as 
 
 	else
 	if( empty($type) ) then
-		common:json_value("STRING" , "none")
+		common:json_value("string" , "none")
 	else
 		common:json_value( common:json_atomic_type($pattern,$type) , common:json_wrap_type($pattern,$type) )
 
@@ -217,7 +217,7 @@ declare function common:json_type( $pattern as element(jxon:pattern) , $type as 
 declare function common:json_text_type( $e as element(),  $pattern as element(jxon:pattern) ) as element(jxon:value)
 {
 	if( empty($e/jxon:type ) ) then
-		common:json_value("STRING" , "none" )
+		common:json_value("string" , "none" )
 	else
 	let $name := common:qname( $e/jxon:type )
 	return 
@@ -233,7 +233,7 @@ declare function common:json_text_value( $e as element() , $pattern as element(j
 	let $type := common:json_text_type( $e , $pattern )
 	return 
 	if( $type/@wrap eq 'array' ) then 
-		<ARRAY>
+		<array>
 			<xsl:for-each select="tokenize(.,' ')">
 			{
 				element { $type/@type/string() } 
@@ -242,7 +242,7 @@ declare function common:json_text_value( $e as element() , $pattern as element(j
 				}
 			}
 			</xsl:for-each>
-		</ARRAY>
+		</array>
 
 	else
 		element { $type/@type/string() } 
@@ -324,7 +324,7 @@ declare function common:member_name( $e as element(jxon:name) , $pattern as elem
 {
 	let $name := common:json_name( $e , $pattern )
 	return 
-		concat("MEMBER[@name='" , $name , "']")
+		concat("member[@name='" , $name , "']")
 };
 
 (: 
@@ -341,8 +341,8 @@ declare function common:match_json( $name as element(jxon:name)? , $e as element
 		return (
 			common:member_name( $n  , $pattern ) , 
 			if( $pattern/jxon:children/@wrap eq 'object' )
-				then concat("/OBJECT/MEMBER[@name eq '" , $pattern/jxon:children/@name,"']/ARRAY/OBJECT/" )
-			else	"/OBJECT/"
+				then concat("/object/member[@name eq '" , $pattern/jxon:children/@name,"']/array/object/" )
+			else	"/object/"
 		),
 			common:member_name( $name , common:getpattern($e) ) 
 		
@@ -359,7 +359,7 @@ declare function common:match_json_attribute( $name as element(jxon:name)? , $e 
 		for $parent in $e/ancestor::*[jxon:name]
 		return common:member_name( $parent/jxon:name  , common:getpattern($parent) ) , 
 		common:member_name( $name , common:getpattern($e) ) ) , 
-		"/OBJECT/" )
+		"/object/" )
 
 
 };

@@ -9,11 +9,11 @@ import module namespace common = "http://www.xmlsh.org/jsonxml/common"  at "comm
 declare function local:toxml_document( $e as element(jxon:document) , $pattern as element(jxon:pattern) )
 {
 
-	<xsl:template  match="/OBJECT">
+	<xsl:template  match="/object">
 		<xsl:apply-templates select="*"/>
 	</xsl:template>,
 
-	<xsl:template  match="ARRAY">
+	<xsl:template  match="array">
 	
 	</xsl:template>
 
@@ -43,19 +43,19 @@ declare function local:toxml_attribute( $e as element(jxon:attribute),$pattern a
 
 
 	if( $ppattern/jxon:attributes/@wrap ne 'none' ) then 
-			<xsl:template match="{$pmatch}/OBJECT/MEMBER[@name eq '{$ppattern/jxon:attributes/@name}']/OBJECT/{common:member_name($e/jxon:name, $pattern )}" priority="{common:priority($e)}">
+			<xsl:template match="{$pmatch}/object/member[@name eq '{$ppattern/jxon:attributes/@name}']/object/{common:member_name($e/jxon:name, $pattern )}" priority="{common:priority($e)}">
 				<xsl:attribute name="{$e/jxon:name/@localname}" namespace="{$e/jxon:name/@uri}">
 						<xsl:apply-templates select="*"/>
 				</xsl:attribute>
 			</xsl:template>
 	else	
 
-		let $match := concat( $pmatch , "/OBJECT/", common:member_name($e/jxon:name, $pattern ) )
+		let $match := concat( $pmatch , "/object/", common:member_name($e/jxon:name, $pattern ) )
 		return 
 		(	
 			
 			
-			<xsl:template match="{$match}/STRING | {$match}/NUMBER" priority="{common:priority($e)}">
+			<xsl:template match="{$match}/string | {$match}/number" priority="{common:priority($e)}">
 					<xsl:value-of select="string()"/>
 			</xsl:template>,
 			$common:nl,
@@ -87,14 +87,14 @@ declare function local:toxml_element( $e as element(jxon:element) , $pattern as 
 	let $match := common:match_json( $e/jxon:name , $e )
 	return 
 	(
-	<xsl:template match="{$match}/OBJECT" priority="{common:priority($e)}" >
+	<xsl:template match="{$match}/object" priority="{common:priority($e)}" >
 			<xsl:apply-templates select="*" />
 	</xsl:template>
 	,
 	$common:nl,
 
 	
-	<xsl:template match="{$match}/STRING | {$match}/NUMBER" priority="{common:priority($e)}">
+	<xsl:template match="{$match}/string | {$match}/number" priority="{common:priority($e)}">
 			<xsl:value-of select="string()"/>
 	</xsl:template>,
 	<xsl:template match="{$match}" priority="{common:priority($e)}">
@@ -105,21 +105,21 @@ declare function local:toxml_element( $e as element(jxon:element) , $pattern as 
 	</xsl:template>,
 	$common:nl,
 	if( $pattern/jxon:text/@wrap eq 'object' )  then 
-		<xsl:template match="{$match}/OBJECT/MEMBER[@name='{$pattern/jxon:text/@name}']" priority="{common:priority($e)}">
+		<xsl:template match="{$match}/object/member[@name='{$pattern/jxon:text/@name}']" priority="{common:priority($e)}">
 		{
 			if( $value/@wrap eq 'array' )  then
-				<xsl:copy-of select="string-join( ARRAY/(NUMBER|STRING) , ' ')"/>			
+				<xsl:copy-of select="string-join( array/(number|string) , ' ')"/>			
 			else
 				<xsl:value-of select="string()" />
 		}
 		</xsl:template> else () ,
 	if( $pattern/jxon:children/@wrap eq 'object' ) then  (
-		<xsl:template match="{$match}/OBJECT/MEMBER[@name eq '{$pattern/jxon:children/@name}']" priority="{common:priority($e)}">
-			<xsl:apply-templates select="ARRAY/*"/>
+		<xsl:template match="{$match}/object/member[@name eq '{$pattern/jxon:children/@name}']" priority="{common:priority($e)}">
+			<xsl:apply-templates select="array/*"/>
 		</xsl:template>,
 		if( $value/@wrap eq 'array' )  then
-			<xsl:template match="{$match}/OBJECT/MEMBER[@name eq '{$pattern/jxon:children/@name}']/ARRAY/ARRAY" priority="{common:priority($e)}">
-				<xsl:copy-of select="string-join( (NUMBER|STRING) , ' ')"/>	
+			<xsl:template match="{$match}/object/member[@name eq '{$pattern/jxon:children/@name}']/array/array" priority="{common:priority($e)}">
+				<xsl:copy-of select="string-join( (number|string) , ' ')"/>	
 			</xsl:template>
 		else ()
 	)
@@ -164,7 +164,7 @@ declare function local:toxml( $es as element()* )
 
 document {
 	<xsl:stylesheet version="2.0" xmlns="http://www.xmlsh.org/jxml"  xpath-default-namespace="http://www.xmlsh.org/jxml">
-	<xsl:strip-space elements="OBJECT MEMBER ARRAY" />
+	<xsl:strip-space elements="object member array" />
 	{
 		local:toxml( $common:annotations/jxon:document )
 
@@ -191,8 +191,8 @@ document {
 			<advancedProperties name="bExtensions" value="true"/>
 			<advancedProperties name="iWhitespace" value="0"/>
 			<advancedProperties name="bTinyTree" value="false"/>
-			<advancedProperties name="bUseDTD" value="false"/>
 			<advancedProperties name="bWarnings" value="true"/>
+			<advancedProperties name="bUseDTD" value="false"/>
 			<advancedProperties name="ModuleURIResolver" value=""/>
 		</scenario>
 	</scenarios>

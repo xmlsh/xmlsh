@@ -29,9 +29,9 @@ return
 	common:dump( $e ,$pattern ),
 	$common:nl,
 	<xsl:template match="{$match}" mode="#all"  priority="{common:priority($e)}">
-		<MEMBER name="{common:json_name($e/jxon:name , $pattern ) }">
+		<member name="{common:json_name($e/jxon:name , $pattern ) }">
 			{ common:json_text_value( $e, $pattern ) }
-		</MEMBER>
+		</member>
 	</xsl:template>
 
 )
@@ -49,34 +49,34 @@ return (
 common:dump( $e ,$pattern ),
 $common:nl,
 <xsl:template match="{$match}" priority="{common:priority($e)}">
-		<MEMBER name="{common:json_name($e/jxon:name, $pattern )}">
+		<member name="{common:json_name($e/jxon:name, $pattern )}">
 		{		
 			(: If we wrap attributes or children in their own child object :)
 			if( $pattern/jxon:attributes/@wrap eq 'object' 
 			 or $pattern/jxon:children/jxon:value/@wrap eq 'object' ) then 
-				<OBJECT>
+				<object>
 					<xsl:if test="@*">
-						<MEMBER name="{$pattern/jxon:attributes/@name}">
-							<OBJECT>
+						<member name="{$pattern/jxon:attributes/@name}">
+							<object>
 								{ (: Only apply to attributes which are marked as full :) 
 								   for $a in $e/jxon:attribute
 								   return
 								   	<xsl:apply-templates select="{  common:attr_name( $a/jxon:name ) }"/>
 								}							
-							</OBJECT>
-						</MEMBER>
+							</object>
+						</member>
 					</xsl:if>
 
 					<xsl:if test="node() except @*">	
 				
-						<MEMBER name="{$pattern/jxon:children/@name}">
+						<member name="{$pattern/jxon:children/@name}">
 							<!-- Applies element and text templates -->
-							<ARRAY>
+							<array>
 								<xsl:apply-templates select="node() except @*" mode="wrap"/>
-							</ARRAY>
-						</MEMBER>
+							</array>
+						</member>
 					</xsl:if>
-				</OBJECT>
+				</object>
 			(: "simple" mode do not wrap children :)
 			else 
 			<xsl:choose>
@@ -86,7 +86,7 @@ $common:nl,
 				</xsl:when>
 				<!-- Otherwise need to make an object out of this -->
 				<xsl:otherwise>
-					<OBJECT>
+					<object>
 
 						<!-- For each element and attribute make a member -->
 						<xsl:for-each select="@*|*">
@@ -97,27 +97,27 @@ $common:nl,
 						{ 
 							if( $e/@contentType eq "simple" and $pattern/jxon:text/@wrap eq 'object' )  then 
 								<xsl:if test="string(.)">
-								<MEMBER name="{$pattern/jxon:text/@name}">
+								<member name="{$pattern/jxon:text/@name}">
 										{ common:json_text_value($e,$pattern) }
-								</MEMBER>
+								</member>
 							</xsl:if>
 							else
 								()
 						}
-					</OBJECT>
+					</object>
 				</xsl:otherwise>
 			</xsl:choose>
 		
 		}
-		</MEMBER>
+		</member>
 	</xsl:template>
 	,
 	$common:nl,
 	<xsl:template match="{$match}" mode="wrap" priority="{common:priority($e)}">
-		<OBJECT xmlns="http://www.xmlsh.org/jxml">
+		<object xmlns="http://www.xmlsh.org/jxml">
 			<xsl:apply-templates select="."/>	
 		
-		</OBJECT>
+		</object>
 	</xsl:template> 
 	, $common:nl,
 	<xsl:template match="{$match}/text()" mode="#all" priority="{common:priority($e)}">
@@ -182,8 +182,8 @@ document {
 			<advancedProperties name="bExtensions" value="true"/>
 			<advancedProperties name="iWhitespace" value="0"/>
 			<advancedProperties name="bTinyTree" value="false"/>
-			<advancedProperties name="bUseDTD" value="false"/>
 			<advancedProperties name="bWarnings" value="true"/>
+			<advancedProperties name="bUseDTD" value="false"/>
 			<advancedProperties name="ModuleURIResolver" value=""/>
 		</scenario>
 	</scenarios>
