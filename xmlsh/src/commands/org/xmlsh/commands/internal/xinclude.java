@@ -6,6 +6,7 @@
 
 package org.xmlsh.commands.internal;
 
+import java.io.OutputStream;
 import java.util.List;
 
 import javanet.staxutils.ContentHandlerToXMLStreamWriter;
@@ -14,6 +15,7 @@ import javax.xml.stream.XMLStreamWriter;
 
 import nu.xom.Builder;
 import nu.xom.Document;
+import nu.xom.Serializer;
 import nu.xom.converters.SAXConverter;
 import nu.xom.xinclude.XIncluder;
 import org.xmlsh.core.InputPort;
@@ -36,10 +38,10 @@ public class xinclude extends XCommand {
 		
 		
 
-		Options opts = new Options( SerializeOpts.getOptionDefs() );
+		Options opts = new Options( "xs=xomserialize",SerializeOpts.getOptionDefs() );
 		opts.parse(args);
 		args = opts.getRemainingArgs();
-		
+		boolean xs = opts.hasOpt("xs");
 		
 		InputPort stdin = null;
 		if( args.size() > 0 )
@@ -61,20 +63,30 @@ public class xinclude extends XCommand {
 			
 			
 			OutputPort stdout = getStdout();
-			XMLStreamWriter w = stdout.asXMLStreamWriter(sopts);
+			OutputStream os = stdout.asOutputStream(sopts);
 			
-			ContentHandlerToXMLStreamWriter	handler = new ContentHandlerToXMLStreamWriter(w);
+			// XOM Serialization 
+			if( xs ){
 			
-			SAXConverter sax = new SAXConverter( handler );
-			sax.convert(input);
+				Serializer ser = new Serializer(os , sopts.getEncoding());
+				ser.write(input);
+				os.close();
+				
 			
-			w.flush();
-			w.close();
-			
-			
-			
-	
-			stdout.writeSequenceTerminator(sopts);
+			} else {
+				
+				XMLStreamWriter w = stdout.asXMLStreamWriter(sopts);
+				
+				ContentHandlerToXMLStreamWriter	handler = new ContentHandlerToXMLStreamWriter(w);
+				
+				SAXConverter sax = new SAXConverter( handler );
+				sax.convert(input);
+				
+				w.flush();
+				w.close();
+				stdout.writeSequenceTerminator(sopts);
+			}
+			stdout.release();
 		} 
 		finally {
 			

@@ -32,6 +32,17 @@
 			<xsd:restriction base="xsd:double"/>
 		</xsd:simpleType>
 	</xsd:element>
+	<xsd:element name="BOOLEAN">
+			<xsd:simpleType>
+				<xsd:restriction  base="xsd:string">
+					<xsd:enumeration value="true"/>
+					<xsd:enumeration value="false"/>
+				</xsd:restriction>
+
+			</xsd:simpleType>
+	</xsd:element>
+
+
 	<xsd:element name="NULL"/>
 	<xsd:group name="value">
 		<xsd:choice>
@@ -40,6 +51,8 @@
 				<xsd:element ref="NULL"/>
 				<xsd:element ref="OBJECT"/>
 				<xsd:element ref="ARRAY"/>
+				<xsd:element ref="BOOLEAN"/>
+
 		</xsd:choice>
 	</xsd:group>
 
