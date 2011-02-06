@@ -66,7 +66,7 @@ declare function common:gettypepatterns( $typename as xs:QName? ) as element(jxo
 	let 
 		$pattern :=  $common:annotations/jxon:document/jxon:type_decl[ common:qname(name) eq $typename ]/jxon:pattern
 	return
-		( common:gettypepatterns( common:parent_type( $typename ) ) , $pattern )
+		( common:gettypepatterns( fn:trace(common:parent_type( $typename ),"parent_type") ) , $pattern )
 
 };
 

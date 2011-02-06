@@ -15,13 +15,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import javanet.staxutils.XMLStreamUtils;
-
 import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
-import javax.xml.transform.Source;
-import javax.xml.transform.stream.StreamSource;
 
 import net.sf.saxon.s9api.BuildingStreamWriter;
 import net.sf.saxon.s9api.QName;
@@ -50,10 +45,8 @@ import org.apache.xerces.xs.XSTerm;
 import org.apache.xerces.xs.XSTypeDefinition;
 import org.xml.sax.ContentHandler;
 import org.xmlsh.core.CoreException;
-import org.xmlsh.core.OmittingXMLStreamWriter;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
-import org.xmlsh.core.VariableInputPort;
 import org.xmlsh.core.VariableOutputPort;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XEnvironment;
@@ -74,10 +67,10 @@ public class jsonxslt  extends XCommand{
 		private static final String CONTEXT_TYPE = "type_decl";
 		private static final String CONTEXT_ATTRIBUTE = "attribute";
 		private static final String CONTEXT_ELEMENT = "element";
+		private static final String CONTEXT_ELEMENT_REF = "element_ref";	
 		private static final String CONTEXT_DOCUMENT = "document";
 		private static final String  JXON_NS = "http://www.xmlsh.org/jxon";
 		
-		private static final QName   JXON_PATTERN = new QName( JXON_NS , "pattern");
 
 		
 		private  XdmNode 	parse( XSAnnotation xanno , SerializeOpts opts ) throws XPathException, SaxonApiException, CoreException
@@ -172,7 +165,6 @@ public class jsonxslt  extends XCommand{
 				super();
 				mName = name ;
 				
-				
 				mContext = context ;
 				mType = type;
 				mAnnotation = annotation;
@@ -180,8 +172,6 @@ public class jsonxslt  extends XCommand{
 				if( parent != null )
 					parent.add( this );
 			}
-			
-		
 			
 			
 			private void add(AnnotationEntry annotationEntry) {
@@ -191,14 +181,12 @@ public class jsonxslt  extends XCommand{
 				
 			}
 
-
-
-
 			public void  serialize( XMLStreamWriter sw ) throws SaxonApiException, XMLStreamException, XPathException, CoreException
 			{
 
-				sw.writeStartElement(JXON_NS, mContext);
-				sw.writeNamespace("jxon", JXON_NS );
+				sw.writeStartElement( "jxon", mContext , JXON_NS );
+				// sw.writeDefaultNamespace(JXON_NS);
+				
 				
 				XSSimpleTypeDefinition itemType = null ;
 				XSObjectList memberTypes = null ;
@@ -207,7 +195,8 @@ public class jsonxslt  extends XCommand{
 					if( mType.getTypeCategory() == XSTypeDefinition.COMPLEX_TYPE ){
 						XSComplexTypeDefinition ctd = (XSComplexTypeDefinition) mType ;
 						sw.writeAttribute( "contentType" , getTypeContentType( ctd ) );
-						
+						if( mName.getLocalName().equals("value"))
+							sw.writeAttribute("abstract", ctd.getAbstract() ? "true" : "false" );
 					}
 					else
 					if( mType.getTypeCategory() == XSTypeDefinition.SIMPLE_TYPE ){
@@ -226,7 +215,13 @@ public class jsonxslt  extends XCommand{
 					
 					if( mType != null ){
 						if( mContext.equals(CONTEXT_TYPE )){
-							writeQName( sw , "basetype" , getName(mType.getBaseType()) );
+							QName baseType = getName(mType.getBaseType());
+							
+							
+							
+							// Prevent infinate recursion
+							if( baseType != null && ! baseType.equals(mName))
+								writeQName( sw , "basetype" , baseType );
 							if( itemType != null )
 								writeQName( sw , "itemtype" , getName( itemType ));
 							if( memberTypes != null ){
@@ -346,7 +341,10 @@ public class jsonxslt  extends XCommand{
 	
 		private SerializeOpts 	  mSerializeOpts ;
 		private	 XdmNode				  mPatterns;
-	
+
+		private static int level = 0;
+		
+		private Schema	mSchema = null;
 		
 		public int run(List<XValue> args) throws Exception {
 			Options opts = new Options("xsd:,o=output:,v,n",SerializeOpts.getOptionDefs());
@@ -362,7 +360,7 @@ public class jsonxslt  extends XCommand{
 			
 			Shell shell = getShell();
 			shell.getEnv().declareNamespace("jxon",JXON_NS );
-			Schema schema = new Schema(   shell.getURI( xsd ).toString()  );
+			mSchema = new Schema(   shell.getURI( xsd ).toString()  );
 			
 			
 			URL patterns_url =  mShell.getResource("/org/xmlsh/json/patterns/patterns.xml");
@@ -372,11 +370,11 @@ public class jsonxslt  extends XCommand{
 			
 			
 			
-			AnnotationEntry docEntry = getGlobalAnnotations(schema);
+			AnnotationEntry docEntry = getGlobalAnnotations();
 			
 			
-			getTypeAnnotations(schema , docEntry);
-			getElementAnnotations(schema, docEntry );
+			getTypeAnnotations( docEntry);
+			getElementAnnotations( docEntry );
 						
 			File	outputDir = shell.getExplicitFile(output,false);
 			if( ! outputDir.exists() )
@@ -457,9 +455,9 @@ public class jsonxslt  extends XCommand{
 			
 		}
 
-		private AnnotationEntry getGlobalAnnotations(Schema schema) throws XPathException,
+		private AnnotationEntry getGlobalAnnotations() throws XPathException,
 				XMLStreamException, CoreException, SaxonApiException {
-			XSObjectList annotations = schema.getAnnotations();
+			XSObjectList annotations = mSchema.getAnnotations();
 			
 			AnnotationList value = getAnnotations( annotations );
 			AnnotationEntry self = new AnnotationEntry( CONTEXT_DOCUMENT ,  null , null , null , value);
@@ -472,17 +470,43 @@ public class jsonxslt  extends XCommand{
 
 		private void getAnnotations(XSParticle particle, AnnotationEntry parent ) throws XPathException,	
 			XMLStreamException, CoreException, SaxonApiException {
+			
+			if( level > 40)
+				return ;
+			
+			
+			
 			if( particle == null )
 				return ;
 			XSTerm term = particle.getTerm() ;
 			if( term == null )
 				return ;
 			
+			level++;
+			
+			
 			switch( term.getType() ){
 			case	XSConstants.ELEMENT_DECLARATION :
 			{
 				XSElementDeclaration child = (XSElementDeclaration) term ;
 				getAnnotations( child , parent  );
+				
+				
+
+				/*
+				 * If this is a member of a substitution group then add all other elements of the same group but dont recurse
+				 */
+				List<XSElementDeclaration> subs  =	getSubElements(child);
+				for( XSElementDeclaration e : subs ){
+					
+					// XSTypeDefinition stype = e.getTypeDefinition();	
+					
+					QName selemName = getName(e);
+					
+					new AnnotationEntry( CONTEXT_ELEMENT_REF ,   selemName,  parent ,  null  , null  );
+				}
+				
+				
 				break ;
 			}
 			
@@ -507,15 +531,16 @@ public class jsonxslt  extends XCommand{
 			case	XSConstants.WILDCARD :
 				break ;
 			}
-		
+			level--;
+			
 		}
 		
 
-		private void getElementAnnotations(Schema schema, AnnotationEntry parent ) throws XPathException,
+		private void getElementAnnotations( AnnotationEntry parent ) throws XPathException,
 				XMLStreamException, CoreException, SaxonApiException {
 			
 			
-			XSModel model = schema.getModel();
+			XSModel model = mSchema.getModel();
 			XSNamedMap types  = model.getComponents(XSConstants.ELEMENT_DECLARATION);
 			for( int i = 0 ; i < types.getLength() ; i++ ){
 				XSObject obj = types.item(i);
@@ -526,6 +551,32 @@ public class jsonxslt  extends XCommand{
 			}
 		}
 
+		private List<XSElementDeclaration> getSubElements(XSElementDeclaration that ) 
+			throws XPathException,
+		XMLStreamException, CoreException, SaxonApiException {
+	
+			ArrayList<XSElementDeclaration>  subs = new ArrayList<XSElementDeclaration>();
+			
+			XSModel model = mSchema.getModel();
+			XSNamedMap types  = model.getComponents(XSConstants.ELEMENT_DECLARATION);
+			for( int i = 0 ; i < types.getLength() ; i++ ){
+				XSObject obj = types.item(i);
+		
+				if( obj instanceof XSElementDeclaration ){
+					XSElementDeclaration xed = (XSElementDeclaration) obj;
+					
+					if( xed != that && xed.getSubstitutionGroupAffiliation() == that )
+						subs.add(xed);
+				}
+					
+				
+			}
+			return subs;
+		}
+		
+				
+		
+		
 		private void getAnnotations(XSElementDeclaration obj, AnnotationEntry parent ) throws XPathException,
 				XMLStreamException, CoreException, SaxonApiException {
 			{
@@ -537,7 +588,9 @@ public class jsonxslt  extends XCommand{
 				XSTypeDefinition type = obj.getTypeDefinition();	
 				
 				QName elemName = getName(obj);
-				
+				boolean bAbstract = obj.getAbstract();
+			
+
 				
 				AnnotationEntry self = new AnnotationEntry( CONTEXT_ELEMENT ,   elemName,  parent ,  type , annotation  );
 
@@ -587,14 +640,15 @@ public class jsonxslt  extends XCommand{
 					
 					XSParticle particle = ctype.getParticle();
 					getAnnotations( particle , self );
+					
 				}
 			}
 		}
 
 
 
-		private void getTypeAnnotations(Schema schema,  AnnotationEntry parent) throws XPathException,	XMLStreamException, CoreException, SaxonApiException {
-			XSModel model = schema.getModel();
+		private void getTypeAnnotations( AnnotationEntry parent) throws XPathException,	XMLStreamException, CoreException, SaxonApiException {
+			XSModel model = mSchema.getModel();
 			XSNamedMap types  = model.getComponents(XSConstants.TYPE_DEFINITION);
 			for( int i = 0 ; i < types.getLength() ; i++ ){
 				XSObject obj = types.item(i);
@@ -697,7 +751,7 @@ public class jsonxslt  extends XCommand{
 			if( Util.isBlank(q.getLocalName()))
 				return ;
 			
-			sw.writeStartElement(JXON_NS, name);
+			sw.writeStartElement("jxon" ,  name,JXON_NS );
 			// sw.writeAttribute("prefix", q.getPrefix() );
 			sw.writeAttribute("uri" , q.getNamespaceURI());
 			sw.writeAttribute("localname", q.getLocalName());
