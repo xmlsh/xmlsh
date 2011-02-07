@@ -1,0 +1,70 @@
+
+ {
+  "object":
+   {
+    "_children":
+     ["\n   ",
+      {
+       "member":
+        {
+         "_attributes":
+          {
+           "name":"foo"
+          },
+         "_children":
+          ["\n      ",
+           {
+            "array":
+             {
+              "_children":
+               ["\n         ",
+                {
+                 "boolean":
+                  {
+                   "_children":
+                    ["true"]
+                  }
+                },"\n         ",
+                {
+                 "null":
+                  {
+                  }
+                },"\n         ",
+                {
+                 "number":
+                  {
+                   "_children":
+                    ["1.23"]
+                  }
+                },"\n         ",
+                {
+                 "object":
+                  {
+                   "_children":
+                    ["\n            ",
+                     {
+                      "member":
+                       {
+                        "_attributes":
+                         {
+                          "name":"bar"
+                         },
+                        "_children":
+                         ["\n               ",
+                          {
+                           "string":
+                            {
+                             "_children":
+                              ["spam"]
+                            }
+                          },"\n            "]
+                       }
+                     },"\n         "]
+                  }
+                },"\n      "]
+             }
+           },"\n   "]
+        }
+      },"\n"]
+   }
+ }
