@@ -142,6 +142,8 @@ declare function local:tojson( $es as element()* )
 	typeswitch( $e ) 
 	case	$elem as element(jxon:element)
 		return local:tojson_element( $elem , $pattern ) 
+
+			
 	case	$a as element(jxon:attribute)
 		return local:tojson_attribute($a , $pattern )
 	case	$d as element(jxon:document)
@@ -149,14 +151,25 @@ declare function local:tojson( $es as element()* )
 	default
 		return ()
 	,
-
-	local:tojson( $e/jxon:element | $e/jxon:attribute )
+	
+	local:tojson( $e/jxon:element | $e/jxon:attribute  )
 	)
 };
 
 document {
 	<xsl:stylesheet version="2.0"  xmlns="http://www.xmlsh.org/jxml">
 	{
+		for $ns in $common:nsmap//ns
+		return
+			attribute { fn:QName($ns/@uri, concat($ns/@prefix,":bogus"))} {}
+
+	}
+	
+	
+	{
+	
+
+
 		local:tojson( $common:annotations/jxon:document )
 
 	}
@@ -169,7 +182,7 @@ document {
 
 <metaInformation>
 	<scenarios>
-		<scenario default="yes" name="tojson" userelativepaths="yes" externalpreview="no" useresolver="yes" url="" outputurl="" processortype="saxon" tcpport="0" profilemode="0" profiledepth="" profilelength="" urlprofilexml="" commandline=""
+		<scenario default="no" name="books" userelativepaths="yes" externalpreview="no" useresolver="yes" url="" outputurl="" processortype="saxon" tcpport="0" profilemode="0" profiledepth="" profilelength="" urlprofilexml="" commandline=""
 		          additionalpath="" additionalclasspath="" postprocessortype="none" postprocesscommandline="" postprocessadditionalpath="" postprocessgeneratedext="" host="" port="0" user="" password="" validateoutput="no" validator="internal"
 		          customvalidator="">
 			<parameterValue name="{http://www.xmlsh.org/jsonxml/common}patterns" value="doc('patterns.xml')"/>
@@ -184,6 +197,23 @@ document {
 			<advancedProperties name="bTinyTree" value="false"/>
 			<advancedProperties name="bWarnings" value="true"/>
 			<advancedProperties name="bUseDTD" value="false"/>
+			<advancedProperties name="ModuleURIResolver" value=""/>
+		</scenario>
+		<scenario default="yes" name="jxml" userelativepaths="yes" externalpreview="no" useresolver="yes" url="" outputurl="" processortype="saxon" tcpport="0" profilemode="0" profiledepth="" profilelength="" urlprofilexml="" commandline=""
+		          additionalpath="" additionalclasspath="" postprocessortype="none" postprocesscommandline="" postprocessadditionalpath="" postprocessgeneratedext="" host="" port="0" user="" password="" validateoutput="no" validator="internal"
+		          customvalidator="">
+			<parameterValue name="{http://www.xmlsh.org/jsonxml/common}patterns" value="doc('patterns.xml')"/>
+			<parameterValue name="{http://www.xmlsh.org/jsonxml/common}annotations" value="doc('..\..\..\..\..\..\..\..\jsonxml\jxml\all.xml')"/>
+			<advancedProperties name="DocumentURIResolver" value=""/>
+			<advancedProperties name="bSchemaAware" value="false"/>
+			<advancedProperties name="bXml11" value="false"/>
+			<advancedProperties name="CollectionURIResolver" value=""/>
+			<advancedProperties name="iValidation" value="0"/>
+			<advancedProperties name="bExtensions" value="true"/>
+			<advancedProperties name="iWhitespace" value="0"/>
+			<advancedProperties name="bTinyTree" value="false"/>
+			<advancedProperties name="bUseDTD" value="false"/>
+			<advancedProperties name="bWarnings" value="true"/>
 			<advancedProperties name="ModuleURIResolver" value=""/>
 		</scenario>
 	</scenarios>

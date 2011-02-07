@@ -7,6 +7,12 @@ declare variable $common:annotations as document-node() external ;
 declare variable $common:patterns    as document-node() external ;
 declare variable $common:nl := "&#xA;" ;
 declare variable $common:default_pattern as element(jxon:pattern) :=  $common:patterns/jxon:patterns/jxon:pattern[@name eq $common:patterns/jxon:patterns/@default];
+declare variable $common:nsmap := <nsmap>{
+	for $ns at $pos in distinct-values($common:annotations//jxon:name[@uri ne '']/@uri/string())
+	return 	<ns prefix="{concat( 'ns' , $pos )}" uri="{$ns}" /> 
+	}
+	</nsmap>;
+
 
 declare function common:dump( $e as element() , $pattern as element(jxon:pattern) ) 
 {
@@ -66,7 +72,7 @@ declare function common:gettypepatterns( $typename as xs:QName? ) as element(jxo
 	let 
 		$pattern :=  $common:annotations/jxon:document/jxon:type_decl[ common:qname(name) eq $typename ]/jxon:pattern
 	return
-		( common:gettypepatterns( fn:trace(common:parent_type( $typename ),"parent_type") ) , $pattern )
+		( common:gettypepatterns( common:parent_type( $typename )) , $pattern )
 
 };
 
@@ -254,11 +260,28 @@ declare function common:json_text_value( $e as element() , $pattern as element(j
 
 };
 
+
+(: Create an xpath name for a single name element 
+   For names with no namespace use the localname
+   For names with a namespace use ns:localname
+   :)
+declare function common:xpath_name( $name as element(jxon:name) ) as xs:string
+{
+	if( $name/@uri eq '' )  then 
+		$name/@localname
+	else
+		concat( $common:nsmap//ns[@uri eq $name/@uri]/@prefix , ":" , $name/@localname )
+	
+};
+
+
 (: Generate a match string for an element :)
 declare function common:match_elem( $name as element() , $e as element() ) as xs:string
 {
 
-	fn:string-join( ($e/ancestor::*/jxon:name/@localname , $name/@localname) , "/" )
+	fn:string-join( 
+		for $n in ( $e/ancestor::*/jxon:name , $name) 
+		return common:xpath_name($n) , "/" )
 
 
 };
@@ -266,7 +289,7 @@ declare function common:match_elem( $name as element() , $e as element() ) as xs
 (: The Attribute name for use in match or select strings :)
 declare function common:attr_name( $name as element(jxon:name) )
 {
-	concat( "@" , common:xml_qname($name)  )
+	concat( "@" , common:xpath_name($name)  )
 
 };
 
@@ -277,17 +300,9 @@ declare function common:match_attr( $name as element() , $e as element() ) as xs
 	fn:string-join( (
 
 	for $parent in $e/ancestor::*/jxon:name
-	return common:xml_qname($parent) , 
+	return common:xpath_name($parent) , 
 	
 	common:attr_name($name) ) , "/" )
-
-
-};
-
-(: Full xmlname with prefix for matching names and attributes :)
-declare function common:xml_qname( $name as element(jxon:name) ) as xs:string
-{
-	$name/@localname 
 
 
 };
@@ -364,6 +379,27 @@ declare function common:match_json_attribute( $name as element(jxon:name)? , $e 
 
 };
 
+declare function common:element_by_ref( $ref as element(jxon:name) ) as element(jxon:element )
+{
+	let $name := common:qname($ref)
+	return
+	$common:annotations/jxon:document/jxon:element[common:qname(jxon:name) eq $name ]
+
+
+
+};
+
+(: From http://fgeorges.blogspot.com/2006/08/add-namespace-node-to-element-in.html :)
+
+declare function common:add-ns-nodes(
+    $elem   as element(),
+    $prefix as xs:string,
+    $ns-uri as xs:string
+  ) as element()
+{
+
+  element { QName($ns-uri, concat($prefix, ":x")) }{ $elem }/*
+};
 (: Stylus Studio meta-information - (c) 2004-2009. Progress Software Corporation. All rights reserved.
 
 <metaInformation>

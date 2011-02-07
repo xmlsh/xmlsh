@@ -26,7 +26,7 @@ failed=<[ 0 ]>
 # Extra tests which depend on local environment
 EXTRA=$*
 
-for d in core $EXTRA; do
+for d in books jxml $EXTRA; do
    echo "running tests in $d"
    cd $d
    for test in *.xsh ; do

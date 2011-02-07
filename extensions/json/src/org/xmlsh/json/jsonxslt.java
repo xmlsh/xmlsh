@@ -64,19 +64,16 @@ import org.xmlsh.util.Util;
 public class jsonxslt  extends XCommand{
 
 		
-		private static final String CONTEXT_TYPE = "type_decl";
+		private static final String CONTEXT_TYPE 		= "type_decl";
 		private static final String CONTEXT_ATTRIBUTE = "attribute";
-		private static final String CONTEXT_ELEMENT = "element";
+		private static final String CONTEXT_ELEMENT 	= "element";
 		private static final String CONTEXT_ELEMENT_REF = "element_ref";	
-		private static final String CONTEXT_DOCUMENT = "document";
-		private static final String  JXON_NS = "http://www.xmlsh.org/jxon";
-		
-
+		private static final String CONTEXT_DOCUMENT 	= "document";
+		private static final String JXON_NS 			= "http://www.xmlsh.org/jxon";
 		
 		private  XdmNode 	parse( XSAnnotation xanno , SerializeOpts opts ) throws XPathException, SaxonApiException, CoreException
 		{
-			
-			
+
 			XVariable var = new XVariable("anon", new XValue());
 			OutputPort out = new VariableOutputPort( var );
 			
@@ -186,8 +183,8 @@ public class jsonxslt  extends XCommand{
 
 				sw.writeStartElement( "jxon", mContext , JXON_NS );
 				// sw.writeDefaultNamespace(JXON_NS);
-				
-				
+
+
 				XSSimpleTypeDefinition itemType = null ;
 				XSObjectList memberTypes = null ;
 				if( mType != null ){
@@ -205,20 +202,15 @@ public class jsonxslt  extends XCommand{
 						itemType = std.getItemType();
 						memberTypes = std.getMemberTypes();
 					}
-					
-					
 				}
-				
 				
 				if( ! mContext.equals(CONTEXT_DOCUMENT)){
 					writeQName( sw , "name" , mName );
-					
+
 					if( mType != null ){
 						if( mContext.equals(CONTEXT_TYPE )){
 							QName baseType = getName(mType.getBaseType());
-							
-							
-							
+	
 							// Prevent infinate recursion
 							if( baseType != null && ! baseType.equals(mName))
 								writeQName( sw , "basetype" , baseType );
@@ -229,14 +221,10 @@ public class jsonxslt  extends XCommand{
 									XSSimpleTypeDefinition member = (XSSimpleTypeDefinition ) memberTypes.item(i);
 									writeQName( sw , "membertype" , getName( member ));
 								}
-								
-								
 							}
 						}
 						else
 							writeQName( sw , "type" , getName(mType) );
-						
-						
 					}
 				}
 				
@@ -471,8 +459,8 @@ public class jsonxslt  extends XCommand{
 		private void getAnnotations(XSParticle particle, AnnotationEntry parent ) throws XPathException,	
 			XMLStreamException, CoreException, SaxonApiException {
 			
-			if( level > 40)
-				return ;
+//			if( level > 40)
+//				return ;
 			
 			
 			
@@ -488,8 +476,16 @@ public class jsonxslt  extends XCommand{
 			switch( term.getType() ){
 			case	XSConstants.ELEMENT_DECLARATION :
 			{
+				
+				
+				
 				XSElementDeclaration child = (XSElementDeclaration) term ;
-				getAnnotations( child , parent  );
+				
+				/*
+				 * Only recurse for local elements
+				 */
+				if( child.getScope() == XSConstants.SCOPE_LOCAL )
+					getAnnotations( child , parent  );
 				
 				
 

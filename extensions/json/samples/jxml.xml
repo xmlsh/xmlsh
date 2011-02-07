@@ -1,0 +1,15 @@
+<object xmlns="http://www.xmlsh.org/jxml">
+   <member name="foo">
+      <array>
+         <boolean>true</boolean>
+         <null/>
+         <number>1.23</number>
+         <object>
+            <member name="bar">
+               <string>spam</string>
+            </member>
+         </object>
+      </array>
+   </member>
+</object>
+

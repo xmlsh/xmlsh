@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="http://www.xmlsh.org/jxml" xmlns="http://www.xmlsh.org/jxml">
+	<xsd:element name="value" abstract="true"/>
+
+	<xsd:element name="object" substitutionGroup="value">
+		<xsd:complexType>
+			<xsd:sequence minOccurs="0" maxOccurs="unbounded">
+				<xsd:element ref="member"/>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="member">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="value"/>
+			</xsd:sequence>
+			<xsd:attribute name="name" use="required"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="array" substitutionGroup="value">
+		<xsd:complexType>
+			<xsd:sequence maxOccurs="unbounded" minOccurs="0">
+				<xsd:element ref="value"/>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="string" type="xsd:string" substitutionGroup="value"/>
+	<xsd:element name="number" type="xsd:double" substitutionGroup="value"/>
+	<xsd:element name="boolean" type="xsd:boolean" substitutionGroup="value"/>
+	<xsd:element name="null" substitutionGroup="value">
+		<xsd:complexType>
+		</xsd:complexType>
+	</xsd:element>
+	
+
+</xsd:schema>
