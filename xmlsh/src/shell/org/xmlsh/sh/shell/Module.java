@@ -317,7 +317,8 @@ public class Module {
 
 			Class<?> cls = findClass(name);
 			
-			return cls != null ;
+			if( cls != null )
+				return true ;
 
 		} catch (Exception e) {
 			;

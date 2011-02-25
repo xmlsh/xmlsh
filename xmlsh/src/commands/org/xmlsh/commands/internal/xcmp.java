@@ -47,20 +47,23 @@ public class xcmp extends XCommand {
 	private boolean xopt = false;
 	private boolean bopt = false ;	// blank (CR/LF) insensitive
 	private	 boolean nopt = false;		// dont print anything, just exit
-	
+	private boolean copt = false ; 	// Ignore comments
+	private boolean popt = false ;
 
 	
 	public int run( List<XValue> args   )	throws Exception
 	{
 		
 
-		Options opts = new Options( "x,b,n"  );
+		Options opts = new Options( "x,b,n,c,p"  );
 		opts.parse(args);
 		
 		
 		xopt = opts.hasOpt("x");
 		bopt = opts.hasOpt("b");
 		nopt = opts.hasOpt("n");
+		copt = opts.hasOpt("c");
+		popt = opts.hasOpt("p");
 		
 
 		List<XValue> argv;
@@ -183,14 +186,22 @@ public class xcmp extends XCommand {
 				/*
 				 * If ignoring blanks then entirely skip any element which is charactors and entirely blank
 				 */
-				if( bopt ){
-					while( e1.getEventType() == XMLEvent.CHARACTERS && isBlank(e1.asCharacters()) && xmlreader1.hasNext() )
+				if( bopt || copt || popt ){
+					while(((bopt && (e1.getEventType() == XMLEvent.CHARACTERS ) && isBlank(e1.asCharacters()) ) || 
+							(copt && e1.getEventType() == XMLEvent.COMMENT )  ||
+							(popt && e1.getEventType() == XMLEvent.PROCESSING_INSTRUCTION ) ) 
+							&& xmlreader1.hasNext() )
 						e1 = xmlreader1.nextEvent();
 					
-					while( e2.getEventType() == XMLEvent.CHARACTERS && isBlank(e2.asCharacters()) && xmlreader2.hasNext() )
+					while(((bopt && (e2.getEventType() == XMLEvent.CHARACTERS ) && isBlank(e2.asCharacters()) ) || 
+							(copt && e2.getEventType() == XMLEvent.COMMENT ) ||
+							(popt && e2.getEventType() == XMLEvent.PROCESSING_INSTRUCTION ) )  
+							&& xmlreader2.hasNext() )
 						e2 = xmlreader2.nextEvent();
 						
+						
 				}
+				
 				
 				
 				
