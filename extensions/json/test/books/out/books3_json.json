@@ -1,0 +1,257 @@
+
+ {
+  "BOOKLIST":
+   {
+    "_children":
+     ["\n",
+      {
+       "BOOKS":
+        [
+         {
+          "BOOK":
+           {
+            "CAT":"MMP",
+            "TITLE":
+             {
+              "_children":
+               ["Pride and Prejudice"]
+             },
+            "AUTHOR":"Jane Austen",
+            "PUBLISHER":"Modern Library",
+            "PUB-DATE":"2002-12-31",
+            "LANGUAGE":"English",
+            "PRICE":
+             {
+              "_children":
+               [4.95]
+             },
+            "QUANTITY":187,
+            "ISBN":"0679601686",
+            "PAGES":"352",
+            "DIMENSIONS":
+             {
+              "UNIT":"in",
+              "value":
+               [8.3,5.7,1.1]
+             },
+            "WEIGHT":
+             {
+              "UNIT":"oz",
+              "amount":6.1
+             }
+           }
+         },
+         {
+          "BOOK":
+           {
+            "CAT":"P",
+            "TITLE":
+             {
+              "_children":
+               ["Wuthering Heights"]
+             },
+            "AUTHOR":"Charlotte Brontë",
+            "PUBLISHER":"Penguin Classics",
+            "PUB-DATE":"2002-12-31",
+            "LANGUAGE":"English",
+            "PRICE":
+             {
+              "_children":
+               [6.58]
+             },
+            "QUANTITY":113,
+            "ISBN":"0141439556",
+            "PAGES":"430",
+            "DIMENSIONS":
+             {
+              "UNIT":"in",
+              "value":
+               [1,5.2,7.8]
+             },
+            "WEIGHT":
+             {
+              "UNIT":"oz",
+              "amount":11.2
+             }
+           }
+         },
+         {
+          "BOOK":
+           {
+            "CAT":"P",
+            "TITLE":
+             {
+              "_children":
+               ["Tess of the d'Urbervilles"]
+             },
+            "AUTHOR":"Thomas Hardy",
+            "PUBLISHER":"Bantam Classics",
+            "PUB-DATE":"1984-05-01",
+            "LANGUAGE":"English",
+            "PRICE":
+             {
+              "_children":
+               [4.95]
+             },
+            "QUANTITY":85,
+            "ISBN":"0553211684",
+            "PAGES":"480",
+            "DIMENSIONS":
+             {
+              "UNIT":"in",
+              "value":
+               [6.8,4.2,0.8]
+             },
+            "WEIGHT":
+             {
+              "UNIT":"oz",
+              "amount":7.7
+             }
+           }
+         },
+         {
+          "BOOK":
+           {
+            "CAT":"P",
+            "TITLE":
+             {
+              "_children":
+               ["Jude the Obscure"]
+             },
+            "AUTHOR":"Thomas Hardy",
+            "PUBLISHER":"Penguin Classics",
+            "PUB-DATE":"1998-09-01",
+            "LANGUAGE":"English",
+            "PRICE":
+             {
+              "_children":
+               [4.95]
+             },
+            "QUANTITY":129,
+            "ISBN":"0140435387",
+            "PAGES":"528",
+            "DIMENSIONS":
+             {
+              "UNIT":"in",
+              "value":
+               [7.8,5.2,0.9]
+             },
+            "WEIGHT":
+             {
+              "UNIT":"oz",
+              "amount":10.9
+             }
+           }
+         },
+         {
+          "BOOK":
+           {
+            "CAT":"H",
+            "TITLE":
+             {
+              "_children":
+               ["The Big Over Easy"]
+             },
+            "AUTHOR":"Jasper Fforde",
+            "PUBLISHER":"Hodder & Stoughton",
+            "PUB-DATE":"2005-07-11",
+            "LANGUAGE":"English",
+            "PRICE":
+             {
+              "_children":
+               [16.47]
+             },
+            "QUANTITY":129,
+            "ISBN":"0340835672",
+            "PAGES":"346",
+            "DIMENSIONS":
+             {
+              "UNIT":"cm",
+              "value":
+               [22.5,18,3.5]
+             },
+            "WEIGHT":
+             {
+              "UNIT":"g",
+              "amount":390
+             }
+           }
+         },
+         {
+          "BOOK":
+           {
+            "CAT":"P",
+            "TITLE":
+             {
+              "_children":
+               ["The Eyre Affair"]
+             },
+            "AUTHOR":"Jasper Fforde",
+            "PUBLISHER":"Penguin",
+            "PUB-DATE":"2003-02-25",
+            "LANGUAGE":"English",
+            "PRICE":
+             {
+              "_children":
+               [16.47]
+             },
+            "QUANTITY":129,
+            "ISBN":"0142001805",
+            "PAGES":"384",
+            "DIMENSIONS":
+             {
+              "UNIT":"in",
+              "value":
+               [7.8,5,0.9]
+             },
+            "WEIGHT":
+             {
+              "UNIT":"oz",
+              "amount":9
+             }
+           }
+         }]
+      },"\n",
+      {
+       "CATEGORIES":
+        {
+         "_attributes":
+          {
+           "DESC":"Miscellaneous categories"
+          },
+         "_children":
+          ["\n    ",
+           {
+            "CATEGORY":
+             {
+              "_attributes":
+               {
+                "CODE":"P",
+                "DESC":"Paperback"
+               }
+             }
+           },"\n    ",
+           {
+            "CATEGORY":
+             {
+              "_attributes":
+               {
+                "CODE":"MMP",
+                "DESC":"Mass-market Paperback"
+               }
+             }
+           },"\n    ",
+           {
+            "CATEGORY":
+             {
+              "_attributes":
+               {
+                "CODE":"H",
+                "DESC":"Hard Cover"
+               }
+             }
+           },"\n"]
+        }
+      },"\n"]
+   }
+ }

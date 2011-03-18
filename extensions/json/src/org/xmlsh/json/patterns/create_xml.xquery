@@ -122,9 +122,16 @@ declare function local:toxml_element( $e as element(jxon:element) , $pattern as 
 				<xsl:copy-of select="string-join( (number|string) , ' ')"/>	
 			</xsl:template>
 		else ()
-	)
+	) else
+	if( $pattern/jxon:children/@wrap eq 'array' ) then 
+		<xsl:template match="{$match}/array" priority="{common:priority($e) + 1}">
+			<xsl:apply-templates select="*"/>
+		</xsl:template>
+	else ()
 			
-	else () 
+
+
+
     )
 
 
@@ -191,8 +198,8 @@ document {
 			<advancedProperties name="bExtensions" value="true"/>
 			<advancedProperties name="iWhitespace" value="0"/>
 			<advancedProperties name="bTinyTree" value="false"/>
-			<advancedProperties name="bUseDTD" value="false"/>
 			<advancedProperties name="bWarnings" value="true"/>
+			<advancedProperties name="bUseDTD" value="false"/>
 			<advancedProperties name="ModuleURIResolver" value=""/>
 		</scenario>
 		<scenario default="yes" name="dx" userelativepaths="yes" externalpreview="no" useresolver="yes" url="..\..\..\..\..\..\..\..\jsonxml\dx\all.xml" outputurl="" processortype="saxon" tcpport="0" profilemode="0" profiledepth="" profilelength=""
@@ -208,8 +215,8 @@ document {
 			<advancedProperties name="bExtensions" value="true"/>
 			<advancedProperties name="iWhitespace" value="0"/>
 			<advancedProperties name="bTinyTree" value="false"/>
-			<advancedProperties name="bUseDTD" value="false"/>
 			<advancedProperties name="bWarnings" value="true"/>
+			<advancedProperties name="bUseDTD" value="false"/>
 			<advancedProperties name="ModuleURIResolver" value=""/>
 		</scenario>
 	</scenarios>

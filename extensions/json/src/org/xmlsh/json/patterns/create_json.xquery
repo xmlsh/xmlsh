@@ -51,6 +51,23 @@ $common:nl,
 <xsl:template match="{$match}" priority="{common:priority($e)}">
 		<member name="{common:json_name($e/jxon:name, $pattern )}">
 		{		
+
+			(: Array wrapping for repeated children :)
+			if( $pattern/jxon:children/@wrap eq 'array' ) then 
+				<array>
+				{ 
+					if( xs:boolean($pattern/jxon:children/@omitChild)) then
+						<xsl:for-each select="*">
+								<xsl:apply-templates select="*" mode="wrap"/>
+						</xsl:for-each>
+					else
+						
+						<xsl:apply-templates select="*" mode="wrap"/>
+				}
+				
+				</array>
+			else
+
 			(: If we wrap attributes or children in their own child object :)
 			if( $pattern/jxon:attributes/@wrap eq 'object' 
 			 or $pattern/jxon:children/jxon:value/@wrap eq 'object' ) then 
@@ -79,6 +96,11 @@ $common:nl,
 				</object>
 			(: "simple" mode do not wrap children :)
 			else 
+
+
+
+
+
 			<xsl:choose>
 				<!-- No attributes or child elements - jump to text  -->
 				<xsl:when test="empty(@*|*)">
@@ -199,11 +221,44 @@ document {
 			<advancedProperties name="bUseDTD" value="false"/>
 			<advancedProperties name="ModuleURIResolver" value=""/>
 		</scenario>
-		<scenario default="yes" name="jxml" userelativepaths="yes" externalpreview="no" useresolver="yes" url="" outputurl="" processortype="saxon" tcpport="0" profilemode="0" profiledepth="" profilelength="" urlprofilexml="" commandline=""
+		<scenario default="no" name="jxml" userelativepaths="yes" externalpreview="no" useresolver="yes" url="" outputurl="" processortype="saxon" tcpport="0" profilemode="0" profiledepth="" profilelength="" urlprofilexml="" commandline=""
 		          additionalpath="" additionalclasspath="" postprocessortype="none" postprocesscommandline="" postprocessadditionalpath="" postprocessgeneratedext="" host="" port="0" user="" password="" validateoutput="no" validator="internal"
 		          customvalidator="">
 			<parameterValue name="{http://www.xmlsh.org/jsonxml/common}patterns" value="doc('patterns.xml')"/>
 			<parameterValue name="{http://www.xmlsh.org/jsonxml/common}annotations" value="doc('..\..\..\..\..\..\..\..\jsonxml\jxml\all.xml')"/>
+			<advancedProperties name="DocumentURIResolver" value=""/>
+			<advancedProperties name="bSchemaAware" value="false"/>
+			<advancedProperties name="bXml11" value="false"/>
+			<advancedProperties name="CollectionURIResolver" value=""/>
+			<advancedProperties name="iValidation" value="0"/>
+			<advancedProperties name="bExtensions" value="true"/>
+			<advancedProperties name="iWhitespace" value="0"/>
+			<advancedProperties name="bTinyTree" value="false"/>
+			<advancedProperties name="bUseDTD" value="false"/>
+			<advancedProperties name="bWarnings" value="true"/>
+			<advancedProperties name="ModuleURIResolver" value=""/>
+		</scenario>
+		<scenario default="no" name="dx1" userelativepaths="yes" externalpreview="no" useresolver="yes" url="" outputurl="" processortype="saxon" tcpport="0" profilemode="0" profiledepth="" profilelength="" urlprofilexml="" commandline="" additionalpath=""
+		          additionalclasspath="" postprocessortype="none" postprocesscommandline="" postprocessadditionalpath="" postprocessgeneratedext="" host="" port="0" user="" password="" validateoutput="no" validator="internal" customvalidator="">
+			<parameterValue name="{http://www.xmlsh.org/jsonxml/common}patterns" value="doc('patterns.xml')"/>
+			<parameterValue name="{http://www.xmlsh.org/jsonxml/common}annotations" value="doc('..\..\..\..\..\..\..\..\jsonxml\dx\all.xml')"/>
+			<advancedProperties name="DocumentURIResolver" value=""/>
+			<advancedProperties name="bSchemaAware" value="false"/>
+			<advancedProperties name="bXml11" value="false"/>
+			<advancedProperties name="CollectionURIResolver" value=""/>
+			<advancedProperties name="iValidation" value="0"/>
+			<advancedProperties name="bExtensions" value="true"/>
+			<advancedProperties name="iWhitespace" value="0"/>
+			<advancedProperties name="bTinyTree" value="false"/>
+			<advancedProperties name="bWarnings" value="true"/>
+			<advancedProperties name="bUseDTD" value="false"/>
+			<advancedProperties name="ModuleURIResolver" value=""/>
+		</scenario>
+		<scenario default="yes" name="docbook" userelativepaths="yes" externalpreview="no" useresolver="yes" url="" outputurl="" processortype="saxon" tcpport="0" profilemode="0" profiledepth="" profilelength="" urlprofilexml="" commandline=""
+		          additionalpath="" additionalclasspath="" postprocessortype="none" postprocesscommandline="" postprocessadditionalpath="" postprocessgeneratedext="" host="" port="0" user="" password="" validateoutput="no" validator="internal"
+		          customvalidator="">
+			<parameterValue name="{http://www.xmlsh.org/jsonxml/common}patterns" value="doc('patterns.xml')"/>
+			<parameterValue name="{http://www.xmlsh.org/jsonxml/common}annotations" value="doc('..\..\..\..\..\..\..\..\jsonxml\docbook\all.xml')"/>
 			<advancedProperties name="DocumentURIResolver" value=""/>
 			<advancedProperties name="bSchemaAware" value="false"/>
 			<advancedProperties name="bXml11" value="false"/>

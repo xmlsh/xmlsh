@@ -22,7 +22,7 @@
                  "boolean":
                   {
                    "_children":
-                    ["true"]
+                    [true]
                   }
                 },"\n         ",
                 {
@@ -34,7 +34,7 @@
                  "number":
                   {
                    "_children":
-                    ["1.23"]
+                    [1.23]
                   }
                 },"\n         ",
                 {

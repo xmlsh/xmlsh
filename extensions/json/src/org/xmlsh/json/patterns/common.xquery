@@ -6,10 +6,19 @@ declare namespace jxon='http://www.xmlsh.org/jxon';
 declare variable $common:annotations as document-node() external ;
 declare variable $common:patterns    as document-node() external ;
 declare variable $common:nl := "&#xA;" ;
-declare variable $common:default_pattern as element(jxon:pattern) :=  $common:patterns/jxon:patterns/jxon:pattern[@name eq $common:patterns/jxon:patterns/@default];
+declare variable $common:default_pattern as element(jxon:pattern) :=  
+	  $common:patterns/jxon:patterns/jxon:pattern[@name eq $common:patterns/jxon:patterns/@default];
+
+
+
 declare variable $common:nsmap := <nsmap>{
 	for $ns at $pos in distinct-values($common:annotations//jxon:name[@uri ne '']/@uri/string())
-	return 	<ns prefix="{concat( 'ns' , $pos )}" uri="{$ns}" /> 
+	return 	
+	
+	if( $ns eq 'http://www.w3.org/XML/1998/namespace' ) then 
+		<ns prefix="xml" uri="{$ns}" /> 
+	else
+		<ns prefix="{concat( 'ns' , $pos )}" uri="{$ns}" /> 
 	}
 	</nsmap>;
 
@@ -84,12 +93,15 @@ declare function common:getpattern( $e as element() ) as element(jxon:pattern)
 	(: Get the self or nearest parents <pattern> element or types :)
 	let $json := $e/ancestor-or-self::jxon:element|$e/ancestor-or-self::jxon:attribute,
 		$patterns := (
+		(: document pattern if any :)
+		$common:annotations/jxon:document/jxon:pattern,
+		(: child patterns :)
 		for $n in $json return
 			( 
 				common:gettypepatterns( common:qname( $n/jxon:type )  ) ,  $n/jxon:pattern 
 			),
 			(: Synthesize a nameless pattern element for all direct children :)
-			let $c := ($e/jxon:value|$e/jxon:text|$e/jxon:json_name)
+			let $c := ($e/jxon:value|$e/jxon:text|$e/jxon:json_name|$e/jxon:children|$e/jxon:attributes)
 			return
 			if( exists($c) ) then
 				<jxon:pattern>
@@ -179,12 +191,16 @@ declare function common:json_atomic_type( $pattern as element(jxon:pattern) , $t
 		"string"
 	else
 	if( $type = 
-	   ( xs:QName("xs:decimal") , 
+	   ( xs:QName("xs:decimal") ,
+	   	 xs:QName("xs:double"),
 	     xs:QName("xs:integer" ) ,
 		 xs:QName("xs:float") ) )
 	 then
 	 	"number"
 	else 
+	if( $type = xs:QName("xs:boolean") ) then 
+		"boolean"
+	else
 	let
 		$decl := common:type_decl($type) 
 		return
@@ -357,7 +373,8 @@ declare function common:match_json( $name as element(jxon:name)? , $e as element
 			common:member_name( $n  , $pattern ) , 
 			if( $pattern/jxon:children/@wrap eq 'object' )
 				then concat("/object/member[@name eq '" , $pattern/jxon:children/@name,"']/array/object/" )
-			else	"/object/"
+			else
+				"/object/"
 		),
 			common:member_name( $name , common:getpattern($e) ) 
 		
