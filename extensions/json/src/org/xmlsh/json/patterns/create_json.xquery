@@ -57,8 +57,21 @@ $common:nl,
 				<array>
 				{ 
 					if( xs:boolean($pattern/jxon:children/@omitChild)) then
+						(: If there are node chidren then wrap them in objects :)
 						<xsl:for-each select="*">
-								<xsl:apply-templates select="*" mode="wrap"/>
+						{
+							<xsl:for-each select="node()">
+								<xsl:choose>
+									<xsl:when test="self::text()">
+										<xsl:apply-templates select="."/>
+									</xsl:when>
+									<xsl:when test="self::*">
+										<xsl:apply-templates select="." mode="wrap"/>
+									</xsl:when>
+								</xsl:choose>
+
+							</xsl:for-each>
+						}
 						</xsl:for-each>
 					else
 						

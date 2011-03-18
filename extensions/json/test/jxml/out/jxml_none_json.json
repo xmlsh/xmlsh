@@ -59,6 +59,34 @@
                             }
                           },"\n            "]
                        }
+                     },"\n            ",
+                     {
+                      "array":
+                       {
+                        "_children":
+                         ["\n            \t",
+                          {
+                           "string":
+                            {
+                             "_children":
+                              ["string1"]
+                            }
+                          },"\n            \t",
+                          {
+                           "string":
+                            {
+                             "_children":
+                              ["string2"]
+                            }
+                          },"\n            \t",
+                          {
+                           "string":
+                            {
+                             "_children":
+                              ["string3"]
+                            }
+                          },"\n            "]
+                       }
                      },"\n         "]
                   }
                 },"\n      "]

@@ -8,6 +8,11 @@
             <member name="bar">
                <string>spam</string>
             </member>
+            <array>
+            	<string>string1</string>
+            	<string>string2</string>
+            	<string>string3</string>
+            </array>
          </object>
       </array>
    </member>

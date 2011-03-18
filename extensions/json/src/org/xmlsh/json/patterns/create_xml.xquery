@@ -93,9 +93,12 @@ declare function local:toxml_element( $e as element(jxon:element) , $pattern as 
 	,
 	$common:nl,
 
+
 	
 	<xsl:template match="{$match}/string | {$match}/number" priority="{common:priority($e)}">
+	
 			<xsl:value-of select="string()"/>
+
 	</xsl:template>,
 	<xsl:template match="{$match}" priority="{common:priority($e)}">
 		<xsl:element name="{$e/jxon:name/@localname }" namespace="{ $e/jxon:name/@uri }" >
@@ -125,7 +128,17 @@ declare function local:toxml_element( $e as element(jxon:element) , $pattern as 
 	) else
 	if( $pattern/jxon:children/@wrap eq 'array' ) then 
 		<xsl:template match="{$match}/array" priority="{common:priority($e) + 1}">
-			<xsl:apply-templates select="*"/>
+		{
+			(: Synthesize a child element when converting back from arrays 
+				TODO: element does not store what the children are only local definitions.
+				Need some way to synthesize the proper element if its omitted, maybe explictly ?
+			:)
+			if( xs:boolean($pattern/jxon:children/@omitChild))  then 
+				<xsl:apply-templates select="*"/>
+			else
+
+				<xsl:apply-templates select="*"/>
+		}
 		</xsl:template>
 	else ()
 			
@@ -198,8 +211,8 @@ document {
 			<advancedProperties name="bExtensions" value="true"/>
 			<advancedProperties name="iWhitespace" value="0"/>
 			<advancedProperties name="bTinyTree" value="false"/>
-			<advancedProperties name="bWarnings" value="true"/>
 			<advancedProperties name="bUseDTD" value="false"/>
+			<advancedProperties name="bWarnings" value="true"/>
 			<advancedProperties name="ModuleURIResolver" value=""/>
 		</scenario>
 		<scenario default="yes" name="dx" userelativepaths="yes" externalpreview="no" useresolver="yes" url="..\..\..\..\..\..\..\..\jsonxml\dx\all.xml" outputurl="" processortype="saxon" tcpport="0" profilemode="0" profiledepth="" profilelength=""
@@ -215,8 +228,8 @@ document {
 			<advancedProperties name="bExtensions" value="true"/>
 			<advancedProperties name="iWhitespace" value="0"/>
 			<advancedProperties name="bTinyTree" value="false"/>
-			<advancedProperties name="bWarnings" value="true"/>
 			<advancedProperties name="bUseDTD" value="false"/>
+			<advancedProperties name="bWarnings" value="true"/>
 			<advancedProperties name="ModuleURIResolver" value=""/>
 		</scenario>
 	</scenarios>
