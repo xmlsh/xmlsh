@@ -24,7 +24,15 @@ declare function local:toxml_document( $e as element(jxon:document) , $pattern a
 
 
 
+declare function local:match_object( $match as xs:string , $pattern as element(jxon:pattern) ) as xs:string
+{
+	if( common:matches_object($match) ) then 
+		$match 
+	else	
+		concat( $match , "/object" )
+		
 
+};
 
 
 declare function local:toxml_attribute( $e as element(jxon:attribute),$pattern as element(jxon:pattern)  )
@@ -34,7 +42,8 @@ declare function local:toxml_attribute( $e as element(jxon:attribute),$pattern a
 
 	let $parent := $e/..,
 		$ppattern := common:getpattern( $parent ),
-		$pmatch := common:match_json( $parent/jxon:name , $parent )
+		$pmatch := common:match_json_element( $parent/jxon:name , $parent ),
+		$pmatch_object := local:match_object( $pmatch , $ppattern )
 	return
 	( <!-- parent element -->,
 		$common:nl,
@@ -43,14 +52,14 @@ declare function local:toxml_attribute( $e as element(jxon:attribute),$pattern a
 
 
 	if( $ppattern/jxon:attributes/@wrap ne 'none' ) then 
-			<xsl:template match="{$pmatch}/object/member[@name eq '{$ppattern/jxon:attributes/@name}']/object/{common:member_name($e/jxon:name, $pattern )}" priority="{common:priority($e)}">
+			<xsl:template match="{$pmatch_object}/member[@name eq '{$ppattern/jxon:attributes/@name}']/object/{common:member_name($e/jxon:name, $pattern )}" priority="{common:priority($e)}">
 				<xsl:attribute name="{$e/jxon:name/@localname}" namespace="{$e/jxon:name/@uri}">
 						<xsl:apply-templates select="*"/>
 				</xsl:attribute>
 			</xsl:template>
 	else	
 
-		let $match := concat( $pmatch , "/object/", common:member_name($e/jxon:name, $pattern ) )
+		let $match := concat( $pmatch_object ,"/", common:member_name($e/jxon:name, $pattern ) )
 		return 
 		(	
 			
@@ -84,10 +93,11 @@ declare function local:toxml_element( $e as element(jxon:element) , $pattern as 
 	
 	return
 
-	let $match := common:match_json( $e/jxon:name , $e )
+	let $match := common:match_json_element( $e/jxon:name , $e ),
+	    $match_object := local:match_object( $match , $pattern)
 	return 
 	(
-	<xsl:template match="{$match}/object" priority="{common:priority($e)}" >
+	<xsl:template match="{$match_object}" priority="{common:priority($e)}" >
 			<xsl:apply-templates select="*" />
 	</xsl:template>
 	,
@@ -100,15 +110,18 @@ declare function local:toxml_element( $e as element(jxon:element) , $pattern as 
 			<xsl:value-of select="string()"/>
 
 	</xsl:template>,
-	<xsl:template match="{$match}" priority="{common:priority($e)}">
+
+	<xsl:template match="{$match}" priority="{common:priority($e) + 1 }">
 		<xsl:element name="{$e/jxon:name/@localname }" namespace="{ $e/jxon:name/@uri }" >
 			<xsl:apply-templates select="*"/>
 		</xsl:element>
 
-	</xsl:template>,
+	</xsl:template>
+
+	,
 	$common:nl,
 	if( $pattern/jxon:text/@wrap eq 'object' )  then 
-		<xsl:template match="{$match}/object/member[@name='{$pattern/jxon:text/@name}']" priority="{common:priority($e)}">
+		<xsl:template match="{$match_object}/member[@name='{$pattern/jxon:text/@name}']" priority="{common:priority($e)}">
 		{
 			if( $value/@wrap eq 'array' )  then
 				<xsl:copy-of select="string-join( array/(number|string) , ' ')"/>			
@@ -117,14 +130,15 @@ declare function local:toxml_element( $e as element(jxon:element) , $pattern as 
 		}
 		</xsl:template> else () ,
 	if( $pattern/jxon:children/@wrap eq 'object' ) then  (
-		<xsl:template match="{$match}/object/member[@name eq '{$pattern/jxon:children/@name}']" priority="{common:priority($e)}">
+		<xsl:template match="{$match_object}/member[@name eq '{$pattern/jxon:children/@name}']" priority="{common:priority($e)}">
 			<xsl:apply-templates select="array/*"/>
 		</xsl:template>,
 		if( $value/@wrap eq 'array' )  then
-			<xsl:template match="{$match}/object/member[@name eq '{$pattern/jxon:children/@name}']/array/array" priority="{common:priority($e)}">
+			<xsl:template match="{$match_object}/member[@name eq '{$pattern/jxon:children/@name}']/array/array" priority="{common:priority($e)}">
 				<xsl:copy-of select="string-join( (number|string) , ' ')"/>	
 			</xsl:template>
 		else ()
+
 	) else
 	if( $pattern/jxon:children/@wrap eq 'array' ) then 
 		<xsl:template match="{$match}/array" priority="{common:priority($e) + 1}">
@@ -141,9 +155,6 @@ declare function local:toxml_element( $e as element(jxon:element) , $pattern as 
 		}
 		</xsl:template>
 	else ()
-			
-
-
 
     )
 
@@ -198,9 +209,9 @@ document {
 
 <metaInformation>
 	<scenarios>
-		<scenario default="no" name="tojson" userelativepaths="yes" externalpreview="no" useresolver="yes" url="..\..\..\..\..\..\..\..\jsonxml\playing\all.xml" outputurl="" processortype="saxon" tcpport="0" profilemode="0" profiledepth="" profilelength=""
-		          urlprofilexml="" commandline="" additionalpath="" additionalclasspath="" postprocessortype="none" postprocesscommandline="" postprocessadditionalpath="" postprocessgeneratedext="" host="" port="0" user="" password="" validateoutput="no"
-		          validator="internal" customvalidator="">
+		<scenario default="yes" name="tojson" userelativepaths="yes" externalpreview="no" useresolver="yes" url="..\..\..\..\..\..\..\..\jsonxml\playing\all.xml" outputurl="" processortype="saxon" tcpport="0" profilemode="0" profiledepth=""
+		          profilelength="" urlprofilexml="" commandline="" additionalpath="" additionalclasspath="" postprocessortype="none" postprocesscommandline="" postprocessadditionalpath="" postprocessgeneratedext="" host="" port="0" user="" password=""
+		          validateoutput="no" validator="internal" customvalidator="">
 			<parameterValue name="{http://www.xmlsh.org/jsonxml/common}patterns" value="doc('patterns.xml')"/>
 			<parameterValue name="{http://www.xmlsh.org/jsonxml/common}annotations" value="doc('..\..\..\..\..\..\..\..\jsonxml\playing\all.xml')"/>
 			<advancedProperties name="DocumentURIResolver" value=""/>
@@ -215,7 +226,7 @@ document {
 			<advancedProperties name="bWarnings" value="true"/>
 			<advancedProperties name="ModuleURIResolver" value=""/>
 		</scenario>
-		<scenario default="yes" name="dx" userelativepaths="yes" externalpreview="no" useresolver="yes" url="..\..\..\..\..\..\..\..\jsonxml\dx\all.xml" outputurl="" processortype="saxon" tcpport="0" profilemode="0" profiledepth="" profilelength=""
+		<scenario default="no" name="dx" userelativepaths="yes" externalpreview="no" useresolver="yes" url="..\..\..\..\..\..\..\..\jsonxml\dx\all.xml" outputurl="" processortype="saxon" tcpport="0" profilemode="0" profiledepth="" profilelength=""
 		          urlprofilexml="" commandline="" additionalpath="" additionalclasspath="" postprocessortype="none" postprocesscommandline="" postprocessadditionalpath="" postprocessgeneratedext="" host="" port="0" user="" password="" validateoutput="no"
 		          validator="internal" customvalidator="">
 			<parameterValue name="{http://www.xmlsh.org/jsonxml/common}patterns" value="doc('patterns.xml')"/>

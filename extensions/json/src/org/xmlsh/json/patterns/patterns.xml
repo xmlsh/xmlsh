@@ -13,13 +13,13 @@
 			<!-- Values are typed and wrapped according to schema -->
 			<value wrap="schema" type="schema" />
 			<json_name	search="\{([^}]*)\}?(.+)$" replace="$2"/>
-
 		</element>
 
 
 		<attribute>
 			<value wrap="schema" type="schema" />
 			<json_name	search="\{([^}]*)\}?(.+)$" replace="$2"/>
+			<json_object omit="false"/>
 
 		</attribute>
 
@@ -34,7 +34,6 @@
 			<text wrap="object" name="_text" />
 			<value wrap="schema" type="schema" />
 			<json_name	search="\{([^}]*)\}?(.+)$" replace="$2"/>
-			<override/>
 		</element>
 		<attribute>
 			<value wrap="schema" type="schema" />

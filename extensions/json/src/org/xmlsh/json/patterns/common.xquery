@@ -22,6 +22,12 @@ declare variable $common:nsmap := <nsmap>{
 	}
 	</nsmap>;
 
+declare function common:quote( $s as xs:string )
+{
+	concat("'",$s,"'")
+
+};
+
 
 declare function common:dump( $e as element() , $pattern as element(jxon:pattern) ) 
 {
@@ -349,13 +355,41 @@ declare function common:json_name( $name as element(jxon:name) , $pattern as ele
 
 
 
+(: Find all elements who have direct children references as $name :)
+declare function common:all_parents( $name as xs:QName ) as element(jxon:element)*
+{
+	$common:annotations/jxon:document/jxon:element[$name = (for $c in ./jxon:child return common:qname($c)) ]
+};
+
+
+
+
 
 (: Construct a match string for a json member :)
 declare function common:member_name( $e as element(jxon:name) , $pattern as element(jxon:pattern)  ) as xs:string 
 {
+	if( xs:boolean( $pattern/jxon:json_name/@omit ) ) then 
+		let $p := common:all_parents( common:qname($e ) ),
+			$p1 := $p[1]
+		return 
+			concat( "object[../..[@name = ", common:quote(common:json_name( $p1/jxon:name , common:getpattern($p1) ) ), "]]") 
+	else 
 	let $name := common:json_name( $e , $pattern )
 	return 
-		concat("member[@name='" , $name , "']")
+		concat("member[@name=" , common:quote($name ), "]")
+};
+
+(: Returns true if a match expression matches an object otherwise false (matches a member) 
+	input:
+		object[...]
+		member[...]
+		object[...]/member[...] ...
+
+:)
+declare function common:matches_object( $match as xs:string ) as xs:boolean 
+{
+	fn:not(fn:matches( $match , "member\[[^/]+$" ))
+
 };
 
 (: 
@@ -363,18 +397,24 @@ declare function common:member_name( $e as element(jxon:name) , $pattern as elem
   For each level of nested (local) elements join with either /OBJECT/ or /OBJECT/ARRAY/
 
 :)
-declare function common:match_json( $name as element(jxon:name)? , $e as element() ) as xs:string
+declare function common:match_json_element( $name as element(jxon:name)? , $e as element() ) as xs:string
 {
+
+	
+
 	fn:string-join( (
 		for $a in $e/ancestor::jxon:element
 		let $n := $a/jxon:name ,
-		    $pattern := common:getpattern( $a )
+		    $pattern := common:getpattern( $a ),
+			$member := common:member_name( $n , $pattern )
 		return (
-			common:member_name( $n  , $pattern ) , 
+			$member,
+			if( common:matches_object( $member ) ) then "/" else "/object/" ,
+			 
 			if( $pattern/jxon:children/@wrap eq 'object' )
-				then concat("/object/member[@name eq '" , $pattern/jxon:children/@name,"']/array/object/" )
+				then concat("member[@name eq '" , $pattern/jxon:children/@name,"']/array/object/" )
 			else
-				"/object/"
+				""
 		),
 			common:member_name( $name , common:getpattern($e) ) 
 		

@@ -158,6 +158,7 @@ public class jsonxslt  extends XCommand{
 			XSTypeDefinition	mType; 			// may be null 
 			AnnotationList		mAnnotation;	// required
 			AnnotationEntryList	mChildren;		// optional
+			List<QName>			mChildRefs;		// optional
 			public AnnotationEntry(String context , QName name , AnnotationEntry parent , XSTypeDefinition type, AnnotationList annotation) {
 				super();
 				mName = name ;
@@ -243,6 +244,16 @@ public class jsonxslt  extends XCommand{
 					mChildren.serialize(sw);
 					
 				}
+				if( mChildRefs != null ){
+					for( QName c : mChildRefs )
+						writeQName( sw , "child" , c );
+					
+					
+					
+					
+				}
+				
+				
 				sw.writeEndElement();
 				
 			}
@@ -299,6 +310,13 @@ public class jsonxslt  extends XCommand{
 				
 				
 				}
+			}
+
+
+			public void addChildReference(QName child) {
+				if( mChildRefs == null )
+					mChildRefs = new ArrayList<QName>();
+				mChildRefs.add( child );
 			}
 			
 			
@@ -487,6 +505,12 @@ public class jsonxslt  extends XCommand{
 				if( child.getScope() == XSConstants.SCOPE_LOCAL )
 					getAnnotations( child , parent  );
 				
+				/*
+				 * Reference to a child, add it as a reference
+				 */
+				else
+					addReference( parent , child );
+				
 				
 
 				/*
@@ -531,6 +555,12 @@ public class jsonxslt  extends XCommand{
 			
 		}
 		
+
+		private void addReference(AnnotationEntry parent, XSElementDeclaration child) {
+			parent.addChildReference( this.getName(child));
+			
+			
+		}
 
 		private void getElementAnnotations( AnnotationEntry parent ) throws XPathException,
 				XMLStreamException, CoreException, SaxonApiException {
