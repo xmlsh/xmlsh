@@ -369,10 +369,14 @@ declare function common:all_parents( $name as xs:QName ) as element(jxon:element
 declare function common:member_name( $e as element(jxon:name) , $pattern as element(jxon:pattern)  ) as xs:string 
 {
 	if( xs:boolean( $pattern/jxon:json_name/@omit ) ) then 
-		let $p := common:all_parents( common:qname($e ) ),
-			$p1 := $p[1]
+		let $ps := common:all_parents( common:qname($e ) )
 		return 
-			concat( "object[../..[@name = ", common:quote(common:json_name( $p1/jxon:name , common:getpattern($p1) ) ), "]]") 
+			concat( "object[../..[@name = (", 
+				fn:string-join(
+					for $p in $ps return 
+						common:quote(common:json_name( $p/jxon:name , common:getpattern($p) ) ), 
+					"," ),
+					")]]") 
 	else 
 	let $name := common:json_name( $e , $pattern )
 	return 
