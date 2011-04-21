@@ -56,11 +56,15 @@ public class xunzip extends XCommand {
 		int ret = 0;
 		if( bList ){
 			ret = list(zis,serializeOpts,args);
-			while( is.read() >= 0 )
-				;
+			
 		}
 		else
 			ret = unzip( zis , getFile(dest) , args );
+		
+		
+		// Central directory may be pesent at the end read past it to avoid a broken pipe
+		while( is.read() >= 0 )
+			;
 		
 		zis.close();
 		
