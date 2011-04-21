@@ -5,10 +5,9 @@
 # A menu of commands is printed.  When one is selected
 # Then the contents of the command are displayed, then executed
 #
+import commands posix 
 
-# Set global data directory
-DEMODIR=$(xfile -d $0)
-XROOT=$(xfile -c $DEMODIR/..)
+
 #
 # Set absolute path for this script
 demo=$(xfile -a $0)
