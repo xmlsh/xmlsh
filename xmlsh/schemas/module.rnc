@@ -1,0 +1,14 @@
+default namespace = ""
+
+start =
+  element module {
+    attribute module_version { xsd:integer },
+    attribute name { xsd:string },
+    attribute package { xsd:string },
+    attribute require { xsd:string }?,
+    element classpath {
+      element file {
+        attribute url { xsd:NCName }
+      }+
+    }
+  }
