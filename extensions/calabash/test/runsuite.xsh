@@ -1,10 +1,13 @@
 # runsuite test-suite.xml
+import module calabash
 declare namespace t="http://xproc.org/ns/testsuite" 
 declare namespace p="http://www.w3.org/ns/xproc"
 declare namespace c="http://www.w3.org/ns/xproc-step"
 declare namespace err="http://www.w3.org/ns/xproc-error"
 
 _BINDIR=$(xfile -d $0)
+
+[ "x" = "x$1" ] && set test-suite.xml
 
 xread suite < $1
 
