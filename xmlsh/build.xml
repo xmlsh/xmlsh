@@ -4,8 +4,8 @@
 <!-- Global properties 
      Edit these for every release
 -->
-	<property name="release" value="1_1_4"/>
-	<property name="version" value="1.1.4"/>
+	<property name="release" value="1_1_5"/>
+	<property name="version" value="1.1.5"/>
 	<property name="jar" value="xmlsh-1.1.jar"/>
 
 
@@ -52,7 +52,8 @@ version.version=${version}
     	 	<classpath>
     				<fileset dir="lib">
     	                  	<include name="**/*.jar"/>
-    	                  	<exclude name="**/saxonhe.jar"/>
+    	                  	<exclude name="**/saxonee.jar"/>
+    	                  	<exclude name="**/saxonpe.jar"/>
     				</fileset>
     				 <fileset dir="build-lib">
     	                  	<include name="**/*.jar"/>

@@ -1,6 +1,10 @@
 CLASSPATH=$XMLSH/bin/xmlsh-1.1.jar
 CLASSPATH=$CLASSPATH:$XMLSH/lib/log4j-1.2.7.jar
+# Pick which saxon you want
 CLASSPATH=$CLASSPATH:$XMLSH/lib/saxon9he.jar
+#CLASSPATH=$CLASSPATH:$XMLSH/lib/saxon9ee.jar
+#CLASSPATH=$CLASSPATH:$XMLSH/lib/saxon9pe.jar
+
 CLASSPATH=$CLASSPATH:$XMLSH/lib/xercesImpl.jar
 # Uncomment the next line if you DO NOT want to use jline input editing
 CLASSPATH=$CLASSPATH:$XMLSH/lib/jline-0.9.94.jar

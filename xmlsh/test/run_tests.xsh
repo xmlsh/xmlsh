@@ -39,6 +39,7 @@ for d in core builtin internal posix java xs stax $EXTRA; do
      if [ $? -ne 0 ] ; then	
      	echo failed test $test ;
      	failed=<[  $failed + 1 ]>
+     	break ;
      else
      	passed=<[ $passed + 1 ]>
      fi
