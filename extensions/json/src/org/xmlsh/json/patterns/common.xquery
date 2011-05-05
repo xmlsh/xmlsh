@@ -465,9 +465,9 @@ declare function common:add-ns-nodes(
 
 <metaInformation>
 	<scenarios>
-		<scenario default="yes" name="Scenario1" userelativepaths="yes" externalpreview="no" useresolver="yes" url="" outputurl="" processortype="datadirect" tcpport="0" profilemode="0" profiledepth="" profilelength="" urlprofilexml="" commandline=""
-		          additionalpath="" additionalclasspath="" postprocessortype="none" postprocesscommandline="" postprocessadditionalpath="" postprocessgeneratedext="" host="" port="0" user="" password="" validateoutput="no" validator="internal"
-		          customvalidator="">
+		<scenario default="yes" name="Scenario1" userelativepaths="yes" externalpreview="no" useresolver="yes" url="..\..\..\..\..\..\..\..\..\Epocrates\Avant\Rx\discover\_output\formulary\list\all.xml" outputurl="" processortype="datadirect" tcpport="0"
+		          profilemode="0" profiledepth="" profilelength="" urlprofilexml="" commandline="" additionalpath="" additionalclasspath="" postprocessortype="none" postprocesscommandline="" postprocessadditionalpath="" postprocessgeneratedext="" host=""
+		          port="0" user="" password="" validateoutput="no" validator="internal" customvalidator="">
 			<advancedProperties name="DocumentURIResolver" value=""/>
 			<advancedProperties name="CollectionURIResolver" value=""/>
 			<advancedProperties name="ModuleURIResolver" value=""/>

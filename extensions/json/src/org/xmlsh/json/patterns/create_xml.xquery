@@ -209,9 +209,9 @@ document {
 
 <metaInformation>
 	<scenarios>
-		<scenario default="yes" name="tojson" userelativepaths="yes" externalpreview="no" useresolver="yes" url="..\..\..\..\..\..\..\..\jsonxml\playing\all.xml" outputurl="" processortype="saxon" tcpport="0" profilemode="0" profiledepth=""
-		          profilelength="" urlprofilexml="" commandline="" additionalpath="" additionalclasspath="" postprocessortype="none" postprocesscommandline="" postprocessadditionalpath="" postprocessgeneratedext="" host="" port="0" user="" password=""
-		          validateoutput="no" validator="internal" customvalidator="">
+		<scenario default="yes" name="tojson" userelativepaths="yes" externalpreview="no" useresolver="yes" url="..\..\..\..\..\..\..\..\..\Epocrates\Avant\Rx\discover\_output\formulary\list\all.xml" outputurl="" processortype="saxon" tcpport="0"
+		          profilemode="0" profiledepth="" profilelength="" urlprofilexml="" commandline="" additionalpath="" additionalclasspath="" postprocessortype="none" postprocesscommandline="" postprocessadditionalpath="" postprocessgeneratedext="" host=""
+		          port="0" user="" password="" validateoutput="no" validator="internal" customvalidator="">
 			<parameterValue name="{http://www.xmlsh.org/jsonxml/common}patterns" value="doc('patterns.xml')"/>
 			<parameterValue name="{http://www.xmlsh.org/jsonxml/common}annotations" value="doc('..\..\..\..\..\..\..\..\jsonxml\playing\all.xml')"/>
 			<advancedProperties name="DocumentURIResolver" value=""/>
@@ -222,8 +222,8 @@ document {
 			<advancedProperties name="bExtensions" value="true"/>
 			<advancedProperties name="iWhitespace" value="0"/>
 			<advancedProperties name="bTinyTree" value="false"/>
-			<advancedProperties name="bUseDTD" value="false"/>
 			<advancedProperties name="bWarnings" value="true"/>
+			<advancedProperties name="bUseDTD" value="false"/>
 			<advancedProperties name="ModuleURIResolver" value=""/>
 		</scenario>
 		<scenario default="no" name="dx" userelativepaths="yes" externalpreview="no" useresolver="yes" url="..\..\..\..\..\..\..\..\jsonxml\dx\all.xml" outputurl="" processortype="saxon" tcpport="0" profilemode="0" profiledepth="" profilelength=""
@@ -239,8 +239,8 @@ document {
 			<advancedProperties name="bExtensions" value="true"/>
 			<advancedProperties name="iWhitespace" value="0"/>
 			<advancedProperties name="bTinyTree" value="false"/>
-			<advancedProperties name="bUseDTD" value="false"/>
 			<advancedProperties name="bWarnings" value="true"/>
+			<advancedProperties name="bUseDTD" value="false"/>
 			<advancedProperties name="ModuleURIResolver" value=""/>
 		</scenario>
 	</scenarios>
