@@ -35,7 +35,7 @@ import org.xmlsh.util.Util;
  *  -colspecs   specs sequence or , delimited list of column specs
  *  -colnames	<seq> or , seperated list  Column names instead of reading from header
  *  -header		read first row for header names
- *  -attr		write in attribute normal format\
+ *  -attr		write in attribute normal format
  *  -encoding encoding  Read CSV format in the specified encoding, else cp1252 assumed
  *  -quote		quoted by (default ")
 */
@@ -49,7 +49,7 @@ public class fixed2xml extends XCommand
 
 		
 
-		Options opts = new Options( "root:,row:,col:,header,attr,encoding:,colnames:,colspecs:,nonorm=nonormalize",SerializeOpts.getOptionDefs());
+		Options opts = new Options( "root:,row:,col:,header,attr,encoding:,colnames:,colspecs:,nonorm=nonormalize,skip:",SerializeOpts.getOptionDefs());
 		opts.parse(args);
 		
 		// root node
@@ -60,6 +60,7 @@ public class fixed2xml extends XCommand
 		boolean bAttr = opts.hasOpt("attr");
 		boolean bHeader = opts.hasOpt("header");
 		boolean bNoNorm = opts.hasOpt("nonorm");
+		int 	 skip 	 = opts.getOptInt("skip", 0);
 		
 		
 		List<XValue> xvargs = opts.getRemainingArgs();
@@ -88,6 +89,11 @@ public class fixed2xml extends XCommand
 		FixedParser parser = new FixedParser( parseWidths( opts.getOptValueRequired("colspecs")) , ! bNoNorm);
 		
 		CSVRecord header = null ;
+		
+		while( skip-- > 0 )
+			readLine(ir);
+		
+		
 		if( bHeader ){
 			String line = readLine(ir);
 			if( line != null )

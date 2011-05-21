@@ -63,6 +63,10 @@ public class FixedParser
     		 if( start < 0 )
     			 start =0;
     		 
+    		 // Line shorter then start position
+    		 if( start >= line.length() )
+    			 break ;
+    		 
     		 if( end <= 0 || end > line.length() )
     			 end = line.length();
     		 String field = line.substring(start , end );

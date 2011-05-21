@@ -14,8 +14,8 @@ import org.xmlsh.core.InputPort;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.XEnvironment;
-import org.xmlsh.core.XValue;
 import org.xmlsh.core.XVariable;
+import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 
 public class IOFile {
@@ -38,6 +38,7 @@ public class IOFile {
 	public void exec(Shell shell, String port, SourceLocation loc ) throws IOException, CoreException {
 
 		XEnvironment env = shell.getEnv();
+		SerializeOpts sopts = shell.getSerializeOpts();
 		
 		/*
 		 * File-less redirections 1>&2 2>&1 
@@ -193,17 +194,17 @@ public class IOFile {
 		}
 		else
 		if( mPrefix.equals("2>"))
-				env.setStderr( shell.getOutputStream(file, false));
+				env.setStderr( shell.getOutputPort(file, false));
 		else
 		if( mPrefix.equals("2>>"))
-				env.setStderr( shell.getOutputStream(file, true));
+				env.setStderr( shell.getOutputPort(file, true));
 		
 		else
 		if( mPrefix.equals(">"))
-			env.setOutput(port,shell.getOutputStream(file, false));
+			env.setOutput(port,shell.getOutputPort(file, false));
 		else
 		if( mPrefix.equals(">>"))
-				env.setOutput(port,shell.getOutputStream(file, true));
+				env.setOutput(port,shell.getOutputPort(file, true));
 
 				
 

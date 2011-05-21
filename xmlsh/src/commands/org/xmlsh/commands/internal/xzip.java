@@ -47,7 +47,7 @@ public class xzip extends XCommand {
 		ZipOutputStream zos = new ZipOutputStream( 
 				zipfile == null ?
 				getStdout().asOutputStream(serializeOpts) :
-				this.getOutputStream( zipfile.toString(), false)
+				this.getOutputStream( zipfile.toString(), false, serializeOpts )
 		);
 		
 		

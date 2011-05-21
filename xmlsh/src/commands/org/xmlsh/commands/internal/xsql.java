@@ -858,7 +858,7 @@ public class xsql extends XCommand {
 				
 				for( int i = 0 ; i < meta.getColumnCount() ; i++ ){
 					String name = getAttrName( i , meta );
-					writer.writeAttribute(name,Util.blankIfNull(rs.getString(i+1)));
+					writer.writeAttribute(name,Util.notNull(rs.getString(i+1)));
 				}
 				
 				
@@ -868,7 +868,7 @@ public class xsql extends XCommand {
 				for( int i = 0 ; i < meta.getColumnCount() ; i++ ){
 					String name = getColName( i ,  meta );
 					writer.writeStartElement(name);
-					writer.writeCharacters(Util.blankIfNull(rs.getString(i+1)));
+					writer.writeCharacters(Util.notNull(rs.getString(i+1)));
 
 					writer.writeEndElement();
 					

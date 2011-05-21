@@ -39,11 +39,14 @@ import org.apache.log4j.Logger;
 import org.xmlsh.core.CommandFactory;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.ExitOnErrorException;
+import org.xmlsh.core.FileOutputPort;
 import org.xmlsh.core.ICommand;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.Options.OptionValue;
+import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.Path;
+import org.xmlsh.core.StreamOutputPort;
 import org.xmlsh.core.ThrowException;
 import org.xmlsh.core.Variables;
 import org.xmlsh.core.XDynamicVariable;
@@ -1329,10 +1332,10 @@ public class Shell {
 			return new FileInputStream(getFile(file));
 	}
 
-	public OutputStream getOutputStream(String file, boolean append) throws FileNotFoundException, IOException
+	public OutputPort getOutputPort(String file, boolean append) throws FileNotFoundException, IOException
 	{
 		if( file.equals("/dev/null")){
-			return new NullOutputStream();
+			return new StreamOutputPort(new NullOutputStream());
 		}
 	
 		else
@@ -1340,13 +1343,19 @@ public class Shell {
 			URL url = Util.tryURL(file);
 			if( url != null )
 
-				return url.openConnection().getOutputStream();
+				return new StreamOutputPort(url.openConnection().getOutputStream());
 			
 		}
 		
 		
-		return  new FileOutputStream(getFile(file),append);
+		return  new FileOutputPort(getFile(file),append);
 	}
+	
+	public OutputStream getOutputStream(String file, boolean append, SerializeOpts opts) throws FileNotFoundException, IOException
+	{
+		return getOutputPort( file , append).asOutputStream(opts); 
+	}
+	
 	
 	
 	public OutputStream getOutputStream(File file, boolean append) throws FileNotFoundException {

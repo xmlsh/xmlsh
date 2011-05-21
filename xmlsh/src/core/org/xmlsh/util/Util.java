@@ -382,6 +382,13 @@ public class Util
 		return str;
 	}
 
+	public	static String	nullIfBlank( String str )
+	{
+		return isBlank(str) ? null : str.trim(); 
+		
+	}
+	
+	
 	public static String formatMessage(Exception e) {
 		String msg = e.getMessage();
 		Throwable cause = e.getCause() ;
@@ -739,10 +746,6 @@ public class Util
 	}
 
 
-	public static String blankIfNull(String s) {
-		return s == null ? "" : s ;
-	}
-	
 	
 
 

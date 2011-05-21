@@ -6,6 +6,7 @@
 
 package org.xmlsh.core;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -72,6 +73,12 @@ public abstract class OutputPort extends IPort
 	
 	public abstract	ContentHandler			asContentHandler( SerializeOpts opts) throws XPathException, SaxonApiException;
 	
+	public	boolean		isFile() { return false ; }
+	
+	public File			getFile() throws UnimplementedException
+	{
+		throw new UnimplementedException("OutputPort.getFile() is not implmented() in class: " + this.getClass().getName() );
+	}
 
 }
 

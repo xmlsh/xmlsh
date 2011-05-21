@@ -239,9 +239,9 @@ public class XEnvironment  {
 	 * @throws IOException
 	 * @see org.xmlsh.sh.shell.Shell#getOutputStream(java.lang.String, boolean)
 	 */
-	public OutputStream getOutputStream(String file, boolean append) throws FileNotFoundException,
+	public OutputStream getOutputStream(String file, boolean append, SerializeOpts opts ) throws FileNotFoundException,
 			IOException {
-		return mShell.getOutputStream(file, append);
+		return mShell.getOutputStream(file, append, opts );
 	}
 
 	public OutputStream getOutputStream(File file, boolean append) throws FileNotFoundException {
@@ -340,17 +340,9 @@ public class XEnvironment  {
 			String name = port.toString().trim();
 			if( name.equals("-"))
 				return getStdout();
-				
-			// Get a stream from name
-			OutputStream out;
-			out = getOutputStream(name, append );
-		
 			
-			if( out == null )
-				return null ;
+			return mShell.getOutputPort(name, append);
 			
-			OutputPort p = new StreamOutputPort( out );
-			return p;
 			
 			
 		}
@@ -367,16 +359,7 @@ public class XEnvironment  {
 	public OutputPort getOutput( File file , boolean append ) throws IOException
 	{
 		
-		// Get a stream from name
-		OutputStream out;
-		out = getOutputStream(file, append );
-	
-		
-		if( out == null )
-			return null ;
-		
-		OutputPort p = new StreamOutputPort( out );
-		return p;
+		return new FileOutputPort( file , append);
 			
 			
 		

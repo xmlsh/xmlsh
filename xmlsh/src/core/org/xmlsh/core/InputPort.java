@@ -6,6 +6,7 @@
 
 package org.xmlsh.core;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -57,7 +58,12 @@ public abstract class InputPort  extends IPort
 	public abstract XdmItem asXdmItem(SerializeOpts serializeOpts) throws CoreException;
 	
 	
+	public	boolean	isFile() { return false ; }
 	
+	public File		getFile() throws UnimplementedException
+	{
+		throw new UnimplementedException("InputPort.getFile() is not implmented() in class: " + this.getClass().getName() );
+	}
 	
 	
 }
