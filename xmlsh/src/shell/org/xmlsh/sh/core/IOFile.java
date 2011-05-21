@@ -189,7 +189,7 @@ public class IOFile {
 		
 		
 		if( mPrefix.equals("<")){
-			InputPort in = env.setInput(port, shell.getInputStream(file)  );
+			InputPort in = env.setInput(port, shell.getInputPort(file)  );
 			in.setSystemId(file);
 		}
 		else

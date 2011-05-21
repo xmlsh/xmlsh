@@ -61,6 +61,7 @@ public class FileOutputPort extends OutputPort
 		if( mStreamPort == null )
 			try {
 				mStreamPort = new StreamOutputPort( new  FileOutputStream(mFile,bAppend) , true );
+				mStreamPort.setSystemId(getSystemId());
 			} catch (FileNotFoundException e) {
 				mLogger.warn( "Error opening file for output: " + mFile.getAbsolutePath() , e );
 				
@@ -71,20 +72,16 @@ public class FileOutputPort extends OutputPort
 	}
 	
 	
-	/**
-	 * @return
-	 * @see org.xmlsh.core.IPort#getSystemId()
-	 */
-	public String getSystemId() {
-		return getStreamPort().getSystemId();
-	}
+
 
 	/**
 	 * @param systemId
 	 * @see org.xmlsh.core.IPort#setSystemId(java.lang.String)
 	 */
 	public void setSystemId(String systemId) {
-		getStreamPort().setSystemId(systemId);
+		super.setSystemId(systemId);
+		if( mStreamPort != null )
+			mStreamPort.setSystemId(systemId);
 	}
 	/**
 	 * @param opts

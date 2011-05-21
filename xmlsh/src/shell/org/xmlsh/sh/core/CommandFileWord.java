@@ -15,8 +15,10 @@ import javax.xml.transform.stream.StreamSource;
 import net.sf.saxon.s9api.DocumentBuilder;
 import net.sf.saxon.s9api.XdmNode;
 import org.xmlsh.core.CoreException;
+import org.xmlsh.core.InputPort;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
+import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.MutableInteger;
 import org.xmlsh.util.Util;
@@ -53,11 +55,16 @@ public class CommandFileWord extends Word {
 			file = files.toString();
 		else 
 			throw new InvalidArgumentException("Invalid expansion for redirection");
-		InputStream is = shell.getInputStream(file);
+		
+		SerializeOpts sopts = shell.getSerializeOpts();
+		InputPort ip = shell.getInputPort(file);
+		InputStream is = ip.asInputStream(sopts);
 		try {
-			return Util.readString( is, shell.getSerializeOpts().getText_encoding()).trim();
+
+			return Util.readString( is, sopts.getText_encoding()).trim();
 		} finally {
 			is.close();
+			ip.close();
 		}
 			
 	}
@@ -68,17 +75,17 @@ public class CommandFileWord extends Word {
 			file = files.toString();
 		else 
 			throw new InvalidArgumentException("Invalid expansion for redirection");
-		InputStream is = null;
+		
+		InputPort ip = shell.getInputPort(file);
 		try {
-			DocumentBuilder builder = Shell.getProcessor().newDocumentBuilder();
-			is = shell.getInputStream(file);
-			XdmNode node = builder.build(new StreamSource(is));
+
+			XdmNode node = ip.asXdmNode( shell.getSerializeOpts());
 			return node;
 		} catch( Exception e ){
 			throw new XMLException("Exception parsing XML document: " + file , e );
-		} finally {
-			if( is != null )
-				is.close();
+		} finally
+		{
+			ip.close();
 		}
 	}
 

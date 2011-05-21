@@ -226,7 +226,7 @@ public class xml2json extends XCommand
 		
 	}
 
-	private void writeString(StartElement start, XMLEventReader reader, PrintWriter writer) throws XMLStreamException, UnsupportedEncodingException, FileNotFoundException, IOException, TransformException, SaxonApiException {
+	private void writeString(StartElement start, XMLEventReader reader, PrintWriter writer) throws XMLStreamException, UnsupportedEncodingException, FileNotFoundException, IOException, TransformException, SaxonApiException, CoreException {
 		String  value = getAttr( start , kATTR_VALUE);
 		String 	src = getAttr( start , kATTR_SRC);
 		String  encoding = getAttr( start, kATTR_ENCODING);
@@ -305,10 +305,12 @@ public class xml2json extends XCommand
 	}
 
 
-	private String readFile(String file, String encoding) throws UnsupportedEncodingException, FileNotFoundException, IOException {
+	private String readFile(String file, String encoding) throws UnsupportedEncodingException, FileNotFoundException, IOException, CoreException 
+	{
+		InputPort ip = getShell().getInputPort(file);
 		Reader r = 
 			new InputStreamReader(
-					getShell().getEnv().getInputStream(file) , 
+					ip.asInputStream(mSerializeOpts) , 
 					encoding == null ? mSerializeOpts.getText_encoding() : encoding );
 		StringBuffer sb = new StringBuffer();
 		
@@ -318,6 +320,7 @@ public class xml2json extends XCommand
 			sb.append(cbuf, 0, n);
 		
 		r.close();
+		ip.close();
 		return sb.toString();
 		
 		

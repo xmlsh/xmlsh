@@ -45,9 +45,6 @@ public abstract class InputPort  extends IPort
 
 	public abstract XdmNode asXdmNode(SerializeOpts opts) throws CoreException;
 	
-
-	public abstract boolean isStream();
-
 	public  abstract void copyTo(OutputStream out, SerializeOpts opts ) throws  CoreException, IOException;
 
 

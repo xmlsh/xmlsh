@@ -8,7 +8,6 @@ package org.xmlsh.sh.shell;
 
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -39,13 +38,16 @@ import org.apache.log4j.Logger;
 import org.xmlsh.core.CommandFactory;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.ExitOnErrorException;
+import org.xmlsh.core.FileInputPort;
 import org.xmlsh.core.FileOutputPort;
 import org.xmlsh.core.ICommand;
+import org.xmlsh.core.InputPort;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.Options.OptionValue;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.Path;
+import org.xmlsh.core.StreamInputPort;
 import org.xmlsh.core.StreamOutputPort;
 import org.xmlsh.core.ThrowException;
 import org.xmlsh.core.Variables;
@@ -1307,17 +1309,15 @@ public class Shell {
 			
 	}
 	
-	
-	
-	
-	public InputStream getInputStream(String file) throws FileNotFoundException, IOException {
+
+	public InputPort getInputPort(String file) throws IOException {
 		/*
 		 * Special case to support /dev/null file on Windows systems
 		 * Doesnt hurt on unix either to fake this out instead of using the OS
 		 */
 		if( file.equals("/dev/null") ){
 			
-			return new NullInputStream();
+			return new StreamInputPort(new NullInputStream(),file);
 			
 		}
 		
@@ -1325,12 +1325,15 @@ public class Shell {
 		
 		if( url != null ){
 
-				return url.openStream();
+				return new StreamInputPort( url.openStream() , url.toExternalForm() );
 			
 		}
 		else
-			return new FileInputStream(getFile(file));
+			return new FileInputPort(getFile(file),file);
 	}
+	
+	
+	
 
 	public OutputPort getOutputPort(String file, boolean append) throws FileNotFoundException, IOException
 	{

@@ -217,18 +217,6 @@ public class XEnvironment  {
 	
 
 	
-	/**
-	 * @param file
-	 * @return
-	 * @throws IOException 
-	 * @throws FileNotFoundException 
-	 * @throws FileNotFoundException
-	 * @throws IOException
-	 * @see org.xmlsh.sh.shell.Shell#getInputStream(java.lang.String)
-	 */
-	public InputStream getInputStream(String file) throws FileNotFoundException, IOException {
-		return mShell.getInputStream(file);
-	}
 
 
 	/**
@@ -461,7 +449,7 @@ public class XEnvironment  {
 	}
 
 
-	public InputStream getInputStream(XValue file,SerializeOpts opts) throws CoreException {
+	public InputStream getInputStream(XValue file,SerializeOpts opts) throws CoreException{
 		return getInput(file).asInputStream(opts);
 	}
 
@@ -496,22 +484,15 @@ public class XEnvironment  {
 			if( name.equals("-"))
 				return getStdin();
 
-				
-			// Get a stream from name
-			InputStream in;
+
+			
+			
+			InputPort p;
 			try {
-				in = getInputStream(name);
-			} catch (FileNotFoundException e) {
-				throw new CoreException(e);
+				p = mShell.getInputPort(name);
 			} catch (IOException e) {
 				throw new CoreException(e);
 			}
-			
-			
-			if( in == null )
-				return null ;
-			
-			InputPort p = new StreamInputPort( in,name );
 			// Port is not managed, add to autorelease
 			addAutoRelease( p );
 			
@@ -574,7 +555,7 @@ public class XEnvironment  {
 	}
 
 
-	public InputSource getInputSource(XValue value, SerializeOpts opts) throws CoreException {
+	public InputSource getInputSource(XValue value, SerializeOpts opts) throws CoreException, FileNotFoundException, IOException {
 		InputPort in = getInput(value);
 		return in.asInputSource(opts);
 		
