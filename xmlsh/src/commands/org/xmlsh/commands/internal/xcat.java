@@ -105,8 +105,11 @@ public class xcat extends XCommand {
 		 } else {
 			 for( XValue xf : xvargs ){
 				 	InputPort in = getInput(xf);
-				 	write(in,writer,bRemoveRoot,serializeOpts);
-				 	in.release();
+				 	try {
+				 		write(in,writer,bRemoveRoot,serializeOpts);
+				 	} finally { 
+				 		in.release();
+				 	}
 			 }
 		 }
 		 if( wrapper != null )
