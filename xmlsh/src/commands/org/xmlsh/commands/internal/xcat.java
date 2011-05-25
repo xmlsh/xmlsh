@@ -107,7 +107,10 @@ public class xcat extends XCommand {
 				 	InputPort in = getInput(xf);
 				 	try {
 				 		write(in,writer,bRemoveRoot,serializeOpts);
-				 	} finally { 
+				 	} catch (Exception e) {
+						this.printErr("Skipping file: " + in.getSystemId() , e );
+					}
+				 	finally { 
 				 		in.release();
 				 	}
 			 }

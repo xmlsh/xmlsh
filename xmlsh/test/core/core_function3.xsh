@@ -27,4 +27,21 @@ function mult()
 }
 
 echo mult( add( <[1,3]> ) mult( <[ 4,5]> ) )
+
+# Test for function containing -
+
+function a-b()
+{
+	echo function a-b
+}
+
+function -()
+{ 
+	echo function -
+}
+
+a-b
+-
+
+
   
