@@ -39,10 +39,37 @@ public abstract class XCommand extends AbstractCommand {
 		if (name.lastIndexOf('.') > 0) {
 		    name = name.substring(name.lastIndexOf('.')+1);  
 		}
-		return name;
+		
+		
+		/*
+		 * Convert from camelCase to hyphen-case
+		 */
+		
+		
+		return fromCamelCase(name);
 	}
 	
 	
+
+	private String fromCamelCase(String name) {
+		StringBuffer result = new StringBuffer( name.length() + 5 );
+		
+		for( char c : name.toCharArray() ){
+			if( Character.isUpperCase(c)){
+				result.append('-');
+				result.append( Character.toLowerCase(c));
+			} else
+				result.append(c);
+				
+			
+			
+		}
+		
+		return result.toString();
+		
+		
+		
+	}
 
 	/* (non-Javadoc)
 	 * @see org.xmlsh.core.ICommand#run(org.xmlsh.sh.shell.Shell, java.lang.String[])

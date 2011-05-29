@@ -129,7 +129,7 @@ public class CommandFactory
 		if( cmd == null )
 			cmd = getBuiltin(shell, name , loc );
 		if( cmd == null )
-			cmd = getNative(shell,name , loc );
+			cmd = getModuleCommand(shell,name , loc );
 		if( cmd == null )
 			cmd = getScript( shell , name , false , loc  );
 		if( cmd == null )
@@ -185,7 +185,10 @@ public class CommandFactory
 
 
 
-	private ICommand getNative(Shell shell,String name, SourceLocation loc) {
+	private ICommand getModuleCommand(Shell shell,String name, SourceLocation loc) {
+
+		
+		
 		
 		StringPair 	pair = new StringPair(name,':');
 		

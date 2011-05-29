@@ -32,3 +32,9 @@ C=
 echo $A $B $C
 set $A $B $C
 echo $#
+
+# Test we cannot set to the empty variable name using >{}
+echo SNH >{""}
+blank=""
+echo SNH >{$blank}
+exit 0

@@ -180,6 +180,14 @@ public class Module {
 
 	public ICommand getCommandClass(String name) {
 
+		String origName = name ;
+		
+		/*
+		 * Convert from camelCase to hypen-case
+		 */
+		
+		name = convertCamelCase( name );
+		
 		
 		/*
 		 * First try to find a class that matches name
@@ -216,7 +224,7 @@ public class Module {
 		// No entry in cache means it has not been tested yet
 		
 		// Failures are cached with a null command
-		String scriptName = name + ".xsh";
+		String scriptName = origName + ".xsh";
 		
 		InputStream scriptStream = getCommandResource(scriptName);
 		if (scriptStream != null)
@@ -224,6 +232,41 @@ public class Module {
 			return new ScriptCommand(name, scriptStream, false, this);
 
 		return null ;
+		
+	}
+	
+	/*
+	 * Conversts hypen-case to camelCase
+	 */
+
+	private String convertCamelCase(String name) {
+		if( name.indexOf('-')  < 0 )
+			return name ;
+		
+		
+		String parts[] = name.split("-");
+		if( parts.length == 1 )
+			return name ;
+		
+		StringBuffer result = new StringBuffer( name.length() );
+		
+		for( String p : parts ){
+			if( p.length() == 0 )
+				continue ;
+			
+			if( result.length() == 0 )
+				result.append(p );
+			else {
+				result.append( Character.toUpperCase( p.charAt(0)) );
+				result.append( p.substring(1));
+			}
+			
+			
+		}
+		
+		return result.toString();
+		
+		
 		
 	}
 
@@ -254,6 +297,14 @@ public class Module {
 
 	public IFunction getFunctionClass(String name) {
 
+		String origName = name ;
+		/*
+		 * Convert from camelCase to hypen-case
+		 */
+		
+		name = convertCamelCase( name );
+		
+		
 		try {
 
 			Class<?> cls = findClass(name);
@@ -277,7 +328,7 @@ public class Module {
 		/*
 		 * Try a script
 		 */
-		InputStream scriptStream = getCommandResource(name + ".xsh");
+		InputStream scriptStream = getCommandResource(origName + ".xsh");
 		if (scriptStream != null)
 			return new ScriptFunctionCommand(name, scriptStream,  this );
 		return null;

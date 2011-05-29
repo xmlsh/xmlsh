@@ -17,6 +17,7 @@ import org.xmlsh.core.XEnvironment;
 import org.xmlsh.core.XVariable;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.util.Util;
 
 public class IOFile {
 	private String	mPrefix;
@@ -84,7 +85,8 @@ public class IOFile {
 							file.endsWith("}");
 		if( isVar ){
 			String var = file.substring(1,file.length()-1);
-			
+			if( Util.isBlank(var))
+				throw new CoreException("Invalid blank name for output variable");
 			
 			if( mPrefix.equals("<"))
 				env.setInput( port ,  env.getVar(var) );

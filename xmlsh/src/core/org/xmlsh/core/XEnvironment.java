@@ -195,6 +195,15 @@ public class XEnvironment  {
 	public Collection<String> getVarNames() {
 		return mVars.getVarNames();
 	}
+	
+	public String getVarString( String key )
+	{
+		XVariable var = getVar(key);
+		if( var== null )
+			return null ;
+
+		return var.getValue().toString();
+	}
 
 	/*
 	 * Save the environment by cloning it and pushing it to this
