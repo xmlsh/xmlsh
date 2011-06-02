@@ -33,7 +33,7 @@ public class invoke extends MLCommand {
 		ContentSource cs = getConnection(opts);
 	
 		
-		String module = args.get(0).toString();
+		String module = args.remove(0).toString();
 
 
         Session session;
