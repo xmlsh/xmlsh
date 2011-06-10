@@ -22,4 +22,5 @@ CLASSPATH=$CLASSPATH:$XMLSH/lib/tagsoup-1.2.jar
 # xom used only for xinclude
 CLASSPATH=$CLASSPATH:$XMLSH/lib/xom-1.2.6.jar
 # Adjust VM args below to your taste
+echo $CLASSPATH
 java -cp $CLASSPATH -Xmx1024m -Xms256m -XX:+UseConcMarkSweepGC org.xmlsh.sh.shell.Shell   "$@"

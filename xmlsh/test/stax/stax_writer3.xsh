@@ -15,7 +15,3 @@ stax:writeEndDocument $w
 
 
 stax:closeWriter $w
-
-
-
-
