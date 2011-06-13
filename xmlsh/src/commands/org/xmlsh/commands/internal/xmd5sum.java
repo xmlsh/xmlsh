@@ -119,8 +119,8 @@ public class xmd5sum extends XCommand
 		in.close();
 		
 		out.writeStartElement(sFile);
-		String name = inp.getSystemId();
-		if( !Util.isBlank(name))
+		String name = arg.toString();
+		if( !Util.isBlank(name) )
 			out.writeAttribute(sName, Util.toJavaPath(name));
 		out.writeAttribute(sMd5, cs.getMD5());
 		out.writeAttribute(sLen , String.valueOf( cs.getLength()) );

@@ -1329,7 +1329,7 @@ public class Shell {
 			
 		}
 		else
-			return new FileInputPort(getFile(file),file);
+			return new FileInputPort(getFile(file));
 	}
 	
 	

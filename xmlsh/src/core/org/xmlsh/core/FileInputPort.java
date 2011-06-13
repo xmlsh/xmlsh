@@ -39,7 +39,7 @@ public class FileInputPort extends InputPort {
 	
 	
 	
-	public	FileInputPort( File file , String sysid ) throws IOException
+	private FileInputPort( File file , String sysid ) throws IOException
 	{
 		mFile = file;
 		super.setSystemId(sysid);
@@ -51,7 +51,7 @@ public class FileInputPort extends InputPort {
 
 	public	FileInputPort( File file  ) throws IOException
 	{
-		this(file, file.getPath());
+		this(file, file.toURI().toString() );
 	}
 
 
