@@ -14,9 +14,9 @@ import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
 
-public class integer extends BuiltinFunctionCommand {
+public class decimal extends BuiltinFunctionCommand {
 
-	public integer()
+	public decimal()
 	{
 		super("integer");
 	}
@@ -25,7 +25,7 @@ public class integer extends BuiltinFunctionCommand {
 	public XValue run(Shell shell, List<XValue> args) throws InvalidArgumentException, XPathException {
 		if( args.size() != 1 )
 			throw new InvalidArgumentException("integer(): Expected 1 argument");
-		return new XValue( args.get(0).toLong() );
+		return new XValue( args.get(0).toBigDecimal() );
 	}
 
 }

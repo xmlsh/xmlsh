@@ -10,6 +10,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,6 +20,7 @@ import net.sf.saxon.om.Item;
 import net.sf.saxon.om.NodeInfo;
 import net.sf.saxon.om.SequenceIterator;
 import net.sf.saxon.om.ValueRepresentation;
+import net.sf.saxon.s9api.ItemType;
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.SaxonApiException;
@@ -35,6 +37,10 @@ import net.sf.saxon.s9api.XdmValue;
 import net.sf.saxon.trans.XPathException;
 import net.sf.saxon.tree.iter.SingletonIterator;
 import net.sf.saxon.value.AtomicValue;
+import net.sf.saxon.value.DecimalValue;
+import net.sf.saxon.value.DoubleValue;
+import net.sf.saxon.value.FloatValue;
+import net.sf.saxon.value.IntegerValue;
 import net.sf.saxon.value.Value;
 import org.apache.log4j.Logger;
 import org.xmlsh.sh.shell.SerializeOpts;
@@ -136,6 +142,16 @@ public class XValue {
 	public XValue(boolean n) {
 		mValue = new XdmAtomicValue( n );
 	}
+	
+	public XValue(BigDecimal n) {
+		mValue = new XdmAtomicValue( n );
+	}
+	
+	public XValue(String value , ItemType type) throws SaxonApiException {
+		mValue = new XdmAtomicValue( value , type  );
+	}
+	
+	
 	public XValue(Item item) {
 		this( S9Util.wrapItem(item));
 	}
@@ -285,16 +301,46 @@ public class XValue {
 		
 	}
 
-	public long toLong() {
+	public long toLong() throws XPathException {
 		if( mValue == null )
 			return 0;
 		
 		if( ! isAtomic() )
 			return -1 ;
+		
+		if( mValue instanceof IntegerValue )
+			return ((IntegerValue)mValue).longValue();
+			
+		
 		return Long.parseLong(toString());
 	}
 
 
+	public BigDecimal toBigDecimal() throws XPathException {
+		if( mValue == null )
+			return null ;
+		
+		if( ! isAtomic() )
+			return null ;
+		
+		if( mValue instanceof AtomicValue ){
+			AtomicValue av = (AtomicValue) mValue ;
+			if( av instanceof DecimalValue )
+				return ((DecimalValue) av).getDecimalValue();
+			if( av instanceof DoubleValue )
+				return BigDecimal.valueOf( ((DoubleValue)av).getDoubleValue() );
+			if( av instanceof FloatValue )
+				return BigDecimal.valueOf( ((FloatValue)av).getDoubleValue() );
+			if( av instanceof IntegerValue )
+				return BigDecimal.valueOf( ((IntegerValue)av).longValue() );
+			
+		} 
+		return BigDecimal.valueOf( Double.valueOf(mValue.toString() ));
+
+	}
+	
+	
+	
 	public void serialize(OutputStream out, SerializeOpts opt) throws UnsupportedEncodingException, IOException, SaxonApiException 
 	{
 		if( isAtomic() || isObject() )
@@ -655,6 +701,8 @@ public class XValue {
 		
 		
 	}
+
+
 	
 
 	
