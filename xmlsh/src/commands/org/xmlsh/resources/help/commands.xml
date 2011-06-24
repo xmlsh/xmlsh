@@ -57,7 +57,7 @@
 
    </command>
    <command name="help" url="http://www.xmlsh.org/CommandHelp">
-		    <synopsis>help for xlmsh commands</synopsis>
+		    <synopsis>help for xmlsh commands</synopsis>
 		    <usage>
 			      <para>help [-n] commands</para>
 			      <para>help [-n] command</para>
