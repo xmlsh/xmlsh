@@ -6,58 +6,59 @@
 		    </usage>
 	  </command>
    <command name="[" url="http://www.xmlsh.org/CommandTest">
-   	<synopsis>Evaluates expressions</synopsis>
+   	<synopsis>Evaluate expressions</synopsis>
 	</command>
 
    <command name="xmd5sum" url="http://www.xmlsh.org/CommandXmd5sum">
-   <synopsis>Calculates the md5 sum of files</synopsis>
+   <synopsis>Calculate the md5 sum of files</synopsis>
    </command>
 
    <command name="break" url="http://www.xmlsh.org/CommandBreak">
-   <synopsis>Exits one level of a while, for or until</synopsis>
+   <synopsis>Exits one level of a while, for, or until</synopsis>
    </command>
-   <command name="cd" url="http://www.xmlsh.org/CommandCd">
-   <synopsis>change or print current directory</synopsis>
+   
+	<command name="cd" url="http://www.xmlsh.org/CommandCd">
+   <synopsis>Change (or print) current directory</synopsis>
    </command>
 
    <command name="continue" url="http://www.xmlsh.org/CommandContinue">
-	   <synopsis>Continues the iteration of one level of a loop</synopsis>
+	   <synopsis>Continue one iteration of a loop</synopsis>
    </command>
 
 
    <command name="csv2xml" url="http://www.xmlsh.org/CommandCsv2xml">
-	   <synopsis>convert csv file to xml</synopsis>
+	   <synopsis>Convert CSV to XML</synopsis>
    </command>
 
 
    <command name="declare" url="http://www.xmlsh.org/CommandDeclare">
-		    <synopsis>declare Declares or lists namespaces</synopsis>
+		    <synopsis>Declare (or list) namespaces</synopsis>
 		    <usage>
 			      <para>declare</para>
 			      <para>declare namespace [prefix=[uri]]</para>
 		    </usage>
 	  </command>
    <command name="echo" url="http://www.xmlsh.org/CommandEcho">
-		    <synopsis>prints arguments as text</synopsis>
+		    <synopsis>Print arguments as text</synopsis>
 	  </command>
    <command name="eval" url="http://www.xmlsh.org/CommandEval">
 		    <synopsis>Evaluate a shell command</synopsis>
 	  </command>
    <command name="exit" url="http://www.xmlsh.org/CommandExit">
-		    <synopsis>exit the shell, script, or function</synopsis>
+		    <synopsis>Exit the shell, script, or function</synopsis>
 	  </command>
 
 
 
    <command name="false" url="http://www.xmlsh.org/CommandFalse">
-		    <synopsis>returns false</synopsis>
+		    <synopsis>Returns false</synopsis>
 	  </command>
    <command name="fixed2xml" url="http://www.xmlsh.org/CommandFixed2xml">
-    <synopsis>convert fixed field files to xml</synopsis>
+    <synopsis>Convert fixed-field data to XML</synopsis>
 
    </command>
    <command name="help" url="http://www.xmlsh.org/CommandHelp">
-		    <synopsis>help for xmlsh commands</synopsis>
+		    <synopsis>Help for xmlsh commands</synopsis>
 		    <usage>
 			      <para>help [-n] commands</para>
 			      <para>help [-n] command</para>
@@ -74,183 +75,186 @@
 		    </options>
 	  </command>
 	 <command name="http" url="http://www.xmlsh.org/CommandHttp">
-	 	<synopsis>Http client command</synopsis>
+	 	<synopsis>HTTP client command</synopsis>
 	 </command>
 	<command name="httpserver" url="http://www.xmlsh.org/CommandHttpserver">
-		<synopsis>Http server</synopsis>
+		<synopsis>HTTP server</synopsis>
 	</command>
    <command name="httpsession" url="http://www.xmlsh.org/CommandHttpsession">
-		<synopsis>Http session control</synopsis>
+		<synopsis>HTTP session control</synopsis>
 	</command>
    
    
    
    <command name="import" url="http://www.xmlsh.org/CommandImport">
    
-       <synopsis>Import modules, packages and commands</synopsis>
+       <synopsis>Import modules, packages, and commands</synopsis>
 
    </command>
    <command name="jcall" url="http://www.xmlsh.org/CommandJcall">
-        <synopsis>call java from within the same JVM</synopsis>   
+        <synopsis>Call Java from within the same JVM</synopsis>   
    </command>
    <command name="jobs" url="http://www.xmlsh.org/CommandJobs">
-         <synopsis>prints jobs</synopsis>   
+         <synopsis>Print jobs</synopsis>   
    </command>
    <command name="log" url="http://www.xmlsh.org/CommandLog">
-		<synopsis>Writes to log4j log</synopsis>   
+		<synopsis>Writes to the log4j log</synopsis>   
    </command>
    <command name="read" url="http://www.xmlsh.org/CommandRead">
-   		<synopsis>reads text into a variable</synopsis>
+   		<synopsis>Reads text into a variable</synopsis>
    </command>
    <command name="require" url="http://www.xmlsh.org/CommandRequire">
-   		<synopsis>Checks the current shell for a specified minimum version</synopsis>
+   		<synopsis>Check the current shell against a specified minimum version</synopsis>
    </command>
    <command name="rngconvert" url="http://www.xmlsh.org/CommandRngconvert">
-   		<synopsis>Converts to and from RNG and other schema formats</synopsis>
+   		<synopsis>Convert RNG schemas to (and from) other schema formats</synopsis>
    </command>
 
    <command name="rngvalidate" url="http://www.xmlsh.org/CommandRngvalidate">
-   		<synopsis>Validates with an RNG schema</synopsis>
+   		<synopsis>Validate against an RNG schema</synopsis>
    </command>
    <command name="set" url="http://www.xmlsh.org/CommandSet">
-   		<synopsis>set positional parameters and view variables</synopsis>
+   		<synopsis>Set positional parameters and view variables</synopsis>
    </command>
    <command name="shift" url="http://www.xmlsh.org/CommandShift">
-   		<synopsis>shift positional parameters</synopsis>
+   		<synopsis>Shift positional parameters</synopsis>
    </command>
    <command name="source" url="http://www.xmlsh.org/CommandSource">
-   		<synopsis>Executes a script within the current shell</synopsis>
+   		<synopsis>Execute a script within the current shell</synopsis>
    </command>
    <command name="test" url="http://www.xmlsh.org/CommandTest" >
-   		<synopsis>Evaluates expressions</synopsis>
+   		<synopsis>Evaluate expressions</synopsis>
    </command>
    <command name="throw" url="http://www.xmlsh.org/CommandThrow">
-   		<synopsis>create and update timestamp of a file</synopsis>
+   		<synopsis>Create and update the timestamp of a file</synopsis>
    </command>
    <command name="tie" url="http://www.xmlsh.org/CommandTie">
-   		<synopsis>Ties an xquery to a variable for ease of access</synopsis>
+   		<synopsis>Tie an XQuery to a variable for convenience</synopsis>
    </command>
    <command name="true" url="http://www.xmlsh.org/CommandTrue">
-   		<synopsis>returns true</synopsis>
+   		<synopsis>Return true</synopsis>
    </command>
    <command name="unset" url="http://www.xmlsh.org/CommandUnset">
-		<synopsis>Unsets a variable</synopsis>
+		<synopsis>Unset a variable</synopsis>
    </command>
    <command name="wait" url="http://www.xmlsh.org/CommandWait">
-   		<synopsis>wait for jobs to complete</synopsis>
+   		<synopsis>Wait for jobs to complete</synopsis>
    </command>
    <command name="xaddattribute" url="http://www.xmlsh.org/CommandXaddattribute">
-   		<synopsis>Adds or replaces an attribute to nodes matching an expression</synopsis>
+   		<synopsis>Add (or replace) an attribute on nodes matching an expression</synopsis>
    </command>
 
    <command name="xaddbase" url="http://www.xmlsh.org/CommandXaddbase">
-   		<synopsis>Add xml:base attributes to a document</synopsis>
+   		<synopsis>Add xml:base attributes</synopsis>
    </command>
    <command name="xbase" url="http://www.xmlsh.org/CommandXbase">
-   		<synopsis>extract the base URI from a document or node</synopsis>
+   		<synopsis>Extract the base URI from a document or node</synopsis>
    </command>
    <command name="xcat" url="http://www.xmlsh.org/CommandXcat" >
-   		<synopsis>concatenate XML documents</synopsis>
+   		<synopsis>Concatenate XML documents</synopsis>
    </command>
    <command name="xcmp" url="http://www.xmlsh.org/CommandXcmp">
-   		<synopsis>compare text, binary or xml</synopsis>
+   		<synopsis>Compare text, binary, or XML data</synopsis>
    </command>
    <command name="xdelete" url="http://www.xmlsh.org/CommandXDelete">
-   		<synopsis>Deletes nodes or attributes matching an expression</synopsis>
+   		<synopsis>Delete nodes or attributes matching an expression</synopsis>
    </command>
    <command name="xecho" url="http://www.xmlsh.org/CommandXEcho">
-   	<synopsis>Prints arguments as xml</synopsis>
+   	<synopsis>Print arguments as XML</synopsis>
    </command>
    <command name="xed" url="http://www.xmlsh.org/CommandXed">
-   		<synopsis>xpath based xml edit</synopsis>
+   		<synopsis>XPath-based XML edit</synopsis>
    </command>
    <command name="xfile" url="http://www.xmlsh.org/CommandXfile">
-   		<synopsis>file name manipulations</synopsis>
+   		<synopsis>File name manipulations</synopsis>
    </command>
    <command name="xgetopts" url="http://www.xmlsh.org/CommandXgetopts">
-   		<synopsis>parse arguments into xml</synopsis>
+   		<synopsis>Parse arguments into XML</synopsis>
    </command>
       <command name="xgrep" url="http://www.xmlsh.org/CommandXgrep">
 	  <synopsis>Search for patterns in files</synopsis>
 	</command>
    <command name="xidentity" url="http://www.xmlsh.org/CommandXidentity">
-   		<synopsis>Outputs an identical copy of the input</synopsis>
+   		<synopsis>Output an identical copy of the input</synopsis>
    </command>
    <command name="xinclude" url="http://www.xmlsh.org/CommandXinclude">
-   		<synopsis>runs xinclude preprocessing on an xml file</synopsis>
+   		<synopsis>Run XInclude preprocessing on an XMLfile</synopsis>
    </command>
    <command name="xls" url="http://www.xmlsh.org/CommandXls" >
-   		<synopsis>list files in a directory</synopsis>
+   		<synopsis>List files in a directory</synopsis>
    </command>
    <command name="xml2csv" url="http://www.xmlsh.org/CommandXml2csv">
-   		<synopsis>convert xml to csv</synopsis>
+   		<synopsis>Convert XML to CSV</synopsis>
    </command>
    <command name="xmlsh" url="http://www.xmlsh.org/CommandXmlsh">
    		  		<synopsis>Run a sub shell</synopsis>
    </command>
    <command name="xmove" url="http://www.xmlsh.org/CommandXmove">
-   	<synopsis>Rename/Move xml files to a new filename based on an expression in the file</synopsis>
+   	<synopsis>Move (and/or rename) XML files, based on an expression in the file</synopsis>
    </command>
    <command name="xpath" url="http://www.xmlsh.org/CommandXpath">
-   		<synopsis>run xpath version 2.0 expressions on an xml document</synopsis>
+   		<synopsis>Run XPath (2.0) expressions on XML</synopsis>
    </command>
    <command name="xproperties" url="http://www.xmlsh.org/CommandXproperties" >
-   		<synopsis>parse or generate Java Properties files</synopsis>
+   		<synopsis>Parse (or generate) Java Properties files</synopsis>
    </command>
    <command name="xpwd" url="http://www.xmlsh.org/CommandXpwd">
-   		<synopsis>prints the current directory</synopsis>
+   		<synopsis>Print the current directory</synopsis>
    </command>
    <command name="xquery" url="http://www.xmlsh.org/CommandXquery" >
-   		<synopsis>runs xquery scripts on an xml document</synopsis>
+   		<synopsis>Run XQuery scripts on an XML document</synopsis>
    </command>
    <command name="xread" url="http://www.xmlsh.org/CommandXread">
-   		<synopsis>Reads an XML document into a variable</synopsis>
+   		<synopsis>Read an XML document into a variable</synopsis>
    </command>
    <command name="return" url="http://www.xmlsh.org/CommandReturn">
-   		<synopsis>Returns from a function</synopsis>
+   		<synopsis>Return from a function</synopsis>
    </command>
    <command name="xslt" url="http://www.xmlsh.org/CommandXslt" >
-   	<synopsis>runs xslt version 2.0 transformations</synopsis>
+   	<synopsis>Run an XSLT 2.0 transformation</synopsis>
    </command>
    <command name="xslt1" url="http://www.xmlsh.org/CommandXslt1">
-   	<synopsis>runs xslt version 1.0 transformations</synopsis>
+   	<synopsis>Run an XSLT 1.0 transformation</synopsis>
    </command>
    <command name="xsplit" url="http://www.xmlsh.org/CommandXsplit">
-   <synopsis>splits an XML file into multiple files</synopsis>
+   <synopsis>Split XML into multiple files</synopsis>
    </command>
    <command name="xsql" url="http://www.xmlsh.org/CommandXsql">
-   		<synopsis>query a relational database using jdbc</synopsis>
+   		<synopsis>Query a relational database using JDBC</synopsis>
    </command>
    <command name="xtee" url="http://www.xmlsh.org/CommandXtee">
-   	<synopsis>copies input to multiple outputs</synopsis>
+   	<synopsis>Copy input to multiple outputs</synopsis>
    </command>
    <command name="xtype" url="http://www.xmlsh.org/CommandXtype">
-   		<synopsis>prints the XDM type of each argument</synopsis>
+   		<synopsis>Print the XDM type of each argument</synopsis>
    </command>
    <command name="xuri" url="http://www.xmlsh.org/CommandXuri">
-   		<synopsis>create and disect URI's</synopsis>
+   		<synopsis>Create and dissect URIs</synopsis>
    </command>
    <command name="xvalidate" url="http://www.xmlsh.org/CommandXvalidate">
-   	<synopsis>validate a document against a schema</synopsis>
+   	<synopsis>Validate a document against a schema</synopsis>
    </command>
    <command name="xsdvalidate" url="http://www.xmlsh.org/CommandXsdvalidate">
-   	<synopsis>validate a document against a W3C XSD schema</synopsis>
+   	<synopsis>Validate a document against a W3C XSD schema</synopsis>
    </command>
   
    <command name="xversion" url="http://www.xmlsh.org/CommandXversion">
-   	<synopsis>prints the shell version</synopsis>
+   	<synopsis>Print the shell version</synopsis>
    </command>
    <command name="xwhich" url="http://www.xmlsh.org/CommandXwhich">
-   	<synopsis>Locates commands</synopsis>
+   	<synopsis>Locate commands</synopsis>
    </command>
 
    <command name="xunzip" url="http://www.xmlsh.org/CommandXunzip">
-   	<synopsis>Extracts or lists contents from a zip file</synopsis>
+   	<synopsis>Extract (or list) the contents from a zip file</synopsis>
    </command>
 
-
+	<!--
+		@FIXME
+			Some duped information with the previous command
+	-->
    <command name="xzip" url="http://www.xmlsh.org/CommandXunzip">
-   	<synopsis>Extracts or lists contents from a zip file</synopsis>
+   	<synopsis>Extract (or list) the contents of a zip file</synopsis>
    </command>
    <function name="quote" url="http://www.xmlsh.org/FunctionQuote">
 		    <synopsis>Quote argument</synopsis>
