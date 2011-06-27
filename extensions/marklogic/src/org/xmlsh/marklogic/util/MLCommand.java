@@ -10,6 +10,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
 import java.math.BigInteger;
@@ -122,7 +123,7 @@ public abstract class MLCommand extends XCommand {
 	}
 
 	protected boolean writeResult(ResultSequence rs, OutputPort out, SerializeOpts sopts,
-			boolean asText) throws FactoryConfigurationError, IOException,
+			boolean asText, boolean bBinary) throws FactoryConfigurationError, IOException,
 			InvalidArgumentException, XMLStreamException, SaxonApiException {
 
 		XMLInputFactory factory = XMLInputFactory.newInstance();
@@ -136,6 +137,14 @@ public abstract class MLCommand extends XCommand {
 			// NOTE: The following test doesnt work for attributes, known XCC
 			// bug as of 2010-03-01
 
+			if( bBinary ){
+				OutputStream os = out.asOutputStream(sopts);
+				rsItem.writeTo(os);
+				os.close();
+				
+			}
+			else
+			
 			if (asText || type.isAtomic() || (type.isNode() && it instanceof XdmAttribute)) {
 				Writer os = out.asPrintWriter(sopts);
 

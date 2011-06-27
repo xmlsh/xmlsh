@@ -24,10 +24,11 @@ public class invoke extends MLCommand {
 	@Override
 	public int run(List<XValue> args) throws Exception {
 		
-		Options opts = new Options("c=connect:,v,t=text",SerializeOpts.getOptionDefs());
+		Options opts = new Options("c=connect:,v,t=text,binary",SerializeOpts.getOptionDefs());
 		opts.parse(args);
 		args = opts.getRemainingArgs();
 		boolean asText = opts.hasOpt("t");
+		boolean bBinary = opts.hasOpt("binary");
         SerializeOpts serializeOpts = getSerializeOpts(opts);
 		
 		ContentSource cs = getConnection(opts);
@@ -62,7 +63,7 @@ public class invoke extends MLCommand {
       		}
             ResultSequence rs = session.submitRequest (request);
 
-			writeResult(  rs  , out , serializeOpts,asText );
+			writeResult(  rs  , out , serializeOpts,asText , bBinary );
            // out.close();
 		
             return 0;

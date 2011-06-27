@@ -30,7 +30,7 @@ public class query extends MLCommand {
 	@Override
 	public int run(List<XValue> args) throws Exception {
 		
-		Options opts = new Options("c=connect:,q:,v,f:,t=text,b=bool",SerializeOpts.getOptionDefs());
+		Options opts = new Options("c=connect:,q:,v,f:,t=text,b=bool,binary",SerializeOpts.getOptionDefs());
 		opts.parse(args);
 		args = opts.getRemainingArgs();
 		
@@ -41,6 +41,7 @@ public class query extends MLCommand {
 		if( opts.hasOpt("q"))
 			query = opts.getOpt("q").getValue().toString();
 		boolean asText = opts.hasOpt("t");
+		boolean bBinary = opts.hasOpt("binary");
 		boolean bBool = opts.hasOpt("b");
 	
 		session = cs.newSession();
@@ -104,7 +105,7 @@ public class query extends MLCommand {
 	    	
 	    }
 	    else
-	    	bOutput = writeResult(rs, out, serializeOpts,asText );
+	    	bOutput = writeResult(rs, out, serializeOpts,asText, bBinary );
         rs.close();
 		
         session.close();
