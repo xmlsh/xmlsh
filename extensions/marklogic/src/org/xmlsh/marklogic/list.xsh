@@ -10,15 +10,25 @@ if [ $hasr ] ; then
       :query $_popts -q <{{
 		xquery version "1.0-ml";		
 		declare variable $dir external;
-		for $d in xdmp:directory($dir,"infinity")/base-uri()
-		order by $d
-		return $d
+		try {
+			cts:uris( $dir , "document" )[fn:starts-with( .,$dir )]
+		} catch( $e ) {
+			for $d in xdmp:directory($dir,"infinity")/base-uri()
+			order by $d
+			return $d
+		}
 		
 	}}> -v dir $dir
 done
 
 elif [ $# -eq 0 ] ; then  
-	:query $_popts -q 'for $uri in collection()/base-uri() order by $uri return $uri'
+	:query $_popts -q <{{
+	try {
+		cts:uris((),"document")
+	} catch($e) {
+		for $uri in collection()/base-uri() order by $uri return $uri
+	}
+}}>
 else
 	for dir in $* ; do
 		:query $_popts -q <{{
