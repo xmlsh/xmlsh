@@ -133,4 +133,11 @@ version.version=${version}
   	  </jar>
   </target>
 
+   <target name="javadoc">
+      <ant antfile="javadoc.xml" target="javadoc" >
+
+      </ant>
+    </target>
+
+  
 </project>

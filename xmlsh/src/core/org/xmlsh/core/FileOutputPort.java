@@ -39,10 +39,14 @@ public class FileOutputPort extends OutputPort
 	private		boolean					bAppend ;
 	
 	
-	
-	
-	
 	public	FileOutputPort( File file , boolean bAppend ) throws IOException
+	{
+		this( file , bAppend , true );
+	}
+	
+	public	FileOutputPort( File file , boolean bAppend , boolean bCreateNow ) throws IOException
+	
+	
 	{
 		mFile = file;
 		this.bAppend = bAppend ;
@@ -51,7 +55,8 @@ public class FileOutputPort extends OutputPort
 		 * Need to create the file now if it doesnt exist
 		 */
 		
-		mFile.createNewFile();
+		if( bCreateNow )
+			mFile.createNewFile();
 		
 		
 		

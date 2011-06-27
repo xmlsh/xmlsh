@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="javadoc">
+    <target name="javadoc">
+        <javadoc 
+        	access="package" 
+        	author="true" 
+        	classpath="build-lib/servlet-api.jar;lib/trang.jar;lib/xercesImpl.jar;lib/resolver.jar;lib/log4j-1.2.7.jar;lib/saxon9he.jar;lib/jing.jar;lib/tagsoup-1.2.jar;lib/stax2-api-3.0.1.jar;lib/xom-1.2.6.jar;lib/stax-utils.jar;lib/saxon.jar;lib/woodstox-core-asl-4.0.3.jar;build-lib/ant.jar" 
+    		destdir="doc/javadoc" 
+    		doctitle="xmlsh" 
+    		nodeprecated="false" 
+    		nodeprecatedlist="false" 
+    		noindex="false" 
+    		nonavbar="false" 
+    		notree="false" 
+    		packagenames="org.xmlsh.commands.stax,org.xmlsh.util,org.xmlsh.commands.posix,org.xmlsh.commands.util,org.xmlsh.servlet,org.xmlsh.types,org.xmlsh.sh.core,org.xmlsh.protocols.var,org.xmlsh.commands.test,org.xmlsh.sh.grammar,org.xmlsh.ant,org.xmlsh.protocols.port,org.xmlsh.xpath,org.xmlsh.commands.internal,org.xmlsh.core,org.xmlsh.commands.builtin,org.xmlsh.commands.experimental,org.xmlsh.sh.shell,org.xmlsh.commands.xs,org.json,org.xmlsh.schema" 
+        	source="1.6" 
+        	sourcepath="src/shell;src/3rdparty;src/core;src/commands" 
+    		splitindex="false" 
+    		use="true" 
+    	version="true"/>
+    </target>
+</project>
