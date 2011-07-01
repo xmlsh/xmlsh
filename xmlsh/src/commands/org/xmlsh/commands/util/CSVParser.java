@@ -12,7 +12,7 @@ public class CSVParser
 {
 	private char mDelim = ','; // csv
 	private char mQuote = '"';
-
+	private int mMax ;
 	
 	
 	
@@ -27,14 +27,23 @@ public class CSVParser
 	{
 		mDelim = delim ;
 		mQuote = quote ;
+		mMax   = 0;
 	}
 	
+	public CSVParser( char delim , char quote , int max )
+	{
+		mDelim = delim ;
+		mQuote = quote ;
+		mMax   = max ;
+	}
 	
+
 	/**
      * Parse a single line into String[] each string is 1 csv field
+     * If combine 
      */
      
-     public CSVRecord parseLine( String line ){
+    public CSVRecord parseLine( String line ){
         ArrayList<String>v = new ArrayList<String>();
 
         int len = line.length();
@@ -47,7 +56,7 @@ public class CSVParser
         {
         	c = line.charAt(i++);
         	
-        	if( c == mDelim ){
+        	if( c == mDelim && (mMax <= 0 ||  mMax > v.size() )){
         		v.add( buf.toString());
         		buf = new StringBuffer();
         		sof = true ;
@@ -70,10 +79,15 @@ public class CSVParser
         	sof=false ;
         }
         
+        // Left over data - add a new field or combine with the last one
         if( i>0 ){
-        	
-        	sof=true;
-        	v.add( buf.toString());
+        	if( mMax <= 0 || mMax > v.size() ) 
+        			v.add( buf.toString());
+        	else {
+        		int last = v.size() - 1;
+        		
+        		v.set( last , v.get(last) + buf.toString() );
+        	}
         }
         
         

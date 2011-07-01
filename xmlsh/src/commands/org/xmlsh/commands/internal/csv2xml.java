@@ -37,6 +37,9 @@ import org.xmlsh.util.Util;
  *  -attr		write in attribute normal format\
  *  -encoding encoding  Read CSV format in the specified encoding, else cp1252 assumed
  *  -quote		quoted by (default ")
+ *  -skip lines	Skip # lines before reading header or data ||
+ *  -trim		Trim the output by ignoring any data after the last column specified in -colnames or -header
+ *  -max 	#	Combine the data in the last field by ignoring any more delimiters after the # of fields is specifed, or if # is <=0 then use the number of colums
 */
 
 public class csv2xml extends XCommand
@@ -48,7 +51,7 @@ public class csv2xml extends XCommand
 
 		
 
-		Options opts = new Options( "root:,row:,col:,header,attr,encoding:,delim:,quote:,colnames:,tab,skip:,trim", SerializeOpts.getOptionDefs() );
+		Options opts = new Options( "root:,row:,col:,header,attr,encoding:,delim:,quote:,colnames:,tab,skip:,trim,max:", SerializeOpts.getOptionDefs() );
 		opts.parse(args);
 		
 		// root node
@@ -62,6 +65,7 @@ public class csv2xml extends XCommand
 		boolean bAttr = opts.hasOpt("attr");
 		int	skip = Util.parseInt(opts.getOptString("skip", "0"),0);
 		boolean bTrim = opts.hasOpt("trim"); 
+		int maxFields = Util.parseInt(opts.getOptString("max", "0"),0);
 		
 		// -tab overrides -delim
 		if( opts.hasOpt("tab"))
@@ -93,7 +97,7 @@ public class csv2xml extends XCommand
 		
 		
 		Reader ir = new InputStreamReader( in , encoding );
-		CSVParser parser = new CSVParser( delim.charAt(0), quote.charAt(0) );
+		CSVParser parser = new CSVParser( delim.charAt(0), quote.charAt(0) , maxFields );
 		
 		while( skip-- > 0 )
 			readLine(ir);
