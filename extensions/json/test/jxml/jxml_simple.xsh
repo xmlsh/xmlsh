@@ -2,7 +2,7 @@ import commands posix
 import module j=json
 
 OUT=$(mktemp -d)
-echo  $OUT 1>&2
+# echo  $OUT 1>&2
 cd ../../samples
 
 
@@ -20,5 +20,5 @@ else
         echo Round trip not valid
 fi
 
-echo $OUT
-#rm -r -f $OUT
+#echo $OUT
+rm -r -f $OUT

@@ -1,1 +1,0 @@
-xml diff at file1: [row,col,system-id]: [4,10,"jxml.xml"]

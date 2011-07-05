@@ -26,7 +26,7 @@
 	<xsd:element name="array" substitutionGroup="value">
 		<xsd:annotation>
 			<xsd:appinfo>
-				<jxon:children wrap="array" omitChild="true" />
+				<jxon:children wrap="array" omitChild="false" />
 			</xsd:appinfo>
 		</xsd:annotation>	
 		<xsd:complexType>
