@@ -61,7 +61,7 @@ import org.xmlsh.util.Util;
 
 
 
-public class jsonxslt  extends XCommand{
+public class jxon  extends XCommand{
 
 		
 		private static final String CONTEXT_TYPE 		= "type_decl";
@@ -707,7 +707,7 @@ public class jsonxslt  extends XCommand{
 			
 			String namespace = type.getNamespace();
 			String name = type.getName();
-			QName qname = new QName(Util.blankIfNull(namespace), Util.blankIfNull(name) );
+			QName qname = new QName(Util.notNull(namespace), Util.notNull(name) );
 			return qname;
 		
 		
@@ -718,7 +718,7 @@ public class jsonxslt  extends XCommand{
 			
 			String namespace = type.getNamespace();
 			String name = type.getName();
-			QName qname = new QName(Util.blankIfNull(namespace), Util.blankIfNull(name) );
+			QName qname = new QName(Util.notNull(namespace), Util.notNull(name) );
 			return qname;
 		
 		

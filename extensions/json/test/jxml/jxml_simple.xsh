@@ -2,11 +2,11 @@ import commands posix
 import module j=json
 
 OUT=$(mktemp -d)
-
+echo  $OUT 1>&2
 cd ../../samples
 
 
-j:jsonxslt -o $OUT -v -xsd jxml_simple.xsd > $OUT/all.xml 
+j:jxon -o $OUT -v -xsd jxml_simple.xsd > $OUT/all.xml 
 xslt -f $OUT/tojson.xsl < jxml.xml > $OUT/jxml.jxml
 xsdvalidate "http://www.xmlsh.org/jxml ../schemas/jxml.xsd" $OUT/jxml.jxml && xml2json -p < $OUT/jxml.jxml > $OUT/jxml.json
 
