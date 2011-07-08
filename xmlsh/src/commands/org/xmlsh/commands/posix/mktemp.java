@@ -14,6 +14,7 @@ import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.SerializeOpts;
+import org.xmlsh.util.Util;
 
 public class mktemp extends XCommand {
 
@@ -43,7 +44,7 @@ public class mktemp extends XCommand {
 				
 		}
 		OutputPort out = this.getStdout();
-		out.asPrintStream(getSerializeOpts(opts)).println( tmp.getAbsolutePath()  );
+		out.asPrintStream(getSerializeOpts(opts)).println( Util.convertPath(tmp.getAbsolutePath(),false) );
 		out.release();
 		return 0;
 	}
@@ -55,7 +56,7 @@ public class mktemp extends XCommand {
 
 //
 //
-//Copyright (C) 2008,2009,2010 , David A. Lee.
+//Copyright (C) 2008,2009,2010,2011 , David A. Lee.
 //
 //The contents of this file are subject to the "Simplified BSD License" (the "License");
 //you may not use this file except in compliance with the License. You may obtain a copy of the

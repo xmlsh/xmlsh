@@ -15,6 +15,7 @@ import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.types.XFile;
+import org.xmlsh.util.Util;
 
 
 /** 
@@ -105,10 +106,7 @@ public class xfile extends XCommand
 	}
 
 	private String toSys(String name, boolean opt_sys) {
-		if( opt_sys && File.separatorChar != '/')
-			return name.replace('/', File.separatorChar);
-		else
-			return name.replace(File.separatorChar, '/');
+		return Util.convertPath(name, opt_sys);
 			
 	}
 	
@@ -116,7 +114,7 @@ public class xfile extends XCommand
 
 //
 //
-//Copyright (C) 2008,2009,2010 , David A. Lee.
+//Copyright (C) 2008,2009,2010,2011 , David A. Lee.
 //
 //The contents of this file are subject to the "Simplified BSD License" (the "License");
 //you may not use this file except in compliance with the License. You may obtain a copy of the

@@ -9,7 +9,10 @@ package org.xmlsh.core;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.Reader;
+import java.io.UnsupportedEncodingException;
 
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLStreamReader;
@@ -62,6 +65,10 @@ public abstract class InputPort  extends IPort
 		throw new UnimplementedException("InputPort.getFile() is not implmented() in class: " + this.getClass().getName() );
 	}
 	
+	public Reader 	asReader( SerializeOpts serializeOpts ) throws UnsupportedEncodingException, CoreException {
+		return new InputStreamReader( asInputStream(serializeOpts) , serializeOpts.getText_encoding()); 
+	}
+	
 	
 }
 
@@ -69,7 +76,7 @@ public abstract class InputPort  extends IPort
 
 //
 //
-//Copyright (C) 2008,2009,2010 , David A. Lee.
+//Copyright (C) 2008,2009,2010,2011 , David A. Lee.
 //
 //The contents of this file are subject to the "Simplified BSD License" (the "License");
 //you may not use this file except in compliance with the License. You may obtain a copy of the

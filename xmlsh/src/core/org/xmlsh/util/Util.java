@@ -945,7 +945,14 @@ public class Util
 	}
 	
 
-	
+	public static String convertPath(String name, boolean bSystem) {
+		if( bSystem && File.separatorChar != '/')
+			return name.replace('/', File.separatorChar);
+		else
+			return name.replace(File.separatorChar, '/');
+			
+	}
+		
 
 		
 
@@ -953,7 +960,7 @@ public class Util
 
 //
 //
-//Copyright (C) 2008,2009,2010 , David A. Lee.
+//Copyright (C) 2008,2009,2010,2011 , David A. Lee.
 //
 //The contents of this file are subject to the "Simplified BSD License" (the "License");
 //you may not use this file except in compliance with the License. You may obtain a copy of the
