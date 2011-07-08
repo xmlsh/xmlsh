@@ -53,29 +53,43 @@ declare function local:tojson_element_contents($e as element(jxon:element), $pat
   else
     (: If we wrap attributes or children in their own child object :)
     if($pattern/jxon:attributes/@wrap eq 'object' or $pattern/jxon:children/jxon:value/@wrap eq 'object') then
-      <object>
-        <xsl:if test="@*">
-          <member name="{ $pattern/jxon:attributes/@name }">
-            <object>
-              {
-                (: Only apply to attributes which are marked as full :)
-                for $a in $e/jxon:attribute
-                return <xsl:apply-templates select="{ common:attr_name($a/jxon:name) }"/>
-              }
-            </object>
-          </member>
-        </xsl:if>
+    
+	
+	
+	<xsl:choose>
+	  <!-- Only wrap with an object if we have either attributes or children or both  -->
+	  <xsl:when test="node() or @*">
+		  <object>
+	        <xsl:if test="@*">
+	          <member name="{ $pattern/jxon:attributes/@name }">
+	            <object>
+	              {
+	                (: Only apply to attributes which are marked as full :)
+	                for $a in $e/jxon:attribute
+	                return <xsl:apply-templates select="{ common:attr_name($a/jxon:name) }"/>
+	              }
+	            </object>
+	          </member>
+	        </xsl:if>
         
-        <xsl:if test="node() except @*">
+	        <xsl:if test="node() except @*">
           
-          <member name="{ $pattern/jxon:children/@name }">
-            <!-- Applies element and text templates -->
-            <array>
-              <xsl:apply-templates select="node() except @*" mode="wrap"/>
-            </array>
-          </member>
-        </xsl:if>
-      </object>
+	          <member name="{ $pattern/jxon:children/@name }">
+	            <!-- Applies element and text templates -->
+	            <array>
+	              <xsl:apply-templates select="node() except @*" mode="wrap"/>
+	            </array>
+	          </member>
+	        </xsl:if>
+	      </object>
+		</xsl:when>
+		
+		<!-- No children or attributes output default empty value (null) -->
+		<xsl:otherwise>
+			<null/>
+		</xsl:otherwise>
+    </xsl:choose>
+
     (: "simple" mode do not wrap children :)
     else
       <xsl:choose>
@@ -170,7 +184,7 @@ document {
 
 <metaInformation>
 	<scenarios>
-		<scenario default="yes" name="books" userelativepaths="yes" externalpreview="no" useresolver="yes" url="" outputurl="" processortype="saxon" tcpport="0" profilemode="0" profiledepth="" profilelength="" urlprofilexml="" commandline=""
+		<scenario default="no" name="books" userelativepaths="yes" externalpreview="no" useresolver="yes" url="" outputurl="" processortype="saxon" tcpport="0" profilemode="0" profiledepth="" profilelength="" urlprofilexml="" commandline=""
 		          additionalpath="" additionalclasspath="" postprocessortype="none" postprocesscommandline="" postprocessadditionalpath="" postprocessgeneratedext="" host="" port="0" user="" password="" validateoutput="no" validator="internal"
 		          customvalidator="">
 			<parameterValue name="{http://www.xmlsh.org/jsonxml/common}patterns" value="doc('patterns.xml')"/>
@@ -233,8 +247,25 @@ document {
 			<advancedProperties name="bExtensions" value="true"/>
 			<advancedProperties name="iWhitespace" value="0"/>
 			<advancedProperties name="bTinyTree" value="false"/>
-			<advancedProperties name="bUseDTD" value="false"/>
 			<advancedProperties name="bWarnings" value="true"/>
+			<advancedProperties name="bUseDTD" value="false"/>
+			<advancedProperties name="ModuleURIResolver" value=""/>
+		</scenario>
+		<scenario default="yes" name="mixed" userelativepaths="yes" externalpreview="no" useresolver="yes" url="" outputurl="" processortype="saxon" tcpport="0" profilemode="0" profiledepth="" profilelength="" urlprofilexml="" commandline=""
+		          additionalpath="" additionalclasspath="" postprocessortype="none" postprocesscommandline="" postprocessadditionalpath="" postprocessgeneratedext="" host="" port="0" user="" password="" validateoutput="no" validator="internal"
+		          customvalidator="">
+			<parameterValue name="{http://www.xmlsh.org/jsonxml/common}patterns" value="doc('patterns.xml')"/>
+			<parameterValue name="{http://www.xmlsh.org/jsonxml/common}annotations" value="doc('..\..\..\..\..\..\..\..\jsonxml\mixedtest\all.xml')"/>
+			<advancedProperties name="DocumentURIResolver" value=""/>
+			<advancedProperties name="bSchemaAware" value="false"/>
+			<advancedProperties name="bXml11" value="false"/>
+			<advancedProperties name="CollectionURIResolver" value=""/>
+			<advancedProperties name="iValidation" value="0"/>
+			<advancedProperties name="bExtensions" value="true"/>
+			<advancedProperties name="iWhitespace" value="0"/>
+			<advancedProperties name="bTinyTree" value="false"/>
+			<advancedProperties name="bWarnings" value="true"/>
+			<advancedProperties name="bUseDTD" value="false"/>
 			<advancedProperties name="ModuleURIResolver" value=""/>
 		</scenario>
 	</scenarios>
