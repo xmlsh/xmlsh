@@ -49,6 +49,7 @@ import org.xmlsh.util.Util;
 public class xsql extends XCommand {
 	
 	private static Logger mLogger = LogManager.getLogger(xsql.class);
+	
 		
 	private static abstract class IDriver 
 	{
@@ -85,6 +86,7 @@ public class xsql extends XCommand {
 		Properties mOptions;
 		Class<?>	mClass ;
 		Driver		mDriver;
+		Connection	mConnection = null;
 		
 		JDBCDriver( String driver, ClassLoader classloader, String connect, String user, String password, Properties options ) throws SQLException
 		{
@@ -102,7 +104,8 @@ public class xsql extends XCommand {
 		Connection	getConnection() throws Exception 
 		{
 					
-			
+			if( mConnection != null )
+				return mConnection ;
 
 		    java.util.Properties info = new java.util.Properties();
 		    if( mOptions != null )
@@ -119,9 +122,9 @@ public class xsql extends XCommand {
 			 mDriver  = (Driver) mClass.newInstance();
 			 if( mDriver == null )
 				 return null ;
-			 Connection c = mDriver.connect(mConnect,info);
+			 mConnection = mDriver.connect(mConnect,info);
 		     	
-			 return c;
+			 return mConnection ;
 		
 		}
 
@@ -130,7 +133,11 @@ public class xsql extends XCommand {
 		public void releaseConnection(Connection c ) throws Exception  
 		{
 			try {
+				if( mConnection == c )
+					mConnection = null ;
+				
 				c.close();
+				
 				
 				// Doesnt seem to do much good 
 				if( mDriver != null )
@@ -210,15 +217,20 @@ public class xsql extends XCommand {
 	}
 	
 	
+	static ThreadLocal<IDriver>	mDriverCache = new ThreadLocal<IDriver>();
+	
+	
+	
+	
 	/**
 	 * StatementCache holds a cache of PreparedStatement objects to provide efficient reuse of prepared statements.
 	 * Cache is specific to a single open connection, which is enforced by storing the connection reference.
 	 * 
 	 */
-	@SuppressWarnings("unchecked")
+
 	static class StatementCache
 	{
-	    private HashMap mStatements = new HashMap();
+	    private HashMap<String, PreparedStatement> mStatements = new HashMap<String, PreparedStatement>();
 	    
 	    private Connection mConnection;
 	    
@@ -245,7 +257,7 @@ public class xsql extends XCommand {
 	    
 	  
 	    
-	    public Iterator    iterStatements()
+	    public Iterator<PreparedStatement>    iterStatements()
 	    {
 	        return mStatements.values().iterator();
 	    }
@@ -265,9 +277,9 @@ public class xsql extends XCommand {
 	     
 	    public void close()
 	    {
-	        Iterator iter = iterStatements();
+	        Iterator<PreparedStatement> iter = iterStatements();
 	        while( iter.hasNext() ){
-	            PreparedStatement pStmt = (PreparedStatement) iter.next();
+	            PreparedStatement pStmt = iter.next();
 	            try {
 	            	pStmt.close();
 	            } catch( Exception e ) {
@@ -282,10 +294,10 @@ public class xsql extends XCommand {
 	    {
 	        int n =  getNumStatements() ;
 	        if( n > 0 ){
-	            Iterator iter = iterStatements();
+	            Iterator<PreparedStatement> iter = iterStatements();
 	            while( iter.hasNext() ){
 	                
-	                PreparedStatement pStmt = (PreparedStatement) iter.next();
+	                PreparedStatement pStmt = iter.next();
 	               
 	                
 	                int[] sizes = pStmt.executeBatch();
@@ -303,7 +315,7 @@ public class xsql extends XCommand {
 
 	
 	
-	private boolean bAttr = false ;
+
 	private	 SerializeOpts mSerializeOpts;
 
 	@Override
@@ -313,7 +325,7 @@ public class xsql extends XCommand {
 		
 		Properties options = null;
 		
-		Options opts = new Options( "cp=classpath:,pool=pooldriver:,d=driver:,u=user:,p=password:,root:,row:,attr,c=connect:,jdbc=jdbcconnection:,q=query:,o=option:+,insert,update=execute,tableAttr:,fieldAttr:,fetch:,table:,batch:" ,SerializeOpts.getOptionDefs() );
+		Options opts = new Options( "cp=classpath:,pool=pooldriver:,d=driver:,u=user:,p=password:,root:,row:,attr,c=connect:,jdbc=jdbcconnection:,q=query:,o=option:+,insert,update=execute,tableAttr:,fieldAttr:,fetch:,table:,batch:,cache,close" ,SerializeOpts.getOptionDefs() );
 		opts.parse(args);
 		
 		String root = opts.getOptString("root", "root");
@@ -327,6 +339,9 @@ public class xsql extends XCommand {
 		String pooldriver = opts.getOptString("pool", null);
 		boolean bInsert = opts.hasOpt("insert");
 		boolean bUpdate = opts.hasOpt("update");
+		boolean	 bCache	 = opts.hasOpt("cache");
+		boolean bClose	 = opts.hasOpt("close");
+		
 		String tableAttr = opts.getOptString("tableAttr", null);
 		String fetch = opts.getOptString("fetch", null );
 		String tableName = opts.getOptString("table", null );
@@ -335,9 +350,18 @@ public class xsql extends XCommand {
 		String fieldAttr = opts.getOptString("fieldAttr",null);
 		XValue jdbc = opts.getOptValue("jdbc");
 
+		
+		IDriver dbdriver = null;
+		
+		
 		if( pooldriver == null && driver == null && jdbc ==  null){
-			usage("Expected -pool or -driver or -jdbc");
-			return 1;
+			if( bCache ){
+				dbdriver = mDriverCache.get();
+			}
+			if( dbdriver == null ){
+				usage("Expected -pool or -driver or -jdbc or -cache");
+				return 1;
+			}
 		}
 		
 		if( driver != null && connect == null ){
@@ -375,7 +399,7 @@ public class xsql extends XCommand {
 		if( query == null   &&  ! xvargs.isEmpty() )
 			query = xvargs.get(0).toString();
 		
-		IDriver dbdriver = null;
+
 		if( driver != null ) 
 			dbdriver = new JDBCDriver(driver,  classloader, connect ,user,password, options );
 		if( pooldriver != null )
@@ -393,6 +417,11 @@ public class xsql extends XCommand {
 			
 		}
 		
+		if( bCache )
+			 mDriverCache.set( dbdriver );
+			
+		
+		
 		Connection conn = dbdriver.getConnection();
 		
 		if( conn == null ){
@@ -401,23 +430,32 @@ public class xsql extends XCommand {
 			return(1);
 		}
 		
-		try {
-			if( bUpdate )
-				runUpdate(conn,  getSerializeOpts(opts), root, row, query, bAttr , batch  );
-			
-			else
-			if( bInsert ){
-				InputPort  in = getStdin();
-
-				runInsert( conn ,  in, bAttr , tableName , tableAttr , fieldAttr , batch ) ;
 		
-			}
-			else
-				runQuery(conn,  getSerializeOpts(opts), root, row, query, bAttr , fetch );
+		
+		
+			
+		try {
+	
+				if( bUpdate )
+					runUpdate(conn,  getSerializeOpts(opts), root, row, query, bAttr , batch  );
+				
+				else
+				if( bInsert ){
+					InputPort  in = getStdin();
+	
+					runInsert( conn ,  in, bAttr , tableName , tableAttr , fieldAttr , batch ) ;
+			
+				}
+				else
+				if( query != null )
+					runQuery(conn,  getSerializeOpts(opts), root, row, query, bAttr , fetch );
 		}
 		finally {
-
-			dbdriver.releaseConnection(conn);
+			if( ! bCache || bClose )
+				dbdriver.releaseConnection(conn);
+			if( bClose )
+				mDriverCache.set(null);
+			
 			
 		}
 		
