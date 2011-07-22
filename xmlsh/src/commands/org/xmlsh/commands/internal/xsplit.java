@@ -127,12 +127,17 @@ public class xsplit extends XCommand {
 					getStdin();
 			
 		
-		SerializeOpts serializeOpts = getSerializeOpts(opts);
-		InputStream is = in.asInputStream(serializeOpts) ;
-		split(in.getSystemId() , is );
+		try {
+			SerializeOpts serializeOpts = getSerializeOpts(opts);
+			InputStream is = in.asInputStream(serializeOpts) ;
+			split(in.getSystemId() , is );
+			is.close();
+		} catch (Exception e) {
+			printErr("Exception splitting input", e);
+		} finally { 
+			in.release();
+		}
 		
-		is.close();
-		in.close();
 		
 		
 		

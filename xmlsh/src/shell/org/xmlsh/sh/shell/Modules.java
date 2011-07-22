@@ -27,6 +27,15 @@ public class Modules extends  ArrayList<Module>
 {
 	public void declare(Shell shell, String prefix , String name, List<XValue> init ) throws CoreException
 	{
+		/*
+		 * Dont redeclare a module under the same prefix
+		 */
+		
+		for( Module m : this )
+			if( Util.isEqual(m.getName(),name) && Util.isEqual(m.getPrefix(),prefix))
+					return ;
+		
+		
 		Module module = new Module(shell, prefix , name , init  );
 		declare(module);
 		

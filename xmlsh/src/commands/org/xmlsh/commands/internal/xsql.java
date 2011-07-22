@@ -22,8 +22,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Map.Entry;
+import java.util.Properties;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLEventReader;
@@ -44,6 +44,7 @@ import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.SerializeOpts;
+import org.xmlsh.util.StringPair;
 import org.xmlsh.util.Util;
 
 public class xsql extends XCommand {
@@ -325,7 +326,7 @@ public class xsql extends XCommand {
 		
 		Properties options = null;
 		
-		Options opts = new Options( "cp=classpath:,pool=pooldriver:,d=driver:,u=user:,p=password:,root:,row:,attr,c=connect:,jdbc=jdbcconnection:,q=query:,o=option:+,insert,update=execute,tableAttr:,fieldAttr:,fetch:,table:,batch:,cache,close" ,SerializeOpts.getOptionDefs() );
+		Options opts = new Options( "cp=classpath:,pool=pooldriver:,d=driver:,u=user:,p=password:,root:,row:,attr,c=connect:,jdbc=jdbcconnection:,q=query:,o=option:+,insert,update=execute,tableAttr:,fieldAttr:,fetch:,table:,batch:,cache,close,column:+" ,SerializeOpts.getOptionDefs() );
 		opts.parse(args);
 		
 		String root = opts.getOptString("root", "root");
@@ -349,7 +350,7 @@ public class xsql extends XCommand {
 		int batch = Util.parseInt( sbatch , 1 );
 		String fieldAttr = opts.getOptString("fieldAttr",null);
 		XValue jdbc = opts.getOptValue("jdbc");
-
+		List<XValue> 	columns = opts.getOptValues("column");
 		
 		IDriver dbdriver = null;
 		
@@ -437,13 +438,13 @@ public class xsql extends XCommand {
 		try {
 	
 				if( bUpdate )
-					runUpdate(conn,  getSerializeOpts(opts), root, row, query, bAttr , batch  );
+					runUpdate(conn,  getSerializeOpts(opts), root, row, query, bAttr , batch   );
 				
 				else
 				if( bInsert ){
 					InputPort  in = getStdin();
 	
-					runInsert( conn ,  in, bAttr , tableName , tableAttr , fieldAttr , batch ) ;
+					runInsert( conn ,  in, bAttr , tableName , tableAttr , fieldAttr , batch  , columns ) ;
 			
 				}
 				else
@@ -476,7 +477,7 @@ public class xsql extends XCommand {
 	
 	
 	
-	private void runInsert(Connection conn,  InputPort input , boolean bAttr , String tableName , String tableNameAttr, String fieldNameAttr, int batch) throws SaxonApiException, SQLException, XMLStreamException, IOException, CoreException {
+	private void runInsert(Connection conn,  InputPort input , boolean bAttr , String tableName , String tableNameAttr, String fieldNameAttr, int batch, List<XValue> columns) throws SaxonApiException, SQLException, XMLStreamException, IOException, CoreException {
 		
 
 		OutputPort stdout = getStdout();
@@ -549,18 +550,24 @@ public class xsql extends XCommand {
 					String name = nv.getKey();
 					String value = nv.getValue();
 
-					if( ! bFirst )
-						sNames.append(",");
-					sNames.append("`" + name + "`");
-
-
-					if( ! bFirst )
-						sQuestions.append(",");
-					sQuestions.append("?");
+					addQueryField(bFirst, sNames, sQuestions, name,"?");
 
 					values.add(value);
 					bFirst = false ;
 				}
+				
+				if( columns != null ){
+					for( String col : Util.toStringList(columns) ){
+						StringPair pair = new StringPair(col,'=');
+						addQueryField(bFirst, sNames, sQuestions, pair.getLeft(), pair.getRight() );
+						
+						
+					}
+					
+					
+				}
+				
+				
 
 				String sql = "INSERT INTO `" + tableName + "` (" + sNames.toString() + ") VALUES(" +sQuestions.toString() + ")" ;
 				// printErr(sql);
@@ -658,6 +665,19 @@ public class xsql extends XCommand {
 		
 		
 		
+	}
+
+
+	private void addQueryField(boolean bFirst, StringBuffer sNames, StringBuffer sQuestions,
+			String name, String value) {
+		if( ! bFirst )
+			sNames.append(",");
+		sNames.append("`" + name + "`");
+
+
+		if( ! bFirst )
+			sQuestions.append(",");
+		sQuestions.append(value);
 	}
 
 	/*
