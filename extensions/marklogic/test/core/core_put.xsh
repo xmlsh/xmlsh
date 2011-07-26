@@ -3,6 +3,8 @@
 ml:put -uri /test1.xml <[ <foo>bar</foo> ]>
 ml:get /test1.xml
 
+P=$PWD
+
 # Test recursive put
 [ -d $TMPDIR/_mltest ] && rm -rf $TMPDIR/_mltest
 mkdir $TMPDIR/_mltest
@@ -23,5 +25,8 @@ echo text | ml:put -t -uri /test.txt
 ml:get -t /test.txt
 ml:del /test.txt
 
+
+cd $P
+[ -d $TMPDIR/_mltest ] && rm -rf $TMPDIR/_mltest
 
 

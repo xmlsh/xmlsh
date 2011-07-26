@@ -11,8 +11,9 @@
 	
 	<property name="dist" location="_dist"/>
 	<property name="xmlsh" location="../../trunk"/>
-	 <tstamp prefix="bdate"/>
+	<tstamp prefix="bdate"/>
 	<property name="release" value="${bdate.DSTAMP}"/>
+	<property name="install" value="/usr/local/xmlsh/marklogic"/>
 		
 	<target name="clean" description="Clean all">
 		  <delete includeEmptyDirs="true" quiet="true">
@@ -87,8 +88,12 @@
 
 
   </target>
-  
-  <mkdir dir="bin"/>
+  	<target name="install" description="Install to modules">
+	  		 <copy todir="${install}" filtering="on">
+				<fileset dir="bin" includes="*.jar module.xml"/>
+
+	    	 </copy>
+	  	</target>
         
   
 </project>

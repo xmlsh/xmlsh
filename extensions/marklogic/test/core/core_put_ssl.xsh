@@ -3,6 +3,8 @@
 MLCONNECT=$MLCONNECT_SSL
 echo Using SSL connection $MLCONNECT
 
+P=$PWD
+
 ml:put -uri /test1.xml <[ <foo>bar</foo> ]>
 ml:get /test1.xml
 
@@ -28,3 +30,5 @@ ml:del /test.txt
 
 
 
+cd $P
+[ -d $TMPDIR/_mltest ] && rm -rf $TMPDIR/_mltest
