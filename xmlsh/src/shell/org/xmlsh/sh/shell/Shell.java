@@ -494,24 +494,10 @@ public class Shell {
 		return getSerializeOpts().getText_encoding();
 	}
 
-	public		int		interactive(String rcfile ) throws Exception
+	public		int		interactive() throws Exception
 	{
 		mIsInteractive = true ;
 		int		ret = 0;
-		
-		
-		// Try to source the rcfile 
-		if( rcfile != null ){
-			
-			File script = this.getFile(rcfile);
-			if( script.exists() && script.canRead() ){
-
-				ICommand icmd = CommandFactory.getInstance().getScript(this, script ,true, null );
-				if( icmd != null )
-					icmd.run(this, rcfile , null);
-	    	}
-		}
-		
 		
 		
 		
@@ -587,6 +573,21 @@ public class Shell {
 		if( mExitVal != null )
 			ret = mExitVal.intValue();
 		return ret;
+	}
+
+
+	public void runRC(String rcfile) throws IOException, Exception {
+		// Try to source the rcfile 
+		if( rcfile != null ){
+			
+			File script = this.getFile(rcfile);
+			if( script.exists() && script.canRead() ){
+
+				ICommand icmd = CommandFactory.getInstance().getScript(this, script ,true, null );
+				if( icmd != null )
+					icmd.run(this, rcfile , null);
+	    	}
+		}
 	}
 
 

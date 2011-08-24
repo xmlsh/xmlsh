@@ -69,18 +69,25 @@ public class xmlsh extends BuiltinCommand {
 	    	boolean bNoRc = opts.hasOpt("norc");
 		    args = opts.getRemainingArgs();
 		    
+		    String rcfile =  opts.getOptString("rcfile", null );
+		    if( rcfile == null ){
+		    	XValue home = shell.getEnv().getVarValue("HOME");
+		    	if( home != null ){
+		    		rcfile = home.toString() + "/.xmlshrc" ;
+		    	}
+		    }	
 		    
+		    
+		    if( ! bNoRc && rcfile != null )
+		    	shell.runRC(rcfile);
+			
+			
+			
 		    
 		    if(  args.size() == 0 && command == null ){
-			    String rcfile =  opts.getOptString("rcfile", null );
-			    if( rcfile == null ){
-			    	XValue home = shell.getEnv().getVarValue("HOME");
-			    	if( home != null ){
-			    		rcfile = home.toString() + "/.xmlshrc" ;
-			    	}
-			    }	
+			   
 			    		
-		    	ret = shell.interactive(bNoRc ? null : rcfile);
+		    	ret = shell.interactive();
 		    	
 		    } else {
 	

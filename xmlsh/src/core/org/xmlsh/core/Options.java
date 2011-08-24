@@ -440,6 +440,10 @@ public class Options
 	public int getOptInt(String opt, int def) {
 		return Util.parseInt(this.getOptString(opt,""), def);
 	}
+	
+	public long getOptLong(String opt, int def) {
+		return Util.parseLong(this.getOptString(opt,""), def);
+	}
 	public boolean hasDashDash() { return mDashDash ; }
 
 

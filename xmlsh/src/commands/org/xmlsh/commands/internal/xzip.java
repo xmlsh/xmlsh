@@ -8,17 +8,12 @@ package org.xmlsh.commands.internal;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.List;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
-
-import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.XCommand;
@@ -43,13 +38,12 @@ public class xzip extends XCommand {
 		args = opts.getRemainingArgs();
 		
 		SerializeOpts serializeOpts = getSerializeOpts(opts);
-
-		ZipOutputStream zos = new ZipOutputStream( 
-				zipfile == null ?
-				getStdout().asOutputStream(serializeOpts) :
-				this.getOutputStream( zipfile.toString(), false, serializeOpts )
-		);
 		
+		OutputPort outp = this.getOutput(zipfile, false);
+		OutputStream outs = outp.asOutputStream(serializeOpts);
+		
+
+		ZipOutputStream zos = new ZipOutputStream( outs );
 		
 		try {
 		
@@ -61,6 +55,8 @@ public class xzip extends XCommand {
 		
 		} finally {
 			zos.close();
+			outs.close();
+			outp.release();
 		}
 		
 

@@ -210,6 +210,22 @@ public class Util
 			return defValue;
 		}
 	}
+	
+	public static long parseLong(String string, long defValue)
+	{
+        if( isEmpty( string ) ) 
+            return defValue ;
+        
+		try
+		{
+			return Long.parseLong(string);
+		}
+		catch (NumberFormatException e)
+		{
+			return defValue;
+		}
+	}
+	
 
 	/**
 	 * Method trim.

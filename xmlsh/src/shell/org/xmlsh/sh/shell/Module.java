@@ -180,13 +180,15 @@ public class Module {
 
 	public ICommand getCommandClass(String name) {
 
-		String origName = name ;
-		
 		/*
-		 * Convert from camelCase to hypen-case
+		 * Convert from hyphen-case to camelCase 
 		 */
 		
 		name = convertCamelCase( name );
+		
+		// Store the camel name not the hyphen name
+		String origName = name ;
+		
 		
 		
 		/*
