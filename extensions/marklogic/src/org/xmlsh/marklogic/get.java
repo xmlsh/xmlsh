@@ -38,7 +38,6 @@ import com.marklogic.xcc.exceptions.RequestException;
 
 public class get extends MLCommand {
 
-	private Session mSession ;
 	private static Logger mLogger = LogManager.getLogger(get.class);
 
 	private ExecutorService mPool = null;
@@ -141,8 +140,8 @@ public class get extends MLCommand {
 		
 		
 			
-		ContentSource cs = getConnection(opts);
-		mSession = cs.newSession();
+		mContentSource = getConnection(opts);
+		mSession = mContentSource.newSession();
 		
 		
 		mOutput = getEnv().getStderr().asPrintWriter(mSerializeOpts);

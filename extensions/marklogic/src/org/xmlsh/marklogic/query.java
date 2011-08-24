@@ -23,7 +23,6 @@ import com.marklogic.xcc.types.XdmVariable;
 
 public class query extends MLCommand {
 
-	private Session session;
 	private AdhocQuery request;
 	private RequestOptions options;
 
@@ -34,7 +33,7 @@ public class query extends MLCommand {
 		opts.parse(args);
 		args = opts.getRemainingArgs();
 		
-		ContentSource cs = getConnection(opts);
+		mContentSource = getConnection(opts);
 	
 	    OutputPort out = getStdout();
 	    String query = null ;
@@ -44,8 +43,8 @@ public class query extends MLCommand {
 		boolean bBinary = opts.hasOpt("binary");
 		boolean bBool = opts.hasOpt("b");
 	
-		session = cs.newSession();
-		request = session.newAdhocQuery (null);
+		mSession = mContentSource.newSession();
+		request = mSession.newAdhocQuery (null);
 
 		OptionValue ov = opts.getOpt("f");
 		SerializeOpts serializeOpts = getSerializeOpts(opts);
@@ -94,7 +93,7 @@ public class query extends MLCommand {
 		request.setOptions (options);
 		
 		
-	    ResultSequence rs = session.submitRequest (request);
+	    ResultSequence rs = mSession.submitRequest (request);
 	    
 	    int ret = 0;
 	    boolean bOutput = false ;
@@ -108,7 +107,7 @@ public class query extends MLCommand {
 	    	bOutput = writeResult(rs, out, serializeOpts,asText, bBinary );
         rs.close();
 		
-        session.close();
+        mSession.close();
 
         if( !bBool  && ! asText && bOutput  )
         	out.writeSequenceTerminator(serializeOpts);

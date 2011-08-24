@@ -17,6 +17,7 @@ import java.math.BigInteger;
 import java.net.URI;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.List;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
@@ -40,10 +41,13 @@ import org.xmlsh.util.Util;
 
 import com.marklogic.xcc.ContentSource;
 import com.marklogic.xcc.ContentSourceFactory;
+import com.marklogic.xcc.ContentbaseMetaData;
 import com.marklogic.xcc.ResultItem;
 import com.marklogic.xcc.ResultSequence;
 import com.marklogic.xcc.SecurityOptions;
+import com.marklogic.xcc.Session;
 import com.marklogic.xcc.ValueFactory;
+import com.marklogic.xcc.exceptions.RequestException;
 import com.marklogic.xcc.types.ItemType;
 import com.marklogic.xcc.types.XName;
 import com.marklogic.xcc.types.XSBoolean;
@@ -55,6 +59,11 @@ import com.marklogic.xcc.types.XdmVariable;
 
 public abstract class MLCommand extends XCommand {
 
+	protected	ContentSource	mContentSource = null ;
+	protected 	Session 		mSession = null ;
+	
+	
+	
 	public MLCommand() {
 		super();
 	}
@@ -292,6 +301,46 @@ public abstract class MLCommand extends XCommand {
 		return true;
 	}
 
+	protected BigInteger[] parseForestIds(List<XValue> forests) throws RequestException {
+		
+		BigInteger bi[] = new BigInteger[ forests.size() ];
+		
+		ContentbaseMetaData meta = mSession.getContentbaseMetaData();
+		int i = 0;
+		for( XValue v : forests ){
+			String forest = v.toString();
+			BigInteger forest_id;
+			if( Util.isInt(forest, false))
+				forest_id = new BigInteger( forest );
+			else
+				forest_id = meta.getForestMap().get(forest);
+			
+			bi[i++] = forest_id ;
+			
+		}
+
+		return bi;
+		
+		
+		
+		
+		
+	}
+
+	
+	
+
+	private BigInteger[] toBigIntArray(List<XValue> values) {
+		BigInteger bi[] = new BigInteger[ values.size() ];
+		int i = 0;
+		for( XValue v : values )
+			bi[i++] = new BigInteger( v.toString() );
+		return bi;
+		
+		
+	}
+	
+	
 }
 
 //

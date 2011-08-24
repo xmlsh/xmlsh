@@ -31,17 +31,15 @@ public class invoke extends MLCommand {
 		boolean bBinary = opts.hasOpt("binary");
         SerializeOpts serializeOpts = getSerializeOpts(opts);
 		
-		ContentSource cs = getConnection(opts);
+		mContentSource = getConnection(opts);
 	
 		
 		String module = args.remove(0).toString();
 
 
-        Session session;
-
         OutputPort out = getStdout();
-            session = cs.newSession ();
-            Request request = session.newModuleInvoke(module);
+            mSession = mContentSource.newSession ();
+            Request request = mSession.newModuleInvoke(module);
             /*
              *  Add Variables - for now only handle string variables
              */
@@ -61,11 +59,14 @@ public class invoke extends MLCommand {
       				
       			
       		}
-            ResultSequence rs = session.submitRequest (request);
+            ResultSequence rs = mSession.submitRequest (request);
 
 			writeResult(  rs  , out , serializeOpts,asText , bBinary );
            // out.close();
 		
+
+	        mSession.close();
+	        
             return 0;
 		
 	}

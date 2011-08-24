@@ -42,7 +42,6 @@ import com.marklogic.xcc.exceptions.RequestException;
 
 public class put extends MLCommand {
 
-	private Session session;
 	private static Logger mLogger = LogManager.getLogger(put.class);
 	private ContentCreateOptions mCreateOptions;
 	private ExecutorService mPool = null;
@@ -128,6 +127,17 @@ public class put extends MLCommand {
 		boolean bBinary = opts.hasOpt("b");
 		boolean bXml = opts.hasOpt("x");
 		
+
+		/*
+		 * Get session before parsing args because some parsing requires to ping the server
+		 * 
+		 */
+		mContentSource = getConnection(opts);
+		mSession = mContentSource.newSession();
+	
+		
+		
+		
 		if( bText )
 			mCreateOptions = ContentCreateOptions.newTextInstance();
 		else
@@ -148,7 +158,7 @@ public class put extends MLCommand {
 		
 		List<XValue> forests = opts.getOptValues("forest");
 		if( forests != null)
-			mCreateOptions.setPlaceKeys( toBigIntArray(forests));
+			mCreateOptions.setPlaceKeys( parseForestIds(forests));
 		
 		List<XValue> perms = opts.getOptValues("permission");
 		if( perms != null )
@@ -183,11 +193,6 @@ public class put extends MLCommand {
 		
 		
 			
-		ContentSource cs = getConnection(opts);
-	
-		// printErr("maxfiles is " + maxFiles );
-
-		session = cs.newSession();
 		
 		
 		mOutput = getEnv().getStderr().asPrintWriter(serializeOpts);
@@ -247,7 +252,7 @@ public class put extends MLCommand {
 		}
 		
 		
-		session.close();
+		mSession.close();
 		print("Complete");
 		mOutput.close();
 		
@@ -303,15 +308,6 @@ public class put extends MLCommand {
 	}
 
 
-	private BigInteger[] toBigIntArray(List<XValue> values) {
-		BigInteger bi[] = new BigInteger[ values.size() ];
-		int i = 0;
-		for( XValue v : values )
-			bi[i++] = new BigInteger( v.toString() );
-		return bi;
-		
-		
-	}
 
 
 	private void createDirectories(List<XValue> args, String baseUri , boolean bRecurse) throws IOException, RequestException {
@@ -404,13 +400,13 @@ public class put extends MLCommand {
 			try {
 				// boolean bIsRewind = content.isRewindable();
 
-				session.insertContent (content);
+				mSession.insertContent (content);
 
 				
 				if( bMD5 && sum != null ){
 					List<SumContent> sc = new ArrayList<SumContent>(1);
 					sc.add( new SumContent( uri , content , sum ));
-					setChecksums( session, sc );
+					setChecksums( mSession, sc );
 					
 					
 				}
@@ -490,7 +486,7 @@ public class put extends MLCommand {
 		if( ! mContents.isEmpty()){
 			
 			print("Submitting contents");
-			mPool.execute(new PutContent(session , mContents) );
+			mPool.execute(new PutContent(mSession , mContents) );
 
 			
 			
@@ -572,8 +568,8 @@ public class put extends MLCommand {
 		// SequenceImpl seq = new SequenceImpl( dirs.toArray(new XdmValue[dirs.size()]));
 	//	request.setNewVariable("dirs", ValueType.SEQUENCE, seq );
 */		
-		AdhocQuery request = session.newAdhocQuery ( sReq.toString() );
-		ResultSequence rs = session.submitRequest (request);
+		AdhocQuery request = mSession.newAdhocQuery ( sReq.toString() );
+		ResultSequence rs = mSession.submitRequest (request);
 
 		rs.close();
 		

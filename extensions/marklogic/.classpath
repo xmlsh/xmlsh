@@ -3,12 +3,8 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/xmlsh"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="lib/xcc.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="file:/C:/Work/DEI/marklogic/markxcc/docs/api/"/>
-		</attributes>
-	</classpathentry>
 	<classpathentry kind="lib" path="/xmlsh/lib/saxon9he.jar" sourcepath="C:/java/saxonhe9-2-0-3/saxonhe9-2-0-3source.zip"/>
 	<classpathentry kind="lib" path="/xmlsh/lib/log4j-1.2.7.jar"/>
+	<classpathentry kind="lib" path="lib/marklogic-xcc-4.2.6.jar"/>
 	<classpathentry kind="output" path="_out"/>
 </classpath>
