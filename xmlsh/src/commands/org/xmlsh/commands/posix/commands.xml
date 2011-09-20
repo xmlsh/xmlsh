@@ -41,6 +41,9 @@
 <command name="tee" url="http://www.xmlsh.org/CommandTee" >
 	<synopsis>Read from STDIN and write to STDOUT and files</synopsis>
 </command>
+<command name="mktemp" url="http://www.xmlsh.org/CommandMktemp" >
+	<synopsis>Creates a temporary file</synopsis>
+</command>
 
 </commands>
 	
