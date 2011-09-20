@@ -17,6 +17,8 @@ import java.util.List;
 import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.ICommand;
 import org.xmlsh.core.IFunction;
@@ -38,6 +40,8 @@ public class Module {
 	
 	private		HashMap<String , Class<?>>		mClassCache = new HashMap<String,Class<?>>();
 	private		HashMap<String , Boolean>	mScriptCache = new HashMap<String,Boolean>();
+	
+	private static Logger mLogger = LogManager.getLogger(Module.class);
 	
 	
 
@@ -212,7 +216,7 @@ public class Module {
 		
 
 		} catch (Exception e) {
-			;
+			mLogger.debug("Exception calling constructor for:" + name , e );
 
 		}
 
