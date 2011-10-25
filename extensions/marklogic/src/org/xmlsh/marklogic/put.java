@@ -89,6 +89,11 @@ public class put extends MLCommand {
 			} catch (RequestException e) {
 				printError("Exception submitting data",e);
 			}
+			finally {
+				mSession.close();
+				
+				
+			}
 
 			
 			
@@ -486,7 +491,7 @@ public class put extends MLCommand {
 		if( ! mContents.isEmpty()){
 			
 			print("Submitting contents");
-			mPool.execute(new PutContent(mSession , mContents) );
+			mPool.execute(new PutContent(mContentSource.newSession() , mContents) );
 
 			
 			
