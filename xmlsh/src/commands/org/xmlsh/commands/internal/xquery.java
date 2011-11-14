@@ -31,6 +31,7 @@ import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.sh.shell.ShellModuleURIResolver;
 import org.xmlsh.util.Util;
+import org.xmlsh.xpath.EvalDefinition;
 
 
 
@@ -41,7 +42,7 @@ public class xquery extends XCommand {
 	throws Exception 
 	{
 		
-		Options opts = new Options( "c=context:,cf=context-file:,f=file:,i=input:,n,q:,v,nons,ns:+,s=string,b=bool,baseuri:" ,	SerializeOpts.getOptionDefs() );
+		Options opts = new Options( "c=context:,cf=context-file:,f=file:,i=input:,n,q:,v,nons,ns:+,s=string,b=bool,baseuri:,noxmlsh" ,	SerializeOpts.getOptionDefs() );
 		opts.parse(args);
 		
 		Processor  processor  = Shell.getProcessor();
@@ -56,6 +57,8 @@ public class xquery extends XCommand {
 
 		boolean bString = 	opts.hasOpt("s");
 		boolean bBool   =  opts.hasOpt("b");
+		boolean bNoXmlsh = opts.hasOpt("noxmlsh");
+		
 		String baseURI = opts.getOptString("baseuri", null );
 		if( baseURI != null )
 			baseURI = getAbsoluteURI( baseURI );
@@ -160,6 +163,9 @@ public class xquery extends XCommand {
 			
 		}
 	
+			if( ! bNoXmlsh )
+				compiler.declareNamespace("xmlsh", EvalDefinition.kXMLSH_EXT_NAMESPACE);
+
 			expr = compiler.compile( query );
 			
 			
