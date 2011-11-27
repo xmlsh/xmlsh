@@ -12,14 +12,24 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.xmlsh.core.Options;
+import org.xmlsh.core.Options.OptionValue;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
-import org.xmlsh.core.Options.OptionValue;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.util.Base64Coder;
 import org.xmlsh.util.StringPair;
@@ -39,7 +49,7 @@ public class http extends XCommand {
 	throws Exception 
 	{
 		
-		Options opts = new Options( "get:,put:,post:,head:,options:,delete:,connectTimeout:,contentType:,readTimeout:,+useCaches,+followRedirects,user:,password:,H=add-header:+" );
+		Options opts = new Options( "get:,put:,post:,head:,options:,delete:,connectTimeout:,contentType:,readTimeout:,+useCaches,+followRedirects,user:,password:,H=add-header:+,disableTrust:" );
 		opts.parse(args);
 		
 		SerializeOpts serializeOpts = getSerializeOpts();  // Use args ?
@@ -103,12 +113,11 @@ public class http extends XCommand {
 		
 		int ret = 0;
 
-		
-		
 	
 		URL url = new URL(surl);
 
 		URLConnection conn = url.openConnection();
+	       
 		if( conn instanceof HttpURLConnection ){
 			
 			
@@ -163,7 +172,7 @@ public class http extends XCommand {
 
 
 
-	private void setOptions(HttpURLConnection http, Options opts) throws UnsupportedEncodingException {
+	private void setOptions(HttpURLConnection http, Options opts) throws UnsupportedEncodingException, KeyManagementException, NoSuchAlgorithmException {
 		
 		if( opts.hasOpt("connectTimeout"))
 			http.setConnectTimeout( (int)(opts.getOptDouble("connectTimeout", 0) * 1000.) );
@@ -182,6 +191,15 @@ public class http extends XCommand {
 			http.setRequestProperty("Content-Type", opts.getOptString("contentType", "text/xml"));
 
 		
+		String disableTrustProto = opts.getOptString("disableTrust", null);
+		
+		if(disableTrustProto != null &&  http instanceof HttpsURLConnection )
+			disableTrust( (HttpsURLConnection) http , disableTrustProto );
+     
+           
+		
+		
+		
 		String user = opts.getOptString("user", null);
 		String pass = opts.getOptString("password", null);
 		if( user != null && pass != null ){
@@ -193,6 +211,7 @@ public class http extends XCommand {
 		       
 		       http.setRequestProperty  ("Authorization", "Basic " + encoding);
 			
+		       
 			
 			
 		}
@@ -202,11 +221,40 @@ public class http extends XCommand {
 		
 		
 	}
-
-
 	
+	private void disableTrust(HttpsURLConnection http , String protocol) throws NoSuchAlgorithmException, KeyManagementException
+	{
 	
 
+		// Create a trust manager that does not validate certificate chains
+		TrustManager[] trustAllCerts = new TrustManager[]{
+		    new X509TrustManager() {
+		        public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+		            return null;
+		        }
+		        public void checkClientTrusted(
+		            java.security.cert.X509Certificate[] certs, String authType) {
+		        }
+		        public void checkServerTrusted(
+		            java.security.cert.X509Certificate[] certs, String authType) {
+		        }
+		    }
+		};
+	
+		// Install the all-trusting trust manager
+		    SSLContext sc = SSLContext.getInstance(protocol);
+		    sc.init(null, trustAllCerts, new java.security.SecureRandom());
+		    http.setSSLSocketFactory(sc.getSocketFactory());
+		    
+		    http.setHostnameVerifier( new HostnameVerifier(){
+	            	public boolean verify(String string,SSLSession ssls) {
+	            	return true;
+	            	}
+	            	});
+			
+		
+	}
+		
 }
 
 
