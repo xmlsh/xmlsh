@@ -6,6 +6,10 @@
 
 package org.xmlsh.commands.internal;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
@@ -13,14 +17,18 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.security.KeyManagementException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
 import java.util.List;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
-import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
@@ -49,7 +57,7 @@ public class http extends XCommand {
 	throws Exception 
 	{
 		
-		Options opts = new Options( "get:,put:,post:,head:,options:,delete:,connectTimeout:,contentType:,readTimeout:,+useCaches,+followRedirects,user:,password:,H=add-header:+,disableTrust:" );
+		Options opts = new Options( "get:,put:,post:,head:,options:,delete:,connectTimeout:,contentType:,readTimeout:,+useCaches,+followRedirects,user:,password:,H=add-header:+,disableTrust:,keystore:,keypass:,sslproto:" );
 		opts.parse(args);
 		
 		SerializeOpts serializeOpts = getSerializeOpts();  // Use args ?
@@ -172,7 +180,7 @@ public class http extends XCommand {
 
 
 
-	private void setOptions(HttpURLConnection http, Options opts) throws UnsupportedEncodingException, KeyManagementException, NoSuchAlgorithmException {
+	private void setOptions(HttpURLConnection http, Options opts) throws KeyManagementException, NoSuchAlgorithmException, UnrecoverableKeyException, CertificateException, FileNotFoundException, KeyStoreException, IOException {
 		
 		if( opts.hasOpt("connectTimeout"))
 			http.setConnectTimeout( (int)(opts.getOptDouble("connectTimeout", 0) * 1000.) );
@@ -193,9 +201,17 @@ public class http extends XCommand {
 		
 		String disableTrustProto = opts.getOptString("disableTrust", null);
 		
+		String	keyStore = opts.getOptString("keystore", null);
+		String 	keyPass  = opts.getOptString("keypass", null);
+		String  sslProto = opts.getOptString("sslProto", "SSLv3");
+		
 		if(disableTrustProto != null &&  http instanceof HttpsURLConnection )
 			disableTrust( (HttpsURLConnection) http , disableTrustProto );
      
+		else
+		if( keyStore != null )
+			setClient(  (HttpsURLConnection) http , keyStore , keyPass , sslProto );
+		
            
 		
 		
@@ -222,6 +238,28 @@ public class http extends XCommand {
 		
 	}
 	
+	private void setClient(HttpsURLConnection http, String keyStoreName, String keyPass, String sslProto) throws NoSuchAlgorithmException, CertificateException, FileNotFoundException, IOException, KeyStoreException, UnrecoverableKeyException, KeyManagementException {
+
+		char[] keystorepass = keyPass.toCharArray();
+
+		File keystoreFile = mShell.getFile(keyStoreName);
+		
+        KeyStore keyStore = KeyStore.getInstance("JKS");
+        keyStore.load(new FileInputStream(keystoreFile), keystorepass);
+        
+        
+        KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+
+        keyManagerFactory.init(keyStore, keystorepass);
+        
+        SSLContext sc = SSLContext.getInstance(sslProto);
+        sc.init(keyManagerFactory.getKeyManagers(), null , null);
+        
+        http.setSSLSocketFactory(sc.getSocketFactory());
+	}
+
+
+
 	private void disableTrust(HttpsURLConnection http , String protocol) throws NoSuchAlgorithmException, KeyManagementException
 	{
 	
@@ -254,6 +292,9 @@ public class http extends XCommand {
 			
 		
 	}
+	
+	
+	
 		
 }
 
