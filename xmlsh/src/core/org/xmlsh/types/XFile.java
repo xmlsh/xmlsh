@@ -121,7 +121,7 @@ public class XFile /* implements XSerializble */ {
 
 	public void serialize(XMLStreamWriter writer, boolean all, boolean end ) throws  XMLStreamException {
 		
-		writer.writeStartElement("file");
+		writer.writeStartElement(mFile.isDirectory() ? "dir" : "file");
 		writer.writeAttribute("name", getName());
 		writer.writeAttribute("path", getPath());
 		if( all ){
