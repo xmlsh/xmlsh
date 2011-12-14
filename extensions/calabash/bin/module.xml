@@ -2,7 +2,7 @@
 	module_version="1"
 	name="calabash"
 	package="org.xmlsh.calabash"
-	require="1.1.7"
+	require="1.1.8"
 >
 <classpath>
   <file url="calabash_ext.jar"/>
