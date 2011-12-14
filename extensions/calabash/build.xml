@@ -12,7 +12,7 @@
 	<property name="dist" location="_dist"/>
 	 <tstamp prefix="bdate"/>
 	<property name="release" value="${bdate.DSTAMP}"/>
-		
+	<property name="install" value="/usr/local/xmlsh/calabash"/>
 	<target name="clean" description="Clean all">
 		  <delete includeEmptyDirs="true" quiet="true">
 		    <fileset dir="${dist}" includes="*"/>
@@ -75,11 +75,15 @@
 			<zipfileset dir="." includes="src/** license.txt README.txt build.xml" 
 				excludes="**/sh_histo _out/** bin/** _dist/** lib/**"  prefix="calabash_${release}"/>
 		</zip>
-
-
   </target>
-  
-  <mkdir dir="bin"/>
+
+	<target name="install" description="Install to modules">
+	  		 <copy todir="${install}" filtering="on">
+				<fileset dir="bin" includes="*.jar module.xml"/>
+
+	    	 </copy>
+	  	</target>
+        
         
   
 </project>
