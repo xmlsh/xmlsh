@@ -2,7 +2,7 @@
 	module_version="1"
 	name="jmx"
 	package="org.xmlsh.jmx"
-	require="1.1.5"
+	require="1.1.8"
 >
 <classpath>
   <file url="jmx_ext.jar"/>

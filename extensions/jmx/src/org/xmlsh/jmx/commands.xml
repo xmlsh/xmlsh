@@ -1,44 +1,25 @@
 <?xml version="1.0"?>
 <commands>
-	<command name="s3ls" url="http://www.xmlsh.org/AWSs3ls">
-		<synopsis>Lists files in a S3 bucket</synopsis>
+	<command name="list" url="http://www.xmlsh.org/JMXlist">
+		<synopsis>Lists the objects in the JMX broker</synopsis>
 		<usage>
-			<para>s3ls [options] bucketname[/prefix]</para>
+			<para>list [options] </para>
 		</usage>
-		<options>
-			<option>
-				<arg>-client client</arg>
-				<para>Use an existing S3 client</para>
-			</option>
-			<option>
-				<arg>-config file</arg>
-				<para>read config information from file</para>
-			</option>
-			<option>
-				<arg>-accessKey key</arg>
-				<para>Specify the AWS Access Key</para>
-			</option>
-			<option>
-				<arg>-secretKey key</arg>
-				<para>Specify the AWS Secret Access Key</para>
-			</option>
-			<option>
-				<arg>-r,-recurse</arg>
-				<para>List all keys in the bucket (optionally starting with prefix)</para>
-			</option>
-			<option>
-				<arg>-d,-delim delimiter</arg>
-				<para>Specify a delimiter string (default "/")</para>
-				<para>-r overrides this setting</para>
-			</option>
-			<option>
-				<arg>bucketname</arg>
-				<para>Name of the AWS bucket to list</para>
-			</option>
-
-
-		</options>
+	
 	</command>
 
-
+	<command name="listen" url="http://www.xmlsh.org/JMXlisten">
+		<synopsis>Listen for a JMX event</synopsis>
+		<usage>
+			<para>listen [options] </para>
+		</usage>
+	
+	</command>
+	<command name="query" url="http://www.xmlsh.org/JMXquery">
+		<synopsis>Query the values of one or more JMX objects</synopsis>
+		<usage>
+			<para>query [options] </para>
+		</usage>
+	
+	</command>
 </commands>
