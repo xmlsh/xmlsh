@@ -114,7 +114,7 @@ public class xml2json extends XCommand
 		
 		// Override the text encoding to UTF-8 - JSON is *always* USTF8
 		mSerializeOpts =serializeOpts.clone();
-		serializeOpts.setText_encoding(kENCODING_UTF_8);
+		serializeOpts.setOutputTextEncoding(kENCODING_UTF_8);
 		PrintWriter writer = stdout.asPrintWriter(serializeOpts);
 		
 		
@@ -311,7 +311,7 @@ public class xml2json extends XCommand
 		Reader r = 
 			new InputStreamReader(
 					ip.asInputStream(mSerializeOpts) , 
-					encoding == null ? mSerializeOpts.getText_encoding() : encoding );
+					encoding == null ? mSerializeOpts.getInputTextEncoding() : encoding );
 		StringBuffer sb = new StringBuffer();
 		
 		char	cbuf[] = new char[1000];

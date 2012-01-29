@@ -100,7 +100,7 @@ public class xquery extends XCommand {
 			
 			InputPort qin = getInput(ov.getValue());
 			InputStream is = qin.asInputStream(serializeOpts);
-			query = Util.readString(is, serializeOpts.getText_encoding());
+			query = Util.readString(is, serializeOpts.getInputTextEncoding());
 
 			if( baseURI == null ){
 				String sysid = qin.getSystemId();

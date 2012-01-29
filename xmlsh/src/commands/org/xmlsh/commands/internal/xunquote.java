@@ -142,7 +142,7 @@ public class xunquote extends XCommand {
 				UnquotingInputStream  	in = new UnquotingInputStream( tempBuf.toByteArray() );
 				
 				XMLInputFactory factory = XMLInputFactory.newInstance();
-				XMLEventReader reader = factory.createXMLEventReader( in , serializeOpts.getEncoding() );
+				XMLEventReader reader = factory.createXMLEventReader( in , serializeOpts.getInputXmlEncoding() );
 				
 				copyXML( reader , out );
 				reader.close();

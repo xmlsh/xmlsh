@@ -207,7 +207,7 @@ public class xpath extends XCommand {
 		InputPort in = getInput( v );
 		InputStream is = in.asInputStream(opts);
 		
-		String s = Util.readString(is,opts.getEncoding());
+		String s = Util.readString(is,opts.getInputTextEncoding());
 		is.close();
 		in.close();
 		return s ;

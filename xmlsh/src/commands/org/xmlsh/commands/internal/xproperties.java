@@ -150,7 +150,7 @@ public class xproperties extends XCommand
 		 */
 		
 		ByteArrayOutputStream oss = new ByteArrayOutputStream();
-		props.storeToXML( oss , comment , serializeOpts.getEncoding());
+		props.storeToXML( oss , comment , serializeOpts.getOutputXmlEncoding());
 		ByteArrayInputStream iss = new ByteArrayInputStream( oss.toByteArray());
 		
 		XMLInputFactory factory = XMLInputFactory.newInstance();

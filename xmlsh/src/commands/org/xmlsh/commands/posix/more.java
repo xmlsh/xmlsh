@@ -99,10 +99,10 @@ public class more extends XCommand {
 		int lines = mLines;
 		do {
 			for( int i =0 ; i < lines ; i++ ){
-				String l = Util.readLine(in,mSerial.getText_encoding());
+				String l = Util.readLine(in,mSerial.getInputTextEncoding());
 				if( l == null )
 					return false;
-				stdout.write(l.getBytes(mSerial.getText_encoding()));
+				stdout.write(l.getBytes(mSerial.getInputTextEncoding()));
 				stdout.write( '\n');
 				
 			}

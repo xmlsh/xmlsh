@@ -51,7 +51,7 @@ public class csv2xml extends XCommand
 
 		
 
-		Options opts = new Options( "root:,row:,col:,header,attr,encoding:,delim:,quote:,colnames:,tab,skip:,trim,max:", SerializeOpts.getOptionDefs() );
+		Options opts = new Options( "root:,row:,col:,header,attr,delim:,quote:,colnames:,tab,skip:,trim,max:,input-encoding:", SerializeOpts.getOptionDefs() );
 		opts.parse(args);
 		
 		// root node
@@ -60,7 +60,6 @@ public class csv2xml extends XCommand
 		String col = opts.getOptString("col", "col");
 		String delim = opts.getOptString("delim", ",");
 		String quote = opts.getOptString("quote", "\"");
-		String encoding = opts.getOptString("encoding", "Cp1252");
 		boolean bHeader = opts.hasOpt("header");
 		boolean bAttr = opts.hasOpt("attr");
 		int	skip = Util.parseInt(opts.getOptString("skip", "0"),0);
@@ -76,10 +75,13 @@ public class csv2xml extends XCommand
 		
 		
 		
+		
 // Output XML
 
 		OutputPort stdout = getStdout();
 		SerializeOpts serializeOpts = getSerializeOpts(opts);
+
+		
 		XMLStreamWriter writer = stdout.asXMLStreamWriter(serializeOpts);
 		
 		writer.writeStartDocument();
@@ -89,14 +91,13 @@ public class csv2xml extends XCommand
 		
 // Input is stdin and/or list of commands
 		
-		InputStream in = null;
+		Reader ir = null;
 		if( xvargs.size() == 0 )
-			in = getStdin().asInputStream(serializeOpts);
+			ir = getStdin().asReader(serializeOpts);
 		else
-			in = getInputStream( xvargs.get(0) );
+			ir = getInput( xvargs.get(0) ).asReader(serializeOpts);
 		
 		
-		Reader ir = new InputStreamReader( in , encoding );
 		CSVParser parser = new CSVParser( delim.charAt(0), quote.charAt(0) , maxFields );
 		
 		while( skip-- > 0 )

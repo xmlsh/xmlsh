@@ -54,11 +54,11 @@ public class json2xml extends XCommand {
 		SerializeOpts serializeOpts = getSerializeOpts(opts);
 		SerializeOpts inputOpts = serializeOpts.clone();
 		// JSON is always UTF8
-		inputOpts.setText_encoding("UTF-8");
+		inputOpts.setInputTextEncoding("UTF-8");
 
 		InputPort in = args.isEmpty() ? this.getStdin() : this.getInput(args.get(0));
 		Reader inr = new InputStreamReader(
-				in.asInputStream(inputOpts), inputOpts.getText_encoding());
+				in.asInputStream(inputOpts), inputOpts.getInputTextEncoding());
 		;
 
 		JSONTokener tokenizer = new JSONTokener(inr);

@@ -52,7 +52,7 @@ public class log extends BuiltinCommand {
 		
 		Logger logger = Logger.getLogger(sClass);
 		
-		logger.log(priority, out.toString(getSerializeOpts().getText_encoding()));
+		logger.log(priority, out.toString(getSerializeOpts().getOutputTextEncoding()));
 		
 		
 		

@@ -125,7 +125,7 @@ public class StreamOutputPort extends OutputPort
 	public synchronized PrintWriter asPrintWriter(SerializeOpts opts) throws UnsupportedEncodingException {
 		return new PrintWriter( 		
 				new OutputStreamWriter(asOutputStream(opts) , 
-						opts.getText_encoding() ));
+						opts.getOutputTextEncoding() ));
 	}
 
 
@@ -134,13 +134,14 @@ public class StreamOutputPort extends OutputPort
 	public synchronized void writeSequenceSeperator(SerializeOpts opts ) throws IOException, InvalidArgumentException
 	{
 		
-		asOutputStream(opts).write( opts.getSequence_sep().getBytes( opts.getText_encoding()) );
+		// Write using XML encoding
+		asOutputStream(opts).write( opts.getSequence_sep().getBytes( opts.getOutputXmlEncoding()) );
 		
 		
 	}
 
 	public void writeSequenceTerminator(SerializeOpts opts) throws IOException {
-			asOutputStream(opts).write(  opts.getSequence_term().getBytes(opts.getText_encoding()) );
+			asOutputStream(opts).write(  opts.getSequence_term().getBytes(opts.getOutputXmlEncoding()) );
 		
 	}
 
@@ -173,7 +174,7 @@ public class StreamOutputPort extends OutputPort
 		
 		
 		// XMLOutputFactory fact = new OutputFactory();
-		XMLEventWriter writer =  fact.createXMLEventWriter(asOutputStream(opts), opts.getEncoding() );
+		XMLEventWriter writer =  fact.createXMLEventWriter(asOutputStream(opts), opts.getOutputXmlEncoding() );
 		
 			if( opts.isIndent() )
 				writer = new IndentingXMLEventWriter(writer);

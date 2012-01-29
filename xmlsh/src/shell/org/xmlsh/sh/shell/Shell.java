@@ -382,7 +382,7 @@ public class Shell {
 		try {
 			is = Util.toInputStream(scmd, getSerializeOpts());
 			mCommandInput = is ;
-			ShellParser parser= new ShellParser(new ShellParserReader(mCommandInput,getTextEncoding()));
+			ShellParser parser= new ShellParser(new ShellParserReader(mCommandInput,getInputTextEncoding()));
 			
 	      	Command c = parser.script();
 	      	return c;
@@ -409,7 +409,7 @@ public class Shell {
 		
 		InputStream save = mCommandInput;
 		mCommandInput = stream ;
-		ShellParser parser= new ShellParser(new ShellParserReader(mCommandInput,getTextEncoding()), source );
+		ShellParser parser= new ShellParser(new ShellParserReader(mCommandInput,getInputTextEncoding()), source );
 		int ret = 0;
 		try {
 			while( mExitVal == null && mReturnVal == null  ){
@@ -457,11 +457,11 @@ public class Shell {
 	       // System.out.println("NOK.");
 	        printErr(e.getMessage());
 	        mLogger.error("Exception parsing statement" , e );
-	        parser.ReInit(new ShellParserReader(mCommandInput,getTextEncoding()), source );
+	        parser.ReInit(new ShellParserReader(mCommandInput,getInputTextEncoding()), source );
 	      } catch (Error e) {
 	        printErr(e.getMessage());
 	        mLogger.error("Exception parsing statement" , e );
-	        parser.ReInit(new ShellParserReader(mCommandInput,getTextEncoding()), source);
+	        parser.ReInit(new ShellParserReader(mCommandInput,getInputTextEncoding()), source);
 	
 	     } 
       
@@ -490,8 +490,8 @@ public class Shell {
 	
 	
 	
-	public String getTextEncoding() {
-		return getSerializeOpts().getText_encoding();
+	public String getInputTextEncoding() {
+		return getSerializeOpts().getInputTextEncoding();
 	}
 
 	public		int		interactive() throws Exception
@@ -505,7 +505,7 @@ public class Shell {
 		
 		
 		// ShellParser parser= new ShellParser(mCommandInput,Shell.getEncoding());
-		ShellParser parser= new ShellParser(new ShellParserReader(mCommandInput,getTextEncoding()));
+		ShellParser parser= new ShellParser(new ShellParserReader(mCommandInput,getInputTextEncoding()));
 		
 		while (mExitVal == null) {
 			
@@ -539,7 +539,7 @@ public class Shell {
 		      catch (ThrowException e) {
 		        printErr("Ignoring thrown value: " + e.getMessage());
 		        mLogger.error("Ignoring throw value",e);
-		        parser.ReInit(new ShellParserReader(mCommandInput,getTextEncoding()));
+		        parser.ReInit(new ShellParserReader(mCommandInput,getInputTextEncoding()));
 		      }
 		      catch (Exception e) {
 		    	
@@ -554,7 +554,7 @@ public class Shell {
 
 		        printErr(e.getMessage());
 		        mLogger.error("Exception parsing statement",e);
-		        parser.ReInit(new ShellParserReader(mCommandInput,getTextEncoding()));
+		        parser.ReInit(new ShellParserReader(mCommandInput,getInputTextEncoding()));
 		      } catch (Error e) {
 		        printErr("Error: " + e.getMessage());
 		        SourceLocation loc = c != null ? c.getLocation() : null ;
@@ -565,7 +565,7 @@ public class Shell {
 		        	mLogger.info(loc.toString());
 		        	printErr( sLoc );
 		        }
-		        parser.ReInit(new ShellParserReader(mCommandInput,getTextEncoding()));
+		        parser.ReInit(new ShellParserReader(mCommandInput,getInputTextEncoding()));
 
 		      } 
 		      
@@ -780,7 +780,7 @@ public class Shell {
 		try {
 			out = new PrintWriter( 
 					new BufferedWriter(
-							new OutputStreamWriter(getEnv().getStderr().asOutputStream(getSerializeOpts()), getSerializeOpts().getText_encoding())
+							new OutputStreamWriter(getEnv().getStderr().asOutputStream(getSerializeOpts()), getSerializeOpts().getOutputTextEncoding())
 						)
 					 );
 		} catch (IOException e) {
@@ -798,7 +798,7 @@ public class Shell {
 		try {
 			out = new PrintWriter( 
 					new BufferedWriter(
-							new OutputStreamWriter(getEnv().getStdout().asOutputStream(getSerializeOpts()), getSerializeOpts().getText_encoding())
+							new OutputStreamWriter(getEnv().getStdout().asOutputStream(getSerializeOpts()), getSerializeOpts().getOutputTextEncoding())
 						)
 					 );
 		} catch (IOException e) {

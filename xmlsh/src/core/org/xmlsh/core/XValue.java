@@ -166,7 +166,7 @@ public class XValue {
 			{
 				ByteArrayOutputStream out = new ByteArrayOutputStream();
 				SerializeOpts opts = new SerializeOpts();
-				opts.setEncoding( encoding );
+				opts.setOutputTextEncoding( encoding );
 				
 				serialize( out , opts );
 				return out.toByteArray();
@@ -344,7 +344,7 @@ public class XValue {
 	public void serialize(OutputStream out, SerializeOpts opt) throws UnsupportedEncodingException, IOException, SaxonApiException 
 	{
 		if( isAtomic() || isObject() )
-			out.write( toString().getBytes(opt.getEncoding()) );
+			out.write( toString().getBytes(opt.getOutputXmlEncoding()) );
 		else 
 		if( mValue instanceof XdmValue )
 		

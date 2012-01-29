@@ -17,8 +17,12 @@ import org.xmlsh.core.Options.OptionValue;
 public class SerializeOpts {
 	private 	boolean		indent	= true ;
 	private		boolean		omit_xml_declaration = true ;
-	private		String		encoding = "UTF-8"; // default encoding
-	private		String 	 	text_encoding = System.getProperty("file.encoding");
+	private		String		input_xml_encoding = "UTF-8"; // default encoding
+	private		String 	 	input_text_encoding = System.getProperty("file.encoding");
+	
+	private		String		output_xml_encoding = input_xml_encoding;
+	private		String 	 	output_text_encoding = input_xml_encoding ;
+	
 	private		boolean		supports_dtd = true ;
 	private 	boolean		xinclude = false ;
 	private		String		content_type = "text/plain";
@@ -33,7 +37,7 @@ public class SerializeOpts {
 	 * Parsed standardized serialization option definitions
 	 */
 	private static final List<Options.OptionDef>  mOptionDefs =		
-		Options.parseDefs("+indent,+omit-xml-declaration,encoding:,text-encoding:,xml-encoding:,+xinclude,content-type:,method:,+supports-dtd,sequence-sep:,sequence-term:" );
+		Options.parseDefs("+indent,+omit-xml-declaration,encoding:,text-encoding:,xml-encoding:,+xinclude,content-type:,method:,+supports-dtd,sequence-sep:,sequence-term:,input-xml-encoding:,output-xml-encoding:,input-text-encoding:,output-text-encoding:" );
 			
 			
 	public static List<Options.OptionDef> getOptionDefs() { return mOptionDefs ; }
@@ -51,8 +55,11 @@ public class SerializeOpts {
 		
 		indent = that.indent;
 		omit_xml_declaration = that.omit_xml_declaration;
-		encoding = that.encoding;
-		text_encoding = that.text_encoding;
+		input_xml_encoding = that.input_xml_encoding;
+		input_text_encoding = that.input_text_encoding;
+		output_xml_encoding = that.output_xml_encoding;
+		output_text_encoding = that.output_text_encoding;
+
 		supports_dtd = that.supports_dtd;
 		xinclude = that.xinclude;
 		content_type = that.content_type;
@@ -86,17 +93,23 @@ public class SerializeOpts {
 	}
 
 
-	public String getEncoding() {
-		return encoding;
+	public String getInputXmlEncoding() {
+		return input_xml_encoding;
+	}
+	public String getOutputXmlEncoding() {
+		return output_xml_encoding;
 	}
 
 	/**
 	 * @return the text_encoding
 	 */
-	public String getText_encoding() {
-		return text_encoding;
+	public String getInputTextEncoding() {
+		return input_text_encoding;
 	}
 	
+	public String getOutputTextEncoding() {
+		return output_text_encoding;
+	}
 	
 
 	public void setOption(OptionValue ov) throws InvalidArgumentException {
@@ -134,11 +147,23 @@ public class SerializeOpts {
 		// if text-encoding then set text encoding only
 		// if xml-encoding then set xml encoding only 
 		
-		if( opt.equals("text-encoding") || opt.equals("encoding"))
-			setText_encoding(value.toString());
 		
-		if( opt.equals("xml-encoding") || opt.equals("encoding") )
-			setEncoding(value.toString());
+			
+		if( opt.equals("text-encoding") || opt.equals("input-text-encoding") || opt.equals("encoding"))
+			setInputTextEncoding(value.toString());
+
+		if( opt.equals("text-encoding") || opt.equals("output-text-encoding") || opt.equals("encoding"))
+			setOutputTextEncoding(value.toString());
+
+		
+		if( opt.equals("xml-encoding") || opt.equals("input-xml-encoding") || opt.equals("encoding") )
+			setInputXmlEncoding(value.toString());
+		
+		if( opt.equals("xml-encoding") || opt.equals("output-xml-encoding") || opt.equals("encoding") )
+			setOutputXmlEncoding(value.toString());
+		
+		
+		
 		
 		if( opt.equals("content-type"))
 			setContent_type(value.toString());
@@ -170,21 +195,38 @@ public class SerializeOpts {
 	}
 
 	/**
-	 * @param encoding the encoding to set
+	 * @param xml_encoding the encoding to set
 	 * @throws InvalidArgumentException 
 	 */
-	public void setEncoding(String enc) throws InvalidArgumentException {
+	public void setInputXmlEncoding(String enc) throws InvalidArgumentException {
 		
 		if( ! Charset.isSupported(enc))
 			throw new InvalidArgumentException("encoding not supported: " + enc);
-		encoding = enc ;
+		input_xml_encoding = enc ;
 
 	}
-	public void setText_encoding(String enc) throws InvalidArgumentException {
+
+	public void setOutputXmlEncoding(String enc) throws InvalidArgumentException {
 		
 		if( ! Charset.isSupported(enc))
 			throw new InvalidArgumentException("encoding not supported: " + enc);
-		text_encoding = enc ;
+		output_xml_encoding = enc ;
+
+	}
+	
+	
+	public void setInputTextEncoding(String enc) throws InvalidArgumentException {
+		
+		if( ! Charset.isSupported(enc))
+			throw new InvalidArgumentException("encoding not supported: " + enc);
+		input_text_encoding = enc ;
+
+	}
+	public void setOutputTextEncoding(String enc) throws InvalidArgumentException {
+		
+		if( ! Charset.isSupported(enc))
+			throw new InvalidArgumentException("encoding not supported: " + enc);
+		output_text_encoding = enc ;
 
 	}
 

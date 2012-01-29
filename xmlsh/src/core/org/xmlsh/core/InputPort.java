@@ -66,7 +66,7 @@ public abstract class InputPort  extends IPort
 	}
 	
 	public Reader 	asReader( SerializeOpts serializeOpts ) throws UnsupportedEncodingException, CoreException {
-		return new InputStreamReader( asInputStream(serializeOpts) , serializeOpts.getText_encoding()); 
+		return new InputStreamReader( asInputStream(serializeOpts) , serializeOpts.getInputTextEncoding()); 
 	}
 	
 	

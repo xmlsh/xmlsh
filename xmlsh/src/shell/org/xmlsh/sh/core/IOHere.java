@@ -29,7 +29,7 @@ public class IOHere {
 	public void exec(Shell shell, String port) throws CoreException, UnsupportedEncodingException  {
 		
 		shell.getEnv().setInput( port , 
-				new ByteArrayInputStream(mHere.getBytes(shell.getTextEncoding())));
+				new ByteArrayInputStream(mHere.getBytes(shell.getInputTextEncoding())));
 		
 	}
 }

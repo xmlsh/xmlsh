@@ -56,7 +56,7 @@ public abstract class OutputPort extends IPort
 
 	public synchronized PrintWriter asPrintWriter(SerializeOpts opts) throws UnsupportedEncodingException {
 		return new PrintWriter( 		
-				new OutputStreamWriter(asOutputStream(opts) , opts.getText_encoding() ));
+				new OutputStreamWriter(asOutputStream(opts) , opts.getOutputTextEncoding() ));
 	}
 
 	

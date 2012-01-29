@@ -68,7 +68,7 @@ public class xinclude extends XCommand {
 			// XOM Serialization 
 			if( xs ){
 			
-				Serializer ser = new Serializer(os , sopts.getEncoding());
+				Serializer ser = new Serializer(os , sopts.getOutputXmlEncoding());
 				ser.write(input);
 				os.close();
 				

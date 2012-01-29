@@ -112,7 +112,7 @@ public class XmlshServlet extends HttpServlet {
 					
 					
 
-					String ct = shell.getSerializeOpts().getContent_type() + "; " + shell.getSerializeOpts().getEncoding();
+					String ct = shell.getSerializeOpts().getContent_type() + "; " + shell.getSerializeOpts().getOutputXmlEncoding();
 					response.setContentType(ct);
 
 					
@@ -210,7 +210,7 @@ public class XmlshServlet extends HttpServlet {
 				@SuppressWarnings("unused")
 				int ret = script.run(shell, path , vargs);
 			
-				String ct = shell.getSerializeOpts().getContent_type() + "; " + shell.getSerializeOpts().getEncoding();
+				String ct = shell.getSerializeOpts().getContent_type() + "; " + shell.getSerializeOpts().getOutputXmlEncoding();
 				response.setContentType(ct);
 
 				

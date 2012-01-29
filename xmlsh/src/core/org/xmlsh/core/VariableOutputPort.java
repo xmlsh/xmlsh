@@ -116,7 +116,7 @@ public class VariableOutputPort extends OutputPort
 			// else
 			if (mByteArrayOutputStream != null)
 				try {
-					appendVar( mByteArrayOutputStream.toString(mSerializeOpts.getText_encoding()   ) );
+					appendVar( mByteArrayOutputStream.toString(mSerializeOpts.getOutputTextEncoding()   ) );
 				} catch (UnsupportedEncodingException e1) {
 					throw new CoreException( e1 );
 				}
@@ -172,7 +172,7 @@ public class VariableOutputPort extends OutputPort
 		
 		return new PrintWriter( 		
 				new OutputStreamWriter(asOutputStream(opts) , 
-						opts.getText_encoding() ));
+						opts.getOutputTextEncoding() ));
 	}
 
 	private void appendVar(String string) throws InvalidArgumentException 

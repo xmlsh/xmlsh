@@ -90,7 +90,7 @@ public class xcat extends XCommand {
 		XMLEventWriter writer = stdout.asXMLEventWriter(serializeOpts);
 		
 		
-		writer.add( mFactory.createStartDocument(serializeOpts.getEncoding()));
+		writer.add( mFactory.createStartDocument(serializeOpts.getOutputXmlEncoding()));
 		
 		
 		

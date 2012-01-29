@@ -61,7 +61,7 @@ public class CommandFileWord extends Word {
 		InputStream is = ip.asInputStream(sopts);
 		try {
 
-			return Util.readString( is, sopts.getText_encoding()).trim();
+			return Util.readString( is, sopts.getInputTextEncoding()).trim();
 		} finally {
 			is.close();
 			ip.close();

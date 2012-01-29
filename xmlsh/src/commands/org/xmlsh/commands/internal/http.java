@@ -223,9 +223,10 @@ public class http extends XCommand {
 			
 			 // Encode String
 			
-		       String encoding = new String(Base64Coder.encode (up.getBytes( getEnv().getShell().getSerializeOpts().getEncoding())));
+			String credentials_encoding = "US-ASCII" ; // TBD allow multiple encodings ?
+			String encoding = new String(Base64Coder.encode (up.getBytes( credentials_encoding )));
 		       
-		       http.setRequestProperty  ("Authorization", "Basic " + encoding);
+		    http.setRequestProperty  ("Authorization", "Basic " + encoding);
 			
 		       
 			

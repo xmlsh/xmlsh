@@ -12,8 +12,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
 
+import org.xmlsh.core.Options;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
+import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.util.Util;
 
 /**
@@ -31,11 +33,11 @@ public class cat extends XCommand {
 	@Override
 	public int run(List<XValue> args) throws Exception {
 		
-		/* Options opts = new Options( "" , args );
-		 * opts.parse();
-		 * args = opts.getRemainingArgs();
-		 */ 
-		OutputStream 	stdout = getStdout().asOutputStream(getSerializeOpts());
+		Options opts = new Options( "" , SerializeOpts.getOptionDefs()  );
+		opts.parse(args);
+		args = opts.getRemainingArgs();
+		 
+		OutputStream 	stdout = getStdout().asOutputStream(getSerializeOpts(opts));
 		if( args.size() > 0 ){
 			for( XValue arg : args ){
 				
@@ -58,7 +60,7 @@ public class cat extends XCommand {
 			}
 		}
 		else
-			Util.copyStream( getStdin().asInputStream(getSerializeOpts()) , stdout );
+			Util.copyStream( getStdin().asInputStream(getSerializeOpts(opts)) , stdout );
 		
 		return 0;
 	}

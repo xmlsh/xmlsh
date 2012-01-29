@@ -435,7 +435,7 @@ public class Util
 		// SAX2.0 ContentHandler.
 		TransformerHandler hd = tf.newTransformerHandler();
 		Transformer serializer = hd.getTransformer();
-		serializer.setOutputProperty(OutputKeys.ENCODING, opts.getEncoding()	);
+		serializer.setOutputProperty(OutputKeys.ENCODING, opts.getOutputXmlEncoding()	);
 		// serializer.setOutputProperty(OutputKeys.DOCTYPE_SYSTEM,"users.dtd");
 		serializer.setOutputProperty(OutputKeys.INDENT, opts.isIndent() ? "yes" : "no");
 		serializer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, opts.isOmit_xml_declaration() ? "yes" : "no");
@@ -571,7 +571,7 @@ public class Util
 	{
 		if( Util.mNewline == null ){
 			try {
-				Util.mNewline = System.getProperty("line.separator").getBytes(opts.getText_encoding());
+				Util.mNewline = System.getProperty("line.separator").getBytes(opts.getOutputTextEncoding());
 			} catch (UnsupportedEncodingException e) {
 				Util.mNewline = new byte[] { '\n' };
 			} 
@@ -630,7 +630,7 @@ public class Util
 
 	public static  ByteArrayInputStream toInputStream(String script,SerializeOpts opts) throws UnsupportedEncodingException {
 			return new ByteArrayInputStream(
-					script.getBytes(opts.getText_encoding()));
+					script.getBytes(opts.getInputTextEncoding()));
 	}
 
 
@@ -750,7 +750,7 @@ public class Util
 		// dest.setOutputProperty(Serializer.Property.VERSION,"1.1");
 		
 		ser.setOutputProperty(Serializer.Property.METHOD, opts.getMethod() );
-		ser.setOutputProperty(Serializer.Property.ENCODING, opts.getEncoding());
+		ser.setOutputProperty(Serializer.Property.ENCODING, opts.getOutputXmlEncoding());
 
 		return ser;
 	}

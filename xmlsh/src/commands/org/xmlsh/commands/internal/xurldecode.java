@@ -56,9 +56,9 @@ public class xurldecode extends XCommand {
 					
 					bFirst = false;
 					String value = arg.toString();
-					value = URLDecoder.decode(value,serializeOpts.getEncoding());
+					value = URLDecoder.decode(value,serializeOpts.getInputXmlEncoding());
 					
-					out.write(value.getBytes(serializeOpts.getEncoding()));
+					out.write(value.getBytes(serializeOpts.getOutputTextEncoding()));
 			}
 			if( ! nolf )
 				out.write(Util.getNewline(serializeOpts));
@@ -67,9 +67,9 @@ public class xurldecode extends XCommand {
 		else {
 			
 			InputStream is = getStdin().asInputStream(serializeOpts);
-			String data = Util.readString(is,serializeOpts.getEncoding());
-			String value = URLDecoder.decode(data,serializeOpts.getEncoding());
-			out.write(value.getBytes(serializeOpts.getEncoding()));
+			String data = Util.readString(is,serializeOpts.getInputTextEncoding());
+			String value = URLDecoder.decode(data,serializeOpts.getInputTextEncoding());
+			out.write(value.getBytes(serializeOpts.getOutputTextEncoding()));
 			is.close();
 			
 		}

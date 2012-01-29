@@ -69,7 +69,7 @@ public class XMLEventOutputPort extends OutputPort
 		@Override
 		public void write(byte[] b, int off, int len) throws IOException {
 			
-			XMLEvent event = mFactory.createCharacters(new String(b,off,len,mOpts.getText_encoding()));
+			XMLEvent event = mFactory.createCharacters(new String(b,off,len,mOpts.getOutputXmlEncoding()));
 			
 			try {
 				mWriter.add(event);
@@ -162,7 +162,7 @@ public class XMLEventOutputPort extends OutputPort
 	public synchronized PrintWriter asPrintWriter(SerializeOpts opts) throws UnsupportedEncodingException {
 		return new PrintWriter( 		
 				new OutputStreamWriter(asOutputStream(mOpts) , 
-						opts.getText_encoding() ));
+						opts.getOutputTextEncoding() ));
 	}
 
 

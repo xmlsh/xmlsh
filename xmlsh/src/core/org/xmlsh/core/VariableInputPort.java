@@ -57,9 +57,9 @@ public class VariableInputPort extends InputPort {
 		try {
 			if (mVariable.getValue().isXExpr())
 				Util.writeXdmValue(mVariable.getValue().asXdmNode(), Util
-						.streamToDestination(buf, opts));
+						.streamToDestination(buf, opts)); // uses output xml encoding
 			else
-				buf.write(mVariable.getValue().toBytes(opts.getEncoding()));
+				buf.write(mVariable.getValue().toBytes(opts.getOutputXmlEncoding())); // Use output encoding
 			return new ByteArrayInputStream(buf.toByteArray());
 		} catch (SaxonApiException e) {
 			throw new CoreException(e);
@@ -115,7 +115,7 @@ public class VariableInputPort extends InputPort {
 				throw new CoreException(e);
 			}
 		else
-			out.write(mVariable.getValue().toString().getBytes(opts.getText_encoding()));
+			out.write(mVariable.getValue().toString().getBytes(opts.getOutputTextEncoding()));
 
 	}
 
