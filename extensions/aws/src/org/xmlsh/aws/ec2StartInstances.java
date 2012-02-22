@@ -1,0 +1,100 @@
+package org.xmlsh.aws;
+
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+
+import javax.xml.stream.XMLStreamException;
+
+import net.sf.saxon.s9api.SaxonApiException;
+import org.xmlsh.aws.util.AWSEC2Command;
+import org.xmlsh.aws.util.SafeXMLStreamWriter;
+import org.xmlsh.core.InvalidArgumentException;
+import org.xmlsh.core.Options;
+import org.xmlsh.core.OutputPort;
+import org.xmlsh.core.UnexpectedException;
+import org.xmlsh.core.XValue;
+import org.xmlsh.sh.shell.SerializeOpts;
+import org.xmlsh.util.Util;
+
+import com.amazonaws.services.ec2.model.InstanceState;
+import com.amazonaws.services.ec2.model.InstanceStateChange;
+import com.amazonaws.services.ec2.model.StartInstancesRequest;
+import com.amazonaws.services.ec2.model.StartInstancesResult;
+
+
+public class ec2StartInstances extends AWSEC2Command {
+
+	
+
+
+
+
+	/**
+	 * @param args
+	 * @throws IOException 
+	 */
+	@Override
+	public int run(List<XValue> args) throws Exception {
+
+		
+		Options opts = getOptions();
+		opts.parse(args);
+
+		args = opts.getRemainingArgs();
+		
+
+		
+		
+		
+		if( args.size() < 1 ){
+			usage(null);
+			return 1;
+		}
+		
+
+		mSerializeOpts = this.getSerializeOpts(opts);
+		try {
+			mAmazon = getEC2Client(opts);
+		} catch (UnexpectedException e) {
+			usage( e.getLocalizedMessage() );
+			return 1;
+			
+		}
+		
+		int ret = start( Util.toStringArray(args) );
+		
+		
+		
+		
+		
+		return ret;
+		
+		
+	}
+
+
+
+
+	private int start( String[] instances ) throws InvalidArgumentException, IOException, XMLStreamException, SaxonApiException 
+	{
+	
+		StartInstancesRequest  request = new StartInstancesRequest( Arrays.asList(instances));
+		
+		
+		StartInstancesResult result = mAmazon.startInstances(request);
+		
+		List<InstanceStateChange> changes = result.getStartingInstances();
+		writeStateChages( changes);
+		return 0;
+		
+	
+	
+	}
+
+
+
+	
+	
+
+}
