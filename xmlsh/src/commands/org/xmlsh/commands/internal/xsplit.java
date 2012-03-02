@@ -27,6 +27,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -45,9 +46,10 @@ import javax.xml.stream.events.XMLEvent;
 
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.Options;
+import org.xmlsh.core.Options.OptionValue;
+import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
-import org.xmlsh.core.Options.OptionValue;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.util.Util;
 
@@ -72,6 +74,7 @@ public class xsplit extends XCommand {
 	private		int				mNumChildren = 1;
 	private		boolean			mNoDTD = false ;
 	private		boolean			mNoPI  = false ;
+	private		XValue			mList  = null ;
 	
 	private		List<XMLEvent>	mHeader = new ArrayList<XMLEvent>();
 
@@ -80,7 +83,7 @@ public class xsplit extends XCommand {
 	{
 
 
-		Options opts = new Options( "c=children:,w=wrap:,n,p=prefix:,e=ext:,s=suffix:,n=nowrap,o=output:,nopi,nodtd" ,SerializeOpts.getOptionDefs() );
+		Options opts = new Options( "c=children:,w=wrap:,n,p=prefix:,e=ext:,s=suffix:,n=nowrap,o=output:,nopi,nodtd,l=list:" ,SerializeOpts.getOptionDefs() );
 		opts.parse(args);
 		
 		// root node
@@ -102,6 +105,7 @@ public class xsplit extends XCommand {
 			mOutputDir = getFile(opts.getOptValue("o"));
 		mNoDTD = opts.hasOpt("nodtd");
 		mNoPI  = opts.hasOpt("nopi");
+		mList  = opts.getOptValue("list");
 		
 		
 		
@@ -125,17 +129,27 @@ public class xsplit extends XCommand {
 			xvargs.size() == 1 ? 
 					getInput(xvargs.get(0)): 
 					getStdin();
-			
-		
+		PrintWriter  listWriter =  null; 
+		OutputPort listOut = null ;	
+
 		try {
 			SerializeOpts serializeOpts = getSerializeOpts(opts);
 			InputStream is = in.asInputStream(serializeOpts) ;
-			split(in.getSystemId() , is );
+
+			if( mList != null )
+				listWriter = (listOut =  getOutput(mList,false)).asPrintWriter( serializeOpts );
+			
+			split(in.getSystemId() , is , listWriter );
 			is.close();
 		} catch (Exception e) {
 			printErr("Exception splitting input", e);
 		} finally { 
 			in.release();
+			if( listWriter != null )
+				listWriter.close();
+			if( listOut != null )
+				listOut.release();
+			
 		}
 		
 		
@@ -153,7 +167,7 @@ public class xsplit extends XCommand {
 
 
 
-	private void split(String systemId , InputStream is) throws XMLStreamException, IOException {
+	private void split(String systemId , InputStream is, PrintWriter listWriter) throws XMLStreamException, IOException {
 	
 
 		
@@ -162,7 +176,7 @@ public class xsplit extends XCommand {
 		inputFactory.setProperty(XMLInputFactory.IS_COALESCING, Boolean.valueOf(true));
 		XMLEventReader  xmlreader  =inputFactory.createXMLEventReader(systemId, is);
 		
-		
+
 		/* 
 		 * Read up to root elem collecting events to repeat on each file
 		 * 
@@ -223,7 +237,7 @@ public class xsplit extends XCommand {
 			int type = e.getEventType() ;
 			
 			if( type == XMLStreamConstants.START_ELEMENT ){
-				write( xmlreader , e ,ns );
+				write( xmlreader , e ,ns , listWriter );
 				
 				
 			} else
@@ -257,7 +271,7 @@ public class xsplit extends XCommand {
 
 
 
-	private void write(XMLEventReader xmlreader, XMLEvent first, List<Namespace> ns) throws XMLStreamException, IOException {
+	private void write(XMLEventReader xmlreader, XMLEvent first, List<Namespace> ns, PrintWriter listWriter) throws XMLStreamException, IOException {
 		File fout = nextFile();
 		OutputStream fo = new FileOutputStream(fout); // need to close seperately
 		XMLEventWriter w = mOutputFactory.createXMLEventWriter( fo );
@@ -308,6 +322,12 @@ public class xsplit extends XCommand {
 		w.flush();
 		w.close();
 		fo.close();
+		
+		if( listWriter != null ){
+			listWriter.println(fout.getName());
+			listWriter.flush();
+		}	
+			
 		
 		
 	}
