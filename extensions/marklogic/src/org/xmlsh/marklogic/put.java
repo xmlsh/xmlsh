@@ -1,14 +1,16 @@
 package org.xmlsh.marklogic;
 
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
-import java.math.BigInteger;
+import java.io.Reader;
 import java.rmi.UnexpectedException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -34,7 +36,6 @@ import com.marklogic.xcc.Content;
 import com.marklogic.xcc.ContentCreateOptions;
 import com.marklogic.xcc.ContentFactory;
 import com.marklogic.xcc.ContentPermission;
-import com.marklogic.xcc.ContentSource;
 import com.marklogic.xcc.DocumentRepairLevel;
 import com.marklogic.xcc.ResultSequence;
 import com.marklogic.xcc.Session;
@@ -62,6 +63,43 @@ public class put extends MLCommand {
 		}
 		
 	}
+	
+	private static class StringIterator
+	{
+		private List<String>		mList;
+		private BufferedReader		mReader;
+		private Iterator<String>	mIter;
+	
+		public StringIterator( List<String> list ){
+			mList = list ;
+			mIter = list.iterator();
+		}
+		
+		public StringIterator( Reader reader , boolean bReset ){
+			mReader = new BufferedReader(reader) ;
+			if( bReset )
+				mList = new LinkedList<String>();
+		}
+		 
+		
+		public String	next() throws IOException{
+			if( mReader != null ){
+				String s = mReader.readLine();
+				if( s != null && mList != null )
+					mList.add(s);
+				return s;
+			} else
+				return mIter.hasNext() ? mIter.next() : null ;
+
+		}
+		
+		void	reset(){
+			mIter = mList.iterator();
+		}
+		
+	}
+	
+	
 	
 	
 	private  class PutContent implements Runnable
@@ -108,7 +146,7 @@ public class put extends MLCommand {
 	@Override
 	public int run(List<XValue> args) throws Exception {
 		
-		Options opts = new Options("v=verbose,c=connect:,md5,uri:,baseuri:,m=maxfiles:,r=recurse,d=mkdirs,t=text,b=binary,x=xml,maxthreads:,collection:+,forest:+,perm=permission:+,repair:,buffer:,language:,namespace:,quality:,+resolve,locale:");
+		Options opts = new Options("f=filenames:,v=verbose,c=connect:,md5,uri:,baseuri:,m=maxfiles:,r=recurse,d=mkdirs,t=text,b=binary,x=xml,maxthreads:,collection:+,forest:+,perm=permission:+,repair:,buffer:,language:,namespace:,quality:,+resolve,locale:");
 		opts.parse(args);
 		args = opts.getRemainingArgs();
 		
@@ -131,6 +169,7 @@ public class put extends MLCommand {
 		boolean bText = opts.hasOpt("t");
 		boolean bBinary = opts.hasOpt("b");
 		boolean bXml = opts.hasOpt("x");
+		XValue	 listFileName = opts.getOptValue("filenames");
 		
 
 		/*
@@ -203,8 +242,8 @@ public class put extends MLCommand {
 		mOutput = getEnv().getStderr().asPrintWriter(serializeOpts);
 
 		
-		
-		if( args.size() == 0 || (args.size() == 1 && baseUri.equals("") ) ){
+		// Case with single file to put
+		if( listFileName == null && args.size() == 0 || (args.size() == 1 && baseUri.equals("") ) ){
 			InputPort in = null;
 			if( args.size() > 0 )
 				in = this.getInput(args.get(0));
@@ -225,8 +264,25 @@ public class put extends MLCommand {
 			if(! baseUri.equals("") && ! baseUri.endsWith("/") )
 				baseUri = baseUri + "/";
 
-			if( bMkdirs )
-				createDirectories(args ,baseUri , bRecurse  );
+			
+			// Get list iterator 
+			StringIterator  nameIter = null;
+			InputPort fileInp = null ;
+			if( listFileName != null  )
+				
+				nameIter = new StringIterator( (fileInp=this.getInput(listFileName)).asReader(serializeOpts) , bMkdirs );
+			else {
+				List<String> filenames = new LinkedList<String>();
+			
+				getFiles(filenames , args, "" , bRecurse);
+				nameIter = new StringIterator(filenames);
+			}
+
+			
+			if( bMkdirs ){
+				createDirs(nameIter ,baseUri  );
+				nameIter.reset();
+			}
 			
 			
 			
@@ -236,11 +292,14 @@ public class put extends MLCommand {
 			*/
 			
 	
-				print("Starting thread pool of " + maxThreads + " threads");
-				mPool = Executors.newFixedThreadPool(maxThreads);
+			print("Starting thread pool of " + maxThreads + " threads");
+			mPool = Executors.newFixedThreadPool(maxThreads);
 
-				load( args , baseUri , bRecurse , bMD5 );
-				flushContent();
+			load( nameIter , baseUri ,  bMD5 );
+			flushContent();
+			 
+			if( fileInp != null )
+				fileInp.release();
 
 		
 		}
@@ -315,17 +374,6 @@ public class put extends MLCommand {
 
 
 
-	private void createDirectories(List<XValue> args, String baseUri , boolean bRecurse) throws IOException, RequestException {
-		
-		List<String> dirs = new LinkedList<String>();
-		getFiles( dirs , args , baseUri , bRecurse );
-		if( dirs.isEmpty())
-			return ;
-		
-		createDirs(dirs);
-
-		
-	}
 
 
 	private void getFiles(List<String> result , List<XValue> files, String baseUri , boolean bRecurse) throws IOException {
@@ -333,9 +381,9 @@ public class put extends MLCommand {
 			
 			String fname = v.toString();
 			File file = getFile(fname);
-			
+			String uri = baseUri + file.getName();
 			if( file.isDirectory() ){
-				String uri = baseUri + file.getName();
+
 				result.add(uri + "/");
 			
 				if( bRecurse ){
@@ -346,7 +394,8 @@ public class put extends MLCommand {
 					getFiles( result , sub ,  uri + "/"  , bRecurse  );
 					
 				}
-			}
+			} else 
+				result.add(uri);
 		}
 			
 	}
@@ -434,29 +483,20 @@ public class put extends MLCommand {
 		
 	}
 
-	public void load (List<XValue> files , String baseUri,  boolean bRecurse,  boolean bMD5 ) throws CoreException, IOException
+	public void load (StringIterator nameIter , String baseUri,   boolean bMD5 ) throws CoreException, IOException
 	{
 		
-		for( XValue v : files ){	
+		String fname = null ; 
+		while( ( fname = nameIter.next())!= null ){
 			
-			String fname = v.toString();
+	
 			File file = getFile(fname);
-			String uri = baseUri + file.getName() ;
+			String uri = baseUri + fname ;
 
-			if( file.isDirectory() ){
-				if( ! bRecurse ){
-					print("Skipping directory: " + file.getName() );
-					continue;
-				}
-				List<XValue> sub = new ArrayList<XValue>();
-				for( String fn : file.list() ){
-					sub.add(new XValue(fname + "/" + fn));
-				}
-
-				if( ! sub.isEmpty() )
-					load( sub , uri + "/" , bRecurse ,  bMD5 );
-				continue ;
+			if( file.isDirectory() ){ 
 				
+				print("Skipping directory: " + file.getName() );
+					continue;
 			}
 			Content content= ContentFactory.newContent (uri, file, mCreateOptions);
 			
@@ -537,11 +577,12 @@ public class put extends MLCommand {
 	}
 
 
-	private void createDirs( List<String> dirs ) throws RequestException {
-		printErr("Creating " + dirs.size() + " directories ...");
+	private void createDirs(StringIterator nameIter , String baseURI ) throws RequestException, IOException {
+
 		StringBuffer sReq = new StringBuffer();
-		for( String d : dirs ){
-			String qd =  quote(d);
+		String d ; 
+		while( ( d = nameIter.next()) != null ){
+			String qd =  quote(baseURI + d);
 			
 			sReq.append("if( exists(xdmp:document-properties(" + qd+ ")//prop:directory)) then () else xdmp:directory-create(" +qd + ");\n");
 			
