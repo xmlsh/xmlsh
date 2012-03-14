@@ -6,10 +6,23 @@
 
 package org.xmlsh.aws.util;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.xml.stream.XMLStreamException;
+
+import net.sf.saxon.s9api.SaxonApiException;
+import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
+import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.UnexpectedException;
+import org.xmlsh.core.XValue;
 
 import com.amazonaws.services.elasticloadbalancing.AmazonElasticLoadBalancingClient;
+import com.amazonaws.services.elasticloadbalancing.model.Instance;
+import com.amazonaws.services.elasticloadbalancing.model.RegisterInstancesWithLoadBalancerRequest;
+import com.amazonaws.services.elasticloadbalancing.model.RegisterInstancesWithLoadBalancerResult;
 import com.amazonaws.services.sqs.AmazonSQS;
 
 public abstract class AWSELBCommand extends AWSCommand {
@@ -29,7 +42,17 @@ public abstract class AWSELBCommand extends AWSCommand {
 		
 		);
 	}
-	
+
+	protected List<Instance> instances(List<XValue> args) {
+		List<Instance> li = new ArrayList<Instance>(args.size());
+		for( XValue a : args )
+			li.add( new Instance( a.toString()));
+		return li;
+				
+	}
+
+
+
 
 }
 

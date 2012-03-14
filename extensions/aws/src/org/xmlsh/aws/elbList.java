@@ -20,7 +20,7 @@ import com.amazonaws.services.elasticloadbalancing.model.ListenerDescription;
 import com.amazonaws.services.elasticloadbalancing.model.LoadBalancerDescription;
 
 
-public class elbList<x> extends AWSELBCommand {
+public class elbList	 extends AWSELBCommand {
 
 	
 

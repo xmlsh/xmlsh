@@ -1,7 +1,9 @@
 package org.xmlsh.aws;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.stream.XMLStreamException;
 
@@ -76,7 +78,15 @@ public class sqsCreateQueue extends AWSSQSCommand {
 
 		CreateQueueRequest request = new CreateQueueRequest();
 		request.setQueueName(name);
-		request.setDefaultVisibilityTimeout(timeout);
+		
+		Map<String, String> attributes = new HashMap<String,String>();
+		attributes.put("VisibilityTimeout", String.valueOf(timeout));
+	
+		
+		
+	
+		request.setAttributes(attributes);
+
 		
 		CreateQueueResult result = mAmazon.createQueue(request);
 		
