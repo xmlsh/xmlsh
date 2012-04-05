@@ -21,7 +21,7 @@ return
 }
 EOF
 
-xsplit -l - test.xml 
+xsplit -l test.xml 
 
 cd ..
 rm -rf $TMPDIR/_xmlsh
