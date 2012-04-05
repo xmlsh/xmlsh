@@ -54,12 +54,14 @@ public class put extends MLCommand {
 		String		mURI;
 		Content		mContent ; 
 		Checksum 	mSum; // Optional
+		File		mDeleteFile; // optinal
 		
 		
-		public SumContent( String uri, Content content , Checksum sum) {
+		public SumContent( String uri, Content content , Checksum sum, File deleteFile ) {
 			mURI  = uri ;
 			mContent = content ;
 			mSum = sum;
+			mDeleteFile = deleteFile;
 		}
 		
 	}
@@ -124,29 +126,30 @@ public class put extends MLCommand {
 				mSession.insertContent( contents );
 
 				setChecksums( mSession ,  mContents );
+				
+				for(SumContent sc : mContents)
+					if(sc.mDeleteFile  != null )
+						sc.mDeleteFile.delete();
+				
 			} catch (RequestException e) {
 				printError("Exception submitting data",e);
 			}
 			finally {
 				mSession.close();
-				
-				
 			}
-
-			
-			
 		}
 		
 	}
 	
 	private 	List<SumContent> 	mContents = null;
 	private		int					mMaxFiles = 1;
+	private    boolean		mDelete = false ;
 	
 
 	@Override
 	public int run(List<XValue> args) throws Exception {
 		
-		Options opts = new Options("f=filenames:,v=verbose,c=connect:,md5,uri:,baseuri:,m=maxfiles:,r=recurse,d=mkdirs,t=text,b=binary,x=xml,maxthreads:,collection:+,forest:+,perm=permission:+,repair:,buffer:,language:,namespace:,quality:,+resolve,locale:");
+		Options opts = new Options("f=filenames:,v=verbose,c=connect:,md5,uri:,baseuri:,m=maxfiles:,r=recurse,d=mkdirs,t=text,b=binary,x=xml,maxthreads:,collection:+,forest:+,perm=permission:+,repair:,buffer:,language:,namespace:,quality:,+resolve,locale:,delete");
 		opts.parse(args);
 		args = opts.getRemainingArgs();
 		
@@ -170,6 +173,7 @@ public class put extends MLCommand {
 		boolean bBinary = opts.hasOpt("b");
 		boolean bXml = opts.hasOpt("x");
 		XValue	 listFileName = opts.getOptValue("filenames");
+		mDelete = opts.hasOpt("delete");
 		
 
 		/*
@@ -459,7 +463,7 @@ public class put extends MLCommand {
 				
 				if( bMD5 && sum != null ){
 					List<SumContent> sc = new ArrayList<SumContent>(1);
-					sc.add( new SumContent( uri , content , sum ));
+					sc.add( new SumContent( uri , content , sum ,null));
 					setChecksums( mSession, sc );
 					
 					
@@ -500,7 +504,7 @@ public class put extends MLCommand {
 			}
 			Content content= ContentFactory.newContent (uri, file, mCreateOptions);
 			
-			putContent( uri , content , bMD5 ?Checksum.calcChecksum(file): null );
+			putContent( uri , content , bMD5 ?Checksum.calcChecksum(file): null, mDelete ? file : null  );
 			
 		}
 		
@@ -508,13 +512,13 @@ public class put extends MLCommand {
 	}
 
 
-	private void putContent(String uri, Content content, Checksum checksum) throws  UnexpectedException {
+	private void putContent(String uri, Content content, Checksum checksum, File deleteFile) throws  UnexpectedException {
 		if( mContents == null )
 			mContents = 	new ArrayList<SumContent>( mMaxFiles );
 
 		
 		
-		mContents.add( new SumContent( uri , content , checksum ));
+		mContents.add( new SumContent( uri , content , checksum, deleteFile ));
 		if( mContents.size() >= mMaxFiles )
 			flushContent();
 		
