@@ -11,12 +11,12 @@ import java.util.List;
 
 import javax.xml.transform.Source;
 
+import net.sf.saxon.om.CodedName;
 import net.sf.saxon.om.DocumentInfo;
 import net.sf.saxon.om.Item;
 import net.sf.saxon.om.MutableNodeInfo;
 import net.sf.saxon.om.NamePool;
 import net.sf.saxon.om.NodeInfo;
-import net.sf.saxon.om.StandardNames;
 import net.sf.saxon.om.TreeModel;
 import net.sf.saxon.s9api.Axis;
 import net.sf.saxon.s9api.DocumentBuilder;
@@ -34,15 +34,16 @@ import net.sf.saxon.s9api.XdmSequenceIterator;
 import net.sf.saxon.trans.XPathException;
 import net.sf.saxon.tree.iter.AxisIterator;
 import net.sf.saxon.tree.linked.DocumentImpl;
+import net.sf.saxon.type.BuiltInAtomicType;
 import net.sf.saxon.type.Type;
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Namespaces;
 import org.xmlsh.core.Options;
+import org.xmlsh.core.Options.OptionValue;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
-import org.xmlsh.core.Options.OptionValue;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.Util;
@@ -290,10 +291,12 @@ public class xed extends XCommand {
 
 		NamePool pool = node.getNamePool();
 		int nameCode  = pool.allocate(prefix , uri , local  );
-		node.addAttribute(nameCode,  StandardNames.XS_UNTYPED_ATOMIC, value , 0);
+		
+		CodedName name = new CodedName(nameCode,pool);
+		node.addAttribute(name,  BuiltInAtomicType.UNTYPED_ATOMIC, value , 0);
 		if( !Util.isEmpty(prefix) ){
-			int nsCode = pool.allocateNamespaceCode(prefix,uri);
-			node.addNamespace(nsCode, false);
+			
+			node.addNamespace( name.getNamespaceBinding() , false);
 		}
 	}
 
@@ -331,8 +334,8 @@ public class xed extends XCommand {
 		NamePool pool = node.getNamePool();
 		int newNameCode = pool.allocateClarkName( opt_rename );
 		
-			
-		node.rename( newNameCode );
+		CodedName name = new CodedName(newNameCode,pool);
+		node.rename(  name );
 	
 	}
 

@@ -30,12 +30,7 @@ public class EvalDefinition extends ExtensionFunctionDefinition {
 		
 	}
 
-	@Override
-	public Object getCompilerForJava() {
-		// TODO Auto-generated method stub
-		return super.getCompilerForJava();
-	}
-
+	
 	@Override
 	public StructuredQName getFunctionQName() {
 		return new StructuredQName("xmlsh", kXMLSH_EXT_NAMESPACE , "eval" );

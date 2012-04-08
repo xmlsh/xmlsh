@@ -15,6 +15,7 @@ import javax.xml.stream.XMLStreamWriter;
 import net.sf.saxon.om.Axis;
 import net.sf.saxon.om.Item;
 import net.sf.saxon.om.NamePool;
+import net.sf.saxon.om.NamespaceBinding;
 import net.sf.saxon.om.NodeInfo;
 import net.sf.saxon.s9api.QName;
 import net.sf.saxon.tree.iter.AxisIterator;
@@ -37,12 +38,12 @@ public class StAXUtils {
 			
 			
 			// Get declared namespaces
-			int [] ns = node.getDeclaredNamespaces(null);
-			if( ns != null ){
-				for( int code : ns ){
+			NamespaceBinding[] nsb = node.getDeclaredNamespaces(null);
+			if( nsb != null ){
+				for( NamespaceBinding ns : nsb ){
 					NamePool np = node.getNamePool();
-					String ns_prefix = np.getPrefixFromNamespaceCode(code);
-					String ns_uri = np.getURIFromNamespaceCode(code);
+					String ns_prefix = ns.getPrefix();
+					String ns_uri = ns.getURI();
 					
 					writer.writeNamespace( ns_prefix , ns_uri );
 				}

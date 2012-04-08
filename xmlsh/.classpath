@@ -22,6 +22,10 @@
 	<classpathentry kind="lib" path="lib/trang.jar" sourcepath="C:/java/trang-20091111/src.zip"/>
 	<classpathentry kind="lib" path="lib/tagsoup-1.2.jar" sourcepath="C:/java/tagsoup/tagsoup-1.2-src.zip"/>
 	<classpathentry kind="lib" path="lib/xom-1.2.6.jar"/>
-	<classpathentry kind="lib" path="lib/saxon9he.jar" sourcepath="C:/java/saxonhe9-2-0-3/saxonhe9-2-0-3source.zip"/>
+	<classpathentry kind="lib" path="lib/saxon9he.jar" sourcepath="C:/java/saxon9-4-0-3j/src">
+		<attributes>
+			<attribute name="javadoc_location" value="file:/C:/java/saxon9-4-0-3j/doc/javadoc/"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="_out"/>
 </classpath>

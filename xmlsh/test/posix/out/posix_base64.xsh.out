@@ -1,7 +1,11 @@
 Hello Word
 <xmd5>
-   <file name="binary.dat" md5="8f8f69e1ce8730ac3fb070fdd9336619" length="5831049"/>
+   <file name="binary.dat"
+         md5="f6a7134b8debde6a76a4f037d92d4754"
+         length="9788989"/>
 </xmd5>
 <xmd5>
-   <file name="b2.dat" md5="8f8f69e1ce8730ac3fb070fdd9336619" length="5831049"/>
+   <file name="b2.dat"
+         md5="f6a7134b8debde6a76a4f037d92d4754"
+         length="9788989"/>
 </xmd5>

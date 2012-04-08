@@ -654,8 +654,8 @@ public class Util
 	        
 	        
 	        
-	        ComplexContentOutputter out2 = new ComplexContentOutputter();
-	        out2.setPipelineConfiguration(Shell.getProcessor().getUnderlyingConfiguration().makePipelineConfiguration());
+	        ComplexContentOutputter out2 = new ComplexContentOutputter(Shell.getProcessor().getUnderlyingConfiguration().makePipelineConfiguration());
+	       
 	        out2.setReceiver(out);
 	  
 		    TreeReceiver tree = new TreeReceiver(out2);
