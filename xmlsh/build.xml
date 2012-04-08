@@ -52,8 +52,8 @@ version.version=${version}
     	 	<classpath>
     				<fileset dir="lib">
     	                  	<include name="**/*.jar"/>
-    	                  	<exclude name="**/saxonee.jar"/>
-    	                  	<exclude name="**/saxonpe.jar"/>
+    	                  	<exclude name="**/saxon9ee.jar"/>
+    	                  	<exclude name="**/saxon9pe.jar"/>
     				</fileset>
     				 <fileset dir="build-lib">
     	                  	<include name="**/*.jar"/>
@@ -103,7 +103,7 @@ version.version=${version}
   		<mkdir dir="${dist}"/>
 		<zip destfile="${dist}/xmlsh_${release}.zip" >
 			<zipfileset dir="." includes="bin/${jar} test/** win32/** lib/** samples/** unix/** cygwin/** notices/** license.txt README.txt" 
-					excludes="**/sh_histo lib/saxon-license.lic lib/saxonpe.jar lib/saxonee.jar" prefix="xmlsh_${release}"/>
+					excludes="**/sh_histo lib/saxon-license.lic lib/saxon9pe.jar lib/saxon9ee.jar" prefix="xmlsh_${release}"/>
 			
   		</zip>
 		<zip destfile="${dist}/xmlsh_src_${release}.zip" >
