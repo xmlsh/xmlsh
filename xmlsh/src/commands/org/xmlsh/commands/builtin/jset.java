@@ -19,12 +19,17 @@ public class jset extends BuiltinCommand {
 
 	public int run(List<XValue> args) throws Exception {
 
-		Options opts = new Options("v=variable:,c=classname:,m=method:,o=object:");
+		Options opts = new Options("v=variable:,c=classname:,m=method:,o=object:,f=field:");
 		opts.parse(args);
 
 		String varname = opts.getOptStringRequired("v");
 		String classname = opts.getOptString("c",null);
 		String method = opts.getOptString("m", null);
+		String field = opts.getOptString("f", null);
+	
+		
+		
+			
 		XValue instance = opts.getOptValue("o");
 
 		args = opts.getRemainingArgs();
@@ -32,11 +37,14 @@ public class jset extends BuiltinCommand {
 		ClassLoader classloader = getClassLoader(null);
 
 		XValue obj = null;
-		if (method == null)
-			obj = JavaUtils.newObject(classname, args, classloader);
-		else if (instance == null)
+		if (method == null && field == null )
+			obj = JavaUtils.newObject(classname, args, classloader); 
+		else if (instance == null && field == null)
 			obj = JavaUtils.callStatic(classname, method, args, classloader);
 		else
+	    if( field != null )
+	    	obj = JavaUtils.getField( classname , instance,  field , classloader );
+	    else
 			obj = JavaUtils.callMethod(instance, method, args, classloader);
 
 		mShell.getEnv().setVar(varname, obj, false);
