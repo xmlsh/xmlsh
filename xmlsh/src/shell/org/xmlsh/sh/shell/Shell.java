@@ -1082,8 +1082,7 @@ public class Shell {
 			// mProcessor.setConfigurationProperty(FeatureKeys.TREE_MODEL, net.sf.saxon.event.Builder.LINKED_TREE);
 			mProcessor.registerExtensionFunction(new EvalDefinition() );
 			mProcessor.getUnderlyingConfiguration().setSerializerFactory(new XmlshSerializerFactory(mProcessor.getUnderlyingConfiguration()));
-			
-
+			mProcessor.getUnderlyingConfiguration().setErrorListener( new XmlshErrorListener());
 			
 			
 		}
