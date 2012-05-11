@@ -326,7 +326,7 @@ public class xsql extends XCommand {
 		
 		Properties options = null;
 		
-		Options opts = new Options( "cp=classpath:,pool=pooldriver:,d=driver:,u=user:,p=password:,root:,row:,attr,c=connect:,jdbc=jdbcconnection:,q=query:,o=option:+,insert,update=execute,tableAttr:,fieldAttr:,fetch:,table:,batch:,cache,close,column:+" ,SerializeOpts.getOptionDefs() );
+		Options opts = new Options( "cp=classpath:,pool=pooldriver:,d=driver:,u=user:,p=password:,root:,row:,attr,c=connect:,jdbc=jdbcconnection:,q=query:,o=option:+,insert,update=execute,tableAttr:,fieldAttr:,fetch:,table:,batch:,cache,close,column:+,fetchmin" ,SerializeOpts.getOptionDefs() );
 		opts.parse(args);
 		
 		String root = opts.getOptString("root", "root");
@@ -351,6 +351,10 @@ public class xsql extends XCommand {
 		String fieldAttr = opts.getOptString("fieldAttr",null);
 		XValue jdbc = opts.getOptValue("jdbc");
 		List<XValue> 	columns = opts.getOptValues("column");
+	
+		if( opts.hasOpt("fetchmin"))
+			fetch = String.valueOf( Integer.MIN_VALUE);
+				
 		
 		IDriver dbdriver = null;
 		
