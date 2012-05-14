@@ -25,6 +25,7 @@ import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
+import org.xmlsh.core.UnimplementedException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.marklogic.util.MLCommand;
 import org.xmlsh.sh.shell.SerializeOpts;
@@ -66,38 +67,126 @@ public class put extends MLCommand {
 		
 	}
 	
-	private static class StringIterator
+	private  abstract class  ContentIterator
+	{
+		
+		abstract boolean hasNext() throws IOException;
+		abstract Content next(String baseUri);
+		abstract boolean canReset();
+		abstract void reset() throws UnimplementedException;
+		abstract boolean isDirectory() ;
+		abstract File getFile();
+		abstract String getUri(String baseURI);
+
+	}
+	private  abstract class  ContentFilenameIterator extends ContentIterator
+	{
+		protected File				mFile = null ;
+		private   String			mName = null ;
+		
+		abstract protected String nextName() throws IOException;
+		
+		@Override
+		boolean hasNext() throws IOException {
+			mName = nextName();
+			
+			if( mName == null )
+				mFile = null ;
+			else
+				mFile = getShell().getFile( mName );
+			
+			return mFile != null;
+			
+		}
+		
+		
+		public boolean isDirectory() {
+			return mFile.isDirectory();
+		}
+		@Override
+		String getUri(String baseUri) {
+			// TODO Auto-generated method stub
+			return baseUri +mName;
+		}
+
+		
+		@Override
+		Content next(String baseUri)
+		{ 
+			
+			Content content= ContentFactory.newContent (getUri(baseUri) , mFile , mCreateOptions);
+			return content ;  
+			
+		} 
+		File getFile() { return mFile ; }
+		
+	}
+	
+	
+	
+	
+	private  class ContentListIterator extends ContentFilenameIterator
 	{
 		private List<String>		mList;
-		private BufferedReader		mReader;
 		private Iterator<String>	mIter;
-	
-		public StringIterator( List<String> list ){
+
+		public ContentListIterator( List<String> list ){
 			mList = list ;
 			mIter = list.iterator();
 		}
-		
-		public StringIterator( Reader reader , boolean bReset ){
-			mReader = new BufferedReader(reader) ;
-			if( bReset )
-				mList = new LinkedList<String>();
-		}
-		 
-		
-		public String	next() throws IOException{
-			if( mReader != null ){
-				String s = mReader.readLine();
-				if( s != null && mList != null )
-					mList.add(s);
-				return s;
-			} else
-				return mIter.hasNext() ? mIter.next() : null ;
+		@Override
+		protected String nextName()
+		{
 
+			if( mIter.hasNext() )
+				return mIter.next();
+			else
+				return null ;
+					
 		}
 		
+		
+
+		
+		@Override
+		boolean canReset() { return true ; }
+		
+		@Override
 		void	reset(){
 			mIter = mList.iterator();
 		}
+
+
+
+	}
+	
+	
+	private  class ContentStreamIterator extends ContentFilenameIterator
+	{
+		private BufferedReader		mReader;
+
+		public ContentStreamIterator( Reader reader ){
+			mReader = new BufferedReader(reader) ;
+		}
+		
+		@Override
+		boolean canReset() { return false ; }
+		
+		@Override
+		void	reset() throws UnimplementedException{
+			throw new UnimplementedException("reset not implemented");
+		}
+		
+		@Override		
+		protected String nextName() throws IOException
+		{
+			
+			return  mReader.readLine();
+			
+		}
+		
+		
+		
 		
 	}
 	
@@ -270,22 +359,25 @@ public class put extends MLCommand {
 
 			
 			// Get list iterator 
-			StringIterator  nameIter = null;
+			ContentIterator  contentIter = null;
 			InputPort fileInp = null ;
 			if( listFileName != null  )
 				
-				nameIter = new StringIterator( (fileInp=this.getInput(listFileName)).asReader(serializeOpts) , bMkdirs );
+				contentIter = new ContentStreamIterator( (fileInp=this.getInput(listFileName)).asReader(serializeOpts)  );
 			else {
 				List<String> filenames = new LinkedList<String>();
 			
 				getFiles(filenames , args, "" , bRecurse);
-				nameIter = new StringIterator(filenames);
+				contentIter = new ContentListIterator(filenames);
 			}
 
 			
 			if( bMkdirs ){
-				createDirs(nameIter ,baseUri  );
-				nameIter.reset();
+				if( contentIter.canReset() ){
+					createDirs( contentIter ,baseUri  );
+					contentIter.reset();
+				} else 
+					getShell().printErr("Skipping mkdirs on non rewindable conent source");
 			}
 			
 			
@@ -299,7 +391,7 @@ public class put extends MLCommand {
 			print("Starting thread pool of " + maxThreads + " threads");
 			mPool = Executors.newFixedThreadPool(maxThreads);
 
-			load( nameIter , baseUri ,  bMD5 );
+			load( contentIter , baseUri ,  bMD5 );
 			flushContent();
 			 
 			if( fileInp != null )
@@ -487,24 +579,28 @@ public class put extends MLCommand {
 		
 	}
 
-	public void load (StringIterator nameIter , String baseUri,   boolean bMD5 ) throws CoreException, IOException
+	public void load (ContentIterator contentIter , String baseUri,   boolean bMD5 ) throws CoreException, IOException
 	{
 		
-		String fname = null ; 
-		while( ( fname = nameIter.next())!= null ){
-			
-	
-			File file = getFile(fname);
-			String uri = baseUri + fname ;
 
-			if( file.isDirectory() ){ 
-				
-				print("Skipping directory: " + file.getName() );
+		while( contentIter.hasNext() ){
+			if( contentIter.isDirectory() ){ 
 					continue;
 			}
-			Content content= ContentFactory.newContent (uri, file, mCreateOptions);
 			
-			putContent( uri , content , bMD5 ?Checksum.calcChecksum(file): null, mDelete ? file : null  );
+		    
+			Content content = contentIter.next(baseUri);
+			Checksum cs = null ;
+			if( bMD5 ){
+				if( content.isRewindable() ){
+					cs = Checksum.calcChecksum( content.openDataStream() );
+					content.rewind();
+				} else
+					getShell().getEnv().printErr("Skipping checksum on non rewindable content: " + content.getUri() );
+			}
+			
+			
+			putContent( content.getUri() , content , cs , mDelete ? contentIter.getFile() : null  );
 			
 		}
 		
@@ -581,17 +677,23 @@ public class put extends MLCommand {
 	}
 
 
-	private void createDirs(StringIterator nameIter , String baseURI ) throws RequestException, IOException {
+	private void createDirs(ContentIterator contentIter , String baseURI ) throws RequestException, IOException {
 
 		StringBuffer sReq = new StringBuffer();
-		String d ; 
-		while( ( d = nameIter.next()) != null ){
-			String qd =  quote(baseURI + d);
+		while( contentIter.hasNext() ) {
+		     if( contentIter.isDirectory() ){
 			
-			sReq.append("if( exists(xdmp:document-properties(" + qd+ ")//prop:directory)) then () else xdmp:directory-create(" +qd + ");\n");
+		    	 String uri = contentIter.getUri( baseURI );
+			     String qd =  quote(uri);
 			
+			     sReq.append("if( exists(xdmp:document-properties(" + qd+ ")//prop:directory)) then () else xdmp:directory-create(" +qd + ");\n");
 			
+		     }
 		}
+		if( sReq.length() == 0 )
+			return ;
+		
+		
 		sReq.append("0");
 		
 		// printErr( sReq.toString() );
