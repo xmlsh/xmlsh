@@ -28,6 +28,8 @@ import org.xmlsh.util.Util;
 
 import com.amazonaws.services.ec2.AmazonEC2;
 import com.amazonaws.services.ec2.AmazonEC2Client;
+import com.amazonaws.services.ec2.model.BlockDeviceMapping;
+import com.amazonaws.services.ec2.model.EbsBlockDevice;
 import com.amazonaws.services.ec2.model.EbsInstanceBlockDevice;
 import com.amazonaws.services.ec2.model.Instance;
 import com.amazonaws.services.ec2.model.InstanceBlockDeviceMapping;
@@ -153,19 +155,22 @@ public abstract class AWSEC2Command extends AWSCommand {
 			writePlacement(inst.getPlacement());
 			
 			
-			startElement("devices");
-			for( InstanceBlockDeviceMapping device : inst.getBlockDeviceMappings() ){
-				writeBlockMapping(mWriter, device);
-	
-				
-			}
-			endElement();
+			writeInstanceBlockDeviceMappings(inst.getBlockDeviceMappings());
 			
 			
 			endElement();
 			
 		}
 		
+		endElement();
+	}
+
+
+	public void writeInstanceBlockDeviceMappings(List<InstanceBlockDeviceMapping> mappings) throws XMLStreamException {
+		startElement("devices");
+		for( InstanceBlockDeviceMapping device : mappings ){
+			writeInstanceDeviceMapping( device);	
+		}
 		endElement();
 	}
 
@@ -235,7 +240,7 @@ public abstract class AWSEC2Command extends AWSCommand {
 	}
 
 
-	public void writeBlockMapping(XMLStreamWriter writer, InstanceBlockDeviceMapping device)
+	public void writeInstanceDeviceMapping( InstanceBlockDeviceMapping device)
 			throws XMLStreamException {
 		startElement("device");
 		attribute("name", device.getDeviceName());
@@ -299,6 +304,39 @@ public abstract class AWSEC2Command extends AWSCommand {
 		}
 		return ips;
 		
+		
+	}
+
+
+	protected void writeBlockDeviceMappings(List<BlockDeviceMapping> deviceMappings) throws XMLStreamException {
+		startElement("device_mappings");
+		for( BlockDeviceMapping mapping : deviceMappings )
+			writeBlockDeviceMapping(mapping);
+		endElement();
+		
+	}
+
+
+	private void writeBlockDeviceMapping(BlockDeviceMapping device) throws XMLStreamException {
+		startElement("device");
+		
+		attribute("name", device.getDeviceName());
+		
+		EbsBlockDevice ebs = device.getEbs();
+		
+		attribute( "shapshot_id" , ebs.getSnapshotId() );
+		attribute( "delete_on_termination" , ebs.getDeleteOnTermination());
+		attribute("volume_size" , ebs.getVolumeSize().toString() );
+
+		
+		
+		endElement();
+		
+	}
+
+
+	public void attribute(String localName, boolean flag) throws XMLStreamException {
+		attribute( localName , flag ? "true" : "false" );
 		
 	}
 
