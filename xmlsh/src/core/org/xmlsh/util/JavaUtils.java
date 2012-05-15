@@ -7,6 +7,7 @@
 package org.xmlsh.util;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
@@ -302,6 +303,32 @@ public class JavaUtils {
 			
 		}
 		return value ;
+	}
+
+	public static XValue getField(String classname, XValue instance, String fieldName, ClassLoader classloader) throws InvalidArgumentException, SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException, ClassNotFoundException {
+		Class<?> cls = Class.forName(classname, true, classloader);
+	    Field f = cls.getField(fieldName);
+
+ 
+	    
+
+		if (f == null) 
+			throw new InvalidArgumentException("No field match found for: " + classname + "." + fieldName );
+
+		Object obj = f.get(instance == null ? null : instance.asObject());	
+		// Special case for null - use formal return type to cast to right XValue type
+		if( obj == null ){
+			if( String.class.isAssignableFrom(f.getType()) )
+				return new XValue( (String) null );
+			else
+				return new XValue( (Object) null);
+			
+			
+		}
+			
+		
+		
+		return new XValue(obj);
 	}
 	
 	

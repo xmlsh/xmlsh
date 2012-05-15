@@ -44,6 +44,9 @@ _var=()
 set FOO $_var BAR
 [ $# -eq 2 ] || echo FAIL should be 2 
 
+[ ${#_var} -eq 0 ] || echo FAIL should be 0
+[ ${#notset} -eq 0 ] || echo FAIL should be 0
+
 
 cd ..
 rm -rf $TMPDIR/_varseq

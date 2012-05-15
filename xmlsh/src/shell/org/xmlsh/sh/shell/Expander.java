@@ -878,7 +878,7 @@ class Expander {
 			if( varname.startsWith("#") ) {
 				varname = varname.substring(1);
 				XValue val = mShell.getEnv().getVarValue( varname );
-				int sz = val.asXdmValue().size();
+				int sz = val == null ? 0 : val.asXdmValue().size();
 				return new XValue( sz);
 				
 				
