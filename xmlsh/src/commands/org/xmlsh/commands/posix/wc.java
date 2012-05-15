@@ -115,7 +115,7 @@ public class wc extends XCommand {
 	}
 
 	private int words(String line) {
-		int w = 0; 
+		int w = 1; 
 		for( char c : line.toCharArray() ){
 			if( Character.isWhitespace(c))
 				w++;
