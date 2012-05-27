@@ -189,10 +189,10 @@ public class FileOutputPort extends OutputPort
 	 * @param opts
 	 * @return
 	 * @throws CoreException
-	 * @see org.xmlsh.core.StreamOutputPort#asXdmValueOutputStream(org.xmlsh.sh.shell.SerializeOpts)
+	 * @see org.xmlsh.core.StreamOutputPort#asXdmItemOutputStream(org.xmlsh.sh.shell.SerializeOpts)
 	 */
-	public IXdmValueOutputStream asXdmValueOutputStream(SerializeOpts opts) throws CoreException {
-		return getStreamPort().asXdmValueOutputStream(opts);
+	public IXdmItemOutputStream asXdmItemOutputStream(SerializeOpts opts) throws CoreException {
+		return getStreamPort().asXdmItemOutputStream(opts);
 	}
 	/**
 	 * @param opts

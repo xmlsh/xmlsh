@@ -6,38 +6,57 @@
 
 package org.xmlsh.core;
 
-import net.sf.saxon.s9api.Destination;
-import net.sf.saxon.s9api.SaxonApiException;
+import net.sf.saxon.om.Item;
 import net.sf.saxon.s9api.XdmItem;
-import org.xmlsh.util.Util;
+import net.sf.saxon.s9api.XdmSequenceIterator;
+import net.sf.saxon.s9api.XdmValue;
+import org.xmlsh.sh.shell.SerializeOpts;
 
-class DestinationXdmValueOutputStream extends AbstractXdmItemOutputStream
-{
-	Destination 	mDest;
+public class ValueXdmItemInputStream implements IXdmItemInputStream {
+
+	private		XdmSequenceIterator 	mIter ;
 	
 	
-	DestinationXdmValueOutputStream( Destination dest ) throws CoreException
-	{
-		mDest = dest ;
+	
+	public ValueXdmItemInputStream(XValue value, SerializeOpts serializeOpts) {
+		if( value == null )
+			mIter = null ;
+		else 	
+			mIter = value.asXdmSequenceIterator();
+		
 		
 	}
+
 	
+	public ValueXdmItemInputStream(XdmValue value, SerializeOpts serializeOpts) {
+		if( value == null )
+			mIter = null ;
+		else 	
+			mIter = value.iterator();
+		
+		
+	}
 	
 	@Override
-	public void write(XdmItem item) throws CoreException {
-		try {
-			Util.writeXdmItem(item , mDest);
-		} catch (SaxonApiException e) {
-			throw new CoreException("Exception writing XdmItem to output",e);
-		}
+	public XdmItem read() throws CoreException {
+		if( mIter == null )
+			return null ;
+		
+		if( mIter.hasNext() )
+			return mIter.next();
+		else
+			return null ;
+		
 		
 	}
+
 }
 
 
+
 //
 //
-//Copyright (C) 2008,2009,2010,2011,2012 David A. Lee.
+//Copyright (C) 2008,2009,2010,2011 David A. Lee.
 //
 //The contents of this file are subject to the "Simplified BSD License" (the "License");
 //you may not use this file except in compliance with the License. You may obtain a copy of the

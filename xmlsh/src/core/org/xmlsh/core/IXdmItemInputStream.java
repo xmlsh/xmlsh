@@ -6,38 +6,18 @@
 
 package org.xmlsh.core;
 
-import net.sf.saxon.s9api.Destination;
-import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XdmItem;
-import org.xmlsh.util.Util;
 
-class DestinationXdmValueOutputStream extends AbstractXdmItemOutputStream
-{
-	Destination 	mDest;
-	
-	
-	DestinationXdmValueOutputStream( Destination dest ) throws CoreException
-	{
-		mDest = dest ;
-		
-	}
-	
-	
-	@Override
-	public void write(XdmItem item) throws CoreException {
-		try {
-			Util.writeXdmItem(item , mDest);
-		} catch (SaxonApiException e) {
-			throw new CoreException("Exception writing XdmItem to output",e);
-		}
-		
-	}
+public interface IXdmItemInputStream {
+
+	XdmItem	read() throws CoreException;
 }
 
 
+
 //
 //
-//Copyright (C) 2008,2009,2010,2011,2012 David A. Lee.
+//Copyright (C) 2008,2009,2010,2011 David A. Lee.
 //
 //The contents of this file are subject to the "Simplified BSD License" (the "License");
 //you may not use this file except in compliance with the License. You may obtain a copy of the

@@ -634,13 +634,20 @@ public class Util
 	}
 
 
-	public static void writeXdmValue(XdmValue value, Destination destination) throws SaxonApiException {
+	public static void writeXdmValue(XdmValue value, Destination destination) throws SaxonApiException 
+    {
+        for (Iterator<XdmItem> it = value.iterator(); it.hasNext();) {
+            XdmItem item = it.next();
+            writeXdmItem(item, destination );
+        }
+	}
+	public static void writeXdmItem(XdmItem item, Destination destination) throws SaxonApiException {
 	    try {
 	    	
-	    	if( value instanceof XdmNode ){
-				XdmNode node = (XdmNode) value ;
+	    	if( item instanceof XdmNode ){
+				XdmNode node = (XdmNode) item ;
 				if( node.getNodeKind() == XdmNodeKind.ATTRIBUTE )
-					value = new XdmAtomicValue( node.getStringValue());
+					item = new XdmAtomicValue( node.getStringValue());
 				
 			}
 	    	
@@ -661,10 +668,8 @@ public class Util
 		    TreeReceiver tree = new TreeReceiver(out2);
 	        tree.open();
 	        tree.startDocument(0);
-	        for (Iterator<XdmItem> it = value.iterator(); it.hasNext();) {
-	            XdmItem item = it.next();
-	            tree.append((Item)item.getUnderlyingValue(), 0, NodeInfo.LOCAL_NAMESPACES ); // NodeInfo.NO_NAMESPACES);//NodeInfo.ALL_NAMESPACES);
-	        }
+	        tree.append((Item)item.getUnderlyingValue(), 0, NodeInfo.LOCAL_NAMESPACES ); // NodeInfo.NO_NAMESPACES);//NodeInfo.ALL_NAMESPACES);
+	        
 	        tree.endDocument();
 	        tree.close();
 	      

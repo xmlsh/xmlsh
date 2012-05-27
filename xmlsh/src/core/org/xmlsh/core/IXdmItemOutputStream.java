@@ -6,17 +6,19 @@
 
 package org.xmlsh.core;
 
+import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmValue;
 
 /**
- * IXdmItemOutputStream is a interface which accepts XdmItems as individual objects
+ * IXdmItemOutputStream is a interface which accepts XdmValues as individual objects
  * @author David A. Lee
  */
 
-public interface IXdmValueOutputStream 
+public interface IXdmItemOutputStream 
 {
 	
 	void	write( XdmValue value ) throws CoreException;
+	void	write( XdmItem item ) throws CoreException;
 	
 }
 

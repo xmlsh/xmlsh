@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.util.List;
 
 import org.xmlsh.core.CoreException;
-import org.xmlsh.core.IXdmValueOutputStream;
+import org.xmlsh.core.IXdmItemOutputStream;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
@@ -86,7 +86,7 @@ public class httpsession extends XCommand {
 		if( value instanceof XValue )
 		{
 			XValue xv = (XValue) value ;
-			IXdmValueOutputStream dest =  getStdout().asXdmValueOutputStream(serializeOpts);
+			IXdmItemOutputStream dest =  getStdout().asXdmItemOutputStream(serializeOpts);
 
 			dest.write(xv.asXdmValue());
 			

@@ -480,6 +480,17 @@ public class XValue {
 		return asXdmNode().getUnderlyingNode();
 	}
 	
+	public XdmSequenceIterator asXdmSequenceIterator()
+	{
+		XdmValue value = asXdmValue();
+		if( value == null )
+			return null ;
+		
+		return value.iterator();		
+	}
+	
+	
+	
 	public SequenceIterator asSequenceIterator()
 	{
 		XdmValue value = asXdmValue();
@@ -698,6 +709,13 @@ public class XValue {
 		String uri = shell.getEnv().getNamespaces().get(pair.getLeft());
 		return new QName( pair.getLeft() , uri , pair.getRight() );
 		
+		
+		
+	}
+
+	public boolean isXdmNode() {
+		XdmValue value = asXdmValue();
+		return value != null && value instanceof XdmNode ;
 		
 		
 	}

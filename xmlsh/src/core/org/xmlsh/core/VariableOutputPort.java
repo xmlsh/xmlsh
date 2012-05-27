@@ -49,15 +49,16 @@ public class VariableOutputPort extends OutputPort
 	private		boolean		mAsText = false ;
 	
 	
-	private class VariableXdmValueOutputStream implements IXdmValueOutputStream
+	private class VariableXdmItemOutputStream extends AbstractXdmItemOutputStream 
 	{
 		
 		@Override
-		public void write(XdmValue value) throws CoreException {
-			for( XdmItem it : value )
-				appendVar(it);
+		public void write(XdmItem item) throws CoreException {
+			
+				appendVar(item);
 			
 		}
+
 	}
 	
 	
@@ -262,9 +263,9 @@ public class VariableOutputPort extends OutputPort
 	}
 
 	
-	public	IXdmValueOutputStream	asXdmValueOutputStream(SerializeOpts opts) throws CoreException
+	public	IXdmItemOutputStream	asXdmItemOutputStream(SerializeOpts opts) throws CoreException
 	{
-		return new VariableXdmValueOutputStream(  );
+		return new VariableXdmItemOutputStream(  );
 	}
 
 
@@ -287,7 +288,7 @@ public class VariableOutputPort extends OutputPort
        
 		
 	}
-	
+
 	
 }
 

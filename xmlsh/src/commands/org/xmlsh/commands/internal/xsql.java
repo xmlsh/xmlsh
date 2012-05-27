@@ -74,6 +74,7 @@ public class xsql extends XCommand {
 		    }
 		    
 		  }
+		 abstract void close() throws Exception ; 
 
 	}
 	
@@ -105,8 +106,13 @@ public class xsql extends XCommand {
 		Connection	getConnection() throws Exception 
 		{
 					
-			if( mConnection != null )
-				return mConnection ;
+			if( mConnection != null ){
+				if( mConnection.isClosed() )
+				   mConnection = null ;
+				else
+			
+				   return mConnection ;
+			}
 
 		    java.util.Properties info = new java.util.Properties();
 		    if( mOptions != null )
@@ -134,10 +140,26 @@ public class xsql extends XCommand {
 		public void releaseConnection(Connection c ) throws Exception  
 		{
 			try {
+				
 				if( mConnection == c )
 					mConnection = null ;
 				
 				c.close();
+				
+				
+			} 
+			finally {} 
+			
+		}
+		 
+		 
+		@Override
+		public void close() throws Exception  
+		{
+			try {
+				if( mConnection != null )
+					releaseConnection(mConnection);
+
 				
 				
 				// Doesnt seem to do much good 
@@ -148,6 +170,7 @@ public class xsql extends XCommand {
 			finally {} 
 			
 		}
+		 
 		  
 	}
 
@@ -186,6 +209,15 @@ public class xsql extends XCommand {
 			
 		}
 		
+		@Override
+		public void close() throws Exception {
+			Method method = mClass.getMethod("close", Connection.class );
+			if( method != null )
+				method.invoke(null);
+			
+			
+		}
+		
 	}
 	
 	private static class DirectDriver extends IDriver
@@ -211,6 +243,11 @@ public class xsql extends XCommand {
 
 		@Override
 		public void releaseConnection(Connection c) throws Exception {
+			
+			
+		}
+		@Override
+		public void close() throws Exception {
 			
 			
 		}
@@ -301,7 +338,8 @@ public class xsql extends XCommand {
 	                PreparedStatement pStmt = iter.next();
 	               
 	                
-	                int[] sizes = pStmt.executeBatch();
+	                @SuppressWarnings("unused")
+					int[] sizes = pStmt.executeBatch();
 	                pStmt.clearBatch();
 	                
 	            }
@@ -326,7 +364,7 @@ public class xsql extends XCommand {
 		
 		Properties options = null;
 		
-		Options opts = new Options( "cp=classpath:,pool=pooldriver:,d=driver:,u=user:,p=password:,root:,row:,attr,c=connect:,jdbc=jdbcconnection:,q=query:,o=option:+,insert,update=execute,tableAttr:,fieldAttr:,fetch:,table:,batch:,cache,close,column:+,fetchmin" ,SerializeOpts.getOptionDefs() );
+		Options opts = new Options( "cp=classpath:,pool=pooldriver:,d=driver:,u=user:,p=password:,root:,row:,attr,c=connect:,jdbc=jdbcconnection:,q=query:,o=option:+,insert,update=execute,tableAttr:,fieldAttr:,fetch:,table:,batch:,cache,close,release,column:+,fetchmin" ,SerializeOpts.getOptionDefs() );
 		opts.parse(args);
 		
 		String root = opts.getOptString("root", "root");
@@ -342,6 +380,7 @@ public class xsql extends XCommand {
 		boolean bUpdate = opts.hasOpt("update");
 		boolean	 bCache	 = opts.hasOpt("cache");
 		boolean bClose	 = opts.hasOpt("close");
+		boolean bRelease = opts.hasOpt("release");
 		
 		String tableAttr = opts.getOptString("tableAttr", null);
 		String fetch = opts.getOptString("fetch", null );
@@ -456,7 +495,7 @@ public class xsql extends XCommand {
 					runQuery(conn,  getSerializeOpts(opts), root, row, query, bAttr , fetch );
 		}
 		finally {
-			if( ! bCache || bClose )
+			if( bRelease || ! bCache || bClose )
 				dbdriver.releaseConnection(conn);
 			if( bClose )
 				mDriverCache.set(null);
@@ -490,11 +529,6 @@ public class xsql extends XCommand {
 		
 		writer.writeStartDocument();		
 		writer.writeStartElement("results");
-
-		
-		
-		int nbatch = 0;
-
 
 		conn.setAutoCommit(false );
 		StatementCache batchCache = new StatementCache( conn );
@@ -697,7 +731,7 @@ public class xsql extends XCommand {
 		
 		Map<String,String> namevalues = new HashMap<String,String>();
 		if( bAttr ){
-			Iterator iter = rowElement.getAttributes();
+			Iterator<?> iter = rowElement.getAttributes();
 			while( iter.hasNext() ){
 				Attribute attr = (Attribute) iter.next();
 				namevalues.put( attr.getName().getLocalPart() , attr.getValue() );

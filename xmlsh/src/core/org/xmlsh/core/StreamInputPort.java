@@ -146,6 +146,8 @@ public class StreamInputPort extends InputPort {
 		return asXdmNode(serializeOpts);
 	}
 
+
+
 }
 
 //

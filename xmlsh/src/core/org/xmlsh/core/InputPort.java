@@ -69,7 +69,12 @@ public abstract class InputPort  extends IPort
 		return new InputStreamReader( asInputStream(serializeOpts) , serializeOpts.getInputTextEncoding()); 
 	}
 	
-	
+	// Default implementation uses a singleton as the input stream
+	public IXdmItemInputStream asXdmItemInputStream(SerializeOpts serializeOpts)
+			throws CoreException {
+		
+		return new ValueXdmItemInputStream( asXdmItem( serializeOpts),serializeOpts);
+	}
 }
 
 

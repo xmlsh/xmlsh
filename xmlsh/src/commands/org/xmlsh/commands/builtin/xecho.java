@@ -13,7 +13,7 @@ import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XdmNodeKind;
 import net.sf.saxon.s9api.XdmValue;
 import org.xmlsh.core.BuiltinCommand;
-import org.xmlsh.core.IXdmValueOutputStream;
+import org.xmlsh.core.IXdmItemOutputStream;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
@@ -44,7 +44,7 @@ public class xecho extends BuiltinCommand {
 		
 		
 		SerializeOpts serializeOpts = mShell.getSerializeOpts(opts);
-		IXdmValueOutputStream dest =  stdout.asXdmValueOutputStream(serializeOpts);
+		IXdmItemOutputStream dest =  stdout.asXdmItemOutputStream(serializeOpts);
 
 		args = Util.expandSequences(args);
 		

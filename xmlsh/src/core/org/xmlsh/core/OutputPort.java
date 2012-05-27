@@ -69,7 +69,7 @@ public abstract class OutputPort extends IPort
 	public abstract XMLStreamWriter asXMLStreamWriter(SerializeOpts opts) throws InvalidArgumentException, XMLStreamException, SaxonApiException;
 	public abstract XMLEventWriter asXMLEventWriter(SerializeOpts opts) throws InvalidArgumentException, XMLStreamException, SaxonApiException;
 	
-	public abstract	IXdmValueOutputStream	asXdmValueOutputStream(SerializeOpts opts) throws CoreException;
+	public abstract	IXdmItemOutputStream	asXdmItemOutputStream(SerializeOpts opts) throws CoreException;
 	
 	public abstract	ContentHandler			asContentHandler( SerializeOpts opts) throws XPathException, SaxonApiException;
 	

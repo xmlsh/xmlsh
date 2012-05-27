@@ -21,7 +21,7 @@ import net.sf.saxon.s9api.XdmAtomicValue;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
 import org.xmlsh.core.CoreException;
-import org.xmlsh.core.IXdmValueOutputStream;
+import org.xmlsh.core.IXdmItemOutputStream;
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.Namespaces;
 import org.xmlsh.core.Options;
@@ -159,7 +159,7 @@ public class xpath extends XCommand {
 			} else {
 
 				OutputPort stdout = getStdout();
-				IXdmValueOutputStream ser = stdout.asXdmValueOutputStream(serializeOpts);
+				IXdmItemOutputStream ser = stdout.asXdmItemOutputStream(serializeOpts);
 				boolean bAnyOutput = false;
 				boolean bFirst = true;
 

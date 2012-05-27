@@ -16,7 +16,7 @@ import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XdmValue;
 import org.xmlsh.core.CoreException;
-import org.xmlsh.core.IXdmValueOutputStream;
+import org.xmlsh.core.IXdmItemOutputStream;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
@@ -106,7 +106,7 @@ public class xgetopts extends XCommand {
 			 * Use a sequence capibile output stream
 			 */
 			OutputPort stdout = getStdout();
-			IXdmValueOutputStream out = stdout.asXdmValueOutputStream( serializeOpts );
+			IXdmItemOutputStream out = stdout.asXdmItemOutputStream( serializeOpts );
 			
 			Options pass_opts = new Options( passthrough ,bPassSerialize ? SerializeOpts.getOptionDefs() : null );
 			List<OptionDef> pass_optdefs = pass_opts.getOptDefs();
@@ -130,7 +130,7 @@ public class xgetopts extends XCommand {
 		return bArgIndex ? arg_index : 0 ;
 	}
 
-	private void writeOption(OutputPort stdout, SerializeOpts serializeOpts, IXdmValueOutputStream out, OptionValue value) throws CoreException, IOException, SaxonApiException {
+	private void writeOption(OutputPort stdout, SerializeOpts serializeOpts, IXdmItemOutputStream out, OptionValue value) throws CoreException, IOException, SaxonApiException {
 		XdmValue argFlag = (new XValue((value.getFlag() ? "-" : "+") + value.getOptionDef().name)).asXdmValue();
 		
 

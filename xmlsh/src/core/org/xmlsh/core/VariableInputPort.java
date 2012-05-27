@@ -40,6 +40,8 @@ import org.xmlsh.util.Util;
 public class VariableInputPort extends InputPort {
 
 	private XVariable mVariable;
+	
+
 
 	/*
 	 * Standard input stream - created on first request
@@ -47,7 +49,7 @@ public class VariableInputPort extends InputPort {
 
 	public VariableInputPort(XVariable value) throws InvalidArgumentException {
 		mVariable = value;
-		if( ! value.getValue().isAtomic() )
+		if( value.getValue().isXdmNode()  )
 			this.setSystemId( value.getValue().asXdmNode().getBaseURI().toString() );
 	}
 
@@ -56,7 +58,7 @@ public class VariableInputPort extends InputPort {
 		ByteArrayOutputStream buf = new ByteArrayOutputStream();
 		try {
 			if (mVariable.getValue().isXExpr())
-				Util.writeXdmValue(mVariable.getValue().asXdmNode(), Util
+				Util.writeXdmValue(mVariable.getValue().asXdmValue(null), Util
 						.streamToDestination(buf, opts)); // uses output xml encoding
 			else
 				buf.write(mVariable.getValue().toBytes(opts.getOutputXmlEncoding())); // Use output encoding
@@ -230,6 +232,12 @@ public class VariableInputPort extends InputPort {
 
 		
 
+	}
+
+	@Override
+	public IXdmItemInputStream asXdmItemInputStream(SerializeOpts serializeOpts)
+			throws CoreException {
+		return new ValueXdmItemInputStream( mVariable.getValue() , serializeOpts );
 	}
 
 }
