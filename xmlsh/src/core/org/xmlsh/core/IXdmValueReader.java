@@ -6,7 +6,7 @@
 
 package org.xmlsh.core;
 
-public interface IXdmValueReader {
+public interface IXdmValueReader extends IXdmItemInputStream {
 
 }
 

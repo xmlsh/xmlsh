@@ -14,6 +14,7 @@ import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.sh.shell.ShellThread;
 import org.xmlsh.util.PipedPort;
 import org.xmlsh.util.PipedStreamPort;
+import org.xmlsh.util.PipedXDMPort;
 import org.xmlsh.util.PipedXMLPort;
 
 public class Pipeline extends Command {
@@ -85,7 +86,9 @@ public class Pipeline extends Command {
 			if( ! shell.getOpts().mXPipe )
 				pipes = PipedStreamPort.getPipes(ncmds-1);
 			else
-				pipes= PipedXMLPort.getPipes(ncmds-1,shell.getSerializeOpts());
+				
+				//pipes= PipedXMLPort.getPipes(ncmds-1,shell.getSerializeOpts());
+				pipes= PipedXDMPort.getPipes(ncmds-1,shell.getSerializeOpts());
 		}
 		
 		/*

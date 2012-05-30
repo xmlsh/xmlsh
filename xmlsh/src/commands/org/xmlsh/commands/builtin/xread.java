@@ -8,8 +8,9 @@ package org.xmlsh.commands.builtin;
 
 import java.util.List;
 
-import net.sf.saxon.s9api.XdmNode;
+import net.sf.saxon.s9api.XdmItem;
 import org.xmlsh.core.BuiltinCommand;
+import org.xmlsh.core.IXdmItemInputStream;
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
@@ -30,11 +31,15 @@ public class xread extends BuiltinCommand {
 		mShell.getEnv().unsetVar(args.get(0).toString());
 
 		InputPort stdin = mShell.getEnv().getStdin();
-		XdmNode node = stdin.asXdmNode(getSerializeOpts());
-		mShell.getEnv().setVar(args.get(0).toString(), new XValue(node),false);
+		IXdmItemInputStream is = stdin.asXdmItemInputStream(getSerializeOpts());
+		XdmItem item = is.read();
+		if( item != null )
+			
+			mShell.getEnv().setVar(args.get(0).toString(), new XValue(item),false);
+		stdin.release();
 
 
-		return 0;
+		return item == null ? 1 : 0 ;
 	}
 }
 

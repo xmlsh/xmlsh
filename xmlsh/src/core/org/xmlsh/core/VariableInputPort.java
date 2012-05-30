@@ -111,7 +111,7 @@ public class VariableInputPort extends InputPort {
 	public void copyTo(OutputStream out, SerializeOpts opts) throws CoreException , IOException {
 		if (mVariable.getValue().isXExpr())
 			try {
-				Util.writeXdmValue(mVariable.getValue().asXdmNode(), Util
+				Util.writeXdmValue(mVariable.getValue().asXdmValue(), Util
 						.streamToDestination(out, opts));
 			} catch (SaxonApiException e) {
 				throw new CoreException(e);

@@ -95,7 +95,8 @@ public class VariableOutputPort extends OutputPort
 	/*
 	 * Standard input stream - created on first request
 	 */
-	
+
+	@Override
 	public	synchronized OutputStream asOutputStream(	SerializeOpts serializeOpts  )
 	{
 		mAsText = true ;
@@ -106,6 +107,7 @@ public class VariableOutputPort extends OutputPort
 		return ( mByteArrayOutputStream = new ByteArrayOutputStream()); 	// BOS is synchroized 
 	}
 
+	@Override
 	public synchronized void flush() throws  CoreException, SaxonApiException
 	{
 			
@@ -134,7 +136,8 @@ public class VariableOutputPort extends OutputPort
 	}
 	
 	
-	
+
+	@Override
 	public synchronized void close() throws CoreException {
 		
 		
@@ -142,13 +145,15 @@ public class VariableOutputPort extends OutputPort
 	}
 
 
-	
+
+	@Override
 	public synchronized PrintStream asPrintStream(SerializeOpts opts)
 	{
 		mAsText = true ;
 		return new PrintStream(asOutputStream(opts));
 	}
 
+	@Override
 	public synchronized Destination asDestination(SerializeOpts opts) throws InvalidArgumentException
 	{
 			// mVariable.clear();
@@ -228,6 +233,7 @@ public class VariableOutputPort extends OutputPort
 		
 	}
 
+	@Override
 	public void writeSequenceTerminator(SerializeOpts opts) throws IOException {
 		
 	}

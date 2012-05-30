@@ -61,8 +61,8 @@ public abstract class OutputPort extends IPort
 
 	
 	// These 2 shouldnt really go on the port 
-	public abstract void writeSequenceSeperator(SerializeOpts serializeOpts) throws IOException, InvalidArgumentException, SaxonApiException;
-	public abstract void writeSequenceTerminator(SerializeOpts serializeOpts) throws IOException ;
+	public abstract void writeSequenceSeperator(SerializeOpts serializeOpts) throws IOException, InvalidArgumentException, CoreException, SaxonApiException;
+	public abstract void writeSequenceTerminator(SerializeOpts serializeOpts) throws IOException, CoreException, SaxonApiException ;
 
 	
 	

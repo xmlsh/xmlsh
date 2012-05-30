@@ -10,12 +10,16 @@ package org.xmlsh.core;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.NoSuchElementException;
+
+import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmValue;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 
 
 
-public class XdmValuePipe {
+public class XdmItemPipe {
 
 	/** 
 	 * Default maximum number of events that may be stored by this pipe until
@@ -24,7 +28,7 @@ public class XdmValuePipe {
 	public static final int QUEUE_CAPACITY = 16;
 
 	/** List of events ready to be read. */
-	private List<XdmValue> eventQueue = new LinkedList<XdmValue>();
+	private List<XdmItem> eventQueue = new LinkedList<XdmItem>();
 
 	/** The maximum capacity of the queue, after which the pipe should block. */
 	private int capacity = QUEUE_CAPACITY;
@@ -39,18 +43,18 @@ public class XdmValuePipe {
 	 * The read end of the pipe. This will be <code>null</code> until
 	 * {@link #getReadEnd()} is called for the first time.
 	 */
-	private PipedXdmValueReader readEnd = new PipedXdmValueReader(this);
+	private PipedXdmItemReader readEnd = new PipedXdmItemReader(this);
 
 	/** 
 	 * The write end of the pipe. This will be <code>null</code> until
 	 * {@link #getWriteEnd()} is called for the first time.
 	 */
-	private PipedXdmValueWriter writeEnd = new PipedXdmValueWriter(this);
+	private PipedXdmItemWriter writeEnd = new PipedXdmItemWriter(this);
 
 	/**
 	 * Constructs a new XdmValuePipe with the default capacity.
 	 */
-	public XdmValuePipe() {
+	public XdmItemPipe() {
 	}
 
 	/**
@@ -60,7 +64,7 @@ public class XdmValuePipe {
 	 * 		A number less than or equal to 0 means the pipe will buffer an
 	 * 		unbounded number of events.
 	 */
-	public XdmValuePipe(int capacity) {
+	public XdmItemPipe(int capacity) {
 
 		this.capacity = capacity;
 
@@ -76,7 +80,7 @@ public class XdmValuePipe {
 
 		if (readEnd == null) {
 
-			readEnd = new PipedXdmValueReader(this);
+			readEnd = new PipedXdmItemReader(this);
 
 		}
 
@@ -94,7 +98,7 @@ public class XdmValuePipe {
 
 		if (writeEnd == null) {
 
-			writeEnd = new PipedXdmValueWriter(this);
+			writeEnd = new PipedXdmItemWriter(this);
 
 		}
 
@@ -109,13 +113,13 @@ public class XdmValuePipe {
 	 * @author christian
 	 * @version $Revision: 1.2 $
 	 */
-	private static final class PipedXdmValueWriter implements IXdmValueWriter {
+	private static final class PipedXdmItemWriter implements IXdmValueWriter {
 
 		/** The pipe we're connected to. */
-		private XdmValuePipe pipe;
+		private XdmItemPipe pipe;
 		private boolean closed = false ;
 
-		public PipedXdmValueWriter(XdmValuePipe pipe) {
+		public PipedXdmItemWriter(XdmItemPipe pipe) {
 
 			this.pipe = pipe;
 
@@ -139,7 +143,7 @@ public class XdmValuePipe {
 
 		}
 
-		protected void put(XdmValue value) throws UnexpectedException {
+		protected void put(XdmItem item) throws UnexpectedException {
 
 
 			if (closed) {
@@ -175,7 +179,7 @@ public class XdmValuePipe {
 
 				}
 
-				pipe.eventQueue.add(value);
+				pipe.eventQueue.add(item);
 				if (pipe.eventQueue.size() == 1) {
 
 					pipe.notifyAll();
@@ -187,22 +191,37 @@ public class XdmValuePipe {
 
 		}
 
+		@Override
+		public void write(XdmItem item) throws CoreException {
+			put(item);
+			
+		}
+
+		@Override
+		public void write(XdmValue value) throws CoreException {
+			for( XdmItem item : value )
+				put(item);
+			
+		}
+
 	}
 
 
-	private static final class PipedXdmValueReader implements IXdmValueReader {
+	private static final class PipedXdmItemReader implements IXdmValueReader {
+
+		private static Logger mLogger = LogManager.getLogger( PipedXdmItemReader.class );
 
 		/** THe pipe this stream is connected to. */
-		private XdmValuePipe pipe;
+		private XdmItemPipe pipe;
 		private boolean closed = false ;
 		
-		public PipedXdmValueReader(XdmValuePipe pipe) {
+		public PipedXdmItemReader(XdmItemPipe pipe) {
 
 			this.pipe = pipe;
 
 		}
 
-		public synchronized XdmValue nextValue() throws UnexpectedException  {
+		public synchronized XdmItem nextItem()   {
 
 
 			synchronized (pipe) {
@@ -211,7 +230,7 @@ public class XdmValuePipe {
 
 					if (pipe.writeEndClosed) {
 
-						throw new UnexpectedException("Stream has completed");
+						return null ;
 
 					}
 
@@ -221,7 +240,7 @@ public class XdmValuePipe {
 
 					} catch (InterruptedException e) {
 
-						e.printStackTrace();
+						mLogger.error("Interrupted exception in pipe" , e );
 
 					}
 
@@ -232,13 +251,13 @@ public class XdmValuePipe {
 						&& pipe.eventQueue.size() >= pipe.capacity;
 
 				// remove next event from the queue
-				XdmValue value = (XdmValue) pipe.eventQueue.remove(0);
+				XdmItem item = pipe.eventQueue.remove(0);
 				if (notify) {
 
 					pipe.notifyAll();
 
 				}
-				return value;
+				return item;
 
 			}
 
@@ -301,6 +320,7 @@ public class XdmValuePipe {
 						pipe.wait();
 
 					} catch (InterruptedException e) {
+						mLogger.error("Interrupted exception in pipe" , e );
 					}
 
 				}
@@ -343,6 +363,11 @@ public class XdmValuePipe {
 				closed = true ;
 			}
 
+		}
+
+		@Override
+		public XdmItem read() throws CoreException {
+			return nextItem();
 		}
 
 	}

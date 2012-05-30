@@ -842,8 +842,7 @@ public class xsql extends XCommand {
 
 
 	private void runQuery(Connection conn,SerializeOpts serializeOpts, String root, String row, String query,
-			boolean bAttr, String fetch) throws SQLException, IOException, InvalidArgumentException,
-			XMLStreamException, SaxonApiException {
+			boolean bAttr, String fetch) throws SQLException, IOException, XMLStreamException, SaxonApiException, CoreException {
 		Statement pStmt  = null ;
 		ResultSet rs = null ;
 		try {
@@ -895,8 +894,7 @@ public class xsql extends XCommand {
 
 
 	private void runUpdate(Connection conn,SerializeOpts serializeOpts, String root, String row, String query,
-			boolean bAttr, int batch) throws SQLException, IOException, InvalidArgumentException,
-			XMLStreamException, SaxonApiException {
+			boolean bAttr, int batch) throws SQLException, IOException, XMLStreamException, SaxonApiException, CoreException {
 		Statement pStmt  = null ;
 
 		try {
