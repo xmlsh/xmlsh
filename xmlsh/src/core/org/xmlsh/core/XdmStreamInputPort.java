@@ -36,9 +36,9 @@ import org.xmlsh.util.Util;
 public class XdmStreamInputPort extends InputPort {
 
 	
-	IXdmValueReader  mReader;
+	IXdmItemReader  mReader;
 
-	public XdmStreamInputPort(IXdmValueReader reader, SerializeOpts opts) {
+	public XdmStreamInputPort(IXdmItemReader reader, SerializeOpts opts) {
 		mReader = reader ;
 	}
 

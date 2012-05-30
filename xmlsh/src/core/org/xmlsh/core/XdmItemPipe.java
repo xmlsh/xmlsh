@@ -76,7 +76,7 @@ public class XdmItemPipe {
 	 * 
 	 * @return The read end of the pipe.
 	 */
-	public synchronized IXdmValueReader getReadEnd() {
+	public synchronized IXdmItemReader getReadEnd() {
 
 		if (readEnd == null) {
 
@@ -94,7 +94,7 @@ public class XdmItemPipe {
 	 * 
 	 * @return The write end of the pipe.
 	 */
-	public synchronized IXdmValueWriter getWriteEnd() {
+	public synchronized IXdmItemWriter getWriteEnd() {
 
 		if (writeEnd == null) {
 
@@ -113,7 +113,7 @@ public class XdmItemPipe {
 	 * @author christian
 	 * @version $Revision: 1.2 $
 	 */
-	private static final class PipedXdmItemWriter implements IXdmValueWriter {
+	private static final class PipedXdmItemWriter implements IXdmItemWriter {
 
 		/** The pipe we're connected to. */
 		private XdmItemPipe pipe;
@@ -207,7 +207,7 @@ public class XdmItemPipe {
 	}
 
 
-	private static final class PipedXdmItemReader implements IXdmValueReader {
+	private static final class PipedXdmItemReader implements IXdmItemReader {
 
 		private static Logger mLogger = LogManager.getLogger( PipedXdmItemReader.class );
 

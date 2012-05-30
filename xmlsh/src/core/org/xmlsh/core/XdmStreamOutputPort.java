@@ -31,7 +31,7 @@ import org.xmlsh.sh.shell.Shell;
 
 public class XdmStreamOutputPort extends OutputPort {
  
-	private IXdmValueWriter mWriter ;
+	private IXdmItemWriter mWriter ;
 	
 	// Set to true if any asXXX method was caused which used a non-xml stream or access 
 	private		boolean		mAsText = false ;
@@ -44,7 +44,7 @@ public class XdmStreamOutputPort extends OutputPort {
 	
 	
 	
-	public XdmStreamOutputPort(IXdmValueWriter writer, SerializeOpts opts) {
+	public XdmStreamOutputPort(IXdmItemWriter writer, SerializeOpts opts) {
 		mWriter = writer;
 	}
 
