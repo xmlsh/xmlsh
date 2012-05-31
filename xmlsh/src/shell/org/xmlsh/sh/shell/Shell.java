@@ -591,7 +591,7 @@ public class Shell {
 	}
 
 
-	private String getPS1() throws IOException, CoreException {
+	public String getPS1() throws IOException, CoreException {
 		
 		XValue ps1 = getEnv().getVarValue("PS1");
 		if( ps1 == null )
