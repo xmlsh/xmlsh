@@ -40,6 +40,8 @@ public class ShellParserReader extends FilterReader {
 		}
 		int c ;
 		while ( ( c = super.read()) != -1 ){
+			if( c == '\ufeff' )
+				continue ; 
 			if( c == '\r')
 				continue ;
 			if( c == '\\') {

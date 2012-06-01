@@ -1,5 +1,7 @@
 # Run a single test and return 0 for success or 1 for failure
 
+set -encoding utf8
+
 [ $# -ne 1 ] && exit 1
 
 [ -f _out.txt ] && rm _out.txt
