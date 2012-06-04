@@ -18,14 +18,25 @@ public class ShellParserReader extends FilterReader {
 	
 	private char	mReadAhead = (char)-1;
 	
+	
+	// Skip UTF8 BOM if its the first char
+	private void skipbom() throws IOException
+	{
+		int c = super.read();
+		if( c != '\ufeff' )
+			mReadAhead = (char)c; 
+			
+	}
 
-	protected ShellParserReader(Reader in) {
+	protected ShellParserReader(Reader in) throws IOException {
 		super(in);
+		skipbom();
 		
 	}
 
-	public ShellParserReader(InputStream is, String encoding) throws UnsupportedEncodingException {
+	public ShellParserReader(InputStream is, String encoding) throws IOException {
 		super( new InputStreamReader(is,encoding));
+		skipbom();
 	}
 
 	/* (non-Javadoc)
@@ -40,8 +51,7 @@ public class ShellParserReader extends FilterReader {
 		}
 		int c ;
 		while ( ( c = super.read()) != -1 ){
-			if( c == '\ufeff' )
-				continue ; 
+
 			if( c == '\r')
 				continue ;
 			if( c == '\\') {

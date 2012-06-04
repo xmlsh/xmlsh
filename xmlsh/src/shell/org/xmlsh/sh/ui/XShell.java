@@ -54,10 +54,10 @@ import javax.swing.JButton;
 public class XShell {
 
 	private JFrame mframe;
-	private TextArea mCommandTextArea;
+	private JTextArea mCommandTextArea;
 	private Shell  mShell = null ;
 
-	private TextArea mResultTextArea;
+	private JTextArea mResultTextArea;
 	
 	private void print(String s){
 		mResultTextArea.append(s);
@@ -71,9 +71,11 @@ public class XShell {
 
 			Command c = null ;
 			
-			ByteArrayOutputStream os = new ByteArrayOutputStream();
+			OutputStream os = new TextAreaOutputStream(mResultTextArea);
 
 			try {
+				
+				
 	            mShell.getEnv().setStdout( os );
 	            mShell.getEnv().setStderr(os);
 				
@@ -81,10 +83,8 @@ public class XShell {
 				c =  mShell.parseEval(sCmd);
 
 				mShell.exec( c );
+				os.flush();
 
-				String result = os.toString( mShell.getSerializeOpts().getOutputTextEncoding() );
-				print(result); 
-				
 					
 
 
@@ -196,17 +196,24 @@ public class XShell {
 			
 		});
 		toolBar.add(btnInvoke);
+		
+		JButton btnStop = new JButton("Stop");
+		btnStop.setEnabled(false);
+		toolBar.add(btnStop);
 		mframe.getContentPane().setLayout(new BoxLayout(mframe.getContentPane(), BoxLayout.X_AXIS));
 		
 		JSplitPane splitPane = new JSplitPane();
 		splitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
 		mframe.getContentPane().add(splitPane);
 		
-		mResultTextArea = new TextArea();
+		mResultTextArea = new JTextArea();
+		mResultTextArea.setRows(10);
 		splitPane.setRightComponent(mResultTextArea);
 		
-		mCommandTextArea = new TextArea();
+		mCommandTextArea = new JTextArea();
+		mCommandTextArea.setRows(10);
 		splitPane.setLeftComponent(mCommandTextArea);
+		splitPane.setDividerLocation(0.5);
 		
 		
 		mShell = new Shell(false);
