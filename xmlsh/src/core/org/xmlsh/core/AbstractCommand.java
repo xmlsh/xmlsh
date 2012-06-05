@@ -29,6 +29,7 @@ public abstract class AbstractCommand implements ICommand {
 	protected	Shell mShell;
 	protected XEnvironment mEnvironment;
 	protected SourceLocation		mLocation ;
+	protected SerializeOpts mSerializeOpts = null ;
 	
 	public AbstractCommand() {
 		
@@ -40,10 +41,7 @@ public abstract class AbstractCommand implements ICommand {
 		return mShell.getSerializeOpts(opts);
 	}
 
-	protected SerializeOpts getSerializeOpts() throws InvalidArgumentException {
-		return mShell.getSerializeOpts(null);
-	}
-
+	
 	@Override
 	public void close() {
 		mShell = null ;
@@ -163,6 +161,22 @@ public abstract class AbstractCommand implements ICommand {
 	}
 	
 
+	protected void setSerializeOpts( SerializeOpts opts)
+	{
+		mSerializeOpts = opts ;
+	}
+	protected void setSerializeOpts( Options opts) throws InvalidArgumentException
+	{
+		mSerializeOpts = this.getSerializeOpts(opts) ;
+	}
+	
+	protected SerializeOpts getSerializeOpts()
+	{
+		if( mSerializeOpts == null )
+			mSerializeOpts = mShell.getSerializeOpts();
+		return mSerializeOpts ;
+	}
+	
 
 }
 

@@ -53,6 +53,7 @@ public class csv2xml extends XCommand
 
 		Options opts = new Options( "root:,row:,col:,header,attr,delim:,quote:,colnames:,tab,skip:,trim,max:,input-encoding:", SerializeOpts.getOptionDefs() );
 		opts.parse(args);
+		setSerializeOpts(opts);
 		
 		// root node
 		String root = opts.getOptString("root", "root");
@@ -79,7 +80,7 @@ public class csv2xml extends XCommand
 // Output XML
 
 		OutputPort stdout = getStdout();
-		SerializeOpts serializeOpts = getSerializeOpts(opts);
+		SerializeOpts serializeOpts = getSerializeOpts();
 
 		
 		XMLStreamWriter writer = stdout.asXMLStreamWriter(serializeOpts);

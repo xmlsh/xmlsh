@@ -16,6 +16,7 @@ import javax.xml.stream.XMLStreamWriter;
 import org.xmlsh.core.BuiltinCommand;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
+import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.XEnvironment;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.XVariable;
@@ -35,6 +36,7 @@ public class set extends BuiltinCommand {
 		
 		Options opts = new Options( "+x,+v,+xpipe,+e,E=expand" , SerializeOpts.getOptionDefs()  );
 		opts.parse(args);
+		setSerializeOpts(opts);
 		boolean bFlatten = opts.hasOpt("E");
 		
 		setShellOptions(opts);
@@ -63,7 +65,8 @@ public class set extends BuiltinCommand {
 		XEnvironment env = mShell.getEnv();
 		
 
-	    XMLStreamWriter writer = env.getStdout().asXMLStreamWriter(mShell.getSerializeOpts());
+	    OutputPort stdout = env.getStdout();
+		XMLStreamWriter writer = stdout.asXMLStreamWriter(mShell.getSerializeOpts());
 
 	    writer.writeStartDocument();
 	    writer.writeStartElement( sDocRoot );
@@ -83,6 +86,7 @@ public class set extends BuiltinCommand {
 		writer.writeEndDocument();
 		
 		writer.close();
+		stdout.writeSequenceTerminator(getSerializeOpts());
 		
 		
 	}
