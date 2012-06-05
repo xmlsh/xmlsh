@@ -55,74 +55,11 @@ public class XShell {
 
 	private JFrame mframe;
 	private JTextArea mCommandTextArea;
-	private Shell  mShell = null ;
-
-	private JTextArea mResultTextArea;
+	private ShellThread  mShell = null ;
 	
-	private void print(String s){
-		mResultTextArea.append(s);
-	}
+	
 	
 
-	private void run() {
-			String   sCmd = mCommandTextArea.getText();
-
-            mResultTextArea.setText("");
-
-			Command c = null ;
-			
-			OutputStream os = new TextAreaOutputStream(mResultTextArea);
-
-			try {
-				
-				
-	            mShell.getEnv().setStdout( os );
-	            mShell.getEnv().setStderr(os);
-				
-	            
-				c =  mShell.parseEval(sCmd);
-
-				mShell.exec( c );
-				os.flush();
-
-					
-
-
-			} 
-			catch (ThrowException e) {
-				print("Ignoring thrown value: " + e.getMessage());
-
-
-			}
-			catch (Exception e) {
-
-
-				SourceLocation loc = c != null ? c.getLocation() : null ;
-
-				if( loc != null ){
-					String sLoc = loc.toString();
-
-					print( sLoc );
-				}
-
-				print(e.getMessage());
-
-
-			} catch (Error e) {
-				print("Error: " + e.getMessage());
-				SourceLocation loc = c != null ? c.getLocation() : null ;
-
-				if( loc != null ){
-					String sLoc = loc.toString();
-
-
-					print( sLoc );
-				}
-
-
-			}
-		}
-	
 
 
 
@@ -190,7 +127,7 @@ public class XShell {
 		JButton btnInvoke = new JButton("Run");
 		btnInvoke.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				run();
+				mShell.putCommand(mCommandTextArea.getText());
 			}
 
 			
@@ -206,20 +143,19 @@ public class XShell {
 		splitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
 		mframe.getContentPane().add(splitPane);
 		
-		mResultTextArea = new JTextArea();
-		mResultTextArea.setRows(10);
-		splitPane.setRightComponent(mResultTextArea);
+		JTextArea ResultTextArea = new JTextArea();
+		ResultTextArea.setEnabled(false);
+		ResultTextArea.setRows(10);
+		splitPane.setRightComponent(ResultTextArea);
 		
 		mCommandTextArea = new JTextArea();
 		mCommandTextArea.setRows(10);
 		splitPane.setLeftComponent(mCommandTextArea);
 		splitPane.setDividerLocation(0.5);
 		
+		mShell = new ShellThread( ResultTextArea );
+		mShell.start();
 		
-		mShell = new Shell(false);
-		mShell.getSerializeOpts().setInputTextEncoding("UTF-8");
-		mShell.getSerializeOpts().setOutputTextEncoding("UTF-8");
-			
 	}
 
 }

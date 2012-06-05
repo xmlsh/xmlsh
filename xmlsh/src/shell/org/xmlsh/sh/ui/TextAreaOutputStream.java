@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import javax.swing.JTextArea;
+import javax.swing.SwingUtilities;
 
 public class TextAreaOutputStream extends OutputStream {
 
@@ -38,9 +39,19 @@ public class TextAreaOutputStream extends OutputStream {
 	@Override
 	public void flush() throws IOException {
 		if( mBytes.size() >0){
-			String s = mBytes.toString("UTF8");
-			mTextArea.append(s);
-			mBytes.reset();
+			 final String s = mBytes.toString("UTF8");
+			 mBytes.reset();
+			 SwingUtilities.invokeLater(new Runnable() {
+				    public void run() {
+				      // Here, we can safely update the GUI
+				      // because we'll be called from the
+				      // event dispatch thread
+				      mTextArea.append(s);
+				      
+				    }
+				  });
+		
+			
 		}
 	}
 
@@ -52,6 +63,24 @@ public class TextAreaOutputStream extends OutputStream {
 	public void close() throws IOException {
 		flush();
 		super.close();
+	}
+
+
+	/* (non-Javadoc)
+	 * @see java.io.OutputStream#write(byte[])
+	 */
+	@Override
+	public void write(byte[] b) throws IOException {
+		mBytes.write(b);
+	}
+
+
+	/* (non-Javadoc)
+	 * @see java.io.OutputStream#write(byte[], int, int)
+	 */
+	@Override
+	public void write(byte[] b, int off, int len) throws IOException {
+		mBytes.write(b,off,len);
 	}  
 	
 	
