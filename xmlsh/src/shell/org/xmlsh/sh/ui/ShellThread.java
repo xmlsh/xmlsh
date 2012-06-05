@@ -27,17 +27,17 @@ public class ShellThread extends Thread {
 	private Shell  mShell = null ;
 
 	private JTextArea mResultTextArea;
-	
+
 	private BlockingQueue<String>   mCommandQueue = new ArrayBlockingQueue<String>(2,true);
 	private OutputStream mResultOutputStream ;
-	
-	
+
+
 	private void print(String s) throws UnsupportedEncodingException, IOException{
 		mResultOutputStream.write( s.getBytes("UTF8"));
 	}
-	
 
-	
+
+
 
 	public ShellThread(JTextArea resultTextArea) {
 		super();
@@ -46,88 +46,88 @@ public class ShellThread extends Thread {
 	}
 
 
-	
+
 
 	public void run() {
 
-		
-	
-
-            mResultTextArea.setText("");
-
-			Command c = null ;
-			
-			mResultOutputStream = new TextAreaOutputStream(mResultTextArea);
-			
-			try {
-			
-				
-				mShell = new Shell(false);
-				mShell.getSerializeOpts().setInputTextEncoding("UTF-8");
-				mShell.getSerializeOpts().setOutputTextEncoding("UTF-8");
-					
-				
-	            mShell.getEnv().setStdout( mResultOutputStream );
-	            mShell.getEnv().setStderr(mResultOutputStream);
-	            String sCmd ; 
-	        	while( ( sCmd = mCommandQueue.take()) != null )
-					
-	    			try {
-	    				
-	    	            
-	    				c =  mShell.parseEval(sCmd);
-
-	    				mShell.exec( c );
-	    				mResultOutputStream.flush();
-
-	    					
 
 
-	    			} 
-	    			catch (ThrowException e) {
-	    				print("Ignoring thrown value: " + e.getMessage());
+
+		mResultTextArea.setText("");
+
+		Command c = null ;
+
+		mResultOutputStream = new TextAreaOutputStream(mResultTextArea);
+
+		try {
 
 
-	    			}
-	    			catch (Exception e) {
+			mShell = new Shell(false);
+			mShell.getSerializeOpts().setInputTextEncoding("UTF-8");
+			mShell.getSerializeOpts().setOutputTextEncoding("UTF-8");
 
 
-	    				SourceLocation loc = c != null ? c.getLocation() : null ;
+			mShell.getEnv().setStdout( mResultOutputStream );
+			mShell.getEnv().setStderr(mResultOutputStream);
+			String sCmd ; 
+			while( ( sCmd = mCommandQueue.take()) != null )
 
-	    				if( loc != null ){
-	    					String sLoc = loc.toString();
-
-	    					print( sLoc );
-	    				}
-
-	    				print(e.getMessage());
+				try {
 
 
-	    			} catch (Error e) {
-	    				print("Error: " + e.getMessage());
-	    				SourceLocation loc = c != null ? c.getLocation() : null ;
+					c =  mShell.parseEval(sCmd);
 
-	    				if( loc != null ){
-	    					String sLoc = loc.toString();
+					mShell.exec( c );
+					mResultOutputStream.flush();
 
 
-	    					print( sLoc );
-	    				}
 
 
-	    			}
-	    			
-			
-			} catch( Exception e ){
-				printError(e);
-				return ;
+				} 
+			catch (ThrowException e) {
+				print("Ignoring thrown value: " + e.getMessage());
+
+
+			}
+			catch (Exception e) {
+
+
+				SourceLocation loc = c != null ? c.getLocation() : null ;
+
+				if( loc != null ){
+					String sLoc = loc.toString();
+
+					print( sLoc );
+				}
+
+				print(e.getMessage());
+
+
+			} catch (Error e) {
+				print("Error: " + e.getMessage());
+				SourceLocation loc = c != null ? c.getLocation() : null ;
+
+				if( loc != null ){
+					String sLoc = loc.toString();
+
+
+					print( sLoc );
+				}
+
+
 			}
 
-			String sCmd ;
-			
-			
-		
+
+		} catch( Exception e ){
+			printError(e);
+			return ;
 		}
+
+		String sCmd ;
+
+
+
+	}
 
 
 
@@ -149,18 +149,18 @@ public class ShellThread extends Thread {
 	 * @throws InterruptedException 
 	 */
 
-	
-	 boolean putCommand( String command ) {
-		 try {
+
+	boolean putCommand( String command ) {
+		try {
 			mCommandQueue.put(command);
 		} catch (InterruptedException e) {
 			printError(e);
 			return false ;
 		}
 		return true ;
-	 }
-	
-	
+	}
+
+
 
 }
 
@@ -168,7 +168,7 @@ public class ShellThread extends Thread {
 
 //
 //
-//Copyright (C) 2008,2009,2010,2011 David A. Lee.
+//Copyright (C) 2008-2012 David A. Lee.
 //
 //The contents of this file are subject to the "Simplified BSD License" (the "License");
 //you may not use this file except in compliance with the License. You may obtain a copy of the
