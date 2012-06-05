@@ -50,12 +50,15 @@ import javax.swing.JTextArea;
 import javax.swing.JToolBar;
 import java.awt.Button;
 import javax.swing.JButton;
+import javax.swing.JScrollPane;
+import javax.swing.ScrollPaneConstants;
 
 public class XShell {
 
 	private JFrame mframe;
 	private JTextArea mCommandTextArea;
 	private ShellThread  mShell = null ;
+	private JTextArea mResultTextArea;
 	
 	
 	
@@ -143,19 +146,32 @@ public class XShell {
 		splitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
 		mframe.getContentPane().add(splitPane);
 		
-		JTextArea ResultTextArea = new JTextArea();
-		ResultTextArea.setEnabled(false);
-		ResultTextArea.setRows(10);
-		splitPane.setRightComponent(ResultTextArea);
+		mResultTextArea = new JTextArea();
+		mResultTextArea.setRows(10);
+		
+		mShell = new ShellThread( mResultTextArea );
 		
 		mCommandTextArea = new JTextArea();
-		mCommandTextArea.setRows(10);
-		splitPane.setLeftComponent(mCommandTextArea);
-		splitPane.setDividerLocation(0.5);
 		
-		mShell = new ShellThread( ResultTextArea );
+		
+        JScrollPane scrollCommand = new JScrollPane(mCommandTextArea,
+                JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        JScrollPane scrollResult = new JScrollPane(mResultTextArea,
+                JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		
+		
+		splitPane.setRightComponent(scrollResult);
+		splitPane.setLeftComponent(scrollCommand);
+		mCommandTextArea.setRows(10);
+		splitPane.setDividerLocation(0.5);
 		mShell.start();
 		
+		mResultTextArea.setEditable(false);
+		
+		new TextAreaPopupMenu( mResultTextArea );
+		new TextAreaPopupMenu( mCommandTextArea );
 	}
 
 }
