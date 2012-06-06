@@ -12,10 +12,9 @@ import javax.swing.JSeparator;
 import javax.swing.JTextArea;
  
 public class TextAreaPopupMenu {
-	private JTextArea mTextArea;
  
-    TextAreaPopupMenu(JTextArea textArea) {
-    	mTextArea = textArea;
+    TextAreaPopupMenu(final JTextArea textArea) {
+
  
         final JPopupMenu popup = new JPopupMenu();
  
@@ -24,7 +23,7 @@ public class TextAreaPopupMenu {
  
             public void actionPerformed(java.awt.event.ActionEvent evt) {
  
-            	mTextArea.selectAll();
+            	textArea.selectAll();
  
             }
         });
@@ -37,7 +36,7 @@ public class TextAreaPopupMenu {
  
             public void actionPerformed(java.awt.event.ActionEvent evt) {
  
-            	mTextArea.copy();
+            	textArea.copy();
  
             }
         });
@@ -45,14 +44,14 @@ public class TextAreaPopupMenu {
  
  
         
-        if( mTextArea.isEditable() ){
+        if( textArea.isEditable() ){
 	        popup.add(new JSeparator());
 	 
 	        menuItem = new JMenuItem("Cut");
 	        menuItem.addActionListener(new java.awt.event.ActionListener() {
 	 
 	            public void actionPerformed(java.awt.event.ActionEvent evt) {
-	            mTextArea.cut();
+	            	textArea.cut();
 	               
 	 
 	            }
@@ -65,13 +64,13 @@ public class TextAreaPopupMenu {
 	        menuItem.addActionListener(new java.awt.event.ActionListener() {
 	 
 	            public void actionPerformed(java.awt.event.ActionEvent evt) {
-	                mTextArea.paste();
+	            	textArea.paste();
 	            }
 	        });
 	        popup.add(menuItem);
         }
  
-        mTextArea.setComponentPopupMenu(popup);
+        textArea.setComponentPopupMenu(popup);
  
  
     }

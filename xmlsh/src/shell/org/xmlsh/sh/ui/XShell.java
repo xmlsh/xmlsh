@@ -127,15 +127,15 @@ public class XShell {
 		JToolBar toolBar = new JToolBar();
 		menuBar.add(toolBar);
 		
-		JButton btnInvoke = new JButton("Run");
-		btnInvoke.addActionListener(new ActionListener() {
+		JButton btnRun = new JButton("Run");
+		btnRun.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				mShell.putCommand(mCommandTextArea.getText());
 			}
 
 			
 		});
-		toolBar.add(btnInvoke);
+		toolBar.add(btnRun);
 		
 		JButton btnStop = new JButton("Stop");
 		btnStop.setEnabled(false);
@@ -149,7 +149,7 @@ public class XShell {
 		mResultTextArea = new JTextArea();
 		mResultTextArea.setRows(10);
 		
-		mShell = new ShellThread( mResultTextArea );
+		mShell = new ShellThread( mResultTextArea , btnRun , btnStop);
 		
 		mCommandTextArea = new JTextArea();
 		
@@ -166,12 +166,14 @@ public class XShell {
 		splitPane.setLeftComponent(scrollCommand);
 		mCommandTextArea.setRows(10);
 		splitPane.setDividerLocation(0.5);
-		mShell.start();
+
 		
 		mResultTextArea.setEditable(false);
 		
 		new TextAreaPopupMenu( mResultTextArea );
 		new TextAreaPopupMenu( mCommandTextArea );
+		mShell.start();
+		
 	}
 
 }
