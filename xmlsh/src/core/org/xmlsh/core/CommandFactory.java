@@ -37,6 +37,7 @@ import org.xmlsh.commands.builtin.xecho;
 import org.xmlsh.commands.builtin.xfalse;
 import org.xmlsh.commands.builtin.ximport;
 import org.xmlsh.commands.builtin.xmlsh;
+import org.xmlsh.commands.builtin.xmlshui;
 import org.xmlsh.commands.builtin.xread;
 import org.xmlsh.commands.builtin.xthrow;
 import org.xmlsh.commands.builtin.xtrue;
@@ -102,6 +103,7 @@ public class CommandFactory
 		addBuiltin("xtype", xtype.class);
 		addBuiltin("require", require.class);
 		addBuiltin("jset" , jset.class );
+		addBuiltin("xmlshui" , xmlshui.class);
 		
 		
 

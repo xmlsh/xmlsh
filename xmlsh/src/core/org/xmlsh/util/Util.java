@@ -973,6 +973,14 @@ public class Util
 			return name.replace(File.separatorChar, '/');
 			
 	}
+
+
+	public static List<XValue> toXValueList(String[] args) {
+		List<XValue> list = new ArrayList<XValue>(args.length);
+		for( String a : args )
+			list.add( new XValue(a) );
+		return list ;
+	}
 		
 
 		

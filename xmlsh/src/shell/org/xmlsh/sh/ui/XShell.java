@@ -41,6 +41,7 @@ import org.xmlsh.sh.grammar.ShellParser;
 import org.xmlsh.sh.grammar.ShellParserReader;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.PipedStreamPort;
+import org.xmlsh.util.Util;
 
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -52,6 +53,8 @@ import java.awt.Button;
 import javax.swing.JButton;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 public class XShell {
 
@@ -59,6 +62,7 @@ public class XShell {
 	private JTextArea mCommandTextArea;
 	private ShellThread  mShell = null ;
 	private JTextArea mResultTextArea;
+	private List<XValue> mArgs;
 	
 	
 	
@@ -73,10 +77,19 @@ public class XShell {
 	 * Launch the application.
 	 */
 	public static void main(String[] args) {
+		run(args);
+	}
+
+	public static void run(final String[] args) {
+		
+		run(Util.toXValueList(args));
+	}
+	
+	public static void run(final List<XValue> args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					XShell window = new XShell();
+					XShell window = new XShell(args);
 					window.mframe.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -85,11 +98,9 @@ public class XShell {
 		});
 	}
 
-	/**
-	 * Create the application.
-	 * @throws Exception 
-	 */
-	public XShell() throws Exception {
+
+	public XShell(List<XValue> args) throws Exception {
+		mArgs = args ;
 		initialize();
 	}
 
@@ -107,8 +118,14 @@ public class XShell {
 		
 		
 		mframe = new JFrame();
+		mframe.addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosed(WindowEvent e) {
+				mShell.close();
+			}
+		});
 		mframe.setBounds(100, 100, 709, 604);
-		mframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		mframe.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		
 		JMenuBar menuBar = new JMenuBar();
 		mframe.setJMenuBar(menuBar);
@@ -119,7 +136,7 @@ public class XShell {
 		JMenuItem mntmExit = new JMenuItem("Exit");
 		mntmExit.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				System.exit(0);
+				mframe.dispose();
 			}
 		});
 		mnFile.add(mntmExit);
@@ -149,7 +166,7 @@ public class XShell {
 		mResultTextArea = new JTextArea();
 		mResultTextArea.setRows(10);
 		
-		mShell = new ShellThread( mResultTextArea , btnRun , btnStop);
+		mShell = new ShellThread( mArgs ,  mResultTextArea , btnRun , btnStop);
 		
 		mCommandTextArea = new JTextArea();
 		

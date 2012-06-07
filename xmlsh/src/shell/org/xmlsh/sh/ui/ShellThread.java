@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
+import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
@@ -21,6 +22,7 @@ import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 
 import org.xmlsh.core.ThrowException;
+import org.xmlsh.core.XValue;
 import org.xmlsh.sh.core.Command;
 import org.xmlsh.sh.core.SourceLocation;
 import org.xmlsh.sh.shell.Shell;
@@ -28,6 +30,7 @@ import org.xmlsh.sh.shell.Shell;
 public class ShellThread extends Thread {
 
 	private Shell mShell = null;
+	private boolean mClosed = false ;
 
 	private JTextArea mResultTextArea;
 	private JButton mStopButton;
@@ -36,13 +39,16 @@ public class ShellThread extends Thread {
 	private BlockingQueue<String> mCommandQueue = new ArrayBlockingQueue<String>(2, true);
 	private OutputStream mResultOutputStream;
 
+	private List<XValue> mArgs;
+
 	private void print(String s) throws UnsupportedEncodingException, IOException {
 		mResultOutputStream.write(s.getBytes("UTF8"));
 	}
 
-	public ShellThread(JTextArea resultTextArea, JButton startButton , JButton stopButton) {
+	public ShellThread(List<XValue> args, JTextArea resultTextArea, JButton startButton , JButton stopButton) {
 		super();
 
+		mArgs = args ;
 		mResultTextArea = resultTextArea;
 		mStartButton = startButton ;
 		mStopButton = stopButton ;
@@ -91,13 +97,16 @@ public class ShellThread extends Thread {
 		try {				
 
 			String sCmd ;
-			while ((sCmd = mCommandQueue.take()) != null){
+			while (! mClosed && (sCmd = mCommandQueue.take()) != null){
 				setRunning(false);
 				clearResult();
 
 				try {
 					
 					mShell = new Shell(false);
+					mShell.setArgs(mArgs);
+					mShell.setArg0("xmlshui");
+					
 					mShell.getSerializeOpts().setInputTextEncoding("UTF-8");
 					mShell.getSerializeOpts().setOutputTextEncoding("UTF-8");
 
@@ -176,6 +185,14 @@ public class ShellThread extends Thread {
 			return false;
 		}
 		return true;
+	}
+
+	public synchronized void close() {
+		mClosed = true ;
+		
+		this.interrupt();
+
+		
 	}
 
 }
