@@ -1,0 +1,102 @@
+<?xml version="1.0" ?>
+<project default="main">
+
+	
+    <target name="main" depends="clean, compile, jar,dist" description="Twitter Extension main target">
+        <echo>
+            Building Twitter xmlsh extension
+        </echo>
+    </target>
+	
+	
+	<property name="dist" location="_dist"/>
+	<property name="xmlsh" location="../../trunk"/>
+	 <tstamp prefix="bdate"/>
+	<property name="release" value="${bdate.DSTAMP}"/>
+	<property name="install" value="/usr/local/xmlsh/twitter"/>
+
+	<target name="clean" description="Clean all">
+		  <delete includeEmptyDirs="true" quiet="true">
+		    <fileset dir="${dist}" includes="*"/>
+		  	<fileset dir="_out" includes="**/*" />
+		  	<fileset dir="test" includes="**/_out.txt"/>
+		  	<fileset dir="bin" includes="**/*.jar" />
+		  	<fileset dir="." includes="xmlsh.log" />
+		  </delete>
+	</target>
+
+  
+    <target name="compile" description="Compilation target">
+  		<mkdir dir="_out"/>
+    
+    	 <javac destdir="_out" debug="on" source="1.6" target="1.6">
+    	        <src path="src" />
+    	 	<classpath>
+    				<fileset dir="lib">
+    	                  	<include name="**/*.jar"/>
+    				</fileset>
+    				<fileset dir="../../trunk/lib">
+    				    <include name="**/*.jar"/>
+    				   </fileset>
+    				   <fileset dir="../../trunk/bin">
+    				    <include name="xmlsh-1.1.jar"/>
+    				   </fileset>
+    	     </classpath>
+    	 </javac>
+    	 <copy todir="_out" filtering="on">
+    	            <fileset dir="src">
+    	                <include name="**/*.properties"/>
+    	 				<include name="**/*.xsh"/>
+    	 				<include name="**/*.xquery"/>
+    	 				<include name="**/*.xml"/>
+    	 				
+    	 			</fileset>
+    	        </copy>
+
+   	</target>
+  
+  <target name="jar" description="Build JAR - jar">
+		<mkdir dir="bin"/>
+        <jar 
+        jarfile="bin/twitter_ext.jar" 
+        basedir="_out" 
+         manifest="src/WEB-INF/MANIFEST.MF"
+        />
+
+  </target>
+  <target name="test" description="Test Cases">
+  	<java 
+  		classname="org.xmlsh.sh.shell.Shell"
+ 		classpath="${xmlsh}/bin/xmlsh-1.1.jar;${xmlsh}/lib/log4j-1.2.7.jar;${xmlsh}/lib/saxon9he.jar;${xmlsh}/lib/xercesImpl.jar;${xmlsh}/lib/woodstox-core-asl-4.0.3.jar;${xmlsh}/lib/stax2-api-3.0.1.jar;${xmlsh}/lib/stax-utils.jar;${xmlsh}/lib/jing.jar;${xmlsh}/lib/trang.jar;"
+  		fork="true"
+  	    dir="test">
+  	    	<arg value="-norc"/>
+  			<arg value="./run_tests.xsh"/>
+  	</java>
+  </target>
+  <target name="dist" description="Create Distribution">
+  		
+  		<mkdir dir="${dist}"/>
+		<zip destfile="${dist}/twitter_${release}.zip" >
+			<zipfileset dir="." includes="bin/** test/** doc/** notices/** license.txt README.txt" 
+					excludes="**/sh_histo" prefix="twitter_${release}"/>
+			<zipfileset dir="lib" includes="*.jar" prefix="twitter_${release}/bin"/>
+  		</zip>
+		<zip destfile="${dist}/twitter_src_${release}.zip" >
+			<zipfileset dir="." includes="src/** license.txt README.txt build.xml" 
+				excludes="**/sh_histo _out/** bin/** _dist/** lib/**"  prefix="twitter_${release}"/>
+		</zip>
+
+
+  </target>
+    <target name="install" description="Install to modules">
+  		 <copy todir="${install}" filtering="on">
+			<fileset dir="bin" includes="*.jar module.xml"/>
+
+
+    	 </copy>
+  	</target>
+         
+        
+  
+</project>

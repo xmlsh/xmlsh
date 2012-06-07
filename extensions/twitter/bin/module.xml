@@ -1,0 +1,11 @@
+<module 
+	module_version="1"
+	name="twitter"
+	package="org.xmlsh.twitter"
+	require="1.1.8"
+>
+<classpath>
+  <file url="twitter_ext.jar"/>
+</classpath>
+</module>
+
