@@ -33,10 +33,16 @@ public class ShellParserReader extends FilterReader {
 		skipbom();
 		
 	}
-
 	public ShellParserReader(InputStream is, String encoding) throws IOException {
 		super( new InputStreamReader(is,encoding));
-		skipbom();
+
+	}
+
+	
+	public ShellParserReader(InputStream is, String encoding, boolean bSkipBOM ) throws IOException {
+		super( new InputStreamReader(is,encoding));
+		if( bSkipBOM )
+		   skipbom();
 	}
 
 	/* (non-Javadoc)

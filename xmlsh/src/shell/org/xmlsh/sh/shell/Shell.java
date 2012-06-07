@@ -409,7 +409,7 @@ public class Shell {
 		
 		InputStream save = mCommandInput;
 		mCommandInput = stream ;
-		ShellParser parser= new ShellParser(new ShellParserReader(mCommandInput,getInputTextEncoding()), source );
+		ShellParser parser= new ShellParser(new ShellParserReader(mCommandInput,getInputTextEncoding(),true), source );
 		int ret = 0;
 		try {
 			while( mExitVal == null && mReturnVal == null  ){
