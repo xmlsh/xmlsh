@@ -91,6 +91,7 @@ public class XShell {
 				try {
 					XShell window = new XShell(args);
 					window.mframe.setVisible(true);
+					window.mCommandTextArea.requestFocusInWindow();
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -189,6 +190,8 @@ public class XShell {
 		
 		new TextAreaPopupMenu( mResultTextArea );
 		new TextAreaPopupMenu( mCommandTextArea );
+		
+
 		mShell.start();
 		
 	}

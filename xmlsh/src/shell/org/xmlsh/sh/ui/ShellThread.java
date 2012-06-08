@@ -8,7 +8,9 @@ package org.xmlsh.sh.ui;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
@@ -116,9 +118,9 @@ public class ShellThread extends Thread {
 					mShell.getEnv().setStderr(mResultOutputStream);
 
 					setRunning(true);
-					c = mShell.parseEval(sCmd);
-
-					mShell.exec(c);
+				
+					InputStream sin = new ByteArrayInputStream( sCmd.getBytes("UTF8"));
+					mShell.runScript(sin , "xmlshui", true );
 					mResultOutputStream.flush();
 					setRunning(false);
 

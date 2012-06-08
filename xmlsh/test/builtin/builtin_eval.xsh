@@ -10,3 +10,9 @@ echo _A is now unset : $_A
 # Echo evaled
 _A=B eval 'echo _A is $_A'
 unset _A
+
+echo Empty Eval
+eval ''
+eval '#'
+eval ' '
+echo Empty Done
