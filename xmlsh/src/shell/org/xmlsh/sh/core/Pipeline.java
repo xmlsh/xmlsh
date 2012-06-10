@@ -15,7 +15,7 @@ import org.xmlsh.sh.shell.ShellThread;
 import org.xmlsh.util.PipedPort;
 import org.xmlsh.util.PipedStreamPort;
 import org.xmlsh.util.PipedXDMPort;
-import org.xmlsh.util.PipedXMLPort;
+import org.xmlsh.util.PipedXEventPort;
 
 public class Pipeline extends Command {
 	

@@ -26,7 +26,7 @@ public class PipedXDMPort extends PipedPort {
 	
 	public PipedXDMPort(SerializeOpts opts)  throws IOException
 	{
-		mPipe = new XdmItemPipe(1000);
+		mPipe = new XdmItemPipe();
 	
 		mIn = new XdmStreamInputPort(mPipe.getReadEnd(), opts);
 		mOut = new XdmStreamOutputPort(mPipe.getWriteEnd(),opts);

@@ -15,13 +15,13 @@ import org.xmlsh.core.XMLEventInputPort;
 import org.xmlsh.core.XMLEventOutputPort;
 import org.xmlsh.sh.shell.SerializeOpts;
 
-public class PipedXMLPort extends PipedPort {
+public class PipedXEventPort extends PipedPort {
 	private		XMLEventInputPort 	mIn;
 	private		XMLEventOutputPort 	mOut;
 	private		XMLEventPipe		mPipe;
 	
 	
-	public PipedXMLPort(SerializeOpts opts)  throws IOException
+	public PipedXEventPort(SerializeOpts opts)  throws IOException
 	{
 		mPipe = new XMLEventPipe(1000);
 	
@@ -38,13 +38,13 @@ public class PipedXMLPort extends PipedPort {
 		return mOut;
 	}
 	
-	static public PipedXMLPort[] getPipes(int n, SerializeOpts opts) throws IOException
+	static public PipedXEventPort[] getPipes(int n, SerializeOpts opts) throws IOException
 	{
 		if( n == 0 )
 			return null;
-		PipedXMLPort	streams[] = new PipedXMLPort[n];
+		PipedXEventPort	streams[] = new PipedXEventPort[n];
 		for( int i = 0 ; i < n ; i++ )
-			streams[i] = new PipedXMLPort(opts);
+			streams[i] = new PipedXEventPort(opts);
 		return streams;
 		
 	}

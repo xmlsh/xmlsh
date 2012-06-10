@@ -7,7 +7,7 @@
 package org.xmlsh.core;
 
 public interface IXdmItemWriter extends IXdmItemOutputStream {
-	void close();
+	void close() throws CoreException;
 
 }
 
