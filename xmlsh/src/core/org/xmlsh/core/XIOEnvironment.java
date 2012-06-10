@@ -190,7 +190,7 @@ public class XIOEnvironment {
 	/* return a named input port 
 	 * 
 	 */
-	protected	InputPort	getInputPort( String name )
+	public	InputPort	getInputPort( String name )
 	{
 		return mInputs.get(name);
 	}
@@ -198,7 +198,7 @@ public class XIOEnvironment {
 	/* return a named output port 
 	 * 
 	 */
-	protected	OutputPort	getOutputPort( String name )
+	public	OutputPort	getOutputPort( String name )
 	{
 		return mOutputs.get(name);
 	}

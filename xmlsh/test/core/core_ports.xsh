@@ -63,8 +63,25 @@ for i in output3 ; do
 done >(output)
 
 echo output4 |  while read a ; do echo $a ; done >(output)
+if true ; then echo output5 ; fi >(output)
 
+while true ; do 
+  echo output6
+  break ;
+done >(output)
 
+{ echo output7 ;} >(output)
+( echo output8 ) >(output)
+
+# Test named ports input
+
+echo input1 | read a <(input)
+echo $a
+
+echo input2 | while read a ; do echo $a ; done <(input)
+
+echo input3 | if true ; then read a ;  echo $a ; fi <(input)
+echo input4 | for a in a ; do read b ; echo $b ; done <(input)
 
 
 

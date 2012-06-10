@@ -24,7 +24,7 @@ public class xmkpipe extends BuiltinCommand {
 	
 	public int run( List<XValue> args ) throws Exception {
 
-		Options opts = new Options( "x=xml,s=size:"  );
+		Options opts = new Options( "x=xml,s=size:,close"  );
 		opts.parse(args);
 		
 
@@ -37,6 +37,15 @@ public class xmkpipe extends BuiltinCommand {
 			return 1;
 		}
 		String name = args.get(0).toString();
+		XIOEnvironment ioenv = mShell.getEnv().getSavedIO();
+		
+		if( opts.hasOpt("close")){
+			ioenv.getOutputPort(name).close();
+			return 0;
+			
+		}
+		
+		
 
 		PipedPort pipe = null ;
 		if( opts.hasOpt("x"))
@@ -50,7 +59,7 @@ public class xmkpipe extends BuiltinCommand {
 			else
 				pipe = new PipedStreamPort();
 		
-		XIOEnvironment ioenv = mShell.getEnv().getSavedIO();
+
 		
 		ioenv.setInput(name, pipe.getInput());
 		ioenv.setOutput(name, pipe.getOutput());
