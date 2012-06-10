@@ -87,7 +87,7 @@ public class SimpleCommand extends Command {
 			
 		}
 		
-		XIOEnvironment saved_io = null ;
+		
 		Shell		   saved_shell = null;
 		Module		   saved_module = null;
 		
@@ -95,7 +95,8 @@ public class SimpleCommand extends Command {
 		 * If there is a prefix then clone the shell, otherwise just clone the IO
 		 */
 		if( mPrefix == null )
-			saved_io = shell.getEnv().saveIO();
+			shell.getEnv().saveIO();
+		
 		else {
 			saved_shell = shell ;
 			shell = shell.clone();
@@ -145,8 +146,9 @@ public class SimpleCommand extends Command {
 		
 		finally {
 			ShellContext.set(saved_context_shell);
-			if( saved_io != null )
-				shell.getEnv().restoreIO(saved_io);
+			
+			if( mPrefix == null )
+			     shell.getEnv().restoreIO();
 			else
 			if( saved_shell != null )
 				shell.close();

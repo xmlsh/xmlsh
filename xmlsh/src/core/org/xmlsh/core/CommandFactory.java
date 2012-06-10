@@ -36,6 +36,7 @@ import org.xmlsh.commands.builtin.xcontinue;
 import org.xmlsh.commands.builtin.xecho;
 import org.xmlsh.commands.builtin.xfalse;
 import org.xmlsh.commands.builtin.ximport;
+import org.xmlsh.commands.builtin.xmkpipe;
 import org.xmlsh.commands.builtin.xmlsh;
 import org.xmlsh.commands.builtin.xmlshui;
 import org.xmlsh.commands.builtin.xread;
@@ -104,6 +105,7 @@ public class CommandFactory
 		addBuiltin("require", require.class);
 		addBuiltin("jset" , jset.class );
 		addBuiltin("xmlshui" , xmlshui.class);
+		addBuiltin("xmkpipe" , xmkpipe.class);
 		
 		
 

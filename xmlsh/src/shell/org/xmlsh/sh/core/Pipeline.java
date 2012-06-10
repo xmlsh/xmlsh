@@ -113,10 +113,10 @@ public class Pipeline extends Command {
 			threads.add(sht);
 		}
 		
-		XIOEnvironment saved_io = null ;
+		
 		
 		if( ncmds > 1 )
-			saved_io = shell.getEnv().saveIO();
+			shell.getEnv().saveIO();
 		try 
 		{
 			
@@ -141,8 +141,8 @@ public class Pipeline extends Command {
 			
 			
 		} finally {
-			if(saved_io != null )
-				shell.getEnv().restoreIO(saved_io);
+			if( ncmds > 1 )
+				shell.getEnv().restoreIO();
 			
 		}
 			

@@ -49,7 +49,7 @@ public class IfClause extends CompoundCommand
 	
 	public int exec(Shell shell) throws Exception 
 	{
-		XIOEnvironment io = shell.getEnv().saveIO();
+		shell.getEnv().saveIO();
 		try {
 			applyRedirect(shell);
 			
@@ -67,7 +67,7 @@ public class IfClause extends CompoundCommand
 				ret = shell.exec( mElsePart );
 			return ret;
 		} finally {
-			shell.getEnv().restoreIO(io);
+			shell.getEnv().restoreIO();
 		}
 	}
 }

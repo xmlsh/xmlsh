@@ -55,7 +55,7 @@ public class TryCatchFinally extends CompoundCommand
 	
 	public int exec(Shell shell) throws Exception 
 	{
-		XIOEnvironment io = shell.getEnv().saveIO();
+		shell.getEnv().saveIO();
 		try {
 			applyRedirect(shell);
 			
@@ -87,7 +87,7 @@ public class TryCatchFinally extends CompoundCommand
 		
 			return ret;
 		} finally {
-			shell.getEnv().restoreIO(io);
+			shell.getEnv().restoreIO();
 		}
 	}
 }

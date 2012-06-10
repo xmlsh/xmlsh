@@ -23,10 +23,19 @@ public class PipedXDMPort extends PipedPort {
 	private		XdmStreamOutputPort 	mOut;
 	private		XdmItemPipe		mPipe;
 	
+	private static int sDefaultSize = 100 ;
 	
-	public PipedXDMPort(SerializeOpts opts)  throws IOException
+	
+	public PipedXDMPort(SerializeOpts opts)  throws IOException 
 	{
-		mPipe = new XdmItemPipe();
+		mPipe = new XdmItemPipe(sDefaultSize);
+		
+		mIn = new XdmStreamInputPort(mPipe.getReadEnd(), opts);
+		mOut = new XdmStreamOutputPort(mPipe.getWriteEnd(),opts);
+	}
+	public PipedXDMPort(SerializeOpts opts, int size)  throws IOException
+	{
+		mPipe = new XdmItemPipe(size);
 	
 		mIn = new XdmStreamInputPort(mPipe.getReadEnd(), opts);
 		mOut = new XdmStreamOutputPort(mPipe.getWriteEnd(),opts);

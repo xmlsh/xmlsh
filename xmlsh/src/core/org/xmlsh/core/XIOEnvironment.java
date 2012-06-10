@@ -30,8 +30,8 @@ public class XIOEnvironment {
 	
 	
 	
-	PortList<InputPort>		mInputs ;
-	PortList<OutputPort>	mOutputs ;
+	private PortList<InputPort>		mInputs ;
+	private PortList<OutputPort>	mOutputs ;
 	
 
 	private	 boolean				 mStdinRedirected = false;

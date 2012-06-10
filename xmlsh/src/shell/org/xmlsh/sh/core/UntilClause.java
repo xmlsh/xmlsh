@@ -33,7 +33,7 @@ public class UntilClause extends CompoundCommand {
 
 	public int exec(Shell shell) throws Exception {
 		
-		XIOEnvironment io = shell.getEnv().saveIO();
+		shell.getEnv().saveIO();
 		ControlLoop loop = shell.pushLoop(  );
 		try {
 			applyRedirect(shell);
@@ -45,7 +45,7 @@ public class UntilClause extends CompoundCommand {
 		}
 		finally {
 			shell.popLoop(  loop );
-			shell.getEnv().restoreIO(io);
+			shell.getEnv().restoreIO();
 		}
 		
 		return 0;

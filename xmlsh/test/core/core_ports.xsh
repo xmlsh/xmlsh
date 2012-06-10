@@ -54,6 +54,17 @@ xecho $_var
 unset _var
 
 
+# Test named ports (output)
+
+echo -p output output 
+echo output2 >(output)
+for i in output3 ; do 
+   echo $i 
+done >(output)
+
+echo output4 |  while read a ; do echo $a ; done >(output)
+
+
 
 
 

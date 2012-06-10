@@ -35,7 +35,7 @@ public class SubShell extends CompoundCommand {
 		 * Save the IO environment then redirect before cloning
 		 * the shell so that port redirections take place in the parent shell
 		 */
-		XIOEnvironment io = shell.getEnv().saveIO();
+		shell.getEnv().saveIO();
 		try {
 			applyRedirect(shell);
 			
@@ -47,7 +47,7 @@ public class SubShell extends CompoundCommand {
 				subshell.close();
 			}
 		} finally {
-			shell.getEnv().restoreIO(io);
+			shell.getEnv().restoreIO();
 		}
 		
 		

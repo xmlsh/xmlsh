@@ -14,6 +14,7 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collection;
+import java.util.Stack;
 
 import javax.xml.transform.Source;
 
@@ -36,6 +37,8 @@ public class XEnvironment  {
 	private		Variables	mVars;
 	private		Namespaces	mNamespaces = null;
 	private		AutoReleasePool  mAutoRelease = null;
+
+	private		Stack<XIOEnvironment>  mSavedIO;
 	
 	
 
@@ -209,17 +212,21 @@ public class XEnvironment  {
 	 * Save the environment by cloning it and pushing it to this
 	 * and return the OLD environment
 	 */
-	public XIOEnvironment saveIO()
+	public void saveIO() throws CoreException
 	{
-		XIOEnvironment io = mIO;
-		mIO = new XIOEnvironment(io);
-		return io;
+		if( mSavedIO == null )
+			mSavedIO = new Stack<XIOEnvironment>();
+			
+		mSavedIO.push(mIO);
+		mIO = new XIOEnvironment(mIO);
+
 	}
 	
-	public void restoreIO( XIOEnvironment io )
+	public void restoreIO()
 	{
 		mIO.release();
-		mIO = io;
+		mIO = mSavedIO.pop();
+
 		
 	}
 
@@ -602,8 +609,14 @@ public class XEnvironment  {
 	}
 
 
+	/**
+	 * @return the savedIO
+	 */
+	public XIOEnvironment getSavedIO() {
+		return mSavedIO.peek();
+	}
 
-
+    
 
 }
 //

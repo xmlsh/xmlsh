@@ -30,12 +30,12 @@ public class BraceGroup extends CompoundCommand {
 	@Override
 	public int exec(Shell shell) throws Exception {
 
-		XIOEnvironment io = shell.getEnv().saveIO();
+		shell.getEnv().saveIO();
 		try {
 			applyRedirect(shell);
 			return shell.exec( mCommand);
 		} finally {
-			shell.getEnv().restoreIO(io);
+			shell.getEnv().restoreIO();
 		}
 
 	

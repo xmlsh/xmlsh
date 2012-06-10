@@ -18,15 +18,22 @@ import org.xmlsh.core.StreamOutputPort;
 public class PipedStreamPort extends PipedPort {
 	private		PipedInputStream 	mIn;
 	private		PipedOutputStream 	mOut;
+	private		static final int sDefaultSize = 10*1024;
 	
 	public PipedStreamPort()  throws IOException
 	{
 	
 		mOut = new PipedOutputStream();
-		mIn = new PipedInputStream(mOut);
+		mIn = new PipedInputStream(mOut,sDefaultSize);
 		
 	}
 	
+	public PipedStreamPort(int size) throws IOException {
+		mOut = new PipedOutputStream();
+		mIn = new PipedInputStream(mOut,size);
+		
+	}
+
 	public	InputPort	getInput() throws IOException { 
 		return new StreamInputPort(mIn,null) ; 
 	}

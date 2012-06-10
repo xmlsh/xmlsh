@@ -18,7 +18,7 @@ import net.sf.saxon.s9api.XdmValue;
 
 
 public class XdmItemPipe {
-	BlockingQueue<XdmItem>   mQueue = new LinkedBlockingQueue<XdmItem>();
+	BlockingQueue<XdmItem>   mQueue ;
 	
 	// Special EOF marker indicating closed pipe
 	private static XdmItem mEOF = new XdmAtomicValue("");
@@ -77,6 +77,10 @@ public class XdmItemPipe {
 	
 	
 	
+	public XdmItemPipe(int size) {
+		mQueue = new LinkedBlockingQueue<XdmItem>(size);
+	}
+
 	public IXdmItemReader getReadEnd() {
 		return new XdmItemPipeReader();
 	}
