@@ -720,6 +720,10 @@ public class XValue {
 		
 	}
 
+	public int toInt() throws XPathException {
+		return (int) toLong();
+	}
+
 
 	
 
