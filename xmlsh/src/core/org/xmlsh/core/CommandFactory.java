@@ -21,6 +21,7 @@ import org.xmlsh.commands.builtin.exit;
 import org.xmlsh.commands.builtin.jobs;
 import org.xmlsh.commands.builtin.jset;
 import org.xmlsh.commands.builtin.log;
+import org.xmlsh.commands.builtin.printvar;
 import org.xmlsh.commands.builtin.read;
 import org.xmlsh.commands.builtin.require;
 import org.xmlsh.commands.builtin.set;
@@ -106,6 +107,7 @@ public class CommandFactory
 		addBuiltin("jset" , jset.class );
 		addBuiltin("xmlshui" , xmlshui.class);
 		addBuiltin("xmkpipe" , xmkpipe.class);
+		addBuiltin("printvar" , printvar.class);
 		
 		
 
