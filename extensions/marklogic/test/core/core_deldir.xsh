@@ -1,6 +1,6 @@
 # test deleting individual files
 . ../init
-ml:createdir /test/dir1/ /test/dir2/ /test/dir3/
+ml:createdir /test/ /test/dir1/ /test/dir2/ /test/dir3/
 
 ml:put -uri /test/dir1/test1.xml <[ <foo/> ]>
 ml:put -uri /test/dir2/test2.xml <[ <bar/> ]>
