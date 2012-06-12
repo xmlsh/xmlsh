@@ -70,20 +70,20 @@ public class XIOEnvironment {
 
 	public InputPort setInput(String name, InputPort port) throws CoreException {
 		InputPort in;
+		
+		
 		if( name == null || name.equals(kSTDIN) ){
 			name = kSTDIN ;
-			in =  mInputs.getDefault();
+			
 			mStdinRedirected = true ;
 		}
-		else
-			in	= mInputs.get(name);
+		
+		in	= mInputs.removeNamed(name);
 
 		
-		if( in != null ){
-			mInputs.removePort( in );
+		if( in != null )
 			in.release();
-		}
-
+		
 		mInputs.add( new NamedPort<InputPort>( name , name.equals(kSTDIN)  , port  ));
 		return port ;
 		
@@ -96,17 +96,14 @@ public class XIOEnvironment {
 
 	public void setOutput(String name , OutputPort port) throws CoreException {
 		OutputPort out ;
-		if( name == null ){
-			out =  mOutputs.getDefault();
+		if( name == null )
 			name = kSTDOUT ;
-		}
-		else
-			out = mOutputs.get(name);
+		
+		out = mOutputs.removeNamed(name);
 
-		if (out != null) {
-			mOutputs.removePort(out);
+		if (out != null) 
 			out.release();
-		}
+		
 
 		mOutputs.add(new NamedPort<OutputPort>(name, name.equals(kSTDOUT) , port));
 	}
@@ -123,13 +120,13 @@ public class XIOEnvironment {
 
 	}
 	public void setStderr(OutputPort err) throws CoreException {
-		OutputPort stderr = mOutputs.get(kSTDERR);
+		OutputPort stderr = mOutputs.removeNamed(kSTDERR);
 
 		
-		if( stderr != null ){
-			mOutputs.removePort( stderr );
+		if( stderr != null )
+			
 			stderr.release();
-		}
+		
 	
 		mOutputs.add(new NamedPort<OutputPort>(kSTDERR,false,err));
 

@@ -338,17 +338,21 @@ public class Shell {
 	}
 	
 	
-	public void close()
+	public void close() 
 	{
-		if( mEnv != null ){
-			mEnv.close();
-			mEnv = null ;
-		}
-		if( mSavedCD != null )
-			SystemEnvironment.getInstance().setProperty("user.dir", mSavedCD);
-		if( mSession != null ){
-			mSession.release();
-			mSession = null ;
+		try {
+			if( mEnv != null ){
+				mEnv.close();
+				mEnv = null ;
+			}
+			if( mSavedCD != null )
+				SystemEnvironment.getInstance().setProperty("user.dir", mSavedCD);
+			if( mSession != null ){
+				mSession.release();
+				mSession = null ;
+			}
+		} catch (CoreException e) {
+			mLogger.error("Exception closing shell" , e);
 		}
 	
 	

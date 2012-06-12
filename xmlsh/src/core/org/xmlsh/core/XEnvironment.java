@@ -180,7 +180,10 @@ public class XEnvironment  {
 	}
 
 
-	public void close() {
+	public void close() throws CoreException {
+		if( this.mSavedIO != null && ! mSavedIO.isEmpty())
+		   throw new CoreException("FIXME");
+		
 		mIO.release();
 		if( mAutoRelease != null ){
 			mAutoRelease.close();

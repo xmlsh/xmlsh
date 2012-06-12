@@ -32,16 +32,6 @@ public class PortList<P extends IPort> extends ArrayList<NamedPort<P>>
 		
 	}
 	
-	void removePort( P port )
-	{
-		for( NamedPort<P> e : this ){
-			if( e.mPort == port){
-				remove( e );
-				return ;
-			}
-		}
-	}
-	
 	void close() throws CoreException
 	{
 		for( NamedPort<P> e : this )
@@ -56,6 +46,17 @@ public class PortList<P extends IPort> extends ArrayList<NamedPort<P>>
 			add( e );
 		}
 		
+	}
+
+	public P removeNamed(String name) {
+		for(NamedPort<P> e : this ){
+			if( Util.isEqual( e.mName , name )){
+				remove(e);
+				return e.mPort;
+
+			}
+		}
+		return null ;
 	}
 	
 	
