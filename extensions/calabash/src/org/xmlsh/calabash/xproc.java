@@ -304,8 +304,7 @@ public class xproc extends XCommand {
 		
 		try {
 	        Receiver out = destination.getReceiver(runtime.getProcessor().getUnderlyingConfiguration());
-	        ComplexContentOutputter out2 = new ComplexContentOutputter();
-	        out2.setPipelineConfiguration(runtime.getProcessor().getUnderlyingConfiguration().makePipelineConfiguration());
+	        ComplexContentOutputter out2 = new ComplexContentOutputter(runtime.getProcessor().getUnderlyingConfiguration().makePipelineConfiguration());
 	        out2.setReceiver(out);
 	        
 	        TreeReceiver tree = new TreeReceiver(out2);
