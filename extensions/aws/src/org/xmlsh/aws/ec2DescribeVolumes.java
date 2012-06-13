@@ -8,6 +8,7 @@ import javax.xml.stream.XMLStreamException;
 import net.sf.saxon.s9api.SaxonApiException;
 import org.xmlsh.aws.util.AWSEC2Command;
 import org.xmlsh.aws.util.SafeXMLStreamWriter;
+import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
@@ -76,7 +77,7 @@ public class ec2DescribeVolumes extends AWSEC2Command {
 	}
 
 
-	private int describe(List<XValue> args) throws IOException, XMLStreamException, InvalidArgumentException, SaxonApiException {
+	private int describe(List<XValue> args) throws IOException, XMLStreamException, SaxonApiException, CoreException {
 		
 
 		OutputPort stdout = this.getStdout();
@@ -104,10 +105,10 @@ public class ec2DescribeVolumes extends AWSEC2Command {
 			
 			
 			
-			attribute("volume_id" , volume.getVolumeId() );
-			attribute( "snapshot_id " , volume.getSnapshotId() );
-			attribute( "availability_zone", volume.getAvailabilityZone());
-			attribute( "create_date", Util.formatXSDateTime(volume.getCreateTime()));
+			attribute("volume-id" , volume.getVolumeId() );
+			attribute( "snapshot-id " , volume.getSnapshotId() );
+			attribute( "availability-zone", volume.getAvailabilityZone());
+			attribute( "create-date", Util.formatXSDateTime(volume.getCreateTime()));
 			attribute( "size", volume.getSize().toString());
 			attribute( "state" , volume.getState());
 			writeAttachements( volume.getAttachments());

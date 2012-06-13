@@ -35,7 +35,7 @@ public abstract class AWSSNSCommand extends AWSCommand {
 
 //
 //
-// Copyright (C) 2008,2009,2010,2011,2012 , David A. Lee.
+// Copyright (C) 2008-2012  David A. Lee.
 //
 // The contents of this file are subject to the "Simplified BSD License" (the
 // "License");

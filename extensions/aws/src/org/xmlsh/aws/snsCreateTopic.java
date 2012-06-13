@@ -7,6 +7,7 @@ import javax.xml.stream.XMLStreamException;
 
 import net.sf.saxon.s9api.SaxonApiException;
 import org.xmlsh.aws.util.AWSSNSCommand;
+import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
@@ -71,7 +72,7 @@ public class snsCreateTopic extends AWSSNSCommand {
 	}
 
 
-	private int create(String name ) throws IOException, XMLStreamException, InvalidArgumentException, SaxonApiException {
+	private int create(String name ) throws IOException, XMLStreamException, SaxonApiException, CoreException {
 		
 
 		CreateTopicRequest request = new CreateTopicRequest();

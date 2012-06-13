@@ -98,7 +98,7 @@ public class ec2DisassociateAddress extends AWSEC2Command {
 		startDocument();
 		startElement(this.getName());
 		startElement("address");
-		attribute("public_ip",ip);
+		attribute("public-ip",ip);
 		endElement();
 		endElement();
 		endDocument();

@@ -10,6 +10,7 @@ import javax.xml.stream.XMLStreamException;
 import net.sf.saxon.s9api.SaxonApiException;
 import org.xmlsh.aws.util.AWSEC2Command;
 import org.xmlsh.aws.util.SafeXMLStreamWriter;
+import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
@@ -83,7 +84,7 @@ public class ec2RunInstances extends AWSEC2Command {
 		return ret;	
 	}
 
-	private int runInstance( String ami_id, Options opts ) throws InvalidArgumentException, IOException, XMLStreamException, SaxonApiException 
+	private int runInstance( String ami_id, Options opts ) throws IOException, XMLStreamException, SaxonApiException, CoreException 
 	{
 /*
  	ec2-run-instances ami_id [-n instance_count] [-g group [-g group ...]] 
@@ -177,7 +178,7 @@ public class ec2RunInstances extends AWSEC2Command {
 		return 0;
 	}
 
-	private void writeResult(RunInstancesResult result) throws IOException, InvalidArgumentException, XMLStreamException, SaxonApiException {
+	private void writeResult(RunInstancesResult result) throws IOException, XMLStreamException, SaxonApiException, CoreException {
 		OutputPort stdout = this.getStdout();
 		mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(mSerializeOpts));
 		

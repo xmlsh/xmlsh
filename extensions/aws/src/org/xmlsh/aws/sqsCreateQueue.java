@@ -9,6 +9,7 @@ import javax.xml.stream.XMLStreamException;
 
 import net.sf.saxon.s9api.SaxonApiException;
 import org.xmlsh.aws.util.AWSSQSCommand;
+import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
@@ -73,7 +74,7 @@ public class sqsCreateQueue extends AWSSQSCommand {
 	}
 
 
-	private int create(String name , int timeout ) throws IOException, XMLStreamException, InvalidArgumentException, SaxonApiException {
+	private int create(String name , int timeout ) throws IOException, XMLStreamException, SaxonApiException, CoreException {
 		
 
 		CreateQueueRequest request = new CreateQueueRequest();

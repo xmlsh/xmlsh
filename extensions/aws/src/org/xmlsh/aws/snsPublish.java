@@ -7,6 +7,7 @@ import javax.xml.stream.XMLStreamException;
 
 import net.sf.saxon.s9api.SaxonApiException;
 import org.xmlsh.aws.util.AWSSNSCommand;
+import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
@@ -65,7 +66,7 @@ public class snsPublish extends AWSSNSCommand {
 	}
 
 
-	private int publish(String topic,String subject, String message) throws IOException, XMLStreamException, InvalidArgumentException, SaxonApiException {
+	private int publish(String topic,String subject, String message) throws IOException, XMLStreamException, SaxonApiException, CoreException {
 		
 
 		PublishRequest request = new PublishRequest().withTopicArn(topic).withMessage(message).withSubject(subject);

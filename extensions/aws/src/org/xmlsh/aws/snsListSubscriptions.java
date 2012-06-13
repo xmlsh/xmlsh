@@ -7,6 +7,7 @@ import javax.xml.stream.XMLStreamException;
 
 import net.sf.saxon.s9api.SaxonApiException;
 import org.xmlsh.aws.util.AWSSNSCommand;
+import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
@@ -66,7 +67,7 @@ public class snsListSubscriptions extends AWSSNSCommand {
 	}
 
 
-	private int list() throws IOException, XMLStreamException, InvalidArgumentException, SaxonApiException {
+	private int list() throws IOException, XMLStreamException, SaxonApiException, CoreException {
 		
 
 		OutputPort stdout = this.getStdout();
@@ -85,8 +86,8 @@ public class snsListSubscriptions extends AWSSNSCommand {
 				attribute("endpoint",subscription.getEndpoint());
 				attribute("owner",subscription.getOwner());
 				attribute("protocol",subscription.getProtocol());
-				attribute("subscription_arn",subscription.getSubscriptionArn());
-				attribute("topic_arn",subscription.getTopicArn());
+				attribute("subscription-arn",subscription.getSubscriptionArn());
+				attribute("topic-arn",subscription.getTopicArn());
 				
 				endElement();
 				
@@ -114,7 +115,7 @@ public class snsListSubscriptions extends AWSSNSCommand {
 		
 	}
 
-	private int list(String topic) throws IOException, XMLStreamException, InvalidArgumentException, SaxonApiException {
+	private int list(String topic) throws IOException, XMLStreamException, SaxonApiException, CoreException {
 		
 
 		OutputPort stdout = this.getStdout();
@@ -133,8 +134,8 @@ public class snsListSubscriptions extends AWSSNSCommand {
 				attribute("endpoint",subscription.getEndpoint());
 				attribute("owner",subscription.getOwner());
 				attribute("protocol",subscription.getProtocol());
-				attribute("subscription_arn",subscription.getSubscriptionArn());
-				attribute("topic_arn",subscription.getTopicArn());
+				attribute("subscription-arn",subscription.getSubscriptionArn());
+				attribute("topic-arn",subscription.getTopicArn());
 				
 				endElement();
 				

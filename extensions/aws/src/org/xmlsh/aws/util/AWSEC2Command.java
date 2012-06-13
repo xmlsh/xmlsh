@@ -16,6 +16,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import net.sf.saxon.s9api.SaxonApiException;
+import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
@@ -62,7 +63,7 @@ public abstract class AWSEC2Command extends AWSCommand {
 
 
 	protected void writeStateChages(List<InstanceStateChange> states) throws IOException, XMLStreamException,
-			InvalidArgumentException, SaxonApiException {
+			SaxonApiException, CoreException {
 				
 				OutputPort stdout = this.getStdout();
 				mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(mSerializeOpts));
@@ -78,16 +79,18 @@ public abstract class AWSEC2Command extends AWSCommand {
 				
 				endElement();
 				endDocument();
-				closeWriter();		
 				
+				closeWriter();		
+				stdout.writeSequenceTerminator(mSerializeOpts);
+				stdout.release();
 				
 				
 			}
 
 
 	private void writeStateChange(InstanceStateChange change) throws XMLStreamException {
-		startElement("state_change");
-		attribute( "instance_id" , change.getInstanceId() );
+		startElement("state-change");
+		attribute( "instance-id" , change.getInstanceId() );
 		InstanceState current = change.getCurrentState();
 		InstanceState prev = change.getPreviousState();
 		writeState( "current" , current );
@@ -117,35 +120,35 @@ public abstract class AWSEC2Command extends AWSCommand {
 		 
 		for( Instance inst : res.getInstances() ){
 			startElement("instance");
-			attribute( "instance_id" , inst.getInstanceId() );
+			attribute( "instance-id" , inst.getInstanceId() );
 			attribute( "image" , inst.getImageId() );
-			attribute( "key_name" ,  inst.getKeyName());
+			attribute( "key-name" ,  inst.getKeyName());
 			attribute( "architecture" , inst.getArchitecture());
-			attribute( "client_token" , inst.getClientToken() );
+			attribute( "client-token" , inst.getClientToken() );
 			attribute( "lifecycle" , Util.notNull( inst.getInstanceLifecycle()) );
-			attribute( "instance_type" , inst.getInstanceType());
-			attribute( "kernel_id" , inst.getKernelId() );
+			attribute( "instance-type" , inst.getInstanceType());
+			attribute( "kernel-id" , inst.getKernelId() );
 			attribute( "platform" , inst.getPlatform() );
-			attribute( "private_dns" , inst.getPrivateDnsName());
-			attribute( "private_ip" , inst.getPrivateIpAddress() );
-			attribute( "public_dns" , inst.getPublicDnsName());
-			attribute( "public_ip" , inst.getPublicIpAddress() );
-			attribute( "ramdisk_id" , inst.getRamdiskId());
-			attribute( "root_device_name" , inst.getRootDeviceName() );
+			attribute( "private-dns" , inst.getPrivateDnsName());
+			attribute( "private-ip" , inst.getPrivateIpAddress() );
+			attribute( "public-dns" , inst.getPublicDnsName());
+			attribute( "public-ip" , inst.getPublicIpAddress() );
+			attribute( "ramdisk-id" , inst.getRamdiskId());
+			attribute( "root-device-name" , inst.getRootDeviceName() );
 			
-			attribute( "spot_request_id" , inst.getSpotInstanceRequestId() );
-			attribute( "state_transistion_reason" , inst.getStateTransitionReason() );
-			attribute( "subnet_id" , inst.getSubnetId() );
+			attribute( "spot-request-id" , inst.getSpotInstanceRequestId() );
+			attribute( "state-transistion-reason" , inst.getStateTransitionReason() );
+			attribute( "subnet-id" , inst.getSubnetId() );
 			attribute( "state" , inst.getState().getName() );
-			attribute( "virtualization_type" , inst.getVirtualizationType() );
+			attribute( "virtualization-type" , inst.getVirtualizationType() );
 			attribute( "vpcid" , inst.getVpcId() );
-			attribute( "ami_launch_index" , inst.getAmiLaunchIndex().toString() );
+			attribute( "ami-launch-index" , inst.getAmiLaunchIndex().toString() );
 			
-			attribute( "launch_date" , Util.formatXSDateTime(inst.getLaunchTime()) );
+			attribute( "launch-date" , Util.formatXSDateTime(inst.getLaunchTime()) );
 			attribute( "license" , getLicense(inst) );
 			attribute( "monitoring" , inst.getMonitoring().getState() );
-			attribute( "source_dest_check" , getSourceCheck(inst) );
-			attribute( "state_reason" , getStateReason(inst) );
+			attribute( "source-dest-check" , getSourceCheck(inst) );
+			attribute( "state-reason" , getStateReason(inst) );
 			
 	
 			writeProductCodes( inst.getProductCodes() );
@@ -193,9 +196,9 @@ public abstract class AWSEC2Command extends AWSCommand {
 	public void writeProductCodes(List<ProductCode> productCodes) throws XMLStreamException {
 		if( productCodes == null )
 			return ;
-		startElement("product_codes");
+		startElement("product-codes");
 		for( ProductCode code : productCodes ){
-			startElement("product_code");
+			startElement("product-code");
 			attribute( "id" , code.getProductCodeId() );
 			endElement();
 			
@@ -233,8 +236,8 @@ public abstract class AWSEC2Command extends AWSCommand {
 	public void writePlacement(Placement placement)
 			throws XMLStreamException {
 		startElement("placement");
-		attribute( "availability_zone" , placement.getAvailabilityZone() );
-		attribute( "group_name" , placement.getGroupName());
+		attribute( "availability-zone" , placement.getAvailabilityZone() );
+		attribute( "group-name" , placement.getGroupName());
 		attribute("tenancy", placement.getTenancy() );
 		endElement();
 	}
@@ -247,9 +250,9 @@ public abstract class AWSEC2Command extends AWSCommand {
 		
 		EbsInstanceBlockDevice ebs = device.getEbs();
 		attribute( "status" , ebs.getStatus() );
-		attribute("volume_id", ebs.getVolumeId());
-		attribute("attach_date" , Util.formatXSDateTime(ebs.getAttachTime()));
-		attribute("delete_on_termination", ebs.getDeleteOnTermination().toString());
+		attribute("volume-id", ebs.getVolumeId());
+		attribute("attach-date" , Util.formatXSDateTime(ebs.getAttachTime()));
+		attribute("delete-on-termination", ebs.getDeleteOnTermination().toString());
 		endElement();
 	}
 
@@ -287,11 +290,11 @@ public abstract class AWSEC2Command extends AWSCommand {
 
 	protected void writeAttachment(VolumeAttachment attachment) throws XMLStreamException {
 		startElement("attachment");
-		attribute( "delete_on_termination", AWSUtil.parseBoolean(attachment.getDeleteOnTermination()));
-		attribute( "attach_date", Util.formatXSDateTime(attachment.getAttachTime()));
+		attribute( "delete-on-termination", AWSUtil.parseBoolean(attachment.getDeleteOnTermination()));
+		attribute( "attach-date", Util.formatXSDateTime(attachment.getAttachTime()));
 		attribute( "device", attachment.getDevice());
-		attribute( "instance_id", attachment.getInstanceId() );
-		attribute( "volume_id", attachment.getVolumeId());
+		attribute( "instance-id", attachment.getInstanceId() );
+		attribute( "volume-id", attachment.getVolumeId());
 		endElement();
 	}
 
@@ -309,7 +312,7 @@ public abstract class AWSEC2Command extends AWSCommand {
 
 
 	protected void writeBlockDeviceMappings(List<BlockDeviceMapping> deviceMappings) throws XMLStreamException {
-		startElement("device_mappings");
+		startElement("device-mappings");
 		for( BlockDeviceMapping mapping : deviceMappings )
 			writeBlockDeviceMapping(mapping);
 		endElement();
@@ -324,9 +327,9 @@ public abstract class AWSEC2Command extends AWSCommand {
 		
 		EbsBlockDevice ebs = device.getEbs();
 		
-		attribute( "shapshot_id" , ebs.getSnapshotId() );
-		attribute( "delete_on_termination" , ebs.getDeleteOnTermination());
-		attribute("volume_size" , ebs.getVolumeSize().toString() );
+		attribute( "shapshot-id" , ebs.getSnapshotId() );
+		attribute( "delete-on-termination" , ebs.getDeleteOnTermination());
+		attribute("volume-size" , ebs.getVolumeSize().toString() );
 
 		
 		
@@ -346,7 +349,7 @@ public abstract class AWSEC2Command extends AWSCommand {
 
 //
 //
-// Copyright (C) 2008,2009,2010,2011,2012 , David A. Lee.
+// Copyright (C) 2008-2012  David A. Lee.
 //
 // The contents of this file are subject to the "Simplified BSD License" (the
 // "License");

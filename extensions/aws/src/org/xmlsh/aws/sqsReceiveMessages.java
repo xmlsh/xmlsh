@@ -9,6 +9,7 @@ import javax.xml.stream.XMLStreamException;
 
 import net.sf.saxon.s9api.SaxonApiException;
 import org.xmlsh.aws.util.AWSSQSCommand;
+import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
@@ -93,7 +94,7 @@ public class sqsReceiveMessages extends AWSSQSCommand {
 
 
 
-	private int receive(String url, int max ,  int visibilityTimeout , OutputPort out ) throws IOException, InvalidArgumentException, XMLStreamException, SaxonApiException  {
+	private int receive(String url, int max ,  int visibilityTimeout , OutputPort out ) throws IOException, XMLStreamException, SaxonApiException, CoreException  {
 		
 
 		List<String> attributeNames = new ArrayList<String>(1);

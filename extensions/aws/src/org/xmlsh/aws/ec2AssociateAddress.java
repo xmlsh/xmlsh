@@ -96,7 +96,7 @@ public class ec2AssociateAddress extends AWSEC2Command {
 		startElement(this.getName());
 		
 		startElement("association" );
-		attribute("associate_id" , result.getAssociationId() );
+		attribute("associate-id" , result.getAssociationId() );
 		endElement();
 		
 		

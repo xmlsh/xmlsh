@@ -109,7 +109,7 @@ public class sqsSendMessage extends AWSSQSCommand {
 	}
 
 
-	private int send(String url, String body ) throws IOException, InvalidArgumentException, XMLStreamException, SaxonApiException  {
+	private int send(String url, String body ) throws IOException, XMLStreamException, SaxonApiException, CoreException  {
 		
 
 		SendMessageRequest request = new SendMessageRequest(url, body);

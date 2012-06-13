@@ -9,6 +9,7 @@ import javax.xml.stream.XMLStreamWriter;
 import net.sf.saxon.s9api.SaxonApiException;
 import org.xmlsh.aws.util.AWSS3Command;
 import org.xmlsh.aws.util.S3Path;
+import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
@@ -92,7 +93,7 @@ public class s3ls extends AWSS3Command {
 	}
 
 
-	private int listBuckets() throws IOException, XMLStreamException, InvalidArgumentException, SaxonApiException {
+	private int listBuckets() throws IOException, XMLStreamException, SaxonApiException, CoreException {
 		
 
 		OutputPort stdout = this.getStdout();
@@ -107,7 +108,7 @@ public class s3ls extends AWSS3Command {
 			startElement("bucket");
 			attribute("name", bucket.getName());
 			if( bLongListing ) {
-				attribute("create_date",Util.formatXSDateTime(bucket.getCreationDate()));
+				attribute("create-date",Util.formatXSDateTime(bucket.getCreationDate()));
 				attribute("owner", bucket.getOwner().getDisplayName());
 				
 			}
@@ -137,8 +138,8 @@ public class s3ls extends AWSS3Command {
 	}
 
 
-	private int list(String s) throws IOException, InvalidArgumentException, XMLStreamException,
-			SaxonApiException, AmazonClientException, AmazonServiceException {
+	private int list(String s) throws IOException, XMLStreamException,
+			SaxonApiException, AmazonClientException, AmazonServiceException, CoreException {
 		
 		
 		S3Path path = new S3Path(s);
@@ -190,9 +191,9 @@ public class s3ls extends AWSS3Command {
 					
 					writer.writeAttribute("size", Long.toString(obj.getSize() ));
 					writer.writeAttribute("md5" , obj.getETag() );
-					writer.writeAttribute("mod_date", Util.formatXSDateTime(obj.getLastModified()) );
+					writer.writeAttribute("mod-date", Util.formatXSDateTime(obj.getLastModified()) );
 					writer.writeAttribute("owner", obj.getOwner().getDisplayName());
-					writer.writeAttribute("storage_class" , obj.getStorageClass() );
+					writer.writeAttribute("storage-class" , obj.getStorageClass() );
 				}
 				writer.writeEndElement();
 				

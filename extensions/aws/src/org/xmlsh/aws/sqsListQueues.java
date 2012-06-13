@@ -7,6 +7,7 @@ import javax.xml.stream.XMLStreamException;
 
 import net.sf.saxon.s9api.SaxonApiException;
 import org.xmlsh.aws.util.AWSSQSCommand;
+import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
@@ -63,7 +64,7 @@ public class sqsListQueues extends AWSSQSCommand {
 	}
 
 
-	private int list(String prefix) throws IOException, XMLStreamException, InvalidArgumentException, SaxonApiException {
+	private int list(String prefix) throws IOException, XMLStreamException, SaxonApiException, CoreException {
 		
 
 		OutputPort stdout = this.getStdout();

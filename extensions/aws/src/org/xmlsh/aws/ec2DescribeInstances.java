@@ -9,6 +9,7 @@ import javax.xml.stream.XMLStreamWriter;
 import net.sf.saxon.s9api.SaxonApiException;
 import org.xmlsh.aws.util.AWSEC2Command;
 import org.xmlsh.aws.util.SafeXMLStreamWriter;
+import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
@@ -93,7 +94,7 @@ public class ec2DescribeInstances extends AWSEC2Command {
 	}
 
 
-	private int describe(List<XValue> args) throws IOException, XMLStreamException, InvalidArgumentException, SaxonApiException {
+	private int describe(List<XValue> args) throws IOException, XMLStreamException, SaxonApiException, CoreException {
 		
 
 		OutputPort stdout = this.getStdout();

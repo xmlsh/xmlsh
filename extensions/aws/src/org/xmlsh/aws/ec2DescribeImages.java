@@ -8,6 +8,7 @@ import javax.xml.stream.XMLStreamException;
 import net.sf.saxon.s9api.SaxonApiException;
 import org.xmlsh.aws.util.AWSEC2Command;
 import org.xmlsh.aws.util.SafeXMLStreamWriter;
+import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
@@ -90,7 +91,7 @@ public class ec2DescribeImages extends AWSEC2Command {
 	}
 
 
-	private int describe(List<XValue> args) throws IOException, XMLStreamException, InvalidArgumentException, SaxonApiException {
+	private int describe(List<XValue> args) throws IOException, XMLStreamException, SaxonApiException, CoreException {
 		
 
 		OutputPort stdout = this.getStdout();
@@ -135,24 +136,24 @@ public class ec2DescribeImages extends AWSEC2Command {
 
 	private void writeImage(Image image) throws XMLStreamException {
 		startElement("image");
-		attribute("image_id", image.getImageId());
+		attribute("image-id", image.getImageId());
 		attribute( "architecture" , image.getArchitecture());
 		attribute( "hypervisor" , image.getHypervisor());
 		
 		
 		attribute( "location" , image.getImageLocation());
-		attribute( "owner_alias" , image.getImageOwnerAlias());
+		attribute( "owner-alias" , image.getImageOwnerAlias());
 		attribute( "type" , image.getImageType());
-		attribute( "kernel_id" , image.getKernelId());
+		attribute( "kernel-id" , image.getKernelId());
 		attribute( "name" , image.getName());
-		attribute( "owner_id" , image.getOwnerId());
+		attribute( "owner-id" , image.getOwnerId());
 		attribute( "platform" , image.getPlatform());
-		attribute( "ramdisk_id" , image.getRamdiskId());
-		attribute( "root_device_name" , image.getRootDeviceName());
-		attribute( "root_device_type" , image.getRootDeviceType());
+		attribute( "ramdisk-id" , image.getRamdiskId());
+		attribute( "root-device-name" , image.getRootDeviceName());
+		attribute( "root-device-type" , image.getRootDeviceType());
 		
 		attribute( "state" , image.getState());
-		attribute( "virtualization_type" , image.getVirtualizationType());
+		attribute( "virtualization-type" , image.getVirtualizationType());
 		attribute( "public" , image.getPublic() ? "true" : "false");
 
 		List<ProductCode> codes = image.getProductCodes();
@@ -179,7 +180,7 @@ public class ec2DescribeImages extends AWSEC2Command {
 
 	private void writeStateReason(StateReason stateReason) throws XMLStreamException {
 		if( stateReason != null ){
-		startElement("state_reason");
+		startElement("state-reason");
 		attribute("code",stateReason.getCode());
 		attribute("message" , stateReason.getMessage());
 		endElement();

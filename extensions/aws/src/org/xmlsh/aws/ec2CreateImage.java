@@ -10,6 +10,7 @@ import javax.xml.stream.XMLStreamException;
 import net.sf.saxon.s9api.SaxonApiException;
 import org.xmlsh.aws.util.AWSEC2Command;
 import org.xmlsh.aws.util.SafeXMLStreamWriter;
+import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
@@ -76,7 +77,7 @@ public class ec2CreateImage extends AWSEC2Command {
 		return ret;	
 	}
 
-	private int createImage( String ami_id, String name , Options opts ) throws InvalidArgumentException, IOException, XMLStreamException, SaxonApiException 
+	private int createImage( String ami_id, String name , Options opts ) throws IOException, XMLStreamException, SaxonApiException, CoreException 
 	{
 
 		
@@ -97,7 +98,7 @@ public class ec2CreateImage extends AWSEC2Command {
 		return 0;
 	}
 
-	private void writeResult(CreateImageResult result) throws IOException, InvalidArgumentException, XMLStreamException, SaxonApiException {
+	private void writeResult(CreateImageResult result) throws IOException, XMLStreamException, SaxonApiException, CoreException {
 		OutputPort stdout = this.getStdout();
 		mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(mSerializeOpts));
 		
@@ -106,7 +107,7 @@ public class ec2CreateImage extends AWSEC2Command {
 		startElement(this.getName());
 		
 		startElement("image");
-		attribute( "image_id",result.getImageId());
+		attribute( "image-id",result.getImageId());
 		endElement();
 		
 		endElement();

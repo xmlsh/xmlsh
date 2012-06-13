@@ -13,6 +13,7 @@ import net.sf.saxon.s9api.SaxonApiException;
 import org.xmlsh.aws.util.AWSEC2Command;
 import org.xmlsh.aws.util.AWSUtil;
 import org.xmlsh.aws.util.SafeXMLStreamWriter;
+import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
@@ -89,7 +90,7 @@ public class ec2DescribeAddresses extends AWSEC2Command {
 	}
 
 
-	private int describe(List<XValue> args) throws IOException, XMLStreamException, InvalidArgumentException, SaxonApiException {
+	private int describe(List<XValue> args) throws IOException, XMLStreamException, SaxonApiException, CoreException {
 		
 
 		OutputPort stdout = this.getStdout();
@@ -115,8 +116,8 @@ public class ec2DescribeAddresses extends AWSEC2Command {
 			startElement("address");
 			
 			
-			attribute("public_ip", addr.getPublicIp() );
-			attribute( "instance_id" , addr.getInstanceId() );
+			attribute("public-ip", addr.getPublicIp() );
+			attribute( "instance-id" , addr.getInstanceId() );
 			
 			endElement();
 			

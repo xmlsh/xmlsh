@@ -8,6 +8,7 @@ import javax.xml.stream.XMLStreamException;
 
 import net.sf.saxon.s9api.SaxonApiException;
 import org.xmlsh.aws.util.AWSEC2Command;
+import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.UnexpectedException;
@@ -71,7 +72,7 @@ public class ec2StopInstances extends AWSEC2Command {
 
 
 
-	private int stop( String[] instances ) throws InvalidArgumentException, IOException, XMLStreamException, SaxonApiException 
+	private int stop( String[] instances ) throws IOException, XMLStreamException, SaxonApiException, CoreException 
 	{
 	
 		StopInstancesRequest  request = new StopInstancesRequest( Arrays.asList(instances));
@@ -81,6 +82,7 @@ public class ec2StopInstances extends AWSEC2Command {
 		
 		List<InstanceStateChange> changes = result.getStoppingInstances();
 		writeStateChages( changes);
+		
 		return 0;
 		
 	
