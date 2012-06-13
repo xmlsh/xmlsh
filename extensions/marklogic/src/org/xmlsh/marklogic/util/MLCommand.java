@@ -30,6 +30,7 @@ import javax.xml.stream.XMLStreamException;
 
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.trans.XPathException;
+import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.Options.OptionValue;
@@ -133,7 +134,7 @@ public abstract class MLCommand extends XCommand {
 
 	protected boolean writeResult(ResultSequence rs, OutputPort out, SerializeOpts sopts,
 			boolean asText, boolean bBinary) throws FactoryConfigurationError, IOException,
-			InvalidArgumentException, XMLStreamException, SaxonApiException {
+			XMLStreamException, SaxonApiException, CoreException {
 
 		XMLInputFactory factory = XMLInputFactory.newInstance();
 		boolean bOutput = false ;
@@ -339,13 +340,22 @@ public abstract class MLCommand extends XCommand {
 		
 		
 	}
+
+	protected byte[] bytesFromItem( net.sf.saxon.s9api.XdmItem item, SerializeOpts opts ) throws SaxonApiException 
+	{
+
+		ByteArrayOutputStream buf = new ByteArrayOutputStream();
+
+		Util.writeXdmItem(item, Util.streamToDestination(buf, opts)); // uses output xml encoding
+		return		buf.toByteArray();
+	}
 	
 	
 }
 
 //
 //
-// Copyright (C) 2008,2009,2010,2011,2012 , David A. Lee.
+// Copyright (C) 2008-2012  David A. Lee.
 //
 // The contents of this file are subject to the "Simplified BSD License" (the
 // "License");

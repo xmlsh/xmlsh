@@ -1,8 +1,8 @@
 <module 
-	module_version="10"
+	module_version="11"
 	name="marklogic"
 	package="org.xmlsh.marklogic"
-	require="1.1.8"
+	require="1.2.0"
 >
 <classpath>
   <file url="marklogic_ext.jar"/>

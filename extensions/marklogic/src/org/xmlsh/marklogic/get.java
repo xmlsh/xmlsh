@@ -89,7 +89,7 @@ public class get extends MLCommand {
 			
 		}
 
-		private void getContent(SumContent sc) throws RequestException, InvalidArgumentException, FactoryConfigurationError, IOException, XMLStreamException, SaxonApiException, UnimplementedException {
+		private void getContent(SumContent sc) throws RequestException, FactoryConfigurationError, IOException, XMLStreamException, SaxonApiException, CoreException {
 			get.this.getContent( mSession , sc.mURI , sc.mOutput , true , true );
 
 			
@@ -244,7 +244,7 @@ public class get extends MLCommand {
 
 
 
-	private void getContent(Session session , String uri , OutputPort output , boolean bText , boolean bBinary ) throws RequestException, InvalidArgumentException, FactoryConfigurationError, IOException, XMLStreamException, SaxonApiException, UnimplementedException {
+	private void getContent(Session session , String uri , OutputPort output , boolean bText , boolean bBinary ) throws RequestException, FactoryConfigurationError, IOException, XMLStreamException, SaxonApiException, CoreException {
 		
 		if( bMkdirs && output.isFile()  ){
 			output.getFile().getParentFile().mkdirs();
@@ -398,7 +398,7 @@ public class get extends MLCommand {
 
 //
 //
-//Copyright (C) 2008,2009,2010,2011,2012 , David A. Lee.
+//Copyright (C) 2008-2012  David A. Lee.
 //
 //The contents of this file are subject to the "Simplified BSD License" (the "License");
 //you may not use this file except in compliance with the License. You may obtain a copy of the

@@ -14,14 +14,18 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import net.sf.saxon.s9api.SaxonApiException;
+import net.sf.saxon.s9api.XdmItem;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.xmlsh.commands.util.Checksum;
 import org.xmlsh.core.CoreException;
+import org.xmlsh.core.IXdmItemInputStream;
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
@@ -43,6 +47,10 @@ import com.marklogic.xcc.Session;
 import com.marklogic.xcc.exceptions.RequestException;
 
 public class put extends MLCommand {
+
+
+	
+
 
 	private static Logger mLogger = LogManager.getLogger(put.class);
 	private ContentCreateOptions mCreateOptions;
@@ -70,7 +78,7 @@ public class put extends MLCommand {
 	private  abstract class  ContentIterator
 	{
 		
-		abstract boolean hasNext() throws IOException;
+		abstract boolean hasNext() throws IOException, CoreException;
 		abstract Content next(String baseUri);
 		abstract boolean canReset();
 		abstract void reset() throws UnimplementedException;
@@ -190,7 +198,75 @@ public class put extends MLCommand {
 		
 	}
 	
+
+	public class ContentXdmStreamIterator extends ContentIterator {
+
+		private IXdmItemInputStream mInput ;
+		private XdmItem mItem ;
+		private String mUriPattern;
+		
+		
+		
+		public ContentXdmStreamIterator(IXdmItemInputStream input, String uriPattern ) {
+			mInput = input ;
+			mUriPattern = uriPattern ;
+			
+		}
+
+		@Override
+		boolean hasNext() throws IOException, CoreException {
+			mItem = mInput.read();
+			return mItem != null ;
+		}
+
+		@Override
+		Content next(String baseUri) {
+			
+			
+			Content content;
+			try {
+				content = ContentFactory.newContent (getUri(baseUri) , bytesFromItem(mItem,mSerializeOpts) , mCreateOptions);
+			} catch (SaxonApiException e) {
+				mShell.printErr("Exception serializing XML" , e );
+				return null ;
+			}
+			return content ;  
 	
+			
+			
+		}
+
+		@Override
+		boolean canReset() {
+			// TODO Auto-generated method stub
+			return false;
+		}
+
+		@Override
+		void reset() throws UnimplementedException {
+			// TODO Auto-generated method stub
+
+		}
+
+		@Override
+		boolean isDirectory() {
+			// TODO Auto-generated method stub
+			return false;
+		}
+
+		@Override
+		File getFile() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		String getUri(String baseURI) {
+			return baseURI + parseURI( mUriPattern );
+		}
+
+	}
+
 	
 	
 	private  class PutContent implements Runnable
@@ -230,15 +306,20 @@ public class put extends MLCommand {
 		
 	}
 	
+	
+	
+	
 	private 	List<SumContent> 	mContents = null;
 	private		int					mMaxFiles = 1;
 	private    boolean		mDelete = false ;
+	private int mSequence = 1;
+	private Random mRandom;
 	
 
 	@Override
 	public int run(List<XValue> args) throws Exception {
 		
-		Options opts = new Options("f=filenames:,v=verbose,c=connect:,md5,uri:,baseuri:,m=maxfiles:,r=recurse,d=mkdirs,t=text,b=binary,x=xml,maxthreads:,collection:+,forest:+,perm=permission:+,repair:,buffer:,language:,namespace:,quality:,+resolve,locale:,delete");
+		Options opts = new Options("f=filenames:,v=verbose,c=connect:,md5,uri:,baseuri:,m=maxfiles:,r=recurse,d=mkdirs,t=text,b=binary,x=xml,maxthreads:,collection:+,forest:+,perm=permission:+,repair:,buffer:,language:,namespace:,quality:,+resolve,locale:,delete,stream:");
 		opts.parse(args);
 		args = opts.getRemainingArgs();
 		
@@ -263,7 +344,8 @@ public class put extends MLCommand {
 		boolean bXml = opts.hasOpt("x");
 		XValue	 listFileName = opts.getOptValue("filenames");
 		mDelete = opts.hasOpt("delete");
-		
+		String  stream = opts.getOptString("stream", null);
+		setSerializeOpts(opts);
 
 		/*
 		 * Get session before parsing args because some parsing requires to ping the server
@@ -335,8 +417,9 @@ public class put extends MLCommand {
 		mOutput = getEnv().getStderr().asPrintWriter(serializeOpts);
 
 		
+		
 		// Case with single file to put
-		if( listFileName == null && args.size() == 0 || (args.size() == 1 && baseUri.equals("") ) ){
+		if( stream == null && listFileName == null && args.size() == 0 || (args.size() == 1 && baseUri.equals("") ) ){
 			InputPort in = null;
 			if( args.size() > 0 )
 				in = this.getInput(args.get(0));
@@ -361,6 +444,21 @@ public class put extends MLCommand {
 			// Get list iterator 
 			ContentIterator  contentIter = null;
 			InputPort fileInp = null ;
+			
+			
+			// Streaming option 
+			if( stream != null ){
+				InputPort port = this.getEnv().getInputPort(stream);
+				if( port == null )
+					throw new CoreException("Cannot open port: " + stream );
+				
+				
+				contentIter = new ContentXdmStreamIterator( port.asXdmItemInputStream(mSerializeOpts) , uri );
+				
+				
+				
+			}
+			else
 			if( listFileName != null  )
 				
 				contentIter = new ContentStreamIterator( (fileInp=this.getInput(listFileName)).asReader(serializeOpts)  );
@@ -677,7 +775,7 @@ public class put extends MLCommand {
 	}
 
 
-	private void createDirs(ContentIterator contentIter , String baseURI ) throws RequestException, IOException {
+	private void createDirs(ContentIterator contentIter , String baseURI ) throws RequestException, IOException, CoreException {
 
 		StringBuffer sReq = new StringBuffer();
 		while( contentIter.hasNext() ) {
@@ -748,6 +846,34 @@ public class put extends MLCommand {
 		
 		mOutput.flush();
 	}
+	
+	String parseURI( String uri )
+	{
+		if( !uri.contains("{"))
+			return uri ;
+		
+		return uri.replaceAll("\\{random}", random() ).
+		   replaceAll("\\{seq}", sequence() );
+		
+		
+	}
+
+
+	private synchronized String sequence() {
+		return String.valueOf(mSequence ++);
+	}
+
+
+	private synchronized String random() {
+		if( mRandom == null )
+			mRandom = new Random();
+		
+		long l = mRandom.nextLong();
+		if( l < 0 )
+			l = -l;
+		return String.valueOf(l);
+		
+	}
 
 
 }
@@ -756,7 +882,7 @@ public class put extends MLCommand {
 
 //
 //
-//Copyright (C) 2008,2009,2010,2011,2012 , David A. Lee.
+//Copyright (C) 2008-2012  David A. Lee.
 //
 //The contents of this file are subject to the "Simplified BSD License" (the "License");
 //you may not use this file except in compliance with the License. You may obtain a copy of the
