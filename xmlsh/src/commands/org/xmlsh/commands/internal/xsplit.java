@@ -44,7 +44,10 @@ import javax.xml.stream.events.Namespace;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 
+import net.sf.saxon.s9api.SaxonApiException;
+import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InputPort;
+import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.Options.OptionValue;
 import org.xmlsh.core.OutputPort;
@@ -77,13 +80,14 @@ public class xsplit extends XCommand {
 	private		XValue			mList  = null ;
 	
 	private		List<XMLEvent>	mHeader = new ArrayList<XMLEvent>();
+	private boolean mStream = false ;
 
 
 	public int run( List<XValue> args)	throws Exception
 	{
 
 
-		Options opts = new Options( "c=children:,w=wrap:,n,p=prefix:,e=ext:,s=suffix:,n=nowrap,o=output:,nopi,nodtd,l=list:" ,SerializeOpts.getOptionDefs() );
+		Options opts = new Options( "c=children:,w=wrap:,n,p=prefix:,e=ext:,s=suffix:,n=nowrap,o=output:,nopi,nodtd,l=list:,stream:" ,SerializeOpts.getOptionDefs() );
 		opts.parse(args);
 		
 		// root node
@@ -105,7 +109,8 @@ public class xsplit extends XCommand {
 			mOutputDir = getFile(opts.getOptValue("o"));
 		mNoDTD = opts.hasOpt("nodtd");
 		mNoPI  = opts.hasOpt("nopi");
-		mList  = opts.getOptValue("list");
+		mList  = opts.getOptValue("list"); 
+		mStream = opts.hasOpt("stream");
 		
 		
 		
@@ -131,15 +136,21 @@ public class xsplit extends XCommand {
 					getStdin();
 		PrintWriter  listWriter =  null; 
 		OutputPort listOut = null ;	
+		OutputPort streamOut = null ;
+		
+		setSerializeOpts(opts);
+		
+		if( mStream )
+			streamOut  = this.getEnv().getOutputPort(opts.getOptStringRequired("stream"));
 
 		try {
-			SerializeOpts serializeOpts = getSerializeOpts(opts);
-			InputStream is = in.asInputStream(serializeOpts) ;
+
+			InputStream is = in.asInputStream(mSerializeOpts) ;
 
 			if( mList != null )
-				listWriter = (listOut =  getOutput(mList,false)).asPrintWriter( serializeOpts );
+				listWriter = (listOut =  getOutput(mList,false)).asPrintWriter( mSerializeOpts );
 			
-			split(in.getSystemId() , is , listWriter );
+			split(in.getSystemId() , is , listWriter , streamOut );
 			is.close();
 		} catch (Exception e) {
 			printErr("Exception splitting input", e);
@@ -167,7 +178,7 @@ public class xsplit extends XCommand {
 
 
 
-	private void split(String systemId , InputStream is, PrintWriter listWriter) throws XMLStreamException, IOException {
+	private void split(String systemId , InputStream is, PrintWriter listWriter, OutputPort streamOut) throws XMLStreamException, IOException, InvalidArgumentException, CoreException, SaxonApiException {
 	
 
 		
@@ -237,7 +248,7 @@ public class xsplit extends XCommand {
 			int type = e.getEventType() ;
 			
 			if( type == XMLStreamConstants.START_ELEMENT ){
-				write( xmlreader , e ,ns , listWriter );
+				write( xmlreader , e ,ns , listWriter , streamOut );
 				
 				
 			} else
@@ -265,16 +276,27 @@ public class xsplit extends XCommand {
 
 
 	/* 
-	 * Write out a single element and all its children to the next file
+	 * Write out a single element and all its children to the next file or to a stram
 	 * 
 	 */
 
 
 
-	private void write(XMLEventReader xmlreader, XMLEvent first, List<Namespace> ns, PrintWriter listWriter) throws XMLStreamException, IOException {
-		File fout = nextFile();
-		OutputStream fo = new FileOutputStream(fout); // need to close seperately
-		XMLEventWriter w = mOutputFactory.createXMLEventWriter( fo );
+	private void write(XMLEventReader xmlreader, XMLEvent first, List<Namespace> ns, PrintWriter listWriter, OutputPort streamOut) throws XMLStreamException, IOException, InvalidArgumentException, CoreException, SaxonApiException {
+		
+		XMLEventWriter w ;
+		OutputStream fo = null ;
+        String name = "-";
+		if( streamOut != null )
+			w = streamOut.asXMLEventWriter(mSerializeOpts);
+		else {
+			File fout = nextFile();
+			name = fout.getName();
+			
+			fo = new FileOutputStream(fout); // need to close seperately
+			w = mOutputFactory.createXMLEventWriter( fo );
+		}
+		
 		
 		
 		/*
@@ -321,10 +343,13 @@ public class xsplit extends XCommand {
 		w.add( mEventFactory.createEndDocument());
 		w.flush();
 		w.close();
-		fo.close();
+		if( fo != null )
+			fo.close();
+		if( streamOut != null )
+			streamOut.writeSequenceSeperator(mSerializeOpts);
 		
 		if( listWriter != null ){
-			listWriter.println(fout.getName());
+			listWriter.println(name);
 			listWriter.flush();
 		}	
 			
