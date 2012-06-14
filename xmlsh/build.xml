@@ -4,9 +4,9 @@
 <!-- Global properties 
      Edit these for every release
 -->
-	<property name="release" value="1_1_9"/>
-	<property name="version" value="1.1.9"/>
-	<property name="jar" value="xmlsh-1.1.jar"/>
+	<property name="release" value="1_2_0"/>
+	<property name="version" value="1.2.0"/>
+	<property name="jar" value="xmlsh-1.2.jar"/>
 
 
 	<property name="dist" location="_dist"/>
