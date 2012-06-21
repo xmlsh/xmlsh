@@ -10,6 +10,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import javax.xml.stream.FactoryConfigurationError;
@@ -170,7 +172,9 @@ public class get extends MLCommand {
 		{
 	
 				print("Starting thread pool of " + maxThreads + " threads");
-				mPool = Executors.newFixedThreadPool(maxThreads);
+				mPool = new ThreadPoolExecutor(maxThreads, maxThreads,
+	                    0L, TimeUnit.MILLISECONDS,
+	                    new LinkedBlockingQueue<Runnable>(maxThreads * 2 ), new ThreadPoolExecutor.CallerRunsPolicy() );
 
 				getContent( Util.toStringList(args) , baseUri , outDir,   bRecurse  );
 				flushContent();

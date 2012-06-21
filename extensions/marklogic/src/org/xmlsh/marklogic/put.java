@@ -17,6 +17,8 @@ import java.util.Locale;
 import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import net.sf.saxon.s9api.SaxonApiException;
@@ -54,7 +56,7 @@ public class put extends MLCommand {
 
 	private static Logger mLogger = LogManager.getLogger(put.class);
 	private ContentCreateOptions mCreateOptions;
-	private ExecutorService mPool = null;
+	private ThreadPoolExecutor mPool = null;
 	private PrintWriter		mOutput = null;
 	private boolean 		bVerbose = false ;
 	
@@ -487,8 +489,16 @@ public class put extends MLCommand {
 			
 	
 			print("Starting thread pool of " + maxThreads + " threads");
-			mPool = Executors.newFixedThreadPool(maxThreads);
+			// mPool = Executors.newFixedThreadPool(maxThreads);
 
+			mPool = new ThreadPoolExecutor(maxThreads, maxThreads,
+                    0L, TimeUnit.MILLISECONDS,
+                    new LinkedBlockingQueue<Runnable>(maxThreads * 2 ), new ThreadPoolExecutor.CallerRunsPolicy() );
+			
+			
+			
+			
+			
 			load( contentIter , baseUri ,  bMD5 );
 			flushContent();
 			 
