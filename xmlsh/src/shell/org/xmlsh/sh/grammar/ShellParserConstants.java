@@ -21,45 +21,45 @@ public interface ShellParserConstants {
   /** RegularExpression Id. */
   int OR_IF = 8;
   /** RegularExpression Id. */
-  int DSEMI = 9;
+  int DGREAT = 9;
   /** RegularExpression Id. */
-  int DGREAT = 10;
+  int DSEMI = 10;
   /** RegularExpression Id. */
-  int LESSGREAT = 11;
+  int CLOBBER = 11;
   /** RegularExpression Id. */
-  int CLOBBER = 12;
+  int DLESSMINUS = 12;
   /** RegularExpression Id. */
-  int DLESSMINUS = 13;
+  int DLESS = 13;
   /** RegularExpression Id. */
-  int DLESS = 14;
+  int IF = 14;
   /** RegularExpression Id. */
-  int IF = 15;
+  int ELIF = 15;
   /** RegularExpression Id. */
-  int ELIF = 16;
+  int THEN = 16;
   /** RegularExpression Id. */
-  int THEN = 17;
+  int ELSE = 17;
   /** RegularExpression Id. */
-  int ELSE = 18;
+  int FI = 18;
   /** RegularExpression Id. */
-  int FI = 19;
+  int DO = 19;
   /** RegularExpression Id. */
-  int DO = 20;
+  int CASE = 20;
   /** RegularExpression Id. */
-  int CASE = 21;
+  int ESAC = 21;
   /** RegularExpression Id. */
-  int ESAC = 22;
+  int WHILE = 22;
   /** RegularExpression Id. */
-  int WHILE = 23;
+  int UNTIL = 23;
   /** RegularExpression Id. */
-  int UNTIL = 24;
+  int FOR = 24;
   /** RegularExpression Id. */
-  int FOR = 25;
+  int TRY = 25;
   /** RegularExpression Id. */
-  int TRY = 26;
+  int CATCH = 26;
   /** RegularExpression Id. */
-  int CATCH = 27;
+  int FINALLY = 27;
   /** RegularExpression Id. */
-  int FINALLY = 28;
+  int RETURN = 28;
   /** RegularExpression Id. */
   int DONE = 29;
   /** RegularExpression Id. */
@@ -71,60 +71,80 @@ public interface ShellParserConstants {
   /** RegularExpression Id. */
   int LPAREN2 = 33;
   /** RegularExpression Id. */
-  int RBRACE = 34;
+  int LBRACE2 = 34;
   /** RegularExpression Id. */
-  int IN = 35;
+  int RBRACE2 = 35;
   /** RegularExpression Id. */
-  int LESS = 36;
+  int RBRACE = 36;
   /** RegularExpression Id. */
-  int GT = 37;
+  int IN = 37;
   /** RegularExpression Id. */
-  int TGT = 38;
+  int LESS = 38;
   /** RegularExpression Id. */
-  int TGTAND1 = 39;
+  int GT = 39;
   /** RegularExpression Id. */
-  int GTAND = 40;
+  int TGT = 40;
   /** RegularExpression Id. */
-  int GTAND2 = 41;
+  int TGTGT = 41;
   /** RegularExpression Id. */
-  int LTAND = 42;
+  int TGTAND1 = 42;
   /** RegularExpression Id. */
-  int RPAREN = 43;
+  int GTAND = 43;
   /** RegularExpression Id. */
-  int AMP = 44;
+  int GTAND2 = 44;
   /** RegularExpression Id. */
-  int SEMI = 45;
+  int LTAND = 45;
   /** RegularExpression Id. */
-  int PIPE = 46;
+  int RPAREN = 46;
   /** RegularExpression Id. */
-  int BIGQUOTE = 47;
+  int AMP = 47;
   /** RegularExpression Id. */
-  int NAME = 48;
+  int SEMI = 48;
   /** RegularExpression Id. */
-  int XEXPR = 49;
+  int PIPE = 49;
   /** RegularExpression Id. */
-  int WORD = 50;
+  int BIGQUOTE = 50;
   /** RegularExpression Id. */
-  int STRING_LITERAL1 = 51;
+  int NAME = 51;
   /** RegularExpression Id. */
-  int STRING_LITERAL2 = 52;
+  int XEXPR = 52;
   /** RegularExpression Id. */
-  int VAR_EXPANSION = 53;
+  int FUNC_CALL_WORD = 53;
   /** RegularExpression Id. */
-  int VAR_SUBPROC = 54;
+  int METHOD_CALL_WORD = 54;
   /** RegularExpression Id. */
-  int VAR_SUBPROC_FILE = 55;
+  int WORD = 55;
   /** RegularExpression Id. */
-  int ASSIGN_WORD = 56;
+  int STRING_LITERAL1 = 56;
   /** RegularExpression Id. */
-  int VARNAME = 57;
+  int STRING_LITERAL2 = 57;
   /** RegularExpression Id. */
-  int FUNC_DECL = 58;
+  int VAR_EXPANSION = 58;
+  /** RegularExpression Id. */
+  int VAR_SUBPROC = 59;
+  /** RegularExpression Id. */
+  int VAR_SUBPROC_FILE = 60;
+  /** RegularExpression Id. */
+  int BACKTICK1 = 61;
+  /** RegularExpression Id. */
+  int BACKTICK2 = 62;
+  /** RegularExpression Id. */
+  int ASSIGN_WORD = 63;
+  /** RegularExpression Id. */
+  int ASSIGN_WORDPE = 64;
+  /** RegularExpression Id. */
+  int VARNAME = 65;
+  /** RegularExpression Id. */
+  int FUNC_DECL = 66;
+  /** RegularExpression Id. */
+  int FNAME = 67;
 
   /** Lexical state. */
   int DEFAULT = 0;
   /** Lexical state. */
   int CMD = 1;
+  /** Lexical state. */
+  int NEVER = 2;
 
   /** Literal token values. */
   String[] tokenImage = {
@@ -137,9 +157,8 @@ public interface ShellParserConstants {
     "\";\"",
     "\"&&\"",
     "\"||\"",
-    "\";;\"",
     "\">>\"",
-    "\"<>\"",
+    "\";;\"",
     "\">|\"",
     "\"<<-\"",
     "\"<<\"",
@@ -157,16 +176,20 @@ public interface ShellParserConstants {
     "\"try\"",
     "\"catch\"",
     "\"finally\"",
+    "\"return\"",
     "\"done\"",
     "\"{\"",
     "\"!\"",
     "\"(\"",
     "\"(\"",
+    "\"{\"",
+    "\"}\"",
     "\"}\"",
     "\"in\"",
     "\"<\"",
     "\">\"",
     "\"2>\"",
+    "\"2>>\"",
     "\"2>&1\"",
     "\">&\"",
     "\"1>&2\"",
@@ -178,15 +201,21 @@ public interface ShellParserConstants {
     "\"<{{\"",
     "<NAME>",
     "\"<[\"",
+    "<FUNC_CALL_WORD>",
+    "<METHOD_CALL_WORD>",
     "<WORD>",
     "<STRING_LITERAL1>",
     "<STRING_LITERAL2>",
     "<VAR_EXPANSION>",
     "<VAR_SUBPROC>",
     "<VAR_SUBPROC_FILE>",
+    "\"`\"",
+    "\"`\"",
     "<ASSIGN_WORD>",
+    "<ASSIGN_WORDPE>",
     "<VARNAME>",
     "<FUNC_DECL>",
+    "<FNAME>",
   };
 
 }

@@ -13,15 +13,6 @@ import org.xmlsh.util.Util;
 @SuppressWarnings("serial") 
 public class PortList<P extends IPort> extends ArrayList<NamedPort<P>>
 {
-	P	getDefault()
-	{
-		for( NamedPort<P> e : this ){
-			if( e.mDefault )
-				return e.mPort;
-			
-		}
-		return null;
-	}
 	
 	P 	get( String name ){
 		for( NamedPort<P> e : this ){

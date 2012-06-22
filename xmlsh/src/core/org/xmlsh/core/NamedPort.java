@@ -3,20 +3,18 @@ package org.xmlsh.core;
 
 
 public class NamedPort<P extends IPort> {
-	String		mName;		// Optional name
-	boolean		mDefault;	// is default input
+	String		mName;		// Name
 	P			mPort;		// port 
 	
-	public NamedPort( String name , boolean def  , P port  )
+	public NamedPort( String name ,  P port  )
 	{
 		mName = name ;
-		mDefault = def ; 
+
 		mPort = port ;
 	}
 	
 	public NamedPort( NamedPort<P> that ){
 		mName = that.mName ;
-		mDefault = that.mDefault ;
 		mPort = that.mPort;
 		if( mPort != null )
 			mPort.addRef();
