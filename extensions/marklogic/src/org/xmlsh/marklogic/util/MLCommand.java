@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
+import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.math.BigInteger;
 import java.net.URI;
@@ -28,8 +29,11 @@ import javax.xml.stream.XMLEventWriter;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 
+import net.sf.saxon.om.NodeInfo;
+import net.sf.saxon.om.ValueRepresentation;
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.trans.XPathException;
+import net.sf.saxon.value.AtomicValue;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
@@ -341,14 +345,33 @@ public abstract class MLCommand extends XCommand {
 		
 	}
 
-	protected byte[] bytesFromItem( net.sf.saxon.s9api.XdmItem item, SerializeOpts opts ) throws SaxonApiException 
+	protected byte[] bytesFromItem( net.sf.saxon.s9api.XdmItem item, SerializeOpts opts ) throws SaxonApiException, UnsupportedEncodingException 
 	{
-
+        if( isAtomic(item) )
+        	return item.toString().getBytes("UTF8");
+		
 		ByteArrayOutputStream buf = new ByteArrayOutputStream();
 
 		Util.writeXdmItem(item, Util.streamToDestination(buf, opts)); // uses output xml encoding
 		return		buf.toByteArray();
 	}
+
+
+	protected boolean isAtomic(net.sf.saxon.s9api.XdmItem item) {
+		if( item == null )
+			return true ;
+		
+
+		
+		
+		@SuppressWarnings("rawtypes")
+		ValueRepresentation value = item.getUnderlyingValue();
+		boolean isAtom = ( value instanceof AtomicValue ) || ( value instanceof NodeInfo && ((NodeInfo)value).getNodeKind() == net.sf.saxon.type.Type.TEXT ) ;
+		return isAtom;
+	
+		
+	}
+
 	
 	
 }

@@ -21,8 +21,13 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import net.sf.saxon.om.Item;
+import net.sf.saxon.om.NodeInfo;
+import net.sf.saxon.om.ValueRepresentation;
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XdmItem;
+import net.sf.saxon.s9api.XdmValue;
+import net.sf.saxon.value.AtomicValue;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.xmlsh.commands.util.Checksum;
@@ -228,7 +233,7 @@ public class put extends MLCommand {
 			Content content;
 			try {
 				content = ContentFactory.newContent (getUri(baseUri) , bytesFromItem(mItem,mSerializeOpts) , mCreateOptions);
-			} catch (SaxonApiException e) {
+			} catch (Exception e) {
 				mShell.printErr("Exception serializing XML" , e );
 				return null ;
 			}
@@ -884,7 +889,6 @@ public class put extends MLCommand {
 		return String.valueOf(l);
 		
 	}
-
 
 }
 
