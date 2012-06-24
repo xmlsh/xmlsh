@@ -29,6 +29,7 @@ public class SerializeOpts {
 	private		String		method = "xml";
 	private		String		sequence_sep = "\n";
 	private		String		sequence_term = "\n";
+	private    boolean    serialize_xml = false ;
 	
 
 	
@@ -37,7 +38,7 @@ public class SerializeOpts {
 	 * Parsed standardized serialization option definitions
 	 */
 	private static final List<Options.OptionDef>  mOptionDefs =		
-		Options.parseDefs("+indent,+omit-xml-declaration,encoding:,text-encoding:,xml-encoding:,+xinclude,content-type:,method:,+supports-dtd,sequence-sep:,sequence-term:,input-xml-encoding:,output-xml-encoding:,input-text-encoding:,output-text-encoding:" );
+		Options.parseDefs("+force-text,+indent,+omit-xml-declaration,encoding:,text-encoding:,xml-encoding:,+xinclude,content-type:,method:,+supports-dtd,sequence-sep:,sequence-term:,input-xml-encoding:,output-xml-encoding:,input-text-encoding:,output-text-encoding:" );
 			
 			
 	public static List<Options.OptionDef> getOptionDefs() { return mOptionDefs ; }
@@ -66,6 +67,7 @@ public class SerializeOpts {
 		method = that.method ;
 		sequence_sep = that.sequence_sep;
 		sequence_term = that.sequence_term;
+		serialize_xml = that.serialize_xml ;
 
 	}
 	
@@ -136,6 +138,9 @@ public class SerializeOpts {
 		else
 		if( name.equals("supports-dtd"))
 			supports_dtd = value ;
+		else
+		if( name.equals("serialize-xml"))
+	        serialize_xml = value ;
 		
 		
 	}
@@ -317,6 +322,76 @@ public class SerializeOpts {
 	 */
 	public void setSequence_term(String sequenceTerm) {
 		sequence_term = sequenceTerm;
+	}
+
+	/**
+	 * @return the input_xml_encoding
+	 */
+	public String getInput_xml_encoding() {
+		return input_xml_encoding;
+	}
+
+	/**
+	 * @param input_xml_encoding the input_xml_encoding to set
+	 */
+	public void setInput_xml_encoding(String input_xml_encoding) {
+		this.input_xml_encoding = input_xml_encoding;
+	}
+
+	/**
+	 * @return the input_text_encoding
+	 */
+	public String getInput_text_encoding() {
+		return input_text_encoding;
+	}
+
+	/**
+	 * @param input_text_encoding the input_text_encoding to set
+	 */
+	public void setInput_text_encoding(String input_text_encoding) {
+		this.input_text_encoding = input_text_encoding;
+	}
+
+	/**
+	 * @return the output_xml_encoding
+	 */
+	public String getOutput_xml_encoding() {
+		return output_xml_encoding;
+	}
+
+	/**
+	 * @param output_xml_encoding the output_xml_encoding to set
+	 */
+	public void setOutput_xml_encoding(String output_xml_encoding) {
+		this.output_xml_encoding = output_xml_encoding;
+	}
+
+	/**
+	 * @return the output_text_encoding
+	 */
+	public String getOutput_text_encoding() {
+		return output_text_encoding;
+	}
+
+	/**
+	 * @param output_text_encoding the output_text_encoding to set
+	 */
+	public void setOutput_text_encoding(String output_text_encoding) {
+		this.output_text_encoding = output_text_encoding;
+	}
+
+	/**
+	 * @return the force_text
+	 */
+	public boolean isSerialize_xml() {
+		return serialize_xml;
+	}
+
+	/**
+	 * @param force_text the force_text to set
+	 */
+	public void setSerialize_xml(boolean force_text) {
+		this.serialize_xml = force_text;
 	}
 	
 	
