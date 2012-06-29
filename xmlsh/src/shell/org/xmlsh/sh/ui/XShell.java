@@ -8,10 +8,13 @@ package org.xmlsh.sh.ui;
 
 import java.awt.EventQueue;
 
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JMenu;
+import javax.swing.JOptionPane;
+
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.FlowLayout;
@@ -22,9 +25,14 @@ import java.awt.TextArea;
 import java.awt.Checkbox;
 import java.awt.BorderLayout;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -55,6 +63,7 @@ import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import javax.swing.JSeparator;
 
 public class XShell {
 
@@ -63,6 +72,7 @@ public class XShell {
 	private ShellThread  mShell = null ;
 	private JTextArea mResultTextArea;
 	private List<XValue> mArgs;
+	private File mCurdir ; 
 	
 	
 	
@@ -85,11 +95,18 @@ public class XShell {
 		run(Util.toXValueList(args));
 	}
 	
-	public static void run(final List<XValue> args) {
+
+	public static void run(List<XValue> args) {
+		run( new File(".") , args );
+		
+	}
+
+	
+	public static void run(final File curdir, final List<XValue> args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					XShell window = new XShell(args);
+					XShell window = new XShell(curdir , args);
 					window.mframe.setVisible(true);
 					window.mCommandTextArea.requestFocusInWindow();
 				} catch (Exception e) {
@@ -100,7 +117,8 @@ public class XShell {
 	}
 
 
-	public XShell(List<XValue> args) throws Exception {
+	public XShell(File curdir , List<XValue> args) throws Exception {
+	    mCurdir = curdir ;
 		mArgs = args ;
 		initialize();
 	}
@@ -140,6 +158,73 @@ public class XShell {
 				mframe.dispose();
 			}
 		});
+		
+		JMenuItem mntmNew = new JMenuItem("New");
+		mntmNew.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) { 
+				
+			}
+		});
+		mnFile.add(mntmNew);
+		
+		JMenuItem mntmOpen = new JMenuItem("Open...");
+		mntmOpen.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				JFileChooser fc = new JFileChooser(mCurdir);
+
+				// Show open dialog; this method does not return until the dialog is closed
+				if( fc.showSaveDialog(mframe) == JFileChooser.APPROVE_OPTION ){
+					File selFile = fc.getSelectedFile();
+					String data = readFrom( selFile );
+					if( data != null )
+						mCommandTextArea.setText(data);
+				}
+				
+				
+
+
+			}
+		});
+		mnFile.add(mntmOpen);
+		
+		JMenuItem mntmSaveAs = new JMenuItem("Save As...");
+		mntmSaveAs.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) { 
+				JFileChooser fc = new JFileChooser(mCurdir);
+
+				// Show open dialog; this method does not return until the dialog is closed
+				fc.showSaveDialog(mframe);
+				if( fc.showSaveDialog(mframe) == JFileChooser.APPROVE_OPTION ){
+					File selFile = fc.getSelectedFile();
+					saveTo( mCommandTextArea.getText() , selFile );
+					
+				}
+				
+			}
+		});
+		mnFile.add(mntmSaveAs);
+		
+		JMenuItem mntmSaveResults = new JMenuItem("Save Results..");
+		mntmSaveResults.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				JFileChooser fc = new JFileChooser(mCurdir);
+
+				// Show open dialog; this method does not return until the dialog is closed
+				if( fc.showSaveDialog(mframe) == JFileChooser.APPROVE_OPTION ){
+					File selFile = fc.getSelectedFile();
+					saveTo( mResultTextArea.getText() , selFile );
+					
+				}
+
+				
+			}
+
+
+		});
+		mnFile.add(mntmSaveResults);
+		
+		JSeparator separator = new JSeparator();
+		mnFile.add(separator);
 		mnFile.add(mntmExit);
 		
 		JToolBar toolBar = new JToolBar();
@@ -193,6 +278,38 @@ public class XShell {
 		
 
 		mShell.start();
+		
+	}
+
+	protected void saveTo(String text, File selFile) {
+		try {
+			OutputStreamWriter  writer = new OutputStreamWriter( new FileOutputStream(selFile) , "utf8" );
+			writer.write(text);
+			writer.close();
+			
+			
+		} catch (IOException e) {
+			JOptionPane.showMessageDialog(mframe, "Error writing to file: " + e.getLocalizedMessage());
+
+		}
+		
+		
+		
+		
+		
+	}
+
+
+	protected String readFrom(File selFile) {
+		StringBuffer sb = new StringBuffer();
+		try {
+			return Util.readString(selFile,"utf8");
+		} catch (IOException e) {
+			JOptionPane.showMessageDialog(mframe, "Error reading from file: " + e.getLocalizedMessage());
+
+			return null ;
+		}
+		
 		
 	}
 
