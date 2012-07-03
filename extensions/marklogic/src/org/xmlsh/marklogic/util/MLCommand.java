@@ -14,6 +14,7 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.URI;
 import java.security.cert.CertificateException;
@@ -54,6 +55,7 @@ import com.marklogic.xcc.Session;
 import com.marklogic.xcc.ValueFactory;
 import com.marklogic.xcc.exceptions.RequestException;
 import com.marklogic.xcc.types.ItemType;
+import com.marklogic.xcc.types.ValueType;
 import com.marklogic.xcc.types.XName;
 import com.marklogic.xcc.types.XSBoolean;
 import com.marklogic.xcc.types.XSInteger;
@@ -242,6 +244,24 @@ public abstract class MLCommand extends XCommand {
 				BigInteger v = ((net.sf.saxon.value.IntegerValue) atom).asBigInteger();
 
 				return ValueFactory.newXSInteger(v);
+
+			}
+			else if (atom instanceof net.sf.saxon.value.DecimalValue) {
+				BigDecimal v = ((net.sf.saxon.value.DecimalValue) atom).getDecimalValue();
+
+				return ValueFactory.newValue(ValueType.XS_DECIMAL, v);
+
+			}
+			else if (atom instanceof net.sf.saxon.value.DoubleValue) {
+				Double v = ((net.sf.saxon.value.DoubleValue) atom).getDoubleValue(); // box
+
+				return ValueFactory.newValue(ValueType.XS_DOUBLE , v);
+
+			}
+			else if (atom instanceof net.sf.saxon.value.FloatValue) {
+				Double v = ((net.sf.saxon.value.FloatValue) atom).getDoubleValue(); // box
+
+				return ValueFactory.newValue(ValueType.XS_FLOAT , v);
 
 			}
 
