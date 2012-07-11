@@ -7,6 +7,7 @@
 package org.xmlsh.sh.shell;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.net.URL;
@@ -71,13 +72,16 @@ public class Module {
 
 			XdmNode configNode;
 			URL configURL;
+			File modDir  = null ;
 			if (nameuri.endsWith(".xml")) {
 				configURL = shell.getURL(nameuri);
+				if( configURL.getProtocol().equals("file"))
+					modDir = new File(configURL.getPath()).getParentFile();
 
 			} else {
 
 				Path path = shell.getPath("XMODPATH", true );
-				File modDir = path.getFirstFileInPath(shell,nameuri);
+				modDir = path.getFirstFileInPath(shell,nameuri);
 				if (modDir == null)
 					throw new InvalidArgumentException("Cannot find module directory for : " + nameuri);
 
@@ -112,6 +116,22 @@ public class Module {
 				}
 
 			}
+			
+			
+            if( modDir != null )
+				for (XdmItem item : xv.xpath(shell,"/module/classpath/directory").asXdmValue()) {
+					if (item instanceof XdmNode) {
+						String dir = ((XdmNode) item).getAttributeValue(new QName("url"));
+						
+						for( String file : listFiles(modDir,dir) ){
+							URL classurl = new URL(configURL, file);
+							classpath.add(classurl);
+						}
+	
+					}
+	
+				}
+				
 
 			mClassLoader = getClassLoader(classpath);
 			mHelpURL = mClassLoader.getResource(toResourceName("commands.xml"));
@@ -130,6 +150,20 @@ public class Module {
 			throw new CoreException(e);
 		}
 
+	}
+
+	private List<String> listFiles(File modDir, String dir) throws IOException {
+		
+		List<String> files = new ArrayList<String>();
+		File file = new File( modDir , dir );
+		for( String f : file.list() )
+			if( f.endsWith(".jar"))
+				files.add(f);
+		
+		return files;
+		
+		
+		
 	}
 
 	/**
