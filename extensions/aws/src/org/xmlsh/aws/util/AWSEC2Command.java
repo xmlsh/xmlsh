@@ -115,7 +115,7 @@ public abstract class AWSEC2Command extends AWSCommand {
 	protected void writeReservation(Reservation res) throws XMLStreamException {
 		startElement("reservation");
 		attribute("id", res.getReservationId() );
-		attribute( "requestor", res.getRequesterId());
+		attribute( "requester-id", res.getRequesterId());
 	
 		 
 		for( Instance inst : res.getInstances() ){
