@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<commands>
+	<command name="list" url="http://www.xmlsh.org/JMXlist">
+		<synopsis>Lists the objects in the JMX broker</synopsis>
+		<usage>
+			<para>list [options] </para>
+		</usage>
+	
+	</command>
+
+	<command name="listen" url="http://www.xmlsh.org/JMXlisten">
+		<synopsis>Listen for a JMX event</synopsis>
+		<usage>
+			<para>listen [options] </para>
+		</usage>
+	
+	</command>
+	<command name="query" url="http://www.xmlsh.org/JMXquery">
+		<synopsis>Query the values of one or more JMX objects</synopsis>
+		<usage>
+			<para>query [options] </para>
+		</usage>
+	
+	</command>
+</commands>

@@ -8,11 +8,15 @@ package org.xmlsh.twitter.util;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.TimeZone;
 
 import javax.xml.stream.XMLStreamException;
@@ -23,181 +27,33 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONString;
 import org.xmlsh.core.InvalidArgumentException;
+import org.xmlsh.core.Options;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.util.Util;
+import twitter4j.Annotations;
+import twitter4j.GeoLocation;
+import twitter4j.HashtagEntity;
+import twitter4j.MediaEntity;
+import twitter4j.Status;
+import twitter4j.MediaEntity.Size;
+import twitter4j.Place;
+import twitter4j.Tweet;
+import twitter4j.URLEntity;
+import twitter4j.User;
+import twitter4j.UserMentionEntity;
 
 public abstract class TwitterCommand extends XCommand {
-	
-	protected static final String kTWITTER_NS = "http://www.xmlsh.org/schemas/twitter";
 
-	
-	protected XMLStreamWriter mWriter;
+
 
 	protected final static String sCOMMON_OPTS = "c=connect:,u=user:,p=password:";
+	
+	
 	public TwitterCommand() {
 		super();
 	}
 
 	
-	
-	
-	protected void closeWriter() throws XMLStreamException {
-		mWriter.flush();
-		mWriter.close();
-	}
-
-
-	protected void endDocument() throws XMLStreamException {
-		mWriter.writeEndDocument();
-	}
-
-
-	protected void endElement() throws XMLStreamException {
-		mWriter.writeEndElement();
-	}
-
-
-	protected void startElement(String localname) throws XMLStreamException {
-		mWriter.writeStartElement(localname);
-	}
-
-
-	protected void startDocument() throws XMLStreamException {
-		mWriter.writeStartDocument();
-	}
-	
-	protected	  void attribute( String localName , String value ) throws XMLStreamException
-	{
-		mWriter.writeAttribute(localName, value);
-	}
-	
-	protected	  void characters( String value ) throws XMLStreamException
-	{
-		mWriter.writeCharacters(value);
-	}
-
-
-
-
-	String formatXSDateTime(Date date) {
-		if( date == null )
-			date = new Date();
-		
-		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SS'Z'");
-		df.setTimeZone( TimeZone.getTimeZone("UTC") );
-			
-			
-		
-		return df.format(date);
-	}
-	
-	protected String httpGetString( String sURL ) throws IOException
-	{
-		URL url = new URL( sURL  );
-		InputStream is = url.openStream();
-		String s = Util.readString(is, "UTF8");
-		is.close();
-		return s;
-		
-		
-	}
-	
-	
-	
-
-
-	protected void writeJSON(JSONObject obj) throws XMLStreamException,
-	InvalidArgumentException, JSONException {
-		
-		
-		Iterator<?> keys = obj.keys();
-
-		while (keys.hasNext()) {
-
-			Object k = keys.next();
-			String name = k.toString();
-			startElement( toNCName( name ));
-
-			Object v = obj.get(name);
-			writeJSON(v);
-			endElement();
-
-		}
-
-
-	}
-
-	private String toNCName(String name) {
-		return name  ;
-	}
-
-
-
-
-	private void writeJSONBoolean(Boolean b) throws XMLStreamException {
-		
-		// writer.writeAttribute("value", b.booleanValue() ? "true" : "false");
-		characters(b.booleanValue() ? "true" : "false");
-
-
-	}
-
-
-	private void writeJSONNull( ) throws XMLStreamException {
-
-	}
-	private void writeJSON(Number v) throws XMLStreamException, JSONException {
-		characters( JSONObject.numberToString(v));
-		
-
-	}
-
-	private void writeJSON(String s) throws XMLStreamException {
-
-		characters(s);
-
-	}
-
-	private void writeJSON(JSONArray array) throws XMLStreamException,
-	JSONException, InvalidArgumentException {
-
-		int len = array.length();
-
-
-
-		for (int i = 0; i < len; i += 1) {
-
-			Object v = array.get(i);
-			startElement("item");
-			writeJSON(v);
-			endElement();
-		}
-
-	}
-
-	private void writeJSON(Object object) throws XMLStreamException,
-	InvalidArgumentException, JSONException {
-		if (object instanceof JSONObject) {
-			writeJSON((JSONObject) object);
-
-		} else if (object instanceof JSONArray) {
-			writeJSON((JSONArray) object);
-		} else if (object instanceof JSONString) {
-
-			writeJSON(((JSONString) object).toJSONString());
-		} else if (object instanceof Number) {
-			writeJSON((Number) object);
-		} else if (object instanceof Boolean) {
-			writeJSONBoolean(((Boolean) object));
-		} else if( object == JSONObject.NULL )
-			writeJSONNull(   );
-		else if( object instanceof String )
-			writeJSON( (String) object  );
-		else
-			throw new InvalidArgumentException("Unknown type for JSON value: "
-					+ object.getClass().toString());
-
-	}
 
 	
 }

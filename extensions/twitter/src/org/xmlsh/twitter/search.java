@@ -6,28 +6,8 @@
 
 package org.xmlsh.twitter;
 
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.lang.reflect.Array;
-import java.net.URLEncoder;
-import java.util.Arrays;
 import java.util.List;
 
-import javax.management.Attribute;
-import javax.management.AttributeList;
-import javax.management.InstanceNotFoundException;
-import javax.management.MBeanAttributeInfo;
-import javax.management.MBeanInfo;
-import javax.management.MBeanServerConnection;
-import javax.management.ObjectName;
-import javax.management.ReflectionException;
-import javax.management.openmbean.CompositeDataSupport;
-import javax.management.openmbean.CompositeType;
-import javax.management.openmbean.TabularDataSupport;
-import javax.management.openmbean.TabularType;
-import javax.management.remote.JMXConnector;
-import javax.xml.stream.XMLStreamException;
 
 import org.json.JSONObject;
 import org.json.JSONTokener;
@@ -36,55 +16,94 @@ import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.twitter.util.TwitterCommand;
+import org.xmlsh.twitter.util.TwitterWriter;
+import twitter4j.Query;
+import twitter4j.QueryResult;
+import twitter4j.Tweet;
+import twitter4j.Twitter;
+import twitter4j.TwitterException;
+import twitter4j.TwitterFactory;
+
+
+
+// implemets: https://dev.twitter.com/docs/api/1/get/search
 
 public class search extends TwitterCommand {
+	
+	private TwitterWriter mWriter;
 
 	@Override
 	public int run(List<XValue> args) throws Exception {
 		
-		Options opts = new Options(sCOMMON_OPTS + ",q=query:",SerializeOpts.getOptionDefs());
+		Options opts = new Options(sCOMMON_OPTS + ",q=query:,geo=geocode:,lang:,locale:,page:,t=result_type:,rpp:,until:,since_id:,max_id:,include_entities:",SerializeOpts.getOptionDefs());
 		opts.parse(args);
 		mSerializeOpts = this.getSerializeOpts(opts);
 		
 		
 		args = opts.getRemainingArgs();
 		
-		String query = opts.getOptStringRequired("query");
-		
-		
 		try {
 			
 			
-			String u = "http://search.twitter.com/search.json?";
+			 Twitter twitter = new TwitterFactory().getInstance();
+			 Query query = new Query();
+			 
+
+
+
 			
-			u = u + "q=" +  URLEncoder.encode(query, "UTF8");
+			if( opts.hasOpt("query") )
+				query.setQuery(opts.getOptStringRequired("query"));
+	
+			if( opts.hasOpt("lang") )
+				query.setLang(opts.getOptStringRequired("lang"));
+	
+			if( opts.hasOpt("locale") )
+				query.setLocale(opts.getOptStringRequired("locale"));
+	
+			if( opts.hasOpt("page") )
+				query.setPage( opts.getOptValue("page").toInt());
+	
+			if( opts.hasOpt("result_type") )
+				query.setResultType(opts.getOptStringRequired("result_type"));
+	
+			if( opts.hasOpt("rpp") )
+				query.setRpp(opts.getOptValue("rpp").toInt());
+	
 			
-			String result = httpGetString( u );
+			if( opts.hasOpt("until") )
+				query.setUntil(opts.getOptStringRequired("until"));
+	
+			if( opts.hasOpt("since_id") )
+				query.setSinceId(opts.getOptValue("since_id").toLong());
+			if( opts.hasOpt("since") )
+				query.setUntil(opts.getOptStringRequired("since"));
 			
+			if( opts.hasOpt("max_id") )
+				query.setSinceId(opts.getOptValue("max_id").toLong());			
+			
+			
+            QueryResult result = twitter.search(query);
+            List<Tweet> tweets = result.getTweets();
+            
 			
 			
 
 			OutputPort out = this.getStdout();
-			mWriter = out.asXMLStreamWriter( mSerializeOpts  );
+			mWriter = new TwitterWriter( out.asXMLStreamWriter( mSerializeOpts  ));
 			
-			startDocument();
-			startElement("twitter");
-			mWriter.writeDefaultNamespace(kTWITTER_NS);
+			mWriter.startDocument();
+			mWriter.startElement("twitter");
+			mWriter.writeDefaultNamespace();
 
-			;
+			for( Tweet t : tweets )
+				mWriter.write( t );
 
-			JSONTokener tokenizer = new JSONTokener(result);
-
-			/*
-			 * Assume JSON file is wrapped by an Object
-			 */
-			JSONObject obj = new JSONObject(tokenizer);
-			writeJSON(obj);
 			
 			
-			endElement();
-			endDocument();
-			closeWriter();
+			mWriter.endElement();
+			mWriter.endDocument();
+			mWriter.closeWriter();
 	
 				
 			out.release();
