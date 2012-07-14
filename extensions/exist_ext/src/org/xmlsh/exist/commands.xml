@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<commands>
+	<command name="del" url="http://www.xmlsh.org/ExistDel">
+		<synopsis>Deletes resources on an eXist server</synopsis>
+		<usage>
+			<para>del [exist options] resource [resource ...]</para>
+		</usage>
+	</command>
+
+
+	<command name="get" url="http://www.xmlsh.org/ExistGet">
+		<synopsis>Gets resources on an eXist server</synopsis>
+		<usage>
+			<para>get [exist options] resource</para>
+			<para>get [exist options] resource output_file</para>
+			<para>get [exist options] resource resource [resource ...] output_direct</para>
+		</usage>
+	</command>
+
+	<command name="invoke" url="http://www.xmlsh.org/ExistInvoke">
+		<synopsis>invokes a stored query on an eXist server</synopsis>
+		<usage>
+			<para>invoke [exist options] [options] query-uri</para>
+		</usage>
+	</command>
+
+	<command name="put" url="http://www.xmlsh.org/ExistPut">
+		<synopsis>Puts a resources to an eXist server</synopsis>
+		<usage>
+			<para>put [exist options] [file or value ...]</para>
+		</usage>
+	</command>
+
+	<command name="query" url="http://www.xmlsh.org/ExistQuery">
+		<synopsis>invokes an 'ad-hoc' query supplied locally</synopsis>
+		<usage>
+			<para>query [exist options] [options] query-uri</para>
+		</usage>
+	</command>
+
+
+	<command name="list" url="http://www.xmlsh.org/ExistList">
+		<synopsis>Lists all resources on an eXist server</synopsis>
+		<usage>
+			<para>list [exist options]</para>
+		</usage>
+	</command>
+
+
+
+</commands>

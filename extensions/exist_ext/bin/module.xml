@@ -1,0 +1,9 @@
+<module 
+	module_version="1"
+	name="exist"
+	package="org.xmlsh.exist" require="1.1.8">
+<classpath>
+  <file url="exist_ext.jar"/>
+</classpath>
+</module>
+

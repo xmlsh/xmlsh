@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/xmlsh"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="/xmlsh/lib/saxon9he.jar" sourcepath="C:/java/saxonhe9-2-0-3/saxonhe9-2-0-3source.zip"/>
+	<classpathentry kind="output" path="_out"/>
+</classpath>
