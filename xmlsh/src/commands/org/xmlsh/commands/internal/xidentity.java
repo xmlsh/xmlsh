@@ -12,6 +12,9 @@ import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLEventWriter;
 import javax.xml.stream.events.XMLEvent;
 
+import net.sf.saxon.s9api.XdmItem;
+import org.xmlsh.core.IXdmItemInputStream;
+import org.xmlsh.core.IXdmItemOutputStream;
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
@@ -38,28 +41,33 @@ public class xidentity extends XCommand {
 			stdin = getStdin();
 		if( stdin == null )
 			throw new InvalidArgumentException("Cannot open input");
+		OutputPort stdout = getStdout();
+		if( stdout == null ){
+			stdin.release();
+		
+			throw new InvalidArgumentException("Cannot open input");
+		}
 		try {
 			
-			SerializeOpts sopts = getSerializeOpts(opts);
+			setSerializeOpts(opts);
 			
-			XMLEventReader	reader = stdin.asXMLEventReader(sopts);
-			OutputPort stdout = getStdout();
-			XMLEventWriter  writer = stdout.asXMLEventWriter(sopts);
+			IXdmItemInputStream input = stdin.asXdmItemInputStream(getSerializeOpts());
+	
+			IXdmItemOutputStream output = stdout.asXdmItemOutputStream(getSerializeOpts());
 			
-			stdout.setSystemId(stdin.getSystemId());
-			XMLEvent e;
 			
-			while( reader.hasNext() ){
-				e = (XMLEvent) reader.next();
-				writer.add(e);
-			}
-			// writer.add(reader);
-			reader.close();
-			writer.close();
+			XdmItem item ;
+			
+			while( (item = input.read() ) != null )
+		        output.write(item);
+			
+			stdout.release();
+				
 		} 
 		finally {
 			
-			stdin.close();
+			stdin.release();
+			stdout.release();
 		}
 		return 0;
 		
