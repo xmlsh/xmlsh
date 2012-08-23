@@ -361,6 +361,11 @@ public class XEnvironment  {
 		
 		
 	}
+	
+	public OutputPort getOutput( String port , boolean append) throws IOException
+	{
+		return getOutput( new XValue(port) , append );
+	}
 
 	
 	public OutputPort getOutput( File file , boolean append ) throws IOException
@@ -537,10 +542,16 @@ public class XEnvironment  {
 		return mIO.getInputPort(name);
 	}
 
+	public InputPort getInput( String name ) throws CoreException
+	{
+		return getInput( new XValue(name));
+	}
+	
 	public OutputPort getOutputPort(String name){
 		return mIO.getOutputPort(name);
 	}
 
+	
 	public String getAbsoluteURI(String sysid) throws URISyntaxException 
 	{
 		URI uri = new URI(sysid);

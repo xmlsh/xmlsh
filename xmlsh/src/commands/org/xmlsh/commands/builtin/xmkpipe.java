@@ -55,7 +55,7 @@ public class xmkpipe extends BuiltinCommand {
 				pipe = new PipedXDMPort(mShell.getSerializeOpts(), opts.getOptInt("size", 100));
 		else
 			if( opts.hasOpt("size"))
-				pipe = new PipedStreamPort(opts.getOptInt("size", 1024));
+				pipe = new PipedStreamPort(opts.getOptInt("size", 10240));
 			else
 				pipe = new PipedStreamPort();
 		

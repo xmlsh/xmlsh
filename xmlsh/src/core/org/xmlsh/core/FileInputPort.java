@@ -55,6 +55,8 @@ public class FileInputPort extends InputPort {
 	}
 
 
+
+
 	/**
 	 * @param systemId
 	 * @see org.xmlsh.core.IPort#setSystemId(java.lang.String)

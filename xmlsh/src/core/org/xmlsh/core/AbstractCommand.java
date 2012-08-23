@@ -93,8 +93,14 @@ public abstract class AbstractCommand implements ICommand {
 	public InputPort getInput(XValue name) throws CoreException {
 		return mEnvironment.getInput( name );
 	}
-
+	public InputPort getInput(String name) throws CoreException {
+		return mEnvironment.getInput( name );
+	}
 	public OutputPort getOutput(XValue name, boolean append) throws CoreException, IOException {
+		return mEnvironment.getOutput( name , append );
+	}
+
+	public OutputPort getOutput(String name, boolean append) throws CoreException, IOException {
 		return mEnvironment.getOutput( name , append );
 	}
 
