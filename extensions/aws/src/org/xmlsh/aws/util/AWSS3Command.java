@@ -135,7 +135,16 @@ public abstract class AWSS3Command extends AWSCommand {
 				
 				
 				
-			}
+	}
+	
+	
+	protected S3Path getPath( String bucket , String key )
+	{
+		if( Util.isBlank(bucket) )
+			return new S3Path( key );
+		else
+			return new S3Path( bucket , key );
+	}
 	
 
 }

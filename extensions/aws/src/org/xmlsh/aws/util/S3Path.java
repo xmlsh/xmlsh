@@ -46,6 +46,16 @@ public class S3Path {
 		
 		
 	}
+	
+	public S3Path( S3Path parent , String child )
+	{
+		mBucket = parent.mBucket ; 
+		if( parent.mKey.endsWith("/") || child.startsWith("/"))
+			mKey = parent.mKey + child ;
+		else
+			mKey = parent.mKey + "/" + child ;
+		
+	}
 
 	public 	String	getBucket(){
 		return mBucket ;
