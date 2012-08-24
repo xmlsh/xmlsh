@@ -2,7 +2,7 @@
 	module_version="2"
 	name="aws"
 	package="org.xmlsh.aws"
-	require="1.2.0"
+	require="1.2.1"
 >
 <classpath>
   <file url="aws_ext.jar"/>
