@@ -85,11 +85,8 @@ public class s3put extends AWSS3Command {
 		    List<XValue> srcs = args ;
 		    S3Path ds  = new S3Path(srcs.remove(args.size()-1).toString());
 		
-		   
-		    
 		    for( XValue s : srcs ){
-		    	S3Path d = new S3Path( ds , s.toString() );
-
+		    	S3Path d =  ds.isDirectory() ? new S3Path( ds , s.toString() ) : ds ;
 			   ret = put(  s , d , meta , storage  );
 				
 		    	
