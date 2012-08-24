@@ -2,7 +2,7 @@
 	module_version="11"
 	name="marklogic"
 	package="org.xmlsh.marklogic"
-	require="1.2.0"
+	require="1.2.1"
 >
 <classpath>
   <file url="marklogic_ext.jar"/>
