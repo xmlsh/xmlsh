@@ -50,6 +50,8 @@ public class ximport extends BuiltinCommand {
 			else
 			if( what.toString().equals("java"))
 				return importJava( args );
+			else
+				mShell.printErr("Invalid command: import " + what.toString());
 		} 
 
 		catch (InvalidArgumentException e){

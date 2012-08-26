@@ -1,8 +1,8 @@
  /**
  * JavaCC file
- */options{  JDK_VERSION = "1.5";  STATIC = false;  // DEBUG_PARSER=true ;  
- // DEBUG_LOOKAHEAD=true;
- // DEBUG_TOKEN_MANAGER=true;
+ */options{  JDK_VERSION = "1.5";  STATIC = false;//   DEBUG_PARSER=true ;  
+//  DEBUG_LOOKAHEAD=true;
+// DEBUG_TOKEN_MANAGER=true;
   // FORCE_LA_CHECK=true;
   UNICODE_INPUT=true;
 }
@@ -17,7 +17,8 @@
 
  
 */< DEFAULT, CMD >SKIP :{  " "| "\r"| "\t"}< DEFAULT, CMD >TOKEN :{  < NEWLINE : "\n" >   : DEFAULT}/* COMMENTS */<* >SPECIAL_TOKEN :{  < SINGLE_LINE_COMMENT : "#" (~[ "\n" ])* >   : DEFAULT}< DEFAULT >TOKEN :{  < CSEMI : ";" >}< CMD >TOKEN :{  < AND_IF : "&&" > : DEFAULT| < OR_IF : "||" > : DEFAULT}< DEFAULT, CMD >TOKEN :{  < DGREAT : ">>" >
-  | < DSEMI : ";;" > : DEFAULT}< DEFAULT, CMD >TOKEN :{  < CLOBBER : ">|" >}< DEFAULT, CMD >TOKEN :{  < DLESSMINUS : "<<-" >  {    matchedToken.image = readHere();  }|   < DLESS : "<<" >  {    matchedToken.image = readHere();  }}TOKEN :{  < IF : "if" >| < ELIF : "elif" >| < THEN : "then" >| < ELSE : "else" >| < FI : "fi" >| < DO : "do" > : DEFAULT| < CASE : "case" >  {    in_for = true;  }| < ESAC : "esac" >| < WHILE : "while" >| < UNTIL : "until" >| < FOR : "for" >  {
+  | < DSEMI : ";;" > : DEFAULT}< DEFAULT, CMD >TOKEN :{  < CLOBBER : ">|" >}< DEFAULT, CMD >TOKEN :{  < DLESSMINUS : "<<-" >  {    matchedToken.image = readHere();  }|   < DLESS : "<<" >  {    matchedToken.image = readHere();  }}TOKEN :{  < IF : "if" >| < ELIF : "elif" >| < THEN : "then" >| < ELSE : "else" >| < FI : "fi" >| < DO : "do" >{  in_for = false ;
+} : DEFAULT| < CASE : "case" >  {    in_for = true;  }| < ESAC : "esac" >| < WHILE : "while" >| < UNTIL : "until" >| < FOR : "for" >  {
     if (in_for) {
     	matchedToken.kind = NAME ;
     	SwitchTo(CMD);

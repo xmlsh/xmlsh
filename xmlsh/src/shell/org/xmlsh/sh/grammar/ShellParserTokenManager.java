@@ -2648,6 +2648,11 @@ void TokenLexicalActions(Token matchedToken)
         lengthOfMatch = jjstrLiteralImages[13].length();
     matchedToken.image = readHere();
          break;
+      case 19 :
+        image.append(jjstrLiteralImages[19]);
+        lengthOfMatch = jjstrLiteralImages[19].length();
+  in_for = false ;
+         break;
       case 20 :
         image.append(jjstrLiteralImages[20]);
         lengthOfMatch = jjstrLiteralImages[20].length();
