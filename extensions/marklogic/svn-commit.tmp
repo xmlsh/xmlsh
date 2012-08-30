@@ -1,6 +1,0 @@
-
---This line, and those below, will be ignored--
-
-A    test/core/core_put4.xsh
-A    test/core/out/core_put4.xsh.out
-M    src/org/xmlsh/marklogic/put.java
