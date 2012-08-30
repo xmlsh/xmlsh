@@ -11,7 +11,10 @@ ml:put -locale en_US  -uri /test3.xml <[ <foo/> ]>
 
 
 # Should be 10
-ml:query "xdmp:document-get-quality('/test1.xml')"
+ml:query -q <{{
+    xquery version "1.0-ml";
+    xdmp:document-get-quality('/test1.xml')
+    }}>
 # ML BUG
 # ml:get -t /test2.xml
 

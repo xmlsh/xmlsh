@@ -23,7 +23,10 @@ import module ml=marklogic
 
 # Test for empty DB ... do NOT run tests if connection contains ANY documents
 
-ml:query 'count(doc())' >{_NDOCS}
+ml:query -q <{{
+xquery version "1.0-ml";
+count(doc())
+}}> >{_NDOCS}
 if [ $_NDOCS -ne 0 ] ; then 
 	echo Warning these tests will wipe out any existing data
 	echo They MUST be run using a connection to an EMPTY database

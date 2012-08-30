@@ -13,6 +13,7 @@ _update=<[ for $u in $_opts//option[@name="u"]/value/string() 	return concat( "x
 _execute=<[ for $u in $_opts//option[@name="x"]/value/string() 	return concat( "xdmp:permission('" , $u , "', 'execute')" )]>
 
 _query=<[ concat(
+    'xquery version "1.0-ml" ; ',
     "declare variable $uri external ; ",
     "declare function local:all( $uri as xs:string? ) as xs:string* ",
     "{ ",

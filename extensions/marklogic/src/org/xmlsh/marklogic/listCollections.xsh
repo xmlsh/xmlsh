@@ -5,6 +5,7 @@ shift $?
 
 
 :query -q <{{
+xquery version "1.0-ml";
 let $collections := cts:collections() return  
 <root count="{ fn:count($collections) }">  
 {  

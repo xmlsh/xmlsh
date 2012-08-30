@@ -317,6 +317,7 @@ public class get extends MLCommand {
 		
 		RequestOptions options = null ; 
 		AdhocQuery request = mSession.newAdhocQuery (
+				" xquery version \"1.0-ml\"; " + 
 				" declare variable $dir external; " + 
 				" for $d in xdmp:directory($dir,'infinity')/base-uri() " + 
 				" order by $d " +

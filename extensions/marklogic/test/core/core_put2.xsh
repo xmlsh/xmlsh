@@ -10,13 +10,26 @@ ml:put -uri /test4.xml <[ <foo>bar</foo> ]>
 
 
 echo foo,bar
-ml:query 'for $u in fn:collection(("foo","bar"))/base-uri() order by $u return $u'
+ml:query -q <{{
+    xquery version "1.0-ml";
+    for $u in fn:collection(("foo","bar"))/base-uri() order by $u return $u
+    }}>
 echo foo
-ml:query 'for $u in  fn:collection("foo")/base-uri() order by $u return $u'
+ml:query -q <{{
+    xquery version "1.0-ml";
+    for $u in  fn:collection("foo")/base-uri() order by $u return $u
+        }}>
 echo bar
-ml:query 'for $u in fn:collection("bar")/base-uri()  order by $u return $u'
+ml:query -q <{{
+    xquery version "1.0-ml";
+    for $u in fn:collection("bar")/base-uri()  order by $u return $u
+    }}>
+    
 echo none
-ml:query 'fn:collection("none")/base-uri()'
+ml:query -q <{{
+    xquery version "1.0-ml";
+    fn:collection("none")/base-uri()
+    }}>
 
 
 

@@ -833,7 +833,9 @@ public class put extends MLCommand {
 		// SequenceImpl seq = new SequenceImpl( dirs.toArray(new XdmValue[dirs.size()]));
 	//	request.setNewVariable("dirs", ValueType.SEQUENCE, seq );
 */		
-		AdhocQuery request = mSession.newAdhocQuery ( sReq.toString() );
+		AdhocQuery request = mSession.newAdhocQuery ( 
+				"xquery version \"1.0-ml\"; " + 
+				sReq.toString() );
 		ResultSequence rs = mSession.submitRequest (request);
 
 		rs.close();

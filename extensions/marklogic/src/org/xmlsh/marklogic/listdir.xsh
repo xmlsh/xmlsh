@@ -8,6 +8,7 @@ shift $?
 declare namespace  prop="http://marklogic.com/xdmp/property";
 if [ $# -eq 0 ] ; then 
 	:query $_opts -q <{{
+xquery version "1.0-ml";	
 for $d in 
 xdmp:document-properties()//prop:directory/base-uri()
 order by $d
