@@ -8,26 +8,28 @@ import javax.xml.stream.XMLStreamException;
 import net.sf.saxon.s9api.SaxonApiException;
 import org.xmlsh.aws.util.AWSELBCommand;
 import org.xmlsh.core.CoreException;
-import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
+import org.xmlsh.util.Util;
 
+import com.amazonaws.services.elasticloadbalancing.model.DescribeInstanceHealthRequest;
+import com.amazonaws.services.elasticloadbalancing.model.DescribeInstanceHealthResult;
+import com.amazonaws.services.elasticloadbalancing.model.DescribeLoadBalancersRequest;
 import com.amazonaws.services.elasticloadbalancing.model.DescribeLoadBalancersResult;
 import com.amazonaws.services.elasticloadbalancing.model.HealthCheck;
 import com.amazonaws.services.elasticloadbalancing.model.Instance;
+import com.amazonaws.services.elasticloadbalancing.model.InstanceState;
 import com.amazonaws.services.elasticloadbalancing.model.ListenerDescription;
 import com.amazonaws.services.elasticloadbalancing.model.LoadBalancerDescription;
 
 
-public class elbList	 extends AWSELBCommand {
+public class elbList	 extends  AWSELBCommand {
 
 	
 
-	private boolean bLongListing;
-
-
+	private List<InstanceState> states;
 	/**
 	 * @param args
 	 * @throws IOException 
@@ -36,7 +38,7 @@ public class elbList	 extends AWSELBCommand {
 	public int run(List<XValue> args) throws Exception {
 
 		
-		Options opts = getOptions("l=long");
+		Options opts = getOptions();
 		opts.parse(args);
 
 		args = opts.getRemainingArgs();
@@ -48,7 +50,6 @@ public class elbList	 extends AWSELBCommand {
 		
 		
 		
-		bLongListing = opts.hasOpt("l");
 		
 		
 		try {
@@ -61,19 +62,7 @@ public class elbList	 extends AWSELBCommand {
 		
 
 		int ret = -1;
-		switch(args.size()){
-		case	0:
-			ret = list();
-			break;
-		case	1:
-			// ret = list( args.get(0).toString());
-			break;
-			
-		default :
-				usage();
-				return 1;
-		}
-
+		ret = list(Util.toStringList(args));
 
 		
 		
@@ -83,17 +72,24 @@ public class elbList	 extends AWSELBCommand {
 	}
 
 
-	private int list() throws IOException, XMLStreamException, SaxonApiException, CoreException 
+	private int list(List<String> elbs) throws IOException, XMLStreamException, SaxonApiException, CoreException 
 	{
 
 		OutputPort stdout = this.getStdout();
 		mWriter = stdout.asXMLStreamWriter(mSerializeOpts);
 		
+		DescribeLoadBalancersRequest request = 
+				elbs.size() == 0 ?
+				new DescribeLoadBalancersRequest(): 
+					new DescribeLoadBalancersRequest(elbs)
+	          ;
+		
 		
 		startDocument();
 		startElement(getName());
+         
 		
-		DescribeLoadBalancersResult result = mAmazon.describeLoadBalancers();
+		DescribeLoadBalancersResult result = mAmazon.describeLoadBalancers(request);
 		
 		for(LoadBalancerDescription desc :  result.getLoadBalancerDescriptions() ){
 			
@@ -110,11 +106,24 @@ public class elbList	 extends AWSELBCommand {
 				endElement();
 			}
 			endElement(); // zones
+			DescribeInstanceHealthRequest healthRequest = 
+					new DescribeInstanceHealthRequest(desc.getLoadBalancerName());
+			DescribeInstanceHealthResult healthResult = mAmazon.describeInstanceHealth(healthRequest);
+			List<InstanceState> instanceStates = healthResult.getInstanceStates();
+			
 			
 			startElement("instances");
 			for( Instance instance : desc.getInstances() ){
 				startElement("instance");
 				attribute( "instance-id" , instance.getInstanceId());
+				for( InstanceState s : instanceStates ){
+					if( s.getInstanceId().equals( instance.getInstanceId()  )){
+						writeInstanceState( s );
+						break ; 
+					}
+				}
+
+				
 				endElement();
 
 			}
@@ -175,6 +184,16 @@ public class elbList	 extends AWSELBCommand {
 		
 		
 	}
+	private void writeInstanceState( InstanceState s) throws XMLStreamException {
+		attribute(	"description",	s.getDescription() );
+		attribute( "reason_code" ,  s.getReasonCode() );
+		attribute( "state" , s.getState() );
+		
+		
+		
+	}
+
+
 	public void usage() {
 		super.usage();
 	}
