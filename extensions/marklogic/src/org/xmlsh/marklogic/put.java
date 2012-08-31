@@ -58,12 +58,9 @@ public class put extends MLCommand {
 
 	
 
-
-	private static Logger mLogger = LogManager.getLogger(put.class);
 	private ContentCreateOptions mCreateOptions;
 	private ThreadPoolExecutor mPool = null;
-	private PrintWriter		mOutput = null;
-	private boolean 		bVerbose = false ;
+
 	
 	private static class SumContent
 	{
@@ -855,14 +852,6 @@ public class put extends MLCommand {
 	}
 
 	
-	protected synchronized void printError( String error , Exception e )
-	{		
-		mOutput.println(error);
-		if( e != null )
-			mLogger.error( error , e );
-		
-		mOutput.flush();
-	}
 	
 	String parseURI( String uri )
 	{

@@ -40,11 +40,10 @@ import com.marklogic.xcc.exceptions.RequestException;
 
 public class get extends MLCommand {
 
-	private static Logger mLogger = LogManager.getLogger(get.class);
+
 
 	private ExecutorService mPool = null;
 	private PrintWriter		mOutput = null;
-	private boolean 		bVerbose = false ;
 	private boolean		bMkdirs = false ;
 	
 	private static class SumContent
@@ -84,7 +83,7 @@ public class get extends MLCommand {
 
 				
 			} catch (Exception e) {
-				printError("Exception submitting data",e);
+				printError("Exception getting data",e);
 			}
 
 			
@@ -377,24 +376,6 @@ public class get extends MLCommand {
 	
 	
 	
-	protected void print( String str )
-	{
-		if( bVerbose ){
-			mOutput.println(str);
-			mOutput.flush();
-		}
-			
-	}
-
-	
-	protected synchronized void printError( String error , Exception e )
-	{		
-		mOutput.println(error);
-		if( e != null )
-			mLogger.error( error , e );
-		
-		mOutput.flush();
-	}
 
 
 }

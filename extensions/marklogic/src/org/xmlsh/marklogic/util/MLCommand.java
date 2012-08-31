@@ -11,6 +11,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
@@ -35,6 +36,8 @@ import net.sf.saxon.om.ValueRepresentation;
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.trans.XPathException;
 import net.sf.saxon.value.AtomicValue;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
@@ -42,6 +45,7 @@ import org.xmlsh.core.Options.OptionValue;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
+import org.xmlsh.marklogic.get;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.util.Util;
 
@@ -68,8 +72,11 @@ public abstract class MLCommand extends XCommand {
 
 	protected	ContentSource	mContentSource = null ;
 	protected 	Session 		mSession = null ;
+	private    Logger mLogger = LogManager.getLogger(this.getClass());
 	
-	
+	protected  PrintWriter		mOutput = null;
+
+	protected boolean 		bVerbose = false ;
 	
 	public MLCommand() {
 		super();
@@ -391,9 +398,36 @@ public abstract class MLCommand extends XCommand {
 	
 		
 	}
+	// Dont use shell printError as these may be in non shell threads
+		protected synchronized void printError( String error , Exception e )
+		{		
+			
+			
+			mOutput.println(error);
+			mOutput.println(e.getMessage());
+			for( Throwable t = e.getCause() ; t != null ; t = t.getCause() ){
+				mOutput.println("  Caused By: " + t.getMessage());		
+				
+			}
+			
+			
+			if( e != null )
+				mLogger.error( error , e );
+			
+			mOutput.flush();
+		}
+	
 
-	
-	
+		
+		protected void print( String str )
+		{
+			if( bVerbose ){
+				mOutput.println(str);
+				mOutput.flush();
+			}
+				
+		}
+
 }
 
 //
