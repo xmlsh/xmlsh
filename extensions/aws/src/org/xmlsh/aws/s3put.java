@@ -4,10 +4,17 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import org.xmlsh.aws.util.AWSS3Command;
 import org.xmlsh.aws.util.S3Path;
+import org.xmlsh.aws.util.S3TransferManager;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.FileInputPort;
 import org.xmlsh.core.InputPort;
@@ -17,9 +24,12 @@ import org.xmlsh.core.XValue;
 import org.xmlsh.util.StringPair;
 import org.xmlsh.util.Util;
 
+import com.amazonaws.AmazonClientException;
+import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.PutObjectResult;
+import com.amazonaws.services.s3.transfer.MultipleFileUpload;
 
 
 public class s3put extends AWSS3Command {
@@ -109,16 +119,54 @@ public class s3put extends AWSS3Command {
 		return ret;
 		
 	}
+	
+	public static Collection<File> listFileTree(File dir) {
+	    Set<File> fileTree = new HashSet<File>();
+	    for (File entry : dir.listFiles()) {
+	        if (entry.isFile()) fileTree.add(entry);
+	        else fileTree.addAll(listFileTree(entry));
+	    }
+	    return fileTree;
+	}
+
 	private int put(File file, S3Path dest, List<XValue> meta, String storage)
 	{
 		if( file.isDirectory() ){
 			int ret = 0;
-			File [] files =  file.listFiles();
-			Util.sortFiles(files);
+			Collection<File> files =  listFileTree(file);
+			List<File> filelist = new ArrayList<File>(files);
+			Util.sortFiles(filelist);
+			S3TransferManager ctm = new S3TransferManager(mAmazon);
+			MultipleFileUpload dirUpload = ctm.uploadFileList(dest.getBucket(), dest.getKey(), filelist, file);
+			/*
+			if (showProgress > 0) {
+				while (!dirUpload.isDone()) {
+					conn.isValid(0);
+					Thread.sleep(showProgress * 1000);
+					log("State: " + dirUpload.getState() + "   Bytes Xferred: " + dirUpload.getProgress().getBytesTransfered());
+				}
+			}
+			else dirUpload.waitForCompletion();
+			bytes += dirUpload.getProgress().getBytesTransfered();
+			log("Bytes Xferred so far: " + bytes);
 			for( File f : files ){
 			     ret += put( f , new S3Path(dest,f.getName()) , meta , storage );
 			}
 			return ret ;
+			*/
+			try {
+				dirUpload.waitForCompletion();
+			} catch (AmazonServiceException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (AmazonClientException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return (int)dirUpload.getProgress().getBytesTransfered();
 		}
 		
 		FileInputPort src;
