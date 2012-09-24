@@ -1,0 +1,24 @@
+Xpath on stdin
+<AUTHOR>Jane Austen</AUTHOR>
+<AUTHOR>Charlotte Brontë</AUTHOR>
+<AUTHOR>Thomas Hardy</AUTHOR>
+<AUTHOR>Thomas Hardy</AUTHOR>
+<AUTHOR>Jasper Fforde</AUTHOR>
+<AUTHOR>Jasper Fforde</AUTHOR>
+Xpath on file
+<AUTHOR>Jane Austen</AUTHOR>
+<AUTHOR>Charlotte Brontë</AUTHOR>
+<AUTHOR>Thomas Hardy</AUTHOR>
+<AUTHOR>Thomas Hardy</AUTHOR>
+<AUTHOR>Jasper Fforde</AUTHOR>
+<AUTHOR>Jasper Fforde</AUTHOR>
+xpath on xml expression
+<bar a2="value2"/>
+<foo>text</foo>
+<foo>text</foo>
+Success returned xpath
+Success empty returned xpath
+<t:test xmlns:t="http://www.example.org/test">Test</t:test>
+<t:test xmlns:t="http://www.example.org/test">Test</t:test>
+<t:test xmlns:t="http://www.example.org/test">Test</t:test>
+<t:test xmlns:t="http://www.example.org/test">Test</t:test>

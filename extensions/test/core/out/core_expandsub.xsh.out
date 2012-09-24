@@ -1,0 +1,7 @@
+Should be foo: foo
+Should be 3 : 3
+Arg a1
+Arg b1
+Arg c1
+Success expected false
+retval is 1

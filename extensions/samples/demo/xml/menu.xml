@@ -1,0 +1,7 @@
+<menu>
+  <command title="XML Element creation"  command="xml_elem.xsh"/>
+  <command title="XML here document"  command="xml_here.xsh"/>
+  <command title="XML Documents" command="xml_doc.xsh"/>
+  <command title="XML Sub Processes" command="xml_proc.xsh"/>
+ 
+</menu>

@@ -1,0 +1,25 @@
+CLASSPATH=$XMLSH/bin/xmlsh-1.2.jar
+CLASSPATH=$CLASSPATH:$XMLSH/lib/log4j-1.2.7.jar
+# Pick which saxon you want
+CLASSPATH=$CLASSPATH:$XMLSH/lib/saxon9he.jar
+#CLASSPATH=$CLASSPATH:$XMLSH/lib/saxon9ee.jar
+#CLASSPATH=$CLASSPATH:$XMLSH/lib/saxon9pe.jar
+
+CLASSPATH=$CLASSPATH:$XMLSH/lib/xercesImpl.jar
+# Uncomment the next line if you DO NOT want to use jline input editing
+CLASSPATH=$CLASSPATH:$XMLSH/lib/jline-0.9.94.jar
+CLASSPATH=$CLASSPATH:$XMLSH/lib/woodstox-core-asl-4.0.3.jar
+CLASSPATH=$CLASSPATH:$XMLSH/lib/stax2-api-3.0.1.jar
+CLASSPATH=$CLASSPATH:$XMLSH/lib/stax-utils.jar
+# jing only used for rngvalidate 
+CLASSPATH=$CLASSPATH:$XMLSH/lib/jing.jar
+# trang only used for rngconvert
+CLASSPATH=$CLASSPATH:$XMLSH/lib/trang.jar
+# saxon only used for xslt1
+CLASSPATH=$CLASSPATH:$XMLSH/lib/saxon.jar
+# tagsoup only used for tagsoup command
+CLASSPATH=$CLASSPATH:$XMLSH/lib/tagsoup-1.2.jar
+# xom used only for xinclude
+CLASSPATH=$CLASSPATH:$XMLSH/lib/xom-1.2.6.jar
+# Adjust VM args below to your taste
+java -cp $CLASSPATH -Xmx1024m -Xms256m -XX:+UseConcMarkSweepGC org.xmlsh.sh.ui.XShell   "$@"

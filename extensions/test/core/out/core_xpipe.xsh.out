@@ -1,0 +1,10 @@
+xs:string
+xs:string
+xs:string
+xs:string
+xs:string
+xs:integer
+xs:string
+element()
+document-node()
+attribute()

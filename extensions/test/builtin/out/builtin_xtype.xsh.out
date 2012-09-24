@@ -1,0 +1,12 @@
+xs:string
+xs:integer
+xs:decimal
+xs:string
+element()
+document-node()
+xs:string
+xs:string+
+xs:string
+empty-sequence()
+xs:integer
+xs:decimal

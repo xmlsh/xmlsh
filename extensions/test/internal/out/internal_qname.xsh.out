@@ -1,0 +1,6 @@
+spam
+prefix:spam
+foo:spam
+net.sf.saxon.s9api.QName
+<bar xmlns="http://foo.bar">hi</bar>
+<prefix2:spam xmlns:prefix2="http://foo.bar2" xmlns:prefix1="http://foo.bar1" prefix1:bar="value hi"/>

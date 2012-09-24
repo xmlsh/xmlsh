@@ -1,0 +1,23 @@
+<xgetopts>
+  <options>
+    <option name="a">
+      <value>Option A</value>
+    </option>
+    <option name="bc">
+      <value>Option BC</value>
+    </option>
+    <option name="bool"/>
+    <option name="multi">
+      <value>Multi 1</value>
+      <value>
+        <multi>Multi 2 as XML</multi>
+      </value>
+    </option>
+  </options>
+  <args>
+    <arg>Remaining</arg>
+    <arg>
+      <args>Args</args>
+    </arg>
+  </args>
+</xgetopts>

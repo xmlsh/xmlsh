@@ -1,0 +1,8 @@
+entering require
+Require succeeded with no args
+Require 1.0.1 succeeded
+Require 9.0.2 failed correctly
+entering require test
+Correctly failed require 99999
+Correctly caught failed require in sub
+requires version: 99999

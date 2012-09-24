@@ -1,0 +1,12 @@
+foo: args are arg1 arg2 arg3
+after foo _A is foo
+bar: args are arg1 arg2
+after bar _A is
+in spam
+bar: args are arg1 arg2
+foo: args are arg1 arg2
+_A is
+before f1 f2
+enter f1 _A is f2
+after f1 f2
+_A is

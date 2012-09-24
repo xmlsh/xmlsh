@@ -1,0 +1,9 @@
+element()
+<foo/>
+<foo>bar</foo>
+<foo:bar xmlns:foo="http://uri" foo:a1="value">Text</foo:bar>
+<foo:root xmlns:foo="http://uri">
+   <foo:bar foo:a1="value">Text</foo:bar>
+   <foo:bar foo:a1="value">Text</foo:bar>
+   <foo:bar foo:a1="value">Text</foo:bar>
+</foo:root>
