@@ -6,7 +6,7 @@
 >
 <classpath>
   <file url="marklogic_ext.jar"/>
-  <file url="marklogic-xcc-5.0.1.jar"/>
+  <file url="marklogic-xcc-6.0.1.jar"/>
 </classpath>
 </module>
 

@@ -215,7 +215,18 @@ public abstract class MLCommand extends XCommand {
 	protected com.marklogic.xcc.types.XdmValue newValue(XValue value, SerializeOpts opts)
 			throws XPathException, InvalidArgumentException, SaxonApiException {
 
+		if( value.isObject() ){
+			String s = value.toString();
+			return ValueFactory.newXSString(s);
+
+			
+			
+			
+		}
+		
+		
 		net.sf.saxon.s9api.XdmItem item = value.asXdmItem();
+		
 		if (item.isAtomicValue()) {
 			net.sf.saxon.value.AtomicValue atom = (net.sf.saxon.value.AtomicValue) item
 					.getUnderlyingValue();

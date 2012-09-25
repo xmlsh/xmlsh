@@ -91,6 +91,7 @@
   	<target name="install" description="Install to modules">
 	  		 <copy todir="${install}" filtering="on">
 				<fileset dir="bin" includes="*.jar module.xml"/>
+				<fileset dir="lib" includes="*.jar"/>
 
 	    	 </copy>
 	  	</target>
