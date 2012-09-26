@@ -132,41 +132,20 @@ public class s3put extends AWSS3Command {
 	private int put(File file, S3Path dest, List<XValue> meta, String storage)
 	{
 		if( file.isDirectory() ){
-			int ret = 0;
 			Collection<File> files =  listFileTree(file);
 			List<File> filelist = new ArrayList<File>(files);
 			Util.sortFiles(filelist);
 			S3TransferManager ctm = new S3TransferManager(mAmazon);
 			MultipleFileUpload dirUpload = ctm.uploadFileList(dest.getBucket(), dest.getKey(), filelist, file);
-			/*
-			if (showProgress > 0) {
-				while (!dirUpload.isDone()) {
-					conn.isValid(0);
-					Thread.sleep(showProgress * 1000);
-					log("State: " + dirUpload.getState() + "   Bytes Xferred: " + dirUpload.getProgress().getBytesTransfered());
-				}
-			}
-			else dirUpload.waitForCompletion();
-			bytes += dirUpload.getProgress().getBytesTransfered();
-			log("Bytes Xferred so far: " + bytes);
-			for( File f : files ){
-			     ret += put( f , new S3Path(dest,f.getName()) , meta , storage );
-			}
-			return ret ;
-			*/
+
 			try {
 				dirUpload.waitForCompletion();
-			} catch (AmazonServiceException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (AmazonClientException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			} catch (Exception e) {
+				this.printErr("Exception putting directory to S3" , e);
+				return 1;
 			}
-			return (int)dirUpload.getProgress().getBytesTransfered();
+			
+			return 0;
 		}
 		
 		FileInputPort src;
