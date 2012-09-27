@@ -29,7 +29,7 @@ public class XFile /* implements XSerializble */ {
 			try {
 				xv = xv.xpath(shell, "/file/@path/string()");
 			} catch (UnexpectedException e) {
-				mLogger.debug("Ingorning exception converting xvalue to file",e);
+				mLogger.debug("Ignoring exception converting xvalue to file",e);
 			}
 			
 		}
@@ -80,6 +80,44 @@ public class XFile /* implements XSerializble */ {
 		try {
 			return Util.toJavaPath(mFile.getCanonicalPath());
 		} catch (IOException e) {
+			return "";
+		}
+	}
+
+	public String getRelpath() {
+		try {
+			String relativeTo = Util.toJavaPath(System.getProperty("user.dir"));
+			String absolutePath = Util.toJavaPath(mFile.getCanonicalPath());
+            String[] absoluteDirectories = absolutePath.split("/");
+            String[] relativeDirectories = relativeTo.split("/");
+
+            int length = absoluteDirectories.length < relativeDirectories.length ? absoluteDirectories.length : relativeDirectories.length;
+            int lastCommonRoot = -1;
+            int index;
+
+            //Find common root
+            for (index = 0; index < length; index++)
+                if (absoluteDirectories[index].equals(relativeDirectories[index]))
+                    lastCommonRoot = index;
+                else
+                    break;
+
+            if (lastCommonRoot == -1)
+                return absolutePath;
+
+            //Build up the relative path
+            StringBuilder relativePath = new StringBuilder();
+            for (index = lastCommonRoot + 1; index < relativeDirectories.length; index++)
+                if (relativeDirectories[index].length() > 0)
+                    relativePath.append("../");
+
+            //Add on the folders
+            for (index = lastCommonRoot + 1; index < absoluteDirectories.length - 1; index++)
+                relativePath.append(absoluteDirectories[index] + "/");
+            relativePath.append(absoluteDirectories[absoluteDirectories.length - 1]);
+
+            return relativePath.toString();
+		} catch (Exception e) {
 			return "";
 		}
 	}
@@ -142,7 +180,7 @@ public class XFile /* implements XSerializble */ {
 			writer.writeEndElement();
 	}
 	
-	public String noExtention() {
+	public String noExtension() {
 		String	path = Util.toJavaPath(mFile.getPath());
 		String  ext = getExt();
 		return path.substring(0 , path.length() - ext.length());

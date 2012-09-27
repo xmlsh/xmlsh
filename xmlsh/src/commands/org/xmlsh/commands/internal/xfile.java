@@ -45,7 +45,7 @@ public class xfile extends XCommand
 	
 	public int run(  List<XValue> args  )	throws Exception
 	{
-		Options opts = new Options("n=name,b=base,d=dir,a=all,c=conanical,e=extension,B=basename,N,s=sys,u=uri",SerializeOpts.getOptionDefs());
+		Options opts = new Options("n=name,b=base,d=dir,a=all,c=conanical,e=extension,B=basename,N,s=sys,u=uri,r=rel",SerializeOpts.getOptionDefs());
 		opts.parse(args);
 		args = opts.getRemainingArgs();
 		
@@ -72,10 +72,10 @@ public class xfile extends XCommand
 			out.println( toSys(xf.getBaseName(),opt_sys));
 		else
 		if( opts.hasOpt("B"))
-			out.println( toSys(xf.noExtention(),opt_sys));
+			out.println( toSys(xf.noExtension(),opt_sys));
 		else
 		if( opts.hasOpt("n") )
-				out.println( toSys(xf.getName(),opt_sys));
+			out.println( toSys(xf.getName(),opt_sys));
 		else
 		if( opts.hasOpt("d"))
 			out.println(toSys(xf.getDirName(),opt_sys));
@@ -95,7 +95,10 @@ public class xfile extends XCommand
 		if( opts.hasOpt("u"))
 			out.println( xf.getFile().toURI().toString());
 		else
-			out.println( toSys(xf.getPath(),opt_sys));
+		if( opts.hasOpt("r"))
+			out.println( toSys(xf.getRelpath(),opt_sys));
+		else
+		out.println( toSys(xf.getPath(),opt_sys));
 		
 		out.flush();
 			
