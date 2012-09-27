@@ -6,6 +6,9 @@
 
 package org.xmlsh.aws.util;
 
+import java.util.Date;
+import java.util.List;
+
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
@@ -19,6 +22,7 @@ import org.xmlsh.util.Util;
 
 import com.amazonaws.services.ec2.AmazonEC2;
 import com.amazonaws.services.ec2.AmazonEC2Client;
+import com.amazonaws.services.ec2.model.Tag;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 
@@ -110,6 +114,46 @@ public abstract class AWSCommand extends XCommand {
 		if( value != null )
 			mWriter.writeCharacters(value);
 	}
+
+
+	public void attribute(String localName, boolean flag) throws XMLStreamException {
+		attribute( localName , flag ? "true" : "false" );
+		
+	}
+
+
+
+
+	protected void writeZones(List<String> zones) throws XMLStreamException {
+		
+		writeStringList("zones" , "zone" , "name" , zones );
+
+	}
+
+
+	protected void attribute(String name, int value) throws XMLStreamException {
+		attribute( name , String.valueOf(value));
+	}
+
+
+	protected void attribute(String name, Date date) throws XMLStreamException {
+		attribute( name ,  Util.formatXSDateTime(date));
+		
+	}
+
+
+	protected void writeStringList(String listName, String elementName, String attrName, List<String> strings)
+			throws XMLStreamException {
+			   startElement(listName);
+			   for( String string : strings ){
+			
+				   startElement( elementName );
+				   attribute( attrName  , string );
+				   endElement();
+			   }
+			   endElement();
+			
+			}
 
 }
 

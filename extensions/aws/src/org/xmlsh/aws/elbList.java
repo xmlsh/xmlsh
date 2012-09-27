@@ -98,14 +98,9 @@ public class elbList	 extends  AWSELBCommand {
 			attribute("dnsname" , desc.getDNSName());
 			attribute("hosted-zone", desc.getCanonicalHostedZoneName());
 
+			List<String> zones = desc.getAvailabilityZones();
 			
-			startElement("zones");
-			for( String zone : desc.getAvailabilityZones() ){
-				startElement("zone");
-				attribute("name" , zone );
-				endElement();
-			}
-			endElement(); // zones
+			writeZones(zones);
 			DescribeInstanceHealthRequest healthRequest = 
 					new DescribeInstanceHealthRequest(desc.getLoadBalancerName());
 			DescribeInstanceHealthResult healthResult = mAmazon.describeInstanceHealth(healthRequest);
@@ -184,6 +179,8 @@ public class elbList	 extends  AWSELBCommand {
 		
 		
 	}
+
+
 	private void writeInstanceState( InstanceState s) throws XMLStreamException {
 		attribute(	"description",	s.getDescription() );
 		attribute( "reason_code" ,  s.getReasonCode() );

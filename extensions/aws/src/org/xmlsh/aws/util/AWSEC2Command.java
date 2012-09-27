@@ -178,21 +178,6 @@ public abstract class AWSEC2Command extends AWSCommand {
 	}
 
 
-	public void writeTags(List<Tag> tags) throws XMLStreamException {
-		if( tags == null )
-			return ;
-		startElement("tags");
-		
-		for(Tag tag :  tags){
-			startElement("tag");
-			attribute( "key" , tag.getKey());
-			attribute("value", tag.getValue());
-			endElement();
-		}
-		endElement();
-		
-	}
-	
 	public void writeProductCodes(List<ProductCode> productCodes) throws XMLStreamException {
 		if( productCodes == null )
 			return ;
@@ -340,6 +325,21 @@ public abstract class AWSEC2Command extends AWSCommand {
 
 	public void attribute(String localName, boolean flag) throws XMLStreamException {
 		attribute( localName , flag ? "true" : "false" );
+		
+	}
+
+	public void writeTags(List<Tag> tags) throws XMLStreamException {
+		if( tags == null )
+			return ;
+		startElement("tags");
+		
+		for(Tag tag :  tags){
+			startElement("tag");
+			attribute( "key" , tag.getKey());
+			attribute("value", tag.getValue());
+			endElement();
+		}
+		endElement();
 		
 	}
 
