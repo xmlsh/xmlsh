@@ -12,6 +12,7 @@ import java.util.List;
 import javax.xml.stream.XMLStreamException;
 
 import com.amazonaws.services.autoscaling.model.AutoScalingGroup;
+import com.amazonaws.services.autoscaling.model.DescribeAutoScalingGroupsRequest;
 import com.amazonaws.services.autoscaling.model.DescribeAutoScalingGroupsResult;
 import com.amazonaws.services.autoscaling.model.EnabledMetric;
 import com.amazonaws.services.autoscaling.model.Instance;
@@ -29,6 +30,7 @@ import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
+import org.xmlsh.util.Util;
 
 public class asDescribeGroups extends AWSASCommand {
 
@@ -58,7 +60,7 @@ public class asDescribeGroups extends AWSASCommand {
 		}
 		
 	
-        int ret = describe();
+        int ret = describe(args);
 
 		
 		
@@ -69,7 +71,7 @@ public class asDescribeGroups extends AWSASCommand {
 
 
 
-	private int describe() throws IOException, XMLStreamException, SaxonApiException, CoreException {
+	private int describe(List<XValue> args) throws IOException, XMLStreamException, SaxonApiException, CoreException {
 		
 
 		OutputPort stdout = this.getStdout();
@@ -80,9 +82,13 @@ public class asDescribeGroups extends AWSASCommand {
 		startElement(this.getName());
 		
 		
+		DescribeAutoScalingGroupsRequest request = new DescribeAutoScalingGroupsRequest();
+		if( ! args.isEmpty())
+		   request.setAutoScalingGroupNames( Util.toStringList(args));
+		
 	
 		
-		DescribeAutoScalingGroupsResult result = mAmazon.describeAutoScalingGroups();
+		DescribeAutoScalingGroupsResult result = mAmazon.describeAutoScalingGroups(request);
 		
 		
 		for( AutoScalingGroup group :  result.getAutoScalingGroups())
@@ -127,6 +133,7 @@ public class asDescribeGroups extends AWSASCommand {
 		attribute("status" , group.getStatus());
 
 		attribute("vpc-zone-id", group.getVPCZoneIdentifier());
+		writeStringList( "termination-policies" , "termination-policy" , "name" , group.getTerminationPolicies());
 		
 		
 		writeZones(group.getAvailabilityZones());
