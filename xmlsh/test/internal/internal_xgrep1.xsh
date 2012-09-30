@@ -3,5 +3,5 @@
 
 # XML output
 
-xgrep //ITEM ../../samples/data/*.xml
+xgrep -r //ITEM ../../samples/data/*.xml
 

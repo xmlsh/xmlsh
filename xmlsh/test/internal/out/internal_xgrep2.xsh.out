@@ -1,8 +1,8 @@
-C:/Work/DEI/xmlsh/trunk/samples/data/REC-xml-20060816.xml
-C:/Work/DEI/xmlsh/trunk/samples/data/books.xml
-C:/Work/DEI/xmlsh/trunk/samples/data/intl.xml
-C:/Work/DEI/xmlsh/trunk/samples/data/othello.xml
-C:/Work/DEI/xmlsh/trunk/samples/data/xi_doc1.xml
-C:/Work/DEI/xmlsh/trunk/samples/data/xi_sub1.xml
-C:/Work/DEI/xmlsh/trunk/samples/data/xml-base-chap.xml
-C:/Work/DEI/xmlsh/trunk/samples/data/xml-base-test.xml
+../../samples/data/REC-xml-20060816.xml
+../../samples/data/books.xml
+../../samples/data/intl.xml
+../../samples/data/othello.xml
+../../samples/data/xi_doc1.xml
+../../samples/data/xi_sub1.xml
+../../samples/data/xml-base-chap.xml
+../../samples/data/xml-base-test.xml

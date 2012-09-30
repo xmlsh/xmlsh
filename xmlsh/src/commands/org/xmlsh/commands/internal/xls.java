@@ -26,10 +26,11 @@ public class xls extends XCommand {
 	
 	private boolean opt_a = false ;
 	private boolean opt_R = false ;
+	private boolean opt_r = false ;
 	private boolean opt_l = false ;
 	public int run(  List<XValue> args  )	throws Exception
 	{
-		Options opts = new Options("a=all,l=long,R=recurse", SerializeOpts.getOptionDefs() );
+		Options opts = new Options("a=all,l=long,R=recurse,r=relative", SerializeOpts.getOptionDefs() );
 		opts.parse(args);
 		args = opts.getRemainingArgs();
 		
@@ -53,6 +54,7 @@ public class xls extends XCommand {
 		opt_l = opts.hasOpt("l");
 		opt_a = opts.hasOpt("a");
 		opt_R = opts.hasOpt("R");
+		opt_r = opts.hasOpt("r");
 		int ret = 0;
 		for( XValue arg : args ){
 			
@@ -64,7 +66,12 @@ public class xls extends XCommand {
 				ret++;
 				continue;
 			}
-			list(writer, dir , true);
+//			try {
+				list(writer, dir , true);
+//			} catch (Exception e) {
+//				System.out.println(e.getMessage());
+//				e.printStackTrace();
+//			}
 		}
 		writer.writeEndElement();
 		writer.writeEndDocument();
@@ -79,26 +86,27 @@ public class xls extends XCommand {
 	private void list(XMLStreamWriter writer, File dir, boolean top ) throws XMLStreamException {
 		if( !dir.isDirectory() ){
 
-			new XFile(dir).serialize(writer, opt_l,true);
+			new XFile(dir).serialize(writer, opt_l,true, opt_r);
 		} else {
 			
 			if( ! top )
-				new XFile(dir).serialize(writer, opt_l,false);
+				new XFile(dir).serialize(writer, opt_l,false, opt_r);
 				
 			
 			if( top || opt_R ){
 				File [] files =  dir.listFiles();
 				
-				
-				Util.sortFiles(files);
-				
-				for( File f : files ){
+				//smcs 30/9/2012 -- check that files is not null before working with it
+				if (files != null) {
+					Util.sortFiles(files);
 					
-					if( ! opt_a && f.getName().startsWith("."))
-						continue;
-					
-					list( writer  , f , false  );
-	
+					for( File f : files ){
+						
+						if( ! opt_a && f.getName().startsWith("."))
+							continue;
+						
+						list( writer  , f , false );
+					}
 				}
 			}
 			if( ! top )

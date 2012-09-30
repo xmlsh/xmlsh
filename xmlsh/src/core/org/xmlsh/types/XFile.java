@@ -157,11 +157,11 @@ public class XFile /* implements XSerializble */ {
 
 	
 
-	public void serialize(XMLStreamWriter writer, boolean all, boolean end ) throws  XMLStreamException {
+	public void serialize(XMLStreamWriter writer, boolean all, boolean end, boolean relative ) throws  XMLStreamException {
 		
 		writer.writeStartElement(mFile.isDirectory() ? "dir" : "file");
 		writer.writeAttribute("name", getName());
-		writer.writeAttribute("path", getPath());
+		writer.writeAttribute("path", relative ? getRelpath() : getPath());
 		if( all ){
 			
 			
@@ -180,7 +180,11 @@ public class XFile /* implements XSerializble */ {
 			writer.writeEndElement();
 	}
 	
-	public String noExtension() {
+	public void serialize(XMLStreamWriter writer, boolean all, boolean end ) throws  XMLStreamException {
+		serialize(writer, all ,end, false);
+	}
+
+		public String noExtension() {
 		String	path = Util.toJavaPath(mFile.getPath());
 		String  ext = getExt();
 		return path.substring(0 , path.length() - ext.length());

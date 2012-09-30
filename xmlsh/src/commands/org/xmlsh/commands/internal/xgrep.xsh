@@ -1,8 +1,8 @@
 # xgrep xpath [xml files]
 import commands stax=stax
 
-_opts=$<(xgetopts -s -i "R=recurse" -o "t=text" -- "$@")
-_popts=$<(xgetopts -a -p "R=recurse" -o "t=text" -- "$@")
+_opts=$<(xgetopts -s -i "R=recurse,r=relative" -o "t=text" -- "$@")
+_popts=$<(xgetopts -a -p "R=recurse,r=relative" -o "t=text" -- "$@")
 shift $?
 
 
