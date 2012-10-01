@@ -96,7 +96,7 @@ public class xfile extends XCommand
 			out.println( xf.getFile().toURI().toString());
 		else
 		if( opts.hasOpt("r"))
-			out.println( toSys(xf.getRelpath(),opt_sys));
+			out.println( toSys(xf.getRelpath(mShell.getCurdir()),opt_sys));
 		else
 		out.println( toSys(xf.getPath(),opt_sys));
 		

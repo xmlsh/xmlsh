@@ -84,9 +84,9 @@ public class XFile /* implements XSerializble */ {
 		}
 	}
 
-	public String getRelpath() {
+	public String getRelpath(File relpath) {
 		try {
-			String relativeTo = Util.toJavaPath(System.getProperty("user.dir"));
+			String relativeTo = Util.toJavaPath(relpath.getCanonicalPath());
 			String absolutePath = Util.toJavaPath(mFile.getCanonicalPath());
             String[] absoluteDirectories = absolutePath.split("/");
             String[] relativeDirectories = relativeTo.split("/");
@@ -157,11 +157,11 @@ public class XFile /* implements XSerializble */ {
 
 	
 
-	public void serialize(XMLStreamWriter writer, boolean all, boolean end, boolean relative ) throws  XMLStreamException {
+	public void serialize(XMLStreamWriter writer, boolean all, boolean end, File relative ) throws  XMLStreamException {
 		
 		writer.writeStartElement(mFile.isDirectory() ? "dir" : "file");
 		writer.writeAttribute("name", getName());
-		writer.writeAttribute("path", relative ? getRelpath() : getPath());
+		writer.writeAttribute("path", relative != null ? getRelpath(relative) : getPath());
 		if( all ){
 			
 			
@@ -181,7 +181,7 @@ public class XFile /* implements XSerializble */ {
 	}
 	
 	public void serialize(XMLStreamWriter writer, boolean all, boolean end ) throws  XMLStreamException {
-		serialize(writer, all ,end, false);
+		serialize(writer, all ,end, null);
 	}
 
 		public String noExtension() {

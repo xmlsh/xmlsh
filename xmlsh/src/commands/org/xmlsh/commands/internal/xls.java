@@ -86,11 +86,11 @@ public class xls extends XCommand {
 	private void list(XMLStreamWriter writer, File dir, boolean top ) throws XMLStreamException {
 		if( !dir.isDirectory() ){
 
-			new XFile(dir).serialize(writer, opt_l,true, opt_r);
+			new XFile(dir).serialize(writer, opt_l, true, opt_r ? getEnv().getShell().getCurdir() : null);
 		} else {
 			
 			if( ! top )
-				new XFile(dir).serialize(writer, opt_l,false, opt_r);
+				new XFile(dir).serialize(writer, opt_l, false, opt_r ? getEnv().getShell().getCurdir() : null);
 				
 			
 			if( top || opt_R ){
