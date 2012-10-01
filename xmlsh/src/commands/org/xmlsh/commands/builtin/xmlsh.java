@@ -71,9 +71,14 @@ public class xmlsh extends BuiltinCommand {
 		    
 		    String rcfile =  opts.getOptString("rcfile", null );
 		    if( rcfile == null ){
-		    	XValue home = shell.getEnv().getVarValue("HOME");
-		    	if( home != null ){
-		    		rcfile = home.toString() + "/.xmlshrc" ;
+		    	XValue xrc = shell.getEnv().getVarValue("XMLSHRC");
+		        if( xrc != null )
+		        	rcfile = xrc.toString();
+		    	if( rcfile == null ){
+			    	XValue home = shell.getEnv().getVarValue("HOME");
+			    	if( home != null ){
+			    		rcfile = home.toString() + "/.xmlshrc" ;
+			    	}
 		    	}
 		    }	
 		    
