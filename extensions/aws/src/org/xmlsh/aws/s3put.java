@@ -95,13 +95,7 @@ public class s3put extends AWSS3Command {
 		    List<XValue> srcs = args ;
 		    S3Path ds  = new S3Path(srcs.remove(args.size()-1).toString());
 		
-		    for( XValue s : srcs ){
-		    	S3Path d =  ds.isDirectory() ? new S3Path( ds , s.toString() ) : ds ;
-			   ret = put(  s , d , meta , storage  );
-				
-		    	
-		    	
-		    }
+		    put( srcs , ds , meta , storage );
 		    
 			break ;
 		}
@@ -158,31 +152,49 @@ public class s3put extends AWSS3Command {
 		return put( src , dest, meta , storage );
 	}
 	
-	
-	private int put(XValue s, S3Path dest, List<XValue> meta, String storage) {
-		if( bRecurse && s.isAtomic()){
-				File file;
-				try {
-					file = getFile( s );
-				} catch (IOException e) {
-					mShell.printErr("Exception getting file: " + s.toString() , e );
-					return 1;
+	private int put(List<XValue> xfiles, S3Path dest, List<XValue> meta, String storage) throws IOException {
+    
+			List<File> files = getFiles( xfiles);
+			// If any file is a directory then revert to single puts
+			for( File f : files ){
+				if( f.isDirectory()){
+					int ret = 0;
+					for( File f2 : files )
+						ret += put( f2 , dest , meta , storage );
+					return ret ;
+					
+					
 				}
-				return put( file , dest , meta , storage );
-				
-		}
-		InputPort input;
-		try {
-			input = getInput(s);
-		} catch (CoreException e) {
-			mShell.printErr("Exception getting input" , e );
-			return 1;
-		}
-		return put( input , dest , meta , storage );
+			}
+			
+			
+			
+			S3TransferManager ctm = new S3TransferManager(mAmazon);
+			File root = getShell().getCurdir();
+			MultipleFileUpload dirUpload = ctm.uploadFileList(dest.getBucket(), dest.getKey(), files, root);
+
+			try {
+				dirUpload.waitForCompletion();
+			} catch (Exception e) {
+				this.printErr("Exception putting directory to S3" , e);
+				return 1;
+			}
+			return 0;
+			
+    }	
+	
+	private List<File> getFiles(List<XValue> xfiles) throws IOException {
+		ArrayList<File> files = new ArrayList<File>();
+		for( XValue xf : xfiles )
+			files.add( mShell.getFile(xf) );
+		
+		return files ;
 		
 		
 		
 	}
+
+
 
 
 
