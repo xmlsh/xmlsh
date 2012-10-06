@@ -155,6 +155,12 @@ public abstract class AWSCommand extends XCommand {
 			
 			}
 
+
+	protected void attribute(String name, long n) throws XMLStreamException {
+		attribute( name , String.valueOf(n));
+		
+	}
+
 }
 
 //
