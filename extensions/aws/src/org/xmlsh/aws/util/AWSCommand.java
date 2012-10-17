@@ -144,16 +144,24 @@ public abstract class AWSCommand extends XCommand {
 
 	protected void writeStringList(String listName, String elementName, String attrName, List<String> strings)
 			throws XMLStreamException {
-			   startElement(listName);
+		       if( listName != null )
+		    	   startElement(listName);
 			   for( String string : strings ){
 			
-				   startElement( elementName );
-				   attribute( attrName  , string );
-				   endElement();
+				   writeElementAttribute(elementName, attrName, string);
 			   }
-			   endElement();
+			   if( listName != null )
+				   endElement();
 			
 			}
+
+
+	public void writeElementAttribute(String elementName, String attrName, String string)
+			throws XMLStreamException {
+		startElement( elementName );
+		   attribute( attrName  , string );
+		   endElement();
+	}
 
 
 	protected void attribute(String name, long n) throws XMLStreamException {

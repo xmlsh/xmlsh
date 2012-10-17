@@ -13,7 +13,6 @@ import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
-import org.xmlsh.util.StringPair;
 import org.xmlsh.util.Util;
 
 import com.amazonaws.services.sqs.model.SetQueueAttributesRequest;

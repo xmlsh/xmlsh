@@ -1,5 +1,6 @@
 package org.xmlsh.aws;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
@@ -12,15 +13,13 @@ import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
-import org.xmlsh.util.Util;
 
 import com.amazonaws.services.elasticloadbalancing.model.InstanceState;
-import com.amazonaws.services.glacier.model.DescribeVaultOutput;
-import com.amazonaws.services.glacier.model.ListVaultsRequest;
-import com.amazonaws.services.glacier.model.ListVaultsResult;
+import com.amazonaws.services.glacier.transfer.ArchiveTransferManager;
+import com.amazonaws.services.glacier.transfer.UploadResult;
 
 
-public class glacierListVaults	 extends  AWSGlacierCommand {
+public class glacierPutArchive	 extends  AWSGlacierCommand {
 
 	
 
@@ -43,7 +42,12 @@ public class glacierListVaults	 extends  AWSGlacierCommand {
 		mSerializeOpts = this.getSerializeOpts(opts);
 		
 		
-		
+        if( args.size() <3)
+        	usage();
+        
+        String vault = args.remove(0).toString();
+        String desc = args.remove(0).toString();
+        
 		
 		
 		
@@ -57,7 +61,7 @@ public class glacierListVaults	 extends  AWSGlacierCommand {
 		
 
 		int ret = -1;
-		ret = list(Util.toStringList(args));
+		ret = put(vault,desc, args );
 
 		
 		
@@ -67,31 +71,31 @@ public class glacierListVaults	 extends  AWSGlacierCommand {
 	}
 
 
-	private int list(List<String> elbs) throws IOException, XMLStreamException, SaxonApiException, CoreException 
+	private int put(String vault, String desc, List<XValue> files ) throws IOException, XMLStreamException, SaxonApiException, CoreException 
 	{
 
 		OutputPort stdout = this.getStdout();
 		mWriter = stdout.asXMLStreamWriter(mSerializeOpts);
 		
-		 
-		ListVaultsRequest request = new ListVaultsRequest();
+		 ArchiveTransferManager tm = new ArchiveTransferManager(mAmazon, mCredentials);
+	    
 		
 		
 		startDocument();
 		startElement(getName());
-         
-		ListVaultsResult result = mAmazon.listVaults(request);
 		
-		for( DescribeVaultOutput vault  : result.getVaultList() ){
-			startElement("valut");
-			attribute("creation-date" , vault.getCreationDate());
-			attribute("last-inventory-date" ,vault.getLastInventoryDate());
-			attribute("number-of-archives" ,vault.getNumberOfArchives());
-			attribute("size" ,vault.getSizeInBytes());
-			attribute("arn" ,vault.getVaultARN());
-			attribute("name" ,vault.getVaultName());
-			endElement();
+		for( XValue xf : files ){
+		
+			File file = mShell.getFile(xf);
 			
+	        UploadResult result = tm.upload(vault, desc, file);
+	        startElement("upload");
+	        attribute("valut", vault);
+	        attribute("description" , desc );
+	        attribute("file" , file.getAbsolutePath());
+	        attribute("archive-id" , result.getArchiveId());
+	        endElement();
+	       
 		}
 		
 		

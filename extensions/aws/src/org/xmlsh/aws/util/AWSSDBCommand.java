@@ -14,24 +14,26 @@ import com.amazonaws.services.simpledb.AmazonSimpleDBClient;
 import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.AmazonSQSClient;
 
-public abstract class AWSSQSCommand extends AWSCommand {
+public abstract class AWSSDBCommand extends AWSCommand {
 	
-	protected		AmazonSQS mAmazon ;
+
+protected		AmazonSimpleDB mAmazon ;
 	
-	public AWSSQSCommand() {
+	public AWSSDBCommand() {
 		super();
 	}
 
-	protected AmazonSQS getSQSClient(Options opts) throws UnexpectedException {
+	protected AmazonSimpleDB getSDBClient(Options opts) throws UnexpectedException {
 		
 			
-		return new AmazonSQSClient(
+		return new AmazonSimpleDBClient(
 				new AWSPropertyCredentials( mShell, opts  ) 
 		
 		);
 	}
 	
-	
+	  
+
 
 }
 

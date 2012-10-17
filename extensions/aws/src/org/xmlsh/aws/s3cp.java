@@ -9,7 +9,6 @@ import org.xmlsh.aws.util.S3Path;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
-import org.xmlsh.sh.shell.SerializeOpts;
 
 import com.amazonaws.services.s3.model.CopyObjectResult;
 

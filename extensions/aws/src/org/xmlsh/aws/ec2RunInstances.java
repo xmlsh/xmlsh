@@ -16,7 +16,6 @@ import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
-import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.util.StringPair;
 import org.xmlsh.util.Util;
 

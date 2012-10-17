@@ -9,11 +9,9 @@ import net.sf.saxon.s9api.SaxonApiException;
 import org.xmlsh.aws.util.AWSSNSCommand;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
-import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
 
-import com.amazonaws.services.sns.model.CreateTopicResult;
 import com.amazonaws.services.sns.model.DeleteTopicRequest;
 
 

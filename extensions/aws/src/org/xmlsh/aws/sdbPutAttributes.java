@@ -1,0 +1,145 @@
+package org.xmlsh.aws;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.xml.stream.XMLStreamException;
+
+import net.sf.saxon.s9api.SaxonApiException;
+import org.xmlsh.aws.util.AWSSDBCommand;
+import org.xmlsh.core.CoreException;
+import org.xmlsh.core.Options;
+import org.xmlsh.core.OutputPort;
+import org.xmlsh.core.UnexpectedException;
+import org.xmlsh.core.XValue;
+import org.xmlsh.util.Util;
+
+import com.amazonaws.services.elasticloadbalancing.model.InstanceState;
+import com.amazonaws.services.simpledb.model.CreateDomainRequest;
+import com.amazonaws.services.simpledb.model.PutAttributesRequest;
+import com.amazonaws.services.simpledb.model.ReplaceableAttribute;
+
+
+public class sdbPutAttributes	 extends  AWSSDBCommand {
+
+	
+
+	/**
+	 * @param args
+	 * @throws IOException 
+	 */
+	@Override
+	public int run(List<XValue> args) throws Exception {
+
+		Options opts = getOptions();
+		opts.parse(args);
+
+		args = opts.getRemainingArgs();
+		
+
+		
+		mSerializeOpts = this.getSerializeOpts(opts);
+		
+		
+		
+		
+		
+		
+		try {
+			mAmazon = getSDBClient(opts);
+		} catch (UnexpectedException e) {
+			usage( e.getLocalizedMessage() );
+			return 1;
+			
+		}
+		
+		if( args.size() < 3 ){
+			usage(getName()+ ":" + "domain item attributes ...");
+			
+		}
+		String domain = args.remove(0).toString();
+		String item   = args.remove(0).toString();
+		
+
+		int ret = -1;
+		ret = put(domain,item,args);
+
+		
+		
+		return ret;
+		
+		
+	}
+
+
+	private int put(String domain, String item, List<XValue > args) throws IOException, XMLStreamException, SaxonApiException, CoreException 
+	{
+
+		OutputPort stdout = this.getStdout();
+		mWriter = stdout.asXMLStreamWriter(mSerializeOpts);
+		
+		
+		
+		
+		
+		startDocument();
+		startElement(getName());
+		
+		List<ReplaceableAttribute> attributes = getAttributes( args );
+         
+		PutAttributesRequest request = new PutAttributesRequest(domain,item,attributes);
+		
+		
+		
+		mAmazon.putAttributes(request);
+		
+		
+		endElement();
+		endDocument();
+		
+		
+				
+		
+		
+		
+		
+		
+		closeWriter();
+		stdout.writeSequenceTerminator(mSerializeOpts);
+		stdout.release();
+		return 0;
+		
+		
+	}
+
+
+	private List<ReplaceableAttribute> getAttributes(List<XValue> args) 
+	{
+		List<ReplaceableAttribute> attrs = new ArrayList<ReplaceableAttribute>();
+		while( !args.isEmpty()){
+
+			String name = args.remove(0).toString();
+			String value = args.isEmpty() ? "" : args.remove(0).toString();
+ 
+			
+			attrs.add( 
+					new ReplaceableAttribute().withName(name).withValue(value));
+		
+
+		
+		}
+		return attrs ;
+	}
+
+
+
+	public void usage() {
+		super.usage();
+	}
+
+
+
+	
+
+}

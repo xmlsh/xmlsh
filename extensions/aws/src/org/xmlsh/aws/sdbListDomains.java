@@ -6,22 +6,21 @@ import java.util.List;
 import javax.xml.stream.XMLStreamException;
 
 import net.sf.saxon.s9api.SaxonApiException;
-import org.xmlsh.aws.util.AWSSNSCommand;
+import org.xmlsh.aws.util.AWSSDBCommand;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
+import org.xmlsh.util.Util;
 
-import com.amazonaws.services.sns.model.CreateTopicRequest;
-import com.amazonaws.services.sns.model.CreateTopicResult;
+import com.amazonaws.services.simpledb.model.ListDomainsRequest;
+import com.amazonaws.services.simpledb.model.ListDomainsResult;
 
 
-public class snsCreateTopic extends AWSSNSCommand {
+public class sdbListDomains	 extends  AWSSDBCommand {
 
 	
-
-
 
 	/**
 	 * @param args
@@ -36,33 +35,27 @@ public class snsCreateTopic extends AWSSNSCommand {
 
 		args = opts.getRemainingArgs();
 		
-		if( args.size() != 1 ){
-			usage();
-			return 1;
-		}
-		
 
 		
 		mSerializeOpts = this.getSerializeOpts(opts);
 		
 		
 		
-
-		String name = args.get(0).toString();
 		
 		
 		
 		try {
-			mAmazon = getSNSClient(opts);
+			mAmazon = getSDBClient(opts);
 		} catch (UnexpectedException e) {
 			usage( e.getLocalizedMessage() );
 			return 1;
 			
 		}
 		
-		int ret;
-		
-		ret = create(name );
+
+		int ret = -1;
+		ret = list(Util.toStringList(args));
+
 		
 		
 		return ret;
@@ -71,36 +64,48 @@ public class snsCreateTopic extends AWSSNSCommand {
 	}
 
 
-	private int create(String name ) throws IOException, XMLStreamException, SaxonApiException, CoreException {
-		
+	private int list(List<String> elbs) throws IOException, XMLStreamException, SaxonApiException, CoreException 
+	{
 
-		CreateTopicRequest request = new CreateTopicRequest();
-		request.setName(name);
-		
-		CreateTopicResult result = mAmazon.createTopic(request);
-		
 		OutputPort stdout = this.getStdout();
 		mWriter = stdout.asXMLStreamWriter(mSerializeOpts);
 		
 		
+		
+		
+		
 		startDocument();
 		startElement(getName());
+         
 		
 		
-			startElement("topic");
-			attribute("arn", result.getTopicArn());
-
-			endElement();
-			
 		
+		String token = null ;
 		
+		do {
+			ListDomainsRequest listDomainsRequest = new ListDomainsRequest();
+			if( token != null )
+				listDomainsRequest.setNextToken(token);
+	
+		
+			ListDomainsResult result = mAmazon.listDomains(listDomainsRequest);
+			writeStringList(  null , "domain" , "name" ,  result.getDomainNames() );
+			token = result.getNextToken();
+		} while( token != null );
 		endElement();
 		endDocument();
+		
+		
+				
+		
+		
+		
+		
+		
 		closeWriter();
 		stdout.writeSequenceTerminator(mSerializeOpts);
 		stdout.release();
 		
-
 
 		
 		
@@ -110,6 +115,12 @@ public class snsCreateTopic extends AWSSNSCommand {
 		
 		
 	}
+
+
+	public void usage() {
+		super.usage();
+	}
+
 
 
 	

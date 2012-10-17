@@ -1,8 +1,6 @@
 package org.xmlsh.aws;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import javax.xml.stream.XMLStreamException;
@@ -11,20 +9,13 @@ import net.sf.saxon.s9api.SaxonApiException;
 import org.xmlsh.aws.util.AWSEC2Command;
 import org.xmlsh.aws.util.SafeXMLStreamWriter;
 import org.xmlsh.core.CoreException;
-import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
-import org.xmlsh.util.StringPair;
-import org.xmlsh.util.Util;
 
-import com.amazonaws.services.ec2.model.BlockDeviceMapping;
 import com.amazonaws.services.ec2.model.CreateImageRequest;
 import com.amazonaws.services.ec2.model.CreateImageResult;
-import com.amazonaws.services.ec2.model.EbsBlockDevice;
-import com.amazonaws.services.ec2.model.Placement;
-import com.amazonaws.services.ec2.model.RunInstancesResult;
 
 
 public class ec2CreateImage extends AWSEC2Command {

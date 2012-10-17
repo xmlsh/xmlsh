@@ -49,16 +49,17 @@ import com.amazonaws.services.s3.AmazonS3Client;
 
 public abstract class AWSGlacierCommand extends AWSCommand {
 	
-	protected	AmazonGlacier		mAmazon ;
+	protected	AmazonGlacierClient		mAmazon ;
+	protected  AWSPropertyCredentials  mCredentials ;
 	
 	public AWSGlacierCommand() {
 		super();
 	}
 
 
-	protected AmazonGlacier getGlacierClient( Options opts ) throws UnexpectedException {
+	protected AmazonGlacierClient getGlacierClient( Options opts ) throws UnexpectedException {
 		return new AmazonGlacierClient(
-				new AWSPropertyCredentials( mShell , opts )
+				mCredentials = new AWSPropertyCredentials( mShell , opts )
 				);
 		
 	}

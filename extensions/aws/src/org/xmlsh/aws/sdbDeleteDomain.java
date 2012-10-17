@@ -6,22 +6,20 @@ import java.util.List;
 import javax.xml.stream.XMLStreamException;
 
 import net.sf.saxon.s9api.SaxonApiException;
-import org.xmlsh.aws.util.AWSSNSCommand;
+import org.xmlsh.aws.util.AWSSDBCommand;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
+import org.xmlsh.util.Util;
 
-import com.amazonaws.services.sns.model.CreateTopicRequest;
-import com.amazonaws.services.sns.model.CreateTopicResult;
+import com.amazonaws.services.simpledb.model.DeleteDomainRequest;
 
 
-public class snsCreateTopic extends AWSSNSCommand {
+public class sdbDeleteDomain	 extends  AWSSDBCommand {
 
 	
-
-
 
 	/**
 	 * @param args
@@ -30,16 +28,10 @@ public class snsCreateTopic extends AWSSNSCommand {
 	@Override
 	public int run(List<XValue> args) throws Exception {
 
-		
 		Options opts = getOptions();
 		opts.parse(args);
 
 		args = opts.getRemainingArgs();
-		
-		if( args.size() != 1 ){
-			usage();
-			return 1;
-		}
 		
 
 		
@@ -47,22 +39,21 @@ public class snsCreateTopic extends AWSSNSCommand {
 		
 		
 		
-
-		String name = args.get(0).toString();
 		
 		
 		
 		try {
-			mAmazon = getSNSClient(opts);
+			mAmazon = getSDBClient(opts);
 		} catch (UnexpectedException e) {
 			usage( e.getLocalizedMessage() );
 			return 1;
 			
 		}
 		
-		int ret;
-		
-		ret = create(name );
+
+		int ret = -1;
+		ret = delete(Util.toStringList(args));
+
 		
 		
 		return ret;
@@ -71,36 +62,45 @@ public class snsCreateTopic extends AWSSNSCommand {
 	}
 
 
-	private int create(String name ) throws IOException, XMLStreamException, SaxonApiException, CoreException {
-		
+	private int delete(List<String> domains) throws IOException, XMLStreamException, SaxonApiException, CoreException 
+	{
 
-		CreateTopicRequest request = new CreateTopicRequest();
-		request.setName(name);
-		
-		CreateTopicResult result = mAmazon.createTopic(request);
-		
 		OutputPort stdout = this.getStdout();
 		mWriter = stdout.asXMLStreamWriter(mSerializeOpts);
 		
 		
+		
+		
+		
 		startDocument();
 		startElement(getName());
+         
 		
 		
-			startElement("topic");
-			attribute("arn", result.getTopicArn());
-
-			endElement();
+		for( String domainName : domains ){
 			
-		
-		
+			DeleteDomainRequest deleteDomainRequest = new DeleteDomainRequest().withDomainName(domainName);
+			mAmazon.deleteDomain(deleteDomainRequest);
+			
+		     
+			   writeElementAttribute("domain", "name", domainName);
+
+			
+		}
 		endElement();
 		endDocument();
+		
+		
+				
+		
+		
+		
+		
+		
 		closeWriter();
 		stdout.writeSequenceTerminator(mSerializeOpts);
 		stdout.release();
 		
-
 
 		
 		
@@ -110,6 +110,12 @@ public class snsCreateTopic extends AWSSNSCommand {
 		
 		
 	}
+
+
+	public void usage() {
+		super.usage();
+	}
+
 
 
 	

@@ -4,18 +4,14 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
 import org.xmlsh.aws.util.AWSS3Command;
 import org.xmlsh.aws.util.S3Path;
 import org.xmlsh.aws.util.S3TransferManager;
-import org.xmlsh.core.CoreException;
 import org.xmlsh.core.FileInputPort;
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.Options;
@@ -24,8 +20,6 @@ import org.xmlsh.core.XValue;
 import org.xmlsh.util.StringPair;
 import org.xmlsh.util.Util;
 
-import com.amazonaws.AmazonClientException;
-import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.PutObjectResult;

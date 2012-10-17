@@ -1,7 +1,6 @@
 package org.xmlsh.aws;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -13,8 +12,6 @@ import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
-import org.xmlsh.sh.shell.SerializeOpts;
-import org.xmlsh.util.StringPair;
 import org.xmlsh.util.Util;
 
 import com.amazonaws.services.ec2.model.DeleteTagsRequest;

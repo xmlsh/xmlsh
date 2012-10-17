@@ -1,7 +1,6 @@
 package org.xmlsh.aws;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.stream.XMLStreamException;
