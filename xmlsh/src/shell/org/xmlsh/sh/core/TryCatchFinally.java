@@ -10,7 +10,6 @@ import java.io.PrintWriter;
 
 import org.xmlsh.core.ExitOnErrorException;
 import org.xmlsh.core.ThrowException;
-import org.xmlsh.core.XIOEnvironment;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
 

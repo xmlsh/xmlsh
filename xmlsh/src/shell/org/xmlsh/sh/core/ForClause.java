@@ -9,7 +9,6 @@ package org.xmlsh.sh.core;
 import java.io.PrintWriter;
 import java.util.List;
 
-import org.xmlsh.core.XIOEnvironment;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.XVariable;
 import org.xmlsh.sh.shell.ControlLoop;

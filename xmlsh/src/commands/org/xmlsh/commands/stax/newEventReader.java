@@ -8,10 +8,6 @@ package org.xmlsh.commands.stax;
 
 import java.util.List;
 
-import javax.xml.stream.XMLEventReader;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.events.XMLEvent;
-
 import org.xmlsh.core.BuiltinFunctionCommand;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.XValue;

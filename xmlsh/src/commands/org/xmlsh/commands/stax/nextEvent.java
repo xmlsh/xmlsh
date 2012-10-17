@@ -10,7 +10,6 @@ import java.util.List;
 
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.events.XMLEvent;
 
 import net.sf.saxon.trans.XPathException;
 import org.xmlsh.core.BuiltinFunctionCommand;

@@ -6,7 +6,6 @@
 
 package org.xmlsh.sh.shell;
 
-import net.sf.saxon.event.ProxyReceiver;
 import net.sf.saxon.serialize.XMLEmitter;
 import net.sf.saxon.serialize.XMLIndenter;
 import net.sf.saxon.trans.XPathException;

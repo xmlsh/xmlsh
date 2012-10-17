@@ -9,7 +9,6 @@ package org.xmlsh.commands.internal;
 import java.util.List;
 
 import org.xmlsh.core.BuiltinFunctionCommand;
-import org.xmlsh.core.Options;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.JavaUtils;

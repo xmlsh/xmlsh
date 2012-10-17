@@ -9,7 +9,6 @@ package org.xmlsh.commands.internal;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.util.List;
 
 import org.xmlsh.core.InvalidArgumentException;

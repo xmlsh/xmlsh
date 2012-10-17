@@ -8,10 +8,6 @@ package org.xmlsh.commands.internal;
 
 import java.util.List;
 
-import javax.xml.stream.XMLEventReader;
-import javax.xml.stream.XMLEventWriter;
-import javax.xml.stream.events.XMLEvent;
-
 import net.sf.saxon.s9api.XdmItem;
 import org.xmlsh.core.IXdmItemInputStream;
 import org.xmlsh.core.IXdmItemOutputStream;

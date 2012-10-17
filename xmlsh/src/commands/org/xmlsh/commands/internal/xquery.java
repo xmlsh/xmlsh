@@ -6,7 +6,6 @@
 
 package org.xmlsh.commands.internal;
 
-import java.io.File;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.List;
@@ -23,10 +22,10 @@ import org.xmlsh.core.IXdmItemOutputStream;
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.Namespaces;
 import org.xmlsh.core.Options;
+import org.xmlsh.core.Options.OptionValue;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
-import org.xmlsh.core.Options.OptionValue;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.sh.shell.ShellModuleURIResolver;

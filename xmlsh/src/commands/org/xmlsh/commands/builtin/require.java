@@ -11,8 +11,6 @@ import java.util.List;
 import org.xmlsh.core.BuiltinCommand;
 import org.xmlsh.core.ThrowException;
 import org.xmlsh.core.XValue;
-import org.xmlsh.sh.shell.Version;
-import org.xmlsh.util.Util;
 
 public class require extends BuiltinCommand {
 

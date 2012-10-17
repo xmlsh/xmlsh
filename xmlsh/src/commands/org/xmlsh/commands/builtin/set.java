@@ -8,7 +8,6 @@ package org.xmlsh.commands.builtin;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 import javax.xml.stream.XMLStreamWriter;

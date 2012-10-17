@@ -10,9 +10,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 
-import javax.xml.transform.stream.StreamSource;
-
-import net.sf.saxon.s9api.DocumentBuilder;
 import net.sf.saxon.s9api.XdmNode;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InputPort;

@@ -11,7 +11,6 @@ import java.util.List;
 import org.xmlsh.core.BuiltinCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.ui.XShell;
-import org.xmlsh.util.Util;
 
 public class xmlshui extends BuiltinCommand {
 

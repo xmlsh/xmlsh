@@ -9,7 +9,6 @@ package org.xmlsh.commands.xs;
 import java.util.List;
 
 import net.sf.saxon.s9api.QName;
-import net.sf.saxon.s9api.XdmValue;
 import org.xmlsh.core.BuiltinFunctionCommand;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;

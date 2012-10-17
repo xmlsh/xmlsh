@@ -7,63 +7,32 @@
 package org.xmlsh.sh.ui;
 
 import java.awt.EventQueue;
-
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JMenu;
-import javax.swing.JOptionPane;
-
-import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import java.awt.FlowLayout;
-import javax.swing.JTextPane;
-import javax.swing.JEditorPane;
-import javax.swing.JPanel;
-import java.awt.TextArea;
-import java.awt.Checkbox;
-import java.awt.BorderLayout;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.xmlsh.core.CoreException;
-import org.xmlsh.core.InputPort;
-import org.xmlsh.core.OutputPort;
-import org.xmlsh.core.ThrowException;
-import org.xmlsh.core.XValue;
-import org.xmlsh.sh.core.Command;
-import org.xmlsh.sh.core.SourceLocation;
-import org.xmlsh.sh.grammar.ShellParser;
-import org.xmlsh.sh.grammar.ShellParserReader;
-import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.util.PipedStreamPort;
-import org.xmlsh.util.Util;
-
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import javax.swing.JSplitPane;
-import javax.swing.BoxLayout;
-import javax.swing.JTextArea;
-import javax.swing.JToolBar;
-import java.awt.Button;
-import javax.swing.JButton;
-import javax.swing.JScrollPane;
-import javax.swing.ScrollPaneConstants;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.util.List;
+
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
+import javax.swing.JSplitPane;
+import javax.swing.JTextArea;
+import javax.swing.JToolBar;
+
+import org.xmlsh.core.XValue;
+import org.xmlsh.util.Util;
 
 public class XShell {
 

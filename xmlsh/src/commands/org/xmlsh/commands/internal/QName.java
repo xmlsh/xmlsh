@@ -11,7 +11,6 @@ import java.util.List;
 import org.xmlsh.core.BuiltinFunctionCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.util.Util;
 
 public class QName extends BuiltinFunctionCommand {
 

@@ -8,8 +8,6 @@ package org.xmlsh.util;
 
 import java.util.ArrayList;
 
-import org.xmlsh.core.CoreException;
-
 @SuppressWarnings("serial")
 public class AutoReleasePool extends ArrayList<IManagedObject> {
 	protected void finalize()

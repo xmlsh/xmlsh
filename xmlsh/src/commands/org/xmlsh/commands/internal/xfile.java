@@ -6,7 +6,6 @@
 
 package org.xmlsh.commands.internal;
 
-import java.io.File;
 import java.io.PrintWriter;
 import java.util.List;
 

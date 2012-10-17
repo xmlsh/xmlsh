@@ -22,7 +22,6 @@ import net.sf.saxon.s9api.XdmValue;
 import org.xml.sax.SAXException;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.NameValueMap;
-import org.xmlsh.util.Util;
 import org.xmlsh.xpath.EvalDefinition;
 import org.xmlsh.xpath.ShellContext;
 

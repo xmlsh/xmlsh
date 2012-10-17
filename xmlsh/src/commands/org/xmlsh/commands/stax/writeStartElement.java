@@ -13,11 +13,9 @@ import javax.xml.stream.XMLStreamWriter;
 
 import net.sf.saxon.s9api.QName;
 import net.sf.saxon.trans.XPathException;
-import org.xmlsh.core.BuiltinFunctionCommand;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
-import org.xmlsh.sh.shell.Shell;
 
 public class writeStartElement extends XCommand {
 

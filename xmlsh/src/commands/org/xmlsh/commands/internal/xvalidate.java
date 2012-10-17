@@ -18,8 +18,6 @@ import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.DTDValidator;
-import org.xmlsh.util.Util;
-import org.xmlsh.util.XSDValidator;
 
 
 public class xvalidate extends XCommand {

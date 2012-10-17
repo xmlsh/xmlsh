@@ -7,8 +7,8 @@
 package org.xmlsh.sh.shell;
 
 import org.xmlsh.core.InvalidArgumentException;
-import org.xmlsh.core.XValue;
 import org.xmlsh.core.Options.OptionValue;
+import org.xmlsh.core.XValue;
 
 public class ShellOpts 
 {

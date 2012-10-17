@@ -8,7 +8,6 @@ package org.xmlsh.commands.xs;
 
 import java.util.List;
 
-import net.sf.saxon.s9api.QName;
 import org.xmlsh.core.BuiltinFunctionCommand;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;

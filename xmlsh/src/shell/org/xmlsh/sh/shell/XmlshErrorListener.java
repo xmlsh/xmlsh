@@ -11,7 +11,6 @@ import javax.xml.transform.TransformerException;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.xml.sax.SAXParseException;
 
 public class XmlshErrorListener implements ErrorListener {
 	private Logger mLogger = LogManager.getLogger(XmlshErrorListener.class);

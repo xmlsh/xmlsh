@@ -14,7 +14,6 @@ import org.apache.log4j.Logger;
 import org.xmlsh.core.CommandFactory;
 import org.xmlsh.core.ICommand;
 import org.xmlsh.core.ThrowException;
-import org.xmlsh.core.XIOEnvironment;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Module;
 import org.xmlsh.sh.shell.Shell;

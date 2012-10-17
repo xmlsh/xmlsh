@@ -6,7 +6,6 @@
 
 package org.xmlsh.core;
 
-import net.sf.saxon.om.Item;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmSequenceIterator;
 import net.sf.saxon.s9api.XdmValue;

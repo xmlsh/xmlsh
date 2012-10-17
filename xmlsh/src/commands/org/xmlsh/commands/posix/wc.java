@@ -6,27 +6,21 @@
 
 package org.xmlsh.commands.posix;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.xml.stream.XMLStreamException;
 
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InputPort;
-import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.SerializeOpts;
-import org.xmlsh.util.Util;
 
 /**
  * Posix command ls

@@ -28,7 +28,6 @@ import net.sf.saxon.s9api.XdmAtomicValue;
 import net.sf.saxon.s9api.XdmDestination;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
-import net.sf.saxon.s9api.XdmValue;
 import net.sf.saxon.trans.XPathException;
 import org.xml.sax.ContentHandler;
 import org.xmlsh.sh.shell.SerializeOpts;

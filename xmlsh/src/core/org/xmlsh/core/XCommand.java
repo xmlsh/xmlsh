@@ -10,8 +10,6 @@ package org.xmlsh.core;
 import java.io.File;
 import java.util.List;
 
-
-import org.xmlsh.core.ICommand.CommandType;
 import org.xmlsh.sh.shell.Module;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.xpath.ShellContext;

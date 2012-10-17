@@ -11,8 +11,8 @@ import java.util.List;
 
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
-import org.xmlsh.core.XValue;
 import org.xmlsh.core.Options.OptionValue;
+import org.xmlsh.core.XValue;
 
 public class SerializeOpts {
 	private 	boolean		indent	= true ;

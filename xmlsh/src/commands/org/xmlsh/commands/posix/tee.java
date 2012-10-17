@@ -13,9 +13,6 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.stream.XMLEventWriter;
-import javax.xml.stream.events.XMLEvent;
-
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;

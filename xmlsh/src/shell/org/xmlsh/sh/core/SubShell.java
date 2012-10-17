@@ -8,7 +8,6 @@ package org.xmlsh.sh.core;
 
 import java.io.PrintWriter;
 
-import org.xmlsh.core.XIOEnvironment;
 import org.xmlsh.sh.shell.Shell;
 
 public class SubShell extends CompoundCommand {
