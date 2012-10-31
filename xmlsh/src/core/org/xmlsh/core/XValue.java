@@ -724,6 +724,21 @@ public class XValue {
 		return (int) toLong();
 	}
 
+	public double toDouble() {
+		if( mValue == null )
+			return 0.;
+		
+		if( ! isAtomic() )
+			return 0. ;
+		
+		if( mValue instanceof DoubleValue )
+			return ((DoubleValue)mValue).getDoubleValue();
+			
+		
+		return Double.parseDouble(toString());		
+		
+	}
+
 
 	
 

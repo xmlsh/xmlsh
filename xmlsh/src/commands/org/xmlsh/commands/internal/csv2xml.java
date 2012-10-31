@@ -220,7 +220,7 @@ public class csv2xml extends XCommand
 
 
 	private String toXmlName(String field) {
-		return field.replaceAll("[^a-zA-Z0-9_]","-");
+		return Util.encodeForNCName(field);
 	}
 
 

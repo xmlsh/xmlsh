@@ -26,6 +26,7 @@ import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.util.Util;
 
 /*
  * 
@@ -64,7 +65,7 @@ public class xml2csv extends XCommand
 	
 		Options opts = new Options( "header,attr,delim:,quote:" , SerializeOpts.getOptionDefs() );
 		opts.parse(args);
-		SerializeOpts serializeOpts = getSerializeOpts(opts);
+		setSerializeOpts(opts);
 		
 		
 		bHeader = opts.hasOpt("header");
@@ -76,14 +77,14 @@ public class xml2csv extends XCommand
 		String quote = opts.getOptString("quote", "\"");
 		
 		mFormatter = new CSVFormatter(delim.charAt(0),quote.charAt(0));
-		mOutput = getStdout().asOutputStream(serializeOpts);
+		mOutput = getStdout().asOutputStream(mSerializeOpts);
 
 	
 		
 		Processor processor = Shell.getProcessor();
 		mCompiler = processor.newXQueryCompiler();
 		InputPort  in = getStdin();
-		XdmNode	context = in.asXdmNode(serializeOpts);
+		XdmNode	context = in.asXdmNode(mSerializeOpts);
 
 		
 
@@ -117,7 +118,7 @@ public class xml2csv extends XCommand
 				writeHeader(row,headerEval);
 				bFirst = false ;
 			}
-			writeLine(row, fieldEval );
+			writeLine(row, fieldEval,false );
 			
 		}
 		return 0;
@@ -128,7 +129,7 @@ public class xml2csv extends XCommand
 
 
 
-	private void writeLine(XdmItem row,  XQueryEvaluator eval ) throws SaxonApiException, IOException {
+	private void writeLine(XdmItem row,  XQueryEvaluator eval , boolean bHeader ) throws SaxonApiException, IOException {
 		
 		
 
@@ -139,12 +140,13 @@ public class xml2csv extends XCommand
 			eval.setContextItem(row);
 		
 		for( XdmItem field : eval ){
-			fields.add( field.toString());
+			String name = field.toString();
+			fields.add( bHeader ? Util.decodeFromNCName(name) : name );
 			
 		}
 		CSVRecord rec = new CSVRecord(fields);
 		String line = mFormatter.encodeRow(rec);
-		mOutput.write( (line +  "\n") . getBytes());
+		mOutput.write( (line +  "\n").getBytes(mSerializeOpts.getOutput_text_encoding()));
 		
 		
 		
@@ -154,7 +156,7 @@ public class xml2csv extends XCommand
 
 	private void writeHeader(XdmItem row, XQueryEvaluator eval) throws SaxonApiException, IOException 
 	{
-		writeLine(row,eval);
+		writeLine(row,eval,true);
 		
 		
 	}

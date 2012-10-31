@@ -989,7 +989,195 @@ public class Util
 	}
 		
 
+
+	public static int  fromHexChars( char[] chars , int i )
+	{
 		
+		
+		int n1 = chars[i] >= 'A' ? (10 + (chars[i] - 'A')) : ( chars[i] - '0');
+		i++;
+		int n2 = chars[i] >= 'A' ? (10 + (chars[i] - 'A')) : ( chars[i] - '0');
+		byte b = (byte)( (n1 << 4) | n2 );
+		return b & 0xFF;
+		
+	}
+	
+	public static void toHexByte( byte b, StringBuffer sb ) {
+			int n1 = (b & 0xF0 ) >> 4 ;
+			int n2 = (b & 0xF ) ;
+			sb.append((char) ( n1 < 10 ? n1 + '0' : (n1 - 10)  + 'A' ) );
+			sb.append( (char) (n2 < 10 ? n2 + '0' : (n2 - 10)  + 'A' ) );
+		
+	}
+	
+
+	public static String toHex(byte[] data) {
+		StringBuffer sb = new StringBuffer( data.length * 2 );
+		for(byte b : data )
+		    toHexByte( b , sb );
+		return sb.toString();
+		
+	}
+	public static void toHexChar( char ch, StringBuffer sb )
+	{
+		if( (ch & 0xFF00) != 0 )
+			toHexByte( (byte) ((ch >> 8 ) & 0xFF), sb  );
+		toHexByte( (byte) (ch & 0xFF), sb  );
+		
+		
+	}
+	// Simplified compatible versions of xdmp:encode-for-NCName and xdmp:decode-from-NCName
+	public static String encodeForNCName( String name )
+	{
+		StringBuffer sb = new StringBuffer( name.length() * 2 );
+		char[] chars = name.toCharArray();
+		
+		boolean bFirst = true ;
+		boolean escaped = false ;
+		for( char ch : chars ){
+			if( ch == '_') {
+				sb.append("__");
+				escaped = true ;
+			} 
+			else 
+			if( ch  == ':' || 
+				(bFirst? !isInitialNameChar(ch) : 
+				!isNameChar(ch))){
+				  sb.append('_');
+			      toHexChar( ch , sb );
+				  sb.append('_');
+			      escaped = true;
+
+			}
+		    else
+			     sb.append(ch);
+			bFirst = false ;
+		}
+		if( sb.length() == 0 )
+			  sb.append('_');
+		else
+		if( ! escaped ) 
+			return name; 
+
+		return sb.toString();
+		
+	}
+	
+	public static String decodeFromNCName( String name )
+	{
+
+		  StringBuffer sb = new StringBuffer( name.length() * 2 );
+		  boolean escaped = false;
+
+          char chars[] = name.toCharArray() ;
+
+ 		  for( int i = 0 ; i < chars.length ; i++ )
+ 		  {
+ 			char ch = chars[i];
+ 			
+		    if( ch == '_' ){
+		      escaped = true ;
+		      char c = 0;
+		     
+		 
+		      while( ++i < chars.length-1 ){
+		    	if( chars[i] == '_' ){
+		    		break ;
+		    	}
+			    c <<= 8;
+		    	c |= fromHexChars( chars , i );
+		    	i +=2 ;
+	
+
+		      } 
+
+		      if( c == 0 )
+		        sb.append('_');
+		      else
+		        sb.append( c );
+
+
+
+		    } else  
+		    	sb.append(ch);
+ 		  }
+ 		  if( ! escaped )
+ 			  return name ;
+ 		  return sb.toString();
+	}
+
+	public  static boolean isNameChar(char ch) {
+		
+		  if ((ch=='-')|(ch=='.')|(ch==':')) return true;
+		  if (ch<'0') return false;
+		  if (ch<='9') return true;
+		  if (ch<'A') return false;
+		  if (ch<='Z') return true;
+		  if (ch=='_') return true;
+		  if (ch<'a') return false;
+		  if (ch<='z') return true;
+		  if (ch==0xb7) return true;
+		  if (ch<0xc0) return false;
+		  if (ch<=0xd6) return true;
+		  if (ch<0xd8) return false;
+		  if (ch<=0xf6) return true;
+		  if (ch<0xf8) return false;
+		  if (ch<=0x37d) return true;
+		  if (ch<0x37f) return false;
+		  if (ch<=0x1fff) return true;
+		  if (ch<0x200c) return false;
+		  if (ch<=0x200d) return true;
+		  if (ch<0x203f) return false;
+		  if (ch<=0x2040) return true;
+		  if (ch<0x2070) return false;
+		  if (ch<=0x218f) return true;
+		  if (ch<0x2c00) return false;
+		  if (ch<=0x2fef) return true;
+		  if (ch<0x3001) return false;
+		  if (ch<=0xd7ff) return true;
+		  if (ch<0xf900) return false;
+		  if (ch<=0xfdcf) return true;
+		  if (ch<0xfdf0) return false;
+		  if (ch<=0xfffd) return true;
+		  return false; 
+		
+	}
+
+	public  static boolean isInitialNameChar(char ch) {
+		 if (ch==':') return true;
+		  if (ch<'A') return false;
+		  if (ch<='Z') return true;
+		  if (ch=='_') return true;
+		  if (ch<'a') return false;
+		  if (ch<='z') return true;
+		  if (ch<0xc0) return false;
+		  if (ch<=0xd6) return true;
+		  if (ch<0xd8) return false;
+		  if (ch<=0xf6) return true;
+		  if (ch<0xf8) return false;
+		  if (ch<=0x2ff) return true;
+		  if (ch<0x370) return false;
+		  if (ch<=0x37d) return true;
+		  if (ch<0x37f) return false;
+		  if (ch<=0x1fff) return true;
+		  if (ch<0x200c) return false;
+		  if (ch<=0x200d) return true;
+		  if (ch<0x2070) return false;
+		  if (ch<=0x218f) return true;
+		  if (ch<0x2c00) return false;
+		  if (ch<=0x2fef) return true;
+		  if (ch<0x3001) return false;
+		  if (ch<=0xd7ff) return true;
+		  if (ch<0xf900) return false;
+		  if (ch<=0xfdcf) return true;
+		  if (ch<0xfdf0) return false;
+		  if (ch<=0xfffd) return true;
+		  return false;
+	
+	
+	
+	}
+
 
 }
 
