@@ -150,30 +150,22 @@ public class s3put extends AWSS3Command {
     
 			List<File> files = getFiles( xfiles);
 			// If any file is a directory then revert to single puts
+			int ret = 0;
 			for( File f : files ){
-				if( f.isDirectory()){
-					int ret = 0;
-					for( File f2 : files )
-						ret += put( f2 , dest , meta , storage );
-					return ret ;
-					
+				if( f.isDirectory())
+					ret += put( f , dest , meta , storage );
+			    else {
+			    	InputPort src = new FileInputPort(f);
+			    	if( dest.isDirectory() )
+			    		ret += 	put(src, new S3Path(dest, f.getName() ) ,  meta ,  storage );
+			    	else
+			    		ret += 	put(src,  dest,  meta , storage );
+
 					
 				}
 			}
+			return ret ;
 			
-			
-			
-			S3TransferManager ctm = new S3TransferManager(mAmazon);
-			File root = getShell().getCurdir();
-			MultipleFileUpload dirUpload = ctm.uploadFileList(dest.getBucket(), dest.getKey(), files, root);
-
-			try {
-				dirUpload.waitForCompletion();
-			} catch (Exception e) {
-				this.printErr("Exception putting directory to S3" , e);
-				return 1;
-			}
-			return 0;
 			
     }	
 	
