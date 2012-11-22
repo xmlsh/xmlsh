@@ -4,10 +4,15 @@
 
 # check for missing TMPDIR
 [ -n "$TMPDIR" ] || { echo TMPDIR must be set to run tests ; exit 1 ; }
-# expand to java cannonical form and check for directory
+# expand to java canonical form and check for directory
 TMPDIR=$(xfile $(xfile -c $TMPDIR))
 [ -d "$TMPDIR" ] || { echo TMPDIR must be a directory: $TMPDIR ; exit 1 ; }
 
+# check for missing AWS_ACCESS_KEY
+[ -n "$AWS_ACCESS_KEY" ] || { echo AWS_ACCESS_KEY must be set to run tests ; exit 1 ; }
+
+# check for missing TMPDIR
+[ -n "$AWS_SECRET_KEY" ] || { echo AWS_SECRET_KEY must be set to run tests ; exit 1 ; }
 
 # Use internal posix module
 import commands posix
@@ -16,19 +21,16 @@ mkdir -p $TMPDIR/extensions/aws
 cp ../bin/*.* $TMPDIR/extensions/aws
 cp ../lib/*.* $TMPDIR/extensions/aws
 XMODPATH=$TMPDIR/extensions
-import module aws=aws
-
 
 . init
 
 passed=<[ 0 ]>
 failed=<[ 0 ]>
 
-
 # Extra tests which depend on local environment
 EXTRA=$*
 
-for d in core $EXTRA; do
+for d in s3 $EXTRA; do
    echo "running tests in $d"
    cd $d
    for test in *.xsh ; do

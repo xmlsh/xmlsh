@@ -2,7 +2,7 @@
 <project default="main">
 
 	
-    <target name="main" depends="clean, compile, jar,dist" description="AWS Extension main target">
+    <target name="main" depends="clean, compile, jar, test, dist" description="AWS Extension main target">
         <echo>
             Building AWS xmlsh extension
         </echo>
@@ -64,7 +64,11 @@
         />
 
   </target>
+	
   <target name="test" description="Test Cases">
+    <echo>
+        Running AWS xmlsh tests
+    </echo>
   	<java 
   		classname="org.xmlsh.sh.shell.Shell"
  		classpath="${xmlsh}/bin/xmlsh-1.2.jar;${xmlsh}/lib/log4j-1.2.7.jar;${xmlsh}/lib/saxon9he.jar;${xmlsh}/lib/xercesImpl.jar;${xmlsh}/lib/woodstox-core-asl-4.0.3.jar;${xmlsh}/lib/stax2-api-3.0.1.jar;${xmlsh}/lib/stax-utils.jar;${xmlsh}/lib/jing.jar;${xmlsh}/lib/trang.jar;"
