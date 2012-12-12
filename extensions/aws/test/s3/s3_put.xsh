@@ -54,7 +54,7 @@ rm -f f2back
 
 cd ..
 
-aws:s3put -u awss3 $foo
+aws:s3put -r awss3 $foo
 
 cd awss3
 

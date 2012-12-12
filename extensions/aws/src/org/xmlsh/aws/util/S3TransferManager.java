@@ -1,6 +1,8 @@
 package org.xmlsh.aws.util;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -8,6 +10,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
+
+import org.xmlsh.core.XValue;
 
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
@@ -162,6 +166,7 @@ public class S3TransferManager extends TransferManager {
 		return upload;
 	}
 
+	/*
 	public MultipleFileUpload uploadFileList(String bucketName, String virtualDirectoryKeyPrefix, List<File> files, File rootdir) {
 
 		if ( files == null || files.isEmpty() ) {
@@ -206,6 +211,72 @@ public class S3TransferManager extends TransferManager {
 		}
 
 		return multipleFileUpload;
+	}
+*/
+	public MultipleFileUpload uploadFileList(String bucketName, String virtualDirectoryKeyPrefix, List<XValue> files, File workdir, ObjectMetadata meta) throws FileNotFoundException {
+
+		if ( files == null || files.isEmpty() ) {
+			throw new IllegalArgumentException("Must provide at least one file to upload");
+		}
+
+		if (virtualDirectoryKeyPrefix == null || virtualDirectoryKeyPrefix.length() == 0) {
+			virtualDirectoryKeyPrefix = "";
+//		} else if ( !virtualDirectoryKeyPrefix.endsWith("/") ) {
+//			virtualDirectoryKeyPrefix = virtualDirectoryKeyPrefix + "/";
+		}
+
+		TransferProgressImpl transferProgress = new TransferProgressImpl();
+		ProgressListener listener = new TransferProgressUpdatingListener(transferProgress);
+
+		List<UploadImpl> uploads = new LinkedList<UploadImpl>();        
+		MultipleFileUploadImpl multipleFileUpload = new MultipleFileUploadImpl("Uploading etc", transferProgress, null, virtualDirectoryKeyPrefix, bucketName, uploads);
+		multipleFileUpload.setMonitor(new MultipleFileTransferMonitor(multipleFileUpload, uploads));
+
+		final AllDownloadsQueuedLock allTransfersQueuedLock = new AllDownloadsQueuedLock();        
+		MultipleFileTransferStateChangeListener stateChangeListener = new MultipleFileTransferStateChangeListener(
+				allTransfersQueuedLock, multipleFileUpload);
+
+		long totalSize = 0;
+
+		for (XValue xv : files) {
+			String xvstr = xv.toString();
+			File f = new File(xvstr);
+			long length = f.length();
+			totalSize += length;
+			meta.setContentLength(length);
+			String key = f.getAbsolutePath().substring(findLCS(workdir.getAbsolutePath(), f.getAbsolutePath()))
+					.replaceAll("\\\\", "/");
+			if(key.startsWith("/")) key = key.substring(1);
+			if(virtualDirectoryKeyPrefix.endsWith("/") || virtualDirectoryKeyPrefix.equals(""))
+				key = virtualDirectoryKeyPrefix + key;
+			else {
+				if(!key.contains("/"))
+					key = virtualDirectoryKeyPrefix + key;
+				else
+					key = virtualDirectoryKeyPrefix + key.substring(key.indexOf("/"));
+			}
+			PutObjectRequest request = new PutObjectRequest(bucketName, key, new FileInputStream(f), meta);
+			uploads.add((UploadImpl) upload(request.withProgressListener(listener),stateChangeListener));
+		}
+
+		transferProgress.setTotalBytesToTransfer(totalSize);
+
+		// Notify all state changes waiting for the uploads to all be queued
+		// to wake up and continue
+		synchronized (allTransfersQueuedLock) {
+			allTransfersQueuedLock.allQueued = true;
+			allTransfersQueuedLock.notifyAll();
+		}
+
+		return multipleFileUpload;
+	}
+	
+	private int  findLCS(String str1, String str2) {
+		int i = 0;
+		int length = str1.length();
+		if (str2.length() < length) length = str2.length();
+		while ( (i < length) && (Character.toLowerCase(str1.charAt(i)) == Character.toLowerCase(str2.charAt(i))) ) i++;
+		return i;
 	}
 
 
