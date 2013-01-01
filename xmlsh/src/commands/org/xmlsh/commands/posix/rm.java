@@ -64,6 +64,11 @@ public class rm extends XCommand {
 					return ;
 				}
 				File files[] = f.listFiles();
+				if( files == null ){
+					printErr("Cannot recurse directory: " + f.getPath() );	
+					
+				}
+				else 
 				for( File subf : files ){
 					delete( subf , force ,recurse);
 					
