@@ -70,5 +70,7 @@ xcmp f3 f3back && echo Step 3-f3 Success compared Success
 aws:s3-delete -r $foo/awss3
 
 aws:s3-delete-bucket $bucket
+rm -rf $TMPDIR/awss3
+
 
 exit 0

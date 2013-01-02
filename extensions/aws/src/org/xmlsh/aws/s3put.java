@@ -36,8 +36,16 @@ public class s3put extends AWSS3Command {
 
 	private boolean bRecurse = false ;
 	private boolean bVerbose = false ;
-	private boolean bTest = false ;
-	private S3TransferManager ctm = null;
+	private S3TransferManager tm = null;
+	
+	
+	private S3TransferManager getTransferManager()
+	{
+		if( tm == null )
+			tm =  new S3TransferManager(mAmazon);
+		return tm ;
+
+	}
 	
 	/**
 	 * @param args
@@ -62,7 +70,6 @@ public class s3put extends AWSS3Command {
 
 		}
 
-		ctm = new S3TransferManager(mAmazon);
 
 		List<XValue> meta = opts.getOptValues("meta");
 
@@ -70,7 +77,6 @@ public class s3put extends AWSS3Command {
 
 		bRecurse = opts.hasOpt("recurse");
 		bVerbose = opts.hasOpt("verbose");
-		bTest = opts.hasOpt("test");
 
 		int ret = 0;
 
@@ -103,20 +109,16 @@ public class s3put extends AWSS3Command {
 
 		}
 
-		ctm.shutdownNow();
+		if( tm != null)
+		    tm.shutdownNow();
 
 		return ret;
 
 	}
 
-	private int put(List<XValue> files, S3Path dest, List<XValue> meta) throws IOException
+	private int put(List<XValue> files, S3Path dest, List<XValue> meta, String storage) throws IOException
 	{
 		List<XValue> filelist = getFilelist(files);
-		if (bTest) {
-			Iterator<XValue> it = filelist.iterator();
-			while( it.hasNext() ) mShell.printOut(it.next().toString());
-			return 0;
-		}
 		
 		ObjectMetadata metadata = new ObjectMetadata();
 
@@ -127,34 +129,20 @@ public class s3put extends AWSS3Command {
 			}
 		}
 		
-		MultipleFileUpload dirUpload = ctm.uploadFileList(dest.getBucket(), dest.getKey(), filelist, mShell.getCurdir(), metadata);
+		MultipleFileUpload dirUpload = getTransferManager().
+				uploadFileList(dest.getBucket(), dest.getKey(), getFiles( filelist), mShell.getCurdir(), metadata.getUserMetadata() , storage );
 
 		try {
 			dirUpload.waitForCompletion();
 		} catch (Exception e) {
-			this.printErr("Exception putting directory to S3" , e);
+			this.printErr("Exception putting files to S3" , e);
 			return 1;
 		}
 
 		return 0;
 	}
 
-	private int put(List<XValue> xfiles, S3Path dest, List<XValue> meta, String storage) throws IOException {
-
-		List<File> files = getFiles(xfiles);
-
-		if (bRecurse) return put(xfiles, dest, meta);
-
-		int ret = 0;
-		for( File f : files ){
-			InputPort src = new FileInputPort(f);
-			if( dest.isDirectory() )
-				ret += 	put(src, new S3Path(dest, f.getName() ) ,  meta ,  storage );
-			else
-				ret += 	put(src,  dest,  meta , storage );
-		}
-		return ret ;
-	}	
+	
 
 	private List<File> getFiles(List<XValue> xfiles) throws IOException {
 		ArrayList<File> files = new ArrayList<File>();
@@ -171,10 +159,10 @@ public class s3put extends AWSS3Command {
 			if (bRecurse && f.isDirectory()) {
 				List<XValue> dirfiles = new ArrayList<XValue>();
 				String[] flist = f.list();
-				for (String ff : flist) dirfiles.add(new XValue(mShell.getFile(xf.toString()+File.separator+ff)));
+				for (String ff : flist) dirfiles.add(new XValue(mShell.getFile(xf.toString()+File.separator+ff).getAbsolutePath()));
 				files.addAll(getFilelist(dirfiles));
 			}
-			else files.add(new XValue(mShell.getFile(xf.toString())));
+			else files.add(new XValue(mShell.getFile(xf.toString()).getAbsolutePath()));
 		}
 		return files ;
 	}
@@ -197,52 +185,37 @@ public class s3put extends AWSS3Command {
 			}
 		}
 
-		/* smcs
-		 * if storage is not null, then use a PutObjectRequest to upload the data
-		 * since this is the only model that supports specifying a storage class
-		 */
-		if (storage != null) {
-			try {
-				PutObjectRequest request;
+		try {
+			PutObjectRequest request;
 
 
-				if( src.isFile() ){
-					request = new PutObjectRequest( dest.getBucket() , dest.getKey() , src.getFile() );
-				}
-				else {
-					is = src.asInputStream( mSerializeOpts );
-					request = new PutObjectRequest( dest.getBucket() , dest.getKey() , is , metadata);
-				}
-
-				request.setStorageClass(storage);
-
-				// update metadata
-				//
-				request.setMetadata(metadata);
-
-				PutObjectResult result = mAmazon.putObject(request);
-				if(bVerbose) printResult(result);
-			} catch( Exception e ){
-				mShell.printErr("Exception putting to: " + dest.toString() , e);
-				return 1;
+			if( src.isFile() ){
+				request = new PutObjectRequest( dest.getBucket() , dest.getKey() , src.getFile() );
+			}
+			else {
+				is = src.asInputStream( mSerializeOpts );
+				request = new PutObjectRequest( dest.getBucket() , dest.getKey() , is , metadata);
 			}
 
-		} else try {
-			if( src.isFile() )
-				is = new FileInputStream(src.getFile());
-			else
-				is = src.asInputStream( mSerializeOpts );
+			request.setStorageClass(storage);
 
-			Upload upload = ctm.upload( dest.getBucket() , dest.getKey() , is , metadata);
+			// update metadata
+			//
+			request.setMetadata(metadata);
+			
 
+			Upload upload = getTransferManager().upload( request );
+           
 			UploadResult result = upload.waitForUploadResult();
+			
 
-			if(bVerbose) printResult(result);			
+			if(bVerbose) printResult(result);
 		} catch( Exception e ){
-			if (is != null) is.close();
 			mShell.printErr("Exception putting to: " + dest.toString() , e);
 			return 1;
 		}
+
+		
 		if (is != null) is.close();
 
 		return 0;

@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -166,54 +167,8 @@ public class S3TransferManager extends TransferManager {
 		return upload;
 	}
 
-	/*
-	public MultipleFileUpload uploadFileList(String bucketName, String virtualDirectoryKeyPrefix, List<File> files, File rootdir) {
-
-		if ( files == null || files.isEmpty() ) {
-			throw new IllegalArgumentException("Must provide at least one file to upload");
-		}
-
-		if (virtualDirectoryKeyPrefix == null || virtualDirectoryKeyPrefix.length() == 0) {
-			virtualDirectoryKeyPrefix = "";
-		} else if ( !virtualDirectoryKeyPrefix.endsWith("/") ) {
-			virtualDirectoryKeyPrefix = virtualDirectoryKeyPrefix + "/";
-		}
-
-		TransferProgressImpl transferProgress = new TransferProgressImpl();
-		ProgressListener listener = new TransferProgressUpdatingListener(transferProgress);
-
-		List<UploadImpl> uploads = new LinkedList<UploadImpl>();        
-		MultipleFileUploadImpl multipleFileUpload = new MultipleFileUploadImpl("Uploading etc", transferProgress, null, virtualDirectoryKeyPrefix, bucketName, uploads);
-		multipleFileUpload.setMonitor(new MultipleFileTransferMonitor(multipleFileUpload, uploads));
-
-		final AllDownloadsQueuedLock allTransfersQueuedLock = new AllDownloadsQueuedLock();        
-		MultipleFileTransferStateChangeListener stateChangeListener = new MultipleFileTransferStateChangeListener(
-				allTransfersQueuedLock, multipleFileUpload);
-
-		long totalSize = 0;
-
-		for (File f : files) {
-			totalSize += f.length();
-			String key = f.getAbsolutePath().substring(rootdir.getAbsolutePath().length() + 1)
-					.replaceAll("\\\\", "/");
-			uploads.add((UploadImpl) upload(
-					new PutObjectRequest(bucketName, virtualDirectoryKeyPrefix + key, f).withProgressListener(listener),
-					stateChangeListener));
-		}
-
-		transferProgress.setTotalBytesToTransfer(totalSize);
-
-		// Notify all state changes waiting for the uploads to all be queued
-		// to wake up and continue
-		synchronized (allTransfersQueuedLock) {
-			allTransfersQueuedLock.allQueued = true;
-			allTransfersQueuedLock.notifyAll();
-		}
-
-		return multipleFileUpload;
-	}
-*/
-	public MultipleFileUpload uploadFileList(String bucketName, String virtualDirectoryKeyPrefix, List<XValue> files, File workdir, ObjectMetadata meta) throws FileNotFoundException {
+	
+	public MultipleFileUpload uploadFileList(String bucketName, String virtualDirectoryKeyPrefix, List<File> files, File workdir, Map<String, String> userMetadata, String storage) throws FileNotFoundException {
 
 		if ( files == null || files.isEmpty() ) {
 			throw new IllegalArgumentException("Must provide at least one file to upload");
@@ -238,9 +193,12 @@ public class S3TransferManager extends TransferManager {
 
 		long totalSize = 0;
 
-		for (XValue xv : files) {
-			String xvstr = xv.toString();
-			File f = new File(xvstr);
+		for (File f : files) {
+			ObjectMetadata meta = new ObjectMetadata();
+			meta.setUserMetadata( userMetadata );
+			
+			
+			
 			long length = f.length();
 			totalSize += length;
 			meta.setContentLength(length);
@@ -255,7 +213,10 @@ public class S3TransferManager extends TransferManager {
 				else
 					key = virtualDirectoryKeyPrefix + key.substring(key.indexOf("/"));
 			}
-			PutObjectRequest request = new PutObjectRequest(bucketName, key, new FileInputStream(f), meta);
+			PutObjectRequest request = new PutObjectRequest(bucketName, key, f);
+			if( storage != null )
+				request.setStorageClass(storage);
+			request.setMetadata( meta);
 			uploads.add((UploadImpl) upload(request.withProgressListener(listener),stateChangeListener));
 		}
 
