@@ -1,6 +1,7 @@
 # Runs all tests 
 # checking for required externals
 
+[ -f "$HOME/initaws.xsh" ] && . $HOME/initaws.xsh
 
 # check for missing TMPDIR
 [ -n "$TMPDIR" ] || { echo TMPDIR must be set to run tests ; exit 1 ; }

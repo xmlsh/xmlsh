@@ -30,11 +30,10 @@ public class s3CreateBucket extends AWSS3Command {
 	public int run(List<XValue> args) throws Exception {
 
 		
-		Options opts = getOptions("r=random_name");
+		Options opts = getOptions( );
 		opts.parse(args);
 
 		args = opts.getRemainingArgs();
-		boolean bRandom = opts.hasOpt("r");
 		
 		mSerializeOpts = this.getSerializeOpts(opts);
 		
@@ -47,19 +46,13 @@ public class s3CreateBucket extends AWSS3Command {
 		}
 
 
-		int ret = 0 ;
 		if(args.size() != 1 ){
-			System.out.println("args count " + args.size());
 				usage();
 				return 1;
 		}
 
 		String bucketName = args.get(0).toString();
-		if( bRandom ) {
-			SecureRandom random = new SecureRandom();
-			bucketName = bucketName + new BigInteger(130, random).toString(32);
-		}
-		
+
 		return createBucket(bucketName);
 		
 	}
@@ -75,13 +68,12 @@ public class s3CreateBucket extends AWSS3Command {
 			ret = 1;
 		}
 		
-		if (ret == 0) mShell.printOut(bucketName);
 		return  ret;
 		
 	}
 
 	public void usage() {
-		super.usage("Usage: s3CreateBucket [-r prefix | bucketname ] ");
+		super.usage("Usage: s3CreateBucket  bucketname");
 	}
 
 

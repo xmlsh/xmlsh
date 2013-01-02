@@ -4,8 +4,9 @@ import module aws=aws
 import commands posix
 
 #foo has name of bucket just created
-
-foo=$(aws:s3CreateBucket -r random-)
+bucket=xmlsh-org-test-$RANDOM
+aws:s3-create-bucket $bucket
+foo=s3://$bucket
 
 rm -rf $TMPDIR/awss3
 mkdir $TMPDIR/awss3
@@ -45,8 +46,8 @@ aws:s3get $foo/f2 f2back
 xcmp f1 f1back && echo Step 2-f1 Success compared Success
 xcmp f2 f2back && echo Step 2-f2 Success compared Success
 
-aws:s3Delete $foo/f1
-aws:s3Delete $foo/f2
+aws:s3-delete $foo/f1
+aws:s3-delete $foo/f2
 rm -f f1back
 rm -f f2back
 
@@ -66,8 +67,8 @@ xcmp f1 f1back && echo Step 3-f1 Success compared Success
 xcmp f2 f2back && echo Step 3-f2 Success compared Success
 xcmp f3 f3back && echo Step 3-f3 Success compared Success
 
-aws:s3Delete -r $foo/awss3
+aws:s3-delete -r $foo/awss3
 
-aws:s3DeleteBucket $foo
+aws:s3-delete-bucket $bucket
 
 exit 0
