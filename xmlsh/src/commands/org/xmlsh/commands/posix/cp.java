@@ -102,6 +102,8 @@ public class cp extends XCommand {
 	private void copy(List<XValue> files, File target, boolean force, boolean recurse) throws IOException, InvalidArgumentException {
 		for( XValue f : files ){
 			File src = getFile(f);
+			if( src == null )
+				throw new IOException("File not found: " + f.toString() );
 			File dest = new File( target , src.getName() );
 			copy( src , dest , force , recurse );
 			

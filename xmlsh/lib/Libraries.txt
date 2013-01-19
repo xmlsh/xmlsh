@@ -26,6 +26,16 @@ StAX utils 20070216
 stax-utils.jar
 
 
+Http Client from http://hc.apache.org/
+Tested with version : Last Published: 2013-01-15  | Version: 7-SNAPSHOT
+
+httpclient-4.2.3.jar
+httpcore-4.2.2.jar
+commons-codec-1.6.jar
+commons-logging-1.1.1.jar
+
+
+
 OPTIONAL FiLES
 
 jline

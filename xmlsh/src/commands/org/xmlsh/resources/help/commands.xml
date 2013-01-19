@@ -159,6 +159,9 @@
    <command name="xdelete" url="http://www.xmlsh.org/CommandXDelete">
    		<synopsis>Delete nodes or attributes matching an expression</synopsis>
    </command>
+      <command name="xdelattribute" url="http://www.xmlsh.org/CommandXdelattribute">
+   		<synopsis>Delete attributes</synopsis>
+   </command>
    <command name="xecho" url="http://www.xmlsh.org/CommandXEcho">
    	<synopsis>Print arguments as XML</synopsis>
    </command>

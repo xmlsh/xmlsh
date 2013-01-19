@@ -26,15 +26,48 @@ import java.util.List;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.KeyManagerFactory;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
+import javax.security.cert.X509Certificate;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpHost;
+import org.apache.http.HttpResponse;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.AuthCache;
+import org.apache.http.client.methods.HttpDelete;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpHead;
+import org.apache.http.client.methods.HttpOptions;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
+import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.client.methods.HttpTrace;
+import org.apache.http.client.protocol.ClientContext;
+import org.apache.http.conn.scheme.Scheme;
+import org.apache.http.conn.scheme.SchemeRegistry;
+import org.apache.http.conn.ssl.SSLSocketFactory;
+import org.apache.http.conn.ssl.TrustStrategy;
+import org.apache.http.entity.AbstractHttpEntity;
+import org.apache.http.entity.FileEntity;
+import org.apache.http.entity.InputStreamEntity;
+import org.apache.http.impl.auth.DigestScheme;
+import org.apache.http.impl.client.BasicAuthCache;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
+import org.apache.http.params.CoreConnectionPNames;
+import org.apache.http.params.HttpConnectionParamBean;
+import org.apache.http.params.HttpParams;
+import org.apache.http.params.HttpProtocolParamBean;
+import org.apache.http.protocol.BasicHttpContext;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.xmlsh.core.CoreException;
+import org.xmlsh.core.InputPort;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.Options.OptionValue;
+import org.xmlsh.core.UnimplementedException;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.SerializeOpts;
@@ -59,57 +92,60 @@ public class http extends XCommand {
 		Options opts = new Options( "get:,put:,post:,head:,options:,delete:,connectTimeout:,contentType:,readTimeout:,+useCaches,+followRedirects,user:,password:,H=add-header:+,disableTrust:,keystore:,keypass:,sslproto:" );
 		opts.parse(args);
 		
-		SerializeOpts serializeOpts = getSerializeOpts();  // Use args ?
+		mSerializeOpts = getSerializeOpts(opts);  
 
 		
 		
-		String method = "GET";
 		boolean doInput = true ;
 		boolean doOutput = false ;
+		HttpRequestBase method;
 		
 		String surl = null;
 		
 		if( opts.hasOpt("get") ){
-			method = "GET";
 			surl =  opts.getOptString("get", null);
+			method = new HttpGet(surl);
 		}
 		else
 		if(  opts.hasOpt("put") ){
-			method = "PUT";
 			doInput = true ; 
 			doOutput = true ;
 			surl =  opts.getOptString("put", null);
+			method = new HttpPut(surl);
+		    ((HttpPut)method).setEntity( getInputEntity());
 		}
 		else
 		if( opts.hasOpt("post") ){
-			method = "POST" ;
 			doOutput = true ;
 			surl =  opts.getOptString("post", null);
+			method = new HttpPost(surl);
+		    ((HttpPost)method).setEntity( getInputEntity());
+
 		}
 		else
 		if( opts.hasOpt("head") ){
-			method = "HEAD" ;
 			surl =  opts.getOptString("head", null);
+			method = new HttpHead(surl);
 		}
 		else
 		if( opts.hasOpt("options") ){
 			surl =  opts.getOptString("options", null);
-		
-			method = "OPTIONS" ;
+		    method = new HttpOptions(surl);
 		}
 		else
 		if( opts.hasOpt("delete") ){
 			surl =  opts.getOptString("delete", null);
-		
-			method = "DELETE" ;
+		    method = new HttpDelete(surl);
 		}
 		else
 		if( opts.hasOpt("trace") ){
-			method = "TRACE" ;
 			surl =  opts.getOptString("trace", null);
+			method = new HttpTrace(surl);
 		}
-		else
+		else {
 			surl = opts.getRemainingArgs().get(0).toString();
+			method = new HttpGet(surl);
+		}
 	
 		
 		if( surl == null ){
@@ -121,56 +157,40 @@ public class http extends XCommand {
 		int ret = 0;
 
 	
-		URL url = new URL(surl);
+		
+		HttpHost host = new HttpHost(surl);
 
-		URLConnection conn = url.openConnection();
-	       
-		if( conn instanceof HttpURLConnection ){
-			
-			
-			
-			
-			
-			HttpURLConnection http = (HttpURLConnection) conn;
-	
-			setOptions( http , opts );
-			
-			
-			http.setRequestMethod(method);
-			OptionValue headers = opts.getOpt("H");
-			if( headers != null ){
-				
-				for( XValue v : headers.getValues() ){
-					StringPair pair = new StringPair( v.toString() , '=');
+		DefaultHttpClient client = new DefaultHttpClient();
+		
+		
+		
 
-					http.addRequestProperty(pair.getLeft(), pair.getRight());
-				}
-				
+		setOptions( client , host ,  opts );
+		
+		OptionValue headers = opts.getOpt("H");
+		if( headers != null ){
+			
+			for( XValue v : headers.getValues() ){
+				StringPair pair = new StringPair( v.toString() , '=');
+				method.addHeader(pair.getLeft(), pair.getRight());
 			}
 			
-			
-			http.setDoInput(doInput);
-			http.setDoOutput(doOutput);
-			
-			if( doOutput ){
-				conn.connect();
-				OutputStream out = http.getOutputStream();
-				Util.copyStream( getStdin().asInputStream(serializeOpts) , out );
-				out.close();
-				
-				
-			}
-			ret = http.getResponseCode();
-			if( ret == 200 )
-				ret = 0;
 		}
 		
-		if( doInput ){
-			InputStream in = conn.getInputStream();
-			Util.copyStream(in, getStdout().asOutputStream(serializeOpts));
-			in.close();
-			
+		
+		
+		HttpResponse resp = client.execute(method);
+ 
+		HttpEntity respEntity = resp.getEntity();
+		if( respEntity != null ){
+			InputStream ins = respEntity.getContent();
+			if( ins != null ){
+				Util.copyStream(ins, getStdout().asOutputStream(mSerializeOpts));
+				ins.close();
+			}
 		}
+		
+		ret = resp.getStatusLine().getStatusCode() ;
 		
 		
 		
@@ -179,119 +199,110 @@ public class http extends XCommand {
 
 
 
-	private void setOptions(HttpURLConnection http, Options opts) throws KeyManagementException, NoSuchAlgorithmException, UnrecoverableKeyException, CertificateException, FileNotFoundException, KeyStoreException, IOException {
+	private void setOptions(DefaultHttpClient client, HttpHost host, Options opts) throws KeyManagementException, NoSuchAlgorithmException, UnrecoverableKeyException, CertificateException, FileNotFoundException, KeyStoreException, IOException {
+		
+		HttpParams params = client.getParams();
+		HttpProtocolParamBean protocol = new HttpProtocolParamBean (params);
+		HttpConnectionParamBean connection = new HttpConnectionParamBean(params);
 		
 		if( opts.hasOpt("connectTimeout"))
-			http.setConnectTimeout( (int)(opts.getOptDouble("connectTimeout", 0) * 1000.) );
-		
+			connection.setConnectionTimeout((int)(opts.getOptDouble("connectTimeout", 0) * 1000.));
+
 		if( opts.hasOpt("readTimeout"))
-			http.setReadTimeout( (int) (opts.getOptDouble("readTimeout", 0) * 1000.));
-		
+			connection.setSoTimeout((int) (opts.getOptDouble("readTimeout", 0) * 1000.));
+		/*
 		if( opts.hasOpt("useCaches"))
-			http.setUseCaches( opts.getOpt("useCaches").getFlag());
-		
+			client.setUseCaches( opts.getOpt("useCaches").getFlag());
+
+			
 		if( opts.hasOpt("followRedirects"))
-			http.setInstanceFollowRedirects(  opts.getOpt("followRedirects").getFlag());	
-		
+			
+			client.setInstanceFollowRedirects(  opts.getOpt("followRedirects").getFlag());	
+	   
 
 		if( opts.hasOpt("contentType"))
-			http.setRequestProperty("Content-Type", opts.getOptString("contentType", "text/xml"));
+			client.setRequestProperty("Content-Type", opts.getOptString("contentType", "text/xml"));
 
-		
+
+			
+			
 		String disableTrustProto = opts.getOptString("disableTrust", null);
 		
 		String	keyStore = opts.getOptString("keystore", null);
 		String 	keyPass  = opts.getOptString("keypass", null);
 		String  sslProto = opts.getOptString("sslProto", "SSLv3");
 		
-		if(disableTrustProto != null &&  http instanceof HttpsURLConnection )
-			disableTrust( (HttpsURLConnection) http , disableTrustProto );
+		if(disableTrustProto != null &&  client instanceof HttpsURLConnection )
+			disableTrust( (HttpsURLConnection) client , disableTrustProto );
      
 		else
 		if( keyStore != null )
-			setClient(  (HttpsURLConnection) http , keyStore , keyPass , sslProto );
+			setClient(  (HttpsURLConnection) client , keyStore , keyPass , sslProto );
 		
-           
+        */
 		
+		String disableTrustProto = opts.getOptString("disableTrust", null);
+ 
+		if( disableTrustProto != null )
+			disableTrust( client, disableTrustProto);
 		
 		
 		String user = opts.getOptString("user", null);
 		String pass = opts.getOptString("password", null);
 		if( user != null && pass != null ){
-			String up = user + ":" + pass ;
+			UsernamePasswordCredentials creds = new UsernamePasswordCredentials(user, pass);
 			
-			 // Encode String
-			
-			String credentials_encoding = "US-ASCII" ; // TBD allow multiple encodings ?
-			String encoding = new String(Base64Coder.encode (up.getBytes( credentials_encoding )));
-		       
-		    http.setRequestProperty  ("Authorization", "Basic " + encoding);
-			
-		       
-			
+			client.getCredentialsProvider().setCredentials( AuthScope.ANY , creds);
+			/*
+			// Create AuthCache instance
+            AuthCache authCache = new BasicAuthCache();
+            // Generate DIGEST scheme object, initialize it and add it to the local
+            // auth cache
+            DigestScheme digestAuth = new DigestScheme();
+            // Suppose we already know the realm name
+            digestAuth.overrideParamter("realm", "some realm");
+            // Suppose we already know the expected nonce value
+            digestAuth.overrideParamter("nonce", "whatever");
+            authCache.put(host, digestAuth);
+
+            // Add AuthCache to the execution context
+            BasicHttpContext localcontext = new BasicHttpContext();
+            localcontext.setAttribute(ClientContext.AUTH_CACHE, authCache);
+			*/
 			
 		}
 		
 		
 		
-		
-		
 	}
-	
-	private void setClient(HttpsURLConnection http, String keyStoreName, String keyPass, String sslProto) throws NoSuchAlgorithmException, CertificateException, FileNotFoundException, IOException, KeyStoreException, UnrecoverableKeyException, KeyManagementException {
-
-		char[] keystorepass = keyPass.toCharArray();
-
-		File keystoreFile = mShell.getFile(keyStoreName);
-		
-        KeyStore keyStore = KeyStore.getInstance("JKS");
-        keyStore.load(new FileInputStream(keystoreFile), keystorepass);
-        
-        
-        KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-
-        keyManagerFactory.init(keyStore, keystorepass);
-        
-        SSLContext sc = SSLContext.getInstance(sslProto);
-        sc.init(keyManagerFactory.getKeyManagers(), null , null);
-        
-        http.setSSLSocketFactory(sc.getSocketFactory());
-	}
-
-
-
-	private void disableTrust(HttpsURLConnection http , String protocol) throws NoSuchAlgorithmException, KeyManagementException
+	HttpEntity getInputEntity() throws IOException, CoreException
 	{
-	
-
-		// Create a trust manager that does not validate certificate chains
-		TrustManager[] trustAllCerts = new TrustManager[]{
-		    new X509TrustManager() {
-		        public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-		            return null;
-		        }
-		        public void checkClientTrusted(
-		            java.security.cert.X509Certificate[] certs, String authType) {
-		        }
-		        public void checkServerTrusted(
-		            java.security.cert.X509Certificate[] certs, String authType) {
-		        }
-		    }
-		};
-	
-		// Install the all-trusting trust manager
-		    SSLContext sc = SSLContext.getInstance(protocol);
-		    sc.init(null, trustAllCerts, new java.security.SecureRandom());
-		    http.setSSLSocketFactory(sc.getSocketFactory());
-		    
-		    http.setHostnameVerifier( new HostnameVerifier(){
-	            	public boolean verify(String string,SSLSession ssls) {
-	            	return true;
-	            	}
-	            	});
-			
+		InputPort in = getStdin();
+		if( in.isFile() )
+			return new FileEntity( in.getFile()  );
+ 		
+		else
+			return new InputStreamEntity( in.asInputStream(mSerializeOpts),-1);
 		
 	}
+	
+	private void disableTrust(DefaultHttpClient client , String disableTrustProto) throws KeyManagementException, UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException {
+
+	        SSLSocketFactory socketFactory = new SSLSocketFactory(new TrustStrategy() {
+
+				@Override
+				public boolean isTrusted(java.security.cert.X509Certificate[] chain, String authType)
+						throws CertificateException {
+					// TODO Auto-generated method stub
+					return false;
+				}
+
+	        }, org.apache.http.conn.ssl.SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+	        int port = client.getConnectionManager().getSchemeRegistry().getScheme(disableTrustProto).getDefaultPort();
+
+	        client.getConnectionManager().getSchemeRegistry().register(new Scheme(disableTrustProto, port, socketFactory));
+	}
+	
 	
 	
 	
