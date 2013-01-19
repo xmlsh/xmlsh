@@ -17,10 +17,12 @@
 @set CLASSPATH=%CLASSPATH%;%XMLSH%\lib\trang.jar
 @set CLASSPATH=%CLASSPATH%;%XMLSH%\lib\saxon.jar
 @set CLASSPATH=%CLASSPATH%;%XMLSH%\lib\xom-1.2.6.jar
+@REM for http command
 @set CLASSPATH=%CLASSPATH%;%XMLSH%\lib\httpclient-4.2.3.jar
 @set CLASSPATH=%CLASSPATH%;%XMLSH%\lib\httpcore-4.2.2.jar
 @set CLASSPATH=%CLASSPATH%;%XMLSH%\lib\commons-codec-1.6.jar
 @set CLASSPATH=%CLASSPATH%;%XMLSH%\lib\commons-logging-1.1.1.jar
+@REM for tagsoup
 @set CLASSPATH=%CLASSPATH%;%XMLSH%\lib\tagsoup-1.2.jar
 
 @REM Uncomment below to use jline input editing
