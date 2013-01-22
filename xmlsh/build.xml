@@ -88,9 +88,19 @@ version.version=${version}
   <target name="test" description="Test Cases">
   	<java 
   		classname="org.xmlsh.sh.shell.Shell"
-  		classpath="bin/${jar};lib/log4j-1.2.7.jar;lib/saxon9he.jar;lib/xercesImpl.jar;lib/woodstox-core-asl-4.0.3.jar;lib/stax2-api-3.0.1.jar;lib/stax-utils.jar;lib/jing.jar;lib/trang.jar;lib/xom-1.2.6.jar"
   		fork="true"
   		dir="test">
+	 	<classpath>
+				<fileset dir="lib">
+	                  	<include name="**/*.jar"/>
+	                  	<exclude name="**/saxon9ee.jar"/>
+	                  	<exclude name="**/saxon9pe.jar"/>
+				</fileset>
+				 <fileset dir="bin">
+	                  	<include name="**/*.jar"/>
+				</fileset>
+	     </classpath>
+  		
   		<!--
   	    	<jvmarg value="-XX:MaxPermSize=128m"/>
 		-->  	    	

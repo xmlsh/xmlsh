@@ -20,6 +20,7 @@ import org.xmlsh.commands.builtin.eval;
 import org.xmlsh.commands.builtin.exit;
 import org.xmlsh.commands.builtin.jobs;
 import org.xmlsh.commands.builtin.jset;
+import org.xmlsh.commands.builtin.jsonread;
 import org.xmlsh.commands.builtin.log;
 import org.xmlsh.commands.builtin.printvar;
 import org.xmlsh.commands.builtin.read;
@@ -108,6 +109,7 @@ public class CommandFactory
 		addBuiltin("xmlshui" , xmlshui.class);
 		addBuiltin("xmkpipe" , xmkpipe.class);
 		addBuiltin("printvar" , printvar.class);
+		addBuiltin("jsonread" , jsonread.class);
 		
 		
 

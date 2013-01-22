@@ -16,6 +16,8 @@ import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
+import com.jayway.jsonpath.JsonModel;
+
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
@@ -146,6 +148,10 @@ public class StreamInputPort extends InputPort {
 		return asXdmNode(serializeOpts);
 	}
 
+	@Override
+	public JsonModel asJson(SerializeOpts serializeOpts) throws IOException, CoreException {
+		return JsonModel.create( asInputStream(serializeOpts));
+	}
 
 
 }

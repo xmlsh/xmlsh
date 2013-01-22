@@ -51,7 +51,7 @@ public class xpath extends XCommand {
 
 		// boolean bReadStdin = false ;
 		
-		SerializeOpts serializeOpts = getSerializeOpts(opts);
+		mSerializeOpts = getSerializeOpts(opts);
 		if( ! opts.hasOpt("n" ) ){ // Has XML data input
 			// Order of prevelence 
 			// -context
@@ -62,12 +62,12 @@ public class xpath extends XCommand {
 				context = opts.getOptValue("c").asXdmItem();
 			else
 			if( opts.hasOpt("cf"))
-				context = (in=getInput( new XValue(opts.getOptString("cf", "-")))).asXdmItem(serializeOpts);
+				context = (in=getInput( new XValue(opts.getOptString("cf", "-")))).asXdmItem(mSerializeOpts);
 			else
 			if( opts.hasOpt("i") )
-				context = (in=getInput( opts.getOptValue("i"))).asXdmItem(serializeOpts);
+				context = (in=getInput( opts.getOptValue("i"))).asXdmItem(mSerializeOpts);
 			else
-				context = (in=getStdin()).asXdmItem(serializeOpts);
+				context = (in=getStdin()).asXdmItem(mSerializeOpts);
 			
 		}
 
@@ -81,7 +81,7 @@ public class xpath extends XCommand {
 		OptionValue ov = opts.getOpt("f");
 		String xpath = null;
 		if (ov != null)
-			xpath = readString(ov.getValue(),serializeOpts);
+			xpath = readString(ov.getValue(),mSerializeOpts);
 		else {
 			ov = opts.getOpt("q");
 			if (ov != null)
@@ -158,7 +158,7 @@ public class xpath extends XCommand {
 			} else {
 
 				OutputPort stdout = getStdout();
-				IXdmItemOutputStream ser = stdout.asXdmItemOutputStream(serializeOpts);
+				IXdmItemOutputStream ser = stdout.asXdmItemOutputStream(mSerializeOpts);
 				boolean bAnyOutput = false;
 				boolean bFirst = true;
 
@@ -169,7 +169,7 @@ public class xpath extends XCommand {
 						break;
 
 					if (!bFirst)
-						stdout.writeSequenceSeperator(serializeOpts); // Thrashes variable
+						stdout.writeSequenceSeperator(mSerializeOpts); // Thrashes variable
 															// output !
 					else {
 						if (item instanceof XdmNode) {
@@ -190,7 +190,7 @@ public class xpath extends XCommand {
 
 				}
 				if (!bQuiet && bAnyOutput)
-					stdout.writeSequenceTerminator(serializeOpts);
+					stdout.writeSequenceTerminator(mSerializeOpts);
 
 				if( in != null )
 					in.close();

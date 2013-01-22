@@ -51,8 +51,8 @@ public class json2xml extends XCommand {
 
 		OutputPort stdout = getStdout();
 
-		SerializeOpts serializeOpts = getSerializeOpts(opts);
-		SerializeOpts inputOpts = serializeOpts.clone();
+		mSerializeOpts = getSerializeOpts(opts);
+		SerializeOpts inputOpts = mSerializeOpts.clone();
 		// JSON is always UTF8
 		inputOpts.setInputTextEncoding("UTF-8");
 
@@ -68,7 +68,7 @@ public class json2xml extends XCommand {
 		 */
 		JSONObject obj = new JSONObject(tokenizer);
 
-		XMLStreamWriter sw = stdout.asXMLStreamWriter(serializeOpts);
+		XMLStreamWriter sw = stdout.asXMLStreamWriter(mSerializeOpts);
 		sw.writeStartDocument();
 
 		write(obj, sw);

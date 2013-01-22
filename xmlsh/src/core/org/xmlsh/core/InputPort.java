@@ -18,6 +18,8 @@ import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.Source;
 
+import com.jayway.jsonpath.JsonModel;
+
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
 import org.xml.sax.InputSource;
@@ -75,6 +77,11 @@ public abstract class InputPort  extends IPort
 		
 		return new ValueXdmItemInputStream( asXdmItem( serializeOpts),serializeOpts);
 	}
+
+
+	public abstract JsonModel asJson(SerializeOpts serializeOpts) throws IOException, CoreException ;
+	
+	
 }
 
 

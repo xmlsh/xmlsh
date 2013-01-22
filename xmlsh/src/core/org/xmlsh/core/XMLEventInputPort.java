@@ -19,6 +19,8 @@ import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.events.XMLEvent;
 import javax.xml.transform.Source;
 
+import com.jayway.jsonpath.JsonModel;
+
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
@@ -171,6 +173,13 @@ public class XMLEventInputPort extends InputPort {
 		
 		
 	}
+	
+	@Override
+	public JsonModel asJson(SerializeOpts serializeOpts) throws IOException, CoreException {
+		return JsonModel.create( asInputStream(serializeOpts));
+	}
+
+	
 
 }
 

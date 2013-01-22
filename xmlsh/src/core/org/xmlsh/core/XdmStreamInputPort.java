@@ -18,6 +18,8 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.Source;
 
+import com.jayway.jsonpath.JsonModel;
+
 import net.sf.saxon.Configuration;
 import net.sf.saxon.evpull.Decomposer;
 import net.sf.saxon.evpull.EventToStaxBridge;
@@ -186,7 +188,12 @@ public class XdmStreamInputPort extends InputPort {
 		
 		return mReader ;
 	}
-	
+
+	@Override
+	public JsonModel asJson(SerializeOpts serializeOpts) throws IOException, CoreException {
+		return JsonModel.create( asInputStream(serializeOpts));
+	}
+
 }
 
 

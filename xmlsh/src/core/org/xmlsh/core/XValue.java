@@ -16,6 +16,8 @@ import java.util.List;
 
 import javax.xml.transform.Source;
 
+import com.jayway.jsonpath.JsonModel;
+
 import net.sf.saxon.om.Item;
 import net.sf.saxon.om.NodeInfo;
 import net.sf.saxon.om.SequenceIterator;
@@ -185,6 +187,8 @@ public class XValue {
 	}
 	public String	toString(){
 		if( mValue != null ){
+			if( isJson() )
+				return ((JsonModel)mValue).getJson();
 			if( isAtomic() || isObject() )
 				return mValue.toString();
 			else
@@ -739,12 +743,21 @@ public class XValue {
 		
 	}
 
+	
+	public boolean isJson()
+	{
+		return mValue != null &&
+			    ( mValue instanceof JsonModel );
+	}
 
-	
+	public JsonModel asJson() {
+		if( mValue == null || mValue instanceof JsonModel )
+			return (JsonModel) mValue ;
 
-	
-	
-	
+		return JsonModel.create( toString() );
+
+	}
+
 	
 }
 //
