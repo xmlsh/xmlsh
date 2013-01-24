@@ -23,11 +23,12 @@ public class xurlencode extends XCommand {
 	
 	public int run( List<XValue> args ) throws Exception {
 
-		Options opts = new Options( "n,p=port:" ,  SerializeOpts.getOptionDefs());
+		Options opts = new Options( "n,p=port:,q=query" ,  SerializeOpts.getOptionDefs());
 		opts.parse(args);
 		
 		boolean nolf = opts.hasOpt("n");
 		String port = opts.getOptString("p", null);
+		boolean query = opts.hasOpt("q");
 		
 		
 		OutputPort stdout = 
@@ -42,22 +43,34 @@ public class xurlencode extends XCommand {
 		OutputStream out = stdout.asOutputStream(serializeOpts);
 	
 		
-		args = opts.getRemainingArgs();
+		args = Util.expandSequences(opts.getRemainingArgs());
 		
 		// If arguments behave like echo and copy args to output stream
 		if( args.size() > 0 ){
+			if( args.size() % 2 != 0 ){
+				usage();
+				return -1;
+			}
 		
 			args = Util.expandSequences( args);
 			boolean bFirst = true;
+			boolean bOdd = false ;
 			for ( XValue arg : args ){
-					if( ! bFirst )
-						out.write('&');
+				 
+				    
+					if( ! bFirst ){
+						if( query && bOdd )
+							out.write('=');
+					    else
+						    out.write('&');
+					}					
+						
 					
 					bFirst = false;
 					String value = arg.toString();
 					value = URLEncoder.encode(value,serializeOpts.getInputXmlEncoding());
-					
 					out.write(value.getBytes(serializeOpts.getOutputTextEncoding()));
+					bOdd = ! bOdd ;
 			}
 			if( ! nolf )
 				out.write(Util.getNewline(serializeOpts));
