@@ -188,7 +188,7 @@ public class XValue {
 	public String	toString(){
 		if( mValue != null ){
 			if( isJson() )
-				return ((JsonModel)mValue).getJson();
+				return ((JsonModel)mValue).toJson(false);
 			if( isAtomic() || isObject() )
 				return mValue.toString();
 			else

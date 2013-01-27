@@ -23,7 +23,7 @@
 @set CLASSPATH=%CLASSPATH%;%XMLSH%\lib\commons-codec-1.6.jar
 @set CLASSPATH=%CLASSPATH%;%XMLSH%\lib\commons-logging-1.1.1.jar
 @REM JSON support
-@set CLASSPATH=%CLASSPATH%;%XMLSH%\lib\json-path-0.8.0.jar
+@set CLASSPATH=%CLASSPATH%;%XMLSH%\lib\json-path-0.8.2.jar
 @set CLASSPATH=%CLASSPATH%;%XMLSH%\lib\json-smart-1.1.jar
 @set CLASSPATH=%CLASSPATH%;%XMLSH%\lib\commons-io-2.1.jar
 @set CLASSPATH=%CLASSPATH%;%XMLSH%\lib\commons-lang-2.6.jar

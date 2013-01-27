@@ -50,6 +50,7 @@ import org.apache.http.conn.scheme.SchemeRegistry;
 import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.conn.ssl.TrustStrategy;
 import org.apache.http.entity.AbstractHttpEntity;
+import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.FileEntity;
 import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.impl.auth.DigestScheme;
@@ -112,14 +113,14 @@ public class http extends XCommand {
 			doOutput = true ;
 			surl =  opts.getOptString("put", null);
 			method = new HttpPut(surl);
-		    ((HttpPut)method).setEntity( getInputEntity());
+		    ((HttpPut)method).setEntity( getInputEntity(opts));
 		}
 		else
 		if( opts.hasOpt("post") ){
 			doOutput = true ;
 			surl =  opts.getOptString("post", null);
 			method = new HttpPost(surl);
-		    ((HttpPost)method).setEntity( getInputEntity());
+		    ((HttpPost)method).setEntity( getInputEntity(opts));
 
 		}
 		else
@@ -199,6 +200,9 @@ public class http extends XCommand {
 
 
 
+
+
+
 	private void setOptions(DefaultHttpClient client, HttpHost host, Options opts) throws KeyManagementException, NoSuchAlgorithmException, UnrecoverableKeyException, CertificateException, FileNotFoundException, KeyStoreException, IOException {
 		
 		HttpParams params = client.getParams();
@@ -210,6 +214,8 @@ public class http extends XCommand {
 
 		if( opts.hasOpt("readTimeout"))
 			connection.setSoTimeout((int) (opts.getOptDouble("readTimeout", 0) * 1000.));
+		
+			
 		/*
 		if( opts.hasOpt("useCaches"))
 			client.setUseCaches( opts.getOpt("useCaches").getFlag());
@@ -220,9 +226,7 @@ public class http extends XCommand {
 			client.setInstanceFollowRedirects(  opts.getOpt("followRedirects").getFlag());	
 	   
 
-		if( opts.hasOpt("contentType"))
-			client.setRequestProperty("Content-Type", opts.getOptString("contentType", "text/xml"));
-
+	
 
 			
 			
@@ -275,15 +279,24 @@ public class http extends XCommand {
 		
 		
 	}
-	HttpEntity getInputEntity() throws IOException, CoreException
+	HttpEntity getInputEntity(Options opts) throws IOException, CoreException
 	{
+
+		AbstractHttpEntity entity = null ;
 		InputPort in = getStdin();
 		if( in.isFile() )
-			return new FileEntity( in.getFile()  );
+			entity =new FileEntity( in.getFile()  );
  		
-		else
-			return new InputStreamEntity( in.asInputStream(mSerializeOpts),-1);
-		
+		else {
+			byte[] data = Util.readBytes( in.asInputStream(mSerializeOpts));
+            entity = new ByteArrayEntity( data );
+		}
+		// return new InputStreamEntity( in.asInputStream(mSerializeOpts),-1);
+		if( opts.hasOpt("contentType"))
+			entity.setContentType(opts.getOptString("contentType", "text/xml"));
+
+		return entity ;
+
 	}
 	
 	private void disableTrust(DefaultHttpClient client , String disableTrustProto) throws KeyManagementException, UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException {

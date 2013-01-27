@@ -12,7 +12,10 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
 import java.net.URI;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.XdmAtomicValue;
@@ -23,6 +26,33 @@ import org.xmlsh.core.XValue;
 
 public class JavaUtils {
 
+private static Set< String > mReserved;
+	
+  // Words that could not make valid class names so cant otherwise be used as commands or functions
+
+	static {
+		mReserved = new HashSet<String>();
+		mReserved.add( "class");
+		mReserved.add( "boolean" );
+		mReserved.add( "int"  );
+		mReserved.add( "double");
+		mReserved.add( "true"  );
+		mReserved.add( "false" );
+		mReserved.add( "long" );
+		mReserved.add( "char" );
+		mReserved.add( "null" );
+		mReserved.add( "float" );
+		mReserved.add( "byte" );
+		mReserved.add( "short" );
+
+		
+	}
+	
+	public static boolean isReserved(String n )
+	{
+		return mReserved.contains(n);
+	}
+	
 
 	public static XValue newObject(String classname, List<XValue> args, ClassLoader classloader) throws Exception {
 		Class<?> cls = Class.forName(classname, true, classloader);
@@ -246,9 +276,11 @@ public class JavaUtils {
 		if( c.isInstance(value))
 			return c.cast(value);
 		
+
+		Class<?> vclass = value.getClass();
+		
 		if( c.isPrimitive() ){
 			
-			Class<?> vclass = value.getClass();
 			
 			
 			/*
@@ -300,9 +332,30 @@ public class JavaUtils {
 					value = Byte.valueOf((byte) ((Short)value).intValue() );
 			}
 				
-			
+			return value ;
 		}
+		// Cast through string
+		
+		String svalue = value.toString();
+		
+		if( c == Integer.class )
+			value = Integer.valueOf( svalue );
+		else
+		if( c == Long.class )
+			value =  Long.valueOf( svalue );
+		else
+		if( c == Short.class )
+			value = Short.valueOf(svalue);
+		else
+		if( c == Float.class )
+			value = Float.valueOf(svalue );
+		else
+		if( c == Double.class )
+			value = Double.valueOf(svalue);
+		
 		return value ;
+		
+		
 	}
 
 	public static XValue getField(String classname, XValue instance, String fieldName, ClassLoader classloader) throws InvalidArgumentException, SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException, ClassNotFoundException {

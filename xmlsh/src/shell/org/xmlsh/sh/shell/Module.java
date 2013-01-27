@@ -30,6 +30,7 @@ import org.xmlsh.core.ScriptFunctionCommand;
 import org.xmlsh.core.XClassLoader;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
+import org.xmlsh.util.JavaUtils;
 import org.xmlsh.util.Util;
 
 public class Module {
@@ -223,6 +224,7 @@ public class Module {
 		 */
 		
 		name = convertCamelCase( name );
+		name = fromReserved( name );
 		
 		// Store the camel name not the hyphen name
 		String origName = name ;
@@ -274,9 +276,16 @@ public class Module {
 		return null ;
 		
 	}
+	private String fromReserved( String name )
+	{
+		if( JavaUtils.isReserved(name ) )
+			return "_" + name ;
+		else
+			return  name;
+	}
 	
 	/*
-	 * Conversts hypen-case to camelCase
+	 * Conversts hypen-case to camelCase, also converts from any reserved word 
 	 */
 
 	private String convertCamelCase(String name) {
@@ -343,6 +352,7 @@ public class Module {
 		 */
 		
 		name = convertCamelCase( name );
+		name = fromReserved(name);
 		
 		
 		try {

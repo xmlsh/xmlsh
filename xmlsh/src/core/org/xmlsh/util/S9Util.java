@@ -39,7 +39,7 @@ import org.xmlsh.sh.shell.Shell;
 
 
 /*
- * S0Util extends from XdmNode so that we can gain access to protected methods
+ * S9Util extends from XdmNode so that we can gain access to protected methods
  * 
  */
 public class S9Util extends XdmNode {
