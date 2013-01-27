@@ -758,6 +758,24 @@ public class XValue {
 
 	}
 
+	public boolean isString() {
+		if( mValue == null )
+			return false ;
+		if( mValue instanceof String )
+			return true ;
+		
+		// Non-XdmValues not considered atomic.
+		if( ! (mValue instanceof XdmValue ))
+			return false ;
+		
+		
+		ValueRepresentation<? extends Item> value = asXdmValue().getUnderlyingValue();
+		boolean isString = ( value instanceof net.sf.saxon.value.StringValue ) || ( value instanceof NodeInfo && ((NodeInfo)value).getNodeKind() == net.sf.saxon.type.Type.TEXT ) ;
+		return isString ;
+		
+
+	}
+
 	
 }
 //

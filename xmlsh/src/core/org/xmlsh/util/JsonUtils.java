@@ -8,6 +8,7 @@ package org.xmlsh.util;
 
 import java.lang.reflect.Array;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import net.sf.saxon.trans.XPathException;
@@ -15,7 +16,6 @@ import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
 
 import com.jayway.jsonpath.JsonModel;
-import com.sun.xml.internal.bind.v2.schemagen.xmlschema.List;
 
 public class JsonUtils {
 
@@ -92,6 +92,12 @@ public class JsonUtils {
 
 	public static Boolean toBoolean(XValue arg) throws UnexpectedException, XPathException {
 		
+		if( arg == null || arg.isNull() )
+			return false ;
+		if( arg.isString() ){
+			String sv = arg.toString();
+			return sv.equalsIgnoreCase("true") || sv.equals("1") ;
+		}
 		return new Boolean( arg.toBoolean() );
 		
 		

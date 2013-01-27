@@ -28,7 +28,7 @@ fi
 # Extra tests which depend on local environment
 EXTRA=$*
 
-for d in core builtin internal posix java xs stax $EXTRA; do
+for d in core builtin internal posix java json xs stax $EXTRA; do
    echo "running tests in $d"
    cd $d
    for test in *.xsh ; do

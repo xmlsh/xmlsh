@@ -25,6 +25,8 @@ public class _boolean extends BuiltinFunctionCommand {
 	@Override
 	public XValue run(Shell shell, List<XValue> args) throws UnexpectedException, XPathException  {
 
+		if( args.size() == 0 )
+			return new XValue( Boolean.FALSE );
 	      
 		XValue arg = args.get(0);
 		
