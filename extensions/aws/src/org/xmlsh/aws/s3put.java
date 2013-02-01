@@ -19,6 +19,7 @@ import org.xmlsh.core.FileInputPort;
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.UnexpectedException;
+import org.xmlsh.core.UnimplementedException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.util.StringPair;
 import org.xmlsh.util.Util;
@@ -89,7 +90,7 @@ public class s3put extends AWSS3Command {
 			return 1; 
 			
 		case 1 :
-
+		{
 			S3Path dest;
 			dest = new S3Path(args.get(0).toString());
 			InputPort src = this.getStdin();
@@ -97,6 +98,24 @@ public class s3put extends AWSS3Command {
 			src.release();
 
 			break;
+		}	
+		case 2:  // s3put src dest if 
+		{
+			S3Path dest;
+			dest = new S3Path(args.get(1).toString());
+			if( ! bRecurse ){
+				InputPort src = mShell.getEnv().getInput(args.get(0));
+				if( ! src.isFile() ||  ! src.getFile().isDirectory() ){
+					 
+			     ret = put(  src , dest , meta , storage  );
+     			 src.release();
+     		     break ; 
+     		     }
+				// Fall Through 
+				src.release();
+			}
+			// fall through
+		}
 
 		default : 
 
@@ -167,13 +186,21 @@ public class s3put extends AWSS3Command {
 		return files ;
 	}
 
-	private int put(InputPort src, S3Path dest, List<XValue> meta , String storage ) throws IOException 
+	private int put(InputPort src, S3Path dest, List<XValue> meta , String storage ) throws IOException, UnexpectedException, UnimplementedException 
 	{
 
 		InputStream is = null;
 
 		if( bVerbose )
 			mShell.printErr("Putting to " + dest.toString() );
+		
+		if( ! dest.hasKey() ){
+			if( ! src.isFile() )
+				throw new UnexpectedException("Cannot put non named object to S3 without a key");
+			
+			dest.setKey( src.getFile().getName());
+			
+		}
 
 
 		ObjectMetadata metadata = new ObjectMetadata();

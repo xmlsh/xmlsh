@@ -108,6 +108,25 @@ public class S3Path {
 			mKey = mKey + "/" + path ;
 		
 	}
+
+
+	/**
+	 * @param bucket the bucket to set
+	 */
+	public void setBucket(String bucket) {
+		mBucket = Util.nullIfBlank(bucket) ;
+		
+
+	}
+
+
+	/**
+	 * @param key the key to set
+	 */
+	public void setKey(String key) {
+		mKey = Util.nullIfBlank(key) ;
+
+	}
 	
 	
 }
