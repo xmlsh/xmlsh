@@ -108,11 +108,11 @@ public class xuri extends XCommand
 					); 
 			break; 
 		case	7:
-			uri = new URI( 
+ 			uri = new URI( 
 					getArg(args,0), 
 					getArg(args,1),
 					getArg(args,2),
-					Integer.parseInt(getArg(args,3)),
+					Util.parseInt(getArg(args,3),-1),
 					getArg(args,4),
 					getArg(args,5),
 					getArg(args,6)

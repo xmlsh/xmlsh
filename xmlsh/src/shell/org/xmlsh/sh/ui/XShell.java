@@ -38,19 +38,11 @@ public class XShell {
 
 	private JFrame mframe;
 	private JTextArea mCommandTextArea;
-	private ShellThread  mShell = null ;
+	private ShellThread mShell = null;
 	private JTextArea mResultTextArea;
 	private List<XValue> mArgs;
-	private File mCurdir ; 
-	
-	
-	
-
-
-
-
-	
-
+	private File mCurdir;
+	private LogFrame mLogWindow = null;
 
 	/**
 	 * Launch the application.
@@ -60,22 +52,20 @@ public class XShell {
 	}
 
 	public static void run(final String[] args) {
-		
+
 		run(Util.toXValueList(args));
 	}
-	
 
 	public static void run(List<XValue> args) {
-		run( new File(".") , args );
-		
+		run(new File("."), args);
+
 	}
 
-	
 	public static void run(final File curdir, final List<XValue> args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					XShell window = new XShell(curdir , args);
+					XShell window = new XShell(curdir, args);
 					window.mframe.setVisible(true);
 					window.mCommandTextArea.requestFocusInWindow();
 				} catch (Exception e) {
@@ -85,16 +75,16 @@ public class XShell {
 		});
 	}
 
-
-	public XShell(File curdir , List<XValue> args) throws Exception {
-	    mCurdir = curdir ;
-		mArgs = args ;
+	public XShell(File curdir, List<XValue> args) throws Exception {
+		mCurdir = curdir;
+		mArgs = args;
 		initialize();
 	}
 
 	/**
 	 * Initialize the contents of the frame.
-	 * @throws Exception 
+	 * 
+	 * @throws Exception
 	 */
 	private void initialize() throws Exception {
 
@@ -196,6 +186,18 @@ public class XShell {
 		mnFile.add(separator);
 		mnFile.add(mntmExit);
 		
+		JMenu mnView = new JMenu("View");
+		menuBar.add(mnView);
+		
+		JMenuItem mntmLogWindow = new JMenuItem("Log Window");
+		mntmLogWindow.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+
+				mLogWindow.setVisible( ! mLogWindow.isVisible());
+			}
+		});
+		mnView.add(mntmLogWindow);
+		
 		JToolBar toolBar = new JToolBar();
 		menuBar.add(toolBar);
 		
@@ -246,63 +248,62 @@ public class XShell {
 		new TextAreaPopupMenu( mCommandTextArea );
 		
 
+		mLogWindow = new LogFrame();
+
 		mShell.start();
 		
 	}
 
 	protected void saveTo(String text, File selFile) {
 		try {
-			OutputStreamWriter  writer = new OutputStreamWriter( new FileOutputStream(selFile) , "utf8" );
+			OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(selFile),
+					"utf8");
 			writer.write(text);
 			writer.close();
-			
-			
+
 		} catch (IOException e) {
-			JOptionPane.showMessageDialog(mframe, "Error writing to file: " + e.getLocalizedMessage());
+			JOptionPane.showMessageDialog(mframe,
+					"Error writing to file: " + e.getLocalizedMessage());
 
 		}
-		
-		
-		
-		
-		
+
 	}
 
-
 	protected String readFrom(File selFile) {
-		StringBuffer sb = new StringBuffer();
 		try {
-			return Util.readString(selFile,"utf8");
+			return Util.readString(selFile, "utf8");
 		} catch (IOException e) {
-			JOptionPane.showMessageDialog(mframe, "Error reading from file: " + e.getLocalizedMessage());
+			JOptionPane.showMessageDialog(mframe,
+					"Error reading from file: " + e.getLocalizedMessage());
 
-			return null ;
+			return null;
 		}
-		
-		
+
 	}
 
 }
 
-
-
 //
 //
-//Copyright (C) 2008-2012 David A. Lee.
+// Copyright (C) 2008-2012 David A. Lee.
 //
-//The contents of this file are subject to the "Simplified BSD License" (the "License");
-//you may not use this file except in compliance with the License. You may obtain a copy of the
-//License at http://www.opensource.org/licenses/bsd-license.php 
+// The contents of this file are subject to the "Simplified BSD License" (the
+// "License");
+// you may not use this file except in compliance with the License. You may
+// obtain a copy of the
+// License at http://www.opensource.org/licenses/bsd-license.php
 //
-//Software distributed under the License is distributed on an "AS IS" basis,
-//WITHOUT WARRANTY OF ANY KIND, either express or implied.
-//See the License for the specific language governing rights and limitations under the License.
+// Software distributed under the License is distributed on an "AS IS" basis,
+// WITHOUT WARRANTY OF ANY KIND, either express or implied.
+// See the License for the specific language governing rights and limitations
+// under the License.
 //
-//The Original Code is: all this file.
+// The Original Code is: all this file.
 //
-//The Initial Developer of the Original Code is David A. Lee
+// The Initial Developer of the Original Code is David A. Lee
 //
-//Portions created by (your name) are Copyright (C) (your legal entity). All Rights Reserved.
+// Portions created by (your name) are Copyright (C) (your legal entity). All
+// Rights Reserved.
 //
-//Contributor(s): none.
+// Contributor(s): none.
 //

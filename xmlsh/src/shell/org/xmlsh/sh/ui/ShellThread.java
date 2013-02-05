@@ -48,6 +48,7 @@ public class ShellThread extends Thread {
 
 	public ShellThread(List<XValue> args, JTextArea resultTextArea, JButton startButton , JButton stopButton) {
 		super();
+		
 
 		mArgs = args ;
 		mResultTextArea = resultTextArea;
@@ -80,6 +81,9 @@ public class ShellThread extends Thread {
 	}
 
 	public void run() {
+		
+
+		
 
 		mResultTextArea.setText("");
 
@@ -107,6 +111,7 @@ public class ShellThread extends Thread {
 					mShell = new Shell(false);
 					mShell.setArgs(mArgs);
 					mShell.setArg0("xmlshui");
+					
 					
 					mShell.getSerializeOpts().setInputTextEncoding("UTF-8");
 					mShell.getSerializeOpts().setOutputTextEncoding("UTF-8");

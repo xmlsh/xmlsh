@@ -42,10 +42,11 @@ public class TextAreaPopupMenu {
         });
         popup.add(menuItem);
  
- 
+        popup.add(new JSeparator());
+        
         
         if( textArea.isEditable() ){
-	        popup.add(new JSeparator());
+	 
 	 
 	        menuItem = new JMenuItem("Cut");
 	        menuItem.addActionListener(new java.awt.event.ActionListener() {
@@ -70,6 +71,16 @@ public class TextAreaPopupMenu {
 	        popup.add(menuItem);
         }
  
+        
+        menuItem = new JMenuItem("Clear");
+        menuItem.addActionListener(new java.awt.event.ActionListener() {
+ 
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+            	textArea.setText("");
+            }
+        });
+        popup.add(menuItem);
+        
         textArea.setComponentPopupMenu(popup);
  
  
