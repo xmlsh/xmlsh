@@ -47,7 +47,7 @@ public class xurlencode extends XCommand {
 		
 		// If arguments behave like echo and copy args to output stream
 		if( args.size() > 0 ){
-			if( args.size() % 2 != 0 ){
+			if( query && (args.size() % 2 != 0) ){
 				usage();
 				return -1;
 			}

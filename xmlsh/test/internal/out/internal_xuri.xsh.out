@@ -1,0 +1,15 @@
+http://www.xmlsh.org
+http://www.xmlsh.org/foo.bar
+http://www.xmlsh.org/foo.bar#fragment
+http://www.xmlsh.org/path/foo.bar?query#fragment
+http://user@www.xmlsh.org:80/path/foo.bar?query#fragment
+http://www.xmlsh.org:80/path/foo.bar?query#fragment
+http://www.xmlsh.org/path/foo.bar?query#fragment
+http://www.xmlsh.org/path/foo.bar#fragment
+user@www.xmlsh.org:80
+fragment
+www.xmlsh.org
+/path/foo.bar
+80
+query
+http

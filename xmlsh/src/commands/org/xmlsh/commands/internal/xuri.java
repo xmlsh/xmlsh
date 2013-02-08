@@ -45,12 +45,13 @@ public class xuri extends XCommand
 	public int run(  List<XValue> args  )	throws Exception
 	{
 		
-		Options opts = new Options("a=authority,f=fragment,h=host,p=path,P=port,q=query,s=scheme,r=resource:",SerializeOpts.getOptionDefs());
+		Options opts = new Options("a=authority,f=fragment,h=host,p=path,P=port,q=query,s=scheme,r=resource:,Q",SerializeOpts.getOptionDefs());
 		opts.parse(args);
 		args = opts.getRemainingArgs();
 		
 		SerializeOpts serializeOpts = getSerializeOpts(opts);
 		PrintWriter out = getEnv().getStdout().asPrintWriter(serializeOpts);
+		boolean bIsQuoted = opts.hasOpt("Q"); // query string is pre-quoted
 		
 		URI uri = null ;
 
@@ -64,6 +65,7 @@ public class xuri extends XCommand
 			
 		}
 			
+		String query ;
 		
 		if( uri == null )
 		switch( args.size() ){
@@ -99,24 +101,36 @@ public class xuri extends XCommand
 		
 			break ;
 		case	5:
+		    query = getArg(args,3);
+		    if( query == null )
+		    	bIsQuoted = false  ;
 			uri = new URI( 
 					getArg(args,0), 
 					getArg(args,1),
 					getArg(args,2),
-					getArg(args,3),
+					bIsQuoted ? null :query , // query
 					getArg(args,4)
 					); 
+			if( bIsQuoted  )
+			    uri = new URI( uri.toString() + "?" + query );
 			break; 
 		case	7:
+		    query = getArg(args,5);
+		    if( query == null )
+		    	bIsQuoted = false ;
+
  			uri = new URI( 
 					getArg(args,0), 
 					getArg(args,1),
 					getArg(args,2),
 					Util.parseInt(getArg(args,3),-1),
 					getArg(args,4),
-					getArg(args,5),
+					bIsQuoted ? null : query , // query 
 					getArg(args,6)
 					); 
+			if( bIsQuoted  )
+			   uri = new URI( uri.toString() + "?" +  query  );
+
 
 			break ;
 		}
@@ -145,8 +159,10 @@ public class xuri extends XCommand
 		if( opts.hasOpt("P"))
 			out.println(uri.getPort() );
 		else
-		if( opts.hasOpt("q"))
+		if( opts.hasOpt("q")){
+			
 			out.println(uri.getQuery() );
+		}
 		else
 		if( opts.hasOpt("s"))
 			out.println(uri.getScheme() );		

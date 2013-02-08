@@ -9,6 +9,7 @@ package org.xmlsh.core;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.HashMap;
 
@@ -127,7 +128,7 @@ public class CommandFactory
 		
 	
 	
-	public ICommand		getCommand(Shell shell , String name, SourceLocation loc ) throws IOException
+	public ICommand		getCommand(Shell shell , String name, SourceLocation loc ) throws IOException, CoreException
 	{
 		
 		
@@ -246,20 +247,25 @@ public class CommandFactory
 		
 	}
 	
-	public ICommand getScript(Shell shell, File scriptFile , boolean bSourceMode , SourceLocation loc ) {
-		if( scriptFile == null )
+	public ICommand getScript(Shell shell, String name , InputPort inputPort , boolean bSourceMode , SourceLocation loc ) throws CoreException {
+		if( inputPort == null )
 			return null;
-		try {
-			return new ScriptCommand( scriptFile , bSourceMode , loc );
-		} catch (FileNotFoundException e) {
-			shell.printErr("File not found: " + scriptFile.getPath() , e);
-			return null ;
-		}
+		if( inputPort.isFile() ){
+			try {
+		       return new ScriptCommand( inputPort.getFile() , bSourceMode , loc );
+			
+			} catch (FileNotFoundException e) {
+				shell.printErr("File not found: " + inputPort.getFile().getPath() , e);
+	           	return null ;
+			}
+		} else
+			
+			return new ScriptCommand(  name , inputPort.asInputStream(shell.getSerializeOpts()), bSourceMode , null );
 		
 	}
 	
 	
-	public ICommand		getScript( Shell shell , String name, boolean bSourceMode , SourceLocation loc ) throws IOException
+	public ICommand		getScript( Shell shell , String name, boolean bSourceMode , SourceLocation loc ) throws IOException, CoreException
 	{
 		File scriptFile = null;
 		
@@ -280,6 +286,8 @@ public class CommandFactory
 			if( scriptFile == null && ! name.endsWith(".xsh") )
 				scriptFile = path.getFirstFileInPath(shell, name + ".xsh");
 		}
+		if( scriptFile == null )
+			return null ;
 		return getScript( shell , scriptFile , bSourceMode , loc );
 		
 	}
@@ -409,6 +417,12 @@ public class CommandFactory
 			
 		return null  ;	
 	}
+
+	public ICommand getScript(Shell shell, File script, boolean bSourceMode, SourceLocation loc) throws CoreException, IOException {
+		return getScript( shell , script.getAbsolutePath() , new FileInputPort(script) , bSourceMode , loc );
+	}
+
+
 	
 	
 	

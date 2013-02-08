@@ -1,8 +1,8 @@
 xs:string
 xs:string
-xs:string
-xs:string
-xs:string
+xs:integer
+xs:integer
+xs:integer
 next
 xs:integer+
 empty

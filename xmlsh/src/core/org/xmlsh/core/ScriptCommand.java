@@ -37,7 +37,8 @@ public class ScriptCommand implements ICommand {
 	{
 		close();
 	}
-	
+
+
 	public ScriptCommand( File script, boolean bSourceMode , SourceLocation location) throws FileNotFoundException
 	{
 		mScript = new FileInputStream(script);

@@ -23,16 +23,17 @@ public class source extends BuiltinCommand {
 			if( args.size() != 1 )
 				throw new UnexpectedException("source expects 1 argument");
 			
-			ICommand icmd = CommandFactory.getInstance().getScript(mShell, args.get(0).toString(),true,getLocation());
+			XValue port = args.get(0);
+			ICommand icmd = CommandFactory.getInstance().getScript(mShell, port.toString(), mShell.getEnv().getInput(port),true,getLocation());
 			if( icmd == null){
 				SourceLocation loc = getLocation();
 				if( loc != null )
 					mShell.printErr(loc.toString());
-				mShell.printErr( args.get(0) + ": not found");
+				mShell.printErr( port + ": not found");
 				return 1;
 			}
 			
-			return icmd.run(mShell, args.get(0).toString() , null);
+			return icmd.run(mShell, port.toString() , null);
 			
 	}
 

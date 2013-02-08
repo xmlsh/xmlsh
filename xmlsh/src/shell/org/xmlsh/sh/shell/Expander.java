@@ -47,9 +47,26 @@ class Expander {
 	
 	private static class Result {
 
+		static class RXValue {
+			public XValue         xvalue;
+			public boolean       bRaw;
+			RXValue( XValue v , boolean r ) {
+				xvalue = v ;
+				bRaw = r;
+			}
+			RXValue( String s ) {
+				xvalue = new XValue(s);
+				bRaw = false ;
+			}
+			public String toString()
+			{
+				return xvalue.toString();
+			}
+			
+		}
 		StringBuffer	sb = new StringBuffer();
-		XValue			cur = null;		// Current XValue if its unknown to convert to string, only atomic values
-		List<XValue>	result = new ArrayList<XValue>();
+		RXValue			cur = null;		// Current XValue if its unknown to convert to string, only atomic values
+		List<RXValue>	result = new ArrayList<RXValue>();
 		
 		void flush() 
 		{
@@ -68,14 +85,20 @@ class Expander {
 		void add( String s )
 		{
 			ajoin();
-			result.add(new XValue(s));
+			result.add(new RXValue(s));
 		}
 		
 		void add( XValue v )
 		{
 			ajoin();
-			result.add(v);
+			result.add( new RXValue(v,false));
 		}
+		void add( XValue v , boolean r )
+		{
+			ajoin();
+			result.add( new RXValue(v,r));
+		}
+		
 		void append( String s )
 		{
 			ajoin();
@@ -90,7 +113,7 @@ class Expander {
 		
 
 		
-		List<XValue> 	getResult()
+		List<RXValue> 	getResult()
 		{
 			flush();
 			return result ;
@@ -120,7 +143,7 @@ class Expander {
 					sb.append( str );
 					
 				} else
-					cur = value ;
+					cur = new RXValue(value,false) ;
 			}
 			else {
 				if( inQuotes ){
@@ -357,7 +380,7 @@ class Expander {
 						else
 							result.flush();
 						for( XValue v : mShell.getArgs() )
-							result.add( quote(v) );
+							result.add(  v , true );
 					}
 
 					
@@ -391,18 +414,24 @@ class Expander {
 		ArrayList<XValue> result2 = new ArrayList<XValue>();
 		
 		
-		for( XValue v : result.getResult() ){
+		for( Result.RXValue v : result.getResult() ){
 			/*
 			 * If v is an atomic string value then dequote and expand
 			 * DO NOT dequote variable expansions
 			 */
 			if( ! bExpandWild )
-				result2.add( removeQuotes(v));
+				result2.add( v.bRaw ? v.xvalue : removeQuotes(v.xvalue) );
 			else {
-			
-				List<XValue> r = expandWild( v );
-				if( r != null )
-					result2.addAll( r );
+		
+		        if( v.bRaw )
+		        	result2.add( v.xvalue );
+		        else {
+					
+					
+					List<XValue> r = expandWild( v.xvalue );
+					if( r != null )
+						result2.addAll( r );
+		        }
 			}
 		}
 			
