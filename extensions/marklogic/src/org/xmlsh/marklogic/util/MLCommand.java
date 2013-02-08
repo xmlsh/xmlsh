@@ -30,15 +30,19 @@ import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLEventWriter;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
+import javax.xml.transform.stream.StreamSource;
 
 import net.sf.saxon.om.NodeInfo;
 import net.sf.saxon.om.ValueRepresentation;
 import net.sf.saxon.s9api.SaxonApiException;
+import net.sf.saxon.s9api.XdmAtomicValue;
+import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.trans.XPathException;
 import net.sf.saxon.value.AtomicValue;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.xmlsh.core.CoreException;
+import org.xmlsh.core.IXdmItemOutputStream;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.Options.OptionValue;
@@ -47,6 +51,7 @@ import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.marklogic.get;
 import org.xmlsh.sh.shell.SerializeOpts;
+import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.Util;
 
 import com.marklogic.xcc.ContentSource;
@@ -62,8 +67,19 @@ import com.marklogic.xcc.types.ItemType;
 import com.marklogic.xcc.types.ValueType;
 import com.marklogic.xcc.types.XName;
 import com.marklogic.xcc.types.XSBoolean;
+import com.marklogic.xcc.types.XSDate;
+import com.marklogic.xcc.types.XSDecimal;
+import com.marklogic.xcc.types.XSDouble;
+import com.marklogic.xcc.types.XSDuration;
+import com.marklogic.xcc.types.XSFloat;
+import com.marklogic.xcc.types.XSGDay;
+import com.marklogic.xcc.types.XSGMonth;
+import com.marklogic.xcc.types.XSGYearMonth;
+import com.marklogic.xcc.types.XSHexBinary;
 import com.marklogic.xcc.types.XSInteger;
+import com.marklogic.xcc.types.XSQName;
 import com.marklogic.xcc.types.XSString;
+import com.marklogic.xcc.types.XSUntypedAtomic;
 import com.marklogic.xcc.types.XdmAttribute;
 import com.marklogic.xcc.types.XdmItem;
 import com.marklogic.xcc.types.XdmVariable;
@@ -144,8 +160,63 @@ public abstract class MLCommand extends XCommand {
 		ContentSource cs = ContentSourceFactory.newContentSource(serverUri,newTrustOptions(serverUri));
 		return cs;
 	}
-
+	
+	
 	protected boolean writeResult(ResultSequence rs, OutputPort out, SerializeOpts sopts,
+			boolean asText, boolean bBinary) throws InvalidArgumentException, IOException, CoreException, SaxonApiException 
+	{
+		OutputPort stdout = getStdout();
+		
+		IXdmItemOutputStream ser = null ;
+		OutputStream os = null  ;
+		PrintWriter  writer = null;
+		
+		if( bBinary )
+			os = out.asOutputStream(sopts);
+		else
+		if( asText )
+			writer = out.asPrintWriter(sopts);
+		else
+			ser = stdout.asXdmItemOutputStream(sopts);
+		
+		boolean bFirst = true ;
+		boolean bAnyOut = false ;
+		
+		while (rs.hasNext()) {
+			ResultItem rsItem = rs.next();
+
+			XdmItem it = rsItem.getItem();
+			
+			
+			bAnyOut = true ;
+			if( ! bFirst )
+				stdout.writeSequenceSeperator(sopts); // Thrashes variable output !
+			bFirst = false ;
+ 
+			if( bBinary )
+				rsItem.writeTo(os );
+			else
+			if( asText )
+				rsItem.writeTo( writer );
+			else {
+				
+				net.sf.saxon.s9api.XdmItem item = null ;
+				if (asText ) {
+	 
+					item = new  XdmAtomicValue( it.asString());
+					
+				}
+				else
+					item = asSaxonItem( it );
+				
+				ser.write(item);
+			}
+		}
+	
+		return bAnyOut;
+	}
+
+	protected boolean writeResult2(ResultSequence rs, OutputPort out, SerializeOpts sopts,
 			boolean asText, boolean bBinary) throws FactoryConfigurationError, IOException,
 			XMLStreamException, SaxonApiException, CoreException {
 
@@ -437,6 +508,87 @@ public abstract class MLCommand extends XCommand {
 				mOutput.flush();
 			}
 				
+		}
+		
+		protected net.sf.saxon.s9api.XdmItem asSaxonItem( XdmItem it ) throws SaxonApiException
+		{
+			ItemType type = it.getItemType();
+			if( type.isAtomic() ){
+				if( it instanceof XSBoolean )
+					return new XdmAtomicValue(  ((XSBoolean)it).asPrimitiveBoolean() );
+				else
+				if( it instanceof XSDate )
+					return new XdmAtomicValue( it.toString()  , net.sf.saxon.s9api.ItemType.DATE );
+				else
+				if( it instanceof XSDecimal )
+					return new XdmAtomicValue(  ((XSDecimal)it).asBigDecimal() );
+				else
+				if( it instanceof XSDouble )
+					return new XdmAtomicValue(  ((XSDouble)it).asPrimitiveDouble() );
+
+				else
+				if( it instanceof XSDuration )
+					return new XdmAtomicValue(   it.toString()  , net.sf.saxon.s9api.ItemType.DURATION );
+				else
+				if( it instanceof XSFloat )
+					return new XdmAtomicValue(   ((XSFloat)it).asPrimitiveFloat() );
+				else
+				if( it instanceof XSGDay )
+					return new XdmAtomicValue(   it.toString()  , net.sf.saxon.s9api.ItemType.G_DAY );
+
+				else
+				if( it instanceof XSGMonth )
+					return new XdmAtomicValue(   it.toString()  , net.sf.saxon.s9api.ItemType.G_MONTH );
+
+				else
+				if( it instanceof XSGYearMonth )
+					return new XdmAtomicValue(   it.toString()  , net.sf.saxon.s9api.ItemType.G_YEAR_MONTH );
+		
+				else
+				if( it instanceof XSHexBinary)
+					return new XdmAtomicValue(   it.toString()  , net.sf.saxon.s9api.ItemType.HEX_BINARY);
+		
+
+				else
+				if( it instanceof XSInteger)
+					return new XdmAtomicValue(   it.toString()  , net.sf.saxon.s9api.ItemType.INTEGER );
+				else
+				if( it instanceof XSQName )
+					return new XdmAtomicValue(   it.toString()  , net.sf.saxon.s9api.ItemType.QNAME );
+				
+				else
+				if( it instanceof XSString )
+					return new XdmAtomicValue(   ((XSString) it).toString() );
+				else
+				if( it instanceof XSUntypedAtomic )
+					return new XdmAtomicValue(   it.toString()  , net.sf.saxon.s9api.ItemType.UNTYPED_ATOMIC );
+		
+				else
+					return new XdmAtomicValue( it.toString() );
+
+			}
+			else
+			if( type.isNode() ){
+			 
+				if( it instanceof XdmAttribute )
+					return new XdmAtomicValue( it.toString() );
+				else
+				if( it instanceof XdmAttribute )
+					return new XdmAtomicValue( it.toString() );
+				else
+			
+				return 	Shell.getProcessor().newDocumentBuilder().build( new StreamSource( it.asReader()) );
+					
+				
+				
+				
+			}
+			else
+				return new XdmAtomicValue( it.toString() );
+
+			
+			
+			
 		}
 
 }

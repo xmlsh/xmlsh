@@ -1,12 +1,11 @@
 <module 
-	module_version="11"
+	module_version="12"
 	name="marklogic"
 	package="org.xmlsh.marklogic"
-	require="1.2.1"
+	require="1.2.3"
 >
 <classpath>
-  <file url="marklogic_ext.jar"/>
-  <file url="marklogic-xcc-6.0.1.jar"/>
+  <directory url="."/>
 </classpath>
 </module>
 
