@@ -104,7 +104,9 @@
    <command name="jsonread" url="http://www.xmlsh.org/CommandJsonread">
 	   <synopsis>Read JSON into a variable</synopsis>
    </command>
-   
+      <command name="jsonpath" url="http://www.xmlsh.org/CommandJsonpath">
+	   <synopsis>Evaluate a jsonpath expression</synopsis>
+   </command>
    <command name="log" url="http://www.xmlsh.org/CommandLog">
 		<synopsis>Writes to the log4j log</synopsis>   
    </command>
