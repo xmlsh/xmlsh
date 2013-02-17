@@ -7,9 +7,11 @@
 package org.xmlsh.core;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.net.URL;
 import java.util.HashMap;
 
@@ -247,20 +249,11 @@ public class CommandFactory
 		
 	}
 	
-	public ICommand getScript(Shell shell, String name , InputPort inputPort , boolean bSourceMode , SourceLocation loc ) throws CoreException {
-		if( inputPort == null )
+	public ICommand getScript(Shell shell, String name , InputStream is , boolean bSourceMode , SourceLocation loc ) throws CoreException {
+		if( is == null )
 			return null;
-		if( inputPort.isFile() ){
-			try {
-		       return new ScriptCommand( inputPort.getFile() , bSourceMode , loc );
-			
-			} catch (FileNotFoundException e) {
-				shell.printErr("File not found: " + inputPort.getFile().getPath() , e);
-	           	return null ;
-			}
-		} else
-			
-			return new ScriptCommand(  name , inputPort.asInputStream(shell.getSerializeOpts()), bSourceMode , null );
+	
+		return new ScriptCommand(  name , is , bSourceMode , null );
 		
 	}
 	
@@ -268,6 +261,11 @@ public class CommandFactory
 	public ICommand		getScript( Shell shell , String name, boolean bSourceMode , SourceLocation loc ) throws IOException, CoreException
 	{
 		File scriptFile = null;
+		
+		// If name has a scheme try that first
+		URI uri =  Util.tryURI(name);
+		if( uri != null )
+			return getScript( shell , name , uri.toURL().openStream() , bSourceMode , loc );
 		
 		// If ends with .xsh try it
 		if( name.endsWith(".xsh") || bSourceMode )
@@ -419,7 +417,7 @@ public class CommandFactory
 	}
 
 	public ICommand getScript(Shell shell, File script, boolean bSourceMode, SourceLocation loc) throws CoreException, IOException {
-		return getScript( shell , script.getAbsolutePath() , new FileInputPort(script) , bSourceMode , loc );
+		return getScript( shell , script.getAbsolutePath() , new FileInputStream(script) , bSourceMode , loc );
 	}
 
 

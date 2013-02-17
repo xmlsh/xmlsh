@@ -692,6 +692,8 @@ public class Util
 	public static URI tryURI( String s )
 	{
 		// First check for a-z{2}+
+		
+		
 
 		URI uri = null;
         Matcher m = mURIPattern.matcher(s);

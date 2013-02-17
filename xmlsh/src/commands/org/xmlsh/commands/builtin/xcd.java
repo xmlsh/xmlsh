@@ -37,7 +37,7 @@ public class xcd extends BuiltinCommand {
 			sdir = args.get(0).toString();
 		
 		File newDir = mShell.getFile( sdir);
-		if( newDir.exists() && newDir.isDirectory() && newDir.canRead() ){
+		if( newDir != null && newDir.exists() && newDir.isDirectory() && newDir.canRead() ){
 			mShell.setCurdir(newDir);
 			return 0;
 		}

@@ -24,7 +24,7 @@ public class source extends BuiltinCommand {
 				throw new UnexpectedException("source expects 1 argument");
 			
 			XValue port = args.get(0);
-			ICommand icmd = CommandFactory.getInstance().getScript(mShell, port.toString(), mShell.getEnv().getInput(port),true,getLocation());
+			ICommand icmd = CommandFactory.getInstance().getScript(mShell, port.toString() ,true,getLocation());
 			if( icmd == null){
 				SourceLocation loc = getLocation();
 				if( loc != null )
