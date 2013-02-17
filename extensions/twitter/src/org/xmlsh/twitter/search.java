@@ -35,10 +35,11 @@ public class search extends TwitterCommand {
 	@Override
 	public int run(List<XValue> args) throws Exception {
 		
-		Options opts = new Options(sCOMMON_OPTS + ",q=query:,geo=geocode:,lang:,locale:,page:,t=result_type:,rpp:,until:,since_id:,max_id:,include_entities:",SerializeOpts.getOptionDefs());
+		Options opts = new Options(sCOMMON_OPTS + ",q=query:,geo=geocode:,lang:,locale:,page:,t=result_type:,rpp:,until:,since_id:,max_id:,include_entities:,sanitize",SerializeOpts.getOptionDefs());
 		opts.parse(args);
 		mSerializeOpts = this.getSerializeOpts(opts);
-		
+		final boolean bSanitize = opts.hasOpt("sanitize");
+
 		
 		args = opts.getRemainingArgs();
 		
@@ -90,7 +91,7 @@ public class search extends TwitterCommand {
 			
 
 			OutputPort out = this.getStdout();
-			mWriter = new TwitterWriter( out.asXMLStreamWriter( mSerializeOpts  ));
+			mWriter = new TwitterWriter( out.asXMLStreamWriter( mSerializeOpts  ),bSanitize);
 			
 			mWriter.startDocument();
 			mWriter.startElement("twitter");

@@ -45,11 +45,11 @@ public class stream extends TwitterCommand {
 	@Override
 	public int run(List<XValue> args) throws Exception {
 		
-		Options opts = new Options(sCOMMON_OPTS + ",p=port:,track:,sample,json",SerializeOpts.getOptionDefs());
+		Options opts = new Options(sCOMMON_OPTS + ",p=port:,track:,sample,json,sanitize",SerializeOpts.getOptionDefs());
 		opts.parse(args);
 		mSerializeOpts = this.getSerializeOpts(opts);
 		final boolean bJson = opts.hasOpt("json");
-		
+		final boolean bSanitize = opts.hasOpt("sanitize");
 		
 		args = opts.getRemainingArgs();
 		
@@ -72,7 +72,7 @@ public class stream extends TwitterCommand {
 	            		
 	            		
 	            	} else {
-		        	    TwitterWriter mWriter = new  TwitterWriter( port.asXMLStreamWriter(mSerializeOpts));
+		        	    TwitterWriter mWriter = new  TwitterWriter( port.asXMLStreamWriter(mSerializeOpts),bSanitize);
 		            	mWriter.startDocument();
 		            	mWriter.startElement(TwitterWriter.kTWITTER_NS,"twitter");
 		    			mWriter.writeDefaultNamespace();

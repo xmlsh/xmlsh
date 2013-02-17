@@ -16,6 +16,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Map.Entry;
+import java.util.Random;
 import java.util.Set;
 import java.util.TimeZone;
 
@@ -46,20 +47,22 @@ public class TwitterWriter {
 	
 	public static final String kTWITTER_NS = "http://www.xmlsh.org/schemas/twitter";
 
+
 	
-	public XMLStreamWriter mWriter;
+	XMLStreamWriter mWriter;
+    boolean bSanitize;
+    long randomSeed;
 
-
-
-	public TwitterWriter(XMLStreamWriter writer) {
-		super();
+	public TwitterWriter(XMLStreamWriter writer, boolean sanitize) {
+		this.bSanitize = sanitize;
 		mWriter = writer;
+		if( bSanitize ){
+			Random r = new Random(12345);
+			randomSeed = r.nextLong();
+		}
 	}
 
 	public final static String sCOMMON_OPTS = "c=connect:,u=user:,p=password:";
-	public TwitterWriter() {
-		super();
-	}
 
 	
 	
@@ -135,17 +138,17 @@ public class TwitterWriter {
 
 		// write("annotations",t.getAnnotations());
 		write("created-at",t.getCreatedAt());
-		write("from-user",t.getFromUserId(),t.getFromUser());
+		write("from-user",sanitizeID(t.getFromUserId()),sanitizeUser(t.getFromUser()));
 		write("geo-location",t.getGeoLocation());
 		write("hash-tags",t.getHashtagEntities());
 		write("iso-language-code",t.getIsoLanguageCode());
 		write("location",t.getLocation());
 		write("media",t.getMediaEntities());
 		write("place",t.getPlace());
-		write("profile-image-url",t.getProfileImageUrl());
+		write("profile-image-url",sanitizeUser(t.getProfileImageUrl()));
 		write("source",t.getSource());
 		write("text",t.getText());
-		write("to-user",t.getToUserId(),t.getToUser());
+		write("to-user",sanitizeID(t.getToUserId()),sanitizeUser(t.getToUser()));
 		write("url-entities",t.getURLEntities());
 		write("user-mention-entities",t.getUserMentionEntities());
 		
@@ -155,7 +158,30 @@ public class TwitterWriter {
 		
 	}
 
+    
+	
+    // sanitize an ID value.  Keep it unique but not identifying.
+	private long sanitizeID(long id) {
+		// TODO Auto-generated method stub
+		return id ^  randomSeed ;
+	}
 
+	static String az = "abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+	
+
+	private String sanitizeUser(String user) {
+		StringBuffer sb = new StringBuffer(user.length());
+		int i = 0;
+	
+		int azl = az.length();
+		for( char c : user.toCharArray() ){
+			int pos = (int) ((c ^ (randomSeed >> i%16)) % azl );
+			sb.append( (char) az.charAt(pos));
+			
+		}
+		return sb.toString();
+		
+	}
 
 
 	private void write(String localName, UserMentionEntity[] userMentionEntities) throws XMLStreamException {
@@ -171,8 +197,8 @@ public class TwitterWriter {
 
 	private void write(String localName, UserMentionEntity e) throws XMLStreamException {
 		startElement(localName);
-		attribute("id",e.getId());
-		attribute( "screen-name" , e.getScreenName());
+		attribute("id",sanitizeID(e.getId()));
+		attribute( "screen-name" , sanitizeUser(e.getScreenName()));
 		attribute("start", e.getStart());
 		attribute("end", e.getEnd());
 		endElement();
@@ -189,11 +215,11 @@ public class TwitterWriter {
 		attribute("favorites-count" ,user.getFavouritesCount());
 		user.getFollowersCount();
 		user.getFriendsCount();
-		attribute("id" , user.getId());
+		attribute("id" , sanitizeID(user.getId()));
 		attribute("lang" , user.getLang());
 		user.getListedCount();
 
-		attribute("name",user.getName());
+		attribute("name",sanitizeUser(user.getName()));
 		user.getProfileBackgroundColor();
 		user.getProfileBackgroundImageUrl();
 		user.getProfileBackgroundImageUrlHttps();
@@ -203,7 +229,7 @@ public class TwitterWriter {
 		user.getProfileSidebarBorderColor();
 		user.getProfileTextColor();
 		user.getRateLimitStatus();
-		attribute("screen-name",user.getScreenName());
+		attribute("screen-name",sanitizeUser(user.getScreenName()));
 		
 		user.getStatusesCount();
 		user.getTimeZone();
