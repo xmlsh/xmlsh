@@ -276,7 +276,39 @@ public class Shell {
 				, false 
 		);
 		
+		// RANDOM32
+		getEnv().setVar(
+				new XDynamicVariable("RANDOM32" , EnumSet.of(  XVarFlag.READONLY , XVarFlag.XEXPR )) { 
+					 Random mRand = new Random();
+					public XValue getValue() 
+					{
+						long v = mRand.nextInt();
+						v &= 0xFFFFFFFFL;
+						return new XValue( v   );
+					}
+					
+					
+				
+				}
+				
+				, false 
+		);
 		
+		// RANDOM
+		getEnv().setVar(
+				new XDynamicVariable("RANDOM64" , EnumSet.of(  XVarFlag.READONLY , XVarFlag.XEXPR )) { 
+					 Random mRand = new Random();
+					public XValue getValue() 
+					{
+						return new XValue(  mRand.nextLong() & 0x7FFFFFFFFFFFFFFFL  );
+					}
+					
+					
+				
+				}
+				
+				, false 
+		);
 		
 		
 		getEnv().setVar("TMPDIR" , Util.toJavaPath(System.getProperty("java.io.tmpdir")), false );
