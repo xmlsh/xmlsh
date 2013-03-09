@@ -116,7 +116,7 @@ public class xobsufcate extends XCommand {
 
 //
 //
-// Copyright (C) 2008-2012  David A. Lee.
+// Copyright (C) 2008-2013    David A. Lee.
 //
 // The contents of this file are subject to the "Simplified BSD License" (the
 // "License");

@@ -50,7 +50,7 @@ public class mkdir extends XCommand {
 
 //
 //
-//Copyright (C) 2008-2012  David A. Lee.
+//Copyright (C) 2008-2013    David A. Lee.
 //
 //The contents of this file are subject to the "Simplified BSD License" (the "License");
 //you may not use this file except in compliance with the License. You may obtain a copy of the
