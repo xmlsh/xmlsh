@@ -54,20 +54,34 @@ public abstract class AWSASCommand extends AWSCommand {
 	}
 
 
-	protected AmazonAutoScaling getASClient( Options opts ) throws UnexpectedException {
-		return new AmazonAutoScalingClient(
+	protected void getASClient( Options opts ) throws UnexpectedException, IllegalArgumentException, InvalidArgumentException {
+		mAmazon = new AmazonAutoScalingClient(
 				new AWSPropertyCredentials( mShell , opts )
 				);
+
+		setEndpoint(opts);		
 		
 	}
+	
 
+
+	@Override
+    public void setEndpoint( String endpoint )
+    {
+    	mAmazon.setEndpoint( endpoint );
+    }
+	
+	
+	
+
+	 
 
 
 }
 
 //
 //
-// Copyright (C) 2008-2012  David A. Lee.
+// Copyright (C) 2008-2013    David A. Lee.
 //
 // The contents of this file are subject to the "Simplified BSD License" (the
 // "License");

@@ -52,7 +52,7 @@ public abstract class AWSS3Command extends AWSCommand {
 
 	
 	
-	protected AmazonS3 getS3Client(Options opts) throws UnsupportedEncodingException, IOException, CoreException {
+	protected void getS3Client(Options opts) throws UnsupportedEncodingException, IOException, CoreException {
 		
 		if( opts.hasOpt("crypt")){
 			
@@ -66,7 +66,7 @@ public abstract class AWSS3Command extends AWSCommand {
 			
 			KeyPair keyPair = (KeyPair) readPEM(sKeypair);
 			
-			return new AmazonS3EncryptionClient(
+			mAmazon =  new AmazonS3EncryptionClient(
 					new AWSPropertyCredentials( mShell, opts  ) ,
 					new EncryptionMaterials( keyPair )
 			
@@ -74,7 +74,7 @@ public abstract class AWSS3Command extends AWSCommand {
 			
 			
 		} else
-			return new AmazonS3Client(
+			mAmazon =  new AmazonS3Client(
 					new AWSPropertyCredentials( mShell, opts  ) 
 			
 			);
@@ -147,11 +147,18 @@ public abstract class AWSS3Command extends AWSCommand {
 	}
 	
 
+	@Override
+    public void setEndpoint( String endpoint )
+    {
+    	mAmazon.setEndpoint( endpoint );
+    }
+	
+
 }
 
 //
 //
-// Copyright (C) 2008-2012  David A. Lee.
+// Copyright (C) 2008-2013    David A. Lee.
 //
 // The contents of this file are subject to the "Simplified BSD License" (the
 // "License");

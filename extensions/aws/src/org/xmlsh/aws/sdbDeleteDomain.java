@@ -43,7 +43,7 @@ public class sdbDeleteDomain	 extends  AWSSDBCommand {
 		
 		
 		try {
-			mAmazon = getSDBClient(opts);
+			 getSDBClient(opts);
 		} catch (UnexpectedException e) {
 			usage( e.getLocalizedMessage() );
 			return 1;

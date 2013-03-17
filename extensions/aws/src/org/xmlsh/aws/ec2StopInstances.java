@@ -49,7 +49,7 @@ public class ec2StopInstances extends AWSEC2Command {
 
 		mSerializeOpts = this.getSerializeOpts(opts);
 		try {
-			mAmazon = getEC2Client(opts);
+			 getEC2Client(opts);
 		} catch (UnexpectedException e) {
 			usage( e.getLocalizedMessage() );
 			return 1;

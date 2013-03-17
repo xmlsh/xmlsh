@@ -24,14 +24,20 @@ public abstract class AWSMonCommand extends AWSCommand {
 		super();
 	}
 
-	protected AmazonCloudWatch getMonClient(Options opts) throws UnexpectedException {
+	protected void getMonClient(Options opts) throws UnexpectedException {
 		
 			
-		return new AmazonCloudWatchClient(
+		mAmazon =  new AmazonCloudWatchClient(
 				new AWSPropertyCredentials( mShell, opts  ) 
 		
 		);
 	}
+
+	@Override
+    public void setEndpoint( String endpoint )
+    {
+    	mAmazon.setEndpoint( endpoint );
+    }
 	
 	
 
@@ -39,7 +45,7 @@ public abstract class AWSMonCommand extends AWSCommand {
 
 //
 //
-// Copyright (C) 2008-2012  David A. Lee.
+// Copyright (C) 2008-2013    David A. Lee.
 //
 // The contents of this file are subject to the "Simplified BSD License" (the
 // "License");

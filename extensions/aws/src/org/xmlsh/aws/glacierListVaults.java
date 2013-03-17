@@ -48,7 +48,7 @@ public class glacierListVaults	 extends  AWSGlacierCommand {
 		
 		
 		try {
-			mAmazon = getGlacierClient(opts);
+			 getGlacierClient(opts);
 		} catch (UnexpectedException e) {
 			usage( e.getLocalizedMessage() );
 			return 1;

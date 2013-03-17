@@ -14,6 +14,7 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
+import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XCommand;
@@ -31,7 +32,7 @@ public abstract class AWSCommand extends XCommand {
 	protected XMLStreamWriter mWriter;
 	protected SerializeOpts mSerializeOpts;
 	
-	protected static final String sCOMMON_OPTS = "client:,config:accessKey:,secretKey:" ;
+	protected static final String sCOMMON_OPTS = "region:,endpoint:,client:,config:,accessKey:,secretKey:" ;
 	
 	
 	static {
@@ -169,11 +170,24 @@ public abstract class AWSCommand extends XCommand {
 		
 	}
 
+
+	protected void setEndpoint(Options opts) throws InvalidArgumentException {
+		
+		if( opts.hasOpt("endpoint") )
+			setEndpoint(opts.getOptStringRequired("endpoint"));
+		
+		
+	}
+
+	
+	public abstract void setEndpoint(String endpoint);
+	
+
 }
 
 //
 //
-// Copyright (C) 2008-2012  David A. Lee.
+// Copyright (C) 2008-2013    David A. Lee.
 //
 // The contents of this file are subject to the "Simplified BSD License" (the
 // "License");

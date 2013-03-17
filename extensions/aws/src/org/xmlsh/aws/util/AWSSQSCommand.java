@@ -22,10 +22,10 @@ public abstract class AWSSQSCommand extends AWSCommand {
 		super();
 	}
 
-	protected AmazonSQS getSQSClient(Options opts) throws UnexpectedException {
+	protected void getSQSClient(Options opts) throws UnexpectedException {
 		
 			
-		return new AmazonSQSClient(
+		mAmazon =  new AmazonSQSClient(
 				new AWSPropertyCredentials( mShell, opts  ) 
 		
 		);
@@ -33,11 +33,18 @@ public abstract class AWSSQSCommand extends AWSCommand {
 	
 	
 
+	@Override
+    public void setEndpoint( String endpoint )
+    {
+    	mAmazon.setEndpoint( endpoint );
+    }
+	
+
 }
 
 //
 //
-// Copyright (C) 2008-2012  David A. Lee.
+// Copyright (C) 2008-2013    David A. Lee.
 //
 // The contents of this file are subject to the "Simplified BSD License" (the
 // "License");

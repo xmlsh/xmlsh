@@ -34,7 +34,7 @@ public class sqsReceiveMessages extends AWSSQSCommand {
 	public int run(List<XValue> args) throws Exception {
 
 		
-		Options opts = getOptions("f=file:,m=max:,t=timeout:");
+		Options opts = getOptions("f=file:,m=max:,t=timeout:,w=wait:");
 		opts.parse(args);
 
 		args = opts.getRemainingArgs();
@@ -54,6 +54,7 @@ public class sqsReceiveMessages extends AWSSQSCommand {
 		
 		int max = opts.getOptInt("m", 1);
 		int visibilityTimeout = opts.getOptInt("timeout", 0);
+		int wait =  opts.getOptInt("wait", 0);
 		
 		
 		// Get message from file 
@@ -73,7 +74,7 @@ public class sqsReceiveMessages extends AWSSQSCommand {
 			
 		
 		try {
-			mAmazon = getSQSClient(opts);
+			 getSQSClient(opts);
 		} catch (UnexpectedException e) {
 			usage( e.getLocalizedMessage() );
 			return 1;
@@ -83,7 +84,7 @@ public class sqsReceiveMessages extends AWSSQSCommand {
 		int ret;
 		
 		
-		ret = receive(url ,  max , visibilityTimeout,   out );
+		ret = receive(url ,  max , visibilityTimeout,  wait , out );
 		
 		
 		return ret;
@@ -93,7 +94,7 @@ public class sqsReceiveMessages extends AWSSQSCommand {
 
 
 
-	private int receive(String url, int max ,  int visibilityTimeout , OutputPort out ) throws IOException, XMLStreamException, SaxonApiException, CoreException  {
+	private int receive(String url, int max ,  int visibilityTimeout , int wait , OutputPort out ) throws IOException, XMLStreamException, SaxonApiException, CoreException  {
 		
 
 		List<String> attributeNames = new ArrayList<String>(1);
@@ -103,6 +104,7 @@ public class sqsReceiveMessages extends AWSSQSCommand {
 		request.setQueueUrl(url);
 		request.setAttributeNames(attributeNames);
 		request.setMaxNumberOfMessages(max);
+        request.setWaitTimeSeconds(wait);
 		if( visibilityTimeout != 0 )
 			request.setVisibilityTimeout(visibilityTimeout);
 		

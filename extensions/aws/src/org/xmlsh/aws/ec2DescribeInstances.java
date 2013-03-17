@@ -53,7 +53,7 @@ public class ec2DescribeInstances extends AWSEC2Command {
 		
 		
 		try {
-			mAmazon = getEC2Client(opts);
+			 getEC2Client(opts);
 		} catch (UnexpectedException e) {
 			usage( e.getLocalizedMessage() );
 			return 1;

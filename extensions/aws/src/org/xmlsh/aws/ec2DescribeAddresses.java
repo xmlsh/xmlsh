@@ -43,7 +43,7 @@ public class ec2DescribeAddresses extends AWSEC2Command {
 		
 			
 		try {
-			mAmazon = getEC2Client(opts);
+			 getEC2Client(opts);
 		} catch (UnexpectedException e) {
 			usage( e.getLocalizedMessage() );
 			return 1;

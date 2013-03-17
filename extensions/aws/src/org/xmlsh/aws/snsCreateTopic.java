@@ -53,7 +53,7 @@ public class snsCreateTopic extends AWSSNSCommand {
 		
 		
 		try {
-			mAmazon = getSNSClient(opts);
+			 getSNSClient(opts);
 		} catch (UnexpectedException e) {
 			usage( e.getLocalizedMessage() );
 			return 1;

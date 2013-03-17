@@ -34,10 +34,10 @@ public abstract class AWSELBCommand extends AWSCommand {
 		super();
 	}
 
-	protected AmazonElasticLoadBalancingClient getELBClient(Options opts) throws UnexpectedException {
+	protected void getELBClient(Options opts) throws UnexpectedException {
 		
 			
-		return new AmazonElasticLoadBalancingClient(
+		mAmazon =  new AmazonElasticLoadBalancingClient(
 				new AWSPropertyCredentials( mShell, opts  ) 
 		
 		);
@@ -51,14 +51,19 @@ public abstract class AWSELBCommand extends AWSCommand {
 				
 	}
 
-
+	@Override
+    public void setEndpoint( String endpoint )
+    {
+    	mAmazon.setEndpoint( endpoint );
+    }
+	
 
 
 }
 
 //
 //
-// Copyright (C) 2008-2012  David A. Lee.
+// Copyright (C) 2008-2013    David A. Lee.
 //
 // The contents of this file are subject to the "Simplified BSD License" (the
 // "License");

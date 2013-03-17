@@ -19,6 +19,7 @@ import com.amazonaws.services.elasticloadbalancing.model.InstanceState;
 import com.amazonaws.services.simpledb.model.CreateDomainRequest;
 import com.amazonaws.services.simpledb.model.PutAttributesRequest;
 import com.amazonaws.services.simpledb.model.ReplaceableAttribute;
+import com.amazonaws.services.simpledb.model.UpdateCondition;
 
 
 public class sdbPutAttributes	 extends  AWSSDBCommand {
@@ -32,7 +33,7 @@ public class sdbPutAttributes	 extends  AWSSDBCommand {
 	@Override
 	public int run(List<XValue> args) throws Exception {
 
-		Options opts = getOptions();
+		Options opts = getOptions("update-name:,exists:");
 		opts.parse(args);
 
 		args = opts.getRemainingArgs();
@@ -41,13 +42,17 @@ public class sdbPutAttributes	 extends  AWSSDBCommand {
 		
 		mSerializeOpts = this.getSerializeOpts(opts);
 		
+		String updateName = opts.getOptString("update-name", null);
+		String updateExists = opts.getOptString("exists",null);
+		
+		
 		
 		
 		
 		
 		
 		try {
-			mAmazon = getSDBClient(opts);
+			 getSDBClient(opts);
 		} catch (UnexpectedException e) {
 			usage( e.getLocalizedMessage() );
 			return 1;
@@ -63,7 +68,7 @@ public class sdbPutAttributes	 extends  AWSSDBCommand {
 		
 
 		int ret = -1;
-		ret = put(domain,item,args);
+		ret = put(domain,item,args,updateName,updateExists);
 
 		
 		
@@ -73,13 +78,15 @@ public class sdbPutAttributes	 extends  AWSSDBCommand {
 	}
 
 
-	private int put(String domain, String item, List<XValue > args) throws IOException, XMLStreamException, SaxonApiException, CoreException 
+	private int put(String domain, String item, List<XValue > args, String updateName, String updateExists) throws IOException, XMLStreamException, SaxonApiException, CoreException 
 	{
 
 		OutputPort stdout = this.getStdout();
 		mWriter = stdout.asXMLStreamWriter(mSerializeOpts);
 		
-		
+		UpdateCondition cond = null  ;
+		if( ! Util.isEmpty(updateName))
+			cond =  new UpdateCondition( updateName , updateExists , ! Util.isEmpty(updateExists)) ;
 		
 		
 		
@@ -88,7 +95,7 @@ public class sdbPutAttributes	 extends  AWSSDBCommand {
 		
 		List<ReplaceableAttribute> attributes = getAttributes( args );
          
-		PutAttributesRequest request = new PutAttributesRequest(domain,item,attributes);
+		PutAttributesRequest request = new PutAttributesRequest(domain,item,attributes,cond);
 		
 		
 		

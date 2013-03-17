@@ -58,7 +58,7 @@ public class monListMetrics	 extends  AWSMonCommand {
 		
 		
 		try {
-			mAmazon = getMonClient(opts);
+			 getMonClient(opts);
 		} catch (UnexpectedException e) {
 			usage( e.getLocalizedMessage() );
 			return 1;

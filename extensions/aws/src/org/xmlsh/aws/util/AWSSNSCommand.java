@@ -21,21 +21,28 @@ public abstract class AWSSNSCommand extends AWSCommand {
 		super();
 	}
 
-	protected AmazonSNS getSNSClient(Options opts) throws UnexpectedException {
+	protected void getSNSClient(Options opts) throws UnexpectedException {
 		
 			
-		return new AmazonSNSClient(
+		mAmazon =  new AmazonSNSClient(
 				new AWSPropertyCredentials( mShell, opts  ) 
 		
 		);
 	}
+
+	@Override
+    public void setEndpoint( String endpoint )
+    {
+    	mAmazon.setEndpoint( endpoint );
+    }
+	
 	
 
 }
 
 //
 //
-// Copyright (C) 2008-2012  David A. Lee.
+// Copyright (C) 2008-2013    David A. Lee.
 //
 // The contents of this file are subject to the "Simplified BSD License" (the
 // "License");

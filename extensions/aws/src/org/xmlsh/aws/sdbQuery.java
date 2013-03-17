@@ -35,12 +35,13 @@ public class sdbQuery	 extends  AWSSDBCommand {
 	@Override
 	public int run(List<XValue> args) throws Exception {
 
-		Options opts = getOptions();
+		Options opts = getOptions("c=consistant");
 		opts.parse(args);
 
 		args = opts.getRemainingArgs();
 		
 
+		boolean bConsistant = opts.hasOpt("consistant");
 		
 		mSerializeOpts = this.getSerializeOpts(opts);
 		
@@ -50,7 +51,7 @@ public class sdbQuery	 extends  AWSSDBCommand {
 		
 		
 		try {
-			mAmazon = getSDBClient(opts);
+			 getSDBClient(opts);
 		} catch (UnexpectedException e) {
 			usage( e.getLocalizedMessage() );
 			return 1;
@@ -65,7 +66,7 @@ public class sdbQuery	 extends  AWSSDBCommand {
 		
 
 		int ret = -1;
-		ret = query(select);
+		ret = query(bConsistant,select);
 
 		
 		
@@ -75,7 +76,7 @@ public class sdbQuery	 extends  AWSSDBCommand {
 	}
 
 
-	private int query(String select) throws IOException, XMLStreamException, SaxonApiException, CoreException 
+	private int query(boolean bConsistant, String select) throws IOException, XMLStreamException, SaxonApiException, CoreException 
 	{
 
 		OutputPort stdout = this.getStdout();
@@ -92,7 +93,7 @@ public class sdbQuery	 extends  AWSSDBCommand {
 
 		
 
-		SelectRequest selectRequest = new SelectRequest(select);
+		SelectRequest selectRequest = new SelectRequest(select,bConsistant);
 
 		String token = null ;
 		do {
@@ -125,6 +126,7 @@ public class sdbQuery	 extends  AWSSDBCommand {
 
 	private void writeItem(Item item) throws XMLStreamException {
 		startElement("item");
+		attribute("name" , item.getName());
 		for( Attribute attr :item.getAttributes()){
 			startElement("attribute");
 			attribute("name" , attr.getName());

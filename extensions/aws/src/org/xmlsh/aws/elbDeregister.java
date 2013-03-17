@@ -50,7 +50,7 @@ public class elbDeregister<x> extends AWSELBCommand {
 		String elb = args.remove(0).toString();
 		
 		try {
-			mAmazon = getELBClient(opts);
+			 getELBClient(opts);
 		} catch (UnexpectedException e) {
 			usage( e.getLocalizedMessage() );
 			return 1;

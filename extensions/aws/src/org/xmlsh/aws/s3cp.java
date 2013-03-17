@@ -34,7 +34,7 @@ public class s3cp extends AWSS3Command {
 		
 		
 		try {
-			mAmazon = getS3Client(opts);
+			 getS3Client(opts);
 		} catch (UnexpectedException e) {
 			usage( e.getLocalizedMessage() );
 			return 1;

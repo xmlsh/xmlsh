@@ -75,7 +75,7 @@ public class sqsSendMessage extends AWSSQSCommand {
 			
 		
 		try {
-			mAmazon = getSQSClient(opts);
+			 getSQSClient(opts);
 		} catch (UnexpectedException e) {
 			usage( e.getLocalizedMessage() );
 			return 1;

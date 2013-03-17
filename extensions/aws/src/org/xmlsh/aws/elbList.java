@@ -53,7 +53,7 @@ public class elbList	 extends  AWSELBCommand {
 		
 		
 		try {
-			mAmazon = getELBClient(opts);
+			 getELBClient(opts);
 		} catch (UnexpectedException e) {
 			usage( e.getLocalizedMessage() );
 			return 1;

@@ -47,7 +47,7 @@ public class s3GeneratePresignedUrl extends AWSS3Command {
 		mSerializeOpts = this.getSerializeOpts(opts);
 		
 		try {
-			mAmazon = getS3Client(opts);
+			 getS3Client(opts);
 		} catch (UnexpectedException e) {
 			usage( e.getLocalizedMessage() );
 			return 1;

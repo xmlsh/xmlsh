@@ -54,7 +54,7 @@ public class glacierInventoryVault	 extends  AWSGlacierCommand {
 		String vault = args.get(0).toString();
 		
 		try {
-			mAmazon = getGlacierClient(opts);
+			 getGlacierClient(opts);
 		} catch (UnexpectedException e) {
 			usage( e.getLocalizedMessage() );
 			return 1;

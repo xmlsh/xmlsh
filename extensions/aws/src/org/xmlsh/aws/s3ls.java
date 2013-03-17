@@ -56,7 +56,7 @@ public class s3ls extends AWSS3Command {
 		
 		
 		try {
-			mAmazon = getS3Client(opts);
+			 getS3Client(opts);
 		} catch (UnexpectedException e) {
 			usage( e.getLocalizedMessage() );
 			return 1;

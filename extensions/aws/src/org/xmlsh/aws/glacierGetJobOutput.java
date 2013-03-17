@@ -51,7 +51,7 @@ public class glacierGetJobOutput	 extends  AWSGlacierCommand {
 		String job = args.get(1).toString();
 		
 		try {
-			mAmazon = getGlacierClient(opts);
+			 getGlacierClient(opts);
 		} catch (UnexpectedException e) {
 			usage( e.getLocalizedMessage() );
 			return 1;

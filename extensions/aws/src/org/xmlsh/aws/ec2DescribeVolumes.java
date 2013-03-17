@@ -44,7 +44,7 @@ public class ec2DescribeVolumes extends AWSEC2Command {
 		
 			
 		try {
-			mAmazon = getEC2Client(opts);
+			 getEC2Client(opts);
 		} catch (UnexpectedException e) {
 			usage( e.getLocalizedMessage() );
 			return 1;
