@@ -18,6 +18,8 @@ import org.xmlsh.util.Util;
 import com.amazonaws.services.elasticloadbalancing.model.InstanceState;
 import com.amazonaws.services.simpledb.model.Attribute;
 import com.amazonaws.services.simpledb.model.CreateDomainRequest;
+import com.amazonaws.services.simpledb.model.GetAttributesRequest;
+import com.amazonaws.services.simpledb.model.GetAttributesResult;
 import com.amazonaws.services.simpledb.model.Item;
 import com.amazonaws.services.simpledb.model.PutAttributesRequest;
 import com.amazonaws.services.simpledb.model.ReplaceableAttribute;
@@ -25,7 +27,7 @@ import com.amazonaws.services.simpledb.model.SelectRequest;
 import com.amazonaws.services.simpledb.model.SelectResult;
 
 
-public class sdbQuery	 extends  AWSSDBCommand {
+public class sdbGetAttributes	 extends  AWSSDBCommand {
 
 
 	/**
@@ -58,15 +60,16 @@ public class sdbQuery	 extends  AWSSDBCommand {
 			
 		}
 		
-		if( args.size() !=1 ){
-			usage(getName()+ ":" + "select ...");
+		if( args.size() !=2 ){
+			usage(getName()+ " domain item");
 			
 		}
-		String select = args.remove(0).toString();
+		String domain = args.remove(0).toString();
+		String item = args.remove(0).toString();
 		
 
 		int ret = -1;
-		ret = query(bConsistant,select);
+		ret = getAttributes(domain,item,bConsistant);
 
 		
 		
@@ -76,7 +79,7 @@ public class sdbQuery	 extends  AWSSDBCommand {
 	}
 
 
-	private int query(boolean bConsistant, String select) throws IOException, XMLStreamException, SaxonApiException, CoreException 
+	private int getAttributes( String domainName, String itemName , boolean bConsistantRead ) throws IOException, XMLStreamException, SaxonApiException, CoreException 
 	{
 
 		OutputPort stdout = this.getStdout();
@@ -88,31 +91,22 @@ public class sdbQuery	 extends  AWSSDBCommand {
 		
 		startDocument();
 		startElement(getName());
+
+
+		GetAttributesRequest getAttributesRequest = 
+				new GetAttributesRequest( domainName, itemName ).withConsistentRead(bConsistantRead);
 		
 		
+		GetAttributesResult result = mAmazon.getAttributes(getAttributesRequest);
 
-		
-
-		SelectRequest selectRequest = new SelectRequest(select,bConsistant);
-
-		String token = null ;
-		do {
-
-			SelectResult result = mAmazon.select(selectRequest).withNextToken(token);
-			for( Item item :result.getItems())
-			   writeItem(item);
-			token = result.getNextToken();
+		startElement("item");
+		attribute("name",itemName);
+		writeAttributes(result.getAttributes());
+		endElement();
 			
-		} while( token != null );
-		
+			
 		endElement();
 		endDocument();
-		
-		
-				
-		
-		
-		
 		
 		
 		closeWriter();
@@ -121,34 +115,6 @@ public class sdbQuery	 extends  AWSSDBCommand {
 		return 0;
 		
 		
-	}
-
-
-	private void writeItem(Item item) throws XMLStreamException {
-		startElement("item");
-		attribute("name" , item.getName());
-		writeAttributes( item.getAttributes());
-		endElement();
-		
-	}
-
-
-	private List<ReplaceableAttribute> getAttributes(List<XValue> args) 
-	{
-		List<ReplaceableAttribute> attrs = new ArrayList<ReplaceableAttribute>();
-		while( !args.isEmpty()){
-
-			String name = args.remove(0).toString();
-			String value = args.isEmpty() ? "" : args.remove(0).toString();
- 
-			
-			attrs.add( 
-					new ReplaceableAttribute().withName(name).withValue(value));
-		
-
-		
-		}
-		return attrs ;
 	}
 
 

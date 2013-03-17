@@ -6,11 +6,16 @@
 
 package org.xmlsh.aws.util;
 
+import java.util.List;
+
+import javax.xml.stream.XMLStreamException;
+
 import org.xmlsh.core.Options;
 import org.xmlsh.core.UnexpectedException;
 
 import com.amazonaws.services.simpledb.AmazonSimpleDB;
 import com.amazonaws.services.simpledb.AmazonSimpleDBClient;
+import com.amazonaws.services.simpledb.model.Attribute;
 import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.AmazonSQSClient;
 
@@ -38,6 +43,21 @@ protected		AmazonSimpleDB mAmazon ;
     {
     	mAmazon.setEndpoint( endpoint );
     }
+
+	protected void writeAttribute(Attribute attr) throws XMLStreamException {
+		startElement("attribute");
+		attribute("name" , attr.getName());
+		characters( attr.getValue());
+		endElement();
+	}
+
+	protected void writeAttributes(List<Attribute> attributes) throws XMLStreamException {
+		for( Attribute a : attributes ){
+			writeAttribute(a);
+			
+		}
+		
+	}
 	
 
 
