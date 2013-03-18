@@ -1847,12 +1847,6 @@ public class ShellParser implements ShellParserConstants {
     finally { jj_save(24, xla); }
   }
 
-  private boolean jj_3_6() {
-    if (jj_3R_20()) return true;
-    if (jj_3R_21()) return true;
-    return false;
-  }
-
   private boolean jj_3R_32() {
     Token xsp;
     xsp = jj_scanpos;
@@ -3054,6 +3048,12 @@ public class ShellParser implements ShellParserConstants {
     jj_scanpos = xsp;
     if (jj_3R_45()) return true;
     }
+    return false;
+  }
+
+  private boolean jj_3_6() {
+    if (jj_3R_20()) return true;
+    if (jj_3R_21()) return true;
     return false;
   }
 

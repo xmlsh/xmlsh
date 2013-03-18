@@ -79,8 +79,18 @@ public class ShellParserTokenManager implements ShellParserConstants
         }
       }
     }
+    catch( java.io.IOException e )
+    {
+      if( sb.toString().endsWith( "\u005cn" + here_end ) )
+      {
+          sb.setLength(sb.length() - here_end.length()   );
+      }
+   }
+
     catch (Exception e)
-    {}
+    {
+      System.err.println(e);
+    }
     return sb.toString();
   }
 
