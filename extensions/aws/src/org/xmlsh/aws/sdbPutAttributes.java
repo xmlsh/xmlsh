@@ -33,7 +33,7 @@ public class sdbPutAttributes	 extends  AWSSDBCommand {
 	@Override
 	public int run(List<XValue> args) throws Exception {
 
-		Options opts = getOptions("update-name:,exists:");
+		Options opts = getOptions("update:,exists:");
 		opts.parse(args);
 
 		args = opts.getRemainingArgs();
@@ -42,7 +42,7 @@ public class sdbPutAttributes	 extends  AWSSDBCommand {
 		
 		mSerializeOpts = this.getSerializeOpts(opts);
 		
-		String updateName = opts.getOptString("update-name", null);
+		String updateName = opts.getOptString("update", null);
 		String updateExists = opts.getOptString("exists",null);
 		
 		
