@@ -1,5 +1,5 @@
 <module 
-	module_version="12"
+	module_version="1.19"
 	name="marklogic"
 	package="org.xmlsh.marklogic"
 	require="1.2.3"
