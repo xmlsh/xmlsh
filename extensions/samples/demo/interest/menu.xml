@@ -1,6 +1,0 @@
-<menu>
-  <command title="Sequences - create numbers" command="seq_num.xsh" />
-  <command title="Sequences - mixed content" command="seq_elem.xsh" />
-  <command title="Complex XML Here documents" command="xml_here.xsh"/> 
-  <command title="XQuery math " command="xml_math.xsh"/> 
-</menu>

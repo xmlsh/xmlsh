@@ -1,1 +1,0 @@
-<xmlsh:test xmlns:xmlsh="http://www.xmlsh.org/test1" xmlns:xmlsh2="http://www.xmlsh.org/test2" xmlsh2:a1="value1">Some Characters<!--This is a comment--><inner>This is CData</inner></xmlsh:test>

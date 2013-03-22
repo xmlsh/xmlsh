@@ -1,8 +1,0 @@
-<menu>
-  <command title="if statement" command="unix_if.xsh" />
-  <command title="for statement"  command="unix_for.xsh"/>
-  <command title="while statement"  command="unix_while.xsh"/>
-  <command title="case statement"  command="unix_case.xsh"/>
-  <command title="String variables"  command="unix_string.xsh"/>
- 
-</menu>

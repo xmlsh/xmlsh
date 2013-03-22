@@ -1,8 +1,0 @@
-in script arg count 4
-in script arg count 3
-in script arg count 2
-in script arg count 1
-Next command should fail
-Success caught 1
-in script arg count 1
-Success

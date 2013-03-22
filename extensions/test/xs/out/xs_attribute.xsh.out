@@ -1,4 +1,0 @@
-attribute()
-bar
-<elem foo="bar"/>
-<elem xmlns:foo="http://uri" foo:bar="spam"/>

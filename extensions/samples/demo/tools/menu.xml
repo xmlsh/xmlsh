@@ -1,6 +1,0 @@
-<menu>
-  <command title="Simple XSLT" command="tool_xslt.xsh" />
-  <command title="Simple XQuery"  command="tool_xquery.xsh"/>
-  <command title="Simple XPath"  command="tool_xpath.xsh"/>
-  <command title="Complex Pipeline"  command="tool_pipe.xsh"/>
-</menu>

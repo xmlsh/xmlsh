@@ -1,9 +1,0 @@
-<a:list xmlns:a="http://www.xmlsh.org/a" xmlns:b="http://www.xmlsh.org/b" b:attr="battr">
-  <a:item b:attr="attrb"/>
-  <a:item2 a:attr="attra" b:attr2="attrb"/>
-  <b:item b:attr="battra" attr="attrb"/>
-  <a:item b:attr="battra" attr="attrb"/>
-  <a:item b:attr="attrb" attr="attra"/>
-  <a:notanitem a:attr="attra" b:attr="attrb"/>
-  <notanitem b:attr="attrb"/>
-</a:list>

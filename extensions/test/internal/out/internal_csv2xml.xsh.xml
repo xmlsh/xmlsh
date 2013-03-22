@@ -1,4 +1,0 @@
-<books>
-  <item TITLE="Pride and Prejudice" AUTHOR="Jane Austen" PUBLISHER="Modern Library" PUB-DATE="12/31/2002" LANGUAGE="English" PRICE="4.95" QUANTITY="187" ISBN="679601686" PAGES="352" DIMENSIONS="8.3 5.7 1.1" WEIGHT="6.1"/>
-  <item TITLE="Wuthering Heights" AUTHOR="Charlotte Bront" PUBLISHER="Penguin Classics" PUB-DATE="12/31/2002" LANGUAGE="English" PRICE="6.58" QUANTITY="113" ISBN="141439556" PAGES="430" DIMENSIONS="1.0 5.2 7.8" WEIGHT="11.2"/>
-</books>
