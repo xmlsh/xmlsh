@@ -7,31 +7,19 @@
 package org.xmlsh.twitter;
 
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.stream.XMLStreamException;
-
-
-import org.json.JSONObject;
-import org.json.JSONTokener;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.twitter.util.TwitterCommand;
 import org.xmlsh.twitter.util.TwitterWriter;
-import org.xmlsh.util.Util;
 import twitter4j.FilterQuery;
-import twitter4j.Query;
-import twitter4j.QueryResult;
+import twitter4j.StallWarning;
 import twitter4j.Status;
 import twitter4j.StatusDeletionNotice;
 import twitter4j.StatusListener;
-import twitter4j.Tweet;
-import twitter4j.Twitter;
-import twitter4j.TwitterException;
-import twitter4j.TwitterFactory;
 import twitter4j.TwitterStream;
 import twitter4j.TwitterStreamFactory;
 import twitter4j.json.DataObjectFactory;
@@ -105,6 +93,13 @@ public class stream extends TwitterCommand {
 	        public void onException(Exception ex) {
 	           // ex.printStackTrace();
 	        }
+
+
+			@Override
+			public void onStallWarning(StallWarning arg0) {
+				// TODO Auto-generated method stub
+				
+			}
 
 
 

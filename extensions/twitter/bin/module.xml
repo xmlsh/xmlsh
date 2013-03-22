@@ -1,15 +1,11 @@
 <module 
-	module_version="1"
+	module_version="2"
 	name="twitter"
 	package="org.xmlsh.twitter"
 	require="1.2.0"
 >
 <classpath>
-  <file url="twitter_ext.jar"/>
-  <file url="twitter4j-async-2.2.5.jar"/>
-  <file url="twitter4j-core-2.2.5.jar"/>
-  <file url="twitter4j-media-support-2.2.5.jar"/>
-  <file url="twitter4j-stream-2.2.5.jar"/>
+   <directory url="."/>
   
 </classpath>
 </module>

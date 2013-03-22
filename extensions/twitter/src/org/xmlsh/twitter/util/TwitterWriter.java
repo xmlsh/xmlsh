@@ -8,13 +8,9 @@ package org.xmlsh.twitter.util;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Set;
@@ -23,22 +19,13 @@ import java.util.TimeZone;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.json.JSONString;
-import org.xmlsh.core.InvalidArgumentException;
-import org.xmlsh.core.Options;
-import org.xmlsh.core.XCommand;
 import org.xmlsh.util.Util;
-import twitter4j.Annotations;
 import twitter4j.GeoLocation;
 import twitter4j.HashtagEntity;
 import twitter4j.MediaEntity;
-import twitter4j.Status;
 import twitter4j.MediaEntity.Size;
 import twitter4j.Place;
-import twitter4j.Tweet;
+import twitter4j.Status;
 import twitter4j.URLEntity;
 import twitter4j.User;
 import twitter4j.UserMentionEntity;
@@ -132,23 +119,23 @@ public class TwitterWriter {
 	
 
 
-	public void write(Tweet t) throws XMLStreamException {
+	public void write(Status t) throws XMLStreamException {
 		startElement("tweet");
 		attribute("id",t.getId());
 
 		// write("annotations",t.getAnnotations());
 		write("created-at",t.getCreatedAt());
-		write("from-user",sanitizeID(t.getFromUserId()),sanitizeUser(t.getFromUser()));
+		write("from-user",sanitizeID(t.getUser().getId()),sanitizeUser(t.getUser().getName()));
 		write("geo-location",t.getGeoLocation());
 		write("hash-tags",t.getHashtagEntities());
-		write("iso-language-code",t.getIsoLanguageCode());
-		write("location",t.getLocation());
+		write("iso-language-code",t.getUser().getLang());
+		write("location", t.getUser().getLocation());
 		write("media",t.getMediaEntities());
 		write("place",t.getPlace());
-		write("profile-image-url",sanitizeUser(t.getProfileImageUrl()));
+		write("profile-image-url",sanitizeUser(t.getUser().getProfileImageURL()));
 		write("source",t.getSource());
 		write("text",t.getText());
-		write("to-user",sanitizeID(t.getToUserId()),sanitizeUser(t.getToUser()));
+		write("to-user",sanitizeID(t.getInReplyToUserId()),sanitizeUser(t.getInReplyToScreenName()));
 		write("url-entities",t.getURLEntities());
 		write("user-mention-entities",t.getUserMentionEntities());
 		
@@ -455,7 +442,7 @@ public class TwitterWriter {
 
 //
 //
-// Copyright (C) 2008-2012  David A. Lee.
+// Copyright (C) 2008-2013    David A. Lee.
 //
 // The contents of this file are subject to the "Simplified BSD License" (the
 // "License");

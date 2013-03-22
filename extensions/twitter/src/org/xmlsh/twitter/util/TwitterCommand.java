@@ -6,41 +6,7 @@
 
 package org.xmlsh.twitter.util;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.TimeZone;
-
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.json.JSONString;
-import org.xmlsh.core.InvalidArgumentException;
-import org.xmlsh.core.Options;
 import org.xmlsh.core.XCommand;
-import org.xmlsh.util.Util;
-import twitter4j.Annotations;
-import twitter4j.GeoLocation;
-import twitter4j.HashtagEntity;
-import twitter4j.MediaEntity;
-import twitter4j.Status;
-import twitter4j.MediaEntity.Size;
-import twitter4j.Place;
-import twitter4j.Tweet;
-import twitter4j.URLEntity;
-import twitter4j.User;
-import twitter4j.UserMentionEntity;
 
 public abstract class TwitterCommand extends XCommand {
 
@@ -60,7 +26,7 @@ public abstract class TwitterCommand extends XCommand {
 
 //
 //
-// Copyright (C) 2008-2012  David A. Lee.
+// Copyright (C) 2008-2013    David A. Lee.
 //
 // The contents of this file are subject to the "Simplified BSD License" (the
 // "License");

@@ -9,21 +9,9 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="/xmlsh/lib/saxon9he.jar" sourcepath="C:/java/saxonhe9-2-0-3/saxonhe9-2-0-3source.zip"/>
-	<classpathentry kind="lib" path="lib/twitter4j-async-2.2.5.jar" sourcepath="C:/java/twitter4j-2.2.5/twitter4j-async/src">
-		<attributes>
-			<attribute name="javadoc_location" value="file:/C:/java/twitter4j-2.2.5/twitter4j-async/javadoc/"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="lib/twitter4j-core-2.2.5.jar" sourcepath="C:/java/twitter4j-2.2.5/twitter4j-core/src">
-		<attributes>
-			<attribute name="javadoc_location" value="file:/C:/java/twitter4j-2.2.5/twitter4j-core/javadoc/"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="lib/twitter4j-media-support-2.2.5.jar"/>
-	<classpathentry kind="lib" path="lib/twitter4j-stream-2.2.5.jar" sourcepath="C:/java/twitter4j-2.2.5/twitter4j-stream/src/main/java">
-		<attributes>
-			<attribute name="javadoc_location" value="file:/C:/java/twitter4j-2.2.5/twitter4j-stream/javadoc/"/>
-		</attributes>
-	</classpathentry>
+	<classpathentry kind="lib" path="lib/twitter4j-async-3.0.3.jar"/>
+	<classpathentry kind="lib" path="lib/twitter4j-core-3.0.3.jar"/>
+	<classpathentry kind="lib" path="lib/twitter4j-media-support-3.0.3.jar"/>
+	<classpathentry kind="lib" path="lib/twitter4j-stream-3.0.3.jar"/>
 	<classpathentry kind="output" path="_out"/>
 </classpath>

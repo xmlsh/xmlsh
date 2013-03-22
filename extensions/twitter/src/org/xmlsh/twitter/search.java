@@ -8,9 +8,6 @@ package org.xmlsh.twitter;
 
 import java.util.List;
 
-
-import org.json.JSONObject;
-import org.json.JSONTokener;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.XValue;
@@ -19,9 +16,8 @@ import org.xmlsh.twitter.util.TwitterCommand;
 import org.xmlsh.twitter.util.TwitterWriter;
 import twitter4j.Query;
 import twitter4j.QueryResult;
-import twitter4j.Tweet;
+import twitter4j.Status;
 import twitter4j.Twitter;
-import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
 
 
@@ -35,7 +31,7 @@ public class search extends TwitterCommand {
 	@Override
 	public int run(List<XValue> args) throws Exception {
 		
-		Options opts = new Options(sCOMMON_OPTS + ",q=query:,geo=geocode:,lang:,locale:,page:,t=result_type:,rpp:,until:,since_id:,max_id:,include_entities:,sanitize",SerializeOpts.getOptionDefs());
+		Options opts = new Options(sCOMMON_OPTS + ",q=query:,geo=geocode:,lang:,locale:,t=result_type:,until:,since_id:,max_id:,include_entities:,sanitize",SerializeOpts.getOptionDefs());
 		opts.parse(args);
 		mSerializeOpts = this.getSerializeOpts(opts);
 		final boolean bSanitize = opts.hasOpt("sanitize");
@@ -62,16 +58,12 @@ public class search extends TwitterCommand {
 			if( opts.hasOpt("locale") )
 				query.setLocale(opts.getOptStringRequired("locale"));
 	
-			if( opts.hasOpt("page") )
-				query.setPage( opts.getOptValue("page").toInt());
+
 	
 			if( opts.hasOpt("result_type") )
 				query.setResultType(opts.getOptStringRequired("result_type"));
 	
-			if( opts.hasOpt("rpp") )
-				query.setRpp(opts.getOptValue("rpp").toInt());
-	
-			
+				
 			if( opts.hasOpt("until") )
 				query.setUntil(opts.getOptStringRequired("until"));
 	
@@ -85,7 +77,7 @@ public class search extends TwitterCommand {
 			
 			
             QueryResult result = twitter.search(query);
-            List<Tweet> tweets = result.getTweets();
+            List<Status> tweets = result.getTweets();
             
 			
 			
@@ -97,7 +89,7 @@ public class search extends TwitterCommand {
 			mWriter.startElement("twitter");
 			mWriter.writeDefaultNamespace();
 
-			for( Tweet t : tweets )
+			for( Status t : tweets )
 				mWriter.write( t );
 
 			
