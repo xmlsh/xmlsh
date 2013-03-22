@@ -1,7 +1,7 @@
 <module 
-	module_version="1"
+	module_version="0.7"
 	name="exist"
-	package="org.xmlsh.exist" require="1.2.1">
+	package="org.xmlsh.exist" require="1.2.3">
 <classpath>
   <file url="exist_ext.jar"/>
 </classpath>
