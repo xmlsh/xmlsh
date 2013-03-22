@@ -8,19 +8,29 @@ xmlsh requires the use of, and may be distributed with,
 the binary distributions of the following products.
 No source for these produces is included or was modified for the creation of xmlsh.
 
+* httpclient version 4.2.3
+Apache 2004 License - Used for the http related commands
+httpclient depends on commons-* libs also Apache license
+
+* json-path  0.8.2
+Apache 2004 License - used for Json related
+
 * log4j version 1.2.7
+Apache license
 License notices for log4j are included in notices/log4j
 
-* saxon B 9.1.0.6 "The Saxon XSLT and XQuery Processor from Saxonica Limited", 
+* saxon B 9.1.0.6 HE "The Saxon XSLT and XQuery Processor from Saxonica Limited", 
   from http://www.saxonica.com/
 License notices for saxon are included in notices/saxon
 
+
 * jline version 0.9.94 from http://jline.sourceforge.net/
 License notices for jline are included in notices/jline
+Optional: Used for command line editing
 
 * jing version 20090818 from http://www.thaiopensource.com/relaxng/jing.html
 License notices for jing are included in notices/jing
-Only used for the rngvalidate and xvalidate -rng commands
+Optional:  for the rngvalidate and xvalidate -rng commands
 
 
 * Woodstox core from
@@ -38,7 +48,11 @@ https://stax-utils.dev.java.net/
 
 * xom 1.2.6 from
 http://www.xom.nu/
-Used only for the xinclude command
+Optional: Used only for the xinclude command
+
+* xerces
+Apache license
+Used for all XML parsing
 
 
 xmlsh may be redistributed as long as these notices in their entirety are included,
