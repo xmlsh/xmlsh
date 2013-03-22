@@ -60,16 +60,22 @@ public class list extends JMXCommand {
 			startDocument();
 			
 			if( bDomains ){
-				startElement("domains");
+				
+				mWriter.writeStartElement("","domains",kJMX_NS);
 				mWriter.writeDefaultNamespace(kJMX_NS);
+				
+				
 				
 				String[] domains = mbean.getDomains();
 				writeDomains(domains);
 				
 			} else
 			{
-				startElement("names");
+				
+				
+				mWriter.writeStartElement("","names",kJMX_NS);
 				mWriter.writeDefaultNamespace(kJMX_NS);
+				
 				
 				Set<ObjectName> names = mbean.queryNames(null,null);
 				TreeSet<ObjectName> sortNames = new TreeSet<ObjectName>(names);

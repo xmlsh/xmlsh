@@ -1,8 +1,8 @@
 <module 
-	module_version="1"
+	module_version="0.2"
 	name="jmx"
 	package="org.xmlsh.jmx"
-	require="1.1.8"
+	require="1.2.3"
 >
 <classpath>
   <file url="jmx_ext.jar"/>

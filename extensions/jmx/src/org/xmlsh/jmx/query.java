@@ -60,7 +60,7 @@ public class query extends JMXCommand {
 			mWriter = out.asXMLStreamWriter( mSerializeOpts  );
 			
 			startDocument();
-			startElement("objects");
+			mWriter.writeStartElement("","objects",kJMX_NS);
 			mWriter.writeDefaultNamespace(kJMX_NS);
 			attribute("date" , formatXSDateTime(new Date()));
 	
