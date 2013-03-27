@@ -68,11 +68,11 @@ public class ec2CreateImage extends AWSEC2Command {
 		return ret;	
 	}
 
-	private int createImage( String ami_id, String name , Options opts ) throws IOException, XMLStreamException, SaxonApiException, CoreException 
+	private int createImage( String instance_id, String name , Options opts ) throws IOException, XMLStreamException, SaxonApiException, CoreException 
 	{
 
 		
-		CreateImageRequest request = new CreateImageRequest( ami_id , name );
+		CreateImageRequest request = new CreateImageRequest( instance_id , name );
 		if( opts.hasOpt("description"))
 		 request.setDescription(opts.getOptStringRequired("description"));
 		

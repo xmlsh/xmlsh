@@ -41,9 +41,6 @@ public class s3GeneratePresignedUrl extends AWSS3Command {
 
 		args = opts.getRemainingArgs();
 		
-		String bucket = opts.getOptString("b", null);
-		boolean bRecurse = opts.hasOpt("r");
-		
 		mSerializeOpts = this.getSerializeOpts(opts);
 		
 		try {

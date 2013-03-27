@@ -37,6 +37,7 @@ import com.amazonaws.services.ec2.model.InstanceBlockDeviceMapping;
 import com.amazonaws.services.ec2.model.InstanceLicense;
 import com.amazonaws.services.ec2.model.InstanceState;
 import com.amazonaws.services.ec2.model.InstanceStateChange;
+import com.amazonaws.services.ec2.model.LaunchPermission;
 import com.amazonaws.services.ec2.model.Placement;
 import com.amazonaws.services.ec2.model.ProductCode;
 import com.amazonaws.services.ec2.model.Reservation;
@@ -349,6 +350,30 @@ public abstract class AWSEC2Command extends AWSCommand {
     {
     	mAmazon.setEndpoint( endpoint );
     }
+
+
+	protected void writeLaunchPermissions(List<LaunchPermission> launchPermissions) throws XMLStreamException {
+		startElement("launch-permissions");
+
+		for( LaunchPermission p : launchPermissions ){
+			writeLaunchPermission( p );
+			
+		}
+		endElement();
+		
+	}
+
+
+	private void writeLaunchPermission(LaunchPermission p) throws XMLStreamException {
+		startElement("launch-permissions");
+
+		if( ! Util.isBlank(p.getGroup()))
+			attribute( "group" , p.getGroup() );
+		if( ! Util.isBlank(p.getUserId()))
+			attribute( "user-id" , p.getUserId());
+		endElement();
+		
+	}
 	
 
 }
