@@ -127,7 +127,8 @@ public class Shell {
 		if( bInitialized )
 			return ;
 		
-		Logging.configureLogger();
+		String logging = System.getenv("XDISABLE_LOGGING");
+		Logging.configureLogger(Util.parseBoolean(logging) );
 
 		mLogger.info("xmlsh initialize");
 		

@@ -6,10 +6,13 @@
 
 package org.xmlsh.sh.shell;
 
+import java.util.Collections;
 import java.util.Enumeration;
+import java.util.List;
 
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.FileAppender;
+import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
@@ -19,18 +22,24 @@ class Logging {
 
 	
 	
-	static void configureLogger()
+	static void configureLogger(boolean bDisabled)
 	{
 		// Only configure logger if it has not already been configured
 		// This avoids adding appenders to embedded invocations of xmlsh
 		if( !isLog4JConfigured() )
-			configureLogger2();
+			configureLogger2(bDisabled);
 		
 		
 	}
-	private static void configureLogger2()
+	private static void configureLogger2(boolean bDisabled )
 	{
 		
+		if( bDisabled ){
+			BasicConfigurator.configure();
+			disableLogging();		
+			return ;
+		
+		}
 		
 		// First look for a properties file 
 		String log4jpath = System.getenv("XLOG4JPATH");
@@ -80,6 +89,7 @@ class Logging {
 			} catch( Exception e ) {
 				
 				BasicConfigurator.configure();
+				disableLogging();
 				return ;
 				
 			}
@@ -90,6 +100,15 @@ class Logging {
 	
 	}
 
+	public static void disableLogging()
+	{
+		@SuppressWarnings("unchecked")
+		List<Logger> loggers = Collections.<Logger>list(LogManager.getCurrentLoggers());
+		loggers.add(LogManager.getRootLogger());
+		for ( Logger logger : loggers ) {
+		    logger.setLevel( Level.OFF);
+		}
+	}
 	
 	/**
 	 * DAL: Ripped code from http://wiki.apache.org/logging-log4j/UsefulCode
