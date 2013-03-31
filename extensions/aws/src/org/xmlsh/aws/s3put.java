@@ -56,7 +56,7 @@ public class s3put extends AWSS3Command {
 	public int run(List<XValue> args) throws Exception {
 
 
-		Options opts = getOptions("m=meta:+,s=storage:,r=recurse,v=verbose,t=test");
+		Options opts = getOptions("m=meta:+,s=storage:,r=recurse,v=verbose");
 		opts.parse(args);
 
 		args = opts.getRemainingArgs();

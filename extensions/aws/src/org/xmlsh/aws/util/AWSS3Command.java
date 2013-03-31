@@ -30,6 +30,7 @@ import org.xmlsh.util.Util;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.AmazonS3EncryptionClient;
+import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.EncryptionMaterials;
 import com.amazonaws.services.s3.model.ListObjectsRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
@@ -152,6 +153,22 @@ public abstract class AWSS3Command extends AWSCommand {
     {
     	mAmazon.setEndpoint( endpoint );
     }
+
+	protected CannedAccessControlList getAcl(String acl) {
+		
+		for(CannedAccessControlList c : CannedAccessControlList.values())
+			if( c.toString().equals(acl))
+				return c;
+		return null ;
+		
+	}
+
+	protected int setAcl(S3Path src, String acl) throws CoreException, IOException,
+			XMLStreamException, SaxonApiException {
+				mAmazon.setObjectAcl(src.getBucket(),src.getKey(), getAcl(acl));
+				return 0;
+				
+			}
 	
 
 }
