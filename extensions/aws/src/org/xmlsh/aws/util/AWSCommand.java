@@ -138,7 +138,7 @@ public abstract class AWSCommand extends XCommand {
 
 
 	protected void attribute(String name, Date date) throws XMLStreamException {
-		attribute( name ,  Util.formatXSDateTime(date));
+		attribute( name ,  date == null ? "" : Util.formatXSDateTime(date));
 		
 	}
 
