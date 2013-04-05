@@ -31,31 +31,31 @@ public interface ShellParserConstants {
   /** RegularExpression Id. */
   int DLESS = 13;
   /** RegularExpression Id. */
-  int IF = 14;
+  int CATCH = 14;
   /** RegularExpression Id. */
-  int ELIF = 15;
+  int IF = 15;
   /** RegularExpression Id. */
-  int THEN = 16;
+  int ELIF = 16;
   /** RegularExpression Id. */
-  int ELSE = 17;
+  int THEN = 17;
   /** RegularExpression Id. */
-  int FI = 18;
+  int ELSE = 18;
   /** RegularExpression Id. */
-  int DO = 19;
+  int FI = 19;
   /** RegularExpression Id. */
-  int CASE = 20;
+  int DO = 20;
   /** RegularExpression Id. */
-  int ESAC = 21;
+  int CASE = 21;
   /** RegularExpression Id. */
-  int WHILE = 22;
+  int ESAC = 22;
   /** RegularExpression Id. */
-  int UNTIL = 23;
+  int WHILE = 23;
   /** RegularExpression Id. */
-  int FOR = 24;
+  int UNTIL = 24;
   /** RegularExpression Id. */
-  int TRY = 25;
+  int FOR = 25;
   /** RegularExpression Id. */
-  int CATCH = 26;
+  int TRY = 26;
   /** RegularExpression Id. */
   int FINALLY = 27;
   /** RegularExpression Id. */
@@ -162,6 +162,7 @@ public interface ShellParserConstants {
     "\">|\"",
     "\"<<-\"",
     "\"<<\"",
+    "\"catch\"",
     "\"if\"",
     "\"elif\"",
     "\"then\"",
@@ -174,7 +175,6 @@ public interface ShellParserConstants {
     "\"until\"",
     "\"for\"",
     "\"try\"",
-    "\"catch\"",
     "\"finally\"",
     "\"return\"",
     "\"done\"",

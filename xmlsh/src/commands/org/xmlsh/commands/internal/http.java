@@ -29,10 +29,15 @@ import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 import javax.security.cert.X509Certificate;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
 
+import net.sf.saxon.s9api.SaxonApiException;
+import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
+import org.apache.http.StatusLine;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.AuthCache;
@@ -66,7 +71,9 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InputPort;
+import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
+import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.Options.OptionValue;
 import org.xmlsh.core.UnimplementedException;
 import org.xmlsh.core.XCommand;
@@ -90,15 +97,13 @@ public class http extends XCommand {
 	throws Exception 
 	{
 		
-		Options opts = new Options( "get:,put:,post:,head:,options:,delete:,connectTimeout:,contentType:,readTimeout:,+useCaches,+followRedirects,user:,password:,H=add-header:+,disableTrust:,keystore:,keypass:,sslproto:" );
+		Options opts = new Options( "get:,put:,post:,head:,options:,delete:,connectTimeout:,contentType:,readTimeout:,+useCaches,+followRedirects,user:,password:,H=add-header:+,disableTrust:,keystore:,keypass:,sslproto:,output-headers=ohead:" );
 		opts.parse(args);
 		
 		mSerializeOpts = getSerializeOpts(opts);  
 
 		
 		
-		boolean doInput = true ;
-		boolean doOutput = false ;
 		HttpRequestBase method;
 		
 		String surl = null;
@@ -109,15 +114,12 @@ public class http extends XCommand {
 		}
 		else
 		if(  opts.hasOpt("put") ){
-			doInput = true ; 
-			doOutput = true ;
 			surl =  opts.getOptString("put", null);
 			method = new HttpPut(surl);
 		    ((HttpPut)method).setEntity( getInputEntity(opts));
 		}
 		else
 		if( opts.hasOpt("post") ){
-			doOutput = true ;
 			surl =  opts.getOptString("post", null);
 			method = new HttpPost(surl);
 		    ((HttpPost)method).setEntity( getInputEntity(opts));
@@ -192,6 +194,8 @@ public class http extends XCommand {
 		}
 		
 		ret = resp.getStatusLine().getStatusCode() ;
+		if( opts.hasOpt("output-headers"))
+		    writeHeaders( opts.getOptStringRequired("output-headers") , resp.getStatusLine(), resp.getAllHeaders());
 		
 		
 		
@@ -203,10 +207,41 @@ public class http extends XCommand {
 
 
 
+	private void writeHeaders(String outv, StatusLine statusLine, Header[] allHeaders) throws InvalidArgumentException, XMLStreamException, SaxonApiException {
+		OutputPort out = mShell.getEnv().getOutputPort(outv);
+	
+		XMLStreamWriter sw = out.asXMLStreamWriter(mSerializeOpts);
+		sw.writeStartDocument();
+		sw.writeStartElement("status");
+		sw.writeAttribute("status-code", String.valueOf(statusLine.getStatusCode()));
+		sw.writeAttribute("reason", statusLine.getReasonPhrase());
+		sw.writeAttribute("protocol-version", statusLine.getProtocolVersion().toString());
+
+		sw.writeEndElement();
+
+		sw.writeStartElement("headers");
+		for( Header header : allHeaders ){
+			sw.writeStartElement("header");
+			sw.writeAttribute("name", header.getName());
+			sw.writeAttribute("value", header.getValue());
+			sw.writeEndElement();
+		}
+		sw.writeEndElement();
+		sw.writeEndDocument();
+		sw.close();
+		
+			
+		
+	}
+
+
+
+
+
+
 	private void setOptions(DefaultHttpClient client, HttpHost host, Options opts) throws KeyManagementException, NoSuchAlgorithmException, UnrecoverableKeyException, CertificateException, FileNotFoundException, KeyStoreException, IOException {
 		
 		HttpParams params = client.getParams();
-		HttpProtocolParamBean protocol = new HttpProtocolParamBean (params);
 		HttpConnectionParamBean connection = new HttpConnectionParamBean(params);
 		
 		if( opts.hasOpt("connectTimeout"))
