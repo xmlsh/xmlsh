@@ -17,6 +17,7 @@ public class AWSCommandCredentialsProviderChain extends AWSCredentialsProviderCh
 	public AWSCommandCredentialsProviderChain(Shell shell , Options opts)  {
 	        super(
 	        	  new AWSOptionsCredentialsProvider( shell , opts),
+	        	  new AWSEnvCredentialsProvider(shell),
 	        	  new EnvironmentVariableCredentialsProvider(),
 	              new SystemPropertiesCredentialsProvider(),
 	              new InstanceProfileCredentialsProvider());
