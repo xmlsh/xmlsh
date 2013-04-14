@@ -3,18 +3,12 @@ package org.xmlsh.aws;
 import java.io.IOException;
 import java.util.List;
 
-
 import org.xmlsh.aws.util.AWSS3Command;
 import org.xmlsh.aws.util.S3Path;
 import org.xmlsh.core.Options;
-import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.util.Util;
-
-import com.amazonaws.services.s3.model.AccessControlList;
-import com.amazonaws.services.s3.model.GetObjectMetadataRequest;
-import com.amazonaws.services.s3.model.ObjectMetadata;
 
 
 public class s3SetObjectAcl extends AWSS3Command {

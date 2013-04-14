@@ -16,8 +16,6 @@ import org.xmlsh.core.UnexpectedException;
 import com.amazonaws.services.simpledb.AmazonSimpleDB;
 import com.amazonaws.services.simpledb.AmazonSimpleDBClient;
 import com.amazonaws.services.simpledb.model.Attribute;
-import com.amazonaws.services.sqs.AmazonSQS;
-import com.amazonaws.services.sqs.AmazonSQSClient;
 
 public abstract class AWSSDBCommand extends AWSCommand {
 	
@@ -32,7 +30,7 @@ protected		AmazonSimpleDB mAmazon ;
 		
 			
 		mAmazon =  new AmazonSimpleDBClient(
-				new AWSPropertyCredentials( mShell, opts  ) 
+				new AWSCommandCredentialsProviderChain( mShell, opts  ) 
 		
 		);
 	}

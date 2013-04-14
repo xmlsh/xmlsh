@@ -11,10 +11,6 @@ import org.xmlsh.core.UnexpectedException;
 
 import com.amazonaws.services.cloudwatch.AmazonCloudWatch;
 import com.amazonaws.services.cloudwatch.AmazonCloudWatchClient;
-import com.amazonaws.services.simpledb.AmazonSimpleDB;
-import com.amazonaws.services.simpledb.AmazonSimpleDBClient;
-import com.amazonaws.services.sqs.AmazonSQS;
-import com.amazonaws.services.sqs.AmazonSQSClient;
 
 public abstract class AWSMonCommand extends AWSCommand {
 	
@@ -28,7 +24,7 @@ public abstract class AWSMonCommand extends AWSCommand {
 		
 			
 		mAmazon =  new AmazonCloudWatchClient(
-				new AWSPropertyCredentials( mShell, opts  ) 
+				new AWSCommandCredentialsProviderChain( mShell, opts  ) 
 		
 		);
 	}

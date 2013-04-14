@@ -1,7 +1,6 @@
 package org.xmlsh.aws.util;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.LinkedList;
 import java.util.List;
@@ -11,8 +10,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
-
-import org.xmlsh.core.XValue;
 
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;

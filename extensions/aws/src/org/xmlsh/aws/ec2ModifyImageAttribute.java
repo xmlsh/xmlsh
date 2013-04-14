@@ -8,7 +8,6 @@ import java.util.List;
 import javax.xml.stream.XMLStreamException;
 
 import net.sf.saxon.s9api.SaxonApiException;
-import net.sf.saxon.s9api.XdmValue;
 import org.xmlsh.aws.util.AWSEC2Command;
 import org.xmlsh.aws.util.SafeXMLStreamWriter;
 import org.xmlsh.core.CoreException;
@@ -18,9 +17,9 @@ import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
 
+import com.amazonaws.services.ec2.model.LaunchPermission;
 import com.amazonaws.services.ec2.model.LaunchPermissionModifications;
 import com.amazonaws.services.ec2.model.ModifyImageAttributeRequest;
-import com.amazonaws.services.ec2.model.LaunchPermission;
 
 public class ec2ModifyImageAttribute extends AWSEC2Command {
 

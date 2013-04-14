@@ -25,7 +25,7 @@ public abstract class AWSSNSCommand extends AWSCommand {
 		
 			
 		mAmazon =  new AmazonSNSClient(
-				new AWSPropertyCredentials( mShell, opts  ) 
+				new AWSCommandCredentialsProviderChain( mShell, opts  ) 
 		
 		);
 	}

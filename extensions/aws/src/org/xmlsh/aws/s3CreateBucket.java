@@ -1,20 +1,12 @@
 package org.xmlsh.aws;
 
 import java.io.IOException;
-import java.math.BigInteger;
-import java.security.SecureRandom;
 import java.util.List;
 
-import javax.xml.stream.XMLStreamException;
-
-import net.sf.saxon.s9api.SaxonApiException;
 import org.xmlsh.aws.util.AWSS3Command;
-import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
-
-import com.amazonaws.services.s3.model.DeleteBucketRequest;
 
 
 public class s3CreateBucket extends AWSS3Command {

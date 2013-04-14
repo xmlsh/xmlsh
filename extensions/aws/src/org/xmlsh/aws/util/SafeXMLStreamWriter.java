@@ -6,10 +6,11 @@
 
 package org.xmlsh.aws.util;
 
+import javanet.staxutils.helpers.StreamWriterDelegate;
+
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import javanet.staxutils.helpers.StreamWriterDelegate;
 import org.xmlsh.util.Util;
 
 

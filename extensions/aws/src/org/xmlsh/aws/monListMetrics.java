@@ -6,7 +6,6 @@ import java.util.List;
 import javax.xml.stream.XMLStreamException;
 
 import net.sf.saxon.s9api.SaxonApiException;
-import org.xmlsh.aws.util.AWSELBCommand;
 import org.xmlsh.aws.util.AWSMonCommand;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.Options;
@@ -19,16 +18,6 @@ import com.amazonaws.services.cloudwatch.model.Dimension;
 import com.amazonaws.services.cloudwatch.model.ListMetricsRequest;
 import com.amazonaws.services.cloudwatch.model.ListMetricsResult;
 import com.amazonaws.services.cloudwatch.model.Metric;
-import com.amazonaws.services.elasticloadbalancing.AmazonElasticLoadBalancingClient;
-import com.amazonaws.services.elasticloadbalancing.model.DescribeInstanceHealthRequest;
-import com.amazonaws.services.elasticloadbalancing.model.DescribeInstanceHealthResult;
-import com.amazonaws.services.elasticloadbalancing.model.DescribeLoadBalancersRequest;
-import com.amazonaws.services.elasticloadbalancing.model.DescribeLoadBalancersResult;
-import com.amazonaws.services.elasticloadbalancing.model.HealthCheck;
-import com.amazonaws.services.elasticloadbalancing.model.Instance;
-import com.amazonaws.services.elasticloadbalancing.model.InstanceState;
-import com.amazonaws.services.elasticloadbalancing.model.ListenerDescription;
-import com.amazonaws.services.elasticloadbalancing.model.LoadBalancerDescription;
 
 
 public class monListMetrics	 extends  AWSMonCommand {

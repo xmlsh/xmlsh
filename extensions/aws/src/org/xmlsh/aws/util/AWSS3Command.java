@@ -9,16 +9,12 @@ package org.xmlsh.aws.util;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.KeyPair;
-import java.security.PrivateKey;
-import java.security.PublicKey;
 import java.security.Security;
 import java.util.Map.Entry;
 
 import javax.xml.stream.XMLStreamException;
 
 import net.sf.saxon.s9api.SaxonApiException;
-import org.apache.log4j.Level;
-import org.apache.log4j.LogManager;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.openssl.PEMReader;
 import org.xmlsh.core.CoreException;
@@ -34,6 +30,7 @@ import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.EncryptionMaterials;
 import com.amazonaws.services.s3.model.ListObjectsRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.StaticEncryptionMaterialsProvider;
 
 public abstract class AWSS3Command extends AWSCommand {
 	
@@ -68,15 +65,16 @@ public abstract class AWSS3Command extends AWSCommand {
 			KeyPair keyPair = (KeyPair) readPEM(sKeypair);
 			
 			mAmazon =  new AmazonS3EncryptionClient(
-					new AWSPropertyCredentials( mShell, opts  ) ,
-					new EncryptionMaterials( keyPair )
+					new AWSCommandCredentialsProviderChain( mShell, opts  ) ,
+					new StaticEncryptionMaterialsProvider(
+							new EncryptionMaterials( keyPair ))
 			
 			);
 			
 			
 		} else
 			mAmazon =  new AmazonS3Client(
-					new AWSPropertyCredentials( mShell, opts  ) 
+					new AWSCommandCredentialsProviderChain( mShell, opts  ) 
 			
 			);
 	}

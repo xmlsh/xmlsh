@@ -9,8 +9,6 @@ package org.xmlsh.aws.util;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.UnexpectedException;
 
-import com.amazonaws.services.simpledb.AmazonSimpleDB;
-import com.amazonaws.services.simpledb.AmazonSimpleDBClient;
 import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.AmazonSQSClient;
 
@@ -26,7 +24,7 @@ public abstract class AWSSQSCommand extends AWSCommand {
 		
 			
 		mAmazon =  new AmazonSQSClient(
-				new AWSPropertyCredentials( mShell, opts  ) 
+				new AWSCommandCredentialsProviderChain( mShell, opts  ) 
 		
 		);
 	}

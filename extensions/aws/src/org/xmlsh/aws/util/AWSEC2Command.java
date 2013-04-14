@@ -13,7 +13,6 @@ import java.util.Collection;
 import java.util.List;
 
 import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
 
 import net.sf.saxon.s9api.SaxonApiException;
 import org.xmlsh.core.CoreException;
@@ -21,9 +20,7 @@ import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.UnexpectedException;
-import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
-import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.util.StringPair;
 import org.xmlsh.util.Util;
 
@@ -43,8 +40,6 @@ import com.amazonaws.services.ec2.model.ProductCode;
 import com.amazonaws.services.ec2.model.Reservation;
 import com.amazonaws.services.ec2.model.Tag;
 import com.amazonaws.services.ec2.model.VolumeAttachment;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3Client;
 
 public abstract class AWSEC2Command extends AWSCommand {
 	
@@ -57,7 +52,7 @@ public abstract class AWSEC2Command extends AWSCommand {
 
 	protected void getEC2Client( Options opts ) throws UnexpectedException {
 		mAmazon =  new AmazonEC2Client(
-				new AWSPropertyCredentials( mShell , opts )
+				new AWSCommandCredentialsProviderChain( mShell , opts )
 				);
 		
 	}

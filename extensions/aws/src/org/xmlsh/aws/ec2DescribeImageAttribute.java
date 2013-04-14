@@ -13,18 +13,12 @@ import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
-import org.xmlsh.util.Util;
 
 import com.amazonaws.services.ec2.model.BlockDeviceMapping;
 import com.amazonaws.services.ec2.model.DescribeImageAttributeRequest;
 import com.amazonaws.services.ec2.model.DescribeImageAttributeResult;
-import com.amazonaws.services.ec2.model.DescribeImagesRequest;
-import com.amazonaws.services.ec2.model.DescribeImagesResult;
-import com.amazonaws.services.ec2.model.Image;
 import com.amazonaws.services.ec2.model.ImageAttribute;
 import com.amazonaws.services.ec2.model.ProductCode;
-import com.amazonaws.services.ec2.model.StateReason;
-import com.amazonaws.services.ec2.model.Tag;
 
 
 public class ec2DescribeImageAttribute extends AWSEC2Command {
