@@ -44,6 +44,7 @@ public class AWSEnvCredentialsProvider implements AWSCredentialsProvider {
     private String secret_key ;
 
     public AWSEnvCredentialsProvider(Shell shell) {
+    	// Dont hold onto shell in case getCredentials() is called in the future on a different thread
 	
     	access_key = shell.getEnv().getVarString(ACCESS_KEY_ENV_VAR);
     	secret_key = shell.getEnv().getVarString(SECRET_KEY_ENV_VAR);

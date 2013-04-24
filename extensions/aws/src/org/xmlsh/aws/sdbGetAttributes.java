@@ -76,9 +76,6 @@ public class sdbGetAttributes	 extends  AWSSDBCommand {
 		mWriter = stdout.asXMLStreamWriter(mSerializeOpts);
 		
 		
-		
-		
-		
 		startDocument();
 		startElement(getName());
 
@@ -89,10 +86,8 @@ public class sdbGetAttributes	 extends  AWSSDBCommand {
 		
 		GetAttributesResult result = mAmazon.getAttributes(getAttributesRequest);
 
-		startElement("item");
-		attribute("name",itemName);
-		writeAttributes(result.getAttributes());
-		endElement();
+		if( result.getAttributes().size() > 0 )
+		     writeItem(itemName, result);
 			
 			
 		endElement();
@@ -105,6 +100,14 @@ public class sdbGetAttributes	 extends  AWSSDBCommand {
 		return 0;
 		
 		
+	}
+
+
+	private void writeItem(String itemName, GetAttributesResult result) throws XMLStreamException {
+		startElement("item");
+		attribute("name",itemName);
+		writeAttributes(result.getAttributes());
+		endElement();
 	}
 
 

@@ -35,6 +35,11 @@ public class sdbListDomains	 extends  AWSSDBCommand {
 
 		args = opts.getRemainingArgs();
 		
+		if( args.size() != 0 ){
+			usage();
+			return 1;
+		}
+		
 
 		
 		mSerializeOpts = this.getSerializeOpts(opts);
@@ -54,7 +59,7 @@ public class sdbListDomains	 extends  AWSSDBCommand {
 		
 
 		int ret = -1;
-		ret = list(Util.toStringList(args));
+		ret = list();
 
 		
 		
@@ -64,7 +69,7 @@ public class sdbListDomains	 extends  AWSSDBCommand {
 	}
 
 
-	private int list(List<String> elbs) throws IOException, XMLStreamException, SaxonApiException, CoreException 
+	private int list() throws IOException, XMLStreamException, SaxonApiException, CoreException 
 	{
 
 		OutputPort stdout = this.getStdout();

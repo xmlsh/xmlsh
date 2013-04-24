@@ -31,10 +31,11 @@ public class sdbPutAttributes	 extends  AWSSDBCommand {
 	@Override
 	public int run(List<XValue> args) throws Exception {
 
-		Options opts = getOptions("update:,exists:");
+		Options opts = getOptions("update:,exists:,+r=replace");
 		opts.parse(args);
 
 		args = opts.getRemainingArgs();
+		
 		
 
 		
@@ -42,7 +43,7 @@ public class sdbPutAttributes	 extends  AWSSDBCommand {
 		
 		String updateName = opts.getOptString("update", null);
 		String updateExists = opts.getOptString("exists",null);
-		
+		boolean bReplace = opts.getOptFlag("replace",true);
 		
 		
 		
@@ -66,7 +67,7 @@ public class sdbPutAttributes	 extends  AWSSDBCommand {
 		
 
 		int ret = -1;
-		ret = put(domain,item,args,updateName,updateExists);
+		ret = put(domain,item,args,updateName,updateExists,bReplace);
 
 		
 		
@@ -76,7 +77,7 @@ public class sdbPutAttributes	 extends  AWSSDBCommand {
 	}
 
 
-	private int put(String domain, String item, List<XValue > args, String updateName, String updateExists) throws IOException, XMLStreamException, SaxonApiException, CoreException 
+	private int put(String domain, String item, List<XValue > args, String updateName, String updateExists, boolean bReplace) throws IOException, XMLStreamException, SaxonApiException, CoreException 
 	{
 
 		OutputPort stdout = this.getStdout();
@@ -91,7 +92,7 @@ public class sdbPutAttributes	 extends  AWSSDBCommand {
 		startDocument();
 		startElement(getName());
 		
-		List<ReplaceableAttribute> attributes = getAttributes( args );
+		List<ReplaceableAttribute> attributes = getAttributes( args , bReplace );
          
 		PutAttributesRequest request = new PutAttributesRequest(domain,item,attributes,cond);
 		
@@ -119,7 +120,7 @@ public class sdbPutAttributes	 extends  AWSSDBCommand {
 	}
 
 
-	private List<ReplaceableAttribute> getAttributes(List<XValue> args) 
+	private List<ReplaceableAttribute> getAttributes(List<XValue> args, boolean bReplace) 
 	{
 		List<ReplaceableAttribute> attrs = new ArrayList<ReplaceableAttribute>();
 		while( !args.isEmpty()){
@@ -129,9 +130,7 @@ public class sdbPutAttributes	 extends  AWSSDBCommand {
  
 			
 			attrs.add( 
-					new ReplaceableAttribute().withName(name).withValue(value));
-		
-
+					new ReplaceableAttribute().withName(name).withValue(value).withReplace(bReplace));
 		
 		}
 		return attrs ;

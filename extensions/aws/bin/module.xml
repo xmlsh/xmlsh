@@ -1,5 +1,5 @@
 <module 
-	module_version="0.6"
+	module_version="0.7"
 	name="aws"
 	package="org.xmlsh.aws"
 	require="1.2.3"
