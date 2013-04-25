@@ -6,9 +6,12 @@
 
 package org.xmlsh.aws.util;
 
+import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.UnexpectedException;
 
+import com.amazonaws.regions.RegionUtils;
+import com.amazonaws.regions.Regions;
 import com.amazonaws.services.glacier.AmazonGlacierClient;
 
 public abstract class AWSGlacierCommand extends AWSCommand {
@@ -21,14 +24,24 @@ public abstract class AWSGlacierCommand extends AWSCommand {
 	}
 
 
-	protected AmazonGlacierClient getGlacierClient( Options opts ) throws UnexpectedException {
-		return new AmazonGlacierClient(
+	protected void getGlacierClient( Options opts ) throws UnexpectedException, InvalidArgumentException {
+		mAmazon =  new AmazonGlacierClient(
 				mCredentials = new AWSCommandCredentialsProviderChain( mShell , opts )
 				);
+	    
+		setEndpoint(opts);
+		setRegion(opts);
 		
 	}
 
-
+	/* (non-Javadoc)
+	 * @see org.xmlsh.aws.util.AWSCommand#setRegion(java.lang.String)
+	 */
+	@Override
+	public void setRegion(String region) {
+	    mAmazon.setRegion( RegionUtils.getRegion(region));
+		
+	}
 	@Override
     public void setEndpoint( String endpoint )
     {

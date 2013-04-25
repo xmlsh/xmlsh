@@ -43,13 +43,6 @@ public class ec2CopyImage extends AWSEC2Command {
 
 		
 		
-		
-		if( args.size() != 2 ){
-			usage(null);
-			return 1;
-		}
-		
-
 		mSerializeOpts = this.getSerializeOpts(opts);
 		try {
 			 getEC2Client(opts);
@@ -81,6 +74,13 @@ public class ec2CopyImage extends AWSEC2Command {
 		
 		CopyImageRequest  request =( new CopyImageRequest()).withSourceImageId(sourceImageId)
 				.withSourceRegion(sourceRegion);
+		
+		String name = opts.getOptString("name", null);
+		String desc = opts.getOptString("description", null);
+		if( name != null )
+			request.setName(name);
+		if( desc != null )
+			request.setDescription(desc);
 		
 		
 		CopyImageResult result = mAmazon.copyImage(request);

@@ -13,6 +13,8 @@ import org.xmlsh.core.Options;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
 
+import com.amazonaws.regions.RegionUtils;
+import com.amazonaws.regions.Regions;
 import com.amazonaws.services.elasticloadbalancing.AmazonElasticLoadBalancingClient;
 import com.amazonaws.services.elasticloadbalancing.model.Instance;
 
@@ -32,6 +34,16 @@ public abstract class AWSELBCommand extends AWSCommand {
 				new AWSCommandCredentialsProviderChain( mShell, opts  ) 
 		
 		);
+		
+        setRegion(opts);
+	}
+	/* (non-Javadoc)
+	 * @see org.xmlsh.aws.util.AWSCommand#setRegion(java.lang.String)
+	 */
+	@Override
+	public void setRegion(String region) {
+	    mAmazon.setRegion( RegionUtils.getRegion(region));
+		
 	}
 
 	protected List<Instance> instances(List<XValue> args) {

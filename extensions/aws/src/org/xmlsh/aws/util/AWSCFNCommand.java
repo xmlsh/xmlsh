@@ -6,9 +6,12 @@
 
 package org.xmlsh.aws.util;
 
+import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.UnexpectedException;
 
+import com.amazonaws.regions.RegionUtils;
+import com.amazonaws.regions.Regions;
 import com.amazonaws.services.cloudformation.AmazonCloudFormation;
 import com.amazonaws.services.cloudformation.AmazonCloudFormationClient;
 
@@ -21,11 +24,14 @@ public abstract class AWSCFNCommand extends AWSCommand {
 	}
 
 
-	protected void getCFNClient( Options opts ) throws UnexpectedException {
+	protected void getCFNClient( Options opts ) throws UnexpectedException, InvalidArgumentException {
 		mAmazon =  new AmazonCloudFormationClient(
 				new AWSCommandCredentialsProviderChain( mShell , opts )
 				);
 		
+		setRegion(opts);
+		setEndpoint(opts);
+
 	}
 
 	@Override
@@ -34,7 +40,15 @@ public abstract class AWSCFNCommand extends AWSCommand {
     	mAmazon.setEndpoint( endpoint );
     }
 	
-	
+	/* (non-Javadoc)
+	 * @see org.xmlsh.aws.util.AWSCommand#setRegion(java.lang.String)
+	 */
+	@Override
+	public void setRegion(String region) {
+	    mAmazon.setRegion( RegionUtils.getRegion(region));
+		
+	}
+
 
 }
 

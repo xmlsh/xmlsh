@@ -10,9 +10,12 @@ import java.util.List;
 
 import javax.xml.stream.XMLStreamException;
 
+import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.UnexpectedException;
 
+import com.amazonaws.regions.RegionUtils;
+import com.amazonaws.regions.Regions;
 import com.amazonaws.services.simpledb.AmazonSimpleDB;
 import com.amazonaws.services.simpledb.AmazonSimpleDBClient;
 import com.amazonaws.services.simpledb.model.Attribute;
@@ -26,16 +29,27 @@ protected		AmazonSimpleDB mAmazon ;
 		super();
 	}
 
-	protected void getSDBClient(Options opts) throws UnexpectedException {
+	protected void getSDBClient(Options opts) throws UnexpectedException, InvalidArgumentException {
 		
 			
 		mAmazon =  new AmazonSimpleDBClient(
 				new AWSCommandCredentialsProviderChain( mShell, opts  ) 
 		
 		);
+		
+		setEndpoint(opts);
+		setRegion(opts);
 	}
 	
-
+	/* (non-Javadoc)
+	 * @see org.xmlsh.aws.util.AWSCommand#setRegion(java.lang.String)
+	 */
+	@Override
+	public void setRegion(String region) {
+	    mAmazon.setRegion( RegionUtils.getRegion(region));
+		
+	}
+	
 	@Override
     public void setEndpoint( String endpoint )
     {

@@ -6,10 +6,15 @@
 
 package org.xmlsh.aws.util;
 
+import java.util.List;
+
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.UnexpectedException;
+import org.xmlsh.core.XValue;
 
+import com.amazonaws.regions.RegionUtils;
+import com.amazonaws.regions.Regions;
 import com.amazonaws.services.autoscaling.AmazonAutoScaling;
 import com.amazonaws.services.autoscaling.AmazonAutoScalingClient;
 
@@ -27,6 +32,10 @@ public abstract class AWSASCommand extends AWSCommand {
 				new AWSCommandCredentialsProviderChain( mShell , opts )
 				);
 
+		if( opts.hasOpt("region"))
+			mAmazon.setRegion( RegionUtils.getRegion(opts.getOptString("region",Regions.DEFAULT_REGION.getName())));
+
+		
 		setEndpoint(opts);		
 		
 	}
@@ -38,6 +47,26 @@ public abstract class AWSASCommand extends AWSCommand {
     {
     	mAmazon.setEndpoint( endpoint );
     }
+
+
+	/* (non-Javadoc)
+	 * @see org.xmlsh.aws.util.AWSCommand#setRegion(java.lang.String)
+	 */
+	@Override
+	public void setRegion(String region) {
+	    mAmazon.setRegion( RegionUtils.getRegion(region));
+		
+	}
+
+
+	/* (non-Javadoc)
+	 * @see org.xmlsh.core.XCommand#run(java.util.List)
+	 */
+	@Override
+	public int run(List<XValue> args) throws Exception {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 	
 	
 	

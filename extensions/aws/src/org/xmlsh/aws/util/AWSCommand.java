@@ -12,6 +12,9 @@ import java.util.List;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import com.amazonaws.regions.RegionUtils;
+import com.amazonaws.regions.Regions;
+
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.xmlsh.core.InvalidArgumentException;
@@ -171,9 +174,14 @@ public abstract class AWSCommand extends XCommand {
 		
 		
 	}
+	protected void setRegion(Options opts){
+	    if( opts.hasOpt("region"))
+	    	setRegion(opts.getOptString("region",Regions.DEFAULT_REGION.getName()) );
 
+	}
 	
 	public abstract void setEndpoint(String endpoint);
+	public abstract void setRegion( String region );
 	
 
 }

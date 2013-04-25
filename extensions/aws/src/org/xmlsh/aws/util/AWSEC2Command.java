@@ -25,6 +25,7 @@ import org.xmlsh.util.StringPair;
 import org.xmlsh.util.Util;
 
 import com.amazonaws.regions.Region;
+import com.amazonaws.regions.RegionUtils;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.ec2.AmazonEC2;
 import com.amazonaws.services.ec2.AmazonEC2Client;
@@ -52,18 +53,23 @@ public abstract class AWSEC2Command extends AWSCommand {
 	}
 
 
-	protected void getEC2Client( Options opts ) throws UnexpectedException {
+	protected void getEC2Client( Options opts ) throws UnexpectedException, InvalidArgumentException {
 		mAmazon =  new AmazonEC2Client(
 				new AWSCommandCredentialsProviderChain( mShell , opts )
 				);
 		
-		if( opts.hasOpt("region"))
-			mAmazon.setRegion( Region.getRegion(
-					Regions.valueOf(opts.getOptString("region",Regions.DEFAULT_REGION.getName()))));
-		
+		setRegion(opts);
+		setEndpoint(opts);
 	}
 
-
+	/* (non-Javadoc)
+	 * @see org.xmlsh.aws.util.AWSCommand#setRegion(java.lang.String)
+	 */
+	@Override
+	public void setRegion(String region) {
+	    mAmazon.setRegion( RegionUtils.getRegion(region));
+		
+	}
 	protected void writeStateChages(List<InstanceStateChange> states) throws IOException, XMLStreamException,
 			SaxonApiException, CoreException {
 				

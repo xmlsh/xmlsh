@@ -23,6 +23,8 @@ import org.xmlsh.core.Options;
 import org.xmlsh.core.XValue;
 import org.xmlsh.util.Util;
 
+import com.amazonaws.regions.RegionUtils;
+import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.AmazonS3EncryptionClient;
@@ -77,7 +79,21 @@ public abstract class AWSS3Command extends AWSCommand {
 					new AWSCommandCredentialsProviderChain( mShell, opts  ) 
 			
 			);
+		
+		setEndpoint(opts);
+		setRegion(opts);
+
 	}
+	
+	/* (non-Javadoc)
+	 * @see org.xmlsh.aws.util.AWSCommand#setRegion(java.lang.String)
+	 */
+	@Override
+	public void setRegion(String region) {
+	    mAmazon.setRegion( RegionUtils.getRegion(region));
+		
+	}
+	
 
 	private Object readPEM(XValue sPrivate) throws IOException, UnsupportedEncodingException,
 			CoreException {
