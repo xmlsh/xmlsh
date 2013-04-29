@@ -100,18 +100,7 @@ public class ec2DescribeVolumes extends AWSEC2Command {
 		
 		
 		for( Volume  volume : result.getVolumes() ){
-			startElement("volume");
-			
-			
-			
-			attribute("volume-id" , volume.getVolumeId() );
-			attribute( "snapshot-id " , volume.getSnapshotId() );
-			attribute( "availability-zone", volume.getAvailabilityZone());
-			attribute( "create-date", Util.formatXSDateTime(volume.getCreateTime()));
-			attribute( "size", volume.getSize().toString());
-			attribute( "state" , volume.getState());
-			writeAttachements( volume.getAttachments());
-			writeTags( volume.getTags());
+			writeVolume(volume);
 			
 			
 			

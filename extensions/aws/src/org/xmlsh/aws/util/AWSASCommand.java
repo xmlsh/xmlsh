@@ -32,10 +32,7 @@ public abstract class AWSASCommand extends AWSCommand {
 				new AWSCommandCredentialsProviderChain( mShell , opts )
 				);
 
-		if( opts.hasOpt("region"))
-			mAmazon.setRegion( RegionUtils.getRegion(opts.getOptString("region",Regions.DEFAULT_REGION.getName())));
-
-		
+		setRegion(opts);
 		setEndpoint(opts);		
 		
 	}

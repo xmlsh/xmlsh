@@ -177,6 +177,13 @@ public abstract class AWSCommand extends XCommand {
 	protected void setRegion(Options opts){
 	    if( opts.hasOpt("region"))
 	    	setRegion(opts.getOptString("region",Regions.DEFAULT_REGION.getName()) );
+	    else {
+	    	String region = mShell.getEnv().getVarString("AWS_REGION");
+	    	if( Util.isBlank(region))
+	    		region = mShell.getEnv().getVarString("EC2_REGION");  // ec2 command line compatibility
+	    	if( !Util.isBlank(region))
+	    		setRegion(region);
+	    }
 
 	}
 	

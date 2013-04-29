@@ -42,6 +42,7 @@ import com.amazonaws.services.ec2.model.Placement;
 import com.amazonaws.services.ec2.model.ProductCode;
 import com.amazonaws.services.ec2.model.Reservation;
 import com.amazonaws.services.ec2.model.Tag;
+import com.amazonaws.services.ec2.model.Volume;
 import com.amazonaws.services.ec2.model.VolumeAttachment;
 
 public abstract class AWSEC2Command extends AWSCommand {
@@ -319,11 +320,12 @@ public abstract class AWSEC2Command extends AWSCommand {
 		attribute("name", device.getDeviceName());
 		
 		EbsBlockDevice ebs = device.getEbs();
+		if( ebs != null ){
 		
-		attribute( "shapshot-id" , ebs.getSnapshotId() );
-		attribute( "delete-on-termination" , ebs.getDeleteOnTermination());
-		attribute("volume-size" , ebs.getVolumeSize().toString() );
-
+			attribute( "shapshot-id" , ebs.getSnapshotId() );
+			attribute( "delete-on-termination" , ebs.getDeleteOnTermination());
+			attribute("volume-size" , ebs.getVolumeSize().toString() );
+		}
 		
 		
 		endElement();
@@ -380,6 +382,22 @@ public abstract class AWSEC2Command extends AWSCommand {
 			attribute( "user-id" , p.getUserId());
 		endElement();
 		
+	}
+
+
+	protected void writeVolume(Volume volume) throws XMLStreamException {
+		startElement("volume");
+		
+		
+		
+		attribute("volume-id" , volume.getVolumeId() );
+		attribute( "snapshot-id " , volume.getSnapshotId() );
+		attribute( "availability-zone", volume.getAvailabilityZone());
+		attribute( "create-date", Util.formatXSDateTime(volume.getCreateTime()));
+		attribute( "size", volume.getSize().toString());
+		attribute( "state" , volume.getState());
+		writeAttachements( volume.getAttachments());
+		writeTags( volume.getTags());
 	}
 	
 
