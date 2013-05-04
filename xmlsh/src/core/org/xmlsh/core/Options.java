@@ -23,7 +23,7 @@ public class Options
 	 *   [+]short[=long][:[+]]
 	 *  Multiple options are separated by ","
 	 *  
-	 *  [+]   	If option starts with a "+" then it is a multi-valued option that at runtime can start 
+	 *  [+]   	If option starts with a "+" then it is a boolean option that at runtime can start 
 	 *     	  	with a + or -.   for example  cmd +opt  
 	 *  short 	The short form of the option.  Typically a single letter
 	 *  =long	The long form of the option.  Typically a word
