@@ -1,6 +1,6 @@
-[C:\Work\DEI\xmlsh\trunk\test\core\core_vars2.xsh line: 37]
+[C:/Work/DEI/xmlsh/trunk/test/core/core_vars2.xsh line: 37]
 Exception running: echo
 org.xmlsh.core.CoreException: Invalid blank name for output variable
-[C:\Work\DEI\xmlsh\trunk\test\core\core_vars2.xsh line: 39]
+[C:/Work/DEI/xmlsh/trunk/test/core/core_vars2.xsh line: 39]
 Exception running: echo
 org.xmlsh.core.CoreException: Invalid blank name for output variable

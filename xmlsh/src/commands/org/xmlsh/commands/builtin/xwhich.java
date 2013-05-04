@@ -16,6 +16,7 @@ import org.xmlsh.core.CommandFactory;
 import org.xmlsh.core.ICommand;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
+import org.xmlsh.core.ScriptCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Module;
 import org.xmlsh.sh.shell.SerializeOpts;
@@ -87,6 +88,13 @@ public class xwhich extends BuiltinCommand {
 					File file = command.getFile();
 					if( file != null )
 						out.writeAttribute(sPath, file.getCanonicalPath() );
+					else 
+					if( command instanceof ScriptCommand ){
+						ScriptCommand sc  = (ScriptCommand) command;
+						out.writeAttribute(sPath, sc.getScriptName());
+						
+						
+					}
 					Module module = command.getModule();
 					if( module != null )
 						out.writeAttribute(sModule, module.getName());

@@ -21,8 +21,6 @@ public class Path implements Iterable<String> {
 	
 	// Empty path
 	public Path( ) {
-		
-		mPaths.add(".");
 	}
 	
 	// Path populated with list of paths from a XValue which could be a sequence

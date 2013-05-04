@@ -246,7 +246,7 @@ public class Shell {
 	
 	    String xpath = Util.toJavaPath(System.getenv("XPATH"));
 	    getEnv().setVar( new XVariable("XPATH", 
-	    		Util.isBlank(xpath) ? new XValue() : new XValue(xpath.split(File.pathSeparator))) , false );
+	    		Util.isBlank(xpath) ? new XValue(".") : new XValue(xpath.split(File.pathSeparator))) , false );
 	
 		// PWD 
 		getEnv().setVar(

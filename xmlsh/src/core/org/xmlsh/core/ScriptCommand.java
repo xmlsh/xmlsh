@@ -57,7 +57,7 @@ public class ScriptCommand implements ICommand {
 	}
 
 	public ScriptCommand(String name , InputStream is, boolean bSourceMode, Module module ) {
-		mScriptName = name;
+		mScriptName = Util.toJavaPath(name);
 		mScript = is;
 		mSourceMode = bSourceMode;
 		mModule = module ;
@@ -127,6 +127,11 @@ public class ScriptCommand implements ICommand {
 	public void setLocation(SourceLocation loc) {
 		mLocation = loc ;
 		
+	}
+
+
+	public String getScriptName() {
+		return mScriptName;
 	}
 
 
