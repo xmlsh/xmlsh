@@ -67,6 +67,7 @@ import org.apache.http.params.HttpConnectionParamBean;
 import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParamBean;
 import org.apache.http.protocol.BasicHttpContext;
+import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.xmlsh.core.CoreException;
@@ -89,7 +90,12 @@ public class http extends XCommand {
 	
 	private static Logger mLogger = LogManager.getLogger( http.class);
 
-
+    static {
+		LogManager.getLogger("httpclient").setLevel(Level.WARN);
+		LogManager.getLogger("http.wire").setLevel(Level.WARN);
+		LogManager.getLogger("org.apache.http").setLevel(Level.WARN);
+	}
+	
 	
 	
 	@Override
@@ -97,7 +103,7 @@ public class http extends XCommand {
 	throws Exception 
 	{
 		
-		Options opts = new Options( "get:,put:,post:,head:,options:,delete:,connectTimeout:,contentType:,readTimeout:,+useCaches,+followRedirects,user:,password:,H=add-header:+,disableTrust:,keystore:,keypass:,sslproto:,output-headers=ohead:" );
+		Options opts = new Options( "retry:,get:,put:,post:,head:,options:,delete:,connectTimeout:,contentType:,readTimeout:,+useCaches,+followRedirects,user:,password:,H=add-header:+,disableTrust:,keystore:,keypass:,sslproto:,output-headers=ohead:" );
 		opts.parse(args);
 		
 		mSerializeOpts = getSerializeOpts(opts);  
@@ -180,16 +186,36 @@ public class http extends XCommand {
 			
 		}
 		
+		int retry = opts.getOptInt("retry", 0);
+		long delay = 1000 ;
+		
+        
+		HttpResponse resp = null ;
+		
+		do {
+		   try {
+			resp =  client.execute(method);
+			break ;
+		   } catch( IOException e ){
+			   mShell.printErr( "Exception running http" + ((retry > 0 ) ? " retrying ... " : "") , e);
+			   if( retry > 0 ){
+				    Thread.sleep( delay );
+				    delay *= 2 ;
+			   } else
+				   throw e ;
+		   }
+		} while( retry-- > 0);
 		
 		
-		HttpResponse resp = client.execute(method);
- 
 		HttpEntity respEntity = resp.getEntity();
 		if( respEntity != null ){
 			InputStream ins = respEntity.getContent();
 			if( ins != null ){
-				Util.copyStream(ins, getStdout().asOutputStream(mSerializeOpts));
-				ins.close();
+				try {
+				    Util.copyStream(ins, getStdout().asOutputStream(mSerializeOpts));
+				} finally { 
+					ins.close();
+				}
 			}
 		}
 		
