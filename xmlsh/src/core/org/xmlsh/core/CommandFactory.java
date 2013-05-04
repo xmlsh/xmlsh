@@ -170,10 +170,12 @@ public class CommandFactory
 	{
 		File	cmdFile = null;
 		
-		cmdFile = shell.getExplicitFile( name , true );
-		if( cmdFile == null && ! name.endsWith(".exe"))
-			cmdFile = shell.getExplicitFile(name + ".exe", true);
-		
+		if( Util.hasDirectory(name)){
+	
+			cmdFile = shell.getExplicitFile( name , true );
+			if( cmdFile == null && ! name.endsWith(".exe"))
+				cmdFile = shell.getExplicitFile(name + ".exe", true);
+		}
 		
 		if( cmdFile == null ){
 			Path	path = shell.getExternalPath();
@@ -267,16 +269,17 @@ public class CommandFactory
 		if( uri != null )
 			return getScript( shell , name , uri.toURL().openStream() , bSourceMode , loc );
 		
+		
 		// If ends with .xsh try it
 		if( name.endsWith(".xsh") || bSourceMode )
 			scriptFile = shell.getExplicitFile(name,true);
 		
-		
-		// try adding a .xsh
-		if( scriptFile == null  && ! name.endsWith(".xsh"))
-			scriptFile = shell.getExplicitFile(name + ".xsh", true);
-		
-		
+		if( Util.hasDirectory(name)){
+			// try adding a .xsh
+			if( scriptFile == null  && ! name.endsWith(".xsh"))
+				scriptFile = shell.getExplicitFile(name + ".xsh", true);
+		}
+		else
 		if( scriptFile == null ) {
 		
 			Path path = shell.getPath("XPATH", true );

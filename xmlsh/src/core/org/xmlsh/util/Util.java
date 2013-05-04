@@ -1181,6 +1181,12 @@ public class Util
 	}
 
 
+	public static boolean hasDirectory(String name) {
+		File f = new File(name);
+		return f.getParent() != null ;
+	}
+
+
 }
 
 //

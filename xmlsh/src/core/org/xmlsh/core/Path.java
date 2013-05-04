@@ -20,7 +20,10 @@ public class Path implements Iterable<String> {
 	List<String>	mPaths = new ArrayList<String>();
 	
 	// Empty path
-	public Path( ) {}
+	public Path( ) {
+		
+		mPaths.add(".");
+	}
 	
 	// Path populated with list of paths from a XValue which could be a sequence
 	public Path( XValue pathVar)
