@@ -20,3 +20,11 @@ foo)
 	;;
 esac
 
+# simple variable setting cases
+
+case A in 
+  X) echo Failed should be A ;;
+  A) _A=B ;;
+esac
+
+[ "$_A" = "B" ] || echo Failed variable not set

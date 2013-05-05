@@ -97,6 +97,8 @@ FILE1 -nt FILE2
 FILE1 -ot FILE2
    FILE1 is older than FILE2
 
+-b FILE
+   FILE exists and is a "partition" (similar to block device)
 
 -d FILE
    FILE exists and is a directory
@@ -295,6 +297,9 @@ public class test extends BuiltinCommand {
 				return ! value.toBoolean();
 			}
 			else
+			if( op.equals("-b"))
+				return getFile( value ).getTotalSpace() > 0L;
+	        else
 			if( op.equals("-d") )
 				return getFile( value ).isDirectory();
 			else
