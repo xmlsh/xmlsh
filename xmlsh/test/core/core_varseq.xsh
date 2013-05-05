@@ -47,6 +47,11 @@ set FOO $_var BAR
 [ ${#_var} -eq 0 ] || echo FAIL should be 0
 [ ${#notset} -eq 0 ] || echo FAIL should be 0
 
+# test for overrunning array
+_var=(a b c d)
+_v=${_var[5]}
+[ -z "$_v" ] || echo Failed should be empty
+
 
 cd ..
 rm -rf $TMPDIR/_varseq

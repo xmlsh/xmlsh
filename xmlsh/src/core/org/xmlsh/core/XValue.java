@@ -560,11 +560,16 @@ public class XValue {
 		else
 		if( ! ( mValue instanceof XdmValue) )
 			return null;
-		else
+		XdmValue v = (XdmValue) mValue;
 		if( ind == null || ind.equals("*") )
-			return (XdmValue) mValue ;
-		else 
-			return ((XdmValue)mValue).itemAt( Util.parseInt(ind, 0) - 1 );
+			return v ;
+		else {
+			int index = Util.parseInt(ind, 0) - 1;
+			if( index >= v.size() )
+				return null ;
+			
+			return v.itemAt( index );
+		}
 	
 		
 	}
