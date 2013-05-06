@@ -7,6 +7,7 @@
 package org.xmlsh.aws;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.List;
 
 import javax.xml.stream.XMLStreamException;
@@ -19,6 +20,7 @@ import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
+import org.xmlsh.sh.shell.SerializeOpts;
 
 import com.amazonaws.services.cloudformation.model.DescribeStacksRequest;
 import com.amazonaws.services.cloudformation.model.DescribeStacksResult;
@@ -37,7 +39,7 @@ public class cfnGetTemplate extends AWSCFNCommand {
 		
 		
 		
-		Options opts = getOptions();
+		Options opts = getOptions("j=json");
 		opts.parse(args);
 
 		args = opts.getRemainingArgs();
@@ -46,6 +48,7 @@ public class cfnGetTemplate extends AWSCFNCommand {
 			return 1;
 		}
 		
+		boolean bJson = opts.hasOpt("json");
 
 		
 		mSerializeOpts = this.getSerializeOpts(opts);
@@ -60,7 +63,7 @@ public class cfnGetTemplate extends AWSCFNCommand {
 		}
 		
 	
-        int ret = getTemplate(args.get(0).toString());
+        int ret = getTemplate(args.get(0).toString(),bJson);
 
 		
 		
@@ -71,31 +74,48 @@ public class cfnGetTemplate extends AWSCFNCommand {
 
 
 
-	private int getTemplate(String stack) throws IOException, XMLStreamException, SaxonApiException, CoreException {
+	private int getTemplate(String stack, boolean bJson) throws IOException, XMLStreamException, SaxonApiException, CoreException {
 		
 
+
 		OutputPort stdout = this.getStdout();
-		mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(mSerializeOpts));
 		
 		
-		startDocument();
-		startElement(this.getName());
-		
-		
+
 		GetTemplateRequest request = new GetTemplateRequest().withStackName(stack);
 		GetTemplateResult result = mAmazon.getTemplate(request);
 		
+		
+		
+		if( bJson ){
+			SerializeOpts opts = mSerializeOpts.clone();
+			opts.setOutput_text_encoding("utf-8");
+			
+			PrintWriter w = stdout.asPrintWriter(opts);
+			w.print(result.getTemplateBody());
+			w.close();
 
- 
-		characters( result.getTemplateBody());
-		
-		endElement();
-		endDocument();
-		closeWriter();
-		
-		stdout.writeSequenceTerminator(mSerializeOpts);
+			
+		} else {
+			mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(mSerializeOpts));
+			
+			
+			startDocument();
+			startElement(this.getName());
+			
+			
+			
+	
+	 
+			characters( result.getTemplateBody());
+			
+			endElement();
+			endDocument();
+			closeWriter();
+			
+			stdout.writeSequenceTerminator(mSerializeOpts);
+		}
 		stdout.release();
-		
 		return 0;
 
 	}
