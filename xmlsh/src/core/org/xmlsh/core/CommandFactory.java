@@ -265,9 +265,9 @@ public class CommandFactory
 		File scriptFile = null;
 		
 		// If name has a scheme try that first
-		URI uri =  Util.tryURI(name);
-		if( uri != null )
-			return getScript( shell , name , uri.toURL().openStream() , bSourceMode , loc );
+		URL url =  Util.tryURL(name);
+		if( url != null )
+			return getScript( shell , name , url.openStream() , bSourceMode , loc );
 		
 		
 		// If ends with .xsh try it
