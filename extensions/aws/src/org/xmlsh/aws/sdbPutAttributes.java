@@ -31,7 +31,7 @@ public class sdbPutAttributes	 extends  AWSSDBCommand {
 	@Override
 	public int run(List<XValue> args) throws Exception {
 
-		Options opts = getOptions("update:,exists:,+r=replace");
+		Options opts = getOptions("update:,exists:,+r=replace,q=quiet:");
 		opts.parse(args);
 
 		args = opts.getRemainingArgs();
@@ -67,7 +67,7 @@ public class sdbPutAttributes	 extends  AWSSDBCommand {
 		
 
 		int ret = -1;
-		ret = put(domain,item,args,updateName,updateExists,bReplace);
+		ret = put(domain,item,args,updateName,updateExists,bReplace, opts.hasOpt("q"));
 
 		
 		
@@ -77,11 +77,10 @@ public class sdbPutAttributes	 extends  AWSSDBCommand {
 	}
 
 
-	private int put(String domain, String item, List<XValue > args, String updateName, String updateExists, boolean bReplace) throws IOException, XMLStreamException, SaxonApiException, CoreException 
+	private int put(String domain, String item, List<XValue > args, String updateName, String updateExists, boolean bReplace, boolean bQuiet) throws IOException, XMLStreamException, SaxonApiException, CoreException 
 	{
 
-		OutputPort stdout = this.getStdout();
-		mWriter = stdout.asXMLStreamWriter(mSerializeOpts);
+		
 		
 		UpdateCondition cond = null  ;
 		if( ! Util.isEmpty(updateName))
@@ -89,10 +88,7 @@ public class sdbPutAttributes	 extends  AWSSDBCommand {
 		
 		
 		
-		startDocument();
-		startElement(getName());
-		
-		List<ReplaceableAttribute> attributes = getAttributes( args , bReplace );
+			List<ReplaceableAttribute> attributes = getAttributes( args , bReplace );
          
 		PutAttributesRequest request = new PutAttributesRequest(domain,item,attributes,cond);
 		
@@ -100,9 +96,14 @@ public class sdbPutAttributes	 extends  AWSSDBCommand {
 		
 		mAmazon.putAttributes(request);
 		
-		
-		endElement();
-		endDocument();
+		if( ! bQuiet ){
+			OutputPort stdout = this.getStdout();
+			mWriter = stdout.asXMLStreamWriter(mSerializeOpts);
+			emptyDocument();
+			closeWriter();
+			stdout.writeSequenceTerminator(mSerializeOpts);
+			stdout.release();
+		}	
 		
 		
 				
@@ -111,9 +112,7 @@ public class sdbPutAttributes	 extends  AWSSDBCommand {
 		
 		
 		
-		closeWriter();
-		stdout.writeSequenceTerminator(mSerializeOpts);
-		stdout.release();
+
 		return 0;
 		
 		

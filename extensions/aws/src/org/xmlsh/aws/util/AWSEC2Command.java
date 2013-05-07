@@ -324,7 +324,7 @@ public abstract class AWSEC2Command extends AWSCommand {
 		
 			attribute( "shapshot-id" , ebs.getSnapshotId() );
 			attribute( "delete-on-termination" , ebs.getDeleteOnTermination());
-			attribute("volume-size" , ebs.getVolumeSize().toString() );
+			attribute("volume-size" , ebs.getVolumeSize() );
 		}
 		
 		

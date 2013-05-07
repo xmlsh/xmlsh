@@ -127,6 +127,9 @@ public abstract class AWSCommand extends XCommand {
 
 	}
 
+	protected void attribute(String name, Integer value) throws XMLStreamException {
+		attribute( name , value == null ? "" : String.valueOf(value));
+	}
 
 	protected void attribute(String name, int value) throws XMLStreamException {
 		attribute( name , String.valueOf(value));
@@ -189,6 +192,14 @@ public abstract class AWSCommand extends XCommand {
 	
 	public abstract void setEndpoint(String endpoint);
 	public abstract void setRegion( String region );
+
+
+	protected void emptyDocument() throws XMLStreamException {
+		startDocument();
+		startElement(getName());
+		endElement();
+		endDocument();
+	}
 	
 
 }
