@@ -39,14 +39,11 @@ public class cfnGetTemplate extends AWSCFNCommand {
 		
 		
 		
-		Options opts = getOptions("j=json");
+		Options opts = getOptions("j=json,n=name:");
 		opts.parse(args);
-
+ 
+		
 		args = opts.getRemainingArgs();
-		if( args.size() != 1 ){
-			usage("stackname");
-			return 1;
-		}
 		
 		boolean bJson = opts.hasOpt("json");
 
@@ -63,7 +60,7 @@ public class cfnGetTemplate extends AWSCFNCommand {
 		}
 		
 	
-        int ret = getTemplate(args.get(0).toString(),bJson);
+        int ret = getTemplate(opts.getOptStringRequired("name"),bJson);
 
 		
 		

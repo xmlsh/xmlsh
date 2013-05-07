@@ -35,7 +35,7 @@ public class cfnDescribeStacks extends AWSCFNCommand {
 		
 		
 		
-		Options opts = getOptions();
+		Options opts = getOptions("n=name:");
 		opts.parse(args);
 
 		args = opts.getRemainingArgs();
@@ -54,7 +54,7 @@ public class cfnDescribeStacks extends AWSCFNCommand {
 		}
 		
 	
-        int ret = describe(args);
+        int ret = describe(opts.getOptString("name", null ) );
 
 		
 		
@@ -65,7 +65,7 @@ public class cfnDescribeStacks extends AWSCFNCommand {
 
 
 
-	private int describe(List<XValue> args) throws IOException, XMLStreamException, SaxonApiException, CoreException {
+	private int describe(String name) throws IOException, XMLStreamException, SaxonApiException, CoreException {
 		
 
 		OutputPort stdout = this.getStdout();
@@ -78,8 +78,8 @@ public class cfnDescribeStacks extends AWSCFNCommand {
 		
 		
 		DescribeStacksRequest request = new DescribeStacksRequest();
-		if( args.size() > 0 )
-			request.setStackName(args.get(0).toString());
+		if( name != null )
+			request.setStackName(name);
 		DescribeStacksResult result = mAmazon.describeStacks(request);
 		
 
