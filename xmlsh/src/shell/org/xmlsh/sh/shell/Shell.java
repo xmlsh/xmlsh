@@ -31,6 +31,7 @@ import java.util.Random;
 import java.util.Stack;
 
 import net.sf.saxon.s9api.Processor;
+import net.sf.saxon.s9api.XdmEmptySequence;
 import net.sf.saxon.s9api.XdmItem;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -1084,7 +1085,7 @@ public class Shell {
 	public	XValue	expand( String value , boolean bExpandWild , boolean bExpandWords , SourceLocation loc ) throws IOException, CoreException {
 			List<XValue> ret = expand(value,false, bExpandWild , bExpandWords, loc  );
 			if( ret.size() == 0 )
-				return new XValue("");
+				return new XValue(XdmEmptySequence.getInstance());
 			else
 			if( ret.size() == 1 )
 				return ret.get(0);
