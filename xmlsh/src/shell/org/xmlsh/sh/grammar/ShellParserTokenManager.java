@@ -11,6 +11,13 @@ public class ShellParserTokenManager implements ShellParserConstants
   boolean in_for = false;
   boolean in_backtick = false;
 
+  public void setInFor( boolean value )
+  {
+        //System.err.println("Setting in_for to " + value + " was " + in_for );
+        in_for = value ;
+  }
+
+
   private String readUntil(String end)
   {
     StringBuffer sb = new StringBuffer();
@@ -2661,7 +2668,7 @@ void TokenLexicalActions(Token matchedToken)
       case 20 :
         image.append(jjstrLiteralImages[20]);
         lengthOfMatch = jjstrLiteralImages[20].length();
-  in_for = false ;
+  setInFor(false) ;
          break;
       case 21 :
         image.append(jjstrLiteralImages[21]);
@@ -2671,18 +2678,18 @@ void TokenLexicalActions(Token matchedToken)
       case 25 :
         image.append(jjstrLiteralImages[25]);
         lengthOfMatch = jjstrLiteralImages[25].length();
+    //System.err.println("got for: in_for is " + in_for);
     if (in_for) {
         matchedToken.kind = NAME ;
         SwitchTo(CMD);
     }
-
-    in_for = true;
+    setInFor(true);
          break;
       case 37 :
         image.append(jjstrLiteralImages[37]);
         lengthOfMatch = jjstrLiteralImages[37].length();
     if (!in_for) matchedToken.kind = WORD;
-    in_for = false;
+    setInFor(false);
          break;
       case 50 :
         image.append(jjstrLiteralImages[50]);
