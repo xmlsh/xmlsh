@@ -31,7 +31,7 @@ public class sdbDeleteAttributes	 extends  AWSSDBCommand {
 	@Override
 	public int run(List<XValue> args) throws Exception {
 
-		Options opts = getOptions("update:,exists:");
+		Options opts = getOptions("update:,exists:,q=quiet");
 		opts.parse(args);
 
 		args = opts.getRemainingArgs();
@@ -61,7 +61,7 @@ public class sdbDeleteAttributes	 extends  AWSSDBCommand {
 		
 
 		int ret = -1;
-		ret = delete(domain,item,args,updateName,updateExists);
+		ret = delete(domain,item,args,updateName,updateExists, opts.hasOpt("q"));
 
 		
 		
@@ -71,20 +71,17 @@ public class sdbDeleteAttributes	 extends  AWSSDBCommand {
 	}
 
 
-	private int delete(String domain, String item, List<XValue > args, String updateName, String updateExists) throws IOException, XMLStreamException, SaxonApiException, CoreException 
+	private int delete(String domain, String item, List<XValue > args, String updateName, String updateExists, boolean bQuiet) throws IOException, XMLStreamException, SaxonApiException, CoreException 
 	{
 
-		OutputPort stdout = this.getStdout();
-		mWriter = stdout.asXMLStreamWriter(mSerializeOpts);
 		
-		UpdateCondition cond = null  ;
+
+	    UpdateCondition cond = null  ;
 		if( ! Util.isEmpty(updateName))
 			cond =  new UpdateCondition( updateName , updateExists , ! Util.isEmpty(updateExists)) ;
 		
 		
 		
-		startDocument();
-		startElement(getName());
 		
 		List<Attribute> attributes = getAttributes( args );
          
@@ -93,20 +90,23 @@ public class sdbDeleteAttributes	 extends  AWSSDBCommand {
 		
         mAmazon.deleteAttributes(request);
 		
+	    if( ! bQuiet ){
+	        OutputPort stdout = this.getStdout();
+			mWriter = stdout.asXMLStreamWriter(mSerializeOpts);
+	
+			emptyDocument();
+
+			closeWriter();
+			stdout.writeSequenceTerminator(mSerializeOpts);
+			stdout.release();
 		
-		endElement();
-		endDocument();
-		
-		
+	    }
 				
 		
 		
 		
 		
 		
-		closeWriter();
-		stdout.writeSequenceTerminator(mSerializeOpts);
-		stdout.release();
 		return 0;
 		
 		
