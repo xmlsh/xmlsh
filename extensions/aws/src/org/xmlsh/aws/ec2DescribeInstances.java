@@ -62,20 +62,7 @@ public class ec2DescribeInstances extends AWSEC2Command {
 		
 	
 
-		int ret;
-		switch(args.size()){
-		case	0:
-			ret = describe(null);
-			break;
-		case	1:
-			ret = describe(args);
-			break;
-			
-		default :
-				usage();
-				return 1;
-		}
-
+		int ret = describe(args);
 
 		
 		
@@ -96,7 +83,7 @@ public class ec2DescribeInstances extends AWSEC2Command {
 		startElement(this.getName());
 		
 		DescribeInstancesRequest  request = new DescribeInstancesRequest();
-		if( args != null ){
+		if( args != null && args.size() > 0 ){
 			
 			request.setInstanceIds(Util.toStringList(args));
 			
@@ -131,7 +118,7 @@ public class ec2DescribeInstances extends AWSEC2Command {
 	
 
 	public void usage() {
-		super.usage("Usage: ec2describe [options] [instance-id]");
+		super.usage("Usage: ec2-describe-instances [options] [instance-id]");
 	}
 
 
