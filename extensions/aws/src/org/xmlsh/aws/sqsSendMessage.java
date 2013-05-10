@@ -50,7 +50,8 @@ public class sqsSendMessage extends AWSSQSCommand {
 		
 		
 		String url = args.get(0).toString();
-		String body;
+		String body = null;
+		
 		// Get message from file 
 		if( opts.hasOpt("f")){
 			body = readMessage( mShell.getEnv().getInput(opts.getOptValue("f")));
@@ -62,8 +63,10 @@ public class sqsSendMessage extends AWSSQSCommand {
 			body = readMessage( getStdin() );
 			break ;
 		case	2:
+		{
 			body = args.get(1).toString();
 			break ;
+		}
 		default :
 		{
 			usage();
