@@ -1,6 +1,8 @@
 package org.xmlsh.aws;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import javax.xml.stream.XMLStreamException;
@@ -13,11 +15,13 @@ import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
+import org.xmlsh.util.StringPair;
 import org.xmlsh.util.Util;
 
 import com.amazonaws.services.ec2.model.BlockDeviceMapping;
 import com.amazonaws.services.ec2.model.DescribeImagesRequest;
 import com.amazonaws.services.ec2.model.DescribeImagesResult;
+import com.amazonaws.services.ec2.model.Filter;
 import com.amazonaws.services.ec2.model.Image;
 import com.amazonaws.services.ec2.model.ProductCode;
 import com.amazonaws.services.ec2.model.StateReason;
@@ -29,11 +33,6 @@ public class ec2DescribeImages extends AWSEC2Command {
 	
 
 
-	private boolean bLongListing;
-
-
-
-
 	/**
 	 * @param args
 	 * @throws IOException 
@@ -42,7 +41,7 @@ public class ec2DescribeImages extends AWSEC2Command {
 	public int run(List<XValue> args) throws Exception {
 
 		
-		Options opts = getOptions("l=long");
+		Options opts = getOptions("f=filter:+");
 		opts.parse(args);
 
 		args = opts.getRemainingArgs();
@@ -50,12 +49,6 @@ public class ec2DescribeImages extends AWSEC2Command {
 
 		
 		mSerializeOpts = this.getSerializeOpts(opts);
-		
-		
-		
-		
-		bLongListing = opts.hasOpt("l");
-		
 		
 		try {
 			 getEC2Client(opts);
@@ -66,14 +59,17 @@ public class ec2DescribeImages extends AWSEC2Command {
 		}
 		
 	
+		Collection<Filter> filters = 
+				opts.hasOpt("filter") ?
+				parseFilters( Util.toStringList(opts.getOptValues("filter"))) : null ;
 
 		int ret;
 		switch(args.size()){
 		case	0:
-			ret = describe(null);
+			ret = describe(null,filters);
 			break;
 		case	1:
-			ret = describe(args);
+			ret = describe(args,filters);
 			break;
 			
 		default :
@@ -90,7 +86,22 @@ public class ec2DescribeImages extends AWSEC2Command {
 	}
 
 
-	private int describe(List<XValue> args) throws IOException, XMLStreamException, SaxonApiException, CoreException {
+	private Collection<Filter> parseFilters(List<String> values) {
+		if( values == null || values.size() == 0 )
+		    return null;
+
+		ArrayList<Filter> filters = new ArrayList<Filter>(values.size());
+	
+		for( String v : values ){
+			StringPair nv = new StringPair( v , '=' );
+			Filter filter = new Filter().withName(nv.getLeft()).withValues( nv.getRight().split(","));
+			filters.add(filter);
+		}
+		return filters;
+	}
+
+
+	private int describe(List<XValue> args, Collection<Filter> filters) throws IOException, XMLStreamException, SaxonApiException, CoreException {
 		
 
 		OutputPort stdout = this.getStdout();
@@ -106,6 +117,9 @@ public class ec2DescribeImages extends AWSEC2Command {
 			request.setImageIds(Util.toStringList(args));
 			
 		}
+		
+        if( filters != null )
+		     request.setFilters(filters);
 		
 		
 		
