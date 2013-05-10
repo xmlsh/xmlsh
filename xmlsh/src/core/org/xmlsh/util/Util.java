@@ -549,12 +549,14 @@ public class Util
 		/*
 		 * Avoid making a new list if this list is a single element
 		 */
-		if( values.isEmpty() )
+		if( values == null || values.isEmpty() )
 			return values ;
 	
 		
 		ArrayList<XValue> list = new ArrayList<XValue>( values.size());
 		for( XValue arg : values ){
+			if( arg == null  )
+				continue ;
 			if( arg.isAtomic() || arg.isObject() )
 				list.add(arg);
 			else {
