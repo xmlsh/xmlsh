@@ -127,7 +127,7 @@ public class cfnCreateStack extends AWSCFNCommand {
 	private Collection<Parameter> getParameters(List<XValue> args) {
 		int sz = args.size();
 		Collection<Parameter> params = new ArrayList<Parameter>( sz );
-		for( int i = 0 ; i < sz+1 ; i += 2 ){
+		for( int i = 0 ; i < sz ; i += 2 ){
 			String name = args.get(i).toString();
 			
 			String value = i+1 >= sz ? "" : args.get(i+1).toString();

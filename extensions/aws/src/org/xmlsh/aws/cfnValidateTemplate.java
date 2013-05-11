@@ -19,13 +19,17 @@ import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
+import org.xmlsh.util.Util;
 
 import com.amazonaws.services.cloudformation.model.DescribeStacksRequest;
 import com.amazonaws.services.cloudformation.model.DescribeStacksResult;
 import com.amazonaws.services.cloudformation.model.Output;
+import com.amazonaws.services.cloudformation.model.Parameter;
 import com.amazonaws.services.cloudformation.model.Stack;
+import com.amazonaws.services.cloudformation.model.ValidateTemplateRequest;
+import com.amazonaws.services.cloudformation.model.ValidateTemplateResult;
 
-public class cfnDescribeStacks extends AWSCFNCommand {
+public class cfnValidateTemplate extends AWSCFNCommand {
 
 	
 
@@ -34,7 +38,7 @@ public class cfnDescribeStacks extends AWSCFNCommand {
 		
 		
 		
-		Options opts = getOptions("n=name:");
+		Options opts = getOptions("template-file=f:,template-url=url:");
 		opts.parse(args);
 
 		args = opts.getRemainingArgs();
@@ -53,7 +57,7 @@ public class cfnDescribeStacks extends AWSCFNCommand {
 		}
 		
 	
-        int ret = describe(opts.getOptString("name", null ) );
+        int ret = validate(opts );
 
 		
 		
@@ -64,9 +68,21 @@ public class cfnDescribeStacks extends AWSCFNCommand {
 
 
 
-	private int describe(String name) throws IOException, XMLStreamException, SaxonApiException, CoreException {
+	private int validate(Options opts) throws IOException, XMLStreamException, SaxonApiException, CoreException {
 		
 
+		
+		
+		ValidateTemplateRequest request = new ValidateTemplateRequest();
+		if( opts.hasOpt("template-file"))
+			request.setTemplateBody( Util.readString( mShell.getFile(opts.getOptValue("template-file")), mSerializeOpts.getInput_text_encoding()));
+		else
+			request.setTemplateURL( opts.getOptStringRequired("template-url"));
+		
+	
+		ValidateTemplateResult result = mAmazon.validateTemplate(request);
+
+		
 		OutputPort stdout = this.getStdout();
 		mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(mSerializeOpts));
 		
@@ -74,17 +90,10 @@ public class cfnDescribeStacks extends AWSCFNCommand {
 		startDocument();
 		startElement(this.getName());
 		
+	
 		
+		writeResult( result );
 		
-		DescribeStacksRequest request = new DescribeStacksRequest();
-		if( name != null )
-			request.setStackName(name);
-		DescribeStacksResult result = mAmazon.describeStacks(request);
-		
-
-		for( Stack  stack : result.getStacks() )
-			writeStack( stack )
-		;
 		
 		endElement();
 		endDocument();
@@ -98,51 +107,18 @@ public class cfnDescribeStacks extends AWSCFNCommand {
 	}
 
 
-	private void writeStack(Stack stack) throws XMLStreamException {
-		startElement("stack");
-		attribute("creation-time" , stack.getCreationTime());
-		attribute("description" ,stack.getDescription());
-		attribute("disable-rollback" ,stack.getDisableRollback());
-		attribute("last-update-time" ,stack.getLastUpdatedTime());
-		attribute("stack-id" ,stack.getStackId());
-		attribute("name" ,stack.getStackName());
-		attribute("status" ,stack.getStackStatus());
-		attribute("reason" ,stack.getStackStatusReason());
+	private void writeResult(ValidateTemplateResult result) throws XMLStreamException {
+		startElement("template");
 		
+		attribute("capabilities-reason" , result.getCapabilitiesReason());
+		attribute("description" , result.getDescription());
 		
+		writeTemplateParameters( result.getParameters() );
 		
-		writeParameters( stack.getParameters() );
-
-		writeOutputs( stack.getOutputs() );
-		
-		writeCapibilities(stack.getCapabilities());
-		writeNotifications(stack.getNotificationARNs());
-		
-	}
-
-
-
-	private void writeOutputs(List<Output> outputs) throws XMLStreamException {
-		startElement("outputs")	;
-		for( Output o : outputs )
-			writeOutput( o );
+		writeCapibilities(result.getCapabilities());
 		endElement();
 		
-	}
-
-
-
-	private void writeOutput(Output o) throws XMLStreamException {
-		startElement("output")	;
-		attribute("description" ,o.getDescription());
-		attribute("output-key" ,o.getOutputKey());
-		attribute("output-value" ,o.getOutputValue());
-		endElement();
-
-	}
-
-
-		
+	}	
 	
 }
 

@@ -6,6 +6,10 @@
 
 package org.xmlsh.aws.util;
 
+import java.util.List;
+
+import javax.xml.stream.XMLStreamException;
+
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.UnexpectedException;
@@ -14,6 +18,8 @@ import com.amazonaws.regions.RegionUtils;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.cloudformation.AmazonCloudFormation;
 import com.amazonaws.services.cloudformation.AmazonCloudFormationClient;
+import com.amazonaws.services.cloudformation.model.Parameter;
+import com.amazonaws.services.cloudformation.model.TemplateParameter;
 
 public abstract class AWSCFNCommand extends AWSCommand {
 	
@@ -48,6 +54,56 @@ public abstract class AWSCFNCommand extends AWSCommand {
 	    mAmazon.setRegion( RegionUtils.getRegion(region));
 		
 	}
+
+
+	protected void writeNotifications(List<String> notificationARNs) throws XMLStreamException {
+		writeStringList("notification-arns", "notification-arn", "arn" , notificationARNs);		
+	}
+
+
+	protected void writeCapibilities(List<String> capabilities) throws XMLStreamException {
+	
+		writeStringList("capabilities", "capability", "name" , capabilities);
+		
+		
+	}
+
+
+	protected void writeParameters(List<Parameter> parameters) throws XMLStreamException {
+		startElement("parameters");
+		for( Parameter p : parameters )
+			writeParameter( p );
+		endElement();
+	}
+
+
+	public void writeParameter(Parameter p) throws XMLStreamException {
+		startElement("parameter");
+		attribute("key",p.getParameterKey());
+		attribute("value",p.getParameterValue());
+		endElement();
+		
+	}
+
+
+	protected void writeTemplateParameters(List<TemplateParameter> parameters) throws XMLStreamException {
+		startElement("parameters");
+		for( TemplateParameter p : parameters )
+			writeTemplateParameter( p );
+		endElement();
+	}
+
+
+	public void writeTemplateParameter(TemplateParameter p) throws XMLStreamException {
+		startElement("parameter");
+		attribute("key",p.getParameterKey());
+		attribute("description",p.getDescription());
+		attribute("no-echo",p.getNoEcho());
+		attribute("default",p.getDefaultValue());
+		endElement();
+		
+	}
+
 
 
 }
