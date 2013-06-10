@@ -34,6 +34,10 @@ public class SourceLocation {
 	}
 	
 	
+	public SourceLocation() {
+		mSource = "<unknown>";
+	}
+
 	/**
 	 * @return the source
 	 */

@@ -24,6 +24,7 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -71,6 +72,7 @@ import org.xmlsh.xpath.ShellContext;
 
 public class Shell {
 	
+
 	private static Logger mLogger = LogManager.getLogger(Shell.class);
 	private 	ShellOpts	mOpts;
 	
@@ -92,6 +94,7 @@ public class Shell {
 	
 
 	private		List<ShellThread>	mChildren = new ArrayList<ShellThread>();
+	private    Map<String,String>  mTraps = null ;
 	private 	boolean mIsInteractive = false ;
 	private		long	mLastThreadId = 0;
 	
@@ -108,7 +111,8 @@ public class Shell {
 	
 	// Current classloader
 	private		ClassLoader		mClassLoader = null ;
-	
+	private  SourceLocation    mCurrentLocation = null ;
+
 	
 	/*
 	 * Initializtion statics
@@ -117,6 +121,9 @@ public class Shell {
 	private		static	Properties		mSavedSystemProperties;
 	private		static Processor		mProcessor = null;
 	// private		static	ModuleURIResolver	mModuleURIResolver = null ;
+	
+	private Shell mParent = null;
+	
 	
 	
 	/**
@@ -326,6 +333,7 @@ public class Shell {
 	 */
 	private Shell( Shell that ) throws IOException
 	{
+		mParent = that;
 		mOpts = new ShellOpts(that.mOpts);
 		mEnv = that.getEnv().clone(this) ;
 		mCommandInput = that.mCommandInput;
@@ -520,6 +528,8 @@ public class Shell {
 			}
 			mReturnVal = null ;
 		}
+		
+		onSignal("EXIT");
 			
 		return ret;
 		
@@ -610,7 +620,16 @@ public class Shell {
 		}
 		if( mExitVal != null )
 			ret = mExitVal.intValue();
+		
+		onSignal("EXIT");
+		
+		
 		return ret;
+	}
+	
+	public void setSourceLocation(SourceLocation loc)
+	{
+		mCurrentLocation = loc ;
 	}
 
 
@@ -622,9 +641,15 @@ public class Shell {
 			if( script.exists() && script.canRead() ){
 
 				ICommand icmd = CommandFactory.getInstance().getScript(this,   script ,true, null );
-				if( icmd != null )
+				if( icmd != null ){
+					SourceLocation l = mCurrentLocation ;
+					mCurrentLocation = icmd.getLocation();
 					icmd.run(this, rcfile , null);
+					mCurrentLocation = l;
+			
+				}
 	    	}
+			onSignal("EXIT");
 		}
 	}
 
@@ -706,6 +731,8 @@ public class Shell {
 	public int exec(Command c, SourceLocation loc) throws ThrowException, ExitOnErrorException {
 		if( loc == null )
 			loc = c.getLocation();
+		
+		mCurrentLocation = loc ;
 		
 		if( mOpts.mExec){
 			String out = c.toString(true);
@@ -1215,8 +1242,8 @@ public class Shell {
 		return 0;
 	}
 
-	public ControlLoop pushLoop() {
-		ControlLoop loop = new ControlLoop();
+	public ControlLoop pushLoop(SourceLocation sourceLocation) {
+		ControlLoop loop = new ControlLoop(sourceLocation);
 		mControlStack.add( loop );
 		return loop;
 	}
@@ -1606,6 +1633,53 @@ public class Shell {
 	}
 
 
+	public void trap(String signal, String cmd) {
+		if( Util.isBlank(signal) || Util.isBlank(cmd))
+			return ;
+		if( mTraps == null )
+			mTraps = new HashMap<String,String>();
+		
+		
+		if( signal.equals("0"))
+			signal = "EXIT";
+		mTraps.put(signal, cmd);
+		
+	}
+	
+	
+	void onSignal( String signal )
+	{
+		if( mTraps == null )
+			return;
+		String scmd = mTraps.get(signal);
+		
+		if( scmd == null )
+			return ;
+		
+
+		try {
+			Command c = parseEval(scmd);
+			exec(c);
+		} catch (Exception e) {
+			this.printErr("Exception running trap: " + signal + ":"  + scmd ,  e );
+		}
+		
+		
+		
+	}
+
+
+	public SourceLocation getLocation() {
+
+ 
+		return mCurrentLocation == null ? new SourceLocation() : mCurrentLocation ;
+	}
+
+
+	public synchronized Shell getParent()
+	{
+		return mParent;
+	}
 
 
 

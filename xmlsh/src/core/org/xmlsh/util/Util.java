@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -1186,6 +1187,14 @@ public class Util
 	public static boolean hasDirectory(String name) {
 		File f = new File(name);
 		return f.getParent() != null ;
+	}
+
+
+	public static String readString(File file, SerializeOpts serializeOpts) throws IOException {
+		InputStream is = new FileInputStream(file);
+		String s = readString( is , serializeOpts.getInput_text_encoding());
+		is.close();
+		return s;
 	}
 
 

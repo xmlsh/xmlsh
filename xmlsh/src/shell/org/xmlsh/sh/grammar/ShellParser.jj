@@ -9,9 +9,15 @@
 PARSER_BEGIN(ShellParser)package org.xmlsh.sh.grammar;import org.xmlsh.sh.core.*;import java.io.PrintWriter;import java.util.ArrayList;import org.xmlsh.core.XEnvironment;public class ShellParser{  private String mSource;  public ShellParser(java.io.InputStream stream, String encoding, String source)  {    this (stream, encoding);    mSource = source;  }  public ShellParser(java.io.Reader stream, String source)  {    this (stream);    mSource = source;  }  public String getSource()  {    return mSource;  }  public void ReInit(java.io.InputStream stream, String encoding, String source)  {    this.ReInit(stream, encoding);    mSource = source;  }  public void ReInit(java.io.Reader stream, String source)  {    this.ReInit(stream);    mSource = source;  }  public SourceLocation getLocation(Token t)  {    return new SourceLocation(getSource(), t == null ? token : t);  }  public void setLocation(Command command, Token t)  {    command.setLocation(getLocation(t));  }  public void setLocation(Command command)  {    setLocation(command, token);  }}PARSER_END(ShellParser)TOKEN_MGR_DECLS :{  boolean in_for = false;  boolean in_backtick = false;
 
   public void setInFor( boolean value )
-  {        //System.err.println("Setting in_for to " + value + " was " + in_for );
+  {       // System.err.println("Setting in_for to " + value + " was " + in_for );
         in_for = value ;
-  }        private String readUntil(String end)  {    StringBuffer sb = new StringBuffer();    char c;    try    {      while ((c = input_stream.readChar()) > 0)      {        sb.append(c);        if (sb.toString().endsWith(end))         break;      }    }    catch (Exception e)    {}    return sb.toString();  }  private String readXExpr()  {    return "<[" + readUntil("]>");  }  private String readBigquote()  {    return "<{{" + readUntil("}}>");  }  String readHere()  {    // Read up to NL then call readHere( word );
+  }   
+
+  public boolean getInFor(  )
+  {
+       // System.err.println("Getting in_for : " + in_for );
+        return in_for;
+  }  private String readUntil(String end)  {    StringBuffer sb = new StringBuffer();    char c;    try    {      while ((c = input_stream.readChar()) > 0)      {        sb.append(c);        if (sb.toString().endsWith(end))         break;      }    }    catch (Exception e)    {}    return sb.toString();  }  private String readXExpr()  {    return "<[" + readUntil("]>");  }  private String readBigquote()  {    return "<{{" + readUntil("}}>");  }  String readHere()  {    // Read up to NL then call readHere( word );
     char c;    StringBuffer sb = new StringBuffer();    try    {      while ((c = input_stream.readChar()) > 0)      {        if (c == '\r')         continue;        if (c == '\n')         break;        sb.append(c);      }    }    catch (Exception e)    {}    return readHere(sb.toString().trim());  }  String readHere(String here_end)  {    StringBuffer sb = new StringBuffer("");    char c;    String estr = "\n" + here_end + "\n";    try    {      while ((c = input_stream.readChar()) > 0)      {        if (c == '\r')         continue;        sb.append(c);        if (c == '\n' &&         sb.toString().endsWith(estr))        {          sb.setLength(sb.length() - estr.length() + 1);          input_stream.backup(1);          break;        }      }
     }
     catch( java.io.IOException e )    {      if( sb.toString().endsWith( "\n" + here_end ) )
@@ -35,9 +41,9 @@
 < DEFAULT  > TOKEN :{   < CATCH : "catch" > }
 
 TOKEN :{  < IF : "if" >| < ELIF : "elif" >| < THEN : "then" >| < ELSE : "else" >| < FI : "fi" >| < DO : "do" >{  setInFor(false) ;
-} : DEFAULT| < CASE : "case" >  {    in_for = true;  }| < ESAC : "esac" >| < WHILE : "while" >| < UNTIL : "until" >| < FOR : "for" >  {
+} : DEFAULT| < CASE : "case" >  {    setInFor(true);  }| < ESAC : "esac" >| < WHILE : "while" >| < UNTIL : "until" >| < FOR : "for" >  {
     //System.err.println("got for: in_for is " + in_for);
-    if (in_for) {
+    if (getInFor()) {
     	matchedToken.kind = NAME ;
     	SwitchTo(CMD);
     }
@@ -45,7 +51,7 @@
   }| < TRY : "try" > : DEFAULT| < FINALLY : "finally" > : DEFAULT
 | < RETURN : "return" > : CMD}< DEFAULT, CMD >TOKEN :{  < DONE : "done" >}< DEFAULT >TOKEN :{  < LBRACE : "{" > // RESERVED WORD only at beginning of command
 | < BANG : "!" >| < LPAREN : "(" >}< CMD >TOKEN :{  < LPAREN2 : "(" >| < LBRACE2 : "{" >| < RBRACE2 : "}" >}< DEFAULT >TOKEN :{  < RBRACE : "}" > : CMD // RESERVED WORD only at beginning of command and starts a command    
-}< CMD >TOKEN :{  < IN : "in" >  {    if (!in_for) matchedToken.kind = WORD;    setInFor(false);  }}< DEFAULT, CMD >TOKEN :{  < LESS : "<" >| < GT : ">" >| < TGT : "2>" >| < TGTGT : "2>>" >
+}< CMD >TOKEN :{  < IN : "in" >  {    if (!getInFor()) matchedToken.kind = WORD;    setInFor(false);  }}< DEFAULT, CMD >TOKEN :{  < LESS : "<" >| < GT : ">" >| < TGT : "2>" >| < TGTGT : "2>>" >
 | < TGTAND1 : "2>&1" >| < GTAND : ">&" >| < GTAND2 : "1>&2" >| < LTAND : "<&" >}< CMD, DEFAULT >TOKEN :{  //	< LTPAREN :"<(" > 
   < RPAREN : ")" > // Recoginze ")" within command to terminate command (unlike })
 }< CMD >TOKEN :{  < AMP : "&" > : DEFAULT| < SEMI : ";" > : DEFAULT}< DEFAULT, CMD >TOKEN :{  < PIPE : "|" >   : DEFAULT}<* >TOKEN :{  < BIGQUOTE : "<{{" >  {    matchedToken.image = readBigquote();  }}TOKEN :{  < NAME :    (      [ "A"-"Z", "a"-"z", "_", "0"-"9", "-", ".", "/", "[", ":", "*", "?", "]", "@" ]    | < VAR_EXPANSION >    )+  | < STRING_LITERAL1 >  | < STRING_LITERAL2 > >   : CMD}<* >TOKEN :{  < XEXPR : "<[" >  {    matchedToken.image = readXExpr();  }}< CMD >TOKEN :{  < FUNC_CALL_WORD :        ( ([ "A"-"Z", "a"-"z", "_", "0"-"9", "-" ])+ ":")? ([ "A"-"Z", "a"-"z", "_", "0"-"9", "-" ])+ "("  >

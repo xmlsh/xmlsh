@@ -33,6 +33,7 @@ import org.xmlsh.commands.builtin.shift;
 import org.xmlsh.commands.builtin.source;
 import org.xmlsh.commands.builtin.test;
 import org.xmlsh.commands.builtin.tie;
+import org.xmlsh.commands.builtin.trap;
 import org.xmlsh.commands.builtin.unset;
 import org.xmlsh.commands.builtin.wait;
 import org.xmlsh.commands.builtin.xbreak;
@@ -50,6 +51,7 @@ import org.xmlsh.commands.builtin.xtrue;
 import org.xmlsh.commands.builtin.xtype;
 import org.xmlsh.commands.builtin.xversion;
 import org.xmlsh.commands.builtin.xwhich;
+import org.xmlsh.commands.internal.validate;
 import org.xmlsh.sh.core.FunctionDeclaration;
 import org.xmlsh.sh.core.SourceLocation;
 import org.xmlsh.sh.shell.Module;
@@ -113,6 +115,7 @@ public class CommandFactory
 		addBuiltin("xmkpipe" , xmkpipe.class);
 		addBuiltin("printvar" , printvar.class);
 		addBuiltin("jsonread" , jsonread.class);
+		addBuiltin("trap" , trap.class);
 		
 		
 

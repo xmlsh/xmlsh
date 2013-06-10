@@ -4,27 +4,29 @@
  *
  */
 
-package org.xmlsh.sh.shell;
+package org.xmlsh.commands.internal;
 
-import org.xmlsh.sh.core.SourceLocation;
+import java.util.List;
 
-/**
- * A Control loop is created at each nesting level of for,while,until
- * It stores the flags that indicate if the loop should continue, break or exit
- * 
- * 
- */
-public class ControlLoop 
-{
-	public	boolean		mBreak;		// loop should break
-	public	boolean		mContinue;	// loop should continue
-	public SourceLocation            mLocation;
+import net.sf.saxon.s9api.QName;
+import org.xmlsh.core.BuiltinFunctionCommand;
+import org.xmlsh.core.InvalidArgumentException;
+import org.xmlsh.core.XValue;
+import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.util.S9Util;
+
+public class xlocation extends BuiltinFunctionCommand {
 	
-	public ControlLoop(SourceLocation loc)
+	public xlocation()
 	{
-		mLocation = loc;
-		mBreak = mContinue = false ;
+		super("xlocation");
+	}
+	
+	@Override
+	public XValue run(Shell shell, List<XValue> args) throws InvalidArgumentException 
+	{
 		
+		return new XValue(shell.getLocation().toString());
 	}
 
 }
@@ -33,7 +35,7 @@ public class ControlLoop
 
 //
 //
-//Copyright (C) 2008-2013    David A. Lee.
+//Copyright (C) 2008,2009,2010,2011,2012 David A. Lee.
 //
 //The contents of this file are subject to the "Simplified BSD License" (the "License");
 //you may not use this file except in compliance with the License. You may obtain a copy of the

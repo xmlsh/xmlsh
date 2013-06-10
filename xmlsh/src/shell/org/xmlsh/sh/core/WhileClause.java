@@ -34,7 +34,7 @@ public class WhileClause extends CompoundCommand {
 	public int exec(Shell shell) throws Exception {
 		
 		shell.getEnv().saveIO();
-		ControlLoop loop = shell.pushLoop(  );
+		ControlLoop loop = shell.pushLoop( getLocation() );
 		try {
 
 			applyRedirect(shell);	

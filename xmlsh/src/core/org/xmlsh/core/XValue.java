@@ -474,8 +474,8 @@ public class XValue {
 		
 	}
 
-	public void append(XValue v) {
-		append( v.asXdmValue() );
+	public XValue append(XValue v) {
+		return append( v.asXdmValue() );
 		
 	}
 

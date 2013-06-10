@@ -55,7 +55,7 @@ public class ForClause extends CompoundCommand {
 		
 		
 		shell.getEnv().saveIO();
-		ControlLoop loop = shell.pushLoop(  );
+		ControlLoop loop = shell.pushLoop( getLocation()  );
 		try {
 			applyRedirect(shell);
 			if( mWords == null ) {	// for all args 

@@ -1,36 +1,44 @@
 /**
- * $Id: $
- * $Date: $
+ * $Id: colon.java 21 2008-07-04 08:33:47Z daldei $
+ * $Date: 2008-07-04 04:33:47 -0400 (Fri, 04 Jul 2008) $
  *
  */
 
-package org.xmlsh.sh.shell;
+package org.xmlsh.commands.builtin;
 
-import org.xmlsh.sh.core.SourceLocation;
+import java.util.List;
 
-/**
- * A Control loop is created at each nesting level of for,while,until
- * It stores the flags that indicate if the loop should continue, break or exit
- * 
- * 
- */
-public class ControlLoop 
-{
-	public	boolean		mBreak;		// loop should break
-	public	boolean		mContinue;	// loop should continue
-	public SourceLocation            mLocation;
+import org.xmlsh.core.BuiltinCommand;
+import org.xmlsh.core.XValue;
+import org.xmlsh.sh.core.Command;
+
+public class trap extends BuiltinCommand {
+
+	/*
+	 * Evaluate all arguments as as string
+	 * and parse them as a command 
+	 * 
+	 */
 	
-	public ControlLoop(SourceLocation loc)
-	{
-		mLocation = loc;
-		mBreak = mContinue = false ;
+	public int run(  List<XValue> args ) throws Exception {
+			
+		if( args.size() < 2 ){
+			usage("Usage: trap 'command' signal");
+		}
 		
+		String cmd = args.remove(0).toString();
+		while( !args.isEmpty() ){
+			String signal = args.remove(0).toString();
+			mShell.trap( signal , cmd );
+		}
+				
+		return 0;
+				
 	}
 
+
+
 }
-
-
-
 //
 //
 //Copyright (C) 2008-2013    David A. Lee.
