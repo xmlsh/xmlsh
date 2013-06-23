@@ -441,8 +441,8 @@ public class Options
 		return Util.parseInt(this.getOptString(opt,""), def);
 	}
 	
-	public long getOptLong(String opt, int def) {
-		return Util.parseLong(this.getOptString(opt,""), def);
+	public long getOptLong(String opt, long l) {
+		return Util.parseLong(this.getOptString(opt,""), l);
 	}
 	public boolean hasDashDash() { return mDashDash ; }
 
