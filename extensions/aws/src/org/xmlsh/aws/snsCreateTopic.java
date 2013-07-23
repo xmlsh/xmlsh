@@ -76,7 +76,8 @@ public class snsCreateTopic extends AWSSNSCommand {
 
 		CreateTopicRequest request = new CreateTopicRequest();
 		request.setName(name);
-		
+		traceCall("createTopic");
+
 		CreateTopicResult result = mAmazon.createTopic(request);
 		
 		OutputPort stdout = this.getStdout();

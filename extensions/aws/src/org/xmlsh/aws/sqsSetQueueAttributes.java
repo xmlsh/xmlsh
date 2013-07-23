@@ -50,8 +50,6 @@ public class sqsSetQueueAttributes extends AWSSQSCommand {
 		
 		
 		
-		
-		
 		try {
 			 getSQSClient(opts);
 		} catch (UnexpectedException e) {
@@ -69,7 +67,6 @@ public class sqsSetQueueAttributes extends AWSSQSCommand {
 		
 		return ret;
 		
-		
 	}
 
 
@@ -81,32 +78,16 @@ public class sqsSetQueueAttributes extends AWSSQSCommand {
 			map.put( list.get(i), list.get(i+1));
 			i+=2;
 		}
-		
-		
 		return map ;
-		
-		
 	}
 
 
 	private int setAttributes(String name , Map<String,String> attrs ) throws IOException, XMLStreamException, InvalidArgumentException, SaxonApiException {
-		
 
 		SetQueueAttributesRequest request = new SetQueueAttributesRequest(name,attrs);
-		
-
-		
+		traceCall("setQueueAttributes");
 		mAmazon.setQueueAttributes(request);
-		
-
-
-		
-		
 		return 0;
-		
-		
-		
-		
 	}
 
 

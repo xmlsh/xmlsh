@@ -93,6 +93,8 @@ public class ec2DescribeAddresses extends AWSEC2Command {
 		
 		
 		
+		traceCall("describeAddresses");
+
 		DescribeAddressesResult result = mAmazon.describeAddresses(request);
 		
 		

@@ -88,6 +88,8 @@ public class glacierPutArchive	 extends  AWSGlacierCommand {
 		
 			File file = mShell.getFile(xf);
 			
+			traceCall("ArchiveTransferManager.upload");
+
 	        UploadResult result = tm.upload(vault, desc, file);
 	        startElement("upload");
 	        attribute("valut", vault);

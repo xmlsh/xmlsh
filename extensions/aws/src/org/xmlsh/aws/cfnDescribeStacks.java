@@ -79,6 +79,9 @@ public class cfnDescribeStacks extends AWSCFNCommand {
 		DescribeStacksRequest request = new DescribeStacksRequest();
 		if( name != null )
 			request.setStackName(name);
+		
+		traceCall("describeStacks");
+
 		DescribeStacksResult result = mAmazon.describeStacks(request);
 		
 

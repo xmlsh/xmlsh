@@ -72,7 +72,8 @@ public class sqsDeleteMessage extends AWSSQSCommand {
 		request.setQueueUrl(url);
 		request.setReceiptHandle(message);
 
-		
+		traceCall("deleteMessage");
+
 		mAmazon.deleteMessage(request);
 		
 				

@@ -78,6 +78,7 @@ public class elbDeregister<x> extends AWSELBCommand {
 		
 		
 		DeregisterInstancesFromLoadBalancerRequest request = new DeregisterInstancesFromLoadBalancerRequest(elb , instances(args));
+		traceCall("deregisterInstancesFromLoadBalancer");
 		DeregisterInstancesFromLoadBalancerResult result = mAmazon.deregisterInstancesFromLoadBalancer(request);
 	    for( Instance instance : result.getInstances()){
 	    	

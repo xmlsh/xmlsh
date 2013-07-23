@@ -104,6 +104,8 @@ public class cfnCreateStack extends AWSCFNCommand {
 		
 		request.setParameters(getParameters( args ));
 		
+		traceCall("createStack");
+
 		CreateStackResult result = mAmazon.createStack(request);
 		
 		writeStackResult(result);

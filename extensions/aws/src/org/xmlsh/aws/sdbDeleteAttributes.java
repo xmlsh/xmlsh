@@ -87,7 +87,8 @@ public class sdbDeleteAttributes	 extends  AWSSDBCommand {
          
 		DeleteAttributesRequest request = new DeleteAttributesRequest(domain,item).withAttributes(attributes).withExpected(cond);
 		
-		
+		traceCall("deleteAttributes");
+
         mAmazon.deleteAttributes(request);
 		
 	    if( ! bQuiet ){

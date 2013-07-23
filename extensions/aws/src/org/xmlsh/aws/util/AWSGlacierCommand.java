@@ -23,6 +23,9 @@ public abstract class AWSGlacierCommand extends AWSCommand {
 		super();
 	}
 
+	protected Object getClient() {
+		return mAmazon; 
+	}
 
 	protected void getGlacierClient( Options opts ) throws UnexpectedException, InvalidArgumentException {
 		mAmazon =  new AmazonGlacierClient(

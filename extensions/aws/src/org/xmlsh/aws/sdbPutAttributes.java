@@ -46,10 +46,6 @@ public class sdbPutAttributes	 extends  AWSSDBCommand {
 		boolean bReplace = opts.getOptFlag("replace",true);
 		
 		
-		
-		
-		
-		
 		try {
 			 getSDBClient(opts);
 		} catch (UnexpectedException e) {
@@ -94,6 +90,8 @@ public class sdbPutAttributes	 extends  AWSSDBCommand {
 		
 		
 		
+		traceCall("putAttributes");
+
 		mAmazon.putAttributes(request);
 		
 		if( ! bQuiet ){

@@ -144,6 +144,8 @@ public class s3get extends AWSS3Command {
 			
 			
 			ListObjectsRequest request = getListRequest( src ,null  );
+			traceCall("listObjects");
+
 			ObjectListing list = mAmazon.listObjects(request);
 			
 			
@@ -230,11 +232,15 @@ public class s3get extends AWSS3Command {
 			if( dest.isFile() )
 			{
 				
+				traceCall("getObject");
+
 				meta  = mAmazon.getObject(request  , dest.getFile() );
 				
 				
 			} else
 			{
+				traceCall("getObject");
+
 				S3Object obj = mAmazon.getObject(request);
 			    meta = obj.getObjectMetadata() ;
 				

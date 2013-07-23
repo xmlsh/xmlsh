@@ -75,6 +75,8 @@ public class ec2CreateVolume extends AWSEC2Command {
 		if( opts.hasOpt("iops"))
 			request.setIops(opts.getOptInt("iops", 100));
 		
+		traceCall("createVolume");
+
 		CreateVolumeResult result = mAmazon.createVolume(request);
 		writeResult(result);
 

@@ -81,6 +81,8 @@ public class ec2CreateImage extends AWSEC2Command {
 		
 		
 	
+		traceCall("createImage");
+
 		CreateImageResult  result = mAmazon.createImage(request);
 
 		writeResult( result );

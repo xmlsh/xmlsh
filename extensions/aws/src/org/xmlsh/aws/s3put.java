@@ -140,6 +140,9 @@ public class s3put extends AWSS3Command {
 			}
 		}
 		
+		traceCall("TransferManager.uploadFileList");
+
+		
 		MultipleFileUpload dirUpload = getTransferManager().
 				uploadFileList(dest.getBucket(), dest.getKey(), getFiles( filelist), mShell.getCurdir(), metadata.getUserMetadata() , storage );
 
@@ -222,6 +225,8 @@ public class s3put extends AWSS3Command {
 			//
 			request.setMetadata(metadata);
 			
+			traceCall("TransferManager.upload");
+
 
 			Upload upload = getTransferManager().upload( request );
            

@@ -88,6 +88,8 @@ public class s3GeneratePresignedUrl extends AWSS3Command {
 		// request.setResponseHeaders(responseHeaders);
 		
 		
+		traceCall("generatePresignedUrl");
+
 		URL url = mAmazon.generatePresignedUrl(request);
 			
 		mOutput.write( url.toString().getBytes(mSerializeOpts.getOutputTextEncoding() ));

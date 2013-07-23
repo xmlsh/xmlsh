@@ -60,6 +60,8 @@ public class ec2DeregisterImage extends AWSEC2Command {
 			
 		}
 		
+		traceCall("deregisterImage");
+
 		int ret = deregisterImage( args.get(0).toString());
 		
 		

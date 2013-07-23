@@ -88,6 +88,8 @@ public class ec2DescribeImageAttribute extends AWSEC2Command {
 		
 		DescribeImageAttributeRequest  request = new DescribeImageAttributeRequest(ami_id , attribute);
 		
+		traceCall("describeImageAttribute");
+
 		DescribeImageAttributeResult result = mAmazon.describeImageAttribute(request);
 		
 		

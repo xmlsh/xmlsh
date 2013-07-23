@@ -93,6 +93,8 @@ public class sdbQuery	 extends  AWSSDBCommand {
 		String token = null ;
 		do {
 
+			traceCall("select");
+
 			SelectResult result = mAmazon.select(selectRequest).withNextToken(token);
 			for( Item item :result.getItems())
 			   writeItem(item);

@@ -101,6 +101,8 @@ public class s3ls extends AWSS3Command {
 		startDocument();
 		startElement("s3ls");
 		
+		traceCall("listBuckets");
+
 		List<Bucket> buckets = mAmazon.listBuckets();
 		for( Bucket  bucket : buckets ){
 			startElement("bucket");
@@ -165,6 +167,8 @@ public class s3ls extends AWSS3Command {
 		
 		
 		ListObjectsRequest request = getListRequest( path ,mDelim );
+		traceCall("listObjects");
+
 		ObjectListing list = mAmazon.listObjects(request);
 		
 		

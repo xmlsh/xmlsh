@@ -49,6 +49,9 @@ public abstract class AWSS3Command extends AWSCommand {
 		return super.getCommonOpts() + ",crypt,keypair:" ;
 	}
 	
+	protected Object getClient() {
+		return mAmazon; 
+	}
 
 	
 	
@@ -179,10 +182,13 @@ public abstract class AWSS3Command extends AWSCommand {
 
 	protected int setAcl(S3Path src, String acl) throws CoreException, IOException,
 			XMLStreamException, SaxonApiException {
-				mAmazon.setObjectAcl(src.getBucket(),src.getKey(), getAcl(acl));
-				return 0;
-				
-			}
+		  
+         traceCall("setObjectAcl");
+
+		mAmazon.setObjectAcl(src.getBucket(),src.getKey(), getAcl(acl));
+		return 0;
+		
+	}
 	
 
 }

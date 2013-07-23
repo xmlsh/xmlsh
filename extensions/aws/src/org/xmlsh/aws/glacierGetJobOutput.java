@@ -81,6 +81,8 @@ public class glacierGetJobOutput	 extends  AWSGlacierCommand {
 		String status = null;
 		DescribeJobResult describeResult= null;
 		do {
+			traceCall("describeJob");
+
 		      describeResult = mAmazon.describeJob(describeJobRequest);
         
 		      status = describeResult.getStatusCode();

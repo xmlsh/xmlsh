@@ -80,6 +80,8 @@ public class cfnValidateTemplate extends AWSCFNCommand {
 			request.setTemplateURL( opts.getOptStringRequired("template-url"));
 		
 	
+		traceCall("validateTemplate");
+
 		ValidateTemplateResult result = mAmazon.validateTemplate(request);
 
 		

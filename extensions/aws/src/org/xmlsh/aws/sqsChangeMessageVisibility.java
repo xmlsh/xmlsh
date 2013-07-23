@@ -6,16 +6,17 @@ import java.util.List;
 import javax.xml.stream.XMLStreamException;
 
 import net.sf.saxon.s9api.SaxonApiException;
-import org.xmlsh.aws.util.AWSSNSCommand;
+import org.xmlsh.aws.util.AWSSQSCommand;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
 
-import com.amazonaws.services.sns.model.DeleteTopicRequest;
+import com.amazonaws.services.sqs.model.ChangeMessageVisibilityRequest;
+import com.amazonaws.services.sqs.model.DeleteMessageRequest;
 
 
-public class snsDeleteTopic extends AWSSNSCommand {
+public class sqsChangeMessageVisibility extends AWSSQSCommand {
 
 	
 
@@ -34,7 +35,7 @@ public class snsDeleteTopic extends AWSSNSCommand {
 
 		args = opts.getRemainingArgs();
 		
-		if( args.size() != 1 ){
+		if( args.size() != 3 ){
 			usage();
 			return 1;
 		}
@@ -45,13 +46,10 @@ public class snsDeleteTopic extends AWSSNSCommand {
 		
 		
 		
-
-		String name = args.get(0).toString();
-		
 		
 		
 		try {
-			 getSNSClient(opts);
+			 getSQSClient(opts);
 		} catch (UnexpectedException e) {
 			usage( e.getLocalizedMessage() );
 			return 1;
@@ -59,8 +57,7 @@ public class snsDeleteTopic extends AWSSNSCommand {
 		}
 		
 		int ret;
-		
-		ret = delete(name );
+		ret = changeVisibility( args.get(0).toString() , args.get(1).toString() , args.get(2).toInt());
 		
 		
 		return ret;
@@ -69,16 +66,20 @@ public class snsDeleteTopic extends AWSSNSCommand {
 	}
 
 
-	private int delete(String name ) throws IOException, XMLStreamException, InvalidArgumentException, SaxonApiException {
+	private int changeVisibility(String url , String message, int vis ) throws IOException, XMLStreamException, InvalidArgumentException, SaxonApiException {
 		
+		
+		
+		ChangeMessageVisibilityRequest request = new ChangeMessageVisibilityRequest();
+		request.setQueueUrl(url);
+		request.setReceiptHandle(message);
+		request.setVisibilityTimeout(vis);
 
-		DeleteTopicRequest request = new DeleteTopicRequest();
-		request.setTopicArn(name);
-		traceCall("deleteTopic");
+		traceCall("changeMessageVisibility");
 
-		mAmazon.deleteTopic(request);
+		mAmazon.changeMessageVisibility(request);
 		
-		
+				
 		
 		return 0;
 		

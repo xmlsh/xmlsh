@@ -87,6 +87,9 @@ public class glacierInventoryVault	 extends  AWSGlacierCommand {
 		InitiateJobRequest initiateJobRequest = new InitiateJobRequest(vault ,
 				new JobParameters().withType("inventory-retrieval")
 				);
+		
+		traceCall("initiateJob");
+
 		InitiateJobResult result = mAmazon.initiateJob(initiateJobRequest);
 		
 		DescribeJobRequest describeJobRequest = new DescribeJobRequest(vault,result.getJobId());
@@ -94,6 +97,8 @@ public class glacierInventoryVault	 extends  AWSGlacierCommand {
 		String status = null;
 		DescribeJobResult describeResult= null;
 		do {
+			traceCall("describeJob");
+
 		      describeResult = mAmazon.describeJob(describeJobRequest);
         
 		      status = describeResult.getStatusCode();
@@ -111,6 +116,8 @@ public class glacierInventoryVault	 extends  AWSGlacierCommand {
 			
 			GetJobOutputRequest getJobOutputRequest= new GetJobOutputRequest(vault, result.getJobId() , null);
 			
+			traceCall("getJobOutput");
+
 			GetJobOutputResult jobOutputResult = mAmazon.getJobOutput(getJobOutputRequest);
 			InputStream jobOutput = jobOutputResult.getBody();
             Util.copyStream(jobOutput, stdout.asOutputStream(mSerializeOpts));

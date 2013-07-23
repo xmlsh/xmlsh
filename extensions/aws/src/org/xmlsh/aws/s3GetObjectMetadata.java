@@ -85,6 +85,8 @@ public class s3GetObjectMetadata extends AWSS3Command {
 				new GetObjectMetadataRequest(src.getBucket(),src.getKey());
 			
 			
+		traceCall("getObjectMetadata");
+
 		ObjectMetadata data = mAmazon.getObjectMetadata(request  );
 		mWriter = metaPort.asXMLStreamWriter(mSerializeOpts);
 		writeMeta( data );

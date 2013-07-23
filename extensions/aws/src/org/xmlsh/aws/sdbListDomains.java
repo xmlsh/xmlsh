@@ -40,14 +40,7 @@ public class sdbListDomains	 extends  AWSSDBCommand {
 			return 1;
 		}
 		
-
-		
 		mSerializeOpts = this.getSerializeOpts(opts);
-		
-		
-		
-		
-		
 		
 		try {
 			 getSDBClient(opts);
@@ -75,15 +68,8 @@ public class sdbListDomains	 extends  AWSSDBCommand {
 		OutputPort stdout = this.getStdout();
 		mWriter = stdout.asXMLStreamWriter(mSerializeOpts);
 		
-		
-		
-		
-		
 		startDocument();
 		startElement(getName());
-         
-		
-		
 		
 		String token = null ;
 		
@@ -92,7 +78,8 @@ public class sdbListDomains	 extends  AWSSDBCommand {
 			if( token != null )
 				listDomainsRequest.setNextToken(token);
 	
-		
+			traceCall("listDomains");
+
 			ListDomainsResult result = mAmazon.listDomains(listDomainsRequest);
 			writeStringList(  null , "domain" , "name" ,  result.getDomainNames() );
 			token = result.getNextToken();

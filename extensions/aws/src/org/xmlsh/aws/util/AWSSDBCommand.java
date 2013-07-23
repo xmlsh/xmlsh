@@ -28,6 +28,9 @@ protected		AmazonSimpleDB mAmazon ;
 	public AWSSDBCommand() {
 		super();
 	}
+	protected Object getClient() {
+		return mAmazon; 
+	}
 
 	protected void getSDBClient(Options opts) throws UnexpectedException, InvalidArgumentException {
 		

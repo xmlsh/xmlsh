@@ -69,6 +69,8 @@ public class snsPublish extends AWSSNSCommand {
 		
 
 		PublishRequest request = new PublishRequest().withTopicArn(topic).withMessage(message).withSubject(subject);
+		traceCall("publish");
+
 		PublishResult result = mAmazon.publish(request);
 		
 		

@@ -78,7 +78,8 @@ public class ec2CreateTags extends AWSEC2Command {
 		CreateTagsRequest request = new CreateTagsRequest().withTags(tags).withResources(Arrays.asList(resources));
 		
 		
-		
+		traceCall("createTags");
+
 		mAmazon.createTags(request);
 	
 		return 0;

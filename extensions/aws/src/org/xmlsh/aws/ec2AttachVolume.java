@@ -73,6 +73,8 @@ public class ec2AttachVolume extends AWSEC2Command {
 		
 		AttachVolumeRequest request = new AttachVolumeRequest(volume,instance,device);
 		
+		traceCall("attachVolume");
+
 		AttachVolumeResult result = mAmazon.attachVolume(request);
 		writeResult(result);
 

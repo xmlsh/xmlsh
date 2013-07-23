@@ -70,6 +70,8 @@ public class s3DeleteBucket extends AWSS3Command {
 		
 		DeleteBucketRequest request = new DeleteBucketRequest(bucket);
 		
+		traceCall("deleteBucket");
+
 		mAmazon.deleteBucket(request);
 		
 		return 0;

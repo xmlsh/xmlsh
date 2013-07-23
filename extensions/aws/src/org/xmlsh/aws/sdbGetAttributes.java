@@ -83,7 +83,8 @@ public class sdbGetAttributes	 extends  AWSSDBCommand {
 		GetAttributesRequest getAttributesRequest = 
 				new GetAttributesRequest( domainName, itemName ).withConsistentRead(bConsistantRead);
 		
-		
+		traceCall("getAttributes");
+
 		GetAttributesResult result = mAmazon.getAttributes(getAttributesRequest);
 
 		if( result.getAttributes().size() > 0 )

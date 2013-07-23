@@ -75,7 +75,7 @@ public class ec2TerminateInstances extends AWSEC2Command {
 	
 		TerminateInstancesRequest  request = new TerminateInstancesRequest( Arrays.asList(instances));
 		
-		
+		traceCall("terminateInstances");
 		TerminateInstancesResult result = mAmazon.terminateInstances(request);
 		
 		List<InstanceStateChange> changes = result.getTerminatingInstances();

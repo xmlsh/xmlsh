@@ -80,6 +80,7 @@ public class sdbCreateDomain	 extends  AWSSDBCommand {
 		
 		for( String domainName : domains ){
 		
+			traceCall("createDomain");
 			CreateDomainRequest createDomainRequest = new CreateDomainRequest().withDomainName(domainName);
 		    mAmazon.createDomain(createDomainRequest);
 		    

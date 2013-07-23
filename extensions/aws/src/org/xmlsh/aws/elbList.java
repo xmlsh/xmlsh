@@ -89,6 +89,7 @@ public class elbList	 extends  AWSELBCommand {
 		startElement(getName());
          
 		
+		traceCall("describeLoadBalancers");
 		DescribeLoadBalancersResult result = mAmazon.describeLoadBalancers(request);
 		
 		for(LoadBalancerDescription desc :  result.getLoadBalancerDescriptions() ){

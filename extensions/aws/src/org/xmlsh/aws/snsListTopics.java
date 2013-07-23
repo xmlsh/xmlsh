@@ -72,7 +72,8 @@ public class snsListTopics extends AWSSNSCommand {
 		startElement(getName());
 		
 
-		
+		traceCall("listTopics");
+
 		ListTopicsResult result = mAmazon.listTopics();
 		do {
 			for( Topic topic : result.getTopics()){

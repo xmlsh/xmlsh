@@ -54,6 +54,8 @@ public class s3CreateBucket extends AWSS3Command {
 		
 		int ret  = 0;
 		try {
+			traceCall("createBucket");
+
 			mAmazon.createBucket(bucketName);
 		} catch (Exception e) {
 			mShell.printErr("Exception creating " + bucketName , e);

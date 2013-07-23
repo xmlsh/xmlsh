@@ -97,6 +97,7 @@ public class ec2ModifyImageAttribute extends AWSEC2Command {
 		}
 		
 	
+		traceCall("modifyImageAttribute");
 		mAmazon.modifyImageAttribute(request);
 
 		writeResult( image_id );

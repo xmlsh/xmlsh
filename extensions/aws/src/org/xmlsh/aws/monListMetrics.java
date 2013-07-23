@@ -84,6 +84,8 @@ public class monListMetrics	 extends  AWSMonCommand {
 	         
 			ListMetricsRequest listMetricsRequest = new ListMetricsRequest().withNextToken(nextToken);
 			
+			traceCall("listMetrics");
+
 			ListMetricsResult result = mAmazon.listMetrics(listMetricsRequest);
 			
 			for( Metric metric : result.getMetrics()){ 

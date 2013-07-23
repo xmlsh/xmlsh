@@ -91,6 +91,8 @@ public class ec2DescribeInstances extends AWSEC2Command {
 		
 		
 		
+		traceCall("describeInstances");
+
 		List<Reservation> result = mAmazon.describeInstances(request).getReservations();
 		
 		

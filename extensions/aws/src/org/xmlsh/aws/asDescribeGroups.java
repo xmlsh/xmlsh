@@ -85,6 +85,7 @@ public class asDescribeGroups extends AWSASCommand {
 		
 	
 		
+		traceCall("describeAutoScalingGroups");
 		DescribeAutoScalingGroupsResult result = mAmazon.describeAutoScalingGroups(request);
 		
 		

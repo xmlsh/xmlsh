@@ -81,6 +81,8 @@ public class s3Delete extends AWSS3Command {
 
 			
 			ListObjectsRequest request = getListRequest( path ,null );
+			traceCall("listObjects");
+
 			ObjectListing list = mAmazon.listObjects(request);
 			
 			
@@ -108,7 +110,8 @@ public class s3Delete extends AWSS3Command {
 		
 			
 			DeleteObjectRequest request = new DeleteObjectRequest(path.getBucket(), path.getKey());
-			
+			traceCall("deleteObject");
+
 			mAmazon.deleteObject(request );
 			
 			return 0;

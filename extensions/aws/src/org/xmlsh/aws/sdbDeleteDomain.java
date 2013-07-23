@@ -33,13 +33,7 @@ public class sdbDeleteDomain	 extends  AWSSDBCommand {
 
 		args = opts.getRemainingArgs();
 		
-
-		
 		mSerializeOpts = this.getSerializeOpts(opts);
-		
-		
-		
-		
 		
 		
 		try {
@@ -68,10 +62,6 @@ public class sdbDeleteDomain	 extends  AWSSDBCommand {
 		OutputPort stdout = this.getStdout();
 		mWriter = stdout.asXMLStreamWriter(mSerializeOpts);
 		
-		
-		
-		
-		
 		startDocument();
 		startElement(getName());
          
@@ -80,6 +70,8 @@ public class sdbDeleteDomain	 extends  AWSSDBCommand {
 		for( String domainName : domains ){
 			
 			DeleteDomainRequest deleteDomainRequest = new DeleteDomainRequest().withDomainName(domainName);
+			traceCall("deleteDomain");
+
 			mAmazon.deleteDomain(deleteDomainRequest);
 			
 		     

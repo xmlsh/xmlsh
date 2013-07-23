@@ -80,6 +80,9 @@ public class cfnGetTemplate extends AWSCFNCommand {
 		
 
 		GetTemplateRequest request = new GetTemplateRequest().withStackName(stack);
+		
+		traceCall("getTemplate");
+
 		GetTemplateResult result = mAmazon.getTemplate(request);
 		
 		

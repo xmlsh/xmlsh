@@ -17,6 +17,7 @@ import com.amazonaws.regions.Regions;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.XCommand;
@@ -24,6 +25,8 @@ import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.util.Util;
 
 public abstract class AWSCommand extends XCommand {
+	
+	Logger mLogger = LogManager.getLogger( this.getClass() );
 	
 	protected XMLStreamWriter mWriter;
 	protected SerializeOpts mSerializeOpts;
@@ -46,6 +49,8 @@ public abstract class AWSCommand extends XCommand {
 	public AWSCommand() {
 		super();
 	}
+	
+	abstract protected Object getClient();
 	
 	
 	protected	Options getOptions()	
@@ -200,7 +205,20 @@ public abstract class AWSCommand extends XCommand {
 		endElement();
 		endDocument();
 	}
+
+
+	protected void textElement(String name, String s) throws XMLStreamException {
+		startElement(name);
+		characters(s);
+		endElement();
+	}
 	
+	protected void traceCall( String method )
+	{
+		Object obj = getClient();
+		
+		mLogger.info( "AWS Method Call: " + obj.getClass().toString() + "." + method );
+	}
 
 }
 

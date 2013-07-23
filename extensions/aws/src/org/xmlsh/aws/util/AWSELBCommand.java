@@ -26,6 +26,9 @@ public abstract class AWSELBCommand extends AWSCommand {
 	public AWSELBCommand() {
 		super();
 	}
+	protected Object getClient() {
+		return mAmazon; 
+	}
 
 	protected void getELBClient(Options opts) throws UnexpectedException {
 		

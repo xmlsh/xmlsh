@@ -77,6 +77,8 @@ public class ec2AssociateAddress extends AWSEC2Command {
 		
 		AssociateAddressRequest request = new AssociateAddressRequest(instance,raw_ip);
 		
+		traceCall("associateAddress");
+
 		AssociateAddressResult result = mAmazon.associateAddress(request);
 		writeResult(result);
 

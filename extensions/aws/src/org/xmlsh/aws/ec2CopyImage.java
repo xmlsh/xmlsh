@@ -83,6 +83,8 @@ public class ec2CopyImage extends AWSEC2Command {
 			request.setDescription(desc);
 		
 		
+		traceCall("copyImage");
+
 		CopyImageResult result = mAmazon.copyImage(request);
 		writeResult(result);
 		return 0;

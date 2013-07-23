@@ -80,6 +80,7 @@ public class cfnUpdateStack extends AWSCFNCommand {
 		startElement(this.getName());
 		
 		
+		
 		UpdateStackRequest request = new UpdateStackRequest();
 		
 		
@@ -100,6 +101,8 @@ public class cfnUpdateStack extends AWSCFNCommand {
 		
 		request.setParameters(getParameters( args ));
 		
+		traceCall("updateStack");
+
 		UpdateStackResult result = mAmazon.updateStack(request);
 		
 		writeStackResult(result);

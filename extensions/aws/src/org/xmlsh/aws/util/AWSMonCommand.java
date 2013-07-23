@@ -22,6 +22,9 @@ public abstract class AWSMonCommand extends AWSCommand {
 	public AWSMonCommand() {
 		super();
 	}
+	protected Object getClient() {
+		return mAmazon; 
+	}
 
 	protected void getMonClient(Options opts) throws UnexpectedException, InvalidArgumentException {
 		

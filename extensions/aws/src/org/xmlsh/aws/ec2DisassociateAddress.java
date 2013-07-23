@@ -78,8 +78,10 @@ public class ec2DisassociateAddress extends AWSEC2Command {
 		if( Util.isBlank(raw_ip))
 			throw new InvalidArgumentException("Unknown IP address or format: " + ip );
 		
+
+
 		DisassociateAddressRequest request = new DisassociateAddressRequest(raw_ip);
-		
+		traceCall("disassociateAddress");
 		mAmazon.disassociateAddress(request);
 		writeResult(raw_ip);
 

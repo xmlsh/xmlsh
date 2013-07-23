@@ -43,10 +43,6 @@ public class glacierListVaults	 extends  AWSGlacierCommand {
 		mSerializeOpts = this.getSerializeOpts(opts);
 		
 		
-		
-		
-		
-		
 		try {
 			 getGlacierClient(opts);
 		} catch (UnexpectedException e) {
@@ -80,6 +76,8 @@ public class glacierListVaults	 extends  AWSGlacierCommand {
 		startDocument();
 		startElement(getName());
          
+		traceCall("listVaults");
+
 		ListVaultsResult result = mAmazon.listVaults(request);
 		
 		for( DescribeVaultOutput vault  : result.getVaultList() ){

@@ -1,8 +1,9 @@
 package org.xmlsh.aws;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Map.Entry;
+import java.util.Map;
 
 import javax.xml.stream.XMLStreamException;
 
@@ -13,15 +14,17 @@ import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
-import org.xmlsh.util.Util;
 
-import com.amazonaws.services.sqs.model.GetQueueAttributesRequest;
-import com.amazonaws.services.sqs.model.GetQueueAttributesResult;
+import com.amazonaws.services.sqs.model.CreateQueueRequest;
+import com.amazonaws.services.sqs.model.CreateQueueResult;
+import com.amazonaws.services.sqs.model.DeleteQueueRequest;
 
 
-public class sqsGetQueueAttributes extends AWSSQSCommand {
+public class sqsDeleteQueue extends AWSSQSCommand {
 
 	
+
+
 
 	/**
 	 * @param args
@@ -36,18 +39,18 @@ public class sqsGetQueueAttributes extends AWSSQSCommand {
 
 		args = opts.getRemainingArgs();
 		
-
-		
-		mSerializeOpts = this.getSerializeOpts(opts);
-		
-		String prefix = null ;
-		if( args.size() < 2 ){
+		if( args.size() != 1 ){
 			usage();
 			return 1;
 		}
 		
+
 		
-		String name = args.remove(0).toString();
+		mSerializeOpts = this.getSerializeOpts(opts);
+		
+		
+		
+		String name = args.get(0).toString();
 		
 		
 		
@@ -61,7 +64,8 @@ public class sqsGetQueueAttributes extends AWSSQSCommand {
 		
 		int ret;
 		
-		ret = list(name , Util.toStringList(args) );		
+		ret = delete(name  );
+		
 		
 		return ret;
 		
@@ -69,9 +73,16 @@ public class sqsGetQueueAttributes extends AWSSQSCommand {
 	}
 
 
-	private int list(String name , List<String> attrNames ) throws IOException, XMLStreamException, SaxonApiException, CoreException {
+	private int delete(String name  ) throws IOException, XMLStreamException, SaxonApiException, CoreException {
 		
 
+		DeleteQueueRequest request = new DeleteQueueRequest();
+		request.setQueueUrl(name);
+
+		traceCall("deleteQueue");
+
+		mAmazon.deleteQueue(request);
+		
 		OutputPort stdout = this.getStdout();
 		mWriter = stdout.asXMLStreamWriter(mSerializeOpts);
 		
@@ -79,21 +90,12 @@ public class sqsGetQueueAttributes extends AWSSQSCommand {
 		startDocument();
 		startElement(getName());
 		
-
 		
-		GetQueueAttributesRequest request = new GetQueueAttributesRequest(name);
-		request.setAttributeNames(attrNames);
-		traceCall("getQueueAttributes");
+			startElement("queue");
+			attribute("url",name);
 
-		GetQueueAttributesResult attrsResult = mAmazon.getQueueAttributes(request);
-		for( Entry<String, String>  attr : attrsResult.getAttributes().entrySet() ){
-			startElement("attribute");
-			attribute("name" , attr.getKey() );
-			characters( attr.getValue());
 			endElement();
-		}
-		
-		
+			
 		
 		
 		endElement();
@@ -102,6 +104,7 @@ public class sqsGetQueueAttributes extends AWSSQSCommand {
 		stdout.writeSequenceTerminator(mSerializeOpts);
 		stdout.release();
 		
+
 
 		
 		

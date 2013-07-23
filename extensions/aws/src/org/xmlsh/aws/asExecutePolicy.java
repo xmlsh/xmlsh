@@ -80,6 +80,8 @@ public class asExecutePolicy extends AWSASCommand {
 		
 		ExecutePolicyRequest request = new ExecutePolicyRequest().withAutoScalingGroupName(group).withPolicyName(policy);
 		
+		traceCall("executePolicy");
+
 		mAmazon.executePolicy(request);
 		
 		endElement();

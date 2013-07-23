@@ -93,6 +93,8 @@ public class s3cp extends AWSS3Command {
 		
 		if( bCopy ){
 			
+			traceCall("copyObject");
+
 			CopyObjectResult result = mAmazon.copyObject(src.getBucket(), src.getKey(), dest.getBucket(), dest.getKey() );
 			
 			return 0;

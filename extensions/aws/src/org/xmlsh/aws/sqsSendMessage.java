@@ -113,7 +113,9 @@ public class sqsSendMessage extends AWSSQSCommand {
 		
 
 		SendMessageRequest request = new SendMessageRequest(url, body);
-		
+		 
+		traceCall("sendMessage");
+
 		SendMessageResult result = mAmazon.sendMessage(request);
 		
 		OutputPort stdout = this.getStdout();
@@ -122,7 +124,6 @@ public class sqsSendMessage extends AWSSQSCommand {
 		
 		startDocument();
 		startElement(getName());
-		
 		
 			startElement("message");
 			attribute("md5", result.getMD5OfMessageBody());

@@ -93,7 +93,8 @@ public class ec2DescribeVolumes extends AWSEC2Command {
 		}
 		
 		
-		
+		traceCall("describeVolumes");
+
 		DescribeVolumesResult result = mAmazon.describeVolumes(request);
 		
 		

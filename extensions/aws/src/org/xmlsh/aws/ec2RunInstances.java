@@ -169,6 +169,7 @@ public class ec2RunInstances extends AWSEC2Command {
 			request.setAdditionalInfo(info);
 		
 	
+		traceCall("runInstances");
 		RunInstancesResult  result = mAmazon.runInstances(request);
 
 		writeResult( result );

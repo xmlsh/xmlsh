@@ -29,6 +29,9 @@ public abstract class AWSCFNCommand extends AWSCommand {
 		super();
 	}
 
+	protected Object getClient() {
+		return mAmazon; 
+	}
 
 	protected void getCFNClient( Options opts ) throws UnexpectedException, InvalidArgumentException {
 		mAmazon =  new AmazonCloudFormationClient(

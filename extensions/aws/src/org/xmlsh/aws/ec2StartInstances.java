@@ -77,7 +77,7 @@ public class ec2StartInstances extends AWSEC2Command {
 	
 		StartInstancesRequest  request = new StartInstancesRequest( Arrays.asList(instances));
 		
-		
+		traceCall("startInstances");
 		StartInstancesResult result = mAmazon.startInstances(request);
 		
 		List<InstanceStateChange> changes = result.getStartingInstances();

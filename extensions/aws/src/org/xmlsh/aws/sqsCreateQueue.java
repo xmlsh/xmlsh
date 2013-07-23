@@ -87,7 +87,8 @@ public class sqsCreateQueue extends AWSSQSCommand {
 	
 		request.setAttributes(attributes);
 
-		
+		traceCall("createQueue");
+
 		CreateQueueResult result = mAmazon.createQueue(request);
 		
 		OutputPort stdout = this.getStdout();

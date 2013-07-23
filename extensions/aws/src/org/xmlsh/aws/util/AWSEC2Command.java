@@ -52,6 +52,9 @@ public abstract class AWSEC2Command extends AWSCommand {
 	public AWSEC2Command() {
 		super();
 	}
+	protected Object getClient() {
+		return mAmazon; 
+	}
 
 
 	protected void getEC2Client( Options opts ) throws UnexpectedException, InvalidArgumentException {

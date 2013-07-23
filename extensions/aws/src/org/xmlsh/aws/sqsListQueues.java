@@ -76,7 +76,8 @@ public class sqsListQueues extends AWSSQSCommand {
 		ListQueuesRequest request = new ListQueuesRequest();
 		if( prefix != null )
 			request.setQueueNamePrefix(prefix);
-		
+		traceCall("listQueues");
+
 		ListQueuesResult result = mAmazon.listQueues(request);
 		for( String  url : result.getQueueUrls() ){
 			startElement("queue");

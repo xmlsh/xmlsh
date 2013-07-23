@@ -26,6 +26,9 @@ public abstract class AWSASCommand extends AWSCommand {
 		super();
 	}
 
+	protected Object getClient() {
+		return mAmazon; 
+	}
 
 	protected void getASClient( Options opts ) throws UnexpectedException, IllegalArgumentException, InvalidArgumentException {
 		mAmazon = new AmazonAutoScalingClient(

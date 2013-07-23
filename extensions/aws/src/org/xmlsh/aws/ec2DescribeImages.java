@@ -123,6 +123,8 @@ public class ec2DescribeImages extends AWSEC2Command {
 		
 		
 		
+		traceCall("describeImages");
+
 		DescribeImagesResult result = mAmazon.describeImages(request);
 		
 		

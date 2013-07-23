@@ -75,7 +75,7 @@ public class ec2StopInstances extends AWSEC2Command {
 	
 		StopInstancesRequest  request = new StopInstancesRequest( Arrays.asList(instances));
 		
-		
+		traceCall("stopInstances");
 		StopInstancesResult result = mAmazon.stopInstances(request);
 		
 		List<InstanceStateChange> changes = result.getStoppingInstances();

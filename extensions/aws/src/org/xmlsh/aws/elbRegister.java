@@ -78,6 +78,7 @@ public class elbRegister extends AWSELBCommand {
 		
 	
 		RegisterInstancesWithLoadBalancerRequest request = new RegisterInstancesWithLoadBalancerRequest(elb, instances(args));
+		traceCall("registerInstancesWithLoadBalancer");
 	    RegisterInstancesWithLoadBalancerResult result = mAmazon.registerInstancesWithLoadBalancer(request);
 	    for( Instance instance : result.getInstances()){
 	    	

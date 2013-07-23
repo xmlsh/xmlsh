@@ -94,6 +94,8 @@ public class monPutData	 extends  AWSMonCommand {
 			PutMetricDataRequest request = new PutMetricDataRequest().
 					withNamespace(namespace).withMetricData(datumList);
 			
+			traceCall("putMetricData");
+
 			mAmazon.putMetricData(request);
 	         
 			

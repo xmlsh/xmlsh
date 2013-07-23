@@ -55,6 +55,8 @@ public class ec2DeleteTags extends AWSEC2Command {
 			
 		}
 		
+		traceCall("deleteTags");
+
 		int ret = deleteTags( parseTags(opts) , Util.toStringArray(args) );
 		
 		

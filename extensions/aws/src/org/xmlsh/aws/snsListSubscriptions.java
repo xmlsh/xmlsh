@@ -76,7 +76,8 @@ public class snsListSubscriptions extends AWSSNSCommand {
 		startDocument();
 		startElement(getName());
 		
-		
+		traceCall("listSubscriptions");
+
 		ListSubscriptionsResult result = mAmazon.listSubscriptions();
 		
 		do {

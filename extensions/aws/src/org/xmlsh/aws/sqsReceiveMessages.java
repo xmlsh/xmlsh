@@ -109,7 +109,8 @@ public class sqsReceiveMessages extends AWSSQSCommand {
 			request.setVisibilityTimeout(visibilityTimeout);
 		
 		
-		
+		traceCall("receiveMessage");
+
 		ReceiveMessageResult result = mAmazon.receiveMessage(request);
 		
 		OutputPort stdout = this.getStdout();

@@ -8,16 +8,18 @@ import javax.xml.stream.XMLStreamException;
 
 import net.sf.saxon.s9api.SaxonApiException;
 import org.xmlsh.aws.util.AWSEC2Command;
-import org.xmlsh.core.CoreException;
+import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.util.Util;
 
-import com.amazonaws.services.ec2.model.RebootInstancesRequest;
+import com.amazonaws.services.ec2.model.DeleteTagsRequest;
+import com.amazonaws.services.ec2.model.DeleteVolumeRequest;
+import com.amazonaws.services.ec2.model.Tag;
 
 
-public class ec2RebootInstances extends AWSEC2Command {
+public class ec2DeleteVolumes extends AWSEC2Command {
 
 	
 
@@ -30,13 +32,10 @@ public class ec2RebootInstances extends AWSEC2Command {
 	public int run(List<XValue> args) throws Exception {
 
 		
-		Options opts = getOptions();
+		Options opts = getOptions("");
 		opts.parse(args);
 
 		args = opts.getRemainingArgs();
-		
-
-		
 		
 		
 		if( args.size() < 1 ){
@@ -54,7 +53,9 @@ public class ec2RebootInstances extends AWSEC2Command {
 			
 		}
 		
-		int ret = reboot( Util.toStringArray(args) );
+		traceCall("deleteVolumes");
+
+		int ret = deleteVolumes( Util.toStringArray(args) );
 		
 		
 		
@@ -68,15 +69,22 @@ public class ec2RebootInstances extends AWSEC2Command {
 
 
 
-	private int reboot( String[] instances ) throws IOException, XMLStreamException, SaxonApiException, CoreException 
+
+
+	private int deleteVolumes(  String[] resources ) throws InvalidArgumentException, IOException, XMLStreamException, SaxonApiException 
 	{
 	
-		RebootInstancesRequest  request = new RebootInstancesRequest( Arrays.asList(instances));
 		
 		
-		traceCall("rebootInstances");
-		mAmazon.rebootInstances(request);
+		for( String volid : resources ){
+			
+			DeleteVolumeRequest deleteVolumeRequest  = new DeleteVolumeRequest(volid);
+			mAmazon.deleteVolume(deleteVolumeRequest);
+			
+		}
 		
+		
+	
 		return 0;
 		
 	
