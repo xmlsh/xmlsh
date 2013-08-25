@@ -256,6 +256,12 @@ public class Shell {
 	    getEnv().setVar( new XVariable("XPATH", 
 	    		Util.isBlank(xpath) ? new XValue(".") : new XValue(xpath.split(File.pathSeparator))) , false );
 	
+	     
+	    String xmpath = Util.toJavaPath(System.getenv("XMODPATH"));
+	    getEnv().setVar( new XVariable("XMODPATH", 
+	    		Util.isBlank(xmpath) ? new XValue() : new XValue(xmpath.split(File.pathSeparator))) , false );
+
+	    
 		// PWD 
 		getEnv().setVar(
 				new XDynamicVariable("PWD" , EnumSet.of( XVarFlag.READONLY , XVarFlag.XEXPR )) { 
