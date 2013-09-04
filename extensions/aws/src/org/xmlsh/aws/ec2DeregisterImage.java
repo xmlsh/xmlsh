@@ -14,8 +14,6 @@ import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
 
-import com.amazonaws.services.ec2.model.CreateImageRequest;
-import com.amazonaws.services.ec2.model.CreateImageResult;
 import com.amazonaws.services.ec2.model.DeregisterImageRequest;
 
 

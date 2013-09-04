@@ -23,9 +23,9 @@
 			<attribute name="javadoc_location" value="file:/C:/java/bouncycastle/bcprov-jdk16-146/docs/"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="lib/aws-java-sdk-1.4.2.1.jar" sourcepath="C:/java/aws-java-sdk-1.4.2.1/lib/aws-java-sdk-1.4.2.1-sources.jar">
+	<classpathentry kind="lib" path="lib/aws-java-sdk-1.4.5.jar" sourcepath="C:/java/aws-java-sdk-1.4.5/lib/aws-java-sdk-1.4.5-sources.jar">
 		<attributes>
-			<attribute name="javadoc_location" value="jar:file:/C:/java/aws-java-sdk-1.4.2.1/lib/aws-java-sdk-1.4.2.1-javadoc.jar!/"/>
+			<attribute name="javadoc_location" value="jar:file:/C:/java/aws-java-sdk-1.4.5/lib/aws-java-sdk-1.4.5-javadoc.jar!/"/>
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="output" path="_out"/>

@@ -9,7 +9,6 @@ import javax.xml.stream.XMLStreamException;
 
 import net.sf.saxon.s9api.SaxonApiException;
 import org.xmlsh.aws.util.AWSDDBCommand;
-import org.xmlsh.aws.util.AWSSDBCommand;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
@@ -24,8 +23,6 @@ import com.amazonaws.services.dynamodbv2.model.CreateTableResult;
 import com.amazonaws.services.dynamodbv2.model.KeySchemaElement;
 import com.amazonaws.services.dynamodbv2.model.KeyType;
 import com.amazonaws.services.dynamodbv2.model.ProvisionedThroughput;
-import com.amazonaws.services.elasticloadbalancing.model.InstanceState;
-import com.amazonaws.services.simpledb.model.CreateDomainRequest;
 
 
 public class ddbCreateTable	 extends  AWSDDBCommand {

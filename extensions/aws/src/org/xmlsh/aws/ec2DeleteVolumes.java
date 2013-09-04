@@ -1,7 +1,6 @@
 package org.xmlsh.aws;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 
 import javax.xml.stream.XMLStreamException;
@@ -14,9 +13,7 @@ import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.util.Util;
 
-import com.amazonaws.services.ec2.model.DeleteTagsRequest;
 import com.amazonaws.services.ec2.model.DeleteVolumeRequest;
-import com.amazonaws.services.ec2.model.Tag;
 
 
 public class ec2DeleteVolumes extends AWSEC2Command {
