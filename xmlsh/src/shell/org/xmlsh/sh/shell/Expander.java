@@ -124,8 +124,8 @@ class Expander {
 		 * Append a value to the result buffer
 		 * If currently in-quotes then convert the args to strings and space seperate
 		 */
-		public void append(XValue value, boolean inQuotes ) {
-			if( value.isAtomic()  ){
+		public void append(XValue value, boolean inQuotes, boolean bTongs ) {
+			if( value.isAtomic()  && ! bTongs ){
 				
 				
 				
@@ -168,7 +168,7 @@ class Expander {
 				} else {
 				
 					flush();
-					add(value);
+					add(value, bTongs);
 				}
 			}
 		}
@@ -230,7 +230,7 @@ class Expander {
 	}
 	
 
-	List<XValue> expand(String arg, boolean bExpandWild , boolean bExpandWords ) throws IOException, CoreException
+	List<XValue> expand(String arg, boolean bExpandWild , boolean bExpandWords, boolean bTongs ) throws IOException, CoreException
 	{
 		
 
@@ -362,7 +362,7 @@ class Expander {
 							if( cQuote != 0  ){
 								if( ! bFirst )
 									result.append(sSEPSPACE  );
-								result.append(quote(v),true);
+								result.append(quote(v),true, bTongs );
 							}
 							else
 							{
@@ -386,11 +386,11 @@ class Expander {
 					
 					
 					else
-						value = extractSingle(var, cQuote != '\0' );
+						value = extractSingle(var, cQuote != '\0' , bTongs );
 					
 					
 					if( value != null )
-						result.append( value , cQuote != '\0' );
+						result.append( value , cQuote != '\0', bTongs );
 				} else
 					result.append('$');
 			
@@ -828,10 +828,10 @@ class Expander {
 		
 		
 	}
-	private XValue extractSingle(String var, boolean quoted) throws IOException, CoreException {
+	private XValue extractSingle(String var, boolean quoted , boolean btongs ) throws IOException, CoreException {
 	
 		XValue v = extractSingle(var);
-		if( v == null || ! v.isAtomic() )
+		if( v == null || btongs || ! v.isAtomic() )
 			return v;
 		
 		// Java objects are not mucked with

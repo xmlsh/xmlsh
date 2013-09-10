@@ -111,6 +111,7 @@ public class jsonpath extends XCommand {
 	    OutputPort stdout = getStdout();
 	    PrintStream os = stdout.asPrintStream(mSerializeOpts);
 	    os.println( xvr.toString() );
+	    
 		
 		return 0;
 	}

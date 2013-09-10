@@ -8,6 +8,7 @@ package org.xmlsh.commands.json;
 
 import java.rmi.UnexpectedException;
 import java.util.List;
+import java.util.Map;
 
 import org.xmlsh.core.BuiltinFunctionCommand;
 import org.xmlsh.core.XValue;
@@ -15,6 +16,7 @@ import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.JsonUtils;
 
 import com.jayway.jsonpath.JsonModel;
+import com.jayway.jsonpath.JsonPath;
 
 public class path extends BuiltinFunctionCommand {
 
@@ -29,7 +31,13 @@ public class path extends BuiltinFunctionCommand {
 			throw new UnexpectedException("usage: path( object path )");
 
 		JsonModel model = JsonUtils.getModel( args.get(0));
-		return new XValue(  model.get(args.get(1).toString()));
+		
+
+		JsonPath path = JsonPath.compile(args.get(1).toString());
+		Object result = model.get(path);
+		XValue xvr = new XValue(result);
+		
+	    return xvr ;
 		
 	}
 

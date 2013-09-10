@@ -32,6 +32,9 @@
    <file name="data/intl.xml"
          md5="73696927038bcac47b0c87d3aec16bc2"
          length="418"/>
+   <file name="data/log.json"
+         md5="c8dee0dfe1a3ee6c748a90e785823e3a"
+         length="2447"/>
    <file name="data/othello.xml"
          md5="7dd2133a6e6104d79e017cd7062aa939"
          length="248777"/>

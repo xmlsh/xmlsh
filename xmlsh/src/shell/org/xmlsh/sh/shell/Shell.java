@@ -1056,9 +1056,9 @@ public class Shell {
 		return mArg0;
 	}
 
-	public List<XValue> expand(String s, boolean bExpandSequences , boolean bExpandWild , boolean bExpandWords  , SourceLocation loc  ) throws IOException, CoreException {
+	public List<XValue> expand(String s, boolean bExpandSequences , boolean bExpandWild , boolean bExpandWords  , boolean bTongs , SourceLocation loc  ) throws IOException, CoreException {
 		Expander e = new Expander( this , loc );
-		List<XValue> result =  e.expand(s,bExpandWild, bExpandWords );
+		List<XValue> result =  e.expand(s,bExpandWild, bExpandWords, bTongs  );
 		if( bExpandSequences )
 			result = Util.expandSequences( result );
 		else
@@ -1096,7 +1096,7 @@ public class Shell {
 	
 
 	public String expandString(String value, boolean bExpandWild , SourceLocation loc ) throws IOException, CoreException {
-		List<XValue> ret = expand(value,false,bExpandWild, false, loc  );
+		List<XValue> ret = expand(value,false,bExpandWild, false, false , loc  );
 		if( ret.size() == 0 )
 			return "";
 		else
@@ -1115,8 +1115,8 @@ public class Shell {
 
 	// Expand a word and return as a single XValue
 	// Preserves sequences and expands 
-	public	XValue	expand( String value , boolean bExpandWild , boolean bExpandWords , SourceLocation loc ) throws IOException, CoreException {
-			List<XValue> ret = expand(value,false, bExpandWild , bExpandWords, loc  );
+	public	XValue	expand( String value , boolean bExpandWild , boolean bExpandWords , boolean bTongs ,  SourceLocation loc ) throws IOException, CoreException {
+			List<XValue> ret = expand(value,false, bExpandWild , bExpandWords, bTongs ,  loc  );
 			if( ret.size() == 0 )
 				return new XValue(XdmEmptySequence.getInstance());
 			else

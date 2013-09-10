@@ -73,7 +73,7 @@ public class ForClause extends CompoundCommand {
 			} else
 			for( Word in : mWords ) {
 				
-				List<XValue> inList = in.expand( shell , true ,true,true , getLocation() );
+				List<XValue> inList = in.expand( shell , true ,true,true , false , getLocation() );
 				if( ! shell.keepRunning() )
 					break ;
 				for( XValue inword : inList ) {

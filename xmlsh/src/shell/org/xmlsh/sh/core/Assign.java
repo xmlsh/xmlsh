@@ -77,11 +77,11 @@ public class Assign {
 	public XValue expand(Shell shell, MutableInteger retVal,SourceLocation loc) throws IOException, CoreException {
 		if( mValue != null )
 			// Single variables dont expand wildcards
-			return mValue.expand(shell, false, false,retVal,loc);
+			return mValue.expand(shell, false, false,false,retVal,loc);
 		else
 		if( mValueList != null )
 			// Sequences expand wildcards
-			return mValueList.expand(shell, true, false,loc);
+			return mValueList.expand(shell, true, false,false,loc);
 		else
 			return null ;
 	}

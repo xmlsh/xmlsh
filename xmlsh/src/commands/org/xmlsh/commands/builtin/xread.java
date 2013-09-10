@@ -13,6 +13,7 @@ import org.xmlsh.core.BuiltinCommand;
 import org.xmlsh.core.IXdmItemInputStream;
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.InvalidArgumentException;
+import org.xmlsh.core.StreamInputPort;
 import org.xmlsh.core.XValue;
 
 public class xread extends BuiltinCommand {
@@ -25,19 +26,32 @@ public class xread extends BuiltinCommand {
 
 	public int run( List<XValue> args ) throws Exception {
 
+		mSerializeOpts = getSerializeOpts();
+		boolean bParse = false ;
+		if( args.size() > 0 && args.get(0).toString().equals("-parse") ){
+			
+		    args.remove(0);
+			bParse = true ;
+		}
 		if( args.size() != 1 )
 			throw new InvalidArgumentException("requires 1 argument");
 		
 		mShell.getEnv().unsetVar(args.get(0).toString());
 
 		InputPort stdin = mShell.getEnv().getStdin();
-		IXdmItemInputStream is = stdin.asXdmItemInputStream(getSerializeOpts());
-		XdmItem item = is.read();
-		if( item != null )
+		XdmItem item = null ;
+		if( bParse ) {
+			StreamInputPort ip = new StreamInputPort( stdin.asInputStream(mSerializeOpts) , stdin.getSystemId() );
 			
+			item = ip.asXdmItem(mSerializeOpts);
+			ip.release();
+		} else {
+			IXdmItemInputStream is = stdin.asXdmItemInputStream(mSerializeOpts);
+			item = is.read();
+		}
+		if( item != null )
 			mShell.getEnv().setVar(args.get(0).toString(), new XValue(item),false);
 		stdin.release();
-
 
 		return item == null ? 1 : 0 ;
 	}

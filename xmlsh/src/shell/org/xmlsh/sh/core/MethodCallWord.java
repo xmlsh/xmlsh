@@ -58,7 +58,7 @@ public class MethodCallWord extends Word {
 
 	
 	@Override
-	public XValue expand(Shell shell,boolean bExpandWild , boolean bExpandWords, MutableInteger retValue, SourceLocation loc ) throws IOException, CoreException {
+	public XValue expand(Shell shell,boolean bExpandWild , boolean bExpandWords, boolean bTongs , MutableInteger retValue,  SourceLocation loc ) throws IOException, CoreException {
 		
 		
 		XVariable var = shell.getEnv().getVar(mVariable);
@@ -70,7 +70,8 @@ public class MethodCallWord extends Word {
 		
 		if( mArgs != null )
 			for( Word arg : mArgs )
-				args.addAll(arg.expand(shell,arg.isExpand(),arg.isExpand(),arg.isExpand(),loc));
+				args.addAll(arg.expand(shell,arg.isExpand(),arg.isExpand(),arg.isExpand(), ! arg.isExpand(),loc));
+		
 
 		
 		

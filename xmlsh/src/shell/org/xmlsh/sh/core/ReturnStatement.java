@@ -39,7 +39,7 @@ public class ReturnStatement extends Command {
 		if( mArg == null )
 			ret = new XValue(0);
 		else	{
-			List<XValue> vret = mArg.expand(shell, false , false , false , getLocation() );
+			List<XValue> vret = mArg.expand(shell, false , false , false , false ,  getLocation() );
 			if( vret == null || vret.isEmpty() )
 				ret = new XValue(XdmEmptySequence.getInstance() );
 			else

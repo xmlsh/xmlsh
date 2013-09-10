@@ -1,0 +1,12 @@
+{
+  "Type" : "Notification",
+  "MessageId" : "20d13cc2-94ae-5ef1-8724-766abb3728c2",
+  "TopicArn" : "arn:aws:sns:us-east-1:027394069461:DLEE-LOG-NOTIFY",
+  "Subject" : "MarkLogic startup message",
+  "Message" : "<log node=\"Node-us-east-1c1\"\n     system=\"mlcmd\"\n     host=\"ec2-54-211-185-23.compute-1.amazonaws.com\"\n     message_dt=\"2013-09-09T16:19:38.788-04:00\"\n     cluster=\"DLEE_Cluster2\"\n     instance=\"i-8b0fbde1\">\n   <title>Test</title>\n   <body/>\n   <sdb>\n      <sdb-query>\n         <item name=\"Node-us-east-1c1-us-east-1c\">\n            <attribute name=\"create-date\">2013-09-04T00:18:17.341-04:00</attribute>\n            <attribute name=\"index\">1</attribute>\n         </item>\n         <item name=\"Node-us-east-1c1\">\n            <attribute name=\"node\">Node-us-east-1c1</attribute>\n            <attribute name=\"instance\">i-8b0fbde1</attribute>\n            <attribute name=\"create-date\">2013-09-06T13:38:02.224-04:00</attribute>\n            <attribute name=\"index\">1</attribute>\n            <attribute name=\"device\">/dev/sdf,/dev/xvdj,vol-d5d0018d,/var/opt/MarkLogic</attribute>\n            <attribute name=\"device\">/dev/sdg,/dev/xvdk,vol-531a2d27,/var/opt/volume1</attribute>\n            <attribute name=\"host\">ec2-54-211-185-23.compute-1.amazonaws.com</attribute>\n            <attribute name=\"master\">1</attribute>\n            <attribute name=\"state\">initialized</attribute>\n            <attribute name=\"hostid\">17969414274864426311</attribute>\n            <attribute name=\"instance-time\">2013-09-09T16:19:03.375-04:00</attribute>\n            <attribute name=\"instance-state\">running</attribute>\n            <attribute name=\"state-instance\">i-8b0fbde1</attribute>\n            <attribute name=\"zone\">us-east-1c</attribute>\n         </item>\n      </sdb-query>\n   </sdb>\n</log>",
+  "Timestamp" : "2013-09-09T20:19:37.763Z",
+  "SignatureVersion" : "1",
+  "Signature" : "oFKEwIyhtiuyqJSyzvq7MmLXUYCI9wdY7QJxX9YDd48hX/eZp5V8K/Gc6l5avx8tESQYFwN1DLsQDjv1J7MMnclh1sLmSkBNH8Vt3Z7t0pTWUCSfbvmNG/UJJp3xGTY5M3JMvlUJT+JSdV1yumYZKLML0DclWwCmd7os0TPkHAk=",
+  "SigningCertURL" : "https://sns.us-east-1.amazonaws.com/SimpleNotificationService-f3ecfb7224c7233fe7bb5f59f96de52f.pem",
+  "UnsubscribeURL" : "https://sns.us-east-1.amazonaws.com/?Action=Unsubscribe&SubscriptionArn=arn:aws:sns:us-east-1:027394069461:DLEE-LOG-NOTIFY:56dc0062-f0d5-475b-b248-46e5b76e3e94"
+}
