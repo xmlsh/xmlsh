@@ -138,6 +138,7 @@ the length of STRING.
 public class test extends BuiltinCommand {
 	
 
+	private int pdepth = 0 ;
 	
 	@SuppressWarnings("serial")
 	private static class Error extends Exception
@@ -158,8 +159,13 @@ public class test extends BuiltinCommand {
 		
 		XValue av1 = av.remove(0);
 
-		if( av.size() == 0 || av.get(0).equals(")") )
+		if( av.size() == 0 )
 			return evalUnary("-n" , av1);
+		if( pdepth > 0 && av.get(0).equals(")") ){
+			pdepth--; 
+			av.remove(0);
+			return evalUnary("-n" , av1);
+		}
 		
 		if( av1.isAtomic() ){
 
@@ -170,12 +176,18 @@ public class test extends BuiltinCommand {
 				return ! eval( av );
 			
 			if( a1.equals("(")){
+				pdepth++;
 				boolean ret = eval(av);
-				if( av.size() < 1 || !av.remove(0).equals(")")){
-					throw new Error("mismatched (");
-	
+				if( av.size() < 1 )
+					return ret ;
+				
+				if( pdepth > 0 &&   (av.get(0).isAtomic() && av.get(0).toString().equals(")") ) ){
+					av.remove(0);
+					pdepth--;
+					
+					return ret ;
 				}
-				return ret;
+						
 			}
 			else
 			if( a1.startsWith("-") && ! Util.isInt(a1, true)){
@@ -194,8 +206,11 @@ public class test extends BuiltinCommand {
 		}
 		
 		XValue op  = av.remove(0);
-		if( op.isAtomic() )
+		if( op.isAtomic() ){
+			if( av.size() < 1 )
+				throw new Error("Expected operator");
 			return evalBinary( av1 ,  op.toString() , av.remove(0 ) );
+		}
 		else
 				throw new Error("Unexpected xml value operator");
 			

@@ -34,3 +34,8 @@ success -z xexpr 0
 succeed xexpr or
 success xexpr string
 success xexpr var sequence
+Success
+Success
+success
+Success
+Success

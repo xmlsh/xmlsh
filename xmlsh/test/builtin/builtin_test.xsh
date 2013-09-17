@@ -125,4 +125,15 @@ b=<[ (1,2,3) ]>
 [ -u foo.bar/spam ] && echo Test URI Failed
 [ -u http://foo.bar.spam/bletch ] || echo Test URI Failed
 
+# Complex nested ()
+[ \( 1 = 0 \) -o \( 2 = 2 \) ] && echo Success
+[ \( 1 = 0 \) -o \( 2 = 2 \) ] && echo Success
+[ \( 1 \) ] && echo success
+
+# Should fail
+[ \( ] && echo Success
+[ \) ] && echo Success
+[ 1 \) ] 
+[ \( 1 \) \( ] 
+
 exit 0
