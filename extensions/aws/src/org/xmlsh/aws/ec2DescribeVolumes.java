@@ -15,6 +15,7 @@ import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.util.Util;
 
+import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.ec2.model.DescribeVolumesRequest;
 import com.amazonaws.services.ec2.model.DescribeVolumesResult;
 import com.amazonaws.services.ec2.model.Volume;
@@ -37,11 +38,9 @@ public class ec2DescribeVolumes extends AWSEC2Command {
 		opts.parse(args);
 
 		args = opts.getRemainingArgs();
-		
-
+		parseCommonOptions(opts);
 		
 		mSerializeOpts = this.getSerializeOpts(opts);
-		
 			
 		try {
 			 getEC2Client(opts);
@@ -67,16 +66,11 @@ public class ec2DescribeVolumes extends AWSEC2Command {
 				return 1;
 		}
 
-
-		
-		
 		return ret;
-		
-		
 	}
 
 
-	private int describe(List<XValue> args) throws IOException, XMLStreamException, SaxonApiException, CoreException {
+	private int describe(List<XValue> args) throws IOException, XMLStreamException, SaxonApiException, CoreException, InterruptedException {
 		
 
 		OutputPort stdout = this.getStdout();
@@ -86,7 +80,33 @@ public class ec2DescribeVolumes extends AWSEC2Command {
 		startDocument();
 		startElement(this.getName());
 		
-		DescribeVolumesRequest  request = new DescribeVolumesRequest();
+		DescribeVolumesRequest  request =  new DescribeVolumesRequest(); ;
+		if( args != null ){
+			request.setVolumeIds(Util.toStringList(args));
+			
+		}
+		DescribeVolumesResult result =null ;
+		
+		int retry = rateRetry ;
+		int delay = retryDelay ;
+		do {
+			try {
+
+				result =  mAmazon.describeVolumes(request); 
+				break ;
+			} catch( AmazonServiceException e ){
+				mShell.printErr("AmazonServiceException" , e );
+				if( retry > 0 && Util.isEqual("RequestLimitExceeded",e.getErrorCode())){
+					mShell.printErr("AWS RequestLimitExceeded - sleeping " + delay );
+					Thread.sleep( delay );
+					retry--;
+					delay *= 2 ;
+				}
+				else
+					throw e;
+			}
+		} while( retry > 0 );
+
 		if( args != null ){
 			request.setVolumeIds(Util.toStringList(args));
 			
@@ -95,22 +115,10 @@ public class ec2DescribeVolumes extends AWSEC2Command {
 		
 		traceCall("describeVolumes");
 
-		DescribeVolumesResult result = mAmazon.describeVolumes(request);
-		
-		
-		
-		
 		for( Volume  volume : result.getVolumes() ){
 			writeVolume(volume);
-			
-			
-			
 			endElement();
-			
 		}
-		
-		
-		
 		
 		
 		endElement();

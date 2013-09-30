@@ -139,7 +139,7 @@ public class s3ls extends AWSS3Command {
 
 
 	private int list(String s) throws IOException, XMLStreamException,
-			SaxonApiException, AmazonClientException, AmazonServiceException, CoreException {
+			SaxonApiException, AmazonClientException,  CoreException {
 		
 		
 		S3Path path = new S3Path(s);

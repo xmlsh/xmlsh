@@ -6,6 +6,8 @@ import java.util.List;
 import javax.xml.stream.XMLStreamException;
 
 import net.sf.saxon.s9api.SaxonApiException;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.xmlsh.aws.util.AWSEC2Command;
 import org.xmlsh.aws.util.SafeXMLStreamWriter;
 import org.xmlsh.core.InvalidArgumentException;
@@ -13,7 +15,9 @@ import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
+import org.xmlsh.util.Util;
 
+import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.ec2.model.CreateVolumeRequest;
 import com.amazonaws.services.ec2.model.CreateVolumeResult;
 
@@ -21,8 +25,9 @@ import com.amazonaws.services.ec2.model.CreateVolumeResult;
 public class ec2CreateVolume extends AWSEC2Command {
 
 	
-
-
+	private static Logger mLogger = LogManager.getLogger(ec2CreateVolume.class);
+	
+	
 	/**
 	 * @param args
 	 * @throws IOException 
@@ -36,6 +41,7 @@ public class ec2CreateVolume extends AWSEC2Command {
 
 		args = opts.getRemainingArgs();
 		
+		rateRetry = opts.getOptInt("rate-retry", 0);
 
 		
 		
@@ -57,7 +63,7 @@ public class ec2CreateVolume extends AWSEC2Command {
 	}
 
 
-	private int create(Options opts ) throws InvalidArgumentException, IOException, XMLStreamException, SaxonApiException  
+	private int create(Options opts ) throws InvalidArgumentException, IOException, XMLStreamException, SaxonApiException, InterruptedException  
 	{
 	
 		
@@ -75,7 +81,32 @@ public class ec2CreateVolume extends AWSEC2Command {
 		
 		traceCall("createVolume");
 
-		CreateVolumeResult result = mAmazon.createVolume(request);
+		CreateVolumeResult result = null ;
+		
+		int retry = rateRetry ;
+		int delay = retryDelay ;
+		do {
+			try {
+	            result=	mAmazon.createVolume(request);
+	            break ;
+		
+			} catch( AmazonServiceException e ){
+				mShell.printErr("AmazonServiceException" , e );
+				if( retry > 0 && Util.isEqual("RequestLimitExceeded",e.getErrorCode())){
+					mShell.printErr("AWS RequestLimitExceeded - sleeping " + delay );
+					Thread.sleep( delay );
+					retry--;
+					delay *= 2 ;
+					
+					
+				}
+				else
+					throw e;
+				
+			}
+		} while( retry > 0 );
+		
+		
 		writeResult(result);
 
 		return 0;

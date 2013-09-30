@@ -31,8 +31,10 @@ public abstract class AWSCommand extends XCommand {
 	protected XMLStreamWriter mWriter;
 	protected SerializeOpts mSerializeOpts;
 	
-	protected static final String sCOMMON_OPTS = "region:,endpoint:,client:,config:,accessKey:,secretKey:" ;
-	
+	protected static final String sCOMMON_OPTS = "region:,endpoint:,client:,config:,accessKey:,secretKey:,rate-retry:,retry-delay:" ;
+	protected int rateRetry = 0;
+	protected int retryDelay = 10000; // 10 seconds default
+
 	
 	static {
 		
@@ -218,6 +220,15 @@ public abstract class AWSCommand extends XCommand {
 		Object obj = getClient();
 		
 		mLogger.info( "AWS Method Call: " + obj.getClass().toString() + "." + method );
+	}
+
+	protected void parseCommonOptions(Options opts) {
+		
+		rateRetry = opts.getOptInt("rate-retry", 0);
+		retryDelay = opts.getOptInt("retry-delay", 10000);
+		
+	
+		
 	}
 
 }

@@ -21,6 +21,7 @@ import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.util.Util;
 
+import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.autoscaling.model.AutoScalingGroup;
 import com.amazonaws.services.autoscaling.model.DescribeAutoScalingGroupsRequest;
 import com.amazonaws.services.autoscaling.model.DescribeAutoScalingGroupsResult;
@@ -28,6 +29,7 @@ import com.amazonaws.services.autoscaling.model.EnabledMetric;
 import com.amazonaws.services.autoscaling.model.Instance;
 import com.amazonaws.services.autoscaling.model.SuspendedProcess;
 import com.amazonaws.services.autoscaling.model.TagDescription;
+import com.amazonaws.services.ec2.model.DescribeVolumesRequest;
 
 public class asDescribeGroups extends AWSASCommand {
 
@@ -42,7 +44,8 @@ public class asDescribeGroups extends AWSASCommand {
 		opts.parse(args);
 
 		args = opts.getRemainingArgs();
-		
+		parseCommonOptions(opts);
+
 
 		
 		mSerializeOpts = this.getSerializeOpts(opts);
@@ -68,7 +71,7 @@ public class asDescribeGroups extends AWSASCommand {
 
 
 
-	private int describe(List<XValue> args) throws IOException, XMLStreamException, SaxonApiException, CoreException {
+	private int describe(List<XValue> args) throws IOException, XMLStreamException, SaxonApiException, CoreException, InterruptedException {
 		
 
 		OutputPort stdout = this.getStdout();
@@ -86,7 +89,30 @@ public class asDescribeGroups extends AWSASCommand {
 	
 		
 		traceCall("describeAutoScalingGroups");
-		DescribeAutoScalingGroupsResult result = mAmazon.describeAutoScalingGroups(request);
+		DescribeAutoScalingGroupsResult result = null ; 
+		
+		
+		int retry = rateRetry ;
+		int delay = retryDelay ;
+		do {
+			try {
+				result = mAmazon.describeAutoScalingGroups(request);
+			    break;
+				
+			} catch( AmazonServiceException e ){
+				mShell.printErr("AmazonServiceException" , e );
+				if( retry > 0 && Util.isEqual("RequestLimitExceeded",e.getErrorCode())){
+					mShell.printErr("AWS RequestLimitExceeded - sleeping " + delay );
+					Thread.sleep( delay );
+					retry--;
+					delay *= 2 ;
+				}
+				else
+					throw e;
+			}
+		} while( retry > 0 );
+		
+		
 		
 		
 		for( AutoScalingGroup group :  result.getAutoScalingGroups())

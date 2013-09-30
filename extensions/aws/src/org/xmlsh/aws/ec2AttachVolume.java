@@ -13,7 +13,9 @@ import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
+import org.xmlsh.util.Util;
 
+import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.ec2.model.AttachVolumeRequest;
 import com.amazonaws.services.ec2.model.AttachVolumeResult;
 
@@ -34,10 +36,8 @@ public class ec2AttachVolume extends AWSEC2Command {
 		Options opts = getOptions("i=instance:,d=device:");
 		opts.parse(args);
 
+		parseCommonOptions(opts);
 		args = opts.getRemainingArgs();
-		
-
-		
 		
 		
 		if( args.size() != 1 ){
@@ -67,7 +67,7 @@ public class ec2AttachVolume extends AWSEC2Command {
 	}
 
 
-	private int attach( String volume , String instance, String device ) throws InvalidArgumentException, IOException, XMLStreamException, SaxonApiException  
+	private int attach( String volume , String instance, String device ) throws InvalidArgumentException, IOException, XMLStreamException, SaxonApiException, InterruptedException  
 	{
 	
 		
@@ -75,7 +75,30 @@ public class ec2AttachVolume extends AWSEC2Command {
 		
 		traceCall("attachVolume");
 
-		AttachVolumeResult result = mAmazon.attachVolume(request);
+		AttachVolumeResult result = null ;
+		
+		int retry = rateRetry ;
+		int delay = retryDelay ;
+		do {
+			try {
+				 result = mAmazon.attachVolume(request);
+				 break ;
+			} catch( AmazonServiceException e ){
+				mShell.printErr("AmazonServiceException" , e );
+				if( retry > 0 && Util.isEqual("RequestLimitExceeded",e.getErrorCode())){
+					mShell.printErr("AWS RequestLimitExceeded - sleeping " + delay );
+					Thread.sleep( delay );
+					retry--;
+					delay *= 2 ;
+				}
+				else
+					throw e;
+			}
+		} while( retry > 0 );
+			
+		
+		
+		
 		writeResult(result);
 
 		return 0;

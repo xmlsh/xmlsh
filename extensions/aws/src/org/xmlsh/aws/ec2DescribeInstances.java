@@ -6,6 +6,8 @@ import java.util.List;
 import javax.xml.stream.XMLStreamException;
 
 import net.sf.saxon.s9api.SaxonApiException;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.xmlsh.aws.util.AWSEC2Command;
 import org.xmlsh.aws.util.SafeXMLStreamWriter;
 import org.xmlsh.core.CoreException;
@@ -15,17 +17,14 @@ import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.util.Util;
 
+import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.ec2.model.DescribeInstancesRequest;
 import com.amazonaws.services.ec2.model.Reservation;
 
 
 public class ec2DescribeInstances extends AWSEC2Command {
 
-	
-
-
-	private boolean bLongListing;
-
+	private static Logger mLogger = LogManager.getLogger(ec2DescribeInstances.class);
 
 
 
@@ -37,10 +36,11 @@ public class ec2DescribeInstances extends AWSEC2Command {
 	public int run(List<XValue> args) throws Exception {
 
 		
-		Options opts = getOptions("l=long");
+		Options opts = getOptions();
 		opts.parse(args);
 
 		args = opts.getRemainingArgs();
+		parseCommonOptions( opts );
 		
 
 		
@@ -49,19 +49,18 @@ public class ec2DescribeInstances extends AWSEC2Command {
 		
 		
 		
-		bLongListing = opts.hasOpt("l");
-		
 		
 		try {
 			 getEC2Client(opts);
 		} catch (UnexpectedException e) {
 			usage( e.getLocalizedMessage() );
 			return 1;
-			
+		
 		}
 		
 	
 
+			
 		int ret = describe(args);
 
 		
@@ -72,7 +71,7 @@ public class ec2DescribeInstances extends AWSEC2Command {
 	}
 
 
-	private int describe(List<XValue> args) throws IOException, XMLStreamException, SaxonApiException, CoreException {
+	private int describe(List<XValue> args) throws IOException, XMLStreamException, SaxonApiException, CoreException, InterruptedException {
 		
 
 		OutputPort stdout = this.getStdout();
@@ -93,8 +92,30 @@ public class ec2DescribeInstances extends AWSEC2Command {
 		
 		traceCall("describeInstances");
 
-		List<Reservation> result = mAmazon.describeInstances(request).getReservations();
+		List<Reservation> result = null;
 		
+		int retry = rateRetry ;
+		int delay = retryDelay ;
+		do {
+			try {
+			   result = mAmazon.describeInstances(request).getReservations();
+			   break ;
+			} catch( AmazonServiceException e ){
+				mShell.printErr("AmazonServiceException" , e );
+				if( retry > 0 && Util.isEqual("RequestLimitExceeded",e.getErrorCode())){
+					mShell.printErr("AWS RequestLimitExceeded - sleeping " + delay );
+					Thread.sleep( delay );
+					retry--;
+					delay *= 2 ;
+					
+					
+				}
+				else
+					throw e;
+				
+			}
+		} while( retry > 0 );
+			
 		
 		for( Reservation  res : result ){
 			writeReservation(res);

@@ -49,6 +49,10 @@ public abstract class AWSEC2Command extends AWSCommand {
 	
 	protected	AmazonEC2		mAmazon ;
 	
+
+
+	
+	
 	public AWSEC2Command() {
 		super();
 	}

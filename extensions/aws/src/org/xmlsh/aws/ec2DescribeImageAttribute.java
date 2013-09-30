@@ -23,12 +23,6 @@ import com.amazonaws.services.ec2.model.ProductCode;
 
 public class ec2DescribeImageAttribute extends AWSEC2Command {
 
-	
-
-
-
-
-
 	/**
 	 * @param args
 	 * @throws IOException 
