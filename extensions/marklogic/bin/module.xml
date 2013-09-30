@@ -1,8 +1,8 @@
 <module 
-	module_version="1.19"
+	module_version="1.20"
 	name="marklogic"
 	package="org.xmlsh.marklogic"
-	require="1.2.3"
+	require="1.2.4"
 >
 <classpath>
   <directory url="."/>

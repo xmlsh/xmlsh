@@ -1,4 +1,3 @@
-# rename a marklogic document
 # rest-get [-user] [-port] [-password] url query-params
 . $(xuri -r /org/xmlsh/marklogic/resources/common.xsh)
 _opts=$<(xgetopts -i "host:,port:,scheme:,uri:,path:" -s -o "u=user:,p=password:" -- $@)
