@@ -202,7 +202,7 @@ public class get extends MLCommand {
 
 
 	private String resolveUri(String baseUri, String uri) {
-		if( baseUri == null )
+		if(Util.isEmpty(baseUri) )
 			return uri ;
 		
 		StringBuffer sb = new StringBuffer( baseUri );
