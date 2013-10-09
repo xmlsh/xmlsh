@@ -57,13 +57,9 @@ public class ec2DescribeVolumes extends AWSEC2Command {
 		case	0:
 			ret = describe(null);
 			break;
-		case	1:
+		default:
 			ret = describe(args);
 			break;
-			
-		default :
-				usage();
-				return 1;
 		}
 
 		return ret;
