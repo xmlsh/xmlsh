@@ -47,11 +47,8 @@ public class ec2DescribeVolumes extends AWSEC2Command {
 		} catch (UnexpectedException e) {
 			usage( e.getLocalizedMessage() );
 			return 1;
-			
 		}
 		
-		
-
 		int ret;
 		switch(args.size()){
 		case	0:
@@ -67,12 +64,8 @@ public class ec2DescribeVolumes extends AWSEC2Command {
 
 
 	private int describe(List<XValue> args) throws IOException, XMLStreamException, SaxonApiException, CoreException, InterruptedException {
-		
-
 		OutputPort stdout = this.getStdout();
 		mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(mSerializeOpts));
-		
-		
 		startDocument();
 		startElement(this.getName());
 		
@@ -108,14 +101,12 @@ public class ec2DescribeVolumes extends AWSEC2Command {
 			
 		}
 		
-		
 		traceCall("describeVolumes");
 
 		for( Volume  volume : result.getVolumes() ){
 			writeVolume(volume);
 			endElement();
 		}
-		
 		
 		endElement();
 		endDocument();
