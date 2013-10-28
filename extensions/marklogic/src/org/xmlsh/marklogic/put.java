@@ -39,6 +39,7 @@ import org.xmlsh.core.Options;
 import org.xmlsh.core.UnimplementedException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.marklogic.util.MLCommand;
+import org.xmlsh.marklogic.util.MLUtil;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.util.StringPair;
 import org.xmlsh.util.Util;
@@ -229,7 +230,7 @@ public class put extends MLCommand {
 			
 			Content content;
 			try {
-				content = ContentFactory.newContent (getUri(baseUri) , bytesFromItem(mItem,mSerializeOpts) , mCreateOptions);
+				content = ContentFactory.newContent (getUri(baseUri) , MLUtil.bytesFromItem(mItem,mSerializeOpts) , mCreateOptions);
 			} catch (Exception e) {
 				mShell.printErr("Exception serializing XML" , e );
 				return null ;
@@ -323,7 +324,7 @@ public class put extends MLCommand {
 	@Override
 	public int run(List<XValue> args) throws Exception {
 		
-		Options opts = new Options("f=filenames:,v=verbose,c=connect:,md5,uri:,baseuri:,m=maxfiles:,r=recurse,d=mkdirs,t=text,b=binary,x=xml,maxthreads:,collection:+,forest:+,perm=permission:+,repair:,buffer:,language:,namespace:,quality:,+resolve,locale:,delete,stream:");
+		Options opts = new Options("f=filenames:,v=verbose,c=connect:,md5,uri:,baseuri:,m=maxfiles:,r=recurse,d=mkdirs,t=text,b=binary,x=xml,maxthreads:,collection:+,forest:+,perm=permission:+,repair:,buffer:,language:,namespace:,quality:,+resolve,locale:,delete,stream:",SerializeOpts.getOptionDefs());
 		opts.parse(args);
 		args = opts.getRemainingArgs();
 		
@@ -776,7 +777,7 @@ public class put extends MLCommand {
 	private static String getChecksumString(String uri , Checksum sum) throws RequestException {
 		
 		return 
-			"xdmp:document-set-property( " + quote(uri) +
+			"xdmp:document-set-property( " + MLUtil.quote(uri) +
 			", <xmd5 md5='" + sum.getMD5() + 
 			"' length='"+ String.valueOf(sum.getLength()) + "'/>),\n" ;
 			
@@ -794,7 +795,7 @@ public class put extends MLCommand {
 		     if( contentIter.isDirectory() ){
 			
 		    	 String uri = contentIter.getUri( baseURI );
-			     String qd =  quote(uri);
+			     String qd =  MLUtil.quote(uri);
 			
 			     sReq.append("if( exists(xdmp:document-properties(" + qd+ ")//prop:directory)) then () else xdmp:directory-create(" +qd + ");\n");
 			

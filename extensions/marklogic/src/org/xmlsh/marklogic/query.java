@@ -10,6 +10,7 @@ import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.Options.OptionValue;
 import org.xmlsh.marklogic.util.MLCommand;
+import org.xmlsh.marklogic.util.MLUtil;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.util.Util;
 
@@ -80,7 +81,7 @@ public class query extends MLCommand {
 				
 				String name = args.get(i*2).toString();
 				XValue value = args.get(i*2+1);
-				XdmVariable var = newVariable(name, value, serializeOpts);
+				XdmVariable var = MLUtil.newVariable(name, value, serializeOpts);
 				request.setVariable(var);
 					
 				
@@ -99,12 +100,12 @@ public class query extends MLCommand {
 	    boolean bOutput = false ;
 	    if( bBool ){
 	    	// Effective boolean value : 
-	    	ret = effectiveBoolean(rs) ? 0 : 1;
+	    	ret = MLUtil.effectiveBoolean(rs) ? 0 : 1;
 	    	
 	    	
 	    }
 	    else
-	    	bOutput = writeResult(rs, out, serializeOpts,asText, bBinary );
+	    	bOutput = MLUtil.writeResult(rs, out, serializeOpts,asText, bBinary );
         rs.close();
 		
         mSession.close();

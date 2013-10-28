@@ -28,6 +28,7 @@ import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.UnimplementedException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.marklogic.util.MLCommand;
+import org.xmlsh.marklogic.util.MLUtil;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.util.Util;
 
@@ -116,7 +117,7 @@ public class get extends MLCommand {
 	@Override
 	public int run(List<XValue> args) throws Exception {
 		
-		Options opts = new Options("v=verbose,c=connect:,baseuri:,m=maxfiles:,r=recurse,maxthreads:,t=text,binary,d=directory:,o=output:");
+		Options opts = new Options("v=verbose,c=connect:,baseuri:,m=maxfiles:,r=recurse,maxthreads:,t=text,binary,d=directory:,o=output:",SerializeOpts.getOptionDefs());
 		opts.parse(args);
 		args = opts.getRemainingArgs();
 		
@@ -264,7 +265,7 @@ public class get extends MLCommand {
 		request.setOptions (options);
 
 	    ResultSequence rs = session.submitRequest (request);
-	    writeResult(rs, output , mSerializeOpts, bText , bBinary );
+	    MLUtil.writeResult(rs, output , mSerializeOpts, bText , bBinary );
 	    rs.close();
 	    
 	    if( ! bText && ! bBinary )

@@ -7,6 +7,7 @@ import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.XValue;
 import org.xmlsh.marklogic.util.MLCommand;
+import org.xmlsh.marklogic.util.MLUtil;
 import org.xmlsh.sh.shell.SerializeOpts;
 
 import com.marklogic.xcc.ContentSource;
@@ -52,7 +53,7 @@ public class invoke extends MLCommand {
       				
     				String name = args.get(i*2).toString();
     				XValue value = args.get(i*2+1);
-    				XdmVariable var = newVariable(name, value, serializeOpts);
+    				XdmVariable var = MLUtil.newVariable(name, value, serializeOpts);
     				request.setVariable(var);
       				
       			}
@@ -61,7 +62,7 @@ public class invoke extends MLCommand {
       		}
             ResultSequence rs = mSession.submitRequest (request);
 
-			writeResult(  rs  , out , serializeOpts,asText , bBinary );
+			MLUtil.writeResult(  rs  , out , serializeOpts,asText , bBinary );
            // out.close();
 		
 
