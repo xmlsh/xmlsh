@@ -95,6 +95,11 @@ public class MLTreeModel extends LazyTreeModel {
 
 	}
 
+	public void reset() {
+		postReset( (LazyTreeNode) getRoot() );
+		
+	}
+
 
 
 

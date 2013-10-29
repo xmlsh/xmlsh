@@ -95,6 +95,7 @@ public class ExplorerShell {
 	private File mTempDir;
 	private JMenuItem mntmNext;
 	private JMenuItem mntmPrev;
+	private JButton mBtnConnect;
 
 
 	public void run( ) {
@@ -169,22 +170,22 @@ public class ExplorerShell {
 		gbl_panel.columnWeights = new double[]{0.0, 1.0, Double.MIN_VALUE};
 		gbl_panel.rowWeights = new double[]{0.0, Double.MIN_VALUE};
 		panel.setLayout(gbl_panel);
-		JButton btnConnect = new JButton("Connect...");
-		btnConnect.addActionListener(new ActionListener() {
+		mBtnConnect = new JButton("Connect...");
+		mBtnConnect.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				reconnect();
 			}
 		});
-		btnConnect.setMinimumSize(new Dimension(87, 20));
-		btnConnect.setMargin(new Insets(1, 12, 1, 12));
-		btnConnect.setMaximumSize(new Dimension(87, 20));
+		mBtnConnect.setMinimumSize(new Dimension(87, 20));
+		mBtnConnect.setMargin(new Insets(1, 12, 1, 12));
+		mBtnConnect.setMaximumSize(new Dimension(87, 20));
 		GridBagConstraints gbc_btnConnect = new GridBagConstraints();
 		gbc_btnConnect.anchor = GridBagConstraints.WEST;
 		gbc_btnConnect.insets = new Insets(0, 0, 0, 5);
 		gbc_btnConnect.gridx = 0;
 		gbc_btnConnect.gridy = 0;
-		panel.add(btnConnect, gbc_btnConnect);
-		btnConnect.setHorizontalAlignment(SwingConstants.LEFT);
+		panel.add(mBtnConnect, gbc_btnConnect);
+		mBtnConnect.setHorizontalAlignment(SwingConstants.LEFT);
 
 		JLabel lblStatus = mStatus= new JLabel("Status");
 		mframe.getContentPane().add(lblStatus, BorderLayout.SOUTH);
@@ -198,10 +199,10 @@ public class ExplorerShell {
 		tree.setRootVisible(false);
 		tree.setTransferHandler( new TreeTransferHandler(this) );
 		scrollPane.setViewportView(tree);
-		tree.setModel( mDirectoryModel = new MLTreeModel(new LazyTreeNode(), tree, this) );
 
 
 		mDirectoryTree = tree ;
+		mDirectoryTree.setModel( mDirectoryModel = new MLTreeModel(new LazyTreeNode(), tree, this) );
 
 		JPopupMenu popupMenu = new JPopupMenu();
 		
@@ -581,16 +582,27 @@ public class ExplorerShell {
 	}
 
 
+	
 	private void reconnect()
 	{
 		if( mRequestThread != null ){
 			mRequestThread.close();
+			mRequestThread = null ;
+			this.mBtnConnect.setText("Connect...");
+			
+			mDirectoryModel.reset();
+
+		} else {
+
+
+			mRequestThread = new MLRequestThread( this ,  mOptions  , mCommandQueue  );
+			mRequestThread.start();
+	
+			mDirectoryModel.loadFirstLevel();
+			this.mBtnConnect.setText("Disconnect...");
+
+	 
 		}
-
-		mRequestThread = new MLRequestThread( this ,  mOptions  , mCommandQueue  );
-		mRequestThread.start();
-
-		mDirectoryModel.loadFirstLevel();
 
 	}
 	private static void addPopup(Component component, final JPopupMenu popup) {
