@@ -10,13 +10,8 @@ import org.xmlsh.marklogic.util.MLCommand;
 import org.xmlsh.marklogic.util.MLUtil;
 import org.xmlsh.sh.shell.SerializeOpts;
 
-import com.marklogic.xcc.ContentSource;
 import com.marklogic.xcc.Request;
 import com.marklogic.xcc.ResultSequence;
-import com.marklogic.xcc.Session;
-import com.marklogic.xcc.ValueFactory;
-import com.marklogic.xcc.types.XName;
-import com.marklogic.xcc.types.XSString;
 import com.marklogic.xcc.types.XdmVariable;
 
 public class invoke extends MLCommand {

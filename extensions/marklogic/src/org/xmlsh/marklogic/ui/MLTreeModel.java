@@ -6,19 +6,16 @@
 
 package org.xmlsh.marklogic.ui;
 
-import java.awt.EventQueue;
-import java.io.IOException;
-
 import javax.swing.JTree;
 import javax.swing.tree.TreeNode;
 
-import org.xmlsh.core.XValue;
 import org.xmlsh.marklogic.util.MLUtil;
 import org.xmlsh.util.Util;
 
 import com.marklogic.xcc.ResultSequence;
 import com.marklogic.xcc.types.XdmVariable;
 
+@SuppressWarnings("serial")
 public class MLTreeModel extends LazyTreeModel {
 	ExplorerShell mShell ;
 	

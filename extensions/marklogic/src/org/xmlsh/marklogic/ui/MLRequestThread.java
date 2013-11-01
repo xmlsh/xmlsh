@@ -6,40 +6,13 @@
 
 package org.xmlsh.marklogic.ui;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.PrintStream;
-import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
-import java.util.List;
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
-import javax.swing.JButton;
-import javax.swing.JTextArea;
-import javax.swing.SwingUtilities;
+import org.xmlsh.marklogic.util.MLUtil;
 
-import com.marklogic.xcc.AdhocQuery;
 import com.marklogic.xcc.ContentSource;
 import com.marklogic.xcc.ContentSourceFactory;
-import com.marklogic.xcc.ResultSequence;
-import com.marklogic.xcc.Session;
-import com.marklogic.xcc.types.XdmVariable;
-
-import org.xmlsh.core.InvalidArgumentException;
-import org.xmlsh.core.Options;
-import org.xmlsh.core.ThrowException;
-import org.xmlsh.core.XValue;
-import org.xmlsh.core.Options.OptionValue;
-import org.xmlsh.marklogic.util.MLUtil;
-import org.xmlsh.sh.core.Command;
-import org.xmlsh.sh.core.SourceLocation;
-import org.xmlsh.sh.shell.Shell;
 
 public class MLRequestThread extends Thread {
 

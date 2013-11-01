@@ -12,8 +12,6 @@ import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.InputEvent;
 import java.io.File;
-import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 
 import javax.swing.JComponent;
@@ -21,6 +19,7 @@ import javax.swing.JTree;
 import javax.swing.TransferHandler;
 import javax.swing.tree.TreePath;
 
+@SuppressWarnings("serial")
 final class TreeTransferHandler extends TransferHandler {
 	/**
 	 * 

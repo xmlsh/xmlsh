@@ -7,19 +7,10 @@
 package org.xmlsh.marklogic.util;
 
 import java.io.PrintWriter;
-import java.io.Reader;
-import java.io.Writer;
 import java.math.BigInteger;
 import java.net.URI;
 import java.util.List;
 
-import javax.xml.stream.FactoryConfigurationError;
-import javax.xml.stream.XMLEventReader;
-import javax.xml.stream.XMLEventWriter;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamException;
-
-import net.sf.saxon.s9api.XdmNode;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.xmlsh.core.InvalidArgumentException;
@@ -27,7 +18,6 @@ import org.xmlsh.core.Options;
 import org.xmlsh.core.Options.OptionValue;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
-import org.xmlsh.marklogic.get;
 import org.xmlsh.util.Util;
 
 import com.marklogic.xcc.ContentSource;

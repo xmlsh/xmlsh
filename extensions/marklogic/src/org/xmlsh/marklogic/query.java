@@ -6,20 +6,17 @@ import java.util.List;
 
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.Options;
+import org.xmlsh.core.Options.OptionValue;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.XValue;
-import org.xmlsh.core.Options.OptionValue;
 import org.xmlsh.marklogic.util.MLCommand;
 import org.xmlsh.marklogic.util.MLUtil;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.util.Util;
 
 import com.marklogic.xcc.AdhocQuery;
-import com.marklogic.xcc.ContentSource;
 import com.marklogic.xcc.RequestOptions;
 import com.marklogic.xcc.ResultSequence;
-import com.marklogic.xcc.Session;
-import com.marklogic.xcc.types.XSString;
 import com.marklogic.xcc.types.XdmVariable;
 
 public class query extends MLCommand {

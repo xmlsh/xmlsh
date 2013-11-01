@@ -6,12 +6,7 @@
 
 package org.xmlsh.marklogic.ui;
 
-import java.io.File;
-
 import com.marklogic.xcc.Content;
-import com.marklogic.xcc.ContentCreateOptions;
-import com.marklogic.xcc.ContentFactory;
-import com.marklogic.xcc.ContentSource;
 import com.marklogic.xcc.Session;
 
 public abstract class MLPutRequest extends MLRequest {

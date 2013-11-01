@@ -13,7 +13,6 @@ import org.xmlsh.core.XValue;
 import org.xmlsh.marklogic.ui.ExplorerShell;
 import org.xmlsh.marklogic.util.MLCommand;
 import org.xmlsh.sh.shell.SerializeOpts;
-import org.xmlsh.sh.ui.XShell;
 
 public class mlui extends MLCommand {
 

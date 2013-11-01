@@ -8,34 +8,19 @@ package org.xmlsh.marklogic.ui;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.util.concurrent.Semaphore;
 
-import com.marklogic.xcc.ResultItem;
-import com.marklogic.xcc.ResultSequence;
-import com.marklogic.xcc.types.XdmItem;
-import com.marklogic.xcc.types.XdmVariable;
-
-import net.sf.saxon.s9api.SaxonApiException;
-import net.sf.saxon.s9api.XdmAtomicValue;
-import net.sf.saxon.trans.XPathException;
-import org.xmlsh.core.CoreException;
-import org.xmlsh.core.FileOutputPort;
-import org.xmlsh.core.IXdmItemOutputStream;
-import org.xmlsh.core.InvalidArgumentException;
-import org.xmlsh.core.OutputPort;
-import org.xmlsh.core.XValue;
 import org.xmlsh.marklogic.util.MLUtil;
 import org.xmlsh.sh.shell.SerializeOpts;
+
+import com.marklogic.xcc.ResultSequence;
 
 public class MLGetRequest extends MLQueryRequest
 {
 
 
-	private boolean bSuccess = false ;
 	private File mOutput ;
+	@SuppressWarnings("unused")
 	private SerializeOpts mSerializeOpts;
 	
 	

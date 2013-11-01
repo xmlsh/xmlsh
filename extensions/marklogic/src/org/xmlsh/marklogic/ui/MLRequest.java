@@ -6,9 +6,6 @@
 
 package org.xmlsh.marklogic.ui;
 
-import java.util.concurrent.Semaphore;
-
-import com.marklogic.xcc.ContentSource;
 
 public abstract class MLRequest {
 	

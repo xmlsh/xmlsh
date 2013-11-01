@@ -6,15 +6,10 @@
 
 package org.xmlsh.marklogic.ui;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.marklogic.xcc.AdhocQuery;
-import com.marklogic.xcc.ContentSource;
 import com.marklogic.xcc.RequestOptions;
 import com.marklogic.xcc.ResultSequence;
 import com.marklogic.xcc.Session;
-import com.marklogic.xcc.exceptions.RequestException;
 import com.marklogic.xcc.types.XdmVariable;
 
 public abstract class MLQueryRequest extends MLRequest {

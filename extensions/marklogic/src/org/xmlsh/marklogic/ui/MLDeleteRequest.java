@@ -8,9 +8,7 @@ package org.xmlsh.marklogic.ui;
 
 import org.xmlsh.marklogic.util.MLUtil;
 
-import com.marklogic.xcc.RequestOptions;
 import com.marklogic.xcc.ResultSequence;
-import com.marklogic.xcc.types.XdmVariable;
 
 public class MLDeleteRequest extends MLQueryRequest {
 
