@@ -18,7 +18,12 @@ public abstract class MLQueryRequest extends MLRequest {
 	private XdmVariable[] mVariables = null;
 	private RequestOptions mOptions ;
 	
-
+	public MLQueryRequest(String operation, String query, 	RequestOptions options) throws InterruptedException {
+		super(operation);
+		mQuery = query;
+		mVariables = null;
+		mOptions = options;
+	}
 
 	public MLQueryRequest(String operation, String query, XdmVariable[] variables,
 			RequestOptions options) throws InterruptedException {

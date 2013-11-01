@@ -54,16 +54,22 @@ import javax.swing.tree.TreePath;
 import org.xmlsh.core.Options;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.util.Util;
 
 import com.marklogic.xcc.Content;
 import com.marklogic.xcc.ContentCreateOptions;
 import com.marklogic.xcc.ContentFactory;
 import com.marklogic.xcc.ResultSequence;
+import javax.swing.JList;
+import javax.swing.ListSelectionModel;
+import javax.swing.JComboBox;
+import java.awt.event.ItemListener;
+import java.awt.event.ItemEvent;
 
 public class ExplorerShell {
 
 	private JFrame mframe;
-	private ExplorerOptions mOptions = new ExplorerOptions();
+	private ExplorerOptions mOptions ;
 	private BlockingQueue<MLRequest> mCommandQueue =  new ArrayBlockingQueue<MLRequest>(20, true);
 
 	private File mCurdir;
@@ -79,6 +85,8 @@ public class ExplorerShell {
 	private JMenuItem mntmNext;
 	private JMenuItem mntmPrev;
 	private JButton mBtnConnect;
+	private JComboBox mListDatabases;
+	private boolean inConnect = false ;
 
 
 	public void run( ) {
@@ -107,8 +115,7 @@ public class ExplorerShell {
 		mCurdir = sh.getCurdir();
 		mSerializeOpts = sh.getSerializeOpts(opts);
 
-
-		mOptions.mConnectString = opts.getOptString("connect", sh.getEnv().getVarString("MLCONNECT"));
+		mOptions = new ExplorerOptions( opts.getOptString("connect", sh.getEnv().getVarString("MLCONNECT")));
 		QueryCache.init(this);
 		initialize();
 	}
@@ -150,7 +157,7 @@ public class ExplorerShell {
 		gbl_panel.columnWidths = new int[]{87, 286, 0};
 		gbl_panel.rowHeights = new int[]{23, 0};
 		gbl_panel.columnWeights = new double[]{0.0, 1.0, Double.MIN_VALUE};
-		gbl_panel.rowWeights = new double[]{0.0, Double.MIN_VALUE};
+		gbl_panel.rowWeights = new double[]{1.0, Double.MIN_VALUE};
 		panel.setLayout(gbl_panel);
 		mBtnConnect = new JButton("Connect...");
 		mBtnConnect.addActionListener(new ActionListener() {
@@ -168,6 +175,27 @@ public class ExplorerShell {
 		gbc_btnConnect.gridy = 0;
 		panel.add(mBtnConnect, gbc_btnConnect);
 		mBtnConnect.setHorizontalAlignment(SwingConstants.LEFT);
+		
+		mListDatabases = new JComboBox();
+		mListDatabases.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent event) {
+				if( inConnect )
+					return ;
+				if (event.getStateChange() == ItemEvent.SELECTED) {
+			          Object item = event.getItem();
+			          if( item instanceof String && ! Util.isBlank((String)item) ){
+			        	  mOptions.mDatabase = (String) item ;
+			        	  reconnect();
+			        	  reconnect();
+			          }
+			       }
+			}
+		});
+		GridBagConstraints gbc_listDatabases = new GridBagConstraints();
+		gbc_listDatabases.fill = GridBagConstraints.BOTH;
+		gbc_listDatabases.gridx = 1;
+		gbc_listDatabases.gridy = 0;
+		panel.add(mListDatabases, gbc_listDatabases);
 
 		JLabel lblStatus = mStatus= new JLabel("Status");
 		mframe.getContentPane().add(lblStatus, BorderLayout.SOUTH);
@@ -571,7 +599,8 @@ public class ExplorerShell {
 			mRequestThread.close();
 			mRequestThread = null ;
 			this.mBtnConnect.setText("Connect...");
-			
+			mListDatabases.removeAllItems();
+
 			mDirectoryModel.reset();
 
 		} else {
@@ -582,11 +611,65 @@ public class ExplorerShell {
 	
 			mDirectoryModel.loadFirstLevel();
 			this.mBtnConnect.setText("Disconnect...");
+			
+			try {
+			  refreshDatabases();
+			} catch( Exception e )
+			{
+				printError("Exception refreshing databases",e);
+				
+			}
+			
 
 	 
 		}
 
 	}
+	private void refreshDatabases() throws InterruptedException {
+
+		putCommand( new MLQueryRequest( "Getting Databases ..." , 
+				QueryCache.getInstance().getQuery("listDatabases.xquery"),
+				null 
+				){  
+
+
+				@Override
+				void onComplete(ResultSequence rs) throws Exception {
+					final String[] dbs = rs.asStrings();
+					
+					SwingUtilities.invokeLater(new Runnable() {
+						public void run() {
+							inConnect = true ;
+							mListDatabases.removeAllItems();
+							
+
+							boolean first = true ;
+							String selected = null ;
+							for( String db : dbs )
+							{
+							   if( ! first ){
+							      mListDatabases.addItem( db );
+							      if( db.equals( dbs[0]))
+							    	  selected =db ;
+							   }
+							   first = false ;
+							   
+							}
+
+							mListDatabases.setSelectedItem(selected);
+							inConnect = false ;
+							   
+						}
+					});	
+					
+					
+					
+				}
+			});
+		
+		
+	}
+
 	private static void addPopup(Component component, final JPopupMenu popup) {
 		component.addMouseListener(new MouseAdapter() {
 			public void mousePressed(MouseEvent e) {

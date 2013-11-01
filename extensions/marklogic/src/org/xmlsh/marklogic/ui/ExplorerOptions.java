@@ -6,11 +6,70 @@
 
 package org.xmlsh.marklogic.ui;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+
+import com.marklogic.xcc.ContentSource;
+import com.marklogic.xcc.ContentSourceFactory;
+import com.marklogic.xcc.SecurityOptions;
+
 class ExplorerOptions {
-	String mConnectString ;
+	String mScheme ;
+	String mHost ;
+	String mUser ;
+	int    mPort ;
+	String mPassword ; 
+	String mDatabase ;
+	
 	int    mBatchSize = 10;  // PUT batch size max
 	int    mMaxRows   = 1000;
+	SecurityOptions mOptions;
 	
+	ExplorerOptions( String connectString ) throws URISyntaxException{
+		if( connectString != null ){
+			URI uri = new URI( connectString );
+			
+		    String scheme = uri.getScheme();
+	
+		    mHost = uri.getHost();
+		    mPort = uri.getPort();
+		    
+		    String userInfoStr = uri.getUserInfo();
+		    String[] userInfo = (userInfoStr == null) ? (new String[0]) : userInfoStr.split(":", 2);
+		    String contentBase = uri.getPath();
+		
+		
+		
+		    if (contentBase != null) {
+		        if (contentBase.startsWith("/")) {
+		            contentBase = contentBase.substring(1);
+		        }
+		
+		        if (contentBase.length() == 0) {
+		        	// in the case where a numeric is sent
+		            contentBase = uri.getFragment(); 
+		            if (contentBase != null) {
+		            	contentBase = "#" + contentBase;
+		            }
+		        }
+		    }
+		    mDatabase = contentBase ;
+		
+		    if( userInfo.length == 2 ) {
+		    	mUser = userInfo[0];
+		    	mPassword = userInfo[1];
+		    }
+		
+		}
+		
+	}
+	
+	
+    public ContentSource newContentSource(){
+    	return ContentSourceFactory.newContentSource( mHost , mPort , mUser , mPassword , mDatabase , mOptions );
+    	
+    }
+
 
 }
 

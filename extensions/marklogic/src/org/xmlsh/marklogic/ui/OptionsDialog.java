@@ -25,16 +25,21 @@ import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
 import org.xmlsh.marklogic.util.MLUtil;
+import java.text.Format;
 
 @SuppressWarnings("serial")
 public class OptionsDialog extends JDialog {
 
 	private final JPanel mcontentPanel = new JPanel();
-	private JTextField mtextConnection;
+	private JTextField mtextHost;
 
 	private ExplorerOptions mOptions ;
 	private JFormattedTextField mtextBatchSize;
 	private JFormattedTextField mtextMaxRows;
+	private JTextField mtextUser;
+	private JTextField mtextPassword;
+	private JTextField mtextDatabase;
+	private JFormattedTextField mtextPort;
 
 	/**
 	 * Create the dialog.
@@ -48,30 +53,110 @@ public class OptionsDialog extends JDialog {
 		getContentPane().add(mcontentPanel, BorderLayout.CENTER);
 		GridBagLayout gbl_contentPanel = new GridBagLayout();
 		gbl_contentPanel.columnWidths = new int[]{0, 0, 0};
-		gbl_contentPanel.rowHeights = new int[]{0, 0, 0, 0};
+		gbl_contentPanel.rowHeights = new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0};
 		gbl_contentPanel.columnWeights = new double[]{0.0, 1.0, Double.MIN_VALUE};
-		gbl_contentPanel.rowWeights = new double[]{0.0, 0.0, 0.0, Double.MIN_VALUE};
+		gbl_contentPanel.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
 		mcontentPanel.setLayout(gbl_contentPanel);
 		{
-			JLabel lblXccConnection = new JLabel("XCC Connection");
-			lblXccConnection.setHorizontalAlignment(SwingConstants.LEFT);
-			GridBagConstraints gbc_lblXccConnection = new GridBagConstraints();
-			gbc_lblXccConnection.insets = new Insets(0, 0, 5, 5);
-			gbc_lblXccConnection.anchor = GridBagConstraints.EAST;
-			gbc_lblXccConnection.gridx = 0;
-			gbc_lblXccConnection.gridy = 0;
-			mcontentPanel.add(lblXccConnection, gbc_lblXccConnection);
+			JLabel lbllHost = new JLabel("Host");
+			lbllHost.setHorizontalAlignment(SwingConstants.LEFT);
+			GridBagConstraints gbc_lbllHost = new GridBagConstraints();
+			gbc_lbllHost.insets = new Insets(0, 0, 5, 5);
+			gbc_lbllHost.anchor = GridBagConstraints.EAST;
+			gbc_lbllHost.gridx = 0;
+			gbc_lbllHost.gridy = 0;
+			mcontentPanel.add(lbllHost, gbc_lbllHost);
 		}
 		{
-			mtextConnection = new JTextField();
-			mtextConnection.setText( mOptions.mConnectString );
-			GridBagConstraints gbc_textConnection = new GridBagConstraints();
-			gbc_textConnection.insets = new Insets(0, 0, 5, 0);
-			gbc_textConnection.fill = GridBagConstraints.HORIZONTAL;
-			gbc_textConnection.gridx = 1;
-			gbc_textConnection.gridy = 0;
-			mcontentPanel.add(mtextConnection, gbc_textConnection);
-			mtextConnection.setColumns(10);
+			mtextHost = new JTextField();
+			mtextHost.setText( mOptions.mHost );
+			GridBagConstraints gbc_textHost = new GridBagConstraints();
+			gbc_textHost.insets = new Insets(0, 0, 5, 0);
+			gbc_textHost.fill = GridBagConstraints.HORIZONTAL;
+			gbc_textHost.gridx = 1;
+			gbc_textHost.gridy = 0;
+			mcontentPanel.add(mtextHost, gbc_textHost);
+			mtextHost.setColumns(10);
+		}
+		{
+			JLabel lblPort = new JLabel("Port");
+			GridBagConstraints gbc_lblPort = new GridBagConstraints();
+			gbc_lblPort.insets = new Insets(0, 0, 5, 5);
+			gbc_lblPort.anchor = GridBagConstraints.EAST;
+			gbc_lblPort.gridx = 0;
+			gbc_lblPort.gridy = 1;
+			mcontentPanel.add(lblPort, gbc_lblPort);
+		}
+		{
+			mtextPort = new JFormattedTextField(NumberFormat.getIntegerInstance());
+			mtextPort.setValue( mOptions.mPort );
+			mtextPort.setColumns(10);
+			GridBagConstraints gbc_mtextPort = new GridBagConstraints();
+			gbc_mtextPort.insets = new Insets(0, 0, 5, 0);
+			gbc_mtextPort.fill = GridBagConstraints.HORIZONTAL;
+			gbc_mtextPort.gridx = 1;
+			gbc_mtextPort.gridy = 1;
+			mcontentPanel.add(mtextPort, gbc_mtextPort);
+		}
+		{
+			JLabel lblUser = new JLabel("User");
+			GridBagConstraints gbc_lblUser = new GridBagConstraints();
+			gbc_lblUser.insets = new Insets(0, 0, 5, 5);
+			gbc_lblUser.anchor = GridBagConstraints.EAST;
+			gbc_lblUser.gridx = 0;
+			gbc_lblUser.gridy = 2;
+			mcontentPanel.add(lblUser, gbc_lblUser);
+		}
+		{
+			mtextUser = new JTextField();
+			mtextUser.setText(mOptions.mUser);
+			mtextUser.setColumns(10);
+			GridBagConstraints gbc_textUser = new GridBagConstraints();
+			gbc_textUser.insets = new Insets(0, 0, 5, 0);
+			gbc_textUser.fill = GridBagConstraints.HORIZONTAL;
+			gbc_textUser.gridx = 1;
+			gbc_textUser.gridy = 2;
+			mcontentPanel.add(mtextUser, gbc_textUser);
+		}
+		{
+			JLabel lblNewLabel_1 = new JLabel("Password");
+			GridBagConstraints gbc_lblNewLabel_1 = new GridBagConstraints();
+			gbc_lblNewLabel_1.insets = new Insets(0, 0, 5, 5);
+			gbc_lblNewLabel_1.anchor = GridBagConstraints.EAST;
+			gbc_lblNewLabel_1.gridx = 0;
+			gbc_lblNewLabel_1.gridy = 3;
+			mcontentPanel.add(lblNewLabel_1, gbc_lblNewLabel_1);
+		}
+		{
+			mtextPassword = new JTextField();
+			mtextPassword.setText( mOptions.mPassword);
+			mtextPassword.setColumns(10);
+			GridBagConstraints gbc_textPassword = new GridBagConstraints();
+			gbc_textPassword.insets = new Insets(0, 0, 5, 0);
+			gbc_textPassword.fill = GridBagConstraints.HORIZONTAL;
+			gbc_textPassword.gridx = 1;
+			gbc_textPassword.gridy = 3;
+			mcontentPanel.add(mtextPassword, gbc_textPassword);
+		}
+		{
+			JLabel lblNewLabel_2 = new JLabel("Database");
+			GridBagConstraints gbc_lblNewLabel_2 = new GridBagConstraints();
+			gbc_lblNewLabel_2.insets = new Insets(0, 0, 5, 5);
+			gbc_lblNewLabel_2.anchor = GridBagConstraints.EAST;
+			gbc_lblNewLabel_2.gridx = 0;
+			gbc_lblNewLabel_2.gridy = 4;
+			mcontentPanel.add(lblNewLabel_2, gbc_lblNewLabel_2);
+		}
+		{
+			mtextDatabase = new JTextField();
+			mtextDatabase.setText(mOptions.mDatabase);
+			mtextDatabase.setColumns(10);
+			GridBagConstraints gbc_textDatabase = new GridBagConstraints();
+			gbc_textDatabase.insets = new Insets(0, 0, 5, 0);
+			gbc_textDatabase.fill = GridBagConstraints.HORIZONTAL;
+			gbc_textDatabase.gridx = 1;
+			gbc_textDatabase.gridy = 4;
+			mcontentPanel.add(mtextDatabase, gbc_textDatabase);
 		}
 		{
 			JLabel lblBatchSize = new JLabel("Batch Size");
@@ -79,7 +164,7 @@ public class OptionsDialog extends JDialog {
 			gbc_lblBatchSize.anchor = GridBagConstraints.EAST;
 			gbc_lblBatchSize.insets = new Insets(0, 0, 5, 5);
 			gbc_lblBatchSize.gridx = 0;
-			gbc_lblBatchSize.gridy = 1;
+			gbc_lblBatchSize.gridy = 5;
 			mcontentPanel.add(lblBatchSize, gbc_lblBatchSize);
 		}
 		{
@@ -89,7 +174,7 @@ public class OptionsDialog extends JDialog {
 			gbc_textBatchSize.insets = new Insets(0, 0, 5, 0);
 			gbc_textBatchSize.anchor = GridBagConstraints.WEST;
 			gbc_textBatchSize.gridx = 1;
-			gbc_textBatchSize.gridy = 1;
+			gbc_textBatchSize.gridy = 5;
 			mcontentPanel.add(mtextBatchSize, gbc_textBatchSize);
 			mtextBatchSize.setColumns(10);
 		}
@@ -97,9 +182,9 @@ public class OptionsDialog extends JDialog {
 			JLabel lblMaxRows = new JLabel("Max Rows");
 			GridBagConstraints gbc_lblMaxRows = new GridBagConstraints();
 			gbc_lblMaxRows.anchor = GridBagConstraints.EAST;
-			gbc_lblMaxRows.insets = new Insets(0, 0, 0, 5);
+			gbc_lblMaxRows.insets = new Insets(0, 0, 5, 5);
 			gbc_lblMaxRows.gridx = 0;
-			gbc_lblMaxRows.gridy = 2;
+			gbc_lblMaxRows.gridy = 6;
 			mcontentPanel.add(lblMaxRows, gbc_lblMaxRows);
 		}
 		{
@@ -107,9 +192,10 @@ public class OptionsDialog extends JDialog {
 			mtextMaxRows.setValue(mOptions.mMaxRows);
 			mtextMaxRows.setColumns(10);
 			GridBagConstraints gbc_mtextMaxRows = new GridBagConstraints();
+			gbc_mtextMaxRows.insets = new Insets(0, 0, 5, 0);
 			gbc_mtextMaxRows.anchor = GridBagConstraints.WEST;
 			gbc_mtextMaxRows.gridx = 1;
-			gbc_mtextMaxRows.gridy = 2;
+			gbc_mtextMaxRows.gridy = 6;
 			mcontentPanel.add(mtextMaxRows, gbc_mtextMaxRows);
 		}
 		{
@@ -120,7 +206,11 @@ public class OptionsDialog extends JDialog {
 				JButton okButton = new JButton("OK");
 				okButton.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						mOptions.mConnectString = mtextConnection.getText();
+						mOptions.mHost = mtextHost.getText() ;
+						mOptions.mUser = mtextUser.getText();
+						mOptions.mDatabase = mtextDatabase.getText();
+						mOptions.mPassword = mtextPassword.getText();
+						mOptions.mPort =  MLUtil.getIntValue( mtextPort.getValue());
 						mOptions.mBatchSize = MLUtil.getIntValue( mtextBatchSize.getValue());
 						mOptions.mMaxRows= MLUtil.getIntValue(mtextMaxRows.getValue());
 						

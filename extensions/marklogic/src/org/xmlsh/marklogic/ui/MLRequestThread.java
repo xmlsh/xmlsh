@@ -34,10 +34,7 @@ public class MLRequestThread extends Thread {
 	}
 	
 	protected ContentSource getConnection() throws Exception  {
-
-		URI serverUri = new URI(mOpts.mConnectString);
-		ContentSource cs = ContentSourceFactory.newContentSource(serverUri,MLUtil.newTrustOptions(serverUri));
-		return cs;
+		return mOpts.newContentSource();
 	}
 	
 	
@@ -52,7 +49,12 @@ public class MLRequestThread extends Thread {
 			while (! mClosed && (command = mCommandQueue.take()) != null){
 
 				mShell.setStatus( command.getOperation() );
-				command.run(this);
+				try {
+					command.run(this);
+			
+				} catch( Exception e ){
+						printError("Exception running command: " + e.getLocalizedMessage()  , e);
+				}
 				mShell.setStatus("Idle");
 			}
 		
@@ -60,9 +62,7 @@ public class MLRequestThread extends Thread {
 		catch( InterruptedException e){
 			;
 		}
-		catch( Exception e ) {
-			printError("Exception running command: " + e.getLocalizedMessage()  , e);
-		}
+		
 		finally {
 
 		}
