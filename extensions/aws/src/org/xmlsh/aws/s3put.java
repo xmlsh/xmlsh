@@ -8,7 +8,6 @@ import java.util.List;
 
 import org.xmlsh.aws.util.AWSS3Command;
 import org.xmlsh.aws.util.S3Path;
-import org.xmlsh.aws.util.S3TransferManager;
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.UnexpectedException;
@@ -20,6 +19,8 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.PutObjectResult;
 import com.amazonaws.services.s3.transfer.MultipleFileUpload;
+import com.amazonaws.services.s3.transfer.ObjectMetadataProvider;
+import com.amazonaws.services.s3.transfer.TransferManager;
 import com.amazonaws.services.s3.transfer.Upload;
 import com.amazonaws.services.s3.transfer.model.UploadResult;
 
@@ -29,16 +30,8 @@ public class s3put extends AWSS3Command {
 
 	private boolean bRecurse = false ;
 	private boolean bVerbose = false ;
-	private S3TransferManager tm = null;
-	
-	
-	private S3TransferManager getTransferManager()
-	{
-		if( tm == null )
-			tm =  new S3TransferManager(mAmazon);
-		return tm ;
+	private TransferManager tm = null;
 
-	}
 	
 	/**
 	 * @param args
@@ -127,24 +120,35 @@ public class s3put extends AWSS3Command {
 
 	}
 
-	private int put(List<XValue> files, S3Path dest, List<XValue> meta, String storage) throws IOException
+	private int put(List<XValue> files, S3Path dest, final List<XValue> meta, String storage) throws IOException
 	{
 		List<XValue> filelist = getFilelist(files);
 		
-		ObjectMetadata metadata = new ObjectMetadata();
 
-		if( meta != null ){
-			for( XValue xm : meta ){
-				StringPair 	pair = new StringPair( xm.toString(), '=' );
-				metadata.addUserMetadata(pair.getLeft(), pair.getRight());
-			}
-		}
+		
 		
 		traceCall("TransferManager.uploadFileList");
 
 		
-		MultipleFileUpload dirUpload = getTransferManager().
-				uploadFileList(dest.getBucket(), dest.getKey(), getFiles( filelist), mShell.getCurdir(), metadata.getUserMetadata() , storage );
+		
+		
+		
+		ObjectMetadataProvider provider = new ObjectMetadataProvider(){
+
+			@Override
+			public void provideObjectMetadata(File file, ObjectMetadata metadata) {
+				if( meta != null ){
+					for( XValue xm : meta ){
+						StringPair 	pair = new StringPair( xm.toString(), '=' );
+						metadata.addUserMetadata(pair.getLeft(), pair.getRight());
+					}
+				}
+				
+			}} ;
+		
+		MultipleFileUpload dirUpload = 
+				getTransferManager().uploadFileList(dest.getBucket(),  dest.getKey(), mShell.getCurdir(), getFiles( filelist), provider );
+				
 
 		try {
 			dirUpload.waitForCompletion();
@@ -228,6 +232,8 @@ public class s3put extends AWSS3Command {
 			traceCall("TransferManager.upload");
 
 
+			
+			
 			Upload upload = getTransferManager().upload( request );
            
 			UploadResult result = upload.waitForUploadResult();
@@ -247,6 +253,12 @@ public class s3put extends AWSS3Command {
 	}
 
 
+
+	private TransferManager getTransferManager() {
+		if( tm == null)
+			tm =new TransferManager( mAmazon );
+		return tm;
+	}
 
 	private void printResult(PutObjectResult result) {
 		mShell.printOut(result.getETag() + " + " + result.getVersionId());
