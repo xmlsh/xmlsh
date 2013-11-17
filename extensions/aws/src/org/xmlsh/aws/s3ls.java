@@ -10,6 +10,7 @@ import net.sf.saxon.s9api.SaxonApiException;
 import org.xmlsh.aws.util.AWSS3Command;
 import org.xmlsh.aws.util.S3Path;
 import org.xmlsh.core.CoreException;
+import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.UnexpectedException;
@@ -19,7 +20,10 @@ import org.xmlsh.util.Util;
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.s3.model.Bucket;
+import com.amazonaws.services.s3.model.ListMultipartUploadsRequest;
 import com.amazonaws.services.s3.model.ListObjectsRequest;
+import com.amazonaws.services.s3.model.MultipartUpload;
+import com.amazonaws.services.s3.model.MultipartUploadListing;
 import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 
@@ -40,10 +44,11 @@ public class s3ls extends AWSS3Command {
 	public int run(List<XValue> args) throws Exception {
 
 		
-		Options opts = getOptions("delim:,r=recurse,l=long");
+		Options opts = getOptions("delim:,r=recurse,l=long,m=multipart");
 		opts.parse(args);
 
 		args = opts.getRemainingArgs();
+		
 		
 
 		
@@ -74,7 +79,10 @@ public class s3ls extends AWSS3Command {
 			ret = listBuckets();
 			break;
 		case	1:
-			ret = list( args.get(0).toString());
+			if( opts.hasOpt("m"))
+				ret =listMultipart( args.get(0).toString());
+			else
+		     	ret = list( args.get(0).toString());
 			break;
 			
 		default :
@@ -137,6 +145,74 @@ public class s3ls extends AWSS3Command {
 		
 	}
 
+	private int listMultipart(String s) throws XMLStreamException, IOException, SaxonApiException, CoreException {
+	
+		S3Path path = new S3Path(s);
+		if( ! path.hasBucket()){
+			usage();
+			return 1;
+			
+		}
+		
+
+		
+		OutputPort stdout = this.getStdout();
+		XMLStreamWriter writer = stdout.asXMLStreamWriter(mSerializeOpts);
+		
+		
+		writePath(path, writer);
+		
+		
+		ListMultipartUploadsRequest request = getListMultipartRequest( path , mDelim );
+		MultipartUploadListing list = mAmazon.listMultipartUploads(request);
+		
+		
+		do {
+			
+			List<String> prefixes = list.getCommonPrefixes();
+			if( prefixes != null && prefixes.size() > 0 ){
+				for( String p : prefixes ){
+					writer.writeStartElement("directory");
+					writer.writeAttribute("name",p);
+					writer.writeEndElement();
+				}
+				
+			}
+			
+			List<MultipartUpload> uploads = list.getMultipartUploads();
+			for ( MultipartUpload obj : uploads ){
+				writer.writeStartElement("file");
+				writer.writeAttribute("key",obj.getKey());
+				if( bLongListing ){
+					
+					writer.writeAttribute("initiated",Util.formatXSDateTime(obj.getInitiated()));
+					writer.writeAttribute("initiator",obj.getInitiator().getId());
+					writer.writeAttribute("uploadId", obj.getUploadId());
+					writer.writeAttribute("owner", obj.getOwner().getDisplayName());
+					writer.writeAttribute("storage-class" , obj.getStorageClass() );
+				}
+				writer.writeEndElement();
+				
+			}
+			if( list.isTruncated()){
+				request.setUploadIdMarker(list.getUploadIdMarker());
+				request.setKeyMarker( list.getKeyMarker());
+				list = mAmazon.listMultipartUploads(request);
+			}
+			else
+				break;
+		} while( true );
+		
+		writer.writeEndElement();
+		writer.writeEndDocument();
+		writer.flush();
+		writer.close();
+		stdout.writeSequenceTerminator(mSerializeOpts);
+		stdout.release();
+
+		return 0;
+		
+	}
 
 	private int list(String s) throws IOException, XMLStreamException,
 			SaxonApiException, AmazonClientException,  CoreException {
@@ -157,11 +233,8 @@ public class s3ls extends AWSS3Command {
 		XMLStreamWriter writer = stdout.asXMLStreamWriter(mSerializeOpts);
 		
 		
-		writer.writeStartDocument();
-		writer.writeStartElement(getName());
-		writer.writeAttribute("bucket" , path.getBucket() );
-		writer.writeAttribute("prefix", Util.notNull(path.getPrefix()));
-		writer.writeAttribute("delim", Util.notNull(mDelim) );
+		writePath(path, writer);
+		
 		
 		
 		
@@ -215,6 +288,15 @@ public class s3ls extends AWSS3Command {
 		stdout.writeSequenceTerminator(mSerializeOpts);
 		stdout.release();
 		return 0;
+	}
+
+
+	private void writePath(S3Path path, XMLStreamWriter writer) throws XMLStreamException {
+		writer.writeStartDocument();
+		writer.writeStartElement(getName());
+		writer.writeAttribute("bucket" , path.getBucket() );
+		writer.writeAttribute("prefix", Util.notNull(path.getPrefix()));
+		writer.writeAttribute("delim", Util.notNull(mDelim) );
 	}
 
 

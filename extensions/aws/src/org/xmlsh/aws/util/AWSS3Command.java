@@ -30,6 +30,7 @@ import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.AmazonS3EncryptionClient;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.EncryptionMaterials;
+import com.amazonaws.services.s3.model.ListMultipartUploadsRequest;
 import com.amazonaws.services.s3.model.ListObjectsRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.StaticEncryptionMaterialsProvider;
@@ -115,8 +116,18 @@ public abstract class AWSS3Command extends AWSCommand {
 			req.setPrefix(path.getPrefix());
 		return req;
 		
+		
 	}
-
+	protected ListMultipartUploadsRequest getListMultipartRequest(S3Path path, String delim) {
+		ListMultipartUploadsRequest req = new ListMultipartUploadsRequest(path.getBucket());
+		if( ! Util.isBlank(delim))
+			req.setDelimiter(delim);
+		if( ! Util.isBlank(path.getPrefix()))
+			req.setPrefix(path.getPrefix());
+		return req;
+		
+	}
+	
 	protected void writeMeta(ObjectMetadata m) throws InvalidArgumentException, XMLStreamException,
 			SaxonApiException {
 				
