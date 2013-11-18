@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.xmlsh.aws.util.AWSS3Command;
@@ -16,12 +18,15 @@ import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.util.Util;
 
+import com.amazonaws.AmazonClientException;
+import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.ListObjectsRequest;
 import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
+import com.amazonaws.services.s3.transfer.Download;
 
 
 public class s3get extends AWSS3Command {
@@ -31,6 +36,7 @@ public class s3get extends AWSS3Command {
 	private boolean bRecurse = false ;
     private boolean bVerbose = false ;
 	
+    private List<Download> mDownloads = new LinkedList<Download>();
 
 	/**
 	 * @param args
@@ -98,39 +104,35 @@ public class s3get extends AWSS3Command {
 		    	String prefix = null ;
 		    	if( bRecurse )
 		    		prefix = src.getKey() ;
-		    	
-
-				
 					
-					ret += get(  src , xds  , metaPort  , prefix );
-				
-		    	
+		    	ret += get(  src , xds  , metaPort  , prefix );
 		    }
 		    
-		    
-				
-		
-		
-				
 		}
-		
-		
 			
 		if( metaPort != null )
 		       metaPort.release();
+		
+		waitForDownloads();
+		shutdownTransferManager();
 
 		return ret;
 		
 	}
 
-	private S3Path getPath(String key) {
-		return getPath( bucket , key );
+	private void waitForDownloads() throws AmazonServiceException, AmazonClientException, InterruptedException {
+		while( !mDownloads.isEmpty()){
+			Download d = mDownloads.remove(0);
+			d.waitForCompletion();
+		}
+		
 	}
+
 	private S3Path getPath(XValue key) {
 		return getPath( bucket , key.toString() );
 	}
 
-	private int get( S3Path src , XValue dest, OutputPort metaPort , String prefix ) throws CoreException, IOException 
+	private int get( S3Path src , XValue dest, OutputPort metaPort , String prefix ) throws CoreException, IOException, AmazonServiceException, AmazonClientException, InterruptedException 
 	{
 		
 		
@@ -141,17 +143,12 @@ public class s3get extends AWSS3Command {
 				return 0;
 			}
 
-			
-			
 			ListObjectsRequest request = getListRequest( src ,null  );
 			traceCall("listObjects");
 
 			ObjectListing list = mAmazon.listObjects(request);
 			
-			
 			do {
-				
-				
 				
 				List<S3ObjectSummary>  objs = list.getObjectSummaries();
 				for ( S3ObjectSummary obj : objs ){
@@ -159,10 +156,8 @@ public class s3get extends AWSS3Command {
 					if( s.isDirectory() )
 						continue ;
 					ret += get( s , dest , metaPort , prefix );
-					
-					
-					
 				}
+				waitForDownloads();
 				if( list.isTruncated()){
 					// String marker = list.getNextMarker();
 					list = mAmazon.listNextBatchOfObjects(list);
@@ -220,22 +215,17 @@ public class s3get extends AWSS3Command {
 			mShell.printErr("Getting " + src.toString() );
 		
 		try {
-		
-		
 
 			GetObjectRequest request = 
 				new GetObjectRequest(src.getBucket(),src.getKey());
-			
-			
 			
 			ObjectMetadata meta = null ;
 			if( dest.isFile() )
 			{
 				
 				traceCall("getObject");
-
-				meta  = mAmazon.getObject(request  , dest.getFile() );
-				
+				Download download = getTransferManager().download(request,  dest.getFile());
+				mDownloads.add(download);
 				
 			} else
 			{
@@ -243,7 +233,6 @@ public class s3get extends AWSS3Command {
 
 				S3Object obj = mAmazon.getObject(request);
 			    meta = obj.getObjectMetadata() ;
-				
 				
 				InputStream is = obj.getObjectContent();
 				OutputStream os = dest.asOutputStream(mSerializeOpts);

@@ -11,6 +11,9 @@ import java.io.UnsupportedEncodingException;
 import java.security.KeyPair;
 import java.security.Security;
 import java.util.Map.Entry;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadPoolExecutor;
 
 import javax.xml.stream.XMLStreamException;
 
@@ -34,6 +37,7 @@ import com.amazonaws.services.s3.model.ListMultipartUploadsRequest;
 import com.amazonaws.services.s3.model.ListObjectsRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.StaticEncryptionMaterialsProvider;
+import com.amazonaws.services.s3.transfer.TransferManager;
 
 public abstract class AWSS3Command extends AWSCommand {
 	
@@ -41,13 +45,30 @@ public abstract class AWSS3Command extends AWSCommand {
 	protected		AmazonS3 mAmazon ;
 	public String sMetaDataElem = "metadata";
 	public String sUserMetaDataElem = "user";
+	private TransferManager tm = null;
+	private int mThreads = 10 ;
+
 	
+    protected ThreadPoolExecutor createDefaultExecutorService() {
+        ThreadFactory threadFactory = new ThreadFactory() {
+            private int threadCount = 1;
+
+            public Thread newThread(Runnable r) {
+                Thread thread = new Thread(r);
+                thread.setName("s3-transfer-manager-worker-" + threadCount++);
+                return thread;
+            }
+        };
+        return (ThreadPoolExecutor)Executors.newFixedThreadPool(mThreads, threadFactory);
+    }
+    
+    
 	public AWSS3Command() {
 		super();
 	}
 
 	protected String getCommonOpts() {
-		return super.getCommonOpts() + ",crypt,keypair:" ;
+		return super.getCommonOpts() + ",crypt,keypair:,threads:" ;
 	}
 	
 	protected Object getClient() {
@@ -86,6 +107,9 @@ public abstract class AWSS3Command extends AWSCommand {
 		
 		setEndpoint(opts);
 		setRegion(opts);
+		
+		if( opts.hasOpt("threads"))
+			mThreads = opts.getOptInt("threads", mThreads);
 
 	}
 	
@@ -199,6 +223,17 @@ public abstract class AWSS3Command extends AWSCommand {
 		mAmazon.setObjectAcl(src.getBucket(),src.getKey(), getAcl(acl));
 		return 0;
 		
+	}
+
+	protected TransferManager getTransferManager() {
+		if( tm == null)
+			tm =new TransferManager( mAmazon ,  createDefaultExecutorService() );
+		return tm;
+	}
+
+	protected void shutdownTransferManager() {
+		if( tm != null)
+		    tm.shutdownNow();
 	}
 	
 

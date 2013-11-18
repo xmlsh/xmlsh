@@ -20,7 +20,6 @@ import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.PutObjectResult;
 import com.amazonaws.services.s3.transfer.MultipleFileUpload;
 import com.amazonaws.services.s3.transfer.ObjectMetadataProvider;
-import com.amazonaws.services.s3.transfer.TransferManager;
 import com.amazonaws.services.s3.transfer.Upload;
 import com.amazonaws.services.s3.transfer.model.UploadResult;
 import com.sun.xml.internal.bind.v2.schemagen.Util;
@@ -31,7 +30,6 @@ public class s3put extends AWSS3Command {
 
 	private boolean bRecurse = false ;
 	private boolean bVerbose = false ;
-	private TransferManager tm = null;
 	private int mBatchSize = 1000 ;
 	
 	
@@ -115,14 +113,13 @@ public class s3put extends AWSS3Command {
 
 		}
 
-		if( tm != null)
-		    tm.shutdownNow();
+		shutdownTransferManager();
 
 		return ret;
 
 	}
-	
-	
+
+
 	private int put( List<File> files , S3Path dest ,ObjectMetadataProvider metadata , String storeage ){
 		
 		File pwd = getDirOrDrive();
@@ -317,12 +314,6 @@ public class s3put extends AWSS3Command {
 	}
 
 
-
-	private TransferManager getTransferManager() {
-		if( tm == null)
-			tm =new TransferManager( mAmazon );
-		return tm;
-	}
 
 	private void printResult(UploadResult result) {
 		mShell.printOut(result.getBucketName() + " + " + result.getKey());
