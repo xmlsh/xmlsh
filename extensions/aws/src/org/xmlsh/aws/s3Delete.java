@@ -14,6 +14,8 @@ import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
 
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
+import com.amazonaws.services.s3.model.DeleteObjectsRequest;
+import com.amazonaws.services.s3.model.DeleteObjectsResult;
 import com.amazonaws.services.s3.model.ListObjectsRequest;
 import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
@@ -59,19 +61,33 @@ public class s3Delete extends AWSS3Command {
 				return 1;
 		}
 
-		for( XValue arg : args ){
-			ret += delete( 
-					bucket != null ? 
-						new S3Path( bucket , arg.toString() ) : 
-						new S3Path( arg.toString() ), bRecurse  );
-
-		}
+			for( XValue arg : args ){
+				ret += delete( 
+						bucket != null ? 
+							new S3Path( bucket , arg.toString() ) : 
+							new S3Path( arg.toString() ), bRecurse  );
+	
+			}
+		
 		
 		return ret;
 		
 		
 	}
 
+	private int deleteBatch( String bucket , String[]  keys ){
+		DeleteObjectsRequest deleteObjectsRequest = new DeleteObjectsRequest(bucket)
+			.withKeys(keys)
+			.withQuiet(true);
+		
+		@SuppressWarnings("unused")
+		DeleteObjectsResult result = mAmazon.deleteObjects(deleteObjectsRequest);
+		return 0;
+		
+		
+		
+		
+	}
 
 	private int delete(S3Path path, boolean bRecurse ) throws IOException, XMLStreamException, InvalidArgumentException, SaxonApiException {
 		
@@ -90,11 +106,12 @@ public class s3Delete extends AWSS3Command {
 				
 				
 				List<S3ObjectSummary>  objs = list.getObjectSummaries();
-				for ( S3ObjectSummary obj : objs ){
-					S3Path p = new S3Path( path.getBucket() , obj.getKey() );
-					delete( p , false );
-					
-				}
+				String[] keys  =  getKeys( objs );
+				// Delete in batches, magically the max size of getObjectSummaries matches the max size for batch deletes (1000)
+				deleteBatch( path.getBucket() , keys );
+				
+				
+				
 				if( list.isTruncated()){
 					// String marker = list.getNextMarker();
 					list = mAmazon.listNextBatchOfObjects(list);
@@ -112,11 +129,23 @@ public class s3Delete extends AWSS3Command {
 			DeleteObjectRequest request = new DeleteObjectRequest(path.getBucket(), path.getKey());
 			traceCall("deleteObject");
 
+
 			mAmazon.deleteObject(request );
 			
 			return 0;
 		
 		}
+		
+		
+	}
+
+	private String[] getKeys(List<S3ObjectSummary> objs) {
+		
+		String[] keys = new String[ objs.size()];
+		int i = 0;
+		for( S3ObjectSummary obj : objs )
+			keys[i++] = obj.getKey();
+		return keys ;
 		
 		
 	}
