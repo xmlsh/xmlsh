@@ -22,7 +22,6 @@ import com.amazonaws.services.s3.transfer.MultipleFileUpload;
 import com.amazonaws.services.s3.transfer.ObjectMetadataProvider;
 import com.amazonaws.services.s3.transfer.Upload;
 import com.amazonaws.services.s3.transfer.model.UploadResult;
-import com.sun.xml.internal.bind.v2.schemagen.Util;
 
 
 public class s3put extends AWSS3Command {
