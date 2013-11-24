@@ -21,9 +21,13 @@ class ExplorerOptions {
 	String mPassword ; 
 	String mDatabase ;
 	
+	
 	int    mBatchSize = 10;  // PUT batch size max
 	int    mMaxRows   = 1000;
 	SecurityOptions mOptions;
+	
+	// Query options 
+	String mQuery = "" ;
 	
 	ExplorerOptions( String connectString ) throws URISyntaxException{
 		if( connectString != null ){

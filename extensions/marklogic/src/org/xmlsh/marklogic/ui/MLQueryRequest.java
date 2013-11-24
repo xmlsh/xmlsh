@@ -34,10 +34,6 @@ public abstract class MLQueryRequest extends MLRequest {
 	}
 	
 
-	public MLQueryRequest(String operation, String query, XdmVariable variable,
-			RequestOptions options) throws InterruptedException {
-		this(operation,query, variable == null ? null : new XdmVariable[]{variable} , options );
-	}
 	
 	
 

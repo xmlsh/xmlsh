@@ -34,7 +34,9 @@ public class MLTreeModel extends LazyTreeModel {
 			Util.isEmpty(node.getUrl()) ? null : 
 					MLUtil.newVariable("root", node.getUrl() ) ,
 			MLUtil.newVariable("start" , start ) , 
-			MLUtil.newVariable("end" , end ) },
+			MLUtil.newVariable("end" , end ) ,
+			MLUtil.newVariable("urimatch", mShell.getOptions().mQuery )
+			},
 						
 			    null );
 		  this.start = start ;

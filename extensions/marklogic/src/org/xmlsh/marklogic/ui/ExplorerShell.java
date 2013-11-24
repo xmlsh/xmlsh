@@ -7,13 +7,16 @@
 package org.xmlsh.marklogic.ui;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.EventQueue;
+import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Image;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -31,6 +34,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Semaphore;
 
 import javax.swing.DropMode;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
@@ -65,6 +69,9 @@ import javax.swing.ListSelectionModel;
 import javax.swing.JComboBox;
 import java.awt.event.ItemListener;
 import java.awt.event.ItemEvent;
+import java.awt.image.BufferedImage;
+
+import javax.swing.JTextField;
 
 public class ExplorerShell {
 
@@ -87,6 +94,7 @@ public class ExplorerShell {
 	private JButton mBtnConnect;
 	private JComboBox mListDatabases;
 	private boolean inConnect = false ;
+	private JTextField mTextUriFilter;
 
 
 	public void run( ) {
@@ -154,15 +162,18 @@ public class ExplorerShell {
 		JPanel panel = new JPanel();
 		mframe.getContentPane().add(panel, BorderLayout.NORTH);
 		GridBagLayout gbl_panel = new GridBagLayout();
-		gbl_panel.columnWidths = new int[]{87, 286, 0};
+		gbl_panel.columnWidths = new int[]{87, 0, 0, 286, 0};
 		gbl_panel.rowHeights = new int[]{23, 0};
-		gbl_panel.columnWeights = new double[]{0.0, 1.0, Double.MIN_VALUE};
+		gbl_panel.columnWeights = new double[]{0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE};
 		gbl_panel.rowWeights = new double[]{1.0, Double.MIN_VALUE};
 		panel.setLayout(gbl_panel);
 		mBtnConnect = new JButton("Connect...");
 		mBtnConnect.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
-				reconnect();
+				if( isConnected() )
+				 disconnect();
+				else
+				 connect();
 			}
 		});
 		mBtnConnect.setMinimumSize(new Dimension(87, 20));
@@ -177,6 +188,7 @@ public class ExplorerShell {
 		mBtnConnect.setHorizontalAlignment(SwingConstants.LEFT);
 		
 		mListDatabases = new JComboBox();
+		mListDatabases.setMinimumSize(new Dimension(80, 20));
 		mListDatabases.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent event) {
 				if( inConnect )
@@ -185,17 +197,79 @@ public class ExplorerShell {
 			          Object item = event.getItem();
 			          if( item instanceof String && ! Util.isBlank((String)item) ){
 			        	  mOptions.mDatabase = (String) item ;
-			        	  reconnect();
-			        	  reconnect();
+
+			        	  if(  isConnected() ){
+			        		  disconnect();
+			        		  connect();
+			        	  }
 			          }
 			       }
 			}
 		});
 		GridBagConstraints gbc_listDatabases = new GridBagConstraints();
+		gbc_listDatabases.gridwidth = 2;
+		gbc_listDatabases.insets = new Insets(0, 0, 0, 5);
 		gbc_listDatabases.fill = GridBagConstraints.BOTH;
 		gbc_listDatabases.gridx = 1;
 		gbc_listDatabases.gridy = 0;
 		panel.add(mListDatabases, gbc_listDatabases);
+		GridBagConstraints gbc_TextUriFilter = new GridBagConstraints();
+		gbc_TextUriFilter.fill = GridBagConstraints.HORIZONTAL;
+		gbc_TextUriFilter.insets = new Insets(0, 0, 0, 5);
+		gbc_TextUriFilter.gridx = 3;
+		gbc_TextUriFilter.gridy = 0;
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		mTextUriFilter = new JTextField();
+		mTextUriFilter.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				mOptions.mQuery = mTextUriFilter.getText();
+				refresh();
+				
+			}
+
+			
+		});
+		panel.add(mTextUriFilter, gbc_TextUriFilter);
+		mTextUriFilter.setColumns(10);
+		
+		/*
+		 * Icon on text field to clear it
+		 */
+		
+		mTextUriFilter.setLayout(new BorderLayout());
+
+	        //creating dummy image...
+	        Image image = new BufferedImage(18, 18, BufferedImage.TYPE_INT_RGB);
+	        Graphics graphics = image.getGraphics();
+	        graphics.setColor(Color.WHITE);
+	        graphics.fillRect(0, 0, 18,18);
+	        graphics.setColor(Color.RED);
+	        graphics.drawLine(6,6, 11, 11);
+	        graphics.drawLine(6,11,11,6);
+	        
+
+	        JLabel iimage = new JLabel(new ImageIcon(image));
+	        mTextUriFilter.add(iimage, BorderLayout.EAST);
+	        iimage.addMouseListener(new MouseAdapter() {
+	            @Override
+	            public void mouseClicked(MouseEvent e) {
+	            	mTextUriFilter.setText("");
+	            	mOptions.mQuery = "";
+	            	refresh();
+	            }
+	        });
+		
+	        
 
 		JLabel lblStatus = mStatus= new JLabel("Status");
 		mframe.getContentPane().add(lblStatus, BorderLayout.SOUTH);
@@ -427,7 +501,7 @@ public class ExplorerShell {
 			final File tmpDir = getTempFile(name);
 			tmpDir.mkdirs();
 
-			MLListDirectoryRequest dirRequest =  new MLListDirectoryRequest( url  ) {
+			MLListDirectoryRequest dirRequest =  new MLListDirectoryRequest( url , mOptions.mQuery ) {
 				@Override
 				void onComplete(ResultSequence rs) throws Exception {
 					final String children[] = rs.asStrings();
@@ -593,17 +667,9 @@ public class ExplorerShell {
 
 
 	
-	private void reconnect()
+	private void connect()
 	{
-		if( mRequestThread != null ){
-			mRequestThread.close();
-			mRequestThread = null ;
-			this.mBtnConnect.setText("Connect...");
-			mListDatabases.removeAllItems();
-
-			mDirectoryModel.reset();
-
-		} else {
+		if( ! isConnected() ){
 
 
 			mRequestThread = new MLRequestThread( this ,  mOptions  , mCommandQueue  );
@@ -619,11 +685,29 @@ public class ExplorerShell {
 				printError("Exception refreshing databases",e);
 				
 			}
-			
-
-	 
 		}
 
+	}
+
+	private void disconnect()
+	{
+		if( isConnected() ){
+			mRequestThread.close();
+			mRequestThread = null ;
+			this.mBtnConnect.setText("Connect...");
+			mListDatabases.removeAllItems();
+
+			mDirectoryModel.reset();
+
+		} 
+
+	}
+	
+	
+	private  boolean isConnected()
+	{
+		return mRequestThread != null ;
+		
 	}
 	private void refreshDatabases() throws InterruptedException {
 
@@ -752,6 +836,14 @@ public class ExplorerShell {
 	 */
 	protected ExplorerOptions getOptions() {
 		return mOptions;
+	}
+	
+	private void refresh() {
+		if( isConnected() ) {
+			disconnect();
+			connect();
+		}
+		
 	}
 
 

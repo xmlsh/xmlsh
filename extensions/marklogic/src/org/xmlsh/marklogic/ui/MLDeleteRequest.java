@@ -9,6 +9,7 @@ package org.xmlsh.marklogic.ui;
 import org.xmlsh.marklogic.util.MLUtil;
 
 import com.marklogic.xcc.ResultSequence;
+import com.marklogic.xcc.types.XdmVariable;
 
 public class MLDeleteRequest extends MLQueryRequest {
 
@@ -16,8 +17,7 @@ public class MLDeleteRequest extends MLQueryRequest {
 	
 	public MLDeleteRequest(String url) throws InterruptedException {
 		super("Deleting ... ", QueryCache.getInstance().getQuery("documentDelete.xquery") , 
-				
-				MLUtil.newVariable("url", url ), null );
+				  new XdmVariable[] { 	MLUtil.newVariable("url", url ) }, null );
 	}
 
 	@Override

@@ -6,6 +6,8 @@
 
 package org.xmlsh.marklogic.ui;
 
+import com.marklogic.xcc.types.XdmVariable;
+
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.trans.XPathException;
 import org.xmlsh.core.InvalidArgumentException;
@@ -14,10 +16,15 @@ import org.xmlsh.marklogic.util.MLUtil;
 public abstract class MLListDirectoryRequest extends MLQueryRequest{
 
 
-	MLListDirectoryRequest( String url  ) throws InterruptedException, XPathException, InvalidArgumentException, SaxonApiException
+	MLListDirectoryRequest( String url, String query  ) throws InterruptedException, XPathException, InvalidArgumentException, SaxonApiException
 	{
 		super("Listing " + url +  " ...", QueryCache.getInstance().getQuery("listDirectoryRecurse.xquery") , 
-			MLUtil.newVariable("root",url) , null );
+
+			new XdmVariable[] { 
+			MLUtil.newVariable("root",url) , 
+			MLUtil.newVariable("urimatch", query )
+		} , 
+			null );
 
 	}
 }

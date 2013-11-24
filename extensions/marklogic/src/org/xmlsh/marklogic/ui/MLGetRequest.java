@@ -14,6 +14,7 @@ import org.xmlsh.marklogic.util.MLUtil;
 import org.xmlsh.sh.shell.SerializeOpts;
 
 import com.marklogic.xcc.ResultSequence;
+import com.marklogic.xcc.types.XdmVariable;
 
 public class MLGetRequest extends MLQueryRequest
 {
@@ -29,7 +30,7 @@ public class MLGetRequest extends MLQueryRequest
 		super("Getting " + url +  " ...",
 				"declare variable $doc external;" +
 				"fn:doc($doc)"  , 
-				MLUtil.newVariable("doc",url) , null );
+				  new XdmVariable[] { 	MLUtil.newVariable("doc",url)} , null );
 		
 		mOutput = output;
 		mSerializeOpts  = sopts ;
