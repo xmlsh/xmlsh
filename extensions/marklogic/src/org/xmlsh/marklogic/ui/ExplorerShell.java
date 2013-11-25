@@ -158,6 +158,19 @@ public class ExplorerShell {
 
 		JMenuItem mntmExit = new JMenuItem("Exit");
 		mnFile.add(mntmExit);
+		
+		JMenu mnEdit = new JMenu("Edit");
+		menuBar.add(mnEdit);
+		
+		JMenuItem mntmProperties = new JMenuItem("Properties...");
+		mntmProperties.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				onProperties();
+			}
+
+			
+		});
+		mnEdit.add(mntmProperties);
 
 		JPanel panel = new JPanel();
 		mframe.getContentPane().add(panel, BorderLayout.NORTH);
@@ -220,15 +233,6 @@ public class ExplorerShell {
 		gbc_TextUriFilter.gridy = 0;
 		
 		
-		
-		
-		
-		
-		
-		
-		
-		
-		
 		mTextUriFilter = new JTextField();
 		mTextUriFilter.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -248,28 +252,29 @@ public class ExplorerShell {
 		
 		mTextUriFilter.setLayout(new BorderLayout());
 
-	        //creating dummy image...
-	        Image image = new BufferedImage(18, 18, BufferedImage.TYPE_INT_RGB);
-	        Graphics graphics = image.getGraphics();
-	        graphics.setColor(Color.WHITE);
-	        graphics.fillRect(0, 0, 18,18);
-	        graphics.setColor(Color.RED);
-	        graphics.drawLine(6,6, 11, 11);
-	        graphics.drawLine(6,11,11,6);
-	        
+        //creating dummy image...
+        Image image = new BufferedImage(18, 18, BufferedImage.TYPE_INT_RGB);
+        Graphics graphics = image.getGraphics();
+        graphics.setColor(Color.WHITE);
+        graphics.fillRect(0, 0, 18,18);
+        graphics.setColor(Color.RED);
+        graphics.drawLine(6,6, 11, 11);
+        graphics.drawLine(6,11,11,6);
+        
 
-	        JLabel iimage = new JLabel(new ImageIcon(image));
-	        mTextUriFilter.add(iimage, BorderLayout.EAST);
-	        iimage.addMouseListener(new MouseAdapter() {
-	            @Override
-	            public void mouseClicked(MouseEvent e) {
-	            	mTextUriFilter.setText("");
-	            	mOptions.mQuery = "";
-	            	refresh();
-	            }
-	        });
-		
-	        
+        JLabel iimage = new JLabel(new ImageIcon(image));
+        iimage.setCursor(  Cursor.getDefaultCursor());
+        mTextUriFilter.add(iimage, BorderLayout.EAST);
+        iimage.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+            	mTextUriFilter.setText("");
+            	mOptions.mQuery = "";
+            	refresh();
+            }
+        });
+	
+        
 
 		JLabel lblStatus = mStatus= new JLabel("Status");
 		mframe.getContentPane().add(lblStatus, BorderLayout.SOUTH);
@@ -289,33 +294,16 @@ public class ExplorerShell {
 		mDirectoryTree.setModel( mDirectoryModel = new MLTreeModel(new LazyTreeNode(), tree, this) );
 
 		JPopupMenu popupMenu = new JPopupMenu();
-		
 		addPopup(tree, popupMenu);
 
 		final JMenuItem mntmOpen = new JMenuItem("Open...");
-		mntmOpen.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				try {
-					onOpen();
-				} catch (Exception e1) {
-					printError("Exception opening file",e1);
-				}
-			}
-		});
+		addOpenAction(mntmOpen);
 
 		final JMenuItem mntmRefresh = new JMenuItem("Refresh...");
-		mntmRefresh.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				onRefresh();
-			}
-		});
+		addRefreshAction(mntmRefresh);
 		
 		mntmNext = new JMenuItem("Next 1000...");
-		mntmNext.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				onNext();
-			}
-		});
+		addNextAction();
 		popupMenu.add(mntmNext);
 		
 		mntmPrev = new JMenuItem("Prev 1000...");
@@ -328,44 +316,19 @@ public class ExplorerShell {
 		popupMenu.add(mntmRefresh);
 		
 		final JMenuItem mntmRename = new JMenuItem("Rename...");
-		mntmRename.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-			}
-		});
+		addRenameAction(mntmRename);
 		popupMenu.add(mntmRename);
 		popupMenu.add(mntmOpen);
 
 		final JMenuItem mntmLoad = new JMenuItem("Load...");
-		mntmLoad.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				try {
-					onLoad();
-				} catch (InterruptedException e1) {
-					printError( "Exception loading documents",e1);
-
-				}
-			}
-		});
+		addLoadAction(mntmLoad);
 		popupMenu.add(mntmLoad);
 
 		final JMenuItem mntmSaveAs = new JMenuItem("Save As...");
-		mntmSaveAs.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				onSaveAs();
-			}
-		});
+		addSaveAsAction(mntmSaveAs);
 		
 		final JMenuItem mntmDelete = new JMenuItem("Delete...");
-		mntmDelete.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				try {
-					onDelete();
-				} catch (InterruptedException e1) {
-					printError( "Exception deleting documents",e1);
-				}
-			}
-
-		});
+		addDeleteAction(mntmDelete);
 		popupMenu.add(mntmDelete);
 		popupMenu.add(mntmSaveAs);
 		
@@ -401,6 +364,75 @@ public class ExplorerShell {
 				mntmPrev.setEnabled(false);
 				
 			  }
+			}
+		});
+	}
+
+	private void addRenameAction(final JMenuItem mntmRename) {
+		mntmRename.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
+	}
+
+	private void addLoadAction(final JMenuItem mntmLoad) {
+		mntmLoad.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					onLoad();
+				} catch (InterruptedException e1) {
+					printError( "Exception loading documents",e1);
+
+				}
+			}
+		});
+	}
+
+	private void addSaveAsAction(final JMenuItem mitem) {
+		mitem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				onSaveAs();
+			}
+		});
+	}
+
+	private void addDeleteAction(final JMenuItem mitem) {
+		mitem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					onDelete();
+				} catch (InterruptedException e1) {
+					printError( "Exception deleting documents",e1);
+				}
+			}
+
+		});
+	}
+
+	private void addNextAction() {
+		mntmNext.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				onNext();
+			}
+		});
+	}
+
+	private void addRefreshAction(final JMenuItem mitem) {
+		mitem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				onRefresh();
+			}
+		});
+	}
+
+	private void addOpenAction(final JMenuItem mitem) {
+		mitem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					onOpen();
+				} catch (Exception e1) {
+					printError("Exception opening file",e1);
+				}
 			}
 		});
 	}
@@ -843,6 +875,24 @@ public class ExplorerShell {
 			disconnect();
 			connect();
 		}
+		
+	}
+	
+	private void onProperties()  {
+		String url = getSelectedUrls().get(0);
+		
+		PropertiesDialog dialog;
+		try {
+			dialog = new PropertiesDialog(this, url);
+			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+			dialog.setVisible(true);
+		} catch (InterruptedException e) {
+			mShell.printErr("Exception loading Properties Dialog" , e );
+		}
+		
+		
+		
+		
 		
 	}
 
