@@ -30,6 +30,7 @@ import javax.swing.JSeparator;
 import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
 import javax.swing.JToolBar;
+import javax.swing.UIManager;
 
 import org.xmlsh.core.XValue;
 import org.xmlsh.util.Util;
@@ -62,6 +63,18 @@ public class XShell {
 	}
 
 	public static void run(final File curdir, final List<XValue> args) {
+		
+		
+		 try {
+	            // Set System L&F
+	        UIManager.setLookAndFeel(
+	            UIManager.getSystemLookAndFeelClassName());
+	    } 
+	    catch (Exception e) {
+	       // handle exception
+	    }
+
+		 
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
@@ -285,7 +298,7 @@ public class XShell {
 
 //
 //
-// Copyright (C) 2008-2013   David A. Lee.
+// Copyright (C) 2008-2014   David A. Lee.
 //
 // The contents of this file are subject to the "Simplified BSD License" (the
 // "License");

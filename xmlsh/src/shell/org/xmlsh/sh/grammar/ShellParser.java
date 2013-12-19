@@ -19,7 +19,6 @@ public class ShellParser implements ShellParserConstants {
     this (stream);
     mSource = source;
   }
-
   public String getSource()
   {
     return mSource;
@@ -1865,6 +1864,11 @@ public class ShellParser implements ShellParserConstants {
     finally { jj_save(25, xla); }
   }
 
+  private boolean jj_3_5() {
+    if (jj_3R_19()) return true;
+    return false;
+  }
+
   private boolean jj_3R_115() {
     if (jj_scan_token(VAR_SUBPROC_FILE)) return true;
     if (jj_3R_111()) return true;
@@ -3081,11 +3085,6 @@ public class ShellParser implements ShellParserConstants {
     jj_scanpos = xsp;
     if (jj_scan_token(36)) return true;
     }
-    return false;
-  }
-
-  private boolean jj_3_5() {
-    if (jj_3R_19()) return true;
     return false;
   }
 
