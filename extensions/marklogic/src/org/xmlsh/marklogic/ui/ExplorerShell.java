@@ -72,6 +72,8 @@ import java.awt.event.ItemEvent;
 import java.awt.image.BufferedImage;
 
 import javax.swing.JTextField;
+import javax.swing.event.MenuListener;
+import javax.swing.event.MenuEvent;
 
 public class ExplorerShell {
 
@@ -95,6 +97,7 @@ public class ExplorerShell {
 	private JComboBox mListDatabases;
 	private boolean inConnect = false ;
 	private JTextField mTextUriFilter;
+	private JMenuItem mMntmProperties;
 
 
 	public void run( ) {
@@ -144,6 +147,7 @@ public class ExplorerShell {
 		mframe.setJMenuBar(menuBar);
 
 		JMenu mnFile = new JMenu("File");
+		mnFile.setMnemonic('F');
 		menuBar.add(mnFile);
 
 		JMenuItem mntmOptions = new JMenuItem("Options...");
@@ -159,18 +163,35 @@ public class ExplorerShell {
 		JMenuItem mntmExit = new JMenuItem("Exit");
 		mnFile.add(mntmExit);
 		
-		JMenu mnEdit = new JMenu("Edit");
-		menuBar.add(mnEdit);
+		JMenu mnView = new JMenu("View");
+		mnView.addMenuListener(new MenuListener() {
+			public void menuCanceled(MenuEvent e) {
+			}
+			public void menuDeselected(MenuEvent e) {
+			}
+			public void menuSelected(MenuEvent e) {
+				
+				int nsel = mDirectoryTree.getSelectionCount();
 		
-		JMenuItem mntmProperties = new JMenuItem("Properties...");
-		mntmProperties.addActionListener(new ActionListener() {
+				mMntmProperties.setEnabled( nsel == 1 );
+			 
+				
+				
+				
+			}
+		});
+		mnView.setMnemonic('V');
+		menuBar.add(mnView);
+		
+		mMntmProperties = new JMenuItem("Properties...");
+		mMntmProperties.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				onProperties();
 			}
 
 			
 		});
-		mnEdit.add(mntmProperties);
+		mnView.add(mMntmProperties);
 
 		JPanel panel = new JPanel();
 		mframe.getContentPane().add(panel, BorderLayout.NORTH);
@@ -201,7 +222,7 @@ public class ExplorerShell {
 		mBtnConnect.setHorizontalAlignment(SwingConstants.LEFT);
 		
 		mListDatabases = new JComboBox();
-		mListDatabases.setMinimumSize(new Dimension(80, 20));
+		mListDatabases.setMinimumSize(new Dimension(120, 20));
 		mListDatabases.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent event) {
 				if( inConnect )
@@ -902,7 +923,7 @@ public class ExplorerShell {
 
 
 /*
- * Copyright (C) 2008-2012 David A. Lee.
+ * Copyright (C) 2008-2014 David A. Lee.
  * 
  * The contents of this file are subject to the "Simplified BSD License" (the "License");
  * you may not use this file except in compliance with the License. You may obtain a copy of the

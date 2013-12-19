@@ -30,6 +30,7 @@ import com.marklogic.xcc.ResultSequence;
 import com.marklogic.xcc.types.XdmVariable;
 import javax.swing.JTextPane;
 import javax.swing.JTextArea;
+import javax.swing.JScrollPane;
 
 public class PropertiesDialog extends JDialog {
 
@@ -53,15 +54,15 @@ public class PropertiesDialog extends JDialog {
 		mShell = shell;
 		mUrl = url ;
 		
-		setBounds(100, 100, 538, 234);
+		setBounds(100, 100, 538, 482);
 		getContentPane().setLayout(new BorderLayout());
 		mcontentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(mcontentPanel, BorderLayout.NORTH);
 		GridBagLayout gbl_contentPanel = new GridBagLayout();
 		gbl_contentPanel.columnWidths = new int[] {25, 400};
-		gbl_contentPanel.rowHeights = new int[]{14, 0, 0, 0, 0, 0};
+		gbl_contentPanel.rowHeights = new int[]{14, 0, 0, 0, 0};
 		gbl_contentPanel.columnWeights = new double[]{1.0, 1.0};
-		gbl_contentPanel.rowWeights = new double[]{0.0, 0.0, 1.0, 1.0, 1.0, Double.MIN_VALUE};
+		gbl_contentPanel.rowWeights = new double[]{0.0, 1.0, 1.0, 1.0, Double.MIN_VALUE};
 		mcontentPanel.setLayout(gbl_contentPanel);
 		{
 			JLabel lblUrl = new JLabel("URL");
@@ -98,14 +99,17 @@ public class PropertiesDialog extends JDialog {
 				mcontentPanel.add(lblCollections, gbc_lblCollections);
 			}
 		}
-		mListCollections = new JList(mCollectionsModel);
-		
-		GridBagConstraints gbc_listCollections = new GridBagConstraints();
-		gbc_listCollections.insets = new Insets(0, 0, 5, 0);
-		gbc_listCollections.fill = GridBagConstraints.BOTH;
-		gbc_listCollections.gridx = 1;
-		gbc_listCollections.gridy = 1;
-		mcontentPanel.add(mListCollections, gbc_listCollections);
+		{
+			JScrollPane scrollPane = new JScrollPane();
+			GridBagConstraints gbc_scrollPane = new GridBagConstraints();
+			gbc_scrollPane.fill = GridBagConstraints.BOTH;
+			gbc_scrollPane.insets = new Insets(0, 0, 5, 0);
+			gbc_scrollPane.gridx = 1;
+			gbc_scrollPane.gridy = 1;
+			mcontentPanel.add(scrollPane, gbc_scrollPane);
+			mListCollections = new JList(mCollectionsModel);
+			scrollPane.setViewportView(mListCollections);
+		}
 		{
 			JLabel lblPermissions = new JLabel("Permissions");
 			GridBagConstraints gbc_lblPermissions = new GridBagConstraints();
@@ -116,34 +120,42 @@ public class PropertiesDialog extends JDialog {
 			mcontentPanel.add(lblPermissions, gbc_lblPermissions);
 		}
 		mPermissionsModel = new DefaultListModel();
-
 		{
-			JList listPermissions = new JList(mPermissionsModel);
-			GridBagConstraints gbc_listPermissions = new GridBagConstraints();
-			gbc_listPermissions.insets = new Insets(0, 0, 5, 0);
-			gbc_listPermissions.fill = GridBagConstraints.BOTH;
-			gbc_listPermissions.gridx = 1;
-			gbc_listPermissions.gridy = 2;
-			mcontentPanel.add(listPermissions, gbc_listPermissions);
+			JScrollPane scrollPane = new JScrollPane();
+			GridBagConstraints gbc_scrollPane = new GridBagConstraints();
+			gbc_scrollPane.fill = GridBagConstraints.BOTH;
+			gbc_scrollPane.insets = new Insets(0, 0, 5, 0);
+			gbc_scrollPane.gridx = 1;
+			gbc_scrollPane.gridy = 2;
+			mcontentPanel.add(scrollPane, gbc_scrollPane);
+			
+					{
+						JList listPermissions = new JList(mPermissionsModel);
+						scrollPane.setViewportView(listPermissions);
+					}
 		}
 		{
 			JLabel lblProperties = new JLabel("Properties");
 			GridBagConstraints gbc_lblProperties = new GridBagConstraints();
 			gbc_lblProperties.anchor = GridBagConstraints.WEST;
-			gbc_lblProperties.insets = new Insets(0, 0, 5, 5);
+			gbc_lblProperties.insets = new Insets(0, 0, 0, 5);
 			gbc_lblProperties.gridx = 0;
 			gbc_lblProperties.gridy = 3;
 			mcontentPanel.add(lblProperties, gbc_lblProperties);
 		}
 		{
-			mTextProperties = new JTextArea();
-			mTextProperties.setEditable(false);
-			GridBagConstraints gbc_textProperties = new GridBagConstraints();
-			gbc_textProperties.insets = new Insets(0, 0, 5, 0);
-			gbc_textProperties.fill = GridBagConstraints.BOTH;
-			gbc_textProperties.gridx = 1;
-			gbc_textProperties.gridy = 3;
-			mcontentPanel.add(mTextProperties, gbc_textProperties);
+			JScrollPane scrollPane = new JScrollPane();
+			GridBagConstraints gbc_scrollPane = new GridBagConstraints();
+			gbc_scrollPane.fill = GridBagConstraints.BOTH;
+			gbc_scrollPane.gridx = 1;
+			gbc_scrollPane.gridy = 3;
+			mcontentPanel.add(scrollPane, gbc_scrollPane);
+			{
+				mTextProperties = new JTextArea();
+				mTextProperties.setRows(6);
+				scrollPane.setViewportView(mTextProperties);
+				mTextProperties.setEditable(false);
+			}
 		}
 		{
 			JPanel buttonPane = new JPanel();
@@ -243,7 +255,7 @@ public class PropertiesDialog extends JDialog {
 
 
 /*
- * Copyright (C) 2008-2012 David A. Lee.
+ * Copyright (C) 2008-2014 David A. Lee.
  * 
  * The contents of this file are subject to the "Simplified BSD License" (the "License");
  * you may not use this file except in compliance with the License. You may obtain a copy of the
