@@ -9,6 +9,8 @@ package org.xmlsh.marklogic.ui;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import org.xmlsh.marklogic.util.MLUtil;
+
 import com.marklogic.xcc.ContentSource;
 import com.marklogic.xcc.ContentSourceFactory;
 import com.marklogic.xcc.SecurityOptions;
@@ -29,11 +31,11 @@ class ExplorerOptions {
 	// Query options 
 	String mQuery = "" ;
 	
-	ExplorerOptions( String connectString ) throws URISyntaxException{
+	ExplorerOptions( String connectString ) throws Exception{
 		if( connectString != null ){
 			URI uri = new URI( connectString );
 			
-		    String scheme = uri.getScheme();
+		    mScheme = uri.getScheme();
 	
 		    mHost = uri.getHost();
 		    mPort = uri.getPort();
@@ -65,6 +67,8 @@ class ExplorerOptions {
 		    }
 		
 		}
+	
+		mOptions = MLUtil.newTrustOptions(mScheme);
 		
 	}
 	

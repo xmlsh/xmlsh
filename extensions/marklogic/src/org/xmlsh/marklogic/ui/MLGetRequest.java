@@ -18,12 +18,9 @@ import com.marklogic.xcc.types.XdmVariable;
 
 public class MLGetRequest extends MLQueryRequest
 {
-
-
 	private File mOutput ;
 	@SuppressWarnings("unused")
 	private SerializeOpts mSerializeOpts;
-	
 	
 	MLGetRequest( String url , final File output ,final SerializeOpts sopts ) throws Exception 
 	{
@@ -34,15 +31,8 @@ public class MLGetRequest extends MLQueryRequest
 		
 		mOutput = output;
 		mSerializeOpts  = sopts ;
-		
-
 	}
 	
-	
-
-	
-
-
 	@Override
 	void onComplete(ResultSequence rs) throws Exception {
 		OutputStream os =  new FileOutputStream( mOutput) ;

@@ -39,8 +39,8 @@ import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.Util;
-import com.marklogic.xcc.types.XdmItem;
 
+import com.marklogic.xcc.types.XdmItem;
 import com.marklogic.xcc.ResultItem;
 import com.marklogic.xcc.ResultSequence;
 import com.marklogic.xcc.SecurityOptions;
@@ -66,11 +66,15 @@ import com.marklogic.xcc.types.XdmAttribute;
 import com.marklogic.xcc.types.XdmVariable;
 
 public class MLUtil {
+	
+	
+	public static SecurityOptions newTrustOptions(URI uri) throws Exception {
+		return newTrustOptions( uri.getScheme() );
+	}
 
-	public static SecurityOptions newTrustOptions(URI uri) throws Exception
+	public static SecurityOptions newTrustOptions(String scheme) throws Exception
 	{
 		
-		String scheme = uri.getScheme();
 		if( !scheme.equals("xccs"))
 			return null ;
 		

@@ -74,6 +74,8 @@ import java.awt.image.BufferedImage;
 import javax.swing.JTextField;
 import javax.swing.event.MenuListener;
 import javax.swing.event.MenuEvent;
+import javax.swing.KeyStroke;
+import java.awt.event.KeyEvent;
 
 public class ExplorerShell {
 
@@ -144,9 +146,11 @@ public class ExplorerShell {
 		mframe.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
 		JMenuBar menuBar = new JMenuBar();
+		menuBar.setAlignmentX(Component.LEFT_ALIGNMENT);
 		mframe.setJMenuBar(menuBar);
 
 		JMenu mnFile = new JMenu("File");
+		mnFile.setAlignmentX(Component.LEFT_ALIGNMENT);
 		mnFile.setMnemonic('F');
 		menuBar.add(mnFile);
 
@@ -324,6 +328,7 @@ public class ExplorerShell {
 		addRefreshAction(mntmRefresh);
 		
 		mntmNext = new JMenuItem("Next 1000...");
+		mntmNext.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, 0));
 		addNextAction();
 		popupMenu.add(mntmNext);
 		
