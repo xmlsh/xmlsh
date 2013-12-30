@@ -11,14 +11,14 @@ import org.xmlsh.marklogic.util.MLUtil;
 import com.marklogic.xcc.ResultSequence;
 import com.marklogic.xcc.types.XdmVariable;
 
-public abstract class MLDeleteRequest extends MLQueryRequest {
+public abstract class MLCreateDirectoryRequest extends MLQueryRequest {
 
-	
-	
-	public MLDeleteRequest(String url) throws InterruptedException {
-		super("Deleting ... ", QueryCache.getInstance().getQuery("documentDelete.xquery") , 
+	public MLCreateDirectoryRequest(String url) throws InterruptedException {
+		super("Creating ... ", QueryCache.getInstance().getQuery("createDirectory.xquery") , 
 				  new XdmVariable[] { 	MLUtil.newVariable("url", url ) }, null );
 	}
+
+
 
 }
 

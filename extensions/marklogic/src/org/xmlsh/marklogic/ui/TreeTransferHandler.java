@@ -62,9 +62,17 @@ final class TreeTransferHandler extends TransferHandler {
 		try {
 			@SuppressWarnings("unchecked")
 			List<File> files = (List<File>)  transferable.getTransferData(DataFlavor.javaFileListFlavor);
-			LazyTreeNode parentNode = (LazyTreeNode)(path.getLastPathComponent());
+			if( path == null ){
+			
+				  mExplorerShell.doLoad( null , files );
+				
+				
+				
+			} else {
+			   LazyTreeNode parentNode = (LazyTreeNode)(path.getLastPathComponent());
 
-			mExplorerShell.doLoad( parentNode , files );
+			   mExplorerShell.doLoad( parentNode , files );
+			}
 			return true ;
 		} catch (Exception e) {
 			mExplorerShell.printError( "Exception getting drop transfer data",e);

@@ -4,7 +4,7 @@ declare variable $urimatch external := "" ;
 
 
 fn:distinct-values( 
-    for $d in cts:uris("","document"  )
+    for $d in cts:uris("","any"  )
     where ($urimatch eq "" or contains( $d , $urimatch ) )
     
     return 

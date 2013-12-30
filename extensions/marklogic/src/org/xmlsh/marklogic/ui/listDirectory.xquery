@@ -15,7 +15,7 @@ declare function local:uri-query()
 
 (for $p in 
 fn:distinct-values( 
-    for $d in cts:uris($root,"document", 
+    for $d in cts:uris($root,"any", 
          local:uri-query() )
     let $p := substring-after( $d , $root )
     where ( $d ne $root ) and ($urimatch eq "" or contains( $p , $urimatch ) )

@@ -56,6 +56,7 @@ import javax.swing.event.PopupMenuListener;
 import javax.swing.tree.TreePath;
 
 import org.xmlsh.core.Options;
+import org.xmlsh.marklogic.util.MLUtil;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.Util;
@@ -64,9 +65,12 @@ import com.marklogic.xcc.Content;
 import com.marklogic.xcc.ContentCreateOptions;
 import com.marklogic.xcc.ContentFactory;
 import com.marklogic.xcc.ResultSequence;
+import com.marklogic.xcc.types.XdmVariable;
+
 import javax.swing.JList;
 import javax.swing.ListSelectionModel;
 import javax.swing.JComboBox;
+
 import java.awt.event.ItemListener;
 import java.awt.event.ItemEvent;
 import java.awt.image.BufferedImage;
@@ -75,6 +79,7 @@ import javax.swing.JTextField;
 import javax.swing.event.MenuListener;
 import javax.swing.event.MenuEvent;
 import javax.swing.KeyStroke;
+
 import java.awt.event.KeyEvent;
 
 public class ExplorerShell {
@@ -150,11 +155,13 @@ public class ExplorerShell {
 		mframe.setJMenuBar(menuBar);
 
 		JMenu mnFile = new JMenu("File");
+		mnFile.setHorizontalAlignment(SwingConstants.LEFT);
 		mnFile.setAlignmentX(Component.LEFT_ALIGNMENT);
 		mnFile.setMnemonic('F');
 		menuBar.add(mnFile);
 
 		JMenuItem mntmOptions = new JMenuItem("Options...");
+		mntmOptions.setHorizontalAlignment(SwingConstants.LEFT);
 		mntmOptions.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				OptionsDialog dialog = new OptionsDialog(mOptions);
@@ -163,11 +170,27 @@ public class ExplorerShell {
 			}
 		});
 		mnFile.add(mntmOptions);
+		
+		JMenuItem mntmCreateDirectory = new JMenuItem("Create Directory...");
+		mntmCreateDirectory.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					onCreateDirectory();
+				} catch (Exception e1) {
+					printError("Exception opening file",e1);
+				}
+				
+				
+			}
+		});
+		mnFile.add(mntmCreateDirectory);
 
 		JMenuItem mntmExit = new JMenuItem("Exit");
+		mntmExit.setHorizontalAlignment(SwingConstants.LEFT);
 		mnFile.add(mntmExit);
 		
 		JMenu mnView = new JMenu("View");
+		mnView.setHorizontalAlignment(SwingConstants.LEFT);
 		mnView.addMenuListener(new MenuListener() {
 			public void menuCanceled(MenuEvent e) {
 			}
@@ -188,6 +211,8 @@ public class ExplorerShell {
 		menuBar.add(mnView);
 		
 		mMntmProperties = new JMenuItem("Properties...");
+		mMntmProperties.setHorizontalAlignment(SwingConstants.LEFT);
+		mMntmProperties.setIcon(null);
 		mMntmProperties.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				onProperties();
@@ -503,8 +528,33 @@ public class ExplorerShell {
 		}
 	
 	}
-	
-	
+	protected void onCreateDirectory() throws InterruptedException {
+		String parentUrl = getSelectedUrl();
+		
+		if( ! Util.isBlank(parentUrl) && !parentUrl.endsWith("/")){
+			JOptionPane.showMessageDialog(null, "Cannot create a sub directory under a regular document.");
+			return ;
+		}
+		
+		
+		String dir = JOptionPane.showInputDialog(null, "Create Directory:", "Parent: " + parentUrl , JOptionPane.INFORMATION_MESSAGE);
+		if( Util.isBlank(dir ) || ! dir.endsWith("/")){
+			JOptionPane.showMessageDialog(null, "Directory must end with a /");
+			return;
+		}
+
+		putCommand(  new MLCreateDirectoryRequest( parentUrl + dir ){
+
+			@Override
+			void onComplete(ResultSequence rs) throws Exception {
+				onRefresh();
+				
+			}}
+		
+	    );
+		
+		
+	}
 	
 	
 	
@@ -618,7 +668,7 @@ public class ExplorerShell {
 
 			
 			for( File f : files ){
-				List<Content>  c = getContents( parentNode.getUrl(), f  );
+				List<Content>  c = getContents( parentNode == null ? "" : parentNode.getUrl(), f  );
 				if( c == null || c.size() == 0 )
 					continue ;
 
@@ -703,8 +753,17 @@ public class ExplorerShell {
 		
 	}
 
+	
+	protected String getSelectedUrl()
+	{
+		List<String> urls = getSelectedUrls();
+		if( urls != null && urls.size() > 0 )
+			return urls.get(0);
+		return "" ;
+		
+	}
 	protected void onOpen() throws Exception {
-		String url = getSelectedUrls().get(0);
+		String url = getSelectedUrl();
 		List<File> files = doStore( url );
 		
 		Desktop.getDesktop().edit(files.get(0));
@@ -858,7 +917,11 @@ public class ExplorerShell {
 		List<MLRequest>  deletes = new ArrayList<MLRequest>( urls.size());
 		
 		for( String url : urls )
-			deletes.add( new MLDeleteRequest(url) );
+			deletes.add( new MLDeleteRequest(url){
+				@Override
+				void onComplete(ResultSequence rs) throws Exception {
+					
+				}} );
 		
 		final Semaphore sem = new Semaphore(1);
 		sem.acquire();
@@ -905,7 +968,7 @@ public class ExplorerShell {
 	}
 	
 	private void onProperties()  {
-		String url = getSelectedUrls().get(0);
+		String url = getSelectedUrl();
 		
 		PropertiesDialog dialog;
 		try {

@@ -153,11 +153,15 @@ public abstract class LazyTreeModel extends DefaultTreeModel implements TreeWill
 	void postReload( final LazyTreeNode node ){
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				node.setLength(-1, -1);
-				node.setLoaded(false);
-				setLoading(node, true);
-				loadNodes(node);
-				nodeChanged( node );
+				if( node == null )
+					loadFirstLevel() ;
+				else {
+					node.setLength(-1, -1);
+					node.setLoaded(false);
+					setLoading(node, true);
+					loadNodes(node);
+					nodeChanged( node );
+				}
 
 			}
 		});	
