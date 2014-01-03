@@ -11,8 +11,8 @@ declare function local:uri-query()
 
 };
 
-for $d in 
-cts:uris($root,"document", local:uri-query() )
+for $d in cts:uris($root,"document", local:uri-query() )
+let $p := substring-after( $d , $root )
 where ($urimatch eq "" or contains( $p , $urimatch ) )
 return $d
  

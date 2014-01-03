@@ -10,6 +10,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import org.xmlsh.marklogic.util.MLUtil;
+import org.xmlsh.util.Util;
 
 import com.marklogic.xcc.ContentSource;
 import com.marklogic.xcc.ContentSourceFactory;
@@ -32,7 +33,7 @@ class ExplorerOptions {
 	String mQuery = "" ;
 	
 	ExplorerOptions( String connectString ) throws Exception{
-		if( connectString != null ){
+		if( ! Util.isBlank(connectString) ){
 			URI uri = new URI( connectString );
 			
 		    mScheme = uri.getScheme();
