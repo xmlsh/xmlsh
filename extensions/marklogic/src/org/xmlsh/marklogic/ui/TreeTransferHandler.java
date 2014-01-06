@@ -12,6 +12,7 @@ import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.InputEvent;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JComponent;
@@ -127,17 +128,22 @@ final class TreeTransferHandler extends TransferHandler {
 	        {
 	            if( flavor == DataFlavor.javaFileListFlavor ){
 	            	   
-				   TreePath selectedPath = TreeTransferHandler.this.mExplorerShell.mDirectoryTree.getSelectionPath();
-				   if( selectedPath == null || selectedPath.getPathCount() < 1 )
+				   TreePath[] selectedPaths = TreeTransferHandler.this.mExplorerShell.mDirectoryTree.getSelectionPaths();
+				   if( selectedPaths == null || selectedPaths.length < 1 )
 					   return null ;
-				   LazyTreeNode node = (LazyTreeNode)(selectedPath.getLastPathComponent());
-				   String url = node.getUrl();
-					   
-					try {
-					   return mExplorerShell.doStore(url);
-					} catch (Exception e) {
-						mExplorerShell.printError("Exception trying to store: " + url , e);
-					}
+				   
+				   List<File> stored = new ArrayList<File>();
+				   for( TreePath tp : selectedPaths ){
+					   LazyTreeNode node = (LazyTreeNode)(tp.getLastPathComponent());
+					   String url = node.getUrl();
+						   
+						try {
+						    stored.addAll(mExplorerShell.doStore(url));
+						} catch (Exception e) {
+							mExplorerShell.printError("Exception trying to store: " + url , e);
+						}
+				   }
+				   return stored ;
 	            }
 	            return null ;
 	        }
