@@ -29,6 +29,9 @@
    <file name="data/diffspec.xsl"
          md5="d19a7123cf0d87e94e26bbbd911fadb5"
          length="11843"/>
+   <file name="data/employee.txt"
+         md5="d26b105541726ad3159c1bd6b64c4208"
+         length="1926"/>
    <file name="data/intl.xml"
          md5="73696927038bcac47b0c87d3aec16bc2"
          length="418"/>

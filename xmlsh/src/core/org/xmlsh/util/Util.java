@@ -1083,9 +1083,9 @@ public class Util
 		    if( ch == '_' ){
 		      escaped = true ;
 		      char c = 0;
-		     
+		      i++;
 		 
-		      while( ++i < chars.length-1 ){
+		      while(  i < chars.length-1  ){
 		    	if( chars[i] == '_' ){
 		    		break ;
 		    	}

@@ -1,0 +1,10 @@
+Employee Email	Employee Number	Company	BU	Approved Required	Escalation_1	Escalation_2	Escalation_3	Escalation_4	Supervisor Number_1	1Supervisor Title	_fancy_text here	漢語	ת ʿIvrit
+vincent.smith@acme.com	111,222	619	300	Y	Y	Y	Y	Y	8960	Manager Development Engineer	日本語	日本語 a	日本語
+jochen.smith@acme.com	33.5	610	250	Y	Y	N			1924	Senior Technical Manager	汉语	日本語 a	汉语
+joe.bar@acme.com	2223.22	210	300	Y	Y	Y	Y	Y	5862	Mgr Development Eng	汉语	日本語 a	汉语
+joe.bar@acme.com	1111	431	400	Y	Y	Y	N		2581	Manager	汉语	日本語 a	汉语
+richard.bigman@acme.com	2222	210	300	Y	Y	Y	Y	Y	1017	"""Development Architect"""	ת ʿIvrit	日本語 a	汉语
+freys@acme.com	8333560	210	300	Y	Y	Y	Y	Y	1180	Dir Development Eng'	ת ʿIvrit	 Text With Spaces	汉语
+dr.spam@acme.com	3335882	210	400	Y	Y	Y	Y	Y	2444	Program Manager II	汉语	日本語 a	 Text With Spaces
+cosmic.charley@acme.com	44	210	300	Y	Y	Y	Y	Y	5862	Mgr Development Eng	汉语	日本語 a	汉语
+jack.straw@acme.com	244549	610	100	Y	Y	Y	Y	Y	6002	Sr Manager	日本語	日本語 a	汉语

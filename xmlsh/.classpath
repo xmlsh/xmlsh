@@ -29,19 +29,11 @@
 	</classpathentry>
 	<classpathentry kind="lib" path="lib/commons-codec-1.6.jar"/>
 	<classpathentry kind="lib" path="lib/commons-logging-1.1.1.jar"/>
-	<classpathentry kind="lib" path="lib/httpclient-4.2.3.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="file:/C:/java/httpcomponents-client-4.2.3/javadoc/"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="lib/httpcore-4.2.2.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="file:/C:/java/httpcomponents-client-4.2.3/javadoc/"/>
-		</attributes>
-	</classpathentry>
 	<classpathentry kind="lib" path="lib/commons-io-2.1.jar"/>
 	<classpathentry kind="lib" path="lib/commons-lang-2.6.jar"/>
 	<classpathentry kind="lib" path="lib/json-path-0.8.2.jar" sourcepath="C:/Users/DLEE/Documents/GitHub/JsonPath/json-path/src/main/java"/>
 	<classpathentry kind="lib" path="lib/json-smart-1.1.jar"/>
+	<classpathentry kind="lib" path="lib/httpclient-4.2.3.jar"/>
+	<classpathentry kind="lib" path="lib/httpcore-4.2.jar"/>
 	<classpathentry kind="output" path="_out"/>
 </classpath>

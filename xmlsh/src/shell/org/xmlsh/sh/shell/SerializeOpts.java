@@ -38,7 +38,7 @@ public class SerializeOpts {
 	 * Parsed standardized serialization option definitions
 	 */
 	private static final List<Options.OptionDef>  mOptionDefs =		
-		Options.parseDefs("+force-text,+indent,+omit-xml-declaration,encoding:,text-encoding:,xml-encoding:,+xinclude,content-type:,method:,+supports-dtd,sequence-sep:,sequence-term:,input-xml-encoding:,output-xml-encoding:,input-text-encoding:,output-text-encoding:" );
+		Options.parseDefs("+force-text,+indent,+omit-xml-declaration,encoding:,text-encoding:,input-encoding:,output-encoding:,xml-encoding:,+xinclude,content-type:,method:,+supports-dtd,sequence-sep:,sequence-term:,input-xml-encoding:,output-xml-encoding:,input-text-encoding:,output-text-encoding:" );
 			
 			
 	public static List<Options.OptionDef> getOptionDefs() { return mOptionDefs ; }
@@ -154,6 +154,7 @@ public class SerializeOpts {
 		
 		
 			
+		
 		if( opt.equals("text-encoding") || opt.equals("input-text-encoding") || opt.equals("encoding"))
 			setInputTextEncoding(value.toString());
 
@@ -167,8 +168,14 @@ public class SerializeOpts {
 		if( opt.equals("xml-encoding") || opt.equals("output-xml-encoding") || opt.equals("encoding") )
 			setOutputXmlEncoding(value.toString());
 		
-		
-		
+		if( opt.equals("input-encoding")){
+			setInputTextEncoding( value.toString());
+			setInputXmlEncoding( value.toString());
+		}
+		if( opt.equals("output-encoding")){
+			setOutputTextEncoding( value.toString());
+			setOutputXmlEncoding( value.toString());
+		}
 		
 		if( opt.equals("content-type"))
 			setContent_type(value.toString());

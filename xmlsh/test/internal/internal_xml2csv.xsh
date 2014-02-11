@@ -1,4 +1,4 @@
-# test of xml2csv2
+# test of xml2csv
 
 F=../../samples/data/books.csv
 csv2xml -header -attr $F | xml2csv -header -attr

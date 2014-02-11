@@ -30,7 +30,7 @@ import org.xmlsh.util.Util;
  * 	-root		root element (default "root")
  *  -row		row	 element (default "row")
  *  -col		col	 element (defauilt "col")
- *  -cols		<seq>   Column names instead of reading from header
+ *  -colnames		<seq>   Column names instead of reading from header
  *  -header		read first row for header names
  *  -attr		write in attribute normal format\
  *  -encoding encoding  Read CSV format in the specified encoding, else cp1252 assumed
@@ -49,7 +49,7 @@ public class csv2xml extends XCommand
 
 		
 
-		Options opts = new Options( "root:,row:,col:,header,attr,delim:,quote:,colnames:,tab,skip:,trim,max:,input-encoding:", SerializeOpts.getOptionDefs() );
+		Options opts = new Options( "root:,row:,col:,header,attr,delim:,quote:,colnames:,tab,skip:,trim,max:", SerializeOpts.getOptionDefs() );
 		opts.parse(args);
 		setSerializeOpts(opts);
 		
@@ -78,10 +78,9 @@ public class csv2xml extends XCommand
 // Output XML
 
 		OutputPort stdout = getStdout();
-		SerializeOpts serializeOpts = getSerializeOpts();
 
 		
-		XMLStreamWriter writer = stdout.asXMLStreamWriter(serializeOpts);
+		XMLStreamWriter writer = stdout.asXMLStreamWriter(mSerializeOpts);
 		
 		writer.writeStartDocument();
 		
@@ -92,9 +91,9 @@ public class csv2xml extends XCommand
 		
 		Reader ir = null;
 		if( xvargs.size() == 0 )
-			ir = getStdin().asReader(serializeOpts);
+			ir = getStdin().asReader(mSerializeOpts);
 		else
-			ir = getInput( xvargs.get(0) ).asReader(serializeOpts);
+			ir = getInput( xvargs.get(0) ).asReader(mSerializeOpts);
 		
 		
 		CSVParser parser = new CSVParser( delim.charAt(0), quote.charAt(0) , maxFields );
@@ -128,7 +127,7 @@ public class csv2xml extends XCommand
 		writer.close();
 		
 		ir.close();
-		stdout.writeSequenceTerminator(serializeOpts);
+		stdout.writeSequenceTerminator(mSerializeOpts);
 		
 		
 		return 0;

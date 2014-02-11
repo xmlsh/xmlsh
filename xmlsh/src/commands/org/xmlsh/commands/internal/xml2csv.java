@@ -63,7 +63,7 @@ public class xml2csv extends XCommand
 	{
 		
 	
-		Options opts = new Options( "header,attr,delim:,quote:" , SerializeOpts.getOptionDefs() );
+		Options opts = new Options( "header,attr,delim:,quote:,tab,newline:" , SerializeOpts.getOptionDefs() );
 		opts.parse(args);
 		setSerializeOpts(opts);
 		
@@ -73,8 +73,13 @@ public class xml2csv extends XCommand
 	
 		
 		
-		String delim = opts.getOptString("delim", ",");
-		String quote = opts.getOptString("quote", "\"");
+		String delim   = opts.getOptString("delim", ",");
+		String quote   = opts.getOptString("quote", "\"");
+		
+		// -tab overrides -delim
+		if( opts.hasOpt("tab"))
+			delim = "\t";
+		 
 		
 		mFormatter = new CSVFormatter(delim.charAt(0),quote.charAt(0));
 		mOutput = getStdout().asOutputStream(mSerializeOpts);
@@ -95,6 +100,7 @@ public class xml2csv extends XCommand
 			
 			
 		}
+		
 		
 
 
@@ -146,7 +152,8 @@ public class xml2csv extends XCommand
 		}
 		CSVRecord rec = new CSVRecord(fields);
 		String line = mFormatter.encodeRow(rec);
-		mOutput.write( (line +  "\n").getBytes(mSerializeOpts.getOutput_text_encoding()));
+		mOutput.write( line.getBytes(mSerializeOpts.getOutputTextEncoding()));
+		mOutput.write( Util.getNewline(mSerializeOpts));
 		
 		
 		
