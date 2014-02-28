@@ -34,7 +34,6 @@ import com.amazonaws.services.ec2.model.EbsBlockDevice;
 import com.amazonaws.services.ec2.model.EbsInstanceBlockDevice;
 import com.amazonaws.services.ec2.model.Instance;
 import com.amazonaws.services.ec2.model.InstanceBlockDeviceMapping;
-import com.amazonaws.services.ec2.model.InstanceLicense;
 import com.amazonaws.services.ec2.model.InstanceState;
 import com.amazonaws.services.ec2.model.InstanceStateChange;
 import com.amazonaws.services.ec2.model.LaunchPermission;
@@ -159,9 +158,7 @@ public abstract class AWSEC2Command extends AWSCommand {
 			attribute( "virtualization-type" , inst.getVirtualizationType() );
 			attribute( "vpcid" , inst.getVpcId() );
 			attribute( "ami-launch-index" , inst.getAmiLaunchIndex().toString() );
-			
 			attribute( "launch-date" , Util.formatXSDateTime(inst.getLaunchTime()) );
-			attribute( "license" , getLicense(inst) );
 			attribute( "monitoring" , inst.getMonitoring().getState() );
 			attribute( "source-dest-check" , getSourceCheck(inst) );
 			attribute( "state-reason" , getStateReason(inst) );
@@ -225,13 +222,6 @@ public abstract class AWSEC2Command extends AWSCommand {
 	}
 
 
-	public String getLicense(Instance inst) {
-		InstanceLicense lic = inst.getLicense();
-		if( lic == null )
-			return "";
-		else
-		return lic.toString();
-	}
 
 
 	public void writePlacement(Placement placement)
