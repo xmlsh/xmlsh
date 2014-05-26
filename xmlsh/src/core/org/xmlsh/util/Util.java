@@ -1198,6 +1198,21 @@ public class Util
 	}
 
 
+	public static String stringJoin(List<String> list, String sep) {
+		if( list == null)
+			return null ;
+
+		StringBuilder sb = new StringBuilder();
+		
+		for( String s : list ){
+			if(sb.length() > 0 )
+				sb.append(sep);
+			sb.append(s);
+		}
+		return sb.toString();
+		
+	}
+
 }
 
 //

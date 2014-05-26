@@ -32,7 +32,10 @@ import javax.swing.JTextArea;
 import javax.swing.JToolBar;
 import javax.swing.UIManager;
 
+import org.xmlsh.core.Options;
 import org.xmlsh.core.XValue;
+import org.xmlsh.sh.shell.SerializeOpts;
+import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.Util;
 
 public class XShell {
@@ -41,7 +44,6 @@ public class XShell {
 	private JTextArea mCommandTextArea;
 	private ShellThread mShell = null;
 	private JTextArea mResultTextArea;
-	private List<XValue> mArgs;
 	private File mCurdir;
 	private LogFrame mLogWindow = null;
 
@@ -58,13 +60,19 @@ public class XShell {
 	}
 
 	public static void run(List<XValue> args) {
-		run(new File("."), args);
+		run(new File("."), args ,new SerializeOpts() );
 
 	}
 
-	public static void run(final File curdir, final List<XValue> args) {
+	public static void run(File curdir , List<XValue> args) {
+		run(curdir, args ,new SerializeOpts() );
+
+	}
+
+	public static void run(final File curdir, final List<XValue> args , final SerializeOpts sopts   ) {
 		
-		
+		 
+		 
 		 try {
 	            // Set System L&F
 	        UIManager.setLookAndFeel(
@@ -78,7 +86,7 @@ public class XShell {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					XShell window = new XShell(curdir, args);
+					XShell window = new XShell(curdir, args , sopts );
 					window.mframe.setVisible(true);
 					window.mCommandTextArea.requestFocusInWindow();
 				} catch (Exception e) {
@@ -88,23 +96,39 @@ public class XShell {
 		});
 	}
 
-	public XShell(File curdir, List<XValue> args) throws Exception {
+	public XShell(File curdir, List<XValue> args,SerializeOpts sopts) throws Exception {
 		mCurdir = curdir;
-		mArgs = args;
-		initialize();
+		Options opts = new Options( "c=command:,cf=command-file:,f=file:", SerializeOpts.getOptionDefs() );
+		opts.parse(args);
+		
+		sopts.setOptions(opts);
+		String command = opts.getOptString("c", null);
+		if( command == null ){
+			String fname = opts.getOptString("cf", null );
+			if( fname != null ){
+					command =  Util.convertPath(fname , false );
+				
+			}
+			if( command == null ){
+			   fname = opts.getOptString("f", null);
+		   	   if( fname != null )
+				command = Util.readString(new File(curdir, fname ) ,  sopts.getInput_text_encoding() );
+			}
+	
+		}
+		initialize(command,opts.getRemainingArgs());
 	}
+
 
 	/**
 	 * Initialize the contents of the frame.
+	 * @param list 
+	 * @param command 
 	 * 
 	 * @throws Exception
 	 */
-	private void initialize() throws Exception {
+	private void initialize(String command, List<XValue> args) throws Exception {
 
-		
-
-		
-		
 		
 		
 		
@@ -236,7 +260,8 @@ public class XShell {
 		mResultTextArea = new JTextArea();
 		mResultTextArea.setRows(10);
 		
-		mShell = new ShellThread( mArgs ,  mResultTextArea , btnRun , btnStop);
+		
+		mShell = new ShellThread( null ,  mResultTextArea , btnRun , btnStop);
 		
 		mCommandTextArea = new JTextArea();
 		
@@ -262,10 +287,14 @@ public class XShell {
 		
 
 		mLogWindow = new LogFrame();
+		
+		if( command != null  )
+			mCommandTextArea.setText( command + " "  + Util.stringJoin( Util.toStringList(args)," ") );
 
 		mShell.start();
 		
 	}
+
 
 	protected void saveTo(String text, File selFile) {
 		try {
@@ -293,7 +322,6 @@ public class XShell {
 		}
 
 	}
-
 }
 
 //

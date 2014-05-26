@@ -44,6 +44,9 @@ public class CSVParser
      */
      
     public CSVRecord parseLine( String line ){
+    	if( line == null )
+    		return null;
+    	
         ArrayList<String>v = new ArrayList<String>();
 
         int len = line.length();
