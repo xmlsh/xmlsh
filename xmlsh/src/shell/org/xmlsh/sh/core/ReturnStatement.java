@@ -26,7 +26,8 @@ public class ReturnStatement extends Command {
 	@Override
 	public void print(PrintWriter out, boolean bExec) {
 		out.print("return " );
-		mArg.print(out);
+		if( mArg != null)
+		   mArg.print(out);
 
 	}
 

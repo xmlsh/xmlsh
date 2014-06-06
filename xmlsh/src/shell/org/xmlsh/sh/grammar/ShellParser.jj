@@ -96,10 +96,10 @@
         return new CaseItem(p, c, getLocation(t));  }}StringList pattern() :{  StringList list = new StringList();  String s;}{  s = wordname()  {    list.add(s);  }  (    < PIPE > s = wordname()    {      list.add(s);    }  )*  {    return list;  }}IfClause if_clause() :{  Command ip = null, tp = null, ep = null;  Token t;  IfClause ifc;}{  t = < IF > ip = compound_list() < THEN > tp = compound_list()  [    LOOKAHEAD(2)    ep = else_part()  ]  < FI >  {    ifc = new IfClause(ip, tp, ep);    setLocation(ifc, t);    return ifc;  }}Command else_part() :{  Command ip = null, tp = null, ep = null;}{  LOOKAHEAD(2)  < ELIF > ip = compound_list() < THEN > tp = compound_list() [ ep = else_part() ]  {    return new IfClause(ip, tp, ep);  }| LOOKAHEAD(2)  < ELSE > ep = compound_list()  {    return ep;  }}WhileClause while_clause() :{  Command w, d;}{  < WHILE > w = compound_list() d = do_group()  {    return new WhileClause(w, d);  }}UntilClause until_clause() :{  Command w, d;}{  < UNTIL > w = compound_list() d = do_group()  {    return new UntilClause(w, d);  }}
 ReturnStatement return_stmt() :
 {
-  Word w ;
+  Word w = null ;
 }
 {
-  < RETURN >  w= cmd_word()
+  < RETURN > [ w= cmd_word() ]
   {
     return new ReturnStatement(w);
   }
