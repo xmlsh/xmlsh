@@ -17,6 +17,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.apache.log4j.PropertyConfigurator;
+import org.apache.log4j.RollingFileAppender;
 
 class Logging {
 
@@ -79,12 +80,15 @@ class Logging {
 		if( filename != null )
 		{
 			try {
+				
+				RollingFileAppender rollingFileAppender = new RollingFileAppender( 
+						new PatternLayout( "%d %-5r %-5p [%t] %c{2} - %m%n"), 
+						filename ,
+						true 
+				);
+				rollingFileAppender.setMaxBackupIndex(5);
 				BasicConfigurator.configure( 
-						new FileAppender( 
-								new PatternLayout( "%d %-5r %-5p [%t] %c{2} - %m%n"), 
-								filename ,
-								true 
-						) 
+						rollingFileAppender
 					);
 			} catch( Exception e ) {
 				

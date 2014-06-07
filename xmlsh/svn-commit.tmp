@@ -1,0 +1,18 @@
+Added a command input field to xmlshui
+--This line, and those below, will be ignored--
+
+M    .classpath
+M    src/shell/org/xmlsh/sh/shell/Logging.java
+M    src/shell/org/xmlsh/sh/shell/Shell.java
+M    src/shell/org/xmlsh/sh/shell/version.properties
+A    src/shell/org/xmlsh/sh/ui/IOutputText.java
+M    src/shell/org/xmlsh/sh/ui/LogFrame.java
+M    src/shell/org/xmlsh/sh/ui/ShellThread.java
+D    src/shell/org/xmlsh/sh/ui/TextAreaOutputStream.java
+D    src/shell/org/xmlsh/sh/ui/TextAreaPopupMenu.java
+A  + src/shell/org/xmlsh/sh/ui/TextComponentOutputStream.java
+A  + src/shell/org/xmlsh/sh/ui/TextComponentPopupMenu.java
+A    src/shell/org/xmlsh/sh/ui/TextFieldStreamPipe.java
+A    src/shell/org/xmlsh/sh/ui/TextOutputArea.java
+A    src/shell/org/xmlsh/sh/ui/TextResultPane.java
+M    src/shell/org/xmlsh/sh/ui/XShell.java

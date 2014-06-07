@@ -9,11 +9,11 @@ package org.xmlsh.sh.ui;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JSeparator;
-import javax.swing.JTextArea;
+import javax.swing.text.JTextComponent;
  
-public class TextAreaPopupMenu {
+public class TextComponentPopupMenu {
  
-    TextAreaPopupMenu(final JTextArea textArea) {
+    TextComponentPopupMenu(final JTextComponent textArea) {
 
  
         final JPopupMenu popup = new JPopupMenu();

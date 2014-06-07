@@ -12,6 +12,8 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -20,13 +22,19 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
 import javax.swing.JButton;
-import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
+import javax.swing.text.JTextComponent;
 
+import org.xmlsh.core.InputPort;
+import org.xmlsh.core.StreamInputPort;
 import org.xmlsh.core.ThrowException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.core.Command;
 import org.xmlsh.sh.core.SourceLocation;
+import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 
 public class ShellThread extends Thread {
@@ -34,7 +42,7 @@ public class ShellThread extends Thread {
 	private Shell mShell = null;
 	private boolean mClosed = false ;
 
-	private JTextArea mResultTextArea;
+	private TextResultPane mResultTextArea;
 	private JButton mStopButton;
 	private JButton mStartButton; 
 
@@ -42,12 +50,21 @@ public class ShellThread extends Thread {
 	private OutputStream mResultOutputStream;
 
 	private List<XValue> mArgs;
+	private JTextField mCommandField;
+	private TextFieldStreamPipe cmdPipe ;
+	private SerializeOpts mSerializeOpts;
+	
+	
 
 	private void print(String s) throws UnsupportedEncodingException, IOException {
 		mResultOutputStream.write(s.getBytes("UTF8"));
 	}
+	
 
-	public ShellThread(List<XValue> args, JTextArea resultTextArea, JButton startButton , JButton stopButton) {
+	
+
+	public ShellThread(List<XValue> args, TextResultPane resultTextArea, JTextField commandField , 
+			JButton startButton , JButton stopButton, SerializeOpts serializeOpts) throws IOException {
 		super();
 		
 
@@ -55,6 +72,10 @@ public class ShellThread extends Thread {
 		mResultTextArea = resultTextArea;
 		mStartButton = startButton ;
 		mStopButton = stopButton ;
+		mCommandField = commandField ;
+		mSerializeOpts = serializeOpts;
+		
+
 		
 	}
 
@@ -63,9 +84,8 @@ public class ShellThread extends Thread {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				mStartButton.setEnabled(!bRunning);
-				
 				mStopButton.setEnabled(bRunning);
-
+				cmdPipe.setReading(bRunning);
 			}
 		});
 	}
@@ -74,7 +94,7 @@ public class ShellThread extends Thread {
 
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				mResultTextArea.setText("");
+				mResultTextArea.clear();
 
 			}
 		});
@@ -86,26 +106,40 @@ public class ShellThread extends Thread {
 
 		
 
-		mResultTextArea.setText("");
+		mResultTextArea.clear();
 
 		Command c = null;
 
-		mResultOutputStream = new TextAreaOutputStream(mResultTextArea);
+		
+		
+		
+		
+		mResultOutputStream = new TextComponentOutputStream(mResultTextArea);
 		mStopButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				if( cmdPipe != null )
+					cmdPipe.reset();
 				if( mShell != null )
 				   mShell.exit(0);
+				
+				
 			}
 
 			
 		});
+		
+
 
 		try {				
+			cmdPipe = new TextFieldStreamPipe( mCommandField , mSerializeOpts);
+			setRunning(false);
 
 			String sCmd ;
 			while (! mClosed && (sCmd = mCommandQueue.take()) != null){
+				InputPort inp =  new StreamInputPort(cmdPipe.getIn(), null);
 				setRunning(false);
 				clearResult();
+				
 
 				try {
 					
@@ -119,9 +153,12 @@ public class ShellThread extends Thread {
 					mShell.getSerializeOpts().setOutputTextEncoding("UTF-8");
 
 					mShell.getEnv().setStdout(mResultOutputStream);
-
-
 					mShell.getEnv().setStderr(mResultOutputStream);
+					
+					inp.addRef(); // hold onto it 
+
+					mShell.getEnv().setInput(null, inp);
+					
 
 					setRunning(true);
 				
@@ -159,6 +196,12 @@ public class ShellThread extends Thread {
 				finally {
 					mShell.close();
 					setRunning(false);
+					mShell = null ;
+					inp.release();
+					if( cmdPipe != null)
+						cmdPipe.close();
+					cmdPipe = null ;
+					cmdPipe = new TextFieldStreamPipe( mCommandField , mSerializeOpts);
 				}
 			}
 		
@@ -166,6 +209,11 @@ public class ShellThread extends Thread {
 		catch( Exception e ) {
 			
 		}finally {
+			if( mShell != null )
+				mShell.close();
+			if( cmdPipe != null )
+				cmdPipe.close();
+			
 
 		}
 

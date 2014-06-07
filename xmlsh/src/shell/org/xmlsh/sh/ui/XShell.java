@@ -6,7 +6,14 @@
 
 package org.xmlsh.sh.ui;
 
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.EventQueue;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.Window.Type;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -25,27 +32,35 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.JTextPane;
 import javax.swing.JToolBar;
+import javax.swing.SwingConstants;
 import javax.swing.UIManager;
+import javax.swing.text.JTextComponent;
 
 import org.xmlsh.core.Options;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.SerializeOpts;
-import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.Util;
+
+import javax.swing.ScrollPaneConstants;
 
 public class XShell {
 
 	private JFrame mframe;
-	private JTextArea mCommandTextArea;
+	private JTextArea mScriptTextArea;
 	private ShellThread mShell = null;
-	private JTextArea mResultTextArea;
+	private TextResultPane mResultArea ;
 	private File mCurdir;
 	private LogFrame mLogWindow = null;
+	private JTextField mCommandInputField;
+	private SerializeOpts mSerializeOpts ;
 
 	/**
 	 * Launch the application.
@@ -71,7 +86,7 @@ public class XShell {
 
 	public static void run(final File curdir, final List<XValue> args , final SerializeOpts sopts   ) {
 		
-		 
+	
 		 
 		 try {
 	            // Set System L&F
@@ -88,7 +103,7 @@ public class XShell {
 				try {
 					XShell window = new XShell(curdir, args , sopts );
 					window.mframe.setVisible(true);
-					window.mCommandTextArea.requestFocusInWindow();
+					window.mScriptTextArea.requestFocusInWindow();
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -102,6 +117,8 @@ public class XShell {
 		opts.parse(args);
 		
 		sopts.setOptions(opts);
+		
+		mSerializeOpts = sopts ;
 		String command = opts.getOptString("c", null);
 		if( command == null ){
 			String fname = opts.getOptString("cf", null );
@@ -133,6 +150,9 @@ public class XShell {
 		
 		
 		mframe = new JFrame();
+		mframe.setMinimumSize(new Dimension(300, 200));
+		mframe.setType(Type.UTILITY);
+		mframe.getContentPane().setMinimumSize(new Dimension(280, 180));
 		mframe.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosed(WindowEvent e) {
@@ -173,7 +193,7 @@ public class XShell {
 					File selFile = fc.getSelectedFile();
 					String data = readFrom( selFile );
 					if( data != null )
-						mCommandTextArea.setText(data);
+						mScriptTextArea.setText(data);
 				}
 				
 				
@@ -192,7 +212,7 @@ public class XShell {
 				fc.showSaveDialog(mframe);
 				if( fc.showSaveDialog(mframe) == JFileChooser.APPROVE_OPTION ){
 					File selFile = fc.getSelectedFile();
-					saveTo( mCommandTextArea.getText() , selFile );
+					saveTo( mScriptTextArea.getText() , selFile );
 					
 				}
 				
@@ -208,7 +228,7 @@ public class XShell {
 				// Show open dialog; this method does not return until the dialog is closed
 				if( fc.showSaveDialog(mframe) == JFileChooser.APPROVE_OPTION ){
 					File selFile = fc.getSelectedFile();
-					saveTo( mResultTextArea.getText() , selFile );
+					saveTo( mResultArea.getAsText() , selFile );
 					
 				}
 
@@ -241,7 +261,7 @@ public class XShell {
 		JButton btnRun = new JButton("Run");
 		btnRun.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				mShell.putCommand(mCommandTextArea.getText());
+				mShell.putCommand(mScriptTextArea.getText());
 			}
 
 			
@@ -254,47 +274,109 @@ public class XShell {
 		mframe.getContentPane().setLayout(new BoxLayout(mframe.getContentPane(), BoxLayout.X_AXIS));
 		
 		JSplitPane splitPane = new JSplitPane();
+		splitPane.setMinimumSize(new Dimension(250, 150));
+		splitPane.setPreferredSize(new Dimension(280, 180));
+		splitPane.setAlignmentY(Component.CENTER_ALIGNMENT);
+		splitPane.setAlignmentX(Component.CENTER_ALIGNMENT);
 		splitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
 		mframe.getContentPane().add(splitPane);
 		
-		mResultTextArea = new JTextArea();
-		mResultTextArea.setRows(10);
-		
-		
-		mShell = new ShellThread( null ,  mResultTextArea , btnRun , btnStop);
-		
-		mCommandTextArea = new JTextArea();
-		
-		
-        JScrollPane scrollCommand = new JScrollPane(mCommandTextArea,
+	     mScriptTextArea = new JTextArea();
+	     mScriptTextArea.setPreferredSize(new Dimension(100, 22));
+        JScrollPane scrollCommand = new JScrollPane(mScriptTextArea,
                 JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
                 JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        JScrollPane scrollResult = new JScrollPane(mResultTextArea,
-                JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
-                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        scrollCommand.setPreferredSize(new Dimension(200, 100));
+        scrollCommand.setMinimumSize(new Dimension(200, 50));
+        scrollCommand.setAlignmentY(Component.TOP_ALIGNMENT);
+		
+        JPanel resultPanel = new JPanel( );
+        resultPanel.setMinimumSize(new Dimension(200, 100));
+        resultPanel.setBorder(null);
+        resultPanel.setPreferredSize(new Dimension(300, 100));
+		GridBagLayout gbl_resultPanel = new GridBagLayout();
+		gbl_resultPanel.rowHeights = new int[]{323, 0};
+		gbl_resultPanel.columnWeights = new double[]{1.0};
+		gbl_resultPanel.rowWeights = new double[]{1.0, 0.0};
+		resultPanel.setLayout(gbl_resultPanel);
+		
+		mResultArea = getResultArea();
+		JTextComponent textPane = mResultArea.getTextComponent();
 		
 		
-		splitPane.setRightComponent(scrollResult);
-		splitPane.setLeftComponent(scrollCommand);
-		mCommandTextArea.setRows(10);
-		splitPane.setDividerLocation(0.5);
+		
+		//textPane.setPreferredSize(new Dimension(4, 100));
+		JPanel textOuterPanel = new JPanel( new BorderLayout());
+		textOuterPanel.add(textPane);
+		
+	
+		
+		
+        JScrollPane scrollResult = new JScrollPane(textOuterPanel,
+		ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
+		ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        
+        textPane.setEditable(false);
+        
+        new TextComponentPopupMenu( textPane );
+        GridBagConstraints gbc_scrollResult = new GridBagConstraints();
+        gbc_scrollResult.fill = GridBagConstraints.BOTH;
+        gbc_scrollResult.gridx = 0;
+        gbc_scrollResult.gridy = 0;
+        resultPanel.add(scrollResult, gbc_scrollResult);
+		
 
+	
 		
-		mResultTextArea.setEditable(false);
 		
-		new TextAreaPopupMenu( mResultTextArea );
-		new TextAreaPopupMenu( mCommandTextArea );
+
+        mScriptTextArea.setRows(5);
+        
+    	
+		splitPane.setLeftComponent(scrollCommand);
+		splitPane.setRightComponent(resultPanel);
+		
+		
+
+		mCommandInputField = new JTextField();
+		mCommandInputField.setAlignmentY(Component.BOTTOM_ALIGNMENT);
+		mCommandInputField.setMargin(new Insets(0, 0, 0, 0));
+		mCommandInputField.setHorizontalAlignment(SwingConstants.LEFT);
+		GridBagConstraints gbc_CommandText = new GridBagConstraints();
+		gbc_CommandText.ipady = 2;
+		gbc_CommandText.ipadx = 2;
+		gbc_CommandText.insets = new Insets(2, 2, 2, 2);
+		gbc_CommandText.fill = GridBagConstraints.HORIZONTAL;
+		gbc_CommandText.anchor = GridBagConstraints.SOUTH;
+		gbc_CommandText.gridx = 0;
+		gbc_CommandText.gridy = 1;
+		resultPanel.add(mCommandInputField, gbc_CommandText);
+		mCommandInputField.setColumns(50);
+		splitPane.setDividerLocation(0.5);
+		
+		
+        new TextComponentPopupMenu( mScriptTextArea );
 		
 
 		mLogWindow = new LogFrame();
 		
 		if( command != null  )
-			mCommandTextArea.setText( command + " "  + Util.stringJoin( Util.toStringList(args)," ") );
+			mScriptTextArea.setText( command + " "  + Util.stringJoin( Util.toStringList(args)," ") );
 
+		
+		mShell = new ShellThread( null ,  mResultArea , mCommandInputField  ,  btnRun , btnStop , mSerializeOpts );
+		
 		mShell.start();
 		
 	}
 
+
+	private TextResultPane getResultArea() {
+	
+		return new TextResultPane();
+		
+		
+	}
 
 	protected void saveTo(String text, File selFile) {
 		try {

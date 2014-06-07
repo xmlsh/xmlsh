@@ -547,15 +547,21 @@ public class Shell {
 	public String getInputTextEncoding() {
 		return getSerializeOpts().getInputTextEncoding();
 	}
-
+	
 	public		int		interactive() throws Exception
+	{
+		return interactive(null);
+	}
+
+	public		int		interactive(InputStream input) throws Exception
+
 	{
 		mIsInteractive = true ;
 		int		ret = 0;
 		
 		
 		
-		setCommandInput();
+		setCommandInput(input);
 		
 		
 		// ShellParser parser= new ShellParser(mCommandInput,Shell.getEncoding());
@@ -683,40 +689,41 @@ public class Shell {
 	 */
 	
 	
-	private void setCommandInput() {
-		mCommandInput = null ;
-		try {
-			/*
-			 * import jline.ConsoleReader;
-			 * import jline.ConsoleReaderInputStream;
-			 */
-			Class<?> consoleReaderClass = Class.forName("jline.ConsoleReader");
-
-			if(consoleReaderClass != null  ){
-				Class<?> consoleInputClass = Class.forName("jline.ConsoleReaderInputStream");
-				if( consoleInputClass != null ){
-					// ConsoleReader jline = new ConsoleReader(); 
-					Object jline =  consoleReaderClass.newInstance();
-					
-					Constructor<?> constructor = consoleInputClass.getConstructor( consoleReaderClass );
-					// mCommandInput = new ConsoleReaderInputStream(jline);
-
-					if( constructor != null ){
-						mCommandInput = (InputStream) constructor.newInstance(jline);
-						// System.err.println("using jline");
+	private void setCommandInput(InputStream in) {
+		mCommandInput = in;
+		if( mCommandInput == null  ){
+			try {
+				/*
+				 * import jline.ConsoleReader;
+				 * import jline.ConsoleReaderInputStream;
+				 */
+				Class<?> consoleReaderClass = Class.forName("jline.ConsoleReader");
+	
+				if(consoleReaderClass != null  ){
+					Class<?> consoleInputClass = Class.forName("jline.ConsoleReaderInputStream");
+					if( consoleInputClass != null ){
+						// ConsoleReader jline = new ConsoleReader(); 
+						Object jline =  consoleReaderClass.newInstance();
+						
+						Constructor<?> constructor = consoleInputClass.getConstructor( consoleReaderClass );
+						// mCommandInput = new ConsoleReaderInputStream(jline);
+	
+						if( constructor != null ){
+							mCommandInput = (InputStream) constructor.newInstance(jline);
+							// System.err.println("using jline");
+						}
+						
 					}
-					
 				}
+					
+					
+			} catch (Exception e1) {
+				mLogger.info("Exception loading jline");
+				
 			}
-				
-				
-		} catch (Exception e1) {
-			mLogger.info("Exception loading jline");
-			
+			if( mCommandInput == null )
+				mCommandInput = System.in;
 		}
-		if( mCommandInput == null )
-			mCommandInput = System.in;
-
 	
 	}
 	

@@ -10,18 +10,20 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import javax.swing.JTextArea;
+import javax.swing.JComponent;
 import javax.swing.SwingUtilities;
+import javax.swing.text.JTextComponent;
 
-public class TextAreaOutputStream extends OutputStream {
+public class TextComponentOutputStream extends OutputStream {
 
-	JTextArea	mTextArea;
+	IOutputText	mOutputText;
 	ByteArrayOutputStream mBytes = new ByteArrayOutputStream();
 	
+
 	
-	public TextAreaOutputStream(JTextArea textArea) {
+	public TextComponentOutputStream(IOutputText text) {
 		super();
-		mTextArea = textArea;
+		mOutputText = text;
 	}
 
 
@@ -29,12 +31,14 @@ public class TextAreaOutputStream extends OutputStream {
 	public void write(int b) throws IOException {
 		mBytes.write(b);
 		
-		
 	}
 
 
 	/* (non-Javadoc)
 	 * @see java.io.OutputStream#flush()
+	 */
+	/**
+	 * @wbp.parser.entryPoint
 	 */
 	@Override
 	public void flush() throws IOException {
@@ -46,7 +50,7 @@ public class TextAreaOutputStream extends OutputStream {
 				      // Here, we can safely update the GUI
 				      // because we'll be called from the
 				      // event dispatch thread
-				      mTextArea.append(s);
+				      mOutputText.addText(s);
 				      
 				    }
 				  });
@@ -59,6 +63,9 @@ public class TextAreaOutputStream extends OutputStream {
 	/* (non-Javadoc)
 	 * @see java.io.OutputStream#close()
 	 */
+	/**
+	 * @wbp.parser.entryPoint
+	 */
 	@Override
 	public void close() throws IOException {
 		flush();
@@ -68,6 +75,9 @@ public class TextAreaOutputStream extends OutputStream {
 
 	/* (non-Javadoc)
 	 * @see java.io.OutputStream#write(byte[])
+	 */
+	/**
+	 * @wbp.parser.entryPoint
 	 */
 	@Override
 	public void write(byte[] b) throws IOException {

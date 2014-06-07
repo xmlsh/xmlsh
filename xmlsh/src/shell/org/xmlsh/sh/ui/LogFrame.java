@@ -10,11 +10,11 @@ import java.awt.BorderLayout;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.border.EmptyBorder;
 
 import org.apache.log4j.LogManager;
-import javax.swing.JScrollPane;
 
 @SuppressWarnings("serial")
 public class LogFrame extends JFrame {
@@ -35,9 +35,9 @@ public class LogFrame extends JFrame {
 		this.setDefaultCloseOperation(HIDE_ON_CLOSE);
 		
 		
-		JTextArea textArea = new JTextArea();
+		final TextOutputArea textArea = new TextOutputArea();
 		textArea.setEditable(false);
-		new TextAreaPopupMenu( textArea );
+		new TextComponentPopupMenu( textArea );
 		
 		
 		JScrollPane scrollPane = new JScrollPane(textArea,
@@ -46,7 +46,7 @@ public class LogFrame extends JFrame {
 		mcontentPane.add(scrollPane, BorderLayout.CENTER);
 		
 		
-		LogManager.getRootLogger().addAppender( new ShellAppender( new TextAreaOutputStream( textArea )));
+		LogManager.getRootLogger().addAppender( new ShellAppender( new TextComponentOutputStream( textArea )));
 		
 	}
 
