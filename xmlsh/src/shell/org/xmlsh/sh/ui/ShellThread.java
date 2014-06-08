@@ -12,8 +12,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -24,10 +22,9 @@ import java.util.concurrent.BlockingQueue;
 import javax.swing.JButton;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.Document;
-import javax.swing.text.JTextComponent;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.StreamInputPort;
 import org.xmlsh.core.ThrowException;
@@ -48,16 +45,19 @@ public class ShellThread extends Thread {
 
 	private BlockingQueue<String> mCommandQueue = new ArrayBlockingQueue<String>(2, true);
 	private OutputStream mResultOutputStream;
+	private OutputStream mResultErrorStream;
+
 
 	private List<XValue> mArgs;
 	private JTextField mCommandField;
 	private TextFieldStreamPipe cmdPipe ;
 	private SerializeOpts mSerializeOpts;
+	private static Logger mLogger = LogManager.getLogger(ShellThread.class);
 	
 	
 
 	private void print(String s) throws UnsupportedEncodingException, IOException {
-		mResultOutputStream.write(s.getBytes("UTF8"));
+		mResultErrorStream.write(s.getBytes("UTF8"));
 	}
 	
 
@@ -114,7 +114,8 @@ public class ShellThread extends Thread {
 		
 		
 		
-		mResultOutputStream = new TextComponentOutputStream(mResultTextArea);
+		mResultOutputStream = new TextComponentOutputStream(mResultTextArea, this.mSerializeOpts , "stdout");
+		mResultErrorStream = new TextComponentOutputStream(mResultTextArea, this.mSerializeOpts , "stderr");
 		mStopButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if( cmdPipe != null )
@@ -153,7 +154,7 @@ public class ShellThread extends Thread {
 					mShell.getSerializeOpts().setOutputTextEncoding("UTF-8");
 
 					mShell.getEnv().setStdout(mResultOutputStream);
-					mShell.getEnv().setStderr(mResultOutputStream);
+					mShell.getEnv().setStderr(mResultErrorStream);
 					
 					inp.addRef(); // hold onto it 
 
@@ -165,13 +166,17 @@ public class ShellThread extends Thread {
 					InputStream sin = new ByteArrayInputStream( sCmd.getBytes("UTF8"));
 					mShell.runScript(sin , "xmlshui", true );
 					mResultOutputStream.flush();
+					mResultErrorStream.flush();
 					setRunning(false);
 
 				} catch (ThrowException e) {
+					mLogger.info("Throw running shell commands",e);
+
 					print("Ignoring thrown value: " + e.getMessage());
 
 				} catch (Exception e) {
 
+					mLogger .warn("Exception running shell commands",e);
 					SourceLocation loc = c != null ? c.getLocation() : null;
 
 					if (loc != null) {
@@ -183,6 +188,8 @@ public class ShellThread extends Thread {
 					print(e.getMessage());
 
 				} catch (Error e) {
+					mLogger.info("Error running shell commands",e);
+
 					print("Error: " + e.getMessage());
 					SourceLocation loc = c != null ? c.getLocation() : null;
 
@@ -207,7 +214,8 @@ public class ShellThread extends Thread {
 		
 		} 
 		catch( Exception e ) {
-			
+			mLogger .warn("Exception running shell commands",e);
+
 		}finally {
 			if( mShell != null )
 				mShell.close();
@@ -220,23 +228,26 @@ public class ShellThread extends Thread {
 	}
 
 	private synchronized void printError(Exception e) {
-		e.printStackTrace(new PrintStream(mResultOutputStream));
 		try {
-			mResultOutputStream.flush();
+			mResultErrorStream.flush();
 		} catch (IOException e1) {
-			;
+			mLogger .warn("Exception running shell commands",e);
+
 		}
 	}
 
 	/**
 	 * @return the blockingQueue
 	 * @throws InterruptedException
+	 * 
+	 * Called by the AWT event thread
 	 */
 
 	boolean putCommand(String command) {
 		try {
 			mCommandQueue.put(command);
 		} catch (InterruptedException e) {
+			mLogger .warn("Exception running shell commands",e);
 			printError(e);
 			return false;
 		}

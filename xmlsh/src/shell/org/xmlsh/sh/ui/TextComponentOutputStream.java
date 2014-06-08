@@ -10,19 +10,26 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import javax.swing.JComponent;
 import javax.swing.SwingUtilities;
-import javax.swing.text.JTextComponent;
+
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.xmlsh.sh.shell.SerializeOpts;
 
 public class TextComponentOutputStream extends OutputStream {
+	private static Logger mLogger = LogManager.getLogger(TextComponentOutputStream.class);
 
-	IOutputText	mOutputText;
+	ITextAreaComponent	mOutputText;
 	ByteArrayOutputStream mBytes = new ByteArrayOutputStream();
+	private String port;
+	private SerializeOpts mSerializeOpts;
 	
 
 	
-	public TextComponentOutputStream(IOutputText text) {
+	public TextComponentOutputStream(ITextAreaComponent text, SerializeOpts serializeOpts, String port) {
 		super();
+		this.port = port;
+		this.mSerializeOpts = serializeOpts;
 		mOutputText = text;
 	}
 
@@ -43,14 +50,14 @@ public class TextComponentOutputStream extends OutputStream {
 	@Override
 	public void flush() throws IOException {
 		if( mBytes.size() >0){
-			 final String s = mBytes.toString("UTF8");
+			 final String s = mBytes.toString(mSerializeOpts.getOutput_text_encoding());
 			 mBytes.reset();
 			 SwingUtilities.invokeLater(new Runnable() {
 				    public void run() {
 				      // Here, we can safely update the GUI
 				      // because we'll be called from the
 				      // event dispatch thread
-				      mOutputText.addText(s);
+				      mOutputText.addText(s,port);
 				      
 				    }
 				  });

@@ -11,7 +11,6 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
-import java.io.UnsupportedEncodingException;
 
 import javax.swing.JTextField;
 
@@ -29,7 +28,7 @@ public class TextFieldStreamPipe {
 	private PipedOutputStream mOut;
 	private PipedInputStream mIn;
 
-	private static Logger mLogger  = LogManager.getLogger(XShell.class);
+	private static Logger mLogger  = LogManager.getLogger(TextFieldStreamPipe.class);
 	
 	/**
 	 * @wbp.parser.entryPoint

@@ -7,12 +7,15 @@
 package org.xmlsh.sh.ui;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.EventQueue;
+import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.Point;
 import java.awt.Window.Type;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -24,43 +27,50 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.List;
 
+import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JSplitPane;
-import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import javax.swing.JTextPane;
 import javax.swing.JToolBar;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.text.JTextComponent;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import org.xmlsh.core.Options;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.SerializeOpts;
+import org.xmlsh.sh.ui.TextResultPane.OutputType;
 import org.xmlsh.util.Util;
-
-import javax.swing.ScrollPaneConstants;
 
 public class XShell {
 
 	private JFrame mframe;
-	private JTextArea mScriptTextArea;
+	private TextAreaComponent mScriptTextArea;
 	private ShellThread mShell = null;
 	private TextResultPane mResultArea ;
 	private File mCurdir;
 	private LogFrame mLogWindow = null;
 	private JTextField mCommandInputField;
 	private SerializeOpts mSerializeOpts ;
+	private final ButtonGroup buttonGroup = new ButtonGroup();
+	private static Logger mLogger = LogManager.getLogger(XShell.class);
 
 	/**
 	 * Launch the application.
@@ -94,7 +104,7 @@ public class XShell {
 	            UIManager.getSystemLookAndFeelClassName());
 	    } 
 	    catch (Exception e) {
-	       // handle exception
+	       mLogger.warn(e);
 	    }
 
 		 
@@ -105,7 +115,7 @@ public class XShell {
 					window.mframe.setVisible(true);
 					window.mScriptTextArea.requestFocusInWindow();
 				} catch (Exception e) {
-					e.printStackTrace();
+				       mLogger.warn(e);
 				}
 			}
 		});
@@ -163,6 +173,8 @@ public class XShell {
 		mframe.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		
 		JMenuBar menuBar = new JMenuBar();
+		menuBar.setMargin(new Insets(0, 20, 0, 20));
+		menuBar.setAlignmentY(Component.CENTER_ALIGNMENT);
 		mframe.setJMenuBar(menuBar);
 		
 		JMenu mnFile = new JMenu("File");
@@ -255,6 +267,9 @@ public class XShell {
 		});
 		mnView.add(mntmLogWindow);
 		
+		Component horizontalStrut_3 = Box.createHorizontalStrut(20);
+		menuBar.add(horizontalStrut_3);
+		
 		JToolBar toolBar = new JToolBar();
 		menuBar.add(toolBar);
 		
@@ -267,10 +282,6 @@ public class XShell {
 			
 		});
 		toolBar.add(btnRun);
-		
-		JButton btnStop = new JButton("Stop");
-		btnStop.setEnabled(false);
-		toolBar.add(btnStop);
 		mframe.getContentPane().setLayout(new BoxLayout(mframe.getContentPane(), BoxLayout.X_AXIS));
 		
 		JSplitPane splitPane = new JSplitPane();
@@ -281,7 +292,7 @@ public class XShell {
 		splitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
 		mframe.getContentPane().add(splitPane);
 		
-	     mScriptTextArea = new JTextArea();
+	     mScriptTextArea = new TextAreaComponent();
 	     mScriptTextArea.setPreferredSize(new Dimension(100, 22));
         JScrollPane scrollCommand = new JScrollPane(mScriptTextArea,
                 JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
@@ -300,7 +311,7 @@ public class XShell {
 		gbl_resultPanel.rowWeights = new double[]{1.0, 0.0};
 		resultPanel.setLayout(gbl_resultPanel);
 		
-		mResultArea = getResultArea();
+		mResultArea = new TextResultPane(OutputType.PLAIN_TEXT);
 		JTextComponent textPane = mResultArea.getTextComponent();
 		
 		
@@ -318,7 +329,7 @@ public class XShell {
         
         textPane.setEditable(false);
         
-        new TextComponentPopupMenu( textPane );
+        new TextComponentPopupMenu( mResultArea );
         GridBagConstraints gbc_scrollResult = new GridBagConstraints();
         gbc_scrollResult.fill = GridBagConstraints.BOTH;
         gbc_scrollResult.gridx = 0;
@@ -358,25 +369,73 @@ public class XShell {
         new TextComponentPopupMenu( mScriptTextArea );
 		
 
-		mLogWindow = new LogFrame();
+		mLogWindow = new LogFrame(mSerializeOpts);
 		
 		if( command != null  )
 			mScriptTextArea.setText( command + " "  + Util.stringJoin( Util.toStringList(args)," ") );
-
 		
-		mShell = new ShellThread( null ,  mResultArea , mCommandInputField  ,  btnRun , btnStop , mSerializeOpts );
+		JButton btnStop = new JButton("Stop");
+		btnStop.setEnabled(false);
+		toolBar.add(btnStop);
+		
+				
+				mShell = new ShellThread( null ,  mResultArea , mCommandInputField  ,  btnRun , btnStop , mSerializeOpts );
+		
+		Component horizontalStrut = Box.createHorizontalStrut(20);
+		toolBar.add(horizontalStrut);
+		
+		JToolBar toolBar_format = new JToolBar();
+		toolBar_format.setAlignmentY(Component.CENTER_ALIGNMENT);
+		toolBar_format.setAlignmentX(Component.RIGHT_ALIGNMENT);
+		toolBar_format.setSize(new Dimension(199, 0));
+		toolBar_format.setLocation(new Point(100, 0));
+		menuBar.add(toolBar_format);
+		
+		Component horizontalStrut_2 = Box.createHorizontalStrut(20);
+		toolBar_format.add(horizontalStrut_2);
+		
+		JLabel lblNewLabel = new JLabel("Output Format");
+		lblNewLabel.setHorizontalTextPosition(SwingConstants.LEADING);
+		lblNewLabel.setFont(new Font("Tahoma", Font.BOLD, 11));
+		lblNewLabel.setForeground(Color.BLUE);
+		toolBar_format.add(lblNewLabel);
+		
+		Component horizontalStrut_1 = Box.createHorizontalStrut(20);
+		toolBar_format.add(horizontalStrut_1);
+		
+		JRadioButton textRadioButton = new JRadioButton("Text");
+		
+		
+		textRadioButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				mResultArea.setOutputFormat( 
+				((JRadioButton)e.getSource()).isSelected() ?  OutputType.PLAIN_TEXT : OutputType.HTML);
+			}
+		});
+		buttonGroup.add(textRadioButton);
+		textRadioButton.setHorizontalAlignment(SwingConstants.CENTER);
+		textRadioButton.setSelected(true);
+		lblNewLabel.setLabelFor(textRadioButton);
+		toolBar_format.add(textRadioButton);
+		
+		JRadioButton htmlRadioButton = new JRadioButton("Html");
+		htmlRadioButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				mResultArea.setOutputFormat( 
+						!((JRadioButton)e.getSource()).isSelected()  ? OutputType.PLAIN_TEXT : OutputType.HTML );
+			}
+		});
+		buttonGroup.add(htmlRadioButton);
+		htmlRadioButton.setHorizontalAlignment(SwingConstants.CENTER);
+		toolBar_format.add(htmlRadioButton);
+		
+		Component horizontalStrut_4 = Box.createHorizontalStrut(20);
+		toolBar_format.add(horizontalStrut_4);
 		
 		mShell.start();
 		
 	}
 
-
-	private TextResultPane getResultArea() {
-	
-		return new TextResultPane();
-		
-		
-	}
 
 	protected void saveTo(String text, File selFile) {
 		try {
@@ -397,6 +456,7 @@ public class XShell {
 		try {
 			return Util.readString(selFile, "utf8");
 		} catch (IOException e) {
+			mLogger.warn(e);
 			JOptionPane.showMessageDialog(mframe,
 					"Error reading from file: " + e.getLocalizedMessage());
 

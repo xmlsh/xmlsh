@@ -11,20 +11,22 @@ import java.awt.BorderLayout;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
 import javax.swing.border.EmptyBorder;
 
 import org.apache.log4j.LogManager;
+import org.xmlsh.sh.shell.SerializeOpts;
 
 @SuppressWarnings("serial")
 public class LogFrame extends JFrame {
 
 	private JPanel mcontentPane;
+	private SerializeOpts mSerializeOps;
 
 	/**
 	 * Create the frame.
 	 */
-	public LogFrame() {
+	public LogFrame(SerializeOpts ops ) {
+		mSerializeOps = ops;
 		setTitle("xmlsh Log Window");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
@@ -35,7 +37,7 @@ public class LogFrame extends JFrame {
 		this.setDefaultCloseOperation(HIDE_ON_CLOSE);
 		
 		
-		final TextOutputArea textArea = new TextOutputArea();
+		final TextAreaComponent textArea = new TextAreaComponent();
 		textArea.setEditable(false);
 		new TextComponentPopupMenu( textArea );
 		
@@ -46,7 +48,7 @@ public class LogFrame extends JFrame {
 		mcontentPane.add(scrollPane, BorderLayout.CENTER);
 		
 		
-		LogManager.getRootLogger().addAppender( new ShellAppender( new TextComponentOutputStream( textArea )));
+		LogManager.getRootLogger().addAppender( new ShellAppender( new TextComponentOutputStream( textArea , mSerializeOps , "log")));
 		
 	}
 

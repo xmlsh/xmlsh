@@ -6,24 +6,26 @@
 
 package org.xmlsh.sh.ui;
 
-import javax.swing.JTextArea;
+import javax.swing.text.JTextComponent;
 
-public class TextOutputArea extends JTextArea implements IOutputText {
+public interface ITextAreaComponent {
 
-	public TextOutputArea() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
+	public abstract void addText(String text, String port);
 
-	@Override
-	public void addText(String text) {
-		super.append(text);
-		
-	}
+	public abstract void selectAll();
+
+	public abstract void copy();
+
+	public abstract boolean isEditable();
+
+	public abstract void cut();
+
+	public abstract void paste();
+	public JTextComponent getTextComponent();
+
+	public abstract void clear();
 
 }
-
-
 
 /*
  * Copyright (C) 2008-2012 David A. Lee.
@@ -38,7 +40,7 @@ public class TextOutputArea extends JTextArea implements IOutputText {
  *
  * The Original Code is: all this file.
  *
- * The Initial Developer of the Original Code is David A. Lee
+ * The Initial Developer of the Original Csode is David A. Lee
  *
  * Portions created by (your name) are Copyright (C) (your legal entity). All Rights Reserved.
  *

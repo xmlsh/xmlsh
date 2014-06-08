@@ -1,5 +1,5 @@
 CLASSPATH=$XMLSH/bin/xmlsh-1.2.jar
-CLASSPATH=$CLASSPATH:$XMLSH/lib/log4j-1.2.7.jar
+CLASSPATH=$CLASSPATH:$XMLSH/lib/log4j-1.2.17.jar
 # Pick which saxon you want
 CLASSPATH=$CLASSPATH:$XMLSH/lib/saxon9he.jar
 #CLASSPATH=$CLASSPATH:$XMLSH/lib/saxon9ee.jar

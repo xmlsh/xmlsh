@@ -6,11 +6,37 @@
 
 package org.xmlsh.sh.ui;
 
-public interface IOutputText {
+import javax.swing.JTextArea;
+import javax.swing.text.JTextComponent;
 
-	public abstract void addText(String text);
+@SuppressWarnings("serial")
+public class TextAreaComponent extends JTextArea implements ITextAreaComponent {
+
+	public TextAreaComponent() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+	@Override
+	public void addText(String text, String port ) {
+		super.append(text);
+		
+	}
+
+	@Override
+	public JTextComponent getTextComponent() {
+		return this;
+	}
+
+	@Override
+	public void clear() {
+		 setText("");
+		
+	}
 
 }
+
+
 
 /*
  * Copyright (C) 2008-2012 David A. Lee.

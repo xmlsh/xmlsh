@@ -9,11 +9,10 @@ package org.xmlsh.sh.ui;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JSeparator;
-import javax.swing.text.JTextComponent;
  
 public class TextComponentPopupMenu {
  
-    TextComponentPopupMenu(final JTextComponent textArea) {
+    TextComponentPopupMenu(final ITextAreaComponent textArea) {
 
  
         final JPopupMenu popup = new JPopupMenu();
@@ -76,12 +75,12 @@ public class TextComponentPopupMenu {
         menuItem.addActionListener(new java.awt.event.ActionListener() {
  
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-            	textArea.setText("");
+            	textArea.clear();
             }
         });
         popup.add(menuItem);
         
-        textArea.setComponentPopupMenu(popup);
+        textArea.getTextComponent().setComponentPopupMenu(popup);
  
  
     }
