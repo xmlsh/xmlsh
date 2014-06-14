@@ -10,7 +10,6 @@ import java.awt.Color;
 import java.awt.Dimension;
 
 import javax.swing.JTextPane;
-import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.Element;
 import javax.swing.text.JTextComponent;
 import javax.swing.text.SimpleAttributeSet;
@@ -18,10 +17,12 @@ import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 import javax.swing.text.html.HTMLDocument;
 
-import com.sun.xml.internal.bind.v2.schemagen.Util;
+
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+
+import org.xmlsh.util.Util;
 
 /**
  * Sample
@@ -137,7 +138,7 @@ public class TextResultPane implements ITextAreaComponent {
 	}
 
 	private SimpleAttributeSet getAttributeSet(String port) {
-		if (Util.equal(port, "stderr"))
+		if (Util.isEqual(port, "stderr"))
 			return mStdErrAttr;
 		else
 			return mStdoutAttr;

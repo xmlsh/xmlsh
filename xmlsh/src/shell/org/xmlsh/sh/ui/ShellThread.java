@@ -54,7 +54,6 @@ public class ShellThread extends Thread {
 	private SerializeOpts mSerializeOpts;
 	private static Logger mLogger = LogManager.getLogger(ShellThread.class);
 	
-	
 
 	private void print(String s) throws UnsupportedEncodingException, IOException {
 		mResultErrorStream.write(s.getBytes("UTF8"));

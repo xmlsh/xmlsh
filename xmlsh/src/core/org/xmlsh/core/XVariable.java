@@ -6,6 +6,9 @@
 
 package org.xmlsh.core;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import java.util.EnumSet;
 
 import javax.xml.stream.XMLStreamException;
@@ -32,6 +35,7 @@ public class XVariable {
 	
 	private static final String sType = "type";
 	private static final String sFlags = "flags";
+	private static Logger mLogger = LogManager.getLogger(XVariable.class);
 
 	public enum XVarFlag {
 		EXPORT , 		// to be exported to child shells
@@ -234,10 +238,8 @@ public class XVariable {
 		
 	}
 	
-	private  XValue	 getTiedValue( Shell shell , XdmItem  item  , XValue arg)
+	private  XValue	 getTiedValue( Shell shell , XdmItem  item  , XValue arg) throws CoreException
 	{
-		
-
 		
 		
 		Shell saved_shell = ShellContext.set(shell);
@@ -259,14 +261,16 @@ public class XVariable {
 			
 			
 		} catch (SaxonApiException e) {
-			shell.printErr("Error expanding xml expression",e);
+			String msg = "Error expanding xml expression: " + arg ;
+			mLogger.warn( msg , e );
+		    throw new CoreException(msg  , e );
+		    
 		}
 		finally {
 			ShellContext.set(saved_shell);
 		
 		}
 
-		return null;
 		
 		
 	}
@@ -275,7 +279,7 @@ public class XVariable {
 	 * Get a variable value with an optional index and tie expression
 	 */
 
-	public XValue getValue(Shell shell, String ind, XValue arg) {
+	public XValue getValue(Shell shell, String ind, XValue arg) throws CoreException {
 	
 		XValue xvalue = getValue();
 		if( xvalue == null )

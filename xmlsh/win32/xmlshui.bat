@@ -9,6 +9,7 @@
 @REM @set CLASSPATH=%CLASSPATH%;%XMLSH%\lib\saxon9ee.jar
 @REM @set CLASSPATH=%CLASSPATH%;%XMLSH%\lib\saxon9pe.jar
 
+
 @set CLASSPATH=%CLASSPATH%;%XMLSH%\lib\xercesimpl.jar
 @set CLASSPATH=%CLASSPATH%;%XMLSH%\lib\woodstox-core-asl-4.0.3.jar
 @set CLASSPATH=%CLASSPATH%;%XMLSH%\lib\stax2-api-3.0.1.jar
@@ -23,10 +24,13 @@
 @set CLASSPATH=%CLASSPATH%;%XMLSH%\lib\commons-codec-1.6.jar
 @set CLASSPATH=%CLASSPATH%;%XMLSH%\lib\commons-logging-1.1.1.jar
 @REM JSON support
-@set CLASSPATH=%CLASSPATH%;%XMLSH%\lib\json-path-0.8.2.jar
-@set CLASSPATH=%CLASSPATH%;%XMLSH%\lib\json-smart-1.1.jar
+@set CLASSPATH=%CLASSPATH%;%XMLSH%\lib\json-path-0.9.0.jar
+@set CLASSPATH=%CLASSPATH%;%XMLSH%\lib\json-smart-1.2.jar
+@set CLASSPATH=%CLASSPATH%;%XMLSH%\lib\slf4j-api-1.7.5.jar
+@set CLASSPATH=%CLASSPATH%;%XMLSH%\lib\slf4j-log4j12-1.7.7.jar
 @set CLASSPATH=%CLASSPATH%;%XMLSH%\lib\commons-io-2.1.jar
 @set CLASSPATH=%CLASSPATH%;%XMLSH%\lib\commons-lang-2.6.jar
+
 
 @REM for tagsoup
 @set CLASSPATH=%CLASSPATH%;%XMLSH%\lib\tagsoup-1.2.jar

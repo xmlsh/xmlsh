@@ -6,6 +6,9 @@
 
 package org.xmlsh.core;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -45,6 +48,8 @@ public class XdmStreamOutputPort extends OutputPort {
 	private		ByteArrayOutputStream 	mByteArrayOutputStream;
 	private		BuildingStreamWriter	mBuilder;
 	private		SerializeOpts 			mSerializeOpts; 	// for converting from ByteArray to string  
+
+	private static Logger  mLogger = LogManager.getLogger(XdmStreamOutputPort.class);
 	
 	
 	
@@ -98,8 +103,12 @@ public class XdmStreamOutputPort extends OutputPort {
 	public void close() throws CoreException {
          flush();
 		
-		mWriter.close();
-		mXdmDestination = null ;
+        if( mWriter == null ) {
+        	mLogger .debug("mWriter null in close()");
+        } else
+		   mWriter.close();
+		
+        mXdmDestination = null ;
 		mByteArrayOutputStream = null ;
 		mBuilder = null ;
 		mWriter = null ;

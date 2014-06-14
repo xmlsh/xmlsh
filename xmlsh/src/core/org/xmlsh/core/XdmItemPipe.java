@@ -21,7 +21,7 @@ public class XdmItemPipe {
 	BlockingQueue<XdmItem>   mQueue ;
 	
 	// Special EOF marker indicating closed pipe
-	private static XdmItem mEOF = new XdmAtomicValue("");
+	private static final XdmItem mEOF = new XdmAtomicValue("");
 	
 
 

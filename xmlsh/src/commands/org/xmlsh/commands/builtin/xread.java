@@ -13,33 +13,49 @@ import org.xmlsh.core.BuiltinCommand;
 import org.xmlsh.core.IXdmItemInputStream;
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.InvalidArgumentException;
+import org.xmlsh.core.Options;
 import org.xmlsh.core.StreamInputPort;
 import org.xmlsh.core.XValue;
+import org.xmlsh.sh.shell.SerializeOpts;
 
 public class xread extends BuiltinCommand {
 
 	/*
-	 *  Read a line of text from stdin and assign to variables
-	 *  
+	 *  Read a XML from stdin and assign to variables
+	 *  if -parse then open as a text 
 	 */
 
 
 	public int run( List<XValue> args ) throws Exception {
 
-		mSerializeOpts = getSerializeOpts();
-		boolean bParse = false ;
-		if( args.size() > 0 && args.get(0).toString().equals("-parse") ){
-			
-		    args.remove(0);
-			bParse = true ;
-		}
+		Options opts = new Options("p=port:,parse",SerializeOpts.getOptionDefs());
+		opts.parse(args);
+
+		args = opts.getRemainingArgs();
+		setSerializeOpts(opts);
+		
+		
+		boolean bParse = opts.hasOpt("parse");
+		String port = opts.getOptString("port", null);
+
+		
+		
 		if( args.size() != 1 )
 			throw new InvalidArgumentException("requires 1 argument");
 		
 		mShell.getEnv().unsetVar(args.get(0).toString());
 
-		InputPort stdin = mShell.getEnv().getStdin();
+		InputPort stdin = null ;
+		
 		XdmItem item = null ;
+		try {
+		if( port != null ) {
+			stdin = mShell.getEnv().getInputPort(port);
+			stdin.addRef();
+		} else
+			stdin = mShell.getEnv().getStdin();
+		
+
 		if( bParse ) {
 			StreamInputPort ip = new StreamInputPort( stdin.asInputStream(mSerializeOpts) , stdin.getSystemId() );
 			
@@ -51,7 +67,11 @@ public class xread extends BuiltinCommand {
 		}
 		if( item != null )
 			mShell.getEnv().setVar(args.get(0).toString(), new XValue(item),false);
-		stdin.release();
+		} finally { 
+			if( stdin != null)
+			 stdin.release();
+		}
+
 
 		return item == null ? 1 : 0 ;
 	}

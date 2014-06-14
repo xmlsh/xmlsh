@@ -34,8 +34,25 @@ add( 3
  )
 
 
+x=concat(  
+  add(1 
+  2)
+add( 3 
+ 4) concat( add(
+ 3 1) concat( foo bar) 
+ )
+ )
 
+echo $x
 
+function l() {
+local _x=concat(  
+  add(1 2)
+add( 3 4) concat( add( 3 1) concat( 
+foo bar) )
+)
+ return $_x
+}
 
-  
+echo l()
   

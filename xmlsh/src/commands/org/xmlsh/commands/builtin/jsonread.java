@@ -1,5 +1,5 @@
 /**
- * $Id: xread.java 698 2012-06-05 23:17:15Z daldei $
+ * $Id: jsonread.java 698 2012-06-05 23:17:15Z daldei $
  * $Date: 2012-06-05 19:17:15 -0400 (Tue, 05 Jun 2012) $
  *
  */

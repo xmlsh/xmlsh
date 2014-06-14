@@ -161,7 +161,6 @@ public class XShell {
 		
 		mframe = new JFrame();
 		mframe.setMinimumSize(new Dimension(300, 200));
-		mframe.setType(Type.UTILITY);
 		mframe.getContentPane().setMinimumSize(new Dimension(280, 180));
 		mframe.addWindowListener(new WindowAdapter() {
 			@Override
@@ -292,15 +291,15 @@ public class XShell {
 		splitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
 		mframe.getContentPane().add(splitPane);
 		
-	     mScriptTextArea = new TextAreaComponent();
-	     mScriptTextArea.setPreferredSize(new Dimension(100, 22));
-        JScrollPane scrollCommand = new JScrollPane(mScriptTextArea,
-                JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
-                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        scrollCommand.setPreferredSize(new Dimension(200, 100));
-        scrollCommand.setMinimumSize(new Dimension(200, 50));
-        scrollCommand.setAlignmentY(Component.TOP_ALIGNMENT);
-		
+		JPanel inputPanel = new JPanel();
+	     GridBagLayout gbl_inputPanel = new GridBagLayout();
+	     gbl_inputPanel.columnWidths = new int[]{645, 0};
+	     gbl_inputPanel.rowHeights = new int[]{100, 0};
+	     gbl_inputPanel.columnWeights = new double[]{1.0, Double.MIN_VALUE};
+	     gbl_inputPanel.rowWeights = new double[]{1.0, Double.MIN_VALUE};
+	     inputPanel.setLayout(gbl_inputPanel);
+        
+        
         JPanel resultPanel = new JPanel( );
         resultPanel.setMinimumSize(new Dimension(200, 100));
         resultPanel.setBorder(null);
@@ -335,16 +334,9 @@ public class XShell {
         gbc_scrollResult.gridx = 0;
         gbc_scrollResult.gridy = 0;
         resultPanel.add(scrollResult, gbc_scrollResult);
-		
-
-	
-		
-		
-
-        mScriptTextArea.setRows(5);
         
     	
-		splitPane.setLeftComponent(scrollCommand);
+		splitPane.setLeftComponent(inputPanel);
 		splitPane.setRightComponent(resultPanel);
 		
 		
@@ -364,8 +356,25 @@ public class XShell {
 		resultPanel.add(mCommandInputField, gbc_CommandText);
 		mCommandInputField.setColumns(50);
 		splitPane.setDividerLocation(0.5);
-		
-		
+        
+	     mScriptTextArea = new TextAreaComponent();
+	     
+	     
+	     
+        JScrollPane scrollCommand = new JScrollPane(mScriptTextArea,
+                JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        scrollCommand.setPreferredSize(new Dimension(200, 100));
+        scrollCommand.setMinimumSize(new Dimension(200, 50));
+        scrollCommand.setAlignmentY(Component.TOP_ALIGNMENT);
+        
+        GridBagConstraints gbc_scrollCommand = new GridBagConstraints();
+        gbc_scrollCommand.fill = GridBagConstraints.BOTH;
+        gbc_scrollCommand.gridx = 0;
+        gbc_scrollCommand.gridy = 0;
+        inputPanel.add( scrollCommand, gbc_scrollCommand);
+        
+        
         new TextComponentPopupMenu( mScriptTextArea );
 		
 
