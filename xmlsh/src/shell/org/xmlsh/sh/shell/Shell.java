@@ -599,7 +599,7 @@ public class Shell {
 		      catch (ThrowException e) {
 		        printErr("Ignoring thrown value: " + e.getMessage());
 		        mLogger.error("Ignoring throw value",e);
-		        parser.ReInit(new ShellParserReader(mCommandInput,getInputTextEncoding()));
+		        parser.ReInit(new ShellParserReader(mCommandInput,getInputTextEncoding()),null);
 		      }
 		      catch (Exception e) {
 		    	
@@ -614,7 +614,7 @@ public class Shell {
 
 		        printErr(e.getMessage());
 		        mLogger.error("Exception parsing statement",e);
-		        parser.ReInit(new ShellParserReader(mCommandInput,getInputTextEncoding()));
+		        parser.ReInit(new ShellParserReader(mCommandInput,getInputTextEncoding()),null);
 		      } catch (Error e) {
 		        printErr("Error: " + e.getMessage());
 		        SourceLocation loc = c != null ? c.getLocation() : null ;
@@ -625,7 +625,7 @@ public class Shell {
 		        	mLogger.info(loc.toString());
 		        	printErr( sLoc );
 		        }
-		        parser.ReInit(new ShellParserReader(mCommandInput,getInputTextEncoding()));
+		        parser.ReInit(new ShellParserReader(mCommandInput,getInputTextEncoding()),null);
 
 		      } 
 		      
