@@ -139,18 +139,16 @@ public abstract class AbstractCommand implements ICommand {
 	{
 		String cmdName = this.getName();
 		SourceLocation sloc = getLocation();
-		if( sloc != null )
-			mShell.printErr(sloc.toString());
 		if( !Util.isBlank(message))
-			mShell.printErr(cmdName + ": " + message);
+			mShell.printErr(cmdName + ": " + message,sloc);
 		else
-			mShell.printErr(cmdName + ":" );
+			mShell.printErr(cmdName + ":", sloc );
 		HelpUsage helpUsage = new HelpUsage( getShell() );
 		try {
 			helpUsage.doUsage(mEnvironment.getStdout(), cmdName);
 		} catch (Exception e) {
 			mLogger.warn("Exception printing usage" , e );
-			mShell.printErr("Usage: <unknown>");
+			mShell.printErr("Usage: <unknown>",sloc);
 		}
 	}
 	public void usage()

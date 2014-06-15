@@ -40,7 +40,6 @@ for d in core builtin internal posix java json xs stax $EXTRA; do
      	echo failed test $test ;
      	failed=<[  $failed + 1 ]>
      	[ "$EXIT" = "1" ] && exit 1 ;
-     	break ;
      else
      	passed=<[ $passed + 1 ]>
      fi

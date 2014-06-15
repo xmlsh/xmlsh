@@ -13,7 +13,9 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.xmlsh.core.BuiltinCommand;
 import org.xmlsh.core.CommandFactory;
+import org.xmlsh.core.FunctionCommand;
 import org.xmlsh.core.ICommand;
+import org.xmlsh.core.IFunction;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.ScriptCommand;
@@ -61,26 +63,44 @@ public class xwhich extends BuiltinCommand {
 		}
 		
 		int bad = 0;
+		
+		final  String sCmd = "command";
+		final	String sName = "name";
+		final 	String sType = "type";
+		final  String sPath = "path";
+		final String sModule = "module";
+		
 
 		for( XValue xname : xvargs ){
 			
 			String name = xname.toString();
 			ICommand command = CommandFactory.getInstance().getCommand(mShell , name , getLocation() );
-			if( command != null ){
-				
-				if( ! bNoWrite ){
 			
+			// Try builtin functions 
+			if( command == null ) {
+			     IFunction func = CommandFactory.getInstance().getBuiltinFunction(mShell, name,  getLocation() );
+			     if( func != null ) {
+						if( ! bNoWrite ){
+							
+							out.writeStartElement(sCmd);
+							out.writeAttribute(sName, name );
+							String type = "builtin-function";
+							out.writeAttribute(sType, type );
+							out.writeEndElement();
+						}
+						continue;
+			     }
+			    	 
+		    }
+			
+			if( command != null ){
+				if( ! bNoWrite ){
 					
-					final  String sCmd = "command";
-					final	String sName = "name";
-					final 	String sType = "type";
-					final  String sPath = "path";
-					final String sModule = "module";
+	
+					
 					
 					out.writeStartElement(sCmd);
 					out.writeAttribute(sName, name);
-					
-				
 					
 					String type = typenames[command.getType().ordinal()];
 					out.writeAttribute(sType, type);
@@ -92,9 +112,12 @@ public class xwhich extends BuiltinCommand {
 					if( command instanceof ScriptCommand ){
 						ScriptCommand sc  = (ScriptCommand) command;
 						out.writeAttribute(sPath, sc.getScriptName());
-						
-						
 					}
+					else
+				    if( command instanceof FunctionCommand ) {
+				    	FunctionCommand fc = (FunctionCommand) command;
+				    	out.writeAttribute(sName, type);
+				    }
 					Module module = command.getModule();
 					if( module != null )
 						out.writeAttribute(sModule, module.getName());

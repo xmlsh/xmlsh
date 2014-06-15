@@ -16,8 +16,11 @@ public class declare extends BuiltinCommand {
 
 	
 	public int run(  List<XValue> args ) throws Exception {
-		if( args.size() < 1 )
+		if( args.size() < 1 ) {
+			usage();
 			return 1;
+	
+		}
 		
 		XValue what = args.remove(0);
 		if( what.toString().equals("namespace"))

@@ -470,18 +470,22 @@ public class Shell {
 		      		break;
 		      
 		    	
-		      	if( mOpts.mVerbose ){
-		      		String s  = c.toString(false);
-		      		if( s.length() > 0){
-		      			SourceLocation loc = c.getLocation();
-		      			if( loc != null ){
+		      	if( mOpts.mVerbose || mOpts.mLocation ){
+		      		
+		      		if( mOpts.mLocation ){
+	      				SourceLocation loc = c.getLocation();
+	      				if( loc != null ) {
 		      				String sLoc = loc.toString();
 		      				mLogger.info(sLoc);
-		      				printErr( "- " + sLoc );
-		      				printErr(s );
-		      			} else 
+	      				}
+	      			} 
 		      		
-		      				printErr( "- " + s );
+		      		if( mOpts.mVerbose ) {
+			      		String s  = c.toString(false);
+			      		
+			      		if( s.length() > 0 ){
+			      				printErr(s );
+			      		}
 		      		}
 		      	}
 		      	
@@ -803,11 +807,10 @@ public class Shell {
 		
 		catch( Exception e )
 		{
-			
 			printLoc( mLogger , loc );
 			
 			printErr("Exception running: " + c.toString(true) );
-			printErr(e.toString());
+			printErr(e.toString(), loc );
 			
 			
 			
@@ -852,8 +855,12 @@ public class Shell {
 		mChildren.add(sht);
 		mLastThreadId = sht.getId();
 	}
-
+	
 	public void printErr(String s) {
+		printErr( s , getLocation());
+	}
+
+	public void printErr(String s , SourceLocation loc ) {
 		PrintWriter out;
 		try {
 			out = new PrintWriter( 
@@ -865,7 +872,13 @@ public class Shell {
 			mLogger.error("Exception printing err:" + s , e );
 			return ;
 		}
-		out.println(s);
+		if( mOpts.mLocation ) {
+			if( loc == null )
+				loc = getLocation() ;
+			if( loc != null )
+				out.println( getLocation().toString());
+		}
+	    out.println(s);
 
 		out.flush();
 		out.close();
@@ -886,9 +899,12 @@ public class Shell {
 		out.println(s);
 		out.flush();
 		out.close();
-		
 	}
-	public void printErr(String s,Exception e) {
+	public void printErr(String s,Exception e  ) {
+       printErr( s , e , null );
+	}
+	
+	public void printErr(String s,Exception e, SourceLocation loc ) {
 		PrintWriter out;
 		try {
 			out = getEnv().getStderr().asPrintWriter(getSerializeOpts());
@@ -896,6 +912,11 @@ public class Shell {
 			mLogger.error("Exception writing output: " + s , e );
 			return ;
 		}
+		if( loc == null )
+			loc = getLocation();
+		if( loc != null )
+			out.println( getLocation().toString());
+		
 		out.println(s);
 		
 
@@ -1349,18 +1370,17 @@ public class Shell {
 	/*
 	 * Declare a module using the prefix=value notation
 	 */
-	public void importModule(String moduledef,  List<XValue> init) throws  CoreException {
+	public Module  importModule(String moduledef,  List<XValue> init) throws  CoreException {
 
-		
-		
-		mModules.declare(this, moduledef,  init );
+		return mModules.declare(this, moduledef,  init );
 		
 	}
 	
-	public void importPackage(String prefix ,String name , String pkg ) throws CoreException {
+	public Module importPackage(String prefix ,String name , String pkg ) throws CoreException {
 		String sHelp = pkg.replace('.', '/') + "/commands.xml";
 		
-		mModules.declare( new Module( prefix , name , pkg ,  sHelp));
+
+		return mModules.declare( new Module( prefix , name , pkg ,  sHelp));
 	}
 
 	public void	importJava( XValue uris ) throws CoreException
@@ -1640,7 +1660,6 @@ public class Shell {
 		if( loc != null ){
 			String sLoc = loc.toString();
 			logger.info( sLoc );
-			printErr(sLoc );
 			
 		}
 	}

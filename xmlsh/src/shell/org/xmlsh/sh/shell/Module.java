@@ -435,6 +435,13 @@ public class Module {
 	{
 		return mHelpURL;
 	}
+
+	/**
+	 * @return the package
+	 */
+	public String getPackage() {
+		return mPackage;
+	}
 	
 	
 	

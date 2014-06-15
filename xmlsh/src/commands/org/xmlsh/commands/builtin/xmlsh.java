@@ -42,7 +42,7 @@ public class xmlsh extends BuiltinCommand {
 	
 	public int run( List<XValue> args ) throws Exception {
 			
-		Options opts = new Options( "x,v,c:,rcfile:,e,norc"  );
+		Options opts = new Options( "x,v,c:,rcfile:,e,norc,+location"  );
 		opts.parse(args);
 		Shell shell = getShell();
 		
@@ -54,13 +54,13 @@ public class xmlsh extends BuiltinCommand {
 		try {
 			if( opts.hasOpt("v") )
 				shell.setOption("v", true);
-	
-			
 	    	if(opts.hasOpt("x"))
 				shell.setOption("x", true);
 	    	
 	    	if( opts.hasOpt("e"))
 	    		shell.setOption("e", true);
+	    	if( opts.hasOpt("location"))
+	    		shell.setOption("location" , opts.getOptFlag("location",true));
 	    	
 	    	String command  = null ;
 	    	if( opts.hasOpt("c"))
@@ -114,11 +114,7 @@ public class xmlsh extends BuiltinCommand {
 			    	String scmd = args.remove(0).toString();
 			    	ICommand cmd = CommandFactory.getInstance().getScript( shell , scmd, true,getLocation() );
 			    	if( cmd == null ){
-			    		SourceLocation loc = getLocation();
-						if( loc != null )
-							shell.printErr(loc.toString());
-						
-			    		shell.printErr( scmd + ": not found");
+			    		shell.printErr( scmd + ": not found",getLocation());
 			    	}
 			    	else {
 			    		

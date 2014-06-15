@@ -16,6 +16,7 @@ public class ShellOpts
 	public boolean mExec	 		= false;		// -x
 	public boolean	 mXPipe	 		= false;		// -xpipe
 	public	boolean	 mThrowOnError 	= false;		// -e
+	public boolean mLocation       = true ;       // print location on error
 
 
 	
@@ -31,7 +32,7 @@ public class ShellOpts
 		mExec=  that.mExec ;
 		mXPipe = that.mXPipe;
 		mThrowOnError = that.mThrowOnError;
-
+		mLocation = that.mLocation ;
 		mSerialize = new SerializeOpts( that.mSerialize );
 		
 		
@@ -44,13 +45,16 @@ public class ShellOpts
 			mExec = on;
 		else
 		if( opt.equals("v"))
-			mVerbose = on;
+			mLocation = mVerbose = on;
 		else
 		if( opt.equals("xpipe"))
 			mXPipe = on;
 		else
 		if( opt.equals("e"))
 			mThrowOnError = on ;
+		else
+		if( opt.equals("location"))
+			mLocation = on ;
 		else
 			mSerialize.setOption( opt , on);
 		

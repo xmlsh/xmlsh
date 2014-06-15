@@ -25,7 +25,7 @@ import org.xmlsh.util.Util;
 @SuppressWarnings("serial")
 public class Modules extends  ArrayList<Module>
 {
-	public void declare(Shell shell, String prefix , String name, List<XValue> init ) throws CoreException
+	public Module declare(Shell shell, String prefix , String name, List<XValue> init ) throws CoreException
 	{
 		/*
 		 * Dont redeclare a module under the same prefix
@@ -33,12 +33,11 @@ public class Modules extends  ArrayList<Module>
 		
 		for( Module m : this )
 			if( Util.isEqual(m.getName(),name) && Util.isEqual(m.getPrefix(),prefix))
-					return ;
+					return m;
 		
 		
 		Module module = new Module(shell, prefix , name , init  );
-		declare(module);
-		
+		return declare(module);
 	}
 	
 	
@@ -51,7 +50,6 @@ public class Modules extends  ArrayList<Module>
 	 */
 	public Module declare(Module module) throws CoreException
 	{
-
 		
 		if( ! Util.isEmpty(module.getPrefix())){
 		// IF module exists by this prefix then redeclare
@@ -59,9 +57,19 @@ public class Modules extends  ArrayList<Module>
 			if( exists != null )
 				remove( exists );
 		}
+		else {
+			// Non prefixed modules dont import the same package
+			Module exists = getModuleByPackage( module.getPackage());
+		    if( exists != null )
+		    	return exists ;
+		}
 		
-		this.add(module);
+		// Dont duplicate exact object
+		if( this.contains(module))
+			return module;
 	
+		this.add(module);
+		
 		return module ;
 	
 	}
@@ -77,6 +85,19 @@ public class Modules extends  ArrayList<Module>
 		return null;
 		
 	}
+	
+	public Module	getModuleByPackage(String pkg)
+	{
+		if( Util.isBlank(pkg))
+			return null ;
+		for( Module m : this )
+			if( Util.isEqual(m.getPackage(),pkg) )
+				return m ;
+		return null;
+		
+	}
+	
+	
 	Modules( Modules that){
 		this.addAll(that);
 	}
@@ -88,9 +109,9 @@ public class Modules extends  ArrayList<Module>
 	 * class
 	 * 
 	 */
-	public void declare(Shell shell, String m, List<XValue> init) throws CoreException {
+	public Module declare(Shell shell, String m, List<XValue> init) throws CoreException {
 		StringPair 	pair = new StringPair(m,'=');
-		declare(shell, pair.getLeft(), pair.getRight() ,  init  );
+		return declare(shell, pair.getLeft(), pair.getRight() ,  init  );
 		
 	}
 	

@@ -26,10 +26,7 @@ public class source extends BuiltinCommand {
 			XValue port = args.get(0);
 			ICommand icmd = CommandFactory.getInstance().getScript(mShell, port.toString() ,true,getLocation());
 			if( icmd == null){
-				SourceLocation loc = getLocation();
-				if( loc != null )
-					mShell.printErr(loc.toString());
-				mShell.printErr( port + ": not found");
+				mShell.printErr( port + ": not found" ,  getLocation()  );
 				return 1;
 			}
 			

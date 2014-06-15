@@ -24,8 +24,10 @@ public class ximport extends BuiltinCommand {
 	private static Logger mLogger = LogManager.getLogger(ximport.class);
 	public int run(  List<XValue> args ) throws Exception {
 		int ret = 0;
-		if( args.size() < 1 )
+		if( args.size() < 1 ) {
+			usage();
 			return 1;
+		}
 		
 		XValue what = args.remove(0);
 
@@ -34,21 +36,34 @@ public class ximport extends BuiltinCommand {
 				return importModule( args );
 			else
 			if( what.toString().equals("package")){
+				if( args.isEmpty() )
+					listModules();
+				else
 				for( XValue arg : args )
-					ret += importPackage(arg.toString(),"");
+					if( ! importPackage(arg.toString(),"") ) {
+						mShell.printErr("package: " + arg.toString() + " not found");
+						ret++;
+					}
 				return ret;
 			}
 			else
 			if( what.toString().equals("commands")){
-				for( XValue arg : args )
-					ret += importPackage(arg.toString(),"org.xmlsh.commands.");
+				if( args.isEmpty() )
+					listModules();
+				else
+				for( XValue arg : args ) {
+					if( !  importPackage(arg.toString(),"org.xmlsh.commands.") ){
+						mShell.printErr("command package: " + arg.toString() + " not found");
+						ret++;
+					}
+				}
 				return ret;
 			}
 			else
 			if( what.toString().equals("java"))
 				return importJava( args );
 			else
-				mShell.printErr("Invalid command: import " + what.toString());
+				usage("Invalid command: import " + what.toString());
 		} 
 
 		catch (InvalidArgumentException e){
@@ -129,13 +144,12 @@ public class ximport extends BuiltinCommand {
 		
 	}
 
-	private int importPackage(String pkg, String pkg_prefix) throws CoreException {
+	private boolean importPackage(String pkg, String pkg_prefix) throws CoreException {
 		
 		String name = null; 
 		String prefix = null;
 		
 		name = pkg ;
-	
 		
 		/* parse package for prefix=package */
 		StringPair 	pair = new StringPair(pkg,'=');
@@ -146,10 +160,7 @@ public class ximport extends BuiltinCommand {
 		
 		
 		
-		mShell.importPackage(prefix , name, pkg_prefix+pkg);
-		
-		
-		return 0;
+		return mShell.importPackage(prefix , name, pkg_prefix+pkg) != null ;
 	}
 
 	
@@ -162,9 +173,9 @@ public class ximport extends BuiltinCommand {
 		for( Module m : modules ){
 			String prefix = m.getPrefix();
 			if( prefix == null )
-				mShell.printOut( m.getName() );
+				mShell.printOut( m.getName()  + " [" + m.getPackage()  +"]");
 			else
-				mShell.printOut( prefix + "=" + m.getName() ); 
+				mShell.printOut( prefix + "=" + m.getName() + " [" + m.getPackage()   +"]"); 
 
 			
 		}
