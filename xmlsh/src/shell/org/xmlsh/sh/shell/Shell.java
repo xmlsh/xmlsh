@@ -34,8 +34,10 @@ import java.util.Stack;
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.XdmEmptySequence;
 import net.sf.saxon.s9api.XdmItem;
+
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+
 import org.xmlsh.core.CommandFactory;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.ExitOnErrorException;
@@ -73,6 +75,22 @@ import org.xmlsh.xpath.ShellContext;
 public class Shell {
 	
 
+	class CallStackEntry {
+		public String name ;
+		public Command cmd ;
+		public SourceLocation loc;
+		public CallStackEntry(String name, Command cmd, SourceLocation loc) {
+ 
+			this.name = name ;
+			this.cmd = cmd;
+			this.loc = loc;
+		}
+		public  SourceLocation makeLocation() {
+			SourceLocation s = new SourceLocation(  name , ( loc == null ? getLocation() : loc ) );
+			return s;
+		}
+	}
+	
 	private static Logger mLogger = LogManager.getLogger(Shell.class);
 	private 	ShellOpts	mOpts;
 	
@@ -98,7 +116,8 @@ public class Shell {
 	private 	boolean mIsInteractive = false ;
 	private		long	mLastThreadId = 0;
 	
-	private		Stack<ControlLoop>  mControlStack = new Stack<ControlLoop>();
+	private		Stack<ControlLoop>  mControlStack = null ;
+	private    Stack<CallStackEntry> mCallStack = null ;
 	 
 	// Depth of conditions used for 'throw on error'
 	private int 	mConditionDepth = 0;
@@ -460,6 +479,7 @@ public class Shell {
 	{
 		
 		InputStream save = mCommandInput;
+		SourceLocation saveLoc = getLocation() ;
 		mCommandInput = stream ;
 		ShellParser parser= new ShellParser(new ShellParserReader(mCommandInput,getInputTextEncoding(),true), source );
 		int ret = 0;
@@ -469,15 +489,12 @@ public class Shell {
 		      	if( c == null )
 		      		break;
 		      
-		    	
+		    	setSourceLocation(c.getLocation());
 		      	if( mOpts.mVerbose || mOpts.mLocation ){
 		      		
 		      		if( mOpts.mLocation ){
-	      				SourceLocation loc = c.getLocation();
-	      				if( loc != null ) {
-		      				String sLoc = loc.toString();
-		      				mLogger.info(sLoc);
-	      				}
+	      				SourceLocation loc = getLocation();
+	      				mLogger.info(loc.toString());
 	      			} 
 		      		
 		      		if( mOpts.mVerbose ) {
@@ -491,9 +508,6 @@ public class Shell {
 		      	
 		      	ret = exec( c );
 			}
-					
-			
-		
 		} 
 		catch( ThrowException e )
 		{
@@ -525,6 +539,7 @@ public class Shell {
 		
 		finally {
 			mCommandInput = save;
+			setCurrentLocation(saveLoc) ;
 		}
 		if( mExitVal != null )
 			ret = mExitVal.intValue();
@@ -579,16 +594,13 @@ public class Shell {
 		      	c = parser.command_line();
 		      	if( c == null )
 		      		break;
+		      	setSourceLocation( c.getLocation());
 		      	
 		      	if( mOpts.mVerbose ){
 		      		String s  = c.toString(false);
 		      		if( s.length() > 0){
-		      			SourceLocation loc  = c.getLocation();
-		      			if( loc != null )	{
-		      				printErr("- " + loc.toString());
-		      				printErr(s);
-		      			} else
-		      				printErr( "- " + s );
+		      			SourceLocation loc  = getLocation();
+		      			printErr( "- " + s );
 		      		}
 		      	}
 		      	
@@ -611,8 +623,8 @@ public class Shell {
 		        SourceLocation loc = c != null ? c.getLocation() : null ;
 		        
 		        if( loc != null ){
-		        	String sLoc = loc.toString();
-		        	mLogger.info(loc.toString());
+		        	String sLoc = loc.format();
+		        	mLogger.info(loc.format());
 		        	printErr( sLoc );
 		        }
 
@@ -624,9 +636,9 @@ public class Shell {
 		        SourceLocation loc = c != null ? c.getLocation() : null ;
 		        mLogger.error("Exception parsing statement",e);
 		        if( loc != null ){
-		        	String sLoc = loc.toString();
+		        	String sLoc = loc.format();
 		        
-		        	mLogger.info(loc.toString());
+		        	mLogger.info(loc.format());
 		        	printErr( sLoc );
 		        }
 		        parser.ReInit(new ShellParserReader(mCommandInput,getInputTextEncoding()),null);
@@ -645,7 +657,7 @@ public class Shell {
 	
 	public void setSourceLocation(SourceLocation loc)
 	{
-		mCurrentLocation = loc ;
+		setCurrentLocation(loc) ;
 	}
 
 
@@ -658,10 +670,11 @@ public class Shell {
 
 				ICommand icmd = CommandFactory.getInstance().getScript(this,   script ,true, null );
 				if( icmd != null ){
-					SourceLocation l = mCurrentLocation ;
-					mCurrentLocation = icmd.getLocation();
+					// push location
+					SourceLocation l = getLocation() ;
+					setCurrentLocation(icmd.getLocation());
 					icmd.run(this, rcfile , null);
-					mCurrentLocation = l;
+					setCurrentLocation(l);
 			
 				}
 	    	}
@@ -742,21 +755,28 @@ public class Shell {
 	 * 
 	 */
 	public int exec(Command c) throws ThrowException, ExitOnErrorException {
-		return exec(c,null);
+		return exec(c, getLocation(c) );
 	}
 	
+	// Default location for command
+	private SourceLocation getLocation(Command c) {
+
+		return c.hasLocation() ? c.getLocation() : getLocation() ;
+	}
+
+
 	public int exec(Command c, SourceLocation loc) throws ThrowException, ExitOnErrorException {
 		if( loc == null )
 			loc = c.getLocation();
 		
-		mCurrentLocation = loc ;
+		setCurrentLocation(loc) ;
 		
 		if( mOpts.mExec){
 			String out = c.toString(true);
 			if( out.length() > 0 ){
 				
 				if( loc != null ) {
-					printErr("+ " + loc.toString());
+					printErr("+ " + loc.format());
 					printErr( out );
 				}
 				
@@ -876,7 +896,7 @@ public class Shell {
 			if( loc == null )
 				loc = getLocation() ;
 			if( loc != null )
-				out.println( getLocation().toString());
+				out.println( getLocation().format());
 		}
 	    out.println(s);
 
@@ -915,7 +935,7 @@ public class Shell {
 		if( loc == null )
 			loc = getLocation();
 		if( loc != null )
-			out.println( getLocation().toString());
+			out.println( getLocation().format());
 		
 		out.println(s);
 		
@@ -1068,8 +1088,8 @@ public class Shell {
 			return false ;
 		
 		// If the top control stack is break then stop
-		if(! mControlStack.empty() ){
-			ControlLoop loop = mControlStack.peek();
+		if(hasControlStack()){
+			ControlLoop loop = getControlStack().peek();
 			if( loop.mBreak || loop.mContinue )
 				return false;
 		}
@@ -1243,10 +1263,13 @@ public class Shell {
 	 */
 	public int doBreak(int levels) 
 	{
-		int end = mControlStack.size() - 1 ;
+		if( ! hasControlStack() )
+			return 0;
+		
+		int end = getControlStack().size() - 1 ;
 		
 		while( levels-- > 0 && end >= 0 )
-			mControlStack.get(end--).mBreak = true ;
+			getControlStack().get(end--).mBreak = true ;
 		
 		return 0;
 			
@@ -1261,24 +1284,27 @@ public class Shell {
 
 	public int doContinue(int levels) 
 	{
-		int end = mControlStack.size() - 1 ;
+		if( ! hasControlStack() )
+			return 0;
+		
+		int end = getControlStack().size() - 1 ;
 		
 		/*
 		 * Break n-1 levels 
 		 */
 		while( levels-- > 1 && end >= 0 )
-			mControlStack.get(end--).mBreak = true ;
+			getControlStack().get(end--).mBreak = true ;
 		
 		// Continue the final level
 		if( end >= 0 )
-			mControlStack.get(end).mContinue = true ;
+			getControlStack().get(end).mContinue = true ;
 		
 		return 0;
 	}
 
 	public ControlLoop pushLoop(SourceLocation sourceLocation) {
 		ControlLoop loop = new ControlLoop(sourceLocation);
-		mControlStack.add( loop );
+		getControlStack().add( loop );
 		return loop;
 	}
 
@@ -1288,7 +1314,7 @@ public class Shell {
 	 */
 	public void popLoop(ControlLoop loop) {
 		
-		while( ! mControlStack.empty() )
+		while( hasControlStack() )
 			if ( mControlStack.pop() == loop )
 				break ;
 	}
@@ -1319,13 +1345,36 @@ public class Shell {
 	 * Execute a command as a function body
 	 * Extracts return values from the function if present
 	 */
-	public int execFunction(Command body) throws Exception {
-		int ret = exec(body);
-		if( mReturnVal != null ){
-			ret = convertReturnValueToExitValue( mReturnVal) ;
-			mReturnVal = null;
+	public int execFunction(String name, Command cmd, SourceLocation location , List<XValue> args ) throws Exception {
+		
+		
+
+		List<XValue> saveArgs = getArgs();
+		String saveArg0 = getArg0();
+		Variables save_vars = pushLocalVars();
+
+		getCallStack().push( new CallStackEntry(name,cmd,location));
+		setArg0(name);
+		setArgs(args);
+		
+		try {
+
+		
+			int ret = 	exec(cmd, location);
+			
+			return ret;
+			
+		
+		} finally {
+			popLocalVars(save_vars);
+			setArg0(saveArg0);
+			setArgs(saveArgs);
+			getCallStack().pop();
+
 		}
-		return ret ;
+		
+		
+		
 	
 	}
 
@@ -1658,7 +1707,7 @@ public class Shell {
 	public void printLoc(Logger logger, SourceLocation loc) {
 
 		if( loc != null ){
-			String sLoc = loc.toString();
+			String sLoc = loc.format();
 			logger.info( sLoc );
 			
 		}
@@ -1707,11 +1756,68 @@ public class Shell {
 		return mCurrentLocation == null ? new SourceLocation() : mCurrentLocation ;
 	}
 
+	public SourceLocation getLocation(int depth) {
+		if( depth < 0 )
+			return getLocation();
+		if( ! hasCallStack() )
+			return null ;
+		
+		if( mCallStack.size()  <= depth )
+			return null ;
+		return mCallStack.get(depth).makeLocation();
+
+	}
 
 	public synchronized Shell getParent()
 	{
 		return mParent;
 	}
+
+
+	private boolean hasControlStack() {
+		return mControlStack != null && ! mControlStack.empty() ;
+	}
+	private Stack<ControlLoop> getControlStack() {
+		if( mControlStack == null )
+			mControlStack = new Stack<ControlLoop>();
+		return mControlStack;
+	}
+
+
+	public boolean hasCallStack() {
+		return mCallStack != null && ! mCallStack.empty() ;
+	}
+
+	public Stack<CallStackEntry> getCallStack() {
+		if( mCallStack == null )
+			mCallStack = new Stack<CallStackEntry>();
+		return mCallStack ;
+	}
+
+
+	public int getReturnValueAsExitValue() {
+
+		int ret = 0;
+		if( mReturnVal != null ){
+			ret = convertReturnValueToExitValue( mReturnVal) ;
+			mReturnVal = null;
+		}
+		return ret ;
+	}
+
+
+
+
+	public void setCurrentLocation(SourceLocation loc) 
+	{
+	
+		if( loc == null && mCurrentLocation != null )
+			printErr("Overwriting location with null:" );
+		else
+		   mCurrentLocation = loc;
+	}
+
+
 
 
 

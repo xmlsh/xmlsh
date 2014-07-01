@@ -10,6 +10,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.xmlsh.core.XVariable.XVarFlag;
 import org.xmlsh.util.NameValueMap;
 
 @SuppressWarnings("serial")
@@ -44,8 +45,10 @@ public class Variables {
 		
 	}
 	public void put(String name, XVariable var, boolean local) {
-		if( local || mLocals.containsKey(name) )
-			mLocals.put(name , var );
+		if( local || mLocals.containsKey(name) ) {
+			var.setFlag( XVarFlag.LOCAL );
+			mLocals.put(name , var  );
+		}
 		else
 			mGlobals.put(name,var);
 		
@@ -54,15 +57,17 @@ public class Variables {
 		Set<String> names = new HashSet<String>(mGlobals.size() + mLocals.size());
 		
 		names.addAll( mGlobals.keySet() );
-		names.addAll( mLocals.keySet());
+		names.addAll( mLocals.keySet() );
 		return names ;
 				
 		
 	}
-	public void remove(String name) 
+	public void unset(String name) throws InvalidArgumentException 
 	{
-		if( mLocals.containsKey(name))
-			mLocals.remove(name);
+		// Unsetting a local just sets its value to null
+		XVariable local = mLocals.get(name);
+		if( local != null )
+			local.unset();
 		else
 			mGlobals.remove(name);
 		

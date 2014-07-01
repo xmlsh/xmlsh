@@ -25,6 +25,7 @@ public class CaseItem {
 	
 	}
 	
+	
 	public void print(PrintWriter out,boolean bExec){
 		mPattern.print(out);
 		out.print(") ");
@@ -48,6 +49,22 @@ public class CaseItem {
 		if( mCommand == null )
 			return 0 ;
 		return shell.exec(mCommand);
+	}
+
+
+	/**
+	 * @return the location
+	 */
+	public SourceLocation getLocation() {
+		return mLocation;
+	}
+
+
+	/**
+	 * @param location the location to set
+	 */
+	public void setLocation(SourceLocation location) {
+		mLocation = location;
 	}
 
 }

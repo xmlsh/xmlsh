@@ -548,7 +548,7 @@ class Expander {
 		} catch (SaxonApiException e) {
 			String msg = "Error expanding xml expression: " + arg ;
 			mLogger.warn( msg , e );
-			mShell.printErr( msg  , e );
+			mShell.printErr( msg  , e , mLocation );
 		    throw new CoreException(msg  , e );
 		}
 		finally {

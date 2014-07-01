@@ -56,11 +56,16 @@ public class TextResultPane implements ITextAreaComponent {
 		StyleConstants.setForeground(mStdoutAttr, Color.BLACK);
 		StyleConstants.setBackground(mStdoutAttr, Color.WHITE);
 		StyleConstants.setBold(mStdoutAttr, false);
+		StyleConstants.setFontFamily(mStdoutAttr, java.awt.Font.MONOSPACED);
 
 		StyleConstants.setForeground(mStdErrAttr, Color.RED);
 		StyleConstants.setBackground(mStdErrAttr, Color.WHITE);
 		StyleConstants.setBold(mStdErrAttr, true);
 		StyleConstants.setItalic(mStdErrAttr, true);
+		StyleConstants.setFontFamily(mStdErrAttr, java.awt.Font.MONOSPACED);
+
+		
+		
 
 	}
 

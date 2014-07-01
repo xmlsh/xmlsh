@@ -70,11 +70,6 @@ public class FunctionCallWord extends Word {
 			throw new InvalidArgumentException("Unknown function: " + mFunction);
 		
 
-		List<XValue> saveArgs = shell.getArgs();
-		String saveArg0 = shell.getArg0();
-
-		Variables save_vars = shell.pushLocalVars();
-
 
 		ArrayList<XValue>	args = new ArrayList<XValue>();
 		
@@ -85,9 +80,8 @@ public class FunctionCallWord extends Word {
 		
 		try {
 			
-			shell.setArg0(mFunction);
-			shell.setArgs(args);
-			int ret =	shell.exec(func.getBody(), loc);
+			int ret =	shell.execFunction(func.getName(), func.getBody(), loc, args);
+			// ?? should check ret ?
 			return shell.getReturnValue(true);
 
 		} catch (Exception e) {
@@ -96,13 +90,7 @@ public class FunctionCallWord extends Word {
 			if( e instanceof IOException )
 				throw (IOException)e;
 			throw new CoreException(e);
-		} finally {
-			shell.popLocalVars(save_vars);
-			
-			shell.setArg0(saveArg0);
-			shell.setArgs(saveArgs);
-		}
-		
+		} 
 		
 		
 	}

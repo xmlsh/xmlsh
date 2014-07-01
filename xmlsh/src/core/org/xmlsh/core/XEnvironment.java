@@ -301,8 +301,8 @@ public class XEnvironment  {
 	}
 
 
-	public void unsetVar(String name ) {
-		mVars.remove( name );
+	public void unsetVar(String name ) throws InvalidArgumentException {
+		mVars.unset( name );
 	}
 	
 	public boolean isStdinRedirected() { return mIO.isStdinRedirected() ; }

@@ -6,8 +6,14 @@
 
 package org.xmlsh.sh.shell;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
+import org.xmlsh.util.Util;
+
 import java.net.URI;
 import java.net.URL;
+import java.util.Arrays;
 
 import javax.xml.transform.stream.StreamSource;
 
@@ -16,6 +22,7 @@ import net.sf.saxon.trans.XPathException;
 
 public class ShellModuleURIResolver implements ModuleURIResolver {
 	private		Shell	mShell = null;
+	private Logger mLogger = LogManager.getLogger(ShellModuleURIResolver.class);
 	
 	
 	
@@ -30,6 +37,7 @@ public class ShellModuleURIResolver implements ModuleURIResolver {
 	public StreamSource[] resolve(String moduleURI, String baseURI, String[] locations)
 			throws XPathException {
 		
+		mLogger.debug("Resolve URI: " + moduleURI +  " " + baseURI + " " + Util.stringJoin( Arrays.asList(locations) , "|") );
 		
 		if( moduleURI.equals("http://www.functx.com")){
 			

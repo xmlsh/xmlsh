@@ -7,24 +7,28 @@
 package org.xmlsh.sh.core;
 
 import org.xmlsh.sh.grammar.Token;
+import org.xmlsh.util.Util;
 
-public class SourceLocation {
+public class SourceLocation implements Cloneable {
+	private    String  mName;  // "" , script , source , function
 	private		String	mSource;
 	private		int		mStartLine;
 	private		int		mStartColumn;
 	private		int		mEndLine;
 	private		int		mEndColumn;
-	public SourceLocation(String source, int startline, int startColumn, int endLine, int endColumn) {
+	public SourceLocation(String source, String name ,  int startline, int startColumn, int endLine, int endColumn) {
+		mName = name ;
 		mSource = source;
 		mStartLine = startline;
 		mStartColumn = startColumn;
 		mEndLine = endLine;
 		mEndColumn = endColumn;
 	}
-	
 	public SourceLocation( String source , Token token )
 	{
+
 		mSource = source ;
+		mName = null ;
 		if( token != null ){
 			mStartLine = token.beginLine;
 			mEndLine = token.endLine;
@@ -35,15 +39,30 @@ public class SourceLocation {
 	
 	
 	public SourceLocation() {
-		mSource = "<unknown>";
+		mSource = null ; 
+		mName = null ;
+	}
+	
+	public SourceLocation(SourceLocation that ) {
+		this( that.mSource , that.mName , that.mStartLine, that.mStartColumn , that.mEndLine , that.mEndColumn );
 	}
 
+	public SourceLocation(String name, SourceLocation that) {
+		this(that);
+		setName(name);
+
+	}
 	/**
 	 * @return the source
 	 */
-	public String getSource() {
-		return mSource;
+	
+	public String getName() {
+		return Util.notNull(mName);
 	}
+	public String getSource() {
+		return Util.notNull(mSource);
+	}
+
 	/**
 	 * @return the startline
 	 */
@@ -68,32 +87,94 @@ public class SourceLocation {
 	public int getEndColumn() {
 		return mEndColumn;
 	}
+	public String format() {
+		return String.format("[%s%s, line: %d]",
+		hasSource() ? getSource() : "stdin" ,
+        hasName() ? String.format("function %s() ",mName) : "" ,
+        getStartLine() );
+	}
 	
+
+	public boolean hasSource() {
+	  return ! Util.isBlank(mSource);
+	}
 	public String toString()
 	{
-		StringBuffer sb = new StringBuffer();
-		sb.append("[");
-		if( mSource != null )
-			sb.append( mSource );
-		else
-			sb.append("stdin");
-		
-		//sb.append("] ");
-		// sb.append("Start (line,col): ");
-		sb.append(" line: ");
-		sb.append( String.valueOf(mStartLine) );
-		/*
-		sb.append( "," );
-		sb.append( String.valueOf(mStartColumn));
-		sb.append("  End:");
-		sb.append( String.valueOf(mEndLine) );
-		sb.append( "," );
-		sb.append( String.valueOf(mEndColumn));
-		*/
-		sb.append("]");
-
-		return sb.toString();
+		return format();
 	}
+
+	/**
+	 * @return the startLine
+	 */
+	public int getStartLine() {
+		return mStartLine;
+	}
+
+	/**
+	 * @param startLine the startLine to set
+	 */
+	public void setStartLine(int startLine) {
+		mStartLine = startLine;
+	}
+
+	/**
+	 * @param name the name to set
+	 */
+	public void setName(String name) {
+		mName = name;
+	}
+
+	/**
+	 * @param source the source to set
+	 */
+	public void setSource(String source) {
+		mSource = source;
+	}
+
+	/**
+	 * @param startColumn the startColumn to set
+	 */
+	public void setStartColumn(int startColumn) {
+		mStartColumn = startColumn;
+	}
+
+	/**
+	 * @param endLine the endLine to set
+	 */
+	public void setEndLine(int endLine) {
+		mEndLine = endLine;
+	}
+
+	/**
+	 * @param endColumn the endColumn to set
+	 */
+	public void setEndColumn(int endColumn) {
+		mEndColumn = endColumn;
+	}
+
+
+	public void refineLocation(SourceLocation loc) {
+		if( mName == null && loc.mName != null )
+			mName = loc.mName;
+		if( mSource == null && loc.mSource != null )
+			mSource = loc.mSource;
+		
+	}
+	public boolean isEmpty() {
+		return mStartLine <= 0 ;
+	}
+	/* (non-Javadoc)
+	 * @see java.lang.Object#clone()
+	 */
+	@Override
+	public Object clone() throws CloneNotSupportedException  {
+			return super.clone();
+	}
+	public boolean hasName() {
+		return ! Util.isBlank(mName);
+	}
+	
+	
 	
 }
 

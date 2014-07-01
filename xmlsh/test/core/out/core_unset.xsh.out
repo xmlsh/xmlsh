@@ -1,0 +1,33 @@
+a global
+b global
+x a global
+x b global
+x a x y z
+x a
+x b global
+x b set in f()
+x b
+calling f from x : y z
+y a a from x
+y b
+y a y z
+y a
+y b
+y b set in f()
+y b
+calling f from y : z
+z a a from y
+z b
+z a z
+z a
+z b
+z b set in f()
+z b
+retured f z
+y a a from y
+y b
+retured f y z
+x a a from x
+x b
+a global
+b

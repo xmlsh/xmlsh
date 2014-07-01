@@ -7,11 +7,29 @@
   FORCE_LA_CHECK=true;
   UNICODE_INPUT=true;
 }
-PARSER_BEGIN(ShellParser)package org.xmlsh.sh.grammar;import org.xmlsh.sh.core.*;import java.io.PrintWriter;import java.util.ArrayList;import org.xmlsh.core.XEnvironment;public class ShellParser{  private String mSource;  public ShellParser(java.io.InputStream stream, String encoding, String source)  {    this (stream, encoding);    mSource = source;  }  public ShellParser(java.io.Reader stream, String source)  {    this (stream);    mSource = source;  }  public String getSource()  {    return mSource;  }  public void ReInit(java.io.InputStream stream, String encoding, String source)  {
+PARSER_BEGIN(ShellParser)package org.xmlsh.sh.grammar;import org.xmlsh.sh.core.*;import java.io.PrintWriter;import java.util.ArrayList;import org.xmlsh.core.XEnvironment;public class ShellParser{  private String mSource;
+  private SourceLocation mParentLocation = null ;  public ShellParser(java.io.InputStream stream, String encoding, String source)  {    this (stream, encoding);    mSource = source;  }  public ShellParser(java.io.Reader stream, String source)  {    this (stream);    mSource = source;  }  public String getSource()  {    return mSource;  }  public void ReInit(java.io.InputStream stream, String encoding, String source)  {
     this.ReInit(stream, encoding);
     token_source.clear();    mSource = source;  }
   public void ReInit(java.io.Reader stream, String source)  {    this.ReInit(stream);
-    token_source.clear();    mSource = source;  }  public SourceLocation getLocation(Token t)  {    return new SourceLocation(getSource(), t == null ? token : t);  }  public void setLocation(Command command, Token t)  {    command.setLocation(getLocation(t));  }  public void setLocation(Command command)  {    setLocation(command, token);  }
+    token_source.clear();    mSource = source;  }  public SourceLocation getLocation(Token t)  {
+    SourceLocation loc = new SourceLocation(getSource(), t == null ? token : t);
+    
+    if( mParentLocation != null )
+        loc.refineLocation( mParentLocation );   
+           return loc ;  }  public void setLocation(Command command, Token t)  {
+    if( ! command.hasLocation() )       command.setLocation(getLocation(t));  }  public void setLocation(Command command)  {    setLocation(command, token);  }
+  public void setLocation(Command command,Command c2)
+  {
+    if( ! command.hasLocation() )
+      command.setLocation( c2.getLocation() );
+  }
+  
+
+  public SourceLocation setParentLocation( SourceLocation loc )  {    SourceLocation r = mParentLocation ;
+    mParentLocation = loc ;
+    return r ;
+  }
 
   //
   // JavaCC hack for doing lexical state transitions syntactically
@@ -153,15 +171,21 @@
   | < EOF > {
      return new NullCommand() ;
   }}Command command_line() :{  Command c;  String op = "";  Token t;}{  c = complete_command() [ op = separator_op() ]  (    < NEWLINE >  | < EOF >  )  {    if (op.equals("&"))     c.setWait(false);    return c;  }|   t = < NEWLINE >  {    c = new NullCommand();    setLocation(c, t);    return c;  }| < EOF >  {    return null;  }}Command complete_command() :{  Command c;}{  c = list()  {    return c;  }}Command and_or() :{  AndOr andor = null;  Command first;  Command c = null;  String op = null;}{  first = pipeline()  (
-    LOOKAHEAD( 2,andor_if() )    op = andor_if() linebreak() c = pipeline()    {      if (andor == null)       andor = new AndOr(first, op, c);      else       andor = new AndOr(andor, op, c);    }  )*  {    return andor == null ? first : andor;  }}String andor_if() :{  Token t;}{  t = < AND_IF >  {    return t.toString();  }| t = < OR_IF >  {    return t.toString();  }}Pipeline pipeline() :{  Pipeline p;}{  p = pipe_sequence()  {    return p;  }| < BANG > p = pipe_sequence()  {    p.setBang(true);    return p;  }}Pipeline pipe_sequence() :{  Pipeline p = new Pipeline(false);  Command c;}{  c = command()  {    p.add(c);  }  (    < PIPE > linebreak() c = command()    {      p.add(c);    }  )*  {    return p;  }}Command command() :{  SimpleCommand sc;  CompoundCommand c;  FunctionDeclaration f;  IORedirectList r;
+    LOOKAHEAD( 2,andor_if() )    op = andor_if() linebreak() c = pipeline()    {      if (andor == null)       andor = new AndOr(first, op, c);      else       andor = new AndOr(andor, op, c);    }  )*  {    return andor == null ? first : andor;  }}String andor_if() :{  Token t;}{  t = < AND_IF >  {    return t.toString();  }| t = < OR_IF >  {    return t.toString();  }}Pipeline pipeline() :{  Pipeline p;}{  p = pipe_sequence()  {    return p;  }| < BANG > p = pipe_sequence()  {    p.setBang(true);
+    return p;  }}Pipeline pipe_sequence() :{  Pipeline p = new Pipeline(false);  Command c;}{  c = command()  {
+    setLocation(p,c);    p.add(c);  }  (    < PIPE > linebreak() c = command()    {      p.add(c);    }  )*  {    return p;  }}Command command() :{  SimpleCommand sc;  CompoundCommand c;  FunctionDeclaration f;  IORedirectList r;
   ReturnStatement rs;}{
 // first try - has a lookahead
   rs = return_stmt()
   { return rs ; }
-|   sc = simple_command()  {    return sc;  }| c = compound_command()   [    r = redirect_list()    {      c.setRedirect(r);    }  ]  {    return c;  }|   f = function_declaration()  {    return f;  }
+|   sc = simple_command()  {    return sc;  }| c = compound_command()   [    r = redirect_list()    {      c.setRedirect(r);    }  ]  {    return c;  }|   f = function_declaration()  {
+        return f;  }
 
 
-  }CompoundCommand compound_command() :{  CompoundCommand c;}{  c = brace_group()  {    return c;  }| c = subshell()  {    return c;  }| c = for_clause() [ LOOKAHEAD( 1,<CSEMI> ) <CSEMI> ]  {    return c;  }| c = case_clause()  {    return c;  }| c = if_clause()  {    return c;  }| c = trycatch_clause()  {    return c;  }| c = while_clause()  {    return c;  }| c = until_clause()  {    return c;  }}SubShell subshell() :{  Command c;}{  < LPAREN > c = compound_list() < RPAREN >  {    return new SubShell(c);  }}Command compound_list() :{  Command c;  String op = "";}{  < CSEMI > < NEWLINE >  {    return new NullCommand();  }|  [    LOOKAHEAD(1,newline_list())    newline_list()  ]  c = term()  [    LOOKAHEAD(1,separator())    op = separator()  ]  {    if (op.length() > 0)     token_source.SwitchTo(DEFAULT);    if (op.equals("&"))     c.setWait(false);    return c;  }}Command list() :{  CommandList list = null;  Command first;  Command c;  String op = null;}{  < CSEMI > < NEWLINE >  {    return new NullCommand();  }|   first = and_or()  (    LOOKAHEAD(3)    op = separator_op() c = and_or()    {      if (list == null)       list = new CommandList(first, op, c);      else       list = new CommandList(list, op, c);    }  )*  {    return list == null ? first : list;  }}Command term() :{  Command first;  String op;  Command c;  CommandList list = null;}{  first = and_or()  (
+  }CompoundCommand compound_command() :{  CompoundCommand c;}{  c = brace_group()  {    return c;  }| c = subshell()  {    return c;  }| c = for_clause() [ LOOKAHEAD( 1,<CSEMI> ) <CSEMI> ]  {    return c;  }| c = case_clause()  {    return c;  }| c = if_clause()  {    return c;  }| c = trycatch_clause()  {    return c;  }| c = while_clause()  {    return c;  }| c = until_clause()  {    return c;  }}SubShell subshell() :{  Command c;}{  < LPAREN > c = compound_list() < RPAREN >  {    return new SubShell(c);  }}Command compound_list() :{  Command c;  String op = "";
+  Token t;}{  t = < CSEMI > < NEWLINE >  {    c = new NullCommand();
+    setLocation(c,t);
+    return c;  }|  [    LOOKAHEAD(1,newline_list())    newline_list()  ]  c = term()  [    LOOKAHEAD(1,separator())    op = separator()  ]  {    if (op.length() > 0)     token_source.SwitchTo(DEFAULT);    if (op.equals("&"))     c.setWait(false);    return c;  }}Command list() :{  CommandList list = null;  Command first;  Command c;  String op = null;}{  < CSEMI > < NEWLINE >  {    return new NullCommand();  }|   first = and_or()  (    LOOKAHEAD(3)    op = separator_op() c = and_or()    {      if (list == null)       list = new CommandList(first, op, c);      else       list = new CommandList(list, op, c);    }  )*  {    return list == null ? first : list;  }}Command term() :{  Command first;  String op;  Command c;  CommandList list = null;}{  first = and_or()  (
     // Infinate lookahead ! UG    LOOKAHEAD(separator() and_or())    op = separator() c = and_or()    {      if (list == null)       list = new CommandList(first, op, c);      else       list = new CommandList(list, op, c);    }  )*  {    return list == null ? first : list;  }}ForClause for_clause() :{  Command c;  String n;  WordList w = null;  Token t;  ForClause f;}{  t=< FOR > n=word_or_name()  (    (      < NEWLINE >    | < SEMI >    )  | (
    LOOKAHEAD({(getToken(1).kind == WORD || getToken(1).kind == NAME) &&  getToken(1).image.equals("in") })
     (        <WORD > | < NAME > )
@@ -172,10 +196,13 @@
 
 
 
-String wordname() :{  Token t;}{  t = < WORD >  {    return t.toString();  }| t = < NAME >  {    return t.toString();  }| t = < XEXPR >  {    return t.toString();  }| t = < BIGQUOTE >  {    return t.toString();  }}WordList wordlist() :{  WordList list = new WordList();  Word w;}{  (    w = cmd_word()    {      list.add(w);    }  )+  {    return list;  }}CaseClause case_clause() :{  Word s;  CaseList l = null;}{  < CASE > s = cmd_word()   LOOKAHEAD({getToken(1).kind == WORD &&  getToken(1).image.equals("in") })
-   <WORD> linebreak() [ l = case_list() ] < ESAC >  {    return new CaseClause(s, l);  }}CaseList case_list() :{  CaseList list = new CaseList();  CaseItem c;}{  (    LOOKAHEAD(2)    c = case_item()    {      list.add(c);    }  )+  {    return list;  }}CaseItem case_item() :{  StringList p;  Command c = null;  Token t;}{  [ < LPAREN > ] p = pattern() t = < RPAREN >  {
-   // System.err.println("case_item [" + token_source.state()+"] "+  token_source.call_depth );
-    
+String wordname() :{  Token t;}{  t = < WORD >  {    return t.toString();  }| t = < NAME >  {    return t.toString();  }| t = < XEXPR >  {    return t.toString();  }| t = < BIGQUOTE >  {    return t.toString();  }}WordList wordlist() :{  WordList list = new WordList();  Word w;}{  (    w = cmd_word()    {      list.add(w);    }  )+  {    return list;  }}CaseClause case_clause() :{  Word s;  CaseList l = null;
+  Token t;}{   t = < CASE > s = cmd_word()   LOOKAHEAD({getToken(1).kind == WORD &&  getToken(1).image.equals("in") })
+   <WORD> linebreak() [ l = case_list() ] < ESAC >  {   CaseClause c= new CaseClause(s, l);
+   setLocation(c,t);
+   return c ;   }}CaseList case_list() :{  CaseList list = new CaseList();  CaseItem c;}{  (    LOOKAHEAD(2)    c = case_item()    {
+      list.add(c);    }  )+  {    return list;  }}CaseItem case_item() :{  StringList p;  Command c = null;  Token t;}{  [ < LPAREN > ] p = pattern() t = < RPAREN >  {
+
       token_source.SwitchTo(DEFAULT);
 
   }
@@ -184,21 +211,39 @@
 ReturnStatement return_stmt() :
 {
   Word w = null ;
+  Token t;
+  ReturnStatement rs;
 }
 {
   (     LOOKAHEAD({(getToken(1).kind == WORD || getToken(1).kind == NAME) &&  getToken(1).image.equals("return") })
-   (     < WORD >|< NAME > )
+   (     t=< WORD >|t=< NAME > )
  | 
-  < RETURN > )
+  t=< RETURN > )
 
   [ w= cmd_word() ]
   {
-    return new ReturnStatement(w);
+    rs = new ReturnStatement(w);
+    setLocation(rs, t);
+    return rs;
   }
 }
 
 
-FunctionDeclaration function_declaration() :{  Token t;  CompoundCommand b;}{  t = < FUNC_DECL > linebreak() b = function_body()  {    String name = t.toString();    if (name.startsWith("function"))     name = name.replaceFirst("^function\\s*", "");    name = name.replaceFirst("\\s*\\(\\s*\\)\\s*$", "");    return new     	FunctionDeclaration(name.trim(), b);  }}CompoundCommand function_body() :{  CompoundCommand c;}{  c = compound_command()  {    return c;  }}BraceGroup brace_group() :{  Command c;}{  < LBRACE > c = compound_list() < RBRACE >  {    token_source.SwitchTo(CMD); // RBRACE sometimes doesnt switch to CMD due to lookahead and op processing
+FunctionDeclaration function_declaration() :{  Token t;  CompoundCommand b;  SourceLocation parentLoc ;
+  SourceLocation funcLoc ;
+}{  t = < FUNC_DECL >  {     parentLoc = setParentLocation( funcLoc = getLocation( t ) );
+  }
+  linebreak() b = function_body()  {    String name = t.toString();    if (name.startsWith("function"))     name = name.replaceFirst("^function\\s*", "");    name = name.replaceFirst("\\s*\\(\\s*\\)\\s*$", "");
+    funcLoc.setName( name );
+    
+    setParentLocation( parentLoc );
+    FunctionDeclaration func =     	new FunctionDeclaration(name.trim(), b);
+    func.setLocation( funcLoc );
+    
+    return func;
+    
+  }}CompoundCommand function_body() :{  CompoundCommand c;}{  c = compound_command()  {
+    setLocation(c);    return c;  }}BraceGroup brace_group() :{  Command c;}{  < LBRACE > c = compound_list() < RBRACE >  {    token_source.SwitchTo(CMD); // RBRACE sometimes doesnt switch to CMD due to lookahead and op processing
     return new BraceGroup(c);  }}Command do_group() :{  Command c;}{  < DO > c = compound_list() < DONE >  {    return c;  }}SimpleCommand simple_command() :{  CommandPrefix p;  Word c = null;  CommandSuffix s = null;  SimpleCommand sc = null;  Token t = null;}{  LOOKAHEAD(2)  p = cmd_prefix()  [    LOOKAHEAD(2)    c = cmd_word()    {      t = token;    }  ]  s = cmd_suffix()  {    sc = new SimpleCommand(p, c, s);    setLocation(sc, t);    return sc;  }| LOOKAHEAD(2)  c = cmd_word()  {    t = token;  }  s = cmd_suffix()  {    sc = new SimpleCommand(null, c, s);    setLocation(sc, t);    return sc;  }| LOOKAHEAD(2)  c = cmd_word()  {    sc = new SimpleCommand(null, c, null);    setLocation(sc);    return sc;  }}String cmd_name() :{  Token t;}{  t = < NAME >  {    return t.toString();  }}
 
 String word_or_name() :

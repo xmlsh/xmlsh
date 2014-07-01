@@ -127,7 +127,7 @@ public class Pipeline extends Command {
 			int ret = 
 				mBang ? 
 				shell.execCondition(c) : 
-				shell.exec(c);
+				shell.exec(c, this.getLocation() );
 
 		//	if( ncmds > 1 )
 		//		pipes[0].getOutput().close();

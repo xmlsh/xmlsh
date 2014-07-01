@@ -31,27 +31,11 @@ public class FunctionCommand implements ICommand {
 	
 	public int run(Shell shell, String cmd, List<XValue> args) throws Exception {
 		
-		List<XValue> saveArgs = shell.getArgs();
-		String saveArg0 = shell.getArg0();
+		int ret =  shell.execFunction(mName,mFunction,mLocation,args);
+		if( ret == 0 )
+				ret = shell.getReturnValueAsExitValue() ;
 
-		Variables save_vars = shell.pushLocalVars();
-
-		
-		
-		try {
-			
-			shell.setArg0(mName);
-			shell.setArgs(args);
-			int ret =	shell.execFunction(mFunction);
-			return ret;
-			
-		
-		} finally {
-			shell.popLocalVars(save_vars);
-			
-			shell.setArg0(saveArg0);
-			shell.setArgs(saveArgs);
-		}
+		return ret;
 	}
 	
 	/* (non-Javadoc)

@@ -6,28 +6,118 @@
 
 package org.xmlsh.commands.internal;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
+
 import net.sf.saxon.s9api.QName;
+import net.sf.saxon.s9api.SaxonApiException;
 import org.xmlsh.core.BuiltinFunctionCommand;
+import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
+import org.xmlsh.core.Options;
+import org.xmlsh.core.OutputPort;
+import org.xmlsh.core.VariableOutputPort;
+import org.xmlsh.core.Options.OptionValue;
+import org.xmlsh.core.UnknownOption;
 import org.xmlsh.core.XValue;
+import org.xmlsh.core.XVariable;
+import org.xmlsh.sh.core.SourceLocation;
+import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.types.XFile;
 import org.xmlsh.util.S9Util;
+import org.xmlsh.util.Util;
 
 public class xlocation extends BuiltinFunctionCommand {
 	
+	public static final String XLOC_OPTS = "d=depth:,f=function,n=name,s=source,start=start-line,end=end-line,scol=start-column,ecol=end-column";
+
 	public xlocation()
 	{
 		super("xlocation");
 	}
 	
+	
 	@Override
-	public XValue run(Shell shell, List<XValue> args) throws InvalidArgumentException 
+	public XValue run(Shell shell, List<XValue> args) throws UnknownOption, XMLStreamException, SaxonApiException, CoreException 
 	{
 		
-		return new XValue(shell.getLocation().toString());
+		Options opts = new Options(XLOC_OPTS,SerializeOpts.getOptionDefs());
+		opts.parse(args);
+		return run( shell , opts , -1 );
 	}
+	
+	// for xstacktrace
+	
+	public XValue run(Shell shell, Options opts, int depth ) throws UnknownOption, XMLStreamException, SaxonApiException, CoreException 
+	{
+		
+		List<XValue> xv = new ArrayList<XValue>();
+		
+		depth = opts.getOptInt("depth", depth );
+		SourceLocation loc = shell.getLocation(depth);
+		
+		if( loc == null )
+			return null ;
+		if( opts.hasOpt("name") && loc.hasName() )
+			xv.add( new XValue( describeName(depth,loc)));
+		if( opts.hasOpt("s") ) 
+			xv.add( new XValue(loc.getSource()) );
+		if( opts.hasOpt("start") ) 
+			xv.add( new XValue(loc.getStartline()));
+		if( opts.hasOpt("end") ) 
+			xv.add( new XValue(loc.getEndLine()));
+
+		if( opts.hasOpt("scol") ) 
+			xv.add( new XValue(loc.getStartColumn()));
+		if( opts.hasOpt("ecol") ) 
+			xv.add( new XValue(loc.getEndColumn()));
+
+		if( xv.isEmpty() )
+			return describe(shell,loc) ;
+		
+		return new XValue( xv );
+	}
+
+	
+
+	private XValue describe(Shell shell , SourceLocation loc) throws XMLStreamException, SaxonApiException, CoreException 
+	{
+	
+		XVariable xv = new XVariable("_out", null);
+		
+		VariableOutputPort port = new VariableOutputPort( xv );
+		XMLStreamWriter writer = port.asXMLStreamWriter(shell.getSerializeOpts());
+		
+		writer.writeStartDocument();
+		writer.writeStartElement(getName());
+		writer.writeAttribute("name", loc.getName() );
+		writer.writeAttribute("source", loc.getSource() );
+		writer.writeAttribute("end-column", String.valueOf(	loc.getEndColumn()));
+		writer.writeAttribute("start-column",String.valueOf(loc.getStartColumn()));
+		writer.writeAttribute("end-line", String.valueOf(	loc.getEndLine()));
+		writer.writeAttribute("start-line", String.valueOf(	loc.getStartLine()));
+		writer.writeEndElement();
+		writer.writeEndDocument();
+		writer.flush();
+		port.flush();
+		port.release();
+		return xv.getValue();
+		
+
+	
+	}
+
+	private String describeName(int depth, SourceLocation loc) {
+		if( depth < 0 || ! loc.hasName())
+		   return loc.getName();
+		else
+	      return "function " + loc.getName() + "()";
+	}
+	
 
 }
 

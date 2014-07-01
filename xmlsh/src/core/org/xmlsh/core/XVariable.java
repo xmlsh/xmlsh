@@ -40,7 +40,9 @@ public class XVariable {
 	public enum XVarFlag {
 		EXPORT , 		// to be exported to child shells
 		XEXPR ,			// participates in XEXPRs
-		READONLY
+		READONLY,
+		LOCAL,
+		UNSET
 		
 	};
 	
@@ -113,11 +115,10 @@ public class XVariable {
 		return mFlags;
 	}
 
-	/**
-	 * @param flags the flags to set
-	 */
-	public void setFlags(EnumSet<XVarFlag> flags) {
-		mFlags = flags;
+
+	public void setFlag( XVarFlag flag )
+	{
+		mFlags.add(flag);
 	}
 
 	
@@ -324,7 +325,13 @@ public class XVariable {
 		
 	}
 	public boolean isExport() {
-		return getFlags().contains(XVarFlag.EXPORT);
+		return mFlags.contains(XVarFlag.EXPORT) && ! mFlags.contains(XVarFlag.UNSET );
+	}
+	
+	public void unset() throws InvalidArgumentException 
+	{
+		clear();
+		mFlags.add( XVarFlag.UNSET );
 	}
 
 

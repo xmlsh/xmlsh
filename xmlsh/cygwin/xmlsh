@@ -1,5 +1,5 @@
-CLASSPATH="$XMLSH/bin/xmlsh-1.1.jar"
-CLASSPATH="$CLASSPATH;$XMLSH/lib/log4j-1.2.7.jar"
+CLASSPATH="$XMLSH/bin/xmlsh-1.2.jar"
+CLASSPATH="$CLASSPATH;$XMLSH/lib/log4j-1.2.17.jar"
 # Pick which saxon you want
 CLASSPATH="$CLASSPATH;$XMLSH/lib/saxon9he.jar"
 #CLASSPATH="$CLASSPATH;$XMLSH/lib/saxon9ee.jar"
@@ -11,17 +11,17 @@ CLASSPATH="$CLASSPATH;$XMLSH/lib/woodstox-core-asl-4.0.3.jar"
 CLASSPATH="$CLASSPATH;$XMLSH/lib/stax2-api-3.0.1.jar"
 CLASSPATH="$CLASSPATH;$XMLSH/lib/stax-utils.jar"
 # for http command
-CLASSPATH=$CLASSPATH;$XMLSH/lib/httpclient-4.2.3.jar
-CLASSPATH=$CLASSPATH;$XMLSH/lib/httpcore-4.2.2.jar
-CLASSPATH=$CLASSPATH;$XMLSH/lib/commons-codec-1.6.jar
-CLASSPATH=$CLASSPATH;$XMLSH/lib/commons-logging-1.1.1.jar
+CLASSPATH="$CLASSPATH;$XMLSH/lib/httpclient-4.2.3.jar"
+CLASSPATH="$CLASSPATH;$XMLSH/lib/httpcore-4.2.2.jar"
+CLASSPATH="$CLASSPATH;$XMLSH/lib/commons-codec-1.6.jar"
+CLASSPATH="$CLASSPATH;$XMLSH/lib/commons-logging-1.1.1.jar"
 # JSON support
-CLASSPATH=$CLASSPATH;$XMLSH/lib/json-path-0.9.0.jar
-CLASSPATH=$CLASSPATH;$XMLSH/lib/json-smart-1.2.jar
-CLASSPATH=$CLASSPATH;$XMLSH/lib/slf4j-api-1.7.5.jar
-CLASSPATH=$CLASSPATH;$XMLSH/lib/slf4j-log4j12-1.7.7.jar
-CLASSPATH=$CLASSPATH;$XMLSH/lib/commons-io-2.1.jar
-CLASSPATH=$CLASSPATH;$XMLSH/lib/commons-lang-2.6.jar
+CLASSPATH="$CLASSPATH;$XMLSH/lib/json-path-0.9.0.jar"
+CLASSPATH="$CLASSPATH;$XMLSH/lib/json-smart-1.2.jar"
+CLASSPATH="$CLASSPATH;$XMLSH/lib/slf4j-api-1.7.5.jar"
+CLASSPATH="$CLASSPATH;$XMLSH/lib/slf4j-log4j12-1.7.7.jar"
+CLASSPATH="$CLASSPATH;$XMLSH/lib/commons-io-2.1.jar"
+CLASSPATH="$CLASSPATH;$XMLSH/lib/commons-lang-2.6.jar"
 
 # jing only used for rngvalidate 
 CLASSPATH="$CLASSPATH;$XMLSH/lib/jing.jar"

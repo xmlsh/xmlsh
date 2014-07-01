@@ -17,9 +17,10 @@ public abstract class Command {
 	
 	public boolean isWait(){ return mWait ; }
 	public void	setWait(boolean w) { mWait = w ; }
-	public	void	setLocation( SourceLocation loc ) {  mLocation = loc ; }
-	public void setLocation(Command c) { if( c != null && c.getLocation() != null ) mLocation =  c.getLocation() ;	}
+	public	void	setLocation( SourceLocation loc ) { mLocation = loc ; }
+	public void    setLocation(Command c) { if( c != null && c.getLocation() != null ) mLocation =  c.getLocation() ;	}
 	public	SourceLocation	getLocation() { return mLocation ; }
+	public boolean hasLocation()  { return mLocation != null && ! mLocation.isEmpty() ; }
 	
 	public abstract void print( PrintWriter out, boolean bExec);
 	public abstract int exec( Shell shell) throws Exception;
