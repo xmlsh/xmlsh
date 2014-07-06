@@ -1,5 +1,5 @@
 # Test of jset
-
+import commands java
 # Simple string
 
 # empty string

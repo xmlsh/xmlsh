@@ -4,7 +4,7 @@
  *
  */
 
-package org.xmlsh.commands.internal;
+package org.xmlsh.commands.json;
 
 import java.io.IOException;
 import java.io.InputStream;

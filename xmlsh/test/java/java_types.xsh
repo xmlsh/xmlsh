@@ -1,7 +1,7 @@
 #
 # Test basic types using TestTypes.class
 #
-
+import commands java 
 import java ../bin/xmlsh-test.jar
 
 # TestTypes()

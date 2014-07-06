@@ -16,8 +16,10 @@ import java.lang.annotation.RetentionPolicy;
 
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Command {
-	Options options() ;
-	String name();
+	String value() default "";
+	String name() default "" ;
+	Option[] options() default  {};
+	
 
 }
 
