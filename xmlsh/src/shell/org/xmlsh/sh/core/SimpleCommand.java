@@ -73,6 +73,9 @@ public class SimpleCommand extends Command {
 			return execNull( shell );
 		
 		List<XValue>	cmdLine = mSuffix.toCmdLine(shell, mCommand , getLocation() );
+		// Ignore empty or blank command lines
+		if( cmdLine == null || cmdLine.isEmpty() )
+			return 0;
 		
 		String cmdName = cmdLine.remove(0).toString();
 		

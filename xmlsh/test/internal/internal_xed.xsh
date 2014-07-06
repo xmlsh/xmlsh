@@ -23,7 +23,7 @@ TF=$TMPDIR/_xmlsh_temp.xml
 
 xed -i $F -r "John Doe" -e //AUTHOR > $TF
 A=$(xquery -i $TF 'distinct-values(//AUTHOR)')
-[ $A = "John Doe" ] || exit Failed replacement
+[ "$A" = "John Doe" ] || exit Failed replacement
 
 rm $TF
 

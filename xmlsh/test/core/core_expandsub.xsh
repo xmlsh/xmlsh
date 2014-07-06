@@ -5,8 +5,13 @@
 a=$(echo foo)
 echo Should be foo: $a
 
+# a should be "a b c" 
 a=$(echo a; echo b ; echo c;)
-echo Should be 3 : ${#a}
+echo Should be 1 : ${#a}
+xtype {$a}  # "xs:string"
+echo exanding
+# evaluating it should produce 3
+xtype $a
 
 b=$(echo a1 ; echo b1 ; echo c1 ; )
 for c in $b ; do
@@ -15,9 +20,9 @@ done
 
 # Test return values in $()
 A=$(true)  || echo FAIL true should be success
-A=$(false) || echo Success expected false
+A=$(false) || echo Success expected false got false
 A=$(true;false)
-echo retval is $?
+echo retval is $? should be 1
 unset A
 
 # Test backticks

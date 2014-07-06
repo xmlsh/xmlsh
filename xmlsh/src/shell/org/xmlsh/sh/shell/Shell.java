@@ -75,6 +75,8 @@ import org.xmlsh.xpath.ShellContext;
 public class Shell {
 	
 
+
+
 	class CallStackEntry {
 		public String name ;
 		public Command cmd ;
@@ -142,6 +144,7 @@ public class Shell {
 	// private		static	ModuleURIResolver	mModuleURIResolver = null ;
 	
 	private Shell mParent = null;
+	private IFS mIFS;
 	
 	
 	
@@ -1805,17 +1808,24 @@ public class Shell {
 		return ret ;
 	}
 
-
-
-
-	public void setCurrentLocation(SourceLocation loc) 
+	public void setCurrentLocation(SourceLocation loc)
 	{
-	
-		if( loc == null && mCurrentLocation != null )
-			printErr("Overwriting location with null:" );
+
+		if(loc == null && mCurrentLocation != null)
+			printErr("Overwriting location with null:");
 		else
-		   mCurrentLocation = loc;
+			mCurrentLocation = loc;
 	}
+
+	public IFS getIFS()
+    {
+		String sisf =this.getEnv().getVarString("IFS");
+	    if( mIFS == null ||
+	    	! mIFS.isCurrent( sisf));
+	    	
+	    	mIFS = new IFS(sisf) ;
+	    return mIFS ; 
+    }
 
 
 

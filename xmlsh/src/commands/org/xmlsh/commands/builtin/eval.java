@@ -30,6 +30,9 @@ public class eval extends BuiltinCommand {
 				
 			}
 			Command c = mShell.parseEval(sb.toString());
+			if( c == null )
+				return 0;
+			
 			int ret = mShell.exec(c);
 			return ret ;
 			

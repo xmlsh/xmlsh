@@ -13,6 +13,7 @@ import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.Options.OptionValue;
 import org.xmlsh.core.XValue;
+import org.xmlsh.util.Util;
 
 public class SerializeOpts {
 	private 	boolean		indent	= true ;
@@ -30,7 +31,7 @@ public class SerializeOpts {
 	private		String		sequence_sep = "\n";
 	private		String		sequence_term = "\n";
 	private    boolean    serialize_xml = false ;
-	
+	private    boolean    igncr = Util.isWindows(); // Affect reading of scripts, files with $(< ) and command output with $()
 
 	
 	
@@ -38,7 +39,7 @@ public class SerializeOpts {
 	 * Parsed standardized serialization option definitions
 	 */
 	private static final List<Options.OptionDef>  mOptionDefs =		
-		Options.parseDefs("+force-text,+indent,+omit-xml-declaration,encoding:,text-encoding:,input-encoding:,output-encoding:,xml-encoding:,+xinclude,content-type:,method:,+supports-dtd,sequence-sep:,sequence-term:,input-xml-encoding:,output-xml-encoding:,input-text-encoding:,output-text-encoding:" );
+		Options.parseDefs("+igncr,+force-text,+indent,+omit-xml-declaration,encoding:,text-encoding:,input-encoding:,output-encoding:,xml-encoding:,+xinclude,content-type:,method:,+supports-dtd,sequence-sep:,sequence-term:,input-xml-encoding:,output-xml-encoding:,input-text-encoding:,output-text-encoding:" );
 			
 			
 	public static List<Options.OptionDef> getOptionDefs() { return mOptionDefs ; }
@@ -68,6 +69,7 @@ public class SerializeOpts {
 		sequence_sep = that.sequence_sep;
 		sequence_term = that.sequence_term;
 		serialize_xml = that.serialize_xml ;
+		igncr = that.igncr;
 
 	}
 	
@@ -141,6 +143,9 @@ public class SerializeOpts {
 		else
 		if( name.equals("serialize-xml"))
 	        serialize_xml = value ;
+		else
+			if( name.equals("igncr"))
+				igncr = value ;
 		
 		
 	}
@@ -399,6 +404,22 @@ public class SerializeOpts {
 	 */
 	public void setSerialize_xml(boolean force_text) {
 		this.serialize_xml = force_text;
+	}
+
+	/**
+	 * @return the igncr
+	 */
+	public boolean isIgncr()
+	{
+		return igncr;
+	}
+
+	/**
+	 * @param igncr the igncr to set
+	 */
+	public void setIgncr(boolean igncr)
+	{
+		this.igncr = igncr;
 	}
 	
 	

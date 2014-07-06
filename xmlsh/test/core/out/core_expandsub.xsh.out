@@ -1,7 +1,12 @@
 Should be foo: foo
-Should be 3 : 3
+Should be 1 : 1
+xs:string
+exanding
+xs:string
+xs:string
+xs:string
 Arg a1
 Arg b1
 Arg c1
-Success expected false
-retval is 1
+Success expected false got false
+retval is 1 should be 1

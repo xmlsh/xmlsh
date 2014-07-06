@@ -169,7 +169,7 @@
   | < #FNAME  : ( ([ "0"-"9", "a"-"z", "A"-"Z", "_" , "-" ])+ ":" ) ? ([ "0"-"9", "a"-"z", "A"-"Z", "_" , "-" ])+   >
 }Command script() :{  Command c;}{   c = compound_list() < EOF >  {    return c;  }
   | < EOF > {
-     return new NullCommand() ;
+     return null ;
   }}Command command_line() :{  Command c;  String op = "";  Token t;}{  c = complete_command() [ op = separator_op() ]  (    < NEWLINE >  | < EOF >  )  {    if (op.equals("&"))     c.setWait(false);    return c;  }|   t = < NEWLINE >  {    c = new NullCommand();    setLocation(c, t);    return c;  }| < EOF >  {    return null;  }}Command complete_command() :{  Command c;}{  c = list()  {    return c;  }}Command and_or() :{  AndOr andor = null;  Command first;  Command c = null;  String op = null;}{  first = pipeline()  (
     LOOKAHEAD( 2,andor_if() )    op = andor_if() linebreak() c = pipeline()    {      if (andor == null)       andor = new AndOr(first, op, c);      else       andor = new AndOr(andor, op, c);    }  )*  {    return andor == null ? first : andor;  }}String andor_if() :{  Token t;}{  t = < AND_IF >  {    return t.toString();  }| t = < OR_IF >  {    return t.toString();  }}Pipeline pipeline() :{  Pipeline p;}{  p = pipe_sequence()  {    return p;  }| < BANG > p = pipe_sequence()  {    p.setBang(true);
     return p;  }}Pipeline pipe_sequence() :{  Pipeline p = new Pipeline(false);  Command c;}{  c = command()  {

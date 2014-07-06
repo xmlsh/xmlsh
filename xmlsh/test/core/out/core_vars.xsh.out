@@ -7,8 +7,7 @@ bar variable
 bar variable
 <foo/>
 foo bar
-foo bar
-spam bletch
+foo bar spam bletch
 <foo attr="an attr"><bar>text</bar></foo>
 A is B
 $<

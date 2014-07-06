@@ -17,6 +17,8 @@ import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.util.ByteFilterInputStream;
+import org.xmlsh.util.ByteFilterOutputStream;
 import org.xmlsh.util.MutableInteger;
 import org.xmlsh.util.Util;
 import org.xmlsh.util.XMLException;
@@ -46,6 +48,7 @@ public class CommandFileWord extends Word {
 	{
 
 
+
 		XValue 	files = shell.expand( cmd , true,true ,false, loc );
 		String file;
 		if( files.isAtomic() )
@@ -56,10 +59,17 @@ public class CommandFileWord extends Word {
 		SerializeOpts sopts = shell.getSerializeOpts();
 		InputPort ip = shell.getInputPort(file);
 		InputStream is = ip.asInputStream(sopts);
+		ByteFilterInputStream filterIn = null ;
+
 		try {
 
-			return Util.readString( is, sopts.getInputTextEncoding()).trim();
+			InputStream commandIn = sopts.isIgncr() ? (filterIn= new ByteFilterInputStream(is,'\r')) : is;
+			String s =  Util.readString( commandIn , sopts.getInputTextEncoding());
+			s = Util.removeTrailingNewlines(s, shell.getSerializeOpts().isIgncr() );
+			return s;
+
 		} finally {
+			Util.safeClose(filterIn);
 			is.close();
 			ip.close();
 		}
@@ -92,8 +102,9 @@ public class CommandFileWord extends Word {
 
 		if(mType.equals("$(<")){
 			
-			String s = expandFile( shell , mFile,loc );
-			return new XValue(s);
+			String value = expandFile( shell , mFile,loc );
+			return expandWords( shell , value , bExpandWords , bTongs );
+
 		} else
 		if( mType.equals("$<(<")){
 			XdmNode node = expandXFile(shell , mFile,loc);

@@ -1,5 +1,7 @@
 package org.xmlsh.util;
 
+import org.apache.log4j.Logger;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -19,6 +21,7 @@ import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -69,6 +72,8 @@ public class Util
 	private static final String sXSDT_FORMAT_STR = "yyyy-MM-dd'T'HH:mm:ss";
 	public static byte mNewline[];
 	private static Pattern mURIPattern = Pattern.compile("[a-zA-Z][a-zA-Z0-9\\.+-]+:.*");
+	private static String mNewlineString;
+	private static Logger mLogger = Logger.getLogger( Util.class);
 	
   
 	
@@ -301,6 +306,8 @@ public class Util
         }
         catch (Exception e)
         {
+ 
+        	mLogger.info("Exception parsing double: " + str,e );
         }
         return defValue;
 	}
@@ -337,7 +344,8 @@ public class Util
 		}
 		catch (UnsupportedEncodingException e)
 		{
-            
+        	mLogger.info("Exception encoding URL to UTF-8: " +  value ,e );
+
             return value;
 		}       
         
@@ -582,6 +590,16 @@ public class Util
 		}
 		return Util.mNewline;
 	}
+	
+	public static synchronized String getNewlineString()
+	{
+		if( Util.mNewlineString == null )
+				Util.mNewlineString = System.getProperty("line.separator");
+		if( Util.mNewlineString == null )
+				Util.mNewlineString = "\n";
+		return Util.mNewlineString;
+	}
+	
 
 	public static void sortFiles( File[] list )
 	{
@@ -704,6 +722,7 @@ public class Util
 			try {
 				uri = new URI(s);
 			} catch (URISyntaxException e) {
+				// Really ignore this
 				return null;
 			}
         
@@ -806,17 +825,30 @@ public class Util
 	}
 
 
-	public static void safeClose(InputStream is) {
+	public static void safeClose(OutputStream out) {
 		try {
-			if( is != null )
-				is.close();
+			if( out != null )
+				out.close();
 		} catch( Exception e )
 		{
+
+			mLogger.info("Exception closing output stream",e);
 			
 		}
 		
 	}
-	
+	public static void safeClose(InputStream in) {
+		try {
+			if( in != null )
+				in.close();
+		} catch( Exception e )
+		{
+
+			mLogger.info("Exception closing input stream",e);
+			
+		}
+		
+	}
 	
 	 /**
 	 * DAL: NOTE: Fixed version of the Saxon S9API function of the same name in QName
@@ -1212,6 +1244,40 @@ public class Util
 		return sb.toString();
 		
 	}
+
+
+	public static boolean isEmpty(Collection<?> list)
+    {
+		return list == null  || list.isEmpty();
+		
+    }
+
+
+	public static String removeTrailingNewlines(String s, boolean ignorCR)
+    {
+
+		if( s == null )
+			return null ;
+		
+		int len = s.length();
+
+		int end = len-1;
+		while( end >= 0 && isNewline( s.charAt(end) , ignorCR ) )
+			end--;
+		if( end < len-1 )
+			return s.substring(0 , end+1 );
+		else
+			return s;
+		
+    
+    
+    }
+
+
+	private static boolean isNewline(char c, boolean ignorCR)
+    {
+	    return c == '\n' || (ignorCR && c == '\r');
+    }
 
 }
 

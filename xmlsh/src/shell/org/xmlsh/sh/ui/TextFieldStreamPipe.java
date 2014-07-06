@@ -42,6 +42,10 @@ public class TextFieldStreamPipe {
 
             public void actionPerformed(ActionEvent e){
             	try {
+            		if( mOut == null ) {
+            			mLogger.error("output is closed");
+            			return ;
+            		}
 					
 					mOut.write( mField.getText().getBytes(opts.getInput_text_encoding()) );
 					mOut.write(  Util.getNewline(opts));

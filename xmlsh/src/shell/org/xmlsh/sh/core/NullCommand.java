@@ -19,6 +19,9 @@ public class NullCommand extends Command {
 	
 
 	}
+	
+
+	// Inefficient placeholder for a "command" that isnt a command, its a NL or EOF
 
 	@Override
 	public int exec(Shell shell) throws Exception {

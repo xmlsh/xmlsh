@@ -88,7 +88,7 @@ public class SourceLocation implements Cloneable {
 		return mEndColumn;
 	}
 	public String format() {
-		return String.format("[%s%s, line: %d]",
+		return String.format("[%s%s line: %d]",
 		hasSource() ? getSource() : "stdin" ,
         hasName() ? String.format("function %s() ",mName) : "" ,
         getStartLine() );

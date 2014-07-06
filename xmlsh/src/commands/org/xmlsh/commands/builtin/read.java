@@ -12,6 +12,7 @@ import java.util.List;
 import org.xmlsh.core.BuiltinCommand;
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.XValue;
+import org.xmlsh.sh.shell.IFS;
 import org.xmlsh.util.Util;
 
 public class read extends BuiltinCommand {
@@ -35,12 +36,33 @@ public class read extends BuiltinCommand {
 		if( line == null )
 			return 1; // EOF
 
-		String ifs = getIFSRegex();
-		String[] results = line.split(ifs,args.size());
-		for( int i = 0 ; i < args.size() ; i++ )
-			if( i < results.length )
+		IFS ifs = mShell.getIFS();
+		
+		List<String> results = ifs.split(line);
+		int i;
+		for(  i = 0 ; i < args.size() -1; i++ )
+			if( i < results.size() )
+				mShell.getEnv().setVar( args.get(i).toString(), new XValue(results.get(i)),false);
+		
+		
+		 
+		
+		// last var
+		if( i < args.size() && i <  results.size() ) {
+			// 1 left
+			if( results.size() == 1 )
+				mShell.getEnv().setVar( args.get(i).toString(), new XValue(results.get(i)),false);
+			else {
+				int n = results.size() - i ;
+				String[] remaining =  results.subList(i, results.size()).toArray( new String [n] );
+				mShell.getEnv().setVar( args.get(i).toString(), new XValue(remaining),false);
+			}
+			
+		}
+			
 
-			mShell.getEnv().setVar( args.get(i).toString(), new XValue(results[i]),false);
+		
+		
 
 		// stdin.close(); // Crashes ... why ?
 		is.close();
@@ -48,12 +70,6 @@ public class read extends BuiltinCommand {
 		return 0;
 	}
 
-	private String getIFSRegex() {
-		XValue xifs = mShell.getEnv().getVarValue("IFS");
-		String ifs = xifs == null ? " \t" : xifs.toString();
-		
-		return "[" + ifs + "]" ;
-	}
 }
 //
 //

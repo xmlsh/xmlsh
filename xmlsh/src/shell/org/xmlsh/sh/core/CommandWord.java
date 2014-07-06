@@ -8,8 +8,10 @@ package org.xmlsh.sh.core;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,8 +29,10 @@ import org.xmlsh.core.VariableOutputPort;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.XVariable;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.util.ByteFilterOutputStream;
 import org.xmlsh.util.MutableInteger;
 import org.xmlsh.util.NullInputStream;
+import org.xmlsh.util.Util;
 
 /*
  * A Value that evaulates to a "cmd_word" which is either a simple string,
@@ -52,25 +56,35 @@ public class CommandWord extends Word {
 	}
 	
 
-	private String expandSubproc(Shell shell , Command c , MutableInteger retValue ) throws CoreException
+	private String expandSubproc(Shell shell , Command c , MutableInteger retValue ) throws CoreException, IOException
 	{
 		
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
-
+		ByteFilterOutputStream filterOut = null ;
 		shell = shell.clone();
 		try {
-		
-			shell.getEnv().setStdout( out );
+			
+			OutputStream commandOut = shell.getSerializeOpts().isIgncr() ? 
+					 filterOut = new ByteFilterOutputStream( out , '\r' ) : out;
+			shell.getEnv().setStdout( commandOut  );
 			shell.getEnv().setStdin( new NullInputStream() );
 			int ret = shell.exec(c);
 			if( retValue != null )
 					retValue.setValue(ret);
-			return out.toString().trim();
-	
 			
+
+			commandOut.flush();
+			out.flush();
+			String s = out.toString( shell.getSerializeOpts().getInput_text_encoding());
+
+			// remove trailing newlines
+			s = Util.removeTrailingNewlines(s, shell.getSerializeOpts().isIgncr() );
+			return s;
 			
 		} 
 		finally {
+
+			Util.safeClose(filterOut);
 			shell.close();
 
 			
@@ -163,17 +177,18 @@ public class CommandWord extends Word {
 		
 		
 		if( mType.equals("$(") || mType.equals("`") ){
+			// http://www.gnu.org/software/bash/manual/bashref.html#Command-Substitution
+			/*
+			 * Bash performs the expansion by executing command and replacing the command substitution with the standard output of the command, with any trailing newlines deleted. Embedded newlines are not deleted, but they may be removed during word splitting. 
+			 * The command substitution $(cat file) can be replaced by the equivalent but faster $(< file).
+			 */
+			
 			String 	value = expandSubproc( shell , mCommand, retValue);
-			// Split value by \n's to turn into a sequence
-			String[] words = value.split("\r?\n");
-			if( words.length == 1 )
-				return new XValue(words[0]);
+			// Trailing lines are already removed
 			
-			List<XdmItem> list = new ArrayList<XdmItem>( words.length );
+ 
+			return expandWords( shell , value , bExpandWords , bTongs );
 			
-			for( String w : words )
-				list.add( new XdmAtomicValue( w ) );
-			return new XValue( new XdmValue(list));
 			
 			
 		} else 

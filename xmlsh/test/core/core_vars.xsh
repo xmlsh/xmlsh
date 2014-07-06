@@ -42,12 +42,14 @@ echo $A
 
 
 # Test $(<)
+## 2014-07-05 DAL: Fixed word expansion from $(< - was previously not correctly matchign sh
 F=$TMPDIR/test_core_vars.txt
 echo foo bar > $F
 echo $(<$F)
 echo spam bletch >> $F
 A=$(<$F)
 echo $A
+
 
 rm $F
 F=$TMPDIR/test_core_vars.xml

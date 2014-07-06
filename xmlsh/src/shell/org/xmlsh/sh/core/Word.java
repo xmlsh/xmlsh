@@ -28,6 +28,22 @@ public abstract class Word {
 	
 	public abstract void print( PrintWriter out );
 
+
+	public XValue expandWords( Shell shell , String word ,  boolean bExpandWords ,boolean bTongs ) throws IOException {
+		// if expand word then need to do IFS splitting
+		if( bExpandWords && ! bTongs  )
+			return new XValue( (String[]) shell.getIFS().split(word).toArray() );
+		else
+			return new XValue( word);
+				
+	}
+
+	// Core word expansion
+	public List<XValue>  expand(Shell shell,String word ,  boolean bExpandSequences ,  boolean bExpandWild , boolean bExpandWords ,boolean bTongs,  MutableInteger retValue , SourceLocation loc )  throws IOException, CoreException
+	{
+	   return shell.expand(word ,bExpandSequences , bExpandWild , bExpandWords , bTongs , loc );
+   }
+	
 	public abstract XValue expand(Shell shell,boolean bExpandWild , boolean bExpandWords ,boolean bTongs,  MutableInteger retValue , SourceLocation loc ) throws IOException, CoreException;
 	
 	public  XValue expand(Shell shell,boolean bExpandWild , boolean bExpandWords , boolean bTongs, SourceLocation loc ) throws IOException, CoreException
