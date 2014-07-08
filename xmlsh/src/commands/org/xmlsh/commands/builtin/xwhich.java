@@ -6,11 +6,6 @@
 
 package org.xmlsh.commands.builtin;
 
-import java.io.File;
-import java.util.List;
-
-import javax.xml.stream.XMLStreamWriter;
-
 import org.xmlsh.core.BuiltinCommand;
 import org.xmlsh.core.CommandFactory;
 import org.xmlsh.core.FunctionCommand;
@@ -23,6 +18,11 @@ import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Module;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.util.Util;
+
+import java.io.File;
+import java.util.List;
+
+import javax.xml.stream.XMLStreamWriter;
 
 public class xwhich extends BuiltinCommand {
 

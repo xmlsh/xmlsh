@@ -6,13 +6,13 @@
 
 package org.xmlsh.commands.builtin;
 
-import java.util.List;
-
 import org.xmlsh.core.BuiltinCommand;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.ShellThread;
 import org.xmlsh.util.Util;
+
+import java.util.List;
 
 public class wait extends BuiltinCommand {
 

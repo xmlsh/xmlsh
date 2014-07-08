@@ -6,12 +6,6 @@
 
 package org.xmlsh.commands.builtin;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-
-import javax.xml.stream.XMLStreamWriter;
-
 import org.xmlsh.core.BuiltinCommand;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
@@ -21,6 +15,12 @@ import org.xmlsh.core.XValue;
 import org.xmlsh.core.XVariable;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.util.Util;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+
+import javax.xml.stream.XMLStreamWriter;
 
 public class set extends BuiltinCommand {
 

@@ -6,8 +6,6 @@
 
 package org.xmlsh.commands.builtin;
 
-import java.util.List;
-
 import org.xmlsh.core.BuiltinCommand;
 import org.xmlsh.core.CommandFactory;
 import org.xmlsh.core.ICommand;
@@ -15,8 +13,9 @@ import org.xmlsh.core.Options;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.core.Command;
 import org.xmlsh.sh.core.EvalScriptCommand;
-import org.xmlsh.sh.core.SourceLocation;
 import org.xmlsh.sh.shell.Shell;
+
+import java.util.List;
 
 public class xmlsh extends BuiltinCommand {
 

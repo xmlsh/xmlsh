@@ -4,7 +4,7 @@
  *
  */
 
-package org.xmlsh.commands.internal;
+package org.xmlsh.commands.json;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -30,13 +30,16 @@ import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 import javax.xml.transform.stream.StreamSource;
 
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.PrettyPrinter;
+
 import net.sf.saxon.s9api.DocumentBuilder;
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.Serializer;
 import net.sf.saxon.s9api.WhitespaceStrippingPolicy;
 import net.sf.saxon.s9api.XdmNode;
-import org.json.JSONObject;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.InvalidArgumentException;
@@ -93,7 +96,6 @@ public class xml2json extends XCommand
 	
 	
 	
-	
 
 	public int run(  List<XValue> args  )	throws Exception
 	{
@@ -117,9 +119,14 @@ public class xml2json extends XCommand
 		serializeOpts.setOutputTextEncoding(kENCODING_UTF_8);
 		PrintWriter writer = stdout.asPrintWriter(serializeOpts);
 		
-		
-		
-		parse( reader , writer, false  );
+		JsonFactory jsonFactory = new JsonFactory(); // or, for data binding, org.codehaus.jackson.mapper.MappingJsonFactory 
+		JsonGenerator jsonGenerator = jsonFactory.createGenerator(writer); // or Stream, Reader
+		if( bIndent ) {
+			jsonGenerator.useDefaultPrettyPrinter();
+		}
+		parse( reader , jsonGenerator  );
+		jsonGenerator.flush();
+		jsonGenerator.close();
 		writer.flush();
 		writer.close();
 
@@ -139,7 +146,7 @@ public class xml2json extends XCommand
 		
 	}
 
-	private boolean parse(XMLEventReader reader, PrintWriter writer, boolean bComma ) throws XMLStreamException, CoreException, UnsupportedEncodingException, IOException, TransformException, SaxonApiException {
+	private boolean parse(XMLEventReader reader, JsonGenerator jsonGenerator ) throws XMLStreamException, CoreException, UnsupportedEncodingException, IOException, TransformException, SaxonApiException {
 		mLevel++;
 		
 		while( reader.hasNext() ){
@@ -156,7 +163,7 @@ public class xml2json extends XCommand
 					// Children become the new roots
 					
 					mLevel=0;
-					while( parse( reader , writer , bComma ) )
+					while( parse( reader , jsonGenerator ) )
 						;
 					return false;
 
@@ -164,31 +171,30 @@ public class xml2json extends XCommand
 				}
 				else
 				if( name.equals(kELEM_FILE)){
-					if( ! writeFile( start , reader , writer ))
+					
+					if( ! writeFile( start , reader , jsonGenerator ))
 						return false ;
 						
 					}
 					
 				
 				else				
-				if( bComma )
-					writer.print(",");
 				
 				if( name.equals(kELEM_OBJECT) ) 
-					writeObject( start , reader , writer );
+					writeObject( start , reader , jsonGenerator );
 				else
 				if( name.equals(kELEM_ARRAY))
-					writeArray( start , reader ,  writer );
+					writeArray( start , reader ,  jsonGenerator );
 				else if(name.equals(kELEM_MEMBER) )
-					writeMember( start , reader , writer );
+					writeMember( start , reader , jsonGenerator );
 				else if( name.equals(kELEM_NUMBER))
-					writeNumber( start , reader , writer );
+					writeNumber( start , reader , jsonGenerator );
 				else if( name.equals(kELEM_BOOLEAN))
-					writeBoolean( start , reader , writer );
+					writeBoolean( start , reader , jsonGenerator );
 				else if( name.equals(kELEM_NULL) )
-					writeNull( reader , writer );
+					writeNull( reader , jsonGenerator );
 				else if( name.equals(kELEM_STRING))
-					writeString( start , reader , writer );
+					writeString( start , reader , jsonGenerator );
 				else
 					readToEnd(reader);
 				
@@ -207,7 +213,7 @@ public class xml2json extends XCommand
 		return false ;
 	}
 
-	private boolean writeFile(StartElement start, XMLEventReader reader, PrintWriter writer) throws UnsupportedEncodingException, IOException, XMLStreamException, CoreException, TransformException, SaxonApiException {
+	private boolean writeFile(StartElement start, XMLEventReader reader, JsonGenerator jsonGenerator) throws UnsupportedEncodingException, IOException, XMLStreamException, CoreException, TransformException, SaxonApiException {
 		Attribute aname = start.getAttributeByName(kATTR_NAME);
 		if( aname == null )
 			throw new InvalidArgumentException("Element FILE requries attribute name");
@@ -216,17 +222,21 @@ public class xml2json extends XCommand
 		//Attribute aencoding = start.getAttributeByName(new QName("encoding"));
 		//String encoding = (aencoding == null ? "UTF-8" : aencoding.getValue());
 		
+		/*
 		PrintWriter w = getShell().getEnv().getOutput( getShell().getFile(name), false).asPrintWriter(mSerializeOpts);
 		
-		boolean ret = parse(reader,w,false);
+		boolean ret = parse(reader,w);
 		w.close();
 		return ret ;
+		*/
 		
+		mLogger.warn( this.kELEM_FILE + "Not Supported");
+		return false ;
 		
 		
 	}
 
-	private void writeString(StartElement start, XMLEventReader reader, PrintWriter writer) throws XMLStreamException, UnsupportedEncodingException, FileNotFoundException, IOException, TransformException, SaxonApiException, CoreException {
+	private void writeString(StartElement start, XMLEventReader reader, JsonGenerator jsonGenerator) throws XMLStreamException, UnsupportedEncodingException, FileNotFoundException, IOException, TransformException, SaxonApiException, CoreException {
 		String  value = getAttr( start , kATTR_VALUE);
 		String 	src = getAttr( start , kATTR_SRC);
 		String  encoding = getAttr( start, kATTR_ENCODING);
@@ -250,15 +260,12 @@ public class xml2json extends XCommand
 		
 		
 		// If Unwrap then trim off <html> and leading and trailing blanks
-		if( Util.parseBoolean(unwrap)){
-			value = unwrap(value);
+		if( Util.parseBoolean(chars)){
+			chars= unwrap(chars);
 			
 		}
 		
-		
-		
-		
-		writer.print( JSONObject.quote(chars) );
+		jsonGenerator.writeString(chars);
 		if( bReadToEnd )
 			readToEnd(reader);
 		
@@ -334,17 +341,25 @@ public class xml2json extends XCommand
 		return a.getValue();
 	}
 
-	private void writeNull( XMLEventReader reader, PrintWriter writer) throws XMLStreamException {
-		writer.print("null");
+	private void writeNull( XMLEventReader reader, JsonGenerator jsonGenerator) throws XMLStreamException, IOException {
+		jsonGenerator.writeNull();
 		readToEnd(reader);
 	}
 
-	private void writeBoolean(StartElement start, XMLEventReader reader, PrintWriter writer) throws XMLStreamException {
-		writeNumber( start , reader , writer );
+	private void writeBoolean(StartElement start, XMLEventReader reader, JsonGenerator jsonGenerator) throws XMLStreamException, IOException {
+		String chars ;
+		Attribute v = start.getAttributeByName(kATTR_VALUE);
+		if( v != null )
+			chars = v.getValue();
+		else	
+			chars = readChars( reader );
 		
+		chars = chars.trim();
+		jsonGenerator.writeBoolean(Util.parseBoolean(chars));
+		readToEnd(reader);
 	}
 
-	private void writeNumber(StartElement start, XMLEventReader reader, PrintWriter writer) throws XMLStreamException {
+	private void writeNumber(StartElement start, XMLEventReader reader, JsonGenerator jsonGenerator) throws XMLStreamException, IOException {
 		
 		String chars ;
 		Attribute v = start.getAttributeByName(kATTR_VALUE);
@@ -355,58 +370,46 @@ public class xml2json extends XCommand
 		
 		chars = chars.trim();
 		
-		writer.print( chars );
+		jsonGenerator.writeNumber(chars);
 		readToEnd(reader);
 		
 		
 	}
 
-	private void writeMember(StartElement start, XMLEventReader reader, PrintWriter writer) throws XMLStreamException, UnsupportedEncodingException, CoreException, IOException, TransformException, SaxonApiException {
+	private void writeMember(StartElement start, XMLEventReader reader, JsonGenerator jsonGenerator) throws XMLStreamException, UnsupportedEncodingException, CoreException, IOException, TransformException, SaxonApiException {
 		
-		indent(writer);
 		String name = start.getAttributeByName( new QName("name")).getValue();
-		writer.print( JSONObject.quote(name) );
-		writer.print(":");
-		
-		if( parse( reader , writer ,false))
+		jsonGenerator.writeFieldName(name);
+		if( parse( reader , jsonGenerator))
 			readToEnd(reader);
 		
 
 	}
 
-	private void writeArray(StartElement start, XMLEventReader reader, PrintWriter writer) throws XMLStreamException, UnsupportedEncodingException, CoreException, IOException, TransformException, SaxonApiException {
-		indent(writer);
-		writer.print("[");
-		boolean bFirst = true ;
+	private void writeArray(StartElement start, XMLEventReader reader, JsonGenerator jsonGenerator) throws XMLStreamException, UnsupportedEncodingException, CoreException, IOException, TransformException, SaxonApiException {
+		
+		jsonGenerator.writeStartArray();
 		do {
 
-			if( ! parse( reader , writer , ! bFirst  ) )
+			if( ! parse( reader , jsonGenerator  ) )
 				break ;
-			bFirst = false ;
 		}
 		while( true  ) ;
-		writer.print("]");
+		jsonGenerator.writeEndArray();
 
-
-		
 	}
 
-	private void writeObject(StartElement start, XMLEventReader reader, PrintWriter writer) throws XMLStreamException, UnsupportedEncodingException, CoreException, IOException, TransformException, SaxonApiException {
-		indent(writer);
-		
-		writer.print("{");
-		boolean bFirst = true ;
+	private void writeObject(StartElement start, XMLEventReader reader, JsonGenerator jsonGenerator) throws XMLStreamException, UnsupportedEncodingException, CoreException, IOException, TransformException, SaxonApiException {
+
+		jsonGenerator.writeStartObject();
 		do {
 
-			if( ! parse( reader , writer , ! bFirst  ) )
+			if( ! parse( reader , jsonGenerator  ) )
 				break ;
-			bFirst = false ;
 		}
 		while( true  ) ;
-		indent(writer);
-		writer.print("}");
+		jsonGenerator.writeEndObject();
 
-		
 	}
 	
 	/*

@@ -24,7 +24,7 @@ import org.xmlsh.util.Util;
 
 public abstract class AbstractCommand implements ICommand {
 
-	private static Logger mLogger = Logger.getLogger(AbstractCommand.class);
+	protected static Logger mLogger = Logger.getLogger(AbstractCommand.class);
 	
 	protected	Shell mShell;
 	protected XEnvironment mEnvironment;

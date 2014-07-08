@@ -6,11 +6,11 @@
 
 package org.xmlsh.commands.builtin;
 
-import java.util.List;
-
 import org.xmlsh.core.BuiltinCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.ShellThread;
+
+import java.util.List;
 
 public class jobs extends BuiltinCommand {
 

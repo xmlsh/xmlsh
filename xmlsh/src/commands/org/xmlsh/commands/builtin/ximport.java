@@ -6,12 +6,9 @@
 
 package org.xmlsh.commands.builtin;
 
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.List;
-
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+
 import org.xmlsh.core.BuiltinCommand;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
@@ -19,6 +16,10 @@ import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Module;
 import org.xmlsh.sh.shell.Modules;
 import org.xmlsh.util.StringPair;
+
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.List;
 
 public class ximport extends BuiltinCommand {
 	private static Logger mLogger = LogManager.getLogger(ximport.class);

@@ -6,14 +6,13 @@
 
 package org.xmlsh.commands.builtin;
 
-import java.util.List;
-
 import org.xmlsh.core.BuiltinCommand;
 import org.xmlsh.core.CommandFactory;
 import org.xmlsh.core.ICommand;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
-import org.xmlsh.sh.core.SourceLocation;
+
+import java.util.List;
 
 public class source extends BuiltinCommand {
 

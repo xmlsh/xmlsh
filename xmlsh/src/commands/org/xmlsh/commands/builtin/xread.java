@@ -6,8 +6,6 @@
 
 package org.xmlsh.commands.builtin;
 
-import java.util.List;
-
 import net.sf.saxon.s9api.XdmItem;
 import org.xmlsh.core.BuiltinCommand;
 import org.xmlsh.core.IXdmItemInputStream;
@@ -17,6 +15,8 @@ import org.xmlsh.core.Options;
 import org.xmlsh.core.StreamInputPort;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.SerializeOpts;
+
+import java.util.List;
 
 public class xread extends BuiltinCommand {
 

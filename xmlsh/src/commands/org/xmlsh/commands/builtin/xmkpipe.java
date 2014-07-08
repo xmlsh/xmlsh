@@ -6,8 +6,6 @@
 
 package org.xmlsh.commands.builtin;
 
-import java.util.List;
-
 import org.xmlsh.core.BuiltinCommand;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.XIOEnvironment;
@@ -15,6 +13,8 @@ import org.xmlsh.core.XValue;
 import org.xmlsh.util.PipedPort;
 import org.xmlsh.util.PipedStreamPort;
 import org.xmlsh.util.PipedXDMPort;
+
+import java.util.List;
 
 public class xmkpipe extends BuiltinCommand {
 	

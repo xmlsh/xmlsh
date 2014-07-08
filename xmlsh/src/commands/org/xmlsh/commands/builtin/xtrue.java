@@ -6,10 +6,10 @@
 
 package org.xmlsh.commands.builtin;
 
-import java.util.List;
-
 import org.xmlsh.core.BuiltinCommand;
 import org.xmlsh.core.XValue;
+
+import java.util.List;
 
 
 public class xtrue extends BuiltinCommand {

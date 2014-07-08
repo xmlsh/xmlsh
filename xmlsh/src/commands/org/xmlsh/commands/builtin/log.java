@@ -6,15 +6,16 @@
 
 package org.xmlsh.commands.builtin;
 
-import java.io.ByteArrayOutputStream;
-import java.util.List;
-
 import org.apache.log4j.Logger;
 import org.apache.log4j.Priority;
+
 import org.xmlsh.core.BuiltinCommand;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.XValue;
 import org.xmlsh.util.Util;
+
+import java.io.ByteArrayOutputStream;
+import java.util.List;
 
 public class log extends BuiltinCommand {
 	

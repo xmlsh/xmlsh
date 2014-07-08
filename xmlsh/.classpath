@@ -41,5 +41,20 @@
 	<classpathentry kind="lib" path="lib/slf4j-api-1.7.5.jar"/>
 	<classpathentry kind="lib" path="lib/slf4j-log4j12-1.7.7.jar"/>
 	<classpathentry kind="lib" path="lib/httpcore-4.2.2.jar"/>
+	<classpathentry kind="lib" path="lib/jackson-annotations-2.4.1.jar" sourcepath="C:/Java/jackson/jackson-2.4.2/jackson-annotations-2.4.1-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/C:/Java/jackson/jackson-2.4.2/jackson-annotations-2.4.1-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/jackson-core-2.4.1.jar" sourcepath="C:/Java/jackson/jackson-2.4.2/jackson-core-2.4.1-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/C:/Java/jackson/jackson-2.4.2/jackson-core-2.4.1-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/jackson-databind-2.4.1.jar" sourcepath="C:/Java/jackson/jackson-2.4.2/jackson-databind-2.4.1-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/C:/Java/jackson/jackson-2.4.2/jackson-databind-2.4.1-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="_out"/>
 </classpath>

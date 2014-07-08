@@ -6,8 +6,6 @@
 
 package org.xmlsh.commands.builtin;
 
-import java.util.List;
-
 import net.sf.saxon.s9api.Destination;
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.QName;
@@ -24,6 +22,8 @@ import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.sh.shell.ShellModuleURIResolver;
 import org.xmlsh.util.Util;
+
+import java.util.List;
 
 public class xtype extends BuiltinCommand {
 	public int run(  List<XValue> args ) throws Exception 

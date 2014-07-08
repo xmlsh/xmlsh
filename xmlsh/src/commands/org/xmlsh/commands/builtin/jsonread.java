@@ -6,22 +6,16 @@
 
 package org.xmlsh.commands.builtin;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.util.List;
-
-import com.jayway.jsonpath.JsonModel;
-
-import net.sf.saxon.s9api.XdmItem;
-import org.json.JSONObject;
-import org.json.JSONTokener;
 import org.xmlsh.core.BuiltinCommand;
-import org.xmlsh.core.IXdmItemInputStream;
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.SerializeOpts;
+
+import java.io.InputStream;
+import java.util.List;
+
+import com.jayway.jsonpath.JsonModel;
 
 public class jsonread extends BuiltinCommand {
 

@@ -6,11 +6,11 @@
 
 package org.xmlsh.commands.builtin;
 
-import java.util.List;
-
 import org.xmlsh.core.BuiltinCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.util.NameValueMap;
+
+import java.util.List;
 
 public class declare extends BuiltinCommand {
 
