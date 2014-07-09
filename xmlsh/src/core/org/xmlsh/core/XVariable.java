@@ -6,14 +6,6 @@
 
 package org.xmlsh.core;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
-import java.util.EnumSet;
-
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
-
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.SaxonApiException;
@@ -22,11 +14,20 @@ import net.sf.saxon.s9api.XQueryEvaluator;
 import net.sf.saxon.s9api.XQueryExecutable;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmValue;
+
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import org.xml.sax.SAXException;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.NameValueMap;
 import org.xmlsh.xpath.EvalDefinition;
 import org.xmlsh.xpath.ShellContext;
+
+import java.util.EnumSet;
+
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
 
 public class XVariable {
 	

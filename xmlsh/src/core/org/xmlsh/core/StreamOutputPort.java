@@ -6,6 +6,20 @@
 
 package org.xmlsh.core;
 
+import net.sf.saxon.Configuration;
+import net.sf.saxon.event.PipelineConfiguration;
+import net.sf.saxon.event.ReceivingContentHandler;
+import net.sf.saxon.s9api.Destination;
+import net.sf.saxon.s9api.SaxonApiException;
+import net.sf.saxon.s9api.Serializer;
+import net.sf.saxon.serialize.XMLEmitter;
+import net.sf.saxon.trans.XPathException;
+import org.xml.sax.ContentHandler;
+import org.xmlsh.sh.shell.SerializeOpts;
+import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.util.SynchronizedOutputStream;
+import org.xmlsh.util.Util;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -20,20 +34,6 @@ import javax.xml.stream.XMLEventWriter;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
-
-import net.sf.saxon.Configuration;
-import net.sf.saxon.event.PipelineConfiguration;
-import net.sf.saxon.event.ReceivingContentHandler;
-import net.sf.saxon.s9api.Destination;
-import net.sf.saxon.s9api.SaxonApiException;
-import net.sf.saxon.s9api.Serializer;
-import net.sf.saxon.serialize.XMLEmitter;
-import net.sf.saxon.trans.XPathException;
-import org.xml.sax.ContentHandler;
-import org.xmlsh.sh.shell.SerializeOpts;
-import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.util.SynchronizedOutputStream;
-import org.xmlsh.util.Util;
 
 /*
  * An OutputPort represents an output sync of data, either Stream (bytes) or XML data

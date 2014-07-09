@@ -6,58 +6,68 @@
 
 package org.xmlsh.util;
 
+import net.sf.saxon.trans.XPathException;
+import org.xmlsh.core.UnexpectedException;
+import org.xmlsh.core.XValue;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintStream;
 import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import net.sf.saxon.trans.XPathException;
-import org.xmlsh.core.UnexpectedException;
-import org.xmlsh.core.XValue;
-
-import com.jayway.jsonpath.JsonModel;
+import com.fasterxml.jackson.core.JsonGenerationException;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class JsonUtils {
 
 
-	public static Object toJsonType( XValue value ) throws XPathException
+	public static JsonNode toJsonNode( String json ) throws JsonProcessingException, IOException {
+		ObjectMapper mapper = new ObjectMapper();
+		JsonNode actualObj = mapper.readTree(json);
+		return actualObj;
+	}
+	public static JsonNode toJsonType( XValue value ) throws XPathException, JsonProcessingException, IOException
 	{
 		if( value.isNull() )
 			return null ;
 		
-		if( value.isJson()){
-			JsonModel model = value.asJson();
-			return model.getJsonObject();
+		if( value.isJson())
+			return value.asJson();
 			
-			
-		}
-		
+	    ObjectMapper mapper = new ObjectMapper();
 		Object obj = value.getJavaNative();
 
 	
 		if( obj instanceof Map )
-			return obj ;
+			return mapper.convertValue(obj, ObjectNode.class);
 		
 		if( obj instanceof List )
-			return obj ;
+			return  mapper.convertValue(obj, ArrayNode.class); ;
 		if( obj instanceof Array )
-			return Arrays.asList(obj);
+			return  mapper.convertValue(obj, ArrayNode.class); ;
 		
+			
 		if( obj instanceof Integer )
-			return obj ;
+			return JsonNodeFactory.instance.numberNode((Integer)obj) ;
 		if( obj instanceof Long )
-			return obj ;
+			return JsonNodeFactory.instance.numberNode((Long)obj) ;
 		if( obj instanceof Double )
-			return obj ;
-		
-		if( obj instanceof Number )
-          	return obj ;
+			return JsonNodeFactory.instance.numberNode((Double)obj) ;
 		
 		if( obj instanceof Boolean )
-			return obj ;
+			return JsonNodeFactory.instance.booleanNode((Boolean)obj) ;
 		
-		return obj.toString() ;
-		
+		return mapper.convertValue(obj, JsonNode.class);
 		
 		
 		
@@ -65,12 +75,11 @@ public class JsonUtils {
 		
 	}
 
-	public static Object toNumber(XValue arg) throws XPathException {
+	public static Object toNumber(XValue arg) throws XPathException, JsonProcessingException, IOException {
 		Object obj = null;
 		if( arg.isJson())
-			obj = arg.asJson().getJsonObject();
+			obj = arg.asJson().asDouble();
 		else
-		
 			obj = arg.getJavaNative();
 		
 		
@@ -103,13 +112,24 @@ public class JsonUtils {
 		
 		
 	}
+	public static String toString(JsonNode value) throws JsonProcessingException
+    {
+		ObjectMapper mapper = new ObjectMapper();
+		mapper.configure( SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS , true);
+		return mapper.writeValueAsString(value);
+    }
+	public static JsonNode toJsonNode(InputStream is) throws JsonProcessingException, IOException
+    {
+		ObjectMapper mapper = new ObjectMapper();
+	    return mapper.readTree(is);
+    }
+	public static void writeJsonNode(JsonNode result, PrintStream os) throws JsonGenerationException, JsonMappingException, IOException
+    {
+		ObjectMapper mapper = new ObjectMapper();
+		mapper.configure(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS , true).writeValue(os, result);
+	    
+    }
 
-	public static JsonModel getModel(XValue v) {
-		Object o = v.asObject() ;
-		if( o instanceof JsonModel )
-			return (JsonModel)o;
-		return JsonModel.model(o);
-	}
 }
 
 

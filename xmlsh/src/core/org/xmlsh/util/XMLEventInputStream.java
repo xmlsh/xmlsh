@@ -6,6 +6,8 @@
 
 package org.xmlsh.util;
 
+import org.xmlsh.sh.shell.SerializeOpts;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
@@ -14,8 +16,6 @@ import javanet.staxutils.io.XMLWriterUtils;
 
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.events.XMLEvent;
-
-import org.xmlsh.sh.shell.SerializeOpts;
 
 /**
  * XMLEventInputStream converts an XMLEventReader into an InputStream

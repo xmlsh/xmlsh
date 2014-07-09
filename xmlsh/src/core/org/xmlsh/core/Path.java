@@ -6,15 +6,15 @@
 
 package org.xmlsh.core;
 
+import net.sf.saxon.s9api.XdmValue;
+import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.util.Util;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
-import net.sf.saxon.s9api.XdmValue;
-import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.util.Util;
 
 public class Path implements Iterable<String> {
 	List<String>	mPaths = new ArrayList<String>();

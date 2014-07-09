@@ -6,14 +6,14 @@
 
 package org.xmlsh.util;
 
-import java.io.IOException;
-
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.XdmItemPipe;
 import org.xmlsh.core.XdmStreamInputPort;
 import org.xmlsh.core.XdmStreamOutputPort;
 import org.xmlsh.sh.shell.SerializeOpts;
+
+import java.io.IOException;
 
 public class PipedXDMPort extends PipedPort {
 	private		XdmStreamInputPort 	mIn;

@@ -11,11 +11,12 @@ import org.xmlsh.core.InputPort;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.SerializeOpts;
+import org.xmlsh.util.JsonUtils;
 
 import java.io.InputStream;
 import java.util.List;
 
-import com.jayway.jsonpath.JsonModel;
+import com.fasterxml.jackson.databind.JsonNode;
 
 public class jsonread extends BuiltinCommand {
 
@@ -39,16 +40,14 @@ public class jsonread extends BuiltinCommand {
 		InputPort stdin = mShell.getEnv().getStdin();
 		InputStream is = stdin.asInputStream( inputOpts );
 		
-		JsonModel model = JsonModel.create(is);
+		JsonNode node = JsonUtils.toJsonNode(is);
 		
 		
-			
-	
-		mShell.getEnv().setVar(args.get(0).toString(), new XValue(model) ,false);
+		mShell.getEnv().setVar(args.get(0).toString(), new XValue(node) ,false);
 		stdin.release();
 
 
-		return model == null ? 1 : 0 ;
+		return node == null ? 1 : 0 ;
 	}
 }
 

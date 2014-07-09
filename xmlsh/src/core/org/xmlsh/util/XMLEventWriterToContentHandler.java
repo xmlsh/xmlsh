@@ -6,6 +6,10 @@
 
 package org.xmlsh.util;
 
+import org.xml.sax.ContentHandler;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.AttributesImpl;
+
 import java.util.Iterator;
 
 import javanet.staxutils.BaseXMLEventWriter;
@@ -20,10 +24,6 @@ import javax.xml.stream.events.ProcessingInstruction;
 import javax.xml.stream.events.StartDocument;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
-
-import org.xml.sax.ContentHandler;
-import org.xml.sax.SAXException;
-import org.xml.sax.helpers.AttributesImpl;
 
 public class XMLEventWriterToContentHandler extends BaseXMLEventWriter {
 	private ContentHandler mHandler;

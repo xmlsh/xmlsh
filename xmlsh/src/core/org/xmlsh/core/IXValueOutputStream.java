@@ -6,8 +6,6 @@
 
 package org.xmlsh.core;
 
-import net.sf.saxon.s9api.XdmItem;
-import net.sf.saxon.s9api.XdmValue;
 
 /**
  * IXdmItemOutputStream is a interface which accepts XdmValues as individual objects

@@ -6,6 +6,17 @@
 
 package org.xmlsh.core;
 
+import net.sf.saxon.s9api.SaxonApiException;
+import net.sf.saxon.s9api.XdmItem;
+import net.sf.saxon.s9api.XdmNode;
+import org.xml.sax.InputSource;
+import org.xmlsh.sh.shell.SerializeOpts;
+import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.util.JsonUtils;
+import org.xmlsh.util.Util;
+import org.xmlsh.util.XMLEventInputStream;
+import org.xmlsh.util.XMLEventStreamReader;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -19,17 +30,7 @@ import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.events.XMLEvent;
 import javax.xml.transform.Source;
 
-import com.jayway.jsonpath.JsonModel;
-
-import net.sf.saxon.s9api.SaxonApiException;
-import net.sf.saxon.s9api.XdmItem;
-import net.sf.saxon.s9api.XdmNode;
-import org.xml.sax.InputSource;
-import org.xmlsh.sh.shell.SerializeOpts;
-import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.util.Util;
-import org.xmlsh.util.XMLEventInputStream;
-import org.xmlsh.util.XMLEventStreamReader;
+import com.fasterxml.jackson.databind.JsonNode;
 
 /*
  * An InputPort represents an input source of data, either Stream (bytes) or XML
@@ -175,8 +176,8 @@ public class XMLEventInputPort extends InputPort {
 	}
 	
 	@Override
-	public JsonModel asJson(SerializeOpts serializeOpts) throws IOException, CoreException {
-		return JsonModel.create( asInputStream(serializeOpts));
+	public JsonNode asJson(SerializeOpts serializeOpts) throws IOException, CoreException {
+		return JsonUtils.toJsonNode( asInputStream(serializeOpts));
 	}
 
 	

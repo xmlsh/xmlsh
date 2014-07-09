@@ -6,14 +6,14 @@
 
 package org.xmlsh.util;
 
-import java.io.IOException;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
-
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.StreamInputPort;
 import org.xmlsh.core.StreamOutputPort;
+
+import java.io.IOException;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
 
 public class PipedStreamPort extends PipedPort {
 	private		PipedInputStream 	mIn;

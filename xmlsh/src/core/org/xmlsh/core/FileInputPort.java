@@ -6,6 +6,17 @@
 
 package org.xmlsh.core;
 
+import net.sf.saxon.s9api.SaxonApiException;
+import net.sf.saxon.s9api.XdmItem;
+import net.sf.saxon.s9api.XdmNode;
+
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
+import org.xml.sax.InputSource;
+import org.xmlsh.sh.shell.SerializeOpts;
+import org.xmlsh.util.JsonUtils;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -17,15 +28,7 @@ import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.Source;
 
-import com.jayway.jsonpath.JsonModel;
-
-import net.sf.saxon.s9api.SaxonApiException;
-import net.sf.saxon.s9api.XdmItem;
-import net.sf.saxon.s9api.XdmNode;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.xml.sax.InputSource;
-import org.xmlsh.sh.shell.SerializeOpts;
+import com.fasterxml.jackson.databind.JsonNode;
 
 public class FileInputPort extends InputPort {
 
@@ -249,8 +252,8 @@ public class FileInputPort extends InputPort {
 
 
 	@Override
-	public JsonModel asJson(SerializeOpts serializeOpts) throws IOException, CoreException {
-		return JsonModel.create( asInputStream(serializeOpts));
+	public JsonNode asJson(SerializeOpts serializeOpts) throws IOException, CoreException {
+		return JsonUtils.toJsonNode( asInputStream(serializeOpts));
 		
 		
 	}

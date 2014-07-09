@@ -6,17 +6,18 @@
 
 package org.xmlsh.commands.json;
 
-import java.rmi.UnexpectedException;
-import java.util.List;
-import java.util.Map;
-
 import org.xmlsh.core.BuiltinFunctionCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.JsonUtils;
 
-import com.jayway.jsonpath.JsonModel;
-import com.jayway.jsonpath.JsonPath;
+import java.io.IOException;
+import java.rmi.UnexpectedException;
+import java.util.List;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.nebhale.jsonpath.JsonPath;
 
 public class path extends BuiltinFunctionCommand {
 
@@ -26,16 +27,15 @@ public class path extends BuiltinFunctionCommand {
 	}
 	
 	@Override
-	public XValue run(Shell shell, List<XValue> args) throws  UnexpectedException {
+	public XValue run(Shell shell, List<XValue> args) throws  JsonProcessingException, IOException {
 		if( args.size() != 2)
 			throw new UnexpectedException("usage: path( object path )");
 
-		JsonModel model = JsonUtils.getModel( args.get(0));
+		JsonNode node = args.get(0).asJson();
 		
 
 		JsonPath path = JsonPath.compile(args.get(1).toString());
-		Object result = model.get(path);
-		XValue xvr = new XValue(result);
+		XValue xvr = new XValue(path.read(node, JsonNode.class));
 		
 	    return xvr ;
 		

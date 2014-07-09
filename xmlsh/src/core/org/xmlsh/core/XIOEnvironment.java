@@ -6,11 +6,11 @@
 
 package org.xmlsh.core;
 
-import java.io.IOException;
-import java.io.OutputStream;
-
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+
+import java.io.IOException;
+import java.io.OutputStream;
 
 
 /*

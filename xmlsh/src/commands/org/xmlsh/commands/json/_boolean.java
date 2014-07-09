@@ -6,14 +6,14 @@
 
 package org.xmlsh.commands.json;
 
-import java.util.List;
-
 import net.sf.saxon.trans.XPathException;
 import org.xmlsh.core.BuiltinFunctionCommand;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.JsonUtils;
+
+import java.util.List;
 
 public class _boolean extends BuiltinFunctionCommand {
 

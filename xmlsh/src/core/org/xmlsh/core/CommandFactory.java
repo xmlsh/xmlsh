@@ -6,16 +6,8 @@
 
 package org.xmlsh.core;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.net.URL;
-import java.util.HashMap;
-
 import org.apache.log4j.Logger;
+
 import org.xmlsh.commands.builtin.colon;
 import org.xmlsh.commands.builtin.declare;
 import org.xmlsh.commands.builtin.echo;
@@ -51,7 +43,6 @@ import org.xmlsh.commands.builtin.xtrue;
 import org.xmlsh.commands.builtin.xtype;
 import org.xmlsh.commands.builtin.xversion;
 import org.xmlsh.commands.builtin.xwhich;
-import org.xmlsh.commands.internal.validate;
 import org.xmlsh.sh.core.FunctionDeclaration;
 import org.xmlsh.sh.core.SourceLocation;
 import org.xmlsh.sh.shell.Module;
@@ -59,6 +50,13 @@ import org.xmlsh.sh.shell.Modules;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.StringPair;
 import org.xmlsh.util.Util;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.HashMap;
 
 public class CommandFactory 
 {

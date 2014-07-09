@@ -6,16 +6,19 @@
 
 package org.xmlsh.commands.json;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import net.sf.saxon.trans.XPathException;
 import org.xmlsh.core.BuiltinFunctionCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.JsonUtils;
 
-import com.jayway.jsonpath.JsonModel;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 
 public class array extends BuiltinFunctionCommand {
 
@@ -25,22 +28,20 @@ public class array extends BuiltinFunctionCommand {
 	}
 	
 	@Override
-	public XValue run(Shell shell, List<XValue> args) throws XPathException {
+	public XValue run(Shell shell, List<XValue> args) throws XPathException, JsonProcessingException, IOException {
 
 		ArrayList<Object> list = new ArrayList<Object>();
 		
 		
-		
+		ObjectMapper mapper = new ObjectMapper();
+		ArrayNode node = mapper.createArrayNode();
 		
 		for( XValue arg : args ){
-			list.add( JsonUtils.toJsonType(arg));
-			
+			node.add(JsonUtils.toJsonType(arg) );
 		}
 		
-		
 
-		JsonModel model = JsonModel.create(list);
-		return new XValue( model );
+		return new XValue( node );
 	}
 
 }

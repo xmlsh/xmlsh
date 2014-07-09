@@ -6,9 +6,9 @@
 
 package org.xmlsh.core;
 
-import java.util.ArrayList;
-
 import org.xmlsh.util.Util;
+
+import java.util.ArrayList;
 
 @SuppressWarnings("serial") 
 public class PortList<P extends IPort> extends ArrayList<NamedPort<P>>

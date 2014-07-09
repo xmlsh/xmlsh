@@ -6,9 +6,9 @@
 
 package org.xmlsh.types;
 
-import javax.xml.transform.sax.TransformerHandler;
-
 import org.xml.sax.SAXException;
+
+import javax.xml.transform.sax.TransformerHandler;
 
 public interface XSerializable {
 

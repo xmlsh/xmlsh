@@ -8,7 +8,6 @@ package org.xmlsh.util;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Arrays;
 
 /*
  * An output stream that discards a single byte

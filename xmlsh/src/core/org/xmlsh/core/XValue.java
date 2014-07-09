@@ -6,18 +6,6 @@
 
 package org.xmlsh.core;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.xml.transform.Source;
-
-import com.jayway.jsonpath.JsonModel;
-
 import net.sf.saxon.om.Item;
 import net.sf.saxon.om.NodeInfo;
 import net.sf.saxon.om.SequenceIterator;
@@ -44,13 +32,29 @@ import net.sf.saxon.value.DoubleValue;
 import net.sf.saxon.value.FloatValue;
 import net.sf.saxon.value.IntegerValue;
 import net.sf.saxon.value.Value;
+
 import org.apache.log4j.Logger;
+
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.JavaUtils;
+import org.xmlsh.util.JsonUtils;
 import org.xmlsh.util.S9Util;
 import org.xmlsh.util.StringPair;
 import org.xmlsh.util.Util;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.xml.transform.Source;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 
 public class XValue {
 	private static Logger mLogger = Logger.getLogger( XValue.class);
@@ -188,7 +192,11 @@ public class XValue {
 	public String	toString(){
 		if( mValue != null ){
 			if( isJson() )
-				return ((JsonModel)mValue).toJson(false);
+	            try {
+	                return JsonUtils.toString( (JsonNode) mValue );
+                } catch (JsonProcessingException e1) {
+					mLogger.warn("Exception serializing Json value");
+                }
 			if( isAtomic() || isObject() )
 				return mValue.toString();
 			else
@@ -752,15 +760,14 @@ public class XValue {
 	public boolean isJson()
 	{
 		return mValue != null &&
-			    ( mValue instanceof JsonModel );
+			    ( mValue instanceof JsonNode );
 	}
 
-	public JsonModel asJson() {
-		if( mValue == null || mValue instanceof JsonModel )
-			return (JsonModel) mValue ;
+	public JsonNode asJson() throws JsonProcessingException, IOException {
+		if( mValue == null || mValue instanceof JsonNode )
+			return (JsonNode) mValue ;
 
-		return JsonModel.create( toString() );
-
+		return JsonUtils.toJsonNode( toString() );
 	}
 
 	public boolean isString() {

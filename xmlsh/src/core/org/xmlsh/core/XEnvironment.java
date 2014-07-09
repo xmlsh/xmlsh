@@ -6,6 +6,18 @@
 
 package org.xmlsh.core;
 
+import net.sf.saxon.s9api.SaxonApiException;
+import net.sf.saxon.s9api.XdmValue;
+
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
+import org.xml.sax.InputSource;
+import org.xmlsh.sh.shell.SerializeOpts;
+import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.util.AutoReleasePool;
+import org.xmlsh.util.IManagedObject;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -17,16 +29,6 @@ import java.util.Collection;
 import java.util.Stack;
 
 import javax.xml.transform.Source;
-
-import net.sf.saxon.s9api.SaxonApiException;
-import net.sf.saxon.s9api.XdmValue;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.xml.sax.InputSource;
-import org.xmlsh.sh.shell.SerializeOpts;
-import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.util.AutoReleasePool;
-import org.xmlsh.util.IManagedObject;
 
 public class XEnvironment  {
 	

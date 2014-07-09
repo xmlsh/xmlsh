@@ -6,6 +6,16 @@
 
 package org.xmlsh.core;
 
+import net.sf.saxon.s9api.Destination;
+import net.sf.saxon.s9api.SaxonApiException;
+import net.sf.saxon.trans.XPathException;
+
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
+import org.xml.sax.ContentHandler;
+import org.xmlsh.sh.shell.SerializeOpts;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -18,14 +28,6 @@ import java.io.UnsupportedEncodingException;
 import javax.xml.stream.XMLEventWriter;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
-
-import net.sf.saxon.s9api.Destination;
-import net.sf.saxon.s9api.SaxonApiException;
-import net.sf.saxon.trans.XPathException;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.xml.sax.ContentHandler;
-import org.xmlsh.sh.shell.SerializeOpts;
 
 
 

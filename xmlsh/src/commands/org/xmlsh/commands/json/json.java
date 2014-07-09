@@ -6,14 +6,17 @@
 
 package org.xmlsh.commands.json;
 
-import java.util.List;
-
 import net.sf.saxon.trans.XPathException;
 import org.xmlsh.core.BuiltinFunctionCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.util.JsonUtils;
 
-import com.jayway.jsonpath.JsonModel;
+import java.io.IOException;
+import java.util.List;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 
 public class json extends BuiltinFunctionCommand {
 
@@ -23,7 +26,7 @@ public class json extends BuiltinFunctionCommand {
 	}
 	
 	@Override
-	public XValue run(Shell shell, List<XValue> args) throws XPathException {
+	public XValue run(Shell shell, List<XValue> args) throws XPathException, JsonProcessingException, IOException {
 
 		StringBuffer sb = new StringBuffer();
 		for( XValue arg : args ){
@@ -32,7 +35,7 @@ public class json extends BuiltinFunctionCommand {
 			sb.append( arg.toString());
 		}
 		
-		JsonModel model = JsonModel.create( sb.toString() );
+		JsonNode model = JsonUtils.toJsonNode( sb.toString() );
 		return new XValue( model );
 	}
 

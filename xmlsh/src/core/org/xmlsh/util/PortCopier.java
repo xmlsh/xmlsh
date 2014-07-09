@@ -6,13 +6,14 @@
 
 package org.xmlsh.util;
 
-import java.io.IOException;
-import java.io.OutputStream;
-
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+
 import org.xmlsh.core.InputPort;
 import org.xmlsh.sh.shell.SerializeOpts;
+
+import java.io.IOException;
+import java.io.OutputStream;
 
 public class PortCopier extends Thread
 {

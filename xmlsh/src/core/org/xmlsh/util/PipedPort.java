@@ -6,10 +6,10 @@
 
 package org.xmlsh.util;
 
-import java.io.IOException;
-
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.OutputPort;
+
+import java.io.IOException;
 
 
 public abstract class PipedPort {

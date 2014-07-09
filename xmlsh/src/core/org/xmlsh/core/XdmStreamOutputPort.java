@@ -6,8 +6,21 @@
 
 package org.xmlsh.core;
 
+import net.sf.saxon.s9api.BuildingStreamWriter;
+import net.sf.saxon.s9api.Destination;
+import net.sf.saxon.s9api.Processor;
+import net.sf.saxon.s9api.SaxonApiException;
+import net.sf.saxon.s9api.Serializer;
+import net.sf.saxon.s9api.XdmDestination;
+import net.sf.saxon.trans.XPathException;
+
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+
+import org.xml.sax.ContentHandler;
+import org.xmlsh.sh.shell.SerializeOpts;
+import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.util.Util;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -23,18 +36,6 @@ import javax.xml.stream.XMLEventWriter;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
-
-import net.sf.saxon.s9api.BuildingStreamWriter;
-import net.sf.saxon.s9api.Destination;
-import net.sf.saxon.s9api.Processor;
-import net.sf.saxon.s9api.SaxonApiException;
-import net.sf.saxon.s9api.Serializer;
-import net.sf.saxon.s9api.XdmDestination;
-import net.sf.saxon.trans.XPathException;
-import org.xml.sax.ContentHandler;
-import org.xmlsh.sh.shell.SerializeOpts;
-import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.util.Util;
 
 public class XdmStreamOutputPort extends OutputPort {
  

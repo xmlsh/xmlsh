@@ -6,6 +6,13 @@
 
 package org.xmlsh.core;
 
+import net.sf.saxon.s9api.Destination;
+import net.sf.saxon.s9api.SAXDestination;
+import net.sf.saxon.trans.XPathException;
+import org.xml.sax.ContentHandler;
+import org.xml.sax.helpers.DefaultHandler;
+import org.xmlsh.sh.shell.SerializeOpts;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -23,13 +30,6 @@ import javax.xml.stream.XMLEventWriter;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.stream.events.XMLEvent;
-
-import net.sf.saxon.s9api.Destination;
-import net.sf.saxon.s9api.SAXDestination;
-import net.sf.saxon.trans.XPathException;
-import org.xml.sax.ContentHandler;
-import org.xml.sax.helpers.DefaultHandler;
-import org.xmlsh.sh.shell.SerializeOpts;
 
 /*
  * An OutputPort represents an output sync of data, either Stream (bytes) or XML data

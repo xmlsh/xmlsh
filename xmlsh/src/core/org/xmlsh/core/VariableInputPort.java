@@ -6,20 +6,6 @@
 
 package org.xmlsh.core;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-
-import javax.xml.stream.XMLEventReader;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-import javax.xml.transform.Source;
-
-import com.jayway.jsonpath.JsonModel;
-
 import net.sf.saxon.Configuration;
 import net.sf.saxon.evpull.Decomposer;
 import net.sf.saxon.evpull.EventToStaxBridge;
@@ -32,6 +18,20 @@ import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.S9Util;
 import org.xmlsh.util.Util;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+
+import javax.xml.stream.XMLEventReader;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import javax.xml.transform.Source;
+
+import com.fasterxml.jackson.databind.JsonNode;
 
 /*
  * An InputPort represents an input source of data, either Stream (bytes) or XML
@@ -244,7 +244,7 @@ public class VariableInputPort extends InputPort {
 
 	
 	@Override
-	public JsonModel asJson(SerializeOpts serializeOpts) throws IOException, CoreException {
+	public JsonNode asJson(SerializeOpts serializeOpts) throws IOException, CoreException {
 		return mVariable.getValue().asJson();
 	}
 	

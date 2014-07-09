@@ -6,16 +6,18 @@
 
 package org.xmlsh.commands.json;
 
-import java.util.List;
-
 import net.sf.saxon.trans.XPathException;
 import org.xmlsh.core.BuiltinFunctionCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.JsonUtils;
 
-import com.jayway.jsonpath.JsonModel;
-import com.jayway.jsonpath.JsonModel.ObjectOps;
+import java.io.IOException;
+import java.util.List;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class object extends BuiltinFunctionCommand {
 
@@ -25,11 +27,11 @@ public class object extends BuiltinFunctionCommand {
 	}
 	
 	@Override
-	public XValue run(Shell shell, List<XValue> args) throws XPathException {
+	public XValue run(Shell shell, List<XValue> args) throws XPathException, JsonProcessingException, IOException {
 		StringBuffer sb = new StringBuffer();
 
-		JsonModel model = JsonModel.create("{}");
-		ObjectOps ops = model.opsForObject();
+		ObjectMapper mapper = new ObjectMapper();
+		ObjectNode obj = mapper.createObjectNode();
 		
 		String name = null ;
 		boolean bOdd = true  ;
@@ -38,7 +40,7 @@ public class object extends BuiltinFunctionCommand {
 			if( bOdd )
 				name = arg.toString();
 			else 
-			    ops.put(name, JsonUtils.toJsonType(arg) );
+				obj.set(name, JsonUtils.toJsonType(arg));
 			bOdd = ! bOdd ;
 			
 		}
@@ -46,7 +48,7 @@ public class object extends BuiltinFunctionCommand {
 		
 
 		
-		return new XValue( model );
+		return new XValue( obj );
 	}
 }
 

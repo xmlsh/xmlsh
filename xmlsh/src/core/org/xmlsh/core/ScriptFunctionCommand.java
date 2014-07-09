@@ -6,13 +6,13 @@
 
 package org.xmlsh.core;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
-
 import org.xmlsh.sh.core.SourceLocation;
 import org.xmlsh.sh.shell.Module;
 import org.xmlsh.sh.shell.Shell;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
 
 public class ScriptFunctionCommand extends BuiltinFunctionCommand {
 	

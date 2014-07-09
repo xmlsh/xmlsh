@@ -6,6 +6,11 @@
 
 package org.xmlsh.core;
 
+import net.sf.saxon.s9api.XdmItem;
+import net.sf.saxon.s9api.XdmNode;
+import org.xml.sax.InputSource;
+import org.xmlsh.sh.shell.SerializeOpts;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,12 +23,7 @@ import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.Source;
 
-import com.jayway.jsonpath.JsonModel;
-
-import net.sf.saxon.s9api.XdmItem;
-import net.sf.saxon.s9api.XdmNode;
-import org.xml.sax.InputSource;
-import org.xmlsh.sh.shell.SerializeOpts;
+import com.fasterxml.jackson.databind.JsonNode;
 
 /*
  * An InputPort represents an input source of data, either Stream (bytes) or XML data
@@ -79,7 +79,7 @@ public abstract class InputPort  extends IPort
 	}
 
 
-	public abstract JsonModel asJson(SerializeOpts serializeOpts) throws IOException, CoreException ;
+	public abstract JsonNode asJson(SerializeOpts serializeOpts) throws IOException, CoreException ;
 	
 	
 }

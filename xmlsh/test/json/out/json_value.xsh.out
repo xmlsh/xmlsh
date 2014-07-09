@@ -1,6 +1,6 @@
+"1"
 1
-1
-java.lang.Long
-java.math.BigDecimal
-java.lang.String
+com.fasterxml.jackson.databind.node.IntNode
+com.fasterxml.jackson.databind.node.DecimalNode
+com.fasterxml.jackson.databind.node.TextNode
 null

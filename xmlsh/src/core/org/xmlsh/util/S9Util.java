@@ -14,9 +14,6 @@
 
 package org.xmlsh.util;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import net.sf.saxon.om.Item;
 import net.sf.saxon.om.NodeInfo;
 import net.sf.saxon.s9api.DocumentBuilder;
@@ -31,11 +28,16 @@ import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XdmValue;
 import net.sf.saxon.type.Type;
+
 import org.apache.log4j.Logger;
+
 import org.xmlsh.commands.xs.element;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 /*

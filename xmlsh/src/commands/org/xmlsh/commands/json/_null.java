@@ -6,12 +6,12 @@
 
 package org.xmlsh.commands.json;
 
-import java.util.List;
-
 import net.sf.saxon.trans.XPathException;
 import org.xmlsh.core.BuiltinFunctionCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
+
+import java.util.List;
 
 public class _null extends BuiltinFunctionCommand {
 

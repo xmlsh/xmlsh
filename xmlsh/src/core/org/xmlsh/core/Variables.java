@@ -6,12 +6,12 @@
 
 package org.xmlsh.core;
 
+import org.xmlsh.core.XVariable.XVarFlag;
+import org.xmlsh.util.NameValueMap;
+
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-
-import org.xmlsh.core.XVariable.XVarFlag;
-import org.xmlsh.util.NameValueMap;
 
 @SuppressWarnings("serial")
 public class Variables {

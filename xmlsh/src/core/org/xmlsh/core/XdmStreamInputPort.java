@@ -6,6 +6,22 @@
 
 package org.xmlsh.core;
 
+import net.sf.saxon.Configuration;
+import net.sf.saxon.evpull.Decomposer;
+import net.sf.saxon.evpull.EventToStaxBridge;
+import net.sf.saxon.om.NodeInfo;
+import net.sf.saxon.s9api.SaxonApiException;
+import net.sf.saxon.s9api.XdmItem;
+import net.sf.saxon.s9api.XdmNode;
+import net.sf.saxon.s9api.XdmValue;
+import org.xml.sax.InputSource;
+import org.xmlsh.sh.shell.SerializeOpts;
+import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.util.JsonUtils;
+import org.xmlsh.util.NullInputStream;
+import org.xmlsh.util.S9Util;
+import org.xmlsh.util.Util;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -18,22 +34,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.Source;
 
-import com.jayway.jsonpath.JsonModel;
-
-import net.sf.saxon.Configuration;
-import net.sf.saxon.evpull.Decomposer;
-import net.sf.saxon.evpull.EventToStaxBridge;
-import net.sf.saxon.om.NodeInfo;
-import net.sf.saxon.s9api.SaxonApiException;
-import net.sf.saxon.s9api.XdmItem;
-import net.sf.saxon.s9api.XdmNode;
-import net.sf.saxon.s9api.XdmValue;
-import org.xml.sax.InputSource;
-import org.xmlsh.sh.shell.SerializeOpts;
-import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.util.NullInputStream;
-import org.xmlsh.util.S9Util;
-import org.xmlsh.util.Util;
+import com.fasterxml.jackson.databind.JsonNode;
 
 public class XdmStreamInputPort extends InputPort {
 
@@ -190,8 +191,8 @@ public class XdmStreamInputPort extends InputPort {
 	}
 
 	@Override
-	public JsonModel asJson(SerializeOpts serializeOpts) throws IOException, CoreException {
-		return JsonModel.create( asInputStream(serializeOpts));
+	public JsonNode asJson(SerializeOpts serializeOpts) throws IOException, CoreException {
+		return JsonUtils.toJsonNode( asInputStream(serializeOpts));
 	}
 
 }

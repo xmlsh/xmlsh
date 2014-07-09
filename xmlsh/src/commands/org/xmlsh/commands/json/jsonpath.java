@@ -6,37 +6,25 @@
 
 package org.xmlsh.commands.json;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.PrintStream;
-import java.net.URI;
-import java.util.List;
-import java.util.Map;
-
-import com.jayway.jsonpath.JsonModel;
-import com.jayway.jsonpath.JsonPath;
-
-import net.sf.saxon.s9api.Processor;
-import net.sf.saxon.s9api.QName;
-import net.sf.saxon.s9api.XPathCompiler;
-import net.sf.saxon.s9api.XPathExecutable;
-import net.sf.saxon.s9api.XPathSelector;
-import net.sf.saxon.s9api.XdmAtomicValue;
-import net.sf.saxon.s9api.XdmItem;
-import net.sf.saxon.s9api.XdmNode;
 import org.xmlsh.core.CoreException;
-import org.xmlsh.core.IXdmItemOutputStream;
 import org.xmlsh.core.InputPort;
-import org.xmlsh.core.Namespaces;
 import org.xmlsh.core.Options;
+import org.xmlsh.core.Options.OptionValue;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
-import org.xmlsh.core.Options.OptionValue;
 import org.xmlsh.sh.shell.SerializeOpts;
-import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.util.JsonUtils;
 import org.xmlsh.util.Util;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintStream;
+import java.util.List;
+import java.util.Map;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.nebhale.jsonpath.JsonPath;
 
 public class jsonpath extends XCommand {
 
@@ -51,13 +39,13 @@ public class jsonpath extends XCommand {
 		boolean bString = 	opts.hasOpt("s");
 		
 
-		JsonModel context = null;
-
 		
 		
 		InputPort in = null;
 
 		// boolean bReadStdin = false ;
+		
+		JsonNode context = null;
 		
 		SerializeOpts serializeOpts = getSerializeOpts(opts);
 		if( ! opts.hasOpt("n" ) ){ // Has XML data input
@@ -101,16 +89,16 @@ public class jsonpath extends XCommand {
 
 
 		JsonPath path = JsonPath.compile(xpath);
-		Object result = context.get(path);
-		XValue xvr = new XValue(result);
 		
-		// Hack - cant get at JsonProvider
-		if( result instanceof List || result instanceof Map )
-			result = JsonModel.create(result);
-
+		JsonNode result = path.read(context, JsonNode.class); // TODO can convert to other types here
+		
 	    OutputPort stdout = getStdout();
 	    PrintStream os = stdout.asPrintStream(mSerializeOpts);
-	    os.println( xvr.toString() );
+
+	    JsonUtils.writeJsonNode( result , os );
+
+	    os.println( result );
+	    os.close();
 	    
 		
 		return 0;

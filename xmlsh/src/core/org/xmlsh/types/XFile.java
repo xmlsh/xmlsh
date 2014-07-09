@@ -6,17 +6,18 @@
 
 package org.xmlsh.types;
 
+import org.apache.log4j.Logger;
+
+import org.xmlsh.core.UnexpectedException;
+import org.xmlsh.core.XValue;
+import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.util.Util;
+
 import java.io.File;
 import java.io.IOException;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
-
-import org.apache.log4j.Logger;
-import org.xmlsh.core.UnexpectedException;
-import org.xmlsh.core.XValue;
-import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.util.Util;
 
 public class XFile /* implements XSerializble */ {
 	private static Logger mLogger = Logger.getLogger( XFile.class);

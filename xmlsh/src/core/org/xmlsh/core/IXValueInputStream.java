@@ -6,7 +6,6 @@
 
 package org.xmlsh.core;
 
-import net.sf.saxon.s9api.XdmItem;
 
 public interface IXValueInputStream {
 
