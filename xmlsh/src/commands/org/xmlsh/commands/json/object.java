@@ -44,8 +44,6 @@ public class object extends BuiltinFunctionCommand {
 			bOdd = ! bOdd ;
 			
 		}
-		
-		
 
 		
 		return new XValue( obj );

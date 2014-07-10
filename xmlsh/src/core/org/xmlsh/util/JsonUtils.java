@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -25,8 +26,13 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.BooleanNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.NullNode;
+import com.fasterxml.jackson.databind.node.NumericNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.node.TextNode;
+import com.fasterxml.jackson.databind.node.ValueNode;
 
 public class JsonUtils {
 
@@ -75,44 +81,44 @@ public class JsonUtils {
 		
 	}
 
-	public static Object toNumber(XValue arg) throws XPathException, JsonProcessingException, IOException {
-		Object obj = null;
-		if( arg.isJson())
-			obj = arg.asJson().asDouble();
-		else
-			obj = arg.getJavaNative();
-		
-		
-		if( obj instanceof String ){
-
-			String sobj = arg.toString() ;
-			if( sobj.contains("." ))
-				return JavaUtils.convert( obj ,  Double.class );
+	public static NumericNode toJsonNumber(XValue arg) throws XPathException, JsonProcessingException, IOException {
+		String str = null;
+		if( arg.isJson()) {
+			JsonNode j  = arg.asJson();
+			if( j.isNumber())
+				return (NumericNode) j;
 			else
-				return JavaUtils.convert( obj , Long.class );
+				str = j.asText();
+		}
 			
-		}
-		
-		if( JavaUtils.isIntClass( obj.getClass() ))
-			return 	JavaUtils.convert(obj, Long.class);
 		else
-			return JavaUtils.convert( obj ,  Double.class );
-	}
+			str = arg.toString();
+		
+	    ObjectMapper mapper = new ObjectMapper();
+	    return mapper.readValue(str, NumericNode.class );
 
-	public static Boolean toBoolean(XValue arg) throws UnexpectedException, XPathException {
-		
-		if( arg == null || arg.isNull() )
-			return false ;
-		if( arg.isString() ){
-			String sv = arg.toString();
-			return sv.equalsIgnoreCase("true") || sv.equals("1") ;
-		}
-		return new Boolean( arg.toBoolean() );
+	}
+	
+	public static BooleanNode toJsonBoolean(XValue arg) throws UnexpectedException, XPathException, JsonProcessingException, IOException {
+		 
+		boolean b = false ;
+		if( arg != null &&! arg.isNull() ) {
+			if( arg.isJson() )
+				b = arg.asJson().asBoolean();
+			else
+			if( arg.isString() ) {
+				String s=arg.toString();
+				b = ( s.equalsIgnoreCase("true") || s.equals("1")) ;
+			} else
+
+			b = arg.toBoolean();
+		} 
+		return JsonNodeFactory.instance.booleanNode( b );
 		
 		
 		
 	}
-	public static String toString(JsonNode value) throws JsonProcessingException
+	public static String jsonToString(JsonNode value) throws JsonProcessingException
     {
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.configure( SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS , true);
@@ -129,7 +135,61 @@ public class JsonUtils {
 		mapper.configure(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS , true).writeValue(os, result);
 	    
     }
+	public static NullNode jsonNull()
+    {
+	   return JsonNodeFactory.instance.nullNode();
+    }
+	public static TextNode toJsonString(String string)
+    {
+		return JsonNodeFactory.instance.textNode(string);
+    }
 
+	public static TextNode toJsonString(XValue xv )
+    {
+		if( xv == null || xv.isNull())
+			return toJsonString( (String) null );
+	
+		if( xv.isString() )
+			return toJsonString( xv.toString());
+		
+		if( xv.isAtomic() )
+			return toJsonString( xv.toString() );
+
+		ObjectMapper mapper = new ObjectMapper();
+		return mapper.convertValue( xv.asObject() , TextNode.class );
+    
+    }
+	public static Object asJavaNative(JsonNode node)
+    {
+	   if( node.isValueNode() ) {
+		   ValueNode value = (ValueNode) node;
+		   if( value.isNumber())
+			   return ((NumericNode)value).numberValue();
+		   if( value.isBoolean() )
+			   return value.asBoolean();
+		   if( value.isTextual())
+			   return value.asText().toString();
+		   if( value.isNull())
+			   return null;
+	   }
+		   
+		if( node.isArray()) {
+			ArrayNode a = (ArrayNode) node;
+			ArrayList<Object> al = new ArrayList<Object>( a.size());
+			for( JsonNode an : a ) {
+				al.add( asJavaNative( an ));
+			}
+			return al;
+		}
+		ObjectMapper mapper = new ObjectMapper();
+
+		if( node.isObject() ) {
+			return mapper.convertValue( node , Map.class);
+		}
+		return node.toString(); // WTF
+    }
+
+	
 }
 
 

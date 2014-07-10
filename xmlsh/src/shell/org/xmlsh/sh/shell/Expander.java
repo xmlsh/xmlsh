@@ -13,6 +13,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.SaxonApiException;
@@ -552,7 +554,11 @@ class Expander {
 							v = new XValue( v.convert(XdmValue.class));
 						} catch (XPathException e) {
 							throw new CoreException(e);
-						}
+						} catch (JsonProcessingException e) {
+							throw new CoreException(e);
+                        } catch (IOException e) {
+							throw new CoreException(e);
+                        }
 
 					eval.setExternalVariable( new QName(value.getName()), v.asXdmValue());
 				}
@@ -870,7 +876,11 @@ class Expander {
 		if(  btongs || ! v.isAtomic() )
 			return Collections.singletonList( v );
 		
-
+ 
+		// Non tong null values go away
+		if( ! btongs && v.isNull())
+		   return null;   
+		
 		// Java objects are not mucked with
 		if( v.isObject() )
 			return Collections.singletonList( v );

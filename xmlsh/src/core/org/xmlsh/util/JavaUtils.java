@@ -13,6 +13,7 @@ import net.sf.saxon.trans.XPathException;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
 
+import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -22,6 +23,8 @@ import java.net.URI;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 public class JavaUtils {
 
@@ -127,7 +130,7 @@ private static Set< String > mReserved;
 		return new XValue(obj) ;
 	}
 
-	public static Method getBestMatch(String methodName, List<XValue> args, Method[] methods , boolean bStatic ) throws XPathException {
+	public static Method getBestMatch(String methodName, List<XValue> args, Method[] methods , boolean bStatic ) throws XPathException, JsonProcessingException, IOException {
 
 		
 		Method best = null;
@@ -167,7 +170,7 @@ private static Set< String > mReserved;
 
 	}
 
-	public static Object[] getArgs(Class<?>[] params, List<XValue> args) throws XPathException {
+	public static Object[] getArgs(Class<?>[] params, List<XValue> args) throws XPathException, JsonProcessingException, IOException {
 
 		Object[] ret = new Object[params.length];
 		int i = 0;
@@ -180,7 +183,7 @@ private static Set< String > mReserved;
 
 	}
 
-	public static Constructor<?> getBestMatch(List<XValue> args, Constructor<?>[] constructors) throws XPathException {
+	public static Constructor<?> getBestMatch(List<XValue> args, Constructor<?>[] constructors) throws XPathException, JsonProcessingException, IOException {
 		
 		Constructor<?> best = null;
 		int bestConversions = 0;

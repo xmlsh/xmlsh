@@ -6,40 +6,99 @@
 
 package org.xmlsh.commands.builtin;
 
+import net.sf.saxon.s9api.SaxonApiException;
+import org.xml.sax.SAXException;
 import org.xmlsh.core.BuiltinCommand;
+import org.xmlsh.core.CoreException;
+import org.xmlsh.core.Options;
+import org.xmlsh.core.OutputPort;
+import org.xmlsh.core.XEnvironment;
+import org.xmlsh.core.XVariable;
+import org.xmlsh.core.Options.OptionValue;
 import org.xmlsh.core.XValue;
+import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.util.NameValueMap;
 
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
+
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
 
 public class declare extends BuiltinCommand {
 
-	
+
 	public int run(  List<XValue> args ) throws Exception {
+		Options opts = new Options("p:,r:,t:,x:,f:",SerializeOpts.getOptionDefs());
+		opts.parse(args);
+		setSerializeOpts(opts );
+
+		if( opts.hasOpt("p")) {
+			return printVar( opts.getOptStringRequired("p"));
+		}
+
+
+
 		if( args.size() < 1 ) {
 			usage();
 			return 1;
-	
+
 		}
-		
+
 		XValue what = args.remove(0);
 		if( what.toString().equals("namespace"))
 			return declareNamespace( args );
 
-		
+
 		return 2;
-				
+
 	}
 
-	
+
+	private int printVar(String name) throws XMLStreamException, SAXException, IOException, CoreException, SaxonApiException
+	{
+		XEnvironment env = mShell.getEnv();
+
+
+		XVariable var = env.getVar(name);
+		if( var == null ) {
+			this.printErr("Unknown variable: " + name );
+			return 1 ;
+		}
+
+		OutputPort stdout = env.getStdout();
+		XMLStreamWriter writer = stdout.asXMLStreamWriter(getSerializeOpts());
+
+		try {
+			writer.writeStartDocument();
+			writer.writeStartElement( getName() );
+			var.serialize(writer);
+			writer.writeEndElement();
+			writer.writeEndDocument();
+
+
+		} finally {
+			if( writer != null)
+				writer.close();
+			stdout.writeSequenceTerminator(getSerializeOpts());
+		}
+
+		return 0;
+
+
+	}
+
+
 	private int declareNamespace(List<XValue> args) {
 		if( args.size() == 0 )
 			return listNamespaces();
-		
+
 		for( XValue arg : args){
 			declareNamespace( arg );
-			
-			
+
+
 		}
 		return 0;
 
@@ -49,36 +108,36 @@ public class declare extends BuiltinCommand {
 		NameValueMap<String> ns = mShell.getEnv().getNamespaces();
 		if( ns == null )
 			return 0;
-		
+
 		for( String name : ns.keySet() ){
 			String uri = ns.get(name);
 			mShell.printOut(name + "=" + uri );
-			
+
 		}
 		return 0;
-		
+
 	}
 
 	/*
 	 * Declare a namespace
 	 * 
 	 */
-	
-	
+
+
 	private void declareNamespace(XValue arg) {
-		
+
 		// ns="url"
 		// ns=
 		// "url"
 		if( arg.isAtomic() ){
 
-			
-			
+
+
 			mShell.getEnv().declareNamespace(arg.toString());
-			
-				
+
+
 		}
-		
+
 	}
 
 

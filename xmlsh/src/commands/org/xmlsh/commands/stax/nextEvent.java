@@ -6,10 +6,13 @@
 
 package org.xmlsh.commands.stax;
 
+import java.io.IOException;
 import java.util.List;
 
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLStreamException;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 import net.sf.saxon.trans.XPathException;
 import org.xmlsh.core.BuiltinFunctionCommand;
@@ -27,7 +30,7 @@ public class nextEvent extends BuiltinFunctionCommand {
 	}
 	
 	@Override
-	public XValue run(Shell shell, List<XValue> args) throws CoreException, XPathException, XMLStreamException {
+	public XValue run(Shell shell, List<XValue> args) throws CoreException, XPathException, XMLStreamException, JsonProcessingException, IOException {
 		if( args.size() == 0 )
 			return null;
 		else

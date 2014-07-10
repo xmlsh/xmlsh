@@ -30,7 +30,7 @@ public class number extends BuiltinFunctionCommand {
 	      
 		XValue arg = args.get(0);
 		
-		return new XValue( JsonUtils.toNumber( arg ) );
+		return new XValue( JsonUtils.toJsonNumber( arg ) );
 	}
 
 }

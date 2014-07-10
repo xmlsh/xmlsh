@@ -9,6 +9,7 @@ package org.xmlsh.commands.json;
 import org.xmlsh.core.BuiltinFunctionCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.util.JsonUtils;
 
 import java.util.List;
 
@@ -21,6 +22,14 @@ public class string extends BuiltinFunctionCommand {
 	
 	@Override
 	public XValue run(Shell shell, List<XValue> args) {
+		
+		if( args.isEmpty() )
+			return new XValue( JsonUtils.toJsonString((String)null));
+		
+		if( args.size() == 1 )
+			return new XValue( JsonUtils.toJsonString(args.get(0)));
+		
+		
 		StringBuffer sb = new StringBuffer();
 		for( XValue arg : args ){
 			if( sb.length() > 0 )
@@ -28,8 +37,7 @@ public class string extends BuiltinFunctionCommand {
 			sb.append( arg.toString());
 		}
 		
-		
-		return new XValue( sb.toString() );
+		return new XValue(  JsonUtils.toJsonString(sb.toString()) );
 	}
 
 }

@@ -60,28 +60,36 @@ public class json2xml extends XCommand
 		inputOpts.setInputTextEncoding("UTF-8");
 
 		InputPort in = args.isEmpty() ? this.getStdin() : this.getInput(args.get(0));
-		Reader inr = new InputStreamReader(in.asInputStream(inputOpts), inputOpts.getInputTextEncoding());
-		;
+		XMLStreamWriter sw = null ;
+		Reader inr = null;
+		try {
+				
+			inr = new InputStreamReader(in.asInputStream(inputOpts), inputOpts.getInputTextEncoding());
+	
+			JsonFactory jsonFactory = new JsonFactory(); // or, for data binding,
+														 // org.codehaus.jackson.mapper.MappingJsonFactory
+			JsonParser jp = jsonFactory.createParser(inr); // or URL, Stream,
+														   // Reader, String, byte[]
+	
+			/*
+			 * Assume JSON file is wrapped by an Object
+			 */
+	
+			sw = stdout.asXMLStreamWriter(mSerializeOpts);
+		
+			sw.writeStartDocument();
 
-		JsonFactory jsonFactory = new JsonFactory(); // or, for data binding,
-													 // org.codehaus.jackson.mapper.MappingJsonFactory
-		JsonParser jp = jsonFactory.createParser(inr); // or URL, Stream,
-													   // Reader, String, byte[]
-
-		/*
-		 * Assume JSON file is wrapped by an Object
-		 */
-
-		XMLStreamWriter sw = stdout.asXMLStreamWriter(mSerializeOpts);
-		sw.writeStartDocument();
-
-		write(jp, sw);
-		sw.writeEndDocument();
-		sw.flush();
-		sw.close();
-
-		inr.close();
-
+			write(jp, sw);
+			sw.writeEndDocument();
+		} finally {
+		
+			if( sw != null ) {
+				sw.flush();
+				sw.close();
+			}
+			if( in != null )
+			  inr.close();
+		}
 		return 0;
 
 	}

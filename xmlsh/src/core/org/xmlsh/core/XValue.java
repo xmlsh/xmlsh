@@ -193,7 +193,7 @@ public class XValue {
 		if( mValue != null ){
 			if( isJson() )
 	            try {
-	                return JsonUtils.toString( (JsonNode) mValue );
+	                return JsonUtils.jsonToString( (JsonNode) mValue );
                 } catch (JsonProcessingException e1) {
 					mLogger.warn("Exception serializing Json value");
                 }
@@ -371,7 +371,7 @@ public class XValue {
 	
 
 
-    public boolean toBoolean() throws UnexpectedException, XPathException {
+    public boolean toBoolean() throws UnexpectedException, XPathException, JsonProcessingException, IOException {
 		if( mValue == null )
 			return false ;
 		
@@ -381,6 +381,10 @@ public class XValue {
 		 */
 		if( mValue == null )
 			return false ;
+		
+		if( isJson() )
+			return asJson().asBoolean();
+		
 		if( ! (mValue instanceof XdmValue ) ){
 			
 			if( canConvert( mValue.getClass() , Boolean.class ) >= 0 )
@@ -389,10 +393,7 @@ public class XValue {
 			if( canConvert( mValue.getClass() , Long.class ) >= 0 )
 				return ((Long)convert(Long.class)).longValue() != 0L ;
 			
-
 		}
-		
-		
 		
 		
 		XdmValue value = asXdmValue();
@@ -598,7 +599,7 @@ public class XValue {
 	 */
 
 
-	public  int canConvert( Class<?> c) throws XPathException {
+	public  int canConvert( Class<?> c) throws XPathException, JsonProcessingException, IOException {
 		Object value = mValue ;
 		if( value == null )
 			return -1;
@@ -663,7 +664,7 @@ public class XValue {
 	 * Returns true if the class is an Integer like class
 	 */
 	
-	public Object convert( Class<?> c) throws XPathException{
+	public Object convert( Class<?> c) throws XPathException, JsonProcessingException, IOException{
 			
 			Object value = mValue ;
 			if( value == null )
@@ -684,10 +685,13 @@ public class XValue {
 
 	}
 
-	public Object getJavaNative() throws XPathException
+	public Object getJavaNative() throws XPathException, JsonProcessingException, IOException
 	{
 		if( mValue == null )
 			return null ;
+		
+		if( isJson() )
+			return JsonUtils.asJavaNative( asJson() );
 		
 		// Already a java type 
 		if( !( mValue instanceof XdmValue) )

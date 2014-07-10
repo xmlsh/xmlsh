@@ -38,9 +38,6 @@ public class jsonpath extends XCommand {
 		
 		boolean bString = 	opts.hasOpt("s");
 		
-
-		
-		
 		InputPort in = null;
 
 		// boolean bReadStdin = false ;

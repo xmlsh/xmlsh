@@ -9,7 +9,7 @@ jackson-annotations-2.4.1.jar
 jackson-core-2.4.1.jar
 jackson-databind-2.4.1.jar
 jing.jar
-jline-0.9.94.jar
+#jline-0.9.94.jar
 jsonpath.jar
 log4j-1.2.17.jar
 resolver.jar
