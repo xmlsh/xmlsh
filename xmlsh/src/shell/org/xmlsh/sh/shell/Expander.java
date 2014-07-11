@@ -21,6 +21,7 @@ import org.xmlsh.core.Variables;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.XVariable;
 import org.xmlsh.core.XVariable.XVarFlag;
+import org.xmlsh.sh.core.CharAttributeBuffer;
 import org.xmlsh.sh.core.SourceLocation;
 import org.xmlsh.util.NameValueMap;
 import org.xmlsh.util.Util;
@@ -44,24 +45,33 @@ class Expander {
 	private		SourceLocation 	mLocation ;
 	private IFS mIFS ;
 
+	
+	/* 
+	 * Attribute enums
+	 */
+	
+	static final byte ATTR_NONE = (byte)0; 
+	static final byte ATTR_SOFT_QUOTE = (byte)1;
+	static final byte ATTR_HARD_QUOTE = (byte)2;
+	static final byte ATTR_ESCAPE = (byte)4;
 
 
 
 
 	private static class Result {
+		// Attribute'd char buffer
+		private CharAttributeBuffer    achars = new CharAttributeBuffer();
 
 		static class RXValue {
 			public XValue         xvalue;
 			public boolean       bRaw;
-			public BitSet		  escapedSet = null;  // TODO : NEEDS MORE WORK
 			RXValue( XValue v , boolean r ) {
 				xvalue = v ;
 				bRaw = r;
 			}
-			RXValue( String s , BitSet escaped ) {
+			RXValue( String s ) {
 				xvalue = new XValue(s);
 				bRaw = false ;
-				escapedSet = escaped;
 			}
 			public String toString()
 			{
@@ -69,11 +79,9 @@ class Expander {
 			}
 
 		}
-		StringBuffer	sb = new StringBuffer();
-		BitSet          sbEscaped = null ; // Escaped bitset for raw strings
+		
 		RXValue			cur = null;		// Current XValue if its unknown to convert to string, only atomic values
 		List<RXValue>	result = new ArrayList<RXValue>();
-		boolean escaped = false;
 
 		void flush() 
 		{
@@ -81,19 +89,17 @@ class Expander {
 				result.add(cur); // dont call ajoin adds twice
 				cur = null;
 			}
-
-
-			if( sb.length() > 0 )
-				add(sb.toString(),sbEscaped);
-			sb.setLength(0);
-			sbEscaped = null ;
-
+			if( ! achars.isEmpty() ) {
+				add(achars.toString());
+				achars.clear();
+			}
+			
 		}
 
-		void add( String s , BitSet escaped)
+		void add( String s)
 		{
 			ajoin();
-			result.add(new RXValue(s,escaped));
+			result.add(new RXValue(s));
 		}
 
 		void add( XValue v )
@@ -110,33 +116,21 @@ class Expander {
 		void append( String s )
 		{
 			ajoin();
-			sb.append(s);
+			achars.append(s);
 		}
 
 		void append( char c  )
 		{
 			ajoin();
-			sb.append(c);
+			achars.append(c);
 		}
 
-
-
-		// The next coming char is escaped
-		private void setEscaped()
-        {
-
-			if( sbEscaped == null )
-	        	sbEscaped = new BitSet(  sb.length() + 1 );
-	        sbEscaped.set(sb.length());
-	        
-        }
 
 		List<RXValue> 	getResult()
 		{
 			flush();
 			return result ;
 		}
-
 
 		/*
 		 * Append a value to the result buffer
@@ -148,18 +142,14 @@ class Expander {
 
 
 				// If in quotes or this is an ajoining value then concatenate 
-				if( inQuotes || cur != null || sb.length() > 0 ){
+				if( inQuotes || cur != null ||  ( achars != null && achars.size() > 0 ) ){
 
 					// Unquoted empty atomic values are ignored 
 					String str = value.toString();
 
 					if(!inQuotes && Util.isEmpty(str) )
 						return ;
-
-
-				    // moves cur to sb
-					ajoin();
-					sb.append( str );
+					append(str);
 
 				} else
 					cur = new RXValue(value,false) ;
@@ -211,10 +201,25 @@ class Expander {
 
 		private void ajoin() {
 			if( cur != null ){
-				sb.append(cur.toString());
+				achars.append(cur.toString());
 				cur = null;
 			}
 		}
+		
+		public int bufferSize() {
+			return achars.size();
+		}
+
+		public void clearBufferIf(char c)
+        {
+			if( achars.size() == 1 && achars.charAt(0) == c )
+				achars.clear();
+			else
+				flush();
+	        
+        }
+		
+		
 
 	};
 
@@ -312,7 +317,6 @@ class Expander {
 
 			if( c == '\\'){
 				if( i < arg.length()){
-					result.setEscaped();
 					char nextc = arg.charAt(++i);
 					if( cQuote == 0 ){ // strip backslash, ignore next 
 						if( nextc == '"' || nextc == '\'' )
@@ -407,10 +411,12 @@ class Expander {
 					else
 					if( var.equals("@")){
 						// Special case if sb has a single " nuke it
-						if( result.sb.length() == 1 && result.sb.charAt(0) == '"' )
-							result.sb.setLength(0);
-						else
-							result.flush();
+						/* 
+						 * TEMPORARY
+						 */
+						result.clearBufferIf( '"' );
+						
+						
 						for( XValue v : mShell.getArgs() )
 							result.add(  v , true );
 					}
@@ -447,7 +453,9 @@ class Expander {
 				// If adding a closing quote and there is nothing in the buffer
 				// then skip adding it.  This lets  "$@" work without adding an empty arg
 
-				if( c == '"' && cQuote == 0 && result.sb.length() == 0 )
+				
+				// TEMPORARY 
+				if( c == '"' && cQuote == 0 && result.bufferSize() == 0 )
 					;
 				else
 					result.append(c);
@@ -476,7 +484,7 @@ class Expander {
 				else {
 
 
-					List<XValue> r = expandWild( v.xvalue , v.escapedSet );
+					List<XValue> r = expandWild( v.xvalue );
 					if( r != null )
 						result2.addAll( r );
 				}
@@ -655,7 +663,7 @@ class Expander {
 	}
 
 
-	private List<XValue> expandWild(XValue v, BitSet escapedSet ) {
+	private List<XValue> expandWild(XValue v ) {
 		ArrayList<XValue> r = new ArrayList<XValue>();
 
 		if( v.isXExpr() || v.isObject() ){
