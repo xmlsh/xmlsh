@@ -6,11 +6,6 @@
 
 package org.xmlsh.commands.internal;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.xml.transform.Source;
-
 import net.sf.saxon.om.CodedName;
 import net.sf.saxon.om.DocumentInfo;
 import net.sf.saxon.om.Item;
@@ -47,6 +42,11 @@ import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.Util;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.xml.transform.Source;
 
 
 public class xed extends XCommand {

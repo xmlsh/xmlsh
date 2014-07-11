@@ -6,15 +6,6 @@
 
 package org.xmlsh.commands.internal;
 
-import java.util.List;
-
-import javax.xml.namespace.QName;
-import javax.xml.stream.XMLEventFactory;
-import javax.xml.stream.XMLEventReader;
-import javax.xml.stream.XMLEventWriter;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.events.XMLEvent;
-
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.XQueryCompiler;
 import org.xmlsh.core.CoreException;
@@ -29,6 +20,15 @@ import org.xmlsh.core.XVariable;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.NameValueMap;
+
+import java.util.List;
+
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLEventFactory;
+import javax.xml.stream.XMLEventReader;
+import javax.xml.stream.XMLEventWriter;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.events.XMLEvent;
 
 public class xcat extends XCommand {
 	/*

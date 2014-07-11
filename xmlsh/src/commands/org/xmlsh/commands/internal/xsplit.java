@@ -22,6 +22,18 @@ package org.xmlsh.commands.internal;
  * 
  */
 
+import net.sf.saxon.s9api.SaxonApiException;
+import org.xmlsh.core.CoreException;
+import org.xmlsh.core.InputPort;
+import org.xmlsh.core.InvalidArgumentException;
+import org.xmlsh.core.Options;
+import org.xmlsh.core.Options.OptionValue;
+import org.xmlsh.core.OutputPort;
+import org.xmlsh.core.XCommand;
+import org.xmlsh.core.XValue;
+import org.xmlsh.sh.shell.SerializeOpts;
+import org.xmlsh.util.Util;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -43,18 +55,6 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.Namespace;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
-
-import net.sf.saxon.s9api.SaxonApiException;
-import org.xmlsh.core.CoreException;
-import org.xmlsh.core.InputPort;
-import org.xmlsh.core.InvalidArgumentException;
-import org.xmlsh.core.Options;
-import org.xmlsh.core.Options.OptionValue;
-import org.xmlsh.core.OutputPort;
-import org.xmlsh.core.XCommand;
-import org.xmlsh.core.XValue;
-import org.xmlsh.sh.shell.SerializeOpts;
-import org.xmlsh.util.Util;
 
 public class xsplit extends XCommand {
 
@@ -145,10 +145,10 @@ public class xsplit extends XCommand {
 
 		try {
 
-			InputStream is = in.asInputStream(mSerializeOpts) ;
+			InputStream is = in.asInputStream(getSerializeOpts()) ;
 
 			if( mList != null )
-				listWriter = (listOut =  getOutput(mList,false)).asPrintWriter( mSerializeOpts );
+				listWriter = (listOut =  getOutput(mList,false)).asPrintWriter( getSerializeOpts() );
 			
 			split(in.getSystemId() , is , listWriter , streamOut );
 			is.close();
@@ -288,7 +288,7 @@ public class xsplit extends XCommand {
 		OutputStream fo = null ;
         String name = "-";
 		if( streamOut != null )
-			w = streamOut.asXMLEventWriter(mSerializeOpts);
+			w = streamOut.asXMLEventWriter(getSerializeOpts());
 		else {
 			File fout = nextFile();
 			name = fout.getName();
@@ -346,7 +346,7 @@ public class xsplit extends XCommand {
 		if( fo != null )
 			fo.close();
 		if( streamOut != null )
-			streamOut.writeSequenceSeperator(mSerializeOpts);
+			streamOut.writeSequenceSeperator(getSerializeOpts());
 		
 		if( listWriter != null ){
 			listWriter.println(name);

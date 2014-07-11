@@ -6,12 +6,12 @@
 
 package org.xmlsh.commands.stax;
 
-import java.util.List;
-
 import org.xmlsh.core.BuiltinFunctionCommand;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
+
+import java.util.List;
 
 public class newEventReader extends BuiltinFunctionCommand {
 

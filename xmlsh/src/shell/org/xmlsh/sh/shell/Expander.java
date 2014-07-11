@@ -5,16 +5,6 @@
 
 package org.xmlsh.sh.shell;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.SaxonApiException;
@@ -22,7 +12,6 @@ import net.sf.saxon.s9api.XQueryCompiler;
 import net.sf.saxon.s9api.XQueryEvaluator;
 import net.sf.saxon.s9api.XQueryExecutable;
 import net.sf.saxon.s9api.XdmValue;
-import net.sf.saxon.trans.XPathException;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -37,6 +26,15 @@ import org.xmlsh.util.NameValueMap;
 import org.xmlsh.util.Util;
 import org.xmlsh.xpath.EvalDefinition;
 import org.xmlsh.xpath.ShellContext;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.BitSet;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 class Expander {
 	private static final String sSEPSPACE = " ";
@@ -55,13 +53,15 @@ class Expander {
 		static class RXValue {
 			public XValue         xvalue;
 			public boolean       bRaw;
+			public BitSet		  escapedSet = null;  // TODO : NEEDS MORE WORK
 			RXValue( XValue v , boolean r ) {
 				xvalue = v ;
 				bRaw = r;
 			}
-			RXValue( String s ) {
+			RXValue( String s , BitSet escaped ) {
 				xvalue = new XValue(s);
 				bRaw = false ;
+				escapedSet = escaped;
 			}
 			public String toString()
 			{
@@ -70,8 +70,10 @@ class Expander {
 
 		}
 		StringBuffer	sb = new StringBuffer();
+		BitSet          sbEscaped = null ; // Escaped bitset for raw strings
 		RXValue			cur = null;		// Current XValue if its unknown to convert to string, only atomic values
 		List<RXValue>	result = new ArrayList<RXValue>();
+		boolean escaped = false;
 
 		void flush() 
 		{
@@ -82,15 +84,16 @@ class Expander {
 
 
 			if( sb.length() > 0 )
-				add(sb.toString());
+				add(sb.toString(),sbEscaped);
 			sb.setLength(0);
+			sbEscaped = null ;
 
 		}
 
-		void add( String s )
+		void add( String s , BitSet escaped)
 		{
 			ajoin();
-			result.add(new RXValue(s));
+			result.add(new RXValue(s,escaped));
 		}
 
 		void add( XValue v )
@@ -110,13 +113,23 @@ class Expander {
 			sb.append(s);
 		}
 
-		void append( char c )
+		void append( char c  )
 		{
 			ajoin();
 			sb.append(c);
 		}
 
 
+
+		// The next coming char is escaped
+		private void setEscaped()
+        {
+
+			if( sbEscaped == null )
+	        	sbEscaped = new BitSet(  sb.length() + 1 );
+	        sbEscaped.set(sb.length());
+	        
+        }
 
 		List<RXValue> 	getResult()
 		{
@@ -299,6 +312,7 @@ class Expander {
 
 			if( c == '\\'){
 				if( i < arg.length()){
+					result.setEscaped();
 					char nextc = arg.charAt(++i);
 					if( cQuote == 0 ){ // strip backslash, ignore next 
 						if( nextc == '"' || nextc == '\'' )
@@ -462,7 +476,7 @@ class Expander {
 				else {
 
 
-					List<XValue> r = expandWild( v.xvalue );
+					List<XValue> r = expandWild( v.xvalue , v.escapedSet );
 					if( r != null )
 						result2.addAll( r );
 				}
@@ -552,11 +566,7 @@ class Expander {
 					if( v.isObject() )
 						try {
 							v = new XValue( v.convert(XdmValue.class));
-						} catch (XPathException e) {
-							throw new CoreException(e);
-						} catch (JsonProcessingException e) {
-							throw new CoreException(e);
-                        } catch (IOException e) {
+                        } catch (Exception e) {
 							throw new CoreException(e);
                         }
 
@@ -645,7 +655,7 @@ class Expander {
 	}
 
 
-	private List<XValue> expandWild(XValue v) {
+	private List<XValue> expandWild(XValue v, BitSet escapedSet ) {
 		ArrayList<XValue> r = new ArrayList<XValue>();
 
 		if( v.isXExpr() || v.isObject() ){

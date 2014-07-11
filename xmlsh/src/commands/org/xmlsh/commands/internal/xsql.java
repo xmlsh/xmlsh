@@ -6,6 +6,21 @@
 
 package org.xmlsh.commands.internal;
 
+import net.sf.saxon.s9api.SaxonApiException;
+
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
+import org.xmlsh.core.CoreException;
+import org.xmlsh.core.InputPort;
+import org.xmlsh.core.Options;
+import org.xmlsh.core.OutputPort;
+import org.xmlsh.core.XCommand;
+import org.xmlsh.core.XValue;
+import org.xmlsh.sh.shell.SerializeOpts;
+import org.xmlsh.util.StringPair;
+import org.xmlsh.util.Util;
+
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.sql.Connection;
@@ -32,19 +47,6 @@ import javax.xml.stream.XMLStreamWriter;
 import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
-
-import net.sf.saxon.s9api.SaxonApiException;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.xmlsh.core.CoreException;
-import org.xmlsh.core.InputPort;
-import org.xmlsh.core.Options;
-import org.xmlsh.core.OutputPort;
-import org.xmlsh.core.XCommand;
-import org.xmlsh.core.XValue;
-import org.xmlsh.sh.shell.SerializeOpts;
-import org.xmlsh.util.StringPair;
-import org.xmlsh.util.Util;
 
 public class xsql extends XCommand {
 	

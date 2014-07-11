@@ -6,14 +6,14 @@
 
 package org.xmlsh.sh.core;
 
+import org.xmlsh.core.CoreException;
+import org.xmlsh.core.XValue;
+import org.xmlsh.sh.shell.Shell;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.xmlsh.core.CoreException;
-import org.xmlsh.core.XValue;
-import org.xmlsh.sh.shell.Shell;
 
 public class CommandSuffix {
 	private WordList		mArgs = new WordList();

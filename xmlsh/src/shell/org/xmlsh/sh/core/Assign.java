@@ -6,13 +6,13 @@
 
 package org.xmlsh.sh.core;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.MutableInteger;
+
+import java.io.IOException;
+import java.io.PrintWriter;
 
 public class Assign {
 	private boolean	mLocal = false ;

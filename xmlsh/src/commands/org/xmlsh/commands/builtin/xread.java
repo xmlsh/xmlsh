@@ -57,12 +57,12 @@ public class xread extends BuiltinCommand {
 		
 
 		if( bParse ) {
-			StreamInputPort ip = new StreamInputPort( stdin.asInputStream(mSerializeOpts) , stdin.getSystemId() );
+			StreamInputPort ip = new StreamInputPort( stdin.asInputStream(getSerializeOpts()) , stdin.getSystemId() );
 			
-			item = ip.asXdmItem(mSerializeOpts);
+			item = ip.asXdmItem(getSerializeOpts());
 			ip.release();
 		} else {
-			IXdmItemInputStream is = stdin.asXdmItemInputStream(mSerializeOpts);
+			IXdmItemInputStream is = stdin.asXdmItemInputStream(getSerializeOpts());
 			item = is.read();
 		}
 		if( item != null )

@@ -6,11 +6,6 @@
 
 package org.xmlsh.commands.internal;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.util.List;
-
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.XPathCompiler;
@@ -32,6 +27,11 @@ import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.Util;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.util.List;
+
 public class xpath extends XCommand {
 
 	@Override
@@ -51,7 +51,7 @@ public class xpath extends XCommand {
 
 		// boolean bReadStdin = false ;
 		
-		mSerializeOpts = getSerializeOpts(opts);
+		setSerializeOpts(getSerializeOpts(opts));
 		if( ! opts.hasOpt("n" ) ){ // Has XML data input
 			// Order of prevelence 
 			// -context
@@ -62,12 +62,12 @@ public class xpath extends XCommand {
 				context = opts.getOptValue("c").asXdmItem();
 			else
 			if( opts.hasOpt("cf"))
-				context = (in=getInput( new XValue(opts.getOptString("cf", "-")))).asXdmItem(mSerializeOpts);
+				context = (in=getInput( new XValue(opts.getOptString("cf", "-")))).asXdmItem(getSerializeOpts());
 			else
 			if( opts.hasOpt("i") )
-				context = (in=getInput( opts.getOptValue("i"))).asXdmItem(mSerializeOpts);
+				context = (in=getInput( opts.getOptValue("i"))).asXdmItem(getSerializeOpts());
 			else
-				context = (in=getStdin()).asXdmItem(mSerializeOpts);
+				context = (in=getStdin()).asXdmItem(getSerializeOpts());
 			
 		}
 
@@ -81,7 +81,7 @@ public class xpath extends XCommand {
 		OptionValue ov = opts.getOpt("f");
 		String xpath = null;
 		if (ov != null)
-			xpath = readString(ov.getValue(),mSerializeOpts);
+			xpath = readString(ov.getValue(),getSerializeOpts());
 		else {
 			ov = opts.getOpt("q");
 			if (ov != null)
@@ -158,7 +158,7 @@ public class xpath extends XCommand {
 			} else {
 
 				OutputPort stdout = getStdout();
-				IXdmItemOutputStream ser = stdout.asXdmItemOutputStream(mSerializeOpts);
+				IXdmItemOutputStream ser = stdout.asXdmItemOutputStream(getSerializeOpts());
 				boolean bAnyOutput = false;
 				boolean bFirst = true;
 
@@ -169,7 +169,7 @@ public class xpath extends XCommand {
 						break;
 
 					if (!bFirst)
-						stdout.writeSequenceSeperator(mSerializeOpts); // Thrashes variable
+						stdout.writeSequenceSeperator(getSerializeOpts()); // Thrashes variable
 															// output !
 					else {
 						if (item instanceof XdmNode) {
@@ -190,7 +190,7 @@ public class xpath extends XCommand {
 
 				}
 				if (!bQuiet && bAnyOutput)
-					stdout.writeSequenceTerminator(mSerializeOpts);
+					stdout.writeSequenceTerminator(getSerializeOpts());
 
 				if( in != null )
 					in.close();

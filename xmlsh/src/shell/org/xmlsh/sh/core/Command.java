@@ -6,10 +6,10 @@
 
 package org.xmlsh.sh.core;
 
+import org.xmlsh.sh.shell.Shell;
+
 import java.io.PrintWriter;
 import java.io.StringWriter;
-
-import org.xmlsh.sh.shell.Shell;
 
 public abstract class Command {
 	private		SourceLocation	mLocation = null;

@@ -6,18 +6,17 @@
 
 package org.xmlsh.sh.shell;
 
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.List;
-
 import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.apache.log4j.PropertyConfigurator;
 import org.apache.log4j.RollingFileAppender;
+
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.List;
 
 class Logging {
 

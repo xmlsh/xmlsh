@@ -6,21 +6,18 @@
 
 package org.xmlsh.commands.internal;
 
-import java.util.List;
-
-import javax.xml.stream.XMLStreamException;
-
-import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.SaxonApiException;
 import org.xmlsh.core.BuiltinFunctionCommand;
 import org.xmlsh.core.CoreException;
-import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.UnknownOption;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.util.S9Util;
+
+import java.util.List;
+
+import javax.xml.stream.XMLStreamException;
 
 public class xstacktrace extends BuiltinFunctionCommand {
 	

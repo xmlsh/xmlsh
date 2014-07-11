@@ -1,6 +1,4 @@
 package org.xmlsh.commands.internal;
-import java.util.List;
-
 import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.XCommand;
@@ -8,6 +6,8 @@ import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.util.HelpUsage;
 import org.xmlsh.util.Util;
+
+import java.util.List;
 
 /**
  * $Id: $

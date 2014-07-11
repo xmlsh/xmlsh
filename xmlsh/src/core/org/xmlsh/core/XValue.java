@@ -44,7 +44,6 @@ import org.xmlsh.util.StringPair;
 import org.xmlsh.util.Util;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
@@ -58,41 +57,41 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 public class XValue {
 	private static Logger mLogger = Logger.getLogger( XValue.class);
-	
-	
+
+
 	private		Object	mValue;		// String , XdmValue , Object 
-	
-	
-	
+
+
+
 	public XValue()
 	{
 		mValue = null;
 	}
-	
+
 	/*
 	 *  Create an atomic string (xs:string)
 	 */
-	
+
 	public XValue(String s)
 	{
 		mValue = new XdmAtomicValue( s );
 	}
-	
+
 	// Create XValue from an array of strings
 	public XValue( String[] astring )
 	{
 		ArrayList<XdmItem> items = new ArrayList<XdmItem>(astring.length);
 		for( String s: astring ){
 			items.add(new XdmAtomicValue(s));
-			
+
 		}
 		mValue = new XdmValue(items);
-		
-		
+
+
 	}
-	
-	
-	
+
+
+
 	/*
 	 * Create an XValue from an XdmValue 
 	 */
@@ -100,7 +99,7 @@ public class XValue {
 	{
 		mValue = v;
 	}
-	
+
 	/*
 	 *  Create an XValue by combining a list of XdmValue objects into a single XValue
 	 */
@@ -110,19 +109,19 @@ public class XValue {
 			XdmValue v = arg.asXdmValue();
 			for( XdmItem item : v )
 				items.add( item );
-			
+
 		}
 
 		mValue =  new XdmValue(  items);
-		
+
 	}
-	
+
 	public XValue( Object obj )
 	{
 		mValue = obj ;
 	}
-	
-	
+
+
 	/*
 	 * Return (cast) the variable to an XdmValue
 	 * do not modify the variable itself. 
@@ -133,10 +132,10 @@ public class XValue {
 			return (XdmValue) mValue ;
 		else
 			return null ;
-		
+
 	}
 
-	
+
 	public XValue(int n) {
 		mValue = new XdmAtomicValue(  n  );
 	}
@@ -148,16 +147,16 @@ public class XValue {
 	public XValue(boolean n) {
 		mValue = new XdmAtomicValue( n );
 	}
-	
+
 	public XValue(BigDecimal n) {
 		mValue = new XdmAtomicValue( n );
 	}
-	
+
 	public XValue(String value , ItemType type) throws SaxonApiException {
 		mValue = new XdmAtomicValue( value , type  );
 	}
-	
-	
+
+
 	public XValue(Item item) {
 		this( S9Util.wrapItem(item));
 	}
@@ -166,37 +165,37 @@ public class XValue {
 	{
 		if( mValue != null ){
 			try {
-			if( isAtomic() )
-				return mValue.toString().getBytes(encoding);
-			else
-			{
-				ByteArrayOutputStream out = new ByteArrayOutputStream();
-				SerializeOpts opts = new SerializeOpts();
-				opts.setOutputTextEncoding( encoding );
-				
-				serialize( out , opts );
-				return out.toByteArray();
-				
-				
-			}
+				if( isAtomic() )
+					return mValue.toString().getBytes(encoding);
+				else
+				{
+					ByteArrayOutputStream out = new ByteArrayOutputStream();
+					SerializeOpts opts = new SerializeOpts();
+					opts.setOutputTextEncoding( encoding );
+
+					serialize( out , opts );
+					return out.toByteArray();
+
+
+				}
 			} catch (Exception e )
 			{
 				mLogger.warn("Exception serializing XML value");
 			}
-			
-			
+
+
 		}
-			
+
 		return null;
 	}
 	public String	toString(){
 		if( mValue != null ){
 			if( isJson() )
-	            try {
-	                return JsonUtils.jsonToString( (JsonNode) mValue );
-                } catch (JsonProcessingException e1) {
+				try {
+					return JsonUtils.jsonToString( (JsonNode) mValue );
+				} catch (JsonProcessingException e1) {
 					mLogger.warn("Exception serializing Json value");
-                }
+				}
 			if( isAtomic() || isObject() )
 				return mValue.toString();
 			else
@@ -208,27 +207,27 @@ public class XValue {
 				} catch (UnsupportedEncodingException e) {
 					mLogger.warn("Exception serializing XML value");
 				}
-				
-				
+
+
 			}
-			
+
 		}
-			
+
 		return "";
 	}
 
-	
-	
-	
+
+
+
 	public XValue	xpath( Shell shell , String expr ) throws UnexpectedException 
 	{
 		if( mValue == null || ! (mValue instanceof XdmValue) )
 			return null ;
-		
+
 		Processor  processor  = Shell.getProcessor();
-	
+
 		XPathCompiler compiler = processor.newXPathCompiler();
-		
+
 		Namespaces ns = shell.getEnv().getNamespaces(); 
 		if (ns != null) {
 			for (String prefix : ns.keySet()) {
@@ -238,21 +237,21 @@ public class XValue {
 			}
 
 		}
-		
-		
+
+
 		try {
 			XPathExecutable exec = compiler.compile( expr );
 
 			XPathSelector eval = exec.load();
 			eval.setContextItem( ((XdmValue)mValue).itemAt(0) );
 			return new XValue( eval.evaluate());
-			
-		
+
+
 		} catch( Exception e ){
 			throw new UnexpectedException("Exception evaluating xpath: " + expr,e );
 		}
 	}
-	
+
 	public boolean isNull()
 	{
 		return  mValue == null ;
@@ -260,70 +259,72 @@ public class XValue {
 
 	public boolean isXExpr()
 	{
+		if( isJson() )
+			return false ;
 		return ! isAtomic();
 	}
-	
+
 	public boolean equals(String s)
 	{
 		return isAtomic() && toString().equals(s);
 	}
-	
+
 	public boolean equals( Object that )
 	{
 		if( this == that )
 			return true ;
-		
+
 		return super.equals(that);
 	}
-	
+
 	public boolean equals( XValue that )
 	{
 		if( this == that )
 			return true ;
-		
+
 		if( this.isAtomic() && that.isAtomic() )
 			return toString().equals(that.toString());
-		
+
 		if( mValue != null && that.mValue != null )
 			return mValue.equals( that.mValue );
 		return false ;
 	}
-	
+
 	public int hashCode()
 	{
 		if( mValue == null )
 			return 0;
 		return mValue.hashCode();
 	}
-	
+
 
 	public boolean isAtomic() {
 		if( mValue == null )
 			return true ;
-		
+
 		// Non-XdmValues not considered atomic.
 		if( ! (mValue instanceof XdmValue ))
 			return false ;
-		
-		
+
+
 		ValueRepresentation<? extends Item> value = asXdmValue().getUnderlyingValue();
 		boolean isAtom = ( value instanceof AtomicValue ) || ( value instanceof NodeInfo && ((NodeInfo)value).getNodeKind() == net.sf.saxon.type.Type.TEXT ) ;
 		return isAtom;
-	
-		
+
+
 	}
 
 	public long toLong() throws XPathException {
 		if( mValue == null )
 			return 0;
-		
+
 		if( ! isAtomic() )
 			return -1 ;
-		
+
 		if( mValue instanceof IntegerValue )
 			return ((IntegerValue)mValue).longValue();
-			
-		
+
+
 		return Long.parseLong(toString());
 	}
 
@@ -331,10 +332,10 @@ public class XValue {
 	public BigDecimal toBigDecimal() throws XPathException {
 		if( mValue == null )
 			return null ;
-		
+
 		if( ! isAtomic() )
 			return null ;
-		
+
 		if( mValue instanceof AtomicValue ){
 			AtomicValue av = (AtomicValue) mValue ;
 			if( av instanceof DecimalValue )
@@ -345,88 +346,104 @@ public class XValue {
 				return BigDecimal.valueOf( ((FloatValue)av).getDoubleValue() );
 			if( av instanceof IntegerValue )
 				return BigDecimal.valueOf( ((IntegerValue)av).longValue() );
-			
+
 		} 
 		return BigDecimal.valueOf( Double.valueOf(mValue.toString() ));
 
 	}
-	
-	
-	
-	public void serialize(OutputStream out, SerializeOpts opt) throws UnsupportedEncodingException, IOException, SaxonApiException 
-	{
-		if( isAtomic() || isObject() )
-			out.write( toString().getBytes(opt.getOutputXmlEncoding()) );
-		else 
-		if( mValue instanceof XdmValue )
-		
-		{
-			Serializer ser = Util.getSerializer(opt);
-			ser.setOutputStream( out );
 
-			// Shell.getProcessor().writeXdmValue( mValue, ser);
-			Util.writeXdmValue( asXdmValue(), ser );
+
+
+	public void serialize(OutputStream out, SerializeOpts opt) throws InvalidArgumentException 
+	{
+		try {
+			if( isJson() ) {
+				JsonUtils.writeJsonNode(asJson(), out , opt );	
+			}
+			else
+				if( isAtomic() || isObject() )
+					out.write( toString().getBytes(opt.getOutputXmlEncoding()) );
+				else 
+					if( mValue instanceof XdmValue )
+
+					{
+						Serializer ser = Util.getSerializer(opt);
+						ser.setOutputStream( out );
+
+						// Shell.getProcessor().writeXdmValue( mValue, ser);
+						Util.writeXdmValue( asXdmValue(), ser );
+					}
+		}	catch( Exception e ){
+			Util.wrapException(e, InvalidArgumentException.class );	
+
 		}
 	}
-	
 
 
-    public boolean toBoolean() throws UnexpectedException, XPathException, JsonProcessingException, IOException {
+
+	public boolean toBoolean() throws InvalidArgumentException, UnexpectedException  {
 		if( mValue == null )
 			return false ;
-		
-		
+
+
 		/*
 		 * Check for Java boolean and integer values
 		 */
 		if( mValue == null )
 			return false ;
-		
-		if( isJson() )
-			return asJson().asBoolean();
-		
-		if( ! (mValue instanceof XdmValue ) ){
-			
-			if( canConvert( mValue.getClass() , Boolean.class ) >= 0 )
-				 return ((Boolean)convert(Boolean.class)).booleanValue() ;
-			
-			if( canConvert( mValue.getClass() , Long.class ) >= 0 )
-				return ((Long)convert(Long.class)).longValue() != 0L ;
-			
+
+		try {
+			if( isJson() )
+				return asJson().asBoolean();
 		}
-		
-		
+		catch( Exception e ){
+			Util.wrapException(e,InvalidArgumentException.class);	
+			return false ; // SNH 
+		}
+
+
+		if( ! (mValue instanceof XdmValue ) ){
+
+			if( JavaUtils.canConvertClass( mValue.getClass() , Boolean.class ) >= 0 )
+				return ((Boolean)convert(Boolean.class)).booleanValue() ;
+
+			if( JavaUtils.canConvertClass( mValue.getClass() , Long.class ) >= 0 )
+				return ((Long)convert(Long.class)).longValue() != 0L ;
+
+		}
+
+
 		XdmValue value = asXdmValue();
 		if( value == null )
 			return false ;
-				
+
 		// Sequence of > 1 length 
 		if( value.size() > 1 )
 			return true ;
 		// Sequence of 0 length 
 		if( value.size() == 0 )
 			return false ;
-		
+
 
 		Processor  processor  = Shell.getProcessor();
-	
+
 		XPathCompiler compiler = processor.newXPathCompiler();
 
-		
+
 		try {
 			XPathExecutable exec = compiler.compile( "." );
 
 			XPathSelector eval = exec.load();
 			eval.setContextItem( value.itemAt(0) );
 			return eval.effectiveBooleanValue();
-			
-		
+
+
 		} catch( Exception e ){
 			throw new UnexpectedException("Exception evaluating boolean xpath" );
 		}
-		
+
 	}
-	
+
 
 	public XdmNode asXdmNode() throws InvalidArgumentException
 	{
@@ -436,13 +453,13 @@ public class XValue {
 		else
 			throw new InvalidArgumentException("Value is not a Node");
 	}
-	
+
 	public XdmItem asXdmItem()
 	{
 		XdmValue value = asXdmValue();
 		if( value == null)
 			return null  ;
-		
+
 		try {
 			return  value.itemAt(0);
 		} catch (IndexOutOfBoundsException e) {
@@ -452,64 +469,64 @@ public class XValue {
 		}
 
 	}
-	
+
 	public Source asSource() throws InvalidArgumentException {
 		return asXdmNode().asSource();
 
 	}
-	
+
 	/*
 	 * Return a new XValue which is an appending of "this" value
 	 * and another XdmValue as a sequence
 	 * If This is null or the empty sequence then return the value
 	 */
-	
+
 	public XValue append(XdmValue xvalue)
 	{
 		if( mValue == null )
 			return new XValue(xvalue);
-		
+
 		if( xvalue == null )
 			return this ;
-		
+
 		List<XdmItem> items = new ArrayList<XdmItem>();
 		for (XdmItem item : asXdmValue())
 			items.add(item);
-		
+
 		for( XdmItem item : xvalue )
 			items.add(item);
-		
+
 		return new XValue(new XdmValue(items));
-		
+
 	}
 
 	public XValue append(XValue v) {
 		return append( v.asXdmValue() );
-		
+
 	}
 
 	public NodeInfo asNodeInfo() throws InvalidArgumentException {
-		
+
 		return asXdmNode().getUnderlyingNode();
 	}
-	
+
 	public XdmSequenceIterator asXdmSequenceIterator()
 	{
 		XdmValue value = asXdmValue();
 		if( value == null )
 			return null ;
-		
+
 		return value.iterator();		
 	}
-	
-	
-	
+
+
+
 	public SequenceIterator asSequenceIterator()
 	{
 		XdmValue value = asXdmValue();
 		if( value == null )
 			return null ;
-		
+
 		try {
 			ValueRepresentation v = value.getUnderlyingValue();
 			if (v instanceof Value) {
@@ -528,7 +545,7 @@ public class XValue {
 		XdmValue value = asXdmValue();
 		if( value == null )
 			return this ;
-		
+
 		XdmItemSubsequence	iter = new XdmItemSubsequence( value , n );
 		return new XValue(  new XdmValue(  iter ) );
 	}
@@ -537,26 +554,26 @@ public class XValue {
 		XdmValue value = asXdmValue();
 		if( value == null )
 			return null ;
-		
-		
+
+
 		XdmSequenceIterator iter = value.iterator();
 		List<String> list = new ArrayList<String>( value.size() );
 		while( iter.hasNext()){
 			XdmItem item = iter.next();
 			list.add( item.toString() );
-			
+
 		}
 		return list;
 	}
 
 	public boolean isEmpty() {
-		
+
 		if( this.isNull() )
 			return true ;
 		XdmValue value = asXdmValue();
 		if( value == null )
 			return true ;
-		
+
 		return value.size() == 0 ;
 	}
 
@@ -567,8 +584,8 @@ public class XValue {
 		if( mValue == null )
 			return null ;
 		else
-		if( ! ( mValue instanceof XdmValue) )
-			return null;
+			if( ! ( mValue instanceof XdmValue) )
+				return null;
 		XdmValue v = (XdmValue) mValue;
 		if( ind == null || ind.equals("*") )
 			return v ;
@@ -576,13 +593,13 @@ public class XValue {
 			int index = Util.parseInt(ind, 0) - 1;
 			if( index >= v.size() )
 				return null ;
-			
+
 			return v.itemAt( index );
 		}
-	
-		
+
+
 	}
-	
+
 	public boolean isObject()
 	{
 		return ( mValue != null && !(mValue instanceof XdmValue)  );
@@ -599,35 +616,31 @@ public class XValue {
 	 */
 
 
-	public  int canConvert( Class<?> c) throws XPathException, JsonProcessingException, IOException {
+	public  int canConvert( Class<?> c) throws InvalidArgumentException, UnexpectedException {
 		Object value = mValue ;
 		if( value == null )
 			return -1;
-		
+
 		Class<? extends Object> vclass = value.getClass();
 
-		int ret = canConvert( vclass , c );
+		int ret = JavaUtils.canConvertClass( vclass , c );
 		if( ret >= 0 )
 			return ret ;
-		
+
 		// Try converting 
 		if( value instanceof XdmValue ){
 			value = getJavaNative();
 			if( value == null )
 				return -1 ;
-			 vclass = value.getClass();
-			ret = canConvert( vclass , c );
-		
+			vclass = value.getClass();
+			ret = JavaUtils.canConvertClass( vclass , c );
 		}
-		
-		
+
 		return ret ;
-		
-		
-		
+
 	}
 
-	
+
 	/*
 	 * Returns 0 if there is an exact match between source and target
 	 * Returns 1 if source can be converted to target
@@ -635,110 +648,103 @@ public class XValue {
 	 */
 
 
-	private static  int canConvert( Class<?> sourceClass ,  Class<?> targetClass) throws XPathException {
+	
 
-		// Equal class
-		if( sourceClass.equals(targetClass))
-			return 0 ;
-	
-		// Directly assignable
-		if( targetClass.isAssignableFrom(sourceClass))
-			return 1 ;
-	
-		
-		// Boxable 
-		// int <-> Integer
-		if( JavaUtils.isIntClass(sourceClass) && JavaUtils.isIntClass(targetClass))
-			return 2 ;
-		
-		
-		
-		
-		return -1;
-		
-		
-	}
 
-	
 	/*
 	 * Returns true if the class is an Integer like class
 	 */
-	
-	public Object convert( Class<?> c) throws XPathException, JsonProcessingException, IOException{
-			
+
+	public Object convert( Class<?> c) throws InvalidArgumentException {
+
+		try {
 			Object value = mValue ;
 			if( value == null )
 				return null;
-			
+
 
 			if( c.isInstance(value))
 				return c.cast(value);
-			
+
 			if( value instanceof XdmValue && ! XdmValue.class.equals(c))
 				value = getJavaNative();
-			
-			
-			
+
+
+
 			return JavaUtils.convert(value, c);
-			
-			
+		} catch( Exception e ) {
+			Util.wrapException(e, InvalidArgumentException.class );	
+
+			return null; // SNH
+		}
+
+
 
 	}
 
-	public Object getJavaNative() throws XPathException, JsonProcessingException, IOException
+	public Object getJavaNative() throws InvalidArgumentException, UnexpectedException
 	{
-		if( mValue == null )
-			return null ;
-		
-		if( isJson() )
-			return JsonUtils.asJavaNative( asJson() );
-		
-		// Already a java type 
-		if( !( mValue instanceof XdmValue) )
-			return mValue ;
-		
-		XdmValue xv = (XdmValue)mValue ;
-		
-		ValueRepresentation value = xv.getUnderlyingValue();
-		// Special case for text nodes treat as String
-		if( value instanceof NodeInfo &&  ((NodeInfo)value).getNodeKind() == net.sf.saxon.type.Type.TEXT ) 
-			return value.getStringValue();
-		
-		if( ! ( value instanceof AtomicValue ))
-			return value ;
-		
-		AtomicValue av = (AtomicValue) value ;
-		Object java = AtomicValue.convertToJava(av);
+		try {
+			if( mValue == null )
+				return null ;
+
+			if( isJson() )
+				return JsonUtils.asJavaNative( asJson() );
+
+			// Already a java type 
+			if( !( mValue instanceof XdmValue) )
+				return mValue ;
+
+			XdmValue xv = (XdmValue)mValue ;
+
+			ValueRepresentation value = xv.getUnderlyingValue();
+			// Special case for text nodes treat as String
+			if( value instanceof NodeInfo &&  ((NodeInfo)value).getNodeKind() == net.sf.saxon.type.Type.TEXT ) 
+				return value.getStringValue();
+
+			if( ! ( value instanceof AtomicValue ))
+				return value ;
+
+			AtomicValue av = (AtomicValue) value ;
+			Object java = AtomicValue.convertToJava(av);
+
+
+			return java;
+		}
+		catch( Exception e ){
+			Util.wrapException("Exception getting java native value",e,UnexpectedException.class);	
 			
-		
-		return java;
+		}
+		// SNH
+
+		return null ;
 	}
 
 	public QName asQName(Shell shell) {
 		if( mValue == null )
 			return null ;
-		
+
 		if( mValue instanceof QName )
 			return (QName) mValue ;
-		
+
 		String qn = mValue.toString();
 		if( qn.startsWith("{") || qn.indexOf(':' ) <= 0 )
 			return Util.qnameFromClarkName( mValue.toString() );
-		
+
 		StringPair pair = new StringPair(qn,':');
-			
+
 		String uri = shell.getEnv().getNamespaces().get(pair.getLeft());
 		return new QName( pair.getLeft() , uri , pair.getRight() );
-		
-		
-		
+
+
+
 	}
 
 	public boolean isXdmNode() {
 		XdmValue value = asXdmValue();
 		return value != null && value instanceof XdmNode ;
-		
-		
+
+
 	}
 
 	public int toInt() throws XPathException {
@@ -748,26 +754,26 @@ public class XValue {
 	public double toDouble() {
 		if( mValue == null )
 			return 0.;
-		
+
 		if( ! isAtomic() )
 			return 0. ;
-		
+
 		if( mValue instanceof DoubleValue )
 			return ((DoubleValue)mValue).getDoubleValue();
-			
-		
+
+
 		return Double.parseDouble(toString());		
-		
+
 	}
 
-	
+
 	public boolean isJson()
 	{
 		return mValue != null &&
-			    ( mValue instanceof JsonNode );
+				( mValue instanceof JsonNode );
 	}
 
-	public JsonNode asJson() throws JsonProcessingException, IOException {
+	public JsonNode asJson() throws InvalidArgumentException  {
 		if( mValue == null || mValue instanceof JsonNode )
 			return (JsonNode) mValue ;
 
@@ -779,20 +785,20 @@ public class XValue {
 			return false ;
 		if( mValue instanceof String )
 			return true ;
-		
+
 		// Non-XdmValues not considered atomic.
 		if( ! (mValue instanceof XdmValue ))
 			return false ;
-		
-		
+
+
 		ValueRepresentation<? extends Item> value = asXdmValue().getUnderlyingValue();
 		boolean isString = ( value instanceof net.sf.saxon.value.StringValue ) || ( value instanceof NodeInfo && ((NodeInfo)value).getNodeKind() == net.sf.saxon.type.Type.TEXT ) ;
 		return isString ;
-		
+
 
 	}
 
-	
+
 }
 //
 //

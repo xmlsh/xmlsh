@@ -6,6 +6,13 @@
 
 package org.xmlsh.commands.stax;
 
+import net.sf.saxon.trans.XPathException;
+import org.xmlsh.core.BuiltinFunctionCommand;
+import org.xmlsh.core.CoreException;
+import org.xmlsh.core.XValue;
+import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.util.StAXUtils;
+
 import java.io.IOException;
 import java.util.List;
 
@@ -13,13 +20,6 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.XMLEvent;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-
-import net.sf.saxon.trans.XPathException;
-import org.xmlsh.core.BuiltinFunctionCommand;
-import org.xmlsh.core.CoreException;
-import org.xmlsh.core.XValue;
-import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.util.StAXUtils;
 
 public class getEventType extends BuiltinFunctionCommand {
 

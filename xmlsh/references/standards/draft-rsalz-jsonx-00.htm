@@ -1,0 +1,876 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!-- saved from url=(0047)http://tools.ietf.org/html/draft-rsalz-jsonx-00 -->
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"><head profile="http://dublincore.org/documents/2008/08/04/dc-html/"><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="robots" content="index,follow">
+    <meta name="creator" content="rfcmarkup version 1.107">
+    <link rel="schema.DC" href="http://purl.org/dc/elements/1.1/">
+<meta name="DC.Identifier" content="urn:ietf:id:rsalz-jsonx">
+<meta name="DC.Description.Abstract" content="This document specifies a mapping between JSON (RFC 4627) and XML. The\nmapping maintains a high degree of fidelity. It is used by several IBM\nproducts.">
+<meta name="DC.Creator" content="Schenker, Michael">
+<meta name="DC.Creator" content="Salz, Rich">
+<meta name="DC.Creator" content="Muschett, Brien">
+<meta name="DC.Date.Issued" content="2011-05-02">
+<meta name="DC.Title" content="JSONx, an XML Encoding for JSON">
+
+    <link rel="icon" href="http://tools.ietf.org/images/id.png" type="image/png">
+    <link rel="shortcut icon" href="http://tools.ietf.org/images/id.png" type="image/png">
+    <title>draft-rsalz-jsonx-00 - JSONx, an XML Encoding for JSON</title>
+    
+    
+    <style type="text/css">
+	body {
+	    margin: 0px 8px;
+            font-size: 1em;
+	}
+        h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
+	    font-weight: bold;
+            line-height: 0pt;
+            display: inline;
+            white-space: pre;
+            font-family: monospace;
+            font-size: 1em;
+	    font-weight: bold;
+        }
+        pre {
+            font-size: 1em;
+            margin-top: 0px;
+            margin-bottom: 0px;
+        }
+	.pre {
+	    white-space: pre;
+	    font-family: monospace;
+	}
+	.header{
+	    font-weight: bold;
+	}
+        .newpage {
+            page-break-before: always;
+        }
+        .invisible {
+            text-decoration: none;
+            color: white;
+        }
+        a.selflink {
+          color: black;
+          text-decoration: none;
+        }
+        @media print {
+            body {
+                font-family: monospace;
+                font-size: 10.5pt;
+            }
+            h1, h2, h3, h4, h5, h6 {
+                font-size: 1em;
+            }
+        
+            a:link, a:visited {
+                color: inherit;
+                text-decoration: none;
+            }
+            .noprint {
+                display: none;
+            }
+        }
+	@media screen {
+	    .grey, .grey a:link, .grey a:visited {
+		color: #777;
+	    }
+            .docinfo {
+                background-color: #EEE;
+            }
+            .top {
+                border-top: 7px solid #EEE;
+            }
+            .bgwhite  { background-color: white; }
+            .bgred    { background-color: #F44; }
+            .bggrey   { background-color: #666; }
+            .bgbrown  { background-color: #840; }            
+            .bgorange { background-color: #FA0; }
+            .bgyellow { background-color: #EE0; }
+            .bgmagenta{ background-color: #F4F; }
+            .bgblue   { background-color: #66F; }
+            .bgcyan   { background-color: #4DD; }
+            .bggreen  { background-color: #4F4; }
+
+            .legend   { font-size: 90%; }
+            .cplate   { font-size: 70%; border: solid grey 1px; }
+	}
+    </style>
+    <!--[if IE]>
+    <style>
+    body {
+       font-size: 13px;
+       margin: 10px 10px;
+    }
+    </style>
+    <![endif]-->
+
+    <script type="text/javascript"><!--
+    function addHeaderTags() {
+	var spans = document.getElementsByTagName("span");
+	for (var i=0; i < spans.length; i++) {
+	    var elem = spans[i];
+	    if (elem) {
+		var level = elem.getAttribute("class");
+                if (level == "h1" || level == "h2" || level == "h3" || level == "h4" || level == "h5" || level == "h6") {
+                    elem.innerHTML = "<"+level+">"+elem.innerHTML+"</"+level+">";		
+                }
+	    }
+	}
+    }
+    var legend_html = "Colour legend:<br />      <table>         <tr><td>Unknown:</td>                   <td><span class='cplate bgwhite'>&nbsp;&nbsp;&nbsp;&nbsp;</span></td></tr>         <tr><td>Draft:</td>                     <td><span class='cplate bgred'>&nbsp;&nbsp;&nbsp;&nbsp;</span></td></tr>         <tr><td>Informational:</td>             <td><span class='cplate bgorange'>&nbsp;&nbsp;&nbsp;&nbsp;</span></td></tr>         <tr><td>Experimental:</td>              <td><span class='cplate bgyellow'>&nbsp;&nbsp;&nbsp;&nbsp;</span></td></tr>         <tr><td>Best Common Practice:</td>      <td><span class='cplate bgmagenta'>&nbsp;&nbsp;&nbsp;&nbsp;</span></td></tr>         <tr><td>Proposed Standard:</td>         <td><span class='cplate bgblue'>&nbsp;&nbsp;&nbsp;&nbsp;</span></td></tr>         <tr><td>Draft Standard (old designation):</td> <td><span class='cplate bgcyan'>&nbsp;&nbsp;&nbsp;&nbsp;</span></td></tr>         <tr><td>Internet Standard:</td>         <td><span class='cplate bggreen'>&nbsp;&nbsp;&nbsp;&nbsp;</span></td></tr>         <tr><td>Historic:</td>                  <td><span class='cplate bggrey'>&nbsp;&nbsp;&nbsp;&nbsp;</span></td></tr>         <tr><td>Obsolete:</td>                  <td><span class='cplate bgbrown'>&nbsp;&nbsp;&nbsp;&nbsp;</span></td></tr>     </table>";
+    function showElem(id) {
+        var elem = document.getElementById(id);
+        elem.innerHTML = eval(id+"_html");
+        elem.style.visibility='visible';
+    }
+    function hideElem(id) {
+        var elem = document.getElementById(id);
+        elem.style.visibility='hidden';        
+        elem.innerHTML = "";
+    }
+    // -->
+    </script>
+</head>
+<body onload="addHeaderTags()">
+   <div style="height: 13px;">
+      <div onmouseover="this.style.cursor=&#39;pointer&#39;;" onclick="showElem(&#39;legend&#39;);" onmouseout="hideElem(&#39;legend&#39;)" style="height: 6px; position: absolute;" class="pre noprint docinfo bgred" title="Click for colour legend.">                                                                        </div>
+      <div id="legend" class="docinfo noprint pre legend" style="position:absolute; top: 4px; left: 4ex; visibility:hidden; background-color: white; padding: 4px 9px 5px 7px; border: solid #345 1px; " onmouseover="showElem(&#39;legend&#39;);" onmouseout="hideElem(&#39;legend&#39;);">
+      </div>
+   </div>
+<span class="pre noprint docinfo top">[<a href="http://tools.ietf.org/html/" title="Document search and retrieval page">Docs</a>] [<a href="http://tools.ietf.org/id/draft-rsalz-jsonx-00.txt" title="Plaintext version of this document">txt</a>|<a href="http://tools.ietf.org/pdf/draft-rsalz-jsonx-00.txt" title="PDF version of this document">pdf</a>|<a href="http://tools.ietf.org/id/draft-rsalz-jsonx-00.xml" title="XML source for this document">xml</a>|<a href="http://tools.ietf.org/id/draft-rsalz-jsonx-00.html" title="HTML version of this document, from XML2RFC">html</a>] [<a href="https://datatracker.ietf.org/doc/draft-rsalz-jsonx" title="IESG Datatracker information for this document">Tracker</a>] [<a href="mailto:draft-rsalz-jsonx@tools.ietf.org?subject=draft-rsalz-jsonx%20" title="Send email to the document authors">Email</a>] [<a href="http://tools.ietf.org/idnits?url=http://tools.ietf.org/id/draft-rsalz-jsonx-00.txt" title="Run an idnits check of this document">Nits</a>]                      </span><br>
+<span class="pre noprint docinfo">                                                                        </span><br>
+<span class="pre noprint docinfo">Versions: <a href="./draft-rsalz-jsonx-00_files/draft-rsalz-jsonx-00.htm">00</a>                                                            </span><br>
+<span class="pre noprint docinfo">                                                                        </span><br>
+<pre>Network Working Group                                        B. Muschett
+Internet-Draft                                                   R. Salz
+Expires: November 3, 2011                                    M. Schenker
+                                                                     IBM
+                                                             May 2, 2011
+
+
+                    <span class="h1"><h1>JSONx, an XML Encoding for JSON</h1></span>
+                        <span class="h1"><h1>draft-rsalz-jsonx-00.txt</h1></span>
+
+Abstract
+
+   This document specifies a mapping between JSON (<a href="http://tools.ietf.org/html/rfc4627">RFC 4627</a>) and XML.
+   The mapping maintains a high degree of fidelity.  It is used by
+   several IBM products.
+
+Status of this Memo
+
+   This Internet-Draft is submitted in full conformance with the
+   provisions of <a href="http://tools.ietf.org/html/bcp78">BCP 78</a> and <a href="http://tools.ietf.org/html/bcp79">BCP 79</a>.
+
+   Internet-Drafts are working documents of the Internet Engineering
+   Task Force (IETF).  Note that other groups may also distribute
+   working documents as Internet-Drafts.  The list of current Internet-
+   Drafts is at <a href="http://datatracker.ietf.org/drafts/current/">http://datatracker.ietf.org/drafts/current/</a>.
+
+   Internet-Drafts are draft documents valid for a maximum of six months
+   and may be updated, replaced, or obsoleted by other documents at any
+   time.  It is inappropriate to use Internet-Drafts as reference
+   material or to cite them other than as "work in progress."
+
+   This Internet-Draft will expire on November 3, 2011.
+
+Copyright Notice
+
+   Copyright (c) 2011 IETF Trust and the persons identified as the
+   document authors.  All rights reserved.
+
+   This document is subject to <a href="http://tools.ietf.org/html/bcp78">BCP 78</a> and the IETF Trust's Legal
+   Provisions Relating to IETF Documents
+   (<a href="http://trustee.ietf.org/license-info">http://trustee.ietf.org/license-info</a>) in effect on the date of
+   publication of this document.  Please review these documents
+   carefully, as they describe your rights and restrictions with respect
+   to this document.  Code Components extracted from this document must
+   include Simplified BSD License text as described in <a href="http://tools.ietf.org/html/draft-rsalz-jsonx-00#section-4">Section 4</a>.e of
+   the Trust Legal Provisions and are provided without warranty as
+   described in the Simplified BSD License.
+
+
+
+
+<span class="grey">Muschett, et al.        Expires November 3, 2011                [Page 1]</span>
+</pre><!--NewPage--><pre class="newpage"><a name="page-2" id="page-2" href="http://tools.ietf.org/html/draft-rsalz-jsonx-00#page-2" class="invisible"> </a>
+<span class="grey">Internet-Draft                    JSONx                         May 2011</span>
+
+
+Table of Contents
+
+   <a href="http://tools.ietf.org/html/draft-rsalz-jsonx-00#section-1">1</a>.  Introduction . . . . . . . . . . . . . . . . . . . . . . . . .  <a href="http://tools.ietf.org/html/draft-rsalz-jsonx-00#page-3">3</a>
+   <a href="http://tools.ietf.org/html/draft-rsalz-jsonx-00#section-2">2</a>.  Conversion Rules . . . . . . . . . . . . . . . . . . . . . . .  <a href="http://tools.ietf.org/html/draft-rsalz-jsonx-00#page-4">4</a>
+     <a href="http://tools.ietf.org/html/draft-rsalz-jsonx-00#section-2.1">2.1</a>.  root element . . . . . . . . . . . . . . . . . . . . . . .  <a href="http://tools.ietf.org/html/draft-rsalz-jsonx-00#page-4">4</a>
+     <a href="http://tools.ietf.org/html/draft-rsalz-jsonx-00#section-2.2">2.2</a>.  object . . . . . . . . . . . . . . . . . . . . . . . . . .  <a href="http://tools.ietf.org/html/draft-rsalz-jsonx-00#page-4">4</a>
+     <a href="http://tools.ietf.org/html/draft-rsalz-jsonx-00#section-2.3">2.3</a>.  array  . . . . . . . . . . . . . . . . . . . . . . . . . .  <a href="http://tools.ietf.org/html/draft-rsalz-jsonx-00#page-4">4</a>
+     <a href="http://tools.ietf.org/html/draft-rsalz-jsonx-00#section-2.4">2.4</a>.  boolean  . . . . . . . . . . . . . . . . . . . . . . . . .  <a href="http://tools.ietf.org/html/draft-rsalz-jsonx-00#page-5">5</a>
+     <a href="http://tools.ietf.org/html/draft-rsalz-jsonx-00#section-2.5">2.5</a>.  string . . . . . . . . . . . . . . . . . . . . . . . . . .  <a href="http://tools.ietf.org/html/draft-rsalz-jsonx-00#page-5">5</a>
+     <a href="http://tools.ietf.org/html/draft-rsalz-jsonx-00#section-2.6">2.6</a>.  number . . . . . . . . . . . . . . . . . . . . . . . . . .  <a href="http://tools.ietf.org/html/draft-rsalz-jsonx-00#page-5">5</a>
+     <a href="http://tools.ietf.org/html/draft-rsalz-jsonx-00#section-2.7">2.7</a>.  null . . . . . . . . . . . . . . . . . . . . . . . . . . .  <a href="http://tools.ietf.org/html/draft-rsalz-jsonx-00#page-6">6</a>
+   <a href="http://tools.ietf.org/html/draft-rsalz-jsonx-00#section-3">3</a>.  Extended Example . . . . . . . . . . . . . . . . . . . . . . .  <a href="http://tools.ietf.org/html/draft-rsalz-jsonx-00#page-7">7</a>
+   <a href="http://tools.ietf.org/html/draft-rsalz-jsonx-00#section-4">4</a>.  Normative References . . . . . . . . . . . . . . . . . . . . .  <a href="http://tools.ietf.org/html/draft-rsalz-jsonx-00#page-8">8</a>
+   <a href="http://tools.ietf.org/html/draft-rsalz-jsonx-00#appendix-A">Appendix A</a>.  Schema (not normative)  . . . . . . . . . . . . . . .  <a href="http://tools.ietf.org/html/draft-rsalz-jsonx-00#page-9">9</a>
+   <a href="http://tools.ietf.org/html/draft-rsalz-jsonx-00#appendix-B">Appendix B</a>.  JSONx to JSON Stylesheet (not normative)  . . . . . . <a href="http://tools.ietf.org/html/draft-rsalz-jsonx-00#page-11">11</a>
+   Authors' Addresses . . . . . . . . . . . . . . . . . . . . . . . . <a href="http://tools.ietf.org/html/draft-rsalz-jsonx-00#page-13">13</a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<span class="grey">Muschett, et al.        Expires November 3, 2011                [Page 2]</span>
+</pre><!--NewPage--><pre class="newpage"><a name="page-3" id="page-3" href="http://tools.ietf.org/html/draft-rsalz-jsonx-00#page-3" class="invisible"> </a>
+<span class="grey">Internet-Draft                    JSONx                         May 2011</span>
+
+
+<span class="h2"><h2><a class="selflink" name="section-1" href="http://tools.ietf.org/html/draft-rsalz-jsonx-00#section-1">1</a>.  Introduction</h2></span>
+
+   This document specifies a mapping between JSON [<a href="http://tools.ietf.org/html/rfc4627" title="&quot;The application/json Media Type for JavaScript Object Notation (JSON)&quot;">RFC4627</a>] and XML,
+   known as JSONx.  The mapping maintains a high degree of fidelity.  It
+   is used by several IBM products.
+
+   JSONx is specified using the terms from the XML Infoset
+   [<a href="http://tools.ietf.org/html/draft-rsalz-jsonx-00#ref-REC-xml-infoset">REC-xml-infoset</a>], serialized as XML 1.0 [<a href="http://tools.ietf.org/html/draft-rsalz-jsonx-00#ref-REC-xml" title="&quot;Extensible Markup Language (XML) 1.0 (Fourth Edition)&quot;">REC-xml</a>].  The Infoset
+   terms "Element Information Item," "Attribute Information Item," and
+   "Character Information Item," are shortened to "element,"
+   "attribute," and "characters" respectively.  For example, when this
+   specification uses the term "element," it is referring to an Element
+   Information Item, and when it uses the term "attribute," it is
+   referring to an Attribute Information Item.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<span class="grey">Muschett, et al.        Expires November 3, 2011                [Page 3]</span>
+</pre><!--NewPage--><pre class="newpage"><a name="page-4" id="page-4" href="http://tools.ietf.org/html/draft-rsalz-jsonx-00#page-4" class="invisible"> </a>
+<span class="grey">Internet-Draft                    JSONx                         May 2011</span>
+
+
+<span class="h2"><h2><a class="selflink" name="section-2" href="http://tools.ietf.org/html/draft-rsalz-jsonx-00#section-2">2</a>.  Conversion Rules</h2></span>
+
+   JSON identifiers are represented by the string contents of the "name"
+   attribute.  Most Unicode characters other than backspace (Unicode
+   code point U+0008) and form feed (U+000C) are valid within
+   identifiers, as long as they are properly escaped (for example,
+   \unnnn).  When JSONx is serialized as XML documents, character and/or
+   entity references may need to be used for special characters.
+   Examples of this include ampersand (U+0026), less-then sign (U+003C),
+   and any characters not representable in the document's encoding.
+
+   Use of backspace, formfeed, or NUL (U+0000) is undefined.
+
+<span class="h3"><h3><a class="selflink" name="section-2.1" href="http://tools.ietf.org/html/draft-rsalz-jsonx-00#section-2.1">2.1</a>.  root element</h3></span>
+
+   The root element is either a &lt;json:object&gt; or a &lt;json:array&gt; element
+   with the following namespace declaration:
+
+           +--------+------------------------------------------+
+           | Prefix | Namespace URI                            |
+           +--------+------------------------------------------+
+           | json   | <a href="http://www.ibm.com/xmlns/prod/2009/jsonx">http://www.ibm.com/xmlns/prod/2009/jsonx</a> |
+           +--------+------------------------------------------+
+
+   All elements defined in this document are in that namespace.
+
+<span class="h3"><h3><a class="selflink" name="section-2.2" href="http://tools.ietf.org/html/draft-rsalz-jsonx-00#section-2.2">2.2</a>.  object</h3></span>
+
+   A JSON object becomes a &lt;json:object&gt; element.  If the object denotes
+   a property within a JSON object, JSONx encodes a name attribute whose
+   value is assigned the property name.  The child elements depend on
+   the properties of the JSON object.  To improve readability,
+   whitespace characters may be added between child elements.  Object
+   elements are ordered according to their document order.
+
+   { "Ticker" : "IBM" }
+
+   &lt;json:object&gt;
+       &lt;json:string name="Ticker"&gt;IBM&lt;/json:string&gt;
+   &lt;/json:object&gt;
+
+<span class="h3"><h3><a class="selflink" name="section-2.3" href="http://tools.ietf.org/html/draft-rsalz-jsonx-00#section-2.3">2.3</a>.  array</h3></span>
+
+   A JSON array becomes a &lt;json:array&gt; element.  If the array denotes a
+   property within a JSON object, JSONx encodes a name attribute whose
+   value is assigned the property name.  The child elements depend on
+   the values in the array.  To improve readability, whitespace
+   characters may be added between child elements.
+
+
+
+<span class="grey">Muschett, et al.        Expires November 3, 2011                [Page 4]</span>
+</pre><!--NewPage--><pre class="newpage"><a name="page-5" id="page-5" href="http://tools.ietf.org/html/draft-rsalz-jsonx-00#page-5" class="invisible"> </a>
+<span class="grey">Internet-Draft                    JSONx                         May 2011</span>
+
+
+   "phoneNumbers": [
+       "212 555-1111",
+       "212 555-2222"
+   ]
+
+   &lt;json:array name="phoneNumbers"&gt;
+       &lt;json:string&gt;212 555-1111&lt;/json:string&gt;
+       &lt;json:string&gt;212 555-2222&lt;/json:string&gt;
+   &lt;/json:array&gt;
+
+<span class="h3"><h3><a class="selflink" name="section-2.4" href="http://tools.ietf.org/html/draft-rsalz-jsonx-00#section-2.4">2.4</a>.  boolean</h3></span>
+
+   A JSON boolean becomes a &lt;json:boolean&gt; element.  If the boolean
+   denotes a property within a JSON object, JSONx encodes a name
+   attribute whose value is assigned the property name.  The boolean
+   value is character data as either true or false.
+
+   "remote": false
+
+   &lt;json:boolean name="remote"&gt;false&lt;/json:boolean&gt;
+
+<span class="h3"><h3><a class="selflink" name="section-2.5" href="http://tools.ietf.org/html/draft-rsalz-jsonx-00#section-2.5">2.5</a>.  string</h3></span>
+
+   A JSON string becomes a &lt;json:string&gt; element.  If the string denotes
+   a property within a JSON object, JSONx encodes a name attribute whose
+   value is assigned the property name.  The string value is character
+   data.
+
+   Use of the Unicode code points U+0000, U+0008, and U+000C is
+   undefined.
+
+   "name": "John Smith"
+
+   &lt;json:string name="name"&gt;John Smith&lt;/json:string&gt;
+
+<span class="h3"><h3><a class="selflink" name="section-2.6" href="http://tools.ietf.org/html/draft-rsalz-jsonx-00#section-2.6">2.6</a>.  number</h3></span>
+
+   A JSON number becomes a &lt;json:number&gt; element.  If the number denotes
+   a property within a JSON object, JSONx encodes a name attribute whose
+   value is assigned the property name.  The number value is character
+   data.
+
+   "height": 62.4
+
+   &lt;json:number name="height"&gt;62.4&lt;/json:number&gt;
+
+
+
+
+
+
+<span class="grey">Muschett, et al.        Expires November 3, 2011                [Page 5]</span>
+</pre><!--NewPage--><pre class="newpage"><a name="page-6" id="page-6" href="http://tools.ietf.org/html/draft-rsalz-jsonx-00#page-6" class="invisible"> </a>
+<span class="grey">Internet-Draft                    JSONx                         May 2011</span>
+
+
+<span class="h3"><h3><a class="selflink" name="section-2.7" href="http://tools.ietf.org/html/draft-rsalz-jsonx-00#section-2.7">2.7</a>.  null</h3></span>
+
+   JSON value of null becomes a &lt;json:null&gt; element.  If the null value
+   denotes a property within a JSON object, JSONx encodes a name
+   attribute whose value is assigned the property name.  This element
+   has no content.
+
+   "additionalInfo": null
+
+   &lt;json:null name="additionalInfo" /&gt;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<span class="grey">Muschett, et al.        Expires November 3, 2011                [Page 6]</span>
+</pre><!--NewPage--><pre class="newpage"><a name="page-7" id="page-7" href="http://tools.ietf.org/html/draft-rsalz-jsonx-00#page-7" class="invisible"> </a>
+<span class="grey">Internet-Draft                    JSONx                         May 2011</span>
+
+
+<span class="h2"><h2><a class="selflink" name="section-3" href="http://tools.ietf.org/html/draft-rsalz-jsonx-00#section-3">3</a>.  Extended Example</h2></span>
+
+   The following example document is a sample of the JSON structure.
+
+   {
+       "name": "John Smith"
+       "address": {
+           "streetAddress": "21 2nd Street",
+           "city": "New York",
+           "state": "NY",
+           "postalCode": 10021,
+       },
+       "phoneNumbers": [
+           "212 555-1111",
+           "212 555-2222"
+       ],
+       "additionalInfo": null,
+       "remote": false,
+       "height": 62.4,
+       "ficoScore": "&gt; 640"
+   }
+
+   The following output is the result of the transformed document as
+   JSONx.
+
+   &lt;?xml version="1.0" encoding="UTF-8"?&gt;
+   &lt;json:object xmlns:json="http://www.ibm.com/xmlns/prod/2009/jsonx"&gt;
+       &lt;json:string name="name"&gt;John Smith&lt;/json:string&gt;
+       &lt;json:object name="address"&gt;
+           &lt;json:string name="streetAddress"&gt;21 2nd Street&lt;/json:string&gt;
+           &lt;json:string name="city"&gt;New York&lt;/json:string&gt;
+           &lt;json:string name="state"&gt;NY&lt;/json:string&gt;
+           &lt;json:number name="postalCode"&gt;10021&lt;/json:number&gt;
+       &lt;/json:object&gt;
+       &lt;json:array name="phoneNumbers"&gt;
+           &lt;json:string&gt;212 555-1111&lt;/json:string&gt;
+           &lt;json:string&gt;212 555-2222&lt;/json:string&gt;
+       &lt;/json:array&gt;
+       &lt;json:null name="additionalInfo" /&gt;
+       &lt;json:boolean name="remote"&gt;false&lt;/json:boolean&gt;
+       &lt;json:number name="height"&gt;62.4&lt;/json:number&gt;
+       &lt;json:string name="ficoScore"&gt;&amp;gt; 640&lt;/json:string&gt;
+   &lt;/json:object&gt;
+
+
+
+
+
+
+
+
+<span class="grey">Muschett, et al.        Expires November 3, 2011                [Page 7]</span>
+</pre><!--NewPage--><pre class="newpage"><a name="page-8" id="page-8" href="http://tools.ietf.org/html/draft-rsalz-jsonx-00#page-8" class="invisible"> </a>
+<span class="grey">Internet-Draft                    JSONx                         May 2011</span>
+
+
+<span class="h2"><h2><a class="selflink" name="section-4" href="http://tools.ietf.org/html/draft-rsalz-jsonx-00#section-4">4</a>.  Normative References</h2></span>
+
+   [<a name="ref-RFC4627" id="ref-RFC4627">RFC4627</a>]  Crockford, D., "The application/json Media Type for
+              JavaScript Object Notation (JSON)", <a href="http://tools.ietf.org/html/rfc4627">RFC 4627</a>, July 2006.
+
+   [<a name="ref-REC-xml" id="ref-REC-xml">REC-xml</a>]  Yergeau, F., Paoli, J., Bray, T., Sperberg-McQueen, C.,
+              and E. Maler, "Extensible Markup Language (XML) 1.0
+              (Fourth Edition)", World Wide Web Consortium
+              Recommendation REC-xml-20060816, August 2006,
+              &lt;<a href="http://www.w3.org/TR/2006/REC-xml-20060816">http://www.w3.org/TR/2006/REC-xml-20060816</a>&gt;.
+
+   [<a name="ref-REC-xml-infoset" id="ref-REC-xml-infoset">REC-xml-infoset</a>]
+              Cowan, J. and R. Tobin, "XML Information Set (Second
+              Edition)", World Wide Web Consortium Recommendation REC-
+              xml-infoset-20040204, February 2004,
+              &lt;<a href="http://www.w3.org/TR/2004/REC-xml-infoset-20040204">http://www.w3.org/TR/2004/REC-xml-infoset-20040204</a>&gt;.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<span class="grey">Muschett, et al.        Expires November 3, 2011                [Page 8]</span>
+</pre><!--NewPage--><pre class="newpage"><a name="page-9" id="page-9" href="http://tools.ietf.org/html/draft-rsalz-jsonx-00#page-9" class="invisible"> </a>
+<span class="grey">Internet-Draft                    JSONx                         May 2011</span>
+
+
+<span class="h2"><h2><a class="selflink" name="appendix-A" href="http://tools.ietf.org/html/draft-rsalz-jsonx-00#appendix-A">Appendix A</a>.  Schema (not normative)</h2></span>
+
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;xsd:schema targetNamespace="http://www.ibm.com/xmlns/prod/2009/jsonx"
+    elementFormDefault="qualified" attributeFormDefault="unqualified"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:tns="http://www.ibm.com/xmlns/prod/2009/jsonx"&gt;
+
+    &lt;xsd:simpleType name="jsonnumbertype"&gt;
+        &lt;xsd:restriction base="xsd:token"&gt;
+            &lt;xsd:pattern value="[-]?(0|[1-9][0-9]*)(\.[0-9]+)?([eE][-+]?[0-9]+)?" /&gt;
+        &lt;/xsd:restriction&gt;
+    &lt;/xsd:simpleType&gt;
+
+    &lt;xsd:element name="object" type="tns:anyElement" /&gt;
+    &lt;xsd:element name="array" type="tns:anyElement" /&gt;
+    &lt;xsd:element name="string" type="tns:stringElement" /&gt;
+    &lt;xsd:element name="number" type="tns:numberElement" /&gt;
+    &lt;xsd:element name="boolean" type="tns:booleanElement" /&gt;
+    &lt;xsd:element name="null" type="tns:emptyElement" /&gt;
+
+    &lt;xsd:complexType name="anyElement"&gt;
+        &lt;xsd:sequence&gt;
+            &lt;xsd:any minOccurs="0" maxOccurs="unbounded"
+                    namespace="##targetNamespace" processContents="strict" /&gt;
+        &lt;/xsd:sequence&gt;
+        &lt;xsd:attribute name="name" type="xsd:string" /&gt;
+    &lt;/xsd:complexType&gt;
+
+    &lt;xsd:complexType name="emptyElement"&gt;
+        &lt;xsd:attribute name="name" type="xsd:string" /&gt;
+    &lt;/xsd:complexType&gt;
+
+    &lt;xsd:complexType name="stringElement"&gt;
+        &lt;xsd:simpleContent&gt;
+            &lt;xsd:extension base="xsd:string"&gt;
+                &lt;xsd:attribute name="name" type="xsd:string" /&gt;
+            &lt;/xsd:extension&gt;
+        &lt;/xsd:simpleContent&gt;
+    &lt;/xsd:complexType&gt;
+
+    &lt;xsd:complexType name="numberElement"&gt;
+        &lt;xsd:simpleContent&gt;
+            &lt;xsd:extension base="tns:jsonnumbertype"&gt;
+                &lt;xsd:attribute name="name" type="xsd:string" /&gt;
+            &lt;/xsd:extension&gt;
+        &lt;/xsd:simpleContent&gt;
+    &lt;/xsd:complexType&gt;
+
+
+
+<span class="grey">Muschett, et al.        Expires November 3, 2011                [Page 9]</span>
+</pre><!--NewPage--><pre class="newpage"><a name="page-10" id="page-10" href="http://tools.ietf.org/html/draft-rsalz-jsonx-00#page-10" class="invisible"> </a>
+<span class="grey">Internet-Draft                    JSONx                         May 2011</span>
+
+
+    &lt;xsd:complexType name="booleanElement"&gt;
+        &lt;xsd:simpleContent&gt;
+            &lt;xsd:extension base="xsd:boolean"&gt;
+                &lt;xsd:attribute name="name" type="xsd:string" /&gt;
+            &lt;/xsd:extension&gt;
+        &lt;/xsd:simpleContent&gt;
+    &lt;/xsd:complexType&gt;
+
+&lt;/xsd:schema&gt;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<span class="grey">Muschett, et al.        Expires November 3, 2011               [Page 10]</span>
+</pre><!--NewPage--><pre class="newpage"><a name="page-11" id="page-11" href="http://tools.ietf.org/html/draft-rsalz-jsonx-00#page-11" class="invisible"> </a>
+<span class="grey">Internet-Draft                    JSONx                         May 2011</span>
+
+
+<span class="h2"><h2><a class="selflink" name="appendix-B" href="http://tools.ietf.org/html/draft-rsalz-jsonx-00#appendix-B">Appendix B</a>.  JSONx to JSON Stylesheet (not normative)</h2></span>
+
+   The following XSLT stylesheet takes a JSONx document as input and
+   generates JSON.  It is intended as a sample implementation, and makes
+   no attempt to be well-behaved if the input is not well-defined.
+
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;xsl:stylesheet version="1.0"
+    xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+    xmlns:json="http://www.ibm.com/xmlns/prod/2009/jsonx"&gt;
+
+    &lt;xsl:output method="text" encoding="utf-8" indent="no"
+      media-type="application/json"/&gt;
+
+    &lt;xsl:template name="json:doNameAttr"&gt;
+       &lt;xsl:if test="local-name(..)!='array' and string-length(@name)&gt;0"&gt;
+          &lt;xsl:value-of select="concat('&amp;quot;', @name, '&amp;quot;', ':')"/&gt;
+       &lt;/xsl:if&gt;
+    &lt;/xsl:template&gt;
+
+    &lt;xsl:template match="json:object"&gt;
+        &lt;xsl:call-template name="json:doNameAttr"/&gt;
+        &lt;xsl:text&gt;{ &lt;/xsl:text&gt;
+        &lt;xsl:for-each select="*"&gt;
+           &lt;xsl:apply-templates select="."/&gt;
+            &lt;xsl:if test="position() != last()"&gt;
+                &lt;xsl:text&gt;, &lt;/xsl:text&gt;
+            &lt;/xsl:if&gt;
+       &lt;/xsl:for-each&gt;
+       &lt;xsl:text&gt; }&lt;/xsl:text&gt;
+    &lt;/xsl:template&gt;
+
+    &lt;xsl:template match="json:array"&gt;
+        &lt;xsl:call-template name="json:doNameAttr" /&gt;
+        &lt;xsl:text&gt;[ &lt;/xsl:text&gt;
+        &lt;xsl:for-each select="*"&gt;
+            &lt;xsl:apply-templates select="." /&gt;
+            &lt;xsl:if test="position() != last()"&gt;
+                &lt;xsl:text&gt;, &lt;/xsl:text&gt;
+            &lt;/xsl:if&gt;
+        &lt;/xsl:for-each&gt;
+        &lt;xsl:text&gt; ]&lt;/xsl:text&gt;
+    &lt;/xsl:template&gt;
+
+    &lt;xsl:template match="json:string"&gt;
+        &lt;xsl:call-template name="json:doNameAttr"/&gt;
+        &lt;xsl:text&gt;"&lt;/xsl:text&gt;
+        &lt;!-- XXX Need to replace " with &amp;amp;quot; --&gt;
+
+
+
+<span class="grey">Muschett, et al.        Expires November 3, 2011               [Page 11]</span>
+</pre><!--NewPage--><pre class="newpage"><a name="page-12" id="page-12" href="http://tools.ietf.org/html/draft-rsalz-jsonx-00#page-12" class="invisible"> </a>
+<span class="grey">Internet-Draft                    JSONx                         May 2011</span>
+
+
+        &lt;xsl:value-of select="normalize-space()"/&gt;
+        &lt;xsl:text&gt;"&lt;/xsl:text&gt;
+    &lt;/xsl:template&gt;
+
+    &lt;xsl:template match="json:number"&gt;
+       &lt;xsl:call-template name="json:doNameAttr"/&gt;
+       &lt;xsl:value-of select="normalize-space()"/&gt;
+    &lt;/xsl:template&gt;
+
+    &lt;xsl:template match="json:boolean"&gt;
+       &lt;xsl:call-template name="json:doNameAttr"/&gt;
+       &lt;xsl:value-of select="normalize-space()"/&gt;
+    &lt;/xsl:template&gt;
+
+    &lt;xsl:template match="json:null"&gt;
+        &lt;xsl:call-template name="json:doNameAttr"/&gt;
+        &lt;xsl:text&gt;null&lt;/xsl:text&gt;
+    &lt;/xsl:template&gt;
+
+&lt;/xsl:stylesheet&gt;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<span class="grey">Muschett, et al.        Expires November 3, 2011               [Page 12]</span>
+</pre><!--NewPage--><pre class="newpage"><a name="page-13" id="page-13" href="http://tools.ietf.org/html/draft-rsalz-jsonx-00#page-13" class="invisible"> </a>
+<span class="grey">Internet-Draft                    JSONx                         May 2011</span>
+
+
+Authors' Addresses
+
+   Brien Muschett
+   IBM
+   8051 Congress Avenue
+   Boca Raton, FL  33487
+   USA
+
+   Phone: +1 561-862-2180
+   Email: muschett@us.ibm.com
+
+
+   Rich Salz
+   IBM
+   550 King Street
+   Littleton, MA  01460
+   USA
+
+   Phone: +1 978-899-2902
+   Email: rsalz@us.ibm.com
+   URI:   <a href="https://www.ibm.com/developerworks/mydeveloperworks/blogs/soma/">https://www.ibm.com/developerworks/mydeveloperworks/blogs/soma/</a>
+
+
+   Michael Schenker
+   IBM
+   555 Bailey Ave.
+   San Jose, CA  95141
+   USA
+
+   Phone: +1 408-463-3907
+   Email: mschenk@us.ibm.com
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Muschett, et al.        Expires November 3, 2011               [Page 13]
+
+</pre><br>
+<span class="noprint"><small><small>Html markup produced by rfcmarkup 1.107, available from
+<a href="http://tools.ietf.org/tools/rfcmarkup/">http://tools.ietf.org/tools/rfcmarkup/</a>
+</small></small></span>
+
+<div id="directions_extension" style="display: none;"></div></body></html>

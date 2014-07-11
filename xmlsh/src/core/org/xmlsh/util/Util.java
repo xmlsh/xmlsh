@@ -20,6 +20,7 @@ import net.sf.saxon.trans.XPathException;
 
 import org.apache.log4j.Logger;
 
+import org.xmlsh.core.IPort;
 import org.xmlsh.core.Namespaces;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.SerializeOpts;
@@ -35,6 +36,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
+import java.io.Writer;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -52,6 +54,9 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.xml.stream.XMLEventReader;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
@@ -837,6 +842,20 @@ public class Util
 		}
 		
 	}
+	
+	public static void safeClose(XMLStreamWriter out) {
+		try {
+			if( out != null )
+				out.close();
+		} catch( Exception e )
+		{
+			mLogger.info("Exception closing output stream",e);
+			
+		}
+		
+	}
+	
+	
 	public static void safeClose(InputStream in) {
 		try {
 			if( in != null )
@@ -1278,6 +1297,80 @@ public class Util
     {
 	    return c == '\n' || (ignorCR && c == '\r');
     }
+	
+	// Skip to c and return prefix, return null if c is never encountered before EOF
+	public static String skipToByte(InputStream is, int delim ) throws IOException {
+		if( is == null )
+			return null ;
+		StringBuffer sb = new StringBuffer();
+		int c;
+		while( ( c = is.read() ) >= 0 ) {
+			if( c == delim )
+				return sb.toString();
+			sb.append((byte)c);
+		}
+		return null;
+		
+	}
+
+
+	public static void safeRelease(IPort p)
+    {
+		if( p != null ) {
+			p.release();
+		}
+    }
+
+
+	public static void safeClose(XMLEventReader reader)
+    {
+	   if( reader != null )
+	    try {
+	        reader.close();
+        } catch (XMLStreamException e) {
+	        mLogger.warn("Exception closing reader" ,  e );
+        }
+	    
+    }
+
+
+	@SuppressWarnings("unchecked")
+    public static <T extends Throwable> void wrapException(Throwable e , Class<T> cls ) throws T
+    {
+		if( e.getClass().isInstance(cls) )
+			throw (T) e ;
+		T ex  = null ;
+		try {
+	        ex = JavaUtils.newObject(cls, e );
+        } catch (Exception e1) {
+        	String msg = "Exception wrapping exception type: " + e.getClass().getName() + " to class: " + cls.getName() ;
+			mLogger.warn( msg, e1 );
+	       throw new IllegalArgumentException( msg + e1.getMessage() , e );
+        } 
+		throw ex ;
+		
+		
+    }
+
+	@SuppressWarnings("unchecked")
+    public static <T extends Throwable> void wrapException( String message,Throwable e, Class<T> cls ) throws T
+    {
+		if( e.getClass().isInstance(cls) )
+			throw (T) e ;
+		T ex  = null ;
+		try {
+	        ex = JavaUtils.newObject(cls, message ,  e );
+        } catch (Exception e1) {
+        	String msg = "Exception wrapping exception type: " + e.getClass().getName() + " to class: " + cls.getName() ;
+			mLogger.warn( msg, e1 );
+	       throw new IllegalArgumentException( message + ": " + msg + e1.getMessage() , e );
+        } 
+		throw ex ;
+		
+		
+    }
+
+	
 
 }
 

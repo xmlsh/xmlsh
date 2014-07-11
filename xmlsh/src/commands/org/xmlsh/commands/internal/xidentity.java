@@ -6,8 +6,6 @@
 
 package org.xmlsh.commands.internal;
 
-import java.util.List;
-
 import net.sf.saxon.s9api.XdmItem;
 import org.xmlsh.core.IXdmItemInputStream;
 import org.xmlsh.core.IXdmItemOutputStream;
@@ -18,6 +16,8 @@ import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.SerializeOpts;
+
+import java.util.List;
 
 public class xidentity extends XCommand {
 

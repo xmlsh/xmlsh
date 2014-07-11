@@ -6,12 +6,12 @@
 
 package org.xmlsh.sh.core;
 
-import java.io.PrintWriter;
-
 import org.xmlsh.core.ExitOnErrorException;
 import org.xmlsh.core.ThrowException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
+
+import java.io.PrintWriter;
 
 public class TryCatchFinally extends CompoundCommand 
 {

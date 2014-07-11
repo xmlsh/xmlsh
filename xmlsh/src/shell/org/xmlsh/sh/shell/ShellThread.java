@@ -6,12 +6,13 @@
 
 package org.xmlsh.sh.shell;
 
-import java.io.File;
-
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+
 import org.xmlsh.sh.core.Command;
 import org.xmlsh.xpath.ShellContext;
+
+import java.io.File;
 
 public class ShellThread extends Thread {
 	

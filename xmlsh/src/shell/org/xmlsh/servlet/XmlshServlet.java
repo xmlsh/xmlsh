@@ -1,4 +1,18 @@
 package org.xmlsh.servlet;
+import net.sf.saxon.s9api.SaxonApiException;
+import org.xmlsh.core.CommandFactory;
+import org.xmlsh.core.CoreException;
+import org.xmlsh.core.ICommand;
+import org.xmlsh.core.StreamOutputPort;
+import org.xmlsh.core.VariableOutputPort;
+import org.xmlsh.core.XEnvironment;
+import org.xmlsh.core.XValue;
+import org.xmlsh.core.XVariable;
+import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.util.NullInputStream;
+import org.xmlsh.util.NullOutputStream;
+import org.xmlsh.util.Util;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -20,20 +34,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
-
-import net.sf.saxon.s9api.SaxonApiException;
-import org.xmlsh.core.CommandFactory;
-import org.xmlsh.core.CoreException;
-import org.xmlsh.core.ICommand;
-import org.xmlsh.core.StreamOutputPort;
-import org.xmlsh.core.VariableOutputPort;
-import org.xmlsh.core.XEnvironment;
-import org.xmlsh.core.XValue;
-import org.xmlsh.core.XVariable;
-import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.util.NullInputStream;
-import org.xmlsh.util.NullOutputStream;
-import org.xmlsh.util.Util;
 
 /**
  * $Id: $

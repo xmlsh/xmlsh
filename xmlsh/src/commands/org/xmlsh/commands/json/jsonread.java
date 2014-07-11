@@ -4,14 +4,16 @@
  *
  */
 
-package org.xmlsh.commands.builtin;
+package org.xmlsh.commands.json;
 
 import org.xmlsh.core.BuiltinCommand;
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.InvalidArgumentException;
+import org.xmlsh.core.Options;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.util.JsonUtils;
+import org.xmlsh.util.Util;
 
 import java.io.InputStream;
 import java.util.List;
@@ -28,23 +30,46 @@ public class jsonread extends BuiltinCommand {
 
 	public int run( List<XValue> args ) throws Exception {
 
+		
+		Options opts = new Options( "+jsonp,p=port:" ,  SerializeOpts.getOptionDefs());
+		opts.parse(args);
+		
+		String port = opts.getOptString("p", null);
+		boolean jsonp = opts.getOptFlag("jsonp",false);
+		
+		args = opts.getRemainingArgs();
+		
 		if( args.size() != 1 )
 			throw new InvalidArgumentException("requires 1 argument");
 		
 		mShell.getEnv().unsetVar(args.get(0).toString());
 
-		mSerializeOpts = getSerializeOpts();
-		SerializeOpts inputOpts = mSerializeOpts.clone();
+		setSerializeOpts(getSerializeOpts());
+		SerializeOpts inputOpts = getSerializeOpts().clone();
 		
 		
 		InputPort stdin = mShell.getEnv().getStdin();
-		InputStream is = stdin.asInputStream( inputOpts );
 		
-		JsonNode node = JsonUtils.toJsonNode(is);
-		
-		
-		mShell.getEnv().setVar(args.get(0).toString(), new XValue(node) ,false);
-		stdin.release();
+		InputStream is = null ;
+		JsonNode node = null ;
+		try {
+			is = stdin.asInputStream( inputOpts );
+			
+			if( jsonp ) {
+				String jsonpFunc = Util.skipToByte(is, '(');
+				if( jsonpFunc == null ) {
+					mShell.printErr("No JSONP prefix found");
+					return 1;
+				}
+			}
+			
+			node = JsonUtils.toJsonNode(is);
+			mShell.getEnv().setVar(args.get(0).toString(), new XValue(node) ,false);
+
+		} finally {
+			Util.safeClose(is);
+			Util.safeRelease(stdin);
+		}
 
 
 		return node == null ? 1 : 0 ;

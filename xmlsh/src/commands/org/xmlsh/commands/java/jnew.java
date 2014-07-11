@@ -6,12 +6,12 @@
 
 package org.xmlsh.commands.java;
 
-import java.util.List;
-
 import org.xmlsh.core.BuiltinFunctionCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.JavaUtils;
+
+import java.util.List;
 
 public class jnew extends BuiltinFunctionCommand {
 
@@ -32,7 +32,7 @@ public class jnew extends BuiltinFunctionCommand {
 		
 
 		XValue obj = null;
-		obj = JavaUtils.newObject(classname, args, classloader);
+		obj = JavaUtils.newXValue(classname, args, classloader);
 		return obj;
 
 		

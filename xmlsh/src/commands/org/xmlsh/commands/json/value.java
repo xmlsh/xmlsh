@@ -6,16 +6,13 @@
 
 package org.xmlsh.commands.json;
 
-import net.sf.saxon.trans.XPathException;
 import org.xmlsh.core.BuiltinFunctionCommand;
+import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.JsonUtils;
 
-import java.io.IOException;
 import java.util.List;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
 
 public class value extends BuiltinFunctionCommand {
 
@@ -27,7 +24,7 @@ public class value extends BuiltinFunctionCommand {
 
 	
 	@Override
-	public XValue run(Shell shell, List<XValue> args) throws XPathException, JsonProcessingException, IOException {
+	public XValue run(Shell shell, List<XValue> args) throws InvalidArgumentException {
 		if( args.size() == 0 )
 			return new XValue();
 

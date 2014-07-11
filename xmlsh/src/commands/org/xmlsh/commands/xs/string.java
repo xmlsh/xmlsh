@@ -6,11 +6,11 @@
 
 package org.xmlsh.commands.xs;
 
-import java.util.List;
-
 import org.xmlsh.core.BuiltinFunctionCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
+
+import java.util.List;
 
 public class string extends BuiltinFunctionCommand {
 

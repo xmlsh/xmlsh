@@ -82,7 +82,7 @@ public class http extends XCommand {
 		Options opts = new Options( "retry:,get:,put:,post:,head:,options:,delete:,connectTimeout:,contentType:,readTimeout:,+useCaches,+followRedirects,user:,password:,H=add-header:+,disableTrust:,keystore:,keypass:,sslproto:,output-headers=ohead:" );
 		opts.parse(args);
 		
-		mSerializeOpts = getSerializeOpts(opts);  
+		setSerializeOpts(getSerializeOpts(opts));  
 
 		
 		
@@ -188,7 +188,7 @@ public class http extends XCommand {
 			InputStream ins = respEntity.getContent();
 			if( ins != null ){
 				try {
-				    Util.copyStream(ins, getStdout().asOutputStream(mSerializeOpts));
+				    Util.copyStream(ins, getStdout().asOutputStream(getSerializeOpts()));
 				} finally { 
 					ins.close();
 				}
@@ -212,7 +212,7 @@ public class http extends XCommand {
 	private void writeHeaders(String outv, StatusLine statusLine, Header[] allHeaders) throws InvalidArgumentException, XMLStreamException, SaxonApiException {
 		OutputPort out = mShell.getEnv().getOutputPort(outv);
 	
-		XMLStreamWriter sw = out.asXMLStreamWriter(mSerializeOpts);
+		XMLStreamWriter sw = out.asXMLStreamWriter(getSerializeOpts());
 		sw.writeStartDocument();
 		sw.writeStartElement("status");
 		sw.writeAttribute("status-code", String.valueOf(statusLine.getStatusCode()));
@@ -325,7 +325,7 @@ public class http extends XCommand {
 			entity =new FileEntity( in.getFile()  );
  		
 		else {
-			byte[] data = Util.readBytes( in.asInputStream(mSerializeOpts));
+			byte[] data = Util.readBytes( in.asInputStream(getSerializeOpts()));
             entity = new ByteArrayEntity( data );
 		}
 		// return new InputStreamEntity( in.asInputStream(mSerializeOpts),-1);

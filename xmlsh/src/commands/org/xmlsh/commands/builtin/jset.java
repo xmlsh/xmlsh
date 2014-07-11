@@ -38,7 +38,7 @@ public class jset extends BuiltinCommand {
 
 		XValue obj = null;
 		if (method == null && field == null )
-			obj = JavaUtils.newObject(classname, args, classloader); 
+			obj = JavaUtils.newXValue(classname, args, classloader); 
 		else if (instance == null && field == null)
 			obj = JavaUtils.callStatic(classname, method, args, classloader);
 		else

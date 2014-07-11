@@ -13,11 +13,15 @@ import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
+import org.xmlsh.json.JSONSerializeOpts;
+import org.xmlsh.json.JXConverter;
+import org.xmlsh.json.JXONConverter;
 import org.xmlsh.sh.shell.SerializeOpts;
+import org.xmlsh.util.JsonUtils;
+import org.xmlsh.util.Util;
 
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
+import java.io.InputStream;
 import java.util.List;
 
 import javax.xml.stream.XMLStreamException;
@@ -47,188 +51,78 @@ public class json2xml extends XCommand
 
 	public int run(List<XValue> args) throws Exception
 	{
-		Options opts = new Options(SerializeOpts.getOptionDefs());
+		Options opts = new Options("+jsonp,p=port:" ,SerializeOpts.getOptionDefs());
 		opts.parse(args);
 
 		args = opts.getRemainingArgs();
+		String port = opts.getOptString("p", null);
+		boolean jsonp = opts.getOptFlag("jsonp",false);
 
 		OutputPort stdout = getStdout();
 
-		mSerializeOpts = getSerializeOpts(opts);
-		SerializeOpts inputOpts = mSerializeOpts.clone();
-		// JSON is always UTF8
-		inputOpts.setInputTextEncoding("UTF-8");
+		setSerializeOpts(opts);
+		SerializeOpts inputOpts = getSerializeOpts();
 
 		InputPort in = args.isEmpty() ? this.getStdin() : this.getInput(args.get(0));
 		XMLStreamWriter sw = null ;
-		Reader inr = null;
+		InputStream is = null;
 		try {
 				
-			inr = new InputStreamReader(in.asInputStream(inputOpts), inputOpts.getInputTextEncoding());
 	
 			JsonFactory jsonFactory = new JsonFactory(); // or, for data binding,
 														 // org.codehaus.jackson.mapper.MappingJsonFactory
-			JsonParser jp = jsonFactory.createParser(inr); // or URL, Stream,
-														   // Reader, String, byte[]
-	
+			is = in.asInputStream(inputOpts);
+			
+			if( jsonp ) {
+				String jsonpFunc = Util.skipToByte(is, '(');
+				if( jsonpFunc == null ) {
+					mShell.printErr("No JSONP prefix found");
+					return 1;
+				}
+			}
+			 
+			/* Note: no encoding argument is taken since it can always be
+			     * auto-detected as suggested by JSON RFC.
+			     */
+			JsonParser jp = jsonFactory.createParser(is); // or URL, Stream,
+
+			JSONSerializeOpts jopts = new JSONSerializeOpts();
+													   // Reader, String, byte[]
 			/*
 			 * Assume JSON file is wrapped by an Object
 			 */
 	
-			sw = stdout.asXMLStreamWriter(mSerializeOpts);
+			sw = stdout.asXMLStreamWriter(getSerializeOpts());
 		
-			sw.writeStartDocument();
+			JXConverter converter = new JXONConverter(jopts,getSerializeOpts());
 
-			write(jp, sw);
-			sw.writeEndDocument();
+			try {  
+				
+				converter.convertFromJson( jp , sw );
+				
+			} 
+			finally {
+			
+				if( jp != null ) {
+					jp.close();
+				}
+				Util.safeClose(sw);
+			}
+			
 		} finally {
 		
 			if( sw != null ) {
 				sw.flush();
 				sw.close();
 			}
-			if( in != null )
-			  inr.close();
+
+			Util.safeRelease(in);
 		}
 		return 0;
 
 	}
 
-	private void write(JsonParser parser, XMLStreamWriter writer) throws XMLStreamException, InvalidArgumentException,
-	                                                             IOException
-	{
-		JsonToken tok = parser.nextToken();
-		writeValue(tok , parser, writer);
-		if( (tok = parser.getCurrentToken()) != null && (tok=parser.nextToken() ) != null )
-			throw new InvalidArgumentException("parse complete before EOF: token=" + tok);
-	}
-
-	// Write a value and return 
-	private void writeValue(JsonToken tok , JsonParser parser, XMLStreamWriter writer) throws XMLStreamException,
-	                                                                       InvalidArgumentException, IOException
-	{
-
-		if(tok == null)
-			return  ;
-
-		switch (tok) {
-		case START_ARRAY:
-
-			writeArray(parser, writer);
-			break;
-		case START_OBJECT:
-			writeObject(parser, writer);
-			break;
-
-		case VALUE_EMBEDDED_OBJECT:
-			break;
-		case VALUE_FALSE:
-			writeBoolean(false, writer);
-			break;
-		case VALUE_NULL:
-			writeNull(writer);
-			break;
-		case VALUE_NUMBER_FLOAT:
-			write(parser.getFloatValue(), writer);
-			break;
-		case VALUE_NUMBER_INT:
-			write(parser.getIntValue(), writer);
-			break;
-		case VALUE_STRING:
-			write(parser.getText(), writer);
-			break;
-		case VALUE_TRUE:
-			writeBoolean(false, writer);
-			break;
-		default:
-			break;
-		}
-
-
-	}
-
-	private void writeArray(JsonParser parser, XMLStreamWriter writer) throws XMLStreamException, IOException,
-	                                                                       InvalidArgumentException
-	{
-
-		JsonToken tok;
-		writer.writeStartElement("", "array", kJXML_URI);
-
-		 while( (tok = parser.nextToken()) != null && tok != JsonToken.END_ARRAY) {
-			writeValue( tok , parser, writer );
-		}
-		writer.writeEndElement();
-	}
-
-	private void writeObject(JsonParser parser, XMLStreamWriter writer) throws XMLStreamException, IOException,
-	                                                                        InvalidArgumentException
-	{
-
-		JsonToken tok;
-
-		writer.writeStartElement("", "object", kJXML_URI);
-
-		while ((tok = parser.nextToken()) == JsonToken.FIELD_NAME)
-			writeMember(parser, writer);
-		
-		if( tok == null )
-			throw new IOException("Unexpected EOF");
-
-		if(tok != JsonToken.END_OBJECT)
-			throw new InvalidArgumentException("Unexpected token: " + tok);
-		writer.writeEndElement();
-	}
-
-	private void writeMember(JsonParser parser, XMLStreamWriter writer) throws XMLStreamException, IOException,
-	                                                                        InvalidArgumentException
-	{
-		writer.writeStartElement("", "member", kJXML_URI);
-		String name = parser.getCurrentName();
-		writer.writeAttribute("name", name);
-		
-		writeValue(parser.nextToken() , parser, writer);
-		writer.writeEndElement();
-	}
-
-	private void writeBoolean(Boolean b, XMLStreamWriter writer) throws XMLStreamException
-	{
-		writer.writeStartElement("", "boolean", kJXML_URI);
-		// writer.writeAttribute("value", b.booleanValue() ? "true" : "false");
-		writer.writeCharacters(b.booleanValue() ? "true" : "false");
-		writer.writeEndElement();
-	}
-
-	private void writeNull(XMLStreamWriter writer) throws XMLStreamException
-	{
-		writer.writeStartElement("", "null", kJXML_URI);
-		writer.writeEndElement();
-
-	}
-
-	private void write(int v, XMLStreamWriter writer) throws XMLStreamException
-	{
-		writer.writeStartElement("", "number", kJXML_URI);
-		writer.writeCharacters(Integer.toString(v));
-		writer.writeEndElement();
-
-	}
-
-	private void write(float v, XMLStreamWriter writer) throws XMLStreamException
-	{
-		writer.writeStartElement("", "number", kJXML_URI);
-		writer.writeCharacters(Float.toString(v));
-		writer.writeEndElement();
-
-	}
-
-	private void write(String s, XMLStreamWriter writer) throws XMLStreamException
-	{
-
-		writer.writeStartElement("", "string", kJXML_URI);
-		writer.writeCharacters(s);
-		writer.writeEndElement();
-
-	}
+	
 
 }
 

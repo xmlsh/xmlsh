@@ -6,11 +6,9 @@
 
 package org.xmlsh.sh.core;
 
-import java.io.PrintWriter;
-import java.util.List;
-
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+
 import org.xmlsh.core.CommandFactory;
 import org.xmlsh.core.ICommand;
 import org.xmlsh.core.ThrowException;
@@ -18,6 +16,9 @@ import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Module;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.xpath.ShellContext;
+
+import java.io.PrintWriter;
+import java.util.List;
 
 public class SimpleCommand extends Command {
 	

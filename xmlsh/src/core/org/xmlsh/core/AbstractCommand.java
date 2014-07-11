@@ -30,7 +30,7 @@ public abstract class AbstractCommand implements ICommand {
 	protected	Shell mShell;
 	protected XEnvironment mEnvironment;
 	protected SourceLocation		mLocation ;
-	protected SerializeOpts mSerializeOpts = null ;
+	private SerializeOpts mSerializeOpts = null ;
 	
 	public AbstractCommand() {
 		

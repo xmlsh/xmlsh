@@ -16,6 +16,7 @@ import net.sf.saxon.s9api.XdmNode;
 import org.xml.sax.InputSource;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.util.JsonUtils;
 import org.xmlsh.util.S9Util;
 import org.xmlsh.util.Util;
 
@@ -59,11 +60,18 @@ public class VariableInputPort extends InputPort {
 			throws  CoreException{
 		ByteArrayOutputStream buf = new ByteArrayOutputStream();
 		try {
-			if (mVariable.getValue().isXExpr())
-				Util.writeXdmValue(mVariable.getValue().asXdmValue(null), Util
+			
+			XValue value = mVariable.getValue();
+			if( value.isJson()) {
+				return JsonUtils.asInputStream( value.asJson() , opts );
+			}
+			
+			
+			if (value.isXExpr())
+				Util.writeXdmValue(value.asXdmValue(null), Util
 						.streamToDestination(buf, opts)); // uses output xml encoding
 			else
-				buf.write(mVariable.getValue().toBytes(opts.getOutputXmlEncoding())); // Use output encoding
+				buf.write(value.toBytes(opts.getOutputXmlEncoding())); // Use output encoding
 			return new ByteArrayInputStream(buf.toByteArray());
 		} catch (SaxonApiException e) {
 			throw new CoreException(e);

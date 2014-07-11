@@ -6,15 +6,15 @@
 
 package org.xmlsh.protocols.port;
 
+import org.xmlsh.core.CoreException;
+import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.xpath.ShellContext;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
-
-import org.xmlsh.core.CoreException;
-import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.xpath.ShellContext;
 
 public class PortURLConnection extends URLConnection {
 

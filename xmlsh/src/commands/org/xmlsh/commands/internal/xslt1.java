@@ -1,5 +1,11 @@
 package org.xmlsh.commands.internal;
 
+import org.xmlsh.core.InputPort;
+import org.xmlsh.core.Options;
+import org.xmlsh.core.XCommand;
+import org.xmlsh.core.XValue;
+import org.xmlsh.sh.shell.SerializeOpts;
+
 import java.io.File;
 import java.io.OutputStream;
 import java.util.List;
@@ -10,12 +16,6 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
-
-import org.xmlsh.core.InputPort;
-import org.xmlsh.core.Options;
-import org.xmlsh.core.XCommand;
-import org.xmlsh.core.XValue;
-import org.xmlsh.sh.shell.SerializeOpts;
 
 import com.icl.saxon.expr.StringValue;
 

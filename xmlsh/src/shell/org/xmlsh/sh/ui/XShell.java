@@ -6,6 +6,15 @@
 
 package org.xmlsh.sh.ui;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
+import org.xmlsh.core.Options;
+import org.xmlsh.core.XValue;
+import org.xmlsh.sh.shell.SerializeOpts;
+import org.xmlsh.sh.ui.TextResultPane.OutputType;
+import org.xmlsh.util.Util;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -16,7 +25,6 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.Point;
-import java.awt.Window.Type;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -49,15 +57,6 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.text.JTextComponent;
-
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
-import org.xmlsh.core.Options;
-import org.xmlsh.core.XValue;
-import org.xmlsh.sh.shell.SerializeOpts;
-import org.xmlsh.sh.ui.TextResultPane.OutputType;
-import org.xmlsh.util.Util;
 
 public class XShell {
 

@@ -6,10 +6,10 @@
 
 package org.xmlsh.sh.ui;
 
-import java.io.OutputStream;
-
 import org.apache.log4j.SimpleLayout;
 import org.apache.log4j.WriterAppender;
+
+import java.io.OutputStream;
 
 public class ShellAppender extends WriterAppender  {
 

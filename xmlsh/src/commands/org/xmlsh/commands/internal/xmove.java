@@ -1,8 +1,4 @@
 package org.xmlsh.commands.internal;
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
-
 import net.sf.saxon.s9api.DocumentBuilder;
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.SaxonApiException;
@@ -18,6 +14,10 @@ import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.types.XFile;
 import org.xmlsh.util.Util;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
 
 
 /**

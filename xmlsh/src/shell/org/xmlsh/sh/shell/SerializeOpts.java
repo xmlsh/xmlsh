@@ -6,14 +6,14 @@
 
 package org.xmlsh.sh.shell;
 
-import java.nio.charset.Charset;
-import java.util.List;
-
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.Options.OptionValue;
 import org.xmlsh.core.XValue;
 import org.xmlsh.util.Util;
+
+import java.nio.charset.Charset;
+import java.util.List;
 
 public class SerializeOpts {
 	private 	boolean		indent	= true ;

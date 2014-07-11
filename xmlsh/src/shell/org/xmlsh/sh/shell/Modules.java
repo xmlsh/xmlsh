@@ -6,13 +6,13 @@
 
 package org.xmlsh.sh.shell;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.util.StringPair;
 import org.xmlsh.util.Util;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /*
  * Modules are like namespaces.

@@ -6,13 +6,13 @@
 
 package org.xmlsh.commands.posix;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
-
 import org.xmlsh.core.Options;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
 
 public class rm extends XCommand {
 

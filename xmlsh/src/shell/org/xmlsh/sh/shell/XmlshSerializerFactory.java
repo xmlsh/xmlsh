@@ -6,13 +6,13 @@
 
 package org.xmlsh.sh.shell;
 
-import java.util.Properties;
-
 import net.sf.saxon.Configuration;
 import net.sf.saxon.event.ProxyReceiver;
 import net.sf.saxon.lib.SerializerFactory;
 import net.sf.saxon.serialize.XMLEmitter;
 import net.sf.saxon.serialize.XMLIndenter;
+
+import java.util.Properties;
 
 public class XmlshSerializerFactory extends SerializerFactory {
 

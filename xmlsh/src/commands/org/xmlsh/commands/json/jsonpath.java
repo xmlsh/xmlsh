@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.List;
-import java.util.Map;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.nebhale.jsonpath.JsonPath;
@@ -90,7 +89,7 @@ public class jsonpath extends XCommand {
 		JsonNode result = path.read(context, JsonNode.class); // TODO can convert to other types here
 		
 	    OutputPort stdout = getStdout();
-	    PrintStream os = stdout.asPrintStream(mSerializeOpts);
+	    PrintStream os = stdout.asPrintStream(getSerializeOpts());
 
 	    JsonUtils.writeJsonNode( result , os );
 

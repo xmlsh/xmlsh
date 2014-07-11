@@ -6,9 +6,9 @@
 
 package org.xmlsh.servlet;
 
-import javax.servlet.http.HttpSession;
-
 import org.xmlsh.util.ManagedObject;
+
+import javax.servlet.http.HttpSession;
 
 public class ManagedHttpSession extends ManagedObject
 {

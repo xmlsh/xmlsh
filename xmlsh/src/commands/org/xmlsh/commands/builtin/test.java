@@ -6,8 +6,8 @@
 
 package org.xmlsh.commands.builtin;
 
-import net.sf.saxon.trans.XPathException;
 import org.xmlsh.core.BuiltinCommand;
+import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
@@ -152,7 +152,7 @@ public class test extends BuiltinCommand {
 
 
 	
-	private 	boolean		eval( List<XValue> av) throws Error, UnexpectedException, IOException, XPathException
+	private 	boolean		eval( List<XValue> av) throws InvalidArgumentException, UnexpectedException, Error, IOException 
 	{
 		if( av.size() == 0 )
 			return false;
@@ -285,7 +285,7 @@ public class test extends BuiltinCommand {
  
 	}
 
-	private boolean evalUnary(String op, XValue value) throws Error, UnexpectedException, IOException, XPathException {
+	private boolean evalUnary(String op, XValue value) throws InvalidArgumentException, UnexpectedException, IOException, Error {
 		
 		
 		/* try type tests first */

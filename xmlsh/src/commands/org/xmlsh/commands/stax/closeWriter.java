@@ -6,13 +6,13 @@
 
 package org.xmlsh.commands.stax;
 
-import java.util.List;
-
-import javax.xml.stream.XMLStreamWriter;
-
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
+
+import java.util.List;
+
+import javax.xml.stream.XMLStreamWriter;
 
 public class closeWriter extends XCommand {
 

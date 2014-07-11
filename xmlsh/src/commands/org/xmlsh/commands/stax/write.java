@@ -6,11 +6,6 @@
 
 package org.xmlsh.commands.stax;
 
-import java.util.List;
-
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
-
 import net.sf.saxon.om.NodeInfo;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
@@ -19,6 +14,11 @@ import org.xmlsh.core.CoreException;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.util.StAXUtils;
+
+import java.util.List;
+
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
 
 public class write extends XCommand {
 

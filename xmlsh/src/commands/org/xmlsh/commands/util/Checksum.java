@@ -7,6 +7,8 @@
 package org.xmlsh.commands.util;
 
 
+import org.xmlsh.core.CoreException;
+
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -15,8 +17,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-
-import org.xmlsh.core.CoreException;
 
 
 

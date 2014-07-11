@@ -6,13 +6,24 @@
 
 package org.xmlsh.sh.ui;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
+import org.xmlsh.core.InputPort;
+import org.xmlsh.core.StreamInputPort;
+import org.xmlsh.core.ThrowException;
+import org.xmlsh.core.XValue;
+import org.xmlsh.sh.core.Command;
+import org.xmlsh.sh.core.SourceLocation;
+import org.xmlsh.sh.shell.SerializeOpts;
+import org.xmlsh.sh.shell.Shell;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,17 +33,6 @@ import java.util.concurrent.BlockingQueue;
 import javax.swing.JButton;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
-
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.xmlsh.core.InputPort;
-import org.xmlsh.core.StreamInputPort;
-import org.xmlsh.core.ThrowException;
-import org.xmlsh.core.XValue;
-import org.xmlsh.sh.core.Command;
-import org.xmlsh.sh.core.SourceLocation;
-import org.xmlsh.sh.shell.SerializeOpts;
-import org.xmlsh.sh.shell.Shell;
 
 public class ShellThread extends Thread {
 

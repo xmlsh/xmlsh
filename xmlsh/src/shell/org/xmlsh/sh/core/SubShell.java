@@ -6,9 +6,9 @@
 
 package org.xmlsh.sh.core;
 
-import java.io.PrintWriter;
-
 import org.xmlsh.sh.shell.Shell;
+
+import java.io.PrintWriter;
 
 public class SubShell extends CompoundCommand {
 	private Command		mCommand;

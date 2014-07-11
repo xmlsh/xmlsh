@@ -6,14 +6,6 @@
 
 package org.xmlsh.commands.internal;
 
-import java.io.IOException;
-import java.io.Reader;
-import java.util.Arrays;
-import java.util.List;
-
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
-
 import org.xmlsh.commands.util.CSVParser;
 import org.xmlsh.commands.util.CSVRecord;
 import org.xmlsh.core.Options;
@@ -22,6 +14,14 @@ import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.util.Util;
+
+import java.io.IOException;
+import java.io.Reader;
+import java.util.Arrays;
+import java.util.List;
+
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
 
 /*
  * 
@@ -80,7 +80,7 @@ public class csv2xml extends XCommand
 		OutputPort stdout = getStdout();
 
 		
-		XMLStreamWriter writer = stdout.asXMLStreamWriter(mSerializeOpts);
+		XMLStreamWriter writer = stdout.asXMLStreamWriter(getSerializeOpts());
 		
 		writer.writeStartDocument();
 		
@@ -91,9 +91,9 @@ public class csv2xml extends XCommand
 		
 		Reader ir = null;
 		if( xvargs.size() == 0 )
-			ir = getStdin().asReader(mSerializeOpts);
+			ir = getStdin().asReader(getSerializeOpts());
 		else
-			ir = getInput( xvargs.get(0) ).asReader(mSerializeOpts);
+			ir = getInput( xvargs.get(0) ).asReader(getSerializeOpts());
 		
 		
 		CSVParser parser = new CSVParser( delim.charAt(0), quote.charAt(0) , maxFields );
@@ -127,7 +127,7 @@ public class csv2xml extends XCommand
 		writer.close();
 		
 		ir.close();
-		stdout.writeSequenceTerminator(mSerializeOpts);
+		stdout.writeSequenceTerminator(getSerializeOpts());
 		
 		
 		return 0;

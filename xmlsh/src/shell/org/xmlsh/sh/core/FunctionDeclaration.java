@@ -6,10 +6,10 @@
 
 package org.xmlsh.sh.core;
 
-import java.io.PrintWriter;
-
 import org.xmlsh.core.IFunction;
 import org.xmlsh.sh.shell.Shell;
+
+import java.io.PrintWriter;
 
 public class FunctionDeclaration extends Command implements IFunction {
 	private String mName;

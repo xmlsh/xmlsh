@@ -7,15 +7,13 @@
 package org.xmlsh.commands.json;
 
 import org.xmlsh.core.BuiltinFunctionCommand;
+import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.util.JsonUtils;
 
-import java.io.IOException;
 import java.rmi.UnexpectedException;
 import java.util.List;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.nebhale.jsonpath.JsonPath;
 
@@ -27,7 +25,7 @@ public class path extends BuiltinFunctionCommand {
 	}
 	
 	@Override
-	public XValue run(Shell shell, List<XValue> args) throws  JsonProcessingException, IOException {
+	public XValue run(Shell shell, List<XValue> args) throws InvalidArgumentException, UnexpectedException  {
 		if( args.size() != 2)
 			throw new UnexpectedException("usage: path( object path )");
 

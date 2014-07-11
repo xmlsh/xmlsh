@@ -6,16 +6,6 @@
 
 package org.xmlsh.commands.internal;
 
-import java.util.List;
-
-import javax.xml.stream.XMLStreamConstants;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-import javax.xml.stream.XMLStreamWriter;
-
-import net.sf.saxon.s9api.XdmItem;
-import org.xmlsh.core.IXdmItemInputStream;
-import org.xmlsh.core.IXdmItemOutputStream;
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
@@ -23,6 +13,13 @@ import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.SerializeOpts;
+
+import java.util.List;
+
+import javax.xml.stream.XMLStreamConstants;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLStreamWriter;
 
 public class xwc extends XCommand {
 
@@ -54,12 +51,12 @@ public class xwc extends XCommand {
 			
 			setSerializeOpts(opts);
 			
-			XMLStreamReader reader = stdin.asXMLStreamReader(mSerializeOpts);
+			XMLStreamReader reader = stdin.asXMLStreamReader(getSerializeOpts());
 			count(reader);
 			reader.close();
 			
  
-			XMLStreamWriter writer =stdout.asXMLStreamWriter(mSerializeOpts);
+			XMLStreamWriter writer =stdout.asXMLStreamWriter(getSerializeOpts());
 			output(writer);
 			writer.flush();
 			writer.close();

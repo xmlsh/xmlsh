@@ -6,6 +6,21 @@
 
 package org.xmlsh.commands.internal;
 
+import net.sf.saxon.s9api.SaxonApiException;
+
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
+import org.xmlsh.core.CoreException;
+import org.xmlsh.core.Options;
+import org.xmlsh.core.ThrowException;
+import org.xmlsh.core.VariableOutputPort;
+import org.xmlsh.core.XCommand;
+import org.xmlsh.core.XValue;
+import org.xmlsh.core.XVariable;
+import org.xmlsh.sh.core.Command;
+import org.xmlsh.sh.shell.Shell;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -19,19 +34,6 @@ import java.util.Set;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
-
-import net.sf.saxon.s9api.SaxonApiException;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.xmlsh.core.CoreException;
-import org.xmlsh.core.Options;
-import org.xmlsh.core.ThrowException;
-import org.xmlsh.core.VariableOutputPort;
-import org.xmlsh.core.XCommand;
-import org.xmlsh.core.XValue;
-import org.xmlsh.core.XVariable;
-import org.xmlsh.sh.core.Command;
-import org.xmlsh.sh.shell.Shell;
 
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;

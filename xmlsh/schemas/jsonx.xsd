@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="http://www.ibm.com/xmlns/prod/2009/jsonx"
+    elementFormDefault="qualified" attributeFormDefault="unqualified"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:tns="http://www.ibm.com/xmlns/prod/2009/jsonx">
+    <xsd:annotation>
+        <xsd:documentation>
+            This document derived from the expired draft ITEF document at 
+            http://tools.ietf.org/html/draft-rsalz-jsonx-00
+        </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:simpleType name="jsonnumbertype">
+        <xsd:restriction base="xsd:token">
+            <xsd:pattern value="[-]?(0|[1-9][0-9]*)(\.[0-9]+)?([eE][-+]?[0-9]+)?" />
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:element name="object" type="tns:anyElement" />
+    <xsd:element name="array" type="tns:anyElement" />
+    <xsd:element name="string" type="tns:stringElement" />
+    <xsd:element name="number" type="tns:numberElement" />
+    <xsd:element name="boolean" type="tns:booleanElement" />
+    <xsd:element name="null" type="tns:emptyElement" />
+
+    <xsd:complexType name="anyElement">
+        <xsd:sequence>
+            <xsd:any minOccurs="0" maxOccurs="unbounded"
+                    namespace="##targetNamespace" processContents="strict" />
+        </xsd:sequence>
+        <xsd:attribute name="name" type="xsd:string" />
+    </xsd:complexType>
+
+    <xsd:complexType name="emptyElement">
+        <xsd:attribute name="name" type="xsd:string" />
+    </xsd:complexType>
+
+    <xsd:complexType name="stringElement">
+        <xsd:simpleContent>
+            <xsd:extension base="xsd:string">
+                <xsd:attribute name="name" type="xsd:string" />
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="numberElement">
+        <xsd:simpleContent>
+            <xsd:extension base="tns:jsonnumbertype">
+                <xsd:attribute name="name" type="xsd:string" />
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>

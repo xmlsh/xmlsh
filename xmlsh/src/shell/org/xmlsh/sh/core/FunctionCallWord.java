@@ -6,22 +6,20 @@
 
 package org.xmlsh.sh.core;
 
+import org.xmlsh.core.CommandFactory;
+import org.xmlsh.core.CoreException;
+import org.xmlsh.core.IFunction;
+import org.xmlsh.core.InvalidArgumentException;
+import org.xmlsh.core.XValue;
+import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.util.MutableInteger;
+import org.xmlsh.util.Util;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
-import java.util.List;
-
-import org.xmlsh.core.CommandFactory;
-import org.xmlsh.core.CoreException;
-import org.xmlsh.core.IFunction;
-import org.xmlsh.core.InvalidArgumentException;
-import org.xmlsh.core.Variables;
-import org.xmlsh.core.XValue;
-import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.util.MutableInteger;
-import org.xmlsh.util.Util;
 
 /*
  * A Value that evaulates to a "cmd_word" which is either a simple string,

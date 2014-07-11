@@ -6,10 +6,6 @@
 
 package org.xmlsh.sh.core;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintWriter;
-
 import net.sf.saxon.s9api.XdmNode;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InputPort;
@@ -18,10 +14,13 @@ import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.ByteFilterInputStream;
-import org.xmlsh.util.ByteFilterOutputStream;
 import org.xmlsh.util.MutableInteger;
 import org.xmlsh.util.Util;
 import org.xmlsh.util.XMLException;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintWriter;
 
 /*
  * A Value that evaulates to a "cmd_word" which is either a simple string,

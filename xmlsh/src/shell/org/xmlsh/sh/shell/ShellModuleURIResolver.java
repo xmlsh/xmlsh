@@ -6,6 +6,9 @@
 
 package org.xmlsh.sh.shell;
 
+import net.sf.saxon.lib.ModuleURIResolver;
+import net.sf.saxon.trans.XPathException;
+
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -16,9 +19,6 @@ import java.net.URL;
 import java.util.Arrays;
 
 import javax.xml.transform.stream.StreamSource;
-
-import net.sf.saxon.lib.ModuleURIResolver;
-import net.sf.saxon.trans.XPathException;
 
 public class ShellModuleURIResolver implements ModuleURIResolver {
 	private		Shell	mShell = null;

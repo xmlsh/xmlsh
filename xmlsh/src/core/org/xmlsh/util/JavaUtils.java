@@ -10,12 +10,13 @@ import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.XdmAtomicValue;
 import net.sf.saxon.s9api.XdmValue;
 import net.sf.saxon.trans.XPathException;
+import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
 
-import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
@@ -23,8 +24,6 @@ import java.net.URI;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
 
 public class JavaUtils {
 
@@ -56,7 +55,7 @@ private static Set< String > mReserved;
 	}
 	
 
-	public static XValue newObject(String classname, List<XValue> args, ClassLoader classloader) throws Exception {
+	public static XValue newXValue(String classname, List<XValue> args, ClassLoader classloader) throws Exception {
 		Class<?> cls = Class.forName(classname, true, classloader);
 
 		Constructor<?>[] constructors = cls.getConstructors();
@@ -67,6 +66,17 @@ private static Set< String > mReserved;
 		Object obj = c.newInstance(getArgs(c.getParameterTypes(), args));
 		return new XValue(obj);
 	}
+	
+	public static <T> T newObject( Class<T> cls , Object... args  ) throws InvalidArgumentException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		
+		@SuppressWarnings("unchecked")
+        Constructor<T>[] constructors = (Constructor<T>[]) cls.getConstructors();
+		Constructor<T> c = getBestConstructor(constructors, args );
+		if( c == null )
+			throw new InvalidArgumentException("Cannot find constructor for: " + cls.getName());
+		return c.newInstance(args);
+	}
+ 
 
 	public static XValue callStatic(String classname, String methodName, List<XValue> args,
 			ClassLoader classloader) throws Exception {
@@ -122,15 +132,13 @@ private static Set< String > mReserved;
 				return new XValue( (String) null );
 			else
 				return new XValue( (Object) null);
-			
-			
 		}
 		
 		
 		return new XValue(obj) ;
 	}
 
-	public static Method getBestMatch(String methodName, List<XValue> args, Method[] methods , boolean bStatic ) throws XPathException, JsonProcessingException, IOException {
+	public static Method getBestMatch(String methodName, List<XValue> args, Method[] methods , boolean bStatic ) throws CoreException {
 
 		
 		Method best = null;
@@ -170,7 +178,7 @@ private static Set< String > mReserved;
 
 	}
 
-	public static Object[] getArgs(Class<?>[] params, List<XValue> args) throws XPathException, JsonProcessingException, IOException {
+	public static Object[] getArgs(Class<?>[] params, List<XValue> args) throws CoreException  {
 
 		Object[] ret = new Object[params.length];
 		int i = 0;
@@ -183,7 +191,7 @@ private static Set< String > mReserved;
 
 	}
 
-	public static Constructor<?> getBestMatch(List<XValue> args, Constructor<?>[] constructors) throws XPathException, JsonProcessingException, IOException {
+	public static Constructor<?> getBestMatch(List<XValue> args, Constructor<?>[] constructors) throws CoreException {
 		
 		Constructor<?> best = null;
 		int bestConversions = 0;
@@ -218,8 +226,43 @@ private static Set< String > mReserved;
 
 		}
 		return best;
-
 	}
+	
+     public static <T> Constructor<T> getBestConstructor(Constructor<T>[] constructors, Object... argValues ) throws InvalidArgumentException {
+		
+		Constructor<T> best = null;
+		int bestConversions = 0;
+		
+		// TODO how to choose best match
+		
+		for (Constructor<T> c : constructors) 
+		{
+			Class<?>[] params = c.getParameterTypes();
+			if (params.length == argValues.length) {
+				int conversions = 0;
+				int i = 0;
+				for (Object obj : argValues) {
+					int convert = canConvertObject( obj , params[i] );
+					if( convert < 0 )
+						break;
+					conversions += convert;
+					i++;
+				}
+				if (i == params.length){
+					// Find best match
+					if( best == null || conversions < bestConversions ){
+						best = c ;
+						bestConversions = conversions;
+						
+					}
+				}
+			}
+
+		}
+		return best;
+	}
+
+
 
 	public static boolean isIntClass(Class<?> c) {
 		if( c == Integer.class ||
@@ -363,8 +406,6 @@ private static Set< String > mReserved;
 	public static XValue getField(String classname, XValue instance, String fieldName, ClassLoader classloader) throws InvalidArgumentException, SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException, ClassNotFoundException {
 		Class<?> cls = Class.forName(classname, true, classloader);
 	    Field f = cls.getField(fieldName);
-
- 
 	    
 
 		if (f == null) 
@@ -385,7 +426,31 @@ private static Set< String > mReserved;
 		
 		return new XValue(obj);
 	}
+
+
+	public static  int canConvertClass( Class<?> sourceClass ,  Class<?> targetClass) throws InvalidArgumentException {
 	
+		// Equal class
+		if( sourceClass.equals(targetClass))
+			return 0 ;
+	
+		// Directly assignable
+		if( targetClass.isAssignableFrom(sourceClass))
+			return 1 ;
+	
+	
+		// Boxable 
+		// int <-> Integer
+		if( isIntClass(sourceClass) && isIntClass(targetClass))
+			return 2 ;
+	
+		return -1;
+	
+	}
+	public static  int canConvertObject( Object sourceObject ,  Class<?> targetClass) throws InvalidArgumentException {
+		return canConvertClass( sourceObject.getClass() , targetClass );
+	}
+
 	
 }
 

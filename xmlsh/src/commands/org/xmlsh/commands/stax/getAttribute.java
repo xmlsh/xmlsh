@@ -6,12 +6,6 @@
 
 package org.xmlsh.commands.stax;
 
-import java.util.List;
-
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.events.Attribute;
-import javax.xml.stream.events.XMLEvent;
-
 import net.sf.saxon.s9api.QName;
 import net.sf.saxon.trans.XPathException;
 import org.xmlsh.core.BuiltinFunctionCommand;
@@ -19,6 +13,12 @@ import org.xmlsh.core.CoreException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.StAXUtils;
+
+import java.util.List;
+
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.events.Attribute;
+import javax.xml.stream.events.XMLEvent;
 
 public class getAttribute extends BuiltinFunctionCommand {
 

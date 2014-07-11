@@ -6,6 +6,11 @@
 
 package org.xmlsh.sh.ui;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
+import org.xmlsh.util.Util;
+
 import java.awt.Color;
 import java.awt.Dimension;
 
@@ -16,13 +21,6 @@ import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 import javax.swing.text.html.HTMLDocument;
-
-
-
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
-import org.xmlsh.util.Util;
 
 /**
  * Sample

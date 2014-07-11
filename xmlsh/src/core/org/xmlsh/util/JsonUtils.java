@@ -6,20 +6,26 @@
 
 package org.xmlsh.util;
 
-import net.sf.saxon.trans.XPathException;
-import org.xmlsh.core.UnexpectedException;
+import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
+import org.xmlsh.json.JSONSerializeOpts;
+import org.xmlsh.sh.shell.SerializeOpts;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.PrintStream;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerationException;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser.Feature;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -36,52 +42,130 @@ import com.fasterxml.jackson.databind.node.ValueNode;
 
 public class JsonUtils {
 
+	/*
+	 * Shared Object Mapper - uses default configuration so needs to be copied if custom configs are used
+	 * 
+	 */
 
-	public static JsonNode toJsonNode( String json ) throws JsonProcessingException, IOException {
-		ObjectMapper mapper = new ObjectMapper();
-		JsonNode actualObj = mapper.readTree(json);
-		return actualObj;
+	private static volatile  ObjectMapper _theObjectMapper = null ;
+	private static volatile  JsonFactory  _theJsonFactory = null ;
+
+
+	// Get a copy of the object mapper for configuring
+	public static ObjectMapper newJsonObjectMapper() {
+		return getJsonObjectMapper().copy();
 	}
-	public static JsonNode toJsonType( XValue value ) throws XPathException, JsonProcessingException, IOException
+
+	public static ObjectMapper getJsonObjectMapper()
+	{
+
+		// lets play and avoid syncronization
+		// on the off chance this is concurrent 2 mappers are created and one gets GC'd
+		if( _theObjectMapper == null ) {
+
+			ObjectMapper mapper = new ObjectMapper();
+			mapper.configure( SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS , true);
+			// mapper.configure(DeserializationFeature. x , on );
+			mapper.configure(Feature.ALLOW_SINGLE_QUOTES, true);
+			mapper.configure(Feature.ALLOW_UNQUOTED_FIELD_NAMES,true);
+			mapper.configure(Feature.ALLOW_COMMENTS,true);
+			mapper.configure(Feature.ALLOW_NON_NUMERIC_NUMBERS,true);
+			mapper.configure(Feature.ALLOW_NUMERIC_LEADING_ZEROS,true);
+
+
+			
+
+			
+			
+			// other completely global configurations
+
+			if( _theObjectMapper == null )
+				_theObjectMapper = mapper ;
+
+		}
+
+		return _theObjectMapper ; 
+
+	}
+
+
+	public static JsonFactory getJsonFactory()
+	{
+
+		// lets play and avoid syncronization
+		// on the off chance this is concurrent 2 mappers are created and one gets GC'd
+		if( _theJsonFactory == null ) {
+
+			JsonFactory factory = new JsonFactory();
+			
+			// other completely global configurations
+
+			if( _theJsonFactory == null )
+				_theJsonFactory = factory ;
+
+		}
+		return _theJsonFactory ;
+
+
+	}
+
+
+	public static JsonNode toJsonNode( String json ) throws InvalidArgumentException  {
+		try {
+			ObjectMapper mapper = getJsonObjectMapper();
+			JsonNode actualObj = mapper.readTree(json);
+			return actualObj;
+		}
+		catch( Exception e ){
+			Util.wrapException("Exception converting json value",e,InvalidArgumentException.class);	
+			return null ; // SNH 
+
+		}
+	}
+	public static JsonNode toJsonType( XValue value ) throws InvalidArgumentException
 	{
 		if( value.isNull() )
 			return null ;
-		
-		if( value.isJson())
-			return value.asJson();
-			
-	    ObjectMapper mapper = new ObjectMapper();
-		Object obj = value.getJavaNative();
 
-	
-		if( obj instanceof Map )
-			return mapper.convertValue(obj, ObjectNode.class);
-		
-		if( obj instanceof List )
-			return  mapper.convertValue(obj, ArrayNode.class); ;
-		if( obj instanceof Array )
-			return  mapper.convertValue(obj, ArrayNode.class); ;
-		
-			
-		if( obj instanceof Integer )
-			return JsonNodeFactory.instance.numberNode((Integer)obj) ;
-		if( obj instanceof Long )
-			return JsonNodeFactory.instance.numberNode((Long)obj) ;
-		if( obj instanceof Double )
-			return JsonNodeFactory.instance.numberNode((Double)obj) ;
-		
-		if( obj instanceof Boolean )
-			return JsonNodeFactory.instance.booleanNode((Boolean)obj) ;
-		
-		return mapper.convertValue(obj, JsonNode.class);
-		
-		
-		
-		
-		
+		try {
+			if( value.isJson())
+				return value.asJson();
+
+			ObjectMapper mapper = getJsonObjectMapper();
+			Object obj = value.getJavaNative();
+
+
+			if( obj instanceof Map )
+				return mapper.convertValue(obj, ObjectNode.class);
+
+			if( obj instanceof List )
+				return  mapper.convertValue(obj, ArrayNode.class); ;
+				if( obj instanceof Array )
+					return  mapper.convertValue(obj, ArrayNode.class); ;
+
+
+					if( obj instanceof Integer )
+						return JsonNodeFactory.instance.numberNode((Integer)obj) ;
+					if( obj instanceof Long )
+						return JsonNodeFactory.instance.numberNode((Long)obj) ;
+					if( obj instanceof Double )
+						return JsonNodeFactory.instance.numberNode((Double)obj) ;
+
+					if( obj instanceof Boolean )
+						return JsonNodeFactory.instance.booleanNode((Boolean)obj) ;
+
+					return mapper.convertValue(obj, JsonNode.class);
+
+		} 
+		catch (Exception e) {
+			Util.wrapException("Exception converting JSON value",e,InvalidArgumentException.class);	
+			return null ; // SNH 
+		}
+
+
 	}
 
-	public static NumericNode toJsonNumber(XValue arg) throws XPathException, JsonProcessingException, IOException {
+	public static NumericNode toJsonNumber(XValue arg) throws InvalidArgumentException  {
 		String str = null;
 		if( arg.isJson()) {
 			JsonNode j  = arg.asJson();
@@ -90,89 +174,104 @@ public class JsonUtils {
 			else
 				str = j.asText();
 		}
-			
+
 		else
 			str = arg.toString();
-		
-	    ObjectMapper mapper = new ObjectMapper();
-	    return mapper.readValue(str, NumericNode.class );
+
+		try {
+			ObjectMapper mapper = getJsonObjectMapper();
+			return mapper.readValue(str, NumericNode.class );
+		}catch( Exception e ){
+			Util.wrapException("Exception converting JSON  value",e,InvalidArgumentException.class);	
+
+			return null ; // SNH 
+
+		}
 
 	}
-	
-	public static BooleanNode toJsonBoolean(XValue arg) throws UnexpectedException, XPathException, JsonProcessingException, IOException {
-		 
-		boolean b = false ;
-		if( arg != null &&! arg.isNull() ) {
-			if( arg.isJson() )
-				b = arg.asJson().asBoolean();
-			else
-			if( arg.isString() ) {
-				String s=arg.toString();
-				b = ( s.equalsIgnoreCase("true") || s.equals("1")) ;
-			} else
 
-			b = arg.toBoolean();
-		} 
-		return JsonNodeFactory.instance.booleanNode( b );
-		
-		
-		
+	public static BooleanNode toJsonBoolean(XValue arg) throws InvalidArgumentException  {
+
+		try {
+			boolean b = false ;
+			if( arg != null &&! arg.isNull() ) {
+				if( arg.isJson() )
+					b = arg.asJson().asBoolean();
+				else
+					if( arg.isString() ) {
+						String s=arg.toString();
+						b = ( s.equalsIgnoreCase("true") || s.equals("1")) ;
+					} else
+
+						b = arg.toBoolean();
+			} 
+			return JsonNodeFactory.instance.booleanNode( b );
+		}
+		catch( Exception e ){
+			Util.wrapException("Exception converting JSON value",e,InvalidArgumentException.class);	
+
+			return null ; // SNH 
+
+		}
+
+
+
 	}
 	public static String jsonToString(JsonNode value) throws JsonProcessingException
-    {
-		ObjectMapper mapper = new ObjectMapper();
-		mapper.configure( SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS , true);
+	{
+		ObjectMapper mapper = getJsonObjectMapper();
 		return mapper.writeValueAsString(value);
-    }
+	}
 	public static JsonNode toJsonNode(InputStream is) throws JsonProcessingException, IOException
-    {
-		ObjectMapper mapper = new ObjectMapper();
-	    return mapper.readTree(is);
-    }
+	{
+		ObjectMapper mapper = getJsonObjectMapper();
+		return mapper.readTree(is);
+	}
+
 	public static void writeJsonNode(JsonNode result, PrintStream os) throws JsonGenerationException, JsonMappingException, IOException
-    {
-		ObjectMapper mapper = new ObjectMapper();
-		mapper.configure(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS , true).writeValue(os, result);
-	    
-    }
+	{
+		ObjectMapper mapper = getJsonObjectMapper(); 
+		mapper.writeValue(os, result);
+
+	}
 	public static NullNode jsonNull()
-    {
-	   return JsonNodeFactory.instance.nullNode();
-    }
+	{
+		return JsonNodeFactory.instance.nullNode();
+	}
 	public static TextNode toJsonString(String string)
-    {
+	{
 		return JsonNodeFactory.instance.textNode(string);
-    }
+	}
 
 	public static TextNode toJsonString(XValue xv )
-    {
+	{
 		if( xv == null || xv.isNull())
 			return toJsonString( (String) null );
-	
+
 		if( xv.isString() )
 			return toJsonString( xv.toString());
-		
+
 		if( xv.isAtomic() )
 			return toJsonString( xv.toString() );
 
-		ObjectMapper mapper = new ObjectMapper();
+		ObjectMapper mapper = getJsonObjectMapper();
 		return mapper.convertValue( xv.asObject() , TextNode.class );
-    
-    }
+
+	}
 	public static Object asJavaNative(JsonNode node)
-    {
-	   if( node.isValueNode() ) {
-		   ValueNode value = (ValueNode) node;
-		   if( value.isNumber())
-			   return ((NumericNode)value).numberValue();
-		   if( value.isBoolean() )
-			   return value.asBoolean();
-		   if( value.isTextual())
-			   return value.asText().toString();
-		   if( value.isNull())
-			   return null;
-	   }
-		   
+	{
+		if( node.isValueNode() ) {
+			ValueNode value = (ValueNode) node;
+			if( value.isNumber())
+				return ((NumericNode)value).numberValue();
+			if( value.isBoolean() )
+				return value.asBoolean();
+			if( value.isTextual())
+				return value.asText().toString();
+			if( value.isNull())
+				return null;
+		}
+
 		if( node.isArray()) {
 			ArrayNode a = (ArrayNode) node;
 			ArrayList<Object> al = new ArrayList<Object>( a.size());
@@ -181,15 +280,42 @@ public class JsonUtils {
 			}
 			return al;
 		}
-		ObjectMapper mapper = new ObjectMapper();
+		ObjectMapper mapper = getJsonObjectMapper();
 
 		if( node.isObject() ) {
 			return mapper.convertValue( node , Map.class);
 		}
 		return node.toString(); // WTF
+	}
+
+	public static void writeJsonNode(JsonNode value, OutputStream os, SerializeOpts opt) throws JsonGenerationException, JsonMappingException, IOException
+	{
+
+		ObjectMapper mapper = getJsonObjectMapper();
+		mapper.writeValue(os, value);
+	}
+
+	public static InputStream asInputStream(JsonNode value, SerializeOpts opt) throws JsonGenerationException, JsonMappingException, IOException
+	{
+
+		/* TODO - figure out a streaming method */
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		writeJsonNode( value ,bos , opt );
+		bos.flush();
+		bos.close();
+		return new ByteArrayInputStream( bos.toByteArray());
+
+	}
+
+	public static JsonGenerator createGenerator(OutputStream os, JSONSerializeOpts jopts) throws IOException
+    {
+		JsonGenerator gen = getJsonFactory().createGenerator(os);
+		if( jopts.getPretyPrint())
+			gen.useDefaultPrettyPrinter();
+		return gen;
     }
 
-	
+
 }
 
 

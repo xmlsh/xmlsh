@@ -13,11 +13,11 @@ package org.xmlsh.sh.core;
  * 
  */
 
-import java.io.PrintWriter;
-
 import org.xmlsh.core.ICommand;
 import org.xmlsh.core.ScriptCommand;
 import org.xmlsh.sh.shell.Shell;
+
+import java.io.PrintWriter;
 
 public class EvalScriptCommand extends Command {
 	private String			mCommand;
