@@ -7,6 +7,8 @@
 package org.xmlsh.sh.core;
 
 import org.xmlsh.core.CoreException;
+import org.xmlsh.core.StaticContextFlag;
+import org.xmlsh.core.StaticEnvironment;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.MutableInteger;
@@ -24,10 +26,14 @@ import java.util.List;
  */
 public abstract class Word {
 	
-	private		boolean 	bExpand = true ;
+	private StaticEnvironment mStaticEnv = null;
 	
 	public abstract void print( PrintWriter out );
 
+
+	protected Word( ) {
+		mStaticEnv =  StaticEnvironment.defaultContext();
+	}
 
 	public XValue expandWords( Shell shell , String word ,  boolean bExpandWords ,boolean bTongs ) throws IOException {
 		// if expand word then need to do IFS splitting
@@ -44,13 +50,8 @@ public abstract class Word {
 	   return shell.expand(word ,bExpandSequences , bExpandWild , bExpandWords , bTongs , loc );
    }
 	
-	public abstract XValue expand(Shell shell,boolean bExpandWild , boolean bExpandWords ,boolean bTongs,  MutableInteger retValue , SourceLocation loc ) throws IOException, CoreException;
+	public abstract XValue expand(Shell shell,boolean bExpandWild , boolean bExpandWords ,boolean bTongs,  SourceLocation loc ) throws IOException, CoreException;
 	
-	public  XValue expand(Shell shell,boolean bExpandWild , boolean bExpandWords , boolean bTongs, SourceLocation loc ) throws IOException, CoreException
-	{
-		return expand( shell , bExpandWild , bExpandWords , bTongs , null, loc );
-	}
-
 	public String expandString(Shell shell, boolean bExpandWild, SourceLocation loc ) throws IOException, CoreException {
 		return expand(shell,bExpandWild,false,false,loc).toString();
 	}
@@ -70,12 +71,11 @@ public abstract class Word {
 	
 	public abstract String toString();
 
-	public boolean isExpand() {
-		
-		return bExpand;
+	public boolean isInTongs() {
+		return mStaticEnv.getTongs();
 	}
-	public void setExpand( boolean expand ){
-		bExpand = expand ;
+	public void setInTongs( boolean tongs ){
+		mStaticEnv = mStaticEnv.addContext(StaticContextFlag.BLOCK_TONG);
 	}
 }
 

@@ -14,7 +14,6 @@ import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.ByteFilterInputStream;
-import org.xmlsh.util.MutableInteger;
 import org.xmlsh.util.Util;
 import org.xmlsh.util.XMLException;
 
@@ -97,7 +96,7 @@ public class CommandFileWord extends Word {
 
 
 	@Override
-	public XValue expand(Shell shell,boolean bExpandWild , boolean bExpandWords, boolean bTongs , MutableInteger retValue , SourceLocation loc ) throws IOException, CoreException {
+	public XValue expand(Shell shell,boolean bExpandWild , boolean bExpandWords, boolean bTongs , SourceLocation loc ) throws IOException, CoreException {
 
 		if(mType.equals("$(<")){
 			

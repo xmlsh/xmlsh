@@ -12,7 +12,6 @@ import org.xmlsh.core.XValue;
 import org.xmlsh.core.XVariable;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.JavaUtils;
-import org.xmlsh.util.MutableInteger;
 import org.xmlsh.util.StringPair;
 import org.xmlsh.util.Util;
 
@@ -58,7 +57,7 @@ public class MethodCallWord extends Word {
 
 	
 	@Override
-	public XValue expand(Shell shell,boolean bExpandWild , boolean bExpandWords, boolean bTongs , MutableInteger retValue,  SourceLocation loc ) throws IOException, CoreException {
+	public XValue expand(Shell shell,boolean bExpandWild , boolean bExpandWords, boolean bTongs , SourceLocation loc ) throws IOException, CoreException {
 		
 		
 		XVariable var = shell.getEnv().getVar(mVariable);
@@ -70,7 +69,7 @@ public class MethodCallWord extends Word {
 		
 		if( mArgs != null )
 			for( Word arg : mArgs )
-				args.addAll(arg.expand(shell,arg.isExpand(),arg.isExpand(),arg.isExpand(), ! arg.isExpand(),loc));
+				args.addAll(arg.expand(shell,!arg.isInTongs(),!arg.isInTongs(),!arg.isInTongs(),  arg.isInTongs(),loc));
 		
 
 		

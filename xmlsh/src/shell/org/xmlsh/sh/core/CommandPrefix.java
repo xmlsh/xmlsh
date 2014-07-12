@@ -27,11 +27,6 @@ public class CommandPrefix {
 	{
 		mList.add( new Assign( var , "=" ,  value ));
 	}
-	public void add( String var , WordList value )
-	{
-		mList.add( new Assign( var , "=" , value ));
-	}
-	
 
 
 	public void print(PrintWriter out) {
@@ -42,19 +37,9 @@ public class CommandPrefix {
 		
 	}
 
-	public int  exec(Shell shell, SourceLocation loc) throws IOException, CoreException {
-		MutableInteger retValue = new MutableInteger(0);
-		for (Assign ass : mList) {
-			XValue value = ass.expand(shell,retValue, loc );
-			
-			if( ass.getOp().equals("+="))
-					shell.getEnv().appendVar( ass.getVariable(), value , ass.isLocal());
-			else
-				shell.getEnv().setVar( ass.getVariable(), value , ass.isLocal());
-				
-			
-		}
-		return retValue.getValue();
+	public void  exec(Shell shell, SourceLocation loc) throws IOException, CoreException {
+		for (Assign ass : mList) 
+			ass.eval( shell, loc );
 		
 	}
 	

@@ -170,15 +170,14 @@ public class SimpleCommand extends Command {
 
 	private int execNull(Shell shell) throws Exception {
 
-		int ret = 0;
 		if( mPrefix != null )
-			ret = mPrefix.exec( shell, getLocation() );
+			mPrefix.exec( shell, getLocation() );
 		
 		
 		if( mSuffix != null )
 			mSuffix.exec( shell, getLocation() );
 		
-		return ret;
+		return shell.getStatus();
 	}
 
 

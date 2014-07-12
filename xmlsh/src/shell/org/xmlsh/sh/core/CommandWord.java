@@ -51,12 +51,12 @@ public class CommandWord extends Word {
 	}
 	
 
-	private String expandSubproc(Shell shell , Command c , MutableInteger retValue ) throws CoreException, IOException
+	private String expandSubproc(Shell parentShell , Command c ) throws CoreException, IOException
 	{
 		
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		ByteFilterOutputStream filterOut = null ;
-		shell = shell.clone();
+		Shell shell = parentShell.clone();
 		try {
 			
 			OutputStream commandOut = shell.getSerializeOpts().isIgncr() ? 
@@ -64,8 +64,7 @@ public class CommandWord extends Word {
 			shell.getEnv().setStdout( commandOut  );
 			shell.getEnv().setStdin( new NullInputStream() );
 			int ret = shell.exec(c);
-			if( retValue != null )
-					retValue.setValue(ret);
+			parentShell.setStatus(ret);
 			
 
 			commandOut.flush();
@@ -102,7 +101,7 @@ public class CommandWord extends Word {
 	
 	
 
-	private XdmValue parseXCmd(Shell shell , Command cmd, MutableInteger retValue ) throws IOException, CoreException
+	private XValue parseXCmd(Shell parentShell , Command cmd) throws IOException, CoreException
 	{
 
 		
@@ -111,18 +110,13 @@ public class CommandWord extends Word {
 		
 		
 
-		shell = shell.clone();
+		Shell shell = parentShell.clone();
 		try {
 		
 			shell.getEnv().setStdout( port );
 			shell.getEnv().setStdin( new NullInputStream() );
 			int ret= shell.exec(cmd);
-			if( retValue != null ){
-				
-				
-			
-				retValue.setValue(ret);
-			}
+			parentShell.setStatus(ret);
 		
 			
 		} 
@@ -153,7 +147,7 @@ public class CommandWord extends Word {
 			} catch (SaxonApiException e) {
 				throw new CoreException("Exception parsing as XML Document",e);
 			}
-			return node ;
+			return new XValue(node) ;
 			
 			
 			
@@ -161,14 +155,14 @@ public class CommandWord extends Word {
 		}
 		
 		
-		return value == null ? null : value.asXdmValue();
+		return value ;
 		
 		
 		
 	}
 		
 	@Override
-	public XValue expand(Shell shell,boolean bExpandWild , boolean bExpandWords, boolean bTongs , MutableInteger retValue, SourceLocation loc ) throws IOException, CoreException {
+	public XValue expand(Shell shell,boolean bExpandWild , boolean bExpandWords, boolean bTongs , SourceLocation loc ) throws IOException, CoreException {
 		
 		
 		if( mType.equals("$(") || mType.equals("`") ){
@@ -178,7 +172,7 @@ public class CommandWord extends Word {
 			 * The command substitution $(cat file) can be replaced by the equivalent but faster $(< file).
 			 */
 			
-			String 	value = expandSubproc( shell , mCommand, retValue);
+			String 	value = expandSubproc( shell , mCommand);
 			// Trailing lines are already removed
 			
  
@@ -189,8 +183,7 @@ public class CommandWord extends Word {
 		} else 
 		if( mType.equals("$<(")){
 			
-			XdmValue v = parseXCmd( shell , mCommand , retValue );
-			return new XValue(v);
+			return parseXCmd( shell , mCommand );
 		}
 
 		else 

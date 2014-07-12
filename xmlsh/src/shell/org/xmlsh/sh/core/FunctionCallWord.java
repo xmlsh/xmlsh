@@ -12,7 +12,6 @@ import org.xmlsh.core.IFunction;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.util.MutableInteger;
 import org.xmlsh.util.Util;
 
 import java.io.IOException;
@@ -53,7 +52,7 @@ public class FunctionCallWord extends Word {
 
 	
 	@Override
-	public XValue expand(Shell shell,boolean bExpandWild , boolean bExpandWords, boolean bTongs , MutableInteger retValue, SourceLocation loc ) throws IOException, CoreException {
+	public XValue expand(Shell shell,boolean bExpandWild , boolean bExpandWords, boolean bTongs , SourceLocation loc ) throws IOException, CoreException {
 		
 		
 		// Try builtin functions first
@@ -73,7 +72,7 @@ public class FunctionCallWord extends Word {
 		
 		if( mArgs != null )
 			for( Word arg : mArgs )
-				args.addAll(arg.expand(shell,arg.isExpand(),arg.isExpand(),arg.isExpand(), !arg.isExpand(),loc));
+				args.addAll(arg.expand(shell,!arg.isInTongs(),!arg.isInTongs(),!arg.isInTongs(), arg.isInTongs(),loc));
 
 		
 		try {

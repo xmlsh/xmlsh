@@ -1,0 +1,997 @@
+<object xmlns="http://www.xmlsh.org/jxml">
+   <member ="BOOKLIST">
+      <object>
+         <member ="_children">
+            <array>
+               <object>
+                  <member ="BOOKS">
+                     <object>
+                        <member ="_children">
+                           <array>
+                              <object>
+                                 <member ="ITEM">
+                                    <object>
+                                       <member ="_attributes">
+                                          <object>
+                                             <member ="CAT">
+                                                <string/>
+                                             </member>
+                                          </object>
+                                       </member>
+                                       <member ="_children">
+                                          <array>
+                                             <object>
+                                                <member ="TITLE">
+                                                   <object>
+                                                      <member ="_children">
+                                                         <array>
+                                                            <string/>
+                                                         </array>
+                                                      </member>
+                                                   </object>
+                                                </member>
+                                             </object>
+                                             <object>
+                                                <member ="AUTHOR">
+                                                   <object>
+                                                      <member ="_children">
+                                                         <array>
+                                                            <string/>
+                                                         </array>
+                                                      </member>
+                                                   </object>
+                                                </member>
+                                             </object>
+                                             <object>
+                                                <member ="PUBLISHER">
+                                                   <object>
+                                                      <member ="_children">
+                                                         <array>
+                                                            <string/>
+                                                         </array>
+                                                      </member>
+                                                   </object>
+                                                </member>
+                                             </object>
+                                             <object>
+                                                <member ="PUB-DATE">
+                                                   <object>
+                                                      <member ="_children">
+                                                         <array>
+                                                            <string/>
+                                                         </array>
+                                                      </member>
+                                                   </object>
+                                                </member>
+                                             </object>
+                                             <object>
+                                                <member ="LANGUAGE">
+                                                   <object>
+                                                      <member ="_children">
+                                                         <array>
+                                                            <string/>
+                                                         </array>
+                                                      </member>
+                                                   </object>
+                                                </member>
+                                             </object>
+                                             <object>
+                                                <member ="PRICE">
+                                                   <object>
+                                                      <member ="_children">
+                                                         <array>
+                                                            <string/>
+                                                         </array>
+                                                      </member>
+                                                   </object>
+                                                </member>
+                                             </object>
+                                             <object>
+                                                <member ="QUANTITY">
+                                                   <object>
+                                                      <member ="_children">
+                                                         <array>
+                                                            <string/>
+                                                         </array>
+                                                      </member>
+                                                   </object>
+                                                </member>
+                                             </object>
+                                             <object>
+                                                <member ="ISBN">
+                                                   <object>
+                                                      <member ="_children">
+                                                         <array>
+                                                            <string/>
+                                                         </array>
+                                                      </member>
+                                                   </object>
+                                                </member>
+                                             </object>
+                                             <object>
+                                                <member ="PAGES">
+                                                   <object>
+                                                      <member ="_children">
+                                                         <array>
+                                                            <string/>
+                                                         </array>
+                                                      </member>
+                                                   </object>
+                                                </member>
+                                             </object>
+                                             <object>
+                                                <member ="DIMENSIONS">
+                                                   <object>
+                                                      <member ="_attributes">
+                                                         <object>
+                                                            <member ="UNIT">
+                                                               <string/>
+                                                            </member>
+                                                         </object>
+                                                      </member>
+                                                      <member ="_children">
+                                                         <array>
+                                                            <string/>
+                                                         </array>
+                                                      </member>
+                                                   </object>
+                                                </member>
+                                             </object>
+                                             <object>
+                                                <member ="WEIGHT">
+                                                   <object>
+                                                      <member ="_attributes">
+                                                         <object>
+                                                            <member ="UNIT">
+                                                               <string/>
+                                                            </member>
+                                                         </object>
+                                                      </member>
+                                                      <member ="_children">
+                                                         <array>
+                                                            <string/>
+                                                         </array>
+                                                      </member>
+                                                   </object>
+                                                </member>
+                                             </object>
+                                          </array>
+                                       </member>
+                                    </object>
+                                 </member>
+                              </object>
+                              <object>
+                                 <member ="ITEM">
+                                    <object>
+                                       <member ="_attributes">
+                                          <object>
+                                             <member ="CAT">
+                                                <string/>
+                                             </member>
+                                          </object>
+                                       </member>
+                                       <member ="_children">
+                                          <array>
+                                             <object>
+                                                <member ="TITLE">
+                                                   <object>
+                                                      <member ="_children">
+                                                         <array>
+                                                            <string/>
+                                                         </array>
+                                                      </member>
+                                                   </object>
+                                                </member>
+                                             </object>
+                                             <object>
+                                                <member ="AUTHOR">
+                                                   <object>
+                                                      <member ="_children">
+                                                         <array>
+                                                            <string/>
+                                                         </array>
+                                                      </member>
+                                                   </object>
+                                                </member>
+                                             </object>
+                                             <object>
+                                                <member ="PUBLISHER">
+                                                   <object>
+                                                      <member ="_children">
+                                                         <array>
+                                                            <string/>
+                                                         </array>
+                                                      </member>
+                                                   </object>
+                                                </member>
+                                             </object>
+                                             <object>
+                                                <member ="PUB-DATE">
+                                                   <object>
+                                                      <member ="_children">
+                                                         <array>
+                                                            <string/>
+                                                         </array>
+                                                      </member>
+                                                   </object>
+                                                </member>
+                                             </object>
+                                             <object>
+                                                <member ="LANGUAGE">
+                                                   <object>
+                                                      <member ="_children">
+                                                         <array>
+                                                            <string/>
+                                                         </array>
+                                                      </member>
+                                                   </object>
+                                                </member>
+                                             </object>
+                                             <object>
+                                                <member ="PRICE">
+                                                   <object>
+                                                      <member ="_children">
+                                                         <array>
+                                                            <string/>
+                                                         </array>
+                                                      </member>
+                                                   </object>
+                                                </member>
+                                             </object>
+                                             <object>
+                                                <member ="QUANTITY">
+                                                   <object>
+                                                      <member ="_children">
+                                                         <array>
+                                                            <string/>
+                                                         </array>
+                                                      </member>
+                                                   </object>
+                                                </member>
+                                             </object>
+                                             <object>
+                                                <member ="ISBN">
+                                                   <object>
+                                                      <member ="_children">
+                                                         <array>
+                                                            <string/>
+                                                         </array>
+                                                      </member>
+                                                   </object>
+                                                </member>
+                                             </object>
+                                             <object>
+                                                <member ="PAGES">
+                                                   <object>
+                                                      <member ="_children">
+                                                         <array>
+                                                            <string/>
+                                                         </array>
+                                                      </member>
+                                                   </object>
+                                                </member>
+                                             </object>
+                                             <object>
+                                                <member ="DIMENSIONS">
+                                                   <object>
+                                                      <member ="_attributes">
+                                                         <object>
+                                                            <member ="UNIT">
+                                                               <string/>
+                                                            </member>
+                                                         </object>
+                                                      </member>
+                                                      <member ="_children">
+                                                         <array>
+                                                            <string/>
+                                                         </array>
+                                                      </member>
+                                                   </object>
+                                                </member>
+                                             </object>
+                                             <object>
+                                                <member ="WEIGHT">
+                                                   <object>
+                                                      <member ="_attributes">
+                                                         <object>
+                                                            <member ="UNIT">
+                                                               <string/>
+                                                            </member>
+                                                         </object>
+                                                      </member>
+                                                      <member ="_children">
+                                                         <array>
+                                                            <string/>
+                                                         </array>
+                                                      </member>
+                                                   </object>
+                                                </member>
+                                             </object>
+                                          </array>
+                                       </member>
+                                    </object>
+                                 </member>
+                              </object>
+                              <object>
+                                 <member ="ITEM">
+                                    <object>
+                                       <member ="_attributes">
+                                          <object>
+                                             <member ="CAT">
+                                                <string/>
+                                             </member>
+                                          </object>
+                                       </member>
+                                       <member ="_children">
+                                          <array>
+                                             <object>
+                                                <member ="TITLE">
+                                                   <object>
+                                                      <member ="_children">
+                                                         <array>
+                                                            <string/>
+                                                         </array>
+                                                      </member>
+                                                   </object>
+                                                </member>
+                                             </object>
+                                             <object>
+                                                <member ="AUTHOR">
+                                                   <object>
+                                                      <member ="_children">
+                                                         <array>
+                                                            <string/>
+                                                         </array>
+                                                      </member>
+                                                   </object>
+                                                </member>
+                                             </object>
+                                             <object>
+                                                <member ="PUBLISHER">
+                                                   <object>
+                                                      <member ="_children">
+                                                         <array>
+                                                            <string/>
+                                                         </array>
+                                                      </member>
+                                                   </object>
+                                                </member>
+                                             </object>
+                                             <object>
+                                                <member ="PUB-DATE">
+                                                   <object>
+                                                      <member ="_children">
+                                                         <array>
+                                                            <string/>
+                                                         </array>
+                                                      </member>
+                                                   </object>
+                                                </member>
+                                             </object>
+                                             <object>
+                                                <member ="LANGUAGE">
+                                                   <object>
+                                                      <member ="_children">
+                                                         <array>
+                                                            <string/>
+                                                         </array>
+                                                      </member>
+                                                   </object>
+                                                </member>
+                                             </object>
+                                             <object>
+                                                <member ="PRICE">
+                                                   <object>
+                                                      <member ="_children">
+                                                         <array>
+                                                            <string/>
+                                                         </array>
+                                                      </member>
+                                                   </object>
+                                                </member>
+                                             </object>
+                                             <object>
+                                                <member ="QUANTITY">
+                                                   <object>
+                                                      <member ="_children">
+                                                         <array>
+                                                            <string/>
+                                                         </array>
+                                                      </member>
+                                                   </object>
+                                                </member>
+                                             </object>
+                                             <object>
+                                                <member ="ISBN">
+                                                   <object>
+                                                      <member ="_children">
+                                                         <array>
+                                                            <string/>
+                                                         </array>
+                                                      </member>
+                                                   </object>
+                                                </member>
+                                             </object>
+                                             <object>
+                                                <member ="PAGES">
+                                                   <object>
+                                                      <member ="_children">
+                                                         <array>
+                                                            <string/>
+                                                         </array>
+                                                      </member>
+                                                   </object>
+                                                </member>
+                                             </object>
+                                             <object>
+                                                <member ="DIMENSIONS">
+                                                   <object>
+                                                      <member ="_attributes">
+                                                         <object>
+                                                            <member ="UNIT">
+                                                               <string/>
+                                                            </member>
+                                                         </object>
+                                                      </member>
+                                                      <member ="_children">
+                                                         <array>
+                                                            <string/>
+                                                         </array>
+                                                      </member>
+                                                   </object>
+                                                </member>
+                                             </object>
+                                             <object>
+                                                <member ="WEIGHT">
+                                                   <object>
+                                                      <member ="_attributes">
+                                                         <object>
+                                                            <member ="UNIT">
+                                                               <string/>
+                                                            </member>
+                                                         </object>
+                                                      </member>
+                                                      <member ="_children">
+                                                         <array>
+                                                            <string/>
+                                                         </array>
+                                                      </member>
+                                                   </object>
+                                                </member>
+                                             </object>
+                                          </array>
+                                       </member>
+                                    </object>
+                                 </member>
+                              </object>
+                              <object>
+                                 <member ="ITEM">
+                                    <object>
+                                       <member ="_attributes">
+                                          <object>
+                                             <member ="CAT">
+                                                <string/>
+                                             </member>
+                                          </object>
+                                       </member>
+                                       <member ="_children">
+                                          <array>
+                                             <object>
+                                                <member ="TITLE">
+                                                   <object>
+                                                      <member ="_children">
+                                                         <array>
+                                                            <string/>
+                                                         </array>
+                                                      </member>
+                                                   </object>
+                                                </member>
+                                             </object>
+                                             <object>
+                                                <member ="AUTHOR">
+                                                   <object>
+                                                      <member ="_children">
+                                                         <array>
+                                                            <string/>
+                                                         </array>
+                                                      </member>
+                                                   </object>
+                                                </member>
+                                             </object>
+                                             <object>
+                                                <member ="PUBLISHER">
+                                                   <object>
+                                                      <member ="_children">
+                                                         <array>
+                                                            <string/>
+                                                         </array>
+                                                      </member>
+                                                   </object>
+                                                </member>
+                                             </object>
+                                             <object>
+                                                <member ="PUB-DATE">
+                                                   <object>
+                                                      <member ="_children">
+                                                         <array>
+                                                            <string/>
+                                                         </array>
+                                                      </member>
+                                                   </object>
+                                                </member>
+                                             </object>
+                                             <object>
+                                                <member ="LANGUAGE">
+                                                   <object>
+                                                      <member ="_children">
+                                                         <array>
+                                                            <string/>
+                                                         </array>
+                                                      </member>
+                                                   </object>
+                                                </member>
+                                             </object>
+                                             <object>
+                                                <member ="PRICE">
+                                                   <object>
+                                                      <member ="_children">
+                                                         <array>
+                                                            <string/>
+                                                         </array>
+                                                      </member>
+                                                   </object>
+                                                </member>
+                                             </object>
+                                             <object>
+                                                <member ="QUANTITY">
+                                                   <object>
+                                                      <member ="_children">
+                                                         <array>
+                                                            <string/>
+                                                         </array>
+                                                      </member>
+                                                   </object>
+                                                </member>
+                                             </object>
+                                             <object>
+                                                <member ="ISBN">
+                                                   <object>
+                                                      <member ="_children">
+                                                         <array>
+                                                            <string/>
+                                                         </array>
+                                                      </member>
+                                                   </object>
+                                                </member>
+                                             </object>
+                                             <object>
+                                                <member ="PAGES">
+                                                   <object>
+                                                      <member ="_children">
+                                                         <array>
+                                                            <string/>
+                                                         </array>
+                                                      </member>
+                                                   </object>
+                                                </member>
+                                             </object>
+                                             <object>
+                                                <member ="DIMENSIONS">
+                                                   <object>
+                                                      <member ="_attributes">
+                                                         <object>
+                                                            <member ="UNIT">
+                                                               <string/>
+                                                            </member>
+                                                         </object>
+                                                      </member>
+                                                      <member ="_children">
+                                                         <array>
+                                                            <string/>
+                                                         </array>
+                                                      </member>
+                                                   </object>
+                                                </member>
+                                             </object>
+                                             <object>
+                                                <member ="WEIGHT">
+                                                   <object>
+                                                      <member ="_attributes">
+                                                         <object>
+                                                            <member ="UNIT">
+                                                               <string/>
+                                                            </member>
+                                                         </object>
+                                                      </member>
+                                                      <member ="_children">
+                                                         <array>
+                                                            <string/>
+                                                         </array>
+                                                      </member>
+                                                   </object>
+                                                </member>
+                                             </object>
+                                          </array>
+                                       </member>
+                                    </object>
+                                 </member>
+                              </object>
+                              <object>
+                                 <member ="ITEM">
+                                    <object>
+                                       <member ="_attributes">
+                                          <object>
+                                             <member ="CAT">
+                                                <string/>
+                                             </member>
+                                          </object>
+                                       </member>
+                                       <member ="_children">
+                                          <array>
+                                             <object>
+                                                <member ="TITLE">
+                                                   <object>
+                                                      <member ="_children">
+                                                         <array>
+                                                            <string/>
+                                                         </array>
+                                                      </member>
+                                                   </object>
+                                                </member>
+                                             </object>
+                                             <object>
+                                                <member ="AUTHOR">
+                                                   <object>
+                                                      <member ="_children">
+                                                         <array>
+                                                            <string/>
+                                                         </array>
+                                                      </member>
+                                                   </object>
+                                                </member>
+                                             </object>
+                                             <object>
+                                                <member ="PUBLISHER">
+                                                   <object>
+                                                      <member ="_children">
+                                                         <array>
+                                                            <string/>
+                                                         </array>
+                                                      </member>
+                                                   </object>
+                                                </member>
+                                             </object>
+                                             <object>
+                                                <member ="PUB-DATE">
+                                                   <object>
+                                                      <member ="_children">
+                                                         <array>
+                                                            <string/>
+                                                         </array>
+                                                      </member>
+                                                   </object>
+                                                </member>
+                                             </object>
+                                             <object>
+                                                <member ="LANGUAGE">
+                                                   <object>
+                                                      <member ="_children">
+                                                         <array>
+                                                            <string/>
+                                                         </array>
+                                                      </member>
+                                                   </object>
+                                                </member>
+                                             </object>
+                                             <object>
+                                                <member ="PRICE">
+                                                   <object>
+                                                      <member ="_children">
+                                                         <array>
+                                                            <string/>
+                                                         </array>
+                                                      </member>
+                                                   </object>
+                                                </member>
+                                             </object>
+                                             <object>
+                                                <member ="QUANTITY">
+                                                   <object>
+                                                      <member ="_children">
+                                                         <array>
+                                                            <string/>
+                                                         </array>
+                                                      </member>
+                                                   </object>
+                                                </member>
+                                             </object>
+                                             <object>
+                                                <member ="ISBN">
+                                                   <object>
+                                                      <member ="_children">
+                                                         <array>
+                                                            <string/>
+                                                         </array>
+                                                      </member>
+                                                   </object>
+                                                </member>
+                                             </object>
+                                             <object>
+                                                <member ="PAGES">
+                                                   <object>
+                                                      <member ="_children">
+                                                         <array>
+                                                            <string/>
+                                                         </array>
+                                                      </member>
+                                                   </object>
+                                                </member>
+                                             </object>
+                                             <object>
+                                                <member ="DIMENSIONS">
+                                                   <object>
+                                                      <member ="_attributes">
+                                                         <object>
+                                                            <member ="UNIT">
+                                                               <string/>
+                                                            </member>
+                                                         </object>
+                                                      </member>
+                                                      <member ="_children">
+                                                         <array>
+                                                            <string/>
+                                                         </array>
+                                                      </member>
+                                                   </object>
+                                                </member>
+                                             </object>
+                                             <object>
+                                                <member ="WEIGHT">
+                                                   <object>
+                                                      <member ="_attributes">
+                                                         <object>
+                                                            <member ="UNIT">
+                                                               <string/>
+                                                            </member>
+                                                         </object>
+                                                      </member>
+                                                      <member ="_children">
+                                                         <array>
+                                                            <string/>
+                                                         </array>
+                                                      </member>
+                                                   </object>
+                                                </member>
+                                             </object>
+                                          </array>
+                                       </member>
+                                    </object>
+                                 </member>
+                              </object>
+                              <object>
+                                 <member ="ITEM">
+                                    <object>
+                                       <member ="_attributes">
+                                          <object>
+                                             <member ="CAT">
+                                                <string/>
+                                             </member>
+                                          </object>
+                                       </member>
+                                       <member ="_children">
+                                          <array>
+                                             <object>
+                                                <member ="TITLE">
+                                                   <object>
+                                                      <member ="_children">
+                                                         <array>
+                                                            <string/>
+                                                         </array>
+                                                      </member>
+                                                   </object>
+                                                </member>
+                                             </object>
+                                             <object>
+                                                <member ="AUTHOR">
+                                                   <object>
+                                                      <member ="_children">
+                                                         <array>
+                                                            <string/>
+                                                         </array>
+                                                      </member>
+                                                   </object>
+                                                </member>
+                                             </object>
+                                             <object>
+                                                <member ="PUBLISHER">
+                                                   <object>
+                                                      <member ="_children">
+                                                         <array>
+                                                            <string/>
+                                                         </array>
+                                                      </member>
+                                                   </object>
+                                                </member>
+                                             </object>
+                                             <object>
+                                                <member ="PUB-DATE">
+                                                   <object>
+                                                      <member ="_children">
+                                                         <array>
+                                                            <string/>
+                                                         </array>
+                                                      </member>
+                                                   </object>
+                                                </member>
+                                             </object>
+                                             <object>
+                                                <member ="LANGUAGE">
+                                                   <object>
+                                                      <member ="_children">
+                                                         <array>
+                                                            <string/>
+                                                         </array>
+                                                      </member>
+                                                   </object>
+                                                </member>
+                                             </object>
+                                             <object>
+                                                <member ="PRICE">
+                                                   <object>
+                                                      <member ="_children">
+                                                         <array>
+                                                            <string/>
+                                                         </array>
+                                                      </member>
+                                                   </object>
+                                                </member>
+                                             </object>
+                                             <object>
+                                                <member ="QUANTITY">
+                                                   <object>
+                                                      <member ="_children">
+                                                         <array>
+                                                            <string/>
+                                                         </array>
+                                                      </member>
+                                                   </object>
+                                                </member>
+                                             </object>
+                                             <object>
+                                                <member ="ISBN">
+                                                   <object>
+                                                      <member ="_children">
+                                                         <array>
+                                                            <string/>
+                                                         </array>
+                                                      </member>
+                                                   </object>
+                                                </member>
+                                             </object>
+                                             <object>
+                                                <member ="PAGES">
+                                                   <object>
+                                                      <member ="_children">
+                                                         <array>
+                                                            <string/>
+                                                         </array>
+                                                      </member>
+                                                   </object>
+                                                </member>
+                                             </object>
+                                             <object>
+                                                <member ="DIMENSIONS">
+                                                   <object>
+                                                      <member ="_attributes">
+                                                         <object>
+                                                            <member ="UNIT">
+                                                               <string/>
+                                                            </member>
+                                                         </object>
+                                                      </member>
+                                                      <member ="_children">
+                                                         <array>
+                                                            <string/>
+                                                         </array>
+                                                      </member>
+                                                   </object>
+                                                </member>
+                                             </object>
+                                             <object>
+                                                <member ="WEIGHT">
+                                                   <object>
+                                                      <member ="_attributes">
+                                                         <object>
+                                                            <member ="UNIT">
+                                                               <string/>
+                                                            </member>
+                                                         </object>
+                                                      </member>
+                                                      <member ="_children">
+                                                         <array>
+                                                            <string/>
+                                                         </array>
+                                                      </member>
+                                                   </object>
+                                                </member>
+                                             </object>
+                                          </array>
+                                       </member>
+                                    </object>
+                                 </member>
+                              </object>
+                           </array>
+                        </member>
+                     </object>
+                  </member>
+               </object>
+               <object>
+                  <member ="CATEGORIES">
+                     <object>
+                        <member ="_attributes">
+                           <object>
+                              <member ="DESC">
+                                 <string/>
+                              </member>
+                           </object>
+                        </member>
+                        <member ="_children">
+                           <array>
+                              <object>
+                                 <member ="CATEGORY">
+                                    <object>
+                                       <member ="_attributes">
+                                          <object>
+                                             <member ="CODE">
+                                                <string/>
+                                             </member>
+                                             <member ="DESC">
+                                                <string/>
+                                             </member>
+                                          </object>
+                                       </member>
+                                    </object>
+                                 </member>
+                              </object>
+                              <object>
+                                 <member ="CATEGORY">
+                                    <object>
+                                       <member ="_attributes">
+                                          <object>
+                                             <member ="CODE">
+                                                <string/>
+                                             </member>
+                                             <member ="DESC">
+                                                <string/>
+                                             </member>
+                                          </object>
+                                       </member>
+                                    </object>
+                                 </member>
+                              </object>
+                              <object>
+                                 <member ="CATEGORY">
+                                    <object>
+                                       <member ="_attributes">
+                                          <object>
+                                             <member ="CODE">
+                                                <string/>
+                                             </member>
+                                             <member ="DESC">
+                                                <string/>
+                                             </member>
+                                          </object>
+                                       </member>
+                                    </object>
+                                 </member>
+                              </object>
+                           </array>
+                        </member>
+                     </object>
+                  </member>
+               </object>
+            </array>
+         </member>
+      </object>
+   </member>
+</object>

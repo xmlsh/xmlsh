@@ -9,7 +9,6 @@ package org.xmlsh.sh.core;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.util.MutableInteger;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -18,19 +17,19 @@ public class Assign {
 	private boolean	mLocal = false ;
 	private	 String		mVariable;
 	private String		mOp;		// "=" or "+-" 
-	private Word		mValue;		// a single value a=b
+	private Word		mRValue;		// a single value a=b
 	private WordList	mValueList; // a sequence constructor a=(b)
-	public Assign(String variable, String op , Word value) {
+	public Assign(String variable, String op , Word rvalue) {
 		if( variable.startsWith("local ")){
 			mLocal = true ;
 			variable = variable.replaceFirst("local\\s*", "");
 		}
 		mVariable = variable;
 		mOp = op ;
-		mValue = value;
+		mRValue = rvalue;
 
 	}
-	public Assign(String variable, String op , WordList value) {
+	public Assign(String variable, String op , WordList rvalue) {
 		if( variable.startsWith("local ")){
 			mLocal = true ;
 			variable = variable.replaceFirst("local\\s*", "");
@@ -38,15 +37,15 @@ public class Assign {
 		
 		mVariable = variable;
 		mOp = op;
-		mValueList = value;
+		mValueList = rvalue;
 	}
 	public void print(PrintWriter out) {
 		if( mLocal )
 			out.print("local ");
 		out.print(getVariable());
 		out.print(mOp);
-		if( mValue != null )
-			mValue.print(out);
+		if( mRValue != null )
+			mRValue.print(out);
 		else
 		{
 			out.print("(");
@@ -74,16 +73,28 @@ public class Assign {
 	public boolean isLocal () {
 		return mLocal ;
 	}
-	public XValue expand(Shell shell, MutableInteger retVal,SourceLocation loc) throws IOException, CoreException {
-		if( mValue != null )
+	public void eval(Shell shell, SourceLocation loc) throws IOException, CoreException {
+		
+		XValue value = null;
+		
+		
+		// Eval RHS
+		if( mRValue != null )
 			// Single variables dont expand wildcards
-			return mValue.expand(shell, false, false,false,retVal,loc);
+			value = mRValue.expand(shell, false, false,false,loc);
 		else
 		if( mValueList != null )
 			// Sequences expand wildcards
-			return mValueList.expand(shell, true, false,false,loc);
+			value = mValueList.expand(shell, true, false,false,loc);
+
+		
+		// Assign
+		if( getOp().equals("+="))
+				shell.getEnv().appendVar( getVariable(), value , isLocal());
 		else
-			return null ;
+			shell.getEnv().setVar( getVariable(), value , isLocal());
+	
+	
 	}
 }
 

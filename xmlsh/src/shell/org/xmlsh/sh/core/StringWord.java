@@ -9,7 +9,6 @@ package org.xmlsh.sh.core;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.util.MutableInteger;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -42,7 +41,7 @@ public class StringWord extends Word
 
 	@Override
 	public XValue expand(Shell shell, boolean bExpandWild, boolean bExpandWords, boolean bTongs,
-	                     MutableInteger retValue, SourceLocation loc) throws IOException, CoreException
+	                     SourceLocation loc) throws IOException, CoreException
 	{
 		return shell.expand(mString, bExpandWild, bExpandWords, bTongs, loc);
 	}
