@@ -35,14 +35,20 @@ public class CharAttributeBuffer
 		attrArray = new byte[capacity];
 	}
 	
-	public CharAttributeBuffer(String s)
+	public CharAttributeBuffer(String s, byte attr)
     {
 		int size = s.length();
 		capacity = size + DEFAULT_CAPACITY - ( size % DEFAULT_CAPACITY) ; 
 		charArray = new char[capacity];
 		attrArray = new byte[capacity];
-		append( s );
+		append( s , attr );
  		
+    }
+
+
+	public CharAttributeBuffer(String s)
+    {
+	    this(s,(byte)0);
     }
 
 

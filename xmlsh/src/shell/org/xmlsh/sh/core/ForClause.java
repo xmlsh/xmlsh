@@ -34,7 +34,7 @@ public class ForClause extends CompoundCommand {
 	public void print(PrintWriter out, boolean bExec)
 	{
 		out.print("for " + mName );
-		if(! mWords.isEmpty()  ){
+		if( mWords != null && ! mWords.isEmpty()  ){
 			out.print(" in ");
 		
 			mWords.print(out);

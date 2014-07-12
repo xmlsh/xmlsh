@@ -50,32 +50,122 @@ class Expander {
 	 * Attribute enums
 	 */
 	
-	static final byte ATTR_NONE = (byte)0; 
-	static final byte ATTR_SOFT_QUOTE = (byte)1;
-	static final byte ATTR_HARD_QUOTE = (byte)2;
-	static final byte ATTR_ESCAPE = (byte)4;
+	/* this"Is a 'string\' in' a $var "string *.x "*.y" \*.z */
+	
+	enum CharAttr {
+		ATTR_NONE( 0 ),
+		ATTR_SOFT_QUOTE(1),
+		ATTR_HARD_QUOTE(2),
+		ATTR_TONGS(4),
+		ATTR_ESCAPED(8);
+		private int attr;
+		CharAttr(){
+			attr = 0;
+		}
+		CharAttr(int attr ){
+			this.attr = attr ;
+		}
 
+		boolean isQuote() { 
+			return isSet( (ATTR_SOFT_QUOTE.attr|ATTR_HARD_QUOTE.attr ) ); 
+			}
+		byte attr() { return (byte) this.attr ; }
+
+		public boolean isTongs()
+        {
+	        return isSet( ATTR_TONGS );
+        }
+		public static CharAttr valueOf(char c)
+        {
+	        if( c == '\'')
+	        	return ATTR_HARD_QUOTE ;
+	        else
+	        if( c == '\"')
+        	  return ATTR_SOFT_QUOTE;
+	        else
+	        	return ATTR_NONE ;
+        }
+
+		public boolean isSet( CharAttr ca ) {
+			return ( attr & ca.attr) != 0;
+		}
+		public boolean isSet( int ca ) {
+			return ( attr & ca ) != 0;
+		}
+		public void clear( CharAttr ca ) {
+			attr &= ~ ca.attr;
+		}
+		public void set( CharAttr ca ) {
+			attr |= ca.attr;
+		}
+		public static boolean isQuote( char c ) {
+			return c == '\'' || c == '"';
+		}
+		public boolean isHardQuote()
+        {
+	        return  isSet(ATTR_HARD_QUOTE);
+        }
+		public boolean isSoftQuote()
+        {
+	        return  isSet(ATTR_SOFT_QUOTE);
+        }
+		
+	};
+	
 
 
 
 	private static class Result {
 		// Attribute'd char buffer
-		private CharAttributeBuffer    achars = new CharAttributeBuffer();
+		private CharAttributeBuffer    achars = null;
+
 
 		static class RXValue {
-			public XValue         xvalue;
-			public boolean       bRaw;
+			private XValue         			xvalue;
+			private CharAttributeBuffer    avalue;
+			private boolean       bRaw;
 			RXValue( XValue v , boolean r ) {
 				xvalue = v ;
 				bRaw = r;
 			}
-			RXValue( String s ) {
-				xvalue = new XValue(s);
+			RXValue( CharAttributeBuffer av ) {
+				avalue  = av ;
 				bRaw = false ;
 			}
+			RXValue( String s , CharAttr attr ) {
+			
+				avalue = new CharAttributeBuffer(s, attr.attr());
+			}
+			
 			public String toString()
 			{
-				return xvalue.toString();
+				if( xvalue != null )
+					return xvalue.toString();
+				else
+				if( avalue != null )
+					return avalue.toString();
+				return null ;
+			}
+			XValue toXValue() {
+				return xvalue != null ? xvalue : new XValue( avalue == null ? null : avalue.toString() ) ;
+			}
+			
+			CharAttributeBuffer toAValue() {
+				return avalue != null ? avalue :
+					 new CharAttributeBuffer( xvalue.toString() , 
+							 (bRaw ? CharAttr.ATTR_TONGS : CharAttr.ATTR_NONE).attr() );
+			}
+			boolean isRaw() { 
+				return bRaw ;
+			}
+			boolean isXValue() { 
+				return xvalue != null ;
+			}
+			boolean isCharAttr() {
+				return avalue != null ;
+			}
+			boolean isEmpty() {
+				return xvalue == null && avalue == null ;
 			}
 
 		}
@@ -89,40 +179,49 @@ class Expander {
 				result.add(cur); // dont call ajoin adds twice
 				cur = null;
 			}
-			if( ! achars.isEmpty() ) {
-				add(achars.toString());
-				achars.clear();
+			if( achars != null 	 ) {
+				result.add( new RXValue( achars ) );
+				achars = null;
 			}
 			
 		}
-
-		void add( String s)
+		
+		void add( CharAttributeBuffer cb ) {
+			flush();
+			result.add( new RXValue( cb ) );
+		}
+		void add( String s, CharAttr attr)
 		{
-			ajoin();
-			result.add(new RXValue(s));
+			flush();
+			result.add(new RXValue(s,attr));
 		}
 
 		void add( XValue v )
 		{
-			ajoin();
+			flush();
 			result.add( new RXValue(v,false));
 		}
 		void add( XValue v , boolean r )
 		{
-			ajoin();
+			flush();
 			result.add( new RXValue(v,r));
 		}
 
-		void append( String s )
+		void append( String s ,CharAttr attr)
 		{
 			ajoin();
-			achars.append(s);
+			if( achars == null )
+				achars = new CharAttributeBuffer();
+			if( s != null )
+			   achars.append(s,attr.attr());
 		}
 
-		void append( char c  )
+		void append( char c, CharAttr attr  )
 		{
 			ajoin();
-			achars.append(c);
+			if( achars == null )
+				achars = new CharAttributeBuffer();
+			achars.append(c,attr.attr());
 		}
 
 
@@ -136,91 +235,61 @@ class Expander {
 		 * Append a value to the result buffer
 		 * If currently in-quotes then convert the args to strings and seperated by the first char in IFS.
 		 */
-		public void append(XValue value, boolean inQuotes, boolean bTongs ) {
-			if( value.isAtomic()  && ! bTongs ){
-
-
-
+		public void append(XValue value, CharAttr attr  ) {
+			if( value.isAtomic()  && !attr.isTongs() ){
 				// If in quotes or this is an ajoining value then concatenate 
-				if( inQuotes || cur != null ||  ( achars != null && achars.size() > 0 ) ){
+				if( attr.isQuote()  || cur != null || (achars != null && ! achars.isEmpty())  ){
 
 					// Unquoted empty atomic values are ignored 
 					String str = value.toString();
 
-					if(!inQuotes && Util.isEmpty(str) )
+					if( attr.isQuote() && Util.isEmpty(str) )
 						return ;
-					append(str);
+					append(str,attr);
 
 				} else
 					cur = new RXValue(value,false) ;
 			}
 			else {
-				if( inQuotes ){
+				if(  attr.isQuote()   ){
 
 					if( value.isObject() )
-						append(escapeQuotes(value.toString()));
+						append(value , attr );
 					else {
 						// Flatten sequences
 						boolean bFirst = true ;
 						for( XdmValue v : value.asXdmValue() ){
 							if( ! bFirst )
-								append(sSEPSPACE /* NOT IFS FIRST CHAR */);
-
-							// DAL: Need to escape quotes if converting XML to string inside quotes
-							String sv = v.toString();
-
-							append(escapeQuotes(sv));
+								append(sSEPSPACE /* NOT IFS FIRST CHAR */ , attr );
+							append(v.toString(),attr);
 							bFirst = false ;
 						}
 					}
 
 				} else {
-
 					flush();
-					add(value, bTongs);
+					add(value, attr.isTongs());
 				}
 			}
 		}
 
-		/*
-		 * Escape any double quotes with 
-		 */
-		private String escapeQuotes(String sv) {
-			StringBuffer sb = new StringBuffer();
-			int len = sv.length();
-			for( int i = 0 ; i < len ; i++ ){
-				char c = sv.charAt(i) ;
-				if( c == '"')
-					sb.append('\\');
-				sb.append(c);
-
-
-			}
-			return sb.toString();
-		}
-
 		private void ajoin() {
 			if( cur != null ){
-				achars.append(cur.toString());
+				if( achars == null )
+					achars = new CharAttributeBuffer();
+				achars.append(cur.toString(), CharAttr.ATTR_NONE.attr() );  // TODO ? 
 				cur = null;
 			}
 		}
 		
-		public int bufferSize() {
-			return achars.size();
-		}
-
-		public void clearBufferIf(char c)
+		public void resetIfEmpty()
         {
-			if( achars.size() == 1 && achars.charAt(0) == c )
-				achars.clear();
-			else
-				flush();
+	        if( achars != null && achars.isEmpty() )
+	        	achars = null;
 	        
         }
+   
 		
-		
-
 	};
 
 
@@ -290,21 +359,26 @@ class Expander {
 
 		Result	result = new Result();
 
-		char cQuote = 0;
 		char c;
 		int i;
+		CharAttr curAttr = bTongs ? CharAttr.ATTR_TONGS : CharAttr.ATTR_NONE ; 
+		
 		for( i = 0 ; i < arg.length() ; i++){
 
 			c = arg.charAt(i);
-
-			// Just detect quotes in this phase, dont strip them
-			// we need them to determine when to do wildcard expansion
-			if( c == '\'' || c == '"'){
-				if( cQuote == c ) // end quote
-					cQuote = 0;
-				else 
-					if(cQuote == 0 )
-						cQuote = c;
+			
+			// Quote - if in quotes then clear only the matching quote
+			if( CharAttr.isQuote(c) ){
+				CharAttr ca = CharAttr.valueOf(c);
+				if( curAttr.isQuote() ) { // in quotes
+					curAttr.clear( ca );
+                    if( curAttr.isQuote() )
+                    	result.append(c, curAttr);
+				}
+				else {
+					result.append( (String)null, curAttr);
+					curAttr.set( ca );
+				}
 			}
 
 
@@ -315,33 +389,42 @@ class Expander {
 			//	'foo\\bar'  -> 'foo\\bar'
 
 
+			/*
+			 * http://pubs.opengroup.org/onlinepubs/009695399/utilities/xcu_chap02.html
+			 */
+			else
 			if( c == '\\'){
-				if( i < arg.length()){
-					char nextc = arg.charAt(++i);
-					if( cQuote == 0 ){ // strip backslash, ignore next 
-						if( nextc == '"' || nextc == '\'' )
-							result.append(c);
-						result.append(nextc);
+				if( curAttr.isHardQuote())
+					result.append(c, curAttr);
+				else 
+					
+					if( i < arg.length()){
+						char nextc = arg.charAt(++i);
+						if( curAttr.isSoftQuote())
+						{
+							switch( nextc ) {
+							case '$' : 
+							case '`':
+							case '"' :
+							case '\\' :
+							case '\n' :
+								break ;
+							default :
+								result.append(c,curAttr);
+								break;
+							}
+						}
+						
+						// For one char we escape 
+						CharAttr cAttr = CharAttr.ATTR_ESCAPED ;
+						cAttr.set(curAttr);
+						result.append( nextc , cAttr );
 					}
-
-
-					if( cQuote == '"' ) {// preserve 1, strip 2 
-						result.append(c);
-						if( nextc != '\\' )
-							result.append(nextc);
-					}
-
-					if( cQuote == '\'') {
-						result.append(c);
-						result.append(nextc);
-					}
-
-				}
-				continue;
 			}
-			if( cQuote != '\'' && c == '$'){
+			else
+			if( ! curAttr.isHardQuote()  && c == '$'){
 				if( ++i == arg.length() ){
-					result.append('$'); // Special case of a single "$"
+					result.append('$', curAttr ); // Special case of a single "$"
 					break;
 				}
 
@@ -389,20 +472,19 @@ class Expander {
 
 				String var = sbv.toString();
 				if( !Util.isBlank(var) ){
-					boolean bQuoted =  cQuote != '\0';
 					if( var.equals("*")){
 						// Add all positional variables as args 
 						boolean bFirst = true ;
 						for( XValue v : mShell.getArgs() ){
-							if(bQuoted  ){
+							if( curAttr.isSoftQuote() ) {
 								if( ! bFirst )
-									result.append( mIFS.getFirstChar()  );
-								result.append(quote(v),true, bTongs );
+									result.append( mIFS.getFirstChar() , curAttr );
+								result.append( v , curAttr );
 							}
 							else
 							{
 								result.flush();
-								result.add(quote(v));
+								result.add( v );
 							}
 							bFirst = false ;
 						}
@@ -410,15 +492,20 @@ class Expander {
 					} 
 					else
 					if( var.equals("@")){
-						// Special case if sb has a single " nuke it
-						/* 
-						 * TEMPORARY
-						 */
-						result.clearBufferIf( '"' );
+						// Add all positional variables as args except "$@" with 0 args is dropped
+						boolean bFirst = true ;
+						List<XValue> args = mShell.getArgs();
+						if( args.isEmpty() ) 
+							result.resetIfEmpty();
+						else
 						
-						
-						for( XValue v : mShell.getArgs() )
-							result.add(  v , true );
+						for( XValue v : args ){
+							if( curAttr.isSoftQuote() && bFirst  ) 
+								result.append( v , curAttr );
+							else
+								result.add( v );
+							bFirst = false ;
+						}
 					}
 
 					else {
@@ -426,7 +513,7 @@ class Expander {
 						// guarentees no null values and empty unquoted strings were removed
 						
 						
-						List<XValue> vs = extractSingle(var, bQuoted, bTongs );
+						List<XValue> vs = extractSingle(var, curAttr );
 
 						// Append the first value to any previous content in the arg
 						// N..last-1 become new args
@@ -438,7 +525,7 @@ class Expander {
 								XValue v = vs.get(vi);
 								if( vi > 0 )
 									result.flush();
-								result.append( v , bQuoted , bTongs );
+								result.append( v , curAttr  );
 							}
 						}
 						
@@ -446,21 +533,10 @@ class Expander {
 
 
 				} else
-					result.append('$');
+					result.append('$' , curAttr );
 
 			} else {
-
-				// If adding a closing quote and there is nothing in the buffer
-				// then skip adding it.  This lets  "$@" work without adding an empty arg
-
-				
-				// TEMPORARY 
-				if( c == '"' && cQuote == 0 && result.bufferSize() == 0 )
-					;
-				else
-					result.append(c);
-
-
+					result.append(c,curAttr);
 			}
 
 		}
@@ -470,27 +546,24 @@ class Expander {
 		ArrayList<XValue> result2 = new ArrayList<XValue>();
 
 
-		for( Result.RXValue v : result.getResult() ){
+		for( Result.RXValue rv : result.getResult() ){
 			/*
 			 * If v is an atomic string value then dequote and expand
 			 * DO NOT dequote variable expansions
 			 */
 			if( ! bExpandWild )
-				result2.add( v.bRaw ? v.xvalue : removeQuotes(v.xvalue) );
+				result2.add( rv.toXValue() );
 			else {
 
-				if( v.bRaw )
-					result2.add( v.xvalue );
+				if( rv.bRaw )
+					result2.add( rv.xvalue );
 				else {
-
-
-					List<XValue> r = expandWild( v.xvalue );
+					List<XValue> r = expandWild( rv );
 					if( r != null )
 						result2.addAll( r );
 				}
 			}
 		}
-
 
 		return result2;
 
@@ -618,125 +691,72 @@ class Expander {
 
 
 
-	private XValue removeQuotes(XValue v) {
-		if( v.isXExpr() )
-			return v;
-
-		String vs = v.toString();
-		int vslen = vs.length();
-		StringBuffer sb = new StringBuffer();
-
-		char cQuote = 0;
-		for( int i = 0 ; i < vslen ; i++ ){
-			char c = vs.charAt(i);
-			if( c == '\\' && i < vslen -1 ){
-				c = vs.charAt(++i);
-				if( c != '"' && c != '\'' )
-					sb.append('\\');
-
-				sb.append(c);
-
-				continue;
-
-			}
-			if( c == '"' || c == '\''){
-				if( c == cQuote ){
-					cQuote = 0;
-					continue ;
-				}
-				else
-					if( cQuote == 0 ){
-						cQuote = c ;
-						continue ;
-					}
-			}
-
-			sb.append(c);
-		}
-		String sbs = sb.toString();
-		// Preserve original value/type of no dequoting was done
-		if( vs.equals(sbs))
-			return v;
-		else
-			return new XValue(sbs);
-
-	}
 
 
-	private List<XValue> expandWild(XValue v ) {
+	private List<XValue> expandWild( Result.RXValue rv ) {
 		ArrayList<XValue> r = new ArrayList<XValue>();
 
-		if( v.isXExpr() || v.isObject() ){
-			r.add( v);
+		if( rv.isEmpty())
 			return r;
+		
+		if( rv.isRaw() ){
+			r.add( rv.toXValue());
+			return r;
+			
 		}
-
-		String vs = v.toString();
-		int vslen = vs.length();
+			
+		if( rv.isXValue()) {
+			XValue xv = null;
+			xv = rv.toXValue();
+			if( xv.isXExpr() || xv.isObject() ){
+				r.add( xv);
+				return r;
+			}
+		}
+		
+		
+		CharAttributeBuffer av = rv.toAValue();
+		int vslen = av.size();
 		StringBuffer sb = new StringBuffer();
 
-		char cQuote = 0;
 		boolean wildUnQuoted = false ;
 		for( int i = 0 ; i < vslen ; i++ ){
-			char c = vs.charAt(i);
-			if( c == '\\' && i < vslen-1 ){
-
-				// sb.append(c);
-				c = vs.charAt(++i);
-				if( c != '"' && c != '\'' )
-					sb.append('\\');
-				sb.append(c);
-				continue;
-
-			}
-			if( c == '"' || c == '\''){
-				if( c == cQuote ){
-					cQuote = 0;
-					continue ;
-				}
-				else
-					if( cQuote == 0 ){
-						cQuote = c ;
-						continue ;
-					}
-			}
-
-			if( cQuote == 0 && ( c == '*' || c == '?' || c == '['))
-				wildUnQuoted = true ;
+			char c = av.charAt(i);
 			sb.append(c);
-
-
+			int a = av.attrAt(i);
+			if( a != 0 )
+				continue ;
+			// To expand wild there must be NO quoting attributes at all
+			if(  ( c == '*' || c == '?' || c == '[') ) 
+				wildUnQuoted = true ;
 		}
 
-
 		String sbs = sb.toString();
-
-
 		/*
 		 * Special case if wildUnQuoted but string == "[" then this is just the test command
 		 */
 		if( wildUnQuoted && sbs.equals("["))
 			wildUnQuoted = false ;
 
+	
+
 		if( ! wildUnQuoted ){
 
 			// IF we havent unquoted or changed any value then preserve the original type/value
-			if( sbs.equals(vs))
-				r.add( v );
+			if( sbs.equals(av.toString()))
+				r.add( rv.toXValue() );
 			else
 				r.add( new XValue(sbs));
 			return r;
 		}
 
 
-		vs = sbs;
-
-
 
 		List<String>	rs = new ArrayList<String>();
 
+		
 		// Convert // to /
-		vs = vs.replaceAll("//", "/");
+		sbs = sbs.replaceAll("//", "/");
 
 
 		/*
@@ -746,26 +766,26 @@ class Expander {
 
 		String root = null ;
 		String parent = null;
-		if( vs.startsWith("/") ){
+		if( sbs.startsWith("/") ){
 			root = "/";
 			parent = "";
-			vs = vs.substring(1);
+			sbs = sbs.substring(1);
 		}
 
-		if( Util.isWindows() && vs.matches("^[a-zA-Z]:.*") ){
+		if( Util.isWindows() && sbs.matches("^[a-zA-Z]:.*") ){
 			// If windows and matches  <dir>:blah blah
 			// make the root <dir>:/
 			// If no "/" is used then the current directory of that dir is used which is not shell semantics
 
-			root = vs.substring(0,2) +"/";
-			vs = vs.substring(2);
-			if( vs.startsWith("/") )
-				vs = vs.substring(1);
+			root = sbs.substring(0,2) +"/";
+			sbs = sbs.substring(2);
+			if( sbs.startsWith("/") )
+				sbs = sbs.substring(1);
 			parent = root;
 		}
 
 
-		String	wilds[] = vs.split("/");
+		String	wilds[] = sbs.split("/");
 		expandDir( root == null ? mShell.getCurdir() : new File(root) , 
 				parent , 
 				wilds , 
@@ -778,7 +798,7 @@ class Expander {
 
 		// If no matches then use arg explicitly
 		if( r.size() == 0)
-			r.add(v);
+			r.add( rv.toXValue());
 
 		return r;
 
@@ -886,17 +906,17 @@ class Expander {
 	 * Evaluate a variable and return either a list of zero or more values
 	 */
 	
-	private List<XValue> extractSingle(String var, boolean quoted , boolean btongs ) throws IOException, CoreException {
+	private List<XValue> extractSingle(String var, CharAttr attr ) throws IOException, CoreException {
 
 		XValue v = extractSingle(var);
 		if( v == null )
 			return null ; 
-		if(  btongs || ! v.isAtomic() )
+		if(  attr.isTongs() || ! v.isAtomic() )
 			return Collections.singletonList( v );
 		
  
 		// Non tong null values go away
-		if( ! btongs && v.isNull())
+		if( ! attr.isTongs() && v.isNull())
 		   return null;   
 		
 		// Java objects are not mucked with
@@ -905,7 +925,7 @@ class Expander {
 
 		
 		List<String> fields;
-		if(  quoted || ! v.isString() )
+		if(  attr.isQuote()  || ! v.isString() )
 			return Collections.singletonList( v );
 
 		String s = v.toString();
@@ -915,51 +935,19 @@ class Expander {
 			return null ;
 		
 	     // Try to preserve original value
-		if( fields.size() == 1 &&  Util.isEqual(fields.get(0),s) && ! hasQuotes(s) )
+		if( fields.size() == 1 &&  Util.isEqual(fields.get(0),s)  )
 				return Collections.singletonList(v);
 		
-
 		List<XValue> xv = new ArrayList<XValue>( fields.size());
 		for( String f : fields ) {
 			if( Util.isEmpty(f))
 				continue ;
-			if( hasQuotes(f) )
-				xv.add( new XValue(quote(f)));
-			else
-				xv.add( new XValue(f ));
+			xv.add( new XValue(f ));
 		}
 		return xv;
 
 	}
 
-	private String quote(String s) 
-	{
-
-		StringBuffer sb = new StringBuffer( s.length() );
-		for( int i = 0 ; i < s.length() ; i++ ){
-			char c = s.charAt(i);
-			if( c == '"' || c == '\'' || c == '\\')
-				sb.append('\\');
-			sb.append(c);
-		}
-		return sb.toString();
-
-	}
-
-	public XValue quote( XValue v)
-	{
-		if( v == null || v.isXExpr() )
-			return v;
-		return new XValue(quote(v.toString()));
-	}
-
-
-	private boolean hasQuotes(String s) {
-		return s.indexOf('\'')  >= 0 ||
-				s.indexOf('\"') >= 0 ;
-
-	}
-	
 	/*
 	 * Evaluate a variable expression and extract its value
 	 */
@@ -1021,15 +1009,12 @@ class Expander {
 							 * Expand index if it starts with "$"
 							 */
 							if( ind.startsWith("$")){
-								XValue indv = extractSingle( ind.substring(1) );
+								XValue indv = extractSingle( ind.substring(1)  );
 								if( indv != null )
 									ind = indv.toString();
 
 							}
-
-
 							varname = varname.substring(0,as);
-
 						}
 
 
