@@ -50,31 +50,23 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonParser.NumberType;
 import com.fasterxml.jackson.core.JsonToken;
 
-public class JXONConverter extends JXConverter
+public class JSONXConverter extends JXConverter
 {
 	static final String	 kENCODING_UTF_8	= "UTF-8";
 
-	static final String	 kJXML_URI	     = "http://www.xmlsh.org/jxml";
-	static final QName	 kATTR_ENCODING	 = new QName("encoding");
+	static final String	 kJXML_URI	     = "http://www.ibm.com/xmlns/prod/2009/jsonx";
 	static final QName	 kATTR_NAME	     = new QName("name");
-	static final QName	 kATTR_VALUE	 = new QName("value");
-	static final QName	 kATTR_UNWRAP	 = new QName("unwrap");
-	static final QName	 kATTR_HTML	     = new QName("html");	 // A String formated as XHTML
-	static final QName	 kELEM_XJSON	 = new QName(kJXML_URI, "xjson");
-	static final QName	 kELEM_FILE	     = new QName(kJXML_URI, "file");
 	static final QName	 kELEM_OBJECT	 = new QName(kJXML_URI, "object");	 // A JSON Object
-	static final QName	 kELEM_MEMBER	 = new QName(kJXML_URI, "member");	 // A JSON Object Member
 	static final QName	 kELEM_STRING	 = new QName(kJXML_URI, "string");	 // A JSON STRING
 	static final QName	 kELEM_NUMBER	 = new QName(kJXML_URI, "number");	 // A  JSON NUMBER
 	static final QName	 kELEM_ARRAY	 = new QName(kJXML_URI, "array");	 // A  JSON ARRAY
 	static final QName	 kELEM_BOOLEAN	 = new QName(kJXML_URI, "boolean");	 // A JSON Literal (true,false)
 	static final QName	 kELEM_NULL	     = new QName(kJXML_URI, "null");	 // A JSON Literal null
-	public static Logger	mLogger	     = LogManager.getLogger(JXONConverter.class);
+	public static Logger	mLogger	     = LogManager.getLogger(JSONXConverter.class);
 
 	class JConverter extends JSONConverter
 	{
 
-		private int	mLevel	= 0;
 
 		protected JConverter(XMLEventReader reader, JsonGenerator generator)
 		{
@@ -85,37 +77,21 @@ public class JXONConverter extends JXConverter
 		public boolean startElement(StartElement start, QName name) throws ConverterException
 		{
 			try {
-				mLevel++;
-				if(name.equals(kELEM_XJSON)) {
-					if(mLevel != 1)
-						throw new ConverterException("XJSON element must be at document root");
-
-					// Children become the new roots
-
-					mLevel = 0;
-					while (parse())
-						;
-					return false;
-				} else if(name.equals(kELEM_FILE))
-					throw new ConverterException("Depreciated element not supported: " + kELEM_FILE.toString());
-				else
 
 				if(name.equals(kELEM_OBJECT))
 					writeObject(start);
 				else if(name.equals(kELEM_ARRAY))
 					writeArray(start);
-				else if(name.equals(kELEM_MEMBER))
-					writeMember(start);
 				else if(name.equals(kELEM_NUMBER))
 					writeNumber(start);
 				else if(name.equals(kELEM_BOOLEAN))
 					writeBoolean(start);
 				else if(name.equals(kELEM_NULL))
-					writeNull();
+					writeNull(start);
 				else if(name.equals(kELEM_STRING))
 					writeString(start);
 				else
-					throw new ConverterException("Depreciated element not supported: " + kELEM_FILE.toString());
+					throw new ConverterException("Depreciated element not supported: " + start.toString());
 			} catch (ConverterException e) {
 				throw e;
 			} catch (Exception e) {
@@ -128,68 +104,20 @@ public class JXONConverter extends JXConverter
 		                                            FileNotFoundException, IOException, TransformException,
 		                                            SaxonApiException, CoreException
 		{
-			String value = getAttr(start, kATTR_VALUE);
-			String encoding = getAttr(start, kATTR_ENCODING);
-			String unwrap = getAttr(start, kATTR_UNWRAP);
-			String html = getAttr(start, kATTR_HTML);
-			boolean bReadToEnd = true;
-			String chars;
-			if(value != null)
-				chars = value;
-			else {
-				// readString eats the close tag
-				bReadToEnd = false;
-				chars = readString(Util.parseBoolean(html));
-
-			}
-
-			// If Unwrap then trim off <html> and leading and trailing blanks
-			if(Util.parseBoolean(chars)) {
-				chars = unwrap(chars);
-
-			}
-
+			writeNameField( start );
+			String chars = readString();
 			mGenerator.writeString(chars);
-			if(bReadToEnd)
-				readToEnd();
 
 		}
 
-		/*
-		 * Parse an HTML element as XML and reserialize as HTML, store as a JSON
-		 * string
-		 */
 
-		private String readString(boolean bHTML) throws TransformException, XMLStreamException, SaxonApiException,
-		                                        IOException
-		{
-
-			byte[] bytes = bHTML ? serializeAsXML() : serializeAsString();
-
-			// String xs = new String(xhtml,klENCODING_UTF_8);
-			if(bHTML)
-				return formatAsHtml(bytes);
-			else
-				return new String(bytes, kENCODING_UTF_8);
-
-		}
-
-		/*
-		 * Unwrap a string by 1) Remove leading and trailing blanks 2) Remove
-		 * any <html> (any case) from beginning and end 3) Remove leading and
-		 * trailing blanks from the result
-		 */
-		private String unwrap(String value)
-		{
-			value = value.trim();
-			if("<html>".equalsIgnoreCase(value.substring(0, 6)))
-				value = value.substring(6);
-			if("</html>".equalsIgnoreCase(value.substring(value.length() - 7)))
-				value = value.substring(0, value.length() - 7);
-
-			return value.trim();
-
-		}
+		private void writeNameField(StartElement start) throws IOException
+        {
+			String name = getAttr( start , kATTR_NAME );
+			if( ! Util.isBlank(name))
+				mGenerator.writeFieldName(name);
+	        
+        }
 
 		private String getAttr(StartElement start, QName attr)
 		{
@@ -199,57 +127,35 @@ public class JXONConverter extends JXConverter
 			return a.getValue();
 		}
 
-		private void writeNull() throws IOException, ConverterException
+		private void writeNull(StartElement start) throws IOException, ConverterException, XMLStreamException
 		{
+			writeNameField( start );
 			mGenerator.writeNull();
 			readToEnd();
 		}
 
 		private void writeBoolean(StartElement start) throws XMLStreamException, IOException, ConverterException
 		{
-			String chars;
-			Attribute v = start.getAttributeByName(kATTR_VALUE);
-			if(v != null)
-				chars = v.getValue();
-			else
-				chars = readString();
-
+			writeNameField( start );
+			String chars = readString();
 			chars = chars.trim();
-			mGenerator.writeBoolean(Util.parseBoolean(chars));
-			readToEnd();
+				mGenerator.writeBoolean(Util.parseBoolean(chars));
 		}
 
 		private void writeNumber(StartElement start) throws ConverterException, IOException, XMLStreamException
 		{
 
-			String chars;
-			Attribute v = start.getAttributeByName(kATTR_VALUE);
-			if(v != null)
-				chars = v.getValue();
-			else
-				chars = readString();
+			writeNameField( start );
 
+			String chars = readString();
 			chars = chars.trim();
-			
-		//	Number num = NumberFormat.getInstance().parse(chars);
-
 			mGenerator.writeNumber(chars);
-
 		}
 
-		private void writeMember(StartElement start) throws IOException, ConverterException
-		{
-
-			String name = start.getAttributeByName(kATTR_NAME).getValue();
-			mGenerator.writeFieldName(name);
-			if(parse())
-				readToEnd();
-
-		}
 
 		private void writeArray(StartElement start) throws IOException, ConverterException
 		{
-
+			writeNameField(start);
 			mGenerator.writeStartArray();
 			do {
 
@@ -262,7 +168,7 @@ public class JXONConverter extends JXConverter
 
 		private void writeObject(StartElement start) throws IOException, ConverterException
 		{
-
+			writeNameField(start);
 			mGenerator.writeStartObject();
 			do {
 
@@ -273,72 +179,7 @@ public class JXONConverter extends JXConverter
 
 		}
 
-		/*
-		 * Serialize the body as HTML and return as a string
-		 */
-
-		private String formatAsHtml(byte[] xhtml) throws SaxonApiException, UnsupportedEncodingException
-		{
-
-			ByteArrayOutputStream bos = new ByteArrayOutputStream();
-			Serializer ser = Shell.getProcessor().newSerializer();
-			ser.setOutputProperty(Serializer.Property.OMIT_XML_DECLARATION, "yes");
-			ser.setOutputProperty(Serializer.Property.INDENT, "no");
-
-			ser.setOutputProperty(Serializer.Property.METHOD, "html");
-			ser.setOutputProperty(Serializer.Property.ENCODING, kENCODING_UTF_8);
-			ser.setOutputStream(bos);
-
-			Processor processor = Shell.getProcessor();
-			DocumentBuilder builder = processor.newDocumentBuilder();
-			builder.setWhitespaceStrippingPolicy(WhitespaceStrippingPolicy.ALL);
-			XdmNode node = builder.build(new StreamSource(new ByteArrayInputStream(xhtml)));
-			processor.writeXdmValue(node, ser);
-			return bos.toString(kENCODING_UTF_8).trim();
-
-		}
-
-		/*
-		 * Serialize as XML
-		 */
-		private byte[] serializeAsXML() throws XMLStreamException
-		{
-
-			ByteArrayOutputStream bos = new ByteArrayOutputStream();
-			XMLOutputFactory fact = new OutputFactory();
-
-			XMLEventWriter writer = fact.createXMLEventWriter(bos, kENCODING_UTF_8);
-			while (mReader.hasNext()) {
-				XMLEvent event = mReader.nextEvent();
-
-				if(event.isEndElement() && event.asEndElement().getName().equals(kELEM_STRING))
-					break;
-				writer.add(event);
-			}
-
-			writer.flush();
-			writer.close();
-			return bos.toByteArray();
-
-		}
-
-		private byte[] serializeAsString() throws XMLStreamException, UnsupportedEncodingException, IOException
-		{
-
-			ByteArrayOutputStream bos = new ByteArrayOutputStream();
-
-			while (mReader.hasNext()) {
-				XMLEvent event = mReader.nextEvent();
-
-				if(event.isEndElement() && event.asEndElement().getName().equals(kELEM_STRING))
-					break;
-				if(event.isCharacters())
-					bos.write(event.asCharacters().getData().getBytes(kENCODING_UTF_8));
-			}
-
-			return bos.toByteArray();
-
-		}
+		
 
 		@Override
 		boolean startDocument(XMLEvent e) throws ConverterException
@@ -372,6 +213,9 @@ public class JXONConverter extends JXConverter
 	class XConverter extends XMLConverter
 	{
 
+		private String mFieldName;
+
+
 		protected XConverter(JsonParser jp, XMLStreamWriter sw)
 		{
 			super(jp, sw);
@@ -386,8 +230,7 @@ public class JXONConverter extends JXConverter
 			try {
 				JsonToken tok;
 				writeStartElement( kELEM_ARRAY );
-				
-
+				writeFieldAttr();
 				while ((tok = nextToken()) != null && tok != JsonToken.END_ARRAY) {
 					writeValue(tok);
 				}
@@ -402,13 +245,12 @@ public class JXONConverter extends JXConverter
 		{
 
 			JsonToken tok;
-
 			try {
+				
 				writeStartElement( kELEM_OBJECT );
-
-				while ((tok = nextToken()) == JsonToken.FIELD_NAME)
+				writeFieldAttr();
+				while ((tok = nextToken()) == JsonToken.FIELD_NAME )
 					writeMember();
-
 				if(tok == null)
 					throw new ConverterException("Unexpected EOF");
 
@@ -423,14 +265,8 @@ public class JXONConverter extends JXConverter
 		private void writeMember() throws ConverterException
 		{
 			try {
-				writeStartElement( kELEM_MEMBER );
-				String name = mParser.getCurrentName();
-				writeAttribute( kATTR_NAME , name );
-				
+				mFieldName = mParser.getCurrentName();
 				writeValue(nextToken());
-				writeEndElement();
-			} catch (XMLStreamException e) {
-				throw new ConverterException(e);
 			} catch (IOException e) {
 				throw new ConverterException(e);
 			}
@@ -443,6 +279,7 @@ public class JXONConverter extends JXConverter
 			try {
 			   
 				writeStartElement( kELEM_BOOLEAN );
+				writeFieldAttr();
 				writeCharacters(value ? "true" : "false");
 				writeEndElement();
 
@@ -451,11 +288,21 @@ public class JXONConverter extends JXConverter
 			}
 		}
 
+		private void writeFieldAttr() throws XMLStreamException
+        {
+	        if( mFieldName != null ) {
+	        	writeAttribute(kATTR_NAME, mFieldName);
+	        	mFieldName = null ;
+	        }
+	        
+        }
+
 		@Override
 		void writeNull() throws ConverterException
 		{
 			try {
 				writeStartElement(kELEM_NULL);
+				writeFieldAttr();
 				writeEndElement();
 			} catch (XMLStreamException e) {
 				throw new ConverterException(e);
@@ -468,6 +315,7 @@ public class JXONConverter extends JXConverter
 		{
 			try {
 				writeStartElement(kELEM_NUMBER);
+				writeFieldAttr();
 				writeCharacters( getStringValue() ); 
 				writeEndElement();
 			} catch (XMLStreamException e) {
@@ -483,6 +331,7 @@ public class JXONConverter extends JXConverter
 
 			try {
 				writeStartElement(kELEM_STRING);
+				writeFieldAttr();
 				writeCharacters(s);
 
 				writeEndElement();
@@ -493,7 +342,7 @@ public class JXONConverter extends JXConverter
 
 	}
 
-	public JXONConverter(JSONSerializeOpts jsonSerializeOpts, SerializeOpts serializeOpts)
+	public JSONXConverter(JSONSerializeOpts jsonSerializeOpts, SerializeOpts serializeOpts)
 	{
 		super(jsonSerializeOpts, serializeOpts);
 	}

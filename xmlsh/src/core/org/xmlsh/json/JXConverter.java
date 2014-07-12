@@ -7,6 +7,7 @@
 package org.xmlsh.json;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.sh.shell.SerializeOpts;
@@ -24,6 +25,7 @@ import javax.xml.stream.events.XMLEvent;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonParser.NumberType;
 import com.fasterxml.jackson.core.JsonToken;
 
 public abstract class JXConverter
@@ -108,18 +110,6 @@ public abstract class JXConverter
             }
 		}
 		
-		String readChars() throws XMLStreamException {
-
-			StringBuffer sb = new StringBuffer();
-			while( mReader.hasNext() && mReader.peek().isCharacters() ){
-				Characters ch = mReader.nextEvent().asCharacters();
-				sb.append( ch.getData() );
-				
-			}
-			return sb.toString();
-
-		}
-
 		public void readToEOF() throws ConverterException  {
 			try {
 		        // Consume input or we can get a Piped Close
@@ -137,6 +127,25 @@ public abstract class JXConverter
 		abstract boolean endElement(EndElement asEndElement) throws ConverterException;;
 		abstract boolean endDocument(XMLEvent e) throws ConverterException;;
 		abstract boolean characters(XMLEvent e);
+
+
+
+		protected String readString() throws XMLStreamException, UnsupportedEncodingException, IOException
+        {
+        	StringBuilder sb = new  StringBuilder();
+        
+        	while (mReader.hasNext()) {
+        		XMLEvent event = mReader.nextEvent();
+        
+        		if(event.isEndElement() )
+        			break;
+        		if(event.isCharacters())
+        			sb.append(event.asCharacters().getData());
+        	}
+        
+        	return sb.toString();
+        
+        }
 
 	}
 	
@@ -179,7 +188,8 @@ public abstract class JXConverter
 		{
 			if(tok == null)
 				return  ;
-
+			
+			
 			switch (tok) {
 			case START_ARRAY:
 				writeArray();
@@ -196,10 +206,8 @@ public abstract class JXConverter
 				writeNull();
 				break;
 			case VALUE_NUMBER_FLOAT:
-				writeNumber(getDoubleValue());
-				break;
 			case VALUE_NUMBER_INT:
-				writeNumber(getLongValue());
+				writeNumber();
 				break;
 			case VALUE_STRING:
 				writeString(getStringValue());
@@ -215,7 +223,7 @@ public abstract class JXConverter
 		}
 
 
-		private String getStringValue() throws ConverterException 
+		protected String getStringValue() throws ConverterException 
         {
 	    	try {
 	            return mParser.getText();
@@ -225,32 +233,21 @@ public abstract class JXConverter
         }
 
 
-		protected double getDoubleValue() throws ConverterException
+		protected Number getNumberValue() throws ConverterException
         {
 			try {
-	            return mParser.getDoubleValue();
+	            return mParser.getNumberValue();
             } catch (IOException e) {
 	           throw new ConverterException(e);
             }
         }
 
-		protected long getLongValue() throws ConverterException
-        {
-			try {
-	           return mParser.getLongValue();
-            } catch (IOException e) {
-	           throw new ConverterException(e);
-            }
-        }
-
-		
 
 		abstract void writeArray() throws ConverterException;
 		abstract void writeObject() throws ConverterException;
 		abstract void writeBoolean(boolean value)throws ConverterException;
 		abstract void writeNull()throws ConverterException;
-		abstract void writeNumber(double value)throws ConverterException;
-		abstract void writeNumber(long value)throws ConverterException;
+		abstract void writeNumber()throws ConverterException;
 		abstract void writeString(String value)throws ConverterException;
 
 
@@ -325,6 +322,17 @@ public abstract class JXConverter
 
 	void close() {
 
+	}
+	public static JXConverter getConverter(String format, JSONSerializeOpts jopts, SerializeOpts serializeOpts) throws InvalidArgumentException
+	{
+	    if( Util.isEqual(format,"jxon"))
+	    	return new JXONConverter( jopts , serializeOpts );
+	    else
+	    if(  Util.isEqual(format,"jsonx")) 
+	    	return new JSONXConverter( jopts , serializeOpts );
+	    else
+	    	throw new InvalidArgumentException("Unknown convert format: " + format );
+	    
 	}
 
 	

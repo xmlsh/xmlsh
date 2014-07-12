@@ -59,7 +59,7 @@ public class XValue {
 	private static Logger mLogger = Logger.getLogger( XValue.class);
 
 
-	private		Object	mValue;		// String , XdmValue , Object 
+	private		Object	mValue;		// String , XdmValue , Object , List<XValue> ... 
 
 
 
@@ -100,19 +100,32 @@ public class XValue {
 		mValue = v;
 	}
 
+	public static boolean isAllXdmValue( Iterable<XValue> args) {
+		for( XValue arg : args ){
+			if( ! arg.isXdmValue() ) {
+				return false ;
+			}
+		}
+		return true ;
+	}
+	
+	
 	/*
 	 *  Create an XValue by combining a list of XdmValue objects into a single XValue
 	 */
-	public XValue( Iterable<XValue> args) {
-		ArrayList<XdmItem> items = new ArrayList<XdmItem>();
-		for( XValue arg : args ){
-			XdmValue v = arg.asXdmValue();
-			for( XdmItem item : v )
-				items.add( item );
-
-		}
-
-		mValue =  new XdmValue(  items);
+	public XValue( List<XValue> args) {
+		
+		if( isAllXdmValue( args )) {
+			ArrayList<XdmItem> items = new ArrayList<XdmItem>();
+			for( XValue arg : args ){
+				XdmValue v = arg.asXdmValue();
+				for( XdmItem item : v )
+					items.add( item );
+	
+			}
+			mValue =  new XdmValue(  items);
+		} else
+			mValue = args ;
 
 	}
 
@@ -743,10 +756,11 @@ public class XValue {
 	public boolean isXdmNode() {
 		XdmValue value = asXdmValue();
 		return value != null && value instanceof XdmNode ;
-
-
 	}
-
+	public boolean isXdmValue() {
+		return ( mValue != null && mValue instanceof XdmValue );
+	}
+	
 	public int toInt() throws XPathException {
 		return (int) toLong();
 	}

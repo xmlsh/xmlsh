@@ -44,12 +44,13 @@ public class xml2json extends XCommand
 
 	public int run(  List<XValue> args  )	throws Exception
 	{
-		Options opts = new Options("p=print",SerializeOpts.getOptionDefs());
+		Options opts = new Options("p=print,f=format:",SerializeOpts.getOptionDefs());
 		
 		opts.parse(args);
 
 		bIndent = opts.hasOpt("p");
-		
+		String format = opts.getOptString("format", "jxon");
+
 		args = opts.getRemainingArgs();
 
 		OutputPort stdout = getStdout();
@@ -70,11 +71,12 @@ public class xml2json extends XCommand
 		jopts.setPretyPrint(bIndent); 
 		
 		
-		JXConverter converter = new JXONConverter(jopts,getSerializeOpts());
-		
+		JXConverter converter = JXConverter.getConverter(format,jopts,getSerializeOpts());
+
 		
 		
 		try {  
+
 			jsonGenerator = JsonUtils.createGenerator(os,jopts); // or Stream, Reader
 			
 			converter.convertToJson( reader , jsonGenerator );

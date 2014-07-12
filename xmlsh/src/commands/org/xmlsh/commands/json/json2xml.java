@@ -8,14 +8,12 @@
 package org.xmlsh.commands.json;
 
 import org.xmlsh.core.InputPort;
-import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.json.JSONSerializeOpts;
 import org.xmlsh.json.JXConverter;
-import org.xmlsh.json.JXONConverter;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.util.JsonUtils;
 import org.xmlsh.util.Util;
@@ -51,27 +49,32 @@ public class json2xml extends XCommand
 
 	public int run(List<XValue> args) throws Exception
 	{
-		Options opts = new Options("+jsonp,p=port:" ,SerializeOpts.getOptionDefs());
+		Options opts = new Options("+jsonp,f=format:,p=port:" ,SerializeOpts.getOptionDefs());
 		opts.parse(args);
 
 		args = opts.getRemainingArgs();
 		String port = opts.getOptString("p", null);
 		boolean jsonp = opts.getOptFlag("jsonp",false);
 
+		String format = opts.getOptString("format", "jxon");
+		
 		OutputPort stdout = getStdout();
 
 		setSerializeOpts(opts);
-		SerializeOpts inputOpts = getSerializeOpts();
 
 		InputPort in = args.isEmpty() ? this.getStdin() : this.getInput(args.get(0));
 		XMLStreamWriter sw = null ;
 		InputStream is = null;
+		
+		JSONSerializeOpts jopts = new JSONSerializeOpts();
+		JXConverter converter = JXConverter.getConverter(format,jopts,getSerializeOpts());
+		
 		try {
 				
 	
 			JsonFactory jsonFactory = new JsonFactory(); // or, for data binding,
 														 // org.codehaus.jackson.mapper.MappingJsonFactory
-			is = in.asInputStream(inputOpts);
+			is = in.asInputStream(getSerializeOpts());
 			
 			if( jsonp ) {
 				String jsonpFunc = Util.skipToByte(is, '(');
@@ -86,7 +89,6 @@ public class json2xml extends XCommand
 			     */
 			JsonParser jp = jsonFactory.createParser(is); // or URL, Stream,
 
-			JSONSerializeOpts jopts = new JSONSerializeOpts();
 													   // Reader, String, byte[]
 			/*
 			 * Assume JSON file is wrapped by an Object
@@ -94,7 +96,7 @@ public class json2xml extends XCommand
 	
 			sw = stdout.asXMLStreamWriter(getSerializeOpts());
 		
-			JXConverter converter = new JXONConverter(jopts,getSerializeOpts());
+			
 
 			try {  
 				
