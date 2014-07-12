@@ -1474,9 +1474,7 @@ public class Shell {
 		 * Doesnt hurt on unix either to fake this out instead of using the OS
 		 */
 		if( file.equals("/dev/null") ){
-			
 			return new StreamInputPort(new NullInputStream(),file);
-			
 		}
 		
 		URL url = Util.tryURL(file);

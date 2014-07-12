@@ -36,6 +36,7 @@ import java.util.BitSet;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Pattern;
 
 class Expander {
 	private static final String sSEPSPACE = " ";
@@ -52,69 +53,6 @@ class Expander {
 	
 	/* this"Is a 'string\' in' a $var "string *.x "*.y" \*.z */
 	
-	enum CharAttr {
-		ATTR_NONE( 0 ),
-		ATTR_SOFT_QUOTE(1),
-		ATTR_HARD_QUOTE(2),
-		ATTR_TONGS(4),
-		ATTR_ESCAPED(8);
-		private int attr;
-		CharAttr(){
-			attr = 0;
-		}
-		CharAttr(int attr ){
-			this.attr = attr ;
-		}
-
-		boolean isQuote() { 
-			return isSet( (ATTR_SOFT_QUOTE.attr|ATTR_HARD_QUOTE.attr ) ); 
-			}
-		byte attr() { return (byte) this.attr ; }
-
-		public boolean isTongs()
-        {
-	        return isSet( ATTR_TONGS );
-        }
-		public static CharAttr valueOf(char c)
-        {
-	        if( c == '\'')
-	        	return ATTR_HARD_QUOTE ;
-	        else
-	        if( c == '\"')
-        	  return ATTR_SOFT_QUOTE;
-	        else
-	        	return ATTR_NONE ;
-        }
-
-		public boolean isSet( CharAttr ca ) {
-			return ( attr & ca.attr) != 0;
-		}
-		public boolean isSet( int ca ) {
-			return ( attr & ca ) != 0;
-		}
-		public void clear( CharAttr ca ) {
-			attr &= ~ ca.attr;
-		}
-		public void set( CharAttr ca ) {
-			attr |= ca.attr;
-		}
-		public static boolean isQuote( char c ) {
-			return c == '\'' || c == '"';
-		}
-		public boolean isHardQuote()
-        {
-	        return  isSet(ATTR_HARD_QUOTE);
-        }
-		public boolean isSoftQuote()
-        {
-	        return  isSet(ATTR_SOFT_QUOTE);
-        }
-		
-	};
-	
-
-
-
 	private static class Result {
 		// Attribute'd char buffer
 		private CharAttributeBuffer    achars = null;
@@ -286,7 +224,6 @@ class Expander {
         {
 	        if( achars != null && achars.isEmpty() )
 	        	achars = null;
-	        
         }
    
 		
@@ -338,7 +275,6 @@ class Expander {
 	 */
 	List<XValue> expand(String arg, boolean bExpandWild , boolean bExpandWords, boolean bTongs ) throws IOException, CoreException
 	{
-
 
 		// <{ big quotes }>
 		if( arg.startsWith("<{{") && arg.endsWith("}}>")){
@@ -717,48 +653,29 @@ class Expander {
 		
 		CharAttributeBuffer av = rv.toAValue();
 		int vslen = av.size();
-		StringBuffer sb = new StringBuffer();
 
 		boolean wildUnQuoted = false ;
 		for( int i = 0 ; i < vslen ; i++ ){
 			char c = av.charAt(i);
-			sb.append(c);
-			int a = av.attrAt(i);
-			if( a != 0 )
-				continue ;
+
 			// To expand wild there must be NO quoting attributes at all
-			if(  ( c == '*' || c == '?' || c == '[') ) 
+			if(  ( c == '*' || c == '?' || c == '[')  &&
+					( av.attrAt(i) == 0 ) ) {
 				wildUnQuoted = true ;
+				break ;
+			}
 		}
-
-		String sbs = sb.toString();
-		/*
-		 * Special case if wildUnQuoted but string == "[" then this is just the test command
-		 */
-		if( wildUnQuoted && sbs.equals("["))
-			wildUnQuoted = false ;
-
-	
 
 		if( ! wildUnQuoted ){
-
-			// IF we havent unquoted or changed any value then preserve the original type/value
-			if( sbs.equals(av.toString()))
-				r.add( rv.toXValue() );
-			else
-				r.add( new XValue(sbs));
+		
+			r.add( rv.toXValue() );
 			return r;
 		}
-
 
 
 		List<String>	rs = new ArrayList<String>();
 
 		
-		// Convert // to /
-		sbs = sbs.replaceAll("//", "/");
-
-
 		/*
 		 * If vs starts with / (or on dos x:) then use that directory as the root
 		 * instead of the current directory
@@ -766,26 +683,36 @@ class Expander {
 
 		String root = null ;
 		String parent = null;
-		if( sbs.startsWith("/") ){
+		
+		
+		if( av.charAt(0) == '/' ){
 			root = "/";
 			parent = "";
-			sbs = sbs.substring(1);
+			av.delete( 0, 1 );
 		}
 
-		if( Util.isWindows() && sbs.matches("^[a-zA-Z]:.*") ){
-			// If windows and matches  <dir>:blah blah
-			// make the root <dir>:/
-			// If no "/" is used then the current directory of that dir is used which is not shell semantics
+		if( Util.isWindows() && av.size() >= 2 ) {
 
-			root = sbs.substring(0,2) +"/";
-			sbs = sbs.substring(2);
-			if( sbs.startsWith("/") )
-				sbs = sbs.substring(1);
-			parent = root;
+			char drive = av.charAt(0);
+			if( Character.isAlphabetic(drive) && av.charAt(1) == ':'){
+				
+				// If windows and matches  <dir>:blah blah
+				// make the root <dir>:/
+				// If no "/" is used then the current directory of that dir is used which is not shell semantics
+	
+				root = "" + drive + ":/";
+				if( av.size() > 2 && av.charAt(2) == '/' )
+					av.delete(0,3);
+				else
+					av.delete(0,2);
+				parent = root;
+			
+			}
+			
 		}
 
 
-		String	wilds[] = sbs.split("/");
+		CharAttributeBuffer	wilds[] = av.split('/');
 		expandDir( root == null ? mShell.getCurdir() : new File(root) , 
 				parent , 
 				wilds , 
@@ -808,16 +735,16 @@ class Expander {
 	 * Return list of all matches or null if no matches
 	 */
 
-	private List<String>	expandDir( File dir , String wild, boolean bDirOnly )
+	private List<String>	expandDir( File dir , CharAttributeBuffer wild, boolean bDirOnly )
 	{
 		ArrayList<String> results = new ArrayList<String>();
 		/*
 		 * special case for "." and ".." as the directory component
 		 * They dont show up in dir.list() so should always be considered an exact match
 		 */
-		if( wild.equals(".") || wild.equals(".."))
+		if( wild.stringEquals(".") || wild.stringEquals(".."))
 		{
-			results.add(wild);
+			results.add(wild.toString());
 			return results;
 		}
 
@@ -830,28 +757,24 @@ class Expander {
 		 * If not matched and this is windows
 		 * try an exact match to the canonical expanson of the dir and wild
 		 */
-		if(  bIsWindows && wild.indexOf('~') >= 0 ){
-			File fwild = new File( dir , wild );
+		if(  bIsWindows && wild.indexOf(0,'~', CharAttr.ATTR_NONE.attr()) >= 0 ){
+			String wildString = wild.toString();
+			File fwild = new File( dir , wildString );
 			if( fwild.exists() ){
-				results.add(wild);
+				results.add(wildString);
 				return results ;
 			}
-
-
-
 		}
 
 
 
-
-
 		String[] files = dir.list();
+		
+		Pattern wp = Util.compileWild(wild, CharAttr.ATTR_ESCAPED.attr() , caseSensitive);
+		
 		for( String f : files ){
 
-
-			boolean bMatched = Util.wildMatches( wild , f, caseSensitive );
-
-
+			boolean bMatched = wp.matcher(f).matches();
 
 			if( bMatched &&
 					( bDirOnly ? ( new File( dir , f ).isDirectory() ) : true ) ) 
@@ -874,9 +797,9 @@ class Expander {
 	 * 
 	 */
 
-	private void expandDir( File dir , String parent , String wilds[] , List<String> results )
+	private void expandDir( File dir , String parent , CharAttributeBuffer wilds[] , List<String> results )
 	{
-		String wild = wilds[0];
+		CharAttributeBuffer wild = wilds[0];
 		if( wilds.length < 2 )
 			wilds = null ;
 		else 

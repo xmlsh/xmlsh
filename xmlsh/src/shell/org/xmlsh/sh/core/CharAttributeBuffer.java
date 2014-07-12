@@ -6,6 +6,7 @@
 
 package org.xmlsh.sh.core;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 /*
@@ -44,6 +45,15 @@ public class CharAttributeBuffer
 		append( s , attr );
  		
     }
+	
+	private CharAttributeBuffer(char[] ca , byte[] aa , int len , int c ) {
+		charArray = ca;
+		attrArray = aa ;
+		length = len ;
+		capacity = c;
+	}
+
+	
 
 
 	public CharAttributeBuffer(String s)
@@ -118,7 +128,89 @@ public class CharAttributeBuffer
         Arrays.fill(attrArray, length , length+len , attr );
         length += len ;
     }
+
+
+	public int indexOf(int start , char c, int attr)
+    {
+	    for(int i = start ; i < length ; i++ ) {
+	    	if( charArray[i] == c && attrArray[i] == attr )
+	    		return i;
+	    }
+	    return -1;
+    }
+
+
+	public void delete(int start, int len)
+    {
+		if( start + len > length)
+			len = (length-start);
+		if(len <= 0)
+			return;
+		System.arraycopy(charArray, start+len, charArray, start, length-len);
+		System.arraycopy(attrArray, start+len, attrArray, start, length-len);
+
+		length -= len ;
+	    
+    }
+
+
+	public CharAttributeBuffer[] split(char c)
+    {
+	   ArrayList<CharAttributeBuffer> list = new ArrayList<CharAttributeBuffer>();
+	   
+	   int start = 0 ;
+	   for( int i = 0 ; i < length ; i++ ) {
+         if( charArray[i] == c ) {
+        	 list.add( subsequence( start , i ) );
+        	 start = i+1;
+         }
+	   }
+	   if( start < length )
+		   list.add( subsequence( start , length ) );
+		   
+		 return list.toArray(new CharAttributeBuffer[ list.size() ]);
+	   
+	   
+	   
+    }
+
+
+	public CharAttributeBuffer subsequence(int start, int i)
+    {
+		return new CharAttributeBuffer(
+				Arrays.copyOfRange(charArray , start , i ) ,
+				Arrays.copyOfRange(attrArray , start , i ) ,
+				i-start , 
+				capacity );
+
+		
+    }
+	public boolean equals( Object that ) {
+		if( this == that )
+			return true ;
+		if( that instanceof CharAttributeBuffer ) {
+			CharAttributeBuffer cb = (CharAttributeBuffer) that;
+			if( length == cb.length ) {
+				for( int i = 0 ; i < length ; i++ ) {
+					if( charArray[i] != cb.charArray[i] ||
+						attrArray[i] != cb.attrArray[i] )
+						  return false ;
+				}
+				return true ;
+			}
+		}
+		return false ;
+	}
 	
+	public boolean stringEquals( String s ) {
+		int len = s.length();
+		if( length != len )
+			return false ;
+		for( int i = 0 ; i < len ; i++ )
+			if( charArray[i] != s.charAt(i))
+				return false ;
+		return true ;
+	}
 }
 
 

@@ -23,6 +23,7 @@ import org.apache.log4j.Logger;
 import org.xmlsh.core.IPort;
 import org.xmlsh.core.Namespaces;
 import org.xmlsh.core.XValue;
+import org.xmlsh.sh.core.CharAttributeBuffer;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 
@@ -472,6 +473,11 @@ public class Util
 		 * Create a java regex that coresponds to pattern
 		 */
 		
+		return compileWild(pattern,caseSensitive).matcher(word).matches();
+	}
+	
+	public static Pattern compileWild( String pattern,  boolean caseSensitive) {
+
 		String reg = "^" + 
 			pattern.
 			replace("^","\\^").
@@ -486,12 +492,55 @@ public class Util
 		if( reg.equals("^[$"))
 			reg = "^\\[$";
 		
-		Pattern p = Pattern.compile(reg, caseSensitive ? 0 : Pattern.CASE_INSENSITIVE );
-		return p.matcher(word).matches();
+		return Pattern.compile(reg, caseSensitive ? 0 : Pattern.CASE_INSENSITIVE );
 		
 		
 	}
+	
+	public static Pattern compileWild( CharAttributeBuffer wild,  int escAttr, boolean caseSensitive) {
 
+		StringBuilder reg = new StringBuilder("^");
+		int len = wild.size();
+		for( int i = 0 ; i < len ; i++ ) {
+			char c = wild.charAt(i);
+			
+			switch(c) {
+			case '^' : reg.append("\\^"); break ;
+			case '+' : reg.append("\\+"); break ;
+			case '.' : reg.append("\\."); break ;
+			case '*' : 
+				if( (wild.attrAt(i) & escAttr) == 0 )
+				      reg.append(".*"); 
+			    else 
+			       reg.append("\\*");
+				break;
+			
+			case '?' :
+				if( (wild.attrAt(i) & escAttr) == 0 )
+		              reg.append("."); 
+			    else 
+			       reg.append("\\.");
+				break;
+			case '[' :
+				if( (wild.attrAt(i) & escAttr) == 0 && wild.indexOf(i+1 , ']', 0) > i )
+		              reg.append("["); 
+			    else 
+			       reg.append("\\[");
+				break;
+			
+			case '(' : reg.append("\\(");  break ;
+			case ')' : reg.append("\\)"); break ;
+			default : 
+				reg.append(c);
+			}
+		}
+
+		reg.append("$");
+		
+		return Pattern.compile(reg.toString(), caseSensitive ? 0 : Pattern.CASE_INSENSITIVE );
+		
+		
+	}
 
 	public static boolean hasAnyChar(String s, String any) {
 		for( int i = 0 ; i < any.length() ; i++ ){
