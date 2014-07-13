@@ -167,6 +167,9 @@ public class xuri extends XCommand
 		if( opts.hasOpt("s"))
 			out.println(uri.getScheme() );		
 		else
+		if( opts.hasOpt("S"))
+			out.println(uri.getSchemeSpecificPart());
+		else
 			out.println(uri);
 			
 		out.flush();

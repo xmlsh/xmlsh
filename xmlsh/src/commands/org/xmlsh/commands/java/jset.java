@@ -4,7 +4,7 @@
  *
  */
 
-package org.xmlsh.commands.builtin;
+package org.xmlsh.commands.java;
 
 import org.xmlsh.core.BuiltinCommand;
 import org.xmlsh.core.Options;
@@ -26,7 +26,6 @@ public class jset extends BuiltinCommand {
 		String classname = opts.getOptString("c",null);
 		String method = opts.getOptString("m", null);
 		String field = opts.getOptString("f", null);
-	
 		
 		
 			

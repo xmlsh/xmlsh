@@ -54,18 +54,35 @@ private static Set< String > mReserved;
 		return mReserved.contains(n);
 	}
 	
-
-	public static XValue newXValue(String classname, List<XValue> args, ClassLoader classloader) throws Exception {
-		Class<?> cls = Class.forName(classname, true, classloader);
-
+	public static XValue newXValue(Class<?> cls,  List<XValue> args) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, CoreException 
+	{
 		Constructor<?>[] constructors = cls.getConstructors();
+		return newXValue( cls , constructors , args );
+
+	}
+	
+	public static XValue newXValue(Class<?> cls, Constructor<?>[] constructors ,List<XValue> args) throws CoreException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException 
+	{
 		Constructor<?> c = getBestMatch(args, constructors);
 		if (c == null) 
-			throw new InvalidArgumentException("No construtor match found for: " + classname  + "(" + getArgClassesString(args) + ")");
+			throw new InvalidArgumentException("No construtor match found for: " + cls.getName()  + "(" + getArgClassesString(args) + ")");
 
 		Object obj = c.newInstance(getArgs(c.getParameterTypes(), args));
 		return new XValue(obj);
 	}
+
+	public static XValue newXValue(String classname, List<XValue> args, ClassLoader classloader) throws Exception {
+		Class<?> cls = findClass(classname, classloader);
+		return newXValue( cls , args );
+
+	}
+
+
+	public static Class<?> findClass(String classname, ClassLoader classloader) throws ClassNotFoundException
+    {
+	    Class<?> cls = Class.forName(classname, true, classloader);
+	    return cls;
+    }
 	
 	public static <T> T newObject( Class<T> cls , Object... args  ) throws InvalidArgumentException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		
@@ -80,29 +97,29 @@ private static Set< String > mReserved;
 
 	public static XValue callStatic(String classname, String methodName, List<XValue> args,
 			ClassLoader classloader) throws Exception {
-		Class<?> cls = Class.forName(classname, true, classloader);
-		Method[] methods = cls.getMethods();
-		Method m = getBestMatch(methodName, args, methods,true);
+		Class<?> cls = findClass(classname, classloader);
+		Method m = getBestMatch(cls,methodName, args, true);
 
 		if (m == null) 
 			throw new InvalidArgumentException("No method match found for: " + classname + "." + methodName + "(" + getArgClassesString(args) + ")");
 
-		Object obj = m.invoke(null, getArgs(m.getParameterTypes(), args));
-		
+		return callStaticMethod(m, args);
+	}
+
+	public static XValue callStaticMethod(Method m, List<XValue> args) throws IllegalAccessException,
+            IllegalArgumentException, InvocationTargetException, CoreException
+    {
+	    Object obj = m.invoke(null, getArgs(m.getParameterTypes(), args));
 		// Special case for null - use formal return type to cast to right XValue type
 		if( obj == null ){
 			if( String.class.isAssignableFrom(m.getReturnType()) )
 				return new XValue( (String) null );
 			else
 				return new XValue( (Object) null);
-			
-			
 		}
-			
-		
 		
 		return new XValue(obj);
-	}
+    }
 
 	public static String getArgClassesString(List<XValue> args) {
 		StringBuffer sb = new StringBuffer();
@@ -118,13 +135,18 @@ private static Set< String > mReserved;
 	public static XValue callMethod(XValue instance, String methodName, List<XValue> args,
 			ClassLoader classloader) throws Exception {
 		Class<?> cls = instance.asObject().getClass();
-		Method[] methods = cls.getMethods();
-		Method m = getBestMatch(methodName, args, methods,false);
+		Method m = getBestMatch(cls,methodName, args, false);
 
 		if (m == null) 
 			throw new InvalidArgumentException("No method match found for: " + cls.getName() + "." + methodName);
 
-		Object obj = m.invoke(instance.asObject(), getArgs(m.getParameterTypes(), args));
+		return callMethod(m, instance.asObject(), args);
+	}
+
+	public static XValue callMethod(Method m, Object instance, List<XValue> args) throws IllegalAccessException,
+            IllegalArgumentException, InvocationTargetException, CoreException
+    {
+	    Object obj = m.invoke(instance, getArgs(m.getParameterTypes(), args));
 		
 		// Special case for null - use formal return type to cast to right XValue type
 		if( obj == null ){
@@ -136,11 +158,17 @@ private static Set< String > mReserved;
 		
 		
 		return new XValue(obj) ;
+    }
+	
+	public static Method getBestMatch(Class<?> cls, String methodName, List<XValue> args, boolean bStatic ) throws CoreException {
+
+		return getBestMatch(  cls.getMethods() , methodName , args , bStatic  );
 	}
 
-	public static Method getBestMatch(String methodName, List<XValue> args, Method[] methods , boolean bStatic ) throws CoreException {
+	public static Method getBestMatch(Method[] methods, String methodName, List<XValue> args, boolean bStatic ) throws CoreException {
 
 		
+
 		Method best = null;
 		int bestConversions = 0;
 		
@@ -404,7 +432,7 @@ private static Set< String > mReserved;
 	}
 
 	public static XValue getField(String classname, XValue instance, String fieldName, ClassLoader classloader) throws InvalidArgumentException, SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException, ClassNotFoundException {
-		Class<?> cls = Class.forName(classname, true, classloader);
+		Class<?> cls = findClass(classname, classloader);
 	    Field f = cls.getField(fieldName);
 	    
 
