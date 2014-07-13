@@ -16,7 +16,7 @@ do
 			if [ stax:getName($e) = "ITEM" ] ; then
 				a=stax:getAttribute($e  "CAT")
 				xtype $a
-				echo CAT is a.getValue()
+				echo "$a"
 			fi
 			;;
 		CHARACTERS    ) echo " " stax:getData($e) ;;

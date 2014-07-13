@@ -140,15 +140,6 @@
     matchedToken.image = matchedToken.image.substring( 0 , matchedToken.image.length() - 1 );
     call_depth++;
   }
-| 
-  < METHOD_CALL_WORD :
-    
-     ([ "A"-"Z", "a"-"z", "_", "0"-"9", "-" ])+ "." ([ "A"-"Z", "a"-"z", "_", "0"-"9", "-" ])+ "("
-  >
-  {
-    call_depth++;
-    matchedToken.image = matchedToken.image.substring( 0 , matchedToken.image.length() - 1 );
-  }
   
   }< CMD >TOKEN :{  < WORD :    (      ~[ "\t", "\n", "\r", " ", "\"", "'", "|", "<", ">", "&", ";", ")", "(", "$", "\\", "{", "}", "`" ]    | "\\" ~[ ]    | < VAR_EXPANSION >    | < STRING_LITERAL1 >    | < STRING_LITERAL2 >    )+ >|   < #STRING_LITERAL1 :    "\""    (      (~[ "\"", "\\" ])    |      (        "\\"         (~[ ])      )    )*    "\""     >|   < #STRING_LITERAL2 :    "\'"    (      (~[ "'" ])    )*    "\'"     >|   < #VAR_EXPANSION :    "${" (~[ "}" ])+ "}"  | "$" [ "#", "?", "*", "@", "$", "!" ]  | "$" ([ "0"-"9", "a"-"z", "A"-"Z", "_" ])+  | "$"     >}<* >TOKEN :{  < VAR_SUBPROC :    "$("  | "$<("     > : DEFAULT|   < VAR_SUBPROC_FILE :    "$(<"  | "$<(<"     >}< CMD, DEFAULT >TOKEN :{  < BACKTICK1 : "`" >  {    if (in_backtick)    {      matchedToken.kind = BACKTICK2;      in_backtick = false;    }    else in_backtick = true;  }  : DEFAULT}
 
@@ -255,25 +246,9 @@ String word_or_name() :
    }
 }Word cmd_word() :{  Word w;}{  w = cmd_word_expr()  {    return w;  }| < LBRACE2 > w = cmd_word_expr() < RBRACE2 >  {    w = new BraceWord( w );    return w;  }}
 
-
-MethodCallWord	method_call() :
-{
-  Token t;
-  WordList wl;
-}
-{
-
-  t = < METHOD_CALL_WORD > wl = function_args() < MRPAREN >
-  {
-
-    return new MethodCallWord(t.toString(), wl);
-  }
-}
 Word cmd_word_expr() :{  Token t;  String s;  Command c;  WordList wl;
   Word w;}{  t = < FUNC_CALL_WORD > wl = function_args() < MRPAREN >  {
-    return new FunctionCallWord(t.toString(), wl);  }| 	w = method_call()
-{	return w ; }
-
+    return new FunctionCallWord(t.toString(), wl);  }
 |
   (    t = < WORD >  | t = < NAME >   )  {    return new StringWord(t.toString());  }|  (    t = < XEXPR >  | t = < BIGQUOTE >  )  {    return new StringWord(t.toString());  }| t = < VAR_SUBPROC > c = compound_list() < RPAREN >  {    return new CommandWord(t.toString(), c);  }| t = < VAR_SUBPROC_FILE > s = filename() < RPAREN >  {    return new CommandFileWord(t.toString(), s);  }| < BACKTICK1 > c = compound_list() < BACKTICK2 >  {    return new CommandWord("`", c);  }}WordList function_args() :{  WordList wl = new WordList();  Word w;}{
    

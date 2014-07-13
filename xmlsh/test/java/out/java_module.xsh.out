@@ -1,0 +1,9 @@
+Value: Hi
+Length: 2
+String
+TestTypes()
+TestTypes(String)
+TestTypes()
+TestTypes(Integer)
+TestTypes(Integer,String)
+TestTypes(Long,String)
