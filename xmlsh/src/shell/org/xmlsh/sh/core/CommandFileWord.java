@@ -8,6 +8,7 @@ package org.xmlsh.sh.core;
 
 import net.sf.saxon.s9api.XdmNode;
 import org.xmlsh.core.CoreException;
+import org.xmlsh.core.EvalEnv;
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
@@ -29,6 +30,8 @@ import java.io.PrintWriter;
 public class CommandFileWord extends Word {
 	private 	String		mType;	// String value
 	private		String		mFile;
+	private static final EvalEnv mEnv = EvalEnv.newInstance(false, true, true, false);
+
 	public CommandFileWord( String type , String file ){
 		mType = type;
 		mFile = file;
@@ -47,7 +50,7 @@ public class CommandFileWord extends Word {
 
 
 
-		XValue 	files = shell.expandToValue( cmd , true,true ,false, loc );
+		XValue 	files = shell.expandToValue( cmd , mEnv , loc );
 		String file;
 		if( files.isAtomic() )
 			file = files.toString();
@@ -74,7 +77,7 @@ public class CommandFileWord extends Word {
 			
 	}
 	XdmNode	expandXFile( Shell shell , String xfile, SourceLocation loc ) throws IOException, CoreException{
-		XValue 	files = shell.expandToValue( xfile , true,true ,false, loc );
+		XValue 	files = shell.expandToValue( xfile , mEnv , loc );
 		String file;
 		if( files.isAtomic() )
 			file = files.toString();

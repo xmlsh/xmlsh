@@ -69,7 +69,7 @@ public class MethodCallWord extends Word {
 		
 		if( mArgs != null )
 			for( Word arg : mArgs )
-				args.addAll(arg.expand(shell,!arg.isInTongs(),!arg.isInTongs(),!arg.isInTongs(),  arg.isInTongs(),loc));
+				args.addAll(arg.expandToList(shell,!arg.isInTongs(),!arg.isInTongs(),!arg.isInTongs(),  arg.isInTongs(),loc));
 		
 
 		

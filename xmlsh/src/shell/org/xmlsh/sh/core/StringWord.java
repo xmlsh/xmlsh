@@ -7,6 +7,7 @@
 package org.xmlsh.sh.core;
 
 import org.xmlsh.core.CoreException;
+import org.xmlsh.core.EvalEnv;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
 
@@ -33,22 +34,22 @@ public class StringWord extends Word
 		out.print(mString);
 	}
 
-	public List<XValue> expand(Shell shell, boolean bExpandSequences, boolean bExpandWild, boolean bExpandWords,
+	public List<XValue> expandToList(Shell shell, boolean bExpandSequences, boolean bExpandWild, boolean bExpandWords,
 	                           boolean bTongs, SourceLocation loc) throws IOException, CoreException
 	{
-		return shell.expandToList(mString, bExpandSequences, bExpandWild, bExpandWords, bTongs, loc);
+		return shell.expandToList(mString, EvalEnv.newInstance(bExpandSequences, bExpandWild, bExpandWords, bTongs), loc);
 	}
 
 	@Override
 	public XValue expand(Shell shell, boolean bExpandWild, boolean bExpandWords, boolean bTongs,
 	                     SourceLocation loc) throws IOException, CoreException
 	{
-		return shell.expandToValue(mString, bExpandWild, bExpandWords, bTongs, loc);
+		return shell.expandToValue(mString, EvalEnv.newInstance(bExpandWild, bExpandWords, bTongs), loc);
 	}
 
 	public String expandString(Shell shell, boolean bExpandWild, SourceLocation loc) throws IOException, CoreException
 	{
-		return shell.expandToString(mString, bExpandWild, loc);
+		return shell.expandToString(mString, EvalEnv.newInstance(bExpandWild,false,false), loc);
 	}
 
 	public boolean isEmpty()

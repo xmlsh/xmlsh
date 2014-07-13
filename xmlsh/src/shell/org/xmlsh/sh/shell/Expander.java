@@ -17,6 +17,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import org.xmlsh.core.CoreException;
+import org.xmlsh.core.EvalEnv;
 import org.xmlsh.core.Variables;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.XVariable;
@@ -91,7 +92,7 @@ class Expander {
 			CharAttributeBuffer toAValue() {
 				return avalue != null ? avalue :
 					 new CharAttributeBuffer( xvalue.toString() , 
-							 (bRaw ? CharAttr.ATTR_TONGS : CharAttr.ATTR_NONE).attr() );
+							 (bRaw ? CharAttr.ATTR_PRESERVE : CharAttr.ATTR_NONE).attr() );
 			}
 			boolean isRaw() { 
 				return bRaw ;
@@ -174,7 +175,7 @@ class Expander {
 		 * If currently in-quotes then convert the args to strings and seperated by the first char in IFS.
 		 */
 		public void append(XValue value, CharAttr attr  ) {
-			if( value.isAtomic()  && !attr.isTongs() ){
+			if( value.isAtomic()  && !attr.isPreserve() ){
 				// If in quotes or this is an ajoining value then concatenate 
 				if( attr.isQuote()  || cur != null || (achars != null && ! achars.isEmpty())  ){
 
@@ -206,7 +207,7 @@ class Expander {
 
 				} else {
 					flush();
-					add(value, attr.isTongs());
+					add(value, attr.isPreserve());
 				}
 			}
 		}
@@ -271,9 +272,8 @@ class Expander {
 	 * 
 	 * If bTongs is set then this is inside {value} which is used to eval/expand the value but do NO substitution
 	 * if bExpandWild is set then globbing is done
-	 * if bExpandWords is NOT USED expansion is done
 	 */
-	List<XValue> expand(String arg, boolean bExpandWild , boolean bExpandWords, boolean bTongs ) throws IOException, CoreException
+	List<XValue> expandToList(String arg, EvalEnv env ) throws IOException, CoreException
 	{
 
 		// <{ big quotes }>
@@ -297,7 +297,7 @@ class Expander {
 
 		char c;
 		int i;
-		CharAttr curAttr = bTongs ? CharAttr.ATTR_TONGS : CharAttr.ATTR_NONE ; 
+		CharAttr curAttr = env.preserveValue() ? CharAttr.ATTR_PRESERVE : CharAttr.ATTR_NONE ; 
 		
 		for( i = 0 ; i < arg.length() ; i++){
 
@@ -449,7 +449,7 @@ class Expander {
 						// guarentees no null values and empty unquoted strings were removed
 						
 						
-						List<XValue> vs = extractSingle(var, curAttr );
+						List<XValue> vs = evalVar(var, curAttr );
 
 						// Append the first value to any previous content in the arg
 						// N..last-1 become new args
@@ -487,7 +487,7 @@ class Expander {
 			 * If v is an atomic string value then dequote and expand
 			 * DO NOT dequote variable expansions
 			 */
-			if( ! bExpandWild )
+			if( ! env.expandWild() )
 				result2.add( rv.toXValue() );
 			else {
 
@@ -623,9 +623,6 @@ class Expander {
 
 
 	}
-
-
-
 
 
 
@@ -829,17 +826,17 @@ class Expander {
 	 * Evaluate a variable and return either a list of zero or more values
 	 */
 	
-	private List<XValue> extractSingle(String var, CharAttr attr ) throws IOException, CoreException {
+	private List<XValue> evalVar(String var, CharAttr attr ) throws IOException, CoreException {
 
-		XValue v = extractSingle(var);
+		XValue v = evalVar(var);
 		if( v == null )
 			return null ; 
-		if(  attr.isTongs() || ! v.isAtomic() )
+		if(  attr.isPreserve() || ! v.isAtomic() )
 			return Collections.singletonList( v );
 		
  
 		// Non tong null values go away
-		if( ! attr.isTongs() && v.isNull())
+		if( ! attr.isPreserve() && v.isNull())
 		   return null;   
 		
 		// Java objects are not mucked with
@@ -875,7 +872,7 @@ class Expander {
 	 * Evaluate a variable expression and extract its value
 	 */
 
-	private XValue extractSingle(String varname) throws IOException, CoreException {
+	private XValue evalVar(String varname) throws IOException, CoreException {
 
 
 
@@ -932,7 +929,7 @@ class Expander {
 							 * Expand index if it starts with "$"
 							 */
 							if( ind.startsWith("$")){
-								XValue indv = extractSingle( ind.substring(1)  );
+								XValue indv = evalVar( ind.substring(1)  );
 								if( indv != null )
 									ind = indv.toString();
 

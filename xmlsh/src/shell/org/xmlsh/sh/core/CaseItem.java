@@ -7,6 +7,7 @@
 package org.xmlsh.sh.core;
 
 import org.xmlsh.core.CoreException;
+import org.xmlsh.core.EvalEnv;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.Util;
 
@@ -17,6 +18,7 @@ public class CaseItem {
 	private		StringList		mPattern;
 	private		Command			mCommand;
 	private		SourceLocation  mLocation ;
+	private static final EvalEnv mEnv = EvalEnv.newInstance(false, false, false, false);
 	public CaseItem(StringList pattern, Command command, SourceLocation location ) {
 
 		mPattern = pattern;
@@ -36,7 +38,7 @@ public class CaseItem {
 	public boolean matches(Shell shell , String word) throws IOException, CoreException {
 		for( String pattern : mPattern ){
 			
-			String p = shell.expandToString(pattern, false, mLocation );
+			String p = shell.expandToString(pattern, mEnv , mLocation );
 			
 			
 			if( Util.wildMatches( p, word , true ))

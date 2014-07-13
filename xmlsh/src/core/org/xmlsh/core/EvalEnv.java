@@ -6,54 +6,74 @@
 
 package org.xmlsh.core;
 
+import java.util.Arrays;
 import java.util.EnumSet;
 
 /*
  * Context for evaluating a Word or Expression 
  */
-public class EvalEnvironment
+public class EvalEnv
+
 {
-	enum EvalFlag {
-		EXPAND_WILD,
-		EXPAND_WORDS,
-		TONGS, EXPAND_SEQUENCES
-	}
-	
-	
 	private EnumSet<EvalFlag> evalFlags;
 	private final static EnumSet<EvalFlag> _evalFlagsNone = EnumSet.noneOf(EvalFlag.class);
 
-	private final static EvalEnvironment _evalNone = new EvalEnvironment();
+	private final static EvalEnv _evalNone = new EvalEnv();
 	
 	
-	private EvalEnvironment()
+	private EvalEnv()
 	{
 		this(_evalFlagsNone);
 	}
 	
-	private EvalEnvironment(EnumSet<EvalFlag> flags){
+	private EvalEnv(EnumSet<EvalFlag> flags){
 		evalFlags = flags ;
 	}
 
+	public static EvalEnv instance(EvalFlag... flags) {
+		return new EvalEnv( EnumSet.copyOf(Arrays.asList(flags)) );
+	 }
+	
 	
 
-	public static final EvalEnvironment evalNone() {
+	public static final EvalEnv evalNone() {
 		return _evalNone;
 	}
 	
 	// Hack for now
-	public static EvalEnvironment  newInstance( boolean bExpandSequences , boolean bExpandWild , boolean bExpandWords, boolean bTongs )
+	public static EvalEnv  newInstance( boolean bExpandSequences , boolean bExpandWild , boolean bExpandWords, boolean bPreserve )
 	{
 		EnumSet<EvalFlag> flags = EnumSet.noneOf(EvalFlag.class);
-		if( bExpandSequences)
-			flags.add(EvalFlag.EXPAND_SEQUENCES );
-		if( bExpandWild )
-			flags.add(EvalFlag.EXPAND_WILD);
-		if( bExpandWords )
-			flags.add(EvalFlag.EXPAND_WORDS);
-		if( bTongs )
-			flags.add(EvalFlag.TONGS);
-		return new EvalEnvironment(flags);
+		flags.add(EvalFlag.EXPAND_VAR);
+		if( ! bPreserve ) {
+			flags.add(EvalFlag.PARSE_QUOTES);
+			flags.add(EvalFlag.JOIN_VALUES);
+			if( bExpandSequences)
+				flags.add(EvalFlag.EXPAND_SEQUENCES );
+			if( bExpandWild )
+				flags.add(EvalFlag.EXPAND_WILD);
+			if( bExpandWords )
+				flags.add(EvalFlag.SPLIT_WORDS);
+			flags.add(EvalFlag.OMIT_NULL);
+		}
+		return new EvalEnv(flags);
+	}
+	
+	public static EvalEnv  newInstance(  boolean bExpandWild , boolean bExpandWords, boolean bPreserve )
+	{
+		return newInstance( false , bExpandWild, bExpandWords , bPreserve );
+	}
+	
+	public boolean expandVar () { 
+		return evalFlags.contains(EvalFlag.EXPAND_VAR);
+	}
+	
+	public boolean parseQuotes () { 
+		return evalFlags.contains(EvalFlag.PARSE_QUOTES);
+	}
+	
+	public boolean joinValues () { 
+		return evalFlags.contains(EvalFlag.JOIN_VALUES);
 	}
 	
 	// Globbing 
@@ -63,11 +83,12 @@ public class EvalEnvironment
 	
 	// Word expansion 
 	public boolean expandWords() {
-		return evalFlags.contains(EvalFlag.EXPAND_WORDS);
+		return evalFlags.contains(EvalFlag.SPLIT_WORDS);
 	}
 	
-	public boolean tongs() {
-		return evalFlags.contains(EvalFlag.TONGS);
+	// Was tongs
+	public boolean preserveValue() {
+		return evalFlags.isEmpty() || evalFlags.equals( EnumSet.of( EvalFlag.EXPAND_VAR));
 
 	}
 	public boolean expandSequences() {

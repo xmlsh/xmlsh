@@ -50,7 +50,7 @@ public abstract class Word {
 		return expand(shell,bExpandWild,false,false,loc).toString();
 	}
 	
-	public List<XValue> expand(Shell shell, boolean bExpandSequences , boolean bExpandWild , boolean bExpandWords , boolean bTongs , SourceLocation loc ) throws IOException, CoreException {
+	public List<XValue> expandToList(Shell shell, boolean bExpandSequences , boolean bExpandWild , boolean bExpandWords , boolean bTongs , SourceLocation loc ) throws IOException, CoreException {
 		XValue v = expand( shell , bExpandWild,bExpandWords, bTongs , loc);
 		List<XValue> list = new ArrayList<XValue>(1);
 		if( v != null )

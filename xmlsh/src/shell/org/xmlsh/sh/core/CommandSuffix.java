@@ -47,9 +47,9 @@ public class CommandSuffix {
 	{
 		ArrayList<XValue>	args = new ArrayList<XValue>();
 				
-		args.addAll( command.expand(shell,false,true,true,false,loc));
+		args.addAll( command.expandToList(shell,false,true,true,false,loc));
 		for( Word arg : mArgs )
-			args.addAll(arg.expand(shell,!arg.isInTongs(),!arg.isInTongs(),!arg.isInTongs(),arg.isInTongs(),loc));
+			args.addAll(arg.expandToList(shell,!arg.isInTongs(),!arg.isInTongs(),!arg.isInTongs(),arg.isInTongs(),loc));
 
 		return args;
 	}

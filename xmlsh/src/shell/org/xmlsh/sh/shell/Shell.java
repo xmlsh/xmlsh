@@ -15,6 +15,7 @@ import org.apache.log4j.Logger;
 
 import org.xmlsh.core.CommandFactory;
 import org.xmlsh.core.CoreException;
+import org.xmlsh.core.EvalEnv;
 import org.xmlsh.core.ExitOnErrorException;
 import org.xmlsh.core.FileInputPort;
 import org.xmlsh.core.FileOutputPort;
@@ -687,13 +688,14 @@ public class Shell {
 
 
 	public String getPS1() throws IOException, CoreException {
+		final EvalEnv env = EvalEnv.newInstance( false,false,true,false);
 		
 		XValue ps1 = getEnv().getVarValue("PS1");
 		if( ps1 == null )
 			return "$ ";
 		String sps1 = ps1.toString();
 		if( !Util.isBlank(sps1))
-			sps1 = expandToString(sps1, false,null);
+			sps1 = expandToString(sps1, env,null);
 		
 		return sps1;
 
@@ -1107,12 +1109,12 @@ public class Shell {
 		return mArg0;
 	}
 
-	public List<XValue> expandToList(String s, boolean bExpandSequences , boolean bExpandWild , boolean bExpandWords  , boolean bTongs , SourceLocation loc  ) throws IOException, CoreException {
+	public List<XValue> expandToList(String s, EvalEnv env , SourceLocation loc  ) throws IOException, CoreException {
 		Expander e = new Expander( this , loc );
-		List<XValue> result =  e.expand(s,bExpandWild, bExpandWords, bTongs  );
-		if( bExpandSequences )
+		List<XValue> result =  e.expandToList(s, env   );
+		if( env.expandSequences() )
 			result = Util.expandSequences( result );
-		else
+		else  
 			result = Util.combineSequence( result );
 		return result;
 	}
@@ -1146,8 +1148,8 @@ public class Shell {
 	}
 	
 
-	public String expandToString(String value, boolean bExpandWild , SourceLocation loc ) throws IOException, CoreException {
-		List<XValue> ret = expandToList(value,false,bExpandWild, false, false , loc  );
+	public String expandToString(String value, EvalEnv env , SourceLocation loc ) throws IOException, CoreException {
+		List<XValue> ret = expandToList(value,env, loc  );
 		if( ret.size() == 0 )
 			return "";
 		else
@@ -1166,8 +1168,8 @@ public class Shell {
 
 	// Expand a word and return as a single XValue
 	// Preserves sequences and expands 
-	public	XValue	expandToValue( String value , boolean bExpandWild , boolean bExpandWords , boolean bTongs ,  SourceLocation loc ) throws IOException, CoreException {
-			List<XValue> ret = expandToList(value,false, bExpandWild , bExpandWords, bTongs ,  loc  );
+	public	XValue	expandToValue( String value ,  EvalEnv env , SourceLocation loc ) throws IOException, CoreException {
+			List<XValue> ret = expandToList(value,env, loc  );
 			if( ret.size() == 0 )
 				return new XValue(XdmEmptySequence.getInstance());
 			else

@@ -10,7 +10,7 @@ enum CharAttr {
 	ATTR_NONE( 0 ),
 	ATTR_SOFT_QUOTE(1),
 	ATTR_HARD_QUOTE(2),
-	ATTR_TONGS(4),
+	ATTR_PRESERVE(4),   // Do not touch, unquote or expand
 	ATTR_ESCAPED(8);
 	private int attr;
 	CharAttr(){
@@ -25,10 +25,7 @@ enum CharAttr {
 		}
 	byte attr() { return (byte) this.attr ; }
 
-	public boolean isTongs()
-    {
-        return isSet( ATTR_TONGS );
-    }
+	
 	public static CharAttr valueOf(char c)
     {
         if( c == '\'')
@@ -63,7 +60,14 @@ enum CharAttr {
     {
         return  isSet(ATTR_SOFT_QUOTE);
     }
-	
+	public boolean isEscaped()
+    {
+        return  isSet(ATTR_ESCAPED);
+    }
+	public boolean isPreserve()
+    {
+        return isSet( ATTR_PRESERVE );
+    }
 }
 
 
