@@ -11,6 +11,7 @@ import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XdmValue;
 import org.xmlsh.core.CoreException;
+import org.xmlsh.core.EvalEnv;
 import org.xmlsh.core.VariableOutputPort;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.XVariable;
@@ -162,7 +163,7 @@ public class CommandWord extends Word {
 	}
 		
 	@Override
-	public XValue expand(Shell shell,boolean bExpandWild , boolean bExpandWords, boolean bTongs , SourceLocation loc ) throws IOException, CoreException {
+	public XValue expand(Shell shell , EvalEnv env,SourceLocation loc ) throws IOException, CoreException {
 		
 		
 		if( mType.equals("$(") || mType.equals("`") ){
@@ -172,11 +173,11 @@ public class CommandWord extends Word {
 			 * The command substitution $(cat file) can be replaced by the equivalent but faster $(< file).
 			 */
 			
-			String 	value = expandSubproc( shell , mCommand);
+			String 	value = expandSubproc( shell, mCommand);
 			// Trailing lines are already removed
 			
  
-			return expandWords( shell , value , bExpandWords , bTongs );
+			return expandWords( shell , value , env.expandWords() , env.preserveValue() );
 			
 			
 			

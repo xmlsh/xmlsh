@@ -7,6 +7,7 @@
 package org.xmlsh.sh.core;
 
 import org.xmlsh.core.CoreException;
+import org.xmlsh.core.EvalEnv;
 import org.xmlsh.core.StaticContextFlag;
 import org.xmlsh.core.StaticEnvironment;
 import org.xmlsh.core.XValue;
@@ -35,23 +36,23 @@ public abstract class Word {
 	protected Word( ) {
 	}
 
-	public XValue expandWords( Shell shell , String word ,  boolean bExpandWords ,boolean bTongs ) throws IOException {
+	public XValue expandWords( Shell shell , String word ,  boolean bExpandWords ,boolean bPreserve ) throws IOException {
 		// if expand word then need to do IFS splitting
-		if( bExpandWords && ! bTongs  )
+		if( bExpandWords && ! bPreserve  )
 			return new XValue( (String[]) shell.getIFS().split(word).toArray() );
 		else
 			return new XValue( word);
 				
 	}
 
-	public abstract XValue expand(Shell shell,boolean bExpandWild , boolean bExpandWords ,boolean bTongs,  SourceLocation loc ) throws IOException, CoreException;
+	public abstract XValue expand(Shell shell, EvalEnv parameterObject,SourceLocation loc ) throws IOException, CoreException;
 	
 	public String expandString(Shell shell, boolean bExpandWild, SourceLocation loc ) throws IOException, CoreException {
-		return expand(shell,bExpandWild,false,false,loc).toString();
+		return expand(shell,EvalEnv.newInstance( bExpandWild, false, false),loc).toString();
 	}
 	
-	public List<XValue> expandToList(Shell shell, boolean bExpandSequences , boolean bExpandWild , boolean bExpandWords , boolean bTongs , SourceLocation loc ) throws IOException, CoreException {
-		XValue v = expand( shell , bExpandWild,bExpandWords, bTongs , loc);
+	public List<XValue> expandToList(Shell shell, boolean bExpandSequences , boolean bExpandWild , boolean bExpandWords , boolean bPreserve , SourceLocation loc ) throws IOException, CoreException {
+		XValue v = expand( shell,  EvalEnv.newInstance( bExpandWild, bExpandWords, bPreserve) , loc);
 		List<XValue> list = new ArrayList<XValue>(1);
 		if( v != null )
 		   list.add( v );
@@ -72,7 +73,7 @@ public abstract class Word {
 		return sw.toString();
 	}
 
-	public boolean isInTongs() {
+	public boolean isPreserve() {
 		return false ;
 	}
 }

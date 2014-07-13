@@ -270,7 +270,7 @@ class Expander {
 	 * "literal" simpmle literal
 	 * "$var literal $var" quoted mixed literal
 	 * 
-	 * If bTongs is set then this is inside {value} which is used to eval/expand the value but do NO substitution
+	 * If bPreserve is set then this is inside {value} which is used to eval/expand the value but do NO substitution
 	 * if bExpandWild is set then globbing is done
 	 */
 	List<XValue> expandToList(String arg, EvalEnv env ) throws IOException, CoreException

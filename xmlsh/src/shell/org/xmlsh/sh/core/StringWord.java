@@ -34,23 +34,12 @@ public class StringWord extends Word
 		out.print(mString);
 	}
 
-	public List<XValue> expandToList(Shell shell, boolean bExpandSequences, boolean bExpandWild, boolean bExpandWords,
-	                           boolean bTongs, SourceLocation loc) throws IOException, CoreException
-	{
-		return shell.expandToList(mString, EvalEnv.newInstance(bExpandSequences, bExpandWild, bExpandWords, bTongs), loc);
-	}
-
 	@Override
-	public XValue expand(Shell shell, boolean bExpandWild, boolean bExpandWords, boolean bTongs,
-	                     SourceLocation loc) throws IOException, CoreException
+	public XValue expand(Shell shell,EvalEnv env, SourceLocation loc) throws IOException, CoreException
 	{
-		return shell.expandToValue(mString, EvalEnv.newInstance(bExpandWild, bExpandWords, bTongs), loc);
+		return shell.expandToValue(mString, env , loc);
 	}
 
-	public String expandString(Shell shell, boolean bExpandWild, SourceLocation loc) throws IOException, CoreException
-	{
-		return shell.expandToString(mString, EvalEnv.newInstance(bExpandWild,false,false), loc);
-	}
 
 	public boolean isEmpty()
 	{

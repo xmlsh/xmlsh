@@ -7,6 +7,7 @@
 package org.xmlsh.sh.core;
 
 import org.xmlsh.core.CoreException;
+import org.xmlsh.core.EvalEnv;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.XVariable;
@@ -57,7 +58,7 @@ public class MethodCallWord extends Word {
 
 	
 	@Override
-	public XValue expand(Shell shell,boolean bExpandWild , boolean bExpandWords, boolean bTongs , SourceLocation loc ) throws IOException, CoreException {
+	public XValue expand(Shell shell, EvalEnv env,SourceLocation loc ) throws IOException, CoreException {
 		
 		
 		XVariable var = shell.getEnv().getVar(mVariable);
@@ -69,7 +70,7 @@ public class MethodCallWord extends Word {
 		
 		if( mArgs != null )
 			for( Word arg : mArgs )
-				args.addAll(arg.expandToList(shell,!arg.isInTongs(),!arg.isInTongs(),!arg.isInTongs(),  arg.isInTongs(),loc));
+				args.addAll(arg.expandToList(shell,!arg.isPreserve(),!arg.isPreserve(),!arg.isPreserve(),  arg.isPreserve(),loc));
 		
 
 		

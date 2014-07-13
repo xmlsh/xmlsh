@@ -7,6 +7,7 @@
 package org.xmlsh.sh.core;
 
 import org.xmlsh.core.CoreException;
+import org.xmlsh.core.EvalEnv;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
 
@@ -32,11 +33,11 @@ public class BraceWord extends Word
 	}
 
 	@Override
-	public XValue expand(Shell shell, boolean bExpandWild, boolean bExpandWords, boolean bTongs, SourceLocation loc)
+	public XValue expand(Shell shell , EvalEnv env, SourceLocation loc)
 	        throws IOException, CoreException
 	{
 
-		return mWord.expand(shell, bExpandWild, bExpandWords, true, loc);
+		return mWord.expand(shell, EvalEnv.newInstance(env.expandWild(), env.expandWords(),    true), loc);
 	}
 
 	@Override
@@ -46,7 +47,7 @@ public class BraceWord extends Word
 	}
 	
 	@Override
-	public boolean isInTongs() {
+	public boolean isPreserve() {
 		return true ;
 	}
 

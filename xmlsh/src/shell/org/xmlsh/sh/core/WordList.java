@@ -8,6 +8,7 @@ package org.xmlsh.sh.core;
 
 import net.sf.saxon.s9api.XdmEmptySequence;
 import org.xmlsh.core.CoreException;
+import org.xmlsh.core.EvalEnv;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
 
@@ -27,17 +28,17 @@ public class WordList extends ArrayList<Word> {
 		
 	}
 
-	public XValue expand(Shell shell, boolean bExpandWild, boolean bExpandWords, boolean bTongs, SourceLocation loc) throws IOException, CoreException {
+	public XValue expand(Shell shell, boolean bExpandWild, boolean bExpandWords, boolean bPreserve, SourceLocation loc) throws IOException, CoreException {
 		if( this.size() == 0 )
 			return new XValue(XdmEmptySequence.getInstance());
 		if( this.size() == 1 )
-			return this.get(0).expand(shell, bExpandWild, bExpandWords,bTongs ,loc);
+			return this.get(0).expand(shell,EvalEnv.newInstance( bExpandWild, bExpandWords, bPreserve), loc);
 		
 		
 		List<XValue>  list = new ArrayList<XValue>( this.size() );
 		
 		for( Word w : this )
-			list.add(w.expand(shell,bExpandWild,bExpandWords,bTongs,loc) );
+			list.add(w.expand(shell,EvalEnv.newInstance(bExpandWild, bExpandWords, bPreserve),loc) );
 		return new XValue( list );
 		
 	}

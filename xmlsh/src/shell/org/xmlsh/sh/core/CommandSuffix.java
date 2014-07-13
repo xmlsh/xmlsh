@@ -49,7 +49,7 @@ public class CommandSuffix {
 				
 		args.addAll( command.expandToList(shell,false,true,true,false,loc));
 		for( Word arg : mArgs )
-			args.addAll(arg.expandToList(shell,!arg.isInTongs(),!arg.isInTongs(),!arg.isInTongs(),arg.isInTongs(),loc));
+			args.addAll(arg.expandToList(shell,!arg.isPreserve(),!arg.isPreserve(),!arg.isPreserve(),arg.isPreserve(),loc));
 
 		return args;
 	}

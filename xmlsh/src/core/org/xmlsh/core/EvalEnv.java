@@ -40,6 +40,8 @@ public class EvalEnv
 		return _evalNone;
 	}
 	
+	
+	
 	// Hack for now
 	public static EvalEnv  newInstance( boolean bExpandSequences , boolean bExpandWild , boolean bExpandWords, boolean bPreserve )
 	{

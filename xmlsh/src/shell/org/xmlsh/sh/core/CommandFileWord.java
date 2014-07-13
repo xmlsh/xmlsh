@@ -99,12 +99,12 @@ public class CommandFileWord extends Word {
 
 
 	@Override
-	public XValue expand(Shell shell,boolean bExpandWild , boolean bExpandWords, boolean bTongs , SourceLocation loc ) throws IOException, CoreException {
+	public XValue expand(Shell shell, EvalEnv env,SourceLocation loc ) throws IOException, CoreException {
 
 		if(mType.equals("$(<")){
 			
 			String value = expandFile( shell , mFile,loc );
-			return expandWords( shell , value , bExpandWords , bTongs );
+			return expandWords( shell, value , env.expandWords() , env.preserveValue() );
 
 		} else
 		if( mType.equals("$<(<")){

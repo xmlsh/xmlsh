@@ -7,6 +7,7 @@
 package org.xmlsh.sh.core;
 
 import org.xmlsh.core.CoreException;
+import org.xmlsh.core.EvalEnv;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
 
@@ -81,7 +82,7 @@ public class Assign {
 		// Eval RHS
 		if( mRValue != null )
 			// Single variables dont expand wildcards
-			value = mRValue.expand(shell, false, false,false,loc);
+			value = mRValue.expand(shell, EvalEnv.newInstance(false, false, false), loc);
 		else
 		if( mValueList != null )
 			// Sequences expand wildcards
