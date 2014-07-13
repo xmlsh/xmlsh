@@ -47,7 +47,7 @@ public class CommandFileWord extends Word {
 
 
 
-		XValue 	files = shell.expand( cmd , true,true ,false, loc );
+		XValue 	files = shell.expandToValue( cmd , true,true ,false, loc );
 		String file;
 		if( files.isAtomic() )
 			file = files.toString();
@@ -74,7 +74,7 @@ public class CommandFileWord extends Word {
 			
 	}
 	XdmNode	expandXFile( Shell shell , String xfile, SourceLocation loc ) throws IOException, CoreException{
-		XValue 	files = shell.expand( xfile , true,true ,false, loc );
+		XValue 	files = shell.expandToValue( xfile , true,true ,false, loc );
 		String file;
 		if( files.isAtomic() )
 			file = files.toString();

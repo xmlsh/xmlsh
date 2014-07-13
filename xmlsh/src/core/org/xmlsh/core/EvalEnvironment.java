@@ -16,7 +16,7 @@ public class EvalEnvironment
 	enum EvalFlag {
 		EXPAND_WILD,
 		EXPAND_WORDS,
-		TONGS
+		TONGS, EXPAND_SEQUENCES
 	}
 	
 	
@@ -42,9 +42,11 @@ public class EvalEnvironment
 	}
 	
 	// Hack for now
-	public static EvalEnvironment  newInstance( boolean bExpandWild , boolean bExpandWords, boolean bTongs )
+	public static EvalEnvironment  newInstance( boolean bExpandSequences , boolean bExpandWild , boolean bExpandWords, boolean bTongs )
 	{
 		EnumSet<EvalFlag> flags = EnumSet.noneOf(EvalFlag.class);
+		if( bExpandSequences)
+			flags.add(EvalFlag.EXPAND_SEQUENCES );
 		if( bExpandWild )
 			flags.add(EvalFlag.EXPAND_WILD);
 		if( bExpandWords )
@@ -56,7 +58,6 @@ public class EvalEnvironment
 	
 	// Globbing 
 	public boolean expandWild() { 
-	
 		return evalFlags.contains(EvalFlag.EXPAND_WILD);
 	}
 	
@@ -67,6 +68,10 @@ public class EvalEnvironment
 	
 	public boolean tongs() {
 		return evalFlags.contains(EvalFlag.TONGS);
+
+	}
+	public boolean expandSequences() {
+		return evalFlags.contains(EvalFlag.EXPAND_SEQUENCES);
 
 	}
 

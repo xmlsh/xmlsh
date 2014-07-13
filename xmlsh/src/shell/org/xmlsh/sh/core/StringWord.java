@@ -36,19 +36,19 @@ public class StringWord extends Word
 	public List<XValue> expand(Shell shell, boolean bExpandSequences, boolean bExpandWild, boolean bExpandWords,
 	                           boolean bTongs, SourceLocation loc) throws IOException, CoreException
 	{
-		return shell.expand(mString, bExpandSequences, bExpandWild, bExpandWords, bTongs, loc);
+		return shell.expandToList(mString, bExpandSequences, bExpandWild, bExpandWords, bTongs, loc);
 	}
 
 	@Override
 	public XValue expand(Shell shell, boolean bExpandWild, boolean bExpandWords, boolean bTongs,
 	                     SourceLocation loc) throws IOException, CoreException
 	{
-		return shell.expand(mString, bExpandWild, bExpandWords, bTongs, loc);
+		return shell.expandToValue(mString, bExpandWild, bExpandWords, bTongs, loc);
 	}
 
 	public String expandString(Shell shell, boolean bExpandWild, SourceLocation loc) throws IOException, CoreException
 	{
-		return shell.expandString(mString, bExpandWild, loc);
+		return shell.expandToString(mString, bExpandWild, loc);
 	}
 
 	public boolean isEmpty()

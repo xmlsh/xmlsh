@@ -693,7 +693,7 @@ public class Shell {
 			return "$ ";
 		String sps1 = ps1.toString();
 		if( !Util.isBlank(sps1))
-			sps1 = expandString(sps1, false,null);
+			sps1 = expandToString(sps1, false,null);
 		
 		return sps1;
 
@@ -1107,7 +1107,7 @@ public class Shell {
 		return mArg0;
 	}
 
-	public List<XValue> expand(String s, boolean bExpandSequences , boolean bExpandWild , boolean bExpandWords  , boolean bTongs , SourceLocation loc  ) throws IOException, CoreException {
+	public List<XValue> expandToList(String s, boolean bExpandSequences , boolean bExpandWild , boolean bExpandWords  , boolean bTongs , SourceLocation loc  ) throws IOException, CoreException {
 		Expander e = new Expander( this , loc );
 		List<XValue> result =  e.expand(s,bExpandWild, bExpandWords, bTongs  );
 		if( bExpandSequences )
@@ -1146,8 +1146,8 @@ public class Shell {
 	}
 	
 
-	public String expandString(String value, boolean bExpandWild , SourceLocation loc ) throws IOException, CoreException {
-		List<XValue> ret = expand(value,false,bExpandWild, false, false , loc  );
+	public String expandToString(String value, boolean bExpandWild , SourceLocation loc ) throws IOException, CoreException {
+		List<XValue> ret = expandToList(value,false,bExpandWild, false, false , loc  );
 		if( ret.size() == 0 )
 			return "";
 		else
@@ -1166,8 +1166,8 @@ public class Shell {
 
 	// Expand a word and return as a single XValue
 	// Preserves sequences and expands 
-	public	XValue	expand( String value , boolean bExpandWild , boolean bExpandWords , boolean bTongs ,  SourceLocation loc ) throws IOException, CoreException {
-			List<XValue> ret = expand(value,false, bExpandWild , bExpandWords, bTongs ,  loc  );
+	public	XValue	expandToValue( String value , boolean bExpandWild , boolean bExpandWords , boolean bTongs ,  SourceLocation loc ) throws IOException, CoreException {
+			List<XValue> ret = expandToList(value,false, bExpandWild , bExpandWords, bTongs ,  loc  );
 			if( ret.size() == 0 )
 				return new XValue(XdmEmptySequence.getInstance());
 			else

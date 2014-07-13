@@ -253,7 +253,7 @@ String word_or_name() :
 {  (    t = < WORD >  | t = < NAME >   )  {
      return t.toString();
    }
-}Word cmd_word() :{  Word w;}{  w = cmd_word_expr()  {    return w;  }| < LBRACE2 > w = cmd_word_expr() < RBRACE2 >  {    w.setInTongs(true);    return w;  }}
+}Word cmd_word() :{  Word w;}{  w = cmd_word_expr()  {    return w;  }| < LBRACE2 > w = cmd_word_expr() < RBRACE2 >  {    w = new BraceWord( w );    return w;  }}
 
 
 MethodCallWord	method_call() :

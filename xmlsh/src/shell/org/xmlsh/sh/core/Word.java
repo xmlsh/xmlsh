@@ -16,6 +16,8 @@ import org.xmlsh.util.Util;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,13 +28,11 @@ import java.util.List;
  */
 public abstract class Word {
 	
-	private StaticEnvironment mStaticEnv = null;
 	
 	public abstract void print( PrintWriter out );
 
 
 	protected Word( ) {
-		mStaticEnv =  StaticEnvironment.defaultContext();
 	}
 
 	public XValue expandWords( Shell shell , String word ,  boolean bExpandWords ,boolean bTongs ) throws IOException {
@@ -44,12 +44,6 @@ public abstract class Word {
 				
 	}
 
-	// Core word expansion
-	public List<XValue>  expand(Shell shell,String word ,  boolean bExpandSequences ,  boolean bExpandWild , boolean bExpandWords ,boolean bTongs,  MutableInteger retValue , SourceLocation loc )  throws IOException, CoreException
-	{
-	   return shell.expand(word ,bExpandSequences , bExpandWild , bExpandWords , bTongs , loc );
-   }
-	
 	public abstract XValue expand(Shell shell,boolean bExpandWild , boolean bExpandWords ,boolean bTongs,  SourceLocation loc ) throws IOException, CoreException;
 	
 	public String expandString(Shell shell, boolean bExpandWild, SourceLocation loc ) throws IOException, CoreException {
@@ -69,13 +63,17 @@ public abstract class Word {
 
 	public abstract boolean isEmpty();
 	
-	public abstract String toString();
+	public String toString() {
+		
+		StringWriter sw;
+		PrintWriter w = new PrintWriter(sw = new StringWriter());
+		this.print(w);
+		w.close();
+		return sw.toString();
+	}
 
 	public boolean isInTongs() {
-		return mStaticEnv.getTongs();
-	}
-	public void setInTongs( boolean tongs ){
-		mStaticEnv = mStaticEnv.addContext(StaticContextFlag.BLOCK_TONG);
+		return false ;
 	}
 }
 
