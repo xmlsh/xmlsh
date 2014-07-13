@@ -497,6 +497,13 @@ public class Util
 		
 	}
 	
+	/*
+	 * is the char one of the glob wils  ? * [
+	 */
+	public static boolean isWildChar( char c ) {
+		return ( c == '*' || c == '?' || c == '[')  ;
+	}
+	
 	public static Pattern compileWild( CharAttributeBuffer wild,  int escAttr, boolean caseSensitive) {
 
 		StringBuilder reg = new StringBuilder("^");

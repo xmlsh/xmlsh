@@ -7,6 +7,7 @@
 package org.xmlsh.sh.core;
 
 import net.sf.saxon.s9api.XdmEmptySequence;
+import org.xmlsh.core.EvalEnv;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
 
@@ -40,7 +41,7 @@ public class ReturnStatement extends Command {
 		if( mArg == null )
 			ret = new XValue(0);
 		else	{
-			List<XValue> vret = mArg.expandToList(shell, false , false , false , false ,  getLocation() );
+			List<XValue> vret = mArg.expandToList(shell, EvalEnv.newInstance(false , false , false , false ),  getLocation() );
 			if( vret == null || vret.isEmpty() )
 				ret = new XValue(XdmEmptySequence.getInstance() );
 			else

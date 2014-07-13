@@ -86,7 +86,7 @@ public class Assign {
 		else
 		if( mValueList != null )
 			// Sequences expand wildcards
-			value = mValueList.expand(shell, true, false,false,loc);
+			value = mValueList.expand(shell, EvalEnv.newInstance(true, false,false),loc);
 
 		
 		// Assign

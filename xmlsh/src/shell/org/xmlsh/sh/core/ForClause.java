@@ -6,6 +6,7 @@
 
 package org.xmlsh.sh.core;
 
+import org.xmlsh.core.EvalEnv;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.XVariable;
 import org.xmlsh.sh.shell.ControlLoop;
@@ -73,7 +74,7 @@ public class ForClause extends CompoundCommand {
 			} else
 			for( Word in : mWords ) {
 				
-				List<XValue> inList = in.expandToList( shell , true ,true,true , false , getLocation() );
+				List<XValue> inList = in.expandToList( shell , EvalEnv.newInstance(true ,true,true , false ), getLocation() );
 				if( ! shell.keepRunning() )
 					break ;
 				for( XValue inword : inList ) {

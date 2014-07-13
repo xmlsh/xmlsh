@@ -104,7 +104,7 @@ public class CommandFileWord extends Word {
 		if(mType.equals("$(<")){
 			
 			String value = expandFile( shell , mFile,loc );
-			return expandWords( shell, value , env.expandWords() , env.preserveValue() );
+			return expandWords( shell, value ,env );
 
 		} else
 		if( mType.equals("$<(<")){

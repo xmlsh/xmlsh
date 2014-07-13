@@ -177,7 +177,7 @@ public class CommandWord extends Word {
 			// Trailing lines are already removed
 			
  
-			return expandWords( shell , value , env.expandWords() , env.preserveValue() );
+			return expandWords( shell , value , env);
 			
 			
 			

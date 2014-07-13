@@ -36,27 +36,27 @@ public abstract class Word {
 	protected Word( ) {
 	}
 
-	public XValue expandWords( Shell shell , String word ,  boolean bExpandWords ,boolean bPreserve ) throws IOException {
+	public XValue expandWords( Shell shell , String word , EvalEnv env ) throws IOException {
 		// if expand word then need to do IFS splitting
-		if( bExpandWords && ! bPreserve  )
+		if( env.expandWords() && ! env.preserveValue() )
 			return new XValue( (String[]) shell.getIFS().split(word).toArray() );
 		else
 			return new XValue( word);
 				
 	}
 
-	public abstract XValue expand(Shell shell, EvalEnv parameterObject,SourceLocation loc ) throws IOException, CoreException;
+	public abstract XValue expand(Shell shell, EvalEnv env,SourceLocation loc ) throws IOException, CoreException;
 	
-	public String expandString(Shell shell, boolean bExpandWild, SourceLocation loc ) throws IOException, CoreException {
-		return expand(shell,EvalEnv.newInstance( bExpandWild, false, false),loc).toString();
+	public String expandString(Shell shell, EvalEnv env, SourceLocation loc ) throws IOException, CoreException {
+		return expand(shell,env,loc).toString();
 	}
 	
-	public List<XValue> expandToList(Shell shell, boolean bExpandSequences , boolean bExpandWild , boolean bExpandWords , boolean bPreserve , SourceLocation loc ) throws IOException, CoreException {
-		XValue v = expand( shell,  EvalEnv.newInstance( bExpandWild, bExpandWords, bPreserve) , loc);
+	public List<XValue> expandToList(Shell shell, EvalEnv env , SourceLocation loc ) throws IOException, CoreException {
+		XValue v = expand( shell,  env , loc);
 		List<XValue> list = new ArrayList<XValue>(1);
 		if( v != null )
 		   list.add( v );
-		if( bExpandSequences)
+		if( env.expandSequences())
 			list = Util.expandSequences(list);
 		return list;
 		

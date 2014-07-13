@@ -6,6 +6,7 @@
 
 package org.xmlsh.sh.core;
 
+import org.xmlsh.core.EvalEnv;
 import org.xmlsh.sh.shell.Shell;
 
 import java.io.PrintWriter;
@@ -55,7 +56,7 @@ public class IORedirect {
 		
 		String port = null;
 		if( mPortname != null )
-			port  = mPortname.expandString(shell, false, loc );
+			port  = mPortname.expandString(shell, EvalEnv.newInstance( false , false, false), loc );
 		
 		
 		if( mFile != null )

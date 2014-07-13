@@ -7,6 +7,7 @@
 package org.xmlsh.sh.core;
 
 import org.xmlsh.core.CoreException;
+import org.xmlsh.core.EvalEnv;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
 
@@ -46,10 +47,10 @@ public class CommandSuffix {
 	public List<XValue> toCmdLine(Shell shell, Word command, SourceLocation loc ) throws IOException, CoreException 
 	{
 		ArrayList<XValue>	args = new ArrayList<XValue>();
-				
-		args.addAll( command.expandToList(shell,false,true,true,false,loc));
+		
+		args.addAll( command.expandToList(shell,EvalEnv.newInstance(false,true,true,false),loc));
 		for( Word arg : mArgs )
-			args.addAll(arg.expandToList(shell,!arg.isPreserve(),!arg.isPreserve(),!arg.isPreserve(),arg.isPreserve(),loc));
+			args.addAll(arg.expandToList(shell,EvalEnv.newInstance(!arg.isPreserve(),!arg.isPreserve(),!arg.isPreserve(),arg.isPreserve()),loc));
 
 		return args;
 	}

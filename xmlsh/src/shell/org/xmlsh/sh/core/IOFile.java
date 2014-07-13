@@ -7,6 +7,7 @@
 package org.xmlsh.sh.core;
 
 import org.xmlsh.core.CoreException;
+import org.xmlsh.core.EvalEnv;
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.OutputPort;
@@ -74,7 +75,7 @@ public class IOFile {
 		
 		
 		
-		String file = mFile.expandString(shell, true,loc);
+		String file = mFile.expandString(shell, EvalEnv.newInstance( true, false, false),loc);
 		
 		
 		/*

@@ -303,61 +303,66 @@ class Expander {
 
 			c = arg.charAt(i);
 			
-			// Quote - if in quotes then clear only the matching quote
-			if( CharAttr.isQuote(c) ){
-				CharAttr ca = CharAttr.valueOf(c);
-				if( curAttr.isQuote() ) { // in quotes
-					curAttr.clear( ca );
-                    if( curAttr.isQuote() )
-                    	result.append(c, curAttr);
-				}
-				else {
-					result.append( (String)null, curAttr);
-					curAttr.set( ca );
-				}
-			}
-
-
-			// Escape
-			//  foo\bar		-> 	foobar
-			//  "foo\bar" 	-> "foo\bar"
-			//  "foo\\bar" 	-> "foo\bar"
-			//	'foo\\bar'  -> 'foo\\bar'
-
-
-			/*
-			 * http://pubs.opengroup.org/onlinepubs/009695399/utilities/xcu_chap02.html
-			 */
-			else
-			if( c == '\\'){
-				if( curAttr.isHardQuote())
-					result.append(c, curAttr);
-				else 
-					
-					if( i < arg.length()){
-						char nextc = arg.charAt(++i);
-						if( curAttr.isSoftQuote())
-						{
-							switch( nextc ) {
-							case '$' : 
-							case '`':
-							case '"' :
-							case '\\' :
-							case '\n' :
-								break ;
-							default :
-								result.append(c,curAttr);
-								break;
-							}
-						}
-						
-						// For one char we escape 
-						CharAttr cAttr = CharAttr.ATTR_ESCAPED ;
-						cAttr.set(curAttr);
-						result.append( nextc , cAttr );
+			if(env.parseQuotes()) {
+				// Quote - if in quotes then clear only the matching quote
+				if( CharAttr.isQuote(c) ){
+					CharAttr ca = CharAttr.valueOf(c);
+					if( curAttr.isQuote() ) { // in quotes
+						curAttr.clear( ca );
+	                    if( curAttr.isQuote() )
+	                    	result.append(c, curAttr);
 					}
+					else {
+						result.append( (String)null, curAttr);
+						curAttr.set( ca );
+					}
+					continue ;
+				}
+
+	
+				// Escape
+				//  foo\bar		-> 	foobar
+				//  "foo\bar" 	-> "foo\bar"
+				//  "foo\\bar" 	-> "foo\bar"
+				//	'foo\\bar'  -> 'foo\\bar'
+	
+	
+				/*
+				 * http://pubs.opengroup.org/onlinepubs/009695399/utilities/xcu_chap02.html
+				 */
+				else
+				if( c == '\\'){
+					if( curAttr.isHardQuote())
+						result.append(c, curAttr);
+					else 
+						
+						if( i < arg.length()){
+							char nextc = arg.charAt(++i);
+							if( curAttr.isSoftQuote())
+							{
+								switch( nextc ) {
+								case '$' : 
+								case '`':
+								case '"' :
+								case '\\' :
+								case '\n' :
+									break ;
+								default :
+									result.append(c,curAttr);
+									break;
+								}
+							}
+							
+							// For one char we escape 
+							CharAttr cAttr = CharAttr.ATTR_ESCAPED ;
+							cAttr.set(curAttr);
+							result.append( nextc , cAttr );
+						}
+					continue ;
+				}
+
 			}
-			else
+			
 			if( ! curAttr.isHardQuote()  && c == '$'){
 				if( ++i == arg.length() ){
 					result.append('$', curAttr ); // Special case of a single "$"
@@ -482,11 +487,10 @@ class Expander {
 		ArrayList<XValue> result2 = new ArrayList<XValue>();
 
 
+		/*
+		 * Globbing
+		 */
 		for( Result.RXValue rv : result.getResult() ){
-			/*
-			 * If v is an atomic string value then dequote and expand
-			 * DO NOT dequote variable expansions
-			 */
 			if( ! env.expandWild() )
 				result2.add( rv.toXValue() );
 			else {
@@ -654,10 +658,8 @@ class Expander {
 		boolean wildUnQuoted = false ;
 		for( int i = 0 ; i < vslen ; i++ ){
 			char c = av.charAt(i);
-
 			// To expand wild there must be NO quoting attributes at all
-			if(  ( c == '*' || c == '?' || c == '[')  &&
-					( av.attrAt(i) == 0 ) ) {
+			if(  Util.isWildChar(c) && ( av.attrAt(i) == 0 ) ) {
 				wildUnQuoted = true ;
 				break ;
 			}
@@ -672,7 +674,6 @@ class Expander {
 
 		List<String>	rs = new ArrayList<String>();
 
-		
 		/*
 		 * If vs starts with / (or on dos x:) then use that directory as the root
 		 * instead of the current directory
@@ -705,9 +706,7 @@ class Expander {
 				parent = root;
 			
 			}
-			
 		}
-
 
 		CharAttributeBuffer	wilds[] = av.split('/');
 		expandDir( root == null ? mShell.getCurdir() : new File(root) , 

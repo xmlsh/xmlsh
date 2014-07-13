@@ -6,6 +6,7 @@
 
 package org.xmlsh.sh.core;
 
+import org.xmlsh.core.EvalEnv;
 import org.xmlsh.sh.shell.Shell;
 
 import java.io.PrintWriter;
@@ -42,7 +43,7 @@ public class CaseClause  extends CompoundCommand {
 		try {
 			applyRedirect(shell);
 			
-			String word = mWord.expandString(shell,false,getLocation());
+			String word = mWord.expandString(shell,EvalEnv.newInstance(false , false, false),getLocation());
 			
 			for( CaseItem item : mList ){
 				
