@@ -16,6 +16,7 @@ import java.io.PrintWriter;
 import java.util.List;
 
 public class ForClause extends CompoundCommand {
+	private static final EvalEnv mEnv = EvalEnv.newInstance(true ,true,true , false );
 	String		mName;
 	WordList	mWords;
 	Command		mCommand;
@@ -74,7 +75,7 @@ public class ForClause extends CompoundCommand {
 			} else
 			for( Word in : mWords ) {
 				
-				List<XValue> inList = in.expandToList( shell , EvalEnv.newInstance(true ,true,true , false ), getLocation() );
+				List<XValue> inList = in.expandToList( shell , mEnv, getLocation() );
 				if( ! shell.keepRunning() )
 					break ;
 				for( XValue inword : inList ) {

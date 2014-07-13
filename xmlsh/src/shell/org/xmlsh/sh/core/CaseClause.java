@@ -12,6 +12,7 @@ import org.xmlsh.sh.shell.Shell;
 import java.io.PrintWriter;
 
 public class CaseClause  extends CompoundCommand {
+	private static final EvalEnv mCaseWordEnv = EvalEnv.basicInstance();
 	Word		mWord;
 	CaseList	mList;
 	public CaseClause(Word word, CaseList list) {
@@ -43,7 +44,7 @@ public class CaseClause  extends CompoundCommand {
 		try {
 			applyRedirect(shell);
 			
-			String word = mWord.expandString(shell,EvalEnv.newInstance(false , false, false),getLocation());
+			String word = mWord.expandString(shell,mCaseWordEnv,getLocation());
 			
 			for( CaseItem item : mList ){
 				

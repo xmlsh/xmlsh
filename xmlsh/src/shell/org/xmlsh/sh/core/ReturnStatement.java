@@ -16,6 +16,7 @@ import java.util.List;
 
 public class ReturnStatement extends Command {
 
+	private static final EvalEnv mEnv = EvalEnv.basicInstance();
 	private		Word	mArg;
 	public	boolean		isSimple() { return false ; }
 
@@ -41,7 +42,7 @@ public class ReturnStatement extends Command {
 		if( mArg == null )
 			ret = new XValue(0);
 		else	{
-			List<XValue> vret = mArg.expandToList(shell, EvalEnv.newInstance(false , false , false , false ),  getLocation() );
+			List<XValue> vret = mArg.expandToList(shell, mEnv,  getLocation() );
 			if( vret == null || vret.isEmpty() )
 				ret = new XValue(XdmEmptySequence.getInstance() );
 			else

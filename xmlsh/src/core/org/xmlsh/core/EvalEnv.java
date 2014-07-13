@@ -17,10 +17,12 @@ public class EvalEnv
 {
 	private EnumSet<EvalFlag> evalFlags;
 	private final static EnumSet<EvalFlag> _evalFlagsNone = EnumSet.noneOf(EvalFlag.class);
-
 	private final static EvalEnv _evalNone = new EvalEnv();
-	
-	
+	private final static EvalEnv _basicInstance = newInstance( false,false,false,false);
+	private final static EvalEnv _fileInstance = newInstance( false,true,true,false);
+	private final static EvalEnv _preserveInstance = newInstance( false,false,false,true);
+	private final static EvalEnv _nopreserveInstance = newInstance( true,true,true,false);
+
 	private EvalEnv()
 	{
 		this(_evalFlagsNone);
@@ -30,16 +32,10 @@ public class EvalEnv
 		evalFlags = flags ;
 	}
 
-	public static EvalEnv instance(EvalFlag... flags) {
-		return new EvalEnv( EnumSet.copyOf(Arrays.asList(flags)) );
-	 }
-	
-	
 
 	public static final EvalEnv evalNone() {
 		return _evalNone;
 	}
-	
 	
 	
 	// Hack for now
@@ -61,10 +57,6 @@ public class EvalEnv
 		return new EvalEnv(flags);
 	}
 	
-	public static EvalEnv  newInstance(  boolean bExpandWild , boolean bExpandWords, boolean bPreserve )
-	{
-		return newInstance( false , bExpandWild, bExpandWords , bPreserve );
-	}
 	
 	public boolean expandVar () { 
 		return evalFlags.contains(EvalFlag.EXPAND_VAR);
@@ -98,6 +90,21 @@ public class EvalEnv
 
 	}
 
+	public static EvalEnv newPreserveInstance(boolean preserve)
+    {
+		return preserve ? _preserveInstance : _nopreserveInstance ;
+    }
+	
+	// Basic evaluation of variables only
+	public static final  EvalEnv basicInstance() {
+		return _basicInstance;
+	}
+
+	// Evaluation of a filename 
+	public static final EvalEnv fileInstance() { 
+		return _fileInstance;
+
+	}
 }
 
 

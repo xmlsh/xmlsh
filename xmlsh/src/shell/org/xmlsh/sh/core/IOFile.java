@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 public class IOFile {
+	private static final EvalEnv mFileEnv = EvalEnv.newInstance( false, true, false, false);
 	private String	mPrefix;
 	private Word	mFile;
 	public IOFile(String prefix, Word file) {
@@ -75,7 +76,7 @@ public class IOFile {
 		
 		
 		
-		String file = mFile.expandString(shell, EvalEnv.newInstance( true, false, false),loc);
+		String file = mFile.expandString(shell, mFileEnv,loc);
 		
 		
 		/*

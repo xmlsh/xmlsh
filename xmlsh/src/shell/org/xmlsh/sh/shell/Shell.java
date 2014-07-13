@@ -147,6 +147,8 @@ public class Shell {
 	private Shell mParent = null;
 	private IFS mIFS;
 	
+	private final static EvalEnv mPSEnv = EvalEnv.newInstance( false,false,true,false);
+
 	
 	
 	/**
@@ -688,14 +690,13 @@ public class Shell {
 
 
 	public String getPS1() throws IOException, CoreException {
-		final EvalEnv env = EvalEnv.newInstance( false,false,true,false);
 		
 		XValue ps1 = getEnv().getVarValue("PS1");
 		if( ps1 == null )
 			return "$ ";
 		String sps1 = ps1.toString();
 		if( !Util.isBlank(sps1))
-			sps1 = expandToString(sps1, env,null);
+			sps1 = expandToString(sps1, mPSEnv,null);
 		
 		return sps1;
 

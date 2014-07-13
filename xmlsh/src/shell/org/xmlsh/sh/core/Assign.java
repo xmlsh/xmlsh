@@ -15,11 +15,13 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 public class Assign {
+	private static final EvalEnv mListVarEnv = EvalEnv.newInstance(false, true,false, false);
+	private static final EvalEnv mSingleVarEnv = EvalEnv.basicInstance();
 	private boolean	mLocal = false ;
 	private	 String		mVariable;
 	private String		mOp;		// "=" or "+-" 
 	private Word		mRValue;		// a single value a=b
-	private WordList	mValueList; // a sequence constructor a=(b)
+	private WordList	mRValList; // a sequence constructor a=(b)
 	public Assign(String variable, String op , Word rvalue) {
 		if( variable.startsWith("local ")){
 			mLocal = true ;
@@ -38,7 +40,7 @@ public class Assign {
 		
 		mVariable = variable;
 		mOp = op;
-		mValueList = rvalue;
+		mRValList = rvalue;
 	}
 	public void print(PrintWriter out) {
 		if( mLocal )
@@ -51,7 +53,7 @@ public class Assign {
 		{
 			out.print("(");
 			boolean bFirst = true ;
-			for( Word w: mValueList ){
+			for( Word w: mRValList ){
 				if( ! bFirst )
 					out.print(" ");
 				w.print(out);
@@ -82,11 +84,11 @@ public class Assign {
 		// Eval RHS
 		if( mRValue != null )
 			// Single variables dont expand wildcards
-			value = mRValue.expand(shell, EvalEnv.newInstance(false, false, false), loc);
+			value = mRValue.expand(shell, mSingleVarEnv, loc);
 		else
-		if( mValueList != null )
+		if( mRValList != null )
 			// Sequences expand wildcards
-			value = mValueList.expand(shell, EvalEnv.newInstance(true, false,false),loc);
+			value = mRValList.expand(shell, mListVarEnv,loc);
 
 		
 		// Assign

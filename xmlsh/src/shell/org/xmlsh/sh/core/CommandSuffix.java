@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CommandSuffix {
+	private static final EvalEnv mEnv = EvalEnv.newInstance(false,true,true,false);
 	private WordList		mArgs = new WordList();
 	private	 IORedirectList		mRedirect = new IORedirectList();
 	public CommandSuffix() {
@@ -48,9 +49,9 @@ public class CommandSuffix {
 	{
 		ArrayList<XValue>	args = new ArrayList<XValue>();
 		
-		args.addAll( command.expandToList(shell,EvalEnv.newInstance(false,true,true,false),loc));
+		args.addAll( command.expandToList(shell,mEnv,loc));
 		for( Word arg : mArgs )
-			args.addAll(arg.expandToList(shell,EvalEnv.newInstance(!arg.isPreserve(),!arg.isPreserve(),!arg.isPreserve(),arg.isPreserve()),loc));
+			args.addAll(arg.expandToList(shell,EvalEnv.newPreserveInstance(arg.isPreserve()),loc));
 
 		return args;
 	}

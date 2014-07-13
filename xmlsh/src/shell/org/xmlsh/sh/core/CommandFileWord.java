@@ -23,14 +23,13 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 
 /*
- * A Value that evaulates to a "cmd_word" which is either a simple string,
- * or a subprocess expression 
- * 
+ * CommandFileWord is a SubProc syntax that comes from a file 
+ * $(<file)  or $<(<file) 
  */
 public class CommandFileWord extends Word {
 	private 	String		mType;	// String value
 	private		String		mFile;
-	private static final EvalEnv mEnv = EvalEnv.newInstance(false, true, true, false);
+	private static final EvalEnv mEnv = EvalEnv.fileInstance();
 
 	public CommandFileWord( String type , String file ){
 		mType = type;

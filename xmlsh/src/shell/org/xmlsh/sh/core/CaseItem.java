@@ -18,7 +18,7 @@ public class CaseItem {
 	private		StringList		mPattern;
 	private		Command			mCommand;
 	private		SourceLocation  mLocation ;
-	private static final EvalEnv mEnv = EvalEnv.newInstance(false, false, false, false);
+	private static final EvalEnv mEnv = EvalEnv.basicInstance();
 	public CaseItem(StringList pattern, Command command, SourceLocation location ) {
 
 		mPattern = pattern;

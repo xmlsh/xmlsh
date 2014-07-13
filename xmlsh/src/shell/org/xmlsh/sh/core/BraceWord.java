@@ -37,7 +37,7 @@ public class BraceWord extends Word
 	        throws IOException, CoreException
 	{
 
-		return mWord.expand(shell, EvalEnv.newInstance(env.expandWild(), env.expandWords(),    true), loc);
+		return mWord.expand(shell, EvalEnv.newInstance(false, env.expandWild(),    env.expandWords(), true), loc);
 	}
 
 	@Override

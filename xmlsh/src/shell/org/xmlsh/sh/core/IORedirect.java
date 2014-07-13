@@ -12,6 +12,7 @@ import org.xmlsh.sh.shell.Shell;
 import java.io.PrintWriter;
 
 public class IORedirect {
+	private static final EvalEnv mPortEnv = EvalEnv.basicInstance();
 	Word	mPortname;	// (word)
 	IOFile	mFile;		//  < file
 	IOHere	mHere;		// <<tag ...tag
@@ -56,7 +57,7 @@ public class IORedirect {
 		
 		String port = null;
 		if( mPortname != null )
-			port  = mPortname.expandString(shell, EvalEnv.newInstance( false , false, false), loc );
+			port  = mPortname.expandString(shell, mPortEnv, loc );
 		
 		
 		if( mFile != null )
