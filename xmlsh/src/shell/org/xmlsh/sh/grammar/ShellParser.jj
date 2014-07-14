@@ -3,7 +3,7 @@
  */options{  JDK_VERSION = "1.6";  STATIC = false;
 //    DEBUG_PARSER=true ;  
 // DEBUG_LOOKAHEAD=true;
-// DEBUG_TOKEN_MANAGER=true;
+//  DEBUG_TOKEN_MANAGER=true;
   FORCE_LA_CHECK=true;
   UNICODE_INPUT=true;
 }
@@ -128,7 +128,7 @@
 | < BANG : "!" >| < LPAREN : "(" >}< CMD >TOKEN :{  < LPAREN2 : "(" >| < LBRACE2 : "{" >| < RBRACE2 : "}" >}< DEFAULT >TOKEN :{  < RBRACE : "}" > : CMD // RESERVED WORD only at beginning of command and starts a command    
 }< DEFAULT, CMD >TOKEN :{  < LESS : "<" >| < GT : ">" >| < TGT : "2>" >| < TGTGT : "2>>" >
 | < TGTAND1 : "2>&1" >| < GTAND : ">&" >| < GTAND2 : "1>&2" >| < LTAND : "<&" >}< CMD, DEFAULT >TOKEN :{  < RPAREN : ")" >  {
-    //System.err.println("RPAREN [" + state()+"] "+  call_depth );
+    // System.err.println("RPAREN [" + state()+"] "+  call_depth );
     // Call syntax nested parens
     if( call_depth >  0 )    {      call_depth--;
       matchedToken.kind = MRPAREN;
@@ -145,23 +145,46 @@
 
 // Abstract tokens that are only switched to never actually matched< NEVER >TOKEN :{  < BACKTICK2 : "`" >
 | 
-  < MRPAREN : ")" >}<* >TOKEN :{
+  < MRPAREN : ")" >}  <* >TOKEN :{
   < ASSIGN_WORD_SEQ :
     (
-      (
-        "local" ([ "\t", " " ])+ < VARNAME > "=("
-      )
-    | (< VARNAME > "=(")
+        < LOCAL > < VARNAME > "=("
+    |   < VARNAME > "=("
     ) >    {      call_depth++;
     }
     : CMD
+|
+ < ASSIGN_WORD_NULL : < ASSIGN_WORD_EQ > < WS > > {
+   matchedToken.image=matchedToken.image.trim(); } : CMD 
+|       < ASSIGN_WORD : < ASSIGN_WORD_EQ >
+    |  <  ASSIGN_WORD_ > >   {    if (matchedToken.image.startsWith("local") && !matchedToken.image.endsWith("="))     	matchedToken.image = matchedToken.image + "=";  } : CMD
+| < ASSIGN_WORDPE_SEQ : < VARNAME > "+=(" > {
+      call_depth++;
+    } :CMD
+| < ASSIGN_WORDPE : < VARNAME > "+=" > :CMD
 | 
-      < ASSIGN_WORD :    (      (        "local" ([ "\t", " " ])+ < VARNAME > ("=")?      )    | (< VARNAME > "=")    ) >   {    if (matchedToken.image.startsWith("local") && !matchedToken.image.endsWith("="))     	matchedToken.image = matchedToken.image + "=";  } : CMD| < ASSIGN_WORDPE : < VARNAME > "+=" > :CMD| < #VARNAME :    ([ "0"-"9", "a"-"z", "A"-"Z", "_" ])+  |     "xmlns:" ([ "0"-"9", "a"-"z", "A"-"Z", "_" ])+     > }< DEFAULT >TOKEN :{  < FUNC_DECL :    "function" ([ "\t", " " ])+ < FNAME >  ([ "\t", " " ])* ("()")?  | < FNAME > ([ "\t", " " ])* "()"     >
+ < #ASSIGN_WORD_EQ :
+    (
+        < LOCAL > < VARNAME > "="
+    |   < VARNAME > "=" 
+    ) >
+| 
+< #ASSIGN_WORD_ :
+    (
+        < LOCAL > < VARNAME >
+    |   < VARNAME >
+    ) >
+| < #VARNAME :    ([ "0"-"9", "a"-"z", "A"-"Z", "_" ])+  |     "xmlns:" ([ "0"-"9", "a"-"z", "A"-"Z", "_" ])+     >
+| < #LOCAL :
+  "local" < WS > >   
+| 
+  < #WS : ([ "\t", " " ])+ > }< DEFAULT >TOKEN :{  < FUNC_DECL :    "function" ([ "\t", " " ])+ < FNAME >  ([ "\t", " " ])* ("()")?  | < FNAME > ([ "\t", " " ])* "()"     >
   | < #FNAME  : ( ([ "0"-"9", "a"-"z", "A"-"Z", "_" , "-" ])+ ":" ) ? ([ "0"-"9", "a"-"z", "A"-"Z", "_" , "-" ])+   >
 }Command script() :{  Command c;}{   c = compound_list() < EOF >  {    return c;  }
   | < EOF > {
      return null ;
-  }}Command command_line() :{  Command c;  String op = "";  Token t;}{  c = complete_command() [ op = separator_op() ]  (    < NEWLINE >  | < EOF >  )  {    if (op.equals("&"))     c.setWait(false);    return c;  }|   t = < NEWLINE >  {    c = new NullCommand();    setLocation(c, t);    return c;  }| < EOF >  {    return null;  }}Command complete_command() :{  Command c;}{  c = list()  {    return c;  }}Command and_or() :{  AndOr andor = null;  Command first;  Command c = null;  String op = null;}{  first = pipeline()  (
+  }}Command command_line() :{  Command c;  String op = "";  Token t;}{  c = complete_command() [ op = separator_op() ]  (
+    < NEWLINE >    | < EOF >  )  {    if (op.equals("&"))     c.setWait(false);    return c;  }|   t = < NEWLINE >  {    c = new NullCommand();    setLocation(c, t);    return c;  }| < EOF >  {    return null;  }}Command complete_command() :{  Command c;}{  c = list()  {    return c;  }}Command and_or() :{  AndOr andor = null;  Command first;  Command c = null;  String op = null;}{  first = pipeline()  (
     LOOKAHEAD( 2,andor_if() )    op = andor_if() linebreak() c = pipeline()    {      if (andor == null)       andor = new AndOr(first, op, c);      else       andor = new AndOr(andor, op, c);    }  )*  {    return andor == null ? first : andor;  }}String andor_if() :{  Token t;}{  t = < AND_IF >  {    return t.toString();  }| t = < OR_IF >  {    return t.toString();  }}Pipeline pipeline() :{  Pipeline p;}{  p = pipe_sequence()  {    return p;  }| < BANG > p = pipe_sequence()  {    p.setBang(true);
     return p;  }}Pipeline pipe_sequence() :{  Pipeline p = new Pipeline(false);  Command c;}{  c = command()  {
     setLocation(p,c);    p.add(c);  }  (    < PIPE > linebreak() c = command()    {      p.add(c);    }  )*  {    return p;  }}Command command() :{  SimpleCommand sc;  CompoundCommand c;  FunctionDeclaration f;  IORedirectList r;
@@ -235,7 +258,10 @@ ReturnStatement return_stmt() :
     
   }}CompoundCommand function_body() :{  CompoundCommand c;}{  c = compound_command()  {
     setLocation(c);    return c;  }}BraceGroup brace_group() :{  Command c;}{  < LBRACE > c = compound_list() < RBRACE >  {    token_source.SwitchTo(CMD); // RBRACE sometimes doesnt switch to CMD due to lookahead and op processing
-    return new BraceGroup(c);  }}Command do_group() :{  Command c;}{  < DO > c = compound_list() < DONE >  {    return c;  }}SimpleCommand simple_command() :{  CommandPrefix p;  Word c = null;  CommandSuffix s = null;  SimpleCommand sc = null;  Token t = null;}{  LOOKAHEAD(2)  p = cmd_prefix()  [    LOOKAHEAD(2)    c = cmd_word()    {      t = token;    }  ]  s = cmd_suffix()  {    sc = new SimpleCommand(p, c, s);    setLocation(sc, t);    return sc;  }| LOOKAHEAD(2)  c = cmd_word()  {    t = token;  }  s = cmd_suffix()  {    sc = new SimpleCommand(null, c, s);    setLocation(sc, t);    return sc;  }| LOOKAHEAD(2)  c = cmd_word()  {    sc = new SimpleCommand(null, c, null);    setLocation(sc);    return sc;  }}String cmd_name() :{  Token t;}{  t = < NAME >  {    return t.toString();  }}
+    return new BraceGroup(c);  }}Command do_group() :{  Command c;}{  < DO > c = compound_list() < DONE >  {    return c;  }}SimpleCommand simple_command() :{  CommandPrefix p;  Word c = null;  CommandSuffix s = null;  SimpleCommand sc = null;  Token t = null;}{  LOOKAHEAD(2)  p = cmd_prefix()
+  
+    [    LOOKAHEAD(2)    c = cmd_word()    {      t = token;    }  ]  s = cmd_suffix()
+    {    sc = new SimpleCommand(p, c, s);    setLocation(sc, t);    return sc;  }| LOOKAHEAD(2)  c = cmd_word()  {    t = token;  }  s = cmd_suffix()  {    sc = new SimpleCommand(null, c, s);    setLocation(sc, t);    return sc;  }| LOOKAHEAD(2)  c = cmd_word()  {    sc = new SimpleCommand(null, c, null);    setLocation(sc);    return sc;  }}String cmd_name() :{  Token t;}{  t = < NAME >  {    return t.toString();  }}
 
 String word_or_name() :
 {
@@ -255,7 +281,27 @@ String word_or_name() :
   
   (
    <NEWLINE>  |     w = cmd_word()     {      wl.add(w);    }
-    )*  {    return wl;  }}CommandPrefix cmd_prefix() :{  CommandPrefix p = new CommandPrefix();  Assign a;}{  (    a = assign()    {      p.add(a);    }  )+  {    return p;  }}Assign assign() :{  Token t1;  Word w = null;  WordList ws;  String s;}{  LOOKAHEAD(2)  t1 = < ASSIGN_WORD > w = cmd_word()  {    s = t1.toString();    return new Assign(s.substring(0, s.length() - 1), "=", w);  }| LOOKAHEAD(2)  t1 = < ASSIGN_WORDPE > w = cmd_word()  {    s = t1.toString();    return new Assign(s.substring(0, s.length() - 2), "+=", w);  }|   LOOKAHEAD(2)  t1 = < ASSIGN_WORD_SEQ > ws = cmd_words() <MRPAREN >  {    s = t1.toString();    return new Assign(s.substring(0, s.length() - 2), "=", ws);  }|   LOOKAHEAD(2)  t1 = < ASSIGN_WORDPE > < LPAREN2 > ws = cmd_words() < RPAREN >  {    s = t1.toString();    return new Assign(s.substring(0, s.length() - 2), "+=", ws);  }|   t1 = < ASSIGN_WORD > (< CSEMI >)?  {    s = t1.toString();    return new Assign(s.substring(0, s.length() - 1), "=", new StringWord(""));  }}WordList cmd_words() :{  WordList ws = new WordList();  Word w;}{  (    (      w = cmd_word()    )    {      ws.add(w);    }  )*  {    return ws;  }}CommandSuffix cmd_suffix() :{  CommandSuffix s = new CommandSuffix();  Word w;  IORedirect io;}{  (    (      w = cmd_word()    )    {      s.addArg(w);    }  )*  (    io = io_redirect()    {      s.addIO(io);    }  )*  {    return s;  }}IORedirectList redirect_list() :{  IORedirectList r = new IORedirectList();  IORedirect io;}{  (    io = io_redirect()    {      r.add(io);    }  )+  {    return r;  }}IORedirect io_redirect() :{  IOFile i = null;  Word s;  IOHere h = null;  Word port = null;  Word port2 = null;}{  /* lookahead enough to disambiguate the next 2 rules */  LOOKAHEAD(5)  [ port = portname() ]  (    i = io_file()  | h = io_here()  )  {    if (i != null)     return new IORedirect(port, i);    else     return new IORedirect(port, h);  }| LOOKAHEAD(5)  port = portname() < GTAND > port2 = port_word()  {    return new IORedirect(port, new IOFile(">&", port2));  }| port = portname() < LTAND > port2 = port_word()  {    return new IORedirect(port, new IOFile("<&", port2));  }| < TGT > s = filename_word()  {    return new IORedirect(null, new IOFile("2>", s));  }
+    )*  {    return wl;  }}CommandPrefix cmd_prefix() :{  CommandPrefix p = new CommandPrefix();  Assign a;}{  (    a = assign()    {      p.add(a);
+   //   token_source.SwitchTo(DEFAULT);
+    }  )+   {    return p;  }}Assign assign() :{  Token t1;  Word w = null;  WordList ws;  String s;}{  t1 = < ASSIGN_WORD_NULL >
+  {
+    s = t1.toString();
+    return new Assign(s.substring(0, s.length() - 1), "=",new StringWord(""));
+  }
+|   t1 = < ASSIGN_WORDPE > w = cmd_word()  {    s = t1.toString();    return new Assign(s.substring(0, s.length() - 2), "+=", w);  }|   t1 = < ASSIGN_WORD_SEQ > ws = cmd_words() <MRPAREN >  {    s = t1.toString();    return new Assign(s.substring(0, s.length() - 2), "=", ws);  }|   t1 = < ASSIGN_WORDPE_SEQ > ws = cmd_words() < MRPAREN >  {    s = t1.toString();    return new Assign(s.substring(0, s.length() - 3), "+=", ws);  }
+| 
+  LOOKAHEAD(2)
+  t1 = < ASSIGN_WORD > w = cmd_word()
+  {
+    s = t1.toString();
+    return new Assign(s.substring(0, s.length() - 1), "=", w);
+  }|
+   t1 = < ASSIGN_WORD > 
+  {
+    s = t1.toString();
+    return new Assign(s.substring(0, s.length() - 1), "=",new StringWord(""));
+  }
+}WordList cmd_words() :{  WordList ws = new WordList();  Word w;}{  (    (      w = cmd_word()    )    {      ws.add(w);    }  )*  {    return ws;  }}CommandSuffix cmd_suffix() :{  CommandSuffix s = new CommandSuffix();  Word w;  IORedirect io;}{  (    (      w = cmd_word()    )    {      s.addArg(w);    }  )*  (    io = io_redirect()    {      s.addIO(io);    }  )*  {    return s;  }}IORedirectList redirect_list() :{  IORedirectList r = new IORedirectList();  IORedirect io;}{  (    io = io_redirect()    {      r.add(io);    }  )+  {    return r;  }}IORedirect io_redirect() :{  IOFile i = null;  Word s;  IOHere h = null;  Word port = null;  Word port2 = null;}{  /* lookahead enough to disambiguate the next 2 rules */  LOOKAHEAD(5)  [ port = portname() ]  (    i = io_file()  | h = io_here()  )  {    if (i != null)     return new IORedirect(port, i);    else     return new IORedirect(port, h);  }| LOOKAHEAD(5)  port = portname() < GTAND > port2 = port_word()  {    return new IORedirect(port, new IOFile(">&", port2));  }| port = portname() < LTAND > port2 = port_word()  {    return new IORedirect(port, new IOFile("<&", port2));  }| < TGT > s = filename_word()  {    return new IORedirect(null, new IOFile("2>", s));  }
 | < TGTGT > s = filename_word()
   {
     return new IORedirect(null, new IOFile("2>>", s));
@@ -264,4 +310,4 @@ String word_or_name() :
      return new StringWord(port);
       }}IOFile io_file() :{  Token t;  Word s;  String num;  Command c;}{  < LESS > s = filename_word()  {    return new IOFile("<", s);  }| < GT > s = filename_word()  {    return new IOFile(">", s);  }
 | < DGREAT > s = filename_word()  {    return new IOFile(">>", s);  }| t = < CLOBBER > s = filename_word()  {    return new IOFile(t.toString(), s);  }}String filename() :{  Token t;}{  t = < WORD >  {    return t.toString();  }| t = < NAME >  {    return t.toString();  }}Word filename_word() :{  Word w;  Token t;  String s;  Command c;}{  w = port_word()  {    return w;  }|  (    t = < WORD >  | t = < NAME >  | t = < XEXPR >  | t = < BIGQUOTE >  )  {    return new StringWord(t.toString());  }| t = < VAR_SUBPROC > c = compound_list() < RPAREN >  {    return new CommandWord(t.toString(), c);  }| t = < VAR_SUBPROC_FILE > s = filename() < RPAREN >  {    return new CommandFileWord(t.toString(), s);  }|  (    < LBRACE >  | < LBRACE2 >  )  (    t = < WORD >  | t = < NAME >  )  (    < RBRACE2 >  | < RBRACE >  )  {    return new StringWord("{" + t.toString() + "}");  }}Word port_word() :{  Word w;  Token t;}{  ( < LPAREN > | < LPAREN2 > )  (    t = < WORD >  | t = < NAME >  )  ")"  {    return new StringWord("(" + t.toString() + ")");  }
-}IOHere io_here() :{  Token tless;  String s;}{  tless = < DLESS >  {    return new IOHere("<<", tless.toString());  }|   tless = < DLESSMINUS >  {    return new IOHere("<<-", tless.toString());  }}void newline_list() :{}{  (LOOKAHEAD(1,<NEWLINE>)< NEWLINE >)+}void linebreak() :{}{  (LOOKAHEAD(1,<NEWLINE>) < NEWLINE >)*}String separator_op() :{}{  < AMP >  {    return "&";  }| < SEMI >  {    return ";";  }}String separator() :{  String op;}{  LOOKAHEAD(1,newline_list())  newline_list()  {    return "\n";  }| op = separator_op()  [    LOOKAHEAD(1,newline_list()) newline_list()  ]  {    return op;  }}void sequential_sep() :{}{  < SEMI > linebreak()| newline_list()}
+}IOHere io_here() :{  Token tless;  String s;}{  tless = < DLESS >  {    return new IOHere("<<", tless.toString());  }|   tless = < DLESSMINUS >  {    return new IOHere("<<-", tless.toString());  }}void newline_list() :{}{  (LOOKAHEAD(1,<NEWLINE>)< NEWLINE >)+}void linebreak() :{}{  (LOOKAHEAD(1,<NEWLINE>) < NEWLINE >)*}String separator_op() :{}{  < AMP >  {    return "&";  }| ( < SEMI > | < CSEMI > )  {    return ";";  }}String separator() :{  String op;}{  LOOKAHEAD(1,newline_list())  newline_list()  {    return "\n";  }| op = separator_op()  [    LOOKAHEAD(1,newline_list()) newline_list()  ]  {    return op;  }}void sequential_sep() :{}{  < SEMI > linebreak()| newline_list()}
