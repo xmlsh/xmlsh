@@ -14,7 +14,7 @@ public class BraceGroup extends CompoundCommand {
 	private Command		mCommand;
 
 	public BraceGroup(Command command) {
-		super();
+		super(command.getName());
 		mCommand = command;
 		setLocation( command );
 	}

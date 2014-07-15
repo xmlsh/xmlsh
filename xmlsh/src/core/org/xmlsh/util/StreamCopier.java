@@ -23,6 +23,7 @@ public class StreamCopier extends Thread
 
 	public StreamCopier( InputStream in , OutputStream out ,  boolean closeOut )
 	{
+		super("streamcopy");
 		mIn = in;
 		mOut = out;
 		

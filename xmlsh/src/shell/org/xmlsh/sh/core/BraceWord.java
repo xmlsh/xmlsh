@@ -50,6 +50,12 @@ public class BraceWord extends Word
 	public boolean isPreserve() {
 		return true ;
 	}
+	
+	 @Override
+	String getSimpleName()
+	{
+	    return isEmpty() ? "{}" : mWord.getSimpleName();
+ 	}
 
 
 }

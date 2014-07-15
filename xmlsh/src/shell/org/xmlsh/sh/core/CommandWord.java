@@ -84,6 +84,8 @@ public class CommandWord extends Word {
 
 			
 		}
+		
+		
 
 		
 	}
@@ -201,6 +203,15 @@ public class CommandWord extends Word {
 	{
 		return mType +  mCommand.toString(false) + ")";
 	}
+	
+	 @Override
+		public String getSimpleName()
+		{
+		    return  mCommand.getName();
+	 	}
+
+	 
+	 
 }
 
 

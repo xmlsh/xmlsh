@@ -167,7 +167,7 @@ public class jcall extends XCommand
 		}
 		
 		finally {
-			System.setSecurityManager(oldManager);
+			   System.setSecurityManager(oldManager);
 			
 			
 			System.setOut(stdout);
@@ -190,7 +190,7 @@ public class jcall extends XCommand
 	 */
 	public static void main( String[] args )
 	{
-		
+		if( args.length > 0 )
 		System.out.println(args[0]);
 		if( args.length == 1 && args[0].equals("exit"))
 			System.exit(1);

@@ -15,11 +15,9 @@ import java.util.List;
 public abstract class BuiltinFunctionCommand extends Command implements IFunction {
 
 	public abstract	XValue	run( Shell shell , List<XValue> args ) throws Exception;
-	private	   String mName ;
-	
 	protected BuiltinFunctionCommand( String name )
 	{ 
-		mName = name ;
+		super(name);
 	}
 	
 	
@@ -38,15 +36,11 @@ public abstract class BuiltinFunctionCommand extends Command implements IFunctio
 
 	@Override
 	public void print(PrintWriter out, boolean bExec) {
-		out.print(mName);
+		out.print(getName());
 
 	}
 
 
-	public String getName() {
-		return mName;
-	}
-	
 	public Command getBody()
 	{
 		return this ;

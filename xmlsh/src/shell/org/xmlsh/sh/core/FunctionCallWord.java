@@ -106,6 +106,14 @@ public class FunctionCallWord extends Word {
 		pw.flush();
 		return sw.toString();
 	}
+	
+	 @Override
+		public String getSimpleName()
+		{
+		    return  mFunction;
+	 	}
+
+	 
 }
 
 

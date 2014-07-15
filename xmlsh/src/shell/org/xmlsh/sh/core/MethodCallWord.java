@@ -27,6 +27,8 @@ import java.util.ArrayList;
  * or a subprocess expression 
  * 
  */
+
+@Deprecated
 public class MethodCallWord extends Word {
 	String		mVariable;
 	String		mMethod;
@@ -104,13 +106,12 @@ public class MethodCallWord extends Word {
 		return Util.isEmpty(mVariable);
 	}
 	
-	public String toString()
+
+	
+@Override
+	String getSimpleName()
 	{
-		Writer sw = new StringWriter();
-		PrintWriter pw = new PrintWriter(sw);
-		print(pw);
-		pw.flush();
-		return sw.toString();
+	   return mVariable  + "." + mMethod ;
 	}
 }
 

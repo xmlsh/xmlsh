@@ -33,8 +33,8 @@ import java.util.concurrent.BlockingQueue;
 import javax.swing.JButton;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
-
-public class ShellThread extends Thread {
+// Use a different name to avoid confusion with sh.shell.ShellThread
+public class XShellThread extends Thread {
 
 	private Shell mShell = null;
 	private boolean mClosed = false ;
@@ -52,7 +52,7 @@ public class ShellThread extends Thread {
 	private JTextField mCommandField;
 	private TextFieldStreamPipe cmdPipe ;
 	private SerializeOpts mSerializeOpts;
-	private static Logger mLogger = LogManager.getLogger(ShellThread.class);
+	private static Logger mLogger = LogManager.getLogger(XShellThread.class);
 	
 
 	private void print(String s) throws UnsupportedEncodingException, IOException {
@@ -62,11 +62,10 @@ public class ShellThread extends Thread {
 
 	
 
-	public ShellThread(List<XValue> args, TextResultPane resultTextArea, JTextField commandField , 
+	public XShellThread(ThreadGroup group , List<XValue> args, TextResultPane resultTextArea, JTextField commandField , 
 			JButton startButton , JButton stopButton, SerializeOpts serializeOpts) throws IOException {
-		super();
+		super(group , "xmlshui" );
 		
-
 		mArgs = args ;
 		mResultTextArea = resultTextArea;
 		mStartButton = startButton ;

@@ -52,6 +52,14 @@ public class SubShell extends CompoundCommand {
 		
 		
 	}
+	/* (non-Javadoc)
+	 * @see org.xmlsh.sh.core.Command#getName()
+	 */
+    @Override
+    public String getName()
+    {
+	    return mCommand.getName();
+    }
 	
 	
 

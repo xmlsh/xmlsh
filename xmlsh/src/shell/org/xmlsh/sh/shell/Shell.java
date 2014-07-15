@@ -65,6 +65,7 @@ import java.net.URLClassLoader;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
@@ -112,9 +113,8 @@ public class Shell {
 	private		int	    mStatus = 0;	// $? variable
 	
 	private 	String  mSavedCD = null;
-	
 
-	private		List<ShellThread>	mChildren = new ArrayList<ShellThread>();
+	private		volatile List<ShellThread>	mChildren = null ;
 	private    Map<String,String>  mTraps = null ;
 	private 	boolean mIsInteractive = false ;
 	private		long	mLastThreadId = 0;
@@ -146,6 +146,7 @@ public class Shell {
 	
 	private Shell mParent = null;
 	private IFS mIFS;
+	private ThreadGroup mThreadGroup = null ;
 	
 	private final static EvalEnv mPSEnv = EvalEnv.newInstance( false,false,true,false);
 
@@ -196,7 +197,6 @@ public class Shell {
 		if( ! bInitialized )
 			return ;
 		
-		
 		mProcessor = null ;
 		System.setProperties( mSavedSystemProperties );
 		mSavedSystemProperties = null ;
@@ -210,7 +210,6 @@ public class Shell {
 	
 	static {
 		initialize();
-	
 	}
 
 	/*
@@ -231,8 +230,6 @@ public class Shell {
 		mSession = new SessionEnvironment();
 		// Add xmlsh commands 
 		mModules.declare( new Module( null , "xmlsh" , "org.xmlsh.commands.internal", CommandFactory.kCOMMANDS_HELP_XML));
-		
-		
 		setGlobalVars();
 		
 		mModule = null ; // no current module
@@ -364,7 +361,12 @@ public class Shell {
 	 */
 	private Shell( Shell that ) throws IOException
 	{
+	    this( that , that.getThreadGroup( ));
+	}
+	private Shell( Shell that , ThreadGroup threadGroup ) throws IOException
+	{
 		mParent = that;
+		mThreadGroup = threadGroup == null ?  that.getThreadGroup() : threadGroup ;
 		mOpts = new ShellOpts(that.mOpts);
 		mEnv = that.getEnv().clone(this) ;
 		mCommandInput = that.mCommandInput;
@@ -378,8 +380,6 @@ public class Shell {
 		
 		if( that.mFunctions != null )
 			mFunctions = new FunctionDefinitions(that.mFunctions);
-		
-
 		
 		mModules = new Modules(that.mModules );
 		
@@ -413,6 +413,10 @@ public class Shell {
 	public void close() 
 	{
 		try {
+			if( mParent != null )
+				mParent.notifyChildClose(this);
+			mParent = null ;
+			mThreadGroup = null ;
 			if( mEnv != null ){
 				mEnv.close();
 				mEnv = null ;
@@ -426,10 +430,36 @@ public class Shell {
 		} catch (CoreException e) {
 			mLogger.error("Exception closing shell" , e);
 		}
-	
-	
 	}
 	
+
+	private void notifyChildClose(Shell shell)
+    {
+		// Async code might invalidate job 
+		// but removeJob can handle invalid pointers
+		ShellThread job = findJobByShell( shell );
+		if( job != null )
+	       removeJob(job);
+	    
+    }
+
+
+	private ShellThread findJobByShell(Shell shell)
+	{
+
+		List<ShellThread> children = getChildren(false);
+
+		if( children != null )
+			synchronized( children  ) {
+				for( ShellThread t :children ) {
+					if( t.getShell() == shell )
+						return t ;
+				}
+			}
+		return null ;
+
+	}
+
 
 	/* (non-Javadoc)
 	 * @see java.lang.Object#finalize()
@@ -812,7 +842,7 @@ public class Shell {
 				
 			}
 			
-			ShellThread sht = new ShellThread( new Shell(this) , this , c);
+			ShellThread sht = new ShellThread( newThreadGroup(c.getName()) ,  new Shell(this) ,null, c );
 			
 			if( isInteractive() )
 				printErr( "" + sht.getId() );
@@ -857,6 +887,12 @@ public class Shell {
 	 * Returns TRUE if the shell is currently in a condition 
 	 */
 
+	public ThreadGroup newThreadGroup(String name )
+    {
+	    return new ThreadGroup( getThreadGroup() , name);
+    }
+
+
 	public boolean isInCommandConndition() {
 		return mConditionDepth > 0  ;
 	}
@@ -877,8 +913,13 @@ public class Shell {
 		return mIsInteractive ;
 	}
 
-	private synchronized void addJob(ShellThread sht) {
-		mChildren.add(sht);
+	private  void addJob(ShellThread sht) {
+		
+		List<ShellThread> children = getChildren(true);
+		synchronized (children) {
+			children.add(sht);
+        }
+		
 		mLastThreadId = sht.getId();
 	}
 	
@@ -1221,10 +1262,18 @@ public class Shell {
 		return mProcessor;
 	}
 
-	public synchronized void removeJob(ShellThread job) {
-		mChildren.remove(job);
-		notify();
-		
+	public void removeJob(Thread job)
+	{
+
+		if( mChildren != null )
+			synchronized (mChildren) {
+				mChildren.remove(job);
+				mChildren.notify();  // Must be in syncrhonized block
+				
+
+			}
+
+
 	}
 	
 	/*
@@ -1232,30 +1281,52 @@ public class Shell {
 	 * copied into a collection so that it is thread safe
 	 */
 	
-	public synchronized List<ShellThread> getChildren()
+	public List<ShellThread> getChildren(boolean create)
 	{
-		ArrayList<ShellThread> copy = new ArrayList<ShellThread>();
-		copy.addAll(mChildren);
-		return copy;
+		// mChildren is only set never chaqnged or cleared
+		
+		// Memory Barrier
+		if( mChildren == null && create ) {
+			synchronized (this) {
+				if( mChildren == null )
+					mChildren =  Collections.synchronizedList(new ArrayList<ShellThread>());
+			}
+		}
+		
+		return mChildren;
 	}
 	
 	/* 
 	 * Waits until there are "at most n" running children of this shell
 	 */
-	public synchronized void waitAtMostChildren(int n)
+	public  void waitAtMostChildren(int n)
 	{
-		while( mChildren.size() > n ){
+		while( childrenSize() > n ){
 			try {
-				wait();
+				if( mChildren != null )
+					synchronized( mChildren ) {
+						mChildren.wait();
+					}
+				
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				mLogger.warn("interrupted while waiting for job to complete" , e );
 			}
 			
 		}
 		
 	}
 
+
+
+	private int childrenSize()
+    {
+		// memory barrier 
+	   if( mChildren == null )
+		   return 0;
+	   synchronized( mChildren ) {
+	      return mChildren.size();
+	   }
+    }
 
 
 	public long getLastThreadId() {
@@ -1828,6 +1899,21 @@ public class Shell {
 	    return mIFS ; 
     }
 
+
+	public ThreadGroup getThreadGroup()
+    {
+	    return mThreadGroup == null ? Thread.currentThread().getThreadGroup() : mThreadGroup ;
+    }
+
+
+	public ShellThread getFirstThreadChild() {
+		if( mChildren == null )
+			return null;
+		synchronized (mChildren) {
+	        return mChildren.isEmpty() ? null : mChildren.get(0);
+        }
+		
+	}
 
 
 

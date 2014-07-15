@@ -45,10 +45,18 @@ public class StringWord extends Word
 	{
 		return mString.isEmpty();
 	}
-
+	
+	
+	@Override
 	public String toString()
 	{
 		return mString;
+	}
+	
+	@Override
+	public String getSimpleName()
+	{
+		return isEmpty() ? "<null>" : mString;
 	}
 }
 

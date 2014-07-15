@@ -1426,8 +1426,84 @@ public class Util
 		
     }
 
+	/*
+	 * Come up with a simple name from a complex one like a command 
+	 */
+
+	public static String simpleName(String command,String def)
+    {
+
+		
+        // Tokenize into words including path chars
+		String words[] = command.split("[^\\w]+");
+		for( String w : words ) {
+			String name = basePathLikeName(w);
+			// Convert paths java paths but dont use the path functions - might not really be a path
+			
+			if( isBlank(name) || name.length() < 2 )
+				continue ;
+			// Trip off leading parts if looks like a path
+			if( name.length() > 10 )
+				name = name.substring(0,10) + "...";
+			return name ;
+		}
+		
+		return def;
+    
+    }
 	
 
+
+	/*
+	 * Special function that would return basename without extension if this is path-like
+	 * but otherwise still does something useful - dont use if you know the string is really a path
+	 */
+
+	private static String basePathLikeName(String path)
+    {
+		if( isBlank(path))
+			return null ;
+		
+		int startpos = 0;
+		// get rid of any windowy drive paths and leading /s
+		int rlen = rootPathLength(path); 
+		if( rlen > 0 )
+			startpos = rlen;
+		
+		int slashpos = path.lastIndexOf('/');
+		int slashpos2  =  (File.separatorChar != '/' ) ? 
+				path.lastIndexOf( File.separatorChar ) : -1 ;
+		slashpos = Math.max(slashpos, slashpos2);
+		if( slashpos > startpos )
+			startpos = slashpos + 1 ;
+		if( startpos >= rlen )
+			return null ;
+		int dotpos = path.indexOf('.', startpos);
+		if( dotpos < 0 )
+			dotpos = rlen;
+		return path.substring(startpos,dotpos);
+    }
+
+	// Return the number of chars that include the root part of a path 
+	// Include windows drive: 
+	// Assumes java path format
+	public static int rootPathLength(String path)
+	{
+		
+		int len = 0;
+		int plen = path.length();
+		if( Util.isWindows() && plen >= 2 ) {
+			char drive = path.charAt(0);
+			if( Character.isAlphabetic(drive) && path.charAt(1) == ':')
+				len = 2 ;
+			
+		}
+		
+		while( len < plen && path.charAt(len) == '/' )
+		  len++;
+
+		 return len ;
+	}
 }
 
 //

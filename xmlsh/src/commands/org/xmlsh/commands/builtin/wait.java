@@ -41,25 +41,34 @@ public class wait extends BuiltinCommand {
 				}
 
 
-				for(  ShellThread thread : mShell.getChildren()  )
-					if( thread.getId() == id ){
-						thread.join();
-						break;
-					}
-
-
+				
+				
+				List<ShellThread> children = mShell.getChildren(false);
+				if( children != null ) {
+					ShellThread toJoin = null ;
+					synchronized (children) {
+						for(  ShellThread thread : children   ) {
+							if( thread.getId() == id ){
+								toJoin = thread ;
+								break;
+							}
+						} 
+                    }
+					if( toJoin != null )
+						toJoin.join();
+				}
 			}
-
-
 
 		}
-		else 
-			for( ShellThread thread : mShell.getChildren() )
-			{
+		else {
+			ShellThread child;
 
-				thread.join();
+			// while there are children jobs 
+			while( ( child = mShell.getFirstThreadChild()) != null )
+				child.join();
 
-			}
+		
+		}
 		return 0;
 
 	}

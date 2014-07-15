@@ -24,6 +24,7 @@ public class PortCopier extends Thread
 	private		SerializeOpts mOpts;
 	public PortCopier( InputPort in , OutputStream out , SerializeOpts opts ,  boolean closeOut )
 	{
+		super( "portcopy");
 		mIn = in;
 		mOut = out;
 		mOpts = opts;

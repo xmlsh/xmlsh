@@ -30,13 +30,18 @@ public abstract class BinaryOpCommand extends Command {
 	public void print( PrintWriter out, boolean bExec ){
 		if( bExec )
 			return ;
-		
-		mLeft.print(out, bExec);
+		if( mLeft != null )
+	    	mLeft.print(out, bExec);
 		out.println(mOp);
-		mRight.print(out, bExec);
+		if( mRight != null )
+		   mRight.print(out, bExec);
 	}
 
 
+	public String getName() {
+		return mLeft != null ? mLeft.getName() : 
+			mRight != null ? mRight.getName() : mOp ;
+	}
 
 	
 }

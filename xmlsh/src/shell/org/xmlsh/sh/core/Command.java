@@ -7,6 +7,7 @@
 package org.xmlsh.sh.core;
 
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.util.Util;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -14,6 +15,8 @@ import java.io.StringWriter;
 public abstract class Command {
 	private		SourceLocation	mLocation = null;
 	private		boolean		mWait = true ;
+	private String mName = null ;
+
 	
 	public boolean isWait(){ return mWait ; }
 	public void	setWait(boolean w) { mWait = w ; }
@@ -33,6 +36,22 @@ public abstract class Command {
 		return toString(false);
 	}
 	
+
+	protected Command()
+	{
+	}
+
+	protected Command(String name)
+	{
+		setName(name) ;
+	}
+
+	// Default name if none provided
+	public String getName()
+    {
+    	return Util.isBlank(mName) ? "<unnamed>" : mName ;
+    }
+	
 	public String	toString(boolean bExec) {
 		StringWriter sw = new StringWriter();
 		PrintWriter w = new PrintWriter(sw);
@@ -41,6 +60,10 @@ public abstract class Command {
 		return sw.toString();
 		
 	}
+	public void setName(String name)
+    {
+	    mName = name;
+    }
 }
 
 

@@ -58,6 +58,7 @@ public class Module {
 
 	/*
 	 * Constructor for internal modules like xlmsh
+	 * These dont get their own thread group
 	 */
 	public Module(String prefix, String name, String pkg, String helpURL) {
 		mName = name;

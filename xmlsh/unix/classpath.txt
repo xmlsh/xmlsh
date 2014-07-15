@@ -10,8 +10,7 @@ jackson-core-2.4.1.jar
 jackson-databind-2.4.1.jar
 jing.jar
 jline-0.9.94.jar
-json-path-0.9.0.jar
-json-smart-1.2.jar
+jsonpath.jar
 log4j-1.2.17.jar
 resolver.jar
 saxon.jar
@@ -20,9 +19,9 @@ saxon9he.jar
 slf4j-api-1.7.5.jar
 slf4j-log4j12-1.7.7.jar
 stax-utils.jar
-stax2-api-3.0.1.jar
+stax2-api-3.1.1.jar
 tagsoup-1.2.jar
 trang.jar
-woodstox-core-asl-4.0.3.jar
+woodstox-core-asl-4.2.0.jar
 xercesImpl.jar
 xom-1.2.6.jar

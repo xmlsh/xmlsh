@@ -45,7 +45,7 @@ public class cat extends XCommand {
 				File inf = getFile(arg);
 				//InputPort ip = this.getInput(arg);
 				// InputStream in = ip.asInputStream(getSerializeOpts());
-				if( ! inf.exists() ){
+				if( inf == null || ! inf.exists() ){
 					this.printErr("File not found: " + arg.toString());
 					continue;
 				}

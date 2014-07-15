@@ -181,10 +181,11 @@ public class FileOutputPort extends OutputPort
 	 * @return
 	 * @throws InvalidArgumentException
 	 * @throws XMLStreamException
+	 * @throws IOException 
 	 * @see org.xmlsh.core.StreamOutputPort#asXMLEventWriter(org.xmlsh.sh.shell.SerializeOpts)
 	 */
 	public XMLEventWriter asXMLEventWriter(SerializeOpts opts) throws InvalidArgumentException,
-			XMLStreamException {
+			XMLStreamException, IOException {
 		return getStreamPort().asXMLEventWriter(opts);
 	}
 	/**

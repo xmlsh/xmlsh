@@ -34,6 +34,7 @@ public class SimpleCommand extends Command {
 	
 	public SimpleCommand(CommandPrefix prefix , Word command, CommandSuffix suffix )
 	{
+
 		mPrefix = prefix;
 		mCommand = command;
 		mSuffix = suffix ;
@@ -180,6 +181,9 @@ public class SimpleCommand extends Command {
 		return shell.getStatus();
 	}
 
+	public String getName() {
+		return mCommand == null ? "<command>" : mCommand.getSimpleName();
+	}
 
 	
 	

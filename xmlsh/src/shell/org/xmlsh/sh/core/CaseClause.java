@@ -16,7 +16,7 @@ public class CaseClause  extends CompoundCommand {
 	Word		mWord;
 	CaseList	mList;
 	public CaseClause(Word word, CaseList list) {
-		super();
+		super("case");
 		mWord = word;
 		mList = list;
 	}

@@ -10,6 +10,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import org.xmlsh.sh.core.Command;
+import org.xmlsh.util.Util;
 import org.xmlsh.xpath.ShellContext;
 
 import java.io.File;
@@ -19,20 +20,30 @@ public class ShellThread extends Thread {
 	@SuppressWarnings("unused")
 	private static Logger mLogger = LogManager.getLogger( ShellThread.class);
 
-	private Shell 		mShell ;
+	private volatile Shell 	mShell ;
 	private Command 	mCommand;
 	private	 File		mIniitalCD;
-	private		Shell	mParent = null;
 
-	public ShellThread(Shell shell , Shell parent ,  Command cmd ) {
+	public ShellThread(ThreadGroup threadGroup, Shell shell ,  String name ,Command cmd ) {
+		super(threadGroup == null ? shell.getThreadGroup() : threadGroup , simpleName(name,cmd ) );
 		mShell = shell;
-		mParent = parent ;
 		mCommand = cmd;
 		mIniitalCD = shell.getCurdir();
 
 	}
 
 	
+	private static String simpleName(String name, Command cmd)
+    {
+		if(  Util.isBlank(name))
+			name =cmd.getName();
+		if( Util.isBlank(name))
+			name = "<shell thread>";
+	    return name ;
+			
+    }
+
+
 	/* (non-Javadoc)
 	 * @see java.lang.Thread#run()
 	 */
@@ -51,8 +62,6 @@ public class ShellThread extends Thread {
 		} finally {
 			ShellContext.set(null);
 			mShell.close();
-			if( mParent != null )
-				mParent.removeJob( this );
 		}
 		
 	}
@@ -60,6 +69,12 @@ public class ShellThread extends Thread {
 	public Command getCommand(){
 		return mCommand ;
 	}
+
+
+	public Shell getShell()
+    {
+	    return mShell;
+    }
 
 	
 }

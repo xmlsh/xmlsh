@@ -12,6 +12,7 @@ import org.apache.log4j.Logger;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.SerializeOpts;
+import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.sh.ui.TextResultPane.OutputType;
 import org.xmlsh.util.Util;
 
@@ -62,7 +63,7 @@ public class XShell {
 
 	private JFrame mframe;
 	private TextAreaComponent mScriptTextArea;
-	private ShellThread mShell = null;
+	private XShellThread mShell = null;
 	private TextResultPane mResultArea ;
 	private File mCurdir;
 	private LogFrame mLogWindow = null;
@@ -92,12 +93,21 @@ public class XShell {
 		run(curdir, args ,new SerializeOpts() );
 
 	}
-
 	public static void run(final File curdir, final List<XValue> args , final SerializeOpts sopts   ) {
+		run(curdir, args, sopts,null);
+	}
+	public static void run(final File curdir, final List<XValue> args , final SerializeOpts sopts ,  Shell parentShell  ) {
 		
 	
-		 
-		 try {
+		
+		final ThreadGroup threadGroup = 
+				parentShell == null ? new ThreadGroup("xmlshui") : new ThreadGroup( parentShell.getThreadGroup() ,"xmlshui");
+		
+		
+		// TODO: Propogate variables and environment ?
+		
+		
+		try {
 	            // Set System L&F
 	        UIManager.setLookAndFeel(
 	            UIManager.getSystemLookAndFeelClassName());
@@ -110,7 +120,8 @@ public class XShell {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					XShell window = new XShell(curdir, args , sopts );
+
+					XShell window = new XShell(threadGroup ,curdir, args , sopts );
 					window.mframe.setVisible(true);
 					window.mScriptTextArea.requestFocusInWindow();
 				} catch (Exception e) {
@@ -120,7 +131,7 @@ public class XShell {
 		});
 	}
 
-	public XShell(File curdir, List<XValue> args,SerializeOpts sopts) throws Exception {
+	public XShell(ThreadGroup threadGroup , File curdir, List<XValue> args,SerializeOpts sopts) throws Exception {
 		mCurdir = curdir;
 		Options opts = new Options( "c=command:,cf=command-file:,f=file:", SerializeOpts.getOptionDefs() );
 		opts.parse(args);
@@ -142,18 +153,19 @@ public class XShell {
 			}
 	
 		}
-		initialize(command,opts.getRemainingArgs());
+		initialize(threadGroup , command,opts.getRemainingArgs());
 	}
 
 
 	/**
 	 * Initialize the contents of the frame.
+	 * @param threadGroup 
 	 * @param list 
 	 * @param command 
 	 * 
 	 * @throws Exception
 	 */
-	private void initialize(String command, List<XValue> args) throws Exception {
+	private void initialize(ThreadGroup threadGroup, String command, List<XValue> args) throws Exception {
 
 		
 		
@@ -387,7 +399,8 @@ public class XShell {
 		toolBar.add(btnStop);
 		
 				
-				mShell = new ShellThread( null ,  mResultArea , mCommandInputField  ,  btnRun , btnStop , mSerializeOpts );
+
+		mShell = new XShellThread( threadGroup , null ,  mResultArea , mCommandInputField  ,  btnRun , btnStop , mSerializeOpts );
 		
 		Component horizontalStrut = Box.createHorizontalStrut(20);
 		toolBar.add(horizontalStrut);

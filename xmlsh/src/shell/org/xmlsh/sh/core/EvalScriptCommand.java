@@ -16,6 +16,7 @@ package org.xmlsh.sh.core;
 import org.xmlsh.core.ICommand;
 import org.xmlsh.core.ScriptCommand;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.util.Util;
 
 import java.io.PrintWriter;
 
@@ -23,15 +24,14 @@ public class EvalScriptCommand extends Command {
 	private String			mCommand;
 	
 	public	boolean		isSimple() { return true ; }
-
 	
 	public EvalScriptCommand( String command)
 	{
+		super( Util.simpleName( command, "<script>" ));
 		mCommand = command;
 		
 	}
-	
-	
+
 
 	/* (non-Javadoc)
 	 * @see org.xmlsh.sh.core.Command#print(java.io.PrintStream)

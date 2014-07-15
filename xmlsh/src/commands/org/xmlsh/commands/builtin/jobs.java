@@ -8,6 +8,7 @@ package org.xmlsh.commands.builtin;
 
 import org.xmlsh.core.BuiltinCommand;
 import org.xmlsh.core.XValue;
+import org.xmlsh.sh.core.StringList;
 import org.xmlsh.sh.shell.ShellThread;
 
 import java.util.List;
@@ -17,12 +18,22 @@ public class jobs extends BuiltinCommand {
 	
 	public int run(  List<XValue> args ) throws Exception {
 			
-			for( ShellThread thread : mShell.getChildren() )
-			{
-				mShell.printOut( "" + thread.getId() + " : " + getCommand(thread) );
-				
-			}
-			return 0;
+		
+		List<ShellThread> children = mShell.getChildren(false);
+		StringList list = new StringList();
+		if( children != null ) {
+			synchronized (children) {
+				// Dont block on IO while collecting infomration
+				for( ShellThread thread : children )
+				{ 
+					list.add("" + thread.getId() + " : " + getCommand(thread) );
+				}
+            }
+			for(String line : list )
+				mShell.printOut( line );
+		}
+		
+		return 0;
 				
 	}
 

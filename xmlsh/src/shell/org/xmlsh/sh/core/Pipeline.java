@@ -105,7 +105,7 @@ public class Pipeline extends Command {
 			sh.getEnv().setStdout(pipes[pi].getOutput());
 				
 			
-			ShellThread sht = new ShellThread( sh , null ,   c );
+			ShellThread sht = new ShellThread( shell.getThreadGroup() , sh , null ,   c );
 
 			sht.start();
 			threads.add(sht);

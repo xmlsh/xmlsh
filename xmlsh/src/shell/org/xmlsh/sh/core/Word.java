@@ -76,6 +76,9 @@ public abstract class Word {
 	public boolean isPreserve() {
 		return false ;
 	}
+
+
+	abstract String getSimpleName();
 }
 
 

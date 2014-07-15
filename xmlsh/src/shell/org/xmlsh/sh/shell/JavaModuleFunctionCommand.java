@@ -10,12 +10,13 @@ import java.io.PrintWriter;
 import java.lang.reflect.Method;
 import java.util.List;
 
-import com.sun.xml.internal.bind.v2.schemagen.Util;
+
 
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.core.Command;
 import org.xmlsh.util.JavaUtils;
+import org.xmlsh.util.Util;
 
 public class JavaModuleFunctionCommand extends Command
 {
@@ -28,6 +29,7 @@ public class JavaModuleFunctionCommand extends Command
 
 	public JavaModuleFunctionCommand(Module mod, String func, Class<?> cls , ClassLoader cl )
 	{
+		super(func);
 		mModule = mod ;
 		mFunc = func ;
 		mClass = cls ;
@@ -47,7 +49,7 @@ public class JavaModuleFunctionCommand extends Command
 		List<XValue> args = shell.getArgs();
 		XValue retVal = null ;
 		
-		if( Util.equal("new", mFunc)) {  // Constructor
+		if( Util.isEqual("new", mFunc)) {  // Constructor
 			retVal  = JavaUtils.newXValue(mClass, args);
 		}
 		else {

@@ -12,28 +12,17 @@ import org.xmlsh.sh.shell.Shell;
 import java.io.PrintWriter;
 
 public class FunctionDeclaration extends Command implements IFunction {
-	private String mName;
 	private Command mBody;
 	
 	public	boolean		isSimple() { return false ; }
 
 	public FunctionDeclaration( String name , Command body )
 	{
-		mName = name;
+		super(name);
 		mBody = body;
 	}
 	
 	
-	
-	/**
-	 * @return the name
-	 */
-	public String getName() {
-		return mName;
-	}
-
-
-
 	/**
 	 * @return the body
 	 */
@@ -50,7 +39,7 @@ public class FunctionDeclaration extends Command implements IFunction {
 	 */
 	@Override
 	public void print(PrintWriter out, boolean bExec) {
-		out.println( mName + " ()");
+		out.println( getName() + " ()");
 		if( ! bExec )
 			mBody.print( out , bExec);
 		

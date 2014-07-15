@@ -54,8 +54,6 @@ public class WhileClause extends CompoundCommand {
 		}
 		
 		return 0;
-		
-		
 	}
 	
 }

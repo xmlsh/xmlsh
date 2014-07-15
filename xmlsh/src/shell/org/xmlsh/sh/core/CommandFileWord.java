@@ -126,6 +126,13 @@ public class CommandFileWord extends Word {
 	{
 		return mType + mFile + ")";
 	}
+	
+	@Override
+	String getSimpleName()
+	{
+		return mType + Util.simpleName( mFile , ""  ) + ")";
+	}
+	 
 }
 
 

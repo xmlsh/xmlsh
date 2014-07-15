@@ -187,7 +187,7 @@ public class XdmStreamOutputPort extends OutputPort {
 
 	@Override
 	public XMLEventWriter asXMLEventWriter(SerializeOpts opts) throws InvalidArgumentException,
-			 SaxonApiException, XMLStreamException {
+			 SaxonApiException, XMLStreamException, IOException {
 		
                 
 		// If forcing text output then serialize to stream 
@@ -195,17 +195,16 @@ public class XdmStreamOutputPort extends OutputPort {
 	
 			
 			XMLOutputFactory fact = XMLOutputFactory.newInstance();
-			
-			
+			OutputStream os = asOutputStream(opts);
+			if(opts.isOmit_xml_declaration() )
+				os = new OmittingOutputStream(os);
+
 			// XMLOutputFactory fact = new OutputFactory();
-			XMLEventWriter writer =  fact.createXMLEventWriter(asOutputStream(opts), opts.getOutputXmlEncoding() );
+			XMLEventWriter writer =  fact.createXMLEventWriter(os , opts.getOutputXmlEncoding() );
 			
-				if( opts.isIndent() )
-					writer = new IndentingXMLEventWriter(writer);
-			
-				if( opts.isOmit_xml_declaration() )
-					writer = new OmittingXMLEventWriter( writer );
-			
+			if( opts.isIndent()|| opts.isOmit_xml_declaration() )
+				writer = new OmittingIndentingXMLEventWriter(writer , os , opts.isIndent(), opts.isOmit_xml_declaration());
+		
 			return writer ;
 				
 		} else {
