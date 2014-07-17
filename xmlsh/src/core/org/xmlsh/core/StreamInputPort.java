@@ -12,7 +12,7 @@ import net.sf.saxon.s9api.XdmNode;
 import org.xml.sax.InputSource;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.util.JsonUtils;
+import org.xmlsh.util.JSONUtils;
 import org.xmlsh.util.SynchronizedInputStream;
 import org.xmlsh.util.Util;
 
@@ -151,7 +151,7 @@ public class StreamInputPort extends InputPort {
 
 	@Override
 	public JsonNode asJson(SerializeOpts serializeOpts) throws IOException, CoreException {
-		return JsonUtils.toJsonNode( asInputStream(serializeOpts));
+		return JSONUtils.readJsonNode( asInputStream(serializeOpts));
 	}
 
 

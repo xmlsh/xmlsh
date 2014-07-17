@@ -1,0 +1,57 @@
+<object xmlns="http://www.ibm.com/xmlns/prod/2009/jsonx">
+   <string name="apiVersion">2.0</string>
+   <object name="data">
+      <string name="updated">2010-01-07T19:58:42.949Z</string>
+      <number name="totalItems">800</number>
+      <number name="startIndex">1</number>
+      <number name="itemsPerPage">1</number>
+      <array name="items">
+         <object>
+            <string name="id">hYB0mn5zh2c</string>
+            <string name="uploaded">2007-06-05T22:07:03.000Z</string>
+            <string name="updated">2010-01-07T13:26:50.000Z</string>
+            <string name="uploader">GoogleDeveloperDay</string>
+            <string name="category">News</string>
+            <string name="title">Google Developers Day US - Maps API Introduction</string>
+            <string name="description">Google Maps API Introduction ...</string>
+            <array name="tags">
+               <string>GDD07</string>
+               <string>GDD07US</string>
+               <string>Maps</string>
+            </array>
+            <object name="thumbnail">
+               <string name="default">http://i.ytimg.com/vi/hYB0mn5zh2c/default.jpg</string>
+               <string name="hqDefault">http://i.ytimg.com/vi/hYB0mn5zh2c/hqdefault.jpg</string>
+            </object>
+            <object name="player">
+               <string name="default">http://www.youtube.com/watch?vu003dhYB0mn5zh2c</string>
+            </object>
+            <object name="content">
+               <string name="1">rtsp://v5.cache3.c.youtube.com/CiILENy.../0/0/0/video.3gp</string>
+               <string name="5">http://www.youtube.com/v/hYB0mn5zh2c?f...</string>
+               <string name="6">rtsp://v1.cache1.c.youtube.com/CiILENy.../0/0/0/video.3gp</string>
+            </object>
+            <number name="duration">2840</number>
+            <string name="aspectRatio">widescreen</string>
+            <number name="rating">4.63</number>
+            <number name="ratingCount">68</number>
+            <number name="viewCount">220101</number>
+            <number name="favoriteCount">201</number>
+            <number name="commentCount">22</number>
+            <object name="status">
+               <string name="value">restricted</string>
+               <string name="reason">limitedSyndication</string>
+            </object>
+            <object name="accessControl">
+               <string name="syndicate">allowed</string>
+               <string name="commentVote">allowed</string>
+               <string name="rate">allowed</string>
+               <string name="list">allowed</string>
+               <string name="comment">allowed</string>
+               <string name="embed">allowed</string>
+               <string name="videoRespond">moderated</string>
+            </object>
+         </object>
+      </array>
+   </object>
+</object>

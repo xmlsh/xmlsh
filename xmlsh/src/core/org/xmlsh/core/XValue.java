@@ -38,7 +38,7 @@ import org.apache.log4j.Logger;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.JavaUtils;
-import org.xmlsh.util.JsonUtils;
+import org.xmlsh.util.JSONUtils;
 import org.xmlsh.util.S9Util;
 import org.xmlsh.util.StringPair;
 import org.xmlsh.util.Util;
@@ -205,7 +205,7 @@ public class XValue {
 		if( mValue != null ){
 			if( isJson() )
 				try {
-					return JsonUtils.jsonToString( (JsonNode) mValue );
+					return JSONUtils.jsonToString( (JsonNode) mValue );
 				} catch (JsonProcessingException e1) {
 					mLogger.warn("Exception serializing Json value");
 				}
@@ -371,7 +371,7 @@ public class XValue {
 	{
 		try {
 			if( isJson() ) {
-				JsonUtils.writeJsonNode(asJson(), out , opt );	
+				JSONUtils.writeJsonNode(asJson(), out , opt );	
 			}
 			else
 				if( isAtomic() || isObject() )
@@ -702,7 +702,7 @@ public class XValue {
 				return null ;
 
 			if( isJson() )
-				return JsonUtils.asJavaNative( asJson() );
+				return JSONUtils.asJavaNative( asJson() );
 
 			// Already a java type 
 			if( !( mValue instanceof XdmValue) )
@@ -791,7 +791,7 @@ public class XValue {
 		if( mValue == null || mValue instanceof JsonNode )
 			return (JsonNode) mValue ;
 
-		return JsonUtils.toJsonNode( toString() );
+		return JSONUtils.toJsonNode( toString() );
 	}
 
 	public boolean isString() {

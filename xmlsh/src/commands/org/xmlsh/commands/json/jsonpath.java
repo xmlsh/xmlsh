@@ -14,7 +14,7 @@ import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.SerializeOpts;
-import org.xmlsh.util.JsonUtils;
+import org.xmlsh.util.JSONUtils;
 import org.xmlsh.util.Util;
 
 import java.io.IOException;
@@ -91,7 +91,7 @@ public class jsonpath extends XCommand {
 	    OutputPort stdout = getStdout();
 	    PrintStream os = stdout.asPrintStream(getSerializeOpts());
 
-	    JsonUtils.writeJsonNode( result , os );
+	    JSONUtils.writeJsonNode( result , os );
 
 	    os.println( result );
 	    os.close();

@@ -12,7 +12,8 @@ import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.SerializeOpts;
-import org.xmlsh.util.JsonUtils;
+import org.xmlsh.util.JavaUtils;
+import org.xmlsh.util.JSONUtils;
 import org.xmlsh.util.Util;
 
 import java.io.InputStream;
@@ -31,12 +32,13 @@ public class jsonread extends BuiltinCommand {
 	public int run( List<XValue> args ) throws Exception {
 
 		
-		Options opts = new Options( "+jsonp,p=port:" ,  SerializeOpts.getOptionDefs());
+		Options opts = new Options( "+jsonp,p=port:,c=class:,cp=classpath:" ,  SerializeOpts.getOptionDefs());
 		opts.parse(args);
 		
 		String port = opts.getOptString("p", null);
 		boolean jsonp = opts.getOptFlag("jsonp",false);
-		
+		String clsName = opts.getOptString("class", null);
+		XValue classPath = opts.getOptValue("classpath");
 		args = opts.getRemainingArgs();
 		
 		if( args.size() != 1 )
@@ -51,28 +53,58 @@ public class jsonread extends BuiltinCommand {
 		InputPort stdin = mShell.getEnv().getStdin();
 		
 		InputStream is = null ;
-		JsonNode node = null ;
+		XValue value = null ;
+		Class<?> cls = null;
 		try {
 			is = stdin.asInputStream( inputOpts );
 			
 			if( jsonp ) {
 				String jsonpFunc = Util.skipToByte(is, '(');
 				if( jsonpFunc == null ) {
-					mShell.printErr("No JSONP prefix found");
+					printErr("No JSONP prefix found");
+					return 1;
+				}
+			}
+			if( clsName != null ) {
+				cls = JavaUtils.findClass(clsName, getClassLoader(classPath) );
+				if( cls == null ) {
+					printErr("Cannot locate class from name:" + clsName);
 					return 1;
 				}
 			}
 			
-			node = JsonUtils.toJsonNode(is);
-			mShell.getEnv().setVar(args.get(0).toString(), new XValue(node) ,false);
+			if( cls != null ) {
+				Object  obj = JSONUtils.readJsonValue( is , cls );
+			    if( obj == null ) {
+			    	printErr("Reading json value to class failed");
+			    	return 1;
+			    }
+			    	
+				value = new XValue(obj );
+				
+			} else {
+			    JsonNode node  = JSONUtils.readJsonNode(is);
+			    if( node == null ) {
+			    	printErr("Reading json value to json node failed");
+			    	return 1;
+			    }
+			    value = new XValue(node);
+			}
+			mShell.getEnv().setVar(args.get(0).toString(), value  ,false);
 
-		} finally {
+		} 
+		catch (Exception e) {
+			printErr("Exception read json value",e);
+			return 1;
+		}
+		
+		finally {
 			Util.safeClose(is);
 			Util.safeRelease(stdin);
 		}
 
 
-		return node == null ? 1 : 0 ;
+		return value == null ? 1 : 0 ;
 	}
 }
 

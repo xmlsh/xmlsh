@@ -15,13 +15,14 @@ import org.xmlsh.json.JSONSerializeOpts;
 import org.xmlsh.json.JXConverter;
 import org.xmlsh.json.JXONConverter;
 import org.xmlsh.sh.shell.SerializeOpts;
-import org.xmlsh.util.JsonUtils;
+import org.xmlsh.util.JSONUtils;
 import org.xmlsh.util.Util;
 
 import java.io.OutputStream;
 import java.util.List;
 
 import javax.xml.stream.XMLEventReader;
+import javax.xml.stream.XMLStreamReader;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 
@@ -58,38 +59,28 @@ public class xml2json extends XCommand
 		InputPort inp = args.isEmpty() ? getStdin() : getInput( args.get(0) );
 
 		setSerializeOpts(opts);
-		XMLEventReader reader = inp.asXMLEventReader(getSerializeOpts());
-		
+		XMLStreamReader reader = inp.asXMLStreamReader(getSerializeOpts());
+		JSONSerializeOpts jopts = new JSONSerializeOpts();
+		if( bIndent )
+			jopts.setPretyPrint(bIndent);
+
 		// Override the text encoding to UTF-8 - JSON is *always* USTF8
 		OutputStream os = stdout.asOutputStream(getSerializeOpts());
-		JsonGenerator jsonGenerator = null ;
-		
-		
-		
-
-		JSONSerializeOpts jopts = new JSONSerializeOpts();
-		jopts.setPretyPrint(bIndent); 
-		
-		
-		JXConverter converter = JXConverter.getConverter(format,jopts,getSerializeOpts());
+	
+		JXConverter converter = JXConverter.getConverter(format,jopts,getSerializeOpts(), args);
 
 		
 		
 		try {  
-
-			jsonGenerator = JsonUtils.createGenerator(os,jopts); // or Stream, Reader
 			
-			converter.convertToJson( reader , jsonGenerator );
+			converter.convertToJson( reader , os );
 			
 			
 			
 		} 
 		finally {
 		
-			if( jsonGenerator != null ) {
-				jsonGenerator.flush();
-				jsonGenerator.close();
-			}
+			Util.safeClose(os);
 			Util.safeClose(reader);
 			Util.safeRelease(inp);
 		}

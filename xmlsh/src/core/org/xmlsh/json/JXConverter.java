@@ -7,15 +7,25 @@
 package org.xmlsh.json;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.util.List;
 
+import org.xmlsh.core.InputPort;
 import org.xmlsh.core.InvalidArgumentException;
+import org.xmlsh.core.OutputPort;
+import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.SerializeOpts;
+import org.xmlsh.util.JSONUtils;
 import org.xmlsh.util.Util;
 
 import javax.xml.namespace.QName;
+import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLEventReader;
+import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.stream.events.Characters;
 import javax.xml.stream.events.EndElement;
@@ -36,23 +46,55 @@ public abstract class JXConverter
 
 	private JSONSerializeOpts mJsonSerializeOpts;
 	private SerializeOpts mSerializeOpts;
+	private List<XValue> mArgs;
+	
+
+	interface IJSONConverter
+	{
+	
+		public abstract boolean parse() throws ConverterException;
+	
+	}
+
+	interface IXMLConverter
+	{
+		
+		public abstract boolean parse() throws ConverterException;
+	
+	}
+
 
 	// Private class for cnverting FROM JSON 
-	abstract class JSONConverter {
+	abstract class JSONConverter implements IJSONConverter {
 		XMLEventReader mReader;
+		XMLStreamReader mStreamReader;
+
 		JsonGenerator  mGenerator;
 		
-
-		protected JSONConverter(XMLEventReader reader, JsonGenerator generator)
+		protected JSONConverter(XMLStreamReader reader, OutputStream os) throws ConverterException
         {
 	        super();
-	        mReader = reader;
-	        mGenerator = generator;
+	        mStreamReader = reader;
+	      
+	        try {
+	        	mGenerator = JSONUtils.createGenerator(os, mJsonSerializeOpts);
+	            mReader = XMLInputFactory.newInstance().createXMLEventReader(mStreamReader);
+            } catch (XMLStreamException e) {
+	            throw new ConverterException(e);
+	            
+            } catch (FactoryConfigurationError e) {
+	            throw new ConverterException(e);
+            } catch (IOException e) {
+	            throw new ConverterException(e);
+
+            }
         }
-
-
 		
-		protected boolean parse( ) throws ConverterException {
+		/* (non-Javadoc)
+		 * @see org.xmlsh.json.IJSONConverter#parse()
+		 */
+		@Override
+        public boolean parse( ) throws ConverterException {
 			try {
 				while( mReader.hasNext() ){
 					XMLEvent e = mReader.nextEvent();
@@ -98,7 +140,7 @@ public abstract class JXConverter
 
 
 
-		void readToEnd() throws ConverterException {
+		protected void readToEnd() throws ConverterException {
 			try {
 	            while( mReader.hasNext() && ! mReader.peek().isEndElement() )
 	            	mReader.nextEvent();
@@ -110,7 +152,7 @@ public abstract class JXConverter
             }
 		}
 		
-		public void readToEOF() throws ConverterException  {
+		protected void readToEOF() throws ConverterException  {
 			try {
 		        // Consume input or we can get a Piped Close
 		        while( mReader.hasNext() )
@@ -122,11 +164,11 @@ public abstract class JXConverter
 			
 		}
 		
-		abstract boolean startElement( StartElement start , QName name) throws ConverterException;
-		abstract boolean startDocument(XMLEvent e) throws ConverterException;;
-		abstract boolean endElement(EndElement asEndElement) throws ConverterException;;
-		abstract boolean endDocument(XMLEvent e) throws ConverterException;;
-		abstract boolean characters(XMLEvent e);
+		abstract protected boolean startElement( StartElement start , QName name) throws ConverterException;
+		abstract protected boolean startDocument(XMLEvent e) throws ConverterException;;
+		abstract protected boolean endElement(EndElement asEndElement) throws ConverterException;;
+		abstract protected boolean endDocument(XMLEvent e) throws ConverterException;;
+		abstract protected boolean characters(XMLEvent e);
 
 
 
@@ -149,22 +191,31 @@ public abstract class JXConverter
 
 	}
 	
-	abstract class XMLConverter {
+	abstract class XMLConverter implements IXMLConverter {
 		JsonParser mParser;
+		InputStream mInput;
 		XMLStreamWriter mWriter;
 		
 
-		protected XMLConverter(JsonParser jp, XMLStreamWriter sw )
+		protected XMLConverter(InputStream is, XMLStreamWriter sw ) throws ConverterException
         {
-	        mParser = jp;
+			mInput = is ;
+	        try {
+	            mParser = JSONUtils.getJsonFactory().createParser(is);
+            } catch (JsonParseException e) {
+	            throw new ConverterException(e);
+            } catch (IOException e) {
+	            throw new ConverterException(e);
+            }
 	        mWriter = sw;
         }
 
 
-		public void parse() throws ConverterException
+		public boolean parse() throws ConverterException
         {
 			JsonToken tok = nextToken();
 			writeValue(tok );
+			return true ;
         }
 
 
@@ -281,41 +332,36 @@ public abstract class JXConverter
 	}
 	
 	
-	abstract JSONConverter newJConverter(XMLEventReader reader, JsonGenerator generator);
-	abstract XMLConverter newXMLConverter(JsonParser jp, XMLStreamWriter sw );
+	abstract IJSONConverter newJConverter(XMLStreamReader reader, OutputStream os) throws ConverterException;
+	abstract IXMLConverter newXMLConverter(InputStream is, XMLStreamWriter sw ) throws ConverterException;
 
 
 	/*
 	 * Converter To and/or From JSON
 	 */
-	public JXConverter(JSONSerializeOpts jsonSerializeOpts, SerializeOpts serializeOpts )
+	public JXConverter(JSONSerializeOpts jsonSerializeOpts, SerializeOpts serializeOpts , List<XValue> args )
     {
 	    super();
 	    mJsonSerializeOpts = jsonSerializeOpts;
 	    mSerializeOpts = serializeOpts;
+	    mArgs = args ;
     }
 	
-	
-	public void convertToJson(XMLEventReader reader, JsonGenerator jsonGenerator) throws ConverterException {
+	public void convertToJson(XMLStreamReader reader, OutputStream os) throws ConverterException {
 		
 		
-		JSONConverter converter = newJConverter(reader,jsonGenerator);
+		IJSONConverter converter = newJConverter(reader,os);
 		converter.parse( );
-		converter.readToEOF();
-
 	
 	}
 	
 
 	
-
 	
-	
-	public void convertFromJson(JsonParser jp, XMLStreamWriter sw ) throws ConverterException {
+	public void convertFromJson(InputStream is, XMLStreamWriter sw ) throws ConverterException {
 		
-		XMLConverter converter = newXMLConverter(jp,sw);
+		IXMLConverter converter = newXMLConverter(is,sw);
 		converter.parse( );
-		converter.readToEOF();
 
 		
 	}
@@ -323,17 +369,25 @@ public abstract class JXConverter
 	void close() {
 
 	}
-	public static JXConverter getConverter(String format, JSONSerializeOpts jopts, SerializeOpts serializeOpts) throws InvalidArgumentException
+	
+	public static JXConverter getConverter(String format, JSONSerializeOpts jopts, SerializeOpts serializeOpts, List<XValue> args) throws InvalidArgumentException
 	{
 	    if( Util.isEqual(format,"jxon"))
-	    	return new JXONConverter( jopts , serializeOpts );
+	    	return new JXONConverter( jopts , serializeOpts, args );
 	    else
 	    if(  Util.isEqual(format,"jsonx")) 
-	    	return new JSONXConverter( jopts , serializeOpts );
+	    	return new JSONXConverter( jopts , serializeOpts, args );
+	    else
+	    if( Util.isEqual(format,"jackson"))
+	    	return new JacksonConverter( jopts , serializeOpts , args );
 	    else
 	    	throw new InvalidArgumentException("Unknown convert format: " + format );
 	    
 	}
+	protected List<XValue> getArgs()
+    {
+	    return mArgs;
+    }
 
 	
 

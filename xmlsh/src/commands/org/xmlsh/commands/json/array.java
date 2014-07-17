@@ -10,7 +10,7 @@ import org.xmlsh.core.BuiltinFunctionCommand;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.util.JsonUtils;
+import org.xmlsh.util.JSONUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,11 +31,11 @@ public class array extends BuiltinFunctionCommand {
 		ArrayList<Object> list = new ArrayList<Object>();
 		
 		
-		ObjectMapper mapper = JsonUtils.getJsonObjectMapper();
+		ObjectMapper mapper = JSONUtils.getJsonObjectMapper();
 		ArrayNode node = mapper.createArrayNode();
 		
 		for( XValue arg : args ){
-			node.add(JsonUtils.toJsonType(arg) );
+			node.add(JSONUtils.toJsonType(arg) );
 		}
 		
 

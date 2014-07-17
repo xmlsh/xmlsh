@@ -22,14 +22,21 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser.Feature;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectReader;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.BooleanNode;
@@ -39,8 +46,12 @@ import com.fasterxml.jackson.databind.node.NumericNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import com.fasterxml.jackson.databind.node.ValueNode;
+import com.fasterxml.jackson.dataformat.xml.JacksonXmlModule;
+import com.fasterxml.jackson.dataformat.xml.XmlFactory;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 
-public class JsonUtils {
+public class JSONUtils {
 
 	/*
 	 * Shared Object Mapper - uses default configuration so needs to be copied if custom configs are used
@@ -49,7 +60,24 @@ public class JsonUtils {
 
 	private static volatile  ObjectMapper _theObjectMapper = null ;
 	private static volatile  JsonFactory  _theJsonFactory = null ;
+	
+	private static volatile  XmlFactory  _theXmlFactory = null ;
+	private static volatile  JacksonXmlModule _theXmlModule = null;
+	private static volatile  XmlMapper _theXmlMapper = null;
 
+
+	
+	/* TEST CODE ... needs to go into AWS 
+	abstract class IgnoreVolumeTypeEnum
+	{
+      @JsonSetter public abstract void setVolumeType(String vt);
+      @JsonGetter public abstract String getVolumeType(String vt);
+
+      
+
+	}
+	
+	*/
 
 	// Get a copy of the object mapper for configuring
 	public static ObjectMapper newJsonObjectMapper() {
@@ -64,6 +92,8 @@ public class JsonUtils {
 		if( _theObjectMapper == null ) {
 
 			ObjectMapper mapper = new ObjectMapper();
+			mapper.registerModule( new JaxbAnnotationModule());
+
 			mapper.configure( SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS , true);
 			// mapper.configure(DeserializationFeature. x , on );
 			mapper.configure(Feature.ALLOW_SINGLE_QUOTES, true);
@@ -71,8 +101,12 @@ public class JsonUtils {
 			mapper.configure(Feature.ALLOW_COMMENTS,true);
 			mapper.configure(Feature.ALLOW_NON_NUMERIC_NUMBERS,true);
 			mapper.configure(Feature.ALLOW_NUMERIC_LEADING_ZEROS,true);
-
-
+			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+			
+			
+			/* Test code needs to go on AWS
+		 mapper.addMixInAnnotations(com.amazonaws.services.ec2.model.EbsBlockDevice.class, IgnoreVolumeTypeEnum.class);
+          */
 			
 
 			
@@ -87,11 +121,56 @@ public class JsonUtils {
 		return _theObjectMapper ; 
 
 	}
+	public static JacksonXmlModule getXmlModule()
+	{
+
+		// lets play and avoid syncronization
+		// on the off chance this is concurrent 2 mappers are created and one gets GC'd
+		if( _theXmlModule == null ) {
+			JacksonXmlModule module = new JacksonXmlModule();
+			if( _theXmlModule == null ) 
+				_theXmlModule = module ;
+		}
+		return _theXmlModule ;
+	}
+	
+	public static XmlFactory getXmlFactory()
+	{
+		// lets play and avoid syncronization
+		// on the off chance this is concurrent 2 mappers are created and one gets GC'd
+		if( _theXmlFactory == null ) {
+			XmlFactory factory = new XmlFactory();
+			if( _theXmlFactory == null ) 
+				_theXmlFactory = factory ;
+		}
+		return _theXmlFactory ;
+	}
+	
+	
+	
+	public static XmlMapper getXmlMapper() {
+		// lets play and avoid syncronization
+		// on the off chance this is concurrent 2 mappers are created and one gets GC'd
+		if( _theXmlMapper == null ) {
+			XmlMapper mapper = new XmlMapper(getXmlFactory(),getXmlModule());
+			mapper.registerModule( new JaxbAnnotationModule());
+			if( _theXmlMapper == null ) 
+				_theXmlMapper = mapper ;
+		}
+		return _theXmlMapper ;
+	}
+	
+	public static ObjectWriter getObjectWriter() {
+		return getJsonObjectMapper().writer();
+	}
+	
+	public static ObjectReader getObjectReader() {
+		return getJsonObjectMapper().reader();
+	}
 
 
 	public static JsonFactory getJsonFactory()
 	{
-
 		// lets play and avoid syncronization
 		// on the off chance this is concurrent 2 mappers are created and one gets GC'd
 		if( _theJsonFactory == null ) {
@@ -222,12 +301,26 @@ public class JsonUtils {
 		ObjectMapper mapper = getJsonObjectMapper();
 		return mapper.writeValueAsString(value);
 	}
-	public static JsonNode toJsonNode(InputStream is) throws JsonProcessingException, IOException
+	
+	/*
+	 * Read a json node from an input stream
+	 */
+	public static JsonNode readJsonNode(InputStream is) throws JsonProcessingException, IOException
 	{
 		ObjectMapper mapper = getJsonObjectMapper();
 		return mapper.readTree(is);
 	}
-
+	
+	
+	/*
+	 * Read an object from Json 
+	 */
+	public static <T> T   readJsonValue(InputStream is,Class<T> cls) throws JsonProcessingException, IOException
+	{
+		ObjectMapper mapper = getJsonObjectMapper();
+		return mapper.readValue(is, cls);
+	}
+	
 	public static void writeJsonNode(JsonNode result, PrintStream os) throws JsonGenerationException, JsonMappingException, IOException
 	{
 		ObjectMapper mapper = getJsonObjectMapper(); 

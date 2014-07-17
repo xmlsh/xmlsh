@@ -15,7 +15,8 @@ import org.apache.log4j.Logger;
 
 import org.xml.sax.InputSource;
 import org.xmlsh.sh.shell.SerializeOpts;
-import org.xmlsh.util.JsonUtils;
+import org.xmlsh.util.FileUtils;
+import org.xmlsh.util.JSONUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -42,12 +43,12 @@ public class FileInputPort extends InputPort {
 	
 	
 	
-	
-	
 	private FileInputPort( File file , String sysid ) throws IOException
 	{
 		mFile = file;
 		super.setSystemId(sysid);
+		if( FileUtils.isNullFile(file))
+			return ;
 		
 		if( ! (mFile.exists() && mFile.isFile() && mFile.canRead()) )
 			throw new FileNotFoundException("File does not exist or is not a file or not readable: " +  mFile.getAbsolutePath());
@@ -253,7 +254,7 @@ public class FileInputPort extends InputPort {
 
 	@Override
 	public JsonNode asJson(SerializeOpts serializeOpts) throws IOException, CoreException {
-		return JsonUtils.toJsonNode( asInputStream(serializeOpts));
+		return JSONUtils.readJsonNode( asInputStream(serializeOpts));
 		
 		
 	}

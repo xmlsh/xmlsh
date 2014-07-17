@@ -7,6 +7,9 @@
 	<property name="release" value="1_2_5"/>
 	<property name="version" value="1.2.5"/>
 	<property name="jar" value="xmlsh-1.2.jar"/>
+ 
+	 <echo>Java Version via Ant: ${ant.java.version}</echo> 
+	 <echo>Java Version System Prop: ${java.version}</echo> 
 
 
 	<property name="dist" location="_dist"/>

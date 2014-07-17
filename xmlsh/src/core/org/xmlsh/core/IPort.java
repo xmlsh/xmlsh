@@ -10,6 +10,8 @@ import net.sf.saxon.s9api.SaxonApiException;
 
 import org.apache.log4j.LogManager;
 
+import java.io.File;
+
 import org.xmlsh.util.IManagedObject;
 
 
@@ -47,6 +49,14 @@ public abstract class IPort implements IManagedObject {
 	}
 	
 	abstract void close() throws CoreException ;
+	
+	public	boolean	  isFile() { return false ; }
+	
+	public File		getFile() throws UnimplementedException
+	{
+		throw new UnimplementedException("IPort.getFile() is not implmented() in class: " + this.getClass().getName() );
+	}
+	
 
 }
 

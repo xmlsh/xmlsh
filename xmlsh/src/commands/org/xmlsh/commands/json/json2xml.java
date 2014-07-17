@@ -15,7 +15,7 @@ import org.xmlsh.core.XValue;
 import org.xmlsh.json.JSONSerializeOpts;
 import org.xmlsh.json.JXConverter;
 import org.xmlsh.sh.shell.SerializeOpts;
-import org.xmlsh.util.JsonUtils;
+import org.xmlsh.util.JSONUtils;
 import org.xmlsh.util.Util;
 
 import java.io.IOException;
@@ -67,13 +67,12 @@ public class json2xml extends XCommand
 		InputStream is = null;
 		
 		JSONSerializeOpts jopts = new JSONSerializeOpts();
-		JXConverter converter = JXConverter.getConverter(format,jopts,getSerializeOpts());
+		JXConverter converter = JXConverter.getConverter(format,jopts,getSerializeOpts(), args);
 		
 		try {
 				
 	
-			JsonFactory jsonFactory = new JsonFactory(); // or, for data binding,
-														 // org.codehaus.jackson.mapper.MappingJsonFactory
+		 
 			is = in.asInputStream(getSerializeOpts());
 			
 			if( jsonp ) {
@@ -84,11 +83,7 @@ public class json2xml extends XCommand
 				}
 			}
 			 
-			/* Note: no encoding argument is taken since it can always be
-			     * auto-detected as suggested by JSON RFC.
-			     */
-			JsonParser jp = jsonFactory.createParser(is); // or URL, Stream,
-
+		
 													   // Reader, String, byte[]
 			/*
 			 * Assume JSON file is wrapped by an Object
@@ -96,17 +91,16 @@ public class json2xml extends XCommand
 	
 			sw = stdout.asXMLStreamWriter(getSerializeOpts());
 		
-			
 
 			try {  
 				
-				converter.convertFromJson( jp , sw );
+				converter.convertFromJson( is , sw );
 				
 			} 
 			finally {
 			
-				if( jp != null ) {
-					jp.close();
+				if( is != null ) {
+					is.close();
 				}
 				Util.safeClose(sw);
 			}

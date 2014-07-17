@@ -10,7 +10,7 @@ import org.xmlsh.core.BuiltinFunctionCommand;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.util.JsonUtils;
+import org.xmlsh.util.JSONUtils;
 
 import java.util.List;
 
@@ -32,7 +32,7 @@ public class _boolean extends BuiltinFunctionCommand {
 		
 		
 		
-		return new XValue( JsonUtils.toJsonBoolean( arg ) );
+		return new XValue( JSONUtils.toJsonBoolean( arg ) );
 	}
 
 }

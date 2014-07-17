@@ -10,7 +10,7 @@ import org.xmlsh.core.BuiltinFunctionCommand;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.util.JsonUtils;
+import org.xmlsh.util.JSONUtils;
 
 import java.util.List;
 
@@ -28,7 +28,7 @@ public class object extends BuiltinFunctionCommand {
 	public XValue run(Shell shell, List<XValue> args) throws InvalidArgumentException  {
 		StringBuffer sb = new StringBuffer();
 
-		ObjectMapper mapper =  JsonUtils.getJsonObjectMapper();
+		ObjectMapper mapper =  JSONUtils.getJsonObjectMapper();
 		ObjectNode obj = mapper.createObjectNode();
 		
 		String name = null ;
@@ -38,7 +38,7 @@ public class object extends BuiltinFunctionCommand {
 			if( bOdd )
 				name = arg.toString();
 			else 
-				obj.set(name, JsonUtils.toJsonType(arg));
+				obj.set(name, JSONUtils.toJsonType(arg));
 			bOdd = ! bOdd ;
 			
 		}

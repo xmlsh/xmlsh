@@ -57,6 +57,7 @@ import java.util.regex.Pattern;
 
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Result;
@@ -909,6 +910,16 @@ public class Util
 			
 		}
 		
+	}public static void safeClose(XMLStreamReader reader) {
+		try {
+			if( reader != null )
+				reader.close();
+		} catch( Exception e )
+		{
+			mLogger.info("Exception closing output stream",e);
+			
+		}
+		
 	}
 	
 	
@@ -1494,7 +1505,8 @@ public class Util
 		int plen = path.length();
 		if( Util.isWindows() && plen >= 2 ) {
 			char drive = path.charAt(0);
-			if( Character.isAlphabetic(drive) && path.charAt(1) == ':')
+			// Character.isAlphabetic() is V7 only
+			if( Character.isLetter(drive) && path.charAt(1) == ':')
 				len = 2 ;
 			
 		}

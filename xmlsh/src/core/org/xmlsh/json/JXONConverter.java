@@ -18,6 +18,7 @@ import org.apache.log4j.Logger;
 
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
+import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.Util;
@@ -26,8 +27,11 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.text.NumberFormat;
+import java.util.List;
 
 import javanet.staxutils.OutputFactory;
 
@@ -37,6 +41,7 @@ import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLEventWriter;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.EndElement;
@@ -76,9 +81,9 @@ public class JXONConverter extends JXConverter
 
 		private int	mLevel	= 0;
 
-		protected JConverter(XMLEventReader reader, JsonGenerator generator)
+		protected JConverter(XMLStreamReader reader, OutputStream os) throws ConverterException
 		{
-			super(reader, generator);
+			super(reader, os);
 		}
 
 		@Override
@@ -341,6 +346,7 @@ public class JXONConverter extends JXConverter
 		}
 
 		@Override
+        protected
 		boolean startDocument(XMLEvent e) throws ConverterException
 		{
 			return true;
@@ -348,6 +354,7 @@ public class JXONConverter extends JXConverter
 		}
 
 		@Override
+        protected
 		boolean endElement(EndElement asEndElement) throws ConverterException
 		{
 
@@ -355,12 +362,14 @@ public class JXONConverter extends JXConverter
 		}
 
 		@Override
+        protected
 		boolean endDocument(XMLEvent e) throws ConverterException
 		{
 			return false;
 		}
 
 		@Override
+        protected
 		boolean characters(XMLEvent e)
 		{
 			// Ignore unexpected chars
@@ -372,9 +381,9 @@ public class JXONConverter extends JXConverter
 	class XConverter extends XMLConverter
 	{
 
-		protected XConverter(JsonParser jp, XMLStreamWriter sw)
+		protected XConverter(InputStream is, XMLStreamWriter sw) throws ConverterException
 		{
-			super(jp, sw);
+			super(is, sw);
 		}
 
 		// Write a value and
@@ -493,21 +502,21 @@ public class JXONConverter extends JXConverter
 
 	}
 
-	public JXONConverter(JSONSerializeOpts jsonSerializeOpts, SerializeOpts serializeOpts)
+	public JXONConverter(JSONSerializeOpts jsonSerializeOpts, SerializeOpts serializeOpts, List<XValue> mArgs)
 	{
-		super(jsonSerializeOpts, serializeOpts);
+		super(jsonSerializeOpts, serializeOpts, mArgs);
 	}
 
 	@Override
-	JSONConverter newJConverter(XMLEventReader reader, JsonGenerator generator)
+	JSONConverter newJConverter(XMLStreamReader reader, OutputStream  os) throws ConverterException
 	{
-		return new JConverter(reader, generator);
+		return new JConverter(reader, os);
 	}
 
 	@Override
-	XMLConverter newXMLConverter(JsonParser jp, XMLStreamWriter sw)
+	XMLConverter newXMLConverter(InputStream is, XMLStreamWriter sw) throws ConverterException
 	{
-		return new XConverter(jp, sw);
+		return new XConverter(is, sw);
 
 	}
 

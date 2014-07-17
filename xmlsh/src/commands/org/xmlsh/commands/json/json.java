@@ -10,7 +10,7 @@ import org.xmlsh.core.BuiltinFunctionCommand;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.util.JsonUtils;
+import org.xmlsh.util.JSONUtils;
 
 import java.util.List;
 
@@ -33,7 +33,7 @@ public class json extends BuiltinFunctionCommand {
 			sb.append( arg.toString());
 		}
 		
-		JsonNode model = JsonUtils.toJsonNode( sb.toString() );
+		JsonNode model = JSONUtils.toJsonNode( sb.toString() );
 		return new XValue( model );
 	}
 

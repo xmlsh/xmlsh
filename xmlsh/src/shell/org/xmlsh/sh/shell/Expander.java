@@ -692,7 +692,8 @@ class Expander {
 		if( Util.isWindows() && av.size() >= 2 ) {
 
 			char drive = av.charAt(0);
-			if( Character.isAlphabetic(drive) && av.charAt(1) == ':'){
+			// Character.isAlphabetic() is V7 only
+			if( Character.isLetter(drive) && av.charAt(1) == ':'){
 				
 				// If windows and matches  <dir>:blah blah
 				// make the root <dir>:/

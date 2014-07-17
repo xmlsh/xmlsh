@@ -10,7 +10,7 @@ import net.sf.saxon.trans.XPathException;
 import org.xmlsh.core.BuiltinFunctionCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.util.JsonUtils;
+import org.xmlsh.util.JSONUtils;
 
 import java.util.List;
 
@@ -24,7 +24,7 @@ public class _null extends BuiltinFunctionCommand {
 	@Override
 	public XValue run(Shell shell, List<XValue> args) throws XPathException {
 		
-		return new XValue( JsonUtils.jsonNull() );
+		return new XValue( JSONUtils.jsonNull() );
  	}
 
 }

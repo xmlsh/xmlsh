@@ -52,6 +52,13 @@ public class JavaModuleFunctionCommand extends Command
 		if( Util.isEqual("new", mFunc)) {  // Constructor
 			retVal  = JavaUtils.newXValue(mClass, args);
 		}
+		else
+		// return class as an object
+		if( Util.isEqual("class", mFunc)){
+
+			retVal = new XValue( mClass );
+			
+		}
 		else {
 		
 			Object thisObj = null;
@@ -83,7 +90,7 @@ public class JavaModuleFunctionCommand extends Command
 	public boolean isSimple()
 	{
 		// TODO Auto-generated method stub
-		return false;
+		return true;
 	}
 
 }

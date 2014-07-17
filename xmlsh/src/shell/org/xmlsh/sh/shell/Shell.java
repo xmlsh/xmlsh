@@ -41,6 +41,7 @@ import org.xmlsh.sh.core.SourceLocation;
 import org.xmlsh.sh.grammar.ParseException;
 import org.xmlsh.sh.grammar.ShellParser;
 import org.xmlsh.sh.grammar.ShellParserReader;
+import org.xmlsh.util.FileUtils;
 import org.xmlsh.util.NullInputStream;
 import org.xmlsh.util.NullOutputStream;
 import org.xmlsh.util.SessionEnvironment;
@@ -1091,18 +1092,17 @@ public class Shell {
 	
 	
 		File file=null;
-		try {
-			file = new File( dir , name).getCanonicalFile();
+			file = new File( dir , name);
+			
+			try {
+			   file = file.getCanonicalFile();
+			} catch( IOException e ) {
+				mLogger.info("Exception translating file to canonical file" , e);
+				// try to still use file
+			}
 			if(  mustExist && ! file.exists() )
 				return null;
 
-		} 
-		
-		catch( IOException e ){
-			// Ignore IOExceptions trying to get a file because it is typically
-			// an invalid name like foo:bar
-			return null;
-		}
 		
 		return file;
 	}
@@ -1547,7 +1547,7 @@ public class Shell {
 		 * Special case to support /dev/null file on Windows systems
 		 * Doesnt hurt on unix either to fake this out instead of using the OS
 		 */
-		if( file.equals("/dev/null") ){
+		if( FileUtils.isNullFilePath( file )) {
 			return new StreamInputPort(new NullInputStream(),file);
 		}
 		
@@ -1567,7 +1567,7 @@ public class Shell {
 
 	public OutputPort getOutputPort(String file, boolean append) throws FileNotFoundException, IOException
 	{
-		if( file.equals("/dev/null")){
+		if( FileUtils.isNullFilePath(file)) {
 			return new StreamOutputPort(new NullOutputStream());
 		}
 	
