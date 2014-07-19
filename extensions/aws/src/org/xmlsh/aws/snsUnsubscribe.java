@@ -13,11 +13,10 @@ import java.util.List;
 
 import javax.xml.stream.XMLStreamException;
 
-import com.amazonaws.services.sns.model.CreateTopicRequest;
-import com.amazonaws.services.sns.model.CreateTopicResult;
+import com.amazonaws.services.sns.model.UnsubscribeRequest;
 
 
-public class snsCreateTopic extends AWSSNSCommand {
+public class snsUnsubscribe extends AWSSNSCommand {
 
 	
 
@@ -31,14 +30,18 @@ public class snsCreateTopic extends AWSSNSCommand {
 	public int run(List<XValue> args) throws Exception {
 
 		
-		Options opts = getOptions();
+		Options opts = getOptions("t=topic:");
 		opts.parse(args);
 
 		args = opts.getRemainingArgs();
+		String topic = opts.getOptString("topic",null);
 		
-		if( args.size() != 1 ){
+		if( topic == null ) {
+			if(args.size() != 1 ){
 			usage();
 			return 1;
+			}
+			topic = args.get(0).toString();
 		}
 		
 
@@ -48,10 +51,6 @@ public class snsCreateTopic extends AWSSNSCommand {
 		
 		
 
-		String name = args.get(0).toString();
-		
-		
-		
 		try {
 			 getSNSClient(opts);
 		} catch (UnexpectedException e) {
@@ -62,7 +61,7 @@ public class snsCreateTopic extends AWSSNSCommand {
 		
 		int ret;
 		
-		ret = create(name );
+		ret = unsubscribe(topic );
 		
 		
 		return ret;
@@ -71,14 +70,14 @@ public class snsCreateTopic extends AWSSNSCommand {
 	}
 
 
-	private int create(String name ) throws IOException, XMLStreamException, SaxonApiException, CoreException {
+	private int unsubscribe(String arn ) throws IOException, XMLStreamException, SaxonApiException, CoreException {
 		
 
-		CreateTopicRequest request = new CreateTopicRequest();
-		request.setName(name);
-		traceCall("createTopic");
+		UnsubscribeRequest request = new UnsubscribeRequest(arn);
+		traceCall("unsubscribe");
 
-		CreateTopicResult result = mAmazon.createTopic(request);
+
+		mAmazon.unsubscribe(request);
 		
 		OutputPort stdout = this.getStdout();
 		mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
@@ -86,15 +85,6 @@ public class snsCreateTopic extends AWSSNSCommand {
 		
 		startDocument();
 		startElement(getName());
-		
-		
-			startElement("topic");
-			attribute("arn", result.getTopicArn());
-
-			endElement();
-			
-		
-		
 		endElement();
 		endDocument();
 		closeWriter();

@@ -1,14 +1,14 @@
 package org.xmlsh.aws;
 
-import java.io.IOException;
-import java.util.List;
-
 import org.xmlsh.aws.util.AWSS3Command;
 import org.xmlsh.aws.util.AWSUtil;
 import org.xmlsh.aws.util.S3Path;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
+
+import java.io.IOException;
+import java.util.List;
 
 import com.amazonaws.services.s3.model.CopyObjectResult;
 
@@ -103,7 +103,6 @@ public class s3cp extends AWSS3Command {
 		}	else
 			return 0;
 
-				
 	
 	}
 

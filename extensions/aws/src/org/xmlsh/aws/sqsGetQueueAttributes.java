@@ -1,11 +1,5 @@
 package org.xmlsh.aws;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Map.Entry;
-
-import javax.xml.stream.XMLStreamException;
-
 import net.sf.saxon.s9api.SaxonApiException;
 import org.xmlsh.aws.util.AWSSQSCommand;
 import org.xmlsh.core.CoreException;
@@ -14,6 +8,12 @@ import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.util.Util;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Map.Entry;
+
+import javax.xml.stream.XMLStreamException;
 
 import com.amazonaws.services.sqs.model.GetQueueAttributesRequest;
 import com.amazonaws.services.sqs.model.GetQueueAttributesResult;
@@ -38,7 +38,7 @@ public class sqsGetQueueAttributes extends AWSSQSCommand {
 		
 
 		
-		mSerializeOpts = this.getSerializeOpts(opts);
+		setSerializeOpts(this.getSerializeOpts(opts));
 		
 		String prefix = null ;
 		if( args.size() < 2 ){
@@ -73,7 +73,7 @@ public class sqsGetQueueAttributes extends AWSSQSCommand {
 		
 
 		OutputPort stdout = this.getStdout();
-		mWriter = stdout.asXMLStreamWriter(mSerializeOpts);
+		mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
 		
 		
 		startDocument();
@@ -99,7 +99,7 @@ public class sqsGetQueueAttributes extends AWSSQSCommand {
 		endElement();
 		endDocument();
 		closeWriter();
-		stdout.writeSequenceTerminator(mSerializeOpts);
+		stdout.writeSequenceTerminator(getSerializeOpts());
 		stdout.release();
 		
 

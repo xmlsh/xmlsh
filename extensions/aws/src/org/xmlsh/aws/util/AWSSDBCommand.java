@@ -6,16 +6,15 @@
 
 package org.xmlsh.aws.util;
 
-import java.util.List;
-
-import javax.xml.stream.XMLStreamException;
-
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.UnexpectedException;
 
+import java.util.List;
+
+import javax.xml.stream.XMLStreamException;
+
 import com.amazonaws.regions.RegionUtils;
-import com.amazonaws.regions.Regions;
 import com.amazonaws.services.simpledb.AmazonSimpleDB;
 import com.amazonaws.services.simpledb.AmazonSimpleDBClient;
 import com.amazonaws.services.simpledb.model.Attribute;

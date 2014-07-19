@@ -1,11 +1,5 @@
 package org.xmlsh.aws;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.xml.stream.XMLStreamException;
-
 import net.sf.saxon.s9api.SaxonApiException;
 import org.xmlsh.aws.util.AWSSDBCommand;
 import org.xmlsh.core.CoreException;
@@ -14,6 +8,12 @@ import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.util.Util;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.xml.stream.XMLStreamException;
 
 import com.amazonaws.services.simpledb.model.Attribute;
 import com.amazonaws.services.simpledb.model.DeleteAttributesRequest;
@@ -38,7 +38,7 @@ public class sdbDeleteAttributes	 extends  AWSSDBCommand {
 		
 
 		
-		mSerializeOpts = this.getSerializeOpts(opts);
+		setSerializeOpts(this.getSerializeOpts(opts));
 		
 		String updateName = opts.getOptString("update", null);
 		String updateExists = opts.getOptString("exists",null);
@@ -93,12 +93,12 @@ public class sdbDeleteAttributes	 extends  AWSSDBCommand {
 		
 	    if( ! bQuiet ){
 	        OutputPort stdout = this.getStdout();
-			mWriter = stdout.asXMLStreamWriter(mSerializeOpts);
+			mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
 	
 			emptyDocument();
 
 			closeWriter();
-			stdout.writeSequenceTerminator(mSerializeOpts);
+			stdout.writeSequenceTerminator(getSerializeOpts());
 			stdout.release();
 		
 	    }

@@ -1,22 +1,20 @@
 package org.xmlsh.aws;
 
+import net.sf.saxon.s9api.SaxonApiException;
+import org.xmlsh.aws.util.AWSEC2Command;
+import org.xmlsh.core.CoreException;
+import org.xmlsh.core.Options;
+import org.xmlsh.core.OutputPort;
+import org.xmlsh.core.SafeXMLStreamWriter;
+import org.xmlsh.core.UnexpectedException;
+import org.xmlsh.core.XValue;
+import org.xmlsh.util.Util;
+
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 import javax.xml.stream.XMLStreamException;
-
-import net.sf.saxon.s9api.SaxonApiException;
-import org.xmlsh.aws.util.AWSEC2Command;
-import org.xmlsh.aws.util.SafeXMLStreamWriter;
-import org.xmlsh.core.CoreException;
-import org.xmlsh.core.Options;
-import org.xmlsh.core.OutputPort;
-import org.xmlsh.core.UnexpectedException;
-import org.xmlsh.core.XValue;
-import org.xmlsh.util.StringPair;
-import org.xmlsh.util.Util;
 
 import com.amazonaws.services.ec2.model.BlockDeviceMapping;
 import com.amazonaws.services.ec2.model.DescribeImagesRequest;
@@ -48,7 +46,7 @@ public class ec2DescribeImages extends AWSEC2Command {
 		
 
 		
-		mSerializeOpts = this.getSerializeOpts(opts);
+		setSerializeOpts(this.getSerializeOpts(opts));
 		
 		try {
 			 getEC2Client(opts);
@@ -86,26 +84,11 @@ public class ec2DescribeImages extends AWSEC2Command {
 	}
 
 
-	private Collection<Filter> parseFilters(List<String> values) {
-		if( values == null || values.size() == 0 )
-		    return null;
-
-		ArrayList<Filter> filters = new ArrayList<Filter>(values.size());
-	
-		for( String v : values ){
-			StringPair nv = new StringPair( v , '=' );
-			Filter filter = new Filter().withName(nv.getLeft()).withValues( nv.getRight().split(","));
-			filters.add(filter);
-		}
-		return filters;
-	}
-
-
 	private int describe(List<XValue> args, Collection<Filter> filters) throws IOException, XMLStreamException, SaxonApiException, CoreException {
 		
 
 		OutputPort stdout = this.getStdout();
-		mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(mSerializeOpts));
+		mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(getSerializeOpts()));
 		
 		
 		startDocument();
@@ -139,7 +122,7 @@ public class ec2DescribeImages extends AWSEC2Command {
 		endDocument();
 		closeWriter();
 		
-		stdout.writeSequenceTerminator(mSerializeOpts);
+		stdout.writeSequenceTerminator(getSerializeOpts());
 		stdout.release();
 		
 		return 0;

@@ -1,26 +1,23 @@
 package org.xmlsh.aws;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
-import javax.xml.stream.XMLStreamException;
-
 import net.sf.saxon.s9api.SaxonApiException;
 import org.xmlsh.aws.util.AWSEC2Command;
-import org.xmlsh.aws.util.SafeXMLStreamWriter;
 import org.xmlsh.core.CoreException;
-import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
+import org.xmlsh.core.SafeXMLStreamWriter;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.util.StringPair;
 import org.xmlsh.util.Util;
 
+import java.io.IOException;
+import java.util.Collection;
+import java.util.List;
+
+import javax.xml.stream.XMLStreamException;
+
 import com.amazonaws.services.ec2.model.BlockDeviceMapping;
-import com.amazonaws.services.ec2.model.EbsBlockDevice;
 import com.amazonaws.services.ec2.model.Placement;
 import com.amazonaws.services.ec2.model.RunInstancesRequest;
 import com.amazonaws.services.ec2.model.RunInstancesResult;
@@ -55,9 +52,6 @@ public class ec2RunInstances extends AWSEC2Command {
 
 		args = opts.getRemainingArgs();
 		
-
-		
-		
 		
 		if( args.size() != 1 ){
 			usage(null);
@@ -65,7 +59,7 @@ public class ec2RunInstances extends AWSEC2Command {
 		}
 		
 
-		mSerializeOpts = this.getSerializeOpts(opts);
+		setSerializeOpts(this.getSerializeOpts(opts));
 		try {
 			 getEC2Client(opts);
 		} catch (UnexpectedException e) {
@@ -180,7 +174,7 @@ public class ec2RunInstances extends AWSEC2Command {
 
 	private void writeResult(RunInstancesResult result) throws IOException, XMLStreamException, SaxonApiException, CoreException {
 		OutputPort stdout = this.getStdout();
-		mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(mSerializeOpts));
+		mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(getSerializeOpts()));
 		
 		
 		startDocument();
@@ -193,7 +187,7 @@ public class ec2RunInstances extends AWSEC2Command {
 		endDocument();
 		closeWriter();
 		
-		stdout.writeSequenceTerminator(mSerializeOpts);
+		stdout.writeSequenceTerminator(getSerializeOpts());
 		stdout.release();
 		
 		
@@ -225,100 +219,10 @@ public class ec2RunInstances extends AWSEC2Command {
 		
 		XValue file = opts.getOptValue("f");
 		if( file != null )
-			return Util.readString(mShell.getFile(file), mSerializeOpts.getInputTextEncoding());
+			return Util.readString(mShell.getFile(file), getSerializeOpts().getInputTextEncoding());
 		return null;
 		
 		
-	}
-
-	
-	/*
-	 * Defines a block device mapping for the instance. This argument is passed in the form of <devicename>=<blockdevice>. 
-	 * The devicename is the device name of the physical device on the instance to map. 
-	 * The blockdevice can be one of the following values:
-
-		none - specifies that the existing mapping on the specified image for this device should be suppressed. For example: /dev/sdc=none
-		ephemeral[0..3] - indicates that an instance local storage device should be mapped to this device. Example: /dev/sdc=ephemeral0
-		[snapshot-id]:[size]:[delete-on-termination (true|false)] - this value can be used to map a device to an existing EBS-backed volume by specifying an existing volume name. You can specify a new EBS-backed volume by skipping the snapshot ID and passing in a volume size instead; for example: /dev/sdb=:20. You can also specify whether the Amazon EBS volume should be deleted on termination; this value is true by default.
-
-	 */
-	private Collection<BlockDeviceMapping> getBlockDeviceMappings(Options opts) throws InvalidArgumentException {
-
-		List<XValue>  blocks = opts.getOptValues("block-device-mapping");
-		if( blocks == null || blocks.size() == 0 )
-			return null ;
-		
-		
-		
-		
-		List<BlockDeviceMapping>	mappings = new ArrayList<BlockDeviceMapping>(blocks.size());
-		for( XValue b : blocks )
-			mappings.add( parseBlockDeviceMapping(b.toString()));
-		// TBD 
-		return mappings;
-		
-		
-		
-		
-	}
-
-	private BlockDeviceMapping parseBlockDeviceMapping(String string) {
-		BlockDeviceMapping map = new BlockDeviceMapping();
-		StringPair 	pair = new StringPair(string , '=');
-		
-		String 	device = pair.getLeft();
-		if( device.startsWith("/dev/"))
-			device = device.substring(5);
-
-		if(! pair.hasRight()){
-			map.setNoDevice(device);
-			return map;
-		}
-		
-		
-		
-		String r = pair.getRight();
-		if( r.equals("none")){
-			map.setNoDevice(device);
-			return map ;
-		}
-			
-		map.setDeviceName(device);
-		
-		// Ephemeral = virtual ?
-		if( ! r.contains(":")){
-			map.setVirtualName(r);
-			return map;
-		}
-		
-		// Parse out the EBS stuff
-		
-		String aebs[] = r.split(":");
-		
-		EbsBlockDevice ebs = new EbsBlockDevice().withDeleteOnTermination( Boolean.FALSE );
-		
-		// [snapshot-id]:[size]:[delete-on-termination (true|false)]
-		if( aebs.length >= 1 ){
-			String snapshotId = aebs[0];
-			if( ! Util.isBlank(snapshotId))
-				ebs.setSnapshotId(snapshotId);
-
-		}
-		
-		if( aebs.length >= 2 ){
-			if( !Util.isBlank(aebs[1]))
-				ebs.setVolumeSize( new Integer( aebs[1]));
-			
-		}
-		
-		if( aebs.length >=  3 ){
-			if( !Util.isBlank(aebs[2]))
-				ebs.setDeleteOnTermination( Boolean.valueOf( Util.parseBoolean(aebs[2])));
-			
-		}
-		map.setEbs(ebs);
-		return map;
-	
 	}
 		
 

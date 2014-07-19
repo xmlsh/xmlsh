@@ -14,18 +14,15 @@ import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.SafeXMLStreamWriter;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
-import org.xmlsh.sh.shell.SerializeOpts;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.List;
 
 import javax.xml.stream.XMLStreamException;
 
-import com.amazonaws.services.cloudformation.model.GetTemplateRequest;
-import com.amazonaws.services.cloudformation.model.GetTemplateResult;
+import com.amazonaws.services.cloudformation.model.DeleteStackRequest;
 
-public class cfnGetTemplate extends AWSCFNCommand {
+public class cfnDeleteStack extends AWSCFNCommand {
 
 	
 
@@ -34,14 +31,11 @@ public class cfnGetTemplate extends AWSCFNCommand {
 		
 		
 		
-		Options opts = getOptions("j=json,n=name:");
+		Options opts = getOptions("n=name:");
 		opts.parse(args);
- 
-		
+
 		args = opts.getRemainingArgs();
 		
-		boolean bJson = opts.hasOpt("json");
-
 		
 		setSerializeOpts(this.getSerializeOpts(opts));
 		
@@ -55,7 +49,7 @@ public class cfnGetTemplate extends AWSCFNCommand {
 		}
 		
 	
-        int ret = getTemplate(opts.getOptStringRequired("name"),bJson);
+        int ret = terminate(opts.getOptStringRequired("name") );
 
 		
 		
@@ -66,54 +60,37 @@ public class cfnGetTemplate extends AWSCFNCommand {
 
 
 
-	private int getTemplate(String stack, boolean bJson) throws IOException, XMLStreamException, SaxonApiException, CoreException {
+	private int terminate(String name) throws IOException, XMLStreamException, SaxonApiException, CoreException {
 		
-
 
 		OutputPort stdout = this.getStdout();
+		mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(getSerializeOpts()));
 		
 		
+		startDocument();
+		startElement(this.getName());
+		
+		
+		
+		DeleteStackRequest request = new DeleteStackRequest().withStackName(name);
+		
+		traceCall("deleteStack");
 
-		GetTemplateRequest request = new GetTemplateRequest().withStackName(stack);
+		mAmazon.deleteStack(request);
 		
-		traceCall("getTemplate");
-
-		GetTemplateResult result = mAmazon.getTemplate(request);
+		endElement();
+		endDocument();
+		closeWriter();
 		
-		
-		
-		if( bJson ){
-			SerializeOpts opts = getSerializeOpts().clone();
-			opts.setOutput_text_encoding("utf-8");
-			
-			PrintWriter w = stdout.asPrintWriter(opts);
-			w.print(result.getTemplateBody());
-			w.close();
-
-			
-		} else {
-			mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(getSerializeOpts()));
-			
-			
-			startDocument();
-			startElement(this.getName());
-			
-			
-			
-	
-	 
-			characters( result.getTemplateBody());
-			
-			endElement();
-			endDocument();
-			closeWriter();
-			
-			stdout.writeSequenceTerminator(getSerializeOpts());
-		}
+		stdout.writeSequenceTerminator(getSerializeOpts());
 		stdout.release();
+		
 		return 0;
 
 	}
+
+
+		
 	
 }
 

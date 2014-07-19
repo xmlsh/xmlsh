@@ -1,10 +1,5 @@
 package org.xmlsh.aws;
 
-import java.io.IOException;
-import java.util.List;
-
-import javax.xml.stream.XMLStreamException;
-
 import net.sf.saxon.s9api.SaxonApiException;
 import org.xmlsh.aws.util.AWSSDBCommand;
 import org.xmlsh.core.CoreException;
@@ -12,6 +7,11 @@ import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
+
+import java.io.IOException;
+import java.util.List;
+
+import javax.xml.stream.XMLStreamException;
 
 import com.amazonaws.services.simpledb.model.ListDomainsRequest;
 import com.amazonaws.services.simpledb.model.ListDomainsResult;
@@ -39,7 +39,7 @@ public class sdbListDomains	 extends  AWSSDBCommand {
 			return 1;
 		}
 		
-		mSerializeOpts = this.getSerializeOpts(opts);
+		setSerializeOpts(this.getSerializeOpts(opts));
 		
 		try {
 			 getSDBClient(opts);
@@ -65,7 +65,7 @@ public class sdbListDomains	 extends  AWSSDBCommand {
 	{
 
 		OutputPort stdout = this.getStdout();
-		mWriter = stdout.asXMLStreamWriter(mSerializeOpts);
+		mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
 		
 		startDocument();
 		startElement(getName());
@@ -94,7 +94,7 @@ public class sdbListDomains	 extends  AWSSDBCommand {
 		
 		
 		closeWriter();
-		stdout.writeSequenceTerminator(mSerializeOpts);
+		stdout.writeSequenceTerminator(getSerializeOpts());
 		stdout.release();
 		
 

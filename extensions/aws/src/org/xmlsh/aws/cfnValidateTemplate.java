@@ -6,20 +6,20 @@
 
 package org.xmlsh.aws;
 
+import net.sf.saxon.s9api.SaxonApiException;
+import org.xmlsh.aws.util.AWSCFNCommand;
+import org.xmlsh.core.CoreException;
+import org.xmlsh.core.Options;
+import org.xmlsh.core.OutputPort;
+import org.xmlsh.core.SafeXMLStreamWriter;
+import org.xmlsh.core.UnexpectedException;
+import org.xmlsh.core.XValue;
+import org.xmlsh.util.Util;
+
 import java.io.IOException;
 import java.util.List;
 
 import javax.xml.stream.XMLStreamException;
-
-import net.sf.saxon.s9api.SaxonApiException;
-import org.xmlsh.aws.util.AWSCFNCommand;
-import org.xmlsh.aws.util.SafeXMLStreamWriter;
-import org.xmlsh.core.CoreException;
-import org.xmlsh.core.Options;
-import org.xmlsh.core.OutputPort;
-import org.xmlsh.core.UnexpectedException;
-import org.xmlsh.core.XValue;
-import org.xmlsh.util.Util;
 
 import com.amazonaws.services.cloudformation.model.ValidateTemplateRequest;
 import com.amazonaws.services.cloudformation.model.ValidateTemplateResult;
@@ -40,7 +40,7 @@ public class cfnValidateTemplate extends AWSCFNCommand {
 		
 
 		
-		mSerializeOpts = this.getSerializeOpts(opts);
+		setSerializeOpts(this.getSerializeOpts(opts));
 		
 		
 		try {
@@ -70,7 +70,7 @@ public class cfnValidateTemplate extends AWSCFNCommand {
 		
 		ValidateTemplateRequest request = new ValidateTemplateRequest();
 		if( opts.hasOpt("template-file"))
-			request.setTemplateBody( Util.readString( mShell.getFile(opts.getOptValue("template-file")), mSerializeOpts.getInput_text_encoding()));
+			request.setTemplateBody( Util.readString( mShell.getFile(opts.getOptValue("template-file")), getSerializeOpts().getInput_text_encoding()));
 		else
 			request.setTemplateURL( opts.getOptStringRequired("template-url"));
 		
@@ -81,7 +81,7 @@ public class cfnValidateTemplate extends AWSCFNCommand {
 
 		
 		OutputPort stdout = this.getStdout();
-		mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(mSerializeOpts));
+		mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(getSerializeOpts()));
 		
 		
 		startDocument();
@@ -96,7 +96,7 @@ public class cfnValidateTemplate extends AWSCFNCommand {
 		endDocument();
 		closeWriter();
 		
-		stdout.writeSequenceTerminator(mSerializeOpts);
+		stdout.writeSequenceTerminator(getSerializeOpts());
 		stdout.release();
 		
 		return 0;

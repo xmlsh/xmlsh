@@ -1,14 +1,14 @@
 package org.xmlsh.aws;
 
-import java.io.IOException;
-import java.util.List;
-
 import org.xmlsh.aws.util.AWSS3Command;
 import org.xmlsh.aws.util.S3Path;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.util.Util;
+
+import java.io.IOException;
+import java.util.List;
 
 
 public class s3SetObjectAcl extends AWSS3Command {
@@ -30,7 +30,7 @@ public class s3SetObjectAcl extends AWSS3Command {
 		
 		args = opts.getRemainingArgs();
 		
-		mSerializeOpts = this.getSerializeOpts(opts);
+		setSerializeOpts(this.getSerializeOpts(opts));
 		
 		try {
 			 getS3Client(opts);

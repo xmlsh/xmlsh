@@ -1,10 +1,5 @@
 package org.xmlsh.aws;
 
-import java.io.IOException;
-import java.util.List;
-
-import javax.xml.stream.XMLStreamException;
-
 import net.sf.saxon.s9api.SaxonApiException;
 import org.xmlsh.aws.util.AWSGlacierCommand;
 import org.xmlsh.core.CoreException;
@@ -13,6 +8,11 @@ import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.util.Util;
+
+import java.io.IOException;
+import java.util.List;
+
+import javax.xml.stream.XMLStreamException;
 
 import com.amazonaws.services.elasticloadbalancing.model.InstanceState;
 import com.amazonaws.services.glacier.model.DescribeVaultOutput;
@@ -40,7 +40,7 @@ public class glacierListVaults	 extends  AWSGlacierCommand {
 		
 
 		
-		mSerializeOpts = this.getSerializeOpts(opts);
+		setSerializeOpts(this.getSerializeOpts(opts));
 		
 		
 		try {
@@ -67,7 +67,7 @@ public class glacierListVaults	 extends  AWSGlacierCommand {
 	{
 
 		OutputPort stdout = this.getStdout();
-		mWriter = stdout.asXMLStreamWriter(mSerializeOpts);
+		mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
 		
 		 
 		ListVaultsRequest request = new ListVaultsRequest();
@@ -105,7 +105,7 @@ public class glacierListVaults	 extends  AWSGlacierCommand {
 		
 		
 		closeWriter();
-		stdout.writeSequenceTerminator(mSerializeOpts);
+		stdout.writeSequenceTerminator(getSerializeOpts());
 		stdout.release();
 		
 

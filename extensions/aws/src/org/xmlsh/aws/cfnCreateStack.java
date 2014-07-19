@@ -6,6 +6,17 @@
 
 package org.xmlsh.aws;
 
+import net.sf.saxon.s9api.SaxonApiException;
+import org.xmlsh.aws.util.AWSCFNCommand;
+import org.xmlsh.core.CoreException;
+import org.xmlsh.core.Options;
+import org.xmlsh.core.OutputPort;
+import org.xmlsh.core.SafeXMLStreamWriter;
+import org.xmlsh.core.UnexpectedException;
+import org.xmlsh.core.XValue;
+import org.xmlsh.util.StringPair;
+import org.xmlsh.util.Util;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -13,19 +24,9 @@ import java.util.List;
 
 import javax.xml.stream.XMLStreamException;
 
-import net.sf.saxon.s9api.SaxonApiException;
-import org.xmlsh.aws.util.AWSCFNCommand;
-import org.xmlsh.aws.util.SafeXMLStreamWriter;
-import org.xmlsh.core.CoreException;
-import org.xmlsh.core.Options;
-import org.xmlsh.core.OutputPort;
-import org.xmlsh.core.UnexpectedException;
-import org.xmlsh.core.XValue;
-import org.xmlsh.util.StringPair;
-import org.xmlsh.util.Util;
-
 import com.amazonaws.services.cloudformation.model.CreateStackRequest;
 import com.amazonaws.services.cloudformation.model.CreateStackResult;
+import com.amazonaws.services.cloudformation.model.OnFailure;
 import com.amazonaws.services.cloudformation.model.Parameter;
 import com.amazonaws.services.cloudformation.model.Tag;
 
@@ -38,14 +39,14 @@ public class cfnCreateStack extends AWSCFNCommand {
 		
 		
 		
-		Options opts = getOptions("capability:+,disable-rollback,notification-arn:+,name:,template-file=f:,template-url=url:,timeout:,tag:+");
+		Options opts = getOptions("capability:+,disable-rollback,fail=on-failure:,notification-arn:+,name:,template-file=f:,template-url=url:,timeout:,tag:+");
 		opts.parse(args);
 
 		args = opts.getRemainingArgs();
 		
 
 		
-		mSerializeOpts = this.getSerializeOpts(opts);
+		setSerializeOpts(this.getSerializeOpts(opts));
 		
 		
 		try {
@@ -72,7 +73,7 @@ public class cfnCreateStack extends AWSCFNCommand {
 		
 
 		OutputPort stdout = this.getStdout();
-		mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(mSerializeOpts));
+		mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(getSerializeOpts()));
 		
 		
 		startDocument();
@@ -85,7 +86,12 @@ public class cfnCreateStack extends AWSCFNCommand {
 		if( opts.hasOpt("capability") )
 			request.setCapabilities(Util.toStringList(opts.getOptValues("capability")));
 		
-		request.setDisableRollback(opts.getOptFlag("disable-rollback", false));
+		String onFail = opts.getOptString("on-failure", null);
+		if( onFail != null)
+			request.setOnFailure(OnFailure.fromValue(onFail));
+		else
+		   request.setDisableRollback(opts.getOptFlag("disable-rollback", false));
+		
 		
 		if( opts.hasOpt("notification-arn"))
 			request.setNotificationARNs(Util.toStringList(opts.getOptValues("notification-arn")));
@@ -93,7 +99,7 @@ public class cfnCreateStack extends AWSCFNCommand {
 		request.setStackName( opts.getOptStringRequired("name"));
 
 		if( opts.hasOpt("template-file"))
-			request.setTemplateBody( Util.readString( mShell.getFile(opts.getOptValue("template-file")), mSerializeOpts.getInput_text_encoding()));
+			request.setTemplateBody( Util.readString( mShell.getFile(opts.getOptValue("template-file")), getSerializeOpts().getInput_text_encoding()));
 		else
 			request.setTemplateURL( opts.getOptStringRequired("template-url"));
 		
@@ -108,7 +114,7 @@ public class cfnCreateStack extends AWSCFNCommand {
 
 		CreateStackResult result = mAmazon.createStack(request);
 		
-		writeStackResult(result);
+		writeStackResult(result,request.getStackName());
 		
 		
 		
@@ -117,7 +123,7 @@ public class cfnCreateStack extends AWSCFNCommand {
 		endDocument();
 		closeWriter();
 		
-		stdout.writeSequenceTerminator(mSerializeOpts);
+		stdout.writeSequenceTerminator(getSerializeOpts());
 		stdout.release();
 		
 		return 0;
@@ -162,9 +168,10 @@ public class cfnCreateStack extends AWSCFNCommand {
 
 
 
-	private void writeStackResult(CreateStackResult result) throws XMLStreamException {
+	private void writeStackResult(CreateStackResult result, String name ) throws XMLStreamException {
 		startElement("stack");
 		attribute("stack-id",result.getStackId());
+		attribute("stack-name",name);
 		endElement();
 		
 	}

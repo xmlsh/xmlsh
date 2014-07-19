@@ -1,20 +1,20 @@
 package org.xmlsh.aws;
 
+import net.sf.saxon.s9api.SaxonApiException;
+import org.xmlsh.aws.util.AWSEC2Command;
+import org.xmlsh.aws.util.AWSUtil;
+import org.xmlsh.core.InvalidArgumentException;
+import org.xmlsh.core.Options;
+import org.xmlsh.core.OutputPort;
+import org.xmlsh.core.SafeXMLStreamWriter;
+import org.xmlsh.core.UnexpectedException;
+import org.xmlsh.core.XValue;
+import org.xmlsh.util.Util;
+
 import java.io.IOException;
 import java.util.List;
 
 import javax.xml.stream.XMLStreamException;
-
-import net.sf.saxon.s9api.SaxonApiException;
-import org.xmlsh.aws.util.AWSEC2Command;
-import org.xmlsh.aws.util.AWSUtil;
-import org.xmlsh.aws.util.SafeXMLStreamWriter;
-import org.xmlsh.core.InvalidArgumentException;
-import org.xmlsh.core.Options;
-import org.xmlsh.core.OutputPort;
-import org.xmlsh.core.UnexpectedException;
-import org.xmlsh.core.XValue;
-import org.xmlsh.util.Util;
 
 import com.amazonaws.services.ec2.model.DisassociateAddressRequest;
 
@@ -47,7 +47,7 @@ public class ec2DisassociateAddress extends AWSEC2Command {
 		}
 		
 
-		mSerializeOpts = this.getSerializeOpts(opts);
+		setSerializeOpts(this.getSerializeOpts(opts));
 		try {
 			 getEC2Client(opts);
 		} catch (UnexpectedException e) {
@@ -93,7 +93,7 @@ public class ec2DisassociateAddress extends AWSEC2Command {
 	{
 		
 		OutputPort stdout = this.getStdout();
-		mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(mSerializeOpts));
+		mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(getSerializeOpts()));
 		
 		
 		startDocument();

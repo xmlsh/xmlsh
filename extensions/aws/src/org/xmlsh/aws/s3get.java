@@ -1,13 +1,5 @@
 package org.xmlsh.aws;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-
 import org.xmlsh.aws.util.AWSS3Command;
 import org.xmlsh.aws.util.S3Path;
 import org.xmlsh.core.CoreException;
@@ -17,6 +9,13 @@ import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.util.Util;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.LinkedList;
+import java.util.List;
 
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
@@ -61,7 +60,7 @@ public class s3get extends AWSS3Command {
 		bRecurse = opts.hasOpt("recurse");
 		bVerbose = opts.hasOpt("verbose");
 		
-		mSerializeOpts = this.getSerializeOpts(opts);
+		setSerializeOpts(this.getSerializeOpts(opts));
 		
 		try {
 			 getS3Client(opts);
@@ -235,14 +234,14 @@ public class s3get extends AWSS3Command {
 			    meta = obj.getObjectMetadata() ;
 				
 				InputStream is = obj.getObjectContent();
-				OutputStream os = dest.asOutputStream(mSerializeOpts);
+				OutputStream os = dest.asOutputStream(getSerializeOpts());
 				Util.copyStream(is, os);
 				os.close();
 				is.close();
 			}
 			
 			if( metaPort != null ){
-				mWriter = metaPort.asXMLStreamWriter(mSerializeOpts);
+				mWriter = metaPort.asXMLStreamWriter(getSerializeOpts());
 			
 				writeMeta( meta );
 				mWriter.close();

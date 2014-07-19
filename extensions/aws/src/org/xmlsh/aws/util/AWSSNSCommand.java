@@ -11,7 +11,6 @@ import org.xmlsh.core.Options;
 import org.xmlsh.core.UnexpectedException;
 
 import com.amazonaws.regions.RegionUtils;
-import com.amazonaws.regions.Regions;
 import com.amazonaws.services.sns.AmazonSNS;
 import com.amazonaws.services.sns.AmazonSNSClient;
 

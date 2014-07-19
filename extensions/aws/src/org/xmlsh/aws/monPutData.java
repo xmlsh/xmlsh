@@ -1,12 +1,5 @@
 package org.xmlsh.aws;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
-import javax.xml.stream.XMLStreamException;
-
 import net.sf.saxon.s9api.SaxonApiException;
 import org.xmlsh.aws.util.AWSMonCommand;
 import org.xmlsh.core.CoreException;
@@ -15,6 +8,13 @@ import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.util.StringPair;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import javax.xml.stream.XMLStreamException;
 
 import com.amazonaws.services.cloudwatch.model.Dimension;
 import com.amazonaws.services.cloudwatch.model.MetricDatum;
@@ -41,7 +41,7 @@ public class monPutData	 extends  AWSMonCommand {
 		
 
 		
-		mSerializeOpts = this.getSerializeOpts(opts);
+		setSerializeOpts(this.getSerializeOpts(opts));
 		
 		
 		
@@ -75,7 +75,7 @@ public class monPutData	 extends  AWSMonCommand {
 	{
 
 		OutputPort stdout = this.getStdout();
-		mWriter = stdout.asXMLStreamWriter(mSerializeOpts);
+		mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
 		
 		
 		
@@ -107,7 +107,7 @@ public class monPutData	 extends  AWSMonCommand {
 		
 		
 		closeWriter();
-		stdout.writeSequenceTerminator(mSerializeOpts);
+		stdout.writeSequenceTerminator(getSerializeOpts());
 		stdout.release();
 		
 		

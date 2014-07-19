@@ -1,11 +1,5 @@
 package org.xmlsh.aws;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
-
-import javax.xml.stream.XMLStreamException;
-
 import net.sf.saxon.s9api.SaxonApiException;
 import org.xmlsh.aws.util.AWSSQSCommand;
 import org.xmlsh.core.CoreException;
@@ -15,6 +9,12 @@ import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.util.Util;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
+
+import javax.xml.stream.XMLStreamException;
 
 import com.amazonaws.services.sqs.model.SendMessageRequest;
 import com.amazonaws.services.sqs.model.SendMessageResult;
@@ -46,7 +46,7 @@ public class sqsSendMessage extends AWSSQSCommand {
 		
 
 		
-		mSerializeOpts = this.getSerializeOpts(opts);
+		setSerializeOpts(this.getSerializeOpts(opts));
 		
 		
 		String url = args.get(0).toString();
@@ -98,8 +98,8 @@ public class sqsSendMessage extends AWSSQSCommand {
 
 	private String readMessage(InputPort input) throws CoreException, IOException {
 		
-		InputStream is = input.asInputStream(mSerializeOpts);
-		String body = Util.readString(is, mSerializeOpts.getInputTextEncoding() );
+		InputStream is = input.asInputStream(getSerializeOpts());
+		String body = Util.readString(is, getSerializeOpts().getInputTextEncoding() );
 		is.close();
 		input.release();
 		return body ;
@@ -119,7 +119,7 @@ public class sqsSendMessage extends AWSSQSCommand {
 		SendMessageResult result = mAmazon.sendMessage(request);
 		
 		OutputPort stdout = this.getStdout();
-		mWriter = stdout.asXMLStreamWriter(mSerializeOpts);
+		mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
 		
 		
 		startDocument();
@@ -136,7 +136,7 @@ public class sqsSendMessage extends AWSSQSCommand {
 		endElement();
 		endDocument();
 		closeWriter();
-		stdout.writeSequenceTerminator(mSerializeOpts);
+		stdout.writeSequenceTerminator(getSerializeOpts());
 		stdout.release();
 		
 

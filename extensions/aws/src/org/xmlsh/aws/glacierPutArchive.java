@@ -1,11 +1,5 @@
 package org.xmlsh.aws;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
-
-import javax.xml.stream.XMLStreamException;
-
 import net.sf.saxon.s9api.SaxonApiException;
 import org.xmlsh.aws.util.AWSGlacierCommand;
 import org.xmlsh.core.CoreException;
@@ -13,6 +7,12 @@ import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+
+import javax.xml.stream.XMLStreamException;
 
 import com.amazonaws.services.elasticloadbalancing.model.InstanceState;
 import com.amazonaws.services.glacier.transfer.ArchiveTransferManager;
@@ -39,7 +39,7 @@ public class glacierPutArchive	 extends  AWSGlacierCommand {
 		
 
 		
-		mSerializeOpts = this.getSerializeOpts(opts);
+		setSerializeOpts(this.getSerializeOpts(opts));
 		
 		
         if( args.size() <3)
@@ -75,7 +75,7 @@ public class glacierPutArchive	 extends  AWSGlacierCommand {
 	{
 
 		OutputPort stdout = this.getStdout();
-		mWriter = stdout.asXMLStreamWriter(mSerializeOpts);
+		mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
 		
 		 ArchiveTransferManager tm = new ArchiveTransferManager(mAmazon, mCredentials);
 	    
@@ -113,7 +113,7 @@ public class glacierPutArchive	 extends  AWSGlacierCommand {
 		
 		
 		closeWriter();
-		stdout.writeSequenceTerminator(mSerializeOpts);
+		stdout.writeSequenceTerminator(getSerializeOpts());
 		stdout.release();
 		
 

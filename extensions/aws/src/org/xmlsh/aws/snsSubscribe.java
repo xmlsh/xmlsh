@@ -13,11 +13,11 @@ import java.util.List;
 
 import javax.xml.stream.XMLStreamException;
 
-import com.amazonaws.services.sns.model.CreateTopicRequest;
-import com.amazonaws.services.sns.model.CreateTopicResult;
+import com.amazonaws.services.sns.model.SubscribeRequest;
+import com.amazonaws.services.sns.model.SubscribeResult;
 
 
-public class snsCreateTopic extends AWSSNSCommand {
+public class snsSubscribe extends AWSSNSCommand {
 
 	
 
@@ -31,27 +31,15 @@ public class snsCreateTopic extends AWSSNSCommand {
 	public int run(List<XValue> args) throws Exception {
 
 		
-		Options opts = getOptions();
+		Options opts = getOptions("t=topic:,p=protocol:,e=endpoint-arn:");
 		opts.parse(args);
 
 		args = opts.getRemainingArgs();
 		
-		if( args.size() != 1 ){
-			usage();
-			return 1;
-		}
-		
 
 		
 		setSerializeOpts(this.getSerializeOpts(opts));
-		
-		
-		
 
-		String name = args.get(0).toString();
-		
-		
-		
 		try {
 			 getSNSClient(opts);
 		} catch (UnexpectedException e) {
@@ -62,7 +50,9 @@ public class snsCreateTopic extends AWSSNSCommand {
 		
 		int ret;
 		
-		ret = create(name );
+		ret = subscribe( opts.getOptStringRequired("topic"),
+				opts.getOptStringRequired("protocol"),
+				opts.getOptStringRequired("endpoint-arn"));
 		
 		
 		return ret;
@@ -71,14 +61,13 @@ public class snsCreateTopic extends AWSSNSCommand {
 	}
 
 
-	private int create(String name ) throws IOException, XMLStreamException, SaxonApiException, CoreException {
+	private int subscribe(String arn, String protocol, String endpoint ) throws IOException, XMLStreamException, SaxonApiException, CoreException {
 		
 
-		CreateTopicRequest request = new CreateTopicRequest();
-		request.setName(name);
-		traceCall("createTopic");
+		SubscribeRequest request = new SubscribeRequest(arn,protocol,endpoint);
+		traceCall("subscribe");
 
-		CreateTopicResult result = mAmazon.createTopic(request);
+		SubscribeResult result = mAmazon.subscribe(request);
 		
 		OutputPort stdout = this.getStdout();
 		mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
@@ -88,8 +77,8 @@ public class snsCreateTopic extends AWSSNSCommand {
 		startElement(getName());
 		
 		
-			startElement("topic");
-			attribute("arn", result.getTopicArn());
+			startElement("subscription");
+			attribute("arn",result.getSubscriptionArn());
 
 			endElement();
 			

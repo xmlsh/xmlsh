@@ -1,17 +1,5 @@
 package org.xmlsh.aws;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.xml.stream.XMLStreamException;
-
 import net.sf.saxon.s9api.SaxonApiException;
 import org.xmlsh.aws.util.AWSDDBCommand;
 import org.xmlsh.core.CoreException;
@@ -20,9 +8,14 @@ import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
-import org.xmlsh.util.Base64;
 import org.xmlsh.util.StringPair;
-import org.xmlsh.util.Util;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.xml.stream.XMLStreamException;
 
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.amazonaws.services.dynamodbv2.model.ExpectedAttributeValue;
@@ -41,12 +34,16 @@ public class ddbPutItem	 extends  AWSDDBCommand {
 	@Override
 	public int run(List<XValue> args) throws Exception {
 
-		Options opts = getOptions("expected:+,q=quiet");
+		Options opts = getOptions("expected:+,q=quiet,xml,csv,header,types:,delim:,quote:,colnames:");
 		opts.parse(args);
 
 		args = opts.getRemainingArgs();
 		
-		mSerializeOpts = this.getSerializeOpts(opts);
+		setSerializeOpts(this.getSerializeOpts(opts));
+		
+		String delim = opts.getOptString("delim", ",");
+		String quote = opts.getOptString("quote", "\"");
+		boolean bHeader = opts.hasOpt("header");
 		
 		try {
 			 getDDBClient(opts);
@@ -56,7 +53,7 @@ public class ddbPutItem	 extends  AWSDDBCommand {
 			
 		}
 		
-		if( args.size() < 3 ){
+		if( args.size() < 1 ){
 			usage(getName()+ ":" + "table item attributes ...");
 			
 		}
@@ -64,7 +61,9 @@ public class ddbPutItem	 extends  AWSDDBCommand {
 		
 
 		int ret = -1;
-		ret = put(table,args,opts, opts.hasOpt("q"));
+		Map<String, AttributeValue> itemMap = readItem(args, opts);
+		Map<String, ExpectedAttributeValue> expected = parseExpected(opts);
+		ret = put(table,itemMap, expected, opts.hasOpt("q"));
 
 		
 		
@@ -74,36 +73,43 @@ public class ddbPutItem	 extends  AWSDDBCommand {
 	}
 
 
-	private int put(String tableName, List<XValue > args,Options opts,boolean bQuiet) throws IOException, XMLStreamException, SaxonApiException, CoreException 
+	private int put(String tableName, Map<String,AttributeValue> itemMap,Map<String, ExpectedAttributeValue> expected, boolean bQuiet) throws IOException, XMLStreamException, SaxonApiException, CoreException 
 	{
-		
-		
-	    Map<String,AttributeValue> itemMap = getAttributes( args  );
+	
 		PutItemRequest putItemRequest = new PutItemRequest().withTableName(tableName).withItem(itemMap);
 		
-		Map<String, ExpectedAttributeValue> expected = parseExpected(opts);
 		if( expected != null )
 		    putItemRequest.setExpected(expected);
-		
 		
 		
 		traceCall("putItem");
 
 		PutItemResult result = mAmazon.putItem(putItemRequest);
 		
-		
 		if( ! bQuiet ){
 			OutputPort stdout = this.getStdout();
-			mWriter = stdout.asXMLStreamWriter(mSerializeOpts);
+			mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
 			emptyDocument();
 			closeWriter();
-			stdout.writeSequenceTerminator(mSerializeOpts);
+			stdout.writeSequenceTerminator(getSerializeOpts());
 			stdout.release();
 		}	
 		
 		
 		return 0;
 		
+	}
+
+
+	private Map<String, AttributeValue> readItem(List<XValue> args, Options opts)
+			throws IOException, UnexpectedException, XMLStreamException, CoreException {
+		Map<String, AttributeValue> itemMap;
+		if( opts.hasOpt("xml"))
+			itemMap = readAttributesXML( mShell.getEnv().getInput(args.size() == 0 ? null : args.get(0) ).asXMLEventReader(getSerializeOpts()));
+			
+		else	
+	       itemMap = getAttributes( args  );
+		return itemMap;
 	}
 
 
@@ -160,84 +166,7 @@ public class ddbPutItem	 extends  AWSDDBCommand {
 	}
 
 
-	private  Map<String,AttributeValue> getAttributes(List<XValue> args) throws IOException, UnexpectedException 
-	{
-		 Map<String,AttributeValue> attrs = new  HashMap<String,AttributeValue>();
-		while( !args.isEmpty()){
-
-			StringPair sp = new StringPair(args.remove(0).toString(),':');
-			String type = sp.getLeft();
-			AttributeValue av  = new AttributeValue();
-			
-			XValue xv = args.remove(0);
-
-			if( type == "N" )
-				av.setN( xv.toString() );
-			else
-			if( type == "NS")
-				av.setNS( parseSS( xv ) );
-			else
-			if( type == "S" )
-				av.setS( xv.toString());
-			else
-			if( type == "SS" )
-			    av.setSS( parseSS(xv));
-			else
-		    if( type == "B" )
-		    	av.setB( parseBinary(xv) );
-		    else
-		    if( type == "BS" ) 
-		    	av.setBS( parseBS( xv ));
-			
-
-		    else
-		    	throw new UnexpectedException("Unknown type: " + type );
-			
-			
-			String value = args.isEmpty() ? "" : args.remove(0).toString();
- 
-			attrs.put(sp.getRight(),av);
-			
-		
-		}
-		return attrs ;
-	}
-
-
-
-	private Collection<ByteBuffer> parseBS(XValue xv) throws IOException {
-
-		ArrayList<ByteBuffer> ret = new ArrayList<ByteBuffer>();
-		for( String s : xv.asStringList() )
-			ret.add( parseBinary( s ));
-		
-		return ret; 
-		
-		
-	}
-	private ByteBuffer parseBinary(XValue xv) throws IOException {
-		return parseBinary( xv.toString() );
-
-	}
-
-
-	private ByteBuffer parseBinary(String s) throws IOException {
-		
-		
-		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		
-		Base64.InputStream b64 = new Base64.InputStream(new ByteArrayInputStream(s.getBytes("UTF8")), Base64.DECODE );
-		Util.copyStream(b64, bos);
-		b64.close();
-		return ByteBuffer.wrap( bos.toByteArray());
-		
-	}
-
-
-	private Collection<String> parseSS(XValue xv) {
-		return xv.asStringList();
-	}
-
+	
 
 	public void usage() {
 		super.usage();

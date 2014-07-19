@@ -6,15 +6,14 @@
 
 package org.xmlsh.aws.util;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.xmlsh.core.Options;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.amazonaws.regions.RegionUtils;
-import com.amazonaws.regions.Regions;
 import com.amazonaws.services.elasticloadbalancing.AmazonElasticLoadBalancingClient;
 import com.amazonaws.services.elasticloadbalancing.model.Instance;
 

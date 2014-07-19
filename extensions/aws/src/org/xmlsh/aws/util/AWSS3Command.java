@@ -6,6 +6,15 @@
 
 package org.xmlsh.aws.util;
 
+import net.sf.saxon.s9api.SaxonApiException;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.bouncycastle.openssl.PEMReader;
+import org.xmlsh.core.CoreException;
+import org.xmlsh.core.InvalidArgumentException;
+import org.xmlsh.core.Options;
+import org.xmlsh.core.XValue;
+import org.xmlsh.util.Util;
+
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.KeyPair;
@@ -17,21 +26,13 @@ import java.util.concurrent.ThreadPoolExecutor;
 
 import javax.xml.stream.XMLStreamException;
 
-import net.sf.saxon.s9api.SaxonApiException;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.bouncycastle.openssl.PEMReader;
-import org.xmlsh.core.CoreException;
-import org.xmlsh.core.InvalidArgumentException;
-import org.xmlsh.core.Options;
-import org.xmlsh.core.XValue;
-import org.xmlsh.util.Util;
-
+import com.amazonaws.ClientConfiguration;
 import com.amazonaws.regions.RegionUtils;
-import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.AmazonS3EncryptionClient;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.CryptoConfiguration;
 import com.amazonaws.services.s3.model.EncryptionMaterials;
 import com.amazonaws.services.s3.model.ListMultipartUploadsRequest;
 import com.amazonaws.services.s3.model.ListObjectsRequest;
@@ -79,6 +80,7 @@ public abstract class AWSS3Command extends AWSCommand {
 	
 	protected void getS3Client(Options opts) throws UnsupportedEncodingException, IOException, CoreException {
 		
+		ClientConfiguration clientConfig = new ClientConfiguration();
 		if( opts.hasOpt("crypt")){
 			
 			synchronized( AWSS3Command.class  ){
@@ -94,14 +96,16 @@ public abstract class AWSS3Command extends AWSCommand {
 			mAmazon =  new AmazonS3EncryptionClient(
 					new AWSCommandCredentialsProviderChain( mShell, opts  ) ,
 					new StaticEncryptionMaterialsProvider(
-							new EncryptionMaterials( keyPair ))
+							new EncryptionMaterials( keyPair )),
+							clientConfig ,  new CryptoConfiguration() 
 			
 			);
 			
 			
 		} else
 			mAmazon =  new AmazonS3Client(
-					new AWSCommandCredentialsProviderChain( mShell, opts  ) 
+					new AWSCommandCredentialsProviderChain( mShell, opts  ) ,
+					clientConfig 
 			
 			);
 		
@@ -125,7 +129,7 @@ public abstract class AWSS3Command extends AWSCommand {
 
 	private Object readPEM(XValue sPrivate) throws IOException, UnsupportedEncodingException,
 			CoreException {
-		PEMReader reader = new PEMReader( getInput(sPrivate).asReader( this.mSerializeOpts ));
+		PEMReader reader = new PEMReader( getInput(sPrivate).asReader( this.getSerializeOpts() ));
 		Object obj = reader.readObject();
 		reader.close();
 		return obj;

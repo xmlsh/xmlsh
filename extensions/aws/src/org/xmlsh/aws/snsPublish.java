@@ -1,10 +1,5 @@
 package org.xmlsh.aws;
 
-import java.io.IOException;
-import java.util.List;
-
-import javax.xml.stream.XMLStreamException;
-
 import net.sf.saxon.s9api.SaxonApiException;
 import org.xmlsh.aws.util.AWSSNSCommand;
 import org.xmlsh.core.CoreException;
@@ -12,6 +7,11 @@ import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
+
+import java.io.IOException;
+import java.util.List;
+
+import javax.xml.stream.XMLStreamException;
 
 import com.amazonaws.services.sns.model.PublishRequest;
 import com.amazonaws.services.sns.model.PublishResult;
@@ -41,7 +41,7 @@ public class snsPublish extends AWSSNSCommand {
 		
 
 		
-		mSerializeOpts = this.getSerializeOpts(opts);
+		setSerializeOpts(this.getSerializeOpts(opts));
 		
 
 		
@@ -76,7 +76,7 @@ public class snsPublish extends AWSSNSCommand {
 		
 
 		OutputPort stdout = this.getStdout();
-		mWriter = stdout.asXMLStreamWriter(mSerializeOpts);
+		mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
 		
 		
 		startDocument();
@@ -89,7 +89,7 @@ public class snsPublish extends AWSSNSCommand {
 		endElement();
 		endDocument();
 		closeWriter();
-		stdout.writeSequenceTerminator(mSerializeOpts);
+		stdout.writeSequenceTerminator(getSerializeOpts());
 		stdout.release();
 		
 		

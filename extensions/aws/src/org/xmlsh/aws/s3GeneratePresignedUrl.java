@@ -1,13 +1,5 @@
 package org.xmlsh.aws;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.net.URL;
-import java.util.Date;
-import java.util.List;
-
-import javax.xml.stream.XMLStreamException;
-
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.trans.XPathException;
 import org.xmlsh.aws.util.AWSS3Command;
@@ -18,6 +10,14 @@ import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.util.Util;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.URL;
+import java.util.Date;
+import java.util.List;
+
+import javax.xml.stream.XMLStreamException;
 
 import com.amazonaws.HttpMethod;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
@@ -41,7 +41,7 @@ public class s3GeneratePresignedUrl extends AWSS3Command {
 
 		args = opts.getRemainingArgs();
 		
-		mSerializeOpts = this.getSerializeOpts(opts);
+		setSerializeOpts(this.getSerializeOpts(opts));
 		
 		try {
 			 getS3Client(opts);
@@ -58,7 +58,7 @@ public class s3GeneratePresignedUrl extends AWSS3Command {
 				return 1;
 		}
 		OutputPort outp = this.getStdout();
-		mOutput = outp.asOutputStream(mSerializeOpts);
+		mOutput = outp.asOutputStream(getSerializeOpts());
 		
 		
 
@@ -92,8 +92,8 @@ public class s3GeneratePresignedUrl extends AWSS3Command {
 
 		URL url = mAmazon.generatePresignedUrl(request);
 			
-		mOutput.write( url.toString().getBytes(mSerializeOpts.getOutputTextEncoding() ));
-		mOutput.write( Util.getNewline(mSerializeOpts));
+		mOutput.write( url.toString().getBytes(getSerializeOpts().getOutputTextEncoding() ));
+		mOutput.write( Util.getNewline(getSerializeOpts()));
 
 			
 		return 0;
@@ -111,7 +111,7 @@ public class s3GeneratePresignedUrl extends AWSS3Command {
 	}
 
 
-	private Date parseDate(XValue value) throws XPathException {
+	private Date parseDate(XValue value) throws InvalidArgumentException  {
 		
 		return (Date) value.convert( Date.class );
 		

@@ -1,24 +1,22 @@
 package org.xmlsh.aws;
 
-import java.io.IOException;
-import java.util.List;
-
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
-
 import net.sf.saxon.s9api.SaxonApiException;
 import org.xmlsh.aws.util.AWSS3Command;
 import org.xmlsh.aws.util.S3Path;
 import org.xmlsh.core.CoreException;
-import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.util.Util;
 
+import java.io.IOException;
+import java.util.List;
+
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
+
 import com.amazonaws.AmazonClientException;
-import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.s3.model.Bucket;
 import com.amazonaws.services.s3.model.ListMultipartUploadsRequest;
 import com.amazonaws.services.s3.model.ListObjectsRequest;
@@ -52,7 +50,7 @@ public class s3ls extends AWSS3Command {
 		
 
 		
-		mSerializeOpts = this.getSerializeOpts(opts);
+		setSerializeOpts(this.getSerializeOpts(opts));
 		
 		
 		
@@ -103,7 +101,7 @@ public class s3ls extends AWSS3Command {
 		
 
 		OutputPort stdout = this.getStdout();
-		mWriter = stdout.asXMLStreamWriter(mSerializeOpts);
+		mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
 		
 		
 		startDocument();
@@ -132,7 +130,7 @@ public class s3ls extends AWSS3Command {
 		endElement();
 		endDocument();
 		closeWriter();
-		stdout.writeSequenceTerminator(mSerializeOpts);
+		stdout.writeSequenceTerminator(getSerializeOpts());
 		stdout.release();
 		
 
@@ -157,7 +155,7 @@ public class s3ls extends AWSS3Command {
 
 		
 		OutputPort stdout = this.getStdout();
-		XMLStreamWriter writer = stdout.asXMLStreamWriter(mSerializeOpts);
+		XMLStreamWriter writer = stdout.asXMLStreamWriter(getSerializeOpts());
 		
 		
 		writePath(path, writer);
@@ -207,7 +205,7 @@ public class s3ls extends AWSS3Command {
 		writer.writeEndDocument();
 		writer.flush();
 		writer.close();
-		stdout.writeSequenceTerminator(mSerializeOpts);
+		stdout.writeSequenceTerminator(getSerializeOpts());
 		stdout.release();
 
 		return 0;
@@ -230,7 +228,7 @@ public class s3ls extends AWSS3Command {
 		
 		
 		OutputPort stdout = this.getStdout();
-		XMLStreamWriter writer = stdout.asXMLStreamWriter(mSerializeOpts);
+		XMLStreamWriter writer = stdout.asXMLStreamWriter(getSerializeOpts());
 		
 		
 		writePath(path, writer);
@@ -285,7 +283,7 @@ public class s3ls extends AWSS3Command {
 		writer.writeEndDocument();
 		writer.flush();
 		writer.close();
-		stdout.writeSequenceTerminator(mSerializeOpts);
+		stdout.writeSequenceTerminator(getSerializeOpts());
 		stdout.release();
 		return 0;
 	}

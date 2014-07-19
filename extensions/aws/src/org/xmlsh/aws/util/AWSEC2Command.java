@@ -6,6 +6,17 @@
 
 package org.xmlsh.aws.util;
 
+import net.sf.saxon.s9api.SaxonApiException;
+import org.xmlsh.core.CoreException;
+import org.xmlsh.core.InvalidArgumentException;
+import org.xmlsh.core.Options;
+import org.xmlsh.core.OutputPort;
+import org.xmlsh.core.SafeXMLStreamWriter;
+import org.xmlsh.core.UnexpectedException;
+import org.xmlsh.core.XValue;
+import org.xmlsh.util.StringPair;
+import org.xmlsh.util.Util;
+
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -14,24 +25,13 @@ import java.util.List;
 
 import javax.xml.stream.XMLStreamException;
 
-import net.sf.saxon.s9api.SaxonApiException;
-import org.xmlsh.core.CoreException;
-import org.xmlsh.core.InvalidArgumentException;
-import org.xmlsh.core.Options;
-import org.xmlsh.core.OutputPort;
-import org.xmlsh.core.UnexpectedException;
-import org.xmlsh.core.XValue;
-import org.xmlsh.util.StringPair;
-import org.xmlsh.util.Util;
-
-import com.amazonaws.regions.Region;
 import com.amazonaws.regions.RegionUtils;
-import com.amazonaws.regions.Regions;
 import com.amazonaws.services.ec2.AmazonEC2;
 import com.amazonaws.services.ec2.AmazonEC2Client;
 import com.amazonaws.services.ec2.model.BlockDeviceMapping;
 import com.amazonaws.services.ec2.model.EbsBlockDevice;
 import com.amazonaws.services.ec2.model.EbsInstanceBlockDevice;
+import com.amazonaws.services.ec2.model.Filter;
 import com.amazonaws.services.ec2.model.Instance;
 import com.amazonaws.services.ec2.model.InstanceBlockDeviceMapping;
 import com.amazonaws.services.ec2.model.InstanceState;
@@ -81,7 +81,7 @@ public abstract class AWSEC2Command extends AWSCommand {
 			SaxonApiException, CoreException {
 				
 				OutputPort stdout = this.getStdout();
-				mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(mSerializeOpts));
+				mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(getSerializeOpts()));
 				
 				
 				startDocument();
@@ -96,7 +96,7 @@ public abstract class AWSEC2Command extends AWSCommand {
 				endDocument();
 				
 				closeWriter();		
-				stdout.writeSequenceTerminator(mSerializeOpts);
+				stdout.writeSequenceTerminator(getSerializeOpts());
 				stdout.release();
 				
 				
@@ -322,6 +322,9 @@ public abstract class AWSEC2Command extends AWSCommand {
 			attribute( "shapshot-id" , ebs.getSnapshotId() );
 			attribute( "delete-on-termination" , ebs.getDeleteOnTermination());
 			attribute("volume-size" , ebs.getVolumeSize() );
+			attribute( "volume-type" , ebs.getVolumeType() );
+			attribute( "encrypted" , ebs.getEncrypted() );
+			attribute( "iops" , ebs.getIops());
 		}
 		
 		
@@ -396,6 +399,98 @@ public abstract class AWSEC2Command extends AWSCommand {
 		writeAttachements( volume.getAttachments());
 		writeTags( volume.getTags());
 	}
+	protected Collection<Filter> parseFilters(List<String> values) {
+		if( values == null || values.size() == 0 )
+		    return null;
+	
+		ArrayList<Filter> filters = new ArrayList<Filter>(values.size());
+	
+		for( String v : values ){
+			StringPair nv = new StringPair( v , '=' );
+			Filter filter = new Filter().withName(nv.getLeft()).withValues( nv.getRight().split(","));
+			filters.add(filter);
+		}
+		return filters;
+	}
+	protected Collection<BlockDeviceMapping> getBlockDeviceMappings(Options opts) throws InvalidArgumentException
+    {
+    
+    	List<XValue>  blocks = opts.getOptValues("block-device-mapping");
+    	if( blocks == null || blocks.size() == 0 )
+    		return null ;
+    	
+    	
+    	
+    	
+    	List<BlockDeviceMapping>	mappings = new ArrayList<BlockDeviceMapping>(blocks.size());
+    	for( XValue b : blocks )
+    		mappings.add( parseBlockDeviceMapping(b.toString()));
+    	// TBD 
+    	return mappings;
+    	
+    	
+    	
+    	
+    }
+	protected BlockDeviceMapping parseBlockDeviceMapping(String string)
+    {
+    	BlockDeviceMapping map = new BlockDeviceMapping();
+    	StringPair 	pair = new StringPair(string , '=');
+    	
+    	String 	device = pair.getLeft();
+    	if( device.startsWith("/dev/"))
+    		device = device.substring(5);
+    
+    	if(! pair.hasRight()){
+    		map.setNoDevice(device);
+    		return map;
+    	}
+    	
+    	
+    	
+    	String r = pair.getRight();
+    	if( r.equals("none")){
+    		map.setNoDevice(device);
+    		return map ;
+    	}
+    		
+    	map.setDeviceName(device);
+    	
+    	// Ephemeral = virtual ?
+    	if( ! r.contains(":")){
+    		map.setVirtualName(r);
+    		return map;
+    	}
+    	
+    	// Parse out the EBS stuff
+    	
+    	String aebs[] = r.split(":");
+    	
+    	EbsBlockDevice ebs = new EbsBlockDevice().withDeleteOnTermination( Boolean.FALSE );
+    	
+    	// [snapshot-id]:[size]:[delete-on-termination (true|false)]
+    	if( aebs.length >= 1 ){
+    		String snapshotId = aebs[0];
+    		if( ! Util.isBlank(snapshotId))
+    			ebs.setSnapshotId(snapshotId);
+    
+    	}
+    	
+    	if( aebs.length >= 2 ){
+    		if( !Util.isBlank(aebs[1]))
+    			ebs.setVolumeSize( new Integer( aebs[1]));
+    		
+    	}
+    	
+    	if( aebs.length >=  3 ){
+    		if( !Util.isBlank(aebs[2]))
+    			ebs.setDeleteOnTermination( Boolean.valueOf( Util.parseBoolean(aebs[2])));
+    		
+    	}
+    	map.setEbs(ebs);
+    	return map;
+    
+    }
 	
 
 }

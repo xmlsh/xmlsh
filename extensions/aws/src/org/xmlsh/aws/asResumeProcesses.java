@@ -7,25 +7,25 @@
 package org.xmlsh.aws;
 
 import net.sf.saxon.s9api.SaxonApiException;
-import org.xmlsh.aws.util.AWSCFNCommand;
-import org.xmlsh.core.CoreException;
+import org.xmlsh.annotations.Command;
+import org.xmlsh.aws.util.AWSASCommand;
+import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.SafeXMLStreamWriter;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
-import org.xmlsh.sh.shell.SerializeOpts;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.List;
 
 import javax.xml.stream.XMLStreamException;
 
-import com.amazonaws.services.cloudformation.model.GetTemplateRequest;
-import com.amazonaws.services.cloudformation.model.GetTemplateResult;
+import com.amazonaws.services.autoscaling.model.ExecutePolicyRequest;
+import com.amazonaws.services.autoscaling.model.ResumeProcessesRequest;
 
-public class cfnGetTemplate extends AWSCFNCommand {
+@Command("as-describe-processes")
+public class asResumeProcesses extends AWSASCommand {
 
 	
 
@@ -34,20 +34,24 @@ public class cfnGetTemplate extends AWSCFNCommand {
 		
 		
 		
-		Options opts = getOptions("j=json,n=name:");
+		Options opts = getOptions();
 		opts.parse(args);
- 
-		
+
 		args = opts.getRemainingArgs();
 		
-		boolean bJson = opts.hasOpt("json");
+		if( args.size() != 2 )
+			usage("as-execute-policy group policy");
+		
 
+
+		String group = args.get(0).toString();
+		String policy = args.get(1).toString();
 		
 		setSerializeOpts(this.getSerializeOpts(opts));
 		
 		
 		try {
-			getCFNClient(opts);
+			getASClient(opts);
 		} catch (UnexpectedException e) {
 			usage( e.getLocalizedMessage() );
 			return 1;
@@ -55,8 +59,8 @@ public class cfnGetTemplate extends AWSCFNCommand {
 		}
 		
 	
-        int ret = getTemplate(opts.getOptStringRequired("name"),bJson);
-
+		int ret = resume( group , policy );
+		
 		
 		
 		return ret;
@@ -64,57 +68,33 @@ public class cfnGetTemplate extends AWSCFNCommand {
 		
 	}
 
+	
 
 
-	private int getTemplate(String stack, boolean bJson) throws IOException, XMLStreamException, SaxonApiException, CoreException {
-		
-
+	private int resume(String group, String... processes) throws IOException, InvalidArgumentException, XMLStreamException, SaxonApiException 
+	{
 
 		OutputPort stdout = this.getStdout();
+		mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(getSerializeOpts()));
 		
 		
+		startDocument();
+		startElement(this.getName());
+		
+		ResumeProcessesRequest request = new ResumeProcessesRequest().withAutoScalingGroupName(group).withScalingProcesses(processes);
+		
+		traceCall("resumeProcesses");
 
-		GetTemplateRequest request = new GetTemplateRequest().withStackName(stack);
+		mAmazon.resumeProcesses(request);
 		
-		traceCall("getTemplate");
-
-		GetTemplateResult result = mAmazon.getTemplate(request);
-		
-		
-		
-		if( bJson ){
-			SerializeOpts opts = getSerializeOpts().clone();
-			opts.setOutput_text_encoding("utf-8");
-			
-			PrintWriter w = stdout.asPrintWriter(opts);
-			w.print(result.getTemplateBody());
-			w.close();
-
-			
-		} else {
-			mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(getSerializeOpts()));
-			
-			
-			startDocument();
-			startElement(this.getName());
-			
-			
-			
+		endElement();
+		endDocument();
+		return 0 ;
 	
-	 
-			characters( result.getTemplateBody());
-			
-			endElement();
-			endDocument();
-			closeWriter();
-			
-			stdout.writeSequenceTerminator(getSerializeOpts());
-		}
-		stdout.release();
-		return 0;
-
+	
 	}
-	
+
+
 }
 
 

@@ -1,11 +1,5 @@
 package org.xmlsh.aws;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.xmlsh.aws.util.AWSS3Command;
 import org.xmlsh.aws.util.S3Path;
 import org.xmlsh.core.InputPort;
@@ -15,9 +9,14 @@ import org.xmlsh.core.UnimplementedException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.util.StringPair;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.amazonaws.services.s3.model.PutObjectResult;
 import com.amazonaws.services.s3.transfer.MultipleFileUpload;
 import com.amazonaws.services.s3.transfer.ObjectMetadataProvider;
 import com.amazonaws.services.s3.transfer.Upload;
@@ -45,7 +44,7 @@ public class s3put extends AWSS3Command {
 
 		args = opts.getRemainingArgs();
 
-		mSerializeOpts = this.getSerializeOpts(opts);
+		setSerializeOpts(this.getSerializeOpts(opts));
 
 		try {
 			 getS3Client(opts);
@@ -279,7 +278,7 @@ public class s3put extends AWSS3Command {
 				request = new PutObjectRequest( dest.getBucket() , dest.getKey() , src.getFile() );
 			}
 			else {
-				is = src.asInputStream( mSerializeOpts );
+				is = src.asInputStream( getSerializeOpts() );
 				request = new PutObjectRequest( dest.getBucket() , dest.getKey() , is , metadata);
 			}
 

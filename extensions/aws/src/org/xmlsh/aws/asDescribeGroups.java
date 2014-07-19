@@ -6,20 +6,20 @@
 
 package org.xmlsh.aws;
 
+import net.sf.saxon.s9api.SaxonApiException;
+import org.xmlsh.aws.util.AWSASCommand;
+import org.xmlsh.core.CoreException;
+import org.xmlsh.core.Options;
+import org.xmlsh.core.OutputPort;
+import org.xmlsh.core.SafeXMLStreamWriter;
+import org.xmlsh.core.UnexpectedException;
+import org.xmlsh.core.XValue;
+import org.xmlsh.util.Util;
+
 import java.io.IOException;
 import java.util.List;
 
 import javax.xml.stream.XMLStreamException;
-
-import net.sf.saxon.s9api.SaxonApiException;
-import org.xmlsh.aws.util.AWSASCommand;
-import org.xmlsh.aws.util.SafeXMLStreamWriter;
-import org.xmlsh.core.CoreException;
-import org.xmlsh.core.Options;
-import org.xmlsh.core.OutputPort;
-import org.xmlsh.core.UnexpectedException;
-import org.xmlsh.core.XValue;
-import org.xmlsh.util.Util;
 
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.autoscaling.model.AutoScalingGroup;
@@ -29,7 +29,6 @@ import com.amazonaws.services.autoscaling.model.EnabledMetric;
 import com.amazonaws.services.autoscaling.model.Instance;
 import com.amazonaws.services.autoscaling.model.SuspendedProcess;
 import com.amazonaws.services.autoscaling.model.TagDescription;
-import com.amazonaws.services.ec2.model.DescribeVolumesRequest;
 
 public class asDescribeGroups extends AWSASCommand {
 
@@ -48,7 +47,7 @@ public class asDescribeGroups extends AWSASCommand {
 
 
 		
-		mSerializeOpts = this.getSerializeOpts(opts);
+		setSerializeOpts(this.getSerializeOpts(opts));
 		
 		
 		try {
@@ -75,7 +74,7 @@ public class asDescribeGroups extends AWSASCommand {
 		
 
 		OutputPort stdout = this.getStdout();
-		mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(mSerializeOpts));
+		mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(getSerializeOpts()));
 		
 		
 		startDocument();
@@ -126,7 +125,7 @@ public class asDescribeGroups extends AWSASCommand {
 		endDocument();
 		closeWriter();
 		
-		stdout.writeSequenceTerminator(mSerializeOpts);
+		stdout.writeSequenceTerminator(getSerializeOpts());
 		stdout.release();
 		
 		return 0;
@@ -166,7 +165,7 @@ public class asDescribeGroups extends AWSASCommand {
 		writeELBNames(group.getLoadBalancerNames());
 		writeSuspendedProcesses(group.getSuspendedProcesses());
 		writeTags(group.getTags());
-		
+		endElement();
 		
 			
 		

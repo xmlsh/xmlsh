@@ -2,11 +2,13 @@
 <project default="main">
 
 	
-    <target name="main" depends="clean, compile, jar, test, dist" description="AWS Extension main target">
+    <target name="main" depends="install,test" description="AWS Extension main target">
         <echo>
             Building AWS xmlsh extension
         </echo>
     </target>
+    <target name="build" depends="clean,compile,jar"/>
+    <target name="build-all" depends="build,dist"/>
 	
 	
 	<property name="dist" location="_dist"/>
@@ -104,7 +106,7 @@
 
   </target>
   
-  <target name="install" description="Install to modules">
+  <target name="install" description="Install to modules" depends="build-all">
   		 <copy todir="${install}" filtering="on">
 			<fileset dir="bin" includes="*.jar module.xml"/>
 			<fileset dir="lib" includes="*.jar"/>

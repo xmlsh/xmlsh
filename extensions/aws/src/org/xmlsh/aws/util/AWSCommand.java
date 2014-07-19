@@ -6,32 +6,30 @@
 
 package org.xmlsh.aws.util;
 
-import java.util.Date;
-import java.util.List;
-
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
-
-import com.amazonaws.regions.RegionUtils;
-import com.amazonaws.regions.Regions;
-
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.util.Util;
 
+import java.util.Date;
+import java.util.List;
+
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
+
+import com.amazonaws.regions.Regions;
+
 public abstract class AWSCommand extends XCommand {
 	
 	Logger mLogger = LogManager.getLogger( this.getClass() );
 	
 	protected XMLStreamWriter mWriter;
-	protected SerializeOpts mSerializeOpts;
-	
-	protected static final String sCOMMON_OPTS = "region:,endpoint:,client:,config:,accessKey:,secretKey:,rate-retry:,retry-delay:" ;
+	protected static final String sCOMMON_OPTS = "region:,endpoint:,client:,config:,accessKey:,secretKey:,rate-retry:,retry-delay:,result-format:" ;
 	protected int rateRetry = 0;
 	protected int retryDelay = 10000; // 10 seconds default
 
@@ -44,9 +42,9 @@ public abstract class AWSCommand extends XCommand {
 		LogManager.getLogger("org.apache.http").setLevel(Level.WARN);
 		LogManager.getLogger("com.amazonaws").setLevel(Level.WARN);
 		
+		LogManager.getLogger("org.apache.http.impl.conn").setLevel(Level.DEBUG);
+		
 	}
-	
-	
 	
 	public AWSCommand() {
 		super();

@@ -1,12 +1,5 @@
 package org.xmlsh.aws;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map.Entry;
-
-import javax.xml.stream.XMLStreamException;
-
 import net.sf.saxon.s9api.SaxonApiException;
 import org.xmlsh.aws.util.AWSSQSCommand;
 import org.xmlsh.core.CoreException;
@@ -14,6 +7,13 @@ import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map.Entry;
+
+import javax.xml.stream.XMLStreamException;
 
 import com.amazonaws.services.sqs.model.Message;
 import com.amazonaws.services.sqs.model.ReceiveMessageRequest;
@@ -34,7 +34,7 @@ public class sqsReceiveMessages extends AWSSQSCommand {
 	public int run(List<XValue> args) throws Exception {
 
 		
-		Options opts = getOptions("f=file:,m=max:,t=timeout:,w=wait:");
+		Options opts = getOptions("f=file:,p=port:,m=max:,t=timeout:,w=wait:");
 		opts.parse(args);
 
 		args = opts.getRemainingArgs();
@@ -46,7 +46,7 @@ public class sqsReceiveMessages extends AWSSQSCommand {
 		
 
 		
-		mSerializeOpts = this.getSerializeOpts(opts);
+		setSerializeOpts(this.getSerializeOpts(opts));
 		
 		
 		String url = args.get(0).toString();
@@ -56,10 +56,16 @@ public class sqsReceiveMessages extends AWSSQSCommand {
 		int visibilityTimeout = opts.getOptInt("timeout", 0);
 		int wait =  opts.getOptInt("wait", 0);
 		
+		// write to port
+         if( opts.hasOpt("p")) { 
+        	 out  = mShell.getEnv().getOutputPort(opts.getOptStringRequired("p"));
+        	out.addRef();
+         } 
+         else
 		
-		// Get message from file 
+		// Put message to file 
 		if( opts.hasOpt("f")){
-			out = mShell.getEnv().getOutput(opts.getOptValue("f"),false);
+			out = mShell.getEnv().getOutput(opts.getOptValue("f"),true);
 			
 		} else
 		if( args.size() == 1 )
@@ -113,9 +119,7 @@ public class sqsReceiveMessages extends AWSSQSCommand {
 
 		ReceiveMessageResult result = mAmazon.receiveMessage(request);
 		
-		OutputPort stdout = this.getStdout();
-		mWriter = stdout.asXMLStreamWriter(mSerializeOpts);
-		
+		mWriter = out.asXMLStreamWriter(getSerializeOpts());
 		
 		startDocument();
 		startElement(getName());
@@ -145,8 +149,8 @@ public class sqsReceiveMessages extends AWSSQSCommand {
 		endElement();
 		endDocument();
 		closeWriter();
-		stdout.writeSequenceTerminator(mSerializeOpts);
-		stdout.release();
+		out.writeSequenceTerminator(getSerializeOpts());
+		out.release();
 		
 
 		return 0;
