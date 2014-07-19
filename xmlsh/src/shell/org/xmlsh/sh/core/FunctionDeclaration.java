@@ -6,6 +6,8 @@
 
 package org.xmlsh.sh.core;
 
+import org.xmlsh.core.EvalEnv;
+import org.xmlsh.core.EvalFlag;
 import org.xmlsh.core.IFunction;
 import org.xmlsh.sh.shell.Shell;
 
@@ -51,6 +53,19 @@ public class FunctionDeclaration extends Command implements IFunction {
 		return 0;
 		
 	}
+
+	@Override
+    public EvalEnv argumentEnv(EvalEnv parent)
+    {
+		// Add normal expansions 
+	   return parent.withFlagsSet( EvalEnv.commandArgsFlags() );
+    }
+
+	@Override
+    public EvalEnv returnEnv(EvalEnv parent)
+    { 
+		return parent ;
+    }
 
 }
 

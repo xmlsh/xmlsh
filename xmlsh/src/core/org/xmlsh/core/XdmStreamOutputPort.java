@@ -29,7 +29,6 @@ import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 
 import javanet.staxutils.ContentHandlerToXMLStreamWriter;
-import javanet.staxutils.IndentingXMLEventWriter;
 import javanet.staxutils.XMLStreamEventWriter;
 
 import javax.xml.stream.XMLEventWriter;

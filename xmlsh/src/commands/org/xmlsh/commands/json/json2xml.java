@@ -15,19 +15,12 @@ import org.xmlsh.core.XValue;
 import org.xmlsh.json.JSONSerializeOpts;
 import org.xmlsh.json.JXConverter;
 import org.xmlsh.sh.shell.SerializeOpts;
-import org.xmlsh.util.JSONUtils;
 import org.xmlsh.util.Util;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
-import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
-
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonToken;
 
 /*
  * 
@@ -98,6 +91,7 @@ public class json2xml extends XCommand
 				
 			} 
 			finally {
+				
 			
 				if( is != null ) {
 					is.close();

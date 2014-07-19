@@ -50,6 +50,9 @@
    <file name="data/REC-xml.xsl"
          md5="d556b42ef1fc5dd434bd09abae8d45c2"
          length="11640"/>
+   <file name="data/WordPress_CF.json"
+         md5="c8430fd907d13965ca9e6aa067813171"
+         length="12331"/>
    <file name="data/xi_doc1.xml"
          md5="80e03792e5d21285672ad5295f54c989"
          length="297"/>
@@ -68,4 +71,7 @@
    <file name="data/xmlspec.xsl"
          md5="53efce206c35841871791c663b17402b"
          length="92868"/>
+   <file name="data/youtube.json"
+         md5="ceb60872c140464d84248700d2f6bfb0"
+         length="1724"/>
 </xmd5>

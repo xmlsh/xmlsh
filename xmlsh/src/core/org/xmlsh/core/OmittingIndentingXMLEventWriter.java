@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.regex.Pattern;
 
 import javanet.staxutils.Indentation;
+import javanet.staxutils.IndentingXMLEventWriter;
 import javanet.staxutils.events.AbstractCharactersEvent;
 import javanet.staxutils.helpers.EventWriterDelegate;
 

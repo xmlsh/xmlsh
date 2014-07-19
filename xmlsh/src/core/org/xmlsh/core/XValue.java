@@ -37,8 +37,8 @@ import org.apache.log4j.Logger;
 
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.util.JavaUtils;
 import org.xmlsh.util.JSONUtils;
+import org.xmlsh.util.JavaUtils;
 import org.xmlsh.util.S9Util;
 import org.xmlsh.util.StringPair;
 import org.xmlsh.util.Util;

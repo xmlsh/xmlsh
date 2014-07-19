@@ -6,6 +6,9 @@
 
 package org.xmlsh.util;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.json.JSONSerializeOpts;
@@ -22,18 +25,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.fasterxml.jackson.annotation.JsonGetter;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonParser.Feature;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
@@ -64,6 +64,7 @@ public class JSONUtils {
 	private static volatile  XmlFactory  _theXmlFactory = null ;
 	private static volatile  JacksonXmlModule _theXmlModule = null;
 	private static volatile  XmlMapper _theXmlMapper = null;
+	private static Logger mLogger = LogManager.getLogger(JSONUtils.class);
 
 
 	
@@ -262,7 +263,6 @@ public class JSONUtils {
 			return mapper.readValue(str, NumericNode.class );
 		}catch( Exception e ){
 			Util.wrapException("Exception converting JSON  value",e,InvalidArgumentException.class);	
-
 			return null ; // SNH 
 
 		}
@@ -408,7 +408,28 @@ public class JSONUtils {
 		return gen;
     }
 
+	public static void safeClose(JsonGenerator generator) 
+    {
+		if( generator != null ) {
+			try {
+	            generator.close();
+            } catch (IOException e) {
+	          mLogger.info( "Exception closing JsonGenerator", e );
+            }
+		}
+    }
 
+	public static void safeClose(JsonParser parser)
+    {
+		if( parser != null ) {
+			try {
+				parser.close();
+            } catch (IOException e) {
+	          mLogger.info( "Exception closing JsonParser", e );
+            }
+		}
+	    
+    }
 }
 
 

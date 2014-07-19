@@ -6,8 +6,6 @@
 
 package org.xmlsh.commands.json;
 
-import net.sf.saxon.s9api.BuildingStreamWriter;
-import net.sf.saxon.s9api.Processor;
 import org.xmlsh.core.BuiltinFunctionCommand;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
@@ -19,10 +17,8 @@ import org.xmlsh.util.JavaUtils;
 import java.util.List;
 
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.jsonschema.JsonSchema;
-import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
 public class toSchema extends BuiltinFunctionCommand {
 
@@ -31,7 +27,7 @@ public class toSchema extends BuiltinFunctionCommand {
 		super("to-schema");
 	}
 	
-	@SuppressWarnings("deprecation")
+
     @Override
 	public XValue run(Shell shell, List<XValue> args) throws ClassNotFoundException, CoreException, JsonMappingException {
 
@@ -40,28 +36,17 @@ public class toSchema extends BuiltinFunctionCommand {
 		
 		XValue arg = args.get(0);
 		
-		Class<?> cls = convertToClass( arg, shell );
+		Class<?> cls = JavaUtils.convertToClass( arg, shell );
 			
 
 		ObjectMapper mapper = JSONUtils.getJsonObjectMapper();
 		
+		@SuppressWarnings("deprecation")
 		JsonSchema schema = mapper.generateJsonSchema(cls);
  
 		return new XValue( schema.getSchemaNode());
 		
 	}
-
-	private Class<?> convertToClass(XValue arg, Shell shell) throws ClassNotFoundException, CoreException
-    {
-		if( arg.isAtomic() && arg.isString() )
-			return JavaUtils.findClass(arg.toString(), shell.getClassLoader(null));
-		Object obj = arg.asObject();
-		if( obj instanceof Class )
-			return (Class<?>) obj ;
-		return obj.getClass();
-		
-		
-    }
 
 }
 

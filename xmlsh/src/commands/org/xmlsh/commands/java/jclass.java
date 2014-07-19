@@ -4,27 +4,29 @@
  *
  */
 
-package org.xmlsh.commands.json;
+package org.xmlsh.commands.java;
 
 import org.xmlsh.core.BuiltinFunctionCommand;
-import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.util.JSONUtils;
+import org.xmlsh.util.JavaUtils;
 
 import java.util.List;
 
-public class number extends BuiltinFunctionCommand {
+public class jclass extends BuiltinFunctionCommand {
 
-	public number()
-	{
-		super("number");
-	}
+	public jclass() {
+		super("jclass");
 	
-	@Override
-	public XValue run(Shell shell, List<XValue> args) throws InvalidArgumentException {
+	}
 
-		return new XValue( JSONUtils.toJsonNumber( getFirstArg(args) ) );
+	@Override
+	public XValue run(Shell shell, List<XValue> args) throws Exception {
+		
+		if( args.isEmpty())
+			return new XValue(Object.class);
+		return new XValue( JavaUtils.convertToClass(args.get(0), shell));
+		
 	}
 
 }

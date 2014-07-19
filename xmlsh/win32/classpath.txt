@@ -8,14 +8,14 @@ httpcore-4.2.2.jar
 jackson-annotations-2.4.1.jar
 jackson-core-2.4.1.jar
 jackson-databind-2.4.1.jar
+jackson-dataformat-xml-2.4.1.jar
+jackson-module-jaxb-annotations-2.4.1.jar
 jing.jar
-#jline-0.9.94.jar
 jsonpath.jar
 log4j-1.2.17.jar
 resolver.jar
 saxon.jar
 saxon9he.jar
-#saxon9pe.jar
 slf4j-api-1.7.5.jar
 slf4j-log4j12-1.7.7.jar
 stax-utils.jar

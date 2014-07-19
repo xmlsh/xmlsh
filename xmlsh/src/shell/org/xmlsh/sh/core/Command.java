@@ -6,11 +6,14 @@
 
 package org.xmlsh.sh.core;
 
+import org.xmlsh.core.InvalidArgumentException;
+import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.Util;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.List;
 
 public abstract class Command {
 	private		SourceLocation	mLocation = null;
@@ -64,6 +67,20 @@ public abstract class Command {
     {
 	    mName = name;
     }
+	
+	// Helper function for simple values
+	protected XValue getFirstArg( List<XValue> args  ) throws InvalidArgumentException {
+		requires( ! args.isEmpty() , "Excpected arugment missing");
+		return args.get(0);
+	}
+
+
+	protected void requires( boolean condition , String message ) throws InvalidArgumentException {
+		if( ! condition )
+			throw new InvalidArgumentException( getName() + ":" + message );
+			
+	}
+	
 }
 
 

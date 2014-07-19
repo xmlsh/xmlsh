@@ -1213,7 +1213,7 @@ public class Shell {
 	public	XValue	expandToValue( String value ,  EvalEnv env , SourceLocation loc ) throws IOException, CoreException {
 			List<XValue> ret = expandToList(value,env, loc  );
 			if( ret.size() == 0 )
-				return new XValue(XdmEmptySequence.getInstance());
+				return new XValue(  env.omitNulls() ? null : XdmEmptySequence.getInstance());
 			else
 			if( ret.size() == 1 )
 				return ret.get(0);

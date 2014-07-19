@@ -7,45 +7,30 @@
 package org.xmlsh.commands.json;
 
 import org.xmlsh.core.BuiltinFunctionCommand;
-import org.xmlsh.core.CoreException;
+import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.JSONUtils;
 
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class json extends BuiltinFunctionCommand {
 
-	public json()
+/*
+ * Parse json text to a Json Node or object
+ */
+public class parse extends BuiltinFunctionCommand {
+
+	public parse()
 	{
-		super("json");
+		super("parse");
 	}
 	
 	@Override
-	public XValue run(Shell shell, List<XValue> args) throws ClassNotFoundException, CoreException, JsonParseException, JsonMappingException, IOException 
-	{
-		List<JsonNode> nodes = new ArrayList<JsonNode>(args.size());
-		ObjectMapper mapper = JSONUtils.getJsonObjectMapper();
-		for( XValue arg : args ) {
-			Object o = arg.asObject();
-			nodes.add( mapper.valueToTree(o) );
-		}
-        if( nodes.isEmpty())
-        	return new XValue();
-
-        else
-		if( nodes.size() > 1 ) 
-			return new XValue( mapper.createArrayNode().addAll(nodes));
-		else
-			return new XValue( nodes.get(0 ) );
-		
+	public XValue run(Shell shell, List<XValue> args) throws InvalidArgumentException {
+		JsonNode model = JSONUtils.toJsonNode( getFirstArg(args).toString() );
+		return new XValue( model );
 	}
 
 }

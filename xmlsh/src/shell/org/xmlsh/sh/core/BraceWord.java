@@ -8,6 +8,7 @@ package org.xmlsh.sh.core;
 
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.EvalEnv;
+import org.xmlsh.core.EvalFlag;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
 
@@ -37,7 +38,7 @@ public class BraceWord extends Word
 	        throws IOException, CoreException
 	{
 
-		return mWord.expand(shell, EvalEnv.newInstance(false, env.expandWild(),    env.expandWords(), true), loc);
+		return mWord.expand(shell, evalEnv(env), loc);
 	}
 
 	@Override
@@ -45,17 +46,23 @@ public class BraceWord extends Word
 	{
 		return mWord == null || mWord.isEmpty();
 	}
+
 	
-	@Override
-	public boolean isPreserve() {
-		return true ;
-	}
 	
 	 @Override
 	String getSimpleName()
 	{
 	    return isEmpty() ? "{}" : mWord.getSimpleName();
  	}
+
+	/* (non-Javadoc)
+	 * @see org.xmlsh.sh.core.Word#evalEnv(org.xmlsh.core.EvalEnv)
+	 */
+    @Override
+    public EvalEnv evalEnv(EvalEnv parent)
+    {
+	   return parent.withFlagsMasked( EvalFlag.preserveValueFlags());
+    }
 
 
 }

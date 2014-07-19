@@ -45,6 +45,22 @@ public abstract class BuiltinFunctionCommand extends Command implements IFunctio
 	{
 		return this ;
 	}
+	/* (non-Javadoc)
+	 * @see org.xmlsh.core.IFunction#argumentEnv(org.xmlsh.core.EvalEnv)
+	 */
+    @Override
+    public EvalEnv argumentEnv(EvalEnv parent)
+    {
+	   return parent ;
+    }
+	/* (non-Javadoc)
+	 * @see org.xmlsh.core.IFunction#returnEnv(org.xmlsh.core.EvalEnv)
+	 */
+    @Override
+    public EvalEnv returnEnv(EvalEnv parent)
+    {
+    	return parent ;
+    }
 }
 
 

@@ -20,6 +20,7 @@ import net.sf.saxon.trans.XPathException;
 
 import org.apache.log4j.Logger;
 
+import org.xmlsh.core.EvalFlag;
 import org.xmlsh.core.IPort;
 import org.xmlsh.core.Namespaces;
 import org.xmlsh.core.XValue;
@@ -37,7 +38,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
-import java.io.Writer;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -50,8 +50,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -1516,6 +1518,125 @@ public class Util
 
 		 return len ;
 	}
+	
+	/*
+	 * EnumSet helpers
+	 */
+	public static <T extends Enum<T>> boolean setContainsAll( EnumSet<T> set , T...  items ) 
+	{
+		for( T item : items )
+			if( ! set.contains(item ))
+				return false;
+		return true ;
+	}
+
+	public static <T extends Enum<T>> boolean setContainsAny( EnumSet<T> set , T...  items ) 
+	{
+		if( set.size() == 0  )
+			return false ;
+		for( T e : items )
+			if( set.contains(e))
+				return true ;
+		return false ;
+	}
+	
+	public static <T extends Enum<T>> boolean setContainsAny( EnumSet<T> set , EnumSet<T> items) 
+	{		
+		if( set.size() == 0  )
+			return false ;
+		for( T e : items )
+			if( set.contains(e))
+				return true ;
+		return false ;
+		
+	}
+	
+	
+	public static  <T extends Enum<T>> EnumSet<T> enumSetOf( T e , T... enums )
+	{
+		EnumSet<T> set = EnumSet.of(e);
+		if( enums.length > 0 )
+			for( T v : enums ) {
+				set.add(v);
+			}
+		return set ;
+	}
+	
+	
+	
+
+	public static <T extends Enum<T>> EnumSet<T> withEnumAdded(EnumSet<T> set, T on)
+    {
+		if( set.contains(on))
+			return set;
+		set = set.clone();
+	    set.add(on);
+	    return set ;
+    }
+	
+	public static <T extends Enum<T>> EnumSet<T> withEnumsAdded(EnumSet<T> set, EnumSet<T> on)
+    {
+		if( on.isEmpty() )
+			return set ;
+		if( set.containsAll(on))
+			return set;
+		set = set.clone();
+	    set.addAll( on );
+	    return set ;
+    }
+	public static <T extends Enum<T>> EnumSet<T> withEnumsAdded(EnumSet<T> set, T... on )
+	{
+		set = set.clone();
+		for( T v : on ) 
+			set.add(v);
+
+		return set;
+	}
+
+	
+	public static <T extends Enum<T>> EnumSet<T> withEnumRemoved(EnumSet<T> set, T  off)
+    {
+		if( set.isEmpty() || !set.contains(off))
+			return set;
+		
+		set = set.clone();
+	    set.remove(off);
+	    return set ;
+    }
+	
+	public static <T extends Enum<T>> EnumSet<T> withEnumsRemoved(EnumSet<T> set,T...  off)
+	{
+		if( set.isEmpty()  || off.length == 0 )
+			return set ;
+		set = set.clone();
+		for( T e : off )
+			set.remove(e);
+		return set ;
+	}
+
+
+	public static <T extends Enum<T>> EnumSet<T> withEnumsRemoved(EnumSet<T> set, EnumSet<T>  off)
+    {
+		if( set.isEmpty()  ||  ! setContainsAny( set , off) )
+			return set;
+		set = set.clone();
+	    set.removeAll(off);
+	    return set ;
+    }
+	
+	// Return a new enum set with only those flags set in mask
+	// same as interesection
+	public static <T extends Enum<T>> EnumSet<T> withEnumsMasked(EnumSet<T> set, EnumSet<T>  mask)
+	{
+		if( set.isEmpty())
+			return set ;
+		set = set.clone();
+		set.retainAll(mask);
+		return set ;
+	}
+
+	
+	
 }
 
 //

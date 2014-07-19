@@ -12,8 +12,8 @@ import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.SerializeOpts;
-import org.xmlsh.util.JavaUtils;
 import org.xmlsh.util.JSONUtils;
+import org.xmlsh.util.JavaUtils;
 import org.xmlsh.util.Util;
 
 import java.io.InputStream;

@@ -6,13 +6,12 @@
 
 package org.xmlsh.commands.json;
 
-import org.apache.commons.io.output.XmlStreamWriter;
 import net.sf.saxon.s9api.BuildingStreamWriter;
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.SaxonApiException;
 import org.xmlsh.core.BuiltinFunctionCommand;
 import org.xmlsh.core.InvalidArgumentException;
-import org.xmlsh.core.XMLStreamWriterDelegate;
+import org.xmlsh.core.SafeXMLStreamWriter;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.JSONUtils;
@@ -21,8 +20,8 @@ import java.io.IOException;
 import java.util.List;
 
 import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
 public class toXml	extends BuiltinFunctionCommand {
@@ -40,7 +39,7 @@ public class toXml	extends BuiltinFunctionCommand {
 			Processor proc = Shell.getProcessor();
 			BuildingStreamWriter bw = proc.newDocumentBuilder().newBuildingStreamWriter();
 			
-			XMLStreamWriterDelegate xd = new XMLStreamWriterDelegate( bw );
+			XMLStreamWriter xd = new SafeXMLStreamWriter( bw );
 			
 			XmlMapper module = JSONUtils.getXmlMapper();
 

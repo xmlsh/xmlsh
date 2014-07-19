@@ -71,9 +71,11 @@ public class FunctionCallWord extends Word {
 
 		ArrayList<XValue>	args = new ArrayList<XValue>();
 		
+		EvalEnv argEnv = func.argumentEnv(env);
+		
 		if( mArgs != null )
 			for( Word arg : mArgs )
-				args.addAll(arg.expandToList(shell,EvalEnv.newPreserveInstance(arg.isPreserve()),loc));
+				args.addAll(arg.expandToList(shell, argEnv ,loc));
 
 		
 		try {

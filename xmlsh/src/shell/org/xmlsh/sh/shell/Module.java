@@ -15,6 +15,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import org.xmlsh.core.CoreException;
+import org.xmlsh.core.EvalEnv;
 import org.xmlsh.core.ICommand;
 import org.xmlsh.core.IFunction;
 import org.xmlsh.core.InvalidArgumentException;
@@ -471,6 +472,18 @@ public class Module {
             {
 					return new JavaModuleFunctionCommand(thisModule , name, mJavaClass, mClassLoader);
 				
+            }
+
+			@Override
+            public EvalEnv argumentEnv(EvalEnv parent)
+            {
+	           return parent ;
+            }
+
+			@Override
+            public EvalEnv returnEnv(EvalEnv parent)
+            {
+	            return parent ;
             }
 			
 			

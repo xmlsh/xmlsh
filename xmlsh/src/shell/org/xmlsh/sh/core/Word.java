@@ -37,6 +37,9 @@ public abstract class Word {
 	}
 
 	public XValue expandWords( Shell shell , String word , EvalEnv env ) throws IOException {
+		
+		env = evalEnv( env ); // Mask my own settings
+		
 		// if expand word then need to do IFS splitting
 		if( env.expandWords() && ! env.preserveValue() )
 			return new XValue( (String[]) shell.getIFS().split(word).toArray() );
@@ -45,17 +48,18 @@ public abstract class Word {
 				
 	}
 
-	public abstract XValue expand(Shell shell, EvalEnv env,SourceLocation loc ) throws IOException, CoreException;
+	public abstract XValue expand(Shell shell, EvalEnv env, SourceLocation loc ) throws IOException, CoreException;
 	
 	public String expandString(Shell shell, EvalEnv env, SourceLocation loc ) throws IOException, CoreException {
-		return expand(shell,env,loc).toString();
+		return expand(shell,evalEnv(env),loc).toString();
 	}
 	
 	public List<XValue> expandToList(Shell shell, EvalEnv env , SourceLocation loc ) throws IOException, CoreException {
+		env = evalEnv(env);
 		XValue v = expand( shell,  env , loc);
 		List<XValue> list = new ArrayList<XValue>(1);
-		if( v != null )
-		   list.add( v );
+		if( v != null && ! v.isNull() )
+		     list.add( v );
 		if( env.expandSequences())
 			list = Util.expandSequences(list);
 		return list;
@@ -73,8 +77,8 @@ public abstract class Word {
 		return sw.toString();
 	}
 
-	public boolean isPreserve() {
-		return false ;
+	public EvalEnv evalEnv(EvalEnv parent) {
+		return parent ;
 	}
 
 

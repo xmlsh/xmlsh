@@ -6,6 +6,10 @@
 
 package org.xmlsh.core;
 
+import org.xmlsh.util.Util;
+
+import java.util.EnumSet;
+
 // Evaluation options  - in order they are evaluated 
 public enum EvalFlag {
 	// String -> String
@@ -16,6 +20,53 @@ public enum EvalFlag {
 	EXPAND_WILD,     // Glob (wildcards) the result
     OMIT_NULL,       // drop null values
 	EXPAND_SEQUENCES // expand single values as sequences into multiple values 
+	;
+	
+
+	public static EnumSet<EvalFlag>  expandVarFlags() { 
+		return  EnumSet.of( EvalFlag.EXPAND_VAR );
+	}
+	
+	public static EnumSet<EvalFlag>  expandWordsFlags() { 
+		return  EnumSet.of( EvalFlag.SPLIT_WORDS );
+	}
+	
+	
+	public static EnumSet<EvalFlag>  expandSequencesFlags() { 
+		return  EnumSet.of( EvalFlag.EXPAND_SEQUENCES );
+	}
+	
+	public static EnumSet<EvalFlag>  expandWildFlags() { 
+		return  EnumSet.of( EvalFlag.EXPAND_WILD );
+	}
+	
+	// Was tongs
+	public static EnumSet<EvalFlag>  preserveValueFlags() {
+		return  EnumSet.of( EvalFlag.EXPAND_VAR);
+	}
+	
+
+		
+
+	public static EnumSet<EvalFlag>  evalFlags( boolean bExpandSequences , boolean bExpandWild , boolean bExpandWords, boolean bPreserve )
+	{ 
+		EnumSet<EvalFlag> flags = EnumSet.of( EXPAND_VAR);
+		if( ! bPreserve ) {
+			flags.add(PARSE_QUOTES);
+			flags.add(JOIN_VALUES);
+			if( bExpandSequences)
+				flags.add(EXPAND_SEQUENCES );
+			if( bExpandWild )
+				flags.add(EXPAND_WILD);
+			if( bExpandWords )
+				flags.add(SPLIT_WORDS);
+			flags.add(OMIT_NULL);
+		}
+		return flags ;
+	}
+
+	final static EnumSet<EvalFlag> _evalFlagsNone = EnumSet.noneOf(EvalFlag.class);
+	
 }
 
 

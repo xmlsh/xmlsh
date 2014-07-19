@@ -6,5 +6,6 @@ echo json:value( <[ 1 ]> )
 xtype json:value( <[ 1 ]> )
 xtype json:value( <[ 1.5 ]> )
 xtype json:value( text )
-xtype json:value()
+a=json:value()
+xtype -v a
 

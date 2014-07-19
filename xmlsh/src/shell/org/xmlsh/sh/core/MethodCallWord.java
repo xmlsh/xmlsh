@@ -72,10 +72,7 @@ public class MethodCallWord extends Word {
 		
 		if( mArgs != null )
 			for( Word arg : mArgs )
-				args.addAll(arg.expandToList(shell,EvalEnv.newPreserveInstance( arg.isPreserve()),loc));
-		
-
-		
+				args.addAll(arg.expandToList(shell,env,loc));
 		
 		
 		try {

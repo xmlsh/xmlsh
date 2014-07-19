@@ -13,6 +13,7 @@ import net.sf.saxon.trans.XPathException;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
+import org.xmlsh.sh.shell.Shell;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -477,6 +478,24 @@ private static Set< String > mReserved;
 	}
 	public static  int canConvertObject( Object sourceObject ,  Class<?> targetClass) throws InvalidArgumentException {
 		return canConvertClass( sourceObject.getClass() , targetClass );
+	}
+	
+		public static Class<?> convertToClass(XValue arg, Shell shell) throws ClassNotFoundException, CoreException
+		{
+		return convertToClass(arg, 	shell.getClassLoader(null));
+
+		}
+
+	public static Class<?> convertToClass(XValue arg,  ClassLoader classLoader) throws ClassNotFoundException, CoreException
+	{
+		if( arg.isAtomic() && arg.isString() )
+			return findClass(arg.toString(),classLoader);
+		Object obj = arg.asObject();
+		if( obj instanceof Class )
+			return (Class<?>) obj ;
+		return obj.getClass();
+		
+		
 	}
 
 	

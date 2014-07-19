@@ -6,19 +6,17 @@
 
 package org.xmlsh.json;
 
+import org.xmlsh.core.InvalidArgumentException;
+import org.xmlsh.core.XValue;
+import org.xmlsh.sh.shell.SerializeOpts;
+import org.xmlsh.util.JSONUtils;
+import org.xmlsh.util.Util;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
-
-import org.xmlsh.core.InputPort;
-import org.xmlsh.core.InvalidArgumentException;
-import org.xmlsh.core.OutputPort;
-import org.xmlsh.core.XValue;
-import org.xmlsh.sh.shell.SerializeOpts;
-import org.xmlsh.util.JSONUtils;
-import org.xmlsh.util.Util;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.FactoryConfigurationError;
@@ -27,7 +25,6 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
-import javax.xml.stream.events.Characters;
 import javax.xml.stream.events.EndElement;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
@@ -35,7 +32,6 @@ import javax.xml.stream.events.XMLEvent;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonParser.NumberType;
 import com.fasterxml.jackson.core.JsonToken;
 
 public abstract class JXConverter
@@ -53,6 +49,7 @@ public abstract class JXConverter
 	{
 	
 		public abstract boolean parse() throws ConverterException;
+		public void close() throws ConverterException;
 	
 	}
 
@@ -60,7 +57,8 @@ public abstract class JXConverter
 	{
 		
 		public abstract boolean parse() throws ConverterException;
-	
+		public void close() throws ConverterException;
+
 	}
 
 
@@ -188,6 +186,17 @@ public abstract class JXConverter
         	return sb.toString();
         
         }
+		
+
+		public void close()  {
+
+			JSONUtils.safeClose(mGenerator);
+			mGenerator =null ;
+			Util.safeClose( mReader );
+			mReader = null ;
+	
+		}
+		
 
 	}
 	
@@ -326,6 +335,23 @@ public abstract class JXConverter
         {
             mWriter.writeCharacters(s);
         }
+		
+
+		public void close() throws ConverterException  {
+
+			
+			try {
+	            mWriter.flush();
+            } catch (XMLStreamException e) {
+            	throw new ConverterException(e);
+            }
+			JSONUtils.safeClose(mParser);
+			mParser =null ;
+			
+			
+	
+		}
+		
 
 		
 		
@@ -351,8 +377,13 @@ public abstract class JXConverter
 		
 		
 		IJSONConverter converter = newJConverter(reader,os);
-		converter.parse( );
-	
+		try {
+			   converter.parse( );
+
+			} finally 
+			{
+				converter.close();
+			}
 	}
 	
 
@@ -361,14 +392,18 @@ public abstract class JXConverter
 	public void convertFromJson(InputStream is, XMLStreamWriter sw ) throws ConverterException {
 		
 		IXMLConverter converter = newXMLConverter(is,sw);
-		converter.parse( );
+		try {
+		   converter.parse( );
 
+		} finally 
+		{
+			converter.close();
+		}
+		
 		
 	}
 
-	void close() {
-
-	}
+ 
 	
 	public static JXConverter getConverter(String format, JSONSerializeOpts jopts, SerializeOpts serializeOpts, List<XValue> args) throws InvalidArgumentException
 	{

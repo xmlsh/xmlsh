@@ -11,9 +11,9 @@ import org.xmlsh.core.CoreException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.JSONUtils;
+import org.xmlsh.util.JavaUtils;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.core.JsonParseException;
@@ -21,31 +21,27 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class json extends BuiltinFunctionCommand {
+public class convert extends BuiltinFunctionCommand {
 
-	public json()
+	public convert()
 	{
-		super("json");
+		super("convert");
 	}
 	
 	@Override
 	public XValue run(Shell shell, List<XValue> args) throws ClassNotFoundException, CoreException, JsonParseException, JsonMappingException, IOException 
 	{
-		List<JsonNode> nodes = new ArrayList<JsonNode>(args.size());
-		ObjectMapper mapper = JSONUtils.getJsonObjectMapper();
-		for( XValue arg : args ) {
-			Object o = arg.asObject();
-			nodes.add( mapper.valueToTree(o) );
-		}
-        if( nodes.isEmpty())
-        	return new XValue();
-
-        else
-		if( nodes.size() > 1 ) 
-			return new XValue( mapper.createArrayNode().addAll(nodes));
-		else
-			return new XValue( nodes.get(0 ) );
+		requires( args.size() == 2 , " two arguments required");
 		
+		Class<?> cls = null ;
+		Object from = args.get(0).asObject();
+			cls = JavaUtils.convertToClass(args.get(1) , shell );
+		if( cls == null )
+			cls = JsonNode.class ;
+		
+		ObjectMapper mapper = JSONUtils.getJsonObjectMapper();
+		Object value = mapper.convertValue(from, cls);
+		return new XValue( value );
 	}
 
 }

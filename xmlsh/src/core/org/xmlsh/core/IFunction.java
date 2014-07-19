@@ -11,6 +11,8 @@ import org.xmlsh.sh.core.Command;
 public interface IFunction {
 	String	getName();
 	Command	getBody();
+	EvalEnv argumentEnv( EvalEnv parent );
+	EvalEnv returnEnv( EvalEnv parent );
 	
 }
 
