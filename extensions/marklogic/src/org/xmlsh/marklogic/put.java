@@ -219,7 +219,7 @@ public class put extends MLCommand {
 			
 			Content content;
 			try {
-				content = ContentFactory.newContent (getUri(baseUri) , MLUtil.bytesFromItem(mItem,mSerializeOpts) , mCreateOptions);
+				content = ContentFactory.newContent (getUri(baseUri) , MLUtil.bytesFromItem(mItem,getSerializeOpts()) , mCreateOptions);
 			} catch (Exception e) {
 				mShell.printErr("Exception serializing XML" , e );
 				return null ;
@@ -447,7 +447,7 @@ public class put extends MLCommand {
 					throw new CoreException("Cannot open port: " + stream );
 				
 				
-				contentIter = new ContentXdmStreamIterator( port.asXdmItemInputStream(mSerializeOpts) , uri );
+				contentIter = new ContentXdmStreamIterator( port.asXdmItemInputStream(getSerializeOpts()) , uri );
 				
 				
 				

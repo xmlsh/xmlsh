@@ -27,7 +27,7 @@ public class MLRequestThread extends Thread {
 
 
 	public MLRequestThread(ExplorerShell shell , ExplorerOptions opts , BlockingQueue<MLRequest> requestQueue ) {
-		super();
+		super(shell.getThreadGroup() , "mlui-reqest" );
 		mOpts = opts ;
 		mShell = shell ;
 		mCommandQueue = requestQueue;

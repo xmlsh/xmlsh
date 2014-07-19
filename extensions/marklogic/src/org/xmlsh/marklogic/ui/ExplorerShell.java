@@ -83,6 +83,8 @@ import javax.swing.KeyStroke;
 import java.awt.event.KeyEvent;
 
 public class ExplorerShell {
+	
+	private ThreadGroup mThreadGroup ;
 
 	private JFrame mframe;
 	private ExplorerOptions mOptions ;
@@ -129,6 +131,7 @@ public class ExplorerShell {
 	}
 
 	public ExplorerShell(Shell sh , Options opts) throws Exception {
+		mThreadGroup = sh.newThreadGroup("mlui");
 		mShell = sh ;
 		mCurdir = sh.getCurdir();
 		mSerializeOpts = sh.getSerializeOpts(opts);
@@ -984,6 +987,12 @@ public class ExplorerShell {
 		
 		
 	}
+
+	ThreadGroup getThreadGroup()
+    {
+	    // TODO Auto-generated method stub
+	    return mThreadGroup;
+    }
 
 
 }

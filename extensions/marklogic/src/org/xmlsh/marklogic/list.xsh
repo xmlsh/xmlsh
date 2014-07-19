@@ -2,7 +2,6 @@
 _opts=$<(xgetopts -i "c=connect:" -s -o "r=recurse" -- "$@")
 _popts=$<(xgetopts -a -p "c=connect:" -ps -i "r=recurse" -- "$@")
 shift $?
-
 hasr=<[ exists($_opts//option[@name="r"]) ]>
 
 if [ $hasr ] ; then 
