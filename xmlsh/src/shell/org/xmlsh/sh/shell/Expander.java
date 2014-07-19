@@ -174,7 +174,11 @@ class Expander {
 		 * Append a value to the result buffer
 		 * If currently in-quotes then convert the args to strings and seperated by the first char in IFS.
 		 */
-		public void append(XValue value, CharAttr attr  ) {
+		public void append(XValue value, EvalEnv env , CharAttr attr  ) {
+		
+			if( (value == null || value.isNull() ) && env.omitNulls() )
+				return ;
+			
 			if( value.isAtomic()  && !attr.isPreserve() ){
 				// If in quotes or this is an ajoining value then concatenate 
 				if( attr.isQuote()  || cur != null || (achars != null && ! achars.isEmpty())  ){
@@ -193,7 +197,7 @@ class Expander {
 				if(  attr.isQuote()   ){
 
 					if( value.isObject() )
-						append(value , attr );
+						append( value.toString() , attr );
 					else {
 						// Flatten sequences
 						boolean bFirst = true ;
@@ -420,7 +424,7 @@ class Expander {
 							if( curAttr.isSoftQuote() ) {
 								if( ! bFirst )
 									result.append( mIFS.getFirstChar() , curAttr );
-								result.append( v , curAttr );
+								result.append( v , env ,  curAttr );
 							}
 							else
 							{
@@ -442,7 +446,7 @@ class Expander {
 						
 						for( XValue v : args ){
 							if( curAttr.isSoftQuote() && bFirst  ) 
-								result.append( v , curAttr );
+								result.append( v , env , curAttr );
 							else
 								result.add( v );
 							bFirst = false ;
@@ -466,7 +470,7 @@ class Expander {
 								XValue v = vs.get(vi);
 								if( vi > 0 )
 									result.flush();
-								result.append( v , curAttr  );
+								result.append( v , env , curAttr  );
 							}
 						}
 						

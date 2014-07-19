@@ -37,8 +37,14 @@ public class WordList extends ArrayList<Word> {
 		
 		List<XValue>  list = new ArrayList<XValue>( this.size() );
 		
-		for( Word w : this )
-			list.add(w.expand(shell,env,loc) );
+		for( Word w : this ) {
+		    XValue v = w.expand(shell,env,loc) ;
+		    if( (v == null || v.isNull()) && env.omitNulls() )
+		    	continue;
+		    	
+			list.add(v );
+
+		}	
 		return new XValue( list );
 		
 	}
