@@ -15,14 +15,16 @@ import org.xmlsh.sh.shell.SerializeOpts;
 import java.io.IOException;
 import java.io.OutputStream;
 
-public class PortCopier extends Thread
+public class PortCopier extends AbstractCopier
 {
 	private 	static 	Logger	mLogger  = LogManager.getLogger(PortCopier.class);
-	private		InputPort	mIn;
-	private		OutputStream	mOut;
-	private		boolean			mCloseOut;
+	private		volatile    InputPort	mIn;
+	private		volatile    OutputStream	mOut;
+	private		boolean	     mCloseOut;
+	private    boolean     mReleaseIn;
+	
 	private		SerializeOpts mOpts;
-	public PortCopier( InputPort in , OutputStream out , SerializeOpts opts ,  boolean closeOut )
+	public PortCopier( InputPort in , OutputStream out , SerializeOpts opts , boolean relaseIn,  boolean closeOut )
 	{
 		super( "portcopy");
 		mIn = in;
@@ -30,6 +32,7 @@ public class PortCopier extends Thread
 		mOpts = opts;
 		
 		mCloseOut = closeOut;
+		mReleaseIn = relaseIn ;
 		
 	}
 	/* (non-Javadoc)
@@ -43,20 +46,47 @@ public class PortCopier extends Thread
 			
 			mIn.copyTo(mOut,mOpts);
 			
-			//mIn.close();
-			//mOut.close();
 		} catch (Exception e) {
 			mLogger.warn("Exception copying streams",e);
 		} finally {
-			if( mCloseOut )
-				try {
-					mOut.close();
-				} catch (IOException e) {
-					mLogger.warn("IOException closing streams",e);
-				}
+			close();
 		}
 		
 	}
+	@Override
+
+	public void close()
+    {
+		closeIn();
+		closeOut();
+	    
+    }
+	
+	@Override
+	public void closeOut()
+    {
+	    if( mCloseOut ) {
+			if( mOut != null ) {
+				synchronized (this) {
+	                Util.safeClose(mOut);
+	                mOut = null ;
+                } 
+			}
+		}
+    }
+	@Override
+
+	
+	public void closeIn()
+    {
+	    if( mReleaseIn ) {
+			if( mIn != null)
+				synchronized (this) {
+					mIn.release();
+					mIn = null ;
+                } 
+		}
+    }
 }
 //
 //

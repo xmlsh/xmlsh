@@ -11,6 +11,7 @@ import net.sf.saxon.s9api.XdmNode;
 import org.xml.sax.InputSource;
 import org.xmlsh.sh.shell.SerializeOpts;
 
+import java.io.FileDescriptor;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -33,10 +34,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 public abstract class InputPort  extends IPort
 {
 	
-
-
-	
-
 	public	abstract InputStream asInputStream(SerializeOpts opts) throws CoreException ;
 	
 
@@ -50,7 +47,6 @@ public abstract class InputPort  extends IPort
 	public abstract XdmNode asXdmNode(SerializeOpts opts) throws CoreException;
 	
 	public  abstract void copyTo(OutputStream out, SerializeOpts opts ) throws  CoreException, IOException;
-
 
 	public abstract XMLEventReader asXMLEventReader(SerializeOpts opts) throws CoreException;
 	public abstract XMLStreamReader asXMLStreamReader(SerializeOpts opts) throws  CoreException;
@@ -74,7 +70,6 @@ public abstract class InputPort  extends IPort
 
 
 	public abstract JsonNode asJson(SerializeOpts serializeOpts) throws IOException, CoreException ;
-	
 	
 }
 

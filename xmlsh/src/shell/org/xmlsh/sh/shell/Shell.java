@@ -929,7 +929,7 @@ public class Shell {
 	}
 
 	public void printErr(String s , SourceLocation loc ) {
-		PrintWriter out;
+		PrintWriter out = null ;
 		try {
 			out = new PrintWriter( 
 					new BufferedWriter(
@@ -937,9 +937,12 @@ public class Shell {
 						)
 					 );
 		} catch (IOException e) {
-			mLogger.error("Exception printing err:" + s , e );
+			mLogger.error("IOException printing err:" + s , e );
 			return ;
-		}
+		} catch (CoreException e) {
+			mLogger.error("CoreException printing err:" + s , e );
+
+        }
 		if( mOpts.mLocation ) {
 			if( loc == null )
 				loc = getLocation() ;
@@ -953,7 +956,7 @@ public class Shell {
 		
 	}
 	public void printOut(String s)  {
-		PrintWriter out;
+		PrintWriter out = null ;
 		try {
 			out = new PrintWriter( 
 					new BufferedWriter(
@@ -963,7 +966,10 @@ public class Shell {
 		} catch (IOException e) {
 			mLogger.error("Exception writing output: " + s , e );
 			return;
-		}
+		} catch (CoreException e) {
+			mLogger.error("Exception writing output: " + s , e );
+			return;
+        }
 		out.println(s);
 		out.flush();
 		out.close();
@@ -973,13 +979,16 @@ public class Shell {
 	}
 	
 	public void printErr(String s,Exception e, SourceLocation loc ) {
-		PrintWriter out;
+		PrintWriter out = null ;
 		try {
 			out = getEnv().getStderr().asPrintWriter(getSerializeOpts());
 		} catch (IOException e1) {
 			mLogger.error("Exception writing output: " + s , e );
 			return ;
-		}
+		} catch (CoreException e1) {
+			mLogger.error("Exception writing output: " + s , e );
+			return ;
+        }
 		if( loc == null )
 			loc = getLocation();
 		if( loc != null )
@@ -1009,7 +1018,11 @@ public class Shell {
 		int ret = -1;
 		try {
 			ret = cmd.run(shell , "xmlsh" , vargs);
-		} finally {
+		} 
+		catch( Throwable e ) {
+			mLogger.error("Uncaught exception in main",e);
+		}
+		finally {
 			shell.close();
 		}
 		
@@ -1584,7 +1597,7 @@ public class Shell {
 		return  new FileOutputPort(getFile(file),append);
 	}
 	
-	public OutputStream getOutputStream(String file, boolean append, SerializeOpts opts) throws FileNotFoundException, IOException
+	public OutputStream getOutputStream(String file, boolean append, SerializeOpts opts) throws FileNotFoundException, IOException, CoreException
 	{
 		return getOutputPort( file , append).asOutputStream(opts); 
 	}

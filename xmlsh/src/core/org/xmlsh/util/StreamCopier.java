@@ -13,22 +13,24 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-public class StreamCopier extends Thread
+public class StreamCopier extends AbstractCopier
 {
 	private 	static 	Logger	mLogger  = LogManager.getLogger(StreamCopier.class);
-	private		InputStream		mIn;
-	private		OutputStream	mOut;
-	private		boolean			mCloseOut;
+	private		volatile InputStream		mIn;
+	private		volatile OutputStream	mOut;
+	private		final boolean			mCloseOut;
+	private    final boolean        mCloseIn;
+	private    final Thread mainThread ;
 
-
-	public StreamCopier( InputStream in , OutputStream out ,  boolean closeOut )
+	public StreamCopier( String name , InputStream in , OutputStream out ,  boolean closeIn, boolean closeOut )
 	{
-		super("streamcopy");
+		super(name);
 		mIn = in;
 		mOut = out;
 		
-		mCloseOut = closeOut;
-		
+		mCloseOut = closeOut; 
+		mCloseIn = closeIn;
+		mainThread = Thread.currentThread();
 	}
 	/* (non-Javadoc)
 	 * @see java.lang.Thread#run()
@@ -36,33 +38,47 @@ public class StreamCopier extends Thread
 	@Override
 	public void run() 
 	{
+		mLogger.debug("running: " + getName() );
+		if( mainThread != Thread.currentThread())
+			Thread.currentThread().setName( getName() );
 
 		try {
 			Util.copyStream(mIn, mOut);
 			//mIn.close();
 			//mOut.close();
 		} catch (IOException e) {
-			mLogger.warn("IOException copying streams",e);
+			mLogger.warn("IOException copying streams: " + getName()  ,e);
 		} finally {
-			if( mCloseOut )
-				closeOut();
+			mLogger.debug("run close(): " + getName()  );
+
+			close();
 		}
 		
 	}
+	@Override
 	public void closeOut() {
-		try {
-			mOut.close();
-		} catch (IOException e) {
-			mLogger.warn("IOException closing streams",e);
-		}
+		if( mCloseOut && mOut != null )
+			synchronized (this) {
+				Util.safeClose(mOut);
+				mOut = null ;
+            }
 	}
+	@Override
 	public void closeIn() {
-		try {
-			mIn.close();
-		} catch (IOException e) {
-			mLogger.warn("IOException closing streams",e);
-		}
+		if( mCloseIn && mIn != null )
+			synchronized (this) {
+				Util.safeClose(mIn);
+				mIn = null ;
+            }
 	}
+	@Override
+    public
+    void close( )
+    {
+	    closeIn();
+	    closeOut();
+	    
+    }
 	 
 	 
 	 

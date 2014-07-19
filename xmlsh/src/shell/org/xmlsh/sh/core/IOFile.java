@@ -24,11 +24,17 @@ public class IOFile {
 	private static final EvalEnv mFileEnv = EvalEnv.newInstance( false, true, false, false);
 	private String	mPrefix;
 	private Word	mFile;
+	private String mPort; // portname or varname
+	
 	public IOFile(String prefix, Word file) {
-		super();
 		mPrefix = prefix;
 		mFile = file;
 	}
+	public IOFile(String prefix, String port) {
+		mPrefix = prefix;
+		mPort = port;
+	}
+	
 	public void print(PrintWriter out) {
 		out.print(mPrefix);
 		if( mFile != null )
@@ -37,16 +43,24 @@ public class IOFile {
 	}
 
 	
-	
 	public void exec(Shell shell, String port, SourceLocation loc ) throws IOException, CoreException {
 
 		XEnvironment env = shell.getEnv();
 		SerializeOpts sopts = shell.getSerializeOpts();
 		
+		String file=null;
+		
+		if( mFile == null) {
+			if( mPort != null )
+				file = mPort ;
+		} else
+			file = mFile.expandString(shell, mFileEnv,loc);
+
+		
 		/*
 		 * File-less redirections 1>&2 2>&1 
 		 */
-		if( mFile == null ){
+		if( file == null ){
 			
 			/*
 			 * Port Duplication puts the same port in 2 slots
@@ -76,7 +90,6 @@ public class IOFile {
 		
 		
 		
-		String file = mFile.expandString(shell, mFileEnv,loc);
 		
 		
 		/*

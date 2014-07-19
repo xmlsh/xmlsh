@@ -6,6 +6,9 @@
 
 package org.xmlsh.core;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import net.sf.saxon.Configuration;
 import net.sf.saxon.event.PipelineConfiguration;
 import net.sf.saxon.event.ReceivingContentHandler;
@@ -17,9 +20,13 @@ import net.sf.saxon.trans.XPathException;
 import org.xml.sax.ContentHandler;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.util.FileUtils;
 import org.xmlsh.util.SynchronizedOutputStream;
 import org.xmlsh.util.Util;
 
+import java.io.FileDescriptor;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -47,7 +54,8 @@ public class StreamOutputPort extends OutputPort
 	
 	
 	
-	
+	private Logger mLogger = LogManager.getLogger(StreamOutputPort.class);
+
 	
 
 	private OutputStream	 mStream;
@@ -213,8 +221,7 @@ public class StreamOutputPort extends OutputPort
        return handler;
 		
 	}
-	
-	
+
 	
 	
 

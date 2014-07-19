@@ -13,6 +13,7 @@ import org.xml.sax.ContentHandler;
 import org.xmlsh.sh.shell.SerializeOpts;
 
 import java.io.File;
+import java.io.FileDescriptor;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -35,7 +36,7 @@ import javax.xml.stream.XMLStreamWriter;
 public abstract class OutputPort extends IPort
 {
 
-	public	abstract OutputStream asOutputStream(SerializeOpts opts);
+	public	abstract OutputStream asOutputStream(SerializeOpts opts) throws CoreException;
 
 	public abstract void flush() throws  CoreException, SaxonApiException;
 	
@@ -46,7 +47,7 @@ public abstract class OutputPort extends IPort
 
 	
 	
-	public synchronized PrintStream asPrintStream(SerializeOpts opts) 
+	public synchronized PrintStream asPrintStream(SerializeOpts opts) throws CoreException 
 	{
 		return new PrintStream(asOutputStream(opts));
 	}
@@ -54,7 +55,7 @@ public abstract class OutputPort extends IPort
 	public abstract Destination asDestination(SerializeOpts opts) throws CoreException;
 	
 
-	public synchronized PrintWriter asPrintWriter(SerializeOpts opts) throws UnsupportedEncodingException {
+	public synchronized PrintWriter asPrintWriter(SerializeOpts opts) throws UnsupportedEncodingException, CoreException {
 		return new PrintWriter( 		
 				new OutputStreamWriter(asOutputStream(opts) , opts.getOutputTextEncoding() ));
 	}
@@ -66,12 +67,12 @@ public abstract class OutputPort extends IPort
 
 	
 	
-	public abstract XMLStreamWriter asXMLStreamWriter(SerializeOpts opts) throws InvalidArgumentException, XMLStreamException, SaxonApiException;
-	public abstract XMLEventWriter asXMLEventWriter(SerializeOpts opts) throws InvalidArgumentException, XMLStreamException, SaxonApiException, IOException;
+	public abstract XMLStreamWriter asXMLStreamWriter(SerializeOpts opts) throws InvalidArgumentException, XMLStreamException, SaxonApiException, CoreException;
+	public abstract XMLEventWriter asXMLEventWriter(SerializeOpts opts) throws InvalidArgumentException, XMLStreamException, SaxonApiException, IOException, CoreException;
 	
 	public abstract	IXdmItemOutputStream	asXdmItemOutputStream(SerializeOpts opts) throws CoreException;
 
-	public abstract	ContentHandler			asContentHandler( SerializeOpts opts) throws XPathException, SaxonApiException;
+	public abstract	ContentHandler			asContentHandler( SerializeOpts opts) throws XPathException, SaxonApiException, CoreException;
 	
 	public	boolean		isFile() { return false ; }
 	
@@ -79,6 +80,12 @@ public abstract class OutputPort extends IPort
 	{
 		throw new UnimplementedException("OutputPort.getFile() is not implmented() in class: " + this.getClass().getName() );
 	}
+
+	public boolean isNull()
+    {
+	    // TODO Auto-generated method stub
+	    return false;
+    }
 
 }
 

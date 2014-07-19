@@ -152,8 +152,7 @@ public class xgetopts extends XCommand {
 	}
 
 	private void writeOptions( Options opts, boolean bNoArgs, boolean bNoValues,
-			Options prog_opts, List<OptionValue> prog_optvalues, List<OptionDef> ignore_list) throws InvalidArgumentException,
-			XMLStreamException, IOException, SaxonApiException {
+			Options prog_opts, List<OptionValue> prog_optvalues, List<OptionDef> ignore_list) throws XMLStreamException, IOException, SaxonApiException, CoreException {
 		XMLStreamWriter out = getStdout().asXMLStreamWriter(getSerializeOpts(opts));
 
 		out.writeStartDocument();

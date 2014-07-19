@@ -22,6 +22,8 @@ public class IOHere {
 			here = here.replaceAll("^\t+", "" ).replaceAll("\n\t+", "\n");
 		mHere = here;
 	}
+	
+	
 	public void print(PrintWriter out) {
 		out.print(mHere);
 		

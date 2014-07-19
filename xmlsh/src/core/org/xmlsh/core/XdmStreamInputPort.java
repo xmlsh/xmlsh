@@ -24,6 +24,7 @@ import org.xmlsh.util.Util;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.FileDescriptor;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -194,6 +195,7 @@ public class XdmStreamInputPort extends InputPort {
 	public JsonNode asJson(SerializeOpts serializeOpts) throws IOException, CoreException {
 		return JSONUtils.readJsonNode( asInputStream(serializeOpts));
 	}
+
 
 }
 

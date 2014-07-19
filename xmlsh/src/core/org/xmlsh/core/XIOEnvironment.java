@@ -9,6 +9,7 @@ package org.xmlsh.core;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+import java.io.FileDescriptor;
 import java.io.IOException;
 import java.io.OutputStream;
 
@@ -27,15 +28,9 @@ public class XIOEnvironment {
 	public static final String kSTDIN 	 ="input";
 	public static final String kSTDOUT ="output";
 	
-	
-	
-	
 	private PortList<InputPort>		mInputs ;
 	private PortList<OutputPort>	mOutputs ;
 	
-
-	private	 boolean				 mStdinRedirected = false;
-
 	public	InputPort getStdin() 
 	{
 		InputPort stdin = mInputs.get( kSTDIN );
@@ -59,7 +54,7 @@ public class XIOEnvironment {
 	/*
 	 * Standard error stream - created on first request
 	 */
-	public	OutputPort	getStderr() throws IOException 
+	public	OutputPort	getStderr() 
 	{
 		OutputPort stderr = mOutputs.get(kSTDERR);
 		if( stderr == null )
@@ -74,8 +69,6 @@ public class XIOEnvironment {
 		
 		if( name == null || name.equals(kSTDIN) ){
 			name = kSTDIN ;
-			
-			mStdinRedirected = true ;
 		}
 		
 		in	= mInputs.removeNamed(name);
@@ -145,41 +138,42 @@ public class XIOEnvironment {
 	}
 	
 	
-	public boolean isStdinRedirected() { 
-		return mStdinRedirected ; 
-		}
 	
 	public XIOEnvironment() {
 
-		
 		mInputs = new PortList<InputPort>();
 		mOutputs = new PortList<OutputPort>();
-		
-		
-		
 	}
 	public XIOEnvironment( XIOEnvironment that )
 	{
 		mInputs = new PortList<InputPort>( that.mInputs );
 		mOutputs = new PortList<OutputPort>( that.mOutputs);
-		mStdinRedirected = that.mStdinRedirected;
 	}
 	
-	
+	public boolean isSystemIn( InputPort ip ) {
+		NamedPort<InputPort> np = mInputs.getPort( ip );
+		return np != null && np.getSystem();
+	}
+	public boolean isSystemOut( OutputPort ip ) {
+		NamedPort<OutputPort> np = mOutputs.getPort( ip );
+		return np != null && np.getSystem();
+	}
 
-	public void initStdio()  {
+
+	public void initStdio()  
+	{
 
 		mInputs.add( 
-				new NamedPort<InputPort>( kSTDIN ,  new StreamInputPort(System.in,null) )
+				new NamedPort<InputPort>( kSTDIN ,  new StreamInputPort(System.in,null) , true )
 		);
 
 		mOutputs.add( 
-				new NamedPort<OutputPort>( kSTDOUT, new StreamOutputPort(System.out,false) )
+				new NamedPort<OutputPort>( kSTDOUT, new StreamOutputPort(System.out,false) , true  )
 		);
 
 
 		mOutputs.add( 
-				new NamedPort<OutputPort>( kSTDERR ,  new StreamOutputPort(System.err,false) )
+				new NamedPort<OutputPort>( kSTDERR ,  new StreamOutputPort(System.err,false) , true )
 		);
 
 	}

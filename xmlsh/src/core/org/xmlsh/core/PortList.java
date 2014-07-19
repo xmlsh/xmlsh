@@ -49,6 +49,15 @@ public class PortList<P extends IPort> extends ArrayList<NamedPort<P>>
 		}
 		return null ;
 	}
+
+	public NamedPort<P> getPort(IPort p)
+    {
+		for(NamedPort<P> e : this ){
+			if( e.getPort().equals(p))
+				return e ;
+		}
+		return null ;
+    }
 	
 	
 }

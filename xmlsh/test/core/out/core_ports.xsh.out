@@ -1,1 +1,27 @@
+There are 6 ITEMS
+Modern Library
+Modern Library
+foo
+There are 3 elements
+<spam>bletch</spam>
+There are 4 elements
+<spam>bletch</spam>
+foobar should be foobar
+foobar
+<foo/>
+<foo>brace group</foo>
+<bar/>
+<foo>sub shell</foo>
+<bar/>
+output
+output2
+output3
+output4
+output5
+output6
+output7
+output8
+input1
+input2
+input3
 input4

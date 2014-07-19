@@ -7,6 +7,7 @@
 package org.xmlsh.commands.internal;
 
 import net.sf.saxon.s9api.SaxonApiException;
+import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
@@ -129,7 +130,7 @@ public class xunzip extends XCommand {
 		
 	}
 
-	private int list(ZipInputStream zis,SerializeOpts serializeOpts, List<XValue> args) throws IOException, XMLStreamException, InvalidArgumentException, SaxonApiException {
+	private int list(ZipInputStream zis,SerializeOpts serializeOpts, List<XValue> args) throws IOException, XMLStreamException, SaxonApiException, CoreException {
 		OutputPort stdout = getStdout();
 		XMLStreamWriter writer = stdout.asXMLStreamWriter(serializeOpts);
 		writer.writeStartDocument();

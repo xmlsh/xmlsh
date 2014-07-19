@@ -209,7 +209,7 @@ public class http extends XCommand {
 
 
 
-	private void writeHeaders(String outv, StatusLine statusLine, Header[] allHeaders) throws InvalidArgumentException, XMLStreamException, SaxonApiException {
+	private void writeHeaders(String outv, StatusLine statusLine, Header[] allHeaders) throws XMLStreamException, SaxonApiException, CoreException {
 		OutputPort out = mShell.getEnv().getOutputPort(outv);
 	
 		XMLStreamWriter sw = out.asXMLStreamWriter(getSerializeOpts());

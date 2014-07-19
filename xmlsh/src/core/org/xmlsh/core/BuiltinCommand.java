@@ -58,7 +58,10 @@ public abstract class BuiltinCommand extends AbstractCommand implements ICommand
 			usage( e.getMessage() );
 			return -1;
 		}
-		
+		catch( Exception e ) {
+			mLogger.error("Uncaught exception in main",e);
+			throw e ;
+		}
 		finally {
 			ShellContext.set(saved_shell);
 		}

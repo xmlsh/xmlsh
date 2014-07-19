@@ -7,7 +7,10 @@
 	<property name="release" value="1_2_5"/>
 	<property name="version" value="1.2.5"/>
 	<property name="jar" value="xmlsh-1.2.jar"/>
- 
+	<property environment="env"/>
+	<echo>JAVA_HOME: ${env.JAVA_HOME}</echo>
+	<echo>JAVADIR: ${env.JAVADIR}</echo>
+
 	 <echo>Java Version via Ant: ${ant.java.version}</echo> 
 	 <echo>Java Version System Prop: ${java.version}</echo> 
 
@@ -47,7 +50,7 @@ version.build_date=${bdate.datetime}
 version.release=${release}
 version.version=${version}
 </echo>
-    	 <javac destdir="_out" debug="on" source="1.6" target="1.6">
+    	 <javac destdir="_out" debug="on" source="1.7" target="1.7">
     	        <src path="src/core" />
     	 		<src path="src/shell"/>
         	 	<src path="src/commands"/>

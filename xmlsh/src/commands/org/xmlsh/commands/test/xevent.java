@@ -49,7 +49,7 @@ public class xevent extends XCommand {
 
 
 
-	private void send(int n) throws InvalidArgumentException, XMLStreamException, IOException, SaxonApiException {
+	private void send(int n) throws XMLStreamException, IOException, SaxonApiException, CoreException {
 		
 		XMLStreamWriter	writer = getStdout().asXMLStreamWriter(getSerializeOpts());
 		writer.writeStartDocument();

@@ -20,6 +20,7 @@ import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 
 import java.io.ByteArrayOutputStream;
+import java.io.FileDescriptor;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -294,7 +295,6 @@ public class VariableOutputPort extends OutputPort
 		
 	}
 
-	
 }
 
 

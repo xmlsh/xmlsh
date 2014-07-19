@@ -231,9 +231,8 @@ public class XEnvironment  {
 	{
 		mIO.release();
 		mIO = mSavedIO.pop();
-
-		
 	}
+	
 
 	
 
@@ -246,10 +245,11 @@ public class XEnvironment  {
 	 * @return
 	 * @throws FileNotFoundException
 	 * @throws IOException
+	 * @throws CoreException 
 	 * @see org.xmlsh.sh.shell.Shell#getOutputStream(java.lang.String, boolean)
 	 */
 	public OutputStream getOutputStream(String file, boolean append, SerializeOpts opts ) throws FileNotFoundException,
-			IOException {
+			IOException, CoreException {
 		return mShell.getOutputStream(file, append, opts );
 	}
 
@@ -307,7 +307,9 @@ public class XEnvironment  {
 		mVars.unset( name );
 	}
 	
-	public boolean isStdinRedirected() { return mIO.isStdinRedirected() ; }
+	public boolean isStdinSystem() { return mIO.isSystemIn(getStdin()) ; }
+	public boolean isStdoutSystem() { return  mIO.isSystemOut(getStdout()) ; }
+	public boolean isStderrSystem() { return  mIO.isSystemOut(getStderr()) ; }
 
 
 	/**
@@ -315,7 +317,7 @@ public class XEnvironment  {
 	 * @throws IOException 
 	 * @see org.xmlsh.core.XIOEnvironment#getStderr()
 	 */
-	public OutputPort getStderr() throws IOException {
+	public OutputPort getStderr() {
 		return mIO.getStderr();
 	}
 
@@ -335,7 +337,7 @@ public class XEnvironment  {
 	 * @throws IOException 
 	 * @see org.xmlsh.core.XIOEnvironment#getStdout()
 	 */
-	public OutputPort getStdout() throws IOException {
+	public OutputPort getStdout()  {
 		return mIO.getStdout();
 	}
 	

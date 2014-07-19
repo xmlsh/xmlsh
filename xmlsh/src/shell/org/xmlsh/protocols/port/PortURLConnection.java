@@ -57,8 +57,12 @@ public class PortURLConnection extends URLConnection {
 		String name = this.getURL().getPath();
 		Shell shell = ShellContext.get();
 		if (shell != null)
-			return shell.getEnv().getOutputPort(name).asOutputStream(shell.getSerializeOpts());
-		else
+	        try {
+	            return shell.getEnv().getOutputPort(name).asOutputStream(shell.getSerializeOpts());
+            } catch (CoreException e) {
+	          throw new IOException(e);
+            }
+        else
 			return null;
 	}
 	

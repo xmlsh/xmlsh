@@ -6,16 +6,22 @@
 
 package org.xmlsh.core;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
 import org.xml.sax.InputSource;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.util.FileUtils;
 import org.xmlsh.util.JSONUtils;
 import org.xmlsh.util.SynchronizedInputStream;
 import org.xmlsh.util.Util;
 
+import java.io.FileDescriptor;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -38,6 +44,7 @@ public class StreamInputPort extends InputPort {
 
 	// An Input Port may be either a Stream or an XML value
 	private InputStream mStream;
+	private Logger mLogger = LogManager.getLogger(StreamInputPort.class);
 
 	public StreamInputPort(InputStream is, String systemId ) {
 		mStream = is;
@@ -50,6 +57,7 @@ public class StreamInputPort extends InputPort {
 
 		return mStream == null ? null : new SynchronizedInputStream(mStream);
 
+		
 	}
 
 	public synchronized void close() throws CoreException {
@@ -153,6 +161,7 @@ public class StreamInputPort extends InputPort {
 	public JsonNode asJson(SerializeOpts serializeOpts) throws IOException, CoreException {
 		return JSONUtils.readJsonNode( asInputStream(serializeOpts));
 	}
+
 
 
 }

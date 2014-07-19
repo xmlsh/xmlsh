@@ -17,6 +17,7 @@ import org.xmlsh.util.Util;
 import org.xmlsh.util.XMLEventInputStream;
 import org.xmlsh.util.XMLEventStreamReader;
 
+import java.io.FileDescriptor;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -179,6 +180,7 @@ public class XMLEventInputPort extends InputPort {
 	public JsonNode asJson(SerializeOpts serializeOpts) throws IOException, CoreException {
 		return JSONUtils.readJsonNode( asInputStream(serializeOpts));
 	}
+
 
 	
 

@@ -120,7 +120,7 @@ public class xproperties extends XCommand
 		
 	}
 
-	private void writeVars(Properties props, List<String> vars , SerializeOpts serializeOpts) throws UnsupportedEncodingException, IOException, InvalidArgumentException {
+	private void writeVars(Properties props, List<String> vars , SerializeOpts serializeOpts) throws UnsupportedEncodingException, IOException, CoreException {
 		
 		PrintWriter out = getStdout().asPrintWriter(serializeOpts);
 		for( String var : vars )
@@ -133,7 +133,7 @@ public class xproperties extends XCommand
 
 
 
-	private void writeText(Properties props, String comment , SerializeOpts serializeOpts) throws IOException {
+	private void writeText(Properties props, String comment , SerializeOpts serializeOpts) throws IOException, CoreException {
 		props.store(getEnv().getStdout().asOutputStream(serializeOpts), comment);
 		
 	}

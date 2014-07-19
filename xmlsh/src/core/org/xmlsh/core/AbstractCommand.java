@@ -84,10 +84,11 @@ public abstract class AbstractCommand implements ICommand {
 	 * @return
 	 * @throws FileNotFoundException
 	 * @throws IOException
+	 * @throws CoreException 
 	 * @see org.xmlsh.core.XEnvironment#getOutputStream(java.lang.String, boolean)
 	 */
 	public OutputStream getOutputStream(String file, boolean append, SerializeOpts opt) throws FileNotFoundException,
-			IOException {
+			IOException, CoreException {
 				return mEnvironment.getOutputStream(file, append,opt);
 			}
 

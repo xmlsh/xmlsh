@@ -5,12 +5,18 @@ package org.xmlsh.core;
 public class NamedPort<P extends IPort> {
 	String		mName;		// Name
 	P			mPort;		// port 
+	boolean    mSystem;    // System port from original env
 	
-	public NamedPort( String name ,  P port  )
+	public NamedPort( String name ,  P port   ) 
+	{
+		this(name,port,false);
+	}
+	
+	public NamedPort( String name ,  P port , boolean system  ) 
 	{
 		mName = name ;
-
 		mPort = port ;
+		mSystem = system ;
 	}
 	
 	public NamedPort( NamedPort<P> that ){
@@ -25,4 +31,11 @@ public class NamedPort<P extends IPort> {
 	public P getPort(){
 		return mPort ;
 	}
+
+	public boolean getSystem()
+	{
+		return mSystem;
+	}
+	
+	
 }

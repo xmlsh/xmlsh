@@ -17,8 +17,10 @@ import org.xml.sax.InputSource;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.util.FileUtils;
 import org.xmlsh.util.JSONUtils;
+import org.xmlsh.util.Util;
 
 import java.io.File;
+import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -40,6 +42,7 @@ public class FileInputPort extends InputPort {
 	
 	private		StreamInputPort		mStreamPort = null ;
 	private		File				mFile  = null ;
+
 	
 	
 	
@@ -75,15 +78,14 @@ public class FileInputPort extends InputPort {
 
 
 
-
-
-	private StreamInputPort getStreamPort() {
+	private StreamInputPort getStreamPort() throws CoreException  {
 		if( mStreamPort == null )
 			try {
-				mStreamPort = new StreamInputPort( new FileInputStream(mFile) , getSystemId() );
+				FileInputStream fileStream = new FileInputStream(mFile);
+				mStreamPort = new StreamInputPort( fileStream , getSystemId() );
 			} catch (FileNotFoundException e) {
-				mLogger.warn("File not found in FileInputPort.getStreamPort(): " + mFile.getAbsolutePath() , e );
-			}
+				mLogger.warn( "Error opening file for input: " + mFile.getAbsolutePath() , e );
+			} 
 		return mStreamPort;
 	}
 
@@ -151,11 +153,8 @@ public class FileInputPort extends InputPort {
 	 * @see org.xmlsh.core.InputPort#isFile()
 	 */
 	public boolean isFile() {
-		return true ;
+		return mFile != null  ;
 	}
-
-
-
 
 
 	/**
@@ -240,7 +239,6 @@ public class FileInputPort extends InputPort {
 
 
 
-
 	/**
 	 * @param serializeOpts
 	 * @return
@@ -258,6 +256,7 @@ public class FileInputPort extends InputPort {
 		
 		
 	}
+
 
 	
 	

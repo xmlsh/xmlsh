@@ -116,7 +116,7 @@
     	SwitchTo(DEFAULT);
     }
  }}/* COMMENTS */<* >SPECIAL_TOKEN :{  < SINGLE_LINE_COMMENT : "#" (~[ "\n" ])* >   : DEFAULT}< DEFAULT >TOKEN :{  < CSEMI : ";" >}< CMD >TOKEN :{  < AND_IF : "&&" > : DEFAULT| < OR_IF : "||" > : DEFAULT}< DEFAULT, CMD >TOKEN :{  < DGREAT : ">>" >
-  | < DSEMI : ";;" > : DEFAULT}< DEFAULT, CMD >TOKEN :{  < CLOBBER : ">|" >}< DEFAULT, CMD >TOKEN :{  < DLESSMINUS : "<<-" >  {    matchedToken.image = readHere();  }|   < DLESS : "<<" >  {    matchedToken.image = readHere();  }}
+  | < DSEMI : ";;" > : DEFAULT}< DEFAULT, CMD >TOKEN :{  < CLOBBER : ">|" >}
 
 < DEFAULT  > TOKEN :{   < CATCH : "catch" >
  |
@@ -124,10 +124,65 @@
  }
 
 TOKEN :{  < IF : "if" >| < ELIF : "elif" >| < THEN : "then" >| < ELSE : "else" >| < FI : "fi" >| < DO : "do" > : DEFAULT| < CASE : "case" >| < WHILE : "while" >| < UNTIL : "until" >| < TRY : "try" > : DEFAULT| < ESAC: "esac" > : DEFAULT | < FINALLY : "finally" > : DEFAULT
-| < RETURN : "return" > : CMD}< DEFAULT, CMD >TOKEN :{  < DONE : "done" >}< DEFAULT >TOKEN :{  < LBRACE : "{" > // RESERVED WORD only at beginning of command
+| < RETURN : "return" > : CMD}< DEFAULT, CMD >TOKEN :{  < DONE : "done" >}
+/*
+ * IO Redirect highest priority
+ * Make them as long a token as possible
+ */		
+< DEFAULT, CMD >
+TOKEN :
+{
+  < NLESSANDN :  < DIGITS > "<&" < DIGITS > > 
+| < NGTANDN   :  < DIGITS > ">&" < DIGITS > > 
+| < NLTN      :  < DIGITS > "<" < DIGITS >  > 
+| < NGTN      :  < DIGITS > ">" < DIGITS >  > 
+| < NGTGT     :  < DIGITS > ">>" > 
+| < NGT       :  < DIGITS > ">" > 
+| < NLT       :  < DIGITS > "<" >
+| < PLESSANDP :  < PORTWORD > "<&" < PORTWORD > > 
+| < PGTANDP  :   < PORTWORD > ">&" < PORTWORD > > 
+| < PLTP      :  < PORTWORD > "<" < PORTWORD >  > 
+| < PGTP      :  < PORTWORD > ">" < PORTWORD >  > 
+| < PGTGP     :  < PORTWORD > ">>" < PORTWORD > > 
+| < PGT       :  < PORTWORD > ">" > 
+| < PLT       :   < PORTWORD > "<" >
+| < GTP       :   ">" < PORTWORD > >
+| < LTP       :   "<" < PORTWORD > >
+| < GT        : ">" >
+| < LT        : "<" > 
+| < #DIGITS  : [ "1"-"2" ] >
+| < #PORTWORD :  "("  ([ "A"-"Z", "a"-"z", "_", "0"-"9" ])+  ")" >
+} 
+
+
+< CMD >
+TOKEN :
+{
+    < PDLESSMINUS : < PORTNAME > "<<-" >
+  {
+    matchedToken.image =  matchedToken.image + readHere();
+  }
+|  < PDLESS : < PORTNAME > "<<" >
+  {
+    matchedToken.image =  matchedToken.image + readHere();
+  }
+|  < DLESSMINUS : "<<-" >
+  {
+    matchedToken.image = readHere();
+  }
+|  < DLESS : "<<" >
+  {
+    matchedToken.image = readHere();
+  }
+| < #PORTNAME :  "("  ([ "A"-"Z", "a"-"z", "_", "0"-"9" ])+  ")" >
+  
+}
+
+
+
+< DEFAULT >TOKEN :{  < LBRACE : "{" > // RESERVED WORD only at beginning of command
 | < BANG : "!" >| < LPAREN : "(" >}< CMD >TOKEN :{  < LPAREN2 : "(" >| < LBRACE2 : "{" >| < RBRACE2 : "}" >}< DEFAULT >TOKEN :{  < RBRACE : "}" > : CMD // RESERVED WORD only at beginning of command and starts a command    
-}< DEFAULT, CMD >TOKEN :{  < LESS : "<" >| < GT : ">" >| < TGT : "2>" >| < TGTGT : "2>>" >
-| < TGTAND1 : "2>&1" >| < GTAND : ">&" >| < GTAND2 : "1>&2" >| < LTAND : "<&" >}< CMD, DEFAULT >TOKEN :{  < RPAREN : ")" >  {
+}< CMD, DEFAULT >TOKEN :{  < RPAREN : ")" >  {
     // System.err.println("RPAREN [" + state()+"] "+  call_depth );
     // Call syntax nested parens
     if( call_depth >  0 )    {      call_depth--;
@@ -301,13 +356,79 @@ String word_or_name() :
     s = t1.toString();
     return new Assign(s.substring(0, s.length() - 1), "=",new StringWord(""));
   }
-}WordList cmd_words() :{  WordList ws = new WordList();  Word w;}{  (    (      w = cmd_word()    )    {      ws.add(w);    }  )*  {    return ws;  }}CommandSuffix cmd_suffix() :{  CommandSuffix s = new CommandSuffix();  Word w;  IORedirect io;}{  (    (      w = cmd_word()    )    {      s.addArg(w);    }  )*  (    io = io_redirect()    {      s.addIO(io);    }  )*  {    return s;  }}IORedirectList redirect_list() :{  IORedirectList r = new IORedirectList();  IORedirect io;}{  (    io = io_redirect()    {      r.add(io);    }  )+  {    return r;  }}IORedirect io_redirect() :{  IOFile i = null;  Word s;  IOHere h = null;  Word port = null;  Word port2 = null;}{  /* lookahead enough to disambiguate the next 2 rules */  LOOKAHEAD(5)  [ port = portname() ]  (    i = io_file()  | h = io_here()  )  {    if (i != null)     return new IORedirect(port, i);    else     return new IORedirect(port, h);  }| LOOKAHEAD(5)  port = portname() < GTAND > port2 = port_word()  {    return new IORedirect(port, new IOFile(">&", port2));  }| port = portname() < LTAND > port2 = port_word()  {    return new IORedirect(port, new IOFile("<&", port2));  }| < TGT > s = filename_word()  {    return new IORedirect(null, new IOFile("2>", s));  }
+}WordList cmd_words() :{  WordList ws = new WordList();  Word w;}{  (    (      w = cmd_word()    )    {      ws.add(w);    }  )*  {    return ws;  }}CommandSuffix cmd_suffix() :{  CommandSuffix s = new CommandSuffix();  Word w;  IORedirect io;}{  (    (      w = cmd_word()    )    {      s.addArg(w);    }  )*  (    io = io_redirect()    {      s.addIO(io);    }  )*  {    return s;  }}IORedirectList redirect_list() :{  IORedirectList r = new IORedirectList();  IORedirect io;}{  (    io = io_redirect()    {      r.add(io);    }  )+  {    return r;  }}IORedirect io_redirect() :{  Word s;  Token t = null ;
+  String ts;
+  String port;}{  /* lookahead enough to disambiguate the next 2 rules */
+
+ (
+     t= < NLESSANDN > |
+     t=  <  NGTANDN > |
+     t=  < NLTN > |
+     t=  <  NGTN >
+    )
+    {      return new IORedirect(null, t.toString() , null );
+   }
+| (
+     t=  <  NGT > |
+     t=  < NLT > |
+     t=  <  NGTGT > |
+     t=  < LT > |
+     t= < GT > |
+     t= < DGREAT > |
+     t= < CLOBBER > 
+    ) s = filename_word()
+   {      return new IORedirect(null, t.toString(), s);   }
+
+| (
+     t= < PLESSANDP > |
+     t= < PGTANDP >    |
+     t= < PLTP > |
+     t= < PGTP > |
+     t= < PGTGP > |
+     t= < GTP > |
+     t= < LTP > )
+  {      return new IORedirect(   t.toString() ) ;
+  }
+| (
+     t=<PGT > |
+     t=<PLT > )
+      s=filename_word()
+   {       return new IORedirect( t.toString() , s  );
+    }
+|  t =< PDLESS > 
+  {
+    ts = t.toString();
+    port = ts.substring( 0 , ts.indexOf(')' + 1));
+    return new  IORedirect( port ,  new IOHere( "<<",ts.substring(port.length() + 2)));
+  }
+| 
+  t  = < DLESSMINUS >
+  {
+    return new IORedirect(null ,  new IOHere("<<-", t.toString()));
+  }
+| 
+  t  = < PDLESSMINUS >
+  {
+    ts = t.toString();
+    port = ts.substring( 0 , ts.indexOf(')' + 1));
+    return new IORedirect(port, new IOHere( "<<-" ,  ts.substring(port.length() + 3)));
+  }
+|
+  t =< DLESS > 
+  {
+    return new  IORedirect(null, new IOHere("<<", t.toString()));
+  }
+}
+
+
+   
+/*  LOOKAHEAD(5)  [ port = portname() ]  (    i = io_file()  | h = io_here()  )  {    if (i != null)     return new IORedirect(port, i);    else     return new IORedirect(port, h);  }
+| LOOKAHEAD(5)  port = portname() < GTAND > port2 = port_word()  {    return new IORedirect(port, new IOFile(">&", port2));  }| port = portname() < LTAND > port2 = port_word()  {    return new IORedirect(port, new IOFile("<&", port2));  }| < TGT > s = filename_word()  {    return new IORedirect(null, new IOFile("2>", s));  }
 | < TGTGT > s = filename_word()
   {
     return new IORedirect(null, new IOFile("2>>", s));
   }
-  | < TGTAND1 >  {    return new IORedirect(null, new IOFile("2>&1", null));  }| < GTAND >  {    return new IORedirect(null, new IOFile(">&", null));  }| < GTAND2 >  {    return new IORedirect(null, new IOFile("1>&2", null));  }}Word portname() :{  String port = null;}{  < LPAREN2 > port = word_or_name() < RPAREN >  {
-     return new StringWord(port);
-      }}IOFile io_file() :{  Token t;  Word s;  String num;  Command c;}{  < LESS > s = filename_word()  {    return new IOFile("<", s);  }| < GT > s = filename_word()  {    return new IOFile(">", s);  }
-| < DGREAT > s = filename_word()  {    return new IOFile(">>", s);  }| t = < CLOBBER > s = filename_word()  {    return new IOFile(t.toString(), s);  }}String filename() :{  Token t;}{  t = < WORD >  {    return t.toString();  }| t = < NAME >  {    return t.toString();  }}Word filename_word() :{  Word w;  Token t;  String s;  Command c;}{  w = port_word()  {    return w;  }|  (    t = < WORD >  | t = < NAME >  | t = < XEXPR >  | t = < BIGQUOTE >  )  {    return new StringWord(t.toString());  }| t = < VAR_SUBPROC > c = compound_list() < RPAREN >  {    return new CommandWord(t.toString(), c);  }| t = < VAR_SUBPROC_FILE > s = filename() < RPAREN >  {    return new CommandFileWord(t.toString(), s);  }|  (    < LBRACE >  | < LBRACE2 >  )  (    t = < WORD >  | t = < NAME >  )  (    < RBRACE2 >  | < RBRACE >  )  {    return new StringWord("{" + t.toString() + "}");  }}Word port_word() :{  Word w;  Token t;}{  ( < LPAREN > | < LPAREN2 > )  (    t = < WORD >  | t = < NAME >  )  ")"  {    return new StringWord("(" + t.toString() + ")");  }
-}IOHere io_here() :{  Token tless;  String s;}{  tless = < DLESS >  {    return new IOHere("<<", tless.toString());  }|   tless = < DLESSMINUS >  {    return new IOHere("<<-", tless.toString());  }}void newline_list() :{}{  (LOOKAHEAD(1,<NEWLINE>)< NEWLINE >)+}void linebreak() :{}{  (LOOKAHEAD(1,<NEWLINE>) < NEWLINE >)*}String separator_op() :{}{  < AMP >  {    return "&";  }| ( < SEMI > | < CSEMI > )  {    return ";";  }}String separator() :{  String op;}{  LOOKAHEAD(1,newline_list())  newline_list()  {    return "\n";  }| op = separator_op()  [    LOOKAHEAD(1,newline_list()) newline_list()  ]  {    return op;  }}void sequential_sep() :{}{  < SEMI > linebreak()| newline_list()}
+  | < TGTAND1 >  {    return new IORedirect(null, new IOFile("2>&1", null));  }| < GTAND >  {    return new IORedirect(null, new IOFile(">&", null));  }| < GTAND2 >  {    return new IORedirect(null, new IOFile("1>&2", null));  }*/
+
+String filename() :{  Token t;}{  t = < WORD >  {    return t.toString();  }| t = < NAME >  {    return t.toString();  }}Word filename_word() :{  Word w;  Token t;  String s;  Command c;}{  w = port_word()  {    return w;  }|  (    t = < WORD >  | t = < NAME >  | t = < XEXPR >  | t = < BIGQUOTE >  )  {    return new StringWord(t.toString());  }| t = < VAR_SUBPROC > c = compound_list() < RPAREN >  {    return new CommandWord(t.toString(), c);  }| t = < VAR_SUBPROC_FILE > s = filename() < RPAREN >  {    return new CommandFileWord(t.toString(), s);  }|  (    < LBRACE >  | < LBRACE2 >  )  (    t = < WORD >  | t = < NAME >  )  (    < RBRACE2 >  | < RBRACE >  )  {    return new StringWord("{" + t.toString() + "}");  }}Word port_word() :{  Word w;  Token t;}{  ( < LPAREN > | < LPAREN2 > )  (    t = < WORD >  | t = < NAME >  )  ")"  {    return new StringWord("(" + t.toString() + ")");  }
+}void newline_list() :{}{  (LOOKAHEAD(1,<NEWLINE>)< NEWLINE >)+}void linebreak() :{}{  (LOOKAHEAD(1,<NEWLINE>) < NEWLINE >)*}String separator_op() :{}{  < AMP >  {    return "&";  }| ( < SEMI > | < CSEMI > )  {    return ";";  }}String separator() :{  String op;}{  LOOKAHEAD(1,newline_list())  newline_list()  {    return "\n";  }| op = separator_op()  [    LOOKAHEAD(1,newline_list()) newline_list()  ]  {    return op;  }}void sequential_sep() :{}{  < SEMI > linebreak()| newline_list()}

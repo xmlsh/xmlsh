@@ -13,24 +13,42 @@ import java.io.PrintWriter;
 
 public class IORedirect {
 	private static final EvalEnv mPortEnv = EvalEnv.basicInstance();
-	Word	mPortname;	// (word)
+	String	mPortname;	// (port)
 	IOFile	mFile;		//  < file
 	IOHere	mHere;		// <<tag ...tag
 
+	// <port>op  ->  (port) op
 
-	
-	public IORedirect( Word name , IOFile file ){
-		mPortname = name ;
+	/* (port)>(port) */
+	public IORedirect( String portstring ) {
 		
-		mFile = file;
-		mHere = null;
-
+		if( portstring.startsWith("(")){
+			mPortname = portstring.substring(0, portstring.indexOf(')') + 1 );
+			String op = portstring.substring(mPortname.length(),portstring.lastIndexOf('(')) ;
+			String port2 = portstring.substring(mPortname.length() + op.length() );
+			mFile = new IOFile( op , port2 );
+		} 
+		
+	}
+	/* (port)OP fileWord */
+	public IORedirect( String portstring , Word file ) {
+		if( portstring.startsWith("(")){
+			mPortname = portstring.substring(0, portstring.indexOf(')') + 1 );
+			String op = portstring.substring(mPortname.length()) ;
+			mFile = new IOFile( op , file );
+		} else
+			mFile = new IOFile( portstring , file );
 	}
 	
-	public IORedirect(Word name ,  IOHere here ){
-		mPortname = name ;
+	// <port> op file
+	public IORedirect( String portstring , String op , Word file ) {
+		mPortname = portstring ;
+		mFile = new IOFile( op , file );
+	}
+	
+	public IORedirect(String portname ,  IOHere here ){
+		mPortname = portname ;
 		mFile = null;
-
 		mHere = here;
 	}
 	
@@ -39,9 +57,7 @@ public class IORedirect {
 	public void print(PrintWriter out) {
 		
 		if( mPortname != null ){
-			out.print("(");
-			mPortname.print(out);
-			out.print(")");
+			out.print(mPortname);
 			
 		}
 			
@@ -57,7 +73,9 @@ public class IORedirect {
 		
 		String port = null;
 		if( mPortname != null )
-			port  = mPortname.expandString(shell, mPortEnv, loc );
+			port  = mPortname.substring(
+					  mPortname.indexOf('(') + 1 ,
+					  mPortname.indexOf(')'));
 		
 		
 		if( mFile != null )

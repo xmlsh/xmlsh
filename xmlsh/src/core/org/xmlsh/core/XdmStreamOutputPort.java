@@ -23,6 +23,7 @@ import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.Util;
 
 import java.io.ByteArrayOutputStream;
+import java.io.FileDescriptor;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;

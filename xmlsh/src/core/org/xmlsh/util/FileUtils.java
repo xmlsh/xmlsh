@@ -7,6 +7,10 @@
 package org.xmlsh.util;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 public class FileUtils
 {
@@ -29,8 +33,23 @@ public class FileUtils
 		return Util.isBlank(file) || file.equals("/dev/null") ||
 				(Util.isWindows() && file.equalsIgnoreCase("NUL"));
     }
-
-
+	@SuppressWarnings("unchecked")
+    public static  <T extends InputStream> T getInputStream(InputStream stream, Class<T> cls )
+    {
+	    if( stream == null )
+	    	return null ;
+	    if( cls.isInstance( stream ) )
+	    	return (T) stream ;
+	    if( stream instanceof SynchronizedInputStream )
+	    	return getInputStream( ((SynchronizedInputStream)stream).getStream() , cls );
+	    
+		return null;
+		
+    }
+	
+	public boolean hasConsole() {
+		return System.console() != null ;
+	}
 }
 
 
