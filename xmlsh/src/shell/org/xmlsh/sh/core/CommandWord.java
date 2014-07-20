@@ -80,7 +80,7 @@ public class CommandWord extends Word {
 		finally {
 
 			Util.safeClose(filterOut);
-			shell.close();
+			Util.safeClose( shell );
 
 			
 		}

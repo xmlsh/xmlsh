@@ -131,7 +131,7 @@ public class XmlshServlet extends HttpServlet {
 			
 			finally {
 				if( shell != null )
-					shell.close();
+					Util.safeClose(shell);
 
 			}
 	

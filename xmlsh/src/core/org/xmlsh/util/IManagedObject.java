@@ -6,10 +6,17 @@
 
 package org.xmlsh.util;
 
+import java.io.Flushable;
+import java.io.IOException;
 
-public interface IManagedObject {
-	void	addRef();
-	void	release() ;
+
+public interface IManagedObject  extends AutoCloseable, IReferenceObject {
+	
+	
+	
+	
+	
+
 }
 
 

@@ -22,7 +22,7 @@ public class ManagedHttpSession extends ManagedObject
 
 
 	@Override
-	protected void close() {
+    public void close() {
 		mSession = null ;
 		
 	}

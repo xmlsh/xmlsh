@@ -30,6 +30,7 @@ import org.xmlsh.sh.shell.Shell;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -889,14 +890,14 @@ public class Util
 	}
 
 
-	public static void safeClose(OutputStream out) {
+	
+	public static void safeClose(Closeable closable) {
 		try {
-			if( out != null )
-				out.close();
+			if( closable != null )
+				closable.close();
 		} catch( Exception e )
 		{
-
-			mLogger.info("Exception closing output stream",e);
+			mLogger.info("Exception closing: " + closable.getClass().getName() ,e);
 			
 		}
 		

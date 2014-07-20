@@ -50,6 +50,7 @@ import org.xmlsh.xpath.EvalDefinition;
 import org.xmlsh.xpath.ShellContext;
 
 import java.io.BufferedWriter;
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -75,7 +76,7 @@ import java.util.Properties;
 import java.util.Random;
 import java.util.Stack;
 
-public class Shell {
+public class Shell implements AutoCloseable, Closeable {
 	
 
 
@@ -411,9 +412,8 @@ public class Shell {
 	}
 	
 	
-	public void close() 
+	public void close() throws IOException
 	{
-		try {
 			if( mParent != null )
 				mParent.notifyChildClose(this);
 			mParent = null ;
@@ -428,9 +428,6 @@ public class Shell {
 				mSession.release();
 				mSession = null ;
 			}
-		} catch (CoreException e) {
-			mLogger.error("Exception closing shell" , e);
-		}
 	}
 	
 

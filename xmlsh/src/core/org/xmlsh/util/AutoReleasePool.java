@@ -6,16 +6,18 @@
 
 package org.xmlsh.util;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.util.ArrayList;
 
 @SuppressWarnings("serial")
-public class AutoReleasePool extends ArrayList<IManagedObject> {
-	protected void finalize()
+public class AutoReleasePool extends ArrayList<IManagedObject> implements Closeable, AutoCloseable {
+	protected void finalize() throws Exception 
 	{
 		close();
 	}
-	public void	close() {
-		for( IManagedObject obj : this )
+	public void	close() throws IOException {
+		for( IReferenceObject obj : this )
 				obj.release();
 		this.clear();
 	}

@@ -18,6 +18,7 @@ import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.AutoReleasePool;
 import org.xmlsh.util.IManagedObject;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -30,7 +31,7 @@ import java.util.Stack;
 
 import javax.xml.transform.Source;
 
-public class XEnvironment  {
+public class XEnvironment implements AutoCloseable, Closeable {
 	
 	@SuppressWarnings("unused")
 	private 	static Logger mLogger = LogManager.getLogger( XEnvironment.class );
@@ -182,9 +183,9 @@ public class XEnvironment  {
 	}
 
 
-	public void close() throws CoreException {
+	public void close() throws IOException  {
 		if( this.mSavedIO != null && ! mSavedIO.isEmpty())
-		   throw new CoreException("FIXME");
+		   throw new IOException("Closing XEnvironment when mSavedIO is not empty");
 		
 		mIO.release();
 		if( mAutoRelease != null ){

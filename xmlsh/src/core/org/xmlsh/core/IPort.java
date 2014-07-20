@@ -52,7 +52,6 @@ public abstract class IPort implements IManagedObject {
 			}
 	}
 	
-	abstract void close() throws CoreException ;
 	
 	public	boolean	  isFile() { return false ; }
 	

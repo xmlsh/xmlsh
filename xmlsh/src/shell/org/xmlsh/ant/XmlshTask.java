@@ -13,6 +13,7 @@ import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Task;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.util.Util;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -89,7 +90,7 @@ public class XmlshTask extends Task {
     		throw new BuildException(e);
     		
     	} finally {
-    		if( shell != null ) shell.close();
+    		Util.safeClose(shell);
     	}
     	
 

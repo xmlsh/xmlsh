@@ -13,10 +13,10 @@ public class SessionEnvironment extends ManagedObject {
 
 	private		Map<String, IManagedObject>		mVars;
 	
-	protected void close()
+	public void close() throws Exception
 	{
 		if( mVars != null ){
-			for( IManagedObject obj : mVars.values() )
+			for( IReferenceObject obj : mVars.values() )
 				obj.release();
 			mVars.clear();
 			mVars = null;
@@ -28,11 +28,11 @@ public class SessionEnvironment extends ManagedObject {
 	 * Get a managed object and adds a reference to it
 	 */
 	
-	public synchronized IManagedObject	getVar(String key)
+	public synchronized IReferenceObject	getVar(String key)
 	{
 		if( mVars == null )
 			return null;
-		IManagedObject obj = mVars.get(key);
+		IReferenceObject obj = mVars.get(key);
 		if( obj != null )
 			obj.addRef();
 		return obj;

@@ -17,6 +17,7 @@ import org.xmlsh.sh.core.Command;
 import org.xmlsh.sh.core.SourceLocation;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.util.Util;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -215,10 +216,8 @@ public class XShellThread extends Thread {
 			mLogger .warn("Exception running shell commands",e);
 
 		}finally {
-			if( mShell != null )
-				mShell.close();
-			if( cmdPipe != null )
-				cmdPipe.close();
+			Util.safeClose( mShell );
+			Util.safeClose( cmdPipe );
 			
 
 		}

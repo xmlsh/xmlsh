@@ -6,6 +6,9 @@
 
 package org.xmlsh.util;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 
 /*
  * Default implementation of a managed object
@@ -14,10 +17,15 @@ package org.xmlsh.util;
 public abstract class ManagedObject implements IManagedObject {
 
 	private		int mRef = 1;
+	private static Logger  mLogger = LogManager.getLogger(ManagedObject.class);
 
 	protected void finalize()
 	{
-		close();
+		try {
+	        close();
+        } catch (Exception e) {
+	       mLogger .debug("Exception closing Managed Object",e);
+        }
 	}
 	
 	@Override
@@ -29,11 +37,20 @@ public abstract class ManagedObject implements IManagedObject {
 	@Override
 	public synchronized void release()  {
 		if( --mRef <= 0 )
-			close();
+			closeObject();
 
 	}
+
+	private void closeObject()
+    {
+	    try {
+	       close(); 
+        } catch (Exception e) {
+        	mLogger.debug("Exception closing managed object: " + this.getClass().toString());
+        }
+	    
+    }
 	
-	 abstract protected void close();
 }
 
 

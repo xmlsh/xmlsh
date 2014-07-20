@@ -61,7 +61,7 @@ public class ShellThread extends Thread {
 		
 		} finally {
 			ShellContext.set(null);
-			mShell.close();
+			Util.safeClose(mShell);
 		}
 		
 	}
