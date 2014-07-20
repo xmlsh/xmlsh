@@ -17,7 +17,7 @@ public class AutoReleasePool extends ArrayList<IManagedObject> implements Closea
 		close();
 	}
 	public void	close() throws IOException {
-		for( IReferenceObject obj : this )
+		for( IReleasable obj : this )
 				obj.release();
 		this.clear();
 	}

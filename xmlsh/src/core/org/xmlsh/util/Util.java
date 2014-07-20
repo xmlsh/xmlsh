@@ -891,7 +891,7 @@ public class Util
 
 
 	
-	public static void safeClose(Closeable closable) {
+	public static void safeClose(AutoCloseable closable) {
 		try {
 			if( closable != null )
 				closable.close();
@@ -909,31 +909,19 @@ public class Util
 				out.close();
 		} catch( Exception e )
 		{
-			mLogger.info("Exception closing output stream",e);
-			
-		}
-		
-	}public static void safeClose(XMLStreamReader reader) {
-		try {
-			if( reader != null )
-				reader.close();
-		} catch( Exception e )
-		{
-			mLogger.info("Exception closing output stream",e);
+			mLogger.debug("Exception closing XMLStreamWriter",e);
 			
 		}
 		
 	}
 	
-	
-	public static void safeClose(InputStream in) {
+	public static void safeClose(XMLStreamReader reader) {
 		try {
-			if( in != null )
-				in.close();
+			if( reader != null )
+				reader.close();
 		} catch( Exception e )
 		{
-
-			mLogger.info("Exception closing input stream",e);
+			mLogger.debug("Exception closing  XMLStreamReader",e);
 			
 		}
 		

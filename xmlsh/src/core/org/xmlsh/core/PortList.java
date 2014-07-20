@@ -6,59 +6,57 @@
 
 package org.xmlsh.core;
 
+import org.xmlsh.util.NameValue;
+import org.xmlsh.util.NameValueList;
 import org.xmlsh.util.Util;
 
 import java.util.ArrayList;
 
 @SuppressWarnings("serial") 
-public class PortList<P extends IPort> extends ArrayList<NamedPort<P>>
+public class PortList<P extends IPort> extends NameValueList< P, NamedPort<P>  >
 {
 	
-	P 	get( String name ){
-		for( NamedPort<P> e : this ){
-			if( Util.isEqual( e.mName , name ))
-				return e.mPort;
-		}
-		return null;	
-		
+	public PortList()
+	{
+		super();
 	}
 	
 	void close() throws CoreException
 	{
-		for( NamedPort<P> e : this )
-			e.mPort.release();
+		for( NameValue<P> e : this )
+			e.getValue().release();
 	}
 	
-	PortList() {} 
 	PortList( PortList<P> that )
 	{
 		for(NamedPort<P> e : that ){
-			e.mPort.addRef();
+			e.getValue().addRef();
 			add( e );
 		}
-		
 	}
-
-	public P removeNamed(String name) {
-		for(NamedPort<P> e : this ){
-			if( Util.isEqual( e.mName , name )){
-				remove(e);
-				return e.mPort;
-
-			}
-		}
-		return null ;
-	}
-
-	public NamedPort<P> getPort(IPort p)
-    {
-		for(NamedPort<P> e : this ){
-			if( e.getPort().equals(p))
-				return e ;
-		}
-		return null ;
-    }
 	
+	P getPort( String name )
+	{
+
+		NamedPort<P> np = findName(name);
+		return np == null ? null : np.getValue();
+	}
+	
+	P getPort( P value )
+	{
+
+		NamedPort<P> np = findValue(value);
+		return np == null ? null : np.getValue();
+	}
+	
+	public P removePort(String name) {
+		NamedPort<P> np = removeName(name);
+		if( np != null )
+			return np.getPort();
+		return null;
+	}
+	
+
 	
 }
 

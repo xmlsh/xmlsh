@@ -52,6 +52,13 @@ public class PipedStreamPort extends PipedPort {
 		return streams;
 		
 	}
+
+	@Override
+	public void close() {
+		Util.safeClose(mIn);
+		Util.safeClose(mOut);
+		
+	}
 	
 }
 //

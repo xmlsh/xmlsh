@@ -57,6 +57,14 @@ public class PipedXDMPort extends PipedPort {
 		return streams;
 		
 	}
+	@Override
+	public void close() {
+		Util.safeClose(mIn);
+		Util.safeClose(mOut);
+		mIn = null ;
+		mOut = null ;
+		
+	}
 	
 }
 //

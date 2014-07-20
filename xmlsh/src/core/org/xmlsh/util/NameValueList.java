@@ -7,6 +7,7 @@
 package org.xmlsh.util;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 /**
  * A Name/Value list that stores lists of pairs String to templated type and has iterators
@@ -18,7 +19,7 @@ import java.util.ArrayList;
 
 
 @SuppressWarnings("serial")
-public class NameValueList<T> extends ArrayList<NameValue<T>> {
+public class NameValueList<V,T extends NameValue<V> >  extends ArrayList< T  > {
 	
 	/*
 	 * Default Constructor
@@ -26,19 +27,50 @@ public class NameValueList<T> extends ArrayList<NameValue<T>> {
 	public	NameValueList()
 	{}
 	
-	
-	
 	/*
 	 * Copy constructor 
 	 */
-	public	NameValueList(NameValueList<T> that)
+	public	NameValueList(NameValueList<V,T> that)
 	{
 		addAll(that);
 	}
-
-
-
 	
+	public T findName( String name ){
+		for( T nv : this )
+			if( nv.getName().equals(name) )
+				return nv;
+		return null;
+	}
+
+	public T findValue( V value ){
+		for( T nv : this )
+			if( nv.getValue().equals(value) )
+				return nv;
+		return null;
+	}
+	
+	
+	public T removeName( String name ){
+		for (Iterator<T> I = iterator(); I.hasNext();) {
+			T e = I.next();
+			if( e.getName().equals(name)){
+				I.remove();
+				return e;
+			}
+		}
+		return null;
+	}
+	
+	public T removeValue( V value ){
+		for (Iterator<T> I = iterator(); I.hasNext();) {
+			T e = I.next();
+			if( e.getValue().equals(value)){
+				I.remove();
+				return e;
+			}
+		}
+		return null;
+	}
 
 }
 

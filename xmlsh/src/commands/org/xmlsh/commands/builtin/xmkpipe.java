@@ -7,7 +7,9 @@
 package org.xmlsh.commands.builtin;
 
 import org.xmlsh.core.BuiltinCommand;
+import org.xmlsh.core.IPort;
 import org.xmlsh.core.Options;
+import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.XIOEnvironment;
 import org.xmlsh.core.XValue;
 import org.xmlsh.util.PipedPort;
@@ -36,8 +38,9 @@ public class xmkpipe extends BuiltinCommand {
 		XIOEnvironment ioenv = mShell.getEnv().getSavedIO();
 		
 		if( opts.hasOpt("close")){
-			ioenv.getOutputPort(name).close();
-			return 0;
+			PipedPort port = ioenv.getPipe(name);
+			if( port != null )
+				port.close();
 			
 		}
 		
@@ -55,11 +58,9 @@ public class xmkpipe extends BuiltinCommand {
 			else
 				pipe = new PipedStreamPort();
 		
+		if( pipe != null )
+			ioenv.newPipe( name, pipe  );
 
-		
-		ioenv.setInput(name, pipe.getInput());
-		ioenv.setOutput(name, pipe.getOutput());
-		
 		
 		return 0;
 	}

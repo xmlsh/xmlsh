@@ -8,10 +8,15 @@ package org.xmlsh.core;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.xmlsh.util.NameValue;
+import org.xmlsh.util.NameValueList;
+import org.xmlsh.util.PipedPort;
 
 import java.io.FileDescriptor;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /*
@@ -30,10 +35,11 @@ public class XIOEnvironment {
 	
 	private PortList<InputPort>		mInputs ;
 	private PortList<OutputPort>	mOutputs ;
+	private volatile NameValueList<PipedPort,NameValue<PipedPort>>        mPipes;
 	
 	public	InputPort getStdin() 
 	{
-		InputPort stdin = mInputs.get( kSTDIN );
+		InputPort stdin = mInputs.getPort(kSTDIN);
 		if( stdin == null )
 			return null;
 			
@@ -45,7 +51,7 @@ public class XIOEnvironment {
 	 */
 	public	OutputPort	getStdout() 
 	{
-		OutputPort stdout = mOutputs.get( kSTDOUT );
+		OutputPort stdout = mOutputs.getPort( kSTDOUT );
 		if( stdout == null )
 			return null;
 		return stdout ;
@@ -56,7 +62,7 @@ public class XIOEnvironment {
 	 */
 	public	OutputPort	getStderr() 
 	{
-		OutputPort stderr = mOutputs.get(kSTDERR);
+		OutputPort stderr = mOutputs.getPort(kSTDERR);
 		if( stderr == null )
 			return null;
 		return stderr ;
@@ -71,15 +77,23 @@ public class XIOEnvironment {
 			name = kSTDIN ;
 		}
 		
-		in	= mInputs.removeNamed(name);
+		in	= removeInput(name);
 
 		
 		if( in != null )
 			in.release();
 		
-		mInputs.add( new NamedPort<InputPort>( name  , port  ));
+		addInput(name, port);
 		return port ;
 		
+	}
+
+	private void addInput(String name, InputPort port) {
+		mInputs.add( new NamedPort<InputPort>( name  , port  ));
+	}
+
+	private InputPort removeInput(String name) {
+		return mInputs.removePort(name);
 	}
 		
 	
@@ -92,13 +106,24 @@ public class XIOEnvironment {
 		if( name == null )
 			name = kSTDOUT ;
 		
-		out = mOutputs.removeNamed(name);
+		out = removeOutput(name);
 
 		if (out != null) 
 			out.release();
 		
+		addOutput(name, port);
+	}
 
-		mOutputs.add(new NamedPort<OutputPort>(name , port));
+	private void addOutput(String name, OutputPort port) {
+		synchronized( mOutputs ){
+		  mOutputs.add(new NamedPort<OutputPort>(name , port));
+		}
+	}
+
+	private OutputPort removeOutput(String name) {
+		synchronized (mOutputs) {
+			return mOutputs.removePort(name);
+		}
 	}
 	
 	
@@ -113,14 +138,9 @@ public class XIOEnvironment {
 
 	}
 	public void setStderr(OutputPort err) throws CoreException {
-		OutputPort stderr = mOutputs.removeNamed(kSTDERR);
-
-		
+		OutputPort stderr = mOutputs.removePort(kSTDERR);
 		if( stderr != null )
-			
 			stderr.release();
-		
-	
 		mOutputs.add(new NamedPort<OutputPort>(kSTDERR,err));
 
 	}
@@ -151,11 +171,11 @@ public class XIOEnvironment {
 	}
 	
 	public boolean isSystemIn( InputPort ip ) {
-		NamedPort<InputPort> np = mInputs.getPort( ip );
+		NamedPort<InputPort> np = mInputs.findValue(ip);
 		return np != null && np.getSystem();
 	}
 	public boolean isSystemOut( OutputPort ip ) {
-		NamedPort<OutputPort> np = mOutputs.getPort( ip );
+		NamedPort<OutputPort> np = mOutputs.findValue( ip );
 		return np != null && np.getSystem();
 	}
 
@@ -183,7 +203,7 @@ public class XIOEnvironment {
 	 */
 	public	InputPort	getInputPort( String name )
 	{
-		return mInputs.get(name);
+		return mInputs.getPort(name);
 	}
 	
 	/* return a named output port 
@@ -191,7 +211,7 @@ public class XIOEnvironment {
 	 */
 	public	OutputPort	getOutputPort( String name )
 	{
-		return mOutputs.get(name);
+		return mOutputs.getPort(name);
 	}
 	
 	protected PortList<InputPort>	getInputPorts()
@@ -201,6 +221,49 @@ public class XIOEnvironment {
 	protected PortList<OutputPort>	getOutputPorts()
 	{
 		return mOutputs;
+	}
+
+	public void newPipe(String name, PipedPort pipe ) throws CoreException, IOException {
+
+		setInput(name, pipe.getInput());
+		setOutput(name, pipe.getOutput());
+		if( mPipes == null ){
+			synchronized(this) {
+				if( mPipes ==  null )
+					mPipes = new NameValueList<>();
+			}
+		}
+		synchronized( mPipes ){
+			mPipes.add( new NameValue<PipedPort>(name,pipe) );
+		}
+	}
+
+	public PipedPort getPipe(String name) {
+		if( mPipes == null )
+			return null;
+		synchronized( mPipes ){
+			NameValue<PipedPort> nv = mPipes.findName(name);
+			return nv == null ? null : nv.getValue();
+		}
+	}
+	
+	public void closePipe( String name )
+	{
+		if( mPipes != null ){
+			NameValue<PipedPort> nv = null;
+			PipedPort pipe;
+			synchronized( mPipes ){
+				 nv = mPipes.removeName( name );
+				 pipe = nv == null ? null : nv.getValue();
+			}
+			if( pipe != null ){
+				pipe.close();
+				removeInput( name );
+				removeOutput( name );
+			}
+			
+		}
+		
 	}
 }
 

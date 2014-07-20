@@ -16,7 +16,7 @@ public class SessionEnvironment extends ManagedObject {
 	public void close() throws Exception
 	{
 		if( mVars != null ){
-			for( IReferenceObject obj : mVars.values() )
+			for( IReleasable obj : mVars.values() )
 				obj.release();
 			mVars.clear();
 			mVars = null;
@@ -28,7 +28,7 @@ public class SessionEnvironment extends ManagedObject {
 	 * Get a managed object and adds a reference to it
 	 */
 	
-	public synchronized IReferenceObject	getVar(String key)
+	public synchronized IReleasable	getVar(String key)
 	{
 		if( mVars == null )
 			return null;

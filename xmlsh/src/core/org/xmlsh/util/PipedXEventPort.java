@@ -49,6 +49,16 @@ public class PipedXEventPort extends PipedPort {
 		return streams;
 		
 	}
+
+	@Override
+	public void close() {
+		Util.safeClose(mIn);
+		Util.safeClose(mOut);
+		mPipe = null ;
+		mIn = null;
+		mOut = null ;
+		
+	}
 	
 }
 //

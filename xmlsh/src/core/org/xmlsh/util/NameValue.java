@@ -6,14 +6,23 @@
 
 package org.xmlsh.util;
 
-public class NameValue<T> {
-	public String		name;
-	public T			value;
-	NameValue( String name , T value )
-	{
+public class NameValue<T> implements INamed {
+	private final String		name;
+	private final T            value;
+	
+	public NameValue(String name,T value) {
 		this.name = name ;
 		this.value = value ;
 	}
+	public String getName() 
+	{
+		return name;
+	}
+	public T getValue()
+	{
+		return value ;
+	}
+
 }
 
 

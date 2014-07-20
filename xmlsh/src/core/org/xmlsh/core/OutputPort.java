@@ -41,10 +41,8 @@ public abstract class OutputPort extends IPort
 	public abstract void flush() throws  CoreException, SaxonApiException;
 	
 	
-	
+	@Override
 	public abstract void close() throws CoreException;
-	
-
 	
 	
 	public synchronized PrintStream asPrintStream(SerializeOpts opts) throws CoreException 

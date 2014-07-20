@@ -1,10 +1,11 @@
 package org.xmlsh.core;
 
+import org.xmlsh.util.NameValue;
 
 
-public class NamedPort<P extends IPort> {
-	String		mName;		// Name
-	P			mPort;		// port 
+
+public class NamedPort<P extends IPort> extends NameValue<P> {
+	
 	boolean    mSystem;    // System port from original env
 	
 	public NamedPort( String name ,  P port   ) 
@@ -14,22 +15,21 @@ public class NamedPort<P extends IPort> {
 	
 	public NamedPort( String name ,  P port , boolean system  ) 
 	{
-		mName = name ;
-		mPort = port ;
+		super(name,port);
 		mSystem = system ;
 	}
 	
 	public NamedPort( NamedPort<P> that ){
-		mName = that.mName ;
-		mPort = that.mPort;
-		if( mPort != null )
-			mPort.addRef();
+		super( that.getName() , that.getValue() );
+		// do NOT copy system 
+		mSystem = false ;
+		if( getValue() != null )
+			getValue().addRef();
 	}
-	public String getName() {
-		return mName ;
-	}
+	
 	public P getPort(){
-		return mPort ;
+
+		return getValue();
 	}
 
 	public boolean getSystem()

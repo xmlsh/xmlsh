@@ -6,14 +6,11 @@
 
 package org.xmlsh.util;
 
-import java.io.IOException;
 
-public interface IReferenceObject
+public interface IReferenceObject extends IReleasable
 {
 
 	public abstract void addRef();
-
-	public abstract void release() throws IOException;
 
 }
 
