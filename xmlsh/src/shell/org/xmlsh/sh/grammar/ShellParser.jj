@@ -115,7 +115,8 @@
       call_depth = 0;
     	SwitchTo(DEFAULT);
     }
- }}/* COMMENTS */<* >SPECIAL_TOKEN :{  < SINGLE_LINE_COMMENT : "#" (~[ "\n" ])* >   : DEFAULT}< DEFAULT >TOKEN :{  < CSEMI : ";" >}< CMD >TOKEN :{  < AND_IF : "&&" > : DEFAULT| < OR_IF : "||" > : DEFAULT}< DEFAULT, CMD >TOKEN :{  < DGREAT : ">>" >
+ }}/* COMMENTS */<* >SPECIAL_TOKEN :{  < SINGLE_LINE_COMMENT : "#" (~[ "\n" ])* >   : DEFAULT}< DEFAULT >TOKEN :{  < CSEMI : ";" >
+| < CAMP  : "&" >}< CMD >TOKEN :{  < AND_IF : "&&" > : DEFAULT| < OR_IF : "||" > : DEFAULT}< DEFAULT, CMD >TOKEN :{  < DGREAT : ">>" >
   | < DSEMI : ";;" > : DEFAULT}< DEFAULT, CMD >TOKEN :{  < CLOBBER : ">|" >}
 
 < DEFAULT  > TOKEN :{   < CATCH : "catch" >
@@ -431,4 +432,4 @@ String word_or_name() :
   | < TGTAND1 >  {    return new IORedirect(null, new IOFile("2>&1", null));  }| < GTAND >  {    return new IORedirect(null, new IOFile(">&", null));  }| < GTAND2 >  {    return new IORedirect(null, new IOFile("1>&2", null));  }*/
 
 String filename() :{  Token t;}{  t = < WORD >  {    return t.toString();  }| t = < NAME >  {    return t.toString();  }}Word filename_word() :{  Word w;  Token t;  String s;  Command c;}{  w = port_word()  {    return w;  }|  (    t = < WORD >  | t = < NAME >  | t = < XEXPR >  | t = < BIGQUOTE >  )  {    return new StringWord(t.toString());  }| t = < VAR_SUBPROC > c = compound_list() < RPAREN >  {    return new CommandWord(t.toString(), c);  }| t = < VAR_SUBPROC_FILE > s = filename() < RPAREN >  {    return new CommandFileWord(t.toString(), s);  }|  (    < LBRACE >  | < LBRACE2 >  )  (    t = < WORD >  | t = < NAME >  )  (    < RBRACE2 >  | < RBRACE >  )  {    return new StringWord("{" + t.toString() + "}");  }}Word port_word() :{  Word w;  Token t;}{  ( < LPAREN > | < LPAREN2 > )  (    t = < WORD >  | t = < NAME >  )  ")"  {    return new StringWord("(" + t.toString() + ")");  }
-}void newline_list() :{}{  (LOOKAHEAD(1,<NEWLINE>)< NEWLINE >)+}void linebreak() :{}{  (LOOKAHEAD(1,<NEWLINE>) < NEWLINE >)*}String separator_op() :{}{  < AMP >  {    return "&";  }| ( < SEMI > | < CSEMI > )  {    return ";";  }}String separator() :{  String op;}{  LOOKAHEAD(1,newline_list())  newline_list()  {    return "\n";  }| op = separator_op()  [    LOOKAHEAD(1,newline_list()) newline_list()  ]  {    return op;  }}void sequential_sep() :{}{  < SEMI > linebreak()| newline_list()}
+}void newline_list() :{}{  (LOOKAHEAD(1,<NEWLINE>)< NEWLINE >)+}void linebreak() :{}{  (LOOKAHEAD(1,<NEWLINE>) < NEWLINE >)*}String separator_op() :{}{  ( < AMP > | < CAMP > )  {    return "&";  }| ( < SEMI > | < CSEMI > )  {    return ";";  }}String separator() :{  String op;}{  LOOKAHEAD(1,newline_list())  newline_list()  {    return "\n";  }| op = separator_op()  [    LOOKAHEAD(1,newline_list()) newline_list()  ]  {    return op;  }}void sequential_sep() :{}{  < SEMI > linebreak()| newline_list()}

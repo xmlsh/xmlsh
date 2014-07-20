@@ -41,7 +41,7 @@ echo -n bar >>{_var}
 echo $_var should be foobar
 
 # Test mixed string and xml 
-xecho <[ <foo/> ]> >> {_var}
+xecho <[ <foo/> ]> >>{_var}
 xecho $_var
 
 # Test brace group into ports
@@ -58,12 +58,17 @@ unset _var
 
 echo -p output output 
 echo output2 >(output)
+
+echo complex commands to a port truncate it
+
 for i in output3 ; do 
    echo $i 
 done >(output)
 
-echo output4 |  while read a ; do echo $a ; done >(output)
+#echo output4 |  while read a ; do echo $a ; done >(output)
+
 if true ; then echo output5 ; fi >(output)
+
 
 while true ; do 
   echo output6
@@ -74,7 +79,7 @@ done >(output)
 ( echo output8 ) >(output)
 
 # Test named ports input
-
+exit 0
 echo input1 | read a <(input)
 echo $a
 

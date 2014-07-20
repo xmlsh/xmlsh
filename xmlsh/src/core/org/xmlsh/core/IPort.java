@@ -14,10 +14,11 @@ import org.xmlsh.util.IManagedObject;
 
 import java.io.File;
 import java.io.FileDescriptor;
+import java.util.concurrent.atomic.AtomicInteger;
 
 
 public abstract class IPort implements IManagedObject {
-	private	int	mRef = 1;
+	private	 final AtomicInteger	mRef = new AtomicInteger(1);
 	private String mSystemId = "";
 	
 	public String getSystemId() {
@@ -29,19 +30,21 @@ public abstract class IPort implements IManagedObject {
 	{
 		mSystemId = systemId;
 	}
-	public final synchronized void addRef() {
-		mRef++;
+	public final void addRef() {
+		mRef.incrementAndGet();
 
 	}
 
 	public synchronized void flush() throws  CoreException, SaxonApiException {};
 	
-	public final synchronized void release()
+	public final void release()
 	{		
 		try {
-			if( --mRef <= 0 ) {
-				flush();
-				close();
+			if( mRef.decrementAndGet() <= 0 ) {
+				synchronized( this ) {
+					flush();
+					close();
+				}
 			}
 			
 			} catch (Exception e) {

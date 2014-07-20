@@ -21,7 +21,17 @@ public class IORedirect {
 
 	/* (port)>(port) */
 	public IORedirect( String portstring ) {
-		
+		//OP(POT)
+		if( portstring.startsWith("<(") || 
+			portstring.startsWith(">(") ) {
+			
+			String op = portstring.substring(0,1);
+			String port = portstring.substring(1);
+			mFile = new IOFile( op , port );
+			
+	     }
+		else
+		// (port)OP<port)
 		if( portstring.startsWith("(")){
 			mPortname = portstring.substring(0, portstring.indexOf(')') + 1 );
 			String op = portstring.substring(mPortname.length(),portstring.lastIndexOf('(')) ;
