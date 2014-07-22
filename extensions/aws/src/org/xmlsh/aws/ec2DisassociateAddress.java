@@ -1,8 +1,10 @@
 package org.xmlsh.aws;
 
 import net.sf.saxon.s9api.SaxonApiException;
+
 import org.xmlsh.aws.util.AWSEC2Command;
 import org.xmlsh.aws.util.AWSUtil;
+import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
@@ -71,7 +73,7 @@ public class ec2DisassociateAddress extends AWSEC2Command {
 	}
 
 
-	private int disassociate( String ip ) throws InvalidArgumentException, IOException, XMLStreamException, SaxonApiException  
+	private int disassociate( String ip ) throws IOException, XMLStreamException, SaxonApiException, CoreException  
 	{
 	
 		String raw_ip = AWSUtil.resolveDNS( ip );
@@ -89,7 +91,7 @@ public class ec2DisassociateAddress extends AWSEC2Command {
 	}
 	
 
-	private	void writeResult(String ip) throws IOException, InvalidArgumentException, XMLStreamException, SaxonApiException 
+	private	void writeResult(String ip) throws IOException, XMLStreamException, SaxonApiException, CoreException 
 	{
 		
 		OutputPort stdout = this.getStdout();

@@ -7,7 +7,9 @@
 package org.xmlsh.aws;
 
 import net.sf.saxon.s9api.SaxonApiException;
+
 import org.xmlsh.aws.util.AWSASCommand;
+import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
@@ -68,7 +70,7 @@ public class asExecutePolicy extends AWSASCommand {
 	
 
 
-	private int execute(String group, String policy) throws IOException, InvalidArgumentException, XMLStreamException, SaxonApiException 
+	private int execute(String group, String policy) throws IOException, XMLStreamException, SaxonApiException, CoreException 
 	{
 
 		OutputPort stdout = this.getStdout();

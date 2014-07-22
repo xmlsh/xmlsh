@@ -1,7 +1,9 @@
 package org.xmlsh.aws;
 
 import net.sf.saxon.s9api.SaxonApiException;
+
 import org.xmlsh.aws.util.AWSEC2Command;
+import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
@@ -67,7 +69,7 @@ public class ec2AttachVolume extends AWSEC2Command {
 	}
 
 
-	private int attach( String volume , String instance, String device ) throws InvalidArgumentException, IOException, XMLStreamException, SaxonApiException, InterruptedException  
+	private int attach( String volume , String instance, String device ) throws IOException, XMLStreamException, SaxonApiException, InterruptedException, CoreException  
 	{
 	
 		
@@ -105,7 +107,7 @@ public class ec2AttachVolume extends AWSEC2Command {
 	}
 	
 
-	private	void writeResult(AttachVolumeResult result) throws IOException, InvalidArgumentException, XMLStreamException, SaxonApiException 
+	private	void writeResult(AttachVolumeResult result) throws IOException, XMLStreamException, SaxonApiException, CoreException 
 	{
 		
 		OutputPort stdout = this.getStdout();

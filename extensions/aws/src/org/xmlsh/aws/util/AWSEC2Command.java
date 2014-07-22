@@ -7,6 +7,7 @@
 package org.xmlsh.aws.util;
 
 import net.sf.saxon.s9api.SaxonApiException;
+
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
@@ -43,6 +44,7 @@ import com.amazonaws.services.ec2.model.Reservation;
 import com.amazonaws.services.ec2.model.Tag;
 import com.amazonaws.services.ec2.model.Volume;
 import com.amazonaws.services.ec2.model.VolumeAttachment;
+import com.amazonaws.services.ec2.model.VolumeType;
 
 public abstract class AWSEC2Command extends AWSCommand {
 	
@@ -432,7 +434,18 @@ public abstract class AWSEC2Command extends AWSCommand {
     	
     	
     }
-	protected BlockDeviceMapping parseBlockDeviceMapping(String string)
+	
+	/* Mapping string from the original AWS CLI format
+	 * The block device mapping for the instance. This argument is passed in the form of <devicename>=<blockdevice>. The devicename is the device name of the physical device on the instance to map. The blockdevice can be one of the following values:
+
+none - Suppresses an existing mapping of the device from the AMI used to launch the instance. For example: "/dev/sdc=none".
+ephemeral[0..3] - An instance store volume to be mapped to the device. For example: "/dev/sdc=ephemeral0".
+[snapshot-id]:[volume-size]:[delete-on-termination]:[volume-type[:iops]]:[encrypted] - An Amazon EBS volume to be mapped to the device. For example "/dev/sdh=snap-7eb96d16::false:io1:500:encrypted".
+
+	 */
+	
+	
+	protected BlockDeviceMapping parseBlockDeviceMapping(String string) throws InvalidArgumentException
     {
     	BlockDeviceMapping map = new BlockDeviceMapping();
     	StringPair 	pair = new StringPair(string , '=');
@@ -463,30 +476,50 @@ public abstract class AWSEC2Command extends AWSCommand {
     	}
     	
     	// Parse out the EBS stuff
+    	// [snapshot-id]:[volume-size]:[delete-on-termination]:[volume-type[:iops]]:[encrypted]
     	
     	String aebs[] = r.split(":");
     	
     	EbsBlockDevice ebs = new EbsBlockDevice().withDeleteOnTermination( Boolean.FALSE );
     	
-    	// [snapshot-id]:[size]:[delete-on-termination (true|false)]
+    	// [snapshot-id]:
     	if( aebs.length >= 1 ){
     		String snapshotId = aebs[0];
     		if( ! Util.isBlank(snapshotId))
     			ebs.setSnapshotId(snapshotId);
     
     	}
-    	
+    	// :[volume-size]:
     	if( aebs.length >= 2 ){
     		if( !Util.isBlank(aebs[1]))
     			ebs.setVolumeSize( new Integer( aebs[1]));
     		
     	}
     	
+    	//[delete-on-termination]:
     	if( aebs.length >=  3 ){
     		if( !Util.isBlank(aebs[2]))
     			ebs.setDeleteOnTermination( Boolean.valueOf( Util.parseBoolean(aebs[2])));
     		
     	}
+    	if( aebs.length >= 4 ){
+    		// [volume-type[:iops]]:[encrypted]
+    		int i = 3;
+    		if( !Util.isBlank(aebs[i])){
+    			ebs.setVolumeType(aebs[i]);
+    			if( aebs[i].equals( VolumeType.Io1.toString())) {
+    			    i++ ;
+    			    if( aebs.length  <= i || Util.isBlank(aebs[i]) )
+    			    	throw new InvalidArgumentException("EBS block mapping with VolumeType :io1 MUST have PIOPS");
+    				ebs.setIops( Integer.valueOf( aebs[i]));
+    			}
+    			i++;
+    			if( aebs.length >= i )
+    				ebs.setEncrypted( Util.parseBoolean(aebs[i]));
+    		}
+    	}
+
+    		
     	map.setEbs(ebs);
     	return map;
     
