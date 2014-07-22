@@ -514,7 +514,7 @@ ephemeral[0..3] - An instance store volume to be mapped to the device. For examp
     				ebs.setIops( Integer.valueOf( aebs[i]));
     			}
     			i++;
-    			if( aebs.length >= i )
+    			if( aebs.length > i )
     				ebs.setEncrypted( Util.parseBoolean(aebs[i]));
     		}
     	}
