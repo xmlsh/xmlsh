@@ -11,12 +11,12 @@ import net.sf.saxon.s9api.XdmValue;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-
 import org.xml.sax.InputSource;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.AutoReleasePool;
-import org.xmlsh.util.IManagedObject;
+import org.xmlsh.util.IReferenceCounted;
+import org.xmlsh.util.Util;
 
 import java.io.Closeable;
 import java.io.File;
@@ -67,7 +67,7 @@ public class XEnvironment implements AutoCloseable, Closeable {
 
 	}
 
-	private void	addAutoRelease( IManagedObject obj )
+	private void	addAutoRelease( IReferenceCounted obj )
 	{
 		if( mAutoRelease == null )
 			mAutoRelease = new AutoReleasePool();
@@ -188,10 +188,8 @@ public class XEnvironment implements AutoCloseable, Closeable {
 		   throw new IOException("Closing XEnvironment when mSavedIO is not empty");
 		
 		mIO.release();
-		if( mAutoRelease != null ){
-			mAutoRelease.close();
-			mAutoRelease = null;
-		}
+		Util.safeClose(mAutoRelease);
+		mAutoRelease = null ;
 	}
 	
 	public Shell getShell() { 
@@ -308,9 +306,9 @@ public class XEnvironment implements AutoCloseable, Closeable {
 		mVars.unset( name );
 	}
 	
-	public boolean isStdinSystem() { return mIO.isSystemIn(getStdin()) ; }
-	public boolean isStdoutSystem() { return  mIO.isSystemOut(getStdout()) ; }
-	public boolean isStderrSystem() { return  mIO.isSystemOut(getStderr()) ; }
+	public boolean isStdinSystem() { return  getStdin().isSystem(); }
+	public boolean isStdoutSystem() { return  getStdout().isSystem() ; }
+	public boolean isStderrSystem() { return  getStderr().isSystem() ; }
 
 
 	/**

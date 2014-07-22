@@ -9,11 +9,12 @@ package org.xmlsh.core;
 import net.sf.saxon.s9api.Destination;
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.trans.XPathException;
+
 import org.xml.sax.ContentHandler;
 import org.xmlsh.sh.shell.SerializeOpts;
 
 import java.io.File;
-import java.io.FileDescriptor;
+import java.io.Flushable;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -33,16 +34,15 @@ import javax.xml.stream.XMLStreamWriter;
 
 
 
-public abstract class OutputPort extends IPort
+public abstract class OutputPort extends AbstractPort 
 {
 
 	public	abstract OutputStream asOutputStream(SerializeOpts opts) throws CoreException;
 
-	public abstract void flush() throws  CoreException, SaxonApiException;
 	
 	
 	@Override
-	public abstract void close() throws CoreException;
+	public abstract void close() throws IOException;
 	
 	
 	public synchronized PrintStream asPrintStream(SerializeOpts opts) throws CoreException 

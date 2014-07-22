@@ -6,8 +6,10 @@
 
 package org.xmlsh.core;
 
+import java.io.IOException;
+
 public interface IXdmItemWriter extends IXdmItemOutputStream {
-	void close() throws CoreException;
+	void close() throws IOException;
 
 }
 

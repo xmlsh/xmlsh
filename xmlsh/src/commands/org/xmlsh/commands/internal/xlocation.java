@@ -35,7 +35,7 @@ public class xlocation extends BuiltinFunctionCommand {
 	
 	
 	@Override
-	public XValue run(Shell shell, List<XValue> args) throws UnknownOption, XMLStreamException, SaxonApiException, CoreException 
+	public XValue run(Shell shell, List<XValue> args) throws Exception
 	{
 		
 		Options opts = new Options(XLOC_OPTS,SerializeOpts.getOptionDefs());
@@ -45,7 +45,7 @@ public class xlocation extends BuiltinFunctionCommand {
 	
 	// for xstacktrace
 	
-	public XValue run(Shell shell, Options opts, int depth ) throws UnknownOption, XMLStreamException, SaxonApiException, CoreException 
+	public XValue run(Shell shell, Options opts, int depth ) throws Exception
 	{
 		
 		List<XValue> xv = new ArrayList<XValue>();
@@ -77,7 +77,7 @@ public class xlocation extends BuiltinFunctionCommand {
 
 	
 
-	private XValue describe(Shell shell , SourceLocation loc) throws XMLStreamException, SaxonApiException, CoreException 
+	private XValue describe(Shell shell , SourceLocation loc) throws Exception 
 	{
 	
 		XVariable xv = new XVariable("_out", null);

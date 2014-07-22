@@ -66,7 +66,7 @@ public class XdmStreamOutputPort extends OutputPort {
 	}
 
 	@Override
-	public synchronized void flush() throws  CoreException
+	public synchronized void flush() throws IOException 
 	{
 			
 			
@@ -81,7 +81,7 @@ public class XdmStreamOutputPort extends OutputPort {
 				try {
 					mWriter.write( new XValue(mByteArrayOutputStream.toString(mSerializeOpts.getOutputTextEncoding()   )).asXdmValue() );
 				} catch (UnsupportedEncodingException e1) {
-					throw new CoreException( e1 );
+					throw new IOException( e1 );
 				}
 				mByteArrayOutputStream.reset();
 			}
@@ -91,7 +91,7 @@ public class XdmStreamOutputPort extends OutputPort {
 				try {
 					mWriter.write(mBuilder.getDocumentNode());
 				} catch (SaxonApiException e) {
-					throw new CoreException(e);
+					throw new IOException(e);
 				}
 				// Cannot reset builder !
 				mBuilder = null ;
@@ -101,7 +101,7 @@ public class XdmStreamOutputPort extends OutputPort {
 		
 	}
 	@Override
-	public void close() throws CoreException {
+	public void close() throws IOException  {
          flush();
 		
         if( mWriter == null ) {

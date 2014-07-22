@@ -10,12 +10,10 @@ import java.io.Flushable;
 import java.io.IOException;
 
 
-public interface IManagedObject  extends AutoCloseable, IReferenceObject {
+public interface IReferenceCounted  {
 	
-	
-	
-	
-	
+	public abstract void addRef();
+	public abstract boolean release() throws Exception ;
 
 }
 

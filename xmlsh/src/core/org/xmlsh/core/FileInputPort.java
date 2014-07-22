@@ -17,10 +17,7 @@ import org.xml.sax.InputSource;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.util.FileUtils;
 import org.xmlsh.util.JSONUtils;
-import org.xmlsh.util.Util;
-
 import java.io.File;
-import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -68,7 +65,7 @@ public class FileInputPort extends InputPort {
 
 	/**
 	 * @param systemId
-	 * @see org.xmlsh.core.IPort#setSystemId(java.lang.String)
+	 * @see org.xmlsh.core.AbstractPort#setSystemId(java.lang.String)
 	 */
 	public void setSystemId(String systemId) {
 		super.setSystemId(systemId);
@@ -92,21 +89,6 @@ public class FileInputPort extends InputPort {
 
 
 
-
-	/**
-	 * @throws CoreException
-	 * @throws SaxonApiException
-	 * @see org.xmlsh.core.IPort#flush()
-	 */
-	public void flush() throws CoreException, SaxonApiException {
-		if( mStreamPort != null )
-			mStreamPort.flush();
-	}
-
-
-
-
-
 	/**
 	 * @param opts
 	 * @return
@@ -122,10 +104,10 @@ public class FileInputPort extends InputPort {
 
 
 	/**
-	 * @throws CoreException
+	 * @throws IOException 
 	 * @see org.xmlsh.core.StreamInputPort#close()
 	 */
-	public void close() throws CoreException {
+	public void close() throws IOException {
 		if( mStreamPort != null )
 			mStreamPort.close();
 	}

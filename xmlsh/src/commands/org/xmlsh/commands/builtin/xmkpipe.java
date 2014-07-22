@@ -7,7 +7,7 @@
 package org.xmlsh.commands.builtin;
 
 import org.xmlsh.core.BuiltinCommand;
-import org.xmlsh.core.IPort;
+import org.xmlsh.core.AbstractPort;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.XIOEnvironment;

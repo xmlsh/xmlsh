@@ -6,14 +6,11 @@
 
 package org.xmlsh.core;
 
-import org.xmlsh.util.NameValue;
+import org.xmlsh.util.INameValue;
 import org.xmlsh.util.NameValueList;
-import org.xmlsh.util.Util;
-
-import java.util.ArrayList;
 
 @SuppressWarnings("serial") 
-public class PortList<P extends IPort> extends NameValueList< P, NamedPort<P>  >
+public class PortList<P extends AbstractPort> extends NameValueList< P >  implements AutoCloseable
 {
 	
 	public PortList()
@@ -21,15 +18,15 @@ public class PortList<P extends IPort> extends NameValueList< P, NamedPort<P>  >
 		super();
 	}
 	
-	void close() throws CoreException
+	public void close() throws Exception
 	{
-		for( NameValue<P> e : this )
+		for( INameValue<P> e : this )
 			e.getValue().release();
 	}
 	
 	PortList( PortList<P> that )
 	{
-		for(NamedPort<P> e : that ){
+		for( INameValue<P> e : that ){
 			e.getValue().addRef();
 			add( e );
 		}
@@ -38,21 +35,21 @@ public class PortList<P extends IPort> extends NameValueList< P, NamedPort<P>  >
 	P getPort( String name )
 	{
 
-		NamedPort<P> np = findName(name);
+		INameValue<P> np = findName(name);
 		return np == null ? null : np.getValue();
 	}
 	
 	P getPort( P value )
 	{
 
-		NamedPort<P> np = findValue(value);
+		INameValue<P> np = findValue(value);
 		return np == null ? null : np.getValue();
 	}
 	
 	public P removePort(String name) {
-		NamedPort<P> np = removeName(name);
+		INameValue<P> np = removeName(name);
 		if( np != null )
-			return np.getPort();
+			return np.getValue();
 		return null;
 	}
 	

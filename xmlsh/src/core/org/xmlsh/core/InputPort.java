@@ -8,10 +8,10 @@ package org.xmlsh.core;
 
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
+
 import org.xml.sax.InputSource;
 import org.xmlsh.sh.shell.SerializeOpts;
 
-import java.io.FileDescriptor;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -31,13 +31,11 @@ import com.fasterxml.jackson.databind.JsonNode;
  */
 
 
-public abstract class InputPort  extends IPort
+public abstract class InputPort  extends AbstractPort
 {
-	
 	public	abstract InputStream asInputStream(SerializeOpts opts) throws CoreException ;
-	
 
-	public abstract void close() throws CoreException ;
+	public abstract void close() throws IOException ;
 	
 	
 	public abstract Source asSource(SerializeOpts opts) throws CoreException;
@@ -54,6 +52,7 @@ public abstract class InputPort  extends IPort
 
 	public abstract XdmItem asXdmItem(SerializeOpts serializeOpts) throws CoreException;
 	
+	public void flush() {}
 	
 
 	

@@ -268,7 +268,7 @@ public class XmlshServlet extends HttpServlet {
 	 * 
 	 */
 	@SuppressWarnings("unchecked")
-	private XVariable parseHeaders(HttpServletRequest request) throws XMLStreamException, CoreException, SaxonApiException {
+	private XVariable parseHeaders(HttpServletRequest request) throws XMLStreamException, CoreException, SaxonApiException, IOException {
 
         
 		XVariable var = new XVariable("HTTP_HEADERS",null);
@@ -325,7 +325,7 @@ public class XmlshServlet extends HttpServlet {
 	 * 
 	 */
 	@SuppressWarnings("unchecked")
-	private XVariable parseParams(HttpServletRequest request) throws XMLStreamException, CoreException, SaxonApiException {
+	private XVariable parseParams(HttpServletRequest request) throws XMLStreamException, CoreException, SaxonApiException, IOException {
 
 
         Map params = request.getParameterMap();

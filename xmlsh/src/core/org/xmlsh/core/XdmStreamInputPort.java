@@ -66,7 +66,7 @@ public class XdmStreamInputPort extends InputPort {
 	}
 
 	@Override
-	public void close() throws CoreException {
+	public void close() {
 		
 
 	}
@@ -181,7 +181,7 @@ public class XdmStreamInputPort extends InputPort {
 
 	@Override
 	public XdmItem asXdmItem(SerializeOpts serializeOpts) throws CoreException {
-		return (XdmItem) mReader.read();
+		return mReader.read();
 	}
 
 	// Default implementation uses a singleton as the input stream

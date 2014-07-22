@@ -55,11 +55,13 @@ public class EvalScriptCommand extends Command {
 		
 		
 		shell = shell.clone();
+		ICommand cmd = null;
 		try {
-		
+			cmd = new ScriptCommand( mCommand , shell.getSerializeOpts() );
+			return cmd.run(  shell, "", null );
 			
-			ICommand cmd = new ScriptCommand( mCommand , shell.getSerializeOpts() );
-			
+		} finally {
+
 			if( cmd == null ){
 				SourceLocation loc = getLocation();
 				if( loc != null )
@@ -69,13 +71,6 @@ public class EvalScriptCommand extends Command {
 				return 1;
 				
 			}	
-
-			
-			
-			return cmd.run(  shell, "", null );
-
-			
-		} finally {
 			shell.close();
 		}
 		

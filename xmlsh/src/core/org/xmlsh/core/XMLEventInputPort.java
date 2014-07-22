@@ -9,6 +9,7 @@ package org.xmlsh.core;
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
+
 import org.xml.sax.InputSource;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
@@ -26,6 +27,7 @@ import javanet.staxutils.StAXSource;
 
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.events.XMLEvent;
@@ -58,12 +60,12 @@ public class XMLEventInputPort extends InputPort {
 
 	}
 
-	public synchronized void close() throws CoreException {
+	public synchronized void close() throws IOException {
 
 		try {
 			mReader.close();
 		} catch (XMLStreamException e) {
-			throw new CoreException(e);
+			throw new IOException(e);
 		}
 
 	}
@@ -149,7 +151,7 @@ public class XMLEventInputPort extends InputPort {
 				// EOF - let fall through
 				return mReader ;
 			
-			if( event.getEventType() != XMLEvent.CHARACTERS )
+			if( event.getEventType() != XMLStreamConstants.CHARACTERS )
 				return mReader ;
 			
 			// Text events in a XML pipe - layer with a InputStream then a parser

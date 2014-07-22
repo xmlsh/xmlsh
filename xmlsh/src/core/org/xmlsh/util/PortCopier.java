@@ -82,7 +82,7 @@ public class PortCopier extends AbstractCopier
 	    if( mReleaseIn ) {
 			if( mIn != null)
 				synchronized (this) {
-					mIn.release();
+					Util.safeRelease(mIn);
 					mIn = null ;
                 } 
 		}

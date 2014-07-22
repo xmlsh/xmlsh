@@ -82,7 +82,7 @@ public class wc extends XCommand {
 		return ret;
 	}
 
-	private void count(PrintWriter writer, XValue file ) throws XMLStreamException, CoreException, IOException {
+	private void count(PrintWriter writer, XValue file ) throws Exception {
 		
 		InputPort inp = getShell().getEnv().getInput(file);
 		BufferedReader reader = new BufferedReader(inp.asReader( mSerializeOpts ));

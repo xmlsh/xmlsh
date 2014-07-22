@@ -22,7 +22,6 @@ import org.xmlsh.util.Util;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.FileDescriptor;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -82,7 +81,7 @@ public class VariableInputPort extends InputPort {
 
 	}
 
-	public synchronized void close() throws CoreException {
+	public synchronized void close()  {
 
 	}
 

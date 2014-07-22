@@ -7,6 +7,7 @@
 package org.xmlsh.commands.internal;
 
 import net.sf.saxon.s9api.SaxonApiException;
+
 import org.xmlsh.core.BuiltinFunctionCommand;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.Options;
@@ -27,7 +28,7 @@ public class xstacktrace extends BuiltinFunctionCommand {
 	}
 	
 	@Override
-	public XValue run(Shell shell, List<XValue> args) throws UnknownOption, XMLStreamException, SaxonApiException, CoreException 
+	public XValue run(Shell shell, List<XValue> args) throws Exception 
 	{
 		
 		Options opts = new Options(xlocation.XLOC_OPTS,SerializeOpts.getOptionDefs());

@@ -8,15 +8,14 @@ package org.xmlsh.core;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.xmlsh.util.INameValue;
 import org.xmlsh.util.NameValue;
 import org.xmlsh.util.NameValueList;
 import org.xmlsh.util.PipedPort;
+import org.xmlsh.util.Util;
 
-import java.io.FileDescriptor;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.List;
 
 
 /*
@@ -35,7 +34,7 @@ public class XIOEnvironment {
 	
 	private PortList<InputPort>		mInputs ;
 	private PortList<OutputPort>	mOutputs ;
-	private volatile NameValueList<PipedPort,NameValue<PipedPort>>        mPipes;
+	private volatile NameValueList<PipedPort>        mPipes;
 	
 	public	InputPort getStdin() 
 	{
@@ -69,7 +68,7 @@ public class XIOEnvironment {
 	}
 
 
-	public InputPort setInput(String name, InputPort port) throws CoreException {
+	public InputPort setInput(String name, InputPort port)  {
 		InputPort in;
 		
 		
@@ -81,7 +80,7 @@ public class XIOEnvironment {
 
 		
 		if( in != null )
-			in.release();
+			Util.safeRelease(in);
 		
 		addInput(name, port);
 		return port ;
@@ -89,7 +88,7 @@ public class XIOEnvironment {
 	}
 
 	private void addInput(String name, InputPort port) {
-		mInputs.add( new NamedPort<InputPort>( name  , port  ));
+		mInputs.add( new NameValue<>( name  , port  ));
 	}
 
 	private InputPort removeInput(String name) {
@@ -101,7 +100,7 @@ public class XIOEnvironment {
 
 
 
-	public void setOutput(String name , OutputPort port) throws CoreException {
+	public void setOutput(String name , OutputPort port)  {
 		OutputPort out ;
 		if( name == null )
 			name = kSTDOUT ;
@@ -109,14 +108,14 @@ public class XIOEnvironment {
 		out = removeOutput(name);
 
 		if (out != null) 
-			out.release();
+			Util.safeRelease(out);
 		
 		addOutput(name, port);
 	}
 
 	private void addOutput(String name, OutputPort port) {
 		synchronized( mOutputs ){
-		  mOutputs.add(new NamedPort<OutputPort>(name , port));
+		  mOutputs.add(new NameValue<>(name , port));
 		}
 	}
 
@@ -140,8 +139,8 @@ public class XIOEnvironment {
 	public void setStderr(OutputPort err) throws CoreException {
 		OutputPort stderr = mOutputs.removePort(kSTDERR);
 		if( stderr != null )
-			stderr.release();
-		mOutputs.add(new NamedPort<OutputPort>(kSTDERR,err));
+			Util.safeRelease(stderr);
+		mOutputs.add(new NameValue<>(kSTDERR,err));
 
 	}
 
@@ -170,30 +169,21 @@ public class XIOEnvironment {
 		mOutputs = new PortList<OutputPort>( that.mOutputs);
 	}
 	
-	public boolean isSystemIn( InputPort ip ) {
-		NamedPort<InputPort> np = mInputs.findValue(ip);
-		return np != null && np.getSystem();
-	}
-	public boolean isSystemOut( OutputPort ip ) {
-		NamedPort<OutputPort> np = mOutputs.findValue( ip );
-		return np != null && np.getSystem();
-	}
-
 
 	public void initStdio()  
 	{
 
 		mInputs.add( 
-				new NamedPort<InputPort>( kSTDIN ,  new StreamInputPort(System.in,null) , true )
+				new NameValue<InputPort>( kSTDIN ,  new StreamInputPort(System.in,null,true) )
 		);
 
 		mOutputs.add( 
-				new NamedPort<OutputPort>( kSTDOUT, new StreamOutputPort(System.out,false) , true  )
+				new NameValue<OutputPort>( kSTDOUT, new StreamOutputPort(System.out,false,true)  )
 		);
 
 
 		mOutputs.add( 
-				new NamedPort<OutputPort>( kSTDERR ,  new StreamOutputPort(System.err,false) , true )
+				new NameValue<OutputPort>( kSTDERR ,  new StreamOutputPort(System.err,false,true) )
 		);
 
 	}
@@ -242,7 +232,7 @@ public class XIOEnvironment {
 		if( mPipes == null )
 			return null;
 		synchronized( mPipes ){
-			NameValue<PipedPort> nv = mPipes.findName(name);
+			INameValue<PipedPort> nv = mPipes.findName(name);
 			return nv == null ? null : nv.getValue();
 		}
 	}
@@ -250,7 +240,7 @@ public class XIOEnvironment {
 	public void closePipe( String name )
 	{
 		if( mPipes != null ){
-			NameValue<PipedPort> nv = null;
+			INameValue<PipedPort> nv = null;
 			PipedPort pipe;
 			synchronized( mPipes ){
 				 nv = mPipes.removeName( name );

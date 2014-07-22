@@ -6,8 +6,6 @@
 
 package org.xmlsh.core;
 
-import org.xmlsh.util.Util;
-
 import java.util.EnumSet;
 
 // Evaluation options  - in order they are evaluated 

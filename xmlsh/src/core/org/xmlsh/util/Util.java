@@ -19,9 +19,8 @@ import net.sf.saxon.s9api.XdmValue;
 import net.sf.saxon.trans.XPathException;
 
 import org.apache.log4j.Logger;
-
 import org.xmlsh.core.EvalFlag;
-import org.xmlsh.core.IPort;
+import org.xmlsh.core.AbstractPort;
 import org.xmlsh.core.Namespaces;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.core.CharAttributeBuffer;
@@ -1372,10 +1371,14 @@ public class Util
 	}
 
 
-	public static void safeRelease(IPort p)
+	public static void safeRelease(IReferenceCounted p)
     {
 		if( p != null ) {
-			p.release();
+			try {
+			   p.release();
+			} catch( Exception e ) {
+		        mLogger.warn("Exception closing: " + p.getClass().getName() ,  e );
+			}
 		}
     }
 
@@ -1413,8 +1416,9 @@ public class Util
 	@SuppressWarnings("unchecked")
     public static <T extends Throwable> void wrapException( String message,Throwable e, Class<T> cls ) throws T
     {
-		if( e.getClass().isInstance(cls) )
-			throw (T) e ;
+// Need to add the message
+// if( e.getClass().isInstance(cls) )
+//			throw (T) e. ;
 		T ex  = null ;
 		try {
 	        ex = JavaUtils.newObject(cls, message ,  e );
@@ -1434,8 +1438,6 @@ public class Util
 
 	public static String simpleName(String command,String def)
     {
-
-		
         // Tokenize into words including path chars
 		String words[] = command.split("[^\\w]+");
 		for( String w : words ) {
@@ -1624,7 +1626,20 @@ public class Util
 		return set ;
 	}
 
+
+	public static void wrapIOException(Throwable e) throws IOException {
 	
+		if( e instanceof IOException )
+			throw (IOException) e ;
+		throw new IOException( e );
+		
+	}
+
+	public static void wrapIOException(String message , Throwable e) throws IOException {
+		
+		throw new IOException( message , e );
+		
+	}
 	
 }
 

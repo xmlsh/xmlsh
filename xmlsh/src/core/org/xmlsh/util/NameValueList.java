@@ -19,7 +19,7 @@ import java.util.Iterator;
 
 
 @SuppressWarnings("serial")
-public class NameValueList<V,T extends NameValue<V> >  extends ArrayList< T  > {
+public class NameValueList<T> extends ArrayList< INameValue<T> > {
 	
 	/*
 	 * Default Constructor
@@ -30,29 +30,22 @@ public class NameValueList<V,T extends NameValue<V> >  extends ArrayList< T  > {
 	/*
 	 * Copy constructor 
 	 */
-	public	NameValueList(NameValueList<V,T> that)
+	public	NameValueList( NameValueList<T> that)
 	{
 		addAll(that);
 	}
 	
-	public T findName( String name ){
-		for( T nv : this )
+	public INameValue<T> findName( String name ){
+		for(INameValue<T> nv : this )
 			if( nv.getName().equals(name) )
 				return nv;
 		return null;
 	}
 
-	public T findValue( V value ){
-		for( T nv : this )
-			if( nv.getValue().equals(value) )
-				return nv;
-		return null;
-	}
 	
-	
-	public T removeName( String name ){
-		for (Iterator<T> I = iterator(); I.hasNext();) {
-			T e = I.next();
+	public  INameValue<T>   removeName( String name ){
+		for (Iterator<INameValue<T>> I = iterator(); I.hasNext();) {
+			INameValue<T> e = I.next();
 			if( e.getName().equals(name)){
 				I.remove();
 				return e;
@@ -61,17 +54,12 @@ public class NameValueList<V,T extends NameValue<V> >  extends ArrayList< T  > {
 		return null;
 	}
 	
-	public T removeValue( V value ){
-		for (Iterator<T> I = iterator(); I.hasNext();) {
-			T e = I.next();
-			if( e.getValue().equals(value)){
-				I.remove();
-				return e;
-			}
-		}
+	public   INameValue<T>  findValue( T value ){
+		for(INameValue<T> nv : this )
+			if( nv.getValue().equals(value) )
+				return nv;
 		return null;
 	}
-
 }
 
 

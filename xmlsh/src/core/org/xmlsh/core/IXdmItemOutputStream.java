@@ -6,6 +6,8 @@
 
 package org.xmlsh.core;
 
+import java.io.IOException;
+
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmValue;
 
@@ -17,8 +19,8 @@ import net.sf.saxon.s9api.XdmValue;
 public interface IXdmItemOutputStream 
 {
 	
-	void	write( XdmValue value ) throws CoreException;
-	void	write( XdmItem item ) throws CoreException;
+	void	write( XdmValue value ) throws IOException ;
+	void	write( XdmItem item ) throws  IOException;
 	
 }
 

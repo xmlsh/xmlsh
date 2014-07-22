@@ -6,9 +6,12 @@
 
 package org.xmlsh.core;
 
+import java.io.IOException;
+
 import net.sf.saxon.s9api.Destination;
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XdmItem;
+
 import org.xmlsh.util.Util;
 
 class DestinationXdmValueOutputStream extends AbstractXdmItemOutputStream
@@ -16,7 +19,7 @@ class DestinationXdmValueOutputStream extends AbstractXdmItemOutputStream
 	Destination 	mDest;
 	
 	
-	DestinationXdmValueOutputStream( Destination dest ) throws CoreException
+	DestinationXdmValueOutputStream( Destination dest ) 
 	{
 		mDest = dest ;
 		
@@ -24,11 +27,11 @@ class DestinationXdmValueOutputStream extends AbstractXdmItemOutputStream
 	
 	
 	@Override
-	public void write(XdmItem item) throws CoreException {
+	public void write(XdmItem item) throws IOException {
 		try {
 			Util.writeXdmItem(item , mDest);
 		} catch (SaxonApiException e) {
-			throw new CoreException("Exception writing XdmItem to output",e);
+			throw new IOException("Exception writing XdmItem to output",e);
 		}
 		
 	}

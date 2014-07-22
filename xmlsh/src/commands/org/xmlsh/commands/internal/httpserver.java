@@ -10,16 +10,17 @@ import net.sf.saxon.s9api.SaxonApiException;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.ThrowException;
+import org.xmlsh.core.UnknownOption;
 import org.xmlsh.core.VariableOutputPort;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.XVariable;
 import org.xmlsh.sh.core.Command;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.util.Util;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -221,53 +222,51 @@ public class httpserver extends XCommand {
 		 * 
 		 */
 		@SuppressWarnings("unchecked")
-		private XVariable parseHeaders(HttpExchange request) throws XMLStreamException, CoreException, SaxonApiException {
+		private XVariable parseHeaders(HttpExchange request) throws IOException  {
 
 	        
 			XVariable var = new XVariable("HTTP_HEADERS",null);
-			VariableOutputPort port = new VariableOutputPort( var );
-			XMLStreamWriter writer = port.asXMLStreamWriter(null);
-			
-			
-			writer.writeStartDocument();
-			writer.writeStartElement("headers");
-			
-			Headers headers = request.getRequestHeaders();
-			Set<String> names = headers.keySet();
-			
-			for( String name : names ){
-
-				List<String> values = headers.get(name);
+			XMLStreamWriter writer = null ;
+			try (
+				VariableOutputPort port = new VariableOutputPort( var );
+			) {
+				writer = port.asXMLStreamWriter(null);
+				writer.writeStartDocument();
+				writer.writeStartElement("headers");
 				
+				Headers headers = request.getRequestHeaders();
+				Set<String> names = headers.keySet();
 				
-				writer.writeStartElement("header");
-				writer.writeAttribute("name", name );
-				
-				for( String value : values ){
-					writer.writeStartElement("value");
-					writer.writeCharacters(value);
+				for( String name : names ){
+	
+					List<String> values = headers.get(name);
+					
+					
+					writer.writeStartElement("header");
+					writer.writeAttribute("name", name );
+					
+					for( String value : values ){
+						writer.writeStartElement("value");
+						writer.writeCharacters(value);
+						writer.writeEndElement();
+					}
 					writer.writeEndElement();
+					
 				}
 				writer.writeEndElement();
-				
-			}
-			writer.writeEndElement();
-			writer.writeEndDocument();
-			writer.close();
-			port.flush();
-			return var ;
-		
-		
-		
+				writer.writeEndDocument();
+				writer.close();
+				return var ;
+		} catch (XMLStreamException|SaxonApiException e) {
+			throw new IOException(e);
+		} finally {
+			Util.safeClose( writer );
 		}
-
-
 	}
-
+	}
 	
 	@Override
-	public int run( List<XValue> args )
-	throws Exception 
+	public int run( List<XValue> args ) throws UnknownOption, IOException, CoreException
 	{
 		
 		Options opts = new Options( "port:,context:,handler:,get:,put:,post:,chunk" );

@@ -113,23 +113,23 @@ public class XMLEventOutputPort extends OutputPort
 		return new XMLEventOutputStream();
 	}
 
-	public synchronized void flush() throws CoreException
+	public synchronized void flush() throws IOException
 	{
 
 		try {
 			mWriter.flush();
 		} catch (XMLStreamException e) {
-			throw new CoreException(e);
+			throw new IOException(e);
 		}
 	}
 	
 	
 	
-	public synchronized void close() throws CoreException {
+	public synchronized void close() throws IOException {
 		try {
 			mWriter.close();
 		} catch (XMLStreamException e) {
-			throw new CoreException(e);
+			throw new IOException(e);
 		}
 	}
 

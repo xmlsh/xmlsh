@@ -412,20 +412,20 @@ public class Shell implements AutoCloseable, Closeable {
 	}
 	
 	
-	public void close() throws IOException
+	public void close() 
 	{
 			if( mParent != null )
 				mParent.notifyChildClose(this);
 			mParent = null ;
 			mThreadGroup = null ;
 			if( mEnv != null ){
-				mEnv.close();
+				Util.safeClose(mEnv);
 				mEnv = null ;
 			}
 			if( mSavedCD != null )
 				SystemEnvironment.getInstance().setProperty("user.dir", mSavedCD);
 			if( mSession != null ){
-				mSession.release();
+				Util.safeRelease(mSession);
 				mSession = null ;
 			}
 	}

@@ -15,13 +15,10 @@ import net.sf.saxon.s9api.XdmNode;
 import org.xml.sax.InputSource;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.util.FileUtils;
 import org.xmlsh.util.JSONUtils;
 import org.xmlsh.util.SynchronizedInputStream;
 import org.xmlsh.util.Util;
 
-import java.io.FileDescriptor;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -47,9 +44,13 @@ public class StreamInputPort extends InputPort {
 	private Logger mLogger = LogManager.getLogger(StreamInputPort.class);
 
 	public StreamInputPort(InputStream is, String systemId ) {
+		this(is,systemId,false);
+	}
+
+	public StreamInputPort(InputStream is, String systemId, boolean system) {
 		mStream = is;
 		this.setSystemId(systemId);
-
+		this.setSystem(system);;
 	}
 
 	public synchronized InputStream asInputStream(SerializeOpts opts)
@@ -60,14 +61,10 @@ public class StreamInputPort extends InputPort {
 		
 	}
 
-	public synchronized void close() throws CoreException {
+	public synchronized void close() throws IOException {
 
 		if (mStream != null)
-			try {
 				mStream.close();
-			} catch (IOException e) {
-				throw new CoreException(e);
-			}
 
 	}
 

@@ -10,16 +10,39 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 @SuppressWarnings("serial")
-public class AutoReleasePool extends ArrayList<IManagedObject> implements Closeable, AutoCloseable {
+public class AutoReleasePool extends ArrayList<IReferenceCounted> implements AutoCloseable {
+	private Logger  mLogger= LogManager.getLogger(AutoReleasePool.class );
 	protected void finalize() throws Exception 
 	{
 		close();
 	}
-	public void	close() throws IOException {
-		for( IReleasable obj : this )
+	public void	close() throws Exception {
+		Exception et = null ;
+		
+		try {
+	    	for( IReferenceCounted obj : this )
+			try {
 				obj.release();
-		this.clear();
+			} catch(Exception e) {
+				if( et == null )
+						et=e;
+				else
+					et.addSuppressed(e);
+			}
+	    	finally {
+				mLogger.debug("Exception closing object autorelease object: " );
+			}
+
+		}
+		finally { 
+		   this.clear();
+		}
+		if( et != null )
+			throw et;
 	}
 }
 

@@ -11,12 +11,12 @@ import java.util.Map;
 
 public class SessionEnvironment extends ManagedObject {
 
-	private		Map<String, IManagedObject>		mVars;
+	private		Map<String, IReferenceCounted>		mVars;
 	
 	public void close() throws Exception
 	{
 		if( mVars != null ){
-			for( IReleasable obj : mVars.values() )
+			for( IReferenceCounted obj : mVars.values() )
 				obj.release();
 			mVars.clear();
 			mVars = null;
@@ -28,11 +28,11 @@ public class SessionEnvironment extends ManagedObject {
 	 * Get a managed object and adds a reference to it
 	 */
 	
-	public synchronized IReleasable	getVar(String key)
+	public synchronized IReferenceCounted	getVar(String key)
 	{
 		if( mVars == null )
 			return null;
-		IReferenceObject obj = mVars.get(key);
+		IReferenceCounted obj = mVars.get(key);
 		if( obj != null )
 			obj.addRef();
 		return obj;
@@ -41,10 +41,10 @@ public class SessionEnvironment extends ManagedObject {
 	/*
 	 * Sets a Session object and adds a reference
 	 */
-	public synchronized void setVar( String key , IManagedObject obj )
+	public synchronized void setVar( String key , IReferenceCounted obj )
 	{
 		if( mVars == null )
-			mVars = new HashMap<String,IManagedObject>();
+			mVars = new HashMap<String,IReferenceCounted>();
 		
 		obj.addRef();
 		mVars.put( key , obj );

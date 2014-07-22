@@ -15,12 +15,13 @@ import net.sf.saxon.s9api.XdmDestination;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.trans.XPathException;
+
 import org.xml.sax.ContentHandler;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.util.Util;
 
 import java.io.ByteArrayOutputStream;
-import java.io.FileDescriptor;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -53,9 +54,13 @@ public class VariableOutputPort extends OutputPort
 	{
 		
 		@Override
-		public void write(XdmItem item) throws CoreException {
+		public void write(XdmItem item) throws IOException  {
 			
-				appendVar(item);
+				try {
+					appendVar(item);
+				} catch (InvalidArgumentException e) {
+				   throw new IOException(e);
+				}
 			
 		}
 
@@ -108,37 +113,36 @@ public class VariableOutputPort extends OutputPort
 	}
 
 	@Override
-	public synchronized void flush() throws  CoreException, SaxonApiException
+	public synchronized void flush() throws IOException 
 	{
 			
 			
-			if (mXdmDestination != null)
-				appendVar( mXdmDestination.getXdmNode());
+			try {
+				if (mXdmDestination != null)
+					appendVar( mXdmDestination.getXdmNode());
 
-			
-			// else
-			if (mByteArrayOutputStream != null)
-				try {
-					appendVar( mByteArrayOutputStream.toString(mSerializeOpts.getOutputTextEncoding()   ) );
-				} catch (UnsupportedEncodingException e1) {
-					throw new CoreException( e1 );
-				}
-
-			//else
-			if (mBuilder != null)
-				appendVar(mBuilder.getDocumentNode());
 				
-		
-			mXdmDestination = null;
-			mByteArrayOutputStream = null ;
-			mBuilder = null ;
-		
+				// else
+				if (mByteArrayOutputStream != null)
+						appendVar( mByteArrayOutputStream.toString(mSerializeOpts.getOutputTextEncoding()   ) );
+
+				//else
+				if (mBuilder != null)
+					appendVar(mBuilder.getDocumentNode());
+			} catch (InvalidArgumentException | UnsupportedEncodingException
+					| SaxonApiException e) {
+				Util.wrapIOException("Exception flushing VariableOutputPort" , e );
+			} finally {
+				mXdmDestination = null;
+				mByteArrayOutputStream = null ;
+				mBuilder = null ;
+			}
 	}
 	
 	
 
 	@Override
-	public synchronized void close() throws CoreException {
+	public synchronized void close()  {
 		
 		
 		

@@ -11,8 +11,12 @@ import net.sf.saxon.s9api.XdmAtomicValue;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmValue;
 
+import java.io.IOException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+
+import org.xmlsh.util.Util;
+
 
 
 
@@ -46,28 +50,29 @@ public class XdmItemPipe {
 	{
 
 		@Override
-		public void write(XdmValue value) throws CoreException {
+		public void write(XdmValue value) throws IOException {
 			for( XdmItem item : value )
 				try {
 					mQueue.put(item);
 				} catch (InterruptedException e) {
-					throw new CoreException(e);
+Util.wrapIOException(e);
 				}
 			
 		}
 
 		@Override
-		public void write(XdmItem item) throws CoreException {
-			try {
-				mQueue.put(item);
-			} catch (InterruptedException e) {
-				throw new CoreException(e);
-			}
+		public void write(XdmItem item) throws IOException {
+				try {
+					mQueue.put(item);
+				} catch (InterruptedException e) {
+			
+					Util.wrapIOException(e);
+				}
 			
 		}
 
 		@Override
-		public void close() throws CoreException {
+		public void close() throws IOException {
 			write( mEOF );
 			
 		}

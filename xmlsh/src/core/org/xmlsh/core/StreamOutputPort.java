@@ -20,13 +20,9 @@ import net.sf.saxon.trans.XPathException;
 import org.xml.sax.ContentHandler;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.util.FileUtils;
 import org.xmlsh.util.SynchronizedOutputStream;
 import org.xmlsh.util.Util;
 
-import java.io.FileDescriptor;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -61,15 +57,20 @@ public class StreamOutputPort extends OutputPort
 	private OutputStream	 mStream;
 	private boolean mClose = true ;
 
-	public StreamOutputPort( OutputStream os , boolean bClose ) 
+	public StreamOutputPort( OutputStream os , boolean bClose , boolean system) 
 	{
 		mStream = os;
 		mClose = bClose;
+		setSystem(system);
 	}
-
+	public StreamOutputPort( OutputStream os , boolean bClose ) 
+	{
+		this(os,bClose,false);
+	}
+	
 	public StreamOutputPort( OutputStream os ) 
 	{
-		mStream = os;
+		this(os,true,false);
 	}
 
 	
@@ -84,27 +85,19 @@ public class StreamOutputPort extends OutputPort
 		return new SynchronizedOutputStream(mStream,mStream != System.out);
 	}
 
-	public synchronized void flush() throws CoreException
+	public synchronized void flush() throws IOException 
 	{
 		if( mStream != null )
-			try {
 				mStream.flush();
-			} catch (IOException e) {
-				throw new CoreException(e);
-			}
 		
 	
 	}
 	
 	
 	
-	public synchronized void close() throws CoreException {
+	public synchronized void close() throws IOException {
 		if( mClose && mStream != null )
-			try {
 				mStream.close();
-			} catch (IOException e) {
-				throw new CoreException(e);
-			}
 	}
 
 

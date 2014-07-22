@@ -719,7 +719,7 @@ public class XValue {
 				return value ;
 
 			AtomicValue av = (AtomicValue) value ;
-			Object java = AtomicValue.convertToJava(av);
+			Object java = Value.convertToJava(av);
 
 
 			return java;

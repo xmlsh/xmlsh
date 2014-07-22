@@ -6,7 +6,7 @@
 
 package org.xmlsh.util;
 
-public class NameValue<T> implements INamed {
+public class NameValue<T> implements   INameValue<T> {
 	private final String		name;
 	private final T            value;
 	
@@ -14,10 +14,18 @@ public class NameValue<T> implements INamed {
 		this.name = name ;
 		this.value = value ;
 	}
+	/* (non-Javadoc)
+	 * @see org.xmlsh.util.INameValue#getName()
+	 */
+	@Override
 	public String getName() 
 	{
 		return name;
 	}
+	/* (non-Javadoc)
+	 * @see org.xmlsh.util.INameValue#getValue()
+	 */
+	@Override
 	public T getValue()
 	{
 		return value ;

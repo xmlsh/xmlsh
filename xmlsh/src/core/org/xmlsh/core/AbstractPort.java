@@ -8,18 +8,23 @@ package org.xmlsh.core;
 
 import net.sf.saxon.s9api.SaxonApiException;
 
-import org.apache.log4j.LogManager;
+import org.xmlsh.util.IReferenceCounted;
+import org.xmlsh.util.ReferenceCounter;
 
-import org.xmlsh.util.IManagedObject;
-
+import java.io.Closeable;
 import java.io.File;
-import java.io.FileDescriptor;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.io.Flushable;
+import java.io.IOException;
 
 
-public abstract class IPort implements IManagedObject {
-	private	 final AtomicInteger	mRef = new AtomicInteger(1);
+public abstract class AbstractPort implements IReferenceCounted , Closeable , Flushable {
+	private	ReferenceCounter mCounter = new ReferenceCounter();
 	private String mSystemId = "";
+	private boolean    mSystem;    // System port from original env
+
+	protected void setSystem( boolean system ){
+		mSystem = system ;
+	}
 	
 	public String getSystemId() {
 		// TODO Auto-generated method stub
@@ -30,26 +35,19 @@ public abstract class IPort implements IManagedObject {
 	{
 		mSystemId = systemId;
 	}
-	public final void addRef() {
-		mRef.incrementAndGet();
-
+	public void addRef() {
+		mCounter.addRef();
 	}
 
-	public synchronized void flush() throws  CoreException, SaxonApiException {};
 	
-	public final void release()
+	public final boolean release() throws Exception 
 	{		
-		try {
-			if( mRef.decrementAndGet() <= 0 ) {
-				synchronized( this ) {
-					flush();
+			if(mCounter.release() ) {
+				    flush();
 					close();
-				}
+					return true ;
 			}
-			
-			} catch (Exception e) {
-				LogManager.getLogger(getClass()).error("Exception closing port",e);
-			}
+			return false ;
 	}
 	
 	
@@ -58,6 +56,10 @@ public abstract class IPort implements IManagedObject {
 	public File		getFile() throws UnimplementedException
 	{
 		throw new UnimplementedException("IPort.getFile() is not implmented() in class: " + this.getClass().getName() );
+	}
+	
+	public boolean isSystem(){
+		return mSystem;
 	}
 
 	

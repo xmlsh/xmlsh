@@ -14,43 +14,30 @@ import org.apache.log4j.Logger;
  * Default implementation of a managed object
  * 
  */
-public abstract class ManagedObject implements IManagedObject {
+public abstract class ManagedObject implements IReferenceCounted, IManagedClosable {
 
-	private		int mRef = 1;
-	private static Logger  mLogger = LogManager.getLogger(ManagedObject.class);
-
+	private		final ReferenceCounter mCounter = new ReferenceCounter();
+	
 	protected void finalize()
 	{
-		try {
-	        close();
-        } catch (Exception e) {
-	       mLogger .debug("Exception closing Managed Object",e);
-        }
+		Util.safeClose(this);
 	}
 	
 	@Override
-	public synchronized void addRef() {
-		mRef++;
-
+	public void addRef() {
+		mCounter.addRef();
 	}
 
 	@Override
-	public synchronized void release()  {
-		if( --mRef <= 0 )
-			closeObject();
+	public synchronized boolean release() throws Exception  {
+		if( mCounter.release() ) {
+			close();
+			return true ;
+		}
+		return false;
 
 	}
 
-	private void closeObject()
-    {
-	    try {
-	       close(); 
-        } catch (Exception e) {
-        	mLogger.debug("Exception closing managed object: " + this.getClass().toString());
-        }
-	    
-    }
-	
 }
 
 
