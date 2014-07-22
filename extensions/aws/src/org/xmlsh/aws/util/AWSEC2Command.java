@@ -451,8 +451,8 @@ ephemeral[0..3] - An instance store volume to be mapped to the device. For examp
     	StringPair 	pair = new StringPair(string , '=');
     	
     	String 	device = pair.getLeft();
-    	if( device.startsWith("/dev/"))
-    		device = device.substring(5);
+    	//if( device.startsWith("/dev/"))
+    	//	device = device.substring(5);
     
     	if(! pair.hasRight()){
     		map.setNoDevice(device);
@@ -480,7 +480,8 @@ ephemeral[0..3] - An instance store volume to be mapped to the device. For examp
     	
     	String aebs[] = r.split(":");
     	
-    	EbsBlockDevice ebs = new EbsBlockDevice().withDeleteOnTermination( Boolean.FALSE );
+    	EbsBlockDevice ebs = new EbsBlockDevice();
+    	
     	
     	// [snapshot-id]:
     	if( aebs.length >= 1 ){
