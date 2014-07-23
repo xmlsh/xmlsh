@@ -67,7 +67,7 @@ public class XEnvironment implements AutoCloseable, Closeable {
 
 	}
 
-	private void	addAutoRelease( IReferenceCounted obj )
+	private void	addAutoRelease( AbstractPort obj )
 	{
 		if( mAutoRelease == null )
 			mAutoRelease = new AutoReleasePool();

@@ -19,8 +19,10 @@ import net.sf.saxon.s9api.XdmValue;
 import net.sf.saxon.trans.XPathException;
 
 import org.apache.log4j.Logger;
+
 import org.xmlsh.core.EvalFlag;
 import org.xmlsh.core.AbstractPort;
+import org.xmlsh.core.IReleasable;
 import org.xmlsh.core.Namespaces;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.core.CharAttributeBuffer;
@@ -1371,7 +1373,7 @@ public class Util
 	}
 
 
-	public static void safeRelease(IReferenceCounted p)
+	public static void safeRelease(IReleasable p)
     {
 		if( p != null ) {
 			try {

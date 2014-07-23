@@ -13,7 +13,7 @@ import java.io.IOException;
 public interface IReferenceCounted  {
 	
 	public abstract void addRef();
-	public abstract boolean release() throws Exception ;
+	public abstract boolean release()  ;
 
 }
 

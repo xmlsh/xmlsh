@@ -12,7 +12,7 @@ public class ReferenceCounter implements IReferenceCounted {
 	}
 
 	@Override
-	public boolean release() throws Exception {
+	public boolean release() {
 		return mRef.decrementAndGet() <= 0;
 	}
 

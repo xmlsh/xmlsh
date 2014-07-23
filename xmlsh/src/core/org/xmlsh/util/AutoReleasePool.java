@@ -13,8 +13,10 @@ import java.util.ArrayList;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+import org.xmlsh.core.IReleasable;
+
 @SuppressWarnings("serial")
-public class AutoReleasePool extends ArrayList<IReferenceCounted> implements AutoCloseable {
+public class AutoReleasePool extends ArrayList<IReleasable> implements AutoCloseable {
 	private Logger  mLogger= LogManager.getLogger(AutoReleasePool.class );
 	protected void finalize() throws Exception 
 	{
@@ -24,7 +26,7 @@ public class AutoReleasePool extends ArrayList<IReferenceCounted> implements Aut
 		Exception et = null ;
 		
 		try {
-	    	for( IReferenceCounted obj : this )
+	    	for( IReleasable obj : this )
 			try {
 				obj.release();
 			} catch(Exception e) {

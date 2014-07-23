@@ -6,17 +6,18 @@
 
 package org.xmlsh.util;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 public class SessionEnvironment extends ManagedObject {
 
-	private		Map<String, IReferenceCounted>		mVars;
+	private		Map<String, ManagedObject>		mVars;
 	
-	public void close() throws Exception
+	public void close() throws IOException
 	{
 		if( mVars != null ){
-			for( IReferenceCounted obj : mVars.values() )
+			for( ManagedObject obj : mVars.values() )
 				obj.release();
 			mVars.clear();
 			mVars = null;
@@ -28,11 +29,11 @@ public class SessionEnvironment extends ManagedObject {
 	 * Get a managed object and adds a reference to it
 	 */
 	
-	public synchronized IReferenceCounted	getVar(String key)
+	public synchronized ManagedObject	getVar(String key)
 	{
 		if( mVars == null )
 			return null;
-		IReferenceCounted obj = mVars.get(key);
+		ManagedObject obj = mVars.get(key);
 		if( obj != null )
 			obj.addRef();
 		return obj;
@@ -41,10 +42,10 @@ public class SessionEnvironment extends ManagedObject {
 	/*
 	 * Sets a Session object and adds a reference
 	 */
-	public synchronized void setVar( String key , IReferenceCounted obj )
+	public synchronized void setVar( String key , ManagedObject obj )
 	{
 		if( mVars == null )
-			mVars = new HashMap<String,IReferenceCounted>();
+			mVars = new HashMap<>();
 		
 		obj.addRef();
 		mVars.put( key , obj );

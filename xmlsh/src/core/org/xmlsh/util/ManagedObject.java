@@ -9,12 +9,17 @@ package org.xmlsh.util;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+import org.xmlsh.core.IReleasable;
+
+import java.io.Closeable;
+import java.io.IOException;
+
 
 /*
  * Default implementation of a managed object
  * 
  */
-public abstract class ManagedObject implements IReferenceCounted, IManagedClosable {
+public abstract class ManagedObject implements Closeable, IReleasable {
 
 	private		final ReferenceCounter mCounter = new ReferenceCounter();
 	
@@ -23,13 +28,11 @@ public abstract class ManagedObject implements IReferenceCounted, IManagedClosab
 		Util.safeClose(this);
 	}
 	
-	@Override
 	public void addRef() {
 		mCounter.addRef();
 	}
 
-	@Override
-	public synchronized boolean release() throws Exception  {
+	public synchronized boolean release() throws IOException  {
 		if( mCounter.release() ) {
 			close();
 			return true ;

@@ -17,7 +17,7 @@ import java.io.Flushable;
 import java.io.IOException;
 
 
-public abstract class AbstractPort implements IReferenceCounted , Closeable , Flushable {
+public abstract class AbstractPort implements  Closeable , Flushable, IPort {
 	private	ReferenceCounter mCounter = new ReferenceCounter();
 	private String mSystemId = "";
 	private boolean    mSystem;    // System port from original env
@@ -40,7 +40,7 @@ public abstract class AbstractPort implements IReferenceCounted , Closeable , Fl
 	}
 
 	
-	public final boolean release() throws Exception 
+	public final boolean release() throws IOException 
 	{		
 			if(mCounter.release() ) {
 				    flush();
