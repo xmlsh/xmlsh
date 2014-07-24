@@ -1576,6 +1576,7 @@ public class Shell implements AutoCloseable, Closeable {
 	
 	
 
+	//  Returns a new port need to manage the port properly
 	public OutputPort newOutputPort(String file, boolean append) throws FileNotFoundException, IOException
 	{
 		if( FileUtils.isNullFilePath(file)) {
@@ -1586,22 +1587,27 @@ public class Shell implements AutoCloseable, Closeable {
 		{
 			URL url = Util.tryURL(file);
 			if( url != null )
-
 				return new StreamOutputPort(url.openConnection().getOutputStream());
 			
 		}
-		
-		
 		return  new FileOutputPort(getFile(file),append);
 	}
 	
 	public OutputStream getOutputStream(String file, boolean append, SerializeOpts opts) throws FileNotFoundException, IOException, CoreException
 	{
-		return newOutputPort( file , append).asOutputStream(opts); 
+		OutputPort p =  newOutputPort( file , append); 
+		addAutoRelease( p );
+		return p.asOutputStream(opts);
+		
 	}
 	
 	
 	
+	public  void addAutoRelease(OutputPort p) {
+		getEnv().addAutoRelease(p);
+	}
+
+
 	public OutputStream getOutputStream(File file, boolean append) throws FileNotFoundException {
 		
 		

@@ -59,13 +59,12 @@ unset _var
 echo -p output output 
 echo output2 >(output)
 
-echo complex commands to a port truncate it
 
 for i in output3 ; do 
    echo $i 
 done >(output)
 
-#echo output4 |  while read a ; do echo $a ; done >(output)
+echo output4 |  while read a ; do echo $a ; done >(output)
 
 if true ; then echo output5 ; fi >(output)
 

@@ -14,8 +14,6 @@ import org.apache.log4j.Logger;
 import org.xml.sax.InputSource;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.util.AutoReleasePool;
-import org.xmlsh.util.Util;
 
 import java.io.Closeable;
 import java.io.File;
@@ -65,10 +63,9 @@ public class XEnvironment implements AutoCloseable, Closeable {
 
 	}
 
-	private void	addAutoRelease( AbstractPort obj )
+	public void	addAutoRelease( AbstractPort obj )
 	{
 		mIO.addAutoRelease(obj);
-
 	}
 
 	/*
@@ -335,6 +332,10 @@ public class XEnvironment implements AutoCloseable, Closeable {
 		return mIO.getStdout();
 	}
 	
+	
+	/*
+	 * Create or return an output port - managed by the autorelease pool
+	 */
 	public OutputPort getOutput( XValue port, boolean append ) throws IOException
 	{
 		
@@ -346,14 +347,14 @@ public class XEnvironment implements AutoCloseable, Closeable {
 			if( name.equals("-"))
 				return getStdout();
 			
-			return mShell.newOutputPort(name, append);
-			
-			
-			
+			OutputPort p = mShell.newOutputPort(name, append);
+			addAutoRelease(p);
+			return p;
 		}
 		else
 		{
 			OutputPort p = new VariableOutputPort(  new XVariable(null,port) );
+			addAutoRelease(p);
 			return p;
 		}
 		

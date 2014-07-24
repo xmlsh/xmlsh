@@ -109,8 +109,7 @@ public class xmd5sum extends XCommand
 		try (
 				InputStream in = inp.asInputStream(serializeOpts) ){
 			Checksum cs = Checksum.calcChecksum(in);
-			
-			
+			out.writeStartElement(sFile);
 			String name = arg.toString();
 			if( !Util.isBlank(name) )
 				out.writeAttribute(sName, Util.toJavaPath(name));
@@ -119,12 +118,8 @@ public class xmd5sum extends XCommand
 			out.writeEndElement();
 		
 		
-		} catch (CoreException e) {
-			mShell.printErr("Exception accessing file",e);
-			return ;
-		
-		}
-		out.writeStartElement(sFile);
+		} 
+
 	
 	}
 
