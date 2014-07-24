@@ -256,6 +256,11 @@ public class VariableInputPort extends InputPort {
 		return mVariable.getValue().asJson();
 	}
 
+	@Override
+	public boolean isFile() {
+		return false;
+	}
+
 	
 }
 

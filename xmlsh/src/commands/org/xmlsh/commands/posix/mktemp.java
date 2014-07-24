@@ -45,7 +45,6 @@ public class mktemp extends XCommand {
 		}
 		OutputPort out = this.getStdout();
 		out.asPrintStream(getSerializeOpts(opts)).println( Util.convertPath(tmp.getAbsolutePath(),false) );
-		out.release();
 		return 0;
 	}
 

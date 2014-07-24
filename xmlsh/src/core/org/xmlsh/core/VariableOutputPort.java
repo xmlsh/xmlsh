@@ -22,6 +22,7 @@ import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.Util;
 
 import java.io.ByteArrayOutputStream;
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -43,7 +44,7 @@ import javax.xml.stream.XMLStreamWriter;
 
 
 
-public class VariableOutputPort extends OutputPort
+public class VariableOutputPort extends OutputPort 
 {
 	
 	// Set to true if any asXXX method was caused which used a non-xml stream or access 
@@ -79,13 +80,6 @@ public class VariableOutputPort extends OutputPort
 	private		ByteArrayOutputStream 	mByteArrayOutputStream;
 	private		BuildingStreamWriter	mBuilder;
 	private		SerializeOpts 			mSerializeOpts; 	// for converting from ByteArray to string  
-	
-	
-	
-	
-	
-	
-	
 	
 	
 	
@@ -142,10 +136,8 @@ public class VariableOutputPort extends OutputPort
 	
 
 	@Override
-	public synchronized void close()  {
-		
-		
-		
+	public synchronized void close() throws IOException  {
+		flush();
 	}
 
 

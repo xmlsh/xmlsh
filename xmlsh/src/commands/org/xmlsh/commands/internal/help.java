@@ -52,8 +52,6 @@ public class help extends XCommand {
 		else
 			helpUsage.doHelp(stdout,name,mXml,!mNoBrowser);
 			
-		stdout.release();
-		
 		return 0;
 		
 		

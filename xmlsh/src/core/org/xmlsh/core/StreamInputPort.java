@@ -12,6 +12,7 @@ import org.apache.log4j.Logger;
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
+
 import org.xml.sax.InputSource;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
@@ -19,6 +20,8 @@ import org.xmlsh.util.JSONUtils;
 import org.xmlsh.util.SynchronizedInputStream;
 import org.xmlsh.util.Util;
 
+import java.io.Closeable;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -37,7 +40,7 @@ import com.fasterxml.jackson.databind.JsonNode;
  * 
  */
 
-public class StreamInputPort extends InputPort {
+public class StreamInputPort extends InputPort  {
 
 	// An Input Port may be either a Stream or an XML value
 	private InputStream mStream;
@@ -56,7 +59,7 @@ public class StreamInputPort extends InputPort {
 	public synchronized InputStream asInputStream(SerializeOpts opts)
 			throws CoreException  {
 
-		return mStream == null ? null : new SynchronizedInputStream(mStream);
+		return mStream == null ? null : new SynchronizedInputStream(mStream,false);
 
 		
 	}
@@ -158,6 +161,13 @@ public class StreamInputPort extends InputPort {
 	public JsonNode asJson(SerializeOpts serializeOpts) throws IOException, CoreException {
 		return JSONUtils.readJsonNode( asInputStream(serializeOpts));
 	}
+
+	@Override
+	public boolean isFile() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 
 
 

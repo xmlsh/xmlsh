@@ -8,6 +8,7 @@ package org.xmlsh.core;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.xmlsh.util.AutoReleasePool;
 import org.xmlsh.util.INameValue;
 import org.xmlsh.util.NameValue;
 import org.xmlsh.util.NameValueList;
@@ -35,14 +36,19 @@ public class XIOEnvironment {
 	private PortList<InputPort>		mInputs ;
 	private PortList<OutputPort>	mOutputs ;
 	private volatile NameValueList<PipedPort>        mPipes;
+	private volatile AutoReleasePool  mAutoRelease = null;
+
+	
+	private <T>  T getPort(IHandle<T> hPort ){
+		if( hPort == null )
+			return null ;
+		return hPort.get();
+	}
+	
 	
 	public	InputPort getStdin() 
 	{
-		InputPort stdin = mInputs.getPort(kSTDIN);
-		if( stdin == null )
-			return null;
-			
-		return stdin;
+		return getPort( getInput(kSTDIN));
 	}
 	
 	/*
@@ -50,10 +56,7 @@ public class XIOEnvironment {
 	 */
 	public	OutputPort	getStdout() 
 	{
-		OutputPort stdout = mOutputs.getPort( kSTDOUT );
-		if( stdout == null )
-			return null;
-		return stdout ;
+		return getPort(mOutputs.getPort( kSTDOUT ));
 	}
 	
 	/*
@@ -61,26 +64,20 @@ public class XIOEnvironment {
 	 */
 	public	OutputPort	getStderr() 
 	{
-		OutputPort stderr = mOutputs.getPort(kSTDERR);
-		if( stderr == null )
-			return null;
-		return stderr ;
+		 return getPort(mOutputs.getPort(kSTDERR));
 	}
 
 
-	public InputPort setInput(String name, InputPort port)  {
-		InputPort in;
-		
+	public InputPort setInput(String name, InputPort port) throws IOException  {
 		
 		if( name == null || name.equals(kSTDIN) ){
 			name = kSTDIN ;
 		}
 		
-		in	= removeInput(name);
-
+		IHandle<InputPort> in 	= removeInput(name);
 		
 		if( in != null )
-			Util.safeRelease(in);
+			in.release();
 		
 		addInput(name, port);
 		return port ;
@@ -88,12 +85,16 @@ public class XIOEnvironment {
 	}
 
 	private void addInput(String name, InputPort port) {
-		mInputs.add( new NameValue<>( name  , port  ));
+		synchronized(mInputs) {
+		  mInputs.add( name , port );
+		}
 	}
 
-	private InputPort removeInput(String name) {
-		return mInputs.removePort(name);
-	}
+	private IHandle<InputPort> removeInput(String name) {
+		synchronized(mInputs) {
+    		return mInputs.removePort(name);
+		}
+    }
 		
 	
 	
@@ -101,7 +102,7 @@ public class XIOEnvironment {
 
 
 	public void setOutput(String name , OutputPort port)  {
-		OutputPort out ;
+		IHandle<OutputPort> out ;
 		if( name == null )
 			name = kSTDOUT ;
 		
@@ -115,11 +116,11 @@ public class XIOEnvironment {
 
 	private void addOutput(String name, OutputPort port) {
 		synchronized( mOutputs ){
-		  mOutputs.add(new NameValue<>(name , port));
+		  mOutputs.add(name , port);
 		}
 	}
 
-	private OutputPort removeOutput(String name) {
+	private IHandle<OutputPort> removeOutput(String name) {
 		synchronized (mOutputs) {
 			return mOutputs.removePort(name);
 		}
@@ -137,19 +138,27 @@ public class XIOEnvironment {
 
 	}
 	public void setStderr(OutputPort err) throws CoreException {
-		OutputPort stderr = mOutputs.removePort(kSTDERR);
+		IHandle<OutputPort> stderr = mOutputs.removePort(kSTDERR);
 		if( stderr != null )
 			Util.safeRelease(stderr);
-		mOutputs.add(new NameValue<>(kSTDERR,err));
-
+		addOutput(kSTDERR, err);
 	}
 
 	public void release() {
 		try {
-			mInputs.close();
-			mOutputs.close();
-			mInputs.clear();
-			mOutputs.clear();
+			synchronized( mInputs ) {
+			   mInputs.close();
+			   mInputs.clear();
+			}
+			synchronized( mOutputs) {
+			  mOutputs.close();
+			  mOutputs.clear();
+			}
+			
+			if( mAutoRelease != null ) {
+				mAutoRelease.close();
+				mAutoRelease = null ;
+			}
 			
 		} catch (Exception e) {
 			mLogger.error("Exception closing environment",e);
@@ -165,8 +174,12 @@ public class XIOEnvironment {
 	}
 	public XIOEnvironment( XIOEnvironment that )
 	{
+		
 		mInputs = new PortList<InputPort>( that.mInputs );
 		mOutputs = new PortList<OutputPort>( that.mOutputs);
+		
+		// Dont copy the AutoRelease pool ... 
+		
 	}
 	
 
@@ -174,16 +187,16 @@ public class XIOEnvironment {
 	{
 
 		mInputs.add( 
-				new NameValue<InputPort>( kSTDIN ,  new StreamInputPort(System.in,null,true) )
+				 kSTDIN ,  new StreamInputPort(System.in,null,true) 
 		);
 
 		mOutputs.add( 
-				new NameValue<OutputPort>( kSTDOUT, new StreamOutputPort(System.out,false,true)  )
+				kSTDOUT, new StreamOutputPort(System.out,false,true)  
 		);
 
 
 		mOutputs.add( 
-				new NameValue<OutputPort>( kSTDERR ,  new StreamOutputPort(System.err,false,true) )
+				kSTDERR ,  new StreamOutputPort(System.err,false,true) 
 		);
 
 	}
@@ -193,25 +206,34 @@ public class XIOEnvironment {
 	 */
 	public	InputPort	getInputPort( String name )
 	{
-		return mInputs.getPort(name);
+		IHandle<InputPort> hPort = getInput(name);
+		return hPort == null ? null : hPort.get();
 	}
 	
+	private IHandle<InputPort> getInput(String name) {
+		synchronized( mInputs ) {
+			  return mInputs.getPort(name);
+			}
+	}
+
+
 	/* return a named output port 
 	 * 
 	 */
 	public	OutputPort	getOutputPort( String name )
 	{
-		return mOutputs.getPort(name);
+		IHandle<OutputPort> hPort = getOutput(name);
+		return hPort == null ? null : hPort.get();
+
+	}
+
+
+	private IHandle<OutputPort> getOutput(String name) {
+		synchronized( mOutputs ) {
+		  return mOutputs.getPort(name);
+		}
 	}
 	
-	protected PortList<InputPort>	getInputPorts()
-	{
-		return mInputs;
-	}
-	protected PortList<OutputPort>	getOutputPorts()
-	{
-		return mOutputs;
-	}
 
 	public void newPipe(String name, PipedPort pipe ) throws CoreException, IOException {
 
@@ -254,6 +276,45 @@ public class XIOEnvironment {
 			
 		}
 		
+	}
+
+	//"1>&2"
+
+	public void dupOutput(String portLeft, String portRight) throws IOException {
+		IHandle<OutputPort> hLeft =  removeOutput(portLeft);
+		IHandle<OutputPort> hRight = getOutput(portRight);
+    	
+		if( hLeft != null )
+    		hLeft.release();
+    	
+	    if( hRight != null ) { // just clear left
+	    	addOutput( portLeft , hRight.get() );
+	    }
+	    	
+	}
+
+
+	public void dupInput(String portLeft, String portRight) throws IOException {
+		IHandle<InputPort> hLeft =  removeInput(portLeft);
+		IHandle<InputPort> hRight = getInput(portRight);
+    	
+		if( hLeft != null )
+    		hLeft.release();
+    	
+	    if( hRight != null ) { // just clear left
+	    	addInput( portLeft , hRight.get() );
+	    }		
+	}
+
+
+	public void addAutoRelease(AbstractPort obj) {
+		if( mAutoRelease == null ) {
+			synchronized( this ) {
+				if( mAutoRelease == null ) 
+				   mAutoRelease = new AutoReleasePool();
+			}
+		}
+		mAutoRelease.add(obj.newReference());		
 	}
 }
 

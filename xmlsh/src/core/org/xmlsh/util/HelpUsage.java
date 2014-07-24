@@ -15,9 +15,10 @@ import net.sf.saxon.s9api.XQueryCompiler;
 import net.sf.saxon.s9api.XQueryEvaluator;
 import net.sf.saxon.s9api.XQueryExecutable;
 import net.sf.saxon.s9api.XdmNode;
+
 import org.xmlsh.core.CommandFactory;
 import org.xmlsh.core.CoreException;
-import org.xmlsh.core.OutputPort;
+import org.xmlsh.core.IOutputPort;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Module;
 import org.xmlsh.sh.shell.SerializeOpts;
@@ -49,7 +50,7 @@ public class HelpUsage {
 		mShell = shell;
 	}
 
-	public void doHelpCommands(OutputPort out, URL url, String prefix, String module, boolean bLaunch ) throws SaxonApiException, IOException, CoreException, URISyntaxException {
+	public void doHelpCommands(IOutputPort out, URL url, String prefix, String module, boolean bLaunch ) throws SaxonApiException, IOException, CoreException, URISyntaxException {
 		
 		XdmNode root = loadHelp(url);
 		
@@ -90,7 +91,7 @@ public class HelpUsage {
 			is.close();
 		}
 	}
-	public void doHelp(OutputPort stdout, String name, boolean bXml, boolean bLaunch ) throws IOException, URISyntaxException, SaxonApiException, CoreException {
+	public void doHelp(IOutputPort stdout, String name, boolean bXml, boolean bLaunch ) throws IOException, URISyntaxException, SaxonApiException, CoreException {
 		
 		URL helpUrl = CommandFactory.getInstance().getHelpURL(mShell, name);
 		if( helpUrl == null ){
@@ -141,7 +142,7 @@ public class HelpUsage {
 		
 	}
 
-	public void doUsage(OutputPort stdout, String name ) throws IOException, URISyntaxException, SaxonApiException, CoreException {
+	public void doUsage(IOutputPort stdout, String name ) throws IOException, URISyntaxException, SaxonApiException, CoreException {
 		
 		URL helpUrl = CommandFactory.getInstance().getHelpURL(mShell, name);
 		if( helpUrl == null ){
@@ -188,14 +189,14 @@ public class HelpUsage {
 		}
 	}
 
-	private void printxml(XdmNode node, OutputPort out) throws SaxonApiException, CoreException {
+	private void printxml(XdmNode node, IOutputPort out) throws SaxonApiException, CoreException {
 		
 		Util.writeXdmValue(node, out.asDestination(this.mSerializeOpts));
 
 		
 	}
 
-	private void print(XdmNode node,  OutputPort out,String query) throws SaxonApiException, IOException, CoreException {
+	private void print(XdmNode node,  IOutputPort out,String query) throws SaxonApiException, IOException, CoreException {
 		
 		Processor  processor  = Shell.getProcessor();
 		XQueryCompiler compiler = processor.newXQueryCompiler();
@@ -216,7 +217,7 @@ public class HelpUsage {
 		
 	}
 
-	public void doHelpCommands(OutputPort stdout, boolean bLaunch) throws SaxonApiException, IOException, CoreException, URISyntaxException {		
+	public void doHelpCommands(IOutputPort stdout, boolean bLaunch) throws SaxonApiException, IOException, CoreException, URISyntaxException {		
 		for( Module m : mShell.getModules() ){
 			URL url = m.getHelpURL();
 			if( url != null )

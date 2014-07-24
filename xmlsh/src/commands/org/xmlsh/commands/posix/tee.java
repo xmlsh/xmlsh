@@ -33,50 +33,34 @@ public class tee extends XCommand {
 		
 		// List of outputs to tee to
 		List<OutputStream>		writers = new ArrayList<OutputStream>();
-		List<OutputPort>		closeme  = new ArrayList<OutputPort>();
-		
 		InputPort stdin = getStdin();
 		
 		
+		SerializeOpts sopts = getSerializeOpts(opts);
 		
-		
-		try {
-			
-			SerializeOpts sopts = getSerializeOpts(opts);
-			
-			InputStream	reader = new BufferedInputStream(stdin.asInputStream(sopts));
+		try (
+				InputStream is = new BufferedInputStream(stdin.asInputStream(sopts));
+		){
+				
 			OutputPort stdout = getStdout();
-			
 			writers.add(new BufferedOutputStream(stdout.asOutputStream(sopts)));
 			
 			for( XValue arg : args ){
 				OutputPort output = getEnv().getOutput(arg, false);
 				writers.add( new BufferedOutputStream(output.asOutputStream(sopts)));
-				closeme.add(output);
 			}
-		
 			
 			int c ;
-			InputStream is = new BufferedInputStream(stdin.asInputStream(sopts));
+
 			while((c=is.read()) > 0 ){
 				for( OutputStream out : writers )
 					out.write(c);
 			}
 			
-			is.close();
 			for( OutputStream out : writers )
 				out.close();
 			
-			// TODO: Why doesnt writers close the underlying stream ?
-			// TODO: Do NOT Close stdout !
-			for( OutputPort p : closeme )
-				p.close();
-
 		} 
-		finally {
-			
-			stdin.close();
-		}
 		return 0;
 		
 		

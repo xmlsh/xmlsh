@@ -136,18 +136,18 @@ public class XShellThread extends Thread {
 
 			String sCmd ;
 			while (! mClosed && (sCmd = mCommandQueue.take()) != null){
-				InputPort inp =  new StreamInputPort(cmdPipe.getIn(), null);
-				setRunning(false);
-				clearResult();
-				
+				try (
+				      StreamInputPort inp =  new StreamInputPort(cmdPipe.getIn(), null) ){
+					
+					setRunning(false);
+					clearResult();
+					
 
-				try {
+			
 					
 					mShell = new Shell(false);
-					
 					mShell.setArgs(mArgs == null ? new ArrayList<XValue>() : mArgs );
 					mShell.setArg0("xmlshui");
-					
 					
 					mShell.getSerializeOpts().setInputTextEncoding("UTF-8");
 					mShell.getSerializeOpts().setOutputTextEncoding("UTF-8");
@@ -155,22 +155,23 @@ public class XShellThread extends Thread {
 					mShell.getEnv().setStdout(mResultOutputStream);
 					mShell.getEnv().setStderr(mResultErrorStream);
 					
-					inp.addRef(); // hold onto it 
-
+					// setInput will create a reference
 					mShell.getEnv().setInput(null, inp);
 					
 
 					setRunning(true);
 				
-					InputStream sin = new ByteArrayInputStream( sCmd.getBytes("UTF8"));
-					mShell.runScript(sin , "xmlshui", true );
-					mResultOutputStream.flush();
-					mResultErrorStream.flush();
-					setRunning(false);
+					try ( 
+							
+						InputStream sin = new ByteArrayInputStream( sCmd.getBytes("UTF8")) ){
+						mShell.runScript(sin , "xmlshui", true );
+						mResultOutputStream.flush();
+						mResultErrorStream.flush();
+						setRunning(false);
+					}
 
 				} catch (ThrowException e) {
 					mLogger.info("Throw running shell commands",e);
-
 					print("Ignoring thrown value: " + e.getMessage());
 
 				} catch (Exception e) {
@@ -203,7 +204,6 @@ public class XShellThread extends Thread {
 					mShell.close();
 					setRunning(false);
 					mShell = null ;
-					inp.release();
 					if( cmdPipe != null)
 						cmdPipe.close();
 					cmdPipe = null ;

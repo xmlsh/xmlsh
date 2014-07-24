@@ -60,8 +60,6 @@ public class xgunzip extends XCommand {
 		} finally {
 			zis.close();
 			is.close();
-			iport.release();
-			oport.release();
 		}
 		
 

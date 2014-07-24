@@ -12,6 +12,7 @@ import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.SerializeOpts;
+import org.xmlsh.util.Util;
 
 import java.util.List;
 
@@ -36,8 +37,7 @@ public class xobsufcate extends XCommand {
 			stdin = getStdin();
 		if( stdin == null )
 			throw new InvalidArgumentException("Cannot open input");
-		try {
-			
+		
 			SerializeOpts opts = getSerializeOpts();
 			
 			XMLEventReader	reader = stdin.asXMLEventReader(opts);
@@ -46,7 +46,8 @@ public class xobsufcate extends XCommand {
 			
 			stdout.setSystemId(stdin.getSystemId());
 			XMLEvent e;
-			
+	
+			try {
 			while( reader.hasNext() ){
 				e = (XMLEvent) reader.next();
 				e = obsufcate(e);
@@ -54,13 +55,10 @@ public class xobsufcate extends XCommand {
 				writer.add(e);
 			}
 			// writer.add(reader);
-			reader.close();
-			writer.close();
-		} 
-		finally {
-			
-			stdin.close();
-		}
+			} finally {
+			Util.safeClose(reader);
+			Util.safeClose(writer);
+			}
 		return 0;
 		
 		

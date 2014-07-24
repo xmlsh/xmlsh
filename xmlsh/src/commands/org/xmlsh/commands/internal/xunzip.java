@@ -48,33 +48,24 @@ public class xunzip extends XCommand {
 		SerializeOpts serializeOpts = getSerializeOpts(opts);
 
 		InputPort iport = (zipfile == null ? getStdin() : getInput(zipfile));
-		InputStream is = iport.asInputStream(serializeOpts); 
 		
-		ZipInputStream zis = new ZipInputStream(is);
 		
-		try {
-		
-		int ret = 0;
-		if( bList ){
-			ret = list(zis,serializeOpts,args);
+		try (
+			InputStream is = iport.asInputStream(serializeOpts); 
+			ZipInputStream zis = new ZipInputStream(is);
+				){
+			int ret = 0;
+			if( bList ){
+				ret = list(zis,serializeOpts,args);
+				
+			}
+			else
+				ret = unzip( zis , getFile(dest) , args );
+			// Central directory may be pesent at the end read past it to avoid a broken pipe
+			while( is.read() >= 0 )
+				;
 			
-		}
-		else
-			ret = unzip( zis , getFile(dest) , args );
-		
-		
-		// Central directory may be pesent at the end read past it to avoid a broken pipe
-		while( is.read() >= 0 )
-			;
-		
-		zis.close();
-		
-		return ret;
-		
-		} finally {
-			zis.close();
-			is.close();
-			iport.close();
+			return ret;
 		}
 		
 
@@ -165,7 +156,6 @@ public class xunzip extends XCommand {
 		writer.writeEndElement();
 		writer.writeEndDocument();
 		writer.close();
-		stdout.release();
 		return 0;
 	}
 

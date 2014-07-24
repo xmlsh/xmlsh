@@ -34,11 +34,8 @@ public class AutoReleasePool extends ArrayList<IReleasable> implements AutoClose
 						et=e;
 				else
 					et.addSuppressed(e);
+				mLogger.debug("Exception closing object autorelease object: " , e);
 			}
-	    	finally {
-				mLogger.debug("Exception closing object autorelease object: " );
-			}
-
 		}
 		finally { 
 		   this.clear();

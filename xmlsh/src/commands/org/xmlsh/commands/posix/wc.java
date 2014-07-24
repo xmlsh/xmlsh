@@ -99,7 +99,6 @@ public class wc extends XCommand {
 			
 		}
 		reader.close();
-		inp.release();
 		
 		list( writer , lc , wc , cc , file.toString() );
 		total_lc += lc;

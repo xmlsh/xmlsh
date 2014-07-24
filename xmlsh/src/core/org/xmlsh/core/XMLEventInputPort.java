@@ -183,6 +183,11 @@ public class XMLEventInputPort extends InputPort {
 		return JSONUtils.readJsonNode( asInputStream(serializeOpts));
 	}
 
+	@Override
+	public boolean isFile() {
+		return false;
+	}
+
 
 	
 

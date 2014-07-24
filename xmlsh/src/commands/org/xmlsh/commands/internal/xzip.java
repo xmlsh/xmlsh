@@ -40,25 +40,17 @@ public class xzip extends XCommand {
 		SerializeOpts serializeOpts = getSerializeOpts(opts);
 		
 		OutputPort outp = this.getOutput(zipfile, false);
-		OutputStream outs = outp.asOutputStream(serializeOpts);
+	  	try (
+	     	OutputStream outs = outp.asOutputStream(serializeOpts);
+		   ZipOutputStream zos = new ZipOutputStream( outs );
 		
-
-		ZipOutputStream zos = new ZipOutputStream( outs );
-		
-		try {
-		
+		){
 			int ret = 0;
 			ret = zip( zos ,  args );
-			
 			zos.finish();
 			return ret;
 		
-		} finally {
-			zos.close();
-			outs.close();
-			outp.release();
-		}
-		
+		} 
 
 		
 

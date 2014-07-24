@@ -12,6 +12,7 @@ import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.SerializeOpts;
+import org.xmlsh.util.Util;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,20 +34,15 @@ public class xtee extends XCommand {
 		
 		// List of outputs to tee to
 		List<XMLEventWriter>	writers = new ArrayList<XMLEventWriter>();
-		List<OutputPort>		closeme  = new ArrayList<OutputPort>();
 		
-		InputPort stdin = null;
-
-		stdin = getStdin();
+		InputPort stdin = getStdin();
 		
-		
-		
-		
+		XMLEventReader reader = null ;
 		try {
 			
 			SerializeOpts sopts = getSerializeOpts(opts);
 			
-			XMLEventReader	reader = stdin.asXMLEventReader(sopts);
+				reader = stdin.asXMLEventReader(sopts);
 			OutputPort stdout = getStdout();
 			
 			writers.add(stdout.asXMLEventWriter(sopts));
@@ -54,7 +50,6 @@ public class xtee extends XCommand {
 			for( XValue arg : args ){
 				OutputPort output = getEnv().getOutput(arg, false);
 				writers.add( output.asXMLEventWriter(sopts));
-				closeme.add(output);
 			}
 		
 			stdout.setSystemId(stdin.getSystemId());
@@ -66,19 +61,13 @@ public class xtee extends XCommand {
 					writer.add(e);
 			}
 			
-			reader.close();
-			for( XMLEventWriter writer : writers )
-				writer.close();
-			
-			// TODO: Why doesnt writers close the underlying stream ?
-			// TODO: Do NOT Close stdout !
-			for( OutputPort p : closeme )
-				p.close();
 
-		} 
-		finally {
+
 			
-			stdin.close();
+		} finally {
+			Util.safeClose(reader);
+			for( XMLEventWriter writer : writers )
+				Util.safeClose( writer );
 		}
 		return 0;
 		

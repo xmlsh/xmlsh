@@ -52,12 +52,11 @@ public class jsonread extends BuiltinCommand {
 		
 		InputPort stdin = mShell.getEnv().getStdin();
 		
-		InputStream is = null ;
 		XValue value = null ;
 		Class<?> cls = null;
-		try {
-			is = stdin.asInputStream( inputOpts );
-			
+		try (
+				InputStream is = stdin.asInputStream( inputOpts );
+			){
 			if( jsonp ) {
 				String jsonpFunc = Util.skipToByte(is, '(');
 				if( jsonpFunc == null ) {
@@ -93,17 +92,6 @@ public class jsonread extends BuiltinCommand {
 			mShell.getEnv().setVar(args.get(0).toString(), value  ,false);
 
 		} 
-		catch (Exception e) {
-			printErr("Exception read json value",e);
-			return 1;
-		}
-		
-		finally {
-			Util.safeClose(is);
-			Util.safeRelease(stdin);
-		}
-
-
 		return value == null ? 1 : 0 ;
 	}
 }

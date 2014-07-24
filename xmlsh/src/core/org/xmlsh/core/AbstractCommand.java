@@ -56,7 +56,7 @@ public abstract class AbstractCommand implements ICommand {
 
 	protected OutputPort getStdout() throws IOException { return mEnvironment.getStdout();}
 
-	protected OutputPort getStderr() throws IOException { return mEnvironment.getStderr();}
+	protected IOutputPort getStderr() throws IOException { return mEnvironment.getStderr();}
 
 	/**
 	 * @return
@@ -70,11 +70,11 @@ public abstract class AbstractCommand implements ICommand {
 		return mEnvironment.getAbsoluteURI( sysid );
 	}
 
-	public InputStream getInputStream(XValue file) throws CoreException {
+	public InputStream getInputStream(XValue file) throws CoreException, IOException {
 		return mEnvironment.getInputStream(file,getSerializeOpts());
 	}
 
-	public Source getSource(XValue value) throws CoreException {
+	public Source getSource(XValue value) throws CoreException, IOException {
 		return mEnvironment.getSource(value,getSerializeOpts());
 	}
 
@@ -92,17 +92,17 @@ public abstract class AbstractCommand implements ICommand {
 				return mEnvironment.getOutputStream(file, append,opt);
 			}
 
-	public InputPort getInput(XValue name) throws CoreException {
+	public InputPort getInput(XValue name) throws CoreException, IOException {
 		return mEnvironment.getInput( name );
 	}
-	public InputPort getInput(String name) throws CoreException {
+	public IInputPort getInput(String name) throws CoreException, IOException {
 		return mEnvironment.getInput( name );
 	}
 	public OutputPort getOutput(XValue name, boolean append) throws CoreException, IOException {
 		return mEnvironment.getOutput( name , append );
 	}
 
-	public OutputPort getOutput(String name, boolean append) throws CoreException, IOException {
+	public IOutputPort getOutput(String name, boolean append) throws CoreException, IOException {
 		return mEnvironment.getOutput( name , append );
 	}
 

@@ -50,17 +50,12 @@ public class xinclude extends XCommand {
 			stdin = getStdin();
 		if( stdin == null )
 			throw new InvalidArgumentException("Cannot open input");
-		try {
 			
 			SerializeOpts sopts = getSerializeOpts(opts);
 			Builder builder = new Builder();
 
 			Document input = builder.build( stdin.asInputStream(sopts) , stdin.getSystemId() );
 			XIncluder.resolveInPlace(input, builder);
-			
-			
-			
-			
 			
 			OutputPort stdout = getStdout();
 			OutputStream os = stdout.asOutputStream(sopts);
@@ -86,12 +81,6 @@ public class xinclude extends XCommand {
 				w.close();
 				stdout.writeSequenceTerminator(sopts);
 			}
-			stdout.release();
-		} 
-		finally {
-			
-			stdin.close();
-		}
 		return 0;
 		
 		

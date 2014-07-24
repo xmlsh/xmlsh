@@ -43,8 +43,6 @@ public class xwc extends XCommand {
 			throw new InvalidArgumentException("Cannot open input");
 		OutputPort stdout = getStdout();
 		if( stdout == null ){
-			stdin.release();
-		
 			throw new InvalidArgumentException("Cannot open input");
 		}
 		try {
@@ -55,7 +53,6 @@ public class xwc extends XCommand {
 			count(reader);
 			reader.close();
 			
- 
 			XMLStreamWriter writer =stdout.asXMLStreamWriter(getSerializeOpts());
 			output(writer);
 			writer.flush();
@@ -64,8 +61,6 @@ public class xwc extends XCommand {
 		} 
 		finally {
 			
-			stdin.release();
-			stdout.release();
 		}
 		return 0;
 		

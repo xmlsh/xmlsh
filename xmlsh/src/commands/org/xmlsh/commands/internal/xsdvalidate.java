@@ -68,8 +68,6 @@ public class xsdvalidate extends XCommand {
 		
 		
 		
-		in.close();
-		
 		return 0;
 
 	}

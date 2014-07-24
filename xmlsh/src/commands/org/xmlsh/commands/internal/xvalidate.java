@@ -79,7 +79,6 @@ public class xvalidate extends XCommand {
 			v.validate( in.getSystemId() , in.asInputStream(sopts));
 		}
 		
-		in.close();
 		
 		return 0;
 

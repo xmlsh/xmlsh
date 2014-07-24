@@ -105,27 +105,27 @@ public class xmd5sum extends XCommand
 			
 		}
 		
-		InputPort inp;
-		InputStream in;
-		try {
-			inp = getInput(arg);
-			in = inp.asInputStream(serializeOpts);
+		InputPort inp= getInput(arg);
+		try (
+				InputStream in = inp.asInputStream(serializeOpts) ){
+			Checksum cs = Checksum.calcChecksum(in);
+			
+			
+			String name = arg.toString();
+			if( !Util.isBlank(name) )
+				out.writeAttribute(sName, Util.toJavaPath(name));
+			out.writeAttribute(sMd5, cs.getMD5());
+			out.writeAttribute(sLen , String.valueOf( cs.getLength()) );
+			out.writeEndElement();
+		
+		
 		} catch (CoreException e) {
 			mShell.printErr("Exception accessing file",e);
 			return ;
 		
 		}
-		Checksum cs = Checksum.calcChecksum(in);
-		in.close();
-		
 		out.writeStartElement(sFile);
-		String name = arg.toString();
-		if( !Util.isBlank(name) )
-			out.writeAttribute(sName, Util.toJavaPath(name));
-		out.writeAttribute(sMd5, cs.getMD5());
-		out.writeAttribute(sLen , String.valueOf( cs.getLength()) );
-		out.writeEndElement();
-		inp.close();
+	
 	}
 
 

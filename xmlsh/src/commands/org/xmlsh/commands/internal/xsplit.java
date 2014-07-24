@@ -134,8 +134,6 @@ public class xsplit extends XCommand {
 			xvargs.size() == 1 ? 
 					getInput(xvargs.get(0)): 
 					getStdin();
-		PrintWriter  listWriter =  null; 
-		OutputPort listOut = null ;	
 		OutputPort streamOut = null ;
 		
 		setSerializeOpts(opts);
@@ -143,31 +141,12 @@ public class xsplit extends XCommand {
 		if( mStream )
 			streamOut  = this.getEnv().getOutputPort(opts.getOptStringRequired("stream"));
 
-		try {
-
-			InputStream is = in.asInputStream(getSerializeOpts()) ;
-
-			if( mList != null )
-				listWriter = (listOut =  getOutput(mList,false)).asPrintWriter( getSerializeOpts() );
-			
+		try ( 
+			InputStream is = in.asInputStream(getSerializeOpts());
+				PrintWriter listWriter = mList == null? null: (getOutput(mList,false)).asPrintWriter( getSerializeOpts() );
+				){
 			split(in.getSystemId() , is , listWriter , streamOut );
-			is.close();
-		} catch (Exception e) {
-			printErr("Exception splitting input", e);
-		} finally { 
-			in.release();
-			if( listWriter != null )
-				listWriter.close();
-			if( listOut != null )
-				listOut.release();
-			
-		}
-		
-		
-		
-		
-		
-		
+		} 
 		return 0;
 
 

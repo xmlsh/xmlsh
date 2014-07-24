@@ -156,11 +156,6 @@ public class xslt extends XCommand {
 		eval.transform();
 		stdout.writeSequenceTerminator(serializeOpts);
 		
-		if( in != null )
-			in.release();
-		if( closePort != null )
-			closePort.release();
-
 		return 0;
 
 	}

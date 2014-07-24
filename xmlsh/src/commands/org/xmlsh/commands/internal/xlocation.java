@@ -82,23 +82,23 @@ public class xlocation extends BuiltinFunctionCommand {
 	
 		XVariable xv = new XVariable("_out", null);
 		
-		VariableOutputPort port = new VariableOutputPort( xv );
-		XMLStreamWriter writer = port.asXMLStreamWriter(shell.getSerializeOpts());
-		
-		writer.writeStartDocument();
-		writer.writeStartElement(getName());
-		writer.writeAttribute("name", loc.getName() );
-		writer.writeAttribute("source", loc.getSource() );
-		writer.writeAttribute("end-column", String.valueOf(	loc.getEndColumn()));
-		writer.writeAttribute("start-column",String.valueOf(loc.getStartColumn()));
-		writer.writeAttribute("end-line", String.valueOf(	loc.getEndLine()));
-		writer.writeAttribute("start-line", String.valueOf(	loc.getStartLine()));
-		writer.writeEndElement();
-		writer.writeEndDocument();
-		writer.flush();
-		port.flush();
-		port.release();
-		return xv.getValue();
+		try ( VariableOutputPort port = new VariableOutputPort( xv ) ){
+			XMLStreamWriter writer = port.asXMLStreamWriter(shell.getSerializeOpts());
+			
+			writer.writeStartDocument();
+			writer.writeStartElement(getName());
+			writer.writeAttribute("name", loc.getName() );
+			writer.writeAttribute("source", loc.getSource() );
+			writer.writeAttribute("end-column", String.valueOf(	loc.getEndColumn()));
+			writer.writeAttribute("start-column",String.valueOf(loc.getStartColumn()));
+			writer.writeAttribute("end-line", String.valueOf(	loc.getEndLine()));
+			writer.writeAttribute("start-line", String.valueOf(	loc.getStartLine()));
+			writer.writeEndElement();
+			writer.writeEndDocument();
+			writer.flush();
+			port.flush();
+			return xv.getValue();
+		}
 		
 
 	

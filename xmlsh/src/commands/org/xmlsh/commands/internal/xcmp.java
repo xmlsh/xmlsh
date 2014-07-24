@@ -78,20 +78,10 @@ public class xcmp extends XCommand {
 		InputPort 	i2 =  getInput( argv.get(1));
 		
 		
-		try {
 		if( xopt )
 			return xml_cmp(  i1 , i2 );
 		else
 			return bin_cmp(  i1, i2 );
-		} finally {
-			if( i1 != null )
-				i1.close();
-			if( i2 != null )
-				i2.close();
-		}
-		
-
-
 	}
 	
 	private int readByte( InputStream is ) throws IOException

@@ -33,26 +33,36 @@ import javax.xml.stream.XMLStreamWriter;
 
 
 
-
-public abstract class OutputPort extends AbstractPort 
+public abstract class OutputPort extends AbstractPort implements IOutputPort 
 {
 
+	/* (non-Javadoc)
+	 * @see org.xmlsh.core.IOutputPort#asOutputStream(org.xmlsh.sh.shell.SerializeOpts)
+	 */
+	@Override
 	public	abstract OutputStream asOutputStream(SerializeOpts opts) throws CoreException;
 
 	
-	
+	/* (non-Javadoc)
+	 * @see org.xmlsh.core.IOutputPort#asPrintStream(org.xmlsh.sh.shell.SerializeOpts)
+	 */
 	@Override
-	public abstract void close() throws IOException;
-	
-	
 	public synchronized PrintStream asPrintStream(SerializeOpts opts) throws CoreException 
 	{
 		return new PrintStream(asOutputStream(opts));
 	}
 
+	/* (non-Javadoc)
+	 * @see org.xmlsh.core.IOutputPort#asDestination(org.xmlsh.sh.shell.SerializeOpts)
+	 */
+	@Override
 	public abstract Destination asDestination(SerializeOpts opts) throws CoreException;
 	
 
+	/* (non-Javadoc)
+	 * @see org.xmlsh.core.IOutputPort#asPrintWriter(org.xmlsh.sh.shell.SerializeOpts)
+	 */
+	@Override
 	public synchronized PrintWriter asPrintWriter(SerializeOpts opts) throws UnsupportedEncodingException, CoreException {
 		return new PrintWriter( 		
 				new OutputStreamWriter(asOutputStream(opts) , opts.getOutputTextEncoding() ));
@@ -60,25 +70,61 @@ public abstract class OutputPort extends AbstractPort
 
 	
 	// These 2 shouldnt really go on the port 
+	/* (non-Javadoc)
+	 * @see org.xmlsh.core.IOutputPort#writeSequenceSeperator(org.xmlsh.sh.shell.SerializeOpts)
+	 */
+	@Override
 	public abstract void writeSequenceSeperator(SerializeOpts serializeOpts) throws IOException, InvalidArgumentException, CoreException, SaxonApiException;
+	/* (non-Javadoc)
+	 * @see org.xmlsh.core.IOutputPort#writeSequenceTerminator(org.xmlsh.sh.shell.SerializeOpts)
+	 */
+	@Override
 	public abstract void writeSequenceTerminator(SerializeOpts serializeOpts) throws IOException, CoreException, SaxonApiException ;
 
 	
 	
+	/* (non-Javadoc)
+	 * @see org.xmlsh.core.IOutputPort#asXMLStreamWriter(org.xmlsh.sh.shell.SerializeOpts)
+	 */
+	@Override
 	public abstract XMLStreamWriter asXMLStreamWriter(SerializeOpts opts) throws InvalidArgumentException, XMLStreamException, SaxonApiException, CoreException;
+	/* (non-Javadoc)
+	 * @see org.xmlsh.core.IOutputPort#asXMLEventWriter(org.xmlsh.sh.shell.SerializeOpts)
+	 */
+	@Override
 	public abstract XMLEventWriter asXMLEventWriter(SerializeOpts opts) throws InvalidArgumentException, XMLStreamException, SaxonApiException, IOException, CoreException;
 	
+	/* (non-Javadoc)
+	 * @see org.xmlsh.core.IOutputPort#asXdmItemOutputStream(org.xmlsh.sh.shell.SerializeOpts)
+	 */
+	@Override
 	public abstract	IXdmItemOutputStream	asXdmItemOutputStream(SerializeOpts opts) throws CoreException;
 
+	/* (non-Javadoc)
+	 * @see org.xmlsh.core.IOutputPort#asContentHandler(org.xmlsh.sh.shell.SerializeOpts)
+	 */
+	@Override
 	public abstract	ContentHandler			asContentHandler( SerializeOpts opts) throws XPathException, SaxonApiException, CoreException;
 	
+	/* (non-Javadoc)
+	 * @see org.xmlsh.core.IOutputPort#isFile()
+	 */
+	@Override
 	public	boolean		isFile() { return false ; }
 	
+	/* (non-Javadoc)
+	 * @see org.xmlsh.core.IOutputPort#getFile()
+	 */
+	@Override
 	public File			getFile() throws UnimplementedException
 	{
 		throw new UnimplementedException("OutputPort.getFile() is not implmented() in class: " + this.getClass().getName() );
 	}
 
+	/* (non-Javadoc)
+	 * @see org.xmlsh.core.IOutputPort#isNull()
+	 */
+	@Override
 	public boolean isNull()
     {
 	    // TODO Auto-generated method stub

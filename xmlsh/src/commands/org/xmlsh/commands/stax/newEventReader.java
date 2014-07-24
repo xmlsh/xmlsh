@@ -11,6 +11,7 @@ import org.xmlsh.core.CoreException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
 
+import java.io.IOException;
 import java.util.List;
 
 public class newEventReader extends BuiltinFunctionCommand {
@@ -23,7 +24,7 @@ public class newEventReader extends BuiltinFunctionCommand {
 	}
 	
 	@Override
-	public XValue run(Shell shell, List<XValue> args) throws CoreException {
+	public XValue run(Shell shell, List<XValue> args) throws CoreException, IOException {
 		if( args.size() == 0 )
 			return new XValue(shell.getEnv().getStdin().asXMLEventReader(shell.getSerializeOpts()));
 		else

@@ -6,9 +6,18 @@
 
 package org.xmlsh.core;
 
-public interface IPort extends IReleasable
+import java.io.Closeable;
+import java.io.File;
+
+public interface IPort extends Closeable
 {
-	
+	public	boolean	  isFile();
+	public boolean   isSystem();
+	public String getSystemId();
+	public void  setSystemId(String id);
+	public File		getFile() throws UnimplementedException;
+
+
 }
 
 /*

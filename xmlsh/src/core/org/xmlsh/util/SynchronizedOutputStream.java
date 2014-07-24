@@ -26,7 +26,7 @@ public class SynchronizedOutputStream extends OutputStream {
 	 */
 	public synchronized void close() throws IOException {
 			mOutputStream.flush();
-			if( false && mCloseOnClose )
+			if(  mCloseOnClose )
 				mOutputStream.close();
 	}
 

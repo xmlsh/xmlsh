@@ -123,7 +123,6 @@ public class xgetopts extends XCommand {
 			}
 			
 			stdout.writeSequenceTerminator(serializeOpts);
-			stdout.release();
 		}
 		
 		

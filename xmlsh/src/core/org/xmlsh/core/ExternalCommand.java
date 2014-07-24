@@ -70,7 +70,7 @@ public class ExternalCommand implements ICommand {
 		PortCopier inCopier = null;
 		
 		if( !shell.getEnv().isStdinSystem())
-			inCopier = new PortCopier(  shell.getEnv().getStdin() , proc.getOutputStream() , shell.getSerializeOpts() , false, true );
+			inCopier = new PortCopier(  shell.getEnv().getStdin() , proc.getOutputStream() , shell.getSerializeOpts() , true );
 		
 		else
 			proc.getOutputStream().close();

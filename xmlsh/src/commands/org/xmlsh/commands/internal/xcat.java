@@ -98,7 +98,6 @@ public class xcat extends XCommand {
 		 if( !bHasFiles ){
 			 InputPort in = getStdin();
 			 write(in,writer,bRemoveRoot,serializeOpts);
-			 in.release();
 			 
 		 } else {
 			 for( XValue xf : xvargs ){
@@ -108,9 +107,6 @@ public class xcat extends XCommand {
 				 	} catch (Exception e) {
 						this.printErr("Skipping file: " + in.getSystemId() , e );
 					}
-				 	finally { 
-				 		in.release();
-				 	}
 			 }
 		 }
 		 if( wrapper != null )

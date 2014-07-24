@@ -15,7 +15,6 @@ import org.xml.sax.InputSource;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.AutoReleasePool;
-import org.xmlsh.util.IReferenceCounted;
 import org.xmlsh.util.Util;
 
 import java.io.Closeable;
@@ -39,7 +38,6 @@ public class XEnvironment implements AutoCloseable, Closeable {
 	private		XIOEnvironment mIO = new XIOEnvironment();
 	private		Variables	mVars;
 	private		Namespaces	mNamespaces = null;
-	private		AutoReleasePool  mAutoRelease = null;
 
 	private		Stack<XIOEnvironment>  mSavedIO;
 	
@@ -69,9 +67,8 @@ public class XEnvironment implements AutoCloseable, Closeable {
 
 	private void	addAutoRelease( AbstractPort obj )
 	{
-		if( mAutoRelease == null )
-			mAutoRelease = new AutoReleasePool();
-		mAutoRelease.add(obj);
+		mIO.addAutoRelease(obj);
+
 	}
 
 	/*
@@ -188,8 +185,6 @@ public class XEnvironment implements AutoCloseable, Closeable {
 		   throw new IOException("Closing XEnvironment when mSavedIO is not empty");
 		
 		mIO.release();
-		Util.safeClose(mAutoRelease);
-		mAutoRelease = null ;
 	}
 	
 	public Shell getShell() { 
@@ -351,7 +346,7 @@ public class XEnvironment implements AutoCloseable, Closeable {
 			if( name.equals("-"))
 				return getStdout();
 			
-			return mShell.getOutputPort(name, append);
+			return mShell.newOutputPort(name, append);
 			
 			
 			
@@ -401,29 +396,29 @@ public class XEnvironment implements AutoCloseable, Closeable {
 	 * @see org.xmlsh.core.XIOEnvironment#setStdin(java.io.InputStream)
 	 */
 	
-	public void setStdin(InputStream in) throws CoreException {
+	public void setStdin(InputStream in) throws IOException {
 		setInput(null, in );
 	}
 
-	public void setStdin(XVariable variable) throws CoreException {
+	public void setStdin(XVariable variable) throws IOException, InvalidArgumentException {
 		
 		setInput( null , variable );
 	}
-	public void setStdin(InputPort in ) throws CoreException {
+	public void setStdin(InputPort in ) throws IOException {
 		
 		setInput( null , in );
 	}
 	
-	public InputPort setInput(String name,InputStream in) throws CoreException {
+	public InputPort setInput(String name,InputStream in) throws IOException  {
 		return mIO.setInput( name,new StreamInputPort(in,null));
 	}
 
-	public InputPort setInput(String name, XVariable variable) throws CoreException {
+	public InputPort setInput(String name, XVariable variable) throws IOException, InvalidArgumentException {
 		
 		return mIO.setInput( name,new VariableInputPort(variable));
 	}
 	
-	public InputPort setInput( String name , InputPort in ) throws CoreException {
+	public InputPort setInput( String name , InputPort in ) throws IOException {
 		
 		return mIO.setInput( name  , in );
 	}
@@ -476,13 +471,13 @@ public class XEnvironment implements AutoCloseable, Closeable {
 	}
 
 
-	public InputStream getInputStream(XValue file,SerializeOpts opts) throws CoreException{
+	public InputStream getInputStream(XValue file,SerializeOpts opts) throws IOException, InvalidArgumentException, CoreException{
 		return getInput(file).asInputStream(opts);
 	}
 
 
 
-	public Source getSource(XValue value,SerializeOpts opts) throws CoreException {
+	public Source getSource(XValue value,SerializeOpts opts) throws  IOException, InvalidArgumentException, CoreException {
 		return getInput(value).asSource(opts);
 
 	}
@@ -502,7 +497,7 @@ public class XEnvironment implements AutoCloseable, Closeable {
 	 * if port is a node return an anonymous port based on a value
 	 * 
 	 */
-	public InputPort getInput(XValue port) throws CoreException  {
+	public InputPort getInput(XValue port) throws  IOException, InvalidArgumentException  {
 		
 		if( port == null )
 			return getStdin();
@@ -510,26 +505,18 @@ public class XEnvironment implements AutoCloseable, Closeable {
 			String name = port.toString().trim();
 			if( name.equals("-"))
 				return getStdin();
-
-
 			
 			
-			InputPort p;
-			try {
-				p = mShell.getInputPort(name);
-			} catch (IOException e) {
-				throw new CoreException(e);
-			}
+			InputPort p = mShell.newInputPort(name);
 			// Port is not managed, add to autorelease
 			addAutoRelease( p );
-			
 			return p;
 			
 			
 		}
 		else
 		{
-			InputPort p = new VariableInputPort(  new XVariable(null,port) );
+			VariableInputPort p = new VariableInputPort(  new XVariable(null,port) );
 			// Port is not managed, add to autorelease
 			addAutoRelease(p);
 			return p;
@@ -545,7 +532,7 @@ public class XEnvironment implements AutoCloseable, Closeable {
 		return mIO.getInputPort(name);
 	}
 
-	public InputPort getInput( String name ) throws CoreException
+	public InputPort getInput( String name ) throws CoreException, IOException
 	{
 		return getInput( new XValue(name));
 	}
@@ -572,14 +559,6 @@ public class XEnvironment implements AutoCloseable, Closeable {
 		return getCurdir().toURI();
 	}
 
-	public PortList<InputPort>	getInputPorts()
-	{
-		return mIO.getInputPorts();
-	}
-	public PortList<OutputPort>	getOutputPorts()
-	{
-		return mIO.getOutputPorts();
-	}
 
 
 	public OutputPort getOutputPort(String portname, boolean append) {
@@ -631,6 +610,21 @@ public class XEnvironment implements AutoCloseable, Closeable {
 	 */
 	public XIOEnvironment getSavedIO() {
 		return mSavedIO.peek();
+	}
+
+	
+	
+
+	// "1>&2" 
+	public void dupOutput(String portLeft, String portRight ) throws IOException {
+		mIO.dupOutput( portLeft , portRight );
+		
+	}
+
+
+	public void dupInput(String portLeft, String portRight) throws IOException {
+		mIO.dupInput( portLeft , portRight );
+		
 	}
 
     

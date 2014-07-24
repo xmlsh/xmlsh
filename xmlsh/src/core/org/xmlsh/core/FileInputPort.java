@@ -6,7 +6,6 @@
 
 package org.xmlsh.core;
 
-import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
 
@@ -30,10 +29,9 @@ import javax.xml.transform.Source;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-public class FileInputPort extends InputPort {
+public class FileInputPort extends InputPort
+{
 
-	
-	
 	
 	private		static 	Logger	mLogger = LogManager.getLogger( FileOutputPort.class );				
 	

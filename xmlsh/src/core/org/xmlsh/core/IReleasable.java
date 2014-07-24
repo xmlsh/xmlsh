@@ -10,7 +10,6 @@ import java.io.IOException;
 
 public interface IReleasable
 {
-
 	public boolean release() throws IOException;
 }
 

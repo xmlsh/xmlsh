@@ -131,11 +131,7 @@ public class xed extends XCommand {
 				else {
 					insrc = getStdin();
 				}	
-				try {
 					context = build(insrc.asSource(serializeOpts));
-				} finally {
-					insrc.close();
-				}
 			}
 		}
 		

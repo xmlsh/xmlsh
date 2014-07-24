@@ -98,19 +98,18 @@ public class xquery extends XCommand {
 				throwInvalidArg(  "Cannot specifify both -q and -f");
 			
 			InputPort qin = getInput(ov.getValue());
-			InputStream is = qin.asInputStream(serializeOpts);
-			query = Util.readString(is, serializeOpts.getInputTextEncoding());
-
-			if( baseURI == null ){
-				String sysid = qin.getSystemId();
-				
-				if( !Util.isBlank(sysid)){
-					String uri = getAbsoluteURI(sysid);
-					baseURI = uri ;
+			try (InputStream is = qin.asInputStream(serializeOpts) ){
+				query = Util.readString(is, serializeOpts.getInputTextEncoding());
+	
+				if( baseURI == null ){
+					String sysid = qin.getSystemId();
+					
+					if( !Util.isBlank(sysid)){
+						String uri = getAbsoluteURI(sysid);
+						baseURI = uri ;
+					}
 				}
 			}
-			is.close();
-			qin.close();
 			
 			
 		}
@@ -188,9 +187,6 @@ public class xquery extends XCommand {
 					
 				
 			}
-			
-			if( in != null )
-				in.close();
 			
 			if( bBool ){
 				XValue value = new XValue(eval.evaluate());

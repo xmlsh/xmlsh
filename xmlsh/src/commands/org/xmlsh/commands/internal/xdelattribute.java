@@ -7,6 +7,7 @@
 package org.xmlsh.commands.internal;
 
 import net.sf.saxon.s9api.QName;
+
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
@@ -15,6 +16,7 @@ import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.util.StAXUtils;
+import org.xmlsh.util.Util;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -59,7 +61,6 @@ public class xdelattribute extends XCommand {
 			stdin = getStdin();
 		if( stdin == null )
 			throw new InvalidArgumentException("Cannot open input");
-		try {
 			
 			SerializeOpts sopts = getSerializeOpts(opts);
 			
@@ -119,13 +120,8 @@ public class xdelattribute extends XCommand {
 				writer.add(e);
 			}
 			// writer.add(reader);
-			reader.close();
-			writer.close();
-		} 
-		finally {
-			
-			stdin.close();
-		}
+			Util.safeClose(reader);
+			Util.safeClose(writer);
 		return 0;
 		
 		

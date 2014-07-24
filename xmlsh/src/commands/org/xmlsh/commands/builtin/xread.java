@@ -48,29 +48,22 @@ public class xread extends BuiltinCommand {
 		InputPort stdin = null ;
 		
 		XdmItem item = null ;
-		try {
 		if( port != null ) {
 			stdin = mShell.getEnv().getInputPort(port);
-			stdin.addRef();
 		} else
 			stdin = mShell.getEnv().getStdin();
 		
 
 		if( bParse ) {
-			StreamInputPort ip = new StreamInputPort( stdin.asInputStream(getSerializeOpts()) , stdin.getSystemId() );
-			
+			try ( StreamInputPort ip = new StreamInputPort( stdin.asInputStream(getSerializeOpts()) , stdin.getSystemId() ) ){
 			item = ip.asXdmItem(getSerializeOpts());
-			ip.release();
+		  }
 		} else {
 			IXdmItemInputStream is = stdin.asXdmItemInputStream(getSerializeOpts());
 			item = is.read();
 		}
 		if( item != null )
 			mShell.getEnv().setVar(args.get(0).toString(), new XValue(item),false);
-		} finally { 
-			if( stdin != null)
-			 stdin.release();
-		}
 
 
 		return item == null ? 1 : 0 ;

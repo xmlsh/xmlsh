@@ -46,13 +46,7 @@ import javax.xml.stream.XMLStreamWriter;
 
 public class StreamOutputPort extends OutputPort
 {
-	
-	
-	
-	
 	private Logger mLogger = LogManager.getLogger(StreamOutputPort.class);
-
-	
 
 	private OutputStream	 mStream;
 	private boolean mClose = true ;
@@ -62,9 +56,11 @@ public class StreamOutputPort extends OutputPort
 		mStream = os;
 		mClose = bClose;
 		setSystem(system);
+		mLogger.debug("StreamOutputPort()");
 	}
 	public StreamOutputPort( OutputStream os , boolean bClose ) 
 	{
+		
 		this(os,bClose,false);
 	}
 	
@@ -82,7 +78,7 @@ public class StreamOutputPort extends OutputPort
 	
 	public	synchronized OutputStream asOutputStream(SerializeOpts opts) 
 	{
-		return new SynchronizedOutputStream(mStream,mStream != System.out);
+		return new SynchronizedOutputStream(mStream, false ) ; // mStream != System.out);
 	}
 
 	public synchronized void flush() throws IOException 
@@ -96,8 +92,15 @@ public class StreamOutputPort extends OutputPort
 	
 	
 	public synchronized void close() throws IOException {
-		if( mClose && mStream != null )
+		mLogger.debug("StreamOutputPort.close()");
+
+		flush();
+		if( mClose && mStream != null ) {
+  			mLogger.debug("StreamOutputPort.close() - closing stream");
 				mStream.close();
+				mLogger.debug("StreamOutputPort.close() - closing stream");
+		}
+
 	}
 
 

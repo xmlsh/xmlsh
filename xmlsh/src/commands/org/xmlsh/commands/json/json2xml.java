@@ -57,17 +57,13 @@ public class json2xml extends XCommand
 
 		InputPort in = args.isEmpty() ? this.getStdin() : this.getInput(args.get(0));
 		XMLStreamWriter sw = null ;
-		InputStream is = null;
 		
 		JSONSerializeOpts jopts = new JSONSerializeOpts();
 		JXConverter converter = JXConverter.getConverter(format,jopts,getSerializeOpts(), args);
 		
-		try {
-				
-	
-		 
-			is = in.asInputStream(getSerializeOpts());
-			
+		try (
+				InputStream is = in.asInputStream(getSerializeOpts());
+        ) {			
 			if( jsonp ) {
 				String jsonpFunc = Util.skipToByte(is, '(');
 				if( jsonpFunc == null ) {
@@ -84,29 +80,11 @@ public class json2xml extends XCommand
 	
 			sw = stdout.asXMLStreamWriter(getSerializeOpts());
 		
-
-			try {  
+			converter.convertFromJson( is , sw );
 				
-				converter.convertFromJson( is , sw );
-				
-			} 
-			finally {
-				
-			
-				if( is != null ) {
-					is.close();
-				}
-				Util.safeClose(sw);
-			}
 			
 		} finally {
-		
-			if( sw != null ) {
-				sw.flush();
-				sw.close();
-			}
-
-			Util.safeRelease(in);
+		   Util.safeClose(sw);
 		}
 		return 0;
 

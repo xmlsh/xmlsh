@@ -7,10 +7,11 @@
 package org.xmlsh.core;
 
 import org.xmlsh.util.INameValue;
+import org.xmlsh.util.NameValue;
 import org.xmlsh.util.NameValueList;
 
 @SuppressWarnings("serial") 
-public class PortList<P extends AbstractPort> extends NameValueList< P >  implements AutoCloseable
+public class PortList<P extends AbstractPort> extends NameValueList< ReferenceCountedHandle< P > >  implements AutoCloseable
 {
 	
 	public PortList()
@@ -20,37 +21,34 @@ public class PortList<P extends AbstractPort> extends NameValueList< P >  implem
 	
 	public void close() throws Exception
 	{
-		for( INameValue<P> e : this )
+		for( INameValue<ReferenceCountedHandle<P>> e : this )
 			e.getValue().release();
 	}
 	
 	PortList( PortList<P> that )
 	{
-		for( INameValue<P> e : that ){
+		for( INameValue<ReferenceCountedHandle<P>> e : that ){
 			e.getValue().addRef();
 			add( e );
 		}
 	}
 	
-	P getPort( String name )
+	IHandle<P> getPort( String name )
 	{
 
-		INameValue<P> np = findName(name);
+		INameValue<ReferenceCountedHandle< P >> np = findName(name);
 		return np == null ? null : np.getValue();
 	}
 	
-	P getPort( P value )
-	{
-
-		INameValue<P> np = findValue(value);
-		return np == null ? null : np.getValue();
-	}
-	
-	public P removePort(String name) {
-		INameValue<P> np = removeName(name);
+	public IHandle<P>  removePort(String name) {
+		INameValue<ReferenceCountedHandle< P >>  np = removeName(name);
 		if( np != null )
 			return np.getValue();
 		return null;
+	}
+
+	public void add(String name, P port) {
+		super.add( new NameValue<>( name  , port.<P>newReference()  ) );
 	}
 	
 

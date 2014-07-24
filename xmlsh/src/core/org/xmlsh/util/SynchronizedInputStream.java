@@ -11,11 +11,12 @@ import java.io.InputStream;
 
 public class SynchronizedInputStream  extends InputStream {
 	private		InputStream		mInputStream;
+    private   boolean mClose ;
 
-
-	public SynchronizedInputStream(InputStream inputStream) {
+	public SynchronizedInputStream(InputStream inputStream, boolean bclose) {
 		super();
 		mInputStream = inputStream;
+		mClose = bclose ;
 	}
 
 	/**
@@ -27,12 +28,11 @@ public class SynchronizedInputStream  extends InputStream {
 		return mInputStream.available();
 	}
 
-	/**
-	 * @throws IOException
-	 * @see java.io.InputStream#close()
-	 */
 	public synchronized void close() throws IOException {
-		// Dont close except it kills us ! // mInputStream.close();
+  
+		if( mClose && mInputStream != null )
+			mInputStream.close();
+	
 	}
 
 	/**

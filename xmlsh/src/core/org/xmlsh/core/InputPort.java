@@ -31,36 +31,71 @@ import com.fasterxml.jackson.databind.JsonNode;
  */
 
 
-public abstract class InputPort  extends AbstractPort
+public abstract class InputPort extends AbstractPort implements IInputPort
 {
+	/* (non-Javadoc)
+	 * @see org.xmlsh.core.IInputPort#asInputStream(org.xmlsh.sh.shell.SerializeOpts)
+	 */
+	@Override
 	public	abstract InputStream asInputStream(SerializeOpts opts) throws CoreException ;
 
-	public abstract void close() throws IOException ;
 	
-	
+	/* (non-Javadoc)
+	 * @see org.xmlsh.core.IInputPort#asSource(org.xmlsh.sh.shell.SerializeOpts)
+	 */
+	@Override
 	public abstract Source asSource(SerializeOpts opts) throws CoreException;
+	/* (non-Javadoc)
+	 * @see org.xmlsh.core.IInputPort#asInputSource(org.xmlsh.sh.shell.SerializeOpts)
+	 */
+	@Override
 	public abstract InputSource	asInputSource(SerializeOpts opts) throws CoreException;
 	
 
+	/* (non-Javadoc)
+	 * @see org.xmlsh.core.IInputPort#asXdmNode(org.xmlsh.sh.shell.SerializeOpts)
+	 */
+	@Override
 	public abstract XdmNode asXdmNode(SerializeOpts opts) throws CoreException;
 	
+	/* (non-Javadoc)
+	 * @see org.xmlsh.core.IInputPort#copyTo(java.io.OutputStream, org.xmlsh.sh.shell.SerializeOpts)
+	 */
+	@Override
 	public  abstract void copyTo(OutputStream out, SerializeOpts opts ) throws  CoreException, IOException;
 
+	/* (non-Javadoc)
+	 * @see org.xmlsh.core.IInputPort#asXMLEventReader(org.xmlsh.sh.shell.SerializeOpts)
+	 */
+	@Override
 	public abstract XMLEventReader asXMLEventReader(SerializeOpts opts) throws CoreException;
+	/* (non-Javadoc)
+	 * @see org.xmlsh.core.IInputPort#asXMLStreamReader(org.xmlsh.sh.shell.SerializeOpts)
+	 */
+	@Override
 	public abstract XMLStreamReader asXMLStreamReader(SerializeOpts opts) throws  CoreException;
 
 
+	/* (non-Javadoc)
+	 * @see org.xmlsh.core.IInputPort#asXdmItem(org.xmlsh.sh.shell.SerializeOpts)
+	 */
+	@Override
 	public abstract XdmItem asXdmItem(SerializeOpts serializeOpts) throws CoreException;
 	
-	public void flush() {}
 	
-
-	
+	/* (non-Javadoc)
+	 * @see org.xmlsh.core.IInputPort#asReader(org.xmlsh.sh.shell.SerializeOpts)
+	 */
+	@Override
 	public Reader 	asReader( SerializeOpts serializeOpts ) throws UnsupportedEncodingException, CoreException {
 		return new InputStreamReader( asInputStream(serializeOpts) , serializeOpts.getInputTextEncoding()); 
 	}
 	
 	// Default implementation uses a singleton as the input stream
+	/* (non-Javadoc)
+	 * @see org.xmlsh.core.IInputPort#asXdmItemInputStream(org.xmlsh.sh.shell.SerializeOpts)
+	 */
+	@Override
 	public IXdmItemInputStream asXdmItemInputStream(SerializeOpts serializeOpts)
 			throws CoreException {
 		
@@ -68,6 +103,10 @@ public abstract class InputPort  extends AbstractPort
 	}
 
 
+	/* (non-Javadoc)
+	 * @see org.xmlsh.core.IInputPort#asJson(org.xmlsh.sh.shell.SerializeOpts)
+	 */
+	@Override
 	public abstract JsonNode asJson(SerializeOpts serializeOpts) throws IOException, CoreException ;
 	
 }

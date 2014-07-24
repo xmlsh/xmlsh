@@ -19,7 +19,6 @@ import net.sf.saxon.s9api.XdmValue;
 import net.sf.saxon.trans.XPathException;
 
 import org.apache.log4j.Logger;
-
 import org.xmlsh.core.EvalFlag;
 import org.xmlsh.core.AbstractPort;
 import org.xmlsh.core.IReleasable;
@@ -60,6 +59,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.xml.stream.XMLEventReader;
+import javax.xml.stream.XMLEventWriter;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
@@ -1640,6 +1640,19 @@ public class Util
 	public static void wrapIOException(String message , Throwable e) throws IOException {
 		
 		throw new IOException( message , e );
+		
+	}
+
+
+	public static void safeClose(XMLEventWriter closable ) {
+		try {
+			if( closable != null )
+				closable.close();
+		} catch( Exception e )
+		{
+			mLogger.info("Exception closing: " + closable.getClass().getName() ,e);
+			
+		}
 		
 	}
 	

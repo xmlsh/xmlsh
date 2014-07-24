@@ -39,11 +39,8 @@ public class xidentity extends XCommand {
 			throw new InvalidArgumentException("Cannot open input");
 		OutputPort stdout = getStdout();
 		if( stdout == null ){
-			stdin.release();
-		
 			throw new InvalidArgumentException("Cannot open input");
 		}
-		try {
 			
 			setSerializeOpts(opts);
 			
@@ -56,15 +53,7 @@ public class xidentity extends XCommand {
 			
 			while( (item = input.read() ) != null )
 		        output.write(item);
-			
-			stdout.release();
 				
-		} 
-		finally {
-			
-			stdin.release();
-			stdout.release();
-		}
 		return 0;
 		
 		

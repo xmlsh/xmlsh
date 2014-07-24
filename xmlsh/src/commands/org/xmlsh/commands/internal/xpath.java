@@ -192,8 +192,6 @@ public class xpath extends XCommand {
 				if (!bQuiet && bAnyOutput)
 					stdout.writeSequenceTerminator(getSerializeOpts());
 
-				if( in != null )
-					in.close();
 				return bAnyOutput ? 0 : 1;
 			}
 
@@ -204,12 +202,11 @@ public class xpath extends XCommand {
 	private String readString(XValue v, SerializeOpts opts) throws CoreException, IOException  {
 		
 		InputPort in = getInput( v );
-		InputStream is = in.asInputStream(opts);
+		try (  InputStream is = in.asInputStream(opts) ){
 		
 		String s = Util.readString(is,opts.getInputTextEncoding());
-		is.close();
-		in.close();
 		return s ;
+		}
 	}
 
 }

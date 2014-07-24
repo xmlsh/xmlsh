@@ -8,7 +8,7 @@ package org.xmlsh.util;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-
+import org.xmlsh.core.InputPort;
 import org.xmlsh.core.InputPort;
 import org.xmlsh.sh.shell.SerializeOpts;
 
@@ -21,10 +21,9 @@ public class PortCopier extends AbstractCopier
 	private		volatile    InputPort	mIn;
 	private		volatile    OutputStream	mOut;
 	private		boolean	     mCloseOut;
-	private    boolean     mReleaseIn;
 	
 	private		SerializeOpts mOpts;
-	public PortCopier( InputPort in , OutputStream out , SerializeOpts opts , boolean relaseIn,  boolean closeOut )
+	public PortCopier( InputPort in , OutputStream out , SerializeOpts opts ,   boolean closeOut )
 	{
 		super( "portcopy");
 		mIn = in;
@@ -32,7 +31,6 @@ public class PortCopier extends AbstractCopier
 		mOpts = opts;
 		
 		mCloseOut = closeOut;
-		mReleaseIn = relaseIn ;
 		
 	}
 	/* (non-Javadoc)
@@ -79,13 +77,8 @@ public class PortCopier extends AbstractCopier
 	
 	public void closeIn()
     {
-	    if( mReleaseIn ) {
-			if( mIn != null)
-				synchronized (this) {
-					Util.safeClose(mIn);
-					mIn = null ;
-                } 
-		}
+
+		mIn = null ;
     }
 }
 //

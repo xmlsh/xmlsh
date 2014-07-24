@@ -63,7 +63,6 @@ public class base64 extends XCommand {
 		} finally {
 			is.close(); // Unnecessary 
 			os.close(); // Unnecessary 
-			iport.release(); // Needed else file handle gets left open
 
 		}
 				

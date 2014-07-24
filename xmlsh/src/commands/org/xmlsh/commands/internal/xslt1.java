@@ -45,12 +45,6 @@ public class xslt1 extends XCommand {
 		
 		apply( style , source, getStdout().asOutputStream(serializeOpts) , opts.hasOpt("v") ? args : null, serializeOpts);
 		
-
-		if( in != null )
-			in.release();
-
-		
-		
 		return 0;
 
 	}

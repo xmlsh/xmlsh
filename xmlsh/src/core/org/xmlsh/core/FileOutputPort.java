@@ -31,7 +31,7 @@ import javax.xml.stream.XMLStreamWriter;
 
 
 
-public class FileOutputPort extends OutputPort 
+public class FileOutputPort extends OutputPort
 {
 	private		static 	Logger	mLogger = LogManager.getLogger( FileOutputPort.class );				
 	
@@ -46,20 +46,16 @@ public class FileOutputPort extends OutputPort
 	}
 	
 	public	FileOutputPort( File file , boolean bAppend , boolean bCreateNow ) throws IOException
-	
-	
 	{
+		mLogger.debug("FileOutputPort() file = "+file.getName());
 		mFile = file;
 		this.bAppend = bAppend ;
-		
 		/*
 		 * Need to create the file now if it doesnt exist
 		 */
 		
 		if( bCreateNow )
 			mFile.createNewFile();
-		
-		
 		
 	}
 	
@@ -114,6 +110,8 @@ public class FileOutputPort extends OutputPort
 	 * @see org.xmlsh.core.StreamOutputPort#close()
 	 */
 	public void close() throws IOException {
+		mLogger.debug("FileOutputPort.close() file = "+ mFile.getName());
+
 		if( mStreamPort != null ){
 			mStreamPort.close();
 			mStreamPort = null ;

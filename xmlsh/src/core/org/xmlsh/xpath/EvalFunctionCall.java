@@ -67,32 +67,34 @@ public class EvalFunctionCall extends ExtensionFunctionCall
 			// Capture stdout
 			XValue oValue = new XValue();
 			XVariable oVar = new XVariable("_out", oValue);
-			VariableOutputPort oPort = new VariableOutputPort(oVar);
-			shell.getEnv().setStdout(oPort);
-
-			Item contextItem = null;
-			if(arguments.length > 2)
-				contextItem = arguments[2].next();
-			else
-				contextItem = context.getContextItem();
-
-			// set stdin
-			if(context != null) {
-				VariableInputPort iPort = new VariableInputPort(new XVariable("_in", new XValue(contextItem)));
-				shell.getEnv().setStdin(iPort);
-			}
-
-			shell.setArgs(shell_args);
-			try {
-				shell.exec(cmd);
-			} catch (ThrowException e) {
-				mLogger.info("Caught ThrowException within eval", e);
-				return null;
-			}
-			oPort.release();
-			oValue = oVar.getValue();
-			if(oValue == null)
-				return null;
+			try (				
+					VariableOutputPort oPort = new VariableOutputPort(oVar) ){
+				shell.getEnv().setStdout(oPort);
+	
+				Item contextItem = null;
+				if(arguments.length > 2)
+					contextItem = arguments[2].next();
+				else
+					contextItem = context.getContextItem();
+	
+				// set stdin
+				if(context != null) {
+					VariableInputPort iPort = new VariableInputPort(new XVariable("_in", new XValue(contextItem)));
+					shell.getEnv().setStdin(iPort);
+				}
+	
+				shell.setArgs(shell_args);
+				try {
+					shell.exec(cmd);
+				} catch (ThrowException e) {
+					mLogger.info("Caught ThrowException within eval", e);
+					return null;
+				}
+				oPort.flush();
+				oValue = oVar.getValue();
+				if(oValue == null)
+					return null;
+			} 
 
 			return oValue.asSequenceIterator();
 		} catch (Exception e) {

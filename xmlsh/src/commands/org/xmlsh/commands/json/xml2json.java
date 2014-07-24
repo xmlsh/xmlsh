@@ -59,32 +59,21 @@ public class xml2json extends XCommand
 		if( bIndent )
 			jopts.setPretyPrint(bIndent);
 
-		// Override the text encoding to UTF-8 - JSON is *always* USTF8
-		OutputStream os = stdout.asOutputStream(getSerializeOpts());
-	
-		JXConverter converter = JXConverter.getConverter(format,jopts,getSerializeOpts(), args);
+		try ( 
+			// Override the text encoding to UTF-8 - JSON is *always* USTF8
+			OutputStream os = stdout.asOutputStream(getSerializeOpts());
+				){
+			JXConverter converter = JXConverter.getConverter(format,jopts,getSerializeOpts(), args);
 
-		
-		
-		try {  
-			
 			converter.convertToJson( reader , os );
-			
-			
+			return 0;
 			
 		} 
 		finally {
-		
-			Util.safeClose(os);
 			Util.safeClose(reader);
-			Util.safeRelease(inp);
 		}
 		
 
-		
-		
-		
-		return 0;
 		
 
 		

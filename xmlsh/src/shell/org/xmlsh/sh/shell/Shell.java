@@ -12,7 +12,8 @@ import net.sf.saxon.s9api.XdmItem;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-
+import org.xmlsh.core.InputPort;
+import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.CommandFactory;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.EvalEnv;
@@ -1552,7 +1553,7 @@ public class Shell implements AutoCloseable, Closeable {
 	}
 	
 
-	public InputPort getInputPort(String file) throws IOException {
+	public InputPort newInputPort(String file) throws IOException {
 		/*
 		 * Special case to support /dev/null file on Windows systems
 		 * Doesnt hurt on unix either to fake this out instead of using the OS
@@ -1575,7 +1576,7 @@ public class Shell implements AutoCloseable, Closeable {
 	
 	
 
-	public OutputPort getOutputPort(String file, boolean append) throws FileNotFoundException, IOException
+	public OutputPort newOutputPort(String file, boolean append) throws FileNotFoundException, IOException
 	{
 		if( FileUtils.isNullFilePath(file)) {
 			return new StreamOutputPort(new NullOutputStream());
@@ -1596,7 +1597,7 @@ public class Shell implements AutoCloseable, Closeable {
 	
 	public OutputStream getOutputStream(String file, boolean append, SerializeOpts opts) throws FileNotFoundException, IOException, CoreException
 	{
-		return getOutputPort( file , append).asOutputStream(opts); 
+		return newOutputPort( file , append).asOutputStream(opts); 
 	}
 	
 	

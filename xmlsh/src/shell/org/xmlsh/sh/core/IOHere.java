@@ -10,6 +10,7 @@ import org.xmlsh.core.CoreException;
 import org.xmlsh.sh.shell.Shell;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 
@@ -28,7 +29,7 @@ public class IOHere {
 		out.print(mHere);
 		
 	}
-	public void exec(Shell shell, String port) throws CoreException, UnsupportedEncodingException  {
+	public void exec(Shell shell, String port) throws CoreException, IOException  {
 		
 		shell.getEnv().setInput( port , 
 				new ByteArrayInputStream(mHere.getBytes(shell.getInputTextEncoding())));

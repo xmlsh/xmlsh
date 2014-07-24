@@ -79,12 +79,10 @@ done >(output)
 ( echo output8 ) >(output)
 
 # Test named ports input
-exit 0
+
 echo input1 | read a <(input)
 echo $a
-
 echo input2 | while read a ; do echo $a ; done <(input)
-
 echo input3 | if true ; then read a ;  echo $a ; fi <(input)
 echo input4 | for a in a ; do read b ; echo $b ; done <(input)
 

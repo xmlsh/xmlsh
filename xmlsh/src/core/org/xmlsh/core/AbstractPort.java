@@ -6,19 +6,31 @@
 
 package org.xmlsh.core;
 
-import net.sf.saxon.s9api.SaxonApiException;
 
-import org.xmlsh.util.IReferenceCounted;
 import org.xmlsh.util.ReferenceCounter;
 
-import java.io.Closeable;
 import java.io.File;
-import java.io.Flushable;
-import java.io.IOException;
 
 
-public abstract class AbstractPort implements  Closeable , Flushable, IPort {
-	private	ReferenceCounter mCounter = new ReferenceCounter();
+public abstract class AbstractPort implements  IPort {
+
+	// volatile so it can start null 
+	private	volatile ReferenceCounter mCounter = null;
+	
+	@SuppressWarnings("unchecked")
+	public <T extends AbstractPort> ReferenceCountedHandle<T> newReference() {
+		if( mCounter == null ) {
+			synchronized( this ) {
+				mCounter = new ReferenceCounter();
+			}
+		}
+		else
+			mCounter.addRef();
+		return new ReferenceCountedHandle<T>( (T) this  , mCounter );
+	}
+
+
+
 	private String mSystemId = "";
 	private boolean    mSystem;    // System port from original env
 
@@ -35,34 +47,18 @@ public abstract class AbstractPort implements  Closeable , Flushable, IPort {
 	{
 		mSystemId = systemId;
 	}
-	public void addRef() {
-		mCounter.addRef();
-	}
 
-	
-	public final boolean release() throws IOException 
-	{		
-			if(mCounter.release() ) {
-				    flush();
-					close();
-					return true ;
-			}
-			return false ;
-	}
-	
-	
-	public	boolean	  isFile() { return false ; }
-	
-	public File		getFile() throws UnimplementedException
-	{
-		throw new UnimplementedException("IPort.getFile() is not implmented() in class: " + this.getClass().getName() );
-	}
 	
 	public boolean isSystem(){
 		return mSystem;
 	}
 
-	
+
+	@Override
+	public File getFile() throws UnimplementedException {
+		  throw new UnimplementedException("getFile not implemented on this port");
+	  
+	}
 
 }
 

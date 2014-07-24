@@ -6,6 +6,8 @@
 
 package org.xmlsh.sh.core;
 
+import org.xmlsh.core.InputPort;
+import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.EvalEnv;
 import org.xmlsh.core.InputPort;
@@ -16,6 +18,7 @@ import org.xmlsh.core.XVariable;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.Util;
+import static  org.xmlsh.core.XIOEnvironment.*;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -67,23 +70,12 @@ public class IOFile {
 			 * must manage an extra reference count to avoid over releasing
 			 */
 			
-			if( mPrefix.equals("1>&2")){
-				OutputPort stderr = env.getStderr();
-				stderr.addRef(); // keep stdout from being over released
-				
-				// Duplicate stdout from stderr
-				env.setStdout(  stderr );
-			} else
-			if( mPrefix.equals("2>&1")){
+			if( mPrefix.equals("1>&2"))
+				env.dupOutput( kSTDOUT , kSTDERR  );
+			else
+			if( mPrefix.equals("2>&1"))
+				env.dupOutput( kSTDERR, kSTDOUT );
 
-				OutputPort stdout = env.getStdout();
-
-				// Duplicate stderr from stdout
-				
-				stdout.addRef(); // keep stderr from being over released
-				env.setStderr(  stdout );
-				
-			}
 			
 			return ;
 		}
@@ -146,7 +138,7 @@ public class IOFile {
 				if( inp == null )
 					throw new InvalidArgumentException("Input port not found: " + portname );
 
-					env.setInput( port , inp );
+					env.setInput( port  , inp );
 			}
 			else
 			if( mPrefix.equals(">")){
@@ -156,7 +148,7 @@ public class IOFile {
 				if( outp == null )
 					throw new InvalidArgumentException("Output port not found: " + portname );
 				
-				env.setOutput(port,outp);
+				env.setOutput(port,(OutputPort)outp);
 			}
 			else
 			if( mPrefix.equals(">>"))
@@ -165,68 +157,45 @@ public class IOFile {
 				if( outp == null )
 					throw new InvalidArgumentException("Output port not found: " + portname );
 
-				env.setOutput(port,outp);
+				env.setOutput(port,(OutputPort)outp);
 					
 			}
 			else
 			if( mPrefix.equals(">&"))
 			{	
 				
-				// Duplicate port from port
-				OutputPort outp=env.getOutputPort( portname );
-				if( outp == null )
-					throw new InvalidArgumentException("Output port not found: " + portname );
-
-
-				outp.addRef(); // keep stderr from being over released
-				env.setOutput(port,outp);
+				env.dupOutput( port , portname  );
 						
 			}
 			else
 			if( mPrefix.equals("<&"))
 			{	
-					
-					// Duplicate port from port
-					InputPort inp=env.getInputPort( portname );
-					if( inp == null )
-						throw new InvalidArgumentException("Input port not found: " + portname );
 
-
-					inp.addRef(); // keep stderr from being over released
-					env.setInput(port,inp);
-							
-				}
+				env.dupInput( port , portname );
+		    }
 			return ;
 		}
 		
 		
-	
-		
-	
-		
 		
 		if( mPrefix.equals("<")){
-			InputPort in = env.setInput(port, shell.getInputPort(file)  );
+			InputPort in = env.setInput(port, shell.newInputPort(file)  );
 			in.setSystemId(file);
 		}
 		else
 		if( mPrefix.equals("2>"))
-				env.setStderr( shell.getOutputPort(file, false));
+				env.setStderr( shell.newOutputPort(file, false));
 		else
 		if( mPrefix.equals("2>>"))
-				env.setStderr( shell.getOutputPort(file, true));
+				env.setStderr( shell.newOutputPort(file, true));
 		
 		else
 		if( mPrefix.equals(">"))
-			env.setOutput(port,shell.getOutputPort(file, false));
+			env.setOutput(port,shell.newOutputPort(file, false));
 		else
 		if( mPrefix.equals(">>"))
-				env.setOutput(port,shell.getOutputPort(file, true));
+				env.setOutput(port,shell.newOutputPort(file, true));
 
-				
-
-		
-		
 	}
 	
 }

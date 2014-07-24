@@ -34,11 +34,11 @@ public class PipedStreamPort extends PipedPort {
 		
 	}
 
-	public	InputPort	getInput() throws IOException { 
+	public	StreamInputPort	getInput() throws IOException { 
 		return new StreamInputPort(mIn,null) ; 
 	}
 	
-	public OutputPort getOutput() { 
+	public StreamOutputPort getOutput() { 
 		return new StreamOutputPort(mOut) ; 
 	}
 	

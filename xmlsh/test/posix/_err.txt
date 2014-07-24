@@ -1,0 +1,6 @@
+[C:/Work/DEI/xmlsh/trunk/test/posix/posix_tee.xsh line: 10]
+Error deleting file: C:\Users\DLEE\AppData\Local\Temp\_xmlsh\a.xml
+[C:/Work/DEI/xmlsh/trunk/test/posix/posix_tee.xsh line: 10]
+Error deleting file: C:\Users\DLEE\AppData\Local\Temp\_xmlsh\b.xml
+[C:/Work/DEI/xmlsh/trunk/test/posix/posix_tee.xsh line: 10]
+Error deleting file: C:\Users\DLEE\AppData\Local\Temp\_xmlsh
