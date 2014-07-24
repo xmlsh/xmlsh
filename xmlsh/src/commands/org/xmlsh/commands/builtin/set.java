@@ -33,7 +33,7 @@ public class set extends BuiltinCommand {
 			return 0;
 		}
 		
-		Options opts = new Options( "+x,+v,+xpipe,+e,E=expand,+location" , SerializeOpts.getOptionDefs()  );
+		Options opts = new Options( "+x,+v,+xpipe,+e,E=expand,+location,location-format:" , SerializeOpts.getOptionDefs()  );
 		opts.parse(args);
 		setSerializeOpts(opts);
 		boolean bFlatten = opts.hasOpt("E");

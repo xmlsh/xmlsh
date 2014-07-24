@@ -9,6 +9,8 @@ package org.xmlsh.sh.shell;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options.OptionValue;
 import org.xmlsh.core.XValue;
+import org.xmlsh.sh.core.SourceLocation;
+import org.xmlsh.util.Util;
 
 public class ShellOpts 
 {
@@ -17,7 +19,7 @@ public class ShellOpts
 	public boolean	 mXPipe	 		= false;		// -xpipe
 	public	boolean	 mThrowOnError 	= false;		// -e
 	public boolean mLocation       = true ;       // print location on error
-
+	public boolean mLocationFormat = defaultLocationFormat() ;      // TODO : convert to enum
 
 	
 	SerializeOpts	 mSerialize;
@@ -25,6 +27,11 @@ public class ShellOpts
 	public ShellOpts( ) {
 		mSerialize = new SerializeOpts();
 	}
+	public static final boolean defaultLocationFormat()
+    {
+		 String format = System.getenv("XLOCFORMAT");
+		 return Util.parseBoolean(format , false);
+    }
 	public ShellOpts( ShellOpts that )
 	{
 	
@@ -34,6 +41,7 @@ public class ShellOpts
 		mThrowOnError = that.mThrowOnError;
 		mLocation = that.mLocation ;
 		mSerialize = new SerializeOpts( that.mSerialize );
+		mLocationFormat = that.mLocationFormat;
 		
 		
 	}
@@ -62,6 +70,8 @@ public class ShellOpts
 	public void setOption(String opt, XValue value) throws InvalidArgumentException {
 		
 		// No shell options take a string value so just defer to serialization options
+		if( opt.equals("location-format"))
+				mLocationFormat = SourceLocation.parseFormat( value );
 		
 		mSerialize.setOption( opt , value );
 		

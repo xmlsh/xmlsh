@@ -1,5 +1,5 @@
 # Run a single test and return 0 for success or 1 for failure
-
+set -location-format true
 set -encoding utf8
 
 [ $# -ne 1 ] && exit 1
@@ -31,19 +31,19 @@ if [ $RET -ne 0 ] ; then
 fi     
 
 
-if [ -f out/${1}.out ] ; then 
-	xcmp -b _out.txt out/${1}.out 
+if [ -f out/$1.out ] ; then 
+	xcmp -b _out.txt out/$1.out 
 	if [ $? -ne 0 ] ; then
-		echo $1 out/${1}.out different output
+		echo $1 out/$1.out different output
 		diff_text _out.txt out/$1.out
 		exit 1
 	fi
 	[ -f _out.txt ] && rm _out.txt
 
-elif [ -f out/${1}.xml ] ; then 
-	xcmp -x -b _out.txt out/${1}.xml 
+elif [ -f out/$1.xml ] ; then 
+	xcmp -x -b _out.txt out/$1.xml 
 	if [ $? -ne 0 ] ; then
-		echo $1 out/${1}.xml different output
+		echo $1 out/$1.xml different output
 		diff_xml _out.txt out/$1.xml
 		exit 1
 	fi
@@ -54,10 +54,12 @@ else
  	exit 2
 fi
 
-if [ -f _err.txt -a -f out/${1}.err ] ; then
-	xcmp -b _err.txt out/${1}.err 
+if [ -f _err.txt -a -f out/$1.err ] ; then
+	xcmp -b _err.txt out/$1.err 
 	if [ $? -ne 0 ] ; then
-		echo $1 out/${1}.err different output
+		echo $1 out/$1.err different output
+		diff_text _err.txt out/$1.err
+
 		exit 1
 	fi
 elif [ -s _err.txt ] ; then 

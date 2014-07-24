@@ -46,17 +46,15 @@ public class query extends MLCommand {
 
 		OptionValue ov = opts.getOpt("f");
 		SerializeOpts serializeOpts = getSerializeOpts(opts);
-		if( ov != null ){
-			if( query != null )
-				throwInvalidArg(  "Cannot specifify both -q and -f");
-			
+		if(ov != null) {
+			if(query != null)
+				throwInvalidArg("Cannot specifify both -q and -f");
+
 			InputPort qin = getInput(ov.getValue());
-			InputStream is = qin.asInputStream(serializeOpts);
-			query = Util.readString(is,serializeOpts.getInputTextEncoding());
-			is.close();
-			qin.close();
-			
-			
+			try (InputStream is = qin.asInputStream(serializeOpts)) {
+				query = Util.readString(is, serializeOpts.getInputTextEncoding());
+			}
+
 		}
 		if( query == null && args.size() < 1 )
 			throwInvalidArg("No query specified");

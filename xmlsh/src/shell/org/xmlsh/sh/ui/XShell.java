@@ -14,6 +14,7 @@ import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.sh.ui.TextResultPane.OutputType;
+import org.xmlsh.util.FileUtils;
 import org.xmlsh.util.Util;
 
 import java.awt.BorderLayout;
@@ -143,7 +144,7 @@ public class XShell {
 		if( command == null ){
 			String fname = opts.getOptString("cf", null );
 			if( fname != null ){
-					command =  Util.convertPath(fname , false );
+					command =  FileUtils.convertPath(fname , false );
 				
 			}
 			if( command == null ){

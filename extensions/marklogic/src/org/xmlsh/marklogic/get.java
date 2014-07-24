@@ -264,9 +264,6 @@ public class get extends MLCommand {
 	    
 	    if( ! bText && ! bBinary )
 	    	output.writeSequenceTerminator(mSerializeOpts);
-	    
-	    output.release();
-	
 		
 	}
 	

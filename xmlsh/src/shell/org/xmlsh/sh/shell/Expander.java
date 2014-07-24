@@ -241,7 +241,6 @@ class Expander {
 		mShell = shell;
 		mLocation = loc ;
 		mIFS = mShell.getIFS();
-
 	}
 
 	private int readToMatching( String arg , int i , StringBuffer sbv , char match )
@@ -264,7 +263,6 @@ class Expander {
 		}
 		return i;
 	}
-
 
 	/*
 	 * Expand a single word value :

@@ -8,7 +8,7 @@ package org.xmlsh.core;
 
 import net.sf.saxon.s9api.XdmValue;
 import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.util.Util;
+import org.xmlsh.util.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -88,7 +88,7 @@ public class Path implements Iterable<String> {
 	{
 		StringBuffer sb = new StringBuffer();
 		for( String ps : mPaths ){
-			String s = Util.fromJavaPath(ps);
+			String s = FileUtils.fromJavaPath(ps);
 			if( sb.length() > 0 )
 				sb.append(File.pathSeparator);
 			sb.append(s);

@@ -12,6 +12,7 @@ import org.xmlsh.sh.core.SourceLocation;
 import org.xmlsh.sh.shell.Module;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.util.FileUtils;
 import org.xmlsh.util.Util;
 
 import java.io.File;
@@ -43,7 +44,7 @@ public class ScriptCommand implements ICommand {
 	public ScriptCommand( File script, boolean bSourceMode , SourceLocation location) throws FileNotFoundException
 	{
 		mScript = new FileInputStream(script);
-		mScriptName = Util.toJavaPath(script.getPath());
+		mScriptName = FileUtils.toJavaPath(script.getPath());
 		mSourceMode = bSourceMode;
 		mScriptFile = script;
 		mLocation = location ;
@@ -58,7 +59,7 @@ public class ScriptCommand implements ICommand {
 	}
 
 	public ScriptCommand(String name , InputStream is, boolean bSourceMode, Module module ) {
-		mScriptName = Util.toJavaPath(name);
+		mScriptName = FileUtils.toJavaPath(name);
 		mScript = is;
 		mSourceMode = bSourceMode;
 		mModule = module ;

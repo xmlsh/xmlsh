@@ -11,6 +11,7 @@ import org.apache.log4j.Logger;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.util.FileUtils;
 import org.xmlsh.util.Util;
 
 import java.io.File;
@@ -69,7 +70,7 @@ public class XFile /* implements XSerializble */ {
 
 
 	public String getName() {
-		return Util.toJavaPath(mFile.getName());
+		return FileUtils.toJavaPath(mFile.getName());
 
 	}
 	public File getFile()
@@ -79,7 +80,7 @@ public class XFile /* implements XSerializble */ {
 
 	public String getPath() {
 		try {
-			return Util.toJavaPath(mFile.getCanonicalPath());
+			return FileUtils.toJavaPath(mFile.getCanonicalPath());
 		} catch (IOException e) {
 			return "";
 		}
@@ -87,8 +88,8 @@ public class XFile /* implements XSerializble */ {
 
 	public String getRelpath(File relpath) {
 		try {
-			String relativeTo = Util.toJavaPath(relpath.getCanonicalPath());
-			String absolutePath = Util.toJavaPath(mFile.getCanonicalPath());
+			String relativeTo = FileUtils.toJavaPath(relpath.getCanonicalPath());
+			String absolutePath = FileUtils.toJavaPath(mFile.getCanonicalPath());
             String[] absoluteDirectories = absolutePath.split("/");
             String[] relativeDirectories = relativeTo.split("/");
 
@@ -124,7 +125,7 @@ public class XFile /* implements XSerializble */ {
 	}
 
 	public String getDirName() {
-		String dir = Util.toJavaPath(mFile.getParent());
+		String dir = FileUtils.toJavaPath(mFile.getParent());
 		return dir == null ? "." : dir;
 	}
 
@@ -186,13 +187,13 @@ public class XFile /* implements XSerializble */ {
 	}
 
 		public String noExtension() {
-		String	path = Util.toJavaPath(mFile.getPath());
+		String	path = FileUtils.toJavaPath(mFile.getPath());
 		String  ext = getExt();
 		return path.substring(0 , path.length() - ext.length());
 	
 	}
 	public String getPathName() {
-		return Util.toJavaPath(mFile.getPath());
+		return FileUtils.toJavaPath(mFile.getPath());
 	}
 
 	/*

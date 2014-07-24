@@ -422,12 +422,7 @@ public class put extends MLCommand {
 			
 			if( uri == null )
 				uri = in.getSystemId();
-			try {
-				this.load(in, uri,bMD5);
-			} finally {
-				in.close();
-			}
-			
+			this.load(in, uri,bMD5);
 		}
 		else {
 			
@@ -437,8 +432,6 @@ public class put extends MLCommand {
 			
 			// Get list iterator 
 			ContentIterator  contentIter = null;
-			InputPort fileInp = null ;
-			
 			
 			// Streaming option 
 			if( stream != null ){
@@ -446,16 +439,13 @@ public class put extends MLCommand {
 				if( port == null )
 					throw new CoreException("Cannot open port: " + stream );
 				
-				
 				contentIter = new ContentXdmStreamIterator( port.asXdmItemInputStream(getSerializeOpts()) , uri );
-				
-				
 				
 			}
 			else
 			if( listFileName != null  )
 				
-				contentIter = new ContentStreamIterator( (fileInp=this.getInput(listFileName)).asReader(serializeOpts)  );
+				contentIter = new ContentStreamIterator( (getInput(listFileName)).asReader(serializeOpts)  );
 			else {
 				List<String> filenames = new LinkedList<String>();
 			
@@ -494,9 +484,6 @@ public class put extends MLCommand {
 			load( contentIter , baseUri ,  bMD5 );
 			flushContent();
 			 
-			if( fileInp != null )
-				fileInp.release();
-
 		
 		}
 		

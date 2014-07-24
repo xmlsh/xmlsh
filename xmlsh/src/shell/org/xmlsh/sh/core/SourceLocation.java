@@ -6,16 +6,26 @@
 
 package org.xmlsh.sh.core;
 
+import java.io.File;
+import java.nio.file.Paths;
+
+import org.xmlsh.core.InvalidArgumentException;
+import org.xmlsh.core.UnexpectedException;
+import org.xmlsh.core.XValue;
 import org.xmlsh.sh.grammar.Token;
+import org.xmlsh.util.FileUtils;
 import org.xmlsh.util.Util;
 
 public class SourceLocation implements Cloneable {
+	private static final String kLOCATION_FORMAT = "[%s%s line: %d]";
 	private    String  mName;  // "" , script , source , function
 	private		String	mSource;
 	private		int		mStartLine;
 	private		int		mStartColumn;
 	private		int		mEndLine;
 	private		int		mEndColumn;
+	private boolean kDEFAULT_LOCATION_FORMAT = false ; // TODO Enum
+	
 	public SourceLocation(String source, String name ,  int startline, int startColumn, int endLine, int endColumn) {
 		mName = name ;
 		mSource = source;
@@ -60,7 +70,12 @@ public class SourceLocation implements Cloneable {
 		return Util.notNull(mName);
 	}
 	public String getSource() {
-		return Util.notNull(mSource);
+		return getSource(false);
+	}
+
+	public String getSource(boolean relpath) {
+		String src =  Util.notNull(mSource);
+		return relpath ? FileUtils.getPathLikeName( src ) : src ;
 	}
 
 	/**
@@ -87,9 +102,9 @@ public class SourceLocation implements Cloneable {
 	public int getEndColumn() {
 		return mEndColumn;
 	}
-	public String format() {
-		return String.format("[%s%s line: %d]",
-		hasSource() ? getSource() : "stdin" ,
+	public String format(boolean relpath ) {
+		return String.format(kLOCATION_FORMAT ,
+		hasSource() ? getSource(relpath) : "stdin" ,
         hasName() ? String.format("function %s() ",mName) : "" ,
         getStartLine() );
 	}
@@ -100,7 +115,7 @@ public class SourceLocation implements Cloneable {
 	}
 	public String toString()
 	{
-		return format();
+		return format(kDEFAULT_LOCATION_FORMAT);
 	}
 
 	/**
@@ -173,6 +188,18 @@ public class SourceLocation implements Cloneable {
 	public boolean hasName() {
 		return ! Util.isBlank(mName);
 	}
+	
+	// fake for now just parse as boolean
+	public static boolean parseFormat(XValue value) throws InvalidArgumentException
+    {
+		try {
+	        return value.toBoolean();
+        } catch (UnexpectedException e) {
+	       Util.wrapException(e, InvalidArgumentException.class);
+	       // SNH
+        }
+		return false ;
+    }
 	
 	
 	

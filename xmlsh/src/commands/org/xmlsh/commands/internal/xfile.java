@@ -11,7 +11,7 @@ import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.types.XFile;
-import org.xmlsh.util.Util;
+import org.xmlsh.util.FileUtils;
 
 import java.io.PrintWriter;
 import java.util.List;
@@ -108,7 +108,7 @@ public class xfile extends XCommand
 	}
 
 	private String toSys(String name, boolean opt_sys) {
-		return Util.convertPath(name, opt_sys);
+		return FileUtils.convertPath(name, opt_sys);
 			
 	}
 	

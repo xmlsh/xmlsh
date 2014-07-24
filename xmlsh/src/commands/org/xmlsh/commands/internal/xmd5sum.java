@@ -14,6 +14,7 @@ import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.SerializeOpts;
+import org.xmlsh.util.FileUtils;
 import org.xmlsh.util.Util;
 
 import java.io.File;
@@ -112,7 +113,7 @@ public class xmd5sum extends XCommand
 			out.writeStartElement(sFile);
 			String name = arg.toString();
 			if( !Util.isBlank(name) )
-				out.writeAttribute(sName, Util.toJavaPath(name));
+				out.writeAttribute(sName, FileUtils.toJavaPath(name));
 			out.writeAttribute(sMd5, cs.getMD5());
 			out.writeAttribute(sLen , String.valueOf( cs.getLength()) );
 			out.writeEndElement();

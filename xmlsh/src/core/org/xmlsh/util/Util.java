@@ -19,6 +19,7 @@ import net.sf.saxon.s9api.XdmValue;
 import net.sf.saxon.trans.XPathException;
 
 import org.apache.log4j.Logger;
+
 import org.xmlsh.core.EvalFlag;
 import org.xmlsh.core.AbstractPort;
 import org.xmlsh.core.IReleasable;
@@ -92,7 +93,7 @@ public class Util
 	{
 
 		public int compare(File o1, File o2) {
-			return toJavaPath(o1.getName()).compareTo(toJavaPath(o2.getName()));
+			return FileUtils.toJavaPath(o1.getName()).compareTo(FileUtils.toJavaPath(o2.getName()));
 		}
 		
 	}
@@ -336,16 +337,21 @@ public class Util
     
     public static boolean parseBoolean(String string)
     {
-        if( isBlank(string))
-            return false;
-        
-        if ("1".equals(string) || "true".equals(string))
-            return true;
-
-        return false;
+       return parseBoolean(string,false);
 
     }
+
+	public static boolean parseBoolean(String string, boolean def)
+    { 
+		
+		if( isBlank(string))
+        return def;
     
+	    if ("1".equals(string) || "true".equals(string))
+	        return true;
+	
+	    return def;
+    }
     
     public static String urlEncode( String value )
     {
@@ -677,34 +683,6 @@ public class Util
 		Collections.sort(list, new FileComparator() );
 	}
 	
-	/**
-	 * Convert a Path or name in DOS format to Java format
-	 * This means converting \ to / 
-	 */
-	
-	public static String toJavaPath( String path )
-	{
-		if( path == null )
-			return null;
-		if( File.separatorChar != '/')
-			return path.replace(File.separatorChar, '/');
-		else
-			return path;
-	}
-
-	/*
-	 * Reverse the conversion of toJavaPath
-	 */
-	public static String fromJavaPath( String path )
-	{
-		if( path == null )
-			return null;
-		if( File.separatorChar != '/')
-			return path.replace('/' , File.separatorChar);
-		else
-			return path;
-	}
-
 	public static String readLine(Reader ir) throws IOException {
 		StringBuffer sb = new StringBuffer();
 		int c;
@@ -1087,15 +1065,6 @@ public class Util
 	}
 	
 
-	public static String convertPath(String name, boolean bSystem) {
-		if( bSystem && File.separatorChar != '/')
-			return name.replace('/', File.separatorChar);
-		else
-			return name.replace(File.separatorChar, '/');
-			
-	}
-
-
 	public static List<XValue> toXValueList(String[] args) {
 		List<XValue> list = new ArrayList<XValue>(args.length);
 		for( String a : args )
@@ -1443,7 +1412,7 @@ public class Util
         // Tokenize into words including path chars
 		String words[] = command.split("[^\\w]+");
 		for( String w : words ) {
-			String name = basePathLikeName(w);
+			String name = FileUtils.basePathLikeName(w);
 			// Convert paths java paths but dont use the path functions - might not really be a path
 			
 			if( isBlank(name) || name.length() < 2 )
@@ -1460,58 +1429,8 @@ public class Util
 	
 
 
-	/*
-	 * Special function that would return basename without extension if this is path-like
-	 * but otherwise still does something useful - dont use if you know the string is really a path
-	 */
-
-	private static String basePathLikeName(String path)
-    {
-		if( isBlank(path))
-			return null ;
-		
-		int startpos = 0;
-		// get rid of any windowy drive paths and leading /s
-		int rlen = rootPathLength(path); 
-		if( rlen > 0 )
-			startpos = rlen;
-		
-		int slashpos = path.lastIndexOf('/');
-		int slashpos2  =  (File.separatorChar != '/' ) ? 
-				path.lastIndexOf( File.separatorChar ) : -1 ;
-		slashpos = Math.max(slashpos, slashpos2);
-		if( slashpos > startpos )
-			startpos = slashpos + 1 ;
-		if( startpos >= rlen )
-			return null ;
-		int dotpos = path.indexOf('.', startpos);
-		if( dotpos < 0 )
-			dotpos = rlen;
-		return path.substring(startpos,dotpos);
-    }
-
-	// Return the number of chars that include the root part of a path 
-	// Include windows drive: 
-	// Assumes java path format
-	public static int rootPathLength(String path)
-	{
-		
-		int len = 0;
-		int plen = path.length();
-		if( Util.isWindows() && plen >= 2 ) {
-			char drive = path.charAt(0);
-			// Character.isAlphabetic() is V7 only
-			if( Character.isLetter(drive) && path.charAt(1) == ':')
-				len = 2 ;
-			
-		}
-		
-		while( len < plen && path.charAt(len) == '/' )
-		  len++;
-
-		 return len ;
-	}
 	
+
 	/*
 	 * EnumSet helpers
 	 */
@@ -1655,6 +1574,8 @@ public class Util
 		}
 		
 	}
+
+
 	
 }
 

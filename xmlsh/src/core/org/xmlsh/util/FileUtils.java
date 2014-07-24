@@ -50,6 +50,99 @@ public class FileUtils
 	public boolean hasConsole() {
 		return System.console() != null ;
 	}
+	public static String convertPath(String name, boolean bSystem) {
+		if( bSystem && File.separatorChar != '/')
+			return name.replace('/', File.separatorChar);
+		else
+			return name.replace(File.separatorChar, '/');
+			
+	}
+	/*
+	 * Reverse the conversion of toJavaPath
+	 */
+	public static String fromJavaPath( String path )
+	{
+		if( path == null )
+			return null;
+		if( File.separatorChar != '/')
+			return path.replace('/' , File.separatorChar);
+		else
+			return path;
+	}
+	/**
+	 * Convert a Path or name in DOS format to Java format
+	 * This means converting \ to / 
+	 */
+	
+	public static String toJavaPath( String path )
+	{
+		if( path == null )
+			return null;
+		if( File.separatorChar != '/')
+			return path.replace(File.separatorChar, '/');
+		else
+			return path;
+	}
+	// Return the number of chars that include the root part of a path 
+	// Include windows drive: 
+	// Assumes java path format
+	public static int rootPathLength(String path)
+	{
+		
+		int len = 0;
+		int plen = path.length();
+		if( Util.isWindows() && plen >= 2 ) {
+			char drive = path.charAt(0);
+			// Character.isAlphabetic() is V7 only
+			if( Character.isLetter(drive) && path.charAt(1) == ':')
+				len = 2 ;
+			
+		}
+		
+		while( len < plen && path.charAt(len) == '/' )
+		  len++;
+	
+		 return len ;
+	}
+	/*
+	 * Special function that would return basename without extension if this is path-like
+	 * but otherwise still does something useful - dont use if you know the string is really a path
+	 */
+	public static String basePathLikeName(String path)
+	{
+		path = getPathLikeName(path);
+	
+		int startpos = 0 ;
+		int dotpos = path.indexOf('.', startpos);
+		if( dotpos < 0 )
+			dotpos = path.length();
+		return path.substring(startpos,dotpos);
+	}
+	
+	// Take a path like string and return just the name.ext component
+	public static String getPathLikeName(String path)
+    {
+
+		if( Util.isBlank(path))
+			return "" ;
+		
+		int startpos = 0;
+		// get rid of any windowy drive paths and leading /s
+		int rlen = FileUtils.rootPathLength(path); 
+		if( rlen > 0 )
+			startpos = rlen;
+		
+		int slashpos = path.lastIndexOf('/');
+		int slashpos2  =  (File.separatorChar != '/' ) ? 
+				path.lastIndexOf( File.separatorChar ) : -1 ;
+		slashpos = Math.max(slashpos, slashpos2);
+		if( slashpos > startpos )
+			startpos = slashpos + 1 ;
+		if( startpos >= rlen )
+			return path.substring(startpos );
+		return "";
+    
+    }
 }
 
 

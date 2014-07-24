@@ -12,6 +12,7 @@ import net.sf.saxon.s9api.XdmItem;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.CommandFactory;
@@ -60,6 +61,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Constructor;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -273,16 +275,16 @@ public class Shell implements AutoCloseable, Closeable {
 		
 		
 		// Export path to shell path
-	    String path = Util.toJavaPath(System.getenv("PATH"));
+	    String path = FileUtils.toJavaPath(System.getenv("PATH"));
 	    	getEnv().setVar( new XVariable("PATH", 
 	    			Util.isBlank(path) ? new XValue() : new XValue(path.split(File.pathSeparator))) , false );
 	
-	    String xpath = Util.toJavaPath(System.getenv("XPATH"));
+	    String xpath = FileUtils.toJavaPath(System.getenv("XPATH"));
 	    getEnv().setVar( new XVariable("XPATH", 
 	    		Util.isBlank(xpath) ? new XValue(".") : new XValue(xpath.split(File.pathSeparator))) , false );
 	
 	     
-	    String xmpath = Util.toJavaPath(System.getenv("XMODPATH"));
+	    String xmpath = FileUtils.toJavaPath(System.getenv("XMODPATH"));
 	    getEnv().setVar( new XVariable("XMODPATH", 
 	    		Util.isBlank(xmpath) ? new XValue() : new XValue(xmpath.split(File.pathSeparator))) , false );
 
@@ -292,7 +294,7 @@ public class Shell implements AutoCloseable, Closeable {
 				new XDynamicVariable("PWD" , EnumSet.of( XVarFlag.READONLY , XVarFlag.XEXPR )) { 
 					public XValue getValue() 
 					{
-						return new XValue( Util.toJavaPath(getEnv().getCurdir().getAbsolutePath()) ) ;
+						return new XValue( FileUtils.toJavaPath(getEnv().getCurdir().getAbsolutePath()) ) ;
 					}
 					
 				}
@@ -351,10 +353,10 @@ public class Shell implements AutoCloseable, Closeable {
 		);
 		
 		
-		getEnv().setVar("TMPDIR" , Util.toJavaPath(System.getProperty("java.io.tmpdir")), false );
+		getEnv().setVar("TMPDIR" , FileUtils.toJavaPath(System.getProperty("java.io.tmpdir")), false );
 		
 		if( getEnv().getVar("HOME") == null )
-			getEnv().setVar("HOME" , Util.toJavaPath(System.getProperty("user.home")), false );
+			getEnv().setVar("HOME" , FileUtils.toJavaPath(System.getProperty("user.home")), false );
 		
 		
 	}
@@ -528,8 +530,7 @@ public class Shell implements AutoCloseable, Closeable {
 		      	if( mOpts.mVerbose || mOpts.mLocation ){
 		      		
 		      		if( mOpts.mLocation ){
-	      				SourceLocation loc = getLocation();
-	      				mLogger.info(loc.toString());
+	      				mLogger.info(formatLocation());
 	      			} 
 		      		
 		      		if( mOpts.mVerbose ) {
@@ -658,8 +659,8 @@ public class Shell implements AutoCloseable, Closeable {
 		        SourceLocation loc = c != null ? c.getLocation() : null ;
 		        
 		        if( loc != null ){
-		        	String sLoc = loc.format();
-		        	mLogger.info(loc.format());
+		        	String sLoc = loc.format(mOpts.mLocationFormat);
+		        	mLogger.info(loc.format(mOpts.mLocationFormat));
 		        	printErr( sLoc );
 		        }
 
@@ -671,9 +672,9 @@ public class Shell implements AutoCloseable, Closeable {
 		        SourceLocation loc = c != null ? c.getLocation() : null ;
 		        mLogger.error("Exception parsing statement",e);
 		        if( loc != null ){
-		        	String sLoc = loc.format();
+		        	String sLoc = loc.format(mOpts.mLocationFormat);
 		        
-		        	mLogger.info(loc.format());
+		        	mLogger.info(loc.format(mOpts.mLocationFormat));
 		        	printErr( sLoc );
 		        }
 		        parser.ReInit(new ShellParserReader(mCommandInput,getInputTextEncoding()),null);
@@ -811,7 +812,7 @@ public class Shell implements AutoCloseable, Closeable {
 			if( out.length() > 0 ){
 				
 				if( loc != null ) {
-					printErr("+ " + loc.format());
+					printErr("+ " + loc.format(mOpts.mLocationFormat));
 					printErr( out );
 				}
 				
@@ -927,82 +928,79 @@ public class Shell implements AutoCloseable, Closeable {
 	}
 
 	public void printErr(String s , SourceLocation loc ) {
-		PrintWriter out = null ;
-		try {
-			out = new PrintWriter( 
+		try (
+				PrintWriter out = new PrintWriter( 
 					new BufferedWriter(
 							new OutputStreamWriter(getEnv().getStderr().asOutputStream(getSerializeOpts()), getSerializeOpts().getOutputTextEncoding())
 						)
-					 );
-		} catch (IOException e) {
-			mLogger.error("IOException printing err:" + s , e );
-			return ;
-		} catch (CoreException e) {
-			mLogger.error("CoreException printing err:" + s , e );
+					 )
+				)
+				{
+				if( mOpts.mLocation ) {
+						out.println( formatLocation(loc));
+				}
+			    out.println(s);
+				out.flush();
+		} catch (UnsupportedEncodingException | CoreException e) {
+			mLogger.error("Exception writing output: " + s , e );
 
-        }
-		if( mOpts.mLocation ) {
-			if( loc == null )
-				loc = getLocation() ;
-			if( loc != null )
-				out.println( getLocation().format());
-		}
-	    out.println(s);
-
-		out.flush();
-		out.close();
+        } 
 		
 	}
+	private String formatLocation()
+	{
+		return formatLocation(null);
+	}
+
+
+	private String formatLocation(SourceLocation loc)
+    {
+		if( loc == null )
+			loc = getLocation();
+	    return loc == null ? "<?>" : loc.format(mOpts.mLocationFormat);
+    }
 	public void printOut(String s)  {
-		PrintWriter out = null ;
-		try {
-			out = new PrintWriter( 
+		try (
+			PrintWriter out = new PrintWriter( 
 					new BufferedWriter(
 							new OutputStreamWriter(getEnv().getStdout().asOutputStream(getSerializeOpts()), getSerializeOpts().getOutputTextEncoding())
 						)
-					 );
-		} catch (IOException e) {
-			mLogger.error("Exception writing output: " + s , e );
-			return;
-		} catch (CoreException e) {
+					 ) ){
+			out.println(s);
+				out.flush();
+		} catch (IOException |CoreException e) {
 			mLogger.error("Exception writing output: " + s , e );
 			return;
         }
-		out.println(s);
-		out.flush();
-		out.close();
+	
 	}
 	public void printErr(String s,Exception e  ) {
        printErr( s , e , null );
 	}
 	
 	public void printErr(String s,Exception e, SourceLocation loc ) {
-		PrintWriter out = null ;
-		try {
-			out = getEnv().getStderr().asPrintWriter(getSerializeOpts());
-		} catch (IOException e1) {
-			mLogger.error("Exception writing output: " + s , e );
-			return ;
-		} catch (CoreException e1) {
+		try (
+			PrintWriter out = getEnv().getStderr().asPrintWriter(getSerializeOpts())
+			){
+			if( loc == null )
+				loc = getLocation();
+			if( loc != null )
+				out.println( formatLocation(loc));
+			
+			out.println(s);
+			
+
+			out.println(e.getMessage());
+			for( Throwable t = e.getCause() ; t != null ; t = t.getCause() ){
+		       out.println("  Caused By: " + t.getMessage());		
+			}
+			
+			out.flush();
+		} catch (IOException |CoreException e1) {
 			mLogger.error("Exception writing output: " + s , e );
 			return ;
         }
-		if( loc == null )
-			loc = getLocation();
-		if( loc != null )
-			out.println( getLocation().format());
-		
-		out.println(s);
-		
-
-		out.println(e.getMessage());
-		for( Throwable t = e.getCause() ; t != null ; t = t.getCause() ){
-	       out.println("  Caused By: " + t.getMessage());		
-			
-		}
-		
-		out.flush();
-		out.close();
+	
 	}
 
 	public static void main(String argv[]) throws Exception {
@@ -1799,7 +1797,7 @@ public class Shell implements AutoCloseable, Closeable {
 	public void printLoc(Logger logger, SourceLocation loc) {
 
 		if( loc != null ){
-			String sLoc = loc.format();
+			String sLoc = loc.format(mOpts.mLocationFormat);
 			logger.info( sLoc );
 			
 		}
