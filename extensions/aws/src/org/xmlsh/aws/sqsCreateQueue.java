@@ -119,11 +119,6 @@ public class sqsCreateQueue extends AWSSQSCommand {
 		endDocument();
 		closeWriter();
 		stdout.writeSequenceTerminator(getSerializeOpts());
-		stdout.release();
-		
-
-
-		
 		
 		return 0;
 		

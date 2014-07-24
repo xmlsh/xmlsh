@@ -109,16 +109,7 @@ public class glacierGetJobOutput	 extends  AWSGlacierCommand {
 		}
 		
 		
-		stdout.release();
-		
-
-		
-		
 		return 0;
-		
-		
-		
-		
 	}
 
 

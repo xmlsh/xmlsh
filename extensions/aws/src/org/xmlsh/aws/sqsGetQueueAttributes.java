@@ -100,9 +100,6 @@ public class sqsGetQueueAttributes extends AWSSQSCommand {
 		endDocument();
 		closeWriter();
 		stdout.writeSequenceTerminator(getSerializeOpts());
-		stdout.release();
-		
-
 		
 		
 		return 0;

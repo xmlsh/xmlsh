@@ -97,8 +97,6 @@ public class sqsListQueues extends AWSSQSCommand {
 		endDocument();
 		closeWriter();
 		stdout.writeSequenceTerminator(getSerializeOpts());
-		stdout.release();
-		
 
 		
 		

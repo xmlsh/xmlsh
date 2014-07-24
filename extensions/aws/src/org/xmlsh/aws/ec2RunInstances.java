@@ -188,7 +188,6 @@ public class ec2RunInstances extends AWSEC2Command {
 		closeWriter();
 		
 		stdout.writeSequenceTerminator(getSerializeOpts());
-		stdout.release();
 		
 		
 	}

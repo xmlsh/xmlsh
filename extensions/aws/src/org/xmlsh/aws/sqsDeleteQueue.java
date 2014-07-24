@@ -98,9 +98,6 @@ public class sqsDeleteQueue extends AWSSQSCommand {
 		endDocument();
 		closeWriter();
 		stdout.writeSequenceTerminator(getSerializeOpts());
-		stdout.release();
-		
-
 
 		
 		

@@ -126,7 +126,6 @@ public class asDescribeGroups extends AWSASCommand {
 		closeWriter();
 		
 		stdout.writeSequenceTerminator(getSerializeOpts());
-		stdout.release();
 		
 		return 0;
 

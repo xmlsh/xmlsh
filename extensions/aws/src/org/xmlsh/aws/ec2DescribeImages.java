@@ -123,8 +123,6 @@ public class ec2DescribeImages extends AWSEC2Command {
 		closeWriter();
 		
 		stdout.writeSequenceTerminator(getSerializeOpts());
-		stdout.release();
-		
 		return 0;
 
 	}

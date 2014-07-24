@@ -89,7 +89,6 @@ public class asDescribeScalingProcessTypes extends AWSASCommand
 		closeWriter();
 
 		stdout.writeSequenceTerminator(getSerializeOpts());
-		stdout.release();
 
 		return 0;
 

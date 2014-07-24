@@ -127,15 +127,7 @@ public class glacierInventoryVault	 extends  AWSGlacierCommand {
 		}
 		
 		
-		stdout.release();
-		
-
-		
-		
 		return 0;
-		
-		
-		
 		
 	}
 

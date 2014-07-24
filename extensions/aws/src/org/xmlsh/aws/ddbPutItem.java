@@ -92,7 +92,6 @@ public class ddbPutItem	 extends  AWSDDBCommand {
 			emptyDocument();
 			closeWriter();
 			stdout.writeSequenceTerminator(getSerializeOpts());
-			stdout.release();
 		}	
 		
 		

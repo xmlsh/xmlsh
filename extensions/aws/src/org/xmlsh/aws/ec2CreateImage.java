@@ -105,8 +105,6 @@ public class ec2CreateImage extends AWSEC2Command {
 		closeWriter();
 		
 		stdout.writeSequenceTerminator(getSerializeOpts());
-		stdout.release();
-		
 		
 	}
 

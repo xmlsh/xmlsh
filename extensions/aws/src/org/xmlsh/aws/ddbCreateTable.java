@@ -44,14 +44,7 @@ public class ddbCreateTable	 extends  AWSDDBCommand {
 		if( args.size() != 1 )
 			usage();
 		
-
-		
-		setSerializeOpts(this.getSerializeOpts(opts));
-		
-		
-		
-		
-		
+		setSerializeOpts(opts);
 		
 		try {
 			 getDDBClient(opts);
@@ -116,16 +109,8 @@ public class ddbCreateTable	 extends  AWSDDBCommand {
 		
 		closeWriter();
 		stdout.writeSequenceTerminator(getSerializeOpts());
-		stdout.release();
-		
-
-		
 		
 		return 0;
-		
-		
-		
-		
 	}
 
 

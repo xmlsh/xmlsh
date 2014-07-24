@@ -98,13 +98,9 @@ public class sqsSendMessage extends AWSSQSCommand {
 
 	private String readMessage(InputPort input) throws CoreException, IOException {
 		
-		InputStream is = input.asInputStream(getSerializeOpts());
-		String body = Util.readString(is, getSerializeOpts().getInputTextEncoding() );
-		is.close();
-		input.release();
-		return body ;
-		
-		
+		try ( InputStream is = input.asInputStream(getSerializeOpts()); ){
+			return Util.readString(is, getSerializeOpts().getInputTextEncoding() );
+		}
 		
 	}
 
@@ -124,26 +120,16 @@ public class sqsSendMessage extends AWSSQSCommand {
 		
 		startDocument();
 		startElement(getName());
-		
 			startElement("message");
 			attribute("md5", result.getMD5OfMessageBody());
 			attribute("id" , result.getMessageId());
-
 			endElement();
-			
-		
-		
 		endElement();
 		endDocument();
 		closeWriter();
 		stdout.writeSequenceTerminator(getSerializeOpts());
-		stdout.release();
-		
 
 		return 0;
-		
-		
-		
 		
 	}
 

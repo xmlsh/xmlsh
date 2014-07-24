@@ -98,7 +98,6 @@ public class ec2DeregisterImage extends AWSEC2Command {
 		closeWriter();
 		
 		stdout.writeSequenceTerminator(getSerializeOpts());
-		stdout.release();
 		
 		
 	}

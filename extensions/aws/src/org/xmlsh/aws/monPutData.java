@@ -108,8 +108,6 @@ public class monPutData	 extends  AWSMonCommand {
 		
 		closeWriter();
 		stdout.writeSequenceTerminator(getSerializeOpts());
-		stdout.release();
-		
 		
 		return 0;
 		

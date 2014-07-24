@@ -119,7 +119,6 @@ public class ec2DescribeAddresses extends AWSEC2Command {
 		closeWriter();
 		
 		stdout.writeSequenceTerminator(getSerializeOpts());
-		stdout.release();
 		
 		return 0;
 

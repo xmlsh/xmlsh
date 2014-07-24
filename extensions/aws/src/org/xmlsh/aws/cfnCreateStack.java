@@ -124,7 +124,6 @@ public class cfnCreateStack extends AWSCFNCommand {
 		closeWriter();
 		
 		stdout.writeSequenceTerminator(getSerializeOpts());
-		stdout.release();
 		
 		return 0;
 

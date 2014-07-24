@@ -91,7 +91,6 @@ public class s3GetObjectMetadata extends AWSS3Command {
 		mWriter = metaPort.asXMLStreamWriter(getSerializeOpts());
 		writeMeta( data );
 		mWriter.close();
-		metaPort.release();
 			
 		return 0;
 		

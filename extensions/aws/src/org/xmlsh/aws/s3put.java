@@ -78,7 +78,6 @@ public class s3put extends AWSS3Command {
 			dest = new S3Path(args.get(0).toString());
 			InputPort src = this.getStdin();
 			ret = put(  src , dest , meta , storage  );
-			src.release();
 
 			break;
 		}	
@@ -91,11 +90,8 @@ public class s3put extends AWSS3Command {
 				if( ! src.isFile() ||  ! src.getFile().isDirectory() ){
 					 
 			     ret = put(  src , dest , meta , storage  );
-     			 src.release();
      		     break ; 
      		     }
-				// Fall Through 
-				src.release();
 			}
 			// fall through
 		}

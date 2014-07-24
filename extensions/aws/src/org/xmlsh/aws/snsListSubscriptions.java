@@ -103,15 +103,8 @@ public class snsListSubscriptions extends AWSSNSCommand {
 		endDocument();
 		closeWriter();
 		stdout.writeSequenceTerminator(getSerializeOpts());
-		stdout.release();
-		
-
-		
 		
 		return 0;
-		
-		
-		
 		
 	}
 
@@ -151,9 +144,6 @@ public class snsListSubscriptions extends AWSSNSCommand {
 		endDocument();
 		closeWriter();
 		stdout.writeSequenceTerminator(getSerializeOpts());
-		stdout.release();
-		
-
 		
 		
 		return 0;

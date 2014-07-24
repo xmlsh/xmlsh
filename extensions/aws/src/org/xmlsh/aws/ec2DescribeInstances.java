@@ -46,11 +46,7 @@ public class ec2DescribeInstances extends AWSEC2Command {
 		args = opts.getRemainingArgs();
 		parseCommonOptions( opts );
 		
-
-		
 		setSerializeOpts(this.getSerializeOpts(opts));
-		
-		
 		
 		
 		
@@ -70,7 +66,6 @@ public class ec2DescribeInstances extends AWSEC2Command {
 			
 		int ret = describe(args,filters);
 
-		
 		
 		return ret;
 		
@@ -130,16 +125,11 @@ public class ec2DescribeInstances extends AWSEC2Command {
 			
 		}
 		
-		
-		
-		
-		
 		endElement();
 		endDocument();
 		closeWriter();
 		
 		stdout.writeSequenceTerminator(getSerializeOpts());
-		stdout.release();
 		
 		return 0;
 

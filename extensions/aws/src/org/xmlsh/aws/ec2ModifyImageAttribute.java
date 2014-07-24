@@ -23,10 +23,6 @@ import com.amazonaws.services.ec2.model.ModifyImageAttributeRequest;
 
 public class ec2ModifyImageAttribute extends AWSEC2Command {
 
-	
-
-
-
 
 	/**
 	 * @param args
@@ -178,8 +174,6 @@ public class ec2ModifyImageAttribute extends AWSEC2Command {
 		closeWriter();
 		
 		stdout.writeSequenceTerminator(getSerializeOpts());
-		stdout.release();
-		
 		
 	}
 

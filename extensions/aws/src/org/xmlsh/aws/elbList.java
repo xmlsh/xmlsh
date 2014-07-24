@@ -161,18 +161,9 @@ public class elbList	 extends  AWSELBCommand {
 		endDocument();
 		
 		
-				
-		
-		
-		
-		
 		
 		closeWriter();
 		stdout.writeSequenceTerminator(getSerializeOpts());
-		stdout.release();
-		
-
-		
 		
 		return 0;
 		

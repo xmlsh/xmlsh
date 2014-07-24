@@ -99,7 +99,6 @@ public abstract class AWSEC2Command extends AWSCommand {
 				
 				closeWriter();		
 				stdout.writeSequenceTerminator(getSerializeOpts());
-				stdout.release();
 				
 				
 			}

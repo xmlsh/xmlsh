@@ -89,10 +89,6 @@ public class snsUnsubscribe extends AWSSNSCommand {
 		endDocument();
 		closeWriter();
 		stdout.writeSequenceTerminator(getSerializeOpts());
-		stdout.release();
-		
-
-
 		
 		
 		return 0;

@@ -97,7 +97,6 @@ public class cfnValidateTemplate extends AWSCFNCommand {
 		closeWriter();
 		
 		stdout.writeSequenceTerminator(getSerializeOpts());
-		stdout.release();
 		
 		return 0;
 

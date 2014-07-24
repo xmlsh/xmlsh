@@ -88,11 +88,6 @@ public class snsSubscribe extends AWSSNSCommand {
 		endDocument();
 		closeWriter();
 		stdout.writeSequenceTerminator(getSerializeOpts());
-		stdout.release();
-		
-
-
-		
 		
 		return 0;
 		

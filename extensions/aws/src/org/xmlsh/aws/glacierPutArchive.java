@@ -106,17 +106,8 @@ public class glacierPutArchive	 extends  AWSGlacierCommand {
 		endDocument();
 		
 		
-				
-		
-		
-		
-		
-		
 		closeWriter();
 		stdout.writeSequenceTerminator(getSerializeOpts());
-		stdout.release();
-		
-
 		
 		
 		return 0;

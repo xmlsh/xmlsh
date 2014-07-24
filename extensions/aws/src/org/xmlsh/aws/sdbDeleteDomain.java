@@ -83,18 +83,8 @@ public class sdbDeleteDomain	 extends  AWSSDBCommand {
 		endDocument();
 		
 		
-				
-		
-		
-		
-		
-		
 		closeWriter();
 		stdout.writeSequenceTerminator(getSerializeOpts());
-		stdout.release();
-		
-
-		
 		
 		return 0;
 		

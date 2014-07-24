@@ -91,25 +91,12 @@ public class glacierListVaults	 extends  AWSGlacierCommand {
 			endElement();
 			
 		}
-		
-		
-		
 		endElement();
 		endDocument();
 		
 		
-				
-		
-		
-		
-		
-		
 		closeWriter();
 		stdout.writeSequenceTerminator(getSerializeOpts());
-		stdout.release();
-		
-
-		
 		
 		return 0;
 		

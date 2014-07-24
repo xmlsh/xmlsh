@@ -97,7 +97,6 @@ public class sdbGetAttributes	 extends  AWSSDBCommand {
 		
 		closeWriter();
 		stdout.writeSequenceTerminator(getSerializeOpts());
-		stdout.release();
 		return 0;
 		
 		

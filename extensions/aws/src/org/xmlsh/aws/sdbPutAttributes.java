@@ -100,14 +100,7 @@ public class sdbPutAttributes	 extends  AWSSDBCommand {
 			emptyDocument();
 			closeWriter();
 			stdout.writeSequenceTerminator(getSerializeOpts());
-			stdout.release();
 		}	
-		
-		
-				
-		
-		
-		
 		
 		
 

@@ -101,7 +101,6 @@ public class asTerminateInstance extends AWSASCommand {
 	closeWriter();
 		
 		stdout.writeSequenceTerminator(getSerializeOpts());
-		stdout.release();
 	
 		
 		return 0 ;

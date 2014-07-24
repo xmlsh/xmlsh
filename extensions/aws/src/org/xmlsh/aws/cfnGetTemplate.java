@@ -110,7 +110,6 @@ public class cfnGetTemplate extends AWSCFNCommand {
 			
 			stdout.writeSequenceTerminator(getSerializeOpts());
 		}
-		stdout.release();
 		return 0;
 
 	}

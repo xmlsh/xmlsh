@@ -59,7 +59,6 @@ public class sqsReceiveMessages extends AWSSQSCommand {
 		// write to port
          if( opts.hasOpt("p")) { 
         	 out  = mShell.getEnv().getOutputPort(opts.getOptStringRequired("p"));
-        	out.addRef();
          } 
          else
 		
@@ -150,7 +149,6 @@ public class sqsReceiveMessages extends AWSSQSCommand {
 		endDocument();
 		closeWriter();
 		out.writeSequenceTerminator(getSerializeOpts());
-		out.release();
 		
 
 		return 0;

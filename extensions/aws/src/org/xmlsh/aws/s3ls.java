@@ -131,15 +131,8 @@ public class s3ls extends AWSS3Command {
 		endDocument();
 		closeWriter();
 		stdout.writeSequenceTerminator(getSerializeOpts());
-		stdout.release();
-		
-
-		
 		
 		return 0;
-		
-		
-		
 		
 	}
 
@@ -206,7 +199,6 @@ public class s3ls extends AWSS3Command {
 		writer.flush();
 		writer.close();
 		stdout.writeSequenceTerminator(getSerializeOpts());
-		stdout.release();
 
 		return 0;
 		
@@ -284,7 +276,6 @@ public class s3ls extends AWSS3Command {
 		writer.flush();
 		writer.close();
 		stdout.writeSequenceTerminator(getSerializeOpts());
-		stdout.release();
 		return 0;
 	}
 

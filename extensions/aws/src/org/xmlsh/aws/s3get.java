@@ -109,8 +109,6 @@ public class s3get extends AWSS3Command {
 		    
 		}
 			
-		if( metaPort != null )
-		       metaPort.release();
 		
 		waitForDownloads();
 		shutdownTransferManager();

@@ -111,7 +111,6 @@ public class cfnUpdateStack extends AWSCFNCommand {
 		closeWriter();
 		
 		stdout.writeSequenceTerminator(getSerializeOpts());
-		stdout.release();
 		
 		return 0;
 

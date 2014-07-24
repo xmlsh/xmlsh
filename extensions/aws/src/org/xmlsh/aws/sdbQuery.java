@@ -108,13 +108,8 @@ public class sdbQuery	 extends  AWSSDBCommand {
 		
 				
 		
-		
-		
-		
-		
 		closeWriter();
 		stdout.writeSequenceTerminator(getSerializeOpts());
-		stdout.release();
 		return 0;
 		
 		
