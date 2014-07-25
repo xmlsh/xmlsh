@@ -8,10 +8,7 @@
   UNICODE_INPUT=true;
 }
 PARSER_BEGIN(ShellParser)package org.xmlsh.sh.grammar;import org.xmlsh.sh.core.*;import java.io.PrintWriter;import java.util.ArrayList;import org.xmlsh.core.XEnvironment;public class ShellParser{  private String mSource;
-  private SourceLocation mParentLocation = null ;  public ShellParser(java.io.InputStream stream, String encoding, String source)  {    this (stream, encoding);    mSource = source;  }  public ShellParser(java.io.Reader stream, String source)  {    this (stream);    mSource = source;  }  public String getSource()  {    return mSource;  }  public void ReInit(java.io.InputStream stream, String encoding, String source)  {
-    this.ReInit(stream, encoding);
-    token_source.clear();    mSource = source;  }
-  public void ReInit(java.io.Reader stream, String source)  {    this.ReInit(stream);
+  private SourceLocation mParentLocation = null ;  public ShellParser(java.io.Reader stream, String source)  {    this (stream);    mSource = source;  }  public String getSource()  {    return mSource;  }  public void ReInit(java.io.Reader stream, String source)  {    this.ReInit(stream);
     token_source.clear();    mSource = source;  }  public SourceLocation getLocation(Token t)  {
     SourceLocation loc = new SourceLocation(getSource(), t == null ? token : t);
     

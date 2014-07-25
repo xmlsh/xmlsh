@@ -8,7 +8,6 @@ package org.xmlsh.core;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-
 import org.xmlsh.sh.core.SourceLocation;
 import org.xmlsh.sh.shell.Module;
 import org.xmlsh.sh.shell.Shell;
@@ -151,18 +150,18 @@ public class ExternalCommand implements ICommand {
 		}
 		
 		// Special case for PATH and XPATH
-		XVariable vpath = xenv.getVar("PATH");
+		XVariable vpath = xenv.getVar(XVariable.PATH);
 		if( vpath != null  && vpath.isExport() ){
 			Path p = new Path( vpath.getValue() );
 			String ps = p.toOSString();
-			env.put("PATH", ps);
+			env.put(XVariable.PATH, ps);
 		}
 		
-		XVariable vxpath = xenv.getVar("XPATH");
+		XVariable vxpath = xenv.getVar(XVariable.XPATH);
 		if( vxpath != null && vxpath.isExport() ){
 			Path p = new Path( vxpath.getValue() );
 			String ps = p.toOSString();
-			env.put("XPATH", ps);
+			env.put(XVariable.XPATH, ps);
 		}
 		
 		

@@ -12,7 +12,6 @@ import net.sf.saxon.s9api.XdmItem;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.CommandFactory;
@@ -58,9 +57,11 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Constructor;
 import java.net.MalformedURLException;
@@ -84,7 +85,10 @@ public class Shell implements AutoCloseable, Closeable {
 
 
 
-	class CallStackEntry {
+	private static final String XDISABLE_LOGGING = "XDISABLE_LOGGING";
+
+
+    class CallStackEntry {
 		public String name ;
 		public Command cmd ;
 		public SourceLocation loc;
@@ -152,7 +156,6 @@ public class Shell implements AutoCloseable, Closeable {
 	private Shell mParent = null;
 	private IFS mIFS;
 	private ThreadGroup mThreadGroup = null ;
-	
 	private final static EvalEnv mPSEnv = EvalEnv.newInstance( false,false,true,false);
 
 	
@@ -166,7 +169,7 @@ public class Shell implements AutoCloseable, Closeable {
 		if( bInitialized )
 			return ;
 		
-		String logging = System.getenv("XDISABLE_LOGGING");
+		String logging = System.getenv(XDISABLE_LOGGING);
 		Logging.configureLogger(Util.parseBoolean(logging) );
 
 		mLogger.info("xmlsh initialize");
@@ -275,23 +278,23 @@ public class Shell implements AutoCloseable, Closeable {
 		
 		
 		// Export path to shell path
-	    String path = FileUtils.toJavaPath(System.getenv("PATH"));
-	    	getEnv().setVar( new XVariable("PATH", 
+	    String path = FileUtils.toJavaPath(System.getenv(XVariable.PATH));
+	    	getEnv().setVar( new XVariable(XVariable.PATH, 
 	    			Util.isBlank(path) ? new XValue() : new XValue(path.split(File.pathSeparator))) , false );
 	
-	    String xpath = FileUtils.toJavaPath(System.getenv("XPATH"));
-	    getEnv().setVar( new XVariable("XPATH", 
+	    String xpath = FileUtils.toJavaPath(System.getenv(XVariable.XPATH));
+	    getEnv().setVar( new XVariable(XVariable.XPATH, 
 	    		Util.isBlank(xpath) ? new XValue(".") : new XValue(xpath.split(File.pathSeparator))) , false );
 	
 	     
-	    String xmpath = FileUtils.toJavaPath(System.getenv("XMODPATH"));
-	    getEnv().setVar( new XVariable("XMODPATH", 
+	    String xmpath = FileUtils.toJavaPath(System.getenv(XVariable.XMODPATH));
+	    getEnv().setVar( new XVariable(XVariable.XMODPATH, 
 	    		Util.isBlank(xmpath) ? new XValue() : new XValue(xmpath.split(File.pathSeparator))) , false );
 
 	    
 		// PWD 
 		getEnv().setVar(
-				new XDynamicVariable("PWD" , EnumSet.of( XVarFlag.READONLY , XVarFlag.XEXPR )) { 
+				new XDynamicVariable(XVariable.PWD , EnumSet.of( XVarFlag.READONLY , XVarFlag.XEXPR )) { 
 					public XValue getValue() 
 					{
 						return new XValue( FileUtils.toJavaPath(getEnv().getCurdir().getAbsolutePath()) ) ;
@@ -489,7 +492,7 @@ public class Shell implements AutoCloseable, Closeable {
 		try {
 			is = Util.toInputStream(scmd, getSerializeOpts());
 			mCommandInput = is ;
-			ShellParser parser= new ShellParser(new ShellParserReader(mCommandInput,getInputTextEncoding()));
+			ShellParser parser= new ShellParser(newParserReader(false));
 			
 	      	Command c = parser.script();
 	      	return c;
@@ -518,7 +521,7 @@ public class Shell implements AutoCloseable, Closeable {
 		InputStream save = mCommandInput;
 		SourceLocation saveLoc = getLocation() ;
 		mCommandInput = stream ;
-		ShellParser parser= new ShellParser(new ShellParserReader(mCommandInput,getInputTextEncoding(),true), source );
+		ShellParser parser= new ShellParser( newParserReader(true), source );
 		int ret = 0;
 		try {
 			while( mExitVal == null && mReturnVal == null  ){
@@ -563,11 +566,11 @@ public class Shell implements AutoCloseable, Closeable {
 	       // System.out.println("NOK.");
 	        printErr(e.getMessage());
 	        mLogger.error("Exception parsing statement" , e );
-	        parser.ReInit(new ShellParserReader(mCommandInput,getInputTextEncoding()), source );
+	        parser.ReInit(newParserReader(false), source );
 	      } catch (Error e) {
 	        printErr(e.getMessage());
 	        mLogger.error("Exception parsing statement" , e );
-	        parser.ReInit(new ShellParserReader(mCommandInput,getInputTextEncoding()), source);
+	        parser.ReInit(newParserReader(false), source);
 	
 	     } 
       
@@ -595,9 +598,22 @@ public class Shell implements AutoCloseable, Closeable {
 		return ret;
 		
 	}
+
+
+
+    private ShellParserReader newParserReader(boolean bSkipBOM) throws IOException {
+        return newParserReader(new InputStreamReader(mCommandInput,getInputTextEncoding()), bSkipBOM);
+    }
+
+    private ShellParserReader newParserReader(Reader reader , boolean bSkipBOM) throws IOException {
+        return new ShellParserReader(reader, bSkipBOM );
+    }
 	
-	
-	
+	private void prompt( boolean ps1 ) {
+	    System.out.print(
+                getPS(ps1 ? XVariable.PS1 : XVariable.PS2 , ps1 ? "$ " : " >"));
+        System.out.flush();
+	}
 	
 	public String getInputTextEncoding() {
 		return getSerializeOpts().getInputTextEncoding();
@@ -614,20 +630,18 @@ public class Shell implements AutoCloseable, Closeable {
 		mIsInteractive = true ;
 		int		ret = 0;
 		
-		
-		
 		setCommandInput(input);
 		
-		
 		// ShellParser parser= new ShellParser(mCommandInput,Shell.getEncoding());
-		ShellParser parser= new ShellParser(new ShellParserReader(mCommandInput,getInputTextEncoding()));
+		ShellParser parser= new ShellParser(newParserReader(false) );
 		
 		while (mExitVal == null) {
 			
-			  System.out.print(getPS1());
 			  Command c = null ;
 		      try {
+		        prompt(true);
 		      	c = parser.command_line();
+
 		      	if( c == null )
 		      		break;
 		      	setSourceLocation( c.getLocation());
@@ -651,7 +665,7 @@ public class Shell implements AutoCloseable, Closeable {
 		      catch (ThrowException e) {
 		        printErr("Ignoring thrown value: " + e.getMessage());
 		        mLogger.error("Ignoring throw value",e);
-		        parser.ReInit(new ShellParserReader(mCommandInput,getInputTextEncoding()),null);
+		        parser.ReInit(newParserReader(false),null);
 		      }
 		      catch (Exception e) {
 		    	
@@ -666,7 +680,7 @@ public class Shell implements AutoCloseable, Closeable {
 
 		        printErr(e.getMessage());
 		        mLogger.error("Exception parsing statement",e);
-		        parser.ReInit(new ShellParserReader(mCommandInput,getInputTextEncoding()),null);
+		        parser.ReInit(newParserReader(false),null);
 		      } catch (Error e) {
 		        printErr("Error: " + e.getMessage());
 		        SourceLocation loc = c != null ? c.getLocation() : null ;
@@ -677,7 +691,7 @@ public class Shell implements AutoCloseable, Closeable {
 		        	mLogger.info(loc.format(mOpts.mLocationFormat));
 		        	printErr( sLoc );
 		        }
-		        parser.ReInit(new ShellParserReader(mCommandInput,getInputTextEncoding()),null);
+		        parser.ReInit(newParserReader(false),null);
 
 		      } 
 		      
@@ -719,19 +733,20 @@ public class Shell implements AutoCloseable, Closeable {
 	}
 
 
-	public String getPS1() throws IOException, CoreException {
+	public String getPS(String ps, String def)  {
 		
-		XValue ps1 = getEnv().getVarValue("PS1");
+		XValue ps1 = getEnv().getVarValue(ps);
 		if( ps1 == null )
-			return "$ ";
+			return def ;
 		String sps1 = ps1.toString();
 		if( !Util.isBlank(sps1))
-			sps1 = expandToString(sps1, mPSEnv,null);
-		
+            try {
+                sps1 = expandToString(sps1, mPSEnv,null);
+            } catch (IOException | CoreException e) {
+               mLogger.debug("Exception getting PS var "+ ps ,e);
+               return def;
+            }
 		return sps1;
-
-		
-		
 		
 	}
 
@@ -745,6 +760,7 @@ public class Shell implements AutoCloseable, Closeable {
 	private void setCommandInput(InputStream in) {
 		mCommandInput = in;
 		if( mCommandInput == null  ){
+		    if( ! Util.isWindows() )
 			try {
 				/*
 				 * import jline.ConsoleReader;
@@ -772,12 +788,11 @@ public class Shell implements AutoCloseable, Closeable {
 					
 			} catch (Exception e1) {
 				mLogger.info("Exception loading jline");
-				
 			}
-			if( mCommandInput == null )
-				mCommandInput = System.in;
+			
 		}
-	
+		if( mCommandInput == null )
+            mCommandInput = System.in;
 	}
 	
 	
@@ -1048,7 +1063,7 @@ public class Shell implements AutoCloseable, Closeable {
 
 	
 	public Path getExternalPath(){
-		return getPath("PATH",true);
+		return getPath(XVariable.PATH,true);
 	}
 	
 	

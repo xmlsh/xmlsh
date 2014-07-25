@@ -19,12 +19,12 @@ import net.sf.saxon.s9api.XdmValue;
 import net.sf.saxon.trans.XPathException;
 
 import org.apache.log4j.Logger;
-
 import org.xmlsh.core.EvalFlag;
 import org.xmlsh.core.AbstractPort;
 import org.xmlsh.core.IReleasable;
 import org.xmlsh.core.Namespaces;
 import org.xmlsh.core.XValue;
+import org.xmlsh.core.XVariable;
 import org.xmlsh.sh.core.CharAttributeBuffer;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
@@ -1032,9 +1032,9 @@ public class Util
 	public static boolean isPath(String var)
 	{ 
 		if( isWindows())
-			return var.equalsIgnoreCase("PATH")||var.equalsIgnoreCase("XPATH");
+			return var.equalsIgnoreCase(XVariable.PATH)||var.equalsIgnoreCase(XVariable.PATH);
 		else	
-			return var.equals("PATH")||var.equals("XPATH");
+			return var.equals(XVariable.PATH)||var.equals(XVariable.XPATH);
 
 	
 	}

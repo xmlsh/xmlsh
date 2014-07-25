@@ -14,6 +14,8 @@ import java.io.Reader;
 
 
 public class ShellParserReader extends FilterReader {
+    
+    
 	
 	private char	mReadAhead = (char)-1;
 	
@@ -26,26 +28,19 @@ public class ShellParserReader extends FilterReader {
 			mReadAhead = (char)c; 
 			
 	}
-
-	protected ShellParserReader(Reader in) throws IOException {
-		super(in);
-		skipbom();
+	public ShellParserReader(Reader in, boolean bSkipBOM ) throws IOException {
+	    super(in);	
+		if( bSkipBOM )
+	       skipbom();
 		
 	}
-	public ShellParserReader(InputStream is, String encoding) throws IOException {
-		super( new InputStreamReader(is,encoding));
 
-	}
-
-	
-	public ShellParserReader(InputStream is, String encoding, boolean bSkipBOM ) throws IOException {
-		super( new InputStreamReader(is,encoding));
-		if( bSkipBOM )
-		   skipbom();
-	}
-
-	/* (non-Javadoc)
+	/*
+	 * Opposite of InputStream, Readers require you to override read(byte[] .... ) - this is used as just a helper function.
+	 * 
+	 * 
 	 * @see java.io.FilterReader#read()
+	 * 
 	 */
 	@Override
 	public int read() throws IOException {
@@ -54,6 +49,8 @@ public class ShellParserReader extends FilterReader {
 			mReadAhead = (char)-1;
 			return ret;
 		}
+	
+		
 		int c ;
 		while ( ( c = super.read()) != -1 ){
 
@@ -77,18 +74,23 @@ public class ShellParserReader extends FilterReader {
 		
 	}
 
-	/* (non-Javadoc)
+	/* 
+	 * Reads at *most* one line at a time
+	 * Note: THIS is the call into read, unlike InputStream.read()
 	 * @see java.io.FilterReader#read(char[], int, int)
 	 */
 	@Override
 	public int read(char[] cbuf, int off, int len) throws IOException {
 		int nc = 0;
 		int c;
+      
+
 		while( nc < len && (c=read()) != -1 ){
 			cbuf[off++] = (char)c;
 			nc++;
-			if( c == '\n')
+			if( c == '\n') {
 				break ;
+			}
 		}
 		return( nc > 0 ? nc : -1 );
 		

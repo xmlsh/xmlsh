@@ -13,7 +13,6 @@ import net.sf.saxon.s9api.XdmNode;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.EvalEnv;
 import org.xmlsh.core.ICommand;
@@ -26,6 +25,7 @@ import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XClassLoader;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
+import org.xmlsh.core.XVariable;
 import org.xmlsh.sh.core.Command;
 import org.xmlsh.util.JavaUtils;
 import org.xmlsh.util.Util;
@@ -111,7 +111,7 @@ public class Module {
 
 			} else {
 
-				Path path = shell.getPath("XMODPATH", true );
+				Path path = shell.getPath(XVariable.XMODPATH, true );
 				modDir = path.getFirstFileInPath(shell,nameuri);
 				if (modDir == null)
 					throw new InvalidArgumentException("Cannot find module directory for : " + nameuri);
