@@ -10,6 +10,7 @@ import org.xmlsh.core.BuiltinFunctionCommand;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.types.TypeFamily;
 import org.xmlsh.util.JSONUtils;
 
 import java.util.List;
@@ -28,7 +29,7 @@ public class value extends BuiltinFunctionCommand {
 		if( args.size() == 0 )
 			return new XValue();
 
-		return new XValue( JSONUtils.toJsonType( args.get(0)) );
+		return new XValue(TypeFamily.JSON,  JSONUtils.toJsonType( args.get(0)) );
 	}
 
 

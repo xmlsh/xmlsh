@@ -10,8 +10,8 @@ import org.xmlsh.core.Options;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.SerializeOpts;
-import org.xmlsh.types.XFile;
 import org.xmlsh.util.FileUtils;
+import org.xmlsh.util.XFile;
 
 import java.io.PrintWriter;
 import java.util.List;

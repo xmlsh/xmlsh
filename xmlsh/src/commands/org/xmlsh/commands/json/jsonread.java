@@ -12,6 +12,7 @@ import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.SerializeOpts;
+import org.xmlsh.types.TypeFamily;
 import org.xmlsh.util.JSONUtils;
 import org.xmlsh.util.JavaUtils;
 import org.xmlsh.util.Util;
@@ -79,7 +80,7 @@ public class jsonread extends BuiltinCommand {
 			    	return 1;
 			    }
 			    	
-				value = new XValue(obj );
+				value = new XValue(TypeFamily.JSON, obj );
 				
 			} else {
 			    JsonNode node  = JSONUtils.readJsonNode(is);
@@ -87,7 +88,7 @@ public class jsonread extends BuiltinCommand {
 			    	printErr("Reading json value to json node failed");
 			    	return 1;
 			    }
-			    value = new XValue(node);
+			    value = new XValue(TypeFamily.JSON, node);
 			}
 			mShell.getEnv().setVar(args.get(0).toString(), value  ,false);
 

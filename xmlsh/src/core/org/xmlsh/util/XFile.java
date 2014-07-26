@@ -4,15 +4,12 @@
  *
  */
 
-package org.xmlsh.types;
+package org.xmlsh.util;
 
 import org.apache.log4j.Logger;
-
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.util.FileUtils;
-import org.xmlsh.util.Util;
 
 import java.io.File;
 import java.io.IOException;

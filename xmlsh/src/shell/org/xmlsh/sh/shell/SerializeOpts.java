@@ -16,6 +16,10 @@ import java.nio.charset.Charset;
 import java.util.List;
 
 public class SerializeOpts {
+    
+    public final static SerializeOpts defaultOpts = new SerializeOpts();
+    
+    
 	private 	boolean		indent	= true ;
 	private		boolean		omit_xml_declaration = true ;
 	private		String		input_xml_encoding = "UTF-8"; // default encoding

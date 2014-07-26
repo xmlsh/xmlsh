@@ -11,6 +11,7 @@ import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.types.TypeFamily;
 import org.xmlsh.util.JSONUtils;
 import org.xmlsh.util.JavaUtils;
 
@@ -28,6 +29,7 @@ public class toSchema extends BuiltinFunctionCommand {
 	}
 	
 
+    @SuppressWarnings("deprecation")
     @Override
 	public XValue run(Shell shell, List<XValue> args) throws ClassNotFoundException, CoreException, JsonMappingException {
 
@@ -44,7 +46,7 @@ public class toSchema extends BuiltinFunctionCommand {
 		@SuppressWarnings("deprecation")
 		JsonSchema schema = mapper.generateJsonSchema(cls);
  
-		return new XValue( schema.getSchemaNode());
+		return new XValue(TypeFamily.JSON,  schema.getSchemaNode());
 		
 	}
 

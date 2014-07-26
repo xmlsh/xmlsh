@@ -11,6 +11,7 @@ import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.types.TypeFamily;
 import org.xmlsh.util.Util;
 
 import java.io.IOException;
@@ -291,7 +292,7 @@ public class test extends BuiltinCommand {
 		/* try type tests first */
 		
 		if( op.equals("-X"))
-			return value.isXExpr();
+			return value.isTypeFamily( TypeFamily.XDM );
 		else
 		if(op.equals("-S"))
 			return value.isAtomic();

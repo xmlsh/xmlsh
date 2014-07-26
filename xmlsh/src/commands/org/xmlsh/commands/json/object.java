@@ -10,6 +10,7 @@ import org.xmlsh.core.BuiltinFunctionCommand;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.types.TypeFamily;
 import org.xmlsh.util.JSONUtils;
 
 import java.util.List;
@@ -44,7 +45,7 @@ public class object extends BuiltinFunctionCommand {
 		}
 
 		
-		return new XValue( obj );
+		return new XValue(TypeFamily.JSON,  obj );
 	}
 }
 

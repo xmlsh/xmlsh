@@ -7,13 +7,14 @@ import net.sf.saxon.s9api.XPathExecutable;
 import net.sf.saxon.s9api.XPathSelector;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
+
 import org.xmlsh.core.Namespaces;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.types.XFile;
 import org.xmlsh.util.Util;
+import org.xmlsh.util.XFile;
 
 import java.io.File;
 import java.io.IOException;

@@ -9,11 +9,13 @@ package org.xmlsh.commands.json;
 import net.sf.saxon.s9api.BuildingStreamWriter;
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.SaxonApiException;
+
 import org.xmlsh.core.BuiltinFunctionCommand;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.SafeXMLStreamWriter;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.types.TypeFamily;
 import org.xmlsh.util.JSONUtils;
 
 import java.io.IOException;
@@ -50,7 +52,7 @@ public class toXml	extends BuiltinFunctionCommand {
 
 			bw.writeEndDocument();
 			
-			return new XValue(bw.getDocumentNode());
+			return new XValue(TypeFamily.XDM,bw.getDocumentNode());
 			
 		}
 

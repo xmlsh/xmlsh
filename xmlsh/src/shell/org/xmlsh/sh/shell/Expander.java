@@ -647,7 +647,7 @@ class Expander {
 		if( rv.isXValue()) {
 			XValue xv = null;
 			xv = rv.toXValue();
-			if( xv.isXExpr() || xv.isObject() ){
+			if( ! xv.isAtomic() ){
 				r.add( xv);
 				return r;
 			}
@@ -960,7 +960,6 @@ class Expander {
 						XVariable var = mShell.getEnv().getVar(varname);
 						if( var == null )
 							return null;
-
 
 
 						return var.getValue(  mShell, ind ,

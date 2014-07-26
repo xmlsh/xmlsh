@@ -1,0 +1,7 @@
+<builtin_set>
+<variable name="A"
+          type-family="XDM"
+          type="string"
+          flags="[EXPORT, XEXPR]"/>
+<variable name="B" type-family="XDM" type="xml" flags="[EXPORT, XEXPR]"/>
+</builtin_set>

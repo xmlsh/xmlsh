@@ -8,7 +8,6 @@ package org.xmlsh.util;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.json.JSONSerializeOpts;
@@ -383,7 +382,6 @@ public class JSONUtils {
 
 	public static void writeJsonNode(JsonNode value, OutputStream os, SerializeOpts opt) throws JsonGenerationException, JsonMappingException, IOException
 	{
-
 		ObjectMapper mapper = getJsonObjectMapper();
 		mapper.writeValue(os, value);
 	}
@@ -391,7 +389,6 @@ public class JSONUtils {
 	public static InputStream asInputStream(JsonNode value, SerializeOpts opt) throws JsonGenerationException, JsonMappingException, IOException
 	{
 
-		/* TODO - figure out a streaming method */
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		writeJsonNode( value ,bos , opt );
 		bos.flush();
@@ -429,6 +426,14 @@ public class JSONUtils {
             }
 		}
 	    
+    }
+
+    public static byte[] toBytes(JsonNode value,SerializeOpts opt) throws JsonGenerationException, JsonMappingException, IOException {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        writeJsonNode( value ,bos , opt );
+        bos.flush();
+        bos.close();
+        return bos.toByteArray();
     }
 }
 

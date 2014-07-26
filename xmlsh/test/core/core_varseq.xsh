@@ -52,12 +52,14 @@ _var=(a b c d)
 _v=${_var[5]}
 [ -z "$_v" ] || echo Failed should be empty
 
+unset _v
+_v=${_var[0]}
+[ -z "$_v" ] || echo Failed should be empty
 
 # test for $* becoming empty sequence
 shift 1000
 _v=($*)
 [ ${#_v} -eq 0 ] || echo Failed should be empty
-
 
 cd ..
 rm -rf $TMPDIR/_varseq

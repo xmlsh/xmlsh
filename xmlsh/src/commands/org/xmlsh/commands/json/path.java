@@ -10,6 +10,7 @@ import org.xmlsh.core.BuiltinFunctionCommand;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.types.TypeFamily;
 
 import java.rmi.UnexpectedException;
 import java.util.List;
@@ -33,7 +34,7 @@ public class path extends BuiltinFunctionCommand {
 		
 
 		JsonPath path = JsonPath.compile(args.get(1).toString());
-		XValue xvr = new XValue(path.read(node, JsonNode.class));
+		XValue xvr = new XValue(TypeFamily.JSON, path.read(node, JsonNode.class));
 		
 	    return xvr ;
 		

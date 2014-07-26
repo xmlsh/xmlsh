@@ -16,25 +16,43 @@ import com.fasterxml.jackson.annotation.JsonAnySetter;
  * Generic Properties 
  * A set of Name/Value pairs to any object 
  */
-public class XProperties
+public class XValueMap implements XValueContainer<XValueMap>
 {
-	private  	Map<String,Object>   mProperties;
+	private  	Map<String,XValue>   mMap;
 	
-	public XProperties() {
-		mProperties = new HashMap< String , Object >();
+	public XValueMap() {
+		mMap = new HashMap<>();
 	}
 
 	@JsonAnySetter
-	public void set( String name , Object value ) {
-		mProperties.put( name, value);
+	public void set( String name , XValue value ) {
+		mMap.put( name, value);
 	}
 
-	public Object get( String name ) {
-		return mProperties.get(name);
+	public XValue get( String name ) {
+		return mMap.get(name);
 	}
 	
+	// How many entries
+	public int size() { return mMap.size() ; }
+	
+	public boolean isEmpty() { return mMap.isEmpty() ; }
+	
 	@JsonAnyGetter 
-	public Map<String,Object> properties(){ return mProperties ; }
+	public Map<String,XValue> properties(){ return mMap ; }
+
+    @Override
+    public XValue get(int index) {
+       return get( String.valueOf(index));
+    }
+
+
+    @Override
+    public XValueMap removeAll() {
+        mMap.clear();
+        return this;
+        
+    }
 
 }
 

@@ -80,10 +80,8 @@ public class CommandFactory
 		addBuiltin( "false" , xfalse.class );
 		addBuiltin( "true" , xtrue.class  );
 		addBuiltin( "set", set.class);
-
 		addBuiltin( "." , source.class);
 		addBuiltin( "source" , source.class);
-
 		addBuiltin("exit" , exit.class);
 		addBuiltin( ":" , colon.class);
 		addBuiltin( "[" , test.class );

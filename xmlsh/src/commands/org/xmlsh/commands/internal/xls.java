@@ -11,8 +11,8 @@ import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.SerializeOpts;
-import org.xmlsh.types.XFile;
 import org.xmlsh.util.Util;
+import org.xmlsh.util.XFile;
 
 import java.io.File;
 import java.util.ArrayList;

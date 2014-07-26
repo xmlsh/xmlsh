@@ -1,3 +1,0 @@
-environment is
-<variable name="A" type="string" flags="[EXPORT, XEXPR]"/>
-<variable name="B" type="xml" flags="[EXPORT, XEXPR]"/>

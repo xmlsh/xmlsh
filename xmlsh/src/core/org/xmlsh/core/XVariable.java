@@ -6,6 +6,7 @@
 
 package org.xmlsh.core;
 
+import static org.xmlsh.util.Util.nullIfBlank;
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.SaxonApiException;
@@ -19,7 +20,10 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.xml.sax.SAXException;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.types.ITypeFamily;
+import org.xmlsh.types.TypeFamily;
 import org.xmlsh.util.NameValueMap;
+import org.xmlsh.util.Util;
 import org.xmlsh.xpath.EvalDefinition;
 import org.xmlsh.xpath.ShellContext;
 
@@ -35,6 +39,10 @@ public class XVariable {
 	
 	private static final String sType = "type";
 	private static final String sFlags = "flags";
+	private static final String sTypeFamily = "type-family";
+
+
+
 	private static Logger mLogger = LogManager.getLogger(XVariable.class);
 
 	public enum XVarFlag {
@@ -46,11 +54,9 @@ public class XVariable {
 		
 	};
 	
-	
-	private		String	mName;
-	private		XValue	mValue;
-	private		EnumSet<XVarFlag>	mFlags;
-	private		XQueryExecutable		mTieExpr;	// Tie expression
+	/*
+	 * Predefined env and shell variable names
+	 */
     public static final String XLOGFILE = "XLOGFILE";
     public static final String XLOG4JPATH = "XLOG4JPATH";
     public static final String XMLSHRC = "XMLSHRC";
@@ -61,9 +67,21 @@ public class XVariable {
     public static final String PWD = "PWD";
     public static final String PS1 = "PS1";
     public static final String PS2 = "PS2";
+    
+    
+    
+	
+	
+	private		String	mName;
+	private		XValue	mValue;
+	private		EnumSet<XVarFlag>	mFlags;
+	private		XQueryExecutable		mTieExpr;	// Tie expression
+	
+	
+	
 
-
-
+    
+    
 	public XVariable( String name , XValue value , EnumSet<XVarFlag> flags)
 	{
 		mName = name ;
@@ -135,35 +153,14 @@ public class XVariable {
 
 	
 	public void serialize(XMLStreamWriter writer) throws SAXException, XMLStreamException {
-/*
-		AttributesImpl atts = new AttributesImpl();
-		atts.addAttribute("", sName, sName, "CDATA", getName());
-		XValue value = this.getValue();
-		String type =
-			value.isString() ? "string" : "xml";
-		
-		atts.addAttribute("", sType, sType, "CDATA", type );
-		
-		
-	//	atts.addAttribute("", "value", "value", "CDATA", value.toString() );
-		String flagStr = mFlags.toString();
-		
-		
-		atts.addAttribute("", sFlags, sFlags, "CDATA", flagStr );
 
-		
-		
-		writer.startElement("", sVariable, sVariable, atts);
-
-		
-		
-		writer.endElement("", sVariable, sVariable);
-*/	
 		XValue value = this.getValue();
 		String flagStr = mFlags.toString();
 		
 		writer.writeStartElement(sVariable);
 		writer.writeAttribute(sName, getName());
+		writer.writeAttribute(sTypeFamily, value == null ? "null" : value.typeFamily().name() );
+		
 		String type ;
 		if( value == null )
 			type = "null";
@@ -295,43 +292,37 @@ public class XVariable {
 	public XValue getValue(Shell shell, String ind, XValue arg) throws CoreException {
 	
 		XValue xvalue = getValue();
-		if( xvalue == null )
+		if( xvalue == null || xvalue.isNull() )
 			return null;
 		
-		if( xvalue.isObject() || xvalue.isNull() ){
-			if( arg == null )
-				return xvalue ;
-			
-			/*
-			 * Get method and args by evaluating arg
-			 */
-			
-			
-			
-			
-			return xvalue ;
-			
-			
-			
+		switch( xvalue.typeFamily() ) {
+		    case JAVA :
+		        return xvalue ;
+		    case JSON :
+		        return xvalue ;
+		    case XDM :
+		        XdmValue value = xvalue.asXdmValue(ind);
+		        if( value == null )
+		            return null ;
+		        // TIE expression
+		        if( arg != null &&  mTieExpr != null  ){
+		            if( value instanceof XdmItem )
+		                return this.getTiedValue(shell, (XdmItem)value , arg);
+		        }
+		        return new XValue(value);
+		    case XTYPE:{
+		        if( Util.isEmpty(ind))
+		            return xvalue ; // no copy ?
+		        ITypeFamily tf = xvalue.typeFamilyInstance();
+		        XValue v =  tf.getType(xvalue.asObject()).getIndexedValue( xvalue.asObject() , ind );
+		        if( v != null )
+		            return v ;
+		        return xvalue ;
+		    }
+		    default :
+		        return xvalue ;
+		 
 		}
-		
-		
-		
-		XdmValue value = xvalue.asXdmValue(ind);
-		
-
-		
-		if( value == null )
-			return null ;
-		
-		// TIE expression
-		if( arg != null &&  mTieExpr != null  ){
-			if( value instanceof XdmItem )
-				return this.getTiedValue(shell, (XdmItem)value , arg);
-			
-			
-		}
-		return new XValue(value);
 				
 		
 		

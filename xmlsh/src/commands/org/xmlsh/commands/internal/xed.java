@@ -114,7 +114,7 @@ public class xed extends XCommand {
 
 			
 			// If -i argument is an XML expression take the first node as the context
-			if( ov != null  && ov.getValue().isXExpr() ){
+			if( ov != null  && ov.getValue().isXdmValue()  ){
 				XdmItem item = ov.getValue().asXdmValue().itemAt(0);
 				if( item instanceof XdmNode )
 				//   context = (XdmNode) item ; // builder.build(((XdmNode)item).asSource());

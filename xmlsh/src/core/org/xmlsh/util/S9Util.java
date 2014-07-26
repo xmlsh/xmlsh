@@ -45,7 +45,7 @@ import java.util.List;
  * 
  */
 public class S9Util extends XdmNode {
-	private static Logger mLogger = Logger.getLogger(element.class);
+	private static Logger mLogger = Logger.getLogger(S9Util.class);
 	
 	protected S9Util(NodeInfo node) {
 		super(node);

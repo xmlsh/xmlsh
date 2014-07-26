@@ -10,6 +10,7 @@ import org.xmlsh.core.BuiltinFunctionCommand;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.types.TypeFamily;
 import org.xmlsh.util.JSONUtils;
 
 import java.io.IOException;
@@ -38,13 +39,13 @@ public class json extends BuiltinFunctionCommand {
 			nodes.add( mapper.valueToTree(o) );
 		}
         if( nodes.isEmpty())
-        	return new XValue();
+        	return new XValue(TypeFamily.JSON);
 
         else
 		if( nodes.size() > 1 ) 
-			return new XValue( mapper.createArrayNode().addAll(nodes));
+			return new XValue(TypeFamily.JSON, mapper.createArrayNode().addAll(nodes));
 		else
-			return new XValue( nodes.get(0 ) );
+			return new XValue( TypeFamily.JSON, nodes.get(0 ) );
 		
 	}
 

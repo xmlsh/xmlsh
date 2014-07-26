@@ -10,6 +10,7 @@ import org.xmlsh.core.BuiltinFunctionCommand;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.types.TypeFamily;
 import org.xmlsh.util.JSONUtils;
 import org.xmlsh.util.JavaUtils;
 
@@ -41,7 +42,7 @@ public class convert extends BuiltinFunctionCommand {
 		
 		ObjectMapper mapper = JSONUtils.getJsonObjectMapper();
 		Object value = mapper.convertValue(from, cls);
-		return new XValue( value );
+		return new XValue( TypeFamily.XTYPE , value );
 	}
 
 }

@@ -10,11 +10,14 @@ import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.XdmAtomicValue;
 import net.sf.saxon.s9api.XdmValue;
 import net.sf.saxon.trans.XPathException;
+
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
+import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -497,6 +500,11 @@ private static Set< String > mReserved;
 		
 		
 	}
+
+    public static byte[] toBytes(Object value, SerializeOpts opts) throws UnsupportedEncodingException {
+       return value.toString().getBytes( opts.getOutput_text_encoding() );
+        
+    }
 
 	
 }

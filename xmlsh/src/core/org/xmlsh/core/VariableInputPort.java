@@ -67,11 +67,11 @@ public class VariableInputPort extends InputPort {
 			}
 			
 			
-			if (value.isXExpr())
+			if (value.isXdmValue())
 				Util.writeXdmValue(value.asXdmValue(null), Util
 						.streamToDestination(buf, opts)); // uses output xml encoding
 			else
-				buf.write(value.toBytes(opts.getOutputXmlEncoding())); // Use output encoding
+				buf.write(value.toBytes(opts)); // Use output encoding
 			return new ByteArrayInputStream(buf.toByteArray());
 		} catch (SaxonApiException e) {
 			throw new CoreException(e);
@@ -119,15 +119,20 @@ public class VariableInputPort extends InputPort {
 	}
 
 	public void copyTo(OutputStream out, SerializeOpts opts) throws CoreException , IOException {
-		if (mVariable.getValue().isXExpr())
+		XValue value = mVariable.getValue();
+		assert ! value.isNull();
+		if( value.isNull() )
+		    ;
+		else
+        if (value.isXdmValue())
 			try {
-				Util.writeXdmValue(mVariable.getValue().asXdmValue(), Util
+				Util.writeXdmValue(value.asXdmValue(), Util
 						.streamToDestination(out, opts));
 			} catch (SaxonApiException e) {
 				throw new CoreException(e);
 			}
 		else
-			out.write(mVariable.getValue().toString().getBytes(opts.getOutputTextEncoding()));
+			out.write(value.toString().getBytes(opts.getOutputTextEncoding()));
 
 	}
 
