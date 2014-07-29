@@ -31,7 +31,6 @@
 	<classpathentry kind="lib" path="lib/commons-codec-1.6.jar"/>
 	<classpathentry kind="lib" path="lib/commons-logging-1.1.1.jar"/>
 	<classpathentry kind="lib" path="lib/commons-io-2.1.jar" sourcepath="C:/Users/DLEE/.m2/repository/commons-io/commons-io/2.1/commons-io-2.1-sources.jar"/>
-	<classpathentry kind="lib" path="lib/commons-lang-2.6.jar"/>
 	<classpathentry kind="lib" path="lib/httpclient-4.2.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/log4j-1.2.17.jar" sourcepath="C:/Java/log4j/apache-log4j-1.2.17/src/main/java"/>
 	<classpathentry kind="lib" path="lib/slf4j-api-1.7.5.jar"/>
@@ -61,5 +60,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="lib/jackson-module-jaxb-annotations-2.4.1.jar"/>
+	<classpathentry kind="lib" path="lib/commons-lang3-3.3.2.jar"/>
 	<classpathentry kind="output" path="_out"/>
 </classpath>

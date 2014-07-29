@@ -62,6 +62,7 @@ public class CommandSuffix {
 		this.mRedirect.exec(shell, loc );
 		
 	}
+
 	
 	
 	

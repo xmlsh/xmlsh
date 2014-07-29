@@ -33,6 +33,7 @@ import org.xmlsh.core.ThrowException;
 import org.xmlsh.core.Variables;
 import org.xmlsh.core.XDynamicVariable;
 import org.xmlsh.core.XEnvironment;
+import org.xmlsh.core.XIOEnvironment;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.XVariable;
 import org.xmlsh.core.XVariable.XVarFlag;
@@ -60,6 +61,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
@@ -237,7 +239,6 @@ public class Shell implements AutoCloseable, Closeable {
 		mModules = new Modules();
 		mSession = new SessionEnvironment();
 		// Add xmlsh commands 
-		mModules.declare( new Module( null , "xmlsh" , "org.xmlsh.commands.internal", CommandFactory.kCOMMANDS_HELP_XML));
 	    mModules.declare( new Module( null , "xmlsh" , "org.xmlsh.commands.internal", CommandFactory.kCOMMANDS_HELP_XML));
 
 		setGlobalVars();
@@ -494,7 +495,7 @@ public class Shell implements AutoCloseable, Closeable {
 		try {
 			is = Util.toInputStream(scmd, getSerializeOpts());
 			mCommandInput = is ;
-			ShellParser parser= new ShellParser(newParserReader(false));
+			ShellParser parser= new ShellParser(newParserReader(false),"<eval>");
 			
 	      	Command c = parser.script();
 	      	return c;
@@ -635,7 +636,7 @@ public class Shell implements AutoCloseable, Closeable {
 		setCommandInput(input);
 		
 		// ShellParser parser= new ShellParser(mCommandInput,Shell.getEncoding());
-		ShellParser parser= new ShellParser(newParserReader(false) );
+		ShellParser parser= new ShellParser(newParserReader(false) ,"stdin");
 		
 		while (mExitVal == null) {
 			
@@ -1024,10 +1025,11 @@ public class Shell implements AutoCloseable, Closeable {
 	 	List<XValue> vargs = new ArrayList<XValue>(argv.length);
 	 	for( String a : argv)
 	 		vargs.add( new XValue(a));
-		
+	
 		org.xmlsh.commands.builtin.xmlsh cmd = new org.xmlsh.commands.builtin.xmlsh(true);
+		Shell shell = new Shell(true);
 		
-		Shell shell = new Shell();
+		
 		int ret = -1;
 		try {
 			ret = cmd.run(shell , "xmlsh" , vargs);
@@ -1916,7 +1918,7 @@ public class Shell implements AutoCloseable, Closeable {
 	{
 
 		if(loc == null && mCurrentLocation != null)
-			printErr("Overwriting location with null:");
+      	      mLogger.debug("Overriting current location with null");
 		else
 			mCurrentLocation = loc;
 	}

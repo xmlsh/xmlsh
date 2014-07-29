@@ -31,6 +31,44 @@ public class SimpleCommand extends Command {
 	public	boolean		isSimple() { return true ; }
 
 	
+	/*
+	 * Construct a command out of a word args and redir
+	 * both first and words might be assignments 
+	 */
+	public SimpleCommand( Word first, WordList args , IORedirectList redir ) {
+		
+		WordList cmdline = new WordList();
+		cmdline.add(first);
+		cmdline.addAll(args);
+		
+		for( Word w : cmdline ) {
+			// not to command yet 
+			if( mCommand == null  ) {
+				if( w instanceof StringWord ) {
+					String s = w.toString();
+					Assign assign = null;// parseAssign( s );
+					if( assign != null ) {
+						if( mPrefix == null )
+							mPrefix = new CommandPrefix();
+						mPrefix.add(assign);
+						continue ;
+					}
+				}
+				mCommand = w ;
+				continue ;
+			}
+			if( mSuffix == null ) 
+				mSuffix = new CommandSuffix();
+			mSuffix.addArg(w);
+		}
+		
+		if( redir != null ) {
+			for( IORedirect io : redir )
+				mSuffix.addIO( io );
+		}
+		
+	}
+	
 	
 	public SimpleCommand(CommandPrefix prefix , Word command, CommandSuffix suffix )
 	{

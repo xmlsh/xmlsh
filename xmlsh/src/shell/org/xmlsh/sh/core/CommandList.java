@@ -6,51 +6,53 @@
 
 package org.xmlsh.sh.core;
 
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.xmlsh.sh.shell.Shell;
 
 
-public class CommandList extends BinaryOpCommand
+public class CommandList extends Command
 {
+	private List<Command>  mList = new ArrayList<>();
 
-	public CommandList(Command left, String op , Command right) {
-		super(left, null , right);
-		if( op.equals("&"))
-			left.setWait(false);
-
-	}
-
-	/* (non-Javadoc)
-	 * @see org.xmlsh.sh.core.Command#exec(org.xmlsh.sh.shell.Shell)
-	 */
-	@Override
-	public int exec(Shell shell) throws Exception {
-		int leftRet = shell.exec(mLeft);
-		if( mRight == null || ! shell.keepRunning() )
-			return leftRet ;
-		else
-			return shell.exec( mRight );
-		
+	public CommandList( Command cmd ) {
+		add( cmd );
 	}
 	
-	/* 
-	 * Override setWait to set the wait flag on the rightmost command if it exists
-	 * This fixes the precidence of "&" applied to command lists such that
-	 * a & b & 
-	 * produces 2 seperate jobs instead of 1 job of "a & b" (which in turn would produce a sub-job of "a")
-	 * 
-	 */
-	@Override
-	public void setWait( boolean flag )
-	{
-		if( mRight != null )
-			mRight.setWait(flag);
-		else
-		if( mLeft != null )
-			mLeft.setWait(flag);
-		else
-			super.setWait(flag);
-		
+	
+	public void add( Command cmd ) {
+		mList.add(cmd);
 	}
+	
+	
+	
+	@Override
+	public int exec(Shell shell) throws Exception {
+		int ret = 0;
+		for( Command c : mList ) {
+		    ret = c.exec( shell);
+			if( ! shell.keepRunning() )
+				return ret ;
+		}
+        return ret ;
+	}
+
+
+	@Override
+    public void print(PrintWriter out, boolean bExec)
+    {
+		for( Command c : mList )
+			c.print( out ,  bExec );
+    }
+
+
+	@Override
+    public boolean isSimple()
+    {
+	    return mList.size() == 1 && mList.get(0).isSimple();
+    }
 	
 	
 }

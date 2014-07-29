@@ -42,7 +42,7 @@ public class xmlsh extends BuiltinCommand {
 	
 	public int run( List<XValue> args ) throws Exception {
 			
-		Options opts = new Options( "x,v,c:,rcfile:,e,norc,+location"  );
+		Options opts = new Options( "x,v,c:,rcfile:,e,norc,+location,redirect-output:,redirect-input:,redirect-error:"  );
 		opts.parse(args);
 		Shell shell = getShell();
 		

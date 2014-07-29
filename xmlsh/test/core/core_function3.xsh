@@ -35,13 +35,13 @@ function a-b()
 	echo function a-b
 }
 
-function -()
-{ 
-	echo function -
-}
+#function -()
+#{ 
+#	echo function -
+#}
 
 a-b
--
+
 
 
   

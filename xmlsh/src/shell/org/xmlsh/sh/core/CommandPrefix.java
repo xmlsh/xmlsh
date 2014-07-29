@@ -25,7 +25,7 @@ public class CommandPrefix {
 	}
 	public void add( String var , Word value )
 	{
-		mList.add( new Assign( var , "=" ,  value ));
+		mList.add( new Assign( false  , var , "=" ,  value ));
 	}
 
 

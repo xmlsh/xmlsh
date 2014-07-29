@@ -18,11 +18,11 @@ import java.util.List;
 public abstract class Command {
 	private		SourceLocation	mLocation = null;
 	private		boolean		mWait = true ;
+    private String mSeparator = null ; // "\n ; & "
 	private String mName = null ;
 
 	
 	public boolean isWait(){ return mWait ; }
-	public void	setWait(boolean w) { mWait = w ; }
 	public	void	setLocation( SourceLocation loc ) { mLocation = loc ; }
 	public void    setLocation(Command c) { if( c != null && c.getLocation() != null ) mLocation =  c.getLocation() ;	}
 	public	SourceLocation	getLocation() { return mLocation ; }
@@ -49,6 +49,11 @@ public abstract class Command {
 		setName(name) ;
 	}
 
+	public void setSeparator( String op ) {
+      mSeparator = op;
+      if( Util.isEqual( op , "&" ) )
+	     mWait = false ;
+	}
 	// Default name if none provided
 	public String getName()
     {

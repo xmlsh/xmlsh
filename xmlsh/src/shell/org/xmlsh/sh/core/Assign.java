@@ -22,22 +22,16 @@ public class Assign {
 	private String		mOp;		// "=" or "+-" 
 	private Word		mRValue;		// a single value a=b
 	private WordList	mRValList; // a sequence constructor a=(b)
-	public Assign(String variable, String op , Word rvalue) {
-		if( variable.startsWith("local ")){
-			mLocal = true ;
-			variable = variable.replaceFirst("local\\s*", "");
-		}
+	public Assign(boolean local  , String variable, String op , Word rvalue) {
+		
+		mLocal = local ;
 		mVariable = variable;
 		mOp = op ;
 		mRValue = rvalue;
 
 	}
-	public Assign(String variable, String op , WordList rvalue) {
-		if( variable.startsWith("local ")){
-			mLocal = true ;
-			variable = variable.replaceFirst("local\\s*", "");
-		}
-		
+	public Assign(boolean local , String variable, String op , WordList rvalue) {
+		mLocal = local ;
 		mVariable = variable;
 		mOp = op;
 		mRValList = rvalue;
