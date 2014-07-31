@@ -7,7 +7,6 @@
 package org.xmlsh.sh.shell;
 
 import net.sf.saxon.s9api.Processor;
-import net.sf.saxon.s9api.XdmEmptySequence;
 import net.sf.saxon.s9api.XdmItem;
 
 import org.apache.log4j.LogManager;
@@ -39,6 +38,7 @@ import org.xmlsh.core.XValue;
 import org.xmlsh.core.XVariable;
 import org.xmlsh.core.XVariable.XVarFlag;
 import org.xmlsh.sh.core.Command;
+import org.xmlsh.sh.core.EvalUtils;
 import org.xmlsh.sh.core.FunctionDeclaration;
 import org.xmlsh.sh.core.SourceLocation;
 import org.xmlsh.sh.grammar.ParseException;
@@ -89,10 +89,7 @@ public class Shell implements AutoCloseable, Closeable {
 
 
 
-	private static final String XDISABLE_LOGGING = "XDISABLE_LOGGING";
-
-
-    class CallStackEntry {
+	class CallStackEntry {
 		public String name ;
 		public Command cmd ;
 		public SourceLocation loc;
@@ -108,7 +105,7 @@ public class Shell implements AutoCloseable, Closeable {
 		}
 	}
 	
-	private static Logger mLogger = LogManager.getLogger(Shell.class);
+	static Logger mLogger = LogManager.getLogger(Shell.class);
 	private 	ShellOpts	mOpts;
 	
 	private		FunctionDefinitions mFunctions = null;
@@ -152,8 +149,8 @@ public class Shell implements AutoCloseable, Closeable {
 	/*
 	 * Initializtion statics
 	 */
-	private		static 	boolean			bInitialized = false ;
-	private		static	Properties		mSavedSystemProperties;
+	static 	boolean			bInitialized = false ;
+	static	Properties		mSavedSystemProperties;
 	private		static Processor		mProcessor = null;
 	// private		static	ModuleURIResolver	mModuleURIResolver = null ;
 	
@@ -165,46 +162,6 @@ public class Shell implements AutoCloseable, Closeable {
 
 	private AtomicInteger mRunDepth = new AtomicInteger() ; // count of depth if the shell is executing
 	private volatile List<Process> mChildProcess = null ;
-	
-	/**
-	 * Must call initialize atleast once, protects against multiple initializations 
-	 */
-	public	static	void 	initialize()
-	{
-
-		if( bInitialized )
-			return ;
-		
-		String logging = System.getenv(XDISABLE_LOGGING);
-		Logging.configureLogger(Util.parseBoolean(logging) );
-
-		mLogger.info("xmlsh initialize");
-		
-		/*
-	     * Workaround a saxon bug - pre-initialize processor
-	     */
-		// getProcessor();
-		 
-		 
-		 // Can only be called once per process
-		 try {
-			 URL.setURLStreamHandlerFactory(new ShellURLFactory() );
-		 
-		 } 
-		 catch( Error e )
-		 {
-			 // mLogger.debug("Exception trying to seURLStreamHandlerFactory" , e );
-		 }
-		 
-		 
-		mSavedSystemProperties = System.getProperties();
-		SystemEnvironment.getInstance().setProperty("user.dir", System.getProperty("user.dir"));
-		System.setProperties( new SystemProperties(System.getProperties()));
-		// PropertyConfigurator.configure(Shell.class.getResource("log4j.properties"));
-	
-
-	}
-	
 	
 	public static void uninitialize()
 	{
@@ -221,7 +178,7 @@ public class Shell implements AutoCloseable, Closeable {
 	
 	
 	static {
-		initialize();
+		ShellConstants.initialize();
 	}
 
 	/*
@@ -236,7 +193,7 @@ public class Shell implements AutoCloseable, Closeable {
 	public Shell(boolean bUseStdio) throws IOException, CoreException
 	{
 		mOpts = new ShellOpts();
-		mSavedCD = System.getProperty("user.dir");
+		mSavedCD = System.getProperty(ShellConstants.PROP_USER_DIR);
 		mEnv =  new XEnvironment(this,bUseStdio);
 		mModules = new Modules();
 		mSession = new SessionEnvironment();
@@ -282,23 +239,23 @@ public class Shell implements AutoCloseable, Closeable {
 		
 		
 		// Export path to shell path
-	    String path = FileUtils.toJavaPath(System.getenv(XVariable.PATH));
-	    	getEnv().setVar( new XVariable(XVariable.PATH, 
+	    String path = FileUtils.toJavaPath(System.getenv(ShellConstants.PATH));
+	    	getEnv().setVar( new XVariable(ShellConstants.PATH, 
 	    			Util.isBlank(path) ? new XValue() : new XValue(path.split(File.pathSeparator))) , false );
 	
-	    String xpath = FileUtils.toJavaPath(System.getenv(XVariable.XPATH));
-	    getEnv().setVar( new XVariable(XVariable.XPATH, 
+	    String xpath = FileUtils.toJavaPath(System.getenv(ShellConstants.XPATH));
+	    getEnv().setVar( new XVariable(ShellConstants.XPATH, 
 	    		Util.isBlank(xpath) ? new XValue(".") : new XValue(xpath.split(File.pathSeparator))) , false );
 	
 	     
-	    String xmpath = FileUtils.toJavaPath(System.getenv(XVariable.XMODPATH));
-	    getEnv().setVar( new XVariable(XVariable.XMODPATH, 
+	    String xmpath = FileUtils.toJavaPath(System.getenv(ShellConstants.XMODPATH));
+	    getEnv().setVar( new XVariable(ShellConstants.XMODPATH, 
 	    		Util.isBlank(xmpath) ? new XValue() : new XValue(xmpath.split(File.pathSeparator))) , false );
 
 	    
 		// PWD 
 		getEnv().setVar(
-				new XDynamicVariable(XVariable.PWD , EnumSet.of( XVarFlag.READONLY , XVarFlag.XEXPR )) { 
+				new XDynamicVariable(ShellConstants.PWD , EnumSet.of( XVarFlag.READONLY , XVarFlag.XEXPR )) { 
 					public XValue getValue() 
 					{
 						return new XValue( FileUtils.toJavaPath(getEnv().getCurdir().getAbsolutePath()) ) ;
@@ -311,7 +268,7 @@ public class Shell implements AutoCloseable, Closeable {
 		
 		// RANDOM
 		getEnv().setVar(
-				new XDynamicVariable("RANDOM" , EnumSet.of(  XVarFlag.READONLY , XVarFlag.XEXPR )) { 
+				new XDynamicVariable(ShellConstants.VAR_RANDOM , EnumSet.of(  XVarFlag.READONLY , XVarFlag.XEXPR )) { 
 					 Random mRand = new Random();
 					public XValue getValue() 
 					{
@@ -327,7 +284,7 @@ public class Shell implements AutoCloseable, Closeable {
 		
 		// RANDOM32
 		getEnv().setVar(
-				new XDynamicVariable("RANDOM32" , EnumSet.of(  XVarFlag.READONLY , XVarFlag.XEXPR )) { 
+				new XDynamicVariable(ShellConstants.VAR_RANDOM32 , EnumSet.of(  XVarFlag.READONLY , XVarFlag.XEXPR )) { 
 					 Random mRand = new Random();
 					public XValue getValue() 
 					{
@@ -345,7 +302,7 @@ public class Shell implements AutoCloseable, Closeable {
 		
 		// RANDOM
 		getEnv().setVar(
-				new XDynamicVariable("RANDOM64" , EnumSet.of(  XVarFlag.READONLY , XVarFlag.XEXPR )) { 
+				new XDynamicVariable(ShellConstants.VAR_RANDOM64 , EnumSet.of(  XVarFlag.READONLY , XVarFlag.XEXPR )) { 
 					 Random mRand = new Random();
 					public XValue getValue() 
 					{
@@ -360,10 +317,10 @@ public class Shell implements AutoCloseable, Closeable {
 		);
 		
 		
-		getEnv().setVar("TMPDIR" , FileUtils.toJavaPath(System.getProperty("java.io.tmpdir")), false );
+		getEnv().setVar(ShellConstants.ENV_TMPDIR , FileUtils.toJavaPath(System.getProperty(ShellConstants.PROP_JAVA_IO_TMPDIR)), false );
 		
-		if( getEnv().getVar("HOME") == null )
-			getEnv().setVar("HOME" , FileUtils.toJavaPath(System.getProperty("user.home")), false );
+		if( getEnv().getVar(ShellConstants.ENV_HOME) == null )
+			getEnv().setVar(ShellConstants.ENV_HOME , FileUtils.toJavaPath(System.getProperty(ShellConstants.PROP_USER_HOME)), false );
 		
 		
 	}
@@ -388,7 +345,7 @@ public class Shell implements AutoCloseable, Closeable {
 		mArgs = new ArrayList<XValue>();
 		mArgs.addAll(that.mArgs);
 		
-		mSavedCD = System.getProperty("user.dir");
+		mSavedCD = System.getProperty(ShellConstants.PROP_USER_DIR);
 		
 		if( that.mFunctions != null )
 			mFunctions = new FunctionDefinitions(that.mFunctions);
@@ -439,7 +396,7 @@ public class Shell implements AutoCloseable, Closeable {
 			mEnv = null ;
 		}
 		if( mSavedCD != null )
-			SystemEnvironment.getInstance().setProperty("user.dir", mSavedCD);
+			SystemEnvironment.getInstance().setProperty(ShellConstants.PROP_USER_DIR, mSavedCD);
 		if( mSession != null ){
 			Util.safeRelease(mSession);
 			mSession = null ;
@@ -648,7 +605,7 @@ public class Shell implements AutoCloseable, Closeable {
 	
 	private void prompt( boolean ps1 ) {
 	    System.out.print(
-                getPS(ps1 ? XVariable.PS1 : XVariable.PS2 , ps1 ? "$ " : " >"));
+                getPS(ps1 ? ShellConstants.PS1 : ShellConstants.PS2 , ps1 ? "$ " : " >"));
         System.out.flush();
 	}
 	
@@ -779,7 +736,7 @@ public class Shell implements AutoCloseable, Closeable {
 		String sps1 = ps1.toString();
 		if( !Util.isBlank(sps1))
             try {
-                sps1 = expandToString(sps1, mPSEnv,null);
+                sps1 = EvalUtils.expandStringToString(this, sps1,mPSEnv, null);
             } catch (IOException | CoreException e) {
                mLogger.debug("Exception getting PS var "+ ps ,e);
                return def;
@@ -1096,7 +1053,7 @@ public class Shell implements AutoCloseable, Closeable {
 
 	
 	public Path getExternalPath(){
-		return getPath(XVariable.PATH,true);
+		return getPath(ShellConstants.PATH,true);
 	}
 	
 	
@@ -1116,7 +1073,7 @@ public class Shell implements AutoCloseable, Closeable {
 	 */
 	public File		getCurdir()
 	{
-		return new File( System.getProperty("user.dir"));
+		return new File( System.getProperty(ShellConstants.PROP_USER_DIR));
 
 	}
 	
@@ -1124,7 +1081,7 @@ public class Shell implements AutoCloseable, Closeable {
 	public  void  		setCurdir( File cd ) throws IOException
 	{
 		String dir = cd.getCanonicalPath();
-		SystemEnvironment.getInstance().setProperty("user.dir",dir);
+		SystemEnvironment.getInstance().setProperty(ShellConstants.PROP_USER_DIR,dir);
 
 	
 	}
@@ -1204,16 +1161,6 @@ public class Shell implements AutoCloseable, Closeable {
 		return mArg0;
 	}
 
-	public List<XValue> expandToList(String s, EvalEnv env , SourceLocation loc  ) throws IOException, CoreException {
-		Expander e = new Expander( this , loc );
-		List<XValue> result =  e.expandToList(s, env   );
-		if( env.expandSequences() )
-			result = Util.expandSequences( result );
-		else  
-			result = Util.combineSequence( result );
-		return result;
-	}
-
 	/**
 	 * @return the status
 	 */
@@ -1243,40 +1190,6 @@ public class Shell implements AutoCloseable, Closeable {
 	}
 	
 
-	public String expandToString(String value, EvalEnv env , SourceLocation loc ) throws IOException, CoreException {
-		List<XValue> ret = expandToList(value,env, loc  );
-		if( ret.size() == 0 )
-			return "";
-		else
-		if( ret.size() == 1 )
-			return ret.get(0).toString();
-		
-		StringBuffer sb = new StringBuffer();
-		for( XValue v : ret ){
-			if( sb.length() > 0 )
-				sb.append(' ');
-			sb.append( v.toString() );
-		}
-		return  sb.toString();
-		
-	}
-
-	// Expand a word and return as a single XValue
-	// Preserves sequences and expands 
-	public	XValue	expandToValue( String value ,  EvalEnv env , SourceLocation loc ) throws IOException, CoreException {
-			List<XValue> ret = expandToList(value,env, loc  );
-			if( ret.size() == 0 )
-				return new XValue(  env.omitNulls() ? null : XdmEmptySequence.getInstance());
-			else
-			if( ret.size() == 1 )
-				return ret.get(0);
-			
-			return new XValue( ret );
-
-	}
-	
-	
-	
 	public void shift(int num) {
 		while( ! mArgs.isEmpty() && num-- > 0 )
 			mArgs.remove(0);
@@ -2085,6 +1998,8 @@ public class Shell implements AutoCloseable, Closeable {
     {
 	    return mClosed ;
     }
+
+
 
 
 }

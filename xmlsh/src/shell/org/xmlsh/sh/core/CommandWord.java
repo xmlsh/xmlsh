@@ -12,10 +12,13 @@ import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XdmValue;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.EvalEnv;
+import org.xmlsh.core.EvalFlag;
 import org.xmlsh.core.VariableOutputPort;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.XVariable;
+import org.xmlsh.sh.shell.ParseResult;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.types.TypeFamily;
 import org.xmlsh.util.ByteFilterOutputStream;
 import org.xmlsh.util.MutableInteger;
 import org.xmlsh.util.NullInputStream;
@@ -163,36 +166,7 @@ public class CommandWord extends Word {
 		
 		
 	}
-		
-	@Override
-	public XValue expand(Shell shell , EvalEnv env,SourceLocation loc ) throws IOException, CoreException {
-		
-		
-		if( mType.equals("$(") || mType.equals("`") ){
-			// http://www.gnu.org/software/bash/manual/bashref.html#Command-Substitution
-			/*
-			 * Bash performs the expansion by executing command and replacing the command substitution with the standard output of the command, with any trailing newlines deleted. Embedded newlines are not deleted, but they may be removed during word splitting. 
-			 * The command substitution $(cat file) can be replaced by the equivalent but faster $(< file).
-			 */
-			
-			String 	value = expandSubproc( shell, mCommand);
-			// Trailing lines are already removed
-			
- 
-			return expandWords( shell , value , env);
-			
-			
-			
-		} else 
-		if( mType.equals("$<(")){
-			
-			return parseXCmd( shell , mCommand );
-		}
-
-		else 
-			return null;
-		
-	}
+	
 
 	
 	public boolean isEmpty() {
@@ -209,6 +183,37 @@ public class CommandWord extends Word {
 		{
 		    return  mCommand.getName();
 	 	}
+
+	@Override
+    protected ParseResult expandToResult(Shell shell, EvalEnv env, SourceLocation loc, ParseResult result) throws CoreException, IOException 
+    {
+
+		assert( result != null );
+		if( mType.equals("$(") || mType.equals("`") ){
+			// http://www.gnu.org/software/bash/manual/bashref.html#Command-Substitution
+			/*
+			 * Bash performs the expansion by executing command and replacing the command substitution with the standard output of the command, with any trailing newlines deleted. Embedded newlines are not deleted, but they may be removed during word splitting. 
+			 * The command substitution $(cat file) can be replaced by the equivalent but faster $(< file).
+			 */
+			
+			String 	svalue = expandSubproc( shell, mCommand);
+			XValue value = EvalUtils.splitStringToValue(shell, svalue, evalEnv( env ));
+			result =  
+  			   EvalUtils.expandValueToResult(shell, value , env.withFlagOff(EvalFlag.EXPAND_VAR), loc, result) ;
+			
+			
+		} else 
+		if( mType.equals("$<(")){
+			
+			XValue value = parseXCmd( shell , mCommand );
+			result.add( value , true );
+
+		}
+		else 
+			throw new CoreException("Unexpected CommandWord: " + mCommand );
+		
+		return result ;
+    }
 
 	 
 	 

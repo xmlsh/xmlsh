@@ -9,8 +9,10 @@ package org.xmlsh.commands.json;
 import org.xmlsh.core.BuiltinFunctionCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.sh.shell.ShellConstants;
 import org.xmlsh.types.TypeFamily;
 import org.xmlsh.util.JSONUtils;
+import org.xmlsh.util.Util;
 
 import java.util.List;
 
@@ -31,14 +33,9 @@ public class string extends BuiltinFunctionCommand {
 			return new XValue( JSONUtils.toJsonString(args.get(0)));
 		
 		
-		StringBuffer sb = new StringBuffer();
-		for( XValue arg : args ){
-			if( sb.length() > 0 )
-				sb.append(" ");
-			sb.append( arg.toString());
-		}
+		String sjson = Util.joinValues(args,ShellConstants.ARG_SEPARATOR );
 		
-		return new XValue( TypeFamily.JSON,  JSONUtils.toJsonString(sb.toString()) );
+		return new XValue( TypeFamily.JSON,  JSONUtils.toJsonString(sjson) );
 	}
 
 }

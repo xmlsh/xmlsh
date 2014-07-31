@@ -9,6 +9,7 @@ import org.xmlsh.core.XEnvironment;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.XVariable;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.sh.shell.ShellConstants;
 import org.xmlsh.util.NullInputStream;
 import org.xmlsh.util.NullOutputStream;
 import org.xmlsh.util.Util;
@@ -248,7 +249,7 @@ public class XmlshServlet extends HttpServlet {
 		mRoot = config.getInitParameter("root");
 	
 		// Pre-initialize shell so logging can work before executing first task
-		Shell.initialize();
+		ShellConstants.initialize();
 		
 	}
 

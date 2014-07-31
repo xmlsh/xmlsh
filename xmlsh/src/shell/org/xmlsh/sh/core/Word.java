@@ -11,6 +11,7 @@ import org.xmlsh.core.EvalEnv;
 import org.xmlsh.core.StaticContextFlag;
 import org.xmlsh.core.StaticEnvironment;
 import org.xmlsh.core.XValue;
+import org.xmlsh.sh.shell.ParseResult;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.MutableInteger;
 import org.xmlsh.util.Util;
@@ -35,19 +36,19 @@ public abstract class Word {
 	protected Word( ) {
 	}
 
-	public XValue expandWords( Shell shell , String word , EvalEnv env ) throws IOException {
-		
-		env = evalEnv( env ); // Mask my own settings
-		
-		// if expand word then need to do IFS splitting
-		if( env.expandWords() && ! env.preserveValue() )
-			return new XValue( (String[]) shell.getIFS().split(word).toArray() );
-		else
-			return new XValue( word);
-				
-	}
+	
+	// Expand a word into an existing result class 
+	protected abstract ParseResult expandToResult(Shell shell, EvalEnv env, SourceLocation loc, ParseResult result ) throws IOException, CoreException;
 
-	public abstract XValue expand(Shell shell, EvalEnv env, SourceLocation loc ) throws IOException, CoreException;
+	
+	public final XValue expand(Shell shell , EvalEnv env,SourceLocation loc ) throws IOException, CoreException {
+		
+		ParseResult result = new ParseResult(shell);
+		expandToResult( shell , env , loc , result );
+		return EvalUtils.expandResultToValue(shell, result, env, loc) ;
+		
+	}
+	
 	
 	public String expandString(Shell shell, EvalEnv env, SourceLocation loc ) throws IOException, CoreException {
 		return expand(shell,evalEnv(env),loc).toString();
@@ -82,6 +83,8 @@ public abstract class Word {
 
 
 	abstract String getSimpleName();
+
+
 
 
 }

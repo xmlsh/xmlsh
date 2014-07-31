@@ -59,7 +59,7 @@ public abstract class BuiltinFunctionCommand extends Command implements IFunctio
     @Override
     public EvalEnv returnEnv(EvalEnv parent)
     {
-    	return parent ;
+    	return EvalEnv.evalNone() ;
     }
 }
 

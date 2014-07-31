@@ -10,6 +10,7 @@ import org.xmlsh.core.CoreException;
 import org.xmlsh.core.EvalEnv;
 import org.xmlsh.core.EvalFlag;
 import org.xmlsh.core.XValue;
+import org.xmlsh.sh.shell.ParseResult;
 import org.xmlsh.sh.shell.Shell;
 
 import java.io.IOException;
@@ -33,13 +34,6 @@ public class BraceWord extends Word
 		out.print("}");
 	}
 
-	@Override
-	public XValue expand(Shell shell , EvalEnv env, SourceLocation loc)
-	        throws IOException, CoreException
-	{
-
-		return mWord.expand(shell, evalEnv(env), loc);
-	}
 
 	@Override
 	public boolean isEmpty()
@@ -62,6 +56,13 @@ public class BraceWord extends Word
     public EvalEnv evalEnv(EvalEnv parent)
     {
 	   return parent.withFlagsMasked( EvalFlag.preserveValueFlags());
+    }
+
+	@Override
+    protected ParseResult expandToResult(Shell shell, EvalEnv env, SourceLocation loc, ParseResult result) throws IOException,
+            CoreException
+    {
+		return mWord.expandToResult(shell,  evalEnv(env), loc, result);
     }
 
 

@@ -13,6 +13,7 @@ import org.xmlsh.sh.core.SourceLocation;
 import org.xmlsh.sh.shell.Module;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.sh.shell.ShellConstants;
 import org.xmlsh.util.PortCopier;
 import org.xmlsh.util.StreamCopier;
 import org.xmlsh.util.Util;
@@ -167,18 +168,18 @@ public class ExternalCommand implements ICommand {
 		}
 		
 		// Special case for PATH and XPATH
-		XVariable vpath = xenv.getVar(XVariable.PATH);
+		XVariable vpath = xenv.getVar(ShellConstants.PATH);
 		if( vpath != null  && vpath.isExport() ){
 			Path p = new Path( vpath.getValue() );
 			String ps = p.toOSString();
-			env.put(XVariable.PATH, ps);
+			env.put(ShellConstants.PATH, ps);
 		}
 		
-		XVariable vxpath = xenv.getVar(XVariable.XPATH);
+		XVariable vxpath = xenv.getVar(ShellConstants.XPATH);
 		if( vxpath != null && vxpath.isExport() ){
 			Path p = new Path( vxpath.getValue() );
 			String ps = p.toOSString();
-			env.put(XVariable.XPATH, ps);
+			env.put(ShellConstants.XPATH, ps);
 		}
 		
 		

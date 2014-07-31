@@ -211,6 +211,17 @@ public class CharAttributeBuffer
 				return false ;
 		return true ;
 	}
+
+
+	public void append(CharAttributeBuffer achars)
+    {
+		int len = achars.length;
+		ensure( length + len );
+		System.arraycopy(achars.charArray, 0 , charArray , 0 , len );
+		System.arraycopy(achars.attrArray, 0 , attrArray , 0 , len );
+        length += len ;
+	    
+    }
 }
 
 

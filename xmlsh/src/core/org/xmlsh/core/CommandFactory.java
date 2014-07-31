@@ -7,6 +7,7 @@
 package org.xmlsh.core;
 
 import org.apache.log4j.Logger;
+
 import org.xmlsh.commands.builtin.colon;
 import org.xmlsh.commands.builtin.declare;
 import org.xmlsh.commands.builtin.echo;
@@ -47,6 +48,7 @@ import org.xmlsh.sh.core.SourceLocation;
 import org.xmlsh.sh.shell.Module;
 import org.xmlsh.sh.shell.Modules;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.sh.shell.ShellConstants;
 import org.xmlsh.util.StringPair;
 import org.xmlsh.util.Util;
 
@@ -280,7 +282,7 @@ public class CommandFactory
 		else
 		if( scriptFile == null ) {
 		
-			Path path = shell.getPath(XVariable.XPATH, true );
+			Path path = shell.getPath(ShellConstants.XPATH, true );
 			scriptFile = path.getFirstFileInPath(shell,name);
 			if( scriptFile == null && ! name.endsWith(".xsh") )
 				scriptFile = path.getFirstFileInPath(shell, name + ".xsh");

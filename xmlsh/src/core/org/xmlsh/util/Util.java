@@ -19,15 +19,16 @@ import net.sf.saxon.s9api.XdmValue;
 import net.sf.saxon.trans.XPathException;
 
 import org.apache.log4j.Logger;
+
 import org.xmlsh.core.EvalFlag;
 import org.xmlsh.core.AbstractPort;
 import org.xmlsh.core.IReleasable;
 import org.xmlsh.core.Namespaces;
 import org.xmlsh.core.XValue;
-import org.xmlsh.core.XVariable;
 import org.xmlsh.sh.core.CharAttributeBuffer;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.sh.shell.ShellConstants;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -1032,13 +1033,17 @@ public class Util
 	public static boolean isPath(String var)
 	{ 
 		if( isWindows())
-			return var.equalsIgnoreCase(XVariable.PATH)||var.equalsIgnoreCase(XVariable.PATH);
+			return var.equalsIgnoreCase(ShellConstants.PATH)||var.equalsIgnoreCase(ShellConstants.PATH);
 		else	
-			return var.equals(XVariable.PATH)||var.equals(XVariable.XPATH);
+			return var.equals(ShellConstants.PATH)||var.equals(ShellConstants.XPATH);
 
 	
 	}
 
+    /*
+     * Convert a List of XValues into a List with 1 XValue 
+     * If the original list is all XDM types they are combined into a sequence XValue
+     */
 
 	public static List<XValue> combineSequence(List<XValue> result) {
 		if( result.size() < 2 )
@@ -1589,6 +1594,20 @@ public class Util
 			return -1;
 		return end - now ;
     }
+
+
+	public static String joinValues(List<XValue> args, String sep)
+	{
+	    StringBuffer sb = new StringBuffer();
+	    for( XValue arg : args ){
+	    	if( sb.length() > 0 )
+	    		sb.append(sep);
+	    	sb.append( arg.toString());
+	    	
+	    	
+	    }
+	    return sb.toString();
+	}
 
 }
 

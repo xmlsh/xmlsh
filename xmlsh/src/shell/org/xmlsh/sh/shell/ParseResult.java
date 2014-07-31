@@ -10,28 +10,26 @@ import net.sf.saxon.s9api.XdmValue;
 import org.xmlsh.core.EvalEnv;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.core.CharAttributeBuffer;
+import org.xmlsh.sh.core.EvalUtils;
 import org.xmlsh.util.Util;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-import java.util.regex.Pattern;
 
-class Result {
+public class ParseResult {
 	// Attribute'd char buffer
 	private CharAttributeBuffer    achars = null;
 
 	private Shell mShell;
-	public Result( Shell shell ) {
+	public ParseResult( Shell shell ) {
 		mShell = shell ;
 	}
 
-	static class RXValue {
-		XValue         			xvalue;
+	public static class RXValue {
+		public XValue         			xvalue;
 		private CharAttributeBuffer    avalue;
-		boolean       bRaw;
+		public boolean       bRaw;
 		RXValue( XValue v , boolean r ) {
 			xvalue = v ;
 			bRaw = r;
@@ -54,32 +52,29 @@ class Result {
 				return avalue.toString();
 			return null ;
 		}
-		XValue toXValue() {
+		public XValue toXValue() {
 			return xvalue != null ? xvalue : new XValue( avalue == null ? null : avalue.toString() ) ;
 		}
 		
-		CharAttributeBuffer toAValue() {
+		public CharAttributeBuffer toAValue() {
 			return avalue != null ? avalue :
 				 new CharAttributeBuffer( xvalue.toString() , 
 						 (bRaw ? CharAttr.ATTR_PRESERVE : CharAttr.ATTR_NONE).attr() );
 		}
-		boolean isRaw() { 
+		public boolean isRaw() { 
 			return bRaw ;
 		}
-		boolean isXValue() { 
+		public boolean isXValue() { 
 			return xvalue != null ;
 		}
-		boolean isCharAttr() {
-			return avalue != null ;
-		}
-		boolean isEmpty() {
+		public boolean isEmpty() {
 			return xvalue == null && avalue == null ;
 		}
 
 	}
 	
-	Result.RXValue			cur = null;		// Current XValue if its unknown to convert to string, only atomic values
-	List<Result.RXValue>	result = new ArrayList<Result.RXValue>();
+	ParseResult.RXValue			cur = null;		// Current XValue if its unknown to convert to string, only atomic values
+	List<ParseResult.RXValue>	result = new ArrayList<ParseResult.RXValue>();
 
 	void flush() 
 	{
@@ -94,28 +89,28 @@ class Result {
 		
 	}
 	
-	void add( CharAttributeBuffer cb ) {
+	public void add( CharAttributeBuffer cb ) {
 		flush();
 		result.add( new RXValue( cb ) );
 	}
-	void add( String s, CharAttr attr)
+	public void add( String s, CharAttr attr)
 	{
 		flush();
 		result.add(new RXValue(s,attr));
 	}
 
-	void add( XValue v )
+	public void add( XValue v )
 	{
 		flush();
 		result.add( new RXValue(v,false));
 	}
-	void add( XValue v , boolean r )
+	public void add( XValue v , boolean r )
 	{
 		flush();
 		result.add( new RXValue(v,r));
 	}
 
-	void append( String s ,CharAttr attr)
+	public void append( String s ,CharAttr attr)
 	{
 		ajoin();
 		if( achars == null )
@@ -124,7 +119,7 @@ class Result {
 		   achars.append(s,attr.attr());
 	}
 
-	void append( char c, CharAttr attr  )
+	public void append( char c, CharAttr attr  )
 	{
 		ajoin();
 		if( achars == null )
@@ -133,7 +128,7 @@ class Result {
 	}
 
 
-	List<Result.RXValue> 	getResult()
+	public List<ParseResult.RXValue> 	resolveToRXValues()
 	{
 		flush();
 		return result ;
@@ -172,7 +167,7 @@ class Result {
 					boolean bFirst = true ;
 					for( XdmValue v : value.asXdmValue() ){
 						if( ! bFirst )
-							append(Expander.sSEPSPACE , attr );
+							append(ShellConstants.ARG_SEPARATOR , attr );
 						append(v.toString(),attr);
 						bFirst = false ;
 					}
@@ -183,6 +178,20 @@ class Result {
 				add(value, attr.isPreserve());
 			}
 		}
+	}
+	
+	public void append( ParseResult r ) {
+		if( r == null )
+			return;
+		ajoin();
+		r.ajoin(); // ??
+		if( r.achars != null && ! r.achars.isEmpty() )
+			achars.append( r.achars );
+		if( ! r.result.isEmpty() ) {
+			flush();
+			result.addAll(r.result);
+		}
+		
 	}
 
 	private void ajoin() {
@@ -200,18 +209,17 @@ class Result {
         	achars = null;
     }
 
-	public List<XValue> expandWild( RXValue rv ) {
+	public static List<XValue> expandWild( RXValue rv, File curdir ) {
 		ArrayList<XValue> r = new ArrayList<XValue>();
 	
 		if( rv.isEmpty())
 			return r;
-		
+	
 		if( rv.isRaw() ){
 			r.add( rv.toXValue());
 			return r;
-			
 		}
-			
+	
 		if( rv.isXValue()) {
 			XValue xv = null;
 			xv = rv.toXValue();
@@ -220,8 +228,7 @@ class Result {
 				return r;
 			}
 		}
-		
-		
+	
 		CharAttributeBuffer av = rv.toAValue();
 		int vslen = av.size();
 	
@@ -236,7 +243,7 @@ class Result {
 		}
 	
 		if( ! wildUnQuoted ){
-		
+	
 			r.add( rv.toXValue() );
 			return r;
 		}
@@ -251,8 +258,8 @@ class Result {
 	
 		String root = null ;
 		String parent = null;
-		
-		
+	
+	
 		if( av.charAt(0) == '/' ){
 			root = "/";
 			parent = "";
@@ -264,7 +271,7 @@ class Result {
 			char drive = av.charAt(0);
 			// Character.isAlphabetic() is V7 only
 			if( Character.isLetter(drive) && av.charAt(1) == ':'){
-				
+	
 				// If windows and matches  <dir>:blah blah
 				// make the root <dir>:/
 				// If no "/" is used then the current directory of that dir is used which is not shell semantics
@@ -275,12 +282,12 @@ class Result {
 				else
 					av.delete(0,2);
 				parent = root;
-			
+	
 			}
 		}
 	
 		CharAttributeBuffer	wilds[] = av.split('/');
-		expandDir( root == null ? mShell.getCurdir() : new File(root) , 
+		EvalUtils.expandDir( root == null ? curdir : new File(root) , 
 				parent , 
 				wilds , 
 				rs );
@@ -302,15 +309,15 @@ class Result {
 	 * Return list of all matches or null if no matches
 	 */
 
-	public  List<XValue> expandWild(EvalEnv env)
+	public   List<XValue>  expandWild(EvalEnv env, File curdir)
 	{
-	    ArrayList<XValue> result2 = new ArrayList<XValue>();
+		ArrayList<XValue> result2 = new ArrayList<XValue>();
 	
 	
 		/*
 		 * Globbing
 		 */
-		for( RXValue rv : getResult() ){
+		for( RXValue rv : resolveToRXValues() ){
 			if( ! env.expandWild() )
 				result2.add( rv.toXValue() );
 			else {
@@ -318,7 +325,7 @@ class Result {
 				if( rv.bRaw )
 					result2.add( rv.xvalue );
 				else {
-					List<XValue> r = expandWild( rv );
+					List<XValue> r = ParseResult.expandWild(  rv, curdir );
 					if( r != null )
 						result2.addAll( r );
 				}
@@ -328,97 +335,7 @@ class Result {
 		return result2;
 	}
 
-	static void expandDir( File dir , String parent , CharAttributeBuffer wilds[] , List<String> results )
-	{
-		CharAttributeBuffer wild = wilds[0];
-		if( wilds.length < 2 )
-			wilds = null ;
-		else 
-			wilds = Arrays.copyOfRange(wilds, 1, wilds.length );
-	
-	
-		List<String> rs = expandDir( dir , wild, wilds != null   );
-		if( rs == null)
-			return ;
-		for( String r : rs ){
-			String path =  parent == null ? r : parent + (parent.endsWith("/") ? "" : "/") + r;
-	
-			if( wilds == null )
-				results.add( path );
-			else 
-				expandDir( 
-						new File( dir , r ) ,
-						path , 
-						wilds ,
-						results );
-	
-		}
-	
-	}
 
-
-
-	/*
-	 * Recursively Expand a possibly multi-level wildcard rooted at a directory
-	 * 
-	 */
-
-	
-	
-	static List<String>	expandDir( File dir , CharAttributeBuffer wild, boolean bDirOnly )
-	{
-		ArrayList<String> results = new ArrayList<String>();
-		/*
-		 * special case for "." and ".." as the directory component
-		 * They dont show up in dir.list() so should always be considered an exact match
-		 */
-		if( wild.stringEquals(".") || wild.stringEquals(".."))
-		{
-			results.add(wild.toString());
-			return results;
-		}
-	
-	
-		boolean bIsWindows = Util.isWindows();
-		boolean caseSensitive = ! bIsWindows;
-	
-		/*
-		 * Hack to handle 8.3 windows file names like "Local~1"
-		 * If not matched and this is windows
-		 * try an exact match to the canonical expanson of the dir and wild
-		 */
-		if(  bIsWindows && wild.indexOf(0,'~', CharAttr.ATTR_NONE.attr()) >= 0 ){
-			String wildString = wild.toString();
-			File fwild = new File( dir , wildString );
-			if( fwild.exists() ){
-				results.add(wildString);
-				return results ;
-			}
-		}
-	
-	
-	
-		String[] files = dir.list();
-		
-		Pattern wp = Util.compileWild(wild, CharAttr.ATTR_ESCAPED.attr() , caseSensitive);
-		
-		for( String f : files ){
-	
-			boolean bMatched = wp.matcher(f).matches();
-	
-			if( bMatched &&
-					( bDirOnly ? ( new File( dir , f ).isDirectory() ) : true ) ) 
-			{
-				results.add(f);
-			}
-		}
-		if( results.size() == 0 )
-			return null;
-		Collections.sort(results);
-		return results;
-	
-	
-	}
 
 	
 }

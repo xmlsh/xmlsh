@@ -64,7 +64,7 @@ public class FunctionDeclaration extends Command implements IFunction {
 	@Override
     public EvalEnv returnEnv(EvalEnv parent)
     { 
-		return parent ;
+		return parent.withFlagsMasked( EvalEnv.returnValueMask() ); 
     }
 
 }

@@ -22,27 +22,24 @@ import org.xmlsh.core.Variables;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.XVariable;
 import org.xmlsh.core.XVariable.XVarFlag;
+import org.xmlsh.sh.core.EvalUtils;
 import org.xmlsh.sh.core.SourceLocation;
+import org.xmlsh.types.TypeFamily;
 import org.xmlsh.util.NameValueMap;
 import org.xmlsh.util.Util;
 import org.xmlsh.xpath.EvalDefinition;
 import org.xmlsh.xpath.ShellContext;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
-class Expander {
-	static final String sSEPSPACE = " ";
+public class Expander {
 	private static Logger mLogger = LogManager.getLogger( Expander.class);
 
-	Shell			mShell;
+	public Shell			mShell;
 	private		SourceLocation 	mLocation ;
-	private IFS mIFS ;
-
 	
 	/* 
 	 * Attribute enums
@@ -50,34 +47,56 @@ class Expander {
 	
 	/* this"Is a 'string\' in' a $var "string *.x "*.y" \*.z */
 	
-	Expander( Shell shell, SourceLocation loc )
+	public Expander( Shell shell, SourceLocation loc )
 	{
 		mShell = shell;
 		mLocation = loc ;
-		mIFS = mShell.getIFS();
 	}
 
-	private int readToMatching( String arg , int i , StringBuffer sbv , char match )
+	/*
+	 * Expand a value into a Results buffer
+	 * Used for combining possible joined values by repeated calls
+	 * 
+	 */
+	public ParseResult expandValueToResult(XValue value, EvalEnv env , ParseResult result ) throws IOException, CoreException
 	{
-		char start = arg.charAt(i++);
-		int matchCount = 1;
-
-		// Eat up to '}'
-		for( ; i < arg.length() ; i++ ){
-			char c = arg.charAt(i);
-			if( c == match ){
-				if( --matchCount == 0 )
-					break ;
-			} else
-				if( c == start )
-					matchCount++;
-
-			sbv.append(c);
-
-		}
-		return i;
+		assert( result != null );
+		if(!env.preserveValue() && value.isAtomic() ) 
+			result = expandStringToResult( value.toString() , env , result );
+		else
+			result.add( value , env.preserveValue() );
+		return result ;
+	}
+	
+	
+	
+	/*
+	 * Expand a string to a list of XValues by  
+	 * 1) Parsing Quotes
+	 * 2) Expanding Variables
+	 * 3) Tokenizing by IFS (expand word) and combining adjacent words 
+	 * 4) globbing 
+	 */
+	
+	public List<XValue> expandStringToList(String arg, EvalEnv env ) throws IOException, CoreException {
+		ParseResult result = new ParseResult(mShell) ;
+		return expandResultToList(env, expandStringToResult( arg , env, result ));
+		
 	}
 
+	public List<XValue> expandResultToList(EvalEnv env, ParseResult result)
+    {
+	    List<XValue> xvresult =  result.expandWild(env,mShell.getCurdir());
+		
+		if( env.expandSequences() )
+			xvresult = Util.expandSequences( xvresult );
+		else  
+			xvresult = Util.combineSequence( xvresult );
+		
+		return xvresult;
+    }
+	
+	
 	/*
 	 * Expand a single word value :
 	 * <{{ ... }}> is a hard multi line quote with nothing inside touched
@@ -87,29 +106,25 @@ class Expander {
 	 * "$var literal $var" quoted mixed literal
 	 * 
 	 * If bPreserve is set then this is inside {value} which is used to eval/expand the value but do NO substitution
-	 * if bExpandWild is set then globbing is done
+	 * NO globbing is done
 	 */
-	List<XValue> expandToList(String arg, EvalEnv env ) throws IOException, CoreException
+	public ParseResult expandStringToResult(String arg, EvalEnv env , ParseResult result ) throws IOException, CoreException
 	{
 
+		assert( result != null );
+		
 		// <{ big quotes }>
 		if( arg.startsWith("<{{") && arg.endsWith("}}>")){
-			List<XValue>	r = new ArrayList<XValue>(1);
-			r.add( new XValue(arg.substring(3,arg.length()-3)) );
-			return r;		
+			// Add as a raw value
+			result.add(new XValue(arg.substring(3,arg.length()-3)), true);
+			return result ;
 		}
-
 
 		// <[ XEXPR ]>
 		if( arg.startsWith("<[") && arg.endsWith("]>")){
-			List<XValue> 	r = new ArrayList<XValue>(1);
-			r.add( new XValue( parseXExpr(arg.substring(2,arg.length()-2))));
-			return r;
+			result.add(parseXExpr(mShell, arg.substring(2,arg.length()-2)), true);
+			return result ;
 		}
-
-
-
-		Result	result = new Result(mShell);
 
 		char c;
 		int i;
@@ -187,7 +202,7 @@ class Expander {
 
 				StringBuffer sbv = new StringBuffer();
 				if( arg.charAt(i) == '{') {
-					i = readToMatching( arg , i , sbv ,  '}' );
+					i = EvalUtils.readToMatching( arg , i , sbv ,  '}' );
 				} 
 
 
@@ -235,7 +250,7 @@ class Expander {
 						for( XValue v : mShell.getArgs() ){
 							if( curAttr.isSoftQuote() ) {
 								if( ! bFirst )
-									result.append( mIFS.getFirstChar() , curAttr );
+									result.append( mShell.getIFS().getFirstChar() , curAttr );
 								result.append( v , env ,  curAttr );
 							}
 							else
@@ -270,7 +285,7 @@ class Expander {
 						// guarentees no null values and empty unquoted strings were removed
 						
 						
-						List<XValue> vs = evalVar(var, curAttr );
+						List<XValue> vs = EvalUtils.evalVar(mShell, var, curAttr );
 
 						// Append the first value to any previous content in the arg
 						// N..last-1 become new args
@@ -298,15 +313,14 @@ class Expander {
 
 		}
 
-		result.flush();
-		
+		if( ! env.joinValues() )
+		  result.flush();
 
-		return result.expandWild(env);
-
+		return result ;
 
 	}
 
-	private XdmValue parseXExpr(String arg) throws CoreException {
+	private XValue parseXExpr(Shell shell, String arg) throws CoreException {
 
 
 
@@ -316,13 +330,11 @@ class Expander {
 		compiler.setModuleURIResolver(new ShellModuleURIResolver(mShell));
 
 
-
-
 		// Declare the extension function namespace
 		// This can be overridden by user declarations
 		compiler.declareNamespace("xmlsh", EvalDefinition.kXMLSH_EXT_NAMESPACE);
 
-		NameValueMap<String> ns = mShell.getEnv().getNamespaces();
+		NameValueMap<String> ns = shell.getEnv().getNamespaces();
 		if( ns != null ){
 			for( String prefix : ns.keySet() ){
 				String uri = ns.get(prefix);
@@ -340,7 +352,7 @@ class Expander {
 		StringBuffer sb = new StringBuffer();
 
 
-		Variables variables = mShell.getEnv().getVars();
+		Variables variables = shell.getEnv().getVars();
 		Collection<String> varnames = variables.getVarNames();
 		for( String name : varnames ) {
 			XVariable value = variables.get(name);
@@ -351,7 +363,7 @@ class Expander {
 
 		}
 
-		List<XValue> args = mShell.getArgs();
+		List<XValue> args = shell.getArgs();
 
 		/*
 		// Legacy support a single sequence $_ with all args
@@ -367,7 +379,7 @@ class Expander {
 
 		sb.append(arg);
 
-		Shell saved_shell = ShellContext.set(mShell);
+		Shell saved_shell = ShellContext.set(shell);
 
 		try {
 			expr = compiler.compile( sb.toString() );
@@ -403,7 +415,7 @@ class Expander {
 			XdmValue result =  eval.evaluate();
 
 
-			return result ;
+			return new XValue( TypeFamily.XDM , result  ) ;
 
 
 
@@ -416,155 +428,14 @@ class Expander {
 		}
 		finally {
 			ShellContext.set(saved_shell);
-
 		}
-
 
 	}
 
 
-	/*
-	 * Evaluate a variable and return either a list of zero or more values
-	 */
 	
-	private List<XValue> evalVar(String var, CharAttr attr ) throws IOException, CoreException {
-
-		XValue v = evalVar(var);
-		if( v == null )
-			return null ; 
-		if(  attr.isPreserve() || ! v.isAtomic() )
-			return Collections.singletonList( v );
-		
- 
-		// Non tong null values go away
-		if( ! attr.isPreserve() && v.isNull())
-		   return null;   
-		
-		// Java objects are not mucked with
-		if( v.isObject() )
-			return Collections.singletonList( v );
-
-		
-		List<String> fields;
-		if(  attr.isQuote()  || ! v.isString() )
-			return Collections.singletonList( v );
-
-		String s = v.toString();
-		// Extract fields
-		fields = mIFS.split(s );
-		if( Util.isEmpty(fields))
-			return null ;
-		
-	     // Try to preserve original value
-		if( fields.size() == 1 &&  Util.isEqual(fields.get(0),s)  )
-				return Collections.singletonList(v);
-		
-		List<XValue> xv = new ArrayList<XValue>( fields.size());
-		for( String f : fields ) {
-			if( Util.isEmpty(f))
-				continue ;
-			xv.add( new XValue(f ));
-		}
-		return xv;
-
-	}
-
-	/*
-	 * Evaluate a variable expression and extract its value
-	 */
-
-	private XValue evalVar(String varname) throws IOException, CoreException {
 
 
-
-		if( varname.equals("#"))
-			return new XValue( mShell.getArgs().size() );
-		else
-			// Special vars
-			if( varname.equals("$"))
-				return new XValue(Thread.currentThread().getId());
-			else
-				if( varname.equals("?"))
-					return new XValue( mShell.getStatus());
-				else
-					if( varname.equals("!")){
-
-						return new XValue( mShell.getLastThreadId() );
-					}
-
-
-
-					else {
-						// ${#var} notation
-						if( varname.startsWith("#") ) {
-							varname = varname.substring(1);
-							XValue val = mShell.getEnv().getVarValue( varname );
-							int sz = (val == null || val.isNull()) ?  0 : val.asXdmValue().size();
-							return new XValue( sz);
-
-
-						}
-
-						// Get the XVariable
-						String ind = null; // [ind] expr
-						String tie = null; // :tie expr
-
-						// Strip off tie expr
-						if( varname.contains(":")) {
-							int as = varname.indexOf(':');
-							if( as > 0 ){
-								tie = varname.substring(as+1 );
-								varname = varname.substring( 0 , as );
-							}
-
-						}
-
-
-
-						// Look for array notation 
-						// ${var[3]}
-						if( varname.contains("[")){
-							int as = varname.indexOf('[');
-							ind = varname.substring(as+1 , varname.indexOf(']')).trim();
-							/*
-							 * Expand index if it starts with "$"
-							 */
-							if( ind.startsWith("$")){
-								XValue indv = evalVar( ind.substring(1)  );
-								if( indv != null )
-									ind = indv.toString();
-
-							}
-							varname = varname.substring(0,as);
-						}
-
-
-						if( Util.isInt(varname,false)){
-							int n = Util.parseInt(varname, -1);
-							if( n == 0 )
-								return new XValue(mShell.getArg0());
-							else
-								if( n > 0 && n <= mShell.getArgs().size() ){
-									XValue value = mShell.getArgs().get(n-1);
-									return ind == null ? value : new XValue( value.asXdmValue(ind) ) ;
-
-								}
-								else
-									return null;	// unfound args, do not get used, 
-						}
-
-
-
-
-						XVariable var = mShell.getEnv().getVar(varname);
-						if( var == null )
-							return null;
-
-
-						return var.getValue(  mShell, ind ,
-								tie == null ? null : new XValue(tie) );
-					}
-	}
 
 }
 

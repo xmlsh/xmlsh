@@ -11,10 +11,10 @@ import org.xmlsh.core.CommandFactory;
 import org.xmlsh.core.ICommand;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.XValue;
-import org.xmlsh.core.XVariable;
 import org.xmlsh.sh.core.Command;
 import org.xmlsh.sh.core.EvalScriptCommand;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.sh.shell.ShellConstants;
 
 import java.util.List;
 
@@ -71,11 +71,11 @@ public class xmlsh extends BuiltinCommand {
 		    
 		    String rcfile =  opts.getOptString("rcfile", null );
 		    if( rcfile == null ){
-		    	XValue xrc = shell.getEnv().getVarValue(XVariable.XMLSHRC);
+		    	XValue xrc = shell.getEnv().getVarValue(ShellConstants.XMLSHRC);
 		        if( xrc != null )
 		        	rcfile = xrc.toString();
 		    	if( rcfile == null ){
-			    	XValue home = shell.getEnv().getVarValue(XVariable.HOME);
+			    	XValue home = shell.getEnv().getVarValue(ShellConstants.HOME);
 			    	if( home != null ){
 			    		rcfile = home.toString() + "/.xmlshrc" ;
 			    	}

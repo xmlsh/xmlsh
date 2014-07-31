@@ -13,7 +13,6 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.apache.log4j.PropertyConfigurator;
 import org.apache.log4j.RollingFileAppender;
-import org.xmlsh.core.XVariable;
 
 import java.util.Collections;
 import java.util.Enumeration;
@@ -43,7 +42,7 @@ class Logging {
 		}
 		
 		// First look for a properties file 
-		String log4jpath = System.getenv(XVariable.XLOG4JPATH);
+		String log4jpath = System.getenv(ShellConstants.XLOG4JPATH);
 		if( log4jpath != null ){
 			try {
 				PropertyConfigurator.configure( log4jpath );
@@ -53,7 +52,7 @@ class Logging {
 		}
 
 		// If none found log to XLOGFILE
-		String filename = System.getenv(XVariable.XLOGFILE);
+		String filename = System.getenv(ShellConstants.XLOGFILE);
 	
 /*	
  	Dont log to $XMLSH by default

@@ -7,15 +7,16 @@
 package org.xmlsh.sh.core;
 
 import net.sf.saxon.s9api.XdmNode;
-
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.EvalEnv;
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
+import org.xmlsh.sh.shell.ParseResult;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.types.TypeFamily;
 import org.xmlsh.util.ByteFilterInputStream;
 import org.xmlsh.util.Util;
 import org.xmlsh.util.XMLException;
@@ -72,7 +73,7 @@ public class CommandFileWord extends Word {
 		} 
 			
 	}
-	XdmNode	expandXFile( Shell shell , Word xfile, SourceLocation loc ) throws IOException, CoreException{
+	private XdmNode	expandXFile( Shell shell , Word xfile, SourceLocation loc ) throws IOException, CoreException{
 		XValue 	files = xfile.expand(shell, mEnv, loc);
 		String file;
 		if( files.isAtomic() )
@@ -90,25 +91,6 @@ public class CommandFileWord extends Word {
 	}
 
 
-	@Override
-	public XValue expand(Shell shell, EvalEnv env,SourceLocation loc ) throws IOException, CoreException {
-
-		if(mType.equals("$(<")){
-			
-			String value = expandFile( shell , mFile,loc );
-			return expandWords( shell, value ,env );
-
-		} else
-		if( mType.equals("$<(<")){
-			XdmNode node = expandXFile(shell , mFile,loc);
-			return new XValue(node);
-			
-		}
-		else
-			return null;
-	
-	}
-
 
 
 	public boolean isEmpty() {
@@ -125,6 +107,24 @@ public class CommandFileWord extends Word {
 	{
 		return mType + mFile.getSimpleName()  + ")";
 	}
+
+	@Override
+    protected ParseResult expandToResult(Shell shell, EvalEnv env, SourceLocation loc, ParseResult result) throws IOException,
+            CoreException
+    {
+	
+		if(mType.equals("$(<")){
+			
+			String value = expandFile( shell , mFile,loc );
+			result.add( new XValue( value ) , true );
+
+		} else
+		if( mType.equals("$<(<")){
+			XdmNode node = expandXFile(shell , mFile,loc);
+			result.add( new XValue( TypeFamily.XDM,node) , true );
+		}
+		return result ;
+    }
 	 
 }
 

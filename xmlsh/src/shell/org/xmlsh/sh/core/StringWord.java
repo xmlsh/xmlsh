@@ -9,6 +9,8 @@ package org.xmlsh.sh.core;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.EvalEnv;
 import org.xmlsh.core.XValue;
+import org.xmlsh.sh.shell.Expander;
+import org.xmlsh.sh.shell.ParseResult;
 import org.xmlsh.sh.shell.Shell;
 
 import java.io.IOException;
@@ -34,11 +36,6 @@ public class StringWord extends Word
 		out.print(mString);
 	}
 
-	@Override
-	public XValue expand(Shell shell,EvalEnv env, SourceLocation loc) throws IOException, CoreException
-	{
-		return shell.expandToValue(mString, env , loc);
-	}
 
 
 	public boolean isEmpty()
@@ -58,6 +55,14 @@ public class StringWord extends Word
 	{
 		return isEmpty() ? "<null>" : mString;
 	}
+
+	@Override
+    protected ParseResult expandToResult(Shell shell, EvalEnv env, SourceLocation loc, ParseResult result) throws IOException, CoreException
+    {
+		return EvalUtils.expandStringToResult(shell, mString , env, loc, result);
+		
+		
+    }
 }
 
 //

@@ -13,6 +13,7 @@ import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Task;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.sh.shell.ShellConstants;
 import org.xmlsh.util.Util;
 
 import java.util.ArrayList;
@@ -26,7 +27,7 @@ public class XmlshTask extends Task {
 
 	static {
 		// Pre-initialize shell so logging can work before executing first task
-		Shell.initialize();
+		ShellConstants.initialize();
 	
 	}
 

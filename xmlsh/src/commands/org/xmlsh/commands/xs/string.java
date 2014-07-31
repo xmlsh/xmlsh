@@ -9,6 +9,8 @@ package org.xmlsh.commands.xs;
 import org.xmlsh.core.BuiltinFunctionCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.sh.shell.ShellConstants;
+import org.xmlsh.util.Util;
 
 import java.util.List;
 
@@ -21,16 +23,8 @@ public class string extends BuiltinFunctionCommand {
 	
 	@Override
 	public XValue run(Shell shell, List<XValue> args) {
-		StringBuffer sb = new StringBuffer();
-		for( XValue arg : args ){
-			if( sb.length() > 0 )
-				sb.append(" ");
-			sb.append( arg.toString());
-		}
 		
-		
-		
-		return new XValue( sb.toString() );
+		return new XValue( Util.joinValues(args,ShellConstants.ARG_SEPARATOR ) );
 	}
 
 }

@@ -11,6 +11,7 @@ import org.xmlsh.core.CoreException;
 import org.xmlsh.core.EvalEnv;
 import org.xmlsh.core.EvalFlag;
 import org.xmlsh.core.XValue;
+import org.xmlsh.sh.shell.ParseResult;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.Util;
 
@@ -24,66 +25,24 @@ import java.util.List;
  * A list of word expressions that should be joined together as a StringWord
  */
 @SuppressWarnings("serial")
-public class StringWordList extends Word  {
+public class JoinedWordList extends Word  {
 
-	private List<StringWord> mList = new ArrayList<>();
+	private List<Word> mList = new ArrayList<>();
 	
 	public void print(PrintWriter out) {
 		for( Word s : mList ){
 			s.print( out );
 			out.print( " ");
 		}
-		
 	}
 
-	public void add( StringWord word ) {
+	public void add( Word word ) {
+		if( word instanceof JoinedWordList ) 
+			mList.addAll(((JoinedWordList)word).mList);
+		else
 		   mList.add( word );
 	}
-	public void add( StringWordList word ) {
-			mList.addAll( ((StringWordList)word).mList );
-	}
-	public XValue expand(Shell shell, EvalEnv env , SourceLocation loc) throws IOException, CoreException {
-		
-		StringBuilder sb = new StringBuilder();
-		// Combine and wild card expand
-		for( StringWord w : mList ) {
-			sb.append( w.toString() );
-		}
-
-
-		return shell.expandToValue(sb.toString(), env , loc);
-		
-		/*
-		
-		
-		if( mList.size() == 0 )
-			return new XValue(XdmEmptySequence.getInstance());
 	
-		
-		List<XValue>  ret = new ArrayList<XValue>( mList.size() );
-	
-		// Expand first pass without wildcard expansion
-		EvalEnv noWild = env.withFlagOff(EvalFlag.EXPAND_WILD);
-		for( Word w : mList ) {
-		    XValue v = w.expand(shell,noWild,loc) ;
-		    if( (v == null || v.isNull()) && env.omitNulls() )
-		    	continue;
-			ret.add(v );
-		}	
-
-		if( ret.size() == 0 )
-			return new XValue(  env.omitNulls() ? null : XdmEmptySequence.getInstance());
-
-		
-		// Combine and wild card expand
-		StringBuilder sb = new StringBuilder();
-
-		for( XValue x : ret )
-			sb.append( x.toString());
-		return new XValue( sb.toString() );
-		*/
-		
-	}
 
 	@Override
     public boolean isEmpty()
@@ -95,6 +54,8 @@ public class StringWordList extends Word  {
     public
     String getSimpleName()
     {
+		
+		// Temporary Hack
 	    StringBuilder sb = new StringBuilder();
 	    for( Word w : mList ) {
 	    	
@@ -103,6 +64,20 @@ public class StringWordList extends Word  {
 	    	sb.append( w.getSimpleName());
 	    }
 	    return sb.toString();
+    }
+
+	@Override
+    protected ParseResult expandToResult(Shell shell, EvalEnv env, SourceLocation loc, ParseResult result) throws IOException,
+            CoreException
+    {
+		
+		// Combine and wild card expand
+		for( Word w : mList ) {
+			result = w.expandToResult(shell, env, loc, result);
+		}
+
+		return result;
+		
     }
 	
 }

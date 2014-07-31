@@ -209,21 +209,6 @@ public class XSDValidator {
 		
 		if( mSchema != null )
 			sources.add( new StreamSource(mSchema));
-		
-/*		
-		if( mSchemaList != null ) {
-			StringBuffer sb = new StringBuffer();
-			for( String s : mSchemaList ){
-				
-				
-				if( sb.length() > 0 )
-					sb.append(" ");
-				sb.append( s );
-				
-			}
-			
-		}
-*/		
 	    
 		Schema s = f.newSchema((Source[]) sources.toArray(new Source[sources.size()]));
 		Validator v = s.newValidator();

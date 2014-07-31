@@ -18,12 +18,13 @@ public class EvalEnv
 {
 	private EnumSet<EvalFlag> evalFlags;
 	private final static EnumSet<EvalFlag> _nopreserveFlags = EvalFlag.evalFlags(true,true,true,false);
+	private final static EnumSet<EvalFlag> _preserveFlags = EvalFlag.evalFlags(false,false,false,true);
 
 	// Cached instances
 	private final static EvalEnv _evalNone = new EvalEnv();
 	private final static EvalEnv _basicInstance = newInstance( false,false,false,false);
 	private final static EvalEnv _fileInstance = newInstance( false,true,true,false);
-	private final static EvalEnv _preserveInstance = newInstance( false,false,false,true);
+	private final static EvalEnv _preserveInstance = newInstance(_preserveFlags);
 	private final static EvalEnv _nopreserveInstance = newInstance( _nopreserveFlags );
 	
 
@@ -77,7 +78,10 @@ public class EvalEnv
 		return _nopreserveFlags ; 
     }
 	
-	
+	public static EnumSet<EvalFlag> returnValueMask()
+    {
+		return _preserveFlags ; 
+    }
 
 	public static EvalEnv  newInstance( EnumSet<EvalFlag> flags  )
 	{
@@ -144,9 +148,7 @@ public class EvalEnv
 		
 	}
 	public static EnumSet<EvalFlag> addFlags( EvalEnv env , EnumSet<EvalFlag> on ) {
-
 		return Util.withEnumsAdded(env.evalFlags, on );
-		
 	}
 	
 	

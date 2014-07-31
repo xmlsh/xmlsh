@@ -6,7 +6,7 @@
 
 package org.xmlsh.sh.shell;
 
-enum CharAttr {
+public enum CharAttr {
 	ATTR_NONE( 0 ),
 	ATTR_SOFT_QUOTE(1),
 	ATTR_HARD_QUOTE(2),
@@ -20,10 +20,10 @@ enum CharAttr {
 		this.attr = attr ;
 	}
 
-	boolean isQuote() { 
+	public boolean isQuote() { 
 		return isSet( (ATTR_SOFT_QUOTE.attr|ATTR_HARD_QUOTE.attr ) ); 
 		}
-	byte attr() { return (byte) this.attr ; }
+	public byte attr() { return (byte) this.attr ; }
 
 	
 	public static CharAttr valueOf(char c)

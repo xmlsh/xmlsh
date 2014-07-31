@@ -54,24 +54,6 @@ public class XVariable {
 		
 	};
 	
-	/*
-	 * Predefined env and shell variable names
-	 */
-    public static final String XLOGFILE = "XLOGFILE";
-    public static final String XLOG4JPATH = "XLOG4JPATH";
-    public static final String XMLSHRC = "XMLSHRC";
-    public static final String HOME = "HOME";
-    public static final String PATH = "PATH";
-    public static final String XPATH = "XPATH";
-    public static final String XMODPATH = "XMODPATH";
-    public static final String PWD = "PWD";
-    public static final String PS1 = "PS1";
-    public static final String PS2 = "PS2";
-    
-    
-    
-	
-	
 	private		String	mName;
 	private		XValue	mValue;
 	private		EnumSet<XVarFlag>	mFlags;

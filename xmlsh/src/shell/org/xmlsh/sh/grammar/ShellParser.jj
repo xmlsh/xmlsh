@@ -88,13 +88,9 @@ public class ShellParser
      if( next == null )
        return new StringWord(t.toString());
      
-     StringWordList l = new StringWordList();
+     JoinedWordList l = new JoinedWordList();
      l.add( new StringWord(t.toString()) );
-     
-     if( next instanceof StringWordList )
-     l.add( (StringWordList) next );  
-     else
-     l.add((StringWord)next);
+     l.add(next);
      return l;
   }
 

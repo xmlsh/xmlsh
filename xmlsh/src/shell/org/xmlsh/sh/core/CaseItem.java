@@ -38,7 +38,7 @@ public class CaseItem {
 	public boolean matches(Shell shell , String word) throws IOException, CoreException {
 		for( String pattern : mPattern ){
 			
-			String p = shell.expandToString(pattern, mEnv , mLocation );
+			String p = EvalUtils.expandStringToString(shell, pattern , mEnv, mLocation );
 			
 			
 			if( Util.wildMatches( p, word , true ))
