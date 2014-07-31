@@ -20,10 +20,12 @@ import net.sf.saxon.trans.XPathException;
 
 import org.apache.log4j.Logger;
 
+import org.xmlsh.core.CoreException;
 import org.xmlsh.core.EvalFlag;
 import org.xmlsh.core.AbstractPort;
 import org.xmlsh.core.IReleasable;
 import org.xmlsh.core.Namespaces;
+import org.xmlsh.core.UnimplementedException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.core.CharAttributeBuffer;
 import org.xmlsh.sh.shell.SerializeOpts;
@@ -1566,7 +1568,11 @@ public class Util
 		throw new IOException( message , e );
 		
 	}
-
+	public static void wrapCoreException(String message , Throwable e) throws CoreException {
+		
+		throw new CoreException( message , e );
+		
+	}
 
 	public static void safeClose(XMLEventWriter closable ) {
 		try {
@@ -1608,6 +1614,63 @@ public class Util
 	    }
 	    return sb.toString();
 	}
+
+
+	// Iterator from start to ... end (exclusive)
+	public static Iterator<String> rangeIterator(final int start , final int end )
+    {
+		return new Iterator<String>() {
+			int pos = start ;
+			
+
+			@Override
+            public boolean hasNext()
+            {
+	            return start < end ;
+            }
+
+			@Override
+            public String next()
+            {
+	            return String.valueOf( pos++ );
+            }
+
+			@Override
+            public void remove()
+            {
+	            throw new UnsupportedOperationException();
+	            
+            }
+		};
+		
+    }
+
+
+	public static Iterator<String> stringIterator(final Iterator<Integer> iterator)
+    {
+		return new Iterator<String>() {
+			Iterator<Integer> iter = iterator;
+
+			@Override
+            public boolean hasNext()
+            {
+				return iter.hasNext();
+            }
+
+			@Override
+            public String next()
+            {
+	           return iter.next().toString();
+            }
+
+			@Override
+            public void remove()
+            {
+	            iter.remove();
+	            
+            }
+		};
+    }
 
 }
 

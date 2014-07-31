@@ -68,7 +68,7 @@ public class VariableInputPort extends InputPort {
 			
 			
 			if (value.isXdmValue())
-				Util.writeXdmValue(value.asXdmValue(null), Util
+				Util.writeXdmValue(value.asXdmValue(), Util
 						.streamToDestination(buf, opts)); // uses output xml encoding
 			else
 				buf.write(value.toBytes(opts)); // Use output encoding

@@ -10,7 +10,6 @@ import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.XdmAtomicValue;
 import net.sf.saxon.s9api.XdmValue;
 import net.sf.saxon.trans.XPathException;
-
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
@@ -18,6 +17,7 @@ import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -25,9 +25,13 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
 import java.net.URI;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.type.CollectionLikeType;
 
 public class JavaUtils {
 
@@ -437,13 +441,19 @@ private static Set< String > mReserved;
 
 	public static XValue getField(String classname, XValue instance, String fieldName, ClassLoader classloader) throws InvalidArgumentException, SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException, ClassNotFoundException {
 		Class<?> cls = findClass(classname, classloader);
-	    Field f = cls.getField(fieldName);
+		return getField( cls , instance == null ? null : instance.asObject() , fieldName , classloader );
+	}
+	
+	public static XValue getField(Class<?> cls , Object instance, String fieldName, ClassLoader classloader) throws InvalidArgumentException, SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException, ClassNotFoundException {
+	    assert( cls != null );
+	    assert( fieldName != null );
+	   
+		Field f = cls.getField(fieldName);
 	    
-
 		if (f == null) 
-			throw new InvalidArgumentException("No field match found for: " + classname + "." + fieldName );
+			throw new InvalidArgumentException("No field match found for: " + cls.getName() + "." + fieldName );
 
-		Object obj = f.get(instance == null ? null : instance.asObject());	
+		Object obj = f.get(instance == null ? null : instance);	
 		// Special case for null - use formal return type to cast to right XValue type
 		if( obj == null ){
 			if( String.class.isAssignableFrom(f.getType()) )
@@ -451,13 +461,11 @@ private static Set< String > mReserved;
 			else
 				return new XValue( (Object) null);
 			
-			
 		}
-			
-		
 		
 		return new XValue(obj);
 	}
+	
 
 
 	public static  int canConvertClass( Class<?> sourceClass ,  Class<?> targetClass) throws InvalidArgumentException {
@@ -504,6 +512,18 @@ private static Set< String > mReserved;
     public static byte[] toBytes(Object value, SerializeOpts opts) throws UnsupportedEncodingException {
        return value.toString().getBytes( opts.getOutput_text_encoding() );
         
+    }
+
+	public static int getSize(Object obj)
+    {
+
+		if( obj instanceof Collection )
+			return ((Collection<?>)obj).size();
+		if( obj instanceof Array )
+			Array.getLength(obj);
+
+		return 0;
+    
     }
 
 	

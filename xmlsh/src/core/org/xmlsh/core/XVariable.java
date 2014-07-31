@@ -18,10 +18,14 @@ import net.sf.saxon.s9api.XdmValue;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+
 import org.xml.sax.SAXException;
+import org.xmlsh.sh.core.EvalUtils;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.types.IType;
 import org.xmlsh.types.ITypeFamily;
 import org.xmlsh.types.TypeFamily;
+import org.xmlsh.types.XTypeKind;
 import org.xmlsh.util.NameValueMap;
 import org.xmlsh.util.Util;
 import org.xmlsh.xpath.EvalDefinition;
@@ -36,8 +40,11 @@ public class XVariable {
 	
 	private static final String sName = "name";
 	private static final String sVariable = "variable";
-	
+	private static final String sKind = "kind";
+
 	private static final String sType = "type";
+	private static final String sSimpleType = "simple-type";
+
 	private static final String sFlags = "flags";
 	private static final String sTypeFamily = "type-family";
 
@@ -59,9 +66,6 @@ public class XVariable {
 	private		EnumSet<XVarFlag>	mFlags;
 	private		XQueryExecutable		mTieExpr;	// Tie expression
 	
-	
-	
-
     
     
 	public XVariable( String name , XValue value , EnumSet<XVarFlag> flags)
@@ -143,20 +147,37 @@ public class XVariable {
 		writer.writeAttribute(sName, getName());
 		writer.writeAttribute(sTypeFamily, value == null ? "null" : value.typeFamily().name() );
 		
-		String type ;
-		if( value == null )
-			type = "null";
-		else
-		if( value.isObject() )
-			type = value.asObject().getClass().getName();
-		else
-		if( value.isAtomic())
-			type = "string";
-		else
-			type = "xml"; 
+		String type  = "null" ;
+		String kind = XTypeKind.UNKNOWN.name() ;
+		String simpleType = kind;
 		
-		
+	    if( value == null )
+	    	type = "null";
+	    else { 
+	    	Object obj = value.asObject();
+			ITypeFamily it = value.typeFamilyInstance();
+			IType itype = null ;
+			if( it != null )
+				 itype = it.getType(obj);
+			if( it == null  || itype == null  ) {
+				  if( obj == null )
+					  kind = XTypeKind.NULL.name();
+				  else {
+				    type = obj.getClass().getName();
+				    simpleType = type.replaceFirst("^.*\\.", "");
+				    
+				  }
+			} 
+			else {
+					kind = itype.kind().name();
+					type = itype.typeName();
+				    simpleType = itype.simpleName();
+				}
+			
+	    }
+		writer.writeAttribute(sKind,kind);
 		writer.writeAttribute(sType,type);
+		writer.writeAttribute(sSimpleType,simpleType);
 		writer.writeAttribute(sFlags, flagStr );
 		writer.writeEndElement();
 		
@@ -230,7 +251,7 @@ public class XVariable {
 		
 	}
 	
-	private  XValue	 getTiedValue( Shell shell , XdmItem  item  , XValue arg) throws CoreException
+	private  XValue	 getTiedValue( Shell shell , XdmItem  item  , String tie) throws CoreException
 	{
 		
 		
@@ -241,7 +262,9 @@ public class XVariable {
 			
 		try {
 					
-			eval.setExternalVariable( new QName("_") , arg.asXdmValue() );
+	//		eval.setExternalVariable( new QName("_") , new XValue( TypeFamily.XDM , tie ).asXdmValue() );
+			eval.setExternalVariable( new QName("_") , new XValue(  tie ).asXdmValue() );
+
 			eval.setContextItem(item);
 			
 			XdmValue result =  eval.evaluate();
@@ -250,10 +273,8 @@ public class XVariable {
 			return new XValue(result) ;
 			
 			
-			
-			
 		} catch (SaxonApiException e) {
-			String msg = "Error expanding xml expression: " + arg ;
+			String msg = "Error expanding xml expression: " + tie ;
 			mLogger.warn( msg , e );
 		    throw new CoreException(msg  , e );
 		    
@@ -271,44 +292,26 @@ public class XVariable {
 	 * Get a variable value with an optional index and tie expression
 	 */
 
-	public XValue getValue(Shell shell, String ind, XValue arg) throws CoreException {
+	public XValue getValue(Shell shell, String ind, String tie) throws CoreException {
 	
-		XValue xvalue = getValue();
-		if( xvalue == null || xvalue.isNull() )
-			return null;
 		
-		switch( xvalue.typeFamily() ) {
-		    case JAVA :
-		        return xvalue ;
-		    case JSON :
-		        return xvalue ;
-		    case XDM :
-		        XdmValue value = xvalue.asXdmValue(ind);
-		        if( value == null )
-		            return null ;
-		        // TIE expression
-		        if( arg != null &&  mTieExpr != null  ){
-		            if( value instanceof XdmItem )
-		                return this.getTiedValue(shell, (XdmItem)value , arg);
-		        }
-		        return new XValue(value);
-		    case XTYPE:{
-		        if( Util.isEmpty(ind))
-		            return xvalue ; // no copy ?
-		        ITypeFamily tf = xvalue.typeFamilyInstance();
-		        XValue v =  tf.getType(xvalue.asObject()).getIndexedValue( xvalue.asObject() , ind );
-		        if( v != null )
-		            return v ;
-		        return xvalue ;
-		    }
-		    default :
-		        return xvalue ;
-		 
-		}
+		XValue xvalue = EvalUtils.getIndexedValue(mValue, ind);
+       
+        if( tie != null && xvalue.isXdmValue()  )
+        	xvalue = getTiedValue(shell, xvalue.asXdmItem() , tie );
+        return xvalue ;
 				
-		
-		
 	}
+	
+	public int getSize()
+    {
+		return EvalUtils.getSize( getValue() );
+		
+	
+		
+    }
+	
+	
 	public boolean isExport() {
 		return mFlags.contains(XVarFlag.EXPORT) && ! mFlags.contains(XVarFlag.UNSET );
 	}
@@ -318,6 +321,7 @@ public class XVariable {
 		clear();
 		mFlags.add( XVarFlag.UNSET );
 	}
+
 
 
 	

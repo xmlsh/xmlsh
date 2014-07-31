@@ -6,8 +6,17 @@
 
 package org.xmlsh.core;
 
+import org.xmlsh.sh.shell.SerializeOpts;
+import org.xmlsh.util.Util;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
@@ -41,19 +50,64 @@ public class XValueMap implements XValueContainer<XValueMap>
 	@JsonAnyGetter 
 	public Map<String,XValue> properties(){ return mMap ; }
 
-    @Override
-    public XValue get(int index) {
-       return get( String.valueOf(index));
-    }
 
 
     @Override
-    public XValueMap removeAll() {
+    public void removeAll() {
         mMap.clear();
-        return this;
         
     }
 
+	@Override
+    public void add(XValue value)
+    {
+	    // TODO Auto-generated method stub
+	    
+    }
+
+	@Override
+    public XValue put(String key, XValue value)
+    {
+		return  mMap.put(key, value);
+		 
+    }
+
+	@Override
+    public Iterator<String> keyIterator()
+    {
+
+		return mMap.keySet().iterator();
+    }
+
+	@Override
+    public Iterator<XValue> valueIterator()
+    {
+	    return mMap.values().iterator();
+    }
+	
+	@Override
+    public void serialize(OutputStream out, SerializeOpts opts) throws IOException
+    {
+	 try ( OutputStreamWriter ps = new OutputStreamWriter(out, opts.getInputTextEncoding() ) ){
+		   String sep = "";
+
+		   ps.write("{");
+		   for(  Entry<String, XValue> entry : mMap.entrySet() ) {
+			   ps.write(sep);;
+			    ps.write( "[" );
+			    ps.write( entry.getKey().toString());
+			    ps.write("]=");
+			    ps.flush();
+			    entry.getValue().serialize(out, opts);
+			    ps.write(" ");
+			    sep = ",";
+		   }
+		   ps.write("}");
+	   } catch (InvalidArgumentException e) {
+       Util.wrapIOException(e);
+  }
+	    
+  }
 }
 
 

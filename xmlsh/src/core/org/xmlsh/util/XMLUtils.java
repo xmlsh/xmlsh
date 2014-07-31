@@ -1,6 +1,7 @@
 package org.xmlsh.util;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 
@@ -14,13 +15,12 @@ import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XdmValue;
 import net.sf.saxon.value.AtomicValue;
-
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.sh.shell.SerializeOpts;
 
 public class XMLUtils
 {
-    public static byte[]   toBytes(XdmValue xdm , SerializeOpts opts ) throws SaxonApiException, UnsupportedEncodingException
+    public static byte[]   toBytes(XdmValue xdm , SerializeOpts opts ) throws SaxonApiException, IOException
     {
         if( xdm != null ){
             if( isAtomic(xdm) )
@@ -76,11 +76,13 @@ public class XMLUtils
             throw new InvalidArgumentException("Value is not a Node");
     }
     
-    public static void serialize( XdmValue value , OutputStream out, SerializeOpts opt) throws SaxonApiException
+    public static void serialize( XdmValue value , OutputStream out, SerializeOpts opt) throws SaxonApiException, IOException
     {
         Serializer ser = Util.getSerializer(opt);
         ser.setOutputStream( out );
         Util.writeXdmValue( value , ser );
+        ser.close();;
+        out.flush();
     }
 
 

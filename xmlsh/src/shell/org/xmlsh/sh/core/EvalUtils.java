@@ -16,6 +16,7 @@ import org.xmlsh.sh.shell.Expander;
 import org.xmlsh.sh.shell.ParseResult;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.sh.shell.ShellConstants;
+import org.xmlsh.types.ITypeFamily;
 import org.xmlsh.util.Util;
 
 import java.io.File;
@@ -52,9 +53,11 @@ public class EvalUtils
 			// ${#var} notation
 			if(varname.startsWith("#")) {
 				varname = varname.substring(1);
-				XValue val = shell.getEnv().getVarValue(varname);
-				int sz = (val == null || val.isNull()) ? 0 : val.asXdmValue().size();
-				return new XValue(sz);
+				XVariable var = shell.getEnv().getVar(varname);
+				if(var == null)
+					return new XValue(0);
+				return new XValue( var.getSize());
+
 
 			}
 
@@ -95,19 +98,32 @@ public class EvalUtils
 					return new XValue(shell.getArg0());
 				else if(n > 0 && n <= shell.getArgs().size()) {
 					XValue value = shell.getArgs().get(n - 1);
-					return ind == null ? value : new XValue(value.asXdmValue(ind));
+					return ind == null ? value : getIndexedValue( value , ind );
 
 				} else
 					return null; // unfound args, do not get used,
 			}
 
+			
 			XVariable var = shell.getEnv().getVar(varname);
 			if(var == null)
 				return null;
-
-			return var.getValue(shell, ind, tie == null ? null : new XValue(tie));
+			if( ind == null && tie == null )
+				return var.getValue();
+			else
+				return var.getValue(shell, ind, tie );
 		}
 	}
+
+	public static XValue getIndexedValue(XValue xvalue, String ind) throws CoreException
+    {
+        ITypeFamily tf = xvalue.typeFamilyInstance();
+        if( tf == null )
+        	return xvalue ;
+
+        xvalue = tf.getValue( xvalue , ind );
+        return xvalue ;
+    }
 
 	/*
 	 * Recursively Expand a possibly multi-level wildcard rooted at a directory
@@ -366,6 +382,17 @@ public class EvalUtils
 		return xv;
 	
 	}
+
+	public static int getSize(XValue xvalue)
+    {
+		if( xvalue == null || xvalue.isNull() )
+			return 0;
+        ITypeFamily tf = xvalue.typeFamilyInstance();
+        if( tf == null )
+        	return 0;
+        assert( tf != null );
+        return tf.getSize( xvalue.asObject() );
+    }
 
 }
 

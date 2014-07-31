@@ -1,12 +1,20 @@
 package org.xmlsh.core;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintStream;
+import java.io.Writer;
 import java.util.AbstractList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.util.Util;
 
 /*
@@ -14,50 +22,35 @@ import org.xmlsh.util.Util;
  * Default starts at index 1 (not 0)
  * 
  */
-public class XValueArray extends AbstractList<XValue>  implements XValueContainer<XValueArray> 
+public class XValueArray   implements XValueContainer<XValueArray> 
 {
-    private     SortedMap<Integer,XValue>   mArray;
-    private     int extent = 0; // maximum integer value
+    private     TreeMap<Integer,XValue>   mArray;
+    private     int maxIndex = -1; // maximum integer value
     public XValueArray() {
         mArray = new TreeMap<>();
     }
     
-    // Public position getter is 0 based
-    @Override 
-    public XValue get( int  pos ) {
-        if( pos > extent )
-            return null ;
-        return mArray.get(Integer.valueOf(pos));
-    }
-    public int extent() { return extent ; }
+    public int extent() { return maxIndex ; }
     public int size() { return mArray.size() ; }
     public boolean isEmpty() { return mArray.isEmpty() ; }
     
-    
-    public void setAt( int pos , XValue value ) {
-        if( pos >= extent )
-            extent = pos ;
-        mArray.put( Integer.valueOf(pos), value);
-    }
-
     
     
 
     @Override
     public XValue get(String name) {
         int ind = Util.parseInt(name, -1);
-        if( ind < 0 )
-            return null ;
+        if( ind < 0 || ind > maxIndex  )
+            throw new ArrayIndexOutOfBoundsException() ;
             
-        return get( ind );
+        return mArray.get(Integer.valueOf(ind));
     }
 
 
     @Override
-    public XValueArray removeAll() {
+    public void removeAll() {
         mArray.clear();
-        extent = 0;
-        return this;
+        maxIndex = -1;
         
     }
     
@@ -71,14 +64,64 @@ public class XValueArray extends AbstractList<XValue>  implements XValueContaine
 */
     
     @Override
-    public boolean add( XValue arg )
+    public void add( XValue arg )
     {
-       mArray.put( Integer.valueOf(++extent), arg);
-       return true ;
+       mArray.put( Integer.valueOf(++maxIndex), arg);
     }
-    public void addAll(List<XValue> args) {
-        for(XValue arg : args )
-            add(arg);
+
+	@Override
+    public XValue put(String key, XValue value)
+    {
+        int ind = Util.parseInt(key, -1);
+        if( ind < 0 )
+            throw new ArrayIndexOutOfBoundsException() ;
+
+       return  mArray.put(Integer.valueOf(ind), value);
+    }
+
+	@Override
+    public Iterator<String> keyIterator()
+    {
+	   return Util.stringIterator( mArray.navigableKeySet().iterator() );
+    }
+
+	@Override
+    public Iterator<XValue> valueIterator()
+    {
+
+		return mArray.values().iterator();
+    }
+
+	public void addAll(List<XValue> args)
+    {
+	    
+		for( XValue a : args )
+			add(a);
+	    
+    }
+
+	@Override
+    public void serialize(OutputStream out, SerializeOpts opts) throws IOException
+    {
+	   try ( OutputStreamWriter ps = new OutputStreamWriter(out, opts.getInputTextEncoding() ) ){
+		   String sep = "";
+
+		   ps.write("[");
+		   for(  Entry<Integer, XValue> entry : mArray.entrySet() ) {
+			   ps.write(sep);;
+			    ps.write( "[" );
+			    ps.write( entry.getKey().toString());
+			    ps.write("]=");
+			    ps.flush();
+			    entry.getValue().serialize(out, opts);
+			    ps.write(" ");
+			    sep = ",";
+		   }
+		   ps.write("]");
+	   } catch (InvalidArgumentException e) {
+         Util.wrapIOException(e);
+    }
+	    
     }
 
 

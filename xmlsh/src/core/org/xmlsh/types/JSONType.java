@@ -1,5 +1,6 @@
 package org.xmlsh.types;
 
+import org.xmlsh.util.JSONUtils;
 import org.xmlsh.util.JavaUtils;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -18,8 +19,13 @@ public class JSONType extends TypeBase implements IType
 
     @Override
     public XTypeKind kind() {
-        // TODO Auto-generated method stub
-        return null;
+    	if( mClass == null ) 
+    		return XTypeKind.NULL;
+    	
+    	return XTypeKind.UNKNOWN;
+    	
+    	
+    	
     }
 
     public static IType getType(Object obj) {

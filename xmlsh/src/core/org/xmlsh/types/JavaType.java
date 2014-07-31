@@ -14,7 +14,9 @@ public class JavaType extends TypeBase implements IType
 
     @Override
     public XTypeKind kind() {
-        return null;
+    	if( mClass == null ) 
+    		return XTypeKind.NULL;
+    	return XTypeKind.UNKNOWN;
     }
     
     public static IType getType(Object obj) {

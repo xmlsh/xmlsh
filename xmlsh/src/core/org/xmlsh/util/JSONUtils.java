@@ -8,6 +8,7 @@ package org.xmlsh.util;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.json.JSONSerializeOpts;
@@ -31,6 +32,7 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonParser.Feature;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -435,6 +437,12 @@ public class JSONUtils {
         bos.close();
         return bos.toByteArray();
     }
+    public static JavaType getJavaType( Object obj ) {
+    
+    	return getJsonObjectMapper().constructType(obj.getClass());
+    }
+    
+    
 }
 
 

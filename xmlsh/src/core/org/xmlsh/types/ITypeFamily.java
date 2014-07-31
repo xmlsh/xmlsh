@@ -1,5 +1,12 @@
 package org.xmlsh.types;
 
+import org.xmlsh.core.CoreException;
+import org.xmlsh.core.XValue;
+import org.xmlsh.sh.shell.SerializeOpts;
+import org.xmlsh.sh.shell.Shell;
+
+import java.io.IOException;
+import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.EnumSet;
 
@@ -24,6 +31,9 @@ public interface ITypeFamily
     public boolean isInstanceOfFamily(Object obj) ;
     public boolean isClassOfFamily(Class<?> cls);
     public String asString(Object value) throws Exception ;
+	int getSize(Object obj);
+	public XValue getValue(XValue xvalue, String ind) throws CoreException;
+	void serialize(Object value, OutputStream out, SerializeOpts opts) throws IOException;
     
     
 }

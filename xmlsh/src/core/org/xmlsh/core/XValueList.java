@@ -6,18 +6,23 @@
 
 package org.xmlsh.core;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.util.AbstractList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map.Entry;
 
+import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.util.Util;
 
 /*
  * A list of objects indexable by string or index (1 based for strings)
  */
-public class XValueList  extends AbstractList<XValue>  implements XValueContainer<XValueList> 
+public class XValueList  implements XValueContainer<XValueList> 
 {
 	private  	List<XValue>   mList;
 	
@@ -25,8 +30,8 @@ public class XValueList  extends AbstractList<XValue>  implements XValueContaine
 	    mList = new LinkedList<>();
 	}
 
-	public boolean add( XValue value ) {
-	   return mList.add(value);
+	public void add( XValue value ) {
+	   mList.add(value);
 	}
 
 	public XValue getAt( int pos) {
@@ -45,37 +50,70 @@ public class XValueList  extends AbstractList<XValue>  implements XValueContaine
         return mList.size();
     }
 
-    @Override
-    public XValue get(int index) {
-        return getAt(index);
-    }
 
-    // convert string to 1 basd index 
+    // convert string to 0 basd index 
     @Override
     public XValue get(String name) {
         int ind = Util.parseInt(name, 0);
-        if( ind <= 0 )
+        if( ind <= 0 || ind >= size() )
             return null ;
-        return get(ind-1 );
+        return mList.get(ind);
     }
 
     @Override
-    public XValueList removeAll() {
-      mList.clear();
-      return this;
+    public void removeAll() {
+    	mList.clear();
         
     }
 
-    @Override
-    public boolean addAll(Collection<? extends XValue> args) {
-        return mList.addAll(args);
+	@Override
+    public XValue put(String key, XValue value)
+    {
+		 int ind = Util.parseInt(key, 0);
+	     if( ind <= 0 || ind >= size() )
+	          throw new ArrayIndexOutOfBoundsException();
+	     return mList.set(ind, value);
+	      
     }
 
-    @Override
-    public Iterator<XValue> iterator() {
-       return mList.iterator();
+	@Override
+    public Iterator<String> keyIterator()
+    {
+
+		return Util.rangeIterator(0,size());
+		
     }
-	
+
+	@Override
+    public Iterator<XValue> valueIterator()
+    {
+	    return mList.iterator();
+    }
+
+	public void addAll(List<XValue> args)
+    {
+	    mList.addAll(args);
+    }
+
+	@Override
+    public void serialize(OutputStream out, SerializeOpts opts) throws IOException
+    {
+	   try ( OutputStreamWriter ps = new OutputStreamWriter(out, opts.getInputTextEncoding() ) ){
+		   ps.write("[");
+		   String sep = "";
+		   for( XValue value : mList  ) {
+			    ps.write( sep );
+			    ps.flush();
+			    value.serialize(out, opts);
+			    ps.write(" ");
+			    sep = ",";
+		   }
+		   ps.write("]");
+	   } catch (InvalidArgumentException e) {
+         Util.wrapIOException(e);
+    }
+	    
+    }
 
 }
 

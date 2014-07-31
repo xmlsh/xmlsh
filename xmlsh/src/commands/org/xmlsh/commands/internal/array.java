@@ -7,6 +7,7 @@ import org.xmlsh.core.XValue;
 import org.xmlsh.core.XValueArray;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.types.TypeFamily;
+import org.xmlsh.types.XTypeFamily;
 
 public class array extends BuiltinFunctionCommand
 {
@@ -19,7 +20,7 @@ public class array extends BuiltinFunctionCommand
     public XValue run(Shell shell, List<XValue> args) throws Exception {
        XValueArray a = new XValueArray() ;
        a.addAll( args );
-       return new XValue(null,a);
+       return new XValue(TypeFamily.XTYPE,a);
         
     }
 

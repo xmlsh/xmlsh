@@ -12,7 +12,7 @@ abstract class TypeBase implements IType
 
     @Override
     public String simpleName() {
-       return mClass.getName();
+       return  typeName().replaceFirst("^.*\\.", "");
         
     }
 

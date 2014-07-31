@@ -12,6 +12,11 @@ public class TypeUtils
     
     // Make the best guess as to the type family given only an object
       public static TypeFamily inferFamily( Object obj ) {
+    	  
+    	  // Hack for now - null values are XDM
+    	  if( obj == null )
+    		  return TypeFamily.XDM;
+    	  
           for( TypeFamily f : typeFamilyPrecidence )
               if( f.instance().isInstanceOfFamily(obj))
                   return f;

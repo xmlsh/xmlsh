@@ -65,6 +65,9 @@ public class XValue {
 	private static Logger mLogger = Logger.getLogger( XValue.class);
 
 
+	private static final XValue _theNullInstance = new XValue( TypeFamily.XTYPE );
+
+
 	private     TypeFamily mTypeFamily = null; // default null defers to a runtime evaluatiion
 	private		Object	mValue;		// String , XdmValue , Object , List<XValue> ... 
 	
@@ -318,27 +321,6 @@ public class XValue {
 
 	}
 
-	/*
-	 * Gets a value with optional indice
-	 */
-	public XdmValue asXdmValue(String ind) {
-		if( mValue == null )
-			return null ;
-		else
-			if( ! ( mValue instanceof XdmValue) )
-				return null;
-		XdmValue v = (XdmValue) mValue;
-		if( ind == null || ind.equals("*") )
-			return v ;
-		else {
-			int index = Util.parseInt(ind, 0) - 1;
-			if( index < 0 || index >= v.size() )
-				return null ;
-			return v.itemAt( index );
-		}
-
-
-	}
 
 
 	public  int canConvert( Class<?> c) throws InvalidArgumentException, UnexpectedException {
@@ -474,9 +456,7 @@ public class XValue {
 		// Non-XdmValues not considered atomic.
 		if( ! (mValue instanceof XdmValue ))
 			return false ;
-		ValueRepresentation<? extends Item> value = asXdmValue().getUnderlyingValue();
-		boolean isAtom = ( value instanceof AtomicValue ) || ( value instanceof NodeInfo && ((NodeInfo)value).getNodeKind() == net.sf.saxon.type.Type.TEXT ) ;
-		return isAtom;
+		return XMLUtils.isAtomic(asXdmValue());
 
 
 	}
@@ -550,24 +530,16 @@ public class XValue {
 	 * Returns true if the class is an Integer like class
 	 */
 
-	public void serialize(OutputStream out, SerializeOpts opt) throws InvalidArgumentException 
+	public void serialize(OutputStream out, SerializeOpts opts) throws InvalidArgumentException , IOException  
 	{
-		try {
-			if( isJson() ) {
-				JSONUtils.writeJsonNode(asJson(), out , opt );	
-			}
-			else
-				if( isAtomic() || isObject() )
-					out.write( toString().getBytes(opt.getOutputXmlEncoding()) );
-				else 
-					if( mValue instanceof XdmValue )
-					{
-					    XMLUtils.serialize( (XdmValue) mValue , out , opt );
-					}
-		}	catch( Exception e ){
-			Util.wrapException(e, InvalidArgumentException.class );	
-
-		}
+		
+		ITypeFamily tf = typeFamilyInstance();
+		if( tf != null )
+			tf.serialize( mValue , out , opts );
+		else 
+		  out.write( toBytes(opts) );
+		out.flush();
+		
 	}
 
 	public XValue shift(int n) {
@@ -664,19 +636,25 @@ public class XValue {
 		}
 	}
 
-	public byte[]	toBytes(SerializeOpts opts) throws SaxonApiException, JsonGenerationException, JsonMappingException, InvalidArgumentException, IOException
-	{
-		if( mValue != null ){
-			    switch( typeFamily() ) {
-			    case JAVA :
-			        return JavaUtils.toBytes( mValue  , opts );
-			    case JSON :
-			        return JSONUtils.toBytes( asJson() , opts );
-			    case XDM :
-	                 return XMLUtils.toBytes( asXdmValue(), opts);
-			    }
-			    
-		}
+	public byte[]	toBytes(SerializeOpts opts) throws IOException {
+		try {
+	        if( mValue != null ){
+	        	    switch( typeFamily() ) {
+	        	    case JAVA :
+	        	    case XTYPE :
+	        	        return JavaUtils.toBytes( mValue  , opts );
+	        	    case JSON :
+	        	        return JSONUtils.toBytes( asJson() , opts );
+	        	    case XDM :
+	                     return XMLUtils.toBytes( asXdmValue(), opts);
+	        	    	 
+	        	    }
+	        	    
+	        }
+        } catch (JsonGenerationException | JsonMappingException | UnsupportedEncodingException
+                | InvalidArgumentException |  SaxonApiException e) {
+	       Util.wrapIOException(e);
+        }
 
 		return null;
 	}
@@ -723,7 +701,7 @@ public class XValue {
             }
 		    return "";
 	}
-    ITypeFamily typeFamilyInstance() {
+    public ITypeFamily typeFamilyInstance() {
         return typeFamily().instance();
     }
 
@@ -773,7 +751,11 @@ public class XValue {
     public boolean isTypeFamily(TypeFamily family) {
       return typeFamily() == family ;
     }
-
+	public static XValue nullValue()
+    {
+	   return _theNullInstance;
+    }
+	
 
 }
 //
