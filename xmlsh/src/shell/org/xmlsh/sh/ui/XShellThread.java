@@ -37,7 +37,7 @@ import javax.swing.SwingUtilities;
 // Use a different name to avoid confusion with sh.shell.ShellThread
 public class XShellThread extends Thread {
 
-	private Shell mShell = null;
+	private volatile Shell mShell = null;
 	private boolean mClosed = false ;
 
 	private TextResultPane mResultTextArea;
@@ -53,6 +53,7 @@ public class XShellThread extends Thread {
 	private JTextField mCommandField;
 	private TextFieldStreamPipe cmdPipe ;
 	private SerializeOpts mSerializeOpts;
+	private XShell mXShell;
 	private static Logger mLogger = LogManager.getLogger(XShellThread.class);
 	
 
@@ -63,10 +64,11 @@ public class XShellThread extends Thread {
 
 	
 
-	public XShellThread(ThreadGroup group , List<XValue> args, TextResultPane resultTextArea, JTextField commandField , 
+	public XShellThread(XShell xshell, ThreadGroup group , List<XValue> args, TextResultPane resultTextArea, JTextField commandField , 
 			JButton startButton , JButton stopButton, SerializeOpts serializeOpts) throws IOException {
 		super(group , "xmlshui" );
 		
+		mXShell = xshell ;
 		mArgs = args ;
 		mResultTextArea = resultTextArea;
 		mStartButton = startButton ;
@@ -103,7 +105,7 @@ public class XShellThread extends Thread {
 	public void run() {
 		
 
-		
+		final XShellThread thisThread = this ;
 
 		mResultTextArea.clear();
 
@@ -119,9 +121,14 @@ public class XShellThread extends Thread {
 			public void actionPerformed(ActionEvent e) {
 				if( cmdPipe != null )
 					cmdPipe.reset();
-				if( mShell != null )
-				   mShell.exit(0);
 				
+				if( mShell != null ) {
+					if( thisThread != Thread.currentThread() ) {
+						interrupt();
+						Thread.yield();
+					}
+				   mShell.shutdown(true,0);
+				}				
 				
 			}
 
@@ -201,9 +208,12 @@ public class XShellThread extends Thread {
 
 				}
 				finally {
-					mShell.close();
-					setRunning(false);
-					mShell = null ;
+					if( mShell != null ) {
+	
+						mShell.shutdown(true,1000);
+						setRunning(false);
+						mShell = null ;
+					}
 					if( cmdPipe != null)
 						cmdPipe.close();
 					cmdPipe = null ;
@@ -216,8 +226,14 @@ public class XShellThread extends Thread {
 			mLogger .warn("Exception running shell commands",e);
 
 		}finally {
-			Util.safeClose( mShell );
+			if( mShell != null ) {
+				mShell.shutdown(true,100);
+			}
 			Util.safeClose( cmdPipe );
+			if( mXShell != null )
+				mXShell.onThreadExit( this );
+			
+			mXShell = null ;
 			
 
 		}
@@ -253,8 +269,10 @@ public class XShellThread extends Thread {
 
 	public synchronized void close() {
 		mClosed = true ;
-		
 		this.interrupt();
+		if( mShell != null ) {
+			mShell.shutdown(true,100);
+		}
 
 		
 	}

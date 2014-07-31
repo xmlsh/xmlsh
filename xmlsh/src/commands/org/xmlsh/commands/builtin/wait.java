@@ -78,7 +78,7 @@ public class wait extends BuiltinCommand {
 	 */
 	private int atmost(int n) 
 	{
-		mShell.waitAtMostChildren(n);
+		mShell.waitAtMostChildren(n,0);
 		return 0;
 	}
 

@@ -62,7 +62,7 @@ import javax.swing.text.JTextComponent;
 
 public class XShell {
 
-	private JFrame mframe;
+	private volatile JFrame mframe = null ;
 	private TextAreaComponent mScriptTextArea;
 	private XShellThread mShell = null;
 	private TextResultPane mResultArea ;
@@ -194,7 +194,11 @@ public class XShell {
 		JMenuItem mntmExit = new JMenuItem("Exit");
 		mntmExit.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				mframe.dispose();
+				JFrame top = mframe ;
+				mframe = null ;
+				if( top != null )
+					top.dispose();
+				
 			}
 		});
 		
@@ -401,7 +405,7 @@ public class XShell {
 		
 				
 
-		mShell = new XShellThread( threadGroup , null ,  mResultArea , mCommandInputField  ,  btnRun , btnStop , mSerializeOpts );
+		mShell = new XShellThread( this , threadGroup , null ,  mResultArea , mCommandInputField  ,  btnRun , btnStop , mSerializeOpts );
 		
 		Component horizontalStrut = Box.createHorizontalStrut(20);
 		toolBar.add(horizontalStrut);
@@ -486,6 +490,20 @@ public class XShell {
 		}
 
 	}
+
+	public void onThreadExit(XShellThread thread )
+    {
+		if( this.mShell == thread ) {
+			JFrame top = mframe ;
+			mframe = null ;
+			// unexpected termination 
+			if( top != null )
+				top.dispose();
+			
+			
+		}
+	    
+    }
 }
 
 //

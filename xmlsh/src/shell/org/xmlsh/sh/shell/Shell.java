@@ -12,6 +12,7 @@ import net.sf.saxon.s9api.XdmItem;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.CommandFactory;
@@ -81,6 +82,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Random;
 import java.util.Stack;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Shell implements AutoCloseable, Closeable {
 	
@@ -110,7 +112,7 @@ public class Shell implements AutoCloseable, Closeable {
 	private 	ShellOpts	mOpts;
 	
 	private		FunctionDefinitions mFunctions = null;
-	private		XEnvironment	mEnv  = null;
+	private		XEnvironment	mEnv  = null ;
 	private		List<XValue> 	mArgs = new ArrayList<XValue>();
 	private		InputStream	mCommandInput = null;
 	private		String	mArg0 = "xmlsh";
@@ -158,9 +160,11 @@ public class Shell implements AutoCloseable, Closeable {
 	private Shell mParent = null;
 	private IFS mIFS;
 	private ThreadGroup mThreadGroup = null ;
+	private volatile boolean mClosed = false ;
 	private final static EvalEnv mPSEnv = EvalEnv.newInstance( false,false,true,false);
 
-	
+	private AtomicInteger mRunDepth = new AtomicInteger() ; // count of depth if the shell is executing
+	private volatile List<Process> mChildProcess = null ;
 	
 	/**
 	 * Must call initialize atleast once, protects against multiple initializations 
@@ -213,8 +217,6 @@ public class Shell implements AutoCloseable, Closeable {
 		SystemEnvironment.uninitialize();
 		ShellContext.set(null);
 		bInitialized = false ;
-		
-		
 	}
 	
 	
@@ -244,7 +246,6 @@ public class Shell implements AutoCloseable, Closeable {
 		setGlobalVars();
 		
 		mModule = null ; // no current module
-		
 		ShellContext.set(this);	// cur thread active shell
 		
 		
@@ -423,20 +424,26 @@ public class Shell implements AutoCloseable, Closeable {
 	
 	public void close() 
 	{
-			if( mParent != null )
-				mParent.notifyChildClose(this);
-			mParent = null ;
-			mThreadGroup = null ;
-			if( mEnv != null ){
-				Util.safeClose(mEnv);
-				mEnv = null ;
-			}
-			if( mSavedCD != null )
-				SystemEnvironment.getInstance().setProperty("user.dir", mSavedCD);
-			if( mSession != null ){
-				Util.safeRelease(mSession);
-				mSession = null ;
-			}
+		// Synchronized only to change states 
+		synchronized( this ) {
+			if( mClosed )
+			   return ;
+			mClosed = true ;  
+		}
+		if( mParent != null )
+			mParent.notifyChildClose(this);
+		mParent = null ;
+		mThreadGroup = null ;
+		if( mEnv != null ){
+			Util.safeClose(mEnv);
+			mEnv = null ;
+		}
+		if( mSavedCD != null )
+			SystemEnvironment.getInstance().setProperty("user.dir", mSavedCD);
+		if( mSession != null ){
+			Util.safeRelease(mSession);
+			mSession = null ;
+		}
 	}
 	
 
@@ -493,6 +500,9 @@ public class Shell implements AutoCloseable, Closeable {
 		InputStream is = null;
 
 		try {
+			
+			enterEval();
+			
 			is = Util.toInputStream(scmd, getSerializeOpts());
 			mCommandInput = is ;
 			ShellParser parser= new ShellParser(newParserReader(false),"<eval>");
@@ -510,96 +520,120 @@ public class Shell implements AutoCloseable, Closeable {
 		finally {
 			mCommandInput = save;
 			Util.safeClose(is);
-			
+			exitEval();
 		}
+	}
 
+
+	private void exitEval()
+    {
+	    int d;
+	    if( (d=mRunDepth.decrementAndGet()) < 0 ) {
+	    	mLogger.error("SNH: run depth underrun: " + d  + " resetting to 0" );
+	    	mRunDepth.compareAndSet(d, 0);
+	    }
+    }
+
+
+	private void enterEval()
+    {
+	    mRunDepth.incrementAndGet();
+    }
 	
+	public boolean isExecuting()
+	{
+		return mRunDepth.get() > 0;
 	}
 	
 
 	
 	public		int		runScript( InputStream stream, String source, boolean convertReturn ) throws ParseException, ThrowException, IOException
 	{
-		
-		InputStream save = mCommandInput;
-		SourceLocation saveLoc = getLocation() ;
-		mCommandInput = stream ;
-		ShellParser parser= new ShellParser( newParserReader(true), source );
-		int ret = 0;
+
 		try {
-			while( mExitVal == null && mReturnVal == null  ){
-		      	Command c = parser.command_line();
-		      	if( c == null )
-		      		break;
-		      
-		    	setSourceLocation(c.getLocation());
-		      	if( mOpts.mVerbose || mOpts.mLocation ){
-		      		
-		      		if( mOpts.mLocation ){
-	      				mLogger.info(formatLocation());
-	      			} 
-		      		
-		      		if( mOpts.mVerbose ) {
-			      		String s  = c.toString(false);
-			      		
-			      		if( s.length() > 0 ){
-			      				printErr(s );
-			      		}
-		      		}
-		      	}
-		      	
-		      	ret = exec( c );
-			}
-		} 
-		catch( ThrowException e )
-		{
-			// mLogger.info("Rethrowing throw exception",e);
-			throw e ;	// rethrow 
-			
-		}
-		catch( ExitOnErrorException e )
-		{
-			// Caught Exit on error from a script
-			ret = e.getValue();
-			
-		}
-		
-		
-		catch (Exception e) {
-	       // System.out.println("NOK.");
-	        printErr(e.getMessage());
-	        mLogger.error("Exception parsing statement" , e );
-	        parser.ReInit(newParserReader(false), source );
-	      } catch (Error e) {
-	        printErr(e.getMessage());
-	        mLogger.error("Exception parsing statement" , e );
-	        parser.ReInit(newParserReader(false), source);
-	
-	     } 
-      
-		
-		
-		finally {
-			mCommandInput = save;
-			setCurrentLocation(saveLoc) ;
-		}
-		if( mExitVal != null )
-			ret = mExitVal.intValue();
-		else
-		if( convertReturn &&  mReturnVal != null ){
+			InputStream save = mCommandInput;
+			SourceLocation saveLoc = getLocation() ;
+			mCommandInput = stream ;
+			int ret = 0;
+			ShellParser parser = null ;
 			try {
-				ret = mReturnVal.toBoolean() ? 0 : 1;
-			} catch (Exception e) {
-				mLogger.error("Exception converting return value to boolean", e );
-				ret = -1;
+				enterEval();
+				parser = new ShellParser( newParserReader(true), source );
+				while( mExitVal == null && mReturnVal == null  ){
+					Command c = parser.command_line();
+					if( c == null )
+						break;
+	
+					setSourceLocation(c.getLocation());
+					if( mOpts.mVerbose || mOpts.mLocation ){
+	
+						if( mOpts.mLocation ){
+							mLogger.info(formatLocation());
+						} 
+	
+						if( mOpts.mVerbose ) {
+							String s  = c.toString(false);
+	
+							if( s.length() > 0 ){
+								printErr(s );
+							}
+						}
+					}
+	
+					ret = exec( c );
+				}
+			} 
+			catch( ThrowException e )
+			{
+				// mLogger.info("Rethrowing throw exception",e);
+				throw e ;	// rethrow 
+	
 			}
-			mReturnVal = null ;
-		}
-		
-		onSignal("EXIT");
+			catch( ExitOnErrorException e )
+			{
+				// Caught Exit on error from a script
+				ret = e.getValue();
+	
+			}
+	
+			catch (Exception e) {
+				// System.out.println("NOK.");
+				printErr(e.getMessage());
+				mLogger.error("Exception parsing statement" , e );
+				parser.ReInit(newParserReader(false), source );
+			} catch (Error e) {
+				printErr(e.getMessage());
+				mLogger.error("Exception parsing statement" , e );
+				parser.ReInit(newParserReader(false), source);
+	
+			} 
+			finally {
+				mCommandInput = save;
+				setCurrentLocation(saveLoc) ;
+				
+			}
+
+			// Exited evaluation - but still in entry point  
 			
-		return ret;
-		
+			if( mExitVal != null )
+				ret = mExitVal.intValue();
+			else
+				if( convertReturn &&  mReturnVal != null ){
+					try {
+						ret = mReturnVal.toBoolean() ? 0 : 1;
+					} catch (Exception e) {
+						mLogger.error("Exception converting return value to boolean", e );
+						ret = -1;
+					}
+					mReturnVal = null ;
+				}
+	
+			onSignal("EXIT");
+			return ret;
+
+		} finally {
+			exitEval();
+		}
 	}
 
 
@@ -627,87 +661,85 @@ public class Shell implements AutoCloseable, Closeable {
 		return interactive(null);
 	}
 
-	public		int		interactive(InputStream input) throws Exception
+	public int interactive(InputStream input) throws Exception
 
 	{
-		mIsInteractive = true ;
-		int		ret = 0;
-		
+		mIsInteractive = true;
+		int ret = 0;
+
 		setCommandInput(input);
-		
-		// ShellParser parser= new ShellParser(mCommandInput,Shell.getEncoding());
-		ShellParser parser= new ShellParser(newParserReader(false) ,"stdin");
-		
-		while (mExitVal == null) {
-			
-			  Command c = null ;
-		      try {
-		        prompt(true);
-		      	c = parser.command_line();
+		try {
+			enterEval();
 
-		      	if( c == null )
-		      		break;
-		      	setSourceLocation( c.getLocation());
-		      	
-		      	if( mOpts.mVerbose ){
-		      		String s  = c.toString(false);
-		      		if( s.length() > 0){
-		      			SourceLocation loc  = getLocation();
-		      			printErr( "- " + s );
-		      		}
-		      	}
-		      	
-		      	
-		      	ret = exec( c );
-		      	
-		      	// PrintWriter out = new PrintWriter( System.out );
-		      	//s.print(out);
-		      	//out.flush();
-		      	
-		      } 
-		      catch (ThrowException e) {
-		        printErr("Ignoring thrown value: " + e.getMessage());
-		        mLogger.error("Ignoring throw value",e);
-		        parser.ReInit(newParserReader(false),null);
-		      }
-		      catch (Exception e) {
-		    	
+			// ShellParser parser= new
+			// ShellParser(mCommandInput,Shell.getEncoding());
+			ShellParser parser = new ShellParser(newParserReader(false), "stdin");
 
-		        SourceLocation loc = c != null ? c.getLocation() : null ;
-		        
-		        if( loc != null ){
-		        	String sLoc = loc.format(mOpts.mLocationFormat);
-		        	mLogger.info(loc.format(mOpts.mLocationFormat));
-		        	printErr( sLoc );
-		        }
+			while (mExitVal == null) {
 
-		        printErr(e.getMessage());
-		        mLogger.error("Exception parsing statement",e);
-		        parser.ReInit(newParserReader(false),null);
-		      } catch (Error e) {
-		        printErr("Error: " + e.getMessage());
-		        SourceLocation loc = c != null ? c.getLocation() : null ;
-		        mLogger.error("Exception parsing statement",e);
-		        if( loc != null ){
-		        	String sLoc = loc.format(mOpts.mLocationFormat);
-		        
-		        	mLogger.info(loc.format(mOpts.mLocationFormat));
-		        	printErr( sLoc );
-		        }
-		        parser.ReInit(newParserReader(false),null);
+				Command c = null;
+				try {
+					prompt(true);
+					c = parser.command_line();
 
-		      } 
-		      
+					if(c == null)
+						break;
+					setSourceLocation(c.getLocation());
+
+					if(mOpts.mVerbose) {
+						String s = c.toString(false);
+						if(s.length() > 0) {
+							SourceLocation loc = getLocation();
+							printErr("- " + s);
+						}
+					}
+
+					ret = exec(c);
+
+					// PrintWriter out = new PrintWriter( System.out );
+					// s.print(out);
+					// out.flush();
+
+				} catch (ThrowException e) {
+					printErr("Ignoring thrown value: " + e.getMessage());
+					mLogger.error("Ignoring throw value", e);
+					parser.ReInit(newParserReader(false), null);
+				} catch (Exception e) {
+
+					SourceLocation loc = c != null ? c.getLocation() : null;
+
+					if(loc != null) {
+						String sLoc = loc.format(mOpts.mLocationFormat);
+						mLogger.info(loc.format(mOpts.mLocationFormat));
+						printErr(sLoc);
+					}
+
+					printErr(e.getMessage());
+					mLogger.error("Exception parsing statement", e);
+					parser.ReInit(newParserReader(false), null);
+				} catch (Error e) {
+					printErr("Error: " + e.getMessage());
+					SourceLocation loc = c != null ? c.getLocation() : null;
+					mLogger.error("Exception parsing statement", e);
+					if(loc != null) {
+						String sLoc = loc.format(mOpts.mLocationFormat);
+
+						mLogger.info(loc.format(mOpts.mLocationFormat));
+						printErr(sLoc);
+					}
+					parser.ReInit(newParserReader(false), null);
+				}
+			}
+			if(mExitVal != null)
+				ret = mExitVal.intValue();
+			onSignal("EXIT");
+		} finally {
+			exitEval();
 		}
-		if( mExitVal != null )
-			ret = mExitVal.intValue();
-		
-		onSignal("EXIT");
-		
-		
+
 		return ret;
 	}
-	
+
 	public void setSourceLocation(SourceLocation loc)
 	{
 		setCurrentLocation(loc) ;
@@ -717,21 +749,24 @@ public class Shell implements AutoCloseable, Closeable {
 	public void runRC(String rcfile) throws IOException, Exception {
 		// Try to source the rcfile 
 		if( rcfile != null ){
-			
-			File script = this.getFile(rcfile);
-			if( script.exists() && script.canRead() ){
-
-				ICommand icmd = CommandFactory.getInstance().getScript(this,   script ,true, null );
-				if( icmd != null ){
-					// push location
-					SourceLocation l = getLocation() ;
-					setCurrentLocation(icmd.getLocation());
-					icmd.run(this, rcfile , null);
-					setCurrentLocation(l);
-			
-				}
-	    	}
-			onSignal("EXIT");
+			try {
+					enterEval();
+				File script = this.getFile(rcfile);
+				if( script.exists() && script.canRead() ){
+					ICommand icmd = CommandFactory.getInstance().getScript(this,   script ,true, null );
+					if( icmd != null ){
+						// push location
+						SourceLocation l = getLocation() ;
+						setCurrentLocation(icmd.getLocation());
+						icmd.run(this, rcfile , null);
+						setCurrentLocation(l);
+				
+					}
+		    	}
+				onSignal("EXIT");
+			} finally {
+				exitEval();
+			}
 		}
 	}
 
@@ -792,7 +827,6 @@ public class Shell implements AutoCloseable, Closeable {
 			} catch (Exception e1) {
 				mLogger.info("Exception loading jline");
 			}
-			
 		}
 		if( mCommandInput == null )
             mCommandInput = System.in;
@@ -820,85 +854,78 @@ public class Shell implements AutoCloseable, Closeable {
 
 
 	public int exec(Command c, SourceLocation loc) throws ThrowException, ExitOnErrorException {
-		if( loc == null )
-			loc = c.getLocation();
-		
-		setCurrentLocation(loc) ;
-		
-		if( mOpts.mExec){
-			String out = c.toString(true);
-			if( out.length() > 0 ){
-				
-				if( loc != null ) {
-					printErr("+ " + loc.format(mOpts.mLocationFormat));
-					printErr( out );
-				}
-				
-				else
-					printErr("+ " + out);
-			}
-			
-		
-		}
 		
 		try {
-		
-			if( c.isWait()){
-				// Execute forground command 
-				mStatus = c.exec(this);
-				
-				// If not success then may throw if option 'throw on error' is set (-e)
-				if( mStatus != 0 && mOpts.mThrowOnError && c.isSimple()  ){
-					if( ! isInCommandConndition() )
-						throw new ExitOnErrorException( mStatus);
-					
-					
-					
-				}
-				return mStatus ;
-				
-				
-			}
-			
-			ShellThread sht = new ShellThread( newThreadGroup(c.getName()) ,  new Shell(this) ,null, c );
-			
-			if( isInteractive() )
-				printErr( "" + sht.getId() );
-			
-			addJob( sht );
-			sht.start();
+			enterEval();
+			if(loc == null)
+				loc = c.getLocation();
 
-			return mStatus = 0;
-		} 
-		catch( ThrowException e ){
-			// mLogger.info("Rethrowing ThrowException",e);
-			throw e ;
-		}
-		catch( ExitOnErrorException e ){
-			// rethrow 
-			throw e ;
-		}
-		
-		catch( Exception e )
-		{
-			printLoc( mLogger , loc );
-			
-			printErr("Exception running: " + c.toString(true) );
-			printErr(e.toString(), loc );
-			
-			
-			
-			mLogger.error("Exception running command: " + c.toString(false) , e );
-			mStatus = -1;
-			// If not success then may throw if option 'throw on error' is set (-e)
-			if( mStatus != 0 && mOpts.mThrowOnError && c.isSimple()  ){
-				if( ! isInCommandConndition() )
-					throw new ThrowException( new  XValue(mStatus));
+			setCurrentLocation(loc);
+
+			if(mOpts.mExec) {
+				String out = c.toString(true);
+				if(out.length() > 0) {
+					if(loc != null) {
+						printErr("+ " + loc.format(mOpts.mLocationFormat));
+						printErr(out);
+					}
+					else
+						printErr("+ " + out);
+				}
 			}
-			return mStatus ;
-			
+
+			try {
+
+				if(c.isWait()) {
+					// Execute forground command
+					mStatus = c.exec(this);
+
+					// If not success then may throw if option 'throw on error'
+					// is set (-e)
+					if(mStatus != 0 && mOpts.mThrowOnError && c.isSimple()) {
+						if(!isInCommandConndition())
+							throw new ExitOnErrorException(mStatus);
+					}
+					return mStatus;
+				}
+
+				ShellThread sht = new ShellThread(newThreadGroup(c.getName()), new Shell(this), null, c);
+
+				if(isInteractive())
+					printErr("" + sht.getId());
+
+				addJob(sht);
+				sht.start();
+
+				return mStatus = 0;
+			} catch (ThrowException e) {
+				// mLogger.info("Rethrowing ThrowException",e);
+				throw e;
+			} catch (ExitOnErrorException e) {
+				// rethrow
+				throw e;
+			}
+
+			catch (Exception e) {
+				printLoc(mLogger, loc);
+
+				printErr("Exception running: " + c.toString(true));
+				printErr(e.toString(), loc);
+
+				mLogger.error("Exception running command: " + c.toString(false), e);
+				mStatus = -1;
+				// If not success then may throw if option 'throw on error' is
+				// set (-e)
+				if(mStatus != 0 && mOpts.mThrowOnError && c.isSimple()) {
+					if(!isInCommandConndition())
+						throw new ThrowException(new XValue(mStatus));
+				}
+				return mStatus;
+
+			}
+		} finally {
+			exitEval();
 		}
-		
 	}
 	
 	/*
@@ -1032,12 +1059,14 @@ public class Shell implements AutoCloseable, Closeable {
 		
 		int ret = -1;
 		try {
+			shell.enterEval();
 			ret = cmd.run(shell , "xmlsh" , vargs);
 		} 
 		catch( Throwable e ) {
 			mLogger.error("Uncaught exception in main",e);
 		}
 		finally {
+			shell.exitEval();
 			shell.close();
 		}
 		
@@ -1081,10 +1110,6 @@ public class Shell implements AutoCloseable, Closeable {
 			return new Path( pathVar.toString().split( File.pathSeparator ));
 		
 	}
-	
-	
-	
-	
 	
 	/* 
 	 * Current Directory
@@ -1159,7 +1184,7 @@ public class Shell implements AutoCloseable, Closeable {
 	public boolean keepRunning()
 	{
 		// Hit exit stop 
-		if(  mExitVal != null || mReturnVal != null  )
+		if(  mClosed || mExitVal != null || mReturnVal != null  )
 			return false ;
 		
 		// If the top control stack is break then stop
@@ -1297,11 +1322,35 @@ public class Shell implements AutoCloseable, Closeable {
 			synchronized (mChildren) {
 				mChildren.remove(job);
 				mChildren.notify();  // Must be in syncrhonized block
-				
-
 			}
+	}
+	
+	// Kill a child shell whether or not its in our list of children
+	public void killChild(ShellThread job, long waitTime ) {
+		if( job != Thread.currentThread() ) {
+			if( job.isAlive() ) {
+				try { 
+					job.shutdown(true,waitTime);
+				} catch( Exception e ) {
 
+					mLogger.warn("Exception trying to close child shell: " + job.describe() );
+				} 
+			} else 
+				job.interrupt();
 
+			Thread.yield();
+			if( waitTime >= 0 ) {
+				try {
+					job.join(waitTime);
+				} catch (InterruptedException e) {
+					mLogger.warn("Exception trying to wait for shell: " + job.describe() );
+				}
+			}
+			Thread.yield();
+		
+			if( job.isAlive() ) 
+				mLogger.warn("Failed to kill child shell: " + job.describe() );
+		}
 	}
 	
 	/*
@@ -1321,26 +1370,36 @@ public class Shell implements AutoCloseable, Closeable {
 			}
 		}
 		
-		return mChildren;
+		return mChildren ;
 	}
 	
 	/* 
 	 * Waits until there are "at most n" running children of this shell
 	 */
-	public  void waitAtMostChildren(int n)
+	public  boolean waitAtMostChildren(int n, long waitTime )
 	{
+		long end = System.currentTimeMillis()  + waitTime;
+		
+		waitTime = Util.nextWait( end , waitTime );
 		while( childrenSize() > n ){
+			if( waitTime < 0 )
+				return false ;
 			try {
+				enterEval(); // equivilent to an eval - were blocking
 				if( mChildren != null )
 					synchronized( mChildren ) {
-						mChildren.wait();
+						mChildren.wait(waitTime);
 					}
 				
 			} catch (InterruptedException e) {
 				mLogger.warn("interrupted while waiting for job to complete" , e );
+			} finally {
+			   exitEval();
+			   waitTime = Util.nextWait( end , waitTime );
+			   
 			}
-			
 		}
+		return true ;
 		
 	}
 
@@ -1365,6 +1424,7 @@ public class Shell implements AutoCloseable, Closeable {
 	
 	/*
 	 * Break n levels of control stacks
+	 * -1 means break all
 	 */
 	public int doBreak(int levels) 
 	{
@@ -1372,10 +1432,16 @@ public class Shell implements AutoCloseable, Closeable {
 			return 0;
 		
 		int end = getControlStack().size() - 1 ;
+		if( levels < 0 ) {
+			while( end >= 0 )
+				getControlStack().get(end--).mBreak = true ;
+		} 
+		else {
 		
-		while( levels-- > 0 && end >= 0 )
-			getControlStack().get(end--).mBreak = true ;
-		
+			while(  levels-- > 0 && end >= 0 )
+				getControlStack().get(end--).mBreak = true ;
+			
+		}	
 		return 0;
 			
 		
@@ -1738,10 +1804,6 @@ public class Shell implements AutoCloseable, Closeable {
 	}
 
 
-
-
-
-
 	public int requireVersion(String module, String sreq) {
 		// Creates a 3-4 element array  [ "1" , "0" , "1" , ? ]
 		String aver[] = Version.getVersion().split("\\.");
@@ -1839,6 +1901,8 @@ public class Shell implements AutoCloseable, Closeable {
 	
 	void onSignal( String signal )
 	{
+		
+		// TODO: Should we avoid thiws on shutdown ?
 		if( mTraps == null )
 			return;
 		String scmd = mTraps.get(signal);
@@ -1853,8 +1917,6 @@ public class Shell implements AutoCloseable, Closeable {
 		} catch (Exception e) {
 			this.printErr("Exception running trap: " + signal + ":"  + scmd ,  e );
 		}
-		
-		
 		
 	}
 
@@ -1949,7 +2011,80 @@ public class Shell implements AutoCloseable, Closeable {
 		
 	}
 
+	
+	// Shutdown the shell 
+	// Intended to be called from a external thread to try to force the shell to quit
+	// Dont actually close it - causes too much asyncronous grief
+	
 
+	public boolean shutdown(boolean force ,  long waitTime )
+    {
+	   if( mClosed )
+	  	   return true ;
+	    // Mark us done 
+	    mExitVal = Integer.valueOf(0);
+	   
+		long end = System.currentTimeMillis()  + waitTime;
+		waitTime = Util.nextWait( end , waitTime );
+		
+	   // Break all 
+	   doBreak(-1);
+
+	   List<ShellThread> children = getChildren(false);
+	   if( force ) {
+		   if( children != null ) {
+			   synchronized( children ) {
+				   children = new ArrayList<>(children);
+			   }
+			   for( ShellThread c : children ) {
+					waitTime = Util.nextWait( end , waitTime );
+				    this.killChild(c , waitTime);
+			   }
+		   }
+		   terminateChildProcesses();
+	   }
+	   waitTime = Util.nextWait( end , waitTime );
+	   this.waitAtMostChildren(0, waitTime);
+	   Thread.yield();
+	   return mClosed; 
+	    
+    }
+
+
+	public void addChildProcess(Process proc)
+    {
+	  if( mChildProcess == null ) {
+		  synchronized( this ) {
+			  if( mChildProcess == null )
+				  mChildProcess = Collections.synchronizedList( new  ArrayList<Process>() );
+		  }
+	  }
+	  synchronized( mChildProcess ){
+	     mChildProcess.add(proc);
+	  }
+    }
+	public void removeChildProcess(Process proc)
+    {
+		if( mChildProcess == null )
+			return ;
+		mChildProcess.remove(proc);
+    }
+	
+	public void terminateChildProcesses() {
+		if( mChildProcess == null )
+			return ;
+		synchronized( mChildProcess ) {
+			for( Process p : mChildProcess )
+				p.destroy();
+		   mChildProcess.clear();
+		}
+	}
+
+
+	public boolean isClosed()
+    {
+	    return mClosed ;
+    }
 
 
 }

@@ -1575,8 +1575,21 @@ public class Util
 		
 	}
 
+	// Calculate a new wait time given a current wait time
+	// if waitTime = 0 then means forever (return 0)
+    // if waitTime < 0 means no wait
+	public static long nextWait(long end, long waitTime)
+    {
 
-	
+		if( waitTime <= 0 )
+			return waitTime ;
+		
+		long now = System.currentTimeMillis() ;
+		if( now >= end )
+			return -1;
+		return end - now ;
+    }
+
 }
 
 //

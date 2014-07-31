@@ -18,19 +18,17 @@ public class StreamCopier extends AbstractCopier
 	private 	static 	Logger	mLogger  = LogManager.getLogger(StreamCopier.class);
 	private		volatile InputStream		mIn;
 	private		volatile OutputStream	mOut;
-	private		final boolean			mCloseOut;
-	private    final boolean        mCloseIn;
-	private    final Thread mainThread ;
 
-	public StreamCopier( String name , InputStream in , OutputStream out ,  boolean closeIn, boolean closeOut )
+	protected void finalize() {
+		// Just in case - remove references to mIn and mOut
+		close();
+	}
+	
+	public StreamCopier( String name , InputStream in , OutputStream out  )
 	{
 		super(name);
 		mIn = in;
 		mOut = out;
-		
-		mCloseOut = closeOut; 
-		mCloseIn = closeIn;
-		mainThread = Thread.currentThread();
 	}
 	/* (non-Javadoc)
 	 * @see java.lang.Thread#run()
@@ -39,25 +37,20 @@ public class StreamCopier extends AbstractCopier
 	public void run() 
 	{
 		mLogger.debug("running: " + getName() );
-		if( mainThread != Thread.currentThread())
-			Thread.currentThread().setName( getName() );
 
 		try {
 			Util.copyStream(mIn, mOut);
-			//mIn.close();
-			//mOut.close();
 		} catch (IOException e) {
 			mLogger.warn("IOException copying streams: " + getName()  ,e);
-		} finally {
+        } finally {
 			mLogger.debug("run close(): " + getName()  );
-
 			close();
 		}
 		
 	}
 	@Override
 	public void closeOut() {
-		if( mCloseOut && mOut != null )
+		if(  mOut != null )
 			synchronized (this) {
 				Util.safeClose(mOut);
 				mOut = null ;
@@ -65,7 +58,7 @@ public class StreamCopier extends AbstractCopier
 	}
 	@Override
 	public void closeIn() {
-		if( mCloseIn && mIn != null )
+		if(  mIn != null )
 			synchronized (this) {
 				Util.safeClose(mIn);
 				mIn = null ;

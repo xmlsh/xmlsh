@@ -188,13 +188,14 @@ public class SimpleCommand extends Command {
 		
 		finally {
 			ShellContext.set(saved_context_shell);
-			
-			if( mPrefix == null )
-			     shell.getEnv().restoreIO();
-			else
-			if( saved_shell != null )
-				shell.close();
-			shell.setModule( saved_module );
+			if( ! shell.isClosed() ) {
+				if( mPrefix == null )
+				     shell.getEnv().restoreIO();
+				else
+				if( saved_shell != null )
+					shell.close();
+				shell.setModule( saved_module );
+			}
 		}
 		
 	}

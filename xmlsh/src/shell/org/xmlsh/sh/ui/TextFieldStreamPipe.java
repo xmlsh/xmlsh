@@ -79,6 +79,7 @@ public class TextFieldStreamPipe implements Closeable {
 		     	mIn.close();
 			if( mOut != null)
 			  mOut.close();
+			
 		} catch (IOException e) {
 			mLogger.error("Exception closing command pipe ",e);
 		} finally {

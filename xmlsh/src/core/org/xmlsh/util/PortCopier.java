@@ -8,6 +8,7 @@ package org.xmlsh.util;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.InputPort;
 import org.xmlsh.sh.shell.SerializeOpts;
@@ -20,17 +21,21 @@ public class PortCopier extends AbstractCopier
 	private 	static 	Logger	mLogger  = LogManager.getLogger(PortCopier.class);
 	private		volatile    InputPort	mIn;
 	private		volatile    OutputStream	mOut;
-	private		boolean	     mCloseOut;
 	
 	private		SerializeOpts mOpts;
-	public PortCopier( InputPort in , OutputStream out , SerializeOpts opts ,   boolean closeOut )
+	
+	protected void finalize() {
+		// Just in case - remove references to mIn and mOut
+		close();
+	}
+	
+	public PortCopier( String name, InputPort in , OutputStream out , SerializeOpts opts  )
 	{
-		super( "portcopy");
+		super( name );
 		mIn = in;
 		mOut = out;
 		mOpts = opts;
 		
-		mCloseOut = closeOut;
 		
 	}
 	/* (non-Javadoc)
@@ -41,35 +46,55 @@ public class PortCopier extends AbstractCopier
 	{
 
 		try {
-			
 			mIn.copyTo(mOut,mOpts);
-			
-		} catch (Exception e) {
+		}catch (Exception e) {
 			mLogger.warn("Exception copying streams",e);
 		} finally {
+			mLogger.debug("run close(): " + getName()  );
 			close();
 		}
 		
 	}
 	@Override
 
-	public void close()
+	public void close() 
     {
-		closeIn();
-		closeOut();
+		if( mIn != null || mOut != null ) { 
+		   closeIn();
+		   closeOut();
+		   
+		   if( this != Thread.currentThread() ) {
+			  Thread.yield();
+			  if( this.isAlive() ) {
+				  try {
+				    this.interrupt();  
+					  Thread.yield();
+				  } catch( SecurityException e ) {
+					  mLogger.debug("Security exception interrupting copy thread");
+				  }
+				  if( this.isAlive() )
+					  return ;
+			  }
+                try {
+                    this.join(1);
+                } catch (InterruptedException e) {
+				  mLogger.debug("Intterrupt exception joining copy thread",e);
+
+                }
+		   }
+		   
+		}
 	    
     }
 	
 	@Override
 	public void closeOut()
     {
-	    if( mCloseOut ) {
-			if( mOut != null ) {
-				synchronized (this) {
-	                Util.safeClose(mOut);
-	                mOut = null ;
-                } 
-			}
+		if( mOut != null ) {
+			synchronized (this) {
+                Util.safeClose(mOut);
+                mOut = null ;
+            } 
 		}
     }
 	@Override
@@ -77,9 +102,10 @@ public class PortCopier extends AbstractCopier
 	
 	public void closeIn()
     {
-
+		// Cannot close  ports - they are self-managed
 		mIn = null ;
     }
+
 }
 //
 //

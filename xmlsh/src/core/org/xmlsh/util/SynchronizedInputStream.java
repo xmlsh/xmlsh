@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public class SynchronizedInputStream  extends InputStream {
-	private		InputStream		mInputStream;
+	private		volatile  InputStream  mInputStream;
     private   boolean mClose ;
 
 	public SynchronizedInputStream(InputStream inputStream, boolean bclose) {
@@ -28,7 +28,8 @@ public class SynchronizedInputStream  extends InputStream {
 		return mInputStream.available();
 	}
 
-	public synchronized void close() throws IOException {
+	// do not syncrhonize close - causes deadlock
+	public void close() throws IOException {
   
 		if( mClose && mInputStream != null )
 			mInputStream.close();

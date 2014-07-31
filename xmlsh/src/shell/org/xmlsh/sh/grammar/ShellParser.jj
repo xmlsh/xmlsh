@@ -5,11 +5,11 @@ options
 {
   JDK_VERSION = "1.7";
   STATIC = false;
-//      DEBUG_PARSER=true ; 
+//       DEBUG_PARSER=true ; 
 //   DEBUG_LOOKAHEAD=true;
-//     DEBUG_TOKEN_MANAGER=true;
-//  FORCE_LA_CHECK=true;
-  UNICODE_INPUT=true;
+//      DEBUG_TOKEN_MANAGER=true;
+ FORCE_LA_CHECK=true;
+//   UNICODE_INPUT=true;
 //  TOKEN_EXTENDS="XToken";
 }
 
@@ -83,6 +83,20 @@ public class ShellParser
     return r ;
   }
 
+  // Create a string word or string list 
+  public Word newStringWord( Token t , Word next ){
+     if( next == null )
+       return new StringWord(t.toString());
+     
+     StringWordList l = new StringWordList();
+     l.add( new StringWord(t.toString()) );
+     
+     if( next instanceof StringWordList )
+     l.add( (StringWordList) next );  
+     else
+     l.add((StringWord)next);
+     return l;
+  }
 
 }
 
@@ -257,7 +271,7 @@ TOKEN :
 |   <#_ID2 :     < _LETTER > ( < _LETTER > | < _NUMBER > | "-" )* >
 |   <#_VARNAME : < _ID >>
 |   <#_NS      : ( ([ "A"-"Z", "a"-"z", "_", "0"-"9", "-" ])+ ":") >
-|   < #_POSVAR  : < _NUMBER > >
+|   <#_POSVAR  : < _NUMBER > >
 }
 
 // Patterns
@@ -426,7 +440,7 @@ TOKEN :
     } 
 | < ASSIGN_WORDPE : < _VARNAME > "+=" > 
 |  < ASSIGN_WORD_EQ :
-     (<_NS>)? < _VARNAME > "=" 
+      < _VARNAME > "=" 
   >
  }
 
@@ -581,6 +595,9 @@ CommandList list2(CommandList list) :
   Command first ;
 }
 {
+  <EOF>
+  { return list ; }
+|
   first = list()
   {
     list.add(first);
@@ -757,9 +774,10 @@ ReturnStatement return_stmt() :
 
 Word expr() :
 {  Word w ;
+  Token t;
 }
 {
-  < LBRACE > w = cmd_word_expr() < RBRACE >
+  t=< LBRACE > w = cmd_word_expr() < RBRACE >
   {
     w = new BraceWord( w );
     return w;
@@ -858,21 +876,21 @@ Word cmd_name_word() :{  Word w ;
     return s + n ;
    }
 } 
-String word_or_name() :
+Word word_or_name() :
 {
-  String s;
-  String n="";
+  Word  n=null;
   Token t;
 }
-{  LOOKAHEAD(1,reserved()) t=reserved()  {     return token.toString();
+{  LOOKAHEAD(1,reserved()) t=reserved()  {     return new StringWord(t.toString() );
    }
  | ( <ASSIGN_WORD_EQ> | < VAR_EXPANSION1 > | < VAR_EXPANSION2 >  | <WORD_TOKEN > |<NAME> |  <SIMPLE_NAME > | < SIMPLE_NS_NAME >)
-    { s=token.toString() ; }
+    { t=token ; }
       (  LOOKAHEAD( 1 , ( <ASSIGN_WORD_EQ> |< VAR_EXPANSION1 > | < VAR_EXPANSION2 >  
              | <WORD_TOKEN > | <NAME> | <SIMPLE_NAME >  |<SIMPLE_NS_NAME> ),
             { getToken(1).specialToken == null } )     
                n=word_or_name() )?
-    {      return s+n;
+    {
+      return newStringWord( t , n );      
     }
    
      
@@ -894,9 +912,9 @@ String word_or_name_lookahead() :
 } 
 
 // A command using a bare name 
-String simple_command_name() :
+Word simple_command_name() :
 {
-  String s ;}
+  Word s ;}
 {      s=word_or_name()
   {
     return s;
@@ -910,8 +928,8 @@ String simple_command_name() :
   LOOKAHEAD(2, {  	( getToken(1).kind == NAME || getToken(1).kind == SIMPLE_NAME || getToken(1).kind == SIMPLE_NS_NAME ) && getToken(2).kind == LPAREN })  ( t=<NAME>|  t=<SIMPLE_NAME> |  t = < SIMPLE_NS_NAME >) <LPAREN> wl = function_args()  {
     return new FunctionCallWord(t.toString(), wl);  }
 |
-  s=simple_command_name()
-  {    return new StringWord(s);  }|  (    t = < XEXPR >  | t = < BIGQUOTE >  )  {    return new StringWord(t.toString());  }| t = < VAR_SUBPROC > c = compound_list() < MRPAREN >  {    return new CommandWord(t.toString(), c);  }| t = < VAR_SUBPROC_FILE > s = filename() < MRPAREN >  {    return new CommandFileWord(t.toString(), s);  }| < BACKTICK1 > c = compound_list() < BACKTICK2 >  {    return new CommandWord("`", c);  }}WordList function_args() :{  WordList wl = new WordList();  Word w;}{
+  w=simple_command_name()
+  {    return w ;  }|  (    t = < XEXPR >  | t = < BIGQUOTE >  )  {    return new StringWord(t.toString());  }| t = < VAR_SUBPROC > c = compound_list() < MRPAREN >  {    return new CommandWord(t.toString(), c);  }| t = < VAR_SUBPROC_FILE > w  = filename() < MRPAREN >  {    return new CommandFileWord(t.toString(), w);  }| < BACKTICK1 > c = compound_list() < BACKTICK2 >  {    return new CommandWord("`", c);  }}WordList function_args() :{  WordList wl = new WordList();  Word w;}{
    ( 
    
     (<NL>)+ 
@@ -1041,8 +1059,8 @@ CommandSuffix cmd_suffix() :{  CommandSuffix s = new CommandSuffix();  Word w
   }
   | < TGTAND1 >  {    return new IORedirect(null, new IOFile("2>&1", null));  }| < GTAND >  {    return new IORedirect(null, new IOFile(">&", null));  }| < GTAND2 >  {    return new IORedirect(null, new IOFile("1>&2", null));  }*/
 
-String filename() :{  String s;}{
-  s=word_or_name()  {    return s;  }}Word filename_word() :{  Word w;  Token t;  String s;  Command c;}{  s=filename()  {    return new StringWord(s);  }| t = < VAR_SUBPROC > c = compound_list() < MRPAREN >  {    return new CommandWord(t.toString(), c);  }| t = < VAR_SUBPROC_FILE > s = filename() < MRPAREN >  {    return new CommandFileWord(t.toString(), s);  }|     < LBRACE >   s=word_or_name()   < RBRACE >  {    return new StringWord("{" + s + "}");  }}String separator_op() :{}{  ( < AMP > | < SEMI > )
+Word filename() :{  Word s;}{
+  s=word_or_name()  {    return s;  }}Word filename_word() :{  Word w;  Token t;  String s;  Command c;}{  w=filename()  {    return w;  }| t = < VAR_SUBPROC > c = compound_list() < MRPAREN >  {    return new CommandWord(t.toString(), c);  }| t = < VAR_SUBPROC_FILE > w = filename() < MRPAREN >  {    return new CommandFileWord(t.toString(), w);  }|     t=< LBRACE >   w=word_or_name()   < RBRACE >  {   return new StringWord( "{" + w.toString()  + "}");  }}String separator_op() :{}{  ( < AMP > | < SEMI > )
   {    return token.toString();  }}
 
 

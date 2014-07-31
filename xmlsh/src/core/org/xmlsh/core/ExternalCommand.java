@@ -8,8 +8,10 @@ package org.xmlsh.core;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+
 import org.xmlsh.sh.core.SourceLocation;
 import org.xmlsh.sh.shell.Module;
+import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.PortCopier;
 import org.xmlsh.util.StreamCopier;
@@ -35,74 +37,88 @@ public class ExternalCommand implements ICommand {
 		mLocation = location ;
 	}
 	
-	
-	public int run(Shell shell, String cmd, List<XValue> args) throws Exception 
+	public int run(Shell shell, String cmd, List<XValue> args) throws Exception
 	{
-		File curdir = shell.getCurdir() ;
-		mLogger.debug("Run external command: " + mCommandFile.getPath() + " in directory: " + curdir.getPath() );
-		
-		
+		File curdir = shell.getCurdir();
+		mLogger.debug("Run external command: " + mCommandFile.getPath() + " in directory: " + curdir.getPath());
+
 		ArrayList<XValue> cmdlist = new ArrayList<XValue>();
-		cmdlist.add( new XValue(mCommandFile.getPath()));
-		cmdlist.addAll( Util.expandSequences(args));
-		Process proc = null ;
-		synchronized ( this.getClass() ){
-		ProcessBuilder	builder = new ProcessBuilder();
-		builder.command( Util.toStringList(cmdlist));
-		builder.directory( curdir );
-		
-		setEnvironment(shell, builder );
-		
-		proc = builder.start();
-		
-		if( proc == null )
-			return -1;
+		cmdlist.add(new XValue(mCommandFile.getPath()));
+		cmdlist.addAll(Util.expandSequences(args));
+		Process proc = null;
+		synchronized (this.getClass()) {
+			ProcessBuilder builder = new ProcessBuilder();
+			builder.command(Util.toStringList(cmdlist));
+			builder.directory(curdir);
+
+			setEnvironment(shell, builder);
+
+			proc = builder.start();
+
+			if(proc == null)
+				return -1;
+			shell.addChildProcess( proc );
+			
 		}
-		
+
 		// Start copiers for stdout, stderr
-		
-		
-		StreamCopier outCopier = new StreamCopier( cmd, proc.getInputStream() , shell.getEnv().getStdout().asOutputStream(shell.getSerializeOpts()),true, true);
-		StreamCopier errCopier = new StreamCopier( cmd, proc.getErrorStream() , shell.getEnv().getStderr().asOutputStream(shell.getSerializeOpts()),true, true);
-		
-		
+
+		SerializeOpts serializeOpts = shell.getSerializeOpts();
+		StreamCopier outCopier = new StreamCopier(cmd + "-out", proc.getInputStream(), shell.getEnv().getStdout()
+		        .asOutputStream(serializeOpts));
+		StreamCopier errCopier = new StreamCopier(cmd + "-err", proc.getErrorStream(), shell.getEnv().getStderr()
+		        .asOutputStream(serializeOpts));
+
 		PortCopier inCopier = null;
-		
-		if( !shell.getEnv().isStdinSystem())
-			inCopier = new PortCopier(  shell.getEnv().getStdin() , proc.getOutputStream() , shell.getSerializeOpts() , true );
-		
+
+		if(!shell.getEnv().isStdinSystem())
+			inCopier = new PortCopier(cmd + "-in", shell.getEnv().getStdin(), proc.getOutputStream(), serializeOpts);
+
 		else
 			proc.getOutputStream().close();
-		
-	
+
 		errCopier.start();
-		
-		if( inCopier != null )
+
+		if(inCopier != null)
 			inCopier.start();
-		
-		
+
 		// outCopier.start();
 		outCopier.run(); // In place
-		
+
 		// Close input just in case we have a broken pipe
 		outCopier.closeIn();
+
+		int ret;
+        try {
+	        ret = proc.waitFor();
+        } catch (Exception e) {
+	        mLogger.warn("Exception waiting for process to complete: " , e  );
+	        ret = -1;
+
+        }
 		
-		int ret = proc.waitFor();
-		
+
+		shell.removeChildProcess(proc);
+
 		// Kill off the input copier
 		// inCopier.interrupt();
-	
-		
-		if( inCopier != null )
-			inCopier.join();
-		
+		// Process has exited, close the output
+
+		if(inCopier != null) {
+			// Input copier is pointless - try to close it but dont worry if you
+			// cant
+			// This may interrupt the copier
+			inCopier.close();
+
+		}
+
 		outCopier.join();
+		outCopier.close();
 		errCopier.join();
-		
-		return ret ;
-		
-		
-		
+		errCopier.close();
+
+		return ret;
+
 	}
 	
 	/*
@@ -142,7 +158,8 @@ public class ExternalCommand implements ICommand {
 		for( String name : xenv.getVarNames() ){
 			if( !Util.isPath(name) ){
 				XVariable var = xenv.getVar(name);
-				if( var.isExport() && var.getValue() != null && var.getValue().isAtomic() )
+				if( var.isExport() && var.getValue() != null && 
+						! var.getValue().isNull() && var.getValue().isAtomic() )
 					env.put(name , var.getValue().toString() );
 			}
 			

@@ -13,9 +13,11 @@ import org.xmlsh.sh.core.Command;
 import org.xmlsh.util.Util;
 import org.xmlsh.xpath.ShellContext;
 
+import java.io.Closeable;
 import java.io.File;
+import java.io.IOException;
 
-public class ShellThread extends Thread {
+public class ShellThread extends Thread implements Closeable {
 	
 	@SuppressWarnings("unused")
 	private static Logger mLogger = LogManager.getLogger( ShellThread.class);
@@ -50,18 +52,35 @@ public class ShellThread extends Thread {
 	@Override
 	public void run() 
 	{
+		
+
 		try {
-			ShellContext.set( mShell );
-			mShell.setCurdir(mIniitalCD); // Populate the current directory in this thread
-			mCommand.exec(mShell);
+
+			Shell shell = null ;
+			synchronized( this ) {
+				shell = mShell ;
+				if( shell == null ) {
+					mLogger.error("Shell is closed before run(): " + describe() );
+					return ;
+				}	
+			}
+		
+			ShellContext.set( shell );
+			shell.setCurdir(mIniitalCD); // Populate the current directory in this thread
+			mCommand.exec(shell);
 		
 		} catch (Exception e) {
 			// mShell.printErr("Exception running: " + mCommand.toString(true) + "\n" +  e.toString() );
 			mLogger.error("Exception running command: " + mCommand.toString(false) , e );
 		
 		} finally {
-			ShellContext.set(null);
-			Util.safeClose(mShell);
+			try {
+	            close();
+            } catch (IOException e) {
+    			mLogger.error("Exception closing self: " + describe()  , e );
+
+            }
+			
 		}
 		
 	}
@@ -76,6 +95,40 @@ public class ShellThread extends Thread {
 	    return mShell;
     }
 
+
+	// Attempt to nicely close this job 
+	public void close() throws IOException 
+    {
+	   if( mShell == null )
+		   return ;
+	   synchronized(this) {
+		   if( mShell == null )
+			  return ;
+		   ShellContext.set(null);
+		   mShell.close();
+           mShell = null ;
+	   }
+    }
+
+
+	public String describe()
+    {
+		 return "[" + getId() + "] : " + getName();
+    }
+
+	/*
+	 * Attempt to force a shutdown of this shell
+	 * Intended to be called from a external thread to try to force the shell to quit
+	 */
+	public boolean shutdown( boolean force , long waitTime ) throws IOException {
+		Shell sh = mShell ;
+		if(  sh == null )
+			return 	true ;
+        
+		sh.shutdown(force,waitTime);
+		Thread.yield();
+		return mShell == null ;
+	}
 	
 }
 //

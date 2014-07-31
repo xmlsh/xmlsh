@@ -32,9 +32,10 @@ public class CommandList extends Command
 	public int exec(Shell shell) throws Exception {
 		int ret = 0;
 		for( Command c : mList ) {
-		    ret = c.exec( shell);
 			if( ! shell.keepRunning() )
 				return ret ;
+			ret = shell.exec(c, getLocation() );
+		
 		}
         return ret ;
 	}

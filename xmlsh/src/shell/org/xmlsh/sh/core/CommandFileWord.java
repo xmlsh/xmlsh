@@ -30,10 +30,10 @@ import java.io.PrintWriter;
  */
 public class CommandFileWord extends Word {
 	private 	String		mType;	// String value
-	private		String		mFile;
+	private		Word		mFile;
 	private static final EvalEnv mEnv = EvalEnv.fileInstance();
 
-	public CommandFileWord( String type , String file ){
+	public CommandFileWord( String type , Word file ){
 		mType = type;
 		mFile = file;
 	}
@@ -41,17 +41,16 @@ public class CommandFileWord extends Word {
 	public void print( PrintWriter out )
 	{
 		out.print(mType);
-		out.print(mFile);
+		mFile.print(out);
 		out.print(")");
 	}
 	
 	
-	private String expandFile( Shell shell , String cmd , SourceLocation loc) throws IOException, CoreException
+	private String expandFile( Shell shell , Word cmd , SourceLocation loc) throws IOException, CoreException
 	{
 
-
-
-		XValue 	files = shell.expandToValue( cmd , mEnv , loc );
+		
+		XValue 	files = cmd.expand(shell, mEnv, loc);
 		String file;
 		if( files.isAtomic() )
 			file = files.toString();
@@ -73,8 +72,8 @@ public class CommandFileWord extends Word {
 		} 
 			
 	}
-	XdmNode	expandXFile( Shell shell , String xfile, SourceLocation loc ) throws IOException, CoreException{
-		XValue 	files = shell.expandToValue( xfile , mEnv , loc );
+	XdmNode	expandXFile( Shell shell , Word xfile, SourceLocation loc ) throws IOException, CoreException{
+		XValue 	files = xfile.expand(shell, mEnv, loc);
 		String file;
 		if( files.isAtomic() )
 			file = files.toString();
@@ -124,7 +123,7 @@ public class CommandFileWord extends Word {
 	@Override
 	String getSimpleName()
 	{
-		return mType + Util.simpleName( mFile , ""  ) + ")";
+		return mType + mFile.getSimpleName()  + ")";
 	}
 	 
 }

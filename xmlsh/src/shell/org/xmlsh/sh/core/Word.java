@@ -28,8 +28,7 @@ import java.util.List;
  * 
  */
 public abstract class Word {
-	
-	
+		
 	public abstract void print( PrintWriter out );
 
 
@@ -83,6 +82,8 @@ public abstract class Word {
 
 
 	abstract String getSimpleName();
+
+
 }
 
 
