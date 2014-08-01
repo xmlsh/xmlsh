@@ -27,6 +27,7 @@ import javax.xml.stream.XMLStreamWriter;
 public class declare extends BuiltinCommand {
 
 
+	@Override
 	public int run(  List<XValue> args ) throws Exception {
 		Options opts = new Options("p:,r:,t:,x:,f:",SerializeOpts.getOptionDefs());
 		opts.parse(args);

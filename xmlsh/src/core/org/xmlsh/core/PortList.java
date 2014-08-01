@@ -13,18 +13,19 @@ import org.xmlsh.util.NameValueList;
 @SuppressWarnings("serial") 
 public class PortList<P extends AbstractPort> extends NameValueList< ReferenceCountedHandle< P > >  implements AutoCloseable
 {
-	
+
 	public PortList()
 	{
 		super();
 	}
-	
+
+	@Override
 	public void close() throws Exception
 	{
 		for( INameValue<ReferenceCountedHandle<P>> e : this )
 			e.getValue().release();
 	}
-	
+
 	PortList( PortList<P> that )
 	{
 		for( INameValue<ReferenceCountedHandle<P>> e : that ){
@@ -32,14 +33,14 @@ public class PortList<P extends AbstractPort> extends NameValueList< ReferenceCo
 			add( e );
 		}
 	}
-	
+
 	IHandle<P> getPort( String name )
 	{
 
 		INameValue<ReferenceCountedHandle< P >> np = findName(name);
 		return np == null ? null : np.getValue();
 	}
-	
+
 	public IHandle<P>  removePort(String name) {
 		INameValue<ReferenceCountedHandle< P >>  np = removeName(name);
 		if( np != null )
@@ -50,9 +51,9 @@ public class PortList<P extends AbstractPort> extends NameValueList< ReferenceCo
 	public void add(String name, P port) {
 		super.add( new NameValue<>( name  , port.<P>newReference()  ) );
 	}
-	
 
-	
+
+
 }
 
 

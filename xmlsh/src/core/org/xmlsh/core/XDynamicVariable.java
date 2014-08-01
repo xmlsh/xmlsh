@@ -20,7 +20,7 @@ public abstract class XDynamicVariable extends XVariable {
 	 */
 	@Override
 	public abstract XValue getValue();
-	
+
 	/* (non-Javadoc)
 	 * @see org.xmlsh.core.XVariable#setValue(org.xmlsh.core.XValue)
 	 */

@@ -30,17 +30,17 @@ public class Modules extends  ArrayList<Module>
 		/*
 		 * Dont redeclare a module under the same prefix
 		 */
-		
+
 		for( Module m : this )
 			if( Util.isEqual(m.getName(),name) && Util.isEqual(m.getPrefix(),prefix))
-					return m;
-		
-		
+				return m;
+
+
 		Module module = new Module(shell, prefix , name , init  );
 		return declare(module);
 	}
-	
-	
+
+
 	/**
 	 * Declare/Import a module
 	 * If prefix is not null and already used then re-declare the module
@@ -50,9 +50,9 @@ public class Modules extends  ArrayList<Module>
 	 */
 	public Module declare(Module module) throws CoreException
 	{
-		
+
 		if( ! Util.isEmpty(module.getPrefix())){
-		// IF module exists by this prefix then redeclare
+			// IF module exists by this prefix then redeclare
 			Module exists = getModule( module.getPrefix() );
 			if( exists != null )
 				remove( exists );
@@ -60,32 +60,32 @@ public class Modules extends  ArrayList<Module>
 		else {
 			// Non prefixed modules dont import the same package
 			Module exists = getModuleByPackage( module.getPackage());
-		    if( exists != null )
-		    	return exists ;
+			if( exists != null )
+				return exists ;
 		}
-		
+
 		// Dont duplicate exact object
 		if( this.contains(module))
 			return module;
-	
+
 		this.add(module);
-		
+
 		return module ;
-	
+
 	}
-	
+
 	Modules() {}
-	
-	
+
+
 	public Module	getModule(String prefix)
 	{
 		for( Module m : this )
 			if( Util.isEqual(m.getPrefix(), prefix ) )
 				return m ;
 		return null;
-		
+
 	}
-	
+
 	public Module	getModuleByPackage(String pkg)
 	{
 		if( Util.isBlank(pkg))
@@ -94,10 +94,10 @@ public class Modules extends  ArrayList<Module>
 			if( Util.isEqual(m.getPackage(),pkg) )
 				return m ;
 		return null;
-		
+
 	}
-	
-	
+
+
 	Modules( Modules that){
 		this.addAll(that);
 	}
@@ -112,9 +112,9 @@ public class Modules extends  ArrayList<Module>
 	public Module declare(Shell shell, String m, List<XValue> init) throws CoreException {
 		StringPair 	pair = new StringPair(m,'=');
 		return declare(shell, pair.getLeft(), pair.getRight() ,  init  );
-		
+
 	}
-	
+
 }
 
 

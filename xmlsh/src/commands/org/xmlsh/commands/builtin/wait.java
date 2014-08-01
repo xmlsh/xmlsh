@@ -17,16 +17,17 @@ import java.util.List;
 public class wait extends BuiltinCommand {
 
 
+	@Override
 	public int run(  List<XValue> args ) throws Exception {
 
 		Options opts = new Options( "m=atmost:"  );
 		opts.parse(args);
-		
+
 		args = opts.getRemainingArgs();
-		
+
 		if( opts.hasOpt("m"))
 			return atmost( Util.parseInt(opts.getOptStringRequired("m") , 0 )) ;
-		
+
 
 		if( args.size() > 0 ){
 			for( XValue arg : args ){
@@ -41,8 +42,8 @@ public class wait extends BuiltinCommand {
 				}
 
 
-				
-				
+
+
 				List<ShellThread> children = mShell.getChildren(false);
 				if( children != null ) {
 					ShellThread toJoin = null ;
@@ -53,7 +54,7 @@ public class wait extends BuiltinCommand {
 								break;
 							}
 						} 
-                    }
+					}
 					if( toJoin != null )
 						toJoin.join();
 				}
@@ -67,7 +68,7 @@ public class wait extends BuiltinCommand {
 			while( ( child = mShell.getFirstThreadChild()) != null )
 				child.join();
 
-		
+
 		}
 		return 0;
 

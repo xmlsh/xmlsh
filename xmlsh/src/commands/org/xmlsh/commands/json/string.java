@@ -8,10 +8,10 @@ package org.xmlsh.commands.json;
 
 import org.xmlsh.core.BuiltinFunctionCommand;
 import org.xmlsh.core.XValue;
+import org.xmlsh.json.JSONUtils;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.sh.shell.ShellConstants;
 import org.xmlsh.types.TypeFamily;
-import org.xmlsh.util.JSONUtils;
 import org.xmlsh.util.Util;
 
 import java.util.List;
@@ -22,19 +22,19 @@ public class string extends BuiltinFunctionCommand {
 	{
 		super("string");
 	}
-	
+
 	@Override
 	public XValue run(Shell shell, List<XValue> args) {
-		
+
 		if( args.isEmpty() )
-			return new XValue( JSONUtils.toJsonString((String)null));
-		
+			return new XValue( TypeFamily.JSON, JSONUtils.toJsonString((String)null));
+
 		if( args.size() == 1 )
-			return new XValue( JSONUtils.toJsonString(args.get(0)));
-		
-		
+			return new XValue( TypeFamily.JSON , JSONUtils.toJsonString(args.get(0)));
+
+
 		String sjson = Util.joinValues(args,ShellConstants.ARG_SEPARATOR );
-		
+
 		return new XValue( TypeFamily.JSON,  JSONUtils.toJsonString(sjson) );
 	}
 

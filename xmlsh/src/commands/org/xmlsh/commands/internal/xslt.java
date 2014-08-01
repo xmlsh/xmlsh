@@ -79,32 +79,32 @@ public class xslt extends XCommand {
 
 		InputPort in = null;
 
-		
+
 		// Use a copy of the serialize opts so we can override the method 
 		SerializeOpts serializeOpts = getSerializeOpts(opts);
 
-			
-		
-		
-		
-		
+
+
+
+
+
 		if( ! opts.hasOpt("n" ) ){ // Has XML data input
 			// Order of prevelence 
 			// -context
 			// -context-file
 			// -i
-			
+
 			if( opts.hasOpt("c") )
 				context = opts.getOptValue("c").asSource();
 			else
-			if( opts.hasOpt("cf"))
-				context = (in=getInput( new XValue(opts.getOptString("cf", "-")))).asSource(serializeOpts);
-			else
-			if( opts.hasOpt("i") )
-				context = (in=getInput( opts.getOptValue("i"))).asSource(serializeOpts);
-			else
-				context = (in=getStdin()).asSource(serializeOpts);
-			
+				if( opts.hasOpt("cf"))
+					context = (in=getInput( new XValue(opts.getOptString("cf", "-")))).asSource(serializeOpts);
+				else
+					if( opts.hasOpt("i") )
+						context = (in=getInput( opts.getOptValue("i"))).asSource(serializeOpts);
+					else
+						context = (in=getStdin()).asSource(serializeOpts);
+
 		}
 
 		Source source = null;
@@ -155,7 +155,7 @@ public class xslt extends XCommand {
 
 		eval.transform();
 		stdout.writeSequenceTerminator(serializeOpts);
-		
+
 		return 0;
 
 	}

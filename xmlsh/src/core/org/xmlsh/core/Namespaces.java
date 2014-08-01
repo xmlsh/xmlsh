@@ -19,18 +19,18 @@ public class Namespaces extends NameValueMap<String>
 	{
 		super(that);
 	}
-	
+
 	public void declare( String prefix , String uri )
 	{
 		if( Util.isEmpty(prefix))
 			prefix = "";
-		
+
 		if( Util.isEmpty(uri))
 			remove(prefix);
 		else
 			put( prefix , uri );
 	}
-	
+
 	/**
 	 * Declare a prefix/uri pair
 	 * 
@@ -40,17 +40,17 @@ public class Namespaces extends NameValueMap<String>
 	 * uri					// equivilent to =uri
 	 * 
 	 */
-	
+
 	public void declare( String ns ){
 		StringPair 	pair = new StringPair(ns,'=');
 		declare( pair.getLeft(), pair.getRight() );
-		
+
 	}
 	public void declare(XValue v) {
 		declare( v.toString() );
-		
+
 	}
-	
+
 
 }
 

@@ -20,10 +20,10 @@ public class string extends BuiltinFunctionCommand {
 	{
 		super("string");
 	}
-	
+
 	@Override
 	public XValue run(Shell shell, List<XValue> args) {
-		
+
 		return new XValue( Util.joinValues(args,ShellConstants.ARG_SEPARATOR ) );
 	}
 

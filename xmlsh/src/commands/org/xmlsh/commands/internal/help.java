@@ -17,49 +17,50 @@ import java.util.List;
 
 public class help extends XCommand {
 
-	
-	
+
+
 	private boolean mNoBrowser = false;
 	private boolean mXml = false ;
-		
-	
+
+
+	@Override
 	public int run(List<XValue> args) throws Exception {
-		
+
 		Options opts = new Options( "h=help,n=nobrowse,xml" , SerializeOpts.getOptionDefs());
 		opts.parse(args);
-		
-		 mNoBrowser = opts.hasOpt("n");
-		 mXml = opts.hasOpt("xml");
-		 HelpUsage helpUsage = new HelpUsage( mShell );
-		
-		List<XValue> xvargs = Util.expandSequences(opts.getRemainingArgs());
-		
 
-		
+		mNoBrowser = opts.hasOpt("n");
+		mXml = opts.hasOpt("xml");
+		HelpUsage helpUsage = new HelpUsage( mShell );
+
+		List<XValue> xvargs = Util.expandSequences(opts.getRemainingArgs());
+
+
+
 		String name =null; 
 		if( xvargs.size() != 1  ){
 			name = "help";
 		} else
 			name = 	xvargs.get(0).toString();
-		
+
 		OutputPort stdout = mShell.getEnv().getStdout();
-		
-		
-		
-		
+
+
+
+
 		if( name.equals("commands"))
 			helpUsage.doHelpCommands(stdout,!mNoBrowser);
 		else
 			helpUsage.doHelp(stdout,name,mXml,!mNoBrowser);
-			
+
 		return 0;
-		
-		
-		
+
+
+
 	}
 
 
-	
+
 }
 
 

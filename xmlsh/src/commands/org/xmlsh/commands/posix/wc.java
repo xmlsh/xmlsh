@@ -6,7 +6,6 @@
 
 package org.xmlsh.commands.posix;
 
-import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
@@ -15,12 +14,9 @@ import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.SerializeOpts;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.xml.stream.XMLStreamException;
 
 /**
  * Posix command ls
@@ -30,64 +26,65 @@ import javax.xml.stream.XMLStreamException;
 
 public class wc extends XCommand {
 
-	
+
 	private boolean opt_l = false ;
 	private boolean opt_c = false ;
 	private boolean opt_w = false ;
-	
+
 	private	 int	total_lc = 0;
 	private	 int	total_cc = 0;
 	private	 int	total_wc = 0;
 	private SerializeOpts  mSerializeOpts ;
-	
-	
+
+
+	@Override
 	public int run(  List<XValue> args  )	throws Exception
 	{
 		Options opts = new Options("l,c,w", SerializeOpts.getOptionDefs());
 		opts.parse(args);
 		args = opts.getRemainingArgs();
-		
-		mSerializeOpts = this.getSerializeOpts(opts);
-		
 
-	      
+		mSerializeOpts = this.getSerializeOpts(opts);
+
+
+
 		OutputPort stdout = getStdout();
 		SerializeOpts serializeOpts = getSerializeOpts(opts);
 		PrintWriter writer  = stdout.asPrintWriter(serializeOpts);
-		
-		
+
+
 		if( args == null )
 			args = new ArrayList<XValue>();
 		if( args.size() == 0 )
 			args.add(new XValue("-"));
-		
+
 		opt_l = opts.hasOpt("l");
 		opt_c = opts.hasOpt("c");
 		opt_w = opts.hasOpt("w");
 		if( ! ( opt_l || opt_c || opt_w ))
 			opt_l = opt_c = opt_w = true ;
-		
-		
+
+
 		int ret = 0;
 		for( XValue arg : args ){
-			
-			
+
+
 			count(writer, arg );
 		}
 		if( args.size() > 1 )
 			list( writer , total_lc , total_wc , total_cc , "total");
 		// writer.write(serializeOpts.getSequence_term());
 		writer.close();
-		
+
 		return ret;
 	}
 
 	private void count(PrintWriter writer, XValue file ) throws Exception {
-		
+
 		InputPort inp = getShell().getEnv().getInput(file);
 		BufferedReader reader = new BufferedReader(inp.asReader( mSerializeOpts ));
 
-		
+
 		int lc=0,wc=0,cc=0;
 		String line = null;
 		while( (line=reader.readLine()) != null ){
@@ -96,15 +93,15 @@ public class wc extends XCommand {
 				cc += line.length();
 			if( opt_w )
 				wc = words( line );
-			
+
 		}
 		reader.close();
-		
+
 		list( writer , lc , wc , cc , file.toString() );
 		total_lc += lc;
 		total_wc += wc;
 		total_cc += cc ;
-		
+
 	}
 
 	private int words(String line) {
@@ -112,7 +109,7 @@ public class wc extends XCommand {
 		for( char c : line.toCharArray() ){
 			if( Character.isWhitespace(c))
 				w++;
-			
+
 		}
 		return w;
 	}
@@ -125,19 +122,19 @@ public class wc extends XCommand {
 			flags.append( wc + " ");
 		if( opt_c )
 			flags.append( cc + " ");
-		
-	    if(! file.equals("-") )
-	    	flags.append(file);
+
+		if(! file.equals("-") )
+			flags.append(file);
 		writer.write(flags.toString());
 		writer.write(mSerializeOpts.getSequence_sep());
-		
-		
+
+
 	}
 
-	
-	
-	
-	
+
+
+
+
 
 }
 

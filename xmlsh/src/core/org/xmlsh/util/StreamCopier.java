@@ -19,11 +19,12 @@ public class StreamCopier extends AbstractCopier
 	private		volatile InputStream		mIn;
 	private		volatile OutputStream	mOut;
 
+	@Override
 	protected void finalize() {
 		// Just in case - remove references to mIn and mOut
 		close();
 	}
-	
+
 	public StreamCopier( String name , InputStream in , OutputStream out  )
 	{
 		super(name);
@@ -42,11 +43,11 @@ public class StreamCopier extends AbstractCopier
 			Util.copyStream(mIn, mOut);
 		} catch (IOException e) {
 			mLogger.warn("IOException copying streams: " + getName()  ,e);
-        } finally {
+		} finally {
 			mLogger.debug("run close(): " + getName()  );
 			close();
 		}
-		
+
 	}
 	@Override
 	public void closeOut() {
@@ -54,7 +55,7 @@ public class StreamCopier extends AbstractCopier
 			synchronized (this) {
 				Util.safeClose(mOut);
 				mOut = null ;
-            }
+			}
 	}
 	@Override
 	public void closeIn() {
@@ -62,19 +63,19 @@ public class StreamCopier extends AbstractCopier
 			synchronized (this) {
 				Util.safeClose(mIn);
 				mIn = null ;
-            }
+			}
 	}
 	@Override
-    public
-    void close( )
-    {
-	    closeIn();
-	    closeOut();
-	    
-    }
-	 
-	 
-	 
+	public
+	void close( )
+	{
+		closeIn();
+		closeOut();
+
+	}
+
+
+
 }
 //
 //

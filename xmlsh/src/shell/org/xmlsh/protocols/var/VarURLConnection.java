@@ -29,7 +29,7 @@ public class VarURLConnection extends URLConnection {
 	@Override
 	public void connect() throws IOException {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	/* (non-Javadoc)
@@ -67,7 +67,7 @@ public class VarURLConnection extends URLConnection {
 		}
 		return null;
 	}
-	
+
 
 }
 

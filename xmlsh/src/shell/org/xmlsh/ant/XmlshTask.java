@@ -28,88 +28,89 @@ public class XmlshTask extends Task {
 	static {
 		// Pre-initialize shell so logging can work before executing first task
 		ShellConstants.initialize();
-	
+
 	}
 
-	
-	
+
+
 	public static class Arg {
 		String mValue ;
 		public void setValue(String value){ mValue = value ; }
-		
+
 	}
-	
+
 	private List<Arg>	mArgs = null ;
-	
-	
+
+
 	public XmlshTask()
 	{
 		mLogger.debug("Initializing xmlsh ant task");
 	}
-	
+
 	public void addArg( Arg arg ){
 		if( mArgs == null )
 			mArgs = new ArrayList<Arg>();
 		mArgs.add(arg);
-		
-		
+
+
 	}
-	
-    // The method executing the task
-    public void execute() throws BuildException {
-    	mLogger.info("executing xmlsh ant task");
-    	// System.out.println("property test: " + getProject().getProperty("test"));
+
+	// The method executing the task
+	@Override
+	public void execute() throws BuildException {
+		mLogger.info("executing xmlsh ant task");
+		// System.out.println("property test: " + getProject().getProperty("test"));
 
 		Shell shell = null ;
-    	try {
-    		shell = new Shell();
-    		
-    		
-	     	List<XValue> vargs = new ArrayList<XValue>();
-		 	if( mScript != null )
-		 		vargs.add( new XValue(mScript));
-		 	else {
-		 		vargs.add( new XValue("-c"));
-		 		vargs.add( new XValue(mText));
-		 	}
-			
-		 	if( mArgs != null ){
-		 		for( Arg arg : mArgs )
-		 			vargs.add( new XValue( arg.mValue));
-		 	}
-		 	
+		try {
+			shell = new Shell();
+
+
+			List<XValue> vargs = new ArrayList<XValue>();
+			if( mScript != null )
+				vargs.add( new XValue(mScript));
+			else {
+				vargs.add( new XValue("-c"));
+				vargs.add( new XValue(mText));
+			}
+
+			if( mArgs != null ){
+				for( Arg arg : mArgs )
+					vargs.add( new XValue( arg.mValue));
+			}
+
 			org.xmlsh.commands.builtin.xmlsh cmd = new org.xmlsh.commands.builtin.xmlsh(true);
-			
+
 
 			@SuppressWarnings("unused")
 			int ret = cmd.run(shell, "xmlsh" , vargs);
-			
-    	}
-    	catch(  Exception e )
-    	{
-    		
-    		throw new BuildException(e);
-    		
-    	} finally {
-    		Util.safeClose(shell);
-    	}
-    	
 
-    	
-        
-    }
+		}
+		catch(  Exception e )
+		{
 
-    // The setter for the "message" attribute
-    public void setScript(String script) {
-        this.mScript = script;
-    }
-    
-    public void addText( String text )
-    {
-    	if( mText != null )
-    		text = mText + text ;
-    	mText = text ;
-    }
+			throw new BuildException(e);
+
+		} finally {
+			Util.safeClose(shell);
+		}
+
+
+
+
+	}
+
+	// The setter for the "message" attribute
+	public void setScript(String script) {
+		this.mScript = script;
+	}
+
+	public void addText( String text )
+	{
+		if( mText != null )
+			text = mText + text ;
+		mText = text ;
+	}
 
 }
 

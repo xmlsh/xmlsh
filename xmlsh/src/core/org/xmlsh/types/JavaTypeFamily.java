@@ -1,95 +1,64 @@
 package org.xmlsh.types;
 
-import org.xmlsh.core.CoreException;
-import org.xmlsh.core.InvalidArgumentException;
-import org.xmlsh.core.XValue;
-import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.util.JavaUtils;
-import org.xmlsh.util.Util;
 
-import java.io.IOException;
-import java.io.OutputStream;
 import java.util.EnumSet;
 
-import com.fasterxml.jackson.databind.JsonNode;
-
-public class JavaTypeFamily implements ITypeFamily
+public class JavaTypeFamily extends AbstractTypeFamily implements ITypeFamily
 {
-    static final JavaTypeFamily instance = new JavaTypeFamily();
-	private XValue _nullValue = new XValue( TypeFamily.JAVA);
-
-    private JavaTypeFamily() {}
-
-    @Override
-    public TypeFamily typeFamily() {
-      return TypeFamily.JAVA;
-    }
-
-    @Override
-    public EnumSet<TypeFamily> subTypeFamilies() {
-        return EnumSet.allOf(TypeFamily.class);
-    }
-
-    @Override
-    public EnumSet<TypeFamily> superTypeFamilies() {
-        return EnumSet.noneOf(TypeFamily.class);
-    }
-
-    @Override
-    public IType getType(Object obj) {
-        return JavaType.getType(obj);
-    }
-
-  
-    @Override
-    public boolean isInstanceOfFamily(Object obj) {
-        return true ;
-    }
-
-    @Override
-    public boolean isClassOfFamily(Class<?> cls) {
-        return true ;
-    }
-
-    @Override
-    public String asString(Object value) {
-       return value.toString();
-    }
+	static final JavaTypeFamily _instance = new JavaTypeFamily();
 
 	@Override
-    public int getSize(Object obj)
-    {
-      if( obj == null)
-    	  return 0 ;
-	  return JavaUtils.getSize( obj );
-		
-    }
+	protected IType getTypeInstance(XTypeKind kind)
+	{
+		return JavaType.newInstance(kind);
+	}
 
 	@Override
-    public XValue getValue(XValue xvalue, String ind) throws CoreException 
-    {
-		 if( xvalue == null || xvalue.isNull() )
-		    	return _nullValue;
-	    if( Util.isBlank(ind) )
-	    	return xvalue;
-	    
-	    Object obj = xvalue.asObject();
-	    try {
-	        return JavaUtils.getField( obj.getClass() , obj , ind , null );
-        } catch (InvalidArgumentException | SecurityException | NoSuchFieldException | IllegalArgumentException
-                | IllegalAccessException | ClassNotFoundException e) {
-	       Util.wrapCoreException("Exception getting value from java class: " + obj.getClass().getName() , e );
-        }
-		return xvalue;
-    }
+	protected
+	XTypeKind inferKind( Class<?> cls ) {
+		if( JavaUtils.isNullClass( cls ) ) 
+			return XTypeKind.NULL ;
+		if( JavaUtils.isContainerClass( cls ) )
+			return XTypeKind.NULL ;
+		if( JavaUtils.isAtomicClass( cls ) )
+			return XTypeKind.ATOMIC ;
+		if( JavaUtils.isClassClass( cls ) )
+			return XTypeKind.CLASS ;
+		else
+			return XTypeKind.OBJECT ;
+	}
+
 
 	@Override
-    public void serialize(Object value, OutputStream out, SerializeOpts opts) throws IOException
-    {
-		if( value == null )
-			return ;
-		out.write( JavaUtils.toBytes(value, opts) );
-	    
-    }	    
+	public boolean isClassOfFamily(Class<?> cls) {
+		return true ;
+	}
+
+	@Override
+	public boolean isInstanceOfFamily(Object obj) {
+		return true ;
+	}
+
+
+
+
+	@Override
+	public EnumSet<TypeFamily> subTypeFamilies() {
+		return EnumSet.allOf(TypeFamily.class);
+	}
+
+
+	@Override
+	public EnumSet<TypeFamily> superTypeFamilies() {
+		return EnumSet.noneOf(TypeFamily.class);
+	}
+
+	@Override
+	public TypeFamily typeFamily()
+	{
+		return TypeFamily.JAVA;
+	}
+
 
 }

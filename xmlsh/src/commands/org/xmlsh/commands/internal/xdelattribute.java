@@ -7,7 +7,6 @@
 package org.xmlsh.commands.internal;
 
 import net.sf.saxon.s9api.QName;
-
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
@@ -32,11 +31,11 @@ import javax.xml.stream.events.XMLEvent;
 public class xdelattribute extends XCommand {
 
 
-	
-	
-	
-	
-	
+
+
+
+
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public int run(List<XValue> args) throws Exception {
@@ -44,16 +43,16 @@ public class xdelattribute extends XCommand {
 		Options opts = new Options( "a=attribute:+,v,e=element:+" , SerializeOpts.getOptionDefs() );
 		opts.parse(args);
 		args = opts.getRemainingArgs();
-		
+
 		List<QName>	attrs 		=	getQNames( opts.getOptValuesRequired("a"));
 		boolean bExcept 		= opts.hasOpt("v");
 		List<QName>	elements 	= getQNames( opts.getOptValues("e"));
-		
+
 
 		XMLEventFactory	mFactory = XMLEventFactory.newInstance();
-		
-		
-		
+
+
+
 		InputPort stdin = null;
 		if( args.size() > 0 )
 			stdin = getInput( args.get(0));
@@ -61,103 +60,103 @@ public class xdelattribute extends XCommand {
 			stdin = getStdin();
 		if( stdin == null )
 			throw new InvalidArgumentException("Cannot open input");
-			
-			SerializeOpts sopts = getSerializeOpts(opts);
-			
-			XMLEventReader	reader = stdin.asXMLEventReader(sopts);
-			OutputPort stdout = getStdout();
-			XMLEventWriter  writer = stdout.asXMLEventWriter(sopts);
-			
-			stdout.setSystemId(stdin.getSystemId());
-			XMLEvent e;
-			
-			while( reader.hasNext() ){
-				e = (XMLEvent) reader.next();
-				if( e.isStartElement()){
-					StartElement se = e.asStartElement();
-					
-					// Only look at elements in list, or all elements if null 
-					if( elements == null || matches( se.getName() , elements , false)){
-						
-						// If matching (or excluding) attributes delete them 
-						Iterator<Attribute> iter = (Iterator<Attribute>) se.getAttributes();
-						
-						boolean bMatches  = false ;
+
+		SerializeOpts sopts = getSerializeOpts(opts);
+
+		XMLEventReader	reader = stdin.asXMLEventReader(sopts);
+		OutputPort stdout = getStdout();
+		XMLEventWriter  writer = stdout.asXMLEventWriter(sopts);
+
+		stdout.setSystemId(stdin.getSystemId());
+		XMLEvent e;
+
+		while( reader.hasNext() ){
+			e = (XMLEvent) reader.next();
+			if( e.isStartElement()){
+				StartElement se = e.asStartElement();
+
+				// Only look at elements in list, or all elements if null 
+				if( elements == null || matches( se.getName() , elements , false)){
+
+					// If matching (or excluding) attributes delete them 
+					Iterator<Attribute> iter = se.getAttributes();
+
+					boolean bMatches  = false ;
+					while( iter.hasNext() ){
+						Attribute attr = iter.next();
+						if( matches(attr.getName() , attrs , bExcept )){
+							bMatches = true ;
+							break ;
+						}
+
+
+
+					}
+
+					// If any match then synthesize a new start element 
+					if( bMatches ){
+						Iterator	namespaces = se.getNamespaces();
+						List<Attribute>  newAttrs = new ArrayList<Attribute>();
+						iter = se.getAttributes();
 						while( iter.hasNext() ){
 							Attribute attr = iter.next();
-							if( matches(attr.getName() , attrs , bExcept )){
-								bMatches = true ;
-								break ;
-							}
-							
-							
-							
+							if( ! matches( attr.getName() , attrs , bExcept ) )
+								newAttrs.add(attr);
 						}
-						
-						// If any match then synthesize a new start element 
-						if( bMatches ){
-							Iterator	namespaces = se.getNamespaces();
-							List<Attribute>  newAttrs = new ArrayList<Attribute>();
-							iter = (Iterator<Attribute>) se.getAttributes();
-							while( iter.hasNext() ){
-								Attribute attr = iter.next();
-								if( ! matches( attr.getName() , attrs , bExcept ) )
-									newAttrs.add(attr);
-							}
-							e = mFactory.createStartElement(se.getName(), newAttrs.iterator() , namespaces);
-							
-							
-						}
-						
+						e = mFactory.createStartElement(se.getName(), newAttrs.iterator() , namespaces);
+
+
 					}
-						
-					
-					
-					
+
 				}
-				
-				
-				writer.add(e);
+
+
+
+
 			}
-			// writer.add(reader);
-			Util.safeClose(reader);
-			Util.safeClose(writer);
+
+
+			writer.add(e);
+		}
+		// writer.add(reader);
+		Util.safeClose(reader);
+		Util.safeClose(writer);
 		return 0;
-		
-		
+
+
 	}
-	
+
 	/*
 	 * Returns true if name matches (or does not match) any name in list of names 
 	 * 
 	 */
-	
-	
+
+
 	private boolean matches(javax.xml.namespace.QName name, List<QName> names, boolean bExcept) 
 	{
 		for( QName qname : names ){
 			if( StAXUtils.matchesQName(name, qname) ) 
-					return bExcept ? false : true ;
-			
+				return bExcept ? false : true ;
+
 		}
 		return bExcept ? true : false ;
-		
-		
-		
-		
+
+
+
+
 	}
 
 	private List<QName> getQNames(List<XValue> opts) {
 		if( opts == null || opts.size() == 0 )
 			return null ;
 		List<QName>		names = new ArrayList<QName>();
-		
+
 		for( XValue v : opts ){
 			names.add( v.asQName(getShell()) );
-			
+
 		}
-		
-		
+
+
 		return names ;
 	}
 

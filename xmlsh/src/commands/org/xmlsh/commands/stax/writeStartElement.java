@@ -19,13 +19,13 @@ import javax.xml.stream.XMLStreamWriter;
 
 public class writeStartElement extends XCommand {
 
-	
-	
+
+
 	public writeStartElement()
 	{
-		
+
 	}
-	
+
 	@Override
 	public int run( List<XValue> args) throws CoreException, XPathException, XMLStreamException {
 		if( args.size()  != 2  )
@@ -35,9 +35,9 @@ public class writeStartElement extends XCommand {
 		Object arg = arg0.asObject();
 		if( arg instanceof XMLStreamWriter )
 			((XMLStreamWriter)arg).writeStartElement(name.getPrefix() , name.getLocalName(), name.getNamespaceURI() );
-		
+
 		return 0;
-		
+
 	}
 
 }

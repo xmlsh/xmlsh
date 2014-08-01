@@ -20,10 +20,10 @@ public class OmittingOutputStream extends OutputStream
 	private boolean bDiscard ;
 	public OmittingOutputStream(OutputStream out )
 	{
- 
+
 		mOut = out ;
 		bDiscard = false ;
-		
+
 	}
 
 	@Override
@@ -54,11 +54,12 @@ public class OmittingOutputStream extends OutputStream
 	 * @throws IOException
 	 * @see java.io.OutputStream#write(byte[])
 	 */
-    public void write(byte[] b) throws IOException
-    {
-    	if( ! bDiscard )
-	        mOut.write(b);
-    }
+	@Override
+	public void write(byte[] b) throws IOException
+	{
+		if( ! bDiscard )
+			mOut.write(b);
+	}
 
 	/**
 	 * @param b
@@ -67,30 +68,33 @@ public class OmittingOutputStream extends OutputStream
 	 * @throws IOException
 	 * @see java.io.OutputStream#write(byte[], int, int)
 	 */
-    public void write(byte[] b, int off, int len) throws IOException
-    {
-    	if( ! bDiscard )
-	    mOut.write(b, off, len);
-    }
+	@Override
+	public void write(byte[] b, int off, int len) throws IOException
+	{
+		if( ! bDiscard )
+			mOut.write(b, off, len);
+	}
 
 
 	/**
 	 * @throws IOException
 	 * @see java.io.OutputStream#flush()
 	 */
-    public void flush() throws IOException
-    {
-	    mOut.flush();
-    }
+	@Override
+	public void flush() throws IOException
+	{
+		mOut.flush();
+	}
 
 	/**
 	 * @throws IOException
 	 * @see java.io.OutputStream#close()
 	 */
-    public void close() throws IOException
-    {
-	    mOut.close();
-    }
+	@Override
+	public void close() throws IOException
+	{
+		mOut.close();
+	}
 
 }
 

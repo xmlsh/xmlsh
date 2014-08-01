@@ -18,25 +18,25 @@ import javax.xml.stream.XMLStreamWriter;
 
 public class writeEndElement extends XCommand {
 
-	
-	
+
+
 	public writeEndElement()
 	{
-		
+
 	}
-	
+
 	@Override
 	public int run( List<XValue> args) throws CoreException, XPathException, XMLStreamException {
 		if( args.size()  != 1  )
 			return -1;
-		
+
 		XValue arg0 = args.get(0);
 		Object arg = arg0.asObject();
 		if( arg instanceof XMLStreamWriter )
 			((XMLStreamWriter)arg).writeEndElement();
-		
+
 		return 0;
-		
+
 	}
 
 }

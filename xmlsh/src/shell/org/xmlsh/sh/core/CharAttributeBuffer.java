@@ -21,31 +21,31 @@ public class CharAttributeBuffer
 	private int length;
 	private char[] charArray;
 	private byte[] attrArray;
-	
-	
+
+
 	public CharAttributeBuffer()
 	{
 		this( DEFAULT_CAPACITY );
 	}
-	
-	
+
+
 	public CharAttributeBuffer(int capacity)
 	{
 		this.capacity = capacity;
 		charArray = new char[capacity];
 		attrArray = new byte[capacity];
 	}
-	
+
 	public CharAttributeBuffer(String s, byte attr)
-    {
+	{
 		int size = s.length();
 		capacity = size + DEFAULT_CAPACITY - ( size % DEFAULT_CAPACITY) ; 
 		charArray = new char[capacity];
 		attrArray = new byte[capacity];
 		append( s , attr );
- 		
-    }
-	
+
+	}
+
 	private CharAttributeBuffer(char[] ca , byte[] aa , int len , int c ) {
 		charArray = ca;
 		attrArray = aa ;
@@ -53,19 +53,19 @@ public class CharAttributeBuffer
 		capacity = c;
 	}
 
-	
+
 
 
 	public CharAttributeBuffer(String s)
-    {
-	    this(s,(byte)0);
-    }
+	{
+		this(s,(byte)0);
+	}
 
 
 	public void append( char c ) {
 		append(c,(byte) 0);
 	}
-	
+
 	public void append( char c , byte attr ) {
 		ensure( length+1 );
 		charArray[length] = c ;
@@ -73,16 +73,16 @@ public class CharAttributeBuffer
 	}
 
 	private void ensure(int size)
-    {
+	{
 		if( size <= capacity )
 			return ;
-				
+
 		capacity = size + DEFAULT_CAPACITY - ( size % DEFAULT_CAPACITY) ;
 		charArray = Arrays.copyOf(charArray, capacity);
 		attrArray = Arrays.copyOf(attrArray, capacity);
-		 
-    }
-	
+
+	}
+
 	public int attrAt( int pos ) {
 		return attrArray[pos];
 	}
@@ -91,19 +91,20 @@ public class CharAttributeBuffer
 		return charArray[pos];
 	}
 
+	@Override
 	public String toString( ) {
 		return  new String( charArray , 0 , length );
 	}
-	
-	
+
+
 	public char[] getCharArray() { 
 		return Arrays.copyOf(charArray, length);
 	}
-	
+
 	public byte[] getAttrArray() {
 		return Arrays.copyOf(attrArray, length);
 	}
-	
+
 	public int size() {
 		return length ;
 	}
@@ -111,7 +112,7 @@ public class CharAttributeBuffer
 	public boolean isEmpty() {
 		return length == 0 ;
 	} 
-	
+
 	public void clear() {
 		length = 0;
 	}
@@ -121,27 +122,27 @@ public class CharAttributeBuffer
 
 
 	public void append(String s, byte attr)
-    {
+	{
 		int len = s.length();
 		ensure( length + len );
-        s.getChars(0,len,charArray,length);
-        Arrays.fill(attrArray, length , length+len , attr );
-        length += len ;
-    }
+		s.getChars(0,len,charArray,length);
+		Arrays.fill(attrArray, length , length+len , attr );
+		length += len ;
+	}
 
 
 	public int indexOf(int start , char c, int attr)
-    {
-	    for(int i = start ; i < length ; i++ ) {
-	    	if( charArray[i] == c && attrArray[i] == attr )
-	    		return i;
-	    }
-	    return -1;
-    }
+	{
+		for(int i = start ; i < length ; i++ ) {
+			if( charArray[i] == c && attrArray[i] == attr )
+				return i;
+		}
+		return -1;
+	}
 
 
 	public void delete(int start, int len)
-    {
+	{
 		if( start + len > length)
 			len = (length-start);
 		if(len <= 0)
@@ -150,41 +151,42 @@ public class CharAttributeBuffer
 		System.arraycopy(attrArray, start+len, attrArray, start, length-len);
 
 		length -= len ;
-	    
-    }
+
+	}
 
 
 	public CharAttributeBuffer[] split(char c)
-    {
-	   ArrayList<CharAttributeBuffer> list = new ArrayList<CharAttributeBuffer>();
-	   
-	   int start = 0 ;
-	   for( int i = 0 ; i < length ; i++ ) {
-         if( charArray[i] == c ) {
-        	 list.add( subsequence( start , i ) );
-        	 start = i+1;
-         }
-	   }
-	   if( start < length )
-		   list.add( subsequence( start , length ) );
-		   
-		 return list.toArray(new CharAttributeBuffer[ list.size() ]);
-	   
-	   
-	   
-    }
+	{
+		ArrayList<CharAttributeBuffer> list = new ArrayList<CharAttributeBuffer>();
+
+		int start = 0 ;
+		for( int i = 0 ; i < length ; i++ ) {
+			if( charArray[i] == c ) {
+				list.add( subsequence( start , i ) );
+				start = i+1;
+			}
+		}
+		if( start < length )
+			list.add( subsequence( start , length ) );
+
+		return list.toArray(new CharAttributeBuffer[ list.size() ]);
+
+
+
+	}
 
 
 	public CharAttributeBuffer subsequence(int start, int i)
-    {
+	{
 		return new CharAttributeBuffer(
 				Arrays.copyOfRange(charArray , start , i ) ,
 				Arrays.copyOfRange(attrArray , start , i ) ,
 				i-start , 
 				capacity );
 
-		
-    }
+
+	}
+	@Override
 	public boolean equals( Object that ) {
 		if( this == that )
 			return true ;
@@ -193,15 +195,15 @@ public class CharAttributeBuffer
 			if( length == cb.length ) {
 				for( int i = 0 ; i < length ; i++ ) {
 					if( charArray[i] != cb.charArray[i] ||
-						attrArray[i] != cb.attrArray[i] )
-						  return false ;
+							attrArray[i] != cb.attrArray[i] )
+						return false ;
 				}
 				return true ;
 			}
 		}
 		return false ;
 	}
-	
+
 	public boolean stringEquals( String s ) {
 		int len = s.length();
 		if( length != len )
@@ -214,14 +216,14 @@ public class CharAttributeBuffer
 
 
 	public void append(CharAttributeBuffer achars)
-    {
+	{
 		int len = achars.length;
 		ensure( length + len );
 		System.arraycopy(achars.charArray, 0 , charArray , 0 , len );
 		System.arraycopy(achars.attrArray, 0 , attrArray , 0 , len );
-        length += len ;
-	    
-    }
+		length += len ;
+
+	}
 }
 
 

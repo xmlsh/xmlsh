@@ -15,21 +15,22 @@ import javax.xml.xpath.XPathVariableResolver;
 public class XValueVariableResolver implements XPathVariableResolver {
 
 	Map<String,XValue>		mVariables = new HashMap<String,XValue>();
-	
+
 	public void	add( String name , XValue value )
 	{
 		mVariables.put(name, value);
 	}
-	
-	
+
+
+	@Override
 	public Object resolveVariable(QName variableName) {
-	
+
 		XValue value = mVariables.get( variableName.getLocalPart());
 		if( value == null )
 			return null;
 		return value.asXdmValue().getUnderlyingValue();
-		
-		
+
+
 	}
 
 }

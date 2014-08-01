@@ -19,7 +19,7 @@ public class TryCatchFinally extends CompoundCommand
 	private		String		mCatchVar;
 	private 	Command 	mCatchPart;
 	private 	Command 	mFinallyPart;
-	
+
 	public TryCatchFinally(Command tryPart, String catchVar , Command catchPart, Command finallyPart ) {
 		super();
 		mTryPart 		= 	tryPart;
@@ -36,54 +36,55 @@ public class TryCatchFinally extends CompoundCommand
 	public void print(PrintWriter out, boolean bExec) {
 		out.print("try " );
 		mTryPart.print(out, bExec);
-		
+
 		out.print("catch ");
-		
+
 		out.println(mCatchVar);
-		
+
 		mCatchPart.print(out, bExec);
-		
+
 		if( mFinallyPart !=null){
 			out.println("finally");
 			mFinallyPart.print(out, bExec);
 		}
 		out.println("fi");
-		
+
 	}
-	
-	
+
+
+	@Override
 	public int exec(Shell shell) throws Exception 
 	{
 		shell.getEnv().saveIO();
 		try {
 			applyRedirect(shell);
-			
+
 			int ret = 0;
 			try {
 				ret = shell.exec( mTryPart  );
 			} catch( ThrowException e ){
 				shell.getEnv().setVar(mCatchVar, e.getValue() , false );
-				
+
 				ret = shell.exec( mCatchPart );
-				
-				
-		
+
+
+
 			} catch( ExitOnErrorException e ){
 				shell.getEnv().setVar(mCatchVar, new XValue(e.getValue()) , false );
-				
+
 				ret = shell.exec( mCatchPart );
-				
-				
+
+
 			}
-			
-			
+
+
 			finally {
 
 				if( shell.keepRunning() && mFinallyPart != null )
 					ret = shell.exec( mFinallyPart );
 			}
-			
-		
+
+
 			return ret;
 		} finally {
 			shell.getEnv().restoreIO();

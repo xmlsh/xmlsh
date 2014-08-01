@@ -25,45 +25,45 @@ public class tee extends XCommand {
 
 	@Override
 	public int run(List<XValue> args) throws Exception {
-		
+
 		Options opts = new Options(	SerializeOpts.getOptionDefs() );
 		opts.parse(args);
 		args = opts.getRemainingArgs();
-		
-		
+
+
 		// List of outputs to tee to
 		List<OutputStream>		writers = new ArrayList<OutputStream>();
 		InputPort stdin = getStdin();
-		
-		
+
+
 		SerializeOpts sopts = getSerializeOpts(opts);
-		
+
 		try (
 				InputStream is = new BufferedInputStream(stdin.asInputStream(sopts));
-		){
-				
+				){
+
 			OutputPort stdout = getStdout();
 			writers.add(new BufferedOutputStream(stdout.asOutputStream(sopts)));
-			
+
 			for( XValue arg : args ){
 				OutputPort output = getEnv().getOutput(arg, false);
 				writers.add( new BufferedOutputStream(output.asOutputStream(sopts)));
 			}
-			
+
 			int c ;
 
 			while((c=is.read()) > 0 ){
 				for( OutputStream out : writers )
 					out.write(c);
 			}
-			
+
 			for( OutputStream out : writers )
 				out.close();
-			
+
 		} 
 		return 0;
-		
-		
+
+
 	}
 
 }

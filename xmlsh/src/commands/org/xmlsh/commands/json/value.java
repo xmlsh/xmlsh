@@ -9,9 +9,9 @@ package org.xmlsh.commands.json;
 import org.xmlsh.core.BuiltinFunctionCommand;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
+import org.xmlsh.json.JSONUtils;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.types.TypeFamily;
-import org.xmlsh.util.JSONUtils;
 
 import java.util.List;
 
@@ -21,9 +21,9 @@ public class value extends BuiltinFunctionCommand {
 	{
 		super("value");
 	}
-	
 
-	
+
+
 	@Override
 	public XValue run(Shell shell, List<XValue> args) throws InvalidArgumentException {
 		if( args.size() == 0 )

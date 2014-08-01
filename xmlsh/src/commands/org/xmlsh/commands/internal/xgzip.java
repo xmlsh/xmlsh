@@ -19,40 +19,41 @@ import java.util.zip.GZIPOutputStream;
 
 public class xgzip extends XCommand {
 
+	@Override
 	public int run( List<XValue> args )	throws Exception
 	{
-		
+
 
 
 		Options opts = new Options( "f=file:" ,  SerializeOpts.getOptionDefs() );
 		opts.parse(args);
-		
+
 		XValue zipfile = opts.getOptValue("f");
-		
+
 		args = opts.getRemainingArgs();
-		
+
 		SerializeOpts serializeOpts = getSerializeOpts(opts);
 
 		try (
-			GZIPOutputStream zos = new GZIPOutputStream( 
-					zipfile == null ?
-					getStdout().asOutputStream(serializeOpts) :
-					this.getOutputStream( zipfile.toString(), false, serializeOpts )
-			))
-			{
-		
-				XValue xin = args.size() > 0 ? args.get(0) : null ;
-				
-				InputPort iport = this.getInput(xin);
-		
+				GZIPOutputStream zos = new GZIPOutputStream( 
+						zipfile == null ?
+								getStdout().asOutputStream(serializeOpts) :
+									this.getOutputStream( zipfile.toString(), false, serializeOpts )
+						))
+						{
+
+			XValue xin = args.size() > 0 ? args.get(0) : null ;
+
+			InputPort iport = this.getInput(xin);
+
 			int ret = 0;
 			ret = gzip( iport.asInputStream(serializeOpts), zos  );
-			
+
 			zos.finish();
 			return ret;
-		
-			}
-		
+
+						}
+
 	}
 
 	private int gzip(InputStream is, GZIPOutputStream zos) throws IOException {

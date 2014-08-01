@@ -6,22 +6,20 @@
 
 package org.xmlsh.core;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import org.xml.sax.InputSource;
+import org.xmlsh.json.JSONUtils;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.util.JSONUtils;
 import org.xmlsh.util.SynchronizedInputStream;
 import org.xmlsh.util.Util;
 
-import java.io.Closeable;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -56,27 +54,30 @@ public class StreamInputPort extends InputPort  {
 		this.setSystem(system);;
 	}
 
+	@Override
 	public synchronized InputStream asInputStream(SerializeOpts opts)
 			throws CoreException  {
 
 		return mStream == null ? null : new SynchronizedInputStream(mStream,false);
 
-		
+
 	}
 
+	@Override
 	public synchronized void close() throws IOException {
 
 		if (mStream != null)
-				mStream.close();
+			mStream.close();
 
 	}
 
+	@Override
 	public synchronized Source asSource(SerializeOpts opts) throws CoreException {
 
 		Source s = new StreamSource(asInputStream(opts));
 		s.setSystemId(getSystemId());
-		
-		
+
+
 		/*
 		 * Dont implement XInclude globally yet - problems in Saxon9
 		 * See xinclude instead
@@ -86,26 +87,28 @@ public class StreamInputPort extends InputPort  {
 			as.setXIncludeAware(true);
 			s = as;
 		}
-		*/
-		
-		
+		 */
+
+
 		return s;
 	}
 
+	@Override
 	public synchronized InputSource asInputSource(SerializeOpts opts) throws CoreException {
 
 		InputSource s = new InputSource(asInputStream(opts));
 		s.setSystemId(getSystemId());
-		
+
 		return s;
 	}
 
-	
-	
+
+
+	@Override
 	public synchronized XdmNode asXdmNode(SerializeOpts opts) throws CoreException  {
 
 		net.sf.saxon.s9api.DocumentBuilder builder = Shell.getProcessor().newDocumentBuilder();
-		
+
 		try {
 			return builder.build(asSource(opts));
 		} catch (SaxonApiException e) {
@@ -113,11 +116,12 @@ public class StreamInputPort extends InputPort  {
 		}
 	}
 
-	
+
 	public boolean isStream() {
 		return true;
 	}
 
+	@Override
 	public void copyTo(OutputStream out, SerializeOpts opts) throws CoreException, IOException {
 
 		Util.copyStream(mStream, out);
@@ -127,11 +131,11 @@ public class StreamInputPort extends InputPort  {
 	@Override
 	public XMLEventReader asXMLEventReader(SerializeOpts opts) throws CoreException {
 		try {
-		XMLInputFactory factory = XMLInputFactory.newInstance();
-		if( ! opts.isSupports_dtd())
-			factory.setProperty(XMLInputFactory.SUPPORT_DTD, "false");
-		
-		return factory.createXMLEventReader( getSystemId() , asInputStream(opts));
+			XMLInputFactory factory = XMLInputFactory.newInstance();
+			if( ! opts.isSupports_dtd())
+				factory.setProperty(XMLInputFactory.SUPPORT_DTD, "false");
+
+			return factory.createXMLEventReader( getSystemId() , asInputStream(opts));
 		} catch (Exception e)
 		{
 			throw new CoreException( e );
@@ -147,11 +151,12 @@ public class StreamInputPort extends InputPort  {
 			XMLStreamReader reader =  factory.createXMLStreamReader(getSystemId() , asInputStream(opts));
 			return reader;
 		} catch (Exception e)
-			{
-				throw new CoreException( e );
-			}
+		{
+			throw new CoreException( e );
+		}
 	}
 
+	@Override
 	public  XdmItem asXdmItem(SerializeOpts serializeOpts) throws CoreException
 	{
 		return asXdmNode(serializeOpts);

@@ -24,7 +24,7 @@ import javax.xml.stream.XMLStreamWriter;
  * TODO:saxon classes StaxToEventBridge , EventIterator
  */
 public class StAXUtils {
-	
+
 	public static void	 copy( NodeInfo node , XMLStreamWriter writer ) throws XMLStreamException
 	{
 		switch( node.getNodeKind() ){
@@ -34,8 +34,8 @@ public class StAXUtils {
 			String localName = node.getLocalPart();
 			String namespaceURI = node.getURI();
 			writer.writeStartElement(prefix, localName, namespaceURI);
-			
-			
+
+
 			// Get declared namespaces
 			NamespaceBinding[] nsb = node.getDeclaredNamespaces(null);
 			if( nsb != null ){
@@ -43,13 +43,13 @@ public class StAXUtils {
 					NamePool np = node.getNamePool();
 					String ns_prefix = ns.getPrefix();
 					String ns_uri = ns.getURI();
-					
+
 					writer.writeNamespace( ns_prefix , ns_uri );
 				}
 			}
-				
-			
-						
+
+
+
 			// Write attributes
 			AxisIterator iter = node.iterateAxis(Axis.ATTRIBUTE);
 			Item item;
@@ -57,9 +57,9 @@ public class StAXUtils {
 				NodeInfo attr = (NodeInfo) item;
 				copy( attr , writer );
 			}
-			
-	
-			
+
+
+
 			// Child nodes 
 			iter = node.iterateAxis(Axis.CHILD);
 			while( ( item = iter.next() ) != null ){
@@ -68,24 +68,24 @@ public class StAXUtils {
 			}
 			writer.writeEndElement();
 
-			
-		
+
+
 		}
 		break;
-		
-			
-			
-		
+
+
+
+
 		case	Type.ATTRIBUTE :
 			writer.writeAttribute( node.getPrefix(), node.getURI() , node.getLocalPart(), node.getStringValue());
 			break;
-		
+
 		case	Type.TEXT :
 		case	Type.WHITESPACE_TEXT :
 			writer.writeCharacters(node.getStringValue());
 			break;
 		case	Type.PROCESSING_INSTRUCTION :
-			
+
 			writer.writeProcessingInstruction(node.getDisplayName(), node.getStringValue());
 			break;
 		case	Type.COMMENT :
@@ -102,7 +102,7 @@ public class StAXUtils {
 			}
 			// writer.writeEndDocument();
 		}	
-			break;
+		break;
 		case	Type.NAMESPACE:
 		{
 			String prefix = node.getDisplayName();
@@ -112,20 +112,20 @@ public class StAXUtils {
 			if( Util.isBlank(uri))
 				break;
 			writer.writeNamespace( prefix , uri );
-		
+
 		}
-			break;
-		
-		
+		break;
+
+
 		}
-		
-		
-		
+
+
+
 	}
 
 	public static void copy(NodeInfo node, XMLEventWriter writer) throws XMLStreamException {
-		copy( node ,(XMLStreamWriter) new XMLEventStreamWriter( writer) );
-		
+		copy( node ,new XMLEventStreamWriter( writer) );
+
 	}
 
 	private static String eventTypes[] = {
@@ -145,16 +145,16 @@ public class StAXUtils {
 		"NAMESPACE",
 		"NOTATION_DECLARATION",
 		"ENTITY_DECLARATION"
-		
-		
+
+
 	};
 
 	public static String getEventTypeName(int type) {
 		if( type >= 0 && type <= eventTypes.length )
 			return eventTypes[type];
 		return "";
-		
-		
+
+
 	}
 
 	public static int getEventTypeByName(String typeName) {
@@ -166,15 +166,15 @@ public class StAXUtils {
 
 	public static boolean matchesQName(javax.xml.namespace.QName name, QName qname) {
 		return Util.isEqual(name.getNamespaceURI(), qname.getNamespaceURI() ) &&
-			Util.isEqual(name.getLocalPart(), qname.getLocalName() );
+				Util.isEqual(name.getLocalPart(), qname.getLocalName() );
 	}
 
 	public static javax.xml.namespace.QName getQName(QName name) {
 		return new javax.xml.namespace.QName(name.getNamespaceURI(), name.getLocalName(), name.getPrefix());
 
 	}
-	
-	
+
+
 
 }
 

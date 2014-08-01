@@ -37,7 +37,8 @@ public class xtype extends BuiltinCommand {
 	private XQueryEvaluator mEval;
 	private OutputPort mStdout;
 	private Destination mSer;
-	
+
+	@Override
 	public int run(  List<XValue> args ) throws Exception 
 	{
 		Options opts = new Options("v:" , SerializeOpts.getOptionDefs());
@@ -45,56 +46,56 @@ public class xtype extends BuiltinCommand {
 		setSerializeOpts( opts );
 		Processor  processor  = Shell.getProcessor();
 		String varname = opts.getOptString("v",null);
-		
+
 		XQueryCompiler compiler = processor.newXQueryCompiler();
 		compiler.setModuleURIResolver(new ShellModuleURIResolver(mShell));
-		
+
 		XQueryExecutable expr = null;
 
 		expr = compiler.compile( 
-		"import module namespace functx = 'http://www.functx.com' ;\n"+ 
-		"declare variable $A external;\n" + 
-		"functx:sequence-type($A)"
-				
-		);
-		
-		
+				"import module namespace functx = 'http://www.functx.com' ;\n"+ 
+						"declare variable $A external;\n" + 
+						"functx:sequence-type($A)"
+
+				);
+
+
 
 		mEval = expr.load();	
 		mVqname = Util.resolveQName( "A", null );
-		
+
 		try {
 			mStdout = mShell.getEnv().getStdout();
 			mSer = mStdout.asDestination(getSerializeOpts());
-	
-			
+
+
 			if( varname != null ) {
 				XVariable xv = getShell().getEnv().getVar(varname);
 				if( xv == null )
 					this.printErr("Unknown variable: " + varname );
 				else
-				   printType( xv.getValue() );
+					printType( xv.getValue() );
 			}
-			
+
 			else
-			for( XValue arg : opts.getRemainingArgs() ){
-				printType( arg );
-					
-			}
+				for( XValue arg : opts.getRemainingArgs() ){
+					printType( arg );
+
+				}
 			if( bAnyOut )
 				mStdout.writeSequenceTerminator(getSerializeOpts()); // write "\n"
-			
+
 		} finally {
 			if( mSer != null)
 				mSer.close();
 		}
 		return 0;
-		
-		
-		
-		
+
+
+
+
 	}
-	
+
 	void printType(XValue arg) throws InvalidArgumentException, IOException, CoreException, SaxonApiException
 	{
 		if( arg == null )
@@ -109,28 +110,28 @@ public class xtype extends BuiltinCommand {
 				Util.writeXdmValue(new XValue(arg.asObject().getClass().getName()).asXdmValue(), mSer);
 			bAnyOut = true ;
 		}
-			
+
 		else {
 			mEval.setExternalVariable( mVqname , arg.asXdmValue()  );
-			
-		
+
+
 			for( XdmItem item : mEval ){
 				bAnyOut = true ;
 				if( ! bFirst )
 					mStdout.writeSequenceSeperator(getSerializeOpts()); // Thrashes variable output !
 				bFirst = false ;
-				
-				
+
+
 				if( item instanceof XdmNode ){
 					XdmNode node = (XdmNode) item ;
 				}
-				
+
 				//processor.writeXdmValue(item, ser );
 				Util.writeXdmValue(item, mSer);
-	
+
 			}
 		}
-		
+
 	}
 
 }

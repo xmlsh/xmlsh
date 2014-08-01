@@ -99,7 +99,7 @@ public class rngvalidate extends XCommand {
 				eh.print(localizer.message("no_schematron", "p"));
 				return 2;
 			}
-				properties.put(option.getPropertyId(), opts.getOptStringRequired("p"));
+			properties.put(option.getPropertyId(), opts.getOptStringRequired("p"));
 		}
 
 		if (!catalogUris.isEmpty()) {
@@ -141,7 +141,7 @@ public class rngvalidate extends XCommand {
 				if( args.size() == 0 ) {// stdin
 					if (!driver.validate( getEnv().getStdin().asInputSource(getSerializeOpts())))
 						hadError = true;
-				
+
 				} else {
 					for (XValue arg : args ){
 						if (!driver.validate(getEnv().getInputSource(arg, getSerializeOpts())))
@@ -163,7 +163,7 @@ public class rngvalidate extends XCommand {
 				loadedPatternTime = endTime;
 			eh.print(localizer.message("elapsed_time",
 					new Object[] { loadedPatternTime - startTime, endTime - loadedPatternTime,
-							endTime - startTime }));
+					endTime - startTime }));
 		}
 		if (hadError)
 			return 1;

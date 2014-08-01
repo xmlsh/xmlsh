@@ -9,9 +9,9 @@ package org.xmlsh.commands.json;
 import org.xmlsh.core.BuiltinFunctionCommand;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
+import org.xmlsh.json.JSONUtils;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.types.TypeFamily;
-import org.xmlsh.util.JSONUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,20 +25,20 @@ public class array extends BuiltinFunctionCommand {
 	{
 		super("array");
 	}
-	
+
 	@Override
 	public XValue run(Shell shell, List<XValue> args) throws InvalidArgumentException {
 
 		ArrayList<Object> list = new ArrayList<Object>();
-		
-		
+
+
 		ObjectMapper mapper = JSONUtils.getJsonObjectMapper();
 		ArrayNode node = mapper.createArrayNode();
-		
+
 		for( XValue arg : args ){
 			node.add(JSONUtils.toJsonType(arg) );
 		}
-		
+
 
 		return new XValue( TypeFamily.JSON ,node );
 	}

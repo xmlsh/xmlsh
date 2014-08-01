@@ -9,9 +9,9 @@ package org.xmlsh.commands.json;
 import org.xmlsh.core.BuiltinFunctionCommand;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
+import org.xmlsh.json.JSONUtils;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.types.TypeFamily;
-import org.xmlsh.util.JSONUtils;
 
 import java.util.List;
 
@@ -21,18 +21,18 @@ public class _boolean extends BuiltinFunctionCommand {
 	{
 		super("boolean");
 	}
-	
+
 	@Override
 	public XValue run(Shell shell, List<XValue> args) throws InvalidArgumentException   {
 
 		if( args.size() == 0 )
 			return new XValue( Boolean.FALSE );
-	      
+
 		XValue arg = args.get(0);
-		
-		
-		
-		
+
+
+
+
 		return new XValue( TypeFamily.JSON ,JSONUtils.toJsonBoolean( arg ));
 	}
 

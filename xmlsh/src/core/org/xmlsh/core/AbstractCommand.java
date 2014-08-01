@@ -26,28 +26,28 @@ import javax.xml.transform.Source;
 public abstract class AbstractCommand implements ICommand {
 
 	protected static Logger mLogger = Logger.getLogger(AbstractCommand.class);
-	
+
 	protected	Shell mShell;
 	protected XEnvironment mEnvironment;
 	protected SourceLocation		mLocation ;
 	private SerializeOpts mSerializeOpts = null ;
-	
+
 	public AbstractCommand() {
-		
+
 	}
-	
+
 
 	public abstract String getName();
 	protected SerializeOpts getSerializeOpts(Options opts) throws InvalidArgumentException {
 		return mShell.getSerializeOpts(opts);
 	}
 
-	
+
 	@Override
 	public void close() {
 		mShell = null ;
 		mEnvironment = null ;
-		
+
 	}
 
 	protected XEnvironment getEnv() { return mEnvironment;}
@@ -88,9 +88,9 @@ public abstract class AbstractCommand implements ICommand {
 	 * @see org.xmlsh.core.XEnvironment#getOutputStream(java.lang.String, boolean)
 	 */
 	public OutputStream getOutputStream(String file, boolean append, SerializeOpts opt) throws FileNotFoundException,
-			IOException, CoreException {
-				return mEnvironment.getOutputStream(file, append,opt);
-			}
+	IOException, CoreException {
+		return mEnvironment.getOutputStream(file, append,opt);
+	}
 
 	public InputPort getInput(XValue name) throws CoreException, IOException {
 		return mEnvironment.getInput( name );
@@ -132,7 +132,7 @@ public abstract class AbstractCommand implements ICommand {
 	protected File getFile(XValue fname) throws IOException {
 		return mShell.getFile(fname);
 	}	
-	
+
 	protected Shell getShell() {
 		return mShell;
 	}
@@ -157,15 +157,17 @@ public abstract class AbstractCommand implements ICommand {
 	{
 		usage(null);
 	}
-	
+
+	@Override
 	public SourceLocation  getLocation() { return mLocation ; }
+	@Override
 	public void setLocation(SourceLocation source) { mLocation = source ; }
 
 	protected ClassLoader getClassLoader(XValue classpath) throws CoreException
 	{
 		return mShell.getClassLoader(classpath);
 	}
-	
+
 
 	protected void setSerializeOpts( SerializeOpts opts)
 	{
@@ -175,14 +177,14 @@ public abstract class AbstractCommand implements ICommand {
 	{
 		mSerializeOpts = this.getSerializeOpts(opts) ;
 	}
-	
+
 	protected SerializeOpts getSerializeOpts()
 	{
 		if( mSerializeOpts == null )
 			mSerializeOpts = mShell.getSerializeOpts();
 		return mSerializeOpts ;
 	}
-	
+
 
 }
 

@@ -15,16 +15,15 @@ import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XdmValue;
 import org.xml.sax.InputSource;
+import org.xmlsh.json.JSONUtils;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.util.JSONUtils;
 import org.xmlsh.util.NullInputStream;
 import org.xmlsh.util.S9Util;
 import org.xmlsh.util.Util;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.FileDescriptor;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -39,7 +38,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 public class XdmStreamInputPort extends InputPort {
 
-	
+
 	IXdmItemReader  mReader;
 
 	public XdmStreamInputPort(IXdmItemReader reader, SerializeOpts opts) {
@@ -48,17 +47,17 @@ public class XdmStreamInputPort extends InputPort {
 
 	@Override
 	public InputStream asInputStream(SerializeOpts opts) throws CoreException {
-		
+
 		XdmValue value = mReader.read();
 		if( value == null )
 			return new NullInputStream();
-		
-		
+
+
 		ByteArrayOutputStream buf = new ByteArrayOutputStream();
 		try {
 			Util.writeXdmValue(value, Util
-						.streamToDestination(buf, opts)); // uses output xml encoding
-			
+					.streamToDestination(buf, opts)); // uses output xml encoding
+
 			return new ByteArrayInputStream(buf.toByteArray());
 		} catch (SaxonApiException e) {
 			throw new CoreException(e);
@@ -67,7 +66,7 @@ public class XdmStreamInputPort extends InputPort {
 
 	@Override
 	public void close() {
-		
+
 
 	}
 
@@ -112,22 +111,22 @@ public class XdmStreamInputPort extends InputPort {
 
 	@Override
 	public XMLStreamReader asXMLStreamReader(SerializeOpts opts) throws CoreException {
-		
+
 		// TODO: This code was copied from VariableInputPort 
-		
-         XValue value = new XValue( mReader.read() );
-		
+
+		XValue value = new XValue( mReader.read() );
+
 		//System.err.println("sysid: " + this.getSystemId() );
 		//System.err.println("base: " + value.asXdmNode().getBaseURI());
-	
+
 		Configuration config = Shell.getProcessor().getUnderlyingConfiguration();
 
 		/*
 		 * IF variable is an atomic value then treat as string and parse to XML
 		 */
-		
+
 		if( value.isAtomic() ){
-			
+
 			try {
 				XMLInputFactory factory = XMLInputFactory.newInstance();
 				if( ! opts.isSupports_dtd())
@@ -135,47 +134,47 @@ public class XdmStreamInputPort extends InputPort {
 				XMLStreamReader reader =  factory.createXMLStreamReader(getSystemId() , asInputStream(opts));
 				return reader;
 			} catch (Exception e)
-				{
-					throw new CoreException( e );
-				}
-			
-			
+			{
+				throw new CoreException( e );
+			}
+
+
 		}
-		
-		
-								
+
+
+
 		// SequenceIterator iter = value.asSequenceIterator();
 		NodeInfo nodeInfo = value.asNodeInfo();
-		
+
 		/*
 		 * 2010-05-19 - EventReaders assume documents, if not a document then wrap with one
 		 */
 		if( nodeInfo.getNodeKind() != net.sf.saxon.type.Type.DOCUMENT )
 			nodeInfo = S9Util.wrapDocument( nodeInfo ).getUnderlyingNode(); ;
-	
-		
-		
-		
-		Decomposer decomposed = new Decomposer( nodeInfo , config.makePipelineConfiguration()  );
-		
-		// EventIteratorOverSequence eviter = new EventIteratorOverSequence(iter);
-		
-		
-		EventToStaxBridge ps = new EventToStaxBridge(	decomposed , config.makePipelineConfiguration() );
-		
-		
-		
-		// TODO: Bug in Saxon 9.1.0.6 
-		// PullToStax starts in state 0 not state START_DOCUMENT
-		if( ps.getEventType() == 0 )
-			try {
-				ps.next();
-			} catch (XMLStreamException e) {
-				throw new CoreException(e);
-			}
-		
-		
-		return ps;
+
+
+
+
+			Decomposer decomposed = new Decomposer( nodeInfo , config.makePipelineConfiguration()  );
+
+			// EventIteratorOverSequence eviter = new EventIteratorOverSequence(iter);
+
+
+			EventToStaxBridge ps = new EventToStaxBridge(	decomposed , config.makePipelineConfiguration() );
+
+
+
+			// TODO: Bug in Saxon 9.1.0.6 
+			// PullToStax starts in state 0 not state START_DOCUMENT
+			if( ps.getEventType() == 0 )
+				try {
+					ps.next();
+				} catch (XMLStreamException e) {
+					throw new CoreException(e);
+				}
+
+
+			return ps;
 
 	}
 
@@ -185,9 +184,10 @@ public class XdmStreamInputPort extends InputPort {
 	}
 
 	// Default implementation uses a singleton as the input stream
+	@Override
 	public IXdmItemInputStream asXdmItemInputStream(SerializeOpts serializeOpts)
 			throws CoreException {
-		
+
 		return mReader ;
 	}
 

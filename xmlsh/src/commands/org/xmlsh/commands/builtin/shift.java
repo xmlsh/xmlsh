@@ -15,34 +15,35 @@ import java.util.List;
 
 public class shift  extends BuiltinCommand {
 
-	
+
+	@Override
 	public int run( List<XValue> args ) throws Exception {
-		
+
 		if( args.size() == 0 ){
 			mShell.shift(1);
 			return 0;
-			
+
 		}
-		
+
 		if( args.size() == 1 ){
 			String a1 = args.get(0).toString();
 			if( Util.isInt(a1, false))
 				mShell.shift(Util.parseInt(a1, 1));
 			else
 				shiftvar( a1 ,1 );
-			
+
 			return 0;
 		}
-		
+
 		if( args.size() == 2 ){
-			
+
 			shiftvar( args.get(0).toString() , Util.parseInt(args.get(1), 1));
-			
-			
+
+
 		}
-		
+
 		return 0;
-				
+
 	}
 
 	private void shiftvar(String name, int n) {
@@ -56,14 +57,14 @@ public class shift  extends BuiltinCommand {
 			if( Util.isInt(name, false)){
 				int np = Util.parseInt(name,-1);
 				// Only shift params 1..
-				
+
 				List<XValue> args = mShell.getArgs();
 				if( np > 1 && np < args.size()  ){
 					XValue val = args.get(np-1);
 					val = val.shift(n);
 					args.set(np-1, val);
 				}
-				
+
 			}
 		}
 	}

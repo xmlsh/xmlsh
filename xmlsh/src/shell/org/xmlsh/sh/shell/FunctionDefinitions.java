@@ -17,10 +17,10 @@ class FunctionDefinitions extends NameValueMap<FunctionDeclaration>
 	FunctionDefinitions(FunctionDefinitions that) 
 	{
 		super(that);
-		
+
 	}
-	
-	
+
+
 
 }
 

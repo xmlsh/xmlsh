@@ -6,11 +6,7 @@
 
 package org.xmlsh.commands.internal;
 
-import net.sf.saxon.s9api.SaxonApiException;
-
-import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InputPort;
-import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.XCommand;
@@ -26,59 +22,59 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 public class xunzip extends XCommand {
-	
+
+	@Override
 	public int run( List<XValue> args )	throws Exception
 	{
-		
+
 
 
 		Options opts = new Options( "f=file:,l=list,d=dest:" ,  SerializeOpts.getOptionDefs() );
 		opts.parse(args);
-		
+
 		boolean bList = opts.hasOpt("l");
 		String dest = opts.getOptString("d", ".");
 		XValue zipfile = opts.getOptValue("f");
-		
+
 		args = opts.getRemainingArgs();
-		
+
 		SerializeOpts serializeOpts = getSerializeOpts(opts);
 
 		InputPort iport = (zipfile == null ? getStdin() : getInput(zipfile));
-		
-		
+
+
 		try (
-			InputStream is = iport.asInputStream(serializeOpts); 
-			ZipInputStream zis = new ZipInputStream(is);
+				InputStream is = iport.asInputStream(serializeOpts); 
+				ZipInputStream zis = new ZipInputStream(is);
 				){
 			int ret = 0;
 			if( bList ){
 				ret = list(zis,serializeOpts,args);
-				
+
 			}
 			else
 				ret = unzip( zis , getFile(dest) , args );
 			// Central directory may be pesent at the end read past it to avoid a broken pipe
 			while( is.read() >= 0 )
 				;
-			
+
 			return ret;
 		}
-		
+
 
 
 	}
 
 	private int unzip(ZipInputStream zis, File dest, List<XValue> args) throws IOException {
-		
-	
-		
+
+
+
 		ZipEntry entry ;
 		while( (entry = zis.getNextEntry()) != null ){
-			
+
 			if( matches( entry.getName() , args )){
 				File outf = getShell().getFile( dest , entry.getName());
 				// printErr(outf.getAbsolutePath());
@@ -90,19 +86,19 @@ public class xunzip extends XCommand {
 					File dir = outf.getParentFile();
 					if( ! dir.exists() )
 						dir.mkdirs();
-					
-					
+
+
 					FileOutputStream fos = new FileOutputStream(outf);
 					Util.copyStream(zis, fos);
 					fos.close();
 					outf.setLastModified(entry.getTime());
-					
+
 				}
-			
+
 			}
 			zis.closeEntry();
-			
-			
+
+
 		}
 
 		return 0;
@@ -111,32 +107,32 @@ public class xunzip extends XCommand {
 	private boolean matches(String name, List<XValue> args) {
 		if( args == null || args.size() == 0)
 			return true ; // 0 args matches all
-		
+
 		for( XValue v : args )
 			if( Util.isEqual(name, v.toString()))
 				return true ;
 		return false ;
-		
-		
-		
-		
+
+
+
+
 	}
 
 	private int list(ZipInputStream zis,SerializeOpts serializeOpts, List<XValue> args) throws Exception {
 		OutputPort stdout = getStdout();
 		XMLStreamWriter writer = stdout.asXMLStreamWriter(serializeOpts);
 		writer.writeStartDocument();
-		
-		
+
+
 		writer.writeStartElement("zip");
-	
-		
+
+
 		ZipEntry entry ;
 		while( (entry = zis.getNextEntry()) != null ){
-			
+
 			if( matches( entry.getName() , args )){
 
-				
+
 				writer.writeStartElement("entry");
 				writer.writeAttribute("name", entry.getName());
 				if( entry.getComment() != null )
@@ -144,14 +140,14 @@ public class xunzip extends XCommand {
 				writer.writeAttribute("size", String.valueOf(entry.getSize()));
 				writer.writeAttribute("compressed_size", String.valueOf(entry.getCompressedSize()));
 				writer.writeAttribute("directory", String.valueOf(entry.isDirectory()));
-				
-	
-				
+
+
+
 				writer.writeAttribute("time", Util.formatXSDateTime( entry.getTime()));
 				writer.writeEndElement();
 			}
 			zis.closeEntry();
-			
+
 		}
 		writer.writeEndElement();
 		writer.writeEndDocument();

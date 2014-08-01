@@ -22,29 +22,31 @@ public class XMLDelegateOutputFactory extends XMLOutputFactory2
 	private XMLOutputFactory2 mFactory;
 
 	protected XMLDelegateOutputFactory(XMLOutputFactory2 factory)
-    {
-	    super();
-	    mFactory = factory;
-    }
+	{
+		super();
+		mFactory = factory;
+	}
 
 	/**
 	 * @return
 	 * @see java.lang.Object#hashCode()
 	 */
-    public int hashCode()
-    {
-	    return mFactory.hashCode();
-    }
+	@Override
+	public int hashCode()
+	{
+		return mFactory.hashCode();
+	}
 
 	/**
 	 * @param obj
 	 * @return
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
-    public boolean equals(Object obj)
-    {
-	    return mFactory.equals(obj);
-    }
+	@Override
+	public boolean equals(Object obj)
+	{
+		return mFactory.equals(obj);
+	}
 
 	/**
 	 * @param w
@@ -53,10 +55,11 @@ public class XMLDelegateOutputFactory extends XMLOutputFactory2
 	 * @throws XMLStreamException
 	 * @see org.codehaus.stax2.XMLOutputFactory2#createXMLEventWriter(java.io.Writer, java.lang.String)
 	 */
-    public XMLEventWriter createXMLEventWriter(Writer w, String encoding) throws XMLStreamException
-    {
-	    return mFactory.createXMLEventWriter(w, encoding);
-    }
+	@Override
+	public XMLEventWriter createXMLEventWriter(Writer w, String encoding) throws XMLStreamException
+	{
+		return mFactory.createXMLEventWriter(w, encoding);
+	}
 
 	/**
 	 * @param sw
@@ -64,10 +67,11 @@ public class XMLDelegateOutputFactory extends XMLOutputFactory2
 	 * @throws XMLStreamException
 	 * @see org.codehaus.stax2.XMLOutputFactory2#createXMLEventWriter(javax.xml.stream.XMLStreamWriter)
 	 */
-    public XMLEventWriter createXMLEventWriter(XMLStreamWriter sw) throws XMLStreamException
-    {
-	    return mFactory.createXMLEventWriter(sw);
-    }
+	@Override
+	public XMLEventWriter createXMLEventWriter(XMLStreamWriter sw) throws XMLStreamException
+	{
+		return mFactory.createXMLEventWriter(sw);
+	}
 
 	/**
 	 * @param w
@@ -76,37 +80,41 @@ public class XMLDelegateOutputFactory extends XMLOutputFactory2
 	 * @throws XMLStreamException
 	 * @see org.codehaus.stax2.XMLOutputFactory2#createXMLStreamWriter(java.io.Writer, java.lang.String)
 	 */
-    public XMLStreamWriter2 createXMLStreamWriter(Writer w, String encoding) throws XMLStreamException
-    {
-	    return mFactory.createXMLStreamWriter(w, encoding);
-    }
+	@Override
+	public XMLStreamWriter2 createXMLStreamWriter(Writer w, String encoding) throws XMLStreamException
+	{
+		return mFactory.createXMLStreamWriter(w, encoding);
+	}
 
 	/**
 	 * 
 	 * @see org.codehaus.stax2.XMLOutputFactory2#configureForXmlConformance()
 	 */
-    public void configureForXmlConformance()
-    {
-	    mFactory.configureForXmlConformance();
-    }
+	@Override
+	public void configureForXmlConformance()
+	{
+		mFactory.configureForXmlConformance();
+	}
 
 	/**
 	 * 
 	 * @see org.codehaus.stax2.XMLOutputFactory2#configureForRobustness()
 	 */
-    public void configureForRobustness()
-    {
-	    mFactory.configureForRobustness();
-    }
+	@Override
+	public void configureForRobustness()
+	{
+		mFactory.configureForRobustness();
+	}
 
 	/**
 	 * 
 	 * @see org.codehaus.stax2.XMLOutputFactory2#configureForSpeed()
 	 */
-    public void configureForSpeed()
-    {
-	    mFactory.configureForSpeed();
-    }
+	@Override
+	public void configureForSpeed()
+	{
+		mFactory.configureForSpeed();
+	}
 
 	/**
 	 * @param stream
@@ -114,10 +122,11 @@ public class XMLDelegateOutputFactory extends XMLOutputFactory2
 	 * @throws XMLStreamException
 	 * @see javax.xml.stream.XMLOutputFactory#createXMLStreamWriter(java.io.Writer)
 	 */
-    public XMLStreamWriter createXMLStreamWriter(Writer stream) throws XMLStreamException
-    {
-	    return mFactory.createXMLStreamWriter(stream);
-    }
+	@Override
+	public XMLStreamWriter createXMLStreamWriter(Writer stream) throws XMLStreamException
+	{
+		return mFactory.createXMLStreamWriter(stream);
+	}
 
 	/**
 	 * @param stream
@@ -125,10 +134,11 @@ public class XMLDelegateOutputFactory extends XMLOutputFactory2
 	 * @throws XMLStreamException
 	 * @see javax.xml.stream.XMLOutputFactory#createXMLStreamWriter(java.io.OutputStream)
 	 */
-    public XMLStreamWriter createXMLStreamWriter(OutputStream stream) throws XMLStreamException
-    {
-	    return mFactory.createXMLStreamWriter(stream);
-    }
+	@Override
+	public XMLStreamWriter createXMLStreamWriter(OutputStream stream) throws XMLStreamException
+	{
+		return mFactory.createXMLStreamWriter(stream);
+	}
 
 	/**
 	 * @param stream
@@ -137,10 +147,11 @@ public class XMLDelegateOutputFactory extends XMLOutputFactory2
 	 * @throws XMLStreamException
 	 * @see javax.xml.stream.XMLOutputFactory#createXMLStreamWriter(java.io.OutputStream, java.lang.String)
 	 */
-    public XMLStreamWriter createXMLStreamWriter(OutputStream stream, String encoding) throws XMLStreamException
-    {
-	    return mFactory.createXMLStreamWriter(stream, encoding);
-    }
+	@Override
+	public XMLStreamWriter createXMLStreamWriter(OutputStream stream, String encoding) throws XMLStreamException
+	{
+		return mFactory.createXMLStreamWriter(stream, encoding);
+	}
 
 	/**
 	 * @param result
@@ -148,19 +159,21 @@ public class XMLDelegateOutputFactory extends XMLOutputFactory2
 	 * @throws XMLStreamException
 	 * @see javax.xml.stream.XMLOutputFactory#createXMLStreamWriter(javax.xml.transform.Result)
 	 */
-    public XMLStreamWriter createXMLStreamWriter(Result result) throws XMLStreamException
-    {
-	    return mFactory.createXMLStreamWriter(result);
-    }
+	@Override
+	public XMLStreamWriter createXMLStreamWriter(Result result) throws XMLStreamException
+	{
+		return mFactory.createXMLStreamWriter(result);
+	}
 
 	/**
 	 * @return
 	 * @see java.lang.Object#toString()
 	 */
-    public String toString()
-    {
-	    return mFactory.toString();
-    }
+	@Override
+	public String toString()
+	{
+		return mFactory.toString();
+	}
 
 	/**
 	 * @param result
@@ -168,10 +181,11 @@ public class XMLDelegateOutputFactory extends XMLOutputFactory2
 	 * @throws XMLStreamException
 	 * @see javax.xml.stream.XMLOutputFactory#createXMLEventWriter(javax.xml.transform.Result)
 	 */
-    public XMLEventWriter createXMLEventWriter(Result result) throws XMLStreamException
-    {
-	    return mFactory.createXMLEventWriter(result);
-    }
+	@Override
+	public XMLEventWriter createXMLEventWriter(Result result) throws XMLStreamException
+	{
+		return mFactory.createXMLEventWriter(result);
+	}
 
 	/**
 	 * @param stream
@@ -179,10 +193,11 @@ public class XMLDelegateOutputFactory extends XMLOutputFactory2
 	 * @throws XMLStreamException
 	 * @see javax.xml.stream.XMLOutputFactory#createXMLEventWriter(java.io.OutputStream)
 	 */
-    public XMLEventWriter createXMLEventWriter(OutputStream stream) throws XMLStreamException
-    {
-	    return mFactory.createXMLEventWriter(stream);
-    }
+	@Override
+	public XMLEventWriter createXMLEventWriter(OutputStream stream) throws XMLStreamException
+	{
+		return mFactory.createXMLEventWriter(stream);
+	}
 
 	/**
 	 * @param stream
@@ -191,10 +206,11 @@ public class XMLDelegateOutputFactory extends XMLOutputFactory2
 	 * @throws XMLStreamException
 	 * @see javax.xml.stream.XMLOutputFactory#createXMLEventWriter(java.io.OutputStream, java.lang.String)
 	 */
-    public XMLEventWriter createXMLEventWriter(OutputStream stream, String encoding) throws XMLStreamException
-    {
-	    return mFactory.createXMLEventWriter(stream, encoding);
-    }
+	@Override
+	public XMLEventWriter createXMLEventWriter(OutputStream stream, String encoding) throws XMLStreamException
+	{
+		return mFactory.createXMLEventWriter(stream, encoding);
+	}
 
 	/**
 	 * @param stream
@@ -202,10 +218,11 @@ public class XMLDelegateOutputFactory extends XMLOutputFactory2
 	 * @throws XMLStreamException
 	 * @see javax.xml.stream.XMLOutputFactory#createXMLEventWriter(java.io.Writer)
 	 */
-    public XMLEventWriter createXMLEventWriter(Writer stream) throws XMLStreamException
-    {
-	    return mFactory.createXMLEventWriter(stream);
-    }
+	@Override
+	public XMLEventWriter createXMLEventWriter(Writer stream) throws XMLStreamException
+	{
+		return mFactory.createXMLEventWriter(stream);
+	}
 
 	/**
 	 * @param name
@@ -213,10 +230,11 @@ public class XMLDelegateOutputFactory extends XMLOutputFactory2
 	 * @throws IllegalArgumentException
 	 * @see javax.xml.stream.XMLOutputFactory#setProperty(java.lang.String, java.lang.Object)
 	 */
-    public void setProperty(String name, Object value) throws IllegalArgumentException
-    {
-	    mFactory.setProperty(name, value);
-    }
+	@Override
+	public void setProperty(String name, Object value) throws IllegalArgumentException
+	{
+		mFactory.setProperty(name, value);
+	}
 
 	/**
 	 * @param name
@@ -224,21 +242,23 @@ public class XMLDelegateOutputFactory extends XMLOutputFactory2
 	 * @throws IllegalArgumentException
 	 * @see javax.xml.stream.XMLOutputFactory#getProperty(java.lang.String)
 	 */
-    public Object getProperty(String name) throws IllegalArgumentException
-    {
-	    return mFactory.getProperty(name);
-    }
+	@Override
+	public Object getProperty(String name) throws IllegalArgumentException
+	{
+		return mFactory.getProperty(name);
+	}
 
 	/**
 	 * @param name
 	 * @return
 	 * @see javax.xml.stream.XMLOutputFactory#isPropertySupported(java.lang.String)
 	 */
-    public boolean isPropertySupported(String name)
-    {
-	    return mFactory.isPropertySupported(name);
-    }
-	
+	@Override
+	public boolean isPropertySupported(String name)
+	{
+		return mFactory.isPropertySupported(name);
+	}
+
 
 }
 

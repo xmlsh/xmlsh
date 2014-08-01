@@ -18,13 +18,13 @@ import javax.xml.stream.XMLStreamWriter;
 
 public class writeNamespace extends XCommand {
 
-	
-	
+
+
 	public writeNamespace()
 	{
-		
+
 	}
-	
+
 	@Override
 	public int run( List<XValue> args) throws CoreException, XPathException, XMLStreamException {
 		if( args.size()  != 3  )
@@ -35,9 +35,9 @@ public class writeNamespace extends XCommand {
 		Object arg = arg0.asObject();
 		if( arg instanceof XMLStreamWriter )
 			((XMLStreamWriter)arg).writeNamespace(prefix , uri );
-		
+
 		return 0;
-		
+
 	}
 
 }

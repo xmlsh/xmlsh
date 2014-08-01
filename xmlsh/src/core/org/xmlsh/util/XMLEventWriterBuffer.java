@@ -19,43 +19,46 @@ import javax.xml.stream.events.XMLEvent;
 public class XMLEventWriterBuffer extends BaseXMLEventWriter {
 	private List<XMLEvent>  mList = new LinkedList<XMLEvent>();
 
-	
+
 	private class BufferReader extends BaseXMLEventReader {
 
+		@Override
 		public boolean hasNext() {
 			return ! mList.isEmpty() ;
 		}
 
+		@Override
 		public XMLEvent nextEvent() throws XMLStreamException {
 			return mList.remove(0);
-			
+
 		}
 
+		@Override
 		public XMLEvent peek() throws XMLStreamException {
 			return mList.get(0);
 		}
-		
-		
+
+
 	}
-	
-	
-	
+
+
+
 	@Override
 	protected void sendEvent(XMLEvent event) throws XMLStreamException {
 		mList.add(event);
-		
+
 	}
-	
+
 	public List<XMLEvent> getBuffer() {
 		return mList ;
 	}
-	
+
 	public	XMLEventReader 	getReader()
 	{
 		return new BufferReader();
-		
+
 	}
-	
+
 
 }
 

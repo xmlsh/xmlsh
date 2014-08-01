@@ -70,19 +70,19 @@ public class EvalFunctionCall extends ExtensionFunctionCall
 			try (				
 					VariableOutputPort oPort = new VariableOutputPort(oVar) ){
 				shell.getEnv().setStdout(oPort);
-	
+
 				Item contextItem = null;
 				if(arguments.length > 2)
 					contextItem = arguments[2].next();
 				else
 					contextItem = context.getContextItem();
-	
+
 				// set stdin
 				if(context != null) {
 					VariableInputPort iPort = new VariableInputPort(new XVariable("_in", new XValue(contextItem)));
 					shell.getEnv().setStdin(iPort);
 				}
-	
+
 				shell.setArgs(shell_args);
 				try {
 					shell.exec(cmd);

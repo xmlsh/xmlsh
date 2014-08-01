@@ -22,16 +22,16 @@ import java.io.PipedOutputStream;
 import javax.swing.JTextField;
 
 public class TextFieldStreamPipe implements Closeable {
-	
-	
+
+
 	private static final int PIPE_SIZE = 20 ;
-	
+
 	private JTextField mField;
 	private PipedOutputStream mOut;
 	private PipedInputStream mIn;
 
 	private static Logger mLogger  = LogManager.getLogger(TextFieldStreamPipe.class);
-	
+
 	/**
 	 * @wbp.parser.entryPoint
 	 */
@@ -42,13 +42,14 @@ public class TextFieldStreamPipe implements Closeable {
 
 		mField.addActionListener(new ActionListener(){
 
-            public void actionPerformed(ActionEvent e){
-            	try {
-            		if( mOut == null ) {
-            			mLogger.error("output is closed");
-            			return ;
-            		}
-					
+			@Override
+			public void actionPerformed(ActionEvent e){
+				try {
+					if( mOut == null ) {
+						mLogger.error("output is closed");
+						return ;
+					}
+
 					mOut.write( mField.getText().getBytes(opts.getInput_text_encoding()) );
 					mOut.write(  Util.getNewline(opts));
 					mOut.flush();
@@ -56,8 +57,8 @@ public class TextFieldStreamPipe implements Closeable {
 				} catch (Exception ex) {
 					mLogger.error("Exception writting text from command window",ex);
 				}
-            	
-            }});
+
+			}});
 
 	}
 
@@ -70,24 +71,25 @@ public class TextFieldStreamPipe implements Closeable {
 	}
 
 
+	@Override
 	public void close() {
 		setReading(false);
 		mField.setText("");
-		
+
 		try {
 			if( mIn != null )
-		     	mIn.close();
+				mIn.close();
 			if( mOut != null)
-			  mOut.close();
-			
+				mOut.close();
+
 		} catch (IOException e) {
 			mLogger.error("Exception closing command pipe ",e);
 		} finally {
 			mIn = null ;
 			mOut = null ;
 		}
-	
-		
+
+
 	}
 
 
@@ -104,14 +106,14 @@ public class TextFieldStreamPipe implements Closeable {
 		} 
 	}
 
-	
+
 	public void setReading(boolean bRead){
 		mField.setEditable(bRead);
 		mField.setEnabled(bRead);
-		
+
 	}
-	
-	
+
+
 
 }
 

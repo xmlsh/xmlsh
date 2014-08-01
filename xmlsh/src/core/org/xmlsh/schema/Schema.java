@@ -29,26 +29,26 @@ public class Schema
 {
 	private 	XSModel		mModel;
 	private		Stack<XSElementDeclaration>		mScopeStack = new Stack<XSElementDeclaration>();
-	
-	
-	
+
+
+
 	public Schema( String schema ) throws ClassCastException, ClassNotFoundException, InstantiationException, IllegalAccessException
 	{
-		
+
 		// Get DOM Implementation using DOM Registry
 
 		System.setProperty(DOMImplementationRegistry.PROPERTY,
-		    "org.apache.xerces.dom.DOMXSImplementationSourceImpl");
+				"org.apache.xerces.dom.DOMXSImplementationSourceImpl");
 		DOMImplementationRegistry registry = DOMImplementationRegistry.newInstance();
 
 		XSImplementation impl = 
-		    (XSImplementation) registry.getDOMImplementation("XS-Loader");
+				(XSImplementation) registry.getDOMImplementation("XS-Loader");
 
 		XSLoader schemaLoader = impl.createXSLoader(null);
-		
+
 		mModel = schemaLoader.loadURI(schema);
-		
-		
+
+
 	}
 
 	public XSElementDeclaration pushElement( String namespace , String localname )
@@ -58,30 +58,30 @@ public class Schema
 		 * Look for scoped element first
 		 */
 		if( ! mScopeStack.isEmpty() ){
-			
+
 			XSElementDeclaration root = mScopeStack.peek();
 			XSTypeDefinition  type = root.getTypeDefinition();
 			if( type.getTypeCategory() != XSTypeDefinition.COMPLEX_TYPE )
 				return null ;
 			XSComplexTypeDefinition ctype = (XSComplexTypeDefinition) type ;
-			
+
 			XSParticle particle = ctype.getParticle();
 			if( particle == null )
 				return null ;
-			
+
 			XSTerm term = particle.getTerm() ;
 			if( term == null )
 				return null;
-			
+
 			elem = findElement( term , namespace , localname );
-			
-			
-			
+
+
+
 		}
-		
+
 		// try a global element
 
-		
+
 		if( elem == null &&  mScopeStack.isEmpty() ){
 			elem = mModel.getElementDeclaration(localname, namespace );
 			if( elem == null )
@@ -89,14 +89,14 @@ public class Schema
 		}
 		if( elem != null )
 			mScopeStack.push(elem);
-		
+
 		return elem ;
-		
-		
-		
+
+
+
 	}
-	
-	
+
+
 
 
 	private XSElementDeclaration findElement(XSTerm term, String namespace, String localname) {
@@ -105,32 +105,32 @@ public class Schema
 		{
 			XSElementDeclaration elem = (XSElementDeclaration) term ;
 			if( Util.isEqual(elem.getNamespace() , namespace ) && 
-				Util.isEqual(term.getName(), localname) )
+					Util.isEqual(term.getName(), localname) )
 				return elem ;
-			
+
 			/* 
 			 * Try substitution group 
 			 */
-			
+
 			XSObjectList groups = mModel.getSubstitutionGroup(elem);
 			if( groups != null )
 			{
 				for( int i = 0 ; i < groups.getLength() ; i++ ){
 					XSObject obj = groups.item(i);
 					if( obj.getType() == XSConstants.ELEMENT_DECLARATION &&
-						Util.isEqual(obj.getNamespace() , namespace ) && 
-						Util.isEqual(obj.getName(), localname) )
-							return (XSElementDeclaration)obj ;
-					
+							Util.isEqual(obj.getNamespace() , namespace ) && 
+							Util.isEqual(obj.getName(), localname) )
+						return (XSElementDeclaration)obj ;
+
 				}
-				
+
 			}
-			
-			
+
+
 			return null ;
 		}
-		
-		
+
+
 		case	XSConstants.MODEL_GROUP : ;
 		{
 			XSModelGroup group = (XSModelGroup) term ;
@@ -145,19 +145,19 @@ public class Schema
 				}
 			}
 			return null ;
-			
-			
-			
+
+
+
 		}
-		
-		
-		
+
+
+
 		case	XSConstants.WILDCARD :
 			return null ;
 		}
 		return null ;
-		
-		
+
+
 	}
 
 	/**
@@ -170,17 +170,17 @@ public class Schema
 	public void popElement() {
 		if( !mScopeStack.isEmpty() )
 			mScopeStack.pop();
-		
+
 	}
-	
-	
+
+
 	public XSObjectList getAnnotations()
 	{
 		return mModel.getAnnotations();
-		
+
 	}
-	
-	
+
+
 }
 
 

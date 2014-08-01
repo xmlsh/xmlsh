@@ -14,7 +14,7 @@ public class ManagedHttpSession extends ManagedObject
 {
 	private		HttpSession 	mSession ;
 
-	
+
 	public ManagedHttpSession(HttpSession session) {
 		super();
 		mSession = session;
@@ -22,9 +22,9 @@ public class ManagedHttpSession extends ManagedObject
 
 
 	@Override
-    public void close() {
+	public void close() {
 		mSession = null ;
-		
+
 	}
 
 
@@ -34,9 +34,9 @@ public class ManagedHttpSession extends ManagedObject
 	public HttpSession getSession() {
 		return mSession;
 	}
-	
-	
-	
+
+
+
 }
 
 

@@ -43,14 +43,14 @@ public class XMLEventOutputPort extends OutputPort
 {
 	private		XMLEventWriter mWriter;
 	private 	SerializeOpts mOpts;
-	
-	
-	
-	
+
+
+
+
 	/*
 	 * A special output stream that turns every xmlevent into text
 	 */
-	
+
 	private class XMLEventOutputStream extends OutputStream
 	{
 		private XMLEventFactory mFactory = EventFactory.newInstance();
@@ -68,17 +68,17 @@ public class XMLEventOutputPort extends OutputPort
 		 */
 		@Override
 		public void write(byte[] b, int off, int len) throws IOException {
-			
+
 			XMLEvent event = mFactory.createCharacters(new String(b,off,len,mOpts.getOutputXmlEncoding()));
-			
+
 			try {
 				mWriter.add(event);
 			} catch (XMLStreamException e) {
 				throw new IOException(e);
 			}
-			
-			
-			
+
+
+
 		}
 
 		/* (non-Javadoc)
@@ -88,11 +88,11 @@ public class XMLEventOutputPort extends OutputPort
 		public void write(byte[] b) throws IOException {
 			write(b,0,b.length);
 		}
-		
-		
+
+
 	}
-	
-	
+
+
 
 
 	public XMLEventOutputPort( XMLEventWriter writer , SerializeOpts opts ) 
@@ -101,18 +101,20 @@ public class XMLEventOutputPort extends OutputPort
 		mOpts = opts;
 	}
 
-	
-	
-	
+
+
+
 	/*
 	 * Standard input stream - created on first request
 	 */
-	
+
+	@Override
 	public	synchronized OutputStream asOutputStream(SerializeOpts serializeOpts) 
 	{
 		return new XMLEventOutputStream();
 	}
 
+	@Override
 	public synchronized void flush() throws IOException
 	{
 
@@ -122,9 +124,10 @@ public class XMLEventOutputPort extends OutputPort
 			throw new IOException(e);
 		}
 	}
-	
-	
-	
+
+
+
+	@Override
 	public synchronized void close() throws IOException {
 		try {
 			mWriter.close();
@@ -134,15 +137,16 @@ public class XMLEventOutputPort extends OutputPort
 	}
 
 
-	
+
 	public synchronized PrintStream asPrintStream()
 	{
 		return new PrintStream(asOutputStream(mOpts));
 	}
 
+	@Override
 	public synchronized Destination asDestination(SerializeOpts opts) throws CoreException
 	{
-		
+
 		DefaultHandler handler;
 		try {
 			handler = new ContentHandlerToXMLEventWriter( asXMLEventWriter(opts) );
@@ -151,14 +155,15 @@ public class XMLEventOutputPort extends OutputPort
 		}
 		Destination dest = new SAXDestination( handler );
 		return dest ;
-		
+
 
 	}
-	
 
-	
-	
 
+
+
+
+	@Override
 	public synchronized PrintWriter asPrintWriter(SerializeOpts opts) throws UnsupportedEncodingException {
 		return new PrintWriter( 		
 				new OutputStreamWriter(asOutputStream(mOpts) , 
@@ -166,18 +171,20 @@ public class XMLEventOutputPort extends OutputPort
 	}
 
 
-	
-	
+
+
+	@Override
 	public synchronized void writeSequenceSeperator(SerializeOpts opts) throws IOException, InvalidArgumentException
 	{
-		
-		
-		
+
+
+
 	}
 
+	@Override
 	public void writeSequenceTerminator(SerializeOpts opts) throws IOException {
-			
-		
+
+
 	}
 
 
@@ -186,7 +193,7 @@ public class XMLEventOutputPort extends OutputPort
 	@Override
 	public XMLStreamWriter asXMLStreamWriter(SerializeOpts opts) throws XMLStreamException {
 		return new XMLEventStreamWriter(mWriter);
-		
+
 	}
 
 
@@ -195,32 +202,32 @@ public class XMLEventOutputPort extends OutputPort
 	@Override
 	public XMLEventWriter asXMLEventWriter(SerializeOpts opts) throws InvalidArgumentException, XMLStreamException {
 		return mWriter;
-			
+
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.xmlsh.core.OutputPort#asXdmItemOutputStream(org.xmlsh.sh.shell.SerializeOpts)
 	 */
 	@Override
 	public IXdmItemOutputStream asXdmItemOutputStream(SerializeOpts opts) throws CoreException {
-		
+
 		return new DestinationXdmValueOutputStream( asDestination(opts) );
-		
+
 	}
-	
-	
+
+
 	/* (non-Javadoc)
 	 * @see org.xmlsh.core.OutputPort#asContentHandler(org.xmlsh.sh.shell.SerializeOpts)
 	 */
 	@Override
 	public ContentHandler asContentHandler(SerializeOpts opts) throws XPathException {
-		
-		
+
+
 		return new StAXEventContentHandler( mWriter );
-		
+
 	}
-	
-	
+
+
 
 }
 

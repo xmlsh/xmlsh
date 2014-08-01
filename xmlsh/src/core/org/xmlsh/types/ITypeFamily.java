@@ -1,16 +1,6 @@
 package org.xmlsh.types;
 
-import org.xmlsh.core.CoreException;
-import org.xmlsh.core.XValue;
-import org.xmlsh.sh.shell.SerializeOpts;
-import org.xmlsh.sh.shell.Shell;
-
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 import java.util.EnumSet;
-
-import net.sf.saxon.s9api.SaxonApiException;
 
 
 /*
@@ -20,20 +10,21 @@ import net.sf.saxon.s9api.SaxonApiException;
  */
 public interface ITypeFamily
 {
-    TypeFamily                 typeFamily();         // Returns the specific type family
-    EnumSet<TypeFamily>        subTypeFamilies();    // Directly derived type families
-    EnumSet<TypeFamily>        superTypeFamilies();   // All supertypes
-    
-    
-    /* Type inspection */
-    IType  getType( Object obj );
-    
-    public boolean isInstanceOfFamily(Object obj) ;
-    public boolean isClassOfFamily(Class<?> cls);
-    public String asString(Object value) throws Exception ;
-	int getSize(Object obj);
-	public XValue getValue(XValue xvalue, String ind) throws CoreException;
-	void serialize(Object value, OutputStream out, SerializeOpts opts) throws IOException;
-    
-    
+	IMethods getMethods( Class<?> cls );
+	IMethods getMethods( XTypeKind kind  );
+	IType  getNullType();
+
+
+	/* Type inspection */
+	IType  getType( Class<?> cls );
+	IType  getType( XTypeKind kind );
+	public boolean isClassOfFamily(Class<?> cls);
+	public boolean isInstanceOfFamily(Object obj) ;
+	EnumSet<TypeFamily>        subTypeFamilies();    // Directly derived type families
+
+
+	EnumSet<TypeFamily>        superTypeFamilies();   // All supertypes
+	TypeFamily                 typeFamily();         // Returns the specific type family
+
+
 }

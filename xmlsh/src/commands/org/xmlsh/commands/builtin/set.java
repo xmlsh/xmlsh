@@ -25,23 +25,24 @@ import javax.xml.stream.XMLStreamWriter;
 public class set extends BuiltinCommand {
 
 	static final String sDocRoot = "env";
+	@Override
 	public int run(   List<XValue> args ) throws Exception {
-		
-		
+
+
 		if( args == null || args.size() == 0 )	{
 			printVars(  );
 			return 0;
 		}
-		
+
 		Options opts = new Options( "+x,+v,+xpipe,+e,E=expand,+location,location-format:" , SerializeOpts.getOptionDefs()  );
 		opts.parse(args);
 		setSerializeOpts(opts);
 		boolean bFlatten = opts.hasOpt("E");
-		
+
 		setShellOptions(opts);
-		
-		
-		
+
+
+
 		args = opts.getRemainingArgs();
 		// Only set args here if there are any left
 		// could be set +x which would clear $*
@@ -49,7 +50,7 @@ public class set extends BuiltinCommand {
 			if( bFlatten )
 				args = Util.expandSequences(args);
 			mShell.setArgs(args);
-			
+
 		}
 		return 0;
 	}
@@ -59,35 +60,35 @@ public class set extends BuiltinCommand {
 	}
 
 	private void printVars() throws Exception {
-		
+
 
 		XEnvironment env = mShell.getEnv();
-		
 
-	    OutputPort stdout = env.getStdout();
+
+		OutputPort stdout = env.getStdout();
 		XMLStreamWriter writer = stdout.asXMLStreamWriter(mShell.getSerializeOpts());
 
-	    writer.writeStartDocument();
-	    writer.writeStartElement( sDocRoot );
-	    
-		
+		writer.writeStartDocument();
+		writer.writeStartElement( sDocRoot );
+
+
 		Collection<String> names = env.getVarNames();
 		String[] anames = names.toArray( new String[names.size()]);
 		Arrays.sort(anames);
-		
+
 
 		for( String name : anames ){
 			XVariable var = env.getVar(name);
 			var.serialize(writer);
-			
+
 		}
 		writer.writeEndElement();
 		writer.writeEndDocument();
-		
+
 		writer.close();
 		stdout.writeSequenceTerminator(getSerializeOpts());
-		
-		
+
+
 	}
 }
 //

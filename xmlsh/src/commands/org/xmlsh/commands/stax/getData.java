@@ -19,20 +19,20 @@ import javax.xml.stream.events.XMLEvent;
 
 public class getData extends BuiltinFunctionCommand {
 
-	
-	
+
+
 	public getData()
 	{
 		super("getData");
 	}
-	
+
 	@Override
 	public XValue run(Shell shell, List<XValue> args) throws CoreException, XPathException, XMLStreamException {
 		if( args.size() == 0 )
 			return null;
 		Object arg = args.get(0).asObject();
-		
-		
+
+
 		if( arg instanceof XMLEvent )
 		{
 			XMLEvent event = (XMLEvent) arg;
@@ -43,7 +43,7 @@ public class getData extends BuiltinFunctionCommand {
 		}
 		else
 			return null ;
-		
+
 	}
 
 }

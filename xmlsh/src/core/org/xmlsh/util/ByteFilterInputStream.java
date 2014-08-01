@@ -19,15 +19,15 @@ public class ByteFilterInputStream extends InputStream
 		mFilter = filter ;
 	}
 	@Override
-    public int read() throws IOException
-    {
+	public int read() throws IOException
+	{
 		int c ;
-	
+
 		while( ( c = mIn.read()) == mFilter )
 			;
 		return c;
-    }
-	
+	}
+
 }
 
 

@@ -9,7 +9,6 @@ package org.xmlsh.sh.ui;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import org.xmlsh.core.InputPort;
 import org.xmlsh.core.StreamInputPort;
 import org.xmlsh.core.ThrowException;
 import org.xmlsh.core.XValue;
@@ -55,19 +54,19 @@ public class XShellThread extends Thread {
 	private SerializeOpts mSerializeOpts;
 	private XShell mXShell;
 	private static Logger mLogger = LogManager.getLogger(XShellThread.class);
-	
+
 
 	private void print(String s) throws UnsupportedEncodingException, IOException {
 		mResultErrorStream.write(s.getBytes("UTF8"));
 	}
-	
 
-	
+
+
 
 	public XShellThread(XShell xshell, ThreadGroup group , List<XValue> args, TextResultPane resultTextArea, JTextField commandField , 
 			JButton startButton , JButton stopButton, SerializeOpts serializeOpts) throws IOException {
 		super(group , "xmlshui" );
-		
+
 		mXShell = xshell ;
 		mArgs = args ;
 		mResultTextArea = resultTextArea;
@@ -75,14 +74,15 @@ public class XShellThread extends Thread {
 		mStopButton = stopButton ;
 		mCommandField = commandField ;
 		mSerializeOpts = serializeOpts;
-		
 
-		
+
+
 	}
 
 	private void setRunning(final boolean bRunning) {
 
 		SwingUtilities.invokeLater(new Runnable() {
+			@Override
 			public void run() {
 				mStartButton.setEnabled(!bRunning);
 				mStopButton.setEnabled(bRunning);
@@ -94,16 +94,18 @@ public class XShellThread extends Thread {
 	{
 
 		SwingUtilities.invokeLater(new Runnable() {
+			@Override
 			public void run() {
 				mResultTextArea.clear();
 
 			}
 		});
-		
+
 	}
 
+	@Override
 	public void run() {
-		
+
 
 		final XShellThread thisThread = this ;
 
@@ -111,73 +113,81 @@ public class XShellThread extends Thread {
 
 		Command c = null;
 
-		
-		
-		
-		
+
+
+
+
 		mResultOutputStream = new TextComponentOutputStream(mResultTextArea, this.mSerializeOpts , "stdout");
 		mResultErrorStream = new TextComponentOutputStream(mResultTextArea, this.mSerializeOpts , "stderr");
 		mStopButton.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				if( cmdPipe != null )
 					cmdPipe.reset();
-				
+
 				if( mShell != null ) {
 					if( thisThread != Thread.currentThread() ) {
 						interrupt();
 						Thread.yield();
 					}
-				   mShell.shutdown(true,0);
+					mShell.shutdown(true,0);
 				}				
-				
+
 			}
 
-			
+
 		});
-		
+
 
 
 		try {				
 			cmdPipe = new TextFieldStreamPipe( mCommandField , mSerializeOpts);
 			setRunning(false);
 
-			String sCmd ;
-			while (! mClosed && (sCmd = mCommandQueue.take()) != null){
+			String sCmd = null ;
+			while (! mClosed ){
+
+					if(( sCmd = mCommandQueue.take()) == null)
+						break ;
+						
 				try (
-				      StreamInputPort inp =  new StreamInputPort(cmdPipe.getIn(), null) ){
-					
+						StreamInputPort inp =  new StreamInputPort(cmdPipe.getIn(), null) ){
+
 					setRunning(false);
 					clearResult();
-					
 
-			
-					
 					mShell = new Shell(false);
 					mShell.setArgs(mArgs == null ? new ArrayList<XValue>() : mArgs );
 					mShell.setArg0("xmlshui");
-					
+
 					mShell.getSerializeOpts().setInputTextEncoding("UTF-8");
 					mShell.getSerializeOpts().setOutputTextEncoding("UTF-8");
 
 					mShell.getEnv().setStdout(mResultOutputStream);
 					mShell.getEnv().setStderr(mResultErrorStream);
-					
+
 					// setInput will create a reference
 					mShell.getEnv().setInput(null, inp);
-					
+
 
 					setRunning(true);
-				
+
 					try ( 
-							
-						InputStream sin = new ByteArrayInputStream( sCmd.getBytes("UTF8")) ){
+
+					    InputStream sin = new ByteArrayInputStream( sCmd.getBytes("UTF8")) ){
 						mShell.runScript(sin , "xmlshui", true );
 						mResultOutputStream.flush();
 						mResultErrorStream.flush();
 						setRunning(false);
 					}
+					catch (Exception e) {
+						mLogger.info("Exception running shell commands",e);
+						print(e.getMessage());
+					}
 
-				} catch (ThrowException e) {
+				} 
+				
+				catch (ThrowException e) {
 					mLogger.info("Throw running shell commands",e);
 					print("Ignoring thrown value: " + e.getMessage());
 
@@ -207,9 +217,10 @@ public class XShellThread extends Thread {
 					}
 
 				}
+
 				finally {
 					if( mShell != null ) {
-	
+
 						mShell.shutdown(true,1000);
 						setRunning(false);
 						mShell = null ;
@@ -220,8 +231,9 @@ public class XShellThread extends Thread {
 					cmdPipe = new TextFieldStreamPipe( mCommandField , mSerializeOpts);
 				}
 			}
-		
+
 		} 
+
 		catch( Exception e ) {
 			mLogger .warn("Exception running shell commands",e);
 
@@ -232,9 +244,9 @@ public class XShellThread extends Thread {
 			Util.safeClose( cmdPipe );
 			if( mXShell != null )
 				mXShell.onThreadExit( this );
-			
+
 			mXShell = null ;
-			
+
 
 		}
 
@@ -274,7 +286,7 @@ public class XShellThread extends Thread {
 			mShell.shutdown(true,100);
 		}
 
-		
+
 	}
 
 }

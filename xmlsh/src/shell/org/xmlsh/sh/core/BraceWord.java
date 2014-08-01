@@ -9,7 +9,6 @@ package org.xmlsh.sh.core;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.EvalEnv;
 import org.xmlsh.core.EvalFlag;
-import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.ParseResult;
 import org.xmlsh.sh.shell.Shell;
 
@@ -41,29 +40,29 @@ public class BraceWord extends Word
 		return mWord == null || mWord.isEmpty();
 	}
 
-	
-	
-	 @Override
+
+
+	@Override
 	String getSimpleName()
 	{
-	    return isEmpty() ? "{}" : mWord.getSimpleName();
- 	}
+		return isEmpty() ? "{}" : mWord.getSimpleName();
+	}
 
 	/* (non-Javadoc)
 	 * @see org.xmlsh.sh.core.Word#evalEnv(org.xmlsh.core.EvalEnv)
 	 */
-    @Override
-    public EvalEnv evalEnv(EvalEnv parent)
-    {
-	   return parent.withFlagsMasked( EvalFlag.preserveValueFlags());
-    }
+	@Override
+	public EvalEnv evalEnv(EvalEnv parent)
+	{
+		return parent.withFlagsMasked( EvalFlag.preserveValueFlags());
+	}
 
 	@Override
-    protected ParseResult expandToResult(Shell shell, EvalEnv env, SourceLocation loc, ParseResult result) throws IOException,
-            CoreException
-    {
+	protected ParseResult expandToResult(Shell shell, EvalEnv env, SourceLocation loc, ParseResult result) throws IOException,
+	CoreException
+	{
 		return mWord.expandToResult(shell,  evalEnv(env), loc, result);
-    }
+	}
 
 
 }

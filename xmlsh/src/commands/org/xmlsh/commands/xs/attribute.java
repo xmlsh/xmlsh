@@ -16,12 +16,12 @@ import org.xmlsh.util.S9Util;
 import java.util.List;
 
 public class attribute extends BuiltinFunctionCommand {
-	
+
 	public attribute()
 	{
 		super("attribute");
 	}
-	
+
 	@Override
 	public XValue run(Shell shell, List<XValue> args) throws InvalidArgumentException 
 	{
@@ -29,15 +29,15 @@ public class attribute extends BuiltinFunctionCommand {
 			throw new InvalidArgumentException("Expected name value");
 
 		QName name = args.get(0).asQName(shell);
-		
-		
+
+
 		return S9Util.createAttribute(shell, name, args.get(1).toString() );
-		
-	
-		
-		
-		
-		
+
+
+
+
+
+
 	}
 
 }

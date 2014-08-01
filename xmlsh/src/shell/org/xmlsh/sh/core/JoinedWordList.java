@@ -6,14 +6,10 @@
 
 package org.xmlsh.sh.core;
 
-import net.sf.saxon.s9api.XdmEmptySequence;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.EvalEnv;
-import org.xmlsh.core.EvalFlag;
-import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.ParseResult;
 import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.util.Util;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -28,7 +24,8 @@ import java.util.List;
 public class JoinedWordList extends Word  {
 
 	private List<Word> mList = new ArrayList<>();
-	
+
+	@Override
 	public void print(PrintWriter out) {
 		for( Word s : mList ){
 			s.print( out );
@@ -40,46 +37,46 @@ public class JoinedWordList extends Word  {
 		if( word instanceof JoinedWordList ) 
 			mList.addAll(((JoinedWordList)word).mList);
 		else
-		   mList.add( word );
+			mList.add( word );
 	}
-	
+
 
 	@Override
-    public boolean isEmpty()
-    {
-	    return mList.isEmpty();
-    }
+	public boolean isEmpty()
+	{
+		return mList.isEmpty();
+	}
 
 	@Override
-    public
-    String getSimpleName()
-    {
-		
+	public
+	String getSimpleName()
+	{
+
 		// Temporary Hack
-	    StringBuilder sb = new StringBuilder();
-	    for( Word w : mList ) {
-	    	
-	    	if( sb.length() > 0 )
-	    		sb.append(" ");
-	    	sb.append( w.getSimpleName());
-	    }
-	    return sb.toString();
-    }
+		StringBuilder sb = new StringBuilder();
+		for( Word w : mList ) {
+
+			if( sb.length() > 0 )
+				sb.append(" ");
+			sb.append( w.getSimpleName());
+		}
+		return sb.toString();
+	}
 
 	@Override
-    protected ParseResult expandToResult(Shell shell, EvalEnv env, SourceLocation loc, ParseResult result) throws IOException,
-            CoreException
-    {
-		
+	protected ParseResult expandToResult(Shell shell, EvalEnv env, SourceLocation loc, ParseResult result) throws IOException,
+	CoreException
+	{
+
 		// Combine and wild card expand
 		for( Word w : mList ) {
 			result = w.expandToResult(shell, env, loc, result);
 		}
 
 		return result;
-		
-    }
-	
+
+	}
+
 }
 
 

@@ -20,7 +20,7 @@ public class ForClause extends CompoundCommand {
 	String		mName;
 	WordList	mWords;
 	Command		mCommand;
-	
+
 	public ForClause( String name, WordList words, Command c )
 	{
 		mName = name ;
@@ -33,29 +33,31 @@ public class ForClause extends CompoundCommand {
 		this(name,null,c);
 	}
 
+	@Override
 	public void print(PrintWriter out, boolean bExec)
 	{
 		out.print("for " + mName );
 		if( mWords != null && ! mWords.isEmpty()  ){
 			out.print(" in ");
-		
+
 			mWords.print(out);
 		}
 		out.println(" ; do");
 		mCommand.print(out, bExec);
 		out.println();
 		out.println("done");
-		
+
 	}
-	
+
+	@Override
 	public int exec(Shell shell) throws Exception {
-		
+
 		if( !mName.matches("[a-zA-Z_0-9]+")){
 			shell.printErr("Not an identifier: " + mName );
 			return 1;
 		}
-		
-		
+
+
 		shell.getEnv().saveIO();
 		ControlLoop loop = shell.pushLoop( getLocation()  );
 		try {
@@ -70,34 +72,34 @@ public class ForClause extends CompoundCommand {
 					if( loop.mContinue ) // continue clause - clear out  continue & keep going
 						loop.mContinue = false ;
 
-					
+
 				}
 			} else
-			for( Word in : mWords ) {
-				
-				List<XValue> inList = in.expandToList( shell , mEnv, getLocation() );
-				if( ! shell.keepRunning() )
-					break ;
-				for( XValue inword : inList ) {
+				for( Word in : mWords ) {
+
+					List<XValue> inList = in.expandToList( shell , mEnv, getLocation() );
 					if( ! shell.keepRunning() )
 						break ;
-					// Forcibly use a new variable every iteration
-					shell.getEnv().setVar( new XVariable(mName, inword), true );
-					shell.exec( mCommand );
-					if( loop.mContinue ) // continue clause - clear out  continue & keep going
-						loop.mContinue = false ;
+					for( XValue inword : inList ) {
+						if( ! shell.keepRunning() )
+							break ;
+						// Forcibly use a new variable every iteration
+						shell.getEnv().setVar( new XVariable(mName, inword), true );
+						shell.exec( mCommand );
+						if( loop.mContinue ) // continue clause - clear out  continue & keep going
+							loop.mContinue = false ;
+
+					}
 
 				}
 
-			}
-			
-			
+
 		} finally {
 			shell.popLoop(  loop );
 			shell.getEnv().restoreIO();
 		}
 		return 0;
-		
+
 	}
 }
 

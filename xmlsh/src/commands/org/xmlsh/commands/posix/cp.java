@@ -22,14 +22,14 @@ import java.util.List;
 
 public class cp extends XCommand {
 
-	
+
 	@Override
 	public int run(List<XValue> args) throws Exception {
-		
+
 		Options opts = new Options( "f=force,r=recurese" );
 		opts.parse(args);
-		
-		
+
+
 		args = opts.getRemainingArgs();
 		if( args.size() < 2 ){
 			usage();
@@ -37,21 +37,21 @@ public class cp extends XCommand {
 		}
 		boolean bForce = opts.hasOpt("f");
 		boolean bRecurse = opts.hasOpt("r");
-		
+
 		XValue last = args.remove(args.size()-1);
 		File target = getFile( last );
-		
+
 		if( args.size() > 2 || target.isDirectory() ){
 
 			if( ! target.isDirectory() )
 				throw new InvalidArgumentException("Target is not a directory: " + target.getName() );
 			copy( args , target , bForce , bRecurse );
-			
+
 		} else {
-			
+
 			copy( getFile(args.get(0)) , target , bForce, bRecurse);
 		}
-				
+
 		return 0;
 	}
 
@@ -62,35 +62,35 @@ public class cp extends XCommand {
 				this.printErr("Omitting directory: " + src.getPath());
 				return ;
 			}
-			
+
 			if( ! dest.exists() )
 				dest.mkdirs();
 			else 
-			// Recurse by taking each file in src and copying to dest + src's basename
-			if( ! dest.isDirectory() )
-				throw new InvalidArgumentException("Target is not a directory: " + dest.getPath() );
-			
-			
+				// Recurse by taking each file in src and copying to dest + src's basename
+				if( ! dest.isDirectory() )
+					throw new InvalidArgumentException("Target is not a directory: " + dest.getPath() );
+
+
 			for( File s : src.listFiles() ){
 				copy( s , new File(dest,s.getName()) , force , recurse );
 			}
 			return ;
-			
+
 		}
-		
-		
-		
+
+
+
 		// Try copy 
 		InputStream in = null;
 		OutputStream out = null;
 		try {
-		
+
 			in = new FileInputStream(src);
-			
+
 			// Try deleting dest if we have to
 			if( force && dest.exists() && ! dest.canWrite() )
 				dest.delete();
-			
+
 			out = new FileOutputStream(dest);
 			Util.copyStream( in , out );
 		} finally {
@@ -106,7 +106,7 @@ public class cp extends XCommand {
 				throw new IOException("File not found: " + f.toString() );
 			File dest = new File( target , src.getName() );
 			copy( src , dest , force , recurse );
-			
+
 		}
 	}
 

@@ -27,9 +27,9 @@ public class ThrowException extends CoreException {
 	public String getMessage() {
 		return mValue.toString();
 	}
-	
 
-	
+
+
 
 }
 

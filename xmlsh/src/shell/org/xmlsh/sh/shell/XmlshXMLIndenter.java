@@ -24,7 +24,7 @@ public class XmlshXMLIndenter extends XMLIndenter {
 	public void endDocument() throws XPathException {
 		nextReceiver.endDocument();
 	}
-	
+
 
 }
 

@@ -23,7 +23,6 @@ import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.Util;
 
 import java.io.ByteArrayOutputStream;
-import java.io.FileDescriptor;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
@@ -38,12 +37,12 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 public class XdmStreamOutputPort extends OutputPort {
- 
+
 	private IXdmItemWriter mWriter ;
-	
+
 	// Set to true if any asXXX method was caused which used a non-xml stream or access 
 	private		boolean		mAsText = false ;
-	
+
 	// Transient classes 
 	private		XdmDestination	 		mXdmDestination;
 	private		ByteArrayOutputStream 	mByteArrayOutputStream;
@@ -51,9 +50,9 @@ public class XdmStreamOutputPort extends OutputPort {
 	private		SerializeOpts 			mSerializeOpts; 	// for converting from ByteArray to string  
 
 	private static Logger  mLogger = LogManager.getLogger(XdmStreamOutputPort.class);
-	
-	
-	
+
+
+
 	public XdmStreamOutputPort(IXdmItemWriter writer, SerializeOpts opts) {
 		mWriter = writer;
 	}
@@ -68,53 +67,53 @@ public class XdmStreamOutputPort extends OutputPort {
 	@Override
 	public synchronized void flush() throws IOException 
 	{
-			
-			
-			if (mXdmDestination != null){
-				mWriter.write( mXdmDestination.getXdmNode());
-				mXdmDestination.reset();
-			}
 
-			
-			// else
-			if (mByteArrayOutputStream != null){
-				try {
-					mWriter.write( new XValue(mByteArrayOutputStream.toString(mSerializeOpts.getOutputTextEncoding()   )).asXdmValue() );
-				} catch (UnsupportedEncodingException e1) {
-					throw new IOException( e1 );
-				}
-				mByteArrayOutputStream.reset();
-			}
 
-			//else
-			if (mBuilder != null){
-				try {
-					mWriter.write(mBuilder.getDocumentNode());
-				} catch (SaxonApiException e) {
-					throw new IOException(e);
-				}
-				// Cannot reset builder !
-				mBuilder = null ;
+		if (mXdmDestination != null){
+			mWriter.write( mXdmDestination.getXdmNode());
+			mXdmDestination.reset();
+		}
+
+
+		// else
+		if (mByteArrayOutputStream != null){
+			try {
+				mWriter.write( new XValue(mByteArrayOutputStream.toString(mSerializeOpts.getOutputTextEncoding()   )).asXdmValue() );
+			} catch (UnsupportedEncodingException e1) {
+				throw new IOException( e1 );
 			}
-				
-		
-		
+			mByteArrayOutputStream.reset();
+		}
+
+		//else
+		if (mBuilder != null){
+			try {
+				mWriter.write(mBuilder.getDocumentNode());
+			} catch (SaxonApiException e) {
+				throw new IOException(e);
+			}
+			// Cannot reset builder !
+			mBuilder = null ;
+		}
+
+
+
 	}
 	@Override
 	public void close() throws IOException  {
-         flush();
-		
-        if( mWriter == null ) {
-        	mLogger .debug("mWriter null in close()");
-        } else
-		   mWriter.close();
-		
-        mXdmDestination = null ;
+		flush();
+
+		if( mWriter == null ) {
+			mLogger .debug("mWriter null in close()");
+		} else
+			mWriter.close();
+
+		mXdmDestination = null ;
 		mByteArrayOutputStream = null ;
 		mBuilder = null ;
 		mWriter = null ;
-			 
-			 
+
+
 
 	}
 
@@ -128,23 +127,23 @@ public class XdmStreamOutputPort extends OutputPort {
 	@Override
 	public synchronized Destination asDestination(SerializeOpts opts) throws InvalidArgumentException
 	{
-		
+
 		// If forcing text output then serialize to stream 
 		if( opts.isSerialize_xml() ){
 			return Util.streamToDestination(asOutputStream(opts), opts);
-			
+
 		} else {
-			
+
 			mXdmDestination = new XdmDestination();
-		
+
 			return mXdmDestination;
 		}
 	}
-	
+
 
 	@Override
 	public void writeSequenceSeperator(SerializeOpts serializeOpts) throws IOException,
-			SaxonApiException, CoreException {
+	SaxonApiException, CoreException {
 		flush();
 
 	}
@@ -158,42 +157,42 @@ public class XdmStreamOutputPort extends OutputPort {
 
 	@Override
 	public synchronized XMLStreamWriter asXMLStreamWriter(SerializeOpts opts) throws SaxonApiException {
-	
+
 
 		// If forcing text output then serialize to stream 
 		if( opts.isSerialize_xml() ){
-			
+
 			// Saxon 9.3 supports serialization as a StreamWriter
 			Serializer ser = Util.getSerializer(opts);
 			ser.setOutputStream(asOutputStream(opts));
-			
-			
-			
+
+
+
 			XMLStreamWriter sw = ser.getXMLStreamWriter();
 			return sw;
-			
-			
+
+
 		} else {
-		
+
 			Processor proc = Shell.getProcessor();
 			BuildingStreamWriter bw = proc.newDocumentBuilder().newBuildingStreamWriter();
-			
-			
+
+
 			mBuilder = bw;
 			return bw;
 		}
-		
+
 	}
 
 	@Override
 	public XMLEventWriter asXMLEventWriter(SerializeOpts opts) throws InvalidArgumentException,
-			 SaxonApiException, XMLStreamException, IOException {
-		
-                
+	SaxonApiException, XMLStreamException, IOException {
+
+
 		// If forcing text output then serialize to stream 
 		if( opts.isSerialize_xml() ){
-	
-			
+
+
 			XMLOutputFactory fact = XMLOutputFactory.newInstance();
 			OutputStream os = asOutputStream(opts);
 			if(opts.isOmit_xml_declaration() )
@@ -201,17 +200,17 @@ public class XdmStreamOutputPort extends OutputPort {
 
 			// XMLOutputFactory fact = new OutputFactory();
 			XMLEventWriter writer =  fact.createXMLEventWriter(os , opts.getOutputXmlEncoding() );
-			
+
 			if( opts.isIndent()|| opts.isOmit_xml_declaration() )
 				writer = new OmittingIndentingXMLEventWriter(writer , os , opts.isIndent(), opts.isOmit_xml_declaration());
-		
+
 			return writer ;
-				
+
 		} else {
 			XMLStreamWriter sw = asXMLStreamWriter(opts);
 			return new XMLStreamEventWriter( sw );
 		}
-		
+
 	}
 
 	@Override
@@ -225,7 +224,7 @@ public class XdmStreamOutputPort extends OutputPort {
 
 	@Override
 	public ContentHandler asContentHandler(SerializeOpts opts) throws XPathException,
-			SaxonApiException {
+	SaxonApiException {
 		XMLStreamWriter sw = asXMLStreamWriter(opts);
 		return new ContentHandlerToXMLStreamWriter(sw);
 	}

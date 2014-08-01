@@ -7,10 +7,7 @@
 package org.xmlsh.util;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.io.OutputStream;
 
 public class FileUtils
 {
@@ -29,24 +26,24 @@ public class FileUtils
 		return isNullFilePath(file.getName()) ;
 	}
 	public static boolean isNullFilePath(String file)
-    {
+	{
 		return Util.isBlank(file) || file.equals("/dev/null") ||
 				(Util.isWindows() && file.equalsIgnoreCase("NUL"));
-    }
+	}
 	@SuppressWarnings("unchecked")
-    public static  <T extends InputStream> T getInputStream(InputStream stream, Class<T> cls )
-    {
-	    if( stream == null )
-	    	return null ;
-	    if( cls.isInstance( stream ) )
-	    	return (T) stream ;
-	    if( stream instanceof SynchronizedInputStream )
-	    	return getInputStream( ((SynchronizedInputStream)stream).getStream() , cls );
-	    
+	public static  <T extends InputStream> T getInputStream(InputStream stream, Class<T> cls )
+	{
+		if( stream == null )
+			return null ;
+		if( cls.isInstance( stream ) )
+			return (T) stream ;
+		if( stream instanceof SynchronizedInputStream )
+			return getInputStream( ((SynchronizedInputStream)stream).getStream() , cls );
+
 		return null;
-		
-    }
-	
+
+	}
+
 	public boolean hasConsole() {
 		return System.console() != null ;
 	}
@@ -55,7 +52,7 @@ public class FileUtils
 			return name.replace('/', File.separatorChar);
 		else
 			return name.replace(File.separatorChar, '/');
-			
+
 	}
 	/*
 	 * Reverse the conversion of toJavaPath
@@ -73,7 +70,7 @@ public class FileUtils
 	 * Convert a Path or name in DOS format to Java format
 	 * This means converting \ to / 
 	 */
-	
+
 	public static String toJavaPath( String path )
 	{
 		if( path == null )
@@ -88,7 +85,7 @@ public class FileUtils
 	// Assumes java path format
 	public static int rootPathLength(String path)
 	{
-		
+
 		int len = 0;
 		int plen = path.length();
 		if( Util.isWindows() && plen >= 2 ) {
@@ -96,13 +93,13 @@ public class FileUtils
 			// Character.isAlphabetic() is V7 only
 			if( Character.isLetter(drive) && path.charAt(1) == ':')
 				len = 2 ;
-			
+
 		}
-		
+
 		while( len < plen && path.charAt(len) == '/' )
-		  len++;
-	
-		 return len ;
+			len++;
+
+		return len ;
 	}
 	/*
 	 * Special function that would return basename without extension if this is path-like
@@ -111,38 +108,38 @@ public class FileUtils
 	public static String basePathLikeName(String path)
 	{
 		path = getPathLikeName(path);
-	
+
 		int startpos = 0 ;
 		int dotpos = path.indexOf('.', startpos);
 		if( dotpos < 0 )
 			dotpos = path.length();
 		return path.substring(startpos,dotpos);
 	}
-	
+
 	// Take a path like string and return just the name.ext component
 	public static String getPathLikeName(String path)
-    {
+	{
 
 		if( Util.isBlank(path))
 			return "" ;
-		
+
 		int startpos = 0;
 		// get rid of any windowy drive paths and leading /s
 		int rlen = FileUtils.rootPathLength(path); 
 		if( rlen > 0 )
 			startpos = rlen;
-		
+
 		int slashpos = path.lastIndexOf('/');
 		int slashpos2  =  (File.separatorChar != '/' ) ? 
 				path.lastIndexOf( File.separatorChar ) : -1 ;
-		slashpos = Math.max(slashpos, slashpos2);
-		if( slashpos > startpos )
-			startpos = slashpos + 1 ;
-		if( startpos >= rlen )
-			return path.substring(startpos );
-		return "";
-    
-    }
+				slashpos = Math.max(slashpos, slashpos2);
+				if( slashpos > startpos )
+					startpos = slashpos + 1 ;
+				if( startpos >= rlen )
+					return path.substring(startpos );
+				return "";
+
+	}
 }
 
 

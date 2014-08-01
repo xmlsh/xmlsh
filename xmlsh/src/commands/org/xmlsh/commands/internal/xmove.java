@@ -7,7 +7,6 @@ import net.sf.saxon.s9api.XPathExecutable;
 import net.sf.saxon.s9api.XPathSelector;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
-
 import org.xmlsh.core.Namespaces;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.XCommand;
@@ -33,21 +32,21 @@ public class xmove extends XCommand {
 
 	@Override
 	public int run( List<XValue> args )
-	throws Exception 
-	{
+			throws Exception 
+			{
 		Options opts = new Options("x=xpath:,d=dir:,e=ext:,ns:+,f=force,mkdir,q");
 		opts.parse(args);
-		
+
 		String xpath = opts.getOptStringRequired("x");
 		String dir = opts.getOptString("d",".");
 		String ext = opts.getOptString("e",null);
 		boolean bForce = opts.hasOpt("f");
 		boolean bQuiet = opts.hasOpt("q");
 		boolean bMkdir = opts.hasOpt("mkdir");
-		
-		
+
+
 		List<XValue> xargs = opts.getRemainingArgs();
-		
+
 		/*
 		 * Precompile the xpath
 		 */
@@ -55,7 +54,7 @@ public class xmove extends XCommand {
 		Processor processor = Shell.getProcessor();
 		XPathCompiler compiler = processor.newXPathCompiler();
 		Namespaces ns = null;
-		
+
 		/*
 		 * Add namespaces
 		 */
@@ -80,30 +79,30 @@ public class xmove extends XCommand {
 
 			}
 		}
-		
+
 
 		XPathExecutable expr = compiler.compile(xpath);
-		
+
 		int failed = 0;
 		for( XValue v : xargs ){
-			
+
 			XFile inFile =  new XFile( getFile(v) );
-			
+
 			String extension = ext ;
 			if( extension == null )
 				extension = inFile.getExt();
-			
+
 			if( !move( inFile.getFile() , expr , dir , extension,bForce ,bQuiet,bMkdir ) )
 				failed++;
-			
-			
+
+
 		}
-		
+
 		return failed;
-		
-		
-	}
-	
+
+
+			}
+
 	/** 
 	 * Do the actual rename by 
 	 * Evaluating the xpath expression as a string
@@ -113,44 +112,44 @@ public class xmove extends XCommand {
 	 */
 
 	private boolean move(File inFile, XPathExecutable expr, String dir, String ext, boolean force, boolean bQuiet , boolean bMkdir ) throws IOException, SaxonApiException {
-		
+
 		expr.load();
-		
+
 
 
 		DocumentBuilder builder = Shell.getProcessor().newDocumentBuilder();
 		XdmNode context = builder.build( inFile );
 		XPathSelector eval = expr.load();
 		eval.setContextItem(context);
-		
+
 		XdmItem res = eval.evaluateSingle();
 		String base = res == null ? null : res.getStringValue() ;
-		
-		
+
+
 		if( Util.isBlank(base) ){
 			this.printErr("XPath expression evalates to null string - skipping " + inFile.getName() );
 			return false ;
 		}
-		
+
 		String toName = base + ext ;
 		File toFile =  new File( getFile(dir) , toName );
 		if( ! bQuiet )
 			printErr("Moving " + inFile.getName() + " to " + toFile.getAbsolutePath() );  
-		
+
 		if( bMkdir ){
 			File parent = toFile.getParentFile();
 			if( parent !=null && ! parent.exists() )
 				parent.mkdirs();
-				
+
 		}
-		
-		
+
+
 		Util.moveFile( inFile ,toFile,force);
 
 		return true ;
-		
-		
-		
-		
+
+
+
+
 	}
 };

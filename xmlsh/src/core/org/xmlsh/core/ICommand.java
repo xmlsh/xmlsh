@@ -22,9 +22,9 @@ public interface ICommand {
 		CMD_TYPE_SCRIPT,
 		CMD_TYPE_FUNCTION
 	} ;
-	
-	
-	
+
+
+
 	public int 	run( Shell shell , String cmd , List<XValue> args )  throws Exception;
 	public 	CommandType	getType();
 	public 	File 	getFile();
@@ -32,9 +32,9 @@ public interface ICommand {
 	public void		close();
 	public SourceLocation getLocation();
 	public void setLocation( SourceLocation loc);
-	
-	
-	
+
+
+
 }
 //
 //

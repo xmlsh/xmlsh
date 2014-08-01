@@ -11,21 +11,21 @@ public class CSVFormatter
 
 	private char mDelim = ','; // csv
 	private char mQuote = '"';
-	
+
 	public CSVFormatter() {}
-	
+
 	public CSVFormatter( char delim , char quote )
 	{
 		mDelim = delim ;
 		mQuote = quote ;
 	}
-	
-	
+
+
 	/**
 	 *  Forcibly quote/encode a character string
 	 */
-	
-    private String encodeQuote(String str)
+
+	private String encodeQuote(String str)
 	{
 		StringBuffer sb = new StringBuffer();
 		sb.append(mQuote);
@@ -39,25 +39,25 @@ public class CSVFormatter
 				sb.append(mQuote);
 				sb.append(mQuote);
 			}
-            else
-            if( ch == '\n')	// newlines to nl 
-                sb.append("\\n");
-            else
-            if( ch == '\r')	// cr to \\r 
-                 sb.append("\\r");
-            
-            else                  
-				sb.append(ch);
+			else
+				if( ch == '\n')	// newlines to nl 
+					sb.append("\\n");
+				else
+					if( ch == '\r')	// cr to \\r 
+						sb.append("\\r");
+
+					else                  
+						sb.append(ch);
 		}
 		sb.append(mQuote);
 		return sb.toString();
 	}
 
 	/**
-     *  CSV Encode a single string
-     * If no ","  " " or \" then leave alone
-     * Otherwise double-quote and double-double qouote literal quotes
-     */
+	 *  CSV Encode a single string
+	 * If no ","  " " or \" then leave alone
+	 * Otherwise double-quote and double-double qouote literal quotes
+	 */
 
 	public String encodeField(String str)
 	{
@@ -72,16 +72,16 @@ public class CSVFormatter
 			ch = str.charAt(i);
 			if (ch == mQuote || ch == mDelim || ch == '\n' || ch == '\r')
 				return encodeQuote(str);
-                            
+
 		}
 
 		return str;
 	}
 
 	/**
-     * Helper method to write out an array of  strings as a CSV "record" onto the writer
-     */
-    
+	 * Helper method to write out an array of  strings as a CSV "record" onto the writer
+	 */
+
 	public String encodeRow(String[] csv)
 	{
 
@@ -96,7 +96,7 @@ public class CSVFormatter
 
 		return sb.toString();
 	}
-	
+
 	public  String encodeRow(CSVRecord rec)
 	{
 		return encodeRow( rec.getFields() );

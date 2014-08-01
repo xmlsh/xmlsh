@@ -14,19 +14,20 @@ import java.io.File;
 import java.util.List;
 
 public class xcd extends BuiltinCommand {
-	
-	
-	
-	
+
+
+
+
+	@Override
 	public int run(  List<XValue> args ) throws Exception {
 		String sdir = null;
 		if( args.size() < 1 ){
 			XVariable xhome = mShell.getEnv().getVar("HOME");
-			
+
 			String home = xhome == null ? null : xhome.getValue().toString();
 			if( home == null )
 				home = System.getProperty("user.home");
-			
+
 			if( home == null ){
 				mShell.printErr("cd: Cannot cd to HOME");
 				return 1;
@@ -35,7 +36,7 @@ public class xcd extends BuiltinCommand {
 		}
 		else
 			sdir = args.get(0).toString();
-		
+
 		File newDir = mShell.getFile( sdir);
 		if( newDir != null && newDir.exists() && newDir.isDirectory() && newDir.canRead() ){
 			mShell.setCurdir(newDir);
@@ -45,7 +46,7 @@ public class xcd extends BuiltinCommand {
 			mShell.printErr("cd: Cannot cd to: " + sdir);
 			return 1;
 		}
-		
+
 	}
 
 }

@@ -19,14 +19,14 @@ public class IORedirectList extends ArrayList<IORedirect> {
 			io.print(out);
 			out.print(" ");
 		}
-		
+
 	}
 
 	public void exec(Shell shell,SourceLocation loc) throws Exception {
 		for( IORedirect io : this ){
 			io.exec( shell,loc );
 		}
-		
+
 	}
 
 }

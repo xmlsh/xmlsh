@@ -38,7 +38,6 @@ import org.apache.log4j.Logger;
 
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InputPort;
-import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.Options.OptionValue;
 import org.xmlsh.core.OutputPort;
@@ -63,146 +62,146 @@ import javax.xml.stream.XMLStreamWriter;
 
 public class http extends XCommand {
 
-	
+
 	private static Logger mLogger = LogManager.getLogger( http.class);
 
-    static {
+	static {
 		LogManager.getLogger("httpclient").setLevel(Level.WARN);
 		LogManager.getLogger("http.wire").setLevel(Level.WARN);
 		LogManager.getLogger("org.apache.http").setLevel(Level.WARN);
 	}
-	
-	
-	
+
+
+
 	@Override
 	public int run( List<XValue> args )
-	throws Exception 
-	{
-		
+			throws Exception 
+			{
+
 		Options opts = new Options( "retry:,get:,put:,post:,head:,options:,delete:,connectTimeout:,contentType:,readTimeout:,+useCaches,+followRedirects,user:,password:,H=add-header:+,disableTrust:,keystore:,keypass:,sslproto:,output-headers=ohead:" );
 		opts.parse(args);
-		
+
 		setSerializeOpts(getSerializeOpts(opts));  
 
-		
-		
+
+
 		HttpRequestBase method;
-		
+
 		String surl = null;
-		
+
 		if( opts.hasOpt("get") ){
 			surl =  opts.getOptString("get", null);
 			method = new HttpGet(surl);
 		}
 		else
-		if(  opts.hasOpt("put") ){
-			surl =  opts.getOptString("put", null);
-			method = new HttpPut(surl);
-		    ((HttpPut)method).setEntity( getInputEntity(opts));
-		}
-		else
-		if( opts.hasOpt("post") ){
-			surl =  opts.getOptString("post", null);
-			method = new HttpPost(surl);
-		    ((HttpPost)method).setEntity( getInputEntity(opts));
+			if(  opts.hasOpt("put") ){
+				surl =  opts.getOptString("put", null);
+				method = new HttpPut(surl);
+				((HttpPut)method).setEntity( getInputEntity(opts));
+			}
+			else
+				if( opts.hasOpt("post") ){
+					surl =  opts.getOptString("post", null);
+					method = new HttpPost(surl);
+					((HttpPost)method).setEntity( getInputEntity(opts));
 
-		}
-		else
-		if( opts.hasOpt("head") ){
-			surl =  opts.getOptString("head", null);
-			method = new HttpHead(surl);
-		}
-		else
-		if( opts.hasOpt("options") ){
-			surl =  opts.getOptString("options", null);
-		    method = new HttpOptions(surl);
-		}
-		else
-		if( opts.hasOpt("delete") ){
-			surl =  opts.getOptString("delete", null);
-		    method = new HttpDelete(surl);
-		}
-		else
-		if( opts.hasOpt("trace") ){
-			surl =  opts.getOptString("trace", null);
-			method = new HttpTrace(surl);
-		}
-		else {
-			surl = opts.getRemainingArgs().get(0).toString();
-			method = new HttpGet(surl);
-		}
-	
-		
+				}
+				else
+					if( opts.hasOpt("head") ){
+						surl =  opts.getOptString("head", null);
+						method = new HttpHead(surl);
+					}
+					else
+						if( opts.hasOpt("options") ){
+							surl =  opts.getOptString("options", null);
+							method = new HttpOptions(surl);
+						}
+						else
+							if( opts.hasOpt("delete") ){
+								surl =  opts.getOptString("delete", null);
+								method = new HttpDelete(surl);
+							}
+							else
+								if( opts.hasOpt("trace") ){
+									surl =  opts.getOptString("trace", null);
+									method = new HttpTrace(surl);
+								}
+								else {
+									surl = opts.getRemainingArgs().get(0).toString();
+									method = new HttpGet(surl);
+								}
+
+
 		if( surl == null ){
 			usage();
 			return 1;
 		}
-		
-		
+
+
 		int ret = 0;
 
-	
-		
+
+
 		HttpHost host = new HttpHost(surl);
 
 		DefaultHttpClient client = new DefaultHttpClient();
-		
-		
-		
+
+
+
 
 		setOptions( client , host ,  opts );
-		
+
 		OptionValue headers = opts.getOpt("H");
 		if( headers != null ){
-			
+
 			for( XValue v : headers.getValues() ){
 				StringPair pair = new StringPair( v.toString() , '=');
 				method.addHeader(pair.getLeft(), pair.getRight());
 			}
-			
+
 		}
-		
+
 		int retry = opts.getOptInt("retry", 0);
 		long delay = 1000 ;
-		
-        
+
+
 		HttpResponse resp = null ;
-		
+
 		do {
-		   try {
-			resp =  client.execute(method);
-			break ;
-		   } catch( IOException e ){
-			   mShell.printErr( "Exception running http" + ((retry > 0 ) ? " retrying ... " : "") , e);
-			   if( retry > 0 ){
-				    Thread.sleep( delay );
-				    delay *= 2 ;
-			   } else
-				   throw e ;
-		   }
+			try {
+				resp =  client.execute(method);
+				break ;
+			} catch( IOException e ){
+				mShell.printErr( "Exception running http" + ((retry > 0 ) ? " retrying ... " : "") , e);
+				if( retry > 0 ){
+					Thread.sleep( delay );
+					delay *= 2 ;
+				} else
+					throw e ;
+			}
 		} while( retry-- > 0);
-		
-		
+
+
 		HttpEntity respEntity = resp.getEntity();
 		if( respEntity != null ){
 			InputStream ins = respEntity.getContent();
 			if( ins != null ){
 				try {
-				    Util.copyStream(ins, getStdout().asOutputStream(getSerializeOpts()));
+					Util.copyStream(ins, getStdout().asOutputStream(getSerializeOpts()));
 				} finally { 
 					ins.close();
 				}
 			}
 		}
-		
+
 		ret = resp.getStatusLine().getStatusCode() ;
 		if( opts.hasOpt("output-headers"))
-		    writeHeaders( opts.getOptStringRequired("output-headers") , resp.getStatusLine(), resp.getAllHeaders());
-		
-		
-		
+			writeHeaders( opts.getOptStringRequired("output-headers") , resp.getStatusLine(), resp.getAllHeaders());
+
+
+
 		return ret;
-	}
+			}
 
 
 
@@ -211,7 +210,7 @@ public class http extends XCommand {
 
 	private void writeHeaders(String outv, StatusLine statusLine, Header[] allHeaders) throws XMLStreamException, SaxonApiException, CoreException {
 		OutputPort out = mShell.getEnv().getOutputPort(outv);
-	
+
 		XMLStreamWriter sw = out.asXMLStreamWriter(getSerializeOpts());
 		sw.writeStartDocument();
 		sw.writeStartElement("status");
@@ -231,9 +230,9 @@ public class http extends XCommand {
 		sw.writeEndElement();
 		sw.writeEndDocument();
 		sw.close();
-		
-			
-		
+
+
+
 	}
 
 
@@ -242,57 +241,57 @@ public class http extends XCommand {
 
 
 	private void setOptions(DefaultHttpClient client, HttpHost host, Options opts) throws KeyManagementException, NoSuchAlgorithmException, UnrecoverableKeyException, CertificateException, FileNotFoundException, KeyStoreException, IOException {
-		
+
 		HttpParams params = client.getParams();
 		HttpConnectionParamBean connection = new HttpConnectionParamBean(params);
-		
+
 		if( opts.hasOpt("connectTimeout"))
 			connection.setConnectionTimeout((int)(opts.getOptDouble("connectTimeout", 0) * 1000.));
 
 		if( opts.hasOpt("readTimeout"))
 			connection.setSoTimeout((int) (opts.getOptDouble("readTimeout", 0) * 1000.));
-		
-			
+
+
 		/*
 		if( opts.hasOpt("useCaches"))
 			client.setUseCaches( opts.getOpt("useCaches").getFlag());
 
-			
+
 		if( opts.hasOpt("followRedirects"))
-			
+
 			client.setInstanceFollowRedirects(  opts.getOpt("followRedirects").getFlag());	
-	   
 
-	
 
-			
-			
+
+
+
+
 		String disableTrustProto = opts.getOptString("disableTrust", null);
-		
+
 		String	keyStore = opts.getOptString("keystore", null);
 		String 	keyPass  = opts.getOptString("keypass", null);
 		String  sslProto = opts.getOptString("sslProto", "SSLv3");
-		
+
 		if(disableTrustProto != null &&  client instanceof HttpsURLConnection )
 			disableTrust( (HttpsURLConnection) client , disableTrustProto );
-     
+
 		else
 		if( keyStore != null )
 			setClient(  (HttpsURLConnection) client , keyStore , keyPass , sslProto );
-		
-        */
-		
+
+		 */
+
 		String disableTrustProto = opts.getOptString("disableTrust", null);
- 
+
 		if( disableTrustProto != null )
 			disableTrust( client, disableTrustProto);
-		
-		
+
+
 		String user = opts.getOptString("user", null);
 		String pass = opts.getOptString("password", null);
 		if( user != null && pass != null ){
 			UsernamePasswordCredentials creds = new UsernamePasswordCredentials(user, pass);
-			
+
 			client.getCredentialsProvider().setCredentials( AuthScope.ANY , creds);
 			/*
 			// Create AuthCache instance
@@ -309,12 +308,12 @@ public class http extends XCommand {
             // Add AuthCache to the execution context
             BasicHttpContext localcontext = new BasicHttpContext();
             localcontext.setAttribute(ClientContext.AUTH_CACHE, authCache);
-			*/
-			
+			 */
+
 		}
-		
-		
-		
+
+
+
 	}
 	HttpEntity getInputEntity(Options opts) throws IOException, CoreException
 	{
@@ -323,10 +322,10 @@ public class http extends XCommand {
 		InputPort in = getStdin();
 		if( in.isFile() )
 			entity =new FileEntity( in.getFile()  );
- 		
+
 		else {
 			byte[] data = Util.readBytes( in.asInputStream(getSerializeOpts()));
-            entity = new ByteArrayEntity( data );
+			entity = new ByteArrayEntity( data );
 		}
 		// return new InputStreamEntity( in.asInputStream(mSerializeOpts),-1);
 		if( opts.hasOpt("contentType"))
@@ -335,28 +334,28 @@ public class http extends XCommand {
 		return entity ;
 
 	}
-	
+
 	private void disableTrust(DefaultHttpClient client , String disableTrustProto) throws KeyManagementException, UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException {
 
-	        SSLSocketFactory socketFactory = new SSLSocketFactory(new TrustStrategy() {
+		SSLSocketFactory socketFactory = new SSLSocketFactory(new TrustStrategy() {
 
-				@Override
-				public boolean isTrusted(java.security.cert.X509Certificate[] chain, String authType)
-						throws CertificateException {
-					// TODO Auto-generated method stub
-					return false;
-				}
+			@Override
+			public boolean isTrusted(java.security.cert.X509Certificate[] chain, String authType)
+					throws CertificateException {
+				// TODO Auto-generated method stub
+				return false;
+			}
 
-	        }, org.apache.http.conn.ssl.SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
-	        int port = client.getConnectionManager().getSchemeRegistry().getScheme(disableTrustProto).getDefaultPort();
+		}, org.apache.http.conn.ssl.SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+		int port = client.getConnectionManager().getSchemeRegistry().getScheme(disableTrustProto).getDefaultPort();
 
-	        client.getConnectionManager().getSchemeRegistry().register(new Scheme(disableTrustProto, port, socketFactory));
+		client.getConnectionManager().getSchemeRegistry().register(new Scheme(disableTrustProto, port, socketFactory));
 	}
-	
-	
-	
-	
-		
+
+
+
+
+
 }
 
 

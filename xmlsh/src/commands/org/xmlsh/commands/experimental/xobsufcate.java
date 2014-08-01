@@ -26,10 +26,10 @@ public class xobsufcate extends XCommand {
 
 	XMLEventFactory	mFactory = XMLEventFactory.newInstance();
 	java.util.Random mRand = new java.util.Random();
-	
+
 	@Override
 	public int run(List<XValue> args) throws Exception {
-		
+
 		InputPort stdin = null;
 		if( args.size() > 0 )
 			stdin = getInput( args.get(0));
@@ -37,37 +37,37 @@ public class xobsufcate extends XCommand {
 			stdin = getStdin();
 		if( stdin == null )
 			throw new InvalidArgumentException("Cannot open input");
-		
-			SerializeOpts opts = getSerializeOpts();
-			
-			XMLEventReader	reader = stdin.asXMLEventReader(opts);
-			OutputPort stdout = getStdout();
-			XMLEventWriter  writer = stdout.asXMLEventWriter(opts);
-			
-			stdout.setSystemId(stdin.getSystemId());
-			XMLEvent e;
-	
-			try {
+
+		SerializeOpts opts = getSerializeOpts();
+
+		XMLEventReader	reader = stdin.asXMLEventReader(opts);
+		OutputPort stdout = getStdout();
+		XMLEventWriter  writer = stdout.asXMLEventWriter(opts);
+
+		stdout.setSystemId(stdin.getSystemId());
+		XMLEvent e;
+
+		try {
 			while( reader.hasNext() ){
 				e = (XMLEvent) reader.next();
 				e = obsufcate(e);
-				
+
 				writer.add(e);
 			}
 			// writer.add(reader);
-			} finally {
+		} finally {
 			Util.safeClose(reader);
 			Util.safeClose(writer);
-			}
+		}
 		return 0;
-		
-		
+
+
 	}
 	private char rand(int mod)
 	{
-		 int c =  ( (mRand.nextInt()  & 0xFFFF) % mod );
-		 return (char) c;
-		
+		int c =  ( (mRand.nextInt()  & 0xFFFF) % mod );
+		return (char) c;
+
 	}
 
 	private XMLEvent obsufcate(XMLEvent e) {
@@ -75,39 +75,39 @@ public class xobsufcate extends XCommand {
 			Characters ch = e.asCharacters();
 			if( ch.isWhiteSpace() ) 
 				return ch;
-			
+
 			String data = ch.getData();
-			
+
 			StringBuffer sb = new StringBuffer();
-			
+
 			int len = data.length();
 			for( int i = 0 ; i < len ; i++ ){
 				char c = data.charAt(i);
 				if( c >= 'a' && c <= 'z' ){
 					c = (char)(rand(26) + 'a');
 				} else
-				if( c >= 'A' && c <= 'Z' )
-				{
-					c = (char)(rand(26) + 'A') ;
-				}
-				
+					if( c >= 'A' && c <= 'Z' )
+					{
+						c = (char)(rand(26) + 'A') ;
+					}
+
 				sb.append(c);
 			}
 			return mFactory.createCharacters(sb.toString());
-				
-				
-				
-			}
+
+
+
+		}
 		else
 			return e ;
-			
-			
-			
-			
+
+
+
+
 	}
-		
-		
-	
+
+
+
 }
 
 

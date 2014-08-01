@@ -23,6 +23,7 @@ public class read extends BuiltinCommand
 	 * Read a line of text from stdin and assign to variables
 	 */
 
+	@Override
 	public int run(List<XValue> args) throws Exception
 	{
 		// Unset all args
@@ -33,9 +34,9 @@ public class read extends BuiltinCommand
 		try (InputStream is = stdin.asInputStream(getSerializeOpts())) {
 			String line = null;
 			try {
-			    line = Util.readLine(is, getSerializeOpts().getInputTextEncoding());
+				line = Util.readLine(is, getSerializeOpts().getInputTextEncoding());
 			} catch (IOException e) 
-		    {
+			{
 				mLogger.debug("Caught IOException in read - treating as EOF" , e );
 				line = null ;
 			}

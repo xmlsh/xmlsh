@@ -37,42 +37,42 @@ public class jcall extends XCommand
 		{
 			mExitCode = code ;
 		}
-		
-	
+
+
 	}
 	private static class NoExitSecurityManager extends SecurityManager
 	{
 		SecurityManager mParent;
-		 @Override
-	        public void checkPermission(Permission perm) 
-	        {
-			 if( mParent != null )
-				 mParent.checkPermission(perm);
-			 
-	        }
-	        @Override
-	        public void checkPermission(Permission perm, Object context) 
-	        {
+		@Override
+		public void checkPermission(Permission perm) 
+		{
+			if( mParent != null )
+				mParent.checkPermission(perm);
 
-				 if( mParent != null )
-					 mParent.checkPermission(perm, context);
-	        
-	        }
-	        
-	        
-	    NoExitSecurityManager( SecurityManager parent )
-	    {
-	    	mParent = parent ;
-	    }
+		}
+		@Override
+		public void checkPermission(Permission perm, Object context) 
+		{
+
+			if( mParent != null )
+				mParent.checkPermission(perm, context);
+
+		}
+
+
+		NoExitSecurityManager( SecurityManager parent )
+		{
+			mParent = parent ;
+		}
 		/* (non-Javadoc)
 		 * @see java.lang.SecurityManager#checkExit(int)
 		 */
-		@Override
-		public void checkExit(int status) {
-			throw new ExitException(status);
-		}
-		
-		
+		 @Override
+		 public void checkExit(int status) {
+			 throw new ExitException(status);
+		 }
+
+
 	}
 
 	/*
@@ -80,18 +80,19 @@ public class jcall extends XCommand
 	 * 
 	 * @see org.xmlsh.core.XCommand#run(java.util.List)
 	 */
-	
-	
+
+
+	@Override
 	public synchronized int run(  List<XValue> args )	throws Exception
 	{
-		
+
 
 		SerializeOpts serializeOpts = getSerializeOpts();
 		/*
 		 * Do NOT use Options because we need to split out the jcall options differently then the invoked options
 		 * 
 		 */
-		
+
 		ClassLoader classloader = null;
 		if( args.size() > 1 ){
 			String arg1 = args.get(0).toString();
@@ -100,50 +101,50 @@ public class jcall extends XCommand
 				XValue classpath = args.remove(0);
 				classloader = getClassLoader( classpath );
 			}
-			
+
 
 		}
 		if( classloader == null )
 			classloader = getClassLoader(null);
-		
-		
-		
-		
+
+
+
+
 		SecurityManager oldManager = null;
 		if( args.size() < 1 )
 			throw new InvalidArgumentException( "usage: jcall [-cp classpath] [class|object] [args]");
-		
-		
-		
-		
-		
-		
-		
+
+
+
+
+
+
+
 		PrintStream	stdout = System.out;
 
 		// DAL: Resesting stderr causes stderr to be lost after this call
 		// dont know why. Dont reset stderr and all is well.
 		// PrintStream	stderr = System.err;
 		InputStream	stdin  = System.in;
-		
+
 		PrintStream newStdout = null;
 		// PrintStream newStderr = null;
-		
+
 		try {
 			oldManager = System.getSecurityManager();
 			System.setSecurityManager(new NoExitSecurityManager(oldManager));
-			
-			
+
+
 			System.setOut(newStdout = getStdout().asPrintStream(serializeOpts));
 
 			System.setIn(getStdin().asInputStream(serializeOpts)) ;
-		
+
 			String className = args.remove(0).toString();
 			Class<?> cls = Class.forName(className,true,classloader);
-			
+
 			Method method = cls.getMethod("main", String[].class );
 			method.invoke(null, new Object[] { Util.toStringArray(args)} );
-		
+
 		}
 		catch( InvocationTargetException e )
 		{
@@ -151,53 +152,53 @@ public class jcall extends XCommand
 			if( e2 instanceof ExitException )
 				return ((ExitException )e2).mExitCode ;
 			else
-			if( e2 != null && e2 instanceof Exception )
+				if( e2 != null && e2 instanceof Exception )
 					throw (Exception) e2;
-			
-			else
-				throw e ;
+
+				else
+					throw e ;
 		}
 		catch ( ExitException e ){
-			
+
 			return e.mExitCode ;
 		}
 		catch ( Exception e )
 		{
 			e.printStackTrace();
 		}
-		
+
 		finally {
-			   System.setSecurityManager(oldManager);
-			
-			
+			System.setSecurityManager(oldManager);
+
+
 			System.setOut(stdout);
 			// System.setErr(stderr);
 			System.setIn(stdin);
-			
+
 			newStdout.flush();
 			// newStderr.flush();
-			
-			
-			
+
+
+
 		}
-		
+
 		return 0;
-		
+
 	}
-	
+
 	/*
 	 * Test for calling jcall or exiting 
 	 */
 	public static void main( String[] args )
 	{
 		if( args.length > 0 )
-		System.out.println(args[0]);
+			System.out.println(args[0]);
 		if( args.length == 1 && args[0].equals("exit"))
 			System.exit(1);
-		
-		
+
+
 	}
-	
+
 }
 
 //

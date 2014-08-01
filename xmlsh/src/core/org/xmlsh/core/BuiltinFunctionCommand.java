@@ -19,8 +19,8 @@ public abstract class BuiltinFunctionCommand extends Command implements IFunctio
 	{ 
 		super(name);
 	}
-	
-	
+
+
 	@Override
 	public int exec(Shell shell) throws Exception {
 		XValue retVal = run( shell , shell.getArgs());
@@ -30,7 +30,7 @@ public abstract class BuiltinFunctionCommand extends Command implements IFunctio
 
 	@Override
 	public boolean isSimple() {
-		
+
 		return true;
 	}
 
@@ -41,6 +41,7 @@ public abstract class BuiltinFunctionCommand extends Command implements IFunctio
 	}
 
 
+	@Override
 	public Command getBody()
 	{
 		return this ;
@@ -48,19 +49,19 @@ public abstract class BuiltinFunctionCommand extends Command implements IFunctio
 	/* (non-Javadoc)
 	 * @see org.xmlsh.core.IFunction#argumentEnv(org.xmlsh.core.EvalEnv)
 	 */
-    @Override
-    public EvalEnv argumentEnv(EvalEnv parent)
-    {
-	   return parent ;
-    }
+	@Override
+	public EvalEnv argumentEnv(EvalEnv parent)
+	{
+		return parent ;
+	}
 	/* (non-Javadoc)
 	 * @see org.xmlsh.core.IFunction#returnEnv(org.xmlsh.core.EvalEnv)
 	 */
-    @Override
-    public EvalEnv returnEnv(EvalEnv parent)
-    {
-    	return EvalEnv.evalNone() ;
-    }
+	@Override
+	public EvalEnv returnEnv(EvalEnv parent)
+	{
+		return EvalEnv.evalNone() ;
+	}
 }
 
 

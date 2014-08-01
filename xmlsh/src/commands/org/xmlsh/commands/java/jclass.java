@@ -9,6 +9,7 @@ package org.xmlsh.commands.java;
 import org.xmlsh.core.BuiltinFunctionCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.types.TypeFamily;
 import org.xmlsh.util.JavaUtils;
 
 import java.util.List;
@@ -17,16 +18,16 @@ public class jclass extends BuiltinFunctionCommand {
 
 	public jclass() {
 		super("jclass");
-	
+
 	}
 
 	@Override
 	public XValue run(Shell shell, List<XValue> args) throws Exception {
-		
+
 		if( args.isEmpty())
-			return new XValue(Object.class);
-		return new XValue( JavaUtils.convertToClass(args.get(0), shell));
-		
+			return new XValue(TypeFamily.JAVA, Object.class);
+		return new XValue( null , JavaUtils.convertToClass(args.get(0), shell));
+
 	}
 
 }

@@ -18,7 +18,7 @@ import javax.xml.stream.XMLInputFactory;
  * Validate an XML Document against a schema Document must come from a stream
  */
 public class DTDValidator {
-	
+
 
 	private URL mDTD = null;
 
@@ -39,28 +39,28 @@ public class DTDValidator {
 		// step 1: get schema factory
 		// XMLValidationSchemaFactory sf = XMLValidationSchemaFactory.newInstance(XMLValidationSchema.SCHEMA_ID_RELAXNG);
 		XMLValidationSchemaFactory sf = XMLValidationSchemaFactory.newInstance(XMLValidationSchema.SCHEMA_ID_DTD );
-		
+
 		// step 2: construct validation schema instance
 		XMLValidationSchema rng = sf.createSchema(mDTD);
 		// step 3: construct stream reader
 		XMLInputFactory2 ifact = (XMLInputFactory2)XMLInputFactory.newInstance();
 		ifact.setProperty(XMLInputFactory2.P_DTD_OVERRIDE, null );
 		ifact.setProperty(XMLInputFactory.SUPPORT_DTD , Boolean.valueOf(false) );
-			
+
 
 		XMLStreamReader2 sr = (XMLStreamReader2) ifact.createXMLStreamReader(systemid , xml);
 		// step 4: enable validation
-		
+
 		sr.validateAgainst(rng);
 		// step 5: stream through the document:
 		while (sr.hasNext()) {
-		  sr.next();
+			sr.next();
 		}
 		// done!
-		
-		
+
+
 	}
 
 
-	
+
 }

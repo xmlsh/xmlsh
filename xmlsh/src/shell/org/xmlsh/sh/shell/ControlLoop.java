@@ -19,12 +19,12 @@ public class ControlLoop
 	public	boolean		mBreak;		// loop should break
 	public	boolean		mContinue;	// loop should continue
 	public SourceLocation            mLocation;
-	
+
 	public ControlLoop(SourceLocation loc)
 	{
 		mLocation = loc;
 		mBreak = mContinue = false ;
-		
+
 	}
 
 }

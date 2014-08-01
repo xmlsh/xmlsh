@@ -86,8 +86,8 @@ public class JSONXConverter extends JXConverter
 		}
 
 		private void writeString(StartElement start) throws XMLStreamException, UnsupportedEncodingException,
-		                                            FileNotFoundException, IOException, TransformException,
-		                                            SaxonApiException, CoreException
+		FileNotFoundException, IOException, TransformException,
+		SaxonApiException, CoreException
 		{
 			writeNameField( start );
 			String chars = readString();
@@ -97,12 +97,12 @@ public class JSONXConverter extends JXConverter
 
 
 		private void writeNameField(StartElement start) throws IOException
-        {
+		{
 			String name = getAttr( start , kATTR_NAME );
 			if( ! Util.isBlank(name))
 				mGenerator.writeFieldName(name);
-	        
-        }
+
+		}
 
 		private String getAttr(StartElement start, QName attr)
 		{
@@ -124,7 +124,7 @@ public class JSONXConverter extends JXConverter
 			writeNameField( start );
 			String chars = readString();
 			chars = chars.trim();
-				mGenerator.writeBoolean(Util.parseBoolean(chars));
+			mGenerator.writeBoolean(Util.parseBoolean(chars));
 		}
 
 		private void writeNumber(StartElement start) throws ConverterException, IOException, XMLStreamException
@@ -164,10 +164,10 @@ public class JSONXConverter extends JXConverter
 
 		}
 
-		
+
 
 		@Override
-        protected
+		protected
 		boolean startDocument(XMLEvent e) throws ConverterException
 		{
 			return true;
@@ -175,7 +175,7 @@ public class JSONXConverter extends JXConverter
 		}
 
 		@Override
-        protected
+		protected
 		boolean endElement(EndElement asEndElement) throws ConverterException
 		{
 
@@ -183,14 +183,14 @@ public class JSONXConverter extends JXConverter
 		}
 
 		@Override
-        protected
+		protected
 		boolean endDocument(XMLEvent e) throws ConverterException
 		{
 			return false;
 		}
 
 		@Override
-        protected
+		protected
 		boolean characters(XMLEvent e)
 		{
 			// Ignore unexpected chars
@@ -236,7 +236,7 @@ public class JSONXConverter extends JXConverter
 
 			JsonToken tok;
 			try {
-				
+
 				writeStartElement( kELEM_OBJECT );
 				writeFieldAttr();
 				while ((tok = nextToken()) == JsonToken.FIELD_NAME )
@@ -262,12 +262,12 @@ public class JSONXConverter extends JXConverter
 			}
 		}
 
-		 @Override
+		@Override
 		void writeBoolean(boolean value) throws ConverterException
 		{
 
 			try {
-			   
+
 				writeStartElement( kELEM_BOOLEAN );
 				writeFieldAttr();
 				writeCharacters(value ? "true" : "false");
@@ -279,13 +279,13 @@ public class JSONXConverter extends JXConverter
 		}
 
 		private void writeFieldAttr() throws XMLStreamException
-        {
-	        if( mFieldName != null ) {
-	        	writeAttribute(kATTR_NAME, mFieldName);
-	        	mFieldName = null ;
-	        }
-	        
-        }
+		{
+			if( mFieldName != null ) {
+				writeAttribute(kATTR_NAME, mFieldName);
+				mFieldName = null ;
+			}
+
+		}
 
 		@Override
 		void writeNull() throws ConverterException
@@ -310,7 +310,7 @@ public class JSONXConverter extends JXConverter
 				writeEndElement();
 			} catch (XMLStreamException e) {
 				throw new ConverterException(e);
-            }
+			}
 
 		}
 
@@ -340,7 +340,7 @@ public class JSONXConverter extends JXConverter
 	@Override
 	JSONConverter newJConverter(XMLStreamReader reader, OutputStream os) throws ConverterException
 	{
-	        return new JConverter(reader, os);
+		return new JConverter(reader, os);
 	}
 
 	@Override

@@ -6,39 +6,39 @@
 
 package org.xmlsh.util;
 
-import java.io.Closeable;
-import java.io.IOException;
-import java.util.ArrayList;
-
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import org.xmlsh.core.IReleasable;
 
+import java.util.ArrayList;
+
 @SuppressWarnings("serial")
 public class AutoReleasePool extends ArrayList<IReleasable> implements AutoCloseable {
 	private Logger  mLogger= LogManager.getLogger(AutoReleasePool.class );
+	@Override
 	protected void finalize() throws Exception 
 	{
 		close();
 	}
+	@Override
 	public void	close() throws Exception {
 		Exception et = null ;
-		
+
 		try {
-	    	for( IReleasable obj : this )
-			try {
-				obj.release();
-			} catch(Exception e) {
-				if( et == null )
+			for( IReleasable obj : this )
+				try {
+					obj.release();
+				} catch(Exception e) {
+					if( et == null )
 						et=e;
-				else
-					et.addSuppressed(e);
-				mLogger.debug("Exception closing object autorelease object: " , e);
-			}
+					else
+						et.addSuppressed(e);
+					mLogger.debug("Exception closing object autorelease object: " , e);
+				}
 		}
 		finally { 
-		   this.clear();
+			this.clear();
 		}
 		if( et != null )
 			throw et;

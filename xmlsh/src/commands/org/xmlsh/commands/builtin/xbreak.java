@@ -14,17 +14,18 @@ import java.util.List;
 
 public class xbreak extends BuiltinCommand {
 
-	
+
+	@Override
 	public int run(   List<XValue> args ) throws Exception {
-			
-			int levels = 1;
-			if( args.size() == 1  ){
-				XValue arg = args.get(0);
-				if( arg.isAtomic() )
-					levels = Util.parseInt( arg.toString() , 1 );
-			}
-			return mShell.doBreak( levels );
-				
+
+		int levels = 1;
+		if( args.size() == 1  ){
+			XValue arg = args.get(0);
+			if( arg.isAtomic() )
+				levels = Util.parseInt( arg.toString() , 1 );
+		}
+		return mShell.doBreak( levels );
+
 	}
 
 

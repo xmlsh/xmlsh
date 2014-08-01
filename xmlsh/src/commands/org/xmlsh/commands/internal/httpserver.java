@@ -10,6 +10,7 @@ import net.sf.saxon.s9api.SaxonApiException;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.ThrowException;
@@ -42,14 +43,14 @@ import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 
 public class httpserver extends XCommand {
-	
-	static	HttpServer 	mServer = null;
-	
 
-	
+	static	HttpServer 	mServer = null;
+
+
+
 	private static Logger mLogger = LogManager.getLogger( httpserver.class);
 
-	
+
 	public class MyHandler implements HttpHandler {
 		private		Shell	 	mShell = null;
 		private	 	File		mInitialCD;
@@ -57,153 +58,154 @@ public class httpserver extends XCommand {
 		private		Command mPut;
 		private		Command mPost;
 		private		boolean 	mChunked = false ;
-		
+
 		MyHandler( Shell shell, boolean chunked , String getFunc, String putFunc , String postFunc  ) throws CoreException 
 		{
 			mShell = shell.clone();	// clone shell for execution
 			mChunked = chunked;
-			
+
 			// need to save the CD so we can restore it in the new thread
 			mInitialCD = mShell.getCurdir();
-			
+
 			if(  getFunc != null )
 				mGet =  mShell.parseEval(getFunc);
 			if( putFunc != null )
 				mPut =  mShell.parseEval(putFunc);
 			if( postFunc != null )
 				mPost = mShell.parseEval(postFunc);
-			
+
 
 		}
-		
+
+		@Override
 		public void handle(HttpExchange http) throws IOException {
-				
+
 
 			try {
 
-		         XVariable headers 	= parseHeaders( http );
-		           
+				XVariable headers 	= parseHeaders( http );
+
 				mShell.setCurdir(mInitialCD);
-			  //  System.out.println("Got request in thread: " + Thread.currentThread().getName() );
+				//  System.out.println("Got request in thread: " + Thread.currentThread().getName() );
 
-		       
-		       String method = http.getRequestMethod();
-		       // TBD: Headers headers = http.getRequestHeaders();
-			       
-		   	
+
+				String method = http.getRequestMethod();
+				// TBD: Headers headers = http.getRequestHeaders();
+
+
 				Command cmd = null ;
-						
-		       if( method.equals("GET") )
-				  cmd = mGet;
-		       else
-			   if( method.equals("PUT") )
-					  cmd = mPut;
-			   else
-		       if( method.equals("POST") && mPost != null )
-					  cmd = mPost ;
-		       
-		       if( cmd == null ){
-		    	   http.sendResponseHeaders(405, -1);
-		    	   http.close();
-		    	   return ;
-		       }
-		    	   
-		       
-		       URI uri = http.getRequestURI();
 
-		       InputStream is = http.getRequestBody();
-		   
-		          
-		       // If chunked mode we can execute directly to the output
-		       if( mChunked ){
-		       
-		    	   http.sendResponseHeaders(200, 0);
-		       
-		           // http.sendResponseHeaders(200, response.length());
-		           OutputStream os = http.getResponseBody();
-		           
+				if( method.equals("GET") )
+					cmd = mGet;
+				else
+					if( method.equals("PUT") )
+						cmd = mPut;
+					else
+						if( method.equals("POST") && mPost != null )
+							cmd = mPost ;
 
-		           
-		           execute(cmd, uri, is, os, headers );
-;
+				if( cmd == null ){
+					http.sendResponseHeaders(405, -1);
+					http.close();
+					return ;
+				}
 
-		       
-		       }
-		       
-		       // Otherwise must buffer up the response
-		       else {
-		    	   ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		    	   
-		    	   
-		    	   execute(cmd, uri, is, bos,headers);
-		    	   
 
-			       try {
-				       // Eat the data
-				       while( is.read() > 0 )
-				       	  ;
+				URI uri = http.getRequestURI();
 
-			       } catch( Exception e )
-			       {
-			    	   
-			       }
-			       
-			       http.getResponseHeaders().add("Connection", "close");
-		
-			       http.sendResponseHeaders(200, bos.size() );
-		    	   
-			       
-		           // http.sendResponseHeaders(200, response.length());
-		           OutputStream os = http.getResponseBody();
-		           os.write(bos.toByteArray());
+				InputStream is = http.getRequestBody();
 
-		    	   os.flush();
-		    	   os.close();
-		    	   
-		    	   
-		       }
-			  
 
-		       
-	          http.close();
-	          
-	          
+				// If chunked mode we can execute directly to the output
+				if( mChunked ){
+
+					http.sendResponseHeaders(200, 0);
+
+					// http.sendResponseHeaders(200, response.length());
+					OutputStream os = http.getResponseBody();
+
+
+
+					execute(cmd, uri, is, os, headers );
+					;
+
+
+				}
+
+				// Otherwise must buffer up the response
+				else {
+					ByteArrayOutputStream bos = new ByteArrayOutputStream();
+
+
+					execute(cmd, uri, is, bos,headers);
+
+
+					try {
+						// Eat the data
+						while( is.read() > 0 )
+							;
+
+					} catch( Exception e )
+					{
+
+					}
+
+					http.getResponseHeaders().add("Connection", "close");
+
+					http.sendResponseHeaders(200, bos.size() );
+
+
+					// http.sendResponseHeaders(200, response.length());
+					OutputStream os = http.getResponseBody();
+					os.write(bos.toByteArray());
+
+					os.flush();
+					os.close();
+
+
+				}
+
+
+
+				http.close();
+
+
 			} catch( Exception e )
 			{
-	
-				
+
+
 				mLogger.error("Exception running http handler" , e );
 				try {
 					mShell.getEnv().setStdin((InputStream)null);
 					mShell.getEnv().setStdout((OutputStream)null);
 					mShell.close();
-					
-					} catch( Exception e2 )
-					{}
+
+				} catch( Exception e2 )
+				{}
 			}
-			
+
 
 		}
 
 		private void execute(Command cmd, URI uri, InputStream is, OutputStream os, XVariable headers)
 				throws CoreException, ThrowException, IOException {
-			
-			 mShell.getEnv().setStdin( is );
-			 mShell.getEnv().setStdout( os  );
-			  
-			  
-			 
-			  List<XValue> args = new ArrayList<XValue>();
-			  String query = uri.getQuery();
-			  String path = uri.getPath();
-			  args.add( new XValue(path));
-			  args.add( new XValue(query));
-			  
-				if( headers != null )
-					mShell.getEnv().setVar(headers,false);
-			  
-			  mShell.setArgs(args);
-			  mShell.exec(cmd);
+
+			mShell.getEnv().setStdin( is );
+			mShell.getEnv().setStdout( os  );
+
+
+
+			List<XValue> args = new ArrayList<XValue>();
+			String query = uri.getQuery();
+			String path = uri.getPath();
+			args.add( new XValue(path));
+			args.add( new XValue(query));
+
+			if( headers != null )
+				mShell.getEnv().setVar(headers,false);
+
+			mShell.setArgs(args);
+			mShell.exec(cmd);
 		}
 
 		/*
@@ -224,60 +226,60 @@ public class httpserver extends XCommand {
 		@SuppressWarnings("unchecked")
 		private XVariable parseHeaders(HttpExchange request) throws IOException  {
 
-	        
+
 			XVariable var = new XVariable("HTTP_HEADERS",null);
 			XMLStreamWriter writer = null ;
 			try (
-				VariableOutputPort port = new VariableOutputPort( var );
-			) {
+					VariableOutputPort port = new VariableOutputPort( var );
+					) {
 				writer = port.asXMLStreamWriter(null);
 				writer.writeStartDocument();
 				writer.writeStartElement("headers");
-				
+
 				Headers headers = request.getRequestHeaders();
 				Set<String> names = headers.keySet();
-				
+
 				for( String name : names ){
-	
+
 					List<String> values = headers.get(name);
-					
-					
+
+
 					writer.writeStartElement("header");
 					writer.writeAttribute("name", name );
-					
+
 					for( String value : values ){
 						writer.writeStartElement("value");
 						writer.writeCharacters(value);
 						writer.writeEndElement();
 					}
 					writer.writeEndElement();
-					
+
 				}
 				writer.writeEndElement();
 				writer.writeEndDocument();
 				writer.close();
 				return var ;
-		} catch (XMLStreamException|SaxonApiException e) {
-			throw new IOException(e);
-		} finally {
-			Util.safeClose( writer );
+			} catch (XMLStreamException|SaxonApiException e) {
+				throw new IOException(e);
+			} finally {
+				Util.safeClose( writer );
+			}
 		}
 	}
-	}
-	
+
 	@Override
 	public int run( List<XValue> args ) throws UnknownOption, IOException, CoreException
 	{
-		
+
 		Options opts = new Options( "port:,context:,handler:,get:,put:,post:,chunk" );
 		opts.parse(args);
-		
+
 		if( ! opts.hasRemainingArgs() ){
 			usage();
 			return -1;
-			
+
 		}
-		
+
 		String arg = opts.getRemainingArgs().get(0).toString();
 		if( arg.equals("stop")){
 			if( mServer != null )
@@ -286,12 +288,12 @@ public class httpserver extends XCommand {
 			return 0;
 		}
 		else
-		if( arg.equals("start"))
-			return start( opts );
-		else
-			usage();
+			if( arg.equals("start"))
+				return start( opts );
+			else
+				usage();
 		return 0;
-		
+
 
 
 	}
@@ -304,19 +306,19 @@ public class httpserver extends XCommand {
 		String put = opts.getOptString("put", null);	
 		String post = opts.getOptString("post", null);	
 		boolean bChunk = opts.hasOpt("chunk");
-		
-	
-		
-		
+
+
+
+
 		if( mServer != null ){
 			printErr("Server already running");
 			return 1;
 		}
-		
-		
 
-		
-		
+
+
+
+
 		mServer = HttpServer.create(new InetSocketAddress(port), 10 );
 		mServer.createContext(context, new MyHandler(getEnv().getShell(),bChunk, get,put,post));
 		mServer.setExecutor(null); // creates a default executor

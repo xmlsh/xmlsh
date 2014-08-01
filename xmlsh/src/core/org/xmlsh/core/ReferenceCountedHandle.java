@@ -1,9 +1,9 @@
 package org.xmlsh.core;
 
+import org.xmlsh.util.ReferenceCounter;
+
 import java.io.Closeable;
 import java.io.IOException;
-
-import org.xmlsh.util.ReferenceCounter;
 
 public class ReferenceCountedHandle<T extends Closeable > implements IHandle<T> {
 
@@ -22,7 +22,7 @@ public class ReferenceCountedHandle<T extends Closeable > implements IHandle<T> 
 		}
 		return false ;
 	} 
-	
+
 	public void addRef() {
 		mCounter.addRef();
 	}
@@ -33,7 +33,7 @@ public class ReferenceCountedHandle<T extends Closeable > implements IHandle<T> 
 	}
 	@Override
 	public IHandle<T> newReference() {
-			mCounter.addRef();
+		mCounter.addRef();
 		return this ;
 	}
 

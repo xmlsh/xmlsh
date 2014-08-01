@@ -19,7 +19,7 @@ public class InvalidArgumentException extends CoreException {
 
 	public InvalidArgumentException(String message) {
 		super(message);
-		
+
 		// TODO Auto-generated constructor stub
 	}
 

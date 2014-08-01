@@ -11,10 +11,10 @@ import java.net.URLClassLoader;
 
 public class XClassLoader extends URLClassLoader {
 
-	
+
 	public XClassLoader(URL[] urls, ClassLoader parent) {
 		super(urls, parent);
-		
+
 	}
 
 	public XClassLoader(URL at, ClassLoader parent ) {
@@ -25,7 +25,7 @@ public class XClassLoader extends URLClassLoader {
 	{
 		super.addURL(url);
 	}
-	
+
 
 }
 

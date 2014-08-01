@@ -54,16 +54,16 @@ STRING equivalent to -n STRING
 
 -z STRING
    the length of STRING is zero
-   
+
 -S value
 	true if the value/argument is a string (not an xml type)
-	
+
 -X value
 	true if the value/argument is an xml type
-	
+
 -D name
 	true if the environment variable "name" is defined
-	
+
 
 STRING1 = STRING2
    the strings are equal
@@ -121,7 +121,7 @@ FILE1 -ot FILE2
 
 -x FILE
    FILE exists and execute (or search) permission is granted
-   
+
 -u string
    TRUE if string is formated as an absolute URI (starts with <scheme>:// )
 
@@ -131,16 +131,16 @@ slashes) for shells.  INTEGER may also be -l STRING, which evaluates to
 the length of STRING.
 
 
-******************************************************/
+ ******************************************************/
 
 
 
 
 public class test extends BuiltinCommand {
-	
+
 
 	private int pdepth = 0 ;
-	
+
 	@SuppressWarnings("serial")
 	private static class Error extends Exception
 	{
@@ -148,16 +148,16 @@ public class test extends BuiltinCommand {
 		public Error(final String message) {
 			super(message);
 		}
-		
+
 	};
 
 
-	
+
 	private 	boolean		eval( List<XValue> av) throws InvalidArgumentException, UnexpectedException, Error, IOException 
 	{
 		if( av.size() == 0 )
 			return false;
-		
+
 		XValue av1 = av.remove(0);
 
 		if( av.size() == 0 )
@@ -167,45 +167,45 @@ public class test extends BuiltinCommand {
 			av.remove(0);
 			return evalUnary("-n" , av1);
 		}
-		
+
 		if( av1.isAtomic() ){
 
 
 			String a1 = av1.toString();
-			
+
 			if( a1.equals("!"))
 				return ! eval( av );
-			
+
 			if( a1.equals("(")){
 				pdepth++;
 				boolean ret = eval(av);
 				if( av.size() < 1 )
 					return ret ;
-				
+
 				if( pdepth > 0 &&   (av.get(0).isAtomic() && av.get(0).toString().equals(")") ) ){
 					av.remove(0);
 					pdepth--;
-					
+
 					return ret ;
 				}
-						
+
 			}
 			else
-			if( a1.startsWith("-") && ! Util.isInt(a1, true)){
-				if( av.size() < 1 ){
-					throw new Error("expected arg after " + a1);
-	
+				if( a1.startsWith("-") && ! Util.isInt(a1, true)){
+					if( av.size() < 1 ){
+						throw new Error("expected arg after " + a1);
+
+					}
+					return evalUnary( a1 , av.remove(0));
 				}
-				return evalUnary( a1 , av.remove(0));
-			}
-			
-			else
-			if( av.size() == 1 ){
-				throw new Error("unexpected arg: " + av.remove(0));
-			
-			}
+
+				else
+					if( av.size() == 1 ){
+						throw new Error("unexpected arg: " + av.remove(0));
+
+					}
 		}
-		
+
 		XValue op  = av.remove(0);
 		if( op.isAtomic() ){
 			if( av.size() < 1 )
@@ -213,99 +213,99 @@ public class test extends BuiltinCommand {
 			return evalBinary( av1 ,  op.toString() , av.remove(0 ) );
 		}
 		else
-				throw new Error("Unexpected xml value operator");
-			
+			throw new Error("Unexpected xml value operator");
 
-		
+
+
 	}
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
 	private boolean evalBinary(XValue av1, String op, XValue value) throws Error, IOException {
 		if( op.equals("="))
 			return av1.equals(value);
 		else
-		if( op.equals("!="))
-			return !av1.equals(value);
-		else
-		if( op.equals("-eq"))
-			return compareInt( av1 , value ) == 0;
-		else
-		if( op.equals("-ne"))
-			return compareInt(av1,value) != 0 ;
-		else
-		if( op.equals("-gt"))
-			return compareInt(av1,value) > 0 ;
+			if( op.equals("!="))
+				return !av1.equals(value);
 			else
-		if( op.equals("-ge"))
-			return compareInt( av1,value) >= 0;
+				if( op.equals("-eq"))
+					return compareInt( av1 , value ) == 0;
+				else
+					if( op.equals("-ne"))
+						return compareInt(av1,value) != 0 ;
+					else
+						if( op.equals("-gt"))
+							return compareInt(av1,value) > 0 ;
+							else
+								if( op.equals("-ge"))
+									return compareInt( av1,value) >= 0;
+									else
+										if( op.equals("-lt"))
+											return compareInt(av1,value) < 0;
+										else
+											if( op.equals("-le"))
+												return compareInt(av1,value) <= 0 ;
+											else
+												if( op.equals("-ef"))
+													return getFile(av1).compareTo(getFile(value)) == 0;
+												else
+													if( op.equals("-nt"))
+														return getFile(av1).lastModified() >
+		getFile(value).lastModified() ;
+		else
+			if( op.equals("-ot" ))
+				return getFile(av1).lastModified() <
+						getFile(value).lastModified() ;		
+
+
 			else
-		if( op.equals("-lt"))
-			return compareInt(av1,value) < 0;
-		else
-		if( op.equals("-le"))
-			return compareInt(av1,value) <= 0 ;
-		else
-		if( op.equals("-ef"))
-			return getFile(av1).compareTo(getFile(value)) == 0;
-		else
-		if( op.equals("-nt"))
-			return getFile(av1).lastModified() >
-				    getFile(value).lastModified() ;
-		else
-		if( op.equals("-ot" ))
-			return getFile(av1).lastModified() <
-		   		getFile(value).lastModified() ;		
-					   
-		
-		else
-			throw new Error("Invalid binary operator " + op);
-	
-	
+				throw new Error("Invalid binary operator " + op);
+
+
 
 	}
 
 	private int compareInt(XValue a1, XValue a2) throws Error {
-		
+
 		if(!( a1.isAtomic() && a2.isAtomic() ))
 			throw new Error("args must be atomic expressions");
-		
+
 		String s1 = a1.toString();
 		String s2 = a2.toString();
-		
+
 		if( ! Util.isInt(s1,true) || ! Util.isInt(s2,true) ){
 			throw new Error("Invalid integer expression");
-			
+
 		}
 		return Util.parseInt(s1, 0) -
 				Util.parseInt(s2, 0);
-		
- 
+
+
 	}
 
 	private boolean evalUnary(String op, XValue value) throws InvalidArgumentException, UnexpectedException, IOException, Error {
-		
-		
+
+
 		/* try type tests first */
-		
+
 		if( op.equals("-X"))
 			return value.isTypeFamily( TypeFamily.XDM );
 		else
-		if(op.equals("-S"))
-			return value.isAtomic();
-		else
-		if( op.equals("-D"))
-			return mShell.getEnv().isDefined( value.toString() );
-	
-
-			if( op.equals("-n")){
-				return value.toBoolean();
-			
-			}	
+			if(op.equals("-S"))
+				return value.isAtomic();
 			else
+				if( op.equals("-D"))
+					return mShell.getEnv().isDefined( value.toString() );
+
+
+		if( op.equals("-n")){
+			return value.toBoolean();
+
+		}	
+		else
 			if( op.equals("-z")){
 				// -z is opposite of -n 
 				// returns true if null, zero length string or false boolean xexpr
@@ -313,68 +313,69 @@ public class test extends BuiltinCommand {
 				return ! value.toBoolean();
 			}
 			else
-			if( op.equals("-b"))
-				return getFile( value ).getTotalSpace() > 0L;
-	        else
-			if( op.equals("-d") )
-				return getFile( value ).isDirectory();
-			else
-			if( op.equals("-e"))
-				return getFile(value).exists();
-			else
-			if( op.equals("-f"))
-				return getFile(value).isFile();
-			else
-			if( op.equals("-r"))
-				return getFile(value).canRead();
-			else
-			if( op.equals("-s"))
-				return getFile(value).length() > 0;
-			else
-			if( op.equals("-w") )
-				return getFile(value).canWrite();
-			else
-			if( op.equals("-x"))
-				return getFile(value).canExecute();
-			else
-			if( op.equals("-u"))
-				return isURI(value);
-			
-			
-			else {
-				throw new Error("unknown test " + op);
-	
-			}
-		
-		
+				if( op.equals("-b"))
+					return getFile( value ).getTotalSpace() > 0L;
+					else
+						if( op.equals("-d") )
+							return getFile( value ).isDirectory();
+						else
+							if( op.equals("-e"))
+								return getFile(value).exists();
+							else
+								if( op.equals("-f"))
+									return getFile(value).isFile();
+								else
+									if( op.equals("-r"))
+										return getFile(value).canRead();
+									else
+										if( op.equals("-s"))
+											return getFile(value).length() > 0;
+											else
+												if( op.equals("-w") )
+													return getFile(value).canWrite();
+												else
+													if( op.equals("-x"))
+														return getFile(value).canExecute();
+													else
+														if( op.equals("-u"))
+															return isURI(value);
+
+
+														else {
+															throw new Error("unknown test " + op);
+
+														}
+
+
 	}
-	
-	
+
+
 	private boolean isURI(XValue value) {
 		return
-		value.toString().matches("^[a-z]+://.*");
+				value.toString().matches("^[a-z]+://.*");
 	}
 
 
+	@Override
 	public int run(  List<XValue> args ) throws Exception {
-			
-		
+
+
 		List<XValue> av = args;
 
-		
+
 		if( getName().equals("[") ){
 			if( av.size() == 0 || !av.remove(av.size()-1).equals("]")){
 				mShell.printErr("Unbalanced [");
 				return 1;
-	
+
 			}
 		}
-		
-		
-		
 
-		
-		
+
+
+
+
+
 		boolean ret = false ;
 		boolean bFirst = true ;
 		try {
@@ -386,39 +387,39 @@ public class test extends BuiltinCommand {
 					av.remove(0);
 				}
 
-				
+
 				boolean r  = eval(av);
 				if( op != null ){
 					if( op.equals("-a"))	
 						ret = ret && r;
 					else
-					if( op.equals("-o"))
-						ret = ret || r ;
-					else
-						throw new Error("Invalid op " + op );
-					
+						if( op.equals("-o"))
+							ret = ret || r ;
+						else
+							throw new Error("Invalid op " + op );
+
 				}
 
 				else
 					ret = r;
-					
+
 				bFirst = false ;
-				
+
 			}
-			
-			
+
+
 		} catch( Error e ){
-			
+
 			mShell.printErr( getName() + ":"  + e.getMessage());
 			return 1;
 		}
-		
-		
-		
-		
+
+
+
+
 		return Shell.fromBool(ret);
-			
-				
+
+
 	}
 
 

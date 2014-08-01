@@ -11,6 +11,7 @@ import org.xmlsh.core.BuiltinFunctionCommand;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.types.TypeFamily;
 
 import java.io.IOException;
 import java.util.List;
@@ -22,19 +23,19 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 public class nextEvent extends BuiltinFunctionCommand {
 
-	
-	
+
+
 	public nextEvent()
 	{
 		super("nextEvent");
 	}
-	
+
 	@Override
 	public XValue run(Shell shell, List<XValue> args) throws CoreException, XPathException, XMLStreamException, JsonProcessingException, IOException {
 		if( args.size() == 0 )
 			return null;
 		else
-			return new XValue( ((XMLEventReader) args.get(0).getJavaNative()).nextEvent() );
+			return new XValue( TypeFamily.JAVA,((XMLEventReader) args.get(0).getJavaNative()).nextEvent() );
 	}
 
 }

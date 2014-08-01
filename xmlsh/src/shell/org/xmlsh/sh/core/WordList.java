@@ -25,7 +25,7 @@ public class WordList extends ArrayList<Word> {
 			s.print( out );
 			out.print( " ");
 		}
-		
+
 	}
 
 	public XValue expand(Shell shell, EvalEnv env , SourceLocation loc) throws IOException, CoreException {
@@ -33,22 +33,22 @@ public class WordList extends ArrayList<Word> {
 			return new XValue(XdmEmptySequence.getInstance());
 		if( this.size() == 1 )
 			return this.get(0).expand(shell,env, loc);
-		
-		
+
+
 		List<XValue>  list = new ArrayList<XValue>( this.size() );
-		
+
 		for( Word w : this ) {
-		    XValue v = w.expand(shell,env,loc) ;
-		    if( (v == null || v.isNull()) && env.omitNulls() )
-		    	continue;
-		    	
+			XValue v = w.expand(shell,env,loc) ;
+			if( (v == null || v.isNull()) && env.omitNulls() )
+				continue;
+
 			list.add(v );
 
 		}	
 		return new XValue( list );
-		
+
 	}
-	
+
 }
 
 

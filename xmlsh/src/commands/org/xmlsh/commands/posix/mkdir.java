@@ -18,13 +18,13 @@ public class mkdir extends XCommand {
 
 	@Override
 	public int run(List<XValue> args) throws Exception {
-		
+
 		Options opts = new Options( "p=parents" );
 		opts.parse(args);
 		args = opts.getRemainingArgs();
 		int ret = 0;
 
-		
+
 		boolean bParents = opts.hasOpt("p");
 		for( XValue arg : args ){
 			File f = getFile(arg);
@@ -36,11 +36,11 @@ public class mkdir extends XCommand {
 			if( ! bOk ){
 				printErr("Error creating directory: " + f.getAbsolutePath() );
 				ret++;
-				
+
 			}
-			
+
 		}
-		
+
 		return ret;
 	}
 

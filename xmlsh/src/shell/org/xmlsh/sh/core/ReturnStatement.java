@@ -18,27 +18,28 @@ public class ReturnStatement extends Command {
 
 	private static final EvalEnv mEnv = EvalEnv.basicInstance();
 	private		Word	mArg;
+	@Override
 	public	boolean		isSimple() { return false ; }
 
 	public ReturnStatement( Word arg )
 	{
 		mArg = arg ;
 	}
-	
+
 	@Override
 	public void print(PrintWriter out, boolean bExec) {
 		out.print("return " );
 		if( mArg != null)
-		   mArg.print(out);
+			mArg.print(out);
 
 	}
 
 	@Override
 	public int exec(Shell shell) throws Exception {
-		
+
 		XValue ret = null ;
-		
-		
+
+
 		if( mArg == null )
 			ret = new XValue(0);
 		else	{
@@ -48,7 +49,7 @@ public class ReturnStatement extends Command {
 			else
 				ret = vret.get(0);
 		}
-			
+
 		shell.exec_return( ret );
 		return 0;
 	}

@@ -13,8 +13,8 @@ import org.xmlsh.core.Options.OptionValue;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
+import org.xmlsh.json.JSONUtils;
 import org.xmlsh.sh.shell.SerializeOpts;
-import org.xmlsh.util.JSONUtils;
 import org.xmlsh.util.Util;
 
 import java.io.IOException;
@@ -30,37 +30,37 @@ public class jsonpath extends XCommand {
 
 	@Override
 	public int run(List<XValue> args) throws Exception {
-		
+
 		Options opts = new Options("c=context:,cf=context-file:,f=file:,i=input:,q=query:,n,e=exists,b=bool,s=string", SerializeOpts.getOptionDefs());
 		opts.parse(args);
 
-		
+
 		boolean bString = 	opts.hasOpt("s");
-		
+
 		InputPort in = null;
 
 		// boolean bReadStdin = false ;
-		
+
 		JsonNode context = null;
-		
+
 		SerializeOpts serializeOpts = getSerializeOpts(opts);
 		if( ! opts.hasOpt("n" ) ){ // Has XML data input
 			// Order of prevelence 
 			// -context
 			// -context-file
 			// -i
-			
+
 			if( opts.hasOpt("c") )
 				context = opts.getOptValue("c").asJson();
 			else
-			if( opts.hasOpt("cf"))
-				context = (in=getInput( new XValue(opts.getOptString("cf", "-")))).asJson(serializeOpts);
-			else
-			if( opts.hasOpt("i") )
-				context = (in=getInput( opts.getOptValue("i"))).asJson(serializeOpts);
-			else
-				context = (in=getStdin()).asJson(serializeOpts);
-			
+				if( opts.hasOpt("cf"))
+					context = (in=getInput( new XValue(opts.getOptString("cf", "-")))).asJson(serializeOpts);
+				else
+					if( opts.hasOpt("i") )
+						context = (in=getInput( opts.getOptValue("i"))).asJson(serializeOpts);
+					else
+						context = (in=getStdin()).asJson(serializeOpts);
+
 		}
 
 		List<XValue> xvargs = opts.getRemainingArgs();
@@ -85,27 +85,27 @@ public class jsonpath extends XCommand {
 
 
 		JsonPath path = JsonPath.compile(xpath);
-		
+
 		JsonNode result = path.read(context, JsonNode.class); // TODO can convert to other types here
-		
-	    OutputPort stdout = getStdout();
-	    PrintStream os = stdout.asPrintStream(getSerializeOpts());
 
-	    JSONUtils.writeJsonNode( result , os );
+		OutputPort stdout = getStdout();
+		PrintStream os = stdout.asPrintStream(getSerializeOpts());
 
-	    os.println( result );
-	    os.close();
-	    
-		
+		JSONUtils.writeJsonNode( result , os );
+
+		os.println( result );
+		os.close();
+
+
 		return 0;
 	}
-	
+
 	private String readString(XValue v, SerializeOpts opts) throws CoreException, IOException  {
-		
+
 		InputPort in = getInput( v );
 		try (
-		InputStream is = in.asInputStream(opts);
-		){
+				InputStream is = in.asInputStream(opts);
+				){
 			String s = Util.readString(is,opts.getInputTextEncoding());
 			return s ;
 		}

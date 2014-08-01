@@ -17,6 +17,7 @@ import javanet.staxutils.BaseXMLEventWriter;
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLEventFactory;
+import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.Namespace;
@@ -43,15 +44,15 @@ public class XMLEventWriterToContentHandler extends BaseXMLEventWriter {
 		try {
 
 			switch (event.getEventType()) {
-			case XMLEvent.START_ELEMENT: {
+			case XMLStreamConstants.START_ELEMENT: {
 				StartElement start = event.asStartElement();
-				
+
 				for( Iterator iter = start.getNamespaces() ; iter.hasNext() ; ){
 					Namespace ns = (Namespace) iter.next();
-					
-			       	 
-	            	 mHandler.startPrefixMapping(ns.getPrefix(), ns.getNamespaceURI());
-					
+
+
+					mHandler.startPrefixMapping(ns.getPrefix(), ns.getNamespaceURI());
+
 				}
 
 				AttributesImpl attrs = new AttributesImpl();
@@ -69,64 +70,64 @@ public class XMLEventWriterToContentHandler extends BaseXMLEventWriter {
 						getRawname(name), attrs);
 
 			}
-				break;
+			break;
 
-			case XMLEvent.END_ELEMENT: {
+			case XMLStreamConstants.END_ELEMENT: {
 				QName name = event.asEndElement().getName();
 
 				mHandler.endElement(name.getNamespaceURI(), name.getLocalPart(), getRawname(name));
 
 			}
-				break;
+			break;
 
-			case XMLEvent.CHARACTERS: {
+			case XMLStreamConstants.CHARACTERS: {
 				String data = event.asCharacters().getData();
 
 				mHandler.characters(data.toCharArray(), 0, data.length());
 
 			}
-				break;
-			case XMLEvent.ATTRIBUTE: {
-				// SNH
-				
-
-			}
-				break;
-
-			case XMLEvent.NAMESPACE: {
+			break;
+			case XMLStreamConstants.ATTRIBUTE: {
 				// SNH
 
+
 			}
-				break;
-			case XMLEvent.PROCESSING_INSTRUCTION: {
+			break;
+
+			case XMLStreamConstants.NAMESPACE: {
+				// SNH
+
+			}
+			break;
+			case XMLStreamConstants.PROCESSING_INSTRUCTION: {
 				ProcessingInstruction pi = (ProcessingInstruction) event ;
 				mHandler.processingInstruction(pi.getTarget(), pi.getData());
-				
-				
+
+
 			}
-				break;
-			case XMLEvent.COMMENT: {
+			break;
+			case XMLStreamConstants.COMMENT: {
 				//
 
 			}
-				break;
-			case XMLEvent.START_DOCUMENT: {
+			break;
+			case XMLStreamConstants.START_DOCUMENT: {
 				StartDocument start = (StartDocument)event;
 				mHandler.startDocument();
-				
+
 
 			}
-				break;
-			case XMLEvent.END_DOCUMENT: {
+			break;
+			case XMLStreamConstants.END_DOCUMENT: {
 				mHandler.endDocument();
 
 			}
-				break;
-			case XMLEvent.DTD: {
-				
+			break;
+			case XMLStreamConstants.DTD: {
+
 
 			}
-				break;
+			break;
 			}
 
 		} catch (SAXException e) {

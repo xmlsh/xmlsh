@@ -13,7 +13,7 @@ public interface IFunction {
 	Command	getBody();
 	EvalEnv argumentEnv( EvalEnv parent );
 	EvalEnv returnEnv( EvalEnv parent );
-	
+
 }
 
 

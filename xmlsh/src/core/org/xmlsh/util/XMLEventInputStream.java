@@ -15,6 +15,7 @@ import java.io.StringWriter;
 import javanet.staxutils.io.XMLWriterUtils;
 
 import javax.xml.stream.XMLEventReader;
+import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.events.XMLEvent;
 
 /**
@@ -31,8 +32,8 @@ public class XMLEventInputStream extends InputStream {
 	private	boolean					mEOF = false ;
 	private	boolean					mTextMode = false ;
 	private	SerializeOpts mOpts ;
-	
-	
+
+
 	public XMLEventInputStream(XMLEventReader reader, SerializeOpts opts , boolean textMode ) {
 		mReader = reader;
 		mTextMode = textMode ;
@@ -43,15 +44,15 @@ public class XMLEventInputStream extends InputStream {
 	public int read() throws IOException {
 		if( mEOF )
 			return -1;
-		
+
 		while( mBuffer == null || mPos >= mBuffer.length )
 			if( ! fill() )
 				return -1;
-		
+
 		return mBuffer[mPos++];
-			
-		
-		
+
+
+
 	}
 
 	/*
@@ -63,21 +64,21 @@ public class XMLEventInputStream extends InputStream {
 			mEOF = true ;
 			return false;
 		}
-		
+
 		try {
 			XMLEvent event = mReader.nextEvent();
 			//@TODO: HACK: skip start document
-			if( event.getEventType() == XMLEvent.START_DOCUMENT)
+			if( event.getEventType() == XMLStreamConstants.START_DOCUMENT)
 				event = mReader.nextEvent();
-			
-			if( mTextMode && event.getEventType() == XMLEvent.CHARACTERS )
+
+			if( mTextMode && event.getEventType() == XMLStreamConstants.CHARACTERS )
 				mBuffer = event.asCharacters().getData().getBytes("UTF8");
 			else {
 				StringWriter w = new StringWriter();
-				
-				
-				
-				
+
+
+
+
 				XMLWriterUtils.writeEvent( event , w );
 				mBuffer = w.toString().getBytes( "UTF8" );
 			}
@@ -87,9 +88,9 @@ public class XMLEventInputStream extends InputStream {
 			throw new IOException(e);
 		}
 		return true ;
-		
-		
-		
+
+
+
 	}
 
 }

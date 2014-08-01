@@ -44,8 +44,8 @@ import javax.xml.stream.XMLStreamWriter;
 
 @SuppressWarnings("serial")
 public class XmlshServlet extends HttpServlet {
-	
-	
+
+
 	private	 String mRoot = null ;
 
 	/* (non-Javadoc)
@@ -55,7 +55,7 @@ public class XmlshServlet extends HttpServlet {
 	public void destroy() {
 		Shell.uninitialize();
 		super.destroy();
-		
+
 	}
 
 	/* (non-Javadoc)
@@ -63,88 +63,88 @@ public class XmlshServlet extends HttpServlet {
 	 */
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException,
-			IOException {
-	
-			OutputStream out = null ;
-			
-			Shell shell = null ;
-			try {
-				// String command = request.getParameter("command");
-			    //    String cpath  = request.getContextPath(); // "/odd_store
-		            String spath  = request.getServletPath();
-		        //    String ruri  = request.getRequestURI();
-		        //    String qstring  = request.getQueryString();
+	IOException {
 
-		        String path = spath.substring(1);
-		        if(Util.isBlank(path) || path.equals("/") )
-		        	path = "index.xsh";
-		        		
-		        XVariable xp 		= parseParams( request );
-		        XVariable headers 	= parseHeaders( request );
-		        
-		        
-		     	List<XValue> vargs = new ArrayList<XValue>();
-		     	
-		 		shell = new Shell(false);
-				shell.setCurdir( new File(mRoot));
-			 			 	
-				ICommand	script = CommandFactory.getInstance().getScript( shell , path , true , null );
-				if( script != null ){
-					ByteArrayOutputStream bos = new ByteArrayOutputStream();
-					XEnvironment env = shell.getEnv();
-					
-					env.setStdout( new StreamOutputPort(bos ,false) );
-					env.setStderr( new StreamOutputPort(new NullOutputStream(),false) );
-					env.setStdin( new NullInputStream() );
-					
-					// Set properties
-					if( xp != null )
-						env.setVar(xp,false);
-					if( headers != null )
-						env.setVar(headers,false);
-	
-					
-					ManagedHttpSession mhs = new ManagedHttpSession( request.getSession());
-					shell.getSession().setVar("HTTP_SESSION", mhs);
-					mhs.release();
-					
-					@SuppressWarnings("unused")
-					int ret = script.run(shell, path , vargs);
-					
-					
+		OutputStream out = null ;
 
-					String ct = shell.getSerializeOpts().getContent_type() + "; " + shell.getSerializeOpts().getOutputXmlEncoding();
-					response.setContentType(ct);
+		Shell shell = null ;
+		try {
+			// String command = request.getParameter("command");
+			//    String cpath  = request.getContextPath(); // "/odd_store
+			String spath  = request.getServletPath();
+			//    String ruri  = request.getRequestURI();
+			//    String qstring  = request.getQueryString();
 
-					
-					OutputStream os = response.getOutputStream();
-					Util.copyStream( new ByteArrayInputStream(bos.toByteArray()), os);
-					
-					
-				}
-				
+			String path = spath.substring(1);
+			if(Util.isBlank(path) || path.equals("/") )
+				path = "index.xsh";
 
-			} 
-			catch( Exception e )
-			{
-				throw new ServletException(e);
-			}
-			
-			finally {
-				if( shell != null )
-					Util.safeClose(shell);
+			XVariable xp 		= parseParams( request );
+			XVariable headers 	= parseHeaders( request );
+
+
+			List<XValue> vargs = new ArrayList<XValue>();
+
+			shell = new Shell(false);
+			shell.setCurdir( new File(mRoot));
+
+			ICommand	script = CommandFactory.getInstance().getScript( shell , path , true , null );
+			if( script != null ){
+				ByteArrayOutputStream bos = new ByteArrayOutputStream();
+				XEnvironment env = shell.getEnv();
+
+				env.setStdout( new StreamOutputPort(bos ,false) );
+				env.setStderr( new StreamOutputPort(new NullOutputStream(),false) );
+				env.setStdin( new NullInputStream() );
+
+				// Set properties
+				if( xp != null )
+					env.setVar(xp,false);
+				if( headers != null )
+					env.setVar(headers,false);
+
+
+				ManagedHttpSession mhs = new ManagedHttpSession( request.getSession());
+				shell.getSession().setVar("HTTP_SESSION", mhs);
+				mhs.release();
+
+				@SuppressWarnings("unused")
+				int ret = script.run(shell, path , vargs);
+
+
+
+				String ct = shell.getSerializeOpts().getContent_type() + "; " + shell.getSerializeOpts().getOutputXmlEncoding();
+				response.setContentType(ct);
+
+
+				OutputStream os = response.getOutputStream();
+				Util.copyStream( new ByteArrayInputStream(bos.toByteArray()), os);
+
 
 			}
-	
+
+
+		} 
+		catch( Exception e )
+		{
+			throw new ServletException(e);
+		}
+
+		finally {
+			if( shell != null )
+				Util.safeClose(shell);
+
+		}
+
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see javax.servlet.http.HttpServlet#doPost(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
 	 */
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-	    
+
 
 		OutputStream out = null ;
 		InputStream in = null ;
@@ -152,91 +152,91 @@ public class XmlshServlet extends HttpServlet {
 		Shell shell = null ;
 		try {
 			// String command = request.getParameter("command");
-		     // String cpath  = request.getContextPath(); // "/odd_store
-	            String spath  = request.getServletPath();
-	        //    String ruri  = request.getRequestURI();
-	        //    String qstring  = request.getQueryString();
+			// String cpath  = request.getContextPath(); // "/odd_store
+			String spath  = request.getServletPath();
+			//    String ruri  = request.getRequestURI();
+			//    String qstring  = request.getQueryString();
 
-	        
-	        String path = spath.substring(1);
-	        if(Util.isBlank(path) || path.equals("/") )
-	        	path = "index.xsh";
-	        		
-	        XVariable xp 		= parseParams( request );
-	        XVariable headers 	= parseHeaders( request );
-	        
-	        
-	        
-	        
-	        
-	     	List<XValue> vargs = new ArrayList<XValue>();
-	 		
-	     	
-	     	
-	 		shell = new Shell(false);
+
+			String path = spath.substring(1);
+			if(Util.isBlank(path) || path.equals("/") )
+				path = "index.xsh";
+
+			XVariable xp 		= parseParams( request );
+			XVariable headers 	= parseHeaders( request );
+
+
+
+
+
+			List<XValue> vargs = new ArrayList<XValue>();
+
+
+
+			shell = new Shell(false);
 			shell.setCurdir( new File(mRoot));
-		 	
+
 			Enumeration<?> names = request.getParameterNames();
 			XEnvironment env = shell.getEnv();
 			while( names.hasMoreElements() ){
 				String name = (String) names.nextElement();
-				String value = (String) request.getParameter(name);
+				String value = request.getParameter(name);
 				env.setVar(name, value,false);
 			}
-			
-			
-			
+
+
+
 			ICommand	script = CommandFactory.getInstance().getScript( shell , path , true , null );
 			if( script != null ){
 				ByteArrayOutputStream bos = new ByteArrayOutputStream();
 				env.setStdout( new StreamOutputPort(bos ,false) );
 				env.setStderr( new StreamOutputPort(new NullOutputStream(),false) );
-				
+
 				InputStream is = readInput( request.getInputStream());
 				env.setStdin(is );
-				
-				
-				
+
+
+
 				// Set properties
 				if( xp != null )
 					env.setVar(xp,false);
 				if( headers != null )
 					env.setVar(headers,false);
-				
-				
+
+
 				ManagedHttpSession mhs = new ManagedHttpSession( request.getSession());
 				shell.getSession().setVar("HTTP_SESSION", mhs);
 				mhs.release();
-				
+
 				@SuppressWarnings("unused")
 				int ret = script.run(shell, path , vargs);
-			
+
 				String ct = shell.getSerializeOpts().getContent_type() + "; " + shell.getSerializeOpts().getOutputXmlEncoding();
 				response.setContentType(ct);
 
-				
+
 				OutputStream os = response.getOutputStream();
 				Util.copyStream( new ByteArrayInputStream(bos.toByteArray()), os);
 
-			
-			
+
+
 			}
-			
+
 
 		} 
 		catch( Exception e )
 		{
 			throw new ServletException(e);
 		}
-		
+
 		finally {
 			if( shell != null )
 				shell.close();
 		}
-		
+
 	}
-	
-	
+
+
 
 	/* (non-Javadoc)
 	 * @see javax.servlet.GenericServlet#init(javax.servlet.ServletConfig)
@@ -245,12 +245,12 @@ public class XmlshServlet extends HttpServlet {
 	public void init(ServletConfig config) throws ServletException {
 		// TODO Auto-generated method stub
 		super.init(config);
-		
+
 		mRoot = config.getInitParameter("root");
-	
+
 		// Pre-initialize shell so logging can work before executing first task
 		ShellConstants.initialize();
-		
+
 	}
 
 	/*
@@ -271,26 +271,26 @@ public class XmlshServlet extends HttpServlet {
 	@SuppressWarnings("unchecked")
 	private XVariable parseHeaders(HttpServletRequest request) throws XMLStreamException, CoreException, SaxonApiException, IOException {
 
-        
+
 		XVariable var = new XVariable("HTTP_HEADERS",null);
 		VariableOutputPort port = new VariableOutputPort( var );
 		XMLStreamWriter writer = port.asXMLStreamWriter(null);
-		
-		
+
+
 		writer.writeStartDocument();
 		writer.writeStartElement("headers");
-		
-		
+
+
 		Enumeration names = request.getHeaderNames();
 		if( names != null ){
 			while( names.hasMoreElements() ){
 				String name = (String) names.nextElement();
 				Enumeration values = request.getHeaders(name);
-				
-				
+
+
 				writer.writeStartElement("header");
 				writer.writeAttribute("name", name );
-				
+
 				while( values.hasMoreElements() ){
 					String value = (String) values.nextElement();
 					writer.writeStartElement("value");
@@ -305,9 +305,9 @@ public class XmlshServlet extends HttpServlet {
 		writer.close();
 		port.flush();
 		return var ;
-	
-	
-	
+
+
+
 	}
 
 	/*
@@ -329,16 +329,16 @@ public class XmlshServlet extends HttpServlet {
 	private XVariable parseParams(HttpServletRequest request) throws XMLStreamException, CoreException, SaxonApiException, IOException {
 
 
-        Map params = request.getParameterMap();
-        
+		Map params = request.getParameterMap();
+
 		XVariable var = new XVariable("HTTP_PARAMETERS",null);
 		VariableOutputPort port = new VariableOutputPort( var );
 		XMLStreamWriter writer = port.asXMLStreamWriter(null);
-		
-		
+
+
 		writer.writeStartDocument();
 		writer.writeStartElement("parameters");
-		
+
 		if( params != null ){
 			Iterator<Entry<String,String[]>> iter = params.entrySet().iterator();
 			while( iter.hasNext() ){
@@ -358,23 +358,23 @@ public class XmlshServlet extends HttpServlet {
 		writer.close();
 		port.flush();
 		return var ;
-	
-	
-	
+
+
+
 	}
 
 	private InputStream readInput(ServletInputStream inputStream) throws IOException {
-		
+
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		Util.copyStream( inputStream , bos );
 		return new ByteArrayInputStream( bos.toByteArray() );
-		
-		
-		
+
+
+
 	}
 
-	
-	
+
+
 }
 
 

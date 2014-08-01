@@ -8,7 +8,6 @@ package org.xmlsh.commands.internal;
 
 import net.sf.saxon.s9api.SaxonApiException;
 import org.xmlsh.core.CoreException;
-import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
@@ -32,16 +31,17 @@ import javax.xml.stream.XMLStreamException;
 /*
  * 
  * Manage a Java properties file
-*/
+ */
 
-public class xproperties extends XCommand
+public class xproperties extends XCommand 
 {
 
-	
+
+	@Override
 	public int run(  List<XValue> args )	throws Exception
 	{
 
-		
+
 
 		Options opts = new Options( "in:,inxml:,text,xml,d=delete:+,v=var:+,a=add:+,c=comment:" , SerializeOpts.getOptionDefs()  );
 		opts.parse(args);
@@ -49,36 +49,36 @@ public class xproperties extends XCommand
 		XValue optIn 		= opts.getOptValue("in");
 		XValue optInXml		= opts.getOptValue("inxml");
 
-		
+
 
 		boolean	 bOutText = opts.hasOpt("text");
-		
-		
+
+
 
 		if( optIn != null && optInXml != null ){
 			usage("Only one of -in and -inxml allowed");
 			return -1;
 		}
-		
-		
-		
-		
-		
-		
+
+
+
+
+
+
 		String comment = opts.getOptString("c", null);
-		
-		
-		
-		
+
+
+
+
 		Properties props = new Properties();
 
 		if( optInXml != null  )
 			props.loadFromXML(getInput(optInXml).asInputStream(serializeOpts));
 		else
-		if( optIn != null )
-			props.load(getInput(optIn).asInputStream(serializeOpts));
-		
-		
+			if( optIn != null )
+				props.load(getInput(optIn).asInputStream(serializeOpts));
+
+
 		/*
 		 * Delete values as specified
 		 */
@@ -92,9 +92,9 @@ public class xproperties extends XCommand
 			for (XValue var : opts.getOpt("v").getValues())
 				printVars.add(var.toString() );
 		}
-		
-		
-	
+
+
+
 		// Add value 
 
 		if (opts.hasOpt("a")) {
@@ -103,55 +103,55 @@ public class xproperties extends XCommand
 				props.setProperty( pair.getLeft(), pair.getRight() );
 			}
 		}
-		
-		
+
+
 		if( printVars != null )
 			writeVars( props, printVars , serializeOpts);
 		else
-		if( ! bOutText)
-			writeXML(props, comment);
-		else
-			writeText(props,comment,serializeOpts);
-		
-		
+			if( ! bOutText)
+				writeXML(props, comment);
+			else
+				writeText(props,comment,serializeOpts);
 
-		
+
+
+
 		return 0;
-		
+
 	}
 
 	private void writeVars(Properties props, List<String> vars , SerializeOpts serializeOpts) throws UnsupportedEncodingException, IOException, CoreException {
-		
+
 		PrintWriter out = getStdout().asPrintWriter(serializeOpts);
 		for( String var : vars )
 			out.println( props.getProperty(var, "") );
-	
+
 		out.flush();
-		
-		
+
+
 	}
 
 
 
 	private void writeText(Properties props, String comment , SerializeOpts serializeOpts) throws IOException, CoreException {
 		props.store(getEnv().getStdout().asOutputStream(serializeOpts), comment);
-		
+
 	}
 
 
 	private void writeXML(Properties props, String comment)
 			throws IOException, CoreException, SaxonApiException, XMLStreamException {
-		
+
 		SerializeOpts serializeOpts = getSerializeOpts();
-		
+
 		/*
 		 * Load XML text into a buffer
 		 */
-		
+
 		ByteArrayOutputStream oss = new ByteArrayOutputStream();
 		props.storeToXML( oss , comment , serializeOpts.getOutputXmlEncoding());
 		ByteArrayInputStream iss = new ByteArrayInputStream( oss.toByteArray());
-		
+
 		XMLInputFactory factory = XMLInputFactory.newInstance();
 		factory.setProperty(XMLInputFactory.SUPPORT_DTD, Boolean.valueOf(false)); // Dont try to reference http://java.sun.com/dtd/properties.dtd !!!
 		XMLEventReader reader = factory.createXMLEventReader( null , iss);
@@ -160,7 +160,7 @@ public class xproperties extends XCommand
 		reader.close();
 		writer.close();
 
-		
+
 	}
 
 

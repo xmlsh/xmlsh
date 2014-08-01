@@ -20,64 +20,65 @@ import java.net.URLDecoder;
 import java.util.List;
 
 public class xurldecode extends XCommand {
-	
+
+	@Override
 	public int run( List<XValue> args ) throws Exception {
 
 		Options opts = new Options( "n,p=port:" ,  SerializeOpts.getOptionDefs());
 		opts.parse(args);
-		
+
 		boolean nolf = opts.hasOpt("n");
 		String port = opts.getOptString("p", null);
-		
-		
+
+
 		OutputPort stdout = 
-			port != null ? getEnv().getOutputPort(port) : 
-			getEnv().getStdout();
-			
-		if( stdout == null )
-			throw new InvalidArgumentException("Output port not found: " + port );
-			
-		SerializeOpts serializeOpts = getSerializeOpts(opts);
-			
-		OutputStream out = stdout.asOutputStream(serializeOpts);
-	
-		
-		args = opts.getRemainingArgs();
-		
-		// If arguments behave like echo and copy args to output stream
-		if( args.size() > 0 ){
-		
-			args = Util.expandSequences( args);
-			boolean bFirst = true;
-			for ( XValue arg : args ){
-					if( ! bFirst )
-						out.write(' ');
-					
-					bFirst = false;
-					String value = arg.toString();
-					value = URLDecoder.decode(value,serializeOpts.getInputXmlEncoding());
-					
+				port != null ? getEnv().getOutputPort(port) : 
+					getEnv().getStdout();
+
+				if( stdout == null )
+					throw new InvalidArgumentException("Output port not found: " + port );
+
+				SerializeOpts serializeOpts = getSerializeOpts(opts);
+
+				OutputStream out = stdout.asOutputStream(serializeOpts);
+
+
+				args = opts.getRemainingArgs();
+
+				// If arguments behave like echo and copy args to output stream
+				if( args.size() > 0 ){
+
+					args = Util.expandSequences( args);
+					boolean bFirst = true;
+					for ( XValue arg : args ){
+						if( ! bFirst )
+							out.write(' ');
+
+						bFirst = false;
+						String value = arg.toString();
+						value = URLDecoder.decode(value,serializeOpts.getInputXmlEncoding());
+
+						out.write(value.getBytes(serializeOpts.getOutputTextEncoding()));
+					}
+					if( ! nolf )
+						out.write(Util.getNewline(serializeOpts));
+				}
+				// Else copy input to out using text mode exclusively
+				else {
+
+					InputStream is = getStdin().asInputStream(serializeOpts);
+					String data = Util.readString(is,serializeOpts.getInputTextEncoding());
+					String value = URLDecoder.decode(data,serializeOpts.getInputTextEncoding());
 					out.write(value.getBytes(serializeOpts.getOutputTextEncoding()));
-			}
-			if( ! nolf )
-				out.write(Util.getNewline(serializeOpts));
-		}
-		// Else copy input to out using text mode exclusively
-		else {
-			
-			InputStream is = getStdin().asInputStream(serializeOpts);
-			String data = Util.readString(is,serializeOpts.getInputTextEncoding());
-			String value = URLDecoder.decode(data,serializeOpts.getInputTextEncoding());
-			out.write(value.getBytes(serializeOpts.getOutputTextEncoding()));
-			is.close();
-			
-		}
-				
+					is.close();
 
-		out.close();
+				}
 
 
-		return 0;
+				out.close();
+
+
+				return 0;
 	}
 }
 //

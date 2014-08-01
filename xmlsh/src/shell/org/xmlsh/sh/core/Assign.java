@@ -23,7 +23,7 @@ public class Assign {
 	private Word		mRValue;		// a single value a=b
 	private WordList	mRValList; // a sequence constructor a=(b)
 	public Assign(boolean local  , String variable, String op , Word rvalue) {
-		
+
 		mLocal = local ;
 		mVariable = variable;
 		mOp = op ;
@@ -52,13 +52,13 @@ public class Assign {
 					out.print(" ");
 				w.print(out);
 				bFirst = false ;
-				
+
 			}
 			out.print(")");
-				
+
 		}
 		out.print( " ");
-		
+
 	}
 	public String getOp() 
 	{
@@ -71,27 +71,27 @@ public class Assign {
 		return mLocal ;
 	}
 	public void eval(Shell shell, SourceLocation loc) throws IOException, CoreException {
-		
+
 		XValue value = null;
-		
-		
+
+
 		// Eval RHS
 		if( mRValue != null )
 			// Single variables dont expand wildcards
 			value = mRValue.expand(shell, mSingleVarEnv, loc);
 		else
-		if( mRValList != null )
-			// Sequences expand wildcards
-			value = mRValList.expand(shell, mListVarEnv,loc);
+			if( mRValList != null )
+				// Sequences expand wildcards
+				value = mRValList.expand(shell, mListVarEnv,loc);
 
-		
+
 		// Assign
 		if( getOp().equals("+="))
-				shell.getEnv().appendVar( getVariable(), value , isLocal());
+			shell.getEnv().appendVar( getVariable(), value , isLocal());
 		else
 			shell.getEnv().setVar( getVariable(), value , isLocal());
-	
-	
+
+
 	}
 }
 

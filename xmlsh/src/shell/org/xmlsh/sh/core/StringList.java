@@ -17,7 +17,7 @@ public class StringList extends ArrayList<String> {
 			out.print( s );
 			out.print( " ");
 		}
-		
+
 	}
 
 }

@@ -15,25 +15,25 @@ import javax.xml.stream.XMLStreamWriter;
 
 public class writeEndDocument extends XCommand {
 
-	
-	
+
+
 	public writeEndDocument()
 	{
-		
+
 	}
-	
+
 	@Override
 	public int run(List<XValue> args) throws Exception {
 		if( args.size()  != 1  )
 			return -1;
-		
+
 		XValue arg0 = args.get(0);
 		Object arg = arg0.asObject();
 		if( arg instanceof XMLStreamWriter )
 			((XMLStreamWriter)arg).writeEndDocument();
-		
+
 		return 0;
-		
+
 	}
 
 }

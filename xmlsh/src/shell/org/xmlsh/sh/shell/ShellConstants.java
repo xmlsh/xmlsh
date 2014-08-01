@@ -38,8 +38,8 @@ public class ShellConstants
 	public static final String PWD = "PWD";
 	public static final String PS1 = "PS1";
 	public static final String PS2 = "PS2";
-	
-	
+
+
 	/**
 	 * Must call initialize atleast once, protects against multiple initializations 
 	 */

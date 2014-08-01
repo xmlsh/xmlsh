@@ -37,87 +37,88 @@ public class xcat extends XCommand {
 	 */
 
 	private XMLEventFactory mFactory = XMLEventFactory.newInstance();
-	
-	
+
+
+	@Override
 	public int run( List<XValue> args )	throws Exception
 	{
-		
+
 
 
 		Options opts = new Options( "w=wrap:,r=root" ,  SerializeOpts.getOptionDefs() );
 		opts.parse(args);
-		
+
 		// root node
 		OptionValue ow = opts.getOpt("w");
 		XValue wrapper = null;
 		if( ow != null )
 			wrapper = ow.getValue();
-		
-		
+
+
 		List<XValue> xvargs = opts.getRemainingArgs();
-		
-		
+
+
 
 		Processor  processor  = Shell.getProcessor();
-		
+
 		XQueryCompiler compiler = processor.newXQueryCompiler();
 		NameValueMap<String> ns = getEnv().getNamespaces();
 		if( ns != null ){
 			for( String prefix : ns.keySet() ){
 				String uri = ns.get(prefix);
 				compiler.declareNamespace(prefix, uri);
-				
+
 			}
-			
+
 		}
-			
-		
-		
+
+
+
 		// hasFiles means 'has more then one file'
 		// this effects if wrapping by default removes the root element.
 		boolean bHasFiles = ( xvargs.size() > 0 );
 		boolean bRemoveRoot = opts.hasOpt("r");
-		
-		
+
+
 		// Use a copy of the serialize opts so we can override the method 
 		SerializeOpts serializeOpts = getSerializeOpts(opts);
-		
-		
-		
+
+
+
 		OutputPort stdout = getStdout();
 		XMLEventWriter writer = stdout.asXMLEventWriter(serializeOpts);
-		
-		
+
+
 		writer.add( mFactory.createStartDocument(serializeOpts.getOutputXmlEncoding()));
-		
-		
-		
+
+
+
 		if( wrapper != null )
 			writeWrapperStart(wrapper, writer , serializeOpts );
-		
-		 if( !bHasFiles ){
-			 InputPort in = getStdin();
-			 write(in,writer,bRemoveRoot,serializeOpts);
-			 
-		 } else {
-			 for( XValue xf : xvargs ){
-				 	InputPort in = getInput(xf);
-				 	try {
-				 		write(in,writer,bRemoveRoot,serializeOpts);
-				 	} catch (Exception e) {
-						this.printErr("Skipping file: " + in.getSystemId() , e );
-					}
-			 }
-		 }
-		 if( wrapper != null )
-			 writeWrapperEnd( wrapper , writer , serializeOpts);
-		 
-		 writer.add( mFactory.createEndDocument() );
-		
+
+		if( !bHasFiles ){
+			InputPort in = getStdin();
+			write(in,writer,bRemoveRoot,serializeOpts);
+
+		} else {
+			for( XValue xf : xvargs ){
+				InputPort in = getInput(xf);
+				try {
+					write(in,writer,bRemoveRoot,serializeOpts);
+				} catch (Exception e) {
+					this.printErr("Skipping file: " + in.getSystemId() , e );
+				}
+			}
+		}
+		if( wrapper != null )
+			writeWrapperEnd( wrapper , writer , serializeOpts);
+
+		writer.add( mFactory.createEndDocument() );
+
 		writer.flush();
 		writer.close();
 		stdout.writeSequenceTerminator(serializeOpts);
-		
+
 		return 0;
 
 
@@ -125,7 +126,7 @@ public class xcat extends XCommand {
 
 
 	private void write(InputPort in, XMLEventWriter writer, boolean bRemoveRoot,SerializeOpts opts) throws CoreException, XMLStreamException {
-		
+
 		XMLEventReader reader = in.asXMLEventReader(opts);
 		XMLEvent event ;
 		int depth = 0;
@@ -134,39 +135,39 @@ public class xcat extends XCommand {
 			if( event.isStartDocument() || event.isEndDocument() )
 				continue;
 			else
-			if( event.isStartElement() ){
-				if( bRemoveRoot && depth == 0 )
-					;
+				if( event.isStartElement() ){
+					if( bRemoveRoot && depth == 0 )
+						;
+					else
+						writer.add( event );
+
+					depth++;	
+				}
 				else
-					writer.add( event );
-					
-				depth++;	
-			}
-			else
-			if( event.isEndElement()){
-				depth--;
-				if( bRemoveRoot && depth == 0 )
-					;
-				else
-					writer.add( event );
-			}
-			else
-			if( depth == 1 && bRemoveRoot && event.isCharacters() && event.asCharacters().isWhiteSpace() )
-				;
-			else
-				writer.add( event );
-			
-			
+					if( event.isEndElement()){
+						depth--;
+						if( bRemoveRoot && depth == 0 )
+							;
+						else
+							writer.add( event );
+					}
+					else
+						if( depth == 1 && bRemoveRoot && event.isCharacters() && event.asCharacters().isWhiteSpace() )
+							;
+						else
+							writer.add( event );
+
+
 		}
 
-		
+
 	}
 
 
 	private void writeWrapperStart(XValue wrapper, XMLEventWriter writer, SerializeOpts opts) throws XMLStreamException, CoreException {
 		if( wrapper.isAtomic() )
 			writer.add( mFactory.createStartElement(new QName(wrapper.toString()), null, null));
-		
+
 		else
 		{
 			XVariable var = new XVariable( "_unnamed" , wrapper );
@@ -178,21 +179,21 @@ public class xcat extends XCommand {
 				if( event.isAttribute() ||  event.isStartElement()){
 					writer.add(event);
 				}
-				
-				
-				
+
+
+
 			}
 			reader.close();
 			nodep.close();
-			
-			
+
+
 		}
 	}
 
 	private void writeWrapperEnd(XValue wrapper, XMLEventWriter writer, SerializeOpts opts) throws XMLStreamException, CoreException {
 		if( wrapper.isAtomic() )
 			writer.add( mFactory.createEndElement(new QName(wrapper.toString()), null));
-		
+
 		else
 		{
 			XVariable var = new XVariable( "_unnamed" , wrapper );
@@ -204,14 +205,14 @@ public class xcat extends XCommand {
 				if( event.isEndElement() ){
 					writer.add(event);
 				}
-				
-				
-				
+
+
+
 			}
 			reader.close();
 			nodep.close();
-			
-			
+
+
 		}
 	}
 

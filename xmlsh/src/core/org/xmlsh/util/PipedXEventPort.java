@@ -8,8 +8,6 @@ package org.xmlsh.util;
 
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.OutputPort;
-import org.xmlsh.core.InputPort;
-import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.XMLEventInputPort;
 import org.xmlsh.core.XMLEventOutputPort;
 import org.xmlsh.sh.shell.SerializeOpts;
@@ -22,25 +20,27 @@ public class PipedXEventPort extends PipedPort {
 	private		XMLEventInputPort 	mIn;
 	private		XMLEventOutputPort 	mOut;
 	private		XMLEventPipe		mPipe;
-	
-	
+
+
 	public PipedXEventPort(SerializeOpts opts)  throws IOException
 	{
 		mPipe = new XMLEventPipe(1000);
-	
+
 		mIn = new XMLEventInputPort(mPipe.getReadEnd(),"");
 		mOut = new XMLEventOutputPort(mPipe.getWriteEnd(),opts);
-		
+
 	}
-	
+
+	@Override
 	public	InputPort	getInput() throws IOException { 
 		return mIn;
 	}
-	
+
+	@Override
 	public OutputPort getOutput() { 
 		return mOut;
 	}
-	
+
 	static public PipedXEventPort[] getPipes(int n, SerializeOpts opts) throws IOException
 	{
 		if( n == 0 )
@@ -49,7 +49,7 @@ public class PipedXEventPort extends PipedPort {
 		for( int i = 0 ; i < n ; i++ )
 			streams[i] = new PipedXEventPort(opts);
 		return streams;
-		
+
 	}
 
 	@Override
@@ -59,9 +59,9 @@ public class PipedXEventPort extends PipedPort {
 		mPipe = null ;
 		mIn = null;
 		mOut = null ;
-		
+
 	}
-	
+
 }
 //
 //

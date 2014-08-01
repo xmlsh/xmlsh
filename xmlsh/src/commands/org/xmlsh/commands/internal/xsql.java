@@ -49,40 +49,40 @@ import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 
 public class xsql extends XCommand {
-	
+
 	private static Logger mLogger = LogManager.getLogger(xsql.class);
-	
-		
+
+
 	private static abstract class IDriver 
 	{
 		abstract Connection	getConnection() throws Exception;
 		abstract void 		releaseConnection(Connection c) throws Exception;
 		//--------------------------------
-		  // Load JDBC-driver
-		  // params  none
-		  // returns error string if error occurs by loaded driver
-		  //         if no errors - returns empty string
-		  //--------------------------------
-		  protected  Class<?> loadDriver (String driver,ClassLoader classloader) throws SQLException {
+		// Load JDBC-driver
+		// params  none
+		// returns error string if error occurs by loaded driver
+		//         if no errors - returns empty string
+		//--------------------------------
+		protected  Class<?> loadDriver (String driver,ClassLoader classloader) throws SQLException {
 
 
 
-		    try {
-		      return  Class.forName(driver,true,classloader);
-		    }
-		    catch (Exception e) {
-		      throw new SQLException( e.toString() );
-		    }
-		    
-		  }
-		 abstract void close() throws Exception ; 
+			try {
+				return  Class.forName(driver,true,classloader);
+			}
+			catch (Exception e) {
+				throw new SQLException( e.toString() );
+			}
+
+		}
+		abstract void close() throws Exception ; 
 
 	}
-	
+
 	private static class JDBCDriver extends IDriver
 	{
-		
-		
+
+
 		String mConnect;
 		String mUser;
 		String mPassword;
@@ -90,70 +90,70 @@ public class xsql extends XCommand {
 		Class<?>	mClass ;
 		Driver		mDriver;
 		Connection	mConnection = null;
-		
+
 		JDBCDriver( String driver, ClassLoader classloader, String connect, String user, String password, Properties options ) throws SQLException
 		{
 			mConnect = connect ; 
 			mUser = user ; 
 			mPassword = password ; 
 			mOptions = options ;
-			
+
 			mClass = loadDriver(driver,classloader);
-			
+
 		}
 
 		@Override
 		public
 		Connection	getConnection() throws Exception 
 		{
-					
+
 			if( mConnection != null ){
 				if( mConnection.isClosed() )
-				   mConnection = null ;
+					mConnection = null ;
 				else
-			
-				   return mConnection ;
+
+					return mConnection ;
 			}
 
-		    java.util.Properties info = new java.util.Properties();
-		    if( mOptions != null )
-		    	info.putAll(mOptions);
-	
-		
+			java.util.Properties info = new java.util.Properties();
+			if( mOptions != null )
+				info.putAll(mOptions);
+
+
 			if (mUser != null) {
-			    info.put("user", mUser);
+				info.put("user", mUser);
 			}
 			if (mPassword != null) 
-			    info.put("password", mPassword);
-			 
-			 
-			 mDriver  = (Driver) mClass.newInstance();
-			 if( mDriver == null )
-				 return null ;
-			 mConnection = mDriver.connect(mConnect,info);
-		     	
-			 return mConnection ;
-		
+				info.put("password", mPassword);
+
+
+			mDriver  = (Driver) mClass.newInstance();
+			if( mDriver == null )
+				return null ;
+			mConnection = mDriver.connect(mConnect,info);
+
+			return mConnection ;
+
 		}
 
-		 
+
 		@Override
 		public void releaseConnection(Connection c ) throws Exception  
 		{
 			try {
-				
+
 				if( mConnection == c )
 					mConnection = null ;
-				
+
 				c.close();
-				
-				
+
+
 			} 
 			finally {} 
-			
+
 		}
-		 
-		 
+
+
 		@Override
 		public void close() throws Exception  
 		{
@@ -161,36 +161,36 @@ public class xsql extends XCommand {
 				if( mConnection != null )
 					releaseConnection(mConnection);
 
-				
-				
+
+
 				// Doesnt seem to do much good 
 				if( mDriver != null )
 					DriverManager.deregisterDriver(mDriver);
-				
+
 			} 
 			finally {} 
-			
+
 		}
-		 
-		  
+
+
 	}
 
 	private static class PoolDriver extends IDriver
 	{
-		
+
 		Properties mOptions;
 		Class<?>	mClass ;
-		
+
 		PoolDriver( String driver, ClassLoader classloader, Properties options ) throws SQLException
 		{
 			mOptions = options ;
-			
+
 			mClass = loadDriver(driver,classloader);
-			
+
 		}
-		
-		
-		
+
+
+
 		@Override
 		public Connection getConnection() throws Exception {
 			Method method = mClass.getMethod("getConnection");
@@ -198,7 +198,7 @@ public class xsql extends XCommand {
 				return (Connection) method.invoke(null);
 			else
 				return null;
-			
+
 		}
 
 		@Override
@@ -206,61 +206,61 @@ public class xsql extends XCommand {
 			Method method = mClass.getMethod("releaseConnection", Connection.class );
 			if( method != null )
 				method.invoke(null, c );
-			
-			
+
+
 		}
-		
+
 		@Override
 		public void close() throws Exception {
 			Method method = mClass.getMethod("close", Connection.class );
 			if( method != null )
 				method.invoke(null);
-			
-			
+
+
 		}
-		
+
 	}
-	
+
 	private static class DirectDriver extends IDriver
 	{
-		
+
 		Properties mOptions;
 		Connection mConnection ;
-		
+
 		DirectDriver( Connection conn , Properties options )
 		{
 			mOptions = options ;
-			
+
 			mConnection = conn ;
 		}
-		
-		
-		
+
+
+
 		@Override
 		public Connection getConnection() throws Exception {
 			return mConnection ;
-			
+
 		}
 
 		@Override
 		public void releaseConnection(Connection c) throws Exception {
-			
-			
+
+
 		}
 		@Override
 		public void close() throws Exception {
-			
-			
+
+
 		}
-		
+
 	}
-	
-	
+
+
 	static ThreadLocal<IDriver>	mDriverCache = new ThreadLocal<IDriver>();
-	
-	
-	
-	
+
+
+
+
 	/**
 	 * StatementCache holds a cache of PreparedStatement objects to provide efficient reuse of prepared statements.
 	 * Cache is specific to a single open connection, which is enforced by storing the connection reference.
@@ -269,92 +269,92 @@ public class xsql extends XCommand {
 
 	static class StatementCache
 	{
-	    private HashMap<String, PreparedStatement> mStatements = new HashMap<String, PreparedStatement>();
-	    
-	    private Connection mConnection;
-	    
-	    public StatementCache( Connection conn )
-	    {
-	        mConnection = conn;
-	    }
-	    
-	    public Connection getConnection( )
-	    {
-	        return mConnection;
-	    }
-	    
-	    public PreparedStatement   prepare(  String sql ) throws SQLException
-	    {
-	        PreparedStatement pStmt = (PreparedStatement) mStatements.get(sql);
-	        if( pStmt == null ) {
-	            pStmt = mConnection.prepareStatement(sql);
-	            mStatements.put( sql , pStmt );
-	        }                
-	        return pStmt;
-	        
-	    }
-	    
-	  
-	    
-	    public Iterator<PreparedStatement>    iterStatements()
-	    {
-	        return mStatements.values().iterator();
-	    }
-	    
-	     
+		private HashMap<String, PreparedStatement> mStatements = new HashMap<String, PreparedStatement>();
 
-	    
-	    public int getNumStatements()
-	    {
-	        return mStatements.size();
-	    }
+		private Connection mConnection;
 
+		public StatementCache( Connection conn )
+		{
+			mConnection = conn;
+		}
 
-	    /*
-	     *  Close all statements 
-	     */
-	     
-	    public void close()
-	    {
-	        Iterator<PreparedStatement> iter = iterStatements();
-	        while( iter.hasNext() ){
-	            PreparedStatement pStmt = iter.next();
-	            try {
-	            	pStmt.close();
-	            } catch( Exception e ) {
-	            }
-	        }
-	        mStatements.clear();
-	    }
+		public Connection getConnection( )
+		{
+			return mConnection;
+		}
+
+		public PreparedStatement   prepare(  String sql ) throws SQLException
+		{
+			PreparedStatement pStmt = mStatements.get(sql);
+			if( pStmt == null ) {
+				pStmt = mConnection.prepareStatement(sql);
+				mStatements.put( sql , pStmt );
+			}                
+			return pStmt;
+
+		}
 
 
 
-	    public void executeAll() throws SQLException
-	    {
-	        int n =  getNumStatements() ;
-	        if( n > 0 ){
-	            Iterator<PreparedStatement> iter = iterStatements();
-	            while( iter.hasNext() ){
-	                
-	                PreparedStatement pStmt = iter.next();
-	               
-	                
-	                @SuppressWarnings("unused")
-					int[] sizes = pStmt.executeBatch();
-	                pStmt.clearBatch();
-	                
-	            }
-	            
-	        }
-	        close();
-	        
-	    }
-	    
-	    
+		public Iterator<PreparedStatement>    iterStatements()
+		{
+			return mStatements.values().iterator();
+		}
+
+
+
+
+		public int getNumStatements()
+		{
+			return mStatements.size();
+		}
+
+
+		/*
+		 *  Close all statements 
+		 */
+
+		 public void close()
+		{
+			Iterator<PreparedStatement> iter = iterStatements();
+			while( iter.hasNext() ){
+				PreparedStatement pStmt = iter.next();
+				try {
+					pStmt.close();
+				} catch( Exception e ) {
+				}
+			}
+			mStatements.clear();
+		}
+
+
+
+		 public void executeAll() throws SQLException
+		 {
+			 int n =  getNumStatements() ;
+			 if( n > 0 ){
+				 Iterator<PreparedStatement> iter = iterStatements();
+				 while( iter.hasNext() ){
+
+					 PreparedStatement pStmt = iter.next();
+
+
+					 @SuppressWarnings("unused")
+					 int[] sizes = pStmt.executeBatch();
+					 pStmt.clearBatch();
+
+				 }
+
+			 }
+			 close();
+
+		 }
+
+
 	}
 
-	
-	
+
+
 
 	private	 SerializeOpts mSerializeOpts;
 
@@ -362,15 +362,15 @@ public class xsql extends XCommand {
 	public int run(List<XValue> args) throws Exception {
 
 
-		
+
 		Properties options = null;
-		
+
 		Options opts = new Options( "cp=classpath:,pool=pooldriver:,d=driver:,u=user:,p=password:,root:,row:,attr,c=connect:,jdbc=jdbcconnection:,q=query:,o=option:+,insert,update=execute,tableAttr:,fieldAttr:,fetch:,table:,batch:,cache,close,release,column:+,fetchmin" ,SerializeOpts.getOptionDefs() );
 		opts.parse(args);
-		
+
 		String root = opts.getOptString("root", "root");
 		String row = opts.getOptString("row", "row");
-		
+
 		String connect = opts.getOptString("c",null);
 		String query = opts.getOptString("q", null);
 		String driver = opts.getOptString("driver",null);
@@ -382,7 +382,7 @@ public class xsql extends XCommand {
 		boolean	 bCache	 = opts.hasOpt("cache");
 		boolean bClose	 = opts.hasOpt("close");
 		boolean bRelease = opts.hasOpt("release");
-		
+
 		String tableAttr = opts.getOptString("tableAttr", null);
 		String fetch = opts.getOptString("fetch", null );
 		String tableName = opts.getOptString("table", null );
@@ -391,14 +391,14 @@ public class xsql extends XCommand {
 		String fieldAttr = opts.getOptString("fieldAttr",null);
 		XValue jdbc = opts.getOptValue("jdbc");
 		List<XValue> 	columns = opts.getOptValues("column");
-	
+
 		if( opts.hasOpt("fetchmin"))
 			fetch = String.valueOf( Integer.MIN_VALUE);
-				
-		
+
+
 		IDriver dbdriver = null;
-		
-		
+
+
 		if( pooldriver == null && driver == null && jdbc ==  null){
 			if( bCache ){
 				dbdriver = mDriverCache.get();
@@ -408,20 +408,20 @@ public class xsql extends XCommand {
 				return 1;
 			}
 		}
-		
+
 		if( driver != null && connect == null ){
 			usage("Required -c connect-string if -d is supplied");
 			return 1;
-			
+
 		}
-		
-		
+
+
 		boolean bAttr = opts.hasOpt("attr");
-		
-		
-		
+
+
+
 		ClassLoader classloader = getClassLoader(opts.getOptValue("cp"));
-		
+
 		/*
 		 * Optional properties
 		 */
@@ -436,80 +436,80 @@ public class xsql extends XCommand {
 
 			}
 		}
-		
+
 		mSerializeOpts = this.getSerializeOpts(opts);
-		
-		
+
+
 		List<XValue> xvargs = opts.getRemainingArgs();
 		if( query == null   &&  ! xvargs.isEmpty() )
 			query = xvargs.get(0).toString();
-		
+
 
 		if( driver != null ) 
 			dbdriver = new JDBCDriver(driver,  classloader, connect ,user,password, options );
 		if( pooldriver != null )
 			dbdriver = new PoolDriver( pooldriver , classloader , options  );
 		else
-		if( jdbc != null ){
-			
-			
-			if( ! jdbc.isObject() || ! (jdbc.asObject() instanceof Connection ))
-			{
-				usage("Connection is not a " + Connection.class.getName() + " - supplied: " + jdbc.asObject().getClass().getName() );
-				return 1;
+			if( jdbc != null ){
+
+
+				if( ! jdbc.isObject() || ! (jdbc.asObject() instanceof Connection ))
+				{
+					usage("Connection is not a " + Connection.class.getName() + " - supplied: " + jdbc.asObject().getClass().getName() );
+					return 1;
+				}
+				dbdriver = new DirectDriver( (Connection) jdbc.asObject(), options );
+
 			}
-			dbdriver = new DirectDriver( (Connection) jdbc.asObject(), options );
-			
-		}
-		
+
 		if( bCache )
-			 mDriverCache.set( dbdriver );
-			
-		
-		
+			mDriverCache.set( dbdriver );
+
+
+
 		Connection conn = dbdriver.getConnection();
-		
+
 		if( conn == null ){
-			
+
 			printErr("Cannot establish connection");
 			return(1);
 		}
-		
-		
-		
-		
-			
+
+
+
+
+
 		try {
-	
-				if( bUpdate )
-					runUpdate(conn,  getSerializeOpts(opts), root, row, query, bAttr , batch   );
-				
-				else
+
+			if( bUpdate )
+				runUpdate(conn,  getSerializeOpts(opts), root, row, query, bAttr , batch   );
+
+			else
 				if( bInsert ){
 					InputPort  in = getStdin();
-	
+
 					runInsert( conn ,  in, bAttr , tableName , tableAttr , fieldAttr , batch  , columns ) ;
-			
+
 				}
 				else
-				if( query != null )
-					runQuery(conn,  getSerializeOpts(opts), root, row, query, bAttr , fetch );
+					if( query != null )
+						runQuery(conn,  getSerializeOpts(opts), root, row, query, bAttr , fetch );
 		}
 		finally {
 			if( bRelease || ! bCache || bClose )
 				dbdriver.releaseConnection(conn);
 			if( bClose )
 				mDriverCache.set(null);
-			
-			
+
+
 		}
-		
+
 		return 0;
-		
-		
-		
+
+
+
 	}
-	
+
 
 	/*
 	 * Insert rows into a single table
@@ -518,25 +518,25 @@ public class xsql extends XCommand {
 	 * If fieldAttr is not null then use each row's attribute "fieldAttr" as the field name otherwise use the element name
 	 * 
 	 */
-	
-	
-	
+
+
+
 	private void runInsert(Connection conn,  InputPort input , boolean bAttr , String tableName , String tableNameAttr, String fieldNameAttr, int batch, List<XValue> columns) throws SaxonApiException, SQLException, XMLStreamException, IOException, CoreException {
-		
+
 
 		OutputPort stdout = getStdout();
-	
+
 		XMLStreamWriter writer = stdout.asXMLStreamWriter(mSerializeOpts);
-		
+
 		writer.writeStartDocument();		
 		writer.writeStartElement("results");
 
 		conn.setAutoCommit(false );
 		StatementCache batchCache = new StatementCache( conn );
-		
-		
+
+
 		XMLEventReader reader = input.asXMLEventReader(mSerializeOpts);
-		
+
 		try {
 
 
@@ -547,7 +547,7 @@ public class xsql extends XCommand {
 			StartElement 	rootElement = readStartElement( reader );
 			if( rootElement == null )
 				throw new CoreException("No root element");
-			
+
 
 
 			if( tableName == null ){
@@ -572,7 +572,7 @@ public class xsql extends XCommand {
 			int allRows = 0;
 			int nrows = 0;
 			while( (rowElement = readStartElement( reader ) ) != null ){
-				
+
 				/*
 				 * Process rows as insrt
 				 */
@@ -594,34 +594,34 @@ public class xsql extends XCommand {
 					values.add(value);
 					bFirst = false ;
 				}
-				
+
 				if( columns != null ){
 					for( String col : Util.toStringList(columns) ){
 						StringPair pair = new StringPair(col,'=');
 						addQueryField(bFirst, sNames, sQuestions, pair.getLeft(), pair.getRight() );
-						
-						
+
+
 					}
-					
-					
+
+
 				}
-				
-				
+
+
 
 				String sql = "INSERT INTO `" + tableName + "` (" + sNames.toString() + ") VALUES(" +sQuestions.toString() + ")" ;
 				// printErr(sql);
 
-				
+
 				PreparedStatement pStmt = batchCache.prepare(sql);
-				
+
 				int i = 1;
 				for( String v : values )
 					pStmt.setString(i++, v);
 
 
 				pStmt.addBatch();
-	
-				
+
+
 				if( nrows++ > batch ){
 					batchCache.executeAll();
 					conn.commit();
@@ -631,7 +631,7 @@ public class xsql extends XCommand {
 
 				/*
 				 * 					
-	
+
 					Integer itype = tableDef.get( name );
 					int type = itype == null ? java.sql.Types.CHAR : itype.intValue();
 					switch( type ){
@@ -675,7 +675,7 @@ public class xsql extends XCommand {
 
 				 */					
 
-			
+
 			}
 
 			if( nrows > 0  ){
@@ -697,13 +697,13 @@ public class xsql extends XCommand {
 			conn.setAutoCommit(true);
 		}
 
-			
+
 		writer.writeEndElement();
 		writer.writeEndDocument();
 		writer.close();
-		
-		
-		
+
+
+
 	}
 
 
@@ -729,15 +729,15 @@ public class xsql extends XCommand {
 	 */
 
 	private Map<String, String> readNameValues(XMLEventReader reader, StartElement rowElement,boolean bAttr, String fieldNameAttr) throws XMLStreamException, CoreException {
-		
+
 		Map<String,String> namevalues = new HashMap<String,String>();
 		if( bAttr ){
 			Iterator<?> iter = rowElement.getAttributes();
 			while( iter.hasNext() ){
 				Attribute attr = (Attribute) iter.next();
 				namevalues.put( attr.getName().getLocalPart() , attr.getValue() );
-				
-				
+
+
 			}
 			// Read the end element for row
 			readEndElement(reader);
@@ -756,20 +756,20 @@ public class xsql extends XCommand {
 					name = attr.getValue();
 				} else
 					name = elem.getName().getLocalPart();
-				
-				
+
+
 				value = readCharacters( reader ); // Includes up to end element
 				namevalues.put( name , value );
 
 			}
 			// Got the EndElement for the row ... stop now
-			
+
 		}
 		return namevalues ;
 	}
 
-	
-	
+
+
 	/*
 	 * Read up to EndElement and include all charactors
 	 */
@@ -779,19 +779,19 @@ public class xsql extends XCommand {
 			XMLEvent event = reader.nextEvent();
 			if( event.isCharacters() ){
 				sb.append( event.asCharacters().getData() );
-				
-				
+
+
 			}
 			else
-			if( event.isEndElement() || event.isEndDocument() )
-				break ;
-			
-			
-			
+				if( event.isEndElement() || event.isEndDocument() )
+					break ;
+
+
+
 		}
-		
+
 		return sb.toString();
-		
+
 	}
 
 
@@ -800,7 +800,7 @@ public class xsql extends XCommand {
 	 */
 
 	private StartElement readStartElement(XMLEventReader reader) throws XMLStreamException {
-		
+
 		while( reader.hasNext() ){
 			XMLEvent event = reader.nextEvent();
 			if( event.isStartElement() )
@@ -811,32 +811,32 @@ public class xsql extends XCommand {
 				return null ;
 		}
 		return null;
-		
-		
+
+
 	}
 
 	private void readEndElement(XMLEventReader reader) throws XMLStreamException {
-		
+
 		while( reader.hasNext() ){
 			XMLEvent event = reader.nextEvent();
 			if( event.isEndElement() || event.isEndDocument() )
 				return ;
 		}
 		return ;
-		
+
 	}
 
 	private Map<String, Integer> describeTable(DatabaseMetaData dbmeta, String tableName) throws SQLException {
-		
+
 		HashMap<String,Integer>  map = new HashMap<String,Integer>();
-		
+
 		ResultSet rs = dbmeta.getColumns(null, null, tableName , "%");
 		// Should be only one result
 		while( rs.next()){
-			
+
 			map.put( rs.getString( "COLUMN_NAME" ), rs.getInt("DATA_TYPE"));
-			
-			
+
+
 		}
 		return map ;
 	}
@@ -847,51 +847,51 @@ public class xsql extends XCommand {
 		Statement pStmt  = null ;
 		ResultSet rs = null ;
 		try {
-			
+
 			pStmt = conn.createStatement();
 			if( fetch != null )
 				pStmt.setFetchSize( Util.parseInt(fetch, 1));
-			
-			
+
+
 			OutputPort stdout = getStdout();
 			XMLStreamWriter writer = stdout.asXMLStreamWriter(serializeOpts);
-			
+
 			writer.writeStartDocument();		
 			writer.writeStartElement(root);
-			
-			
-			
+
+
+
 			rs = pStmt.executeQuery(query);
 			ResultSetMetaData meta = rs.getMetaData();
-			
+
 			while( rs.next()  ){
-				
+
 				addElement( writer , rs , row ,  bAttr , meta );
 			}
 			writer.writeEndElement();
 			writer.writeEndDocument();
 			writer.close();
-			
+
 			stdout.writeSequenceTerminator(serializeOpts);
-			
-			
-		
+
+
+
 		} finally {
 			try {
 				if( rs != null ) rs.close();
 				if( pStmt != null ) pStmt.close();
-				
+
 			} catch( Exception e )
 			{
 				mLogger.error("Exception closing resultset or statement",e);
-				
-				
-				
+
+
+
 			}
-			
+
 		}
 	}
-	
+
 
 
 	private void runUpdate(Connection conn,SerializeOpts serializeOpts, String root, String row, String query,
@@ -899,103 +899,103 @@ public class xsql extends XCommand {
 		Statement pStmt  = null ;
 
 		try {
-			
+
 			pStmt = conn.createStatement();
-			
+
 			OutputPort stdout = getStdout();
 			XMLStreamWriter writer = stdout.asXMLStreamWriter(serializeOpts);
-			
+
 			writer.writeStartDocument();		
 			writer.writeStartElement(root);
-	
-			
+
+
 			int rows = pStmt.executeUpdate(query);
 			writer.writeAttribute("rows", String.valueOf(rows) );
 
-			
-			
+
+
 			writer.writeEndElement();
 			writer.writeEndDocument();
 
 			writer.close();
-			
+
 			stdout.writeSequenceTerminator(serializeOpts);
-			
-		
+
+
 		} finally {
 			try {
-				
+
 				if( pStmt != null ) pStmt.close();
-				
+
 			} catch( Exception e )
 			{
 				mLogger.error("Exception closing statement",e);
-				
-				
-				
+
+
+
 			}
-			
+
 		}
 	}
-	
+
 	private void addElement(
 			XMLStreamWriter writer, 
 			ResultSet rs ,
 			String row, 
 			boolean battr,
 			ResultSetMetaData meta) throws  XMLStreamException, SQLException 
-		{
-			
-			writer.writeStartElement(row);
-			// Attribute normal format
-			if( battr ){
-				
-				
-				for( int i = 0 ; i < meta.getColumnCount() ; i++ ){
-					String name = getAttrName( i , meta );
-					writer.writeAttribute(name,Util.notNull(rs.getString(i+1)));
-				}
-				
-				
-			} else {
+			{
+
+		writer.writeStartElement(row);
+		// Attribute normal format
+		if( battr ){
 
 
-				for( int i = 0 ; i < meta.getColumnCount() ; i++ ){
-					String name = getColName( i ,  meta );
-					writer.writeStartElement(name);
-					writer.writeCharacters(Util.notNull(rs.getString(i+1)));
-
-					writer.writeEndElement();
-					
-				}
-				
+			for( int i = 0 ; i < meta.getColumnCount() ; i++ ){
+				String name = getAttrName( i , meta );
+				writer.writeAttribute(name,Util.notNull(rs.getString(i+1)));
 			}
-			writer.writeEndElement();
-			
+
+
+		} else {
+
+
+			for( int i = 0 ; i < meta.getColumnCount() ; i++ ){
+				String name = getColName( i ,  meta );
+				writer.writeStartElement(name);
+				writer.writeCharacters(Util.notNull(rs.getString(i+1)));
+
+				writer.writeEndElement();
+
+			}
+
 		}
-	
-	
+		writer.writeEndElement();
+
+			}
+
+
 	// Get an attribute name 
 	private String getAttrName(int i, ResultSetMetaData meta) throws SQLException {
-		
-			return toXmlName( meta.getColumnName(i+1));
 
-		
+		return toXmlName( meta.getColumnName(i+1));
+
+
 	}
 
 
 
 	private String getColName(int i, ResultSetMetaData meta) throws SQLException {
 
-			return toXmlName( meta.getColumnName(i+1));
-		
+		return toXmlName( meta.getColumnName(i+1));
+
 	}
 
 	private String toXmlName(String field) {
 		return field.replaceAll("[^a-zA-Z0-9_]","-");
 	}
 
-	
+
 
 }
 

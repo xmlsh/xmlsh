@@ -17,6 +17,7 @@ public class jset extends BuiltinCommand {
 
 	static final String sDocRoot = "env";
 
+	@Override
 	public int run(List<XValue> args) throws Exception {
 
 		Options opts = new Options("v=variable:,c=classname:,m=method:,o=object:,f=field:");
@@ -26,9 +27,9 @@ public class jset extends BuiltinCommand {
 		String classname = opts.getOptString("c",null);
 		String method = opts.getOptString("m", null);
 		String field = opts.getOptString("f", null);
-		
-		
-			
+
+
+
 		XValue instance = opts.getOptValue("o");
 
 		args = opts.getRemainingArgs();
@@ -41,10 +42,10 @@ public class jset extends BuiltinCommand {
 		else if (instance == null && field == null)
 			obj = JavaUtils.callStatic(classname, method, args, classloader);
 		else
-	    if( field != null )
-	    	obj = JavaUtils.getField( classname , instance,  field , classloader );
-	    else
-			obj = JavaUtils.callMethod(instance, method, args, classloader);
+			if( field != null )
+				obj = JavaUtils.getField( classname , instance,  field , classloader );
+			else
+				obj = JavaUtils.callMethod(instance, method, args, classloader);
 
 		mShell.getEnv().setVar(varname, obj, false);
 

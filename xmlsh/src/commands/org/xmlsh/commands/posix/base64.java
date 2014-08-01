@@ -35,26 +35,26 @@ public class base64 extends XCommand {
 
 	@Override
 	public int run(List<XValue> args) throws Exception {
-		
+
 
 		Options opts = new Options("w=wrap,d=decode", SerializeOpts.getOptionDefs());
 		opts.parse(args);
 		args = opts.getRemainingArgs();
-		
+
 		boolean bDecode = opts.hasOpt("d");
 		boolean bWrap   = opts.hasOpt("w");
-		
+
 		InputPort iport = (args.isEmpty() ? getStdin() : getInput(args.get(0)));
 		SerializeOpts serializeOpts = getSerializeOpts(opts);
 		InputStream is = iport.asInputStream(serializeOpts); 
 		OutputStream os = getStdout().asOutputStream(serializeOpts);
-		
+
 		/*
 		 * Need to buffer the streams because the B64 code does 1 byte IO 
 		 */
 		is = new BufferedInputStream(is);
 		os = new BufferedOutputStream(os);
-		
+
 		try {
 			if( bDecode )
 				decode( is , os);
@@ -65,7 +65,7 @@ public class base64 extends XCommand {
 			os.close(); // Unnecessary 
 
 		}
-				
+
 		return 0;
 	}
 
@@ -79,7 +79,7 @@ public class base64 extends XCommand {
 		Base64.InputStream b64 = new Base64.InputStream(is, Base64.DECODE );
 		Util.copyStream(b64, os);
 		b64.close();
-		
+
 	}
 
 }

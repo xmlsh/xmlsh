@@ -15,7 +15,7 @@ public class IfClause extends CompoundCommand
 	private Command	mIfPart;
 	private Command mThenPart;
 	private Command mElsePart;
-	
+
 	public IfClause(Command ifPart, Command thenPart, Command elsePart) {
 		super();
 		mIfPart = ifPart;
@@ -42,28 +42,29 @@ public class IfClause extends CompoundCommand
 			mElsePart.print(out, bExec);
 		}
 		out.println("fi");
-		
+
 	}
-	
-	
+
+
+	@Override
 	public int exec(Shell shell) throws Exception 
 	{
 		shell.getEnv().saveIO();
 		try {
 			applyRedirect(shell);
-			
+
 			/*
 			 * Check condition and execute then part or else part
 			 * Returns 0 if there is no else part
 			 */
-			
+
 			int cond = shell.execCondition( mIfPart );
 			int ret = 0;
 			if( cond == 0 && shell.keepRunning() )
 				ret = shell.exec( mThenPart );
 			else
-			if( mElsePart != null && shell.keepRunning() )
-				ret = shell.exec( mElsePart );
+				if( mElsePart != null && shell.keepRunning() )
+					ret = shell.exec( mElsePart );
 			return ret;
 		} finally {
 			shell.getEnv().restoreIO();

@@ -13,6 +13,7 @@ public abstract class BinaryOpCommand extends Command {
 	protected 		Command		mLeft;
 	protected		String	 	mOp;
 	protected		Command		mRight;
+	@Override
 	public	boolean		isSimple() { return false ; }
 
 
@@ -27,23 +28,25 @@ public abstract class BinaryOpCommand extends Command {
 			setLocation( mRight );
 	}
 
+	@Override
 	public void print( PrintWriter out, boolean bExec ){
 		if( bExec )
 			return ;
 		if( mLeft != null )
-	    	mLeft.print(out, bExec);
+			mLeft.print(out, bExec);
 		out.println(mOp);
 		if( mRight != null )
-		   mRight.print(out, bExec);
+			mRight.print(out, bExec);
 	}
 
 
+	@Override
 	public String getName() {
 		return mLeft != null ? mLeft.getName() : 
 			mRight != null ? mRight.getName() : mOp ;
 	}
 
-	
+
 }
 
 //

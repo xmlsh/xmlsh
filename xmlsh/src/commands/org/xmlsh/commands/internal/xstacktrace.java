@@ -6,61 +6,55 @@
 
 package org.xmlsh.commands.internal;
 
-import net.sf.saxon.s9api.SaxonApiException;
-
 import org.xmlsh.core.BuiltinFunctionCommand;
-import org.xmlsh.core.CoreException;
 import org.xmlsh.core.Options;
-import org.xmlsh.core.UnknownOption;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 
 import java.util.List;
 
-import javax.xml.stream.XMLStreamException;
-
 public class xstacktrace extends BuiltinFunctionCommand {
-	
+
 	public xstacktrace()
 	{
 		super("xstacktrace");
 	}
-	
+
 	@Override
 	public XValue run(Shell shell, List<XValue> args) throws Exception 
 	{
-		
+
 		Options opts = new Options(xlocation.XLOC_OPTS,SerializeOpts.getOptionDefs());
- 
+
 		opts.addOptionDefs("f=function");
 		opts.parse(args);
-		
+
 		boolean funcCalls = opts.hasOpt("f" )  && ! opts.hasOpt("depth") ;
-			
-	
+
+
 		xlocation xloc = new xlocation();
 		XValue ret = new XValue();
-	
-	    Shell sh = shell ;
-	    while( sh != null ){
-	    	
-	    	ret = ret.append( xloc.run(sh, opts , -1 ));
-            if( funcCalls && sh.hasCallStack() ) {
-            	for( int depth = 0 ; depth < sh.getCallStack().size() ;depth++  ) {
-            		XValue xv = xloc.run( sh , opts , depth );
-            		if( xv == null )
-            			shell.printErr("null stack entry at depth: " + depth );
-            		else
-            	 		ret = ret.append( xv );
-            	}
-            	
-            }
-	    	sh = sh.getParent();
-	    	
-	    }
+
+		Shell sh = shell ;
+		while( sh != null ){
+
+			ret = ret.append( xloc.run(sh, opts , -1 ));
+			if( funcCalls && sh.hasCallStack() ) {
+				for( int depth = 0 ; depth < sh.getCallStack().size() ;depth++  ) {
+					XValue xv = xloc.run( sh , opts , depth );
+					if( xv == null )
+						shell.printErr("null stack entry at depth: " + depth );
+					else
+						ret = ret.append( xv );
+				}
+
+			}
+			sh = sh.getParent();
+
+		}
 		return ret ;
-		
+
 
 	}
 

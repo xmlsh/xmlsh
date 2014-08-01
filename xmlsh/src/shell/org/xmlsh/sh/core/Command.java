@@ -15,30 +15,31 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.List;
 
-public abstract class Command {
+public abstract class Command  {
 	private		SourceLocation	mLocation = null;
 	private		boolean		mWait = true ;
-    private String mSeparator = null ; // "\n ; & "
+	private String mSeparator = null ; // "\n ; & "
 	private String mName = null ;
 
-	
+
 	public boolean isWait(){ return mWait ; }
 	public	void	setLocation( SourceLocation loc ) { mLocation = loc ; }
 	public void    setLocation(Command c) { if( c != null && c.getLocation() != null ) mLocation =  c.getLocation() ;	}
 	public	SourceLocation	getLocation() { return mLocation ; }
 	public boolean hasLocation()  { return mLocation != null && ! mLocation.isEmpty() ; }
-	
+
 	public abstract void print( PrintWriter out, boolean bExec);
 	public abstract int exec( Shell shell) throws Exception;
-	
+
 	// Is a simple command for purposes of throw-on-error
 	public	abstract	boolean		isSimple() ;
-	
+
+	@Override
 	public String	toString() {
-		
+
 		return toString(false);
 	}
-	
+
 
 	protected Command()
 	{
@@ -50,29 +51,29 @@ public abstract class Command {
 	}
 
 	public void setSeparator( String op ) {
-      mSeparator = op;
-      if( Util.isEqual( op , "&" ) )
-	     mWait = false ;
+		mSeparator = op;
+		if( Util.isEqual( op , "&" ) )
+			mWait = false ;
 	}
 	// Default name if none provided
 	public String getName()
-    {
-    	return Util.isBlank(mName) ? "<unnamed>" : mName ;
-    }
-	
+	{
+		return Util.isBlank(mName) ? "<unnamed>" : mName ;
+	}
+
 	public String	toString(boolean bExec) {
 		StringWriter sw = new StringWriter();
 		PrintWriter w = new PrintWriter(sw);
 		print(w, bExec);
 		w.flush();
 		return sw.toString();
-		
+
 	}
 	public void setName(String name)
-    {
-	    mName = name;
-    }
-	
+	{
+		mName = name;
+	}
+
 	// Helper function for simple values
 	protected XValue getFirstArg( List<XValue> args  ) throws InvalidArgumentException {
 		requires( ! args.isEmpty() , "Excpected arugment missing");
@@ -83,9 +84,9 @@ public abstract class Command {
 	protected void requires( boolean condition , String message ) throws InvalidArgumentException {
 		if( ! condition )
 			throw new InvalidArgumentException( getName() + ":" + message );
-			
+
 	}
-	
+
 }
 
 

@@ -14,8 +14,8 @@ import java.io.OutputStream;
 public class ShellAppender extends WriterAppender  {
 
 	public ShellAppender(OutputStream os) {
-         super(new SimpleLayout() , os  );
-	
+		super(new SimpleLayout() , os  );
+
 	}
 
 

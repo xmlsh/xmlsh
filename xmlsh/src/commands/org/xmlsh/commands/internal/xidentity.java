@@ -24,12 +24,12 @@ public class xidentity extends XCommand {
 
 	@Override
 	public int run(List<XValue> args) throws Exception {
-		
+
 		Options opts = new Options( SerializeOpts.getOptionDefs() );
 		opts.parse(args);
 		args = opts.getRemainingArgs();
-		
-		
+
+
 		InputPort stdin = null;
 		if( args.size() > 0 )
 			stdin = getInput( args.get(0));
@@ -41,22 +41,22 @@ public class xidentity extends XCommand {
 		if( stdout == null ){
 			throw new InvalidArgumentException("Cannot open input");
 		}
-			
-			setSerializeOpts(opts);
-			
-			IXdmItemInputStream input = stdin.asXdmItemInputStream(getSerializeOpts());
-	
-			IXdmItemOutputStream output = stdout.asXdmItemOutputStream(getSerializeOpts());
-			
-			
-			XdmItem item ;
-			
-			while( (item = input.read() ) != null )
-		        output.write(item);
-				
+
+		setSerializeOpts(opts);
+
+		IXdmItemInputStream input = stdin.asXdmItemInputStream(getSerializeOpts());
+
+		IXdmItemOutputStream output = stdout.asXdmItemOutputStream(getSerializeOpts());
+
+
+		XdmItem item ;
+
+		while( (item = input.read() ) != null )
+			output.write(item);
+
 		return 0;
-		
-		
+
+
 	}
 
 }

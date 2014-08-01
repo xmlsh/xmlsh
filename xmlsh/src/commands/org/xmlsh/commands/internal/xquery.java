@@ -38,202 +38,202 @@ public class xquery extends XCommand {
 
 	@Override
 	public int run( List<XValue> args )
-	throws Exception 
-	{
-		
+			throws Exception 
+			{
+
 		Options opts = new Options( "c=context:,cf=context-file:,f=file:,i=input:,n,q:,v,nons,ns:+,s=string,b=bool,baseuri:,noxmlsh" ,	SerializeOpts.getOptionDefs() );
 		opts.parse(args);
-		
+
 		Processor  processor  = Shell.getProcessor();
-		
+
 		XQueryCompiler compiler = processor.newXQueryCompiler();
 		compiler.setModuleURIResolver(new ShellModuleURIResolver(getEnv().getShell()));
 		XdmItem	context = null;
-		
-		
+
+
 		SerializeOpts serializeOpts = getSerializeOpts(opts);
 		InputPort in = null ; // Save to close 
 
 		boolean bString = 	opts.hasOpt("s");
 		boolean bBool   =  opts.hasOpt("b");
 		boolean bNoXmlsh = opts.hasOpt("noxmlsh");
-		
+
 		String baseURI = opts.getOptString("baseuri", null );
 		if( baseURI != null )
 			baseURI = getAbsoluteURI( baseURI );
 
-		
+
 		if( ! opts.hasOpt("n" ) ){ // Has XML data input
 			// Order of prevelence 
 			// -context
 			// -context-file
 			// -i
-			
+
 			if( opts.hasOpt("c") )
 				context = opts.getOptValue("c").asXdmItem();
 			else
-			if( opts.hasOpt("cf"))
-				context = (in=getInput( new XValue(opts.getOptString("cf", "-")))).asXdmItem(serializeOpts);
-			else
-			if( opts.hasOpt("i") )
-				context = (in=getInput( opts.getOptValue("i"))).asXdmItem(serializeOpts);
-			else
-				context = (in=getStdin()).asXdmItem(serializeOpts);
-			
+				if( opts.hasOpt("cf"))
+					context = (in=getInput( new XValue(opts.getOptString("cf", "-")))).asXdmItem(serializeOpts);
+				else
+					if( opts.hasOpt("i") )
+						context = (in=getInput( opts.getOptValue("i"))).asXdmItem(serializeOpts);
+					else
+						context = (in=getStdin()).asXdmItem(serializeOpts);
+
 		}
-		
+
 		String query = null;
-		
+
 		if( opts.hasOpt("q"))
 			query = opts.getOpt("q").getValue().toString();
-		
-		
+
+
 		XQueryExecutable expr = null;
-		
+
 		List<XValue> xvargs = opts.getRemainingArgs();
-		
+
 		OptionValue ov = opts.getOpt("f");
 		if( ov != null ){
 			if( query != null )
 				throwInvalidArg(  "Cannot specifify both -q and -f");
-			
+
 			InputPort qin = getInput(ov.getValue());
 			try (InputStream is = qin.asInputStream(serializeOpts) ){
 				query = Util.readString(is, serializeOpts.getInputTextEncoding());
-	
+
 				if( baseURI == null ){
 					String sysid = qin.getSystemId();
-					
+
 					if( !Util.isBlank(sysid)){
 						String uri = getAbsoluteURI(sysid);
 						baseURI = uri ;
 					}
 				}
 			}
-			
-			
+
+
 		}
-		
+
 		if( baseURI == null )
 			compiler.setBaseURI(getShell().getEnv().getBaseURI());
-		
+
 		else
 			compiler.setBaseURI(new URI(baseURI));
 
 
-		
+
 		if( query == null ){
 			if ( xvargs.size() < 1 )
 				throwInvalidArg("No query specified");
 			query = xvargs.remove(0).toString(); // remove arg 0
 		}
-		
-			
+
+
 		/*
 		 * Add namespaces
 		 */
-		
+
 
 		Namespaces ns = null ;
-		
+
 		if( !opts.hasOpt("nons"))
 			ns = getEnv().getNamespaces();
 		if( opts.hasOpt("ns")){
 			Namespaces ns2 = new Namespaces();
 			if( ns != null )
 				ns2.putAll(ns);
-			
+
 			// Add custom name spaces
 			for( XValue v : opts.getOpt("ns").getValues() )
 				ns2.declare(v);
-				
-			
+
+
 			ns = ns2;
 		}
-		
-		
+
+
 		if( ns != null ){
 			for( String prefix : ns.keySet() ){
 				String uri = ns.get(prefix);
 				compiler.declareNamespace(prefix, uri);
-				
+
 			}
-			
+
 		}
-	
-			if( ! bNoXmlsh )
-				compiler.declareNamespace("xmlsh", EvalDefinition.kXMLSH_EXT_NAMESPACE);
 
-			expr = compiler.compile( query );
-			
-			
-			XQueryEvaluator eval = expr.load();
-			if( context != null )
-				eval.setContextItem(context);
-			
-			
-			if( opts.hasOpt("v")){
-				// Read pairs from args to set
-				for( int i = 0 ; i < xvargs.size()/2 ; i++ ){
-					String name = xvargs.get(i*2).toString();
-					XValue value = xvargs.get(i*2+1);
-					// DAL: Bug in 9.1.1 QName vqname = QName.fromClarkName(name );
-					//QName vqname = Util.fromClarkName(name);
-					QName vqname = Util.resolveQName( name , ns );
-					eval.setExternalVariable( vqname ,  value.asXdmValue() );	
-						
-					
-				}
-					
-				
+		if( ! bNoXmlsh )
+			compiler.declareNamespace("xmlsh", EvalDefinition.kXMLSH_EXT_NAMESPACE);
+
+		expr = compiler.compile( query );
+
+
+		XQueryEvaluator eval = expr.load();
+		if( context != null )
+			eval.setContextItem(context);
+
+
+		if( opts.hasOpt("v")){
+			// Read pairs from args to set
+			for( int i = 0 ; i < xvargs.size()/2 ; i++ ){
+				String name = xvargs.get(i*2).toString();
+				XValue value = xvargs.get(i*2+1);
+				// DAL: Bug in 9.1.1 QName vqname = QName.fromClarkName(name );
+				//QName vqname = Util.fromClarkName(name);
+				QName vqname = Util.resolveQName( name , ns );
+				eval.setExternalVariable( vqname ,  value.asXdmValue() );	
+
+
 			}
-			
-			if( bBool ){
-				XValue value = new XValue(eval.evaluate());
-				return value.toBoolean() ? 0 : 1 ;
-				
-		
-			} 
-				
 
-			
-				
-//		eval.run(getStdout().asDestination(getSerializeOpts()));
 
-			OutputPort stdout = getStdout();
-			IXdmItemOutputStream ser = stdout.asXdmItemOutputStream(serializeOpts);
-			boolean bFirst = true ;
-			boolean bAnyOut = false ;
-			for( XdmItem item : eval ){
-				bAnyOut = true ;
-				if( ! bFirst )
-					stdout.writeSequenceSeperator(serializeOpts); // Thrashes variable output !
-				bFirst = false ;
-				
-				
-				if( item instanceof XdmNode ){
-					XdmNode node = (XdmNode) item ;
-					if( bString  )
-						item = new XdmAtomicValue( node.getStringValue());
-					
-				}
-				
-				
-				//processor.writeXdmValue(item, ser );
-				// Util.writeXdmValue(item, ser);
-				ser.write(item);
-				
+		}
+
+		if( bBool ){
+			XValue value = new XValue(eval.evaluate());
+			return value.toBoolean() ? 0 : 1 ;
+
+
+		} 
+
+
+
+
+		//		eval.run(getStdout().asDestination(getSerializeOpts()));
+
+		OutputPort stdout = getStdout();
+		IXdmItemOutputStream ser = stdout.asXdmItemOutputStream(serializeOpts);
+		boolean bFirst = true ;
+		boolean bAnyOut = false ;
+		for( XdmItem item : eval ){
+			bAnyOut = true ;
+			if( ! bFirst )
+				stdout.writeSequenceSeperator(serializeOpts); // Thrashes variable output !
+			bFirst = false ;
+
+
+			if( item instanceof XdmNode ){
+				XdmNode node = (XdmNode) item ;
+				if( bString  )
+					item = new XdmAtomicValue( node.getStringValue());
+
 			}
-			if( bAnyOut )
-				stdout.writeSequenceTerminator(serializeOpts); // write "\n"
 
 
-			
-			return 0;
+			//processor.writeXdmValue(item, ser );
+			// Util.writeXdmValue(item, ser);
+			ser.write(item);
 
-	}
+		}
+		if( bAnyOut )
+			stdout.writeSequenceTerminator(serializeOpts); // write "\n"
 
-	
+
+
+		return 0;
+
+			}
+
+
 
 }
 

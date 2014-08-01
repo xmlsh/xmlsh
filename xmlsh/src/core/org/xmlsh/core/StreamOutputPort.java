@@ -6,9 +6,6 @@
 
 package org.xmlsh.core;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
 import net.sf.saxon.Configuration;
 import net.sf.saxon.event.PipelineConfiguration;
 import net.sf.saxon.event.ReceivingContentHandler;
@@ -17,6 +14,10 @@ import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.Serializer;
 import net.sf.saxon.serialize.XMLEmitter;
 import net.sf.saxon.trans.XPathException;
+
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import org.xml.sax.ContentHandler;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
@@ -60,67 +61,73 @@ public class StreamOutputPort extends OutputPort
 	}
 	public StreamOutputPort( OutputStream os , boolean bClose ) 
 	{
-		
+
 		this(os,bClose,false);
 	}
-	
+
 	public StreamOutputPort( OutputStream os ) 
 	{
 		this(os,true,false);
 	}
 
-	
-	
-	
+
+
+
 	/*
 	 * Standard input stream - created on first request
 	 */
-	
+
+	@Override
 	public	synchronized OutputStream asOutputStream(SerializeOpts opts) 
 	{
 		return new SynchronizedOutputStream(mStream, false ) ; // mStream != System.out);
 	}
 
+	@Override
 	public synchronized void flush() throws IOException 
 	{
 		if( mStream != null )
-				mStream.flush();
-		
-	
+			mStream.flush();
+
+
 	}
-	
-	
-	
+
+
+
+	@Override
 	public synchronized void close() throws IOException {
 		mLogger.debug("StreamOutputPort.close()");
 
 		flush();
 		if( mClose && mStream != null ) {
-  			mLogger.debug("StreamOutputPort.close() - closing stream");
-				mStream.close();
-				mLogger.debug("StreamOutputPort.close() - closing stream");
+			mLogger.debug("StreamOutputPort.close() - closing stream");
+			mStream.close();
+			mLogger.debug("StreamOutputPort.close() - closing stream");
 		}
 
 	}
 
 
 
-	
+
+	@Override
 	public synchronized PrintStream asPrintStream(SerializeOpts opts)
 	{
 		return new PrintStream(asOutputStream(opts));
 	}
 
+	@Override
 	public synchronized Destination asDestination(SerializeOpts opts) throws CoreException
 	{
 
 		return Util.streamToDestination(asOutputStream(opts), opts);
 	}
-	
 
-	
-	
 
+
+
+
+	@Override
 	public synchronized PrintWriter asPrintWriter(SerializeOpts opts) throws UnsupportedEncodingException {
 		return new PrintWriter( 		
 				new OutputStreamWriter(asOutputStream(opts) , 
@@ -128,20 +135,22 @@ public class StreamOutputPort extends OutputPort
 	}
 
 
-	
-	
+
+
+	@Override
 	public synchronized void writeSequenceSeperator(SerializeOpts opts ) throws IOException, InvalidArgumentException
 	{
-		
+
 		// Write using XML encoding
 		asOutputStream(opts).write( opts.getSequence_sep().getBytes( opts.getOutputXmlEncoding()) );
-		
-		
+
+
 	}
 
+	@Override
 	public void writeSequenceTerminator(SerializeOpts opts) throws IOException {
-			asOutputStream(opts).write(  opts.getSequence_term().getBytes(opts.getOutputXmlEncoding()) );
-		
+		asOutputStream(opts).write(  opts.getSequence_term().getBytes(opts.getOutputXmlEncoding()) );
+
 	}
 
 
@@ -149,19 +158,19 @@ public class StreamOutputPort extends OutputPort
 
 	@Override
 	public XMLStreamWriter asXMLStreamWriter(SerializeOpts opts) throws SaxonApiException {
-		
+
 		// Saxon 9.3 supports serialization as a StreamWriter
 		Serializer ser = Util.getSerializer(opts);
 		ser.setOutputStream(asOutputStream(opts));
-		
-		
-		
+
+
+
 		XMLStreamWriter sw = ser.getXMLStreamWriter();
 		return sw;
-		
-		
-		
-		
+
+
+
+
 	}
 
 
@@ -170,20 +179,20 @@ public class StreamOutputPort extends OutputPort
 	@Override
 	public XMLEventWriter asXMLEventWriter(SerializeOpts opts) throws InvalidArgumentException, XMLStreamException, IOException {
 		XMLOutputFactory fact = XMLOutputFactory.newInstance();
-		
+
 		OutputStream os = asOutputStream(opts);
 		if(opts.isOmit_xml_declaration() )
 			os = new OmittingOutputStream(os);
-		
-		
-		 
+
+
+
 		XMLEventWriter writer =  fact.createXMLEventWriter( os , opts.getOutputXmlEncoding() );
-		
-		
+
+
 		writer = new OmittingIndentingXMLEventWriter(writer , os , opts.isIndent(), opts.isOmit_xml_declaration());
 
 		return writer ;
-			
+
 	}
 
 	/* (non-Javadoc)
@@ -191,9 +200,9 @@ public class StreamOutputPort extends OutputPort
 	 */
 	@Override
 	public IXdmItemOutputStream asXdmItemOutputStream(SerializeOpts opts) throws CoreException {
-		
+
 		return new DestinationXdmValueOutputStream( asDestination(opts) );
-		
+
 	}
 
 	/* (non-Javadoc)
@@ -201,25 +210,25 @@ public class StreamOutputPort extends OutputPort
 	 */
 	@Override
 	public ContentHandler asContentHandler(SerializeOpts opts) throws XPathException {
-	
+
 		ReceivingContentHandler  handler = new ReceivingContentHandler();
 		Configuration config = Shell.getProcessor().getUnderlyingConfiguration();
-	    PipelineConfiguration pipe = config.makePipelineConfiguration();
+		PipelineConfiguration pipe = config.makePipelineConfiguration();
 		handler.setPipelineConfiguration(pipe);
 
-		
-	   XMLEmitter emitter = new XMLEmitter();
-       emitter.setPipelineConfiguration(pipe);
-       emitter.setOutputProperties(new Properties());
-       emitter.setOutputStream( asOutputStream(opts));
-       
-       handler.setReceiver(emitter);
-       return handler;
-		
+
+		XMLEmitter emitter = new XMLEmitter();
+		emitter.setPipelineConfiguration(pipe);
+		emitter.setOutputProperties(new Properties());
+		emitter.setOutputStream( asOutputStream(opts));
+
+		handler.setReceiver(emitter);
+		return handler;
+
 	}
 
-	
-	
+
+
 
 }
 

@@ -7,6 +7,7 @@
 package org.xmlsh.util;
 
 import org.apache.log4j.Logger;
+
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
@@ -21,7 +22,7 @@ public class XFile /* implements XSerializble */ {
 	private static Logger mLogger = Logger.getLogger( XFile.class);
 	private File mFile;
 
-	
+
 	public XFile(Shell shell , XValue xv )
 	{
 		if( ! xv.isAtomic() ){
@@ -30,10 +31,10 @@ public class XFile /* implements XSerializble */ {
 			} catch (UnexpectedException e) {
 				mLogger.debug("Ignoring exception converting xvalue to file",e);
 			}
-			
+
 		}
 		mFile = new File(xv.toString());
-		
+
 	}
 	public XFile(String path) {
 		this(new File(path));
@@ -53,8 +54,8 @@ public class XFile /* implements XSerializble */ {
 			return fbase;
 		else
 			return new File(dir, base);
-		
-		
+
+
 	}
 
 	public XFile(String dir, String base, String ext) {
@@ -87,35 +88,35 @@ public class XFile /* implements XSerializble */ {
 		try {
 			String relativeTo = FileUtils.toJavaPath(relpath.getCanonicalPath());
 			String absolutePath = FileUtils.toJavaPath(mFile.getCanonicalPath());
-            String[] absoluteDirectories = absolutePath.split("/");
-            String[] relativeDirectories = relativeTo.split("/");
+			String[] absoluteDirectories = absolutePath.split("/");
+			String[] relativeDirectories = relativeTo.split("/");
 
-            int length = absoluteDirectories.length < relativeDirectories.length ? absoluteDirectories.length : relativeDirectories.length;
-            int lastCommonRoot = -1;
-            int index;
+			int length = absoluteDirectories.length < relativeDirectories.length ? absoluteDirectories.length : relativeDirectories.length;
+			int lastCommonRoot = -1;
+			int index;
 
-            //Find common root
-            for (index = 0; index < length; index++)
-                if (absoluteDirectories[index].equals(relativeDirectories[index]))
-                    lastCommonRoot = index;
-                else
-                    break;
+			//Find common root
+			for (index = 0; index < length; index++)
+				if (absoluteDirectories[index].equals(relativeDirectories[index]))
+					lastCommonRoot = index;
+				else
+					break;
 
-            if (lastCommonRoot == -1)
-                return absolutePath;
+			if (lastCommonRoot == -1)
+				return absolutePath;
 
-            //Build up the relative path
-            StringBuilder relativePath = new StringBuilder();
-            for (index = lastCommonRoot + 1; index < relativeDirectories.length; index++)
-                if (relativeDirectories[index].length() > 0)
-                    relativePath.append("../");
+			//Build up the relative path
+			StringBuilder relativePath = new StringBuilder();
+			for (index = lastCommonRoot + 1; index < relativeDirectories.length; index++)
+				if (relativeDirectories[index].length() > 0)
+					relativePath.append("../");
 
-            //Add on the folders
-            for (index = lastCommonRoot + 1; index < absoluteDirectories.length - 1; index++)
-                relativePath.append(absoluteDirectories[index] + "/");
-            relativePath.append(absoluteDirectories[absoluteDirectories.length - 1]);
+			//Add on the folders
+			for (index = lastCommonRoot + 1; index < absoluteDirectories.length - 1; index++)
+				relativePath.append(absoluteDirectories[index] + "/");
+			relativePath.append(absoluteDirectories[absoluteDirectories.length - 1]);
 
-            return relativePath.toString();
+			return relativePath.toString();
 		} catch (Exception e) {
 			return "";
 		}
@@ -154,40 +155,40 @@ public class XFile /* implements XSerializble */ {
 			return name;
 	}
 
-	
+
 
 	public void serialize(XMLStreamWriter writer, boolean all, boolean end, File relative ) throws  XMLStreamException {
-		
+
 		writer.writeStartElement(mFile.isDirectory() ? "dir" : "file");
 		writer.writeAttribute("name", getName());
 		writer.writeAttribute("path", relative != null ? getRelpath(relative) : getPath());
 		if( all ){
-			
-			
+
+
 			writer.writeAttribute("length", String.valueOf(mFile.length()));
-			
+
 			writer.writeAttribute("type", mFile.isDirectory() ? "dir" : "file");
 			writer.writeAttribute("readable", mFile.canRead()? "true" : "false");
 			writer.writeAttribute("writable", mFile.canWrite()? "true" : "false");
 			writer.writeAttribute("executable", mFile.canExecute() ? "true" : "false");
 			writer.writeAttribute("mtime", Util.formatXSDateTime(mFile.lastModified()));
-			
-	
-			
+
+
+
 		}
 		if( end )
 			writer.writeEndElement();
 	}
-	
+
 	public void serialize(XMLStreamWriter writer, boolean all, boolean end ) throws  XMLStreamException {
 		serialize(writer, all ,end, null);
 	}
 
-		public String noExtension() {
+	public String noExtension() {
 		String	path = FileUtils.toJavaPath(mFile.getPath());
 		String  ext = getExt();
 		return path.substring(0 , path.length() - ext.length());
-	
+
 	}
 	public String getPathName() {
 		return FileUtils.toJavaPath(mFile.getPath());

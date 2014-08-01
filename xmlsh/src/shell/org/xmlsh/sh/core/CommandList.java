@@ -6,11 +6,11 @@
 
 package org.xmlsh.sh.core;
 
+import org.xmlsh.sh.shell.Shell;
+
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.xmlsh.sh.shell.Shell;
 
 
 public class CommandList extends Command
@@ -20,14 +20,14 @@ public class CommandList extends Command
 	public CommandList( Command cmd ) {
 		add( cmd );
 	}
-	
-	
+
+
 	public void add( Command cmd ) {
 		mList.add(cmd);
 	}
-	
-	
-	
+
+
+
 	@Override
 	public int exec(Shell shell) throws Exception {
 		int ret = 0;
@@ -35,27 +35,27 @@ public class CommandList extends Command
 			if( ! shell.keepRunning() )
 				return ret ;
 			ret = shell.exec(c, getLocation() );
-		
+
 		}
-        return ret ;
+		return ret ;
 	}
 
 
 	@Override
-    public void print(PrintWriter out, boolean bExec)
-    {
+	public void print(PrintWriter out, boolean bExec)
+	{
 		for( Command c : mList )
 			c.print( out ,  bExec );
-    }
+	}
 
 
 	@Override
-    public boolean isSimple()
-    {
-	    return mList.size() == 1 && mList.get(0).isSimple();
-    }
-	
-	
+	public boolean isSimple()
+	{
+		return mList.size() == 1 && mList.get(0).isSimple();
+	}
+
+
 }
 
 //

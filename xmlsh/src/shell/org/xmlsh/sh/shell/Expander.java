@@ -31,7 +31,6 @@ import org.xmlsh.xpath.EvalDefinition;
 import org.xmlsh.xpath.ShellContext;
 
 import java.io.IOException;
-import java.util.BitSet;
 import java.util.Collection;
 import java.util.List;
 
@@ -40,13 +39,13 @@ public class Expander {
 
 	public Shell			mShell;
 	private		SourceLocation 	mLocation ;
-	
+
 	/* 
 	 * Attribute enums
 	 */
-	
+
 	/* this"Is a 'string\' in' a $var "string *.x "*.y" \*.z */
-	
+
 	public Expander( Shell shell, SourceLocation loc )
 	{
 		mShell = shell;
@@ -67,9 +66,9 @@ public class Expander {
 			result.add( value , env.preserveValue() );
 		return result ;
 	}
-	
-	
-	
+
+
+
 	/*
 	 * Expand a string to a list of XValues by  
 	 * 1) Parsing Quotes
@@ -77,26 +76,26 @@ public class Expander {
 	 * 3) Tokenizing by IFS (expand word) and combining adjacent words 
 	 * 4) globbing 
 	 */
-	
+
 	public List<XValue> expandStringToList(String arg, EvalEnv env ) throws IOException, CoreException {
 		ParseResult result = new ParseResult(mShell) ;
 		return expandResultToList(env, expandStringToResult( arg , env, result ));
-		
+
 	}
 
 	public List<XValue> expandResultToList(EvalEnv env, ParseResult result)
-    {
-	    List<XValue> xvresult =  result.expandWild(env,mShell.getCurdir());
-		
+	{
+		List<XValue> xvresult =  result.expandWild(env,mShell.getCurdir());
+
 		if( env.expandSequences() )
 			xvresult = Util.expandSequences( xvresult );
 		else  
 			xvresult = Util.combineSequence( xvresult );
-		
+
 		return xvresult;
-    }
-	
-	
+	}
+
+
 	/*
 	 * Expand a single word value :
 	 * <{{ ... }}> is a hard multi line quote with nothing inside touched
@@ -112,7 +111,7 @@ public class Expander {
 	{
 
 		assert( result != null );
-		
+
 		// <{ big quotes }>
 		if( arg.startsWith("<{{") && arg.endsWith("}}>")){
 			// Add as a raw value
@@ -129,19 +128,19 @@ public class Expander {
 		char c;
 		int i;
 		CharAttr curAttr = env.preserveValue() ? CharAttr.ATTR_PRESERVE : CharAttr.ATTR_NONE ; 
-		
+
 		for( i = 0 ; i < arg.length() ; i++){
 
 			c = arg.charAt(i);
-			
+
 			if(env.parseQuotes()) {
 				// Quote - if in quotes then clear only the matching quote
 				if( CharAttr.isQuote(c) ){
 					CharAttr ca = CharAttr.valueOf(c);
 					if( curAttr.isQuote() ) { // in quotes
 						curAttr.clear( ca );
-	                    if( curAttr.isQuote() )
-	                    	result.append(c, curAttr);
+						if( curAttr.isQuote() )
+							result.append(c, curAttr);
 					}
 					else {
 						result.append( (String)null, curAttr);
@@ -150,50 +149,50 @@ public class Expander {
 					continue ;
 				}
 
-	
+
 				// Escape
 				//  foo\bar		-> 	foobar
 				//  "foo\bar" 	-> "foo\bar"
 				//  "foo\\bar" 	-> "foo\bar"
 				//	'foo\\bar'  -> 'foo\\bar'
-	
-	
+
+
 				/*
 				 * http://pubs.opengroup.org/onlinepubs/009695399/utilities/xcu_chap02.html
 				 */
 				else
-				if( c == '\\'){
-					if( curAttr.isHardQuote())
-						result.append(c, curAttr);
-					else 
-						
-						if( i < arg.length()){
-							char nextc = arg.charAt(++i);
-							if( curAttr.isSoftQuote())
-							{
-								switch( nextc ) {
-								case '$' : 
-								case '`':
-								case '"' :
-								case '\\' :
-								case '\n' :
-									break ;
-								default :
-									result.append(c,curAttr);
-									break;
+					if( c == '\\'){
+						if( curAttr.isHardQuote())
+							result.append(c, curAttr);
+						else 
+
+							if( i < arg.length()){
+								char nextc = arg.charAt(++i);
+								if( curAttr.isSoftQuote())
+								{
+									switch( nextc ) {
+									case '$' : 
+									case '`':
+									case '"' :
+									case '\\' :
+									case '\n' :
+										break ;
+									default :
+										result.append(c,curAttr);
+										break;
+									}
 								}
+
+								// For one char we escape 
+								CharAttr cAttr = CharAttr.ATTR_ESCAPED ;
+								cAttr.set(curAttr);
+								result.append( nextc , cAttr );
 							}
-							
-							// For one char we escape 
-							CharAttr cAttr = CharAttr.ATTR_ESCAPED ;
-							cAttr.set(curAttr);
-							result.append( nextc , cAttr );
-						}
-					continue ;
-				}
+						continue ;
+					}
 
 			}
-			
+
 			if( ! curAttr.isHardQuote()  && c == '$'){
 				if( ++i == arg.length() ){
 					result.append('$', curAttr ); // Special case of a single "$"
@@ -263,58 +262,58 @@ public class Expander {
 
 					} 
 					else
-					if( var.equals("@")){
-						// Add all positional variables as args except "$@" with 0 args is dropped
-						boolean bFirst = true ;
-						List<XValue> args = mShell.getArgs();
-						if( args.isEmpty() ) 
-							result.resetIfEmpty();
-						else
-						
-						for( XValue v : args ){
-							if( curAttr.isSoftQuote() && bFirst  ) 
-								result.append( v , env , curAttr );
+						if( var.equals("@")){
+							// Add all positional variables as args except "$@" with 0 args is dropped
+							boolean bFirst = true ;
+							List<XValue> args = mShell.getArgs();
+							if( args.isEmpty() ) 
+								result.resetIfEmpty();
 							else
-								result.add( v );
-							bFirst = false ;
+
+								for( XValue v : args ){
+									if( curAttr.isSoftQuote() && bFirst  ) 
+										result.append( v , env , curAttr );
+									else
+										result.add( v );
+									bFirst = false ;
+								}
 						}
-					}
 
-					else {
-						// get value from single variable, parse and field split
-						// guarentees no null values and empty unquoted strings were removed
-						
-						
-						List<XValue> vs = EvalUtils.evalVar(mShell, var, curAttr );
+						else {
+							// get value from single variable, parse and field split
+							// guarentees no null values and empty unquoted strings were removed
 
-						// Append the first value to any previous content in the arg
-						// N..last-1 become new args
-						// Last is a new word but possibly appendable
-						
-						if( vs != null ) {
-							int vsize = vs.size();
-							for( int vi  = 0 ; vi < vsize ; vi++ ) {
-								XValue v = vs.get(vi);
-								if( vi > 0 )
-									result.flush();
-								result.append( v , env , curAttr  );
+
+							List<XValue> vs = EvalUtils.evalVar(mShell, var, curAttr );
+
+							// Append the first value to any previous content in the arg
+							// N..last-1 become new args
+							// Last is a new word but possibly appendable
+
+							if( vs != null ) {
+								int vsize = vs.size();
+								for( int vi  = 0 ; vi < vsize ; vi++ ) {
+									XValue v = vs.get(vi);
+									if( vi > 0 )
+										result.flush();
+									result.append( v , env , curAttr  );
+								}
 							}
+
 						}
-						
-					}
 
 
 				} else
 					result.append('$' , curAttr );
 
 			} else {
-					result.append(c,curAttr);
+				result.append(c,curAttr);
 			}
 
 		}
 
 		if( ! env.joinValues() )
-		  result.flush();
+			result.flush();
 
 		return result ;
 
@@ -392,10 +391,10 @@ public class Expander {
 					XValue v = value.getValue();
 					if( v.isObject() )
 						try {
-							v = new XValue( v.convert(XdmValue.class));
-                        } catch (Exception e) {
+							v = new XValue( (XdmValue) v.convert(XdmValue.class));
+						} catch (Exception e) {
 							throw new CoreException(e);
-                        }
+						}
 
 					eval.setExternalVariable( new QName(value.getName()), v.asXdmValue());
 				}
@@ -433,7 +432,7 @@ public class Expander {
 	}
 
 
-	
+
 
 
 

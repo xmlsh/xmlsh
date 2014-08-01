@@ -19,15 +19,16 @@ public class SynchronizedOutputStream extends OutputStream {
 		mCloseOnClose = close ;
 	}
 
-	
+
 	/**
 	 * @throws IOException
 	 * @see java.io.OutputStream#close()
 	 */
+	@Override
 	public synchronized void close() throws IOException {
-			mOutputStream.flush();
-			if(  mCloseOnClose )
-				mOutputStream.close();
+		mOutputStream.flush();
+		if(  mCloseOnClose )
+			mOutputStream.close();
 	}
 
 	/**
@@ -35,6 +36,7 @@ public class SynchronizedOutputStream extends OutputStream {
 	 * @return
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
+	@Override
 	public synchronized boolean equals(Object obj) {
 		return mOutputStream.equals(obj);
 	}
@@ -43,6 +45,7 @@ public class SynchronizedOutputStream extends OutputStream {
 	 * @throws IOException
 	 * @see java.io.OutputStream#flush()
 	 */
+	@Override
 	public synchronized void flush() throws IOException {
 		mOutputStream.flush();
 	}
@@ -51,6 +54,7 @@ public class SynchronizedOutputStream extends OutputStream {
 	 * @return
 	 * @see java.lang.Object#hashCode()
 	 */
+	@Override
 	public synchronized int hashCode() {
 		return mOutputStream.hashCode();
 	}
@@ -59,6 +63,7 @@ public class SynchronizedOutputStream extends OutputStream {
 	 * @return
 	 * @see java.lang.Object#toString()
 	 */
+	@Override
 	public synchronized  String toString() {
 		return mOutputStream.toString();
 	}
@@ -70,6 +75,7 @@ public class SynchronizedOutputStream extends OutputStream {
 	 * @throws IOException
 	 * @see java.io.OutputStream#write(byte[], int, int)
 	 */
+	@Override
 	public synchronized void write(byte[] b, int off, int len) throws IOException {
 		mOutputStream.write(b, off, len);
 	}
@@ -79,6 +85,7 @@ public class SynchronizedOutputStream extends OutputStream {
 	 * @throws IOException
 	 * @see java.io.OutputStream#write(byte[])
 	 */
+	@Override
 	public synchronized  void write(byte[] b) throws IOException {
 		mOutputStream.write(b);
 	}
@@ -88,10 +95,11 @@ public class SynchronizedOutputStream extends OutputStream {
 	 * @throws IOException
 	 * @see java.io.OutputStream#write(int)
 	 */
+	@Override
 	public synchronized void write(int b) throws IOException {
 		mOutputStream.write(b);
 	}
-	
+
 }
 //
 //

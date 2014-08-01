@@ -6,10 +6,10 @@
 
 package org.xmlsh.core;
 
-import java.io.IOException;
-
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmValue;
+
+import java.io.IOException;
 
 /**
  * IXdmItemOutputStream is a interface which accepts XdmValues as individual objects
@@ -18,10 +18,10 @@ import net.sf.saxon.s9api.XdmValue;
 
 public interface IXdmItemOutputStream 
 {
-	
+
 	void	write( XdmValue value ) throws IOException ;
 	void	write( XdmItem item ) throws  IOException;
-	
+
 }
 
 

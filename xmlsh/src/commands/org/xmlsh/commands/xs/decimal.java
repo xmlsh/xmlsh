@@ -20,7 +20,7 @@ public class decimal extends BuiltinFunctionCommand {
 	{
 		super("integer");
 	}
-	
+
 	@Override
 	public XValue run(Shell shell, List<XValue> args) throws InvalidArgumentException, XPathException {
 		if( args.size() != 1 )

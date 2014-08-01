@@ -8,7 +8,6 @@ package org.xmlsh.commands.test;
 
 import net.sf.saxon.s9api.SaxonApiException;
 import org.xmlsh.core.CoreException;
-import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
@@ -28,29 +27,29 @@ public class xevent extends XCommand {
 
 	@Override
 	public int run(List<XValue> args) throws Exception {
-		
-		
-		
+
+
+
 		Options opts = new Options( "r,s,n:" );
 		opts.parse(args);
-		
+
 		if( opts.hasOpt("r"))
 			receive();
 		else
-		if( opts.hasOpt("s")){
-			int n = Integer.parseInt(opts.getOptValue("n").toString());
-			send(n);
-		} else
-			usage();
-		
+			if( opts.hasOpt("s")){
+				int n = Integer.parseInt(opts.getOptValue("n").toString());
+				send(n);
+			} else
+				usage();
+
 		return 0;
-			
-		}
+
+	}
 
 
 
 	private void send(int n) throws XMLStreamException, IOException, SaxonApiException, CoreException {
-		
+
 		XMLStreamWriter	writer = getStdout().asXMLStreamWriter(getSerializeOpts());
 		writer.writeStartDocument();
 		writer.writeStartElement("root");
@@ -59,16 +58,16 @@ public class xevent extends XCommand {
 			writer.writeAttribute("attr", "value");
 			writer.writeCharacters("charactors");
 			writer.writeEndElement();
-			
+
 		}
 		writer.writeEndElement();
 		writer.writeEndDocument();
 		writer.close();
-		
-		
-		
-		
-		
+
+
+
+
+
 	}
 
 	private void receive() throws CoreException, IOException, XMLStreamException {
@@ -76,10 +75,10 @@ public class xevent extends XCommand {
 		while( reader.hasNext())
 			reader.nextEvent();
 		reader.close();
-		
+
 	}
-	
-	
+
+
 
 }
 

@@ -27,24 +27,24 @@ public class xslt1 extends XCommand {
 		Options opts = new Options("i:,f:,v", SerializeOpts.getOptionDefs());
 		opts.parse(args);
 		args = opts.getRemainingArgs();
-		
+
 		String style = opts.getOptStringRequired("f");
-		
+
 		SerializeOpts serializeOpts = getSerializeOpts(opts);
-		
+
 
 		InputPort in = null;
 
-		
+
 		Source source = null;
-		
+
 		if( opts.hasOpt("i") )
 			source = (in=getInput( opts.getOptValue("i"))).asSource(serializeOpts);
 		else
 			source = (in=getStdin()).asSource(serializeOpts);
-		
+
 		apply( style , source, getStdout().asOutputStream(serializeOpts) , opts.hasOpt("v") ? args : null, serializeOpts);
-		
+
 		return 0;
 
 	}
@@ -54,13 +54,13 @@ public class xslt1 extends XCommand {
 
 
 
-		
+
 		try {
 			Templates pss = tryCache(style);
 			Transformer transformer = pss.newTransformer();
 			// Properties details = pss.getOutputProperties();
 
-			
+
 			if (args != null ) {
 				// Read pairs from args to set
 				for (int i = 0; i < args.size() / 2; i++) {
@@ -70,11 +70,11 @@ public class xslt1 extends XCommand {
 					transformer.setParameter(name, new StringValue(value.toString()));
 				}
 			}
-			
 
-			
+
+
 			transformer.setOutputProperty(javax.xml.transform.OutputKeys.METHOD, serializeOpts.getMethod() );
-			
+
 			transformer.transform(source, new StreamResult(out));
 		} catch (Exception err) {
 			throw err; 
@@ -82,16 +82,16 @@ public class xslt1 extends XCommand {
 
 	}
 
-	
-	    private synchronized Templates tryCache(String path) throws TransformerException, java.io.IOException {
-	      
-	    		com.icl.saxon.TransformerFactoryImpl factory = new com.icl.saxon.TransformerFactoryImpl();
-	            return factory.newTemplates(new StreamSource(new File(path)));
-	           
 
-	    }
+	private synchronized Templates tryCache(String path) throws TransformerException, java.io.IOException {
 
-	    
+		com.icl.saxon.TransformerFactoryImpl factory = new com.icl.saxon.TransformerFactoryImpl();
+		return factory.newTemplates(new StreamSource(new File(path)));
+
+
+	}
+
+
 }
 
 //

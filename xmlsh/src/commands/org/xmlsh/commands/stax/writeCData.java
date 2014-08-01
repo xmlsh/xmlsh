@@ -18,13 +18,13 @@ import javax.xml.stream.XMLStreamWriter;
 
 public class writeCData extends XCommand {
 
-	
-	
+
+
 	public writeCData()
 	{
-		
+
 	}
-	
+
 	@Override
 	public int run( List<XValue> args) throws CoreException, XPathException, XMLStreamException {
 		if( args.size()  != 2  )
@@ -34,9 +34,9 @@ public class writeCData extends XCommand {
 		Object arg = arg0.asObject();
 		if( arg instanceof XMLStreamWriter )
 			((XMLStreamWriter)arg).writeCData(cdata);
-		
+
 		return 0;
-		
+
 	}
 
 }

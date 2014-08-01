@@ -19,7 +19,7 @@ public class XMLEventStreamReader extends BaseXMLStreamReader {
 
 	private XMLEventReader 		mReader;
 	private	 XMLEvent			mEvent; 	// current event
-	
+
 	public XMLEventStreamReader(XMLEventReader reader) {
 		mReader = reader;
 	}
@@ -29,149 +29,178 @@ public class XMLEventStreamReader extends BaseXMLStreamReader {
 		mReader = reader;
 	}
 
+	@Override
 	public void close() throws XMLStreamException {
 		mReader.close();
 	}
 
+	@Override
 	public int getAttributeCount() 
 	{
 		//if( mEvent != null )
-			return 0;
-		
-		
+		return 0;
+
+
 	}
 
+	@Override
 	public QName getAttributeName(int index) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
+	@Override
 	public String getAttributeType(int index) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
+	@Override
 	public String getAttributeValue(int index) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
+	@Override
 	public String getAttributeValue(String namespaceURI, String localName) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
+	@Override
 	public String getCharacterEncodingScheme() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
+	@Override
 	public int getEventType() {
 		// TODO Auto-generated method stub
 		return 0;
 	}
 
+	@Override
 	public String getLocalName() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
+	@Override
 	public Location getLocation() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
+	@Override
 	public QName getName() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
+	@Override
 	public NamespaceContext getNamespaceContext() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
+	@Override
 	public int getNamespaceCount() {
 		// TODO Auto-generated method stub
 		return 0;
 	}
 
+	@Override
 	public String getNamespacePrefix(int index) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
+	@Override
 	public String getNamespaceURI(int index) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
+	@Override
 	public String getPIData() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
+	@Override
 	public String getPITarget() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
+	@Override
 	public Object getProperty(String name) throws IllegalArgumentException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
+	@Override
 	public String getText() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
+	@Override
 	public char[] getTextCharacters() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
+	@Override
 	public int getTextCharacters(int sourceStart, char[] target, int targetStart, int length)
 			throws XMLStreamException {
 		// TODO Auto-generated method stub
 		return 0;
 	}
 
+	@Override
 	public int getTextLength() {
 		// TODO Auto-generated method stub
 		return 0;
 	}
 
+	@Override
 	public int getTextStart() {
 		// TODO Auto-generated method stub
 		return 0;
 	}
 
+	@Override
 	public String getVersion() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
+	@Override
 	public boolean hasNext() throws XMLStreamException {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
+	@Override
 	public boolean isAttributeSpecified(int index) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
+	@Override
 	public boolean isStandalone() {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
+	@Override
 	public int next() throws XMLStreamException {
 		// TODO Auto-generated method stub
 		return 0;
 	}
 
+	@Override
 	public boolean standaloneSet() {
 		// TODO Auto-generated method stub
 		return false;

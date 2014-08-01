@@ -24,13 +24,13 @@ public class httpsession extends XCommand {
 	@Override
 	public int run(List<XValue> args) throws Exception {
 
-		
+
 		Options opts = new Options( "getvar:,setvar:,n", SerializeOpts.getOptionDefs()  );
 		opts.parse(args);
-		
+
 
 		SerializeOpts serializeOpts = getSerializeOpts(opts);
-		
+
 		String 	getVar = opts.getOptString("getvar", null);
 		String  setVar = opts.getOptString("setvar", null);
 		Boolean noErr  = opts.hasOpt("n");
@@ -38,16 +38,16 @@ public class httpsession extends XCommand {
 			usage();
 			return 1;
 		}
-		
+
 		ManagedHttpSession msess = (ManagedHttpSession) getShell().getSession().getVar("HTTP_SESSION");
 		if( msess == null ){
 			printErr("HTTP_SESSION not found");
 			return 2;
 		}
 		try {
-			
-		
-			
+
+
+
 			if( getVar != null )
 			{
 				Object value = msess.getSession().getAttribute(getVar);
@@ -56,23 +56,23 @@ public class httpsession extends XCommand {
 					return 0;
 				}
 				else
-				if( ! noErr )
-					printErr("No session variable: " + getVar );
-				
+					if( ! noErr )
+						printErr("No session variable: " + getVar );
+
 				return 1;
-				
-				
+
+
 			} else
-			if( setVar != null )
-			{
-				args = opts.getRemainingArgs();
-				if( args.size() < 1 ){
-					usage();
-					return 1;
+				if( setVar != null )
+				{
+					args = opts.getRemainingArgs();
+					if( args.size() < 1 ){
+						usage();
+						return 1;
+					}
+					msess.getSession().setAttribute(setVar , args.get(0));
+					return 0;
 				}
-				msess.getSession().setAttribute(setVar , args.get(0));
-				return 0;
-			}
 
 		} finally {
 			msess.release();
@@ -89,15 +89,15 @@ public class httpsession extends XCommand {
 			IXdmItemOutputStream dest =  getStdout().asXdmItemOutputStream(serializeOpts);
 
 			dest.write(xv.asXdmValue());
-			
+
 
 		} else
 		{
 			String svalue = value.toString();
 			getStdout().asPrintStream(serializeOpts).print(svalue);
-			
+
 		}
-		
+
 	}
 
 }

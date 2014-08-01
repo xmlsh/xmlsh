@@ -18,7 +18,7 @@ import java.io.File;
 import java.io.IOException;
 
 public class ShellThread extends Thread implements Closeable {
-	
+
 	@SuppressWarnings("unused")
 	private static Logger mLogger = LogManager.getLogger( ShellThread.class);
 
@@ -34,16 +34,16 @@ public class ShellThread extends Thread implements Closeable {
 
 	}
 
-	
+
 	private static String simpleName(String name, Command cmd)
-    {
+	{
 		if(  Util.isBlank(name))
 			name =cmd.getName();
 		if( Util.isBlank(name))
 			name = "<shell thread>";
-	    return name ;
-			
-    }
+		return name ;
+
+	}
 
 
 	/* (non-Javadoc)
@@ -52,7 +52,7 @@ public class ShellThread extends Thread implements Closeable {
 	@Override
 	public void run() 
 	{
-		
+
 
 		try {
 
@@ -64,25 +64,25 @@ public class ShellThread extends Thread implements Closeable {
 					return ;
 				}	
 			}
-		
+
 			ShellContext.set( shell );
 			shell.setCurdir(mIniitalCD); // Populate the current directory in this thread
 			mCommand.exec(shell);
-		
+
 		} catch (Exception e) {
 			// mShell.printErr("Exception running: " + mCommand.toString(true) + "\n" +  e.toString() );
 			mLogger.error("Exception running command: " + mCommand.toString(false) , e );
-		
+
 		} finally {
 			try {
-	            close();
-            } catch (IOException e) {
-    			mLogger.error("Exception closing self: " + describe()  , e );
+				close();
+			} catch (IOException e) {
+				mLogger.error("Exception closing self: " + describe()  , e );
 
-            }
-			
+			}
+
 		}
-		
+
 	}
 
 	public Command getCommand(){
@@ -91,30 +91,31 @@ public class ShellThread extends Thread implements Closeable {
 
 
 	public Shell getShell()
-    {
-	    return mShell;
-    }
+	{
+		return mShell;
+	}
 
 
 	// Attempt to nicely close this job 
+	@Override
 	public void close() throws IOException 
-    {
-	   if( mShell == null )
-		   return ;
-	   synchronized(this) {
-		   if( mShell == null )
-			  return ;
-		   ShellContext.set(null);
-		   mShell.close();
-           mShell = null ;
-	   }
-    }
+	{
+		if( mShell == null )
+			return ;
+		synchronized(this) {
+			if( mShell == null )
+				return ;
+			ShellContext.set(null);
+			mShell.close();
+			mShell = null ;
+		}
+	}
 
 
 	public String describe()
-    {
-		 return "[" + getId() + "] : " + getName();
-    }
+	{
+		return "[" + getId() + "] : " + getName();
+	}
 
 	/*
 	 * Attempt to force a shutdown of this shell
@@ -124,12 +125,12 @@ public class ShellThread extends Thread implements Closeable {
 		Shell sh = mShell ;
 		if(  sh == null )
 			return 	true ;
-        
+
 		sh.shutdown(force,waitTime);
 		Thread.yield();
 		return mShell == null ;
 	}
-	
+
 }
 //
 //

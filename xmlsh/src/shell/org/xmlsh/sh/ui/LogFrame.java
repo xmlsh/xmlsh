@@ -15,6 +15,7 @@ import java.awt.BorderLayout;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.border.EmptyBorder;
 
 @SuppressWarnings("serial")
@@ -36,21 +37,21 @@ public class LogFrame extends JFrame {
 		mcontentPane.setLayout(new BorderLayout(0, 0));
 		setContentPane(mcontentPane);
 		this.setDefaultCloseOperation(HIDE_ON_CLOSE);
-		
-		
+
+
 		final TextAreaComponent textArea = new TextAreaComponent();
 		textArea.setEditable(false);
 		new TextComponentPopupMenu( textArea );
-		
-		
+
+
 		JScrollPane scrollPane = new JScrollPane(textArea,
-                JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
-                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+				ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
+				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		mcontentPane.add(scrollPane, BorderLayout.CENTER);
-		
-		
+
+
 		LogManager.getRootLogger().addAppender( new ShellAppender( new TextComponentOutputStream( textArea , mSerializeOps , "log")));
-		
+
 	}
 
 }

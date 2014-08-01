@@ -16,45 +16,46 @@ import org.xmlsh.util.StAXUtils;
 import java.util.List;
 
 import javax.xml.stream.XMLEventReader;
+import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.XMLEvent;
 
 public class hasNext extends BuiltinFunctionCommand {
 
-	
-	
+
+
 	public hasNext()
 	{
 		super("hasNext");
 	}
-	
+
 	@Override
 	public XValue run(Shell shell, List<XValue> args) throws InvalidArgumentException, XMLStreamException  {
-		
-		
+
+
 		if( args.size() == 0 )
 			return null;
-		
+
 		XValue a0 = args.get(0);
 		if(! (a0.asObject() instanceof XMLEventReader ) )
-				throw new InvalidArgumentException("Expected XMLEventReader as args[0]");
+			throw new InvalidArgumentException("Expected XMLEventReader as args[0]");
 		XMLEventReader reader = (XMLEventReader) a0.asObject();
-		
-		
+
+
 		switch( args.size() ){
 		case	1:
-		
+
 			return new XValue( reader.hasNext() );
-		
+
 		case	2: 	// type
 		{
 			int type = StAXUtils.getEventTypeByName( args.get(1).toString() );
 			if( type < 0)
 				return new XValue(false);
-			
+
 			while( reader.hasNext() && reader.peek().getEventType() != type )
 				reader.nextEvent();
-			
+
 			return new XValue( reader.hasNext() );
 		}	
 		case	3: 	// type name
@@ -63,22 +64,22 @@ public class hasNext extends BuiltinFunctionCommand {
 			if( type < 0)
 				return new XValue(false);
 			QName name = args.get(2).asQName(shell);
-			
+
 			while( reader.hasNext() ){
 				XMLEvent event = reader.peek();
 				if( event.getEventType() == type ){
-						
-					if( type == XMLEvent.START_ELEMENT && StAXUtils.matchesQName(reader.peek().asStartElement().getName() , name ) )
+
+					if( type == XMLStreamConstants.START_ELEMENT && StAXUtils.matchesQName(reader.peek().asStartElement().getName() , name ) )
 						return new XValue( true );
 					else
-					if( type == XMLEvent.END_ELEMENT && StAXUtils.matchesQName(reader.peek().asEndElement().getName() , name ) )
-						return new XValue( true );
-					
-					
+						if( type == XMLStreamConstants.END_ELEMENT && StAXUtils.matchesQName(reader.peek().asEndElement().getName() , name ) )
+							return new XValue( true );
+
+
 				}
 				reader.nextEvent();
 			}
-				
+
 			return new XValue( false  );
 		}
 		default:

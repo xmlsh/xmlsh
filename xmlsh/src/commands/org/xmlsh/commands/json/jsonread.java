@@ -11,9 +11,9 @@ import org.xmlsh.core.InputPort;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.XValue;
+import org.xmlsh.json.JSONUtils;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.types.TypeFamily;
-import org.xmlsh.util.JSONUtils;
 import org.xmlsh.util.JavaUtils;
 import org.xmlsh.util.Util;
 
@@ -30,34 +30,35 @@ public class jsonread extends BuiltinCommand {
 	 */
 
 
+	@Override
 	public int run( List<XValue> args ) throws Exception {
 
-		
+
 		Options opts = new Options( "+jsonp,p=port:,c=class:,cp=classpath:" ,  SerializeOpts.getOptionDefs());
 		opts.parse(args);
-		
+
 		String port = opts.getOptString("p", null);
 		boolean jsonp = opts.getOptFlag("jsonp",false);
 		String clsName = opts.getOptString("class", null);
 		XValue classPath = opts.getOptValue("classpath");
 		args = opts.getRemainingArgs();
-		
+
 		if( args.size() != 1 )
 			throw new InvalidArgumentException("requires 1 argument");
-		
+
 		mShell.getEnv().unsetVar(args.get(0).toString());
 
 		setSerializeOpts(getSerializeOpts());
 		SerializeOpts inputOpts = getSerializeOpts().clone();
-		
-		
+
+
 		InputPort stdin = mShell.getEnv().getStdin();
-		
+
 		XValue value = null ;
 		Class<?> cls = null;
 		try (
 				InputStream is = stdin.asInputStream( inputOpts );
-			){
+				){
 			if( jsonp ) {
 				String jsonpFunc = Util.skipToByte(is, '(');
 				if( jsonpFunc == null ) {
@@ -72,23 +73,23 @@ public class jsonread extends BuiltinCommand {
 					return 1;
 				}
 			}
-			
+
 			if( cls != null ) {
 				Object  obj = JSONUtils.readJsonValue( is , cls );
-			    if( obj == null ) {
-			    	printErr("Reading json value to class failed");
-			    	return 1;
-			    }
-			    	
+				if( obj == null ) {
+					printErr("Reading json value to class failed");
+					return 1;
+				}
+
 				value = new XValue(TypeFamily.JSON, obj );
-				
+
 			} else {
-			    JsonNode node  = JSONUtils.readJsonNode(is);
-			    if( node == null ) {
-			    	printErr("Reading json value to json node failed");
-			    	return 1;
-			    }
-			    value = new XValue(TypeFamily.JSON, node);
+				JsonNode node  = JSONUtils.readJsonNode(is);
+				if( node == null ) {
+					printErr("Reading json value to json node failed");
+					return 1;
+				}
+				value = new XValue(TypeFamily.JSON, node);
 			}
 			mShell.getEnv().setVar(args.get(0).toString(), value  ,false);
 

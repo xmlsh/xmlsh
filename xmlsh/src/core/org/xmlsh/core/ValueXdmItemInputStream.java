@@ -14,39 +14,39 @@ import org.xmlsh.sh.shell.SerializeOpts;
 public class ValueXdmItemInputStream implements IXdmItemInputStream {
 
 	private		XdmSequenceIterator 	mIter ;
-	
-	
-	
+
+
+
 	public ValueXdmItemInputStream(XValue value, SerializeOpts serializeOpts) {
 		if( value == null )
 			mIter = null ;
 		else 	
 			mIter = value.asXdmSequenceIterator();
-		
-		
+
+
 	}
 
-	
+
 	public ValueXdmItemInputStream(XdmValue value, SerializeOpts serializeOpts) {
 		if( value == null )
 			mIter = null ;
 		else 	
 			mIter = value.iterator();
-		
-		
+
+
 	}
-	
+
 	@Override
 	public XdmItem read() throws CoreException {
 		if( mIter == null )
 			return null ;
-		
+
 		if( mIter.hasNext() )
 			return mIter.next();
 		else
 			return null ;
-		
-		
+
+
 	}
 
 }

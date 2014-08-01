@@ -23,22 +23,22 @@ public class IORedirect {
 	public IORedirect( String portstring ) {
 		//OP(POT)
 		if( portstring.startsWith("<(") || 
-			portstring.startsWith(">(") ) {
-			
+				portstring.startsWith(">(") ) {
+
 			String op = portstring.substring(0,1);
 			String port = portstring.substring(1);
 			mFile = new IOFile( op , port );
-			
-	     }
+
+		}
 		else
-		// (port)OP<port)
-		if( portstring.startsWith("(")){
-			mPortname = portstring.substring(0, portstring.indexOf(')') + 1 );
-			String op = portstring.substring(mPortname.length(),portstring.lastIndexOf('(')) ;
-			String port2 = portstring.substring(mPortname.length() + op.length() );
-			mFile = new IOFile( op , port2 );
-		} 
-		
+			// (port)OP<port)
+			if( portstring.startsWith("(")){
+				mPortname = portstring.substring(0, portstring.indexOf(')') + 1 );
+				String op = portstring.substring(mPortname.length(),portstring.lastIndexOf('(')) ;
+				String port2 = portstring.substring(mPortname.length() + op.length() );
+				mFile = new IOFile( op , port2 );
+			} 
+
 	}
 	/* (port)OP fileWord */
 	public IORedirect( String portstring , Word file ) {
@@ -49,51 +49,51 @@ public class IORedirect {
 		} else
 			mFile = new IOFile( portstring , file );
 	}
-	
+
 	// <port> op file
 	public IORedirect( String portstring , String op , Word file ) {
 		mPortname = portstring ;
 		mFile = new IOFile( op , file );
 	}
-	
+
 	public IORedirect(String portname ,  IOHere here ){
 		mPortname = portname ;
 		mFile = null;
 		mHere = here;
 	}
-	
-	
+
+
 
 	public void print(PrintWriter out) {
-		
+
 		if( mPortname != null ){
 			out.print(mPortname);
-			
+
 		}
-			
+
 		if( mFile != null)
 			mFile.print(out);
 		if( mHere != null)
 			mHere.print(out);
 
-		
+
 	}
 
 	public void exec(Shell shell,SourceLocation loc ) throws Exception {
-		
+
 		String port = null;
 		if( mPortname != null )
 			port  = mPortname.substring(
-					  mPortname.indexOf('(') + 1 ,
-					  mPortname.indexOf(')'));
-		
-		
+					mPortname.indexOf('(') + 1 ,
+					mPortname.indexOf(')'));
+
+
 		if( mFile != null )
 			mFile.exec(shell,port,loc);
 		if( mHere != null )
 			mHere.exec( shell,port);
 
-		
+
 	}
 }
 //

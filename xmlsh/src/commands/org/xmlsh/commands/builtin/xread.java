@@ -26,6 +26,7 @@ public class xread extends BuiltinCommand {
 	 */
 
 
+	@Override
 	public int run( List<XValue> args ) throws Exception {
 
 		Options opts = new Options("p=port:,parse",SerializeOpts.getOptionDefs());
@@ -33,31 +34,31 @@ public class xread extends BuiltinCommand {
 
 		args = opts.getRemainingArgs();
 		setSerializeOpts(opts);
-		
-		
+
+
 		boolean bParse = opts.hasOpt("parse");
 		String port = opts.getOptString("port", null);
 
-		
-		
+
+
 		if( args.size() != 1 )
 			throw new InvalidArgumentException("requires 1 argument");
-		
+
 		mShell.getEnv().unsetVar(args.get(0).toString());
 
 		InputPort stdin = null ;
-		
+
 		XdmItem item = null ;
 		if( port != null ) {
 			stdin = mShell.getEnv().getInputPort(port);
 		} else
 			stdin = mShell.getEnv().getStdin();
-		
+
 
 		if( bParse ) {
 			try ( StreamInputPort ip = new StreamInputPort( stdin.asInputStream(getSerializeOpts()) , stdin.getSystemId() ) ){
-			item = ip.asXdmItem(getSerializeOpts());
-		  }
+				item = ip.asXdmItem(getSerializeOpts());
+			}
 		} else {
 			IXdmItemInputStream is = stdin.asXdmItemInputStream(getSerializeOpts());
 			item = is.read();

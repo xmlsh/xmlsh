@@ -8,7 +8,6 @@ package org.xmlsh.core;
 
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
-
 import org.xml.sax.InputSource;
 import org.xmlsh.sh.shell.SerializeOpts;
 
@@ -39,7 +38,7 @@ public abstract class InputPort extends AbstractPort implements IInputPort
 	@Override
 	public	abstract InputStream asInputStream(SerializeOpts opts) throws CoreException ;
 
-	
+
 	/* (non-Javadoc)
 	 * @see org.xmlsh.core.IInputPort#asSource(org.xmlsh.sh.shell.SerializeOpts)
 	 */
@@ -50,14 +49,14 @@ public abstract class InputPort extends AbstractPort implements IInputPort
 	 */
 	@Override
 	public abstract InputSource	asInputSource(SerializeOpts opts) throws CoreException;
-	
+
 
 	/* (non-Javadoc)
 	 * @see org.xmlsh.core.IInputPort#asXdmNode(org.xmlsh.sh.shell.SerializeOpts)
 	 */
 	@Override
 	public abstract XdmNode asXdmNode(SerializeOpts opts) throws CoreException;
-	
+
 	/* (non-Javadoc)
 	 * @see org.xmlsh.core.IInputPort#copyTo(java.io.OutputStream, org.xmlsh.sh.shell.SerializeOpts)
 	 */
@@ -81,8 +80,8 @@ public abstract class InputPort extends AbstractPort implements IInputPort
 	 */
 	@Override
 	public abstract XdmItem asXdmItem(SerializeOpts serializeOpts) throws CoreException;
-	
-	
+
+
 	/* (non-Javadoc)
 	 * @see org.xmlsh.core.IInputPort#asReader(org.xmlsh.sh.shell.SerializeOpts)
 	 */
@@ -90,7 +89,7 @@ public abstract class InputPort extends AbstractPort implements IInputPort
 	public Reader 	asReader( SerializeOpts serializeOpts ) throws UnsupportedEncodingException, CoreException {
 		return new InputStreamReader( asInputStream(serializeOpts) , serializeOpts.getInputTextEncoding()); 
 	}
-	
+
 	// Default implementation uses a singleton as the input stream
 	/* (non-Javadoc)
 	 * @see org.xmlsh.core.IInputPort#asXdmItemInputStream(org.xmlsh.sh.shell.SerializeOpts)
@@ -98,7 +97,7 @@ public abstract class InputPort extends AbstractPort implements IInputPort
 	@Override
 	public IXdmItemInputStream asXdmItemInputStream(SerializeOpts serializeOpts)
 			throws CoreException {
-		
+
 		return new ValueXdmItemInputStream( asXdmItem( serializeOpts),serializeOpts);
 	}
 
@@ -108,7 +107,7 @@ public abstract class InputPort extends AbstractPort implements IInputPort
 	 */
 	@Override
 	public abstract JsonNode asJson(SerializeOpts serializeOpts) throws IOException, CoreException ;
-	
+
 }
 
 

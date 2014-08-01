@@ -20,16 +20,16 @@ import java.util.List;
 
 public class xmlsh extends BuiltinCommand {
 
-	
+
 	boolean mTopShell = false ;
-	
-	
+
+
 	public xmlsh()
 	{
-		
+
 	}
-	
-	
+
+
 	/*
 	 * Special constructor for a top level shell which doesnt clone
 	 */
@@ -37,106 +37,107 @@ public class xmlsh extends BuiltinCommand {
 	{
 		mTopShell = bTopShell ;
 	}
-	
-	
-	
+
+
+
+	@Override
 	public int run( List<XValue> args ) throws Exception {
-			
+
 		Options opts = new Options( "x,v,c:,rcfile:,e,norc,+location,redirect-output:,redirect-input:,redirect-error:"  );
 		opts.parse(args);
 		Shell shell = getShell();
-		
+
 		if( ! mTopShell )
 			shell = shell.clone();
-		
-		
-	    int ret = 0;
+
+
+		int ret = 0;
 		try {
 			if( opts.hasOpt("v") )
 				shell.setOption("v", true);
-	    	if(opts.hasOpt("x"))
+			if(opts.hasOpt("x"))
 				shell.setOption("x", true);
-	    	
-	    	if( opts.hasOpt("e"))
-	    		shell.setOption("e", true);
-	    	if( opts.hasOpt("location"))
-	    		shell.setOption("location" , opts.getOptFlag("location",true));
-	    	
-	    	String command  = null ;
-	    	if( opts.hasOpt("c"))
-	    		command = opts.getOptStringRequired("c").toString();
-		    
-	    	boolean bNoRc = opts.hasOpt("norc");
-		    args = opts.getRemainingArgs();
-		    
-		    String rcfile =  opts.getOptString("rcfile", null );
-		    if( rcfile == null ){
-		    	XValue xrc = shell.getEnv().getVarValue(ShellConstants.XMLSHRC);
-		        if( xrc != null )
-		        	rcfile = xrc.toString();
-		    	if( rcfile == null ){
-			    	XValue home = shell.getEnv().getVarValue(ShellConstants.HOME);
-			    	if( home != null ){
-			    		rcfile = home.toString() + "/.xmlshrc" ;
-			    	}
-		    	}
-		    }	
-		    
-		    
-		    if( ! bNoRc && rcfile != null )
-		    	shell.runRC(rcfile);
-			
-			
-			
-		    
-		    if(  args.size() == 0 && command == null ){
-			   
-			    		
-		    	ret = shell.interactive();
-		    	
-		    } else {
-	
-		     	
-			    // Run command
-			    if(command != null)
-			    {
-	
-	
-			    	
-			    	Command cmd = new EvalScriptCommand( command );
-		    		ret = shell.exec(cmd);
-			    	
-	
-			    }
-			    else // Run script 
-			    {
-			    	
-			    	String scmd = args.remove(0).toString();
-			    	ICommand cmd = CommandFactory.getInstance().getScript( shell , scmd, true,getLocation() );
-			    	if( cmd == null ){
-			    		shell.printErr( scmd + ": not found",getLocation());
-			    	}
-			    	else {
-			    		
-			    			// Run as sourced mode, in this shell ...
-			    		// must set args ourselves
-			    		
-			    		shell.setArg0( scmd);
-			    		shell.setArgs(args );
-			    		ret = cmd.run( shell , scmd , null );
-			    	}
-			    	
-			    	
-			    }
-		    	
-		    }
+
+			if( opts.hasOpt("e"))
+				shell.setOption("e", true);
+			if( opts.hasOpt("location"))
+				shell.setOption("location" , opts.getOptFlag("location",true));
+
+			String command  = null ;
+			if( opts.hasOpt("c"))
+				command = opts.getOptStringRequired("c").toString();
+
+			boolean bNoRc = opts.hasOpt("norc");
+			args = opts.getRemainingArgs();
+
+			String rcfile =  opts.getOptString("rcfile", null );
+			if( rcfile == null ){
+				XValue xrc = shell.getEnv().getVarValue(ShellConstants.XMLSHRC);
+				if( xrc != null )
+					rcfile = xrc.toString();
+				if( rcfile == null ){
+					XValue home = shell.getEnv().getVarValue(ShellConstants.HOME);
+					if( home != null ){
+						rcfile = home.toString() + "/.xmlshrc" ;
+					}
+				}
+			}	
+
+
+			if( ! bNoRc && rcfile != null )
+				shell.runRC(rcfile);
+
+
+
+
+			if(  args.size() == 0 && command == null ){
+
+
+				ret = shell.interactive();
+
+			} else {
+
+
+				// Run command
+				if(command != null)
+				{
+
+
+
+					Command cmd = new EvalScriptCommand( command );
+					ret = shell.exec(cmd);
+
+
+				}
+				else // Run script 
+				{
+
+					String scmd = args.remove(0).toString();
+					ICommand cmd = CommandFactory.getInstance().getScript( shell , scmd, true,getLocation() );
+					if( cmd == null ){
+						shell.printErr( scmd + ": not found",getLocation());
+					}
+					else {
+
+						// Run as sourced mode, in this shell ...
+						// must set args ourselves
+
+						shell.setArg0( scmd);
+						shell.setArgs(args );
+						ret = cmd.run( shell , scmd , null );
+					}
+
+
+				}
+
+			}
 		} finally {
 			if( ! mTopShell )
 				shell.close();
-			
+
 		}
-	    return ret ;
-				
+		return ret ;
+
 	}
 
 

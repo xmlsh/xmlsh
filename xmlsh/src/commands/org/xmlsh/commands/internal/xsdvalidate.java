@@ -20,57 +20,57 @@ import java.util.List;
 
 public class xsdvalidate extends XCommand {
 
-	
+
 	@Override
 	public int run( List<XValue> args )
-	throws Exception 
-	{
+			throws Exception 
+			{
 
-		
+
 		Options opts = new Options( "psvi" , SerializeOpts.getOptionDefs() );
 		opts.parse(args);
-		
 
-		
+
+
 		String schema = null;
-	
 
-		
+
+
 		SerializeOpts sopts = getSerializeOpts(opts);
 		args= opts.getRemainingArgs();
 		InputPort in = null;
-		
-		
+
+
 		if( args.size() < 1 ){
 			usage("XSD file expected");
 			return -1;
-			
+
 		}
-		
+
 		schema = args.remove(0).toString();
-		
-		
+
+
 		if( args.size() > 0 )
 			in = getInput(args.get(0));
 		else
 			in = getStdin();
-		
+
 		if( schema != null ){
 			XSDValidator v = null ; 
-				
+
 			if( schema.indexOf(' ') < 0 )
 				v = new XSDValidator( getEnv().getShell().getURL(schema).toString() );
 			else
 				v = new XSDValidator( getSchemaList(schema) );
-				
+
 			v.validate( in.asInputSource(sopts));
 		} 
-		
-		
-		
+
+
+
 		return 0;
 
-	}
+			}
 	/*
 	 * Return a list of  
 	 *     namespace-uri  schema-uri
@@ -89,10 +89,10 @@ public class xsdvalidate extends XCommand {
 
 
 
-	
 
 
-	
+
+
 
 }
 

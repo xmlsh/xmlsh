@@ -28,12 +28,12 @@ public class xwc extends XCommand {
 
 	@Override
 	public int run(List<XValue> args) throws Exception {
-		
+
 		Options opts = new Options( SerializeOpts.getOptionDefs() );
 		opts.parse(args);
 		args = opts.getRemainingArgs();
-		
-		
+
+
 		InputPort stdin = null;
 		if( args.size() > 0 )
 			stdin = getInput( args.get(0));
@@ -46,25 +46,25 @@ public class xwc extends XCommand {
 			throw new InvalidArgumentException("Cannot open input");
 		}
 		try {
-			
+
 			setSerializeOpts(opts);
-			
+
 			XMLStreamReader reader = stdin.asXMLStreamReader(getSerializeOpts());
 			count(reader);
 			reader.close();
-			
+
 			XMLStreamWriter writer =stdout.asXMLStreamWriter(getSerializeOpts());
 			output(writer);
 			writer.flush();
 			writer.close();
-			
+
 		} 
 		finally {
-			
+
 		}
 		return 0;
-		
-		
+
+
 	}
 
 	private void output(XMLStreamWriter writer) throws XMLStreamException {
@@ -88,12 +88,12 @@ public class xwc extends XCommand {
 
 		writer.writeEndElement();
 		writer.writeEndDocument();
-	
+
 	}
 
 	private void write(XMLStreamWriter writer, String localName, int n) throws XMLStreamException {
 		writer.writeStartElement(localName);
-		
+
 		writer.writeCharacters( String.valueOf(n));
 		writer.writeEndElement();
 	}
@@ -104,7 +104,7 @@ public class xwc extends XCommand {
 			counts[ event-1]++;
 			if( event == XMLStreamConstants.START_ELEMENT ){
 				counts[ XMLStreamConstants.ATTRIBUTE -1 ] += reader.getAttributeCount();
-				
+
 			}
 		}
 	}

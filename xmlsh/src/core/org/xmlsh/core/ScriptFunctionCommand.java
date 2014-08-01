@@ -15,22 +15,22 @@ import java.io.InputStream;
 import java.util.List;
 
 public class ScriptFunctionCommand extends BuiltinFunctionCommand {
-	
-	
+
+
 	private InputStream mScript;
 	private Module mModule;
 	private SourceLocation mLocation;
-	
-	
-	
-	
+
+
+
+
 	public ScriptFunctionCommand(String name , InputStream is, Module module ) {
 		super(name);
 		mScript = is;
 		mModule = module ;
-		
+
 	}
-	
+
 	private void close()
 	{
 		try {
@@ -42,30 +42,30 @@ public class ScriptFunctionCommand extends BuiltinFunctionCommand {
 
 	@Override
 	public XValue run(Shell shell, List<XValue> args ) throws Exception {
-		
-		
+
+
 		try {
 			Shell sh = shell.clone();
 			try {
-					if( args != null )
-						sh.setArgs(args);
-					sh.setArg0(getName());
-					int iret = shell.runScript(mScript, getName(),false);
-					
-					return shell.getReturnValue(true);
-				} finally {
-					// Close shell - even if exception is thrown through sh.runScript and up
-					sh.close();
+				if( args != null )
+					sh.setArgs(args);
+				sh.setArg0(getName());
+				int iret = shell.runScript(mScript, getName(),false);
 
-				}
+				return shell.getReturnValue(true);
+			} finally {
+				// Close shell - even if exception is thrown through sh.runScript and up
+				sh.close();
+
+			}
 
 		}
-			
+
 		finally {
 			close();
 		}
-		
-		
+
+
 	}
 
 }

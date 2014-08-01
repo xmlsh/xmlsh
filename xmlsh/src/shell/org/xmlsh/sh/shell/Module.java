@@ -33,7 +33,6 @@ import org.xmlsh.util.Util;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintWriter;
 import java.lang.reflect.Constructor;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -48,14 +47,14 @@ public class Module {
 	private String mPackage; // may NOT be null
 	private ClassLoader mClassLoader; // Classloader for this module
 	private	 URL mHelpURL = null ; 
-	
+
 	private		HashMap<String , Class<?>>		mClassCache = new HashMap<String,Class<?>>();
 	private		HashMap<String , Boolean>	mScriptCache = new HashMap<String,Boolean>();
 	private static Logger mLogger = LogManager.getLogger(Module.class);
-	
-	
+
+
 	private Class mJavaClass ; // If this is a Java module
-    
+
 
 	/*
 	 * Constructor for internal modules like xlmsh
@@ -86,150 +85,150 @@ public class Module {
 			URL configURL;
 			URI nameURI;
 			File modDir  = null ;
-			
+
 			// "java:xxx 
 			try {
 				nameURI = shell.getURI(nameuri);
-				
-				
+
+
 
 			} catch( Exception e ) {
 				mLogger.trace("excpetion parsing module as URI: " + nameuri , e );
 				nameURI = null;
 			}
-			
+
 			if( nameURI != null && Util.isEqual(nameURI.getScheme(),"java") )
 				initJavaModule( shell ,  nameURI ,args);
 			else {
-			
-			
-			
-			if (nameuri.endsWith(".xml")) {
-				configURL = shell.getURL(nameuri);
-				if( configURL.getProtocol().equals("file"))
-					modDir = new File(configURL.getPath()).getParentFile();
 
-			} else {
 
-				Path path = shell.getPath(ShellConstants.XMODPATH, true );
-				modDir = path.getFirstFileInPath(shell,nameuri);
-				if (modDir == null)
-					throw new InvalidArgumentException("Cannot find module directory for : " + nameuri);
 
-				File config = new File(modDir, "module.xml");
-				if (!config.exists())
-					throw new InvalidArgumentException("Cannot find module.xml in directory : " + modDir.getAbsolutePath() );
-				configURL = config.toURI().toURL();
-			}
+				if (nameuri.endsWith(".xml")) {
+					configURL = shell.getURL(nameuri);
+					if( configURL.getProtocol().equals("file"))
+						modDir = new File(configURL.getPath()).getParentFile();
 
-			initModule(shell, configURL, modDir);
-			
-			
+				} else {
+
+					Path path = shell.getPath(ShellConstants.XMODPATH, true );
+					modDir = path.getFirstFileInPath(shell,nameuri);
+					if (modDir == null)
+						throw new InvalidArgumentException("Cannot find module directory for : " + nameuri);
+
+					File config = new File(modDir, "module.xml");
+					if (!config.exists())
+						throw new InvalidArgumentException("Cannot find module.xml in directory : " + modDir.getAbsolutePath() );
+					configURL = config.toURI().toURL();
+				}
+
+				initModule(shell, configURL, modDir);
+
+
 			}
 
 		} 
 		catch( CoreException e )
 		{
 			throw e ;
-			
+
 		}
-		
+
 		catch (Exception e) {
 			throw new CoreException(e);
 		}
 
 	}
-	
+
 
 	private void initJavaModule(Shell shell, URI nameURI, List<XValue> args) throws CoreException
-    {
+	{
 		List<URL> classpath = null;
-		 if( args.size() > 1 && args.remove(0).toString().equals("at") ) {
-			    classpath = new ArrayList<URL>();
-			    for( XValue xv : args ) {
-	    		  URL classurl = shell.getURL(xv.toString());
-	    		  classpath.add(classurl);
-			    }
-		 }
-		 
-		 mClassLoader = getClassLoader(classpath);
-		 mHelpURL = null ;
-		 String clsname  = nameURI.getRawSchemeSpecificPart();
-		 
+		if( args.size() > 1 && args.remove(0).toString().equals("at") ) {
+			classpath = new ArrayList<URL>();
+			for( XValue xv : args ) {
+				URL classurl = shell.getURL(xv.toString());
+				classpath.add(classurl);
+			}
+		}
+
+		mClassLoader = getClassLoader(classpath);
+		mHelpURL = null ;
+		String clsname  = nameURI.getRawSchemeSpecificPart();
 
 
-		 int ldot = clsname.lastIndexOf('.');
-		 mName= clsname.substring(ldot+1);
-		 mPackage = clsname.substring(0,ldot);
-		 mJavaClass = findClass( mName );
-		 if( mJavaClass == null )
-			 throw new InvalidArgumentException("Class not found:" + clsname);
-		 
-		
-    }
+
+		int ldot = clsname.lastIndexOf('.');
+		mName= clsname.substring(ldot+1);
+		mPackage = clsname.substring(0,ldot);
+		mJavaClass = findClass( mName );
+		if( mJavaClass == null )
+			throw new InvalidArgumentException("Class not found:" + clsname);
+
+
+	}
 
 	private void initModule(Shell shell, URL configURL, File modDir) throws IOException, SaxonApiException,
-            UnexpectedException, InvalidArgumentException, MalformedURLException
-    {
-	    XdmNode configNode;
-	    configNode = Util.asXdmNode(configURL);
+	UnexpectedException, InvalidArgumentException, MalformedURLException
+	{
+		XdmNode configNode;
+		configNode = Util.asXdmNode(configURL);
 
-	    List<URL> classpath = new ArrayList<URL>();
+		List<URL> classpath = new ArrayList<URL>();
 
-	    XValue xv = new XValue(configNode);
-	    mPackage = xv.xpath(shell,"/module/@package/string()").toString();
-	    mName = xv.xpath(shell,"/module/@name/string()").toString();
-	    String require = xv.xpath(shell,"/module/@require/string()").toString();
-	    if( !Util.isBlank(require)){
-	    	int ret = shell.requireVersion(mName,require);
-	    	if( ret != 0 )
-	    		throw new InvalidArgumentException("Module " + mName + " requires version " + require );
-	    }
-	    
-	    
+		XValue xv = new XValue(configNode);
+		mPackage = xv.xpath(shell,"/module/@package/string()").toString();
+		mName = xv.xpath(shell,"/module/@name/string()").toString();
+		String require = xv.xpath(shell,"/module/@require/string()").toString();
+		if( !Util.isBlank(require)){
+			int ret = shell.requireVersion(mName,require);
+			if( ret != 0 )
+				throw new InvalidArgumentException("Module " + mName + " requires version " + require );
+		}
 
-	    for (XdmItem item : xv.xpath(shell,"/module/classpath/file").asXdmValue()) {
-	    	if (item instanceof XdmNode) {
-	    		String file = ((XdmNode) item).getAttributeValue(new QName("url"));
-	    		URL classurl = new URL(configURL, file);
-	    		classpath.add(classurl);
 
-	    	}
 
-	    }
-	    
-	    
-	    if( modDir != null )
-	    	for (XdmItem item : xv.xpath(shell,"/module/classpath/directory").asXdmValue()) {
-	    		if (item instanceof XdmNode) {
-	    			String dir = ((XdmNode) item).getAttributeValue(new QName("url"));
-	    			
-	    			for( String file : listFiles(modDir,dir) ){
-	    				URL classurl = new URL(configURL, file);
-	    				classpath.add(classurl);
-	    			}
+		for (XdmItem item : xv.xpath(shell,"/module/classpath/file").asXdmValue()) {
+			if (item instanceof XdmNode) {
+				String file = ((XdmNode) item).getAttributeValue(new QName("url"));
+				URL classurl = new URL(configURL, file);
+				classpath.add(classurl);
 
-	    		}
+			}
 
-	    	}
-	    	
+		}
 
-	    mClassLoader = getClassLoader(classpath);
-	    mHelpURL = mClassLoader.getResource(toResourceName("commands.xml"));
-    }
+
+		if( modDir != null )
+			for (XdmItem item : xv.xpath(shell,"/module/classpath/directory").asXdmValue()) {
+				if (item instanceof XdmNode) {
+					String dir = ((XdmNode) item).getAttributeValue(new QName("url"));
+
+					for( String file : listFiles(modDir,dir) ){
+						URL classurl = new URL(configURL, file);
+						classpath.add(classurl);
+					}
+
+				}
+
+			}
+
+
+		mClassLoader = getClassLoader(classpath);
+		mHelpURL = mClassLoader.getResource(toResourceName("commands.xml"));
+	}
 
 	private List<String> listFiles(File modDir, String dir) throws IOException {
-		
+
 		List<String> files = new ArrayList<String>();
 		File file = new File( modDir , dir );
 		for( String f : file.list() )
 			if( f.endsWith(".jar"))
 				files.add(f);
-		
+
 		return files;
-		
-		
-		
+
+
+
 	}
 
 	public boolean isJavaModule() {
@@ -252,31 +251,31 @@ public class Module {
 		 * name should NOT begin with a "/"
 		 * 
 		 */
-		
-		
+
+
 		/*
 		 * Get cached indication of if there is a resource by this name
 		 */
-		
+
 		Boolean hasResource = mScriptCache.get(name);
 		if( hasResource != null && ! hasResource.booleanValue() )
 			return null ;
-		
-		
+
+
 		String resource = toResourceName(name);
 		InputStream is = mClassLoader.getResourceAsStream(resource);
 
 		mScriptCache.put( name , is != null );
-		
+
 		return is;
 	}
 
 	private String toResourceName(String name) {
 		String resource = /* "/" + */
-		mPackage.replace('.', '/') + "/" + name;
+				mPackage.replace('.', '/') + "/" + name;
 		return resource;
 	}
-	
+
 	private boolean hasCommandResource(String name) {
 		String resource = toResourceName(name);
 		return ( mClassLoader.getResource(resource)  != null );
@@ -288,15 +287,15 @@ public class Module {
 		/*
 		 * Convert from hyphen-case to camelCase 
 		 */
-		
+
 		name = convertCamelCase( name );
 		name = fromReserved( name );
-		
+
 		// Store the camel name not the hyphen name
 		String origName = name ;
-		
-		
-		
+
+
+
 		/*
 		 * First try to find a class that matches name
 		 */
@@ -325,21 +324,21 @@ public class Module {
 		 * Second 
 		 * Try a script stored as a resource
 		 */
-		
-		
+
+
 		// mScriptCache caches a Boolean indicating whether the resource is found or not
 		// No entry in cache means it has not been tested yet
-		
+
 		// Failures are cached with a null command
 		String scriptName = origName + ".xsh";
-		
+
 		InputStream scriptStream = getCommandResource(scriptName);
 		if (scriptStream != null)
 
 			return new ScriptCommand(name, scriptStream, false, this);
 
 		return null ;
-		
+
 	}
 	private String fromReserved( String name )
 	{
@@ -348,7 +347,7 @@ public class Module {
 		else
 			return  name;
 	}
-	
+
 	/*
 	 * Conversts hypen-case to camelCase, also converts from any reserved word 
 	 */
@@ -356,74 +355,74 @@ public class Module {
 	private String convertCamelCase(String name) {
 		if( name.indexOf('-')  < 0 )
 			return name ;
-		
-		
+
+
 		String parts[] = name.split("-");
 		if( parts.length == 1 )
 			return name ;
-		
+
 		StringBuffer result = new StringBuffer( name.length() );
-		
+
 		for( String p : parts ){
 			if( p.length() == 0 )
 				continue ;
-			
+
 			if( result.length() == 0 )
 				result.append(p );
 			else {
 				result.append( Character.toUpperCase( p.charAt(0)) );
 				result.append( p.substring(1));
 			}
-			
-			
+
+
 		}
-		
+
 		return result.toString();
-		
-		
-		
+
+
+
 	}
 
 	private Class<?> findClass(String name)  {
-		
-		
+
+
 		String 	className = mPackage + "." + name;
-		
+
 		// Find cached class name even if null 
 		// This caches failures as well as successes
 		// Consider changing to a WeakHashMap<> if this uses up too much memory caching failed lookups
 		if( mClassCache.containsKey(className))
 			return mClassCache.get(className);
-		
+
 		Class<?> cls = null;
 		try {
 			cls = Class.forName(className, true, mClassLoader);
 		} catch (ClassNotFoundException e) {
-			
+
 		}
 		// Store class in cache even if null
 		mClassCache.put(className , cls );
 		return cls;
-		
-		
+
+
 	}
-	
+
 
 	public IFunction getFunctionClass(String name) {
 
 		if( isJavaModule() )
 			return getJavaFunctionClass( name );
-		
-		
+
+
 		String origName = name ;
 		/*
 		 * Convert from camelCase to hypen-case
 		 */
-		
+
 		name = convertCamelCase( name );
 		name = fromReserved(name);
-		
-		
+
+
 		try {
 
 			Class<?> cls = findClass(name);
@@ -433,7 +432,7 @@ public class Module {
 					Object obj = constructor.newInstance();
 					if( obj instanceof IFunction ){
 						IFunction cmd = (IFunction) obj ;
-						
+
 						return cmd;
 					}
 				}
@@ -443,7 +442,7 @@ public class Module {
 			;
 
 		}
-		
+
 		/*
 		 * Try a script
 		 */
@@ -452,54 +451,54 @@ public class Module {
 			return new ScriptFunctionCommand(name, scriptStream,  this );
 		return null;
 
-		
+
 	}
 
 	private IFunction getJavaFunctionClass(final String name)
-    {
-		
+	{
+
 		final Module thisModule = this;
 		return new IFunction() {
 
 			@Override
-            public String getName()
-            {
-	           return name ;
-            }
+			public String getName()
+			{
+				return name ;
+			}
 
 			@Override
-            public Command getBody()
-            {
-					return new JavaModuleFunctionCommand(thisModule , name, mJavaClass, mClassLoader);
-				
-            }
+			public Command getBody()
+			{
+				return new JavaModuleFunctionCommand(thisModule , name, mJavaClass, mClassLoader);
+
+			}
 
 			@Override
-            public EvalEnv argumentEnv(EvalEnv parent)
-            {
-	           return parent ;
-            }
+			public EvalEnv argumentEnv(EvalEnv parent)
+			{
+				return parent ;
+			}
 
 			@Override
-            public EvalEnv returnEnv(EvalEnv parent)
-            {
-	            return parent ;
-            }
-			
-			
+			public EvalEnv returnEnv(EvalEnv parent)
+			{
+				return parent ;
+			}
+
+
 		} ;
-		
-		
-		
-		
-		
-    }
+
+
+
+
+
+	}
 
 	private ClassLoader getClassLoader(List<URL> classpath) {
 		if (classpath == null || classpath.size() == 0)
 			return getClass().getClassLoader();
 
-		return new XClassLoader((URL[]) classpath.toArray(new URL[classpath.size()]), getClass()
+		return new XClassLoader(classpath.toArray(new URL[classpath.size()]), getClass()
 				.getClassLoader());
 
 	}
@@ -519,14 +518,14 @@ public class Module {
 			res = res.substring(1);
 		return mClassLoader.getResource(res);
 	}
-	
+
 	public boolean hasCommand( String name )
 	{
-	
+
 		try {
 
 			Class<?> cls = findClass(name);
-			
+
 			if( cls != null )
 				return true ;
 
@@ -536,10 +535,10 @@ public class Module {
 		}
 
 		return hasCommandResource(name + ".xsh");
-		
+
 
 	}
-	
+
 	public URL getHelpURL()
 	{
 		return mHelpURL;
@@ -551,9 +550,9 @@ public class Module {
 	public String getPackage() {
 		return mPackage;
 	}
-	
-	
-	
+
+
+
 }
 
 //

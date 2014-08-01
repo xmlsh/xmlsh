@@ -13,9 +13,10 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import org.xml.sax.InputSource;
+import org.xmlsh.json.JSONUtils;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.util.FileUtils;
-import org.xmlsh.util.JSONUtils;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -32,22 +33,22 @@ import com.fasterxml.jackson.databind.JsonNode;
 public class FileInputPort extends InputPort
 {
 
-	
+
 	private		static 	Logger	mLogger = LogManager.getLogger( FileOutputPort.class );				
-	
+
 	private		StreamInputPort		mStreamPort = null ;
 	private		File				mFile  = null ;
 
-	
-	
-	
+
+
+
 	private FileInputPort( File file , String sysid ) throws IOException
 	{
 		mFile = file;
 		super.setSystemId(sysid);
 		if( FileUtils.isNullFile(file))
 			return ;
-		
+
 		if( ! (mFile.exists() && mFile.isFile() && mFile.canRead()) )
 			throw new FileNotFoundException("File does not exist or is not a file or not readable: " +  mFile.getAbsolutePath());
 	}
@@ -65,6 +66,7 @@ public class FileInputPort extends InputPort
 	 * @param systemId
 	 * @see org.xmlsh.core.AbstractPort#setSystemId(java.lang.String)
 	 */
+	@Override
 	public void setSystemId(String systemId) {
 		super.setSystemId(systemId);
 		if( mStreamPort != null )
@@ -93,6 +95,7 @@ public class FileInputPort extends InputPort
 	 * @throws CoreException
 	 * @see org.xmlsh.core.StreamInputPort#asInputStream(org.xmlsh.sh.shell.SerializeOpts)
 	 */
+	@Override
 	public InputStream asInputStream(SerializeOpts opts) throws CoreException {
 		return getStreamPort().asInputStream(opts);
 	}
@@ -105,6 +108,7 @@ public class FileInputPort extends InputPort
 	 * @throws IOException 
 	 * @see org.xmlsh.core.StreamInputPort#close()
 	 */
+	@Override
 	public void close() throws IOException {
 		if( mStreamPort != null )
 			mStreamPort.close();
@@ -120,6 +124,7 @@ public class FileInputPort extends InputPort
 	 * @throws CoreException
 	 * @see org.xmlsh.core.StreamInputPort#asSource(org.xmlsh.sh.shell.SerializeOpts)
 	 */
+	@Override
 	public Source asSource(SerializeOpts opts) throws CoreException {
 		return getStreamPort().asSource(opts);
 	}
@@ -132,6 +137,7 @@ public class FileInputPort extends InputPort
 	 * @return
 	 * @see org.xmlsh.core.InputPort#isFile()
 	 */
+	@Override
 	public boolean isFile() {
 		return mFile != null  ;
 	}
@@ -142,6 +148,7 @@ public class FileInputPort extends InputPort
 	 * @throws UnimplementedException
 	 * @see org.xmlsh.core.InputPort#getFile()
 	 */
+	@Override
 	public File getFile() throws UnimplementedException {
 		return mFile ;
 	}
@@ -156,6 +163,7 @@ public class FileInputPort extends InputPort
 	 * @throws CoreException
 	 * @see org.xmlsh.core.StreamInputPort#asInputSource(org.xmlsh.sh.shell.SerializeOpts)
 	 */
+	@Override
 	public InputSource asInputSource(SerializeOpts opts) throws CoreException {
 		return getStreamPort().asInputSource(opts);
 	}
@@ -170,6 +178,7 @@ public class FileInputPort extends InputPort
 	 * @throws CoreException
 	 * @see org.xmlsh.core.StreamInputPort#asXdmNode(org.xmlsh.sh.shell.SerializeOpts)
 	 */
+	@Override
 	public XdmNode asXdmNode(SerializeOpts opts) throws CoreException {
 		return getStreamPort().asXdmNode(opts);
 	}
@@ -184,6 +193,7 @@ public class FileInputPort extends InputPort
 	 * @throws IOException
 	 * @see org.xmlsh.core.StreamInputPort#copyTo(java.io.OutputStream, org.xmlsh.sh.shell.SerializeOpts)
 	 */
+	@Override
 	public void copyTo(OutputStream out, SerializeOpts opts) throws CoreException, IOException {
 		getStreamPort().copyTo(out, opts);
 	}
@@ -198,6 +208,7 @@ public class FileInputPort extends InputPort
 	 * @throws CoreException
 	 * @see org.xmlsh.core.StreamInputPort#asXMLEventReader(org.xmlsh.sh.shell.SerializeOpts)
 	 */
+	@Override
 	public XMLEventReader asXMLEventReader(SerializeOpts opts) throws CoreException {
 		return getStreamPort().asXMLEventReader(opts);
 	}
@@ -212,6 +223,7 @@ public class FileInputPort extends InputPort
 	 * @throws CoreException
 	 * @see org.xmlsh.core.StreamInputPort#asXMLStreamReader(org.xmlsh.sh.shell.SerializeOpts)
 	 */
+	@Override
 	public XMLStreamReader asXMLStreamReader(SerializeOpts opts) throws CoreException {
 		return getStreamPort().asXMLStreamReader(opts);
 	}
@@ -225,6 +237,7 @@ public class FileInputPort extends InputPort
 	 * @throws CoreException
 	 * @see org.xmlsh.core.StreamInputPort#asXdmItem(org.xmlsh.sh.shell.SerializeOpts)
 	 */
+	@Override
 	public XdmItem asXdmItem(SerializeOpts serializeOpts) throws CoreException {
 		return getStreamPort().asXdmItem(serializeOpts);
 	}
@@ -233,14 +246,14 @@ public class FileInputPort extends InputPort
 	@Override
 	public JsonNode asJson(SerializeOpts serializeOpts) throws IOException, CoreException {
 		return JSONUtils.readJsonNode( asInputStream(serializeOpts));
-		
-		
+
+
 	}
 
 
-	
-	
-	
+
+
+
 }
 
 

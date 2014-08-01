@@ -27,7 +27,7 @@ public class MutableInteger {
 	public void setValue(int value) {
 		mValue = value;
 	}
-	
+
 
 }
 

@@ -46,7 +46,7 @@ public class XMLException extends CoreException
 		// TODO Auto-generated constructor stub
 	}
 
-    
+
 
 
 }

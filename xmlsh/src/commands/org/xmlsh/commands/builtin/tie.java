@@ -16,21 +16,22 @@ import java.util.List;
  */
 public class tie extends BuiltinCommand {
 
-	
+
+	@Override
 	public int run( List<XValue> args ) throws Exception {
-			
-			if( args.size() < 1 ){
-				usage();
-				return -1;
-			}
-			
-			String var = args.get(0).toString();
-			String expr = args.size() > 1 ? args.get(1).toString() : null ;
-			mShell.getEnv().tie( mShell , var , expr );
-			return 0;
-				
+
+		if( args.size() < 1 ){
+			usage();
+			return -1;
+		}
+
+		String var = args.get(0).toString();
+		String expr = args.size() > 1 ? args.get(1).toString() : null ;
+		mShell.getEnv().tie( mShell , var , expr );
+		return 0;
+
 	}
-	
+
 
 
 

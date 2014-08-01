@@ -23,45 +23,45 @@ import javax.xml.transform.stream.StreamSource;
 public class ShellModuleURIResolver implements ModuleURIResolver {
 	private		Shell	mShell = null;
 	private Logger mLogger = LogManager.getLogger(ShellModuleURIResolver.class);
-	
-	
-	
-	
+
+
+
+
 	public ShellModuleURIResolver( Shell shell )
 	{
 		mShell = shell ;
 	}
-	
-	
+
+
 	@Override
 	public StreamSource[] resolve(String moduleURI, String baseURI, String[] locations)
 			throws XPathException {
-		
+
 		mLogger.debug("Resolve URI: " + moduleURI +  " " + baseURI + " " + Util.stringJoin( Arrays.asList(locations) , "|") );
-		
+
 		if( moduleURI.equals("http://www.functx.com")){
-			
+
 			URL url = mShell.getResource("/org/xmlsh/resources/modules/functx.xquery");
 			if( url == null )
 				return null ;
-			
+
 			try {
 				URI uri = url.toURI();
-				
-				
+
+
 				StreamSource[] result = new StreamSource[1];
 				result[0] = new StreamSource( url.openStream() , uri.toString() );
 				return result ;
-				
-				
+
+
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		
+
 		}
 
-		
+
 		return null;
 	}
 

@@ -15,7 +15,7 @@ import java.io.File;
 import java.util.List;
 
 public class chmod extends XCommand {
-	
+
 	private static class Perm
 	{			
 		boolean 	bRead = false;
@@ -34,7 +34,7 @@ public class chmod extends XCommand {
 			bWrite = s.contains("w");
 			bExecute = s.contains("x");
 		}
-		
+
 		void add( Perm p )
 		{
 			bRead = bRead || p.bRead;
@@ -51,12 +51,12 @@ public class chmod extends XCommand {
 				bExecute = false ;
 		}
 	}
-	
+
 	private boolean bRecurse ;
 	/*
 	 * Parse a single permission mask [rxx]
 	 */
-	
+
 	private void applyMode( String mode , File file ) throws InvalidArgumentException
 	{
 		for( String s : mode.split(",")){
@@ -67,68 +67,68 @@ public class chmod extends XCommand {
 				applyMode( mode , child );
 			}
 		}
-			
-		
-		
+
+
+
 	}
-	
+
 	/*
 	 * Parse a single mode and apply it to a file
 	 *     [aou][-|+|=][rwx]
 	 */
 	private void applyMode2( String mode , File file ) throws InvalidArgumentException
 	{
-		
+
 		boolean bOther = false ;
 		boolean bOwner = false ;
 
 		String[] fl = mode.split("[-+=]");
 		if( fl.length != 2 )
 			throw new InvalidArgumentException("Unexpected mode string: " + mode);
-		
+
 		String users = fl[0];
 		String perms = fl[1];
 		String plusminus = mode.substring(users.length() , mode.length() - perms.length() );
-		
+
 		Perm permFile = new Perm( file );
 		Perm permAll = permFile ;
 		Perm permUser = permFile ;
 		Perm permMode = new Perm(perms);
-		
-		
-		
+
+
+
 		bOther = users.contains("o") || users.contains("a");
 		bOwner = users.contains("u") || users.contains("a");	
-		
+
 		if( plusminus.equals("+")){
 			if( bOther )
 				permAll.add(permMode);
 			if( bOwner )
 				permUser.add(permMode);
-			
+
 		}
 		else
-		if( plusminus.equals("-")){
-			if( bOther )
-				permAll.sub(permMode);
-			if( bOwner )
-				permUser.sub(permMode);			
-		}
-		else
-		if( plusminus.equals("="))
-		{
-			if( bOther )
-				permAll = permMode;
-			if( bOwner )
-				permUser = permMode ;
-		}
-				
+			if( plusminus.equals("-")){
+				if( bOther )
+					permAll.sub(permMode);
+				if( bOwner )
+					permUser.sub(permMode);			
+			}
+			else
+				if( plusminus.equals("="))
+				{
+					if( bOther )
+						permAll = permMode;
+					if( bOwner )
+						permUser = permMode ;
+				}
+
 		/*
 		 * other set - set all first
 		 * owner set - the set owner only
 		 * other but not owner - cant do
 		 */
-		
+
 
 		if( bOther ){
 			file.setReadable( permAll.bRead , false );
@@ -140,34 +140,34 @@ public class chmod extends XCommand {
 			file.setExecutable(permUser.bExecute , true );
 			file.setWritable(permUser.bWrite, true  );
 		}
-		
-				
-				
-		
+
+
+
+
 	}
-	
+
 
 
 	@Override
 	public int run(List<XValue> args) throws Exception {
-		
-		
+
+
 		Options opts = new Options( "R=recurse" );
 		opts.parse(args);
 		args = opts.getRemainingArgs();
 		bRecurse = opts.hasOpt("R");
-		
+
 		String mode = args.remove(0).toString();
 		for( XValue arg : args){
 			File f = this.getFile(arg);
 			applyMode( mode , f );
-			
+
 		}
-		
-	
-		
+
+
+
 		return 0;
-		
+
 	}
 
 }

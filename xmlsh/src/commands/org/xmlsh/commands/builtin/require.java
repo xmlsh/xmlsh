@@ -16,29 +16,29 @@ public class require extends BuiltinCommand {
 
 	@Override
 	protected int run(List<XValue> args) throws Exception {
-		
+
 		// Require with no args simply requires the require command exists
 		// Added in version 1.0.1
 		if( args.size() == 0 )
 			return 0;
-		
+
 		String sreq = args.get(0).toString();
-		
+
 		int ret = mShell.requireVersion(null,sreq);
 		if( ret == 0 )
 			return 0;
-		
+
 		if( mShell.isInCommandConndition() )
 			return 1;
-		
-		
+
+
 		String err = "requires version: " + sreq ;  
 		printErr(err);
-		
+
 		throw new ThrowException(new XValue(err) );
-		
-		
-		
+
+
+
 	}
 }
 

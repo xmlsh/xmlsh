@@ -22,57 +22,58 @@ import java.net.URI;
 import java.util.List;
 
 public class xecho extends BuiltinCommand {
-	
+
+	@Override
 	public int run( List<XValue> args ) throws Exception {
-		
+
 		Options opts = new Options( "n,p=port:" , SerializeOpts.getOptionDefs() );
 		opts.parse(args);
-		
+
 		args = opts.getRemainingArgs();
 		boolean nolf = opts.hasOpt("n");
-	
+
 		String port = opts.getOptString("p", null);
-		
+
 		OutputPort stdout = 
-			port != null ? mShell.getEnv().getOutputPort(port) : 
-			mShell.getEnv().getStdout();
+				port != null ? mShell.getEnv().getOutputPort(port) : 
+					mShell.getEnv().getStdout();
 
-		if( stdout == null )
-			throw new InvalidArgumentException("Output port not found: " + port );
-		
+				if( stdout == null )
+					throw new InvalidArgumentException("Output port not found: " + port );
 
-		
-		
-		SerializeOpts serializeOpts = mShell.getSerializeOpts(opts);
-		IXdmItemOutputStream dest =  stdout.asXdmItemOutputStream(serializeOpts);
 
-		args = Util.expandSequences(args);
-		
-		boolean bFirst = true;
-		for ( XValue arg : args ){
-				if( ! bFirst )
-					stdout.writeSequenceSeperator(serializeOpts);
-				
-				else {
-					 XdmValue item = arg.asXdmValue();
-					if( item instanceof XdmNode ){
-						XdmNode xdmNode = ((XdmNode)item);
-						// DAL: Note workaround bug in Saxon, crashes if getBaseURI on Attribute or text
-						if( xdmNode.getNodeKind() != XdmNodeKind.ATTRIBUTE &&
-								xdmNode.getNodeKind() != XdmNodeKind.TEXT ){
-							URI uri = xdmNode.getBaseURI();
-							stdout.setSystemId( uri.toString() );
+
+
+				SerializeOpts serializeOpts = mShell.getSerializeOpts(opts);
+				IXdmItemOutputStream dest =  stdout.asXdmItemOutputStream(serializeOpts);
+
+				args = Util.expandSequences(args);
+
+				boolean bFirst = true;
+				for ( XValue arg : args ){
+					if( ! bFirst )
+						stdout.writeSequenceSeperator(serializeOpts);
+
+					else {
+						XdmValue item = arg.asXdmValue();
+						if( item instanceof XdmNode ){
+							XdmNode xdmNode = ((XdmNode)item);
+							// DAL: Note workaround bug in Saxon, crashes if getBaseURI on Attribute or text
+							if( xdmNode.getNodeKind() != XdmNodeKind.ATTRIBUTE &&
+									xdmNode.getNodeKind() != XdmNodeKind.TEXT ){
+								URI uri = xdmNode.getBaseURI();
+								stdout.setSystemId( uri.toString() );
+							}
 						}
 					}
+
+					bFirst = false;
+					dest.write( arg.asXdmValue() );
+
 				}
-					
-				bFirst = false;
-				dest.write( arg.asXdmValue() );
-				
-		}
-		if( ! nolf )
-			stdout.writeSequenceTerminator(serializeOpts);
-		return 0;
+				if( ! nolf )
+					stdout.writeSequenceTerminator(serializeOpts);
+				return 0;
 	}
 }
 //

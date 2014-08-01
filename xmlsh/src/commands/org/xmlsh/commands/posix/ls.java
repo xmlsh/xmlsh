@@ -30,35 +30,36 @@ import javax.xml.stream.XMLStreamException;
 
 public class ls extends XCommand {
 
-	
+
 	private boolean opt_a = false ;
 	private boolean opt_R = false ;
 	private boolean opt_l = false ;
+	@Override
 	public int run(  List<XValue> args  )	throws Exception
 	{
 		Options opts = new Options("a=all,l=long,R=recurse", SerializeOpts.getOptionDefs());
 		opts.parse(args);
 		args = opts.getRemainingArgs();
-		
-		
 
-	      
+
+
+
 		OutputPort stdout = getStdout();
 		SerializeOpts serializeOpts = getSerializeOpts(opts);
 		PrintWriter writer  = stdout.asPrintWriter(serializeOpts);
-		
-		
+
+
 		if( args == null )
 			args = new ArrayList<XValue>();
 		if( args.size() == 0 )
 			args.add(new XValue(""));
-		
+
 		opt_l = opts.hasOpt("l");
 		opt_a = opts.hasOpt("a");
 		opt_R = opts.hasOpt("R");
 		int ret = 0;
 		for( XValue arg : args ){
-			
+
 			// Must go to Shell API to get raw files
 			String sArg = arg.toString();
 			File dir = getEnv().getShell().getFile(sArg);
@@ -67,12 +68,12 @@ public class ls extends XCommand {
 				ret++;
 				continue;
 			}
-			
+
 			list(writer, dir , null);
 		}
 		// writer.write(serializeOpts.getSequence_term());
 		writer.close();
-		
+
 		return ret;
 	}
 
@@ -81,28 +82,28 @@ public class ls extends XCommand {
 
 			serialize(dir, writer, opt_l,parent);
 		} else {
-			
+
 			if( parent != null  )
 				serialize(dir, writer, opt_l,parent);
-				
-			
+
+
 			if( parent == null || opt_R ){
 				String p = parent == null ? "" : (parent  + dir.getName() + "/");
 				File [] files =  dir.listFiles();
-				
-				
+
+
 				Util.sortFiles(files);
-				
+
 				for( File f : files ){
-					
+
 					if( ! opt_a && f.getName().startsWith("."))
 						continue;
-					
+
 					list( writer  , f , p    );
-	
+
 				}
 			}
-			
+
 
 		}
 	}
@@ -111,13 +112,13 @@ public class ls extends XCommand {
 		String name = ( parent != null ? parent : "" ) + dir.getName();
 		if(  optL )
 			writeFlags( writer , dir );
-		
+
 		writer.write( name );
-	
+
 		writer.write(this.getSerializeOpts().getSequence_sep());
 
-			
-		
+
+
 	}
 
 	private void writeFlags(PrintWriter writer, File f) {
@@ -127,23 +128,23 @@ public class ls extends XCommand {
 		flags.append(f.canWrite() ? "w" : "-");
 		flags.append(f.canExecute() ? "x" : "-");
 		flags.append(" ");
-		
+
 		long len = f.length();
 		String slen = String.valueOf(len);
 		slen = String.format("%1$10s", slen);
 		flags.append(slen);
 		flags.append(" ");
-		
+
 		String sDate = String.format("%1$tF %1$tT", new Date(f.lastModified()));
 		flags.append(sDate);
 		flags.append(" ");
 		writer.write(flags.toString());
-		
+
 	}
-	
-	
-	
-	
+
+
+
+
 
 }
 

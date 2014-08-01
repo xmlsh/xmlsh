@@ -98,22 +98,22 @@ public class JXONConverter extends JXConverter
 					throw new ConverterException("Depreciated element not supported: " + kELEM_FILE.toString());
 				else
 
-				if(name.equals(kELEM_OBJECT))
-					writeObject(start);
-				else if(name.equals(kELEM_ARRAY))
-					writeArray(start);
-				else if(name.equals(kELEM_MEMBER))
-					writeMember(start);
-				else if(name.equals(kELEM_NUMBER))
-					writeNumber(start);
-				else if(name.equals(kELEM_BOOLEAN))
-					writeBoolean(start);
-				else if(name.equals(kELEM_NULL))
-					writeNull();
-				else if(name.equals(kELEM_STRING))
-					writeString(start);
-				else
-					throw new ConverterException("Depreciated element not supported: " + kELEM_FILE.toString());
+					if(name.equals(kELEM_OBJECT))
+						writeObject(start);
+					else if(name.equals(kELEM_ARRAY))
+						writeArray(start);
+					else if(name.equals(kELEM_MEMBER))
+						writeMember(start);
+					else if(name.equals(kELEM_NUMBER))
+						writeNumber(start);
+					else if(name.equals(kELEM_BOOLEAN))
+						writeBoolean(start);
+					else if(name.equals(kELEM_NULL))
+						writeNull();
+					else if(name.equals(kELEM_STRING))
+						writeString(start);
+					else
+						throw new ConverterException("Depreciated element not supported: " + kELEM_FILE.toString());
 			} catch (ConverterException e) {
 				throw e;
 			} catch (Exception e) {
@@ -123,8 +123,8 @@ public class JXONConverter extends JXConverter
 		}
 
 		private void writeString(StartElement start) throws XMLStreamException, UnsupportedEncodingException,
-		                                            FileNotFoundException, IOException, TransformException,
-		                                            SaxonApiException, CoreException
+		FileNotFoundException, IOException, TransformException,
+		SaxonApiException, CoreException
 		{
 			String value = getAttr(start, kATTR_VALUE);
 			String encoding = getAttr(start, kATTR_ENCODING);
@@ -159,7 +159,7 @@ public class JXONConverter extends JXConverter
 		 */
 
 		private String readString(boolean bHTML) throws TransformException, XMLStreamException, SaxonApiException,
-		                                        IOException
+		IOException
 		{
 
 			byte[] bytes = bHTML ? serializeAsXML() : serializeAsString();
@@ -228,8 +228,8 @@ public class JXONConverter extends JXConverter
 				chars = readString();
 
 			chars = chars.trim();
-			
-		//	Number num = NumberFormat.getInstance().parse(chars);
+
+			//	Number num = NumberFormat.getInstance().parse(chars);
 
 			mGenerator.writeNumber(chars);
 
@@ -339,7 +339,7 @@ public class JXONConverter extends JXConverter
 		}
 
 		@Override
-        protected
+		protected
 		boolean startDocument(XMLEvent e) throws ConverterException
 		{
 			return true;
@@ -347,7 +347,7 @@ public class JXONConverter extends JXConverter
 		}
 
 		@Override
-        protected
+		protected
 		boolean endElement(EndElement asEndElement) throws ConverterException
 		{
 
@@ -355,14 +355,14 @@ public class JXONConverter extends JXConverter
 		}
 
 		@Override
-        protected
+		protected
 		boolean endDocument(XMLEvent e) throws ConverterException
 		{
 			return false;
 		}
 
 		@Override
-        protected
+		protected
 		boolean characters(XMLEvent e)
 		{
 			// Ignore unexpected chars
@@ -388,7 +388,7 @@ public class JXONConverter extends JXConverter
 			try {
 				JsonToken tok;
 				writeStartElement( kELEM_ARRAY );
-				
+
 
 				while ((tok = nextToken()) != null && tok != JsonToken.END_ARRAY) {
 					writeValue(tok);
@@ -428,7 +428,7 @@ public class JXONConverter extends JXConverter
 				writeStartElement( kELEM_MEMBER );
 				String name = mParser.getCurrentName();
 				writeAttribute( kATTR_NAME , name );
-				
+
 				writeValue(nextToken());
 				writeEndElement();
 			} catch (XMLStreamException e) {
@@ -438,12 +438,12 @@ public class JXONConverter extends JXConverter
 			}
 		}
 
-		 @Override
+		@Override
 		void writeBoolean(boolean value) throws ConverterException
 		{
 
 			try {
-			   
+
 				writeStartElement( kELEM_BOOLEAN );
 				writeCharacters(value ? "true" : "false");
 				writeEndElement();
@@ -474,7 +474,7 @@ public class JXONConverter extends JXConverter
 				writeEndElement();
 			} catch (XMLStreamException e) {
 				throw new ConverterException(e);
-            }
+			}
 
 		}
 

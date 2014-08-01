@@ -28,21 +28,21 @@ import javax.xml.stream.XMLStreamWriter;
 
 public class xinclude extends XCommand {
 
-	
-	
-	
-	
+
+
+
+
 
 	@Override
 	public int run(List<XValue> args) throws Exception {
-		
-		
+
+
 
 		Options opts = new Options( "xs=xomserialize",SerializeOpts.getOptionDefs() );
 		opts.parse(args);
 		args = opts.getRemainingArgs();
 		boolean xs = opts.hasOpt("xs");
-		
+
 		InputPort stdin = null;
 		if( args.size() > 0 )
 			stdin = getInput( args.get(0));
@@ -50,40 +50,40 @@ public class xinclude extends XCommand {
 			stdin = getStdin();
 		if( stdin == null )
 			throw new InvalidArgumentException("Cannot open input");
-			
-			SerializeOpts sopts = getSerializeOpts(opts);
-			Builder builder = new Builder();
 
-			Document input = builder.build( stdin.asInputStream(sopts) , stdin.getSystemId() );
-			XIncluder.resolveInPlace(input, builder);
-			
-			OutputPort stdout = getStdout();
-			OutputStream os = stdout.asOutputStream(sopts);
-			
-			// XOM Serialization 
-			if( xs ){
-			
-				Serializer ser = new Serializer(os , sopts.getOutputXmlEncoding());
-				ser.write(input);
-				os.close();
-				
-			
-			} else {
-				
-				XMLStreamWriter w = stdout.asXMLStreamWriter(sopts);
-				
-				ContentHandlerToXMLStreamWriter	handler = new ContentHandlerToXMLStreamWriter(w);
-				
-				SAXConverter sax = new SAXConverter( handler );
-				sax.convert(input);
-				
-				w.flush();
-				w.close();
-				stdout.writeSequenceTerminator(sopts);
-			}
+		SerializeOpts sopts = getSerializeOpts(opts);
+		Builder builder = new Builder();
+
+		Document input = builder.build( stdin.asInputStream(sopts) , stdin.getSystemId() );
+		XIncluder.resolveInPlace(input, builder);
+
+		OutputPort stdout = getStdout();
+		OutputStream os = stdout.asOutputStream(sopts);
+
+		// XOM Serialization 
+		if( xs ){
+
+			Serializer ser = new Serializer(os , sopts.getOutputXmlEncoding());
+			ser.write(input);
+			os.close();
+
+
+		} else {
+
+			XMLStreamWriter w = stdout.asXMLStreamWriter(sopts);
+
+			ContentHandlerToXMLStreamWriter	handler = new ContentHandlerToXMLStreamWriter(w);
+
+			SAXConverter sax = new SAXConverter( handler );
+			sax.convert(input);
+
+			w.flush();
+			w.close();
+			stdout.writeSequenceTerminator(sopts);
+		}
 		return 0;
-		
-		
+
+
 	}
 
 }

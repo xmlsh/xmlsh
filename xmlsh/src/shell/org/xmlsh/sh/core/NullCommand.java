@@ -12,14 +12,15 @@ import java.io.PrintWriter;
 
 public class NullCommand extends Command {
 
+	@Override
 	public	boolean		isSimple() { return false ; }
 
 	@Override
 	public void print(PrintWriter out, boolean bExec) {
-	
+
 
 	}
-	
+
 
 	// Inefficient placeholder for a "command" that isnt a command, its a NL or EOF
 

@@ -15,6 +15,7 @@ import org.apache.log4j.Logger;
 
 import org.xml.sax.ContentHandler;
 import org.xmlsh.sh.shell.SerializeOpts;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -34,17 +35,17 @@ import javax.xml.stream.XMLStreamWriter;
 public class FileOutputPort extends OutputPort
 {
 	private		static 	Logger	mLogger = LogManager.getLogger( FileOutputPort.class );				
-	
+
 	private		StreamOutputPort		mStreamPort = null ;
 	private		File					mFile  = null ;
 	private		boolean					bAppend ;
 
-	
+
 	public	FileOutputPort( File file , boolean bAppend ) throws IOException
 	{
 		this( file , bAppend , true );
 	}
-	
+
 	public	FileOutputPort( File file , boolean bAppend , boolean bCreateNow ) throws IOException
 	{
 		mLogger.debug("FileOutputPort() file = "+file.getName());
@@ -53,35 +54,36 @@ public class FileOutputPort extends OutputPort
 		/*
 		 * Need to create the file now if it doesnt exist
 		 */
-		
+
 		if( bCreateNow )
 			mFile.createNewFile();
-		
+
 	}
-	
+
 	private StreamOutputPort getStreamPort() throws CoreException  {
 		if( mStreamPort == null )
 			try {
-				
+
 				FileOutputStream fileStream =  new  FileOutputStream(mFile,bAppend) ;
 				mStreamPort = new StreamOutputPort( fileStream , true );
 				mStreamPort.setSystemId(getSystemId());
 			} catch (FileNotFoundException e) {
 				mLogger.warn( "Error opening file for output: " + mFile.getAbsolutePath() , e );
-				
+
 			} 
-		
+
 		return mStreamPort;
-	
+
 	}
-	
-	
+
+
 
 
 	/**
 	 * @param systemId
 	 * @see org.xmlsh.core.AbstractPort#setSystemId(java.lang.String)
 	 */
+	@Override
 	public void setSystemId(String systemId) {
 		super.setSystemId(systemId);
 		if( mStreamPort != null )
@@ -93,6 +95,7 @@ public class FileOutputPort extends OutputPort
 	 * @throws CoreException 
 	 * @see org.xmlsh.core.StreamOutputPort#asOutputStream(org.xmlsh.sh.shell.SerializeOpts)
 	 */
+	@Override
 	public OutputStream asOutputStream(SerializeOpts opts) throws CoreException {
 		return getStreamPort().asOutputStream(opts);
 	}
@@ -101,6 +104,7 @@ public class FileOutputPort extends OutputPort
 	 * @throws CoreException
 	 * @see org.xmlsh.core.StreamOutputPort#flush()
 	 */
+	@Override
 	public void flush() throws IOException  {
 		if( mStreamPort != null )
 			mStreamPort.flush();
@@ -109,6 +113,7 @@ public class FileOutputPort extends OutputPort
 	 * @throws CoreException
 	 * @see org.xmlsh.core.StreamOutputPort#close()
 	 */
+	@Override
 	public void close() throws IOException {
 		mLogger.debug("FileOutputPort.close() file = "+ mFile.getName());
 
@@ -121,6 +126,7 @@ public class FileOutputPort extends OutputPort
 	 * @return
 	 * @see org.xmlsh.core.OutputPort#isFile()
 	 */
+	@Override
 	public boolean isFile() {
 		return true ;
 	}
@@ -130,6 +136,7 @@ public class FileOutputPort extends OutputPort
 	 * @throws CoreException 
 	 * @see org.xmlsh.core.StreamOutputPort#asPrintStream(org.xmlsh.sh.shell.SerializeOpts)
 	 */
+	@Override
 	public PrintStream asPrintStream(SerializeOpts opts) throws CoreException {
 		return getStreamPort().asPrintStream(opts);
 	}
@@ -139,6 +146,7 @@ public class FileOutputPort extends OutputPort
 	 * @throws CoreException
 	 * @see org.xmlsh.core.StreamOutputPort#asDestination(org.xmlsh.sh.shell.SerializeOpts)
 	 */
+	@Override
 	public Destination asDestination(SerializeOpts opts) throws CoreException {
 		return getStreamPort().asDestination(opts);
 	}
@@ -149,6 +157,7 @@ public class FileOutputPort extends OutputPort
 	 * @throws CoreException 
 	 * @see org.xmlsh.core.StreamOutputPort#asPrintWriter(org.xmlsh.sh.shell.SerializeOpts)
 	 */
+	@Override
 	public PrintWriter asPrintWriter(SerializeOpts opts) throws UnsupportedEncodingException, CoreException {
 		return getStreamPort().asPrintWriter(opts);
 	}
@@ -158,8 +167,9 @@ public class FileOutputPort extends OutputPort
 	 * @throws CoreException 
 	 * @see org.xmlsh.core.StreamOutputPort#writeSequenceSeperator(org.xmlsh.sh.shell.SerializeOpts)
 	 */
+	@Override
 	public void writeSequenceSeperator(SerializeOpts opts) throws IOException,
-			CoreException {
+	CoreException {
 		getStreamPort().writeSequenceSeperator(opts);
 	}
 	/**
@@ -168,6 +178,7 @@ public class FileOutputPort extends OutputPort
 	 * @throws CoreException 
 	 * @see org.xmlsh.core.StreamOutputPort#writeSequenceTerminator(org.xmlsh.sh.shell.SerializeOpts)
 	 */
+	@Override
 	public void writeSequenceTerminator(SerializeOpts opts) throws IOException, CoreException {
 		getStreamPort().writeSequenceTerminator(opts);
 	}
@@ -178,6 +189,7 @@ public class FileOutputPort extends OutputPort
 	 * @throws CoreException 
 	 * @see org.xmlsh.core.StreamOutputPort#asXMLStreamWriter(org.xmlsh.sh.shell.SerializeOpts)
 	 */
+	@Override
 	public XMLStreamWriter asXMLStreamWriter(SerializeOpts opts) throws SaxonApiException, CoreException {
 		return getStreamPort().asXMLStreamWriter(opts);
 	}
@@ -189,6 +201,7 @@ public class FileOutputPort extends OutputPort
 	 * @throws CoreException 
 	 * @see org.xmlsh.core.StreamOutputPort#asXMLEventWriter(org.xmlsh.sh.shell.SerializeOpts)
 	 */
+	@Override
 	public XMLEventWriter asXMLEventWriter(SerializeOpts opts) throws XMLStreamException, IOException, CoreException {
 		return getStreamPort().asXMLEventWriter(opts);
 	}
@@ -198,6 +211,7 @@ public class FileOutputPort extends OutputPort
 	 * @throws CoreException
 	 * @see org.xmlsh.core.StreamOutputPort#asXdmItemOutputStream(org.xmlsh.sh.shell.SerializeOpts)
 	 */
+	@Override
 	public IXdmItemOutputStream asXdmItemOutputStream(SerializeOpts opts) throws CoreException {
 		return getStreamPort().asXdmItemOutputStream(opts);
 	}
@@ -208,6 +222,7 @@ public class FileOutputPort extends OutputPort
 	 * @throws CoreException 
 	 * @see org.xmlsh.core.StreamOutputPort#asContentHandler(org.xmlsh.sh.shell.SerializeOpts)
 	 */
+	@Override
 	public ContentHandler asContentHandler(SerializeOpts opts) throws XPathException, CoreException {
 		return getStreamPort().asContentHandler(opts);
 	}

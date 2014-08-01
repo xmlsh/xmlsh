@@ -4,15 +4,15 @@
  *
  */
 
-package org.xmlsh.util;
+package org.xmlsh.json;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
-import org.xmlsh.json.JSONSerializeOpts;
 import org.xmlsh.sh.shell.SerializeOpts;
+import org.xmlsh.util.Util;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -41,10 +41,14 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.BooleanNode;
+import com.fasterxml.jackson.databind.node.ContainerNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.JsonNodeType;
+import com.fasterxml.jackson.databind.node.MissingNode;
 import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.NumericNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.node.POJONode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import com.fasterxml.jackson.databind.node.ValueNode;
 import com.fasterxml.jackson.dataformat.xml.JacksonXmlModule;
@@ -61,25 +65,25 @@ public class JSONUtils {
 
 	private static volatile  ObjectMapper _theObjectMapper = null ;
 	private static volatile  JsonFactory  _theJsonFactory = null ;
-	
+
 	private static volatile  XmlFactory  _theXmlFactory = null ;
 	private static volatile  JacksonXmlModule _theXmlModule = null;
 	private static volatile  XmlMapper _theXmlMapper = null;
 	private static Logger mLogger = LogManager.getLogger(JSONUtils.class);
 
 
-	
+
 	/* TEST CODE ... needs to go into AWS 
 	abstract class IgnoreVolumeTypeEnum
 	{
       @JsonSetter public abstract void setVolumeType(String vt);
       @JsonGetter public abstract String getVolumeType(String vt);
 
-      
+
 
 	}
-	
-	*/
+
+	 */
 
 	// Get a copy of the object mapper for configuring
 	public static ObjectMapper newJsonObjectMapper() {
@@ -104,15 +108,15 @@ public class JSONUtils {
 			mapper.configure(Feature.ALLOW_NON_NUMERIC_NUMBERS,true);
 			mapper.configure(Feature.ALLOW_NUMERIC_LEADING_ZEROS,true);
 			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-			
-			
+
+
 			/* Test code needs to go on AWS
 		 mapper.addMixInAnnotations(com.amazonaws.services.ec2.model.EbsBlockDevice.class, IgnoreVolumeTypeEnum.class);
-          */
-			
+			 */
 
-			
-			
+
+
+
 			// other completely global configurations
 
 			if( _theObjectMapper == null )
@@ -135,7 +139,7 @@ public class JSONUtils {
 		}
 		return _theXmlModule ;
 	}
-	
+
 	public static XmlFactory getXmlFactory()
 	{
 		// lets play and avoid syncronization
@@ -147,9 +151,9 @@ public class JSONUtils {
 		}
 		return _theXmlFactory ;
 	}
-	
-	
-	
+
+
+
 	public static XmlMapper getXmlMapper() {
 		// lets play and avoid syncronization
 		// on the off chance this is concurrent 2 mappers are created and one gets GC'd
@@ -161,11 +165,11 @@ public class JSONUtils {
 		}
 		return _theXmlMapper ;
 	}
-	
+
 	public static ObjectWriter getObjectWriter() {
 		return getJsonObjectMapper().writer();
 	}
-	
+
 	public static ObjectReader getObjectReader() {
 		return getJsonObjectMapper().reader();
 	}
@@ -178,7 +182,7 @@ public class JSONUtils {
 		if( _theJsonFactory == null ) {
 
 			JsonFactory factory = new JsonFactory();
-			
+
 			// other completely global configurations
 
 			if( _theJsonFactory == null )
@@ -302,7 +306,7 @@ public class JSONUtils {
 		ObjectMapper mapper = getJsonObjectMapper();
 		return mapper.writeValueAsString(value);
 	}
-	
+
 	/*
 	 * Read a json node from an input stream
 	 */
@@ -311,8 +315,8 @@ public class JSONUtils {
 		ObjectMapper mapper = getJsonObjectMapper();
 		return mapper.readTree(is);
 	}
-	
-	
+
+
 	/*
 	 * Read an object from Json 
 	 */
@@ -321,7 +325,7 @@ public class JSONUtils {
 		ObjectMapper mapper = getJsonObjectMapper();
 		return mapper.readValue(is, cls);
 	}
-	
+
 	public static void writeJsonNode(JsonNode result, PrintStream os) throws JsonGenerationException, JsonMappingException, IOException
 	{
 		ObjectMapper mapper = getJsonObjectMapper(); 
@@ -400,49 +404,68 @@ public class JSONUtils {
 	}
 
 	public static JsonGenerator createGenerator(OutputStream os, JSONSerializeOpts jopts) throws IOException
-    {
+	{
 		JsonGenerator gen = getJsonFactory().createGenerator(os);
 		if( jopts.getPretyPrint())
 			gen.useDefaultPrettyPrinter();
 		return gen;
-    }
+	}
 
 	public static void safeClose(JsonGenerator generator) 
-    {
+	{
 		if( generator != null ) {
 			try {
-	            generator.close();
-            } catch (IOException e) {
-	          mLogger.info( "Exception closing JsonGenerator", e );
-            }
+				generator.close();
+			} catch (IOException e) {
+				mLogger.info( "Exception closing JsonGenerator", e );
+			}
 		}
-    }
+	}
 
 	public static void safeClose(JsonParser parser)
-    {
+	{
 		if( parser != null ) {
 			try {
 				parser.close();
-            } catch (IOException e) {
-	          mLogger.info( "Exception closing JsonParser", e );
-            }
+			} catch (IOException e) {
+				mLogger.info( "Exception closing JsonParser", e );
+			}
 		}
-	    
-    }
 
-    public static byte[] toBytes(JsonNode value,SerializeOpts opt) throws JsonGenerationException, JsonMappingException, IOException {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        writeJsonNode( value ,bos , opt );
-        bos.flush();
-        bos.close();
-        return bos.toByteArray();
-    }
-    public static JavaType getJavaType( Object obj ) {
-    
-    	return getJsonObjectMapper().constructType(obj.getClass());
-    }
-    
-    
+	}
+
+	public static byte[] toByteArray(JsonNode value,SerializeOpts opt) throws JsonGenerationException, JsonMappingException, IOException {
+		return getJsonObjectMapper().writeValueAsBytes(value);
+	}
+	public static JavaType getJavaType( Object obj ) {
+
+		return getJsonObjectMapper().constructType(obj.getClass());
+	}
+
+	public static boolean isNullClass(Class<?> cls)
+	{
+		return cls == null || NullNode.class.isAssignableFrom(cls ) ;
+	}
+
+	public static boolean isContainerClass(Class<?> cls)
+	{
+		return ContainerNode.class.isAssignableFrom(cls);
+	}
+
+	public static boolean isAtomicClass(Class<?> cls)
+	{
+		return ValueNode.class.isAssignableFrom(cls) && 
+				!( MissingNode.class.isAssignableFrom(cls) || 
+						POJONode.class.isAssignableFrom(cls) );
+	}
+
+	public static boolean isClassClass(Class<?> cls)
+	{
+		return JsonNodeType.class.isAssignableFrom(cls) ;
+
+	}
+
+
 }
 
 

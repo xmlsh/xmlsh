@@ -9,7 +9,6 @@ package org.xmlsh.commands.builtin;
 import org.xmlsh.core.BuiltinCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.core.Command;
-import org.xmlsh.sh.shell.Expander;
 import org.xmlsh.sh.shell.ShellConstants;
 import org.xmlsh.util.Util;
 
@@ -22,15 +21,16 @@ public class eval extends BuiltinCommand {
 	 * and parse them as a command 
 	 * 
 	 */
-	
+
+	@Override
 	public int run(  List<XValue> args ) throws Exception {
-			String  evals = Util.joinValues(args,ShellConstants.ARG_SEPARATOR );
-			Command c = mShell.parseEval(evals);
-			if( c == null )
-				return 0;
-			
-			int ret = mShell.exec(c);
-			return ret ;
+		String  evals = Util.joinValues(args,ShellConstants.ARG_SEPARATOR );
+		Command c = mShell.parseEval(evals);
+		if( c == null )
+			return 0;
+
+		int ret = mShell.exec(c);
+		return ret ;
 	}
 
 

@@ -66,14 +66,14 @@ public class CommandFactory
 
 	private static Logger mLogger =  Logger.getLogger( CommandFactory.class);
 	private static CommandFactory _instance = null ;
-	
+
 	private HashMap<String,Class<?>>		mBuiltins = new HashMap<String,Class<?>>();
-	
+
 	private void addBuiltin( String name , Class<?> cls)
 	{
 		mBuiltins.put( name , cls);
 	}
-	
+
 	private CommandFactory()
 	{
 		addBuiltin(  "cd" , xcd.class );
@@ -113,30 +113,30 @@ public class CommandFactory
 		addBuiltin("printvar" , printvar.class);
 		addBuiltin("jsonread" , jsonread.class);
 		addBuiltin("trap" , trap.class);
-		
-		
+
+
 
 	}
-	
-	
+
+
 	public synchronized static CommandFactory getInstance()
 	{
 		if( _instance == null )
 			_instance = new CommandFactory();
 		return _instance ;
 	}
-	
-	
-		
-	
-	
+
+
+
+
+
 	public ICommand		getCommand(Shell shell , String name, SourceLocation loc ) throws IOException, CoreException
 	{
-		
-		
-		
+
+
+
 		ICommand cmd = 
-			getFunction( shell , name , loc  );
+				getFunction( shell , name , loc  );
 		if( cmd == null )
 			cmd = getBuiltin(shell, name , loc );
 		if( cmd == null )
@@ -145,21 +145,21 @@ public class CommandFactory
 			cmd = getScript( shell , name , false , loc  );
 		if( cmd == null )
 			cmd = getExternal(shell,name , loc );
-		
+
 		return cmd ;
-		
+
 	}
 
-	
-	
-	
+
+
+
 	/*
 	 * Gets an External command of given name
 	 * by looking through the External Path
 	 */
 
 	private ICommand getFunction(Shell shell, String name,  SourceLocation loc) {
-		
+
 		FunctionDeclaration func = shell.getFunction( name );
 		if( func != null )
 			return new FunctionCommand( func.getName() , func.getBody()  , loc );
@@ -169,14 +169,14 @@ public class CommandFactory
 	private ICommand getExternal(Shell shell, String name, SourceLocation loc ) throws IOException 
 	{
 		File	cmdFile = null;
-		
+
 		if( Util.hasDirectory(name)){
-	
+
 			cmdFile = shell.getExplicitFile( name , true );
 			if( cmdFile == null && ! name.endsWith(".exe"))
 				cmdFile = shell.getExplicitFile(name + ".exe", true);
 		}
-		
+
 		if( cmdFile == null ){
 			Path	path = shell.getExternalPath();
 			cmdFile = path.getFirstFileInPath(shell,name);
@@ -184,59 +184,59 @@ public class CommandFactory
 				cmdFile = path.getFirstFileInPath( shell,name + ".exe");
 
 		}
-		
-		
+
+
 		if( cmdFile == null )
 			return null;
-		
+
 		return new ExternalCommand( cmdFile, loc  );
-		
-		
-		
-		
+
+
+
+
 	}
 
 
 
 	private ICommand getModuleCommand(Shell shell,String name, SourceLocation loc) {
 
-		
-		
-		
+
+
+
 		StringPair 	pair = new StringPair(name,':');
-		
-		
+
+
 
 		Modules modules = shell.getModules();
 
-		
+
 		if( pair.hasLeft() ){ // prefix:name , prefix non-empty
 			Module m   = 
-				Util.isBlank(pair.getLeft()) ? 
-						shell.getModule() : 
-				modules.getModule(pair.getLeft());
-			// Allow C:/xxx/yyy to work 
-			// May look like a namespace but isnt
+					Util.isBlank(pair.getLeft()) ? 
+							shell.getModule() : 
+								modules.getModule(pair.getLeft());
+							// Allow C:/xxx/yyy to work 
+							// May look like a namespace but isnt
 
-			if( m != null ){
+							if( m != null ){
 
-				ICommand cls = m.getCommandClass( pair.getRight() );
-				if( cls != null ){
-					cls.setLocation( loc );
-				
-					return cls ;
-				}
+								ICommand cls = m.getCommandClass( pair.getRight() );
+								if( cls != null ){
+									cls.setLocation( loc );
 
-			}
-			return null;
+									return cls ;
+								}
+
+							}
+							return null;
 		}
-			
+
 		/* 
 		 * Try all default modules 
 		 */
 		for( Module m : modules ){
 			if( m.isDefault() ){
-				
+
 				ICommand cls = m.getCommandClass( name);
 				if( cls != null ){
 					cls.setLocation(loc);
@@ -244,55 +244,55 @@ public class CommandFactory
 				}
 			}
 		}
-		
-			
+
+
 		return null  ;
-		
-		
+
+
 	}
-	
+
 	public ICommand getScript(Shell shell, String name , InputStream is , boolean bSourceMode , SourceLocation loc ) throws CoreException {
 		if( is == null )
 			return null;
-	
+
 		return new ScriptCommand(  name , is , bSourceMode , null );
-		
+
 	}
-	
-	
+
+
 	public ICommand		getScript( Shell shell , String name, boolean bSourceMode , SourceLocation loc ) throws IOException, CoreException
 	{
 		File scriptFile = null;
-		
+
 		// If name has a scheme try that first
 		URL url =  Util.tryURL(name);
 		if( url != null )
 			return getScript( shell , name , url.openStream() , bSourceMode , loc );
-		
-		
+
+
 		// If ends with .xsh try it
 		if( name.endsWith(".xsh") || bSourceMode )
 			scriptFile = shell.getExplicitFile(name,true);
-		
+
 		if( Util.hasDirectory(name)){
 			// try adding a .xsh
 			if( scriptFile == null  && ! name.endsWith(".xsh"))
 				scriptFile = shell.getExplicitFile(name + ".xsh", true);
 		}
 		else
-		if( scriptFile == null ) {
-		
-			Path path = shell.getPath(ShellConstants.XPATH, true );
-			scriptFile = path.getFirstFileInPath(shell,name);
-			if( scriptFile == null && ! name.endsWith(".xsh") )
-				scriptFile = path.getFirstFileInPath(shell, name + ".xsh");
-		}
+			if( scriptFile == null ) {
+
+				Path path = shell.getPath(ShellConstants.XPATH, true );
+				scriptFile = path.getFirstFileInPath(shell,name);
+				if( scriptFile == null && ! name.endsWith(".xsh") )
+					scriptFile = path.getFirstFileInPath(shell, name + ".xsh");
+			}
 		if( scriptFile == null )
 			return null ;
 		return getScript( shell , scriptFile , bSourceMode , loc );
-		
+
 	}
-	
+
 
 	private ICommand getBuiltin(Shell shell, String name, SourceLocation loc) {
 		Class<?> cls =  mBuiltins.get(name);
@@ -310,58 +310,58 @@ public class CommandFactory
 	}
 
 
-	
+
 	public URL getHelpURL( Shell shell , String name )
 	{
-		
+
 		URL url = null ;
-		
-		
+
+
 		if( url == null )
 			url = getBuiltinHelpURL(shell, name);
-		
+
 		if( url == null )
 			url = getNativeHelpURL(shell,name);
 
 		return url ;
-		
+
 	}
 
 	private URL getNativeHelpURL(Shell shell, String name) {
 
-		
+
 		StringPair 	pair = new StringPair(name,':');
 		Modules modules = shell.getModules();
 
-		
+
 		if( pair.hasLeft() ){ // prefix:name , prefix non-empty
 			Module m   = 
-				Util.isBlank(pair.getLeft()) ? 
-						shell.getModule() : 
-				modules.getModule(pair.getLeft());
-			// Allow C:/xxx/yyy to work 
-			// May look like a namespace but isnt
+					Util.isBlank(pair.getLeft()) ? 
+							shell.getModule() : 
+								modules.getModule(pair.getLeft());
+							// Allow C:/xxx/yyy to work 
+							// May look like a namespace but isnt
 
-			if( m != null && m.hasCommand( pair.getRight() ) )
-				return m.getHelpURL( );
-			return null;
+							if( m != null && m.hasCommand( pair.getRight() ) )
+								return m.getHelpURL( );
+							return null;
 		}
-			
+
 		/* 
 		 * Try all default modules 
 		 */
 		for( Module m : modules ){
 			if( m.isDefault() ){
-				
+
 				if( m != null && m.hasCommand( name ) )
 					return m.getHelpURL( );
 			}
 		}
-		
-			
+
+
 		return null  ;
-		
-		
+
+
 	}
 
 	private URL getBuiltinHelpURL(Shell shell, String name) {
@@ -372,41 +372,41 @@ public class CommandFactory
 	}
 
 	public IFunction getBuiltinFunction(Shell shell, String name,SourceLocation loc) {
-		
+
 		StringPair 	pair = new StringPair(name,':');
-		
-		
+
+
 
 		Modules modules = shell.getModules();
 
-		
+
 		if( pair.hasLeft() ){ // prefix:name , prefix non-empty
 			Module m   = 
-				Util.isBlank(pair.getLeft()) ? 
-						shell.getModule() : 
-				modules.getModule(pair.getLeft());
-			// Allow C:/xxx/yyy to work 
-			// May look like a namespace but isnt
+					Util.isBlank(pair.getLeft()) ? 
+							shell.getModule() : 
+								modules.getModule(pair.getLeft());
+							// Allow C:/xxx/yyy to work 
+							// May look like a namespace but isnt
 
-			if( m != null ){
+							if( m != null ){
 
-				IFunction cls = m.getFunctionClass( pair.getRight() );
-				if( cls != null ){
-					// cls.setLocation( loc );
-				
-					return cls ;
-				}
+								IFunction cls = m.getFunctionClass( pair.getRight() );
+								if( cls != null ){
+									// cls.setLocation( loc );
 
-			}
-			return null;
+									return cls ;
+								}
+
+							}
+							return null;
 		}
-			
+
 		/* 
 		 * Try all default modules 
 		 */
 		for( Module m : modules ){
 			if( m.isDefault() ){
-				
+
 				IFunction cls = m.getFunctionClass( name);
 				if( cls != null ){
 					// cls.setLocation(loc);
@@ -414,8 +414,8 @@ public class CommandFactory
 				}
 			}
 		}
-		
-			
+
+
 		return null  ;	
 	}
 
@@ -424,9 +424,9 @@ public class CommandFactory
 	}
 
 
-	
-	
-	
+
+
+
 
 }
 //

@@ -12,29 +12,29 @@ import java.util.List;
  */
 public class CSVRecord
 {
-    private String[]    mFields;
-    
-    CSVRecord( String[] fields )
-    {
-        mFields = fields;
-    }
-    
-    
-    public CSVRecord(List<String> fields) {
+	private String[]    mFields;
+
+	CSVRecord( String[] fields )
+	{
+		mFields = fields;
+	}
+
+
+	public CSVRecord(List<String> fields) {
 		this( fields.toArray(new String[fields.size()]));
 	}
 
 
 	public String getField( int id )
-    {
-        return id < mFields.length ? mFields[id] : "" ; //$NON-NLS-1$
-    }    
+	{
+		return id < mFields.length ? mFields[id] : "" ; //$NON-NLS-1$
+	}    
 
-    public int getNumFields() {
-        return mFields.length;
-    }
+	public int getNumFields() {
+		return mFields.length;
+	}
 
-    String[] getFields() { return mFields; }
+	String[] getFields() { return mFields; }
 
 
 }

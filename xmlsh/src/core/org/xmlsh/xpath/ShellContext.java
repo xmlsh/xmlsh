@@ -16,11 +16,12 @@ import org.xmlsh.sh.shell.Shell;
 public class ShellContext {
 
 	static ThreadLocal<Shell>		sInstance = new ThreadLocal<Shell>()
-	{
-	     protected synchronized Shell initialValue() {
-	         return null;
-	     }
-	}
+			{
+		@Override
+		protected synchronized Shell initialValue() {
+			return null;
+		}
+			}
 	;
 
 	public static Shell set( Shell shell )
@@ -28,13 +29,13 @@ public class ShellContext {
 		Shell old = sInstance.get();
 		sInstance.set(shell);
 		return old;
-	
+
 	}
-	
+
 	public static Shell get()
 	{
 		return sInstance.get();
-		
+
 	}
 
 }

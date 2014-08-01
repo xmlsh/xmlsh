@@ -13,11 +13,12 @@ import java.util.List;
 
 public class colon extends BuiltinCommand {
 
-	
+
+	@Override
 	public int run( List<XValue> args ) throws Exception {
-			
-			return 0;
-				
+
+		return 0;
+
 	}
 
 

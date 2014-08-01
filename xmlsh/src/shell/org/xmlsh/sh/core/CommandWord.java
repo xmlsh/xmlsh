@@ -9,7 +9,6 @@ package org.xmlsh.sh.core;
 import net.sf.saxon.s9api.DocumentBuilder;
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XdmNode;
-import net.sf.saxon.s9api.XdmValue;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.EvalEnv;
 import org.xmlsh.core.EvalFlag;
@@ -18,9 +17,7 @@ import org.xmlsh.core.XValue;
 import org.xmlsh.core.XVariable;
 import org.xmlsh.sh.shell.ParseResult;
 import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.types.TypeFamily;
 import org.xmlsh.util.ByteFilterOutputStream;
-import org.xmlsh.util.MutableInteger;
 import org.xmlsh.util.NullInputStream;
 import org.xmlsh.util.Util;
 
@@ -41,60 +38,61 @@ import javax.xml.transform.stream.StreamSource;
 public class CommandWord extends Word {
 	String		mType;	// $( $(< $<( $<(<  `
 	Command		mCommand;
-	
+
 	public CommandWord( String type , Command c){
 		mType = type;
 		mCommand =  c;
 	}
-	
+
+	@Override
 	public void print( PrintWriter out )
 	{
 		out.print( mType );
 		mCommand.print(out,false);
 		out.print(")");
 	}
-	
+
 
 	private String expandSubproc(Shell parentShell , Command c ) throws CoreException, IOException
 	{
-		
+
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		ByteFilterOutputStream filterOut = null ;
 		Shell shell = parentShell.clone();
 		try {
-			
+
 			OutputStream commandOut = shell.getSerializeOpts().isIgncr() ? 
-					 filterOut = new ByteFilterOutputStream( out , '\r' ) : out;
-			shell.getEnv().setStdout( commandOut  );
-			shell.getEnv().setStdin( new NullInputStream() );
-			int ret = shell.exec(c);
-			parentShell.setStatus(ret);
-			
+					filterOut = new ByteFilterOutputStream( out , '\r' ) : out;
+					shell.getEnv().setStdout( commandOut  );
+					shell.getEnv().setStdin( new NullInputStream() );
+					int ret = shell.exec(c);
+					parentShell.setStatus(ret);
 
-			commandOut.flush();
-			out.flush();
-			String s = out.toString( shell.getSerializeOpts().getInput_text_encoding());
 
-			// remove trailing newlines
-			s = Util.removeTrailingNewlines(s, shell.getSerializeOpts().isIgncr() );
-			return s;
-			
+					commandOut.flush();
+					out.flush();
+					String s = out.toString( shell.getSerializeOpts().getInput_text_encoding());
+
+					// remove trailing newlines
+					s = Util.removeTrailingNewlines(s, shell.getSerializeOpts().isIgncr() );
+					return s;
+
 		} 
 		finally {
 
 			Util.safeClose(filterOut);
 			Util.safeClose( shell );
 
-			
-		}
-		
-		
 
-		
+		}
+
+
+
+
 	}
 
 
-	
+
 
 	/*
 	 * Parse an XValue subprocess expression like
@@ -104,47 +102,47 @@ public class CommandWord extends Word {
 	 * run the command to the output then extract the value from the variable
 	 * 
 	 */
-	
-	
+
+
 
 	private XValue parseXCmd(Shell parentShell , Command cmd) throws IOException, CoreException
 	{
 
-		
+
 		XVariable var = new XVariable("__temp",null);
 		VariableOutputPort port = new VariableOutputPort( var );
-		
-		
+
+
 
 		Shell shell = parentShell.clone();
 		try {
-		
+
 			shell.getEnv().setStdout( port );
 			shell.getEnv().setStdin( new NullInputStream() );
 			int ret= shell.exec(cmd);
 			parentShell.setStatus(ret);
-		
-			
+
+
 		} 
 		finally {
 			shell.close();
 
-			
+
 		}
-		
+
 		port.close();
-		
-	
-		
-		
+
+
+
+
 		XValue value = var.getValue();
 		/*
 		 * If port was written to as a text stream then need to reparse it as a document
 		 */
 		if( value != null && port.isAsText() ){
 			String sDoc = value.toString();
-			
-			
+
+
 			DocumentBuilder builder = Shell.getProcessor().newDocumentBuilder();
 			Source source = new StreamSource( new StringReader(sDoc));
 			XdmNode node;
@@ -154,39 +152,41 @@ public class CommandWord extends Word {
 				throw new CoreException("Exception parsing as XML Document",e);
 			}
 			return new XValue(node) ;
-			
-			
-			
-			
-		}
-		
-		
-		return value ;
-		
-		
-		
-	}
-	
 
-	
+
+
+
+		}
+
+
+		return value ;
+
+
+
+	}
+
+
+
+	@Override
 	public boolean isEmpty() {
 		return mType == null || mCommand == null ;
 	}
-	
+
+	@Override
 	public String toString()
 	{
 		return mType +  mCommand.toString(false) + ")";
 	}
-	
-	 @Override
-		public String getSimpleName()
-		{
-		    return  mCommand.getName();
-	 	}
 
 	@Override
-    protected ParseResult expandToResult(Shell shell, EvalEnv env, SourceLocation loc, ParseResult result) throws CoreException, IOException 
-    {
+	public String getSimpleName()
+	{
+		return  mCommand.getName();
+	}
+
+	@Override
+	protected ParseResult expandToResult(Shell shell, EvalEnv env, SourceLocation loc, ParseResult result) throws CoreException, IOException 
+	{
 
 		assert( result != null );
 		if( mType.equals("$(") || mType.equals("`") ){
@@ -195,28 +195,28 @@ public class CommandWord extends Word {
 			 * Bash performs the expansion by executing command and replacing the command substitution with the standard output of the command, with any trailing newlines deleted. Embedded newlines are not deleted, but they may be removed during word splitting. 
 			 * The command substitution $(cat file) can be replaced by the equivalent but faster $(< file).
 			 */
-			
+
 			String 	svalue = expandSubproc( shell, mCommand);
 			XValue value = EvalUtils.splitStringToValue(shell, svalue, evalEnv( env ));
 			result =  
-  			   EvalUtils.expandValueToResult(shell, value , env.withFlagOff(EvalFlag.EXPAND_VAR), loc, result) ;
-			
-			
+					EvalUtils.expandValueToResult(shell, value , env.withFlagOff(EvalFlag.EXPAND_VAR), loc, result) ;
+
+
 		} else 
-		if( mType.equals("$<(")){
-			
-			XValue value = parseXCmd( shell , mCommand );
-			result.add( value , true );
+			if( mType.equals("$<(")){
 
-		}
-		else 
-			throw new CoreException("Unexpected CommandWord: " + mCommand );
-		
+				XValue value = parseXCmd( shell , mCommand );
+				result.add( value , true );
+
+			}
+			else 
+				throw new CoreException("Unexpected CommandWord: " + mCommand );
+
 		return result ;
-    }
+	}
 
-	 
-	 
+
+
 }
 
 

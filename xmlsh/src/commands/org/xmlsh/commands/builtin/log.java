@@ -18,50 +18,51 @@ import java.io.ByteArrayOutputStream;
 import java.util.List;
 
 public class log extends BuiltinCommand {
-	
+
+	@Override
 	public int run( List<XValue> args ) throws Exception {
 
 		Options opts = new Options( "c=class:,p=priority:"  );
 		opts.parse(args);
-		
+
 
 		String sClass = opts.getOptString("c", log.class.getName());
 		String sLevel = opts.getOptString("p" , "info");
-		
+
 		Priority priority = parseLevel(sLevel);
-		
-		
+
+
 		args = opts.getRemainingArgs();
 
 		/* Serialize all output into a single string
 		 * 
 		 */
-		
+
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
-		
+
 		args = Util.expandSequences( args);
 		boolean bFirst = true;
 		for ( XValue arg : args ){
-				if( ! bFirst )
-					out.write(' ');
-				
-				bFirst = false;
-				arg.serialize( out , getSerializeOpts() );
+			if( ! bFirst )
+				out.write(' ');
+
+			bFirst = false;
+			arg.serialize( out , getSerializeOpts() );
 		}
 
 		out.flush();
-		
+
 		Logger logger = Logger.getLogger(sClass);
-		
+
 		logger.log(priority, out.toString(getSerializeOpts().getOutputTextEncoding()));
-		
-		
-		
+
+
+
 		return 0;
 	}
 
 	private Priority parseLevel(String sLevel) {
-		
+
 		return Priority.toPriority(sLevel,Priority.INFO);
 	}
 }

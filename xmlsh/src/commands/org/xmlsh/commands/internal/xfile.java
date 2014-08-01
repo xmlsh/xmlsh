@@ -39,15 +39,16 @@ import java.util.List;
  */
 public class xfile extends XCommand
 {
-	
-	
-	
+
+
+
+	@Override
 	public int run(  List<XValue> args  )	throws Exception
 	{
 		Options opts = new Options("n=name,b=base,d=dir,a=all,c=conanical,e=extension,B=basename,N,s=sys,u=uri,r=rel",SerializeOpts.getOptionDefs());
 		opts.parse(args);
 		args = opts.getRemainingArgs();
-		
+
 		XFile xf = null ;
 		switch( args.size() ){
 		case	0:
@@ -57,61 +58,61 @@ public class xfile extends XCommand
 		case	2:
 			xf = new XFile( args.get(0).toString(), args.get(1).toString() ); break;
 		default : 
-			
+
 			usage("Unexpected argument");
 			return 1;
 		}
-		
+
 		boolean opt_sys = opts.hasOpt("s");
-		
+
 		SerializeOpts serializeOpts = getSerializeOpts(opts);
 		PrintWriter out = getStdout().asPrintWriter(serializeOpts);
-		
+
 		if( opts.hasOpt("b") )
 			out.println( toSys(xf.getBaseName(),opt_sys));
 		else
-		if( opts.hasOpt("B"))
-			out.println( toSys(xf.noExtension(),opt_sys));
-		else
-		if( opts.hasOpt("n") )
-			out.println( toSys(xf.getName(),opt_sys));
-		else
-		if( opts.hasOpt("d"))
-			out.println(toSys(xf.getDirName(),opt_sys));
-		else
-		if( opts.hasOpt("a"))
-			out.println(toSys(xf.getFile().getAbsolutePath(),opt_sys));
-		else
-		if( opts.hasOpt("c"))
-			out.println(toSys(xf.getFile().getCanonicalPath(),opt_sys));
-		else
-		if( opts.hasOpt("e"))
-			out.println( xf.getExt());
-		else
-		if( opts.hasOpt("N"))
-			out.println(toSys( xf.getPathName(),opt_sys));
-		else
-		if( opts.hasOpt("u"))
-			out.println( xf.getFile().toURI().toString());
-		else
-		if( opts.hasOpt("r"))
-			out.println( toSys(xf.getRelpath(mShell.getCurdir()),opt_sys));
-		else
-		out.println( toSys(xf.getPath(),opt_sys));
-		
+			if( opts.hasOpt("B"))
+				out.println( toSys(xf.noExtension(),opt_sys));
+			else
+				if( opts.hasOpt("n") )
+					out.println( toSys(xf.getName(),opt_sys));
+				else
+					if( opts.hasOpt("d"))
+						out.println(toSys(xf.getDirName(),opt_sys));
+					else
+						if( opts.hasOpt("a"))
+							out.println(toSys(xf.getFile().getAbsolutePath(),opt_sys));
+						else
+							if( opts.hasOpt("c"))
+								out.println(toSys(xf.getFile().getCanonicalPath(),opt_sys));
+							else
+								if( opts.hasOpt("e"))
+									out.println( xf.getExt());
+								else
+									if( opts.hasOpt("N"))
+										out.println(toSys( xf.getPathName(),opt_sys));
+									else
+										if( opts.hasOpt("u"))
+											out.println( xf.getFile().toURI().toString());
+										else
+											if( opts.hasOpt("r"))
+												out.println( toSys(xf.getRelpath(mShell.getCurdir()),opt_sys));
+											else
+												out.println( toSys(xf.getPath(),opt_sys));
+
 		out.flush();
-			
-				
+
+
 		return 0;
-		
-		
+
+
 	}
 
 	private String toSys(String name, boolean opt_sys) {
 		return FileUtils.convertPath(name, opt_sys);
-			
+
 	}
-	
+
 }
 
 //

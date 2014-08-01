@@ -38,39 +38,46 @@ public class XMLStreamWriterToContentHandler implements XMLStreamWriter {
 		mHandler = handler;
 	}
 
+	@Override
 	public void close() throws XMLStreamException {
 		;
 
 	}
 
+	@Override
 	public void flush() throws XMLStreamException {
-	      closeElementContext();
+		closeElementContext();
 
 	}
 
+	@Override
 	public NamespaceContext getNamespaceContext() {
 
 		return elementContext;
 
 	}
 
+	@Override
 	public String getPrefix(String uri) throws XMLStreamException {
 
 		return getNamespaceContext().getPrefix(uri);
 
 	}
 
+	@Override
 	public Object getProperty(String name) throws IllegalArgumentException {
 		// TODO provide access to properties?
 		throw new IllegalArgumentException(name + " property not supported");
 
 	}
 
+	@Override
 	public void setDefaultNamespace(String uri) throws XMLStreamException {
 		elementContext.putNamespace("", uri);
 
 	}
 
+	@Override
 	public void setNamespaceContext(NamespaceContext context) throws XMLStreamException {
 		if (this.rootContext == null && elementContext == null) {
 
@@ -85,6 +92,7 @@ public class XMLStreamWriterToContentHandler implements XMLStreamWriter {
 
 	}
 
+	@Override
 	public void setPrefix(String prefix, String uri) throws XMLStreamException {
 		elementContext.putNamespace(prefix, uri);
 
@@ -103,6 +111,7 @@ public class XMLStreamWriterToContentHandler implements XMLStreamWriter {
 
 	}
 
+	@Override
 	public void writeAttribute(String prefix, String namespaceURI, String localName, String value)
 			throws XMLStreamException {
 
@@ -127,6 +136,7 @@ public class XMLStreamWriterToContentHandler implements XMLStreamWriter {
 
 	}
 
+	@Override
 	public void writeAttribute(String namespaceURI, String localName, String value)
 			throws XMLStreamException {
 
@@ -134,15 +144,17 @@ public class XMLStreamWriterToContentHandler implements XMLStreamWriter {
 
 	}
 
+	@Override
 	public void writeAttribute(String localName, String value) throws XMLStreamException {
 
 		writeAttribute("", "", localName, value);
 
 	}
 
+	@Override
 	public void writeCharacters(String text) throws XMLStreamException {
-	       // flush any cached start element content
-        closeElementContext();
+		// flush any cached start element content
+		closeElementContext();
 
 		try {
 			mHandler.characters(text.toCharArray(), 0, text.length());
@@ -152,9 +164,10 @@ public class XMLStreamWriterToContentHandler implements XMLStreamWriter {
 
 	}
 
+	@Override
 	public void writeCharacters(char[] text, int start, int len) throws XMLStreamException {
-	       // flush any cached start element content
-        closeElementContext();
+		// flush any cached start element content
+		closeElementContext();
 
 		try {
 			mHandler.characters(text, start , len );
@@ -164,41 +177,48 @@ public class XMLStreamWriterToContentHandler implements XMLStreamWriter {
 
 	}
 
+	@Override
 	public void writeComment(String data) throws XMLStreamException {
 		// Ignore comments
 
 	}
 
+	@Override
 	public void writeDTD(String dtd) throws XMLStreamException {
 		// ignore DTD
 
 	}
 
+	@Override
 	public void writeDefaultNamespace(String namespaceURI) throws XMLStreamException {
-	       writeNamespace("", namespaceURI);
+		writeNamespace("", namespaceURI);
 
 	}
 
+	@Override
 	public void writeEmptyElement(String localName) throws XMLStreamException {
 
 		writeEmptyElement("",localName,"");
 
 	}
 
+	@Override
 	public void writeEmptyElement(String namespaceURI, String localName) throws XMLStreamException {
 		writeEmptyElement( "" , localName , namespaceURI );
 
 	}
 
+	@Override
 	public void writeEmptyElement(String prefix, String localName, String uri)
 			throws XMLStreamException {
-		
-        writeStartElement( prefix , localName , uri , true );
+
+		writeStartElement( prefix , localName , uri , true );
 	}
 
+	@Override
 	public void writeEndDocument() throws XMLStreamException {
-	     // flush any cached start element content
-        closeElementContext();
+		// flush any cached start element content
+		closeElementContext();
 
 		try {
 			mHandler.endDocument();
@@ -208,29 +228,30 @@ public class XMLStreamWriterToContentHandler implements XMLStreamWriter {
 
 	}
 
+	@Override
 	public void writeEndElement() throws XMLStreamException {
-	      // flush any cached start element content
-        closeElementContext();
+		// flush any cached start element content
+		closeElementContext();
 
-        if (elementContext != null) {
+		if (elementContext != null) {
 
-            QName name = elementContext.getName();
-            String rawname = getRawname(name);
-            
-            try {
+			QName name = elementContext.getName();
+			String rawname = getRawname(name);
+
+			try {
 				mHandler.endElement( name.getNamespaceURI() , name.getLocalPart() , rawname);
 			} catch (SAXException e) {
 				throw new XMLStreamException(e);
 			}
 
-            // pop the context
-            elementContext = elementContext.getParentContext();
+			// pop the context
+			elementContext = elementContext.getParentContext();
 
-        } else {
+		} else {
 
-            throw new XMLStreamException("Unmatched END_ELEMENT");
+			throw new XMLStreamException("Unmatched END_ELEMENT");
 
-        }
+		}
 
 	}
 
@@ -238,77 +259,84 @@ public class XMLStreamWriterToContentHandler implements XMLStreamWriter {
 		String prefix = name.getPrefix();
 		String rawname;
 		if (prefix == null || prefix.length() == 0) {
-		    rawname = name.getLocalPart();
+			rawname = name.getLocalPart();
 		} else {
-		    rawname = prefix + ':' + name.getLocalPart();
+			rawname = prefix + ':' + name.getLocalPart();
 		}
 		return rawname;
 	}
 
+	@Override
 	public void writeEntityRef(String name) throws XMLStreamException {
-	      // flush any cached start element content
-        closeElementContext();
-        // ???
+		// flush any cached start element content
+		closeElementContext();
+		// ???
 	}
 
+	@Override
 	public void writeNamespace(String prefix, String namespaceURI) throws XMLStreamException {
 
-        if (prefix == null) {
+		if (prefix == null) {
 
-            throw new IllegalArgumentException(
-                    "Namespace prefix may not be null @ [" + getCurrentPath()
-                            + "]");
+			throw new IllegalArgumentException(
+					"Namespace prefix may not be null @ [" + getCurrentPath()
+					+ "]");
 
-        } else if (namespaceURI == null) {
+		} else if (namespaceURI == null) {
 
-            throw new IllegalArgumentException(
-                    "Namespace URI may not be null @ [" + getCurrentPath()
-                            + "]");
+			throw new IllegalArgumentException(
+					"Namespace URI may not be null @ [" + getCurrentPath()
+					+ "]");
 
-        }
+		}
 
-        if (elementContext != null && !elementContext.isReadOnly()) {
+		if (elementContext != null && !elementContext.isReadOnly()) {
 
-            elementContext.putNamespace(prefix, namespaceURI);
+			elementContext.putNamespace(prefix, namespaceURI);
 
-        } else {
+		} else {
 
-            throw new XMLStreamException(
-                    getCurrentPath()
-                            + ": Namespaces must be written directly following a start tag");
-        }
+			throw new XMLStreamException(
+					getCurrentPath()
+					+ ": Namespaces must be written directly following a start tag");
+		}
 
 	}
 
+	@Override
 	public void writeProcessingInstruction(String target) throws XMLStreamException {
 		writeProcessingInstruction(target,"");
 
 	}
 
+	@Override
 	public void writeProcessingInstruction(String target, String data) throws XMLStreamException {
-	      // flush any cached start element content
-        closeElementContext();
+		// flush any cached start element content
+		closeElementContext();
 
-		
+
 		try {
 			mHandler.processingInstruction(target, data);
 		} catch (SAXException e) {
 			throw new XMLStreamException(e);
-			
+
 		}
 
 	}
 
+	@Override
 	public void writeStartDocument() throws XMLStreamException {
 		writeStartDocument("","");
 
 	}
 
+	@Override
 	public void writeStartDocument(String version) throws XMLStreamException {
 		writeStartDocument("",version);
 
 	}
 
+	@Override
 	public void writeStartDocument(String encoding, String version) throws XMLStreamException {
 		try {
 			mHandler.startDocument();
@@ -318,74 +346,77 @@ public class XMLStreamWriterToContentHandler implements XMLStreamWriter {
 
 	}
 
+	@Override
 	public void writeStartElement(String localName) throws XMLStreamException {
 		writeStartElement("",localName,"",false);
 
 	}
 
+	@Override
 	public void writeStartElement(String namespaceURI, String localName) throws XMLStreamException {
 		writeStartElement("",localName,namespaceURI,false);
 
 	}
 
+	@Override
 	public void writeStartElement(String prefix, String localName, String namespaceURI)
 			throws XMLStreamException {
 		writeStartElement(prefix,localName,namespaceURI,false);
 
 
 	}
-	   /**
-     * Core start tag output method called by all other <code>writeXXXElement</code>
-     * methods.
-     * 
-     * @param prefix The tag prefix.
-     * @param localName The tag local name.
-     * @param namespaceURI The namespace URI of the prefix.
-     * @param isEmpty Whether the tag is empty.
-     * @throws XMLStreamException If an error occurs writing the tag to the stream.
-     */
-    public synchronized void writeStartElement(String prefix, String localName,
-            String namespaceURI, boolean isEmpty) throws XMLStreamException {
+	/**
+	 * Core start tag output method called by all other <code>writeXXXElement</code>
+	 * methods.
+	 * 
+	 * @param prefix The tag prefix.
+	 * @param localName The tag local name.
+	 * @param namespaceURI The namespace URI of the prefix.
+	 * @param isEmpty Whether the tag is empty.
+	 * @throws XMLStreamException If an error occurs writing the tag to the stream.
+	 */
+	public synchronized void writeStartElement(String prefix, String localName,
+			String namespaceURI, boolean isEmpty) throws XMLStreamException {
 
-        if (prefix == null) {
+		if (prefix == null) {
 
-            throw new IllegalArgumentException("prefix may not be null @ ["
-                    + getCurrentPath() + "]");
+			throw new IllegalArgumentException("prefix may not be null @ ["
+					+ getCurrentPath() + "]");
 
-        } else if (localName == null) {
+		} else if (localName == null) {
 
-            throw new IllegalArgumentException("localName may not be null @ ["
-                    + getCurrentPath() + "]");
+			throw new IllegalArgumentException("localName may not be null @ ["
+					+ getCurrentPath() + "]");
 
-        } else if (namespaceURI == null) {
+		} else if (namespaceURI == null) {
 
-            throw new IllegalArgumentException(
-                    "namespaceURI may not be null @ [" + getCurrentPath() + "]");
+			throw new IllegalArgumentException(
+					"namespaceURI may not be null @ [" + getCurrentPath() + "]");
 
-        }
-        
-        // new context is beginning; close the current context if needed
-        if (elementContext != null) {
+		}
 
-            closeElementContext();
+		// new context is beginning; close the current context if needed
+		if (elementContext != null) {
 
-            // test if we just closed an empty root context
-            if (elementContext == null) {
+			closeElementContext();
 
-                throw new XMLStreamException(
-                        "Writing start tag after close of root element");
+			// test if we just closed an empty root context
+			if (elementContext == null) {
 
-            }
+				throw new XMLStreamException(
+						"Writing start tag after close of root element");
 
-        }
+			}
+
+		}
 
 
-        // create the new context
-        QName name = new QName(namespaceURI, localName, prefix);
-        elementContext = new ElementContext(name, elementContext, isEmpty);
-        
-        
-    }
+		// create the new context
+		QName name = new QName(namespaceURI, localName, prefix);
+		elementContext = new ElementContext(name, elementContext, isEmpty);
+
+
+	}
 
 
 	/**
@@ -408,76 +439,77 @@ public class XMLStreamWriterToContentHandler implements XMLStreamWriter {
 
 	}
 
+	@Override
 	public void writeCData(String data) throws XMLStreamException {
-		
-	       // flush any cached start element content
-        closeElementContext();
-        try {
+
+		// flush any cached start element content
+		closeElementContext();
+		try {
 
 			mHandler.characters(data.toCharArray(), 0, data.length());
 		} catch (SAXException e) {
 			throw new XMLStreamException(e);
 		}
-		
+
 	}
-	
-	  /**
-     * Closes the current {@link ElementContext}, writing any cached content and 
-     * making it read-only. If the current context is empty, it will be popped and
-     * replaced with its parent context. If no context is open, this method has no
-     * effects.
-     * 
-     * @throws XMLStreamException If an error occurs flushing any element content.
-     */
-    protected void closeElementContext() throws XMLStreamException {
 
-        if (elementContext != null && !elementContext.isReadOnly()) {
+	/**
+	 * Closes the current {@link ElementContext}, writing any cached content and 
+	 * making it read-only. If the current context is empty, it will be popped and
+	 * replaced with its parent context. If no context is open, this method has no
+	 * effects.
+	 * 
+	 * @throws XMLStreamException If an error occurs flushing any element content.
+	 */
+	protected void closeElementContext() throws XMLStreamException {
 
-            elementContext.setReadOnly();
+		if (elementContext != null && !elementContext.isReadOnly()) {
 
-            // it hasn't been closed yet, so write it
-            try {
+			elementContext.setReadOnly();
 
-           	 for (int i = 0, s = elementContext.namespaceCount(); i < s; i++) {
+			// it hasn't been closed yet, so write it
+			try {
 
-                 String prefix = elementContext.getNamespacePrefix(i);
-                 String uri = elementContext.getNamespaceURI(i);
+				for (int i = 0, s = elementContext.namespaceCount(); i < s; i++) {
 
-            	 
-            	 mHandler.startPrefixMapping(prefix, uri);
-            	 
-           	 }
-             
-            	 
-            	AttributesImpl attrs = new AttributesImpl();
-            	 for (int i = 0, s = elementContext.attributeCount(); i < s; i++) {
+					String prefix = elementContext.getNamespacePrefix(i);
+					String uri = elementContext.getNamespaceURI(i);
 
-                     QName name = elementContext.getAttributeName(i);
-                     String value = elementContext.getAttribute(i);
 
-                     
-                     
-                     attrs.addAttribute(name.getNamespaceURI(), name.getLocalPart(), getRawname(name), "CDATA", value);
-                  
-                 }
-                 
-            	 QName name = elementContext.getName();
+					mHandler.startPrefixMapping(prefix, uri);
 
-                 
-            	 mHandler.startElement(name.getNamespaceURI(), name.getLocalPart(), getRawname(name), attrs);
-	 
+				}
 
-            } catch (Exception e) {
 
-                throw new XMLStreamException(getCurrentPath()
-                        + ": error writing start tag to stream", e);
+				AttributesImpl attrs = new AttributesImpl();
+				for (int i = 0, s = elementContext.attributeCount(); i < s; i++) {
 
-            }
+					QName name = elementContext.getAttributeName(i);
+					String value = elementContext.getAttribute(i);
 
-        }
 
-    }
-	
+
+					attrs.addAttribute(name.getNamespaceURI(), name.getLocalPart(), getRawname(name), "CDATA", value);
+
+				}
+
+				QName name = elementContext.getName();
+
+
+				mHandler.startElement(name.getNamespaceURI(), name.getLocalPart(), getRawname(name), attrs);
+
+
+			} catch (Exception e) {
+
+				throw new XMLStreamException(getCurrentPath()
+						+ ": error writing start tag to stream", e);
+
+			}
+
+		}
+
+	}
+
 }
 
 //

@@ -9,12 +9,10 @@ package org.xmlsh.core;
 import net.sf.saxon.s9api.Destination;
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.trans.XPathException;
-
 import org.xml.sax.ContentHandler;
 import org.xmlsh.sh.shell.SerializeOpts;
 
 import java.io.File;
-import java.io.Flushable;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -42,7 +40,7 @@ public abstract class OutputPort extends AbstractPort implements IOutputPort
 	@Override
 	public	abstract OutputStream asOutputStream(SerializeOpts opts) throws CoreException;
 
-	
+
 	/* (non-Javadoc)
 	 * @see org.xmlsh.core.IOutputPort#asPrintStream(org.xmlsh.sh.shell.SerializeOpts)
 	 */
@@ -57,7 +55,7 @@ public abstract class OutputPort extends AbstractPort implements IOutputPort
 	 */
 	@Override
 	public abstract Destination asDestination(SerializeOpts opts) throws CoreException;
-	
+
 
 	/* (non-Javadoc)
 	 * @see org.xmlsh.core.IOutputPort#asPrintWriter(org.xmlsh.sh.shell.SerializeOpts)
@@ -68,7 +66,7 @@ public abstract class OutputPort extends AbstractPort implements IOutputPort
 				new OutputStreamWriter(asOutputStream(opts) , opts.getOutputTextEncoding() ));
 	}
 
-	
+
 	// These 2 shouldnt really go on the port 
 	/* (non-Javadoc)
 	 * @see org.xmlsh.core.IOutputPort#writeSequenceSeperator(org.xmlsh.sh.shell.SerializeOpts)
@@ -81,8 +79,8 @@ public abstract class OutputPort extends AbstractPort implements IOutputPort
 	@Override
 	public abstract void writeSequenceTerminator(SerializeOpts serializeOpts) throws IOException, CoreException, SaxonApiException ;
 
-	
-	
+
+
 	/* (non-Javadoc)
 	 * @see org.xmlsh.core.IOutputPort#asXMLStreamWriter(org.xmlsh.sh.shell.SerializeOpts)
 	 */
@@ -93,7 +91,7 @@ public abstract class OutputPort extends AbstractPort implements IOutputPort
 	 */
 	@Override
 	public abstract XMLEventWriter asXMLEventWriter(SerializeOpts opts) throws InvalidArgumentException, XMLStreamException, SaxonApiException, IOException, CoreException;
-	
+
 	/* (non-Javadoc)
 	 * @see org.xmlsh.core.IOutputPort#asXdmItemOutputStream(org.xmlsh.sh.shell.SerializeOpts)
 	 */
@@ -105,13 +103,13 @@ public abstract class OutputPort extends AbstractPort implements IOutputPort
 	 */
 	@Override
 	public abstract	ContentHandler			asContentHandler( SerializeOpts opts) throws XPathException, SaxonApiException, CoreException;
-	
+
 	/* (non-Javadoc)
 	 * @see org.xmlsh.core.IOutputPort#isFile()
 	 */
 	@Override
 	public	boolean		isFile() { return false ; }
-	
+
 	/* (non-Javadoc)
 	 * @see org.xmlsh.core.IOutputPort#getFile()
 	 */
@@ -126,10 +124,10 @@ public abstract class OutputPort extends AbstractPort implements IOutputPort
 	 */
 	@Override
 	public boolean isNull()
-    {
-	    // TODO Auto-generated method stub
-	    return false;
-    }
+	{
+		// TODO Auto-generated method stub
+		return false;
+	}
 
 }
 

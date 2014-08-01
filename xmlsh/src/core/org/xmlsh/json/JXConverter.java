@@ -9,7 +9,6 @@ package org.xmlsh.json;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.SerializeOpts;
-import org.xmlsh.util.JSONUtils;
 import org.xmlsh.util.Util;
 
 import java.io.IOException;
@@ -43,19 +42,19 @@ public abstract class JXConverter
 	private JSONSerializeOpts mJsonSerializeOpts;
 	private SerializeOpts mSerializeOpts;
 	private List<XValue> mArgs;
-	
+
 
 	interface IJSONConverter
 	{
-	
+
 		public abstract boolean parse() throws ConverterException;
 		public void close() throws ConverterException;
-	
+
 	}
 
 	interface IXMLConverter
 	{
-		
+
 		public abstract boolean parse() throws ConverterException;
 		public void close() throws ConverterException;
 
@@ -68,188 +67,190 @@ public abstract class JXConverter
 		XMLStreamReader mStreamReader;
 
 		JsonGenerator  mGenerator;
-		
-		protected JSONConverter(XMLStreamReader reader, OutputStream os) throws ConverterException
-        {
-	        super();
-	        mStreamReader = reader;
-	      
-	        try {
-	        	mGenerator = JSONUtils.createGenerator(os, mJsonSerializeOpts);
-	            mReader = XMLInputFactory.newInstance().createXMLEventReader(mStreamReader);
-            } catch (XMLStreamException e) {
-	            throw new ConverterException(e);
-	            
-            } catch (FactoryConfigurationError e) {
-	            throw new ConverterException(e);
-            } catch (IOException e) {
-	            throw new ConverterException(e);
 
-            }
-        }
-		
+		protected JSONConverter(XMLStreamReader reader, OutputStream os) throws ConverterException
+		{
+			super();
+			mStreamReader = reader;
+
+			try {
+				mGenerator = JSONUtils.createGenerator(os, mJsonSerializeOpts);
+				mReader = XMLInputFactory.newInstance().createXMLEventReader(mStreamReader);
+			} catch (XMLStreamException e) {
+				throw new ConverterException(e);
+
+			} catch (FactoryConfigurationError e) {
+				throw new ConverterException(e);
+			} catch (IOException e) {
+				throw new ConverterException(e);
+
+			}
+		}
+
 		/* (non-Javadoc)
 		 * @see org.xmlsh.json.IJSONConverter#parse()
 		 */
-		@Override
-        public boolean parse( ) throws ConverterException {
-			try {
-				while( mReader.hasNext() ){
-					XMLEvent e = mReader.nextEvent();
-					if( e.isStartDocument())
-						startDocument(e);
-					else
-					
-					if( e.isStartElement() ){
-						StartElement start = e.asStartElement();
-						QName name = start.getName(); 
-						if( ! startElement( start , name    ))
-							return false ;
-						
-					}
-					else
-					if( e.isEndElement() ){
-						if( ! endElement( e.asEndElement() ) ) 
-							return false ;
-					}
-					else
-					if( e.isEndDocument() ) {
-						endDocument(e);
-						return false ;
-					}
-					else
-					if( e.isCharacters()) {
-						if( ! characters(e)) 
-							return false ;
-					}
-					else 
-						throw new ConverterException("Unexpected XML element: " + e.getEventType() );
-				}
-			} catch( Exception e ) {
-				 
-				Util.wrapException( e , ConverterException.class );
-				 
-			}
-			return false ;
-		}
-		
+		 @Override
+		 public boolean parse( ) throws ConverterException {
+			 try {
+				 while( mReader.hasNext() ){
+					 XMLEvent e = mReader.nextEvent();
+					 if( e.isStartDocument())
+						 startDocument(e);
+					 else
+
+						 if( e.isStartElement() ){
+							 StartElement start = e.asStartElement();
+							 QName name = start.getName(); 
+							 if( ! startElement( start , name    ))
+								 return false ;
+
+						 }
+						 else
+							 if( e.isEndElement() ){
+								 if( ! endElement( e.asEndElement() ) ) 
+									 return false ;
+							 }
+							 else
+								 if( e.isEndDocument() ) {
+									 endDocument(e);
+									 return false ;
+								 }
+								 else
+									 if( e.isCharacters()) {
+										 if( ! characters(e)) 
+											 return false ;
+									 }
+									 else 
+										 throw new ConverterException("Unexpected XML element: " + e.getEventType() );
+				 }
+			 } catch( Exception e ) {
+
+				 Util.wrapException( e , ConverterException.class );
+
+			 }
+			 return false ;
+		 }
 
 
 
 
 
-		protected void readToEnd() throws ConverterException {
-			try {
-	            while( mReader.hasNext() && ! mReader.peek().isEndElement() )
-	            	mReader.nextEvent();
-	            
-	            if( mReader.hasNext())
-	            	mReader.nextEvent();
-            } catch (XMLStreamException e) {
-	            throw new ConverterException("Exception reading to end of XML Element" ,e);
-            }
-		}
-		
-		protected void readToEOF() throws ConverterException  {
-			try {
-		        // Consume input or we can get a Piped Close
-		        while( mReader.hasNext() )
-		        	mReader.nextEvent();
-	        } catch (XMLStreamException e) {
-	            throw new ConverterException("Exception reading to end of XML Document" ,e);
 
-	        }
-			
-		}
-		
-		abstract protected boolean startElement( StartElement start , QName name) throws ConverterException;
-		abstract protected boolean startDocument(XMLEvent e) throws ConverterException;;
-		abstract protected boolean endElement(EndElement asEndElement) throws ConverterException;;
-		abstract protected boolean endDocument(XMLEvent e) throws ConverterException;;
-		abstract protected boolean characters(XMLEvent e);
+		 protected void readToEnd() throws ConverterException {
+			 try {
+				 while( mReader.hasNext() && ! mReader.peek().isEndElement() )
+					 mReader.nextEvent();
+
+				 if( mReader.hasNext())
+					 mReader.nextEvent();
+			 } catch (XMLStreamException e) {
+				 throw new ConverterException("Exception reading to end of XML Element" ,e);
+			 }
+		 }
+
+		 protected void readToEOF() throws ConverterException  {
+			 try {
+				 // Consume input or we can get a Piped Close
+				 while( mReader.hasNext() )
+					 mReader.nextEvent();
+			 } catch (XMLStreamException e) {
+				 throw new ConverterException("Exception reading to end of XML Document" ,e);
+
+			 }
+
+		 }
+
+		 abstract protected boolean startElement( StartElement start , QName name) throws ConverterException;
+		 abstract protected boolean startDocument(XMLEvent e) throws ConverterException;;
+		 abstract protected boolean endElement(EndElement asEndElement) throws ConverterException;;
+		 abstract protected boolean endDocument(XMLEvent e) throws ConverterException;;
+		 abstract protected boolean characters(XMLEvent e);
 
 
 
-		protected String readString() throws XMLStreamException, UnsupportedEncodingException, IOException
-        {
-        	StringBuilder sb = new  StringBuilder();
-        
-        	while (mReader.hasNext()) {
-        		XMLEvent event = mReader.nextEvent();
-        
-        		if(event.isEndElement() )
-        			break;
-        		if(event.isCharacters())
-        			sb.append(event.asCharacters().getData());
-        	}
-        
-        	return sb.toString();
-        
-        }
-		
+		 protected String readString() throws XMLStreamException, UnsupportedEncodingException, IOException
+		 {
+			 StringBuilder sb = new  StringBuilder();
 
-		public void close()  {
+			 while (mReader.hasNext()) {
+				 XMLEvent event = mReader.nextEvent();
 
-			JSONUtils.safeClose(mGenerator);
-			mGenerator =null ;
-			Util.safeClose( mReader );
-			mReader = null ;
-	
-		}
-		
+				 if(event.isEndElement() )
+					 break;
+				 if(event.isCharacters())
+					 sb.append(event.asCharacters().getData());
+			 }
+
+			 return sb.toString();
+
+		 }
+
+
+		 @Override
+		 public void close()  {
+
+			 JSONUtils.safeClose(mGenerator);
+			 mGenerator =null ;
+			 Util.safeClose( mReader );
+			 mReader = null ;
+
+		 }
+
 
 	}
-	
+
 	abstract class XMLConverter implements IXMLConverter {
 		JsonParser mParser;
 		InputStream mInput;
 		XMLStreamWriter mWriter;
-		
+
 
 		protected XMLConverter(InputStream is, XMLStreamWriter sw ) throws ConverterException
-        {
+		{
 			mInput = is ;
-	        try {
-	            mParser = JSONUtils.getJsonFactory().createParser(is);
-            } catch (JsonParseException e) {
-	            throw new ConverterException(e);
-            } catch (IOException e) {
-	            throw new ConverterException(e);
-            }
-	        mWriter = sw;
-        }
+			try {
+				mParser = JSONUtils.getJsonFactory().createParser(is);
+			} catch (JsonParseException e) {
+				throw new ConverterException(e);
+			} catch (IOException e) {
+				throw new ConverterException(e);
+			}
+			mWriter = sw;
+		}
 
 
+		@Override
 		public boolean parse() throws ConverterException
-        {
+		{
 			JsonToken tok = nextToken();
 			writeValue(tok );
 			return true ;
-        }
+		}
 
 
 		protected JsonToken nextToken() throws ConverterException
-        {
-	        try {
-	            return mParser.nextToken();
-            } catch (JsonParseException e) {
-	           throw new ConverterException(e);
-            } catch (IOException e) {
- 	           throw new ConverterException(e);
-            }
-        }
+		{
+			try {
+				return mParser.nextToken();
+			} catch (JsonParseException e) {
+				throw new ConverterException(e);
+			} catch (IOException e) {
+				throw new ConverterException(e);
+			}
+		}
 
 
 		public void readToEOF()
-        {
-	        
-        }
+		{
+
+		}
 		protected void writeValue(JsonToken tok ) throws ConverterException
 		{
 			if(tok == null)
 				return  ;
-			
-			
+
+
 			switch (tok) {
 			case START_ARRAY:
 				writeArray();
@@ -284,23 +285,23 @@ public abstract class JXConverter
 
 
 		protected String getStringValue() throws ConverterException 
-        {
-	    	try {
-	            return mParser.getText();
-            } catch (IOException e) {
-	           throw new ConverterException(e);
-            }
-        }
+		{
+			try {
+				return mParser.getText();
+			} catch (IOException e) {
+				throw new ConverterException(e);
+			}
+		}
 
 
 		protected Number getNumberValue() throws ConverterException
-        {
+		{
 			try {
-	            return mParser.getNumberValue();
-            } catch (IOException e) {
-	           throw new ConverterException(e);
-            }
-        }
+				return mParser.getNumberValue();
+			} catch (IOException e) {
+				throw new ConverterException(e);
+			}
+		}
 
 
 		abstract void writeArray() throws ConverterException;
@@ -312,52 +313,53 @@ public abstract class JXConverter
 
 
 		protected void writeStartElement(QName qn) throws XMLStreamException
-        {
-        	mWriter.writeStartElement(qn.getPrefix() , qn.getLocalPart() , qn.getNamespaceURI() );
-            
-        }
+		{
+			mWriter.writeStartElement(qn.getPrefix() , qn.getLocalPart() , qn.getNamespaceURI() );
+
+		}
 
 
 		protected void writeAttribute(QName qn, String value) throws XMLStreamException
-        {
-        	mWriter.writeAttribute( qn.getPrefix() ,  qn.getNamespaceURI(), qn.getLocalPart() , value);
-            
-        }
+		{
+			mWriter.writeAttribute( qn.getPrefix() ,  qn.getNamespaceURI(), qn.getLocalPart() , value);
+
+		}
 
 
 		protected void writeEndElement() throws XMLStreamException
-        {
-            mWriter.writeEndElement();
-        }
+		{
+			mWriter.writeEndElement();
+		}
 
 
 		protected void writeCharacters(String s) throws XMLStreamException
-        {
-            mWriter.writeCharacters(s);
-        }
-		
+		{
+			mWriter.writeCharacters(s);
+		}
 
+
+		@Override
 		public void close() throws ConverterException  {
 
-			
+
 			try {
-	            mWriter.flush();
-            } catch (XMLStreamException e) {
-            	throw new ConverterException(e);
-            }
+				mWriter.flush();
+			} catch (XMLStreamException e) {
+				throw new ConverterException(e);
+			}
 			JSONUtils.safeClose(mParser);
 			mParser =null ;
-			
-			
-	
-		}
-		
 
-		
-		
+
+
+		}
+
+
+
+
 	}
-	
-	
+
+
 	abstract IJSONConverter newJConverter(XMLStreamReader reader, OutputStream os) throws ConverterException;
 	abstract IXMLConverter newXMLConverter(InputStream is, XMLStreamWriter sw ) throws ConverterException;
 
@@ -366,65 +368,65 @@ public abstract class JXConverter
 	 * Converter To and/or From JSON
 	 */
 	public JXConverter(JSONSerializeOpts jsonSerializeOpts, SerializeOpts serializeOpts , List<XValue> args )
-    {
-	    super();
-	    mJsonSerializeOpts = jsonSerializeOpts;
-	    mSerializeOpts = serializeOpts;
-	    mArgs = args ;
-    }
-	
+	{
+		super();
+		mJsonSerializeOpts = jsonSerializeOpts;
+		mSerializeOpts = serializeOpts;
+		mArgs = args ;
+	}
+
 	public void convertToJson(XMLStreamReader reader, OutputStream os) throws ConverterException {
-		
-		
+
+
 		IJSONConverter converter = newJConverter(reader,os);
 		try {
-			   converter.parse( );
-
-			} finally 
-			{
-				converter.close();
-			}
-	}
-	
-
-	
-	
-	public void convertFromJson(InputStream is, XMLStreamWriter sw ) throws ConverterException {
-		
-		IXMLConverter converter = newXMLConverter(is,sw);
-		try {
-		   converter.parse( );
+			converter.parse( );
 
 		} finally 
 		{
 			converter.close();
 		}
-		
-		
 	}
 
- 
-	
+
+
+
+	public void convertFromJson(InputStream is, XMLStreamWriter sw ) throws ConverterException {
+
+		IXMLConverter converter = newXMLConverter(is,sw);
+		try {
+			converter.parse( );
+
+		} finally 
+		{
+			converter.close();
+		}
+
+
+	}
+
+
+
 	public static JXConverter getConverter(String format, JSONSerializeOpts jopts, SerializeOpts serializeOpts, List<XValue> args) throws InvalidArgumentException
 	{
-	    if( Util.isEqual(format,"jxon"))
-	    	return new JXONConverter( jopts , serializeOpts, args );
-	    else
-	    if(  Util.isEqual(format,"jsonx")) 
-	    	return new JSONXConverter( jopts , serializeOpts, args );
-	    else
-	    if( Util.isEqual(format,"jackson"))
-	    	return new JacksonConverter( jopts , serializeOpts , args );
-	    else
-	    	throw new InvalidArgumentException("Unknown convert format: " + format );
-	    
+		if( Util.isEqual(format,"jxon"))
+			return new JXONConverter( jopts , serializeOpts, args );
+		else
+			if(  Util.isEqual(format,"jsonx")) 
+				return new JSONXConverter( jopts , serializeOpts, args );
+			else
+				if( Util.isEqual(format,"jackson"))
+					return new JacksonConverter( jopts , serializeOpts , args );
+				else
+					throw new InvalidArgumentException("Unknown convert format: " + format );
+
 	}
 	protected List<XValue> getArgs()
-    {
-	    return mArgs;
-    }
+	{
+		return mArgs;
+	}
 
-	
+
 
 }
 

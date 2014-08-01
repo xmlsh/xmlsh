@@ -6,8 +6,6 @@
 
 package org.xmlsh.util;
 
-import org.xmlsh.core.InputPort;
-import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.StreamInputPort;
 import org.xmlsh.core.StreamOutputPort;
 
@@ -19,29 +17,31 @@ public class PipedStreamPort extends PipedPort {
 	private		PipedInputStream 	mIn;
 	private		PipedOutputStream 	mOut;
 	private		static final int sDefaultSize = 10*1024;
-	
+
 	public PipedStreamPort()  throws IOException
 	{
-	
+
 		mOut = new PipedOutputStream();
 		mIn = new PipedInputStream(mOut,sDefaultSize);
-		
+
 	}
-	
+
 	public PipedStreamPort(int size) throws IOException {
 		mOut = new PipedOutputStream();
 		mIn = new PipedInputStream(mOut,size);
-		
+
 	}
 
+	@Override
 	public	StreamInputPort	getInput() throws IOException { 
 		return new StreamInputPort(mIn,null) ; 
 	}
-	
+
+	@Override
 	public StreamOutputPort getOutput() { 
 		return new StreamOutputPort(mOut) ; 
 	}
-	
+
 	static public PipedStreamPort[] getPipes(int n ) throws IOException
 	{
 		if( n == 0 )
@@ -50,16 +50,16 @@ public class PipedStreamPort extends PipedPort {
 		for( int i = 0 ; i < n ; i++ )
 			streams[i] = new PipedStreamPort();
 		return streams;
-		
+
 	}
 
 	@Override
 	public void close() {
 		Util.safeClose(mIn);
 		Util.safeClose(mOut);
-		
+
 	}
-	
+
 }
 //
 //

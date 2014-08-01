@@ -36,12 +36,13 @@ public class xml2json extends XCommand
 {
 
 	private 	boolean bIndent = false ;
-	
 
+
+	@Override
 	public int run(  List<XValue> args  )	throws Exception
 	{
 		Options opts = new Options("p=print,f=format:",SerializeOpts.getOptionDefs());
-		
+
 		opts.parse(args);
 
 		bIndent = opts.hasOpt("p");
@@ -50,7 +51,7 @@ public class xml2json extends XCommand
 		args = opts.getRemainingArgs();
 
 		OutputPort stdout = getStdout();
-		
+
 		InputPort inp = args.isEmpty() ? getStdin() : getInput( args.get(0) );
 
 		setSerializeOpts(opts);
@@ -60,31 +61,31 @@ public class xml2json extends XCommand
 			jopts.setPretyPrint(bIndent);
 
 		try ( 
-			// Override the text encoding to UTF-8 - JSON is *always* USTF8
-			OutputStream os = stdout.asOutputStream(getSerializeOpts());
+				// Override the text encoding to UTF-8 - JSON is *always* USTF8
+				OutputStream os = stdout.asOutputStream(getSerializeOpts());
 				){
 			JXConverter converter = JXConverter.getConverter(format,jopts,getSerializeOpts(), args);
 
 			converter.convertToJson( reader , os );
 			return 0;
-			
+
 		} 
 		finally {
 			Util.safeClose(reader);
 		}
-		
 
-		
 
-		
-		
+
+
+
+
 	}
 
-	
-	
-	
-			
-	
+
+
+
+
+
 }
 
 //

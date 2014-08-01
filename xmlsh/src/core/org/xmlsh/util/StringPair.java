@@ -14,8 +14,8 @@ public class StringPair {
 	private		String		mString;
 	private		String 		mLeft ;
 	private		String		mRight;
-	
-	
+
+
 	public StringPair( String string , char delim  )
 	{
 		mString = string ;
@@ -23,7 +23,7 @@ public class StringPair {
 		if( cpos >= 0 ){
 			mLeft = string.substring(0,cpos);
 			mRight = string.substring(cpos+1);
-			
+
 		} else
 			mRight = string ;
 	}
@@ -39,6 +39,7 @@ public class StringPair {
 	/**
 	 * @return the string
 	 */
+	@Override
 	public String toString() {
 		return mString;
 	}
@@ -57,12 +58,12 @@ public class StringPair {
 	public String getRight() {
 		return mRight;
 	}
-	
+
 	/*
 	 * Return true if the pair had a left side. 
 	 * Note: Returns true even if the left side is blank
 	 */
-	
+
 	public boolean hasLeft()
 	{
 		return mLeft != null;
@@ -78,8 +79,8 @@ public class StringPair {
 	{
 		return mLeft != null ;
 	}
-	
-	
+
+
 }
 
 

@@ -18,13 +18,13 @@ import javax.xml.stream.XMLStreamWriter;
 
 public class writeCharacters extends XCommand {
 
-	
-	
+
+
 	public writeCharacters()
 	{
-		
+
 	}
-	
+
 	@Override
 	public int run( List<XValue> args) throws CoreException, XPathException, XMLStreamException {
 		if( args.size()  < 1 )
@@ -35,9 +35,9 @@ public class writeCharacters extends XCommand {
 			for( XValue v : args )
 				((XMLStreamWriter)arg).writeCharacters( v.toString());
 		}
-		
+
 		return 0;
-		
+
 	}
 
 }

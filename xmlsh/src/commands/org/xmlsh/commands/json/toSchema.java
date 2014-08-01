@@ -10,9 +10,9 @@ import org.xmlsh.core.BuiltinFunctionCommand;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
+import org.xmlsh.json.JSONUtils;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.types.TypeFamily;
-import org.xmlsh.util.JSONUtils;
 import org.xmlsh.util.JavaUtils;
 
 import java.util.List;
@@ -27,27 +27,27 @@ public class toSchema extends BuiltinFunctionCommand {
 	{
 		super("to-schema");
 	}
-	
 
-    @SuppressWarnings("deprecation")
-    @Override
+
+	@SuppressWarnings("deprecation")
+	@Override
 	public XValue run(Shell shell, List<XValue> args) throws ClassNotFoundException, CoreException, JsonMappingException {
 
 		if( args.size() == 0)
 			throw new InvalidArgumentException("usage: to-schema( class )");
-		
+
 		XValue arg = args.get(0);
-		
+
 		Class<?> cls = JavaUtils.convertToClass( arg, shell );
-			
+
 
 		ObjectMapper mapper = JSONUtils.getJsonObjectMapper();
-		
+
 		@SuppressWarnings("deprecation")
 		JsonSchema schema = mapper.generateJsonSchema(cls);
- 
+
 		return new XValue(TypeFamily.JSON,  schema.getSchemaNode());
-		
+
 	}
 
 }

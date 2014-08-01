@@ -17,12 +17,12 @@ import java.util.Set;
 public class Variables {
 	private		NameValueMap<XVariable> mGlobals;
 	private		NameValueMap<XVariable> mLocals = new NameValueMap<XVariable>();
-	
-	
+
+
 	public Variables() 
 	{
 		mGlobals = new NameValueMap<XVariable>();
-		
+
 	}
 	Variables(Variables that) {
 		mGlobals = new NameValueMap<XVariable>(that.mGlobals);
@@ -32,17 +32,17 @@ public class Variables {
 	{
 		mGlobals = globals ; 
 		mLocals = locals ;
-		
-		
+
+
 	}
-	
-	
+
+
 	public XVariable get(String name) {
 		// First look in locals
 		if( mLocals.containsKey(name) )
 			return mLocals.get(name);
 		return 	mGlobals.get(name);
-		
+
 	}
 	public void put(String name, XVariable var, boolean local) {
 		if( local || mLocals.containsKey(name) ) {
@@ -51,16 +51,16 @@ public class Variables {
 		}
 		else
 			mGlobals.put(name,var);
-		
+
 	}
 	public Collection<String> getVarNames() {
 		Set<String> names = new HashSet<String>(mGlobals.size() + mLocals.size());
-		
+
 		names.addAll( mGlobals.keySet() );
 		names.addAll( mLocals.keySet() );
 		return names ;
-				
-		
+
+
 	}
 	public void unset(String name) throws InvalidArgumentException 
 	{
@@ -70,7 +70,7 @@ public class Variables {
 			local.unset();
 		else
 			mGlobals.remove(name);
-		
+
 	}
 	public boolean containsKey(String name) {
 		return mGlobals.containsKey(name) || mLocals.containsKey(name);

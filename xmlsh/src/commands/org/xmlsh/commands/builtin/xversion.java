@@ -20,46 +20,47 @@ import javax.xml.stream.XMLStreamWriter;
 
 public class xversion extends BuiltinCommand {
 
-	
+
+	@Override
 	public int run(  List<XValue> args ) throws Exception {
-	
-	      
+
+
 		OutputPort stdout = mShell.getEnv().getStdout();
 		Options opts = new Options(SerializeOpts.getOptionDefs());
 		opts.parse(args);
 		SerializeOpts serializeOpts = getSerializeOpts(opts);
-		
-		
+
+
 		XMLStreamWriter writer = stdout.asXMLStreamWriter(serializeOpts);
-	
+
 		writer.writeStartDocument();
 
-			
+
 		final String sBuild = "build";
 		final String sRelease = "release";
 		final String sVersion = "version";
 		final String sDocRoot = sVersion;
 		final String sSaxon = "saxon_version";
 		final String sSaxonEdition = "saxon_edition";
-		
-	
+
+
 		writer.writeStartElement(sDocRoot);
 		writer.writeAttribute(sBuild, Version.getBuildDate());
 		writer.writeAttribute(sRelease, Version.getRelease() );
 		writer.writeAttribute(sVersion, Version.getVersion() );
 		writer.writeAttribute(sSaxon, Shell.getProcessor().getSaxonProductVersion() );
 		writer.writeAttribute(sSaxonEdition, Shell.getProcessor().getUnderlyingConfiguration().getEditionCode() );
-		
 
-		
+
+
 		writer.writeEndElement();
 		writer.writeEndDocument();
 		writer.close();
 		stdout.writeSequenceTerminator(serializeOpts);
-		
+
 		return 0;
-		
-		}
+
+	}
 
 
 

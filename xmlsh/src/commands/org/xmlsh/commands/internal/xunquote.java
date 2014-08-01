@@ -26,21 +26,21 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.XMLEvent;
 
 public class xunquote extends XCommand {
-	
+
 	static class UnquotingInputStream extends InputStream
 	{
 		private		byte[]  	mBytes;
 		int			pos = 0;
 		int 		end = 0;
-		
-		
+
+
 		public UnquotingInputStream(byte[] bytes) {
 			super();
 			mBytes = bytes;
 			end = mBytes.length;
 		}
 
-		
+
 		private int next()
 		{
 			if( pos >= end )
@@ -55,9 +55,9 @@ public class xunquote extends XCommand {
 			while( ( c = next()) >= 0  && c != ';')
 				sb.append((char)c);
 			return sb.toString();
-			
+
 		}
-		
+
 
 		@Override
 		public int read() throws IOException {
@@ -78,7 +78,7 @@ public class xunquote extends XCommand {
 					return '\'';
 				if( s.equals("amp"))
 					return '&';
-				
+
 				if( s.startsWith("#")){
 					if( s.charAt(1) == 'x' )
 						return Integer.parseInt(s.substring(2), 16);
@@ -87,82 +87,83 @@ public class xunquote extends XCommand {
 				}
 				else 
 					throw new IOException("Unexepcted entity: &" + s + ";");
-					
+
 			} else
 				return c;
-			
+
 		}
-		
+
 	};
-	
-	
+
+
+	@Override
 	public int run( List<XValue> args ) throws Exception {
-		
+
 		Options opts = new Options( "n,p=port:" ,SerializeOpts.getOptionDefs() );
 		opts.parse(args);
-		
+
 		args = opts.getRemainingArgs();
 
 		SerializeOpts serializeOpts = getSerializeOpts(opts);
-		
+
 		boolean nolf = opts.hasOpt("n");
-		
+
 		String port = opts.getOptString("p", null);
-		
+
 		OutputPort stdout = 
-			port != null ? mShell.getEnv().getOutputPort(port) : 
-			mShell.getEnv().getStdout();
+				port != null ? mShell.getEnv().getOutputPort(port) : 
+					mShell.getEnv().getStdout();
 
-		if( stdout == null )
-			throw new InvalidArgumentException("Output port not found: " + port );
-			
-	
-		
-		XMLEventWriter out = stdout.asXMLEventWriter(serializeOpts);
+				if( stdout == null )
+					throw new InvalidArgumentException("Output port not found: " + port );
 
-		
-		args = Util.expandSequences(args);
-		
-		
-		/*
-		 * IF there are any arguments, then treat them as strings and re-parse them to XML
-		 * Otherwise use stdin, parse it and output as XML
-		 */
-		
-		boolean bFirst = true;
-		if( args.size() > 0 )
-			for ( XValue arg : args ){
-				if( ! bFirst )
-					stdout.writeSequenceSeperator(serializeOpts);
-				
-				
-				ByteArrayOutputStream	tempBuf = new ByteArrayOutputStream(  );
-				arg.serialize( tempBuf , serializeOpts );
-				UnquotingInputStream  	in = new UnquotingInputStream( tempBuf.toByteArray() );
-				
-				XMLInputFactory factory = XMLInputFactory.newInstance();
-				XMLEventReader reader = factory.createXMLEventReader( in , serializeOpts.getInputXmlEncoding() );
-				
-				copyXML( reader , out );
-				reader.close();
-				bFirst = false;
-				
-				
-		}  else { 
-			// Parse Stdin as XML and output
-			XMLEventReader reader = getStdin().asXMLEventReader(serializeOpts);
-			copyXML( reader , out );
-			reader.close();
-			
-			
-			
-		}
-			
-		out.close();
-		if( ! nolf )
-			stdout.writeSequenceTerminator(serializeOpts);
 
-		return 0;
+
+				XMLEventWriter out = stdout.asXMLEventWriter(serializeOpts);
+
+
+				args = Util.expandSequences(args);
+
+
+				/*
+				 * IF there are any arguments, then treat them as strings and re-parse them to XML
+				 * Otherwise use stdin, parse it and output as XML
+				 */
+
+				boolean bFirst = true;
+				if( args.size() > 0 )
+					for ( XValue arg : args ){
+						if( ! bFirst )
+							stdout.writeSequenceSeperator(serializeOpts);
+
+
+						ByteArrayOutputStream	tempBuf = new ByteArrayOutputStream(  );
+						arg.serialize( tempBuf , serializeOpts );
+						UnquotingInputStream  	in = new UnquotingInputStream( tempBuf.toByteArray() );
+
+						XMLInputFactory factory = XMLInputFactory.newInstance();
+						XMLEventReader reader = factory.createXMLEventReader( in , serializeOpts.getInputXmlEncoding() );
+
+						copyXML( reader , out );
+						reader.close();
+						bFirst = false;
+
+
+					}  else { 
+						// Parse Stdin as XML and output
+						XMLEventReader reader = getStdin().asXMLEventReader(serializeOpts);
+						copyXML( reader , out );
+						reader.close();
+
+
+
+					}
+
+				out.close();
+				if( ! nolf )
+					stdout.writeSequenceTerminator(serializeOpts);
+
+				return 0;
 	}
 
 	private void copyXML(XMLEventReader in, XMLEventWriter out) throws XMLStreamException {

@@ -29,7 +29,7 @@ public class CommandSuffix {
 	public void addArg( Word arg){
 		mArgs.add(arg);
 	}
-	
+
 	public void addIO( IORedirect io){
 		mRedirect.add(io);
 	}
@@ -37,20 +37,20 @@ public class CommandSuffix {
 	public void print(PrintWriter out) {
 		mArgs.print(out);
 		mRedirect.print(out);
-		
-		
-		
+
+
+
 	}
 
 	/*
 	 * Expand command line argument list
 	 * into runtime argument list 0-n ... 
 	 */
-	
+
 	public List<XValue> toCmdLine(Shell shell, Word command, SourceLocation loc ) throws IOException, CoreException 
 	{
 		ArrayList<XValue>	args = new ArrayList<XValue>();
-		
+
 		args.addAll( command.expandToList(shell,mCmdEnv,loc));
 		for( Word arg : mArgs )
 			args.addAll(arg.expandToList(shell, mArgEnv,loc));
@@ -60,13 +60,13 @@ public class CommandSuffix {
 
 	public void exec(Shell shell, SourceLocation loc) throws Exception {
 		this.mRedirect.exec(shell, loc );
-		
+
 	}
 
-	
-	
-	
-	
+
+
+
+
 }
 
 

@@ -9,9 +9,9 @@ package org.xmlsh.commands.json;
 import org.xmlsh.core.BuiltinFunctionCommand;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.XValue;
+import org.xmlsh.json.JSONUtils;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.types.TypeFamily;
-import org.xmlsh.util.JSONUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -28,7 +28,7 @@ public class json extends BuiltinFunctionCommand {
 	{
 		super("json");
 	}
-	
+
 	@Override
 	public XValue run(Shell shell, List<XValue> args) throws ClassNotFoundException, CoreException, JsonParseException, JsonMappingException, IOException 
 	{
@@ -38,15 +38,15 @@ public class json extends BuiltinFunctionCommand {
 			Object o = arg.asObject();
 			nodes.add( mapper.valueToTree(o) );
 		}
-        if( nodes.isEmpty())
-        	return new XValue(TypeFamily.JSON);
+		if( nodes.isEmpty())
+			return new XValue(TypeFamily.JSON);
 
-        else
-		if( nodes.size() > 1 ) 
-			return new XValue(TypeFamily.JSON, mapper.createArrayNode().addAll(nodes));
 		else
-			return new XValue( TypeFamily.JSON, nodes.get(0 ) );
-		
+			if( nodes.size() > 1 ) 
+				return new XValue(TypeFamily.JSON, mapper.createArrayNode().addAll(nodes));
+			else
+				return new XValue( TypeFamily.JSON, nodes.get(0 ) );
+
 	}
 
 }

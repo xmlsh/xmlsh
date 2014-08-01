@@ -9,7 +9,7 @@ EOF
 
 echo a is $a
 # test type with xquery on set
-echo type of a is $(set | xquery '//variable[@name="a"]/@type/string()')
+echo type of a is $(set | xquery '//variable[@name="a"]/@simple-type/string()')
 
 
 # read from a file 

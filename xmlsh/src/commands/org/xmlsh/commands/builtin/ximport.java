@@ -23,48 +23,49 @@ import java.util.List;
 
 public class ximport extends BuiltinCommand {
 	private static Logger mLogger = LogManager.getLogger(ximport.class);
+	@Override
 	public int run(  List<XValue> args ) throws Exception {
 		int ret = 0;
 		if( args.size() < 1 ) {
 			usage();
 			return 1;
 		}
-		
+
 		XValue what = args.remove(0);
 
 		try {
 			if( what.toString().equals("module"))
 				return importModule( args );
 			else
-			if( what.toString().equals("package")){
-				if( args.isEmpty() )
-					listModules();
-				else
-				for( XValue arg : args )
-					if( ! importPackage(arg.toString(),"") ) {
-						mShell.printErr("package: " + arg.toString() + " not found");
-						ret++;
-					}
-				return ret;
-			}
-			else
-			if( what.toString().equals("commands")){
-				if( args.isEmpty() )
-					listModules();
-				else
-				for( XValue arg : args ) {
-					if( !  importPackage(arg.toString(),"org.xmlsh.commands.") ){
-						mShell.printErr("command package: " + arg.toString() + " not found");
-						ret++;
-					}
+				if( what.toString().equals("package")){
+					if( args.isEmpty() )
+						listModules();
+					else
+						for( XValue arg : args )
+							if( ! importPackage(arg.toString(),"") ) {
+								mShell.printErr("package: " + arg.toString() + " not found");
+								ret++;
+							}
+					return ret;
 				}
-				return ret;
-			}
-			else
-			if( what.toString().equals("java"))
-				return importJava( args );
-			else
-				usage("Invalid command: import " + what.toString());
+				else
+					if( what.toString().equals("commands")){
+						if( args.isEmpty() )
+							listModules();
+						else
+							for( XValue arg : args ) {
+								if( !  importPackage(arg.toString(),"org.xmlsh.commands.") ){
+									mShell.printErr("command package: " + arg.toString() + " not found");
+									ret++;
+								}
+							}
+						return ret;
+					}
+					else
+						if( what.toString().equals("java"))
+							return importJava( args );
+						else
+							usage("Invalid command: import " + what.toString());
 		} 
 
 		catch (InvalidArgumentException e){
@@ -73,17 +74,17 @@ public class ximport extends BuiltinCommand {
 				return -1 ;
 			// mShell.printErr("invalid argument exception importing: "+ what.toString()  ,e );
 			throw e ;
-			
+
 		}
-		
-		
-		
+
+
+
 		catch (Exception e) {
 			mLogger.warn("Uncaught exception: " + e );
 			throw e ;
 		}
 		return 2;
-				
+
 	}
 	/*
 	 * Implements 
@@ -96,16 +97,16 @@ public class ximport extends BuiltinCommand {
 	private int importModule(List<XValue> args) throws CoreException {
 		if( args.size() == 0 )
 			return listModules();
-		
+
 		String mod = args.remove(0).toString();
-		
-		
+
+
 		mShell.importModule(mod , args );
 
 		return 0;
 	}
-	
-	
+
+
 	/*
 	 * Implements 
 	 *    import java
@@ -116,15 +117,15 @@ public class ximport extends BuiltinCommand {
 	private int importJava(List<XValue> args) throws CoreException {
 		if( args.size() == 0 )
 			return listClasspaths();
-		
-		
-		
+
+
+
 		mShell.importJava( new XValue(args) );
 
 		return 0;
 	}
-	
-	
+
+
 	/*
 	 * import package name foo.bar.spam
 	 * import package foo.bar.spam
@@ -136,41 +137,41 @@ public class ximport extends BuiltinCommand {
 			if( cl instanceof URLClassLoader ){
 				for( URL url : ((URLClassLoader)cl).getURLs() )
 					mShell.printOut(url.toString());
-				
+
 			}
 			cl = cl.getParent();
 		}
 		return 0;
-		
-		
+
+
 	}
 
 	private boolean importPackage(String pkg, String pkg_prefix) throws CoreException {
-		
+
 		String name = null; 
 		String prefix = null;
-		
+
 		name = pkg ;
-		
+
 		/* parse package for prefix=package */
 		StringPair 	pair = new StringPair(pkg,'=');
 		if( pair.hasLeft() ){
 			prefix = pair.getLeft();
 			name = pkg = pair.getRight();
 		}
-		
-		
-		
+
+
+
 		return mShell.importPackage(prefix , name, pkg_prefix+pkg) != null ;
 	}
 
-	
-	
+
+
 	private int listModules() {
 		Modules modules = mShell.getModules();
 		if( modules == null )
 			return 0;
-		
+
 		for( Module m : modules ){
 			String prefix = m.getPrefix();
 			if( prefix == null )
@@ -178,10 +179,10 @@ public class ximport extends BuiltinCommand {
 			else
 				mShell.printOut( prefix + "=" + m.getName() + " [" + m.getPackage()   +"]"); 
 
-			
+
 		}
 		return 0;
-		
+
 	}
 
 

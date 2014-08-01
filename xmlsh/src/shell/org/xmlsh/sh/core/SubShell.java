@@ -17,13 +17,14 @@ public class SubShell extends CompoundCommand {
 		mCommand = c;
 		setLocation(c);
 	}
+	@Override
 	public void print( PrintWriter out, boolean bExec ){
 		out.print("(");
 		mCommand.print(out, bExec);
 		out.print(")");
 	}
-	
-	
+
+
 	/* (non-Javadoc)
 	 * @see org.xmlsh.sh.core.Command#exec(org.xmlsh.sh.shell.Shell)
 	 */
@@ -37,7 +38,7 @@ public class SubShell extends CompoundCommand {
 		shell.getEnv().saveIO();
 		try {
 			applyRedirect(shell);
-			
+
 			// Clone shell to run command inside new shell
 			Shell subshell = shell.clone();
 			try {
@@ -48,20 +49,20 @@ public class SubShell extends CompoundCommand {
 		} finally {
 			shell.getEnv().restoreIO();
 		}
-		
-		
-		
+
+
+
 	}
 	/* (non-Javadoc)
 	 * @see org.xmlsh.sh.core.Command#getName()
 	 */
-    @Override
-    public String getName()
-    {
-	    return mCommand.getName();
-    }
-	
-	
+	@Override
+	public String getName()
+	{
+		return mCommand.getName();
+	}
+
+
 
 }
 //

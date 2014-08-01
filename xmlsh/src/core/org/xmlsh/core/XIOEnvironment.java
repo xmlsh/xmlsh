@@ -8,6 +8,7 @@ package org.xmlsh.core;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+
 import org.xmlsh.util.AutoReleasePool;
 import org.xmlsh.util.INameValue;
 import org.xmlsh.util.NameValue;
@@ -28,29 +29,29 @@ import java.io.OutputStream;
 
 public class XIOEnvironment {
 	private static Logger mLogger = LogManager.getLogger( XIOEnvironment.class );
-	
+
 	public static final String kSTDERR ="error";
 	public static final String kSTDIN 	 ="input";
 	public static final String kSTDOUT ="output";
-	
+
 	private PortList<InputPort>		mInputs ;
 	private PortList<OutputPort>	mOutputs ;
 	private volatile NameValueList<PipedPort>        mPipes;
 	private volatile AutoReleasePool  mAutoRelease = null;
 
-	
+
 	private <T>  T getPort(IHandle<T> hPort ){
 		if( hPort == null )
 			return null ;
 		return hPort.get();
 	}
-	
-	
+
+
 	public	InputPort getStdin() 
 	{
 		return getPort( getInput(kSTDIN));
 	}
-	
+
 	/*
 	 * Stdandard output stream - created on first request
 	 */
@@ -58,46 +59,46 @@ public class XIOEnvironment {
 	{
 		return getPort(mOutputs.getPort( kSTDOUT ));
 	}
-	
+
 	/*
 	 * Standard error stream - created on first request
 	 */
 	public	OutputPort	getStderr() 
 	{
-		 return getPort(mOutputs.getPort(kSTDERR));
+		return getPort(mOutputs.getPort(kSTDERR));
 	}
 
 
 	public InputPort setInput(String name, InputPort port) throws IOException  {
-		
+
 		if( name == null || name.equals(kSTDIN) ){
 			name = kSTDIN ;
 		}
-		
+
 		IHandle<InputPort> in 	= removeInput(name);
-		
+
 		if( in != null )
 			in.release();
-		
+
 		addInput(name, port);
 		return port ;
-		
+
 	}
 
 	private void addInput(String name, InputPort port) {
 		synchronized(mInputs) {
-		  mInputs.add( name , port );
+			mInputs.add( name , port );
 		}
 	}
 
 	private IHandle<InputPort> removeInput(String name) {
 		synchronized(mInputs) {
-    		return mInputs.removePort(name);
+			return mInputs.removePort(name);
 		}
-    }
-		
-	
-	
+	}
+
+
+
 
 
 
@@ -105,18 +106,18 @@ public class XIOEnvironment {
 		IHandle<OutputPort> out ;
 		if( name == null )
 			name = kSTDOUT ;
-		
+
 		out = removeOutput(name);
 
 		if (out != null) 
 			Util.safeRelease(out);
-		
+
 		addOutput(name, port);
 	}
 
 	private void addOutput(String name, OutputPort port) {
 		synchronized( mOutputs ){
-		  mOutputs.add(name , port);
+			mOutputs.add(name , port);
 		}
 	}
 
@@ -125,9 +126,9 @@ public class XIOEnvironment {
 			return mOutputs.removePort(name);
 		}
 	}
-	
-	
-	
+
+
+
 	/**
 	 * @param stderr the stderr to set
 	 * @throws IOException 
@@ -147,26 +148,26 @@ public class XIOEnvironment {
 	public void release() {
 		try {
 			synchronized( mInputs ) {
-			   mInputs.close();
-			   mInputs.clear();
+				mInputs.close();
+				mInputs.clear();
 			}
 			synchronized( mOutputs) {
-			  mOutputs.close();
-			  mOutputs.clear();
+				mOutputs.close();
+				mOutputs.clear();
 			}
-			
+
 			if( mAutoRelease != null ) {
 				mAutoRelease.close();
 				mAutoRelease = null ;
 			}
-			
+
 		} catch (Exception e) {
 			mLogger.error("Exception closing environment",e);
 		}
 	}
-	
-	
-	
+
+
+
 	public XIOEnvironment() {
 
 		mInputs = new PortList<InputPort>();
@@ -174,30 +175,30 @@ public class XIOEnvironment {
 	}
 	public XIOEnvironment( XIOEnvironment that )
 	{
-		
+
 		mInputs = new PortList<InputPort>( that.mInputs );
 		mOutputs = new PortList<OutputPort>( that.mOutputs);
-		
+
 		// Dont copy the AutoRelease pool ... 
-		
+
 	}
-	
+
 
 	public void initStdio()  
 	{
 
 		mInputs.add( 
-				 kSTDIN ,  new StreamInputPort(System.in,null,true) 
-		);
+				kSTDIN ,  new StreamInputPort(System.in,null,true) 
+				);
 
 		mOutputs.add( 
 				kSTDOUT, new StreamOutputPort(System.out,false,true)  
-		);
+				);
 
 
 		mOutputs.add( 
 				kSTDERR ,  new StreamOutputPort(System.err,false,true) 
-		);
+				);
 
 	}
 
@@ -209,11 +210,11 @@ public class XIOEnvironment {
 		IHandle<InputPort> hPort = getInput(name);
 		return hPort == null ? null : hPort.get();
 	}
-	
+
 	private IHandle<InputPort> getInput(String name) {
 		synchronized( mInputs ) {
-			  return mInputs.getPort(name);
-			}
+			return mInputs.getPort(name);
+		}
 	}
 
 
@@ -230,10 +231,10 @@ public class XIOEnvironment {
 
 	private IHandle<OutputPort> getOutput(String name) {
 		synchronized( mOutputs ) {
-		  return mOutputs.getPort(name);
+			return mOutputs.getPort(name);
 		}
 	}
-	
+
 
 	public void newPipe(String name, PipedPort pipe ) throws CoreException, IOException {
 
@@ -258,24 +259,24 @@ public class XIOEnvironment {
 			return nv == null ? null : nv.getValue();
 		}
 	}
-	
+
 	public void closePipe( String name )
 	{
 		if( mPipes != null ){
 			INameValue<PipedPort> nv = null;
 			PipedPort pipe;
 			synchronized( mPipes ){
-				 nv = mPipes.removeName( name );
-				 pipe = nv == null ? null : nv.getValue();
+				nv = mPipes.removeName( name );
+				pipe = nv == null ? null : nv.getValue();
 			}
 			if( pipe != null ){
 				pipe.close();
 				removeInput( name );
 				removeOutput( name );
 			}
-			
+
 		}
-		
+
 	}
 
 	//"1>&2"
@@ -283,27 +284,27 @@ public class XIOEnvironment {
 	public void dupOutput(String portLeft, String portRight) throws IOException {
 		IHandle<OutputPort> hLeft =  removeOutput(portLeft);
 		IHandle<OutputPort> hRight = getOutput(portRight);
-    	
+
 		if( hLeft != null )
-    		hLeft.release();
-    	
-	    if( hRight != null ) { // just clear left
-	    	addOutput( portLeft , hRight.get() );
-	    }
-	    	
+			hLeft.release();
+
+		if( hRight != null ) { // just clear left
+			addOutput( portLeft , hRight.get() );
+		}
+
 	}
 
 
 	public void dupInput(String portLeft, String portRight) throws IOException {
 		IHandle<InputPort> hLeft =  removeInput(portLeft);
 		IHandle<InputPort> hRight = getInput(portRight);
-    	
+
 		if( hLeft != null )
-    		hLeft.release();
-    	
-	    if( hRight != null ) { // just clear left
-	    	addInput( portLeft , hRight.get() );
-	    }		
+			hLeft.release();
+
+		if( hRight != null ) { // just clear left
+			addInput( portLeft , hRight.get() );
+		}		
 	}
 
 
@@ -311,7 +312,7 @@ public class XIOEnvironment {
 		if( mAutoRelease == null ) {
 			synchronized( this ) {
 				if( mAutoRelease == null ) 
-				   mAutoRelease = new AutoReleasePool();
+					mAutoRelease = new AutoReleasePool();
 			}
 		}
 		mAutoRelease.add(obj.newReference());		

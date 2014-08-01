@@ -21,27 +21,27 @@ public class mktemp extends XCommand {
 
 	@Override
 	public int run(List<XValue> args) throws Exception {
-		
+
 
 		Options opts = new Options( "d=directory,s=suffix:,tempdir:,p=prefix:" , SerializeOpts.getOptionDefs() );
 		opts.parse(args);
-		
+
 		args = opts.getRemainingArgs();
-		
+
 		if( args.size() != 0 ){
 			usage();
 			return -1;
 		}
-		
-		
+
+
 		File tmp = 
-			File.createTempFile(opts.getOptString("p", "xmlsh") , opts.getOptString("s", null) , 
-					opts.hasOpt("tempdir") ? this.getFile( opts.getOptValue("tempdir") ) : null );
-		
+				File.createTempFile(opts.getOptString("p", "xmlsh") , opts.getOptString("s", null) , 
+						opts.hasOpt("tempdir") ? this.getFile( opts.getOptValue("tempdir") ) : null );
+
 		if( opts.hasOpt("d")){
 			tmp.delete();
 			tmp.mkdirs();
-				
+
 		}
 		OutputPort out = this.getStdout();
 		out.asPrintStream(getSerializeOpts(opts)).println( FileUtils.convertPath(tmp.getAbsolutePath(),false) );

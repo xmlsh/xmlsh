@@ -8,31 +8,29 @@ package org.xmlsh.sh.grammar;
 
 import java.io.FilterReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.Reader;
 
 
 public class ShellParserReader extends FilterReader {
-    
-    
-	
+
+
+
 	private char	mReadAhead = (char)-1;
-	
-	
+
+
 	// Skip UTF8 BOM if its the first char
 	private void skipbom() throws IOException
 	{
 		int c = super.read();
 		if( c != '\ufeff' )
 			mReadAhead = (char)c; 
-			
+
 	}
 	public ShellParserReader(Reader in, boolean bSkipBOM ) throws IOException {
-	    super(in);	
+		super(in);	
 		if( bSkipBOM )
-	       skipbom();
-		
+			skipbom();
+
 	}
 
 	/*
@@ -49,8 +47,8 @@ public class ShellParserReader extends FilterReader {
 			mReadAhead = (char)-1;
 			return ret;
 		}
-	
-		
+
+
 		int c ;
 		while ( ( c = super.read()) != -1 ){
 
@@ -71,7 +69,7 @@ public class ShellParserReader extends FilterReader {
 				break ;
 		}
 		return c;
-		
+
 	}
 
 	/* 
@@ -83,7 +81,7 @@ public class ShellParserReader extends FilterReader {
 	public int read(char[] cbuf, int off, int len) throws IOException {
 		int nc = 0;
 		int c;
-      
+
 
 		while( nc < len && (c=read()) != -1 ){
 			cbuf[off++] = (char)c;
@@ -93,7 +91,7 @@ public class ShellParserReader extends FilterReader {
 			}
 		}
 		return( nc > 0 ? nc : -1 );
-		
+
 	}
 
 

@@ -6,7 +6,6 @@
 
 package org.xmlsh.core;
 
-import static org.xmlsh.util.Util.nullIfBlank;
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.SaxonApiException;
@@ -24,7 +23,6 @@ import org.xmlsh.sh.core.EvalUtils;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.types.IType;
 import org.xmlsh.types.ITypeFamily;
-import org.xmlsh.types.TypeFamily;
 import org.xmlsh.types.XTypeKind;
 import org.xmlsh.util.NameValueMap;
 import org.xmlsh.util.Util;
@@ -37,7 +35,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 public class XVariable {
-	
+
 	private static final String sName = "name";
 	private static final String sVariable = "variable";
 	private static final String sKind = "kind";
@@ -58,36 +56,37 @@ public class XVariable {
 		READONLY,
 		LOCAL,
 		UNSET
-		
+
 	};
-	
+
 	private		String	mName;
 	private		XValue	mValue;
 	private		EnumSet<XVarFlag>	mFlags;
 	private		XQueryExecutable		mTieExpr;	// Tie expression
-	
-    
-    
+
+
+
 	public XVariable( String name , XValue value , EnumSet<XVarFlag> flags)
 	{
 		mName = name ;
 		mValue = value;
 		mFlags = flags;
-		
+
 	}
+	@Override
 	public XVariable clone()
 	{
 		XVariable that = new XVariable(mName,mValue,mFlags);
 		that.mTieExpr = mTieExpr ;
 		return that ;
-		
+
 	}
 	public XVariable( String name , XValue value )
 	{
 		this( name , value , EnumSet.of( XVarFlag.EXPORT , XVarFlag.XEXPR ));
-		
+
 	}
-	
+
 	protected XVariable( String name , EnumSet<XVarFlag> flags )
 	{
 		this( name , null , flags );
@@ -120,7 +119,7 @@ public class XVariable {
 	public void setValue(XValue value) throws InvalidArgumentException {
 		if( mFlags.contains( XVarFlag.READONLY ))
 			throw new InvalidArgumentException("Cannot modify readonly variable: " + getName());
-		
+
 		mValue = value;
 	}
 
@@ -137,62 +136,63 @@ public class XVariable {
 		mFlags.add(flag);
 	}
 
-	
+
 	public void serialize(XMLStreamWriter writer) throws SAXException, XMLStreamException {
 
 		XValue value = this.getValue();
 		String flagStr = mFlags.toString();
-		
+
 		writer.writeStartElement(sVariable);
 		writer.writeAttribute(sName, getName());
 		writer.writeAttribute(sTypeFamily, value == null ? "null" : value.typeFamily().name() );
-		
+
 		String type  = "null" ;
 		String kind = XTypeKind.UNKNOWN.name() ;
 		String simpleType = kind;
-		
-	    if( value == null )
-	    	type = "null";
-	    else { 
-	    	Object obj = value.asObject();
+
+		if( value == null )
+			type = "null";
+		else { 
+			Object obj = value.asObject();
 			ITypeFamily it = value.typeFamilyInstance();
 			IType itype = null ;
-			if( it != null )
-				 itype = it.getType(obj);
+			if( it != null ) {
+				itype = obj == null ? it.getNullType() : it.getType(obj.getClass());
+			}
 			if( it == null  || itype == null  ) {
-				  if( obj == null )
-					  kind = XTypeKind.NULL.name();
-				  else {
-				    type = obj.getClass().getName();
-				    simpleType = type.replaceFirst("^.*\\.", "");
-				    
-				  }
+				if( obj == null )
+					kind = XTypeKind.NULL.name();
+				else {
+					type = obj == null ? "null" : obj.getClass().getName();
+					simpleType = type.replaceFirst("^.*\\.", "");
+
+				}
 			} 
 			else {
-					kind = itype.kind().name();
-					type = itype.typeName();
-				    simpleType = itype.simpleName();
-				}
-			
-	    }
+				kind = itype.kind().toString();
+				type = itype.getMethods().typeName(obj);
+				simpleType = itype.getMethods().simpleTypeName(obj);
+			}
+
+		}
 		writer.writeAttribute(sKind,kind);
 		writer.writeAttribute(sType,type);
 		writer.writeAttribute(sSimpleType,simpleType);
 		writer.writeAttribute(sFlags, flagStr );
 		writer.writeEndElement();
-		
-		
-		
+
+
+
 	}
 
-	
-	
-	
+
+
+
 	public void clear() throws InvalidArgumentException {
 
 		setValue( null );
 
-		
+
 	}
 
 	public boolean isNull() {
@@ -200,12 +200,12 @@ public class XVariable {
 	}
 
 	public void shift(int n) {
-		
+
 		if( n <= 0 || mValue == null )
 			return ;
-		
+
 		mValue = mValue.shift( n );
-		
+
 
 	}
 
@@ -215,107 +215,108 @@ public class XVariable {
 		{
 			mTieExpr = null ;
 			return ;
-			
+
 		}
-		
-		
-		
+
+
+
 		Processor processor = Shell.getProcessor();
-		
+
 		XQueryCompiler compiler = processor.newXQueryCompiler();
 
 		// Declare the extension function namespace
 		// This can be overridden by user declarations
 		compiler.declareNamespace("xmlsh", EvalDefinition.kXMLSH_EXT_NAMESPACE);
-		
+
 		NameValueMap<String> ns = shell.getEnv().getNamespaces();
 		if( ns != null ){
 			for( String prefix : ns.keySet() ){
 				String uri = ns.get(prefix);
 				compiler.declareNamespace(prefix, uri);
-				
+
 			}
-			
+
 		}
-		
+
 
 		StringBuffer sb = new StringBuffer();
 
 		sb.append("declare variable $_ external;\n");
 		sb.append(expr);
-			
+
 		mTieExpr = compiler.compile( sb.toString() );
-			
-		
-		
-		
+
+
+
+
 	}
-	
+
 	private  XValue	 getTiedValue( Shell shell , XdmItem  item  , String tie) throws CoreException
 	{
-		
-		
+
+
 		Shell saved_shell = ShellContext.set(shell);
 
 		XQueryEvaluator eval = mTieExpr.load();
-			
-			
+
+
 		try {
-					
-	//		eval.setExternalVariable( new QName("_") , new XValue( TypeFamily.XDM , tie ).asXdmValue() );
+
+			//		eval.setExternalVariable( new QName("_") , new XValue( TypeFamily.XDM , tie ).asXdmValue() );
 			eval.setExternalVariable( new QName("_") , new XValue(  tie ).asXdmValue() );
 
 			eval.setContextItem(item);
-			
+
 			XdmValue result =  eval.evaluate();
 
-			
+
 			return new XValue(result) ;
-			
-			
+
+
 		} catch (SaxonApiException e) {
 			String msg = "Error expanding xml expression: " + tie ;
 			mLogger.warn( msg , e );
-		    throw new CoreException(msg  , e );
-		    
+			throw new CoreException(msg  , e );
+
 		}
 		finally {
 			ShellContext.set(saved_shell);
-		
+
 		}
 
-		
-		
+
+
 	}
-	
+
 	/*
 	 * Get a variable value with an optional index and tie expression
 	 */
 
 	public XValue getValue(Shell shell, String ind, String tie) throws CoreException {
-	
-		
-		XValue xvalue = EvalUtils.getIndexedValue(mValue, ind);
-       
-        if( tie != null && xvalue.isXdmValue()  )
-        	xvalue = getTiedValue(shell, xvalue.asXdmItem() , tie );
-        return xvalue ;
-				
+
+
+		XValue xvalue = Util.isBlank(ind) ? 
+				mValue :  EvalUtils.getIndexedValue(mValue, ind);
+
+		if( tie != null && xvalue.isXdmValue()  )
+			xvalue = getTiedValue(shell, xvalue.asXdmItem() , tie );
+		return xvalue ;
+
 	}
-	
+
 	public int getSize()
-    {
+	{
 		return EvalUtils.getSize( getValue() );
-		
-	
-		
-    }
-	
-	
+
+
+
+	}
+
+
 	public boolean isExport() {
 		return mFlags.contains(XVarFlag.EXPORT) && ! mFlags.contains(XVarFlag.UNSET );
 	}
-	
+
 	public void unset() throws InvalidArgumentException 
 	{
 		clear();
@@ -324,7 +325,7 @@ public class XVariable {
 
 
 
-	
+
 }
 
 

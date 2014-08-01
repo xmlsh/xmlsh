@@ -15,15 +15,16 @@ import java.util.List;
 public class exit extends BuiltinCommand {
 
 
-	
+
+	@Override
 	public int run(  List<XValue> args ) throws Exception {
-			if( args.size() == 0 ){
-				mShell.exit( 0 );
-				
-			} else
-				mShell.exit( Util.parseInt(args.get(0).toString(),-1));
-			return 0;
-				
+		if( args.size() == 0 ){
+			mShell.exit( 0 );
+
+		} else
+			mShell.exit( Util.parseInt(args.get(0).toString(),-1));
+		return 0;
+
 	}
 
 

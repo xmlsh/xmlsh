@@ -24,10 +24,10 @@ public class CaseItem {
 		mPattern = pattern;
 		mCommand = command;
 		mLocation = location;
-	
+
 	}
-	
-	
+
+
 	public void print(PrintWriter out,boolean bExec){
 		mPattern.print(out);
 		out.print(") ");
@@ -37,10 +37,10 @@ public class CaseItem {
 
 	public boolean matches(Shell shell , String word) throws IOException, CoreException {
 		for( String pattern : mPattern ){
-			
+
 			String p = EvalUtils.expandStringToString(shell, pattern , mEnv, mLocation );
-			
-			
+
+
 			if( Util.wildMatches( p, word , true ))
 				return true ;
 		}

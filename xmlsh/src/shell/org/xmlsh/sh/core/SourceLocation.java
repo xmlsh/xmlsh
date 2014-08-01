@@ -6,9 +6,6 @@
 
 package org.xmlsh.sh.core;
 
-import java.io.File;
-import java.nio.file.Paths;
-
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
@@ -25,7 +22,7 @@ public class SourceLocation implements Cloneable {
 	private		int		mEndLine;
 	private		int		mEndColumn;
 	private boolean kDEFAULT_LOCATION_FORMAT = false ; // TODO Enum
-	
+
 	public SourceLocation(String source, String name ,  int startline, int startColumn, int endLine, int endColumn) {
 		mName = name ;
 		mSource = source;
@@ -46,13 +43,13 @@ public class SourceLocation implements Cloneable {
 			mEndColumn = token.endColumn;
 		}
 	}
-	
-	
+
+
 	public SourceLocation() {
 		mSource = null ; 
 		mName = null ;
 	}
-	
+
 	public SourceLocation(SourceLocation that ) {
 		this( that.mSource , that.mName , that.mStartLine, that.mStartColumn , that.mEndLine , that.mEndColumn );
 	}
@@ -65,7 +62,7 @@ public class SourceLocation implements Cloneable {
 	/**
 	 * @return the source
 	 */
-	
+
 	public String getName() {
 		return Util.notNull(mName);
 	}
@@ -104,15 +101,16 @@ public class SourceLocation implements Cloneable {
 	}
 	public String format(boolean relpath ) {
 		return String.format(kLOCATION_FORMAT ,
-		hasSource() ? getSource(relpath) : "stdin" ,
-        hasName() ? String.format("function %s() ",mName) : "" ,
-        getStartLine() );
+				hasSource() ? getSource(relpath) : "stdin" ,
+						hasName() ? String.format("function %s() ",mName) : "" ,
+								getStartLine() );
 	}
-	
+
 
 	public boolean hasSource() {
-	  return ! Util.isBlank(mSource);
+		return ! Util.isBlank(mSource);
 	}
+	@Override
 	public String toString()
 	{
 		return format(kDEFAULT_LOCATION_FORMAT);
@@ -173,7 +171,7 @@ public class SourceLocation implements Cloneable {
 			mName = loc.mName;
 		if( mSource == null && loc.mSource != null )
 			mSource = loc.mSource;
-		
+
 	}
 	public boolean isEmpty() {
 		return mStartLine <= 0 ;
@@ -183,26 +181,26 @@ public class SourceLocation implements Cloneable {
 	 */
 	@Override
 	public Object clone() throws CloneNotSupportedException  {
-			return super.clone();
+		return super.clone();
 	}
 	public boolean hasName() {
 		return ! Util.isBlank(mName);
 	}
-	
+
 	// fake for now just parse as boolean
 	public static boolean parseFormat(XValue value) throws InvalidArgumentException
-    {
+	{
 		try {
-	        return value.toBoolean();
-        } catch (UnexpectedException e) {
-	       Util.wrapException(e, InvalidArgumentException.class);
-	       // SNH
-        }
+			return value.toBoolean();
+		} catch (UnexpectedException e) {
+			Util.wrapException(e, InvalidArgumentException.class);
+			// SNH
+		}
 		return false ;
-    }
-	
-	
-	
+	}
+
+
+
 }
 
 

@@ -27,7 +27,7 @@ public class getEventType extends BuiltinFunctionCommand {
 	{
 		super("getEventType");
 	}
-	
+
 	@Override
 	public XValue run(Shell shell, List<XValue> args) throws CoreException, XPathException, XMLStreamException, JsonProcessingException, IOException {
 		if( args.size() == 0 )
@@ -35,10 +35,10 @@ public class getEventType extends BuiltinFunctionCommand {
 		else {
 			int type = ((XMLEvent) args.get(0).getJavaNative()).getEventType();
 			return new XValue( StAXUtils.getEventTypeName(type));
-		
-			
+
+
 		}
-			
+
 	}
 }
 

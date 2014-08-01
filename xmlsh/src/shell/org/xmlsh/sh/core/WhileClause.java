@@ -20,7 +20,8 @@ public class WhileClause extends CompoundCommand {
 		mDo = do1;
 		setLocation(do1);
 	}
-	
+
+	@Override
 	public void print(PrintWriter out, boolean bExec)
 	{
 		out.print("while ");
@@ -29,10 +30,11 @@ public class WhileClause extends CompoundCommand {
 		mDo.print(out, bExec);
 		out.println("done");
 	}
-	
 
+
+	@Override
 	public int exec(Shell shell) throws Exception {
-		
+
 		shell.getEnv().saveIO();
 		ControlLoop loop = shell.pushLoop( getLocation() );
 		try {
@@ -40,22 +42,22 @@ public class WhileClause extends CompoundCommand {
 			applyRedirect(shell);	
 
 			while( shell.keepRunning() && Shell.toBool( shell.execCondition( mWhile ))   ){
-					
-					shell.exec( mDo );
-					
-					
-					if( loop.mContinue ) // continue clause - clear out  continue & keep going
-						loop.mContinue = false ;
+
+				shell.exec( mDo );
+
+
+				if( loop.mContinue ) // continue clause - clear out  continue & keep going
+					loop.mContinue = false ;
 			}
 		} 
 		finally {
 			shell.popLoop(  loop );
 			shell.getEnv().restoreIO();
 		}
-		
+
 		return 0;
 	}
-	
+
 }
 
 //

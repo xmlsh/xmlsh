@@ -7,7 +7,6 @@
 package org.xmlsh.sh.core;
 
 import net.sf.saxon.s9api.XdmNode;
-import org.xmlsh.core.InputPort;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.EvalEnv;
 import org.xmlsh.core.InputPort;
@@ -19,7 +18,6 @@ import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.types.TypeFamily;
 import org.xmlsh.util.ByteFilterInputStream;
 import org.xmlsh.util.Util;
-import org.xmlsh.util.XMLException;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -38,31 +36,32 @@ public class CommandFileWord extends Word {
 		mType = type;
 		mFile = file;
 	}
-	
+
+	@Override
 	public void print( PrintWriter out )
 	{
 		out.print(mType);
 		mFile.print(out);
 		out.print(")");
 	}
-	
-	
+
+
 	private String expandFile( Shell shell , Word cmd , SourceLocation loc) throws IOException, CoreException
 	{
 
-		
+
 		XValue 	files = cmd.expand(shell, mEnv, loc);
 		String file;
 		if( files.isAtomic() )
 			file = files.toString();
 		else 
 			throw new InvalidArgumentException("Invalid expansion for redirection");
-		
+
 		SerializeOpts sopts = shell.getSerializeOpts();
 		try (
-			InputPort ip = shell.newInputPort(file);
-			InputStream is = ip.asInputStream(sopts);
-		){
+				InputPort ip = shell.newInputPort(file);
+				InputStream is = ip.asInputStream(sopts);
+				){
 
 			ByteFilterInputStream filterIn = null ;
 
@@ -71,7 +70,7 @@ public class CommandFileWord extends Word {
 			s = Util.removeTrailingNewlines(s, shell.getSerializeOpts().isIgncr() );
 			return s;
 		} 
-			
+
 	}
 	private XdmNode	expandXFile( Shell shell , Word xfile, SourceLocation loc ) throws IOException, CoreException{
 		XValue 	files = xfile.expand(shell, mEnv, loc);
@@ -80,10 +79,10 @@ public class CommandFileWord extends Word {
 			file = files.toString();
 		else 
 			throw new InvalidArgumentException("Invalid expansion for redirection");
-		
+
 		try (
 				InputPort ip = shell.newInputPort(file);
-		){
+				){
 
 			XdmNode node = ip.asXdmNode( shell.getSerializeOpts());
 			return node;
@@ -93,15 +92,17 @@ public class CommandFileWord extends Word {
 
 
 
+	@Override
 	public boolean isEmpty() {
 		return mFile == null ||  mFile.isEmpty();
 	}
-	
+
+	@Override
 	public String toString()
 	{
 		return mType + mFile + ")";
 	}
-	
+
 	@Override
 	String getSimpleName()
 	{
@@ -109,23 +110,23 @@ public class CommandFileWord extends Word {
 	}
 
 	@Override
-    protected ParseResult expandToResult(Shell shell, EvalEnv env, SourceLocation loc, ParseResult result) throws IOException,
-            CoreException
-    {
-	
+	protected ParseResult expandToResult(Shell shell, EvalEnv env, SourceLocation loc, ParseResult result) throws IOException,
+	CoreException
+	{
+
 		if(mType.equals("$(<")){
-			
+
 			String value = expandFile( shell , mFile,loc );
 			result.add( new XValue( value ) , true );
 
 		} else
-		if( mType.equals("$<(<")){
-			XdmNode node = expandXFile(shell , mFile,loc);
-			result.add( new XValue( TypeFamily.XDM,node) , true );
-		}
+			if( mType.equals("$<(<")){
+				XdmNode node = expandXFile(shell , mFile,loc);
+				result.add( new XValue( TypeFamily.XDM,node) , true );
+			}
 		return result ;
-    }
-	 
+	}
+
 }
 
 

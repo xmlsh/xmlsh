@@ -28,16 +28,17 @@ import java.util.Map.Entry;
 public class ExternalCommand implements ICommand {
 
 	private 	static			Logger		mLogger = LogManager.getLogger( ExternalCommand.class );
-	
+
 	private		File			mCommandFile;		// command path
 	private		SourceLocation 	mLocation ;
-	
+
 	public ExternalCommand( File cmd , SourceLocation location )
 	{
 		mCommandFile = cmd;
 		mLocation = location ;
 	}
-	
+
+	@Override
 	public int run(Shell shell, String cmd, List<XValue> args) throws Exception
 	{
 		File curdir = shell.getCurdir();
@@ -59,16 +60,16 @@ public class ExternalCommand implements ICommand {
 			if(proc == null)
 				return -1;
 			shell.addChildProcess( proc );
-			
+
 		}
 
 		// Start copiers for stdout, stderr
 
 		SerializeOpts serializeOpts = shell.getSerializeOpts();
 		StreamCopier outCopier = new StreamCopier(cmd + "-out", proc.getInputStream(), shell.getEnv().getStdout()
-		        .asOutputStream(serializeOpts));
+				.asOutputStream(serializeOpts));
 		StreamCopier errCopier = new StreamCopier(cmd + "-err", proc.getErrorStream(), shell.getEnv().getStderr()
-		        .asOutputStream(serializeOpts));
+				.asOutputStream(serializeOpts));
 
 		PortCopier inCopier = null;
 
@@ -90,14 +91,13 @@ public class ExternalCommand implements ICommand {
 		outCopier.closeIn();
 
 		int ret;
-        try {
-	        ret = proc.waitFor();
-        } catch (Exception e) {
-	        mLogger.warn("Exception waiting for process to complete: " , e  );
-	        ret = -1;
+		try {
+			ret = proc.waitFor();
+		} catch (InterruptedException e) {
+			mLogger.warn("Interrupted waiting for process to complete: " , e  );
+			ret = -1;
+		}
 
-        }
-		
 
 		shell.removeChildProcess(proc);
 
@@ -121,7 +121,7 @@ public class ExternalCommand implements ICommand {
 		return ret;
 
 	}
-	
+
 	/*
 	 * Set the environment for a subprocess by the following
 	 * 
@@ -136,26 +136,26 @@ public class ExternalCommand implements ICommand {
 		Map<String,String> env = builder.environment();
 		if( env == null )
 			return ;
-		
+
 		// 1) delete any env vars not in the shell 
 		// Use Iterator so we can call remove
 		Iterator<Entry<String,String>> iter = env.entrySet().iterator();
 		while( iter.hasNext() ){
 			Entry<String,String> e = iter.next();
 			String name = e.getKey();
-			
+
 			// Remove PATH and XPATH as well as non-defined names
 			if( Util.isPath(name) || ! xenv.isDefined(name) )
 				iter.remove();
 		}
-		
-		
-		
+
+
+
 		/*
 		 *  2) For any "EXPORT" variables Update any existing variables with new content from the shell
 		 * 3) Add any unset "EXPORT" variables of type string
 		 */
-		
+
 		for( String name : xenv.getVarNames() ){
 			if( !Util.isPath(name) ){
 				XVariable var = xenv.getVar(name);
@@ -163,10 +163,10 @@ public class ExternalCommand implements ICommand {
 						! var.getValue().isNull() && var.getValue().isAtomic() )
 					env.put(name , var.getValue().toString() );
 			}
-			
-			
+
+
 		}
-		
+
 		// Special case for PATH and XPATH
 		XVariable vpath = xenv.getVar(ShellConstants.PATH);
 		if( vpath != null  && vpath.isExport() ){
@@ -174,32 +174,35 @@ public class ExternalCommand implements ICommand {
 			String ps = p.toOSString();
 			env.put(ShellConstants.PATH, ps);
 		}
-		
+
 		XVariable vxpath = xenv.getVar(ShellConstants.XPATH);
 		if( vxpath != null && vxpath.isExport() ){
 			Path p = new Path( vxpath.getValue() );
 			String ps = p.toOSString();
 			env.put(ShellConstants.XPATH, ps);
 		}
-		
-		
-		
-		
-		
+
+
+
+
+
 	}
 	/* (non-Javadoc)
 	 * @see org.xmlsh.core.ICommand#getType()
 	 */
+	@Override
 	public CommandType getType() {
 		return CommandType.CMD_TYPE_EXTERNAL;
 	}
-	
+
+	@Override
 	public File getFile() {
 		return mCommandFile ;  
-		
+
 	}
 
 
+	@Override
 	public Module getModule() {
 		// TODO Auto-generated method stub
 		return null;
@@ -214,7 +217,7 @@ public class ExternalCommand implements ICommand {
 	@Override
 	public void close() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 
@@ -229,8 +232,8 @@ public class ExternalCommand implements ICommand {
 		mLocation = loc ;
 	}
 
-	
-	
+
+
 }
 
 //

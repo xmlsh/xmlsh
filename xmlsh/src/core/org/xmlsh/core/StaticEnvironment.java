@@ -10,7 +10,7 @@ import java.util.EnumSet;
 
 public class StaticEnvironment 
 {
-	
+
 	private EnumSet<StaticContextFlag> mFlags = EnumSet.noneOf(StaticContextFlag.class);
 	private static final EnumSet<StaticContextFlag> noFlags = EnumSet.noneOf(StaticContextFlag.class);
 	private static final StaticEnvironment _defaultEnv  = new StaticEnvironment();
@@ -19,7 +19,7 @@ public class StaticEnvironment
 	private StaticEnvironment(  EnumSet<StaticContextFlag>  flags ) {
 		mFlags = flags ;
 	}
-	
+
 	private StaticEnvironment() {
 		mFlags = noFlags ;
 	}
@@ -33,10 +33,10 @@ public class StaticEnvironment
 
 
 	public static final StaticEnvironment defaultContext()
-    {
-	   return _defaultEnv;
-    }
-	
+	{
+		return _defaultEnv;
+	}
+
 	public StaticEnvironment addContext( StaticContextFlag flag ) {
 		StaticEnvironment newEnv = this ;
 		if( newEnv == _defaultEnv )
@@ -45,7 +45,7 @@ public class StaticEnvironment
 			mFlags.add(flag);
 		return newEnv;
 	}
-	
+
 
 }
 

@@ -15,68 +15,71 @@ import java.io.File;
 import java.util.List;
 
 public abstract class XCommand extends AbstractCommand {
-	
+
 	private Module mModule;
-	
-	
+
+
 	protected void throwInvalidArg(String string)
 			throws InvalidArgumentException {
-				printErr(string);
-				throw new InvalidArgumentException( string );
-				
+		printErr(string);
+		throw new InvalidArgumentException( string );
+
 	}
 
+	@Override
 	public Module getModule()
 	{
 		return mModule;
 	}
 
+	@Override
 	public String getName()
 	{
 		String name = getClass().getSimpleName();
 		if (name.lastIndexOf('.') > 0) {
-		    name = name.substring(name.lastIndexOf('.')+1);  
+			name = name.substring(name.lastIndexOf('.')+1);  
 		}
-		
-		
+
+
 		/*
 		 * Convert from camelCase to hyphen-case
 		 */
-		
-		
+
+
 		return fromCamelCase(name);
 	}
-	
-	
+
+
 
 	private String fromCamelCase(String name) {
 		StringBuffer result = new StringBuffer( name.length() + 5 );
-		
+
 		for( char c : name.toCharArray() ){
 			if( Character.isUpperCase(c)){
 				result.append('-');
 				result.append( Character.toLowerCase(c));
 			} else
 				result.append(c);
-				
-			
-			
+
+
+
 		}
-		
+
 		return result.toString();
-		
-		
-		
+
+
+
 	}
 
 	/* (non-Javadoc)
 	 * @see org.xmlsh.core.ICommand#run(org.xmlsh.sh.shell.Shell, java.lang.String[])
 	 */
+	@Override
 	public int run(Shell shell, String cmd, List<XValue> args) throws Exception 
 	{
 		Shell saved_shell = ShellContext.set(shell);
 
-		
+
 		try {
 			return run(  args , shell.getEnv() );
 		} 
@@ -85,47 +88,49 @@ public abstract class XCommand extends AbstractCommand {
 			usage( e.getMessage() );
 			return -1;
 		}
-		
-		
-		
+
+
+
 		finally{
 			ShellContext.set(saved_shell);
 		}
-		
+
 	}
-	
+
 	abstract public int run( List<XValue>  args ) throws Exception;
 
-	
-   public int run( List<XValue>  args, XEnvironment env ) throws Exception
-   {
-	   mEnvironment = env ;
-	   mShell = env.getShell();
-	   return run(args);
-	   
-   }
-	
+
+	public int run( List<XValue>  args, XEnvironment env ) throws Exception
+	{
+		mEnvironment = env ;
+		mShell = env.getShell();
+		return run(args);
+
+	}
+
 	/* (non-Javadoc)
 	 * @see org.xmlsh.core.ICommand#getType()
 	 */
+	@Override
 	public CommandType getType() {
 		return CommandType.CMD_TYPE_INTERNAL ;
 	}
-	
+
+	@Override
 	public File getFile() {
 		return null ; // no associated file 
-		
+
 	}
 
 	public void setModule(Module module) {
 		mModule = module ;
-		
+
 	}
 
 
 
-	
-	
+
+
 }
 //
 //

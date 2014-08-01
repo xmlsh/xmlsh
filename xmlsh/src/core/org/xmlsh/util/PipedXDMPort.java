@@ -8,8 +8,6 @@ package org.xmlsh.util;
 
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.OutputPort;
-import org.xmlsh.core.InputPort;
-import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.XdmItemPipe;
 import org.xmlsh.core.XdmStreamInputPort;
 import org.xmlsh.core.XdmStreamOutputPort;
@@ -21,34 +19,36 @@ public class PipedXDMPort extends PipedPort {
 	private		XdmStreamInputPort 	mIn;
 	private		XdmStreamOutputPort 	mOut;
 	private		XdmItemPipe		mPipe;
-	
+
 	private static int sDefaultSize = 100 ;
-	
-	
+
+
 	public PipedXDMPort(SerializeOpts opts)  throws IOException 
 	{
 		mPipe = new XdmItemPipe(sDefaultSize);
-		
+
 		mIn = new XdmStreamInputPort(mPipe.getReadEnd(), opts);
 		mOut = new XdmStreamOutputPort(mPipe.getWriteEnd(),opts);
 	}
 	public PipedXDMPort(SerializeOpts opts, int size)  throws IOException
 	{
 		mPipe = new XdmItemPipe(size);
-	
+
 		mIn = new XdmStreamInputPort(mPipe.getReadEnd(), opts);
 		mOut = new XdmStreamOutputPort(mPipe.getWriteEnd(),opts);
-		
+
 	}
-	
+
+	@Override
 	public	InputPort	getInput() throws IOException { 
 		return mIn;
 	}
-	
+
+	@Override
 	public OutputPort getOutput() { 
 		return mOut;
 	}
-	
+
 	static public PipedXDMPort[] getPipes(int n, SerializeOpts opts) throws IOException
 	{
 		if( n == 0 )
@@ -57,7 +57,7 @@ public class PipedXDMPort extends PipedPort {
 		for( int i = 0 ; i < n ; i++ )
 			streams[i] = new PipedXDMPort(opts);
 		return streams;
-		
+
 	}
 	@Override
 	public void close() {
@@ -65,9 +65,9 @@ public class PipedXDMPort extends PipedPort {
 		Util.safeClose(mOut);
 		mIn = null ;
 		mOut = null ;
-		
+
 	}
-	
+
 }
 //
 //

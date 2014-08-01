@@ -11,7 +11,7 @@ import java.io.InputStream;
 
 public class SynchronizedInputStream  extends InputStream {
 	private		volatile  InputStream  mInputStream;
-    private   boolean mClose ;
+	private   boolean mClose ;
 
 	public SynchronizedInputStream(InputStream inputStream, boolean bclose) {
 		super();
@@ -24,16 +24,18 @@ public class SynchronizedInputStream  extends InputStream {
 	 * @throws IOException
 	 * @see java.io.InputStream#available()
 	 */
+	@Override
 	public synchronized int available() throws IOException {
 		return mInputStream.available();
 	}
 
 	// do not syncrhonize close - causes deadlock
+	@Override
 	public void close() throws IOException {
-  
+
 		if( mClose && mInputStream != null )
 			mInputStream.close();
-	
+
 	}
 
 	/**
@@ -41,6 +43,7 @@ public class SynchronizedInputStream  extends InputStream {
 	 * @return
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
+	@Override
 	public synchronized boolean equals(Object obj) {
 		return mInputStream.equals(obj);
 	}
@@ -49,6 +52,7 @@ public class SynchronizedInputStream  extends InputStream {
 	 * @return
 	 * @see java.lang.Object#hashCode()
 	 */
+	@Override
 	public synchronized int hashCode() {
 		return mInputStream.hashCode();
 	}
@@ -57,6 +61,7 @@ public class SynchronizedInputStream  extends InputStream {
 	 * @param readlimit
 	 * @see java.io.InputStream#mark(int)
 	 */
+	@Override
 	public synchronized void mark(int readlimit) {
 		mInputStream.mark(readlimit);
 	}
@@ -65,6 +70,7 @@ public class SynchronizedInputStream  extends InputStream {
 	 * @return
 	 * @see java.io.InputStream#markSupported()
 	 */
+	@Override
 	public synchronized boolean markSupported() {
 		return mInputStream.markSupported();
 	}
@@ -74,6 +80,7 @@ public class SynchronizedInputStream  extends InputStream {
 	 * @throws IOException
 	 * @see java.io.InputStream#read()
 	 */
+	@Override
 	public synchronized int read() throws IOException {
 		return mInputStream.read();
 	}
@@ -86,6 +93,7 @@ public class SynchronizedInputStream  extends InputStream {
 	 * @throws IOException
 	 * @see java.io.InputStream#read(byte[], int, int)
 	 */
+	@Override
 	public synchronized int read(byte[] b, int off, int len) throws IOException {
 		return mInputStream.read(b, off, len);
 	}
@@ -96,6 +104,7 @@ public class SynchronizedInputStream  extends InputStream {
 	 * @throws IOException
 	 * @see java.io.InputStream#read(byte[])
 	 */
+	@Override
 	public synchronized int read(byte[] b) throws IOException {
 		return mInputStream.read(b);
 	}
@@ -104,6 +113,7 @@ public class SynchronizedInputStream  extends InputStream {
 	 * @throws IOException
 	 * @see java.io.InputStream#reset()
 	 */
+	@Override
 	public synchronized void reset() throws IOException {
 		mInputStream.reset();
 	}
@@ -114,6 +124,7 @@ public class SynchronizedInputStream  extends InputStream {
 	 * @throws IOException
 	 * @see java.io.InputStream#skip(long)
 	 */
+	@Override
 	public synchronized long skip(long n) throws IOException {
 		return mInputStream.skip(n);
 	}
@@ -122,13 +133,14 @@ public class SynchronizedInputStream  extends InputStream {
 	 * @return
 	 * @see java.lang.Object#toString()
 	 */
+	@Override
 	public synchronized String toString() {
 		return mInputStream.toString();
 	}
 	public InputStream getStream() {
 		return mInputStream;
 	}
-	
+
 }
 //
 //

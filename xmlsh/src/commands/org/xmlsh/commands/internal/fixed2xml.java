@@ -38,20 +38,21 @@ import javax.xml.stream.XMLStreamWriter;
  *  -attr		write in attribute normal format
  *  -encoding encoding  Read CSV format in the specified encoding, else cp1252 assumed
  *  -quote		quoted by (default ")
-*/
+ */
 
 public class fixed2xml extends XCommand
 {
 
-	
+
+	@Override
 	public int run(  List<XValue> args )	throws Exception
 	{
 
-		
+
 
 		Options opts = new Options( "root:,row:,col:,header,attr,encoding:,colnames:,colspecs:,nonorm=nonormalize,skip:",SerializeOpts.getOptionDefs());
 		opts.parse(args);
-		
+
 		// root node
 		String root = opts.getOptString("root", "root");
 		String row = opts.getOptString("row", "row");
@@ -61,48 +62,48 @@ public class fixed2xml extends XCommand
 		boolean bHeader = opts.hasOpt("header");
 		boolean bNoNorm = opts.hasOpt("nonorm");
 		int 	 skip 	 = opts.getOptInt("skip", 0);
-		
-		
+
+
 		List<XValue> xvargs = opts.getRemainingArgs();
-		
-// Output XML
+
+		// Output XML
 
 		OutputPort stdout = getStdout();
 		SerializeOpts serializeOpts = getSerializeOpts(opts);
 		XMLStreamWriter writer = stdout.asXMLStreamWriter(serializeOpts);
-		
+
 		writer.writeStartDocument();
-		
-		
+
+
 		writer.writeStartElement(root);
-		
-// Input is stdin and/or list of commands
-		
+
+		// Input is stdin and/or list of commands
+
 		InputStream in = null;
 		if( xvargs.size() == 0 )
 			in = getStdin().asInputStream(serializeOpts);
 		else
 			in = getInputStream( xvargs.get(0) );
-		
-		
+
+
 		Reader ir = new InputStreamReader( in , encoding );
 		FixedParser parser = new FixedParser( parseWidths( opts.getOptValueRequired("colspecs")) , ! bNoNorm);
-		
+
 		CSVRecord header = null ;
-		
+
 		while( skip-- > 0 )
 			readLine(ir);
-		
-		
+
+
 		if( bHeader ){
 			String line = readLine(ir);
 			if( line != null )
 				header = parser.parseLine(line);
 		} else 
-		if( opts.hasOpt("colnames")){
-			header = parseCols( opts.getOptValue("colnames"));
-		}
-		
+			if( opts.hasOpt("colnames")){
+				header = parseCols( opts.getOptValue("colnames"));
+			}
+
 		String line;
 		while( (line = readLine(ir)) != null ){
 			CSVRecord csv = parser.parseLine(line);
@@ -112,13 +113,13 @@ public class fixed2xml extends XCommand
 		writer.writeEndDocument();
 		writer.flush();
 		writer.close();
-		
+
 		ir.close();
 		stdout.writeSequenceTerminator(serializeOpts);
-		
-		
+
+
 		return 0;
-		
+
 	}
 
 
@@ -127,43 +128,43 @@ public class fixed2xml extends XCommand
 	 */
 
 	private CSVRecord parseCols(XValue cols) {
-		
+
 		if( cols.isAtomic() )
 			return new CSVRecord( Arrays.asList( cols.toString().split(",")));
 		else
 			return new CSVRecord(cols.asStringList());
-		
-		
+
+
 	}
 
 
 
 
 	private String[] parseWidths(XValue specs) {
-		
+
 		if( specs.isAtomic() )
 			return specs.toString().split(",");
-		
-			
-			
+
+
+
 		List<String> list = specs.asStringList();
-		
+
 		return list.toArray( new String[list.size()]);
-		
-		
+
+
 	}
-	
-	
+
+
 
 	private void addElement(
-		XMLStreamWriter writer, 
-		CSVRecord csv ,
-		String row, 
-		String col, 
-		boolean battr,
-		CSVRecord header) throws  XMLStreamException 
-	{
-		
+			XMLStreamWriter writer, 
+			CSVRecord csv ,
+			String row, 
+			String col, 
+			boolean battr,
+			CSVRecord header) throws  XMLStreamException 
+			{
+
 		writer.writeStartElement(row);
 		// Attribute normal format
 		if( battr ){
@@ -171,8 +172,8 @@ public class fixed2xml extends XCommand
 				String name = getAttrName( i , col , header );
 				writer.writeAttribute(name,csv.getField(i));
 			}
-			
-			
+
+
 		} else {
 
 
@@ -181,13 +182,13 @@ public class fixed2xml extends XCommand
 				writer.writeStartElement(name);
 				writer.writeCharacters(csv.getField(i));
 				writer.writeEndElement();
-				
+
 			}
-			
+
 		}
 		writer.writeEndElement();
-		
-	}
+
+			}
 
 
 	private String getColName(int i, String col, CSVRecord header) {
@@ -205,7 +206,7 @@ public class fixed2xml extends XCommand
 			return toXmlName( header.getField(i));
 		else
 			return col + (i + 1)  ;
-		
+
 	}
 
 
@@ -219,7 +220,7 @@ public class fixed2xml extends XCommand
 	private String readLine(Reader ir) throws IOException {
 		return Util.readLine(ir);
 	}
-	
+
 }
 
 //

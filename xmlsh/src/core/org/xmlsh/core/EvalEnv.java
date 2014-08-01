@@ -26,24 +26,24 @@ public class EvalEnv
 	private final static EvalEnv _fileInstance = newInstance( false,true,true,false);
 	private final static EvalEnv _preserveInstance = newInstance(_preserveFlags);
 	private final static EvalEnv _nopreserveInstance = newInstance( _nopreserveFlags );
-	
+
 
 	private EvalEnv()
 	{
 		this(EvalFlag._evalFlagsNone);
 	}
-	
-	
+
+
 	public static EvalEnv newEnv( EvalEnv that , EnumSet<EvalFlag> flags) {
 		return new EvalEnv( that ,  flags );
 
 	}
-	
+
 	public static EvalEnv newEnv( EnumSet<EvalFlag> flags) {
 		return new EvalEnv( flags );
 	}
 
-	
+
 	private EvalEnv(EnumSet<EvalFlag> flags){
 		evalFlags = flags ;
 	}
@@ -51,72 +51,72 @@ public class EvalEnv
 
 	// Expect more then flags in the future
 	private EvalEnv(EvalEnv env, EnumSet<EvalFlag> flags )
-    {
+	{
 		this(flags);
-    }
+	}
 
 
 	public static final EvalEnv evalNone() {
 		return _evalNone;
 	}
-	
+
 	// Hack for now
 	public static EvalEnv  newInstance( boolean bExpandSequences , boolean bExpandWild , boolean bExpandWords, boolean bPreserve )
 	{
 		return newInstance(EvalFlag.evalFlags(bExpandSequences, bExpandWild, bExpandWords, bPreserve));
 	}
-	
-	
+
+
 	public static EvalEnv  commandArgsInstance( ) {
 
 		return _nopreserveInstance;
-		
+
 	}
-	
+
 	public static EnumSet<EvalFlag> commandArgsFlags()
-    {
+	{
 		return _nopreserveFlags ; 
-    }
-	
+	}
+
 	public static EnumSet<EvalFlag> returnValueMask()
-    {
+	{
 		return _preserveFlags ; 
-    }
+	}
 
 	public static EvalEnv  newInstance( EnumSet<EvalFlag> flags  )
 	{
 		return new EvalEnv(flags);
 	}
 	private static EvalEnv newInstance(EvalEnv that, EnumSet<EvalFlag> flags)
-    {
+	{
 		if( that.evalFlags.equals(flags) )  
 			return that ;
 		return newInstance( flags );
-    }
-	
-	
+	}
+
+
 	public boolean expandVar () { 
 		return evalFlags.contains(EvalFlag.EXPAND_VAR);
 	}
-	
+
 	public boolean parseQuotes () { 
 		return evalFlags.contains(EvalFlag.PARSE_QUOTES);
 	}
-	
+
 	public boolean joinValues () { 
 		return evalFlags.contains(EvalFlag.JOIN_VALUES);
 	}
-	
+
 	// Globbing 
 	public boolean expandWild() { 
 		return evalFlags.contains(EvalFlag.EXPAND_WILD);
 	}
-	
+
 	// Word expansion 
 	public boolean expandWords() {
 		return evalFlags.contains(EvalFlag.SPLIT_WORDS);
 	}
-	
+
 	// Was tongs
 	public boolean preserveValue() {
 		return evalFlags.isEmpty() || evalFlags.equals( EnumSet.of( EvalFlag.EXPAND_VAR));
@@ -126,12 +126,12 @@ public class EvalEnv
 		return evalFlags.contains(EvalFlag.EXPAND_SEQUENCES);
 	}
 
-	
+
 	public static EvalEnv newPreserveInstance(boolean preserve)
-    {
+	{
 		return preserve ? _preserveInstance : _nopreserveInstance ;
-    }
-	
+	}
+
 	// Basic evaluation of variables only
 	public static final  EvalEnv basicInstance() {
 		return _basicInstance;
@@ -141,72 +141,73 @@ public class EvalEnv
 	public static final EvalEnv fileInstance() { 
 		return _fileInstance;
 	}
-	
+
 	public static EnumSet<EvalFlag> removeFlags( EvalEnv env , EnumSet<EvalFlag> off ) {
 
 		return Util.withEnumsRemoved(env.evalFlags, off );
-		
+
 	}
 	public static EnumSet<EvalFlag> addFlags( EvalEnv env , EnumSet<EvalFlag> on ) {
 		return Util.withEnumsAdded(env.evalFlags, on );
 	}
-	
-	
+
+
 	/*
 	 * Fluent set
 	 */
-	
+
 	public EvalEnv withFlagSet( EvalFlag on ) {
 		return newInstance( this , Util.withEnumAdded( evalFlags , on ) );
 	}
-	
+
 	public EvalEnv withFlagsSet( EnumSet<EvalFlag> flags  ) {
 		return newInstance( this , Util.withEnumsAdded( evalFlags , flags  ));
 	}
 
-	
+
 	public EvalEnv withFlagsSet( EvalFlag... flags ) {
 		return newInstance( this , Util.withEnumsAdded( evalFlags , flags  ));
 	}
-	
+
 	public EvalEnv withFlagOff( EvalFlag off ) {
 		return newInstance( this ,Util.withEnumRemoved( evalFlags , off ) );
 	}
 
 	// Allow ONLY the set of flags in mask 
 	public  EvalEnv  withFlagsMasked( EnumSet<EvalFlag> mask ){
-		
+
 		return newInstance( this , Util.withEnumsMasked(evalFlags, mask)  );
 	}
 
 	public EvalEnv withFlagsOff( EvalFlag... flags ) {
 		return newInstance( this, Util.withEnumsRemoved( evalFlags , flags  ));
 	}
-	
+
+	@Override
 	public boolean equals( Object that ) {
 		if( that == null )
 			return false;
 		if( ! (that instanceof EvalEnv ) )
 			return false;
 		return ((EvalEnv)that).equals(evalFlags);
-		
+
 	}
-	
+
 	public boolean isSet( EvalFlag flag ) {
 		return evalFlags.contains(flag);
 	}
 
 
 	public boolean omitNulls()
-    {
+	{
 		return evalFlags.contains(EvalFlag.OMIT_NULL );
 
-    }
+	}
 
 
-	
-	
-	
+
+
+
 }
 
 

@@ -19,15 +19,15 @@ import java.util.HashMap;
 
 @SuppressWarnings("serial")
 public class NameValueMap<T> extends HashMap<String,T> {
-	
+
 	/*
 	 * Default Constructor
 	 */
 	public	NameValueMap()
 	{}
-	
-	
-	
+
+
+
 	/*
 	 * Copy constructor 
 	 */
@@ -38,7 +38,7 @@ public class NameValueMap<T> extends HashMap<String,T> {
 
 
 
-	
+
 
 }
 

@@ -18,21 +18,22 @@ public class trap extends BuiltinCommand {
 	 * and parse them as a command 
 	 * 
 	 */
-	
+
+	@Override
 	public int run(  List<XValue> args ) throws Exception {
-			
+
 		if( args.size() < 2 ){
 			usage("Usage: trap 'command' signal");
 		}
-		
+
 		String cmd = args.remove(0).toString();
 		while( !args.isEmpty() ){
 			String signal = args.remove(0).toString();
 			mShell.trap( signal , cmd );
 		}
-				
+
 		return 0;
-				
+
 	}
 
 

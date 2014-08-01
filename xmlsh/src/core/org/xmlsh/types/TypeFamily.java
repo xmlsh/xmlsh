@@ -11,17 +11,14 @@ package org.xmlsh.types;
  * 
  */
 public enum TypeFamily {
-    XTYPE(XTypeFamily.instance),                        // XML Xtypes (XValue, XList .. .
-    XDM(XDMTypeFamily.instance),                        // XDM type system - currently only Saxon XDM types
-    JSON(JSONTypeFamily.instance),                       // JSON specific types - currently only Jackson implenetion tpyes
-    JAVA(JavaTypeFamily.instance)                        // Generic JAVA type fmaily - substitutable for all other types but less specific
-    ;
-    private ITypeFamily instance;
-    private TypeFamily(ITypeFamily f) {
-        instance=f;
-    }
-    public ITypeFamily  instance() {
-        return instance ;
-    }
+	XTYPE,                        // XML Xtypes (XValue, XList .. .
+	XDM,                      // XDM type system - currently only Saxon XDM types
+	JSON,                  // JSON specific types - currently only Jackson implenetion tpyes
+	JAVA                 // Generic JAVA type fmaily - substitutable for all other types but less specific
+	;
 
+	@Override 
+	public String toString() {
+		return name().toLowerCase();
+	}
 }

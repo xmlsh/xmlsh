@@ -58,323 +58,338 @@ public class OmittingIndentingXMLEventWriter extends EventWriterDelegate impleme
 	private boolean bOmitXml;
 	private boolean bIndent;
 	private OmittingOutputStream mOut;
-    public OmittingIndentingXMLEventWriter(XMLEventWriter out, OutputStream os,boolean indent , boolean omit ) throws IOException {
-        super(out);
-        bOmitXml = omit;
-        bIndent = indent ;
-        mOut = ( omit && os instanceof OmittingOutputStream ) ? (OmittingOutputStream) os : null ;
-    
-        if(mOut != null ) {
-        	mOut.flush();
-        	mOut.setDiscard(true);
-        }
-    
-    }
+	public OmittingIndentingXMLEventWriter(XMLEventWriter out, OutputStream os,boolean indent , boolean omit ) throws IOException {
+		super(out);
+		bOmitXml = omit;
+		bIndent = indent ;
+		mOut = ( omit && os instanceof OmittingOutputStream ) ? (OmittingOutputStream) os : null ;
 
-    /** How deeply nested the current scope is. The root element is depth 1. */
-    private int depth = 0; // document scope
+		if(mOut != null ) {
+			mOut.flush();
+			mOut.setDiscard(true);
+		}
 
-    /** stack[depth] indicates what's been written into the current scope. */
-    private int[] stack = new int[] { 0, 0, 0, 0 }; // nothing written yet
+	}
 
-    private static final int WROTE_MARKUP = 1;
+	/** How deeply nested the current scope is. The root element is depth 1. */
+	private int depth = 0; // document scope
 
-    private static final int WROTE_DATA = 2;
+	/** stack[depth] indicates what's been written into the current scope. */
+	private int[] stack = new int[] { 0, 0, 0, 0 }; // nothing written yet
 
-    /** An object that produces a line break and indentation. */
-    private final PrefixCharacters newLineEvent = new PrefixCharacters();
+	private static final int WROTE_MARKUP = 1;
 
-    public void setIndent(String indent) {
-        newLineEvent.setIndent(indent);
-    }
+	private static final int WROTE_DATA = 2;
 
-    public void setNewLine(String newLine) {
-        newLineEvent.setNewLine(newLine);
-    }
+	/** An object that produces a line break and indentation. */
+	private final PrefixCharacters newLineEvent = new PrefixCharacters();
 
-    public String getIndent() {
-        return newLineEvent.getIndent();
-    }
+	@Override
+	public void setIndent(String indent) {
+		newLineEvent.setIndent(indent);
+	}
 
-    public String getNewLine() {
-        return newLineEvent.getNewLine();
-    }
+	@Override
+	public void setNewLine(String newLine) {
+		newLineEvent.setNewLine(newLine);
+	}
 
-    /**
-     * @return System.getProperty("line.separator"); or
-     *         {@link #NORMAL_END_OF_LINE} if that fails.
-     */
-    public static String getLineSeparator() {
-        return Util.getNewlineString();
-    }
+	@Override
+	public String getIndent() {
+		return newLineEvent.getIndent();
+	}
 
-    public void add(XMLEvent event) throws XMLStreamException {
-        switch (event.getEventType()) {
-            case XMLStreamConstants.CHARACTERS:
-            case XMLStreamConstants.CDATA:
-            case XMLStreamConstants.SPACE:
-                out.add(event);
-            	if( bIndent )
-            		afterData();
-                return;
+	@Override
+	public String getNewLine() {
+		return newLineEvent.getNewLine();
+	}
 
-            case XMLStreamConstants.START_ELEMENT:
-            	if( bIndent )
-            		beforeStartElement();
-                out.add(event);
-            	if( bIndent )
-            		afterStartElement();
-                return;
+	/**
+	 * @return System.getProperty("line.separator"); or
+	 *         {@link #NORMAL_END_OF_LINE} if that fails.
+	 */
+	public static String getLineSeparator() {
+		return Util.getNewlineString();
+	}
 
-            case XMLStreamConstants.END_ELEMENT:
-            	if( bIndent )
-            		beforeEndElement();
-                out.add(event);
-            	if( bIndent )
-            		afterEndElement();
-                return;
+	@Override
+	public void add(XMLEvent event) throws XMLStreamException {
+		switch (event.getEventType()) {
+		case XMLStreamConstants.CHARACTERS:
+		case XMLStreamConstants.CDATA:
+		case XMLStreamConstants.SPACE:
+			out.add(event);
+			if( bIndent )
+				afterData();
+			return;
 
-            case XMLStreamConstants.START_DOCUMENT:
-            case XMLStreamConstants.PROCESSING_INSTRUCTION:
-            case XMLStreamConstants.COMMENT:
-            case XMLStreamConstants.DTD:
+		case XMLStreamConstants.START_ELEMENT:
+			if( bIndent )
+				beforeStartElement();
+			out.add(event);
+			if( bIndent )
+				afterStartElement();
+			return;
 
-            	if( bIndent )
-            		beforeMarkup();
-                out.add(event);
-                boolean discard =  mOut != null && mOut.getDiscard() ;
-            	if(discard) {
-            		out.flush();
-            		mOut.setDiscard(false);
-            	}
-            	if( bIndent && ! discard )
-            		afterMarkup();
-                return;
+		case XMLStreamConstants.END_ELEMENT:
+			if( bIndent )
+				beforeEndElement();
+			out.add(event);
+			if( bIndent )
+				afterEndElement();
+			return;
 
-            case XMLStreamConstants.END_DOCUMENT:
-                out.add(event);
-                
-                // Writing text after END_DOCUMENT can cause an NPE 
-                // afterEndDocument();
-                break;
+		case XMLStreamConstants.START_DOCUMENT:
+		case XMLStreamConstants.PROCESSING_INSTRUCTION:
+		case XMLStreamConstants.COMMENT:
+		case XMLStreamConstants.DTD:
 
-            default:
-                out.add(event);
-                return;
-        }
-    }
+			if( bIndent )
+				beforeMarkup();
+			out.add(event);
+			boolean discard =  mOut != null && mOut.getDiscard() ;
+			if(discard) {
+				out.flush();
+				mOut.setDiscard(false);
+			}
+			if( bIndent && ! discard )
+				afterMarkup();
+			return;
 
-    /** Prepare to write markup, by writing a new line and indentation. */
-    protected void beforeMarkup() {
+		case XMLStreamConstants.END_DOCUMENT:
+			out.add(event);
 
-        int soFar = stack[depth];
-        if ((soFar & WROTE_DATA) == 0 // no data in this scope
-                && (depth > 0 || soFar != 0)) // not the first line
-        {
-            try {
-                newLineEvent.write(out, depth);
-                if (depth > 0 && getIndent().length() > 0) {
-                    afterMarkup(); // indentation was written
-                }
-            } catch (Exception e) {
-            }
-        }
-    }
+			// Writing text after END_DOCUMENT can cause an NPE 
+			// afterEndDocument();
+			break;
 
-    /** Note that markup or indentation was written. */
-    protected void afterMarkup() {
-        stack[depth] |= WROTE_MARKUP;
-    }
+		default:
+			out.add(event);
+			return;
+		}
+	}
 
-    /** Note that data were written. */
-    protected void afterData() {
-        stack[depth] |= WROTE_DATA;
-    }
+	/** Prepare to write markup, by writing a new line and indentation. */
+	protected void beforeMarkup() {
 
-    /** Prepare to start an element, by allocating stack space. */
-    protected void beforeStartElement() {
-        beforeMarkup();
-        if (stack.length <= depth + 1) {
-            // Allocate more space for the stacks:
-            int[] newWrote = new int[stack.length * 2];
-            System.arraycopy(stack, 0, newWrote, 0, stack.length);
-            stack = newWrote;
-        }
-        stack[depth + 1] = 0; // nothing written yet
-    }
+		int soFar = stack[depth];
+		if ((soFar & WROTE_DATA) == 0 // no data in this scope
+				&& (depth > 0 || soFar != 0)) // not the first line
+		{
+			try {
+				newLineEvent.write(out, depth);
+				if (depth > 0 && getIndent().length() > 0) {
+					afterMarkup(); // indentation was written
+				}
+			} catch (Exception e) {
+			}
+		}
+	}
 
-    /** Note that an element was started. */
-    protected void afterStartElement() {
-        afterMarkup();
-        ++depth;
-    }
+	/** Note that markup or indentation was written. */
+	protected void afterMarkup() {
+		stack[depth] |= WROTE_MARKUP;
+	}
 
-    /** Prepare to end an element, by writing a new line and indentation. */
-    protected void beforeEndElement() {
-        if (depth > 0 && stack[depth] == WROTE_MARKUP) { // but not data
-            try {
-                newLineEvent.write(out, depth - 1);
-            } catch (Exception ignored) {
-            }
-        }
-    }
+	/** Note that data were written. */
+	protected void afterData() {
+		stack[depth] |= WROTE_DATA;
+	}
 
-    /** Note that an element was ended. */
-    protected void afterEndElement() {
-        if (depth > 0) {
-            --depth;
-        }
-    }
+	/** Prepare to start an element, by allocating stack space. */
+	protected void beforeStartElement() {
+		beforeMarkup();
+		if (stack.length <= depth + 1) {
+			// Allocate more space for the stacks:
+			int[] newWrote = new int[stack.length * 2];
+			System.arraycopy(stack, 0, newWrote, 0, stack.length);
+			stack = newWrote;
+		}
+		stack[depth + 1] = 0; // nothing written yet
+	}
 
-    /** Note that a document was ended. */
-    protected void afterEndDocument() {
-        depth = 0;
-        if (stack[0] == WROTE_MARKUP) { // but not data
-            try {
-                newLineEvent.write(out, 0);
-            } catch (Exception ignored) {
-            }
-        }
-        stack[0] = 0; // start fresh
-    }
+	/** Note that an element was started. */
+	protected void afterStartElement() {
+		afterMarkup();
+		++depth;
+	}
 
-    private static class PrefixCharacters extends AbstractCharactersEvent implements Indentation {
+	/** Prepare to end an element, by writing a new line and indentation. */
+	protected void beforeEndElement() {
+		if (depth > 0 && stack[depth] == WROTE_MARKUP) { // but not data
+			try {
+				newLineEvent.write(out, depth - 1);
+			} catch (Exception ignored) {
+			}
+		}
+	}
 
-        PrefixCharacters() {
-            super((String) null);
-        }
+	/** Note that an element was ended. */
+	protected void afterEndElement() {
+		if (depth > 0) {
+			--depth;
+		}
+	}
 
-        /** String used for indentation. */
-        private String indent = DEFAULT_INDENT;
+	/** Note that a document was ended. */
+	protected void afterEndDocument() {
+		depth = 0;
+		if (stack[0] == WROTE_MARKUP) { // but not data
+			try {
+				newLineEvent.write(out, 0);
+			} catch (Exception ignored) {
+			}
+		}
+		stack[0] = 0; // start fresh
+	}
 
-        /** String for EOL. */
-        private String newLine = NORMAL_END_OF_LINE;
+	private static class PrefixCharacters extends AbstractCharactersEvent implements Indentation {
 
-        /**
-         * Various combinations of newLine and indent, used to begin and indent
-         * a line. The appropriate prefix for a given depth is prefixes[depth %
-         * prefixes.length]. This array is managed as a ring buffer, containing
-         * the prefix for the current depth and recently used adjacent prefixes.
-         * <p>
-         * This structure uses memory proportional to the maximum depth.
-         * Retaining prefixes for all depths would be faster, but require memory
-         * proportional the square of the maximum depth.
-         */
-        private final String[] prefixes = new String[] { null, null, null, null, null, null };
+		PrefixCharacters() {
+			super((String) null);
+		}
 
-        /**
-         * The depth of the shortest String in prefixes (which is located at
-         * prefixes[minimumPrefix % prefixes.length]).
-         */
-        private int minimumPrefix = 0;
+		/** String used for indentation. */
+		private String indent = DEFAULT_INDENT;
 
-        public String getIndent() {
-            return indent;
-        }
+		/** String for EOL. */
+		private String newLine = NORMAL_END_OF_LINE;
 
-        public String getNewLine() {
-            return newLine;
-        }
+		/**
+		 * Various combinations of newLine and indent, used to begin and indent
+		 * a line. The appropriate prefix for a given depth is prefixes[depth %
+		 * prefixes.length]. This array is managed as a ring buffer, containing
+		 * the prefix for the current depth and recently used adjacent prefixes.
+		 * <p>
+		 * This structure uses memory proportional to the maximum depth.
+		 * Retaining prefixes for all depths would be faster, but require memory
+		 * proportional the square of the maximum depth.
+		 */
+		private final String[] prefixes = new String[] { null, null, null, null, null, null };
 
-        public void setIndent(String indent) {
-            if (!indent.equals(this.indent)) {
-                Arrays.fill(prefixes, null);
-            }
-            this.indent = indent;
-        }
+		/**
+		 * The depth of the shortest String in prefixes (which is located at
+		 * prefixes[minimumPrefix % prefixes.length]).
+		 */
+		private int minimumPrefix = 0;
 
-        public void setNewLine(String newLine) {
-            if (!newLine.equals(this.newLine)) {
-                Arrays.fill(prefixes, null);
-            }
-            this.newLine = newLine;
-        }
+		@Override
+		public String getIndent() {
+			return indent;
+		}
 
-        void write(XMLEventWriter out, int depth) throws XMLStreamException {
-            this.depth = depth; // so getData knows what to do.
-            out.add(this);
-        }
+		@Override
+		public String getNewLine() {
+			return newLine;
+		}
 
-        /** An implicit parameter to getData(). */
-        private int depth = 0;
+		@Override
+		public void setIndent(String indent) {
+			if (!indent.equals(this.indent)) {
+				Arrays.fill(prefixes, null);
+			}
+			this.indent = indent;
+		}
 
-        public String getData() {
-            while (depth >= minimumPrefix + prefixes.length) {
-                prefixes[minimumPrefix++ % prefixes.length] = null;
-            }
-            while (depth < minimumPrefix) {
-                prefixes[--minimumPrefix % prefixes.length] = null;
-            }
-            final int p = depth % prefixes.length;
-            String data = prefixes[p];
-            if (data == null) {
-                StringBuffer b = new StringBuffer(newLine.length() + (indent.length() * depth));
-                b.append(newLine);
-                for (int d = 0; d < depth; ++d) {
-                    b.append(indent);
-                }
-                data = prefixes[p] = b.toString();
-            }
-            return data;
-        }
+		@Override
+		public void setNewLine(String newLine) {
+			if (!newLine.equals(this.newLine)) {
+				Arrays.fill(prefixes, null);
+			}
+			this.newLine = newLine;
+		}
 
-        public int getEventType() {
-            // it's not clear if we are supposed to return SPACES
-            return XMLStreamConstants.CHARACTERS;
-        }
+		void write(XMLEventWriter out, int depth) throws XMLStreamException {
+			this.depth = depth; // so getData knows what to do.
+			out.add(this);
+		}
 
-        public Characters asCharacters() {
-            return this;
-        }
+		/** An implicit parameter to getData(). */
+		private int depth = 0;
 
-        public boolean isCData() {
-            return false;
-        }
+		@Override
+		public String getData() {
+			while (depth >= minimumPrefix + prefixes.length) {
+				prefixes[minimumPrefix++ % prefixes.length] = null;
+			}
+			while (depth < minimumPrefix) {
+				prefixes[--minimumPrefix % prefixes.length] = null;
+			}
+			final int p = depth % prefixes.length;
+			String data = prefixes[p];
+			if (data == null) {
+				StringBuffer b = new StringBuffer(newLine.length() + (indent.length() * depth));
+				b.append(newLine);
+				for (int d = 0; d < depth; ++d) {
+					b.append(indent);
+				}
+				data = prefixes[p] = b.toString();
+			}
+			return data;
+		}
 
-        public boolean isIgnorableWhiteSpace() {
-            return isWhiteSpace();
-        }
+		@Override
+		public int getEventType() {
+			// it's not clear if we are supposed to return SPACES
+			return XMLStreamConstants.CHARACTERS;
+		}
 
-        private static final Pattern ENCODABLE = Pattern.compile("[&<>]");
+		@Override
+		public Characters asCharacters() {
+			return this;
+		}
 
-        public void writeAsEncodedUnicode(Writer writer) throws XMLStreamException {
-            // Similar to super.writeAsEncodedUnicode;
-            // but '\r' is not encoded.
-            // TODO? memoize the encoded string.
-            try {
-                String s = getData();
-                if (!ENCODABLE.matcher(s).find()) {
-                    writer.write(s);
-                } else {
-                    final char[] data = s.toCharArray();
-                    int first = 0;
-                    for (int d = first; d < data.length; ++d) {
-                        switch (data[d]) {
-                            case '&':
-                                writer.write(data, first, d - first);
-                                writer.write("&amp;");
-                                first = d + 1;
-                                break;
-                            case '<':
-                                writer.write(data, first, d - first);
-                                writer.write("&lt;");
-                                first = d + 1;
-                                break;
-                            case '>':
-                                writer.write(data, first, d - first);
-                                writer.write("&gt;");
-                                first = d + 1;
-                                break;
-                            default:
-                        }
-                    }
-                    writer.write(data, first, data.length - first);
-                }
-            } catch (IOException e) {
-                throw new XMLStreamException(e);
-            }
-        }
+		@Override
+		public boolean isCData() {
+			return false;
+		}
 
-    }
+		@Override
+		public boolean isIgnorableWhiteSpace() {
+			return isWhiteSpace();
+		}
+
+		private static final Pattern ENCODABLE = Pattern.compile("[&<>]");
+
+		@Override
+		public void writeAsEncodedUnicode(Writer writer) throws XMLStreamException {
+			// Similar to super.writeAsEncodedUnicode;
+			// but '\r' is not encoded.
+			// TODO? memoize the encoded string.
+			try {
+				String s = getData();
+				if (!ENCODABLE.matcher(s).find()) {
+					writer.write(s);
+				} else {
+					final char[] data = s.toCharArray();
+					int first = 0;
+					for (int d = first; d < data.length; ++d) {
+						switch (data[d]) {
+						case '&':
+							writer.write(data, first, d - first);
+							writer.write("&amp;");
+							first = d + 1;
+							break;
+						case '<':
+							writer.write(data, first, d - first);
+							writer.write("&lt;");
+							first = d + 1;
+							break;
+						case '>':
+							writer.write(data, first, d - first);
+							writer.write("&gt;");
+							first = d + 1;
+							break;
+						default:
+						}
+					}
+					writer.write(data, first, data.length - first);
+				}
+			} catch (IOException e) {
+				throw new XMLStreamException(e);
+			}
+		}
+
+	}
 
 }

@@ -20,13 +20,13 @@ import java.util.Iterator;
 
 @SuppressWarnings("serial")
 public class NameValueList<T> extends ArrayList< INameValue<T> > {
-	
+
 	/*
 	 * Default Constructor
 	 */
 	public	NameValueList()
 	{}
-	
+
 	/*
 	 * Copy constructor 
 	 */
@@ -34,7 +34,7 @@ public class NameValueList<T> extends ArrayList< INameValue<T> > {
 	{
 		addAll(that);
 	}
-	
+
 	public INameValue<T> findName( String name ){
 		for(INameValue<T> nv : this )
 			if( nv.getName().equals(name) )
@@ -42,7 +42,7 @@ public class NameValueList<T> extends ArrayList< INameValue<T> > {
 		return null;
 	}
 
-	
+
 	public  INameValue<T>   removeName( String name ){
 		for (Iterator<INameValue<T>> I = iterator(); I.hasNext();) {
 			INameValue<T> e = I.next();
@@ -53,7 +53,7 @@ public class NameValueList<T> extends ArrayList< INameValue<T> > {
 		}
 		return null;
 	}
-	
+
 	public   INameValue<T>  findValue( T value ){
 		for(INameValue<T> nv : this )
 			if( nv.getValue().equals(value) )

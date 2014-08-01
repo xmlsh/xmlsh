@@ -17,20 +17,21 @@ import java.util.List;
 public class source extends BuiltinCommand {
 
 
-	
+
+	@Override
 	public int run(   List<XValue> args ) throws Exception {
-			if( args.size() != 1 )
-				throw new UnexpectedException("source expects 1 argument");
-			
-			XValue port = args.get(0);
-			ICommand icmd = CommandFactory.getInstance().getScript(mShell, port.toString() ,true,getLocation());
-			if( icmd == null){
-				mShell.printErr( port + ": not found" ,  getLocation()  );
-				return 1;
-			}
-			
-			return icmd.run(mShell, port.toString() , null);
-			
+		if( args.size() != 1 )
+			throw new UnexpectedException("source expects 1 argument");
+
+		XValue port = args.get(0);
+		ICommand icmd = CommandFactory.getInstance().getScript(mShell, port.toString() ,true,getLocation());
+		if( icmd == null){
+			mShell.printErr( port + ": not found" ,  getLocation()  );
+			return 1;
+		}
+
+		return icmd.run(mShell, port.toString() , null);
+
 	}
 
 

@@ -15,10 +15,11 @@ import java.util.List;
 
 public class jobs extends BuiltinCommand {
 
-	
+
+	@Override
 	public int run(  List<XValue> args ) throws Exception {
-			
-		
+
+
 		List<ShellThread> children = mShell.getChildren(false);
 		StringList list = new StringList();
 		if( children != null ) {
@@ -28,13 +29,13 @@ public class jobs extends BuiltinCommand {
 				{ 
 					list.add("" + thread.getId() + " : " + getCommand(thread) );
 				}
-            }
+			}
 			for(String line : list )
 				mShell.printOut( line );
 		}
-		
+
 		return 0;
-				
+
 	}
 
 	private String getCommand(ShellThread thread) {

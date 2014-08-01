@@ -8,14 +8,11 @@ package org.xmlsh.sh.core;
 
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.EvalEnv;
-import org.xmlsh.core.XValue;
-import org.xmlsh.sh.shell.Expander;
 import org.xmlsh.sh.shell.ParseResult;
 import org.xmlsh.sh.shell.Shell;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.List;
 
 /*
  * A Value that evaulates to a "cmd_word" which is either a simple string,
@@ -31,6 +28,7 @@ public class StringWord extends Word
 		mString = s;
 	}
 
+	@Override
 	public void print(PrintWriter out)
 	{
 		out.print(mString);
@@ -38,18 +36,19 @@ public class StringWord extends Word
 
 
 
+	@Override
 	public boolean isEmpty()
 	{
 		return mString.isEmpty();
 	}
-	
-	
+
+
 	@Override
 	public String toString()
 	{
 		return mString;
 	}
-	
+
 	@Override
 	public String getSimpleName()
 	{
@@ -57,12 +56,12 @@ public class StringWord extends Word
 	}
 
 	@Override
-    protected ParseResult expandToResult(Shell shell, EvalEnv env, SourceLocation loc, ParseResult result) throws IOException, CoreException
-    {
+	protected ParseResult expandToResult(Shell shell, EvalEnv env, SourceLocation loc, ParseResult result) throws IOException, CoreException
+	{
 		return EvalUtils.expandStringToResult(shell, mString , env, loc, result);
-		
-		
-    }
+
+
+	}
 }
 
 //

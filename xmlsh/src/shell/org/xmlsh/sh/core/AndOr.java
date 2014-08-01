@@ -13,7 +13,7 @@ public class AndOr extends BinaryOpCommand {
 
 	public AndOr(Command left, String op, Command right) {
 		super(left, op, right);
-	
+
 	}
 
 	/* (non-Javadoc)
@@ -24,25 +24,25 @@ public class AndOr extends BinaryOpCommand {
 		int leftRet = shell.execCondition(mLeft);
 		if( ! shell.keepRunning() )
 			return leftRet ;
-		
+
 		if( mOp.equals("||") ){
 			if( Shell.toBool(leftRet))
 				return leftRet;
 			return shell.execCondition(mRight);
-			
-		} else
-		if( mOp.equals("&&")){
-			if( ! Shell.toBool(leftRet))
-				return leftRet ; 	
-			
-			int rightRet = shell.execCondition(mRight);
-			return Shell.fromBool(Shell.toBool( leftRet ) && 
-					Shell.toBool(rightRet) );
 
 		} else
-			return leftRet;
-		
-		
+			if( mOp.equals("&&")){
+				if( ! Shell.toBool(leftRet))
+					return leftRet ; 	
+
+				int rightRet = shell.execCondition(mRight);
+				return Shell.fromBool(Shell.toBool( leftRet ) && 
+						Shell.toBool(rightRet) );
+
+			} else
+				return leftRet;
+
+
 	}
 }
 

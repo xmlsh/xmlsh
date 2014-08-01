@@ -6,17 +6,16 @@
 
 package org.xmlsh.sh.shell;
 
-import java.io.PrintWriter;
-import java.lang.reflect.Method;
-import java.util.List;
-
-
-
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.core.Command;
+import org.xmlsh.types.TypeFamily;
 import org.xmlsh.util.JavaUtils;
 import org.xmlsh.util.Util;
+
+import java.io.PrintWriter;
+import java.lang.reflect.Method;
+import java.util.List;
 
 public class JavaModuleFunctionCommand extends Command
 {
@@ -48,42 +47,42 @@ public class JavaModuleFunctionCommand extends Command
 	{
 		List<XValue> args = shell.getArgs();
 		XValue retVal = null ;
-		
+
 		if( Util.isEqual("new", mFunc)) {  // Constructor
 			retVal  = JavaUtils.newXValue(mClass, args);
 		}
 		else
-		// return class as an object
-		if( Util.isEqual("class", mFunc)){
+			// return class as an object
+			if( Util.isEqual("class", mFunc)){
 
-			retVal = new XValue( mClass );
-			
-		}
-		else {
-		
-			Object thisObj = null;
-			// Static first 
-			Method m = JavaUtils.getBestMatch(mClass , mFunc, args, true );
-			if( m == null && args.size() > 0  ) {
-			
-				thisObj = args.remove(0).asObject();
-				if( mClass.isInstance(thisObj) ) 
-	  			  m = JavaUtils.getBestMatch(mClass , mFunc, args, false );
-					
-			}		
-			if( m == null )
-				throw new InvalidArgumentException( "Cannot find matching method: " + mFunc );
-			
-			
-			retVal = thisObj != null ? JavaUtils.callMethod( m, thisObj , args ) : 
-				JavaUtils.callStaticMethod( m , args );
-				
-		
-		}
+				retVal = new XValue( TypeFamily.JAVA, mClass );
+
+			}
+			else {
+
+				Object thisObj = null;
+				// Static first 
+				Method m = JavaUtils.getBestMatch(mClass , mFunc, args, true );
+				if( m == null && args.size() > 0  ) {
+
+					thisObj = args.remove(0).asObject();
+					if( mClass.isInstance(thisObj) ) 
+						m = JavaUtils.getBestMatch(mClass , mFunc, args, false );
+
+				}		
+				if( m == null )
+					throw new InvalidArgumentException( "Cannot find matching method: " + mFunc );
+
+
+				retVal = thisObj != null ? JavaUtils.callMethod( m, thisObj , args ) : 
+					JavaUtils.callStaticMethod( m , args );
+
+
+			}
 		shell.exec_return(retVal);
 		return 0;
-		
-		
+
+
 	}
 
 	@Override

@@ -58,38 +58,39 @@ import javax.xml.stream.events.XMLEvent;
 
 public class xsplit extends XCommand {
 
-	
+
 	private 	XMLOutputFactory mOutputFactory = XMLOutputFactory.newInstance();
 	private		XMLEventFactory  mEventFactory  = XMLEventFactory.newInstance();
 
 	/*
 	 * Runtime data
 	 */
-	
+
 	private		XMLEvent		mRootNode = null;
 	private		String 			mPrefix = "x";
 	private		int				mSeq 	= 0;
 	private		String			mSuffix = "";
 	private		String			mExt 	= ".xml";
 	private		File 			mOutputDir = null ;
-	
-    private		boolean			mNoRoot = false ;
+
+	private		boolean			mNoRoot = false ;
 	private		int				mNumChildren = 1;
 	private		boolean			mNoDTD = false ;
 	private		boolean			mNoPI  = false ;
 	private		XValue			mList  = null ;
-	
+
 	private		List<XMLEvent>	mHeader = new ArrayList<XMLEvent>();
 	private boolean mStream = false ;
 
 
+	@Override
 	public int run( List<XValue> args)	throws Exception
 	{
 
 
 		Options opts = new Options( "c=children:,w=wrap:,n,p=prefix:,e=ext:,s=suffix:,n=nowrap,o=output:,nopi,nodtd,l=list:,stream:" ,SerializeOpts.getOptionDefs() );
 		opts.parse(args);
-		
+
 		// root node
 		OptionValue ow = opts.getOpt("w");
 		XValue wrapper = null;
@@ -97,11 +98,11 @@ public class xsplit extends XCommand {
 			wrapper = ow.getValue();
 			mRootNode = mEventFactory.createStartElement( new QName(null,wrapper.toString()), null, null);
 		}
-		
-		
-		
+
+
+
 		mNumChildren = Util.parseInt(opts.getOptString("c","1"),1);
-		
+
 		mExt 	 = opts.getOptString("e",mExt);
 		mSuffix  = opts.getOptString("s",mSuffix);
 		mPrefix  = opts.getOptString("p",mPrefix);
@@ -111,9 +112,9 @@ public class xsplit extends XCommand {
 		mNoPI  = opts.hasOpt("nopi");
 		mList  = opts.getOptValue("list"); 
 		mStream = opts.hasOpt("stream");
-		
-		
-		
+
+
+
 		/*
 		 * If not adding a root then must add only 1 child 
 		 */
@@ -122,32 +123,32 @@ public class xsplit extends XCommand {
 			mNoRoot = true ;
 		}
 
-		
-		
+
+
 		List<XValue> xvargs = opts.getRemainingArgs();
 		if( xvargs.size() > 1 ){
 			usage();
 			return 1;
 		}
-		
-		InputPort in = 
-			xvargs.size() == 1 ? 
-					getInput(xvargs.get(0)): 
-					getStdin();
-		OutputPort streamOut = null ;
-		
-		setSerializeOpts(opts);
-		
-		if( mStream )
-			streamOut  = this.getEnv().getOutputPort(opts.getOptStringRequired("stream"));
 
-		try ( 
-			InputStream is = in.asInputStream(getSerializeOpts());
-				PrintWriter listWriter = mList == null? null: (getOutput(mList,false)).asPrintWriter( getSerializeOpts() );
-				){
-			split(in.getSystemId() , is , listWriter , streamOut );
-		} 
-		return 0;
+		InputPort in = 
+				xvargs.size() == 1 ? 
+						getInput(xvargs.get(0)): 
+							getStdin();
+						OutputPort streamOut = null ;
+
+						setSerializeOpts(opts);
+
+						if( mStream )
+							streamOut  = this.getEnv().getOutputPort(opts.getOptStringRequired("stream"));
+
+						try ( 
+								InputStream is = in.asInputStream(getSerializeOpts());
+								PrintWriter listWriter = mList == null? null: (getOutput(mList,false)).asPrintWriter( getSerializeOpts() );
+								){
+							split(in.getSystemId() , is , listWriter , streamOut );
+						} 
+						return 0;
 
 
 	}
@@ -158,22 +159,22 @@ public class xsplit extends XCommand {
 
 
 	private void split(String systemId , InputStream is, PrintWriter listWriter, OutputPort streamOut) throws XMLStreamException, IOException, InvalidArgumentException, CoreException, SaxonApiException {
-	
 
-		
-		
+
+
+
 		XMLInputFactory inputFactory=XMLInputFactory.newInstance();
 		inputFactory.setProperty(XMLInputFactory.IS_COALESCING, Boolean.valueOf(true));
 		XMLEventReader  xmlreader  =inputFactory.createXMLEventReader(systemId, is);
-		
+
 
 		/* 
 		 * Read up to root elem collecting events to repeat on each file
 		 * 
 		 */
-		
+
 		List<Namespace>  ns = null;
-		
+
 		while( xmlreader.hasNext()   ){
 			XMLEvent e = xmlreader.nextEvent();
 			if( e.getEventType() != XMLStreamConstants.START_ELEMENT ){
@@ -181,28 +182,28 @@ public class xsplit extends XCommand {
 					continue;
 				if( mNoPI && e.getEventType() == XMLStreamConstants.PROCESSING_INSTRUCTION )
 					continue;
-				
-				
+
+
 				mHeader.add(e);
 				continue;
 			}
-			
-			
+
+
 			/* 
 			 * If no root then dont add elements to root, but do collect namespaces
 			 */
 			if( mNoRoot ){
-				
-				
+
+
 				StartElement se = e.asStartElement();
-				
+
 				Iterator<?> nsi = se.getNamespaces();
 				ns = new ArrayList<Namespace>();
 				while( nsi.hasNext())
 					ns.add((Namespace) nsi.next());
 
 			}
-			
+
 			if( ! mNoRoot ){
 				// Found document root
 				if( mRootNode == null )
@@ -211,46 +212,46 @@ public class xsplit extends XCommand {
 					mHeader.add( mRootNode );
 
 			}
-				
+
 			break;
-			
-			
+
+
 		}
-		
+
 		/*
 		 * For each element write it to a new file
 		 */
-		
+
 		while( xmlreader.hasNext() ){
 			XMLEvent e = xmlreader.nextEvent();
-			
+
 			int type = e.getEventType() ;
-			
+
 			if( type == XMLStreamConstants.START_ELEMENT ){
 				write( xmlreader , e ,ns , listWriter , streamOut );
-				
-				
+
+
 			} else
-			if( type == XMLStreamConstants.END_ELEMENT ||
+				if( type == XMLStreamConstants.END_ELEMENT ||
 				type == XMLStreamConstants.END_DOCUMENT 
-				
-			)
-			{
-				// ignore
-			}
-			
-			else
-			{
-				if( type == XMLStreamConstants.CHARACTERS && e.asCharacters().isWhiteSpace())
-					continue ;
-				printErr("Skipping XML node: " + e.toString());
-			}
+
+						)
+				{
+					// ignore
+				}
+
+				else
+				{
+					if( type == XMLStreamConstants.CHARACTERS && e.asCharacters().isWhiteSpace())
+						continue ;
+					printErr("Skipping XML node: " + e.toString());
+				}
 		}
-		
+
 		xmlreader.close();
-				
-			
-		
+
+
+
 	}
 
 
@@ -262,42 +263,42 @@ public class xsplit extends XCommand {
 
 
 	private void write(XMLEventReader xmlreader, XMLEvent first, List<Namespace> ns, PrintWriter listWriter, OutputPort streamOut) throws XMLStreamException, IOException, InvalidArgumentException, CoreException, SaxonApiException {
-		
+
 		XMLEventWriter w ;
 		OutputStream fo = null ;
-        String name = "-";
+		String name = "-";
 		if( streamOut != null )
 			w = streamOut.asXMLEventWriter(getSerializeOpts());
 		else {
 			File fout = nextFile();
 			name = fout.getName();
-			
+
 			fo = new FileOutputStream(fout); // need to close seperately
 			w = mOutputFactory.createXMLEventWriter( fo );
 		}
-		
-		
-		
+
+
+
 		/*
 		 * Write the common header elements
 		 */
 		for( XMLEvent e : mHeader )
 			w.add(e);
-		
-		
-		
+
+
+
 		w.add(first);
 		/*
 		 * Add namespaces if needed
 		 */
-		
+
 		if( ns != null )
 			for( Namespace n : ns )
 				w.add(n);
-		
+
 		int depth = 0;
 		int nchild = 0;
-		
+
 		while( xmlreader.hasNext() ){
 			XMLEvent e = xmlreader.nextEvent();
 			w.add(e);
@@ -305,16 +306,16 @@ public class xsplit extends XCommand {
 			if( e.getEventType() == XMLStreamConstants.START_ELEMENT )
 				depth++;
 			else
-			if( e.getEventType() == XMLStreamConstants.END_ELEMENT ){
-				if( depth-- <= 0 ){
-					if( ++nchild == mNumChildren )
-						break;
+				if( e.getEventType() == XMLStreamConstants.END_ELEMENT ){
+					if( depth-- <= 0 ){
+						if( ++nchild == mNumChildren )
+							break;
+					}
+
 				}
 
-			}
-			
 		}
-		
+
 		/*
 		 * End with end element and end document
 		 */
@@ -326,14 +327,14 @@ public class xsplit extends XCommand {
 			fo.close();
 		if( streamOut != null )
 			streamOut.writeSequenceSeperator(getSerializeOpts());
-		
+
 		if( listWriter != null ){
 			listWriter.println(name);
 			listWriter.flush();
 		}	
-			
-		
-		
+
+
+
 	}
 
 

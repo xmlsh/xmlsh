@@ -20,11 +20,11 @@ public class mv extends XCommand {
 
 	@Override
 	public int run(List<XValue> args) throws Exception {
-		
+
 		Options opts = new Options( "f=force" );
 		opts.parse(args);
-		
-		
+
+
 		args = opts.getRemainingArgs();
 		if( args.size() < 2 ){
 			usage();
@@ -33,36 +33,36 @@ public class mv extends XCommand {
 		boolean bForce = opts.hasOpt("f");
 		XValue last = args.remove(args.size()-1);
 		File target = getFile( last );
-		
+
 		if( args.size() > 2 || target.isDirectory() ){
 
 			if( ! target.isDirectory() )
 				throw new InvalidArgumentException("Target is not a directory: " + target.getName() );
 			move( args , target , bForce );
-			
+
 		} else {
-			
+
 			Util.moveFile( getFile(args.get(0)) , target , bForce);
 		}
-				
+
 		return 0;
 	}
 
-	
+
 	private void move(List<XValue> files, File target, boolean force) throws IOException {
 		for( XValue f : files ){
 			File src = getFile(f);
 			File dest = new File( target , src.getName() );
 			Util.moveFile( src , dest , force );
-			
-			
-			
+
+
+
 		}
 	}
 
 
 
-	
+
 
 
 }

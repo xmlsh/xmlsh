@@ -19,59 +19,60 @@ import java.io.OutputStream;
 import java.util.List;
 
 public class xquote extends XCommand {
-	
+
+	@Override
 	public int run( List<XValue> args ) throws Exception {
 
 		Options opts = new Options( "n,p=port:" ,  SerializeOpts.getOptionDefs());
 		opts.parse(args);
-		
+
 		boolean nolf = opts.hasOpt("n");
 		String port = opts.getOptString("p", null);
-		
-		
+
+
 		OutputPort stdout = 
-			port != null ? getEnv().getOutputPort(port) : 
-			getEnv().getStdout();
-			
-		if( stdout == null )
-			throw new InvalidArgumentException("Output port not found: " + port );
-			
-		SerializeOpts serializeOpts = getSerializeOpts(opts);
-			
-		OutputStream out = stdout.asOutputStream(serializeOpts);
-	
-		
-		args = opts.getRemainingArgs();
-		
-		// If arguments behave like echo and copy args to output stream
-		if( args.size() > 0 ){
-		
-			args = Util.expandSequences( args);
-			boolean bFirst = true;
-			for ( XValue arg : args ){
-					if( ! bFirst )
-						out.write(' ');
-					
-					bFirst = false;
-					arg.serialize( out , serializeOpts );
-			}
-			if( ! nolf )
-				out.write(Util.getNewline(serializeOpts));
-		}
-		// Else copy input to out using text mode exclusively
-		else {
-			
-			InputStream is = getStdin().asInputStream(serializeOpts);
-			Util.copyStream( is, out);
-			is.close();
-			
-		}
-				
+				port != null ? getEnv().getOutputPort(port) : 
+					getEnv().getStdout();
 
-		out.close();
+				if( stdout == null )
+					throw new InvalidArgumentException("Output port not found: " + port );
+
+				SerializeOpts serializeOpts = getSerializeOpts(opts);
+
+				OutputStream out = stdout.asOutputStream(serializeOpts);
 
 
-		return 0;
+				args = opts.getRemainingArgs();
+
+				// If arguments behave like echo and copy args to output stream
+				if( args.size() > 0 ){
+
+					args = Util.expandSequences( args);
+					boolean bFirst = true;
+					for ( XValue arg : args ){
+						if( ! bFirst )
+							out.write(' ');
+
+						bFirst = false;
+						arg.serialize( out , serializeOpts );
+					}
+					if( ! nolf )
+						out.write(Util.getNewline(serializeOpts));
+				}
+				// Else copy input to out using text mode exclusively
+				else {
+
+					InputStream is = getStdin().asInputStream(serializeOpts);
+					Util.copyStream( is, out);
+					is.close();
+
+				}
+
+
+				out.close();
+
+
+				return 0;
 	}
 }
 //

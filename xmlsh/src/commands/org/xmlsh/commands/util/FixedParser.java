@@ -17,7 +17,7 @@ public class FixedParser
 	{
 		int		start ;
 		int		end   ;
-		
+
 		ColSpec( int start , int end ){
 			this.start = start ;
 			this.end = end ;
@@ -27,15 +27,15 @@ public class FixedParser
 			String pair[] = spec.split("-");
 			start = Util.parseInt(pair[0],0);
 			end = pair.length > 1 ?  
-				Util.parseInt(pair[1],0) : 0 ;
-			
+					Util.parseInt(pair[1],0) : 0 ;
+
 		}
-		
-		
+
+
 	};
-	
-	
-	
+
+
+
 	public FixedParser( String colspecs[] , boolean normalize )
 	{
 		bNormalize = normalize;
@@ -43,46 +43,46 @@ public class FixedParser
 		int i = 0;
 		for( String spec : colspecs )
 			mColspecs[i++] = new ColSpec( spec );
-		
-		
+
+
 	}
-	
-	
+
+
 	/**
-     * Parse a single line into String[] each string is 1 csv field
-     */
-     
-     public CSVRecord parseLine( String line ){
-        
-    	 String[] list = new String[ mColspecs.length];
-    	 int col = 0;
-    	 for( ColSpec spec : mColspecs ){
-    		 int start = spec.start - 1;
-    		 int end   = spec.end ;
-    		 
-    		 if( start < 0 )
-    			 start =0;
-    		 
-    		 // Line shorter then start position
-    		 if( start >= line.length() )
-    			 break ;
-    		 
-    		 if( end <= 0 || end > line.length() )
-    			 end = line.length();
-    		 String field = line.substring(start , end );
-    		 if( bNormalize )
-    			 field = field.trim();
-    		 
-    		 list[col++] = field ;
-    		  
-    	 }
-    	 
-        return new CSVRecord( list );
-        
-    }
+	 * Parse a single line into String[] each string is 1 csv field
+	 */
+
+	public CSVRecord parseLine( String line ){
+
+		String[] list = new String[ mColspecs.length];
+		int col = 0;
+		for( ColSpec spec : mColspecs ){
+			int start = spec.start - 1;
+			int end   = spec.end ;
+
+			if( start < 0 )
+				start =0;
+
+			// Line shorter then start position
+			if( start >= line.length() )
+				break ;
+
+			if( end <= 0 || end > line.length() )
+				end = line.length();
+			String field = line.substring(start , end );
+			if( bNormalize )
+				field = field.trim();
+
+			list[col++] = field ;
+
+		}
+
+		return new CSVRecord( list );
+
+	}
 
 
-    
+
 
 }
 //

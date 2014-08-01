@@ -23,33 +23,34 @@ import javax.xml.stream.XMLStreamWriter;
 
 public class xsysinfo extends XCommand {
 
-	
+
+	@Override
 	public int run(  List<XValue> args ) throws Exception {
-	
+
 		Options opts = new Options(SerializeOpts.getOptionDefs() );
 		opts.parse(args);
 		// args = opts.getRemainingArgs();
-	
+
 		OutputPort stdout = getEnv().getStdout();
 		SerializeOpts serializeOpts = getSerializeOpts(opts);
 		XMLStreamWriter writer = stdout.asXMLStreamWriter(serializeOpts);
-	
+
 		writer.writeStartDocument();
 
-		
+
 		writer.writeStartElement("systeminfo");
 		writeNetwork( writer );
 		writer.writeEndElement();
 		writer.writeEndDocument();
 		writer.close();
 		stdout.writeSequenceTerminator(serializeOpts);
-		
+
 		return 0;
-		
-		}
+
+	}
 
 	private void writeNetwork(XMLStreamWriter writer) throws XMLStreamException, SocketException {
-		
+
 		writer.writeStartElement("network");
 		Enumeration<NetworkInterface> all = NetworkInterface.getNetworkInterfaces();
 		while( all.hasMoreElements() ){
@@ -65,16 +66,16 @@ public class xsysinfo extends XCommand {
 				writer.writeAttribute("address" , addr.getHostAddress());
 				writer.writeAttribute("name", addr.getHostName());
 				writer.writeAttribute("loopback", addr.isLoopbackAddress() ? "true" : "false");
-				
-				
-				 
+
+
+
 				writer.writeEndElement();
-				
+
 			}
 			writer.writeEndElement();
 		}
 		writer.writeEndElement();
-		
+
 	}
 
 

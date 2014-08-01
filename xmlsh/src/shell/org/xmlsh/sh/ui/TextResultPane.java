@@ -62,8 +62,8 @@ public class TextResultPane implements ITextAreaComponent {
 		StyleConstants.setItalic(mStdErrAttr, true);
 		StyleConstants.setFontFamily(mStdErrAttr, java.awt.Font.MONOSPACED);
 
-		
-		
+
+
 
 	}
 
@@ -96,6 +96,7 @@ public class TextResultPane implements ITextAreaComponent {
 		}
 	}
 
+	@Override
 	public JTextComponent getTextComponent() {
 		return mText;
 	}
@@ -208,6 +209,7 @@ public class TextResultPane implements ITextAreaComponent {
 	 * }
 	 */
 
+	@Override
 	public void clear() {
 		mText.setContentType(getContentType());
 		mText.setDocument(mText.getEditorKit().createDefaultDocument());
@@ -232,6 +234,7 @@ public class TextResultPane implements ITextAreaComponent {
 	 * 
 	 * @see javax.swing.text.JTextComponent#cut()
 	 */
+	@Override
 	public void cut() {
 		mText.cut();
 	}
@@ -240,6 +243,7 @@ public class TextResultPane implements ITextAreaComponent {
 	 * 
 	 * @see javax.swing.text.JTextComponent#copy()
 	 */
+	@Override
 	public void copy() {
 		mText.copy();
 	}
@@ -248,6 +252,7 @@ public class TextResultPane implements ITextAreaComponent {
 	 * 
 	 * @see javax.swing.text.JTextComponent#paste()
 	 */
+	@Override
 	public void paste() {
 		mText.paste();
 	}
@@ -265,6 +270,7 @@ public class TextResultPane implements ITextAreaComponent {
 	 * 
 	 * @see javax.swing.text.JTextComponent#selectAll()
 	 */
+	@Override
 	public void selectAll() {
 		mText.selectAll();
 	}

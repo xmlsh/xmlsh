@@ -30,39 +30,39 @@ public class CaseClause  extends CompoundCommand {
 		mWord.print(out);
 		out.println( " in ");
 		mList.print(out,bExec);
-		
-		
+
+
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.xmlsh.sh.core.Command#exec(org.xmlsh.sh.shell.Shell)
 	 */
 	@Override
 	public int exec(Shell shell) throws Exception {
-		
+
 		shell.getEnv().saveIO();
 		try {
 			applyRedirect(shell);
-			
+
 			String word = mWord.expandString(shell,mCaseWordEnv,getLocation());
-			
+
 			for( CaseItem item : mList ){
-				
+
 				if( item.matches( shell,  word )){
 					return item.exec( shell );
-					
+
 				}
-				
+
 			}
 			return 1;
 		} finally {
 			shell.getEnv().restoreIO();
 		}
-		
-		
+
+
 	}
-	
-	
+
+
 }
 
 

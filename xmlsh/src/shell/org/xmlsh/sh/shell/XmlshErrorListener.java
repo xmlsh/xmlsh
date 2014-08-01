@@ -15,19 +15,19 @@ import javax.xml.transform.TransformerException;
 public class XmlshErrorListener implements ErrorListener {
 	private Logger mLogger = LogManager.getLogger(XmlshErrorListener.class);
 
-	
+
 	private String formatError( TransformerException e , boolean isFatal )
 	{ 
 		StringBuffer sb  = new StringBuffer();
-		 String errcat = (isFatal ? "Fatal error" : "Error");
-         sb.append(errcat + " reported by XML parser: " + e.getMessage() + '\n');
-         sb.append("  URL:    " + e.getLocator().getSystemId() + '\n');
-         sb.append("  Line:   " + e.getLocator().getLineNumber() + '\n');
-         sb.append("  Column: " + e.getLocator().getColumnNumber() + '\n');
-         return sb.toString();
+		String errcat = (isFatal ? "Fatal error" : "Error");
+		sb.append(errcat + " reported by XML parser: " + e.getMessage() + '\n');
+		sb.append("  URL:    " + e.getLocator().getSystemId() + '\n');
+		sb.append("  Line:   " + e.getLocator().getLineNumber() + '\n');
+		sb.append("  Column: " + e.getLocator().getColumnNumber() + '\n');
+		return sb.toString();
 	}
-	
-	 
+
+
 	@Override
 	public void warning(TransformerException e) throws TransformerException {
 		mLogger.warn(formatError(e ,false));

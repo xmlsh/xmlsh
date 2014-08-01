@@ -7,9 +7,7 @@
 package org.xmlsh.commands.builtin;
 
 import org.xmlsh.core.BuiltinCommand;
-import org.xmlsh.core.AbstractPort;
 import org.xmlsh.core.Options;
-import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.XIOEnvironment;
 import org.xmlsh.core.XValue;
 import org.xmlsh.util.PipedPort;
@@ -19,16 +17,17 @@ import org.xmlsh.util.PipedXDMPort;
 import java.util.List;
 
 public class xmkpipe extends BuiltinCommand {
-	
+
+	@Override
 	public int run( List<XValue> args ) throws Exception {
 
 		Options opts = new Options( "x=xml,s=size:,close"  );
 		opts.parse(args);
-		
 
-		
 
-		
+
+
+
 		args = opts.getRemainingArgs();
 		if( args.size() != 1 ){
 			this.usage("Usage: xmkpipe [-xml] name");
@@ -36,15 +35,15 @@ public class xmkpipe extends BuiltinCommand {
 		}
 		String name = args.get(0).toString();
 		XIOEnvironment ioenv = mShell.getEnv().getSavedIO();
-		
+
 		if( opts.hasOpt("close")){
 			PipedPort port = ioenv.getPipe(name);
 			if( port != null )
 				port.close();
-			
+
 		}
-		
-		
+
+
 
 		PipedPort pipe = null ;
 		if( opts.hasOpt("x"))
@@ -57,11 +56,11 @@ public class xmkpipe extends BuiltinCommand {
 				pipe = new PipedStreamPort(opts.getOptInt("size", 10240));
 			else
 				pipe = new PipedStreamPort();
-		
+
 		if( pipe != null )
 			ioenv.newPipe( name, pipe  );
 
-		
+
 		return 0;
 	}
 }

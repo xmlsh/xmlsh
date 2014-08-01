@@ -20,63 +20,64 @@ import java.util.List;
 import java.util.zip.GZIPInputStream;
 
 public class xgunzip extends XCommand {
-	
+
+	@Override
 	public int run( List<XValue> args )	throws Exception
 	{
-		
+
 
 
 		Options opts = new Options( "f=file:,o=out:" ,  SerializeOpts.getOptionDefs() );
 		opts.parse(args);
-		
+
 		XValue zipfile = opts.getOptValue("f");
-		
+
 		args = opts.getRemainingArgs();
-		
+
 		SerializeOpts serializeOpts = getSerializeOpts(opts);
 
 		InputPort iport = (zipfile == null ? getStdin() : getInput(zipfile));
 		InputStream is = iport.asInputStream(serializeOpts); 
-		
+
 		GZIPInputStream zis = new GZIPInputStream(is);
-		
+
 		XValue xout = opts.getOptValue("out");
-		
+
 		OutputPort oport = this.getOutput(xout, false);
-		
-		
-		
-		
+
+
+
+
 		try {
-		
-		int ret = 0;
-		ret = gunzip( zis , oport.asOutputStream(serializeOpts) , args );
-		
-	
-		zis.close();
-		
-		return ret;
-		
+
+			int ret = 0;
+			ret = gunzip( zis , oport.asOutputStream(serializeOpts) , args );
+
+
+			zis.close();
+
+			return ret;
+
 		} finally {
 			zis.close();
 			is.close();
 		}
-		
+
 
 
 	}
 
 	private int gunzip(GZIPInputStream zis, OutputStream out , List<XValue> args) throws IOException {
-	
-	
-	 byte[] buf = new byte[1024];
-	    int len;
-	    while ((len = zis.read(buf)) > 0)
-	        out.write(buf, 0, len);
-	 
-	    zis.close();
-	    out.close();
-	 
+
+
+		byte[] buf = new byte[1024];
+		int len;
+		while ((len = zis.read(buf)) > 0)
+			out.write(buf, 0, len);
+
+		zis.close();
+		out.close();
+
 
 		return 0;
 	}

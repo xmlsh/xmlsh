@@ -36,27 +36,27 @@ public class more extends XCommand {
 
 	@Override
 	public int run(List<XValue> args) throws Exception {
-		
-		
+
+
 		Options opts = new Options( "l=lines:" , SerializeOpts.getOptionDefs() );
 		opts.parse(args);
 		args = opts.getRemainingArgs();
-		
+
 		mSerial = this.getSerializeOpts(opts);
-		
-		
+
+
 		XValue vlines = getEnv().getVarValue("LINES");
 		if( vlines != null )
 			mLines = (int) vlines.toLong();
-		
+
 		mLines = opts.getOptInt("l", mLines);
-		
-		
-		
+
+
+
 		OutputStream 	stdout = getStdout().asOutputStream(mSerial);
 		if( args.size() > 0 ){
 			for( XValue arg : args ){
-				
+
 				//InputStream in = getInputStream(arg);
 				File inf = getFile(arg);
 				//InputPort ip = this.getInput(arg);
@@ -80,21 +80,21 @@ public class more extends XCommand {
 
 			page( getStdin().asInputStream(mSerial) , stdout );
 		}
-		
+
 		return 0;
 	}
 
 	// pagenate, return true on EOF false on quit
 	private boolean page(InputStream in, OutputStream stdout ) throws IOException {
-		
-		
-		
+
+
+
 		Console con = System.console();
 		if( con == null ){
 			Util.copyStream( in , stdout );
 			return false;
 		}
-		
+
 		int lines = mLines;
 		do {
 			for( int i =0 ; i < lines ; i++ ){
@@ -103,27 +103,27 @@ public class more extends XCommand {
 					return false;
 				stdout.write(l.getBytes(mSerial.getInputTextEncoding()));
 				stdout.write( '\n');
-				
+
 			}
-			
+
 			//if( r.read() == 'q')
 			//	return ;
 			//InputStream is = new FileInputStream(FileDescriptor.in);
 			//is.read();
 			//is.close();
-			
+
 			char[] ret = con.readPassword("---More---");
 			if( ret == null )
 				return false; // EOF
 			if( ret.length == 0 )
 				continue;
-		
+
 			if( ret[0] == 'q' || ret[0] == 'Q')
 				return true ;
-			
-		
+
+
 		} while(true);
-		
+
 	}
 
 }

@@ -21,20 +21,20 @@ public class ShellOpts
 	public boolean mLocation       = true ;       // print location on error
 	public boolean mLocationFormat = defaultLocationFormat() ;      // TODO : convert to enum
 
-	
+
 	SerializeOpts	 mSerialize;
-	
+
 	public ShellOpts( ) {
 		mSerialize = new SerializeOpts();
 	}
 	public static final boolean defaultLocationFormat()
-    {
-		 String format = System.getenv("XLOCFORMAT");
-		 return Util.parseBoolean(format , false);
-    }
+	{
+		String format = System.getenv("XLOCFORMAT");
+		return Util.parseBoolean(format , false);
+	}
 	public ShellOpts( ShellOpts that )
 	{
-	
+
 		mVerbose = that.mVerbose;
 		mExec=  that.mExec ;
 		mXPipe = that.mXPipe;
@@ -42,52 +42,52 @@ public class ShellOpts
 		mLocation = that.mLocation ;
 		mSerialize = new SerializeOpts( that.mSerialize );
 		mLocationFormat = that.mLocationFormat;
-		
-		
+
+
 	}
-	
-	
+
+
 	public void setOption( String opt , boolean on)
 	{
 		if( opt.equals("x"))
 			mExec = on;
 		else
-		if( opt.equals("v"))
-			mLocation = mVerbose = on;
-		else
-		if( opt.equals("xpipe"))
-			mXPipe = on;
-		else
-		if( opt.equals("e"))
-			mThrowOnError = on ;
-		else
-		if( opt.equals("location"))
-			mLocation = on ;
-		else
-			mSerialize.setOption( opt , on);
-		
+			if( opt.equals("v"))
+				mLocation = mVerbose = on;
+			else
+				if( opt.equals("xpipe"))
+					mXPipe = on;
+				else
+					if( opt.equals("e"))
+						mThrowOnError = on ;
+					else
+						if( opt.equals("location"))
+							mLocation = on ;
+						else
+							mSerialize.setOption( opt , on);
+
 	}
 	public void setOption(String opt, XValue value) throws InvalidArgumentException {
-		
+
 		// No shell options take a string value so just defer to serialization options
 		if( opt.equals("location-format"))
-				mLocationFormat = SourceLocation.parseFormat( value );
-		
+			mLocationFormat = SourceLocation.parseFormat( value );
+
 		mSerialize.setOption( opt , value );
-		
+
 	}
 	public void setOption(OptionValue ov) throws InvalidArgumentException {
-		
-		
+
+
 		if( ov.getOptionDef().hasArgs )
 			setOption( ov.getOptionDef().name , ov.getValue() );
 		else	
 			setOption( ov.getOptionDef().name , ov.getFlag() );
-		
+
 	}
-	
-	
-	
+
+
+
 }
 
 

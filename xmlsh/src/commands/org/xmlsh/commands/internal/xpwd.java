@@ -20,10 +20,11 @@ import javax.xml.stream.XMLStreamWriter;
 
 public class xpwd extends XCommand
 {
-	
-	
-	
-	
+
+
+
+
+	@Override
 	public int run(  List<XValue> args )	throws Exception
 	{
 		Options opts = new Options(	SerializeOpts.getOptionDefs() );
@@ -31,29 +32,29 @@ public class xpwd extends XCommand
 		// args = opts.getRemainingArgs();
 
 		XFile file = new XFile(getCurdir());
-		
+
 
 		OutputPort stdout = getStdout();
 		SerializeOpts serializeOpts = getSerializeOpts(opts);
 		XMLStreamWriter writer = stdout.asXMLStreamWriter(serializeOpts);
-		
+
 		writer.writeStartDocument();
-		
+
 		file.serialize(writer,false,false);
-		
+
 		writer.writeEndDocument();
 		writer.close();
-		
+
 		stdout.writeSequenceTerminator(serializeOpts);
 		// stdout.close();
-		
-		
-		
-		
+
+
+
+
 		return 0;
-		
+
 	}
-	
+
 }
 
 //

@@ -17,29 +17,29 @@ import java.util.List;
 
 public class element extends BuiltinFunctionCommand {
 
-	
-	
+
+
 	public element()
 	{
 		super("element");
 	}
-	
+
 	@Override
 	public XValue run(Shell shell, List<XValue> args) throws InvalidArgumentException 
 	{
 		if( args.size() < 1 )
 			throw new InvalidArgumentException("Expected name value");
-		
+
 
 		QName name = args.remove(0).asQName(shell);
-		
+
 		return S9Util.createElement(shell, name ,  args);
-		
-	
-		
-		
-		
-		
+
+
+
+
+
+
 	}
 
 }

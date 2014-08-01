@@ -29,15 +29,16 @@ import javax.xml.stream.XMLStreamWriter;
 
 public class xmd5sum extends XCommand
 {
-	
-	
+
+
 	private static final  String sFile = "file";
 	private static final	String sName = "name";
 	private static final 	String sMd5 = "md5";
 	private static final   String sLen = "length";
 	private static String sDocRoot = "xmd5";
-	
-	
+
+
+	@Override
 	public int run(  List<XValue> args  )	throws Exception
 	{
 		Options opts = new Options("b=binary,x=xml",SerializeOpts.getOptionDefs());
@@ -48,43 +49,43 @@ public class xmd5sum extends XCommand
 		OutputPort stdout = mShell.getEnv().getStdout();	
 
 		SerializeOpts serializeOpts = getSerializeOpts(opts);
-		
-		
+
+
 		out = stdout.asXMLStreamWriter(serializeOpts);
 		out.writeStartDocument();
 		out.writeStartElement(sDocRoot);
-			
 
-		
+
+
 		if( args.isEmpty() )
 			args.add(new XValue("-"));
-		
-		
-		
+
+
+
 		for( XValue arg : args ){
-	
+
 			writeMD5(arg, out, serializeOpts);
-	
-			
+
+
 		}
 		out.writeEndElement();
 		out.writeEndDocument();
 		out.flush();
 		out.close();
-		
+
 		stdout.writeSequenceTerminator(serializeOpts);
-				
+
 		return 0;
-		
-		
+
+
 	}
 
 
 	private void writeMD5(XValue arg, XMLStreamWriter out, SerializeOpts serializeOpts)
 			throws CoreException, IOException, XMLStreamException 
-	{
-		
-		
+			{
+
+
 		/*
 		 * Attempt to safely recurse if a file/directory
 		 */
@@ -98,14 +99,14 @@ public class xmd5sum extends XCommand
 					writeMD5( new XValue( sArg + "/" + child  ),
 							out , 
 							serializeOpts
-					);
-				
+							);
+
 				return ;
 			}
-			
-			
+
+
 		}
-		
+
 		InputPort inp= getInput(arg);
 		try (
 				InputStream in = inp.asInputStream(serializeOpts) ){
@@ -117,15 +118,15 @@ public class xmd5sum extends XCommand
 			out.writeAttribute(sMd5, cs.getMD5());
 			out.writeAttribute(sLen , String.valueOf( cs.getLength()) );
 			out.writeEndElement();
-		
-		
+
+
 		} 
 
-	
-	}
+
+			}
 
 
-	
+
 }
 
 //

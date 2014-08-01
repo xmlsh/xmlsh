@@ -40,6 +40,7 @@ public class json2xml extends XCommand
 	private boolean	            bFirstElement	= true;
 	private int	                depth	      = 0;
 
+	@Override
 	public int run(List<XValue> args) throws Exception
 	{
 		Options opts = new Options("+jsonp,f=format:,p=port:" ,SerializeOpts.getOptionDefs());
@@ -50,20 +51,20 @@ public class json2xml extends XCommand
 		boolean jsonp = opts.getOptFlag("jsonp",false);
 
 		String format = opts.getOptString("format", "jxon");
-		
+
 		OutputPort stdout = getStdout();
 
 		setSerializeOpts(opts);
 
 		InputPort in = args.isEmpty() ? this.getStdin() : this.getInput(args.get(0));
 		XMLStreamWriter sw = null ;
-		
+
 		JSONSerializeOpts jopts = new JSONSerializeOpts();
 		JXConverter converter = JXConverter.getConverter(format,jopts,getSerializeOpts(), args);
-		
+
 		try (
 				InputStream is = in.asInputStream(getSerializeOpts());
-        ) {			
+				) {			
 			if( jsonp ) {
 				String jsonpFunc = Util.skipToByte(is, '(');
 				if( jsonpFunc == null ) {
@@ -71,26 +72,26 @@ public class json2xml extends XCommand
 					return 1;
 				}
 			}
-			 
-		
-													   // Reader, String, byte[]
+
+
+			// Reader, String, byte[]
 			/*
 			 * Assume JSON file is wrapped by an Object
 			 */
-	
+
 			sw = stdout.asXMLStreamWriter(getSerializeOpts());
-		
+
 			converter.convertFromJson( is , sw );
-				
-			
+
+
 		} finally {
-		   Util.safeClose(sw);
+			Util.safeClose(sw);
 		}
 		return 0;
 
 	}
 
-	
+
 
 }
 

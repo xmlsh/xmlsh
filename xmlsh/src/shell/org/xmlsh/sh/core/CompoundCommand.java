@@ -16,23 +16,24 @@ class CompoundCommand extends Command {
 		super();
 	}
 	public CompoundCommand(String name)
-    {
-	  super(name);
-    }
+	{
+		super(name);
+	}
 
+	@Override
 	public	boolean		isSimple() { return false ; }
 
 	public void setRedirect( IORedirectList redir ){
 		mRedirect = redir;
 	}
-	
+
 	protected	void	applyRedirect( Shell shell) throws Exception
 	{
 		if( mRedirect != null )
 			mRedirect.exec(shell, getLocation());
-		
+
 	}
-	
+
 }
 
 //

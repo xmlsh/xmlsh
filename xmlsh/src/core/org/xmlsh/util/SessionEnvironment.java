@@ -13,7 +13,8 @@ import java.util.Map;
 public class SessionEnvironment extends ManagedObject {
 
 	private		Map<String, ManagedObject>		mVars;
-	
+
+	@Override
 	public void close() throws IOException
 	{
 		if( mVars != null ){
@@ -22,13 +23,13 @@ public class SessionEnvironment extends ManagedObject {
 			mVars.clear();
 			mVars = null;
 		}
-		
+
 	}
-	
+
 	/*
 	 * Get a managed object and adds a reference to it
 	 */
-	
+
 	public synchronized ManagedObject	getVar(String key)
 	{
 		if( mVars == null )
@@ -38,7 +39,7 @@ public class SessionEnvironment extends ManagedObject {
 			obj.addRef();
 		return obj;
 	}
-	
+
 	/*
 	 * Sets a Session object and adds a reference
 	 */
@@ -46,11 +47,11 @@ public class SessionEnvironment extends ManagedObject {
 	{
 		if( mVars == null )
 			mVars = new HashMap<>();
-		
-		obj.addRef();
-		mVars.put( key , obj );
-		
-		
+
+			obj.addRef();
+			mVars.put( key , obj );
+
+
 	}
 
 }

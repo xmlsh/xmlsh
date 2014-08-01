@@ -18,6 +18,7 @@ public class BraceGroup extends CompoundCommand {
 		mCommand = command;
 		setLocation( command );
 	}
+	@Override
 	public void print( PrintWriter out, boolean bExec ){
 		out.print("{");
 		mCommand.print(out, bExec);
@@ -37,10 +38,10 @@ public class BraceGroup extends CompoundCommand {
 			shell.getEnv().restoreIO();
 		}
 
-	
+
 	}
-	
-	
+
+
 
 }
 

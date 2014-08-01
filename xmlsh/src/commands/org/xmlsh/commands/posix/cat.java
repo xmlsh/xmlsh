@@ -32,15 +32,15 @@ public class cat extends XCommand {
 
 	@Override
 	public int run(List<XValue> args) throws Exception {
-		
+
 		Options opts = new Options( "" , SerializeOpts.getOptionDefs()  );
 		opts.parse(args);
 		args = opts.getRemainingArgs();
-		 
+
 		OutputStream 	stdout = getStdout().asOutputStream(getSerializeOpts(opts));
 		if( args.size() > 0 ){
 			for( XValue arg : args ){
-				
+
 				//InputStream in = getInputStream(arg);
 				File inf = getFile(arg);
 				//InputPort ip = this.getInput(arg);
@@ -53,7 +53,7 @@ public class cat extends XCommand {
 					this.printErr("File not readable: " + arg.toString());
 					continue;
 				}
-				 InputStream  in= new FileInputStream( inf );
+				InputStream  in= new FileInputStream( inf );
 				Util.copyStream( in , stdout );
 				in.close();
 				// ip.close();
@@ -61,7 +61,7 @@ public class cat extends XCommand {
 		}
 		else
 			Util.copyStream( getStdin().asInputStream(getSerializeOpts(opts)) , stdout );
-		
+
 		return 0;
 	}
 

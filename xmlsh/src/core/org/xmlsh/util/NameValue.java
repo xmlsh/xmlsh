@@ -9,7 +9,7 @@ package org.xmlsh.util;
 public class NameValue<T> implements   INameValue<T> {
 	private final String		name;
 	private final T            value;
-	
+
 	public NameValue(String name,T value) {
 		this.name = name ;
 		this.value = value ;

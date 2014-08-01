@@ -17,14 +17,15 @@ public class SafeXMLStreamWriter extends StreamWriterDelegate {
 
 	public SafeXMLStreamWriter(XMLStreamWriter out) {
 		super(out);
-		
+
 	}
 
-    public Object getProperty(String name) throws IllegalArgumentException
-    {
-        return null;
-    }
-    
+	@Override
+	public Object getProperty(String name) throws IllegalArgumentException
+	{
+		return null;
+	}
+
 	/* (non-Javadoc)
 	 * @see javanet.staxutils.helpers.StreamWriterDelegate#writeAttribute(java.lang.String, java.lang.String)
 	 */
@@ -53,7 +54,7 @@ public class SafeXMLStreamWriter extends StreamWriterDelegate {
 		// TODO Auto-generated method stub
 		super.writeAttribute(prefix, namespaceURI, localName, Util.notNull(value));
 	}
-	
+
 
 }
 

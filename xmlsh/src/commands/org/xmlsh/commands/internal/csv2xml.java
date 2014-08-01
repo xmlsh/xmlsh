@@ -38,21 +38,22 @@ import javax.xml.stream.XMLStreamWriter;
  *  -skip lines	Skip # lines before reading header or data ||
  *  -trim		Trim the output by ignoring any data after the last column specified in -colnames or -header
  *  -max 	#	Combine the data in the last field by ignoring any more delimiters after the # of fields is specifed, or if # is <=0 then use the number of colums
-*/
+ */
 
 public class csv2xml extends XCommand
 {
 
-	
+
+	@Override
 	public int run(  List<XValue> args )	throws Exception
 	{
 
-		
+
 
 		Options opts = new Options( "root:,row:,col:,header,attr,delim:,quote:,colnames:,tab,skip:,trim,max:", SerializeOpts.getOptionDefs() );
 		opts.parse(args);
 		setSerializeOpts(opts);
-		
+
 		// root node
 		String root = opts.getOptString("root", "root");
 		String row = opts.getOptString("row", "row");
@@ -64,58 +65,58 @@ public class csv2xml extends XCommand
 		int	skip = Util.parseInt(opts.getOptString("skip", "0"),0);
 		boolean bTrim = opts.hasOpt("trim"); 
 		int maxFields = Util.parseInt(opts.getOptString("max", "0"),0);
-		
+
 		// -tab overrides -delim
 		if( opts.hasOpt("tab"))
 			delim = "\t";
-		
-		
+
+
 		List<XValue> xvargs = opts.getRemainingArgs();
-		
-		
-		
-		
-// Output XML
+
+
+
+
+		// Output XML
 
 		OutputPort stdout = getStdout();
 
-		
+
 		XMLStreamWriter writer = stdout.asXMLStreamWriter(getSerializeOpts());
-		
+
 		writer.writeStartDocument();
-		
-		
+
+
 		writer.writeStartElement(root);
-		
-// Input is stdin and/or list of commands
-		
+
+		// Input is stdin and/or list of commands
+
 		Reader ir = null;
 		if( xvargs.size() == 0 )
 			ir = getStdin().asReader(getSerializeOpts());
 		else
 			ir = getInput( xvargs.get(0) ).asReader(getSerializeOpts());
-		
-		
+
+
 		CSVParser parser = new CSVParser( delim.charAt(0), quote.charAt(0) , maxFields );
-		
+
 		while( skip-- > 0 )
 			readLine(ir);
-		
-		
+
+
 		CSVRecord header = null ;
 		if( bHeader ){
 			String line = readLine(ir);
 			if( line != null )
 				header = parser.parseLine(line);
 		} 
-		
+
 		// Even if bHeader override the colnames
 		if( opts.hasOpt("colnames")){
 			header = parseCols( opts.getOptValue("colnames"));
 		}
-		
 
-		
+
+
 		String line;
 		while( (line = readLine(ir)) != null ){
 			CSVRecord csv = parser.parseLine(line);
@@ -125,41 +126,41 @@ public class csv2xml extends XCommand
 		writer.writeEndDocument();
 		writer.flush();
 		writer.close();
-		
+
 		ir.close();
 		stdout.writeSequenceTerminator(getSerializeOpts());
-		
-		
+
+
 		return 0;
-		
+
 	}
 
 
 
 	private CSVRecord parseCols(XValue cols) {
-		
+
 		if( cols.isAtomic() )
 			return new CSVRecord( Arrays.asList( cols.toString().split(",")));
 		else
 			return new CSVRecord(cols.asStringList());
-		
-		
+
+
 	}
 
 
 
 
 	private void addElement(
-		XMLStreamWriter writer, 
-		CSVRecord csv ,
-		String row, 
-		String col, 
-		boolean battr,
-		CSVRecord header, 
-		boolean bTrim
-	) throws  XMLStreamException 
-	{
-		
+			XMLStreamWriter writer, 
+			CSVRecord csv ,
+			String row, 
+			String col, 
+			boolean battr,
+			CSVRecord header, 
+			boolean bTrim
+			) throws  XMLStreamException 
+			{
+
 		writer.writeStartElement(row);
 		// Attribute normal format
 		if( battr ){
@@ -168,8 +169,8 @@ public class csv2xml extends XCommand
 				if( name != null )
 					writer.writeAttribute(name,csv.getField(i));
 			}
-			
-			
+
+
 		} else {
 
 
@@ -180,20 +181,20 @@ public class csv2xml extends XCommand
 					writer.writeCharacters(csv.getField(i));
 					writer.writeEndElement();
 				}
-				
+
 			}
-			
+
 		}
 		writer.writeEndElement();
-		
-	}
+
+			}
 
 
 	private String getColName(int i, String col, CSVRecord header, boolean bTrim ) {
 		if( header != null  ){
 			if( header.getNumFields() <= i )
 				return bTrim ? null : col ;
-		
+
 			return toXmlName( header.getField(i));
 		}
 		else
@@ -210,10 +211,10 @@ public class csv2xml extends XCommand
 
 			return toXmlName( header.getField(i));
 		}
-		
+
 		else
 			return col + (i + 1)  ;
-		
+
 	}
 
 
@@ -227,7 +228,7 @@ public class csv2xml extends XCommand
 	private String readLine(Reader ir) throws IOException {
 		return Util.readLine(ir);
 	}
-	
+
 }
 
 //

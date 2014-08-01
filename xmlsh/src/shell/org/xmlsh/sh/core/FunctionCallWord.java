@@ -39,6 +39,7 @@ public class FunctionCallWord extends Word
 
 	}
 
+	@Override
 	public void print(PrintWriter out)
 	{
 		out.print(mFunction);
@@ -49,11 +50,13 @@ public class FunctionCallWord extends Word
 
 	}
 
+	@Override
 	public boolean isEmpty()
 	{
 		return Util.isEmpty(mFunction);
 	}
 
+	@Override
 	public String toString()
 	{
 		Writer sw = new StringWriter();
@@ -71,8 +74,8 @@ public class FunctionCallWord extends Word
 
 	@Override
 	protected ParseResult expandToResult(Shell shell, EvalEnv env, SourceLocation loc, ParseResult result)
-	        throws IOException, CoreException
-	{
+			throws IOException, CoreException
+			{
 
 		// Try builtin functions first
 		IFunction func = CommandFactory.getInstance().getBuiltinFunction(shell, mFunction, loc);
@@ -105,7 +108,7 @@ public class FunctionCallWord extends Word
 				throw (IOException) e;
 			throw new CoreException(e);
 		}
-	}
+			}
 
 }
 

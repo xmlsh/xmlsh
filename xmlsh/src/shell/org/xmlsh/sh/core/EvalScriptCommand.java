@@ -22,14 +22,15 @@ import java.io.PrintWriter;
 
 public class EvalScriptCommand extends Command {
 	private String			mCommand;
-	
+
+	@Override
 	public	boolean		isSimple() { return true ; }
-	
+
 	public EvalScriptCommand( String command)
 	{
 		super( Util.simpleName( command, "<script>" ));
 		mCommand = command;
-		
+
 	}
 
 
@@ -50,30 +51,30 @@ public class EvalScriptCommand extends Command {
 	 */
 	@Override
 	public int exec(Shell shell) throws Exception {
-		
+
 		// Commands run in a sub shell
-		
-		
+
+
 		shell = shell.clone();
 		ICommand cmd = null;
 		try {
 			cmd = new ScriptCommand( mCommand , shell.getSerializeOpts() );
 			return cmd.run(  shell, "", null );
-			
+
 		} finally {
 
 			if( cmd == null ){
 				SourceLocation loc = getLocation();
 				if( loc != null )
 					shell.printErr(loc.toString());
-				
+
 				shell.printErr(mCommand + ": not found");
 				return 1;
-				
+
 			}	
 			shell.close();
 		}
-		
+
 	}
 }
 

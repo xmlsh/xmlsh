@@ -20,7 +20,7 @@ public class TextAreaComponent extends JTextArea implements ITextAreaComponent {
 	@Override
 	public void addText(String text, String port ) {
 		super.append(text);
-		
+
 	}
 
 	@Override
@@ -30,8 +30,8 @@ public class TextAreaComponent extends JTextArea implements ITextAreaComponent {
 
 	@Override
 	public void clear() {
-		 setText("");
-		
+		setText("");
+
 	}
 
 }

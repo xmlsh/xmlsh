@@ -14,9 +14,9 @@ package org.xmlsh.core;
 
 public interface IXValueOutputStream 
 {
-	
+
 	void	write( XValue value ) throws CoreException;
-	
+
 }
 
 

@@ -18,11 +18,11 @@ import java.util.List;
 
 public class Path implements Iterable<String> {
 	List<String>	mPaths = new ArrayList<String>();
-	
+
 	// Empty path
 	public Path( ) {
 	}
-	
+
 	// Path populated with list of paths from a XValue which could be a sequence
 	public Path( XValue pathVar)
 	{
@@ -32,41 +32,42 @@ public class Path implements Iterable<String> {
 			mPaths.add( v.toString() );
 		}
 	}
-	
+
 	public Path( String[] vars )
 	{
 		for( String v : vars )
 			mPaths.add(v);
 	}
-	
+
 	public Path( String path , String sep )
 	{
 		this( path.split(sep));
 	}
-	
-	
+
+
 
 	public void	add( String path )
 	{
 		mPaths.add(path);
 	}
-	
+
 	public void 	addAll( String[] paths)
 	{
 		for( String path : paths ){
 			add( path );
 		}
 	}
-	
+
+	@Override
 	public Iterator<String> iterator() { return mPaths.iterator() ; }
-	
-	
+
+
 	public String[] getPaths()
 	{ 
 		return mPaths.toArray( new String[mPaths.size()]);
 	}
-	
-	
+
+
 	public 	File	getFirstFileInPath( Shell shell , String fname ) throws IOException
 	{
 		for ( String path  : mPaths ) {
@@ -76,7 +77,7 @@ public class Path implements Iterable<String> {
 				return target;
 		}
 		return null;
-		
+
 	}
 
 	/*
@@ -92,7 +93,7 @@ public class Path implements Iterable<String> {
 			if( sb.length() > 0 )
 				sb.append(File.pathSeparator);
 			sb.append(s);
-			
+
 		}
 		return sb.toString();
 	}

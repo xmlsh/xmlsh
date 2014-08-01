@@ -39,91 +39,100 @@ public class EvalUtils
 		if(varname.equals("#"))
 			return new XValue(shell.getArgs().size());
 		else
-		// Special vars
-		if(varname.equals("$"))
-			return new XValue(Thread.currentThread().getId());
-		else if(varname.equals("?"))
-			return new XValue(shell.getStatus());
-		else if(varname.equals("!")) {
+			// Special vars
+			if(varname.equals("$"))
+				return new XValue(Thread.currentThread().getId());
+			else if(varname.equals("?"))
+				return new XValue(shell.getStatus());
+			else if(varname.equals("!")) {
 
-			return new XValue(shell.getLastThreadId());
-		}
-
-		else {
-			// ${#var} notation
-			if(varname.startsWith("#")) {
-				varname = varname.substring(1);
-				XVariable var = shell.getEnv().getVar(varname);
-				if(var == null)
-					return new XValue(0);
-				return new XValue( var.getSize());
-
-
+				return new XValue(shell.getLastThreadId());
 			}
 
-			// Get the XVariable
-			String ind = null; // [ind] expr
-			String tie = null; // :tie expr
+			else {
+				// ${#var} notation
+				if(varname.startsWith("#")) {
+					varname = varname.substring(1);
+					XVariable var = shell.getEnv().getVar(varname);
+					if(var == null)
+						return new XValue(0);
+					return new XValue( var.getSize());
 
-			// Strip off tie expr
-			if(varname.contains(":")) {
-				int as = varname.indexOf(':');
-				if(as > 0) {
-					tie = varname.substring(as + 1);
+
+				}
+
+				// Get the XVariable
+				String ind = null; // [ind] expr
+				String tie = null; // :tie expr
+
+				// Strip off tie expr
+				if(varname.contains(":")) {
+					int as = varname.indexOf(':');
+					if(as > 0) {
+						tie = varname.substring(as + 1);
+						varname = varname.substring(0, as);
+					}
+
+				}
+
+				// Look for array notation
+				// ${var[3]}
+				if(varname.contains("[")) {
+					int as = varname.indexOf('[');
+					ind = varname.substring(as + 1, varname.indexOf(']')).trim();
+					/*
+					 * Expand index if it starts with "$"
+					 */
+					if(ind.startsWith("$")) {
+						XValue indv = evalVar(shell, ind.substring(1));
+						if(indv != null)
+							ind = indv.toString();
+
+					}
 					varname = varname.substring(0, as);
 				}
 
-			}
+				if(Util.isInt(varname, false)) {
+					int n = Util.parseInt(varname, -1);
+					if(n == 0)
+						return new XValue(shell.getArg0());
+					else if(n > 0 && n <= shell.getArgs().size()) {
+						XValue value = shell.getArgs().get(n - 1);
+						return ind == null ? value : getIndexedValue( value , ind );
 
-			// Look for array notation
-			// ${var[3]}
-			if(varname.contains("[")) {
-				int as = varname.indexOf('[');
-				ind = varname.substring(as + 1, varname.indexOf(']')).trim();
-				/*
-				 * Expand index if it starts with "$"
-				 */
-				if(ind.startsWith("$")) {
-					XValue indv = evalVar(shell, ind.substring(1));
-					if(indv != null)
-						ind = indv.toString();
-
+					} else
+						return null; // unfound args, do not get used,
 				}
-				varname = varname.substring(0, as);
+
+
+				XVariable var = shell.getEnv().getVar(varname);
+				if(var == null)
+					return null;
+				if( ind == null && tie == null )
+					return var.getValue();
+				else
+					return var.getValue(shell, ind, tie );
 			}
-
-			if(Util.isInt(varname, false)) {
-				int n = Util.parseInt(varname, -1);
-				if(n == 0)
-					return new XValue(shell.getArg0());
-				else if(n > 0 && n <= shell.getArgs().size()) {
-					XValue value = shell.getArgs().get(n - 1);
-					return ind == null ? value : getIndexedValue( value , ind );
-
-				} else
-					return null; // unfound args, do not get used,
-			}
-
-			
-			XVariable var = shell.getEnv().getVar(varname);
-			if(var == null)
-				return null;
-			if( ind == null && tie == null )
-				return var.getValue();
-			else
-				return var.getValue(shell, ind, tie );
-		}
 	}
 
 	public static XValue getIndexedValue(XValue xvalue, String ind) throws CoreException
-    {
-        ITypeFamily tf = xvalue.typeFamilyInstance();
-        if( tf == null )
-        	return xvalue ;
+	{
+		assert( xvalue != null );
+		assert( ! Util.isBlank(ind));
 
-        xvalue = tf.getValue( xvalue , ind );
-        return xvalue ;
-    }
+		if( xvalue == null )
+			return XValue.nullValue();
+		if( Util.isBlank(ind))
+			return xvalue ;
+
+		ITypeFamily tf = xvalue.typeFamilyInstance();
+		if( tf == null )
+			return xvalue ;
+
+		Object obj =  xvalue.asObject() ;
+		xvalue = tf.getMethods(obj.getClass()).getXValue(obj, ind );
+		return xvalue ;
+	}
 
 	/*
 	 * Recursively Expand a possibly multi-level wildcard rooted at a directory
@@ -210,7 +219,7 @@ public class EvalUtils
 
 		}
 	}
-	
+
 	public static ParseResult expandStringToResult(Shell shell,String value , EvalEnv env, SourceLocation loc , ParseResult result ) throws IOException, CoreException {
 		Expander e = new Expander( shell , loc );
 		return e.expandStringToResult(value, env, result == null ? new ParseResult(shell) : result );
@@ -220,19 +229,19 @@ public class EvalUtils
 		Expander e = new Expander( shell , loc );
 		return  e.expandValueToResult(xv, env  , result == null ? new ParseResult(shell) : result  );
 	}
-	
-	
+
+
 	public static List<XValue> expandResultToList(Shell shell, ParseResult result , EvalEnv env, SourceLocation loc  ) throws IOException, CoreException {
 		Expander e = new Expander( shell , loc );
 		return e.expandResultToList( env, result  );
 	}
-	
+
 	public static List<XValue> expandValueToList(Shell shell, XValue xv , EvalEnv env, SourceLocation loc  ) throws IOException, CoreException {
 		Expander e = new Expander( shell , loc );
 		return e.expandResultToList( env, e.expandValueToResult(xv, env  , new ParseResult(shell) ) );
 	}
-	
-	
+
+
 	public static List<XValue> expandStringToList(Shell shell, String s , EvalEnv env, SourceLocation loc  ) throws IOException, CoreException {
 		Expander e = new Expander( shell , loc );
 		return  e.expandStringToList(s, env   );
@@ -259,16 +268,16 @@ public class EvalUtils
 
 	// Converts a List<XValue> into single XValue 
 	public static XValue expandListToValue(EvalEnv env, List<XValue> ret)
-    {
-	    if( ret.size() == 0 )
+	{
+		if( ret.size() == 0 )
 			return new XValue(  env.omitNulls() ? null : XdmEmptySequence.getInstance());
 		else
 			if( ret.size() == 1 )
 				return ret.get(0);
 
 		return new XValue( ret );
-    }
-	
+	}
+
 	public static ParseResult expandListToResult(Shell shell , List<XValue> list , EvalEnv env, SourceLocation loc ) throws IOException, CoreException
 	{
 		Expander e = new Expander( shell , loc );
@@ -278,16 +287,16 @@ public class EvalUtils
 		return result ;
 	}
 
-	
-	
-	
-	
+
+
+
+
 	public	static XValue	 expandResultToValue( Shell shell ,  ParseResult result , EvalEnv env, SourceLocation loc ) throws IOException, CoreException {
 		List<XValue> ret = expandResultToList(shell,result, env, loc  );
 		return expandListToValue(env, ret);
 
 	}
-	
+
 
 	public static int readToMatching( String arg , int i , StringBuffer sbv , char match )
 	{
@@ -310,8 +319,8 @@ public class EvalUtils
 		return i;
 	}
 
-	
-	
+
+
 	public static XValue splitStringToValue(Shell shell, String word, EvalEnv env) throws IOException
 	{
 		// if expand word then need to do IFS splitting
@@ -321,58 +330,58 @@ public class EvalUtils
 			return new XValue( word);
 	}
 
-	
+
 	public static ParseResult splitStringToResult(Shell shell, String word, EvalEnv env, SourceLocation loc, ParseResult result) throws IOException, CoreException
 	{
 		Expander e = new Expander( shell , loc );
 		// if expand word then need to do IFS splitting
 		if( env.expandWords() && ! env.preserveValue() ) {
 			for( String s : shell.getIFS().split(word) )
-			   result = e.expandStringToResult(s, env, result);
+				result = e.expandStringToResult(s, env, result);
 		}
 		else
 			e.expandStringToResult(word, env, result);
 		return result ;
-		
-		
+
+
 	}
 
 	/*
 	 * Evaluate a variable and return either a list of zero or more values
 	 */
-	
+
 	public static List<XValue> evalVar(Shell shell, String var, CharAttr attr ) throws IOException, CoreException {
-	
+
 		XValue v = evalVar(shell, var);
 		if( v == null )
 			return null ; 
 		if(  attr.isPreserve() || ! v.isAtomic() )
 			return Collections.singletonList( v );
-		
-	
+
+
 		// Non tong null values go away
 		if( ! attr.isPreserve() && v.isNull())
-		   return null;   
-		
+			return null;   
+
 		// Java objects are not mucked with
 		if( v.isObject() )
 			return Collections.singletonList( v );
-	
-		
+
+
 		List<String> fields;
 		if(  attr.isQuote()  || ! v.isString() )
 			return Collections.singletonList( v );
-	
+
 		String s = v.toString();
 		// Extract fields
 		fields = shell.getIFS().split(s );
 		if( Util.isEmpty(fields))
 			return null ;
-		
-	     // Try to preserve original value
+
+		// Try to preserve original value
 		if( fields.size() == 1 &&  Util.isEqual(fields.get(0),s)  )
-				return Collections.singletonList(v);
-		
+			return Collections.singletonList(v);
+
 		List<XValue> xv = new ArrayList<XValue>( fields.size());
 		for( String f : fields ) {
 			if( Util.isEmpty(f))
@@ -380,19 +389,20 @@ public class EvalUtils
 			xv.add( new XValue(f ));
 		}
 		return xv;
-	
+
 	}
 
 	public static int getSize(XValue xvalue)
-    {
+	{
 		if( xvalue == null || xvalue.isNull() )
 			return 0;
-        ITypeFamily tf = xvalue.typeFamilyInstance();
-        if( tf == null )
-        	return 0;
-        assert( tf != null );
-        return tf.getSize( xvalue.asObject() );
-    }
+		ITypeFamily tf = xvalue.typeFamilyInstance();
+		if( tf == null )
+			return 0;
+		assert( tf != null );
+		Object obj =  xvalue.asObject() ;
+		return tf.getMethods(obj.getClass()).getSize(obj);
+	}
 
 }
 

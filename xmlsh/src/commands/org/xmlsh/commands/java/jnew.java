@@ -17,25 +17,25 @@ public class jnew extends BuiltinFunctionCommand {
 
 	public jnew() {
 		super("jnew");
-	
+
 	}
 
 	@Override
 	public XValue run(Shell shell, List<XValue> args) throws Exception {
-		
-		
-		
+
+
+
 		String classname = args.remove(0).toString();
-		
+
 
 		ClassLoader classloader =shell.getClassLoader(null);
-		
+
 
 		XValue obj = null;
 		obj = JavaUtils.newXValue(classname, args, classloader);
 		return obj;
 
-		
+
 	}
 
 }

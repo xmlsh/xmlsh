@@ -16,18 +16,18 @@ import java.nio.charset.Charset;
 import java.util.List;
 
 public class SerializeOpts {
-    
-    public final static SerializeOpts defaultOpts = new SerializeOpts();
-    
-    
+
+	public final static SerializeOpts defaultOpts = new SerializeOpts();
+
+
 	private 	boolean		indent	= true ;
 	private		boolean		omit_xml_declaration = true ;
 	private		String		input_xml_encoding = "UTF-8"; // default encoding
 	private		String 	 	input_text_encoding = System.getProperty("file.encoding");
-	
+
 	private		String		output_xml_encoding = input_xml_encoding;
 	private		String 	 	output_text_encoding = input_xml_encoding ;
-	
+
 	private		boolean		supports_dtd = true ;
 	private 	boolean		xinclude = false ;
 	private		String		content_type = "text/plain";
@@ -37,28 +37,29 @@ public class SerializeOpts {
 	private    boolean    serialize_xml = false ;
 	private    boolean    igncr = Util.isWindows(); // Affect reading of scripts, files with $(< ) and command output with $()
 
-	
-	
+
+
 	/*
 	 * Parsed standardized serialization option definitions
 	 */
 	private static final List<Options.OptionDef>  mOptionDefs =		
-		Options.parseDefs("+igncr,+force-text,+indent,+omit-xml-declaration,encoding:,text-encoding:,input-encoding:,output-encoding:,xml-encoding:,+xinclude,content-type:,method:,+supports-dtd,sequence-sep:,sequence-term:,input-xml-encoding:,output-xml-encoding:,input-text-encoding:,output-text-encoding:" );
-			
-			
+			Options.parseDefs("+igncr,+force-text,+indent,+omit-xml-declaration,encoding:,text-encoding:,input-encoding:,output-encoding:,xml-encoding:,+xinclude,content-type:,method:,+supports-dtd,sequence-sep:,sequence-term:,input-xml-encoding:,output-xml-encoding:,input-text-encoding:,output-text-encoding:" );
+
+
 	public static List<Options.OptionDef> getOptionDefs() { return mOptionDefs ; }
-	
+
 	public SerializeOpts() {}
-	
+
+	@Override
 	public SerializeOpts clone()
 	{
 		return new SerializeOpts(this);
 	}
-	
-	
-	
+
+
+
 	public SerializeOpts( SerializeOpts that ) {
-		
+
 		indent = that.indent;
 		omit_xml_declaration = that.omit_xml_declaration;
 		input_xml_encoding = that.input_xml_encoding;
@@ -76,26 +77,26 @@ public class SerializeOpts {
 		igncr = that.igncr;
 
 	}
-	
+
 	/*
 	 * Set serialize options based on a parsed options 
 	 */
 	public void setOptions( Options opts ) throws InvalidArgumentException
 	{
-			for( OptionValue ov : opts.getOpts() )
-				setOption( ov );
-		
+		for( OptionValue ov : opts.getOpts() )
+			setOption( ov );
+
 	}
-	
-	
-	
-	
+
+
+
+
 
 	public boolean isIndent() {
 		return indent;
 	}
 
-	
+
 	public boolean isOmit_xml_declaration() {
 		return omit_xml_declaration;
 	}
@@ -114,69 +115,69 @@ public class SerializeOpts {
 	public String getInputTextEncoding() {
 		return input_text_encoding;
 	}
-	
+
 	public String getOutputTextEncoding() {
 		return output_text_encoding;
 	}
-	
+
 
 	public void setOption(OptionValue ov) throws InvalidArgumentException {
-		
-		
+
+
 		if( ov.getOptionDef().hasArgs )
 			setOption( ov.getOptionDef().name , ov.getValue() );
 		else	
 			setOption( ov.getOptionDef().name , ov.getFlag() );
-		
+
 	}
-	
-	
+
+
 	public void setOption( String name , boolean value )
 	{
 		if( name.equals("omit-xml-declaration" ) )
 			omit_xml_declaration = value;
 		else
-		if( name.equals("indent"))
-			indent = value ;
-		else
-		if( name.equals("xinclude"))
-			xinclude = value;
-		else
-		if( name.equals("supports-dtd"))
-			supports_dtd = value ;
-		else
-		if( name.equals("serialize-xml"))
-	        serialize_xml = value ;
-		else
-			if( name.equals("igncr"))
-				igncr = value ;
-		
-		
+			if( name.equals("indent"))
+				indent = value ;
+			else
+				if( name.equals("xinclude"))
+					xinclude = value;
+				else
+					if( name.equals("supports-dtd"))
+						supports_dtd = value ;
+					else
+						if( name.equals("serialize-xml"))
+							serialize_xml = value ;
+						else
+							if( name.equals("igncr"))
+								igncr = value ;
+
+
 	}
-	
+
 
 	public void setOption(String opt, XValue value) throws InvalidArgumentException {
-		
+
 		// If 'encoding' set both text and xml encoding
 		// if text-encoding then set text encoding only
 		// if xml-encoding then set xml encoding only 
-		
-		
-			
-		
+
+
+
+
 		if( opt.equals("text-encoding") || opt.equals("input-text-encoding") || opt.equals("encoding"))
 			setInputTextEncoding(value.toString());
 
 		if( opt.equals("text-encoding") || opt.equals("output-text-encoding") || opt.equals("encoding"))
 			setOutputTextEncoding(value.toString());
 
-		
+
 		if( opt.equals("xml-encoding") || opt.equals("input-xml-encoding") || opt.equals("encoding") )
 			setInputXmlEncoding(value.toString());
-		
+
 		if( opt.equals("xml-encoding") || opt.equals("output-xml-encoding") || opt.equals("encoding") )
 			setOutputXmlEncoding(value.toString());
-		
+
 		if( opt.equals("input-encoding")){
 			setInputTextEncoding( value.toString());
 			setInputXmlEncoding( value.toString());
@@ -185,20 +186,20 @@ public class SerializeOpts {
 			setOutputTextEncoding( value.toString());
 			setOutputXmlEncoding( value.toString());
 		}
-		
+
 		if( opt.equals("content-type"))
 			setContent_type(value.toString());
 		else
-		if(opt.equals("method"))
-			setMethod( value.toString());
-		else
-		if(opt.equals("sequence-sep"))
-			setSequence_sep( value.toString() );
-		else
-		if(opt.equals("sequence-term"))
-			setSequence_term( value.toString() );
-			
-		
+			if(opt.equals("method"))
+				setMethod( value.toString());
+			else
+				if(opt.equals("sequence-sep"))
+					setSequence_sep( value.toString() );
+				else
+					if(opt.equals("sequence-term"))
+						setSequence_term( value.toString() );
+
+
 	}
 
 	/**
@@ -220,7 +221,7 @@ public class SerializeOpts {
 	 * @throws InvalidArgumentException 
 	 */
 	public void setInputXmlEncoding(String enc) throws InvalidArgumentException {
-		
+
 		if( ! Charset.isSupported(enc))
 			throw new InvalidArgumentException("encoding not supported: " + enc);
 		input_xml_encoding = enc ;
@@ -228,23 +229,23 @@ public class SerializeOpts {
 	}
 
 	public void setOutputXmlEncoding(String enc) throws InvalidArgumentException {
-		
+
 		if( ! Charset.isSupported(enc))
 			throw new InvalidArgumentException("encoding not supported: " + enc);
 		output_xml_encoding = enc ;
 
 	}
-	
-	
+
+
 	public void setInputTextEncoding(String enc) throws InvalidArgumentException {
-		
+
 		if( ! Charset.isSupported(enc))
 			throw new InvalidArgumentException("encoding not supported: " + enc);
 		input_text_encoding = enc ;
 
 	}
 	public void setOutputTextEncoding(String enc) throws InvalidArgumentException {
-		
+
 		if( ! Charset.isSupported(enc))
 			throw new InvalidArgumentException("encoding not supported: " + enc);
 		output_text_encoding = enc ;
@@ -309,7 +310,7 @@ public class SerializeOpts {
 			this.method = method;
 		else
 			throw new InvalidArgumentException("Invalid value for serialization method: must be xml, html, xhtml, text");
-		
+
 	}
 
 	/**
@@ -425,8 +426,8 @@ public class SerializeOpts {
 	{
 		this.igncr = igncr;
 	}
-	
-	
+
+
 }
 
 

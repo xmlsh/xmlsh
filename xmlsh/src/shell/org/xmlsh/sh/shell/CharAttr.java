@@ -22,20 +22,20 @@ public enum CharAttr {
 
 	public boolean isQuote() { 
 		return isSet( (ATTR_SOFT_QUOTE.attr|ATTR_HARD_QUOTE.attr ) ); 
-		}
+	}
 	public byte attr() { return (byte) this.attr ; }
 
-	
+
 	public static CharAttr valueOf(char c)
-    {
-        if( c == '\'')
-        	return ATTR_HARD_QUOTE ;
-        else
-        if( c == '\"')
-    	  return ATTR_SOFT_QUOTE;
-        else
-        	return ATTR_NONE ;
-    }
+	{
+		if( c == '\'')
+			return ATTR_HARD_QUOTE ;
+		else
+			if( c == '\"')
+				return ATTR_SOFT_QUOTE;
+			else
+				return ATTR_NONE ;
+	}
 
 	public boolean isSet( CharAttr ca ) {
 		return ( attr & ca.attr) != 0;
@@ -53,21 +53,21 @@ public enum CharAttr {
 		return c == '\'' || c == '"';
 	}
 	public boolean isHardQuote()
-    {
-        return  isSet(ATTR_HARD_QUOTE);
-    }
+	{
+		return  isSet(ATTR_HARD_QUOTE);
+	}
 	public boolean isSoftQuote()
-    {
-        return  isSet(ATTR_SOFT_QUOTE);
-    }
+	{
+		return  isSet(ATTR_SOFT_QUOTE);
+	}
 	public boolean isEscaped()
-    {
-        return  isSet(ATTR_ESCAPED);
-    }
+	{
+		return  isSet(ATTR_ESCAPED);
+	}
 	public boolean isPreserve()
-    {
-        return isSet( ATTR_PRESERVE );
-    }
+	{
+		return isSet( ATTR_PRESERVE );
+	}
 }
 
 

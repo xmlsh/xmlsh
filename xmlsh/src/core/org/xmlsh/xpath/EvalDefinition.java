@@ -13,7 +13,7 @@ import net.sf.saxon.value.SequenceType;
 
 public class EvalDefinition extends ExtensionFunctionDefinition {
 
-	
+
 	public static final String kXMLSH_EXT_NAMESPACE = "http://www.xmlsh.org/extfuncs";
 
 	@Override
@@ -25,16 +25,16 @@ public class EvalDefinition extends ExtensionFunctionDefinition {
 	public SequenceType[] getArgumentTypes() {
 		SequenceType[] types = { SequenceType.SINGLE_STRING , SequenceType.ANY_SEQUENCE , SequenceType.OPTIONAL_NODE};
 		return types ;
-		
-		
-		
+
+
+
 	}
 
-	
+
 	@Override
 	public StructuredQName getFunctionQName() {
 		return new StructuredQName("xmlsh", kXMLSH_EXT_NAMESPACE , "eval" );
-			
+
 	}
 
 	/* (non-Javadoc)
@@ -86,8 +86,8 @@ public class EvalDefinition extends ExtensionFunctionDefinition {
 		return super.trustResultType();
 	}
 
-	
-	
+
+
 }
 
 

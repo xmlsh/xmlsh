@@ -1,6 +1,5 @@
 package org.xmlsh.types;
 
-import org.xmlsh.core.XValue;
 
 
 /*
@@ -8,10 +7,11 @@ import org.xmlsh.core.XValue;
  */
 public interface IType
 {
-    TypeFamily family();
-    XTypeKind  kind();         // General kind of type 
-    String     simpleName();   // simple type name
-    String     typeName();     // specific type name 
-    XValue getIndexedValue(Object obj , String ind );
+	public TypeFamily family();
+	public IMethods   getMethods();
+	public boolean   isAtomic();
+	public boolean   isContainer();
+	public boolean   isNull();
+	public XTypeKind  kind();         // General kind of type 
 
 }

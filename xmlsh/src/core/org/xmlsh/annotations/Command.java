@@ -19,7 +19,7 @@ public @interface Command {
 	String value() default "";
 	String name() default "" ;
 	Option[] options() default  {};
-	
+
 
 }
 

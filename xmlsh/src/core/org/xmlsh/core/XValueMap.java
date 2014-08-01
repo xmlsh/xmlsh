@@ -7,16 +7,18 @@
 package org.xmlsh.core;
 
 import org.xmlsh.sh.shell.SerializeOpts;
+import org.xmlsh.types.XTypeUtils;
 import org.xmlsh.util.Util;
+import org.xmlsh.util.XNamedValue;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.util.AbstractMap;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Map.Entry;
+import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
@@ -25,10 +27,9 @@ import com.fasterxml.jackson.annotation.JsonAnySetter;
  * Generic Properties 
  * A set of Name/Value pairs to any object 
  */
-public class XValueMap implements XValueContainer<XValueMap>
-{
+public class XValueMap extends AbstractMap<String,XValue> implements IXValueContainer<XValueMap>  {
 	private  	Map<String,XValue>   mMap;
-	
+
 	public XValueMap() {
 		mMap = new HashMap<>();
 	}
@@ -38,80 +39,110 @@ public class XValueMap implements XValueContainer<XValueMap>
 		mMap.put( name, value);
 	}
 
+	@Override
 	public XValue get( String name ) {
 		return mMap.get(name);
 	}
-	
+
 	// How many entries
+	@Override
 	public int size() { return mMap.size() ; }
-	
+
+	@Override
 	public boolean isEmpty() { return mMap.isEmpty() ; }
-	
+
 	@JsonAnyGetter 
 	public Map<String,XValue> properties(){ return mMap ; }
 
 
 
-    @Override
-    public void removeAll() {
-        mMap.clear();
-        
-    }
+	@Override
+	public void removeAll() {
+		mMap.clear();
+
+	}
 
 	@Override
-    public void add(XValue value)
-    {
-	    // TODO Auto-generated method stub
-	    
-    }
-
-	@Override
-    public XValue put(String key, XValue value)
-    {
+	public XValue put(String key, XValue value)
+	{
 		return  mMap.put(key, value);
-		 
-    }
+
+	}
 
 	@Override
-    public Iterator<String> keyIterator()
-    {
-
-		return mMap.keySet().iterator();
-    }
+	public Set<String> keySet()
+	{
+		return mMap.keySet();
+	}
 
 	@Override
-    public Iterator<XValue> valueIterator()
-    {
-	    return mMap.values().iterator();
-    }
-	
-	@Override
-    public void serialize(OutputStream out, SerializeOpts opts) throws IOException
-    {
-	 try ( OutputStreamWriter ps = new OutputStreamWriter(out, opts.getInputTextEncoding() ) ){
-		   String sep = "";
+	public Collection<XValue> values()
+	{
+		return mMap.values();
+	}
 
-		   ps.write("{");
-		   for(  Entry<String, XValue> entry : mMap.entrySet() ) {
-			   ps.write(sep);;
-			    ps.write( "[" );
-			    ps.write( entry.getKey().toString());
-			    ps.write("]=");
-			    ps.flush();
-			    entry.getValue().serialize(out, opts);
-			    ps.write(" ");
-			    sep = ",";
-		   }
-		   ps.write("}");
-	   } catch (InvalidArgumentException e) {
-       Util.wrapIOException(e);
-  }
-	    
-  }
+	@Override
+	public void serialize(OutputStream out, SerializeOpts opts) throws IOException
+	{
+		try ( OutputStreamWriter ps = new OutputStreamWriter(out, opts.getInputTextEncoding() ) ){
+			String sep = "";
+
+			ps.write("{");
+			for(  Entry<String, XValue> entry : mMap.entrySet() ) {
+				ps.write(sep);;
+				ps.write( "[" );
+				ps.write( entry.getKey().toString());
+				ps.write("]=");
+				ps.flush();
+				entry.getValue().serialize(out, opts);
+				ps.write(" ");
+				sep = ",";
+			}
+			ps.write("}");
+		} catch (InvalidArgumentException e) {
+			Util.wrapIOException(e);
+		}
+
+	}
+
+
+	public void addAll( XValueMap map )
+	{
+		mMap.putAll(map.mMap);
+	}
+
+	public void put(String key, Object value)
+	{
+		if( value instanceof XValue )
+			put( key , (XValue) value );
+		else
+			put( key , new XValue(null,value) );
+
+	}
+
+	@Override
+	public Set<java.util.Map.Entry<String, XValue>> entrySet()
+	{
+		return mMap.entrySet();
+	}
+
+	@Override
+	public boolean add(XValue arg)
+	{
+		try {
+			put( XTypeUtils.newNamedValue( arg ) );
+		} catch (InvalidArgumentException e) {
+			Util.wrapException(e,IllegalArgumentException.class);
+		}
+		return true ;
+	}
+
+	public void put(XNamedValue nv )
+	{
+		put( nv.getName() , nv.getValue() );
+	}
+
 }
-
-
-
 /*
  * Copyright (C) 2008-2012 David A. Lee.
  * 

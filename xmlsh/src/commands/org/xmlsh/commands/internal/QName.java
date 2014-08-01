@@ -9,6 +9,7 @@ package org.xmlsh.commands.internal;
 import org.xmlsh.core.BuiltinFunctionCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.types.TypeFamily;
 
 import java.util.List;
 
@@ -18,24 +19,24 @@ public class QName extends BuiltinFunctionCommand {
 	{
 		super("qname");
 	}
-	
+
 	@Override
 	public XValue run(Shell shell, List<XValue> args) {
 		switch( args.size())
 		{
 		case	1: // Clarke or local ?
-			return new XValue( args.get(0).asQName(shell) );
+			return new XValue( TypeFamily.XDM , args.get(0).asQName(shell) );
 		case	2:
-			return new XValue( new net.sf.saxon.s9api.QName(args.get(0).toString() , args.get(1).toString()) );
+			return new XValue( TypeFamily.XDM , new net.sf.saxon.s9api.QName(args.get(0).toString() , args.get(1).toString()) );
 		case	3 :
-			return new XValue( new net.sf.saxon.s9api.QName(args.get(0).toString() , args.get(1).toString() , args.get(2).toString() ) );
+			return new XValue(TypeFamily.XDM ,  new net.sf.saxon.s9api.QName(args.get(0).toString() , args.get(1).toString() , args.get(2).toString() ) );
 
 
 		default:
 			return null ;
-		
+
 		}
-		
+
 	}
 
 }

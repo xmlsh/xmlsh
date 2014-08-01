@@ -21,26 +21,27 @@ import java.io.PrintWriter;
 import java.util.List;
 
 public class SimpleCommand extends Command {
-	
+
 
 	private static Logger mLogger = LogManager.getLogger(SimpleCommand.class);
-	
+
 	private CommandPrefix  mPrefix;
 	private Word			mCommand;
 	private CommandSuffix	mSuffix;
+	@Override
 	public	boolean		isSimple() { return true ; }
 
-	
+
 	/*
 	 * Construct a command out of a word args and redir
 	 * both first and words might be assignments 
 	 */
 	public SimpleCommand( Word first, WordList args , IORedirectList redir ) {
-		
+
 		WordList cmdline = new WordList();
 		cmdline.add(first);
 		cmdline.addAll(args);
-		
+
 		for( Word w : cmdline ) {
 			// not to command yet 
 			if( mCommand == null  ) {
@@ -61,25 +62,25 @@ public class SimpleCommand extends Command {
 				mSuffix = new CommandSuffix();
 			mSuffix.addArg(w);
 		}
-		
+
 		if( redir != null ) {
 			for( IORedirect io : redir )
 				mSuffix.addIO( io );
 		}
-		
+
 	}
-	
-	
+
+
 	public SimpleCommand(CommandPrefix prefix , Word command, CommandSuffix suffix )
 	{
 
 		mPrefix = prefix;
 		mCommand = command;
 		mSuffix = suffix ;
-		
+
 	}
-	
-	
+
+
 
 	/* (non-Javadoc)
 	 * @see org.xmlsh.sh.core.Command#print(java.io.PrintStream)
@@ -90,7 +91,7 @@ public class SimpleCommand extends Command {
 			mPrefix.print(out);
 		if( mCommand != null )
 			mCommand.print(out);
-		
+
 		if( mSuffix  != null ){
 			out.print(" ");
 
@@ -106,73 +107,73 @@ public class SimpleCommand extends Command {
 	 */
 	@Override
 	public int exec(Shell shell) throws Exception {
-		
-		
-		
+
+
+
 		if( mCommand == null || mCommand.isEmpty() )
 			return execNull( shell );
-		
+
 		List<XValue>	cmdLine = mSuffix.toCmdLine(shell, mCommand , getLocation() );
 		// Ignore empty or blank command lines
 		if( cmdLine == null || cmdLine.isEmpty() )
 			return 0;
-		
+
 		String cmdName = cmdLine.remove(0).toString();
-		
+
 		ICommand cmd = CommandFactory.getInstance().getCommand( shell , cmdName , getLocation() );
-		
+
 		if( cmd == null ){
 			logLocation(shell);
-			
+
 			shell.printErr(mCommand + ": not found");
 			return 1;
-			
+
 		}
-		
-		
+
+
 		Shell		   saved_shell = null;
 		Module		   saved_module = null;
-		
+
 		/*
 		 * If there is a prefix then clone the shell, otherwise just clone the IO
 		 */
 		if( mPrefix == null )
 			shell.getEnv().saveIO();
-		
+
 		else {
 			saved_shell = shell ;
 			shell = shell.clone();
-			
+
 		}
-		
+
 		saved_module = shell.getModule();
-		
+
 		Shell saved_context_shell = ShellContext.set( shell );
 		try {
-		
-		
+
+
 			if( mPrefix != null )
 				mPrefix.exec( shell, getLocation() );
-			
-			
-		
+
+
+
 			mSuffix.exec( shell, getLocation() );
-			
+
 			// Push the current module if its different
 			Module module = cmd.getModule();
 			if( module != null )
 				shell.setModule(module);
-			
+
 			return cmd.run(  shell, cmdName , cmdLine );
 
-			
+
 		} 
 		catch( ThrowException e )
 		{
 			cmd.close();
 			throw e ;// Rethrow 
 		}
-		
+
 		catch( Exception e ){
 
 			mLogger.error("Exception running command: " + cmdName  , e );
@@ -185,19 +186,19 @@ public class SimpleCommand extends Command {
 
 			return -1;
 		}
-		
+
 		finally {
 			ShellContext.set(saved_context_shell);
 			if( ! shell.isClosed() ) {
 				if( mPrefix == null )
-				     shell.getEnv().restoreIO();
+					shell.getEnv().restoreIO();
 				else
-				if( saved_shell != null )
-					shell.close();
+					if( saved_shell != null )
+						shell.close();
 				shell.setModule( saved_module );
 			}
 		}
-		
+
 	}
 
 
@@ -212,20 +213,21 @@ public class SimpleCommand extends Command {
 
 		if( mPrefix != null )
 			mPrefix.exec( shell, getLocation() );
-		
-		
+
+
 		if( mSuffix != null )
 			mSuffix.exec( shell, getLocation() );
-		
+
 		return shell.getStatus();
 	}
 
+	@Override
 	public String getName() {
 		return mCommand == null ? "<command>" : mCommand.getSimpleName();
 	}
 
-	
-	
+
+
 }
 //
 //

@@ -18,43 +18,44 @@ import java.io.OutputStream;
 import java.util.List;
 
 public class printvar extends BuiltinCommand {
-	
+
+	@Override
 	public int run( List<XValue> args ) throws Exception {
 
 		Options opts = new Options( "n,p=port:" ,  SerializeOpts.getOptionDefs());
 		opts.parse(args);
-		
+
 		boolean nolf = opts.hasOpt("n");
 		String port = opts.getOptString("p", null);
-		
-		
+
+
 		OutputPort stdout = 
-			port != null ? mShell.getEnv().getOutputPort(port) : 
-			mShell.getEnv().getStdout();
-			
-		if( stdout == null )
-			throw new InvalidArgumentException("Output port not found: " + port );
-			
-		SerializeOpts serializeOpts = getSerializeOpts(opts);
-			
-		OutputStream out = stdout.asOutputStream(serializeOpts);
-	
-		
-		args = opts.getRemainingArgs();
-	
-		args = Util.expandSequences( args);
-		boolean bFirst = true;
-		for ( XValue arg : args ){
-			    if( ! bFirst )
-				      stdout.writeSequenceSeperator(serializeOpts);
-				XValue value = mShell.getEnv().getVarValue(arg.toString());
-				
-				bFirst = false;
-				value.serialize( out , serializeOpts );
-		}
-		
-		stdout.writeSequenceTerminator(serializeOpts);
-		return 0;
+				port != null ? mShell.getEnv().getOutputPort(port) : 
+					mShell.getEnv().getStdout();
+
+				if( stdout == null )
+					throw new InvalidArgumentException("Output port not found: " + port );
+
+				SerializeOpts serializeOpts = getSerializeOpts(opts);
+
+				OutputStream out = stdout.asOutputStream(serializeOpts);
+
+
+				args = opts.getRemainingArgs();
+
+				args = Util.expandSequences( args);
+				boolean bFirst = true;
+				for ( XValue arg : args ){
+					if( ! bFirst )
+						stdout.writeSequenceSeperator(serializeOpts);
+					XValue value = mShell.getEnv().getVarValue(arg.toString());
+
+					bFirst = false;
+					value.serialize( out , serializeOpts );
+				}
+
+				stdout.writeSequenceTerminator(serializeOpts);
+				return 0;
 	}
 }
 //

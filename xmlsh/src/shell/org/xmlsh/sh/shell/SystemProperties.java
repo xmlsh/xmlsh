@@ -18,8 +18,8 @@ import java.util.Properties;
 @SuppressWarnings("serial")
 class SystemProperties extends Properties {
 
-	
-	
+
+
 	public SystemProperties() {
 		super();
 		// TODO Auto-generated constructor stub
@@ -29,19 +29,19 @@ class SystemProperties extends Properties {
 		super(defaults);
 		// TODO Auto-generated constructor stub
 	}
-	
+
 
 	/* (non-Javadoc)
 	 * @see java.util.Properties#getProperty(java.lang.String, java.lang.String)
 	 */
 	@Override
 	public String getProperty(String key, String defaultValue) {
-		
+
 		if( key.equals("user.dir") ){
 			String value = SystemEnvironment.getInstance().getProperty(key);
 			if( value != null )
 				return value ;
-		
+
 		}
 		// cant use super.getProperty(key,def) as it recurses !
 		String value = super.getProperty(key);
@@ -55,15 +55,15 @@ class SystemProperties extends Properties {
 	 */
 	@Override
 	public String getProperty(String key) {
-		
+
 		if( key.equals("user.dir"))
 			return getProperty(key,null);
 
 		return super.getProperty(key);
 	}
 
-	
-	
+
+
 }
 
 //

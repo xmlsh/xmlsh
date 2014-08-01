@@ -17,24 +17,24 @@ import java.util.List;
 
 public class document extends BuiltinFunctionCommand {
 
-	
-	
+
+
 	public document()
 	{
 		super("document");
 	}
-	
+
 	@Override
 	public XValue run(Shell shell, List<XValue> args) throws CoreException 
 	{
 		if( args.size() != 1 )
 			throw new InvalidArgumentException("document() requres a single argument");
-		
+
 
 		return new XValue( S9Util.wrapDocument(args.get(0).asXdmNode() ) );
-		
-	
-		
+
+
+
 	}
 
 }

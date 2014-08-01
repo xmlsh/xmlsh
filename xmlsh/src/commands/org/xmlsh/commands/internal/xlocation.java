@@ -6,11 +6,8 @@
 
 package org.xmlsh.commands.internal;
 
-import net.sf.saxon.s9api.SaxonApiException;
 import org.xmlsh.core.BuiltinFunctionCommand;
-import org.xmlsh.core.CoreException;
 import org.xmlsh.core.Options;
-import org.xmlsh.core.UnknownOption;
 import org.xmlsh.core.VariableOutputPort;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.XVariable;
@@ -21,38 +18,37 @@ import org.xmlsh.sh.shell.Shell;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 public class xlocation extends BuiltinFunctionCommand {
-	
+
 	public static final String XLOC_OPTS = "d=depth:,f=function,n=name,s=source,start=start-line,end=end-line,scol=start-column,ecol=end-column";
 
 	public xlocation()
 	{
 		super("xlocation");
 	}
-	
-	
+
+
 	@Override
 	public XValue run(Shell shell, List<XValue> args) throws Exception
 	{
-		
+
 		Options opts = new Options(XLOC_OPTS,SerializeOpts.getOptionDefs());
 		opts.parse(args);
 		return run( shell , opts , -1 );
 	}
-	
+
 	// for xstacktrace
-	
+
 	public XValue run(Shell shell, Options opts, int depth ) throws Exception
 	{
-		
+
 		List<XValue> xv = new ArrayList<XValue>();
-		
+
 		depth = opts.getOptInt("depth", depth );
 		SourceLocation loc = shell.getLocation(depth);
-		
+
 		if( loc == null )
 			return null ;
 		if( opts.hasOpt("name") && loc.hasName() )
@@ -71,20 +67,20 @@ public class xlocation extends BuiltinFunctionCommand {
 
 		if( xv.isEmpty() )
 			return describe(shell,loc) ;
-		
+
 		return new XValue( xv );
 	}
 
-	
+
 
 	private XValue describe(Shell shell , SourceLocation loc) throws Exception 
 	{
-	
+
 		XVariable xv = new XVariable("_out", null);
-		
+
 		try ( VariableOutputPort port = new VariableOutputPort( xv ) ){
 			XMLStreamWriter writer = port.asXMLStreamWriter(shell.getSerializeOpts());
-			
+
 			writer.writeStartDocument();
 			writer.writeStartElement(getName());
 			writer.writeAttribute("name", loc.getName() );
@@ -99,18 +95,18 @@ public class xlocation extends BuiltinFunctionCommand {
 			port.flush();
 			return xv.getValue();
 		}
-		
 
-	
+
+
 	}
 
 	private String describeName(int depth, SourceLocation loc) {
 		if( depth < 0 || ! loc.hasName())
-		   return loc.getName();
+			return loc.getName();
 		else
-	      return "function " + loc.getName() + "()";
+			return "function " + loc.getName() + "()";
 	}
-	
+
 
 }
 

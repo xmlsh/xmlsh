@@ -23,58 +23,59 @@ import java.util.zip.ZipOutputStream;
 
 public class xzip extends XCommand {
 
-	
-	
+
+
+	@Override
 	public int run( List<XValue> args )	throws Exception
 	{
-		
+
 
 
 		Options opts = new Options( "f=file:" ,  SerializeOpts.getOptionDefs() );
 		opts.parse(args);
-		
+
 		XValue zipfile = opts.getOptValue("f");
-		
+
 		args = opts.getRemainingArgs();
-		
+
 		SerializeOpts serializeOpts = getSerializeOpts(opts);
-		
+
 		OutputPort outp = this.getOutput(zipfile, false);
-	  	try (
-	     	OutputStream outs = outp.asOutputStream(serializeOpts);
-		   ZipOutputStream zos = new ZipOutputStream( outs );
-		
-		){
+		try (
+				OutputStream outs = outp.asOutputStream(serializeOpts);
+				ZipOutputStream zos = new ZipOutputStream( outs );
+
+				){
 			int ret = 0;
 			ret = zip( zos ,  args );
 			zos.finish();
 			return ret;
-		
+
 		} 
 
-		
+
 
 
 	}
 
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
+
+
+
 	private int zip(ZipOutputStream zos, List<XValue> args) throws IOException 
 	{
 		int ret ;
 		for( XValue v : args )
 			if( (ret = zip( zos , v.toString() )) != 0 ) 
-					return ret ;
+				return ret ;
 		return 0;
-		
-		
+
+
 	}
 
 
@@ -87,21 +88,21 @@ public class xzip extends XCommand {
 			for( String f : files ){
 				if( ( ret = zip(zos, fname + "/" + f )) != 0 )
 					return ret ;
-				
+
 			}
 			return 0;
 		}
-		
-		
+
+
 		ZipEntry entry = new ZipEntry(fname);
 		entry.setTime(file.lastModified());
 		zos.putNextEntry(entry);
-		
+
 		FileInputStream fis = new FileInputStream( file );
 		Util.copyStream(fis, zos);
 		fis.close();
 		zos.closeEntry();
-		
+
 		return 0;
 	}
 

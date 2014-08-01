@@ -4,43 +4,29 @@
  *
  */
 
-package org.xmlsh.util;
+package org.xmlsh.types;
+
+import org.xmlsh.core.CoreException;
+import org.xmlsh.core.XValue;
+import org.xmlsh.sh.shell.SerializeOpts;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.Reader;
+import java.io.OutputStream;
 
-import com.fasterxml.jackson.core.io.IOContext;
-import com.fasterxml.jackson.core.io.InputDecorator;
-
-public class JSONPInputDecorator extends InputDecorator
+/*
+ * Generic methods available on typed objects
+ */
+public interface IMethods
 {
-
-	
-	public JSONPInputDecorator()
-	{
-	}
-
-	@Override
-	public InputStream decorate(IOContext ctxt, InputStream in) throws IOException
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public InputStream decorate(IOContext ctxt, byte[] src, int offset, int length) throws IOException
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Reader decorate(IOContext ctxt, Reader r) throws IOException
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
+	public XValue append(Object value, XValue v);
+	public String asString( Object obj );
+	public int    getSize( Object obj );
+	public IType  getType( Object obj );
+	public XValue getXValue( Object obj );
+	public XValue getXValue(Object obj, String ind) throws CoreException;
+	public void   serialize( Object obj , OutputStream os , SerializeOpts opts) throws IOException ;
+	public String  simpleTypeName(Object obj);
+	public String  typeName(Object obj);     // specific type name 
 
 }
 

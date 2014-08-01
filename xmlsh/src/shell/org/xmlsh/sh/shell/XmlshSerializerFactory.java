@@ -27,11 +27,11 @@ public class XmlshSerializerFactory extends SerializerFactory {
 	@Override
 	protected ProxyReceiver newXMLIndenter(XMLEmitter next, Properties outputProperties) {
 		// TODO Auto-generated method stub
-		 XMLIndenter r = new XmlshXMLIndenter(next);
-	        r.setOutputProperties(outputProperties);
-	     return r;
+		XMLIndenter r = new XmlshXMLIndenter(next);
+		r.setOutputProperties(outputProperties);
+		return r;
 	}
-	
+
 
 }
 

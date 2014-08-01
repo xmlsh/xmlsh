@@ -14,8 +14,8 @@ public class XdmItemSubsequence implements Iterable<XdmItem> {
 
 	Iterable<XdmItem>	mIter;
 	int		mBegin;
-	
-	
+
+
 	@Override
 	public Iterator<XdmItem> iterator() {
 		Iterator<XdmItem> iter = mIter.iterator();
@@ -23,18 +23,18 @@ public class XdmItemSubsequence implements Iterable<XdmItem> {
 			if( iter.hasNext() )
 				iter.next();
 		return iter ;
-		
-		
+
+
 	}
 
 	XdmItemSubsequence(Iterable<XdmItem> i, int begin)
 	{
 		mIter = i;
 		mBegin = begin;
-		
+
 	}
-	
-	
+
+
 
 }
 

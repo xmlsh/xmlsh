@@ -26,7 +26,7 @@ public class PortURLConnection extends URLConnection {
 	@Override
 	public void connect() throws IOException {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	/* (non-Javadoc)
@@ -57,15 +57,15 @@ public class PortURLConnection extends URLConnection {
 		String name = this.getURL().getPath();
 		Shell shell = ShellContext.get();
 		if (shell != null)
-	        try {
-	            return shell.getEnv().getOutputPort(name).asOutputStream(shell.getSerializeOpts());
-            } catch (CoreException e) {
-	          throw new IOException(e);
-            }
-        else
+			try {
+				return shell.getEnv().getOutputPort(name).asOutputStream(shell.getSerializeOpts());
+			} catch (CoreException e) {
+				throw new IOException(e);
+			}
+		else
 			return null;
 	}
-	
+
 
 }
 

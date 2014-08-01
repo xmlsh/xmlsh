@@ -17,75 +17,75 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.Location;
+import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamReader;
-import javax.xml.stream.events.XMLEvent;
 
 
 public class xbase extends XCommand {
 
 
 	private static QName mBaseQName = new QName("http://www.w3.org/XML/1998/namespace","base" , "xml");
-	
 
-	
-	
+
+
+
 	@Override
 	public int run( List<XValue> args )
-	throws Exception 
-	{
-		
+			throws Exception 
+			{
+
 		Options opts = new Options( SerializeOpts.getOptionDefs()  );
 		opts.parse(args);
 		args = opts.getRemainingArgs();
-		
-		
+
+
 
 		SerializeOpts sopts = getSerializeOpts(opts);
 
 		XMLStreamReader reader = 
-			args.isEmpty() ?	getStdin().asXMLStreamReader(sopts) :
-			getInput(args.get(0)).asXMLStreamReader(sopts);
-				
-		
-		do {
-		
-			if( reader.getEventType() == XMLEvent.START_ELEMENT )
-				break;
-			reader.next();
-			
-		} while( reader.hasNext() );
-		
-	
-			
-	
-		Location loc = reader.getLocation();
-		String sSystemID  = loc.getSystemId();
-		String sBase = reader.getAttributeValue(mBaseQName.getNamespaceURI(), mBaseQName.getLocalPart());
-		if( Util.isEmpty(sBase))
-			sBase = sSystemID ;
-		
-		
-		
-		reader.close();
-		
-		PrintWriter out = getStdout().asPrintWriter(sopts);
-		
-		out.println(sBase );
-	
-		out.flush();
-		
-		
-		return 0;
-
-	}
-	
-	
+				args.isEmpty() ?	getStdin().asXMLStreamReader(sopts) :
+					getInput(args.get(0)).asXMLStreamReader(sopts);
 
 
-	
+				do {
+
+					if( reader.getEventType() == XMLStreamConstants.START_ELEMENT )
+						break;
+					reader.next();
+
+				} while( reader.hasNext() );
 
 
-	
+
+
+				Location loc = reader.getLocation();
+				String sSystemID  = loc.getSystemId();
+				String sBase = reader.getAttributeValue(mBaseQName.getNamespaceURI(), mBaseQName.getLocalPart());
+				if( Util.isEmpty(sBase))
+					sBase = sSystemID ;
+
+
+
+				reader.close();
+
+				PrintWriter out = getStdout().asPrintWriter(sopts);
+
+				out.println(sBase );
+
+				out.flush();
+
+
+				return 0;
+
+			}
+
+
+
+
+
+
+
+
 
 }
 

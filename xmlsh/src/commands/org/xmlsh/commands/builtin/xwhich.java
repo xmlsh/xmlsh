@@ -26,30 +26,31 @@ import javax.xml.stream.XMLStreamWriter;
 
 public class xwhich extends BuiltinCommand {
 
-	
+
 	private static final String typenames[] = new String[] {
 		"builtin" , "internal" , "user" , "external" , "script" , "function"
 
 	};
-	
+
+	@Override
 	public int run(   List<XValue> args ) throws Exception {
-			
+
 		Options opts = new Options( "n" , SerializeOpts.getOptionDefs());
 		opts.parse(args);
-		
+
 		boolean bNoWrite = opts.hasOpt("n");
 
-		
-		
+
+
 		List<XValue> xvargs = Util.expandSequences(opts.getRemainingArgs());
-		
+
 		if( xvargs.size() < 1  ){
 			mShell.printErr("usage: " + getName() + " command ...");
 			return 1;
 		}
-		
+
 		final  String sDocRoot = getName();
-	      
+
 		XMLStreamWriter 	out = null ;
 		OutputPort stdout = mShell.getEnv().getStdout();	
 
@@ -59,74 +60,74 @@ public class xwhich extends BuiltinCommand {
 			out = stdout.asXMLStreamWriter(serializeOpts);
 			out.writeStartDocument();
 			out.writeStartElement(sDocRoot);
-			
+
 		}
-		
+
 		int bad = 0;
-		
+
 		final  String sCmd = "command";
 		final	String sName = "name";
 		final 	String sType = "type";
 		final  String sPath = "path";
 		final String sModule = "module";
-		
+
 
 		for( XValue xname : xvargs ){
-			
+
 			String name = xname.toString();
 			ICommand command = CommandFactory.getInstance().getCommand(mShell , name , getLocation() );
-			
+
 			// Try builtin functions 
 			if( command == null ) {
-			     IFunction func = CommandFactory.getInstance().getBuiltinFunction(mShell, name,  getLocation() );
-			     if( func != null ) {
-						if( ! bNoWrite ){
-							
-							out.writeStartElement(sCmd);
-							out.writeAttribute(sName, name );
-							String type = "builtin-function";
-							out.writeAttribute(sType, type );
-							out.writeEndElement();
-						}
-						continue;
-			     }
-			    	 
-		    }
-			
+				IFunction func = CommandFactory.getInstance().getBuiltinFunction(mShell, name,  getLocation() );
+				if( func != null ) {
+					if( ! bNoWrite ){
+
+						out.writeStartElement(sCmd);
+						out.writeAttribute(sName, name );
+						String type = "builtin-function";
+						out.writeAttribute(sType, type );
+						out.writeEndElement();
+					}
+					continue;
+				}
+
+			}
+
 			if( command != null ){
 				if( ! bNoWrite ){
-					
-	
-					
-					
+
+
+
+
 					out.writeStartElement(sCmd);
 					out.writeAttribute(sName, name);
-					
+
 					String type = typenames[command.getType().ordinal()];
 					out.writeAttribute(sType, type);
-				
+
 					File file = command.getFile();
 					if( file != null )
 						out.writeAttribute(sPath, file.getCanonicalPath() );
 					else 
-					if( command instanceof ScriptCommand ){
-						ScriptCommand sc  = (ScriptCommand) command;
-						out.writeAttribute(sPath, sc.getScriptName());
-					}
-					else
-				    if( command instanceof FunctionCommand ) {
-				    	FunctionCommand fc = (FunctionCommand) command;
-				    	out.writeAttribute(sName, type);
-				    }
+						if( command instanceof ScriptCommand ){
+							ScriptCommand sc  = (ScriptCommand) command;
+							out.writeAttribute(sPath, sc.getScriptName());
+						}
+						else
+							if( command instanceof FunctionCommand ) {
+								FunctionCommand fc = (FunctionCommand) command;
+								out.writeAttribute(sName, type);
+							}
 					Module module = command.getModule();
 					if( module != null )
 						out.writeAttribute(sModule, module.getName());
 					out.writeEndElement();
-					
+
 				}
 			} else
 				bad++;
-		
+
 		}
 		if( ! bNoWrite ){
 			out.writeEndElement();
@@ -135,12 +136,12 @@ public class xwhich extends BuiltinCommand {
 			out.close();
 			stdout.writeSequenceTerminator(serializeOpts);
 		}
-		
-		
+
+
 		return bad;
-		
-			
-				
+
+
+
 	}
 
 

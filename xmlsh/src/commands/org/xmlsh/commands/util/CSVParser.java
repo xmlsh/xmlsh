@@ -13,96 +13,96 @@ public class CSVParser
 	private char mDelim = ','; // csv
 	private char mQuote = '"';
 	private int mMax ;
-	
-	
-	
-	
-	
+
+
+
+
+
 	public CSVParser() {
-		
-		
+
+
 	}
-	
+
 	public CSVParser( char delim , char quote )
 	{
 		mDelim = delim ;
 		mQuote = quote ;
 		mMax   = 0;
 	}
-	
+
 	public CSVParser( char delim , char quote , int max )
 	{
 		mDelim = delim ;
 		mQuote = quote ;
 		mMax   = max ;
 	}
-	
+
 
 	/**
-     * Parse a single line into String[] each string is 1 csv field
-     * If combine 
-     */
-     
-    public CSVRecord parseLine( String line ){
-    	if( line == null )
-    		return null;
-    	
-        ArrayList<String>v = new ArrayList<String>();
+	 * Parse a single line into String[] each string is 1 csv field
+	 * If combine 
+	 */
 
-        int len = line.length();
-        char c;
-        int i;
-        boolean sof = true ; // start of field
-        
-        StringBuffer	buf = new StringBuffer();
-        for( i = 0 ; i < len ; )
-        {
-        	c = line.charAt(i++);
-        	
-        	if( c == mDelim && (mMax <= 0 ||  mMax > v.size() )){
-        		v.add( buf.toString());
-        		buf = new StringBuffer();
-        		sof = true ;
-        		continue;
-        	}
-        	// Start quotes only recognized at sof
-        	if( sof && c == mQuote ){
-        		while ( i < len ){
-        			c = line.charAt(i++);
-        			if( c == mQuote ){
-        				if( i == len || (i < len && line.charAt(i) != mQuote ) )
-        					break;
-        				c = line.charAt(i++);
-        			}
-        			buf.append(c);
-        		}
-        	}
-        	else
-        		buf.append(c);
-        	sof=false ;
-        }
-        
-        // Left over data - add a new field or combine with the last one
-        if( i>0 ){
-        	if( mMax <= 0 || mMax > v.size() ) 
-        			v.add( buf.toString());
-        	else {
-        		int last = v.size() - 1;
-        		
-        		v.set( last , v.get(last) + buf.toString() );
-        	}
-        }
-        
-        
-        
-        
+	public CSVRecord parseLine( String line ){
+		if( line == null )
+			return null;
 
-        return new CSVRecord( (String[]) v.toArray( new String[ v.size() ] )  );
-        
-    }
+		ArrayList<String>v = new ArrayList<String>();
+
+		int len = line.length();
+		char c;
+		int i;
+		boolean sof = true ; // start of field
+
+		StringBuffer	buf = new StringBuffer();
+		for( i = 0 ; i < len ; )
+		{
+			c = line.charAt(i++);
+
+			if( c == mDelim && (mMax <= 0 ||  mMax > v.size() )){
+				v.add( buf.toString());
+				buf = new StringBuffer();
+				sof = true ;
+				continue;
+			}
+			// Start quotes only recognized at sof
+			if( sof && c == mQuote ){
+				while ( i < len ){
+					c = line.charAt(i++);
+					if( c == mQuote ){
+						if( i == len || (i < len && line.charAt(i) != mQuote ) )
+							break;
+						c = line.charAt(i++);
+					}
+					buf.append(c);
+				}
+			}
+			else
+				buf.append(c);
+			sof=false ;
+		}
+
+		// Left over data - add a new field or combine with the last one
+		if( i>0 ){
+			if( mMax <= 0 || mMax > v.size() ) 
+				v.add( buf.toString());
+			else {
+				int last = v.size() - 1;
+
+				v.set( last , v.get(last) + buf.toString() );
+			}
+		}
 
 
-    
+
+
+
+		return new CSVRecord( v.toArray( new String[ v.size() ] )  );
+
+	}
+
+
+
 
 }
 

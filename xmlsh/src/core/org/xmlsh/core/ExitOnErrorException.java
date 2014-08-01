@@ -34,9 +34,9 @@ public class ExitOnErrorException extends CoreException {
 	public String getMessage() {
 		return "Exit on error: " + mValue ;
 	}
-	
 
-	
+
+
 
 }
 

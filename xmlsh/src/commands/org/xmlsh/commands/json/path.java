@@ -24,20 +24,20 @@ public class path extends BuiltinFunctionCommand {
 	{
 		super("object");
 	}
-	
+
 	@Override
 	public XValue run(Shell shell, List<XValue> args) throws InvalidArgumentException, UnexpectedException  {
 		if( args.size() != 2)
 			throw new UnexpectedException("usage: path( object path )");
 
 		JsonNode node = args.get(0).asJson();
-		
+
 
 		JsonPath path = JsonPath.compile(args.get(1).toString());
 		XValue xvr = new XValue(TypeFamily.JSON, path.read(node, JsonNode.class));
-		
-	    return xvr ;
-		
+
+		return xvr ;
+
 	}
 
 }

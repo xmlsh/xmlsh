@@ -10,12 +10,11 @@ package org.xmlsh.core;
 import net.sf.saxon.s9api.XdmAtomicValue;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmValue;
+import org.xmlsh.util.Util;
 
 import java.io.IOException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
-
-import org.xmlsh.util.Util;
 
 
 
@@ -23,10 +22,10 @@ import org.xmlsh.util.Util;
 
 public class XdmItemPipe {
 	BlockingQueue<XdmItem>   mQueue ;
-	
+
 	// Special EOF marker indicating closed pipe
 	private static final XdmItem mEOF = new XdmAtomicValue("");
-	
+
 
 
 	private class XdmItemPipeReader implements IXdmItemReader
@@ -43,9 +42,9 @@ public class XdmItemPipe {
 				throw new CoreException(e);
 			}
 		}
-	
+
 	}
-	
+
 	private class XdmItemPipeWriter implements IXdmItemWriter
 	{
 
@@ -55,33 +54,33 @@ public class XdmItemPipe {
 				try {
 					mQueue.put(item);
 				} catch (InterruptedException e) {
-Util.wrapIOException(e);
+					Util.wrapIOException(e);
 				}
-			
+
 		}
 
 		@Override
 		public void write(XdmItem item) throws IOException {
-				try {
-					mQueue.put(item);
-				} catch (InterruptedException e) {
-			
-					Util.wrapIOException(e);
-				}
-			
+			try {
+				mQueue.put(item);
+			} catch (InterruptedException e) {
+
+				Util.wrapIOException(e);
+			}
+
 		}
 
 		@Override
 		public void close() throws IOException {
 			write( mEOF );
-			
+
 		}
-	
+
 	}
-	
-	
-	
-	
+
+
+
+
 	public XdmItemPipe(int size) {
 		mQueue = new LinkedBlockingQueue<XdmItem>(size);
 	}
@@ -94,7 +93,7 @@ Util.wrapIOException(e);
 		// TODO Auto-generated method stub
 		return new XdmItemPipeWriter();
 	}
-	
+
 }
 
 

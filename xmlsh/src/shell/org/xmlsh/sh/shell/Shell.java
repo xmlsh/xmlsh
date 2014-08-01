@@ -12,8 +12,6 @@ import net.sf.saxon.s9api.XdmItem;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import org.xmlsh.core.InputPort;
-import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.CommandFactory;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.EvalEnv;
@@ -33,7 +31,6 @@ import org.xmlsh.core.ThrowException;
 import org.xmlsh.core.Variables;
 import org.xmlsh.core.XDynamicVariable;
 import org.xmlsh.core.XEnvironment;
-import org.xmlsh.core.XIOEnvironment;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.XVariable;
 import org.xmlsh.core.XVariable.XVarFlag;
@@ -62,7 +59,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
@@ -85,7 +81,7 @@ import java.util.Stack;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Shell implements AutoCloseable, Closeable {
-	
+
 
 
 
@@ -94,7 +90,7 @@ public class Shell implements AutoCloseable, Closeable {
 		public Command cmd ;
 		public SourceLocation loc;
 		public CallStackEntry(String name, Command cmd, SourceLocation loc) {
- 
+
 			this.name = name ;
 			this.cmd = cmd;
 			this.loc = loc;
@@ -104,48 +100,48 @@ public class Shell implements AutoCloseable, Closeable {
 			return s;
 		}
 	}
-	
+
 	static Logger mLogger = LogManager.getLogger(Shell.class);
 	private 	ShellOpts	mOpts;
-	
+
 	private		FunctionDefinitions mFunctions = null;
 	private		XEnvironment	mEnv  = null ;
 	private		List<XValue> 	mArgs = new ArrayList<XValue>();
 	private		InputStream	mCommandInput = null;
 	private		String	mArg0 = "xmlsh";
 	private		SessionEnvironment mSession = null ;
-	
+
 	// Set to non null until exit or EOF
 	private 	Integer mExitVal = null;
 	private		XValue  mReturnVal = null;
 
-	
+
 	private		int	    mStatus = 0;	// $? variable
-	
+
 	private 	String  mSavedCD = null;
 
 	private		volatile List<ShellThread>	mChildren = null ;
 	private    Map<String,String>  mTraps = null ;
 	private 	boolean mIsInteractive = false ;
 	private		long	mLastThreadId = 0;
-	
+
 	private		Stack<ControlLoop>  mControlStack = null ;
 	private    Stack<CallStackEntry> mCallStack = null ;
-	 
+
 	// Depth of conditions used for 'throw on error'
 	private int 	mConditionDepth = 0;
 
 	private		Modules		mModules	= null;
-	
+
 	// current module
 	private		Module	mModule = null;
 
-	
+
 	// Current classloader
 	private		ClassLoader		mClassLoader = null ;
 	private  SourceLocation    mCurrentLocation = null ;
 
-	
+
 	/*
 	 * Initializtion statics
 	 */
@@ -153,7 +149,7 @@ public class Shell implements AutoCloseable, Closeable {
 	static	Properties		mSavedSystemProperties;
 	private		static Processor		mProcessor = null;
 	// private		static	ModuleURIResolver	mModuleURIResolver = null ;
-	
+
 	private Shell mParent = null;
 	private IFS mIFS;
 	private ThreadGroup mThreadGroup = null ;
@@ -162,12 +158,12 @@ public class Shell implements AutoCloseable, Closeable {
 
 	private AtomicInteger mRunDepth = new AtomicInteger() ; // count of depth if the shell is executing
 	private volatile List<Process> mChildProcess = null ;
-	
+
 	public static void uninitialize()
 	{
 		if( ! bInitialized )
 			return ;
-		
+
 		mProcessor = null ;
 		System.setProperties( mSavedSystemProperties );
 		mSavedSystemProperties = null ;
@@ -175,8 +171,8 @@ public class Shell implements AutoCloseable, Closeable {
 		ShellContext.set(null);
 		bInitialized = false ;
 	}
-	
-	
+
+
 	static {
 		ShellConstants.initialize();
 	}
@@ -187,9 +183,9 @@ public class Shell implements AutoCloseable, Closeable {
 	public Shell( ) throws IOException, CoreException
 	{
 		this( true );
-		
+
 	}
-	
+
 	public Shell(boolean bUseStdio) throws IOException, CoreException
 	{
 		mOpts = new ShellOpts();
@@ -198,25 +194,25 @@ public class Shell implements AutoCloseable, Closeable {
 		mModules = new Modules();
 		mSession = new SessionEnvironment();
 		// Add xmlsh commands 
-	    mModules.declare( new Module( null , "xmlsh" , "org.xmlsh.commands.internal", CommandFactory.kCOMMANDS_HELP_XML));
+		mModules.declare( new Module( null , "xmlsh" , "org.xmlsh.commands.internal", CommandFactory.kCOMMANDS_HELP_XML));
 
 		setGlobalVars();
-		
+
 		mModule = null ; // no current module
 		ShellContext.set(this);	// cur thread active shell
-		
-		
+
+
 	}
-	
+
 	/*
 	 * Populate the environment with any global variables
 	 */
-	
+
 	private void setGlobalVars() throws InvalidArgumentException {
-	    
-		
+
+
 		Map<String,String> 	env = System.getenv();
-		
+
 
 		for( Map.Entry<String,String > entry : env.entrySet() ){
 
@@ -227,102 +223,106 @@ public class Shell implements AutoCloseable, Closeable {
 				continue ;
 			if( ! name.matches("^[a-zA-Z_0-9]+$"))
 				continue ;
-			
+
 			// Ignore PS1
 			if( name.equals("PS1"))
 				continue ;
-			
-			getEnv().setVar( new XVariable( name , new XValue(entry.getValue()) , EnumSet.of(XVarFlag.EXPORT )),false );
-			
-			
-		}
-		
-		
-		// Export path to shell path
-	    String path = FileUtils.toJavaPath(System.getenv(ShellConstants.PATH));
-	    	getEnv().setVar( new XVariable(ShellConstants.PATH, 
-	    			Util.isBlank(path) ? new XValue() : new XValue(path.split(File.pathSeparator))) , false );
-	
-	    String xpath = FileUtils.toJavaPath(System.getenv(ShellConstants.XPATH));
-	    getEnv().setVar( new XVariable(ShellConstants.XPATH, 
-	    		Util.isBlank(xpath) ? new XValue(".") : new XValue(xpath.split(File.pathSeparator))) , false );
-	
-	     
-	    String xmpath = FileUtils.toJavaPath(System.getenv(ShellConstants.XMODPATH));
-	    getEnv().setVar( new XVariable(ShellConstants.XMODPATH, 
-	    		Util.isBlank(xmpath) ? new XValue() : new XValue(xmpath.split(File.pathSeparator))) , false );
 
-	    
+			getEnv().setVar( new XVariable( name , new XValue(entry.getValue()) , EnumSet.of(XVarFlag.EXPORT )),false );
+
+
+		}
+
+
+		// Export path to shell path
+		String path = FileUtils.toJavaPath(System.getenv(ShellConstants.PATH));
+		getEnv().setVar( new XVariable(ShellConstants.PATH, 
+				Util.isBlank(path) ? new XValue() : new XValue(path.split(File.pathSeparator))) , false );
+
+		String xpath = FileUtils.toJavaPath(System.getenv(ShellConstants.XPATH));
+		getEnv().setVar( new XVariable(ShellConstants.XPATH, 
+				Util.isBlank(xpath) ? new XValue(".") : new XValue(xpath.split(File.pathSeparator))) , false );
+
+
+		String xmpath = FileUtils.toJavaPath(System.getenv(ShellConstants.XMODPATH));
+		getEnv().setVar( new XVariable(ShellConstants.XMODPATH, 
+				Util.isBlank(xmpath) ? new XValue() : new XValue(xmpath.split(File.pathSeparator))) , false );
+
+
 		// PWD 
 		getEnv().setVar(
 				new XDynamicVariable(ShellConstants.PWD , EnumSet.of( XVarFlag.READONLY , XVarFlag.XEXPR )) { 
+					@Override
 					public XValue getValue() 
 					{
 						return new XValue( FileUtils.toJavaPath(getEnv().getCurdir().getAbsolutePath()) ) ;
 					}
-					
+
 				}
-				
+
 				, false 
-		);
-		
+				);
+
 		// RANDOM
 		getEnv().setVar(
 				new XDynamicVariable(ShellConstants.VAR_RANDOM , EnumSet.of(  XVarFlag.READONLY , XVarFlag.XEXPR )) { 
-					 Random mRand = new Random();
+					Random mRand = new Random();
+					@Override
 					public XValue getValue() 
 					{
 						return new XValue( mRand.nextInt(0x7FFF) );
 					}
-					
-					
-				
+
+
+
 				}
-				
+
 				, false 
-		);
-		
+				);
+
 		// RANDOM32
 		getEnv().setVar(
 				new XDynamicVariable(ShellConstants.VAR_RANDOM32 , EnumSet.of(  XVarFlag.READONLY , XVarFlag.XEXPR )) { 
-					 Random mRand = new Random();
+					Random mRand = new Random();
+					@Override
 					public XValue getValue() 
 					{
 						long v = mRand.nextInt();
 						v &= 0x7FFFFFFFL;
 						return new XValue( (int) v    );
 					}
-					
-					
-				
+
+
+
 				}
-				
+
 				, false 
-		);
-		
+				);
+
 		// RANDOM
 		getEnv().setVar(
 				new XDynamicVariable(ShellConstants.VAR_RANDOM64 , EnumSet.of(  XVarFlag.READONLY , XVarFlag.XEXPR )) { 
-					 Random mRand = new Random();
+					Random mRand = new Random();
+					@Override
 					public XValue getValue() 
 					{
 						return new XValue(  mRand.nextLong() & 0x7FFFFFFFFFFFFFFFL  );
 					}
-					
-					
-				
+
+
+
 				}
-				
+
 				, false 
-		);
-		
-		
+				);
+
+
 		getEnv().setVar(ShellConstants.ENV_TMPDIR , FileUtils.toJavaPath(System.getProperty(ShellConstants.PROP_JAVA_IO_TMPDIR)), false );
-		
+
 		if( getEnv().getVar(ShellConstants.ENV_HOME) == null )
 			getEnv().setVar(ShellConstants.ENV_HOME , FileUtils.toJavaPath(System.getProperty(ShellConstants.PROP_USER_HOME)), false );
-		
-		
+
+
 	}
 
 	/*
@@ -330,7 +330,7 @@ public class Shell implements AutoCloseable, Closeable {
 	 */
 	private Shell( Shell that ) throws IOException
 	{
-	    this( that , that.getThreadGroup( ));
+		this( that , that.getThreadGroup( ));
 	}
 	private Shell( Shell that , ThreadGroup threadGroup ) throws IOException
 	{
@@ -340,33 +340,34 @@ public class Shell implements AutoCloseable, Closeable {
 		mEnv = that.getEnv().clone(this) ;
 		mCommandInput = that.mCommandInput;
 		mArg0 = that.mArg0;
-		
+
 		// clone $1..$N
 		mArgs = new ArrayList<XValue>();
 		mArgs.addAll(that.mArgs);
-		
+
 		mSavedCD = System.getProperty(ShellConstants.PROP_USER_DIR);
-		
+
 		if( that.mFunctions != null )
 			mFunctions = new FunctionDefinitions(that.mFunctions);
-		
+
 		mModules = new Modules(that.mModules );
-		
+
 		mModule = that.mModule;
-		
+
 		// Pass through the Session Enviornment, keep a reference
 		mSession = that.mSession;
 		mSession.addRef();
-		
+
 		// Reference the parent classloader
 		mClassLoader = that.mClassLoader;
-		
-		
+
+
 		// Cloning shells doesnt save the condition depth
 		// mConditionDepth = that.mConditionDepth;
-		
+
 	}
-	
+
+	@Override
 	public Shell clone()
 	{
 		try {
@@ -377,14 +378,15 @@ public class Shell implements AutoCloseable, Closeable {
 			return null;
 		}
 	}
-	
-	
+
+
+	@Override
 	public void close() 
 	{
 		// Synchronized only to change states 
 		synchronized( this ) {
 			if( mClosed )
-			   return ;
+				return ;
 			mClosed = true ;  
 		}
 		if( mParent != null )
@@ -402,17 +404,17 @@ public class Shell implements AutoCloseable, Closeable {
 			mSession = null ;
 		}
 	}
-	
+
 
 	private void notifyChildClose(Shell shell)
-    {
+	{
 		// Async code might invalidate job 
 		// but removeJob can handle invalid pointers
 		ShellThread job = findJobByShell( shell );
 		if( job != null )
-	       removeJob(job);
-	    
-    }
+			removeJob(job);
+
+	}
 
 
 	private ShellThread findJobByShell(Shell shell)
@@ -440,7 +442,7 @@ public class Shell implements AutoCloseable, Closeable {
 		close();
 	}
 
-	
+
 	public XEnvironment getEnv() {
 		return 	mEnv;
 	}
@@ -457,23 +459,23 @@ public class Shell implements AutoCloseable, Closeable {
 		InputStream is = null;
 
 		try {
-			
+
 			enterEval();
-			
+
 			is = Util.toInputStream(scmd, getSerializeOpts());
 			mCommandInput = is ;
 			ShellParser parser= new ShellParser(newParserReader(false),"<eval>");
-			
-	      	Command c = parser.script();
-	      	return c;
-			
-		
+
+			Command c = parser.script();
+			return c;
+
+
 		}  catch ( Exception e )
 		{
 			throw new CoreException("Exception parsing command: " + scmd , e );
 		}
-		
-		
+
+
 		finally {
 			mCommandInput = save;
 			Util.safeClose(is);
@@ -483,27 +485,27 @@ public class Shell implements AutoCloseable, Closeable {
 
 
 	private void exitEval()
-    {
-	    int d;
-	    if( (d=mRunDepth.decrementAndGet()) < 0 ) {
-	    	mLogger.error("SNH: run depth underrun: " + d  + " resetting to 0" );
-	    	mRunDepth.compareAndSet(d, 0);
-	    }
-    }
+	{
+		int d;
+		if( (d=mRunDepth.decrementAndGet()) < 0 ) {
+			mLogger.error("SNH: run depth underrun: " + d  + " resetting to 0" );
+			mRunDepth.compareAndSet(d, 0);
+		}
+	}
 
 
 	private void enterEval()
-    {
-	    mRunDepth.incrementAndGet();
-    }
-	
+	{
+		mRunDepth.incrementAndGet();
+	}
+
 	public boolean isExecuting()
 	{
 		return mRunDepth.get() > 0;
 	}
-	
 
-	
+
+
 	public		int		runScript( InputStream stream, String source, boolean convertReturn ) throws ParseException, ThrowException, IOException
 	{
 
@@ -520,39 +522,40 @@ public class Shell implements AutoCloseable, Closeable {
 					Command c = parser.command_line();
 					if( c == null )
 						break;
-	
+
 					setSourceLocation(c.getLocation());
 					if( mOpts.mVerbose || mOpts.mLocation ){
-	
+
 						if( mOpts.mLocation ){
 							mLogger.info(formatLocation());
 						} 
-	
+
 						if( mOpts.mVerbose ) {
 							String s  = c.toString(false);
-	
+
 							if( s.length() > 0 ){
 								printErr(s );
 							}
 						}
 					}
-	
+
 					ret = exec( c );
 				}
 			} 
+			
 			catch( ThrowException e )
 			{
 				// mLogger.info("Rethrowing throw exception",e);
 				throw e ;	// rethrow 
-	
+
 			}
 			catch( ExitOnErrorException e )
 			{
 				// Caught Exit on error from a script
 				ret = e.getValue();
-	
+
 			}
-	
+
 			catch (Exception e) {
 				// System.out.println("NOK.");
 				printErr(e.getMessage());
@@ -562,16 +565,16 @@ public class Shell implements AutoCloseable, Closeable {
 				printErr(e.getMessage());
 				mLogger.error("Exception parsing statement" , e );
 				parser.ReInit(newParserReader(false), source);
-	
+
 			} 
 			finally {
 				mCommandInput = save;
 				setCurrentLocation(saveLoc) ;
-				
+
 			}
 
 			// Exited evaluation - but still in entry point  
-			
+
 			if( mExitVal != null )
 				ret = mExitVal.intValue();
 			else
@@ -584,7 +587,7 @@ public class Shell implements AutoCloseable, Closeable {
 					}
 					mReturnVal = null ;
 				}
-	
+
 			onSignal("EXIT");
 			return ret;
 
@@ -595,24 +598,24 @@ public class Shell implements AutoCloseable, Closeable {
 
 
 
-    private ShellParserReader newParserReader(boolean bSkipBOM) throws IOException {
-        return newParserReader(new InputStreamReader(mCommandInput,getInputTextEncoding()), bSkipBOM);
-    }
-
-    private ShellParserReader newParserReader(Reader reader , boolean bSkipBOM) throws IOException {
-        return new ShellParserReader(reader, bSkipBOM );
-    }
-	
-	private void prompt( boolean ps1 ) {
-	    System.out.print(
-                getPS(ps1 ? ShellConstants.PS1 : ShellConstants.PS2 , ps1 ? "$ " : " >"));
-        System.out.flush();
+	private ShellParserReader newParserReader(boolean bSkipBOM) throws IOException {
+		return newParserReader(new InputStreamReader(mCommandInput,getInputTextEncoding()), bSkipBOM);
 	}
-	
+
+	private ShellParserReader newParserReader(Reader reader , boolean bSkipBOM) throws IOException {
+		return new ShellParserReader(reader, bSkipBOM );
+	}
+
+	private void prompt( boolean ps1 ) {
+		System.out.print(
+				getPS(ps1 ? ShellConstants.PS1 : ShellConstants.PS2 , ps1 ? "$ " : " >"));
+		System.out.flush();
+	}
+
 	public String getInputTextEncoding() {
 		return getSerializeOpts().getInputTextEncoding();
 	}
-	
+
 	public		int		interactive() throws Exception
 	{
 		return interactive(null);
@@ -707,7 +710,7 @@ public class Shell implements AutoCloseable, Closeable {
 		// Try to source the rcfile 
 		if( rcfile != null ){
 			try {
-					enterEval();
+				enterEval();
 				File script = this.getFile(rcfile);
 				if( script.exists() && script.canRead() ){
 					ICommand icmd = CommandFactory.getInstance().getScript(this,   script ,true, null );
@@ -717,9 +720,9 @@ public class Shell implements AutoCloseable, Closeable {
 						setCurrentLocation(icmd.getLocation());
 						icmd.run(this, rcfile , null);
 						setCurrentLocation(l);
-				
+
 					}
-		    	}
+				}
 				onSignal("EXIT");
 			} finally {
 				exitEval();
@@ -729,20 +732,20 @@ public class Shell implements AutoCloseable, Closeable {
 
 
 	public String getPS(String ps, String def)  {
-		
+
 		XValue ps1 = getEnv().getVarValue(ps);
 		if( ps1 == null )
 			return def ;
 		String sps1 = ps1.toString();
 		if( !Util.isBlank(sps1))
-            try {
-                sps1 = EvalUtils.expandStringToString(this, sps1,mPSEnv, null);
-            } catch (IOException | CoreException e) {
-               mLogger.debug("Exception getting PS var "+ ps ,e);
-               return def;
-            }
+			try {
+				sps1 = EvalUtils.expandStringToString(this, sps1,mPSEnv, null);
+			} catch (IOException | CoreException e) {
+				mLogger.debug("Exception getting PS var "+ ps ,e);
+				return def;
+			}
 		return sps1;
-		
+
 	}
 
 	/*
@@ -750,46 +753,46 @@ public class Shell implements AutoCloseable, Closeable {
 	 * Try to locate jline if its in the classpath and use it
 	 * otherwise default to System.in
 	 */
-	
-	
+
+
 	private void setCommandInput(InputStream in) {
 		mCommandInput = in;
 		if( mCommandInput == null  ){
-		    if( ! Util.isWindows() )
-			try {
-				/*
-				 * import jline.ConsoleReader;
-				 * import jline.ConsoleReaderInputStream;
-				 */
-				Class<?> consoleReaderClass = Class.forName("jline.ConsoleReader");
-	
-				if(consoleReaderClass != null  ){
-					Class<?> consoleInputClass = Class.forName("jline.ConsoleReaderInputStream");
-					if( consoleInputClass != null ){
-						// ConsoleReader jline = new ConsoleReader(); 
-						Object jline =  consoleReaderClass.newInstance();
-						
-						Constructor<?> constructor = consoleInputClass.getConstructor( consoleReaderClass );
-						// mCommandInput = new ConsoleReaderInputStream(jline);
-	
-						if( constructor != null ){
-							mCommandInput = (InputStream) constructor.newInstance(jline);
-							// System.err.println("using jline");
+			if( ! Util.isWindows() )
+				try {
+					/*
+					 * import jline.ConsoleReader;
+					 * import jline.ConsoleReaderInputStream;
+					 */
+					Class<?> consoleReaderClass = Class.forName("jline.ConsoleReader");
+
+					if(consoleReaderClass != null  ){
+						Class<?> consoleInputClass = Class.forName("jline.ConsoleReaderInputStream");
+						if( consoleInputClass != null ){
+							// ConsoleReader jline = new ConsoleReader(); 
+							Object jline =  consoleReaderClass.newInstance();
+
+							Constructor<?> constructor = consoleInputClass.getConstructor( consoleReaderClass );
+							// mCommandInput = new ConsoleReaderInputStream(jline);
+
+							if( constructor != null ){
+								mCommandInput = (InputStream) constructor.newInstance(jline);
+								// System.err.println("using jline");
+							}
+
 						}
-						
 					}
+
+
+				} catch (Exception e1) {
+					mLogger.info("Exception loading jline");
 				}
-					
-					
-			} catch (Exception e1) {
-				mLogger.info("Exception loading jline");
-			}
 		}
 		if( mCommandInput == null )
-            mCommandInput = System.in;
+			mCommandInput = System.in;
 	}
-	
-	
+
+
 	/*
 	 * Main entry point for executing commands.
 	 * All command execution should go through this entry point
@@ -802,7 +805,7 @@ public class Shell implements AutoCloseable, Closeable {
 	public int exec(Command c) throws ThrowException, ExitOnErrorException {
 		return exec(c, getLocation(c) );
 	}
-	
+
 	// Default location for command
 	private SourceLocation getLocation(Command c) {
 
@@ -811,7 +814,7 @@ public class Shell implements AutoCloseable, Closeable {
 
 
 	public int exec(Command c, SourceLocation loc) throws ThrowException, ExitOnErrorException {
-		
+
 		try {
 			enterEval();
 			if(loc == null)
@@ -884,15 +887,15 @@ public class Shell implements AutoCloseable, Closeable {
 			exitEval();
 		}
 	}
-	
+
 	/*
 	 * Returns TRUE if the shell is currently in a condition 
 	 */
 
 	public ThreadGroup newThreadGroup(String name )
-    {
-	    return new ThreadGroup( getThreadGroup() , name);
-    }
+	{
+		return new ThreadGroup( getThreadGroup() , name);
+	}
 
 
 	public boolean isInCommandConndition() {
@@ -907,8 +910,8 @@ public class Shell implements AutoCloseable, Closeable {
 	{
 		mConditionDepth--;
 	}
-	
-	
+
+
 
 
 	private boolean isInteractive() {
@@ -916,15 +919,15 @@ public class Shell implements AutoCloseable, Closeable {
 	}
 
 	private  void addJob(ShellThread sht) {
-		
+
 		List<ShellThread> children = getChildren(true);
 		synchronized (children) {
 			children.add(sht);
-        }
-		
+		}
+
 		mLastThreadId = sht.getId();
 	}
-	
+
 	public void printErr(String s) {
 		printErr( s , getLocation());
 	}
@@ -932,22 +935,22 @@ public class Shell implements AutoCloseable, Closeable {
 	public void printErr(String s , SourceLocation loc ) {
 		try (
 				PrintWriter out = new PrintWriter( 
-					new BufferedWriter(
-							new OutputStreamWriter(getEnv().getStderr().asOutputStream(getSerializeOpts()), getSerializeOpts().getOutputTextEncoding())
+						new BufferedWriter(
+								new OutputStreamWriter(getEnv().getStderr().asOutputStream(getSerializeOpts()), getSerializeOpts().getOutputTextEncoding())
+								)
 						)
-					 )
 				)
 				{
-				if( mOpts.mLocation ) {
-						out.println( formatLocation(loc));
-				}
-			    out.println(s);
-				out.flush();
-		} catch (UnsupportedEncodingException | CoreException e) {
-			mLogger.error("Exception writing output: " + s , e );
+			if( mOpts.mLocation ) {
+				out.println( formatLocation(loc));
+			}
+			out.println(s);
+			out.flush();
+				} catch (UnsupportedEncodingException | CoreException e) {
+					mLogger.error("Exception writing output: " + s , e );
 
-        } 
-		
+				} 
+
 	}
 	private String formatLocation()
 	{
@@ -956,64 +959,64 @@ public class Shell implements AutoCloseable, Closeable {
 
 
 	private String formatLocation(SourceLocation loc)
-    {
+	{
 		if( loc == null )
 			loc = getLocation();
-	    return loc == null ? "<?>" : loc.format(mOpts.mLocationFormat);
-    }
+		return loc == null ? "<?>" : loc.format(mOpts.mLocationFormat);
+	}
 	public void printOut(String s)  {
 		try (
-			PrintWriter out = new PrintWriter( 
-					new BufferedWriter(
-							new OutputStreamWriter(getEnv().getStdout().asOutputStream(getSerializeOpts()), getSerializeOpts().getOutputTextEncoding())
-						)
-					 ) ){
+				PrintWriter out = new PrintWriter( 
+						new BufferedWriter(
+								new OutputStreamWriter(getEnv().getStdout().asOutputStream(getSerializeOpts()), getSerializeOpts().getOutputTextEncoding())
+								)
+						) ){
 			out.println(s);
-				out.flush();
+			out.flush();
 		} catch (IOException |CoreException e) {
 			mLogger.error("Exception writing output: " + s , e );
 			return;
-        }
-	
+		}
+
 	}
 	public void printErr(String s,Exception e  ) {
-       printErr( s , e , null );
+		printErr( s , e , null );
 	}
-	
+
 	public void printErr(String s,Exception e, SourceLocation loc ) {
 		try (
-			PrintWriter out = getEnv().getStderr().asPrintWriter(getSerializeOpts())
-			){
+				PrintWriter out = getEnv().getStderr().asPrintWriter(getSerializeOpts())
+				){
 			if( loc == null )
 				loc = getLocation();
 			if( loc != null )
 				out.println( formatLocation(loc));
-			
+
 			out.println(s);
-			
+
 
 			out.println(e.getMessage());
 			for( Throwable t = e.getCause() ; t != null ; t = t.getCause() ){
-		       out.println("  Caused By: " + t.getMessage());		
+				out.println("  Caused By: " + t.getMessage());		
 			}
-			
+
 			out.flush();
 		} catch (IOException |CoreException e1) {
 			mLogger.error("Exception writing output: " + s , e );
 			return ;
-        }
-	
+		}
+
 	}
 
 	public static void main(String argv[]) throws Exception {
-	 	List<XValue> vargs = new ArrayList<XValue>(argv.length);
-	 	for( String a : argv)
-	 		vargs.add( new XValue(a));
-	
+		List<XValue> vargs = new ArrayList<XValue>(argv.length);
+		for( String a : argv)
+			vargs.add( new XValue(a));
+
 		org.xmlsh.commands.builtin.xmlsh cmd = new org.xmlsh.commands.builtin.xmlsh(true);
 		Shell shell = new Shell(true);
-		
-		
+
+
 		int ret = -1;
 		try {
 			shell.enterEval();
@@ -1026,37 +1029,37 @@ public class Shell implements AutoCloseable, Closeable {
 			shell.exitEval();
 			shell.close();
 		}
-		
-	    System.exit(ret);
 
-	   
-	  }
-	
-	
+		System.exit(ret);
+
+
+	}
+
+
 	public void setArg0(String string) {
 		mArg0 = string;
-		
+
 	}
 
 	// Translate a shell return code to java bool
 	public static boolean toBool(int intVal ) {
 		return intVal == 0 ;
-		
+
 	}
-	
+
 	// Translate a java bool to a shell return code
 	public static int fromBool( boolean boolVal )
 	{
 		return boolVal ? 0 : 1;
 	}
-	
 
-	
+
+
 	public Path getExternalPath(){
 		return getPath(ShellConstants.PATH,true);
 	}
-	
-	
+
+
 	public Path getPath(String var, boolean bSeqVar ){
 		XValue	pathVar = getEnv().getVarValue(var);
 		if( pathVar == null )
@@ -1065,9 +1068,9 @@ public class Shell implements AutoCloseable, Closeable {
 			return new Path( pathVar );
 		else
 			return new Path( pathVar.toString().split( File.pathSeparator ));
-		
+
 	}
-	
+
 	/* 
 	 * Current Directory
 	 */
@@ -1076,64 +1079,64 @@ public class Shell implements AutoCloseable, Closeable {
 		return new File( System.getProperty(ShellConstants.PROP_USER_DIR));
 
 	}
-	
-	
+
+
 	public  void  		setCurdir( File cd ) throws IOException
 	{
 		String dir = cd.getCanonicalPath();
 		SystemEnvironment.getInstance().setProperty(ShellConstants.PROP_USER_DIR,dir);
 
-	
+
 	}
 
 	public void setArgs(List<XValue> args) {
 		mArgs = args ;
-		
-		
+
+
 	}
-	
-	
+
+
 	public File getExplicitFile(String name, boolean mustExist ) throws IOException {
 		return getExplicitFile( null , name,mustExist );
 	}
-	
-	
-	public File getExplicitFile(File dir , String name, boolean mustExist ) throws IOException {
-	
-	
-		File file=null;
-			file = new File( dir , name);
-			
-			try {
-			   file = file.getCanonicalFile();
-			} catch( IOException e ) {
-				mLogger.info("Exception translating file to canonical file" , e);
-				// try to still use file
-			}
-			if(  mustExist && ! file.exists() )
-				return null;
 
-		
+
+	public File getExplicitFile(File dir , String name, boolean mustExist ) throws IOException {
+
+
+		File file=null;
+		file = new File( dir , name);
+
+		try {
+			file = file.getCanonicalFile();
+		} catch( IOException e ) {
+			mLogger.info("Exception translating file to canonical file" , e);
+			// try to still use file
+		}
+		if(  mustExist && ! file.exists() )
+			return null;
+
+
 		return file;
 	}
 
 	public List<XValue> 	getArgs() {
 		return mArgs;
 	}
-	
-	
+
+
 	public void exit(int retval) {
 		mExitVal = Integer.valueOf(retval);
-		
+
 	}
-	
+
 	public void exec_return(XValue retval) {
 		mReturnVal = retval ;
-		
-	}
-	
 
-	
+	}
+
+
+
 	/*
 	 * Return TRUE if we should keep running on this shell
 	 * Includes early termination in control stacks
@@ -1143,7 +1146,7 @@ public class Shell implements AutoCloseable, Closeable {
 		// Hit exit stop 
 		if(  mClosed || mExitVal != null || mReturnVal != null  )
 			return false ;
-		
+
 		// If the top control stack is break then stop
 		if(hasControlStack()){
 			ControlLoop loop = getControlStack().peek();
@@ -1152,9 +1155,9 @@ public class Shell implements AutoCloseable, Closeable {
 		}
 
 		return true ;
-				
-		
-		
+
+
+
 	}
 
 	public String getArg0() {
@@ -1175,28 +1178,28 @@ public class Shell implements AutoCloseable, Closeable {
 		mStatus = status;
 	}
 
-	
+
 	public File getFile(File dir, String file) throws IOException {
 		return getExplicitFile( dir, file , false);
 	}
 
-	
+
 	public File getFile(String fname) throws IOException {
 		return getExplicitFile( fname , false);
 	}
-	
+
 	public File getFile(XValue fvalue) throws IOException {
 		return getFile( fvalue.toString());
 	}
-	
+
 
 	public void shift(int num) {
 		while( ! mArgs.isEmpty() && num-- > 0 )
 			mArgs.remove(0);
-		
-		
+
+
 	}
-	
+
 	/*
 	 * Returns the singleton processor for all of Xmlsh
 	 */
@@ -1206,25 +1209,25 @@ public class Shell implements AutoCloseable, Closeable {
 			String saxon_ee = System.getenv("XMLSH_SAXON_EE");
 			boolean bEE = Util.isEmpty(saxon_ee) ? true : Util.parseBoolean(saxon_ee);
 			mProcessor  = new Processor( bEE  );
-			
-			
+
+
 			/*
 			mProcessor.getUnderlyingConfiguration().getEditionCode();
-			
+
 			System.err.println("Version " + mProcessor.getSaxonProductVersion() );
 			System.err.println("XQuery " + mProcessor.getConfigurationProperty(FeatureKeys.XQUERY_SCHEMA_AWARE) );
 			System.err.println("XSLT " + mProcessor.getConfigurationProperty(FeatureKeys.XSLT_SCHEMA_AWARE) );
 			System.err.println("Schema " + mProcessor.getConfigurationProperty(FeatureKeys.SCHEMA_VALIDATION ));
-			*/
-			
+			 */
+
 			// mProcessor.setConfigurationProperty(FeatureKeys.TREE_MODEL, net.sf.saxon.event.Builder.LINKED_TREE);
 			mProcessor.registerExtensionFunction(new EvalDefinition() );
 			mProcessor.getUnderlyingConfiguration().setSerializerFactory(new XmlshSerializerFactory(mProcessor.getUnderlyingConfiguration()));
 			mProcessor.getUnderlyingConfiguration().setErrorListener( new XmlshErrorListener());
-			
-			
+
+
 		}
-		
+
 		return mProcessor;
 	}
 
@@ -1237,7 +1240,7 @@ public class Shell implements AutoCloseable, Closeable {
 				mChildren.notify();  // Must be in syncrhonized block
 			}
 	}
-	
+
 	// Kill a child shell whether or not its in our list of children
 	public void killChild(ShellThread job, long waitTime ) {
 		if( job != Thread.currentThread() ) {
@@ -1260,21 +1263,21 @@ public class Shell implements AutoCloseable, Closeable {
 				}
 			}
 			Thread.yield();
-		
+
 			if( job.isAlive() ) 
 				mLogger.warn("Failed to kill child shell: " + job.describe() );
 		}
 	}
-	
+
 	/*
 	 * Returns the children of the current thread
 	 * copied into a collection so that it is thread safe
 	 */
-	
+
 	public List<ShellThread> getChildren(boolean create)
 	{
 		// mChildren is only set never chaqnged or cleared
-		
+
 		// Memory Barrier
 		if( mChildren == null && create ) {
 			synchronized (this) {
@@ -1282,17 +1285,17 @@ public class Shell implements AutoCloseable, Closeable {
 					mChildren =  Collections.synchronizedList(new ArrayList<ShellThread>());
 			}
 		}
-		
+
 		return mChildren ;
 	}
-	
+
 	/* 
 	 * Waits until there are "at most n" running children of this shell
 	 */
 	public  boolean waitAtMostChildren(int n, long waitTime )
 	{
 		long end = System.currentTimeMillis()  + waitTime;
-		
+
 		waitTime = Util.nextWait( end , waitTime );
 		while( childrenSize() > n ){
 			if( waitTime < 0 )
@@ -1303,30 +1306,30 @@ public class Shell implements AutoCloseable, Closeable {
 					synchronized( mChildren ) {
 						mChildren.wait(waitTime);
 					}
-				
+
 			} catch (InterruptedException e) {
 				mLogger.warn("interrupted while waiting for job to complete" , e );
 			} finally {
-			   exitEval();
-			   waitTime = Util.nextWait( end , waitTime );
-			   
+				exitEval();
+				waitTime = Util.nextWait( end , waitTime );
+
 			}
 		}
 		return true ;
-		
+
 	}
 
 
 
 	private int childrenSize()
-    {
+	{
 		// memory barrier 
-	   if( mChildren == null )
-		   return 0;
-	   synchronized( mChildren ) {
-	      return mChildren.size();
-	   }
-    }
+		if( mChildren == null )
+			return 0;
+		synchronized( mChildren ) {
+			return mChildren.size();
+		}
+	}
 
 
 	public long getLastThreadId() {
@@ -1334,7 +1337,7 @@ public class Shell implements AutoCloseable, Closeable {
 		return mLastThreadId;
 	}
 
-	
+
 	/*
 	 * Break n levels of control stacks
 	 * -1 means break all
@@ -1343,24 +1346,24 @@ public class Shell implements AutoCloseable, Closeable {
 	{
 		if( ! hasControlStack() )
 			return 0;
-		
+
 		int end = getControlStack().size() - 1 ;
 		if( levels < 0 ) {
 			while( end >= 0 )
 				getControlStack().get(end--).mBreak = true ;
 		} 
 		else {
-		
+
 			while(  levels-- > 0 && end >= 0 )
 				getControlStack().get(end--).mBreak = true ;
-			
+
 		}	
 		return 0;
-			
-		
-		
+
+
+
 	}
-	
+
 	/*
 	 * Continue n levels of control stacks
 	 * 
@@ -1370,19 +1373,19 @@ public class Shell implements AutoCloseable, Closeable {
 	{
 		if( ! hasControlStack() )
 			return 0;
-		
+
 		int end = getControlStack().size() - 1 ;
-		
+
 		/*
 		 * Break n-1 levels 
 		 */
 		while( levels-- > 1 && end >= 0 )
 			getControlStack().get(end--).mBreak = true ;
-		
+
 		// Continue the final level
 		if( end >= 0 )
 			getControlStack().get(end).mContinue = true ;
-		
+
 		return 0;
 	}
 
@@ -1397,7 +1400,7 @@ public class Shell implements AutoCloseable, Closeable {
 	 * 
 	 */
 	public void popLoop(ControlLoop loop) {
-		
+
 		while( hasControlStack() )
 			if ( mControlStack.pop() == loop )
 				break ;
@@ -1407,12 +1410,12 @@ public class Shell implements AutoCloseable, Closeable {
 		if( mFunctions == null )
 			mFunctions = new FunctionDefinitions();
 		mFunctions.put( func.getName() , func);
-		
+
 	}
 
 	public FunctionDeclaration getFunction(String name) {
-		
-		
+
+
 		if( mFunctions == null )
 			return null;
 		return mFunctions.get(name);
@@ -1421,7 +1424,7 @@ public class Shell implements AutoCloseable, Closeable {
 	public Modules getModules() {
 		return mModules;
 	}
-	
+
 
 
 
@@ -1430,8 +1433,8 @@ public class Shell implements AutoCloseable, Closeable {
 	 * Extracts return values from the function if present
 	 */
 	public int execFunction(String name, Command cmd, SourceLocation location , List<XValue> args ) throws Exception {
-		
-		
+
+
 
 		List<XValue> saveArgs = getArgs();
 		String saveArg0 = getArg0();
@@ -1440,15 +1443,15 @@ public class Shell implements AutoCloseable, Closeable {
 		getCallStack().push( new CallStackEntry(name,cmd,location));
 		setArg0(name);
 		setArgs(args);
-		
+
 		try {
 
-		
+
 			int ret = 	exec(cmd, location);
-			
+
 			return ret;
-			
-		
+
+
 		} finally {
 			popLocalVars(save_vars);
 			setArg0(saveArg0);
@@ -1456,38 +1459,38 @@ public class Shell implements AutoCloseable, Closeable {
 			getCallStack().pop();
 
 		}
-		
-		
-		
-	
+
+
+
+
 	}
 
 	/*
 	 * Convert return value to exit value
 	 */
 	private int convertReturnValueToExitValue(XValue value) {
-		
+
 		// Null is true (0)
 		if( value.isNull() )
 			return 0;
 		if( value.isAtomic() ){
 			// Check if native boolean
-			
+
 			String s = value.toString();
 			// Empty string is false 
 			if( Util.isBlank(s))
 				return 0;
-			
+
 			if( Util.isInt(s, true) )
 				return Integer.parseInt(s);
 			else
-			if( s.equals("true"))
-				return 0;
-			else
-				return 1; // False
-			
+				if( s.equals("true"))
+					return 0;
+				else
+					return 1; // False
+
 		}
-		
+
 		// Non atomic
 		try {
 			return value.toBoolean() ? 0 : 1 ;
@@ -1495,8 +1498,8 @@ public class Shell implements AutoCloseable, Closeable {
 			mLogger.error("Exception parsing value as boolean",e);
 			return -1;
 		} 
-		
-		
+
+
 	}
 
 
@@ -1506,12 +1509,12 @@ public class Shell implements AutoCloseable, Closeable {
 	public Module  importModule(String moduledef,  List<XValue> init) throws  CoreException {
 
 		return mModules.declare(this, moduledef,  init );
-		
+
 	}
-	
+
 	public Module importPackage(String prefix ,String name , String pkg ) throws CoreException {
 		String sHelp = pkg.replace('.', '/') + "/commands.xml";
-		
+
 
 		return mModules.declare( new Module( prefix , name , pkg ,  sHelp));
 	}
@@ -1519,9 +1522,9 @@ public class Shell implements AutoCloseable, Closeable {
 	public void	importJava( XValue uris ) throws CoreException
 	{
 		mClassLoader = getClassLoader( uris );
-		
+
 	}
-	
+
 	public URL getURL( String file ) throws CoreException
 	{
 		URL url = Util.tryURL(file);
@@ -1534,10 +1537,10 @@ public class Shell implements AutoCloseable, Closeable {
 				throw new CoreException(e);
 			}
 		return url;
-			
+
 	}
-	
-	
+
+
 
 	public URI getURI( String file ) throws MalformedURLException, IOException
 	{
@@ -1545,9 +1548,9 @@ public class Shell implements AutoCloseable, Closeable {
 		if( uri == null )
 			uri = getFile(file).toURI();
 		return uri;
-			
+
 	}
-	
+
 
 	public InputPort newInputPort(String file) throws IOException {
 		/*
@@ -1557,20 +1560,20 @@ public class Shell implements AutoCloseable, Closeable {
 		if( FileUtils.isNullFilePath( file )) {
 			return new StreamInputPort(new NullInputStream(),file);
 		}
-		
+
 		URL url = Util.tryURL(file);
-		
+
 		if( url != null ){
 
-				return new StreamInputPort( url.openStream() , url.toExternalForm() );
-			
+			return new StreamInputPort( url.openStream() , url.toExternalForm() );
+
 		}
 		else
 			return new FileInputPort(getFile(file));
 	}
-	
-	
-	
+
+
+
 
 	//  Returns a new port need to manage the port properly
 	public OutputPort newOutputPort(String file, boolean append) throws FileNotFoundException, IOException
@@ -1578,53 +1581,53 @@ public class Shell implements AutoCloseable, Closeable {
 		if( FileUtils.isNullFilePath(file)) {
 			return new StreamOutputPort(new NullOutputStream());
 		}
-	
+
 		else
 		{
 			URL url = Util.tryURL(file);
 			if( url != null )
 				return new StreamOutputPort(url.openConnection().getOutputStream());
-			
+
 		}
 		return  new FileOutputPort(getFile(file),append);
 	}
-	
+
 	public OutputStream getOutputStream(String file, boolean append, SerializeOpts opts) throws FileNotFoundException, IOException, CoreException
 	{
 		OutputPort p =  newOutputPort( file , append); 
 		addAutoRelease( p );
 		return p.asOutputStream(opts);
-		
+
 	}
-	
-	
-	
+
+
+
 	public  void addAutoRelease(OutputPort p) {
 		getEnv().addAutoRelease(p);
 	}
 
 
 	public OutputStream getOutputStream(File file, boolean append) throws FileNotFoundException {
-		
-		
+
+
 		return  new FileOutputStream(file,append);
 	}
-	
+
 
 
 	public void setOption(String name, boolean flag) {
 		mOpts.setOption(name,flag);
-		
+
 	}
 
 	public void setOption(String name, XValue value) throws InvalidArgumentException {
 		mOpts.setOption(name,value);
-		
+
 	}
 
 	public void setModule(Module module) {
 		mModule = module ;
-		
+
 	}
 
 	public Module getModule() {
@@ -1643,13 +1646,13 @@ public class Shell implements AutoCloseable, Closeable {
 	 * an exception if errors
 	 */
 	public int execCondition(Command left) throws ThrowException, ExitOnErrorException {
-		
+
 		pushCondition();
 		try {
 			return exec( left );
 		} 
-		
-		
+
+
 		finally {
 			popCondition();
 		}
@@ -1664,14 +1667,14 @@ public class Shell implements AutoCloseable, Closeable {
 		URL url = getClass().getResource(res);
 		if( url != null )
 			return url;
-		
+
 		for( Module m : mModules ){
 			url = m.getResource(res);
 			if( url != null )
 				return url ;
 		}
 		return null;
-	
+
 	}
 
 
@@ -1679,7 +1682,7 @@ public class Shell implements AutoCloseable, Closeable {
 		for( OptionValue ov : opts.getOpts()){
 			setOption(ov);
 		}
-		
+
 	}
 
 
@@ -1692,7 +1695,7 @@ public class Shell implements AutoCloseable, Closeable {
 	public SerializeOpts getSerializeOpts(Options opts) throws InvalidArgumentException {
 		if( opts == null || opts.getOpts() == null )
 			return mOpts.mSerialize;
-		
+
 		SerializeOpts sopts = mOpts.mSerialize.clone();
 		sopts.setOptions(opts);
 		return sopts;
@@ -1701,19 +1704,19 @@ public class Shell implements AutoCloseable, Closeable {
 	public SerializeOpts getSerializeOpts()
 	{
 		return mOpts.mSerialize;
-		
+
 	}
 
 
 	public Variables pushLocalVars() {
 		return mEnv.pushLocalVars();
-		
+
 	}
 
 
 	public void popLocalVars(Variables vars ) {
 		mEnv.popLocalVars( vars );
-		
+
 	}
 
 
@@ -1721,28 +1724,28 @@ public class Shell implements AutoCloseable, Closeable {
 		// Creates a 3-4 element array  [ "1" , "0" , "1" , ? ]
 		String aver[] = Version.getVersion().split("\\.");
 		String areq[] = sreq.split("\\.");
-		
+
 		// Start with major and go down
 		for( int i = 0 ; i < Math.max(aver.length,areq.length) ; i++ ){
 			if( i >= areq.length )
 				break ;
 			int ireq = Util.parseInt(areq[i], 0);
 			int iver = i >= aver.length ? 0 : Util.parseInt(aver[i], 0);
-			
+
 			// Same version OK check minor
 			if( ireq == iver )
 				continue ;
 			else
-			if( ireq < iver )
-				break ;
-			else
-			if( ireq > iver ) {
-				return -1 ;
-			}
-			
-			
-			
-			
+				if( ireq < iver )
+					break ;
+				else
+					if( ireq > iver ) {
+						return -1 ;
+					}
+
+
+
+
 		}
 		return 0;
 	}
@@ -1769,7 +1772,7 @@ public class Shell implements AutoCloseable, Closeable {
 			else
 				return this.getClass().getClassLoader();
 		}
-				
+
 		final List<URL> urls = new ArrayList<URL>();
 		for( XdmItem item : classpath.asXdmValue() ){
 			String cp = item.getStringValue();
@@ -1780,20 +1783,21 @@ public class Shell implements AutoCloseable, Closeable {
 		final ClassLoader parent = getClass().getClassLoader();
 
 		URLClassLoader loader = AccessController.doPrivileged(new PrivilegedAction<URLClassLoader>() {
+			@Override
 			public URLClassLoader run() {
-				return new URLClassLoader( (URL[]) urls.toArray(new URL[urls.size()]), parent );
+				return new URLClassLoader( urls.toArray(new URL[urls.size()]), parent );
 			}
 		});
 		return loader;
 	}
 
-	
+
 	public void printLoc(Logger logger, SourceLocation loc) {
 
 		if( loc != null ){
 			String sLoc = loc.format(mOpts.mLocationFormat);
 			logger.info( sLoc );
-			
+
 		}
 	}
 
@@ -1803,26 +1807,26 @@ public class Shell implements AutoCloseable, Closeable {
 			return ;
 		if( mTraps == null )
 			mTraps = new HashMap<String,String>();
-		
-		
+
+
 		if( signal.equals("0"))
 			signal = "EXIT";
 		mTraps.put(signal, cmd);
-		
+
 	}
-	
-	
+
+
 	void onSignal( String signal )
 	{
-		
+
 		// TODO: Should we avoid thiws on shutdown ?
 		if( mTraps == null )
 			return;
 		String scmd = mTraps.get(signal);
-		
+
 		if( scmd == null )
 			return ;
-		
+
 
 		try {
 			Command c = parseEval(scmd);
@@ -1830,13 +1834,13 @@ public class Shell implements AutoCloseable, Closeable {
 		} catch (Exception e) {
 			this.printErr("Exception running trap: " + signal + ":"  + scmd ,  e );
 		}
-		
+
 	}
 
 
 	public SourceLocation getLocation() {
 
- 
+
 		return mCurrentLocation == null ? new SourceLocation() : mCurrentLocation ;
 	}
 
@@ -1845,7 +1849,7 @@ public class Shell implements AutoCloseable, Closeable {
 			return getLocation();
 		if( ! hasCallStack() )
 			return null ;
-		
+
 		if( mCallStack.size()  <= depth )
 			return null ;
 		return mCallStack.get(depth).makeLocation();
@@ -1893,111 +1897,111 @@ public class Shell implements AutoCloseable, Closeable {
 	{
 
 		if(loc == null && mCurrentLocation != null)
-      	      mLogger.debug("Overriting current location with null");
+			mLogger.debug("Overriting current location with null");
 		else
 			mCurrentLocation = loc;
 	}
 
 	public IFS getIFS()
-    {
+	{
 		String sisf =this.getEnv().getVarString("IFS");
-	    if( mIFS == null ||
-	    	! mIFS.isCurrent( sisf));
-	    	
-	    	mIFS = new IFS(sisf) ;
-	    return mIFS ; 
-    }
+		if( mIFS == null ||
+				! mIFS.isCurrent( sisf));
+
+		mIFS = new IFS(sisf) ;
+		return mIFS ; 
+	}
 
 
 	public ThreadGroup getThreadGroup()
-    {
-	    return mThreadGroup == null ? Thread.currentThread().getThreadGroup() : mThreadGroup ;
-    }
+	{
+		return mThreadGroup == null ? Thread.currentThread().getThreadGroup() : mThreadGroup ;
+	}
 
 
 	public ShellThread getFirstThreadChild() {
 		if( mChildren == null )
 			return null;
 		synchronized (mChildren) {
-	        return mChildren.isEmpty() ? null : mChildren.get(0);
-        }
-		
+			return mChildren.isEmpty() ? null : mChildren.get(0);
+		}
+
 	}
 
-	
+
 	// Shutdown the shell 
 	// Intended to be called from a external thread to try to force the shell to quit
 	// Dont actually close it - causes too much asyncronous grief
-	
+
 
 	public boolean shutdown(boolean force ,  long waitTime )
-    {
-	   if( mClosed )
-	  	   return true ;
-	    // Mark us done 
-	    mExitVal = Integer.valueOf(0);
-	   
+	{
+		if( mClosed )
+			return true ;
+		// Mark us done 
+		mExitVal = Integer.valueOf(0);
+
 		long end = System.currentTimeMillis()  + waitTime;
 		waitTime = Util.nextWait( end , waitTime );
-		
-	   // Break all 
-	   doBreak(-1);
 
-	   List<ShellThread> children = getChildren(false);
-	   if( force ) {
-		   if( children != null ) {
-			   synchronized( children ) {
-				   children = new ArrayList<>(children);
-			   }
-			   for( ShellThread c : children ) {
+		// Break all 
+		doBreak(-1);
+
+		List<ShellThread> children = getChildren(false);
+		if( force ) {
+			if( children != null ) {
+				synchronized( children ) {
+					children = new ArrayList<>(children);
+				}
+				for( ShellThread c : children ) {
 					waitTime = Util.nextWait( end , waitTime );
-				    this.killChild(c , waitTime);
-			   }
-		   }
-		   terminateChildProcesses();
-	   }
-	   waitTime = Util.nextWait( end , waitTime );
-	   this.waitAtMostChildren(0, waitTime);
-	   Thread.yield();
-	   return mClosed; 
-	    
-    }
+					this.killChild(c , waitTime);
+				}
+			}
+			terminateChildProcesses();
+		}
+		waitTime = Util.nextWait( end , waitTime );
+		this.waitAtMostChildren(0, waitTime);
+		Thread.yield();
+		return mClosed; 
+
+	}
 
 
 	public void addChildProcess(Process proc)
-    {
-	  if( mChildProcess == null ) {
-		  synchronized( this ) {
-			  if( mChildProcess == null )
-				  mChildProcess = Collections.synchronizedList( new  ArrayList<Process>() );
-		  }
-	  }
-	  synchronized( mChildProcess ){
-	     mChildProcess.add(proc);
-	  }
-    }
+	{
+		if( mChildProcess == null ) {
+			synchronized( this ) {
+				if( mChildProcess == null )
+					mChildProcess = Collections.synchronizedList( new  ArrayList<Process>() );
+			}
+		}
+		synchronized( mChildProcess ){
+			mChildProcess.add(proc);
+		}
+	}
 	public void removeChildProcess(Process proc)
-    {
+	{
 		if( mChildProcess == null )
 			return ;
 		mChildProcess.remove(proc);
-    }
-	
+	}
+
 	public void terminateChildProcesses() {
 		if( mChildProcess == null )
 			return ;
 		synchronized( mChildProcess ) {
 			for( Process p : mChildProcess )
 				p.destroy();
-		   mChildProcess.clear();
+			mChildProcess.clear();
 		}
 	}
 
 
 	public boolean isClosed()
-    {
-	    return mClosed ;
-    }
+	{
+		return mClosed ;
+	}
 
 
 

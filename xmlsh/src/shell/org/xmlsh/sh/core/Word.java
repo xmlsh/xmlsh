@@ -8,18 +8,14 @@ package org.xmlsh.sh.core;
 
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.EvalEnv;
-import org.xmlsh.core.StaticContextFlag;
-import org.xmlsh.core.StaticEnvironment;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.ParseResult;
 import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.util.MutableInteger;
 import org.xmlsh.util.Util;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,47 +25,48 @@ import java.util.List;
  * 
  */
 public abstract class Word {
-		
+
 	public abstract void print( PrintWriter out );
 
 
 	protected Word( ) {
 	}
 
-	
+
 	// Expand a word into an existing result class 
 	protected abstract ParseResult expandToResult(Shell shell, EvalEnv env, SourceLocation loc, ParseResult result ) throws IOException, CoreException;
 
-	
+
 	public final XValue expand(Shell shell , EvalEnv env,SourceLocation loc ) throws IOException, CoreException {
-		
+
 		ParseResult result = new ParseResult(shell);
 		expandToResult( shell , env , loc , result );
 		return EvalUtils.expandResultToValue(shell, result, env, loc) ;
-		
+
 	}
-	
-	
+
+
 	public String expandString(Shell shell, EvalEnv env, SourceLocation loc ) throws IOException, CoreException {
 		return expand(shell,evalEnv(env),loc).toString();
 	}
-	
+
 	public List<XValue> expandToList(Shell shell, EvalEnv env , SourceLocation loc ) throws IOException, CoreException {
 		env = evalEnv(env);
 		XValue v = expand( shell,  env , loc);
 		List<XValue> list = new ArrayList<XValue>(1);
 		if( v != null && ! v.isNull() )
-		     list.add( v );
+			list.add( v );
 		if( env.expandSequences())
 			list = Util.expandSequences(list);
 		return list;
-		
+
 	}
 
 	public abstract boolean isEmpty();
-	
+
+	@Override
 	public String toString() {
-		
+
 		StringWriter sw;
 		PrintWriter w = new PrintWriter(sw = new StringWriter());
 		this.print(w);

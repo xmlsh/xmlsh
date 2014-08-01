@@ -26,15 +26,15 @@ public class rmdir extends XCommand {
 			// Ignore IO exceptions 
 			if( ! bForce )
 				throw e ;
-			
+
 		}
 		return null ;
 	}
-	
+
 
 	@Override
 	public int run(List<XValue> args) throws Exception {
-		
+
 		Options opts = new Options( ""  );
 		opts.parse(args);
 		args = opts.getRemainingArgs();
@@ -44,15 +44,15 @@ public class rmdir extends XCommand {
 
 			if( f != null )
 				ret += delete(f );
-			
+
 		}
-		
-		
+
+
 		return ret;
 	}
 
 	private int delete(File f) {
-		
+
 		if( f.exists() ){
 			if( f.isDirectory() ){
 				boolean ok = f.delete();
@@ -61,23 +61,23 @@ public class rmdir extends XCommand {
 					return 1;
 				}
 				return 0;
-					
+
 			}
 			else {
 				printErr("Not a directory: " + f.getPath());
 				return 1;
 			}
-				
-			
-			
+
+
+
 		}
-	
+
 		else {
 			printErr("Directory does not exist: " + f.getPath() );
 			return 1;
 		}
 	}
-		
+
 }
 
 

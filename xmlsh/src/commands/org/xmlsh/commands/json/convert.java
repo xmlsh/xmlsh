@@ -9,9 +9,9 @@ package org.xmlsh.commands.json;
 import org.xmlsh.core.BuiltinFunctionCommand;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.XValue;
+import org.xmlsh.json.JSONUtils;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.types.TypeFamily;
-import org.xmlsh.util.JSONUtils;
 import org.xmlsh.util.JavaUtils;
 
 import java.io.IOException;
@@ -28,18 +28,18 @@ public class convert extends BuiltinFunctionCommand {
 	{
 		super("convert");
 	}
-	
+
 	@Override
 	public XValue run(Shell shell, List<XValue> args) throws ClassNotFoundException, CoreException, JsonParseException, JsonMappingException, IOException 
 	{
 		requires( args.size() == 2 , " two arguments required");
-		
+
 		Class<?> cls = null ;
 		Object from = args.get(0).asObject();
-			cls = JavaUtils.convertToClass(args.get(1) , shell );
+		cls = JavaUtils.convertToClass(args.get(1) , shell );
 		if( cls == null )
 			cls = JsonNode.class ;
-		
+
 		ObjectMapper mapper = JSONUtils.getJsonObjectMapper();
 		Object value = mapper.convertValue(from, cls);
 		return new XValue( TypeFamily.XTYPE , value );

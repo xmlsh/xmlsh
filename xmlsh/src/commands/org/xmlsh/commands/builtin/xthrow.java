@@ -13,9 +13,10 @@ import org.xmlsh.core.XValue;
 import java.util.List;
 
 public class xthrow extends BuiltinCommand {
-	
+
+	@Override
 	public int run( List<XValue> args ) throws Exception {
-		
+
 		throw new ThrowException( args.get(0));
 	}
 }

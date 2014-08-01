@@ -39,27 +39,28 @@ public class ParseResult {
 			bRaw = false ;
 		}
 		RXValue( String s , CharAttr attr ) {
-		
+
 			avalue = new CharAttributeBuffer(s, attr.attr());
 		}
-		
+
+		@Override
 		public String toString()
 		{
 			if( xvalue != null )
 				return xvalue.toString();
 			else
-			if( avalue != null )
-				return avalue.toString();
+				if( avalue != null )
+					return avalue.toString();
 			return null ;
 		}
 		public XValue toXValue() {
 			return xvalue != null ? xvalue : new XValue( avalue == null ? null : avalue.toString() ) ;
 		}
-		
+
 		public CharAttributeBuffer toAValue() {
 			return avalue != null ? avalue :
-				 new CharAttributeBuffer( xvalue.toString() , 
-						 (bRaw ? CharAttr.ATTR_PRESERVE : CharAttr.ATTR_NONE).attr() );
+				new CharAttributeBuffer( xvalue.toString() , 
+						(bRaw ? CharAttr.ATTR_PRESERVE : CharAttr.ATTR_NONE).attr() );
 		}
 		public boolean isRaw() { 
 			return bRaw ;
@@ -72,7 +73,7 @@ public class ParseResult {
 		}
 
 	}
-	
+
 	ParseResult.RXValue			cur = null;		// Current XValue if its unknown to convert to string, only atomic values
 	List<ParseResult.RXValue>	result = new ArrayList<ParseResult.RXValue>();
 
@@ -86,9 +87,9 @@ public class ParseResult {
 			result.add( new RXValue( achars ) );
 			achars = null;
 		}
-		
+
 	}
-	
+
 	public void add( CharAttributeBuffer cb ) {
 		flush();
 		result.add( new RXValue( cb ) );
@@ -116,7 +117,7 @@ public class ParseResult {
 		if( achars == null )
 			achars = new CharAttributeBuffer();
 		if( s != null )
-		   achars.append(s,attr.attr());
+			achars.append(s,attr.attr());
 	}
 
 	public void append( char c, CharAttr attr  )
@@ -139,10 +140,10 @@ public class ParseResult {
 	 * If currently in-quotes then convert the args to strings and seperated by the first char in IFS.
 	 */
 	public void append(XValue value, EvalEnv env , CharAttr attr  ) {
-	
+
 		if( (value == null || value.isNull() ) && env.omitNulls() )
 			return ;
-		
+
 		if( value.isAtomic()  && !attr.isPreserve() ){
 			// If in quotes or this is an ajoining value then concatenate 
 			if( attr.isQuote()  || cur != null || (achars != null && ! achars.isEmpty())  ){
@@ -179,7 +180,7 @@ public class ParseResult {
 			}
 		}
 	}
-	
+
 	public void append( ParseResult r ) {
 		if( r == null )
 			return;
@@ -191,7 +192,7 @@ public class ParseResult {
 			flush();
 			result.addAll(r.result);
 		}
-		
+
 	}
 
 	private void ajoin() {
@@ -202,24 +203,24 @@ public class ParseResult {
 			cur = null;
 		}
 	}
-	
+
 	public void resetIfEmpty()
-    {
-        if( achars != null && achars.isEmpty() )
-        	achars = null;
-    }
+	{
+		if( achars != null && achars.isEmpty() )
+			achars = null;
+	}
 
 	public static List<XValue> expandWild( RXValue rv, File curdir ) {
 		ArrayList<XValue> r = new ArrayList<XValue>();
-	
+
 		if( rv.isEmpty())
 			return r;
-	
+
 		if( rv.isRaw() ){
 			r.add( rv.toXValue());
 			return r;
 		}
-	
+
 		if( rv.isXValue()) {
 			XValue xv = null;
 			xv = rv.toXValue();
@@ -228,10 +229,10 @@ public class ParseResult {
 				return r;
 			}
 		}
-	
+
 		CharAttributeBuffer av = rv.toAValue();
 		int vslen = av.size();
-	
+
 		boolean wildUnQuoted = false ;
 		for( int i = 0 ; i < vslen ; i++ ){
 			char c = av.charAt(i);
@@ -241,68 +242,68 @@ public class ParseResult {
 				break ;
 			}
 		}
-	
+
 		if( ! wildUnQuoted ){
-	
+
 			r.add( rv.toXValue() );
 			return r;
 		}
-	
-	
+
+
 		List<String>	rs = new ArrayList<String>();
-	
+
 		/*
 		 * If vs starts with / (or on dos x:) then use that directory as the root
 		 * instead of the current directory
 		 */
-	
+
 		String root = null ;
 		String parent = null;
-	
-	
+
+
 		if( av.charAt(0) == '/' ){
 			root = "/";
 			parent = "";
 			av.delete( 0, 1 );
 		}
-	
+
 		if( Util.isWindows() && av.size() >= 2 ) {
-	
+
 			char drive = av.charAt(0);
 			// Character.isAlphabetic() is V7 only
 			if( Character.isLetter(drive) && av.charAt(1) == ':'){
-	
+
 				// If windows and matches  <dir>:blah blah
 				// make the root <dir>:/
 				// If no "/" is used then the current directory of that dir is used which is not shell semantics
-	
+
 				root = "" + drive + ":/";
 				if( av.size() > 2 && av.charAt(2) == '/' )
 					av.delete(0,3);
 				else
 					av.delete(0,2);
 				parent = root;
-	
+
 			}
 		}
-	
+
 		CharAttributeBuffer	wilds[] = av.split('/');
 		EvalUtils.expandDir( root == null ? curdir : new File(root) , 
 				parent , 
 				wilds , 
 				rs );
-	
-	
+
+
 		for( String f : rs ){
 			r.add( new XValue(f));
 		}
-	
+
 		// If no matches then use arg explicitly
 		if( r.size() == 0)
 			r.add( rv.toXValue());
-	
+
 		return r;
-	
+
 	}
 	/*
 	 * Expand a single level wildcard rooted at a directory
@@ -312,8 +313,8 @@ public class ParseResult {
 	public   List<XValue>  expandWild(EvalEnv env, File curdir)
 	{
 		ArrayList<XValue> result2 = new ArrayList<XValue>();
-	
-	
+
+
 		/*
 		 * Globbing
 		 */
@@ -321,7 +322,7 @@ public class ParseResult {
 			if( ! env.expandWild() )
 				result2.add( rv.toXValue() );
 			else {
-	
+
 				if( rv.bRaw )
 					result2.add( rv.xvalue );
 				else {
@@ -331,13 +332,13 @@ public class ParseResult {
 				}
 			}
 		}
-	
+
 		return result2;
 	}
 
 
 
-	
+
 }
 
 

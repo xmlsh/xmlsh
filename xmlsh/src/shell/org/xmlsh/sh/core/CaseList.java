@@ -13,17 +13,17 @@ import java.util.ArrayList;
 public class CaseList  extends ArrayList<CaseItem>	{
 
 	public void print(PrintWriter out, boolean bExec){
-		
+
 		for (CaseItem item : this) {
 			item.print(out,bExec);
-			
+
 		}
-		
-		
+
+
 	}
-	
-	
-	
+
+
+
 }
 
 

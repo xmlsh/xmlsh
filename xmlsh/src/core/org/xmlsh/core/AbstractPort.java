@@ -16,7 +16,7 @@ public abstract class AbstractPort implements  IPort {
 
 	// volatile so it can start null 
 	private	volatile ReferenceCounter mCounter = null;
-	
+
 	@SuppressWarnings("unchecked")
 	public <T extends AbstractPort> ReferenceCountedHandle<T> newReference() {
 		if( mCounter == null ) {
@@ -37,18 +37,21 @@ public abstract class AbstractPort implements  IPort {
 	protected void setSystem( boolean system ){
 		mSystem = system ;
 	}
-	
+
+	@Override
 	public String getSystemId() {
 		// TODO Auto-generated method stub
 		return mSystemId;
 	}
 
+	@Override
 	public void setSystemId(String systemId)
 	{
 		mSystemId = systemId;
 	}
 
-	
+
+	@Override
 	public boolean isSystem(){
 		return mSystem;
 	}
@@ -56,8 +59,8 @@ public abstract class AbstractPort implements  IPort {
 
 	@Override
 	public File getFile() throws UnimplementedException {
-		  throw new UnimplementedException("getFile not implemented on this port");
-	  
+		throw new UnimplementedException("getFile not implemented on this port");
+
 	}
 
 }

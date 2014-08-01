@@ -26,37 +26,37 @@ public class rm extends XCommand {
 			// Ignore IO exceptions 
 			if( ! bForce )
 				throw e ;
-			
+
 		}
 		return null ;
 	}
-	
+
 
 	@Override
 	public int run(List<XValue> args) throws Exception {
-		
+
 		Options opts = new Options( "f,r,rf" );
 		opts.parse(args);
 		args = opts.getRemainingArgs();
-		
+
 		boolean bForce = opts.hasOpt("f") || opts.hasOpt("rf");
 		boolean bRecurse = opts.hasOpt("r") || opts.hasOpt("rf");
-		
+
 		for( XValue arg : args ){
 			File f = getFile( arg , bForce );
 			if( f != null )
 				delete(f , bForce , bRecurse );
-			
+
 		}
-		
-		
-		
-		
+
+
+
+
 		return 0;
 	}
 
 	private void delete(File f, boolean force, boolean recurse) {
-		
+
 		if( f.exists() ){
 			if( f.isDirectory() ){
 				if(  ! recurse ){
@@ -66,35 +66,35 @@ public class rm extends XCommand {
 				File files[] = f.listFiles();
 				if( files == null ){
 					printErr("Cannot recurse directory: " + f.getPath() );	
-					
+
 				}
 				else 
-				for( File subf : files ){
-					delete( subf , force ,recurse);
-					
-				}
+					for( File subf : files ){
+						delete( subf , force ,recurse);
+
+					}
 			}
-			
-			
-			
+
+
+
 			if( ! force && ! f.canWrite() ){
 				printErr("File is not writable: " + f.getPath());
 				return;
 			}
-			
-			
+
+
 			if( ! f.delete() ){
 				printErr("Error deleting file: " + f.getPath());
-				
+
 			}
-			
+
 		}
-	
+
 		else
-		if( ! force )
-			printErr("File does not exist: " + f.getPath() );
+			if( ! force )
+				printErr("File does not exist: " + f.getPath() );
 	}
-		
+
 }
 
 

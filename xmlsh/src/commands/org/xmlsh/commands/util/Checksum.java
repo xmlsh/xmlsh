@@ -27,7 +27,7 @@ public class Checksum
 {
 	private		String	mMD5;
 	private		long	mLength;
-	
+
 	private Checksum( String md5 , long len )
 	{
 		mMD5 = md5;
@@ -40,7 +40,7 @@ public class Checksum
 		StringBuffer sb = new StringBuffer();
 		for (int i = 0; i < bytes.length; i++)
 		{
-			int b = (int) bytes[i] & 0xFF;
+			int b = bytes[i] & 0xFF;
 
 			String hex = Integer.toString(b, 16);
 			if (hex.length() < 2)
@@ -62,7 +62,7 @@ public class Checksum
 	public static Checksum calcChecksum(InputStream in) throws CoreException, IOException  
 	{
 		return calcChecksum( in , null );
-		
+
 	}
 	/**
 	 * @param file
@@ -102,7 +102,7 @@ public class Checksum
 	 * @param file
 	 * @return
 	 */
-    public static Checksum calcChecksum(File file) throws CoreException, IOException
+	public static Checksum calcChecksum(File file) throws CoreException, IOException
 	{
 		InputStream in = new FileInputStream(file);
 		Checksum checksum = calcChecksum(in);
@@ -114,24 +114,24 @@ public class Checksum
 	 * @param file
 	 * @return
 	 */
-    public static Checksum calcChecksum(String data) throws CoreException, IOException
+	public static Checksum calcChecksum(String data) throws CoreException, IOException
 	{
 		return calcChecksum( data.getBytes());
 
 	}
 
-    /**
-     * @param file
-     * @return
-     */
-    public static Checksum calcChecksum(byte[] data ) throws CoreException, IOException
-    {
-        InputStream in = new ByteArrayInputStream(data);
-        Checksum checksum = calcChecksum(in);
-        in.close();
-        return checksum;
+	/**
+	 * @param file
+	 * @return
+	 */
+	public static Checksum calcChecksum(byte[] data ) throws CoreException, IOException
+	{
+		InputStream in = new ByteArrayInputStream(data);
+		Checksum checksum = calcChecksum(in);
+		in.close();
+		return checksum;
 
-    }
+	}
 
 	/**
 	 * @return the mD5

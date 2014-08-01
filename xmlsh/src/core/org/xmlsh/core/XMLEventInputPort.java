@@ -9,16 +9,14 @@ package org.xmlsh.core;
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
-
 import org.xml.sax.InputSource;
+import org.xmlsh.json.JSONUtils;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.util.JSONUtils;
 import org.xmlsh.util.Util;
 import org.xmlsh.util.XMLEventInputStream;
 import org.xmlsh.util.XMLEventStreamReader;
 
-import java.io.FileDescriptor;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -52,14 +50,16 @@ public class XMLEventInputPort extends InputPort {
 
 	}
 
+	@Override
 	public synchronized InputStream asInputStream(SerializeOpts opts)
 			throws CoreException {
 
 		return new XMLEventInputStream( mReader , opts ,true);
-		
+
 
 	}
 
+	@Override
 	public synchronized void close() throws IOException {
 
 		try {
@@ -70,9 +70,10 @@ public class XMLEventInputPort extends InputPort {
 
 	}
 
+	@Override
 	public synchronized Source asSource(SerializeOpts opts) throws CoreException {
 
-		
+
 		Source s;
 		s = new StAXSource( asXMLEventReader(opts) );
 		s.setSystemId(getSystemId());
@@ -80,16 +81,18 @@ public class XMLEventInputPort extends InputPort {
 	}
 
 
+	@Override
 	public synchronized InputSource asInputSource(SerializeOpts opts) throws CoreException {
 
-		
+
 		InputSource in = new InputSource(asInputStream(opts));
 		in.setSystemId(this.getSystemId());
 		return in;
 
 	}
-	
-	
+
+
+	@Override
 	public synchronized XdmNode asXdmNode(SerializeOpts opts) throws CoreException {
 
 		net.sf.saxon.s9api.DocumentBuilder builder = Shell.getProcessor().newDocumentBuilder();
@@ -99,9 +102,9 @@ public class XMLEventInputPort extends InputPort {
 			throw new CoreException(e);
 		}
 	}
-	
 
-	
+
+
 	/* (non-Javadoc)
 	 * @see org.xmlsh.core.InputPort#asXdmItem(org.xmlsh.sh.shell.SerializeOpts)
 	 */
@@ -114,6 +117,7 @@ public class XMLEventInputPort extends InputPort {
 		return true;
 	}
 
+	@Override
 	public void copyTo(OutputStream out, SerializeOpts opts) throws CoreException {
 		InputStream in = new XMLEventInputStream( mReader , opts ,true);
 		try {
@@ -121,20 +125,20 @@ public class XMLEventInputPort extends InputPort {
 		} catch (IOException e) {
 			throw new CoreException(e);
 		}
-		
-		
+
+
 		/*
 		StreamEventWriter writer = new StreamEventWriter(out);
-		
+
 		try {
 			writer.add(asXMLEventReader(opts));
 			writer.close();
 		} catch (XMLStreamException e) {
 			throw new CoreException(e);
 		}
-		*/
-	
-		
+		 */
+
+
 
 	}
 
@@ -150,21 +154,21 @@ public class XMLEventInputPort extends InputPort {
 			if( event == null )
 				// EOF - let fall through
 				return mReader ;
-			
+
 			if( event.getEventType() != XMLStreamConstants.CHARACTERS )
 				return mReader ;
-			
+
 			// Text events in a XML pipe - layer with a InputStream then a parser
 			InputStream 	is = asInputStream(opts);
 			XMLInputFactory factory = XMLInputFactory.newInstance();
 			if( ! opts.isSupports_dtd())
 				factory.setProperty(XMLInputFactory.SUPPORT_DTD, "false");
-			
+
 			return factory.createXMLEventReader( getSystemId() , is);
-			
-			
-			
-				
+
+
+
+
 		} catch (XMLStreamException e) {
 			throw new CoreException(e);
 		}
@@ -174,10 +178,10 @@ public class XMLEventInputPort extends InputPort {
 	@Override
 	public XMLStreamReader asXMLStreamReader(SerializeOpts opts) throws CoreException {
 		return new XMLEventStreamReader(asXMLEventReader(opts));
-		
-		
+
+
 	}
-	
+
 	@Override
 	public JsonNode asJson(SerializeOpts serializeOpts) throws IOException, CoreException {
 		return JSONUtils.readJsonNode( asInputStream(serializeOpts));
@@ -189,7 +193,7 @@ public class XMLEventInputPort extends InputPort {
 	}
 
 
-	
+
 
 }
 

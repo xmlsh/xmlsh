@@ -24,7 +24,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 public class ScriptCommand implements ICommand {
-	
+
 	private static Logger mLogger = Logger.getLogger(ScriptCommand.class);
 	private String	mScriptName;
 	private InputStream mScript;
@@ -32,9 +32,10 @@ public class ScriptCommand implements ICommand {
 	private File	 mScriptFile; // file for script, may be null if internal script
 	private Module mModule;
 	private SourceLocation mLocation;
-	
-	
+
+
 	// Finalize script command make sure to close
+	@Override
 	protected void finalize()
 	{
 		close();
@@ -48,14 +49,14 @@ public class ScriptCommand implements ICommand {
 		mSourceMode = bSourceMode;
 		mScriptFile = script;
 		mLocation = location ;
-		
+
 	}
-	
+
 	public ScriptCommand( String script , SerializeOpts opts ) throws UnsupportedEncodingException
 	{
 		mScript = Util.toInputStream(script, opts );
 		mSourceMode = true ;
-		
+
 	}
 
 	public ScriptCommand(String name , InputStream is, boolean bSourceMode, Module module ) {
@@ -63,23 +64,24 @@ public class ScriptCommand implements ICommand {
 		mScript = is;
 		mSourceMode = bSourceMode;
 		mModule = module ;
-		
+
 	}
 
+	@Override
 	public int run(Shell shell, String cmd, List<XValue> args) throws Exception {
-		
+
 		try {
 			if( mSourceMode ){
 				return shell.runScript(mScript,mScriptName,true);
 			} else {
-			
+
 				Shell sh = shell.clone();
 				try {
 					if( args != null )
 						sh.setArgs(args);
 					sh.setArg0(mScriptName);
 					int ret = sh.runScript(mScript,mScriptName,true);
-					
+
 					return ret;
 				} finally {
 					// Close shell - even if exception is thrown through sh.runScript and up
@@ -91,7 +93,8 @@ public class ScriptCommand implements ICommand {
 			close();
 		}
 	}
-	
+
+	@Override
 	public void close() {
 		if( mScript != null ){
 			try {
@@ -101,21 +104,24 @@ public class ScriptCommand implements ICommand {
 			}
 			mScript = null ;
 		}
-		
+
 	}
 
 	/* (non-Javadoc)
 	 * @see org.xmlsh.core.ICommand#getType()
 	 */
+	@Override
 	public CommandType getType() {
 		return CommandType.CMD_TYPE_SCRIPT ;
 	}
 
+	@Override
 	public File getFile() {
 		return mScriptFile ; // may be null 
-		
+
 	}
 
+	@Override
 	public Module getModule() {
 		return mModule ;
 	}
@@ -128,7 +134,7 @@ public class ScriptCommand implements ICommand {
 	@Override
 	public void setLocation(SourceLocation loc) {
 		mLocation = loc ;
-		
+
 	}
 
 
@@ -137,5 +143,5 @@ public class ScriptCommand implements ICommand {
 	}
 
 
-	
+
 }

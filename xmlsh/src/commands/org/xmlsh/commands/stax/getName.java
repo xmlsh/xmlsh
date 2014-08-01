@@ -12,6 +12,7 @@ import org.xmlsh.core.BuiltinFunctionCommand;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.types.TypeFamily;
 
 import java.util.List;
 
@@ -21,26 +22,26 @@ import javax.xml.stream.events.XMLEvent;
 
 public class getName extends BuiltinFunctionCommand {
 
-	
-	
+
+
 	public getName()
 	{
 		super("getName");
 	}
-	
+
 	@Override
 	public XValue run(Shell shell, List<XValue> args) throws CoreException, XPathException, XMLStreamException {
 		if( args.size() == 0 )
 			return null;
 		Object arg = args.get(0).asObject();
-		
-		
+
+
 		if( arg instanceof XMLEvent )
 		{
 			XMLEvent event = (XMLEvent) arg;
 			if( event.isStartElement()) {
 				StartElement se = event.asStartElement();
-				return new XValue( 
+				return new XValue( TypeFamily.XDM,
 						new QName( 
 								se.getName().getPrefix(),
 								se.getName().getNamespaceURI(),
@@ -50,7 +51,7 @@ public class getName extends BuiltinFunctionCommand {
 		}
 		else
 			return null ;
-		
+
 	}
 
 }

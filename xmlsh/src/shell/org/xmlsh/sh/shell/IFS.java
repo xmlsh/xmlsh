@@ -44,30 +44,30 @@ Each occurrence in the input of an IFS character that is not IFS white space, al
 
 Non-zero-length IFS white space shall delimit a field.
 
-*/
+ */
 public class IFS
 {
-	
+
 	static final String DEFAULT_IFS = " \t\n";
 	private boolean bDefault ;
 	private String   ifs;    // IFS
 
-	
+
 
 	private boolean bInit = false ;
 	private boolean bValid = false ;
-	
+
 	private String   ws;  // whitespace in IFS
 	private String   nws; // NOT whitepsace in IFS
 	private Pattern  leading_ws;   // Leading IFSWS pattern
 	private Pattern  trailing_ws;  // Trailing IFSWS pattern
 	private Pattern  delim;		      // intraword delimiter pattern
 	private static Logger mLogger = LogManager.getLogger(IFS.class);
-	
-	
+
+
 	public IFS(String sIFS)
 	{
-		
+
 		if( sIFS == null ) {
 			ifs = DEFAULT_IFS ;
 			bDefault = true ;
@@ -75,15 +75,15 @@ public class IFS
 			ifs=sIFS;
 			bDefault = DEFAULT_IFS.equals( ifs );
 		}
-		
-		
-	}
-	
 
-	
+
+	}
+
+
+
 	private void compile()
 	{
-		
+
 		if( bDefault ) {
 			ws = ifs ;
 			nws  = "";
@@ -92,7 +92,7 @@ public class IFS
 			ws = ifs.replaceAll("[^\\s]",""  );
 			nws = ifs.replaceAll("\\s","");
 		}
-		
+
 		/*	
 		 * Compiling can produce runtime exceptions !
 		 */
@@ -105,13 +105,13 @@ public class IFS
 			else {
 				String nwsDelim = "["+Pattern.quote(nws) + "]";
 				if( Util.isEmpty(ws)) {
-	                delim =  Pattern.compile( nwsDelim );
-                } else
+					delim =  Pattern.compile( nwsDelim );
+				} else
 					// Delim is (nws)(ws*) -- nws needs possible escaping 
 					delim = Pattern.compile( nwsDelim + "[" + ws + "]*" );
 			}	
 			bValid = true ;
-		
+
 		} catch( IllegalArgumentException e ){
 			mLogger.info("Exception compiling IFS - bypassing",e);
 			ifs = DEFAULT_IFS ;
@@ -120,34 +120,34 @@ public class IFS
 		finally {
 			bInit = true ;
 		}
-		
-		
-		
+
+
+
 	}
-	
+
 	boolean isNull() { return Util.isEmpty(ifs); }
 	boolean isDefault() { return bDefault ; }
 	char getFirstChar(){
 		return isNull() ? '\0' : ifs.charAt(0);
 	}
 
-	
+
 	// Trim leading and trailing WS as per rules
 	private String trimWS( String word ) {
 		if( ! bValid )
 			return word.trim();
-		
+
 		if(leading_ws != null )
-		   word = leading_ws.matcher(word).replaceFirst("");
-        if( trailing_ws != null )
-		  word = trailing_ws.matcher(word).replaceFirst("");
-        return word ;
-		
+			word = leading_ws.matcher(word).replaceFirst("");
+		if( trailing_ws != null )
+			word = trailing_ws.matcher(word).replaceFirst("");
+		return word ;
+
 
 	}
 	public List<String> split( String word ) throws IOException {
 
-		
+
 		// SNH
 		if( isNull() )
 			return Collections.singletonList( word );
@@ -163,17 +163,17 @@ public class IFS
 			return Arrays.asList(word.split("\\s+"));
 		// split by the delimiter
 		return Arrays.asList(delim.split(word , 0));
-		
+
 
 	}
 	public boolean isCurrent(String sIFS)
-    {
+	{
 		if( sIFS == null )
 			return isDefault() ;
 
 		return sIFS.equals(ifs);
-	    
-    }
+
+	}
 }
 
 

@@ -24,9 +24,9 @@ public class TextComponentOutputStream extends OutputStream {
 	ByteArrayOutputStream mBytes = new ByteArrayOutputStream();
 	private String port;
 	private SerializeOpts mSerializeOpts;
-	
 
-	
+
+
 	public TextComponentOutputStream(ITextAreaComponent text, SerializeOpts serializeOpts, String port) {
 		super();
 		this.port = port;
@@ -38,7 +38,7 @@ public class TextComponentOutputStream extends OutputStream {
 	@Override
 	public void write(int b) throws IOException {
 		mBytes.write(b);
-		
+
 	}
 
 
@@ -51,19 +51,20 @@ public class TextComponentOutputStream extends OutputStream {
 	@Override
 	public void flush() throws IOException {
 		if( mBytes.size() >0){
-			 final String s = mBytes.toString(mSerializeOpts.getOutput_text_encoding());
-			 mBytes.reset();
-			 SwingUtilities.invokeLater(new Runnable() {
-				    public void run() {
-				      // Here, we can safely update the GUI
-				      // because we'll be called from the
-				      // event dispatch thread
-				      mOutputText.addText(s,port);
-				      
-				    }
-				  });
-		
-			
+			final String s = mBytes.toString(mSerializeOpts.getOutput_text_encoding());
+			mBytes.reset();
+			SwingUtilities.invokeLater(new Runnable() {
+				@Override
+				public void run() {
+					// Here, we can safely update the GUI
+					// because we'll be called from the
+					// event dispatch thread
+					mOutputText.addText(s,port);
+
+				}
+			});
+
+
 		}
 	}
 
@@ -100,8 +101,8 @@ public class TextComponentOutputStream extends OutputStream {
 	public void write(byte[] b, int off, int len) throws IOException {
 		mBytes.write(b,off,len);
 	}  
-	
-	
+
+
 
 }
 

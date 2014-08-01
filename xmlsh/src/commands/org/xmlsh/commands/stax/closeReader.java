@@ -24,13 +24,13 @@ public class closeReader extends XCommand {
 	public int run(List<XValue> args) throws Exception {
 		if( args.size() != 1)
 			throw new InvalidArgumentException("Expected XMLEventReader");
-		
+
 		Object obj = args.get(0).asObject();
 		if(! (obj instanceof XMLEventReader))
 			throw new InvalidArgumentException("Expected XMLEventReader");
-		
+
 		((XMLEventReader)obj).close();
-		
+
 		return 0;
 	}
 

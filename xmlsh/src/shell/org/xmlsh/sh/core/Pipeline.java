@@ -16,11 +16,12 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 
 public class Pipeline extends Command {
-	
+
 	private		ArrayList<Command>	mList = new ArrayList<Command>();
+	@Override
 	public	boolean		isSimple() { return false ; }
 
-	
+
 	private boolean mBang;
 	public Pipeline( boolean bBang ) {
 		mBang = bBang;
@@ -45,21 +46,22 @@ public class Pipeline extends Command {
 			setLocation(e);
 		return mList.add(e);
 	}
+	@Override
 	public void print( PrintWriter out, boolean bExec ){
 		// Dont print pipelines in exec mode
 		if( bExec )
 			return ;
-		
+
 		if( isBang() )
 			out.print("! ");
-		
+
 		int n = mList.size();
 		for (Command c : mList) {
 			c.print(out, bExec);
 			if( n-- > 1 )
 				out.print("|");
-			
-			
+
+
 		}
 	}
 
@@ -68,13 +70,13 @@ public class Pipeline extends Command {
 	 */
 	@Override
 	public int exec(Shell shell) throws Exception {
-		
-		
+
+
 		int		ncmds = mList.size();
-		
-		
+
+
 		ArrayList<ShellThread>  threads = new ArrayList<ShellThread>();
-		
+
 		PipedPort pipes[] = null ;
 		/*
 		 * Use XML Pipes only if xpipe option is set
@@ -84,11 +86,11 @@ public class Pipeline extends Command {
 			if( ! shell.getOpts().mXPipe )
 				pipes = PipedStreamPort.getPipes(ncmds-1);
 			else
-				
+
 				//pipes= PipedXMLPort.getPipes(ncmds-1,shell.getSerializeOpts());
 				pipes= PipedXDMPort.getPipes(ncmds-1,shell.getSerializeOpts());
 		}
-		
+
 		/*
 		 * Setup all but LAST command as seperate threads
 		 * The last thread runs within the current shell
@@ -96,57 +98,57 @@ public class Pipeline extends Command {
 		for(int pi=0 ; pi < ncmds-1 ; pi++ ){
 			Shell sh = shell.clone();	// clone shell for execution
 			Command c = mList.get(pi);
-			
+
 			if( pi > 0 )
 				// Set input to pipe for all but the first
 				sh.getEnv().setStdin( pipes[pi-1].getInput());
-			
+
 			// Set the output 
 			sh.getEnv().setStdout(pipes[pi].getOutput());
-				
-			
+
+
 			ShellThread sht = new ShellThread( shell.getThreadGroup() , sh , null ,   c );
 
 			sht.start();
 			threads.add(sht);
 		}
-		
-		
-		
+
+
+
 		if( ncmds > 1 )
 			shell.getEnv().saveIO();
 		try 
 		{
-			
+
 			if( ncmds > 1 )
 				shell.getEnv().setStdin(pipes[ncmds-2].getInput());
-			
+
 			Command c = mList.get(ncmds-1);
-			
+
 			// Protect ! commands as a condition
 			int ret = 
-				mBang ? 
-				shell.execCondition(c) : 
-				shell.exec(c, this.getLocation() );
+					mBang ? 
+							shell.execCondition(c) : 
+								shell.exec(c, this.getLocation() );
 
-		//	if( ncmds > 1 )
-		//		pipes[0].getOutput().close();
-			
-			for( ShellThread sht : threads )
-				sht.join();
+							//	if( ncmds > 1 )
+							//		pipes[0].getOutput().close();
 
-			return mBang ? (ret == 0 ? 1 : 0 ) : ret ;
-			
-			
+							for( ShellThread sht : threads )
+								sht.join();
+
+							return mBang ? (ret == 0 ? 1 : 0 ) : ret ;
+
+
 		} finally {
 			if( ncmds > 1 )
 				shell.getEnv().restoreIO();
-			
+
 		}
-			
+
 	}
 
-	
+
 }
 //
 //

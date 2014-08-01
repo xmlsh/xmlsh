@@ -9,14 +9,13 @@ package org.xmlsh.commands.json;
 import net.sf.saxon.s9api.BuildingStreamWriter;
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.SaxonApiException;
-
 import org.xmlsh.core.BuiltinFunctionCommand;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.SafeXMLStreamWriter;
 import org.xmlsh.core.XValue;
+import org.xmlsh.json.JSONUtils;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.types.TypeFamily;
-import org.xmlsh.util.JSONUtils;
 
 import java.io.IOException;
 import java.util.List;
@@ -27,36 +26,36 @@ import javax.xml.stream.XMLStreamWriter;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
 public class toXml	extends BuiltinFunctionCommand {
-	 
-	
+
+
 	public toXml()
-		{
-			super("to-xml");
+	{
+		super("to-xml");
+	}
+
+	@Override
+	public XValue run(Shell shell, List<XValue> args) throws InvalidArgumentException, SaxonApiException, IOException, XMLStreamException {
+
+
+		Processor proc = Shell.getProcessor();
+		BuildingStreamWriter bw = proc.newDocumentBuilder().newBuildingStreamWriter();
+
+		XMLStreamWriter xd = new SafeXMLStreamWriter( bw );
+
+		XmlMapper module = JSONUtils.getXmlMapper();
+
+		bw.writeStartDocument();
+		for( XValue arg : args ) {
+			module.writeValue(xd, arg.asObject());
 		}
-		
-		@Override
-		public XValue run(Shell shell, List<XValue> args) throws InvalidArgumentException, SaxonApiException, IOException, XMLStreamException {
 
+		bw.writeEndDocument();
 
-			Processor proc = Shell.getProcessor();
-			BuildingStreamWriter bw = proc.newDocumentBuilder().newBuildingStreamWriter();
-			
-			XMLStreamWriter xd = new SafeXMLStreamWriter( bw );
-			
-			XmlMapper module = JSONUtils.getXmlMapper();
-
-			bw.writeStartDocument();
-				for( XValue arg : args ) {
-					module.writeValue(xd, arg.asObject());
-				}
-
-			bw.writeEndDocument();
-			
-			return new XValue(TypeFamily.XDM,bw.getDocumentNode());
-			
-		}
+		return new XValue(TypeFamily.XDM,bw.getDocumentNode());
 
 	}
+
+}
 
 /*
  * Copyright (C) 2008-2012 David A. Lee.

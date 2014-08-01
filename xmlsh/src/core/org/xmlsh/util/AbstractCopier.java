@@ -10,9 +10,9 @@ package org.xmlsh.util;
 public abstract class AbstractCopier extends Thread
 {
 	public AbstractCopier(String name)
-    {
+	{
 		super(name);
-    }
+	}
 	abstract void close( );
 	abstract void closeOut();
 	abstract void closeIn();

@@ -9,82 +9,87 @@ package org.xmlsh.sh.ui;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JSeparator;
- 
-public class TextComponentPopupMenu {
- 
-    TextComponentPopupMenu(final ITextAreaComponent textArea) {
 
- 
-        final JPopupMenu popup = new JPopupMenu();
- 
-        JMenuItem menuItem = new JMenuItem("Select All");
-        menuItem.addActionListener(new java.awt.event.ActionListener() {
- 
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
- 
-            	textArea.selectAll();
- 
-            }
-        });
-        popup.add(menuItem);
-        
-        
-        
-        menuItem = new JMenuItem("Copy");
-        menuItem.addActionListener(new java.awt.event.ActionListener() {
- 
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
- 
-            	textArea.copy();
- 
-            }
-        });
-        popup.add(menuItem);
- 
-        popup.add(new JSeparator());
-        
-        
-        if( textArea.isEditable() ){
-	 
-	 
-	        menuItem = new JMenuItem("Cut");
-	        menuItem.addActionListener(new java.awt.event.ActionListener() {
-	 
-	            public void actionPerformed(java.awt.event.ActionEvent evt) {
-	            	textArea.cut();
-	               
-	 
-	            }
-	        });
-	        popup.add(menuItem);
-	 
-	        popup.add(new JSeparator());
-	 
-	        menuItem = new JMenuItem("Paste");
-	        menuItem.addActionListener(new java.awt.event.ActionListener() {
-	 
-	            public void actionPerformed(java.awt.event.ActionEvent evt) {
-	            	textArea.paste();
-	            }
-	        });
-	        popup.add(menuItem);
-        }
- 
-        
-        menuItem = new JMenuItem("Clear");
-        menuItem.addActionListener(new java.awt.event.ActionListener() {
- 
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-            	textArea.clear();
-            }
-        });
-        popup.add(menuItem);
-        
-        textArea.getTextComponent().setComponentPopupMenu(popup);
- 
- 
-    }
- 
+public class TextComponentPopupMenu {
+
+	TextComponentPopupMenu(final ITextAreaComponent textArea) {
+
+
+		final JPopupMenu popup = new JPopupMenu();
+
+		JMenuItem menuItem = new JMenuItem("Select All");
+		menuItem.addActionListener(new java.awt.event.ActionListener() {
+
+			@Override
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+
+				textArea.selectAll();
+
+			}
+		});
+		popup.add(menuItem);
+
+
+
+		menuItem = new JMenuItem("Copy");
+		menuItem.addActionListener(new java.awt.event.ActionListener() {
+
+			@Override
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+
+				textArea.copy();
+
+			}
+		});
+		popup.add(menuItem);
+
+		popup.add(new JSeparator());
+
+
+		if( textArea.isEditable() ){
+
+
+			menuItem = new JMenuItem("Cut");
+			menuItem.addActionListener(new java.awt.event.ActionListener() {
+
+				@Override
+				public void actionPerformed(java.awt.event.ActionEvent evt) {
+					textArea.cut();
+
+
+				}
+			});
+			popup.add(menuItem);
+
+			popup.add(new JSeparator());
+
+			menuItem = new JMenuItem("Paste");
+			menuItem.addActionListener(new java.awt.event.ActionListener() {
+
+				@Override
+				public void actionPerformed(java.awt.event.ActionEvent evt) {
+					textArea.paste();
+				}
+			});
+			popup.add(menuItem);
+		}
+
+
+		menuItem = new JMenuItem("Clear");
+		menuItem.addActionListener(new java.awt.event.ActionListener() {
+
+			@Override
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				textArea.clear();
+			}
+		});
+		popup.add(menuItem);
+
+		textArea.getTextComponent().setComponentPopupMenu(popup);
+
+
+	}
+
 }
 
 //

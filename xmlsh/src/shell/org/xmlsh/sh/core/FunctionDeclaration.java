@@ -7,7 +7,6 @@
 package org.xmlsh.sh.core;
 
 import org.xmlsh.core.EvalEnv;
-import org.xmlsh.core.EvalFlag;
 import org.xmlsh.core.IFunction;
 import org.xmlsh.sh.shell.Shell;
 
@@ -15,7 +14,8 @@ import java.io.PrintWriter;
 
 public class FunctionDeclaration extends Command implements IFunction {
 	private Command mBody;
-	
+
+	@Override
 	public	boolean		isSimple() { return false ; }
 
 	public FunctionDeclaration( String name , Command body )
@@ -23,11 +23,12 @@ public class FunctionDeclaration extends Command implements IFunction {
 		super(name);
 		mBody = body;
 	}
-	
-	
+
+
 	/**
 	 * @return the body
 	 */
+	@Override
 	public Command getBody() {
 		return mBody;
 	}
@@ -44,28 +45,28 @@ public class FunctionDeclaration extends Command implements IFunction {
 		out.println( getName() + " ()");
 		if( ! bExec )
 			mBody.print( out , bExec);
-		
+
 	}
 	@Override
 	public int exec(Shell shell) throws Exception {
-		
+
 		shell.declareFunction( this );	
 		return 0;
-		
+
 	}
 
 	@Override
-    public EvalEnv argumentEnv(EvalEnv parent)
-    {
+	public EvalEnv argumentEnv(EvalEnv parent)
+	{
 		// Add normal expansions 
-	   return parent.withFlagsSet( EvalEnv.commandArgsFlags() );
-    }
+		return parent.withFlagsSet( EvalEnv.commandArgsFlags() );
+	}
 
 	@Override
-    public EvalEnv returnEnv(EvalEnv parent)
-    { 
+	public EvalEnv returnEnv(EvalEnv parent)
+	{ 
 		return parent.withFlagsMasked( EvalEnv.returnValueMask() ); 
-    }
+	}
 
 }
 

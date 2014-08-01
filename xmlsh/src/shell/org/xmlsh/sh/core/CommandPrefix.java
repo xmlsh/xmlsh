@@ -7,9 +7,7 @@
 package org.xmlsh.sh.core;
 
 import org.xmlsh.core.CoreException;
-import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.util.MutableInteger;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -32,17 +30,17 @@ public class CommandPrefix {
 	public void print(PrintWriter out) {
 		for (Assign ass : mList) {
 			ass.print(out);
-			
+
 		}
-		
+
 	}
 
 	public void  exec(Shell shell, SourceLocation loc) throws IOException, CoreException {
 		for (Assign ass : mList) 
 			ass.eval( shell, loc );
-		
+
 	}
-	
+
 }
 
 

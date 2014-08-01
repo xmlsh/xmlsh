@@ -24,13 +24,13 @@ public class closeWriter extends XCommand {
 	public int run(List<XValue> args) throws Exception {
 		if( args.size() != 1)
 			throw new InvalidArgumentException("Expected XMLStreamWriter");
-		
+
 		Object obj = args.get(0).asObject();
 		if(! (obj instanceof XMLStreamWriter))
 			throw new InvalidArgumentException("Expected XMLStreamWriter");
-		
+
 		((XMLStreamWriter)obj).close();
-		
+
 		return 0;
 	}
 

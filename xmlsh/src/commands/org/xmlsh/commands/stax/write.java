@@ -22,13 +22,13 @@ import javax.xml.stream.XMLStreamWriter;
 
 public class write extends XCommand {
 
-	
-	
+
+
 	public write()
 	{
-		
+
 	}
-	
+
 	@Override
 	public int run( List<XValue> args) throws CoreException, XPathException, XMLStreamException {
 		if( args.size()  < 1 )
@@ -39,19 +39,19 @@ public class write extends XCommand {
 			for( XValue v : args ){
 				XdmItem item = v.asXdmItem();
 				if( item != null && item instanceof XdmNode ){
-					
+
 					StAXUtils.copy( (NodeInfo) item.getUnderlyingValue() , (XMLStreamWriter) arg ); 
-					
-					
+
+
 				} else
 					((XMLStreamWriter)arg).writeCharacters( v.toString() );
-				
-				
+
+
 			}
-		
+
 		}
 		return 0;
-		
+
 	}
 
 }

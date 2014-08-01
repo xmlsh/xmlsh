@@ -12,7 +12,6 @@ import org.xmlsh.sh.shell.Shell;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
 
 public class IOHere {
 
@@ -23,17 +22,17 @@ public class IOHere {
 			here = here.replaceAll("^\t+", "" ).replaceAll("\n\t+", "\n");
 		mHere = here;
 	}
-	
-	
+
+
 	public void print(PrintWriter out) {
 		out.print(mHere);
-		
+
 	}
 	public void exec(Shell shell, String port) throws CoreException, IOException  {
-		
+
 		shell.getEnv().setInput( port , 
 				new ByteArrayInputStream(mHere.getBytes(shell.getInputTextEncoding())));
-		
+
 	}
 }
 

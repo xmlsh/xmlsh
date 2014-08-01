@@ -6,14 +6,15 @@
 
 package org.xmlsh.commands.internal;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.xmlsh.core.BuiltinFunctionCommand;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.Options.OptionDef;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.types.TypeFamily;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class options extends BuiltinFunctionCommand
 {
@@ -26,20 +27,20 @@ public class options extends BuiltinFunctionCommand
 	@Override
 	public XValue run(Shell shell, List<XValue> args) throws Exception
 	{
-		
+
 		Options opts = new Options( parseDefs(args) );
-        return new XValue(opts);
+		return new XValue(TypeFamily.JAVA,opts);
 	}
 
 	private List<OptionDef> parseDefs(List<XValue> args)
-    {
+	{
 		List<OptionDef> defs = new ArrayList<>(args.size());
 		for( XValue arg : args )
 			defs.addAll( Options.parseDefs(arg.toString()));
 		return defs;
-			
-		
-    }
+
+
+	}
 
 }
 

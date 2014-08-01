@@ -12,7 +12,7 @@ public class JSONSerializeOpts
 
 	public JSONSerializeOpts()
 	{
-		
+
 	}
 
 	/**

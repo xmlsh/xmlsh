@@ -10,28 +10,29 @@ import org.xmlsh.core.BuiltinFunctionCommand;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.types.TypeFamily;
 
 import java.io.IOException;
 import java.util.List;
 
 public class newEventReader extends BuiltinFunctionCommand {
 
-	
-	
+
+
 	public newEventReader()
 	{
 		super("newEventReader");
 	}
-	
+
 	@Override
 	public XValue run(Shell shell, List<XValue> args) throws CoreException, IOException {
 		if( args.size() == 0 )
-			return new XValue(shell.getEnv().getStdin().asXMLEventReader(shell.getSerializeOpts()));
+			return new XValue( TypeFamily.JAVA, shell.getEnv().getStdin().asXMLEventReader(shell.getSerializeOpts()));
 		else
-			return new XValue(shell.getEnv().getInput(args.get(0)).asXMLEventReader(shell.getSerializeOpts()));
-		
-		
-		
+			return new XValue( TypeFamily.JAVA, shell.getEnv().getInput(args.get(0)).asXMLEventReader(shell.getSerializeOpts()));
+
+
+
 	}
 
 }

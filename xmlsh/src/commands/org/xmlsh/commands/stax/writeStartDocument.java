@@ -18,13 +18,13 @@ import javax.xml.stream.XMLStreamWriter;
 
 public class writeStartDocument extends XCommand {
 
-	
-	
+
+
 	public writeStartDocument()
 	{
-		
+
 	}
-	
+
 	@Override
 	public int run(List<XValue> args) throws CoreException, XPathException, XMLStreamException {
 		if( args.size()  != 1  )
@@ -33,9 +33,9 @@ public class writeStartDocument extends XCommand {
 		Object arg = arg0.asObject();
 		if( arg instanceof XMLStreamWriter )
 			((XMLStreamWriter)arg).writeStartDocument();
-		
+
 		return 0;
-		
+
 	}
 
 }

@@ -16,25 +16,25 @@ public class quote extends BuiltinFunctionCommand {
 
 	public quote() {
 		super("quote");
-	
+
 	}
 
 	@Override
 	public XValue run(Shell shell, List<XValue> args) throws Exception {
-		
+
 		StringBuffer	sb = new StringBuffer("\"");
 		for( XValue arg : args )
 			sb.append( escape( arg.toString() ) );
 		sb.append("\"");
 		return new XValue( sb.toString());
 
-		
+
 	}
 
 	private String escape(String string) 
 	{
 		if( string.indexOf('"') < 0 && string.indexOf('\\') < 0 ) 
-				return string ;
+			return string ;
 		StringBuffer sb = new StringBuffer();
 		char c;
 		for( int i = 0 ; i < string.length() ; i++ ){
@@ -42,11 +42,11 @@ public class quote extends BuiltinFunctionCommand {
 			if( c == '"' || c == '\\' )
 				sb.append('\\');
 			sb.append(c);
-			
-				
+
+
 		}
 		return sb.toString();
-		
+
 	}
 
 }

@@ -16,35 +16,35 @@ public enum EvalFlag {
 	JOIN_VALUES,      // Join values in string context 
 	SPLIT_WORDS,     // Split string info words (IFS expansion)
 	EXPAND_WILD,     // Glob (wildcards) the result
-    OMIT_NULL,       // drop null values
+	OMIT_NULL,       // drop null values
 	EXPAND_SEQUENCES // expand single values as sequences into multiple values 
 	;
-	
+
 
 	public static EnumSet<EvalFlag>  expandVarFlags() { 
 		return  EnumSet.of( EvalFlag.EXPAND_VAR );
 	}
-	
+
 	public static EnumSet<EvalFlag>  expandWordsFlags() { 
 		return  EnumSet.of( EvalFlag.SPLIT_WORDS );
 	}
-	
-	
+
+
 	public static EnumSet<EvalFlag>  expandSequencesFlags() { 
 		return  EnumSet.of( EvalFlag.EXPAND_SEQUENCES );
 	}
-	
+
 	public static EnumSet<EvalFlag>  expandWildFlags() { 
 		return  EnumSet.of( EvalFlag.EXPAND_WILD );
 	}
-	
+
 	// Was tongs
 	public static EnumSet<EvalFlag>  preserveValueFlags() {
 		return  EnumSet.of( EvalFlag.EXPAND_VAR);
 	}
-	
 
-		
+
+
 
 	public static EnumSet<EvalFlag>  evalFlags( boolean bExpandSequences , boolean bExpandWild , boolean bExpandWords, boolean bPreserve )
 	{ 
@@ -64,7 +64,7 @@ public enum EvalFlag {
 	}
 
 	final static EnumSet<EvalFlag> _evalFlagsNone = EnumSet.noneOf(EvalFlag.class);
-	
+
 }
 
 

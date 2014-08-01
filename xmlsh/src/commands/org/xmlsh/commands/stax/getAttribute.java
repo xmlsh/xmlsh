@@ -22,20 +22,20 @@ import javax.xml.stream.events.XMLEvent;
 
 public class getAttribute extends BuiltinFunctionCommand {
 
-	
-	
+
+
 	public getAttribute()
 	{
 		super("getAttribute");
 	}
-	
+
 	@Override
 	public XValue run(Shell shell, List<XValue> args) throws CoreException, XPathException, XMLStreamException {
 		if( args.size()  < 2  )
 			return null;
 		Object arg = args.get(0).asObject();
 		QName attrName = args.get(1).asQName(shell);
-		
+
 		if( arg instanceof XMLEvent )
 		{
 			XMLEvent event = (XMLEvent) arg;
@@ -47,7 +47,7 @@ public class getAttribute extends BuiltinFunctionCommand {
 		}
 		else
 			return null ;
-		
+
 	}
 
 }

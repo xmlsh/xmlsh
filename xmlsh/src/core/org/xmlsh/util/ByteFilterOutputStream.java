@@ -23,18 +23,18 @@ public class ByteFilterOutputStream extends OutputStream
 		mOut = os ;
 		mFilter = filter ;
 	}
-	
+
 	/*
 	 * This is the only necessary override
 	 */
 	@Override
-    public void write(int b) throws IOException
-    {
+	public void write(int b) throws IOException
+	{
 		if( b != mFilter )
 			mOut.write(b);
-	    
-    }
-	
+
+	}
+
 }
 
 
