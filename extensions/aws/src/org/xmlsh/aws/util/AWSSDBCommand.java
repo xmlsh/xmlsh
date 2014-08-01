@@ -20,43 +20,44 @@ import com.amazonaws.services.simpledb.AmazonSimpleDBClient;
 import com.amazonaws.services.simpledb.model.Attribute;
 
 public abstract class AWSSDBCommand extends AWSCommand {
-	
 
-protected		AmazonSimpleDB mAmazon ;
-	
+
+	protected		AmazonSimpleDB mAmazon ;
+
 	public AWSSDBCommand() {
 		super();
 	}
+	@Override
 	protected Object getClient() {
 		return mAmazon; 
 	}
 
 	protected void getSDBClient(Options opts) throws UnexpectedException, InvalidArgumentException {
-		
-			
+
+
 		mAmazon =  new AmazonSimpleDBClient(
 				new AWSCommandCredentialsProviderChain( mShell, opts  ) 
-		
-		);
-		
+
+				);
+
 		setEndpoint(opts);
 		setRegion(opts);
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.xmlsh.aws.util.AWSCommand#setRegion(java.lang.String)
 	 */
 	@Override
 	public void setRegion(String region) {
-	    mAmazon.setRegion( RegionUtils.getRegion(region));
-		
+		mAmazon.setRegion( RegionUtils.getRegion(region));
+
 	}
-	
+
 	@Override
-    public void setEndpoint( String endpoint )
-    {
-    	mAmazon.setEndpoint( endpoint );
-    }
+	public void setEndpoint( String endpoint )
+	{
+		mAmazon.setEndpoint( endpoint );
+	}
 
 	protected void writeAttribute(Attribute attr) throws XMLStreamException {
 		startElement("attribute");
@@ -68,11 +69,11 @@ protected		AmazonSimpleDB mAmazon ;
 	protected void writeAttributes(List<Attribute> attributes) throws XMLStreamException {
 		for( Attribute a : attributes ){
 			writeAttribute(a);
-			
+
 		}
-		
+
 	}
-	
+
 
 
 }

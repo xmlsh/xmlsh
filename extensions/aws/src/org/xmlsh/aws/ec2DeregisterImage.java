@@ -19,7 +19,7 @@ import com.amazonaws.services.ec2.model.DeregisterImageRequest;
 
 public class ec2DeregisterImage extends AWSEC2Command {
 
-	
+
 
 
 
@@ -28,81 +28,81 @@ public class ec2DeregisterImage extends AWSEC2Command {
 	 * @param args
 	 * @throws IOException 
 	 * 
-	 
+
 	 */
 	@Override
 	public int run(List<XValue> args) throws Exception {
 
-		
+
 		Options opts = getOptions();
 		opts.parse(args);
 
 		args = opts.getRemainingArgs();
-		
 
-		
-		
-		
+
+
+
+
 		if( args.size() != 1 ){
 			usage(null);
 			return 1;
 		}
-		
+
 
 		setSerializeOpts(this.getSerializeOpts(opts));
 		try {
-			 getEC2Client(opts);
+			getEC2Client(opts);
 		} catch (UnexpectedException e) {
 			usage( e.getLocalizedMessage() );
 			return 1;
-			
+
 		}
-		
+
 		traceCall("deregisterImage");
 
 		int ret = deregisterImage( args.get(0).toString());
-		
-		
-		
+
+
+
 		return ret;	
 	}
 
 	private int deregisterImage( String image ) throws IOException, XMLStreamException, SaxonApiException, CoreException 
 	{
 
-		
-		
+
+
 		DeregisterImageRequest deregisterImageRequest= new DeregisterImageRequest(image);
-		
+
 		mAmazon.deregisterImage(deregisterImageRequest);
-		
+
 
 
 		writeResult(  );
-		
-		
+
+
 		return 0;
 	}
 
 	private void writeResult() throws IOException, XMLStreamException, SaxonApiException, CoreException {
 		OutputPort stdout = this.getStdout();
 		mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(getSerializeOpts()));
-		
-		
+
+
 		startDocument();
 		startElement(this.getName());
-		
-		
+
+
 		endElement();
 		endDocument();
 		closeWriter();
-		
+
 		stdout.writeSequenceTerminator(getSerializeOpts());
-		
-		
+
+
 	}
 
-	
-	
+
+
 
 }

@@ -28,44 +28,44 @@ public class ec2ModifyImageAttribute extends AWSEC2Command {
 	 * @param args
 	 * @throws IOException 
 	 * 
-	 
+
 	 */
 	@Override
 	public int run(List<XValue> args) throws Exception {
 
-		
+
 		Options opts = getOptions("p=product-codes,l=launch,a=add:+,r=remove:+");
 		opts.parse(args);
 
 		args = opts.getRemainingArgs();
-		
 
-		
-		
-		
+
+
+
+
 		if( args.size() != 1 ){
 			usage(null);
 			return 1;
 		}
-		
+
 
 		setSerializeOpts(this.getSerializeOpts(opts));
 		try {
-			 getEC2Client(opts);
+			getEC2Client(opts);
 		} catch (UnexpectedException e) {
 			usage( e.getLocalizedMessage() );
 			return 1;
-			
+
 		}
 		boolean bAdd = opts.hasOpt("add") || ! opts.hasOpt("remove");
-		
-		
+
+
 		int ret = modifyImage( args.get(0).toString(), bAdd, opts );
-		
-		
-		
-		
-		
+
+
+
+
+
 		return ret;	
 	}
 
@@ -73,32 +73,32 @@ public class ec2ModifyImageAttribute extends AWSEC2Command {
 	{
 
 		String attribute	 = opts.hasOpt("launch") ? "launchPermission" : "productCodes" ;
-		
-		
+
+
 		ModifyImageAttributeRequest request = new ModifyImageAttributeRequest( image_id, attribute  );
 
 		request.setOperationType(bAdd ? "add" : "remove");
 		if( opts.hasOpt("launch"))
-		    // request.setLaunchPermission(getLaunchPermissions(bAdd,opts));
+			// request.setLaunchPermission(getLaunchPermissions(bAdd,opts));
 			request.setUserIds(getUserIds(opts,bAdd));
 		else
-		if( opts.hasOpt("product-codes")){
-			request.setProductCodes( getProductCodes( opts, bAdd ) );
-			request.setUserIds(null);
-			request.setLaunchPermission(null);
-		}
-		else {
-			usage(null);
-			return 1;
-		}
-		
-	
+			if( opts.hasOpt("product-codes")){
+				request.setProductCodes( getProductCodes( opts, bAdd ) );
+				request.setUserIds(null);
+				request.setLaunchPermission(null);
+			}
+			else {
+				usage(null);
+				return 1;
+			}
+
+
 		traceCall("modifyImageAttribute");
 		mAmazon.modifyImageAttribute(request);
 
 		writeResult( image_id );
-		
-		
+
+
 		return 0;
 	}
 
@@ -111,7 +111,7 @@ public class ec2ModifyImageAttribute extends AWSEC2Command {
 		Collection<String> codes = parseStrings( opts.getOptValues(bAdd ? "add" : "remove") );
 
 		return codes ;
-		
+
 	}
 
 	private Collection<String> parseStrings(List<XValue> values) {
@@ -129,28 +129,28 @@ public class ec2ModifyImageAttribute extends AWSEC2Command {
 	private LaunchPermissionModifications getLaunchPermissions(boolean bAdd, Options opts) throws InvalidArgumentException {
 		LaunchPermissionModifications launch = new LaunchPermissionModifications();
 
-		
-		
+
+
 		Collection<LaunchPermission> perms = parseLaunchPermissions( opts.getOptValues("launch") );
-		
+
 		if( bAdd )
-	       launch.setAdd(perms);	 		
+			launch.setAdd(perms);	 		
 		else
-	       launch.setRemove(perms);	 		
-		
+			launch.setRemove(perms);	 		
+
 		return launch;
 	}
 
 	private Collection<LaunchPermission> parseLaunchPermissions(List<XValue> values) {
-		
+
 		Collection<LaunchPermission> p = new ArrayList<LaunchPermission>();
 		for( XValue xv : values ){
 			for( String vl : xv.asStringList() ){
 				for( String s : vl.split(",") ){
 					if( s.equals("all"))
-					    p.add( new LaunchPermission().withGroup(s));
+						p.add( new LaunchPermission().withGroup(s));
 					else
-					    p.add( new LaunchPermission().withUserId(s));
+						p.add( new LaunchPermission().withUserId(s));
 				}
 			}
 		}
@@ -160,24 +160,24 @@ public class ec2ModifyImageAttribute extends AWSEC2Command {
 	private void writeResult(String image_id) throws IOException, XMLStreamException, SaxonApiException, CoreException {
 		OutputPort stdout = this.getStdout();
 		mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(getSerializeOpts()));
-		
-		
+
+
 		startDocument();
 		startElement(this.getName());
-		
+
 		startElement("image");
 		attribute( "image-id", image_id);
 		endElement();
-		
+
 		endElement();
 		endDocument();
 		closeWriter();
-		
+
 		stdout.writeSequenceTerminator(getSerializeOpts());
-		
+
 	}
 
-	
-	
+
+
 
 }

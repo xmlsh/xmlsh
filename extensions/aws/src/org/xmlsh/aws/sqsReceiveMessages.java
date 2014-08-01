@@ -22,7 +22,7 @@ import com.amazonaws.services.sqs.model.ReceiveMessageResult;
 
 public class sqsReceiveMessages extends AWSSQSCommand {
 
-	
+
 
 
 
@@ -33,97 +33,97 @@ public class sqsReceiveMessages extends AWSSQSCommand {
 	@Override
 	public int run(List<XValue> args) throws Exception {
 
-		
+
 		Options opts = getOptions("f=file:,p=port:,m=max:,t=timeout:,w=wait:");
 		opts.parse(args);
 
 		args = opts.getRemainingArgs();
-		
+
 		if( args.size() < 1 ){
 			usage();
 			return 1;
 		}
-		
 
-		
+
+
 		setSerializeOpts(this.getSerializeOpts(opts));
-		
-		
+
+
 		String url = args.get(0).toString();
 		OutputPort	out ;
-		
+
 		int max = opts.getOptInt("m", 1);
 		int visibilityTimeout = opts.getOptInt("timeout", 0);
 		int wait =  opts.getOptInt("wait", 0);
-		
+
 		// write to port
-         if( opts.hasOpt("p")) { 
-        	 out  = mShell.getEnv().getOutputPort(opts.getOptStringRequired("p"));
-         } 
-         else
-		
-		// Put message to file 
-		if( opts.hasOpt("f")){
-			out = mShell.getEnv().getOutput(opts.getOptValue("f"),true);
-			
-		} else
-		if( args.size() == 1 )
-			out = getStdout();
+		if( opts.hasOpt("p")) { 
+			out  = mShell.getEnv().getOutputPort(opts.getOptStringRequired("p"));
+		} 
 		else
-		{
-			usage();
-			return 1 ;
-		}
-		
-		
-			
-		
+
+			// Put message to file 
+			if( opts.hasOpt("f")){
+				out = mShell.getEnv().getOutput(opts.getOptValue("f"),true);
+
+			} else
+				if( args.size() == 1 )
+					out = getStdout();
+				else
+				{
+					usage();
+					return 1 ;
+				}
+
+
+
+
 		try {
-			 getSQSClient(opts);
+			getSQSClient(opts);
 		} catch (UnexpectedException e) {
 			usage( e.getLocalizedMessage() );
 			return 1;
-			
+
 		}
-		
+
 		int ret;
-		
-		
+
+
 		ret = receive(url ,  max , visibilityTimeout,  wait , out );
-		
-		
+
+
 		return ret;
-		
-		
+
+
 	}
 
 
 
 	private int receive(String url, int max ,  int visibilityTimeout , int wait , OutputPort out ) throws IOException, XMLStreamException, SaxonApiException, CoreException  {
-		
+
 
 		List<String> attributeNames = new ArrayList<String>(1);
 		attributeNames.add("All");
-		
+
 		ReceiveMessageRequest request = new ReceiveMessageRequest();
 		request.setQueueUrl(url);
 		request.setAttributeNames(attributeNames);
 		request.setMaxNumberOfMessages(max);
-        request.setWaitTimeSeconds(wait);
+		request.setWaitTimeSeconds(wait);
 		if( visibilityTimeout != 0 )
 			request.setVisibilityTimeout(visibilityTimeout);
-		
-		
+
+
 		traceCall("receiveMessage");
 
 		ReceiveMessageResult result = mAmazon.receiveMessage(request);
-		
+
 		mWriter = out.asXMLStreamWriter(getSerializeOpts());
-		
+
 		startDocument();
 		startElement(getName());
 		for( Message m :  result.getMessages() ){
-		
+
 			startElement("message");
 			attribute("md5", m.getMD5OfBody() );
 			attribute("id" , m.getMessageId());
@@ -134,7 +134,7 @@ public class sqsReceiveMessages extends AWSSQSCommand {
 				attribute( "name" , attr.getKey() );
 				attribute("value", attr.getValue() );
 				endElement();
-				
+
 			}
 			endElement();
 			startElement("body");
@@ -143,22 +143,22 @@ public class sqsReceiveMessages extends AWSSQSCommand {
 
 			endElement();
 		}
-		
-		
+
+
 		endElement();
 		endDocument();
 		closeWriter();
 		out.writeSequenceTerminator(getSerializeOpts());
-		
+
 
 		return 0;
-		
-		
-		
-		
+
+
+
+
 	}
 
 
-	
+
 
 }

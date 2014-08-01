@@ -20,7 +20,7 @@ import com.amazonaws.services.sns.model.Topic;
 
 public class snsListTopics extends AWSSNSCommand {
 
-	
+
 
 	/**
 	 * @param args
@@ -29,48 +29,48 @@ public class snsListTopics extends AWSSNSCommand {
 	@Override
 	public int run(List<XValue> args) throws Exception {
 
-		
+
 		Options opts = getOptions();
 		opts.parse(args);
 
 		args = opts.getRemainingArgs();
-		
 
-		
+
+
 		setSerializeOpts(this.getSerializeOpts(opts));
-		
 
-		
-		
+
+
+
 		try {
-			 getSNSClient(opts);
+			getSNSClient(opts);
 		} catch (UnexpectedException e) {
 			usage( e.getLocalizedMessage() );
 			return 1;
-			
+
 		}
-		
+
 		int ret;
-		
+
 		ret = list();
-		
-		
+
+
 		return ret;
-		
-		
+
+
 	}
 
 
 	private int list() throws IOException, XMLStreamException, SaxonApiException, CoreException {
-		
+
 
 		OutputPort stdout = this.getStdout();
 		mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
-		
-		
+
+
 		startDocument();
 		startElement(getName());
-		
+
 
 		traceCall("listTopics");
 
@@ -80,31 +80,31 @@ public class snsListTopics extends AWSSNSCommand {
 				startElement("topic");
 				attribute("arn", topic.getTopicArn());
 				endElement();
-				
+
 			}
 			if( result.getNextToken() != null )
 				result = mAmazon.listTopics( new ListTopicsRequest().withNextToken(result.getNextToken()));
-			
-			
+
+
 		} while( result.getNextToken() != null );
-		
-		
-		
-		
+
+
+
+
 		endElement();
 		endDocument();
 		closeWriter();
 		stdout.writeSequenceTerminator(getSerializeOpts());
-		
-		
+
+
 		return 0;
-		
-		
-		
-		
+
+
+
+
 	}
 
 
-	
+
 
 }

@@ -41,7 +41,7 @@ import com.amazonaws.services.s3.model.StaticEncryptionMaterialsProvider;
 import com.amazonaws.services.s3.transfer.TransferManager;
 
 public abstract class AWSS3Command extends AWSCommand {
-	
+
 
 	protected		AmazonS3 mAmazon ;
 	public String sMetaDataElem = "metadata";
@@ -49,86 +49,89 @@ public abstract class AWSS3Command extends AWSCommand {
 	private TransferManager tm = null;
 	private int mThreads = 10 ;
 
-	
-    protected ThreadPoolExecutor createDefaultExecutorService() {
-        ThreadFactory threadFactory = new ThreadFactory() {
-            private int threadCount = 1;
 
-            public Thread newThread(Runnable r) {
-                Thread thread = new Thread(r);
-                thread.setName("s3-transfer-manager-worker-" + threadCount++);
-                return thread;
-            }
-        };
-        return (ThreadPoolExecutor)Executors.newFixedThreadPool(mThreads, threadFactory);
-    }
-    
-    
+	protected ThreadPoolExecutor createDefaultExecutorService() {
+		ThreadFactory threadFactory = new ThreadFactory() {
+			private int threadCount = 1;
+
+			@Override
+			public Thread newThread(Runnable r) {
+				Thread thread = new Thread(r);
+				thread.setName("s3-transfer-manager-worker-" + threadCount++);
+				return thread;
+			}
+		};
+		return (ThreadPoolExecutor)Executors.newFixedThreadPool(mThreads, threadFactory);
+	}
+
+
 	public AWSS3Command() {
 		super();
 	}
 
+	@Override
 	protected String getCommonOpts() {
 		return super.getCommonOpts() + ",crypt,keypair:,threads:" ;
 	}
-	
+
+	@Override
 	protected Object getClient() {
 		return mAmazon; 
 	}
 
-	
-	
+
+
 	protected void getS3Client(Options opts) throws UnsupportedEncodingException, IOException, CoreException {
-		
+
 		ClientConfiguration clientConfig = new ClientConfiguration();
 		if( opts.hasOpt("crypt")){
-			
+
 			synchronized( AWSS3Command.class  ){
 				if( Security.getProperty(BouncyCastleProvider.PROVIDER_NAME) == null ) 
 					Security.addProvider(new BouncyCastleProvider());
 			}
-			
+
 			XValue sKeypair = opts.getOptValueRequired("keypair");
 
-			
+
 			KeyPair keyPair = (KeyPair) readPEM(sKeypair);
-			
+
 			mAmazon =  new AmazonS3EncryptionClient(
 					new AWSCommandCredentialsProviderChain( mShell, opts  ) ,
 					new StaticEncryptionMaterialsProvider(
 							new EncryptionMaterials( keyPair )),
 							clientConfig ,  new CryptoConfiguration() 
-			
-			);
-			
-			
+
+					);
+
+
 		} else
 			mAmazon =  new AmazonS3Client(
 					new AWSCommandCredentialsProviderChain( mShell, opts  ) ,
 					clientConfig 
-			
-			);
-		
+
+					);
+
 		setEndpoint(opts);
 		setRegion(opts);
-		
+
 		if( opts.hasOpt("threads"))
 			mThreads = opts.getOptInt("threads", mThreads);
 
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.xmlsh.aws.util.AWSCommand#setRegion(java.lang.String)
 	 */
 	@Override
 	public void setRegion(String region) {
-	    mAmazon.setRegion( RegionUtils.getRegion(region));
-		
+		mAmazon.setRegion( RegionUtils.getRegion(region));
+
 	}
-	
+
 
 	private Object readPEM(XValue sPrivate) throws IOException, UnsupportedEncodingException,
-			CoreException {
+	CoreException {
 		PEMReader reader = new PEMReader( getInput(sPrivate).asReader( this.getSerializeOpts() ));
 		Object obj = reader.readObject();
 		reader.close();
@@ -143,8 +146,8 @@ public abstract class AWSS3Command extends AWSCommand {
 		if( ! Util.isBlank(path.getPrefix()))
 			req.setPrefix(path.getPrefix());
 		return req;
-		
-		
+
+
 	}
 	protected ListMultipartUploadsRequest getListMultipartRequest(S3Path path, String delim) {
 		ListMultipartUploadsRequest req = new ListMultipartUploadsRequest(path.getBucket());
@@ -153,48 +156,48 @@ public abstract class AWSS3Command extends AWSCommand {
 		if( ! Util.isBlank(path.getPrefix()))
 			req.setPrefix(path.getPrefix());
 		return req;
-		
+
 	}
-	
+
 	protected void writeMeta(ObjectMetadata m) throws InvalidArgumentException, XMLStreamException,
-			SaxonApiException {
-				
-				
-				
-				startDocument();
-				startElement(sMetaDataElem);
-				
-				
-				attribute("cache-control" , m.getCacheControl() );
-				attribute("content-disposition" ,m.getContentDisposition() );
-				attribute("content-encoding" , m.getContentEncoding() );
-				attribute("md5" , m.getContentMD5() );
-				attribute("etag" , m.getETag() );
-				attribute("version-id" , m.getVersionId() );
-				attribute("content-length" , String.valueOf(m.getContentLength()) );
-				attribute("last-modified" , Util.formatXSDateTime(m.getLastModified()) );
-				
-				startElement("user-metadata");
-				for( Entry<String, String> user : m.getUserMetadata().entrySet()  ){
-					startElement(sUserMetaDataElem);
-					attribute("name", user.getKey() );
-					attribute("value", user.getValue() );
-					endElement();
-					
-				
-				}
-				endElement();
-				endElement();
-				endDocument();
-			
-				
-				
-				
-				
-				
+	SaxonApiException {
+
+
+
+		startDocument();
+		startElement(sMetaDataElem);
+
+
+		attribute("cache-control" , m.getCacheControl() );
+		attribute("content-disposition" ,m.getContentDisposition() );
+		attribute("content-encoding" , m.getContentEncoding() );
+		attribute("md5" , m.getContentMD5() );
+		attribute("etag" , m.getETag() );
+		attribute("version-id" , m.getVersionId() );
+		attribute("content-length" , String.valueOf(m.getContentLength()) );
+		attribute("last-modified" , Util.formatXSDateTime(m.getLastModified()) );
+
+		startElement("user-metadata");
+		for( Entry<String, String> user : m.getUserMetadata().entrySet()  ){
+			startElement(sUserMetaDataElem);
+			attribute("name", user.getKey() );
+			attribute("value", user.getValue() );
+			endElement();
+
+
+		}
+		endElement();
+		endElement();
+		endDocument();
+
+
+
+
+
+
 	}
-	
-	
+
+
 	protected S3Path getPath( String bucket , String key )
 	{
 		if( Util.isBlank(bucket) )
@@ -202,31 +205,31 @@ public abstract class AWSS3Command extends AWSCommand {
 		else
 			return new S3Path( bucket , key );
 	}
-	
+
 
 	@Override
-    public void setEndpoint( String endpoint )
-    {
-    	mAmazon.setEndpoint( endpoint );
-    }
+	public void setEndpoint( String endpoint )
+	{
+		mAmazon.setEndpoint( endpoint );
+	}
 
 	protected CannedAccessControlList getAcl(String acl) {
-		
+
 		for(CannedAccessControlList c : CannedAccessControlList.values())
 			if( c.toString().equals(acl))
 				return c;
 		return null ;
-		
+
 	}
 
 	protected int setAcl(S3Path src, String acl) throws CoreException, IOException,
-			XMLStreamException, SaxonApiException {
-		  
-         traceCall("setObjectAcl");
+	XMLStreamException, SaxonApiException {
+
+		traceCall("setObjectAcl");
 
 		mAmazon.setObjectAcl(src.getBucket(),src.getKey(), getAcl(acl));
 		return 0;
-		
+
 	}
 
 	protected TransferManager getTransferManager() {
@@ -237,9 +240,9 @@ public abstract class AWSS3Command extends AWSCommand {
 
 	protected void shutdownTransferManager() {
 		if( tm != null)
-		    tm.shutdownNow();
+			tm.shutdownNow();
 	}
-	
+
 
 }
 

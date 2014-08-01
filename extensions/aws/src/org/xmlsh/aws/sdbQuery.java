@@ -34,40 +34,40 @@ public class sdbQuery	 extends  AWSSDBCommand {
 		opts.parse(args);
 
 		args = opts.getRemainingArgs();
-		
+
 
 		boolean bConsistant = opts.hasOpt("consistant");
-		
+
 		setSerializeOpts(this.getSerializeOpts(opts));
-		
-		
-		
-		
-		
-		
+
+
+
+
+
+
 		try {
-			 getSDBClient(opts);
+			getSDBClient(opts);
 		} catch (UnexpectedException e) {
 			usage( e.getLocalizedMessage() );
 			return 1;
-			
+
 		}
-		
+
 		if( args.size() !=1 ){
 			usage(getName()+ ":" + "select ...");
-			
+
 		}
 		String select = args.remove(0).toString();
-		
+
 
 		int ret = -1;
 		ret = query(bConsistant,select);
 
-		
-		
+
+
 		return ret;
-		
-		
+
+
 	}
 
 
@@ -76,17 +76,17 @@ public class sdbQuery	 extends  AWSSDBCommand {
 
 		OutputPort stdout = this.getStdout();
 		mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
-		
-		
-		
-		
-		
+
+
+
+
+
 		startDocument();
 		startElement(getName());
-		
-		
 
-		
+
+
+
 
 		SelectRequest selectRequest = new SelectRequest(select,bConsistant);
 
@@ -97,22 +97,22 @@ public class sdbQuery	 extends  AWSSDBCommand {
 
 			SelectResult result = mAmazon.select(selectRequest).withNextToken(token);
 			for( Item item :result.getItems())
-			   writeItem(item);
+				writeItem(item);
 			token = result.getNextToken();
-			
+
 		} while( token != null );
-		
+
 		endElement();
 		endDocument();
-		
-		
-				
-		
+
+
+
+
 		closeWriter();
 		stdout.writeSequenceTerminator(getSerializeOpts());
 		return 0;
-		
-		
+
+
 	}
 
 
@@ -121,7 +121,7 @@ public class sdbQuery	 extends  AWSSDBCommand {
 		attribute("name" , item.getName());
 		writeAttributes( item.getAttributes());
 		endElement();
-		
+
 	}
 
 
@@ -132,25 +132,26 @@ public class sdbQuery	 extends  AWSSDBCommand {
 
 			String name = args.remove(0).toString();
 			String value = args.isEmpty() ? "" : args.remove(0).toString();
- 
-			
+
+
 			attrs.add( 
 					new ReplaceableAttribute().withName(name).withValue(value));
-		
 
-		
+
+
 		}
 		return attrs ;
 	}
 
 
 
+	@Override
 	public void usage() {
 		super.usage();
 	}
 
 
 
-	
+
 
 }

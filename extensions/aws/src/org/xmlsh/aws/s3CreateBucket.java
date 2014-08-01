@@ -11,7 +11,7 @@ import java.util.List;
 
 public class s3CreateBucket extends AWSS3Command {
 
-	
+
 
 
 	/**
@@ -21,37 +21,37 @@ public class s3CreateBucket extends AWSS3Command {
 	@Override
 	public int run(List<XValue> args) throws Exception {
 
-		
+
 		Options opts = getOptions( );
 		opts.parse(args);
 
 		args = opts.getRemainingArgs();
-		
+
 		setSerializeOpts(this.getSerializeOpts(opts));
-		
+
 		try {
-			 getS3Client(opts);
+			getS3Client(opts);
 		} catch (UnexpectedException e) {
 			usage( e.getLocalizedMessage() );
 			return 1;
-			
+
 		}
 
 
 		if(args.size() != 1 ){
-				usage();
-				return 1;
+			usage();
+			return 1;
 		}
 
 		String bucketName = args.get(0).toString();
 
 		return createBucket(bucketName);
-		
+
 	}
 
 
 	private int createBucket(String bucketName) {
-		
+
 		int ret  = 0;
 		try {
 			traceCall("createBucket");
@@ -61,11 +61,12 @@ public class s3CreateBucket extends AWSS3Command {
 			mShell.printErr("Exception creating " + bucketName , e);
 			ret = 1;
 		}
-		
+
 		return  ret;
-		
+
 	}
 
+	@Override
 	public void usage() {
 		super.usage("Usage: s3CreateBucket  bucketname");
 	}

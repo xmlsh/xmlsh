@@ -9,11 +9,11 @@ package org.xmlsh.aws.util;
 import org.xmlsh.util.Util;
 
 public class S3Path {
-	
+
 	private		String 	mBucket;
 	private		String	mKey;
-	
-	
+
+
 	/*
 	 * Construct a path from
 	 * 		bucket
@@ -22,12 +22,12 @@ public class S3Path {
 	 * 		s3://bucket/prefix
 	 * 		
 	 */
-	
+
 	public S3Path(String	path)
 	{
 		if( path.startsWith("s3://"))
 			path = path.substring(5);
-		
+
 		int spos = path.indexOf('/');
 		if( spos < 0 )
 			mBucket = Util.nullIfBlank(path) ;
@@ -35,18 +35,18 @@ public class S3Path {
 			mBucket = Util.nullIfBlank( path.substring(0,spos));
 			mKey = Util.nullIfBlank(path.substring(spos+1));
 		}
-		
+
 	}
-	
-	
+
+
 	public S3Path( String bucket , String key )
 	{
 		mBucket = Util.nullIfBlank(bucket) ;
 		mKey = Util.nullIfBlank(key) ;
-		
-		
+
+
 	}
-	
+
 	public S3Path( S3Path parent , String child )
 	{
 		mBucket = parent.mBucket ; 
@@ -59,11 +59,11 @@ public class S3Path {
 	public 	String	getBucket(){
 		return mBucket ;
 	}
-	
+
 	public String	getPrefix(){
 		return mKey ;
 	}
-	
+
 	public boolean 	hasBucket()
 	{
 		return mBucket != null ;
@@ -73,8 +73,8 @@ public class S3Path {
 	{
 		return mKey != null ;
 	}
-	
-	
+
+
 	// Synonym to getPrefix 
 	public String getKey() {
 		return mKey ;
@@ -86,27 +86,27 @@ public class S3Path {
 	 */
 	@Override
 	public String toString() {
-		
+
 		return "s3://" + Util.notNull(mBucket) + ( hasKey() ? ("/" + mKey) : "" );
-		
-		
+
+
 	}
-	
+
 	public boolean isDirectory()
 	{
 		return mKey == null || mKey.endsWith("/");
 	}
-	
+
 	public void appendPath( String path )
 	{
 		if( mKey == null )
 			mKey = path ;
 		else
-		if( mKey.endsWith("/"))
-			mKey = mKey + path ;
-		else
-			mKey = mKey + "/" + path ;
-		
+			if( mKey.endsWith("/"))
+				mKey = mKey + path ;
+			else
+				mKey = mKey + "/" + path ;
+
 	}
 
 
@@ -115,7 +115,7 @@ public class S3Path {
 	 */
 	public void setBucket(String bucket) {
 		mBucket = Util.nullIfBlank(bucket) ;
-		
+
 
 	}
 
@@ -127,8 +127,8 @@ public class S3Path {
 		mKey = Util.nullIfBlank(key) ;
 
 	}
-	
-	
+
+
 }
 
 

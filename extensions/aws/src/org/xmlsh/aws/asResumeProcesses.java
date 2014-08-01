@@ -7,11 +7,9 @@
 package org.xmlsh.aws;
 
 import net.sf.saxon.s9api.SaxonApiException;
-
 import org.xmlsh.annotations.Command;
 import org.xmlsh.aws.util.AWSASCommand;
 import org.xmlsh.core.CoreException;
-import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.SafeXMLStreamWriter;
@@ -23,54 +21,53 @@ import java.util.List;
 
 import javax.xml.stream.XMLStreamException;
 
-import com.amazonaws.services.autoscaling.model.ExecutePolicyRequest;
 import com.amazonaws.services.autoscaling.model.ResumeProcessesRequest;
 
 @Command("as-describe-processes")
 public class asResumeProcesses extends AWSASCommand {
 
-	
+
 
 	@Override
 	public int run(List<XValue> args) throws Exception {
-		
-		
-		
+
+
+
 		Options opts = getOptions();
 		opts.parse(args);
 
 		args = opts.getRemainingArgs();
-		
+
 		if( args.size() != 2 )
 			usage("as-execute-policy group policy");
-		
+
 
 
 		String group = args.get(0).toString();
 		String policy = args.get(1).toString();
-		
+
 		setSerializeOpts(this.getSerializeOpts(opts));
-		
-		
+
+
 		try {
 			getASClient(opts);
 		} catch (UnexpectedException e) {
 			usage( e.getLocalizedMessage() );
 			return 1;
-			
+
 		}
-		
-	
+
+
 		int ret = resume( group , policy );
-		
-		
-		
+
+
+
 		return ret;
-		
-		
+
+
 	}
 
-	
+
 
 
 	private int resume(String group, String... processes) throws IOException, XMLStreamException, SaxonApiException, CoreException 
@@ -78,22 +75,22 @@ public class asResumeProcesses extends AWSASCommand {
 
 		OutputPort stdout = this.getStdout();
 		mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(getSerializeOpts()));
-		
-		
+
+
 		startDocument();
 		startElement(this.getName());
-		
+
 		ResumeProcessesRequest request = new ResumeProcessesRequest().withAutoScalingGroupName(group).withScalingProcesses(processes);
-		
+
 		traceCall("resumeProcesses");
 
 		mAmazon.resumeProcesses(request);
-		
+
 		endElement();
 		endDocument();
 		return 0 ;
-	
-	
+
+
 	}
 
 

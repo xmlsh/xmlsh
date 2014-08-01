@@ -27,73 +27,73 @@ import com.amazonaws.services.cloudformation.model.Stack;
 
 public class cfnDescribeStacks extends AWSCFNCommand {
 
-	
+
 
 	@Override
 	public int run(List<XValue> args) throws Exception {
-		
-		
+
+
 		Options opts = getOptions("n=name:");
 		opts.parse(args);
 
 		args = opts.getRemainingArgs();
-		
 
-		
+
+
 		setSerializeOpts(this.getSerializeOpts(opts));
-		
-		
+
+
 		try {
 			getCFNClient(opts);
 		} catch (UnexpectedException e) {
 			usage( e.getLocalizedMessage() );
 			return 1;
-			
-		}
-		
-	
-        int ret = describe(opts.getOptString("name", null ) );
 
-		
-		
+		}
+
+
+		int ret = describe(opts.getOptString("name", null ) );
+
+
+
 		return ret;
-		
-		
+
+
 	}
 
 
 
 	private int describe(String name) throws IOException, XMLStreamException, SaxonApiException, CoreException {
-		
+
 
 		OutputPort stdout = this.getStdout();
 		mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(getSerializeOpts()));
-		
-		
+
+
 		startDocument();
 		startElement(this.getName());
-		
-		
-		
+
+
+
 		DescribeStacksRequest request = new DescribeStacksRequest();
 		if( name != null )
 			request.setStackName(name);
-		
+
 		traceCall("describeStacks");
 
 		DescribeStacksResult result = mAmazon.describeStacks(request);
-		
+
 
 		for( Stack  stack : result.getStacks() )
 			writeStack( stack )
-		;
-		
+			;
+
 		endElement();
 		endDocument();
 		closeWriter();
-		
+
 		stdout.writeSequenceTerminator(getSerializeOpts());
-		
+
 		return 0;
 
 	}
@@ -109,16 +109,16 @@ public class cfnDescribeStacks extends AWSCFNCommand {
 		attribute("name" ,stack.getStackName());
 		attribute("status" ,stack.getStackStatus());
 		attribute("reason" ,stack.getStackStatusReason());
-		
-		
-		
+
+
+
 		writeParameters( stack.getParameters() );
 
 		writeOutputs( stack.getOutputs() );
-		
+
 		writeCapibilities(stack.getCapabilities());
 		writeNotifications(stack.getNotificationARNs());
-		
+
 	}
 
 
@@ -128,7 +128,7 @@ public class cfnDescribeStacks extends AWSCFNCommand {
 		for( Output o : outputs )
 			writeOutput( o );
 		endElement();
-		
+
 	}
 
 
@@ -143,8 +143,8 @@ public class cfnDescribeStacks extends AWSCFNCommand {
 	}
 
 
-		
-	
+
+
 }
 
 

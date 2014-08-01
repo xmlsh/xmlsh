@@ -27,7 +27,7 @@ import com.amazonaws.services.dynamodbv2.model.ProvisionedThroughput;
 
 public class ddbCreateTable	 extends  AWSDDBCommand {
 
-	
+
 
 	/**
 	 * @param args
@@ -40,29 +40,29 @@ public class ddbCreateTable	 extends  AWSDDBCommand {
 		opts.parse(args);
 
 		args = opts.getRemainingArgs();
-		
+
 		if( args.size() != 1 )
 			usage();
-		
+
 		setSerializeOpts(opts);
-		
+
 		try {
-			 getDDBClient(opts);
+			getDDBClient(opts);
 		} catch (UnexpectedException e) {
 			usage( e.getLocalizedMessage() );
 			return 1;
-			
+
 		}
-		
+
 
 		int ret = -1;
 		ret = create(args.get(0).toString(),opts);
 
-		
-		
+
+
 		return ret;
-		
-		
+
+
 	}
 
 
@@ -71,58 +71,58 @@ public class ddbCreateTable	 extends  AWSDDBCommand {
 
 		OutputPort stdout = this.getStdout();
 		mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
-		
-		
-		
-	    ProvisionedThroughput provisionedThroughput = new ProvisionedThroughput()
-	        .withReadCapacityUnits(opts.getOptLong("readCapacity", 5L))
-	        .withWriteCapacityUnits(opts.getOptLong("writeCapacity", 5L));
-		    
-		
-		
+
+
+
+		ProvisionedThroughput provisionedThroughput = new ProvisionedThroughput()
+		.withReadCapacityUnits(opts.getOptLong("readCapacity", 5L))
+		.withWriteCapacityUnits(opts.getOptLong("writeCapacity", 5L));
+
+
+
 		startDocument();
 		startElement(getName());
-         
-		
-		
+
+
+
 		Collection<AttributeDefinition> attributeDefinitions  = parseAttributes( opts );
 		Collection<KeySchemaElement> keySchema = parseKeySchema(opts);
 
-	
-	
+
+
 		CreateTableRequest createTableRequest = new CreateTableRequest()
-		   .withTableName(tableName)
-		   .withProvisionedThroughput(provisionedThroughput)
-		   .withAttributeDefinitions(attributeDefinitions)
-		   .withKeySchema(keySchema);
-		   
-	 
+		.withTableName(tableName)
+		.withProvisionedThroughput(provisionedThroughput)
+		.withAttributeDefinitions(attributeDefinitions)
+		.withKeySchema(keySchema);
+
+
 
 		traceCall("createTable");
 
 		CreateTableResult result = mAmazon.createTable(createTableRequest);
-	    writeTableDescription(result.getTableDescription());
+		writeTableDescription(result.getTableDescription());
 
-		
+
 		endElement();
 		endDocument();
-		
+
 		closeWriter();
 		stdout.writeSequenceTerminator(getSerializeOpts());
-		
+
 		return 0;
 	}
 
 
 	private Collection<KeySchemaElement> parseKeySchema(Options opts) throws InvalidArgumentException {
-		
-		
+
+
 		ArrayList<KeySchemaElement> tableKeySchema = new ArrayList<KeySchemaElement>();
 
 		for( XValue xv : opts.getOptValues("key") ){
-			
+
 			StringPair sp = new StringPair( xv.toString(),':' );
-			
+
 			tableKeySchema.add(new KeySchemaElement().withAttributeName(sp.getRight())
 					.withKeyType(KeyType.valueOf(sp.getLeft().toUpperCase())));
 
@@ -134,29 +134,30 @@ public class ddbCreateTable	 extends  AWSDDBCommand {
 	private Collection<AttributeDefinition> parseAttributes(Options opts) throws InvalidArgumentException {
 
 		ArrayList<AttributeDefinition> attributeDefinitions = new ArrayList<AttributeDefinition>();
-        for( XValue xv : opts.getOptValues("attribute") ){
-			
+		for( XValue xv : opts.getOptValues("attribute") ){
+
 			StringPair sp = new StringPair( xv.toString(),':' );
-			
+
 			attributeDefinitions.add(new AttributeDefinition()
 			.withAttributeName(sp.getRight()).withAttributeType(sp.getLeft()));
 		}
 
-        return attributeDefinitions;
-	
-		
-	     
-		
+		return attributeDefinitions;
+
+
+
+
 	}
 
 
 
+	@Override
 	public void usage() {
 		super.usage();
 	}
 
 
 
-	
+
 
 }

@@ -22,7 +22,7 @@ import com.amazonaws.services.sns.model.Subscription;
 
 public class snsListSubscriptions extends AWSSNSCommand {
 
-	
+
 
 	/**
 	 * @param args
@@ -31,55 +31,55 @@ public class snsListSubscriptions extends AWSSNSCommand {
 	@Override
 	public int run(List<XValue> args) throws Exception {
 
-		
+
 		Options opts = getOptions();
 		opts.parse(args);
 
 		args = opts.getRemainingArgs();
-		
 
-		
+
+
 		setSerializeOpts(this.getSerializeOpts(opts));
-		
 
-		
-		
+
+
+
 		try {
-			 getSNSClient(opts);
+			getSNSClient(opts);
 		} catch (UnexpectedException e) {
 			usage( e.getLocalizedMessage() );
 			return 1;
-			
+
 		}
-		
+
 		int ret;
-		
+
 		if( args.size() == 0 )
 			ret = list();
 		else
 			ret = list(args.get(0).toString());
-		
-		
+
+
 		return ret;
-		
-		
+
+
 	}
 
 
 	private int list() throws IOException, XMLStreamException, SaxonApiException, CoreException {
-		
+
 
 		OutputPort stdout = this.getStdout();
 		mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
-		
-		
+
+
 		startDocument();
 		startElement(getName());
-		
+
 		traceCall("listSubscriptions");
 
 		ListSubscriptionsResult result = mAmazon.listSubscriptions();
-		
+
 		do {
 			for( Subscription subscription : result.getSubscriptions()){
 				startElement("subscription");
@@ -88,39 +88,39 @@ public class snsListSubscriptions extends AWSSNSCommand {
 				attribute("protocol",subscription.getProtocol());
 				attribute("subscription-arn",subscription.getSubscriptionArn());
 				attribute("topic-arn",subscription.getTopicArn());
-				
+
 				endElement();
-				
+
 			}
 			if( result.getNextToken() != null )
 				result = mAmazon.listSubscriptions( new ListSubscriptionsRequest().withNextToken(result.getNextToken()));
-				
+
 		} while(result.getNextToken() != null );
-		
-		
-		
+
+
+
 		endElement();
 		endDocument();
 		closeWriter();
 		stdout.writeSequenceTerminator(getSerializeOpts());
-		
+
 		return 0;
-		
+
 	}
 
 	private int list(String topic) throws IOException, XMLStreamException, SaxonApiException, CoreException {
-		
+
 
 		OutputPort stdout = this.getStdout();
 		mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
-		
-		
+
+
 		startDocument();
 		startElement(getName());
-		
-		
+
+
 		ListSubscriptionsByTopicResult result = mAmazon.listSubscriptionsByTopic(new ListSubscriptionsByTopicRequest(topic));
-		
+
 		do {
 			for( Subscription subscription : result.getSubscriptions()){
 				startElement("subscription");
@@ -129,29 +129,29 @@ public class snsListSubscriptions extends AWSSNSCommand {
 				attribute("protocol",subscription.getProtocol());
 				attribute("subscription-arn",subscription.getSubscriptionArn());
 				attribute("topic-arn",subscription.getTopicArn());
-				
+
 				endElement();
-				
+
 			}
 			if( result.getNextToken() != null )
 				result = mAmazon.listSubscriptionsByTopic( new ListSubscriptionsByTopicRequest(topic,result.getNextToken()));
-				
+
 		} while(result.getNextToken() != null );
-		
-		
-		
+
+
+
 		endElement();
 		endDocument();
 		closeWriter();
 		stdout.writeSequenceTerminator(getSerializeOpts());
-		
-		
+
+
 		return 0;
-		
-		
-		
-		
+
+
+
+
 	}
-	
+
 
 }

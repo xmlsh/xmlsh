@@ -3,56 +3,12 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/xmlsh"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="/xmlsh/lib/commons-codec-1.6.jar"/>
-	<classpathentry kind="lib" path="/xmlsh/lib/commons-io-2.1.jar"/>
-	<classpathentry kind="lib" path="/xmlsh/lib/commons-lang-2.6.jar"/>
-	<classpathentry kind="lib" path="/xmlsh/lib/commons-logging-1.1.1.jar"/>
-	<classpathentry kind="lib" path="/xmlsh/lib/httpclient-4.2.3.jar"/>
-	<classpathentry kind="lib" path="/xmlsh/lib/httpcore-4.2.2.jar"/>
-	<classpathentry kind="lib" path="/xmlsh/lib/jackson-annotations-2.4.1.jar" sourcepath="C:/Java/jackson/jackson-2.4.2/jackson-annotations-2.4.1-sources.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="jar:file:/C:/Java/jackson/jackson-2.4.2/jackson-annotations-2.4.1-javadoc.jar!/"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/xmlsh/lib/jackson-core-2.4.1.jar" sourcepath="C:/Java/jackson/jackson-2.4.2/jackson-core-2.4.1-sources.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="jar:file:/C:/Java/jackson/jackson-2.4.2/jackson-core-2.4.1-javadoc.jar!/"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/xmlsh/lib/jackson-databind-2.4.1.jar" sourcepath="C:/Java/jackson/jackson-2.4.2/jackson-databind-2.4.1-sources.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="jar:file:/C:/Java/jackson/jackson-2.4.2/jackson-databind-2.4.1-javadoc.jar!/"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/xmlsh/lib/jing.jar" sourcepath="C:/java/jing-20091111/src.zip"/>
-	<classpathentry kind="lib" path="/xmlsh/lib/jsonpath.jar" sourcepath="/jsonpath/src"/>
-	<classpathentry kind="lib" path="/xmlsh/lib/log4j-1.2.17.jar" sourcepath="C:/Java/log4j/apache-log4j-1.2.17/src/main/java"/>
-	<classpathentry kind="lib" path="/xmlsh/lib/resolver.jar"/>
-	<classpathentry kind="lib" path="/xmlsh/lib/saxon.jar" sourcepath="C:/java/saxon6.5/source.zip"/>
-	<classpathentry kind="lib" path="/xmlsh/lib/saxon9he.jar" sourcepath="C:/java/saxonhe9-2-0-3/saxonhe9-2-0-3source.zip">
-		<attributes>
-			<attribute name="javadoc_location" value="file:/C:/java/saxon9-4-0-3j/doc/javadoc/"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/xmlsh/lib/slf4j-api-1.7.5.jar"/>
-	<classpathentry kind="lib" path="/xmlsh/lib/slf4j-log4j12-1.7.7.jar"/>
-	<classpathentry kind="lib" path="/xmlsh/lib/stax-utils.jar" sourcepath="C:/java/stax-utils-20071202/stax-utils-src.zip">
-		<attributes>
-			<attribute name="javadoc_location" value="file:/C:/java/stax-utils-20071202/docs/javadoc/"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/xmlsh/lib/stax2-api-3.1.1.jar" sourcepath="E:/Java/woodstox/stax2-3.1.1/src/java"/>
-	<classpathentry kind="lib" path="/xmlsh/lib/tagsoup-1.2.jar" sourcepath="C:/java/tagsoup/tagsoup-1.2-src.zip"/>
-	<classpathentry kind="lib" path="/xmlsh/lib/trang.jar" sourcepath="C:/java/trang-20091111/src.zip"/>
-	<classpathentry kind="lib" path="/xmlsh/lib/woodstox-core-asl-4.2.0.jar" sourcepath="E:/Java/woodstox/woodstox-4.2.0/src/java"/>
-	<classpathentry kind="lib" path="/xmlsh/lib/xercesImpl.jar"/>
-	<classpathentry kind="lib" path="/xmlsh/lib/xom-1.2.6.jar"/>
-	<classpathentry kind="lib" path="lib/bcprov-jdk16-146.jar"/>
-	<classpathentry kind="lib" path="lib/joda-time-2.2.jar"/>
 	<classpathentry kind="lib" path="lib/aws-java-sdk-1.8.4.jar" sourcepath="C:/Java/aws/aws-java-sdk-1.8.4/lib/aws-java-sdk-1.8.4-sources.jar">
 		<attributes>
 			<attribute name="javadoc_location" value="jar:file:/C:/Java/aws/aws-java-sdk-1.8.4/lib/aws-java-sdk-1.8.4-javadoc.jar!/"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="lib/bcprov-jdk16-146.jar"/>
+	<classpathentry kind="lib" path="lib/joda-time-2.2.jar"/>
 	<classpathentry kind="output" path="_out"/>
 </classpath>

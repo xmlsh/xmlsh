@@ -17,7 +17,7 @@ import com.amazonaws.services.sqs.model.ChangeMessageVisibilityRequest;
 
 public class sqsChangeMessageVisibility extends AWSSQSCommand {
 
-	
+
 
 
 
@@ -28,47 +28,47 @@ public class sqsChangeMessageVisibility extends AWSSQSCommand {
 	@Override
 	public int run(List<XValue> args) throws Exception {
 
-		
+
 		Options opts = getOptions();
 		opts.parse(args);
 
 		args = opts.getRemainingArgs();
-		
+
 		if( args.size() != 3 ){
 			usage();
 			return 1;
 		}
-		
 
-		
+
+
 		setSerializeOpts(this.getSerializeOpts(opts));
-		
-		
-		
-		
-		
+
+
+
+
+
 		try {
-			 getSQSClient(opts);
+			getSQSClient(opts);
 		} catch (UnexpectedException e) {
 			usage( e.getLocalizedMessage() );
 			return 1;
-			
+
 		}
-		
+
 		int ret;
 		ret = changeVisibility( args.get(0).toString() , args.get(1).toString() , args.get(2).toInt());
-		
-		
+
+
 		return ret;
-		
-		
+
+
 	}
 
 
 	private int changeVisibility(String url , String message, int vis ) throws IOException, XMLStreamException, InvalidArgumentException, SaxonApiException {
-		
-		
-		
+
+
+
 		ChangeMessageVisibilityRequest request = new ChangeMessageVisibilityRequest();
 		request.setQueueUrl(url);
 		request.setReceiptHandle(message);
@@ -77,17 +77,17 @@ public class sqsChangeMessageVisibility extends AWSSQSCommand {
 		traceCall("changeMessageVisibility");
 
 		mAmazon.changeMessageVisibility(request);
-		
-				
-		
+
+
+
 		return 0;
-		
-		
-		
-		
+
+
+
+
 	}
 
 
-	
+
 
 }

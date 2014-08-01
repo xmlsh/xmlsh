@@ -14,14 +14,15 @@ import com.amazonaws.regions.RegionUtils;
 import com.amazonaws.services.glacier.AmazonGlacierClient;
 
 public abstract class AWSGlacierCommand extends AWSCommand {
-	
+
 	protected	AmazonGlacierClient		mAmazon ;
 	protected  AWSCommandCredentialsProviderChain  mCredentials ;
-	
+
 	public AWSGlacierCommand() {
 		super();
 	}
 
+	@Override
 	protected Object getClient() {
 		return mAmazon; 
 	}
@@ -30,10 +31,10 @@ public abstract class AWSGlacierCommand extends AWSCommand {
 		mAmazon =  new AmazonGlacierClient(
 				mCredentials = new AWSCommandCredentialsProviderChain( mShell , opts )
 				);
-	    
+
 		setEndpoint(opts);
 		setRegion(opts);
-		
+
 	}
 
 	/* (non-Javadoc)
@@ -41,15 +42,15 @@ public abstract class AWSGlacierCommand extends AWSCommand {
 	 */
 	@Override
 	public void setRegion(String region) {
-	    mAmazon.setRegion( RegionUtils.getRegion(region));
-		
+		mAmazon.setRegion( RegionUtils.getRegion(region));
+
 	}
 	@Override
-    public void setEndpoint( String endpoint )
-    {
-    	mAmazon.setEndpoint( endpoint );
-    }
-	
+	public void setEndpoint( String endpoint )
+	{
+		mAmazon.setEndpoint( endpoint );
+	}
+
 
 
 }

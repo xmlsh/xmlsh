@@ -29,89 +29,89 @@ import com.amazonaws.services.cloudformation.model.UpdateStackResult;
 
 public class cfnUpdateStack extends AWSCFNCommand {
 
-	
+
 
 	@Override
 	public int run(List<XValue> args) throws Exception {
-		
-		
-		
+
+
+
 		Options opts = getOptions("capability:+,name:,template-file=f:,template-url=url:");
 		opts.parse(args);
 
 		args = opts.getRemainingArgs();
-		
-		
+
+
 		setSerializeOpts(this.getSerializeOpts(opts));
-		
-		
+
+
 		try {
 			getCFNClient(opts);
 		} catch (UnexpectedException e) {
 			usage( e.getLocalizedMessage() );
 			return 1;
-			
-		}
-		
-	
-        int ret = updateStack(args, opts);
 
-		
-		
+		}
+
+
+		int ret = updateStack(args, opts);
+
+
+
 		return ret;
-		
-		
+
+
 	}
 
 
 
 	private int updateStack(List<XValue> args, Options opts) throws IOException, XMLStreamException, SaxonApiException, CoreException {
-		
+
 
 		OutputPort stdout = this.getStdout();
 		mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(getSerializeOpts()));
-		
-		
+
+
 		startDocument();
 		startElement(this.getName());
-		
-		
-		
+
+
+
 		UpdateStackRequest request = new UpdateStackRequest();
-		
-		
+
+
 		// "capability:+,disable-rollback,notification-arn:+,name:,template:,timeout:,tag:+");
 
 		if( opts.hasOpt("capability") )
 			request.setCapabilities(Util.toStringList(opts.getOptValues("capability")));
-		
-		
-		
+
+
+
 		request.setStackName( opts.getOptStringRequired("name"));
 
 		if( opts.hasOpt("template-file"))
 			request.setTemplateBody( Util.readString( mShell.getFile(opts.getOptValue("template-file")), getSerializeOpts().getInput_text_encoding()));
 		else
 			request.setTemplateURL( opts.getOptStringRequired("template-url"));
-		
-		
+
+
 		request.setParameters(getParameters( args ));
-		
+
 		traceCall("updateStack");
 
 		UpdateStackResult result = mAmazon.updateStack(request);
-		
+
 		writeStackResult(result);
-		
-		
-		
-		
+
+
+
+
 		endElement();
 		endDocument();
 		closeWriter();
-		
+
 		stdout.writeSequenceTerminator(getSerializeOpts());
-		
+
 		return 0;
 
 	}
@@ -125,11 +125,11 @@ public class cfnUpdateStack extends AWSCFNCommand {
 			String name = args.get(i).toString();
 			String value = args.get(i+1).toString();
 			params.add( new Parameter().withParameterKey(name).withParameterValue(value)) ;
-			
+
 		}
 		return params;
-		
-		
+
+
 	}
 
 
@@ -141,10 +141,10 @@ public class cfnUpdateStack extends AWSCFNCommand {
 		startElement("stack");
 		attribute("stack-id",result.getStackId());
 		endElement();
-		
+
 	}
 
-	
+
 }
 
 

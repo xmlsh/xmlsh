@@ -22,7 +22,7 @@ import com.amazonaws.services.cloudwatch.model.Metric;
 
 public class monListMetrics	 extends  AWSMonCommand {
 
-	
+
 
 	/**
 	 * @param args
@@ -31,63 +31,63 @@ public class monListMetrics	 extends  AWSMonCommand {
 	@Override
 	public int run(List<XValue> args) throws Exception {
 
-		
+
 		Options opts = getOptions();
 		opts.parse(args);
 
 		args = opts.getRemainingArgs();
-		
 
-		
+
+
 		setSerializeOpts(this.getSerializeOpts(opts));
-		
-		
-		
-		
-		
-		
+
+
+
+
+
+
 		try {
-			 getMonClient(opts);
+			getMonClient(opts);
 		} catch (UnexpectedException e) {
 			usage( e.getLocalizedMessage() );
 			return 1;
-			
+
 		}
-		
+
 
 		int ret = -1;
 		ret = list(Util.toStringList(args));
 
-		
-		
+
+
 		return ret;
-		
-		
+
+
 	}
 
 
-	
+
 
 	private int list(List<String> elbs) throws IOException, XMLStreamException, SaxonApiException, CoreException 
 	{
 
 		OutputPort stdout = this.getStdout();
 		mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
-		
-		
-		
+
+
+
 		startDocument();
 		startElement(getName());
-		
+
 		String nextToken = null ;
 		do {
-	         
+
 			ListMetricsRequest listMetricsRequest = new ListMetricsRequest().withNextToken(nextToken);
-			
+
 			traceCall("listMetrics");
 
 			ListMetricsResult result = mAmazon.listMetrics(listMetricsRequest);
-			
+
 			for( Metric metric : result.getMetrics()){ 
 				startElement("metric");
 				attribute("name" , metric.getMetricName());
@@ -95,36 +95,37 @@ public class monListMetrics	 extends  AWSMonCommand {
 				for( Dimension dim : metric.getDimensions()){
 					startElement("dimension");
 					attribute("name",dim.getName());
-                    characters( dim.getValue());
-                    endElement();
-					
+					characters( dim.getValue());
+					endElement();
+
 				}
 				endElement();
-				
-				
+
+
 
 			}
 			nextToken = result.getNextToken();
-			
+
 		} while( nextToken != null );
-			
+
 		endElement();
 		endDocument();
-		
-		
+
+
 		closeWriter();
 		stdout.writeSequenceTerminator(getSerializeOpts());
-		
+
 		return 0;
-		
+
 	}
 
+	@Override
 	public void usage() {
 		super.usage();
 	}
 
 
 
-	
+
 
 }

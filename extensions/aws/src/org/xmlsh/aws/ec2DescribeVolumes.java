@@ -23,7 +23,7 @@ import com.amazonaws.services.ec2.model.Volume;
 
 public class ec2DescribeVolumes extends AWSEC2Command {
 
-	
+
 
 
 	/**
@@ -33,22 +33,22 @@ public class ec2DescribeVolumes extends AWSEC2Command {
 	@Override
 	public int run(List<XValue> args) throws Exception {
 
-		
+
 		Options opts = getOptions();
 		opts.parse(args);
 
 		args = opts.getRemainingArgs();
 		parseCommonOptions(opts);
-		
+
 		setSerializeOpts(this.getSerializeOpts(opts));
-			
+
 		try {
-			 getEC2Client(opts);
+			getEC2Client(opts);
 		} catch (UnexpectedException e) {
 			usage( e.getLocalizedMessage() );
 			return 1;
 		}
-		
+
 		int ret;
 		switch(args.size()){
 		case	0:
@@ -68,14 +68,14 @@ public class ec2DescribeVolumes extends AWSEC2Command {
 		mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(getSerializeOpts()));
 		startDocument();
 		startElement(this.getName());
-		
+
 		DescribeVolumesRequest  request =  new DescribeVolumesRequest(); ;
 		if( args != null ){
 			request.setVolumeIds(Util.toStringList(args));
-			
+
 		}
 		DescribeVolumesResult result =null ;
-		
+
 		int retry = rateRetry ;
 		int delay = retryDelay ;
 		do {
@@ -98,25 +98,25 @@ public class ec2DescribeVolumes extends AWSEC2Command {
 
 		if( args != null ){
 			request.setVolumeIds(Util.toStringList(args));
-			
+
 		}
-		
+
 		traceCall("describeVolumes");
 
 		for( Volume  volume : result.getVolumes() ){
 			writeVolume(volume);
 			endElement();
 		}
-		
+
 		endElement();
 		endDocument();
 		closeWriter();
-		
+
 		stdout.writeSequenceTerminator(getSerializeOpts());
-		
+
 		return 0;
 
 	}
-	
+
 
 }

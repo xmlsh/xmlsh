@@ -22,7 +22,7 @@ import com.amazonaws.services.sqs.model.SendMessageResult;
 
 public class sqsSendMessage extends AWSSQSCommand {
 
-	
+
 
 
 
@@ -33,107 +33,107 @@ public class sqsSendMessage extends AWSSQSCommand {
 	@Override
 	public int run(List<XValue> args) throws Exception {
 
-		
+
 		Options opts = getOptions("f=file:");
 		opts.parse(args);
 
 		args = opts.getRemainingArgs();
-		
+
 		if( args.size() < 1 ){
 			usage();
 			return 1;
 		}
-		
 
-		
+
+
 		setSerializeOpts(this.getSerializeOpts(opts));
-		
-		
+
+
 		String url = args.get(0).toString();
 		String body = null;
-		
+
 		// Get message from file 
 		if( opts.hasOpt("f")){
 			body = readMessage( mShell.getEnv().getInput(opts.getOptValue("f")));
-			
+
 		} else
-		switch( args.size() ){
-		case	1:
-		// Read from stdin 
-			body = readMessage( getStdin() );
-			break ;
-		case	2:
-		{
-			body = args.get(1).toString();
-			break ;
-		}
-		default :
-		{
-			usage();
-			return 1 ;
-		}
-		}
-		
-		
-			
-		
+			switch( args.size() ){
+			case	1:
+				// Read from stdin 
+				body = readMessage( getStdin() );
+				break ;
+			case	2:
+			{
+				body = args.get(1).toString();
+				break ;
+			}
+			default :
+			{
+				usage();
+				return 1 ;
+			}
+			}
+
+
+
+
 		try {
-			 getSQSClient(opts);
+			getSQSClient(opts);
 		} catch (UnexpectedException e) {
 			usage( e.getLocalizedMessage() );
 			return 1;
-			
+
 		}
-		
+
 		int ret;
-		
+
 		ret = send(url , body  );
-		
-		
+
+
 		return ret;
-		
-		
+
+
 	}
 
 
 	private String readMessage(InputPort input) throws CoreException, IOException {
-		
+
 		try ( InputStream is = input.asInputStream(getSerializeOpts()); ){
 			return Util.readString(is, getSerializeOpts().getInputTextEncoding() );
 		}
-		
+
 	}
 
 
 	private int send(String url, String body ) throws IOException, XMLStreamException, SaxonApiException, CoreException  {
-		
+
 
 		SendMessageRequest request = new SendMessageRequest(url, body);
-		 
+
 		traceCall("sendMessage");
 
 		SendMessageResult result = mAmazon.sendMessage(request);
-		
+
 		OutputPort stdout = this.getStdout();
 		mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
-		
-		
+
+
 		startDocument();
 		startElement(getName());
-			startElement("message");
-			attribute("md5", result.getMD5OfMessageBody());
-			attribute("id" , result.getMessageId());
-			endElement();
+		startElement("message");
+		attribute("md5", result.getMD5OfMessageBody());
+		attribute("id" , result.getMessageId());
+		endElement();
 		endElement();
 		endDocument();
 		closeWriter();
 		stdout.writeSequenceTerminator(getSerializeOpts());
 
 		return 0;
-		
+
 	}
 
 
-	
+
 
 }

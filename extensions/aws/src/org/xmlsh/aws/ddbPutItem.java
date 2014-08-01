@@ -25,7 +25,7 @@ import com.amazonaws.services.dynamodbv2.model.PutItemResult;
 
 public class ddbPutItem	 extends  AWSDDBCommand {
 
-	
+
 
 	/**
 	 * @param args
@@ -38,54 +38,54 @@ public class ddbPutItem	 extends  AWSDDBCommand {
 		opts.parse(args);
 
 		args = opts.getRemainingArgs();
-		
+
 		setSerializeOpts(this.getSerializeOpts(opts));
-		
+
 		String delim = opts.getOptString("delim", ",");
 		String quote = opts.getOptString("quote", "\"");
 		boolean bHeader = opts.hasOpt("header");
-		
+
 		try {
-			 getDDBClient(opts);
+			getDDBClient(opts);
 		} catch (UnexpectedException e) {
 			usage( e.getLocalizedMessage() );
 			return 1;
-			
+
 		}
-		
+
 		if( args.size() < 1 ){
 			usage(getName()+ ":" + "table item attributes ...");
-			
+
 		}
 		String table = args.remove(0).toString();
-		
+
 
 		int ret = -1;
 		Map<String, AttributeValue> itemMap = readItem(args, opts);
 		Map<String, ExpectedAttributeValue> expected = parseExpected(opts);
 		ret = put(table,itemMap, expected, opts.hasOpt("q"));
 
-		
-		
+
+
 		return ret;
-		
-		
+
+
 	}
 
 
 	private int put(String tableName, Map<String,AttributeValue> itemMap,Map<String, ExpectedAttributeValue> expected, boolean bQuiet) throws IOException, XMLStreamException, SaxonApiException, CoreException 
 	{
-	
+
 		PutItemRequest putItemRequest = new PutItemRequest().withTableName(tableName).withItem(itemMap);
-		
+
 		if( expected != null )
-		    putItemRequest.setExpected(expected);
-		
-		
+			putItemRequest.setExpected(expected);
+
+
 		traceCall("putItem");
 
 		PutItemResult result = mAmazon.putItem(putItemRequest);
-		
+
 		if( ! bQuiet ){
 			OutputPort stdout = this.getStdout();
 			mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
@@ -93,10 +93,10 @@ public class ddbPutItem	 extends  AWSDDBCommand {
 			closeWriter();
 			stdout.writeSequenceTerminator(getSerializeOpts());
 		}	
-		
-		
+
+
 		return 0;
-		
+
 	}
 
 
@@ -105,74 +105,75 @@ public class ddbPutItem	 extends  AWSDDBCommand {
 		Map<String, AttributeValue> itemMap;
 		if( opts.hasOpt("xml"))
 			itemMap = readAttributesXML( mShell.getEnv().getInput(args.size() == 0 ? null : args.get(0) ).asXMLEventReader(getSerializeOpts()));
-			
+
 		else	
-	       itemMap = getAttributes( args  );
+			itemMap = getAttributes( args  );
 		return itemMap;
 	}
 
 
 	private Map<String, ExpectedAttributeValue> parseExpected(Options opts) throws InvalidArgumentException, IOException {
-		
+
 		List<XValue> list = opts.getOptValues("expected");
 		if( list == null )
-		   return null ;
-		
-		
+			return null ;
+
+
 		Map<String, ExpectedAttributeValue> result = new  HashMap<String, ExpectedAttributeValue>();
 		for( XValue xv : list ){
 			StringPair namevalue=new StringPair( xv.toString() , '=');
 			if(! namevalue.hasRight())
 				result.put( namevalue.getLeft() , new ExpectedAttributeValue(true));
-			
+
 			else {
 				StringPair typename = new StringPair( namevalue.getLeft(), ':');
 				String type = typename.getLeft();
 				String value = namevalue.getRight();
-				
+
 				AttributeValue  av= new AttributeValue();
-				
-				
-				
+
+
+
 				if( type == "N" )
 					av.setN( value );
 				else
-				if( type == "NS")
-					av.setNS( parseSS( new XValue(value )) );
-				else
-				if( type == "S" )
-					av.setS( value );
-				else
-				if( type == "SS" )
-				    av.setSS( parseSS( new XValue(value)));
-				else
-			    if( type == "B" )
-			    	av.setB( parseBinary(value) );
-			    else
-			    if( type == "BS" ) 
-			    	av.setBS( parseBS( new XValue(xv) ));
-				
-					
+					if( type == "NS")
+						av.setNS( parseSS( new XValue(value )) );
+					else
+						if( type == "S" )
+							av.setS( value );
+						else
+							if( type == "SS" )
+								av.setSS( parseSS( new XValue(value)));
+							else
+								if( type == "B" )
+									av.setB( parseBinary(value) );
+								else
+									if( type == "BS" ) 
+										av.setBS( parseBS(xv ));
+
+
 				result.put( namevalue.getRight() , new ExpectedAttributeValue(av));
-					
-				
+
+
 			}
-			
+
 		}
 		return result;
-			
-		
+
+
 	}
 
 
-	
 
+
+	@Override
 	public void usage() {
 		super.usage();
 	}
 
 
 
-	
+
 
 }

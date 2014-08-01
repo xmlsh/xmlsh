@@ -21,7 +21,7 @@ import com.amazonaws.services.glacier.transfer.UploadResult;
 
 public class glacierPutArchive	 extends  AWSGlacierCommand {
 
-	
+
 
 	private List<InstanceState> states;
 	/**
@@ -31,43 +31,43 @@ public class glacierPutArchive	 extends  AWSGlacierCommand {
 	@Override
 	public int run(List<XValue> args) throws Exception {
 
-		
+
 		Options opts = getOptions();
 		opts.parse(args);
 
 		args = opts.getRemainingArgs();
-		
 
-		
+
+
 		setSerializeOpts(this.getSerializeOpts(opts));
-		
-		
-        if( args.size() <3)
-        	usage();
-        
-        String vault = args.remove(0).toString();
-        String desc = args.remove(0).toString();
-        
-		
-		
-		
+
+
+		if( args.size() <3)
+			usage();
+
+		String vault = args.remove(0).toString();
+		String desc = args.remove(0).toString();
+
+
+
+
 		try {
-			 getGlacierClient(opts);
+			getGlacierClient(opts);
 		} catch (UnexpectedException e) {
 			usage( e.getLocalizedMessage() );
 			return 1;
-			
+
 		}
-		
+
 
 		int ret = -1;
 		ret = put(vault,desc, args );
 
-		
-		
+
+
 		return ret;
-		
-		
+
+
 	}
 
 
@@ -76,54 +76,55 @@ public class glacierPutArchive	 extends  AWSGlacierCommand {
 
 		OutputPort stdout = this.getStdout();
 		mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
-		
-		 ArchiveTransferManager tm = new ArchiveTransferManager(mAmazon, mCredentials);
-	    
-		
-		
+
+		ArchiveTransferManager tm = new ArchiveTransferManager(mAmazon, mCredentials);
+
+
+
 		startDocument();
 		startElement(getName());
-		
+
 		for( XValue xf : files ){
-		
+
 			File file = mShell.getFile(xf);
-			
+
 			traceCall("ArchiveTransferManager.upload");
 
-	        UploadResult result = tm.upload(vault, desc, file);
-	        startElement("upload");
-	        attribute("valut", vault);
-	        attribute("description" , desc );
-	        attribute("file" , file.getAbsolutePath());
-	        attribute("archive-id" , result.getArchiveId());
-	        endElement();
-	       
+			UploadResult result = tm.upload(vault, desc, file);
+			startElement("upload");
+			attribute("valut", vault);
+			attribute("description" , desc );
+			attribute("file" , file.getAbsolutePath());
+			attribute("archive-id" , result.getArchiveId());
+			endElement();
+
 		}
-		
-		
-		
+
+
+
 		endElement();
 		endDocument();
-		
-		
+
+
 		closeWriter();
 		stdout.writeSequenceTerminator(getSerializeOpts());
-		
-		
+
+
 		return 0;
-		
-		
-		
-		
+
+
+
+
 	}
 
 
+	@Override
 	public void usage() {
 		super.usage();
 	}
 
 
 
-	
+
 
 }

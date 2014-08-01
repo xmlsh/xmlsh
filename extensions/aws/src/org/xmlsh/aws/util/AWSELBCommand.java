@@ -18,34 +18,35 @@ import com.amazonaws.services.elasticloadbalancing.AmazonElasticLoadBalancingCli
 import com.amazonaws.services.elasticloadbalancing.model.Instance;
 
 public abstract class AWSELBCommand extends AWSCommand {
-	
+
 
 	protected		AmazonElasticLoadBalancingClient mAmazon ;
-	
+
 	public AWSELBCommand() {
 		super();
 	}
+	@Override
 	protected Object getClient() {
 		return mAmazon; 
 	}
 
 	protected void getELBClient(Options opts) throws UnexpectedException {
-		
-			
+
+
 		mAmazon =  new AmazonElasticLoadBalancingClient(
 				new AWSCommandCredentialsProviderChain( mShell, opts  ) 
-		
-		);
-		
-        setRegion(opts);
+
+				);
+
+		setRegion(opts);
 	}
 	/* (non-Javadoc)
 	 * @see org.xmlsh.aws.util.AWSCommand#setRegion(java.lang.String)
 	 */
 	@Override
 	public void setRegion(String region) {
-	    mAmazon.setRegion( RegionUtils.getRegion(region));
-		
+		mAmazon.setRegion( RegionUtils.getRegion(region));
+
 	}
 
 	protected List<Instance> instances(List<XValue> args) {
@@ -53,15 +54,15 @@ public abstract class AWSELBCommand extends AWSCommand {
 		for( XValue a : args )
 			li.add( new Instance( a.toString()));
 		return li;
-				
+
 	}
 
 	@Override
-    public void setEndpoint( String endpoint )
-    {
-    	mAmazon.setEndpoint( endpoint );
-    }
-	
+	public void setEndpoint( String endpoint )
+	{
+		mAmazon.setEndpoint( endpoint );
+	}
+
 
 
 }

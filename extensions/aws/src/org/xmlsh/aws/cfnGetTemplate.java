@@ -27,93 +27,93 @@ import com.amazonaws.services.cloudformation.model.GetTemplateResult;
 
 public class cfnGetTemplate extends AWSCFNCommand {
 
-	
+
 
 	@Override
 	public int run(List<XValue> args) throws Exception {
-		
-		
-		
+
+
+
 		Options opts = getOptions("j=json,n=name:");
 		opts.parse(args);
- 
-		
+
+
 		args = opts.getRemainingArgs();
-		
+
 		boolean bJson = opts.hasOpt("json");
 
-		
+
 		setSerializeOpts(this.getSerializeOpts(opts));
-		
-		
+
+
 		try {
 			getCFNClient(opts);
 		} catch (UnexpectedException e) {
 			usage( e.getLocalizedMessage() );
 			return 1;
-			
-		}
-		
-	
-        int ret = getTemplate(opts.getOptStringRequired("name"),bJson);
 
-		
-		
+		}
+
+
+		int ret = getTemplate(opts.getOptStringRequired("name"),bJson);
+
+
+
 		return ret;
-		
-		
+
+
 	}
 
 
 
 	private int getTemplate(String stack, boolean bJson) throws IOException, XMLStreamException, SaxonApiException, CoreException {
-		
+
 
 
 		OutputPort stdout = this.getStdout();
-		
-		
+
+
 
 		GetTemplateRequest request = new GetTemplateRequest().withStackName(stack);
-		
+
 		traceCall("getTemplate");
 
 		GetTemplateResult result = mAmazon.getTemplate(request);
-		
-		
-		
+
+
+
 		if( bJson ){
 			SerializeOpts opts = getSerializeOpts().clone();
 			opts.setOutput_text_encoding("utf-8");
-			
+
 			PrintWriter w = stdout.asPrintWriter(opts);
 			w.print(result.getTemplateBody());
 			w.close();
 
-			
+
 		} else {
 			mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(getSerializeOpts()));
-			
-			
+
+
 			startDocument();
 			startElement(this.getName());
-			
-			
-			
-	
-	 
+
+
+
+
+
 			characters( result.getTemplateBody());
-			
+
 			endElement();
 			endDocument();
 			closeWriter();
-			
+
 			stdout.writeSequenceTerminator(getSerializeOpts());
 		}
 		return 0;
 
 	}
-	
+
 }
 
 

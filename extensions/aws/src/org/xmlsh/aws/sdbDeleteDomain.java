@@ -19,7 +19,7 @@ import com.amazonaws.services.simpledb.model.DeleteDomainRequest;
 
 public class sdbDeleteDomain	 extends  AWSSDBCommand {
 
-	
+
 
 	/**
 	 * @param args
@@ -32,27 +32,27 @@ public class sdbDeleteDomain	 extends  AWSSDBCommand {
 		opts.parse(args);
 
 		args = opts.getRemainingArgs();
-		
+
 		setSerializeOpts(this.getSerializeOpts(opts));
-		
-		
+
+
 		try {
-			 getSDBClient(opts);
+			getSDBClient(opts);
 		} catch (UnexpectedException e) {
 			usage( e.getLocalizedMessage() );
 			return 1;
-			
+
 		}
-		
+
 
 		int ret = -1;
 		ret = delete(Util.toStringList(args));
 
-		
-		
+
+
 		return ret;
-		
-		
+
+
 	}
 
 
@@ -61,45 +61,46 @@ public class sdbDeleteDomain	 extends  AWSSDBCommand {
 
 		OutputPort stdout = this.getStdout();
 		mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
-		
+
 		startDocument();
 		startElement(getName());
-         
-		
-		
+
+
+
 		for( String domainName : domains ){
-			
+
 			DeleteDomainRequest deleteDomainRequest = new DeleteDomainRequest().withDomainName(domainName);
 			traceCall("deleteDomain");
 
 			mAmazon.deleteDomain(deleteDomainRequest);
-			
-		     
-			   writeElementAttribute("domain", "name", domainName);
 
-			
+
+			writeElementAttribute("domain", "name", domainName);
+
+
 		}
 		endElement();
 		endDocument();
-		
-		
+
+
 		closeWriter();
 		stdout.writeSequenceTerminator(getSerializeOpts());
-		
+
 		return 0;
-		
-		
-		
-		
+
+
+
+
 	}
 
 
+	@Override
 	public void usage() {
 		super.usage();
 	}
 
 
 
-	
+
 
 }

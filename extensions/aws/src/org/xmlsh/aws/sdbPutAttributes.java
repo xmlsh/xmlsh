@@ -22,7 +22,7 @@ import com.amazonaws.services.simpledb.model.UpdateCondition;
 
 public class sdbPutAttributes	 extends  AWSSDBCommand {
 
-	
+
 
 	/**
 	 * @param args
@@ -35,65 +35,65 @@ public class sdbPutAttributes	 extends  AWSSDBCommand {
 		opts.parse(args);
 
 		args = opts.getRemainingArgs();
-		
-		
 
-		
+
+
+
 		setSerializeOpts(this.getSerializeOpts(opts));
-		
+
 		String updateName = opts.getOptString("update", null);
 		String updateExists = opts.getOptString("exists",null);
 		boolean bReplace = opts.getOptFlag("replace",true);
-		
-		
+
+
 		try {
-			 getSDBClient(opts);
+			getSDBClient(opts);
 		} catch (UnexpectedException e) {
 			usage( e.getLocalizedMessage() );
 			return 1;
-			
+
 		}
-		
+
 		if( args.size() < 3 ){
 			usage(getName()+ ":" + "domain item attributes ...");
-			
+
 		}
 		String domain = args.remove(0).toString();
 		String item   = args.remove(0).toString();
-		
+
 
 		int ret = -1;
 		ret = put(domain,item,args,updateName,updateExists,bReplace, opts.hasOpt("q"));
 
-		
-		
+
+
 		return ret;
-		
-		
+
+
 	}
 
 
 	private int put(String domain, String item, List<XValue > args, String updateName, String updateExists, boolean bReplace, boolean bQuiet) throws IOException, XMLStreamException, SaxonApiException, CoreException 
 	{
 
-		
-		
+
+
 		UpdateCondition cond = null  ;
 		if( ! Util.isEmpty(updateName))
 			cond =  new UpdateCondition( updateName , updateExists , ! Util.isEmpty(updateExists)) ;
-		
-		
-		
-			List<ReplaceableAttribute> attributes = getAttributes( args , bReplace );
-         
+
+
+
+		List<ReplaceableAttribute> attributes = getAttributes( args , bReplace );
+
 		PutAttributesRequest request = new PutAttributesRequest(domain,item,attributes,cond);
-		
-		
-		
+
+
+
 		traceCall("putAttributes");
 
 		mAmazon.putAttributes(request);
-		
+
 		if( ! bQuiet ){
 			OutputPort stdout = this.getStdout();
 			mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
@@ -101,12 +101,12 @@ public class sdbPutAttributes	 extends  AWSSDBCommand {
 			closeWriter();
 			stdout.writeSequenceTerminator(getSerializeOpts());
 		}	
-		
-		
+
+
 
 		return 0;
-		
-		
+
+
 	}
 
 
@@ -117,23 +117,24 @@ public class sdbPutAttributes	 extends  AWSSDBCommand {
 
 			String name = args.remove(0).toString();
 			String value = args.isEmpty() ? "" : args.remove(0).toString();
- 
-			
+
+
 			attrs.add( 
 					new ReplaceableAttribute().withName(name).withValue(value).withReplace(bReplace));
-		
+
 		}
 		return attrs ;
 	}
 
 
 
+	@Override
 	public void usage() {
 		super.usage();
 	}
 
 
 
-	
+
 
 }

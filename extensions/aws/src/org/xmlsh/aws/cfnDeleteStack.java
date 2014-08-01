@@ -24,73 +24,73 @@ import com.amazonaws.services.cloudformation.model.DeleteStackRequest;
 
 public class cfnDeleteStack extends AWSCFNCommand {
 
-	
+
 
 	@Override
 	public int run(List<XValue> args) throws Exception {
-		
-		
-		
+
+
+
 		Options opts = getOptions("n=name:");
 		opts.parse(args);
 
 		args = opts.getRemainingArgs();
-		
-		
+
+
 		setSerializeOpts(this.getSerializeOpts(opts));
-		
-		
+
+
 		try {
 			getCFNClient(opts);
 		} catch (UnexpectedException e) {
 			usage( e.getLocalizedMessage() );
 			return 1;
-			
-		}
-		
-	
-        int ret = terminate(opts.getOptStringRequired("name") );
 
-		
-		
+		}
+
+
+		int ret = terminate(opts.getOptStringRequired("name") );
+
+
+
 		return ret;
-		
-		
+
+
 	}
 
 
 
 	private int terminate(String name) throws IOException, XMLStreamException, SaxonApiException, CoreException {
-		
+
 
 		OutputPort stdout = this.getStdout();
 		mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(getSerializeOpts()));
-		
-		
+
+
 		startDocument();
 		startElement(this.getName());
-		
-		
-		
+
+
+
 		DeleteStackRequest request = new DeleteStackRequest().withStackName(name);
-		
+
 		traceCall("deleteStack");
 
 		mAmazon.deleteStack(request);
-		
+
 		endElement();
 		endDocument();
 		closeWriter();
-		
+
 		stdout.writeSequenceTerminator(getSerializeOpts());
-		
+
 		return 0;
 
 	}
 
 
-		
-	
+
+
 }
 
 

@@ -28,7 +28,7 @@ import com.amazonaws.services.ec2.model.Tag;
 
 public class ec2DescribeImages extends AWSEC2Command {
 
-	
+
 
 
 	/**
@@ -38,105 +38,105 @@ public class ec2DescribeImages extends AWSEC2Command {
 	@Override
 	public int run(List<XValue> args) throws Exception {
 
-		
+
 		Options opts = getOptions("f=filter:+");
 		opts.parse(args);
 
 		args = opts.getRemainingArgs();
-		
 
-		
+
+
 		setSerializeOpts(this.getSerializeOpts(opts));
-		
+
 		try {
-			 getEC2Client(opts);
+			getEC2Client(opts);
 		} catch (UnexpectedException e) {
 			usage( e.getLocalizedMessage() );
 			return 1;
-			
+
 		}
-		
-	
+
+
 		Collection<Filter> filters = 
 				opts.hasOpt("filter") ?
-				parseFilters( Util.toStringList(opts.getOptValues("filter"))) : null ;
+						parseFilters( Util.toStringList(opts.getOptValues("filter"))) : null ;
 
-		int ret;
-		switch(args.size()){
-		case	0:
-			ret = describe(null,filters);
-			break;
-		case	1:
-			ret = describe(args,filters);
-			break;
-			
-		default :
-				usage();
-				return 1;
-		}
+						int ret;
+						switch(args.size()){
+						case	0:
+							ret = describe(null,filters);
+							break;
+						case	1:
+							ret = describe(args,filters);
+							break;
+
+						default :
+							usage();
+							return 1;
+						}
 
 
-		
-		
-		return ret;
-		
-		
+
+
+						return ret;
+
+
 	}
 
 
 	private int describe(List<XValue> args, Collection<Filter> filters) throws IOException, XMLStreamException, SaxonApiException, CoreException {
-		
+
 
 		OutputPort stdout = this.getStdout();
 		mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(getSerializeOpts()));
-		
-		
+
+
 		startDocument();
 		startElement(this.getName());
-		
+
 		DescribeImagesRequest  request = new DescribeImagesRequest();
 		if( args != null ){
-			
+
 			request.setImageIds(Util.toStringList(args));
-			
+
 		}
-		
-        if( filters != null )
-		     request.setFilters(filters);
-		
-		
-		
+
+		if( filters != null )
+			request.setFilters(filters);
+
+
+
 		traceCall("describeImages");
 
 		DescribeImagesResult result = mAmazon.describeImages(request);
-		
-		
+
+
 		for( Image image :  result.getImages() )
 			writeImage(image);
-		
-		
-		
-		
-		
+
+
+
+
+
 		endElement();
 		endDocument();
 		closeWriter();
-		
+
 		stdout.writeSequenceTerminator(getSerializeOpts());
 		return 0;
 
 	}
 
 
-	
+
 
 	private void writeImage(Image image) throws XMLStreamException {
 		startElement("image");
 		attribute("image-id", image.getImageId());
 		attribute( "architecture" , image.getArchitecture());
 		attribute( "hypervisor" , image.getHypervisor());
-		
-		
+
+
 		attribute( "location" , image.getImageLocation());
 		attribute( "owner-alias" , image.getImageOwnerAlias());
 		attribute( "type" , image.getImageType());
@@ -147,7 +147,7 @@ public class ec2DescribeImages extends AWSEC2Command {
 		attribute( "ramdisk-id" , image.getRamdiskId());
 		attribute( "root-device-name" , image.getRootDeviceName());
 		attribute( "root-device-type" , image.getRootDeviceType());
-		
+
 		attribute( "state" , image.getState());
 		attribute( "virtualization-type" , image.getVirtualizationType());
 		attribute( "public" , image.getPublic() ? "true" : "false");
@@ -158,33 +158,34 @@ public class ec2DescribeImages extends AWSEC2Command {
 		writeBlockDeviceMappings(deviceMappings);
 		StateReason stateReason = image.getStateReason();
 		writeStateReason(stateReason);
-		
-		
+
+
 		List<Tag> tags = image.getTags();
 		writeTags(tags);
-		
-		
-		
-		
-		
-		
-		
+
+
+
+
+
+
+
 		endElement();
-		
+
 	}
 
 
 	private void writeStateReason(StateReason stateReason) throws XMLStreamException {
 		if( stateReason != null ){
-		startElement("state-reason");
-		attribute("code",stateReason.getCode());
-		attribute("message" , stateReason.getMessage());
-		endElement();
+			startElement("state-reason");
+			attribute("code",stateReason.getCode());
+			attribute("message" , stateReason.getMessage());
+			endElement();
 		}
-		
+
 	}
 
 
+	@Override
 	public void usage() {
 		super.usage("Usage: ec2-describe-images [options] [image-id]");
 	}
@@ -192,6 +193,6 @@ public class ec2DescribeImages extends AWSEC2Command {
 
 
 
-	
+
 
 }

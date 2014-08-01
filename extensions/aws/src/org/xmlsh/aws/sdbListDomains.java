@@ -19,7 +19,7 @@ import com.amazonaws.services.simpledb.model.ListDomainsResult;
 
 public class sdbListDomains	 extends  AWSSDBCommand {
 
-	
+
 
 	/**
 	 * @param args
@@ -28,36 +28,36 @@ public class sdbListDomains	 extends  AWSSDBCommand {
 	@Override
 	public int run(List<XValue> args) throws Exception {
 
-		
+
 		Options opts = getOptions();
 		opts.parse(args);
 
 		args = opts.getRemainingArgs();
-		
+
 		if( args.size() != 0 ){
 			usage();
 			return 1;
 		}
-		
+
 		setSerializeOpts(this.getSerializeOpts(opts));
-		
+
 		try {
-			 getSDBClient(opts);
+			getSDBClient(opts);
 		} catch (UnexpectedException e) {
 			usage( e.getLocalizedMessage() );
 			return 1;
-			
+
 		}
-		
+
 
 		int ret = -1;
 		ret = list();
 
-		
-		
+
+
 		return ret;
-		
-		
+
+
 	}
 
 
@@ -66,17 +66,17 @@ public class sdbListDomains	 extends  AWSSDBCommand {
 
 		OutputPort stdout = this.getStdout();
 		mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
-		
+
 		startDocument();
 		startElement(getName());
-		
+
 		String token = null ;
-		
+
 		do {
 			ListDomainsRequest listDomainsRequest = new ListDomainsRequest();
 			if( token != null )
 				listDomainsRequest.setNextToken(token);
-	
+
 			traceCall("listDomains");
 
 			ListDomainsResult result = mAmazon.listDomains(listDomainsRequest);
@@ -85,28 +85,29 @@ public class sdbListDomains	 extends  AWSSDBCommand {
 		} while( token != null );
 		endElement();
 		endDocument();
-		
-		
-				
-		
+
+
+
+
 		closeWriter();
 		stdout.writeSequenceTerminator(getSerializeOpts());
-		
-		
+
+
 		return 0;
-		
-		
-		
-		
+
+
+
+
 	}
 
 
+	@Override
 	public void usage() {
 		super.usage();
 	}
 
 
 
-	
+
 
 }

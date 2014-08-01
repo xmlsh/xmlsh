@@ -13,19 +13,19 @@ import com.amazonaws.auth.SystemPropertiesCredentialsProvider;
 public class AWSCommandCredentialsProviderChain extends AWSCredentialsProviderChain
 {
 
-	
+
 	public AWSCommandCredentialsProviderChain(Shell shell , Options opts)  {
-	        super(
-	        	  new AWSOptionsCredentialsProvider( shell , opts),
-	        	  new AWSEnvCredentialsProvider(shell),
-	        	  new EnvironmentVariableCredentialsProvider(),
-	              new SystemPropertiesCredentialsProvider(),
-	              new InstanceProfileCredentialsProvider());
-		
+		super(
+				new AWSOptionsCredentialsProvider( shell , opts),
+				new AWSEnvCredentialsProvider(shell),
+				new EnvironmentVariableCredentialsProvider(),
+				new SystemPropertiesCredentialsProvider(),
+				new InstanceProfileCredentialsProvider());
+
 	}
 
 
 
-	
-	
+
+
 }

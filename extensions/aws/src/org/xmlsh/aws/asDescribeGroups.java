@@ -32,13 +32,13 @@ import com.amazonaws.services.autoscaling.model.TagDescription;
 
 public class asDescribeGroups extends AWSASCommand {
 
-	
+
 
 	@Override
 	public int run(List<XValue> args) throws Exception {
-		
-		
-		
+
+
+
 		Options opts = getOptions();
 		opts.parse(args);
 
@@ -46,58 +46,58 @@ public class asDescribeGroups extends AWSASCommand {
 		parseCommonOptions(opts);
 
 
-		
+
 		setSerializeOpts(this.getSerializeOpts(opts));
-		
-		
+
+
 		try {
 			getASClient(opts);
 		} catch (UnexpectedException e) {
 			usage( e.getLocalizedMessage() );
 			return 1;
-			
-		}
-		
-	
-        int ret = describe(args);
 
-		
-		
+		}
+
+
+		int ret = describe(args);
+
+
+
 		return ret;
-		
-		
+
+
 	}
 
 
 
 	private int describe(List<XValue> args) throws IOException, XMLStreamException, SaxonApiException, CoreException, InterruptedException {
-		
+
 
 		OutputPort stdout = this.getStdout();
 		mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(getSerializeOpts()));
-		
-		
+
+
 		startDocument();
 		startElement(this.getName());
-		
-		
+
+
 		DescribeAutoScalingGroupsRequest request = new DescribeAutoScalingGroupsRequest();
 		if( ! args.isEmpty())
-		   request.setAutoScalingGroupNames( Util.toStringList(args));
-		
-	
-		
+			request.setAutoScalingGroupNames( Util.toStringList(args));
+
+
+
 		traceCall("describeAutoScalingGroups");
 		DescribeAutoScalingGroupsResult result = null ; 
-		
-		
+
+
 		int retry = rateRetry ;
 		int delay = retryDelay ;
 		do {
 			try {
 				result = mAmazon.describeAutoScalingGroups(request);
-			    break;
-				
+				break;
+
 			} catch( AmazonServiceException e ){
 				mShell.printErr("AmazonServiceException" , e );
 				if( retry > 0 && Util.isEqual("RequestLimitExceeded",e.getErrorCode())){
@@ -110,23 +110,23 @@ public class asDescribeGroups extends AWSASCommand {
 					throw e;
 			}
 		} while( retry > 0 );
-		
-		
-		
-		
+
+
+
+
 		for( AutoScalingGroup group :  result.getAutoScalingGroups())
 			write(group);
-		
-		
-		
-		
-		
+
+
+
+
+
 		endElement();
 		endDocument();
 		closeWriter();
-		
+
 		stdout.writeSequenceTerminator(getSerializeOpts());
-		
+
 		return 0;
 
 	}
@@ -136,7 +136,7 @@ public class asDescribeGroups extends AWSASCommand {
 		startElement("group");
 		attribute( "group-arn" , group.getAutoScalingGroupARN() );
 		attribute( "name" , group.getAutoScalingGroupName() );
-		
+
 
 		attribute("create-time" , group.getCreatedTime());
 		attribute( "default-cooldown" , group.getDefaultCooldown());
@@ -147,7 +147,7 @@ public class asDescribeGroups extends AWSASCommand {
 
 		attribute("launch-configuration-name" , group.getLaunchConfigurationName());
 
-		
+
 		attribute("max-size",group.getMaxSize());
 		attribute("min-size",group.getMinSize());
 		attribute("placement-group",group.getPlacementGroup());
@@ -156,8 +156,8 @@ public class asDescribeGroups extends AWSASCommand {
 
 		attribute("vpc-zone-id", group.getVPCZoneIdentifier());
 		writeStringList( "termination-policies" , "termination-policy" , "name" , group.getTerminationPolicies());
-		
-		
+
+
 		writeZones(group.getAvailabilityZones());
 		writeMetrics(group.getEnabledMetrics());
 		writeInstances(group.getInstances());
@@ -165,9 +165,9 @@ public class asDescribeGroups extends AWSASCommand {
 		writeSuspendedProcesses(group.getSuspendedProcesses());
 		writeTags(group.getTags());
 		endElement();
-		
-			
-		
+
+
+
 	}
 
 
@@ -176,7 +176,7 @@ public class asDescribeGroups extends AWSASCommand {
 		for( TagDescription  tag : tags )
 			writeTag( tag );
 		endElement();
-		
+
 	}
 
 
@@ -184,22 +184,22 @@ public class asDescribeGroups extends AWSASCommand {
 	private void writeTag(TagDescription tag) throws XMLStreamException {
 		startElement("tag");
 		attribute("key",tag.getKey());
-	    attribute("propagate-at-launch",tag.getPropagateAtLaunch());
+		attribute("propagate-at-launch",tag.getPropagateAtLaunch());
 		attribute("resource-id",tag.getResourceId());
 		attribute("resource-type",tag.getResourceType());
 		attribute("value",tag.getValue());
 		endElement();
-	    
+
 	}
 
 
 
 	private void writeSuspendedProcesses(List<SuspendedProcess> suspendedProcesses) throws XMLStreamException {
-       startElement("suspended-processes");
-       for( SuspendedProcess proc : suspendedProcesses )
-    	   writeSuspendedProcess( proc );
-       endElement();
-		
+		startElement("suspended-processes");
+		for( SuspendedProcess proc : suspendedProcesses )
+			writeSuspendedProcess( proc );
+		endElement();
+
 	}
 
 
@@ -209,15 +209,15 @@ public class asDescribeGroups extends AWSASCommand {
 		attribute("name",proc.getProcessName());
 		attribute("reason",proc.getSuspensionReason());
 		endElement();
-		
-		
+
+
 	}
 
 
 
 	private void writeELBNames(List<String> loadBalancerNames) throws XMLStreamException {
 		writeStringList( "elb-names" , "elb" , "name" , loadBalancerNames );
-		
+
 	}
 
 
@@ -232,10 +232,10 @@ public class asDescribeGroups extends AWSASCommand {
 			attribute("launch-configuration",inst.getLaunchConfigurationName());
 			attribute("lifecycle-state",inst.getLifecycleState());
 			endElement();
-			
+
 		}
 		endElement();
-		
+
 	}
 
 
@@ -252,9 +252,9 @@ public class asDescribeGroups extends AWSASCommand {
 		endElement();
 
 	}
-		
-		
-	
+
+
+
 }
 
 

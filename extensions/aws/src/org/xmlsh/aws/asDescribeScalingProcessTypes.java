@@ -11,7 +11,6 @@ import org.xmlsh.annotations.Command;
 import org.xmlsh.annotations.Option;
 import org.xmlsh.aws.util.AWSASCommand;
 import org.xmlsh.core.CoreException;
-import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.SafeXMLStreamWriter;
@@ -19,21 +18,17 @@ import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
 
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.xml.stream.XMLStreamException;
 
-import com.amazonaws.services.autoscaling.model.Activity;
 import com.amazonaws.services.autoscaling.model.DescribeScalingProcessTypesRequest;
 import com.amazonaws.services.autoscaling.model.DescribeScalingProcessTypesResult;
 import com.amazonaws.services.autoscaling.model.ProcessType;
-import com.amazonaws.services.autoscaling.model.TerminateInstanceInAutoScalingGroupRequest;
-import com.amazonaws.services.autoscaling.model.TerminateInstanceInAutoScalingGroupResult;
 
 
 @Command( name= "as-describe-scaling-process-types" , 
-    options= { @Option("-a") } )
+options= { @Option("-a") } )
 @Option("bar")
 public class asDescribeScalingProcessTypes extends AWSASCommand
 {
@@ -65,12 +60,12 @@ public class asDescribeScalingProcessTypes extends AWSASCommand
 	}
 
 	private int describe() throws XMLStreamException, IOException,
-	        SaxonApiException, CoreException
+	SaxonApiException, CoreException
 	{
 
 		OutputPort stdout = this.getStdout();
 		mWriter = new SafeXMLStreamWriter(
-		        stdout.asXMLStreamWriter(getSerializeOpts()));
+				stdout.asXMLStreamWriter(getSerializeOpts()));
 
 		startDocument();
 		startElement(this.getName());
@@ -79,7 +74,7 @@ public class asDescribeScalingProcessTypes extends AWSASCommand
 
 		DescribeScalingProcessTypesRequest request = new DescribeScalingProcessTypesRequest();
 		DescribeScalingProcessTypesResult result = mAmazon
-		        .describeScalingProcessTypes(request);
+				.describeScalingProcessTypes(request);
 
 		writeScalingProceessTypes(result);
 
@@ -95,8 +90,8 @@ public class asDescribeScalingProcessTypes extends AWSASCommand
 	}
 
 	private void writeScalingProceessTypes(
-	        DescribeScalingProcessTypesResult stypes) throws XMLStreamException
-	{
+			DescribeScalingProcessTypesResult stypes) throws XMLStreamException
+			{
 
 		startElement("process-types");
 		for (ProcessType pt : stypes.getProcesses()) {
@@ -108,7 +103,7 @@ public class asDescribeScalingProcessTypes extends AWSASCommand
 		}
 
 		endElement();
-	}
+			}
 
 }
 

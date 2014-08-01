@@ -20,7 +20,7 @@ import com.amazonaws.services.ec2.model.Tag;
 
 public class ec2CreateTags extends AWSEC2Command {
 
-	
+
 
 
 	/**
@@ -30,40 +30,40 @@ public class ec2CreateTags extends AWSEC2Command {
 	@Override
 	public int run(List<XValue> args) throws Exception {
 
-		
+
 		Options opts = getOptions("t=tag:+");
 		opts.parse(args);
 
 		args = opts.getRemainingArgs();
-		
 
-		
-		
-		
+
+
+
+
 		if( args.size() < 1 ){
 			usage(null);
 			return 1;
 		}
-		
+
 
 		setSerializeOpts(this.getSerializeOpts(opts));
 		try {
-			 getEC2Client(opts);
+			getEC2Client(opts);
 		} catch (UnexpectedException e) {
 			usage( e.getLocalizedMessage() );
 			return 1;
-			
+
 		}
-		
+
 		int ret = createTags( parseTags(opts) , Util.toStringArray(args) );
-		
-		
-		
-		
-		
+
+
+
+
+
 		return ret;
-		
-		
+
+
 	}
 
 
@@ -74,22 +74,22 @@ public class ec2CreateTags extends AWSEC2Command {
 
 	private int createTags( List<Tag> tags , String[] resources ) throws InvalidArgumentException, IOException, XMLStreamException, SaxonApiException 
 	{
-	
+
 		CreateTagsRequest request = new CreateTagsRequest().withTags(tags).withResources(Arrays.asList(resources));
-		
-		
+
+
 		traceCall("createTags");
 
 		mAmazon.createTags(request);
-	
+
 		return 0;
-		
-	
-	
+
+
+
 	}
 
 
-	
-	
+
+
 
 }

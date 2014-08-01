@@ -22,7 +22,7 @@ import com.amazonaws.services.simpledb.model.UpdateCondition;
 
 public class sdbDeleteAttributes	 extends  AWSSDBCommand {
 
-	
+
 
 	/**
 	 * @param args
@@ -35,77 +35,77 @@ public class sdbDeleteAttributes	 extends  AWSSDBCommand {
 		opts.parse(args);
 
 		args = opts.getRemainingArgs();
-		
 
-		
+
+
 		setSerializeOpts(this.getSerializeOpts(opts));
-		
+
 		String updateName = opts.getOptString("update", null);
 		String updateExists = opts.getOptString("exists",null);
-		
-		
+
+
 		try {
-			 getSDBClient(opts);
+			getSDBClient(opts);
 		} catch (UnexpectedException e) {
 			usage( e.getLocalizedMessage() );
 			return 1;
-			
+
 		}
-		
+
 		if( args.size() < 2){
 			usage(getName()+ ":" + "domain item attributes ...");
-			
+
 		}
 		String domain = args.remove(0).toString();
 		String item   = args.remove(0).toString();
-		
+
 
 		int ret = -1;
 		ret = delete(domain,item,args,updateName,updateExists, opts.hasOpt("q"));
 
-		
-		
+
+
 		return ret;
-		
-		
+
+
 	}
 
 
 	private int delete(String domain, String item, List<XValue > args, String updateName, String updateExists, boolean bQuiet) throws IOException, XMLStreamException, SaxonApiException, CoreException 
 	{
 
-		
 
-	    UpdateCondition cond = null  ;
+
+		UpdateCondition cond = null  ;
 		if( ! Util.isEmpty(updateName))
 			cond =  new UpdateCondition( updateName , updateExists , ! Util.isEmpty(updateExists)) ;
-		
-		
-		
-		
+
+
+
+
 		List<Attribute> attributes = getAttributes( args );
-         
+
 		DeleteAttributesRequest request = new DeleteAttributesRequest(domain,item).withAttributes(attributes).withExpected(cond);
-		
+
 		traceCall("deleteAttributes");
 
-        mAmazon.deleteAttributes(request);
-		
-	    if( ! bQuiet ){
-	        OutputPort stdout = this.getStdout();
+		mAmazon.deleteAttributes(request);
+
+		if( ! bQuiet ){
+			OutputPort stdout = this.getStdout();
 			mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
-	
+
 			emptyDocument();
 
 			closeWriter();
 			stdout.writeSequenceTerminator(getSerializeOpts());
-		
-	    }
-				
-		
+
+		}
+
+
 		return 0;
-		
-		
+
+
 	}
 
 
@@ -116,21 +116,22 @@ public class sdbDeleteAttributes	 extends  AWSSDBCommand {
 
 			String name = args.remove(0).toString();
 			attrs.add( new Attribute(name,null) );
-		
 
-		
+
+
 		}
 		return attrs ;
 	}
 
 
 
+	@Override
 	public void usage() {
 		super.usage();
 	}
 
 
 
-	
+
 
 }

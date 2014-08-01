@@ -28,7 +28,7 @@ import com.amazonaws.services.s3.model.S3ObjectSummary;
 
 public class s3ls extends AWSS3Command {
 
-	
+
 
 	private boolean bLongListing;
 	private String mDelim;
@@ -41,31 +41,31 @@ public class s3ls extends AWSS3Command {
 	@Override
 	public int run(List<XValue> args) throws Exception {
 
-		
+
 		Options opts = getOptions("delim:,r=recurse,l=long,m=multipart");
 		opts.parse(args);
 
 		args = opts.getRemainingArgs();
-		
-		
 
-		
+
+
+
 		setSerializeOpts(this.getSerializeOpts(opts));
-		
-		
-		
-		
+
+
+
+
 		bLongListing = opts.hasOpt("l");
-		
-		
+
+
 		try {
-			 getS3Client(opts);
+			getS3Client(opts);
 		} catch (UnexpectedException e) {
 			usage( e.getLocalizedMessage() );
 			return 1;
-			
+
 		}
-		
+
 		mDelim = opts.getOptString("delim", "/" );
 		if( opts.hasOpt("r") )
 			mDelim = null ;
@@ -80,33 +80,33 @@ public class s3ls extends AWSS3Command {
 			if( opts.hasOpt("m"))
 				ret =listMultipart( args.get(0).toString());
 			else
-		     	ret = list( args.get(0).toString());
+				ret = list( args.get(0).toString());
 			break;
-			
+
 		default :
-				usage();
-				return 1;
+			usage();
+			return 1;
 		}
 
 
-		
-		
+
+
 		return ret;
-		
-		
+
+
 	}
 
 
 	private int listBuckets() throws IOException, XMLStreamException, SaxonApiException, CoreException {
-		
+
 
 		OutputPort stdout = this.getStdout();
 		mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
-		
-		
+
+
 		startDocument();
 		startElement("s3ls");
-		
+
 		traceCall("listBuckets");
 
 		List<Bucket> buckets = mAmazon.listBuckets();
@@ -116,50 +116,50 @@ public class s3ls extends AWSS3Command {
 			if( bLongListing ) {
 				attribute("create-date",Util.formatXSDateTime(bucket.getCreationDate()));
 				attribute("owner", bucket.getOwner().getDisplayName());
-				
+
 			}
-			
+
 			endElement();
-			
+
 		}
-		
-		
-		
-		
-		
+
+
+
+
+
 		endElement();
 		endDocument();
 		closeWriter();
 		stdout.writeSequenceTerminator(getSerializeOpts());
-		
+
 		return 0;
-		
+
 	}
 
 	private int listMultipart(String s) throws XMLStreamException, IOException, SaxonApiException, CoreException {
-	
+
 		S3Path path = new S3Path(s);
 		if( ! path.hasBucket()){
 			usage();
 			return 1;
-			
-		}
-		
 
-		
+		}
+
+
+
 		OutputPort stdout = this.getStdout();
 		XMLStreamWriter writer = stdout.asXMLStreamWriter(getSerializeOpts());
-		
-		
+
+
 		writePath(path, writer);
-		
-		
+
+
 		ListMultipartUploadsRequest request = getListMultipartRequest( path , mDelim );
 		MultipartUploadListing list = mAmazon.listMultipartUploads(request);
-		
-		
+
+
 		do {
-			
+
 			List<String> prefixes = list.getCommonPrefixes();
 			if( prefixes != null && prefixes.size() > 0 ){
 				for( String p : prefixes ){
@@ -167,15 +167,15 @@ public class s3ls extends AWSS3Command {
 					writer.writeAttribute("name",p);
 					writer.writeEndElement();
 				}
-				
+
 			}
-			
+
 			List<MultipartUpload> uploads = list.getMultipartUploads();
 			for ( MultipartUpload obj : uploads ){
 				writer.writeStartElement("file");
 				writer.writeAttribute("key",obj.getKey());
 				if( bLongListing ){
-					
+
 					writer.writeAttribute("initiated",Util.formatXSDateTime(obj.getInitiated()));
 					writer.writeAttribute("initiator",obj.getInitiator().getId());
 					writer.writeAttribute("uploadId", obj.getUploadId());
@@ -183,7 +183,7 @@ public class s3ls extends AWSS3Command {
 					writer.writeAttribute("storage-class" , obj.getStorageClass() );
 				}
 				writer.writeEndElement();
-				
+
 			}
 			if( list.isTruncated()){
 				request.setUploadIdMarker(list.getUploadIdMarker());
@@ -193,7 +193,7 @@ public class s3ls extends AWSS3Command {
 			else
 				break;
 		} while( true );
-		
+
 		writer.writeEndElement();
 		writer.writeEndDocument();
 		writer.flush();
@@ -201,43 +201,43 @@ public class s3ls extends AWSS3Command {
 		stdout.writeSequenceTerminator(getSerializeOpts());
 
 		return 0;
-		
+
 	}
 
 	private int list(String s) throws IOException, XMLStreamException,
-			SaxonApiException, AmazonClientException,  CoreException {
-		
-		
+	SaxonApiException, AmazonClientException,  CoreException {
+
+
 		S3Path path = new S3Path(s);
 		if( ! path.hasBucket()){
 			usage();
 			return 1;
-			
+
 		}
-		
-			
-			
-		
-		
+
+
+
+
+
 		OutputPort stdout = this.getStdout();
 		XMLStreamWriter writer = stdout.asXMLStreamWriter(getSerializeOpts());
-		
-		
+
+
 		writePath(path, writer);
-		
-		
-		
-		
-		
+
+
+
+
+
 		ListObjectsRequest request = getListRequest( path ,mDelim );
 		traceCall("listObjects");
 
 		ObjectListing list = mAmazon.listObjects(request);
-		
-		
-		
+
+
+
 		do {
-			
+
 			List<String> prefixes = list.getCommonPrefixes();
 			if( prefixes != null && prefixes.size() > 0 ){
 				for( String p : prefixes ){
@@ -245,15 +245,15 @@ public class s3ls extends AWSS3Command {
 					writer.writeAttribute("name",p);
 					writer.writeEndElement();
 				}
-				
+
 			}
-			
+
 			List<S3ObjectSummary>  objs = list.getObjectSummaries();
 			for ( S3ObjectSummary obj : objs ){
 				writer.writeStartElement("file");
 				writer.writeAttribute("key",obj.getKey());
 				if( bLongListing ){
-					
+
 					writer.writeAttribute("size", Long.toString(obj.getSize() ));
 					writer.writeAttribute("md5" , obj.getETag() );
 					writer.writeAttribute("mod-date", Util.formatXSDateTime(obj.getLastModified()) );
@@ -261,7 +261,7 @@ public class s3ls extends AWSS3Command {
 					writer.writeAttribute("storage-class" , obj.getStorageClass() );
 				}
 				writer.writeEndElement();
-				
+
 			}
 			if( list.isTruncated()){
 				// String marker = list.getNextMarker();
@@ -270,7 +270,7 @@ public class s3ls extends AWSS3Command {
 			else
 				break;
 		} while( true );
-		
+
 		writer.writeEndElement();
 		writer.writeEndDocument();
 		writer.flush();
@@ -289,12 +289,13 @@ public class s3ls extends AWSS3Command {
 	}
 
 
+	@Override
 	public void usage() {
 		super.usage("Usage: s3ls [options] [bucket/prefix]");
 	}
 
 
 
-	
+
 
 }

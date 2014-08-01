@@ -31,41 +31,41 @@ public class sdbGetAttributes	 extends  AWSSDBCommand {
 		opts.parse(args);
 
 		args = opts.getRemainingArgs();
-		
+
 
 		boolean bConsistant = opts.hasOpt("consistant");
-		
+
 		setSerializeOpts(this.getSerializeOpts(opts));
-		
-		
-		
-		
-		
-		
+
+
+
+
+
+
 		try {
-			 getSDBClient(opts);
+			getSDBClient(opts);
 		} catch (UnexpectedException e) {
 			usage( e.getLocalizedMessage() );
 			return 1;
-			
+
 		}
-		
+
 		if( args.size() !=2 ){
 			usage(getName()+ " domain item");
-			
+
 		}
 		String domain = args.remove(0).toString();
 		String item = args.remove(0).toString();
-		
+
 
 		int ret = -1;
 		ret = getAttributes(domain,item,bConsistant);
 
-		
-		
+
+
 		return ret;
-		
-		
+
+
 	}
 
 
@@ -74,32 +74,32 @@ public class sdbGetAttributes	 extends  AWSSDBCommand {
 
 		OutputPort stdout = this.getStdout();
 		mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
-		
-		
+
+
 		startDocument();
 		startElement(getName());
 
 
 		GetAttributesRequest getAttributesRequest = 
 				new GetAttributesRequest( domainName, itemName ).withConsistentRead(bConsistantRead);
-		
+
 		traceCall("getAttributes");
 
 		GetAttributesResult result = mAmazon.getAttributes(getAttributesRequest);
 
 		if( result.getAttributes().size() > 0 )
-		     writeItem(itemName, result);
-			
-			
+			writeItem(itemName, result);
+
+
 		endElement();
 		endDocument();
-		
-		
+
+
 		closeWriter();
 		stdout.writeSequenceTerminator(getSerializeOpts());
 		return 0;
-		
-		
+
+
 	}
 
 
@@ -112,12 +112,13 @@ public class sdbGetAttributes	 extends  AWSSDBCommand {
 
 
 
+	@Override
 	public void usage() {
 		super.usage();
 	}
 
 
 
-	
+
 
 }

@@ -13,7 +13,7 @@ import java.util.List;
 
 public class s3SetObjectAcl extends AWSS3Command {
 
-	
+
 
 	/**
 	 * @param args
@@ -22,36 +22,36 @@ public class s3SetObjectAcl extends AWSS3Command {
 	@Override
 	public int run(List<XValue> args) throws Exception {
 
-		
+
 		Options opts = getOptions("acl:");
 		opts.parse(args);
 
 		String acl = opts.getOptStringRequired("acl");
-		
+
 		args = opts.getRemainingArgs();
-		
+
 		setSerializeOpts(this.getSerializeOpts(opts));
-		
+
 		try {
-			 getS3Client(opts);
+			getS3Client(opts);
 		} catch (UnexpectedException e) {
 			usage( e.getLocalizedMessage() );
 			return 1;
-			
+
 		}
-			
+
 		int ret = 0 ;
 		for( String arg : Util.toStringList(args)){
 			S3Path path = new S3Path( arg );
-			
+
 			ret += setAcl( path , acl );
-			
-			
+
+
 		}
-		
-		
+
+
 		return ret;
-		
+
 	}
 
 
@@ -59,6 +59,6 @@ public class s3SetObjectAcl extends AWSS3Command {
 
 
 
-	
+
 
 }

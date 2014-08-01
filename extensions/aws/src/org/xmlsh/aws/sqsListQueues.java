@@ -19,7 +19,7 @@ import com.amazonaws.services.sqs.model.ListQueuesResult;
 
 public class sqsListQueues extends AWSSQSCommand {
 
-	
+
 
 	/**
 	 * @param args
@@ -28,51 +28,51 @@ public class sqsListQueues extends AWSSQSCommand {
 	@Override
 	public int run(List<XValue> args) throws Exception {
 
-		
+
 		Options opts = getOptions();
 		opts.parse(args);
 
 		args = opts.getRemainingArgs();
-		
 
-		
+
+
 		setSerializeOpts(this.getSerializeOpts(opts));
-		
+
 		String prefix = null ;
 		if( args.size() > 0 )
 			prefix = args.get(0).toString();
-		
-		
-		
+
+
+
 		try {
-			 getSQSClient(opts);
+			getSQSClient(opts);
 		} catch (UnexpectedException e) {
 			usage( e.getLocalizedMessage() );
 			return 1;
-			
+
 		}
-		
+
 		int ret;
-		
+
 		ret = list(prefix);
-		
-		
+
+
 		return ret;
-		
-		
+
+
 	}
 
 
 	private int list(String prefix) throws IOException, XMLStreamException, SaxonApiException, CoreException {
-		
+
 
 		OutputPort stdout = this.getStdout();
 		mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
-		
-		
+
+
 		startDocument();
 		startElement(getName());
-		
+
 		ListQueuesRequest request = new ListQueuesRequest();
 		if( prefix != null )
 			request.setQueueNamePrefix(prefix);
@@ -82,32 +82,32 @@ public class sqsListQueues extends AWSSQSCommand {
 		for( String  url : result.getQueueUrls() ){
 			startElement("queue");
 			attribute("url", url);
-			
-			
-			
+
+
+
 			endElement();
-			
+
 		}
-		
-		
-		
-		
-		
+
+
+
+
+
 		endElement();
 		endDocument();
 		closeWriter();
 		stdout.writeSequenceTerminator(getSerializeOpts());
 
-		
-		
+
+
 		return 0;
-		
-		
-		
-		
+
+
+
+
 	}
 
 
-	
+
 
 }

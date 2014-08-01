@@ -20,7 +20,7 @@ import com.amazonaws.services.simpledb.model.CreateDomainRequest;
 
 public class sdbCreateDomain	 extends  AWSSDBCommand {
 
-	
+
 
 	/**
 	 * @param args
@@ -33,33 +33,33 @@ public class sdbCreateDomain	 extends  AWSSDBCommand {
 		opts.parse(args);
 
 		args = opts.getRemainingArgs();
-		
 
-		
+
+
 		setSerializeOpts(this.getSerializeOpts(opts));
-		
-		
-		
-		
-		
-		
+
+
+
+
+
+
 		try {
-			 getSDBClient(opts);
+			getSDBClient(opts);
 		} catch (UnexpectedException e) {
 			usage( e.getLocalizedMessage() );
 			return 1;
-			
+
 		}
-		
+
 
 		int ret = -1;
 		ret = create(Util.toStringList(args));
 
-		
-		
+
+
 		return ret;
-		
-		
+
+
 	}
 
 
@@ -68,36 +68,36 @@ public class sdbCreateDomain	 extends  AWSSDBCommand {
 
 		OutputPort stdout = this.getStdout();
 		mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
-		
-		
-		
-		
-		
+
+
+
+
+
 		startDocument();
 		startElement(getName());
-         
-		
-		
+
+
+
 		for( String domainName : domains ){
-		
+
 			traceCall("createDomain");
 			CreateDomainRequest createDomainRequest = new CreateDomainRequest().withDomainName(domainName);
-		    mAmazon.createDomain(createDomainRequest);
-		    
-			   writeElementAttribute("domain", "name", domainName);
+			mAmazon.createDomain(createDomainRequest);
 
-			
+			writeElementAttribute("domain", "name", domainName);
+
+
 		}
 		endElement();
 		endDocument();
-		
-		
-				
+
+
+
 		closeWriter();
 		stdout.writeSequenceTerminator(getSerializeOpts());
-		
+
 		return 0;
-		
+
 	}
 
 
@@ -105,18 +105,19 @@ public class sdbCreateDomain	 extends  AWSSDBCommand {
 		attribute(	"description",	s.getDescription() );
 		attribute( "reason_code" ,  s.getReasonCode() );
 		attribute( "state" , s.getState() );
-		
-		
-		
+
+
+
 	}
 
 
+	@Override
 	public void usage() {
 		super.usage();
 	}
 
 
 
-	
+
 
 }

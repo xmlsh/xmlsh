@@ -19,7 +19,7 @@ import com.amazonaws.services.sns.model.PublishResult;
 
 public class snsPublish extends AWSSNSCommand {
 
-	
+
 
 	/**
 	 * @param args
@@ -28,60 +28,60 @@ public class snsPublish extends AWSSNSCommand {
 	@Override
 	public int run(List<XValue> args) throws Exception {
 
-		
+
 		Options opts = getOptions("t=topic:,m=message:,s=subject:");
 		opts.parse(args);
 
 		args = opts.getRemainingArgs();
-		
-		
+
+
 		String topic = opts.getOptStringRequired("topic");
 		String message = opts.getOptStringRequired("message");
 		String subject = opts.getOptString("subject", null );
-		
 
-		
+
+
 		setSerializeOpts(this.getSerializeOpts(opts));
-		
 
-		
-		
+
+
+
 		try {
-			 getSNSClient(opts);
+			getSNSClient(opts);
 		} catch (UnexpectedException e) {
 			usage( e.getLocalizedMessage() );
 			return 1;
-			
+
 		}
-		
+
 		int ret;
-		
+
 		ret = publish(topic,subject,message);
-		
-		
+
+
 		return ret;
-		
-		
+
+
 	}
 
 
 	private int publish(String topic,String subject, String message) throws IOException, XMLStreamException, SaxonApiException, CoreException {
-		
+
 
 		PublishRequest request = new PublishRequest().withTopicArn(topic).withMessage(message).withSubject(subject);
 		traceCall("publish");
 
 		PublishResult result = mAmazon.publish(request);
-		
-		
+
+
 
 		OutputPort stdout = this.getStdout();
 		mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
-		
-		
+
+
 		startDocument();
 		startElement(getName());
-		
+
 		startElement("message");
 		attribute("id" , result.getMessageId() );
 		endElement();
@@ -90,16 +90,16 @@ public class snsPublish extends AWSSNSCommand {
 		endDocument();
 		closeWriter();
 		stdout.writeSequenceTerminator(getSerializeOpts());
-		
-		
+
+
 		return 0;
-		
-		
-		
-		
+
+
+
+
 	}
 
 
-	
+
 
 }

@@ -21,9 +21,9 @@ public class AWSUtil {
 			ObjectMetadata exists = s3.getObjectMetadata( path.getBucket() , path.getKey() );
 			if( exists != null )
 				return exists.getETag();
-			
+
 		} catch( Exception e ){
-			
+
 		}
 		return null ;
 	}
@@ -37,9 +37,9 @@ public class AWSUtil {
 		if( addr == null )
 			return null ;
 		return addr.getHostAddress();
-		
-		
-		
+
+
+
 	}
 
 	public static String parseBoolean(Boolean b) 
@@ -48,10 +48,10 @@ public class AWSUtil {
 			return "";
 		else
 			return b.toString();
-		
-		
+
+
 	}
-	
+
 }
 
 

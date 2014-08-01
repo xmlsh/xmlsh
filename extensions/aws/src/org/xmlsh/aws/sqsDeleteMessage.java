@@ -17,7 +17,7 @@ import com.amazonaws.services.sqs.model.DeleteMessageRequest;
 
 public class sqsDeleteMessage extends AWSSQSCommand {
 
-	
+
 
 
 
@@ -28,46 +28,46 @@ public class sqsDeleteMessage extends AWSSQSCommand {
 	@Override
 	public int run(List<XValue> args) throws Exception {
 
-		
+
 		Options opts = getOptions();
 		opts.parse(args);
 
 		args = opts.getRemainingArgs();
-		
+
 		if( args.size() != 2 ){
 			usage();
 			return 1;
 		}
-		
 
-		
+
+
 		setSerializeOpts(this.getSerializeOpts(opts));
-		
-		
-		
-		
-		
+
+
+
+
+
 		try {
-			 getSQSClient(opts);
+			getSQSClient(opts);
 		} catch (UnexpectedException e) {
 			usage( e.getLocalizedMessage() );
 			return 1;
-			
+
 		}
-		
+
 		int ret;
 		ret = delete( args.get(0).toString() , args.get(1).toString() );
-		
-		
+
+
 		return ret;
-		
-		
+
+
 	}
 
 
 	private int delete(String url , String message) throws IOException, XMLStreamException, InvalidArgumentException, SaxonApiException {
-		
-		
+
+
 		DeleteMessageRequest request = new DeleteMessageRequest();
 		request.setQueueUrl(url);
 		request.setReceiptHandle(message);
@@ -75,17 +75,17 @@ public class sqsDeleteMessage extends AWSSQSCommand {
 		traceCall("deleteMessage");
 
 		mAmazon.deleteMessage(request);
-		
-				
-		
+
+
+
 		return 0;
-		
-		
-		
-		
+
+
+
+
 	}
 
 
-	
+
 
 }

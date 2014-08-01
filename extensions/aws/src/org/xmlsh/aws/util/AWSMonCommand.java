@@ -15,23 +15,24 @@ import com.amazonaws.services.cloudwatch.AmazonCloudWatch;
 import com.amazonaws.services.cloudwatch.AmazonCloudWatchClient;
 
 public abstract class AWSMonCommand extends AWSCommand {
-	
+
 	protected		AmazonCloudWatch mAmazon ;
-	
+
 	public AWSMonCommand() {
 		super();
 	}
+	@Override
 	protected Object getClient() {
 		return mAmazon; 
 	}
 
 	protected void getMonClient(Options opts) throws UnexpectedException, InvalidArgumentException {
-		
-			
+
+
 		mAmazon =  new AmazonCloudWatchClient(
 				new AWSCommandCredentialsProviderChain( mShell, opts  ) 
-		
-		);
+
+				);
 
 		setEndpoint(opts);
 		setRegion(opts);
@@ -39,18 +40,18 @@ public abstract class AWSMonCommand extends AWSCommand {
 	}
 
 	@Override
-    public void setEndpoint( String endpoint )
-    {
-    	mAmazon.setEndpoint( endpoint );
-    }
-	
+	public void setEndpoint( String endpoint )
+	{
+		mAmazon.setEndpoint( endpoint );
+	}
+
 	/* (non-Javadoc)
 	 * @see org.xmlsh.aws.util.AWSCommand#setRegion(java.lang.String)
 	 */
 	@Override
 	public void setRegion(String region) {
-	    mAmazon.setRegion( RegionUtils.getRegion(region));
-		
+		mAmazon.setRegion( RegionUtils.getRegion(region));
+
 	}
 
 }

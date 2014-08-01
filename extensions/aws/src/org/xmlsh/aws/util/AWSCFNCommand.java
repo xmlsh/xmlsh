@@ -21,13 +21,14 @@ import com.amazonaws.services.cloudformation.model.Parameter;
 import com.amazonaws.services.cloudformation.model.TemplateParameter;
 
 public abstract class AWSCFNCommand extends AWSCommand {
-	
+
 	protected	AmazonCloudFormation		mAmazon ;
-	
+
 	public AWSCFNCommand() {
 		super();
 	}
 
+	@Override
 	protected Object getClient() {
 		return mAmazon; 
 	}
@@ -36,25 +37,25 @@ public abstract class AWSCFNCommand extends AWSCommand {
 		mAmazon =  new AmazonCloudFormationClient(
 				new AWSCommandCredentialsProviderChain( mShell , opts )
 				);
-		
+
 		setRegion(opts);
 		setEndpoint(opts);
 
 	}
 
 	@Override
-    public void setEndpoint( String endpoint )
-    {
-    	mAmazon.setEndpoint( endpoint );
-    }
-	
+	public void setEndpoint( String endpoint )
+	{
+		mAmazon.setEndpoint( endpoint );
+	}
+
 	/* (non-Javadoc)
 	 * @see org.xmlsh.aws.util.AWSCommand#setRegion(java.lang.String)
 	 */
 	@Override
 	public void setRegion(String region) {
-	    mAmazon.setRegion( RegionUtils.getRegion(region));
-		
+		mAmazon.setRegion( RegionUtils.getRegion(region));
+
 	}
 
 
@@ -64,10 +65,10 @@ public abstract class AWSCFNCommand extends AWSCommand {
 
 
 	protected void writeCapibilities(List<String> capabilities) throws XMLStreamException {
-	
+
 		writeStringList("capabilities", "capability", "name" , capabilities);
-		
-		
+
+
 	}
 
 
@@ -84,7 +85,7 @@ public abstract class AWSCFNCommand extends AWSCommand {
 		attribute("key",p.getParameterKey());
 		attribute("value",p.getParameterValue());
 		endElement();
-		
+
 	}
 
 
@@ -103,7 +104,7 @@ public abstract class AWSCFNCommand extends AWSCommand {
 		attribute("no-echo",p.getNoEcho());
 		attribute("default",p.getDefaultValue());
 		endElement();
-		
+
 	}
 
 

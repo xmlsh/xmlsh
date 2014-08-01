@@ -22,7 +22,7 @@ import com.amazonaws.services.glacier.model.ListVaultsResult;
 
 public class glacierListVaults	 extends  AWSGlacierCommand {
 
-	
+
 
 	private List<InstanceState> states;
 	/**
@@ -32,34 +32,34 @@ public class glacierListVaults	 extends  AWSGlacierCommand {
 	@Override
 	public int run(List<XValue> args) throws Exception {
 
-		
+
 		Options opts = getOptions();
 		opts.parse(args);
 
 		args = opts.getRemainingArgs();
-		
 
-		
+
+
 		setSerializeOpts(this.getSerializeOpts(opts));
-		
-		
+
+
 		try {
-			 getGlacierClient(opts);
+			getGlacierClient(opts);
 		} catch (UnexpectedException e) {
 			usage( e.getLocalizedMessage() );
 			return 1;
-			
+
 		}
-		
+
 
 		int ret = -1;
 		ret = list(Util.toStringList(args));
 
-		
-		
+
+
 		return ret;
-		
-		
+
+
 	}
 
 
@@ -68,18 +68,18 @@ public class glacierListVaults	 extends  AWSGlacierCommand {
 
 		OutputPort stdout = this.getStdout();
 		mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
-		
-		 
+
+
 		ListVaultsRequest request = new ListVaultsRequest();
-		
-		
+
+
 		startDocument();
 		startElement(getName());
-         
+
 		traceCall("listVaults");
 
 		ListVaultsResult result = mAmazon.listVaults(request);
-		
+
 		for( DescribeVaultOutput vault  : result.getVaultList() ){
 			startElement("valut");
 			attribute("creation-date" , vault.getCreationDate());
@@ -89,29 +89,30 @@ public class glacierListVaults	 extends  AWSGlacierCommand {
 			attribute("arn" ,vault.getVaultARN());
 			attribute("name" ,vault.getVaultName());
 			endElement();
-			
+
 		}
 		endElement();
 		endDocument();
-		
-		
+
+
 		closeWriter();
 		stdout.writeSequenceTerminator(getSerializeOpts());
-		
+
 		return 0;
-		
-		
-		
-		
+
+
+
+
 	}
 
 
+	@Override
 	public void usage() {
 		super.usage();
 	}
 
 
 
-	
+
 
 }

@@ -154,7 +154,7 @@ public class ddbBatchWrite extends AWSDDBCommand {
 		mPool = new ThreadPoolExecutor(maxThreads, maxThreads, 0L,
 				TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(
 						maxThreads * 2),
-				new ThreadPoolExecutor.CallerRunsPolicy());
+						new ThreadPoolExecutor.CallerRunsPolicy());
 
 		ret = batchWrite(mTable, port, opts.hasOpt("q"));
 
@@ -262,7 +262,7 @@ public class ddbBatchWrite extends AWSDDBCommand {
 	}
 
 	private WriteRequest readWriteRequestCSV() throws UnexpectedException,
-			IOException, XMLStreamException {
+	IOException, XMLStreamException {
 
 		Map<String, AttributeValue> item = readItemCSV(mReader, mParser,
 				mHeader, mListSep, mColTypes);
@@ -276,6 +276,7 @@ public class ddbBatchWrite extends AWSDDBCommand {
 		return null;
 	}
 
+	@Override
 	public void usage() {
 		super.usage();
 	}

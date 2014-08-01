@@ -21,7 +21,7 @@ import com.amazonaws.services.ec2.model.TerminateInstancesResult;
 
 public class ec2TerminateInstances extends AWSEC2Command {
 
-	
+
 
 
 	/**
@@ -31,40 +31,40 @@ public class ec2TerminateInstances extends AWSEC2Command {
 	@Override
 	public int run(List<XValue> args) throws Exception {
 
-		
+
 		Options opts = getOptions();
 		opts.parse(args);
 
 		args = opts.getRemainingArgs();
-		
 
-		
-		
-		
+
+
+
+
 		if( args.size() < 1 ){
 			usage(null);
 			return 1;
 		}
-		
+
 
 		setSerializeOpts(this.getSerializeOpts(opts));
 		try {
-			 getEC2Client(opts);
+			getEC2Client(opts);
 		} catch (UnexpectedException e) {
 			usage( e.getLocalizedMessage() );
 			return 1;
-			
+
 		}
-		
+
 		int ret = stop( Util.toStringArray(args) );
-		
-		
-		
-		
-		
+
+
+
+
+
 		return ret;
-		
-		
+
+
 	}
 
 
@@ -72,22 +72,22 @@ public class ec2TerminateInstances extends AWSEC2Command {
 
 	private int stop( String[] instances ) throws IOException, XMLStreamException, SaxonApiException, CoreException 
 	{
-	
+
 		TerminateInstancesRequest  request = new TerminateInstancesRequest( Arrays.asList(instances));
-		
+
 		traceCall("terminateInstances");
 		TerminateInstancesResult result = mAmazon.terminateInstances(request);
-		
+
 		List<InstanceStateChange> changes = result.getTerminatingInstances();
 		writeStateChages( changes);
 		return 0;
-		
-	
-	
+
+
+
 	}
 
 
-	
-	
+
+
 
 }

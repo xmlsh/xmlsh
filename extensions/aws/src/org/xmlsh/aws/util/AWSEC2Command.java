@@ -7,7 +7,6 @@
 package org.xmlsh.aws.util;
 
 import net.sf.saxon.s9api.SaxonApiException;
-
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
@@ -47,16 +46,17 @@ import com.amazonaws.services.ec2.model.VolumeAttachment;
 import com.amazonaws.services.ec2.model.VolumeType;
 
 public abstract class AWSEC2Command extends AWSCommand {
-	
+
 	protected	AmazonEC2		mAmazon ;
-	
 
 
-	
-	
+
+
+
 	public AWSEC2Command() {
 		super();
 	}
+	@Override
 	protected Object getClient() {
 		return mAmazon; 
 	}
@@ -66,7 +66,7 @@ public abstract class AWSEC2Command extends AWSCommand {
 		mAmazon =  new AmazonEC2Client(
 				new AWSCommandCredentialsProviderChain( mShell , opts )
 				);
-		
+
 		setRegion(opts);
 		setEndpoint(opts);
 	}
@@ -76,32 +76,32 @@ public abstract class AWSEC2Command extends AWSCommand {
 	 */
 	@Override
 	public void setRegion(String region) {
-	    mAmazon.setRegion( RegionUtils.getRegion(region));
-		
+		mAmazon.setRegion( RegionUtils.getRegion(region));
+
 	}
 	protected void writeStateChages(List<InstanceStateChange> states) throws IOException, XMLStreamException,
-			SaxonApiException, CoreException {
-				
-				OutputPort stdout = this.getStdout();
-				mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(getSerializeOpts()));
-				
-				
-				startDocument();
-				startElement(this.getName());
-				
-				for( InstanceStateChange state : states ) { 
-						writeStateChange(state);
-					
-				}
-				
-				endElement();
-				endDocument();
-				
-				closeWriter();		
-				stdout.writeSequenceTerminator(getSerializeOpts());
-				
-				
-			}
+	SaxonApiException, CoreException {
+
+		OutputPort stdout = this.getStdout();
+		mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(getSerializeOpts()));
+
+
+		startDocument();
+		startElement(this.getName());
+
+		for( InstanceStateChange state : states ) { 
+			writeStateChange(state);
+
+		}
+
+		endElement();
+		endDocument();
+
+		closeWriter();		
+		stdout.writeSequenceTerminator(getSerializeOpts());
+
+
+	}
 
 
 	private void writeStateChange(InstanceStateChange change) throws XMLStreamException {
@@ -111,11 +111,11 @@ public abstract class AWSEC2Command extends AWSCommand {
 		InstanceState prev = change.getPreviousState();
 		writeState( "current" , current );
 		writeState( "previous" , prev );
-	
-		
+
+
 		endElement();
-		
-		
+
+
 	}
 
 
@@ -124,7 +124,7 @@ public abstract class AWSEC2Command extends AWSCommand {
 		attribute( "name" , state.getName()  );
 		attribute( "code" , String.valueOf(state.getCode() ));
 		endElement();
-		
+
 	}
 
 
@@ -132,8 +132,8 @@ public abstract class AWSEC2Command extends AWSCommand {
 		startElement("reservation");
 		attribute("id", res.getReservationId() );
 		attribute( "requester-id", res.getRequesterId());
-	
-		 
+
+
 		for( Instance inst : res.getInstances() ){
 			startElement("instance");
 			attribute( "instance-id" , inst.getInstanceId() );
@@ -151,7 +151,7 @@ public abstract class AWSEC2Command extends AWSCommand {
 			attribute( "public-ip" , inst.getPublicIpAddress() );
 			attribute( "ramdisk-id" , inst.getRamdiskId());
 			attribute( "root-device-name" , inst.getRootDeviceName() );
-			
+
 			attribute( "spot-request-id" , inst.getSpotInstanceRequestId() );
 			attribute( "state-transistion-reason" , inst.getStateTransitionReason() );
 			attribute( "subnet-id" , inst.getSubnetId() );
@@ -163,22 +163,22 @@ public abstract class AWSEC2Command extends AWSCommand {
 			attribute( "monitoring" , inst.getMonitoring().getState() );
 			attribute( "source-dest-check" , getSourceCheck(inst) );
 			attribute( "state-reason" , getStateReason(inst) );
-			
-	
+
+
 			writeProductCodes( inst.getProductCodes() );
 			writeTags( inst.getTags() );
-			
-			
+
+
 			writePlacement(inst.getPlacement());
-			
-			
+
+
 			writeInstanceBlockDeviceMappings(inst.getBlockDeviceMappings());
-			
-			
+
+
 			endElement();
-			
+
 		}
-		
+
 		endElement();
 	}
 
@@ -200,10 +200,10 @@ public abstract class AWSEC2Command extends AWSCommand {
 			startElement("product-code");
 			attribute( "id" , code.getProductCodeId() );
 			endElement();
-			
+
 		}
 		endElement();
-		
+
 	}
 
 
@@ -216,7 +216,7 @@ public abstract class AWSEC2Command extends AWSCommand {
 
 
 	public String getSourceCheck(Instance inst) {
-		
+
 		Boolean is = inst.getSourceDestCheck();
 		return is == null ? "false" : is.toString();
 
@@ -239,7 +239,7 @@ public abstract class AWSEC2Command extends AWSCommand {
 			throws XMLStreamException {
 		startElement("device");
 		attribute("name", device.getDeviceName());
-		
+
 		EbsInstanceBlockDevice ebs = device.getEbs();
 		attribute( "status" , ebs.getStatus() );
 		attribute("volume-id", ebs.getVolumeId());
@@ -252,22 +252,22 @@ public abstract class AWSEC2Command extends AWSCommand {
 
 	protected List<Tag> parseTags(Options opts) throws InvalidArgumentException {
 		List<Tag> tags = new ArrayList<Tag>( );
-		
+
 		for( XValue xt : opts.getOptValuesRequired("t") ) {
 			StringPair pair = new StringPair( xt.toString() , '=');
-			
+
 			tags.add( 
 					pair.hasLeft() ?
 							new Tag(pair.getLeft() , pair.getRight() )
 					:
-							new Tag( pair.getRight() )
-			
-			);
-			
+						new Tag( pair.getRight() )
+
+					);
+
 		}
 		return tags ;
-		
-		
+
+
 	}
 
 
@@ -276,7 +276,7 @@ public abstract class AWSEC2Command extends AWSCommand {
 		for( VolumeAttachment attachment : attachments )
 			writeAttachment( attachment );
 		endElement();
-		
+
 	}
 
 
@@ -295,11 +295,11 @@ public abstract class AWSEC2Command extends AWSCommand {
 		ArrayList<String> 	ips = new ArrayList<String>( args.size() );
 		for( String sip : Util.toStringArray( args)){
 			ips.add( AWSUtil.resolveDNS(sip));
-			
+
 		}
 		return ips;
-		
-		
+
+
 	}
 
 
@@ -308,18 +308,18 @@ public abstract class AWSEC2Command extends AWSCommand {
 		for( BlockDeviceMapping mapping : deviceMappings )
 			writeBlockDeviceMapping(mapping);
 		endElement();
-		
+
 	}
 
 
 	private void writeBlockDeviceMapping(BlockDeviceMapping device) throws XMLStreamException {
 		startElement("device");
-		
+
 		attribute("name", device.getDeviceName());
-		
+
 		EbsBlockDevice ebs = device.getEbs();
 		if( ebs != null ){
-		
+
 			attribute( "shapshot-id" , ebs.getSnapshotId() );
 			attribute( "delete-on-termination" , ebs.getDeleteOnTermination());
 			attribute("volume-size" , ebs.getVolumeSize() );
@@ -327,23 +327,24 @@ public abstract class AWSEC2Command extends AWSCommand {
 			attribute( "encrypted" , ebs.getEncrypted() );
 			attribute( "iops" , ebs.getIops());
 		}
-		
-		
+
+
 		endElement();
-		
+
 	}
 
 
+	@Override
 	public void attribute(String localName, boolean flag) throws XMLStreamException {
 		attribute( localName , flag ? "true" : "false" );
-		
+
 	}
 
 	public void writeTags(List<Tag> tags) throws XMLStreamException {
 		if( tags == null )
 			return ;
 		startElement("tags");
-		
+
 		for(Tag tag :  tags){
 			startElement("tag");
 			attribute( "key" , tag.getKey());
@@ -351,15 +352,15 @@ public abstract class AWSEC2Command extends AWSCommand {
 			endElement();
 		}
 		endElement();
-		
+
 	}
 
 
 	@Override
-    public void setEndpoint( String endpoint )
-    {
-    	mAmazon.setEndpoint( endpoint );
-    }
+	public void setEndpoint( String endpoint )
+	{
+		mAmazon.setEndpoint( endpoint );
+	}
 
 
 	protected void writeLaunchPermissions(List<LaunchPermission> launchPermissions) throws XMLStreamException {
@@ -367,10 +368,10 @@ public abstract class AWSEC2Command extends AWSCommand {
 
 		for( LaunchPermission p : launchPermissions ){
 			writeLaunchPermission( p );
-			
+
 		}
 		endElement();
-		
+
 	}
 
 
@@ -382,15 +383,15 @@ public abstract class AWSEC2Command extends AWSCommand {
 		if( ! Util.isBlank(p.getUserId()))
 			attribute( "user-id" , p.getUserId());
 		endElement();
-		
+
 	}
 
 
 	protected void writeVolume(Volume volume) throws XMLStreamException {
 		startElement("volume");
-		
-		
-		
+
+
+
 		attribute("volume-id" , volume.getVolumeId() );
 		attribute( "snapshot-id " , volume.getSnapshotId() );
 		attribute( "availability-zone", volume.getAvailabilityZone());
@@ -402,10 +403,10 @@ public abstract class AWSEC2Command extends AWSCommand {
 	}
 	protected Collection<Filter> parseFilters(List<String> values) {
 		if( values == null || values.size() == 0 )
-		    return null;
-	
+			return null;
+
 		ArrayList<Filter> filters = new ArrayList<Filter>(values.size());
-	
+
 		for( String v : values ){
 			StringPair nv = new StringPair( v , '=' );
 			Filter filter = new Filter().withName(nv.getLeft()).withValues( nv.getRight().split(","));
@@ -414,26 +415,26 @@ public abstract class AWSEC2Command extends AWSCommand {
 		return filters;
 	}
 	protected Collection<BlockDeviceMapping> getBlockDeviceMappings(Options opts) throws InvalidArgumentException
-    {
-    
-    	List<XValue>  blocks = opts.getOptValues("block-device-mapping");
-    	if( blocks == null || blocks.size() == 0 )
-    		return null ;
-    	
-    	
-    	
-    	
-    	List<BlockDeviceMapping>	mappings = new ArrayList<BlockDeviceMapping>(blocks.size());
-    	for( XValue b : blocks )
-    		mappings.add( parseBlockDeviceMapping(b.toString()));
-    	// TBD 
-    	return mappings;
-    	
-    	
-    	
-    	
-    }
-	
+	{
+
+		List<XValue>  blocks = opts.getOptValues("block-device-mapping");
+		if( blocks == null || blocks.size() == 0 )
+			return null ;
+
+
+
+
+		List<BlockDeviceMapping>	mappings = new ArrayList<BlockDeviceMapping>(blocks.size());
+		for( XValue b : blocks )
+			mappings.add( parseBlockDeviceMapping(b.toString()));
+		// TBD 
+		return mappings;
+
+
+
+
+	}
+
 	/* Mapping string from the original AWS CLI format
 	 * The block device mapping for the instance. This argument is passed in the form of <devicename>=<blockdevice>. The devicename is the device name of the physical device on the instance to map. The blockdevice can be one of the following values:
 
@@ -442,89 +443,89 @@ ephemeral[0..3] - An instance store volume to be mapped to the device. For examp
 [snapshot-id]:[volume-size]:[delete-on-termination]:[volume-type[:iops]]:[encrypted] - An Amazon EBS volume to be mapped to the device. For example "/dev/sdh=snap-7eb96d16::false:io1:500:encrypted".
 
 	 */
-	
-	
-	protected BlockDeviceMapping parseBlockDeviceMapping(String string) throws InvalidArgumentException
-    {
-    	BlockDeviceMapping map = new BlockDeviceMapping();
-    	StringPair 	pair = new StringPair(string , '=');
-    	
-    	String 	device = pair.getLeft();
-    	//if( device.startsWith("/dev/"))
-    	//	device = device.substring(5);
-    
-    	if(! pair.hasRight()){
-    		map.setNoDevice(device);
-    		return map;
-    	}
-    	
-    	
-    	
-    	String r = pair.getRight();
-    	if( r.equals("none")){
-    		map.setNoDevice(device);
-    		return map ;
-    	}
-    		
-    	map.setDeviceName(device);
-    	
-    	// Ephemeral = virtual ?
-    	if( ! r.contains(":")){
-    		map.setVirtualName(r);
-    		return map;
-    	}
-    	
-    	// Parse out the EBS stuff
-    	// [snapshot-id]:[volume-size]:[delete-on-termination]:[volume-type[:iops]]:[encrypted]
-    	
-    	String aebs[] = r.split(":");
-    	
-    	EbsBlockDevice ebs = new EbsBlockDevice();
-    	
-    	
-    	// [snapshot-id]:
-    	if( aebs.length >= 1 ){
-    		String snapshotId = aebs[0];
-    		if( ! Util.isBlank(snapshotId))
-    			ebs.setSnapshotId(snapshotId);
-    
-    	}
-    	// :[volume-size]:
-    	if( aebs.length >= 2 ){
-    		if( !Util.isBlank(aebs[1]))
-    			ebs.setVolumeSize( new Integer( aebs[1]));
-    		
-    	}
-    	
-    	//[delete-on-termination]:
-    	if( aebs.length >=  3 ){
-    		if( !Util.isBlank(aebs[2]))
-    			ebs.setDeleteOnTermination( Boolean.valueOf( Util.parseBoolean(aebs[2])));
-    		
-    	}
-    	if( aebs.length >= 4 ){
-    		// [volume-type[:iops]]:[encrypted]
-    		int i = 3;
-    		if( !Util.isBlank(aebs[i])){
-    			ebs.setVolumeType(aebs[i]);
-    			if( aebs[i].equals( VolumeType.Io1.toString())) {
-    			    i++ ;
-    			    if( aebs.length  <= i || Util.isBlank(aebs[i]) )
-    			    	throw new InvalidArgumentException("EBS block mapping with VolumeType :io1 MUST have PIOPS");
-    				ebs.setIops( Integer.valueOf( aebs[i]));
-    			}
-    			i++;
-    			if( aebs.length > i )
-    				ebs.setEncrypted( Util.parseBoolean(aebs[i]));
-    		}
-    	}
 
-    		
-    	map.setEbs(ebs);
-    	return map;
-    
-    }
-	
+
+	protected BlockDeviceMapping parseBlockDeviceMapping(String string) throws InvalidArgumentException
+	{
+		BlockDeviceMapping map = new BlockDeviceMapping();
+		StringPair 	pair = new StringPair(string , '=');
+
+		String 	device = pair.getLeft();
+		//if( device.startsWith("/dev/"))
+		//	device = device.substring(5);
+
+		if(! pair.hasRight()){
+			map.setNoDevice(device);
+			return map;
+		}
+
+
+
+		String r = pair.getRight();
+		if( r.equals("none")){
+			map.setNoDevice(device);
+			return map ;
+		}
+
+		map.setDeviceName(device);
+
+		// Ephemeral = virtual ?
+		if( ! r.contains(":")){
+			map.setVirtualName(r);
+			return map;
+		}
+
+		// Parse out the EBS stuff
+		// [snapshot-id]:[volume-size]:[delete-on-termination]:[volume-type[:iops]]:[encrypted]
+
+		String aebs[] = r.split(":");
+
+		EbsBlockDevice ebs = new EbsBlockDevice();
+
+
+		// [snapshot-id]:
+		if( aebs.length >= 1 ){
+			String snapshotId = aebs[0];
+			if( ! Util.isBlank(snapshotId))
+				ebs.setSnapshotId(snapshotId);
+
+		}
+		// :[volume-size]:
+		if( aebs.length >= 2 ){
+			if( !Util.isBlank(aebs[1]))
+				ebs.setVolumeSize( new Integer( aebs[1]));
+
+		}
+
+		//[delete-on-termination]:
+		if( aebs.length >=  3 ){
+			if( !Util.isBlank(aebs[2]))
+				ebs.setDeleteOnTermination( Boolean.valueOf( Util.parseBoolean(aebs[2])));
+
+		}
+		if( aebs.length >= 4 ){
+			// [volume-type[:iops]]:[encrypted]
+			int i = 3;
+			if( !Util.isBlank(aebs[i])){
+				ebs.setVolumeType(aebs[i]);
+				if( aebs[i].equals( VolumeType.Io1.toString())) {
+					i++ ;
+					if( aebs.length  <= i || Util.isBlank(aebs[i]) )
+						throw new InvalidArgumentException("EBS block mapping with VolumeType :io1 MUST have PIOPS");
+					ebs.setIops( Integer.valueOf( aebs[i]));
+				}
+				i++;
+				if( aebs.length > i )
+					ebs.setEncrypted( Util.parseBoolean(aebs[i]));
+			}
+		}
+
+
+		map.setEbs(ebs);
+		return map;
+
+	}
+
 
 }
 

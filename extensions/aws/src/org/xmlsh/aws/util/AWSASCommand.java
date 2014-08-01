@@ -18,13 +18,14 @@ import com.amazonaws.services.autoscaling.AmazonAutoScaling;
 import com.amazonaws.services.autoscaling.AmazonAutoScalingClient;
 
 public abstract class AWSASCommand extends AWSCommand {
-	
+
 	protected	AmazonAutoScaling		mAmazon ;
-	
+
 	public AWSASCommand() {
 		super();
 	}
 
+	@Override
 	protected Object getClient() {
 		return mAmazon; 
 	}
@@ -36,16 +37,16 @@ public abstract class AWSASCommand extends AWSCommand {
 
 		setRegion(opts);
 		setEndpoint(opts);		
-		
+
 	}
-	
+
 
 
 	@Override
-    public void setEndpoint( String endpoint )
-    {
-    	mAmazon.setEndpoint( endpoint );
-    }
+	public void setEndpoint( String endpoint )
+	{
+		mAmazon.setEndpoint( endpoint );
+	}
 
 
 	/* (non-Javadoc)
@@ -53,8 +54,8 @@ public abstract class AWSASCommand extends AWSCommand {
 	 */
 	@Override
 	public void setRegion(String region) {
-	    mAmazon.setRegion( RegionUtils.getRegion(region));
-		
+		mAmazon.setRegion( RegionUtils.getRegion(region));
+
 	}
 
 
@@ -66,11 +67,11 @@ public abstract class AWSASCommand extends AWSCommand {
 		// TODO Auto-generated method stub
 		return 0;
 	}
-	
-	
-	
 
-	 
+
+
+
+
 
 
 }

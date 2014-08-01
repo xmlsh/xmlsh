@@ -39,70 +39,70 @@ public class ec2DescribeInstances extends AWSEC2Command {
 	@Override
 	public int run(List<XValue> args) throws Exception {
 
-		
+
 		Options opts = getOptions("f=filter:+");
 		opts.parse(args);
 
 		args = opts.getRemainingArgs();
 		parseCommonOptions( opts );
-		
+
 		setSerializeOpts(this.getSerializeOpts(opts));
-		
-		
-		
+
+
+
 		try {
-			 getEC2Client(opts);
+			getEC2Client(opts);
 		} catch (UnexpectedException e) {
 			usage( e.getLocalizedMessage() );
 			return 1;
-		
+
 		}
-		
+
 		Collection<Filter> filters = 
 				opts.hasOpt("filter") ?
-				parseFilters( Util.toStringList(opts.getOptValues("filter"))) : null ;
-	
+						parseFilters( Util.toStringList(opts.getOptValues("filter"))) : null ;
 
-			
-		int ret = describe(args,filters);
 
-		
-		return ret;
-		
-		
+
+						int ret = describe(args,filters);
+
+
+						return ret;
+
+
 	}
 
 
 	private int describe(List<XValue> args, Collection<Filter> filters) throws IOException, XMLStreamException, SaxonApiException, CoreException, InterruptedException {
-		
+
 
 		OutputPort stdout = this.getStdout();
 		mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(getSerializeOpts()));
-		
-		
+
+
 		startDocument();
 		startElement(this.getName());
-		
+
 		DescribeInstancesRequest  request = new DescribeInstancesRequest();
 		if( args != null && args.size() > 0 ){
-			
+
 			request.setInstanceIds(Util.toStringList(args));
-			
+
 		}
-	   if( filters != null )
-		     request.setFilters(filters);
-	
-		
+		if( filters != null )
+			request.setFilters(filters);
+
+
 		traceCall("describeInstances");
 
 		List<Reservation> result = null;
-		
+
 		int retry = rateRetry ;
 		int delay = retryDelay ;
 		do {
 			try {
-			   result = mAmazon.describeInstances(request).getReservations();
-			   break ;
+				result = mAmazon.describeInstances(request).getReservations();
+				break ;
 			} catch( AmazonServiceException e ){
 				mShell.printErr("AmazonServiceException" , e );
 				if( retry > 0 && Util.isEqual("RequestLimitExceeded",e.getErrorCode())){
@@ -110,34 +110,35 @@ public class ec2DescribeInstances extends AWSEC2Command {
 					Thread.sleep( delay );
 					retry--;
 					delay *= 2 ;
-					
-					
+
+
 				}
 				else
 					throw e;
-				
+
 			}
 		} while( retry > 0 );
-			
-		
+
+
 		for( Reservation  res : result ){
 			writeReservation(res);
-			
+
 		}
-		
+
 		endElement();
 		endDocument();
 		closeWriter();
-		
+
 		stdout.writeSequenceTerminator(getSerializeOpts());
-		
+
 		return 0;
 
 	}
 
 
-	
 
+
+	@Override
 	public void usage() {
 		super.usage("Usage: ec2-describe-instances [options] [instance-id]");
 	}
@@ -145,6 +146,6 @@ public class ec2DescribeInstances extends AWSEC2Command {
 
 
 
-	
+
 
 }

@@ -29,8 +29,8 @@ public class s3put extends AWSS3Command {
 	private boolean bRecurse = false ;
 	private boolean bVerbose = false ;
 	private int mBatchSize = 1000 ;
-	
-	
+
+
 	/**
 	 * @param args
 	 * @throws IOException 
@@ -47,7 +47,7 @@ public class s3put extends AWSS3Command {
 		setSerializeOpts(this.getSerializeOpts(opts));
 
 		try {
-			 getS3Client(opts);
+			getS3Client(opts);
 		} catch (UnexpectedException e) {
 			usage( e.getLocalizedMessage() );
 			return 1;
@@ -71,7 +71,7 @@ public class s3put extends AWSS3Command {
 
 			usage() ; 
 			return 1; 
-			
+
 		case 1 :
 		{
 			S3Path dest;
@@ -88,10 +88,10 @@ public class s3put extends AWSS3Command {
 			if( ! bRecurse ){
 				InputPort src = mShell.getEnv().getInput(args.get(0));
 				if( ! src.isFile() ||  ! src.getFile().isDirectory() ){
-					 
-			     ret = put(  src , dest , meta , storage  );
-     		     break ; 
-     		     }
+
+					ret = put(  src , dest , meta , storage  );
+					break ; 
+				}
 			}
 			// fall through
 		}
@@ -115,10 +115,10 @@ public class s3put extends AWSS3Command {
 
 
 	private int put( List<File> files , S3Path dest ,ObjectMetadataProvider metadata , String storeage ){
-		
+
 		File pwd = getDirOrDrive();
 		String destKey = dest.getKey();
-		
+
 		/* DAL: TODO No easy work around 
 		// Workaround a TM bug where putting files from root delete the first char of the file
 		if( isRoot( pwd )){
@@ -126,13 +126,13 @@ public class s3put extends AWSS3Command {
 			//for( File f : files )
 			//	tmp.add( new File( ))
 			mShell.printErr( destKey );
-			
+
 		}
-		*/
-		
+		 */
+
 		MultipleFileUpload dirUpload = 
 				getTransferManager().uploadFileList(dest.getBucket(), destKey , pwd , files, metadata );
-				
+
 
 		try {
 			dirUpload.waitForCompletion();
@@ -142,28 +142,28 @@ public class s3put extends AWSS3Command {
 		}
 
 		return 0;
-		
+
 	}
 
-	
-	
-	
-	
+
+
+
+
 	private boolean isRoot(File file) 
 	{
-		
+
 		for( File root : File.listRoots() )
 			if( file.equals(root) )
-					return true ;
+				return true ;
 		return false ;
 	}
 
 
 	private int put(List<XValue> files, S3Path dest, final List<XValue> meta, String storage) throws IOException
 	{
-		
+
 		traceCall("TransferManager.uploadFileList");
-		
+
 		ObjectMetadataProvider provider = new ObjectMetadataProvider(){
 
 			@Override
@@ -174,27 +174,27 @@ public class s3put extends AWSS3Command {
 						metadata.addUserMetadata(pair.getLeft(), pair.getRight());
 					}
 				}
-				
+
 			}} ;
-			
-			
-		ArrayList<File> afiles = new ArrayList<File>( mBatchSize );
-		
-		for( File f :  getFiles(files) )
-		  batchPut( afiles , f , dest , provider , storage );
-			
-		if( afiles.size() > 0 )
-		  flush( afiles ,  dest , provider , storage );
 
 
-		return 0;
+			ArrayList<File> afiles = new ArrayList<File>( mBatchSize );
+
+			for( File f :  getFiles(files) )
+				batchPut( afiles , f , dest , provider , storage );
+
+			if( afiles.size() > 0 )
+				flush( afiles ,  dest , provider , storage );
+
+
+			return 0;
 	}
 
 	private File getDirOrDrive() {
 		return mShell.getCurdir();
 	}
 
-	
+
 
 	/* 
 	 * Convert a list of XValue to a list of File without recursing
@@ -207,35 +207,35 @@ public class s3put extends AWSS3Command {
 		return files ;
 	}
 
-	
-	
-	
+
+
+
 	private void batchPut( ArrayList< File > files , File file , S3Path dest ,ObjectMetadataProvider metadata , String storage ){
-		
-		
+
+
 		if( file.isDirectory() ){
 			String[] flist = file.list();
-			
+
 			for (String ff : flist) 
 				batchPut( files , new File( file , ff ) , dest , metadata , storage );
-			
+
 		} else
 			files.add( file );
 
 		if( files.size() >= mBatchSize )
 			flush( files , dest , metadata , storage );
-	
-	
+
+
 	}
-	
+
 	private void flush( ArrayList< File > files , S3Path dest ,ObjectMetadataProvider metadata , String storage ){
 		put( files , dest , metadata , storage );
 		files.clear();
-		
+
 	}
-	
-	
-	
+
+
+
 	/* 
 	 * Put a single file from a stream to a specific S3 bucket+key
 	 */
@@ -247,13 +247,13 @@ public class s3put extends AWSS3Command {
 
 		if( bVerbose )
 			mShell.printErr("Putting to " + dest.toString() );
-		
+
 		if( ! dest.hasKey() ){
 			if( ! src.isFile() )
 				throw new UnexpectedException("Cannot put non named object to S3 without a key");
-			
+
 			dest.setKey( src.getFile().getName());
-			
+
 		}
 
 
@@ -283,16 +283,16 @@ public class s3put extends AWSS3Command {
 			// update metadata
 			//
 			request.setMetadata(metadata);
-			
+
 			traceCall("TransferManager.upload");
 
 
-			
-			
+
+
 			Upload upload = getTransferManager().upload( request );
-           
+
 			UploadResult result = upload.waitForUploadResult();
-			
+
 
 			if(bVerbose) printResult(result);
 		} catch( Exception e ){
@@ -300,7 +300,7 @@ public class s3put extends AWSS3Command {
 			return 1;
 		}
 
-		
+
 		if (is != null) is.close();
 
 		return 0;
@@ -313,6 +313,7 @@ public class s3put extends AWSS3Command {
 		mShell.printOut(result.getBucketName() + " + " + result.getKey());
 	}
 
+	@Override
 	public void usage() {
 		super.usage("Usage: s3put [source] dest");
 	}

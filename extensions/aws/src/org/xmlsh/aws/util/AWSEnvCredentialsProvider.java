@@ -34,41 +34,43 @@ import com.amazonaws.auth.BasicAWSCredentials;
  */
 public class AWSEnvCredentialsProvider implements AWSCredentialsProvider {
 
-    /** Environment variable name for the AWS access key ID */
-    private static final String ACCESS_KEY_ENV_VAR = "AWS_ACCESS_KEY";
+	/** Environment variable name for the AWS access key ID */
+	private static final String ACCESS_KEY_ENV_VAR = "AWS_ACCESS_KEY";
 
-    /** Environment variable name for the AWS secret key */
-    private static final String SECRET_KEY_ENV_VAR = "AWS_SECRET_KEY";
-    
-    private String access_key;
-    private String secret_key ;
+	/** Environment variable name for the AWS secret key */
+	private static final String SECRET_KEY_ENV_VAR = "AWS_SECRET_KEY";
 
-    public AWSEnvCredentialsProvider(Shell shell) {
-    	// Dont hold onto shell in case getCredentials() is called in the future on a different thread
-	
-    	access_key = shell.getEnv().getVarString(ACCESS_KEY_ENV_VAR);
-    	secret_key = shell.getEnv().getVarString(SECRET_KEY_ENV_VAR);
+	private String access_key;
+	private String secret_key ;
+
+	public AWSEnvCredentialsProvider(Shell shell) {
+		// Dont hold onto shell in case getCredentials() is called in the future on a different thread
+
+		access_key = shell.getEnv().getVarString(ACCESS_KEY_ENV_VAR);
+		secret_key = shell.getEnv().getVarString(SECRET_KEY_ENV_VAR);
 	}
 
+	@Override
 	public AWSCredentials getCredentials() {
-        if ( access_key != null &&
-             secret_key != null) {
+		if ( access_key != null &&
+				secret_key != null) {
 
-            return new BasicAWSCredentials(
-            		access_key , secret_key );
-        }
+			return new BasicAWSCredentials(
+					access_key , secret_key );
+		}
 
-        throw new AmazonClientException(
-                "Unable to load AWS credentials from environment variables " +
-                "(" + ACCESS_KEY_ENV_VAR + " and " + SECRET_KEY_ENV_VAR + ")");
-    }
+		throw new AmazonClientException(
+				"Unable to load AWS credentials from environment variables " +
+						"(" + ACCESS_KEY_ENV_VAR + " and " + SECRET_KEY_ENV_VAR + ")");
+	}
 
-    public void refresh() {}
+	@Override
+	public void refresh() {}
 
-    @Override
-    public String toString() {
-        return getClass().getSimpleName();
-    }
+	@Override
+	public String toString() {
+		return getClass().getSimpleName();
+	}
 }
 
 

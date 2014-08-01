@@ -19,7 +19,7 @@ import com.amazonaws.services.sns.model.CreateTopicResult;
 
 public class snsCreateTopic extends AWSSNSCommand {
 
-	
+
 
 
 
@@ -30,71 +30,71 @@ public class snsCreateTopic extends AWSSNSCommand {
 	@Override
 	public int run(List<XValue> args) throws Exception {
 
-		
+
 		Options opts = getOptions();
 		opts.parse(args);
 
 		args = opts.getRemainingArgs();
-		
+
 		if( args.size() != 1 ){
 			usage();
 			return 1;
 		}
-		
 
-		
+
+
 		setSerializeOpts(this.getSerializeOpts(opts));
-		
-		
-		
+
+
+
 
 		String name = args.get(0).toString();
-		
-		
-		
+
+
+
 		try {
-			 getSNSClient(opts);
+			getSNSClient(opts);
 		} catch (UnexpectedException e) {
 			usage( e.getLocalizedMessage() );
 			return 1;
-			
+
 		}
-		
+
 		int ret;
-		
+
 		ret = create(name );
-		
-		
+
+
 		return ret;
-		
-		
+
+
 	}
 
 
 	private int create(String name ) throws IOException, XMLStreamException, SaxonApiException, CoreException {
-		
+
 
 		CreateTopicRequest request = new CreateTopicRequest();
 		request.setName(name);
 		traceCall("createTopic");
 
 		CreateTopicResult result = mAmazon.createTopic(request);
-		
+
 		OutputPort stdout = this.getStdout();
 		mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
-		
-		
+
+
 		startDocument();
 		startElement(getName());
-		
-		
-			startElement("topic");
-			attribute("arn", result.getTopicArn());
 
-			endElement();
-			
-		
-		
+
+		startElement("topic");
+		attribute("arn", result.getTopicArn());
+
+		endElement();
+
+
+
 		endElement();
 		endDocument();
 		closeWriter();
@@ -102,14 +102,14 @@ public class snsCreateTopic extends AWSSNSCommand {
 
 		return 0;
 
-		
-		
-		
-		
-		
+
+
+
+
+
 	}
 
 
-	
+
 
 }

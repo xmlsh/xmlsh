@@ -21,7 +21,7 @@ import com.amazonaws.services.ec2.model.StartInstancesResult;
 
 public class ec2StartInstances extends AWSEC2Command {
 
-	
+
 
 
 
@@ -33,40 +33,40 @@ public class ec2StartInstances extends AWSEC2Command {
 	@Override
 	public int run(List<XValue> args) throws Exception {
 
-		
+
 		Options opts = getOptions();
 		opts.parse(args);
 
 		args = opts.getRemainingArgs();
-		
 
-		
-		
-		
+
+
+
+
 		if( args.size() < 1 ){
 			usage(null);
 			return 1;
 		}
-		
+
 
 		setSerializeOpts(this.getSerializeOpts(opts));
 		try {
-			 getEC2Client(opts);
+			getEC2Client(opts);
 		} catch (UnexpectedException e) {
 			usage( e.getLocalizedMessage() );
 			return 1;
-			
+
 		}
-		
+
 		int ret = start( Util.toStringArray(args) );
-		
-		
-		
-		
-		
+
+
+
+
+
 		return ret;
-		
-		
+
+
 	}
 
 
@@ -74,23 +74,23 @@ public class ec2StartInstances extends AWSEC2Command {
 
 	private int start( String[] instances ) throws IOException, XMLStreamException, SaxonApiException, CoreException 
 	{
-	
+
 		StartInstancesRequest  request = new StartInstancesRequest( Arrays.asList(instances));
-		
+
 		traceCall("startInstances");
 		StartInstancesResult result = mAmazon.startInstances(request);
-		
+
 		List<InstanceStateChange> changes = result.getStartingInstances();
 		writeStateChages( changes);
 		return 0;
-		
-	
-	
+
+
+
 	}
 
 
 
-	
-	
+
+
 
 }

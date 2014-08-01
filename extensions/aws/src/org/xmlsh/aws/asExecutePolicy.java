@@ -7,10 +7,8 @@
 package org.xmlsh.aws;
 
 import net.sf.saxon.s9api.SaxonApiException;
-
 import org.xmlsh.aws.util.AWSASCommand;
 import org.xmlsh.core.CoreException;
-import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.SafeXMLStreamWriter;
@@ -26,48 +24,48 @@ import com.amazonaws.services.autoscaling.model.ExecutePolicyRequest;
 
 public class asExecutePolicy extends AWSASCommand {
 
-	
+
 
 	@Override
 	public int run(List<XValue> args) throws Exception {
-		
-		
-		
+
+
+
 		Options opts = getOptions();
 		opts.parse(args);
 
 		args = opts.getRemainingArgs();
-		
+
 		if( args.size() != 2 )
 			usage("as-execute-policy group policy");
-		
+
 
 
 		String group = args.get(0).toString();
 		String policy = args.get(1).toString();
-		
+
 		setSerializeOpts(this.getSerializeOpts(opts));
-		
-		
+
+
 		try {
 			getASClient(opts);
 		} catch (UnexpectedException e) {
 			usage( e.getLocalizedMessage() );
 			return 1;
-			
+
 		}
-		
-	
+
+
 		int ret = execute( group , policy );
-		
-		
-		
+
+
+
 		return ret;
-		
-		
+
+
 	}
 
-	
+
 
 
 	private int execute(String group, String policy) throws IOException, XMLStreamException, SaxonApiException, CoreException 
@@ -75,22 +73,22 @@ public class asExecutePolicy extends AWSASCommand {
 
 		OutputPort stdout = this.getStdout();
 		mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(getSerializeOpts()));
-		
-		
+
+
 		startDocument();
 		startElement(this.getName());
-		
+
 		ExecutePolicyRequest request = new ExecutePolicyRequest().withAutoScalingGroupName(group).withPolicyName(policy);
-		
+
 		traceCall("executePolicy");
 
 		mAmazon.executePolicy(request);
-		
+
 		endElement();
 		endDocument();
 		return 0 ;
-	
-	
+
+
 	}
 
 

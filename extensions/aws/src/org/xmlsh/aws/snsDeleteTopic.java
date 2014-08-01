@@ -17,7 +17,7 @@ import com.amazonaws.services.sns.model.DeleteTopicRequest;
 
 public class snsDeleteTopic extends AWSSNSCommand {
 
-	
+
 
 
 
@@ -28,66 +28,66 @@ public class snsDeleteTopic extends AWSSNSCommand {
 	@Override
 	public int run(List<XValue> args) throws Exception {
 
-		
+
 		Options opts = getOptions();
 		opts.parse(args);
 
 		args = opts.getRemainingArgs();
-		
+
 		if( args.size() != 1 ){
 			usage();
 			return 1;
 		}
-		
 
-		
+
+
 		setSerializeOpts(this.getSerializeOpts(opts));
-		
-		
-		
+
+
+
 
 		String name = args.get(0).toString();
-		
-		
-		
+
+
+
 		try {
-			 getSNSClient(opts);
+			getSNSClient(opts);
 		} catch (UnexpectedException e) {
 			usage( e.getLocalizedMessage() );
 			return 1;
-			
+
 		}
-		
+
 		int ret;
-		
+
 		ret = delete(name );
-		
-		
+
+
 		return ret;
-		
-		
+
+
 	}
 
 
 	private int delete(String name ) throws IOException, XMLStreamException, InvalidArgumentException, SaxonApiException {
-		
+
 
 		DeleteTopicRequest request = new DeleteTopicRequest();
 		request.setTopicArn(name);
 		traceCall("deleteTopic");
 
 		mAmazon.deleteTopic(request);
-		
-		
-		
+
+
+
 		return 0;
-		
-		
-		
-		
+
+
+
+
 	}
 
 
-	
+
 
 }

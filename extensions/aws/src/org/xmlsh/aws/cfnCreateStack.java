@@ -32,99 +32,99 @@ import com.amazonaws.services.cloudformation.model.Tag;
 
 public class cfnCreateStack extends AWSCFNCommand {
 
-	
+
 
 	@Override
 	public int run(List<XValue> args) throws Exception {
-		
-		
-		
+
+
+
 		Options opts = getOptions("capability:+,disable-rollback,fail=on-failure:,notification-arn:+,name:,template-file=f:,template-url=url:,timeout:,tag:+");
 		opts.parse(args);
 
 		args = opts.getRemainingArgs();
-		
 
-		
+
+
 		setSerializeOpts(this.getSerializeOpts(opts));
-		
-		
+
+
 		try {
 			getCFNClient(opts);
 		} catch (UnexpectedException e) {
 			usage( e.getLocalizedMessage() );
 			return 1;
-			
-		}
-		
-	
-        int ret = createStack(args, opts);
 
-		
-		
+		}
+
+
+		int ret = createStack(args, opts);
+
+
+
 		return ret;
-		
-		
+
+
 	}
 
 
 
 	private int createStack(List<XValue> args, Options opts) throws IOException, XMLStreamException, SaxonApiException, CoreException {
-		
+
 
 		OutputPort stdout = this.getStdout();
 		mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(getSerializeOpts()));
-		
-		
+
+
 		startDocument();
 		startElement(this.getName());
-		
+
 		CreateStackRequest request = new CreateStackRequest();
-		
+
 		// "capability:+,disable-rollback,notification-arn:+,name:,template:,timeout:,tag:+");
 
 		if( opts.hasOpt("capability") )
 			request.setCapabilities(Util.toStringList(opts.getOptValues("capability")));
-		
+
 		String onFail = opts.getOptString("on-failure", null);
 		if( onFail != null)
 			request.setOnFailure(OnFailure.fromValue(onFail));
 		else
-		   request.setDisableRollback(opts.getOptFlag("disable-rollback", false));
-		
-		
+			request.setDisableRollback(opts.getOptFlag("disable-rollback", false));
+
+
 		if( opts.hasOpt("notification-arn"))
 			request.setNotificationARNs(Util.toStringList(opts.getOptValues("notification-arn")));
-		
+
 		request.setStackName( opts.getOptStringRequired("name"));
 
 		if( opts.hasOpt("template-file"))
 			request.setTemplateBody( Util.readString( mShell.getFile(opts.getOptValue("template-file")), getSerializeOpts().getInput_text_encoding()));
 		else
 			request.setTemplateURL( opts.getOptStringRequired("template-url"));
-		
+
 		if( opts.hasOpt("timeout" ))
 			request.setTimeoutInMinutes((int) opts.getOptLong("timeout", 10));
 		if( opts.hasOpt("tag"))
 			request.setTags( getTags( opts.getOptValues("tag")));
-		
+
 		request.setParameters(getParameters( args ));
-		
+
 		traceCall("createStack");
 
 		CreateStackResult result = mAmazon.createStack(request);
-		
+
 		writeStackResult(result,request.getStackName());
-		
-		
-		
-		
+
+
+
+
 		endElement();
 		endDocument();
 		closeWriter();
-		
+
 		stdout.writeSequenceTerminator(getSerializeOpts());
-		
+
 		return 0;
 
 	}
@@ -136,20 +136,20 @@ public class cfnCreateStack extends AWSCFNCommand {
 		Collection<Parameter> params = new ArrayList<Parameter>( sz );
 		for( int i = 0 ; i < sz ; i += 2 ){
 			String name = args.get(i).toString();
-			
+
 			String value = i+1 >= sz ? "" : args.get(i+1).toString();
 			params.add( new Parameter().withParameterKey(name).withParameterValue(value)) ;
-			
+
 		}
 		return params;
-		
-		
+
+
 	}
 
 
 
 	private Collection<Tag> getTags(List<XValue> values) {
-	
+
 		Collection<Tag> tags = new ArrayList<Tag>( values.size() );
 		for( XValue v : values )
 			tags.add( parseTag( v ));
@@ -161,8 +161,8 @@ public class cfnCreateStack extends AWSCFNCommand {
 	private Tag parseTag(XValue v) {
 		StringPair pair = new StringPair( v.toString() , '=');
 		return new Tag().withKey(pair.getLeft()).withValue( pair.getRight());
-		
-		
+
+
 	}
 
 
@@ -172,10 +172,10 @@ public class cfnCreateStack extends AWSCFNCommand {
 		attribute("stack-id",result.getStackId());
 		attribute("stack-name",name);
 		endElement();
-		
+
 	}
 
-	
+
 }
 
 

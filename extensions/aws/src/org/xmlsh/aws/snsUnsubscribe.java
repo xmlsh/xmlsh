@@ -18,7 +18,7 @@ import com.amazonaws.services.sns.model.UnsubscribeRequest;
 
 public class snsUnsubscribe extends AWSSNSCommand {
 
-	
+
 
 
 
@@ -29,76 +29,76 @@ public class snsUnsubscribe extends AWSSNSCommand {
 	@Override
 	public int run(List<XValue> args) throws Exception {
 
-		
+
 		Options opts = getOptions("t=topic:");
 		opts.parse(args);
 
 		args = opts.getRemainingArgs();
 		String topic = opts.getOptString("topic",null);
-		
+
 		if( topic == null ) {
 			if(args.size() != 1 ){
-			usage();
-			return 1;
+				usage();
+				return 1;
 			}
 			topic = args.get(0).toString();
 		}
-		
 
-		
+
+
 		setSerializeOpts(this.getSerializeOpts(opts));
-		
-		
-		
+
+
+
 
 		try {
-			 getSNSClient(opts);
+			getSNSClient(opts);
 		} catch (UnexpectedException e) {
 			usage( e.getLocalizedMessage() );
 			return 1;
-			
+
 		}
-		
+
 		int ret;
-		
+
 		ret = unsubscribe(topic );
-		
-		
+
+
 		return ret;
-		
-		
+
+
 	}
 
 
 	private int unsubscribe(String arn ) throws IOException, XMLStreamException, SaxonApiException, CoreException {
-		
+
 
 		UnsubscribeRequest request = new UnsubscribeRequest(arn);
 		traceCall("unsubscribe");
 
 
 		mAmazon.unsubscribe(request);
-		
+
 		OutputPort stdout = this.getStdout();
 		mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
-		
-		
+
+
 		startDocument();
 		startElement(getName());
 		endElement();
 		endDocument();
 		closeWriter();
 		stdout.writeSequenceTerminator(getSerializeOpts());
-		
-		
+
+
 		return 0;
-		
-		
-		
-		
+
+
+
+
 	}
 
 
-	
+
 
 }

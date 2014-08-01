@@ -17,7 +17,7 @@ import com.amazonaws.services.s3.model.DeleteBucketRequest;
 
 public class s3DeleteBucket extends AWSS3Command {
 
-	
+
 
 
 	/**
@@ -27,63 +27,63 @@ public class s3DeleteBucket extends AWSS3Command {
 	@Override
 	public int run(List<XValue> args) throws Exception {
 
-		
+
 		Options opts = getOptions("r=recurse");
 		opts.parse(args);
 
 		args = opts.getRemainingArgs();
-		
 
-		
+
+
 		setSerializeOpts(this.getSerializeOpts(opts));
-		
-		
-		
+
+
+
 		try {
-			 getS3Client(opts);
+			getS3Client(opts);
 		} catch (UnexpectedException e) {
 			usage( e.getLocalizedMessage() );
 			return 1;
-			
+
 		}
 
 
 		int ret = 0 ;
 		if(args.size() < 1 ){
-				usage();
-				return 1;
+			usage();
+			return 1;
 		}
 
 		for( XValue arg : args )
 			ret += deleteBucket(  arg.toString()  );
 
-		
-		
+
+
 		return ret;
-		
-		
+
+
 	}
 
 
 	private int deleteBucket(String bucket) throws IOException, XMLStreamException, InvalidArgumentException, SaxonApiException {
-		
-		
+
+
 		DeleteBucketRequest request = new DeleteBucketRequest(bucket);
-		
+
 		traceCall("deleteBucket");
 
 		mAmazon.deleteBucket(request);
-		
+
 		return 0;
-		
-		
-		
-		
+
+
+
+
 	}
 
 
 
 
-	
+
 
 }

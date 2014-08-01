@@ -20,7 +20,7 @@ import com.amazonaws.services.sqs.model.SetQueueAttributesRequest;
 
 public class sqsSetQueueAttributes extends AWSSQSCommand {
 
-	
+
 
 
 
@@ -31,49 +31,49 @@ public class sqsSetQueueAttributes extends AWSSQSCommand {
 	@Override
 	public int run(List<XValue> args) throws Exception {
 
-		
+
 		Options opts = getOptions();
 		opts.parse(args);
 
 		args = opts.getRemainingArgs();
-		
+
 		if( args.size() < 2 ){
 			usage();
 			return 1;
 		}
-		
-		String name = args.remove(0).toString();
-		
 
-		
+		String name = args.remove(0).toString();
+
+
+
 		setSerializeOpts(this.getSerializeOpts(opts));
-		
-		
-		
+
+
+
 		try {
-			 getSQSClient(opts);
+			getSQSClient(opts);
 		} catch (UnexpectedException e) {
 			usage( e.getLocalizedMessage() );
 			return 1;
-			
+
 		}
-		
+
 		int ret;
-		
-		
-		
+
+
+
 		ret = setAttributes( name , parseAttributes( Util.toStringList(args) ) );
-		
-		
+
+
 		return ret;
-		
+
 	}
 
 
 	private Map<String, String> parseAttributes(List<String> list) {
-		
+
 		Map<String,String> map = new HashMap<String,String>(list.size());
-		
+
 		for( int i = 0 ; i < list.size() ; ){
 			map.put( list.get(i), list.get(i+1));
 			i+=2;
@@ -91,6 +91,6 @@ public class sqsSetQueueAttributes extends AWSSQSCommand {
 	}
 
 
-	
+
 
 }
