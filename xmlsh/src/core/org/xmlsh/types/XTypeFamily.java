@@ -2,6 +2,9 @@ package org.xmlsh.types;
 
 import org.xmlsh.core.IXValueContainer;
 import org.xmlsh.core.XValue;
+import org.xmlsh.core.XValueArray;
+import org.xmlsh.core.XValueList;
+import org.xmlsh.core.XValueMap;
 
 import java.util.EnumSet;
 
@@ -20,6 +23,11 @@ public class XTypeFamily extends AbstractTypeFamily implements ITypeFamily
 	protected XTypeKind inferKind( Class<?> cls ) {
 		if( cls == null ) 
 			return XTypeKind.NULL;
+		if( XValueArray.class.isAssignableFrom(cls) ||
+		    XValueList.class.isAssignableFrom(cls) )
+			  return XTypeKind.ARRAY ;
+		if( XValueMap.class.isAssignableFrom(cls) )
+			return XTypeKind.MAP ;
 		if(  IXValueContainer.class.isAssignableFrom(cls) )
 			return XTypeKind.CONTAINER ;
 		return XTypeKind.ATOMIC;

@@ -36,7 +36,7 @@ public class template extends XCommand
 
 		String format = opts.getOptString("format", "text");
 		InputPort template = opts.hasOpt("template") ?
-				mShell.getEnv().getInput( opts.getOptValue("tempalte") ):
+				mShell.getEnv().getInput( opts.getOptValue("template") ):
 					mShell.getEnv().getStdin();
 
 

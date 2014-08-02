@@ -12,7 +12,10 @@ public interface  IXValueContainer<T extends IXValueContainer<T > >
 {
 	public abstract int size();
 	public abstract boolean isEmpty();
-	public abstract XValue put(String key , XValue value);
+	public abstract boolean isMap();
+	public abstract boolean isList();
+	public abstract boolean isAtomic();
+	public abstract XValue put(String key , XValue value) ;
 	public abstract XValue get(String name);
 	public abstract void removeAll();
 	public abstract Set<String>  keySet();     // Ordered set of keys

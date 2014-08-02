@@ -142,6 +142,26 @@ public class XValueMap extends AbstractMap<String,XValue> implements IXValueCont
 		put( nv.getName() , nv.getValue() );
 	}
 
+	@Override
+    public boolean isMap()
+    {
+	    return true;
+    }
+
+	@Override
+    public boolean isList()
+    {
+	    // TODO Auto-generated method stub
+	    return false;
+    }
+
+	@Override
+    public boolean isAtomic()
+    {
+	    // TODO Auto-generated method stub
+	    return false;
+    }
+
 }
 /*
  * Copyright (C) 2008-2012 David A. Lee.

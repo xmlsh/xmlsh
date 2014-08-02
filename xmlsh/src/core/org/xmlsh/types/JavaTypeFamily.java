@@ -19,14 +19,18 @@ public class JavaTypeFamily extends AbstractTypeFamily implements ITypeFamily
 	XTypeKind inferKind( Class<?> cls ) {
 		if( JavaUtils.isNullClass( cls ) ) 
 			return XTypeKind.NULL ;
+		if( JavaUtils.isObjectClass( cls ) )
+			return XTypeKind.MAP ;
+		if( JavaUtils.isArrayClass( cls ) )
+			return XTypeKind.ARRAY ;
 		if( JavaUtils.isContainerClass( cls ) )
-			return XTypeKind.NULL ;
+			return XTypeKind.CONTAINER ;
 		if( JavaUtils.isAtomicClass( cls ) )
 			return XTypeKind.ATOMIC ;
 		if( JavaUtils.isClassClass( cls ) )
 			return XTypeKind.CLASS ;
 		else
-			return XTypeKind.OBJECT ;
+			return XTypeKind.MAP ;
 	}
 
 

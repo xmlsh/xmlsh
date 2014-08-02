@@ -452,6 +452,16 @@ public class JSONUtils {
 		return ContainerNode.class.isAssignableFrom(cls);
 	}
 
+	public static boolean isObjectClass(Class<?> cls)
+	{
+		return ObjectNode.class.isAssignableFrom(cls);
+	}
+	public static boolean isArrayClass(Class<?> cls)
+	{
+		return ArrayNode.class.isAssignableFrom(cls);
+	}
+
+	
 	public static boolean isAtomicClass(Class<?> cls)
 	{
 		return ValueNode.class.isAssignableFrom(cls) && 

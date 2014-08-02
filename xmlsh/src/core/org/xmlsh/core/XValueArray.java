@@ -143,5 +143,23 @@ public class XValueArray extends AbstractList<XValue> implements IXValueContaine
 		return mArray.get(Integer.valueOf(index));
 	}
 
+	@Override
+    public boolean isMap()
+    {
+	    return false;
+    }
+
+	@Override
+    public boolean isList()
+    {
+	    return true;
+    }
+
+	@Override
+    public boolean isAtomic()
+    {
+	    return false;
+    }
+
 
 }

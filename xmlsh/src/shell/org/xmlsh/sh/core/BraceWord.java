@@ -9,8 +9,11 @@ package org.xmlsh.sh.core;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.EvalEnv;
 import org.xmlsh.core.EvalFlag;
+import org.xmlsh.core.XValue;
+import org.xmlsh.core.XValueList;
 import org.xmlsh.sh.shell.ParseResult;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.types.TypeFamily;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -18,18 +21,23 @@ import java.io.PrintWriter;
 public class BraceWord extends Word
 {
 
-	private Word	mWord;
+	private WordList	mWords;
 
-	public BraceWord(Word w)
+	public BraceWord(WordList w)
 	{
-		mWord = w;
+		mWords = w;
 	}
 
 	@Override
 	public void print(PrintWriter out)
 	{
 		out.print("{");
-		mWord.print(out);
+		String sep="";
+		for( Word w : mWords ) {
+			w.print(out);
+			out.print(sep);
+			sep="";
+		}
 		out.print("}");
 	}
 
@@ -37,7 +45,7 @@ public class BraceWord extends Word
 	@Override
 	public boolean isEmpty()
 	{
-		return mWord == null || mWord.isEmpty();
+		return mWords == null || mWords.isEmpty();
 	}
 
 
@@ -45,7 +53,7 @@ public class BraceWord extends Word
 	@Override
 	String getSimpleName()
 	{
-		return isEmpty() ? "{}" : mWord.getSimpleName();
+		return isEmpty() ? "{}" : mWords.get(0).getSimpleName() + "...";
 	}
 
 	/* (non-Javadoc)
@@ -61,7 +69,19 @@ public class BraceWord extends Word
 	protected ParseResult expandToResult(Shell shell, EvalEnv env, SourceLocation loc, ParseResult result) throws IOException,
 	CoreException
 	{
-		return mWord.expandToResult(shell,  evalEnv(env), loc, result);
+		if( mWords.isEmpty() )
+			return result  ;
+		if( mWords.size() == 1 )
+			return mWords.get(0).expandToResult(shell, evalEnv(env), loc, result);
+		
+		XValueList list = new XValueList();
+		for( Word w : mWords ) {
+			XValue xv = w.expand(shell, evalEnv(env), loc);
+			list.add(xv);
+		}
+		result.add( new XValue( TypeFamily.XTYPE , list ) );
+		return result ;
+
 	}
 
 

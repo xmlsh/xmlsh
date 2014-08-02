@@ -13,5 +13,8 @@ public interface IType
 	public boolean   isContainer();
 	public boolean   isNull();
 	public XTypeKind  kind();         // General kind of type 
+	boolean isObject();
+	boolean isArray();
+	boolean isMap();
 
 }

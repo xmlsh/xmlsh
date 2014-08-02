@@ -133,9 +133,29 @@ public class XValueList  extends AbstractList<XValue> implements IXValueContaine
 	@Override
 	public XValue get(int index)
 	{
-		// TODO Auto-generated method stub
-		return null;
+		return getAt(index);
 	}
+
+	@Override
+    public boolean isMap()
+    {
+	    // TODO Auto-generated method stub
+	    return false;
+    }
+
+	@Override
+    public boolean isList()
+    {
+	    // TODO Auto-generated method stub
+	    return true;
+    }
+
+	@Override
+    public boolean isAtomic()
+    {
+	    // TODO Auto-generated method stub
+	    return false;
+    }
 
 }
 

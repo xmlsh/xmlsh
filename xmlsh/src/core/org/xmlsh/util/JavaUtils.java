@@ -537,6 +537,27 @@ public class JavaUtils {
 		return false ;
 
 	}
+	
+	public static boolean isArrayClass(Class<?> cls)
+	{
+		if( cls == null )
+			return false;
+		if(     List.class.isAssignableFrom(cls) ||
+				Array.class.isAssignableFrom(cls) )
+			return true ;
+		return false ;
+
+	}
+	
+	public static boolean isObjectClass(Class<?> cls)
+	{
+		if( cls == null )
+			return false;
+		return (  ! isAtomicClass( cls ) );
+
+	}
+	
+	
 
 	public static boolean isStringClass( Class<?> cls) {
 

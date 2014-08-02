@@ -17,7 +17,6 @@ public final class XDMTypeFamily extends AbstractTypeFamily implements ITypeFami
 	protected IType getTypeInstance(XTypeKind kind)
 	{
 		return XDMType.newInstance(kind);
-
 	}
 
 	@Override
@@ -28,6 +27,7 @@ public final class XDMTypeFamily extends AbstractTypeFamily implements ITypeFami
 		if( XdmValue.class.isAssignableFrom(cls) ) {
 			if( XdmAtomicValue.class.isAssignableFrom(cls ) ) 
 				return XTypeKind.ATOMIC ;
+			
 			if( XdmNode.class.isAssignableFrom(cls ) ) 
 				return XTypeKind.CONTAINER;
 

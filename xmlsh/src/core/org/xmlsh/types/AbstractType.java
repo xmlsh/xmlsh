@@ -62,7 +62,21 @@ abstract class AbstractType implements IType
 	{
 		return kind() == XTypeKind.CONTAINER;
 	}
-
+	@Override
+	public boolean isMap()
+	{
+		return kind() == XTypeKind.MAP;
+	}
+	@Override
+	public boolean isObject()
+	{
+		return kind() == XTypeKind.OBJECT;
+	}
+	@Override
+	public boolean isArray()
+	{
+		return kind() == XTypeKind.ARRAY;
+	}
 	/*
 	 * (non-Javadoc)
 	 * 
