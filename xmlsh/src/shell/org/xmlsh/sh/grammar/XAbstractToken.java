@@ -6,23 +6,36 @@
 
 package org.xmlsh.sh.grammar;
 
-public class XToken extends Token
+import java.util.Arrays;
+
+public abstract class XAbstractToken
 {
-
-
-	public XToken(int kind, String image)
-	{
-		super(kind, image);
+	protected int getKind() {
+		assert(false);
+		return 0;}
+	private static int depth[] = new int[ ShellParserConstants.tokenImage.length ];
+	public void enter(int kind) { 
+		 assert( kind < depth.length ) ;
+		 depth[kind]++ ; 
 	}
-
-	/* (non-Javadoc)
-	 * @see org.xmlsh.sh.grammar.XAbstractToken#getKind()
-	 */
-    protected int getKind()
-    {
-	    return kind;
-    }
-
+	public boolean exit(int kind) { 
+		 assert( kind < depth.length ) ;
+		 assert( depth[kind] >= 0 );
+         if( --depth[kind] < 0 ) {
+        	 depth[kind] = 0; 
+        	 return false ;
+         }
+         return true ;
+	}
+	static int get(int kind) {
+		assert( kind < depth.length ) ;
+		return depth[kind];
+	}
+	static void  clearAll()
+	{
+		Arrays.fill( depth , 0 );
+	}
+		
 }
 
 

@@ -6,21 +6,12 @@
 
 package org.xmlsh.sh.grammar;
 
-public class XToken extends Token
+public class XTokenFactory
 {
 
-
-	public XToken(int kind, String image)
-	{
-		super(kind, image);
-	}
-
-	/* (non-Javadoc)
-	 * @see org.xmlsh.sh.grammar.XAbstractToken#getKind()
-	 */
-    protected int getKind()
+	public static Token newToken(int jjmatchedKind, String curTokenImage)
     {
-	    return kind;
+	    return new XToken( jjmatchedKind , curTokenImage );
     }
 
 }

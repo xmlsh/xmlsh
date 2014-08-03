@@ -10,8 +10,10 @@ options
 //      DEBUG_TOKEN_MANAGER=true;
  FORCE_LA_CHECK=true;
 //   UNICODE_INPUT=true;
- TOKEN_EXTENDS="XToken";
+ TOKEN_EXTENDS="XAbstractToken";
  COMMON_TOKEN_ACTION=true;
+ TOKEN_FACTORY="XTokenFactory";
+ OUTPUT_DIRECTORY="../../../../../generated/org/xmlsh/sh/grammar";
 }
 
 
