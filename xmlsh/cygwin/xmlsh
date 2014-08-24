@@ -1,12 +1,6 @@
-#
+#!/bin/sh
 [ -d "$XMLSH" ] || { echo "xmlsh requires environment variable XMLSH set" 1>&2 ;  exit 1 ; }
-unset CLASSPATH
-D=$(dirname $0)
-export CLASSPATH="$XMLSH/bin/xmlsh-1.2.jar"
-while read jar ; do
-  case $jar in
-  #* ) ;; 
-  *) CLASSPATH="$CLASSPATH;$XMLSH/lib/$jar"
-  esac
-done  < $D/classpath.txt
-java -cp "$CLASSPATH" -Xmx1024m -Xms256m -XX:+UseConcMarkSweepGC org.xmlsh.sh.shell.Shell   "$@"
+# cygwin uses ";" separator because java is still a win app.
+export CP="$XMLSH/bin/*;$XMLSH/lib/*"
+[ -z "$XMLSH_JVMOPTS" ] &&  export XMLSH_JVMOPTS="-XX:+UseConcMarkSweepGC -Xmx1024m -Xms256m"
+java -cp "$CP" $XMLSH_JVMOPTS org.xmlsh.sh.shell.Shell   "$@"

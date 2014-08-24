@@ -141,34 +141,6 @@ TOKEN_MGR_DECLS :
 
    return lexStateNames[curLexState];
  }
-
-  private String readUntil(String end)
-  {
-    StringBuffer sb = new StringBuffer();
-    char c;
-    try
-    {
-      while ((c = input_stream.readChar()) > 0)
-      {
-        sb.append(c);
-        if (sb.toString().endsWith(end)) 
-        break;
-      }
-    }
-    catch (Exception e)
-    {}
-    return sb.toString();
-  }
-
-  private String readXExpr()
-  {
-    return "<[" + readUntil("]>");
-  }
-
-  private String readBigquote()
-  {
-    return "<{{" + readUntil("}}>");
-  }
   String readHere()
   {
     // Read up to NL then call readHere( word );
@@ -370,6 +342,9 @@ MORE :
   < ~[] >
 }
 
+
+
+
 TOKEN :{
   < SEMI : ";" >
 | < AMP  : "&" >|  < AND_IF : "&&" > | < OR_IF : "||" > |  < DGREAT : ">>" >
@@ -450,9 +425,6 @@ TOKEN :
     < _WORD_SPECIAL > 
     | <_WORD_PUNC> )
   >
-
-
-|   < XEXPR : "<[" >  {    matchedToken.image = readXExpr();  }
 
 
 |   < VAR_SUBPROC :    "$("  | "$<("     > 
