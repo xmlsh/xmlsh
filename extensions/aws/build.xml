@@ -21,7 +21,7 @@
 	</target>
 
 
-	<property name="install" value="${env.XMODPATH}/marklogic" />
+	<property name="install" value="${env.XMODPATH}/aws" />
 	<target name="clean" description="Clean all">
 		<delete includeEmptyDirs="true" quiet="true">
 			<fileset dir="${dist}" includes="*"/>
@@ -83,11 +83,9 @@
 			<classpath>
 				<fileset dir="${xmlsh}/lib">
 					<include name="**/*.jar"/>
-					<exclude name="**/saxon9ee.jar"/>
-					<exclude name="**/saxon9pe.jar"/>
 				</fileset>
 				<fileset dir="${xmlsh}/bin">
-					<include name="**/*.jar"/>
+					<include name="**/*.jar" />
 				</fileset>
 			</classpath>
 

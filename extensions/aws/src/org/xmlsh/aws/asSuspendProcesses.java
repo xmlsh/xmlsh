@@ -23,9 +23,10 @@ import java.util.List;
 import javax.xml.stream.XMLStreamException;
 
 import com.amazonaws.services.autoscaling.model.ResumeProcessesRequest;
+import com.amazonaws.services.autoscaling.model.SuspendProcessesRequest;
 
-@Command("as-resume-processes")
-public class asResumeProcesses extends AWSASCommand {
+@Command("as-suspend-processes")
+public class asSuspendProcesses extends AWSASCommand {
 
 
 
@@ -40,14 +41,10 @@ public class asResumeProcesses extends AWSASCommand {
 		args = opts.getRemainingArgs();
 
 		if( args.size() < 2 )
-			usage("as-resume-processes group process...");
+			usage("as-suspend-processes group process...");
 
 
-
-    String group = args.remove(0).toString();
-
-    setSerializeOpts(this.getSerializeOpts(opts));
-
+		String group = args.remove(0).toString();
 
 		setSerializeOpts(this.getSerializeOpts(opts));
 
@@ -61,7 +58,7 @@ public class asResumeProcesses extends AWSASCommand {
 		}
 
 
-		int ret = resume( group , Util.toStringList(args) );
+		int ret = suspend( group , Util.toStringList(args) );
 
 
 
@@ -73,7 +70,7 @@ public class asResumeProcesses extends AWSASCommand {
 
 
 
-	private int resume(String group, List<String> list) throws IOException, XMLStreamException, SaxonApiException, CoreException 
+	private int suspend(String group,  List<String> processes ) throws IOException, XMLStreamException, SaxonApiException, CoreException 
 	{
 
 		OutputPort stdout = this.getStdout();
@@ -83,11 +80,11 @@ public class asResumeProcesses extends AWSASCommand {
 		startDocument();
 		startElement(this.getName());
 
-		ResumeProcessesRequest request = new ResumeProcessesRequest().withAutoScalingGroupName(group).withScalingProcesses(list);
+		SuspendProcessesRequest request = new SuspendProcessesRequest().withAutoScalingGroupName(group).withScalingProcesses(processes);
 
 		traceCall("resumeProcesses");
 
-		mAmazon.resumeProcesses(request);
+		mAmazon.suspendProcesses(request);
 
 		endElement();
 		endDocument();
