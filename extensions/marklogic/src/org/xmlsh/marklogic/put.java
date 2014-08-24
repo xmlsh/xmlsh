@@ -19,7 +19,6 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import net.sf.saxon.s9api.XdmItem;
-import org.xmlsh.commands.util.Checksum;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.IXdmItemInputStream;
 import org.xmlsh.core.InputPort;
@@ -32,6 +31,7 @@ import org.xmlsh.marklogic.util.MLUtil;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.util.StringPair;
 import org.xmlsh.util.Util;
+import org.xmlsh.util.commands.Checksum;
 
 import com.marklogic.xcc.AdhocQuery;
 import com.marklogic.xcc.Content;
