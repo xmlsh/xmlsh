@@ -1,6 +1,7 @@
 # Runs all tests 
 # checking for required externals
-
+echo MarkLogic tests requre a marklogic server configured
+[ "x$1" = "x-f" ] || exit 1
 
 # check for missing TMPDIR
 [ -n "$TMPDIR" ] || { echo TMPDIR must be set to run tests ; exit 1 ; }

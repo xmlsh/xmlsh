@@ -152,16 +152,11 @@ public class MLUtil {
 	public  static com.marklogic.xcc.types.XdmValue newValue(XValue value, SerializeOpts opts)
 			throws XPathException, InvalidArgumentException, SaxonApiException {
 	
-		if( value.isObject() ){
+		if( ! value.isXdmItem() ){
 			String s = value.toString();
 			return ValueFactory.newXSString(s);
-	
-			
-			
 			
 		}
-		
-		
 		net.sf.saxon.s9api.XdmItem item = value.asXdmItem();
 		
 		if (item.isAtomicValue()) {
@@ -294,9 +289,6 @@ public class MLUtil {
 	public static  boolean isAtomic(net.sf.saxon.s9api.XdmItem item) {
 		if( item == null )
 			return true ;
-		
-	
-		
 		
 		@SuppressWarnings("rawtypes")
 		ValueRepresentation value = item.getUnderlyingValue();

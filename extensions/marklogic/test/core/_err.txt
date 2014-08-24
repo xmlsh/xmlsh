@@ -1,0 +1,5 @@
+[createdir line: 7]
+Exception running: :query
+com.marklogic.xcc.exceptions.ServerConnectionException: Connection refused: connect
+ [Session: user=test, cb={default} [ContentSource: user=test, cb={none} [provider: address=home/74.133.89.140:8020, pool=0/64]]]
+ [Client: XCC/7.0-1]

@@ -51,7 +51,7 @@
 					<include name="**/*.jar" />
 				</fileset>
 				<fileset dir="../../trunk/bin">
-					<include name="xmlsh-1.2.jar" />
+					<include name="**/*.jar" />
 				</fileset>
 			</classpath>
 		</javac>
@@ -61,7 +61,6 @@
 				<include name="**/*.xsh" />
 				<include name="**/*.xquery" />
 				<include name="**/*.xml" />
-
 			</fileset>
 		</copy>
 
@@ -78,8 +77,6 @@
 			<classpath>
 				<fileset dir="${xmlsh}/lib">
 					<include name="**/*.jar" />
-					<exclude name="**/saxon9ee.jar" />
-					<exclude name="**/saxon9pe.jar" />
 				</fileset>
 				<fileset dir="${xmlsh}/bin">
 					<include name="**/*.jar" />
@@ -87,6 +84,7 @@
 			</classpath>
 			<arg value="-norc" />
 			<arg value="./run_tests.xsh" />
+			<arg value="-f" />
 		</java>
 	</target>
 	<target name="dist" description="Create Distribution">
