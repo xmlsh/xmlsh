@@ -1,5 +1,5 @@
 # Test rm
-import package posix=org.xmlsh.commands.posix
+import commands posix=posix
 
 posix:rm -rf $TMPDIR/_xmlsh
 posix:mkdir $TMPDIR/_xmlsh

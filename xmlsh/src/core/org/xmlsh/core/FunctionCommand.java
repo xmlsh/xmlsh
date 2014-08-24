@@ -8,7 +8,7 @@ package org.xmlsh.core;
 
 import org.xmlsh.sh.core.Command;
 import org.xmlsh.sh.core.SourceLocation;
-import org.xmlsh.sh.shell.Module;
+import org.xmlsh.sh.shell.IModule;
 import org.xmlsh.sh.shell.Shell;
 
 import java.io.File;
@@ -56,7 +56,7 @@ public class FunctionCommand implements ICommand {
 
 
 	@Override
-	public Module getModule() {
+	public IModule getModule() {
 		// TODO: Return the module of the invoking script
 		return null;
 	}

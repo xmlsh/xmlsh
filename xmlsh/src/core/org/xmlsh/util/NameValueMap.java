@@ -26,6 +26,9 @@ public class NameValueMap<T> extends HashMap<String,T> {
 	public	NameValueMap()
 	{}
 
+  public  NameValueMap(int size) {
+    super(size);
+  }
 
 
 	/*

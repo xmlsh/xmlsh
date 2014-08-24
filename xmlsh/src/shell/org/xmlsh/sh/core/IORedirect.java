@@ -7,20 +7,25 @@
 package org.xmlsh.sh.core;
 
 import org.xmlsh.core.EvalEnv;
+import org.xmlsh.sh.grammar.Token;
 import org.xmlsh.sh.shell.Shell;
 
 import java.io.PrintWriter;
 
 public class IORedirect {
 	private static final EvalEnv mPortEnv = EvalEnv.basicInstance();
-	String	mPortname;	// (port)
-	IOFile	mFile;		//  < file
-	IOHere	mHere;		// <<tag ...tag
+	private String	mPortname;	// (port)
+	private IOFile	mFile;		//  < file
+	private IOHere	mHere;		// <<tag ...tag
+	private Token   mFirstToken;
+	
+	
 
 	// <port>op  ->  (port) op
 
 	/* (port)>(port) */
-	public IORedirect( String portstring ) {
+	public IORedirect( Token t, String portstring ) {
+	  mFirstToken = t ;
 		//OP(POT)
 		if( portstring.startsWith("<(") || 
 				portstring.startsWith(">(") ) {
@@ -41,7 +46,8 @@ public class IORedirect {
 
 	}
 	/* (port)OP fileWord */
-	public IORedirect( String portstring , Word file ) {
+	public IORedirect( Token t , String portstring , Word file ) {
+	   mFirstToken = t ;
 		if( portstring.startsWith("(")){
 			mPortname = portstring.substring(0, portstring.indexOf(')') + 1 );
 			String op = portstring.substring(mPortname.length()) ;
@@ -51,12 +57,15 @@ public class IORedirect {
 	}
 
 	// <port> op file
-	public IORedirect( String portstring , String op , Word file ) {
+	public IORedirect( Token t ,String portstring , String op , Word file ) {
+	   mFirstToken = t ;
+
 		mPortname = portstring ;
 		mFile = new IOFile( op , file );
 	}
 
-	public IORedirect(String portname ,  IOHere here ){
+	public IORedirect(Token t , String portname ,  IOHere here ){
+	   mFirstToken = t ;
 		mPortname = portname ;
 		mFile = null;
 		mHere = here;

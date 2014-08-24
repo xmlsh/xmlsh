@@ -8,12 +8,15 @@ package org.xmlsh.sh.core;
 
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.EvalEnv;
+import org.xmlsh.sh.grammar.Token;
 import org.xmlsh.sh.shell.ParseResult;
 import org.xmlsh.sh.shell.Shell;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 
@@ -21,47 +24,22 @@ import java.util.List;
  * A list of word expressions that should be joined together as a StringWord
  */
 @SuppressWarnings("serial")
-public class JoinedWordList extends Word  {
+public class JoinedWordList extends ListWord  {
 
-	private List<Word> mList = new ArrayList<>();
+	 
+	public JoinedWordList(Token t)
+    {
+	    super(t);
+    }
 
-	@Override
-	public void print(PrintWriter out) {
-		for( Word s : mList ){
-			s.print( out );
-			out.print( " ");
-		}
-	}
 
-	public void add( Word word ) {
+	public boolean add( Word word ) {
 		if( word instanceof JoinedWordList ) 
-			mList.addAll(((JoinedWordList)word).mList);
+			return mList.addAll(((JoinedWordList)word).mList);
 		else
-			mList.add( word );
+			return super.add( word );
 	}
 
-
-	@Override
-	public boolean isEmpty()
-	{
-		return mList.isEmpty();
-	}
-
-	@Override
-	public
-	String getSimpleName()
-	{
-
-		// Temporary Hack
-		StringBuilder sb = new StringBuilder();
-		for( Word w : mList ) {
-
-			if( sb.length() > 0 )
-				sb.append(" ");
-			sb.append( w.getSimpleName());
-		}
-		return sb.toString();
-	}
 
 	@Override
 	protected ParseResult expandToResult(Shell shell, EvalEnv env, SourceLocation loc, ParseResult result) throws IOException,
@@ -76,6 +54,7 @@ public class JoinedWordList extends Word  {
 		return result;
 
 	}
+   
 
 }
 

@@ -1,0 +1,14 @@
+<builtin_set>
+<variable name="A"
+          type-family="XDM"
+          kind="atomic"
+          type="net.sf.saxon.s9api.XdmAtomicValue"
+          simple-type="string"
+          flags="[EXPORT, XEXPR]"/>
+<variable name="B"
+          type-family="XDM"
+          kind="container"
+          type="net.sf.saxon.s9api.XdmNode"
+          simple-type="xml"
+          flags="[EXPORT, XEXPR]"/>
+</builtin_set>

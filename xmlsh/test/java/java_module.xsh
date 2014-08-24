@@ -26,22 +26,22 @@ t=test:new($s)
 echo test:getConstructor($t)
 
 # TestTypes(Object)
-t=test:new($types)
+t=test:new($t)
 echo test:getConstructor($t)
 
 #TestTypes(Integer)
 i=jnew(java.lang.Integer 10)
-t=test:new($i)
+t=test:new({$i})
 echo test:getConstructor($t)
 
 #TestTypes(Integer,String)
 i=jnew(java.lang.Integer 10)
-t=test:new($i Hi)
+t=test:new({$i} Hi)
 echo test:getConstructor($t)
 
 
 #TestTypes(Long,String)
 i=jnew(java.lang.Long 10)
-t=test:new($i HI)
+t=test:new({$i} HI)
 echo test:getConstructor($t)
 

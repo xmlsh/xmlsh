@@ -4,58 +4,66 @@
 options
 {
   JDK_VERSION = "1.7";
-  STATIC = false;
-//       DEBUG_PARSER=true ; 
+  STATIC = false; 
+//  DEBUG_PARSER=true ; 
 //   DEBUG_LOOKAHEAD=true;
-//      DEBUG_TOKEN_MANAGER=true;
- FORCE_LA_CHECK=true;
+//c      DEBUG_TOKEN_MANAGER=true;
+// FORCE_LA_CHECK=true;
 //   UNICODE_INPUT=true;
  TOKEN_EXTENDS="XAbstractToken";
- COMMON_TOKEN_ACTION=true;
- TOKEN_FACTORY="XTokenFactory";
+ COMMON_TOKEN_ACTION=false;
+ //TOKEN_FACTORY="XTokenFactory";
  OUTPUT_DIRECTORY="../../../../../generated/org/xmlsh/sh/grammar";
 }
 
-
+ 
 PARSER_BEGIN(ShellParser)
 package org.xmlsh.sh.grammar;
 import org.xmlsh.sh.core.*;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import org.xmlsh.core.XEnvironment;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Deque;
+import static org.xmlsh.sh.grammar.ShellParserUtils.* ;
+import org.xmlsh.sh.grammar.ParserState.*;
+import org.xmlsh.sh.grammar.ParserContext;
+import org.xmlsh.sh.grammar.XAbstractToken;
+import org.xmlsh.types.TypeFamily;
 
 public class ShellParser
 {
-  private String mSource;
-  private SourceLocation mParentLocation = null ;
+
+  private ParserContext mContext = null ;
+
+  /*
+   * Active delimiter stack for joinable tokens
+   */
 
 
   public ShellParser(java.io.Reader stream, String source)
   {
     this (stream);
-    mSource = source;
+    mContext = new ParserContext( this , source );
+
   }
   public String getSource()
   {
-    return mSource;
+    return mContext.getSource();
   }
 
   public void ReInit(java.io.Reader stream, String source)
   {
     this.ReInit(stream);
     token_source.clear();
-    mSource = source;
-    //trace_indent=0;
+    mContext = new ParserContext( this , source );
   }
 
   public SourceLocation getLocation(Token t)
   {
-    SourceLocation loc = new SourceLocation(getSource(), t == null ? token : t);
-    
-    if( mParentLocation != null )
-        loc.refineLocation( mParentLocation );   
-       
-    return loc ;
+    return mContext.getLocation(t);
+  
   }
 
   public void setLocation(Command command, Token t)
@@ -74,50 +82,59 @@ public class ShellParser
     if( ! command.hasLocation() )
       command.setLocation( c2.getLocation() );
   }
-  
 
   public SourceLocation setParentLocation( SourceLocation loc )
   {
-    SourceLocation r = mParentLocation ;
-    mParentLocation = loc ;
-    return r ;
+    return mContext.setParentLocation( loc );
   }
 
+  
   // Create a string word or string list 
-  public Word newStringWord( Token t , Word next ){
-     if( next == null )
-       return new StringWord(t.toString());
-     
-     JoinedWordList l = new JoinedWordList();
-     l.add( new StringWord(t.toString()) );
-     l.add(next);
-     return l;
+  public Word newJoinedWord( Token t , Word next )  {
+    return mContext.newJoinedWord(t , next );
+  }
+  public Word newJoinedWord( Token t  )
+  {
+    return mContext.newJoinedWord(t);
+  }
+  
+  public Word newJoinedWord( Word w , Word next ){
+    return mContext.newJoinedWord(w , next );
   }
 
-   public boolean tokenInList( Token t , int kind , String... names ){
-    if( t.kind != kind )
-      return false;
-    if( names == null || names.length == 0 )
-      return true ;
-       for( String s : names )
-        if( s.equals(t.image) )
-          return true;
-     return false ;
-    }
-    
-   
-    
-}
+  public boolean isJoinable( Token t )  {
+        return mContext.isJoinable(t );
+  }
+  public boolean isJoinable( Word w )
+  {
+        return mContext.isJoinable(w );
+  }
+  
+
+  public boolean isDelim( Token t )  {       return mContext.isDelim(t );
+  }
+
+  public void pushState( StateEnum s )  {     mContext.pushState( ParserState.instanceOf(s) );
+  }
+
+  public void popState( )  {
+    mContext.popState();
+  }
+  
+   public String trim( Token  t , String pre , String post )
+   {
+     String s = t.toString();
+     return s.substring( pre.length() , s.length() - post.length()).trim();
+   }}
 
 PARSER_END(ShellParser)
 
 TOKEN_MGR_DECLS :
 {
-  boolean in_backtick = false;
 
   public void clear()
-  {    in_backtick = false ;
-    XToken.clearAll();
+  {
+    XAbstractToken.clearAll();
  }
  public String state()
  {
@@ -208,12 +225,16 @@ TOKEN_MGR_DECLS :
     return sb.toString();
   } 
   
+  /*
    public void CommonTokenAction(Token t) {
       XToken xt = (XToken)t;
+
+      
      // System.err.println( tokenImage[ t.kind ] + "=" + t.kind   + " depth " + t.get(t.kind) );
-    // System.err.println( tokenImage[ t.kind ] + "=" + t.kind   + "(" + t.image + ")" );
+   // System.err.println( tokenImage[ t.kind ] + "=" + t.kind   + "(" + t.image + ")" );
     }
     
+  */
     
 }
 
@@ -227,16 +248,9 @@ TOKEN_MGR_DECLS :
  
 */
 
-
-< DEFAULT >
-SPECIAL_TOKEN :{< WHITESPACE :  < _WS > >}
-
-
 /* COMMENTS */
-
-SPECIAL_TOKEN :
-{
-   <SINGLE_LINE_COMMENT: "#" (~["\n","\r"])*>
+< DEFAULT >
+SPECIAL_TOKEN :{     < WHITESPACE :  < _WS > >|    <SINGLE_LINE_COMMENT: "#" (~["\n","\r"])*>
 }
 
 <DEFAULT>
@@ -247,16 +261,14 @@ TOKEN :
 }
 
 
-
-
 // Abstract tokens that are only switched to never actually matched
 < NEVER >
 TOKEN :
 {
   < BACKTICK2 : "`" >
- | < MRBRACE : "}" > : DEFAULT 
-//| 
- // < RPAREN : ")" >
+ | < MRBRACE : "}" > : DEFAULT
+ | < RSBRACE : "]" > : DEFAULT
+ | < LSBRACE : "[" > : DEFAULT 
 }
 
 // Global patterns 
@@ -269,17 +281,16 @@ TOKEN :
 |   <#_NUMBER:  "0" | (< _DIGIT >)+ >
 |   <#_ALPHA:   ["A"-"Z","a"-"z","\u00a2"-"\u00a5","\u00aa","\u00b5","\u00ba","\u00c0"-"\u00d6","\u00d8"-"\u00f6","\u00f8"-"\u021f","\u0222"-"\u0233","\u0250"-"\u02ad","\u02b0"-"\u02b8","\u02bb"-"\u02c1","\u02d0"-"\u02d1","\u02e0"-"\u02e4","\u02ee","\u037a","\u0386","\u0388"-"\u038a","\u038c","\u038e"-"\u03a1","\u03a3"-"\u03ce","\u03d0"-"\u03d7","\u03da"-"\u03f3","\u0400"-"\u0481","\u048c"-"\u04c4","\u04c7"-"\u04c8","\u04cb"-"\u04cc","\u04d0"-"\u04f5","\u04f8"-"\u04f9","\u0531"-"\u0556","\u0559","\u0561"-"\u0587","\u05d0"-"\u05ea","\u05f0"-"\u05f2","\u0621"-"\u063a","\u0640"-"\u064a","\u0671"-"\u06d3","\u06d5","\u06e5"-"\u06e6","\u06fa"-"\u06fc","\u0710","\u0712"-"\u072c","\u0780"-"\u07a5","\u0905"-"\u0939","\u093d","\u0950","\u0958"-"\u0961","\u0985"-"\u098c","\u098f"-"\u0990","\u0993"-"\u09a8","\u09aa"-"\u09b0","\u09b2","\u09b6"-"\u09b9","\u09dc"-"\u09dd","\u09df"-"\u09e1","\u09f0"-"\u09f3","\u0a05"-"\u0a0a","\u0a0f"-"\u0a10","\u0a13"-"\u0a28","\u0a2a"-"\u0a30","\u0a32"-"\u0a33","\u0a35"-"\u0a36","\u0a38"-"\u0a39","\u0a59"-"\u0a5c","\u0a5e","\u0a72"-"\u0a74","\u0a85"-"\u0a8b","\u0a8d","\u0a8f"-"\u0a91","\u0a93"-"\u0aa8","\u0aaa"-"\u0ab0","\u0ab2"-"\u0ab3","\u0ab5"-"\u0ab9","\u0abd","\u0ad0","\u0ae0","\u0b05"-"\u0b0c","\u0b0f"-"\u0b10","\u0b13"-"\u0b28","\u0b2a"-"\u0b30","\u0b32"-"\u0b33","\u0b36"-"\u0b39","\u0b3d","\u0b5c"-"\u0b5d","\u0b5f"-"\u0b61","\u0b85"-"\u0b8a","\u0b8e"-"\u0b90","\u0b92"-"\u0b95","\u0b99"-"\u0b9a","\u0b9c","\u0b9e"-"\u0b9f","\u0ba3"-"\u0ba4","\u0ba8"-"\u0baa","\u0bae"-"\u0bb5","\u0bb7"-"\u0bb9","\u0c05"-"\u0c0c","\u0c0e"-"\u0c10","\u0c12"-"\u0c28","\u0c2a"-"\u0c33","\u0c35"-"\u0c39","\u0c60"-"\u0c61","\u0c85"-"\u0c8c","\u0c8e"-"\u0c90","\u0c92"-"\u0ca8","\u0caa"-"\u0cb3","\u0cb5"-"\u0cb9","\u0cde","\u0ce0"-"\u0ce1","\u0d05"-"\u0d0c","\u0d0e"-"\u0d10","\u0d12"-"\u0d28","\u0d2a"-"\u0d39","\u0d60"-"\u0d61","\u0d85"-"\u0d96","\u0d9a"-"\u0db1","\u0db3"-"\u0dbb","\u0dbd","\u0dc0"-"\u0dc6","\u0e01"-"\u0e30","\u0e32"-"\u0e33","\u0e3f"-"\u0e46","\u0e81"-"\u0e82","\u0e84","\u0e87"-"\u0e88","\u0e8a","\u0e8d","\u0e94"-"\u0e97","\u0e99"-"\u0e9f","\u0ea1"-"\u0ea3","\u0ea5","\u0ea7","\u0eaa"-"\u0eab","\u0ead"-"\u0eb0","\u0eb2"-"\u0eb3","\u0ebd","\u0ec0"-"\u0ec4","\u0ec6","\u0edc"-"\u0edd","\u0f00","\u0f40"-"\u0f47","\u0f49"-"\u0f6a","\u0f88"-"\u0f8b","\u1000"-"\u1021","\u1023"-"\u1027","\u1029"-"\u102a","\u1050"-"\u1055","\u10a0"-"\u10c5","\u10d0"-"\u10f6","\u1100"-"\u1159","\u115f"-"\u11a2","\u11a8"-"\u11f9","\u1200"-"\u1206","\u1208"-"\u1246","\u1248","\u124a"-"\u124d","\u1250"-"\u1256","\u1258","\u125a"-"\u125d","\u1260"-"\u1286","\u1288","\u128a"-"\u128d","\u1290"-"\u12ae","\u12b0","\u12b2"-"\u12b5","\u12b8"-"\u12be","\u12c0","\u12c2"-"\u12c5","\u12c8"-"\u12ce","\u12d0"-"\u12d6","\u12d8"-"\u12ee","\u12f0"-"\u130e","\u1310","\u1312"-"\u1315","\u1318"-"\u131e","\u1320"-"\u1346","\u1348"-"\u135a","\u13a0"-"\u13f4","\u1401"-"\u166c","\u166f"-"\u1676","\u1681"-"\u169a","\u16a0"-"\u16ea","\u1780"-"\u17b3","\u17db","\u1820"-"\u1877","\u1880"-"\u18a8","\u1e00"-"\u1e9b","\u1ea0"-"\u1ef9","\u1f00"-"\u1f15","\u1f18"-"\u1f1d","\u1f20"-"\u1f45","\u1f48"-"\u1f4d","\u1f50"-"\u1f57","\u1f59","\u1f5b","\u1f5d","\u1f5f"-"\u1f7d","\u1f80"-"\u1fb4","\u1fb6"-"\u1fbc","\u1fbe","\u1fc2"-"\u1fc4","\u1fc6"-"\u1fcc","\u1fd0"-"\u1fd3","\u1fd6"-"\u1fdb","\u1fe0"-"\u1fec","\u1ff2"-"\u1ff4","\u1ff6"-"\u1ffc","\u203f"-"\u2040","\u207f","\u20a0"-"\u20af","\u2102","\u2107","\u210a"-"\u2113","\u2115","\u2119"-"\u211d","\u2124","\u2126","\u2128","\u212a"-"\u212d","\u212f"-"\u2131","\u2133"-"\u2139","\u2160"-"\u2183","\u3005"-"\u3007","\u3021"-"\u3029","\u3031"-"\u3035","\u3038"-"\u303a","\u3041"-"\u3094","\u309d"-"\u309e","\u30a1"-"\u30fe","\u3105"-"\u312c","\u3131"-"\u318e","\u31a0"-"\u31b7","\u3400"-"\u4db5","\u4e00"-"\u9fa5","\ua000"-"\ua48c","\uac00"-"\ud7a3","\uf900"-"\ufa2d","\ufb00"-"\ufb06","\ufb13"-"\ufb17","\ufb1d","\ufb1f"-"\ufb28","\ufb2a"-"\ufb36","\ufb38"-"\ufb3c","\ufb3e","\ufb40"-"\ufb41","\ufb43"-"\ufb44","\ufb46"-"\ufbb1","\ufbd3"-"\ufd3d","\ufd50"-"\ufd8f","\ufd92"-"\ufdc7","\ufdf0"-"\ufdfb","\ufe33"-"\ufe34","\ufe4d"-"\ufe4f","\ufe69","\ufe70"-"\ufe72","\ufe74","\ufe76"-"\ufefc","\uff04","\uff21"-"\uff3a","\uff3f","\uff41"-"\uff5a","\uff65"-"\uffbe","\uffc2"-"\uffc7","\uffca"-"\uffcf","\uffd2"-"\uffd7","\uffda"-"\uffdc","\uffe0"-"\uffe1","\uffe5"-"\uffe6"]>
 |   <#_ID :      < _LETTER > ( < _LETTER > | < _NUMBER > )* >
-|   <#_ID2 :     < _LETTER > ( < _LETTER > | < _NUMBER > | "-" )* >
+|   <#_ID2 :     < _LETTER > ( < _LETTER > | < _NUMBER > | "-" |":"  )* >
 |   <#_VARNAME : < _ID >>
-|   <#_NS      : ( ([ "A"-"Z", "a"-"z", "_", "0"-"9", "-" ])+ ":") >
 |   <#_POSVAR  : < _NUMBER > >
 }
 
 // Patterns
+<DEFAULT,IN_VAR_EXP>
 TOKEN :
 {
-    < #_WILD_PART :  ( [ "*" , "?" ])  |  (  "[" ( ( ~[ "[" ,  " " , "\t" , "\r" , "\t" , "\f"  , "]" , "\n" ,  "]" , "#" ] ) | ("\\[")  )+ "]" ) >
-|   < #_STRING_LITERAL : (
+   < #_STRING_LITERAL : (
        < _STRING_LITERAL1 > | < _STRING_LITERAL2 >
      ) >|   < #_STRING_LITERAL1 :
     "\""
@@ -301,43 +312,66 @@ TOKEN :
     "\'" 
     >
 |  < #_ESCAPED : "\\" ~[ ] >
+|  < #_SPECIAL_VARNAME : ( 
+        < _VARNAME > | < _POSVAR > |  [ "#", "?", "*", "@", "$", "!" ] ) >
 
 
-|  < VAR_EXPANSION1 :
-     "$" < _VARNAME >
-  |  "$" < _POSVAR >
-  | "$" [ "#", "?", "*", "@", "$", "!" ]
-  | "$" < _NUMBER > 
-    >
+|  < VAR_EXP :
+     "$" < _SPECIAL_VARNAME > >
 
-}
+} 
 
 /* 
  * Complex variable expressions 
  * Start with ${
  */
 
-MORE :  
-{ 
-    < "${"   ( <_VARNAME> | <_POSVAR> )  > : IN_VAR_EXPANSION
-|   < "${#"  ( <_VARNAME> | <_POSVAR> )  > : IN_VAR_EXPANSION
-   
+TOKEN:
+{
+    < VAR_EXPR1 :  "${" (< _SPECIAL_VARNAME > |( < _VARNAME > | < _POSVAR >  )) "}" > 
+|    < VAR_EXPR2 :  "${#" ( < _VARNAME > | < _POSVAR >  ) "}" > 
+|    < VAR_EXPR3 :  "${" ( < _VARNAME > | < _POSVAR >  ) "[" > 
+    { 
+      matchedToken.enter( LBRACE ) ; 
+    }
+|    < VAR_EXPR4 :  "${" ( < _VARNAME > | < _POSVAR >  ) ":" >     { 
+    } : IN_VAR_FIELD
+    
 }
-< IN_VAR_EXPANSION > 
+
+MORE :
+{  
+    < "<[" > : IN_XEXPR 
+|   < "<{{" > : IN_BIGQUOTE
+}
+
+
+< IN_XEXPR > 
 TOKEN : 
 {
- < VAR_EXPANSION2 :  "}" > : DEFAULT 
-}   
+ < XEXPR : "]>" > : DEFAULT 
+}
 
+< IN_BIGQUOTE > 
+TOKEN : 
+{
+ < BIGQUOTE : "}}>" > : DEFAULT 
+}   
+<IN_VAR_FIELD >
+TOKEN :
+{
+  < MRFBRACE : "}" > : DEFAULT
+}
 
 // TODO: better filtering 
-<IN_VAR_EXPANSION>
+< IN_XEXPR , IN_BIGQUOTE , IN_VAR_FIELD >
 MORE :
 {
   < ~[] >
 }
 
-TOKEN :{  < SEMI : ";" >
+TOKEN :{
+  < SEMI : ";" >
 | < AMP  : "&" >|  < AND_IF : "&&" > | < OR_IF : "||" > |  < DGREAT : ">>" >
 | < DSEMI : ";;" >| < CLOBBER : ">|" >}
 
@@ -373,7 +407,7 @@ TOKEN :
 | < LT        : "<" > 
 | < #_DIGITS  : [ "1"-"2" ] >
 | < #_PORTWORD :  "("  < _ID >   ")" >
-| < #_WORD_SPECIAL :     ( "[" | "]" | "$" | "," ) >
+| < #_WORD_SPECIAL :     ( "[" | "$" | "," ) >
 | < #_WORD_PUNC :     ( "=" ) >
 
 // Word Expressions that shold be tokenized together
@@ -397,27 +431,19 @@ TOKEN :
   }
 | < LBRACE : "{" > {  matchedToken.enter( LBRACE ) ; } 
 | < LPAREN : "(" >
-| < RBRACE : "}" > 
+| < RBRACE : "}" > 
   { 
     if( matchedToken.exit( LBRACE ) )
          matchedToken.kind = MRBRACE ;
-
    }
-
-| < RPAREN : ")" >| < PIPE : "|" > | < BIGQUOTE : "<{{" >  {    matchedToken.image = readBigquote();  }
-   // Largest alpha only word - same as _VARNAME 
-|  < SIMPLE_NAME  : < _ID > > 
-
-// Name with a namespace
-|  < SIMPLE_NS_NAME : (<_NS>) ? <_ID> >
-|  < NAME :  (<_NS>) ? <_ID2>  >
-  
+| < RPAREN : ")" >
+| < PIPE : "|" > | < NAME :   <_ID2>  >
   // Word with extra stuff allowed 
- | < WORD_TOKEN :
+ | < WORD :
    (<_WORD_PUNC>)?
    (
     (
-    ~[ "|" , "&" , "<" , ">" , "," , "(" , ")" , "$" , "`" , "\\" , "\"" , "'" , " " , "\t" , "\n" , "\r" , "=" , ";","#" , "{" , "}" ] 
+    ~[ "|" , "&" , "<" , ">" , "," , "(" , ")" , "$" , "`" , "\\" , "\"" , "'" , " " , "\t" , "\n" , "\r" , "=" , ";","#" , "{" , "}" , "[","]"  ] 
     | < _ESCAPED >
     | < _STRING_LITERAL >
     )+ | 
@@ -431,16 +457,32 @@ TOKEN :
 
 |   < VAR_SUBPROC :    "$("  | "$<("     > 
 |   < VAR_SUBPROC_FILE :    "$(<"  | "$<(<"     >
-|   < BACKTICK1 : "`" >  {    if (in_backtick)    {      matchedToken.kind = BACKTICK2;      in_backtick = false;    }    else in_backtick = true;  }
-|  < ASSIGN_WORD_SEQ :
-    (
-        < _VARNAME > "=("
-    ) >| < ASSIGN_WORDPE_SEQ : < _VARNAME > "+=(" > 
-| < ASSIGN_WORDPE : < _VARNAME > "+=" > 
-|  < ASSIGN_WORD_EQ :
-      < _VARNAME > "=" 
-  >
- }
+|   < BACKTICK1 : "`" >  {
+    if( matchedToken.get(BACKTICK1 ) >0)    {      matchedToken.exit( BACKTICK1 );
+      matchedToken.kind = BACKTICK2;
+    }    else
+      matchedToken.enter( BACKTICK1 );  }
+|  < ASSIGN_WORD_SEQ   :  < _VARNAME > "=(" >
+|  < ASSIGN_WORD_ARRAY :  < _VARNAME > "=[" >
+{   matchedToken.enter(LSBRACE);
+}
+ 
+|  < ARRAY_WORD:  < _VARNAME > "[" >
+{
+   matchedToken.enter(ASSIGN_WORD_ARRAY);
+}
+|  < ASSIGN_WORDPE_SEQ : < _VARNAME > "+=(" > 
+|  < ASSIGN_WORDPE : < _VARNAME > "+=" > 
+|  < ASSIGN_WORD_EQ : < _VARNAME > "=" >
+| < RSBRACE2 : "]" > 
+  { 
+    if(  matchedToken.get( LSBRACE ) == 0 ) 
+         matchedToken.kind = WORD ;
+    else    {      matchedToken.exit( LSBRACE );
+      matchedToken.kind = RSBRACE ;
+   }
+ }
+}
 
 Token eol() :{
 }
@@ -492,15 +534,19 @@ Token eol_or_semi() :
     }
     }Command complete_command() :{  Command c;}{  c = list()  {    return c;  }}Command and_or() :{  AndOr andor = null;  Command first;  Command c = null;  String op = null;}{  first = pipeline()  (
     op = andor_if() linebreak() c = pipeline()    {      if (andor == null)         andor = new AndOr(first, op, c);      else          andor = new AndOr(andor, op, c);    }  )*  {    return andor == null ? first : andor;  }}String andor_if() :{}{   (    < AND_IF > |    < OR_IF >
-  )  {    return token.toString();  }}Pipeline pipeline() :{  Pipeline p;}{   LOOKAHEAD( 1 , <WORD_TOKEN> , {
+  )  {    return token.toString();  }}Pipeline pipeline() :{  Pipeline p;}{   LOOKAHEAD( 1 , <WORD> , {
     getToken(1).image.equals("!") })
-     <WORD_TOKEN>  p = pipe_sequence()  {    p.setBang(true);
+     <WORD>  p = pipe_sequence()  {    p.setBang(true);
     return p;  }
 |  p = pipe_sequence()
   {
     return p;
   }}Pipeline pipe_sequence() :{  Pipeline p = new Pipeline(false);  Command c;}{  c = command()  {
-    setLocation(p,c);    p.add(c);  }  (    < PIPE > linebreak() c = command()    {      p.add(c);    }  )*  {    return p;  }}Command command() :{  Command sc;  CompoundCommand c;  FunctionDeclaration f;  IORedirectList r;
+    setLocation(p,c);    p.add(c);  }  (    < PIPE > linebreak() c = command()    {      p.add(c);    }  )*  {
+    popState();    return p;  }}Command command() :{  Command sc;  CompoundCommand c;  FunctionDeclaration f;  IORedirectList r;
+
+  pushState( StateEnum.START );
+  
 }{
 
  LOOKAHEAD( 1 , compound_command_lookahead() ) c = compound_command()   [    r = redirect_list()    {      c.setRedirect(r);    }  ]  {    return c;  }
@@ -511,7 +557,7 @@ Token eol_or_semi() :
     return f;
   }
 |
-    LOOKAHEAD( 2 , {getToken(1).kind == NAME || getToken(1).kind == SIMPLE_NAME && getToken(2).kind == LPAREN } )
+    LOOKAHEAD( 2 , {getToken(1).kind == NAME && getToken(2).kind == LPAREN } )
    f = function_declaration()
   { 
     return f;
@@ -557,9 +603,6 @@ Token eol_or_semi() :
 
   ( < NL > ) *
   {    return c ;  }
-
-          
-  
 }
 Command list() :
 {
@@ -570,17 +613,17 @@ Command list() :
 {
   first = and_or()
   (
-    LOOKAHEAD( separator_op() term_stop_lookahead() )  op=separator_op()
-    {      first.setSeparator(op);
-    }
-  | LOOKAHEAD( separator_op() )  op = separator_op()
-    {       first.setSeparator( op );
-    }
-    list=list2( new CommandList(first))
+	    LOOKAHEAD( separator_op() term_stop_lookahead() )  op=separator_op()
+	    {	      first.setSeparator(op);
+	    }
+	  | LOOKAHEAD( separator_op() )  op = separator_op()
+	    {	       first.setSeparator( op );
+	    }
+	    list=list2( new CommandList(first))
   ) ?
-  {
-    return list == null ? first : list;
-  }
+	  {
+	    return list == null ? first : list;
+	  }
 }
 
 
@@ -672,14 +715,14 @@ void term_stop_lookahead() :
 {}
 {
     
-   (        ";;" |  <RPAREN> | <MRBRACE> | "else" | "then" | "do" | "done"  | "fi" | "elif" | <NL >)
+   (        ";;" |  <RPAREN> | <MRBRACE> | "else" | "then" | "do" | "done"  | "fi" | "elif" | <NL > | < RSBRACE >)
 }
-ForClause for_clause() :{  Command c;  String n;  WordList w = null;  Token t;  ForClause f;}{  t="for" n=varname() linebreak()  (";" |
-  (    "in" (
+ForClause for_clause() :{  Command c;  String n;  WordList w = null;  Token t;  ForClause f;}{  t="for" n=varname() linebreak()  (";" linebreak() |
+    "in" (
        sequential_sep()
        | w= for_in_words() sequential_sep()
      ) 
-  )?)  c = do_group()  {    f = new ForClause(n, w, c);    setLocation(f, t);    return f;  }}
+  )?  c = do_group()  {    f = new ForClause(n, w, c);    setLocation(f, t);    return f;  }}
 
 WordList for_in_words() :
 {  WordList w ;
@@ -695,7 +738,7 @@ WordList for_in_words() :
 // Any word that passes the varname testString varname() :{  Token t;}{  LOOKAHEAD(1,reserved()) t=reserved()
   {    return t.toString() ;
   }
-| t=< SIMPLE_NAME >  {    return t.toString() ;
+| t=< NAME >  {    return t.toString() ;
  }}
 Token reserved() :
 {
@@ -729,11 +772,10 @@ Token reserved() :
   LOOKAHEAD(1,reserved()) t=reserved()
   {    return t.toString();
    }
-|  ( t = < SIMPLE_NAME >  | t = <NAME>
-  | t = < WORD_TOKEN >
-  | t = < XEXPR >  | t = < BIGQUOTE >
-  )  {    return t.toString();  }
-  }WordList wordlist() :{  WordList list = new WordList();  Word w;}{  (    w = expr()    {      list.add(w);    }  )+  {    return list;  }}CaseClause case_clause() :{  Word s;  CaseList l = null;
+|  <NAME>          { return token.toString(); }
+| < WORD >         { return token.toString(); }
+| < XEXPR >        { return token.toString(); }| < BIGQUOTE >     { return token.toString(); }
+}WordList wordlist() :{  WordList list = new WordList();  Word w;}{  (    w = expr()    {      list.add(w);    }  )+  {    return list;  }}CaseClause case_clause() :{  Word s;  CaseList l = null;
   Token t;}{   t="case" s = expr() "in"
   linebreak()  l = case_list()   {   CaseClause c= new CaseClause(s, l);
    setLocation(c,t);
@@ -773,51 +815,70 @@ Word expr() :
   Token t;
 }
 {
-  t=< LBRACE > wl = comma_expr() < MRBRACE >
+  t=< LBRACE >
+  {    pushState( StateEnum.BRACE_GROUP );
+  }
+   wl = brace_expr_list()  
   {
     w = new BraceWord( wl );
     return w;
   }
-|  w=cmd_word_expr()
+|  w=word_expr()
   {    return w;
   }
-  
 }
 
-WordList comma_expr():
+
+/*
+ * Brace expressions are lists of expressions and property words
+ */
+
+WordList brace_expr_list() :
 {
-  WordList list = new WordList();
-  Word w;
+  WordList wl = new WordList();
+  Word w1;
+  Word w2 ;
 }
 {
-   w=expr() 
-   { list.add(w); }
+   ( 
    
-   ( LOOKAHEAD( 1 , <WORD_TOKEN>, { getToken(1).kind == WORD_TOKEN && getToken(1).image.equals(",")} )
-     <WORD_TOKEN>  w=expr() 
-      {list.add(w); } )*
-      { return list ; }
-}
-
-
-
-/* Command or function argument expressions */
-Word cmd_arg()  :
-{  Word w;
-
-}{   w=expr() 
-  {    return w;
+     
+    (<NL>)+ 
+   |
+    <MRBRACE> {
+      popState();
+      return wl ;
+    }
+    
+    |  
+    
+     w1= expr() 
+    (
+       LOOKAHEAD( 1 , <WORD > ,       {          isWord(getToken(1),":")        }      ) < WORD >  w2=expr()
+       {
+       w1 = new PropertyWord(  w1 , w2 );
+       }
+     ) ?
+    {
+       wl.add( w1 );
+    }
+  )*
+  {
+    return wl;
   }
 
+}
+
   
-}
 
 FunctionDeclaration function_declaration() :{  Token t;  CompoundCommand b;  SourceLocation parentLoc ;
   SourceLocation funcLoc ;
 }{
-  (   "function" (t=<NAME> | t=< SIMPLE_NAME > ) [ <LPAREN> <RPAREN> ]     |  (t=<NAME>|t=< SIMPLE_NAME >) <LPAREN> <RPAREN> )  {     parentLoc = setParentLocation( funcLoc = getLocation( t ) );
+  (   "function" t=<NAME>  [ <LPAREN> <RPAREN> ]     |  t=<NAME> <LPAREN> <RPAREN> )  {
+    pushState( StateEnum.FUNCTION_CALL );     parentLoc = setParentLocation( funcLoc = getLocation( t ) );
   }
-  linebreak() b = function_body()  {    String name = t.toString();
+  linebreak() b = function_body()  {
+    popState();    String name = t.toString();
     funcLoc.setName( name );
     setParentLocation( parentLoc );
     FunctionDeclaration func =     	new FunctionDeclaration(name.trim(), b);
@@ -846,103 +907,105 @@ Word cmd_arg()  :
    c = cmd_name_word()  {    t = token;  }  s = cmd_suffix()  {
     sc = new SimpleCommand(null, c, s);    setLocation(sc, t);    return sc;  }}
 
-WordList cmd_arg_words() :
-{
-  WordList wl =  null;
+Word var_expansion() : 
+{ 
+  Token t;
+  Token t2;
   Word w;
-}
-{
-  (
-      w = cmd_arg()
-    {
-      if( wl == null )
-       wl = new WordList();
-     wl.add(w);
-    }
-  )*
-	{	  return wl;
-	}
-}
-  
-Word cmd_name_word() :{  Word w ;
-  String s;
-}
-{
-  s = cmd_name()  {    w = new StringWord(s);
-    return w;
- }
-}  String cmd_name() :{
- String s;
- String n="";}{
 
-  LOOKAHEAD(1,reserved()) reserved()
-  {
-     return token.toString();
+}
+{
+  
+   // $var
+   t=< VAR_EXP > {
+      return  new VarExpansion(token , trim( t,"$","") );
    }
- |  ( <NAME> |  < SIMPLE_NS_NAME > | < SIMPLE_NAME > |  < WORD_TOKEN > | < VAR_EXPANSION1 > | <VAR_EXPANSION2 > )
-     { s=token.toString(); } 
-     (
-        LOOKAHEAD( 1, ( <NAME> | < SIMPLE_NS_NAME > |< SIMPLE_NAME > |  < WORD_TOKEN > | 
-	       < VAR_EXPANSION1 > | <VAR_EXPANSION2 > ) , 
-	       {  getToken(1).specialToken == null } )	           n=cmd_name()  )?
+ |
+   // ${ name }
+   t=< VAR_EXPR1 > {
+      return  new VarExpansion(token , trim(  t , "${" , "}" ) ) ;
+   }
+   // ${#var}
+| t=<VAR_EXPR2>
    {
-    return s + n ;
+      return  new VarExpansion( token , "#" , trim(  t , "${#" , "}" )  , null , null ) ;
+    }
+    // ${ name ["
+ | t=<VAR_EXPR3>  w=expr() "]}"
+   {
+      t.exit( LBRACE );
+      
+      return  new VarExpansion( token , null , trim(  t , "${" , "}" )  , w , null ) ;
+    }
+    // t    ${ name : 
+    // t2   field } 
+ | t=<VAR_EXPR4> t2=<MRFBRACE>
+   {
+      return  new VarExpansion( t , null , trim( t , "${" , ":" ) ,  null ,
+           new StringWord(t2,trim(t2,"","}")) ) ;
+    }
+}Word cmd_name_word() :{
+ Token t=null;
+ Word w=null;
+ Word n=null;
+}
+{
+
+  LOOKAHEAD(1,reserved()) t=reserved()
+  {
+     return  new StringWord(t) ;
    }
+
+
+ |  ( ( <NAME>  |  < WORD > )
+     { w= newJoinedWord( token) ; } 
+     | w=var_expansion() ) 
+     (
+        LOOKAHEAD( 1, ( reserved() | var_expansion() | <NAME> |  < WORD > ) , 
+	       {  isJoinable( getToken(1) ) } )	           n=cmd_name_word()  )?
+  {
+      return newJoinedWord( w, n );
+      
+    }
 } 
 Word word_or_name() :
 {
   Word  n=null;
+  Word  w=null ;
   Token t;
 }
-{  LOOKAHEAD(1,reserved()) t=reserved()  {     return new StringWord(t.toString() );
-   }
- | ( <ASSIGN_WORD_EQ> | < VAR_EXPANSION1 > | < VAR_EXPANSION2 >  | <WORD_TOKEN > |<NAME> |  <SIMPLE_NAME > | < SIMPLE_NS_NAME >)
-    { t=token ; }
-      (  LOOKAHEAD( 1 , ( <ASSIGN_WORD_EQ> |< VAR_EXPANSION1 > | < VAR_EXPANSION2 >  
-             | <WORD_TOKEN > | <NAME> | <SIMPLE_NAME >  |<SIMPLE_NS_NAME> ),
-            { getToken(1).specialToken == null } )     
+{   LOOKAHEAD(1 , <WORD > , {  isDelim( getToken(1))})  < WORD >
+	{
+	   return new DelimWord( token ) ;
+	 }
+ | (  
+     (   t=reserved() 
+      | t=< ARRAY_WORD > |   t=<ASSIGN_WORD_EQ> |  t=<WORD > |t=<NAME>  )
+      { w = newJoinedWord(t) ;  } 
+      | w  =var_expansion()  
+    )
+      (  LOOKAHEAD( 1 , ( reserved() | var_expansion() | < ARRAY_WORD >|  <ASSIGN_WORD_EQ>  | <WORD > | <NAME>  ),
+            {  isJoinable(getToken(1))} )     
                n=word_or_name() )?
     {
-      return newStringWord( t , n );      
+      return  newJoinedWord( w , n );      
     }
-   
-     
 }
 
-
-String word_or_name_lookahead() :
-
-{
-  String s;
-  Token t;
-}
-{
-  (  <ASSIGN_WORD_EQ>|  < VAR_EXPANSION1 > | < VAR_EXPANSION2 >  | 
-   <WORD_TOKEN > |<NAME> |  <SIMPLE_NAME >| <SIMPLE_NS_NAME > )
-    {
-      return token.toString();
-   }
-} 
-
-// A command using a bare name 
-Word simple_command_name() :
-{
-  Word s ;}
-{      s=word_or_name()
-  {
-    return s;
-  }
-}
-/*
- * Single word that can be arguments to commands or functions 
- */Word cmd_word_expr() :{  Token t;  String s;  Command c;  WordList wl; 
+/*
+ * Single word that can be arguments to commands
+ */Word word_expr() :{  Token t;  String s;  Command c;  WordList wl; 
   Word w;}{
   
-  LOOKAHEAD(2, {  	( getToken(1).kind == NAME || getToken(1).kind == SIMPLE_NAME || getToken(1).kind == SIMPLE_NS_NAME ) && getToken(2).kind == LPAREN })  ( t=<NAME>|  t=<SIMPLE_NAME> |  t = < SIMPLE_NS_NAME >) <LPAREN> wl = function_args()  {
-    return new FunctionCallWord(t.toString(), wl);  }
+  LOOKAHEAD(2, {  	( getToken(1).kind == NAME  ) && getToken(2).kind == LPAREN })   t=<NAME> <LPAREN> wl = function_args()  {
+    return new FunctionCallWord(t,t.toString(), wl);  }
 |
-  w=simple_command_name()
-  {    return w ;  }|  (    t = < XEXPR >  | t = < BIGQUOTE >  )  {    return new StringWord(t.toString());  }| t = < VAR_SUBPROC > c = compound_list() < RPAREN >  {    return new CommandWord(t.toString(), c);  }| t = < VAR_SUBPROC_FILE > w  = filename() < RPAREN >  {    return new CommandFileWord(t.toString(), w);  }| < BACKTICK1 > c = compound_list() < BACKTICK2 >  {    return new CommandWord("`", c);  }}WordList function_args() :{  WordList wl = new WordList();  Word w;}{
+  w=word_or_name()
+  {    return w ;  }|   < XEXPR >    {  return new StringWord(token); }
+| < BIGQUOTE >   {  return new StringWord(token); }| t = < VAR_SUBPROC > c = compound_list() < RPAREN >  {    return new CommandWord(t, c);  }| t = < VAR_SUBPROC_FILE > w  = word_or_name() < RPAREN >  {    return new CommandFileWord(t, w);  }| t=< BACKTICK1 > c = compound_list() < BACKTICK2 >  {    return new CommandWord(t, c);  }}
+
+
+WordList function_args() :{  WordList wl = new WordList();  Word w;}{
    ( 
    
     (<NL>)+ 
@@ -958,38 +1021,54 @@ Word simple_command_name() :
 CommandPrefix cmd_prefix() :{  CommandPrefix p = new CommandPrefix();  Assign a;}{  (    a = assign()    {      p.add(a);
     }  )+   {    return p;  }}
 
-Assign assign() :{  Token t1;
+Assign assign() :{
+     Token t1;
   Token op ;
-    Word w = null;  WordList ws;  String s;
-  Token local = null ;}{
+    Word w = null;
+  Word ind = null ;  WordList ws;  String s;
+  Token local = null ;}{ 
 
-  LOOKAHEAD( 2 , <LOCAL> <SIMPLE_NAME> )  <LOCAL> t1 = < SIMPLE_NAME > 
+  LOOKAHEAD( 2 , <LOCAL> <NAME> )  <LOCAL> t1 = < NAME > 
   {
     s = t1.toString();
-    return new Assign(true , s , "=",new StringWord(""));
+    return new Assign(true , "=" , s , "=",new StringWord(t1,""));
   }
 |   [ local=<LOCAL> ] 
    (
-	   t1 = < ASSIGN_WORDPE > w = expr()	  {	    s = t1.toString();	    return new Assign( local != null , s.substring(0, s.length() - 2), "+=", w);	  }	| 	   t1 =  < ASSIGN_WORD_SEQ > ws = cmd_words() <RPAREN >	  {	    s = t1.toString();	    return new Assign( local != null ,s.substring(0, s.length() - 2), "=", ws);	  }	| 	  t1 =  < ASSIGN_WORDPE_SEQ > ws = cmd_words() < RPAREN >	  {	    s = t1.toString();	    return new Assign( local != null ,s.substring(0, s.length() - 3), "+=", ws);	  }
-	| 
-	
-	  LOOKAHEAD( 2 , <ASSIGN_WORD_EQ> ,
-            { getToken(1).kind ==ASSIGN_WORD_EQ && getToken(2).specialToken == null } )     
-	  t1 =  < ASSIGN_WORD_EQ > [ w = expr() ]
+      t1=<  ARRAY_WORD > ind=expr() "]=" w= expr()
+      {
+        s = t1.toString();            return new Assign( local != null , "[]" ,  s.substring(0, s.length() - 1) , ind , "=" , w );
+      }
+| 	   t1 = < ASSIGN_WORDPE > w = expr()	  {	    s = t1.toString();	    return new Assign( local != null , "+=", s.substring(0, s.length() - 2), "+=", w);	  }	| 	   t1 =  < ASSIGN_WORD_SEQ >
+	   { pushState( StateEnum.SEQUENCE_LIST  ) ; }
+
+	   ws = cmd_words() <RPAREN >	  {
+	    popState();	    s = t1.toString();	    return new Assign( local != null , "()" ,s.substring(0, s.length() - 2), "=", ws);	  }
+
+      |      LOOKAHEAD(2 , < ASSIGN_WORD_ARRAY >  < RSBRACE > )	   t1 =  < ASSIGN_WORD_ARRAY >   < RSBRACE > 
 	  {
 	    s = t1.toString();
-	    if( w == null )
-	      w = new StringWord("");
-	    return new Assign( local != null ,s.substring(0, s.length() - 1), "=", w);
+	    return new Assign( local != null , "[]" , s.substring(0, s.length() - 2), "=", (Word) null );
 	  }
-	  
-|  	  LOOKAHEAD( 2 , <ASSIGN_WORD_EQ> ,
-         { getToken(1).kind ==ASSIGN_WORD_EQ && getToken(2).specialToken != null } )  
-          t1 =  < ASSIGN_WORD_EQ >
-      {
+   | 
+	   t1 =  < ASSIGN_WORD_ARRAY >	   { pushState( StateEnum.ARRAY_LIST ) ; }	 	      ws = cmd_words() < RSBRACE >
+	  {
+	    popState();
 	    s = t1.toString();
-	    return new Assign( local != null ,s.substring(0, s.length() - 1), "=", new StringWord(""));
-	  }	  
+	    return new Assign( local != null , "[]" , s.substring(0, s.length() - 2), "=", ws);
+	  }	| 	  t1 =  < ASSIGN_WORDPE_SEQ >
+	   { pushState( StateEnum.SEQUENCE_LIST ) ; }
+
+	  ws = cmd_words() < RPAREN >	  {	    s = t1.toString();
+	     popState();	    return new Assign( local != null ,"()" , s.substring(0, s.length() - 3), "+=", ws);	  }
+	| t1=< ASSIGN_WORD_EQ > (
+	     LOOKAHEAD( 1 , expr() , {  isJoinable(getToken(1) )}) w=expr()
+	         )?
+      { s = t1.toString();
+         if( w == null )
+           w = new StringWord(t1,"") ;
+           
+      return new Assign( local != null ,"=" , s.substring(0, s.length() - 1), "=", w); 	}
 	  
   )}
 
@@ -997,83 +1076,66 @@ Word simple_command_name() :
 
 
 
-CommandSuffix cmd_suffix() :{  CommandSuffix s = new CommandSuffix();  Word w;  IORedirect io;}{  (      w = cmd_arg()    {      s.addArg(w);    }  )*  (    io = io_redirect()    {      s.addIO(io);    }  )*  {    return s;  }}
-IORedirectList redirect_list() :{  IORedirectList r = new IORedirectList();  IORedirect io;}{  (    io = io_redirect()    {      r.add(io);    }  )+  {    return r;  }}IORedirect io_redirect() :{  Word s;  Token t = null ;
-  String ts;
-  String port;}{  /* lookahead enough to disambiguate the next 2 rules */
-
- (
-     t= < NLESSANDN > |
-     t=  <  NGTANDN > |
-     t=  < NLTN > |
-     t=  <  NGTN >
+CommandSuffix cmd_suffix() :{  CommandSuffix s = new CommandSuffix();  Word w;  IORedirect io;}{  (      w = expr()    {      s.addArg(w);    }  )*  (    io = io_redirect()    {      s.addIO(io);    }  )*  {    return s;  }}
+IORedirectList redirect_list() :{  IORedirectList r = new IORedirectList();  IORedirect io;}{  (    io = io_redirect()    {      r.add(io);    }  )+  {    return r;  }}IORedirect io_redirect() :{  Word s;
+  Token t;  String ts;
+  String port;}{      < NLESSANDN >  { return new IORedirect(token,null, token.toString() , null ); }
+|     <  NGTANDN >   { return new IORedirect(token,null, token.toString() , null ); }
+|     < NLTN >       { return new IORedirect(token,null, token.toString() , null ); }
+|     <  NGTN >      { return new IORedirect(token,null, token.toString() , null ); }
+| (
+     <  NGT > |
+     < NLT > |
+     <  NGTGT > |
+     < LT > |
+     < GT > |
+     < DGREAT > |
+     < CLOBBER > 
     )
-    {      return new IORedirect(null, t.toString() , null );
-   }
-| (
-     t=  <  NGT > |
-     t=  < NLT > |
-     t=  <  NGTGT > |
-     t=  < LT > |
-     t= < GT > |
-     t= < DGREAT > |
-     t= < CLOBBER > 
-    ) s = filename_word()
-   {      return new IORedirect(null, t.toString(), s);   }
+    { 
+     t = token ;
+     }
+     
+     s = filename_word()
+   {      return new IORedirect(t,null, t.toString(), s);   }
 
-| (
-     t= < PLESSANDP > |
-     t= < PGTANDP >    |
-     t= < PLTP > |
-     t= < PGTP > |
-     t= < PGTGP > |
-     t= < GTP > |
-     t= < LTP > )
-  {      return new IORedirect(   t.toString() ) ;
-  }
-| (
-     t=<PGT > |
-     t=<PLT > )
-      s=filename_word()
-   {       return new IORedirect( t.toString() , s  );
-    }
-|  t =< PDLESS > 
+|   < PLESSANDP >   {  return new IORedirect( token,  token.toString() ) ; }
+|   < PGTANDP >     {  return new IORedirect( token,  token.toString() ) ; }
+|   < PLTP > 		{  return new IORedirect( token,  token.toString() ) ; }
+|   < PGTP > 		{  return new IORedirect( token,  token.toString() ) ; }
+|   < PGTGP > 		{  return new IORedirect( token,  token.toString() ) ; }
+|   < GTP > 		{  return new IORedirect( token,  token.toString() ) ; }
+|   < LTP > 		{  return new IORedirect( token,  token.toString() ) ; }
+|  <PGT > s=filename_word() { return new IORedirect( token , token.toString() , s  );  }
+|  <PLT > s=filename_word() { return new IORedirect( token , token.toString() , s  );  }
+|  < PDLESS > 
   {
-    ts = t.toString();
+    ts = token.toString();
     port = ts.substring( 0 , ts.indexOf(')' + 1));
-    return new  IORedirect( port ,  new IOHere( "<<",ts.substring(port.length() + 2)));
+    return new  IORedirect( token ,port ,  new IOHere( "<<",ts.substring(port.length() + 2)));
   }
 | 
-  t  = < DLESSMINUS >
+  < DLESSMINUS >
   {
-    return new IORedirect(null ,  new IOHere("<<-", t.toString()));
+    return new IORedirect(token , null ,  new IOHere("<<-", token.toString()));
   }
 | 
-  t  = < PDLESSMINUS >
+  < PDLESSMINUS >
   {
-    ts = t.toString();
+    ts = token.toString();
     port = ts.substring( 0 , ts.indexOf(')' + 1));
-    return new IORedirect(port, new IOHere( "<<-" ,  ts.substring(port.length() + 3)));
+    return new IORedirect(token, port, new IOHere( "<<-" ,  ts.substring(port.length() + 3)));
   }
 |
-  t =< DLESS > 
+  < DLESS > 
   {
-    return new  IORedirect(null, new IOHere("<<", t.toString()));
+    return new  IORedirect(token , null, new IOHere("<<", token.toString()));
   }
 }
 
 
    
-/*  LOOKAHEAD(5)  [ port = portname() ]  (    i = io_file()  | h = io_here()  )  {    if (i != null)     return new IORedirect(port, i);    else     return new IORedirect(port, h);  }
-| LOOKAHEAD(5)  port = portname() < GTAND > port2 = port_word()  {    return new IORedirect(port, new IOFile(">&", port2));  }| port = portname() < LTAND > port2 = port_word()  {    return new IORedirect(port, new IOFile("<&", port2));  }| < TGT > s = filename_word()  {    return new IORedirect(null, new IOFile("2>", s));  }
-| < TGTGT > s = filename_word()
-  {
-    return new IORedirect(null, new IOFile("2>>", s));
-  }
-  | < TGTAND1 >  {    return new IORedirect(null, new IOFile("2>&1", null));  }| < GTAND >  {    return new IORedirect(null, new IOFile(">&", null));  }| < GTAND2 >  {    return new IORedirect(null, new IOFile("1>&2", null));  }*/
-
-Word filename() :{  Word s;}{
-  s=word_or_name()  {    return s;  }}Word filename_word() :{  Word w;  Token t;  String s;  Command c;}{  w=filename()  {    return w;  }| t = < VAR_SUBPROC > c = compound_list() < RPAREN >  {    return new CommandWord(t.toString(), c);  }| t = < VAR_SUBPROC_FILE > w = filename() < RPAREN >  {    return new CommandFileWord(t.toString(), w);  }|     t=< LBRACE >   w=word_or_name()   < MRBRACE >  {   return new StringWord( "{" + w.toString()  + "}");  }}String separator_op() :{}{  ( < AMP > | < SEMI > )
+Word filename_word() :{  Word w;  Token t;  String s;  Command c;}{  w=word_or_name()  {    return w;  }| t = < VAR_SUBPROC > c = compound_list() < RPAREN >  {    return new CommandWord(t, c);  }| t = < VAR_SUBPROC_FILE > w = word_or_name() < RPAREN >  {    return new CommandFileWord(t, w);  }|     t=< LBRACE >   w=word_or_name()   < MRBRACE >  {   return new StringWord( t,"{" + w.toString()  + "}");  }}String separator_op() :{}{  ( < AMP > | < SEMI > )
   {    return token.toString();  }}
 
 

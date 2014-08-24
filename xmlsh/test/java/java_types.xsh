@@ -20,17 +20,17 @@ types=jnew(org.xmlsh.test.TestTypes $s)
 echo getConstructor($types)
 
 # TestTypes(Object)
-types=jnew(org.xmlsh.test.TestTypes $types)
+types=jnew(org.xmlsh.test.TestTypes {$types})
 echo getConstructor($types)
 
 #TestTypes(Integer)
 i=jnew(java.lang.Integer 10)
-types=jnew(org.xmlsh.test.TestTypes $i)
+types=jnew(org.xmlsh.test.TestTypes {$i})
 echo getConstructor($types)
 
 #TestTypes(Integer,String)
 i=jnew(java.lang.Integer 10)
-types=jnew(org.xmlsh.test.TestTypes $i Hi)
+types=jnew(org.xmlsh.test.TestTypes {$i} Hi)
 echo getConstructor($types)
 
 
@@ -46,5 +46,5 @@ echo getConstructor($types)
 # static method
 jset -v types -c org.xmlsh.test.TestTypes -m staticAsString
 echo $types
-xtype $types
+xtype -j -v types
 

@@ -23,14 +23,13 @@ public class CommandPrefix {
 	}
 	public void add( String var , Word value )
 	{
-		mList.add( new Assign( false  , var , "=" ,  value ));
+		mList.add( new Assign( false  , null , var , "=" ,  value ));
 	}
 
 
 	public void print(PrintWriter out) {
 		for (Assign ass : mList) {
 			ass.print(out);
-
 		}
 
 	}

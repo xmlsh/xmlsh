@@ -8,10 +8,10 @@ echo Should be foo: $a
 # a should be "a b c" 
 a=$(echo a; echo b ; echo c;)
 echo Should be 1 : ${#a}
-xtype {$a}  # "xs:string"
+xtype -s {$a}  # "string"
 echo exanding
 # evaluating it should produce 3
-xtype $a
+xtype -s $a
 
 b=$(echo a1 ; echo b1 ; echo c1 ; )
 for c in $b ; do

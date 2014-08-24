@@ -1,10 +1,10 @@
-xs:string
-xs:string
+string
+string
 xs:integer
 xs:integer
 xs:integer
 next
-xs:integer+
+object
 empty
 hello world
 80

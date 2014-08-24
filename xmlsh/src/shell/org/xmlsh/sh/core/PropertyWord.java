@@ -8,8 +8,10 @@ package org.xmlsh.sh.core;
 
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.EvalEnv;
+import org.xmlsh.core.EvalFlag;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.XValueProperty;
+import org.xmlsh.sh.grammar.Token;
 import org.xmlsh.sh.shell.ParseResult;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.types.TypeFamily;
@@ -20,11 +22,12 @@ import java.io.PrintWriter;
 public class PropertyWord extends Word
 {
 
-	private String mName ;
+	private Word mName ;
 	private Word mValue ;
 	
-	public PropertyWord(String name, Word value)
+	public PropertyWord(Word name, Word value)
     {
+		super(name.getFirstToken());
 	    mName = name;
 	    mValue = value;
     }
@@ -32,8 +35,8 @@ public class PropertyWord extends Word
 	@Override
 	public void print(PrintWriter out)
 	{
-		out.print(mName);
-		out.print(":=");
+		mName.print( out );
+		out.print(" : ");
 		mValue.print(out);
 
 	}
@@ -42,13 +45,23 @@ public class PropertyWord extends Word
 	protected ParseResult expandToResult(Shell shell, EvalEnv env, SourceLocation loc, ParseResult result) throws IOException, CoreException
 	        
 	{
-		XValue xv = mValue.expand(shell, env, loc);
-		result.add( new XValue( TypeFamily.XTYPE , new XValueProperty( mName ,xv )) );
+	  String name = mName.expandString(shell, mName.evalEnv(nameEnv(env)), loc);
+		XValue xv = mValue.expand(shell , mValue.evalEnv(valueEnv(env)) , loc );
+		result.add( new XValue(new XValueProperty( name ,xv )) );
 		return result ;
 		
 	}
 
-	@Override
+	private EvalEnv valueEnv(EvalEnv env) {
+        return env.withFlagsSet( EvalFlag.PARSE_QUOTES , EvalFlag.EXPAND_VAR , EvalFlag.JOIN_VALUES , EvalFlag.OMIT_NULL );
+
+    }
+
+    private EvalEnv nameEnv(EvalEnv env) {
+        return env.withFlagsSet( EvalFlag.PARSE_QUOTES , EvalFlag.EXPAND_VAR , EvalFlag.JOIN_VALUES , EvalFlag.OMIT_NULL );
+    }
+
+    @Override
 	public boolean isEmpty()
 	{
 		return mName == null && mValue == null ;
@@ -57,7 +70,7 @@ public class PropertyWord extends Word
 	@Override
 	String getSimpleName()
 	{
-		return mName ;
+		return mName.getSimpleName() ;
 	}
 
 }

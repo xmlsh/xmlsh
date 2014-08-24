@@ -9,6 +9,7 @@ package org.xmlsh.sh.core;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.EvalEnv;
 import org.xmlsh.core.XValue;
+import org.xmlsh.sh.grammar.Token;
 import org.xmlsh.sh.shell.ParseResult;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.Util;
@@ -26,12 +27,26 @@ import java.util.List;
  */
 public abstract class Word {
 
+	private Token mFirstToken ;
 	public abstract void print( PrintWriter out );
 
 
-	protected Word( ) {
+	/*protected Word() {
+		mFirst = null ; 
+	}*/
+	protected Word( Token t  ) {
+		mFirstToken = t ;
+
 	}
 
+	public boolean isJoinable() {
+		return 
+		mFirstToken !=null && 
+		mFirstToken.specialToken == null &&
+			! isDelim() ; 
+		
+	}
+	
 
 	// Expand a word into an existing result class 
 	protected abstract ParseResult expandToResult(Shell shell, EvalEnv env, SourceLocation loc, ParseResult result ) throws IOException, CoreException;
@@ -82,7 +97,27 @@ public abstract class Word {
 	abstract String getSimpleName();
 
 
+    public boolean isDelim() {
+        return false;
+    }
 
+
+	/**
+	 * @return the first
+	 */
+	public Token getFirstToken()
+	{
+		return mFirstToken;
+	}
+
+
+	/**
+	 * @param first the first to set
+	 */
+	public void setFirstToken(Token first)
+	{
+		mFirstToken = first;
+	}
 
 }
 

@@ -9,7 +9,7 @@ package org.xmlsh.core;
 import org.apache.log4j.Logger;
 
 import org.xmlsh.sh.core.SourceLocation;
-import org.xmlsh.sh.shell.Module;
+import org.xmlsh.sh.shell.IModule;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.FileUtils;
@@ -30,7 +30,7 @@ public class ScriptCommand implements ICommand {
 	private InputStream mScript;
 	private boolean mSourceMode;
 	private File	 mScriptFile; // file for script, may be null if internal script
-	private Module mModule;
+	private IModule mModule;
 	private SourceLocation mLocation;
 
 
@@ -59,7 +59,7 @@ public class ScriptCommand implements ICommand {
 
 	}
 
-	public ScriptCommand(String name , InputStream is, boolean bSourceMode, Module module ) {
+	public ScriptCommand(String name , InputStream is, boolean bSourceMode, IModule module ) {
 		mScriptName = FileUtils.toJavaPath(name);
 		mScript = is;
 		mSourceMode = bSourceMode;
@@ -122,7 +122,7 @@ public class ScriptCommand implements ICommand {
 	}
 
 	@Override
-	public Module getModule() {
+	public IModule getModule() {
 		return mModule ;
 	}
 

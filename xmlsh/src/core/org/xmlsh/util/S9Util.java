@@ -149,8 +149,7 @@ public class S9Util extends XdmNode {
 
 			List<XdmItem> items = new ArrayList<XdmItem>();
 			for( XValue arg : args ){
-				for (XdmItem item : arg.asXdmValue())
-					items.add(item);
+					items.add(arg.toXdmItem());
 
 			}
 			XdmValue value = new XdmValue(items);

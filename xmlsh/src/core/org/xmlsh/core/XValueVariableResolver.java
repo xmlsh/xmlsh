@@ -12,6 +12,7 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import javax.xml.xpath.XPathVariableResolver;
 
+@Deprecated
 public class XValueVariableResolver implements XPathVariableResolver {
 
 	Map<String,XValue>		mVariables = new HashMap<String,XValue>();
@@ -28,9 +29,7 @@ public class XValueVariableResolver implements XPathVariableResolver {
 		XValue value = mVariables.get( variableName.getLocalPart());
 		if( value == null )
 			return null;
-		return value.asXdmValue().getUnderlyingValue();
-
-
+		return value.toXdmItem().getUnderlyingValue();
 	}
 
 }

@@ -6,69 +6,64 @@
 
 package org.xmlsh.types;
 
-import java.util.EnumMap;
+import org.xmlsh.core.InvalidArgumentException;
+import org.xmlsh.core.XValue;
+import org.xmlsh.util.JavaUtils;
 
 abstract class AbstractTypeFamily implements ITypeFamily
 {	
-	protected EnumMap<XTypeKind,IType>  mTypes = new EnumMap<>(XTypeKind.class);
+  protected final XValue _nullValue= newXValue(null);
+
+  protected XValue newXValue( Object obj ) {
+    return new XValue( typeFamily() , obj ); 
+  }
+
+  
+  static String describeClass(Object obj)
+  {
+    return obj == null ? "<null>" : obj.getClass().getName(); 
+  }
+ 
+  
+
+  @Override
+  public XValue append(Object o , XValue v) throws InvalidArgumentException
+  {
+    if( o == null )
+      return v; 
+    return getXValue( JavaUtils.concat( o , v.asObject() ));
 
 
-	/* (non-Javadoc)
-	 * @see org.xmlsh.types.ITypeFamily#getMethods(java.lang.Class)
-	 */
-	@Override
-	public IMethods getMethods(Class<?> cls)
-	{
-		return getType(cls).getMethods();
-
-	}
-	/* (non-Javadoc)
-	 * @see org.xmlsh.types.ITypeFamily#getMethods(org.xmlsh.types.XTypeKind)
-	 */
-	@Override
-	public IMethods getMethods(XTypeKind kind)
-	{
-		return getType(kind).getMethods();
-	}
+  }
 
 
-	/* (non-Javadoc)
-	 * @see org.xmlsh.types.ITypeFamily#getNullType()
-	 */
-	@Override
-	public IType getNullType()
-	{
-		return getType( XTypeKind.NULL );
-	}
+  @Override
+  public String asString(Object obj)
+  {
+    return obj.toString();
 
-	/* (non-Javadoc)
-	 * @see org.xmlsh.types.ITypeFamily#getType(java.lang.Class)
-	 */
-	@Override
-	public final IType getType(Class<?> cls)
-	{
-		return getType( inferKind( cls ) );
-	}
-
-	/* (non-Javadoc)
-	 * @see org.xmlsh.types.ITypeFamily#getType(org.xmlsh.types.XTypeKind)
-	 */
-	@Override
-	public final IType getType(XTypeKind kind)
-	{
-		IType it = mTypes.get(kind)  ;
-		if(  it == null )
-			mTypes.put( kind , it =  getTypeInstance(kind) );
-		return it;
-
-	}
-
-	protected abstract  IType getTypeInstance(XTypeKind kind);
-
-	protected abstract  XTypeKind inferKind(Class<?> cls);
+  }
 
 
+  @Override
+  public String simpleTypeName(Object obj)
+  {
+    return JavaUtils.simpleTypeName(obj);
+  }
 
+  /* (non-Javadoc)
+   * @see org.xmlsh.types.IMethods#typeName(java.lang.Object)
+   */
+  @Override
+  public String typeName(Object obj)
+  {
+    if( obj == null )
+      return "null";
+    return JavaUtils.getClassName(obj);
+  }
+  
+  
+  
 }
 
 /*

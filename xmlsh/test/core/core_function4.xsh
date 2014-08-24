@@ -1,6 +1,6 @@
 # Test of functions with optional returns
 
-
+. ../common
 
 function f1() {
 	return 
@@ -60,12 +60,17 @@ f6
 f7
 f8
 
-
-f1 && f2 && f3 && f4 && echo Passed 
-f3 0 && f4 0 && echo Passed 
-f3 1 || f4 1 || echo Passed 
+echo loc()
+f1 && f2 && f3 && f4 && echo Failed || echo Passed
+echo loc()
+f3 0 && f4 0 && echo Passed || echo Failed
+echo loc()
+f3 1 || f4 1 || echo Passed || echo failed
+echo loc()
 x=f8( 1 2 3 )
+echo loc()
 echo ${#x}
+echo loc()
 [ ${#x} -eq 3 ] && echo Passed || echo Failed
 
 

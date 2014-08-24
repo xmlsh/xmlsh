@@ -9,29 +9,53 @@ package org.xmlsh.sh.core;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.EvalEnv;
 import org.xmlsh.core.XValue;
+import org.xmlsh.core.XValueArray;
+import org.xmlsh.core.XValueSequence;
+import org.xmlsh.core.XVariable;
+import org.xmlsh.core.XVariable.XVarFlag;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.types.TypeFamily;
+import org.xmlsh.util.Util;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.EnumSet;
 
 public class Assign {
+  
+  
 	private static final EvalEnv mListVarEnv = EvalEnv.newInstance(false, true,false, false);
 	private static final EvalEnv mSingleVarEnv = EvalEnv.basicInstance();
+  private static final EnumSet<XVarFlag> SEQ_VAR_FLAGS = XVariable.standardFlags( XVariable.sequenceFlags() );
+  private static final EnumSet<XVarFlag> VAR_FLAGS = XVariable.standardFlags();
 	private boolean	mLocal = false ;
 	private	 String		mVariable;
 	private String		mOp;		// "=" or "+-" 
+	private Word        mInd ;      // [ index ] 
 	private Word		mRValue;		// a single value a=b
 	private WordList	mRValList; // a sequence constructor a=(b)
-	public Assign(boolean local  , String variable, String op , Word rvalue) {
-
+	private String   mTypeStr;  // =[ =( ={ 
+	
+	public Assign(boolean local  , String typeStr , String variable, String op , Word rvalue) {
 		mLocal = local ;
+		mTypeStr = typeStr;
 		mVariable = variable;
 		mOp = op ;
 		mRValue = rvalue;
 
 	}
-	public Assign(boolean local , String variable, String op , WordList rvalue) {
+	   
+	public Assign(boolean local  ,String typeStr , String variable, Word ind , String op , Word rvalue) {
+        mLocal = local ;
+        mTypeStr = typeStr;
+        mVariable = variable;
+        mOp = op;
+        mInd = ind ;
+        mRValue = rvalue;
+	}
+	public Assign(boolean local , String typeStr,String variable, String op , WordList rvalue) {
 		mLocal = local ;
+    mTypeStr = typeStr;
 		mVariable = variable;
 		mOp = op;
 		mRValList = rvalue;
@@ -40,6 +64,12 @@ public class Assign {
 		if( mLocal )
 			out.print("local ");
 		out.print(getVariable());
+		if( mInd != null ) {
+		    out.print("[");
+		    mInd.print(out);
+		    out.print("]");
+		    
+		}
 		out.print(mOp);
 		if( mRValue != null )
 			mRValue.print(out);
@@ -74,25 +104,62 @@ public class Assign {
 
 		XValue value = null;
 
+		if( mRValue == null && mRValList == null)
+		    value = nullValue( mTypeStr );
+		
 
 		// Eval RHS
+		else
 		if( mRValue != null )
 			// Single variables dont expand wildcards
 			value = mRValue.expand(shell, mSingleVarEnv, loc);
 		else
-			if( mRValList != null )
+	    if( mRValList != null )
 				// Sequences expand wildcards
 				value = mRValList.expand(shell, mListVarEnv,loc);
 
-
 		// Assign
 		if( getOp().equals("+="))
-			shell.getEnv().appendVar( getVariable(), value , isLocal());
-		else
-			shell.getEnv().setVar( getVariable(), value , isLocal());
-
+			shell.getEnv().appendVar( getVariable(), value , getVarFlags(value),  isLocal());
+		else {
+		    
+		    if( mInd != null ) {
+		        String ind = mInd.expandString(shell, mListVarEnv, loc);
+	            shell.getEnv().setIndexedVar( getVariable(), value , ind ,  getVarFlags(value), mLocal );
+		    }
+		    else
+			     shell.getEnv().setVar( getVariable(), value , getVarFlags(value), mLocal );
+		}
 
 	}
+
+  private XValue nullValue(String typeStr)
+  {
+    switch( typeStr )
+    {
+    case "=" :
+    case "+=" :
+      return XValue.nullValue();
+    case "[]" :
+       return new XValue( new XValueArray());
+    case "{}" :
+      return new XValue(new  org.xmlsh.core.XValuePropertyList() );
+    case "()" :
+      return  new XValue( XValueSequence.emptySequence());
+    }
+    return XValue.nullValue();
+  }
+  private EnumSet<XVarFlag> getVarFlags(XValue value)
+  {
+    if( value == null )
+      return VAR_FLAGS ;
+    else      
+      return Util.withEnumsAdded(VAR_FLAGS, value.typeFlags());
+    
+    
+  }
+  
+  
 }
 
 

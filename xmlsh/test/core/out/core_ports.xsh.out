@@ -1,27 +1,53 @@
-There are 6 ITEMS
+[6] There are 6 ITEMS
 Modern Library
 Modern Library
-foo
-There are 3 elements
-<spam>bletch</spam>
-There are 4 elements
-<spam>bletch</spam>
-foobar should be foobar
-foobar
+[23] foo
+[26] There are 3 elements : should be 3
+[27] <spam>bletch</spam>
+[34] There are 4 elements : should be 4
+[35] <spam>bletch</spam>
+[42] foobar should be foobar
+[45] Should be text foobar<foo/>
+[47] foobar<foo/>
+[48] should be foobar followed by XML encoded
+foobar&lt;foo/&gt;
+[50] should be foobar followed by XML encoded
+foobar&lt;foo/&gt;
+[52] should be string
+string
+string
+[60] test append to an unset var
+string
+[64] empty
+full
+[65] 1
+Should be xdm <foo/>
 <foo/>
+[73] should be 3 lines
+<foo/>
+foo
+bar
+[75] 3 should be 3
+item()+
+[77] 3
 <foo>brace group</foo>
 <bar/>
 <foo>sub shell</foo>
 <bar/>
+[91] testing port (output)
 output
-output2
-output3
+[93] output2
+output3 should be output3 on stdout once
 output4
 output5
+[103] testing output then break should be output6 once
 output6
+[108] should be output7 then output 8
 output7
 output8
-input1
+[112] testing redirect through compound statements
+[114] input1
 input2
 input3
 input4
+[118] done

@@ -127,7 +127,7 @@ public class IFS
 
 	boolean isNull() { return Util.isEmpty(ifs); }
 	boolean isDefault() { return bDefault ; }
-	char getFirstChar(){
+	public char getFirstChar(){
 		return isNull() ? '\0' : ifs.charAt(0);
 	}
 

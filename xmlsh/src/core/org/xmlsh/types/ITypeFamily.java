@@ -1,6 +1,5 @@
 package org.xmlsh.types;
 
-import java.util.EnumSet;
 
 
 /*
@@ -8,23 +7,11 @@ import java.util.EnumSet;
  * if not then the XTYPE type family will be used
  * 
  */
-public interface ITypeFamily
+public interface ITypeFamily extends IMethods
 {
-	IMethods getMethods( Class<?> cls );
-	IMethods getMethods( XTypeKind kind  );
-	IType  getNullType();
-
-
 	/* Type inspection */
-	IType  getType( Class<?> cls );
-	IType  getType( XTypeKind kind );
 	public boolean isClassOfFamily(Class<?> cls);
 	public boolean isInstanceOfFamily(Object obj) ;
-	EnumSet<TypeFamily>        subTypeFamilies();    // Directly derived type families
-
-
-	EnumSet<TypeFamily>        superTypeFamilies();   // All supertypes
 	TypeFamily                 typeFamily();         // Returns the specific type family
-
 
 }

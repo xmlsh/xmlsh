@@ -101,7 +101,7 @@ public class IOFile {
 
 					XVariable xvar = env.getVar(var);
 					if( xvar == null ){
-						xvar = new XVariable(var,null);
+						xvar = new XVariable(var,null,XVariable.XVAR_STANDARD);
 						env.setVar(xvar, false );
 					}
 					else
@@ -113,8 +113,8 @@ public class IOFile {
 					if( mPrefix.equals(">>"))
 					{
 						XVariable xvar = env.getVar(var);
-						if( var == null ){
-							xvar = new XVariable(var,null);
+						if( xvar == null ){
+							xvar = new XVariable(var,null,XVariable.XVAR_STANDARD);
 							env.setVar(xvar, false );
 						}
 						env.setOutput(port,xvar);				

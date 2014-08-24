@@ -4,6 +4,7 @@ import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.XValueMap;
 import org.xmlsh.util.StringPair;
+import org.xmlsh.util.XNamedValue;
 
 import java.util.Iterator;
 import java.util.List;
@@ -35,7 +36,7 @@ public class XTypeUtils
 			return XTypeFamily._instance;
 
 		}
-		return null;
+		return XDMTypeFamily._instance;
 	}
 
 
@@ -122,6 +123,10 @@ public class XTypeUtils
 
 	public static org.xmlsh.util.XNamedValue newNamedValue(XValue arg) throws InvalidArgumentException
 	{
+	    if( arg.isInstanceOf( XNamedValue.class ))
+	        return ((XNamedValue) arg.asObject());
+	    
+	    
 		if( arg.isAtomic() ) {
 			StringPair pair = new StringPair( arg.toString() ,'=' );
 			return new org.xmlsh.util.XNamedValue(pair.getLeft(), new XValue(pair.getRight()) );
@@ -132,4 +137,8 @@ public class XTypeUtils
 
 	}
 
+	
+	
+	
+	
 }

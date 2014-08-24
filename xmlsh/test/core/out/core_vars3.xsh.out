@@ -1,2 +1,3 @@
 a=b
-null
+empty-sequence()
+a:b c:d e:

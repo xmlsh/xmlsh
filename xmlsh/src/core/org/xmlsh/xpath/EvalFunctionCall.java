@@ -10,6 +10,7 @@ import net.sf.saxon.expr.XPathContext;
 import net.sf.saxon.lib.ExtensionFunctionCall;
 import net.sf.saxon.om.Item;
 import net.sf.saxon.om.SequenceIterator;
+import net.sf.saxon.s9api.XdmValue;
 import net.sf.saxon.trans.XPathException;
 
 import org.apache.log4j.LogManager;
@@ -23,6 +24,7 @@ import org.xmlsh.core.XVariable;
 import org.xmlsh.sh.core.Command;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.Util;
+import org.xmlsh.util.XMLUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -96,7 +98,7 @@ public class EvalFunctionCall extends ExtensionFunctionCall
 					return null;
 			} 
 
-			return oValue.asSequenceIterator();
+			return XMLUtils.asSequenceIterator( oValue.toXdmValue() );
 		} catch (Exception e) {
 			throw new XPathException(e);
 		}

@@ -19,7 +19,7 @@ import org.xmlsh.core.CommandFactory;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.IOutputPort;
 import org.xmlsh.core.XValue;
-import org.xmlsh.sh.shell.Module;
+import org.xmlsh.sh.shell.IModule;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 
@@ -62,8 +62,8 @@ public class HelpUsage {
 
 
 		XQueryEvaluator eval = expr.load();
-		eval.setExternalVariable(new QName("prefix"), new XValue(prefix).asXdmValue() );
-		eval.setExternalVariable(new QName("module"), new XValue(module).asXdmValue() );
+		eval.setExternalVariable(new QName("prefix"), new XValue(prefix).toXdmValue() );
+		eval.setExternalVariable(new QName("module"), new XValue(module).toXdmValue() );
 
 		eval.setContextItem(root);
 
@@ -217,7 +217,7 @@ public class HelpUsage {
 	}
 
 	public void doHelpCommands(IOutputPort stdout, boolean bLaunch) throws SaxonApiException, IOException, CoreException, URISyntaxException {		
-		for( Module m : mShell.getModules() ){
+		for( IModule m : mShell.getModules() ){
 			URL url = m.getHelpURL();
 			if( url != null )
 				doHelpCommands(stdout,url,m.getPrefix(),m.getName(), bLaunch);

@@ -63,7 +63,7 @@ public class ForClause extends CompoundCommand {
 		try {
 			applyRedirect(shell);
 			if( mWords == null ) {	// for all args 
-				for( XValue inword : shell.getArgs() ){
+				for( XValue inword :  shell.getArgs() ) {
 					if( ! shell.keepRunning() )
 						break ;
 					// Forcibly use a new variable every iteration

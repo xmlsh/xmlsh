@@ -1,0 +1,4 @@
+org.xmlsh.core.XValueProperty
+value 2
+org.xmlsh.core.XValuePropertyList
+[value1 ,value2 ]

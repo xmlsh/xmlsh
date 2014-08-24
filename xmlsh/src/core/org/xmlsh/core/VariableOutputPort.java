@@ -85,6 +85,7 @@ public class VariableOutputPort extends OutputPort
 
 	public VariableOutputPort( XVariable var)
 	{
+	  assert( var != null );
 		mVariable = var ;
 	}
 
@@ -194,7 +195,7 @@ public class VariableOutputPort extends OutputPort
 	private void appendVar(String string) throws InvalidArgumentException 
 	{
 		XValue value = mVariable.getValue();
-		if (value == null)
+		if (value == null || value.isNull())
 			mVariable.setValue(new XValue(string));
 		else {
 			if (value.isAtomic())

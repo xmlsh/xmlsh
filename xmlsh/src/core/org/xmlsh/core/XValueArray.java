@@ -1,6 +1,7 @@
 package org.xmlsh.core;
 
 import org.xmlsh.sh.shell.SerializeOpts;
+import org.xmlsh.types.TypeFamily;
 import org.xmlsh.util.Util;
 
 import java.io.IOException;
@@ -27,6 +28,10 @@ public class XValueArray extends AbstractList<XValue> implements IXValueContaine
 	public XValueArray() {
 		mArray = new TreeMap<>();
 	}
+	
+    public XValueArray( XValueArray that ) {
+        mArray = new TreeMap<>( that.mArray );
+    }
 
 	public int extent() { return maxIndex ; }
 	@Override
@@ -130,9 +135,6 @@ public class XValueArray extends AbstractList<XValue> implements IXValueContaine
 				ps.write(" ");
 				sep = ",";
 			}
-			ps.write("]");
-		} catch (InvalidArgumentException e) {
-			Util.wrapIOException(e);
 		}
 
 	}
@@ -159,6 +161,32 @@ public class XValueArray extends AbstractList<XValue> implements IXValueContaine
     public boolean isAtomic()
     {
 	    return false;
+    }
+
+	/* 
+	 * Create a new value by appending this one
+	 * @see org.xmlsh.core.IXValueContainer#append(org.xmlsh.core.XValue)
+	 */
+    @Override
+    public XValue append(XValue item) {
+        
+        XValueArray  newArray = new XValueArray(this);
+        newArray.add( item );
+        return new  XValue( TypeFamily.XTYPE , newArray ) ;
+        
+        
+    }
+
+    @Override
+    public XValue getAt(int index)
+    {
+      return get(index);
+    }
+
+    @Override
+    public XValue setAt(int index, XValue value)
+    {
+      return  mArray.put(index , value);
     }
 
 

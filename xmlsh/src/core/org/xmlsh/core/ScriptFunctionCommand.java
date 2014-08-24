@@ -7,7 +7,7 @@
 package org.xmlsh.core;
 
 import org.xmlsh.sh.core.SourceLocation;
-import org.xmlsh.sh.shell.Module;
+import org.xmlsh.sh.shell.IModule;
 import org.xmlsh.sh.shell.Shell;
 
 import java.io.IOException;
@@ -18,13 +18,13 @@ public class ScriptFunctionCommand extends BuiltinFunctionCommand {
 
 
 	private InputStream mScript;
-	private Module mModule;
+	private IModule mModule;
 	private SourceLocation mLocation;
 
 
 
 
-	public ScriptFunctionCommand(String name , InputStream is, Module module ) {
+	public ScriptFunctionCommand(String name , InputStream is, IModule module ) {
 		super(name);
 		mScript = is;
 		mModule = module ;

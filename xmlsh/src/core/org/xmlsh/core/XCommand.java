@@ -7,7 +7,7 @@
 package org.xmlsh.core;
 
 
-import org.xmlsh.sh.shell.Module;
+import org.xmlsh.sh.shell.IModule;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.xpath.ShellContext;
 
@@ -16,7 +16,7 @@ import java.util.List;
 
 public abstract class XCommand extends AbstractCommand {
 
-	private Module mModule;
+	private IModule mModule;
 
 
 	protected void throwInvalidArg(String string)
@@ -27,7 +27,7 @@ public abstract class XCommand extends AbstractCommand {
 	}
 
 	@Override
-	public Module getModule()
+	public IModule getModule()
 	{
 		return mModule;
 	}
@@ -122,7 +122,7 @@ public abstract class XCommand extends AbstractCommand {
 
 	}
 
-	public void setModule(Module module) {
+	public void setModule(IModule module) {
 		mModule = module ;
 
 	}

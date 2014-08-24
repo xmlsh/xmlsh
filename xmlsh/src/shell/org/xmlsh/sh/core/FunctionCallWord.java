@@ -12,6 +12,7 @@ import org.xmlsh.core.EvalEnv;
 import org.xmlsh.core.IFunction;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
+import org.xmlsh.sh.grammar.Token;
 import org.xmlsh.sh.shell.ParseResult;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.Util;
@@ -32,8 +33,9 @@ public class FunctionCallWord extends Word
 	String	 mFunction;
 	WordList	mArgs;
 
-	public FunctionCallWord(String func, WordList args)
+	public FunctionCallWord(Token t , String func, WordList args)
 	{
+		super(t);
 		mFunction = func;
 		mArgs = args;
 

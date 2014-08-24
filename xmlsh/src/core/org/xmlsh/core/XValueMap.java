@@ -7,6 +7,7 @@
 package org.xmlsh.core;
 
 import org.xmlsh.sh.shell.SerializeOpts;
+import org.xmlsh.types.TypeFamily;
 import org.xmlsh.types.XTypeUtils;
 import org.xmlsh.util.Util;
 import org.xmlsh.util.XNamedValue;
@@ -17,6 +18,7 @@ import java.io.OutputStreamWriter;
 import java.util.AbstractMap;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -30,11 +32,21 @@ import com.fasterxml.jackson.annotation.JsonAnySetter;
 public class XValueMap extends AbstractMap<String,XValue> implements IXValueContainer<XValueMap>  {
 	private  	Map<String,XValue>   mMap;
 
-	public XValueMap() {
-		mMap = new HashMap<>();
+	public XValueMap(XValueMap that) {
+		mMap = new HashMap<>(that.mMap );
 	}
 
-	@JsonAnySetter
+	public XValueMap() {
+	       mMap = new HashMap<>();
+    }
+
+    public XValueMap(int extent)
+  {
+      mMap = new HashMap<>(extent);
+      
+  }
+
+    @JsonAnySetter
 	public void set( String name , XValue value ) {
 		mMap.put( name, value);
 	}
@@ -99,8 +111,6 @@ public class XValueMap extends AbstractMap<String,XValue> implements IXValueCont
 				sep = ",";
 			}
 			ps.write("}");
-		} catch (InvalidArgumentException e) {
-			Util.wrapIOException(e);
 		}
 
 	}
@@ -120,16 +130,29 @@ public class XValueMap extends AbstractMap<String,XValue> implements IXValueCont
 
 	}
 
+	public void put( XValueProperty prop ) {
+	    put( prop.getName() , prop.getValue() );
+	}
+	
+	
+	
 	@Override
 	public Set<java.util.Map.Entry<String, XValue>> entrySet()
 	{
 		return mMap.entrySet();
 	}
 
-	@Override
 	public boolean add(XValue arg)
 	{
-		try {
+		
+	    if( arg.isInstanceOf( XValueMap.class ))
+	        addAll( ((XValueMap) arg.asObject()) );
+	    else
+	    if( arg.isInstanceOf( XValueProperty.class ))
+	        add( ((XValueProperty) arg.asObject()) );
+
+	    else 
+	    try {
 			put( XTypeUtils.newNamedValue( arg ) );
 		} catch (InvalidArgumentException e) {
 			Util.wrapException(e,IllegalArgumentException.class);
@@ -137,8 +160,10 @@ public class XValueMap extends AbstractMap<String,XValue> implements IXValueCont
 		return true ;
 	}
 
-	public void put(XNamedValue nv )
+	public void put(XNamedValue nv ) 
 	{
+	    if( Util.isBlank(nv.getName()))
+	        throw new IllegalArgumentException( "Cannot add an entry to a map with an empty key");
 		put( nv.getName() , nv.getValue() );
 	}
 
@@ -160,6 +185,38 @@ public class XValueMap extends AbstractMap<String,XValue> implements IXValueCont
     {
 	    // TODO Auto-generated method stub
 	    return false;
+    }
+
+    @Override
+    public XValue append(XValue item) {
+        
+        
+        XValueMap newMap = new XValueMap(this);
+        newMap.add(item);
+        return new XValue(newMap );
+    }
+
+    public void add(XValueProperty prop) {
+       put( prop.getName() , prop.getValue() );
+        
+    }
+
+    @Override
+    public Iterator<XValue> iterator() {
+        return mMap.values().iterator();
+    }
+
+    @Override
+    public XValue getAt(int index)
+    {
+      throw new UnsupportedOperationException("get(int) unimplemented");
+    }
+
+    @Override
+    public XValue setAt(int index, XValue value)
+    {
+      throw new UnsupportedOperationException("setAt(int) unimplemented");
+
     }
 
 }

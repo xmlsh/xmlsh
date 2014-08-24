@@ -3,7 +3,7 @@ Length: 2
 String
 TestTypes()
 TestTypes(String)
-TestTypes()
+TestTypes(Object)
 TestTypes(Integer)
 TestTypes(Integer,String)
 TestTypes(Long,String)

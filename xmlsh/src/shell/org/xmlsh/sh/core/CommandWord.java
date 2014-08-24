@@ -15,6 +15,7 @@ import org.xmlsh.core.EvalFlag;
 import org.xmlsh.core.VariableOutputPort;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.XVariable;
+import org.xmlsh.sh.grammar.Token;
 import org.xmlsh.sh.shell.ParseResult;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.ByteFilterOutputStream;
@@ -39,11 +40,12 @@ public class CommandWord extends Word {
 	String		mType;	// $( $(< $<( $<(<  `
 	Command		mCommand;
 
-	public CommandWord( String type , Command c){
-		mType = type;
+	public CommandWord( Token ttype , Command c){
+		super(ttype);
+		mType = ttype.toString();
 		mCommand =  c;
 	}
-
+	
 	@Override
 	public void print( PrintWriter out )
 	{

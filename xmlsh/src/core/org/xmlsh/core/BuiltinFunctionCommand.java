@@ -52,7 +52,7 @@ public abstract class BuiltinFunctionCommand extends Command implements IFunctio
 	@Override
 	public EvalEnv argumentEnv(EvalEnv parent)
 	{
-		return parent ;
+		return parent.withFlagsOff(EvalFlag.EXPAND_WILD , EvalFlag.SPLIT_WORDS) ;
 	}
 	/* (non-Javadoc)
 	 * @see org.xmlsh.core.IFunction#returnEnv(org.xmlsh.core.EvalEnv)

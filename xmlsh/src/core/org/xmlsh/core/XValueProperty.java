@@ -7,14 +7,17 @@
 package org.xmlsh.core;
 
 import org.xmlsh.sh.shell.SerializeOpts;
+import org.xmlsh.types.TypeFamily;
 import org.xmlsh.util.Util;
 import org.xmlsh.util.XNamedValue;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.Set;
 
 /*
@@ -28,6 +31,10 @@ public class XValueProperty  extends XNamedValue  implements IXValueContainer<XV
     {
 	    super(name, value);
     }
+  public XValueProperty( XValue value)
+  {
+    super(null,value);
+  }
 
 	@Override
     public int size()
@@ -38,7 +45,7 @@ public class XValueProperty  extends XNamedValue  implements IXValueContainer<XV
 	@Override
     public boolean isEmpty()
     {
-		return false ;
+		return getValue() == null  ;
     }
 
 	@Override
@@ -47,7 +54,7 @@ public class XValueProperty  extends XNamedValue  implements IXValueContainer<XV
 		throw new UnsupportedOperationException("put is not implemented for XValueProperty");
     }
 
-	@Override
+	  @Override
     public XValue get(String name)
     {
 	   return  Util.isEqual(name, getName() ) ? getValue() : null ;
@@ -76,41 +83,88 @@ public class XValueProperty  extends XNamedValue  implements IXValueContainer<XV
     public void serialize(OutputStream out, SerializeOpts opts) throws IOException
     {
 
-		try ( OutputStreamWriter ps = new OutputStreamWriter(out, opts.getInputTextEncoding() ) ){
-				ps.write( getName());
-				ps.write(":=");
-				ps.flush();
-				getValue().serialize(out, opts);
-		} catch (InvalidArgumentException e) {
-			Util.wrapIOException(e);
-		}		
-    }
+	  
+       XValue value = getValue();
+       if( value == null )
+         return ;
+       value.serialize(out, opts);
 
-	@Override
-    public boolean add(XValue arg)
-    {
-		throw new UnsupportedOperationException("removeAll is not implemented for XValueProperty");
+	  
+	  
     }
 
 	@Override
     public boolean isMap()
     {
-	    // TODO Auto-generated method stub
 	    return true;
     }
 
 	@Override
     public boolean isList()
     {
-	    // TODO Auto-generated method stub
-	    return false;
+	    return true;
     }
 
 	@Override
     public boolean isAtomic()
     {
-	    // TODO Auto-generated method stub
-	    return false;
+	    return true;
+    }
+	
+	
+	/*
+	 * operator += 
+	 * @see org.xmlsh.core.IXValueContainer#append(org.xmlsh.core.XValue)
+	 */
+
+    @Override
+    public XValue append(XValue item) {
+        
+        if( item.isEmpty() )
+            return new XValue( this  ) ;
+        
+        XValuePropertyList newMap = new XValuePropertyList( this  );
+        newMap.add( XValueProperty.instanceOf(item) );
+        return new XValue( newMap  );
+        
+        
+        
+        
+    }
+
+    @Override
+    public Iterator<XValue> iterator() {
+       return Collections.singletonList( getValue()).iterator();
+    }
+
+    // Allows null or "" as equivilent names
+    public boolean nameEquals(String name)
+    {
+       return Util.isEqual( getName() , name  );
+      
+    }
+    public static XValueProperty instanceOf(XValue item)
+    {
+      if( item.isInstanceOf( XValueProperty.class ) )
+       return (XValueProperty) item.asObject();
+      else 
+        return new XValueProperty(item) ;
+    }
+    @Override
+    public XValue getAt(int index)
+    {
+      if( index == 0 )
+        return getValue();
+      
+      
+      throw new IndexOutOfBoundsException("Index out of bounds: " + index );
+
+    }
+    @Override
+    public XValue setAt(int index, XValue value)
+    {
+      throw new UnsupportedOperationException("setAt is not implemented for XValueProperty");
+
     }
 	
 

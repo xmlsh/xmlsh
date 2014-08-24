@@ -11,7 +11,9 @@ import org.apache.log4j.Logger;
 
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
+import org.xmlsh.core.XValueList;
 import org.xmlsh.sh.shell.SerializeOpts;
+import org.xmlsh.types.TypeFamily;
 import org.xmlsh.util.Util;
 
 import java.io.ByteArrayInputStream;
@@ -22,6 +24,7 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -51,6 +54,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.POJONode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import com.fasterxml.jackson.databind.node.ValueNode;
+import com.fasterxml.jackson.databind.type.SimpleType;
 import com.fasterxml.jackson.dataformat.xml.JacksonXmlModule;
 import com.fasterxml.jackson.dataformat.xml.XmlFactory;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
@@ -71,6 +75,7 @@ public class JSONUtils {
 	private static volatile  XmlMapper _theXmlMapper = null;
 	private static Logger mLogger = LogManager.getLogger(JSONUtils.class);
 
+    private final static JavaType JSON_NODE_TYPE = SimpleType.constructUnsafe(JsonNode.class);
 
 
 	/* TEST CODE ... needs to go into AWS 
@@ -239,7 +244,7 @@ public class JSONUtils {
 					if( obj instanceof Boolean )
 						return JsonNodeFactory.instance.booleanNode((Boolean)obj) ;
 
-					return mapper.convertValue(obj, JsonNode.class);
+					return mapper.convertValue(obj, jsonNodeClass());
 
 		} 
 		catch (Exception e) {
@@ -250,6 +255,17 @@ public class JSONUtils {
 
 	}
 
+	public static Class<JsonNode> jsonNodeClass()
+    {
+	    return JsonNode.class;
+    }
+
+	public static JavaType jsonNodeType()
+    {
+	    return   JSON_NODE_TYPE;
+
+    }
+	
 	public static NumericNode toJsonNumber(XValue arg) throws InvalidArgumentException  {
 		String str = null;
 		if( arg.isJson()) {
@@ -475,6 +491,34 @@ public class JSONUtils {
 
 	}
 
+    public static boolean isEmpty(JsonNode value) {
+        return value.size()  == 0 ;
+    }
+
+    public static Object newJsonObject() {
+        return getJsonObjectMapper().createObjectNode();
+    }
+
+    public static Object newJsonArray() {
+        return getJsonObjectMapper().createArrayNode();
+    }
+
+	public static List<XValue> asXList(Iterator<JsonNode> nodes)
+    {
+		XValueList list = new XValueList();
+
+
+		while( nodes.hasNext() )
+			list.add( new XValue(TypeFamily.JSON,nodes.next()) );
+
+		return list ;
+    }
+
+  public static boolean isAtomic(Object value)
+  {
+
+    return isAtomicClass(value.getClass());
+  }
 
 }
 

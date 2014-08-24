@@ -13,6 +13,8 @@ event type CHARACTERS
 	
 event type START_ELEMENT
    ITEM
+xs:string
+MMP
 event type CHARACTERS
   
     	
@@ -110,6 +112,8 @@ event type CHARACTERS
 	
 event type START_ELEMENT
    ITEM
+xs:string
+P
 event type CHARACTERS
   
 		
@@ -207,6 +211,8 @@ event type CHARACTERS
 	
 event type START_ELEMENT
    ITEM
+xs:string
+P
 event type CHARACTERS
   
 		
@@ -304,6 +310,8 @@ event type CHARACTERS
 	
 event type START_ELEMENT
    ITEM
+xs:string
+P
 event type CHARACTERS
   
 		
@@ -401,6 +409,8 @@ event type CHARACTERS
 	
 event type START_ELEMENT
    ITEM
+xs:string
+H
 event type CHARACTERS
   
 		
@@ -498,6 +508,8 @@ event type CHARACTERS
 	
 event type START_ELEMENT
    ITEM
+xs:string
+P
 event type CHARACTERS
   
 		

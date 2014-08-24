@@ -12,6 +12,7 @@ import org.xmlsh.core.EvalEnv;
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
+import org.xmlsh.sh.grammar.Token;
 import org.xmlsh.sh.shell.ParseResult;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
@@ -32,8 +33,9 @@ public class CommandFileWord extends Word {
 	private		Word		mFile;
 	private static final EvalEnv mEnv = EvalEnv.fileInstance();
 
-	public CommandFileWord( String type , Word file ){
-		mType = type;
+	public CommandFileWord( Token t,  Word file ){
+		super(t);
+		mType = t.toString();
 		mFile = file;
 	}
 

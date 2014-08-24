@@ -68,8 +68,8 @@ public class VariableInputPort extends InputPort {
 			}
 
 
-			if (value.isXdmValue())
-				Util.writeXdmValue(value.asXdmValue(), Util
+			if (value.isXdmItem())
+				Util.writeXdmItem(value.asXdmItem(), Util
 						.streamToDestination(buf, opts)); // uses output xml encoding
 			else
 				buf.write(value.toByteArray(opts)); // Use output encoding
@@ -131,9 +131,9 @@ public class VariableInputPort extends InputPort {
 		if( value.isNull() )
 			;
 		else
-			if (value.isXdmValue())
+			if (value.isXdmItem())
 				try {
-					Util.writeXdmValue(value.asXdmValue(), Util
+					Util.writeXdmItem(value.asXdmItem(), Util
 							.streamToDestination(out, opts));
 				} catch (SaxonApiException e) {
 					throw new CoreException(e);

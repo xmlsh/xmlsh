@@ -17,15 +17,44 @@ import org.xmlsh.types.TypeFamily;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Deque;
+import java.util.Stack;
 
-public class BraceWord extends Word
+
+/*
+ * BraceWord represents the syntax  { expr }  , {expr ...}  and  { expr : expr , expr : expr ... }
+ * 
+ * Evaluating produces either
+ *   A) the result of expr exactly
+ *   B) XList<> of exprs
+ *   C) XList<> of  { expr or property }*
+ *   D) XMap<> 
+ *   
+ *   
+ * 
+ */
+public class BraceWord extends ListWord
 {
 
-	private WordList	mWords;
 
-	public BraceWord(WordList w)
+	public BraceWord(WordList wl)
 	{
-		mWords = w;
+		super( wl.getFirstToken() );
+	    ListWord list = null ;
+	    Word  simple;
+	    for(Word  w : wl ) {
+	        if( w.isDelim() ) {
+	            super.add( list );
+	            list = null ;
+	        } else {
+	            if( list == null )
+	                list = new ListWord(w.getFirstToken());
+	            list.add( w );
+	        }
+	    }
+	    if( list != null )
+	        super.add( list );
+	    
 	}
 
 	@Override
@@ -33,7 +62,7 @@ public class BraceWord extends Word
 	{
 		out.print("{");
 		String sep="";
-		for( Word w : mWords ) {
+		for( Word w : super.mList ) {
 			w.print(out);
 			out.print(sep);
 			sep="";
@@ -42,18 +71,14 @@ public class BraceWord extends Word
 	}
 
 
-	@Override
-	public boolean isEmpty()
-	{
-		return mWords == null || mWords.isEmpty();
-	}
 
 
 
 	@Override
+    public
 	String getSimpleName()
 	{
-		return isEmpty() ? "{}" : mWords.get(0).getSimpleName() + "...";
+		return isEmpty() ? "{}" :mList.get(0).getSimpleName() + "...";
 	}
 
 	/* (non-Javadoc)
@@ -69,17 +94,24 @@ public class BraceWord extends Word
 	protected ParseResult expandToResult(Shell shell, EvalEnv env, SourceLocation loc, ParseResult result) throws IOException,
 	CoreException
 	{
-		if( mWords.isEmpty() )
+		if( mList.isEmpty() )
 			return result  ;
-		if( mWords.size() == 1 )
-			return mWords.get(0).expandToResult(shell, evalEnv(env), loc, result);
+		if( mList.size() == 1 )
+		    return mList.get(0).expandToResult(shell, evalEnv(env), loc, result);
 		
-		XValueList list = new XValueList();
-		for( Word w : mWords ) {
-			XValue xv = w.expand(shell, evalEnv(env), loc);
-			list.add(xv);
+
+		// Sequence ... 
+		XValue xv = null ;
+		for( Word w :  mList ) {
+            XValue wv = w.expand(shell , evalEnv(env), loc);
+            if(  xv == null )
+                xv = wv ;
+            else
+                xv  = xv.append( wv );
 		}
-		result.add( new XValue( TypeFamily.XTYPE , list ) );
+		
+		
+		result.add( xv  );
 		return result ;
 
 	}

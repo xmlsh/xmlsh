@@ -36,6 +36,13 @@ public class CharAttributeBuffer
 		attrArray = new byte[capacity];
 	}
 
+
+	public CharAttributeBuffer(CharAttributeBuffer that ) {
+	    this(that.capacity);
+	    append(that);
+	}
+
+	   
 	public CharAttributeBuffer(String s, byte attr)
 	{
 		int size = s.length();

@@ -25,18 +25,18 @@ import java.util.List;
 @SuppressWarnings("serial")
 public class Modules extends  ArrayList<Module>
 {
-	public Module declare(Shell shell, String prefix , String name, List<XValue> init ) throws CoreException
+	public IModule declare(Shell shell, String prefix , String name, List<XValue> init ) throws CoreException
 	{
 		/*
 		 * Dont redeclare a module under the same prefix
 		 */
 
-		for( Module m : this )
+		for( IModule m : this )
 			if( Util.isEqual(m.getName(),name) && Util.isEqual(m.getPrefix(),prefix))
 				return m;
 
 
-		Module module = new Module(shell, prefix , name , init  );
+		Module module = Module.createModule(shell, prefix , name , init  );
 		return declare(module);
 	}
 
@@ -48,18 +48,18 @@ public class Modules extends  ArrayList<Module>
 	 * @throws CoreException 
 	 * 
 	 */
-	public Module declare(Module module) throws CoreException
+	public IModule declare(Module module) throws CoreException
 	{
 
 		if( ! Util.isEmpty(module.getPrefix())){
 			// IF module exists by this prefix then redeclare
-			Module exists = getModule( module.getPrefix() );
+			IModule exists = getModule( module.getPrefix() );
 			if( exists != null )
 				remove( exists );
 		}
 		else {
 			// Non prefixed modules dont import the same package
-			Module exists = getModuleByPackage( module.getPackage());
+			IModule exists = getExistingModule( module );
 			if( exists != null )
 				return exists ;
 		}
@@ -77,21 +77,20 @@ public class Modules extends  ArrayList<Module>
 	Modules() {}
 
 
-	public Module	getModule(String prefix)
+	public IModule	getModule(String prefix)
 	{
-		for( Module m : this )
+		for( IModule m : this )
 			if( Util.isEqual(m.getPrefix(), prefix ) )
 				return m ;
 		return null;
 
 	}
 
-	public Module	getModuleByPackage(String pkg)
+	public IModule	getExistingModule(IModule mod)
 	{
-		if( Util.isBlank(pkg))
-			return null ;
-		for( Module m : this )
-			if( Util.isEqual(m.getPackage(),pkg) )
+	  
+		for( IModule m : this )
+			if( m.definesSameModule(mod ) )
 				return m ;
 		return null;
 
@@ -109,7 +108,7 @@ public class Modules extends  ArrayList<Module>
 	 * class
 	 * 
 	 */
-	public Module declare(Shell shell, String m, List<XValue> init) throws CoreException {
+	public IModule declare(Shell shell, String m, List<XValue> init) throws CoreException {
 		StringPair 	pair = new StringPair(m,'=');
 		return declare(shell, pair.getLeft(), pair.getRight() ,  init  );
 

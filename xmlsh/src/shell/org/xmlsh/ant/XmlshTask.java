@@ -79,7 +79,7 @@ public class XmlshTask extends Task {
 					vargs.add( new XValue( arg.mValue));
 			}
 
-			org.xmlsh.commands.builtin.xmlsh cmd = new org.xmlsh.commands.builtin.xmlsh(true);
+			org.xmlsh.builtin.commands.xmlsh cmd = new org.xmlsh.builtin.commands.xmlsh(true);
 
 
 			@SuppressWarnings("unused")

@@ -10,27 +10,43 @@ import net.sf.saxon.s9api.XdmEmptySequence;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.EvalEnv;
 import org.xmlsh.core.XValue;
+import org.xmlsh.core.XValueSequence;
+import org.xmlsh.sh.grammar.Token;
 import org.xmlsh.sh.shell.Shell;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 
 @SuppressWarnings("serial")
-public class WordList extends ArrayList<Word> {
+public class WordList  extends ArrayList<Word >  {
 
 	public void print(PrintWriter out) {
 		for( Word s : this ){
 			s.print( out );
 			out.print( " ");
 		}
-
 	}
 
-	public XValue expand(Shell shell, EvalEnv env , SourceLocation loc) throws IOException, CoreException {
+    @Override
+    public boolean add(Word e) {
+        return super.add(e);
+    }
+
+    @Override
+    public boolean addAll(Collection<? extends Word> c) {
+        return super.addAll(c);
+    }
+
+
+
+    public XValue expand(Shell shell, EvalEnv env , SourceLocation loc) throws IOException, CoreException {
 		if( this.size() == 0 )
-			return new XValue(XdmEmptySequence.getInstance());
+			return new XValue( XValueSequence.emptySequence());
 		if( this.size() == 1 )
 			return this.get(0).expand(shell,env, loc);
 
@@ -49,6 +65,30 @@ public class WordList extends ArrayList<Word> {
 
 	}
 
+	public Token getFirstToken()
+    {
+		if( isEmpty() )
+			return null;
+
+		return get(0).getFirstToken();
+    }
+
+
+    
+    /*
+     * Split a word list by expanding any JoinedWordList words delimited by delim,  and combining free 
+  
+    public WordList splitDelim(String delim ) {
+        for( Word w : this ) {
+            if( w.isDelimiter( delim ))
+            
+            
+        }
+        
+        
+        
+    }
+   */
 }
 
 

@@ -8,6 +8,7 @@ package org.xmlsh.sh.core;
 
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.EvalEnv;
+import org.xmlsh.sh.grammar.Token;
 import org.xmlsh.sh.shell.ParseResult;
 import org.xmlsh.sh.shell.Shell;
 
@@ -23,9 +24,14 @@ public class StringWord extends Word
 {
 	private String	mString; // String value
 
-	public StringWord(String s)
+	public StringWord(Token t )
 	{
-		mString = s;
+		this( t , t.toString()) ;
+	}
+	public StringWord(Token t , String s )
+	{
+		super(t);
+		mString = s ;
 	}
 
 	@Override

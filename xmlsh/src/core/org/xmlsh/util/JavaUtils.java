@@ -6,8 +6,13 @@
 
 package org.xmlsh.util;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.XdmAtomicValue;
+import net.sf.saxon.s9api.XdmItem;
+import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XdmValue;
 import net.sf.saxon.trans.XPathException;
 import org.xmlsh.core.CoreException;
@@ -24,15 +29,20 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.net.URI;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class JavaUtils {
 
 	private static Set< String > mReserved;
+  private static Logger mLogger = LogManager.getLogger(JavaUtils.class) ;
 
 	// Words that could not make valid class names so cant otherwise be used as commands or functions
 
@@ -223,7 +233,18 @@ public class JavaUtils {
 		return ret;
 
 	}
+  public static Object[] convertObjects(Class<?>[] params, List<Object> args) throws CoreException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException  {
 
+    Object[] ret = new Object[params.length];
+    int i = 0;
+    for (Object arg : args) {
+      ret[i] = convert(arg , params[i]);
+      i++;
+    }
+
+    return ret;
+
+  }
 	public static Constructor<?> getBestMatch(List<XValue> args, Constructor<?>[] constructors) throws CoreException {
 
 		Constructor<?> best = null;
@@ -260,6 +281,8 @@ public class JavaUtils {
 		}
 		return best;
 	}
+	
+  
 
 	public static <T> Constructor<T> getBestConstructor(Constructor<T>[] constructors, Object... argValues ) throws InvalidArgumentException {
 
@@ -295,75 +318,134 @@ public class JavaUtils {
 		return best;
 	}
 
+  public static int  hasBeanConstructor(Class<?> targetClass, Class<?> sourceClass)  
+  { 
+   
+    Constructor<?> c = getBeanConstructor( targetClass , sourceClass );
+    if( c == null )
+      return -1;
+    
+    if( c.getParameterTypes()[0].isAssignableFrom( sourceClass) )
+      return 3;
+    else
+      return 4;
+  }
 
+  // Does the target hava a single method constructor from a convertable source
+  public static Constructor<?> getBeanConstructor(Class<?> targetClass, Class<?> sourceClass)  
+   {     
+       try {
+         Constructor<?> c =  targetClass.getConstructor(sourceClass);
+         if( c !=null )
+           return  c ;
+         
+      } catch (NoSuchMethodException | SecurityException e) {
+        mLogger.info("Exception getting constructors for: " + targetClass.getName(), e );
+        return null ;
+      }
 
-	public static boolean isIntClass(Class<?> c) {
-		if( Integer.class.isAssignableFrom(c) ||
-				Long.class.isAssignableFrom(c) ||
-				Byte.class.isAssignableFrom(c) ||
-				Short.class.isAssignableFrom(c) ||
-				c == Integer.TYPE ||
-				c == Long.TYPE ||
-				c == Byte.TYPE || 
-				c == Short.TYPE )
-			return true ;
-		return false;
+       Constructor<?>[] cs = targetClass.getConstructors();
+       
+       for (Constructor<?> c : cs) 
+       {
+         Class<?>[] params = c.getParameterTypes();
+         if (params.length == 1) {
+             int convert = canConvertClass( sourceClass , params[0] );
+             if( convert >= 0 )
+               return c ;
+           }
+       }
+       return null ;
+  }
+	static private final Class<?> mNumberWrappers[] = new Class<?>[] {
+    Integer.class,
+    Long.class,
+    Byte.class,
+    Short.class,
+    Number.class,
+    AtomicInteger.class, 
+    AtomicLong.class, 
+    BigDecimal.class, 
+    BigInteger.class, 
+    Double.class, 
+    Float.class
+	};
+	
+  public  static boolean isWrappedOrPrimativeNumber(  Class<?> c )
+	{
+	  if( c == null )
+	    return false ;
+	  if( c.isPrimitive() && ! ( c == Void.TYPE || c == Boolean.TYPE ) )
+	    return true ;
+    for( Class<?> w : mNumberWrappers )
+	    if( c.isAssignableFrom(w) )
+	      return true ;
 
-
+	  return false ;
 	}
+  
 
-	public static Object convert(Object value, Class<?> c) throws XPathException {
+  
+  public  static boolean isBooleanClass(  Class<?> c )
+  {
+    return c == Boolean.TYPE ||
+        Boolean.class.isAssignableFrom( c ) ;
 
-		if( c.isInstance(value))
-			return c.cast(value);
+  }
 
+	public static Object convert(Object value, Class<?> targetClass) {
 
+	  assert( targetClass != null );
+	  
+	  assert( value != null );
+		if( targetClass.isInstance(value))
+			return targetClass.cast(value);
 
-		// Convert to XdmValue
-		if( c.equals(XdmValue.class) ){
-			// Try some smart conversions of all types XdmAtomicValue knows
-			if( value instanceof Boolean )
-				return new XdmAtomicValue( ((Boolean)value).booleanValue() );
-			else
-				if( value instanceof Double)
-					return new XdmAtomicValue( ((Double)value).doubleValue() );
-				else
-					if( value instanceof Float)
-						return new XdmAtomicValue( ((Float)value).floatValue() );
+		Class<?> sourceClass = value.getClass();
+		
+    // Asking for an XdmValue class
+    if(XdmValue.class.isAssignableFrom(targetClass)) {
+      if( value instanceof XdmNode )
+        return (XdmValue) value ;
+      
+      if( targetClass.isAssignableFrom(XdmAtomicValue.class) ) {
+      
+        // Try some smart conversions of all types XdmAtomicValue knows
+        if(value instanceof Boolean)
+          return new XdmAtomicValue(((Boolean) value).booleanValue());
+        else if(value instanceof Double)
+          return new XdmAtomicValue(((Double) value).doubleValue());
+        else if(value instanceof Float)
+          return new XdmAtomicValue(((Float) value).floatValue());
+  
+        else if(value instanceof BigDecimal)
+          return new XdmAtomicValue((BigDecimal) value);
+        else if(value instanceof BigDecimal)
+          return new XdmAtomicValue((BigDecimal) value);
+  
+        else if(value instanceof URI)
+          return new XdmAtomicValue((URI) value);
+        else if(value instanceof Long)
+          return new XdmAtomicValue((Long) value);
+        else if(value instanceof QName)
+          return new XdmAtomicValue((QName) value);
+      
+      // Still wanting an xdm value
+      }
+      
+      if( isAtomic( value ) ) 
+         return new XdmAtomicValue(value.toString());
 
-					else
-						if( value instanceof BigDecimal)
-							return new XdmAtomicValue( (BigDecimal) value );
-						else
-							if( value instanceof BigDecimal)
-								return new XdmAtomicValue( (BigDecimal) value );
-
-							else
-								if( value instanceof URI )
-									return new XdmAtomicValue( (URI) value );
-								else
-									if( value instanceof Long)
-										return new XdmAtomicValue( (Long) value );
-									else
-										if( value instanceof QName)
-											return new XdmAtomicValue( (QName) value );
-										else
-											value = new XdmAtomicValue( value.toString() );
-		}
-		if( c.isInstance(value))
-			return c.cast(value);
+    }
 
 
 		Class<?> vclass = value.getClass();
 
-		if( c.isPrimitive() ){
+		if( targetClass.isPrimitive() ){
 
-
-
-			/*
-			 * Try to match non-primative types
+			 /* Try to match non-primative types
 			 */
-			if( c == Integer.TYPE ){
+			if( targetClass == Integer.TYPE ){
 				if( vclass == Long.class )
 					value = Integer.valueOf(((Long)value).intValue());
 				else
@@ -374,7 +456,7 @@ public class JavaUtils {
 							value = Integer.valueOf( ((Byte)value).intValue() );
 			}
 			else
-				if( c == Long.TYPE ){
+				if( targetClass == Long.TYPE ){
 					if(vclass == Integer.class )
 						value = Long.valueOf(((Integer)value).intValue());
 					else
@@ -386,7 +468,7 @@ public class JavaUtils {
 				}
 
 				else
-					if( c == Short.TYPE ){
+					if( targetClass == Short.TYPE ){
 						if( vclass == Integer.class )
 							value = Short.valueOf((short)((Integer)value).intValue());
 						else
@@ -398,7 +480,7 @@ public class JavaUtils {
 					}
 
 					else
-						if( c == Byte.TYPE ){
+						if( targetClass == Byte.TYPE ){
 							if( vclass == Integer.class )
 								value = Byte.valueOf((byte)((Integer)value).intValue());
 							else
@@ -411,23 +493,36 @@ public class JavaUtils {
 
 			return value ;
 		}
+		
+		// Bean constructor
+		
+		Constructor<?> cnst = getBeanConstructor( targetClass , sourceClass ) ;
+		if( cnst != null )
+      try {
+        return cnst.newInstance( convert( value , cnst.getParameterTypes()[0] ) );
+      } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+
+        mLogger.debug("Exception converting argument for constructor",e);
+      }
+		
+		
 		// Cast through string
 
 		String svalue = value.toString();
 
-		if( c == Integer.class )
+		if( targetClass == Integer.class )
 			value = Integer.valueOf( svalue );
 		else
-			if( c == Long.class )
+			if( targetClass == Long.class )
 				value =  Long.valueOf( svalue );
 			else
-				if( c == Short.class )
+				if( targetClass == Short.class )
 					value = Short.valueOf(svalue);
 				else
-					if( c == Float.class )
+					if( targetClass == Float.class )
 						value = Float.valueOf(svalue );
 					else
-						if( c == Double.class )
+						if( targetClass == Double.class )
 							value = Double.valueOf(svalue);
 
 		return value ;
@@ -435,12 +530,12 @@ public class JavaUtils {
 
 	}
 
-	public static XValue getField(String classname, XValue instance, String fieldName, ClassLoader classloader) throws InvalidArgumentException, SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException, ClassNotFoundException {
+	public static Object getField(String classname, XValue instance, String fieldName, ClassLoader classloader) throws InvalidArgumentException, SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException, ClassNotFoundException {
 		Class<?> cls = findClass(classname, classloader);
 		return getField( cls , instance == null ? null : instance.asObject() , fieldName , classloader );
 	}
 
-	public static XValue getField(Class<?> cls , Object instance, String fieldName, ClassLoader classloader) throws InvalidArgumentException, SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException, ClassNotFoundException {
+	public static Object getField(Class<?> cls , Object instance, String fieldName, ClassLoader classloader) throws InvalidArgumentException, SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException, ClassNotFoundException {
 		assert( cls != null );
 		assert( fieldName != null );
 
@@ -450,22 +545,24 @@ public class JavaUtils {
 			throw new InvalidArgumentException("No field match found for: " + cls.getName() + "." + fieldName );
 
 		Object obj = f.get(instance == null ? null : instance);	
-		// Special case for null - use formal return type to cast to right XValue type
-		if( obj == null ){
-			if( String.class.isAssignableFrom(f.getType()) )
-				return new XValue( (String) null );
-			else
-				return new XValue( null, (Object) null);
-
-		}
-
-		return new XValue(null,obj);
+		return obj ;
 	}
 
 
 
 	public static  int canConvertClass( Class<?> sourceClass ,  Class<?> targetClass) throws InvalidArgumentException {
 
+	  assert( targetClass != null );
+	  if( targetClass == null )
+	    return -1;
+	  
+	  // Null case
+	  if( sourceClass == null  ) {
+	    
+	     if(  XdmValue.class.isAssignableFrom(targetClass) )
+	       return 3;
+	     return -1;  
+ 	  }
 		// Equal class
 		if( sourceClass.equals(targetClass))
 			return 0 ;
@@ -477,13 +574,34 @@ public class JavaUtils {
 
 		// Boxable 
 		// int <-> Integer
-		if( isIntClass(sourceClass) && isIntClass(targetClass))
+		if( isWrappedOrPrimativeNumber(sourceClass) && isWrappedOrPrimativeNumber(targetClass))
 			return 2 ;
+		
+		// TypeFamily conversion TO XdmValue 
+		if( XdmValue.class.isAssignableFrom(targetClass)) {
+		   if( XdmNode.class.isAssignableFrom(sourceClass ) )
+		     return 1;
+		   if( XdmAtomicValue.class.isAssignableFrom(sourceClass) )
+		    return 2;
+
+		   if( isWrappedOrPrimativeNumber( sourceClass ) || isBooleanClass( sourceClass ) || isStringClass(sourceClass)) 
+		     return 3 ;
+		   if( isAtomic( sourceClass ) ) 
+		     return 3 ;
+		}   
+		
+		if( isStringClass( targetClass ) )
+		  return 4 ;
+		
+		int c = hasBeanConstructor( targetClass , sourceClass );
+		if( c >= 0 )
+		  return 5 + c ;
 
 		return -1;
 
 	}
-	public static  int canConvertObject( Object sourceObject ,  Class<?> targetClass) throws InvalidArgumentException {
+
+  public static  int canConvertObject( Object sourceObject ,  Class<?> targetClass) throws InvalidArgumentException {
 		return canConvertClass( sourceObject.getClass() , targetClass );
 	}
 
@@ -512,13 +630,14 @@ public class JavaUtils {
 
 	public static int getSize(Object obj)
 	{
+	  if( obj == null )
 
 		if( obj instanceof Collection )
 			return ((Collection<?>)obj).size();
 		if( obj instanceof Array )
 			Array.getLength(obj);
 
-		return 0;
+		return 1;
 
 	}
 
@@ -567,13 +686,14 @@ public class JavaUtils {
 	}
 	public static boolean isAtomicClass(Class<?> cls)
 	{
-		return cls.isEnum() || cls.isPrimitive() ||
-				isIntClass( cls ) ||
+		return cls.isEnum() || 
+				isWrappedOrPrimativeNumber( cls ) ||
 				isStringClass( cls ) ;
 
 	}
 
-	public static boolean isClassClass(Class<?> cls)
+
+  public static boolean isClassClass(Class<?> cls)
 	{
 		return Class.class.isAssignableFrom(cls);
 	}
@@ -584,7 +704,99 @@ public class JavaUtils {
 		return o.toString() + that.toString() ;
 	}
 
+	
+	// Is a or attomic collection type that is empty 
+    public static boolean isEmpty(Object value) {
+       
+        if( isAtomic( value ) ) 
+          return isAtomicEmpty(value);
+        else
+          return isObjectEmpty( value );
+      
+        }
 
+    public static boolean isObjectEmpty(Object value)
+    {
+
+      if( value instanceof Collection )
+          return ((Collection<?>)value).isEmpty() ;
+      if( value instanceof Map)
+          return ((Map<?, ?>)value).isEmpty() ;
+      if( value.getClass().isArray() )
+          return Array.getLength(value) == 0 ;
+      return false ;
+    }
+
+    private static boolean isAtomicEmpty(Object value)
+    {
+      return value == null || value.toString().isEmpty();
+      
+    }
+
+    private static boolean isAtomic(Object value)
+    {
+      return isAtomicClass( value.getClass() );
+    }
+
+    public static void setNameIndexedValue(  Object obj, String ind, Object object) throws NoSuchFieldException, SecurityException, InvalidArgumentException, IllegalArgumentException, IllegalAccessException {
+          Field f = obj.getClass().getField(ind);
+          if (f == null) 
+             throw new InvalidArgumentException("No field match found for: " + getClassName(obj) + "." + ind );
+          f.set(obj, object);
+    }
+
+    public static String getClassName(Object obj)
+    {
+      assert( obj != null );
+      if( obj == null )
+       return "";
+      return obj.getClass().getName();
+    }
+
+    @SuppressWarnings("rawtypes")
+    public static void setNamePositionalValue(  Object obj, int index, Object object) throws InvalidArgumentException 
+    {
+      if(obj.getClass().isArray() ) { 
+          Array.set( obj ,index, object);
+      } else
+      if( obj instanceof List) {
+          ((List)obj).set( index, object);
+      }
+      else
+      throw new InvalidArgumentException("No positional index for class: " + getClassName(obj)  );
+  }
+
+    public static  boolean isArrayOf(Object value, Class<?> cls) {
+      return  value.getClass().isArray() &&  cls.isAssignableFrom(value.getClass().getComponentType());
+    }
+
+    public static Object getIndexValue(Object obj, int index )
+    {
+      Object res = null ;
+      if(obj.getClass().isArray() ) { 
+        res = Array.get( obj , index);
+    } else
+    if( obj instanceof List) {
+       res =  ((List<?>)obj).get(index);
+    }
+      return res;
+    }
+
+    public static String simpleTypeName(Object value)
+    {
+      if( value == null )
+        return "null";
+      Class<?> cls = value.getClass();
+       if( isStringClass( cls ) )
+         return "string" ;
+       if( isArrayClass( cls ) )
+         return "array" ;
+       
+       if( isWrappedOrPrimativeNumber( cls ) )
+         return "number" ;
+       return "object" ;
+           
+    }
 }
 
 

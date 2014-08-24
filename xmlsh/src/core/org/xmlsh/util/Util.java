@@ -24,10 +24,12 @@ import org.xmlsh.core.CoreException;
 import org.xmlsh.core.IReleasable;
 import org.xmlsh.core.Namespaces;
 import org.xmlsh.core.XValue;
+import org.xmlsh.core.XValueProperty;
 import org.xmlsh.sh.core.CharAttributeBuffer;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.sh.shell.ShellConstants;
+import org.xmlsh.types.ITypeConverter;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -54,6 +56,7 @@ import java.util.Date;
 import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -73,6 +76,8 @@ import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.sax.TransformerHandler;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
+
+import com.fasterxml.jackson.databind.JsonNode;
 /**
  * @author DLEE
  *
@@ -638,14 +643,8 @@ public class Util
 		 for( XValue arg : values ){
 			 if( arg == null  )
 				 continue ;
-			 if( arg.isAtomic() || arg.isObject() )
-				 list.add(arg);
-			 else {
-				 XdmValue xv = arg.asXdmValue();
-				 Iterator<XdmItem> iter = xv.iterator();
-				 while( iter.hasNext() )
-					 list.add( new XValue( iter.next() ));
-			 }
+			   for( XValue v : arg )
+			     list.add( v );
 		 }
 		 return list;
 	 }
@@ -1601,15 +1600,7 @@ public class Util
 
 	 public static String joinValues(List<XValue> args, String sep)
 	 {
-		 StringBuffer sb = new StringBuffer();
-		 for( XValue arg : args ){
-			 if( sb.length() > 0 )
-				 sb.append(sep);
-			 sb.append( arg.toString());
-
-
-		 }
-		 return sb.toString();
+	   return join(args,sep);
 	 }
 
 
@@ -1668,6 +1659,104 @@ public class Util
 			 }
 		 };
 	 }
+
+
+  public static String join(List<?> args, String sep)
+  {
+      StringBuffer sb = new StringBuffer();
+      for( Object arg : args ){
+        if( sb.length() > 0 )
+          sb.append(sep);
+        sb.append( arg.toString() );
+      }
+      return sb.toString();
+  }
+
+
+  public static <T> List<T> toList(Iterator<T> iter)
+  {
+    List<T> list = new ArrayList<T>(  );
+    while( iter.hasNext() )
+      list.add(iter.next());
+    return list ;
+  }
+
+
+  public static <E> Iterator<E> singletonIterator(final E e) {
+      return new Iterator<E>() {
+          private boolean hasNext = true;
+          public boolean hasNext() {
+              return hasNext;
+          }
+          public E next() {
+              if (hasNext) {
+                  hasNext = false;
+                  return e;
+              }
+              throw new NoSuchElementException();
+          }
+          public void remove() {
+              throw new UnsupportedOperationException();
+          }
+      };
+  }
+
+  
+  public static <E> Iterable<E> toIterable(final Iterator<E> iter)
+  {
+    return new Iterable<E>()
+      {
+        @Override
+        public Iterator<E> iterator()
+        {
+          return iter;
+        }
+      };
+
+  }
+
+  public static <S, D> Iterator<D> toConvertingIterater(  
+    Iterator<S> iter , 
+    ITypeConverter<S, D> converter ){
+  
+     return new TypeConvertingIterator<S,D>( iter , converter );
+    
+  }
+
+  // An iterator that converts from <S>ource type to <D> type
+  public static <S, D> Iterable<D>
+      toConvertingIterable(
+        final Iterator<S> iterator, 
+        final ITypeConverter<S, D> converter )
+  {
+    return new Iterable<D>()
+        {
+          @Override
+          public Iterator<D> iterator()
+          {
+            return toConvertingIterater( iterator , converter );
+          }
+        }; 
+  }
+
+
+  public static boolean isOneOf(String s, String... strings)
+  {
+
+    for( String of: strings )
+      if( Util.isEqual( s , of ) )
+       return true;
+    return false;
+  
+  }
+
+
+  public static void writeXdmItem(XdmValue asXdmValue, Destination streamToDestination)
+  {
+    // TODO Auto-generated method stub
+    
+  }
+
 
 }
 

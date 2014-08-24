@@ -7,7 +7,7 @@
 package org.xmlsh.core;
 
 import org.xmlsh.sh.core.SourceLocation;
-import org.xmlsh.sh.shell.Module;
+import org.xmlsh.sh.shell.IModule;
 import org.xmlsh.sh.shell.Shell;
 
 import java.io.File;
@@ -28,7 +28,7 @@ public interface ICommand {
 	public int 	run( Shell shell , String cmd , List<XValue> args )  throws Exception;
 	public 	CommandType	getType();
 	public 	File 	getFile();
-	public 	Module	getModule();
+	public 	IModule	getModule();
 	public void		close();
 	public SourceLocation getLocation();
 	public void setLocation( SourceLocation loc);

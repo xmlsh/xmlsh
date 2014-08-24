@@ -6,7 +6,9 @@
 
 package org.xmlsh.core;
 
+import org.xmlsh.sh.shell.CharAttr;
 import org.xmlsh.util.Util;
+import static org.xmlsh.core.EvalFlag.* ;
 
 import java.util.EnumSet;
 
@@ -19,7 +21,7 @@ public class EvalEnv
 	private EnumSet<EvalFlag> evalFlags;
 	private final static EnumSet<EvalFlag> _nopreserveFlags = EvalFlag.evalFlags(true,true,true,false);
 	private final static EnumSet<EvalFlag> _preserveFlags = EvalFlag.evalFlags(false,false,false,true);
-
+  private final static EnumSet<EvalFlag> _expandFlags = EnumSet.of( EXPAND_VAR , EXPAND_SEQUENCES , EXPAND_WILD , SPLIT_WORDS ) ;
 	// Cached instances
 	private final static EvalEnv _evalNone = new EvalEnv();
 	private final static EvalEnv _basicInstance = newInstance( false,false,false,false);
@@ -205,6 +207,16 @@ public class EvalEnv
 	}
 
 
+	public CharAttr asCharAttr()
+    {
+		return preserveValue() ? CharAttr.ATTR_PRESERVE : CharAttr.ATTR_NONE ;
+    }
+
+
+  public boolean expandAny()
+  {
+   return Util.setContainsAny(evalFlags , _expandFlags );
+  }
 
 
 

@@ -19,4 +19,5 @@ function
 local
 catch for if elif then else fi do case while until try esac finally return done in function local
 catch for if elif then else fi do case while until try esac finally return done in function local
-catch= for= catch , fi , if , =if if= :if if:
+catch= for= catch, fi, if, =if if= :if if:
+if ,if if, ,if, do ,,do =do =:do done ,done done done

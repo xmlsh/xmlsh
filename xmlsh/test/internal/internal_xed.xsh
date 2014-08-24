@@ -36,8 +36,11 @@ X=<[
    <foo2>spam</foo2>
 </root>]>
 
-xed -i $X -r <[<bletch/>]> -e /root/foo2
- 
+xed -i $X -r <[<bletch/>]> -e /root/foo2 >{_X}
+equals $_X <[document{ <root><foo a="attr">bar</foo><bletch/></root>} ]> && 
+echo Success xml replace  || echo Failed xml replace
+
+
 # replace attribute
 _X=$<( xed -i $X -r <[ attribute {"a"} {"attr2" } ]> -e /root/foo )
 equals $_X <[document{ <root><foo a="attr2">bar</foo><foo2>spam</foo2></root>} ]> && 
@@ -47,22 +50,29 @@ echo Success replace attribute
 _X=$<( xed -i $X -a <[ <child/> ]> -xpath /root )
 
 equals $_X <[document{ <root><child/><foo a="attr">bar</foo><foo2>spam</foo2></root> } ]> && 
-echo Success add element
+echo Success add element || echo Failed add element 
 
 _X=$<( xed -i $X -d -matches foo2 )
 equals $_X  <[document{ <root><foo a="attr">bar</foo></root> } ]> && 
-echo Success delete element
+echo Success delete element || echo Failed delete element 
 
-# Test xproc modes -rx 
-_X=$<(xed -i $X -rx "'text'" -matches foo)
+# Test  modes -rx 
+_X=$<(xed -i $X -rx "'text'" -matches 'foo/text()')
+equals $_X  <[document{ <root><foo a="attr">text</foo><foo2>spam</foo2></root> } ]> && 
+echo Success xpath replace text  || echo Failed xpath replace text 
+
+# Test xpath modes -rx 
+_X=$<(xed -i $X -rx "'text'" -matches 'foo')
 equals $_X  <[document{ <root>text<foo2>spam</foo2></root> } ]> && 
-echo Success xproc replace text 
+echo Success xpath replace text  || echo Failed xpath replace text 
 
 _X=$<(xed -i $X -rx "'text'" -matches "@a")
 equals $_X  <[document{ <root><foo a="text">bar</foo><foo2>spam</foo2></root> } ]> && 
-echo Success xproc replace attriubute 
+echo Success xpath replace attriubute  || echo Failed xpath replace element 
 
-
+_X=$<(xed -i $X -rx './preceding-sibling::node()' -matches foo2)
+equals $_X  <[document{ <root><foo a="attr">bar</foo><foo a="attr">bar</foo></root>} ]> && 
+echo Success xproc replace with xpath  || echo Failed  xproc replace with xpath 
 
 exit 0
 

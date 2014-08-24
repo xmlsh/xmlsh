@@ -1,10 +1,10 @@
 Should be foo: foo
 Should be 1 : 1
-xs:string
+string
 exanding
-xs:string
-xs:string
-xs:string
+string
+string
+string
 Arg a1
 Arg b1
 Arg c1

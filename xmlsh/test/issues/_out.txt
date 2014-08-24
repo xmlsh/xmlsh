@@ -1,0 +1,6 @@
+org.xmlsh.core.XValueProperty
+value
+org.xmlsh.core.XValueProperty
+org.xmlsh.core.XValueProperty
+org.xmlsh.core.XValueProperty
+value

@@ -6,7 +6,7 @@
 
 package org.xmlsh.core;
 
-import org.xmlsh.sh.shell.Module;
+import org.xmlsh.sh.shell.IModule;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.xpath.ShellContext;
 
@@ -39,7 +39,7 @@ public abstract class BuiltinCommand extends AbstractCommand implements ICommand
 
 	}
 	@Override
-	public Module getModule()
+	public IModule getModule()
 	{
 		return null;
 	}

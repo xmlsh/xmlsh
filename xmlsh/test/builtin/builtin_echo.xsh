@@ -11,6 +11,7 @@ echo <[1,"hi",<foo/>]>
 # echo with variable expansion
 A=var1
 B=var2
+unset C # just in case 
 
 # echo with null middle variable
 echo $A$C$B

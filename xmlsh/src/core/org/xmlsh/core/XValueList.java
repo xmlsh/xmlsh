@@ -7,6 +7,7 @@
 package org.xmlsh.core;
 
 import org.xmlsh.sh.shell.SerializeOpts;
+import org.xmlsh.types.TypeFamily;
 import org.xmlsh.util.Util;
 
 import java.io.IOException;
@@ -32,8 +33,16 @@ public class XValueList  extends AbstractList<XValue> implements IXValueContaine
 	public XValueList() {
 		mList = new LinkedList<>();
 	}
+  public XValueList(List<XValue> list ) {
+    mList = new LinkedList<>(list );
+  }
+  
+	
+	public XValueList(XValueList that) {
+	    mList = new LinkedList<>( that.mList );
+    }
 
-	@Override
+    @Override
 	public boolean add( XValue value ) {
 		return mList.add(value);
 	}
@@ -59,9 +68,7 @@ public class XValueList  extends AbstractList<XValue> implements IXValueContaine
 	@Override
 	public XValue get(String name) {
 		int ind = Util.parseInt(name, 0);
-		if( ind <= 0 || ind >= size() )
-			return null ;
-		return mList.get(ind);
+		return getAt(ind);
 	}
 
 	@Override
@@ -74,11 +81,19 @@ public class XValueList  extends AbstractList<XValue> implements IXValueContaine
 	public XValue put(String key, XValue value)
 	{
 		int ind = Util.parseInt(key, 0);
-		if( ind <= 0 || ind >= size() )
+		if( ind < 0 || ind >= size() )
 			throw new ArrayIndexOutOfBoundsException();
 		return mList.set(ind, value);
 
 	}
+	
+  @Override
+  public XValue setAt(int index, XValue value)
+  {
+    return mList.set(index, value);
+  }
+
+  
 
 	@Override
 	public Set<String> keySet()
@@ -124,8 +139,6 @@ public class XValueList  extends AbstractList<XValue> implements IXValueContaine
 				sep = ",";
 			}
 			ps.write("]");
-		} catch (InvalidArgumentException e) {
-			Util.wrapIOException(e);
 		}
 
 	}
@@ -156,6 +169,14 @@ public class XValueList  extends AbstractList<XValue> implements IXValueContaine
 	    // TODO Auto-generated method stub
 	    return false;
     }
+
+    @Override
+    public XValue append(XValue item) {
+        XValueList newList = new XValueList(this);
+        newList.add(item);
+        return new XValue(  newList ); 
+    }
+  
 
 }
 

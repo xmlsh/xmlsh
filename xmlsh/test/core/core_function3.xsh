@@ -4,9 +4,9 @@ function f1() {
 	return $@
 }
 
-xtype f1( a 1 <[2,3,4]> )
+xtype -s f1( a 1 <[2,3,4]> )
 echo next
-xtype {f1( {<[2,3,4]>} )}
+xtype -s {f1( {<[2,3,4]>} )}
 
 # Assignment
 a=f1()

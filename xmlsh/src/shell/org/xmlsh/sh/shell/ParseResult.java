@@ -6,8 +6,8 @@
 
 package org.xmlsh.sh.shell;
 
-import net.sf.saxon.s9api.XdmValue;
 import org.xmlsh.core.EvalEnv;
+import org.xmlsh.core.EvalFlag;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.core.CharAttributeBuffer;
 import org.xmlsh.sh.core.EvalUtils;
@@ -75,16 +75,27 @@ public class ParseResult {
 	}
 
 	ParseResult.RXValue			cur = null;		// Current XValue if its unknown to convert to string, only atomic values
-	List<ParseResult.RXValue>	result = new ArrayList<ParseResult.RXValue>();
+	List<ParseResult.RXValue>	result = null ;
 
-	void flush() 
+	
+	public void delim() {
+	    flush(); // TODO insert a null token?
+	}
+	
+	private List<ParseResult.RXValue> getResult(){
+	  if( result == null )
+        result = new ArrayList<ParseResult.RXValue>( 1 );
+	  return result ;
+	}
+	public void flush() 
 	{
 		if( cur != null ){
-			result.add(cur); // dont call ajoin adds twice
+			getResult().add(cur); // dont call ajoin adds twice
 			cur = null;
 		}
-		if( achars != null 	 ) {
-			result.add( new RXValue( achars ) );
+		// resetIfEmpty();
+		if( achars != null  ) {
+		     getResult().add( new RXValue( achars ) );
 			achars = null;
 		}
 
@@ -92,23 +103,23 @@ public class ParseResult {
 
 	public void add( CharAttributeBuffer cb ) {
 		flush();
-		result.add( new RXValue( cb ) );
+		getResult().add( new RXValue( cb ) );
 	}
 	public void add( String s, CharAttr attr)
 	{
 		flush();
-		result.add(new RXValue(s,attr));
+		getResult().add(new RXValue(s,attr));
 	}
 
 	public void add( XValue v )
 	{
 		flush();
-		result.add( new RXValue(v,false));
+		getResult().add( new RXValue(v,false));
 	}
 	public void add( XValue v , boolean r )
 	{
 		flush();
-		result.add( new RXValue(v,r));
+		getResult().add( new RXValue(v,r));
 	}
 
 	public void append( String s ,CharAttr attr)
@@ -119,6 +130,15 @@ public class ParseResult {
 		if( s != null )
 			achars.append(s,attr.attr());
 	}
+
+	public void append( CharAttributeBuffer cb ) {
+	  ajoin();
+      if( achars == null )
+          achars = new CharAttributeBuffer(cb) ;
+      else
+        achars.append(cb);
+	}
+	   
 
 	public void append( char c, CharAttr attr  )
 	{
@@ -143,10 +163,15 @@ public class ParseResult {
 
 		if( (value == null || value.isNull() ) && env.omitNulls() )
 			return ;
+		if( attr.isPreserve() ) {
+			flush();
+			add(value, attr.isPreserve());
+		}
 
-		if( value.isAtomic()  && !attr.isPreserve() ){
+		else 
+		if( value.isAtomic()   ){
 			// If in quotes or this is an ajoining value then concatenate 
-			if( attr.isQuote()  || cur != null || (achars != null && ! achars.isEmpty())  ){
+			if( attr.isQuote()  || cur != null || achars != null   ){
 
 				// Unquoted empty atomic values are ignored 
 				String str = value.toString();
@@ -159,14 +184,15 @@ public class ParseResult {
 				cur = new RXValue(value,false) ;
 		}
 		else {
+		  // Inquotes - expand sequences via spearator or not
 			if(  attr.isQuote()   ){
-
-				if( value.isObject() )
+ 
+			  if( ! env.expandSequences() || ! value.isSequence() )
 					append( value.toString() , attr );
 				else {
 					// Flatten sequences
 					boolean bFirst = true ;
-					for( XdmValue v : value.asXdmValue() ){
+					for( XValue v : value ) {
 						if( ! bFirst )
 							append(ShellConstants.ARG_SEPARATOR , attr );
 						append(v.toString(),attr);
@@ -174,7 +200,20 @@ public class ParseResult {
 					}
 				}
 
-			} else {
+			} 
+			// Not in quotes but joining values // expand sequences ?
+			else
+			if( env.joinValues() && env.expandSequences() ) {
+				// Only join first value 
+				boolean bFirst = true ;
+				for( XValue v : value ) {
+					if( ! bFirst )
+						flush();
+					append(v,env.withFlagOff(EvalFlag.EXPAND_SEQUENCES),attr);
+					bFirst = false ;
+				}
+			}
+			else {
 				flush();
 				add(value, attr.isPreserve());
 			}
@@ -186,8 +225,8 @@ public class ParseResult {
 			return;
 		ajoin();
 		r.ajoin(); // ??
-		if( r.achars != null && ! r.achars.isEmpty() )
-			achars.append( r.achars );
+		if( r.achars != null  ) 
+			append( r.achars );
 		if( ! r.result.isEmpty() ) {
 			flush();
 			result.addAll(r.result);
@@ -312,13 +351,17 @@ public class ParseResult {
 
 	public   List<XValue>  expandWild(EvalEnv env, File curdir)
 	{
+	    List<RXValue> resolved = resolveToRXValues();
+	    if( resolved == null )
+	      return null ;
+	    
 		ArrayList<XValue> result2 = new ArrayList<XValue>();
 
 
 		/*
 		 * Globbing
 		 */
-		for( RXValue rv : resolveToRXValues() ){
+		for( RXValue rv : resolved ){
 			if( ! env.expandWild() )
 				result2.add( rv.toXValue() );
 			else {

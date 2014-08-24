@@ -1,0 +1,39 @@
+TODO: THIS TEST IS NOT RIGHT ..
+positional
+[10] a b c
+[11] a b c
+[12] a b c
+[13] a b c
+[14] xa b c
+[15] xa b c
+[16] xa b cy
+[17] xa b cy
+[18] xa b cy
+sequence
+[21] A B C
+[22] A B C
+[23] A B C
+[24] A B C
+[25] XA B C
+[26] XA B C
+[27] XA B CX
+[28] XA B CX
+[41] 0
+[42] 0
+[43] 1
+[43] arg
+[44] 0
+[45] 0
+[46] 0
+[47] 0
+[48] 1
+[48] arg
+[49] 0
+[50] 0
+[52] 6
+[52] arg 1
+[52] arg 2
+[52] arg 3
+[52] arg 4
+[52] arg 5
+[52] arg 6

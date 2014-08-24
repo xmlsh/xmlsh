@@ -28,7 +28,7 @@ public class Path implements Iterable<String> {
 	{
 		if( pathVar == null || pathVar.isNull())
 			return ;
-		for( XdmValue v : pathVar.asXdmValue() ){
+		for( XValue v : pathVar ){
 			mPaths.add( v.toString() );
 		}
 	}

@@ -1,0 +1,40 @@
+Success nonzero
+Success nonzero
+Success -z
+Success =
+Success !=
+Success -eq
+Success -eq
+Success -ge
+Success -ge
+Success -gt
+Success -gt
+Success -le
+Success -le
+Success -lt
+Success -lt
+Success -ne
+Success -ne
+Success -ef
+success -ef
+Success -d
+Success -e
+Success -s
+Success -w
+Success empty ()
+Success ()
+Success simple -o
+success -o
+success -a
+Success compound
+success xexpr true
+failed xexpr false
+success sequence
+succeed xexpr or
+success xexpr string
+success xexpr var sequence
+Success
+Success
+success
+Success
+Success

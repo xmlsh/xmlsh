@@ -1,6 +1,7 @@
 # Runs all tests 
 # checking for required externals
-[ $# -gt 0 -a "$1" = "-x" ] && { EXIT=1 ; shift ; }
+[ $# -gt 0 -a "x$1" = "x-x" ] && { EXIT=1 ; shift ; }
+[ $# -gt 0 -a "x$1" = "x-X" ] && { TEST=-test ; EXIT=1; shift ; }
 
 # check for missing TMPDIR
 [ -n "$TMPDIR" ] || { echo TMPDIR must be set to run tests ; exit 1 ; }
@@ -35,7 +36,7 @@ for d in core builtin internal posix java json xs stax $EXTRA; do
      
      echo Running test $test
      # run test 
-     ../run_test.xsh $test 
+     ../run_test.xsh $TEST $test 
      if [ $? -ne 0 ] ; then	
      	echo failed test $test ;
      	failed=<[  $failed + 1 ]>

@@ -8,44 +8,44 @@ package org.xmlsh.core;
 
 import org.apache.log4j.Logger;
 
-import org.xmlsh.commands.builtin.colon;
-import org.xmlsh.commands.builtin.declare;
-import org.xmlsh.commands.builtin.echo;
-import org.xmlsh.commands.builtin.eval;
-import org.xmlsh.commands.builtin.exit;
-import org.xmlsh.commands.builtin.jobs;
-import org.xmlsh.commands.builtin.log;
-import org.xmlsh.commands.builtin.printvar;
-import org.xmlsh.commands.builtin.read;
-import org.xmlsh.commands.builtin.require;
-import org.xmlsh.commands.builtin.set;
-import org.xmlsh.commands.builtin.shift;
-import org.xmlsh.commands.builtin.source;
-import org.xmlsh.commands.builtin.test;
-import org.xmlsh.commands.builtin.tie;
-import org.xmlsh.commands.builtin.trap;
-import org.xmlsh.commands.builtin.unset;
-import org.xmlsh.commands.builtin.wait;
-import org.xmlsh.commands.builtin.xbreak;
-import org.xmlsh.commands.builtin.xcd;
-import org.xmlsh.commands.builtin.xcontinue;
-import org.xmlsh.commands.builtin.xecho;
-import org.xmlsh.commands.builtin.xfalse;
-import org.xmlsh.commands.builtin.ximport;
-import org.xmlsh.commands.builtin.xmkpipe;
-import org.xmlsh.commands.builtin.xmlsh;
-import org.xmlsh.commands.builtin.xmlshui;
-import org.xmlsh.commands.builtin.xread;
-import org.xmlsh.commands.builtin.xthrow;
-import org.xmlsh.commands.builtin.xtrue;
-import org.xmlsh.commands.builtin.xtype;
-import org.xmlsh.commands.builtin.xversion;
-import org.xmlsh.commands.builtin.xwhich;
-import org.xmlsh.commands.java.jset;
-import org.xmlsh.commands.json.jsonread;
+import org.xmlsh.builtin.commands.colon;
+import org.xmlsh.builtin.commands.declare;
+import org.xmlsh.builtin.commands.echo;
+import org.xmlsh.builtin.commands.eval;
+import org.xmlsh.builtin.commands.exit;
+import org.xmlsh.builtin.commands.jobs;
+import org.xmlsh.builtin.commands.log;
+import org.xmlsh.builtin.commands.printvar;
+import org.xmlsh.builtin.commands.read;
+import org.xmlsh.builtin.commands.require;
+import org.xmlsh.builtin.commands.set;
+import org.xmlsh.builtin.commands.shift;
+import org.xmlsh.builtin.commands.source;
+import org.xmlsh.builtin.commands.test;
+import org.xmlsh.builtin.commands.tie;
+import org.xmlsh.builtin.commands.trap;
+import org.xmlsh.builtin.commands.unset;
+import org.xmlsh.builtin.commands.wait;
+import org.xmlsh.builtin.commands.xbreak;
+import org.xmlsh.builtin.commands.xcd;
+import org.xmlsh.builtin.commands.xcontinue;
+import org.xmlsh.builtin.commands.xecho;
+import org.xmlsh.builtin.commands.xfalse;
+import org.xmlsh.builtin.commands.ximport;
+import org.xmlsh.builtin.commands.xmkpipe;
+import org.xmlsh.builtin.commands.xmlsh;
+import org.xmlsh.builtin.commands.xmlshui;
+import org.xmlsh.builtin.commands.xread;
+import org.xmlsh.builtin.commands.xthrow;
+import org.xmlsh.builtin.commands.xtrue;
+import org.xmlsh.builtin.commands.xtype;
+import org.xmlsh.builtin.commands.xversion;
+import org.xmlsh.builtin.commands.xwhich;
+import org.xmlsh.java.commands.jset;
+import org.xmlsh.json.commands.jsonread;
 import org.xmlsh.sh.core.FunctionDeclaration;
 import org.xmlsh.sh.core.SourceLocation;
-import org.xmlsh.sh.shell.Module;
+import org.xmlsh.sh.shell.IModule;
 import org.xmlsh.sh.shell.Modules;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.sh.shell.ShellConstants;
@@ -211,7 +211,7 @@ public class CommandFactory
 
 
 		if( pair.hasLeft() ){ // prefix:name , prefix non-empty
-			Module m   = 
+			IModule m   = 
 					Util.isBlank(pair.getLeft()) ? 
 							shell.getModule() : 
 								modules.getModule(pair.getLeft());
@@ -234,7 +234,7 @@ public class CommandFactory
 		/* 
 		 * Try all default modules 
 		 */
-		for( Module m : modules ){
+		for( IModule m : modules ){
 			if( m.isDefault() ){
 
 				ICommand cls = m.getCommandClass( name);
@@ -335,14 +335,14 @@ public class CommandFactory
 
 
 		if( pair.hasLeft() ){ // prefix:name , prefix non-empty
-			Module m   = 
+			IModule m   = 
 					Util.isBlank(pair.getLeft()) ? 
 							shell.getModule() : 
 								modules.getModule(pair.getLeft());
 							// Allow C:/xxx/yyy to work 
 							// May look like a namespace but isnt
 
-							if( m != null && m.hasCommand( pair.getRight() ) )
+							if( m != null && m.hasHelp( pair.getRight() ) )
 								return m.getHelpURL( );
 							return null;
 		}
@@ -350,10 +350,10 @@ public class CommandFactory
 		/* 
 		 * Try all default modules 
 		 */
-		for( Module m : modules ){
+		for( IModule m : modules ){
 			if( m.isDefault() ){
 
-				if( m != null && m.hasCommand( name ) )
+				if( m != null && m.hasHelp( name ) )
 					return m.getHelpURL( );
 			}
 		}
@@ -381,7 +381,7 @@ public class CommandFactory
 
 
 		if( pair.hasLeft() ){ // prefix:name , prefix non-empty
-			Module m   = 
+			IModule m   = 
 					Util.isBlank(pair.getLeft()) ? 
 							shell.getModule() : 
 								modules.getModule(pair.getLeft());
@@ -404,7 +404,7 @@ public class CommandFactory
 		/* 
 		 * Try all default modules 
 		 */
-		for( Module m : modules ){
+		for( IModule m : modules ){
 			if( m.isDefault() ){
 
 				IFunction cls = m.getFunctionClass( name);

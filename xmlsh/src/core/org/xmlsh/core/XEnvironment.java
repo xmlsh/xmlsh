@@ -12,8 +12,14 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import org.xml.sax.InputSource;
+import org.xmlsh.core.XVariable.XVarFlag;
+import static org.xmlsh.core.XVariable.*;
+import static org.xmlsh.core.XVariable.XVarFlag.*;
+import org.xmlsh.sh.core.EvalUtils;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.types.TypeFamily;
+import org.xmlsh.util.Util;
 
 import java.io.Closeable;
 import java.io.File;
@@ -24,6 +30,7 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.Stack;
 
 import javax.xml.transform.Source;
@@ -92,61 +99,112 @@ public class XEnvironment implements AutoCloseable, Closeable {
 	 */
 	public XVariable	getVar( String name )
 	{
-
+		/*
+		 * Special variables 
+		 */
+	 
+		if( name == null ) {
+			// $* 
+	    	 return new XVariable( null ,  new XValue( mShell.getArgs() ),  shellArgListFlags() );
+		}
+		
+		switch( name ) {
+		case "*" :
+			return new XVariable( null ,  new XValue( mShell.getArgs() ) , shellArgListFlags( )  );
+		case "@" :
+			return  mShell.getArgs().size() == 0 ? null 
+					: new XVariable( null ,  new XValue( mShell.getArgs() ) , shellArgListFlags( )  );
+	     case "#" :
+	    	 return new XVariable( name , new XValue(mShell.getArgs().size()) , standardFlags() );
+	     case "$" :
+	    	 return new XVariable( name ,new XValue(Thread.currentThread().getId()), standardFlags() );
+	     case "?" :
+	            return new XVariable( name ,new XValue(mShell.getStatus()),standardFlags());
+	     case "!" :
+	    	  return new XVariable( name , new XValue(mShell.getLastThreadId()),standardFlags());
+		}
+		if(Util.isInt(name, false)) {
+           int n = Util.parseInt(name, -1);
+           if(n == 0)
+        	   return new XVariable( name , new XValue(mShell.getArg0()),shellArgFlags());
+           else if(n > 0 && n <= mShell.getArgs().size()) 
+        	   return new XVariable( name ,mShell.getArgs().get(n - 1), shellArgFlags());
+            else
+        	   return null ;
+       }
 		return mVars.get(name);
 	}
 
-	public void	setVar( XVariable var, boolean local )
+	public void	setVar( XVariable var, boolean local)
 	{
 		String name = var.getName();
+		if( local )
+	  	var.getFlags().add(LOCAL);
+		else
+		  var.getFlags().remove(LOCAL);
 		mVars.put(name , var, local );
 	}
 
 
-
-	public void	setVar( String name , XValue value, boolean local ) throws InvalidArgumentException 
+	public void setIndexedVar( String name , XValue value, String ind , EnumSet<XVarFlag> flags , boolean local  ) throws CoreException 
 	{
-
-
-		XVariable var = mVars.get(name);
-		if( var == null )
-			var = new XVariable( name , value );
-		else
-			var = var.clone();
-
-		var.setValue(value);
-
-
-		setVar( var , local );
+	    XVariable var = mVars.get(name);
+        if( var == null )
+           var = new XVariable( name ,  new XValue( TypeFamily.XTYPE , new XValueMap()) , flags  );
+      else
+          var = var.clone();
+          
+      var.setIndexedValue(value, ind);
+            
+	    setVar( var , local );
 	}
+
 
 
 	/*
 	 * Append to a variable as a sequence 
 	 */
-	public void appendVar(String name, XValue xvalue, boolean local ) throws InvalidArgumentException {
+	public void appendVar(String name, XValue xvalue, EnumSet<XVarFlag> varFlags, boolean local ) throws InvalidArgumentException {
 
 
 		XVariable var = mVars.get(name);
 		if( var == null ){
 			// If no existing variable then dont touch
-			setVar(new XVariable( name , xvalue ) , local );
+			setVar(new XVariable( name , xvalue  , varFlags ) , local );
 			return ;
 		}
 
 		var = var.clone();
-
-		var.setValue(  var.getValue().append(xvalue));
+		xvalue = var.getValue().append(xvalue);
+		var.setValue(  xvalue , Util.withEnumsAdded(varFlags, xvalue.typeFlags()) );
 		setVar( var , local);
 
 	}
-
+	
+	 public void appendVar(String name, XValue xvalue, boolean local ) throws InvalidArgumentException {
+	   appendVar(name,xvalue,standardFlags() , local );
+	 }
 
 
 	public void setVar(String name, String value , boolean local ) throws InvalidArgumentException {
-		setVar( name , new XValue(value),local);
-
+		setVar( name , new XValue(value), standardFlags(), local);
 	}
+  public void setVar(String name, XValue value ,  boolean local ) throws InvalidArgumentException {
+    setVar( name , value , standardFlags() , local);
+  }
+
+  public void setVar( String name , XValue value, EnumSet<XVarFlag> varFlags , boolean local ) throws InvalidArgumentException 
+  {
+
+    XVariable var = mVars.get(name);
+    if( var == null )
+      var = new XVariable( name , value , varFlags  );
+    else
+      var = var.newValue( value , varFlags );
+
+
+    setVar( var , local );
+  }
 
 
 	@Override
@@ -363,7 +421,7 @@ public class XEnvironment implements AutoCloseable, Closeable {
 		}
 		else
 		{
-			OutputPort p = new VariableOutputPort(  new XVariable(null,port) );
+			OutputPort p = new VariableOutputPort(  new XVariable(null,port,standardFlags()) );
 			addAutoRelease(p);
 			return p;
 		}
@@ -454,6 +512,7 @@ public class XEnvironment implements AutoCloseable, Closeable {
 
 
 	public void setOutput(String name ,XVariable xvar) throws CoreException {
+	  assert( xvar != null );
 		setOutput( name,new VariableOutputPort(xvar));
 	}
 
@@ -463,21 +522,20 @@ public class XEnvironment implements AutoCloseable, Closeable {
 
 
 	public void declareNamespace(String ns ) {
-		if( mNamespaces == null )
-			mNamespaces = new Namespaces();
 
-		mNamespaces.declare( ns );
+	  getNamespaces().declare( ns );
 
 	}
 	public void declareNamespace(String prefix, String uri) {
-		if( mNamespaces == null )
-			mNamespaces = new Namespaces();
-		mNamespaces.declare(prefix, uri);
+		
+	  getNamespaces().declare(prefix, uri);
 	}
 
 
 	public Namespaces getNamespaces()
 	{
+	  if( mNamespaces == null )
+      mNamespaces = new Namespaces();
 		return mNamespaces;
 	}
 
@@ -527,7 +585,7 @@ public class XEnvironment implements AutoCloseable, Closeable {
 		}
 		else
 		{
-			VariableInputPort p = new VariableInputPort(  new XVariable(null,port) );
+			VariableInputPort p = new VariableInputPort(  new XVariable(null,port,standardFlags()) );
 			// Port is not managed, add to autorelease
 			addAutoRelease(p);
 			return p;
@@ -637,6 +695,22 @@ public class XEnvironment implements AutoCloseable, Closeable {
 		getIO().dupInput( portLeft , portRight );
 
 	}
+
+
+	public static boolean isSpecialVarname( String name ) {
+	     switch( name ) {
+	     case "#" :
+	     case "$" :
+	     case "?" :
+	     case "!" :
+	     case "*" : 
+	     case "@" :
+	         return true ;
+	      default:
+	          return false ;
+	      
+	     }
+	 }
 
 
 

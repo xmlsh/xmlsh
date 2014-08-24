@@ -60,7 +60,7 @@
 			<attribute name="javadoc_location" value="http://fasterxml.github.io/jackson-dataformat-xml/javadoc/2.4.0/"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="lib/jackson-module-jaxb-annotations-2.4.1.jar"/>
+	<classpathentry kind="lib" path="lib/jackson-module-jaxb-annotations-2.4.1.jar" sourcepath="C:/Users/DLEE/Documents/GitHub/jackson-module-jaxb-annotations/src/main/java"/>
 	<classpathentry kind="lib" path="lib/commons-lang3-3.3.2.jar"/>
 	<classpathentry kind="output" path="_out"/>
 </classpath>
