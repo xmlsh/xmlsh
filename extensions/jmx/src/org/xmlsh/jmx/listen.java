@@ -29,6 +29,7 @@ import org.xmlsh.core.XValue;
 import org.xmlsh.jmx.util.JMXCommand;
 import org.xmlsh.sh.core.Command;
 import org.xmlsh.sh.shell.SerializeOpts;
+import org.xmlsh.types.TypeFamily;
 import org.xmlsh.util.NullInputStream;
 import org.xmlsh.util.Util;
 
@@ -44,12 +45,12 @@ public class listen extends JMXCommand {
 				mShell.getEnv().setStdin(new NullInputStream());
 				mShell.setArg0("listen");
 				List<XValue> args = new ArrayList<XValue>();
-				args.add( new XValue( notification.getSource() ));			// $1 == source 
+				args.add( new XValue( TypeFamily.XTYPE , notification.getSource() ));			// $1 == source 
 				args.add( new XValue( notification.getType()));				// $2 == type
 				args.add( new XValue( notification.getTimeStamp() ));		// $3 == timestamp
 				args.add( new XValue( notification.getSequenceNumber() )); 	// $4 == sequence#
 				args.add( new XValue( notification.getMessage())); 			// $5 == message
-				args.add( new XValue( notification.getUserData() ));		// $6 == userdata
+				args.add( new XValue(  TypeFamily.XTYPE , notification.getUserData() ));		// $6 == userdata
 
 				
 				mShell.setArgs(args);

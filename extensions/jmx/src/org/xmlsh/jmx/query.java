@@ -84,8 +84,6 @@ public class query extends JMXCommand {
 			endDocument();
 			closeWriter();
 	
-				
-			out.release();
 		} finally {
 			jmx.close();
 		}

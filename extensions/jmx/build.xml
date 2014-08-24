@@ -29,7 +29,7 @@
     <target name="compile" description="Compilation target">
   		<mkdir dir="_out"/>
     
-    	 <javac destdir="_out" debug="on" source="1.6" target="1.6">
+    	 <javac destdir="_out" debug="on" source="1.7" target="1.7">
     	        <src path="src" />
     	 	<classpath>
     				<fileset dir="lib">
@@ -39,7 +39,7 @@
     				    <include name="**/*.jar"/>
     				   </fileset>
     				   <fileset dir="../../trunk/bin">
-    				    <include name="xmlsh-1.2.jar"/>
+    				    <include name="**/*.jar"/>
     				   </fileset>
     	     </classpath>
     	 </javac>
