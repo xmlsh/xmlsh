@@ -6,8 +6,6 @@
 
 package org.xmlsh.aws.util;
 
-import org.xmlsh.commands.util.CSVParser;
-import org.xmlsh.commands.util.CSVRecord;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.UnexpectedException;
@@ -15,6 +13,8 @@ import org.xmlsh.core.XValue;
 import org.xmlsh.util.Base64;
 import org.xmlsh.util.StringPair;
 import org.xmlsh.util.Util;
+import org.xmlsh.util.commands.CSVParser;
+import org.xmlsh.util.commands.CSVRecord;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

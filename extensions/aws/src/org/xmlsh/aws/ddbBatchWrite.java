@@ -2,14 +2,14 @@ package org.xmlsh.aws;
 
 import net.sf.saxon.s9api.SaxonApiException;
 import org.xmlsh.aws.util.AWSDDBCommand;
-import org.xmlsh.commands.util.CSVParser;
-import org.xmlsh.commands.util.CSVRecord;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.util.Util;
+import org.xmlsh.util.commands.CSVParser;
+import org.xmlsh.util.commands.CSVRecord;
 
 import java.io.BufferedReader;
 import java.io.IOException;
