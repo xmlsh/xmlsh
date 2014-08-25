@@ -7,11 +7,11 @@ options
   STATIC = false; 
 //  DEBUG_PARSER=true ; 
 //   DEBUG_LOOKAHEAD=true;
-//c      DEBUG_TOKEN_MANAGER=true;
-// FORCE_LA_CHECK=true;
+//      DEBUG_TOKEN_MANAGER=true;
+ FORCE_LA_CHECK=true;
 //   UNICODE_INPUT=true;
  TOKEN_EXTENDS="XAbstractToken";
- COMMON_TOKEN_ACTION=false;
+// COMMON_TOKEN_ACTION=true;
  //TOKEN_FACTORY="XTokenFactory";
  OUTPUT_DIRECTORY="../../../../../generated/org/xmlsh/sh/grammar";
 }
@@ -110,7 +110,29 @@ public class ShellParser
         return mContext.isJoinable(w );
   }
   
+  public boolean isKind( Token t , int kind )
+  {
+     return t.kind == kind ;
+  }
+  
+  public boolean isKind( int lookahead , int kind ){
+    return getToken( lookahead ).kind == kind ;
+  }
+     
+  public boolean isKind( Token t , int kind , String value ){
+    return t.kind == kind &&
+           t.image.equals(value) ;
+  }
+  public boolean isKind( int pos , int kind , String value ){
+    return isKind( getToken(pos) , kind , value );
+  }
 
+  public boolean isWord( Token t , String value ){
+     return isKind( t , WORD , value );
+  }
+    public boolean isWord( int pos , String value ){
+     return isKind( getToken(pos) , WORD , value );
+  }
   public boolean isDelim( Token t )  {       return mContext.isDelim(t );
   }
 
@@ -197,16 +219,13 @@ TOKEN_MGR_DECLS :
     return sb.toString();
   } 
   
-  /*
    public void CommonTokenAction(Token t) {
-      XToken xt = (XToken)t;
 
       
      // System.err.println( tokenImage[ t.kind ] + "=" + t.kind   + " depth " + t.get(t.kind) );
-   // System.err.println( tokenImage[ t.kind ] + "=" + t.kind   + "(" + t.image + ")" );
+   System.err.println( tokenImage[ t.kind ] + "=" + t.kind   + "(" + t.image + ")" );
     }
     
-  */
     
 }
 
@@ -244,7 +263,7 @@ TOKEN :
 }
 
 // Global patterns 
-<DEFAULT,IN_VAR_EXPANSION>
+<DEFAULT>
 TOKEN :
 {
     < #_WS :  ( " " | "\r" | "\t" )+ >
@@ -300,7 +319,7 @@ TOKEN :
 
 TOKEN:
 {
-    < VAR_EXPR1 :  "${" (< _SPECIAL_VARNAME > |( < _VARNAME > | < _POSVAR >  )) "}" > 
+     < VAR_EXPR1 :  "${" (< _SPECIAL_VARNAME > |( < _VARNAME > | < _POSVAR >  )) "}" > 
 |    < VAR_EXPR2 :  "${#" ( < _VARNAME > | < _POSVAR >  ) "}" > 
 |    < VAR_EXPR3 :  "${" ( < _VARNAME > | < _POSVAR >  ) "[" > 
     { 
@@ -382,7 +401,8 @@ TOKEN :
 | < LT        : "<" > 
 | < #_DIGITS  : [ "1"-"2" ] >
 | < #_PORTWORD :  "("  < _ID >   ")" >
-| < #_WORD_SPECIAL :     ( "[" | "$" | "," ) >
+// Single charactor words that need to be words themselfs in some cases
+| < #_WORD_SPECIAL :     ( "[" | "$" | "," | "." ) >
 | < #_WORD_PUNC :     ( "=" ) >
 
 // Word Expressions that shold be tokenized together
@@ -418,7 +438,8 @@ TOKEN :
    (<_WORD_PUNC>)?
    (
     (
-    ~[ "|" , "&" , "<" , ">" , "," , "(" , ")" , "$" , "`" , "\\" , "\"" , "'" , " " , "\t" , "\n" , "\r" , "=" , ";","#" , "{" , "}" , "[","]"  ] 
+    ~[ "|" , "&" , "<" , ">" , "," , "(" , ")" , "$" , "`" , "\\" , "\"" , "'" , " " , "\t" , "\n" , "\r" , 
+         "=" , ";","#" , "{" , "}" , "[","]" , "." ] 
     | < _ESCAPED >
     | < _STRING_LITERAL >
     )+ | 
@@ -523,13 +544,13 @@ Token eol_or_semi() :
 
  LOOKAHEAD( 1 , compound_command_lookahead() ) c = compound_command()   [    r = redirect_list()    {      c.setRedirect(r);    }  ]  {    return c;  }
 | 
-  LOOKAHEAD( 1 , { getToken(1).kind == FUNCTION  })
+  LOOKAHEAD( 1 , <FUNCTION> , { isKind(1, FUNCTION)  })
   f = function_declaration()
   { 
     return f;
   }
 |
-    LOOKAHEAD( 2 , {getToken(1).kind == NAME && getToken(2).kind == LPAREN } )
+    LOOKAHEAD( 2 , <NAME> <LPAREN>, { isKind(1,NAME) && isKind(2,LPAREN ) } )
    f = function_declaration()
   { 
     return f;
@@ -781,25 +802,36 @@ ReturnStatement return_stmt() :
   }
 }
 
-Word expr() :
-{  Word w ;
+// Only used for syntatic lookahead
+void function_call_lookahead() :
+{}
+{
+  // Only for JavaCC warnings
+   LOOKAHEAD(2, <NAME> <LPAREN> )
+   <NAME> <LPAREN>
+
+}
+
+Word function_call(Word prefix) :
+{
   WordList wl;
+  Word fcw;
   Token t;
 }
 {
-  t=< LBRACE >
-  {    pushState( StateEnum.BRACE_GROUP );
-  }
-   wl = brace_expr_list()  
+   t=<NAME> <LPAREN> 
+   {
+    pushState( StateEnum.FUNCTION_CALL ) ;
+    
+   }
+    wl = function_args()
   {
-    w = new BraceWord( wl );
-    return w;
-  }
-|  w=word_expr()
-  {    return w;
-  }
+    popState(  );
+    fcw = new FunctionCallWord(prefix,t,t.toString(), wl);
+    return fcw ; 
+   
+   }
 }
-
 
 /*
  * Brace expressions are lists of expressions and property words
@@ -826,7 +858,7 @@ WordList brace_expr_list() :
     
      w1= expr() 
     (
-       LOOKAHEAD( 1 , <WORD > ,       {          isWord(getToken(1),":")        }      ) < WORD >  w2=expr()
+       LOOKAHEAD( 1 , <WORD > ,       {          isWord(1,":")        }      ) < WORD >  w2=expr()
        {
        w1 = new PropertyWord(  w1 , w2 );
        }
@@ -846,11 +878,11 @@ WordList brace_expr_list() :
 FunctionDeclaration function_declaration() :{  Token t;  CompoundCommand b;  SourceLocation parentLoc ;
   SourceLocation funcLoc ;
 }{
-  (   "function" t=<NAME>  [ <LPAREN> <RPAREN> ]     |  t=<NAME> <LPAREN> <RPAREN> )  {
-    pushState( StateEnum.FUNCTION_CALL );     parentLoc = setParentLocation( funcLoc = getLocation( t ) );
+  (   <FUNCTION> t=<NAME>  [ <LPAREN> <RPAREN> ]     |  t=<NAME> <LPAREN> <RPAREN> )  {
+     parentLoc = setParentLocation( funcLoc = getLocation( t ) );
   }
   linebreak() b = function_body()  {
-    popState();    String name = t.toString();
+    String name = t.toString();
     funcLoc.setName( name );
     setParentLocation( parentLoc );
     FunctionDeclaration func =     	new FunctionDeclaration(name.trim(), b);
@@ -939,7 +971,8 @@ Word var_expansion() :
       return newJoinedWord( w, n );
       
     }
-} 
+}
+// a word , name, variable expansion/expression
 Word word_or_name() :
 {
   Word  n=null;
@@ -965,14 +998,28 @@ Word word_or_name() :
 }
 
 /*
- * Single word that can be arguments to commands
- */Word word_expr() :{  Token t;  String s;  Command c;  WordList wl; 
-  Word w;}{
-  
-  LOOKAHEAD(2, {  	( getToken(1).kind == NAME  ) && getToken(2).kind == LPAREN })   t=<NAME> <LPAREN> wl = function_args()  {
-    return new FunctionCallWord(t,t.toString(), wl);  }
+ * Expression  that evaluates as a single 'word'
+ */Word expr() :{  Token t;  String s;  Command c;  WordList wl; 
+  Word w,fcw;
+}{
+    t=< LBRACE >
+  {
+    pushState( StateEnum.BRACE_GROUP );
+  }
+   wl = brace_expr_list()  
+  {
+    w = new BraceWord( wl );
+    return w;
+  }
 |
-  w=word_or_name()
+  
+    
+  LOOKAHEAD(2, function_call_lookahead()  )
+  fcw = function_call(null) {
+    return fcw ;
+  }
+|
+  w=word_or_name()
   {    return w ;  }|   < XEXPR >    {  return new StringWord(token); }
 | < BIGQUOTE >   {  return new StringWord(token); }| t = < VAR_SUBPROC > c = compound_list() < RPAREN >  {    return new CommandWord(t, c);  }| t = < VAR_SUBPROC_FILE > w  = word_or_name() < RPAREN >  {    return new CommandFileWord(t, w);  }| t=< BACKTICK1 > c = compound_list() < BACKTICK2 >  {    return new CommandWord(t, c);  }}
 
@@ -982,14 +1029,14 @@ WordList function_args() :{  WordList wl = new WordList();  Word w;}{
    
     (<NL>)+ 
    |
+     w = expr()     {      wl.add(w);    }
+  )*
+  
     <RPAREN> {
       return wl ;
     }
     
-    |  
-    
-     w = expr()     {      wl.add(w);    }
-  )*  {    return wl;  }}
+}
 CommandPrefix cmd_prefix() :{  CommandPrefix p = new CommandPrefix();  Assign a;}{  (    a = assign()    {      p.add(a);
     }  )+   {    return p;  }}
 

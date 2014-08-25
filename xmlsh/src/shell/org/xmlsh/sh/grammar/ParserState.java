@@ -12,6 +12,7 @@ class ParserState {
         START ,
         BRACE_GROUP,
         FUNCTION_CALL,
+        FUNCTION_DECL,
         ARRAY_LIST ,
         SEQUENCE_LIST ;
     }
@@ -47,6 +48,7 @@ class ParserState {
         case FUNCTION_CALL : 
         case ARRAY_LIST : 
         case SEQUENCE_LIST :
+        case FUNCTION_DECL :
             return new ParserState( EnumSet.of( TokenEnum.COMMA ));
         default :
         case START :

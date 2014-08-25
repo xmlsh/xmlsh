@@ -90,6 +90,9 @@ public class BraceWord extends ListWord
 		return parent.withFlagsMasked( EvalFlag.preserveValueFlags());
 	}
 
+	/*
+	 * 
+	 *   Call ListWord to expand 
 	@Override
 	protected ParseResult expandToResult(Shell shell, EvalEnv env, SourceLocation loc, ParseResult result) throws IOException,
 	CoreException
@@ -115,6 +118,7 @@ public class BraceWord extends ListWord
 		return result ;
 
 	}
+	*/
 
 
 }

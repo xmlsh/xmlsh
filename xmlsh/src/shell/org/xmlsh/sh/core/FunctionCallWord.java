@@ -32,15 +32,25 @@ public class FunctionCallWord extends Word
 {
 	String	 mFunction;
 	WordList	mArgs;
+	Word      mPrefix;  // expr . function( ... )
 
 	public FunctionCallWord(Token t , String func, WordList args)
 	{
 		super(t);
+		mPrefix = null;
 		mFunction = func;
 		mArgs = args;
 
 	}
+  public FunctionCallWord( Word prefix , Token t , String func, WordList args)
+  {
+    super(t);
+    mPrefix = prefix;
+    mFunction = func;
+    mArgs = args;
 
+  }
+  
 	@Override
 	public void print(PrintWriter out)
 	{
