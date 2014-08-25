@@ -1,0 +1,9 @@
+[5]  should be empty not null
+[7] Pass 1 arg
+[9] Pass true
+[12] Hi There should be Hi There
+[13] Pass true
+[16] should be empty not null
+[19] fail 0 args
+[22] Hi There should be Hi There
+[23] Pass true

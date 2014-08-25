@@ -110,7 +110,7 @@ public class FunctionCallWord extends Word
 
 			int ret = shell.execFunction(func.getName(), func.getBody(), loc, args);
 			// ?? should check ret ?
-			XValue xret = shell.getReturnValue(true);
+			XValue xret = shell.getReturnValue();
 			return EvalUtils.expandValueToResult(shell, xret, func.returnEnv(env), loc, result);
 
 		} catch (Exception e) {

@@ -1,0 +1,41 @@
+[5] true should be true
+[6] false should be false
+[7] Pass true
+[8] Pass false
+[9] Pass true
+[10] Pass unequal
+[11] Pass unequal
+[19] true should be true
+[20] false should be false
+[21] true should be true
+[22] false should be false
+[24] Pass true
+[25] Pass false
+[26] Pass true
+[27] Pass false
+[28] Pass true
+[29] Pass true
+[30] Pass true
+[31] Pass true
+[32] Pass true
+[33] Pass true
+[34] Pass true
+[35] Pass true
+[37] Pass unequal
+[38] Pass unequal
+[41] true should be true
+[42] false should be false
+[43] false should be false
+[44] false should be false
+[51] true should be true
+[52] false should be false
+[53] false should be false
+[54] false should be false
+[56] Pass true
+[57] Pass false
+[58] Pass false
+[59] Pass false
+[61] Pass true
+[62] Pass true
+[63] Pass true
+[64] fail true

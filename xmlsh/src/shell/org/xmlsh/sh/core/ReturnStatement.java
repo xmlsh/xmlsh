@@ -40,16 +40,18 @@ public class ReturnStatement extends Command {
 		XValue ret = null ;
 
 
-		if( mArg == null )
-			ret = new XValue(0);
+		// No argument to return 
+		// e.g  return ;
+		
+		if( mArg == null ) 
+			ret = null ; // will convert to empty sequence and set last exit value
 		else	{
 			List<XValue> vret = mArg.expandToList(shell, mEnv,  getLocation() );
 			if( vret == null || vret.isEmpty() )
-				ret = new XValue(XdmEmptySequence.getInstance() );
+				ret = XValue.empytSequence();
 			else
 				ret = vret.get(0);
 		}
-
 		shell.exec_return( ret );
 		return 0;
 	}

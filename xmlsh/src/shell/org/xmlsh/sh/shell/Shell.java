@@ -160,6 +160,10 @@ public class Shell implements AutoCloseable, Closeable
 
   private AtomicInteger mRunDepth = new AtomicInteger(); // count of depth if the shell is executing
   private volatile List<Process> mChildProcess = null;
+  
+  
+  // Special flag/marker indicating a return
+  private final static  XValue mReturnFlag = XValue.nullValue();
 
   public static void uninitialize()
   {
@@ -504,7 +508,7 @@ public class Shell implements AutoCloseable, Closeable
       try {
         enterEval();
         parser = new ShellParser(newParserReader(true), source);
-        while (mExitVal == null && mReturnVal == null) {
+        while ( ! hasReturned() ) {
           Command c = parser.command_line();
           if(c == null)
             break;
@@ -559,13 +563,9 @@ public class Shell implements AutoCloseable, Closeable
 
       if(mExitVal != null)
         ret = mExitVal.intValue();
-      else if(convertReturn && mReturnVal != null) {
-        try {
-          ret = mReturnVal.toBoolean() ? 0 : 1;
-        } catch (Exception e) {
-          mLogger.error("Exception converting return value to boolean", e);
-          ret = -1;
-        }
+      // Special check for returning thrown  errors 
+      else if(convertReturn  && mReturnVal != null  ) {
+        ret = this.convertReturnValueToExitValue(mReturnVal);
         mReturnVal = null;
       }
 
@@ -575,6 +575,11 @@ public class Shell implements AutoCloseable, Closeable
     } finally {
       exitEval();
     }
+  }
+
+  private boolean hasReturned()
+  {
+    return  !(mExitVal == null && mReturnVal == null) ;
   }
 
   private ShellParserReader newParserReader(boolean bSkipBOM) throws IOException
@@ -1096,13 +1101,11 @@ public class Shell implements AutoCloseable, Closeable
   public void exit(int retval)
   {
     mExitVal = Integer.valueOf(retval);
-
   }
 
   public void exec_return(XValue retval)
   {
-    mReturnVal = retval;
-
+    mReturnVal = retval == null ? mReturnFlag : retval ;
   }
 
   /*
@@ -1112,7 +1115,7 @@ public class Shell implements AutoCloseable, Closeable
   public boolean keepRunning()
   {
     // Hit exit stop
-    if(mClosed || mExitVal != null || mReturnVal != null)
+    if(mClosed || hasReturned() )
       return false;
 
     // If the top control stack is break then stop
@@ -1410,9 +1413,7 @@ public class Shell implements AutoCloseable, Closeable
     setArgs(args);
 
     try {
-
       int ret = exec(cmd, location);
-
       return ret;
 
     } finally {
@@ -1430,12 +1431,21 @@ public class Shell implements AutoCloseable, Closeable
    */
   private int convertReturnValueToExitValue(XValue value)
   {
+    // Special case for null values
+    if( value == null || value == mReturnFlag )
+      return 0 ; 
 
     // Null is false (1)
     if(value.isNull())
       return 1;
+    
+    // Change: Empty sequence is false
     if( value.isEmpty() || value.isEmptySequence() )
       return 1;
+    
+    /*
+     * Special: if looks like an integer then thats the exit value
+     */
     if(value.isAtomic()) {
       // Check if native boolean
 
@@ -1446,13 +1456,12 @@ public class Shell implements AutoCloseable, Closeable
 
       if(Util.isInt(s, true))
         return Integer.parseInt(s);
-      else if(s.equals("true"))
+      else if(s.equalsIgnoreCase("true"))
         return 0;
       else return 1; // False
 
     }
-
-    // Non atomic
+    
     try {
       return value.toBoolean() ? 0 : 1;
     } catch (Exception e) {
@@ -1705,12 +1714,11 @@ public class Shell implements AutoCloseable, Closeable
   /*
    * Get the return value of the last return statement
    */
-  public XValue getReturnValue(boolean bClear)
+  public XValue getReturnValue()
   {
     XValue ret = mReturnVal;
-    if(bClear)
-      mReturnVal = null;
-    return ret;
+    mReturnVal = null;
+    return (ret == null || ret == mReturnFlag ) ? XValue.empytSequence() : ret ;
   }
 
   public ClassLoader getClassLoader(XValue classpath) throws CoreException
@@ -1837,12 +1845,10 @@ public class Shell implements AutoCloseable, Closeable
   public int getReturnValueAsExitValue()
   {
 
-    int ret = 0;
-    if(mReturnVal != null) {
-      ret = convertReturnValueToExitValue(mReturnVal);
-      mReturnVal = null;
-    }
-    return ret;
+// Special null return value means 0  - SNH need to check logic of scripts
+    if( mReturnVal == null )
+      return 0;
+      return convertReturnValueToExitValue(getReturnValue());
   }
 
   public void setCurrentLocation(SourceLocation loc)

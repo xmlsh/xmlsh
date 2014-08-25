@@ -12,3 +12,12 @@ function loc() {
   local l=xlocation(-start-line -depth 0) 
   return "[$l]" 
 }
+
+function message() {
+  echo loc() "$@"
+}
+
+function error() {
+  echo loc() "$@" >(error)
+  log "error in " loc() "$@"
+}

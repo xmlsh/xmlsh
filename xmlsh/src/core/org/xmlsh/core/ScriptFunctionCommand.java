@@ -52,7 +52,7 @@ public class ScriptFunctionCommand extends BuiltinFunctionCommand {
 				sh.setArg0(getName());
 				int iret = shell.runScript(mScript, getName(),false);
 
-				return shell.getReturnValue(true);
+				return shell.getReturnValue();
 			} finally {
 				// Close shell - even if exception is thrown through sh.runScript and up
 				sh.close();

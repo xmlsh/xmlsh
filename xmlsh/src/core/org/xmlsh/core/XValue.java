@@ -133,14 +133,16 @@ public class XValue implements Iterable<XValue>{
 	private void _initSequence(XValueSequence seq)
   {
     this.mTypeFamily = TypeFamily.XTYPE ;
-    this.mValue = seq == null ? empytSequence() : seq ;
+    this.mValue = seq == null ?  XValueSequence.emptySequence() : seq ;
     _init();
     
   }
 
-  private XValueSequence empytSequence()
+  public static XValue empytSequence()
   {
-    return XValueSequence.emptySequence();
+ 
+    return new XValue(TypeFamily.XTYPE ,XValueSequence.emptySequence() );
+    
   }
 
   public XValue(TypeFamily family) {
@@ -577,6 +579,7 @@ public class XValue implements Iterable<XValue>{
 	{
 		if( this == that )
 			return true ;
+		
 
 		if( this.isAtomic() && that.isAtomic() )
 			return toString().equals(that.toString());

@@ -1,0 +1,2 @@
+[10] string() might need to evaluate to nothing like $s
+[18] set $s fails for now

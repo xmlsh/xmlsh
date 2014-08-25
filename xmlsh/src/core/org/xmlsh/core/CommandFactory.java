@@ -67,52 +67,52 @@ public class CommandFactory
 	private static Logger mLogger =  Logger.getLogger( CommandFactory.class);
 	private static CommandFactory _instance = null ;
 
-	private HashMap<String,Class<?>>		mBuiltins = new HashMap<String,Class<?>>();
+	private HashMap<String,Class<? extends ICommand>>		mBuiltinCommands = new HashMap<String,Class<? extends ICommand>>();
 
-	private void addBuiltin( String name , Class<?> cls)
+	private void addBuiltinCommand( String name ,   Class<? extends ICommand>  cls )
 	{
-		mBuiltins.put( name , cls);
+		mBuiltinCommands.put( name , cls);
 	}
 
 	private CommandFactory()
 	{
-		addBuiltin(  "cd" , xcd.class );
-		addBuiltin( "xecho" , xecho.class );
-		addBuiltin( "echo" , echo.class );
-		addBuiltin( "false" , xfalse.class );
-		addBuiltin( "true" , xtrue.class  );
-		addBuiltin( "set", set.class);
-		addBuiltin( "." , source.class);
-		addBuiltin( "source" , source.class);
-		addBuiltin("exit" , exit.class);
-		addBuiltin( ":" , colon.class);
-		addBuiltin( "[" , test.class );
-		addBuiltin( "test" , test.class );
-		addBuiltin( "shift" , shift.class );
-		addBuiltin( "read" , read.class);
-		addBuiltin( "xread" , xread.class);
-		addBuiltin( "unset" , unset.class );
-		addBuiltin( "xwhich" , xwhich.class );
-		addBuiltin( "xversion" , xversion.class);
-		addBuiltin("jobs" , jobs.class);
-		addBuiltin("wait" , wait.class);
-		addBuiltin("break" , xbreak.class);
-		addBuiltin("continue", xcontinue.class );
-		addBuiltin("eval", eval.class);
-		addBuiltin("declare" , declare.class);
-		addBuiltin("import" , ximport.class);
-		addBuiltin("xmlsh" , xmlsh.class);
-		addBuiltin("throw" , xthrow.class);
-		addBuiltin("tie" , tie.class);
-		addBuiltin("log",log.class);
-		addBuiltin("xtype", xtype.class);
-		addBuiltin("require", require.class);
-		addBuiltin("jset" , jset.class );
-		addBuiltin("xmlshui" , xmlshui.class);
-		addBuiltin("xmkpipe" , xmkpipe.class);
-		addBuiltin("printvar" , printvar.class);
-		addBuiltin("jsonread" , jsonread.class);
-		addBuiltin("trap" , trap.class);
+		addBuiltinCommand(  "cd" , xcd.class );
+		addBuiltinCommand( "xecho" , xecho.class );
+		addBuiltinCommand( "echo" , echo.class );
+		addBuiltinCommand( "false" , xfalse.class );
+		addBuiltinCommand( "true" , xtrue.class  );
+		addBuiltinCommand( "set", set.class);
+		addBuiltinCommand( "." , source.class);
+		addBuiltinCommand( "source" , source.class);
+		addBuiltinCommand("exit" , exit.class);
+		addBuiltinCommand( ":" , colon.class);
+		addBuiltinCommand( "[" , test.class );
+		addBuiltinCommand( "test" , test.class );
+		addBuiltinCommand( "shift" , shift.class );
+		addBuiltinCommand( "read" , read.class);
+		addBuiltinCommand( "xread" , xread.class);
+		addBuiltinCommand( "unset" , unset.class );
+		addBuiltinCommand( "xwhich" , xwhich.class );
+		addBuiltinCommand( "xversion" , xversion.class);
+		addBuiltinCommand("jobs" , jobs.class);
+		addBuiltinCommand("wait" , wait.class);
+		addBuiltinCommand("break" , xbreak.class);
+		addBuiltinCommand("continue", xcontinue.class );
+		addBuiltinCommand("eval", eval.class);
+		addBuiltinCommand("declare" , declare.class);
+		addBuiltinCommand("import" , ximport.class);
+		addBuiltinCommand("xmlsh" , xmlsh.class);
+		addBuiltinCommand("throw" , xthrow.class);
+		addBuiltinCommand("tie" , tie.class);
+		addBuiltinCommand("log",log.class);
+		addBuiltinCommand("xtype", xtype.class);
+		addBuiltinCommand("require", require.class);
+		addBuiltinCommand("jset" , jset.class );
+		addBuiltinCommand("xmlshui" , xmlshui.class);
+		addBuiltinCommand("xmkpipe" , xmkpipe.class);
+		addBuiltinCommand("printvar" , printvar.class);
+		addBuiltinCommand("jsonread" , jsonread.class);
+		addBuiltinCommand("trap" , trap.class);
 
 
 
@@ -295,10 +295,10 @@ public class CommandFactory
 
 
 	private ICommand getBuiltin(Shell shell, String name, SourceLocation loc) {
-		Class<?> cls =  mBuiltins.get(name);
+		Class<?> cls =  mBuiltinCommands.get(name);
 		if( cls != null ){
 			try {
-				BuiltinCommand b =  (BuiltinCommand) cls.newInstance();
+				ICommand b =  (ICommand) cls.newInstance();
 				b.setLocation( loc );
 				return b;
 			} catch (Exception e) {
@@ -365,7 +365,7 @@ public class CommandFactory
 	}
 
 	private URL getBuiltinHelpURL(Shell shell, String name) {
-		if( mBuiltins.containsKey(name) )
+		if( mBuiltinCommands.containsKey(name) )
 			return shell.getResource(kCOMMANDS_HELP_XML);
 		else
 			return null ;
