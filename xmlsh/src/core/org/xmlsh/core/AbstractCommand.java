@@ -186,6 +186,13 @@ public abstract class AbstractCommand implements ICommand {
 	}
 
 
+  protected void error(Exception e)
+  {
+    mShell.printErr( getName() , e);
+    usage( e.toString() );
+  }
+
+
 }
 
 //

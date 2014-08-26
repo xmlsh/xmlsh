@@ -189,5 +189,11 @@ public class XValueArray extends AbstractList<XValue> implements IXValueContaine
       return  mArray.put(index , value);
     }
 
+    @Override
+    public XValue asXValue()
+    {
+      return new XValue( TypeFamily.XTYPE , this );
+    }
+
 
 }

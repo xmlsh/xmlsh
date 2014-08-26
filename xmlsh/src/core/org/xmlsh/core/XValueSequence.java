@@ -194,4 +194,12 @@ public  class XValueSequence implements Iterable<XValue>  , IXValueContainer<XVa
     return Util.joinValues(mList,ShellConstants.ARG_SEPARATOR );
     
   }
+
+
+
+  @Override
+  public XValue asXValue()
+  {
+    return new XValue( TypeFamily.XTYPE , this );
+  }
 }

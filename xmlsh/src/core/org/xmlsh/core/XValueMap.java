@@ -219,6 +219,12 @@ public class XValueMap extends AbstractMap<String,XValue> implements IXValueCont
 
     }
 
+    @Override
+    public XValue asXValue()
+    {
+      return new XValue( TypeFamily.XTYPE , this );
+    }
+
 }
 /*
  * Copyright (C) 2008-2012 David A. Lee.

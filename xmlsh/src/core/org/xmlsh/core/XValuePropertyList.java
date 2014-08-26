@@ -226,6 +226,13 @@ public class XValuePropertyList  implements IXValueContainer<XValuePropertyList>
 
     }
 
+    @Override
+    public XValue asXValue()
+    {
+      return new XValue( TypeFamily.XTYPE , this );
+
+    }
+
 }
 
 

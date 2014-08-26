@@ -9,6 +9,7 @@ package org.xmlsh.sh.core;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.util.HelpUsage;
 import org.xmlsh.util.Util;
 
 import java.io.PrintWriter;
@@ -86,6 +87,35 @@ public abstract class Command  {
 			throw new InvalidArgumentException( getName() + ":" + message );
 
 	}
+	
+
+  public void usage(Shell shell  , String message)
+  {
+    String cmdName = this.getName();
+    SourceLocation sloc = getLocation();
+    if( !Util.isBlank(message))
+      shell.printErr(cmdName + ": " + message,sloc);
+    else
+      shell.printErr(cmdName + ":", sloc );
+    HelpUsage helpUsage = new HelpUsage( shell );
+    try {
+      helpUsage.doUsage(shell.getEnv().getStdout(), cmdName);
+    } catch (Exception e) {
+      shell.printErr("Usage: <unknown>",sloc);
+    }
+  }
+  public void usage(Shell shell)
+  {
+    usage(shell);
+  }
+
+  protected void error(Shell shell , Exception e)
+  {
+    shell.printErr( getName() , e);
+    usage( shell ,  e.toString() );
+  }
+
+  
 
 }
 

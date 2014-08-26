@@ -21,7 +21,8 @@ import org.xmlsh.util.Util;
  */
 public class VarExpansion extends Word
 {
-	private final static EnumSet<EvalFlag> _indMskFlags = EnumSet.of( EvalFlag.EXPAND_VAR , EvalFlag.PARSE_QUOTES);
+	private final static EnumSet<EvalFlag> _indMskFlags = 
+	     EnumSet.of( EvalFlag.EXPAND_VAR , EvalFlag.PARSE_QUOTES , EvalFlag.JOIN_VALUES , EvalFlag.OMIT_NULL);
 	private String mPrefix ; //"#" | "!"
     private String mVarname ;
     private Word   mIndex ; 

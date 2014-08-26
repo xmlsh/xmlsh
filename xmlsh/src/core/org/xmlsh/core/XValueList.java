@@ -176,6 +176,11 @@ public class XValueList  extends AbstractList<XValue> implements IXValueContaine
         newList.add(item);
         return new XValue(  newList ); 
     }
+    @Override
+    public XValue asXValue()
+    {
+      return new XValue( TypeFamily.XTYPE , this );
+    }
   
 
 }

@@ -166,6 +166,11 @@ public class XValueProperty  extends XNamedValue  implements IXValueContainer<XV
       throw new UnsupportedOperationException("setAt is not implemented for XValueProperty");
 
     }
+    @Override
+    public XValue asXValue()
+    {
+      return new XValue( TypeFamily.XTYPE , this );
+    }
 	
 
 }

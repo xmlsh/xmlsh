@@ -8,6 +8,7 @@ package org.xmlsh.sh.core;
 
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.EvalEnv;
+import org.xmlsh.core.EvalFlag;
 import org.xmlsh.sh.grammar.Token;
 import org.xmlsh.sh.shell.ParseResult;
 import org.xmlsh.sh.shell.Shell;
@@ -45,6 +46,7 @@ public class JoinedWordList extends ListWord  {
 	protected ParseResult expandToResult(Shell shell, EvalEnv env, SourceLocation loc, ParseResult result) throws IOException,
 	CoreException
 	{
+	  env = evalEnv(env);
 
 		// Combine and wild card expand
 		for( Word w : mList ) {
@@ -54,6 +56,18 @@ public class JoinedWordList extends ListWord  {
 		return result;
 
 	}
+
+
+
+  /* (non-Javadoc)
+   * @see org.xmlsh.sh.core.Word#evalEnv(org.xmlsh.core.EvalEnv)
+   */
+  @Override
+  public EvalEnv evalEnv(EvalEnv env)
+  {
+    // TODO Auto-generated method stub
+    return env.withFlagSet(EvalFlag.JOIN_VALUES);
+  }
    
 
 }

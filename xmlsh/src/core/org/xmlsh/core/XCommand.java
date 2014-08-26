@@ -85,7 +85,7 @@ public abstract class XCommand extends AbstractCommand {
 		} 
 		catch( UnknownOption e )
 		{
-			usage( e.getMessage() );
+			error( e);
 			return -1;
 		}
 

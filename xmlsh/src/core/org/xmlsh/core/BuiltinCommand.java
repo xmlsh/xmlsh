@@ -60,7 +60,7 @@ public abstract class BuiltinCommand extends AbstractCommand implements ICommand
 		}  
 		catch( UnknownOption e )
 		{
-			usage( e.getMessage() );
+			error( e );
 			return -1;
 		}
 		catch( Exception e ) {

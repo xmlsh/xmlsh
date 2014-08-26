@@ -26,4 +26,5 @@ public interface  IXValueContainer<T extends IXValueContainer<T > >
 	public abstract void serialize(OutputStream out, SerializeOpts opts) throws IOException;
 	public abstract XValue append( XValue item );
   public abstract Iterator<XValue> iterator();
+  public abstract XValue asXValue();
 }
