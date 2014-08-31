@@ -6,8 +6,8 @@
 
 package org.xmlsh.sh.ui;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import org.xmlsh.core.StreamInputPort;
 import org.xmlsh.core.ThrowException;
@@ -53,7 +53,7 @@ public class XShellThread extends Thread {
 	private TextFieldStreamPipe cmdPipe ;
 	private SerializeOpts mSerializeOpts;
 	private XShell mXShell;
-	private static Logger mLogger = LogManager.getLogger(XShellThread.class);
+	private static Logger mLogger = LogManager.getLogger();
 
 
 	private void print(String s) throws UnsupportedEncodingException, IOException {

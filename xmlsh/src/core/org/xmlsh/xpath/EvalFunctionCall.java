@@ -13,8 +13,8 @@ import net.sf.saxon.om.SequenceIterator;
 import net.sf.saxon.s9api.XdmValue;
 import net.sf.saxon.trans.XPathException;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import org.xmlsh.core.ThrowException;
 import org.xmlsh.core.VariableInputPort;
@@ -31,7 +31,7 @@ import java.util.List;
 
 public class EvalFunctionCall extends ExtensionFunctionCall
 {
-	private static Logger	mLogger	= LogManager.getLogger(EvalFunctionCall.class);
+	private static Logger	mLogger	= LogManager.getLogger();
 
 	EvalFunctionCall()
 	{

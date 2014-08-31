@@ -29,7 +29,7 @@ import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XdmValue;
 import net.sf.saxon.type.Type;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.XValue;
@@ -44,7 +44,7 @@ import java.util.List;
  * 
  */
 public class S9Util extends XdmNode {
-	private static Logger mLogger = Logger.getLogger(S9Util.class);
+	private static Logger mLogger = org.apache.logging.log4j.LogManager.getLogger();
 
 	protected S9Util(NodeInfo node) {
 		super(node);

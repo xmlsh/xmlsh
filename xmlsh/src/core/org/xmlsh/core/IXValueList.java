@@ -1,46 +1,22 @@
 /**
  * $Id: $
  * $Date: $
- *
+ * 
  */
 
-package org.xmlsh.sh.ui;
+package org.xmlsh.core;
 
-import org.apache.logging.log4j.core.LogEvent;
-import org.apache.logging.log4j.core.appender.AbstractAppender;
-import org.apache.logging.log4j.core.layout.PatternLayout;
+public interface IXValueList<T extends IXValueList<T > > extends IXValueContainer<T>
+{
 
-import java.io.IOException;
-import java.io.OutputStream;
-public class ShellAppender extends AbstractAppender  {
-
-  private OutputStream os ;
-
-  static PatternLayout mLayout = PatternLayout.createDefaultLayout();
-  public ShellAppender(OutputStream os)
-  {
-    super("org.xmlsh.xmlshui", null, mLayout);
-    this.os =os;
-  }
-
-
-  @Override
-  public void append(LogEvent event)
-  {
-    try {
-      os.write( event.getMessage().getFormattedMessage().getBytes());
-    } catch (IOException e) {
-      
-    }
-    
-  }
+  public XValue setAt(int index, XValue value);
+  public XValue get(int index);
+  public XValue getAt(int index);
 
 }
 
-
-
 /*
- * Copyright (C) 2008-2014   David A. Lee.
+ * Copyright (C) 2008-2012 David A. Lee.
  * 
  * The contents of this file are subject to the "Simplified BSD License" (the "License");
  * you may not use this file except in compliance with the License. You may obtain a copy of the

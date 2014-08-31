@@ -7,8 +7,8 @@
 package org.xmlsh.sh.shell;
 
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.ICommand;
@@ -38,7 +38,7 @@ public abstract class Module implements IModule
   private HashMap<String, Class<?>> mClassCache = new HashMap<String, Class<?>>();
   protected HashMap<String, Boolean> mScriptCache = new HashMap<String, Boolean>();
   // Not static - use derived class
-  protected static Logger mLogger = LogManager.getLogger(Module.class);
+  protected static Logger mLogger = LogManager.getLogger();
  
   protected Module(String prefix)
   {

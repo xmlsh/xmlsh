@@ -18,7 +18,7 @@ import net.sf.saxon.s9api.XdmNodeKind;
 import net.sf.saxon.s9api.XdmValue;
 import net.sf.saxon.trans.XPathException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.IReleasable;
@@ -89,7 +89,7 @@ public class Util
 	public static byte mNewline[];
 	private static Pattern mURIPattern = Pattern.compile("[a-zA-Z][a-zA-Z0-9\\.+-]+:.*");
 	private static String mNewlineString;
-	private static Logger mLogger = Logger.getLogger( Util.class);
+	private static Logger mLogger = org.apache.logging.log4j.LogManager.getLogger( Util.class);
 
 
 
@@ -1751,11 +1751,6 @@ public class Util
   }
 
 
-  public static void writeXdmItem(XdmValue asXdmValue, Destination streamToDestination)
-  {
-    // TODO Auto-generated method stub
-    
-  }
 
 
 }

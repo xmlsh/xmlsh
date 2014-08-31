@@ -6,8 +6,8 @@
 
 package org.xmlsh.sh.ui;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import org.xmlsh.util.Util;
 
@@ -38,7 +38,7 @@ import javax.swing.text.html.HTMLDocument;
 
 public class TextResultPane implements ITextAreaComponent {
 	private JTextPane mText;
-	private static Logger mLogger = LogManager.getLogger(TextResultPane.class);
+	private static Logger mLogger = LogManager.getLogger();
 
 	public static enum OutputType {
 		PLAIN_TEXT, STYLED_TEXT, HTML

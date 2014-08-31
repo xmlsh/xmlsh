@@ -26,7 +26,7 @@ import java.util.TreeSet;
 /*
  * A list of objects indexable by string or index (1 based for strings)
  */
-public class XValueList  extends AbstractList<XValue> implements IXValueContainer<XValueList> 
+public class XValueList  extends AbstractList<XValue> implements IXValueContainer<XValueList>, IXValueList<XValueList> 
 {
 	private  	List<XValue>   mList;
 
@@ -48,7 +48,7 @@ public class XValueList  extends AbstractList<XValue> implements IXValueContaine
 	}
 
 	public XValue getAt( int pos) {
-		if( pos < 0 || pos > mList.size() )
+		if( pos < 0 || pos >= mList.size() )
 			return null ;
 		return mList.get(pos);
 	}
@@ -64,29 +64,16 @@ public class XValueList  extends AbstractList<XValue> implements IXValueContaine
 	}
 
 
-	// convert string to 0 basd index 
-	@Override
-	public XValue get(String name) {
-		int ind = Util.parseInt(name, 0);
-		return getAt(ind);
-	}
 
 	@Override
 	public void removeAll() {
 		mList.clear();
 
 	}
-
-	@Override
-	public XValue put(String key, XValue value)
-	{
-		int ind = Util.parseInt(key, 0);
-		if( ind < 0 || ind >= size() )
-			throw new ArrayIndexOutOfBoundsException();
-		return mList.set(ind, value);
-
-	}
 	
+  /* (non-Javadoc)
+   * @see org.xmlsh.core.IXValueList#setAt(int, org.xmlsh.core.XValue)
+   */
   @Override
   public XValue setAt(int index, XValue value)
   {
@@ -143,7 +130,10 @@ public class XValueList  extends AbstractList<XValue> implements IXValueContaine
 
 	}
 
-	@Override
+	/* (non-Javadoc)
+   * @see org.xmlsh.core.IXValueList#get(int)
+   */
+  @Override
 	public XValue get(int index)
 	{
 		return getAt(index);
@@ -152,21 +142,18 @@ public class XValueList  extends AbstractList<XValue> implements IXValueContaine
 	@Override
     public boolean isMap()
     {
-	    // TODO Auto-generated method stub
 	    return false;
     }
 
 	@Override
     public boolean isList()
     {
-	    // TODO Auto-generated method stub
 	    return true;
     }
 
 	@Override
     public boolean isAtomic()
     {
-	    // TODO Auto-generated method stub
 	    return false;
     }
 
@@ -174,12 +161,42 @@ public class XValueList  extends AbstractList<XValue> implements IXValueContaine
     public XValue append(XValue item) {
         XValueList newList = new XValueList(this);
         newList.add(item);
-        return new XValue(  newList ); 
+        return new XValue( TypeFamily.XTYPE , newList ); 
     }
     @Override
     public XValue asXValue()
     {
       return new XValue( TypeFamily.XTYPE , this );
+    }
+    @Override
+    public boolean isContainer()
+    {
+      return true;
+    }
+    @Override
+    public boolean isSequence()
+    {
+      return false;
+    }
+    @Override
+    public IXValueContainer<? extends IXValueContainer<?>> asXContainer()
+    {
+      return this;
+    }
+    @Override
+    public IXValueMap<? extends IXValueMap<?>> asXMap()
+    {
+      return  null;
+    }
+    @Override
+    public IXValueList<? extends IXValueList<?>> asXList()
+    {
+      return this;
+    }
+    @Override
+    public IXValueSequence<? extends IXValueSequence<?>> asXSequence()
+    {
+      return null;
     }
   
 

@@ -21,9 +21,10 @@ import java.util.TreeSet;
  * Default starts at index 1 (not 0)
  * 
  */
-public class XValueArray extends AbstractList<XValue> implements IXValueContainer<XValueArray> 
+public class XValueArray extends AbstractList<XValue> implements IXValueContainer<XValueArray> , IXValueList<XValueArray> 
 {
-	private     TreeMap<Integer,XValue>   mArray;
+	private static XValueArray _emptyArray = new XValueArray();
+  private     TreeMap<Integer,XValue>   mArray;
 	private     int maxIndex = -1; // maximum integer value
 	public XValueArray() {
 		mArray = new TreeMap<>();
@@ -41,15 +42,6 @@ public class XValueArray extends AbstractList<XValue> implements IXValueContaine
 
 
 
-
-	@Override
-	public XValue get(String name) {
-		int ind = Util.parseInt(name, -1);
-		if( ind < 0 || ind > maxIndex  )
-			throw new ArrayIndexOutOfBoundsException() ;
-
-		return mArray.get(Integer.valueOf(ind));
-	}
 
 
 	@Override
@@ -73,16 +65,6 @@ public class XValueArray extends AbstractList<XValue> implements IXValueContaine
 	{
 		mArray.put( Integer.valueOf(++maxIndex), arg);
 		return true ;
-	}
-
-	@Override
-	public XValue put(String key, XValue value)
-	{
-		int ind = Util.parseInt(key, -1);
-		if( ind < 0 )
-			throw new ArrayIndexOutOfBoundsException() ;
-
-		return  mArray.put(Integer.valueOf(ind), value);
 	}
 
 	@Override
@@ -193,6 +175,52 @@ public class XValueArray extends AbstractList<XValue> implements IXValueContaine
     public XValue asXValue()
     {
       return new XValue( TypeFamily.XTYPE , this );
+    }
+
+    @Override
+    public boolean isContainer()
+    {
+      return true ;
+    }
+
+    @Override
+    public boolean isSequence()
+    {
+     return false ;
+    }
+
+
+    @Override
+    public IXValueContainer<? extends IXValueContainer<?>> asXContainer()
+    {
+      // TODO Auto-generated method stub
+      return this;
+    }
+
+    @Override
+    public IXValueMap<? extends IXValueMap<?>> asXMap()
+    {
+      // TODO Auto-generated method stub
+      return null;
+    }
+
+    @Override
+    public IXValueList<? extends IXValueList<?>> asXList()
+    {
+      // TODO Auto-generated method stub
+      return this;
+    }
+
+    @Override
+    public IXValueSequence<? extends IXValueSequence<?>> asXSequence()
+    {
+      // TODO Auto-generated method stub
+      return null;
+    }
+
+    public static Object emptyArray()
+    {
+      return _emptyArray;
     }
 
 

@@ -6,14 +6,14 @@
 
 package org.xmlsh.sh.shell;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.xml.transform.ErrorListener;
 import javax.xml.transform.TransformerException;
 
 public class XmlshErrorListener implements ErrorListener {
-	private Logger mLogger = LogManager.getLogger(XmlshErrorListener.class);
+	private Logger mLogger = LogManager.getLogger();
 
 
 	private String formatError( TransformerException e , boolean isFatal )

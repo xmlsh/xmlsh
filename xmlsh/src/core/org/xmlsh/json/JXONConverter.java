@@ -13,8 +13,8 @@ import net.sf.saxon.s9api.Serializer;
 import net.sf.saxon.s9api.WhitespaceStrippingPolicy;
 import net.sf.saxon.s9api.XdmNode;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.XValue;
@@ -67,7 +67,7 @@ public class JXONConverter extends JXConverter
 	static final QName	 kELEM_ARRAY	 = new QName(kJXML_URI, "array");	 // A  JSON ARRAY
 	static final QName	 kELEM_BOOLEAN	 = new QName(kJXML_URI, "boolean");	 // A JSON Literal (true,false)
 	static final QName	 kELEM_NULL	     = new QName(kJXML_URI, "null");	 // A JSON Literal null
-	public static Logger	mLogger	     = LogManager.getLogger(JXONConverter.class);
+	public static Logger	mLogger	     = LogManager.getLogger();
 
 	class JConverter extends JSONConverter
 	{

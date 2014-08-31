@@ -6,7 +6,7 @@
 
 package org.xmlsh.util;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
@@ -19,7 +19,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 public class XFile /* implements XSerializble */ {
-	private static Logger mLogger = Logger.getLogger( XFile.class);
+	private static Logger mLogger = org.apache.logging.log4j.LogManager.getLogger( XFile.class);
 	private File mFile;
 
 

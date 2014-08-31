@@ -6,8 +6,8 @@
 
 package org.xmlsh.sh.shell;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import org.xmlsh.util.Util;
 
@@ -62,7 +62,7 @@ public class IFS
 	private Pattern  leading_ws;   // Leading IFSWS pattern
 	private Pattern  trailing_ws;  // Trailing IFSWS pattern
 	private Pattern  delim;		      // intraword delimiter pattern
-	private static Logger mLogger = LogManager.getLogger(IFS.class);
+	private static Logger mLogger = LogManager.getLogger();
 
 
 	public IFS(String sIFS)

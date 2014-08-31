@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+    <appender class="org.apache.log4j.DailyRollingFileAppender" name="A1">
+        <param value="true" name="Append"/>
+        <param value="'.'yyyy-MM-dd" name="DatePattern"/>
+        <param value="/odd/odd.log" name="File"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param value="%d{ISO8601} %-5p [%t] %c conn=%X{db.connection} - %m%n" name="ConversionPattern"/>
+        </layout>
+    </appender>
+    <appender class="odd.logging.AlerterAppender" name="ALERT">
+        <param value="WARN" name="Threshold"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param value="%d{ISO8601} %-5p [%t] %c conn=%X{db.connection} - %m%n" name="ConversionPattern"/>
+        </layout>
+    </appender>
+    <logger name="com.amazonaws">
+        <level value="warn"/>
+    </logger>
+    <logger name="httpclient">
+        <level value="warn"/>
+    </logger>
+    <logger name="org.apache.fop">
+        <level value="error"/>
+    </logger>
+    <logger name="org.apache.http">
+        <level value="warn"/>
+    </logger>
+    <root>
+        <level value="debug"/>
+        <appender-ref ref="A1"/>
+        <appender-ref ref="ALERT"/>
+    </root>
+</log4j:configuration>>

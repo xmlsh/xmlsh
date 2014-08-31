@@ -8,9 +8,10 @@ package org.xmlsh.sh.shell;
 
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.XdmItem;
+import org.apache.commons.io.output.StringBuilderWriter;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import org.xmlsh.core.CommandFactory;
 import org.xmlsh.core.CoreException;
@@ -61,6 +62,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Reader;
+import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Constructor;
 import java.net.MalformedURLException;
@@ -106,7 +108,7 @@ public class Shell implements AutoCloseable, Closeable
     }
   }
 
-  static Logger mLogger = LogManager.getLogger(Shell.class);
+  static Logger mLogger = LogManager.getLogger();
   private ShellOpts mOpts;
 
   private FunctionDefinitions mFunctions = null;
@@ -543,12 +545,7 @@ public class Shell implements AutoCloseable, Closeable
 
       }
 
-      catch (Exception e) {
-        // System.out.println("NOK.");
-        printErr(e.getMessage());
-        mLogger.error("Exception parsing statement", e);
-        parser.ReInit(newParserReader(false), source);
-      } catch (Error e) {
+      catch (Exception | Error e ) {
         printErr(e.getMessage());
         mLogger.error("Exception parsing statement", e);
         parser.ReInit(newParserReader(false), source);
@@ -807,15 +804,8 @@ public class Shell implements AutoCloseable, Closeable
 
       setCurrentLocation(loc);
 
-      if(mOpts.mExec) {
-        String out = c.toString(true);
-        if(out.length() > 0) {
-          if(loc != null) {
-            printErr("+ " + loc.format(mOpts.mLocationFormat));
-            printErr(out);
-          }
-          else printErr("+ " + out);
-        }
+      if(mOpts.mExec|| mOpts.mTrace ) {
+        logExec(c,mOpts.mExec, loc);
       }
 
       try {
@@ -872,9 +862,63 @@ public class Shell implements AutoCloseable, Closeable
     }
   }
 
+  public void logExec(Command c, boolean bExec , SourceLocation loc)
+  {
+    
+    StringBuilderWriter sw = new StringBuilderWriter();
+    PrintWriter w = new PrintWriter(sw);
+
+    c.print(w, bExec);
+    w.flush();
+    
+    StringBuilder sb = sw.getBuilder();
+    
+    
+    if(sb.length() > 0) {
+        String scmd = sb.toString();
+        if( mOpts.mTrace && mLogger.isEnabled(mOpts.mTraceLevel)) {
+          traceExec( loc , scmd );
+        }
+        if( mOpts.mExec ) {
+          if(loc != null ) {
+            printErr("+ " + loc.format(mOpts.mLocationFormat));
+            printErr(scmd);
+          }
+          else 
+            printErr("+ " + scmd);
+        }
+    }
+  }
+
   /*
    * Returns TRUE if the shell is currently in a condition
    */
+
+  private void traceExec(SourceLocation loc, String scmd)
+  {
+    String strace = 
+        SourceLocation.formatLocation( loc , mOpts.mLocationFormat ) + " " + scmd ;
+    
+    if( mOpts.mTraceFile != null ) {
+      String sEnc = mOpts.mSerialize.getOutputTextEncoding();
+      try {
+        OutputPort op = getEnv().getOutput( mOpts.mTraceFile , true );
+        try ( OutputStream os = op.asOutputStream(getSerializeOpts()) ){
+          os.write( strace.getBytes(sEnc) );
+          os.write(  Util.getNewline(getSerializeOpts()) );
+          os.flush();
+        }
+      } catch (IOException | CoreException e) {
+        mLogger.debug("Exception tracing output", e);
+      }
+      
+    }
+    else
+      mLogger.log( mOpts.mTraceLevel ,  strace );
+      
+      
+    
+  }
 
   public ThreadGroup newThreadGroup(String name)
   {

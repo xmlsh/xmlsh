@@ -29,9 +29,10 @@ import java.util.TreeSet;
 /*
  * A list of objects indexable by string or index (1 based for strings)
  */
-public class XValuePropertyList  implements IXValueContainer<XValuePropertyList> 
+public class XValuePropertyList  implements     IXValueMap<XValuePropertyList>, IXValueList<XValuePropertyList>
 {
-	private  	List<XValueProperty>   mList;
+	private static final XValuePropertyList _emptyList = new XValuePropertyList();
+  private  	List<XValueProperty>   mList;
 
 	public XValuePropertyList(XValueProperty p) {
 		mList = new LinkedList<>();
@@ -89,7 +90,7 @@ public class XValuePropertyList  implements IXValueContainer<XValuePropertyList>
 		  return new XValue(TypeFamily.XTYPE,null);
 		if( list.size() == 1 )
 		  return list.get(0);
-		return new XValue( list );
+		return new XValue(TypeFamily.XTYPE, list );
 		
 	}
 
@@ -231,6 +232,56 @@ public class XValuePropertyList  implements IXValueContainer<XValuePropertyList>
     {
       return new XValue( TypeFamily.XTYPE , this );
 
+    }
+
+    @Override
+    public boolean isContainer()
+    {
+      return true;
+    }
+
+    @Override
+    public boolean isSequence()
+    {
+      return false;
+    }
+
+    @Override
+    public IXValueContainer<? extends IXValueContainer<?>> asXContainer()
+    {
+      return this;
+    }
+
+    @Override
+    public IXValueMap<? extends IXValueMap<?>> asXMap()
+    {
+      // TODO Auto-generated method stub
+      return this;
+    }
+
+
+    @Override
+    public IXValueList<? extends IXValueList<?>> asXList()
+    {
+      return this;
+    }
+
+    @Override
+    public IXValueSequence<? extends IXValueSequence<?>> asXSequence()
+    {
+      return null;
+    }
+
+    @Override
+    public XValue get(int index)
+    {
+      return getAt(index);
+    }
+
+    public static XValuePropertyList emptyPropertyList()
+    {
+
+      return _emptyList ;
     }
 
 }

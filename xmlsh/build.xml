@@ -77,6 +77,10 @@ version.version=${version}
     	 				<include name="**/*.xml"/>
     	                <include name="**/*.xquery"/>
     	 			</fileset>
+    	 	        <fileset dir="src">
+    	            	<include name="log4j2.xml"/>
+    	 	       </fileset>
+    	 	
     	        </copy>
 
    	</target>

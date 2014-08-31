@@ -1,46 +1,47 @@
 /**
  * $Id: $
  * $Date: $
- *
+ * 
  */
 
-package org.xmlsh.sh.ui;
+package org.xmlsh.core;
 
-import org.apache.logging.log4j.core.LogEvent;
-import org.apache.logging.log4j.core.appender.AbstractAppender;
-import org.apache.logging.log4j.core.layout.PatternLayout;
+import org.xmlsh.sh.shell.SerializeOpts;
 
 import java.io.IOException;
 import java.io.OutputStream;
-public class ShellAppender extends AbstractAppender  {
-
-  private OutputStream os ;
-
-  static PatternLayout mLayout = PatternLayout.createDefaultLayout();
-  public ShellAppender(OutputStream os)
-  {
-    super("org.xmlsh.xmlshui", null, mLayout);
-    this.os =os;
-  }
-
-
-  @Override
-  public void append(LogEvent event)
-  {
-    try {
-      os.write( event.getMessage().getFormattedMessage().getBytes());
-    } catch (IOException e) {
-      
-    }
-    
-  }
-
-}
-
 
 
 /*
- * Copyright (C) 2008-2014   David A. Lee.
+ * All FamilyType.XTYPE Objects derive implement this interface
+ * 
+ */
+public interface IXValue<T extends IXValue<T>>
+{
+
+  public boolean isEmpty();
+  public boolean isMap();
+  public boolean isList();  
+  public boolean isAtomic();
+  public boolean isContainer();
+  public boolean isSequence();
+  public void serialize(OutputStream out, SerializeOpts opts) throws IOException;
+  public XValue append(XValue item);
+  public XValue asXValue();
+  public IXValueContainer<? extends IXValueContainer<?> > asXContainer();
+  public IXValueMap<? extends IXValueMap<?>> asXMap();
+  public IXValueList<? extends IXValueList<?>> asXList();
+  public IXValueSequence<? extends IXValueSequence<?>> asXSequence();
+
+  
+  
+  
+  
+
+}
+
+/*
+ * Copyright (C) 2008-2012 David A. Lee.
  * 
  * The contents of this file are subject to the "Simplified BSD License" (the "License");
  * you may not use this file except in compliance with the License. You may obtain a copy of the

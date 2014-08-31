@@ -6,8 +6,8 @@
 
 package org.xmlsh.sh.ui;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.util.Util;
@@ -30,7 +30,7 @@ public class TextFieldStreamPipe implements Closeable {
 	private PipedOutputStream mOut;
 	private PipedInputStream mIn;
 
-	private static Logger mLogger  = LogManager.getLogger(TextFieldStreamPipe.class);
+	private static Logger mLogger  = LogManager.getLogger();
 
 	/**
 	 * @wbp.parser.entryPoint

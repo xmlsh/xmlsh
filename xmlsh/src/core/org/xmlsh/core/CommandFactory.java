@@ -6,7 +6,7 @@
 
 package org.xmlsh.core;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 import org.xmlsh.builtin.commands.colon;
 import org.xmlsh.builtin.commands.declare;
@@ -43,6 +43,7 @@ import org.xmlsh.builtin.commands.xversion;
 import org.xmlsh.builtin.commands.xwhich;
 import org.xmlsh.java.commands.jset;
 import org.xmlsh.json.commands.jsonread;
+import org.xmlsh.properties.commands.propread;
 import org.xmlsh.sh.core.FunctionDeclaration;
 import org.xmlsh.sh.core.SourceLocation;
 import org.xmlsh.sh.shell.IModule;
@@ -64,7 +65,7 @@ public class CommandFactory
 	public static final String kCOMMANDS_HELP_XML = "/org/xmlsh/resources/help/commands.xml";
 	public static final String kFUNCTIONS_HELP_XML = "/org/xmlsh/resources/help/functions.xml";
 
-	private static Logger mLogger =  Logger.getLogger( CommandFactory.class);
+	private static Logger mLogger =  org.apache.logging.log4j.LogManager.getLogger( CommandFactory.class);
 	private static CommandFactory _instance = null ;
 
 	private HashMap<String,Class<? extends ICommand>>		mBuiltinCommands = new HashMap<String,Class<? extends ICommand>>();
@@ -112,6 +113,7 @@ public class CommandFactory
 		addBuiltinCommand("xmkpipe" , xmkpipe.class);
 		addBuiltinCommand("printvar" , printvar.class);
 		addBuiltinCommand("jsonread" , jsonread.class);
+    addBuiltinCommand("propread" , propread.class);
 		addBuiltinCommand("trap" , trap.class);
 
 

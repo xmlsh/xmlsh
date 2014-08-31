@@ -10,6 +10,8 @@ import org.xmlsh.core.CoreException;
 import org.xmlsh.core.EvalEnv;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.XValueArray;
+import org.xmlsh.core.XValueProperties;
+import org.xmlsh.core.XValuePropertyList;
 import org.xmlsh.core.XValueSequence;
 import org.xmlsh.core.XVariable;
 import org.xmlsh.core.XVariable.XVarFlag;
@@ -141,11 +143,11 @@ public class Assign {
     case "+=" :
       return XValue.nullValue();
     case "[]" :
-       return new XValue( new XValueArray());
+       return new XValue( TypeFamily.XTYPE , XValueArray.emptyArray() );
     case "{}" :
-      return new XValue(new  org.xmlsh.core.XValuePropertyList() );
+      return new XValue( TypeFamily.XTYPE , XValuePropertyList.emptyPropertyList() );
     case "()" :
-      return  new XValue( XValueSequence.emptySequence());
+      return  new XValue( TypeFamily.XTYPE , XValueSequence.emptySequence());
     }
     return XValue.nullValue();
   }

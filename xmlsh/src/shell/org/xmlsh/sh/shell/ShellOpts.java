@@ -6,6 +6,8 @@
 
 package org.xmlsh.sh.shell;
 
+import org.apache.logging.log4j.Level;
+
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options.OptionValue;
 import org.xmlsh.core.XValue;
@@ -20,8 +22,11 @@ public class ShellOpts
   public boolean mThrowOnError = false;		// -e
   public boolean mLocation = true;       // print location on error
   public boolean mLocationFormat = defaultLocationFormat();      // TODO : convert to enum
+  public boolean mTrace = false ;
+  public String  mTraceFile = null;
 
   SerializeOpts mSerialize;
+  public Level mTraceLevel = Level.INFO ;
 
   public ShellOpts()
   {
@@ -44,6 +49,8 @@ public class ShellOpts
     mLocation = that.mLocation;
     mSerialize = new SerializeOpts(that.mSerialize);
     mLocationFormat = that.mLocationFormat;
+    mTrace = that.mTrace;
+    mTraceFile = that.mTraceFile;
 
   }
 
@@ -59,6 +66,10 @@ public class ShellOpts
       mThrowOnError = on;
     else if(opt.equals("location"))
       mLocation = on;
+    else 
+      if(opt.equals("trace"))
+        mTrace = on ;
+      
     else mSerialize.setOption(opt, on);
 
   }
@@ -69,7 +80,11 @@ public class ShellOpts
     // No shell options take a string value so just defer to serialization options
     if(opt.equals("location-format"))
       mLocationFormat = Util.parseBoolean(value.toString(),mLocationFormat);
-
+    else
+      if(
+    opt.equals("trace-file"))
+      mTraceFile = value.toString();
+    
     mSerialize.setOption(opt, value);
 
   }

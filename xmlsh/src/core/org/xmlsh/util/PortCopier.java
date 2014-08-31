@@ -6,8 +6,8 @@
 
 package org.xmlsh.util;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import org.xmlsh.core.InputPort;
 import org.xmlsh.sh.shell.SerializeOpts;
@@ -16,7 +16,7 @@ import java.io.OutputStream;
 
 public class PortCopier extends AbstractCopier
 {
-	private 	static 	Logger	mLogger  = LogManager.getLogger(PortCopier.class);
+	private 	static 	Logger	mLogger  = LogManager.getLogger();
 	private		volatile    InputPort	mIn;
 	private		volatile    OutputStream	mOut;
 

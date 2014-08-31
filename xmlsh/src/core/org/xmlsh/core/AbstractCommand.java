@@ -6,7 +6,7 @@
 
 package org.xmlsh.core;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 import org.xmlsh.sh.core.SourceLocation;
 import org.xmlsh.sh.shell.SerializeOpts;
@@ -25,7 +25,7 @@ import javax.xml.transform.Source;
 
 public abstract class AbstractCommand implements ICommand {
 
-	protected static Logger mLogger = Logger.getLogger(AbstractCommand.class);
+	protected static Logger mLogger = org.apache.logging.log4j.LogManager.getLogger();
 
 	protected	Shell mShell;
 	protected XEnvironment mEnvironment;

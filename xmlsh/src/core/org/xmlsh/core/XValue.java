@@ -32,7 +32,7 @@ import net.sf.saxon.value.FloatValue;
 import net.sf.saxon.value.IntegerValue;
 import net.sf.saxon.value.Value;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 import org.xmlsh.core.XVariable.XVarFlag;
 import org.xmlsh.json.JSONUtils;
@@ -72,7 +72,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 public class XValue implements Iterable<XValue>{
   
   
-	private static Logger mLogger = Logger.getLogger( XValue.class);
+	private static Logger mLogger = org.apache.logging.log4j.LogManager.getLogger( XValue.class);
 
 	private     TypeFamily mTypeFamily = null; // default null defers to a runtime evaluatiion
 	private		 Object	mValue;		// String , XdmItem , Object , List<XValue> ... 
@@ -130,7 +130,7 @@ public class XValue implements Iterable<XValue>{
     
   }
   
-	private void _initSequence(XValueSequence seq)
+	private void _initSequence(IXValueSequence seq)
   {
     this.mTypeFamily = TypeFamily.XTYPE ;
     this.mValue = seq == null ?  XValueSequence.emptySequence() : seq ;
@@ -253,10 +253,10 @@ public class XValue implements Iterable<XValue>{
 		this(TypeFamily.XDM, v == null ? null :  XMLUtils.simplify(v) );
 	}
 
-	public XValue(XValueMap map) {
+	public XValue(IXValueMap map) {
 	    this(TypeFamily.XTYPE , map );
     }
-   public XValue(XValueList list) {
+   public XValue(IXValueList list) {
         this(TypeFamily.XTYPE , list );
     }
    
@@ -282,7 +282,7 @@ public class XValue implements Iterable<XValue>{
     
     }
 
-    public XValue( XValueSequence seq ) {
+    public XValue( IXValueSequence seq ) {
      this( TypeFamily.XTYPE , seq ); 
       
     }

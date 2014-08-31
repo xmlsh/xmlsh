@@ -1,5 +1,6 @@
 package org.xmlsh.types;
 
+import org.xmlsh.core.IXValueMap;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.XValueMap;
@@ -59,7 +60,7 @@ public class XTypeUtils
 
 
 
-	public static XValueMap newMapFromList(List<XValue> value) throws InvalidArgumentException {
+	public static IXValueMap newMapFromList(List<XValue> value) throws InvalidArgumentException {
 
 		if( value.isEmpty() )
 			return new XValueMap(); ;

@@ -6,8 +6,8 @@
 
 package org.xmlsh.json;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
@@ -73,7 +73,7 @@ public class JSONUtils {
 	private static volatile  XmlFactory  _theXmlFactory = null ;
 	private static volatile  JacksonXmlModule _theXmlModule = null;
 	private static volatile  XmlMapper _theXmlMapper = null;
-	private static Logger mLogger = LogManager.getLogger(JSONUtils.class);
+	private static Logger mLogger = LogManager.getLogger();
 
     private final static JavaType JSON_NODE_TYPE = SimpleType.constructUnsafe(JsonNode.class);
 

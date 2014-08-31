@@ -24,9 +24,9 @@ import org.xmlsh.util.Util;
  * Since an XValue is a sequence itself then 
  * only lists of > 1 XValues need be implemented
  */
-public  class XValueSequence implements Iterable<XValue>  , IXValueContainer<XValueProperty> 
+public  class XValueSequence implements Iterable<XValue>  ,    IXValueSequence<XValueSequence>
 {
-  private static XValueSequence _emptySequence = new XValueSequence();
+  private static IXValueSequence _emptySequence = new XValueSequence();
 
   private List<XValue> mList;
   
@@ -49,11 +49,15 @@ public  class XValueSequence implements Iterable<XValue>  , IXValueContainer<XVa
   }
   
   
-  public static XValueSequence emptySequence() {
+  public static IXValueSequence emptySequence() {
     return _emptySequence;
   }
   
 
+  /* (non-Javadoc)
+   * @see org.xmlsh.core.IXValueSequence#addValue(org.xmlsh.core.XValue)
+   */
+  @Override
   public void addValue(XValue v)
   {
     for( XValue v2 : v ) {
@@ -109,23 +113,11 @@ public  class XValueSequence implements Iterable<XValue>  , IXValueContainer<XVa
   }
 
 
-  @Override
-  public XValue put(String key, XValue value)
-  {
-    throw new UnsupportedOperationException("put is not implemented for XValueSequence");
-
-  
-  }
 
 
-  @Override
-  public XValue get(String name)
-  {
-    int ind = Util.parseInt(name, 0);
-    return getAt(ind);
-  }
-
-
+  /* (non-Javadoc)
+   * @see org.xmlsh.core.IXValueSequence#getAt(int)
+   */
   @Override
   public XValue getAt(int index)
   {
@@ -169,13 +161,16 @@ public  class XValueSequence implements Iterable<XValue>  , IXValueContainer<XVa
   @Override
   public XValue append(XValue item)
   {
-    XValueSequence s = new XValueSequence(this);
+    IXValueSequence s = new XValueSequence(this);
     s.addValue(item);
 
     return new XValue( TypeFamily.XTYPE , s );
     
   }
 
+  /* (non-Javadoc)
+   * @see org.xmlsh.core.IXValueSequence#setAt(int, org.xmlsh.core.XValue)
+   */
   @Override
   public XValue setAt(int index, XValue value)
   {
@@ -201,5 +196,55 @@ public  class XValueSequence implements Iterable<XValue>  , IXValueContainer<XVa
   public XValue asXValue()
   {
     return new XValue( TypeFamily.XTYPE , this );
+  }
+
+
+
+  @Override
+  public boolean isContainer()
+  {
+    return true;
+  }
+
+
+
+  @Override
+  public boolean isSequence()
+  {
+    return true;
+  }
+
+
+
+
+  @Override
+  public IXValueContainer<? extends IXValueContainer<?>> asXContainer()
+  {
+    return this;
+  }
+
+
+
+  @Override
+  public IXValueMap<? extends IXValueMap<?>> asXMap()
+  {
+    return null;
+  }
+
+
+
+  @Override
+  public IXValueList<? extends IXValueList<?>> asXList()
+  {
+    return new XValueList(mList);
+  }
+
+
+
+  @Override
+  public IXValueSequence<? extends IXValueSequence<?>> asXSequence()
+  {
+    // TODO Auto-generated method stub
+    return this;
   }
 }

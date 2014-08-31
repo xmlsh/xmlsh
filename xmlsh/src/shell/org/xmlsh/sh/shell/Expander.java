@@ -13,8 +13,8 @@ import net.sf.saxon.s9api.XQueryEvaluator;
 import net.sf.saxon.s9api.XQueryExecutable;
 import net.sf.saxon.s9api.XdmValue;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.EvalEnv;
@@ -42,7 +42,7 @@ import java.util.Map.Entry;
 
 public class Expander
 {
-  private static Logger mLogger = LogManager.getLogger(Expander.class);
+  private static Logger mLogger = LogManager.getLogger();
 
   public Shell mShell;
   private SourceLocation mLocation;

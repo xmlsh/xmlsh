@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+	<Properties>
+
+		<!-- Logfile location env XLOGFILE env HOME/xmlsh.log sys user.home/xmlsh.log 
+			sys user.dir/xmlsh.log ./xmlsh.log -->
+		<Property name="user.dir">.</Property>
+		<Property name="user.home">${sys:user.dir}</Property>
+		<Property name="HOME">${sys:user.home}</Property>
+		<Property name="home">${env:HOME}</Property>
+		<Property name="XLOGFILE">${env:HOME}/xmlsh.log</Property>
+		<Property name="logfile">${env:XLOGFILE}</Property>
+	</Properties>
+
+
+	<Appenders>
+		<File name="A1" fileName="${logfile}" append="false">
+			<PatternLayout pattern="%d %-5r %-5p [%t] %c{2} - %m%n" />
+		</File>
+		<Console name="STDOUT">
+			<PatternLayout pattern="%m MDC%X%n" />
+		</Console>
+	</Appenders>
+	<Loggers>
+		<logger name="org.xmlsh" level="INFO">
+			<AppenderRef ref="A1" />
+		</logger>
+		<logger name="httpclient" level="WARN" />
+		<logger name="http.wire" level="WARN" />
+		<logger name="org.apache.http" level="WARN" />
+		<logger name="com.amazonaws" level="WARN" />
+		<logger name="org.apache.http.impl.conn" level="WARN" />
+		<Root level="ERROR">
+			<AppenderRef ref="A1" />
+		</Root>
+	</Loggers>
+</Configuration>
+

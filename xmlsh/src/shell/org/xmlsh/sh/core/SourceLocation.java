@@ -15,6 +15,7 @@ import org.xmlsh.util.Util;
 
 public class SourceLocation implements Cloneable {
 	private static final String kLOCATION_FORMAT = "[%s%s line: %d]";
+  private static final String _unknown = "[-]";
 	private    String  mName;  // "" , script , source , function
 	private		String	mSource;
 	private		int		mStartLine;
@@ -199,6 +200,13 @@ public class SourceLocation implements Cloneable {
 		return false ;
 	}
 
+	public static String formatLocation( SourceLocation loc , boolean bFormat ) {
+	  if( loc == null )
+	    return _unknown;
+	  else
+	    return loc.format(bFormat);
+	  
+	}
 
 
 }

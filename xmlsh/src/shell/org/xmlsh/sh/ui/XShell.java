@@ -6,8 +6,8 @@
 
 package org.xmlsh.sh.ui;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import org.xmlsh.core.Options;
 import org.xmlsh.core.XValue;
@@ -72,7 +72,7 @@ public class XShell {
 	private JTextField mCommandInputField;
 	private SerializeOpts mSerializeOpts ;
 	private final ButtonGroup buttonGroup = new ButtonGroup();
-	private static Logger mLogger = LogManager.getLogger(XShell.class);
+	private static Logger mLogger = LogManager.getLogger();
 
 	/**
 	 * Launch the application.

@@ -6,7 +6,7 @@
 
 package org.xmlsh.core;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 import org.xmlsh.sh.core.SourceLocation;
 import org.xmlsh.sh.shell.IModule;
@@ -25,7 +25,7 @@ import java.util.List;
 
 public class ScriptCommand implements ICommand {
 
-	private static Logger mLogger = Logger.getLogger(ScriptCommand.class);
+	private static Logger mLogger = org.apache.logging.log4j.LogManager.getLogger();
 	private String	mScriptName;
 	private InputStream mScript;
 	private boolean mSourceMode;

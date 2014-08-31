@@ -10,8 +10,8 @@ import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import org.xml.sax.InputSource;
 import org.xmlsh.json.JSONUtils;
@@ -42,7 +42,7 @@ public class StreamInputPort extends InputPort  {
 
 	// An Input Port may be either a Stream or an XML value
 	private InputStream mStream;
-	private Logger mLogger = LogManager.getLogger(StreamInputPort.class);
+	private Logger mLogger = LogManager.getLogger();
 
 	public StreamInputPort(InputStream is, String systemId ) {
 		this(is,systemId,false);

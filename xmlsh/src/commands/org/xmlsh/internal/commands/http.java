@@ -32,9 +32,9 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.HttpConnectionParamBean;
 import org.apache.http.params.HttpParams;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InputPort;
@@ -65,12 +65,17 @@ public class http extends XCommand {
 
 	private static Logger mLogger = LogManager.getLogger( http.class);
 
+	/*
+	 * Moved to config file
+	 *
+	 *
 	static {
 		LogManager.getLogger("httpclient").setLevel(Level.WARN);
 		LogManager.getLogger("http.wire").setLevel(Level.WARN);
 		LogManager.getLogger("org.apache.http").setLevel(Level.WARN);
 	}
 
+  */
 
 
 	@Override

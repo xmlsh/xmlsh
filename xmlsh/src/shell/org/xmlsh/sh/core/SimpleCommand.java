@@ -6,8 +6,8 @@
 
 package org.xmlsh.sh.core;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import org.xmlsh.core.CommandFactory;
 import org.xmlsh.core.ICommand;
@@ -23,7 +23,7 @@ import java.util.List;
 public class SimpleCommand extends Command {
 
 
-	private static Logger mLogger = LogManager.getLogger(SimpleCommand.class);
+	private static Logger mLogger = LogManager.getLogger();
 
 	private CommandPrefix  mPrefix;
 	private Word			mCommand;

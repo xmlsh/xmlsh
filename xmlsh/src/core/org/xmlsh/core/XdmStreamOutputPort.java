@@ -14,8 +14,8 @@ import net.sf.saxon.s9api.Serializer;
 import net.sf.saxon.s9api.XdmDestination;
 import net.sf.saxon.trans.XPathException;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import org.xml.sax.ContentHandler;
 import org.xmlsh.sh.shell.SerializeOpts;
@@ -49,7 +49,7 @@ public class XdmStreamOutputPort extends OutputPort {
 	private		BuildingStreamWriter	mBuilder;
 	private		SerializeOpts 			mSerializeOpts; 	// for converting from ByteArray to string  
 
-	private static Logger  mLogger = LogManager.getLogger(XdmStreamOutputPort.class);
+	private static Logger  mLogger = LogManager.getLogger();
 
 
 

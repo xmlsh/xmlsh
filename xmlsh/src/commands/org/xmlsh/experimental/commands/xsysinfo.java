@@ -21,6 +21,10 @@ import java.util.List;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+/* BAD
+JDK-6450279 : InetAddress GetHostName() method takes long time in windows - need timeout option
+*/
+
 public class xsysinfo extends XCommand {
 
 
@@ -58,13 +62,13 @@ public class xsysinfo extends XCommand {
 			writer.writeStartElement("interface");
 			writer.writeAttribute("display_name", net.getDisplayName());
 			writer.writeAttribute("name", net.getName());
-			writer.writeAttribute("mtu", String.valueOf(net.getMTU()));
+		//	writer.writeAttribute("mtu", String.valueOf(net.getMTU()));
 			Enumeration<InetAddress> addrs = net.getInetAddresses();
 			while( addrs.hasMoreElements()){
 				InetAddress addr = addrs.nextElement();
 				writer.writeStartElement("inet");
 				writer.writeAttribute("address" , addr.getHostAddress());
-				writer.writeAttribute("name", addr.getHostName());
+			//	writer.writeAttribute("name", addr.getHostName());
 				writer.writeAttribute("loopback", addr.isLoopbackAddress() ? "true" : "false");
 
 

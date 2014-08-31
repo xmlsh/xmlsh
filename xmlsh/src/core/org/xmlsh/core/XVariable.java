@@ -15,8 +15,8 @@ import net.sf.saxon.s9api.XQueryExecutable;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmValue;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import org.xml.sax.SAXException;
 import org.xmlsh.core.XVariable.XVarFlag;
@@ -50,7 +50,7 @@ public class XVariable {
 
 
 
-	private static Logger mLogger = LogManager.getLogger(XVariable.class);
+	private static Logger mLogger = LogManager.getLogger();
 
 	public static enum XVarFlag {
 		EXPORT , 		// to be exported to child shells

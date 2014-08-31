@@ -6,7 +6,7 @@
 
 package org.xmlsh.sh.shell;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,7 +15,7 @@ import java.util.Properties;
 public class Version {
 
 	private static Properties mProperties ;
-	static Logger mLogger = Logger.getLogger(Version.class);
+	static Logger mLogger = org.apache.logging.log4j.LogManager.getLogger();
 	static {
 		mProperties = new Properties();
 		try {

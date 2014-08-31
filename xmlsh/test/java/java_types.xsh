@@ -3,6 +3,7 @@
 #
 import commands java 
 import java ../bin/xmlsh-test.jar
+log $0 should not need the "{}" around expressions 
 
 function getConstructor() {
   local c ;
@@ -36,7 +37,7 @@ echo getConstructor($types)
 
 #TestTypes(Long,String)
 i=jnew(java.lang.Long 10)
-types=jnew(org.xmlsh.test.TestTypes $i HI)
+types=jnew(org.xmlsh.test.TestTypes {$i} HI)
 echo getConstructor($types)
 
 #Null

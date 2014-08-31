@@ -6,8 +6,8 @@ import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmValue;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
@@ -228,7 +228,7 @@ public final class XDMTypeFamily extends AbstractTypeFamily implements ITypeFami
 
     }
 
-  private static Logger mLogger = LogManager.getLogger(XDMTypeFamily.class);
+  private static Logger mLogger = LogManager.getLogger();
 
   @Override
   protected XValue newXValue(Object obj)

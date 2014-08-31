@@ -6,9 +6,8 @@
 
 package org.xmlsh.builtin.commands;
 
-import org.apache.log4j.Logger;
-import org.apache.log4j.Priority;
-
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.Logger;
 import org.xmlsh.core.BuiltinCommand;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.XValue;
@@ -29,7 +28,7 @@ public class log extends BuiltinCommand {
 		String sClass = opts.getOptString("c", log.class.getName());
 		String sLevel = opts.getOptString("p" , "info");
 
-		Priority priority = parseLevel(sLevel);
+		Level level = parseLevel(sLevel);
 
 
 		args = opts.getRemainingArgs();
@@ -52,18 +51,18 @@ public class log extends BuiltinCommand {
 
 		out.flush();
 
-		Logger logger = Logger.getLogger(sClass);
+		Logger logger = org.apache.logging.log4j.LogManager.getLogger(sClass);
 
-		logger.log(priority, out.toString(getSerializeOpts().getOutputTextEncoding()));
+		logger.log(level, out.toString(getSerializeOpts().getOutputTextEncoding()));
 
 
 
 		return 0;
 	}
 
-	private Priority parseLevel(String sLevel) {
+	private Level parseLevel(String sLevel) {
 
-		return Priority.toPriority(sLevel,Priority.INFO);
+		return Level.toLevel(sLevel);
 	}
 }
 //

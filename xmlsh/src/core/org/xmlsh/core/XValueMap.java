@@ -29,7 +29,7 @@ import com.fasterxml.jackson.annotation.JsonAnySetter;
  * Generic Properties 
  * A set of Name/Value pairs to any object 
  */
-public class XValueMap extends AbstractMap<String,XValue> implements IXValueContainer<XValueMap>  {
+public class XValueMap extends AbstractMap<String,XValue> implements IXValueMap<XValueMap>  {
 	private  	Map<String,XValue>   mMap;
 
 	public XValueMap(XValueMap that) {
@@ -46,12 +46,7 @@ public class XValueMap extends AbstractMap<String,XValue> implements IXValueCont
       
   }
 
-    @JsonAnySetter
-	public void set( String name , XValue value ) {
-		mMap.put( name, value);
-	}
-
-	@Override
+  @Override
 	public XValue get( String name ) {
 		return mMap.get(name);
 	}
@@ -77,11 +72,17 @@ public class XValueMap extends AbstractMap<String,XValue> implements IXValueCont
 	@Override
 	public XValue put(String key, XValue value)
 	{
+	  assert( key != null );
+	  assert( value != null );
+	  System.out.println("put("  + key +  ","  + value.toString() );
 		return  mMap.put(key, value);
 
 	}
 
-	@Override
+	/* (non-Javadoc)
+   * @see org.xmlsh.core.IXValueMap#keySet()
+   */
+  @Override
 	public Set<String> keySet()
 	{
 		return mMap.keySet();
@@ -206,23 +207,54 @@ public class XValueMap extends AbstractMap<String,XValue> implements IXValueCont
         return mMap.values().iterator();
     }
 
-    @Override
-    public XValue getAt(int index)
-    {
-      throw new UnsupportedOperationException("get(int) unimplemented");
-    }
-
-    @Override
-    public XValue setAt(int index, XValue value)
-    {
-      throw new UnsupportedOperationException("setAt(int) unimplemented");
-
-    }
 
     @Override
     public XValue asXValue()
     {
       return new XValue( TypeFamily.XTYPE , this );
+    }
+
+    @Override
+    public boolean isContainer()
+    {
+      // TODO Auto-generated method stub
+      return true;
+    }
+
+    @Override
+    public boolean isSequence()
+    {
+      // TODO Auto-generated method stub
+      return false;
+    }
+
+
+    @Override
+    public IXValueContainer<? extends IXValueContainer<?>> asXContainer()
+    {
+      // TODO Auto-generated method stub
+      return this;
+    }
+
+    @Override
+    public IXValueMap<? extends IXValueMap<?>> asXMap()
+    {
+      // TODO Auto-generated method stub
+      return this;
+    }
+
+    @Override
+    public IXValueList<? extends IXValueList<?>> asXList()
+    {
+      // TODO Auto-generated method stub
+      return null;
+    }
+
+    @Override
+    public IXValueSequence<? extends IXValueSequence<?>> asXSequence()
+    {
+      // TODO Auto-generated method stub
+      return null;
     }
 
 }

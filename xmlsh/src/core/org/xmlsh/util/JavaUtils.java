@@ -6,8 +6,8 @@
 
 package org.xmlsh.util;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.XdmAtomicValue;
@@ -42,7 +42,7 @@ import java.util.concurrent.atomic.AtomicLong;
 public class JavaUtils {
 
 	private static Set< String > mReserved;
-  private static Logger mLogger = LogManager.getLogger(JavaUtils.class) ;
+  private static Logger mLogger = LogManager.getLogger() ;
 
 	// Words that could not make valid class names so cant otherwise be used as commands or functions
 
@@ -571,11 +571,18 @@ public class JavaUtils {
 		if( targetClass.isAssignableFrom(sourceClass))
 			return 1 ;
 
+		boolean sourceNum =  isWrappedOrPrimativeNumber(sourceClass) ;
+		boolean targetNum = isWrappedOrPrimativeNumber(targetClass) ;
+
 
 		// Boxable 
 		// int <-> Integer
-		if( isWrappedOrPrimativeNumber(sourceClass) && isWrappedOrPrimativeNumber(targetClass))
+		if(sourceNum && targetNum  )
 			return 2 ;
+
+		boolean soruceString = isStringClass(sourceClass);
+
+
 		
 		// TypeFamily conversion TO XdmValue 
 		if( XdmValue.class.isAssignableFrom(targetClass)) {
@@ -584,14 +591,19 @@ public class JavaUtils {
 		   if( XdmAtomicValue.class.isAssignableFrom(sourceClass) )
 		    return 2;
 
-		   if( isWrappedOrPrimativeNumber( sourceClass ) || isBooleanClass( sourceClass ) || isStringClass(sourceClass)) 
+		   if( sourceNum || soruceString || isBooleanClass( sourceClass ) ) 
 		     return 3 ;
 		   if( isAtomic( sourceClass ) ) 
 		     return 3 ;
 		}   
 		
-		if( isStringClass( targetClass ) )
-		  return 4 ;
+    boolean targetString = isStringClass(targetClass);
+    if( targetClass.isPrimitive() && soruceString )
+      // convert string to primative, yes
+      return 4 ;
+    
+		if( targetString )
+		  return 5 ;
 		
 		int c = hasBeanConstructor( targetClass , sourceClass );
 		if( c >= 0 )
@@ -600,6 +612,7 @@ public class JavaUtils {
 		return -1;
 
 	}
+
 
   public static  int canConvertObject( Object sourceObject ,  Class<?> targetClass) throws InvalidArgumentException {
 		return canConvertClass( sourceObject.getClass() , targetClass );

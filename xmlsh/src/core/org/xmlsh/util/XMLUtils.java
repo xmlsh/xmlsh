@@ -1,7 +1,7 @@
 package org.xmlsh.util;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import net.sf.saxon.expr.StaticProperty;
 import net.sf.saxon.expr.flwor.ReturnClauseIterator;
@@ -43,7 +43,7 @@ import com.icl.saxon.expr.XPathException;
 
 public class XMLUtils
 {
-	private static Logger mLogger = LogManager.getLogger(XMLUtils.class);
+	private static Logger mLogger = LogManager.getLogger();
 
 
   public static byte[]   toByteArray(XdmValue xdm , SerializeOpts opts ) throws SaxonApiException, IOException

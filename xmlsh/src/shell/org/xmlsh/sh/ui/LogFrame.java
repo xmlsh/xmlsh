@@ -6,8 +6,12 @@
 
 package org.xmlsh.sh.ui;
 
-import org.apache.log4j.LogManager;
-
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.core.Logger;
+import org.apache.logging.log4j.core.LoggerContext;
+import org.apache.logging.log4j.core.config.Configuration;
+import org.apache.logging.log4j.core.config.LoggerConfig;
 import org.xmlsh.sh.shell.SerializeOpts;
 
 import java.awt.BorderLayout;
@@ -49,8 +53,19 @@ public class LogFrame extends JFrame {
 				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		mcontentPane.add(scrollPane, BorderLayout.CENTER);
 
+   // LoggerContext ctx = (LoggerContext)LogManager.getContext(false);
+    //LoggerConfig conf = ctx.getConfiguration().getLoggerConfig(LogManager.ROOT_LOGGER_NAME);
+   // org.apache.logging.log4j.Logger root = LogManager.getRootLogger();
 
-		LogManager.getRootLogger().addAppender( new ShellAppender( new TextComponentOutputStream( textArea , mSerializeOps , "log")));
+    org.apache.logging.log4j.core.Logger coreLogger =    
+        (org.apache.logging.log4j.core.Logger)LogManager.getLogger( "xmlsh.org" );// LogManager.ROOT_LOGGER_NAME);
+
+    LoggerContext context = (LoggerContext)coreLogger.getContext();
+        
+    
+    ShellAppender appender = new ShellAppender( new TextComponentOutputStream( textArea , mSerializeOps , "log"));
+    appender.start();
+    coreLogger.addAppender(appender);
 
 	}
 

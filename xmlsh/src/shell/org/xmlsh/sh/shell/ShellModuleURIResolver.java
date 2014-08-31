@@ -9,8 +9,8 @@ package org.xmlsh.sh.shell;
 import net.sf.saxon.lib.ModuleURIResolver;
 import net.sf.saxon.trans.XPathException;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import org.xmlsh.util.Util;
 
@@ -22,7 +22,7 @@ import javax.xml.transform.stream.StreamSource;
 
 public class ShellModuleURIResolver implements ModuleURIResolver {
 	private		Shell	mShell = null;
-	private Logger mLogger = LogManager.getLogger(ShellModuleURIResolver.class);
+	private Logger mLogger = LogManager.getLogger();
 
 
 

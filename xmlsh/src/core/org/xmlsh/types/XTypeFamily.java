@@ -1,6 +1,7 @@
 package org.xmlsh.types;
 
 import org.xmlsh.core.CoreException;
+import org.xmlsh.core.IXValue;
 import org.xmlsh.core.IXValueContainer;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
@@ -73,13 +74,13 @@ public class XTypeFamily extends AbstractTypeFamily implements ITypeFamily
     public int getSize(Object obj) throws InvalidArgumentException
     {
 
-      IXValueContainer<?> ic = asXType(obj);
+      IXValue<?> ic = asXType(obj);
       assert( obj != null );
       if( obj == null )
         return 0;
      
-      return ic.size();
-      
+      return ic.isContainer() ? ic.asXContainer().size() : 
+         0;
     }
 
     // Named index access
@@ -88,20 +89,26 @@ public class XTypeFamily extends AbstractTypeFamily implements ITypeFamily
     {
       if(obj == null)
         return _nullValue;
-      IXValueContainer<?> ic = asXType(obj);
+      IXValue<?> ic = asXType(obj);
 
       if(Util.isBlank(ind))
         return newXValue(obj);
-      else return ic.get(ind);
+      
+      // map first
+      if( ic.isMap() )
+        return ic.asXMap().get(ind);      
+      if( ic.isList() ) 
+        return ic.asXList().get(Util.parseInt(ind, 0));
 
+       return _nullValue ;
     }
 
     @Override
     public XValue getXValue(Object obj, int index) throws CoreException
     {
-      IXValueContainer<?> ic = asXType(obj);
+      IXValue<?> ic = asXType(obj);
       if(ic.isList())
-        return ic.getAt(index);
+        return ic.asXList().getAt(index);
       throw new InvalidArgumentException("Not an indexable type: " + describeClass(obj));
 
     }
@@ -112,7 +119,7 @@ public class XTypeFamily extends AbstractTypeFamily implements ITypeFamily
     {
       if(obj == null)
         return;
-      IXValueContainer<?> ic = asXType(obj);
+      IXValue<?> ic = asXType(obj);
       ic.serialize(out, opts);
     }
 
@@ -131,7 +138,7 @@ public class XTypeFamily extends AbstractTypeFamily implements ITypeFamily
     {
       if(obj == null)
         return true;
-      IXValueContainer<?> ic = asXType(obj);
+      IXValue<?> ic = asXType(obj);
       return ic.isEmpty();
 
     }
@@ -143,9 +150,15 @@ public class XTypeFamily extends AbstractTypeFamily implements ITypeFamily
       assert (xobj != null && !xobj.isNull());
       if(xobj == null || xobj.isNull())
         throw new CoreException("Cannot set indexed value to null object");
-      IXValueContainer<?> ic = asXType(xobj.asObject());
+      
+      IXValue<?> ic = asXType(xobj.asObject());
+      // map first
+      if( ic.isMap() )
+        return ic.asXMap().put(ind,value);      
+      if( ic.isList() ) 
+        return ic.asXList().setAt(Util.parseInt(ind, 0),value);
 
-      return ic.put(ind, value);
+      throw new CoreException("Cannot set non-indexed object");
 
     }
 
@@ -181,7 +194,7 @@ public class XTypeFamily extends AbstractTypeFamily implements ITypeFamily
     public boolean isAtomic(Object obj)
     {
       if((obj instanceof IXValueContainer)) {
-        return ((IXValueContainer<?>) obj).isAtomic();
+        return ((IXValue<?>) obj).isAtomic();
       }
       throw new InvalidArgumentException("Unexpected type: " + describeClass(obj));
     }
@@ -191,18 +204,24 @@ public class XTypeFamily extends AbstractTypeFamily implements ITypeFamily
     {
 
       assert (xobj != null && !xobj.isNull());
+
+      IXValue<?> ic = asXType(xobj.asObject());
+
       if(xobj == null || xobj.isNull())
         throw new CoreException("Cannot set indexed value to null object");
-      IXValueContainer<?> ic = asXType(xobj.asObject());
-
-      return ic.setAt(index, value);
+      
+      if( ic.isList() ) 
+        return ic.asXList().setAt(index,value);
+      if( ic.isMap() )
+        return ic.asXMap().put(String.valueOf(index),value);      
+      throw new CoreException("Cannot set non indexed value");
 
     }
 
-  protected static IXValueContainer<?> asXType(Object obj) throws InvalidArgumentException
+  protected static IXValue<?> asXType(Object obj) throws InvalidArgumentException
   {
-    if((obj instanceof IXValueContainer)) {
-      return ((IXValueContainer<?>) obj);
+    if((obj instanceof IXValue)) {
+      return ((IXValue<?>) obj);
     }
     throw new InvalidArgumentException("Unexpected type: " + describeClass(obj));
 

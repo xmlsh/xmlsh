@@ -24,7 +24,7 @@ import java.util.Set;
  * A single "Property" - substitutable for a Map 
  *  
  */
-public class XValueProperty  extends XNamedValue  implements IXValueContainer<XValueProperty> 
+public class XValueProperty  extends XNamedValue  implements IXValueMap<XValueProperty>
 {
 	
 	public XValueProperty(String name, XValue value)
@@ -46,12 +46,6 @@ public class XValueProperty  extends XNamedValue  implements IXValueContainer<XV
     public boolean isEmpty()
     {
 		return getValue() == null  ;
-    }
-
-	@Override
-    public XValue put(String key, XValue value) throws UnsupportedOperationException
-    {
-		throw new UnsupportedOperationException("put is not implemented for XValueProperty");
     }
 
 	  @Override
@@ -150,26 +144,49 @@ public class XValueProperty  extends XNamedValue  implements IXValueContainer<XV
       else 
         return new XValueProperty(item) ;
     }
-    @Override
-    public XValue getAt(int index)
-    {
-      if( index == 0 )
-        return getValue();
-      
-      
-      throw new IndexOutOfBoundsException("Index out of bounds: " + index );
-
-    }
-    @Override
-    public XValue setAt(int index, XValue value)
-    {
-      throw new UnsupportedOperationException("setAt is not implemented for XValueProperty");
-
-    }
+    
     @Override
     public XValue asXValue()
     {
       return new XValue( TypeFamily.XTYPE , this );
+    }
+    @Override
+    public boolean isContainer()
+    {
+      return true;
+    }
+    @Override
+    public boolean isSequence()
+    {
+      return false ;
+    }
+    @Override
+    public IXValueContainer<? extends IXValueContainer<?>> asXContainer()
+    {
+      return this;
+    }
+    @Override
+    public IXValueMap<? extends IXValueMap<?>> asXMap()
+    {
+      return this;
+    }
+    @Override
+    public IXValueList<? extends IXValueList<?>> asXList()
+    {
+      // TODO Auto-generated method stub
+      return null;
+    }
+    @Override
+    public IXValueSequence<? extends IXValueSequence<?>> asXSequence()
+    {
+      // TODO Auto-generated method stub
+      return null;
+    }
+    @Override
+    public XValue put(String key, XValue value)
+    {
+      throw new UnsupportedOperationException("put not supported for XValueProperty");
+        
     }
 	
 

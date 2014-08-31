@@ -1,7 +1,7 @@
 package org.xmlsh.types;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
@@ -28,7 +28,7 @@ import com.fasterxml.jackson.databind.node.POJONode;
 public class JSONTypeFamily extends AbstractTypeFamily implements ITypeFamily
 {
   static final JSONTypeFamily _instance = new JSONTypeFamily();
-  private static Logger mLogger = LogManager.getLogger(JSONTypeFamily.class);
+  private static Logger mLogger = LogManager.getLogger();
 
   private final static XValue _nullValue = new XValue(TypeFamily.JSON , null);
 

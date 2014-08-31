@@ -6,8 +6,8 @@
 
 package org.xmlsh.json;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import org.xmlsh.core.SafeXMLStreamWriter;
 import org.xmlsh.core.XValue;
@@ -31,7 +31,7 @@ import com.fasterxml.jackson.dataformat.xml.ser.ToXmlGenerator;
 
 public class JacksonConverter extends JXConverter
 {
-	public static Logger	mLogger	     = LogManager.getLogger(JacksonConverter.class);
+	public static Logger	mLogger	     = LogManager.getLogger();
 
 
 	public JacksonConverter(JSONSerializeOpts jsonSerializeOpts, SerializeOpts serializeOpts, List<XValue> mArgs)
