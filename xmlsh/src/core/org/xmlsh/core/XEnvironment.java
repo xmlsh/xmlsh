@@ -176,7 +176,7 @@ public class XEnvironment implements AutoCloseable, Closeable {
 
 		var = var.clone();
 		xvalue = var.getValue().append(xvalue);
-		var.setValue(  xvalue , Util.withEnumsAdded(varFlags, xvalue.typeFlags()) );
+		var.setValue(  xvalue  );
 		setVar( var , local);
 
 	}
@@ -186,21 +186,15 @@ public class XEnvironment implements AutoCloseable, Closeable {
 	 }
 
 
-	public void setVar(String name, String value , boolean local ) throws InvalidArgumentException {
-		setVar( name , new XValue(value), standardFlags(), local);
-	}
-  public void setVar(String name, XValue value ,  boolean local ) throws InvalidArgumentException {
-    setVar( name , value , standardFlags() , local);
-  }
 
-  public void setVar( String name , XValue value, EnumSet<XVarFlag> varFlags , boolean local ) throws InvalidArgumentException 
+  public void setVar( String name , XValue value, boolean local ) throws InvalidArgumentException 
   {
 
     XVariable var = mVars.get(name);
     if( var == null )
-      var = new XVariable( name , value , varFlags  );
+      var = new XVariable( name , value  );
     else
-      var = var.newValue( value , varFlags );
+      var = var.newValue( value );
 
 
     setVar( var , local );
@@ -639,17 +633,6 @@ public class XEnvironment implements AutoCloseable, Closeable {
 	public InputSource getInputSource(XValue value, SerializeOpts opts) throws CoreException, FileNotFoundException, IOException {
 		InputPort in = getInput(value);
 		return in.asInputSource(opts);
-
-	}
-
-
-	public void tie(Shell shell, String varname, String expr) throws InvalidArgumentException, SaxonApiException {
-
-		XVariable var = mVars.get(varname);
-		if( var == null )
-			throw new InvalidArgumentException("Unknown variable: " + varname);
-
-		var.tie(shell,expr);
 
 	}
 

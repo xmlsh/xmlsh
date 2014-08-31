@@ -57,14 +57,7 @@ public class XVariable {
 		XEXPR ,			// participates in XEXPRs
 		READONLY,
 		LOCAL,
-		UNSET,
-		
-		
-		POSVAR,     // special $0..n or $* / $@
-		SEQUENCE,    // secuence var
-		LIST ,      // List value (Explicit list of XVars like $@
-		NAMED_INDEX  ,   // Map or object - named fields
-		POSITIONAL_INDEX   // Positional index
+		UNSET
     ;
 
   
@@ -89,18 +82,10 @@ public class XVariable {
 	
 	private		EnumSet<XVarFlag>	mFlags;
 	
-
-	
-	private		XQueryExecutable		mTieExpr;	// Tie expression
 	public final static EnumSet<XVarFlag>  XVAR_STANDARD = EnumSet.of( EXPORT , XEXPR );
 	public final static EnumSet<XVarFlag>  XVAR_STANDARD_LOCAL = EnumSet.of( EXPORT , XEXPR , LOCAL );
-	public final static EnumSet<XVarFlag>  XVAR_SHELLARG = EnumSet.of( EXPORT , XEXPR , POSITIONAL_INDEX );
-  public final static EnumSet<XVarFlag>  XVAR_SHELLARG_LOCAL = EnumSet.of( EXPORT , XEXPR , POSITIONAL_INDEX, LOCAL  );
-  public final static EnumSet<XVarFlag>  XVAR_SEQUENCE = EnumSet.of( POSITIONAL_INDEX , SEQUENCE  );
- 
-  
-  public final static EnumSet<XVarFlag>  XVAR_TYPEMASK = EnumSet.of( POSVAR , POSITIONAL_INDEX , SEQUENCE , LIST   , NAMED_INDEX);
-  public final static EnumSet<XVarFlag>  XVAR_PRIVMASK = EnumSet.of( EXPORT ,   XEXPR ,   READONLY,  LOCAL,  UNSET ); 
+	public final static EnumSet<XVarFlag>  XVAR_SHELLARG = EnumSet.of( EXPORT , XEXPR  );
+  public final static EnumSet<XVarFlag>  XVAR_SHELLARG_LOCAL = EnumSet.of( EXPORT , XEXPR , LOCAL  );
   
 	public XVariable( String name , XValue value , EnumSet<XVarFlag> flags)
 	{
@@ -113,25 +98,17 @@ public class XVariable {
 	public XVariable clone()
 	{
 		XVariable that = new XVariable(mName,getValue(),mFlags);
-		that.mTieExpr = mTieExpr ;
 		return that ;
 	}
 	
 	
 	
-	
-	@Deprecated
 	public XVariable( String name , XValue value )
 	{
 		this( name , value ,XVAR_STANDARD );
 
 	}
 
-	protected XVariable( String name , EnumSet<XVarFlag> flags )
-	{
-		this( name , null , flags );
-	}
-	
 	
 	// helper for flag tests that requre UNSET to be OFF
 	private boolean hasFlags( XVarFlag... flags ) {
@@ -178,11 +155,6 @@ public class XVariable {
     return LOCAL ;
   }
   
-  public static EnumSet<XVarFlag> listFlags()
-  {
-    return EnumSet.of( LIST ,POSVAR ,  POSITIONAL_INDEX );
-    
-  }
     
 	
 	 /*
@@ -194,15 +166,6 @@ public class XVariable {
   }
    
   
-  public   boolean isIndexed() {
-   return hasAnyFlags( NAMED_INDEX , POSITIONAL_INDEX );
-  }
-  public  boolean isNameIndexed() {
-    return hasFlag(  NAMED_INDEX );
-  }
-  public  boolean isPositionIndexed() {
-    return hasFlag(  POSITIONAL_INDEX );
-  }
   public boolean isExport() {
     return  hasFlag( EXPORT );
   }
@@ -234,20 +197,12 @@ public class XVariable {
 	 * @throws InvalidArgumentException 
 	 *  Flags are presumed to be already set
 	 */
-	public void setValue(XValue value) throws InvalidArgumentException {
-	
-	  setValue( value , value == null ? XVAR_STANDARD : value.typeFlags() );
-	}
 
-  public void setValue(XValue value, EnumSet<XVarFlag> varFlags)
+  public void setValue(XValue value )
   {
     if( mFlags.contains( READONLY ))
       throw new InvalidArgumentException("Cannot modify readonly variable: " + getName());
 
-    EnumSet<XVarFlag> old = Util.withEnumsMasked( mFlags , XVAR_PRIVMASK );
-    
-    mFlags = Util.withEnumsAdded(old, 
-        Util.withEnumsMasked( varFlags, XVAR_TYPEMASK ) );
     mValue = value;
     
     
@@ -261,15 +216,9 @@ public class XVariable {
         if( mFlags.contains( READONLY ))
             throw new InvalidArgumentException("Cannot modify readonly variable: " + getName());
         
-        if( ! isIndexed() ) 
-          throw new InvalidArgumentException("Cannot set non indexed variable by index: " + getName());
-        
         assert( ! Util.isBlank(ind));
         
-        if( isNameIndexed() )
           setValue(getValueMethods().setXValue(  getValue() , ind, value));
-        else
-          setValue(getValueMethods().setXValue(  getValue() , parsePositionalIndex(ind), value));
 
 	}
   public IMethods getValueMethods()
@@ -363,84 +312,6 @@ public class XVariable {
 
 	}
 
-	public void tie(Shell shell , String expr) throws SaxonApiException {
-
-		if( expr == null )
-		{
-			mTieExpr = null ;
-			return ;
-
-		}
-
-
-		Processor processor = Shell.getProcessor();
-
-		XQueryCompiler compiler = processor.newXQueryCompiler();
-
-		// Declare the extension function namespace
-		// This can be overridden by user declarations
-		compiler.declareNamespace("xmlsh", EvalDefinition.kXMLSH_EXT_NAMESPACE);
-
-		NameValueMap<String> ns = shell.getEnv().getNamespaces();
-		if( ns != null ){
-			for( String prefix : ns.keySet() ){
-				String uri = ns.get(prefix);
-				compiler.declareNamespace(prefix, uri);
-
-			}
-
-		}
-
-
-		StringBuffer sb = new StringBuffer();
-
-		sb.append("declare variable $_ external;\n");
-		sb.append(expr);
-
-		mTieExpr = compiler.compile( sb.toString() );
-
-
-
-
-	}
-
-	private  XValue	 getTiedValue( Shell shell , XdmItem  item  , String tie) throws CoreException
-	{
-
-
-		Shell saved_shell = ShellContext.set(shell);
-
-		XQueryEvaluator eval = mTieExpr.load();
-
-
-		try {
-
-			//		eval.setExternalVariable( new QName("_") , new XValue( TypeFamily.XDM , tie ).asXdmValue() );
-			
-		  eval.setExternalVariable( new QName("_") , new XValue(  tie ).toXdmItem() );
-
-			eval.setContextItem(item);
-
-			XdmValue result =  eval.evaluate();
-
-
-			return new XValue(result) ;
-
-
-		} catch (SaxonApiException e) {
-			String msg = "Error expanding xml expression: " + tie ;
-			mLogger.warn( msg , e );
-			throw new CoreException(msg  , e );
-
-		}
-		finally {
-			ShellContext.set(saved_shell);
-
-		}
-
-
-
-	}
 
 	/*
 	 * Get a variable value with an optional index and tie expression
@@ -454,19 +325,10 @@ public class XVariable {
 		  if( Util.isOneOf( ind , "*" , "@" ) )
 		    return EvalUtils.getValues( env , mValue );
 		    
-		  
-		  if( ! isIndexed() )
-		    shell.printErr("Attempting to get indexed value from non indexed variable: " + getName() );
-		  else
-		    if( isNameIndexed()  )
 		       xv =  EvalUtils.getIndexedValue(env , mValue,  ind );
-		    else
-          xv =  EvalUtils.getIndexedValue(env , mValue, parsePositionalIndex(ind) );
-
 		}
+		assert( Util.isEmpty(tie));
 
-		if( tie != null && xv.isXdmItem()  )
-			xv = getTiedValue(shell, xv.asXdmItem() , tie );
 		return xv ;
 
 	}
@@ -488,34 +350,15 @@ public class XVariable {
 	}
   public static EnumSet<XVarFlag> shellArgListFlags()
   {
-    return Util.withEnumsAdded(XVAR_SHELLARG, listFlags());
+    return XVAR_SHELLARG;
   }
-  
-  /*
-   * Like clone, will preserve tied value
-   * but will augment flags
-   */
-  public XVariable newValue(XValue value, EnumSet<XVarFlag> flags)
+  public XVariable newValue(XValue value)
   {
-    
-    EnumSet<XVarFlag> newFlags = Util.withEnumsMasked( mFlags, 
-      EnumSet.of(XVarFlag.LOCAL , XVarFlag.READONLY, XVarFlag.EXPORT)  );
-    
-    newFlags = Util.withEnumsAdded( flags );
-    
-    XVariable that = new XVariable(mName,value,newFlags);
-    that.mTieExpr = mTieExpr ;
+    XVariable that = new XVariable(mName,value,mFlags);
     return that ;
     
-     
-    
   }
-  public static EnumSet<XVarFlag> sequenceFlags()
-  {
-    return XVAR_SEQUENCE ;
-  }
-
-
+  
 
 
 }

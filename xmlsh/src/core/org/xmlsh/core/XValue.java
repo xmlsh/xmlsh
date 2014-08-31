@@ -1016,23 +1016,6 @@ public class XValue implements Iterable<XValue>{
     return isInstanceOf(XValueSequence.class);
   }
   
-  public EnumSet<XVarFlag> typeFlags() {
-    EnumSet<XVarFlag> flags  = EnumSet.noneOf(XVarFlag.class);
-    
-    if( isSequence() ) 
-      flags = XVariable.XVAR_SEQUENCE ;
-    
-    if( isInstanceOf( XValueProperty.class )|| isInstanceOf( XValueMap.class ) 
-        || isInstanceOf( XValuePropertyList.class ) )
-      flags = Util.withEnumsAdded( flags , XVarFlag.NAMED_INDEX );
-    if( isInstanceOf( XValuePropertyList.class ) ||
-        isInstanceOf( XValueList.class ) ||
-        isInstanceOf( XValueArray.class ) )
-      flags = Util.withEnumsAdded( flags , XVarFlag.POSITIONAL_INDEX , XVarFlag.LIST );
-      return flags ;
-    
-    
-  }
 
   public String javaTypeName()
   {

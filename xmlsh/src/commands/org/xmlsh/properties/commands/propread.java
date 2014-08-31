@@ -71,7 +71,7 @@ public class propread extends BuiltinCommand
       xp = xp.expandTree(opts.getOptString("delim","."));
     XValue value = xp.asXValue();
     
-    mShell.getEnv().setVar(varName, value, XVariable.standardFlags(NAMED_INDEX), false);
+    mShell.getEnv().setVar(varName, value , false);
     return 0;
 
   }

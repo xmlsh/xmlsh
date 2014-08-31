@@ -98,7 +98,7 @@ public class XTypeFamily extends AbstractTypeFamily implements ITypeFamily
       if( ic.isMap() )
         return ic.asXMap().get(ind);      
       if( ic.isList() ) 
-        return ic.asXList().get(Util.parseInt(ind, 0));
+        return ic.asXList().get(Util.parseInt(ind, 1)-1);
 
        return _nullValue ;
     }

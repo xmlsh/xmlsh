@@ -317,10 +317,11 @@ public class Shell implements AutoCloseable, Closeable
     , false);
 
     getEnv().setVar(ShellConstants.ENV_TMPDIR,
-      FileUtils.toJavaPath(System.getProperty(ShellConstants.PROP_JAVA_IO_TMPDIR)), false);
+     XValue.newInstance( FileUtils.toJavaPath(System.getProperty(ShellConstants.PROP_JAVA_IO_TMPDIR))), false);
 
     if(getEnv().getVar(ShellConstants.ENV_HOME) == null)
-      getEnv().setVar(ShellConstants.ENV_HOME, FileUtils.toJavaPath(System.getProperty(ShellConstants.PROP_USER_HOME)),
+      getEnv().setVar(ShellConstants.ENV_HOME, 
+        XValue.newInstance(FileUtils.toJavaPath(System.getProperty(ShellConstants.PROP_USER_HOME))),
         false);
 
   }

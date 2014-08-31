@@ -28,7 +28,6 @@ public class Assign {
   
 	private static final EvalEnv mListVarEnv = EvalEnv.newInstance(false, true,false, false);
 	private static final EvalEnv mSingleVarEnv = EvalEnv.basicInstance();
-  private static final EnumSet<XVarFlag> SEQ_VAR_FLAGS = XVariable.standardFlags( XVariable.sequenceFlags() );
   private static final EnumSet<XVarFlag> VAR_FLAGS = XVariable.standardFlags();
 	private boolean	mLocal = false ;
 	private	 String		mVariable;
@@ -122,15 +121,15 @@ public class Assign {
 
 		// Assign
 		if( getOp().equals("+="))
-			shell.getEnv().appendVar( getVariable(), value , getVarFlags(value),  isLocal());
+			shell.getEnv().appendVar( getVariable(), value ,   isLocal());
 		else {
 		    
 		    if( mInd != null ) {
 		        String ind = mInd.expandString(shell, mListVarEnv, loc);
-	            shell.getEnv().setIndexedVar( getVariable(), value , ind ,  getVarFlags(value), mLocal );
+	            shell.getEnv().setIndexedVar( getVariable(), value , ind ,  VAR_FLAGS, mLocal );
 		    }
 		    else
-			     shell.getEnv().setVar( getVariable(), value , getVarFlags(value), mLocal );
+			     shell.getEnv().setVar( getVariable(), value , mLocal );
 		}
 
 	}
@@ -151,16 +150,6 @@ public class Assign {
     }
     return XValue.nullValue();
   }
-  private EnumSet<XVarFlag> getVarFlags(XValue value)
-  {
-    if( value == null )
-      return VAR_FLAGS ;
-    else      
-      return Util.withEnumsAdded(VAR_FLAGS, value.typeFlags());
-    
-    
-  }
-  
   
 }
 

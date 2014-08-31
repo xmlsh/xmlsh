@@ -22,7 +22,6 @@ import org.xmlsh.builtin.commands.set;
 import org.xmlsh.builtin.commands.shift;
 import org.xmlsh.builtin.commands.source;
 import org.xmlsh.builtin.commands.test;
-import org.xmlsh.builtin.commands.tie;
 import org.xmlsh.builtin.commands.trap;
 import org.xmlsh.builtin.commands.unset;
 import org.xmlsh.builtin.commands.wait;
@@ -104,7 +103,6 @@ public class CommandFactory
 		addBuiltinCommand("import" , ximport.class);
 		addBuiltinCommand("xmlsh" , xmlsh.class);
 		addBuiltinCommand("throw" , xthrow.class);
-		addBuiltinCommand("tie" , tie.class);
 		addBuiltinCommand("log",log.class);
 		addBuiltinCommand("xtype", xtype.class);
 		addBuiltinCommand("require", require.class);

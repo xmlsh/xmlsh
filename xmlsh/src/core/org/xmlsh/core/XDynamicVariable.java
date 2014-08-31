@@ -10,9 +10,8 @@ import java.util.EnumSet;
 
 public abstract class XDynamicVariable extends XVariable {
 
-	public XDynamicVariable(String name, EnumSet<XVarFlag> flags) {
-		super(name, flags);
-		// TODO Auto-generated constructor stub
+	public XDynamicVariable(String name,EnumSet<XVarFlag> flags) {
+		super(name, null,flags);
 	}
 
 	/* (non-Javadoc)
