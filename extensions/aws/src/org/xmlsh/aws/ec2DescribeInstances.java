@@ -2,8 +2,8 @@ package org.xmlsh.aws;
 
 import net.sf.saxon.s9api.SaxonApiException;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import org.xmlsh.aws.util.AWSEC2Command;
 import org.xmlsh.core.CoreException;
@@ -28,7 +28,7 @@ import com.amazonaws.services.ec2.model.Reservation;
 
 public class ec2DescribeInstances extends AWSEC2Command {
 
-	private static Logger mLogger = LogManager.getLogger(ec2DescribeInstances.class);
+	private static Logger mLogger = LogManager.getLogger();
 
 
 

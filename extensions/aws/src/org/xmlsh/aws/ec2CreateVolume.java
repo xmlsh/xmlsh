@@ -2,8 +2,8 @@ package org.xmlsh.aws;
 
 import net.sf.saxon.s9api.SaxonApiException;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import org.xmlsh.aws.util.AWSEC2Command;
 import org.xmlsh.core.CoreException;
@@ -27,7 +27,7 @@ import com.amazonaws.services.ec2.model.CreateVolumeResult;
 public class ec2CreateVolume extends AWSEC2Command {
 
 
-	private static Logger mLogger = LogManager.getLogger(ec2CreateVolume.class);
+	private static Logger mLogger = LogManager.getLogger();
 
 
 	/**
