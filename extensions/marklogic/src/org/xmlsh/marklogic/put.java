@@ -572,7 +572,7 @@ public class put extends MLCommand {
 				if( bRecurse ){
 					List<XValue> sub = new ArrayList<XValue>();
 					for( String fn : file.list() ){
-						sub.add(new XValue(fname + "/" + fn ));
+						sub.add(XValue.asXValue(fname + "/" + fn));
 					}
 					getFiles( result , sub ,  uri + "/"  , bRecurse  );
 					
