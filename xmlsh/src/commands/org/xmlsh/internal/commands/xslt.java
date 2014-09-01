@@ -98,7 +98,7 @@ public class xslt extends XCommand {
 				context = opts.getOptValue("c").asSource();
 			else
 				if( opts.hasOpt("cf"))
-					context = (in=getInput( new XValue(opts.getOptString("cf", "-")))).asSource(serializeOpts);
+					context = (in=getInput( XValue.asXValue(opts.getOptString("cf", "-")))).asSource(serializeOpts);
 				else
 					if( opts.hasOpt("i") )
 						context = (in=getInput( opts.getOptValue("i"))).asSource(serializeOpts);

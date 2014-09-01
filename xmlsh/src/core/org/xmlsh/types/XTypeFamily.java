@@ -10,6 +10,7 @@ import org.xmlsh.core.XValueSequence;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.util.JavaUtils;
 import org.xmlsh.util.Util;
+import static org.xmlsh.types.TypeFamily.*;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -18,7 +19,9 @@ import java.util.List;
 
 public class XTypeFamily extends AbstractTypeFamily implements ITypeFamily
 {
-  static final XTypeFamily _instance = new XTypeFamily();
+  private static final XTypeFamily _instance = new XTypeFamily();
+  private static final Object _nullValue = null;
+
 
 /*
  * @Override
@@ -45,6 +48,8 @@ public class XTypeFamily extends AbstractTypeFamily implements ITypeFamily
   @Override
   public boolean isInstanceOfFamily(Object obj)
   {
+    if( obj == null )
+      return true ; // OK for null objects
     return obj instanceof XValue || obj instanceof IXValueContainer;
   }
 
@@ -88,11 +93,11 @@ public class XTypeFamily extends AbstractTypeFamily implements ITypeFamily
     public XValue getXValue(Object obj, String ind) throws InvalidArgumentException
     {
       if(obj == null)
-        return _nullValue;
+        return nullXValue();
       IXValue<?> ic = asXType(obj);
 
       if(Util.isBlank(ind))
-        return newXValue(obj);
+        return  XValue.asXValue( this , obj , false );
       
       // map first
       if( ic.isMap() )
@@ -100,7 +105,7 @@ public class XTypeFamily extends AbstractTypeFamily implements ITypeFamily
       if( ic.isList() ) 
         return ic.asXList().get(Util.parseInt(ind, 1)-1);
 
-       return _nullValue ;
+       return nullXValue() ;
     }
 
     @Override
@@ -176,7 +181,7 @@ public class XTypeFamily extends AbstractTypeFamily implements ITypeFamily
       }
       else if((obj instanceof XValue))
         return Collections.singletonList((XValue) obj);
-      else return Collections.singletonList(new XValue(null, obj)); // may conatain any type - SNH
+      else return Collections.singletonList(XValue.asXValue(null, obj)); // may conatain any type - SNH
 
     }
 
@@ -186,7 +191,9 @@ public class XTypeFamily extends AbstractTypeFamily implements ITypeFamily
 
       if(obj instanceof XValue)
         return (XValue) obj;
-      return newXValue(obj);
+      if( isInstanceOfFamily( obj ) ) 
+        return XValue.asXValue( this , obj , false );
+      return XValue.newInstance(obj);
 
     }
 
@@ -226,5 +233,23 @@ public class XTypeFamily extends AbstractTypeFamily implements ITypeFamily
     throw new InvalidArgumentException("Unexpected type: " + describeClass(obj));
 
   }
+
+  @Override
+  public Object nullValue()
+  {
+    return _nullValue;
+  }
+
+  @Override
+  public XValue nullXValue()
+  {
+    return XValue.asXValue(this , _nullValue, false );
+  }
+
+  public static XTypeFamily getInstance()
+  {
+    return _instance;
+  }
+
 
 }

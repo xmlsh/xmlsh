@@ -51,14 +51,14 @@ public class EvalUtils
     if(var == null) {
       // Special case ${#x} == 0 if x is undef
       if(Util.isEqual(expr.getPrefix(), "#")) {
-        return new XValue(0);
+        return XValue.asXValue(0);
       }
       return null;
 
     }
     // ${#var} notation
     if(Util.isEqual(expr.getPrefix(), "#")) {
-      return new XValue(var.getSize());
+      return XValue.asXValue(var.getSize());
     }
 
     if(Util.isBlank(expr.getIndex()) && Util.isBlank(expr.getField()))
@@ -270,11 +270,11 @@ public class EvalUtils
   public static XValue expandListToValue(EvalEnv env, List<XValue> ret)
   {
     if(ret == null || ret.size() == 0)
-      return new XValue(env.omitNulls() ? null : XMLUtils.emptySequence());
+      return env.omitNulls() ? XValue.nullValue() : XValue.empytSequence() ;
     else if(ret.size() == 1)
       return ret.get(0);
 
-    return new XValue(ret);
+    return XValue.asXValue(ret);
   }
 
   public static ParseResult expandListToResult(Shell shell, List<XValue> list, EvalEnv env, SourceLocation loc)
@@ -320,13 +320,13 @@ public class EvalUtils
   {
     assert( word != null );
     if( word == null|word.isEmpty() )
-      return new XValue(word);
+      return XValue.asXValue(word);
     
     
     // if expand word then need to do IFS splitting
     if(env.expandWords() && !env.preserveValue())
-      return new XValue((String[]) shell.getIFS().split(word).toArray());
-    else return new XValue(word);
+      return XValue.asXValue((String[]) shell.getIFS().split(word).toArray());
+    else return XValue.asXValue(word);
   }
 
   public static ParseResult splitStringToResult(Shell shell, String word, EvalEnv env, SourceLocation loc,
@@ -432,11 +432,11 @@ public class EvalUtils
               for (String f : fields) {
                 if(Util.isEmpty(f))
                   continue;
-                vs.add(new XValue(f));
+                vs.add(XValue.asXValue(f));
               }
             }
           }
-          else vs = Collections.singletonList(new XValue(s));
+          else vs = Collections.singletonList(XValue.asXValue(s));
         }
       }
     }
@@ -504,12 +504,12 @@ public class EvalUtils
     switch (family) {
     case XTYPE:
     case JAVA:
-      return new XValue(family, new XValueList());
+      return XValue.asXValue(family, new XValueList());
     case JSON:
-      return new XValue(family, JSONUtils.newJsonObject());
+      return XValue.asXValue(family, JSONUtils.newJsonObject());
 
     case XDM:
-      return new XValue(family, XMLUtils.emptySequence());
+      return XValue.asXValue(family, XMLUtils.emptySequence());
 
     }
     return XValue.nullValue();

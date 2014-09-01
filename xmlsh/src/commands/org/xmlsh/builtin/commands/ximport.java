@@ -122,7 +122,7 @@ public class ximport extends BuiltinCommand {
 
 
 
-		mShell.importJava( new XValue(args) );
+		mShell.importJava( XValue.asXValue(args) );
 
 		return 0;
 	}

@@ -164,7 +164,7 @@ public  class XValueSequence implements Iterable<XValue>  ,    IXValueSequence<X
     IXValueSequence s = new XValueSequence(this);
     s.addValue(item);
 
-    return new XValue( TypeFamily.XTYPE , s );
+    return XValue.asXValue( TypeFamily.XTYPE , s );
     
   }
 
@@ -195,7 +195,7 @@ public  class XValueSequence implements Iterable<XValue>  ,    IXValueSequence<X
   @Override
   public XValue asXValue()
   {
-    return new XValue( TypeFamily.XTYPE , this );
+    return XValue.asXValue( TypeFamily.XTYPE , this );
   }
 
 
@@ -246,5 +246,13 @@ public  class XValueSequence implements Iterable<XValue>  ,    IXValueSequence<X
   {
     // TODO Auto-generated method stub
     return this;
+  }
+
+
+
+  @Override
+  public IXValueSequence subSequence(int begin)
+  {
+    return new XValueSequence( mList.subList(begin, mList.size() ));
   }
 }

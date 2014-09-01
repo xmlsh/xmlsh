@@ -37,7 +37,7 @@ public class getNamespace extends BuiltinFunctionCommand {
 		{
 			XMLEvent event = (XMLEvent) arg;
 			if( event.isStartElement())
-				return new XValue( event.asStartElement().getName().getNamespaceURI() );
+				return XValue.asXValue(event.asStartElement().getName().getNamespaceURI());
 			else
 				return null ;
 		}

@@ -198,11 +198,11 @@ public class httpserver extends XCommand {
 			List<XValue> args = new ArrayList<XValue>();
 			String query = uri.getQuery();
 			String path = uri.getPath();
-			args.add( new XValue(path));
-			args.add( new XValue(query));
+			args.add( XValue.asXValue(path));
+			args.add( XValue.asXValue(query));
 
 			if( headers != null )
-				mShell.getEnv().setVar(headers,false);
+				mShell.getEnv().setVar(headers);
 
 			mShell.setArgs(args);
 			mShell.exec(cmd);
@@ -227,7 +227,7 @@ public class httpserver extends XCommand {
 		private XVariable parseHeaders(HttpExchange request) throws IOException  {
 
 
-			XVariable var = new XVariable("HTTP_HEADERS",null);
+			XVariable var = XVariable.newInstance("HTTP_HEADERS");
 			XMLStreamWriter writer = null ;
 			try (
 					VariableOutputPort port = new VariableOutputPort( var );

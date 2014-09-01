@@ -13,6 +13,7 @@ import org.xmlsh.json.JSONUtils;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.types.JSONTypeFamily;
 import org.xmlsh.types.TypeFamily;
+import org.xmlsh.types.XTypeUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -40,13 +41,13 @@ public class json extends BuiltinFunctionCommand {
 			nodes.add( mapper.valueToTree(o) );
 		}
 		if( nodes.isEmpty())
-			return JSONTypeFamily.nullValue();
+			return XTypeUtils.getInstance(TypeFamily.JSON).nullXValue();
 
 		else
 			if( nodes.size() > 1 ) 
-				return new XValue(TypeFamily.JSON, mapper.createArrayNode().addAll(nodes));
+				return XValue.asXValue(TypeFamily.JSON, mapper.createArrayNode().addAll(nodes));
 			else
-				return new XValue( TypeFamily.JSON, nodes.get(0 ) );
+				return XValue.asXValue( TypeFamily.JSON, nodes.get(0 ) );
 
 	}
 

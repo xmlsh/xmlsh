@@ -121,15 +121,19 @@ public class Assign {
 
 		// Assign
 		if( getOp().equals("+="))
-			shell.getEnv().appendVar( getVariable(), value ,   isLocal());
+			shell.getEnv().appendVar( getVariable(), value);
 		else {
 		    
 		    if( mInd != null ) {
 		        String ind = mInd.expandString(shell, mListVarEnv, loc);
-	            shell.getEnv().setIndexedVar( getVariable(), value , ind ,  VAR_FLAGS, mLocal );
+	            shell.getEnv().setIndexedVar( getVariable(), value , ind );
 		    }
 		    else
-			     shell.getEnv().setVar( getVariable(), value , mLocal );
+		      if( mLocal )
+	           shell.getEnv().setLocalVar( getVariable(), value );
+
+		      else
+			       shell.getEnv().setVar( getVariable(), value );
 		}
 
 	}
@@ -142,11 +146,11 @@ public class Assign {
     case "+=" :
       return XValue.nullValue();
     case "[]" :
-       return new XValue( TypeFamily.XTYPE , XValueArray.emptyArray() );
+       return XValue.asXValue( TypeFamily.XTYPE , XValueArray.emptyArray() );
     case "{}" :
-      return new XValue( TypeFamily.XTYPE , XValuePropertyList.emptyPropertyList() );
+      return XValue.asXValue( TypeFamily.XTYPE , XValuePropertyList.emptyPropertyList() );
     case "()" :
-      return  new XValue( TypeFamily.XTYPE , XValueSequence.emptySequence());
+      return  XValue.asXValue( TypeFamily.XTYPE , XValueSequence.emptySequence());
     }
     return XValue.nullValue();
   }

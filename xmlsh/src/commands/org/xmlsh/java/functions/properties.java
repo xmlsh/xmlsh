@@ -98,7 +98,7 @@ public class properties extends BuiltinFunctionCommand
 
 	public XValue newValue(Properties props)
 	{
-		return new XValue( TypeFamily.JAVA , props );
+		return XValue.asXValue( TypeFamily.JAVA , props );
 	}
 
 

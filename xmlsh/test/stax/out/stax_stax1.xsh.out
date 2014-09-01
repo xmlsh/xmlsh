@@ -13,7 +13,7 @@ event type CHARACTERS
 	
 event type START_ELEMENT
    ITEM
-xs:string
+java.lang.String
 MMP
 event type CHARACTERS
   
@@ -112,7 +112,7 @@ event type CHARACTERS
 	
 event type START_ELEMENT
    ITEM
-xs:string
+java.lang.String
 P
 event type CHARACTERS
   
@@ -211,7 +211,7 @@ event type CHARACTERS
 	
 event type START_ELEMENT
    ITEM
-xs:string
+java.lang.String
 P
 event type CHARACTERS
   
@@ -310,7 +310,7 @@ event type CHARACTERS
 	
 event type START_ELEMENT
    ITEM
-xs:string
+java.lang.String
 P
 event type CHARACTERS
   
@@ -409,7 +409,7 @@ event type CHARACTERS
 	
 event type START_ELEMENT
    ITEM
-xs:string
+java.lang.String
 H
 event type CHARACTERS
   
@@ -508,7 +508,7 @@ event type CHARACTERS
 	
 event type START_ELEMENT
    ITEM
-xs:string
+java.lang.String
 P
 event type CHARACTERS
   

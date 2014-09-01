@@ -58,7 +58,7 @@ public class xmd5sum extends XCommand
 
 
 		if( args.isEmpty() )
-			args.add(new XValue("-"));
+			args.add(XValue.asXValue("-"));
 
 
 
@@ -96,7 +96,7 @@ public class xmd5sum extends XCommand
 			if( file != null && file.exists() && file.isDirectory() ){
 				for( String child : file.list() )
 					// Use / not File.seperator so that we keep java paths 
-					writeMD5( new XValue( sArg + "/" + child  ),
+					writeMD5( XValue.asXValue(sArg + "/" + child),
 							out , 
 							serializeOpts
 							);

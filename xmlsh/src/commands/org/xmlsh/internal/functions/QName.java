@@ -25,11 +25,11 @@ public class QName extends BuiltinFunctionCommand {
 		switch( args.size())
 		{
 		case	1: // Clarke or local ?
-			return new XValue( TypeFamily.XDM , args.get(0).asQName(shell) );
+			return XValue.asXValue( TypeFamily.XDM , args.get(0).asQName(shell) );
 		case	2:
-			return new XValue( TypeFamily.XDM , new net.sf.saxon.s9api.QName(args.get(0).toString() , args.get(1).toString()) );
+			return XValue.asXValue( TypeFamily.XDM , new net.sf.saxon.s9api.QName(args.get(0).toString() , args.get(1).toString()) );
 		case	3 :
-			return new XValue(TypeFamily.XDM ,  new net.sf.saxon.s9api.QName(args.get(0).toString() , args.get(1).toString() , args.get(2).toString() ) );
+			return XValue.asXValue(TypeFamily.XDM ,  new net.sf.saxon.s9api.QName(args.get(0).toString() , args.get(1).toString() , args.get(2).toString() ) );
 
 
 		default:

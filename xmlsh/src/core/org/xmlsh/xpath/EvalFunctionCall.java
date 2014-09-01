@@ -62,13 +62,13 @@ public class EvalFunctionCall extends ExtensionFunctionCall
 			Item item = null;
 			if(args != null) {
 				while ((item = args.next()) != null) {
-					shell_args.add(new XValue(item));
+					shell_args.add(XValue.asXValue(item));
 				}
 			}
 
 			// Capture stdout
-			XValue oValue = new XValue();
-			XVariable oVar = new XVariable("_out", oValue);
+			XValue oValue = XValue.empytSequence();
+			XVariable oVar = XVariable.anonymousInstance(oValue);
 			try (				
 					VariableOutputPort oPort = new VariableOutputPort(oVar) ){
 				shell.getEnv().setStdout(oPort);
@@ -81,7 +81,8 @@ public class EvalFunctionCall extends ExtensionFunctionCall
 
 				// set stdin
 				if(context != null) {
-					VariableInputPort iPort = new VariableInputPort(new XVariable("_in", new XValue(contextItem)));
+					VariableInputPort iPort = new VariableInputPort(
+					  XVariable.anonymousInstance( XValue.asXValue(contextItem)));
 					shell.getEnv().setStdin(iPort);
 				}
 

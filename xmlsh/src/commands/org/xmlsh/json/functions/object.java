@@ -45,7 +45,7 @@ public class object extends BuiltinFunctionCommand {
 		}
 
 
-		return new XValue(TypeFamily.JSON,  obj );
+		return XValue.asXValue(TypeFamily.JSON,  obj );
 	}
 }
 

@@ -1,14 +1,17 @@
 package org.xmlsh.types;
 
+import static org.xmlsh.types.TypeFamily.*;
+import net.sf.saxon.om.Item;
 import net.sf.saxon.om.ValueRepresentation;
 import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.SaxonApiException;
+import net.sf.saxon.s9api.XdmAtomicValue;
+import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmValue;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
+import org.apache.tools.ant.types.resources.comparators.Size;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.UnimplementedException;
@@ -17,11 +20,13 @@ import org.xmlsh.core.XValueList;
 import org.xmlsh.core.XValueSequence;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.util.JavaUtils;
+import org.xmlsh.util.S9Util;
 import org.xmlsh.util.Util;
 import org.xmlsh.util.XMLUtils;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -31,19 +36,32 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 public final class XDMTypeFamily extends AbstractTypeFamily implements ITypeFamily
 {
-  static final XDMTypeFamily _instance = new XDMTypeFamily();
+  private static final XDMTypeFamily _instance = new XDMTypeFamily();
+  private static final Object _nullValue = null;
+
+
+
+  private static Logger mLogger = LogManager.getLogger();
 
   @Override
   public boolean isClassOfFamily(Class<?> cls)
   {
-    return XdmValue.class.isAssignableFrom(cls) || ValueRepresentation.class.isAssignableFrom(cls) ||
-        QName.class.isAssignableFrom(cls);
+    assert( cls != null );
+    if( cls == null ) 
+      return false;
+    return XdmItem.class.isAssignableFrom(cls) || ValueRepresentation.class.isAssignableFrom(cls) ||
+        QName.class.isAssignableFrom(cls) ;
   }
 
   @Override
   public boolean isInstanceOfFamily(Object obj)
   {
-    return obj instanceof XdmValue || obj instanceof ValueRepresentation || obj instanceof QName;
+    if( obj == null )
+      return true ;
+
+    if(  obj instanceof XdmItem || obj instanceof ValueRepresentation || obj instanceof QName  || obj instanceof URI )
+      return true ;
+    return false ;
 
   }
 
@@ -57,12 +75,12 @@ public final class XDMTypeFamily extends AbstractTypeFamily implements ITypeFami
     public XValue append(Object obj, XValue xvalue)
     {
       assert( obj != null );
-      assert (obj instanceof XdmItem);
+      assert (obj instanceof XdmItem );
       
       if(xvalue == null)
-        return newXValue(obj);
+        return XValue.asXValue( TypeFamily.XDM , obj);
       
-      return new XValue( new XValueSequence( newXValue(obj) , xvalue ) );
+      return XValue.asXValue(new XValueSequence( getXValue(obj), xvalue ));
 
     }
 
@@ -72,17 +90,20 @@ public final class XDMTypeFamily extends AbstractTypeFamily implements ITypeFami
       if(obj == null)
         return "";
       assert( obj != null );
-      assert (obj instanceof XdmItem);
-      if(obj instanceof XdmItem)
+      assert (obj instanceof XdmItem );
+      
+      if(obj instanceof XdmItem) {
         try {
           return new String(XMLUtils.toByteArray((XdmItem) obj, SerializeOpts.defaultOpts),
             SerializeOpts.defaultOpts.getOutput_xml_encoding());
         } catch (SaxonApiException | IOException e) {
           mLogger.warn("Exception serializing XDM value", e);
+          return "";
         }
+      }
       else 
-        return obj.toString();
-      return "";
+        return  obj.toString();
+
 
     }
 
@@ -91,8 +112,7 @@ public final class XDMTypeFamily extends AbstractTypeFamily implements ITypeFami
     {
       assert( obj != null );
       assert (obj instanceof XdmItem);
-      // return ((XdmItem) XdmItem).size();
-      return 1;
+      return ((XdmItem)obj).size();
     }
 
     // Named index XValue
@@ -100,11 +120,12 @@ public final class XDMTypeFamily extends AbstractTypeFamily implements ITypeFami
     public XValue getXValue(Object obj, String ind) throws InvalidArgumentException
     {
       if( obj == null )
-        return _nullValue;
+        return nullXValue();
+      
       assert( obj != null );
       assert( obj instanceof XdmItem );
 
-    throw new InvalidArgumentException("Invalid named index for XDM Value:" + ind);
+      throw new InvalidArgumentException("Invalid named index for XDM Value:" + ind);
 
     }
 
@@ -186,39 +207,69 @@ public final class XDMTypeFamily extends AbstractTypeFamily implements ITypeFami
     public boolean isAtomic(Object value)
     {
       assert( value != null );
-      assert( value instanceof XdmItem );
       if(value == null)
         return true;
-      if(!(value instanceof XdmValue))
+      if(!(value instanceof XdmItem))
         return false;
 
-      return XMLUtils.isAtomic((XdmValue) value);
+      return XMLUtils.isAtomic((XdmItem) value);
     }
+    
 
     @Override
     public XValue getXValue(Object obj)
     {
-      assert( obj != null );
-      assert( obj instanceof XdmItem );
-      if(obj == null)
-        return _nullValue;
-      assert( obj instanceof XdmItem );
-      XdmItem v = (XdmItem) obj;
-      return newXValue(v);
+    
+       if( obj == null )
+           return XTypeFamily.getInstance().nullXValue();
+       
+       if( obj instanceof XdmValue && ! (obj instanceof XdmItem) ) {
+           XdmValue v = (XdmValue) obj ;
+           v = XMLUtils.simplify(v);
+           
+           switch( v.size() ){
+           case 0:
+              return XValue.empytSequence();
+           case 1:
+             obj = v.itemAt(0);
+           default:
+             return XValue.asXValue(XMLUtils.toXValueList( v ));
+           }
+         }
+       
+       if( obj instanceof XdmItem ) 
+         assert( ( (XdmItem) obj ).size() <= 1 );
+       else       
+       if( obj instanceof QName )
+         obj = new XdmAtomicValue( (QName) obj );
+       else
+       if( obj instanceof String )
+         obj = new XdmAtomicValue( (String) obj );
+       else
+       if( obj instanceof URI )
+         obj = new XdmAtomicValue( (URI) obj );
+       else
+       if( obj instanceof Item<?> )
+         obj = S9Util.wrapItem((Item<?>)obj);
+       else
+         return XValue.asXValue(obj);
 
+      return XValue.asXValue(this,obj,false);
     }
+
+    
 
     @Override
     public XValue getXValue(Object obj, int index) throws CoreException
     {
       if(obj == null)
-        return _nullValue;
-      assert (obj instanceof XdmValue);
-      XdmValue v = (XdmValue) obj;
+        return nullXValue();
+      assert (obj instanceof XdmItem);
+      XdmItem v = (XdmItem) obj;
 
       if(index < 0 || index >= v.size())
         throw new InvalidArgumentException("Invalid index for sequence");
-      return newXValue(v.itemAt(index));
+      return XValue.asXValue(this,v.itemAt(index),false);
     }
 
     @Override
@@ -228,12 +279,22 @@ public final class XDMTypeFamily extends AbstractTypeFamily implements ITypeFami
 
     }
 
-  private static Logger mLogger = LogManager.getLogger();
+  @Override
+  public Object nullValue()
+  {
+    return _nullValue;
+  }
 
   @Override
-  protected XValue newXValue(Object obj)
+  public XValue nullXValue()
   {
-      return new XValue(TypeFamily.XDM, obj);
+   
+   return XValue.asXValue(TypeFamily.XDM, _nullValue);
+  }
+
+  public static XDMTypeFamily getInstance()
+  {
+    return _instance;
   }
 
 

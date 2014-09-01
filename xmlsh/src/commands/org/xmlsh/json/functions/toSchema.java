@@ -46,7 +46,7 @@ public class toSchema extends BuiltinFunctionCommand {
 		@SuppressWarnings("deprecation")
 		JsonSchema schema = mapper.generateJsonSchema(cls);
 
-		return new XValue(TypeFamily.JSON,  schema.getSchemaNode());
+		return XValue.asXValue(TypeFamily.JSON,  schema.getSchemaNode());
 
 	}
 

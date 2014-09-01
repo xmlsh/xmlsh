@@ -51,7 +51,7 @@ public class toXml	extends BuiltinFunctionCommand {
 
 		bw.writeEndDocument();
 
-		return new XValue(TypeFamily.XDM,bw.getDocumentNode());
+		return XValue.asXValue(TypeFamily.XDM,bw.getDocumentNode());
 
 	}
 

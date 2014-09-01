@@ -19,7 +19,7 @@ public class array extends BuiltinFunctionCommand
 	public XValue run(Shell shell, List<XValue> args) throws Exception {
 		XValueArray a = new XValueArray() ;
 		a.addAll( args );
-		return new XValue(TypeFamily.XTYPE,a);
+		return XValue.asXValue(TypeFamily.XTYPE,a);
 
 	}
 

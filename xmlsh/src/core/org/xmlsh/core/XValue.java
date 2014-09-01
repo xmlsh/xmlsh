@@ -19,6 +19,7 @@ import net.sf.saxon.s9api.XPathCompiler;
 import net.sf.saxon.s9api.XPathExecutable;
 import net.sf.saxon.s9api.XPathSelector;
 import net.sf.saxon.s9api.XdmAtomicValue;
+import net.sf.saxon.s9api.XdmEmptySequence;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XdmSequenceIterator;
@@ -31,9 +32,7 @@ import net.sf.saxon.value.DoubleValue;
 import net.sf.saxon.value.FloatValue;
 import net.sf.saxon.value.IntegerValue;
 import net.sf.saxon.value.Value;
-
 import org.apache.logging.log4j.Logger;
-
 import org.xmlsh.core.XVariable.XVarFlag;
 import org.xmlsh.json.JSONUtils;
 import org.xmlsh.sh.shell.SerializeOpts;
@@ -86,51 +85,14 @@ public class XValue implements Iterable<XValue>{
   {
     if( mTypeFamily == null )
       mTypeFamily = XTypeUtils.inferFamily(mValue);
-    
-    switch( mTypeFamily ) {
-    case XDM :
-      if( mValue == null )
-        _initSequence(null);
-      else
-      if( mValue instanceof XdmValue ) {
-        XdmValue v = (XdmValue) mValue ;
-        switch( v.size() ){
-        case 0:
-          _initSequence(null);
-           break;
-        case 1:
-          assert( mValue instanceof XdmAtomicValue || mValue instanceof XdmNode );
-          break;
-        default:
-          _initSequence( new XValueSequence(XMLUtils.toXValueList( v ) ) );
-         break;
-        }
-      }
-      if( mValue instanceof XdmValue ) 
-        assert( ( (XdmValue) mValue ).size() <= 1 );
-      if( mValue instanceof QName )
-        mValue = new XdmAtomicValue( (QName) mValue );
-      else
-      if( mValue instanceof String )
-        mValue = new XdmAtomicValue( (String) mValue );
-      else
-      if( mValue instanceof URI )
-        mValue = new XdmAtomicValue( (URI) mValue );
-      break;
-     
-      case JAVA  :
-      case XTYPE :
-      case JSON  :
-        break;
-      default :
-        assert(true );
-     break;
-    }
-    
+
+    if( mValue != null )
+      assert( ! mValue.getClass().isArray() );
+    assert( XTypeUtils.getInstance(mTypeFamily).isInstanceOfFamily(mValue));
     
   }
   
-	private void _initSequence(IXValueSequence seq)
+	private void _initSequence(IXValueSequence<?> seq)
   {
     this.mTypeFamily = TypeFamily.XTYPE ;
     this.mValue = seq == null ?  XValueSequence.emptySequence() : seq ;
@@ -141,7 +103,7 @@ public class XValue implements Iterable<XValue>{
   public static XValue empytSequence()
   {
  
-    return new XValue(TypeFamily.XTYPE ,XValueSequence.emptySequence() );
+    return  new XValue(TypeFamily.XTYPE ,XValueSequence.emptySequence() );
     
   }
 
@@ -152,7 +114,7 @@ public class XValue implements Iterable<XValue>{
 
 
 	}
-	public XValue(TypeFamily family, Object obj) {
+	private XValue(TypeFamily family, Object obj) {
 		mTypeFamily = family ;
 		mValue = obj;
     _init();
@@ -161,7 +123,7 @@ public class XValue implements Iterable<XValue>{
 
 	public XValue()
 	{
-		mTypeFamily = null ;
+		mTypeFamily = TypeFamily.XTYPE ;
 		mValue = null ;
     _init();
 
@@ -171,27 +133,27 @@ public class XValue implements Iterable<XValue>{
 	 *  Create an atomic string (xs:string)
 	 */
 
-	public XValue(BigDecimal n) {
+	private XValue(BigDecimal n) {
 		this( TypeFamily.XDM ,  new XdmAtomicValue( n ));
 	}
 
 
-	public XValue(boolean n) {
+	private XValue(boolean n) {
 		this(  TypeFamily.XDM , new XdmAtomicValue( n) );
 	}
 
-	public XValue(int n) {
+	private XValue(int n) {
 		this(  TypeFamily.XDM, new XdmAtomicValue( n) );
 	}
 
-	public XValue(Item<?> item) {
+	private XValue(Item<?> item) {
 		this( S9Util.wrapItem(item));
 	}
 
 	/*
 	 *  Create an XValue by combining a list of XValue objects into a single XValue as a sequence
 	 */
-	public XValue( List<XValue> args) {
+	private XValue( List<XValue> args) {
 	  assert( args != null );
 	  
 	  if( args.isEmpty() ) {
@@ -212,22 +174,22 @@ public class XValue implements Iterable<XValue>{
 	    
 	}
 
-  public XValue(long n) {
+  private XValue(long n) {
 		this(TypeFamily.XDM,new XdmAtomicValue( n ));
 	}
 
 
-	public XValue(String s)
+	private XValue(String s)
 	{
 		this( TypeFamily.JAVA,s);
 	}
 
-	public XValue(String value , ItemType type) throws SaxonApiException {
+	private XValue(String value , ItemType type) throws SaxonApiException {
 		this( TypeFamily.XDM,new XdmAtomicValue( value , type  ));
 	}
 
 	// Create XValue from an array of strings
-	public XValue( String[] astring )
+	private XValue( String[] astring )
 	{
 
 	  this( new XValueSequence(Util.toXValueList(astring)));
@@ -248,24 +210,24 @@ public class XValue implements Iterable<XValue>{
 	/*
 	 * Create an XValue from an XdmValue 
 	 */
-	public XValue( XdmValue v )
+	private XValue( XdmValue v )
 	{
 		this(TypeFamily.XDM, v == null ? null :  XMLUtils.simplify(v) );
 	}
 
-	public XValue(IXValueMap map) {
+	private XValue(IXValueMap map) {
 	    this(TypeFamily.XTYPE , map );
     }
-   public XValue(IXValueList list) {
+   private XValue(IXValueList list) {
         this(TypeFamily.XTYPE , list );
     }
    
-   public XValue(XValueProperty prop) {
+   private XValue(XValueProperty prop) {
        this(TypeFamily.XTYPE , prop );
    }
 	
 	
-    public XValue(XValuePropertyList plist )
+    private XValue(XValuePropertyList plist )
   {
      this(TypeFamily.XTYPE, plist );
   }
@@ -279,10 +241,12 @@ public class XValue implements Iterable<XValue>{
     {
 
       this( null , obj );
+      assert( mValue == null || ! ( mValue instanceof XValue ) );
+
     
     }
 
-    public XValue( IXValueSequence seq ) {
+    private XValue( IXValueSequence<?> seq ) {
      this( TypeFamily.XTYPE , seq ); 
       
     }
@@ -290,7 +254,7 @@ public class XValue implements Iterable<XValue>{
 	{
 	  
 		if( mValue == null )
-			return new XValue(value);
+			return XValue.asXValue(value);
 
 		
 		if( value == null )
@@ -304,9 +268,9 @@ public class XValue implements Iterable<XValue>{
 		for( XdmItem item : xvalue )
 			items.add(item);
 
-		return new XValue(new XdmValue(items));
+		return XValue.asXValue(new XdmValue(items));
 */
-		return append( new XValue( value ) );
+		return append( XValue.asXValue( value ) );
 	}
 	
 	/*
@@ -510,8 +474,8 @@ public class XValue implements Iterable<XValue>{
 	public boolean isEmptySequence()
   {
 	  return 
-	  isInstanceOf(XValueSequence.class) &&
-      asType(XValueSequence.class).isEmpty() ;
+	  mValue instanceof IXValueSequence &&
+	  ((IXValueSequence<?>)mValue).isEmpty() ;
 	  
 
   }
@@ -639,7 +603,7 @@ public class XValue implements Iterable<XValue>{
 
 	public boolean isAtomic() {
 		if( mValue == null )
-			return true ;
+			return false ;
 
 		return 
 		this.typeFamilyInstance().isAtomic(mValue);
@@ -658,7 +622,7 @@ public class XValue implements Iterable<XValue>{
 		if( mTypeFamily == TypeFamily.JSON )
 			return true ;
 		return mValue != null &&
-				XTypeUtils.getFamilyInstance(TypeFamily.JSON).isInstanceOfFamily(mValue);
+				XTypeUtils.getInstance(TypeFamily.JSON).isInstanceOfFamily(mValue);
 
 	}
 
@@ -722,12 +686,18 @@ public class XValue implements Iterable<XValue>{
 	public XValue shift(int n) {
 		if( mValue == null )
 			return this ;
-		XdmValue value = toXdmValue();
-		if( value == null )
-			return this ;
+		
+		if( ! (mValue instanceof IXValueSequence ))
+		  return this ;
+		IXValueSequence seq = (IXValueSequence) mValue;
+		
+ 
+		if( seq.isEmpty() )
+		  return this ;
+		if( seq.size() <= n )
+		  return empytSequence() ;
 
-		XdmItemSubsequence	iter = new XdmItemSubsequence( value , n );
-		return new XValue(  new XdmValue(  iter ) );
+		return XValue.newInstance(seq.subSequence( n ));
 	}
 
 	public BigDecimal toBigDecimal() throws XPathException {
@@ -881,7 +851,7 @@ public class XValue implements Iterable<XValue>{
 		return "";
 	}
 	public ITypeFamily typeFamilyInstance() {
-		return  XTypeUtils.getFamilyInstance(typeFamily());
+		return XTypeUtils.getInstance(typeFamily());
 	}
 
 	public TypeFamily  typeFamily()
@@ -918,7 +888,7 @@ public class XValue implements Iterable<XValue>{
 
 			XPathSelector eval = exec.load();
 			eval.setContextItem( ((XdmValue)mValue).itemAt(0) );
-			return new XValue( eval.evaluate());
+			return XValue.asXValue( TypeFamily.XDM , eval.evaluate());
 
 
 		} catch( Exception e ){
@@ -927,10 +897,6 @@ public class XValue implements Iterable<XValue>{
 	}
 	public boolean isTypeFamily(TypeFamily family) {
 		return typeFamily() == family ;
-	}
-	public static XValue nullValue()
-	{
-		return new XValue();
 	}
 	public boolean isInstanceOf(Class<?> cls)
 	{
@@ -966,7 +932,7 @@ public class XValue implements Iterable<XValue>{
     if( isNull() || isEmptySequence() )
       return Collections.emptyIterator();
     if( isSequence()  )
-      return ((XValueSequence)mValue).iterator() ;
+      return ((IXValueSequence)mValue).iterator() ;
      return Util.singletonIterator( this );
     
     
@@ -991,7 +957,9 @@ public class XValue implements Iterable<XValue>{
     if( obj  == null )
       return  nullValue();
     
-    return new XValue( obj );
+    assert( obj == null || ! ( obj instanceof XValue ) );
+
+    return XValue.asXValue( obj );
   
   }
   
@@ -1000,20 +968,40 @@ public class XValue implements Iterable<XValue>{
    * Will cast directly to XValue if its a known type
    * otherwise will create a wrapper
    * 
+   * 
+   * 
    */
+  
+  public static XValue asXValue(List<XValue> values)
+  {
+    return new XValue(values);
+  }
+
+  
   public static XValue asXValue(Object obj)
   {
     if( obj  == null )
       return  nullValue();
     if( obj instanceof XValue )
       return (XValue) obj ;
-
-    return new XValue( obj );
+    
+    TypeFamily tf = XTypeUtils.inferFamily(obj);
+    return XTypeUtils.getInstance(tf).getXValue(obj);
   
   }
+  public static XValue nullValue()
+  {
+    return new XValue(TypeFamily.XTYPE,null);
+  }
+
+  public static XValue nullValue(TypeFamily xtype)
+  {
+    return  XTypeUtils.getInstance(xtype).nullXValue() ;
+  }
+
   public boolean isSequence()
   {
-    return isInstanceOf(XValueSequence.class);
+    return mValue instanceof IXValueSequence ;
   }
   
 
@@ -1022,6 +1010,94 @@ public class XValue implements Iterable<XValue>{
     if( mValue == null)
       return "null";
     return mValue.getClass().getName();
+  }
+  public static XValue asXValue(ITypeFamily type , Object value, boolean convert )
+  {
+    if( type == null )
+      return asXValue(value);
+     if( convert && ! type.isInstanceOfFamily(value) )
+        return asXValue( type.typeFamily() , value );
+     return new XValue( type.typeFamily() , value );
+  
+  }
+  
+  public static XValue asXValue(TypeFamily type , Object value)
+  {
+    if( type == null )
+      return asXValue(value);
+    
+    return XTypeUtils.getInstance(type).getXValue(value);
+  
+  }
+
+  public static XValue asXValue(BigDecimal n)
+  {
+    return new XValue(n);
+  }
+
+  public static XValue asXValue(boolean n)
+  {
+    return new XValue(n);
+  }
+
+  public static XValue asXValue(int n)
+  {
+    return new XValue(n);
+  }
+
+  public static XValue asXValue(Item<?> item)
+  {
+    return new XValue(item);
+  }
+
+  public static XValue asXValue(long n)
+  {
+    return new XValue(n);
+  }
+
+  public static XValue asXValue(String s)
+  {
+    return new XValue(s);
+  }
+
+  public static XValue asXValue(String value, ItemType type) throws SaxonApiException
+  {
+    return new XValue(value, type);
+  }
+
+  public static XValue asXValue(String[] astring)
+  {
+    return new XValue(astring);
+  }
+
+  public static XValue asXValue(XdmValue v)
+  {
+    return new XValue(v);
+  }
+
+  public static XValue asXValue(IXValueMap map)
+  {
+    return new XValue(map);
+  }
+
+  public static XValue asXValue(IXValueList list)
+  {
+    return new XValue(list);
+  }
+
+  public static XValue asXValue(XValueProperty prop)
+  {
+    return new XValue(prop);
+  }
+
+  public static XValue asXValue(XValuePropertyList plist)
+  {
+    return new XValue(plist);
+  }
+
+  public static XValue asXValue(IXValueSequence<?> seq)
+  {
+    return new XValue(seq);
   }
 
 }

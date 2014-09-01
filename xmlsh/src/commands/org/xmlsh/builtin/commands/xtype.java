@@ -26,6 +26,7 @@ import org.xmlsh.core.XVariable;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.sh.shell.ShellModuleURIResolver;
+import org.xmlsh.types.TypeFamily;
 import org.xmlsh.util.Util;
 import org.xmlsh.util.XMLUtils;
 
@@ -100,9 +101,9 @@ public class xtype extends BuiltinCommand {
 		  w.println( arg.javaTypeName() );
 		else
 		
-		if(  bSimple ||  arg.canConvert( XdmValue.class ) < 0 
-		    ){
-
+//		if(  bSimple ||  arg.canConvert( XdmValue.class ) < 0 ){
+		  
+   if(  bSimple ||  ! arg.isTypeFamily( TypeFamily.XDM ) ) {
 			String type = 
 			    bSimple ? 
 			        arg.typeFamilyInstance().simpleTypeName( arg.asObject() ) :

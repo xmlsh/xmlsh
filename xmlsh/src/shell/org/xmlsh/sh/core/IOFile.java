@@ -14,6 +14,7 @@ import org.xmlsh.core.InputPort;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.XEnvironment;
+import org.xmlsh.core.XValue;
 import org.xmlsh.core.XVariable;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
@@ -101,8 +102,8 @@ public class IOFile {
 
 					XVariable xvar = env.getVar(var);
 					if( xvar == null ){
-						xvar = new XVariable(var,null,XVariable.XVAR_STANDARD);
-						env.setVar(xvar, false );
+						xvar = XVariable.newInstance(var);
+						env.setVar(xvar );
 					}
 					else
 						xvar.clear();
@@ -114,8 +115,8 @@ public class IOFile {
 					{
 						XVariable xvar = env.getVar(var);
 						if( xvar == null ){
-							xvar = new XVariable(var,null,XVariable.XVAR_STANDARD);
-							env.setVar(xvar, false );
+							xvar = XVariable.newInstance(var, XValue.nullValue());
+							env.setVar(xvar );
 						}
 						env.setOutput(port,xvar);				
 					}

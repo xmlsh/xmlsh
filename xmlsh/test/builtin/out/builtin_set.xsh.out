@@ -3,10 +3,10 @@
           type-family="JAVA"
           type="java.lang.String"
           simple-type="string"
-          flags="[EXPORT, XEXPR]"/>
+          flags="[EXPORT]"/>
 <variable name="B"
           type-family="XDM"
           type="net.sf.saxon.s9api.XdmNode"
           simple-type="element(xml, xs:untyped)"
-          flags="[EXPORT, XEXPR]"/>
+          flags="[EXPORT]"/>
 </builtin_set>

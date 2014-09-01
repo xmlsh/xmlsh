@@ -49,7 +49,7 @@ public class WordList extends ArrayList<Word>
   public XValue expand(Shell shell, EvalEnv env, SourceLocation loc) throws IOException, CoreException
   {
     if(this.size() == 0)
-      return new XValue(XValueSequence.emptySequence());
+      return XValue.asXValue(XValueSequence.emptySequence());
     if(this.size() == 1)
       return this.get(0).expand(shell, env, loc);
 
@@ -63,7 +63,7 @@ public class WordList extends ArrayList<Word>
       list.add(v);
 
     }
-    return new XValue(list);
+    return XValue.asXValue(list);
 
   }
 

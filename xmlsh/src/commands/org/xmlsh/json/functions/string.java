@@ -27,15 +27,15 @@ public class string extends BuiltinFunctionCommand {
 	public XValue run(Shell shell, List<XValue> args) {
 
 		if( args.isEmpty() )
-			return new XValue( TypeFamily.JSON, JSONUtils.toJsonString((String)null));
+			return XValue.asXValue( TypeFamily.JSON, JSONUtils.toJsonString((String)null));
 
 		if( args.size() == 1 )
-			return new XValue( TypeFamily.JSON , JSONUtils.toJsonString(args.get(0)));
+			return XValue.asXValue( TypeFamily.JSON , JSONUtils.toJsonString(args.get(0)));
 
 
 		String sjson = Util.joinValues(args,ShellConstants.ARG_SEPARATOR );
 
-		return new XValue( TypeFamily.JSON,  JSONUtils.toJsonString(sjson) );
+		return XValue.asXValue( TypeFamily.JSON,  JSONUtils.toJsonString(sjson) );
 	}
 
 }

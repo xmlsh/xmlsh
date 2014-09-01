@@ -14,6 +14,7 @@ import org.xmlsh.core.XVariable;
 import org.xmlsh.sh.core.SourceLocation;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.types.TypeFamily;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,23 +53,23 @@ public class xlocation extends BuiltinFunctionCommand {
 		if( loc == null )
 			return null ;
 		if( opts.hasOpt("name") && loc.hasName() )
-			xv.add( new XValue( describeName(depth,loc)));
+			xv.add( XValue.asXValue( describeName(depth,loc)));
 		if( opts.hasOpt("s") ) 
-			xv.add( new XValue(loc.getSource()) );
+			xv.add( XValue.asXValue(loc.getSource()) );
 		if( opts.hasOpt("start") ) 
-			xv.add( new XValue(loc.getStartline()));
+			xv.add( XValue.asXValue(loc.getStartline()));
 		if( opts.hasOpt("end") ) 
-			xv.add( new XValue(loc.getEndLine()));
+			xv.add( XValue.asXValue(loc.getEndLine()));
 
 		if( opts.hasOpt("scol") ) 
-			xv.add( new XValue(loc.getStartColumn()));
+			xv.add( XValue.asXValue(loc.getStartColumn()));
 		if( opts.hasOpt("ecol") ) 
-			xv.add( new XValue(loc.getEndColumn()));
+			xv.add( XValue.asXValue(loc.getEndColumn()));
 
 		if( xv.isEmpty() )
 			return describe(shell,loc) ;
 
-		return new XValue( xv );
+		return XValue.asXValue(xv);
 	}
 
 
@@ -76,7 +77,7 @@ public class xlocation extends BuiltinFunctionCommand {
 	private XValue describe(Shell shell , SourceLocation loc) throws Exception 
 	{
 
-		XVariable xv = new XVariable("_out", null);
+		XVariable xv = XVariable.anonymousInstance(TypeFamily.XDM);
 
 		try ( VariableOutputPort port = new VariableOutputPort( xv ) ){
 			XMLStreamWriter writer = port.asXMLStreamWriter(shell.getSerializeOpts());

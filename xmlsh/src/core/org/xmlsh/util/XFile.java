@@ -7,10 +7,10 @@
 package org.xmlsh.util;
 
 import org.apache.logging.log4j.Logger;
-
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.types.TypeFamily;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,7 +25,7 @@ public class XFile /* implements XSerializble */ {
 
 	public XFile(Shell shell , XValue xv )
 	{
-		if( ! xv.isAtomic() ){
+		if( xv.isXdmNode() ){
 			try {
 				xv = xv.xpath(shell, "/file/@path/string()");
 			} catch (UnexpectedException e) {

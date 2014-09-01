@@ -45,24 +45,24 @@ public class hasNext extends BuiltinFunctionCommand {
 		switch( args.size() ){
 		case	1:
 
-			return new XValue( reader.hasNext() );
+			return XValue.asXValue(reader.hasNext());
 
 		case	2: 	// type
 		{
 			int type = StAXUtils.getEventTypeByName( args.get(1).toString() );
 			if( type < 0)
-				return new XValue(false);
+				return XValue.asXValue(false);
 
 			while( reader.hasNext() && reader.peek().getEventType() != type )
 				reader.nextEvent();
 
-			return new XValue( reader.hasNext() );
+			return XValue.asXValue( reader.hasNext() );
 		}	
 		case	3: 	// type name
 		{	
 			int type = StAXUtils.getEventTypeByName( args.get(1).toString() );
 			if( type < 0)
-				return new XValue(false);
+				return XValue.asXValue(false);
 			QName name = args.get(2).asQName(shell);
 
 			while( reader.hasNext() ){
@@ -70,17 +70,17 @@ public class hasNext extends BuiltinFunctionCommand {
 				if( event.getEventType() == type ){
 
 					if( type == XMLStreamConstants.START_ELEMENT && StAXUtils.matchesQName(reader.peek().asStartElement().getName() , name ) )
-						return new XValue( true );
+						return XValue.asXValue(true);
 					else
 						if( type == XMLStreamConstants.END_ELEMENT && StAXUtils.matchesQName(reader.peek().asEndElement().getName() , name ) )
-							return new XValue( true );
+							return XValue.asXValue(true);
 
 
 				}
 				reader.nextEvent();
 			}
 
-			return new XValue( false  );
+			return XValue.asXValue( false  );
 		}
 		default:
 			return null;

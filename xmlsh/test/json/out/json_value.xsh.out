@@ -3,4 +3,4 @@
 com.fasterxml.jackson.databind.node.IntNode
 com.fasterxml.jackson.databind.node.DecimalNode
 com.fasterxml.jackson.databind.node.TextNode
-null
+com.fasterxml.jackson.databind.node.NullNode

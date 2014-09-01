@@ -102,7 +102,7 @@ public class S9Util extends XdmNode {
 			XdmValue result =  eval.evaluate();
 
 
-			return new XValue(result) ;
+			return XValue.asXValue(result) ;
 
 
 
@@ -165,7 +165,7 @@ public class S9Util extends XdmNode {
 			XdmValue result =  eval.evaluate();
 
 
-			return new XValue(result) ;
+			return XValue.asXValue(result) ;
 
 
 

@@ -35,7 +35,7 @@ public class require extends BuiltinCommand {
 		String err = "requires version: " + sreq ;  
 		printErr(err);
 
-		throw new ThrowException(new XValue(err) );
+		throw new ThrowException(XValue.asXValue(err) );
 
 
 

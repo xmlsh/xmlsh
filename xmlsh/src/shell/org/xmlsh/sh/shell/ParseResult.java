@@ -54,7 +54,7 @@ public class ParseResult {
 			return null ;
 		}
 		public XValue toXValue() {
-			return xvalue != null ? xvalue : new XValue( avalue == null ? null : avalue.toString() ) ;
+			return xvalue != null ? xvalue : XValue.asXValue(avalue == null ? null : avalue.toString()) ;
 		}
 
 		public CharAttributeBuffer toAValue() {
@@ -334,7 +334,7 @@ public class ParseResult {
 
 
 		for( String f : rs ){
-			r.add( new XValue(f));
+			r.add( XValue.asXValue(f));
 		}
 
 		// If no matches then use arg explicitly

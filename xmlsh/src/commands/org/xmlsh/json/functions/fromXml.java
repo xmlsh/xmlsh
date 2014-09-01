@@ -78,13 +78,13 @@ public class fromXml	extends BuiltinFunctionCommand {
 		XMLStreamReader reader = null ;
 		
 		try ( 
-			VariableInputPort iPort = new VariableInputPort(new XVariable("_in", args.get(0))) ){
+			VariableInputPort iPort = new VariableInputPort(XVariable.anonymousInstance( args.get(0))) ){
 		
 			reader = iPort.asXMLStreamReader(shell.getSerializeOpts());
 		
 			Object obj = mapper.readValue( reader , cls );
 
-		    return new XValue(null,obj);
+		    return XValue.asXValue(null,obj);
 		} finally {
 			Util.safeClose(reader);
 		}

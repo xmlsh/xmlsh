@@ -34,7 +34,7 @@ public class getEventType extends BuiltinFunctionCommand {
 			return null;
 		else {
 			int type = ((XMLEvent) args.get(0).getJavaNative()).getEventType();
-			return new XValue( StAXUtils.getEventTypeName(type));
+			return XValue.asXValue(StAXUtils.getEventTypeName(type));
 
 
 		}

@@ -119,12 +119,12 @@ public class CommandFileWord extends Word {
 		if(mType.equals("$(<")){
 
 			String value = expandFile( shell , mFile,loc );
-			result.add( new XValue( value ) , true );
+			result.add( XValue.asXValue(value) , true );
 
 		} else
 			if( mType.equals("$<(<")){
 				XdmNode node = expandXFile(shell , mFile,loc);
-				result.add( new XValue( TypeFamily.XDM,node) , true );
+				result.add( XValue.asXValue( TypeFamily.XDM,node) , true );
 			}
 		return result ;
 	}

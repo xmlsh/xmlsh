@@ -12,11 +12,6 @@ import org.xmlsh.util.JavaUtils;
 
 abstract class AbstractTypeFamily implements ITypeFamily
 {	
-  protected final XValue _nullValue= newXValue(null);
-
-  protected XValue newXValue( Object obj ) {
-    return new XValue( typeFamily() , obj ); 
-  }
 
   
   static String describeClass(Object obj)

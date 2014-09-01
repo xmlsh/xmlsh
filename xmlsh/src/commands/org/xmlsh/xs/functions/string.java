@@ -24,7 +24,7 @@ public class string extends BuiltinFunctionCommand {
 	@Override
 	public XValue run(Shell shell, List<XValue> args) {
 
-		return new XValue( Util.joinValues(args,ShellConstants.ARG_SEPARATOR ) );
+		return XValue.asXValue( Util.joinValues(args,ShellConstants.ARG_SEPARATOR ) );
 	}
 
 }

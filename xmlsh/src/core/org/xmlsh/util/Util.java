@@ -1047,7 +1047,7 @@ public class Util
 		 if( result.size() < 2 )
 			 return result ;
 
-		 XValue value = new XValue(result);
+		 XValue value = XValue.asXValue(result);
 
 		 List<XValue> v = new ArrayList<XValue>(1);
 		 v.add(value);
@@ -1071,7 +1071,7 @@ public class Util
 	 public static List<XValue> toXValueList(String[] args) {
 		 List<XValue> list = new ArrayList<XValue>(args.length);
 		 for( String a : args )
-			 list.add( new XValue(a) );
+			 list.add( XValue.asXValue(a) );
 		 return list ;
 	 }
 

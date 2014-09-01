@@ -29,7 +29,7 @@ public class options extends BuiltinFunctionCommand
 	{
 
 		Options opts = new Options( parseDefs(args) );
-		return new XValue(TypeFamily.JAVA,opts);
+		return XValue.asXValue(TypeFamily.JAVA,opts);
 	}
 
 	private List<OptionDef> parseDefs(List<XValue> args)

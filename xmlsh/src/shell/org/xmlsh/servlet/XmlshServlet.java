@@ -99,9 +99,9 @@ public class XmlshServlet extends HttpServlet {
 
 				// Set properties
 				if( xp != null )
-					env.setVar(xp,false);
+					env.setVar(xp);
 				if( headers != null )
-					env.setVar(headers,false);
+					env.setVar(headers);
 
 
 				ManagedHttpSession mhs = new ManagedHttpSession( request.getSession());
@@ -181,7 +181,7 @@ public class XmlshServlet extends HttpServlet {
 			while( names.hasMoreElements() ){
 				String name = (String) names.nextElement();
 				String value = request.getParameter(name);
-				env.setVar(name, XValue.newInstance(value),false);
+				env.setVar(name, XValue.newInstance(value));
 			}
 
 
@@ -199,9 +199,9 @@ public class XmlshServlet extends HttpServlet {
 
 				// Set properties
 				if( xp != null )
-					env.setVar(xp,false);
+					env.setVar(xp);
 				if( headers != null )
-					env.setVar(headers,false);
+					env.setVar(headers);
 
 
 				ManagedHttpSession mhs = new ManagedHttpSession( request.getSession());
@@ -272,7 +272,7 @@ public class XmlshServlet extends HttpServlet {
 	private XVariable parseHeaders(HttpServletRequest request) throws XMLStreamException, CoreException, SaxonApiException, IOException {
 
 
-		XVariable var = new XVariable("HTTP_HEADERS",null);
+		XVariable var =  XVariable.newInstance("HTTP_HEADERS");
 		VariableOutputPort port = new VariableOutputPort( var );
 		XMLStreamWriter writer = port.asXMLStreamWriter(null);
 
@@ -331,7 +331,7 @@ public class XmlshServlet extends HttpServlet {
 
 		Map params = request.getParameterMap();
 
-		XVariable var = new XVariable("HTTP_PARAMETERS",null);
+		XVariable var = XVariable.newInstance("HTTP_PARAMETERS");
 		VariableOutputPort port = new VariableOutputPort( var );
 		XMLStreamWriter writer = port.asXMLStreamWriter(null);
 

@@ -62,7 +62,7 @@ public class xpath extends XCommand {
 				context = opts.getOptValue("c").asXdmItem();
 			else
 				if( opts.hasOpt("cf"))
-					context = (in=getInput( new XValue(opts.getOptString("cf", "-")))).asXdmItem(getSerializeOpts());
+					context = (in=getInput( XValue.asXValue(opts.getOptString("cf", "-")))).asXdmItem(getSerializeOpts());
 				else
 					if( opts.hasOpt("i") )
 						context = (in=getInput( opts.getOptValue("i"))).asXdmItem(getSerializeOpts());

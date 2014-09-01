@@ -25,7 +25,7 @@ public class number extends BuiltinFunctionCommand {
 	@Override
 	public XValue run(Shell shell, List<XValue> args) throws InvalidArgumentException {
 
-		return new XValue(TypeFamily.JSON,  JSONUtils.toJsonNumber( getFirstArg(args) ) );
+		return XValue.asXValue(TypeFamily.JSON,  JSONUtils.toJsonNumber( getFirstArg(args) ) );
 	}
 
 }

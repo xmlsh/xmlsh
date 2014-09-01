@@ -154,7 +154,7 @@ public class XValueArray extends AbstractList<XValue> implements IXValueContaine
         
         XValueArray  newArray = new XValueArray(this);
         newArray.add( item );
-        return new  XValue( TypeFamily.XTYPE , newArray ) ;
+        return XValue.asXValue( TypeFamily.XTYPE , newArray ) ;
         
         
     }
@@ -174,7 +174,7 @@ public class XValueArray extends AbstractList<XValue> implements IXValueContaine
     @Override
     public XValue asXValue()
     {
-      return new XValue( TypeFamily.XTYPE , this );
+      return XValue.asXValue( TypeFamily.XTYPE , this );
     }
 
     @Override

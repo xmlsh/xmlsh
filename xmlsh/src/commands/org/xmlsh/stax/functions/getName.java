@@ -41,7 +41,7 @@ public class getName extends BuiltinFunctionCommand {
 			XMLEvent event = (XMLEvent) arg;
 			if( event.isStartElement()) {
 				StartElement se = event.asStartElement();
-				return new XValue( TypeFamily.XDM,
+				return XValue.asXValue( TypeFamily.XDM,
 						new QName( 
 								se.getName().getPrefix(),
 								se.getName().getNamespaceURI(),

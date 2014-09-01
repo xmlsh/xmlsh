@@ -81,7 +81,7 @@ public class jsonread extends BuiltinCommand {
 					return 1;
 				}
 
-				value = new XValue(TypeFamily.JSON, obj );
+				value = XValue.asXValue(TypeFamily.JSON, obj );
 
 			} else {
 				JsonNode node  = JSONUtils.readJsonNode(is);
@@ -89,9 +89,9 @@ public class jsonread extends BuiltinCommand {
 					printErr("Reading json value to json node failed");
 					return 1;
 				}
-				value = new XValue(TypeFamily.JSON, node);
+				value = XValue.asXValue(TypeFamily.JSON, node);
 			}
-			mShell.getEnv().setVar(args.get(0).toString(), value  ,false);
+			mShell.getEnv().setVar(args.get(0).toString(), value);
 
 		} 
 		return value == null ? 1 : 0 ;

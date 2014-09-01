@@ -2,7 +2,6 @@ package org.xmlsh.types;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
@@ -27,10 +26,10 @@ import com.fasterxml.jackson.databind.node.POJONode;
 
 public class JSONTypeFamily extends AbstractTypeFamily implements ITypeFamily
 {
-  static final JSONTypeFamily _instance = new JSONTypeFamily();
+  private static final JSONTypeFamily _instance = new JSONTypeFamily();
   private static Logger mLogger = LogManager.getLogger();
-
-  private final static XValue _nullValue = new XValue(TypeFamily.JSON , null);
+  
+  private final static Object _nullValue = JSONUtils.nullValue();
 
 /*
  * @Override
@@ -73,12 +72,12 @@ public class JSONTypeFamily extends AbstractTypeFamily implements ITypeFamily
     return TypeFamily.JSON;
   }
 
-    private final class JsonToXValueConverter implements ITypeConverter<JsonNode, XValue>
+    private final class JsongetXValueConverter implements ITypeConverter<JsonNode, XValue>
     {
       @Override
       public XValue convert(JsonNode node)
       {
-        return newXValue(node);
+        return getXValue(node);
       }
     }
 
@@ -108,19 +107,19 @@ public class JSONTypeFamily extends AbstractTypeFamily implements ITypeFamily
       assert (!Util.isBlank(ind));
 
       if(obj == null)
-        return _nullValue;
+        return nullXValue();
       assert (obj instanceof JsonNode);
 
       JsonNode node = (JsonNode) obj;
       switch (node.getNodeType()) {
       case ARRAY:
-        return newXValue(node.get(Util.parseInt(ind, 0)));
+        return getXValue(node.get(Util.parseInt(ind, 0)));
       case OBJECT:
-        return newXValue(node.get(ind));
+        return getXValue(node.get(ind));
       case POJO:
-        return new XValue(null, node.get(ind));  // not JSON type
+        return XValue.asXValue(node.get(ind));  // not JSON type
       default:
-        return newXValue(obj);
+        return getXValue(obj);
       }
 
     }
@@ -206,15 +205,16 @@ public class JSONTypeFamily extends AbstractTypeFamily implements ITypeFamily
       if(obj == null)
         return Collections.emptyList();
       assert (obj instanceof JsonNode);
+      
       JsonNode node = (JsonNode) obj;
       switch (node.getNodeType()) {
       case ARRAY:
       case OBJECT:
         return JSONUtils.asXList(node.elements());
       case POJO:
-        return Collections.singletonList(new XValue(TypeFamily.JAVA, ((POJONode) node).getPojo()));
+        return Collections.singletonList(getXValue(((POJONode) node).getPojo()));
       default:
-        return Collections.singletonList(newXValue(obj));
+        return Collections.singletonList(getXValue(obj));
       }
 
     }
@@ -240,18 +240,10 @@ public class JSONTypeFamily extends AbstractTypeFamily implements ITypeFamily
       default:
         assert (false);
       }
-      return toXValue(ret);
+      return getXValue(ret);
     }
     
 
-    XValue toXValue(Object r)
-    {
-      if( r == null  )
-        return _nullValue ;
-      if( r instanceof XValue )
-        return( (XValue) r );
-      return newXValue( r );
-    }
     
 
     // Set a positional index value
@@ -281,7 +273,15 @@ public class JSONTypeFamily extends AbstractTypeFamily implements ITypeFamily
     @Override
     public XValue getXValue(Object obj) throws InvalidArgumentException
     {
-      return toXValue(getJsonNode(obj));
+        if(obj== null  )
+          return nullXValue() ;
+        if( obj instanceof XValue )
+          return( (XValue) obj );
+        if( obj instanceof JsonNode || isInstanceOfFamily(obj) )
+          return XValue.asXValue( this , obj , false );
+        
+        return XValue.asXValue(obj);
+      
     }
 
 
@@ -295,7 +295,7 @@ public class JSONTypeFamily extends AbstractTypeFamily implements ITypeFamily
   private static JsonNode getJsonNode(XValue xobj) throws InvalidArgumentException
   {
     if(xobj == null)
-      return JSONUtils.jsonNull();
+      return JSONUtils.nullValue();
     Object obj = xobj.asObject();
     return getJsonNode(obj);
   }
@@ -303,7 +303,7 @@ public class JSONTypeFamily extends AbstractTypeFamily implements ITypeFamily
   private static JsonNode getJsonNode(Object obj) throws InvalidArgumentException
   {
     if(obj == null)
-      return JSONUtils.jsonNull();
+      return JSONUtils.nullValue();
 
     assert (obj instanceof JsonNode);
     if(!(obj instanceof JsonNode))
@@ -312,9 +312,23 @@ public class JSONTypeFamily extends AbstractTypeFamily implements ITypeFamily
     return (JsonNode) obj;
   }
 
-  public static XValue nullValue()
+  @Override
+  public XValue nullXValue()
   {
-   return _nullValue;
+   return XValue.asXValue(this , _nullValue , false );
   }
+
+  @Override
+  public Object nullValue()
+  {
+    // TODO Auto-generated method stub
+    return _nullValue;
+  }
+
+  public static JSONTypeFamily getInstance()
+  {
+    return _instance;
+  }
+
 
 }

@@ -49,17 +49,17 @@ public class read extends BuiltinCommand
 			int i;
 			for (i = 0; i < args.size() - 1; i++)
 				if(i < results.size())
-					mShell.getEnv().setVar(args.get(i).toString(), new XValue(results.get(i))  , false);
+					mShell.getEnv().setVar(args.get(i).toString(), XValue.asXValue(results.get(i)));
 
 			// last var
 			if(i < args.size() && i < results.size()) {
 				// 1 left
 				if(results.size() == 1)
-					mShell.getEnv().setVar(args.get(i).toString(), new XValue(results.get(i)), false);
+					mShell.getEnv().setVar(args.get(i).toString(), XValue.asXValue(results.get(i)));
 				else {
 					int n = results.size() - i;
 					String[] remaining = results.subList(i, results.size()).toArray(new String[n]);
-					mShell.getEnv().setVar(args.get(i).toString(), new XValue(remaining), false);
+					mShell.getEnv().setVar(args.get(i).toString(), XValue.asXValue(remaining));
 				}
 
 			}

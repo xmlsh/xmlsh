@@ -53,7 +53,7 @@ public class jset extends BuiltinCommand {
 			else
 				obj = XValue.asXValue(JavaUtils.callMethod(instance, method, args, classloader));
 
-		mShell.getEnv().setVar(varname, obj, false);
+		mShell.getEnv().setVar(varname, obj);
 
 		return 0;
 	}

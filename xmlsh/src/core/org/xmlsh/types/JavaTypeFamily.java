@@ -14,7 +14,8 @@ import java.util.List;
 
 public class JavaTypeFamily extends AbstractTypeFamily implements ITypeFamily
 {
-  static final JavaTypeFamily _instance = new JavaTypeFamily();
+  private static final JavaTypeFamily _instance = new JavaTypeFamily();
+  private static final Object _nullValue = null ;
 
 /*
  * @Override
@@ -53,7 +54,6 @@ public class JavaTypeFamily extends AbstractTypeFamily implements ITypeFamily
   {
     return TypeFamily.JAVA;
   }
-    private final XValue _nullValue = new XValue(TypeFamily.JAVA, null);
 
 
     @Override
@@ -77,7 +77,7 @@ public class JavaTypeFamily extends AbstractTypeFamily implements ITypeFamily
     public XValue getXValue(Object obj, String ind) throws CoreException
     {
       if(obj == null)
-        return _nullValue;
+        return nullXValue();
       assert (!Util.isBlank(ind));
 
       Object res = null;
@@ -90,7 +90,7 @@ public class JavaTypeFamily extends AbstractTypeFamily implements ITypeFamily
         | IllegalAccessException | ClassNotFoundException e) {
         Util.wrapCoreException("Exception getting value from java class: " + obj.getClass().getName(), e);
       }
-      return toXValue(res);
+      return getXValue(res);
 
     }
 
@@ -134,15 +134,19 @@ public class JavaTypeFamily extends AbstractTypeFamily implements ITypeFamily
     {
       if(obj == null)
         return Collections.emptyList();
-      return Collections.singletonList(newXValue(obj));
+      return Collections.singletonList(getXValue(obj));
     }
 
     @Override
     public XValue getXValue(Object obj)
     {
-       return toXValue(obj);
-      
-      
+       if( obj == null  )
+         return nullXValue() ;
+       if( obj instanceof XValue )
+         return( (XValue) obj );
+       
+       
+       return XValue.asXValue( this, obj , false );
     }
 
     @Override
@@ -155,17 +159,9 @@ public class JavaTypeFamily extends AbstractTypeFamily implements ITypeFamily
     public XValue getXValue(Object obj, int index) throws CoreException
     {
       Object r = JavaUtils.getIndexValue(obj, index);
-      return toXValue(r);
+      return getXValue(r);
     }
 
-     XValue toXValue(Object r)
-    {
-      if( r == null  )
-        return _nullValue ;
-      if( r instanceof XValue )
-        return( (XValue) r );
-      return newXValue( r );
-    }
 
     @Override
     public XValue setXValue(XValue xobj, int index, XValue value) throws CoreException
@@ -182,6 +178,23 @@ public class JavaTypeFamily extends AbstractTypeFamily implements ITypeFamily
           Util.wrapCoreException("Exception setting indexed value", e);
         }
         return xobj;
+    }
+
+    @Override
+    public Object nullValue()
+    {
+      return _nullValue;
+    }
+
+    @Override
+    public XValue nullXValue()
+    {
+      return XValue.asXValue(this , _nullValue , false);
+    }
+
+    public static JavaTypeFamily getInstance()
+    {
+      return _instance;
     }
 
 }

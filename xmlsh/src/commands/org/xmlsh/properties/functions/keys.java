@@ -34,7 +34,7 @@ public class keys extends BuiltinFunctionCommand
         if( o instanceof org.xmlsh.core.IXValueMap ) {
           IXValueMap<?> m = (IXValueMap<?>) o ;
           for( String keys : Util.toList(  m.keySet().iterator()) ) {
-            list.addValue( new XValue(keys) );
+            list.addValue( XValue.asXValue(keys) );
           }
         }
       }

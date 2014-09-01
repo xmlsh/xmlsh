@@ -25,7 +25,7 @@ public class _false extends BuiltinFunctionCommand
   @Override
   public XValue run(Shell shell, List<XValue> args) throws Exception
   {
-    return new XValue( TypeFamily.JAVA, Boolean.FALSE );
+    return XValue.asXValue( TypeFamily.JAVA, Boolean.FALSE );
   }
 
 }

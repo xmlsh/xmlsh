@@ -12,10 +12,8 @@ import net.sf.saxon.s9api.XQueryCompiler;
 import net.sf.saxon.s9api.XQueryEvaluator;
 import net.sf.saxon.s9api.XQueryExecutable;
 import net.sf.saxon.s9api.XdmValue;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.EvalEnv;
 import org.xmlsh.core.InvalidArgumentException;
@@ -28,6 +26,7 @@ import org.xmlsh.core.XVariable.XVarFlag;
 import org.xmlsh.sh.core.EvalUtils;
 import org.xmlsh.sh.core.SourceLocation;
 import org.xmlsh.types.TypeFamily;
+import org.xmlsh.types.XDMTypeFamily;
 import org.xmlsh.util.JavaUtils;
 import org.xmlsh.util.NameValueMap;
 import org.xmlsh.util.Util;
@@ -122,7 +121,7 @@ public class Expander
     // <{ big quotes }>
     if(arg.startsWith("<{{") && arg.endsWith("}}>")) {
       // Add as a raw value
-      result.add(new XValue(arg.substring(3, arg.length() - 3)), true);
+      result.add(XValue.asXValue(arg.substring(3, arg.length() - 3)), true);
       return result;
     }
 
@@ -336,7 +335,7 @@ public class Expander
       }
 
       XdmValue result = eval.evaluate();
-      return new XValue(TypeFamily.XDM, result);
+      return XDMTypeFamily.getInstance().getXValue( result);
     } catch (SaxonApiException e) {
       String msg = "Error expanding xml expression: " + arg;
       mLogger.warn(msg, e);
@@ -358,7 +357,7 @@ public class Expander
 
   public XdmValue convertVar(XVariable var) throws InvalidArgumentException, UnexpectedException
   {
-    if(!var.isNull() && var.getFlags().contains(XVarFlag.XEXPR))
+    if(!var.isNull() )
       return convertValue(var.getValue());
 
     return null;

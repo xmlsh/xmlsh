@@ -7,12 +7,9 @@
 package org.xmlsh.core;
 
 import net.sf.saxon.s9api.SaxonApiException;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
 import org.xml.sax.InputSource;
-import org.xmlsh.core.XVariable.XVarFlag;
 import static org.xmlsh.core.XVariable.*;
 import static org.xmlsh.core.XVariable.XVarFlag.*;
 import org.xmlsh.sh.core.EvalUtils;
@@ -30,7 +27,6 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collection;
-import java.util.EnumSet;
 import java.util.Stack;
 
 import javax.xml.transform.Source;
@@ -71,12 +67,6 @@ public class XEnvironment implements AutoCloseable, Closeable {
 	}
 
 
-	// Only for the empty environment 
-	private XEnvironment()
-	{
-		// TODO Auto-generated constructor stub
-	}
-
 
 	public void	addAutoRelease( AbstractPort obj )
 	{
@@ -105,58 +95,58 @@ public class XEnvironment implements AutoCloseable, Closeable {
 	 
 		if( name == null ) {
 			// $* 
-	    	 return new XVariable( null ,  new XValue( mShell.getArgs() ),  shellArgListFlags() );
+	    	 return new XVariable(null, XValue.asXValue(mShell.getArgs()));
 		}
 		
 		switch( name ) {
 		case "*" :
-			return new XVariable( null ,  new XValue( mShell.getArgs() ) , shellArgListFlags( )  );
+			return new XVariable(null, XValue.asXValue(mShell.getArgs()));
 		case "@" :
 			return  mShell.getArgs().size() == 0 ? null 
-					: new XVariable( null ,  new XValue( mShell.getArgs() ) , shellArgListFlags( )  );
+					: new XVariable(null, XValue.asXValue(mShell.getArgs()));
 	     case "#" :
-	    	 return new XVariable( name , new XValue(mShell.getArgs().size()) , standardFlags() );
+      return new XVariable(name, XValue.asXValue(mShell.getArgs().size()));
 	     case "$" :
-	    	 return new XVariable( name ,new XValue(Thread.currentThread().getId()), standardFlags() );
+      return new XVariable(name, XValue.asXValue(Thread.currentThread().getId()));
 	     case "?" :
-	            return new XVariable( name ,new XValue(mShell.getStatus()),standardFlags());
+      return new XVariable(name, XValue.asXValue(mShell.getStatus()));
 	     case "!" :
-	    	  return new XVariable( name , new XValue(mShell.getLastThreadId()),standardFlags());
+      return new XVariable(name, XValue.asXValue(mShell.getLastThreadId()));
 		}
 		if(Util.isInt(name, false)) {
            int n = Util.parseInt(name, -1);
            if(n == 0)
-        	   return new XVariable( name , new XValue(mShell.getArg0()),shellArgFlags());
-           else if(n > 0 && n <= mShell.getArgs().size()) 
-        	   return new XVariable( name ,mShell.getArgs().get(n - 1), shellArgFlags());
-            else
+            return new XVariable(name, XValue.asXValue(mShell.getArg0()));
+          else if(n > 0 && n <= mShell.getArgs().size())
+            return new XVariable(name, mShell.getArgs().get(n - 1));
+          else
         	   return null ;
        }
 		return mVars.get(name);
 	}
 
-	public void	setVar( XVariable var, boolean local)
+	public void	setVar( XVariable var)
 	{
-		String name = var.getName();
-		if( local )
-	  	var.getFlags().add(LOCAL);
-		else
-		  var.getFlags().remove(LOCAL);
-		mVars.put(name , var, local );
+		mVars.put(var );
 	}
 
+  public void setLocalVar( XVariable var)
+  {
+    mVars.putLocal(var );
+  }
 
-	public void setIndexedVar( String name , XValue value, String ind , EnumSet<XVarFlag> flags , boolean local  ) throws CoreException 
+
+	public void setIndexedVar( String name , XValue value, String ind  ) throws CoreException 
 	{
 	    XVariable var = mVars.get(name);
         if( var == null )
-           var = new XVariable( name ,  new XValue( TypeFamily.XTYPE , new XValueMap()) , flags  );
+           var = new XVariable(name, XValue.asXValue( TypeFamily.XTYPE , new XValueMap()));
       else
           var = var.clone();
           
       var.setIndexedValue(value, ind);
             
-	    setVar( var , local );
+	    setVar( var );
 	}
 
 
@@ -164,40 +154,46 @@ public class XEnvironment implements AutoCloseable, Closeable {
 	/*
 	 * Append to a variable as a sequence 
 	 */
-	public void appendVar(String name, XValue xvalue, EnumSet<XVarFlag> varFlags, boolean local ) throws InvalidArgumentException {
+	public void appendVar(String name, XValue xvalue ) throws InvalidArgumentException {
 
 
 		XVariable var = mVars.get(name);
 		if( var == null ){
 			// If no existing variable then dont touch
-			setVar(new XVariable( name , xvalue  , varFlags ) , local );
+			setVar(new XVariable(name, xvalue) );
 			return ;
 		}
 
 		var = var.clone();
 		xvalue = var.getValue().append(xvalue);
 		var.setValue(  xvalue  );
-		setVar( var , local);
+		setVar( var);
 
 	}
 	
-	 public void appendVar(String name, XValue xvalue, boolean local ) throws InvalidArgumentException {
-	   appendVar(name,xvalue,standardFlags() , local );
-	 }
+
+  public void setLocalVar(String name, XValue value)
+  {
+    
+    XVariable var = mVars.get(name);
+    if( var == null )
+      var = new XVariable(name, value);
+    else
+      var = var.newValue( value );
+    setLocalVar( var );
+    
+  }
 
 
-
-  public void setVar( String name , XValue value, boolean local ) throws InvalidArgumentException 
+  public void setVar( String name , XValue value) throws InvalidArgumentException 
   {
 
     XVariable var = mVars.get(name);
     if( var == null )
-      var = new XVariable( name , value  );
+      var = new XVariable(name, value);
     else
       var = var.newValue( value );
-
-
-    setVar( var , local );
+    setVar( var );
   }
 
 
@@ -415,7 +411,7 @@ public class XEnvironment implements AutoCloseable, Closeable {
 		}
 		else
 		{
-			OutputPort p = new VariableOutputPort(  new XVariable(null,port,standardFlags()) );
+			OutputPort p = new VariableOutputPort(  new XVariable(null, port) );
 			addAutoRelease(p);
 			return p;
 		}
@@ -425,7 +421,7 @@ public class XEnvironment implements AutoCloseable, Closeable {
 
 	public OutputPort getOutput( String port , boolean append) throws IOException
 	{
-		return getOutput( new XValue(port) , append );
+		return getOutput( XValue.asXValue(port) , append );
 	}
 
 
@@ -579,7 +575,7 @@ public class XEnvironment implements AutoCloseable, Closeable {
 		}
 		else
 		{
-			VariableInputPort p = new VariableInputPort(  new XVariable(null,port,standardFlags()) );
+			VariableInputPort p = new VariableInputPort(  new XVariable(null, port) );
 			// Port is not managed, add to autorelease
 			addAutoRelease(p);
 			return p;
@@ -597,7 +593,7 @@ public class XEnvironment implements AutoCloseable, Closeable {
 
 	public InputPort getInput( String name ) throws CoreException, IOException
 	{
-		return getInput( new XValue(name));
+		return getInput( XValue.asXValue(name));
 	}
 
 	public OutputPort getOutputPort(String name){
@@ -694,6 +690,7 @@ public class XEnvironment implements AutoCloseable, Closeable {
 	      
 	     }
 	 }
+
 
 
 

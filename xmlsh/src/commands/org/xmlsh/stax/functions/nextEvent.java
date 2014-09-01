@@ -35,7 +35,7 @@ public class nextEvent extends BuiltinFunctionCommand {
 		if( args.size() == 0 )
 			return null;
 		else
-			return new XValue( TypeFamily.JAVA,((XMLEventReader) args.get(0).getJavaNative()).nextEvent() );
+			return XValue.asXValue( TypeFamily.JAVA,((XMLEventReader) args.get(0).getJavaNative()).nextEvent() );
 	}
 
 }

@@ -8,7 +8,6 @@ package org.xmlsh.json;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.XValueList;
@@ -348,7 +347,7 @@ public class JSONUtils {
 		mapper.writeValue(os, result);
 
 	}
-	public static NullNode jsonNull()
+	public static NullNode nullValue()
 	{
 		return JsonNodeFactory.instance.nullNode();
 	}
@@ -509,7 +508,7 @@ public class JSONUtils {
 
 
 		while( nodes.hasNext() )
-			list.add( new XValue(TypeFamily.JSON,nodes.next()) );
+			list.add( XValue.asXValue(TypeFamily.JSON,nodes.next()) );
 
 		return list ;
     }
@@ -519,6 +518,7 @@ public class JSONUtils {
 
     return isAtomicClass(value.getClass());
   }
+
 
 }
 

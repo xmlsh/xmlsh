@@ -54,22 +54,24 @@ version.version=${version}
     	 		<src path="src/shell"/>
         	 	<src path="src/commands"/>
         	 	<src path="src/generated" />
+ 		        <src path="src/resources" />
     	 	<classpath>
     				<fileset dir="lib">
     	                  	<include name="**/*.jar"/>
     	                  	<exclude name="**/saxon9ee.jar"/>
     	                  	<exclude name="**/saxon9pe.jar"/>
+    	    	 	        
     				</fileset>
     				 <fileset dir="build-lib">
     	                  	<include name="**/*.jar"/>
     				</fileset>
+    	
     	            </classpath>
     	        </javac>
     	 <copy todir="_out" filtering="on">
     	            <fileset dir="src/shell">
     	                <include name="**/*.properties"/>
     	                <include name="**/*.xquery"/>
-    	                
     	            </fileset>
     	 			<fileset dir="src/commands">
     	 				<include name="**/*.xsh"/>
@@ -77,7 +79,7 @@ version.version=${version}
     	 				<include name="**/*.xml"/>
     	                <include name="**/*.xquery"/>
     	 			</fileset>
-    	 	        <fileset dir="src">
+    	 	        <fileset dir="src/resources">
     	            	<include name="log4j2.xml"/>
     	 	       </fileset>
     	 	
@@ -90,7 +92,7 @@ version.version=${version}
         <jar 
         jarfile="bin/${jar}" 
         basedir="_out" 
-        manifest="src/WEB-INF/MANIFEST.MF"
+        manifest="src/resources/WEB-INF/MANIFEST.MF"
         />
 
   </target>

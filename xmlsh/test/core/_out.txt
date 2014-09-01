@@ -1,8 +1,8 @@
-xs:string
-xs:string
-xs:string
-xs:string
-xs:string
+java.lang.String
+java.lang.String
+java.lang.String
+java.lang.String
+java.lang.String
 xs:integer
 xs:string
 element()

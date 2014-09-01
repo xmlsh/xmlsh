@@ -29,14 +29,14 @@ public class string extends BuiltinFunctionCommand
   public XValue run(Shell shell, List<XValue> args) throws Exception
   {
     if( args.isEmpty() )
-      return new XValue( "" );
+      return XValue.asXValue("");
 
     if( args.size() == 1 )
-      return new XValue( args.get(0).toString() );
+      return XValue.asXValue( args.get(0).toString() );
 
     String s = Util.joinValues(args,ShellConstants.ARG_SEPARATOR );
 
-    return new XValue( s );
+    return XValue.asXValue(s);
   }
 
 }

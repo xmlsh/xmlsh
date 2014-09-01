@@ -14,16 +14,15 @@ import net.sf.saxon.s9api.XQueryEvaluator;
 import net.sf.saxon.s9api.XQueryExecutable;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmValue;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
 import org.xml.sax.SAXException;
 import org.xmlsh.core.XVariable.XVarFlag;
 import org.xmlsh.sh.core.EvalUtils;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.types.IMethods;
 import org.xmlsh.types.ITypeFamily;
+import org.xmlsh.types.TypeFamily;
 import org.xmlsh.util.NameValueMap;
 import org.xmlsh.util.Util;
 import org.xmlsh.xpath.EvalDefinition;
@@ -40,7 +39,6 @@ public class XVariable {
 
 	private static final String sName = "name";
 	private static final String sVariable = "variable";
-	private static final String sKind = "kind";
 
 	private static final String sType = "type";
 	private static final String sSimpleType = "simple-type";
@@ -54,9 +52,7 @@ public class XVariable {
 
 	public static enum XVarFlag {
 		EXPORT , 		// to be exported to child shells
-		XEXPR ,			// participates in XEXPRs
 		READONLY,
-		LOCAL,
 		UNSET
     ;
 
@@ -82,33 +78,36 @@ public class XVariable {
 	
 	private		EnumSet<XVarFlag>	mFlags;
 	
-	public final static EnumSet<XVarFlag>  XVAR_STANDARD = EnumSet.of( EXPORT , XEXPR );
-	public final static EnumSet<XVarFlag>  XVAR_STANDARD_LOCAL = EnumSet.of( EXPORT , XEXPR , LOCAL );
-	public final static EnumSet<XVarFlag>  XVAR_SHELLARG = EnumSet.of( EXPORT , XEXPR  );
-  public final static EnumSet<XVarFlag>  XVAR_SHELLARG_LOCAL = EnumSet.of( EXPORT , XEXPR , LOCAL  );
+	public final static EnumSet<XVarFlag>  XVAR_STANDARD = EnumSet.noneOf(XVarFlag.class);
+	 public final static EnumSet<XVarFlag>  XVAR_INIT = EnumSet.of( UNSET );
+   public final static EnumSet<XVarFlag>  XVAR_SYSTEM = EnumSet.of( EXPORT );
+
   
-	public XVariable( String name , XValue value , EnumSet<XVarFlag> flags)
+	protected XVariable( String name , XValue value)
 	{
 		mName = name ;
 		mValue = value;
-		mFlags = flags;
-
+		mFlags = XVAR_STANDARD;
 	}
+	
+	 protected XVariable( String name , XValue value, EnumSet<XVarFlag> flags )
+	  {
+	    mName = name ;
+	    mValue = value;
+	    mFlags = flags;
+	  }
+	
+	
+	
 	@Override
 	public XVariable clone()
 	{
-		XVariable that = new XVariable(mName,getValue(),mFlags);
+		XVariable that = new XVariable(mName, getValue());
 		return that ;
 	}
 	
 	
 	
-	public XVariable( String name , XValue value )
-	{
-		this( name , value ,XVAR_STANDARD );
-
-	}
-
 	
 	// helper for flag tests that requre UNSET to be OFF
 	private boolean hasFlags( XVarFlag... flags ) {
@@ -131,31 +130,14 @@ public class XVariable {
   
   public static EnumSet<XVarFlag> addFlag( EnumSet<XVarFlag> flags  , XVarFlag flag )
   {
+    assert( flag != UNSET );
     return Util.withEnumAdded( flags , flag );
   }
   
-  
-  public static EnumSet<XVarFlag> standardFlags( XVarFlag...flags )
+  public static EnumSet<XVarFlag> standardFlags(  )
   {
-    return Util.withEnumsAdded( XVAR_STANDARD, flags);
+    return  XVAR_STANDARD;
   }
-  public static EnumSet<XVarFlag> standardFlags( EnumSet<XVarFlag> flags )
-  {
-    return Util.withEnumsAdded( XVAR_STANDARD, flags);
-  }
-  public static EnumSet<XVarFlag> shellArgFlags(XVarFlag...flags ){
-    return Util.withEnumsAdded( XVAR_SHELLARG, flags);
-  }
-
-  public static EnumSet<XVarFlag> shellArgFlags(EnumSet<XVarFlag> flags){
-    return Util.withEnumsAdded( XVAR_SHELLARG, flags);
-  }
- 
-  public static Enum<XVarFlag> localFlag() {
-    return LOCAL ;
-  }
-  
-    
 	
 	 /*
 	  *  Flag accessors
@@ -242,10 +224,8 @@ public class XVariable {
 
 	public void setFlag( XVarFlag flag )
 	{
-		mFlags.add(flag);
+	  mFlags = Util.withEnumAdded(mFlags,flag);
 	}
-
-
 	public void serialize(XMLStreamWriter writer) throws SAXException, XMLStreamException {
 
 		XValue value = this.getValue();
@@ -346,20 +326,61 @@ public class XVariable {
 	public void unset() throws InvalidArgumentException 
 	{
 		clear();
-		mFlags.add( UNSET );
+		mFlags = Util.withEnumAdded(mFlags,UNSET );
 	}
-  public static EnumSet<XVarFlag> shellArgListFlags()
+
+	public XVariable newValue(XValue value)
   {
-    return XVAR_SHELLARG;
-  }
-  public XVariable newValue(XValue value)
-  {
-    XVariable that = new XVariable(mName,value,mFlags);
+    XVariable that = new XVariable(mName, value,mFlags);
     return that ;
-    
+  }
+	
+  public static XVariable newInstance(String name)
+  {
+    return new XVariable(name, null);
   }
   
+  public static  XVariable newInstance(String name , XValue value )
+  {
+    return new XVariable(name, value);
+  }
 
+  public static XVariable newInstance(String name, XValue value, EnumSet<XVarFlag> flags)
+  {
+    return new XVariable(name, value,flags);
+
+  }
+  
+  public static  XVariable newInstance(String name , String value )
+  {
+    return new XVariable(name, XValue.newInstance(value));
+    
+  }
+
+  public static  <T extends Object> XVariable newInstance(String name , T value )
+  {
+    return new XVariable(name, XValue.newInstance(value));
+  }
+
+  public static  XVariable anonymousInstance(TypeFamily type ) {
+    return new XVariable(null,XValue.nullValue(type));
+
+  }
+
+  public static <T extends XValue> XVariable anonymousInstance(T value )
+  {
+     return new XVariable(null,value);
+  }
+  
+  public static <T extends Object> XVariable anonymousInstance(T value )
+  {
+     return new XVariable(null, XValue.newInstance(value));
+  }
+
+  public static EnumSet<XVarFlag> systemFlags()
+  {
+    return XVAR_SYSTEM ;
+  }
 
 }
 

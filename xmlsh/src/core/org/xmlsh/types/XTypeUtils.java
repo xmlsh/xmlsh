@@ -15,6 +15,7 @@ import java.util.Properties;
 
 public class XTypeUtils
 {
+  
 	public static final TypeFamily defaultFamily = TypeFamily.XDM;
 	private static final TypeFamily[] typeFamilyPrecidence = {
 		TypeFamily.XDM , 
@@ -23,33 +24,14 @@ public class XTypeUtils
 		TypeFamily.JAVA 
 	};
 
-	public static ITypeFamily getFamilyInstance( TypeFamily family ) {
-		switch( family ) {
-		case JAVA:
-			return JavaTypeFamily._instance;
-		case JSON :
-			return JSONTypeFamily._instance;
-
-		case XDM : 
-			return XDMTypeFamily._instance;
-
-		case XTYPE :
-			return XTypeFamily._instance;
-
-		}
-		return XDMTypeFamily._instance;
-	}
-
-
 	// Make the best guess as to the type family given only an object
 	public static TypeFamily inferFamily( Object obj ) {
 
-		// Hack for now - null values are XDM
 		if( obj == null )
-			return TypeFamily.XDM;
+			return TypeFamily.XTYPE;
 
 		for( TypeFamily f : typeFamilyPrecidence ) {
-			ITypeFamily itf = getFamilyInstance(f);
+			ITypeFamily itf = XTypeUtils.getInstance(f);
 			if( itf != null  &&  itf.isInstanceOfFamily(obj))
 				return f;
 		}
@@ -85,7 +67,7 @@ public class XTypeUtils
 		XValueMap map = new XValueMap();
 		for (Iterator<Entry<Object, Object>> iterator = props.entrySet().iterator(); iterator.hasNext();) {
 			Entry<Object, Object> e = iterator.next();
-			map.put( e.getKey().toString() , new XValue( (String) e.getValue() ) );
+			map.put( e.getKey().toString() , XValue.asXValue((String) e.getValue()) );
 
 		}
 		return map;
@@ -130,13 +112,35 @@ public class XTypeUtils
 	    
 		if( arg.isAtomic() ) {
 			StringPair pair = new StringPair( arg.toString() ,'=' );
-			return new org.xmlsh.util.XNamedValue(pair.getLeft(), new XValue(pair.getRight()) );
+			return new org.xmlsh.util.XNamedValue(pair.getLeft(), XValue.asXValue(pair.getRight()) );
 		} else {
 			throw new InvalidArgumentException( "Cannot convert to NamedValue" );
 
 		}
 
 	}
+
+
+
+
+
+  public static ITypeFamily getInstance(TypeFamily type ) {
+  
+    switch( type ) {
+    case JAVA:
+      return JavaTypeFamily.getInstance();
+    case JSON :
+      return JSONTypeFamily.getInstance();
+  
+    case XDM : 
+      return XDMTypeFamily.getInstance();
+  
+    case XTYPE :
+    default:
+      return XTypeFamily.getInstance();
+  
+    }
+  }
 
 	
 	

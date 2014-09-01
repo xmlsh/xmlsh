@@ -34,7 +34,7 @@ public class xstacktrace extends BuiltinFunctionCommand {
 
 
 		xlocation xloc = new xlocation();
-		XValue ret = new XValue();
+		XValue ret = XValue.empytSequence();
 
 		Shell sh = shell ;
 		while( sh != null ){

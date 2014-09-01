@@ -185,7 +185,7 @@ public class VariableOutputPort extends OutputPort
 		if (value == null)
 			mVariable.setValue(new XValue(string));
 		else {
-			mVariable.setValue( value.append(new XValue(string)));
+			mVariable.setValue( value.append(XValue.asXValue(string)));
 		}
 
 
@@ -196,10 +196,10 @@ public class VariableOutputPort extends OutputPort
 	{
 		XValue value = mVariable.getValue();
 		if (value == null || value.isNull())
-			mVariable.setValue(new XValue(string));
+			mVariable.setValue(XValue.asXValue(string));
 		else {
 			if (value.isAtomic())
-				mVariable.setValue(new XValue(value.toString() + string));
+				mVariable.setValue(XValue.asXValue(value.toString() + string));
 			else {
 				mVariable.setValue(value.append(new XdmAtomicValue(string)));
 			}
@@ -221,7 +221,7 @@ public class VariableOutputPort extends OutputPort
 
 		XValue value = mVariable.getValue();
 		if (value == null)
-			mVariable.setValue(new XValue(xitem));
+			mVariable.setValue(XValue.asXValue(xitem));
 		else {
 			mVariable.setValue( value.append(xitem));
 		}

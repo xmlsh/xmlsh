@@ -44,6 +44,7 @@ import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.types.TypeFamily;
+import org.xmlsh.types.XDMTypeFamily;
 import org.xmlsh.util.Util;
 
 import java.util.ArrayList;
@@ -348,7 +349,7 @@ public class xed extends XCommand {
 		replacex.setContextItem(item);
 
 		// Convert to string and turn into an XdmItem
-		XValue xreplace = new XValue( TypeFamily.XDM , replacex.evaluate()  );
+		XValue xreplace = XValue.asXValue( TypeFamily.XDM ,  replacex.evaluate()  );
 		replace( node , xreplace , false );
 
 

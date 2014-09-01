@@ -19,7 +19,7 @@ public class list extends BuiltinFunctionCommand
 	public XValue run(Shell shell, List<XValue> args) throws Exception {
 		XValueList a = new XValueList() ;
 		a.addAll( args );
-		return new XValue(TypeFamily.XTYPE,a);
+		return XValue.asXValue(TypeFamily.XTYPE,a);
 
 	}
 

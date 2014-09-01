@@ -165,7 +165,7 @@ public class Shell implements AutoCloseable, Closeable
   
   
   // Special flag/marker indicating a return
-  private final static  XValue mReturnFlag = XValue.nullValue();
+  private final   XValue mReturnFlag = XValue.nullValue();
 
   public static void uninitialize()
   {
@@ -236,7 +236,7 @@ public class Shell implements AutoCloseable, Closeable
       if(name.equals("PS1"))
         continue;
 
-      getEnv().setVar(new XVariable(name, new XValue(entry.getValue()), EnumSet.of(XVarFlag.EXPORT)), false);
+      getEnv().setVar(XVariable.newInstance(name, XValue.asXValue(entry.getValue()), XVariable.systemFlags() ));
 
     }
 
@@ -244,49 +244,46 @@ public class Shell implements AutoCloseable, Closeable
     String path = FileUtils.toJavaPath(System.getenv(ShellConstants.PATH));
     getEnv()
       .setVar(
-        new XVariable(ShellConstants.PATH, Util.isBlank(path) ? new XValue() : new XValue(
-          path.split(File.pathSeparator))), false);
+        XVariable.newInstance(ShellConstants.PATH, Util.isBlank(path) ? XValue.empytSequence() : 
+          XValue.asXValue(path.split(File.pathSeparator)),XVariable.systemFlags()));
 
     String xpath = FileUtils.toJavaPath(System.getenv(ShellConstants.XPATH));
     getEnv().setVar(
-      new XVariable(ShellConstants.XPATH, Util.isBlank(xpath) ? new XValue(".") : new XValue(
-        xpath.split(File.pathSeparator))), false);
+      XVariable.newInstance(ShellConstants.XPATH, Util.isBlank(xpath) ? XValue.asXValue(".") :
+        XValue.asXValue(
+           xpath.split(File.pathSeparator)),XVariable.systemFlags()));
 
     String xmpath = FileUtils.toJavaPath(System.getenv(ShellConstants.XMODPATH));
     getEnv().setVar(
-      new XVariable(ShellConstants.XMODPATH, Util.isBlank(xmpath) ? new XValue() : new XValue(
-        xmpath.split(File.pathSeparator))), false);
+      XVariable.newInstance(ShellConstants.XMODPATH, Util.isBlank(xmpath) ? 
+          XValue.empytSequence(): XValue.asXValue(xmpath.split(File.pathSeparator)),XVariable.systemFlags()));
 
     // PWD
-    getEnv().setVar(new XDynamicVariable(ShellConstants.PWD, EnumSet.of(XVarFlag.READONLY, XVarFlag.XEXPR))
+    getEnv().setVar(new XDynamicVariable(ShellConstants.PWD, EnumSet.of(XVarFlag.READONLY,XVarFlag.EXPORT))
       {
         @Override
         public XValue getValue()
         {
-          return new XValue(FileUtils.toJavaPath(getEnv().getCurdir().getAbsolutePath()));
+          return XValue.asXValue(FileUtils.toJavaPath(getEnv().getCurdir().getAbsolutePath()));
         }
 
-      }
-
-    , false);
+      });
 
     // RANDOM
-    getEnv().setVar(new XDynamicVariable(ShellConstants.VAR_RANDOM, EnumSet.of(XVarFlag.READONLY, XVarFlag.XEXPR))
+    getEnv().setVar(new XDynamicVariable(ShellConstants.VAR_RANDOM, EnumSet.of(XVarFlag.READONLY))
       {
         Random mRand = new Random();
 
         @Override
         public XValue getValue()
         {
-          return new XValue(mRand.nextInt(0x7FFF));
+          return XValue.asXValue(mRand.nextInt(0x7FFF));
         }
 
-      }
-
-    , false);
+      });
 
     // RANDOM32
-    getEnv().setVar(new XDynamicVariable(ShellConstants.VAR_RANDOM32, EnumSet.of(XVarFlag.READONLY, XVarFlag.XEXPR))
+    getEnv().setVar(new XDynamicVariable(ShellConstants.VAR_RANDOM32, EnumSet.of(XVarFlag.READONLY))
       {
         Random mRand = new Random();
 
@@ -295,34 +292,29 @@ public class Shell implements AutoCloseable, Closeable
         {
           long v = mRand.nextInt();
           v &= 0x7FFFFFFFL;
-          return new XValue((int) v);
+          return XValue.asXValue((int) v);
         }
 
-      }
-
-    , false);
+      });
 
     // RANDOM
-    getEnv().setVar(new XDynamicVariable(ShellConstants.VAR_RANDOM64, EnumSet.of(XVarFlag.READONLY, XVarFlag.XEXPR))
+    getEnv().setVar(new XDynamicVariable(ShellConstants.VAR_RANDOM64, EnumSet.of(XVarFlag.READONLY))
       {
         Random mRand = new Random();
 
         @Override
         public XValue getValue()
         {
-          return new XValue(mRand.nextLong() & 0x7FFFFFFFFFFFFFFFL);
+          return XValue.asXValue(mRand.nextLong() & 0x7FFFFFFFFFFFFFFFL);
         }
-      }
-
-    , false);
+      });
 
     getEnv().setVar(ShellConstants.ENV_TMPDIR,
-     XValue.newInstance( FileUtils.toJavaPath(System.getProperty(ShellConstants.PROP_JAVA_IO_TMPDIR))), false);
+     XValue.newInstance( FileUtils.toJavaPath(System.getProperty(ShellConstants.PROP_JAVA_IO_TMPDIR))));
 
     if(getEnv().getVar(ShellConstants.ENV_HOME) == null)
       getEnv().setVar(ShellConstants.ENV_HOME, 
-        XValue.newInstance(FileUtils.toJavaPath(System.getProperty(ShellConstants.PROP_USER_HOME))),
-        false);
+        XValue.newInstance(FileUtils.toJavaPath(System.getProperty(ShellConstants.PROP_USER_HOME))));
 
   }
 
@@ -853,7 +845,7 @@ public class Shell implements AutoCloseable, Closeable
         // set (-e)
         if(mStatus != 0 && mOpts.mThrowOnError && c.isSimple()) {
           if(!isInCommandConndition())
-            throw new ThrowException(new XValue(mStatus));
+            throw new ThrowException(XValue.asXValue(mStatus));
         }
         return mStatus;
 
@@ -1038,10 +1030,10 @@ public class Shell implements AutoCloseable, Closeable
   {
     List<XValue> vargs = new ArrayList<XValue>(argv.length);
     for (String a : argv)
-      vargs.add(new XValue(a));
+      vargs.add(XValue.asXValue(a));
 
-    org.xmlsh.builtin.commands.xmlsh cmd = new org.xmlsh.builtin.commands.xmlsh(true);
     Shell shell = new Shell(true);
+    org.xmlsh.builtin.commands.xmlsh cmd = new org.xmlsh.builtin.commands.xmlsh(true);
 
     int ret = -1;
     try {

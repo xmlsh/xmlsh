@@ -90,7 +90,7 @@ public class xvalidate extends XCommand {
 		Shell shell = getEnv().getShell();
 		ICommand cmd = CommandFactory.getInstance().getCommand( shell , "xsdvalidate", getLocation());
 		ArrayList<XValue>  al = new ArrayList<XValue>();
-		al.add(new XValue(xsd));
+		al.add(XValue.asXValue(xsd));
 		al.addAll( args );
 
 		return cmd.run(shell, "xsdvalidate", al);
@@ -104,7 +104,7 @@ public class xvalidate extends XCommand {
 		Shell shell = getEnv().getShell();
 		ICommand cmd = CommandFactory.getInstance().getCommand( shell , "schematron", getLocation());
 		ArrayList<XValue>  al = new ArrayList<XValue>();
-		al.add(new XValue(schematron));
+		al.add(XValue.asXValue(schematron));
 		al.addAll( args );
 
 		return cmd.run(shell, "schematron", al);
@@ -119,7 +119,7 @@ public class xvalidate extends XCommand {
 		Shell shell = getEnv().getShell();
 		ICommand cmd = CommandFactory.getInstance().getCommand( shell , "rngvalidate",getLocation());
 		ArrayList<XValue>  al = new ArrayList<XValue>();
-		al.add(new XValue(rng));
+		al.add(XValue.asXValue(rng));
 		al.addAll( args );
 
 		return cmd.run(shell, "rngvalidate", al);

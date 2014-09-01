@@ -131,7 +131,7 @@ public class xgetopts extends XCommand {
 	}
 
 	private void writeOption(OutputPort stdout, SerializeOpts serializeOpts, IXdmItemOutputStream out, OptionValue value) throws CoreException, IOException, SaxonApiException {
-		XdmItem argFlag = (new XValue((value.getFlag() ? "-" : "+") + value.getOptionDef().name)).toXdmItem();
+		XdmItem argFlag = (XValue.asXValue((value.getFlag() ? "-" : "+") + value.getOptionDef().name)).toXdmItem();
 
 
 		if( ! value.getOptionDef().hasArgs ){

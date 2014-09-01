@@ -37,7 +37,7 @@ public class getData extends BuiltinFunctionCommand {
 		{
 			XMLEvent event = (XMLEvent) arg;
 			if( event.isCharacters())
-				return new XValue( event.asCharacters().getData() );
+				return XValue.asXValue(event.asCharacters().getData());
 			else
 				return null ;
 		}

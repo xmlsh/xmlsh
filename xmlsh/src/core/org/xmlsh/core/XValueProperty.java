@@ -115,11 +115,11 @@ public class XValueProperty  extends XNamedValue  implements IXValueMap<XValuePr
     public XValue append(XValue item) {
         
         if( item.isEmpty() )
-            return new XValue( this  ) ;
+            return XValue.asXValue(this) ;
         
         XValuePropertyList newMap = new XValuePropertyList( this  );
         newMap.add( XValueProperty.instanceOf(item) );
-        return new XValue( newMap  );
+        return XValue.asXValue( newMap  );
         
         
         
@@ -148,7 +148,7 @@ public class XValueProperty  extends XNamedValue  implements IXValueMap<XValuePr
     @Override
     public XValue asXValue()
     {
-      return new XValue( TypeFamily.XTYPE , this );
+      return XValue.asXValue( TypeFamily.XTYPE , this );
     }
     @Override
     public boolean isContainer()

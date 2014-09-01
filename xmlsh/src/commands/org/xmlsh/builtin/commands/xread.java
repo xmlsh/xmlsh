@@ -64,7 +64,7 @@ public class xread extends BuiltinCommand {
 			item = is.read();
 		}
 		if( item != null )
-			mShell.getEnv().setVar(args.get(0).toString(), new XValue(item),false);
+			mShell.getEnv().setVar(args.get(0).toString(), XValue.asXValue(item));
 
 
 		return item == null ? 1 : 0 ;

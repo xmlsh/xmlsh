@@ -13,6 +13,7 @@ import org.xmlsh.json.JSONUtils;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.types.JSONTypeFamily;
 import org.xmlsh.types.TypeFamily;
+import org.xmlsh.types.XTypeUtils;
 
 import java.util.List;
 
@@ -28,9 +29,9 @@ public class value extends BuiltinFunctionCommand {
 	@Override
 	public XValue run(Shell shell, List<XValue> args) throws InvalidArgumentException {
 		if( args.size() == 0 )
-			return JSONTypeFamily.nullValue();
+      return XTypeUtils.getInstance(TypeFamily.JSON).nullXValue();
 
-		return new XValue(TypeFamily.JSON,  JSONUtils.toJsonType( args.get(0)) );
+		return XValue.asXValue(TypeFamily.JSON,  JSONUtils.toJsonType( args.get(0)) );
 	}
 
 

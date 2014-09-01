@@ -19,6 +19,7 @@ import org.xmlsh.core.XValue;
 import org.xmlsh.core.XVariable;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.types.TypeFamily;
 import org.xmlsh.util.NameValueMap;
 
 import java.util.List;
@@ -170,7 +171,7 @@ public class xcat extends XCommand {
 
 		else
 		{
-			XVariable var = new XVariable( "_unnamed" , wrapper );
+			XVariable var = XVariable.anonymousInstance(wrapper);
 			VariableInputPort nodep = new VariableInputPort( var );
 			XMLEventReader reader = nodep.asXMLEventReader(opts);
 			XMLEvent event ;
@@ -196,7 +197,7 @@ public class xcat extends XCommand {
 
 		else
 		{
-			XVariable var = new XVariable( "_unnamed" , wrapper );
+			XVariable var = XVariable.anonymousInstance(wrapper);
 			VariableInputPort nodep = new VariableInputPort( var );
 			XMLEventReader reader = nodep.asXMLEventReader(opts);
 			XMLEvent event ;

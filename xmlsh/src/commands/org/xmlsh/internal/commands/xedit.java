@@ -535,7 +535,7 @@ public class xedit extends XCommand
     valuex.setContextItem(item);
 
     // Convert to string and turn into an XdmItem
-    XValue xv = new XValue(valuex.evaluate());
+    XValue xv = XValue.asXValue(valuex.evaluate());
     return xv;
   }
 
@@ -545,7 +545,7 @@ public class xedit extends XCommand
     valueq.setContextItem(item);
 
     // Convert to string and turn into an XdmItem
-    XValue xv = new XValue(valueq.evaluate());
+    XValue xv = XValue.asXValue(valueq.evaluate());
     return xv;
 
   }

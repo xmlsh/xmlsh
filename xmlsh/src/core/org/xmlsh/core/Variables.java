@@ -32,26 +32,40 @@ public class Variables {
 	{
 		mGlobals = globals ; 
 		mLocals = locals ;
-
-
+	}
+	
+	public XVariable setLocal( String name ) {
+	  XVariable v = mLocals.get(name);
+	  if( v != null )
+	    return v ;
+	  
+	   mLocals.put( name , v = XVariable.newInstance(name) );
+	  return v;
+	  
 	}
 
 
 	public XVariable get(String name) {
 		// First look in locals
-		if( mLocals.containsKey(name) )
-			return mLocals.get(name);
-		return 	mGlobals.get(name);
+	  XVariable v = mLocals.get(name);
+	  if( v == null )
+	    v = mGlobals.get(name);
+	  return  v;
 
 	}
-	public void put(String name, XVariable var, boolean local) {
-		if( local || mLocals.containsKey(name) ) {
-			var.setFlag( XVarFlag.LOCAL );
+	
+  public void putLocal(XVariable var) {
+    mLocals.put(var.getName() , var  );
+  }
+
+	   
+	public void put(XVariable var) {
+		String name = var.getName();
+    if( mLocals.containsKey(name) ) {
 			mLocals.put(name , var  );
 		}
 		else
 			mGlobals.put(name,var);
-
 	}
 	public Collection<String> getVarNames() {
 		Set<String> names = new HashSet<String>(mGlobals.size() + mLocals.size());

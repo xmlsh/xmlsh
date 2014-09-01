@@ -42,7 +42,7 @@ public class convert extends BuiltinFunctionCommand {
 
 		ObjectMapper mapper = JSONUtils.getJsonObjectMapper();
 		Object value = mapper.convertValue(from, cls);
-		return new XValue( TypeFamily.XTYPE , value );
+		return XValue.asXValue( TypeFamily.XTYPE , value );
 	}
 
 }

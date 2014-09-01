@@ -18,6 +18,7 @@ import org.xmlsh.core.XVariable;
 import org.xmlsh.sh.grammar.Token;
 import org.xmlsh.sh.shell.ParseResult;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.types.TypeFamily;
 import org.xmlsh.util.ByteFilterOutputStream;
 import org.xmlsh.util.NullInputStream;
 import org.xmlsh.util.Util;
@@ -111,7 +112,7 @@ public class CommandWord extends Word {
 	{
 
 
-		XVariable var = new XVariable("__temp",null);
+		XVariable var = XVariable.anonymousInstance(TypeFamily.XDM);
 		VariableOutputPort port = new VariableOutputPort( var );
 
 
@@ -153,7 +154,7 @@ public class CommandWord extends Word {
 			} catch (SaxonApiException e) {
 				throw new CoreException("Exception parsing as XML Document",e);
 			}
-			return new XValue(node) ;
+			return XValue.asXValue(node) ;
 
 
 
