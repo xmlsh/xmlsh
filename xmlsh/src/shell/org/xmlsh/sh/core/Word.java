@@ -55,6 +55,7 @@ public abstract class Word {
 	public final XValue expand(Shell shell , EvalEnv env,SourceLocation loc ) throws IOException, CoreException {
 
 		ParseResult result = new ParseResult(shell);
+		env=evalEnv(env);
 		expandToResult( shell , env , loc , result );
 		return EvalUtils.expandResultToValue(shell, result, env, loc) ;
 
@@ -62,7 +63,8 @@ public abstract class Word {
 
 
 	public String expandString(Shell shell, EvalEnv env, SourceLocation loc ) throws IOException, CoreException {
-		return expand(shell,evalEnv(env),loc).toString();
+	   env=evalEnv(env);
+		return expand(shell,env,loc).toString();
 	}
 
 	public List<XValue> expandToList(Shell shell, EvalEnv env , SourceLocation loc ) throws IOException, CoreException {
