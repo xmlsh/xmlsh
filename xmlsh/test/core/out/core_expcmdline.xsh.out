@@ -1,0 +1,5 @@
+[4]
+foo [6]
+[7] next line should fail
+[9] shold catch failure
+Success

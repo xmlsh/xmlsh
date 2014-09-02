@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CommandSuffix {
-	private static final EvalEnv mCmdEnv = EvalEnv.newInstance(false,true,true,false);
+	private static final EvalEnv mCmdEnv = EvalEnv.newInstance(true,true,true,false);
 	private static final EvalEnv mArgEnv = EvalEnv.commandArgsInstance();
 
 	private WordList		mArgs = new WordList();
