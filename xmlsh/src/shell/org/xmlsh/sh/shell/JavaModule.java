@@ -65,7 +65,7 @@ public class JavaModule extends Module
       // return class as an object
       if(Util.isEqual("class", mFunc)) {
 
-        retVal = XValue.asXValue(TypeFamily.JAVA, mClass);
+        retVal = XValue.newXValue(TypeFamily.JAVA, mClass);
 
       }
       else {

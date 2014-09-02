@@ -26,14 +26,14 @@ public class _boolean extends BuiltinFunctionCommand {
 	public XValue run(Shell shell, List<XValue> args) throws InvalidArgumentException   {
 
 		if( args.size() == 0 )
-			return XValue.asXValue(Boolean.FALSE);
+			return XValue.newXValue(Boolean.FALSE);
 
 		XValue arg = args.get(0);
 
 
 
 
-		return XValue.asXValue( TypeFamily.JSON ,JSONUtils.toJsonBoolean( arg ));
+		return XValue.newXValue( TypeFamily.JSON ,JSONUtils.toJsonBoolean( arg ));
 	}
 
 }

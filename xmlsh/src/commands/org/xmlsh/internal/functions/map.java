@@ -17,7 +17,7 @@ public class map extends BuiltinFunctionCommand
 
 	@Override
 	public XValue run(Shell shell, List<XValue> args) throws Exception {
-		return XValue.asXValue(TypeFamily.XTYPE ,  XTypeUtils.newMapFromList(args));
+		return XValue.newXValue(TypeFamily.XTYPE ,  XTypeUtils.newMapFromList(args));
 	}
 
 }

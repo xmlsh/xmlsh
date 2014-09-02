@@ -67,7 +67,7 @@ public class XTypeUtils
 		XValueMap map = new XValueMap();
 		for (Iterator<Entry<Object, Object>> iterator = props.entrySet().iterator(); iterator.hasNext();) {
 			Entry<Object, Object> e = iterator.next();
-			map.put( e.getKey().toString() , XValue.asXValue((String) e.getValue()) );
+			map.put( e.getKey().toString() , XValue.newXValue((String) e.getValue()) );
 
 		}
 		return map;
@@ -112,7 +112,7 @@ public class XTypeUtils
 	    
 		if( arg.isAtomic() ) {
 			StringPair pair = new StringPair( arg.toString() ,'=' );
-			return new org.xmlsh.util.XNamedValue(pair.getLeft(), XValue.asXValue(pair.getRight()) );
+			return new org.xmlsh.util.XNamedValue(pair.getLeft(), XValue.newXValue(pair.getRight()) );
 		} else {
 			throw new InvalidArgumentException( "Cannot convert to NamedValue" );
 

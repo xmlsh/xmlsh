@@ -72,7 +72,7 @@ public class XdmStreamInputPort extends InputPort {
 
 	@Override
 	public Source asSource(SerializeOpts opts) throws CoreException {
-		return XValue.asXValue(mReader.read()).asSource();
+		return XValue.newXValue(mReader.read()).asSource();
 	}
 
 	@Override
@@ -114,7 +114,7 @@ public class XdmStreamInputPort extends InputPort {
 
 		// TODO: This code was copied from VariableInputPort 
 
-		XValue value = XValue.asXValue(mReader.read());
+		XValue value = XValue.newXValue(mReader.read());
 
 		//System.err.println("sysid: " + this.getSystemId() );
 		//System.err.println("base: " + value.asXdmNode().getBaseURI());

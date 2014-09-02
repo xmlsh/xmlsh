@@ -45,9 +45,9 @@ public class json extends BuiltinFunctionCommand {
 
 		else
 			if( nodes.size() > 1 ) 
-				return XValue.asXValue(TypeFamily.JSON, mapper.createArrayNode().addAll(nodes));
+				return XValue.newXValue(TypeFamily.JSON, mapper.createArrayNode().addAll(nodes));
 			else
-				return XValue.asXValue( TypeFamily.JSON, nodes.get(0 ) );
+				return XValue.newXValue( TypeFamily.JSON, nodes.get(0 ) );
 
 	}
 

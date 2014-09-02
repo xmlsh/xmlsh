@@ -26,7 +26,7 @@ public class _boolean extends BuiltinFunctionCommand
   public XValue run(Shell shell, List<XValue> args) throws Exception
   {
     return
-        XValue.asXValue( TypeFamily.JAVA, args.isEmpty() ? Boolean.FALSE : Boolean.valueOf(args.get(0).toBoolean())  );
+        XValue.newXValue( TypeFamily.JAVA, args.isEmpty() ? Boolean.FALSE : Boolean.valueOf(args.get(0).toBoolean())  );
   }
 
 }

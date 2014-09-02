@@ -73,7 +73,7 @@ public class xquery extends XCommand {
 				context = opts.getOptValue("c").toXdmItem();
 			else
 				if( opts.hasOpt("cf"))
-					context = (in=getInput( XValue.asXValue(opts.getOptString("cf", "-")))).asXdmItem(serializeOpts);
+					context = (in=getInput( XValue.newXValue(opts.getOptString("cf", "-")))).asXdmItem(serializeOpts);
 				else
 					if( opts.hasOpt("i") )
 						context = (in=getInput( opts.getOptValue("i"))).asXdmItem(serializeOpts);
@@ -189,7 +189,7 @@ public class xquery extends XCommand {
 		}
 
 		if( bBool ){
-			XValue value = XValue.asXValue(eval.evaluate());
+			XValue value = XValue.newXValue(eval.evaluate());
 			return value.toBoolean() ? 0 : 1 ;
 
 

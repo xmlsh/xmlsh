@@ -25,7 +25,7 @@ public class _null extends BuiltinFunctionCommand {
 	@Override
 	public XValue run(Shell shell, List<XValue> args) throws XPathException {
 
-		return XValue.asXValue( TypeFamily.JSON ,JSONUtils.nullValue() );
+		return XValue.newXValue( TypeFamily.JSON ,JSONUtils.nullValue() );
 	}
 
 }

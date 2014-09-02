@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Configuration status="WARN">
+<Configuration status="DEBUG" dest="/tmp/log4j.txt">
 	<Properties>
 
 		<!-- Logfile location env XLOGFILE env HOME/xmlsh.log sys user.home/xmlsh.log 
@@ -30,9 +30,11 @@
 		<logger name="org.apache.http" level="WARN" />
 		<logger name="com.amazonaws" level="WARN" />
 		<logger name="org.apache.http.impl.conn" level="WARN" />
+		<logger name="org.xmlsh.sh.grammar" level="WARN" additivity="false">
+		   <AppenderRef ref="A1" />
+		</logger>
 		<Root level="ERROR">
 			<AppenderRef ref="A1" />
 		</Root>
 	</Loggers>
 </Configuration>
-

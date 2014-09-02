@@ -146,11 +146,11 @@ public class Assign {
     case "+=" :
       return XValue.nullValue();
     case "[]" :
-       return XValue.asXValue( TypeFamily.XTYPE , XValueArray.emptyArray() );
+       return XValue.newXValue( TypeFamily.XTYPE , XValueArray.emptyArray() );
     case "{}" :
-      return XValue.asXValue( TypeFamily.XTYPE , XValuePropertyList.emptyPropertyList() );
+      return XValue.newXValue( TypeFamily.XTYPE , XValuePropertyList.emptyPropertyList() );
     case "()" :
-      return  XValue.asXValue( TypeFamily.XTYPE , XValueSequence.emptySequence());
+      return  XValue.newXValue( TypeFamily.XTYPE , XValueSequence.emptySequence());
     }
     return XValue.nullValue();
   }

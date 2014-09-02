@@ -70,7 +70,7 @@ public class TryCatchFinally extends CompoundCommand
 
 
 			} catch( ExitOnErrorException e ){
-				shell.getEnv().setVar(mCatchVar, XValue.asXValue(e.getValue()) );
+				shell.getEnv().setVar(mCatchVar, XValue.newXValue(e.getValue()) );
 
 				ret = shell.exec( mCatchPart );
 

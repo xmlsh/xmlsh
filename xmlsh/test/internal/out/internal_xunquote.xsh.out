@@ -1,5 +1,5 @@
 element()
-xs:string
+java.lang.String
 document-node()
 <foo>bar</foo>
 <test><foo>bar</foo></test>

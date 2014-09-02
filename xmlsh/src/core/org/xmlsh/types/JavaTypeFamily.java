@@ -146,7 +146,7 @@ public class JavaTypeFamily extends AbstractTypeFamily implements ITypeFamily
          return( (XValue) obj );
        
        
-       return XValue.asXValue( this, obj , false );
+       return XValue.newXValue( this, obj , false );
     }
 
     @Override
@@ -189,7 +189,7 @@ public class JavaTypeFamily extends AbstractTypeFamily implements ITypeFamily
     @Override
     public XValue nullXValue()
     {
-      return XValue.asXValue(this , _nullValue , false);
+      return XValue.newXValue(this , _nullValue , false);
     }
 
     public static JavaTypeFamily getInstance()

@@ -345,7 +345,7 @@ public class XMLUtils
       @Override
       public XValue convert(XdmItem value)
       {
-        return XValue.asXValue(TypeFamily.XDM , value);
+        return XValue.newXValue(TypeFamily.XDM , value);
       }
     }
 

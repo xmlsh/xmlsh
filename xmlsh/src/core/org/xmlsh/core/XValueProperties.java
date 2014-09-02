@@ -45,7 +45,7 @@ public class XValueProperties extends XValueMap {
   protected XValueProperties( Map<?,?> map , XValueProperties defaults ) {
     this(defaults);
 	  for( java.util.Map.Entry<?, ?> entries : map.entrySet() ) 
-	    put( XValue.asXValue(entries.getKey()).toString() ,  XValue.asXValue(entries.getValue())  );
+	    put( XValue.newXValue(entries.getKey()).toString() ,  XValue.newXValue(entries.getValue())  );
 	}
 	
 	
@@ -64,7 +64,7 @@ public class XValueProperties extends XValueMap {
   @Override
   public
   XValue asXValue() {
-    return XValue.asXValue( TypeFamily.XTYPE , this );
+    return XValue.newXValue( TypeFamily.XTYPE , this );
   }
 
 

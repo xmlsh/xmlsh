@@ -49,9 +49,9 @@ public class jset extends BuiltinCommand {
 			obj = JavaUtils.callStatic(classname, method, args, classloader);
 		else
 			if( field != null )
-				obj = XValue.asXValue(JavaUtils.getField( classname , instance,  field , classloader ));
+				obj = XValue.newXValue(JavaUtils.getField( classname , instance,  field , classloader ));
 			else
-				obj = XValue.asXValue(JavaUtils.callMethod(instance, method, args, classloader));
+				obj = XValue.newXValue(JavaUtils.callMethod(instance, method, args, classloader));
 
 		mShell.getEnv().setVar(varname, obj);
 

@@ -154,7 +154,7 @@ public class CommandWord extends Word {
 			} catch (SaxonApiException e) {
 				throw new CoreException("Exception parsing as XML Document",e);
 			}
-			return XValue.asXValue(node) ;
+			return XValue.newXValue(node) ;
 
 
 

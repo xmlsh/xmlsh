@@ -236,7 +236,7 @@ public class Shell implements AutoCloseable, Closeable
       if(name.equals("PS1"))
         continue;
 
-      getEnv().setVar(XVariable.newInstance(name, XValue.asXValue(entry.getValue()), XVariable.systemFlags() ));
+      getEnv().setVar(XVariable.newInstance(name, XValue.newXValue(entry.getValue()), XVariable.systemFlags() ));
 
     }
 
@@ -245,18 +245,18 @@ public class Shell implements AutoCloseable, Closeable
     getEnv()
       .setVar(
         XVariable.newInstance(ShellConstants.PATH, Util.isBlank(path) ? XValue.empytSequence() : 
-          XValue.asXValue(path.split(File.pathSeparator)),XVariable.systemFlags()));
+          XValue.newXValue(path.split(File.pathSeparator)),XVariable.systemFlags()));
 
     String xpath = FileUtils.toJavaPath(System.getenv(ShellConstants.XPATH));
     getEnv().setVar(
-      XVariable.newInstance(ShellConstants.XPATH, Util.isBlank(xpath) ? XValue.asXValue(".") :
-        XValue.asXValue(
+      XVariable.newInstance(ShellConstants.XPATH, Util.isBlank(xpath) ? XValue.newXValue(".") :
+        XValue.newXValue(
            xpath.split(File.pathSeparator)),XVariable.systemFlags()));
 
     String xmpath = FileUtils.toJavaPath(System.getenv(ShellConstants.XMODPATH));
     getEnv().setVar(
       XVariable.newInstance(ShellConstants.XMODPATH, Util.isBlank(xmpath) ? 
-          XValue.empytSequence(): XValue.asXValue(xmpath.split(File.pathSeparator)),XVariable.systemFlags()));
+          XValue.empytSequence(): XValue.newXValue(xmpath.split(File.pathSeparator)),XVariable.systemFlags()));
 
     // PWD
     getEnv().setVar(new XDynamicVariable(ShellConstants.PWD, EnumSet.of(XVarFlag.READONLY,XVarFlag.EXPORT))
@@ -264,7 +264,7 @@ public class Shell implements AutoCloseable, Closeable
         @Override
         public XValue getValue()
         {
-          return XValue.asXValue(FileUtils.toJavaPath(getEnv().getCurdir().getAbsolutePath()));
+          return XValue.newXValue(FileUtils.toJavaPath(getEnv().getCurdir().getAbsolutePath()));
         }
 
       });
@@ -277,7 +277,7 @@ public class Shell implements AutoCloseable, Closeable
         @Override
         public XValue getValue()
         {
-          return XValue.asXValue(mRand.nextInt(0x7FFF));
+          return XValue.newXValue(mRand.nextInt(0x7FFF));
         }
 
       });
@@ -292,7 +292,7 @@ public class Shell implements AutoCloseable, Closeable
         {
           long v = mRand.nextInt();
           v &= 0x7FFFFFFFL;
-          return XValue.asXValue((int) v);
+          return XValue.newXValue((int) v);
         }
 
       });
@@ -305,7 +305,7 @@ public class Shell implements AutoCloseable, Closeable
         @Override
         public XValue getValue()
         {
-          return XValue.asXValue(mRand.nextLong() & 0x7FFFFFFFFFFFFFFFL);
+          return XValue.newXValue(mRand.nextLong() & 0x7FFFFFFFFFFFFFFFL);
         }
       });
 
@@ -845,7 +845,7 @@ public class Shell implements AutoCloseable, Closeable
         // set (-e)
         if(mStatus != 0 && mOpts.mThrowOnError && c.isSimple()) {
           if(!isInCommandConndition())
-            throw new ThrowException(XValue.asXValue(mStatus));
+            throw new ThrowException(XValue.newXValue(mStatus));
         }
         return mStatus;
 
@@ -1030,7 +1030,7 @@ public class Shell implements AutoCloseable, Closeable
   {
     List<XValue> vargs = new ArrayList<XValue>(argv.length);
     for (String a : argv)
-      vargs.add(XValue.asXValue(a));
+      vargs.add(XValue.newXValue(a));
 
     Shell shell = new Shell(true);
     org.xmlsh.builtin.commands.xmlsh cmd = new org.xmlsh.builtin.commands.xmlsh(true);

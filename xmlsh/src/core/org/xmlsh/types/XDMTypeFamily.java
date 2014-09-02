@@ -78,9 +78,9 @@ public final class XDMTypeFamily extends AbstractTypeFamily implements ITypeFami
       assert (obj instanceof XdmItem );
       
       if(xvalue == null)
-        return XValue.asXValue( TypeFamily.XDM , obj);
+        return XValue.newXValue( TypeFamily.XDM , obj);
       
-      return XValue.asXValue(new XValueSequence( getXValue(obj), xvalue ));
+      return XValue.newXValue(new XValueSequence( getXValue(obj), xvalue ));
 
     }
 
@@ -233,7 +233,7 @@ public final class XDMTypeFamily extends AbstractTypeFamily implements ITypeFami
            case 1:
              obj = v.itemAt(0);
            default:
-             return XValue.asXValue(XMLUtils.toXValueList( v ));
+             return XValue.newXValue(XMLUtils.toXValueList( v ));
            }
          }
        
@@ -252,9 +252,9 @@ public final class XDMTypeFamily extends AbstractTypeFamily implements ITypeFami
        if( obj instanceof Item<?> )
          obj = S9Util.wrapItem((Item<?>)obj);
        else
-         return XValue.asXValue(obj);
+         return XValue.newXValue(obj);
 
-      return XValue.asXValue(this,obj,false);
+      return XValue.newXValue(this,obj,false);
     }
 
     
@@ -269,7 +269,7 @@ public final class XDMTypeFamily extends AbstractTypeFamily implements ITypeFami
 
       if(index < 0 || index >= v.size())
         throw new InvalidArgumentException("Invalid index for sequence");
-      return XValue.asXValue(this,v.itemAt(index),false);
+      return XValue.newXValue(this,v.itemAt(index),false);
     }
 
     @Override
@@ -289,7 +289,7 @@ public final class XDMTypeFamily extends AbstractTypeFamily implements ITypeFami
   public XValue nullXValue()
   {
    
-   return XValue.asXValue(TypeFamily.XDM, _nullValue);
+   return XValue.newXValue(TypeFamily.XDM, _nullValue);
   }
 
   public static XDMTypeFamily getInstance()

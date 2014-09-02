@@ -62,8 +62,8 @@ public class HelpUsage {
 
 
 		XQueryEvaluator eval = expr.load();
-		eval.setExternalVariable(new QName("prefix"), XValue.asXValue(prefix).toXdmValue() );
-		eval.setExternalVariable(new QName("module"), XValue.asXValue(module).toXdmValue() );
+		eval.setExternalVariable(new QName("prefix"), XValue.newXValue(prefix).toXdmValue() );
+		eval.setExternalVariable(new QName("module"), XValue.newXValue(module).toXdmValue() );
 
 		eval.setContextItem(root);
 
@@ -114,7 +114,7 @@ public class HelpUsage {
 
 
 
-		XValue v = XValue.asXValue(root);
+		XValue v = XValue.newXValue(root);
 		XValue xcmd = v.xpath(mShell,"//(command|function)[@name='" + nonsName + "']");
 
 		if( xcmd.isEmpty() ){
@@ -162,7 +162,7 @@ public class HelpUsage {
 		if( name.equals(":"))
 			nonsName = ":";
 
-		XValue v = XValue.asXValue(root);
+		XValue v = XValue.newXValue(root);
 		XValue xcmd = v.xpath(mShell,"//command[@name='" + nonsName + "']");
 
 		if( xcmd.isEmpty() ){

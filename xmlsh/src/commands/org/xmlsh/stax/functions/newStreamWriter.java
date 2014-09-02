@@ -30,9 +30,9 @@ public class newStreamWriter extends BuiltinFunctionCommand {
 	@Override
 	public XValue run(Shell shell, List<XValue> args) throws CoreException, XMLStreamException, SaxonApiException, IOException {
 		if( args.size() == 0 )
-			return XValue.asXValue(TypeFamily.JAVA, shell.getEnv().getStdout().asXMLStreamWriter(shell.getSerializeOpts()));
+			return XValue.newXValue(TypeFamily.JAVA, shell.getEnv().getStdout().asXMLStreamWriter(shell.getSerializeOpts()));
 		else
-			return XValue.asXValue(TypeFamily.JAVA, shell.getEnv().getOutput(args.get(0),false).asXMLStreamWriter(shell.getSerializeOpts()));
+			return XValue.newXValue(TypeFamily.JAVA, shell.getEnv().getOutput(args.get(0),false).asXMLStreamWriter(shell.getSerializeOpts()));
 
 
 

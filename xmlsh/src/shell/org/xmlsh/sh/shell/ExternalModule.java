@@ -69,7 +69,7 @@ public class ExternalModule extends PackageModule
 
     List<URL> classpath = new ArrayList<URL>();
 
-    XValue xv = XValue.asXValue(configNode);
+    XValue xv = XValue.newXValue(configNode);
     String pkg = xv.xpath(shell, "/module/@package/string()").toString();
     // TODO: better support for multi packages
 

@@ -1,6 +1,6 @@
-xs:string
-xs:string
-xs:string
+java.lang.String
+java.lang.String
+java.lang.String
 Hi There
 Hi There
 1 8 true

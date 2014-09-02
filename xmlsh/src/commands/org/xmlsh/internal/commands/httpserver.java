@@ -198,8 +198,8 @@ public class httpserver extends XCommand {
 			List<XValue> args = new ArrayList<XValue>();
 			String query = uri.getQuery();
 			String path = uri.getPath();
-			args.add( XValue.asXValue(path));
-			args.add( XValue.asXValue(query));
+			args.add( XValue.newXValue(path));
+			args.add( XValue.newXValue(query));
 
 			if( headers != null )
 				mShell.getEnv().setVar(headers);

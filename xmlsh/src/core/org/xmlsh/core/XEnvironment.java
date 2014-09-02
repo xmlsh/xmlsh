@@ -95,28 +95,28 @@ public class XEnvironment implements AutoCloseable, Closeable {
 	 
 		if( name == null ) {
 			// $* 
-	    	 return new XVariable(null, XValue.asXValue(mShell.getArgs()));
+	    	 return new XVariable(null, XValue.newXValue(mShell.getArgs()));
 		}
 		
 		switch( name ) {
 		case "*" :
-			return new XVariable(null, XValue.asXValue(mShell.getArgs()));
+			return new XVariable(null, XValue.newXValue(mShell.getArgs()));
 		case "@" :
 			return  mShell.getArgs().size() == 0 ? null 
-					: new XVariable(null, XValue.asXValue(mShell.getArgs()));
+					: new XVariable(null, XValue.newXValue(mShell.getArgs()));
 	     case "#" :
-      return new XVariable(name, XValue.asXValue(mShell.getArgs().size()));
+      return new XVariable(name, XValue.newXValue(mShell.getArgs().size()));
 	     case "$" :
-      return new XVariable(name, XValue.asXValue(Thread.currentThread().getId()));
+      return new XVariable(name, XValue.newXValue(Thread.currentThread().getId()));
 	     case "?" :
-      return new XVariable(name, XValue.asXValue(mShell.getStatus()));
+      return new XVariable(name, XValue.newXValue(mShell.getStatus()));
 	     case "!" :
-      return new XVariable(name, XValue.asXValue(mShell.getLastThreadId()));
+      return new XVariable(name, XValue.newXValue(mShell.getLastThreadId()));
 		}
 		if(Util.isInt(name, false)) {
            int n = Util.parseInt(name, -1);
            if(n == 0)
-            return new XVariable(name, XValue.asXValue(mShell.getArg0()));
+            return new XVariable(name, XValue.newXValue(mShell.getArg0()));
           else if(n > 0 && n <= mShell.getArgs().size())
             return new XVariable(name, mShell.getArgs().get(n - 1));
           else
@@ -140,7 +140,7 @@ public class XEnvironment implements AutoCloseable, Closeable {
 	{
 	    XVariable var = mVars.get(name);
         if( var == null )
-           var = new XVariable(name, XValue.asXValue( TypeFamily.XTYPE , new XValueMap()));
+           var = new XVariable(name, XValue.newXValue( TypeFamily.XTYPE , new XValueMap()));
       else
           var = var.clone();
           
@@ -421,7 +421,7 @@ public class XEnvironment implements AutoCloseable, Closeable {
 
 	public OutputPort getOutput( String port , boolean append) throws IOException
 	{
-		return getOutput( XValue.asXValue(port) , append );
+		return getOutput( XValue.newXValue(port) , append );
 	}
 
 
@@ -593,7 +593,7 @@ public class XEnvironment implements AutoCloseable, Closeable {
 
 	public InputPort getInput( String name ) throws CoreException, IOException
 	{
-		return getInput( XValue.asXValue(name));
+		return getInput( XValue.newXValue(name));
 	}
 
 	public OutputPort getOutputPort(String name){

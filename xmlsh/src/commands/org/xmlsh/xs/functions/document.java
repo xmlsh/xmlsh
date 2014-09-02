@@ -31,7 +31,7 @@ public class document extends BuiltinFunctionCommand {
 			throw new InvalidArgumentException("document() requres a single argument");
 
 
-		return XValue.asXValue(S9Util.wrapDocument(args.get(0).asXdmNode() ));
+		return XValue.newXValue(S9Util.wrapDocument(args.get(0).asXdmNode() ));
 
 
 

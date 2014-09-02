@@ -47,7 +47,7 @@ public class PropertyWord extends Word
 	{
 	  String name = mName.expandString(shell, mName.evalEnv(nameEnv(env)), loc);
 		XValue xv = mValue.expand(shell , mValue.evalEnv(valueEnv(env)) , loc );
-		result.add( XValue.asXValue(new XValueProperty( name ,xv )) );
+		result.add( XValue.newXValue(new XValueProperty( name ,xv )) );
 		return result ;
 		
 	}

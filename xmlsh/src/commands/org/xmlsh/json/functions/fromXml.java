@@ -84,7 +84,7 @@ public class fromXml	extends BuiltinFunctionCommand {
 		
 			Object obj = mapper.readValue( reader , cls );
 
-		    return XValue.asXValue(null,obj);
+		    return XValue.newXValue(null,obj);
 		} finally {
 			Util.safeClose(reader);
 		}

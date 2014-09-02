@@ -27,9 +27,9 @@ public class newEventReader extends BuiltinFunctionCommand {
 	@Override
 	public XValue run(Shell shell, List<XValue> args) throws CoreException, IOException {
 		if( args.size() == 0 )
-			return XValue.asXValue( TypeFamily.JAVA, shell.getEnv().getStdin().asXMLEventReader(shell.getSerializeOpts()));
+			return XValue.newXValue( TypeFamily.JAVA, shell.getEnv().getStdin().asXMLEventReader(shell.getSerializeOpts()));
 		else
-			return XValue.asXValue( TypeFamily.JAVA, shell.getEnv().getInput(args.get(0)).asXMLEventReader(shell.getSerializeOpts()));
+			return XValue.newXValue( TypeFamily.JAVA, shell.getEnv().getInput(args.get(0)).asXMLEventReader(shell.getSerializeOpts()));
 
 
 

@@ -87,10 +87,10 @@ public class XValuePropertyList  implements     IXValueMap<XValuePropertyList>, 
 		  }
 		}
 		if( list == null )
-		  return XValue.asXValue(TypeFamily.XTYPE,null);
+		  return XValue.newXValue(TypeFamily.XTYPE,null);
 		if( list.size() == 1 )
 		  return list.get(0);
-		return XValue.asXValue(TypeFamily.XTYPE, list );
+		return XValue.newXValue(TypeFamily.XTYPE, list );
 		
 	}
 
@@ -179,7 +179,7 @@ public class XValuePropertyList  implements     IXValueMap<XValuePropertyList>, 
     public XValue append(XValue item) {
         XValuePropertyList newList = new XValuePropertyList(this);
         newList.add( XValueProperty.instanceOf( item ) );
-        return XValue.asXValue(newList); 
+        return XValue.newXValue(newList); 
     }
 
     @Override
@@ -230,7 +230,7 @@ public class XValuePropertyList  implements     IXValueMap<XValuePropertyList>, 
     @Override
     public XValue asXValue()
     {
-      return XValue.asXValue( TypeFamily.XTYPE , this );
+      return XValue.newXValue( TypeFamily.XTYPE , this );
 
     }
 

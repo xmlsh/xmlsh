@@ -78,7 +78,7 @@ public class XdmStreamOutputPort extends OutputPort {
 		// else
 		if (mByteArrayOutputStream != null){
 			try {
-				mWriter.write( XValue.asXValue(mByteArrayOutputStream.toString(mSerializeOpts.getOutputTextEncoding()   )).toXdmValue() );
+				mWriter.write( XValue.newXValue(mByteArrayOutputStream.toString(mSerializeOpts.getOutputTextEncoding()   )).toXdmValue() );
 			} catch (UnsupportedEncodingException e1) {
 				throw new IOException( e1 );
 			}

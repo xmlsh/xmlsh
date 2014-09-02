@@ -31,7 +31,7 @@ public class parse extends BuiltinFunctionCommand {
 	@Override
 	public XValue run(Shell shell, List<XValue> args) throws InvalidArgumentException {
 		JsonNode model = JSONUtils.toJsonNode( getFirstArg(args).toString() );
-		return XValue.asXValue( TypeFamily.JSON, model );
+		return XValue.newXValue( TypeFamily.JSON, model );
 	}
 
 }

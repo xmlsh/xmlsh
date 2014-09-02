@@ -508,7 +508,7 @@ public class JSONUtils {
 
 
 		while( nodes.hasNext() )
-			list.add( XValue.asXValue(TypeFamily.JSON,nodes.next()) );
+			list.add( XValue.newXValue(TypeFamily.JSON,nodes.next()) );
 
 		return list ;
     }

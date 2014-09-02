@@ -1,5 +1,7 @@
 package org.xmlsh.sh.grammar;
 
+import static org.xmlsh.sh.grammar.ParserState.TokenEnum.*;
+
 import java.util.EnumMap;
 import java.util.EnumSet;
 
@@ -14,7 +16,8 @@ class ParserState {
         FUNCTION_CALL,
         FUNCTION_DECL,
         ARRAY_LIST ,
-        SEQUENCE_LIST ;
+        SEQUENCE_LIST ,
+        BRACE_WORD ;
     }
     
     
@@ -26,7 +29,8 @@ class ParserState {
         COMMA( new TokenValue( ShellParserConstants.WORD , ",")) , 
         NL( new TokenValue( ShellParserConstants.NL , null )), 
         SEMI( new TokenValue( ShellParserConstants.SEMI , null)),
-        RPAREN( new TokenValue( ShellParserConstants.RPAREN , null))
+        RPAREN( new TokenValue( ShellParserConstants.RPAREN , null)),
+        COLON(  new TokenValue( ShellParserConstants.WORD , ":"))
         ;
         
         TokenValue value ;
@@ -49,7 +53,11 @@ class ParserState {
         case ARRAY_LIST : 
         case SEQUENCE_LIST :
         case FUNCTION_DECL :
-            return new ParserState( EnumSet.of( TokenEnum.COMMA ));
+            return new ParserState( EnumSet.of( COMMA ));
+
+        case BRACE_WORD :
+          return new ParserState( EnumSet.of( COMMA  , COLON ));
+
         default :
         case START :
             return new ParserState( EnumSet.noneOf(TokenEnum.class));

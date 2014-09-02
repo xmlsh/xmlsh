@@ -54,7 +54,7 @@ public class jsonpath extends XCommand {
 				context = opts.getOptValue("c").asJson();
 			else
 				if( opts.hasOpt("cf"))
-					context = (in=getInput( XValue.asXValue(opts.getOptString("cf", "-")))).asJson(serializeOpts);
+					context = (in=getInput( XValue.newXValue(opts.getOptString("cf", "-")))).asJson(serializeOpts);
 				else
 					if( opts.hasOpt("i") )
 						context = (in=getInput( opts.getOptValue("i"))).asJson(serializeOpts);

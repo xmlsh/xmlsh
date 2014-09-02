@@ -68,15 +68,15 @@ public class XmlshTask extends Task {
 
 			List<XValue> vargs = new ArrayList<XValue>();
 			if( mScript != null )
-				vargs.add( XValue.asXValue(mScript));
+				vargs.add( XValue.newXValue(mScript));
 			else {
-				vargs.add( XValue.asXValue("-c"));
-				vargs.add( XValue.asXValue(mText));
+				vargs.add( XValue.newXValue("-c"));
+				vargs.add( XValue.newXValue(mText));
 			}
 
 			if( mArgs != null ){
 				for( Arg arg : mArgs )
-					vargs.add( XValue.asXValue( arg.mValue));
+					vargs.add( XValue.newXValue( arg.mValue));
 			}
 
 			org.xmlsh.builtin.commands.xmlsh cmd = new org.xmlsh.builtin.commands.xmlsh(true);

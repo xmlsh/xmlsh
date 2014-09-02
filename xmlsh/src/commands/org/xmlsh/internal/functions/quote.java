@@ -26,7 +26,7 @@ public class quote extends BuiltinFunctionCommand {
 		for( XValue arg : args )
 			sb.append( escape( arg.toString() ) );
 		sb.append("\"");
-		return XValue.asXValue(sb.toString());
+		return XValue.newXValue(sb.toString());
 
 
 	}

@@ -83,7 +83,7 @@ public class JavaUtils {
 			throw new InvalidArgumentException("No construtor match found for: " + cls.getName()  + "(" + getArgClassesString(args) + ")");
 
 		Object obj = c.newInstance(getArgs(c.getParameterTypes(), args));
-		return XValue.asXValue(null,obj);
+		return XValue.newXValue(null,obj);
 	}
 
 	public static XValue newXValue(String classname, List<XValue> args, ClassLoader classloader) throws Exception {
@@ -128,12 +128,12 @@ public class JavaUtils {
 		// Special case for null - use formal return type to cast to right XValue type
 		if( obj == null ){
 			if( String.class.isAssignableFrom(m.getReturnType()) )
-				return XValue.asXValue((String) null);
+				return XValue.newXValue((String) null);
 			else
-				return XValue.asXValue(null,(Object)null);
+				return XValue.newXValue(null,(Object)null);
 		}
 
-		return XValue.asXValue(null,obj);
+		return XValue.newXValue(null,obj);
 	}
 
 	public static String getArgClassesString(List<XValue> args) {
@@ -166,13 +166,13 @@ public class JavaUtils {
 		// Special case for null - use formal return type to cast to right XValue type
 		if( obj == null ){
 			if( String.class.isAssignableFrom(m.getReturnType()) )
-				return XValue.asXValue((String) null);
+				return XValue.newXValue((String) null);
 			else
-				return XValue.asXValue( null , (Object) null);
+				return XValue.newXValue( null , (Object) null);
 		}
 
 
-		return XValue.asXValue(null , obj) ;
+		return XValue.newXValue(null , obj) ;
 	}
 
 	public static Method getBestMatch(Class<?> cls, String methodName, List<XValue> args, boolean bStatic ) throws CoreException {

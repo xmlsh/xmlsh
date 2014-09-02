@@ -97,7 +97,7 @@ public class XTypeFamily extends AbstractTypeFamily implements ITypeFamily
       IXValue<?> ic = asXType(obj);
 
       if(Util.isBlank(ind))
-        return  XValue.asXValue( this , obj , false );
+        return  XValue.newXValue( this , obj , false );
       
       // map first
       if( ic.isMap() )
@@ -181,7 +181,7 @@ public class XTypeFamily extends AbstractTypeFamily implements ITypeFamily
       }
       else if((obj instanceof XValue))
         return Collections.singletonList((XValue) obj);
-      else return Collections.singletonList(XValue.asXValue(null, obj)); // may conatain any type - SNH
+      else return Collections.singletonList(XValue.newXValue(null, obj)); // may conatain any type - SNH
 
     }
 
@@ -192,7 +192,7 @@ public class XTypeFamily extends AbstractTypeFamily implements ITypeFamily
       if(obj instanceof XValue)
         return (XValue) obj;
       if( isInstanceOfFamily( obj ) ) 
-        return XValue.asXValue( this , obj , false );
+        return XValue.newXValue( this , obj , false );
       return XValue.newInstance(obj);
 
     }
@@ -243,7 +243,7 @@ public class XTypeFamily extends AbstractTypeFamily implements ITypeFamily
   @Override
   public XValue nullXValue()
   {
-    return XValue.asXValue(this , _nullValue, false );
+    return XValue.newXValue(this , _nullValue, false );
   }
 
   public static XTypeFamily getInstance()

@@ -50,7 +50,7 @@ public class xls extends XCommand {
 		if( args == null )
 			args = new ArrayList<XValue>();
 		if( args.size() == 0 )
-			args.add(XValue.asXValue(""));
+			args.add(XValue.newXValue(""));
 
 		opt_l = opts.hasOpt("l");
 		opt_a = opts.hasOpt("a");

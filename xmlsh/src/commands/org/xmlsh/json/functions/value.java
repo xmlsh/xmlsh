@@ -31,7 +31,7 @@ public class value extends BuiltinFunctionCommand {
 		if( args.size() == 0 )
       return XTypeUtils.getInstance(TypeFamily.JSON).nullXValue();
 
-		return XValue.asXValue(TypeFamily.JSON,  JSONUtils.toJsonType( args.get(0)) );
+		return XValue.newXValue(TypeFamily.JSON,  JSONUtils.toJsonType( args.get(0)) );
 	}
 
 

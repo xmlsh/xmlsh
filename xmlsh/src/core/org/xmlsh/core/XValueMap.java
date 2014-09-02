@@ -127,7 +127,7 @@ public class XValueMap extends AbstractMap<String,XValue> implements IXValueMap<
 		if( value instanceof XValue )
 			put( key , (XValue) value );
 		else
-			put( key , XValue.asXValue(null,value) );
+			put( key , XValue.newXValue(null,value) );
 
 	}
 
@@ -194,7 +194,7 @@ public class XValueMap extends AbstractMap<String,XValue> implements IXValueMap<
         
         XValueMap newMap = new XValueMap(this);
         newMap.add(item);
-        return XValue.asXValue(newMap);
+        return XValue.newXValue(newMap);
     }
 
     public void add(XValueProperty prop) {
@@ -211,7 +211,7 @@ public class XValueMap extends AbstractMap<String,XValue> implements IXValueMap<
     @Override
     public XValue asXValue()
     {
-      return XValue.asXValue( TypeFamily.XTYPE , this );
+      return XValue.newXValue( TypeFamily.XTYPE , this );
     }
 
     @Override

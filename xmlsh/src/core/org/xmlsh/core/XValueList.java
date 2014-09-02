@@ -161,12 +161,12 @@ public class XValueList  extends AbstractList<XValue> implements IXValueContaine
     public XValue append(XValue item) {
         XValueList newList = new XValueList(this);
         newList.add(item);
-        return XValue.asXValue( TypeFamily.XTYPE , newList ); 
+        return XValue.newXValue( TypeFamily.XTYPE , newList ); 
     }
     @Override
     public XValue asXValue()
     {
-      return XValue.asXValue( TypeFamily.XTYPE , this );
+      return XValue.newXValue( TypeFamily.XTYPE , this );
     }
     @Override
     public boolean isContainer()

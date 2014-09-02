@@ -25,7 +25,7 @@ public class integer extends BuiltinFunctionCommand {
 	public XValue run(Shell shell, List<XValue> args) throws InvalidArgumentException, XPathException {
 		if( args.size() != 1 )
 			throw new InvalidArgumentException("integer(): Expected 1 argument");
-		return XValue.asXValue(args.get(0).toLong());
+		return XValue.newXValue(args.get(0).toLong());
 	}
 
 }

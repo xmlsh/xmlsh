@@ -121,7 +121,7 @@ public class Expander
     // <{ big quotes }>
     if(arg.startsWith("<{{") && arg.endsWith("}}>")) {
       // Add as a raw value
-      result.add(XValue.asXValue(arg.substring(3, arg.length() - 3)), true);
+      result.add(XValue.newXValue(arg.substring(3, arg.length() - 3)), true);
       return result;
     }
 

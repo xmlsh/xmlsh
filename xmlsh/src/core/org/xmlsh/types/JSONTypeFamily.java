@@ -117,7 +117,7 @@ public class JSONTypeFamily extends AbstractTypeFamily implements ITypeFamily
       case OBJECT:
         return getXValue(node.get(ind));
       case POJO:
-        return XValue.asXValue(node.get(ind));  // not JSON type
+        return XValue.newXValue(node.get(ind));  // not JSON type
       default:
         return getXValue(obj);
       }
@@ -278,9 +278,9 @@ public class JSONTypeFamily extends AbstractTypeFamily implements ITypeFamily
         if( obj instanceof XValue )
           return( (XValue) obj );
         if( obj instanceof JsonNode || isInstanceOfFamily(obj) )
-          return XValue.asXValue( this , obj , false );
+          return XValue.newXValue( this , obj , false );
         
-        return XValue.asXValue(obj);
+        return XValue.newXValue(obj);
       
     }
 
@@ -315,7 +315,7 @@ public class JSONTypeFamily extends AbstractTypeFamily implements ITypeFamily
   @Override
   public XValue nullXValue()
   {
-   return XValue.asXValue(this , _nullValue , false );
+   return XValue.newXValue(this , _nullValue , false );
   }
 
   @Override

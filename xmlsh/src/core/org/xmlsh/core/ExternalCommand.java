@@ -45,7 +45,7 @@ public class ExternalCommand implements ICommand {
 		mLogger.debug("Run external command: " + mCommandFile.getPath() + " in directory: " + curdir.getPath());
 
 		ArrayList<XValue> cmdlist = new ArrayList<XValue>();
-		cmdlist.add(XValue.asXValue(mCommandFile.getPath()));
+		cmdlist.add(XValue.newXValue(mCommandFile.getPath()));
 		cmdlist.addAll(Util.expandSequences(args));
 		Process proc = null;
 		synchronized (this.getClass()) {

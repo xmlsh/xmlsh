@@ -53,23 +53,23 @@ public class xlocation extends BuiltinFunctionCommand {
 		if( loc == null )
 			return null ;
 		if( opts.hasOpt("name") && loc.hasName() )
-			xv.add( XValue.asXValue( describeName(depth,loc)));
+			xv.add( XValue.newXValue( describeName(depth,loc)));
 		if( opts.hasOpt("s") ) 
-			xv.add( XValue.asXValue(loc.getSource()) );
+			xv.add( XValue.newXValue(loc.getSource()) );
 		if( opts.hasOpt("start") ) 
-			xv.add( XValue.asXValue(loc.getStartline()));
+			xv.add( XValue.newXValue(loc.getStartline()));
 		if( opts.hasOpt("end") ) 
-			xv.add( XValue.asXValue(loc.getEndLine()));
+			xv.add( XValue.newXValue(loc.getEndLine()));
 
 		if( opts.hasOpt("scol") ) 
-			xv.add( XValue.asXValue(loc.getStartColumn()));
+			xv.add( XValue.newXValue(loc.getStartColumn()));
 		if( opts.hasOpt("ecol") ) 
-			xv.add( XValue.asXValue(loc.getEndColumn()));
+			xv.add( XValue.newXValue(loc.getEndColumn()));
 
 		if( xv.isEmpty() )
 			return describe(shell,loc) ;
 
-		return XValue.asXValue(xv);
+		return XValue.newXValue(xv);
 	}
 
 

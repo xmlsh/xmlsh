@@ -349,7 +349,7 @@ public class xed extends XCommand {
 		replacex.setContextItem(item);
 
 		// Convert to string and turn into an XdmItem
-		XValue xreplace = XValue.asXValue( TypeFamily.XDM ,  replacex.evaluate()  );
+		XValue xreplace = XValue.newXValue( TypeFamily.XDM ,  replacex.evaluate()  );
 		replace( node , xreplace , false );
 
 

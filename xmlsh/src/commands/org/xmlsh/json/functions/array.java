@@ -40,7 +40,7 @@ public class array extends BuiltinFunctionCommand {
 		}
 
 
-		return XValue.asXValue( TypeFamily.JSON ,node );
+		return XValue.newXValue( TypeFamily.JSON ,node );
 	}
 
 }

@@ -51,14 +51,14 @@ public class EvalUtils
     if(var == null) {
       // Special case ${#x} == 0 if x is undef
       if(Util.isEqual(expr.getPrefix(), "#")) {
-        return XValue.asXValue(0);
+        return XValue.newXValue(0);
       }
       return null;
 
     }
     // ${#var} notation
     if(Util.isEqual(expr.getPrefix(), "#")) {
-      return XValue.asXValue(var.getSize());
+      return XValue.newXValue(var.getSize());
     }
 
     if(Util.isBlank(expr.getIndex()) && Util.isBlank(expr.getField()))
@@ -274,7 +274,7 @@ public class EvalUtils
     else if(ret.size() == 1)
       return ret.get(0);
 
-    return XValue.asXValue(ret);
+    return XValue.newXValue(ret);
   }
 
   public static ParseResult expandListToResult(Shell shell, List<XValue> list, EvalEnv env, SourceLocation loc)
@@ -320,13 +320,13 @@ public class EvalUtils
   {
     assert( word != null );
     if( word == null|word.isEmpty() )
-      return XValue.asXValue(word);
+      return XValue.newXValue(word);
     
     
     // if expand word then need to do IFS splitting
     if(env.expandWords() && !env.preserveValue())
-      return XValue.asXValue((String[]) shell.getIFS().split(word).toArray());
-    else return XValue.asXValue(word);
+      return XValue.newXValue((String[]) shell.getIFS().split(word).toArray());
+    else return XValue.newXValue(word);
   }
 
   public static ParseResult splitStringToResult(Shell shell, String word, EvalEnv env, SourceLocation loc,
@@ -432,11 +432,11 @@ public class EvalUtils
               for (String f : fields) {
                 if(Util.isEmpty(f))
                   continue;
-                vs.add(XValue.asXValue(f));
+                vs.add(XValue.newXValue(f));
               }
             }
           }
-          else vs = Collections.singletonList(XValue.asXValue(s));
+          else vs = Collections.singletonList(XValue.newXValue(s));
         }
       }
     }
@@ -504,12 +504,12 @@ public class EvalUtils
     switch (family) {
     case XTYPE:
     case JAVA:
-      return XValue.asXValue(family, new XValueList());
+      return XValue.newXValue(family, new XValueList());
     case JSON:
-      return XValue.asXValue(family, JSONUtils.newJsonObject());
+      return XValue.newXValue(family, JSONUtils.newJsonObject());
 
     case XDM:
-      return XValue.asXValue(family, XMLUtils.emptySequence());
+      return XValue.newXValue(family, XMLUtils.emptySequence());
 
     }
     return XValue.nullValue();

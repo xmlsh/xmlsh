@@ -34,7 +34,7 @@ public class path extends BuiltinFunctionCommand {
 
 
 		JsonPath path = JsonPath.compile(args.get(1).toString());
-		XValue xvr = XValue.asXValue(TypeFamily.JSON, path.read(node, JsonNode.class));
+		XValue xvr = XValue.newXValue(TypeFamily.JSON, path.read(node, JsonNode.class));
 
 		return xvr ;
 

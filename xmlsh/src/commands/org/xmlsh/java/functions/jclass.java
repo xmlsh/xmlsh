@@ -25,8 +25,8 @@ public class jclass extends BuiltinFunctionCommand {
 	public XValue run(Shell shell, List<XValue> args) throws Exception {
 
 		if( args.isEmpty())
-			return XValue.asXValue(TypeFamily.JAVA, Object.class);
-		return XValue.asXValue(JavaUtils.convertToClass(args.get(0), shell));
+			return XValue.newXValue(TypeFamily.JAVA, Object.class);
+		return XValue.newXValue(JavaUtils.convertToClass(args.get(0), shell));
 
 	}
 
