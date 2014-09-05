@@ -6,7 +6,8 @@
 
 package org.xmlsh.core;
 
-import org.xmlsh.sh.core.Command;
+import org.xmlsh.sh.core.CommandExpr;
+import org.xmlsh.sh.core.ICommandExpr;
 import org.xmlsh.sh.core.SourceLocation;
 import org.xmlsh.sh.shell.IModule;
 import org.xmlsh.sh.shell.Shell;
@@ -17,10 +18,10 @@ import java.util.List;
 public class FunctionCommand implements ICommand {
 
 	String				mName;
-	Command			 	mFunction;
+	ICommandExpr			 	mFunction;
 	SourceLocation  	mLocation;
 
-	public FunctionCommand( String name , Command func ,  SourceLocation loc )
+	public FunctionCommand( String name , ICommandExpr func ,  SourceLocation loc )
 	{
 		mName = name ;
 		mFunction = func ;

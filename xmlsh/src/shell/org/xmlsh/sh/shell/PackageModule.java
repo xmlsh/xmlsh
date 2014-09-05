@@ -9,6 +9,7 @@ package org.xmlsh.sh.shell;
 
 import org.xmlsh.core.ICommand;
 import org.xmlsh.core.IFunction;
+import org.xmlsh.core.IFunctionDecl;
 import org.xmlsh.core.ScriptCommand;
 import org.xmlsh.core.ScriptFunctionCommand;
 import org.xmlsh.core.XCommand;
@@ -81,7 +82,7 @@ public class PackageModule extends Module
    * @see org.xmlsh.sh.shell.IModule#getFunctionClass(java.lang.String)
    */
   @Override
-  public IFunction getFunctionClass(String name)
+  public IFunctionDecl getFunctionClass(String name)
   {
 
     String origName = name;
@@ -99,9 +100,8 @@ public class PackageModule extends Module
         Constructor<?> constructor = cls.getConstructor();
         if(constructor != null) {
           Object obj = constructor.newInstance();
-          if(obj instanceof IFunction) {
-            IFunction cmd = (IFunction) obj;
-
+          if(obj instanceof IFunctionDecl) {
+            IFunctionDecl cmd = (IFunctionDecl) obj;
             return cmd;
           }
         }
@@ -203,6 +203,8 @@ public class PackageModule extends Module
             cmd.setModule(this);
             return cmd;
           }
+          else
+            mLogger.warn("Command class found [ {} ] but is not instance of XCommand." , cls.getName() );
         }
       }
 

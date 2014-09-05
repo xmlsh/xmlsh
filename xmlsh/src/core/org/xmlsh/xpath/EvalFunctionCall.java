@@ -12,16 +12,15 @@ import net.sf.saxon.om.Item;
 import net.sf.saxon.om.SequenceIterator;
 import net.sf.saxon.s9api.XdmValue;
 import net.sf.saxon.trans.XPathException;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
 import org.xmlsh.core.ThrowException;
 import org.xmlsh.core.VariableInputPort;
 import org.xmlsh.core.VariableOutputPort;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.XVariable;
-import org.xmlsh.sh.core.Command;
+import org.xmlsh.sh.core.CommandExpr;
+import org.xmlsh.sh.core.ICommandExpr;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.Util;
 import org.xmlsh.util.XMLUtils;
@@ -56,7 +55,7 @@ public class EvalFunctionCall extends ExtensionFunctionCall
 			else
 				shell = shell.clone();
 
-			Command cmd = shell.parseEval(command);
+			ICommandExpr cmd = shell.parseEval(command);
 
 			List<XValue> shell_args = new ArrayList<XValue>();
 			Item item = null;

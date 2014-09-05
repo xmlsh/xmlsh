@@ -6,7 +6,7 @@
 
 package org.xmlsh.json.functions;
 
-import org.xmlsh.core.BuiltinFunctionCommand;
+import org.xmlsh.core.AbstractBuiltinFunction;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.json.JSONUtils;
@@ -15,7 +15,7 @@ import org.xmlsh.types.TypeFamily;
 
 import java.util.List;
 
-public class number extends BuiltinFunctionCommand {
+public class number extends AbstractBuiltinFunction {
 
 	public number()
 	{

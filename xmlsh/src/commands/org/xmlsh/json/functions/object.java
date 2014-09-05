@@ -6,7 +6,7 @@
 
 package org.xmlsh.json.functions;
 
-import org.xmlsh.core.BuiltinFunctionCommand;
+import org.xmlsh.core.AbstractBuiltinFunction;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.json.JSONUtils;
@@ -18,7 +18,7 @@ import java.util.List;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-public class object extends BuiltinFunctionCommand {
+public class object extends AbstractBuiltinFunction {
 
 	public object()
 	{

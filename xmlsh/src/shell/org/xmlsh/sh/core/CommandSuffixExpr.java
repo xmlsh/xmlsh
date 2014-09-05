@@ -16,13 +16,13 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CommandSuffix {
+public class CommandSuffixExpr {
 	private static final EvalEnv mCmdEnv = EvalEnv.newInstance(true,true,true,false);
 	private static final EvalEnv mArgEnv = EvalEnv.commandArgsInstance();
 
 	private WordList		mArgs = new WordList();
 	private	 IORedirectList		mRedirect = new IORedirectList();
-	public CommandSuffix() {
+	public CommandSuffixExpr() {
 
 	}
 

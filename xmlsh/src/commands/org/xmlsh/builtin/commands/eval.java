@@ -8,7 +8,7 @@ package org.xmlsh.builtin.commands;
 
 import org.xmlsh.core.BuiltinCommand;
 import org.xmlsh.core.XValue;
-import org.xmlsh.sh.core.Command;
+import org.xmlsh.sh.core.ICommandExpr;
 import org.xmlsh.sh.shell.ShellConstants;
 import org.xmlsh.util.Util;
 
@@ -25,7 +25,7 @@ public class eval extends BuiltinCommand {
 	@Override
 	public int run(  List<XValue> args ) throws Exception {
 		String  evals = Util.joinValues(args,ShellConstants.ARG_SEPARATOR );
-		Command c = mShell.parseEval(evals);
+		ICommandExpr c = mShell.parseEval(evals);
 		if( c == null )
 			return 0;
 

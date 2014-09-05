@@ -33,8 +33,8 @@ public class XValueList  extends AbstractList<XValue> implements IXValueContaine
 	public XValueList() {
 		mList = new LinkedList<>();
 	}
-  public XValueList(List<XValue> list ) {
-    mList = new LinkedList<>(list );
+  public XValueList(Collection<XValue> collection ) {
+    mList = new LinkedList<>(collection );
   }
   
 	
@@ -198,7 +198,11 @@ public class XValueList  extends AbstractList<XValue> implements IXValueContaine
     {
       return null;
     }
-  
+    @Override
+    public List<XValue> asList()
+    {
+      return Util.toList(iterator());
+    }
 
 }
 

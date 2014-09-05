@@ -6,7 +6,7 @@
 
 package org.xmlsh.internal.functions;
 
-import org.xmlsh.core.BuiltinFunctionCommand;
+import org.xmlsh.core.AbstractBuiltinFunction;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.SerializeOpts;
@@ -14,7 +14,7 @@ import org.xmlsh.sh.shell.Shell;
 
 import java.util.List;
 
-public class xstacktrace extends BuiltinFunctionCommand {
+public class xstacktrace extends AbstractBuiltinFunction {
 
 	public xstacktrace()
 	{

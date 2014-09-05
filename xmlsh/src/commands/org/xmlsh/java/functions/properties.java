@@ -6,7 +6,7 @@
 
 package org.xmlsh.java.functions;
 
-import org.xmlsh.core.BuiltinFunctionCommand;
+import org.xmlsh.core.AbstractBuiltinFunction;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
@@ -22,7 +22,7 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Properties;
 
-public class properties extends BuiltinFunctionCommand
+public class properties extends AbstractBuiltinFunction
 {
 
 	private SerializeOpts sopts;

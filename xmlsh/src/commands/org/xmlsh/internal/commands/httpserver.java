@@ -7,10 +7,8 @@
 package org.xmlsh.internal.commands;
 
 import net.sf.saxon.s9api.SaxonApiException;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.ThrowException;
@@ -19,7 +17,8 @@ import org.xmlsh.core.VariableOutputPort;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.XVariable;
-import org.xmlsh.sh.core.Command;
+import org.xmlsh.sh.core.CommandExpr;
+import org.xmlsh.sh.core.ICommandExpr;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.Util;
 
@@ -54,9 +53,9 @@ public class httpserver extends XCommand {
 	public class MyHandler implements HttpHandler {
 		private		Shell	 	mShell = null;
 		private	 	File		mInitialCD;
-		private		Command	mGet;
-		private		Command mPut;
-		private		Command mPost;
+		private		ICommandExpr	mGet;
+		private		ICommandExpr mPut;
+		private		ICommandExpr mPost;
 		private		boolean 	mChunked = false ;
 
 		MyHandler( Shell shell, boolean chunked , String getFunc, String putFunc , String postFunc  ) throws CoreException 
@@ -93,7 +92,7 @@ public class httpserver extends XCommand {
 				// TBD: Headers headers = http.getRequestHeaders();
 
 
-				Command cmd = null ;
+				ICommandExpr cmd = null ;
 
 				if( method.equals("GET") )
 					cmd = mGet;
@@ -187,7 +186,7 @@ public class httpserver extends XCommand {
 
 		}
 
-		private void execute(Command cmd, URI uri, InputStream is, OutputStream os, XVariable headers)
+		private void execute(ICommandExpr cmd, URI uri, InputStream is, OutputStream os, XVariable headers)
 				throws CoreException, ThrowException, IOException {
 
 			mShell.getEnv().setStdin( is );

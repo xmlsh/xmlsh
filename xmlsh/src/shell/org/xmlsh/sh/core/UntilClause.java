@@ -11,10 +11,10 @@ import org.xmlsh.sh.shell.Shell;
 
 import java.io.PrintWriter;
 
-public class UntilClause extends CompoundCommand {
-	private		Command		mUntil;
-	private		Command		mDo;
-	public UntilClause(Command until1, Command do1) {
+public class UntilClause extends CompoundCommandExpr {
+	private		CommandExpr		mUntil;
+	private		CommandExpr		mDo;
+	public UntilClause(CommandExpr until1, CommandExpr do1) {
 		super();
 		mUntil = until1;
 		mDo = do1;

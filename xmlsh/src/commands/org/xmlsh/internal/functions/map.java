@@ -1,6 +1,6 @@
 package org.xmlsh.internal.functions;
 
-import org.xmlsh.core.BuiltinFunctionCommand;
+import org.xmlsh.core.AbstractBuiltinFunction;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.types.TypeFamily;
@@ -8,7 +8,7 @@ import org.xmlsh.types.XTypeUtils;
 
 import java.util.List;
 
-public class map extends BuiltinFunctionCommand
+public class map extends AbstractBuiltinFunction
 {
 
 	public map() {

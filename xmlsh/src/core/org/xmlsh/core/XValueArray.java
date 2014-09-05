@@ -223,5 +223,11 @@ public class XValueArray extends AbstractList<XValue> implements IXValueContaine
       return _emptyArray;
     }
 
+    @Override
+    public List<XValue> asList()
+    {
+      return Util.toList(iterator());
+    }
+
 
 }

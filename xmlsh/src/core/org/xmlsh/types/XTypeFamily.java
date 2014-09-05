@@ -3,6 +3,7 @@ package org.xmlsh.types;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.IXValue;
 import org.xmlsh.core.IXValueContainer;
+import org.xmlsh.core.IXValueList;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.XValueList;
@@ -42,7 +43,7 @@ public class XTypeFamily extends AbstractTypeFamily implements ITypeFamily
   @Override
   public boolean isClassOfFamily(Class<?> cls)
   {
-    return XValue.class.isAssignableFrom(cls) || IXValueContainer.class.isAssignableFrom(cls);
+    return XValue.class.isAssignableFrom(cls) || IXValue.class.isAssignableFrom(cls);
   }
 
   @Override
@@ -50,7 +51,7 @@ public class XTypeFamily extends AbstractTypeFamily implements ITypeFamily
   {
     if( obj == null )
       return true ; // OK for null objects
-    return obj instanceof XValue || obj instanceof IXValueContainer;
+    return obj instanceof XValue || obj instanceof IXValue;
   }
 
   @Override
@@ -173,8 +174,8 @@ public class XTypeFamily extends AbstractTypeFamily implements ITypeFamily
       if(obj == null)
         return Collections.emptyList();
       if((obj instanceof IXValueContainer)) {
-        if(obj instanceof XValueList)
-          return (XValueList) obj;
+        if(obj instanceof IXValueList)
+          return ((IXValueList<?>) obj).asList();
         XValueList list = new XValueList();
         list.addAll(((IXValueContainer<?>) obj).values());
         return list;
@@ -200,7 +201,7 @@ public class XTypeFamily extends AbstractTypeFamily implements ITypeFamily
     @Override
     public boolean isAtomic(Object obj)
     {
-      if((obj instanceof IXValueContainer)) {
+      if((obj instanceof IXValue)) {
         return ((IXValue<?>) obj).isAtomic();
       }
       throw new InvalidArgumentException("Unexpected type: " + describeClass(obj));

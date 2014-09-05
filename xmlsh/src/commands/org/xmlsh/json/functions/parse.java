@@ -6,7 +6,7 @@
 
 package org.xmlsh.json.functions;
 
-import org.xmlsh.core.BuiltinFunctionCommand;
+import org.xmlsh.core.AbstractBuiltinFunction;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.json.JSONUtils;
@@ -21,7 +21,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 /*
  * Parse json text to a Json Node or object
  */
-public class parse extends BuiltinFunctionCommand {
+public class parse extends AbstractBuiltinFunction {
 
 	public parse()
 	{

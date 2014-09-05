@@ -20,13 +20,13 @@ import org.xmlsh.util.Util;
 
 import java.io.PrintWriter;
 
-public class EvalScriptCommand extends Command {
+public class EvalScriptExpr extends CommandExpr {
 	private String			mCommand;
 
 	@Override
 	public	boolean		isSimple() { return true ; }
 
-	public EvalScriptCommand( String command)
+	public EvalScriptExpr( String command)
 	{
 		super( Util.simpleName( command, "<script>" ));
 		mCommand = command;

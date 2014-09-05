@@ -16,24 +16,48 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.List;
 
-public abstract class Command  {
+public abstract class CommandExpr implements ICommandExpr  {
 	private		SourceLocation	mLocation = null;
 	private		boolean		mWait = true ;
 	private String mSeparator = null ; // "\n ; & "
 	private String mName = null ;
 
 
-	public boolean isWait(){ return mWait ; }
+	/* (non-Javadoc)
+   * @see org.xmlsh.sh.core.ICommandExpr#isWait()
+   */
+	@Override
+  public boolean isWait(){ return mWait ; }
 	public	void	setLocation( SourceLocation loc ) { mLocation = loc ; }
-	public void    setLocation(Command c) { if( c != null && c.getLocation() != null ) mLocation =  c.getLocation() ;	}
-	public	SourceLocation	getLocation() { return mLocation ; }
-	public boolean hasLocation()  { return mLocation != null && ! mLocation.isEmpty() ; }
+	public void    setLocation(ICommandExpr c) { if( c != null && c.getLocation() != null ) mLocation =  c.getLocation() ;	}
+	/* (non-Javadoc)
+   * @see org.xmlsh.sh.core.ICommandExpr#getLocation()
+   */
+	@Override
+  public	SourceLocation	getLocation() { return mLocation ; }
+	/* (non-Javadoc)
+   * @see org.xmlsh.sh.core.ICommandExpr#hasLocation()
+   */
+	@Override
+  public boolean hasLocation()  { return mLocation != null && ! mLocation.isEmpty() ; }
 
-	public abstract void print( PrintWriter out, boolean bExec);
-	public abstract int exec( Shell shell) throws Exception;
+	/* (non-Javadoc)
+   * @see org.xmlsh.sh.core.ICommandExpr#print(java.io.PrintWriter, boolean)
+   */
+	@Override
+  public abstract void print( PrintWriter out, boolean bExec);
+	/* (non-Javadoc)
+   * @see org.xmlsh.sh.core.ICommandExpr#exec(org.xmlsh.sh.shell.Shell)
+   */
+	@Override
+  public abstract int exec( Shell shell) throws Exception;
 
 	// Is a simple command for purposes of throw-on-error
-	public	abstract	boolean		isSimple() ;
+	/* (non-Javadoc)
+   * @see org.xmlsh.sh.core.ICommandExpr#isSimple()
+   */
+	@Override
+  public	abstract	boolean		isSimple() ;
 
 	@Override
 	public String	toString() {
@@ -42,11 +66,11 @@ public abstract class Command  {
 	}
 
 
-	protected Command()
+	protected CommandExpr()
 	{
 	}
 
-	protected Command(String name)
+	protected CommandExpr(String name)
 	{
 		setName(name) ;
 	}
@@ -57,7 +81,11 @@ public abstract class Command  {
 			mWait = false ;
 	}
 	// Default name if none provided
-	public String getName()
+	/* (non-Javadoc)
+   * @see org.xmlsh.sh.core.ICommandExpr#getName()
+   */
+	@Override
+  public String getName()
 	{
 		return Util.isBlank(mName) ? "<unnamed>" : mName ;
 	}

@@ -8,11 +8,10 @@ package org.xmlsh.sh.ui;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
 import org.xmlsh.core.StreamInputPort;
 import org.xmlsh.core.ThrowException;
 import org.xmlsh.core.XValue;
-import org.xmlsh.sh.core.Command;
+import org.xmlsh.sh.core.ICommandExpr;
 import org.xmlsh.sh.core.SourceLocation;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
@@ -111,7 +110,7 @@ public class XShellThread extends Thread {
 
 		mResultTextArea.clear();
 
-		Command c = null;
+		ICommandExpr c = null;
 
 
 

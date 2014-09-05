@@ -11,7 +11,7 @@ import org.xmlsh.sh.shell.Shell;
 
 import java.io.PrintWriter;
 
-public class CaseClause  extends CompoundCommand {
+public class CaseClause  extends CompoundCommandExpr {
 	private static final EvalEnv mCaseWordEnv = EvalEnv.basicInstance();
 	Word		mWord;
 	CaseList	mList;

@@ -15,20 +15,20 @@ import org.xmlsh.sh.shell.Shell;
 import java.io.PrintWriter;
 import java.util.List;
 
-public class ForClause extends CompoundCommand {
+public class ForClause extends CompoundCommandExpr {
 	private static final EvalEnv mEnv = EvalEnv.newInstance(true ,true,true , false );
 	String		mName;
 	WordList	mWords;
-	Command		mCommand;
+	CommandExpr		mCommand;
 
-	public ForClause( String name, WordList words, Command c )
+	public ForClause( String name, WordList words, CommandExpr c )
 	{
 		mName = name ;
 		mWords = words;
 		mCommand = c;
 		setLocation(c);
 	}
-	public ForClause( String name,  Command c )
+	public ForClause( String name,  CommandExpr c )
 	{
 		this(name,null,c);
 	}

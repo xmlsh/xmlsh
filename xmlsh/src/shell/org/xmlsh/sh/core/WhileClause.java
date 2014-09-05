@@ -11,10 +11,10 @@ import org.xmlsh.sh.shell.Shell;
 
 import java.io.PrintWriter;
 
-public class WhileClause extends CompoundCommand {
-	private		Command		mWhile;
-	private		Command		mDo;
-	public WhileClause(Command while1, Command do1) {
+public class WhileClause extends CompoundCommandExpr {
+	private		CommandExpr		mWhile;
+	private		CommandExpr		mDo;
+	public WhileClause(CommandExpr while1, CommandExpr do1) {
 		super();
 		mWhile = while1;
 		mDo = do1;

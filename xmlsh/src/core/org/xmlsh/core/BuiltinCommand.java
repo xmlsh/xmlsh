@@ -14,7 +14,7 @@ import java.io.File;
 import java.util.List;
 
 
-public abstract class BuiltinCommand extends AbstractCommand implements ICommand {
+public abstract class BuiltinCommand extends AbstractCommand  {
 
 	private String mName;
 

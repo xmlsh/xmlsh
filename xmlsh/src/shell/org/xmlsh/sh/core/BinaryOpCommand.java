@@ -8,16 +8,16 @@ package org.xmlsh.sh.core;
 
 import java.io.PrintWriter;
 
-public abstract class BinaryOpCommand extends Command {
+public abstract class BinaryOpCommand extends CommandExpr {
 
-	protected 		Command		mLeft;
+	protected 		CommandExpr		mLeft;
 	protected		String	 	mOp;
-	protected		Command		mRight;
+	protected		CommandExpr		mRight;
 	@Override
 	public	boolean		isSimple() { return false ; }
 
 
-	public BinaryOpCommand( Command left, String op , Command right )
+	public BinaryOpCommand( CommandExpr left, String op , CommandExpr right )
 	{
 		mLeft = left;
 		mOp = op ;

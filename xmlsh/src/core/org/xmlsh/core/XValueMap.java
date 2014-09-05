@@ -74,7 +74,6 @@ public class XValueMap extends AbstractMap<String,XValue> implements IXValueMap<
 	{
 	  assert( key != null );
 	  assert( value != null );
-	  System.out.println("put("  + key +  ","  + value.toString() );
 		return  mMap.put(key, value);
 
 	}
@@ -143,6 +142,7 @@ public class XValueMap extends AbstractMap<String,XValue> implements IXValueMap<
 		return mMap.entrySet();
 	}
 
+	// Adds an XValue if it can turn it into a property or property set
 	public boolean add(XValue arg)
 	{
 		
@@ -153,11 +153,12 @@ public class XValueMap extends AbstractMap<String,XValue> implements IXValueMap<
 	        add( ((XValueProperty) arg.asObject()) );
 
 	    else 
-	    try {
-			put( XTypeUtils.newNamedValue( arg ) );
-		} catch (InvalidArgumentException e) {
-			Util.wrapException(e,IllegalArgumentException.class);
-		}
+	      // Maybe too much hack 
+    	    try {
+    			  put( XTypeUtils.newNamedValue( arg ) );
+    		} catch (InvalidArgumentException e) {
+    			Util.wrapException(e,IllegalArgumentException.class);
+    		}
 		return true ;
 	}
 
@@ -190,8 +191,6 @@ public class XValueMap extends AbstractMap<String,XValue> implements IXValueMap<
 
     @Override
     public XValue append(XValue item) {
-        
-        
         XValueMap newMap = new XValueMap(this);
         newMap.add(item);
         return XValue.newXValue(newMap);
@@ -255,6 +254,12 @@ public class XValueMap extends AbstractMap<String,XValue> implements IXValueMap<
     {
       // TODO Auto-generated method stub
       return null;
+    }
+
+    public void put(java.util.Map.Entry<String, XValue> e)
+    {
+      put( e.getKey() , e.getValue() );
+      
     }
 
 }

@@ -8,6 +8,7 @@ package org.xmlsh.sh.shell;
 
 import org.xmlsh.core.ICommand;
 import org.xmlsh.core.IFunction;
+import org.xmlsh.core.IFunctionDecl;
 
 import java.net.URL;
 
@@ -20,7 +21,7 @@ public interface IModule
   public String getPrefix();
   public boolean isDefault();
   public ICommand getCommandClass(String name);
-  public IFunction getFunctionClass(String name);
+  public IFunctionDecl getFunctionClass(String name);
   public String getName();
   public boolean hasHelp(String name);
   public URL getHelpURL();

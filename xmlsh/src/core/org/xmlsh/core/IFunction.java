@@ -1,40 +1,51 @@
 /**
  * $Id: $
  * $Date: $
- *
+ * 
  */
 
 package org.xmlsh.core;
 
-import org.xmlsh.sh.core.Command;
+import org.xmlsh.sh.shell.Shell;
 
-public interface IFunction {
-	String	getName();
-	Command	getBody();
-	EvalEnv argumentEnv( EvalEnv parent );
-	EvalEnv returnEnv( EvalEnv parent );
+import java.util.List;
+
+public interface IFunction
+{
+
+  public XValue run(Shell shell, List<XValue> args) throws Exception;
+
+  /* (non-Javadoc)
+   * @see org.xmlsh.core.IFunction#argumentEnv(org.xmlsh.core.EvalEnv)
+   */
+  public EvalEnv argumentEnv(EvalEnv parent);
+
+  /* (non-Javadoc)
+   * @see org.xmlsh.core.IFunction#returnEnv(org.xmlsh.core.EvalEnv)
+   */
+  public EvalEnv returnEnv(EvalEnv parent);
+
+  public String getName();
 
 }
 
+/*
+ * Copyright (C) 2008-2012 David A. Lee.
+ * 
+ * The contents of this file are subject to the "Simplified BSD License" (the "License");
+ * you may not use this file except in compliance with the License. You may obtain a copy of the
+ * License at http://www.opensource.org/licenses/bsd-license.php 
 
-
-//
-//
-//Copyright (C) 2008-2014 David A. Lee.
-//
-//The contents of this file are subject to the "Simplified BSD License" (the "License");
-//you may not use this file except in compliance with the License. You may obtain a copy of the
-//License at http://www.opensource.org/licenses/bsd-license.php 
-//
-//Software distributed under the License is distributed on an "AS IS" basis,
-//WITHOUT WARRANTY OF ANY KIND, either express or implied.
-//See the License for the specific language governing rights and limitations under the License.
-//
-//The Original Code is: all this file.
-//
-//The Initial Developer of the Original Code is David A. Lee
-//
-//Portions created by (your name) are Copyright (C) (your legal entity). All Rights Reserved.
-//
-//Contributor(s): none.
-//
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * See the License for the specific language governing rights and limitations under the License.
+ *
+ * The Original Code is: all this file.
+ *
+ * The Initial Developer of the Original Code is David A. Lee
+ *
+ * Portions created by (your name) are Copyright (C) (your legal entity). All Rights Reserved.
+ *
+ * Contributor(s): David A. Lee
+ * 
+ */

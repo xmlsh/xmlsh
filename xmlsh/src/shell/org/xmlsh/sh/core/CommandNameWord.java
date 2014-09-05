@@ -37,11 +37,11 @@ import javax.xml.transform.stream.StreamSource;
  * or a subprocess expression 
  * 
  */
-public class CommandWord extends Word {
+public class CommandNameWord extends Word {
 	String		mType;	// $( $(< $<( $<(<  `
-	Command		mCommand;
+	CommandExpr		mCommand;
 
-	public CommandWord( Token ttype , Command c){
+	public CommandNameWord( Token ttype , CommandExpr c){
 		super(ttype);
 		mType = ttype.toString();
 		mCommand =  c;
@@ -56,7 +56,7 @@ public class CommandWord extends Word {
 	}
 
 
-	private String expandSubproc(Shell parentShell , Command c ) throws CoreException, IOException
+	private String expandSubproc(Shell parentShell , CommandExpr c ) throws CoreException, IOException
 	{
 
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -108,7 +108,7 @@ public class CommandWord extends Word {
 
 
 
-	private XValue parseXCmd(Shell parentShell , Command cmd) throws IOException, CoreException
+	private XValue parseXCmd(Shell parentShell , CommandExpr cmd) throws IOException, CoreException
 	{
 
 

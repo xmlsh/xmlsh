@@ -10,10 +10,11 @@ import org.xmlsh.core.CoreException;
 import org.xmlsh.core.EvalEnv;
 import org.xmlsh.core.EvalFlag;
 import org.xmlsh.core.ICommand;
-import org.xmlsh.core.IFunction;
+import org.xmlsh.core.IFunctionDecl;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
-import org.xmlsh.sh.core.Command;
+import org.xmlsh.sh.core.CommandExpr;
+import org.xmlsh.sh.core.ICommandExpr;
 import org.xmlsh.types.TypeFamily;
 import org.xmlsh.util.JavaUtils;
 import org.xmlsh.util.Util;
@@ -30,7 +31,7 @@ import java.util.List;
 public class JavaModule extends Module
 {
 
-  static class JavaModuleFunctionCommand extends Command
+  static class JavaModuleFunctionCommand extends CommandExpr
   {
     private IModule mModule;
     private String mFunc;
@@ -126,11 +127,11 @@ public class JavaModule extends Module
   }
 
   @Override
-  public IFunction getFunctionClass(final String name)
+  public IFunctionDecl getFunctionClass(final String name)
   {
 
     final IModule thisModule = this;
-    return new IFunction()
+    return new IFunctionDecl()
       {
 
         @Override
@@ -140,7 +141,7 @@ public class JavaModule extends Module
         }
 
         @Override
-        public Command getBody()
+        public ICommandExpr getBody()
         {
           return new JavaModuleFunctionCommand(thisModule, name, mJavaClass, mClassLoader);
 

@@ -8,8 +8,8 @@ package org.xmlsh.sh.shell;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import org.xmlsh.sh.core.Command;
+import org.xmlsh.sh.core.CommandExpr;
+import org.xmlsh.sh.core.ICommandExpr;
 import org.xmlsh.util.Util;
 import org.xmlsh.xpath.ShellContext;
 
@@ -23,10 +23,10 @@ public class ShellThread extends Thread implements Closeable {
 	private static Logger mLogger = LogManager.getLogger( ShellThread.class);
 
 	private volatile Shell 	mShell ;
-	private Command 	mCommand;
+	private ICommandExpr 	mCommand;
 	private	 File		mIniitalCD;
 
-	public ShellThread(ThreadGroup threadGroup, Shell shell ,  String name ,Command cmd ) {
+	public ShellThread(ThreadGroup threadGroup, Shell shell ,  String name ,ICommandExpr cmd ) {
 		super(threadGroup == null ? shell.getThreadGroup() : threadGroup , simpleName(name,cmd ) );
 		mShell = shell;
 		mCommand = cmd;
@@ -35,7 +35,7 @@ public class ShellThread extends Thread implements Closeable {
 	}
 
 
-	private static String simpleName(String name, Command cmd)
+	private static String simpleName(String name, ICommandExpr cmd)
 	{
 		if(  Util.isBlank(name))
 			name =cmd.getName();
@@ -85,7 +85,7 @@ public class ShellThread extends Thread implements Closeable {
 
 	}
 
-	public Command getCommand(){
+	public ICommandExpr getCommand(){
 		return mCommand ;
 	}
 

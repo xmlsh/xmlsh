@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
-public class ScriptFunctionCommand extends BuiltinFunctionCommand {
+public class ScriptFunctionCommand extends AbstractBuiltinFunction {
 
 
 	private InputStream mScript;

@@ -6,11 +6,11 @@
 
 package org.xmlsh.sh.shell;
 
-import org.xmlsh.sh.core.FunctionDeclaration;
+import org.xmlsh.core.IFunctionDecl;
 import org.xmlsh.util.NameValueMap;
 
 @SuppressWarnings("serial")
-class FunctionDefinitions extends NameValueMap<FunctionDeclaration>
+class FunctionDefinitions extends NameValueMap<IFunctionDecl>
 {
 
 	FunctionDefinitions() {}

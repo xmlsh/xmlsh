@@ -11,7 +11,7 @@ import org.xmlsh.sh.shell.Shell;
 
 public class AndOr extends BinaryOpCommand {
 
-	public AndOr(Command left, String op, Command right) {
+	public AndOr(CommandExpr left, String op, CommandExpr right) {
 		super(left, op, right);
 
 	}

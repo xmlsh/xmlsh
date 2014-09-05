@@ -1,6 +1,6 @@
 package org.xmlsh.internal.functions;
 
-import org.xmlsh.core.BuiltinFunctionCommand;
+import org.xmlsh.core.AbstractBuiltinFunction;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.XValueList;
 import org.xmlsh.sh.shell.Shell;
@@ -8,7 +8,7 @@ import org.xmlsh.types.TypeFamily;
 
 import java.util.List;
 
-public class list extends BuiltinFunctionCommand
+public class list extends AbstractBuiltinFunction
 {
 
 	public list() {

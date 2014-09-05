@@ -7,7 +7,7 @@
 package org.xmlsh.json.functions;
 
 import net.sf.saxon.trans.XPathException;
-import org.xmlsh.core.BuiltinFunctionCommand;
+import org.xmlsh.core.AbstractBuiltinFunction;
 import org.xmlsh.core.XValue;
 import org.xmlsh.json.JSONUtils;
 import org.xmlsh.sh.shell.Shell;
@@ -15,7 +15,7 @@ import org.xmlsh.types.TypeFamily;
 
 import java.util.List;
 
-public class _null extends BuiltinFunctionCommand {
+public class _null extends AbstractBuiltinFunction {
 
 	public _null()
 	{

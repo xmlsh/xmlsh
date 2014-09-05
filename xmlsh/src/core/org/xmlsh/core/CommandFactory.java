@@ -7,7 +7,6 @@
 package org.xmlsh.core;
 
 import org.apache.logging.log4j.Logger;
-
 import org.xmlsh.builtin.commands.colon;
 import org.xmlsh.builtin.commands.declare;
 import org.xmlsh.builtin.commands.echo;
@@ -42,13 +41,12 @@ import org.xmlsh.builtin.commands.xversion;
 import org.xmlsh.builtin.commands.xwhich;
 import org.xmlsh.java.commands.jset;
 import org.xmlsh.json.commands.jsonread;
-import org.xmlsh.properties.commands.propread;
-import org.xmlsh.sh.core.FunctionDeclaration;
 import org.xmlsh.sh.core.SourceLocation;
 import org.xmlsh.sh.shell.IModule;
 import org.xmlsh.sh.shell.Modules;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.sh.shell.ShellConstants;
+import org.xmlsh.text.commands.readconfig;
 import org.xmlsh.util.StringPair;
 import org.xmlsh.util.Util;
 
@@ -111,7 +109,7 @@ public class CommandFactory
 		addBuiltinCommand("xmkpipe" , xmkpipe.class);
 		addBuiltinCommand("printvar" , printvar.class);
 		addBuiltinCommand("jsonread" , jsonread.class);
-    addBuiltinCommand("propread" , propread.class);
+    addBuiltinCommand("propread" , readconfig.class);
 		addBuiltinCommand("trap" , trap.class);
 
 
@@ -160,7 +158,7 @@ public class CommandFactory
 
 	private ICommand getFunction(Shell shell, String name,  SourceLocation loc) {
 
-		FunctionDeclaration func = shell.getFunction( name );
+		IFunctionDecl func = shell.getFunction( name );
 		if( func != null )
 			return new FunctionCommand( func.getName() , func.getBody()  , loc );
 		return null;
@@ -371,7 +369,7 @@ public class CommandFactory
 			return null ;
 	}
 
-	public IFunction getBuiltinFunction(Shell shell, String name,SourceLocation loc) {
+	public IFunctionDecl getBuiltinFunction(Shell shell, String name,SourceLocation loc) {
 
 		StringPair 	pair = new StringPair(name,':');
 
@@ -390,7 +388,7 @@ public class CommandFactory
 
 							if( m != null ){
 
-								IFunction cls = m.getFunctionClass( pair.getRight() );
+								IFunctionDecl cls = m.getFunctionClass( pair.getRight() );
 								if( cls != null ){
 									// cls.setLocation( loc );
 
@@ -407,7 +405,7 @@ public class CommandFactory
 		for( IModule m : modules ){
 			if( m.isDefault() ){
 
-				IFunction cls = m.getFunctionClass( name);
+				IFunctionDecl cls = m.getFunctionClass( name);
 				if( cls != null ){
 					// cls.setLocation(loc);
 					return cls ;

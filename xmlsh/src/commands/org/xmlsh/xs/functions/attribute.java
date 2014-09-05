@@ -7,7 +7,7 @@
 package org.xmlsh.xs.functions;
 
 import net.sf.saxon.s9api.QName;
-import org.xmlsh.core.BuiltinFunctionCommand;
+import org.xmlsh.core.AbstractBuiltinFunction;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
@@ -15,7 +15,7 @@ import org.xmlsh.util.S9Util;
 
 import java.util.List;
 
-public class attribute extends BuiltinFunctionCommand {
+public class attribute extends AbstractBuiltinFunction {
 
 	public attribute()
 	{

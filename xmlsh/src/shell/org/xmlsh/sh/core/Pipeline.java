@@ -15,9 +15,9 @@ import org.xmlsh.util.PipedXDMPort;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 
-public class Pipeline extends Command {
+public class Pipeline extends CommandExpr {
 
-	private		ArrayList<Command>	mList = new ArrayList<Command>();
+	private		ArrayList<CommandExpr>	mList = new ArrayList<CommandExpr>();
 	@Override
 	public	boolean		isSimple() { return false ; }
 
@@ -41,7 +41,7 @@ public class Pipeline extends Command {
 	 * @return
 	 * @see java.util.ArrayList#add(java.lang.Object)
 	 */
-	public boolean add(Command e) {
+	public boolean add(CommandExpr e) {
 		if( getLocation() == null )
 			setLocation(e);
 		return mList.add(e);
@@ -56,7 +56,7 @@ public class Pipeline extends Command {
 			out.print("! ");
 
 		int n = mList.size();
-		for (Command c : mList) {
+		for (ICommandExpr c : mList) {
 			c.print(out, bExec);
 			if( n-- > 1 )
 				out.print("|");
@@ -97,7 +97,7 @@ public class Pipeline extends Command {
 		 */
 		for(int pi=0 ; pi < ncmds-1 ; pi++ ){
 			Shell sh = shell.clone();	// clone shell for execution
-			Command c = mList.get(pi);
+			CommandExpr c = mList.get(pi);
 
 			if( pi > 0 )
 				// Set input to pipe for all but the first
@@ -123,7 +123,7 @@ public class Pipeline extends Command {
 			if( ncmds > 1 )
 				shell.getEnv().setStdin(pipes[ncmds-2].getInput());
 
-			Command c = mList.get(ncmds-1);
+			CommandExpr c = mList.get(ncmds-1);
 
 			// Protect ! commands as a condition
 			int ret = 

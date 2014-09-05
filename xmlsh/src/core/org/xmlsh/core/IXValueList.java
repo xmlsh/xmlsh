@@ -6,9 +6,12 @@
 
 package org.xmlsh.core;
 
+import java.util.List;
+
 public interface IXValueList<T extends IXValueList<T > > extends IXValueContainer<T>
 {
 
+  public List<XValue> asList();
   public XValue setAt(int index, XValue value);
   public XValue get(int index);
   public XValue getAt(int index);

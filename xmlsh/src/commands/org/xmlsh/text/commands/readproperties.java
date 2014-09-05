@@ -4,14 +4,14 @@
  * 
  */
 
-package org.xmlsh.properties.commands;
+package org.xmlsh.text.commands;
 
 import java.io.InputStream;
 import java.util.List;
 import java.util.Properties;
 
 import org.xmlsh.core.BuiltinCommand;
-import org.xmlsh.core.BuiltinFunctionCommand;
+import org.xmlsh.core.AbstractBuiltinFunction;
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
@@ -23,7 +23,7 @@ import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.types.TypeFamily;
 
 import static org.xmlsh.core.XVariable.XVarFlag.*;
-public class propread extends BuiltinCommand
+public class readproperties extends BuiltinCommand
 {
   @Override
   public int run(List<XValue> args) throws Exception

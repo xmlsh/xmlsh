@@ -13,14 +13,14 @@ import org.xmlsh.sh.shell.Shell;
 
 import java.io.PrintWriter;
 
-public class TryCatchFinally extends CompoundCommand 
+public class TryCatchFinally extends CompoundCommandExpr 
 {
-	private 	Command		mTryPart;
+	private 	CommandExpr		mTryPart;
 	private		String		mCatchVar;
-	private 	Command 	mCatchPart;
-	private 	Command 	mFinallyPart;
+	private 	CommandExpr 	mCatchPart;
+	private 	CommandExpr 	mFinallyPart;
 
-	public TryCatchFinally(Command tryPart, String catchVar , Command catchPart, Command finallyPart ) {
+	public TryCatchFinally(CommandExpr tryPart, String catchVar , CommandExpr catchPart, CommandExpr finallyPart ) {
 		super();
 		mTryPart 		= 	tryPart;
 		mCatchVar		= 	catchVar;

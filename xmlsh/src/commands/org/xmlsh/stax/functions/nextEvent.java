@@ -7,7 +7,7 @@
 package org.xmlsh.stax.functions;
 
 import net.sf.saxon.trans.XPathException;
-import org.xmlsh.core.BuiltinFunctionCommand;
+import org.xmlsh.core.AbstractBuiltinFunction;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
@@ -21,7 +21,7 @@ import javax.xml.stream.XMLStreamException;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-public class nextEvent extends BuiltinFunctionCommand {
+public class nextEvent extends AbstractBuiltinFunction {
 
 
 

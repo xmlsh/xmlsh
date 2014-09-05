@@ -283,7 +283,11 @@ public class XValuePropertyList  implements     IXValueMap<XValuePropertyList>, 
 
       return _emptyList ;
     }
-
+    @Override
+    public List<XValue> asList()
+    {
+      return Util.toList(iterator());
+    }
 }
 
 

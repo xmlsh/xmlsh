@@ -6,7 +6,7 @@
 
 package org.xmlsh.json.functions;
 
-import org.xmlsh.core.BuiltinFunctionCommand;
+import org.xmlsh.core.AbstractBuiltinFunction;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
@@ -18,7 +18,7 @@ import java.util.List;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.nebhale.jsonpath.JsonPath;
 
-public class path extends BuiltinFunctionCommand {
+public class path extends AbstractBuiltinFunction {
 
 	public path()
 	{

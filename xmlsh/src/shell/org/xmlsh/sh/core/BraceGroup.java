@@ -10,10 +10,10 @@ import org.xmlsh.sh.shell.Shell;
 
 import java.io.PrintWriter;
 
-public class BraceGroup extends CompoundCommand {
-	private Command		mCommand;
+public class BraceGroup extends CompoundCommandExpr {
+	private CommandExpr		mCommand;
 
-	public BraceGroup(Command command) {
+	public BraceGroup(CommandExpr command) {
 		super(command.getName());
 		mCommand = command;
 		setLocation( command );

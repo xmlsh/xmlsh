@@ -16,10 +16,10 @@ import java.io.PrintWriter;
 
 public class CaseItem {
 	private		StringList		mPattern;
-	private		Command			mCommand;
+	private		CommandExpr			mCommand;
 	private		SourceLocation  mLocation ;
 	private static final EvalEnv mEnv = EvalEnv.basicInstance();
-	public CaseItem(StringList pattern, Command command, SourceLocation location ) {
+	public CaseItem(StringList pattern, CommandExpr command, SourceLocation location ) {
 
 		mPattern = pattern;
 		mCommand = command;

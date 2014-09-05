@@ -13,16 +13,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class CommandList extends Command
+public class CommandExprList extends CommandExpr
 {
-	private List<Command>  mList = new ArrayList<>();
+	private List<CommandExpr>  mList = new ArrayList<>();
 
-	public CommandList( Command cmd ) {
+	public CommandExprList( CommandExpr cmd ) {
 		add( cmd );
 	}
 
 
-	public void add( Command cmd ) {
+	public void add( CommandExpr cmd ) {
 		mList.add(cmd);
 	}
 
@@ -31,7 +31,7 @@ public class CommandList extends Command
 	@Override
 	public int exec(Shell shell) throws Exception {
 		int ret = 0;
-		for( Command c : mList ) {
+		for( CommandExpr c : mList ) {
 			if( ! shell.keepRunning() )
 				return ret ;
 			ret = shell.exec(c, getLocation() );
@@ -44,7 +44,7 @@ public class CommandList extends Command
 	@Override
 	public void print(PrintWriter out, boolean bExec)
 	{
-		for( Command c : mList )
+		for( ICommandExpr c : mList )
 			c.print( out ,  bExec );
 	}
 

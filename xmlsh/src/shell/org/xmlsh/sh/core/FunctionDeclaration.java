@@ -7,18 +7,18 @@
 package org.xmlsh.sh.core;
 
 import org.xmlsh.core.EvalEnv;
-import org.xmlsh.core.IFunction;
+import org.xmlsh.core.IFunctionDecl;
 import org.xmlsh.sh.shell.Shell;
 
 import java.io.PrintWriter;
 
-public class FunctionDeclaration extends Command implements IFunction {
-	private Command mBody;
+public class FunctionDeclaration extends CommandExpr implements IFunctionDecl {
+	private ICommandExpr mBody;
 
 	@Override
 	public	boolean		isSimple() { return false ; }
 
-	public FunctionDeclaration( String name , Command body )
+	public FunctionDeclaration( String name , ICommandExpr body )
 	{
 		super(name);
 		mBody = body;
@@ -29,7 +29,7 @@ public class FunctionDeclaration extends Command implements IFunction {
 	 * @return the body
 	 */
 	@Override
-	public Command getBody() {
+	public ICommandExpr getBody() {
 		return mBody;
 	}
 

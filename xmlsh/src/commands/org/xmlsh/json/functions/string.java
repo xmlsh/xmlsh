@@ -6,7 +6,7 @@
 
 package org.xmlsh.json.functions;
 
-import org.xmlsh.core.BuiltinFunctionCommand;
+import org.xmlsh.core.AbstractBuiltinFunction;
 import org.xmlsh.core.XValue;
 import org.xmlsh.json.JSONUtils;
 import org.xmlsh.sh.shell.Shell;
@@ -16,7 +16,7 @@ import org.xmlsh.util.Util;
 
 import java.util.List;
 
-public class string extends BuiltinFunctionCommand {
+public class string extends AbstractBuiltinFunction {
 
 	public string()
 	{

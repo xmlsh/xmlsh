@@ -10,7 +10,7 @@ import org.xmlsh.core.BuiltinCommand;
 import org.xmlsh.core.CommandFactory;
 import org.xmlsh.core.FunctionCommand;
 import org.xmlsh.core.ICommand;
-import org.xmlsh.core.IFunction;
+import org.xmlsh.core.IFunctionDecl;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.ScriptCommand;
@@ -79,7 +79,7 @@ public class xwhich extends BuiltinCommand {
 
 			// Try builtin functions 
 			if( command == null ) {
-				IFunction func = CommandFactory.getInstance().getBuiltinFunction(mShell, name,  getLocation() );
+				IFunctionDecl func = CommandFactory.getInstance().getBuiltinFunction(mShell, name,  getLocation() );
 				if( func != null ) {
 					if( ! bNoWrite ){
 

@@ -697,10 +697,14 @@ public class XValue implements Iterable<XValue>
 
   public boolean isInstanceOf(Class<?> cls)
   {
-
     return mValue != null && cls.isAssignableFrom(mValue.getClass());
   }
-
+   
+  public <T> T asInstanceOf( Class<T> cls ){
+    return  cls.cast( mValue ); 
+  }
+  
+  
   public boolean isJson()
   {
     if(mTypeFamily == TypeFamily.JSON)

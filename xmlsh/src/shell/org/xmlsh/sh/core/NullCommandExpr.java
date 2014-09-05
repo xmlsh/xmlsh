@@ -6,43 +6,30 @@
 
 package org.xmlsh.sh.core;
 
-import org.xmlsh.core.CoreException;
 import org.xmlsh.sh.shell.Shell;
 
-import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.List;
 
-public class CommandPrefix {
-	private List<Assign>	mList = new ArrayList<Assign>();
+public class NullCommandExpr extends CommandExpr {
 
-	public void add( Assign a )
-	{
-		mList.add(a);
-	}
-	public void add( String var , Word value )
-	{
-		mList.add( new Assign( false  , null , var , "=" ,  value ));
+	@Override
+	public	boolean		isSimple() { return false ; }
+
+	@Override
+	public void print(PrintWriter out, boolean bExec) {
+
+
 	}
 
 
-	public void print(PrintWriter out) {
-		for (Assign ass : mList) {
-			ass.print(out);
-		}
+	// Inefficient placeholder for a "command" that isnt a command, its a NL or EOF
 
-	}
-
-	public void  exec(Shell shell, SourceLocation loc) throws IOException, CoreException {
-		for (Assign ass : mList) 
-			ass.eval( shell, loc );
-
+	@Override
+	public int exec(Shell shell) throws Exception {
+		return shell.getStatus(); // preserve last exit status
 	}
 
 }
-
-
 //
 //
 //Copyright (C) 2008-2014    David A. Lee.

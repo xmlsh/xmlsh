@@ -1,44 +1,26 @@
 /**
- * $Id$
- * $Date$
+ * $Id: $
+ * $Date: $
  *
  */
 
-package org.xmlsh.sh.core;
+package org.xmlsh.core;
 
-import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.sh.core.ICommandExpr;
 
-public abstract 
-class CompoundCommand extends Command {
-	protected	IORedirectList	mRedirect = null;
-	public CompoundCommand()
-	{
-		super();
-	}
-	public CompoundCommand(String name)
-	{
-		super(name);
-	}
-
-	@Override
-	public	boolean		isSimple() { return false ; }
-
-	public void setRedirect( IORedirectList redir ){
-		mRedirect = redir;
-	}
-
-	protected	void	applyRedirect( Shell shell) throws Exception
-	{
-		if( mRedirect != null )
-			mRedirect.exec(shell, getLocation());
-
-	}
+public interface IFunctionDecl {
+	String	getName();
+	ICommandExpr	getBody();
+	EvalEnv argumentEnv( EvalEnv parent );
+	EvalEnv returnEnv( EvalEnv parent );
 
 }
 
+
+
 //
 //
-//Copyright (C) 2008-2014    David A. Lee.
+//Copyright (C) 2008-2014 David A. Lee.
 //
 //The contents of this file are subject to the "Simplified BSD License" (the "License");
 //you may not use this file except in compliance with the License. You may obtain a copy of the

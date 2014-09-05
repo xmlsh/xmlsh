@@ -24,28 +24,16 @@ import java.util.Set;
  * 
  * Generic Properties 
  * A set of Name/Value pairs to any object 
- * Supports "parent" properties aka Java Properties to provide default values.
- * Supports property "trees" by allowing any value to be any XValue including a List or Propert
- * 
  * 
  * 
  */
-public class XValueProperties extends XValueMap {
-
-  private XValueProperties mDefaults = null;
-
-  /*
-   */
-  
-	public XValueProperties(XValueProperties defaults) {
-	  mDefaults = defaults;
-	}
+public class XValueProperties extends XValueMap  {
 	
 
-  protected XValueProperties( Map<?,?> map , XValueProperties defaults ) {
-    this(defaults);
-	  for( java.util.Map.Entry<?, ?> entries : map.entrySet() ) 
-	    put( XValue.newXValue(entries.getKey()).toString() ,  XValue.newXValue(entries.getValue())  );
+  protected XValueProperties( Map<?,?> map  ) {
+    for(Map.Entry<?, ?> e : map.entrySet() ) {
+      super.put( e.getKey().toString() , XValue.newInstance(e.getValue()));
+    }
 	}
 	
 	
@@ -55,10 +43,10 @@ public class XValueProperties extends XValueMap {
 	}
 
   public static XValueProperties fromMap( Map<?,?> map ) {
-    return new XValueProperties( map , null );
+    return new XValueProperties( map  );
   };
   public static XValueProperties fromJavaProperties( Properties props ) {
-    return new XValueProperties( (Map<?,?>) props , null   );
+    return new XValueProperties( (Map<?,?>) props  );
   };
   
   @Override
@@ -68,45 +56,7 @@ public class XValueProperties extends XValueMap {
   }
 
 
-  /* (non-Javadoc)
-   * @see org.xmlsh.core.XValueMap#removeAll()
-   */
-  @Override
-  public void removeAll()
-  {
-    super.removeAll();
-    mDefaults = null;
-  }
 
-
-  /* (non-Javadoc)
-   * @see org.xmlsh.core.XValueMap#keySet()
-   */
-  @Override
-  public Set<String> keySet()
-  {
-    if( mDefaults == null )
-      return super.keySet();
-    
-    HashSet<String> keys = new HashSet<>(super.keySet());
-    keys.addAll( mDefaults.keySet() );
-    return keys;
-  }
-
-
-  /* (non-Javadoc)
-   * @see org.xmlsh.core.XValueMap#get(java.lang.String)
-   */
-  @Override
-  public XValue get(String name)
-  {
-    XValue v = super.get(name);
-    if( v == null && mDefaults != null )
-      v = mDefaults.get(name);
-    return v;
-  }
-  
-  
   /*
    * Expand properties to set of nested properties based on a delimiter
    */
@@ -190,8 +140,44 @@ public class XValueProperties extends XValueMap {
     return topKeys;
   }
   
-
-  
+  /*
+   * Merge these properties with that, recursively
+   * return a merged set where any property in that overwrites the property in this
+   *  
+   */
+  public XValueProperties merge( XValueProperties that) 
+  {
+    if( isEmpty() )
+      return that ;
+    
+    // Copy this to merged 
+    XValueProperties merged = new XValueProperties(this);
+    
+    Set<java.util.Map.Entry<String, XValue>> entries =  that.entrySet();
+    for( java.util.Map.Entry<String, XValue> e : entries ) {
+      XValue thatx = e.getValue();
+      // Nothing in this - put it in 
+      String key = e.getKey();
+      if( ! merged.containsKey( key) )
+        merged.put( e );
+      else {
+         
+        XValue thisx = get( key );
+        assert(thisx !=null );
+        
+        // Both are nested properties, merge 
+        if( thisx.isInstanceOf( XValueProperties.class ) &&
+            thatx.isInstanceOf( XValueProperties.class )   ) {
+          
+             XValueProperties thatp = thatx.asInstanceOf( XValueProperties.class );
+             XValueProperties thisp = thisx.asInstanceOf( XValueProperties.class );
+             merged.put( key , thisp.merge(  thatp ));
+        } else
+          merged.put( key , thatx );
+      }
+    }
+    return merged ;
+  }
   
 }
 /*

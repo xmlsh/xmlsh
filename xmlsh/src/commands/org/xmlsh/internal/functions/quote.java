@@ -6,13 +6,13 @@
 
 package org.xmlsh.internal.functions;
 
-import org.xmlsh.core.BuiltinFunctionCommand;
+import org.xmlsh.core.AbstractBuiltinFunction;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
 
 import java.util.List;
 
-public class quote extends BuiltinFunctionCommand {
+public class quote extends AbstractBuiltinFunction {
 
 	public quote() {
 		super("quote");

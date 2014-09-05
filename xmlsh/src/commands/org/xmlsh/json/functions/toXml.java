@@ -9,7 +9,7 @@ package org.xmlsh.json.functions;
 import net.sf.saxon.s9api.BuildingStreamWriter;
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.SaxonApiException;
-import org.xmlsh.core.BuiltinFunctionCommand;
+import org.xmlsh.core.AbstractBuiltinFunction;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.SafeXMLStreamWriter;
 import org.xmlsh.core.XValue;
@@ -25,7 +25,7 @@ import javax.xml.stream.XMLStreamWriter;
 
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
-public class toXml	extends BuiltinFunctionCommand {
+public class toXml	extends AbstractBuiltinFunction {
 
 
 	public toXml()

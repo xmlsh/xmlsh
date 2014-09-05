@@ -28,12 +28,12 @@ import java.io.PrintWriter;
  * CommandFileWord is a SubProc syntax that comes from a file 
  * $(<file)  or $<(<file) 
  */
-public class CommandFileWord extends Word {
+public class FileWordExpr extends Word {
 	private 	String		mType;	// String value
 	private		Word		mFile;
 	private static final EvalEnv mEnv = EvalEnv.fileInstance();
 
-	public CommandFileWord( Token t,  Word file ){
+	public FileWordExpr( Token t,  Word file ){
 		super(t);
 		mType = t.toString();
 		mFile = file;

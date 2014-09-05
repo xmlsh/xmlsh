@@ -10,9 +10,9 @@ import org.xmlsh.sh.shell.Shell;
 
 import java.io.PrintWriter;
 
-public class SubShell extends CompoundCommand {
-	private Command		mCommand;
-	public SubShell( Command c )
+public class SubShell extends CompoundCommandExpr {
+	private CommandExpr		mCommand;
+	public SubShell( CommandExpr c )
 	{
 		mCommand = c;
 		setLocation(c);

@@ -6,7 +6,7 @@
 
 package org.xmlsh.java.functions;
 
-import org.xmlsh.core.BuiltinFunctionCommand;
+import org.xmlsh.core.AbstractBuiltinFunction;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.types.TypeFamily;
@@ -14,7 +14,7 @@ import org.xmlsh.util.JavaUtils;
 
 import java.util.List;
 
-public class jclass extends BuiltinFunctionCommand {
+public class jclass extends AbstractBuiltinFunction {
 
 	public jclass() {
 		super("jclass");

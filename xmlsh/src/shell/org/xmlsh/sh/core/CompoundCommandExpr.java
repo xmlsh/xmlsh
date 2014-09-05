@@ -8,28 +8,34 @@ package org.xmlsh.sh.core;
 
 import org.xmlsh.sh.shell.Shell;
 
-import java.io.PrintWriter;
-
-public class NullCommand extends Command {
+public abstract 
+class CompoundCommandExpr extends CommandExpr {
+	protected	IORedirectList	mRedirect = null;
+	public CompoundCommandExpr()
+	{
+		super();
+	}
+	public CompoundCommandExpr(String name)
+	{
+		super(name);
+	}
 
 	@Override
 	public	boolean		isSimple() { return false ; }
 
-	@Override
-	public void print(PrintWriter out, boolean bExec) {
-
-
+	public void setRedirect( IORedirectList redir ){
+		mRedirect = redir;
 	}
 
+	protected	void	applyRedirect( Shell shell) throws Exception
+	{
+		if( mRedirect != null )
+			mRedirect.exec(shell, getLocation());
 
-	// Inefficient placeholder for a "command" that isnt a command, its a NL or EOF
-
-	@Override
-	public int exec(Shell shell) throws Exception {
-		return shell.getStatus(); // preserve last exit status
 	}
 
 }
+
 //
 //
 //Copyright (C) 2008-2014    David A. Lee.

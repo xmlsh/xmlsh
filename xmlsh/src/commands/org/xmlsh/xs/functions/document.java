@@ -6,7 +6,7 @@
 
 package org.xmlsh.xs.functions;
 
-import org.xmlsh.core.BuiltinFunctionCommand;
+import org.xmlsh.core.AbstractBuiltinFunction;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
@@ -15,7 +15,7 @@ import org.xmlsh.util.S9Util;
 
 import java.util.List;
 
-public class document extends BuiltinFunctionCommand {
+public class document extends AbstractBuiltinFunction {
 
 
 

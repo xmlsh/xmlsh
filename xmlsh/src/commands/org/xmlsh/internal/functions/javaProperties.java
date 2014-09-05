@@ -4,13 +4,14 @@
  *
  */
 
-package org.xmlsh.properties.functions;
+package org.xmlsh.internal.functions;
 
 import java.io.InputStream;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
-import org.xmlsh.core.BuiltinFunctionCommand;
+import org.xmlsh.core.AbstractBuiltinFunction;
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.XValue;
@@ -18,56 +19,46 @@ import org.xmlsh.core.XValueProperties;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.types.TypeFamily;
+import org.xmlsh.util.JavaUtils;
 
-public class fromFile extends BuiltinFunctionCommand
+public class javaProperties extends AbstractBuiltinFunction
 {
 
 
   private SerializeOpts sopts;
 
-  public fromFile()
+  public javaProperties()
   {
-    super("from-file");
+    super("properties");
   }
 
   @Override
   public XValue run(Shell shell, List<XValue> args) throws Exception
   {
-    Options opts = new Options( "format:" , SerializeOpts.getOptionDefs()  );
-    opts.parse(args);
-    sopts = shell.getSerializeOpts(opts);
-    String format = opts.getOptString("format", "text");
-    if( args.size() != 1 ) {
-      usage( shell, "[-format text|xml|json] file");
-      return null;
-    }
+    XValueProperties props = null ;
+    for( XValue arg : args ) {
+      if( props == null ) {
+        if( arg.isInstanceOf( XValueProperties.class ) )
+          props = arg.asInstanceOf(XValueProperties.class);
+        else
+        if( arg.isInstanceOf( Map.class ) )
+          props = XValueProperties.fromMap( arg.asInstanceOf(Map.class));
+        else
+          props = (XValueProperties) JavaUtils.convert(arg, XValueProperties.class );
+      }
+      else {
+        if( arg.isInstanceOf( XValueProperties.class ) )
+          props = props.merge(arg.asInstanceOf(XValueProperties.class) );
+        else
+          if( arg.isInstanceOf( Map.class ) )
+            props = props.merge( XValueProperties.fromMap( arg.asInstanceOf(Map.class)));
+        
+        
+      }
+    } 
+      return props == null ? new XValueProperties().asXValue() : props.asXValue();
     
-    InputPort in = shell.getEnv().getInput(args.get(0));
-    Properties props = new Properties();
-
-    
-    switch( format ) {
-    case "text":
-      try ( InputStream is = in.asInputStream(sopts) )
-      {
-        props.load(is );
-      } ;
-      break;
-    case "xml" :
-      try ( InputStream is = in.asInputStream(sopts) )
-      {
-        props.loadFromXML(is );
-      } ;
-      break;
-    case "json" :
-      loadFromJSON( props , in );
-      break ;
-    default : 
-      usage( shell, "Unknown format: " + format );
-    }
-    
-    return XValueProperties.fromMap( props ).asXValue();
-  }
+   }
 
   private void loadFromJSON(Properties props, InputPort in)
   {

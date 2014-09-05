@@ -4,21 +4,21 @@
  *
  */
 
-package org.xmlsh.properties.functions;
+package org.xmlsh.internal.functions;
 
 import java.util.List;
 
 import org.xmlsh.core.IXValueMap;
-import org.xmlsh.core.BuiltinFunctionCommand;
+import org.xmlsh.core.AbstractBuiltinFunction;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.XValueSequence;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.Util;
 
-public class keys extends BuiltinFunctionCommand
+public class propertyKeys extends AbstractBuiltinFunction
 {
 
-  public keys()
+  public propertyKeys()
   {
     super("keys");
     // TODO Auto-generated constructor stub

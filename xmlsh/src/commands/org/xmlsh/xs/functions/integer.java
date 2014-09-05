@@ -7,14 +7,14 @@
 package org.xmlsh.xs.functions;
 
 import net.sf.saxon.trans.XPathException;
-import org.xmlsh.core.BuiltinFunctionCommand;
+import org.xmlsh.core.AbstractBuiltinFunction;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
 
 import java.util.List;
 
-public class integer extends BuiltinFunctionCommand {
+public class integer extends AbstractBuiltinFunction {
 
 	public integer()
 	{

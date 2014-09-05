@@ -9,7 +9,7 @@ package org.xmlsh.json.functions;
 import net.sf.saxon.s9api.BuildingStreamWriter;
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.SaxonApiException;
-import org.xmlsh.core.BuiltinFunctionCommand;
+import org.xmlsh.core.AbstractBuiltinFunction;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.SafeXMLStreamWriter;
@@ -40,7 +40,7 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 
-public class fromXml	extends BuiltinFunctionCommand {
+public class fromXml	extends AbstractBuiltinFunction {
 
 
     @JacksonXmlRootElement(localName = "dynaBean", namespace = "")

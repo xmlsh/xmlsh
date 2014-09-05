@@ -6,7 +6,7 @@
 
 package org.xmlsh.stax.functions;
 
-import org.xmlsh.core.BuiltinFunctionCommand;
+import org.xmlsh.core.AbstractBuiltinFunction;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
@@ -15,7 +15,7 @@ import org.xmlsh.types.TypeFamily;
 import java.io.IOException;
 import java.util.List;
 
-public class newEventReader extends BuiltinFunctionCommand {
+public class newEventReader extends AbstractBuiltinFunction {
 
 
 

@@ -20,14 +20,14 @@ import org.xmlsh.xpath.ShellContext;
 import java.io.PrintWriter;
 import java.util.List;
 
-public class SimpleCommand extends Command {
+public class SimpleCommandExpr extends CommandExpr {
 
 
 	private static Logger mLogger = LogManager.getLogger();
 
-	private CommandPrefix  mPrefix;
+	private CommandPrefixExpr  mPrefix;
 	private Word			mCommand;
-	private CommandSuffix	mSuffix;
+	private CommandSuffixExpr	mSuffix;
 	@Override
 	public	boolean		isSimple() { return true ; }
 
@@ -36,7 +36,7 @@ public class SimpleCommand extends Command {
 	 * Construct a command out of a word args and redir
 	 * both first and words might be assignments 
 	 */
-	public SimpleCommand( Word first, WordList args , IORedirectList redir ) {
+	public SimpleCommandExpr( Word first, WordList args , IORedirectList redir ) {
 
 		WordList cmdline = new WordList();
 		cmdline.add(first);
@@ -50,7 +50,7 @@ public class SimpleCommand extends Command {
 					Assign assign = null;// parseAssign( s );
 					if( assign != null ) {
 						if( mPrefix == null )
-							mPrefix = new CommandPrefix();
+							mPrefix = new CommandPrefixExpr();
 						mPrefix.add(assign);
 						continue ;
 					}
@@ -59,7 +59,7 @@ public class SimpleCommand extends Command {
 				continue ;
 			}
 			if( mSuffix == null ) 
-				mSuffix = new CommandSuffix();
+				mSuffix = new CommandSuffixExpr();
 			mSuffix.addArg(w);
 		}
 
@@ -71,7 +71,7 @@ public class SimpleCommand extends Command {
 	}
 
 
-	public SimpleCommand(CommandPrefix prefix , Word command, CommandSuffix suffix )
+	public SimpleCommandExpr(CommandPrefixExpr prefix , Word command, CommandSuffixExpr suffix )
 	{
 
 		mPrefix = prefix;

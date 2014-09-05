@@ -10,13 +10,13 @@ import org.xmlsh.sh.shell.Shell;
 
 import java.io.PrintWriter;
 
-public class IfClause extends CompoundCommand 
+public class IfClause extends CompoundCommandExpr 
 {
-	private Command	mIfPart;
-	private Command mThenPart;
-	private Command mElsePart;
+	private CommandExpr	mIfPart;
+	private CommandExpr mThenPart;
+	private CommandExpr mElsePart;
 
-	public IfClause(Command ifPart, Command thenPart, Command elsePart) {
+	public IfClause(CommandExpr ifPart, CommandExpr thenPart, CommandExpr elsePart) {
 		super();
 		mIfPart = ifPart;
 		mThenPart = thenPart;

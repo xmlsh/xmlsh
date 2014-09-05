@@ -8,7 +8,6 @@ package org.xmlsh.util;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
 import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.XdmAtomicValue;
 import net.sf.saxon.s9api.XdmItem;
@@ -393,7 +392,7 @@ public class JavaUtils {
 
   }
 
-	public static Object convert(Object value, Class<?> targetClass) {
+	public static <T> T convert(Object value, Class<T> targetClass) {
 
 	  assert( targetClass != null );
 	  
@@ -406,35 +405,35 @@ public class JavaUtils {
     // Asking for an XdmValue class
     if(XdmValue.class.isAssignableFrom(targetClass)) {
       if( value instanceof XdmNode )
-        return (XdmValue) value ;
+        return (T) (XdmValue) value ;
       
       if( targetClass.isAssignableFrom(XdmAtomicValue.class) ) {
       
         // Try some smart conversions of all types XdmAtomicValue knows
         if(value instanceof Boolean)
-          return new XdmAtomicValue(((Boolean) value).booleanValue());
+          return (T) new XdmAtomicValue(((Boolean) value).booleanValue());
         else if(value instanceof Double)
-          return new XdmAtomicValue(((Double) value).doubleValue());
+          return (T) new XdmAtomicValue(((Double) value).doubleValue());
         else if(value instanceof Float)
-          return new XdmAtomicValue(((Float) value).floatValue());
+          return (T) new XdmAtomicValue(((Float) value).floatValue());
   
         else if(value instanceof BigDecimal)
-          return new XdmAtomicValue((BigDecimal) value);
+          return (T) new XdmAtomicValue((BigDecimal) value);
         else if(value instanceof BigDecimal)
-          return new XdmAtomicValue((BigDecimal) value);
+          return (T) new XdmAtomicValue((BigDecimal) value);
   
         else if(value instanceof URI)
-          return new XdmAtomicValue((URI) value);
+          return (T) new XdmAtomicValue((URI) value);
         else if(value instanceof Long)
-          return new XdmAtomicValue((Long) value);
+          return (T) new XdmAtomicValue((Long) value);
         else if(value instanceof QName)
-          return new XdmAtomicValue((QName) value);
+          return (T) new XdmAtomicValue((QName) value);
       
       // Still wanting an xdm value
       }
       
       if( isAtomic( value ) ) 
-         return new XdmAtomicValue(value.toString());
+         return (T) new XdmAtomicValue(value.toString());
 
     }
 
@@ -491,7 +490,7 @@ public class JavaUtils {
 										value = Byte.valueOf((byte) ((Short)value).intValue() );
 						}
 
-			return value ;
+			return (T) value ;
 		}
 		
 		// Bean constructor
@@ -499,7 +498,7 @@ public class JavaUtils {
 		Constructor<?> cnst = getBeanConstructor( targetClass , sourceClass ) ;
 		if( cnst != null )
       try {
-        return cnst.newInstance( convert( value , cnst.getParameterTypes()[0] ) );
+        return (T) cnst.newInstance( convert( value , cnst.getParameterTypes()[0] ) );
       } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 
         mLogger.debug("Exception converting argument for constructor",e);
@@ -525,7 +524,7 @@ public class JavaUtils {
 						if( targetClass == Double.class )
 							value = Double.valueOf(svalue);
 
-		return value ;
+		return (T) value ;
 
 
 	}

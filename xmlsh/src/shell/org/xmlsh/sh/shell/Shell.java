@@ -7,12 +7,9 @@
 package org.xmlsh.sh.shell;
 
 import net.sf.saxon.s9api.Processor;
-import net.sf.saxon.s9api.XdmItem;
 import org.apache.commons.io.output.StringBuilderWriter;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
 import org.xmlsh.core.CommandFactory;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.EvalEnv;
@@ -20,6 +17,7 @@ import org.xmlsh.core.ExitOnErrorException;
 import org.xmlsh.core.FileInputPort;
 import org.xmlsh.core.FileOutputPort;
 import org.xmlsh.core.ICommand;
+import org.xmlsh.core.IFunctionDecl;
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
@@ -35,9 +33,9 @@ import org.xmlsh.core.XEnvironment;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.XVariable;
 import org.xmlsh.core.XVariable.XVarFlag;
-import org.xmlsh.sh.core.Command;
+import org.xmlsh.sh.core.CommandExpr;
 import org.xmlsh.sh.core.EvalUtils;
-import org.xmlsh.sh.core.FunctionDeclaration;
+import org.xmlsh.sh.core.ICommandExpr;
 import org.xmlsh.sh.core.SourceLocation;
 import org.xmlsh.sh.grammar.ParseException;
 import org.xmlsh.sh.grammar.ShellParser;
@@ -62,7 +60,6 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Reader;
-import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Constructor;
 import java.net.MalformedURLException;
@@ -90,10 +87,10 @@ public class Shell implements AutoCloseable, Closeable
   class CallStackEntry
   {
     public String name;
-    public Command cmd;
+    public ICommandExpr cmd;
     public SourceLocation loc;
 
-    public CallStackEntry(String name, Command cmd, SourceLocation loc)
+    public CallStackEntry(String name, ICommandExpr cmd, SourceLocation loc)
     {
 
       this.name = name;
@@ -443,7 +440,7 @@ public class Shell implements AutoCloseable, Closeable
     return mSession;
   }
 
-  public Command parseEval(String scmd) throws CoreException
+  public ICommandExpr parseEval(String scmd) throws CoreException
   {
 
     InputStream save = mCommandInput;
@@ -457,7 +454,7 @@ public class Shell implements AutoCloseable, Closeable
       mCommandInput = is;
       ShellParser parser = new ShellParser(newParserReader(false), "<eval>");
 
-      Command c = parser.script();
+      ICommandExpr c = parser.script();
       return c;
 
     } catch (Exception e) {
@@ -504,7 +501,7 @@ public class Shell implements AutoCloseable, Closeable
         enterEval();
         parser = new ShellParser(newParserReader(true), source);
         while ( ! hasReturned() ) {
-          Command c = parser.command_line();
+          CommandExpr c = parser.command_line();
           if(c == null)
             break;
 
@@ -614,7 +611,7 @@ public class Shell implements AutoCloseable, Closeable
 
       while (mExitVal == null) {
 
-        Command c = null;
+        CommandExpr c = null;
         try {
           prompt(true);
           c = parser.command_line();
@@ -775,19 +772,19 @@ public class Shell implements AutoCloseable, Closeable
    * Handles background shell ("&")
    * Handles "throw on error" (-e)
    */
-  public int exec(Command c) throws ThrowException, ExitOnErrorException
+  public int exec(ICommandExpr c) throws ThrowException, ExitOnErrorException
   {
     return exec(c, getLocation(c));
   }
 
   // Default location for command
-  private SourceLocation getLocation(Command c)
+  private SourceLocation getLocation(ICommandExpr c)
   {
 
     return c.hasLocation() ? c.getLocation() : getLocation();
   }
 
-  public int exec(Command c, SourceLocation loc) throws ThrowException, ExitOnErrorException
+  public int exec(ICommandExpr c, SourceLocation loc) throws ThrowException, ExitOnErrorException
   {
 
     try {
@@ -855,7 +852,7 @@ public class Shell implements AutoCloseable, Closeable
     }
   }
 
-  public void logExec(Command c, boolean bExec , SourceLocation loc)
+  public void logExec(ICommandExpr c, boolean bExec , SourceLocation loc)
   {
     
     StringBuilderWriter sw = new StringBuilderWriter();
@@ -1413,7 +1410,7 @@ public class Shell implements AutoCloseable, Closeable
         break;
   }
 
-  public void declareFunction(FunctionDeclaration func)
+  public void declareFunction(IFunctionDecl func)
   {
     if(mFunctions == null)
       mFunctions = new FunctionDefinitions();
@@ -1421,7 +1418,7 @@ public class Shell implements AutoCloseable, Closeable
 
   }
 
-  public FunctionDeclaration getFunction(String name)
+  public IFunctionDecl getFunction(String name)
   {
 
     if(mFunctions == null)
@@ -1438,7 +1435,7 @@ public class Shell implements AutoCloseable, Closeable
    * Execute a command as a function body
    * Extracts return values from the function if present
    */
-  public int execFunction(String name, Command cmd, SourceLocation location, List<XValue> args) throws Exception
+  public int execFunction(String name, ICommandExpr cmd, SourceLocation location, List<XValue> args) throws Exception
   {
 
     List<XValue> saveArgs = getArgs();
@@ -1647,7 +1644,7 @@ public class Shell implements AutoCloseable, Closeable
    * Executes a command as a condition so that it doesnt throw
    * an exception if errors
    */
-  public int execCondition(Command left) throws ThrowException, ExitOnErrorException
+  public int execCondition(CommandExpr left) throws ThrowException, ExitOnErrorException
   {
 
     pushCondition();
@@ -1823,7 +1820,7 @@ public class Shell implements AutoCloseable, Closeable
       return;
 
     try {
-      Command c = parseEval(scmd);
+      ICommandExpr c = parseEval(scmd);
       exec(c);
     } catch (Exception e) {
       this.printErr("Exception running trap: " + signal + ":" + scmd, e);

@@ -12,7 +12,7 @@ import org.apache.logging.log4j.Logger;
 
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.ICommand;
-import org.xmlsh.core.IFunction;
+import org.xmlsh.core.IFunctionDecl;
 import org.xmlsh.core.ScriptCommand;
 import org.xmlsh.core.ScriptFunctionCommand;
 import org.xmlsh.core.XClassLoader;

@@ -8,13 +8,13 @@ package org.xmlsh.internal.functions;
 
 import java.util.List;
 
-import org.xmlsh.core.BuiltinFunctionCommand;
+import org.xmlsh.core.AbstractBuiltinFunction;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.types.TypeFamily;
 
 
-public class _null extends BuiltinFunctionCommand
+public class _null extends AbstractBuiltinFunction
 {
 
   public _null()

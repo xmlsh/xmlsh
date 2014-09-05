@@ -11,8 +11,8 @@ import org.xmlsh.core.CommandFactory;
 import org.xmlsh.core.ICommand;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.XValue;
-import org.xmlsh.sh.core.Command;
-import org.xmlsh.sh.core.EvalScriptCommand;
+import org.xmlsh.sh.core.ICommandExpr;
+import org.xmlsh.sh.core.EvalScriptExpr;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.sh.shell.ShellConstants;
 
@@ -104,7 +104,7 @@ public class xmlsh extends BuiltinCommand {
 
 
 
-					Command cmd = new EvalScriptCommand( command );
+					ICommandExpr cmd = new EvalScriptExpr( command );
 					ret = shell.exec(cmd);
 
 

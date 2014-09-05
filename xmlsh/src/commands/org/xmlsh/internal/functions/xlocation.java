@@ -6,7 +6,7 @@
 
 package org.xmlsh.internal.functions;
 
-import org.xmlsh.core.BuiltinFunctionCommand;
+import org.xmlsh.core.AbstractBuiltinFunction;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.VariableOutputPort;
 import org.xmlsh.core.XValue;
@@ -21,7 +21,7 @@ import java.util.List;
 
 import javax.xml.stream.XMLStreamWriter;
 
-public class xlocation extends BuiltinFunctionCommand {
+public class xlocation extends AbstractBuiltinFunction {
 
 	public static final String XLOC_OPTS = "d=depth:,f=function,n=name,s=source,start=start-line,end=end-line,scol=start-column,ecol=end-column";
 

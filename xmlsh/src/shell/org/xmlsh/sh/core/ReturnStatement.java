@@ -14,7 +14,7 @@ import org.xmlsh.sh.shell.Shell;
 import java.io.PrintWriter;
 import java.util.List;
 
-public class ReturnStatement extends Command {
+public class ReturnStatement extends CommandExpr {
 
 	private static final EvalEnv mEnv = EvalEnv.basicInstance();
 	private		Word	mArg;
