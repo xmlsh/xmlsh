@@ -3,11 +3,6 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/xmlsh"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="lib/aws-java-sdk-1.8.4.jar" sourcepath="C:/Java/aws/aws-java-sdk-1.8.4/lib/aws-java-sdk-1.8.4-sources.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="jar:file:/C:/Java/aws/aws-java-sdk-1.8.4/lib/aws-java-sdk-1.8.4-javadoc.jar!/"/>
-		</attributes>
-	</classpathentry>
 	<classpathentry kind="lib" path="lib/bcprov-jdk16-146.jar"/>
 	<classpathentry kind="lib" path="lib/joda-time-2.2.jar"/>
 	<classpathentry kind="lib" path="/xmlsh/lib/log4j-api-2.0.2.jar" sourcepath="C:/Java/log4j/apache-log4j-2.0.2-bin/log4j-api-2.0.2-sources.jar">
@@ -15,5 +10,6 @@
 			<attribute name="javadoc_location" value="jar:file:/C:/Java/log4j/apache-log4j-2.0.2-bin/log4j-api-2.0.2-javadoc.jar!/"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="lib/aws-java-sdk-1.8.9.1.jar"/>
 	<classpathentry kind="output" path="_out"/>
 </classpath>

@@ -1,0 +1,12 @@
+java.lang.String
+xs:integer
+xs:decimal
+java.lang.String
+element()
+document-node()
+java.lang.String
+org.xmlsh.core.XValueSequence
+java.lang.String
+org.xmlsh.core.XValueSequence
+xs:integer
+xs:decimal

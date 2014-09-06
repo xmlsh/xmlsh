@@ -165,7 +165,7 @@ public class XValue implements Iterable<XValue>
   /*
    * Create an XValue from an XdmValue
    */
-  private XValue(XdmValue v)
+  protected XValue(XdmValue v)
   {
     this(TypeFamily.XDM, v == null ? null : XMLUtils.simplify(v));
   }

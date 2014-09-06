@@ -138,13 +138,13 @@ public class ddbPutItem	 extends  AWSDDBCommand {
 					av.setN( value );
 				else
 					if( type == "NS")
-						av.setNS( parseSS( XValue.asXValue(value)) );
+						av.setNS( parseSS( XValue.newXValue(value)) );
 					else
 						if( type == "S" )
 							av.setS( value );
 						else
 							if( type == "SS" )
-								av.setSS( parseSS( XValue.asXValue(value)));
+								av.setSS( parseSS( XValue.newXValue(value)));
 							else
 								if( type == "B" )
 									av.setB( parseBinary(value) );

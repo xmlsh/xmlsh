@@ -71,10 +71,10 @@ public class jxon  extends XCommand{
 		private static final String CONTEXT_DOCUMENT 	= "document";
 		private static final String JXON_NS 			= "http://www.xmlsh.org/jxon";
 		
-		private  XdmNode 	parse( XSAnnotation xanno , SerializeOpts opts ) throws XPathException, SaxonApiException, CoreException
+		private  XdmNode 	parse( XSAnnotation xanno , SerializeOpts opts ) throws XPathException, SaxonApiException, CoreException, IOException
 		{
 
-			XVariable var = new XVariable("anon", new XValue());
+			XVariable var = XVariable.anonymousInstance( new XValue());
 			OutputPort out = new VariableOutputPort( var );
 			
 			ContentHandler handler  = out.asContentHandler(opts );
@@ -83,14 +83,13 @@ public class jxon  extends XCommand{
 			out.close();
 			
 			
-			XdmValue xv = var.getValue().xpath( getShell() , "/xs:annotation/xs:appinfo/jxon:*").asXdmValue();
-//			XdmValue xv = var.getValue().xpath( getShell() , "//jxon:*").asXdmValue();
+			XdmValue xv = var.getValue().xpath( getShell() , "/xs:annotation/xs:appinfo/jxon:*").toXdmValue();
 			
 			/*
 			 * Reserialize with a namespacer reduicer
 			 */
 			
-			var = new XVariable( "anon" , new XValue());
+			var = XVariable.anonymousInstance(XValue.nullValue());
 
 			out = new VariableOutputPort( var );
 			Util.writeXdmValue(xv ,out.asDestination(opts ));
@@ -107,7 +106,7 @@ public class jxon  extends XCommand{
 			
 			
 			
-			public Annotation( XSAnnotation xanno ) throws XPathException, SaxonApiException, CoreException{
+			public Annotation( XSAnnotation xanno ) throws XPathException, SaxonApiException, CoreException, IOException{
 				
 				
 			
@@ -455,10 +454,6 @@ public class jxon  extends XCommand{
 			
 			
 			
-			xmlPort.release();
-			
-			
-			
 		}
 
 		private AnnotationEntry getGlobalAnnotations() throws XPathException,
@@ -752,7 +747,7 @@ public class jxon  extends XCommand{
 			
 		}
 
-		private AnnotationList  getAnnotations(XSObjectList annotations) throws XPathException, XMLStreamException, CoreException, SaxonApiException {
+		private AnnotationList  getAnnotations(XSObjectList annotations) throws XPathException, XMLStreamException, CoreException, SaxonApiException, IOException {
 			
 			if( annotations == null || annotations.getLength() == 0 )
 				return null ;
