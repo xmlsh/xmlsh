@@ -13,7 +13,7 @@ import org.xmlsh.core.BuiltinCommand;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
-import org.xmlsh.sh.shell.Module;
+import org.xmlsh.sh.shell.AbstractModule;
 import org.xmlsh.sh.shell.Modules;
 import org.xmlsh.util.StringPair;
 
@@ -199,7 +199,7 @@ public class ximport extends BuiltinCommand {
 		if( modules == null )
 			return 0;
 
-		for( Module m : modules ){
+		for( AbstractModule m : modules ){
 			String prefix = m.getPrefix();
 			if( prefix == null )
 				mShell.printOut( m.getName()  + " [" + m.describe()  +"]");

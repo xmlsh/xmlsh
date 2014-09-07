@@ -39,9 +39,10 @@
 		</logger>
 		
 		 <Root level="ERROR">
-		 
+		 	  <!-- 
 		   <AppenderRef ref="SHELL" level="trace"/>
-		  <!--   <AppenderRef ref="CONSOLE" level="ERROR"/> -->
+	       <AppenderRef ref="CONSOLE" level="ERROR"/>
+	        -->
 		   <AppenderRef ref="A1" level="WARN"/>
 
 		</Root>

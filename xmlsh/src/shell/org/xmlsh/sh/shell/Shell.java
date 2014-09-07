@@ -201,7 +201,7 @@ public class Shell implements AutoCloseable, Closeable
     mModules = new Modules();
     mSession = new SessionEnvironment();
     // Add xmlsh commands
-    mModules.declare(Module.createPackageModule(null, null, "xmlsh",
+    mModules.declare(AbstractModule.createPackageModule(null, null, "xmlsh",
       Arrays.asList("org.xmlsh.internal.commands",
          "org.xmlsh.internal.functions" ), 
       CommandFactory.kCOMMANDS_HELP_XML));
@@ -1551,7 +1551,7 @@ public class Shell implements AutoCloseable, Closeable
     // TODO: Help needs better placement
     String sHelp = packages.get(0).replace('.', '/') + "/commands.xml";
 
-    return mModules.declare(Module.createPackageModule(null, prefix, name, packages, sHelp));
+    return mModules.declare(AbstractModule.createPackageModule(null, prefix, name, packages, sHelp));
   }
 
   public void importJava(XValue uris) throws CoreException

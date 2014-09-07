@@ -136,6 +136,8 @@ public class XEnvironment implements AutoCloseable, Closeable {
   }
 
 
+  
+
 	public void setIndexedVar( String name , XValue value, String ind  ) throws CoreException 
 	{
 	    XVariable var = mVars.get(name);
@@ -182,6 +184,17 @@ public class XEnvironment implements AutoCloseable, Closeable {
       var = var.newValue( value );
     setLocalVar( var );
     
+  }
+  
+  public XVariable exportVar( String name ){
+    XVariable var = mVars.get(name);
+    if( var == null ){
+      var = XVariable.newInstance(name);
+      var.unset();
+    }
+    var.setFlag(EXPORT);
+    mVars.put(var);
+    return var;
   }
 
 

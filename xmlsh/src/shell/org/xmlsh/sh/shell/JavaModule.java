@@ -12,108 +12,82 @@ import org.xmlsh.core.EvalEnv;
 import org.xmlsh.core.EvalFlag;
 import org.xmlsh.core.ICommand;
 import org.xmlsh.core.IFunction;
-import org.xmlsh.core.IFunctionDecl;
-import org.xmlsh.core.IFunctionExpr;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
-import org.xmlsh.sh.core.CommandExpr;
-import org.xmlsh.sh.core.ICommandExpr;
 import org.xmlsh.types.TypeFamily;
 import org.xmlsh.util.JavaUtils;
 import org.xmlsh.util.Util;
 
-import java.io.InputStream;
-import java.io.PrintWriter;
 import java.lang.reflect.Method;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
-public class JavaModule extends Module
+public class JavaModule extends AbstractModule
 {
 
-  static class JavaModuleFunctionExpr implements IFunctionExpr
+  static class JavaModuleFunction implements IFunction
   {
+    @SuppressWarnings("unused")
     private IModule mModule;
     private String mFunc;
     private Class<?> mClass;
 
-
-    public JavaModuleFunctionExpr(IModule mod, String func, Class<?> cls, ClassLoader cl)
+    public JavaModuleFunction(IModule mod, String func, Class<?> cls, ClassLoader cl)
     {
       mModule = mod;
       mFunc = func;
       mClass = cls;
     }
 
-
-   
-
-
     @Override
     public String getName()
     {
-      // TODO Auto-generated method stub
-      return null;
+      return mFunc;
     }
+
 
     @Override
-    public IFunction getFunction()
+    public XValue run(Shell shell, SourceLocation loc, List<XValue> args) throws Exception
     {
-     return new IFunction() {
+      XValue retVal = null;
 
-      @Override
-      public XValue run(Shell shell, SourceLocation loc , List<XValue> args) throws Exception
-      {
-          XValue retVal = null;
-
-          if(Util.isEqual("new", mFunc)) {  // Constructor
-            retVal = JavaUtils.newXValue(mClass, args);
-          }
-          else
-          // return class as an object
-          if(Util.isEqual("class", mFunc)) {
-
-            retVal = XValue.newXValue(TypeFamily.JAVA, mClass);
-
-          }
-          else {
-
-            Object thisObj = null;
-            // Static first
-            Method m = JavaUtils.getBestMatch(mClass, mFunc, args, true);
-            if(m == null && args.size() > 0) {
-
-              thisObj = args.remove(0).asObject();
-              if(mClass.isInstance(thisObj))
-                m = JavaUtils.getBestMatch(mClass, mFunc, args, false);
-
-            }
-            if(m == null)
-              throw new InvalidArgumentException("Cannot find matching method: " + mFunc);
-
-            retVal = thisObj != null ? JavaUtils.callMethod(m, thisObj, args) : JavaUtils.callStaticMethod(m, args);
-
-          }
-          return retVal ;
-        }
-
-      @Override
-      public String getName()
-      {
-        return mFunc;
+      if(Util.isEqual("new", mFunc)) {  // Constructor
+        retVal = JavaUtils.newXValue(mClass, args);
       }
-      };
+      else
+        // return class as an object
+        if(Util.isEqual("class", mFunc)) {
+
+          retVal = XValue.newXValue(TypeFamily.JAVA, mClass);
+
+        }
+        else {
+
+          Object thisObj = null;
+          // Static first
+          Method m = JavaUtils.getBestMatch(mClass, mFunc, args, true);
+          if(m == null && args.size() > 0) {
+
+            thisObj = args.remove(0).asObject();
+            if(mClass.isInstance(thisObj))
+              m = JavaUtils.getBestMatch(mClass, mFunc, args, false);
+
+          }
+          if(m == null)
+            throw new InvalidArgumentException("Cannot find matching method: " + mFunc);
+
+          retVal = thisObj != null ? JavaUtils.callMethod(m, thisObj, args) : JavaUtils.callStaticMethod(m, args);
+
+        }
+      return retVal;
     }
-
-
 
     @Override
     public EvalEnv argumentEnv(EvalEnv parent)
     {
-      return parent.withFlagsOff(EvalFlag.EXPAND_WILD , EvalFlag.SPLIT_WORDS);
+      return parent.withFlagsOff(EvalFlag.EXPAND_WILD, EvalFlag.SPLIT_WORDS);
     }
 
     @Override
@@ -124,66 +98,67 @@ public class JavaModule extends Module
 
   }
 
-  private Class<?> mJavaClass;
 
-  JavaModule(Shell shell, String prefix, URI nameURI, List<XValue> args) throws CoreException
-  {
-    super(prefix);
-    List<URL> classpath = null;
-    if(args.size() > 1 && args.remove(0).toString().equals("at")) {
-      classpath = new ArrayList<URL>();
-      for (XValue xv : args) {
-        URL classurl = shell.getURL(xv.toString());
-        classpath.add(classurl);
-      }
+
+private Class<?> mJavaClass;
+
+JavaModule(Shell shell, String prefix, URI nameURI, List<XValue> args) throws CoreException
+{
+  super(prefix);
+  List<URL> classpath = null;
+  if(args.size() > 1 && args.remove(0).toString().equals("at")) {
+    classpath = new ArrayList<URL>();
+    for (XValue xv : args) {
+      URL classurl = shell.getURL(xv.toString());
+      classpath.add(classurl);
     }
-    mClassLoader = getClassLoader(classpath);
-    mHelpURL = null;
-    String clsname = nameURI.getRawSchemeSpecificPart();
-
-    int ldot = clsname.lastIndexOf('.');
-    mName = clsname.substring(ldot + 1);
-    mJavaClass = findClass(clsname );
-    if(mJavaClass == null)
-      throw new InvalidArgumentException("Class not found:" + clsname);
-
   }
+  mClassLoader = getClassLoader(classpath);
+  mHelpURL = null;
+  String clsname = nameURI.getRawSchemeSpecificPart();
 
-  @Override
-  public IFunctionExpr getFunctionClass(final String name)
-  {
+  int ldot = clsname.lastIndexOf('.');
+  mName = clsname.substring(ldot + 1);
+  mJavaClass = findClass(clsname);
+  if(mJavaClass == null)
+    throw new InvalidArgumentException("Class not found:" + clsname);
 
-    return new JavaModuleFunctionExpr(this, name, mJavaClass, mClassLoader);
+}
 
+@Override
+public IFunction getFunctionClass(final String name)
+{
 
-  }
+  return new JavaModuleFunction(this, name, mJavaClass, mClassLoader);
 
-  @Override
-  public ICommand getCommandClass(String name)
-  {
-    return null;
-  }
+}
 
-  @Override
-  public boolean hasHelp(String name)
-  {
-    // TODO Auto-generated method stub
+@Override
+public ICommand getCommandClass(String name)
+{
+  return null;
+}
+
+@Override
+public boolean hasHelp(String name)
+{
+  // TODO Auto-generated method stub
+  return false;
+}
+
+@Override
+public boolean definesSameModule(IModule mod)
+{
+  if(mod == null || !(mod instanceof JavaModule))
     return false;
-  }
+  return ((JavaModule) mod).mJavaClass.equals(mJavaClass);
+}
 
-  @Override
-  public boolean definesSameModule(IModule mod)
-  {
-    if( mod == null || ! ( mod instanceof JavaModule) )
-        return false ;
-    return ((JavaModule)mod).mJavaClass.equals( mJavaClass ) ;
-  }
-
-  @Override
-  public String describe()
-  {
-    return "java:" + mJavaClass.getName() ;
-  }
+@Override
+public String describe()
+{
+  return "java:" + mJavaClass.getName();
+}
 
 }
 

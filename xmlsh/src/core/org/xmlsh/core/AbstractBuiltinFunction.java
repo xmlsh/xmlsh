@@ -43,6 +43,18 @@ public abstract class AbstractBuiltinFunction extends AbstractFunction implement
       public String getName()
       {
         return func.getName();
+      }
+
+      @Override
+      public EvalEnv argumentEnv(EvalEnv env)
+      {
+       return func.argumentEnv(env);
+      }
+
+      @Override
+      public EvalEnv returnEnv(EvalEnv env)
+      {
+        return func.returnEnv(env);
       }} ;
 
   

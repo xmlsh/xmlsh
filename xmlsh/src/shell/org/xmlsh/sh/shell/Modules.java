@@ -23,7 +23,7 @@ import java.util.List;
 
 
 @SuppressWarnings("serial")
-public class Modules extends  ArrayList<Module>
+public class Modules extends  ArrayList<AbstractModule>
 {
 	public IModule declare(Shell shell, String prefix , String name, List<XValue> init ) throws CoreException
 	{
@@ -36,7 +36,7 @@ public class Modules extends  ArrayList<Module>
 				return m;
 
 
-		Module module = Module.createModule(shell, prefix , name , init  );
+		AbstractModule module = AbstractModule.createModule(shell, prefix , name , init  );
 		return declare(module);
 	}
 
@@ -48,7 +48,7 @@ public class Modules extends  ArrayList<Module>
 	 * @throws CoreException 
 	 * 
 	 */
-	public IModule declare(Module module) throws CoreException
+	public IModule declare(AbstractModule module) throws CoreException
 	{
 
 		if( ! Util.isEmpty(module.getPrefix())){

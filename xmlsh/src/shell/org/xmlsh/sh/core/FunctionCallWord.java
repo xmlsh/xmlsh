@@ -9,6 +9,7 @@ package org.xmlsh.sh.core;
 import org.xmlsh.core.CommandFactory;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.EvalEnv;
+import org.xmlsh.core.IFunction;
 import org.xmlsh.core.IFunctionDecl;
 import org.xmlsh.core.IFunctionExpr;
 import org.xmlsh.core.InvalidArgumentException;
@@ -91,12 +92,12 @@ public class FunctionCallWord extends Word
 			{
 
 		// Try builtin functions first
-	  IFunctionExpr func = CommandFactory.getInstance().getBuiltinFunction(shell, mFunction, loc);
+	  IFunction func = CommandFactory.getInstance().getBuiltinFunction(shell, mFunction, loc);
 
 		if(func == null){
 			IFunctionDecl funcdecl = shell.getFunctionDecl(mFunction);
 			if( funcdecl != null )
-			  func = funcdecl.getFuntionExpr();
+			  func = funcdecl.getFuntionExpr().getFunction();
 		}
 
 		if(func == null)
@@ -112,7 +113,7 @@ public class FunctionCallWord extends Word
 
 		try {
 
-		  XValue xret = func.getFunction().run(shell, loc , args);
+		  XValue xret = func.run(shell, loc , args);
 			// ?? should check ret ?
 			return EvalUtils.expandValueToResult(shell, xret, func.returnEnv(env), loc, result);
 

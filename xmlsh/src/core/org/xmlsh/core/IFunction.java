@@ -16,6 +16,8 @@ public interface IFunction
 
   public XValue run(Shell shell, SourceLocation loc, List<XValue> args) throws Exception;
   public String getName();
+  public EvalEnv argumentEnv(EvalEnv env);
+  public EvalEnv returnEnv(EvalEnv env);
 
 }
 

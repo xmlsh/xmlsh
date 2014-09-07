@@ -1041,6 +1041,18 @@ public List<XValue> getXValues() {
 	return getTypeMethods().getXValues( mValue  ); 
 }
 
+/*
+ * A reasonable version of toString that wont be a bazillion bytes
+ */
+public String describe()
+{
+   if( isNull() )
+     return "null";
+
+   return typeFamilyInstance().simpleTypeName(mValue);
+
+}
+
 }
 //
 //

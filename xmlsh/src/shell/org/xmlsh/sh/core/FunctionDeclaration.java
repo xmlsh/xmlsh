@@ -91,6 +91,18 @@ public class FunctionDeclaration extends CommandExpr {
               {
                 // TODO Auto-generated method stub
                 return mName;
+              }
+
+              @Override
+              public EvalEnv argumentEnv(EvalEnv parent)
+              {
+                return parent.withFlagsSet( EvalEnv.commandArgsFlags() );
+              }
+
+              @Override
+              public EvalEnv returnEnv(EvalEnv parent)
+              {
+                return parent.withFlagsMasked( EvalEnv.returnValueMask() ); 
               }};
           }
   

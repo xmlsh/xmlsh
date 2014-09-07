@@ -369,7 +369,7 @@ public class CommandFactory
 			return null ;
 	}
 
-	public IFunctionExpr getBuiltinFunction(Shell shell, String name,SourceLocation loc) {
+	public IFunction getBuiltinFunction(Shell shell, String name,SourceLocation loc) {
 
 		StringPair 	pair = new StringPair(name,':');
 
@@ -388,9 +388,8 @@ public class CommandFactory
 
 							if( m != null ){
 
-								IFunctionExpr cls = m.getFunctionClass( pair.getRight() );
+								IFunction cls = m.getFunctionClass( pair.getRight() );
 								if( cls != null ){
-
 									return cls ;
 								}
 
@@ -404,7 +403,7 @@ public class CommandFactory
 		for( IModule m : modules ){
 			if( m.isDefault() ){
 
-				IFunctionExpr cls = m.getFunctionClass( name);
+			  IFunction cls = m.getFunctionClass( name);
 				if( cls != null ){
 					return cls ;
 				}

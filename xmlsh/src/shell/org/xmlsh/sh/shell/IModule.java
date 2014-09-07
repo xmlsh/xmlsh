@@ -22,7 +22,7 @@ public interface IModule
   public String getPrefix();
   public boolean isDefault();
   public ICommand getCommandClass(String name);
-  public IFunctionExpr getFunctionClass(String name);
+  public IFunction getFunctionClass(String name);
   public String getName();
   public boolean hasHelp(String name);
   public URL getHelpURL();

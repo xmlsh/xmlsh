@@ -21,7 +21,7 @@ import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.util.List;
 
-public class PackageModule extends Module
+public class PackageModule extends AbstractModule
 {
   protected List<String> mPackages;
 
@@ -83,7 +83,7 @@ public class PackageModule extends Module
    * @see org.xmlsh.sh.shell.IModule#getFunctionClass(java.lang.String)
    */
   @Override
-  public IFunctionExpr getFunctionClass(String name)
+  public IFunction getFunctionClass(String name)
   {
 
     String origName = name;
@@ -101,12 +101,15 @@ public class PackageModule extends Module
         Constructor<?> constructor = cls.getConstructor();
         if(constructor != null) {
           Object obj = constructor.newInstance();
+          if( obj instanceof IFunction )
+            return (IFunction) obj ;
+          
           if( obj instanceof IFunctionExpr )
-            return (IFunctionExpr) obj ;
+            return ((IFunctionExpr) obj).getFunction() ;
           
           if(obj instanceof IFunctionDecl) {
             IFunctionDecl cmd = (IFunctionDecl) obj;
-            return cmd.getFuntionExpr();
+            return cmd.getFuntionExpr().getFunction();
           }
         }
       }
@@ -121,7 +124,7 @@ public class PackageModule extends Module
      */
     InputStream scriptStream = getCommandResource(origName + ".xsh");
     if(scriptStream != null)
-      return new ScriptFunctionCommand(name, scriptStream, this);
+      return new ScriptFunctionCommand(name, scriptStream, this).getFunction();
     return null;
 
   }

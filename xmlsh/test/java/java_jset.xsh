@@ -5,7 +5,7 @@ import commands java
 # empty string
 
 jset -v s1 -c java.lang.String
-echo -n loc()
+echo -n loc() ""
 xtype {$s1}
 echo loc() String Value: $s1
 
@@ -23,7 +23,7 @@ echo loc() String Value: "(replace)" $s2
 
 # Integer values
 jset -v i1 -o {$s1}-m length
-echo -n loc()
+echo -n loc() ""
 xtype {$i1}
 echo loc()  Length: $i1
 
@@ -32,7 +32,7 @@ import java ../bin/xmlsh-test.jar
 
 # Default constructor
 jset -v t1 -c org.xmlsh.test.TestTypes
-echo -n loc()
+echo -n loc() ""
 xtype {$t1}
 jset -v m1 -o {$t1} -m getConstructor
 
@@ -50,7 +50,7 @@ echo loc()  $m1
 # Overloaded multi arg constructors
 jset -v t2 -c org.xmlsh.test.TestTypes <[ 1 ]> "String"
 jset -v m2 -o {$t2} -m getConstructor
-echo $m2
+echo loc() $m2
 
 
 

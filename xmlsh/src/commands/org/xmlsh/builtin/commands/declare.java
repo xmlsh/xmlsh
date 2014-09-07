@@ -7,6 +7,7 @@
 package org.xmlsh.builtin.commands;
 
 import net.sf.saxon.s9api.SaxonApiException;
+
 import org.xml.sax.SAXException;
 import org.xmlsh.core.BuiltinCommand;
 import org.xmlsh.core.CoreException;
@@ -15,6 +16,7 @@ import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.XEnvironment;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.XVariable;
+import org.xmlsh.core.XVariable.XVarFlag;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.util.NameValueMap;
 
@@ -33,12 +35,16 @@ public class declare extends BuiltinCommand {
 		opts.parse(args);
 		setSerializeOpts(opts );
 
+		args = opts.getRemainingArgs();
 		if( opts.hasOpt("p")) {
-			return printVar( opts.getOptStringRequired("p"));
+			 printVar( opts.getOptStringRequired("p"));
+			 return 0;
 		}
-
-
-
+		else
+		if( opts.hasOpt("x")){
+		  export( opts.getOptStringRequired("x"));
+      return 0;
+		}
 		if( args.size() < 1 ) {
 			usage();
 			return 1;
@@ -55,7 +61,21 @@ public class declare extends BuiltinCommand {
 	}
 
 
-	private int printVar(String name) throws XMLStreamException, SAXException, IOException, CoreException, SaxonApiException
+	private int export(String varname)
+  { 
+	  XVariable xvar = mShell.getEnv().getVar(varname); 
+	  if( xvar == null ){
+	    xvar = XVariable.newInstance(varname);
+	  }
+	  xvar.setFlag( XVarFlag.EXPORT);
+	  mShell.getEnv().setVar(xvar);
+    return 0;
+	  
+	  
+  }
+
+
+  private int printVar(String name) throws XMLStreamException, SAXException, IOException, CoreException, SaxonApiException
 	{
 		XEnvironment env = mShell.getEnv();
 
@@ -134,7 +154,8 @@ public class declare extends BuiltinCommand {
 			mShell.getEnv().declareNamespace(arg.toString());
 
 
-		}
+		} else
+		  usage("Unexpected value: "+ arg.describe() );
 
 	}
 

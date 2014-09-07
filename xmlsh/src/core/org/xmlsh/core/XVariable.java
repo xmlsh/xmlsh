@@ -316,9 +316,6 @@ public class XVariable {
 	public int getSize()
 	{
 		return EvalUtils.getSize( getValue() );
-
-
-
 	}
 
 
@@ -328,6 +325,14 @@ public class XVariable {
 		clear();
 		mFlags = Util.withEnumAdded(mFlags,UNSET );
 	}
+	
+	 public void export() throws InvalidArgumentException 
+	  {
+	    clear();
+	    mFlags = Util.withEnumAdded(mFlags,UNSET );
+	  }
+
+	 
 
 	public XVariable newValue(XValue value)
   {
