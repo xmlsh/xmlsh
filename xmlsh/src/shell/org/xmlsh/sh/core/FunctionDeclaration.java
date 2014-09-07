@@ -7,12 +7,16 @@
 package org.xmlsh.sh.core;
 
 import org.xmlsh.core.EvalEnv;
+import org.xmlsh.core.IFunction;
 import org.xmlsh.core.IFunctionDecl;
+import org.xmlsh.core.IFunctionExpr;
+import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
 
 import java.io.PrintWriter;
+import java.util.List;
 
-public class FunctionDeclaration extends CommandExpr implements IFunctionDecl {
+public class FunctionDeclaration extends CommandExpr {
 	private ICommandExpr mBody;
 
 	@Override
@@ -22,15 +26,6 @@ public class FunctionDeclaration extends CommandExpr implements IFunctionDecl {
 	{
 		super(name);
 		mBody = body;
-	}
-
-
-	/**
-	 * @return the body
-	 */
-	@Override
-	public ICommandExpr getBody() {
-		return mBody;
 	}
 
 
@@ -50,24 +45,74 @@ public class FunctionDeclaration extends CommandExpr implements IFunctionDecl {
 	@Override
 	public int exec(Shell shell) throws Exception {
 
-		shell.declareFunction( this );	
+		shell.declareFunction( new IFunctionDecl() {
+
+      @Override
+      public String getName()
+      {
+		    return mName ;
+      }
+
+      @Override
+      public ICommandExpr getBody()
+      {
+        // TODO Auto-generated method stub
+        return mBody;
+      }
+
+   
+      @Override
+      public IFunctionExpr getFuntionExpr()
+      {
+        return new IFunctionExpr() {
+
+          @Override
+          public String getName()
+          {
+            
+          return mName ;
+          }
+  
+          @Override
+          public IFunction getFunction()
+          {
+            return new IFunction(){
+
+              @Override
+              public XValue run(Shell shell, SourceLocation loc , List<XValue> args) throws Exception
+              {
+                
+                return shell.runCommandFunction( mName , mBody , loc, args );
+                
+              }
+
+              @Override
+              public String getName()
+              {
+                // TODO Auto-generated method stub
+                return mName;
+              }};
+          }
+  
+          @Override
+          public EvalEnv argumentEnv(EvalEnv parent)
+          {
+            // Add normal expansions 
+            return parent.withFlagsSet( EvalEnv.commandArgsFlags() );
+          }
+  
+          @Override
+          public EvalEnv returnEnv(EvalEnv parent)
+          { 
+            return parent.withFlagsMasked( EvalEnv.returnValueMask() ); 
+          }
+       };
+      }
+		});
 		return 0;
-
 	}
 
-	@Override
-	public EvalEnv argumentEnv(EvalEnv parent)
-	{
-		// Add normal expansions 
-		return parent.withFlagsSet( EvalEnv.commandArgsFlags() );
-	}
-
-	@Override
-	public EvalEnv returnEnv(EvalEnv parent)
-	{ 
-		return parent.withFlagsMasked( EvalEnv.returnValueMask() ); 
-	}
-
+       
 }
 
 //

@@ -10,6 +10,7 @@ import org.xmlsh.core.CommandFactory;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.EvalEnv;
 import org.xmlsh.core.IFunctionDecl;
+import org.xmlsh.core.IFunctionExpr;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.grammar.Token;
@@ -90,10 +91,13 @@ public class FunctionCallWord extends Word
 			{
 
 		// Try builtin functions first
-		IFunctionDecl func = CommandFactory.getInstance().getBuiltinFunction(shell, mFunction, loc);
+	  IFunctionExpr func = CommandFactory.getInstance().getBuiltinFunction(shell, mFunction, loc);
 
-		if(func == null)
-			func = shell.getFunction(mFunction);
+		if(func == null){
+			IFunctionDecl funcdecl = shell.getFunctionDecl(mFunction);
+			if( funcdecl != null )
+			  func = funcdecl.getFuntionExpr();
+		}
 
 		if(func == null)
 			throw new InvalidArgumentException("Unknown function: " + mFunction);
@@ -108,9 +112,8 @@ public class FunctionCallWord extends Word
 
 		try {
 
-			int ret = shell.execFunction(func.getName(), func.getBody(), loc, args);
+		  XValue xret = func.getFunction().run(shell, loc , args);
 			// ?? should check ret ?
-			XValue xret = shell.getReturnValue();
 			return EvalUtils.expandValueToResult(shell, xret, func.returnEnv(env), loc, result);
 
 		} catch (Exception e) {

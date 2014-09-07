@@ -13,6 +13,7 @@ import org.xmlsh.sh.shell.IModule;
 import org.xmlsh.sh.shell.Shell;
 
 import java.io.File;
+import java.io.PrintWriter;
 import java.util.List;
 
 public class FunctionCommand implements ICommand {
@@ -33,7 +34,7 @@ public class FunctionCommand implements ICommand {
 	@Override
 	public int run(Shell shell, String cmd, List<XValue> args) throws Exception {
 
-		int ret =  shell.execFunction(mName,mFunction,mLocation,args);
+		int ret =  shell.execFunctionAsCommand(mName,mFunction,mLocation,args);
 		if( ret == 0 )
 			ret = shell.getReturnValueAsExitValue() ;
 
@@ -86,7 +87,15 @@ public class FunctionCommand implements ICommand {
 	@Override
 	public void setLocation(SourceLocation loc) {
 		mLocation = loc ;
-	}	
+	}
+
+
+
+  @Override
+  public void print(PrintWriter w, boolean bExec)
+  {
+    w.print(mName);
+  }	
 
 
 }

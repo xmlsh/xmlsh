@@ -7,10 +7,13 @@
 package org.xmlsh.sh.shell;
 
 import org.xmlsh.core.CoreException;
+import org.xmlsh.sh.core.SourceLocation;
 import org.xmlsh.core.EvalEnv;
 import org.xmlsh.core.EvalFlag;
 import org.xmlsh.core.ICommand;
+import org.xmlsh.core.IFunction;
 import org.xmlsh.core.IFunctionDecl;
+import org.xmlsh.core.IFunctionExpr;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.core.CommandExpr;
@@ -31,72 +34,92 @@ import java.util.List;
 public class JavaModule extends Module
 {
 
-  static class JavaModuleFunctionCommand extends CommandExpr
+  static class JavaModuleFunctionExpr implements IFunctionExpr
   {
     private IModule mModule;
     private String mFunc;
     private Class<?> mClass;
 
 
-    public JavaModuleFunctionCommand(IModule mod, String func, Class<?> cls, ClassLoader cl)
+    public JavaModuleFunctionExpr(IModule mod, String func, Class<?> cls, ClassLoader cl)
     {
-      super(func);
       mModule = mod;
       mFunc = func;
       mClass = cls;
     }
 
-    @Override
-    public void print(PrintWriter out, boolean bExec)
-    {
-      out.println(mClass.getName() + mFunc + "()");
 
-    }
+   
+
 
     @Override
-    public int exec(Shell shell) throws Exception
-    {
-      List<XValue> args = shell.getArgs();
-      XValue retVal = null;
-
-      if(Util.isEqual("new", mFunc)) {  // Constructor
-        retVal = JavaUtils.newXValue(mClass, args);
-      }
-      else
-      // return class as an object
-      if(Util.isEqual("class", mFunc)) {
-
-        retVal = XValue.newXValue(TypeFamily.JAVA, mClass);
-
-      }
-      else {
-
-        Object thisObj = null;
-        // Static first
-        Method m = JavaUtils.getBestMatch(mClass, mFunc, args, true);
-        if(m == null && args.size() > 0) {
-
-          thisObj = args.remove(0).asObject();
-          if(mClass.isInstance(thisObj))
-            m = JavaUtils.getBestMatch(mClass, mFunc, args, false);
-
-        }
-        if(m == null)
-          throw new InvalidArgumentException("Cannot find matching method: " + mFunc);
-
-        retVal = thisObj != null ? JavaUtils.callMethod(m, thisObj, args) : JavaUtils.callStaticMethod(m, args);
-
-      }
-      shell.exec_return(retVal);
-      return 0;
-
-    }
-
-    @Override
-    public boolean isSimple()
+    public String getName()
     {
       // TODO Auto-generated method stub
-      return true;
+      return null;
+    }
+
+    @Override
+    public IFunction getFunction()
+    {
+     return new IFunction() {
+
+      @Override
+      public XValue run(Shell shell, SourceLocation loc , List<XValue> args) throws Exception
+      {
+          XValue retVal = null;
+
+          if(Util.isEqual("new", mFunc)) {  // Constructor
+            retVal = JavaUtils.newXValue(mClass, args);
+          }
+          else
+          // return class as an object
+          if(Util.isEqual("class", mFunc)) {
+
+            retVal = XValue.newXValue(TypeFamily.JAVA, mClass);
+
+          }
+          else {
+
+            Object thisObj = null;
+            // Static first
+            Method m = JavaUtils.getBestMatch(mClass, mFunc, args, true);
+            if(m == null && args.size() > 0) {
+
+              thisObj = args.remove(0).asObject();
+              if(mClass.isInstance(thisObj))
+                m = JavaUtils.getBestMatch(mClass, mFunc, args, false);
+
+            }
+            if(m == null)
+              throw new InvalidArgumentException("Cannot find matching method: " + mFunc);
+
+            retVal = thisObj != null ? JavaUtils.callMethod(m, thisObj, args) : JavaUtils.callStaticMethod(m, args);
+
+          }
+          return retVal ;
+        }
+
+      @Override
+      public String getName()
+      {
+        return mFunc;
+      }
+      };
+    }
+
+
+
+    @Override
+    public EvalEnv argumentEnv(EvalEnv parent)
+    {
+      return parent.withFlagsOff(EvalFlag.EXPAND_WILD , EvalFlag.SPLIT_WORDS);
+    }
+
+    @Override
+    public EvalEnv returnEnv(EvalEnv parent)
+    {
+      return EvalEnv.evalNone();
     }
 
   }
@@ -127,39 +150,11 @@ public class JavaModule extends Module
   }
 
   @Override
-  public IFunctionDecl getFunctionClass(final String name)
+  public IFunctionExpr getFunctionClass(final String name)
   {
 
-    final IModule thisModule = this;
-    return new IFunctionDecl()
-      {
+    return new JavaModuleFunctionExpr(this, name, mJavaClass, mClassLoader);
 
-        @Override
-        public String getName()
-        {
-          return name;
-        }
-
-        @Override
-        public ICommandExpr getBody()
-        {
-          return new JavaModuleFunctionCommand(thisModule, name, mJavaClass, mClassLoader);
-
-        }
-
-        @Override
-        public EvalEnv argumentEnv(EvalEnv parent)
-        {
-          return parent.withFlagsOff(EvalFlag.EXPAND_WILD , EvalFlag.SPLIT_WORDS);
-        }
-
-        @Override
-        public EvalEnv returnEnv(EvalEnv parent)
-        {
-          return EvalEnv.evalNone();
-        }
-
-      };
 
   }
 

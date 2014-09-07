@@ -6,13 +6,12 @@
 
 package org.xmlsh.core;
 
-import org.xmlsh.sh.core.ICommandExpr;
 
-public interface IFunctionDecl {
+public interface IFunctionExpr {
 	String	getName();
-	ICommandExpr	getBody();
-	IFunctionExpr getFuntionExpr();
-
+	IFunction getFunction();
+	EvalEnv argumentEnv( EvalEnv parent );
+	EvalEnv returnEnv( EvalEnv parent );
 
 }
 

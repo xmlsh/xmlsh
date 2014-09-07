@@ -9,6 +9,8 @@ package org.xmlsh.sh.shell;
 import org.xmlsh.core.IFunctionDecl;
 import org.xmlsh.util.NameValueMap;
 
+
+// Script funcitons
 @SuppressWarnings("serial")
 class FunctionDefinitions extends NameValueMap<IFunctionDecl>
 {

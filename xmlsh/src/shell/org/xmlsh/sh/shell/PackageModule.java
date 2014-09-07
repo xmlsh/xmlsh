@@ -10,6 +10,7 @@ package org.xmlsh.sh.shell;
 import org.xmlsh.core.ICommand;
 import org.xmlsh.core.IFunction;
 import org.xmlsh.core.IFunctionDecl;
+import org.xmlsh.core.IFunctionExpr;
 import org.xmlsh.core.ScriptCommand;
 import org.xmlsh.core.ScriptFunctionCommand;
 import org.xmlsh.core.XCommand;
@@ -82,7 +83,7 @@ public class PackageModule extends Module
    * @see org.xmlsh.sh.shell.IModule#getFunctionClass(java.lang.String)
    */
   @Override
-  public IFunctionDecl getFunctionClass(String name)
+  public IFunctionExpr getFunctionClass(String name)
   {
 
     String origName = name;
@@ -100,9 +101,12 @@ public class PackageModule extends Module
         Constructor<?> constructor = cls.getConstructor();
         if(constructor != null) {
           Object obj = constructor.newInstance();
+          if( obj instanceof IFunctionExpr )
+            return (IFunctionExpr) obj ;
+          
           if(obj instanceof IFunctionDecl) {
             IFunctionDecl cmd = (IFunctionDecl) obj;
-            return cmd;
+            return cmd.getFuntionExpr();
           }
         }
       }

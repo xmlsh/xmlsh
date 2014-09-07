@@ -134,7 +134,7 @@ public class CommandFactory
 
 
 		ICommand cmd = 
-				getFunction( shell , name , loc  );
+				getFunctionCommand( shell , name , loc  );
 		if( cmd == null )
 			cmd = getBuiltin(shell, name , loc );
 		if( cmd == null )
@@ -156,9 +156,9 @@ public class CommandFactory
 	 * by looking through the External Path
 	 */
 
-	private ICommand getFunction(Shell shell, String name,  SourceLocation loc) {
+	private ICommand getFunctionCommand(Shell shell, String name,  SourceLocation loc) {
 
-		IFunctionDecl func = shell.getFunction( name );
+		IFunctionDecl func = shell.getFunctionDecl( name );
 		if( func != null )
 			return new FunctionCommand( func.getName() , func.getBody()  , loc );
 		return null;
@@ -369,7 +369,7 @@ public class CommandFactory
 			return null ;
 	}
 
-	public IFunctionDecl getBuiltinFunction(Shell shell, String name,SourceLocation loc) {
+	public IFunctionExpr getBuiltinFunction(Shell shell, String name,SourceLocation loc) {
 
 		StringPair 	pair = new StringPair(name,':');
 
@@ -388,9 +388,8 @@ public class CommandFactory
 
 							if( m != null ){
 
-								IFunctionDecl cls = m.getFunctionClass( pair.getRight() );
+								IFunctionExpr cls = m.getFunctionClass( pair.getRight() );
 								if( cls != null ){
-									// cls.setLocation( loc );
 
 									return cls ;
 								}
@@ -405,9 +404,8 @@ public class CommandFactory
 		for( IModule m : modules ){
 			if( m.isDefault() ){
 
-				IFunctionDecl cls = m.getFunctionClass( name);
+				IFunctionExpr cls = m.getFunctionClass( name);
 				if( cls != null ){
-					// cls.setLocation(loc);
 					return cls ;
 				}
 			}

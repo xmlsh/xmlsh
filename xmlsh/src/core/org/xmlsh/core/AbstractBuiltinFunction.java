@@ -5,7 +5,7 @@
  */
 
 package org.xmlsh.core;
-
+import org.xmlsh.sh.core.SourceLocation;
 import org.xmlsh.sh.core.CommandExpr;
 import org.xmlsh.sh.core.ICommandExpr;
 import org.xmlsh.sh.shell.Shell;
@@ -13,7 +13,7 @@ import org.xmlsh.sh.shell.Shell;
 import java.io.PrintWriter;
 import java.util.List;
 
-public abstract class AbstractBuiltinFunction extends CommandExpr implements IFunctionDecl {
+public abstract class AbstractBuiltinFunction extends CommandExpr implements IFunctionExpr {
 
   public abstract XValue  run( Shell shell , List<XValue> args ) throws Exception;
   protected AbstractBuiltinFunction( String name )
@@ -41,11 +41,27 @@ public abstract class AbstractBuiltinFunction extends CommandExpr implements IFu
 
   }
 
-
   @Override
-  public ICommandExpr getBody()
+  public IFunction getFunction()
   {
-    return this ;
+    final AbstractBuiltinFunction func = this ;
+    return new IFunction() {
+      
+
+      @Override
+      public XValue run(Shell shell, SourceLocation loc, List<XValue> args) throws Exception
+      {
+        return func.run(shell, args);
+        
+      }
+
+      @Override
+      public String getName()
+      {
+        return func.getName();
+      }} ;
+
+  
   }
   /* (non-Javadoc)
    * @see org.xmlsh.core.IFunction#argumentEnv(org.xmlsh.core.EvalEnv)

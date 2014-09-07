@@ -15,12 +15,14 @@ import org.xmlsh.util.Util;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.List;
-
+/*
+ * An expression that evaluates as running a 'command' by running exec()
+ */
 public abstract class CommandExpr implements ICommandExpr  {
 	private		SourceLocation	mLocation = null;
 	private		boolean		mWait = true ;
 	private String mSeparator = null ; // "\n ; & "
-	private String mName = null ;
+	protected String mName = null ;
 
 
 	/* (non-Javadoc)

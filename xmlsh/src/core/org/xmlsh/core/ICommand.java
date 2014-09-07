@@ -11,6 +11,7 @@ import org.xmlsh.sh.shell.IModule;
 import org.xmlsh.sh.shell.Shell;
 
 import java.io.File;
+import java.io.PrintWriter;
 import java.util.List;
 
 public interface ICommand {
@@ -31,6 +32,7 @@ public interface ICommand {
 	public void		close();
 	public SourceLocation getLocation();
 	public void setLocation( SourceLocation loc);
+  public void print(PrintWriter w, boolean bExec);
 
 
 

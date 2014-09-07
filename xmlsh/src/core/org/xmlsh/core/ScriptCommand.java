@@ -7,7 +7,6 @@
 package org.xmlsh.core;
 
 import org.apache.logging.log4j.Logger;
-
 import org.xmlsh.sh.core.SourceLocation;
 import org.xmlsh.sh.shell.IModule;
 import org.xmlsh.sh.shell.SerializeOpts;
@@ -20,6 +19,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 
@@ -141,6 +141,13 @@ public class ScriptCommand implements ICommand {
 	public String getScriptName() {
 		return mScriptName;
 	}
+
+
+  @Override
+  public void print(PrintWriter w, boolean bExec)
+  {
+    w.print( mScriptName );
+  }
 
 
 

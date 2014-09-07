@@ -6,6 +6,7 @@
 
 package org.xmlsh.core;
 
+import org.xmlsh.sh.core.SourceLocation;
 import org.xmlsh.sh.shell.Shell;
 
 import java.util.List;
@@ -13,18 +14,7 @@ import java.util.List;
 public interface IFunction
 {
 
-  public XValue run(Shell shell, List<XValue> args) throws Exception;
-
-  /* (non-Javadoc)
-   * @see org.xmlsh.core.IFunction#argumentEnv(org.xmlsh.core.EvalEnv)
-   */
-  public EvalEnv argumentEnv(EvalEnv parent);
-
-  /* (non-Javadoc)
-   * @see org.xmlsh.core.IFunction#returnEnv(org.xmlsh.core.EvalEnv)
-   */
-  public EvalEnv returnEnv(EvalEnv parent);
-
+  public XValue run(Shell shell, SourceLocation loc, List<XValue> args) throws Exception;
   public String getName();
 
 }

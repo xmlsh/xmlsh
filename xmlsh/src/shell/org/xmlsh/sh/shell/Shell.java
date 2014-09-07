@@ -7,6 +7,7 @@
 package org.xmlsh.sh.shell;
 
 import net.sf.saxon.s9api.Processor;
+
 import org.apache.commons.io.output.StringBuilderWriter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -17,6 +18,7 @@ import org.xmlsh.core.ExitOnErrorException;
 import org.xmlsh.core.FileInputPort;
 import org.xmlsh.core.FileOutputPort;
 import org.xmlsh.core.ICommand;
+import org.xmlsh.core.IFunction;
 import org.xmlsh.core.IFunctionDecl;
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.InvalidArgumentException;
@@ -108,6 +110,7 @@ public class Shell implements AutoCloseable, Closeable
   static Logger mLogger = LogManager.getLogger();
   private ShellOpts mOpts;
 
+  // Script functons
   private FunctionDefinitions mFunctions = null;
   private XEnvironment mEnv = null;
   private List<XValue> mArgs = new CopyOnWriteArrayList<XValue>();
@@ -1418,7 +1421,7 @@ public class Shell implements AutoCloseable, Closeable
 
   }
 
-  public IFunctionDecl getFunction(String name)
+  public IFunctionDecl getFunctionDecl(String name)
   {
 
     if(mFunctions == null)
@@ -1432,10 +1435,10 @@ public class Shell implements AutoCloseable, Closeable
   }
 
   /*
-   * Execute a command as a function body
+   * Execute a function as a command
    * Extracts return values from the function if present
    */
-  public int execFunction(String name, ICommandExpr cmd, SourceLocation location, List<XValue> args) throws Exception
+  public int execFunctionAsCommand(String name, ICommandExpr cmd, SourceLocation location, List<XValue> args) throws Exception
   {
 
     List<XValue> saveArgs = getArgs();
@@ -1457,9 +1460,37 @@ public class Shell implements AutoCloseable, Closeable
       getCallStack().pop();
 
     }
-
   }
 
+  /*
+   * Run a function expressed as a command body 
+   */
+  public XValue runCommandFunction(String name , ICommandExpr mBody, SourceLocation location , List<XValue> args) throws ThrowException, ExitOnErrorException
+  {
+    
+    List<XValue> saveArgs = getArgs();
+    String saveArg0 = getArg0();
+    Variables save_vars = pushLocalVars();
+
+    getCallStack().push(new CallStackEntry(name, mBody , location  ));
+    setArg0(name);
+    setArgs(args);
+
+    try {
+      int ret = exec(mBody, mBody.getLocation());
+      return this.getReturnValue();
+
+    } finally {
+      popLocalVars(save_vars);
+      setArg0(saveArg0);
+      setArgs(saveArgs);
+      getCallStack().pop();
+
+    }
+    
+  }
+  
+  
   /*
    * Convert return value to exit value
    */
@@ -1990,6 +2021,10 @@ public class Shell implements AutoCloseable, Closeable
   {
     return mClosed;
   }
+
+
+
+
 
 }
 //

@@ -1,11 +1,11 @@
-java.lang.String
-String Value:
-String Value: (init) Hi
-String Value: (concat) Hi There
-String Value: (replace) Bye There
-java.lang.Integer
-Length: 8
-org.xmlsh.test.TestTypes
-TestTypes(String)
-TestTypes(Integer)
+[14]java.lang.String
+[14] String Value:
+[14] String Value: (init) Hi
+[14] String Value: (concat) Hi There
+[14] String Value: (replace) Bye There
+[14]java.lang.Integer
+[14] Length: 8
+[14]org.xmlsh.test.TestTypes
+[14] TestTypes(String)
+[14] TestTypes(Integer)
 TestTypes(int,String)

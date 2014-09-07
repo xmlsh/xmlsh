@@ -8,7 +8,6 @@ package org.xmlsh.core;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
 import org.xmlsh.sh.core.SourceLocation;
 import org.xmlsh.sh.shell.IModule;
 import org.xmlsh.sh.shell.SerializeOpts;
@@ -19,6 +18,7 @@ import org.xmlsh.util.StreamCopier;
 import org.xmlsh.util.Util;
 
 import java.io.File;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -231,6 +231,13 @@ public class ExternalCommand implements ICommand {
 	public void setLocation(SourceLocation loc) {
 		mLocation = loc ;
 	}
+
+  @Override
+  public void print(PrintWriter w, boolean bExec)
+  {
+    w.print(  mCommandFile.getPath() );
+    
+  }
 
 
 

@@ -7,7 +7,6 @@
 package org.xmlsh.core;
 
 import org.apache.logging.log4j.Logger;
-
 import org.xmlsh.sh.core.SourceLocation;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
@@ -19,13 +18,24 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.net.URISyntaxException;
 
 import javax.xml.transform.Source;
 
 public abstract class AbstractCommand implements ICommand {
 
-	protected static Logger mLogger = org.apache.logging.log4j.LogManager.getLogger();
+  //@TODO Temporary
+	@Override
+  public void print(PrintWriter w, boolean bExec)
+  {
+
+	  w.print( getName() );
+	  
+  }
+
+
+  protected static Logger mLogger = org.apache.logging.log4j.LogManager.getLogger();
 
 	protected	Shell mShell;
 	protected XEnvironment mEnvironment;
