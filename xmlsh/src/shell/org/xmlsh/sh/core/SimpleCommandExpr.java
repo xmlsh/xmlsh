@@ -176,7 +176,7 @@ public class SimpleCommandExpr extends CommandExpr {
 
 		catch( Exception e ){
 
-			mLogger.error("Exception running command: " + cmdName  , e );
+	///		mLogger.catching( e );
 			logLocation(shell);
 			shell.printErr("Exception running: " +  cmdName + "\n" +  e.toString() );
 

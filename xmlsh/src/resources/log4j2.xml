@@ -14,14 +14,18 @@
 
 
 	<Appenders>
-		<File name="A1" fileName="${logfile}" append="false">
+		<File name="A1" fileName="${logfile}" append="true">
 			<PatternLayout pattern="%d %-5r %-5p [%t] %c{2} - %m%n" />
 		</File>
-		<Console name="STDOUT">
+		<Console name="CONSOLE" target="SYSTEM_ERR">
 			<PatternLayout pattern="%m MDC%X%n" />
 		</Console>
+		<Shell name="SHELL" >
+		
+		</Shell>
 	</Appenders>
 	<Loggers>
+	  
 		<logger name="org.xmlsh" level="INFO">
 			<AppenderRef ref="A1" />
 		</logger>
@@ -33,8 +37,14 @@
 		<logger name="org.xmlsh.sh.grammar" level="WARN" additivity="false">
 		   <AppenderRef ref="A1" />
 		</logger>
-		<Root level="ERROR">
-			<AppenderRef ref="A1" />
+		
+		 <Root level="ERROR">
+		 
+		   <AppenderRef ref="SHELL" level="trace"/>
+		  <!--   <AppenderRef ref="CONSOLE" level="ERROR"/> -->
+		   <AppenderRef ref="A1" level="WARN"/>
+
 		</Root>
 	</Loggers>
+	
 </Configuration>

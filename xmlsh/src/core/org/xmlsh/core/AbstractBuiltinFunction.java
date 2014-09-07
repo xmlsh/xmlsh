@@ -9,11 +9,13 @@ import org.xmlsh.sh.core.SourceLocation;
 import org.xmlsh.sh.core.CommandExpr;
 import org.xmlsh.sh.core.ICommandExpr;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.util.HelpUsage;
+import org.xmlsh.util.Util;
 
 import java.io.PrintWriter;
 import java.util.List;
 
-public abstract class AbstractBuiltinFunction extends CommandExpr implements IFunctionExpr {
+public abstract class AbstractBuiltinFunction extends AbstractFunction implements IFunctionExpr {
 
   public abstract XValue  run( Shell shell , List<XValue> args ) throws Exception;
   protected AbstractBuiltinFunction( String name )
@@ -21,25 +23,7 @@ public abstract class AbstractBuiltinFunction extends CommandExpr implements IFu
     super(name);
   }
 
-
-  @Override
-  public int exec(Shell shell) throws Exception {
-    XValue retVal = run( shell , shell.getArgs());
-    shell.exec_return(retVal);
-    return 0;
-  }
-
-  @Override
-  public boolean isSimple() {
-
-    return true;
-  }
-
-  @Override
-  public void print(PrintWriter out, boolean bExec) {
-    out.print(getName());
-
-  }
+  
 
   @Override
   public IFunction getFunction()
@@ -62,22 +46,6 @@ public abstract class AbstractBuiltinFunction extends CommandExpr implements IFu
       }} ;
 
   
-  }
-  /* (non-Javadoc)
-   * @see org.xmlsh.core.IFunction#argumentEnv(org.xmlsh.core.EvalEnv)
-   */
-  @Override
-  public EvalEnv argumentEnv(EvalEnv parent)
-  {
-    return parent.withFlagsOff(EvalFlag.EXPAND_WILD , EvalFlag.SPLIT_WORDS) ;
-  }
-  /* (non-Javadoc)
-   * @see org.xmlsh.core.IFunction#returnEnv(org.xmlsh.core.EvalEnv)
-   */
-  @Override
-  public EvalEnv returnEnv(EvalEnv parent)
-  {
-    return EvalEnv.evalNone() ;
   }
 }
 

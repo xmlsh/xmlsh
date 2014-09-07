@@ -63,8 +63,8 @@ public abstract class BuiltinCommand extends AbstractCommand  {
 			error( e );
 			return -1;
 		}
-		catch( Exception e ) {
-			mLogger.error("Uncaught exception in main",e);
+		catch( ThrowException e ) {
+		  mLogger.trace("passing on ThrownException" , e);
 			throw e ;
 		}
 		finally {

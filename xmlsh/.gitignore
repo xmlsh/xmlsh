@@ -1,3 +1,4 @@
 **/version.properties
 test/**/_out.txt
 test/**/_err.txt
+/.apt_generated/

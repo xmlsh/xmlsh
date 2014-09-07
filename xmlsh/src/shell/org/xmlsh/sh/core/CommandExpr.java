@@ -6,26 +6,27 @@
 
 package org.xmlsh.sh.core;
 
-import org.xmlsh.core.InvalidArgumentException;
-import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.util.HelpUsage;
 import org.xmlsh.util.Util;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.List;
 /*
  * An expression that evaluates as running a 'command' by running exec()
  */
-public abstract class CommandExpr implements ICommandExpr  {
+public abstract class CommandExpr extends AbstractExpr implements ICommandExpr  {
 	private		SourceLocation	mLocation = null;
 	private		boolean		mWait = true ;
 	private String mSeparator = null ; // "\n ; & "
-	protected String mName = null ;
 
-
-	/* (non-Javadoc)
+	protected CommandExpr(){
+	  super();
+	}
+	protected CommandExpr(String name)
+  {
+    super(name);
+  }
+  /* (non-Javadoc)
    * @see org.xmlsh.sh.core.ICommandExpr#isWait()
    */
 	@Override
@@ -68,30 +69,12 @@ public abstract class CommandExpr implements ICommandExpr  {
 	}
 
 
-	protected CommandExpr()
-	{
-	}
-
-	protected CommandExpr(String name)
-	{
-		setName(name) ;
-	}
 
 	public void setSeparator( String op ) {
 		mSeparator = op;
 		if( Util.isEqual( op , "&" ) )
 			mWait = false ;
 	}
-	// Default name if none provided
-	/* (non-Javadoc)
-   * @see org.xmlsh.sh.core.ICommandExpr#getName()
-   */
-	@Override
-  public String getName()
-	{
-		return Util.isBlank(mName) ? "<unnamed>" : mName ;
-	}
-
 	public String	toString(boolean bExec) {
 		StringWriter sw = new StringWriter();
 		PrintWriter w = new PrintWriter(sw);
@@ -100,52 +83,7 @@ public abstract class CommandExpr implements ICommandExpr  {
 		return sw.toString();
 
 	}
-	public void setName(String name)
-	{
-		mName = name;
-	}
 
-	// Helper function for simple values
-	protected XValue getFirstArg( List<XValue> args  ) throws InvalidArgumentException {
-		requires( ! args.isEmpty() , "Excpected arugment missing");
-		return args.get(0);
-	}
-
-
-	protected void requires( boolean condition , String message ) throws InvalidArgumentException {
-		if( ! condition )
-			throw new InvalidArgumentException( getName() + ":" + message );
-
-	}
-	
-
-  public void usage(Shell shell  , String message)
-  {
-    String cmdName = this.getName();
-    SourceLocation sloc = getLocation();
-    if( !Util.isBlank(message))
-      shell.printErr(cmdName + ": " + message,sloc);
-    else
-      shell.printErr(cmdName + ":", sloc );
-    HelpUsage helpUsage = new HelpUsage( shell );
-    try {
-      helpUsage.doUsage(shell.getEnv().getStdout(), cmdName);
-    } catch (Exception e) {
-      shell.printErr("Usage: <unknown>",sloc);
-    }
-  }
-  public void usage(Shell shell)
-  {
-    usage(shell);
-  }
-
-  protected void error(Shell shell , Exception e)
-  {
-    shell.printErr( getName() , e);
-    usage( shell ,  e.toString() );
-  }
-
-  
 
 }
 
