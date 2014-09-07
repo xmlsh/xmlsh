@@ -288,6 +288,15 @@ public class XValuePropertyList  implements     IXValueMap<XValuePropertyList>, 
     {
       return Util.toList(iterator());
     }
+
+	@Override
+	public boolean containsKey(String key) {
+		for( XValueProperty p : mList ) {
+			  if( p.nameEquals(key) ) 
+				  return true ;
+		}
+		return false ;
+	}
 }
 
 

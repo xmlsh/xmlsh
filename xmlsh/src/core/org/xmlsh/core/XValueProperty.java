@@ -203,6 +203,11 @@ public class XValueProperty extends XNamedValue implements IXValueMap<XValueProp
     throw new UnsupportedOperationException("asXSequence not supported for XValueProperty");
   }
 
+@Override
+public boolean containsKey(String key) {
+	return key.equals(getKey());
+}
+
 }
 
 /*

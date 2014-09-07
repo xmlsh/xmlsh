@@ -83,25 +83,6 @@ public class XValueList  extends AbstractList<XValue> implements IXValueContaine
   
 
 	@Override
-	public Set<String> keySet()
-	{
-		SortedSet<String> set = new TreeSet<>(
-				new Comparator<String>() {
-
-					@Override
-					public int compare(String o1, String o2)
-					{
-						return  Integer.valueOf( o1).compareTo
-								(Integer.valueOf(o2));
-					}}
-				);
-		for( int i = 0 ; i < mList.size() ; i++ )
-			set.add(String.valueOf(i));
-		return set;
-
-	}
-
-	@Override
 	public Collection<XValue> values()
 	{
 		return Collections.unmodifiableCollection(mList);

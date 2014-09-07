@@ -24,17 +24,19 @@ public interface IMethods
 	public String asString( Object obj );
 	public int    getSize( Object obj ) throws InvalidArgumentException;
 	public XValue getXValue( Object obj ) throws InvalidArgumentException;
-	public XValue getXValue(Object obj, String ind) throws CoreException;
-  public XValue getXValue(Object obj, int index) throws CoreException;
+  	public XValue getXValue(Object obj, String ind) throws CoreException;
+    public XValue getXValue(Object obj, int index) throws CoreException;
 	public XValue setXValue(XValue obj , String ind , XValue value ) throws CoreException;
-  public XValue setXValue(XValue obj, int index, XValue value) throws CoreException;
+    public XValue setXValue(XValue obj, int index, XValue value) throws CoreException;
 
 	public void   serialize( Object obj , OutputStream os , SerializeOpts opts) throws IOException, InvalidArgumentException ;
 	public String  simpleTypeName(Object obj);
 	public String  typeName(Object obj);     // specific type name 
     public boolean isEmpty(Object obj) throws InvalidArgumentException;
 	public List<XValue>  getXValues(Object obj);    // Get all contents 
-	public boolean isAtomic(Object value);
+	public boolean isAtomic(Object obj);
+    public boolean hasKey(Object obj , String key );
+    
 
 }
 

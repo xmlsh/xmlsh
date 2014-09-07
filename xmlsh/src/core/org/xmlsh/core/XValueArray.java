@@ -21,7 +21,7 @@ import java.util.TreeSet;
  * Default starts at index 1 (not 0)
  * 
  */
-public class XValueArray extends AbstractList<XValue> implements IXValueContainer<XValueArray> , IXValueList<XValueArray> 
+public class XValueArray extends AbstractList<XValue> implements IXValueMap<XValueArray> , IXValueList<XValueArray> 
 {
 	private static XValueArray _emptyArray = new XValueArray();
   private     TreeMap<Integer,XValue>   mArray;
@@ -200,21 +200,18 @@ public class XValueArray extends AbstractList<XValue> implements IXValueContaine
     @Override
     public IXValueMap<? extends IXValueMap<?>> asXMap()
     {
-      // TODO Auto-generated method stub
-      return null;
+      return this;
     }
 
     @Override
     public IXValueList<? extends IXValueList<?>> asXList()
     {
-      // TODO Auto-generated method stub
       return this;
     }
 
     @Override
     public IXValueSequence<? extends IXValueSequence<?>> asXSequence()
     {
-      // TODO Auto-generated method stub
       return null;
     }
 
@@ -228,6 +225,23 @@ public class XValueArray extends AbstractList<XValue> implements IXValueContaine
     {
       return Util.toList(iterator());
     }
+
+	@Override
+	public XValue get(String name) {
+      return getAt( Util.parseInt(name, 0));
+	
+	}
+
+	@Override
+	public XValue put(String key, XValue value) {
+		return setAt( Util.parseInt(key,0),value);
+		
+	}
+
+	@Override
+	public boolean containsKey(String key) {
+		return mArray.containsKey(Util.parseInt(key,0));
+	}
 
 
 }

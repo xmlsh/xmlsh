@@ -1,0 +1,9 @@
+_out/
+*.class
+*.jar
+*.bak
+_dist/
+*.war
+*.tmp/
+test/_out.txt
+test/_err.txt

@@ -136,12 +136,6 @@ public  class XValueSequence implements Iterable<XValue>  ,    IXValueSequence<X
   }
 
 
-  @Override
-  public Set<String> keySet()
-  {
-    throw new UnsupportedOperationException("keySet is not implemented for XValueSequence");
-
-  }
 
 
   @Override
@@ -244,7 +238,6 @@ public  class XValueSequence implements Iterable<XValue>  ,    IXValueSequence<X
   @Override
   public IXValueSequence<? extends IXValueSequence<?>> asXSequence()
   {
-    // TODO Auto-generated method stub
     return this;
   }
 

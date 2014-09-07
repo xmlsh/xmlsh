@@ -18,6 +18,7 @@ import net.sf.saxon.s9api.XdmEmptySequence;
 import net.sf.saxon.s9api.XdmFunctionItem;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
+import net.sf.saxon.s9api.XdmNodeKind;
 import net.sf.saxon.s9api.XdmSequenceIterator;
 import net.sf.saxon.s9api.XdmValue;
 import net.sf.saxon.tree.iter.SingletonIterator;
@@ -26,6 +27,7 @@ import net.sf.saxon.value.AtomicValue;
 import net.sf.saxon.value.EmptySequence;
 import net.sf.saxon.value.SequenceExtent;
 import net.sf.saxon.value.Value;
+
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.SerializeOpts;
@@ -91,12 +93,19 @@ public class XMLUtils
 		return simplify( new XdmValue(list) );
 		
 	}
-
+	public static XdmValue asXdmValue(Object obj) throws InvalidArgumentException
+	{
+		if( ! (obj instanceof XdmValue) )
+			return null ;
+		return (XdmValue) obj ;
+	}
 	
 
-	public static XdmNode asXdmNode(XdmValue xdm) throws InvalidArgumentException
+	public static XdmNode asXdmNode(Object obj) throws InvalidArgumentException
 	{
-		XdmItem item = asXdmItem(xdm);
+		if( ! (obj instanceof XdmValue) )
+			return null ;
+		XdmItem item = asXdmItem((XdmValue)obj );
 		if( item instanceof XdmNode )
 			return (XdmNode) item ;
 		else
@@ -348,6 +357,21 @@ public class XMLUtils
         return XValue.newXValue(TypeFamily.XDM , value);
       }
     }
+
+
+	public static boolean isXdmValue(Object obj) {
+		return obj instanceof XdmValue ;
+
+	}
+
+
+	public static boolean isXdmElement(Object obj) {
+		if( obj instanceof XdmNode ){
+			XdmNode node = ((XdmNode)obj);
+			return node.getNodeKind() == XdmNodeKind.ELEMENT;
+		}
+		return false ;
+	}
 
 
   

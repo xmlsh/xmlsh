@@ -4,6 +4,7 @@ import org.xmlsh.core.CoreException;
 import org.xmlsh.core.IXValue;
 import org.xmlsh.core.IXValueContainer;
 import org.xmlsh.core.IXValueList;
+import org.xmlsh.core.IXValueMap;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.XValueList;
@@ -11,6 +12,7 @@ import org.xmlsh.core.XValueSequence;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.util.JavaUtils;
 import org.xmlsh.util.Util;
+
 import static org.xmlsh.types.TypeFamily.*;
 
 import java.io.IOException;
@@ -251,6 +253,18 @@ public class XTypeFamily extends AbstractTypeFamily implements ITypeFamily
   {
     return _instance;
   }
+
+
+@Override
+public boolean hasKey(Object obj, String key) {
+	if( obj instanceof IXValueContainer ){
+		IXValueMap<?> c = (IXValueMap<?>) obj ;
+		return 	c.containsKey(key);
+	}
+	return false;
+	
+	
+}
 
 
 }

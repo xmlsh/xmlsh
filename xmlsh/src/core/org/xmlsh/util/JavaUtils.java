@@ -8,12 +8,14 @@ package org.xmlsh.util;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
 import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.XdmAtomicValue;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XdmValue;
 import net.sf.saxon.trans.XPathException;
+
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
@@ -529,12 +531,12 @@ public class JavaUtils {
 
 	}
 
-	public static Object getField(String classname, XValue instance, String fieldName, ClassLoader classloader) throws InvalidArgumentException, SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException, ClassNotFoundException {
+	public static Object getFieldValue(String classname, XValue instance, String fieldName, ClassLoader classloader) throws InvalidArgumentException, SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException, ClassNotFoundException {
 		Class<?> cls = findClass(classname, classloader);
-		return getField( cls , instance == null ? null : instance.asObject() , fieldName , classloader );
+		return getFieldValue( cls , instance == null ? null : instance.asObject() , fieldName , classloader );
 	}
 
-	public static Object getField(Class<?> cls , Object instance, String fieldName, ClassLoader classloader) throws InvalidArgumentException, SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException, ClassNotFoundException {
+	public static Object getFieldValue(Class<?> cls , Object instance, String fieldName, ClassLoader classloader) throws InvalidArgumentException, SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException, ClassNotFoundException {
 		assert( cls != null );
 		assert( fieldName != null );
 
@@ -809,6 +811,37 @@ public class JavaUtils {
        return "object" ;
            
     }
+
+	public static boolean hasKey(Object obj, String key) {
+		if( obj instanceof Map )
+			return ((Map)obj).containsKey(key);
+		return false ;
+		
+		
+	}
+
+
+	public static Object getNameIndexValue(Object obj, String ind) throws CoreException {
+		if( obj instanceof Map )
+			return ((Map)obj).get(ind);
+
+    	  try {
+          return getFieldValue(obj.getClass(), obj, ind, null);
+      } catch (SecurityException | NoSuchFieldException | IllegalArgumentException
+        | IllegalAccessException | ClassNotFoundException e) {
+        Util.wrapCoreException("Exception getting value from java class: " + obj.getClass().getName(), e);
+      }
+		return null;
+		
+		
+	}
+
+	public static boolean isList(Object obj) {
+		return isArrayClass(obj.getClass()) ||
+			 obj instanceof List ;
+		
+		
+	}
 }
 
 

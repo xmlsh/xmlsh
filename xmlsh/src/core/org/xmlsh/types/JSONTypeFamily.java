@@ -331,4 +331,13 @@ public class JSONTypeFamily extends AbstractTypeFamily implements ITypeFamily
   }
 
 
+@Override
+public boolean hasKey(Object obj, String key) {
+	if( obj instanceof ObjectNode )
+		return ((ObjectNode)obj).has(key);
+	return false ;
+}
+
+
+
 }

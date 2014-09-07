@@ -9,7 +9,7 @@ public interface  IXValueContainer<T extends IXValueContainer<T > > extends IXVa
 {
 	public int size();
 	public void removeAll();
-	public Set<String>  keySet();     // Ordered set of keys
 	public Collection<XValue> values();   // Ordered set of values
 	public Iterator<XValue> iterator();
+
 }

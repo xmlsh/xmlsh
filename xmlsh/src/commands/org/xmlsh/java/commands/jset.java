@@ -6,13 +6,13 @@
 
 package org.xmlsh.java.commands;
 
+import java.util.List;
+
 import org.xmlsh.core.BuiltinCommand;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.XValue;
 import org.xmlsh.util.JavaUtils;
 import org.xmlsh.util.Util;
-
-import java.util.List;
 
 public class jset extends BuiltinCommand {
 
@@ -49,7 +49,7 @@ public class jset extends BuiltinCommand {
 			obj = JavaUtils.callStatic(classname, method, args, classloader);
 		else
 			if( field != null )
-				obj = XValue.newXValue(JavaUtils.getField( classname , instance,  field , classloader ));
+				obj = XValue.newXValue(JavaUtils.getFieldValue( classname , instance,  field , classloader ));
 			else
 				obj = XValue.newXValue(JavaUtils.callMethod(instance, method, args, classloader));
 

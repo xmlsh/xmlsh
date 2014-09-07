@@ -8,7 +8,9 @@ import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XdmAtomicValue;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmItem;
+import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XdmValue;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.tools.ant.types.resources.comparators.Size;
@@ -23,6 +25,7 @@ import org.xmlsh.util.JavaUtils;
 import org.xmlsh.util.S9Util;
 import org.xmlsh.util.Util;
 import org.xmlsh.util.XMLUtils;
+import org.xmlsh.xs.functions.element;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -296,6 +299,19 @@ public final class XDMTypeFamily extends AbstractTypeFamily implements ITypeFami
   {
     return _instance;
   }
+
+@Override
+public boolean hasKey(Object obj, String key) {
+	if( XMLUtils.isXdmElement(obj)){
+
+		XdmNode element = XMLUtils.asXdmNode(obj);
+
+		if( element.getAttributeValue( new QName(key) ) != null )
+			return true ;
+	}
+	return false ;
+		
+}
 
 
 }

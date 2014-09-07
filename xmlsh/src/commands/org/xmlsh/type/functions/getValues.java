@@ -1,27 +1,42 @@
 /**
  * $Id: $
  * $Date: $
- * 
+ *
  */
 
-package org.xmlsh.core;
+package org.xmlsh.type.functions;
 
-import java.util.Set;
+import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonAnySetter;
+import org.xmlsh.core.IXValueMap;
+import org.xmlsh.core.AbstractBuiltinFunction;
+import org.xmlsh.core.XValue;
+import org.xmlsh.core.XValueSequence;
+import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.util.Util;
 
-/*
- * Map specific values
- */
-public interface IXValueMap<T extends IXValueMap<T > > extends  IXValueContainer<T>
+public class getValues extends AbstractBuiltinFunction
 {
-  public XValue get(String name);
-  public Set<String> keySet();
-  public XValue put(String key, XValue value);
-	public boolean containsKey(String key);
 
+  public getValues()
+  {
+    super("get-values");
+  }
 
+  @Override
+  public XValue run(Shell shell, List<XValue> args) throws Exception
+  {
+    XValueSequence list = new XValueSequence();
+    for( XValue x : args ) { 
+      for( XValue v : x.getXValues() ){
+            list.addValue( v );
+      }
+    }
+    return list.asXValue();
+  }
 }
+
+
 
 /*
  * Copyright (C) 2008-2012 David A. Lee.

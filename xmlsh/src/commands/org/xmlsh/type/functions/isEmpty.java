@@ -1,27 +1,42 @@
 /**
  * $Id: $
  * $Date: $
- * 
+ *
  */
 
-package org.xmlsh.core;
+package org.xmlsh.type.functions;
 
-import java.util.Set;
+import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonAnySetter;
+import org.xmlsh.core.AbstractBuiltinFunction;
+import org.xmlsh.core.XValue;
+import org.xmlsh.json.JSONUtils;
+import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.sh.shell.ShellConstants;
+import org.xmlsh.types.TypeFamily;
+import org.xmlsh.util.Util;
 
-/*
- * Map specific values
- */
-public interface IXValueMap<T extends IXValueMap<T > > extends  IXValueContainer<T>
+
+public class isEmpty extends AbstractBuiltinFunction
 {
-  public XValue get(String name);
-  public Set<String> keySet();
-  public XValue put(String key, XValue value);
-	public boolean containsKey(String key);
 
+  public isEmpty()
+  {
+    super("is-emtpy");
+  }
+
+  @Override
+  public XValue run(Shell shell, List<XValue> args) throws Exception
+  {
+    for( XValue arg : args )
+    	if( ! arg.isEmpty())
+    		return XValue.newXValue(false) ;
+    return XValue.newXValue(true) ;
+  }
 
 }
+
+
 
 /*
  * Copyright (C) 2008-2012 David A. Lee.

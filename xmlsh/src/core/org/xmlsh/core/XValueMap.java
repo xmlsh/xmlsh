@@ -262,6 +262,11 @@ public class XValueMap extends AbstractMap<String,XValue> implements IXValueMap<
       
     }
 
+	@Override
+	public boolean containsKey(String key) {
+		return mMap.containsKey(key);
+	}
+
 }
 /*
  * Copyright (C) 2008-2012 David A. Lee.

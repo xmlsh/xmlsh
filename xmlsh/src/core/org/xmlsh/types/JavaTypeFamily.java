@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 public class JavaTypeFamily extends AbstractTypeFamily implements ITypeFamily
 {
@@ -84,12 +85,10 @@ public class JavaTypeFamily extends AbstractTypeFamily implements ITypeFamily
       boolean isInt = Util.isInt(ind, false);
       if(isInt && JavaUtils.isArrayClass(obj.getClass()))
         res = JavaUtils.getIndexValue(obj, Util.parseInt(ind, 0));
-      else try {
-        res = JavaUtils.getField(obj.getClass(), obj, ind, null);
-      } catch (SecurityException | NoSuchFieldException | IllegalArgumentException
-        | IllegalAccessException | ClassNotFoundException e) {
-        Util.wrapCoreException("Exception getting value from java class: " + obj.getClass().getName(), e);
-      }
+      else 
+      if( ! isAtomic(obj) )
+    	  res = JavaUtils.getNameIndexValue( obj , ind );
+   
       return getXValue(res);
 
     }
@@ -196,5 +195,13 @@ public class JavaTypeFamily extends AbstractTypeFamily implements ITypeFamily
     {
       return _instance;
     }
+
+
+	@Override
+	public boolean hasKey(Object obj, String key) {
+	   return JavaUtils.hasKey( obj , key );
+		
+	}
+
 
 }

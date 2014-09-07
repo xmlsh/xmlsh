@@ -9,6 +9,7 @@ import com.amazonaws.auth.AWSCredentialsProviderChain;
 import com.amazonaws.auth.EnvironmentVariableCredentialsProvider;
 import com.amazonaws.auth.InstanceProfileCredentialsProvider;
 import com.amazonaws.auth.SystemPropertiesCredentialsProvider;
+import com.amazonaws.auth.profile.ProfileCredentialsProvider;
 
 public class AWSCommandCredentialsProviderChain extends AWSCredentialsProviderChain
 {
@@ -19,8 +20,11 @@ public class AWSCommandCredentialsProviderChain extends AWSCredentialsProviderCh
 				new AWSOptionsCredentialsProvider( shell , opts),
 				new AWSEnvCredentialsProvider(shell),
 				new EnvironmentVariableCredentialsProvider(),
+				new ProfileCredentialsProvider(),
 				new SystemPropertiesCredentialsProvider(),
 				new InstanceProfileCredentialsProvider());
+		   
+		   
 
 	}
 

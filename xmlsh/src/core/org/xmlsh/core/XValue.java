@@ -28,6 +28,7 @@ import net.sf.saxon.value.DoubleValue;
 import net.sf.saxon.value.FloatValue;
 import net.sf.saxon.value.IntegerValue;
 import net.sf.saxon.value.Value;
+
 import org.apache.logging.log4j.Logger;
 import org.xmlsh.json.JSONUtils;
 import org.xmlsh.sh.shell.SerializeOpts;
@@ -1025,6 +1026,20 @@ public class XValue implements Iterable<XValue>
       throw new UnexpectedException("Exception evaluating xpath: " + expr, e);
     }
   }
+
+
+
+public XValue getNamedValue( String key ) throws CoreException {
+	
+	return typeFamilyInstance().getXValue( mValue, key );
+
+}
+
+public List<XValue> getXValues() {
+	if( mValue == null )
+		return emptyList();
+	return getTypeMethods().getXValues( mValue  ); 
+}
 
 }
 //

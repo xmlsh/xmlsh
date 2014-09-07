@@ -271,6 +271,11 @@ public class XConfiguration implements IXValueContainer<XConfiguration> , IXValu
     return null;
 
   }
+
+@Override
+public boolean containsKey(String key) {
+	return mSections.containsKey(key);
+}
   
 }
 
