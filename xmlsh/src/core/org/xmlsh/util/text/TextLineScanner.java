@@ -6,9 +6,9 @@
 
 package org.xmlsh.util.text;
 
-import org.xmlsh.util.Util;
-
 import java.util.Scanner;
+
+import org.xmlsh.util.Util;
 
 
 /*

@@ -7,19 +7,18 @@
 package org.xmlsh.sh.shell;
 
 
+import java.io.InputStream;
+import java.lang.reflect.Constructor;
+import java.util.List;
+
 import org.xmlsh.core.ICommand;
 import org.xmlsh.core.IFunction;
 import org.xmlsh.core.IFunctionDecl;
-import org.xmlsh.core.IFunctionExpr;
 import org.xmlsh.core.ScriptCommand;
 import org.xmlsh.core.ScriptFunctionCommand;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.util.JavaUtils;
 import org.xmlsh.util.Util;
-
-import java.io.InputStream;
-import java.lang.reflect.Constructor;
-import java.util.List;
 
 public class PackageModule extends AbstractModule
 {
@@ -104,12 +103,9 @@ public class PackageModule extends AbstractModule
           if( obj instanceof IFunction )
             return (IFunction) obj ;
           
-          if( obj instanceof IFunctionExpr )
-            return ((IFunctionExpr) obj).getFunction() ;
-          
           if(obj instanceof IFunctionDecl) {
             IFunctionDecl cmd = (IFunctionDecl) obj;
-            return cmd.getFuntionExpr().getFunction();
+            return cmd.getFunction();
           }
         }
       }
@@ -124,7 +120,7 @@ public class PackageModule extends AbstractModule
      */
     InputStream scriptStream = getCommandResource(origName + ".xsh");
     if(scriptStream != null)
-      return new ScriptFunctionCommand(name, scriptStream, this).getFunction();
+      return new ScriptFunctionCommand(name, scriptStream, this);
     return null;
 
   }

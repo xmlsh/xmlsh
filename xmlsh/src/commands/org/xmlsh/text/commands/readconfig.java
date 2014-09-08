@@ -6,25 +6,16 @@
 
 package org.xmlsh.text.commands;
 
-import java.io.InputStream;
 import java.util.List;
 import java.util.Properties;
 
-import org.xmlsh.core.BuiltinCommand;
-import org.xmlsh.core.AbstractBuiltinFunction;
 import org.xmlsh.core.InputPort;
-import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XConfiguration;
 import org.xmlsh.core.XValue;
-import org.xmlsh.core.XValueProperties;
-import org.xmlsh.core.XVariable;
 import org.xmlsh.sh.shell.SerializeOpts;
-import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.types.TypeFamily;
 import org.xmlsh.util.text.TextConfigParser;
-import static org.xmlsh.core.XVariable.XVarFlag.*;
 public class readconfig extends XCommand
 {
   private final class IniConfigParser extends TextConfigParser

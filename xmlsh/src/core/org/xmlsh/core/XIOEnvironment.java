@@ -6,18 +6,17 @@
 
 package org.xmlsh.core;
 
+import java.io.IOException;
+import java.io.OutputStream;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
 import org.xmlsh.util.AutoReleasePool;
 import org.xmlsh.util.INameValue;
 import org.xmlsh.util.NameValue;
 import org.xmlsh.util.NameValueList;
 import org.xmlsh.util.PipedPort;
 import org.xmlsh.util.Util;
-
-import java.io.IOException;
-import java.io.OutputStream;
 
 
 /*

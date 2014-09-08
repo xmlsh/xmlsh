@@ -6,6 +6,11 @@
 
 package org.xmlsh.internal.commands;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.util.List;
+
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.XPathCompiler;
@@ -14,6 +19,7 @@ import net.sf.saxon.s9api.XPathSelector;
 import net.sf.saxon.s9api.XdmAtomicValue;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
+
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.IXdmItemOutputStream;
 import org.xmlsh.core.InputPort;
@@ -26,11 +32,6 @@ import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.Util;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.util.List;
 
 public class xpath extends XCommand {
 

@@ -6,6 +6,14 @@
 
 package org.xmlsh.core;
 
+import java.io.File;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.xmlsh.sh.core.SourceLocation;
@@ -16,14 +24,6 @@ import org.xmlsh.sh.shell.ShellConstants;
 import org.xmlsh.util.PortCopier;
 import org.xmlsh.util.StreamCopier;
 import org.xmlsh.util.Util;
-
-import java.io.File;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
 public class ExternalCommand implements ICommand {
 

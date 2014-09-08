@@ -6,11 +6,6 @@
 
 package org.xmlsh.sh.shell;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import org.xmlsh.util.Util;
-
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
@@ -19,6 +14,10 @@ import java.util.regex.Pattern;
 /*
  * "Input Field Seperator"
  */
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.xmlsh.util.Util;
 
 
 /*

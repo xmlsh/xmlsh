@@ -6,11 +6,11 @@
 
 package org.xmlsh.sh.shell;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import javax.xml.transform.ErrorListener;
 import javax.xml.transform.TransformerException;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class XmlshErrorListener implements ErrorListener {
 	private Logger mLogger = LogManager.getLogger();

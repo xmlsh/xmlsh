@@ -6,11 +6,11 @@
 
 package org.xmlsh.builtin.commands;
 
+import java.util.List;
+
 import org.xmlsh.core.BuiltinCommand;
 import org.xmlsh.core.ThrowException;
 import org.xmlsh.core.XValue;
-
-import java.util.List;
 
 public class xthrow extends BuiltinCommand {
 

@@ -6,16 +6,15 @@
 
 package org.xmlsh.sh.ui;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import org.xmlsh.sh.shell.SerializeOpts;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
 import javax.swing.SwingUtilities;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.xmlsh.sh.shell.SerializeOpts;
 
 public class TextComponentOutputStream extends OutputStream {
 	private static Logger mLogger = LogManager.getLogger();

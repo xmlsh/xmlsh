@@ -6,12 +6,12 @@
 
 package org.xmlsh.internal.commands;
 
+import java.util.List;
+
 import org.xmlsh.core.CommandFactory;
 import org.xmlsh.core.ICommand;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
-
-import java.util.List;
 
 public class validate extends XCommand  {
 

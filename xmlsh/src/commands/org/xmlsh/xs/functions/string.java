@@ -6,13 +6,13 @@
 
 package org.xmlsh.xs.functions;
 
+import java.util.List;
+
 import org.xmlsh.core.AbstractBuiltinFunction;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.sh.shell.ShellConstants;
 import org.xmlsh.util.Util;
-
-import java.util.List;
 
 public class string extends AbstractBuiltinFunction {
 

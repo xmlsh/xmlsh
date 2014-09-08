@@ -6,18 +6,17 @@
 
 package org.xmlsh.json.functions;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.xmlsh.core.AbstractBuiltinFunction;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.json.JSONUtils;
 import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.types.JSONTypeFamily;
 import org.xmlsh.types.TypeFamily;
 import org.xmlsh.types.XTypeUtils;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;

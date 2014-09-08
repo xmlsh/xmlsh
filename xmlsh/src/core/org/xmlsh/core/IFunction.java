@@ -6,10 +6,10 @@
 
 package org.xmlsh.core;
 
+import java.util.List;
+
 import org.xmlsh.sh.core.SourceLocation;
 import org.xmlsh.sh.shell.Shell;
-
-import java.util.List;
 
 public interface IFunction
 {

@@ -6,22 +6,6 @@
 
 package org.xmlsh.json;
 
-import net.sf.saxon.s9api.DocumentBuilder;
-import net.sf.saxon.s9api.Processor;
-import net.sf.saxon.s9api.SaxonApiException;
-import net.sf.saxon.s9api.Serializer;
-import net.sf.saxon.s9api.WhitespaceStrippingPolicy;
-import net.sf.saxon.s9api.XdmNode;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import org.xmlsh.core.CoreException;
-import org.xmlsh.core.XValue;
-import org.xmlsh.sh.shell.SerializeOpts;
-import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.util.Util;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
@@ -45,6 +29,21 @@ import javax.xml.stream.events.EndElement;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 import javax.xml.transform.stream.StreamSource;
+
+import net.sf.saxon.s9api.DocumentBuilder;
+import net.sf.saxon.s9api.Processor;
+import net.sf.saxon.s9api.SaxonApiException;
+import net.sf.saxon.s9api.Serializer;
+import net.sf.saxon.s9api.WhitespaceStrippingPolicy;
+import net.sf.saxon.s9api.XdmNode;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.xmlsh.core.CoreException;
+import org.xmlsh.core.XValue;
+import org.xmlsh.sh.shell.SerializeOpts;
+import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.util.Util;
 
 import com.fasterxml.jackson.core.JsonToken;
 

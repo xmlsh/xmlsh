@@ -1,5 +1,5 @@
 package org.xmlsh.sh.grammar;
-import static org.xmlsh.sh.grammar.ShellParserConstants.*;
+import static org.xmlsh.sh.grammar.ShellParserConstants.WORD;
 
 import org.xmlsh.sh.grammar.ParserState.TokenEnum;
 

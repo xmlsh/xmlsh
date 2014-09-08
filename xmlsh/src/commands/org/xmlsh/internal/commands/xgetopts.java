@@ -6,10 +6,16 @@
 
 package org.xmlsh.internal.commands;
 
+import java.io.IOException;
+import java.util.List;
+
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
+
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
-import net.sf.saxon.s9api.XdmValue;
+
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.IXdmItemOutputStream;
 import org.xmlsh.core.Options;
@@ -21,12 +27,6 @@ import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.util.StAXUtils;
 import org.xmlsh.util.Util;
-
-import java.io.IOException;
-import java.util.List;
-
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
 
 public class xgetopts extends XCommand {
 

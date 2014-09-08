@@ -6,16 +6,16 @@
 
 package org.xmlsh.sh.shell;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.xmlsh.core.EvalEnv;
 import org.xmlsh.core.EvalFlag;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.core.CharAttributeBuffer;
 import org.xmlsh.sh.core.EvalUtils;
 import org.xmlsh.util.Util;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
 public class ParseResult {
 	// Attribute'd char buffer

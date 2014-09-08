@@ -6,15 +6,15 @@
 
 package org.xmlsh.builtin.commands;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
+
 import org.xmlsh.core.BuiltinCommand;
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.IFS;
 import org.xmlsh.util.Util;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
 
 public class read extends BuiltinCommand
 {

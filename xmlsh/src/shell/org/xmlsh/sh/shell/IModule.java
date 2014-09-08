@@ -6,18 +6,13 @@
 
 package org.xmlsh.sh.shell;
 
-import org.xmlsh.core.ICommand;
-import org.xmlsh.core.IFunction;
-
-
-
-import org.xmlsh.core.IReleasable;
-import org.xmlsh.core.XValue;
-
 import java.io.Closeable;
-import java.io.IOException;
 import java.net.URL;
 import java.util.List;
+
+import org.xmlsh.core.ICommand;
+import org.xmlsh.core.IFunction;
+import org.xmlsh.core.XValue;
 
 public interface IModule extends Closeable 
 {

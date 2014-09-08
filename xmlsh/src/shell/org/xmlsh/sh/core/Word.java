@@ -6,6 +6,12 @@
 
 package org.xmlsh.sh.core;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.EvalEnv;
 import org.xmlsh.core.XValue;
@@ -13,12 +19,6 @@ import org.xmlsh.sh.grammar.Token;
 import org.xmlsh.sh.shell.ParseResult;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.Util;
-
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.List;
 
 /*
  * A Value that evaulates to a "cmd_word" which is either a simple string,

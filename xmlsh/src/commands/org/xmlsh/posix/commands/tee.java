@@ -6,19 +6,19 @@
 
 package org.xmlsh.posix.commands;
 
-import org.xmlsh.core.InputPort;
-import org.xmlsh.core.Options;
-import org.xmlsh.core.OutputPort;
-import org.xmlsh.core.XCommand;
-import org.xmlsh.core.XValue;
-import org.xmlsh.sh.shell.SerializeOpts;
-
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.xmlsh.core.InputPort;
+import org.xmlsh.core.Options;
+import org.xmlsh.core.OutputPort;
+import org.xmlsh.core.XCommand;
+import org.xmlsh.core.XValue;
+import org.xmlsh.sh.shell.SerializeOpts;
 
 public class tee extends XCommand {
 

@@ -6,13 +6,10 @@
 
 package org.xmlsh.util.text;
 
+import java.util.Scanner;
+
 import org.xmlsh.core.XConfiguration;
 import org.xmlsh.core.XValue;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
-import java.util.Scanner;
 
 public abstract class TextConfigParser
 {

@@ -8,8 +8,6 @@ package org.xmlsh.core;
 
 import java.util.Set;
 
-import com.fasterxml.jackson.annotation.JsonAnySetter;
-
 /*
  * Map specific values
  */

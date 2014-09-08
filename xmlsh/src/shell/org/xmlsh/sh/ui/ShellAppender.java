@@ -6,12 +6,12 @@
 
 package org.xmlsh.sh.ui;
 
+import java.io.IOException;
+import java.io.OutputStream;
+
 import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.core.appender.AbstractAppender;
 import org.apache.logging.log4j.core.layout.PatternLayout;
-
-import java.io.IOException;
-import java.io.OutputStream;
 public class ShellAppender extends AbstractAppender  {
 
   private OutputStream os ;

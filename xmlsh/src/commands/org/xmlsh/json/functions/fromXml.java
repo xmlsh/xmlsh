@@ -6,22 +6,6 @@
 
 package org.xmlsh.json.functions;
 
-import net.sf.saxon.s9api.BuildingStreamWriter;
-import net.sf.saxon.s9api.Processor;
-import net.sf.saxon.s9api.SaxonApiException;
-import org.xmlsh.core.AbstractBuiltinFunction;
-import org.xmlsh.core.CoreException;
-import org.xmlsh.core.InvalidArgumentException;
-import org.xmlsh.core.SafeXMLStreamWriter;
-import org.xmlsh.core.VariableInputPort;
-import org.xmlsh.core.XValue;
-import org.xmlsh.core.XVariable;
-import org.xmlsh.json.JSONUtils;
-import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.types.TypeFamily;
-import org.xmlsh.util.JavaUtils;
-import org.xmlsh.util.Util;
-
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -29,12 +13,21 @@ import java.util.TreeMap;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
-import javax.xml.stream.XMLStreamWriter;
+
+import net.sf.saxon.s9api.SaxonApiException;
+
+import org.xmlsh.core.AbstractBuiltinFunction;
+import org.xmlsh.core.CoreException;
+import org.xmlsh.core.VariableInputPort;
+import org.xmlsh.core.XValue;
+import org.xmlsh.core.XVariable;
+import org.xmlsh.json.JSONUtils;
+import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.util.JavaUtils;
+import org.xmlsh.util.Util;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.databind.AnnotationIntrospector;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.dataformat.xml.JacksonXmlModule;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;

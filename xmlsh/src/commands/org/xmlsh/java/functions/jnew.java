@@ -6,12 +6,12 @@
 
 package org.xmlsh.java.functions;
 
+import java.util.List;
+
 import org.xmlsh.core.AbstractBuiltinFunction;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.JavaUtils;
-
-import java.util.List;
 
 public class jnew extends AbstractBuiltinFunction {
 

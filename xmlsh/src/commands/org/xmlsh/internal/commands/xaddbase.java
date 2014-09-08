@@ -6,12 +6,6 @@
 
 package org.xmlsh.internal.commands;
 
-import org.xmlsh.core.Options;
-import org.xmlsh.core.XCommand;
-import org.xmlsh.core.XValue;
-import org.xmlsh.sh.shell.SerializeOpts;
-import org.xmlsh.util.Util;
-
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collections;
@@ -30,6 +24,12 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
+
+import org.xmlsh.core.Options;
+import org.xmlsh.core.XCommand;
+import org.xmlsh.core.XValue;
+import org.xmlsh.sh.shell.SerializeOpts;
+import org.xmlsh.util.Util;
 
 
 public class xaddbase extends XCommand {

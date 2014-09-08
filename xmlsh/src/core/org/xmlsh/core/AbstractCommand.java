@@ -6,13 +6,6 @@
 
 package org.xmlsh.core;
 
-import org.apache.logging.log4j.Logger;
-import org.xmlsh.sh.core.SourceLocation;
-import org.xmlsh.sh.shell.SerializeOpts;
-import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.util.HelpUsage;
-import org.xmlsh.util.Util;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -22,6 +15,13 @@ import java.io.PrintWriter;
 import java.net.URISyntaxException;
 
 import javax.xml.transform.Source;
+
+import org.apache.logging.log4j.Logger;
+import org.xmlsh.sh.core.SourceLocation;
+import org.xmlsh.sh.shell.SerializeOpts;
+import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.util.HelpUsage;
+import org.xmlsh.util.Util;
 
 public abstract class AbstractCommand implements ICommand {
 

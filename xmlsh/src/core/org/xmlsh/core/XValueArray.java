@@ -1,9 +1,5 @@
 package org.xmlsh.core;
 
-import org.xmlsh.sh.shell.SerializeOpts;
-import org.xmlsh.types.TypeFamily;
-import org.xmlsh.util.Util;
-
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -15,6 +11,10 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+
+import org.xmlsh.sh.shell.SerializeOpts;
+import org.xmlsh.types.TypeFamily;
+import org.xmlsh.util.Util;
 
 /*
  * A sparse array indexable by string or integer

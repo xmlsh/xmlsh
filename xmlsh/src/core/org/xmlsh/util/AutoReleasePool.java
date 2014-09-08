@@ -6,12 +6,11 @@
 
 package org.xmlsh.util;
 
+import java.util.ArrayList;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
 import org.xmlsh.core.IReleasable;
-
-import java.util.ArrayList;
 
 @SuppressWarnings("serial")
 public class AutoReleasePool extends ArrayList<IReleasable> implements AutoCloseable {

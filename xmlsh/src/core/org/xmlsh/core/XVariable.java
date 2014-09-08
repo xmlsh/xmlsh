@@ -6,34 +6,24 @@
 
 package org.xmlsh.core;
 
-import net.sf.saxon.s9api.Processor;
-import net.sf.saxon.s9api.QName;
-import net.sf.saxon.s9api.SaxonApiException;
-import net.sf.saxon.s9api.XQueryCompiler;
-import net.sf.saxon.s9api.XQueryEvaluator;
-import net.sf.saxon.s9api.XQueryExecutable;
-import net.sf.saxon.s9api.XdmItem;
-import net.sf.saxon.s9api.XdmValue;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.xml.sax.SAXException;
-import org.xmlsh.core.XVariable.XVarFlag;
-import org.xmlsh.sh.core.EvalUtils;
-import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.types.IMethods;
-import org.xmlsh.types.ITypeFamily;
-import org.xmlsh.types.TypeFamily;
-import org.xmlsh.util.NameValueMap;
-import org.xmlsh.util.Util;
-import org.xmlsh.xpath.EvalDefinition;
-import org.xmlsh.xpath.ShellContext;
+import static org.xmlsh.core.XVariable.XVarFlag.EXPORT;
+import static org.xmlsh.core.XVariable.XVarFlag.READONLY;
+import static org.xmlsh.core.XVariable.XVarFlag.UNSET;
 
 import java.util.EnumSet;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import static org.xmlsh.core.XVariable.XVarFlag.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.xml.sax.SAXException;
+import org.xmlsh.sh.core.EvalUtils;
+import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.types.IMethods;
+import org.xmlsh.types.ITypeFamily;
+import org.xmlsh.types.TypeFamily;
+import org.xmlsh.util.Util;
 
 public class XVariable {
 

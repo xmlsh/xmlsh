@@ -1,36 +1,5 @@
 package org.xmlsh.util;
 
-import net.sf.saxon.event.ComplexContentOutputter;
-import net.sf.saxon.event.NamespaceReducer;
-import net.sf.saxon.event.Receiver;
-import net.sf.saxon.event.TreeReceiver;
-import net.sf.saxon.lib.FeatureKeys;
-import net.sf.saxon.om.Item;
-import net.sf.saxon.om.NodeInfo;
-import net.sf.saxon.s9api.Destination;
-import net.sf.saxon.s9api.QName;
-import net.sf.saxon.s9api.SaxonApiException;
-import net.sf.saxon.s9api.Serializer;
-import net.sf.saxon.s9api.XdmAtomicValue;
-import net.sf.saxon.s9api.XdmItem;
-import net.sf.saxon.s9api.XdmNode;
-import net.sf.saxon.s9api.XdmNodeKind;
-import net.sf.saxon.s9api.XdmValue;
-import net.sf.saxon.trans.XPathException;
-
-import org.apache.logging.log4j.Logger;
-
-import org.xmlsh.core.CoreException;
-import org.xmlsh.core.IReleasable;
-import org.xmlsh.core.Namespaces;
-import org.xmlsh.core.XValue;
-import org.xmlsh.core.XValueProperty;
-import org.xmlsh.sh.core.CharAttributeBuffer;
-import org.xmlsh.sh.shell.SerializeOpts;
-import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.sh.shell.ShellConstants;
-import org.xmlsh.types.ITypeConverter;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -77,7 +46,34 @@ import javax.xml.transform.sax.TransformerHandler;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import net.sf.saxon.event.ComplexContentOutputter;
+import net.sf.saxon.event.NamespaceReducer;
+import net.sf.saxon.event.Receiver;
+import net.sf.saxon.event.TreeReceiver;
+import net.sf.saxon.lib.FeatureKeys;
+import net.sf.saxon.om.Item;
+import net.sf.saxon.om.NodeInfo;
+import net.sf.saxon.s9api.Destination;
+import net.sf.saxon.s9api.QName;
+import net.sf.saxon.s9api.SaxonApiException;
+import net.sf.saxon.s9api.Serializer;
+import net.sf.saxon.s9api.XdmAtomicValue;
+import net.sf.saxon.s9api.XdmItem;
+import net.sf.saxon.s9api.XdmNode;
+import net.sf.saxon.s9api.XdmNodeKind;
+import net.sf.saxon.s9api.XdmValue;
+import net.sf.saxon.trans.XPathException;
+
+import org.apache.logging.log4j.Logger;
+import org.xmlsh.core.CoreException;
+import org.xmlsh.core.IReleasable;
+import org.xmlsh.core.Namespaces;
+import org.xmlsh.core.XValue;
+import org.xmlsh.sh.core.CharAttributeBuffer;
+import org.xmlsh.sh.shell.SerializeOpts;
+import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.sh.shell.ShellConstants;
+import org.xmlsh.types.ITypeConverter;
 /**
  * @author DLEE
  *

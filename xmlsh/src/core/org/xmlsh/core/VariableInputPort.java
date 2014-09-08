@@ -6,20 +6,6 @@
 
 package org.xmlsh.core;
 
-import net.sf.saxon.Configuration;
-import net.sf.saxon.evpull.Decomposer;
-import net.sf.saxon.evpull.EventToStaxBridge;
-import net.sf.saxon.om.NodeInfo;
-import net.sf.saxon.s9api.SaxonApiException;
-import net.sf.saxon.s9api.XdmItem;
-import net.sf.saxon.s9api.XdmNode;
-import org.xml.sax.InputSource;
-import org.xmlsh.json.JSONUtils;
-import org.xmlsh.sh.shell.SerializeOpts;
-import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.util.S9Util;
-import org.xmlsh.util.Util;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -31,6 +17,21 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.Source;
+
+import net.sf.saxon.Configuration;
+import net.sf.saxon.evpull.Decomposer;
+import net.sf.saxon.evpull.EventToStaxBridge;
+import net.sf.saxon.om.NodeInfo;
+import net.sf.saxon.s9api.SaxonApiException;
+import net.sf.saxon.s9api.XdmItem;
+import net.sf.saxon.s9api.XdmNode;
+
+import org.xml.sax.InputSource;
+import org.xmlsh.json.JSONUtils;
+import org.xmlsh.sh.shell.SerializeOpts;
+import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.util.S9Util;
+import org.xmlsh.util.Util;
 
 import com.fasterxml.jackson.databind.JsonNode;
 

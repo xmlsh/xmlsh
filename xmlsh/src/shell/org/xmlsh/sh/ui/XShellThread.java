@@ -6,17 +6,6 @@
 
 package org.xmlsh.sh.ui;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.xmlsh.core.StreamInputPort;
-import org.xmlsh.core.ThrowException;
-import org.xmlsh.core.XValue;
-import org.xmlsh.sh.core.ICommandExpr;
-import org.xmlsh.sh.core.SourceLocation;
-import org.xmlsh.sh.shell.SerializeOpts;
-import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.util.Util;
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.ByteArrayInputStream;
@@ -32,6 +21,17 @@ import java.util.concurrent.BlockingQueue;
 import javax.swing.JButton;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.xmlsh.core.StreamInputPort;
+import org.xmlsh.core.ThrowException;
+import org.xmlsh.core.XValue;
+import org.xmlsh.sh.core.ICommandExpr;
+import org.xmlsh.sh.core.SourceLocation;
+import org.xmlsh.sh.shell.SerializeOpts;
+import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.util.Util;
 // Use a different name to avoid confusion with sh.shell.ShellThread
 public class XShellThread extends Thread {
 

@@ -6,14 +6,6 @@
 
 package org.xmlsh.core;
 
-import org.apache.logging.log4j.Logger;
-import org.xmlsh.sh.core.SourceLocation;
-import org.xmlsh.sh.shell.IModule;
-import org.xmlsh.sh.shell.SerializeOpts;
-import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.util.FileUtils;
-import org.xmlsh.util.Util;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -22,6 +14,14 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
+
+import org.apache.logging.log4j.Logger;
+import org.xmlsh.sh.core.SourceLocation;
+import org.xmlsh.sh.shell.IModule;
+import org.xmlsh.sh.shell.SerializeOpts;
+import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.util.FileUtils;
+import org.xmlsh.util.Util;
 
 public class ScriptCommand implements ICommand {
 

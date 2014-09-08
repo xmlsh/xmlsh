@@ -6,18 +6,19 @@
 
 package org.xmlsh.stax.functions;
 
-import net.sf.saxon.trans.XPathException;
-import org.xmlsh.core.AbstractBuiltinFunction;
-import org.xmlsh.core.CoreException;
-import org.xmlsh.core.XValue;
-import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.util.StAXUtils;
-
 import java.io.IOException;
 import java.util.List;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.XMLEvent;
+
+import net.sf.saxon.trans.XPathException;
+
+import org.xmlsh.core.AbstractBuiltinFunction;
+import org.xmlsh.core.CoreException;
+import org.xmlsh.core.XValue;
+import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.util.StAXUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 

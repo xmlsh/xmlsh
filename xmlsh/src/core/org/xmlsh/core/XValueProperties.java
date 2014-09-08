@@ -6,18 +6,14 @@
 
 package org.xmlsh.core;
 
-import org.xmlsh.types.TypeFamily;
-import org.xmlsh.util.Util;
-
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+
+import org.xmlsh.types.TypeFamily;
 
 
 /*

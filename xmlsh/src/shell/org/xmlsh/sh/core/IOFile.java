@@ -8,6 +8,10 @@ package org.xmlsh.sh.core;
 
 import static org.xmlsh.core.XIOEnvironment.kSTDERR;
 import static org.xmlsh.core.XIOEnvironment.kSTDOUT;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.EvalEnv;
 import org.xmlsh.core.InputPort;
@@ -19,9 +23,6 @@ import org.xmlsh.core.XVariable;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.Util;
-
-import java.io.IOException;
-import java.io.PrintWriter;
 
 public class IOFile {
 	private static final EvalEnv mFileEnv = EvalEnv.newInstance( false, true, false, false);

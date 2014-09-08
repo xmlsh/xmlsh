@@ -6,6 +6,9 @@
 
 package org.xmlsh.builtin.commands;
 
+import java.io.IOException;
+import java.util.List;
+
 import org.xmlsh.core.BuiltinCommand;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.UnexpectedException;
@@ -13,9 +16,6 @@ import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.types.TypeFamily;
 import org.xmlsh.util.Util;
-
-import java.io.IOException;
-import java.util.List;
 
 /*
  * The "test" command implements a subset of the unix test (1) command.

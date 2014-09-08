@@ -6,6 +6,11 @@
 
 package org.xmlsh.json.commands;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintStream;
+import java.util.List;
+
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.Options;
@@ -16,11 +21,6 @@ import org.xmlsh.core.XValue;
 import org.xmlsh.json.JSONUtils;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.util.Util;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintStream;
-import java.util.List;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.nebhale.jsonpath.JsonPath;

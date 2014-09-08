@@ -6,6 +6,9 @@
 
 package org.xmlsh.internal.commands;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.xml.sax.SAXException;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
@@ -13,9 +16,6 @@ import org.xmlsh.core.Options.OptionValue;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.util.Util;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import com.thaiopensource.relaxng.edit.SchemaCollection;
 import com.thaiopensource.relaxng.input.InputFormat;

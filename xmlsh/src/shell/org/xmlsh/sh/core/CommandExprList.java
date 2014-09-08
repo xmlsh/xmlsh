@@ -6,11 +6,11 @@
 
 package org.xmlsh.sh.core;
 
-import org.xmlsh.sh.shell.Shell;
-
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.xmlsh.sh.shell.Shell;
 
 
 public class CommandExprList extends CommandExpr

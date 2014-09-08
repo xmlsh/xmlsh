@@ -11,18 +11,11 @@ import java.util.List;
 import java.util.Properties;
 
 import org.xmlsh.core.BuiltinCommand;
-import org.xmlsh.core.AbstractBuiltinFunction;
 import org.xmlsh.core.InputPort;
-import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.XValueProperties;
-import org.xmlsh.core.XVariable;
 import org.xmlsh.sh.shell.SerializeOpts;
-import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.types.TypeFamily;
-
-import static org.xmlsh.core.XVariable.XVarFlag.*;
 public class readproperties extends BuiltinCommand
 {
   @Override

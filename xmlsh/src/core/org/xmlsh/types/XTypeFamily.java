@@ -1,5 +1,10 @@
 package org.xmlsh.types;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.Collections;
+import java.util.List;
+
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.IXValue;
 import org.xmlsh.core.IXValueContainer;
@@ -8,17 +13,9 @@ import org.xmlsh.core.IXValueMap;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.XValueList;
-import org.xmlsh.core.XValueSequence;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.util.JavaUtils;
 import org.xmlsh.util.Util;
-
-import static org.xmlsh.types.TypeFamily.*;
-
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.Collections;
-import java.util.List;
 
 public class XTypeFamily extends AbstractTypeFamily implements ITypeFamily
 {

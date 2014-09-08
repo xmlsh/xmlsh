@@ -6,14 +6,14 @@
 
 package org.xmlsh.sh.core;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.EvalEnv;
 import org.xmlsh.sh.grammar.Token;
 import org.xmlsh.sh.shell.ParseResult;
 import org.xmlsh.sh.shell.Shell;
-
-import java.io.IOException;
-import java.io.PrintWriter;
 
 /*
  * A Value that evaulates to a "cmd_word" which is either a simple string,

@@ -6,11 +6,11 @@
 
 package org.xmlsh.sh.core;
 
+import java.io.PrintWriter;
+
 import org.xmlsh.core.EvalEnv;
 import org.xmlsh.sh.grammar.Token;
 import org.xmlsh.sh.shell.Shell;
-
-import java.io.PrintWriter;
 
 public class IORedirect {
 	private static final EvalEnv mPortEnv = EvalEnv.basicInstance();

@@ -6,12 +6,13 @@
 
 package org.xmlsh.core;
 
+import java.io.IOException;
+
 import net.sf.saxon.s9api.Destination;
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XdmItem;
-import org.xmlsh.util.Util;
 
-import java.io.IOException;
+import org.xmlsh.util.Util;
 
 class DestinationXdmValueOutputStream extends AbstractXdmItemOutputStream
 {

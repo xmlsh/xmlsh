@@ -6,16 +6,15 @@
 
 package org.xmlsh.sh.shell;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.xmlsh.sh.core.CommandExpr;
-import org.xmlsh.sh.core.ICommandExpr;
-import org.xmlsh.util.Util;
-import org.xmlsh.xpath.ShellContext;
-
 import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.xmlsh.sh.core.ICommandExpr;
+import org.xmlsh.util.Util;
+import org.xmlsh.xpath.ShellContext;
 
 public class ShellThread extends Thread implements Closeable {
 

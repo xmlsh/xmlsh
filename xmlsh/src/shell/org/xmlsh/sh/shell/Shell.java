@@ -6,50 +6,6 @@
 
 package org.xmlsh.sh.shell;
 
-import net.sf.saxon.s9api.Processor;
-
-import org.apache.commons.io.output.StringBuilderWriter;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.xmlsh.core.CommandFactory;
-import org.xmlsh.core.CoreException;
-import org.xmlsh.core.EvalEnv;
-import org.xmlsh.core.ExitOnErrorException;
-import org.xmlsh.core.FileInputPort;
-import org.xmlsh.core.FileOutputPort;
-import org.xmlsh.core.ICommand;
-import org.xmlsh.core.IFunction;
-import org.xmlsh.core.IFunctionDecl;
-import org.xmlsh.core.InputPort;
-import org.xmlsh.core.InvalidArgumentException;
-import org.xmlsh.core.Options;
-import org.xmlsh.core.Options.OptionValue;
-import org.xmlsh.core.OutputPort;
-import org.xmlsh.core.Path;
-import org.xmlsh.core.StreamInputPort;
-import org.xmlsh.core.StreamOutputPort;
-import org.xmlsh.core.ThrowException;
-import org.xmlsh.core.Variables;
-import org.xmlsh.core.XDynamicVariable;
-import org.xmlsh.core.XEnvironment;
-import org.xmlsh.core.XValue;
-import org.xmlsh.core.XVariable;
-import org.xmlsh.core.XVariable.XVarFlag;
-import org.xmlsh.sh.core.CommandExpr;
-import org.xmlsh.sh.core.EvalUtils;
-import org.xmlsh.sh.core.ICommandExpr;
-import org.xmlsh.sh.core.SourceLocation;
-import org.xmlsh.sh.grammar.ParseException;
-import org.xmlsh.sh.grammar.ShellParser;
-import org.xmlsh.sh.grammar.ShellParserReader;
-import org.xmlsh.util.FileUtils;
-import org.xmlsh.util.NullInputStream;
-import org.xmlsh.util.NullOutputStream;
-import org.xmlsh.util.SessionEnvironment;
-import org.xmlsh.util.Util;
-import org.xmlsh.xpath.EvalDefinition;
-import org.xmlsh.xpath.ShellContext;
-
 import java.io.BufferedWriter;
 import java.io.Closeable;
 import java.io.File;
@@ -82,6 +38,49 @@ import java.util.Random;
 import java.util.Stack;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import net.sf.saxon.s9api.Processor;
+
+import org.apache.commons.io.output.StringBuilderWriter;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.xmlsh.core.CommandFactory;
+import org.xmlsh.core.CoreException;
+import org.xmlsh.core.EvalEnv;
+import org.xmlsh.core.ExitOnErrorException;
+import org.xmlsh.core.FileInputPort;
+import org.xmlsh.core.FileOutputPort;
+import org.xmlsh.core.ICommand;
+import org.xmlsh.core.IFunctionDecl;
+import org.xmlsh.core.InputPort;
+import org.xmlsh.core.InvalidArgumentException;
+import org.xmlsh.core.Options;
+import org.xmlsh.core.Options.OptionValue;
+import org.xmlsh.core.OutputPort;
+import org.xmlsh.core.Path;
+import org.xmlsh.core.StreamInputPort;
+import org.xmlsh.core.StreamOutputPort;
+import org.xmlsh.core.ThrowException;
+import org.xmlsh.core.Variables;
+import org.xmlsh.core.XDynamicVariable;
+import org.xmlsh.core.XEnvironment;
+import org.xmlsh.core.XValue;
+import org.xmlsh.core.XVariable;
+import org.xmlsh.core.XVariable.XVarFlag;
+import org.xmlsh.sh.core.CommandExpr;
+import org.xmlsh.sh.core.EvalUtils;
+import org.xmlsh.sh.core.ICommandExpr;
+import org.xmlsh.sh.core.SourceLocation;
+import org.xmlsh.sh.grammar.ParseException;
+import org.xmlsh.sh.grammar.ShellParser;
+import org.xmlsh.sh.grammar.ShellParserReader;
+import org.xmlsh.util.FileUtils;
+import org.xmlsh.util.NullInputStream;
+import org.xmlsh.util.NullOutputStream;
+import org.xmlsh.util.SessionEnvironment;
+import org.xmlsh.util.Util;
+import org.xmlsh.xpath.EvalDefinition;
+import org.xmlsh.xpath.ShellContext;
 
 public class Shell implements AutoCloseable, Closeable
 {

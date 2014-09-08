@@ -6,11 +6,11 @@
 
 package org.xmlsh.sh.core;
 
-import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.util.Util;
-
 import java.io.PrintWriter;
 import java.io.StringWriter;
+
+import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.util.Util;
 /*
  * An expression that evaluates as running a 'command' by running exec()
  */

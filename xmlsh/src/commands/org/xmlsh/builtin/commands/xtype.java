@@ -6,7 +6,10 @@
 
 package org.xmlsh.builtin.commands;
 
-import net.sf.saxon.s9api.Destination;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.List;
+
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.SaxonApiException;
@@ -14,8 +17,7 @@ import net.sf.saxon.s9api.XQueryCompiler;
 import net.sf.saxon.s9api.XQueryEvaluator;
 import net.sf.saxon.s9api.XQueryExecutable;
 import net.sf.saxon.s9api.XdmItem;
-import net.sf.saxon.s9api.XdmNode;
-import net.sf.saxon.s9api.XdmValue;
+
 import org.xmlsh.core.BuiltinCommand;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
@@ -28,11 +30,6 @@ import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.sh.shell.ShellModuleURIResolver;
 import org.xmlsh.types.TypeFamily;
 import org.xmlsh.util.Util;
-import org.xmlsh.util.XMLUtils;
-
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.List;
 
 public class xtype extends BuiltinCommand {
 	private QName mVqname;

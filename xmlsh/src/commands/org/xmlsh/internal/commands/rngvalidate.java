@@ -6,15 +6,15 @@
 
 package org.xmlsh.internal.commands;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import com.thaiopensource.resolver.catalog.CatalogResolver;
 import com.thaiopensource.util.Localizer;

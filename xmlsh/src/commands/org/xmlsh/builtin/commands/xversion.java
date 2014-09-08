@@ -6,6 +6,10 @@
 
 package org.xmlsh.builtin.commands;
 
+import java.util.List;
+
+import javax.xml.stream.XMLStreamWriter;
+
 import org.xmlsh.core.BuiltinCommand;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
@@ -13,10 +17,6 @@ import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.sh.shell.Version;
-
-import java.util.List;
-
-import javax.xml.stream.XMLStreamWriter;
 
 public class xversion extends BuiltinCommand {
 

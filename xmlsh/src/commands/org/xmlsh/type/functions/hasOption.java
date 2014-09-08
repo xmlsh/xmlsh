@@ -10,13 +10,8 @@ import java.util.List;
 
 import org.xmlsh.core.AbstractBuiltinFunction;
 import org.xmlsh.core.Options;
-import org.xmlsh.core.XConfiguration;
 import org.xmlsh.core.XValue;
-import org.xmlsh.json.JSONUtils;
 import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.sh.shell.ShellConstants;
-import org.xmlsh.types.TypeFamily;
-import org.xmlsh.util.Util;
 
 
 public class hasOption extends AbstractBuiltinFunction

@@ -6,10 +6,10 @@
 
 package org.xmlsh.sh.core;
 
+import java.io.PrintWriter;
+
 import org.xmlsh.sh.shell.ControlLoop;
 import org.xmlsh.sh.shell.Shell;
-
-import java.io.PrintWriter;
 
 public class WhileClause extends CompoundCommandExpr {
 	private		CommandExpr		mWhile;

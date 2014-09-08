@@ -6,9 +6,9 @@
 
 package org.xmlsh.sh.shell;
 
-import org.xmlsh.util.Util;
-
 import java.net.URL;
+
+import org.xmlsh.util.Util;
 
 public class ShellConstants
 {

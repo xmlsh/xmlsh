@@ -6,6 +6,14 @@
 
 package org.xmlsh.internal.commands;
 
+import java.io.IOException;
+import java.io.Reader;
+import java.util.Arrays;
+import java.util.List;
+
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
+
 import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.XCommand;
@@ -14,14 +22,6 @@ import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.util.Util;
 import org.xmlsh.util.commands.CSVParser;
 import org.xmlsh.util.commands.CSVRecord;
-
-import java.io.IOException;
-import java.io.Reader;
-import java.util.Arrays;
-import java.util.List;
-
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
 
 /*
  * 

@@ -6,11 +6,6 @@
 
 package org.xmlsh.json;
 
-import org.xmlsh.core.InvalidArgumentException;
-import org.xmlsh.core.XValue;
-import org.xmlsh.sh.shell.SerializeOpts;
-import org.xmlsh.util.Util;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -27,6 +22,11 @@ import javax.xml.stream.XMLStreamWriter;
 import javax.xml.stream.events.EndElement;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
+
+import org.xmlsh.core.InvalidArgumentException;
+import org.xmlsh.core.XValue;
+import org.xmlsh.sh.shell.SerializeOpts;
+import org.xmlsh.util.Util;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParseException;

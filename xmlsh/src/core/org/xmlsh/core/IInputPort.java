@@ -1,10 +1,5 @@
 package org.xmlsh.core;
 
-import net.sf.saxon.s9api.XdmItem;
-import net.sf.saxon.s9api.XdmNode;
-import org.xml.sax.InputSource;
-import org.xmlsh.sh.shell.SerializeOpts;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -14,6 +9,12 @@ import java.io.UnsupportedEncodingException;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.Source;
+
+import net.sf.saxon.s9api.XdmItem;
+import net.sf.saxon.s9api.XdmNode;
+
+import org.xml.sax.InputSource;
+import org.xmlsh.sh.shell.SerializeOpts;
 
 import com.fasterxml.jackson.databind.JsonNode;
 

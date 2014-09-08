@@ -6,22 +6,14 @@
 
 package org.xmlsh.sh.shell;
 
-import static org.xmlsh.util.Util.formatMessage;
+import java.io.File;
+
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.Configuration;
 import org.apache.logging.log4j.core.config.ConfigurationFactory;
 import org.apache.logging.log4j.core.config.LoggerConfig;
-import org.xmlsh.util.Util;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.Set;
 
 class Logging {
 

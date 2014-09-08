@@ -6,21 +6,18 @@
 
 package org.xmlsh.sh.core;
 
-import net.sf.saxon.s9api.XdmEmptySequence;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.EvalEnv;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.XValueSequence;
 import org.xmlsh.sh.grammar.Token;
 import org.xmlsh.sh.shell.Shell;
-
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
 
 @SuppressWarnings("serial")
 public class WordList extends ArrayList<Word>

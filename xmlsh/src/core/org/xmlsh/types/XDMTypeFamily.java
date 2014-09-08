@@ -1,41 +1,31 @@
 package org.xmlsh.types;
 
-import static org.xmlsh.types.TypeFamily.*;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.URI;
+import java.util.List;
+
 import net.sf.saxon.om.Item;
 import net.sf.saxon.om.ValueRepresentation;
 import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XdmAtomicValue;
 import net.sf.saxon.s9api.XdmItem;
-import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XdmValue;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.tools.ant.types.resources.comparators.Size;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.UnimplementedException;
 import org.xmlsh.core.XValue;
-import org.xmlsh.core.XValueList;
 import org.xmlsh.core.XValueSequence;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.util.JavaUtils;
 import org.xmlsh.util.S9Util;
 import org.xmlsh.util.Util;
 import org.xmlsh.util.XMLUtils;
-import org.xmlsh.xs.functions.element;
-
-import java.io.IOException;
-import java.io.OutputStream;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-
-import com.fasterxml.jackson.databind.JsonNode;
 
 public final class XDMTypeFamily extends AbstractTypeFamily implements ITypeFamily
 {

@@ -6,6 +6,10 @@
 
 package org.xmlsh.internal.commands;
 
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.List;
+
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
@@ -13,10 +17,6 @@ import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.util.Util;
-
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.List;
 
 public class xquote extends XCommand {
 

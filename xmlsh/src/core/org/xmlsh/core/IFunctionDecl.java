@@ -11,7 +11,7 @@ import org.xmlsh.sh.core.ICommandExpr;
 public interface IFunctionDecl {
 	String	getName();
 	ICommandExpr	getBody();
-	IFunctionExpr getFuntionExpr();
+	IFunction  getFunction();
 
 
 }

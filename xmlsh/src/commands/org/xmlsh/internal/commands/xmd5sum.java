@@ -6,6 +6,15 @@
 
 package org.xmlsh.internal.commands;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.List;
+
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
+
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.Options;
@@ -16,15 +25,6 @@ import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.util.FileUtils;
 import org.xmlsh.util.Util;
 import org.xmlsh.util.commands.Checksum;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.util.List;
-
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
 
 
 public class xmd5sum extends XCommand

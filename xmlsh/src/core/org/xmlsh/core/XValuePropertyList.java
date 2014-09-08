@@ -6,25 +6,20 @@
 
 package org.xmlsh.core;
 
-import org.xmlsh.sh.shell.SerializeOpts;
-import org.xmlsh.types.TypeFamily;
-import org.xmlsh.util.Util;
-
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.util.AbstractList;
 import java.util.AbstractSet;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
+
+import org.xmlsh.sh.shell.SerializeOpts;
+import org.xmlsh.types.TypeFamily;
+import org.xmlsh.util.Util;
 
 /*
  * A list of objects indexable by string or index (1 based for strings)

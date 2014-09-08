@@ -6,13 +6,12 @@
 
 package org.xmlsh.sh.core;
 
-import net.sf.saxon.s9api.XdmEmptySequence;
+import java.io.PrintWriter;
+import java.util.List;
+
 import org.xmlsh.core.EvalEnv;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
-
-import java.io.PrintWriter;
-import java.util.List;
 
 public class ReturnStatement extends CommandExpr {
 

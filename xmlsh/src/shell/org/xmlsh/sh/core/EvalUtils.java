@@ -6,15 +6,19 @@
 
 package org.xmlsh.sh.core;
 
-import net.sf.saxon.s9api.XdmEmptySequence;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.regex.Pattern;
+
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.EvalEnv;
 import org.xmlsh.core.EvalFlag;
-import org.xmlsh.core.InvalidArgumentException;
-import org.xmlsh.core.XEnvironment;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.XValueList;
-import org.xmlsh.core.XValueSequence;
 import org.xmlsh.core.XVariable;
 import org.xmlsh.core.XVariableExpr;
 import org.xmlsh.json.JSONUtils;
@@ -23,20 +27,9 @@ import org.xmlsh.sh.shell.Expander;
 import org.xmlsh.sh.shell.ParseResult;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.sh.shell.ShellConstants;
-import org.xmlsh.types.ITypeFamily;
 import org.xmlsh.types.TypeFamily;
-import org.xmlsh.types.XTypeUtils;
 import org.xmlsh.util.Util;
 import org.xmlsh.util.XMLUtils;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-import java.util.regex.Pattern;
 
 public class EvalUtils
 {

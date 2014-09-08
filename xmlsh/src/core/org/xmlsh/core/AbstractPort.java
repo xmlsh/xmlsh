@@ -7,9 +7,9 @@
 package org.xmlsh.core;
 
 
-import org.xmlsh.util.ReferenceCounter;
-
 import java.io.File;
+
+import org.xmlsh.util.ReferenceCounter;
 
 
 public abstract class AbstractPort implements  IPort {

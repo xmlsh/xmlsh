@@ -6,12 +6,6 @@
 
 package org.xmlsh.experimental.commands;
 
-import org.xmlsh.core.Options;
-import org.xmlsh.core.OutputPort;
-import org.xmlsh.core.XCommand;
-import org.xmlsh.core.XValue;
-import org.xmlsh.sh.shell.SerializeOpts;
-
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
@@ -20,6 +14,12 @@ import java.util.List;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
+
+import org.xmlsh.core.Options;
+import org.xmlsh.core.OutputPort;
+import org.xmlsh.core.XCommand;
+import org.xmlsh.core.XValue;
+import org.xmlsh.sh.shell.SerializeOpts;
 
 /* BAD
 JDK-6450279 : InetAddress GetHostName() method takes long time in windows - need timeout option

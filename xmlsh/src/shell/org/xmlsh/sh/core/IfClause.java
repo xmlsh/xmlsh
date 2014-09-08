@@ -6,9 +6,9 @@
 
 package org.xmlsh.sh.core;
 
-import org.xmlsh.sh.shell.Shell;
-
 import java.io.PrintWriter;
+
+import org.xmlsh.sh.shell.Shell;
 
 public class IfClause extends CompoundCommandExpr 
 {

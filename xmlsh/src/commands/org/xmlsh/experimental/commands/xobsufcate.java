@@ -6,14 +6,6 @@
 
 package org.xmlsh.experimental.commands;
 
-import org.xmlsh.core.InputPort;
-import org.xmlsh.core.InvalidArgumentException;
-import org.xmlsh.core.OutputPort;
-import org.xmlsh.core.XCommand;
-import org.xmlsh.core.XValue;
-import org.xmlsh.sh.shell.SerializeOpts;
-import org.xmlsh.util.Util;
-
 import java.util.List;
 
 import javax.xml.stream.XMLEventFactory;
@@ -21,6 +13,14 @@ import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLEventWriter;
 import javax.xml.stream.events.Characters;
 import javax.xml.stream.events.XMLEvent;
+
+import org.xmlsh.core.InputPort;
+import org.xmlsh.core.InvalidArgumentException;
+import org.xmlsh.core.OutputPort;
+import org.xmlsh.core.XCommand;
+import org.xmlsh.core.XValue;
+import org.xmlsh.sh.shell.SerializeOpts;
+import org.xmlsh.util.Util;
 
 public class xobsufcate extends XCommand {
 

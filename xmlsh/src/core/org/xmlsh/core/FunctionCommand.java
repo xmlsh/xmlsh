@@ -6,15 +6,14 @@
 
 package org.xmlsh.core;
 
-import org.xmlsh.sh.core.CommandExpr;
+import java.io.File;
+import java.io.PrintWriter;
+import java.util.List;
+
 import org.xmlsh.sh.core.ICommandExpr;
 import org.xmlsh.sh.core.SourceLocation;
 import org.xmlsh.sh.shell.IModule;
 import org.xmlsh.sh.shell.Shell;
-
-import java.io.File;
-import java.io.PrintWriter;
-import java.util.List;
 
 public class FunctionCommand implements ICommand {
 

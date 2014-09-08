@@ -6,6 +6,11 @@
 
 package org.xmlsh.internal.functions;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.xml.stream.XMLStreamWriter;
+
 import org.xmlsh.core.AbstractBuiltinFunction;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.VariableOutputPort;
@@ -15,11 +20,6 @@ import org.xmlsh.sh.core.SourceLocation;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.types.TypeFamily;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.xml.stream.XMLStreamWriter;
 
 public class xlocation extends AbstractBuiltinFunction {
 

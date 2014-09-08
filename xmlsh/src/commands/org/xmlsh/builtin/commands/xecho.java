@@ -6,9 +6,13 @@
 
 package org.xmlsh.builtin.commands;
 
+import java.net.URI;
+import java.util.List;
+
 import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XdmNodeKind;
 import net.sf.saxon.s9api.XdmValue;
+
 import org.xmlsh.core.BuiltinCommand;
 import org.xmlsh.core.IXdmItemOutputStream;
 import org.xmlsh.core.InvalidArgumentException;
@@ -17,9 +21,6 @@ import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.util.Util;
-
-import java.net.URI;
-import java.util.List;
 
 public class xecho extends BuiltinCommand {
 

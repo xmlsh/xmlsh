@@ -6,6 +6,12 @@
 
 package org.xmlsh.internal.commands;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Writer;
+import java.util.List;
+import java.util.Properties;
+
 import org.apache.commons.lang3.text.StrSubstitutor;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InputPort;
@@ -18,12 +24,6 @@ import org.xmlsh.core.XValueMap;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.types.XTypeUtils;
 import org.xmlsh.util.Util;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Writer;
-import java.util.List;
-import java.util.Properties;
 
 public class template extends XCommand
 {

@@ -6,6 +6,11 @@
 
 package org.xmlsh.internal.commands;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.xml.transform.Source;
+
 import net.sf.saxon.event.Builder;
 import net.sf.saxon.om.CodedName;
 import net.sf.saxon.om.DocumentInfo;
@@ -33,6 +38,7 @@ import net.sf.saxon.tree.iter.AxisIterator;
 import net.sf.saxon.tree.linked.DocumentImpl;
 import net.sf.saxon.type.BuiltInAtomicType;
 import net.sf.saxon.type.Type;
+
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Namespaces;
@@ -44,13 +50,7 @@ import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.types.TypeFamily;
-import org.xmlsh.types.XDMTypeFamily;
 import org.xmlsh.util.Util;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.xml.transform.Source;
 
 
 public class xed extends XCommand {

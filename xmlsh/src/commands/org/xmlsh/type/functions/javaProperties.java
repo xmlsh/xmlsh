@@ -6,19 +6,16 @@
 
 package org.xmlsh.type.functions;
 
-import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
 import org.xmlsh.core.AbstractBuiltinFunction;
 import org.xmlsh.core.InputPort;
-import org.xmlsh.core.Options;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.XValueProperties;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.types.TypeFamily;
 import org.xmlsh.util.JavaUtils;
 
 public class javaProperties extends AbstractBuiltinFunction

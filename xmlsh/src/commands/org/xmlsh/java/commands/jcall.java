@@ -6,18 +6,18 @@
 
 package org.xmlsh.java.commands;
 
-import org.xmlsh.core.InvalidArgumentException;
-import org.xmlsh.core.XCommand;
-import org.xmlsh.core.XValue;
-import org.xmlsh.sh.shell.SerializeOpts;
-import org.xmlsh.util.Util;
-
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.security.Permission;
 import java.util.List;
+
+import org.xmlsh.core.InvalidArgumentException;
+import org.xmlsh.core.XCommand;
+import org.xmlsh.core.XValue;
+import org.xmlsh.sh.shell.SerializeOpts;
+import org.xmlsh.util.Util;
 
 /*
  * 

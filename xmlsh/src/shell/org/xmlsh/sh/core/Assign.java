@@ -6,22 +6,20 @@
 
 package org.xmlsh.sh.core;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.EnumSet;
+
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.EvalEnv;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.XValueArray;
-import org.xmlsh.core.XValueProperties;
 import org.xmlsh.core.XValuePropertyList;
 import org.xmlsh.core.XValueSequence;
 import org.xmlsh.core.XVariable;
 import org.xmlsh.core.XVariable.XVarFlag;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.types.TypeFamily;
-import org.xmlsh.util.Util;
-
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.EnumSet;
 
 public class Assign {
   

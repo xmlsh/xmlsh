@@ -6,12 +6,12 @@
 
 package org.xmlsh.sh.core;
 
-import org.xmlsh.core.CoreException;
-import org.xmlsh.sh.shell.Shell;
-
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
+
+import org.xmlsh.core.CoreException;
+import org.xmlsh.sh.shell.Shell;
 
 public class IOHere {
 

@@ -6,6 +6,12 @@
 
 package org.xmlsh.builtin.commands;
 
+import java.io.IOException;
+import java.util.List;
+
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
+
 import net.sf.saxon.s9api.SaxonApiException;
 
 import org.xml.sax.SAXException;
@@ -19,12 +25,6 @@ import org.xmlsh.core.XVariable;
 import org.xmlsh.core.XVariable.XVarFlag;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.util.NameValueMap;
-
-import java.io.IOException;
-import java.util.List;
-
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
 
 public class declare extends BuiltinCommand {
 

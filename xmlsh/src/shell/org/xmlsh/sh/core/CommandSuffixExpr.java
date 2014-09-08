@@ -6,15 +6,15 @@
 
 package org.xmlsh.sh.core;
 
-import org.xmlsh.core.CoreException;
-import org.xmlsh.core.EvalEnv;
-import org.xmlsh.core.XValue;
-import org.xmlsh.sh.shell.Shell;
-
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.xmlsh.core.CoreException;
+import org.xmlsh.core.EvalEnv;
+import org.xmlsh.core.XValue;
+import org.xmlsh.sh.shell.Shell;
 
 public class CommandSuffixExpr {
 	private static final EvalEnv mCmdEnv = EvalEnv.newInstance(true,true,true,false);

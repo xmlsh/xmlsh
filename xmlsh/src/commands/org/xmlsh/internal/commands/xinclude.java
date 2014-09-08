@@ -6,11 +6,19 @@
 
 package org.xmlsh.internal.commands;
 
+import java.io.OutputStream;
+import java.util.List;
+
+import javanet.staxutils.ContentHandlerToXMLStreamWriter;
+
+import javax.xml.stream.XMLStreamWriter;
+
 import nu.xom.Builder;
 import nu.xom.Document;
 import nu.xom.Serializer;
 import nu.xom.converters.SAXConverter;
 import nu.xom.xinclude.XIncluder;
+
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
@@ -18,13 +26,6 @@ import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.SerializeOpts;
-
-import java.io.OutputStream;
-import java.util.List;
-
-import javanet.staxutils.ContentHandlerToXMLStreamWriter;
-
-import javax.xml.stream.XMLStreamWriter;
 
 public class xinclude extends XCommand {
 

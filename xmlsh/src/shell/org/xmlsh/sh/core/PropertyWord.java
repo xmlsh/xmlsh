@@ -6,18 +6,16 @@
 
 package org.xmlsh.sh.core;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.EvalEnv;
 import org.xmlsh.core.EvalFlag;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.XValueProperty;
-import org.xmlsh.sh.grammar.Token;
 import org.xmlsh.sh.shell.ParseResult;
 import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.types.TypeFamily;
-
-import java.io.IOException;
-import java.io.PrintWriter;
 
 public class PropertyWord extends Word
 {

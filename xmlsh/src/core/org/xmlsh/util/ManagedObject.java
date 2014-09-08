@@ -6,10 +6,10 @@
 
 package org.xmlsh.util;
 
-import org.xmlsh.core.IReleasable;
-
 import java.io.Closeable;
 import java.io.IOException;
+
+import org.xmlsh.core.IReleasable;
 
 
 /*

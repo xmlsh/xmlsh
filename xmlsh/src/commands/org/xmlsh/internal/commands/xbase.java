@@ -6,12 +6,6 @@
 
 package org.xmlsh.internal.commands;
 
-import org.xmlsh.core.Options;
-import org.xmlsh.core.XCommand;
-import org.xmlsh.core.XValue;
-import org.xmlsh.sh.shell.SerializeOpts;
-import org.xmlsh.util.Util;
-
 import java.io.PrintWriter;
 import java.util.List;
 
@@ -19,6 +13,12 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.Location;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamReader;
+
+import org.xmlsh.core.Options;
+import org.xmlsh.core.XCommand;
+import org.xmlsh.core.XValue;
+import org.xmlsh.sh.shell.SerializeOpts;
+import org.xmlsh.util.Util;
 
 
 public class xbase extends XCommand {

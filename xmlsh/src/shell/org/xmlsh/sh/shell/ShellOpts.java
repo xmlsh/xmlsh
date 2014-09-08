@@ -7,7 +7,6 @@
 package org.xmlsh.sh.shell;
 
 import org.apache.logging.log4j.Level;
-
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options.OptionValue;
 import org.xmlsh.core.XValue;

@@ -6,15 +6,15 @@
 
 package org.xmlsh.type.functions;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.xmlsh.core.AbstractBuiltinFunction;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.Options.OptionDef;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.types.TypeFamily;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class options extends AbstractBuiltinFunction
 {

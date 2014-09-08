@@ -6,6 +6,9 @@
 
 package org.xmlsh.json.commands;
 
+import java.io.InputStream;
+import java.util.List;
+
 import org.xmlsh.core.BuiltinCommand;
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.InvalidArgumentException;
@@ -16,9 +19,6 @@ import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.types.TypeFamily;
 import org.xmlsh.util.JavaUtils;
 import org.xmlsh.util.Util;
-
-import java.io.InputStream;
-import java.util.List;
 
 import com.fasterxml.jackson.databind.JsonNode;
 

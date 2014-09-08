@@ -6,6 +6,10 @@
 
 package org.xmlsh.internal.commands;
 
+import java.io.InputStream;
+import java.net.URI;
+import java.util.List;
+
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.XQueryCompiler;
@@ -14,6 +18,7 @@ import net.sf.saxon.s9api.XQueryExecutable;
 import net.sf.saxon.s9api.XdmAtomicValue;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
+
 import org.xmlsh.core.IXdmItemOutputStream;
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.Namespaces;
@@ -27,10 +32,6 @@ import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.sh.shell.ShellModuleURIResolver;
 import org.xmlsh.util.Util;
 import org.xmlsh.xpath.EvalDefinition;
-
-import java.io.InputStream;
-import java.net.URI;
-import java.util.List;
 
 
 

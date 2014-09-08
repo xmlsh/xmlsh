@@ -6,6 +6,11 @@
 
 package org.xmlsh.json.commands;
 
+import java.io.OutputStream;
+import java.util.List;
+
+import javax.xml.stream.XMLStreamReader;
+
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
@@ -15,11 +20,6 @@ import org.xmlsh.json.JSONSerializeOpts;
 import org.xmlsh.json.JXConverter;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.util.Util;
-
-import java.io.OutputStream;
-import java.util.List;
-
-import javax.xml.stream.XMLStreamReader;
 
 /*
  * 

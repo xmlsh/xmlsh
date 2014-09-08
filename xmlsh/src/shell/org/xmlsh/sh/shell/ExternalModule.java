@@ -6,26 +6,22 @@
 
 package org.xmlsh.sh.shell;
 
-import net.sf.saxon.s9api.QName;
-import net.sf.saxon.s9api.SaxonApiException;
-import net.sf.saxon.s9api.XdmItem;
-import net.sf.saxon.s9api.XdmNode;
-
-import org.xmlsh.core.CoreException;
-import org.xmlsh.core.InvalidArgumentException;
-import org.xmlsh.core.Path;
-import org.xmlsh.core.UnexpectedException;
-import org.xmlsh.core.XValue;
-import org.xmlsh.util.Util;
-
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import net.sf.saxon.s9api.QName;
+import net.sf.saxon.s9api.XdmNode;
+
+import org.xmlsh.core.CoreException;
+import org.xmlsh.core.InvalidArgumentException;
+import org.xmlsh.core.Path;
+import org.xmlsh.core.XValue;
+import org.xmlsh.util.Util;
 
 public class ExternalModule extends PackageModule
 {

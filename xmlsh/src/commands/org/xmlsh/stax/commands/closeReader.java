@@ -6,13 +6,13 @@
 
 package org.xmlsh.stax.commands;
 
-import org.xmlsh.core.InvalidArgumentException;
-import org.xmlsh.core.XCommand;
-import org.xmlsh.core.XValue;
-
 import java.util.List;
 
 import javax.xml.stream.XMLEventReader;
+
+import org.xmlsh.core.InvalidArgumentException;
+import org.xmlsh.core.XCommand;
+import org.xmlsh.core.XValue;
 
 public class closeReader extends XCommand {
 

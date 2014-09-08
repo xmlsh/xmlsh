@@ -6,6 +6,9 @@
 
 package org.xmlsh.internal.commands;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.Options;
@@ -13,9 +16,6 @@ import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.util.XSDValidator;
-
-import java.util.ArrayList;
-import java.util.List;
 
 
 public class xsdvalidate extends XCommand {

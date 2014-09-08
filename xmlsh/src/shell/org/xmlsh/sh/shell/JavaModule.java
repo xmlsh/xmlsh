@@ -6,23 +6,23 @@
 
 package org.xmlsh.sh.shell;
 
+import java.lang.reflect.Method;
+import java.net.URI;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.xmlsh.core.CoreException;
-import org.xmlsh.sh.core.SourceLocation;
 import org.xmlsh.core.EvalEnv;
 import org.xmlsh.core.EvalFlag;
 import org.xmlsh.core.ICommand;
 import org.xmlsh.core.IFunction;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
+import org.xmlsh.sh.core.SourceLocation;
 import org.xmlsh.types.TypeFamily;
 import org.xmlsh.util.JavaUtils;
 import org.xmlsh.util.Util;
-
-import java.lang.reflect.Method;
-import java.net.URI;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 
 public class JavaModule extends AbstractModule
 {

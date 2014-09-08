@@ -6,10 +6,10 @@
 
 package org.xmlsh.core;
 
-import org.xmlsh.sh.shell.SerializeOpts;
-
 import java.io.IOException;
 import java.io.OutputStream;
+
+import org.xmlsh.sh.shell.SerializeOpts;
 
 
 /*

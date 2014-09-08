@@ -6,18 +6,17 @@
 
 package org.xmlsh.ant;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Task;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.sh.shell.ShellConstants;
 import org.xmlsh.util.Util;
-
-import java.util.ArrayList;
-import java.util.List;
 
 
 public class XmlshTask extends Task {

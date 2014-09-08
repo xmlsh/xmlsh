@@ -6,10 +6,10 @@
 
 package org.xmlsh.sh.core;
 
-import org.xmlsh.sh.shell.Shell;
-
 import java.io.PrintWriter;
 import java.util.ArrayList;
+
+import org.xmlsh.sh.shell.Shell;
 
 @SuppressWarnings("serial")
 public class IORedirectList extends ArrayList<IORedirect> {

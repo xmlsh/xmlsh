@@ -1,12 +1,12 @@
 package org.xmlsh.type.functions;
 
+import java.util.List;
+
 import org.xmlsh.core.AbstractBuiltinFunction;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.XValueArray;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.types.TypeFamily;
-
-import java.util.List;
 
 public class array extends AbstractBuiltinFunction
 {

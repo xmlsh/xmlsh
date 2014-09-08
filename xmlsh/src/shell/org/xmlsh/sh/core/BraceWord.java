@@ -6,19 +6,10 @@
 
 package org.xmlsh.sh.core;
 
-import org.xmlsh.core.CoreException;
+import java.io.PrintWriter;
+
 import org.xmlsh.core.EvalEnv;
 import org.xmlsh.core.EvalFlag;
-import org.xmlsh.core.XValue;
-import org.xmlsh.core.XValueList;
-import org.xmlsh.sh.shell.ParseResult;
-import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.types.TypeFamily;
-
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.Deque;
-import java.util.Stack;
 
 
 /*

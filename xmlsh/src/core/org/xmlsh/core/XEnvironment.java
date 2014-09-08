@@ -6,17 +6,7 @@
 
 package org.xmlsh.core;
 
-import net.sf.saxon.s9api.SaxonApiException;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.xml.sax.InputSource;
-import static org.xmlsh.core.XVariable.*;
-import static org.xmlsh.core.XVariable.XVarFlag.*;
-import org.xmlsh.sh.core.EvalUtils;
-import org.xmlsh.sh.shell.SerializeOpts;
-import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.types.TypeFamily;
-import org.xmlsh.util.Util;
+import static org.xmlsh.core.XVariable.XVarFlag.EXPORT;
 
 import java.io.Closeable;
 import java.io.File;
@@ -30,6 +20,14 @@ import java.util.Collection;
 import java.util.Stack;
 
 import javax.xml.transform.Source;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.xml.sax.InputSource;
+import org.xmlsh.sh.shell.SerializeOpts;
+import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.types.TypeFamily;
+import org.xmlsh.util.Util;
 
 public class XEnvironment implements AutoCloseable, Closeable {
 

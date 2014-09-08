@@ -6,15 +6,6 @@
 
 package org.xmlsh.json;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.xmlsh.core.InvalidArgumentException;
-import org.xmlsh.core.XValue;
-import org.xmlsh.core.XValueList;
-import org.xmlsh.sh.shell.SerializeOpts;
-import org.xmlsh.types.TypeFamily;
-import org.xmlsh.util.Util;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -26,6 +17,15 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.xmlsh.core.InvalidArgumentException;
+import org.xmlsh.core.XValue;
+import org.xmlsh.core.XValueList;
+import org.xmlsh.sh.shell.SerializeOpts;
+import org.xmlsh.types.TypeFamily;
+import org.xmlsh.util.Util;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerationException;

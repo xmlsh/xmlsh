@@ -6,18 +6,18 @@
 
 package org.xmlsh.protocols.var;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URL;
+import java.net.URLConnection;
+
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.VariableInputPort;
 import org.xmlsh.core.VariableOutputPort;
 import org.xmlsh.core.XVariable;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.xpath.ShellContext;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.URL;
-import java.net.URLConnection;
 
 public class VarURLConnection extends URLConnection {
 

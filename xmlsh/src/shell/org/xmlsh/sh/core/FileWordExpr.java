@@ -6,7 +6,12 @@
 
 package org.xmlsh.sh.core;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintWriter;
+
 import net.sf.saxon.s9api.XdmNode;
+
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.EvalEnv;
 import org.xmlsh.core.InputPort;
@@ -19,10 +24,6 @@ import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.types.TypeFamily;
 import org.xmlsh.util.ByteFilterInputStream;
 import org.xmlsh.util.Util;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintWriter;
 
 /*
  * CommandFileWord is a SubProc syntax that comes from a file 

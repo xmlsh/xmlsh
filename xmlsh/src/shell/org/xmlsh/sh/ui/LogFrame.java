@@ -6,14 +6,6 @@
 
 package org.xmlsh.sh.ui;
 
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.core.Logger;
-import org.apache.logging.log4j.core.LoggerContext;
-import org.apache.logging.log4j.core.config.Configuration;
-import org.apache.logging.log4j.core.config.LoggerConfig;
-import org.xmlsh.sh.shell.SerializeOpts;
-
 import java.awt.BorderLayout;
 
 import javax.swing.JFrame;
@@ -21,6 +13,10 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.border.EmptyBorder;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.core.LoggerContext;
+import org.xmlsh.sh.shell.SerializeOpts;
 
 @SuppressWarnings("serial")
 public class LogFrame extends JFrame {

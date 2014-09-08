@@ -8,13 +8,10 @@ package org.xmlsh.type.functions;
 
 import java.util.List;
 
-import org.xmlsh.core.IXValueMap;
 import org.xmlsh.core.AbstractBuiltinFunction;
 import org.xmlsh.core.XConfiguration;
 import org.xmlsh.core.XValue;
-import org.xmlsh.core.XValueSequence;
 import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.util.Util;
 
 public class getConfigValue extends AbstractBuiltinFunction
 {

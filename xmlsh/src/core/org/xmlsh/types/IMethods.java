@@ -6,14 +6,14 @@
 
 package org.xmlsh.types;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.List;
+
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.SerializeOpts;
-
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.List;
 
 /*
  * Generic methods available on typed objects

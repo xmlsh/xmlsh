@@ -6,14 +6,14 @@
 
 package org.xmlsh.xs.functions;
 
+import java.util.List;
+
 import org.xmlsh.core.AbstractBuiltinFunction;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.S9Util;
-
-import java.util.List;
 
 public class document extends AbstractBuiltinFunction {
 

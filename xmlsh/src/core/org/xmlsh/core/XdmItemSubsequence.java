@@ -6,9 +6,9 @@
 
 package org.xmlsh.core;
 
-import net.sf.saxon.s9api.XdmItem;
-
 import java.util.Iterator;
+
+import net.sf.saxon.s9api.XdmItem;
 
 public class XdmItemSubsequence implements Iterable<XdmItem> {
 

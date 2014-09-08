@@ -1,6 +1,7 @@
 package org.xmlsh.sh.grammar;
 
-import static org.xmlsh.sh.grammar.ParserState.TokenEnum.*;
+import static org.xmlsh.sh.grammar.ParserState.TokenEnum.COLON;
+import static org.xmlsh.sh.grammar.ParserState.TokenEnum.COMMA;
 
 import java.util.EnumMap;
 import java.util.EnumSet;

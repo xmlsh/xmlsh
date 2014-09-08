@@ -1,14 +1,14 @@
 package org.xmlsh.util;
 
-import org.codehaus.stax2.XMLInputFactory2;
-import org.codehaus.stax2.XMLStreamReader2;
-import org.codehaus.stax2.validation.XMLValidationSchema;
-import org.codehaus.stax2.validation.XMLValidationSchemaFactory;
-
 import java.io.InputStream;
 import java.net.URL;
 
 import javax.xml.stream.XMLInputFactory;
+
+import org.codehaus.stax2.XMLInputFactory2;
+import org.codehaus.stax2.XMLStreamReader2;
+import org.codehaus.stax2.validation.XMLValidationSchema;
+import org.codehaus.stax2.validation.XMLValidationSchemaFactory;
 
 
 

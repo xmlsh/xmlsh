@@ -6,10 +6,10 @@
 
 package org.xmlsh.core;
 
+import java.io.IOException;
+
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmValue;
-
-import java.io.IOException;
 
 public abstract class AbstractXdmItemOutputStream implements IXdmItemOutputStream {
 

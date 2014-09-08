@@ -6,17 +6,6 @@
 
 package org.xmlsh.core;
 
-import net.sf.saxon.s9api.XdmItem;
-import net.sf.saxon.s9api.XdmNode;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import org.xml.sax.InputSource;
-import org.xmlsh.json.JSONUtils;
-import org.xmlsh.sh.shell.SerializeOpts;
-import org.xmlsh.util.FileUtils;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -27,6 +16,16 @@ import java.io.OutputStream;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.Source;
+
+import net.sf.saxon.s9api.XdmItem;
+import net.sf.saxon.s9api.XdmNode;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.xml.sax.InputSource;
+import org.xmlsh.json.JSONUtils;
+import org.xmlsh.sh.shell.SerializeOpts;
+import org.xmlsh.util.FileUtils;
 
 import com.fasterxml.jackson.databind.JsonNode;
 

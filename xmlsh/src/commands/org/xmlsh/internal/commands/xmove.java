@@ -1,4 +1,8 @@
 package org.xmlsh.internal.commands;
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+
 import net.sf.saxon.s9api.DocumentBuilder;
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.SaxonApiException;
@@ -7,6 +11,7 @@ import net.sf.saxon.s9api.XPathExecutable;
 import net.sf.saxon.s9api.XPathSelector;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
+
 import org.xmlsh.core.Namespaces;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.XCommand;
@@ -14,10 +19,6 @@ import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.Util;
 import org.xmlsh.util.XFile;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
 
 
 /**

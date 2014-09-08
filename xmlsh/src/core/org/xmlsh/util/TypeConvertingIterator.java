@@ -6,8 +6,9 @@
 
 package org.xmlsh.util;
 
-import org.xmlsh.types.ITypeConverter;
 import java.util.Iterator;
+
+import org.xmlsh.types.ITypeConverter;
 
 public class TypeConvertingIterator<S,D> implements Iterator<D>
 {

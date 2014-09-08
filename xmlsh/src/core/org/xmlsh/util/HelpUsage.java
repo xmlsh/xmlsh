@@ -6,23 +6,6 @@
 
 package org.xmlsh.util;
 
-import net.sf.saxon.s9api.Destination;
-import net.sf.saxon.s9api.DocumentBuilder;
-import net.sf.saxon.s9api.Processor;
-import net.sf.saxon.s9api.QName;
-import net.sf.saxon.s9api.SaxonApiException;
-import net.sf.saxon.s9api.XQueryCompiler;
-import net.sf.saxon.s9api.XQueryEvaluator;
-import net.sf.saxon.s9api.XQueryExecutable;
-import net.sf.saxon.s9api.XdmNode;
-import org.xmlsh.core.CommandFactory;
-import org.xmlsh.core.CoreException;
-import org.xmlsh.core.IOutputPort;
-import org.xmlsh.core.XValue;
-import org.xmlsh.sh.shell.IModule;
-import org.xmlsh.sh.shell.SerializeOpts;
-import org.xmlsh.sh.shell.Shell;
-
 import java.awt.Desktop;
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,6 +15,24 @@ import java.net.URL;
 
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
+
+import net.sf.saxon.s9api.Destination;
+import net.sf.saxon.s9api.DocumentBuilder;
+import net.sf.saxon.s9api.Processor;
+import net.sf.saxon.s9api.QName;
+import net.sf.saxon.s9api.SaxonApiException;
+import net.sf.saxon.s9api.XQueryCompiler;
+import net.sf.saxon.s9api.XQueryEvaluator;
+import net.sf.saxon.s9api.XQueryExecutable;
+import net.sf.saxon.s9api.XdmNode;
+
+import org.xmlsh.core.CommandFactory;
+import org.xmlsh.core.CoreException;
+import org.xmlsh.core.IOutputPort;
+import org.xmlsh.core.XValue;
+import org.xmlsh.sh.shell.IModule;
+import org.xmlsh.sh.shell.SerializeOpts;
+import org.xmlsh.sh.shell.Shell;
 
 public class HelpUsage {
 

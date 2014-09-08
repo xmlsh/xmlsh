@@ -6,17 +6,6 @@
 
 package org.xmlsh.core;
 
-import net.sf.saxon.s9api.SaxonApiException;
-import net.sf.saxon.s9api.XdmItem;
-import net.sf.saxon.s9api.XdmNode;
-import org.xml.sax.InputSource;
-import org.xmlsh.json.JSONUtils;
-import org.xmlsh.sh.shell.SerializeOpts;
-import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.util.Util;
-import org.xmlsh.util.XMLEventInputStream;
-import org.xmlsh.util.XMLEventStreamReader;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -30,6 +19,18 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.events.XMLEvent;
 import javax.xml.transform.Source;
+
+import net.sf.saxon.s9api.SaxonApiException;
+import net.sf.saxon.s9api.XdmItem;
+import net.sf.saxon.s9api.XdmNode;
+
+import org.xml.sax.InputSource;
+import org.xmlsh.json.JSONUtils;
+import org.xmlsh.sh.shell.SerializeOpts;
+import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.util.Util;
+import org.xmlsh.util.XMLEventInputStream;
+import org.xmlsh.util.XMLEventStreamReader;
 
 import com.fasterxml.jackson.databind.JsonNode;
 

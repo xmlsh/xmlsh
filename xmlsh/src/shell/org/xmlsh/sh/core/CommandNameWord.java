@@ -6,9 +6,19 @@
 
 package org.xmlsh.sh.core;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.io.StringReader;
+
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
+
 import net.sf.saxon.s9api.DocumentBuilder;
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XdmNode;
+
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.EvalEnv;
 import org.xmlsh.core.EvalFlag;
@@ -22,15 +32,6 @@ import org.xmlsh.types.TypeFamily;
 import org.xmlsh.util.ByteFilterOutputStream;
 import org.xmlsh.util.NullInputStream;
 import org.xmlsh.util.Util;
-
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.io.StringReader;
-
-import javax.xml.transform.Source;
-import javax.xml.transform.stream.StreamSource;
 
 /*
  * A Value that evaulates to a "cmd_word" which is either a simple string,

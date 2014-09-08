@@ -1,8 +1,6 @@
 
 package org.xmlsh.core;
 
-import org.xmlsh.util.Util;
-
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
@@ -19,6 +17,8 @@ import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.Characters;
 import javax.xml.stream.events.XMLEvent;
+
+import org.xmlsh.util.Util;
 
 /**
  * A filter that indents an XML stream. To apply it, construct a filter that

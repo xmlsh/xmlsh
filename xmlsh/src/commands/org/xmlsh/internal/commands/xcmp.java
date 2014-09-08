@@ -9,15 +9,6 @@ package org.xmlsh.internal.commands;
 
 
 
-import org.xmlsh.core.CoreException;
-import org.xmlsh.core.InputPort;
-import org.xmlsh.core.InvalidArgumentException;
-import org.xmlsh.core.Options;
-import org.xmlsh.core.XCommand;
-import org.xmlsh.core.XValue;
-import org.xmlsh.sh.shell.SerializeOpts;
-import org.xmlsh.util.Util;
-
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -41,6 +32,15 @@ import javax.xml.stream.events.ProcessingInstruction;
 import javax.xml.stream.events.StartDocument;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
+
+import org.xmlsh.core.CoreException;
+import org.xmlsh.core.InputPort;
+import org.xmlsh.core.InvalidArgumentException;
+import org.xmlsh.core.Options;
+import org.xmlsh.core.XCommand;
+import org.xmlsh.core.XValue;
+import org.xmlsh.sh.shell.SerializeOpts;
+import org.xmlsh.util.Util;
 
 public class xcmp extends XCommand {
 

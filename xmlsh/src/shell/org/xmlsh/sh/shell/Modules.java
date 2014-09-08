@@ -6,21 +6,19 @@
 
 package org.xmlsh.sh.shell;
 
+import java.io.Closeable;
+import java.io.IOException;
+import java.util.Iterator;
+import java.util.List;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.ReferenceCountedHandle;
 import org.xmlsh.core.XValue;
 import org.xmlsh.util.ManagedObject;
-import org.xmlsh.util.ReferenceCounter;
 import org.xmlsh.util.StringPair;
 import org.xmlsh.util.Util;
-
-import java.io.Closeable;
-import java.io.IOException;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
 
 /*
  * Modules are like namespaces.

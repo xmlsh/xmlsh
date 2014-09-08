@@ -6,12 +6,12 @@
 
 package org.xmlsh.core;
 
-import org.xmlsh.util.StringPair;
-import org.xmlsh.util.Util;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
+import org.xmlsh.util.StringPair;
+import org.xmlsh.util.Util;
 
 
 

@@ -6,12 +6,6 @@
 
 package org.xmlsh.core;
 
-import org.xmlsh.sh.shell.SerializeOpts;
-import org.xmlsh.types.TypeFamily;
-import org.xmlsh.types.XTypeUtils;
-import org.xmlsh.util.Util;
-import org.xmlsh.util.XNamedValue;
-
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -22,8 +16,13 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import org.xmlsh.sh.shell.SerializeOpts;
+import org.xmlsh.types.TypeFamily;
+import org.xmlsh.types.XTypeUtils;
+import org.xmlsh.util.Util;
+import org.xmlsh.util.XNamedValue;
+
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
 
 /*
  * Generic Properties 

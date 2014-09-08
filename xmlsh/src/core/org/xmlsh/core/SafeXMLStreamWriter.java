@@ -6,11 +6,12 @@
 
 package org.xmlsh.core;
 
-import org.xmlsh.util.Util;
 import javanet.staxutils.helpers.StreamWriterDelegate;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
+
+import org.xmlsh.util.Util;
 
 
 public class SafeXMLStreamWriter extends StreamWriterDelegate {

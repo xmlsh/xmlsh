@@ -3,17 +3,14 @@ package org.xmlsh.core;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.ShellConstants;
 import org.xmlsh.types.TypeFamily;
-import org.xmlsh.util.JavaUtils;
 import org.xmlsh.util.Util;
 
 

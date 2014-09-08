@@ -6,14 +6,14 @@
 
 package org.xmlsh.sh.core;
 
+import java.io.PrintWriter;
+import java.util.ArrayList;
+
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.sh.shell.ShellThread;
 import org.xmlsh.util.PipedPort;
 import org.xmlsh.util.PipedStreamPort;
 import org.xmlsh.util.PipedXDMPort;
-
-import java.io.PrintWriter;
-import java.util.ArrayList;
 
 public class Pipeline extends CommandExpr {
 

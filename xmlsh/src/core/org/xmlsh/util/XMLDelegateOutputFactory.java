@@ -6,9 +6,6 @@
 
 package org.xmlsh.util;
 
-import org.codehaus.stax2.XMLOutputFactory2;
-import org.codehaus.stax2.XMLStreamWriter2;
-
 import java.io.OutputStream;
 import java.io.Writer;
 
@@ -16,6 +13,9 @@ import javax.xml.stream.XMLEventWriter;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.transform.Result;
+
+import org.codehaus.stax2.XMLOutputFactory2;
+import org.codehaus.stax2.XMLStreamWriter2;
 
 public class XMLDelegateOutputFactory extends XMLOutputFactory2
 {

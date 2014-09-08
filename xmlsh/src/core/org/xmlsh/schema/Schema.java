@@ -6,6 +6,8 @@
 
 package org.xmlsh.schema;
 // import org.w3c.dom.DOMImplementationRegistry;
+import java.util.Stack;
+
 import org.apache.xerces.xs.XSComplexTypeDefinition;
 import org.apache.xerces.xs.XSConstants;
 import org.apache.xerces.xs.XSElementDeclaration;
@@ -20,8 +22,6 @@ import org.apache.xerces.xs.XSTerm;
 import org.apache.xerces.xs.XSTypeDefinition;
 import org.w3c.dom.bootstrap.DOMImplementationRegistry;
 import org.xmlsh.util.Util;
-
-import java.util.Stack;
 
 
 

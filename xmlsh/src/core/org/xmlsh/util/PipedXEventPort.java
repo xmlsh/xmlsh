@@ -6,15 +6,15 @@
 
 package org.xmlsh.util;
 
+import java.io.IOException;
+
+import javanet.staxutils.XMLEventPipe;
+
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.XMLEventInputPort;
 import org.xmlsh.core.XMLEventOutputPort;
 import org.xmlsh.sh.shell.SerializeOpts;
-
-import java.io.IOException;
-
-import javanet.staxutils.XMLEventPipe;
 
 public class PipedXEventPort extends PipedPort {
 	private		XMLEventInputPort 	mIn;

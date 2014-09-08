@@ -5,6 +5,11 @@
 
 package org.xmlsh.sh.shell;
 
+import java.io.IOException;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map.Entry;
+
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.SaxonApiException;
@@ -12,6 +17,7 @@ import net.sf.saxon.s9api.XQueryCompiler;
 import net.sf.saxon.s9api.XQueryEvaluator;
 import net.sf.saxon.s9api.XQueryExecutable;
 import net.sf.saxon.s9api.XdmValue;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.xmlsh.core.CoreException;
@@ -20,24 +26,14 @@ import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.Variables;
 import org.xmlsh.core.XValue;
-import org.xmlsh.core.XValueMap;
 import org.xmlsh.core.XVariable;
-import org.xmlsh.core.XVariable.XVarFlag;
 import org.xmlsh.sh.core.EvalUtils;
 import org.xmlsh.sh.core.SourceLocation;
-import org.xmlsh.types.TypeFamily;
 import org.xmlsh.types.XDMTypeFamily;
-import org.xmlsh.util.JavaUtils;
 import org.xmlsh.util.NameValueMap;
 import org.xmlsh.util.Util;
 import org.xmlsh.xpath.EvalDefinition;
 import org.xmlsh.xpath.ShellContext;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map.Entry;
 
 public class Expander
 {

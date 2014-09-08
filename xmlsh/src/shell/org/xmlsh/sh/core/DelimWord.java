@@ -5,9 +5,9 @@ import java.io.PrintWriter;
 
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.EvalEnv;
+import org.xmlsh.sh.grammar.Token;
 import org.xmlsh.sh.shell.ParseResult;
 import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.sh.grammar.Token;
 
 public class DelimWord extends Word
 {

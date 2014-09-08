@@ -6,17 +6,6 @@
 
 package org.xmlsh.sh.ui;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import org.xmlsh.core.Options;
-import org.xmlsh.core.XValue;
-import org.xmlsh.sh.shell.SerializeOpts;
-import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.sh.ui.TextResultPane.OutputType;
-import org.xmlsh.util.FileUtils;
-import org.xmlsh.util.Util;
-
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -60,6 +49,16 @@ import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 import javax.swing.text.JTextComponent;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.xmlsh.core.Options;
+import org.xmlsh.core.XValue;
+import org.xmlsh.sh.shell.SerializeOpts;
+import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.sh.ui.TextResultPane.OutputType;
+import org.xmlsh.util.FileUtils;
+import org.xmlsh.util.Util;
 
 public class XShell {
 

@@ -6,13 +6,13 @@
 
 package org.xmlsh.sh.core;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.EvalEnv;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.Util;
-
-import java.io.IOException;
-import java.io.PrintWriter;
 
 public class CaseItem {
 	private		StringList		mPattern;

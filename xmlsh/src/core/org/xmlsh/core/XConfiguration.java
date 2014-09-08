@@ -16,7 +16,6 @@ import java.util.Set;
 
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.types.TypeFamily;
-import org.xmlsh.util.NameValue;
 import org.xmlsh.util.NameValueMap;
 import org.xmlsh.util.Util;
 

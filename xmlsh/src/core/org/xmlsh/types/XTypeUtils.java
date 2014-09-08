@@ -1,17 +1,17 @@
 package org.xmlsh.types;
 
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Properties;
+
 import org.xmlsh.core.IXValueMap;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.XValueMap;
 import org.xmlsh.util.StringPair;
 import org.xmlsh.util.XNamedValue;
-
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Properties;
 
 public class XTypeUtils
 {

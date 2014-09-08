@@ -5,19 +5,20 @@
  */
 
 package org.xmlsh.core;
-import org.xmlsh.sh.core.SourceLocation;
-import org.xmlsh.sh.core.CommandExpr;
-import org.xmlsh.sh.core.ICommandExpr;
-import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.util.HelpUsage;
-import org.xmlsh.util.Util;
-
-import java.io.PrintWriter;
 import java.util.List;
 
-public abstract class AbstractBuiltinFunction extends AbstractFunction implements IFunctionExpr {
+import org.xmlsh.sh.core.SourceLocation;
+import org.xmlsh.sh.shell.Shell;
 
+public abstract class AbstractBuiltinFunction extends AbstractFunction  {
+
+  @Override
+  public XValue run(Shell shell, SourceLocation loc, List<XValue> args) throws Exception
+  {
+    return run(shell,args);
+  }
   public abstract XValue  run( Shell shell , List<XValue> args ) throws Exception;
+  
   protected AbstractBuiltinFunction( String name )
   { 
     super(name);
@@ -25,40 +26,6 @@ public abstract class AbstractBuiltinFunction extends AbstractFunction implement
 
   
 
-  @Override
-  public IFunction getFunction()
-  {
-    final AbstractBuiltinFunction func = this ;
-    return new IFunction() {
-      
-
-      @Override
-      public XValue run(Shell shell, SourceLocation loc, List<XValue> args) throws Exception
-      {
-        return func.run(shell, args);
-        
-      }
-
-      @Override
-      public String getName()
-      {
-        return func.getName();
-      }
-
-      @Override
-      public EvalEnv argumentEnv(EvalEnv env)
-      {
-       return func.argumentEnv(env);
-      }
-
-      @Override
-      public EvalEnv returnEnv(EvalEnv env)
-      {
-        return func.returnEnv(env);
-      }} ;
-
-  
-  }
 }
 
 

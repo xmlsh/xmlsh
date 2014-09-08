@@ -6,10 +6,10 @@
 
 package org.xmlsh.sh.core;
 
+import java.io.PrintWriter;
+
 import org.xmlsh.core.EvalEnv;
 import org.xmlsh.sh.shell.Shell;
-
-import java.io.PrintWriter;
 
 public class CaseClause  extends CompoundCommandExpr {
 	private static final EvalEnv mCaseWordEnv = EvalEnv.basicInstance();

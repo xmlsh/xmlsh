@@ -6,12 +6,12 @@
 
 package org.xmlsh.builtin.commands;
 
+import java.io.File;
+import java.util.List;
+
 import org.xmlsh.core.BuiltinCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.XVariable;
-
-import java.io.File;
-import java.util.List;
 
 public class xcd extends BuiltinCommand {
 
