@@ -99,10 +99,15 @@ public class ximport extends BuiltinCommand {
 		if( args.size() == 0 )
 			return listModules();
 
+		XValue at = null;
 		String mod = args.remove(0).toString();
+		if( args.size() > 1 && args.get(0).isAtomic() && args.get(0).toString().equals("at")){
+		  args.remove(0);
+      at = args.remove(0);
+		}
 
 
-		mShell.importModule(mod , args );
+		mShell.importModule(mod , at ,args );
 
 		return 0;
 	}

@@ -9,6 +9,11 @@ public class ReferenceCountedHandle<T extends Closeable > implements IHandle<T> 
 
 	private final  ReferenceCounter mCounter ;
 	private volatile T mObj;
+	
+	public ReferenceCountedHandle( T obj ) {
+	  this( obj , new ReferenceCounter() );
+	}
+
 	public ReferenceCountedHandle( T obj , ReferenceCounter counter) {
 		mCounter = counter;
 		mObj = obj ;

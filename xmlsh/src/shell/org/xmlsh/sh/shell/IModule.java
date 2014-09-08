@@ -19,7 +19,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 
-public interface IModule extends Closeable , IReleasable
+public interface IModule extends Closeable 
 {
   
   /*
@@ -28,9 +28,7 @@ public interface IModule extends Closeable , IReleasable
   
   public void onLoad(Shell shell);
   public void onInit(Shell shell , List<XValue> args);
-  public void onAttach(Shell shell )  throws IOException;
-  public void onDetach(Shell shell) throws IOException;
-  public void onUnload();
+  // close() is called for an unload
   
   /*
    * Calls TO the module

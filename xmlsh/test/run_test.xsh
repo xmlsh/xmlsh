@@ -68,7 +68,7 @@ elif [ -f out/$1.xml ] ; then
 		echo $1 out/$1.xml different output
 		diff_xml _out.txt out/$1.xml
   if [ $TEST -eq 1 -a -f out/$1.xml.$S ] ; then 
-      diff_xml -b _out.txt out/$1.xml.$S
+      xcmp -x -b _out.txt out/$1.xml.$S
       if [ $? -ne 0 ] ; then
         echo $1 out/$1.xml.$S different output
 	     	diff_xml _out.txt out/$1.xml.$S
@@ -93,7 +93,7 @@ if [ -f _err.txt -a -f out/$1.err ] ; then
 		echo $1 out/$1.err different output
 		diff_text _err.txt out/$1.err
     if [ $TEST -eq 1 -a -f out/$1.err.$S ] ; then 
-      diff_text -b _err.txt out/$1.err.$S
+      xcmp -b _err.txt out/$1.err.$S
       if [ $? -ne 0 ] ; then
         echo $1 out/$1.err.$S different output
 	     	diff_text _err.txt out/$1.err.$S

@@ -27,13 +27,12 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 
- abstract class AbstractModule extends ManagedObject implements IModule
+ abstract class AbstractModule  implements IModule
 {
   @Override
   public void close() throws IOException
   {
     mLogger.trace("Closing module {} " , getName() );
-    onUnload();
   }
 
   @Override
@@ -50,29 +49,7 @@ import java.util.List;
 
   }
 
-  @Override
-  public void onAttach(Shell shell)
-  {
-    addRef();
-    mLogger.trace("module {} onAttach()" , getName() );
-
-  }
-
-  @Override
-  public void onDetach(Shell shell) throws IOException
-  {
-    release();
-    mLogger.trace("module {} onDetach()" , getName() );
-
-  }
   
-  
-  @Override
-  public void onUnload()
-  {
-    mLogger.trace("module {} onUnload()" , getName() );
-
-  }
 
   protected String mName;
   protected String mPrefix; // may be null

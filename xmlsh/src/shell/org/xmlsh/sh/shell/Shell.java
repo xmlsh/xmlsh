@@ -1543,10 +1543,10 @@ public class Shell implements AutoCloseable, Closeable
   /*
    * Declare a module using the prefix=value notation
    */
-  public IModule importModule(String moduledef, List<XValue> init) throws CoreException, IOException
+  public IModule importModule(String moduledef, XValue at ,List<XValue> init) throws CoreException, IOException
   {
 
-    return mModules.declare(this, moduledef, init);
+    return mModules.declare(this, moduledef, at , init);
 
   }
 

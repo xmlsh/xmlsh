@@ -9,14 +9,16 @@ package org.xmlsh.sh.shell;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.xmlsh.core.CoreException;
+import org.xmlsh.core.ReferenceCountedHandle;
 import org.xmlsh.core.XValue;
 import org.xmlsh.util.ManagedObject;
+import org.xmlsh.util.ReferenceCounter;
 import org.xmlsh.util.StringPair;
 import org.xmlsh.util.Util;
 
 import java.io.Closeable;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -28,10 +30,22 @@ import java.util.List;
  */
 
 
-public class Modules extends ManagedObject implements Iterable<IModule > , Closeable
+public class Modules extends ManagedObject<Modules> implements Iterable<IModule > , Closeable
 {
+
+ 
+  static class ModuleHandle extends ReferenceCountedHandle<IModule>
+  {
+
+    public ModuleHandle(IModule mod)
+    {
+      super(mod);
+    }
+  
+  }
+  
   private static final Logger mLogger = LogManager.getLogger();
-  private List<IModule> mModules = new ArrayList<>();
+  private HandleList<IModule, ModuleHandle>  mModules = new HandleList<>();
   private Shell mShell ;
   private boolean bClosed = true ;
   
@@ -39,30 +53,20 @@ public class Modules extends ManagedObject implements Iterable<IModule > , Close
     mShell = shell ;
     bClosed = false ;
   }
-	public Iterator<IModule> iterator()
-  {
-    return mModules.iterator();
-  }
+  
 
 
-  public IModule declare(Shell shell, String prefix , String name, List<XValue> init ) throws CoreException, IOException
+
+  public IModule declare(Shell shell, String prefix , String name, XValue at , List<XValue> init ) throws CoreException, IOException
 	{
 		/*
 		 * Dont redeclare a module under the same prefix
 		 */
     
-    XValue at = null;
-    if( init.size() > 1 && init.get(0).isAtomic()  && Util.isEqual("at", init.get(0).toString())){
-      init.remove(0);
-      at = init.remove(0);
-      
-    }
-    
 
-		for( IModule m : mModules )
-			if( Util.isEqual(m.getName(),name) && Util.isEqual(m.getPrefix(),prefix))
-				return m;
-
+		for( ModuleHandle hm : mModules )
+			if( Util.isEqual(hm.get().getName(),name) && Util.isEqual(hm.get().getPrefix(),prefix))
+				return  hm.get() ;
 
 		IModule module = ModuleFactory.createModule(shell, prefix , name , at  );
 		
@@ -87,74 +91,55 @@ public class Modules extends ManagedObject implements Iterable<IModule > , Close
 	  
 		if( ! Util.isEmpty(module.getPrefix())){
 			// IF module exists by this prefix then redeclare
-			IModule exists = getModuleByPrefix( module.getPrefix() );
+			ModuleHandle exists = getModuleHandleByPrefix( module.getPrefix() );
 			if( exists != null )
-        detachModule(exists);
+        exists.release();
 		}
 		else {
 			// Non prefixed modules dont import the same package
-			IModule exists = getExistingModule( module );
+			ModuleHandle exists = getExistingModule( module );
 			if( exists != null ) {
-			  mLogger.trace("declare an existing non prefixed module - ignoreing new module");
-			  
-			  module.onDetach(mShell);
-			  
-			  
-			  
-				return exists ;
+	       mLogger.trace("declare an existing non prefixed module - closing new module");
+			  module.close();
+				return exists.get();
 			
 			}
 		}
 
-		// Dont duplicate exact object
-		if( mModules.contains(module)){
-      mLogger.trace("declare an existing identical module object- ignoreing new module");
-      module.onDetach(mShell);
-			return module;
-		}
-
-		attachModule(module);
-
-		return module ;
+		assert(! mModules.containsValue( module ));
+		ModuleHandle hmod = new ModuleHandle(module);
+		mModules.add( hmod  );
+		return hmod.get() ;
 
 	}
 
-
-  private void attachModule(IModule module) throws IOException
-  {
-
-   assert( module != null  );
-   module.onAttach(mShell);
-    mModules.add(module);
-  }
-
-
-  private void detachModule(IModule exists) throws IOException
-  {
-    if( exists != null )
-      exists.onDetach(mShell);
-    mModules.remove( exists );
-  }
 
 
 
   Modules() {}
 
 
-	public IModule	getModuleByPrefix(String prefix)
+	private ModuleHandle	getModuleHandleByPrefix(String prefix)
 	{
-		for( IModule m : mModules )
-			if( Util.isEqual(m.getPrefix(), prefix ) )
+		for( ModuleHandle m : mModules)
+			if( Util.isEqual(m.get().getPrefix(), prefix ) )
 				return m ;
 		return null;
 
 	}
 
-	public IModule	getExistingModule(IModule mod)
+	 public IModule  getModuleByPrefix(String prefix){
+	   ModuleHandle hm = getModuleHandleByPrefix(prefix);
+	   return hm == null ? null : hm.get();
+	   
+	 }
+
+	 
+	public ModuleHandle	getExistingModule(IModule mod)
 	{
 	  
-		for( IModule m : mModules )
-			if( m.definesSameModule(mod ) )
+		for( ModuleHandle m : mModules  )
+			if( m.get().definesSameModule(mod ) )
 				return m ;
 		return null;
 
@@ -164,8 +149,9 @@ public class Modules extends ManagedObject implements Iterable<IModule > , Close
 	Modules( Shell shell , Modules that) throws IOException{
 	  mShell = shell ;
     mLogger.trace("Cloning Modules - attach to all new ones");
-    for( IModule m : that ){
-      attachModule(  m );
+    for(  ModuleHandle hm : that.mModules ){
+      hm.addRef();
+      mModules.add(hm);
     }
 
 	}
@@ -177,9 +163,9 @@ public class Modules extends ManagedObject implements Iterable<IModule > , Close
 	 * class
 	 * 
 	 */
-	public IModule declare(Shell shell, String m, List<XValue> init) throws CoreException, IOException {
+	public IModule declare(Shell shell, String m, XValue at, List<XValue> init) throws CoreException, IOException {
 		StringPair 	pair = new StringPair(m,'=');
-		return declare(shell, pair.getLeft(), pair.getRight() ,  init  );
+		return declare(shell, pair.getLeft(), pair.getRight() ,  at , init  );
 
 	}
 
@@ -191,8 +177,8 @@ public class Modules extends ManagedObject implements Iterable<IModule > , Close
     if( bClosed )
       return ;
     synchronized( mModules ){
-      for( IModule m : mModules ){
-        m.onDetach(mShell);
+      for( ModuleHandle m : mModules ){
+        m.release();
       }
       mModules.clear();
     }
@@ -200,6 +186,13 @@ public class Modules extends ManagedObject implements Iterable<IModule > , Close
     mShell = null ;
     
     
+  }
+
+
+  @Override
+  public Iterator<IModule> iterator()
+  {
+   return mModules.valueIterator();
   }
 
 }

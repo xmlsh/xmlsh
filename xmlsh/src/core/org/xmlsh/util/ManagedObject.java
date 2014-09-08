@@ -16,7 +16,7 @@ import java.io.IOException;
  * Default implementation of a managed object
  * 
  */
-public abstract class ManagedObject implements Closeable, IReleasable {
+public abstract class ManagedObject<T> implements Closeable, IReleasable {
 
 	private		final ReferenceCounter mCounter = new ReferenceCounter();
 

@@ -15,7 +15,7 @@ public class TypeConvertingIterator<S,D> implements Iterator<D>
   private final Iterator<S> iter;
   private final ITypeConverter<S,D> converter;
   
-  TypeConvertingIterator( final Iterator<S> iter , final ITypeConverter<S,D> converter ){
+  public TypeConvertingIterator( final Iterator<S> iter , final ITypeConverter<S,D> converter ){
   
     this.iter = iter;
     this.converter = converter ;

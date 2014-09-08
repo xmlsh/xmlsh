@@ -10,7 +10,7 @@ import org.xmlsh.util.ManagedObject;
 
 import javax.servlet.http.HttpSession;
 
-public class ManagedHttpSession extends ManagedObject
+public class ManagedHttpSession extends ManagedObject<ManagedHttpSession>
 {
 	private		HttpSession 	mSession ;
 

@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class SessionEnvironment extends ManagedObject {
+public class SessionEnvironment extends ManagedObject<SessionEnvironment> {
 
 	private		Map<String, ManagedObject>		mVars;
 
