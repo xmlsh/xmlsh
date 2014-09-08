@@ -17,6 +17,7 @@ import java.io.PrintWriter;
 
 import org.xmlsh.core.ICommand;
 import org.xmlsh.core.ScriptCommand;
+import org.xmlsh.core.ScriptCommand.SourceMode;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.Util;
 
@@ -58,7 +59,7 @@ public class EvalScriptExpr extends CommandExpr {
 		shell = shell.clone();
 		ICommand cmd = null;
 		try {
-			cmd = new ScriptCommand( mCommand , shell.getSerializeOpts() );
+			cmd = new ScriptCommand( mCommand , shell.getSerializeOpts(),  SourceMode.SOURCE );
 			return cmd.run(  shell, "", null );
 
 		} finally {

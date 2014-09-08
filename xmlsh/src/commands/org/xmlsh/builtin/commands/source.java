@@ -11,6 +11,7 @@ import java.util.List;
 import org.xmlsh.core.BuiltinCommand;
 import org.xmlsh.core.CommandFactory;
 import org.xmlsh.core.ICommand;
+import org.xmlsh.core.ScriptCommand.SourceMode;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
 
@@ -24,7 +25,7 @@ public class source extends BuiltinCommand {
 			throw new UnexpectedException("source expects 1 argument");
 
 		XValue port = args.get(0);
-		ICommand icmd = CommandFactory.getInstance().getScript(mShell, port.toString() ,true,getLocation());
+		ICommand icmd = CommandFactory.getInstance().getScript(mShell, port.toString() ,SourceMode.SOURCE,getLocation());
 		if( icmd == null){
 			mShell.printErr( port + ": not found" ,  getLocation()  );
 			return 1;

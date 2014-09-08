@@ -1,7 +1,7 @@
 /**
  * $Id: colon.java 21 2008-07-04 08:33:47Z daldei $
  * $Date: 2008-07-04 04:33:47 -0400 (Fri, 04 Jul 2008) $
- *
+ * 
  */
 
 package org.xmlsh.builtin.commands;
@@ -16,224 +16,249 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.xmlsh.core.BuiltinCommand;
+import org.xmlsh.core.CommandFactory;
 import org.xmlsh.core.CoreException;
+import org.xmlsh.core.ICommand;
 import org.xmlsh.core.InvalidArgumentException;
+import org.xmlsh.core.ScriptCommand.SourceMode;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.IModule;
 import org.xmlsh.util.StringPair;
 
-public class ximport extends BuiltinCommand {
-	private static Logger mLogger = LogManager.getLogger();
-	@Override
-	public int run(  List<XValue> args ) throws Exception {
-		int ret = 0;
-		if( args.size() < 1 ) {
-			usage();
-			return 1;
-		}
+public class ximport extends BuiltinCommand
+{
+  private static Logger mLogger = LogManager.getLogger();
 
-		XValue what = args.remove(0);
+  @Override
+  public int run(List<XValue> args) throws Exception
+  {
+    int ret = 0;
+    if(args.size() < 1) {
+      usage();
+      return 1;
+    }
 
-		try {
-			if( what.toString().equals("module"))
-				return importModule( args );
-			else
-				if( what.toString().equals("package")){
-					if( args.isEmpty() )
-						listModules();
-					else
-						for( XValue arg : args )
-							if( ! importPackage(arg.toString()) ) {
-								mShell.printErr("package: " + arg.toString() + " not found");
-								ret++;
-							}
-					return ret;
-				}
-				else
-					if( what.toString().equals("commands")){
-						if( args.isEmpty() )
-							listModules();
-						else
-							for( XValue arg : args ) {
-								if( !  importCommands(arg.toString()) ){
-									mShell.printErr("xmlsh command extension: " + arg.toString() + " not found");
-									ret++;
-								}
-							}
-						return ret;
-					}
-					else
-						if( what.toString().equals("java"))
-							return importJava( args );
-						else
-							usage("Invalid command: import " + what.toString());
-		} 
+    XValue what = args.remove(0);
 
-		catch (InvalidArgumentException e){
-			mLogger.info("invalid argument exception importing: " + what.toString() , e);
-			if( mShell.isInCommandConndition() )
-				return -1 ;
-			// mShell.printErr("invalid argument exception importing: "+ what.toString()  ,e );
-			throw e ;
+    try {
+      if(what.toString().equals("module"))
+        return importModule(args);
+      else if(what.toString().equals("package")) {
+        if(args.isEmpty())
+          listModules();
+        else for (XValue arg : args)
+          if(!importPackage(arg.toString())) {
+            mShell.printErr("package: " + arg.toString() + " not found");
+            ret++;
+          }
+        return ret;
+      }
+      else if(what.toString().equals("commands")) {
+        if(args.isEmpty())
+          listModules();
+        else for (XValue arg : args) {
+          if(!importCommands(arg.toString())) {
+            mShell.printErr("xmlsh command extension: " + arg.toString() + " not found");
+            ret++;
+          }
+        }
+        return ret;
+      }
+      else if(what.toString().equals("java"))
+        return importJava(args);
+      else 
+        return importScript(args);
+    }
 
-		}
+    catch (InvalidArgumentException e) {
+      mLogger.info("invalid argument exception importing: " + what.toString(), e);
+      if(mShell.isInCommandConndition())
+        return -1;
+      // mShell.printErr("invalid argument exception importing: "+ what.toString() ,e );
+      throw e;
 
+    }
 
+    catch (Exception e) {
+      mLogger.warn("Uncaught exception: " + e);
+      throw e;
+    }
 
-		catch (Exception e) {
-			mLogger.warn("Uncaught exception: " + e );
-			throw e ;
-		}
-		return 2;
+  }
 
-	}
-	/*
-	 * Implements 
-	 *    import module a.b.c
-	 *    import module foo=a.b.c
-	 *    import module foo=a.b.c at jar-file
-	 *    
-	 */
+  /*
+   * Implements
+   * import module a.b.c
+   * import module foo=a.b.c
+   * import module foo=a.b.c at jar-file
+   */
 
-	private int importModule(List<XValue> args) throws CoreException, IOException {
-		if( args.size() == 0 )
-			return listModules();
+  private int importScript(List<XValue> args) throws IOException, CoreException
+  {
+    
+    XValue at = getAt(args);
+    if( at == null ){
 
-		XValue at = null;
-		String mod = args.remove(0).toString();
-		if( args.size() > 1 && args.get(0).isAtomic() && args.get(0).toString().equals("at")){
-		  args.remove(0);
+      if( args.isEmpty()){
+        usage();
+        return 2;
+      }
       at = args.remove(0);
-		}
+    }
+    
+    ICommand icmd = CommandFactory.getInstance().getScript(mShell, at.toString() ,SourceMode.IMPORT,getLocation());
+    if( icmd == null){
+      mShell.printErr( at + ": not found" ,  getLocation()  );
+      return 1;
+    }
 
+    
+    mLogger.error("Finish import of script command");
+    
+    return 0;
+    
+  }
 
-		mShell.importModule(mod , at ,args );
+  private int importModule(List<XValue> args) throws CoreException, IOException
+  {
+    if(args.size() == 0)
+      return listModules();
 
-		return 0;
-	}
+    String mod = args.remove(0).toString();
+    XValue at = getAt(args);
 
+    mShell.importModule(mod, at, args);
 
-	/*
-	 * Implements 
-	 *    import java
-	 *    import java a.jar b.jar c.jar
-	 *    
-	 */
+    return 0;
+  }
 
-	private int importJava(List<XValue> args) throws CoreException {
-		if( args.size() == 0 )
-			return listClasspaths();
+  private XValue getAt(List<XValue> args)
+  {
+    XValue at = null;
+    if(args.size() > 1 && args.get(0).isAtomic() && args.get(0).toString().equals("at")) {
+      args.remove(0);
+      at = args.remove(0);
+    }
+    return at;
+  }
 
+  
+  
+  
+  
+  /*
+   * Implements
+   * import java
+   * import java a.jar b.jar c.jar
+   * import java at a.jar
+   */
 
+  private int importJava(List<XValue> args) throws CoreException
+  {
+    if(args.size() == 0)
+      return listClasspaths();
 
-		mShell.importJava( XValue.newXValue(args) );
+   XValue at = getAt(args);
+   if( at != null )
+     args.add(0, at);
 
-		return 0;
-	}
+    mShell.importJava(XValue.newXValue(args)  );
 
+    return 0;
+  }
 
-	/*
-	 * import package name foo.bar.spam
-	 * import package foo.bar.spam
-	 */
+  /*
+   * import package name foo.bar.spam
+   * import package foo.bar.spam
+   */
 
-	private int listClasspaths() throws CoreException  {
-		ClassLoader cl = mShell.getClassLoader(null);
-		while( cl != null ){
-			if( cl instanceof URLClassLoader ){
-				for( URL url : ((URLClassLoader)cl).getURLs() )
-					mShell.printOut(url.toString());
+  private int listClasspaths() throws CoreException
+  {
+    ClassLoader cl = mShell.getClassLoader(null);
+    while (cl != null) {
+      if(cl instanceof URLClassLoader) {
+        for (URL url : ((URLClassLoader) cl).getURLs())
+          mShell.printOut(url.toString());
 
-			}
-			cl = cl.getParent();
-		}
-		return 0;
+      }
+      cl = cl.getParent();
+    }
+    return 0;
 
+  }
 
-	}
+  private boolean importPackage(String fullname) throws CoreException, IOException
+  {
 
-	private boolean importPackage(String fullname) throws CoreException, IOException {
-
-		String name = null; 
-		String prefix = null;
-
-
-		/* parse package for prefix=package */
-		StringPair 	pair = new StringPair(fullname,'=');
-		if( pair.hasLeft() ){
-			prefix = pair.getLeft();
-			name = pair.getRight();
-		} else
-		  name = fullname ;
-
-		return mShell.importPackage(prefix , name, Collections.singletonList(name)) != null ;
-	}
-
-
-  private boolean importCommands(String fullname) throws CoreException, IOException {
-
-    String name = null; 
+    String name = null;
     String prefix = null;
 
     /* parse package for prefix=package */
-    StringPair  pair = new StringPair(fullname,'=');
-    if( pair.hasLeft() ){
+    StringPair pair = new StringPair(fullname, '=');
+    if(pair.hasLeft()) {
       prefix = pair.getLeft();
-      name =  pair.getRight();
-    } else
-      name = fullname ;
-    
+      name = pair.getRight();
+    }
+    else name = fullname;
 
-    return mShell.importPackage(prefix , name, internalPackages( name ) ) != null ;
+    return mShell.importPackage(prefix, name, Collections.singletonList(name)) != null;
   }
 
-
-	private List<String> internalPackages(String fullname)
+  private boolean importCommands(String fullname) throws CoreException, IOException
   {
-     return Arrays.asList(
-       "org.xmlsh." + fullname + ".commands" ,
-       "org.xmlsh." + fullname + ".functions"  );
-       
-	  
-	  
+
+    String name = null;
+    String prefix = null;
+
+    /* parse package for prefix=package */
+    StringPair pair = new StringPair(fullname, '=');
+    if(pair.hasLeft()) {
+      prefix = pair.getLeft();
+      name = pair.getRight();
+    }
+    else name = fullname;
+
+    return mShell.importPackage(prefix, name, internalPackages(name)) != null;
   }
 
-  private int listModules() {
+  private List<String> internalPackages(String fullname)
+  {
+    return Arrays.asList("org.xmlsh." + fullname + ".commands", "org.xmlsh." + fullname + ".functions");
 
-		for( IModule m : mShell.getModules() ){
-			String prefix = m.getPrefix();
-			if( prefix == null )
-				mShell.printOut( m.getName()  + " [" + m.describe()  +"]");
-			else
-				mShell.printOut( prefix + "=" + m.getName() + " [" + m.describe()   +"]"); 
+  }
 
+  private int listModules()
+  {
 
-		}
-		return 0;
+    for (IModule m : mShell.getModules()) {
+      String prefix = m.getPrefix();
+      if(prefix == null)
+        mShell.printOut(m.getName() + " [" + m.describe() + "]");
+      else mShell.printOut(prefix + "=" + m.getName() + " [" + m.describe() + "]");
 
-	}
+    }
+    return 0;
 
-
-
+  }
 
 }
 //
 //
-//Copyright (C) 2008-2014    David A. Lee.
+// Copyright (C) 2008-2014 David A. Lee.
 //
-//The contents of this file are subject to the "Simplified BSD License" (the "License");
-//you may not use this file except in compliance with the License. You may obtain a copy of the
-//License at http://www.opensource.org/licenses/bsd-license.php 
+// The contents of this file are subject to the "Simplified BSD License" (the "License");
+// you may not use this file except in compliance with the License. You may obtain a copy of the
+// License at http://www.opensource.org/licenses/bsd-license.php
 //
-//Software distributed under the License is distributed on an "AS IS" basis,
-//WITHOUT WARRANTY OF ANY KIND, either express or implied.
-//See the License for the specific language governing rights and limitations under the License.
+// Software distributed under the License is distributed on an "AS IS" basis,
+// WITHOUT WARRANTY OF ANY KIND, either express or implied.
+// See the License for the specific language governing rights and limitations under the License.
 //
-//The Original Code is: all this file.
+// The Original Code is: all this file.
 //
-//The Initial Developer of the Original Code is David A. Lee
+// The Initial Developer of the Original Code is David A. Lee
 //
-//Portions created by (your name) are Copyright (C) (your legal entity). All Rights Reserved.
+// Portions created by (your name) are Copyright (C) (your legal entity). All Rights Reserved.
 //
-//Contributor(s): none.
+// Contributor(s): none.
 //

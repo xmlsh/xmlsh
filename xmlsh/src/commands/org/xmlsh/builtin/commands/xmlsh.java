@@ -12,6 +12,7 @@ import org.xmlsh.core.BuiltinCommand;
 import org.xmlsh.core.CommandFactory;
 import org.xmlsh.core.ICommand;
 import org.xmlsh.core.Options;
+import org.xmlsh.core.ScriptCommand.SourceMode;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.core.EvalScriptExpr;
 import org.xmlsh.sh.core.ICommandExpr;
@@ -113,7 +114,7 @@ public class xmlsh extends BuiltinCommand {
 				{
 
 					String scmd = args.remove(0).toString();
-					ICommand cmd = CommandFactory.getInstance().getScript( shell , scmd, true,getLocation() );
+					ICommand cmd = CommandFactory.getInstance().getScript( shell , scmd, SourceMode.SOURCE,getLocation() );
 					if( cmd == null ){
 						shell.printErr( scmd + ": not found",getLocation());
 					}

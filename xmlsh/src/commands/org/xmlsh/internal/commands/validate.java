@@ -10,8 +10,11 @@ import java.util.List;
 
 import org.xmlsh.core.CommandFactory;
 import org.xmlsh.core.ICommand;
+import org.xmlsh.core.ScriptCommand;
+import org.xmlsh.core.ScriptCommand.SourceMode;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
+import org.xmlsh.util.Util;
 
 public class validate extends XCommand  {
 
@@ -24,14 +27,29 @@ public class validate extends XCommand  {
 	@Override
 	public int run(  List<XValue> args ) throws Exception {
 
+	  if( args.isEmpty() ){
+	    usage();
+	    return -1;
+	  }
 
 
-		XValue port = args.get(0);
-		@SuppressWarnings("unused")
-		ICommand icmd = CommandFactory.getInstance().getScript(mShell, port.toString() ,true,getLocation());
+		XValue port = args.remove(0);
+    String name = port.toString();
 
-
-		return  0 ;
+		try {
+      @SuppressWarnings("unused")
+  		ICommand icmd = CommandFactory.getInstance().getScript(mShell, name ,SourceMode.VALIDATE,getLocation());
+  		if( icmd == null ){
+  		  printErr("script not found: " + name );
+  		  return 1;
+  		}
+      return icmd.run(getShell(), name, args);
+      
+		} catch( Exception  e ){
+		  printErr("Exception validating script: " + name, e );
+		  return -1;
+		  
+		}
 
 	}
 

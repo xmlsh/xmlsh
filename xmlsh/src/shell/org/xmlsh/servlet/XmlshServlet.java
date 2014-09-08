@@ -26,6 +26,7 @@ import net.sf.saxon.s9api.SaxonApiException;
 import org.xmlsh.core.CommandFactory;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.ICommand;
+import org.xmlsh.core.ScriptCommand.SourceMode;
 import org.xmlsh.core.StreamOutputPort;
 import org.xmlsh.core.VariableOutputPort;
 import org.xmlsh.core.XEnvironment;
@@ -89,7 +90,7 @@ public class XmlshServlet extends HttpServlet {
 			shell = new Shell(false);
 			shell.setCurdir( new File(mRoot));
 
-			ICommand	script = CommandFactory.getInstance().getScript( shell , path , true , null );
+			ICommand	script = CommandFactory.getInstance().getScript( shell , path , SourceMode.SOURCE , null );
 			if( script != null ){
 				ByteArrayOutputStream bos = new ByteArrayOutputStream();
 				XEnvironment env = shell.getEnv();
@@ -187,7 +188,7 @@ public class XmlshServlet extends HttpServlet {
 
 
 
-			ICommand	script = CommandFactory.getInstance().getScript( shell , path , true , null );
+			ICommand	script = CommandFactory.getInstance().getScript( shell , path , SourceMode.SOURCE , null );
 			if( script != null ){
 				ByteArrayOutputStream bos = new ByteArrayOutputStream();
 				env.setStdout( new StreamOutputPort(bos ,false) );

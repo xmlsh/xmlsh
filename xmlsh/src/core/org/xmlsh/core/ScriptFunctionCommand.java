@@ -6,6 +6,7 @@
 
 package org.xmlsh.core;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -14,7 +15,7 @@ import org.xmlsh.sh.core.SourceLocation;
 import org.xmlsh.sh.shell.IModule;
 import org.xmlsh.sh.shell.Shell;
 
-public class ScriptFunctionCommand extends AbstractBuiltinFunction {
+public class ScriptFunctionCommand extends AbstractBuiltinFunction implements Closeable {
 
 
 	private InputStream mScript;
@@ -31,13 +32,14 @@ public class ScriptFunctionCommand extends AbstractBuiltinFunction {
 
 	}
 
-	private void close()
+	public void close() throws IOException
 	{
-		try {
-			mScript.close();
-		} catch (IOException e) {
-			;
-		}
+	   try {
+		  if( mScript != null )
+			   mScript.close();
+	   } finally {
+	     mScript = null ;
+	   }
 	}
 
 	@Override

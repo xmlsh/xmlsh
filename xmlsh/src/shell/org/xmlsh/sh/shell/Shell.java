@@ -58,6 +58,7 @@ import org.xmlsh.core.Options;
 import org.xmlsh.core.Options.OptionValue;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.Path;
+import org.xmlsh.core.ScriptCommand.SourceMode;
 import org.xmlsh.core.StreamInputPort;
 import org.xmlsh.core.StreamOutputPort;
 import org.xmlsh.core.ThrowException;
@@ -445,6 +446,26 @@ public class Shell implements AutoCloseable, Closeable
   {
     return mSession;
   }
+  
+  public ICommandExpr parseScript(Reader reader, String source) throws CoreException
+  {
+
+    try {
+
+      enterEval();
+      ShellParser parser = new ShellParser(newParserReader(reader,false), source );
+      return parser.script();
+
+    } catch (Exception e) {
+      throw new CoreException("Exception parsing source: " + source, e);
+    }
+
+    finally {
+      exitEval();
+    }
+    
+  }
+
 
   public ICommandExpr parseEval(String scmd) throws CoreException
   {
@@ -478,7 +499,7 @@ public class Shell implements AutoCloseable, Closeable
   {
     int d;
     if((d = mRunDepth.decrementAndGet()) < 0) {
-      mLogger.error("SNH: run depth underrun: " + d + " resetting to 0");
+      mLogger.error("SNH: run depth underrun: " + d + " resetting to 0: stack {}" , (Object[])Thread.currentThread().getStackTrace() );
       mRunDepth.compareAndSet(d, 0);
     }
   }
@@ -493,18 +514,41 @@ public class Shell implements AutoCloseable, Closeable
     return mRunDepth.get() > 0;
   }
 
+  
+  public boolean validateScript( InputStream stream, String source ) throws ParseException, IOException{
+      SourceLocation saveLoc = getLocation();
+      ShellParser parser = null;
+      boolean bSuccess = false ;
+      try {
+        enterEval();
+        parser = new ShellParser(newParserReader(stream,true), source);
+        
+        while(  parser.command_line() != null )
+          ;
+        bSuccess = true ;
+
+      } finally {
+        exitEval();
+        setCurrentLocation(saveLoc);
+
+      }
+      return bSuccess;
+      
+        
+  }
+  
   public int runScript(InputStream stream, String source, boolean convertReturn) throws ParseException, ThrowException,
       IOException
   {
 
     try {
+      enterEval();
       InputStream save = mCommandInput;
       SourceLocation saveLoc = getLocation();
       mCommandInput = stream;
       int ret = 0;
       ShellParser parser = null;
       try {
-        enterEval();
         parser = new ShellParser(newParserReader(true), source);
         while ( ! hasReturned() ) {
           CommandExpr c = parser.command_line();
@@ -577,9 +621,14 @@ public class Shell implements AutoCloseable, Closeable
 
   private ShellParserReader newParserReader(boolean bSkipBOM) throws IOException
   {
-    return newParserReader(new InputStreamReader(mCommandInput, getInputTextEncoding()), bSkipBOM);
+    return newParserReader( mCommandInput , bSkipBOM);
   }
 
+  private ShellParserReader newParserReader(InputStream stream, boolean bSkipBOM) throws IOException
+  {
+     return newParserReader( new InputStreamReader(stream, getInputTextEncoding()) , bSkipBOM );
+  }
+  
   private ShellParserReader newParserReader(Reader reader, boolean bSkipBOM) throws IOException
   {
     return new ShellParserReader(reader, bSkipBOM);
@@ -693,7 +742,7 @@ public class Shell implements AutoCloseable, Closeable
         enterEval();
         File script = this.getFile(rcfile);
         if(script.exists() && script.canRead()) {
-          ICommand icmd = CommandFactory.getInstance().getScript(this, script, true, null);
+          ICommand icmd = CommandFactory.getInstance().getScript(this, script, SourceMode.SOURCE, null);
           if(icmd != null) {
             // push location
             SourceLocation l = getLocation();

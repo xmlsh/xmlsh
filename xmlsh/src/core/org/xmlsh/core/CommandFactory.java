@@ -46,6 +46,7 @@ import org.xmlsh.builtin.commands.xtrue;
 import org.xmlsh.builtin.commands.xtype;
 import org.xmlsh.builtin.commands.xversion;
 import org.xmlsh.builtin.commands.xwhich;
+import org.xmlsh.core.ScriptCommand.SourceMode;
 import org.xmlsh.java.commands.jset;
 import org.xmlsh.json.commands.jsonread;
 import org.xmlsh.sh.core.SourceLocation;
@@ -139,7 +140,7 @@ public class CommandFactory
 		if( cmd == null )
 			cmd = getModuleCommand(shell,name , loc );
 		if( cmd == null )
-			cmd = getScript( shell , name , false , loc  );
+			cmd = getScript( shell , name , SourceMode.RUN , loc  );
 		if( cmd == null )
 			cmd = getExternal(shell,name , loc );
 
@@ -247,27 +248,27 @@ public class CommandFactory
 
 	}
 
-	public ICommand getScript(Shell shell, String name , InputStream is , boolean bSourceMode , SourceLocation loc ) throws CoreException {
+	public ICommand getScript(Shell shell, String name , InputStream is , SourceMode sourceMode , SourceLocation loc ) throws CoreException {
 		if( is == null )
 			return null;
 
-		return new ScriptCommand(  name , is , bSourceMode , null );
+		return new ScriptCommand(  name , is , sourceMode , null );
 
 	}
 
 
-	public ICommand		getScript( Shell shell , String name, boolean bSourceMode , SourceLocation loc ) throws IOException, CoreException
+	public ICommand		getScript( Shell shell , String name, SourceMode sourceMode , SourceLocation loc ) throws IOException, CoreException
 	{
 		File scriptFile = null;
 
 		// If name has a scheme try that first
 		URL url =  Util.tryURL(name);
 		if( url != null )
-			return getScript( shell , name , url.openStream() , bSourceMode , loc );
+			return getScript( shell , name , url.openStream() , sourceMode , loc );
 
 
-		// If ends with .xsh try it
-		if( name.endsWith(".xsh") || bSourceMode )
+		// If ends with .xsh OR we are in source mode try it
+		if( name.endsWith(".xsh") || ( sourceMode == SourceMode.SOURCE) )
 			scriptFile = shell.getExplicitFile(name,true);
 
 		if( Util.hasDirectory(name)){
@@ -285,7 +286,7 @@ public class CommandFactory
 			}
 		if( scriptFile == null )
 			return null ;
-		return getScript( shell , scriptFile , bSourceMode , loc );
+		return getScript( shell , scriptFile , sourceMode , loc );
 
 	}
 
@@ -410,8 +411,8 @@ public class CommandFactory
 		return null  ;	
 	}
 
-	public ICommand getScript(Shell shell, File script, boolean bSourceMode, SourceLocation loc) throws CoreException, IOException {
-		return getScript( shell , script.getAbsolutePath() , new FileInputStream(script) , bSourceMode , loc );
+	public ICommand getScript(Shell shell, File script, SourceMode sourceMode, SourceLocation loc) throws CoreException, IOException {
+		return getScript( shell , script.getAbsolutePath() , new FileInputStream(script) , sourceMode , loc );
 	}
 
 

@@ -17,6 +17,7 @@ import org.xmlsh.core.IFunctionDecl;
 import org.xmlsh.core.ScriptCommand;
 import org.xmlsh.core.ScriptFunctionCommand;
 import org.xmlsh.core.XCommand;
+import org.xmlsh.core.ScriptCommand.SourceMode;
 import org.xmlsh.util.JavaUtils;
 import org.xmlsh.util.Util;
 
@@ -230,7 +231,7 @@ public class PackageModule extends AbstractModule
     InputStream scriptStream = getCommandResource(scriptName);
     if(scriptStream != null)
 
-      return new ScriptCommand(name, scriptStream, false, this);
+      return new ScriptCommand(name, scriptStream, SourceMode.RUN, this);
 
     return null;
 

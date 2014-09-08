@@ -24,11 +24,20 @@ import org.xmlsh.util.FileUtils;
 import org.xmlsh.util.Util;
 
 public class ScriptCommand implements ICommand {
+  
+  public enum SourceMode {
+    SOURCE ,
+    RUN , 
+    IMPORT ,
+    VALIDATE 
+  };
+  
+  
 
 	private static Logger mLogger = org.apache.logging.log4j.LogManager.getLogger();
 	private String	mScriptName;
 	private InputStream mScript;
-	private boolean mSourceMode;
+	private SourceMode mSourceMode;
 	private File	 mScriptFile; // file for script, may be null if internal script
 	private IModule mModule;
 	private SourceLocation mLocation;
@@ -42,27 +51,27 @@ public class ScriptCommand implements ICommand {
 	}
 
 
-	public ScriptCommand( File script, boolean bSourceMode , SourceLocation location) throws FileNotFoundException
+	public ScriptCommand( File script, SourceMode sourceMode , SourceLocation location) throws FileNotFoundException
 	{
 		mScript = new FileInputStream(script);
 		mScriptName = FileUtils.toJavaPath(script.getPath());
-		mSourceMode = bSourceMode;
+		mSourceMode = sourceMode;
 		mScriptFile = script;
 		mLocation = location ;
 
 	}
 
-	public ScriptCommand( String script , SerializeOpts opts ) throws UnsupportedEncodingException
+	public ScriptCommand( String script , SerializeOpts opts, SourceMode sourceMode ) throws UnsupportedEncodingException
 	{
 		mScript = Util.toInputStream(script, opts );
-		mSourceMode = true ;
+		mSourceMode = sourceMode ;
 
 	}
 
-	public ScriptCommand(String name , InputStream is, boolean bSourceMode, IModule module ) {
+	public ScriptCommand(String name , InputStream is, SourceMode sourceMode, IModule module ) {
 		mScriptName = FileUtils.toJavaPath(name);
 		mScript = is;
-		mSourceMode = bSourceMode;
+		mSourceMode = sourceMode;
 		mModule = module ;
 
 	}
@@ -71,9 +80,10 @@ public class ScriptCommand implements ICommand {
 	public int run(Shell shell, String cmd, List<XValue> args) throws Exception {
 
 		try {
-			if( mSourceMode ){
+		  switch( mSourceMode ){
+			case SOURCE :
 				return shell.runScript(mScript,mScriptName,true);
-			} else {
+			case RUN :
 
 				Shell sh = shell.clone();
 				try {
@@ -86,8 +96,14 @@ public class ScriptCommand implements ICommand {
 				} finally {
 					// Close shell - even if exception is thrown through sh.runScript and up
 					sh.close();
-
 				}
+			case VALIDATE: 
+		    return shell.validateScript( mScript , mScriptName ) ? 0 : 1 ;
+
+			  
+		default :
+		  mLogger.warn("Run mode not implemented: {}" , mSourceMode );
+		  throw new UnimplementedException("Source mode: " + mSourceMode.toString() + " Not implemented");
 			}
 		} finally {
 			close();
