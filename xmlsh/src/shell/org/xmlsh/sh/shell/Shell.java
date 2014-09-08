@@ -201,10 +201,10 @@ public class Shell implements AutoCloseable, Closeable
     mModules = new Modules();
     mSession = new SessionEnvironment();
     // Add xmlsh commands
-    mModules.declare(AbstractModule.createPackageModule(null, null, "xmlsh",
+    mModules.declare(ModuleFactory.createPackageModule(null, null, "xmlsh",
       Arrays.asList("org.xmlsh.internal.commands",
          "org.xmlsh.internal.functions" ), 
-      CommandFactory.kCOMMANDS_HELP_XML));
+      CommandFactory.kCOMMANDS_HELP_XML), null );
 
     setGlobalVars();
 
@@ -343,7 +343,7 @@ public class Shell implements AutoCloseable, Closeable
     if(that.mFunctions != null)
       mFunctions = new FunctionDefinitions(that.mFunctions);
 
-    mModules = new Modules(that.mModules);
+    mModules = new Modules(this , that.mModules);
 
     mModule = that.mModule;
 
@@ -380,6 +380,7 @@ public class Shell implements AutoCloseable, Closeable
         return;
       mClosed = true;
     }
+    
     if(mParent != null)
       mParent.notifyChildClose(this);
     mParent = null;
@@ -394,6 +395,9 @@ public class Shell implements AutoCloseable, Closeable
       Util.safeRelease(mSession);
       mSession = null;
     }
+    
+    if( mModules != null )
+      Util.safeRelease(mModules);
   }
 
   private void notifyChildClose(Shell shell)
@@ -1429,7 +1433,7 @@ public class Shell implements AutoCloseable, Closeable
     return mFunctions.get(name);
   }
 
-  public Modules getModules()
+  public Iterable<IModule> getModules()
   {
     return mModules;
   }
@@ -1539,19 +1543,19 @@ public class Shell implements AutoCloseable, Closeable
   /*
    * Declare a module using the prefix=value notation
    */
-  public IModule importModule(String moduledef, List<XValue> init) throws CoreException
+  public IModule importModule(String moduledef, List<XValue> init) throws CoreException, IOException
   {
 
     return mModules.declare(this, moduledef, init);
 
   }
 
-  public IModule importPackage(String prefix, String name, List<String> packages ) throws CoreException
+  public IModule importPackage(String prefix, String name, List<String> packages ) throws CoreException, IOException
   {
     // TODO: Help needs better placement
     String sHelp = packages.get(0).replace('.', '/') + "/commands.xml";
 
-    return mModules.declare(AbstractModule.createPackageModule(null, prefix, name, packages, sHelp));
+    return mModules.declare(ModuleFactory.createPackageModule(null, prefix, name, packages, sHelp),null);
   }
 
   public void importJava(XValue uris) throws CoreException
@@ -2020,6 +2024,11 @@ public class Shell implements AutoCloseable, Closeable
   public boolean isClosed()
   {
     return mClosed;
+  }
+
+  public IModule getModuleByPrefix(String prefix)
+  {
+    return mModules.getModuleByPrefix(prefix);
   }
 
 

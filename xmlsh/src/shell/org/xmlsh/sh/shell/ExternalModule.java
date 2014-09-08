@@ -10,6 +10,7 @@ import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
+
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Path;
@@ -35,7 +36,7 @@ public class ExternalModule extends PackageModule
    */
   
 
-  ExternalModule(Shell shell, String prefix, String nameuri, URI nameURI, List<XValue> args) throws CoreException
+  ExternalModule(Shell shell, String prefix, String nameuri, URI nameURI, XValue at) throws CoreException
   {
     super(prefix);
     try {
@@ -43,8 +44,9 @@ public class ExternalModule extends PackageModule
       URL configURL;
       File modDir = null;
 
-      if(nameuri.endsWith(".xml")) {
-        configURL = shell.getURL(nameuri);
+      if(nameuri.endsWith(".xml") ) {
+        assert( nameURI != null );
+        configURL = nameURI.toURL();
         if(configURL.getProtocol().equals("file"))
           modDir = new File(configURL.getPath()).getParentFile();
 

@@ -6,12 +6,18 @@
 
 package org.xmlsh.sh.shell;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.XValue;
+import org.xmlsh.util.ManagedObject;
 import org.xmlsh.util.StringPair;
 import org.xmlsh.util.Util;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /*
@@ -22,22 +28,45 @@ import java.util.List;
  */
 
 
-@SuppressWarnings("serial")
-public class Modules extends  ArrayList<AbstractModule>
+public class Modules extends ManagedObject implements Iterable<IModule > , Closeable
 {
-	public IModule declare(Shell shell, String prefix , String name, List<XValue> init ) throws CoreException
+  private static final Logger mLogger = LogManager.getLogger();
+  private List<IModule> mModules = new ArrayList<>();
+  private Shell mShell ;
+  private boolean bClosed = true ;
+  
+  Modules( Shell shell ){
+    mShell = shell ;
+    bClosed = false ;
+  }
+	public Iterator<IModule> iterator()
+  {
+    return mModules.iterator();
+  }
+
+
+  public IModule declare(Shell shell, String prefix , String name, List<XValue> init ) throws CoreException, IOException
 	{
 		/*
 		 * Dont redeclare a module under the same prefix
 		 */
+    
+    XValue at = null;
+    if( init.size() > 1 && init.get(0).isAtomic()  && Util.isEqual("at", init.get(0).toString())){
+      init.remove(0);
+      at = init.remove(0);
+      
+    }
+    
 
-		for( IModule m : this )
+		for( IModule m : mModules )
 			if( Util.isEqual(m.getName(),name) && Util.isEqual(m.getPrefix(),prefix))
 				return m;
 
 
-		AbstractModule module = AbstractModule.createModule(shell, prefix , name , init  );
-		return declare(module);
+		IModule module = ModuleFactory.createModule(shell, prefix , name , at  );
+		
+		return declare(module,init);
 	}
 
 
@@ -45,41 +74,76 @@ public class Modules extends  ArrayList<AbstractModule>
 	 * Declare/Import a module
 	 * If prefix is not null and already used then re-declare the module
 	 * @param init 
+	 * @param init 
 	 * @throws CoreException 
+	 * @throws IOException 
 	 * 
 	 */
-	public IModule declare(AbstractModule module) throws CoreException
+	public IModule declare(IModule module, List<XValue> init) throws CoreException, IOException
 	{
-
+ 
+	  assert( module != null );
+	  module.onInit(mShell, init);
+	  
 		if( ! Util.isEmpty(module.getPrefix())){
 			// IF module exists by this prefix then redeclare
-			IModule exists = getModule( module.getPrefix() );
+			IModule exists = getModuleByPrefix( module.getPrefix() );
 			if( exists != null )
-				remove( exists );
+        detachModule(exists);
 		}
 		else {
 			// Non prefixed modules dont import the same package
 			IModule exists = getExistingModule( module );
-			if( exists != null )
+			if( exists != null ) {
+			  mLogger.trace("declare an existing non prefixed module - ignoreing new module");
+			  
+			  module.onDetach(mShell);
+			  
+			  
+			  
 				return exists ;
+			
+			}
 		}
 
 		// Dont duplicate exact object
-		if( this.contains(module))
+		if( mModules.contains(module)){
+      mLogger.trace("declare an existing identical module object- ignoreing new module");
+      module.onDetach(mShell);
 			return module;
+		}
 
-		this.add(module);
+		attachModule(module);
 
 		return module ;
 
 	}
 
-	Modules() {}
+
+  private void attachModule(IModule module) throws IOException
+  {
+
+   assert( module != null  );
+   module.onAttach(mShell);
+    mModules.add(module);
+  }
 
 
-	public IModule	getModule(String prefix)
+  private void detachModule(IModule exists) throws IOException
+  {
+    if( exists != null )
+      exists.onDetach(mShell);
+    mModules.remove( exists );
+  }
+
+
+
+  Modules() {}
+
+
+	public IModule	getModuleByPrefix(String prefix)
 	{
-		for( IModule m : this )
+		for( IModule m : mModules )
 			if( Util.isEqual(m.getPrefix(), prefix ) )
 				return m ;
 		return null;
@@ -89,7 +153,7 @@ public class Modules extends  ArrayList<AbstractModule>
 	public IModule	getExistingModule(IModule mod)
 	{
 	  
-		for( IModule m : this )
+		for( IModule m : mModules )
 			if( m.definesSameModule(mod ) )
 				return m ;
 		return null;
@@ -97,8 +161,13 @@ public class Modules extends  ArrayList<AbstractModule>
 	}
 
 
-	Modules( Modules that){
-		this.addAll(that);
+	Modules( Shell shell , Modules that) throws IOException{
+	  mShell = shell ;
+    mLogger.trace("Cloning Modules - attach to all new ones");
+    for( IModule m : that ){
+      attachModule(  m );
+    }
+
 	}
 
 	/*
@@ -108,11 +177,30 @@ public class Modules extends  ArrayList<AbstractModule>
 	 * class
 	 * 
 	 */
-	public IModule declare(Shell shell, String m, List<XValue> init) throws CoreException {
+	public IModule declare(Shell shell, String m, List<XValue> init) throws CoreException, IOException {
 		StringPair 	pair = new StringPair(m,'=');
 		return declare(shell, pair.getLeft(), pair.getRight() ,  init  );
 
 	}
+
+
+  @Override
+  public void close() throws IOException
+  {
+ 
+    if( bClosed )
+      return ;
+    synchronized( mModules ){
+      for( IModule m : mModules ){
+        m.onDetach(mShell);
+      }
+      mModules.clear();
+    }
+    mModules = null ;  
+    mShell = null ;
+    
+    
+  }
 
 }
 

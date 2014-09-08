@@ -9,8 +9,6 @@ package org.xmlsh.sh.shell;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import org.xmlsh.core.CoreException;
 import org.xmlsh.core.ICommand;
 import org.xmlsh.core.IFunctionDecl;
 import org.xmlsh.core.ScriptCommand;
@@ -19,17 +17,63 @@ import org.xmlsh.core.XClassLoader;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.util.JavaUtils;
+import org.xmlsh.util.ManagedObject;
 import org.xmlsh.util.Util;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
-import java.net.URI;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 
-public abstract class AbstractModule implements IModule
+ abstract class AbstractModule extends ManagedObject implements IModule
 {
+  @Override
+  public void close() throws IOException
+  {
+    mLogger.trace("Closing module {} " , getName() );
+    onUnload();
+  }
+
+  @Override
+  public void onLoad(Shell shell)
+  {
+    mLogger.trace("module {} onLoad()" , getName() );
+
+  }
+
+  @Override
+  public void onInit(Shell shell, List<XValue> args)
+  {
+    mLogger.trace("module {} onInit()" , getName() );
+
+  }
+
+  @Override
+  public void onAttach(Shell shell)
+  {
+    addRef();
+    mLogger.trace("module {} onAttach()" , getName() );
+
+  }
+
+  @Override
+  public void onDetach(Shell shell) throws IOException
+  {
+    release();
+    mLogger.trace("module {} onDetach()" , getName() );
+
+  }
+  
+  
+  @Override
+  public void onUnload()
+  {
+    mLogger.trace("module {} onUnload()" , getName() );
+
+  }
+
   protected String mName;
   protected String mPrefix; // may be null
   protected ClassLoader mClassLoader; // Classloader for this module
@@ -38,7 +82,7 @@ public abstract class AbstractModule implements IModule
   private HashMap<String, Class<?>> mClassCache = new HashMap<String, Class<?>>();
   protected HashMap<String, Boolean> mScriptCache = new HashMap<String, Boolean>();
   // Not static - use derived class
-  protected static Logger mLogger = LogManager.getLogger();
+  protected  final Logger mLogger = LogManager.getLogger();
  
   protected AbstractModule(String prefix)
   {
@@ -49,32 +93,6 @@ public abstract class AbstractModule implements IModule
   {
     mName = name;
     mPrefix = prefix;
-  }
-
- 
-
-  public static AbstractModule createModule(Shell shell, String prefix, String nameuri, List<XValue> args) throws CoreException
-  {
-    
-    URI nameURI = null;
-    // "java:xxx
-    try {
-      nameURI = shell.getURI(nameuri);
-
-    } catch (Exception e) {
-      mLogger.trace("excpetion parsing module as URI: " + nameuri, e);
-      nameURI = null;
-    }
-
-    if(nameURI != null && Util.isEqual(nameURI.getScheme(), "java"))
-      return new JavaModule(shell, prefix, nameURI, args);
-    else 
-      return new ExternalModule(shell, prefix, nameuri, nameURI, args);
-  }
-
-  public static AbstractModule createPackageModule(Shell shell, String prefix, String name, List<String> pkgs, String helpURL)
-  {
-    return new PackageModule(prefix, name, pkgs, helpURL);
   }
 
  

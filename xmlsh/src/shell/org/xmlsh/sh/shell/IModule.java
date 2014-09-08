@@ -8,16 +8,32 @@ package org.xmlsh.sh.shell;
 
 import org.xmlsh.core.ICommand;
 import org.xmlsh.core.IFunction;
-import org.xmlsh.core.IFunctionDecl;
-import org.xmlsh.core.IFunctionExpr;
 
+
+
+import org.xmlsh.core.IReleasable;
+import org.xmlsh.core.XValue;
+
+import java.io.Closeable;
+import java.io.IOException;
 import java.net.URL;
+import java.util.List;
 
-public interface IModule
+public interface IModule extends Closeable , IReleasable
 {
-
-  /**
-   * @return the prefix
+  
+  /*
+   * Calls into the module
+   */
+  
+  public void onLoad(Shell shell);
+  public void onInit(Shell shell , List<XValue> args);
+  public void onAttach(Shell shell )  throws IOException;
+  public void onDetach(Shell shell) throws IOException;
+  public void onUnload();
+  
+  /*
+   * Calls TO the module
    */
   public String getPrefix();
   public boolean isDefault();

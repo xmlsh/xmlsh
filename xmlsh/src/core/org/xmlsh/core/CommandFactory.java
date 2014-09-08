@@ -205,14 +205,13 @@ public class CommandFactory
 
 
 
-		Modules modules = shell.getModules();
 
 
 		if( pair.hasLeft() ){ // prefix:name , prefix non-empty
 			IModule m   = 
 					Util.isBlank(pair.getLeft()) ? 
 							shell.getModule() : 
-								modules.getModule(pair.getLeft());
+								shell.getModuleByPrefix(pair.getLeft());
 							// Allow C:/xxx/yyy to work 
 							// May look like a namespace but isnt
 
@@ -232,7 +231,7 @@ public class CommandFactory
 		/* 
 		 * Try all default modules 
 		 */
-		for( IModule m : modules ){
+		for( IModule m : shell.getModules() ){
 			if( m.isDefault() ){
 
 				ICommand cls = m.getCommandClass( name);
@@ -329,14 +328,13 @@ public class CommandFactory
 
 
 		StringPair 	pair = new StringPair(name,':');
-		Modules modules = shell.getModules();
 
 
 		if( pair.hasLeft() ){ // prefix:name , prefix non-empty
 			IModule m   = 
 					Util.isBlank(pair.getLeft()) ? 
 							shell.getModule() : 
-								modules.getModule(pair.getLeft());
+								shell.getModuleByPrefix(pair.getLeft());
 							// Allow C:/xxx/yyy to work 
 							// May look like a namespace but isnt
 
@@ -348,7 +346,7 @@ public class CommandFactory
 		/* 
 		 * Try all default modules 
 		 */
-		for( IModule m : modules ){
+		for( IModule m : shell.getModules() ){
 			if( m.isDefault() ){
 
 				if( m != null && m.hasHelp( name ) )
@@ -375,14 +373,13 @@ public class CommandFactory
 
 
 
-		Modules modules = shell.getModules();
 
 
 		if( pair.hasLeft() ){ // prefix:name , prefix non-empty
 			IModule m   = 
 					Util.isBlank(pair.getLeft()) ? 
 							shell.getModule() : 
-								modules.getModule(pair.getLeft());
+								shell.getModuleByPrefix(pair.getLeft());
 							// Allow C:/xxx/yyy to work 
 							// May look like a namespace but isnt
 
@@ -400,7 +397,7 @@ public class CommandFactory
 		/* 
 		 * Try all default modules 
 		 */
-		for( IModule m : modules ){
+		for( IModule m : shell.getModules() ){
 			if( m.isDefault() ){
 
 			  IFunction cls = m.getFunctionClass( name);

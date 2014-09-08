@@ -8,15 +8,14 @@ package org.xmlsh.builtin.commands;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
 import org.xmlsh.core.BuiltinCommand;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
-import org.xmlsh.sh.shell.AbstractModule;
-import org.xmlsh.sh.shell.Modules;
+import org.xmlsh.sh.shell.IModule;
 import org.xmlsh.util.StringPair;
 
+import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Arrays;
@@ -96,7 +95,7 @@ public class ximport extends BuiltinCommand {
 	 *    
 	 */
 
-	private int importModule(List<XValue> args) throws CoreException {
+	private int importModule(List<XValue> args) throws CoreException, IOException {
 		if( args.size() == 0 )
 			return listModules();
 
@@ -148,7 +147,7 @@ public class ximport extends BuiltinCommand {
 
 	}
 
-	private boolean importPackage(String fullname) throws CoreException {
+	private boolean importPackage(String fullname) throws CoreException, IOException {
 
 		String name = null; 
 		String prefix = null;
@@ -166,7 +165,7 @@ public class ximport extends BuiltinCommand {
 	}
 
 
-  private boolean importCommands(String fullname) throws CoreException {
+  private boolean importCommands(String fullname) throws CoreException, IOException {
 
     String name = null; 
     String prefix = null;
@@ -195,11 +194,8 @@ public class ximport extends BuiltinCommand {
   }
 
   private int listModules() {
-		Modules modules = mShell.getModules();
-		if( modules == null )
-			return 0;
 
-		for( AbstractModule m : modules ){
+		for( IModule m : mShell.getModules() ){
 			String prefix = m.getPrefix();
 			if( prefix == null )
 				mShell.printOut( m.getName()  + " [" + m.describe()  +"]");
