@@ -57,7 +57,7 @@ public class EvalScriptExpr extends CommandExpr {
 
 
 		shell = shell.clone();
-		ICommand cmd = null;
+		ScriptCommand cmd = null;
 		try {
 			cmd = new ScriptCommand( mCommand , shell.getSerializeOpts(),  SourceMode.SOURCE );
 			return cmd.run(  shell, "", null );

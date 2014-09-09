@@ -248,7 +248,7 @@ public class CommandFactory
 
 	}
 
-	public ICommand getScript(Shell shell, String name , InputStream is , SourceMode sourceMode , SourceLocation loc ) throws CoreException {
+	public ScriptCommand getScript(Shell shell, String name , InputStream is , SourceMode sourceMode , SourceLocation loc ) throws CoreException {
 		if( is == null )
 			return null;
 
@@ -257,7 +257,7 @@ public class CommandFactory
 	}
 
 
-	public ICommand		getScript( Shell shell , String name, SourceMode sourceMode , SourceLocation loc ) throws IOException, CoreException
+	public ScriptCommand		getScript( Shell shell , String name, SourceMode sourceMode , SourceLocation loc ) throws IOException, CoreException
 	{
 		File scriptFile = null;
 
@@ -372,9 +372,6 @@ public class CommandFactory
 		StringPair 	pair = new StringPair(name,':');
 
 
-
-
-
 		if( pair.hasLeft() ){ // prefix:name , prefix non-empty
 			IModule m   = 
 					Util.isBlank(pair.getLeft()) ? 
@@ -411,7 +408,7 @@ public class CommandFactory
 		return null  ;	
 	}
 
-	public ICommand getScript(Shell shell, File script, SourceMode sourceMode, SourceLocation loc) throws CoreException, IOException {
+	public ScriptCommand getScript(Shell shell, File script, SourceMode sourceMode, SourceLocation loc) throws CoreException, IOException {
 		return getScript( shell , script.getAbsolutePath() , new FileInputStream(script) , sourceMode , loc );
 	}
 

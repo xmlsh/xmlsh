@@ -95,7 +95,7 @@ public class PackageModule extends AbstractModule
     name = fromReserved(name);
 
     try {
-
+      // Cached in AbstractModule
       Class<?> cls = findClass( name,getFunctionPackages());
       if(cls != null) {
         Constructor<?> constructor = cls.getConstructor();
@@ -137,7 +137,7 @@ public class PackageModule extends AbstractModule
   {
 
     try {
-
+      // Cached in AbstractModule
       Class<?> cls = findClass( name , getCommandPackages() );
 
       if(cls != null)
@@ -196,7 +196,8 @@ public class PackageModule extends AbstractModule
      */
 
     try {
-
+ 
+      // Cached in AbstractModule
       Class<?> cls = findClass(name,getCommandPackages());
       if(cls != null) {
         Constructor<?> constructor = cls.getConstructor();

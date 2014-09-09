@@ -17,6 +17,7 @@ import java.util.List;
 
 import org.apache.logging.log4j.Logger;
 import org.xmlsh.sh.core.SourceLocation;
+import org.xmlsh.sh.grammar.ParseException;
 import org.xmlsh.sh.shell.IModule;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
@@ -77,14 +78,14 @@ public class ScriptCommand implements ICommand {
 	}
 
 	@Override
-	public int run(Shell shell, String cmd, List<XValue> args) throws Exception {
+	public int run(Shell shell, String cmd, List<XValue> args) throws ThrowException, ParseException, IOException, UnimplementedException {
 
 		try {
 		  switch( mSourceMode ){
 			case SOURCE :
 				return shell.runScript(mScript,mScriptName,true);
 			case RUN :
-
+			{
 				Shell sh = shell.clone();
 				try {
 					if( args != null )
@@ -97,10 +98,18 @@ public class ScriptCommand implements ICommand {
 					// Close shell - even if exception is thrown through sh.runScript and up
 					sh.close();
 				}
+			}
 			case VALIDATE: 
+			  
 		    return shell.validateScript( mScript , mScriptName ) ? 0 : 1 ;
 
+			case IMPORT : 
+			{
+          int ret =  shell.runScript( mScript, mScriptName, true );
+          return ret ;
+			}
 			  
+			
 		default :
 		  mLogger.warn("Run mode not implemented: {}" , mSourceMode );
 		  throw new UnimplementedException("Source mode: " + mSourceMode.toString() + " Not implemented");

@@ -123,7 +123,6 @@ public class SimpleCommandExpr extends CommandExpr {
 
 		if( cmd == null ){
 			logLocation(shell);
-
 			shell.printErr(mCommand + ": not found");
 			return 1;
 

@@ -1,12 +1,16 @@
 package org.xmlsh.sh.shell;
 
+import java.io.IOException;
 import java.net.URI;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.xmlsh.core.CommandFactory;
 import org.xmlsh.core.CoreException;
+import org.xmlsh.core.ScriptCommand;
 import org.xmlsh.core.XValue;
+import org.xmlsh.core.ScriptCommand.SourceMode;
 import org.xmlsh.util.Util;
 
 public class ModuleFactory
@@ -14,7 +18,7 @@ public class ModuleFactory
   private  final static Logger mLogger = LogManager.getLogger();
 
 
-  public static IModule createModule(Shell shell, String prefix, String nameuri, XValue at )  throws CoreException
+  public static IModule createModule(Shell shell, String prefix, String nameuri, XValue at )  throws Exception
   {
     
     URI nameURI = null;
@@ -33,13 +37,26 @@ public class ModuleFactory
     if(nameURI != null && Util.isEqual(nameURI.getScheme(), "java"))
       mod = createJavaModule(shell, prefix, nameURI, at  );
     else 
-      mod = createExternalModule(shell, prefix, nameuri , nameURI,at);
+    if( nameuri.endsWith(".xsh"))
+    {
+       ScriptCommand script  = CommandFactory.getInstance().getScript(shell,nameuri ,SourceMode.IMPORT, shell.getLocation());
+       if( script != null )
+         mod = createScriptModule(shell , script , prefix , nameuri );
+    } 
+    if( mod == null )
+        mod = createExternalModule(shell, prefix, nameuri , nameURI,at);
     
     if( mod != null )
       mod.onLoad(shell);
     return mod ;
   }
 
+
+
+  public static IModule createScriptModule(Shell shell, ScriptCommand script , String prefix, String nameuri ) throws CoreException, IOException
+  {
+    return new ScriptModule(shell, script, prefix, nameuri );
+  }
 
 
 

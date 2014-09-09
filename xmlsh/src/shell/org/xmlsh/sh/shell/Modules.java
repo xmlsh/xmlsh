@@ -55,7 +55,7 @@ public class Modules extends ManagedObject<Modules> implements Iterable<IModule 
 
 
 
-  public IModule declare(Shell shell, String prefix , String name, XValue at , List<XValue> init ) throws CoreException, IOException
+  public IModule declare(Shell shell, String prefix , String name, XValue at , List<XValue> init ) throws Exception
 	{
 		/*
 		 * Dont redeclare a module under the same prefix
@@ -77,11 +77,10 @@ public class Modules extends ManagedObject<Modules> implements Iterable<IModule 
 	 * If prefix is not null and already used then re-declare the module
 	 * @param init 
 	 * @param init 
-	 * @throws CoreException 
-	 * @throws IOException 
+	 * @throws Exception 
 	 * 
 	 */
-	public IModule declare(IModule module, List<XValue> init) throws CoreException, IOException
+	public IModule declare(IModule module, List<XValue> init) throws Exception
 	{
  
 	  assert( module != null );
@@ -112,9 +111,6 @@ public class Modules extends ManagedObject<Modules> implements Iterable<IModule 
 	}
 
 
-
-
-  Modules() {}
 
 
 	private ModuleHandle	getModuleHandleByPrefix(String prefix)
@@ -161,7 +157,7 @@ public class Modules extends ManagedObject<Modules> implements Iterable<IModule 
 	 * class
 	 * 
 	 */
-	public IModule declare(Shell shell, String m, XValue at, List<XValue> init) throws CoreException, IOException {
+	public IModule declare(Shell shell, String m, XValue at, List<XValue> init) throws Exception {
 		StringPair 	pair = new StringPair(m,'=');
 		return declare(shell, pair.getLeft(), pair.getRight() ,  at , init  );
 

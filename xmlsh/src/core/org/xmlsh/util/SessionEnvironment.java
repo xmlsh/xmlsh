@@ -18,7 +18,7 @@ public class SessionEnvironment extends ManagedObject<SessionEnvironment> {
 	public void close() throws IOException
 	{
 		if( mVars != null ){
-			for( ManagedObject obj : mVars.values() )
+			for( ManagedObject<?> obj : mVars.values() )
 				obj.release();
 			mVars.clear();
 			mVars = null;
@@ -30,11 +30,11 @@ public class SessionEnvironment extends ManagedObject<SessionEnvironment> {
 	 * Get a managed object and adds a reference to it
 	 */
 
-	public synchronized ManagedObject	getVar(String key)
+	public synchronized ManagedObject<?>	getVar(String key)
 	{
 		if( mVars == null )
 			return null;
-		ManagedObject obj = mVars.get(key);
+		ManagedObject<?> obj = mVars.get(key);
 		if( obj != null )
 			obj.addRef();
 		return obj;
@@ -43,7 +43,7 @@ public class SessionEnvironment extends ManagedObject<SessionEnvironment> {
 	/*
 	 * Sets a Session object and adds a reference
 	 */
-	public synchronized void setVar( String key , ManagedObject obj )
+	public synchronized void setVar( String key , ManagedObject<?> obj )
 	{
 		if( mVars == null )
 			mVars = new HashMap<>();

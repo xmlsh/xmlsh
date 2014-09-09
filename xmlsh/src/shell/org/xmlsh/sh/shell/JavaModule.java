@@ -116,6 +116,8 @@ public class JavaModule extends AbstractModule
 
     int ldot = clsname.lastIndexOf('.');
     mName = clsname.substring(ldot + 1);
+
+    // Cached in AbstractModule
     mJavaClass = findClass(clsname);
     if(mJavaClass == null)
       throw new InvalidArgumentException("Class not found:" + clsname);

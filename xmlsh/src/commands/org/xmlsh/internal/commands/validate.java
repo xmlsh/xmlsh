@@ -38,7 +38,7 @@ public class validate extends XCommand  {
 
 		try {
       @SuppressWarnings("unused")
-  		ICommand icmd = CommandFactory.getInstance().getScript(mShell, name ,SourceMode.VALIDATE,getLocation());
+      ScriptCommand icmd = CommandFactory.getInstance().getScript(mShell, name ,SourceMode.VALIDATE,getLocation());
   		if( icmd == null ){
   		  printErr("script not found: " + name );
   		  return 1;

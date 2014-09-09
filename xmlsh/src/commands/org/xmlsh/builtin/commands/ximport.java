@@ -20,6 +20,7 @@ import org.xmlsh.core.CommandFactory;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.ICommand;
 import org.xmlsh.core.InvalidArgumentException;
+import org.xmlsh.core.ScriptCommand;
 import org.xmlsh.core.ScriptCommand.SourceMode;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.IModule;
@@ -67,7 +68,7 @@ public class ximport extends BuiltinCommand
       else if(what.toString().equals("java"))
         return importJava(args);
       else 
-        return importScript(args);
+        return importScript(what.toString(),args);
     }
 
     catch (InvalidArgumentException e) {
@@ -88,17 +89,15 @@ public class ximport extends BuiltinCommand
 
   /*
    * Implements
-   * import module a.b.c
-   * import module foo=a.b.c
-   * import module foo=a.b.c at jar-file
+   * import module 
+   * import foo=script
+   * import foo=a.b.c at jar-file
    */
-
-  private int importScript(List<XValue> args) throws IOException, CoreException
+  private int importScript(String script, List<XValue> args) throws Exception
   {
     
     XValue at = getAt(args);
     if( at == null ){
-
       if( args.isEmpty()){
         usage();
         return 2;
@@ -106,26 +105,25 @@ public class ximport extends BuiltinCommand
       at = args.remove(0);
     }
     
-    ICommand icmd = CommandFactory.getInstance().getScript(mShell, at.toString() ,SourceMode.IMPORT,getLocation());
-    if( icmd == null){
-      mShell.printErr( at + ": not found" ,  getLocation()  );
-      return 1;
-    }
+   // ScriptCommand icmd = CommandFactory.getInstance().getScript(mShell, at.toString() ,SourceMode.IMPORT,getLocation());
 
+    mShell.importScript(script , at , args ); 
     
-    mLogger.error("Finish import of script command");
     
     return 0;
     
   }
 
-  private int importModule(List<XValue> args) throws CoreException, IOException
+  private int importModule(List<XValue> args) throws Exception
   {
     if(args.size() == 0)
       return listModules();
 
     String mod = args.remove(0).toString();
     XValue at = getAt(args);
+    
+    
+    
 
     mShell.importModule(mod, at, args);
 
@@ -187,7 +185,7 @@ public class ximport extends BuiltinCommand
 
   }
 
-  private boolean importPackage(String fullname) throws CoreException, IOException
+  private boolean importPackage(String fullname) throws Exception
   {
 
     String name = null;
@@ -204,7 +202,7 @@ public class ximport extends BuiltinCommand
     return mShell.importPackage(prefix, name, Collections.singletonList(name)) != null;
   }
 
-  private boolean importCommands(String fullname) throws CoreException, IOException
+  private boolean importCommands(String fullname) throws Exception
   {
 
     String name = null;

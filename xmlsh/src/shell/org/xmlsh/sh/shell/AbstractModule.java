@@ -34,7 +34,7 @@ import org.xmlsh.util.Util;
   }
 
   @Override
-  public void onInit(Shell shell, List<XValue> args)
+  public void onInit(Shell shell, List<XValue> args) throws Exception
   {
     mLogger.trace("module {} onInit()" , getName() );
 
@@ -49,6 +49,8 @@ import org.xmlsh.util.Util;
 
   private HashMap<String, Class<?>> mClassCache = new HashMap<String, Class<?>>();
   protected HashMap<String, Boolean> mScriptCache = new HashMap<String, Boolean>();
+  
+  
   // Not static - use derived class
   protected  final Logger mLogger = LogManager.getLogger();
  

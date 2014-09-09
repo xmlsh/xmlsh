@@ -21,8 +21,8 @@ public interface IModule extends Closeable
    * Calls into the module
    */
   
-  public void onLoad(Shell shell);
-  public void onInit(Shell shell , List<XValue> args);
+  public void onLoad(Shell shell) throws Exception;
+  public void onInit(Shell shell , List<XValue> args) throws Exception;
   // close() is called for an unload
   
   /*

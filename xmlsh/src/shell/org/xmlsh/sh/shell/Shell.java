@@ -187,18 +187,18 @@ public class Shell implements AutoCloseable, Closeable
   /*
    * New top level shell
    */
-  public Shell() throws IOException, CoreException
+  public Shell() throws Exception
   {
     this(true);
 
   }
 
-  public Shell(boolean bUseStdio) throws IOException, CoreException
+  public Shell(boolean bUseStdio) throws Exception
   {
     mOpts = new ShellOpts();
     mSavedCD = System.getProperty(ShellConstants.PROP_USER_DIR);
     mEnv = new XEnvironment(this, bUseStdio);
-    mModules = new Modules();
+    mModules = new Modules(this);
     mSession = new SessionEnvironment();
     // Add xmlsh commands
     mModules.declare(ModuleFactory.createPackageModule(null, null, "xmlsh",
@@ -536,6 +536,7 @@ public class Shell implements AutoCloseable, Closeable
       
         
   }
+  
   
   public int runScript(InputStream stream, String source, boolean convertReturn) throws ParseException, ThrowException,
       IOException
@@ -1591,14 +1592,21 @@ public class Shell implements AutoCloseable, Closeable
   /*
    * Declare a module using the prefix=value notation
    */
-  public IModule importModule(String moduledef, XValue at ,List<XValue> init) throws CoreException, IOException
+  public IModule importModule(String moduledef, XValue at ,List<XValue> init) throws Exception
   {
 
     return mModules.declare(this, moduledef, at , init);
 
   }
 
-  public IModule importPackage(String prefix, String name, List<String> packages ) throws CoreException, IOException
+  
+  public IModule importScript( String script , XValue at ,List<XValue> init  ) throws Exception{
+    
+    return mModules.declare(this, script, at , init);
+
+}
+
+  public IModule importPackage(String prefix, String name, List<String> packages ) throws Exception
   {
     // TODO: Help needs better placement
     String sHelp = packages.get(0).replace('.', '/') + "/commands.xml";
@@ -2078,6 +2086,15 @@ public class Shell implements AutoCloseable, Closeable
   {
     return mModules.getModuleByPrefix(prefix);
   }
+
+public FunctionDefinitions getFunctionDelcs() {
+	
+	// HACK for now 
+	return new FunctionDefinitions(mFunctions);
+	
+}
+
+
 
 
 
