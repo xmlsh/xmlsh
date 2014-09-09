@@ -41,13 +41,10 @@ public class ScriptCommand implements ICommand {
   
 
 	private static Logger mLogger = org.apache.logging.log4j.LogManager.getLogger();
-	private String	mScriptName;
-	private URL        mScriptURL ;
 	private SourceMode mSourceMode;
 	private IModule mModule;
 	private SourceLocation mLocation;
-	private String mScriptBody = null;
-	private String mEncoding;
+	private ScriptSource mSource;
 
 
 	// Finalize script command make sure to close
@@ -68,11 +65,9 @@ public class ScriptCommand implements ICommand {
 	}
 	*/
 
-	public ScriptCommand( URL url, String name, SourceMode sourceMode , String encoding , SourceLocation location, IModule module ) throws FileNotFoundException
+	public ScriptCommand( SourceMode sourceMode, SourceLocation location, IModule module , ScriptSource source ) throws FileNotFoundException
 	{
-		mScriptURL = url ;
-		mEncoding = encoding ;
-		mScriptName = name == null ?  FileUtils.toJavaPath(url.getPath()) : name ;
+		mSource = source;
 		mSourceMode = sourceMode;
 		mLocation = location ;
 		mModule = module ;
@@ -83,11 +78,10 @@ public class ScriptCommand implements ICommand {
 	/*
 	 * Script from literal string (eval)
 	 */
-	public ScriptCommand( String script , String name,  SourceMode sourceMode, IModule module ) throws UnsupportedEncodingException
+	public ScriptCommand( SourceMode sourceMode , IModule module,  ScriptSource source ) throws UnsupportedEncodingException
 	{
-		mScriptBody = script ;
+		mSource = source ;
 		mSourceMode = sourceMode ;
-		mScriptName = name ;
 		mModule = module ;
 
 	}
@@ -100,15 +94,15 @@ public class ScriptCommand implements ICommand {
 			
 		  switch( mSourceMode ){
 			case SOURCE :
-				return shell.runScript(mScriptStreamSource,mScriptName,true).mExitStatus;
+				return shell.runScript(mScriptStreamSource,mSource.mScriptName,true).mExitStatus;
 			case RUN :
 			{
 				Shell sh = shell.clone();
 				try {
 					if( args != null )
 						sh.setArgs(args);
-					sh.setArg0(mScriptName);
-					int ret = sh.runScript(mScriptStreamSource,mScriptName,true).mExitStatus;
+					sh.setArg0(mSource.mScriptName);
+					int ret = sh.runScript(mScriptStreamSource,mSource.mScriptName,true).mExitStatus;
 
 					return ret;
 				} finally {
@@ -118,11 +112,11 @@ public class ScriptCommand implements ICommand {
 			}
 			case VALIDATE: 
 			  
-		    return shell.validateScript( mScriptStreamSource , mScriptName ) ? 0 : 1 ;
+		    return shell.validateScript( mScriptStreamSource , mSource.mScriptName ) ? 0 : 1 ;
 
 			case IMPORT : 
 			{
-          int ret =  shell.runScript( mScriptStreamSource, mScriptName, true ).mExitStatus;;
+          int ret =  shell.runScript( mScriptStreamSource, mSource.mScriptName, true ).mExitStatus;;
           return ret ;
 			}
 			  
@@ -138,10 +132,10 @@ public class ScriptCommand implements ICommand {
 
 
 	private Reader getScriptSource() throws IOException {
-		if( mScriptURL != null )
-		  return new InputStreamReader(mScriptURL.openStream(), mEncoding );
-		if(mScriptBody != null )
-			return Util.toReader(mScriptBody);
+		if( mSource.mScriptURL != null )
+		  return new InputStreamReader(mSource.mScriptURL.openStream(), mSource.mEncoding );
+		if(mSource.mScriptBody != null )
+			return Util.toReader(mSource.mScriptBody);
 		throw new IOException("Script body is empty");
 			
 	}
@@ -161,7 +155,7 @@ public class ScriptCommand implements ICommand {
 
 	@Override
 	public URL getURL() {
-		return mScriptURL ; // may be null 
+		return mSource.mScriptURL ; // may be null 
 
 	}
 
@@ -183,14 +177,14 @@ public class ScriptCommand implements ICommand {
 
 
 	public String getScriptName() {
-		return mScriptName;
+		return mSource.mScriptName;
 	}
 
 
   @Override
   public void print(PrintWriter w, boolean bExec)
   {
-    w.print( mScriptName );
+    w.print( mSource.mScriptName );
   }
 
 

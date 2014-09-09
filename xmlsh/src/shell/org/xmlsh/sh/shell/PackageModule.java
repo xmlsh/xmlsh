@@ -19,6 +19,7 @@ import org.xmlsh.core.IFunction;
 import org.xmlsh.core.IFunctionDecl;
 import org.xmlsh.core.ScriptCommand;
 import org.xmlsh.core.ScriptFunctionCommand;
+import org.xmlsh.core.ScriptSource;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.ScriptCommand.SourceMode;
 import org.xmlsh.util.JavaUtils;
@@ -249,7 +250,7 @@ public class PackageModule extends AbstractModule
     URL scriptURL= getCommandResource(scriptName);
     if(scriptURL != null)
 
-      return new ScriptCommand(scriptURL, name , SourceMode.RUN,  mEncoding, null, this);
+      return new ScriptCommand(SourceMode.RUN, null , this,  new ScriptSource(scriptName,scriptURL,mEncoding));
 
     return null;
 

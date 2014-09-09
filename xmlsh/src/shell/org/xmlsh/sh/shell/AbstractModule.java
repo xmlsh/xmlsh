@@ -42,7 +42,6 @@ import org.xmlsh.util.Util;
 
   
 
-  protected IModule mModule; // containing module
   protected String mName;
   protected String mPrefix; // may be null
   protected ClassLoader mClassLoader; // Classloader for this module
@@ -58,14 +57,12 @@ import org.xmlsh.util.Util;
   protected AbstractModule(Shell shell, String prefix )
   {
     mPrefix = prefix;
-    mModule = shell.getModule() ;
   }
 
   protected AbstractModule(Shell shell,String prefix, String name)
   {
 	mPrefix = prefix;
     mName = name;
-    mModule = shell.getModule() ;
   }
 
  

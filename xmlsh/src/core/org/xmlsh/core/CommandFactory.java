@@ -405,12 +405,12 @@ public class CommandFactory
 	}
 
 	public ScriptCommand getScript(Shell shell, URL url , String name, SourceMode sourceMode, SourceLocation loc) throws CoreException, IOException {
-		return new ScriptCommand(  url , name , sourceMode , shell.getInputTextEncoding(), loc  , shell.getModule() );
+		return new ScriptCommand(  sourceMode , loc , shell.getModule() , new ScriptSource(name , url , shell.getInputTextEncoding()) );
 
 	}
 
 	public ScriptCommand getScript(Shell shell, File file, String name, SourceMode sourceMode, SourceLocation loc) throws CoreException, IOException {
-		return new ScriptCommand(  file.toURI().toURL() , name , sourceMode , shell.getInputTextEncoding(), loc , shell.getModule() );
+		return new ScriptCommand(  sourceMode , loc , shell.getModule() , new ScriptSource(name,file.toURI().toURL(), shell.getInputTextEncoding()) );
 
 	}
 

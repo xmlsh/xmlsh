@@ -99,7 +99,6 @@ public class ScriptModule extends AbstractModule
   @Override
   public boolean definesSameModule(IModule mod)
   {
-    // TODO Auto-generated method stub
     return false;
   }
 
