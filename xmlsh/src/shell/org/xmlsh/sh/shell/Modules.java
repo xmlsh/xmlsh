@@ -55,7 +55,7 @@ public class Modules extends ManagedObject<Modules> implements Iterable<IModule 
 
 
 
-  public IModule declare(Shell shell, String prefix , String name, XValue at , List<XValue> init ) throws Exception
+  public boolean declare(Shell shell, String prefix , String name, XValue at , List<XValue> init ) throws Exception
 	{
 		/*
 		 * Dont redeclare a module under the same prefix
@@ -64,7 +64,7 @@ public class Modules extends ManagedObject<Modules> implements Iterable<IModule 
 
 		for( ModuleHandle hm : mModules )
 			if( Util.isEqual(hm.get().getName(),name) && Util.isEqual(hm.get().getPrefix(),prefix))
-				return  hm.get() ;
+				return   false;
 
 		IModule module = ModuleFactory.createModule(shell, prefix , name , at  );
 		
@@ -80,7 +80,7 @@ public class Modules extends ManagedObject<Modules> implements Iterable<IModule 
 	 * @throws Exception 
 	 * 
 	 */
-	public IModule declare(IModule module, List<XValue> init) throws Exception
+	boolean declare(IModule module, List<XValue> init) throws Exception
 	{
  
 	  assert( module != null );
@@ -98,7 +98,7 @@ public class Modules extends ManagedObject<Modules> implements Iterable<IModule 
 			if( exists != null ) {
 	       mLogger.trace("declare an existing non prefixed module - closing new module");
 			  module.close();
-				return exists.get();
+				return true;
 			
 			}
 		}
@@ -106,7 +106,7 @@ public class Modules extends ManagedObject<Modules> implements Iterable<IModule 
 		assert(! mModules.containsValue( module ));
 		ModuleHandle hmod = new ModuleHandle(module);
 		mModules.add( hmod  );
-		return hmod.get() ;
+		return true;
 
 	}
 
@@ -157,7 +157,7 @@ public class Modules extends ManagedObject<Modules> implements Iterable<IModule 
 	 * class
 	 * 
 	 */
-	public IModule declare(Shell shell, String m, XValue at, List<XValue> init) throws Exception {
+	public boolean declare(Shell shell, String m, XValue at, List<XValue> init) throws Exception {
 		StringPair 	pair = new StringPair(m,'=');
 		return declare(shell, pair.getLeft(), pair.getRight() ,  at , init  );
 
@@ -188,6 +188,19 @@ public class Modules extends ManagedObject<Modules> implements Iterable<IModule 
   {
    return mModules.valueIterator();
   }
+
+
+
+
+boolean  declarePackageModule( String prefix,  String name,
+		List<String> pkgs, String helpXML, List<XValue> init ) throws Exception {
+
+	return declare( ModuleFactory.createPackageModule(mShell, prefix, name, pkgs, helpXML) ,
+			init );
+			
+
+	
+}
 
 }
 

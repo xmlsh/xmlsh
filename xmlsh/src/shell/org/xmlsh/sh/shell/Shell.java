@@ -201,10 +201,10 @@ public class Shell implements AutoCloseable, Closeable
     mModules = new Modules(this);
     mSession = new SessionEnvironment();
     // Add xmlsh commands
-    mModules.declare(ModuleFactory.createPackageModule(null, null, "xmlsh",
+    mModules.declarePackageModule( null, "xmlsh",
       Arrays.asList("org.xmlsh.internal.commands",
-         "org.xmlsh.internal.functions" ), 
-      CommandFactory.kCOMMANDS_HELP_XML), null );
+         "org.xmlsh.internal.functions" ) ,
+      CommandFactory.kCOMMANDS_HELP_XML,null );
 
     setGlobalVars();
 
@@ -1592,7 +1592,7 @@ public class Shell implements AutoCloseable, Closeable
   /*
    * Declare a module using the prefix=value notation
    */
-  public IModule importModule(String moduledef, XValue at ,List<XValue> init) throws Exception
+  public boolean importModule(String moduledef, XValue at ,List<XValue> init) throws Exception
   {
 
     return mModules.declare(this, moduledef, at , init);
@@ -1600,13 +1600,13 @@ public class Shell implements AutoCloseable, Closeable
   }
 
   
-  public IModule importScript( String script , XValue at ,List<XValue> init  ) throws Exception{
+  public boolean importScript( String script , XValue at ,List<XValue> init  ) throws Exception{
     
     return mModules.declare(this, script, at , init);
 
 }
 
-  public IModule importPackage(String prefix, String name, List<String> packages ) throws Exception
+  public boolean  importPackage(String prefix, String name, List<String> packages ) throws Exception
   {
     // TODO: Help needs better placement
     String sHelp = packages.get(0).replace('.', '/') + "/commands.xml";

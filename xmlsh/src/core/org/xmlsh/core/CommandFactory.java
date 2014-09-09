@@ -199,12 +199,7 @@ public class CommandFactory
 	private ICommand getModuleCommand(Shell shell,String name, SourceLocation loc) {
 
 
-
-
 		StringPair 	pair = new StringPair(name,':');
-
-
-
 
 
 		if( pair.hasLeft() ){ // prefix:name , prefix non-empty

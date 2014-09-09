@@ -199,7 +199,7 @@ public class ximport extends BuiltinCommand
     }
     else name = fullname;
 
-    return mShell.importPackage(prefix, name, Collections.singletonList(name)) != null;
+    return mShell.importPackage(prefix, name, Collections.singletonList(name));
   }
 
   private boolean importCommands(String fullname) throws Exception
@@ -216,7 +216,7 @@ public class ximport extends BuiltinCommand
     }
     else name = fullname;
 
-    return mShell.importPackage(prefix, name, internalPackages(name)) != null;
+    return mShell.importPackage(prefix, name, internalPackages(name)) ;
   }
 
   private List<String> internalPackages(String fullname)
