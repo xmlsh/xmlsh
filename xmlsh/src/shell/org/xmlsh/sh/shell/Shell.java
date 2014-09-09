@@ -86,6 +86,19 @@ import org.xmlsh.xpath.ShellContext;
 public class Shell implements AutoCloseable, Closeable
 {
 
+	// The return of a function and/or command 
+	// A interger 'exit value' and a XValue - may or may not be the same
+	public static class ReturnValue {
+		public ReturnValue(int exitStatus, XValue returnValue) {
+			super();
+			this.mExitStatus = exitStatus;
+			this.mReturnValue = returnValue;
+		}
+		public int mExitStatus;
+		public XValue mReturnValue;
+	}
+	
+	
   class CallStackEntry
   {
     public String name;
@@ -537,8 +550,19 @@ public class Shell implements AutoCloseable, Closeable
         
   }
   
+  /*
   
-  public int runScript(InputStream stream, String source, boolean convertReturn) throws ParseException, ThrowException,
+  public int runScript( )
+  {
+	  
+	  ICommandExpr parsed = parseScript(reader, source)
+	  
+	  
+  }
+  */
+  
+  
+  public ReturnValue  runScript(InputStream stream, String source, boolean convertReturn) throws ParseException, ThrowException,
       IOException
   {
 
@@ -547,7 +571,7 @@ public class Shell implements AutoCloseable, Closeable
       InputStream save = mCommandInput;
       SourceLocation saveLoc = getLocation();
       mCommandInput = stream;
-      int ret = 0;
+      int exitStatus = 0;
       ShellParser parser = null;
       try {
         parser = new ShellParser(newParserReader(true), source);
@@ -572,7 +596,7 @@ public class Shell implements AutoCloseable, Closeable
             }
           }
 
-          ret = exec(c);
+          exitStatus = exec(c);
         }
       }
 
@@ -582,7 +606,7 @@ public class Shell implements AutoCloseable, Closeable
 
       } catch (ExitOnErrorException e) {
         // Caught Exit on error from a script
-        ret = e.getValue();
+        exitStatus = e.getValue();
 
       }
 
@@ -600,15 +624,16 @@ public class Shell implements AutoCloseable, Closeable
       // Exited evaluation - but still in entry point
 
       if(mExitVal != null)
-        ret = mExitVal.intValue();
+        exitStatus = mExitVal.intValue();
       // Special check for returning thrown  errors 
-      else if(convertReturn  && mReturnVal != null  ) {
-        ret = this.convertReturnValueToExitValue(mReturnVal);
-        mReturnVal = null;
-      }
+      else 
+       if( convertReturn  )  // clears mReturnValue 
+        exitStatus = getReturnValueAsExitStatus(exitStatus);
+      
+      
 
       onSignal("EXIT");
-      return ret;
+      return new ReturnValue(exitStatus , getReturnValue() ) ;
 
     } finally {
       exitEval();
@@ -1547,7 +1572,7 @@ public class Shell implements AutoCloseable, Closeable
   /*
    * Convert return value to exit value
    */
-  private int convertReturnValueToExitValue(XValue value)
+  private int convertReturnValueToExitStatus(XValue value)
   {
     // Special case for null values
     if( value == null || value == mReturnFlag )
@@ -1839,7 +1864,7 @@ public class Shell implements AutoCloseable, Closeable
   /*
    * Get the return value of the last return statement
    */
-  public XValue getReturnValue()
+  private XValue getReturnValue()
   {
     XValue ret = mReturnVal;
     mReturnVal = null;
@@ -1967,13 +1992,13 @@ public class Shell implements AutoCloseable, Closeable
     return mCallStack;
   }
 
-  public int getReturnValueAsExitValue()
+  public int getReturnValueAsExitStatus(int defRet )
   {
 
 // Special null return value means 0  - SNH need to check logic of scripts
     if( mReturnVal == null )
-      return 0;
-      return convertReturnValueToExitValue(getReturnValue());
+      return defRet;
+      return convertReturnValueToExitStatus(getReturnValue());
   }
 
   public void setCurrentLocation(SourceLocation loc)

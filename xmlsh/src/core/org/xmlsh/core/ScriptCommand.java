@@ -37,7 +37,8 @@ public class ScriptCommand implements ICommand {
 
 	private static Logger mLogger = org.apache.logging.log4j.LogManager.getLogger();
 	private String	mScriptName;
-	private InputStream mScript;
+	private InputStream mScriptStreamSource;   // TRANSIENT !
+	
 	private SourceMode mSourceMode;
 	private File	 mScriptFile; // file for script, may be null if internal script
 	private IModule mModule;
@@ -54,7 +55,7 @@ public class ScriptCommand implements ICommand {
 
 	public ScriptCommand( File script, SourceMode sourceMode , SourceLocation location) throws FileNotFoundException
 	{
-		mScript = new FileInputStream(script);
+		mScriptStreamSource = new FileInputStream(script);
 		mScriptName = FileUtils.toJavaPath(script.getPath());
 		mSourceMode = sourceMode;
 		mScriptFile = script;
@@ -64,14 +65,14 @@ public class ScriptCommand implements ICommand {
 
 	public ScriptCommand( String script , SerializeOpts opts, SourceMode sourceMode ) throws UnsupportedEncodingException
 	{
-		mScript = Util.toInputStream(script, opts );
+		mScriptStreamSource = Util.toInputStream(script, opts );
 		mSourceMode = sourceMode ;
 
 	}
 
 	public ScriptCommand(String name , InputStream is, SourceMode sourceMode, IModule module ) {
 		mScriptName = FileUtils.toJavaPath(name);
-		mScript = is;
+		mScriptStreamSource = is;
 		mSourceMode = sourceMode;
 		mModule = module ;
 
@@ -83,7 +84,7 @@ public class ScriptCommand implements ICommand {
 		try {
 		  switch( mSourceMode ){
 			case SOURCE :
-				return shell.runScript(mScript,mScriptName,true);
+				return shell.runScript(mScriptStreamSource,mScriptName,true).mExitStatus;
 			case RUN :
 			{
 				Shell sh = shell.clone();
@@ -91,7 +92,7 @@ public class ScriptCommand implements ICommand {
 					if( args != null )
 						sh.setArgs(args);
 					sh.setArg0(mScriptName);
-					int ret = sh.runScript(mScript,mScriptName,true);
+					int ret = sh.runScript(mScriptStreamSource,mScriptName,true).mExitStatus;
 
 					return ret;
 				} finally {
@@ -101,11 +102,11 @@ public class ScriptCommand implements ICommand {
 			}
 			case VALIDATE: 
 			  
-		    return shell.validateScript( mScript , mScriptName ) ? 0 : 1 ;
+		    return shell.validateScript( mScriptStreamSource , mScriptName ) ? 0 : 1 ;
 
 			case IMPORT : 
 			{
-          int ret =  shell.runScript( mScript, mScriptName, true );
+          int ret =  shell.runScript( mScriptStreamSource, mScriptName, true ).mExitStatus;;
           return ret ;
 			}
 			  
@@ -121,13 +122,13 @@ public class ScriptCommand implements ICommand {
 
 	@Override
 	public void close() {
-		if( mScript != null ){
+		if( mScriptStreamSource != null ){
 			try {
-				mScript.close();
+				mScriptStreamSource.close();
 			} catch (IOException e) {
 				mLogger.warn("Exception closing script" , e );
 			}
-			mScript = null ;
+			mScriptStreamSource = null ;
 		}
 
 	}

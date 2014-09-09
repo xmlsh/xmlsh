@@ -35,7 +35,7 @@ public class FunctionCommand implements ICommand {
 
 		int ret =  shell.execFunctionAsCommand(mName,mFunction,mLocation,args);
 		if( ret == 0 )
-			ret = shell.getReturnValueAsExitValue() ;
+			ret = shell.getReturnValueAsExitStatus(ret) ;
 
 		return ret;
 	}

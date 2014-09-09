@@ -14,6 +14,7 @@ import java.util.List;
 import org.xmlsh.sh.core.SourceLocation;
 import org.xmlsh.sh.shell.IModule;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.sh.shell.Shell.ReturnValue;
 
 public class ScriptFunctionCommand extends AbstractBuiltinFunction implements Closeable {
 
@@ -52,9 +53,7 @@ public class ScriptFunctionCommand extends AbstractBuiltinFunction implements Cl
 				if( args != null )
 					sh.setArgs(args);
 				sh.setArg0(getName());
-				int iret = shell.runScript(mScript, getName(),false);
-
-				return shell.getReturnValue();
+				return shell.runScript(mScript, getName(),false).mReturnValue;
 			} finally {
 				// Close shell - even if exception is thrown through sh.runScript and up
 				sh.close();
