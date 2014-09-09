@@ -8,6 +8,8 @@ package org.xmlsh.core;
 
 import java.io.File;
 import java.io.PrintWriter;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 
 import org.xmlsh.sh.core.SourceLocation;
@@ -27,12 +29,12 @@ public interface ICommand {
 
 	public int 	run( Shell shell , String cmd , List<XValue> args )  throws Exception;
 	public 	CommandType	getType();
-	public 	File 	getFile();
+	public 	URL 	getURL() throws MalformedURLException;
 	public 	IModule	getModule();
 	public void		close();
 	public SourceLocation getLocation();
 	public void setLocation( SourceLocation loc);
-  public void print(PrintWriter w, boolean bExec);
+    public void print(PrintWriter w, boolean bExec);
 
 
 

@@ -8,8 +8,12 @@ package org.xmlsh.core;
 
 import java.io.File;
 import java.io.PrintWriter;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.xmlsh.sh.core.ICommandExpr;
 import org.xmlsh.sh.core.SourceLocation;
 import org.xmlsh.sh.shell.IModule;
@@ -20,6 +24,7 @@ public class FunctionCommand implements ICommand {
 	String				mName;
 	ICommandExpr			 	mFunction;
 	SourceLocation  	mLocation;
+	private static Logger mLogger = LogManager.getLogger();
 
 	public FunctionCommand( String name , ICommandExpr func ,  SourceLocation loc )
 	{
@@ -27,7 +32,11 @@ public class FunctionCommand implements ICommand {
 		mFunction = func ;
 		mLocation = loc ;
 	}
-
+	@Override
+	public URL getURL() throws MalformedURLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 
 	@Override
@@ -48,21 +57,12 @@ public class FunctionCommand implements ICommand {
 		return CommandType.CMD_TYPE_FUNCTION ;
 	}
 
-	@Override
-	public 	File 	getFile() 
-	{ 
-		return null; 
-	}
-
-
 
 	@Override
 	public IModule getModule() {
-		// TODO: Return the module of the invoking script
+		mLogger.warn("TODO: getModule UNIMPLEMENTED called on FunctionCommand ");
 		return null;
 	}
-
-
 
 
 	/* (non-Javadoc)
@@ -70,8 +70,8 @@ public class FunctionCommand implements ICommand {
 	 */
 	@Override
 	public void close() {
-		// TODO Auto-generated method stub
-
+		mLogger.entry();
+		
 	}
 
 

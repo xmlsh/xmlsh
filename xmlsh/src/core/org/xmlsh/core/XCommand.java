@@ -8,6 +8,7 @@ package org.xmlsh.core;
 
 
 import java.io.File;
+import java.net.URL;
 import java.util.List;
 
 import org.xmlsh.sh.shell.IModule;
@@ -116,18 +117,17 @@ public abstract class XCommand extends AbstractCommand {
 		return CommandType.CMD_TYPE_INTERNAL ;
 	}
 
-	@Override
-	public File getFile() {
-		return null ; // no associated file 
-
-	}
 
 	public void setModule(IModule module) {
 		mModule = module ;
 
 	}
 
-
+	@Override
+	public URL getURL() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 
 

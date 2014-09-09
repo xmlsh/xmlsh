@@ -101,7 +101,7 @@ public class JavaModule extends AbstractModule
 
   JavaModule(Shell shell, String prefix, URI nameURI, XValue at) throws CoreException
   {
-    super(prefix);
+    super(shell,prefix);
     List<URL> classpath = null;
     if(at != null && !at.isEmpty()) {
       classpath = new ArrayList<URL>();

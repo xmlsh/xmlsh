@@ -12,6 +12,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
@@ -171,10 +172,8 @@ public class XShellThread extends Thread {
 
 					setRunning(true);
 
-					try ( 
-
-					    InputStream sin = new ByteArrayInputStream( sCmd.getBytes("UTF8")) ){
-						mShell.runScript(sin , "xmlshui", true );
+					try ( Reader reader = Util.toReader(sCmd ) ){
+						mShell.runScript(reader , "xmlshui", true );
 						mResultOutputStream.flush();
 						mResultErrorStream.flush();
 						setRunning(false);

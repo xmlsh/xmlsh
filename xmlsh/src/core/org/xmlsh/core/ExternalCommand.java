@@ -8,6 +8,8 @@ package org.xmlsh.core;
 
 import java.io.File;
 import java.io.PrintWriter;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -37,7 +39,10 @@ public class ExternalCommand implements ICommand {
 		mCommandFile = cmd;
 		mLocation = location ;
 	}
-
+	@Override
+	public URL getURL() throws MalformedURLException {
+		return mCommandFile.toURI().toURL();
+	}
 	@Override
 	public int run(Shell shell, String cmd, List<XValue> args) throws Exception
 	{
@@ -195,17 +200,13 @@ public class ExternalCommand implements ICommand {
 		return CommandType.CMD_TYPE_EXTERNAL;
 	}
 
-	@Override
-	public File getFile() {
-		return mCommandFile ;  
-
-	}
 
 
 	@Override
 	public IModule getModule() {
-		// TODO Auto-generated method stub
+		mLogger.info("@TODO Calling unimplemented getModule()");
 		return null;
+		
 	}
 
 
@@ -216,7 +217,7 @@ public class ExternalCommand implements ICommand {
 	 */
 	@Override
 	public void close() {
-		// TODO Auto-generated method stub
+		mLogger.info("@TODO Calling unimplemented close()");
 
 	}
 

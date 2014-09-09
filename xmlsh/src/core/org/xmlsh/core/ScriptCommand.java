@@ -11,11 +11,16 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.io.Reader;
 import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 
 import org.apache.logging.log4j.Logger;
+import org.apache.tools.ant.filters.StringInputStream;
 import org.xmlsh.sh.core.SourceLocation;
 import org.xmlsh.sh.grammar.ParseException;
 import org.xmlsh.sh.shell.IModule;
@@ -37,12 +42,12 @@ public class ScriptCommand implements ICommand {
 
 	private static Logger mLogger = org.apache.logging.log4j.LogManager.getLogger();
 	private String	mScriptName;
-	private InputStream mScriptStreamSource;   // TRANSIENT !
-	
+	private URL        mScriptURL ;
 	private SourceMode mSourceMode;
-	private File	 mScriptFile; // file for script, may be null if internal script
 	private IModule mModule;
 	private SourceLocation mLocation;
+	private String mScriptBody = null;
+	private String mEncoding;
 
 
 	// Finalize script command make sure to close
@@ -53,35 +58,46 @@ public class ScriptCommand implements ICommand {
 	}
 
 
-	public ScriptCommand( File script, SourceMode sourceMode , SourceLocation location) throws FileNotFoundException
+	/*
+	public ScriptCommand( File script, SourceMode sourceMode , SourceLocation location) throws FileNotFoundException, MalformedURLException
 	{
-		mScriptStreamSource = new FileInputStream(script);
-		mScriptName = FileUtils.toJavaPath(script.getPath());
+		mScriptURL = script.toURI().toURL();
+		mScriptName =  name == null ?  FileUtils.toJavaPath(script.getPath()) : name ;
 		mSourceMode = sourceMode;
-		mScriptFile = script;
 		mLocation = location ;
-
 	}
+	*/
 
-	public ScriptCommand( String script , SerializeOpts opts, SourceMode sourceMode ) throws UnsupportedEncodingException
+	public ScriptCommand( URL url, String name, SourceMode sourceMode , String encoding , SourceLocation location, IModule module ) throws FileNotFoundException
 	{
-		mScriptStreamSource = Util.toInputStream(script, opts );
-		mSourceMode = sourceMode ;
+		mScriptURL = url ;
+		mEncoding = encoding ;
+		mScriptName = name == null ?  FileUtils.toJavaPath(url.getPath()) : name ;
+		mSourceMode = sourceMode;
+		mLocation = location ;
+		mModule = module ;
 
 	}
+	
 
-	public ScriptCommand(String name , InputStream is, SourceMode sourceMode, IModule module ) {
-		mScriptName = FileUtils.toJavaPath(name);
-		mScriptStreamSource = is;
-		mSourceMode = sourceMode;
+	/*
+	 * Script from literal string (eval)
+	 */
+	public ScriptCommand( String script , String name,  SourceMode sourceMode, IModule module ) throws UnsupportedEncodingException
+	{
+		mScriptBody = script ;
+		mSourceMode = sourceMode ;
+		mScriptName = name ;
 		mModule = module ;
 
 	}
 
+
 	@Override
 	public int run(Shell shell, String cmd, List<XValue> args) throws ThrowException, ParseException, IOException, UnimplementedException {
 
-		try {
+		try ( Reader mScriptStreamSource = getScriptSource() ){
+			
 		  switch( mSourceMode ){
 			case SOURCE :
 				return shell.runScript(mScriptStreamSource,mScriptName,true).mExitStatus;
@@ -120,16 +136,18 @@ public class ScriptCommand implements ICommand {
 		}
 	}
 
+
+	private Reader getScriptSource() throws IOException {
+		if( mScriptURL != null )
+		  return new InputStreamReader(mScriptURL.openStream(), mEncoding );
+		if(mScriptBody != null )
+			return Util.toReader(mScriptBody);
+		throw new IOException("Script body is empty");
+			
+	}
+
 	@Override
 	public void close() {
-		if( mScriptStreamSource != null ){
-			try {
-				mScriptStreamSource.close();
-			} catch (IOException e) {
-				mLogger.warn("Exception closing script" , e );
-			}
-			mScriptStreamSource = null ;
-		}
 
 	}
 
@@ -142,8 +160,8 @@ public class ScriptCommand implements ICommand {
 	}
 
 	@Override
-	public File getFile() {
-		return mScriptFile ; // may be null 
+	public URL getURL() {
+		return mScriptURL ; // may be null 
 
 	}
 

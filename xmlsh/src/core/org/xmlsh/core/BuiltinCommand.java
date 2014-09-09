@@ -7,6 +7,7 @@
 package org.xmlsh.core;
 
 import java.io.File;
+import java.net.URL;
 import java.util.List;
 
 import org.xmlsh.sh.shell.IModule;
@@ -33,11 +34,6 @@ public abstract class BuiltinCommand extends AbstractCommand  {
 	}
 
 
-	@Override
-	public File getFile() {
-		return null ; // builtins have no file  
-
-	}
 	@Override
 	public IModule getModule()
 	{
@@ -71,6 +67,12 @@ public abstract class BuiltinCommand extends AbstractCommand  {
 			ShellContext.set(saved_shell);
 		}
 
+	}
+	
+	@Override
+	public URL getURL() {
+		// Builtins have no URL
+		return null;
 	}
 
 

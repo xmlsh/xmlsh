@@ -7,6 +7,7 @@
 package org.xmlsh.builtin.commands;
 
 import java.io.File;
+import java.net.URL;
 import java.util.List;
 
 import javax.xml.stream.XMLStreamWriter;
@@ -106,9 +107,10 @@ public class xwhich extends BuiltinCommand {
 					String type = typenames[command.getType().ordinal()];
 					out.writeAttribute(sType, type);
 
-					File file = command.getFile();
-					if( file != null )
-						out.writeAttribute(sPath, file.getCanonicalPath() );
+
+					URL url = command.getURL();
+					if( url != null )
+						out.writeAttribute(sPath, url.getPath() );
 					else 
 						if( command instanceof ScriptCommand ){
 							ScriptCommand sc  = (ScriptCommand) command;

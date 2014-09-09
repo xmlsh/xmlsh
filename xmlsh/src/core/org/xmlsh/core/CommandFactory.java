@@ -196,7 +196,7 @@ public class CommandFactory
 
 
 
-	private ICommand getModuleCommand(Shell shell,String name, SourceLocation loc) {
+	private ICommand getModuleCommand(Shell shell,String name, SourceLocation loc) throws IOException {
 
 
 		StringPair 	pair = new StringPair(name,':');
@@ -243,13 +243,14 @@ public class CommandFactory
 
 	}
 
+	/*
 	public ScriptCommand getScript(Shell shell, String name , InputStream is , SourceMode sourceMode , SourceLocation loc ) throws CoreException {
 		if( is == null )
 			return null;
 
 		return new ScriptCommand(  name , is , sourceMode , null );
 
-	}
+	}*/
 
 
 	public ScriptCommand		getScript( Shell shell , String name, SourceMode sourceMode , SourceLocation loc ) throws IOException, CoreException
@@ -259,7 +260,7 @@ public class CommandFactory
 		// If name has a scheme try that first
 		URL url =  Util.tryURL(name);
 		if( url != null )
-			return getScript( shell , name , url.openStream() , sourceMode , loc );
+			return getScript( shell , url , name , sourceMode , loc );
 
 
 		// If ends with .xsh OR we are in source mode try it
@@ -281,7 +282,7 @@ public class CommandFactory
 			}
 		if( scriptFile == null )
 			return null ;
-		return getScript( shell , scriptFile , sourceMode , loc );
+		return getScript( shell , scriptFile.toURI().toURL(), scriptFile.getPath() , sourceMode , loc );
 
 	}
 
@@ -403,10 +404,15 @@ public class CommandFactory
 		return null  ;	
 	}
 
-	public ScriptCommand getScript(Shell shell, File script, SourceMode sourceMode, SourceLocation loc) throws CoreException, IOException {
-		return getScript( shell , script.getAbsolutePath() , new FileInputStream(script) , sourceMode , loc );
+	public ScriptCommand getScript(Shell shell, URL url , String name, SourceMode sourceMode, SourceLocation loc) throws CoreException, IOException {
+		return new ScriptCommand(  url , name , sourceMode , shell.getInputTextEncoding(), loc  , shell.getModule() );
+
 	}
 
+	public ScriptCommand getScript(Shell shell, File file, String name, SourceMode sourceMode, SourceLocation loc) throws CoreException, IOException {
+		return new ScriptCommand(  file.toURI().toURL() , name , sourceMode , shell.getInputTextEncoding(), loc , shell.getModule() );
+
+	}
 
 
 

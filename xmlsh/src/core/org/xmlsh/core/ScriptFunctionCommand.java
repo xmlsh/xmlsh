@@ -9,6 +9,7 @@ package org.xmlsh.core;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.List;
 
 import org.xmlsh.sh.core.SourceLocation;
@@ -19,28 +20,22 @@ import org.xmlsh.sh.shell.Shell.ReturnValue;
 public class ScriptFunctionCommand extends AbstractBuiltinFunction implements Closeable {
 
 
-	private InputStream mScript;
+	private URL mScriptURL;
 	private IModule mModule;
 	private SourceLocation mLocation;
 
 
 
 
-	public ScriptFunctionCommand(String name , InputStream is, IModule module ) {
+	public ScriptFunctionCommand(String name , URL input, IModule module ) {
 		super(name);
-		mScript = is;
+		mScriptURL = input;
 		mModule = module ;
 
 	}
 
 	public void close() throws IOException
 	{
-	   try {
-		  if( mScript != null )
-			   mScript.close();
-	   } finally {
-	     mScript = null ;
-	   }
 	}
 
 	@Override
@@ -53,7 +48,7 @@ public class ScriptFunctionCommand extends AbstractBuiltinFunction implements Cl
 				if( args != null )
 					sh.setArgs(args);
 				sh.setArg0(getName());
-				return shell.runScript(mScript, getName(),false).mReturnValue;
+				return shell.runScript(mScriptURL , getName(),false).mReturnValue;
 			} finally {
 				// Close shell - even if exception is thrown through sh.runScript and up
 				sh.close();

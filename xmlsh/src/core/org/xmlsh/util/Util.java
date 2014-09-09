@@ -7,8 +7,10 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
+import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -693,8 +695,10 @@ public class Util
 		 return sb.toString();
 	 }
 
+	 
 
-	 public static  ByteArrayInputStream toInputStream(String script,SerializeOpts opts) throws UnsupportedEncodingException {
+
+	 public static  InputStream toInputStream(String script,SerializeOpts opts) throws UnsupportedEncodingException {
 		 return new ByteArrayInputStream(
 				 script.getBytes(opts.getInputTextEncoding()));
 	 }
@@ -1745,6 +1749,17 @@ public class Util
     return false;
   
   }
+
+
+public static Reader toReader(String string) {
+	return new StringReader(string);
+}
+
+
+public static Reader toReader(URL scriptURL, String inputTextEncoding) throws IOException {
+		return new InputStreamReader( scriptURL.openStream() , inputTextEncoding );
+	
+}
 
 
 

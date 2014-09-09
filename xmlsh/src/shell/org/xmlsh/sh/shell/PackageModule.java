@@ -7,8 +7,11 @@
 package org.xmlsh.sh.shell;
 
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
+import java.net.URL;
 import java.util.List;
 
 import org.xmlsh.core.ICommand;
@@ -24,33 +27,47 @@ import org.xmlsh.util.Util;
 public class PackageModule extends AbstractModule
 {
   protected List<String> mPackages;
-
+  protected String mEncoding ;
 
   /*
    * Constructor for internal modules like xlmsh
    * These dont get their own thread group
    */
-  protected PackageModule(String prefix, String name, List<String> packages , String helpURL)
+  protected PackageModule(Shell shell, String prefix, String name, List<String> packages , String helpURL)
   {
-    super(name,prefix);
+    this(shell,prefix,name);
+    mEncoding = shell.getInputTextEncoding();
     mPackages = packages;
     mClassLoader = getClassLoader(null);
     // Undocumented - if you use a class loader to find a resource dont start it with "/"
     mHelpURL = mClassLoader.getResource(helpURL.replaceFirst("^/", ""));
   }
   
-  protected PackageModule( String prefix, String name)
+  protected PackageModule( Shell shell, String prefix, String name)
   {
-    super(name,prefix);
+    super(shell,prefix,name);
+    mEncoding = shell.getInputTextEncoding();
+
+    
   }
 
 
-  public PackageModule(String prefix)
+  public PackageModule(Shell shell,String prefix)
   {
-    super(prefix);
+    super(shell,prefix);;
+    mEncoding = shell.getInputTextEncoding();
+
+  }
+  private InputStream getCommandResourceStream(String name) throws IOException
+  {
+	  URL url =  getCommandResource( name);
+	  if( url != null )
+		  return url.openStream();
+	return null;
+	  
   }
 
-  private InputStream getCommandResource(String name)
+  private URL getCommandResource(String name)
   {
     /*
      * Undocumented: When using a classloader to get a resource, then the
@@ -66,7 +83,7 @@ public class PackageModule extends AbstractModule
       return null;
 
     for( String pkg :getCommandPackages() ) {
-      InputStream is = mClassLoader.getResourceAsStream( toResourceName(name,pkg));
+      URL is = mClassLoader.getResource( toResourceName(name,pkg));
        if( is != null ) {
           mScriptCache.put(name, true );
           return is ;
@@ -119,9 +136,9 @@ public class PackageModule extends AbstractModule
     /*
      * Try a script
      */
-    InputStream scriptStream = getCommandResource(origName + ".xsh");
-    if(scriptStream != null)
-      return new ScriptFunctionCommand(name, scriptStream, this);
+    URL scriptURL= getCommandResource(origName + ".xsh");
+    if(scriptURL != null)
+      return new ScriptFunctionCommand(name, scriptURL, this);
     return null;
 
   }
@@ -178,7 +195,7 @@ public class PackageModule extends AbstractModule
    * @see org.xmlsh.sh.shell.IModule#getCommandClass(java.lang.String)
    */
   @Override
-  public ICommand getCommandClass(String name)
+  public ICommand getCommandClass(String name) throws FileNotFoundException
   {
 
     /*
@@ -229,10 +246,10 @@ public class PackageModule extends AbstractModule
     // Failures are cached with a null command
     String scriptName = origName + ".xsh";
 
-    InputStream scriptStream = getCommandResource(scriptName);
-    if(scriptStream != null)
+    URL scriptURL= getCommandResource(scriptName);
+    if(scriptURL != null)
 
-      return new ScriptCommand(name, scriptStream, SourceMode.RUN, this);
+      return new ScriptCommand(scriptURL, name , SourceMode.RUN,  mEncoding, null, this);
 
     return null;
 

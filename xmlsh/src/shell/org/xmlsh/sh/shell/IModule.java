@@ -7,6 +7,8 @@
 package org.xmlsh.sh.shell;
 
 import java.io.Closeable;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 
@@ -30,7 +32,7 @@ public interface IModule extends Closeable
    */
   public String getPrefix();
   public boolean isDefault();
-  public ICommand getCommandClass(String name);
+  public ICommand getCommandClass(String name) throws IOException;
   public IFunction getFunctionClass(String name);
   public String getName();
   public boolean hasHelp(String name);

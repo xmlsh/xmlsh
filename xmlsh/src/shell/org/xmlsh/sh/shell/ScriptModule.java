@@ -1,10 +1,8 @@
 package org.xmlsh.sh.shell;
 
 import java.io.IOException;
-import java.net.URI;
 import java.util.List;
 
-import org.xmlsh.core.CommandFactory;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.FunctionCommand;
 import org.xmlsh.core.ICommand;
@@ -12,18 +10,17 @@ import org.xmlsh.core.IFunction;
 import org.xmlsh.core.IFunctionDecl;
 import org.xmlsh.core.ScriptCommand;
 import org.xmlsh.core.XValue;
-import org.xmlsh.core.ScriptCommand.SourceMode;
 
 public class ScriptModule extends AbstractModule
 {
 
   private ScriptCommand mScript ; 
-  private FunctionDefinitions mFunctions;
+  private Shell.StaticContext mStaticContext;
   
   
   protected ScriptModule(Shell shell, ScriptCommand script , String prefix, String nameuri ) throws IOException, CoreException
   {
-    super(nameuri , prefix);
+    super(shell,nameuri , prefix);
 
     mScript = script ;
     mClassLoader = getClassLoader(null);
@@ -63,17 +60,17 @@ public class ScriptModule extends AbstractModule
   
   
   private void importContext(Shell shell) {
-	  mFunctions = shell.getFunctionDelcs();
+	  mStaticContext = shell.getExportedContext();
 }
 
 
 @Override
   public ICommand getCommandClass(String name)
   {
-	if( mFunctions == null )
+	if( mStaticContext == null )
 		return null;
     
-	IFunctionDecl func = mFunctions.get(name);
+	IFunctionDecl func = mStaticContext.getFunctionDecl(name);
 	if( func != null )
 		return new FunctionCommand( func.getName() , func.getBody() , null  );
 	return null ;
@@ -83,10 +80,10 @@ public class ScriptModule extends AbstractModule
   @Override
   public IFunction getFunctionClass(String name)
   {
-	  if( mFunctions == null )
+	  if( mStaticContext == null )
 			return null;
 	    
-     IFunctionDecl func = mFunctions.get(name);
+     IFunctionDecl func = mStaticContext.getFunctionDecl(name);
      if( func != null )
     	 return func.getFunction();
      return null ;

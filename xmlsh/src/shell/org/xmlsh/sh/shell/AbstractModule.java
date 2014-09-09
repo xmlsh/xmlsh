@@ -42,6 +42,7 @@ import org.xmlsh.util.Util;
 
   
 
+  protected IModule mModule; // containing module
   protected String mName;
   protected String mPrefix; // may be null
   protected ClassLoader mClassLoader; // Classloader for this module
@@ -54,15 +55,17 @@ import org.xmlsh.util.Util;
   // Not static - use derived class
   protected  final Logger mLogger = LogManager.getLogger();
  
-  protected AbstractModule(String prefix)
+  protected AbstractModule(Shell shell, String prefix )
   {
     mPrefix = prefix;
+    mModule = shell.getModule() ;
   }
 
-  protected AbstractModule(String name, String prefix)
+  protected AbstractModule(Shell shell,String prefix, String name)
   {
+	mPrefix = prefix;
     mName = name;
-    mPrefix = prefix;
+    mModule = shell.getModule() ;
   }
 
  
