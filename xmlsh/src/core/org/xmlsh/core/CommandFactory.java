@@ -109,7 +109,7 @@ public class CommandFactory
 		addBuiltinCommand("xmkpipe" , xmkpipe.class);
 		addBuiltinCommand("printvar" , printvar.class);
 		addBuiltinCommand("jsonread" , jsonread.class);
-    addBuiltinCommand("propread" , readconfig.class);
+        addBuiltinCommand("propread" , readconfig.class);
 		addBuiltinCommand("trap" , trap.class);
 
 
@@ -253,14 +253,14 @@ public class CommandFactory
 	}*/
 
 
-	public ScriptCommand		getScript( Shell shell , String name, SourceMode sourceMode , SourceLocation loc ) throws IOException, CoreException
+	public ScriptSource		getScriptSource( Shell shell , String name, SourceMode sourceMode ) throws IOException, CoreException
 	{
 		File scriptFile = null;
 
 		// If name has a scheme try that first
 		URL url =  Util.tryURL(name);
 		if( url != null )
-			return getScript( shell , url , name , sourceMode , loc );
+			return getScriptSource( shell , url , name  );
 
 
 		// If ends with .xsh OR we are in source mode try it
@@ -282,7 +282,18 @@ public class CommandFactory
 			}
 		if( scriptFile == null )
 			return null ;
-		return getScript( shell , scriptFile.toURI().toURL(), scriptFile.getPath() , sourceMode , loc );
+		return getScriptSource( shell , scriptFile.toURI().toURL(), scriptFile.getPath() );
+
+	}
+	
+	
+	public ScriptCommand		getScript( Shell shell , String name, SourceMode sourceMode , SourceLocation loc ) throws IOException, CoreException
+	{
+		
+		ScriptSource source = getScriptSource( shell , name , sourceMode );
+		if( source == null )
+			return null;
+		return new ScriptCommand(  sourceMode , loc , shell.getModule() , source  );
 
 	}
 
@@ -404,13 +415,28 @@ public class CommandFactory
 		return null  ;	
 	}
 
+	public ScriptSource getScriptSource(Shell shell, URL url , String name ) throws CoreException, IOException {
+		
+		return  new ScriptSource(name , url , shell.getInputTextEncoding() );
+
+	}
+
+	public ScriptSource getScriptSource(Shell shell, File file, String name ) throws CoreException, IOException {
+		
+		return new ScriptSource(name,file.toURI().toURL(), shell.getInputTextEncoding() );
+
+	}
+	
+
 	public ScriptCommand getScript(Shell shell, URL url , String name, SourceMode sourceMode, SourceLocation loc) throws CoreException, IOException {
-		return new ScriptCommand(  sourceMode , loc , shell.getModule() , new ScriptSource(name , url , shell.getInputTextEncoding()) );
+		
+		return new ScriptCommand(  sourceMode , loc , shell.getModule() , getScriptSource(shell , url , name) );
 
 	}
 
 	public ScriptCommand getScript(Shell shell, File file, String name, SourceMode sourceMode, SourceLocation loc) throws CoreException, IOException {
-		return new ScriptCommand(  sourceMode , loc , shell.getModule() , new ScriptSource(name,file.toURI().toURL(), shell.getInputTextEncoding()) );
+		
+		return new ScriptCommand(  sourceMode , loc , shell.getModule() , getScriptSource(shell , file , name ));
 
 	}
 

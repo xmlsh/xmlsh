@@ -55,16 +55,6 @@ public class ScriptCommand implements ICommand {
 	}
 
 
-	/*
-	public ScriptCommand( File script, SourceMode sourceMode , SourceLocation location) throws FileNotFoundException, MalformedURLException
-	{
-		mScriptURL = script.toURI().toURL();
-		mScriptName =  name == null ?  FileUtils.toJavaPath(script.getPath()) : name ;
-		mSourceMode = sourceMode;
-		mLocation = location ;
-	}
-	*/
-
 	public ScriptCommand( SourceMode sourceMode, SourceLocation location, IModule module , ScriptSource source ) throws FileNotFoundException
 	{
 		mSource = source;
@@ -74,17 +64,6 @@ public class ScriptCommand implements ICommand {
 
 	}
 	
-
-	/*
-	 * Script from literal string (eval)
-	 */
-	public ScriptCommand( SourceMode sourceMode , IModule module,  ScriptSource source ) throws UnsupportedEncodingException
-	{
-		mSource = source ;
-		mSourceMode = sourceMode ;
-		mModule = module ;
-
-	}
 
 
 	@Override

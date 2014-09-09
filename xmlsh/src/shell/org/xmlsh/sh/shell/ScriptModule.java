@@ -9,16 +9,18 @@ import org.xmlsh.core.ICommand;
 import org.xmlsh.core.IFunction;
 import org.xmlsh.core.IFunctionDecl;
 import org.xmlsh.core.ScriptCommand;
+import org.xmlsh.core.ScriptSource;
 import org.xmlsh.core.XValue;
+import org.xmlsh.core.ScriptCommand.SourceMode;
 
 public class ScriptModule extends AbstractModule
 {
 
-  private ScriptCommand mScript ; 
+  private ScriptSource mScript ; 
   private Shell.StaticContext mStaticContext;
   
   
-  protected ScriptModule(Shell shell, ScriptCommand script , String prefix, String nameuri ) throws IOException, CoreException
+  protected ScriptModule(Shell shell, ScriptSource script , String prefix, String nameuri ) throws IOException, CoreException
   {
     super(shell,nameuri , prefix);
 
@@ -49,7 +51,11 @@ public class ScriptModule extends AbstractModule
       if( args != null )
         sh.setArgs(args);
       
-      if(  mScript.run(sh, getName(), args) != 0 )
+      ScriptCommand cmd = new ScriptCommand( 
+    		  SourceMode.IMPORT ,  shell.getLocation(), shell.getModule() , mScript 
+    		  );
+      
+      if(  cmd.run(sh, getName(), args) != 0 )
         shell.printErr("Failed to init script:" + getName() );
       else {
          importContext( sh );
