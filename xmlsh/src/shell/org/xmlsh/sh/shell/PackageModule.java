@@ -250,7 +250,7 @@ public class PackageModule extends AbstractModule
     URL scriptURL= getCommandResource(scriptName);
     if(scriptURL != null)
 
-      return new ScriptCommand(SourceMode.RUN, null , this,  new ScriptSource(scriptName,scriptURL,mEncoding));
+      return new ScriptCommand(new ScriptSource(scriptName,scriptURL,mEncoding), SourceMode.RUN , null,  this);
 
     return null;
 

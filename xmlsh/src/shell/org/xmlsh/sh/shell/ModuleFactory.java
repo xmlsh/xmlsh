@@ -42,7 +42,7 @@ public class ModuleFactory
     {
        ScriptSource script  = CommandFactory.getInstance().getScriptSource(shell,nameuri ,SourceMode.IMPORT);
        if( script != null )
-         mod = createScriptModule(shell , script , prefix , nameuri );
+         mod = createScriptModule(shell ,prefix, script , nameuri );
     } 
     if( mod == null )
         mod = createExternalModule(shell, prefix, nameuri , nameURI,at);
@@ -54,9 +54,9 @@ public class ModuleFactory
 
 
 
-  public static IModule createScriptModule(Shell shell, ScriptSource script , String prefix, String nameuri ) throws CoreException, IOException
+  public static IModule createScriptModule(Shell shell, String prefix, ScriptSource script , String nameuri ) throws CoreException, IOException
   {
-    return new ScriptModule(shell, script, prefix, nameuri );
+    return new ScriptModule(shell, prefix, script, nameuri );
   }
 
 

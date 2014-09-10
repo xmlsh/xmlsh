@@ -12,25 +12,31 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 
+import net.sf.saxon.trans.UncheckedXPathException;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.xmlsh.sh.core.ICommandExpr;
 import org.xmlsh.sh.core.SourceLocation;
 import org.xmlsh.sh.shell.IModule;
+import org.xmlsh.sh.shell.ScriptModule;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.sh.shell.StaticContext;
 
 public class FunctionCommand implements ICommand {
 
 	String				mName;
 	ICommandExpr			 	mFunction;
 	SourceLocation  	mLocation;
+	IModule      mModule;
 	private static Logger mLogger = LogManager.getLogger();
 
-	public FunctionCommand( String name , ICommandExpr func ,  SourceLocation loc )
+	public FunctionCommand( IModule module, String name , ICommandExpr func ,  SourceLocation loc )
 	{
 		mName = name ;
 		mFunction = func ;
 		mLocation = loc ;
+		mModule = module;
 	}
 	@Override
 	public URL getURL() throws MalformedURLException {
@@ -60,8 +66,7 @@ public class FunctionCommand implements ICommand {
 
 	@Override
 	public IModule getModule() {
-		mLogger.warn("TODO: getModule UNIMPLEMENTED called on FunctionCommand ");
-		return null;
+		return mModule ;
 	}
 
 
@@ -94,7 +99,11 @@ public class FunctionCommand implements ICommand {
   public void print(PrintWriter w, boolean bExec)
   {
     w.print(mName);
-  }	
+  }
+@Override
+public StaticContext getStaticContext() {
+	return mModule == null ? null : mModule.getStaticContext();
+}	
 
 
 }

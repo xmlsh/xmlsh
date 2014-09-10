@@ -18,3 +18,4 @@ function run_child() {
 }
 
 echo initializing A=$A B=$B
+declare -f

@@ -60,7 +60,7 @@ public class EvalScriptExpr extends CommandExpr {
 		shell = shell.clone();
 		ScriptCommand cmd = null;
 		try {
-			cmd = new ScriptCommand( SourceMode.SOURCE , shell.getLocation() , shell.getModule() , new ScriptSource( getName() , mCommand  ) );
+			cmd = new ScriptCommand( new ScriptSource( getName() , mCommand  ) , SourceMode.SOURCE , shell.getLocation() , shell.getModule() );
 			return cmd.run(  shell, "", null );
 
 		} finally {

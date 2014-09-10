@@ -12,6 +12,8 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.xmlsh.core.CommandFactory;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.EvalEnv;
@@ -20,8 +22,10 @@ import org.xmlsh.core.IFunctionDecl;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.grammar.Token;
+import org.xmlsh.sh.shell.IModule;
 import org.xmlsh.sh.shell.ParseResult;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.sh.shell.StaticContext;
 import org.xmlsh.util.Util;
 
 /*
@@ -34,6 +38,7 @@ public class FunctionCallWord extends Word
 	String	 mFunction;
 	WordList	mArgs;
 	Word      mPrefix;  // expr . function( ... )
+	private static Logger mLogger = LogManager.getLogger();
 
 	public FunctionCallWord(Token t , String func, WordList args)
 	{
@@ -89,6 +94,7 @@ public class FunctionCallWord extends Word
 	protected ParseResult expandToResult(Shell shell, EvalEnv env, SourceLocation loc, ParseResult result)
 			throws IOException, CoreException
 			{
+       mLogger.entry();
 
 		// Try builtin functions first
 	  IFunction func = CommandFactory.getInstance().getBuiltinFunction(shell, mFunction, loc);
@@ -110,20 +116,45 @@ public class FunctionCallWord extends Word
 			for (Word arg : mArgs)
 				args.addAll(arg.expandToList(shell, argEnv, loc));
 
-		try {
+		
 
+
+		StaticContext		 saved_context = shell.getStaticContext();
+
+		try {
+			StaticContext ctx = func.getStaticContext();
+			// Cross module functiomn call 
+			if( saved_context != null && saved_context != ctx ){
+				shell.setModuleContext( ctx  );
+			}
+			
+
+			mLogger.warn("Need to also set the shell context");
+			
+			
 		  XValue xret = func.run(shell, loc , args);
 			// ?? should check ret ?
 			return EvalUtils.expandValueToResult(shell, xret, func.returnEnv(env), loc, result);
 
-		} catch (Exception e) {
-			if(e instanceof CoreException)
-				throw (CoreException) e;
-			if(e instanceof IOException)
-				throw (IOException) e;
+		} 
+		catch( CoreException | IOException e) {
+			throw e ;
+		}
+		
+		catch (Exception e) {
 			throw new CoreException(e);
 		}
-			}
+		finally{
+			mLogger.info("restoring shell context shell : {} context_saved : {}",shell,saved_context);
+			shell.retoreStaticContext(saved_context);
+		       
+			
+			mLogger.exit();
+
+		}
+			
+			
+  }
 
 }
 

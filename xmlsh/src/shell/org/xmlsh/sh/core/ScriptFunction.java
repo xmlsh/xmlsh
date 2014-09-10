@@ -5,41 +5,58 @@ import java.util.List;
 import org.xmlsh.core.EvalEnv;
 import org.xmlsh.core.IFunction;
 import org.xmlsh.core.XValue;
+import org.xmlsh.sh.shell.IModule;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.sh.shell.StaticContext;
 
-final class ScriptFunction implements IFunction
-{
-  private String mName ;
-  private ICommandExpr mBody;
-  public ScriptFunction(String name, ICommandExpr body)
-  {
-    mName = name ;
-    mBody = body ;
-  }
+/*
+ * 
+ */
+final class ScriptFunction implements IFunction {
+	private String mName;
+	private ICommandExpr mBody;
+	private IModule mModule; // containing module
 
-  @Override
-  public XValue run(Shell shell, SourceLocation loc, List<XValue> args) throws Exception
-  {
+	public ScriptFunction(String name, ICommandExpr body, IModule mod) {
+		mName = name;
+		mBody = body;
+		mModule = mod;
+	}
 
-    return shell.runCommandFunction(mName, mBody, loc, args);
+	@Override
+	public XValue run(Shell shell, SourceLocation loc, List<XValue> args)
+			throws Exception {
 
-  }
-  @Override
-  public String getName()
-  {
-    // TODO Auto-generated method stub
-    return mName;
-  }
+		return shell.runCommandFunction(mName, mBody, loc, args);
 
-  @Override
-  public EvalEnv argumentEnv(EvalEnv parent)
-  {
-    return parent.withFlagsSet(EvalEnv.commandArgsFlags());
-  }
+	}
 
-  @Override
-  public EvalEnv returnEnv(EvalEnv parent)
-  {
-    return parent.withFlagsMasked(EvalEnv.returnValueMask());
-  }
+	@Override
+	public String getName() {
+		// TODO Auto-generated method stub
+		return mName;
+	}
+
+	@Override
+	public EvalEnv argumentEnv(EvalEnv parent) {
+		return parent.withFlagsSet(EvalEnv.commandArgsFlags());
+	}
+
+	@Override
+	public EvalEnv returnEnv(EvalEnv parent) {
+		return parent.withFlagsMasked(EvalEnv.returnValueMask());
+	}
+
+	public IModule getModule() {
+		return mModule;
+	}
+
+	public void setModule(IModule module) {
+		this.mModule = module;
+	}
+
+	@Override
+	public StaticContext getStaticContext() {
+		return mModule == null ? null : mModule.getStaticContext();
+	}
 }

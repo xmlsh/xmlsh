@@ -17,6 +17,7 @@ import org.xmlsh.core.ThrowException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.IModule;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.sh.shell.StaticContext;
 import org.xmlsh.xpath.ShellContext;
 
 public class SimpleCommandExpr extends CommandExpr {
@@ -106,6 +107,7 @@ public class SimpleCommandExpr extends CommandExpr {
 	 */
 	@Override
 	public int exec(Shell shell) throws Exception {
+	       mLogger.entry(shell , this);
 
 
 
@@ -130,13 +132,18 @@ public class SimpleCommandExpr extends CommandExpr {
 
 
 		Shell		   saved_shell = null;
-		IModule		   saved_module = null;
+		StaticContext		   saved_context= null;
 
 		/*
 		 * If there is a prefix then clone the shell, otherwise just clone the IO
 		 */
-		if( mPrefix == null )
+
+
+		if( mPrefix == null ){
+			
 			shell.getEnv().saveIO();
+		}
+
 
 		else {
 			saved_shell = shell ;
@@ -144,9 +151,14 @@ public class SimpleCommandExpr extends CommandExpr {
 
 		}
 
-		saved_module = shell.getModule();
+		
+		// In case we need to restore it - get it from possibly cloned shell
+		saved_context = shell.getStaticContext();
 
 		Shell saved_context_shell = ShellContext.set( shell );
+		
+		IModule mod = shell.getModule();
+		mLogger.debug("exec command: this {} ctx: {} mod: {}" , this , saved_context , mod );
 		try {
 
 
@@ -158,9 +170,10 @@ public class SimpleCommandExpr extends CommandExpr {
 			mSuffix.exec( shell, getLocation() );
 
 			// Push the current module if its different
-			IModule module = cmd.getModule();
-			if( module != null )
-				shell.setModule(module);
+			StaticContext ctx = cmd.getStaticContext();
+			if( ctx != null && ctx != saved_context  ){
+               shell.setModuleContext(ctx);				
+			}
 
 			return cmd.run(  shell, cmdName , cmdLine );
 
@@ -176,6 +189,7 @@ public class SimpleCommandExpr extends CommandExpr {
 
 	///		mLogger.catching( e );
 			logLocation(shell);
+			// Note: shell is the cloned shell ..
 			shell.printErr("Exception running: " +  cmdName + "\n" +  e.toString() );
 
 			/*
@@ -186,15 +200,26 @@ public class SimpleCommandExpr extends CommandExpr {
 		}
 
 		finally {
+			mLogger.trace("exec finally: {}",this);
 			ShellContext.set(saved_context_shell);
+			
+			mLogger.trace("restoring saved cts: {}",saved_context);
+			shell.retoreStaticContext( saved_context);
+			
+			
 			if( ! shell.isClosed() ) {
 				if( mPrefix == null )
 					shell.getEnv().restoreIO();
 				else
-					if( saved_shell != null )
+					// Should use try-resource instead
+					if( saved_shell != null ){
 						shell.close();
-				shell.setModule( saved_module );
+					}
+					
+
 			}
+		       mLogger.exit();
+
 		}
 
 	}

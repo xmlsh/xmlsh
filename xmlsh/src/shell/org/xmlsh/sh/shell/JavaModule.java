@@ -95,6 +95,17 @@ public class JavaModule extends AbstractModule
       return EvalEnv.evalNone();
     }
 
+	@Override
+	public IModule getModule() {
+		mLogger.warn("getModule called without impl");
+		return null;
+	}
+
+	@Override
+	public StaticContext getStaticContext() {
+		return null;
+	}
+
   }
 
   private Class<?> mJavaClass;

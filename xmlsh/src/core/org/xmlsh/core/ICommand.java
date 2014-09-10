@@ -15,6 +15,7 @@ import java.util.List;
 import org.xmlsh.sh.core.SourceLocation;
 import org.xmlsh.sh.shell.IModule;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.sh.shell.StaticContext;
 
 public interface ICommand {
 	enum CommandType {
@@ -35,6 +36,7 @@ public interface ICommand {
 	public SourceLocation getLocation();
 	public void setLocation( SourceLocation loc);
     public void print(PrintWriter w, boolean bExec);
+	public StaticContext getStaticContext();
 
 
 

@@ -160,7 +160,7 @@ public class CommandFactory
 
 		IFunctionDecl func = shell.getFunctionDecl( name );
 		if( func != null )
-			return new FunctionCommand( func.getName() , func.getBody()  , loc );
+			return new FunctionCommand( func.getModule() , func.getName() , func.getBody()  , loc );
 		return null;
 	}
 
@@ -293,7 +293,7 @@ public class CommandFactory
 		ScriptSource source = getScriptSource( shell , name , sourceMode );
 		if( source == null )
 			return null;
-		return new ScriptCommand(  sourceMode , loc , shell.getModule() , source  );
+		return new ScriptCommand(  source , sourceMode , loc , shell.getModule()  );
 
 	}
 
@@ -430,13 +430,13 @@ public class CommandFactory
 
 	public ScriptCommand getScript(Shell shell, URL url , String name, SourceMode sourceMode, SourceLocation loc) throws CoreException, IOException {
 		
-		return new ScriptCommand(  sourceMode , loc , shell.getModule() , getScriptSource(shell , url , name) );
+		return new ScriptCommand(  getScriptSource(shell , url , name) , sourceMode , loc , shell.getModule() );
 
 	}
 
 	public ScriptCommand getScript(Shell shell, File file, String name, SourceMode sourceMode, SourceLocation loc) throws CoreException, IOException {
 		
-		return new ScriptCommand(  sourceMode , loc , shell.getModule() , getScriptSource(shell , file , name ));
+		return new ScriptCommand(  getScriptSource(shell , file , name ) , sourceMode , loc , shell.getModule());
 
 	}
 

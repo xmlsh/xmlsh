@@ -20,7 +20,20 @@ import org.xmlsh.util.Util;
 
  abstract class AbstractModule  implements IModule
 {
+	 
+		public String toString() {
+			return "Module: " + ( getPrefix() == null ? "" : ":" + getPrefix() ) + getName() ;
+		}
+		
+	 
   @Override
+	public StaticContext getStaticContext() {
+		
+	  mLogger.info("AbstactModule returning null StaticContext");
+	  return null;
+	}
+
+@Override
   public void close() throws IOException
   {
     mLogger.trace("Closing module {} " , getName() );
@@ -52,7 +65,7 @@ import org.xmlsh.util.Util;
   
   
   // Not static - use derived class
-  protected  final Logger mLogger = LogManager.getLogger();
+  protected  final static Logger mLogger = LogManager.getLogger();
  
   protected AbstractModule(Shell shell, String prefix )
   {

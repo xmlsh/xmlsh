@@ -17,12 +17,12 @@ public class ScriptModule extends AbstractModule
 {
 
   private ScriptSource mScript ; 
-  private Shell.StaticContext mStaticContext;
+  private StaticContext mStaticContext;
   
   
-  protected ScriptModule(Shell shell, ScriptSource script , String prefix, String nameuri ) throws IOException, CoreException
+  protected ScriptModule(Shell shell, String prefix , ScriptSource script, String nameuri ) throws IOException, CoreException
   {
-    super(shell,nameuri , prefix);
+    super(shell,prefix , nameuri );
 
     mScript = script ;
     mClassLoader = getClassLoader(null);
@@ -49,25 +49,19 @@ public class ScriptModule extends AbstractModule
 	super.onInit(shell, args);
     try ( Shell sh = shell.clone() ) {
       if( args != null )
-        sh.setArgs(args);
-      
-      ScriptCommand cmd = new ScriptCommand( 
-    		  SourceMode.IMPORT ,  shell.getLocation(), shell.getModule() , mScript 
+         sh.setArgs(args);
+         ScriptCommand cmd = new ScriptCommand( 
+
+    		  mScript ,  SourceMode.IMPORT, shell.getLocation() , this 
     		  );
       
       if(  cmd.run(sh, getName(), args) != 0 )
         shell.printErr("Failed to init script:" + getName() );
       else {
-         importContext( sh );
-
+    	  mStaticContext = sh.getExportedContext();
       }
     }
   }
-  
-  
-  private void importContext(Shell shell) {
-	  mStaticContext = shell.getExportedContext();
-}
 
 
 @Override
@@ -78,7 +72,7 @@ public class ScriptModule extends AbstractModule
     
 	IFunctionDecl func = mStaticContext.getFunctionDecl(name);
 	if( func != null )
-		return new FunctionCommand( func.getName() , func.getBody() , null  );
+		return new FunctionCommand( this ,  func.getName() , func.getBody() , null  );
 	return null ;
 	
   }
@@ -113,5 +107,11 @@ public class ScriptModule extends AbstractModule
   {
     return getName();
   }
+
+
+@Override
+public StaticContext getStaticContext() {
+	return mStaticContext ;
+}
 
 }

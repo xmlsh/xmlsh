@@ -7,11 +7,13 @@
 package org.xmlsh.core;
 
 import org.xmlsh.sh.core.ICommandExpr;
+import org.xmlsh.sh.shell.IModule;
 
 public interface IFunctionDecl {
 	String	getName();
 	ICommandExpr	getBody();
 	IFunction  getFunction();
+	IModule getModule();
 
 
 }

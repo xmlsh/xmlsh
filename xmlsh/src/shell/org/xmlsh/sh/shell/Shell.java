@@ -75,7 +75,6 @@ import org.xmlsh.sh.core.SourceLocation;
 import org.xmlsh.sh.grammar.ParseException;
 import org.xmlsh.sh.grammar.ShellParser;
 import org.xmlsh.sh.grammar.ShellParserReader;
-import org.xmlsh.sh.shell.Shell.StaticContext;
 import org.xmlsh.util.FileUtils;
 import org.xmlsh.util.NullInputStream;
 import org.xmlsh.util.NullOutputStream;
@@ -85,6 +84,11 @@ import org.xmlsh.xpath.EvalDefinition;
 import org.xmlsh.xpath.ShellContext;
 
 public class Shell implements AutoCloseable, Closeable {
+	
+	public String toString() {
+		return "SH" + getLocation().toString() ;
+	}
+	
 
 	// The return of a function and/or command
 	// A interger 'exit value' and a XValue - may or may not be the same
@@ -97,45 +101,6 @@ public class Shell implements AutoCloseable, Closeable {
 
 		public int mExitStatus;
 		public XValue mReturnValue;
-	}
-
-	// The 'Static Context' (similar to XQuery/XSLT)
-	// Composed of Functions, Modules, Namespaces anything which is determined
-	// at parse/compile time inherited by the shell
-	// All components of StaticContext are immutable and sharable at any one one
-	// time,
-	// but the static context itself is not imutable - it is affected by parse
-	// and runtime declarations
-	public static class StaticContext {
-		private FunctionDefinitions mFunctions = null;
-
-		public StaticContext(StaticContext that) {
-			if( that.mFunctions != null)
-			   mFunctions = new FunctionDefinitions(that.mFunctions);
-			else
-				mFunctions = null ;
-		}
-
-		public StaticContext() {
-			
-		}
-
-		public FunctionDefinitions getFunctions() {
-			return mFunctions;
-		}
-
-		public void declareFunction(IFunctionDecl func) {
-			if (mFunctions == null)
-				mFunctions = new FunctionDefinitions();
-			mFunctions.put(func.getName(), func);
-		}
-
-		public IFunctionDecl getFunctionDecl(String name) {
-			if (mFunctions == null)
-				return null;
-			return mFunctions.get(name);
-		}
-
 	}
 
 	class CallStackEntry {
@@ -164,7 +129,7 @@ public class Shell implements AutoCloseable, Closeable {
 
 	// Script functons
 	private FunctionDefinitions getFunctions() {
-		return getStaticContext(false).getFunctions();
+		return getStaticContext(false).getFunctions(true);
 	}
 
 	private XEnvironment mEnv = null;
@@ -192,10 +157,7 @@ public class Shell implements AutoCloseable, Closeable {
 	// Depth of conditions used for 'throw on error'
 	private int mConditionDepth = 0;
 
-	private Modules mModules = null;
 
-	// current module
-	private IModule mModule = null;
 
 	// Current classloader
 	private ClassLoader mClassLoader = null;
@@ -223,6 +185,7 @@ public class Shell implements AutoCloseable, Closeable {
 
 	// Special flag/marker indicating a return
 	private final XValue mReturnFlag = XValue.nullValue();
+	private Modules mModules;
 
 	public static void uninitialize() {
 		if (!bInitialized)
@@ -252,16 +215,15 @@ public class Shell implements AutoCloseable, Closeable {
 		mOpts = new ShellOpts();
 		mSavedCD = System.getProperty(ShellConstants.PROP_USER_DIR);
 		mEnv = new XEnvironment(this, bUseStdio);
-		mModules = new Modules(this);
 		mSession = new SessionEnvironment();
 		// Add xmlsh commands
-		mModules.declarePackageModule(null, "xmlsh", Arrays.asList(
-				"org.xmlsh.internal.commands", "org.xmlsh.internal.functions"),
-				CommandFactory.kCOMMANDS_HELP_XML, null);
+		getModules().declarePackageModule(this, null, "xmlsh",
+				Arrays.asList(
+						"org.xmlsh.internal.commands", "org.xmlsh.internal.functions"), CommandFactory.kCOMMANDS_HELP_XML, null);
 
 		setGlobalVars();
+		mStaticContext = null ;
 
-		mModule = null; // no current module
 		ShellContext.set(this); // cur thread active shell
 
 	}
@@ -408,12 +370,8 @@ public class Shell implements AutoCloseable, Closeable {
 
 		mSavedCD = System.getProperty(ShellConstants.PROP_USER_DIR);
 
-		if (that.getStaticContext(false) != null)
-			setStaticContext(new StaticContext(that.getStaticContext(false)));
-
-		mModules = new Modules(this, that.mModules);
-
-		mModule = that.mModule;
+		if ( mStaticContext == null)
+			mStaticContext = new StaticContext(that.getStaticContext(false));
 
 		// Pass through the Session Enviornment, keep a reference
 		mSession = that.mSession;
@@ -463,8 +421,8 @@ public class Shell implements AutoCloseable, Closeable {
 			mSession = null;
 		}
 
-		if (mModules != null)
-			Util.safeRelease(mModules);
+		if (getModules() != null)
+			Util.safeRelease(getModules());
 	}
 
 	private void notifyChildClose(Shell shell) {
@@ -1513,8 +1471,8 @@ public class Shell implements AutoCloseable, Closeable {
 		return getStaticContext(false).getFunctionDecl(name);
 	}
 
-	public Iterable<IModule> getModules() {
-		return mModules;
+	public Modules getModules() {
+		return getStaticContext(true).getModules(true);
 	}
 
 	/*
@@ -1625,14 +1583,14 @@ public class Shell implements AutoCloseable, Closeable {
 	public boolean importModule(String moduledef, XValue at, List<XValue> init)
 			throws Exception {
 
-		return mModules.declare(this, moduledef, at, init);
+		return getModules().declare(this, moduledef, at, init);
 
 	}
 
 	public boolean importScript(String script, XValue at, List<XValue> init)
 			throws Exception {
 
-		return mModules.declare(this, script, at, init);
+		return getModules().declare(this, script, at, init);
 
 	}
 
@@ -1641,8 +1599,8 @@ public class Shell implements AutoCloseable, Closeable {
 		// TODO: Help needs better placement
 		String sHelp = packages.get(0).replace('.', '/') + "/commands.xml";
 
-		return mModules.declare(ModuleFactory.createPackageModule(this, prefix,
-				name, packages, sHelp), null);
+		return getModules().declare(this, ModuleFactory.createPackageModule(this, prefix,
+						name, packages, sHelp), null);
 	}
 
 	public void importJava(XValue uris) throws CoreException {
@@ -1738,13 +1696,12 @@ public class Shell implements AutoCloseable, Closeable {
 
 	}
 
-	public void setModule(IModule module) {
-		mModule = module;
-
-	}
-
 	public IModule getModule() {
-		return mModule;
+		if( mStaticContext != null )
+			return mStaticContext.getModule();
+		else
+			return null;
+		
 	}
 
 	/**
@@ -1781,7 +1738,7 @@ public class Shell implements AutoCloseable, Closeable {
 		if (url != null)
 			return url;
 
-		for (IModule m : mModules) {
+		for (IModule m : getModules()) {
 			url = m.getResource(res);
 			if (url != null)
 				return url;
@@ -2085,17 +2042,24 @@ public class Shell implements AutoCloseable, Closeable {
 	}
 
 	public IModule getModuleByPrefix(String prefix) {
-		return mModules.getModuleByPrefix(prefix);
+		return getModules().getModuleByPrefix(prefix);
 	}
 
 	public FunctionDefinitions getFunctionDelcs() {
-
-		return new FunctionDefinitions(/* context */);
-
+		return getStaticContext(true).getFunctions(true) ;
 	}
 
+	/*
+	 * When a script module is imported - parts of the static context are exported so they can be
+	 * re-imported when functions from the script are run
+	 */
 	public StaticContext getExportedContext() {
-		return getStaticContext(true);
+		StaticContext  c = getStaticContext(false);
+		if( c == null )
+			return null ;
+		
+		
+		return c.exportContext() ;
 	}
 
 	private StaticContext getStaticContext(boolean bCreate) {
@@ -2103,10 +2067,35 @@ public class Shell implements AutoCloseable, Closeable {
 			mStaticContext = new StaticContext();
 		return mStaticContext;
 	}
+	
+	
+	/*
+	 * Associates the current shell with an associated module and any static context 
+	 * it may have from when it was initialized.
+	 */
 
-	private void setStaticContext(StaticContext staticContext) {
-		mStaticContext = staticContext;
+	public void setModuleContext(StaticContext staticContext) {
+	    mLogger.entry(this,mStaticContext, staticContext);
+
+		//getStaticContext(true).importContext( staticContext );
+		
+		mStaticContext = staticContext ;
 	}
+
+	public StaticContext getStaticContext() {
+
+		return getStaticContext(true);
+	}
+
+	public void retoreStaticContext(StaticContext staticContext) {
+	    mLogger.entry(this,mStaticContext, staticContext);
+
+		mStaticContext = staticContext ;
+
+		
+	}
+
+
 
 }
 //

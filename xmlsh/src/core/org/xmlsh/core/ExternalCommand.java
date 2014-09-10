@@ -23,6 +23,7 @@ import org.xmlsh.sh.shell.IModule;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.sh.shell.ShellConstants;
+import org.xmlsh.sh.shell.StaticContext;
 import org.xmlsh.util.PortCopier;
 import org.xmlsh.util.StreamCopier;
 import org.xmlsh.util.Util;
@@ -239,6 +240,11 @@ public class ExternalCommand implements ICommand {
     w.print(  mCommandFile.getPath() );
     
   }
+@Override
+public StaticContext getStaticContext() {
+	// TODO Auto-generated method stub
+	return null;
+}
 
 
 

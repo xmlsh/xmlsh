@@ -40,6 +40,7 @@ public interface IModule extends Closeable
   public boolean definesSameModule(IModule mod);
   public String describe();
   public URL getResource(String res);
+  public StaticContext getStaticContext();
 
 
 }

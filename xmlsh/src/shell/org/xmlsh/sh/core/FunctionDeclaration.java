@@ -8,14 +8,23 @@ package org.xmlsh.sh.core;
 
 import java.io.PrintWriter;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.xmlsh.core.IFunction;
 import org.xmlsh.core.IFunctionDecl;
+import org.xmlsh.sh.shell.IModule;
 import org.xmlsh.sh.shell.Shell;
 
 public class FunctionDeclaration extends CommandExpr
 {
-  private ICommandExpr mBody;
+	
+	public String toString() {
+		return "FuncDecl: " + mName ;
+	}
 
+	
+  private ICommandExpr mBody;
+  private static Logger mLogger = LogManager.getLogger();
   @Override
   public boolean isSimple()
   {
@@ -45,9 +54,15 @@ public class FunctionDeclaration extends CommandExpr
   @Override
   public int exec(Shell shell) throws Exception
   {
-
+    mLogger.entry( this , shell);
+  	final IModule module = shell.getModule();
+  	
     shell.declareFunction(new IFunctionDecl()
       {
+		public String toString() {
+			return "new FuncDelc: " + mName ;
+		}
+
 
         @Override
         public String getName()
@@ -65,8 +80,13 @@ public class FunctionDeclaration extends CommandExpr
         @Override
         public IFunction getFunction()
         {
-          return new ScriptFunction(mName,mBody);
+          return new ScriptFunction(mName,mBody,module);
         }
+
+		@Override
+		public IModule getModule() {
+			return module;
+		}
       });
     return 0;
   }

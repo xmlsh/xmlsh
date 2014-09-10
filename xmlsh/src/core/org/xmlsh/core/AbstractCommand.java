@@ -18,14 +18,23 @@ import javax.xml.transform.Source;
 
 import org.apache.logging.log4j.Logger;
 import org.xmlsh.sh.core.SourceLocation;
+import org.xmlsh.sh.shell.IModule;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.sh.shell.StaticContext;
 import org.xmlsh.util.HelpUsage;
 import org.xmlsh.util.Util;
 
 public abstract class AbstractCommand implements ICommand {
 
-  //@TODO Temporary
+  @Override
+	public StaticContext getStaticContext() {
+		IModule m = getModule(); 
+		return m == null ? null : m.getStaticContext();
+	}
+
+
+	//@TODO Temporary
 	@Override
   public void print(PrintWriter w, boolean bExec)
   {

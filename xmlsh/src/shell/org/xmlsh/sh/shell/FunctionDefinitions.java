@@ -12,6 +12,7 @@ import org.xmlsh.util.NameValueMap;
 
 // Script funcitons
 @SuppressWarnings("serial")
+public
 class FunctionDefinitions extends NameValueMap<IFunctionDecl>
 {
 

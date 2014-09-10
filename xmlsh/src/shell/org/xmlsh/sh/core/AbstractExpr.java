@@ -10,6 +10,12 @@ import org.xmlsh.util.Util;
 
 public abstract class AbstractExpr 
 {
+	
+	public String toString() {
+		return "Expr: " + getName();
+	}
+	
+	
   protected String mName  = null ;
 
   public AbstractExpr(String name)
