@@ -21,77 +21,34 @@ import org.xmlsh.util.Util;
  abstract class AbstractModule  implements IModule
 {
 	 
-		public String toString() {
-			return "Module: " + ( getPrefix() == null ? "" : ":" + getPrefix() ) + getName() ;
-		}
+		protected String mName;
 		
 	 
-  @Override
-	public StaticContext getStaticContext() {
-		
-	  mLogger.info("AbstactModule returning null StaticContext");
-	  return null;
-	}
+  protected ClassLoader mClassLoader; // Classloader for this module
 
-@Override
+protected URL mHelpURL = null;
+
+  private HashMap<String, Class<?>> mClassCache = new HashMap<String, Class<?>>();
+
+  protected HashMap<String, Boolean> mScriptCache = new HashMap<String, Boolean>();
+
+  
+
+  // Not static - use derived class
+  protected  final static Logger mLogger = LogManager.getLogger();
+  protected AbstractModule()
+  {
+  }
+  protected AbstractModule(String name)
+  {
+    mName = name;
+  }
+
+  @Override
   public void close() throws IOException
   {
     mLogger.trace("Closing module {} " , getName() );
   }
-
-  @Override
-  public void onLoad(Shell shell)
-  {
-    mLogger.trace("module {} onLoad()" , getName() );
-
-  }
-
-  @Override
-  public void onInit(Shell shell, List<XValue> args) throws Exception
-  {
-    mLogger.trace("module {} onInit()" , getName() );
-
-  }
-
-  
-
-  protected String mName;
-  protected String mPrefix; // may be null
-  protected ClassLoader mClassLoader; // Classloader for this module
-  protected URL mHelpURL = null;
-
-  private HashMap<String, Class<?>> mClassCache = new HashMap<String, Class<?>>();
-  protected HashMap<String, Boolean> mScriptCache = new HashMap<String, Boolean>();
-  
-  
-  // Not static - use derived class
-  protected  final static Logger mLogger = LogManager.getLogger();
- 
-  protected AbstractModule(Shell shell, String prefix )
-  {
-    mPrefix = prefix;
-  }
-
-  protected AbstractModule(Shell shell,String prefix, String name)
-  {
-	mPrefix = prefix;
-    mName = name;
-  }
-
- 
-
-  protected Class<?> findClass(String name, List<String> packages)
-  {
-     for( String pkg : packages ) {
-       Class<?>  cls = findClass( pkg + "." + name );
-       if(cls != null )
-         return cls ;
-     }
-    return null;
-  }
-
-  
-
   protected Class<?> findClass(String className)
   {
 
@@ -113,8 +70,18 @@ import org.xmlsh.util.Util;
     return cls;
 
   }
-
   
+  
+  protected Class<?> findClass(String name, List<String> packages)
+  {
+     for( String pkg : packages ) {
+       Class<?>  cls = findClass( pkg + "." + name );
+       if(cls != null )
+         return cls ;
+     }
+    return null;
+  }
+ 
   protected ClassLoader getClassLoader(List<URL> classpath)
   {
     if(classpath == null || classpath.size() == 0)
@@ -124,7 +91,6 @@ import org.xmlsh.util.Util;
 
   }
 
-  
   /*
    * (non-Javadoc)
    * 
@@ -135,6 +101,8 @@ import org.xmlsh.util.Util;
   {
     return mHelpURL;
   }
+
+ 
 
   /*
    * (non-Javadoc)
@@ -147,35 +115,7 @@ import org.xmlsh.util.Util;
     return mName;
   }
 
- 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.xmlsh.sh.shell.IModule#getPrefix()
-   */
-  @Override
-  public String getPrefix()
-  {
-    return mPrefix;
-  }
-
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.xmlsh.sh.shell.IModule#isDefault()
-   */
-  @Override
-  public boolean isDefault()
-  {
-    return Util.isEmpty(mPrefix);
-  }
-
-  protected String toResourceName(String name,String pkg)
-  {
-    String resource = pkg.replace('.', '/') + "/" + name;
-    return resource;
-  }
+  
 
   public URL getResource(String res)
   {
@@ -187,6 +127,41 @@ import org.xmlsh.util.Util;
       res = res.substring(1);
     return mClassLoader.getResource(res);
   }
+
+  
+  @Override
+	public ModuleContext getStaticContext() {
+	  
+	  return mLogger.exit(null ); // NO default static context
+	}
+
+  
+
+  @Override
+  public void onInit(Shell shell, List<XValue> args) throws Exception
+  {
+    mLogger.trace("module {} onInit()" , getName() );
+
+  }
+
+
+
+  @Override
+  public void onLoad(Shell shell)
+  {
+    mLogger.trace("module {} onLoad()" , getName() );
+
+  }
+
+  protected String toResourceName(String name,String pkg)
+  {
+    String resource = pkg.replace('.', '/') + "/" + name;
+    return resource;
+  }
+
+  public String toString() {
+	return describe();
+}
 }
 
 //

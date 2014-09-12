@@ -26,7 +26,7 @@ import org.xmlsh.sh.grammar.ParseException;
 import org.xmlsh.sh.shell.IModule;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.sh.shell.StaticContext;
+import org.xmlsh.sh.shell.ModuleContext;
 import org.xmlsh.util.FileUtils;
 import org.xmlsh.util.Util;
 
@@ -58,10 +58,13 @@ public class ScriptCommand implements ICommand {
 
 	public ScriptCommand( ScriptSource source, SourceMode sourceMode, SourceLocation location , IModule module ) throws FileNotFoundException
 	{
+		mLogger.entry(source,sourceMode,location,module);
+		assert( module != null );
 		mSource = source;
 		mSourceMode = sourceMode;
 		mLocation = location ;
 		mModule = module ;
+		
 
 	}
 	
@@ -69,6 +72,9 @@ public class ScriptCommand implements ICommand {
 
 	@Override
 	public int run(Shell shell, String cmd, List<XValue> args) throws ThrowException, ParseException, IOException, UnimplementedException {
+
+		mLogger.entry(shell,cmd);
+		assert( mModule != null );
 
 		try ( Reader mScriptStreamSource = getScriptSource() ){
 			
@@ -167,11 +173,6 @@ public class ScriptCommand implements ICommand {
   }
 
 
-@Override
-public StaticContext getStaticContext() {
-	return mModule == null ? null : mModule.getStaticContext();
-
-}
 
 
 

@@ -15,32 +15,29 @@ import java.util.List;
 import org.xmlsh.core.ICommand;
 import org.xmlsh.core.IFunction;
 import org.xmlsh.core.XValue;
+  
 
-public interface IModule extends Closeable 
+/*
+ * A runtime instance of a module that may have state and may be shared or duplicated
+ * in different contexts.
+ */
+public interface IModule extends Closeable, IStaticModule 
 {
   
   /*
    * Calls into the module
    */
   
-  public void onLoad(Shell shell) throws Exception;
   public void onInit(Shell shell , List<XValue> args) throws Exception;
   // close() is called for an unload
   
   /*
    * Calls TO the module
    */
-  public String getPrefix();
-  public boolean isDefault();
   public ICommand getCommandClass(String name) throws IOException;
   public IFunction getFunctionClass(String name);
-  public String getName();
-  public boolean hasHelp(String name);
   public URL getHelpURL();
-  public boolean definesSameModule(IModule mod);
-  public String describe();
-  public URL getResource(String res);
-  public StaticContext getStaticContext();
+  public ModuleContext getStaticContext();
 
 
 }

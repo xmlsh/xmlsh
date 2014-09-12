@@ -11,7 +11,7 @@ import java.util.List;
 import org.xmlsh.sh.core.SourceLocation;
 import org.xmlsh.sh.shell.IModule;
 import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.sh.shell.StaticContext;
+import org.xmlsh.sh.shell.ModuleContext;
 
 public interface IFunction
 {
@@ -21,7 +21,6 @@ public interface IFunction
   public EvalEnv argumentEnv(EvalEnv env);
   public EvalEnv returnEnv(EvalEnv env);
   public IModule	getModule();
-public StaticContext getStaticContext();
 
 
 }

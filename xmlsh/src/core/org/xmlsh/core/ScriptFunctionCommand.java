@@ -25,8 +25,6 @@ public class ScriptFunctionCommand extends AbstractBuiltinFunction implements Cl
 	private SourceLocation mLocation;
 
 
-
-
 	public ScriptFunctionCommand(String name , URL input, IModule module ) {
 		super(name);
 		mScriptURL = input;

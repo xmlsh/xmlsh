@@ -50,6 +50,14 @@ import org.xmlsh.util.Util;
     }
     return false ;
   }
+  
+  public T getByValue(V v){
+	  for( T handle : this )
+		  if( handle.get().equals(v)) 
+			  return handle;
+	  return null;
+					  
+  }
 
   
 }

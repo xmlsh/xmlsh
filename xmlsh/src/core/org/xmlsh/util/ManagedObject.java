@@ -9,6 +9,8 @@ package org.xmlsh.util;
 import java.io.Closeable;
 import java.io.IOException;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.xmlsh.core.IReleasable;
 
 
@@ -18,8 +20,14 @@ import org.xmlsh.core.IReleasable;
  */
 public abstract class ManagedObject<T> implements Closeable, IReleasable {
 
+	private static Logger  mLogger = LogManager.getLogger();
 	private		final ReferenceCounter mCounter = new ReferenceCounter();
 
+	protected ManagedObject()
+	{
+		mLogger.entry(this,mCounter);
+	}
+	
 	@Override
 	protected void finalize()
 	{
@@ -27,11 +35,15 @@ public abstract class ManagedObject<T> implements Closeable, IReleasable {
 	}
 
 	public void addRef() {
+		mLogger.entry(this,mCounter);
+
+		mLogger.entry( mCounter );
 		mCounter.addRef();
 	}
 
 	@Override
 	public synchronized boolean release() throws IOException  {
+		mLogger.entry(this,mCounter);
 		if( mCounter.release() ) {
 			close();
 			return true ;

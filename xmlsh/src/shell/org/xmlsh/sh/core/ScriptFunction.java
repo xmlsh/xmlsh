@@ -7,7 +7,7 @@ import org.xmlsh.core.IFunction;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.IModule;
 import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.sh.shell.StaticContext;
+import org.xmlsh.sh.shell.ModuleContext;
 
 /*
  * 
@@ -55,8 +55,4 @@ final class ScriptFunction implements IFunction {
 		this.mModule = module;
 	}
 
-	@Override
-	public StaticContext getStaticContext() {
-		return mModule == null ? null : mModule.getStaticContext();
-	}
 }

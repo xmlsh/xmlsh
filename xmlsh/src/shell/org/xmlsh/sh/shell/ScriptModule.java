@@ -17,12 +17,12 @@ public class ScriptModule extends AbstractModule
 {
 
   private ScriptSource mScript ; 
-  private StaticContext mStaticContext;
+  private ModuleContext mStaticContext;
   
   
   protected ScriptModule(Shell shell, String prefix , ScriptSource script, String nameuri ) throws IOException, CoreException
   {
-    super(shell,prefix , nameuri );
+    super( nameuri );
 
     mScript = script ;
     mClassLoader = getClassLoader(null);
@@ -96,11 +96,6 @@ public class ScriptModule extends AbstractModule
     return false;
   }
 
-  @Override
-  public boolean definesSameModule(IModule mod)
-  {
-    return false;
-  }
 
   @Override
   public String describe()
@@ -110,7 +105,7 @@ public class ScriptModule extends AbstractModule
 
 
 @Override
-public StaticContext getStaticContext() {
+public ModuleContext getStaticContext() {
 	return mStaticContext ;
 }
 

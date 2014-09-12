@@ -101,18 +101,13 @@ public class JavaModule extends AbstractModule
 		return null;
 	}
 
-	@Override
-	public StaticContext getStaticContext() {
-		return null;
-	}
-
   }
 
   private Class<?> mJavaClass;
 
   JavaModule(Shell shell, String prefix, URI nameURI, XValue at) throws CoreException
   {
-    super(shell,prefix);
+    super();
     List<URL> classpath = null;
     if(at != null && !at.isEmpty()) {
       classpath = new ArrayList<URL>();
@@ -156,13 +151,6 @@ public class JavaModule extends AbstractModule
     return false;
   }
 
-  @Override
-  public boolean definesSameModule(IModule mod)
-  {
-    if(mod == null || !(mod instanceof JavaModule))
-      return false;
-    return ((JavaModule) mod).mJavaClass.equals(mJavaClass);
-  }
 
   @Override
   public String describe()

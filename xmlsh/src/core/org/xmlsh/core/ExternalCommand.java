@@ -23,7 +23,7 @@ import org.xmlsh.sh.shell.IModule;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.sh.shell.ShellConstants;
-import org.xmlsh.sh.shell.StaticContext;
+import org.xmlsh.sh.shell.ModuleContext;
 import org.xmlsh.util.PortCopier;
 import org.xmlsh.util.StreamCopier;
 import org.xmlsh.util.Util;
@@ -34,11 +34,15 @@ public class ExternalCommand implements ICommand {
 
 	private		File			mCommandFile;		// command path
 	private		SourceLocation 	mLocation ;
+	private    IModule mModule ;
 
-	public ExternalCommand( File cmd , SourceLocation location )
+	public ExternalCommand( File cmd , SourceLocation location, IModule module )
 	{
+		mLogger.entry(cmd,location,module);
+		assert( module != null );
 		mCommandFile = cmd;
 		mLocation = location ;
+		mModule = module;
 	}
 	@Override
 	public URL getURL() throws MalformedURLException {
@@ -203,13 +207,6 @@ public class ExternalCommand implements ICommand {
 
 
 
-	@Override
-	public IModule getModule() {
-		mLogger.info("@TODO Calling unimplemented getModule()");
-		return null;
-		
-	}
-
 
 
 
@@ -241,9 +238,10 @@ public class ExternalCommand implements ICommand {
     
   }
 @Override
-public StaticContext getStaticContext() {
-	// TODO Auto-generated method stub
-	return null;
+public IModule getModule() {
+
+	return mModule ;
+
 }
 
 

@@ -221,7 +221,7 @@ public class HelpUsage {
 		for( IModule m : mShell.getModules() ){
 			URL url = m.getHelpURL();
 			if( url != null )
-				doHelpCommands(stdout,url,m.getPrefix(),m.getName(), bLaunch);
+				doHelpCommands(stdout,url,"",m.getName(), bLaunch);
 			bLaunch = false ;
 		}
 

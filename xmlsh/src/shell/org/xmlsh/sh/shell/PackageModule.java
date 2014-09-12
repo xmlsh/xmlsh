@@ -34,9 +34,9 @@ public class PackageModule extends AbstractModule
    * Constructor for internal modules like xlmsh
    * These dont get their own thread group
    */
-  protected PackageModule(Shell shell, String prefix, String name, List<String> packages , String helpURL)
+  protected PackageModule(Shell shell,  String name, List<String> packages , String helpURL)
   {
-    this(shell,prefix,name);
+    this(shell,name);
     mEncoding = shell.getInputTextEncoding();
     mPackages = packages;
     mClassLoader = getClassLoader(null);
@@ -44,21 +44,14 @@ public class PackageModule extends AbstractModule
     mHelpURL = mClassLoader.getResource(helpURL.replaceFirst("^/", ""));
   }
   
-  protected PackageModule( Shell shell, String prefix, String name)
+  protected PackageModule( Shell shell,  String name)
   {
-    super(shell,prefix,name);
-    mEncoding = shell.getInputTextEncoding();
-
-    
-  }
-
-
-  public PackageModule(Shell shell,String prefix)
-  {
-    super(shell,prefix);;
+    super(name);
     mEncoding = shell.getInputTextEncoding();
 
   }
+
+
   private InputStream getCommandResourceStream(String name) throws IOException
   {
 	  URL url =  getCommandResource( name);
@@ -291,16 +284,6 @@ public class PackageModule extends AbstractModule
 
   }
 
-  @Override
-  public boolean definesSameModule(IModule mod)
-  {
-    if( mod == null || ! ( mod instanceof PackageModule) )
-        return false ;
-    PackageModule pmod =  ((PackageModule)mod);
-    // Equivilence is if this module contains all packages as that
-    return mPackages.containsAll(pmod.mPackages);
-    
-  }
   private String fromReserved(String name)
   {
     if(JavaUtils.isReserved(name))

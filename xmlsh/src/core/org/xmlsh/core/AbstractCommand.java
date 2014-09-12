@@ -21,18 +21,11 @@ import org.xmlsh.sh.core.SourceLocation;
 import org.xmlsh.sh.shell.IModule;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.sh.shell.StaticContext;
+import org.xmlsh.sh.shell.ModuleContext;
 import org.xmlsh.util.HelpUsage;
 import org.xmlsh.util.Util;
 
 public abstract class AbstractCommand implements ICommand {
-
-  @Override
-	public StaticContext getStaticContext() {
-		IModule m = getModule(); 
-		return m == null ? null : m.getStaticContext();
-	}
-
 
 	//@TODO Temporary
 	@Override
@@ -42,6 +35,8 @@ public abstract class AbstractCommand implements ICommand {
 	  w.print( getName() );
 	  
   }
+	
+	
 
 
   protected static Logger mLogger = org.apache.logging.log4j.LogManager.getLogger();
@@ -51,7 +46,27 @@ public abstract class AbstractCommand implements ICommand {
 	protected SourceLocation		mLocation ;
 	private SerializeOpts mSerializeOpts = null ;
 
-	public AbstractCommand() {
+	protected IModule mModule;
+
+	@Override
+	public final IModule getModule() {
+		mLogger.entry();
+
+		assert( mModule != null );
+		return mModule;
+	}
+
+
+	public void setModule(IModule module) {
+		mLogger.entry(module);
+
+		mModule = module;
+	}
+
+
+	public AbstractCommand(IModule module) {
+		mLogger.entry(module);
+		mModule = module ;
 
 	}
 

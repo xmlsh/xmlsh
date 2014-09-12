@@ -84,9 +84,10 @@ import org.xmlsh.xpath.EvalDefinition;
 import org.xmlsh.xpath.ShellContext;
 
 public class Shell implements AutoCloseable, Closeable {
-	
+	private static volatile int __id = 0;
+	private final int _id = ++__id ;
 	public String toString() {
-		return "SH" + getLocation().toString() ;
+		return "Shell[" + _id + "]";
 	}
 	
 
@@ -125,11 +126,11 @@ public class Shell implements AutoCloseable, Closeable {
 	static Logger mLogger = LogManager.getLogger();
 	private ShellOpts mOpts;
 
-	private volatile StaticContext mStaticContext = null;
+	private volatile ModuleContext mStaticContext = null;
 
 	// Script functons
 	private FunctionDefinitions getFunctions() {
-		return getStaticContext(false).getFunctions(true);
+		return mStaticContext.getFunctions(true);
 	}
 
 	private XEnvironment mEnv = null;
@@ -185,7 +186,6 @@ public class Shell implements AutoCloseable, Closeable {
 
 	// Special flag/marker indicating a return
 	private final XValue mReturnFlag = XValue.nullValue();
-	private Modules mModules;
 
 	public static void uninitialize() {
 		if (!bInitialized)
@@ -216,13 +216,13 @@ public class Shell implements AutoCloseable, Closeable {
 		mSavedCD = System.getProperty(ShellConstants.PROP_USER_DIR);
 		mEnv = new XEnvironment(this, bUseStdio);
 		mSession = new SessionEnvironment();
+		mStaticContext = new ModuleContext( RootModule.getInstance() );
 		// Add xmlsh commands
 		getModules().declarePackageModule(this, null, "xmlsh",
 				Arrays.asList(
 						"org.xmlsh.internal.commands", "org.xmlsh.internal.functions"), CommandFactory.kCOMMANDS_HELP_XML, null);
 
 		setGlobalVars();
-		mStaticContext = null ;
 
 		ShellContext.set(this); // cur thread active shell
 
@@ -370,8 +370,7 @@ public class Shell implements AutoCloseable, Closeable {
 
 		mSavedCD = System.getProperty(ShellConstants.PROP_USER_DIR);
 
-		if ( mStaticContext == null)
-			mStaticContext = new StaticContext(that.getStaticContext(false));
+		mStaticContext = that.mStaticContext.clone(this);
 
 		// Pass through the Session Enviornment, keep a reference
 		mSession = that.mSession;
@@ -1460,19 +1459,17 @@ public class Shell implements AutoCloseable, Closeable {
 	}
 
 	public void declareFunction(IFunctionDecl func) {
-		getStaticContext(true).declareFunction(func);
+		mStaticContext.declareFunction(func);
 
 	}
 
 	public IFunctionDecl getFunctionDecl(String name) {
 
-		if (getStaticContext(false) == null)
-			return null;
-		return getStaticContext(false).getFunctionDecl(name);
+		return mStaticContext.getFunctionDecl(name);
 	}
 
 	public Modules getModules() {
-		return getStaticContext(true).getModules(true);
+		return mStaticContext.getModules(true);
 	}
 
 	/*
@@ -1596,11 +1593,11 @@ public class Shell implements AutoCloseable, Closeable {
 
 	public boolean importPackage(String prefix, String name,
 			List<String> packages) throws Exception {
-		// TODO: Help needs better placement
-		String sHelp = packages.get(0).replace('.', '/') + "/commands.xml";
-
-		return getModules().declare(this, ModuleFactory.createPackageModule(this, prefix,
-						name, packages, sHelp), null);
+		
+		
+	     String sHelp = packages.get(0).replace('.', '/') + "/commands.xml";
+		
+		return getModules().declarePackageModule(this, prefix, name, packages , sHelp, null );
 	}
 
 	public void importJava(XValue uris) throws CoreException {
@@ -1697,10 +1694,12 @@ public class Shell implements AutoCloseable, Closeable {
 	}
 
 	public IModule getModule() {
+		mLogger.entry();
+		assert( mStaticContext != null );
 		if( mStaticContext != null )
 			return mStaticContext.getModule();
-		else
-			return null;
+		assert(false);
+		return mLogger.exit(null);
 		
 	}
 
@@ -2046,27 +2045,17 @@ public class Shell implements AutoCloseable, Closeable {
 	}
 
 	public FunctionDefinitions getFunctionDelcs() {
-		return getStaticContext(true).getFunctions(true) ;
+		return mStaticContext.getFunctions(true) ;
 	}
 
 	/*
 	 * When a script module is imported - parts of the static context are exported so they can be
 	 * re-imported when functions from the script are run
 	 */
-	public StaticContext getExportedContext() {
-		StaticContext  c = getStaticContext(false);
-		if( c == null )
-			return null ;
-		
-		
-		return c.exportContext() ;
+	public ModuleContext getExportedContext() {
+		return mStaticContext.exportContext() ;
 	}
 
-	private StaticContext getStaticContext(boolean bCreate) {
-		if (mStaticContext == null && bCreate)
-			mStaticContext = new StaticContext();
-		return mStaticContext;
-	}
 	
 	
 	/*
@@ -2074,7 +2063,7 @@ public class Shell implements AutoCloseable, Closeable {
 	 * it may have from when it was initialized.
 	 */
 
-	public void setModuleContext(StaticContext staticContext) {
+	private void setModuleContext(ModuleContext staticContext) {
 	    mLogger.entry(this,mStaticContext, staticContext);
 
 		//getStaticContext(true).importContext( staticContext );
@@ -2082,18 +2071,45 @@ public class Shell implements AutoCloseable, Closeable {
 		mStaticContext = staticContext ;
 	}
 
-	public StaticContext getStaticContext() {
+	public ModuleContext getStaticContext() {
 
-		return getStaticContext(true);
+		assert( mStaticContext != null);
+		return mStaticContext;
 	}
 
-	public void retoreStaticContext(StaticContext staticContext) {
-	    mLogger.entry(this,mStaticContext, staticContext);
 
-		mStaticContext = staticContext ;
+	public Iterable<IModule> getDefaultModules() {
+		mLogger.entry();
 
+		return getStaticContext().getDefaultModules();
+	
+	}
+
+	public void pushModuleContext(ModuleContext ctx) 
+	{
+		mLogger.entry(ctx);
+	  assert( ctx != null );
+	  if( ctx == null )
+		  throw new UnsupportedOperationException("Cant push a null context");
+	  
+	   mStaticContext = mStaticContext.pushContext( ctx );
+	}
+	
+	public ModuleContext popModuleContext()
+	{
+		mLogger.entry();
+		ModuleContext ctx = mStaticContext ;
+		assert( ctx != null );
+		  if( ctx == null )
+			  throw new UnsupportedOperationException("Cant push a null context");
+
+	  
+	    mStaticContext = mStaticContext.popContext();
+		assert( mStaticContext != null );
+		return ctx ;
 		
 	}
+
 
 
 

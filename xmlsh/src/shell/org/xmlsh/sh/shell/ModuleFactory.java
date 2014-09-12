@@ -75,7 +75,7 @@ public class ModuleFactory
   
   public static IModule createPackageModule(Shell shell, String prefix, String name, List<String> pkgs, String helpURL)
   {
-    return new PackageModule(shell,prefix, name, pkgs, helpURL);
+    return new PackageModule(shell, name, pkgs, helpURL);
   }
 
 }

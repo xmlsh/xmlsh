@@ -12,6 +12,7 @@ import java.net.URLClassLoader;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -228,13 +229,24 @@ public class ximport extends BuiltinCommand
   private int listModules()
   {
 
-    for (IModule m : mShell.getModules()) {
-      String prefix = m.getPrefix();
-      if(prefix == null)
-        mShell.printOut(m.getName() + " [" + m.describe() + "]");
-      else mShell.printOut(prefix + "=" + m.getName() + " [" + m.describe() + "]");
-
+	  Set<String> prefixes = mShell.getModules().getPrefixes();
+    for (IModule m : mShell.getModules()  ) {
+   	    StringBuilder sb = new StringBuilder();
+    	for( String p : prefixes ){
+    		IModule pm = mShell.getModuleByPrefix(p) ;
+    		if( pm.equals( m )){
+    			if( sb.length() != 0);
+    			 sb.append(",");
+    			sb.append(p).append("=");
+    		}    			
+    	}
+    	sb.append(" ").append(m.getName()).append("[").append(m.describe()).append("]");
+        mShell.printOut( sb.toString() );
+    
     }
+    	
+  
+
     return 0;
 
   }

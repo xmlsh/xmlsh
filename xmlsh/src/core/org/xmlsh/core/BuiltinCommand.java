@@ -11,11 +11,17 @@ import java.net.URL;
 import java.util.List;
 
 import org.xmlsh.sh.shell.IModule;
+import org.xmlsh.sh.shell.RootModule;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.xpath.ShellContext;
 
 
 public abstract class BuiltinCommand extends AbstractCommand  {
+
+	// TODO : get Module from package or constructor
+	public BuiltinCommand() {
+		super(RootModule.getInstance());
+	}
 
 	private String mName;
 
@@ -34,11 +40,6 @@ public abstract class BuiltinCommand extends AbstractCommand  {
 	}
 
 
-	@Override
-	public IModule getModule()
-	{
-		return null;
-	}
 
 	abstract protected int run( List<XValue> args) throws Exception;
 

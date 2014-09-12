@@ -25,7 +25,7 @@ import org.xmlsh.sh.grammar.Token;
 import org.xmlsh.sh.shell.IModule;
 import org.xmlsh.sh.shell.ParseResult;
 import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.sh.shell.StaticContext;
+import org.xmlsh.sh.shell.ModuleContext;
 import org.xmlsh.util.Util;
 
 /*
@@ -119,13 +119,15 @@ public class FunctionCallWord extends Word
 		
 
 
-		StaticContext		 saved_context = shell.getStaticContext();
-
+		boolean popContext = false ;
 		try {
-			StaticContext ctx = func.getStaticContext();
+			IModule module = func.getModule();
+			assert( module != null );
+			ModuleContext ctx = module.getStaticContext();
 			// Cross module functiomn call 
-			if( saved_context != null && saved_context != ctx ){
-				shell.setModuleContext( ctx  );
+			if( ctx != null ){
+				popContext = true ;
+				shell.pushModuleContext(ctx);
 			}
 			
 
@@ -145,10 +147,14 @@ public class FunctionCallWord extends Word
 			throw new CoreException(e);
 		}
 		finally{
-			mLogger.info("restoring shell context shell : {} context_saved : {}",shell,saved_context);
-			shell.retoreStaticContext(saved_context);
-		       
-			
+			if( popContext ){
+				mLogger.info("Popping shell context");
+				ModuleContext ctx = shell.popModuleContext();
+				assert( ctx != null );
+				
+				// TODO: should I push this back into the mdoule ?
+			}
+				
 			mLogger.exit();
 
 		}

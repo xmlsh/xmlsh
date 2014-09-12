@@ -12,12 +12,16 @@ import java.net.URL;
 import java.util.List;
 
 import org.xmlsh.sh.shell.IModule;
+import org.xmlsh.sh.shell.RootModule;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.xpath.ShellContext;
 
 public abstract class XCommand extends AbstractCommand {
 
-	private IModule mModule;
+	public XCommand() {
+		super(RootModule.getInstance());
+	}
+
 
 
 	protected void throwInvalidArg(String string)
@@ -27,11 +31,6 @@ public abstract class XCommand extends AbstractCommand {
 
 	}
 
-	@Override
-	public IModule getModule()
-	{
-		return mModule;
-	}
 
 	@Override
 	public String getName()
@@ -115,12 +114,6 @@ public abstract class XCommand extends AbstractCommand {
 	@Override
 	public CommandType getType() {
 		return CommandType.CMD_TYPE_INTERNAL ;
-	}
-
-
-	public void setModule(IModule module) {
-		mModule = module ;
-
 	}
 
 	@Override

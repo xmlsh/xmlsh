@@ -17,7 +17,7 @@ import org.xmlsh.core.ThrowException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.IModule;
 import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.sh.shell.StaticContext;
+import org.xmlsh.sh.shell.ModuleContext;
 import org.xmlsh.xpath.ShellContext;
 
 public class SimpleCommandExpr extends CommandExpr {
@@ -38,6 +38,7 @@ public class SimpleCommandExpr extends CommandExpr {
 	 */
 	public SimpleCommandExpr( Word first, WordList args , IORedirectList redir ) {
 
+		mLogger.entry( first , args );
 		WordList cmdline = new WordList();
 		cmdline.add(first);
 		cmdline.addAll(args);
@@ -73,6 +74,7 @@ public class SimpleCommandExpr extends CommandExpr {
 
 	public SimpleCommandExpr(CommandPrefixExpr prefix , Word command, CommandSuffixExpr suffix )
 	{
+		mLogger.entry( prefix , command , suffix );
 
 		mPrefix = prefix;
 		mCommand = command;
@@ -107,7 +109,7 @@ public class SimpleCommandExpr extends CommandExpr {
 	 */
 	@Override
 	public int exec(Shell shell) throws Exception {
-	       mLogger.entry(shell , this);
+	       mLogger.entry(mCommand);
 
 
 
@@ -132,12 +134,9 @@ public class SimpleCommandExpr extends CommandExpr {
 
 
 		Shell		   saved_shell = null;
-		StaticContext		   saved_context= null;
-
 		/*
 		 * If there is a prefix then clone the shell, otherwise just clone the IO
 		 */
-
 
 		if( mPrefix == null ){
 			
@@ -153,12 +152,14 @@ public class SimpleCommandExpr extends CommandExpr {
 
 		
 		// In case we need to restore it - get it from possibly cloned shell
-		saved_context = shell.getStaticContext();
 
 		Shell saved_context_shell = ShellContext.set( shell );
 		
-		IModule mod = shell.getModule();
-		mLogger.debug("exec command: this {} ctx: {} mod: {}" , this , saved_context , mod );
+		IModule smod = shell.getModule();
+		mLogger.debug("exec command: this {} mod: {}" , this ,  smod );
+		
+        boolean bPopContext = false ;
+
 		try {
 
 
@@ -170,9 +171,16 @@ public class SimpleCommandExpr extends CommandExpr {
 			mSuffix.exec( shell, getLocation() );
 
 			// Push the current module if its different
-			StaticContext ctx = cmd.getStaticContext();
-			if( ctx != null && ctx != saved_context  ){
-               shell.setModuleContext(ctx);				
+			IModule mod = cmd.getModule();
+			assert( mod != null );
+			
+			ModuleContext ctx = mod.getStaticContext();
+			// Context is often 
+			
+			if( ctx != null   ){
+				mLogger.info("pushing module context" , ctx );
+               shell.pushModuleContext(ctx);				
+               bPopContext = true ;
 			}
 
 			return cmd.run(  shell, cmdName , cmdLine );
@@ -203,9 +211,12 @@ public class SimpleCommandExpr extends CommandExpr {
 			mLogger.trace("exec finally: {}",this);
 			ShellContext.set(saved_context_shell);
 			
-			mLogger.trace("restoring saved cts: {}",saved_context);
-			shell.retoreStaticContext( saved_context);
-			
+			if( bPopContext ){
+			   mLogger.trace("popping context" );
+			  ModuleContext ctx = shell.popModuleContext();
+				assert( ctx != null );
+				// TODO: should I push this back into the mdoule ?
+			}
 			
 			if( ! shell.isClosed() ) {
 				if( mPrefix == null )

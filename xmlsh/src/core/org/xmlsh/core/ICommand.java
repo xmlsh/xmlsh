@@ -15,7 +15,7 @@ import java.util.List;
 import org.xmlsh.sh.core.SourceLocation;
 import org.xmlsh.sh.shell.IModule;
 import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.sh.shell.StaticContext;
+import org.xmlsh.sh.shell.ModuleContext;
 
 public interface ICommand {
 	enum CommandType {
@@ -31,12 +31,12 @@ public interface ICommand {
 	public int 	run( Shell shell , String cmd , List<XValue> args )  throws Exception;
 	public 	CommandType	getType();
 	public 	URL 	getURL() throws MalformedURLException;
+	// TEMP:
 	public 	IModule	getModule();
 	public void		close();
 	public SourceLocation getLocation();
 	public void setLocation( SourceLocation loc);
     public void print(PrintWriter w, boolean bExec);
-	public StaticContext getStaticContext();
 
 
 

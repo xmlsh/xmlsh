@@ -15,10 +15,7 @@
 
 	<Appenders>
 		<File name="A1" fileName="${logfile}" append="false">
-          <PatternLayout pattern="%d{HH:mm:ss.SSS} %-5level %class{36} %L %M - %msg%xEx%n - %X %x"/>
-		<!-- 
-			<PatternLayout pattern="%d %-5r %-5p [%t] %c{2} - %m%n" />
-			 -->
+			<PatternLayout pattern="%d %-5p [%t] %c{5} %M - %m%n%F %L%n" />
 		</File>
 		<Console name="CONSOLE" target="SYSTEM_ERR">
 			<PatternLayout pattern="%m MDC%X%n" />
@@ -30,13 +27,16 @@
 	<Loggers>
 	  
 		<logger name="org.xmlsh" level="TRACE">
-			<AppenderRef ref="A1" />
+			<AppenderRef ref="A1"  />
 		</logger>
 		<logger name="httpclient" level="WARN" />
 		<logger name="http.wire" level="WARN" />
 		<logger name="org.apache.http" level="WARN" />
 		<logger name="com.amazonaws" level="WARN" />
 		<logger name="org.apache.http.impl.conn" level="WARN" />
+		<logger name="org.xmlsh" level="TRACE" additivity="true">
+		   <AppenderRef ref="A1" />
+		</logger>
 		<logger name="org.xmlsh.sh.grammar" level="WARN" additivity="false">
 		   <AppenderRef ref="A1" />
 		</logger>

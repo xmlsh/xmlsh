@@ -21,7 +21,7 @@ import org.xmlsh.sh.core.SourceLocation;
 import org.xmlsh.sh.shell.IModule;
 import org.xmlsh.sh.shell.ScriptModule;
 import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.sh.shell.StaticContext;
+import org.xmlsh.sh.shell.ModuleContext;
 
 public class FunctionCommand implements ICommand {
 
@@ -33,6 +33,9 @@ public class FunctionCommand implements ICommand {
 
 	public FunctionCommand( IModule module, String name , ICommandExpr func ,  SourceLocation loc )
 	{
+		mLogger.entry(module,name,func,loc);
+		assert( module != null );
+
 		mName = name ;
 		mFunction = func ;
 		mLocation = loc ;
@@ -47,6 +50,7 @@ public class FunctionCommand implements ICommand {
 
 	@Override
 	public int run(Shell shell, String cmd, List<XValue> args) throws Exception {
+		mLogger.entry(shell,cmd);
 
 		int ret =  shell.execFunctionAsCommand(mName,mFunction,mLocation,args);
 		if( ret == 0 )
@@ -100,10 +104,5 @@ public class FunctionCommand implements ICommand {
   {
     w.print(mName);
   }
-@Override
-public StaticContext getStaticContext() {
-	return mModule == null ? null : mModule.getStaticContext();
-}	
-
 
 }
