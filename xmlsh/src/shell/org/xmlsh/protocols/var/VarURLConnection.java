@@ -17,7 +17,7 @@ import org.xmlsh.core.VariableInputPort;
 import org.xmlsh.core.VariableOutputPort;
 import org.xmlsh.core.XVariable;
 import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.xpath.ShellContext;
+import org.xmlsh.xpath.ThreadLocalShell;
 
 public class VarURLConnection extends URLConnection {
 
@@ -39,7 +39,7 @@ public class VarURLConnection extends URLConnection {
 	public InputStream getInputStream() throws IOException {
 
 		String name = this.getURL().getPath();
-		Shell shell = ShellContext.get();
+		Shell shell = ThreadLocalShell.get();
 		if (shell != null)
 			try {
 				XVariable var = shell.getEnv().getVar(name);
@@ -59,7 +59,7 @@ public class VarURLConnection extends URLConnection {
 	public OutputStream getOutputStream() throws IOException {
 
 		String name = this.getURL().getPath();
-		Shell shell = ShellContext.get();
+		Shell shell = ThreadLocalShell.get();
 		if (shell != null) {
 			XVariable var = shell.getEnv().getVar(name);
 			if( var != null )

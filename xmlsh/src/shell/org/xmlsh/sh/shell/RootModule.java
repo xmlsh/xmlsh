@@ -15,16 +15,16 @@ public class RootModule extends AbstractModule {
 	// TEMP
 	private static RootModule _instance = new RootModule();
 	
-	public static IModule getInstance() {
-		return _instance ;
+	public static ModuleHandle getInstance() {
+		return new ModuleHandle(_instance );
 	}
 	
 	private RootModule() {
-		super();
+		super("Root");
 	}
 	
 	public String toString() {
-		return describe();
+		return getName();
 	}
 	@Override
 	public ICommand getCommandClass(String name) throws IOException {
@@ -43,7 +43,12 @@ public class RootModule extends AbstractModule {
 
 	@Override
 	public String describe() {
-		return "Root " ;
+		return getName();
 	}
 
+	@Override
+	public void close() {
+		mLogger.error("Root Module should never be closed");
+		assert(false);
+	}
 }

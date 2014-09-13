@@ -51,6 +51,7 @@ import org.xmlsh.java.commands.jset;
 import org.xmlsh.json.commands.jsonread;
 import org.xmlsh.sh.core.SourceLocation;
 import org.xmlsh.sh.shell.IModule;
+import org.xmlsh.sh.shell.ModuleHandle;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.sh.shell.ShellConstants;
 import org.xmlsh.text.commands.readconfig;
@@ -190,7 +191,7 @@ public class CommandFactory {
 		StringPair pair = new StringPair(name, ':');
 
 		if (pair.hasLeft()) { // prefix:name , prefix non-empty
-			IModule m ;
+			ModuleHandle m ;
 			mLogger.trace("found prefix - trying command by prefix: ", pair);
 			
 			if( Util.isBlank(pair.getLeft()) ){
@@ -207,7 +208,7 @@ public class CommandFactory {
 			if (m != null) {
 	
 				mLogger.trace("Found module - try getting command" , m , pair.getRight());
-				ICommand cls = m.getCommandClass(pair.getRight());
+				ICommand cls = m.get().getCommandClass(pair.getRight());
 				if (cls != null) {
 					mLogger.debug("Command Class found: " , cls );
 					cls.setLocation(loc);
@@ -222,8 +223,9 @@ public class CommandFactory {
 		 * Try all default modules
 		 */
 	   mLogger.debug("Try default modules");
-		for (IModule m : shell.getDefaultModules() ) {
-				ICommand cls = m.getCommandClass(name);
+		for (ModuleHandle m : shell.getDefaultModules() ) {
+			    assert( ! m.isNull() );
+				ICommand cls = m.get().getCommandClass(name);
 				if (cls != null) {
 					cls.setLocation(loc);
 					return mLogger.exit(cls);
@@ -329,22 +331,23 @@ public class CommandFactory {
 		StringPair pair = new StringPair(name, ':');
 
 		if (pair.hasLeft()) { // prefix:name , prefix non-empty
-			IModule m = Util.isBlank(pair.getLeft()) ? shell.getModule()
+			ModuleHandle m = Util.isBlank(pair.getLeft()) ? shell.getModule()
 					: shell.getModuleByPrefix(pair.getLeft());
 			// Allow C:/xxx/yyy to work
 			// May look like a namespace but isnt
 
-			if (m != null && m.hasHelp(pair.getRight()))
-				return m.getHelpURL();
+			if (m != null && m.get().hasHelp(pair.getRight()))
+				return m.get().getHelpURL();
 			return null;
 		}
 
 		/*
 		 * Try all default modules
 		 */
-		for (IModule m : shell.getDefaultModules()) {
-			if (m.hasHelp(name))
-				return m.getHelpURL();
+		for (ModuleHandle m : shell.getDefaultModules()) {
+			assert( ! m.isNull());
+			if (m.get().hasHelp(name))
+				return m.get().getHelpURL();
 		}
 
 		return null;
@@ -367,7 +370,7 @@ public class CommandFactory {
 
 		
 		if (pair.hasLeft()) { // prefix:name , prefix non-empty
-			IModule m;
+			ModuleHandle m;
 			mLogger.trace("found prefix - trying command by prefix: ", pair);
 		
 			if( Util.isBlank(pair.getLeft()) ){
@@ -383,7 +386,7 @@ public class CommandFactory {
 			if (m != null) {
 
 				mLogger.debug("Found module",m);
-				IFunction cls = m.getFunctionClass(pair.getRight());
+				IFunction cls = m.get().getFunctionClass(pair.getRight());
 				if (cls != null) {
 					return mLogger.exit(cls);
 				}
@@ -397,8 +400,9 @@ public class CommandFactory {
 		 */
 		
 		 mLogger.debug("Try default modules");
-		for ( IModule m : shell.getDefaultModules() ) {
-			IFunction cls = m.getFunctionClass(name);
+		for ( ModuleHandle m : shell.getDefaultModules() ) {
+			assert( !m.isNull());
+			IFunction cls = m.get().getFunctionClass(name);
 				if (cls != null) 
 					return mLogger.exit(cls);
 

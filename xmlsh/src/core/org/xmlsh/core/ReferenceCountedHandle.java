@@ -7,7 +7,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.xmlsh.util.ReferenceCounter;
 
-public class ReferenceCountedHandle<T extends Closeable > implements IHandle<T> {
+public class ReferenceCountedHandle< T extends Closeable > implements  IManagedHandle<T> {
     private static Logger mLogger = LogManager.getLogger();
 	private final  ReferenceCounter mCounter ;
 	private volatile T mObj;
@@ -16,27 +16,43 @@ public class ReferenceCountedHandle<T extends Closeable > implements IHandle<T> 
 	  this( obj , new ReferenceCounter() );
 	}
 
+	public String toString() {
+		return mObj == null ?  "null" : mObj.toString() + "[" + mCounter.value() + "]" ;
+	}
 	public ReferenceCountedHandle( T obj , ReferenceCounter counter) {
 		mLogger.entry( obj , counter );
 		mCounter = counter;
 		mObj = obj ;
 	}
+	/* (non-Javadoc)
+	 * @see org.xmlsh.core.IManagedHandle#release()
+	 */
 	@Override
 	final public boolean release() throws IOException  {
-		mLogger.entry( mCounter.value() );
-		assert( mObj != null );
+		mLogger.entry( this );
+		assert( ! isNull() );
 		if( mCounter.release() ) {
-
-			mObj.close() ;
+			mLogger.info("Closing : {} " , mObj );
+			mObj.close();
 			mObj = null ;
 			return true ;
 		}
 		return false ;
 	} 
 
+	/* (non-Javadoc)
+	 * @see org.xmlsh.core.IManagedHandle#addRef()
+	 */
+	@Override
 	public void addRef() { 
-		mLogger.entry(mCounter);
+
+		assert( ! isNull() );
+		mLogger.entry(this);
 		mCounter.addRef();
+	}
+	
+	public int getRefCount() {
+		return mCounter.value();
 	}
 
 	@Override
@@ -44,11 +60,9 @@ public class ReferenceCountedHandle<T extends Closeable > implements IHandle<T> 
 		mLogger.entry(mCounter);
 		return mObj;
 	}
+	
 	@Override
-	public IHandle<T> newReference() {
-		mLogger.entry(mCounter);
-		mCounter.addRef();
-		return this ;
+	final public boolean isNull() {
+		return mObj == null;
 	}
-
 }

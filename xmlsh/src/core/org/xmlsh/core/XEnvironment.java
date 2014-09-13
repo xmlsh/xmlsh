@@ -24,8 +24,14 @@ import javax.xml.transform.Source;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.xml.sax.InputSource;
+import org.xmlsh.builtin.commands.exit;
+import org.xmlsh.sh.shell.FunctionDefinitions;
+import org.xmlsh.sh.shell.IModule;
+import org.xmlsh.sh.shell.ModuleHandle;
+import org.xmlsh.sh.shell.Modules;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.sh.shell.StaticContext;
 import org.xmlsh.types.TypeFamily;
 import org.xmlsh.util.Util;
 
@@ -36,9 +42,10 @@ public class XEnvironment implements AutoCloseable, Closeable {
 	private 	Shell mShell;
 	private		volatile XIOEnvironment mIO;
 	private		Variables	mVars;
-	private		Namespaces	mNamespaces = null;
-
+	private     StaticContext  mStaticContext;
 	private		Stack<XIOEnvironment>  mSavedIO;
+	private     Stack<ModuleHandle> mModuleStack;
+	private     boolean bClosed = false;
 
 
 
@@ -52,17 +59,24 @@ public class XEnvironment implements AutoCloseable, Closeable {
 	}
 
 
-	public XEnvironment(Shell shell, boolean bInitIO ) throws IOException
+	public XEnvironment(Shell shell, StaticContext ctx , boolean bInitIO ) throws IOException
 	{
+		
+		mLogger.entry(shell, ctx, bInitIO);
+		mStaticContext = ctx ;
 		mShell = shell;
 		mVars = new Variables();
 		mIO = new XIOEnvironment();
+		mModuleStack = new Stack<>();
+		pushModule(shell.getModule());
 
 		if( bInitIO )
 			getIO().initStdio();
 
 
+		mLogger.exit();
 	}
+
 
 
 
@@ -216,8 +230,6 @@ public class XEnvironment implements AutoCloseable, Closeable {
 		// Add typeset command
 
 
-
-
 		try {
 			return clone( mShell );
 		} catch (IOException e) {
@@ -233,24 +245,37 @@ public class XEnvironment implements AutoCloseable, Closeable {
 
 	public XEnvironment clone(Shell shell) throws IOException
 	{
-		XEnvironment 	that = new XEnvironment(shell, false);
+		
+		mLogger.entry(shell);
+		XEnvironment 	that = new XEnvironment(shell, mStaticContext.clone() , false);
 		that.mVars		= new Variables(this.mVars);
-
 		that.mIO = new XIOEnvironment(this.getIO());
-
-		if( this.mNamespaces != null )	
-			that.mNamespaces = new Namespaces( this.mNamespaces );
-
-		return that;
+		
+		return mLogger.exit( that);
 	}
 
 
 	@Override
 	public void close() throws IOException  {
+		mLogger.entry(bClosed);
+		if( bClosed )
+			return;
+		
 		if( this.mSavedIO != null && ! mSavedIO.isEmpty())
 			throw new IOException("Closing XEnvironment when mSavedIO is not empty");
 
 		getIO().release();
+		
+		// close modules
+ 
+		if( mModuleStack != null && ! mModuleStack.empty()){
+			mLogger.warn("Module stack is not empty {} " , mModuleStack.size() );
+			while( !mModuleStack.isEmpty() )
+			    mModuleStack.pop().release();
+			mModuleStack = null ;
+		}
+		bClosed = true ;
+				
 	}
 
 	public Shell getShell() { 
@@ -533,11 +558,10 @@ public class XEnvironment implements AutoCloseable, Closeable {
 	}
 
 
-	public Namespaces getNamespaces()
-	{
-	  if( mNamespaces == null )
-      mNamespaces = new Namespaces();
-		return mNamespaces;
+	
+
+	public Namespaces getNamespaces() {
+		return mStaticContext.getNamespaces();
 	}
 
 
@@ -701,6 +725,57 @@ public class XEnvironment implements AutoCloseable, Closeable {
 	      
 	     }
 	 }
+
+
+	public StaticContext getStaticContext() {
+		return mStaticContext ;
+	}
+
+
+	public Modules getModules(boolean bCreate ) {
+		return mStaticContext.getModules(bCreate);
+	}
+
+
+	public ModuleHandle getModuleByPrefix(String prefix) {
+		
+		mLogger.entry(prefix);
+		String uri = getNamespaces().get(prefix);
+		if( uri == null )
+			return mLogger.exit(null );
+		
+		return mLogger.exit(mStaticContext.getModules(true).getExistingModuleByName(uri));
+		
+	}
+
+
+	public FunctionDefinitions getFunctions(boolean bCreate) {
+		return mStaticContext.getFunctions(bCreate);
+	}
+
+
+
+	public ModuleHandle pushModule(ModuleHandle module) {
+		mLogger.entry(module , mModuleStack.size() );
+		module.addRef();
+		mModuleStack.push(module);
+		return mLogger.exit(module) ;
+	}
+
+
+	public ModuleHandle popModule() throws IOException {
+		mLogger.entry(mModuleStack.size());
+		assert( !mModuleStack.isEmpty());
+	    ModuleHandle mh = mModuleStack.pop();
+		mh.release();
+		return mLogger.exit(mh);
+	}
+
+
+	public StaticContext exportStaticContext() {
+		return mStaticContext.clone();
+		
+	}
 
 
 

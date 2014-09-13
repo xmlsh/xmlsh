@@ -13,16 +13,19 @@ import org.xmlsh.util.NameValueMap;
 // Script funcitons
 @SuppressWarnings("serial")
 public
-class FunctionDefinitions extends NameValueMap<IFunctionDecl>
+class FunctionDefinitions extends NameValueMap<IFunctionDecl> implements Cloneable
 {
 
 	FunctionDefinitions() {}
-	FunctionDefinitions(FunctionDefinitions that) 
+	protected  FunctionDefinitions(FunctionDefinitions that) 
 	{
 		super(that);
 
 	}
 
+	public FunctionDefinitions clone() {
+		return new FunctionDefinitions( this );
+	}
 
 
 }

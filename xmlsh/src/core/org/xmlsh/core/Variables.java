@@ -24,8 +24,8 @@ public class Variables {
 
 	}
 	Variables(Variables that) {
-		mGlobals = new NameValueMap<XVariable>(that.mGlobals);
-		mGlobals.putAll( that.mLocals);
+		mGlobals = that.mGlobals.clone();
+		mGlobals.putAll( that.mLocals.clone() );
 	}
 	private Variables( NameValueMap<XVariable> globals , NameValueMap<XVariable>  locals )
 	{

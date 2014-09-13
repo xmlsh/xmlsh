@@ -1,7 +1,10 @@
 package org.xmlsh.sh.shell;
 
+import java.io.Closeable;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -20,51 +23,51 @@ import org.xmlsh.sh.core.SourceLocation;
 // time,
 // but the static context itself is not imutable - it is affected by parse
 // and runtime declarations
-public class ModuleContext {
+public class StaticContext implements Cloneable, Closeable {
 	private static Logger mLogger = LogManager.getLogger();
 	private FunctionDefinitions mFunctions = null;
 	private Modules mModules;                    // Imported modules visible to this module
-	private IModule mModule = null;              // The module this context is contained in  
 	private int id = _id++;
-	private static int _id = 0;
+	private static int _id = 0; 
+	private boolean bClosed = false ;
+	private		Namespaces	mNamespaces = null;
 	
-	private ModuleContext mParent ;				// The parent context if any - used when calling cross modules
 	
 	// log debugging
 	public String toString() {
-		return "CTX: " + id + ( mModule == null ? " <null> " : (" "  + mModule.toString() ));
+		return "CTX: " + id ;
 	}
 	
-	public ModuleContext(IModule mod)
+	public StaticContext()
 	{
-		mLogger.entry(mod);
+		mLogger.entry();
 
-		assert( mod != null );
-		mModule = mod ;
-		mParent = null ;
+
+		
 	}
 	
 
-	public ModuleContext clone(Shell shell) throws IOException
+	public StaticContext clone()
 	{
-
 		mLogger.entry(this);
-		return new ModuleContext( this );
+		
+		return mLogger.exit(new StaticContext( this ));
 	}
 
 	
 	// Clone this context 
-	private ModuleContext(ModuleContext that) {
+	protected StaticContext(StaticContext that) {
 		mLogger.entry(that);
-		assert( that.mModule != null );
-		mModule = that.mModule ;
 		
 		if( that.mFunctions != null)
-		    mFunctions = new FunctionDefinitions(that.mFunctions);
+		    mFunctions = that.mFunctions.clone();
 		
 		if( that.mModules != null )
-			mModules = new Modules( that.mModules);
-		mParent = that.mParent;
+			mModules = that.mModules.clone() ;
+		if( this.mNamespaces != null )	
+			that.mNamespaces = new Namespaces( this.mNamespaces );
+		
+		mLogger.exit();
 		
 	}
 	public void declareFunction(IFunctionDecl func) {
@@ -75,14 +78,6 @@ public class ModuleContext {
 		mFunctions.put(func.getName(), func);
 	}
 
-	// Export out the current context, removing it from this one 
-	// Used at the end of an import
-	public ModuleContext exportContext() {
-		mLogger.entry();
-		ModuleContext ex = new ModuleContext( this );
-		return mLogger.exit(ex);
-		
-	}
 
 	public IFunctionDecl getFunctionDecl(String name) {
 		if (mFunctions == null)
@@ -100,13 +95,7 @@ public class ModuleContext {
 		return mFunctions;
 	}
 
-	IModule getModule() {
-		mLogger.entry();
-		assert( mModule != null);
-		return mLogger.exit(mModule);
-	}
-
-	private Modules getModules() {
+	Modules getModules() {
 		return mModules;
 	}
 
@@ -117,36 +106,40 @@ public class ModuleContext {
 		
 	}
 
-	public Iterable<IModule> getDefaultModules() {
-		if( mModules == null )
-			return Collections.emptyList();
-		return getModules(true).getDefaultModules();
-	}
-
-
-	/*
-	 * A cross module call 
-	 * push the context of the called function/command and return the new context
-	 */
-	public ModuleContext pushContext(ModuleContext ctx) {
-		assert( ctx != null );
-		mLogger.entry( ctx );
-		// Clone a context so changes dont propogate 
-		ModuleContext newContext = new ModuleContext( ctx );
-		newContext.mParent = this ;
-		return mLogger.exit(newContext) ;
-	}
-	
-	// Pop the context and detach it from its parent
-	public ModuleContext popContext() 
-	{
+	@Override
+	public void close() throws IOException {
 		mLogger.entry();
-		assert( mParent != null );
-		ModuleContext parent = mParent ;
-		parent.mParent = null ;
-		return parent;
+		if( bClosed )
+			return;
+		if( mModules != null )
+			mModules.release();
+		if( mFunctions != null )
+			mFunctions.clear();
+		
+		mModules = null;
+		mFunctions = null ;
+		bClosed = true ;
 		
 	}
+	public Namespaces getNamespaces()
+	{
+	  if( mNamespaces == null )
+      mNamespaces = new Namespaces();
+		return mNamespaces;
+	}
 
+	public Iterable<ModuleHandle> getDefaultModules() {
+		List<ModuleHandle> all = new ArrayList<>();
+		for( ModuleHandle mh : mModules ){
+			
+			String uri = Shell.toModuleUri(mh);
+			if( ! getNamespaces().containsValue( uri ) )
+				all.add(mh );
+		}
+		
+		return mLogger.exit( all );
+		
+		
+	}
 
 }

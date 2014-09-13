@@ -10,15 +10,14 @@ import java.net.URL;
 import java.util.List;
 
 import org.xmlsh.sh.core.SourceLocation;
-import org.xmlsh.sh.shell.IModule;
+import org.xmlsh.sh.shell.ModuleHandle;
 import org.xmlsh.sh.shell.RootModule;
 import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.sh.shell.ModuleContext;
 
 public abstract class AbstractBuiltinFunction extends AbstractFunction  {
 	 
 	 @Override
-    public IModule getModule() 
+    public ModuleHandle getModule() 
 	{
 		 return RootModule.getInstance();
 	}

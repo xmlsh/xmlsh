@@ -31,6 +31,7 @@ import org.xmlsh.core.CoreException;
 import org.xmlsh.core.IOutputPort;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.IModule;
+import org.xmlsh.sh.shell.ModuleHandle;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 
@@ -218,8 +219,8 @@ public class HelpUsage {
 	}
 
 	public void doHelpCommands(IOutputPort stdout, boolean bLaunch) throws SaxonApiException, IOException, CoreException, URISyntaxException {		
-		for( IModule m : mShell.getModules() ){
-			URL url = m.getHelpURL();
+		for( ModuleHandle m : mShell.getModules() ){
+			URL url = m.get().getHelpURL();
 			if( url != null )
 				doHelpCommands(stdout,url,"",m.getName(), bLaunch);
 			bLaunch = false ;

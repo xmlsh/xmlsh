@@ -22,6 +22,7 @@ import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Constructor;
 import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.security.AccessController;
@@ -79,9 +80,10 @@ import org.xmlsh.util.FileUtils;
 import org.xmlsh.util.NullInputStream;
 import org.xmlsh.util.NullOutputStream;
 import org.xmlsh.util.SessionEnvironment;
+import org.xmlsh.util.StringPair;
 import org.xmlsh.util.Util;
 import org.xmlsh.xpath.EvalDefinition;
-import org.xmlsh.xpath.ShellContext;
+import org.xmlsh.xpath.ThreadLocalShell;
 
 public class Shell implements AutoCloseable, Closeable {
 	private static volatile int __id = 0;
@@ -125,13 +127,8 @@ public class Shell implements AutoCloseable, Closeable {
 
 	static Logger mLogger = LogManager.getLogger();
 	private ShellOpts mOpts;
+	private ModuleHandle mModule; // The module currently executing in this shell
 
-	private volatile ModuleContext mStaticContext = null;
-
-	// Script functons
-	private FunctionDefinitions getFunctions() {
-		return mStaticContext.getFunctions(true);
-	}
 
 	private XEnvironment mEnv = null;
 	private List<XValue> mArgs = new CopyOnWriteArrayList<XValue>();
@@ -195,7 +192,7 @@ public class Shell implements AutoCloseable, Closeable {
 		System.setProperties(mSavedSystemProperties);
 		mSavedSystemProperties = null;
 		SystemEnvironment.uninitialize();
-		ShellContext.set(null);
+		ThreadLocalShell.set(null);
 		bInitialized = false;
 	}
 
@@ -212,11 +209,12 @@ public class Shell implements AutoCloseable, Closeable {
 	}
 
 	public Shell(boolean bUseStdio) throws Exception {
+		mModule = RootModule.getInstance();
 		mOpts = new ShellOpts();
 		mSavedCD = System.getProperty(ShellConstants.PROP_USER_DIR);
-		mEnv = new XEnvironment(this, bUseStdio);
+		mEnv = new XEnvironment(this,  new StaticContext() , bUseStdio);
 		mSession = new SessionEnvironment();
-		mStaticContext = new ModuleContext( RootModule.getInstance() );
+
 		// Add xmlsh commands
 		getModules().declarePackageModule(this, null, "xmlsh",
 				Arrays.asList(
@@ -224,7 +222,7 @@ public class Shell implements AutoCloseable, Closeable {
 
 		setGlobalVars();
 
-		ShellContext.set(this); // cur thread active shell
+		ThreadLocalShell.set(this); // cur thread active shell
 
 	}
 
@@ -358,6 +356,7 @@ public class Shell implements AutoCloseable, Closeable {
 
 	private Shell(Shell that, ThreadGroup threadGroup) throws IOException {
 		mParent = that;
+		mModule = that.mModule;
 		mThreadGroup = threadGroup == null ? that.getThreadGroup()
 				: threadGroup;
 		mOpts = new ShellOpts(that.mOpts);
@@ -370,7 +369,7 @@ public class Shell implements AutoCloseable, Closeable {
 
 		mSavedCD = System.getProperty(ShellConstants.PROP_USER_DIR);
 
-		mStaticContext = that.mStaticContext.clone(this);
+		// mModule.addRef? mModule.clone() ?
 
 		// Pass through the Session Enviornment, keep a reference
 		mSession = that.mSession;
@@ -396,7 +395,7 @@ public class Shell implements AutoCloseable, Closeable {
 	}
 
 	@Override
-	public void close() {
+	public void close() throws IOException {
 		// Synchronized only to change states
 		synchronized (this) {
 			if (mClosed)
@@ -418,10 +417,17 @@ public class Shell implements AutoCloseable, Closeable {
 		if (mSession != null) {
 			Util.safeRelease(mSession);
 			mSession = null;
-		}
+		} 
+		
+		if( mModule != null )
+			mModule.release();
+		mModule = null;
+				
+		
+		mLogger.exit();
+		
+			
 
-		if (getModules() != null)
-			Util.safeRelease(getModules());
 	}
 
 	private void notifyChildClose(Shell shell) {
@@ -1459,17 +1465,26 @@ public class Shell implements AutoCloseable, Closeable {
 	}
 
 	public void declareFunction(IFunctionDecl func) {
-		mStaticContext.declareFunction(func);
+
+		mLogger.entry(func);
+		StaticContext ctx = getStaticContext();
+		assert( ctx != null );
+		ctx.declareFunction(func);
+	    mLogger.exit();
 
 	}
 
 	public IFunctionDecl getFunctionDecl(String name) {
-
-		return mStaticContext.getFunctionDecl(name);
+		mLogger.entry(name);
+		StaticContext ctx = getStaticContext();
+		assert( ctx != null );
+		return mLogger.exit( ctx.getFunctionDecl(name));
 	}
 
 	public Modules getModules() {
-		return mStaticContext.getModules(true);
+		mLogger.entry();
+		return mLogger.exit( getEnv().getModules(true) );
+		
 	}
 
 	/*
@@ -1577,27 +1592,58 @@ public class Shell implements AutoCloseable, Closeable {
 	/*
 	 * Declare a module using the prefix=value notation
 	 */
-	public boolean importModule(String moduledef, XValue at, List<XValue> init)
+	public ModuleHandle importModule(String moduledef, XValue at, List<XValue> init)
 			throws Exception {
+		
+		mLogger.entry(moduledef, at, init);
+			StringPair pair = new StringPair(moduledef, '=');
+			
+		ModuleHandle mod = 	getModules().importModule(this, pair.getLeft(), pair.getRight(), at, init);
 
-		return getModules().declare(this, moduledef, at, init);
+		assert( mod != null && ! mod.isNull());
+
+		// Add namespace prefix
+		
+		if( pair.hasLeft() )
+			getEnv().declareNamespace(pair.getLeft(),  toModuleUri( mod));
+		
+		return mLogger.exit( mod );
 
 	}
-
-	public boolean importScript(String script, XValue at, List<XValue> init)
-			throws Exception {
-
-		return getModules().declare(this, script, at, init);
-
+	// Dup function but may need different
+	public ModuleHandle importScript(String moduledef, XValue at, List<XValue> init) throws Exception
+	{
+		return importModule( moduledef , at , init );
 	}
+	
+	public static String toModuleUri(ModuleHandle mod) {
+	
+		// bogus URI scheme for now
+		URI uri;
+		try {
+			uri = new URI( "module" , mod.getName(), null );
+			return uri.toASCIIString();
+		} catch (URISyntaxException e) {
+			mLogger.catching(e);
+			return "module:" + mod.getName();
+		}
+		
+	
+	}
+	
+	
 
-	public boolean importPackage(String prefix, String name,
-			List<String> packages) throws Exception {
+
+	public ModuleHandle importPackage(String prefix, String name,
+			List<String> packages) throws Exception  {
 		
 		
+		 mLogger.entry(prefix, name, packages);
 	     String sHelp = packages.get(0).replace('.', '/') + "/commands.xml";
 		
-		return getModules().declarePackageModule(this, prefix, name, packages , sHelp, null );
+		ModuleHandle h = getModules().declarePackageModule(this, prefix, name, packages , sHelp, null );
+	    return h;
+	
 	}
 
 	public void importJava(XValue uris) throws CoreException {
@@ -1693,13 +1739,10 @@ public class Shell implements AutoCloseable, Closeable {
 
 	}
 
-	public IModule getModule() {
+	public ModuleHandle getModule() {
 		mLogger.entry();
-		assert( mStaticContext != null );
-		if( mStaticContext != null )
-			return mStaticContext.getModule();
-		assert(false);
-		return mLogger.exit(null);
+		assert( mModule != null);
+		return mLogger.exit(mModule);
 		
 	}
 
@@ -1737,8 +1780,8 @@ public class Shell implements AutoCloseable, Closeable {
 		if (url != null)
 			return url;
 
-		for (IModule m : getModules()) {
-			url = m.getResource(res);
+		for (ModuleHandle m : getModules()) {
+			url = m.get().getResource(res);
 			if (url != null)
 				return url;
 		}
@@ -1779,6 +1822,8 @@ public class Shell implements AutoCloseable, Closeable {
 	}
 
 	public void popLocalVars(Variables vars) {
+		
+		mLogger.entry(vars);
 		mEnv.popLocalVars(vars);
 
 	}
@@ -2040,75 +2085,53 @@ public class Shell implements AutoCloseable, Closeable {
 		return mClosed;
 	}
 
-	public IModule getModuleByPrefix(String prefix) {
-		return getModules().getModuleByPrefix(prefix);
+	public ModuleHandle getModuleByPrefix(String prefix) {
+		return getEnv().getModuleByPrefix(prefix);
 	}
 
 	public FunctionDefinitions getFunctionDelcs() {
-		return mStaticContext.getFunctions(true) ;
+		return getEnv().getFunctions(true) ;
 	}
 
-	/*
-	 * When a script module is imported - parts of the static context are exported so they can be
-	 * re-imported when functions from the script are run
-	 */
-	public ModuleContext getExportedContext() {
-		return mStaticContext.exportContext() ;
-	}
-
-	
 	
 	/*
 	 * Associates the current shell with an associated module and any static context 
 	 * it may have from when it was initialized.
 	 */
 
-	private void setModuleContext(ModuleContext staticContext) {
-	    mLogger.entry(this,mStaticContext, staticContext);
 
-		//getStaticContext(true).importContext( staticContext );
-		
-		mStaticContext = staticContext ;
-	}
-
-	public ModuleContext getStaticContext() {
-
-		assert( mStaticContext != null);
-		return mStaticContext;
-	}
-
-
-	public Iterable<IModule> getDefaultModules() {
+	public StaticContext getStaticContext() {
 		mLogger.entry();
+		return mLogger.exit(getEnv().getStaticContext());
+		
+	}
 
+
+	public Iterable<ModuleHandle> getDefaultModules() {
+		mLogger.entry();
 		return getStaticContext().getDefaultModules();
 	
 	}
 
-	public void pushModuleContext(ModuleContext ctx) 
-	{
-		mLogger.entry(ctx);
-	  assert( ctx != null );
-	  if( ctx == null )
-		  throw new UnsupportedOperationException("Cant push a null context");
-	  
-	   mStaticContext = mStaticContext.pushContext( ctx );
-	}
-	
-	public ModuleContext popModuleContext()
-	{
+	public StaticContext getExportedContext() {
 		mLogger.entry();
-		ModuleContext ctx = mStaticContext ;
-		assert( ctx != null );
-		  if( ctx == null )
-			  throw new UnsupportedOperationException("Cant push a null context");
-
-	  
-	    mStaticContext = mStaticContext.popContext();
-		assert( mStaticContext != null );
-		return ctx ;
-		
+		return mLogger.exit( mEnv.exportStaticContext( ) );
 	}
+
+	public void pushModule(ModuleHandle mod) {
+	   
+	    mLogger.entry(mod);
+		mModule = getEnv().pushModule( mod );
+	
+	}
+
+	public ModuleHandle  popModule() throws IOException {
+		mLogger.entry();
+		return mLogger.exit(getEnv().popModule());
+
+	}
+
+	
 
 
 

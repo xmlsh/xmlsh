@@ -22,6 +22,7 @@ import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.ScriptCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.IModule;
+import org.xmlsh.sh.shell.ModuleHandle;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.util.Util;
 
@@ -121,7 +122,7 @@ public class xwhich extends BuiltinCommand {
 								FunctionCommand fc = (FunctionCommand) command;
 								out.writeAttribute(sName, type);
 							}
-					IModule module = command.getModule();
+					ModuleHandle module = command.getModule();
 					if( module != null )
 						out.writeAttribute(sModule, module.getName());
 					out.writeEndElement();

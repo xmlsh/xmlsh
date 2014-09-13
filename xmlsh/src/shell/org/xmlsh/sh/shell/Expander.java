@@ -33,7 +33,7 @@ import org.xmlsh.types.XDMTypeFamily;
 import org.xmlsh.util.NameValueMap;
 import org.xmlsh.util.Util;
 import org.xmlsh.xpath.EvalDefinition;
-import org.xmlsh.xpath.ShellContext;
+import org.xmlsh.xpath.ThreadLocalShell;
 
 public class Expander
 {
@@ -319,7 +319,7 @@ public class Expander
 
     sb.append(arg);
 
-    Shell saved_shell = ShellContext.set(shell);
+    Shell saved_shell = ThreadLocalShell.set(shell);
     try {
       expr = compiler.compile(sb.toString());
 
@@ -339,7 +339,7 @@ public class Expander
       throw new CoreException(msg, e);
 
     } finally {
-      ShellContext.set(saved_shell);
+      ThreadLocalShell.set(saved_shell);
     }
 
   }

@@ -13,7 +13,7 @@ import java.util.List;
 import org.xmlsh.sh.shell.IModule;
 import org.xmlsh.sh.shell.RootModule;
 import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.xpath.ShellContext;
+import org.xmlsh.xpath.ThreadLocalShell;
 
 
 public abstract class BuiltinCommand extends AbstractCommand  {
@@ -51,7 +51,7 @@ public abstract class BuiltinCommand extends AbstractCommand  {
 		mShell 		 = shell;
 		mEnvironment = shell.getEnv();
 		mName  = cmd ;
-		Shell saved_shell = ShellContext.set( shell );
+		Shell saved_shell = ThreadLocalShell.set( shell );
 		try {
 			return run(args);
 		}  
@@ -65,7 +65,7 @@ public abstract class BuiltinCommand extends AbstractCommand  {
 			throw e ;
 		}
 		finally {
-			ShellContext.set(saved_shell);
+			ThreadLocalShell.set(saved_shell);
 		}
 
 	}

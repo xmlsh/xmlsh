@@ -24,9 +24,10 @@ import org.apache.tools.ant.filters.StringInputStream;
 import org.xmlsh.sh.core.SourceLocation;
 import org.xmlsh.sh.grammar.ParseException;
 import org.xmlsh.sh.shell.IModule;
+import org.xmlsh.sh.shell.ModuleHandle;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.sh.shell.ModuleContext;
+import org.xmlsh.sh.shell.StaticContext;
 import org.xmlsh.util.FileUtils;
 import org.xmlsh.util.Util;
 
@@ -43,7 +44,7 @@ public class ScriptCommand implements ICommand {
 
 	private static Logger mLogger = org.apache.logging.log4j.LogManager.getLogger();
 	private SourceMode mSourceMode;
-	private IModule mModule;        // The module in which the script was located
+	private ModuleHandle mModule;        // The module in which the script was located
 	private SourceLocation mLocation;
 	private ScriptSource mSource;
 
@@ -56,14 +57,14 @@ public class ScriptCommand implements ICommand {
 	}
 
 
-	public ScriptCommand( ScriptSource source, SourceMode sourceMode, SourceLocation location , IModule module ) throws FileNotFoundException
+	public ScriptCommand( ScriptSource source, SourceMode sourceMode, SourceLocation location , ModuleHandle moduleHandle ) throws FileNotFoundException
 	{
-		mLogger.entry(source,sourceMode,location,module);
-		assert( module != null );
+		mLogger.entry(source,sourceMode,location,moduleHandle);
+		assert( moduleHandle != null );
 		mSource = source;
 		mSourceMode = sourceMode;
 		mLocation = location ;
-		mModule = module ;
+		mModule = moduleHandle ;
 		
 
 	}
@@ -145,7 +146,7 @@ public class ScriptCommand implements ICommand {
 	}
 
 	@Override
-	public IModule getModule() {
+	public ModuleHandle getModule() {
 		return mModule ;
 	}
 

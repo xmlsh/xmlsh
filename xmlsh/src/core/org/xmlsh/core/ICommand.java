@@ -7,15 +7,16 @@
 package org.xmlsh.core;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 
 import org.xmlsh.sh.core.SourceLocation;
-import org.xmlsh.sh.shell.IModule;
+import org.xmlsh.sh.shell.ModuleHandle;
 import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.sh.shell.ModuleContext;
+import org.xmlsh.sh.shell.StaticContext;
 
 public interface ICommand {
 	enum CommandType {
@@ -32,8 +33,8 @@ public interface ICommand {
 	public 	CommandType	getType();
 	public 	URL 	getURL() throws MalformedURLException;
 	// TEMP:
-	public 	IModule	getModule();
-	public void		close();
+	public 	ModuleHandle	getModule();
+	public void		close() throws IOException;
 	public SourceLocation getLocation();
 	public void setLocation( SourceLocation loc);
     public void print(PrintWriter w, boolean bExec);

@@ -6,13 +6,14 @@
 
 package org.xmlsh.sh.core;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.xmlsh.core.IFunction;
 import org.xmlsh.core.IFunctionDecl;
-import org.xmlsh.sh.shell.IModule;
+import org.xmlsh.sh.shell.ModuleHandle;
 import org.xmlsh.sh.shell.Shell;
 
 public class FunctionDeclaration extends CommandExpr
@@ -55,7 +56,7 @@ public class FunctionDeclaration extends CommandExpr
   public int exec(Shell shell) throws Exception
   {
     mLogger.entry( this , shell);
-  	final IModule module = shell.getModule();
+  	final ModuleHandle module = shell.getModule();  // maybe return  handle
   	
     shell.declareFunction(new IFunctionDecl()
       {
@@ -84,8 +85,15 @@ public class FunctionDeclaration extends CommandExpr
         }
 
 		@Override
-		public IModule getModule() {
+		public ModuleHandle getModule() {
 			return module;
+		}
+
+
+		@Override
+		public boolean release() throws IOException {
+			mLogger.entry();
+			return true ;
 		}
       });
     return 0;

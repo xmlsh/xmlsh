@@ -216,7 +216,7 @@ public class PackageModule extends AbstractModule
           Object obj = constructor.newInstance();
           if(obj instanceof XCommand) {
             XCommand cmd = (XCommand) obj;
-            cmd.setModule(this);
+            cmd.setModule(new ModuleHandle(this));
             return cmd;
           }
           else
@@ -243,7 +243,7 @@ public class PackageModule extends AbstractModule
     URL scriptURL= getCommandResource(scriptName);
     if(scriptURL != null)
 
-      return new ScriptCommand(new ScriptSource(scriptName,scriptURL,mEncoding), SourceMode.RUN , null,  this);
+      return new ScriptCommand(new ScriptSource(scriptName,scriptURL,mEncoding), SourceMode.RUN , null,  new ModuleHandle(this));
 
     return null;
 

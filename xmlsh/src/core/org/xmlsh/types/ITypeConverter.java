@@ -11,7 +11,7 @@ package org.xmlsh.types;
  */
 public interface ITypeConverter<S,D>
 {
-  D convert(S object);
+   D convert(S s);
 }
 
 

@@ -14,7 +14,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.xmlsh.sh.core.ICommandExpr;
 import org.xmlsh.util.Util;
-import org.xmlsh.xpath.ShellContext;
+import org.xmlsh.xpath.ThreadLocalShell;
 
 public class ShellThread extends Thread implements Closeable {
 
@@ -64,7 +64,7 @@ public class ShellThread extends Thread implements Closeable {
 				}	
 			}
 
-			ShellContext.set( shell );
+			ThreadLocalShell.set( shell );
 			shell.setCurdir(mIniitalCD); // Populate the current directory in this thread
 			mCommand.exec(shell);
 
@@ -104,7 +104,7 @@ public class ShellThread extends Thread implements Closeable {
 		synchronized(this) {
 			if( mShell == null )
 				return ;
-			ShellContext.set(null);
+			ThreadLocalShell.set(null);
 			mShell.close();
 			mShell = null ;
 		}

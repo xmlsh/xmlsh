@@ -14,7 +14,7 @@ import java.util.List;
 import org.xmlsh.sh.shell.IModule;
 import org.xmlsh.sh.shell.RootModule;
 import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.xpath.ShellContext;
+import org.xmlsh.xpath.ThreadLocalShell;
 
 public abstract class XCommand extends AbstractCommand {
 
@@ -77,7 +77,7 @@ public abstract class XCommand extends AbstractCommand {
 	@Override
 	public int run(Shell shell, String cmd, List<XValue> args) throws Exception 
 	{
-		Shell saved_shell = ShellContext.set(shell);
+		Shell saved_shell = ThreadLocalShell.set(shell);
 
 
 		try {
@@ -92,7 +92,7 @@ public abstract class XCommand extends AbstractCommand {
 
 
 		finally{
-			ShellContext.set(saved_shell);
+			ThreadLocalShell.set(saved_shell);
 		}
 
 	}

@@ -25,6 +25,7 @@ import org.xmlsh.core.ScriptCommand;
 import org.xmlsh.core.ScriptCommand.SourceMode;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.IModule;
+import org.xmlsh.sh.shell.ModuleHandle;
 import org.xmlsh.util.StringPair;
 
 public class ximport extends BuiltinCommand
@@ -49,7 +50,7 @@ public class ximport extends BuiltinCommand
         if(args.isEmpty())
           listModules();
         else for (XValue arg : args)
-          if(!importPackage(arg.toString())) {
+          if( importPackage(arg.toString()) == null ) {
             mShell.printErr("package: " + arg.toString() + " not found");
             ret++;
           }
@@ -59,7 +60,8 @@ public class ximport extends BuiltinCommand
         if(args.isEmpty())
           listModules();
         else for (XValue arg : args) {
-          if(!importCommands(arg.toString())) {
+          ModuleHandle mod =importCommands(arg.toString());
+          if( mod == null ){
             mShell.printErr("xmlsh command extension: " + arg.toString() + " not found");
             ret++;
           }
@@ -123,8 +125,6 @@ public class ximport extends BuiltinCommand
     String mod = args.remove(0).toString();
     XValue at = getAt(args);
     
-    
-    
 
     mShell.importModule(mod, at, args);
 
@@ -186,7 +186,7 @@ public class ximport extends BuiltinCommand
 
   }
 
-  private boolean importPackage(String fullname) throws Exception
+  private ModuleHandle importPackage(String fullname) throws Exception
   {
 
     String name = null;
@@ -203,7 +203,7 @@ public class ximport extends BuiltinCommand
     return mShell.importPackage(prefix, name, Collections.singletonList(name));
   }
 
-  private boolean importCommands(String fullname) throws Exception
+  private ModuleHandle importCommands(String fullname) throws Exception
   {
 
     String name = null;
@@ -229,6 +229,7 @@ public class ximport extends BuiltinCommand
   private int listModules()
   {
 
+	  /*
 	  Set<String> prefixes = mShell.getModules().getPrefixes();
     for (IModule m : mShell.getModules()  ) {
    	    StringBuilder sb = new StringBuilder();
@@ -242,10 +243,13 @@ public class ximport extends BuiltinCommand
     	}
     	sb.append(" ").append(m.getName()).append("[").append(m.describe()).append("]");
         mShell.printOut( sb.toString() );
+        */
+	  
+	  for(  ModuleHandle hm : mShell.getModules() ){
+		  mShell.printOut( hm.get().describe());
+		  
+	  }
     
-    }
-    	
-  
 
     return 0;
 

@@ -13,7 +13,7 @@ import org.xmlsh.sh.shell.Shell;
  * Thread local instance of a Shell
  */
 
-public class ShellContext {
+public class ThreadLocalShell {
 
 	static ThreadLocal<Shell>		sInstance = new ThreadLocal<Shell>()
 			{

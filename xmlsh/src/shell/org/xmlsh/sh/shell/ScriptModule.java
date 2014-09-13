@@ -17,7 +17,7 @@ public class ScriptModule extends AbstractModule
 {
 
   private ScriptSource mScript ; 
-  private ModuleContext mStaticContext;
+  private StaticContext mStaticContext;
   
   
   protected ScriptModule(Shell shell, String prefix , ScriptSource script, String nameuri ) throws IOException, CoreException
@@ -52,7 +52,7 @@ public class ScriptModule extends AbstractModule
          sh.setArgs(args);
          ScriptCommand cmd = new ScriptCommand( 
 
-    		  mScript ,  SourceMode.IMPORT, shell.getLocation() , this 
+    		  mScript ,  SourceMode.IMPORT, shell.getLocation() ,new ModuleHandle(this )
     		  );
       
       if(  cmd.run(sh, getName(), args) != 0 )
@@ -72,7 +72,7 @@ public class ScriptModule extends AbstractModule
     
 	IFunctionDecl func = mStaticContext.getFunctionDecl(name);
 	if( func != null )
-		return new FunctionCommand( this ,  func.getName() , func.getBody() , null  );
+		return new FunctionCommand( new ModuleHandle(this) ,  func.getName() , func.getBody() , null  );
 	return null ;
 	
   }
@@ -103,9 +103,8 @@ public class ScriptModule extends AbstractModule
     return getName();
   }
 
-
-@Override
-public ModuleContext getStaticContext() {
+// @TODO
+public StaticContext getStaticContext() {
 	return mStaticContext ;
 }
 

@@ -14,6 +14,7 @@ import java.util.List;
 
 import org.xmlsh.core.ICommand;
 import org.xmlsh.core.IFunction;
+import org.xmlsh.core.IReleasable;
 import org.xmlsh.core.XValue;
   
 
@@ -28,6 +29,7 @@ public interface IModule extends Closeable, IStaticModule
    * Calls into the module
    */
   
+
   public void onInit(Shell shell , List<XValue> args) throws Exception;
   // close() is called for an unload
   
@@ -37,7 +39,7 @@ public interface IModule extends Closeable, IStaticModule
   public ICommand getCommandClass(String name) throws IOException;
   public IFunction getFunctionClass(String name);
   public URL getHelpURL();
-  public ModuleContext getStaticContext();
+  public String getName();
 
 
 }

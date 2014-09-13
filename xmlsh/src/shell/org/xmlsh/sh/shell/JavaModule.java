@@ -96,7 +96,7 @@ public class JavaModule extends AbstractModule
     }
 
 	@Override
-	public IModule getModule() {
+	public ModuleHandle getModule() {
 		mLogger.warn("getModule called without impl");
 		return null;
 	}
@@ -107,7 +107,7 @@ public class JavaModule extends AbstractModule
 
   JavaModule(Shell shell, String prefix, URI nameURI, XValue at) throws CoreException
   {
-    super();
+    super(nameURI.toString());
     List<URL> classpath = null;
     if(at != null && !at.isEmpty()) {
       classpath = new ArrayList<URL>();

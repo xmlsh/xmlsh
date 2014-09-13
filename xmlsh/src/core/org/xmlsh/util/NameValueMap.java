@@ -18,7 +18,7 @@ import java.util.HashMap;
 
 
 @SuppressWarnings("serial")
-public class NameValueMap<T> extends HashMap<String,T> {
+public class NameValueMap<T> extends HashMap<String,T> implements Cloneable {
 
 	/*
 	 * Default Constructor
@@ -34,11 +34,15 @@ public class NameValueMap<T> extends HashMap<String,T> {
 	/*
 	 * Copy constructor 
 	 */
-	public	NameValueMap(NameValueMap<T> that)
+	protected	NameValueMap(NameValueMap<T> that)
 	{
 		putAll(that);
 	}
-
+	
+	public NameValueMap<T> clone() {
+		return new NameValueMap<>( this );
+	}
+	
 
 
 

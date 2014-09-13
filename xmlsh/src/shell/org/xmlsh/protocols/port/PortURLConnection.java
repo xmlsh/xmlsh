@@ -14,7 +14,7 @@ import java.net.URLConnection;
 
 import org.xmlsh.core.CoreException;
 import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.xpath.ShellContext;
+import org.xmlsh.xpath.ThreadLocalShell;
 
 public class PortURLConnection extends URLConnection {
 
@@ -36,7 +36,7 @@ public class PortURLConnection extends URLConnection {
 	public InputStream getInputStream() throws IOException {
 
 		String name = this.getURL().getPath();
-		Shell shell = ShellContext.get();
+		Shell shell = ThreadLocalShell.get();
 		if (shell != null)
 			try {
 				return shell.getEnv().getInputPort(name).asInputStream(shell.getSerializeOpts());
@@ -55,7 +55,7 @@ public class PortURLConnection extends URLConnection {
 	public OutputStream getOutputStream() throws IOException {
 
 		String name = this.getURL().getPath();
-		Shell shell = ShellContext.get();
+		Shell shell = ThreadLocalShell.get();
 		if (shell != null)
 			try {
 				return shell.getEnv().getOutputPort(name).asOutputStream(shell.getSerializeOpts());

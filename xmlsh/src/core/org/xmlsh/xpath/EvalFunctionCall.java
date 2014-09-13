@@ -45,7 +45,7 @@ public class EvalFunctionCall extends ExtensionFunctionCall
 		String command = arguments[0].next().getStringValue();
 		SequenceIterator args = arguments.length > 1 ? arguments[1] : null;
 
-		Shell shell = ShellContext.get();
+		Shell shell = ThreadLocalShell.get();
 
 		try {
 

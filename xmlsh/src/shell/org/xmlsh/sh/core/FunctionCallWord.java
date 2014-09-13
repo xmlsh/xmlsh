@@ -23,9 +23,10 @@ import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.grammar.Token;
 import org.xmlsh.sh.shell.IModule;
+import org.xmlsh.sh.shell.ModuleHandle;
 import org.xmlsh.sh.shell.ParseResult;
 import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.sh.shell.ModuleContext;
+import org.xmlsh.sh.shell.StaticContext;
 import org.xmlsh.util.Util;
 
 /*
@@ -38,6 +39,7 @@ public class FunctionCallWord extends Word
 	String	 mFunction;
 	WordList	mArgs;
 	Word      mPrefix;  // expr . function( ... )
+	private ModuleHandle mod;
 	private static Logger mLogger = LogManager.getLogger();
 
 	public FunctionCallWord(Token t , String func, WordList args)
@@ -118,17 +120,15 @@ public class FunctionCallWord extends Word
 
 		
 
+		int refCount = 0;
 
-		boolean popContext = false ;
 		try {
-			IModule module = func.getModule();
+			ModuleHandle module = func.getModule();
+			refCount = module.getRefCount();
 			assert( module != null );
-			ModuleContext ctx = module.getStaticContext();
-			// Cross module functiomn call 
-			if( ctx != null ){
-				popContext = true ;
-				shell.pushModuleContext(ctx);
-			}
+			mLogger.debug("pushing module {} ref {} " , module , refCount );
+			
+			shell.pushModule(module);
 			
 
 			mLogger.warn("Need to also set the shell context");
@@ -147,13 +147,14 @@ public class FunctionCallWord extends Word
 			throw new CoreException(e);
 		}
 		finally{
-			if( popContext ){
-				mLogger.info("Popping shell context");
-				ModuleContext ctx = shell.popModuleContext();
-				assert( ctx != null );
+
+				mod = shell.popModule();
+				mLogger.trace("Module popped: {} ref {} ", mod , mod.getRefCount() );
+			
+				if( mod.getRefCount() != refCount )
+					mLogger.error("Ref counts after commands doesnt match {} {}" , refCount , mod.getRefCount() );
 				
-				// TODO: should I push this back into the mdoule ?
-			}
+					// TODO: should I push this back into the mdoule ?
 				
 			mLogger.exit();
 

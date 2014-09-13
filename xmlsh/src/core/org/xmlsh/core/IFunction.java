@@ -9,9 +9,9 @@ package org.xmlsh.core;
 import java.util.List;
 
 import org.xmlsh.sh.core.SourceLocation;
-import org.xmlsh.sh.shell.IModule;
+import org.xmlsh.sh.shell.ModuleHandle;
 import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.sh.shell.ModuleContext;
+import org.xmlsh.sh.shell.StaticContext;
 
 public interface IFunction
 {
@@ -20,7 +20,7 @@ public interface IFunction
   public String getName();
   public EvalEnv argumentEnv(EvalEnv env);
   public EvalEnv returnEnv(EvalEnv env);
-  public IModule	getModule();
+  public ModuleHandle	getModule();
 
 
 }

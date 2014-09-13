@@ -19,11 +19,11 @@ import java.util.Map.Entry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.xmlsh.sh.core.SourceLocation;
-import org.xmlsh.sh.shell.IModule;
+import org.xmlsh.sh.shell.ModuleHandle;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.sh.shell.ShellConstants;
-import org.xmlsh.sh.shell.ModuleContext;
+import org.xmlsh.sh.shell.StaticContext;
 import org.xmlsh.util.PortCopier;
 import org.xmlsh.util.StreamCopier;
 import org.xmlsh.util.Util;
@@ -34,9 +34,9 @@ public class ExternalCommand implements ICommand {
 
 	private		File			mCommandFile;		// command path
 	private		SourceLocation 	mLocation ;
-	private    IModule mModule ;
+	private    ModuleHandle mModule ;
 
-	public ExternalCommand( File cmd , SourceLocation location, IModule module )
+	public ExternalCommand( File cmd , SourceLocation location, ModuleHandle module )
 	{
 		mLogger.entry(cmd,location,module);
 		assert( module != null );
@@ -238,7 +238,7 @@ public class ExternalCommand implements ICommand {
     
   }
 @Override
-public IModule getModule() {
+public ModuleHandle getModule() {
 
 	return mModule ;
 

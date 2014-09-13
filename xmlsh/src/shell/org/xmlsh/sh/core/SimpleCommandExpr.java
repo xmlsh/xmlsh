@@ -16,9 +16,10 @@ import org.xmlsh.core.ICommand;
 import org.xmlsh.core.ThrowException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.IModule;
+import org.xmlsh.sh.shell.ModuleHandle;
 import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.sh.shell.ModuleContext;
-import org.xmlsh.xpath.ShellContext;
+import org.xmlsh.sh.shell.StaticContext;
+import org.xmlsh.xpath.ThreadLocalShell;
 
 public class SimpleCommandExpr extends CommandExpr {
 
@@ -150,16 +151,12 @@ public class SimpleCommandExpr extends CommandExpr {
 
 		}
 
+		int refcnt = 0;
 		
 		// In case we need to restore it - get it from possibly cloned shell
 
-		Shell saved_context_shell = ShellContext.set( shell );
+		Shell saved_context_shell = ThreadLocalShell.set( shell );
 		
-		IModule smod = shell.getModule();
-		mLogger.debug("exec command: this {} mod: {}" , this ,  smod );
-		
-        boolean bPopContext = false ;
-
 		try {
 
 
@@ -171,17 +168,13 @@ public class SimpleCommandExpr extends CommandExpr {
 			mSuffix.exec( shell, getLocation() );
 
 			// Push the current module if its different
-			IModule mod = cmd.getModule();
+			ModuleHandle mod = cmd.getModule();
 			assert( mod != null );
+			refcnt = mod.getRefCount();
 			
-			ModuleContext ctx = mod.getStaticContext();
-			// Context is often 
-			
-			if( ctx != null   ){
-				mLogger.info("pushing module context" , ctx );
-               shell.pushModuleContext(ctx);				
-               bPopContext = true ;
-			}
+
+			mLogger.info("pushing module {} " , mod);
+            shell.pushModule(mod);		
 
 			return cmd.run(  shell, cmdName , cmdLine );
 
@@ -209,28 +202,22 @@ public class SimpleCommandExpr extends CommandExpr {
 
 		finally {
 			mLogger.trace("exec finally: {}",this);
-			ShellContext.set(saved_context_shell);
-			
-			if( bPopContext ){
-			   mLogger.trace("popping context" );
-			  ModuleContext ctx = shell.popModuleContext();
-				assert( ctx != null );
-				// TODO: should I push this back into the mdoule ?
-			}
+			ThreadLocalShell.set(saved_context_shell);
+			ModuleHandle mod = shell.popModule();
+			mLogger.trace("Module popped: {} ref: ", mod , mod.getRefCount() );
+			if( mod.getRefCount() != refcnt )
+				mLogger.error("Ref counts after commands doesnt match {} {}" , refcnt , mod.getRefCount() );
+			// TODO: should I push this back into the mdoule ?
 			
 			if( ! shell.isClosed() ) {
 				if( mPrefix == null )
 					shell.getEnv().restoreIO();
-				else
+				else {
 					// Should use try-resource instead
-					if( saved_shell != null ){
+					if( saved_shell != null )
 						shell.close();
-					}
-					
-
+				}
 			}
-		       mLogger.exit();
-
 		}
 
 	}

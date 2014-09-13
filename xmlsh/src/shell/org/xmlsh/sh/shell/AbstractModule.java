@@ -6,7 +6,6 @@
 
 package org.xmlsh.sh.shell;
 
-
 import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
@@ -18,150 +17,132 @@ import org.xmlsh.core.XClassLoader;
 import org.xmlsh.core.XValue;
 import org.xmlsh.util.Util;
 
- abstract class AbstractModule  implements IModule
-{
-	 
-		protected String mName;
-		
-	 
-  protected ClassLoader mClassLoader; // Classloader for this module
+import com.sun.xml.internal.bind.annotation.OverrideAnnotationOf;
 
-protected URL mHelpURL = null;
+abstract class AbstractModule implements IModule {
 
-  private HashMap<String, Class<?>> mClassCache = new HashMap<String, Class<?>>();
+	protected String mName;
+	private boolean bClosed = false;
 
-  protected HashMap<String, Boolean> mScriptCache = new HashMap<String, Boolean>();
+	protected ClassLoader mClassLoader; // Classloader for this module
 
-  
+	protected URL mHelpURL = null;
 
-  // Not static - use derived class
-  protected  final static Logger mLogger = LogManager.getLogger();
-  protected AbstractModule()
-  {
-  }
-  protected AbstractModule(String name)
-  {
-    mName = name;
-  }
+	private HashMap<String, Class<?>> mClassCache = new HashMap<String, Class<?>>();
 
-  @Override
-  public void close() throws IOException
-  {
-    mLogger.trace("Closing module {} " , getName() );
-  }
-  protected Class<?> findClass(String className)
-  {
+	protected HashMap<String, Boolean> mScriptCache = new HashMap<String, Boolean>();
+
+	// Not static - use derived class
+	protected final static Logger mLogger = LogManager.getLogger();
 
 
-    // Find cached class name even if null
-    // This caches failures as well as successes
-    // Consider changing to a WeakHashMap<> if this uses up too much memory caching failed lookups
-    if(mClassCache.containsKey(className))
-      return mClassCache.get(className);
-
-    Class<?> cls = null;
-    try {
-      cls = Class.forName(className, true, mClassLoader);
-    } catch (ClassNotFoundException e) {
-
-    }
-    // Store class in cache even if null
-    mClassCache.put(className, cls);
-    return cls;
-
-  }
-  
-  
-  protected Class<?> findClass(String name, List<String> packages)
-  {
-     for( String pkg : packages ) {
-       Class<?>  cls = findClass( pkg + "." + name );
-       if(cls != null )
-         return cls ;
-     }
-    return null;
-  }
- 
-  protected ClassLoader getClassLoader(List<URL> classpath)
-  {
-    if(classpath == null || classpath.size() == 0)
-      return getClass().getClassLoader();
-
-    return new XClassLoader(classpath.toArray(new URL[classpath.size()]), getClass().getClassLoader());
-
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.xmlsh.sh.shell.IModule#getHelpURL()
-   */
-  @Override
-  public URL getHelpURL()
-  {
-    return mHelpURL;
-  }
-
- 
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.xmlsh.sh.shell.IModule#getName()
-   */
-  @Override
-  public String getName()
-  {
-    return mName;
-  }
-
-  
-
-  public URL getResource(String res)
-  {
-    /*
-     * Undocumented: When using a classloader to get a resource, then the
-     * name should NOT begin with a "/"
-     */
-    if(res.startsWith("/"))
-      res = res.substring(1);
-    return mClassLoader.getResource(res);
-  }
-
-  
-  @Override
-	public ModuleContext getStaticContext() {
-	  
-	  return mLogger.exit(null ); // NO default static context
+	protected AbstractModule(String name) {
+		mName = name;
 	}
 
-  
+	@Override
+	public void close() throws IOException {
 
-  @Override
-  public void onInit(Shell shell, List<XValue> args) throws Exception
-  {
-    mLogger.trace("module {} onInit()" , getName() );
+		mLogger.entry();
+		if (bClosed)
+			return;
 
-  }
+		mClassCache.clear();
+		mScriptCache.clear();
+		mClassCache = null;
+		mScriptCache = null;
+		mClassLoader = null;
+		bClosed = true ;
+	}
 
+	protected Class<?> findClass(String className) {
 
+		// Find cached class name even if null
+		// This caches failures as well as successes
+		// Consider changing to a WeakHashMap<> if this uses up too much memory
+		// caching failed lookups
+		if (mClassCache.containsKey(className))
+			return mClassCache.get(className);
 
-  @Override
-  public void onLoad(Shell shell)
-  {
-    mLogger.trace("module {} onLoad()" , getName() );
+		Class<?> cls = null;
+		try {
+			cls = Class.forName(className, true, mClassLoader);
+		} catch (ClassNotFoundException e) {
 
-  }
+		}
+		// Store class in cache even if null
+		mClassCache.put(className, cls);
+		return cls;
 
-  protected String toResourceName(String name,String pkg)
-  {
-    String resource = pkg.replace('.', '/') + "/" + name;
-    return resource;
-  }
+	}
 
-  public String toString() {
-	return describe();
-}
+	protected Class<?> findClass(String name, List<String> packages) {
+		for (String pkg : packages) {
+			Class<?> cls = findClass(pkg + "." + name);
+			if (cls != null)
+				return cls;
+		}
+		return null;
+	}
+
+	protected ClassLoader getClassLoader(List<URL> classpath) {
+		if (classpath == null || classpath.size() == 0)
+			return getClass().getClassLoader();
+
+		return new XClassLoader(classpath.toArray(new URL[classpath.size()]),
+				getClass().getClassLoader());
+
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.xmlsh.sh.shell.IModule#getHelpURL()
+	 */
+	@Override
+	public URL getHelpURL() {
+		return mHelpURL;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.xmlsh.sh.shell.IModule#getName()
+	 */
+	@Override
+	public String getName() {
+		return mName;
+	}
+
+	public URL getResource(String res) {
+		/*
+		 * Undocumented: When using a classloader to get a resource, then the
+		 * name should NOT begin with a "/"
+		 */
+		if (res.startsWith("/"))
+			res = res.substring(1);
+		return mClassLoader.getResource(res);
+	}
+
+	@Override
+	public void onInit(Shell shell, List<XValue> args) throws Exception {
+		mLogger.trace("module {} onInit()", getName());
+
+	}
+
+	@Override
+	public void onLoad(Shell shell) {
+		mLogger.trace("module {} onLoad()", getName());
+
+	}
+
+	protected String toResourceName(String name, String pkg) {
+		String resource = pkg.replace('.', '/') + "/" + name;
+		return resource;
+	}
+
+ 
+	public String toString() { return getName() ; }
 }
 
 //

@@ -18,10 +18,10 @@ import javax.xml.transform.Source;
 
 import org.apache.logging.log4j.Logger;
 import org.xmlsh.sh.core.SourceLocation;
-import org.xmlsh.sh.shell.IModule;
+import org.xmlsh.sh.shell.ModuleHandle;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.sh.shell.ModuleContext;
+import org.xmlsh.sh.shell.StaticContext;
 import org.xmlsh.util.HelpUsage;
 import org.xmlsh.util.Util;
 
@@ -46,10 +46,10 @@ public abstract class AbstractCommand implements ICommand {
 	protected SourceLocation		mLocation ;
 	private SerializeOpts mSerializeOpts = null ;
 
-	protected IModule mModule;
+	protected ModuleHandle mModule;
 
 	@Override
-	public final IModule getModule() {
+	public final ModuleHandle getModule() {
 		mLogger.entry();
 
 		assert( mModule != null );
@@ -57,16 +57,20 @@ public abstract class AbstractCommand implements ICommand {
 	}
 
 
-	public void setModule(IModule module) {
+	public void setModule(ModuleHandle module) throws IOException {
 		mLogger.entry(module);
 
+		if( mModule != null )
+			mModule.release();
+		module.addRef();
 		mModule = module;
 	}
 
 
-	public AbstractCommand(IModule module) {
-		mLogger.entry(module);
-		mModule = module ;
+	public AbstractCommand(ModuleHandle moduleHandle) {
+		mLogger.entry(moduleHandle);
+		mModule = moduleHandle;
+		mModule.addRef();
 
 	}
 

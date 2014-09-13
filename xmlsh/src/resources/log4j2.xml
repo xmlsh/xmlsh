@@ -17,6 +17,10 @@
 		<File name="A1" fileName="${logfile}" append="false">
 			<PatternLayout pattern="%d %-5p [%t] %c{5} %M - %m%n%F %L%n" />
 		</File>
+		<File name="A2" fileName="${logfile}.xml" append="false">
+			<XMLLayout complete="true"/>
+		</File>
+		
 		<Console name="CONSOLE" target="SYSTEM_ERR">
 			<PatternLayout pattern="%m MDC%X%n" />
 		</Console>
@@ -28,15 +32,13 @@
 	  
 		<logger name="org.xmlsh" level="TRACE">
 			<AppenderRef ref="A1"  />
+			<AppenderRef ref="A2" level="ERROR"/>
 		</logger>
 		<logger name="httpclient" level="WARN" />
 		<logger name="http.wire" level="WARN" />
 		<logger name="org.apache.http" level="WARN" />
 		<logger name="com.amazonaws" level="WARN" />
 		<logger name="org.apache.http.impl.conn" level="WARN" />
-		<logger name="org.xmlsh" level="TRACE" additivity="true">
-		   <AppenderRef ref="A1" />
-		</logger>
 		<logger name="org.xmlsh.sh.grammar" level="WARN" additivity="false">
 		   <AppenderRef ref="A1" />
 		</logger>
