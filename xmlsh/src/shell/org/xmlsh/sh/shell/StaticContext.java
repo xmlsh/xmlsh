@@ -3,18 +3,12 @@ package org.xmlsh.sh.shell;
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.xmlsh.builtin.commands.log;
 import org.xmlsh.core.IFunctionDecl;
 import org.xmlsh.core.Namespaces;
-import org.xmlsh.core.Variables;
-import org.xmlsh.core.XEnvironment;
-import org.xmlsh.core.XIOEnvironment;
-import org.xmlsh.sh.core.SourceLocation;
 
 // The 'Static Context' (similar to XQuery/XSLT)
 // Composed of Functions, Modules, Namespaces anything which is determined
@@ -34,6 +28,7 @@ public class StaticContext implements Cloneable, Closeable {
 	
 	
 	// log debugging
+	@Override
 	public String toString() {
 		return "CTX: " + id ;
 	}
@@ -45,6 +40,7 @@ public class StaticContext implements Cloneable, Closeable {
 	}
 	
 
+	@Override
 	public StaticContext clone()
 	{
 		mLogger.entry(this);

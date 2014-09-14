@@ -13,7 +13,8 @@ public abstract class PropertiesScanner extends TextLineScanner implements IProp
   
   String propertyDelimiter = "[=:]";
   
-  void run( Scanner scanner ) {
+  @Override
+void run( Scanner scanner ) {
     super.run(scanner);
     
   }

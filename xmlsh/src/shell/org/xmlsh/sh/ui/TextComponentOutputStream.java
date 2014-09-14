@@ -29,7 +29,7 @@ public class TextComponentOutputStream extends OutputStream {
 	public TextComponentOutputStream(ITextAreaComponent text, SerializeOpts serializeOpts, String port) {
 		super();
 		this.port = port;
-		this.mSerializeOpts = serializeOpts;
+		mSerializeOpts = serializeOpts;
 		mOutputText = text;
 	}
 

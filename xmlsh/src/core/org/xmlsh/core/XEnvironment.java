@@ -24,9 +24,7 @@ import javax.xml.transform.Source;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.xml.sax.InputSource;
-import org.xmlsh.builtin.commands.exit;
 import org.xmlsh.sh.shell.FunctionDefinitions;
-import org.xmlsh.sh.shell.IModule;
 import org.xmlsh.sh.shell.ModuleHandle;
 import org.xmlsh.sh.shell.Modules;
 import org.xmlsh.sh.shell.SerializeOpts;
@@ -46,6 +44,7 @@ public class XEnvironment implements AutoCloseable, Closeable {
 	private		Stack<XIOEnvironment>  mSavedIO;
 	private     Stack<ModuleHandle> mModuleStack;
 	private     boolean bClosed = false;
+	private StaticContext ctx;
 
 
 
@@ -249,8 +248,8 @@ public class XEnvironment implements AutoCloseable, Closeable {
 		
 		mLogger.entry(shell);
 		XEnvironment 	that = new XEnvironment(shell, mStaticContext.clone() , false);
-		that.mVars		= new Variables(this.mVars);
-		that.mIO = new XIOEnvironment(this.getIO());
+		that.mVars		= new Variables(mVars);
+		that.mIO = new XIOEnvironment(getIO());
 		
 		return mLogger.exit( that);
 	}
@@ -265,7 +264,7 @@ public class XEnvironment implements AutoCloseable, Closeable {
 			mLogger.exit();
 		}
 		
-		if( this.mSavedIO != null && ! mSavedIO.isEmpty())
+		if( mSavedIO != null && ! mSavedIO.isEmpty())
 			throw new IOException("Closing XEnvironment when mSavedIO is not empty");
 
 		getIO().release();
@@ -762,6 +761,8 @@ public class XEnvironment implements AutoCloseable, Closeable {
 		mLogger.entry(module , mModuleStack.size() );
 		module.addRef();
 		mModuleStack.push(module);
+		//ctx = module.get().getStaticContext();
+		//mLogger.error("WHAT TO DO WITH PUSHED STATIC CTX: {}",ctx );
 		return mLogger.exit(module) ;
 	}
 

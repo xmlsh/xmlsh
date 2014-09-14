@@ -54,7 +54,7 @@ public class VariableInputPort extends InputPort {
 	public VariableInputPort(XVariable value) throws InvalidArgumentException {
 		mVariable = value;
 		if( value.getValue().isXdmNode()  )
-			this.setSystemId( value.getValue().asXdmNode().getBaseURI().toString() );
+			setSystemId( value.getValue().asXdmNode().getBaseURI().toString() );
 	}
 
 	@Override
@@ -99,7 +99,7 @@ public class VariableInputPort extends InputPort {
 	public synchronized InputSource asInputSource(SerializeOpts opts) throws CoreException{
 
 		InputSource in = new InputSource(asInputStream(opts));
-		in.setSystemId(this.getSystemId());
+		in.setSystemId(getSystemId());
 		return in;
 
 	}

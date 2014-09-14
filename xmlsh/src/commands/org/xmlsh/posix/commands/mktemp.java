@@ -43,7 +43,7 @@ public class mktemp extends XCommand {
 			tmp.mkdirs();
 
 		}
-		OutputPort out = this.getStdout();
+		OutputPort out = getStdout();
 		out.asPrintStream(getSerializeOpts(opts)).println( FileUtils.convertPath(tmp.getAbsolutePath(),false) );
 		return 0;
 	}

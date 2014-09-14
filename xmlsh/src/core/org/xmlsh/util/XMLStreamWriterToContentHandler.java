@@ -80,9 +80,9 @@ public class XMLStreamWriterToContentHandler implements XMLStreamWriter {
 
 	@Override
 	public void setNamespaceContext(NamespaceContext context) throws XMLStreamException {
-		if (this.rootContext == null && elementContext == null) {
+		if (rootContext == null && elementContext == null) {
 
-			this.rootContext = context;
+			rootContext = context;
 
 		} else {
 

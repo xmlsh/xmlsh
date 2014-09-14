@@ -23,16 +23,17 @@ public class RootModule extends AbstractModule {
 		super("builtin");
 	}
 	
+	@Override
 	public String toString() {
 		return getName();
 	}
 	@Override
-	public ICommand getCommandClass(String name) throws IOException {
+	public ICommand getCommand(String name) throws IOException {
 		return null;
 	}
 
 	@Override
-	public IFunction getFunctionClass(String name) {
+	public IFunction getFunction(String name) {
 		return null;
 	}
 

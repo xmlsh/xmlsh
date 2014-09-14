@@ -45,12 +45,12 @@ public class WordList extends ArrayList<Word>
 
   public XValue expand(Shell shell, EvalEnv env, SourceLocation loc) throws IOException, CoreException
   {
-    if(this.size() == 0)
+    if(size() == 0)
       return XValue.newXValue(XValueSequence.emptySequence());
-    if(this.size() == 1)
-      return this.get(0).expand(shell, env, loc);
+    if(size() == 1)
+      return get(0).expand(shell, env, loc);
 
-    List<XValue> list = new ArrayList<XValue>(this.size());
+    List<XValue> list = new ArrayList<XValue>(size());
 
     for (Word w : this) {
       XValue v = w.expand(shell, env, loc);

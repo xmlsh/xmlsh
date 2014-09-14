@@ -16,10 +16,8 @@ import org.xmlsh.core.ICommand;
 import org.xmlsh.core.ThrowException;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
-import org.xmlsh.sh.shell.IModule;
 import org.xmlsh.sh.shell.ModuleHandle;
 import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.sh.shell.StaticContext;
 import org.xmlsh.util.Util;
 import org.xmlsh.xpath.ThreadLocalShell;
 
@@ -49,16 +47,6 @@ public class SimpleCommandExpr extends CommandExpr {
 		for( Word w : cmdline ) {
 			// not to command yet 
 			if( mCommand == null  ) {
-				if( w instanceof StringWord ) {
-					String s = w.toString();
-					Assign assign = null;// parseAssign( s );
-					if( assign != null ) {
-						if( mPrefix == null )
-							mPrefix = new CommandPrefixExpr();
-						mPrefix.add(assign);
-						continue ;
-					}
-				}
 				mCommand = w ;
 				continue ;
 			}
@@ -126,7 +114,7 @@ public class SimpleCommandExpr extends CommandExpr {
 
 		String cmdName = cmdLine.remove(0).toString();
 
-		try ( ICommand cmd = CommandFactory.getInstance().getCommand( shell , cmdName , getLocation() ) ){
+		try ( ICommand cmd = CommandFactory.getCommand( shell , cmdName , getLocation() ) ){
 			if( cmd == null ){
 				logLocation(shell);
 				shell.printErr(mCommand + ": not found");

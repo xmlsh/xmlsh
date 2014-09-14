@@ -38,7 +38,7 @@ public class xgzip extends XCommand {
 				GZIPOutputStream zos = new GZIPOutputStream( 
 						zipfile == null ?
 								getStdout().asOutputStream(serializeOpts) :
-									this.getOutputStream( zipfile.toString(), false, serializeOpts )
+									getOutputStream( zipfile.toString(), false, serializeOpts )
 						))
 						{
 

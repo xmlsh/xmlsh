@@ -6,24 +6,18 @@
 
 package org.xmlsh.core;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 
-import net.sf.saxon.trans.UncheckedXPathException;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.xmlsh.sh.core.ICommandExpr;
 import org.xmlsh.sh.core.SourceLocation;
-import org.xmlsh.sh.shell.IModule;
 import org.xmlsh.sh.shell.ModuleHandle;
-import org.xmlsh.sh.shell.ScriptModule;
 import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.sh.shell.StaticContext;
 
 public class FunctionCommand implements ICommand {
 

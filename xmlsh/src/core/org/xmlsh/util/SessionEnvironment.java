@@ -11,10 +11,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.xmlsh.core.IHandleable;
 import org.xmlsh.core.IReferenceCounted;
 import org.xmlsh.core.ReferenceCounted;
-import org.xmlsh.core.ReferenceCountedHandle;
 
 @SuppressWarnings("serial")
 public class SessionEnvironment extends ReferenceCounted implements IManagable , Closeable {

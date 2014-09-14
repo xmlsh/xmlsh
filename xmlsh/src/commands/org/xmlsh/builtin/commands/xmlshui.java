@@ -37,7 +37,7 @@ public class xmlshui extends BuiltinCommand {
 	@Override
 	public int run( List<XValue> args ) throws Exception {
 
-		XShell.run( this.getCurdir() ,  args , getShell().getSerializeOpts().clone() , getShell()  );
+		XShell.run( getCurdir() ,  args , getShell().getSerializeOpts().clone() , getShell()  );
 		return 0;
 
 

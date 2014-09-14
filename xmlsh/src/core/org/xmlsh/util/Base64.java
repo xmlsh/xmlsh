@@ -1685,13 +1685,13 @@ public class Base64
 
 			super( in );
 			this.options      = options; // Record for later
-			this.breakLines   = (options & DO_BREAK_LINES) > 0;
-			this.encode       = (options & ENCODE) > 0;
-			this.bufferLength = encode ? 4 : 3;
-			this.buffer       = new byte[ bufferLength ];
-			this.position     = -1;
-			this.lineLength   = 0;
-			this.decodabet    = getDecodabet(options);
+			breakLines   = (options & DO_BREAK_LINES) > 0;
+			encode       = (options & ENCODE) > 0;
+			bufferLength = encode ? 4 : 3;
+			buffer       = new byte[ bufferLength ];
+			position     = -1;
+			lineLength   = 0;
+			decodabet    = getDecodabet(options);
 		}   // end constructor
 
 		/**
@@ -1895,16 +1895,16 @@ public class Base64
 		 */
 		public OutputStream( java.io.OutputStream out, int options ) {
 			super( out );
-			this.breakLines   = (options & DO_BREAK_LINES) != 0;
-			this.encode       = (options & ENCODE) != 0;
-			this.bufferLength = encode ? 3 : 4;
-			this.buffer       = new byte[ bufferLength ];
-			this.position     = 0;
-			this.lineLength   = 0;
-			this.suspendEncoding = false;
-			this.b4           = new byte[4];
+			breakLines   = (options & DO_BREAK_LINES) != 0;
+			encode       = (options & ENCODE) != 0;
+			bufferLength = encode ? 3 : 4;
+			buffer       = new byte[ bufferLength ];
+			position     = 0;
+			lineLength   = 0;
+			suspendEncoding = false;
+			b4           = new byte[4];
 			this.options      = options;
-			this.decodabet    = getDecodabet(options);
+			decodabet    = getDecodabet(options);
 		}   // end constructor
 
 
@@ -1925,7 +1925,7 @@ public class Base64
 				throws java.io.IOException {
 			// Encoding suspended?
 			if( suspendEncoding ) {
-				this.out.write( theByte );
+				out.write( theByte );
 				return;
 			}   // end if: supsended
 
@@ -1934,11 +1934,11 @@ public class Base64
 				buffer[ position++ ] = (byte)theByte;
 				if( position >= bufferLength ) { // Enough to encode.
 
-					this.out.write( encode3to4( b4, buffer, bufferLength, options ) );
+					out.write( encode3to4( b4, buffer, bufferLength, options ) );
 
 					lineLength += 4;
 					if( breakLines && lineLength >= MAX_LINE_LENGTH ) {
-						this.out.write( NEW_LINE );
+						out.write( NEW_LINE );
 						lineLength = 0;
 					}   // end if: end of line
 
@@ -1980,7 +1980,7 @@ public class Base64
 				throws java.io.IOException {
 			// Encoding suspended?
 			if( suspendEncoding ) {
-				this.out.write( theBytes, off, len );
+				out.write( theBytes, off, len );
 				return;
 			}   // end if: supsended
 
@@ -2041,7 +2041,7 @@ public class Base64
 		 */
 		public void suspendEncoding() throws java.io.IOException  {
 			flushBase64();
-			this.suspendEncoding = true;
+			suspendEncoding = true;
 		}   // end suspendEncoding
 
 
@@ -2053,7 +2053,7 @@ public class Base64
 		 * @since 1.5.1
 		 */
 		public void resumeEncoding() {
-			this.suspendEncoding = false;
+			suspendEncoding = false;
 		}   // end resumeEncoding
 
 

@@ -29,6 +29,7 @@ public class JoinedWordList extends ListWord  {
     }
 
 
+	@Override
 	public boolean add( Word word ) {
 		if( word instanceof JoinedWordList ) 
 			return mList.addAll(((JoinedWordList)word).mList);

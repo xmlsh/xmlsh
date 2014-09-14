@@ -11,7 +11,6 @@ import java.util.List;
 import org.xmlsh.sh.core.SourceLocation;
 import org.xmlsh.sh.shell.ModuleHandle;
 import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.sh.shell.StaticContext;
 
 public interface IFunction
 {

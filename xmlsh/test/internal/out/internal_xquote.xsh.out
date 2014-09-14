@@ -1,6 +1,6 @@
 element()
-xs:string
+java.lang.String
 <test><foo>bar</foo></test>
 <test>&lt;foo&gt;bar&lt;/foo&gt;&#xD;
 </test>
-xs:string
+java.lang.String

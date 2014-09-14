@@ -11,7 +11,6 @@ import java.io.IOException;
 import javax.servlet.http.HttpSession;
 
 import org.xmlsh.core.ReferenceCounted;
-import org.xmlsh.util.ManagedObject;
 
 @SuppressWarnings("serial")
 public class ManagedHttpSession extends ReferenceCounted

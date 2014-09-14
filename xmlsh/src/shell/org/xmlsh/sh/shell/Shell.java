@@ -22,7 +22,6 @@ import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Constructor;
 import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.security.AccessController;
@@ -88,6 +87,7 @@ import org.xmlsh.xpath.ThreadLocalShell;
 public class Shell implements AutoCloseable, Closeable {
 	private static volatile int __id = 0;
 	private final int _id = ++__id ;
+	@Override
 	public String toString() {
 		return "Shell[" + _id + "]";
 	}
@@ -98,8 +98,8 @@ public class Shell implements AutoCloseable, Closeable {
 	public static class ReturnValue {
 		public ReturnValue(int exitStatus, XValue returnValue) {
 			super();
-			this.mExitStatus = exitStatus;
-			this.mReturnValue = returnValue;
+			mExitStatus = exitStatus;
+			mReturnValue = returnValue;
 		}
 
 		public int mExitStatus;
@@ -596,7 +596,7 @@ public class Shell implements AutoCloseable, Closeable {
 	{
 		
 		mLogger.entry(scriptURL, source, convertReturn);
-		try ( Reader reader = Util.toReader(scriptURL, this.getInputTextEncoding())) {
+		try ( Reader reader = Util.toReader(scriptURL, getInputTextEncoding())) {
 			return runScript( reader , source , convertReturn );
 		}
 			
@@ -804,7 +804,7 @@ public class Shell implements AutoCloseable, Closeable {
 				enterEval();
 				File script = this.getFile(rcfile);
 				if (script.exists() && script.canRead()) {
-					ICommand icmd = CommandFactory.getInstance().getScript(
+					ICommand icmd = CommandFactory.getScript(
 							this, script, rcfile ,  SourceMode.SOURCE, null);
 					if (icmd != null) {
 						// push location
@@ -1513,6 +1513,11 @@ public class Shell implements AutoCloseable, Closeable {
 
 	public IFunctionDecl getFunctionDecl(String name) {
 		mLogger.entry(name);
+		
+		// First look in the current module
+	//	IFunctionDecl funcd = mModule.get().getFunction(name);
+		
+		
 		StaticContext ctx = getStaticContext();
 		assert( ctx != null );
 		return mLogger.exit( ctx.getFunctionDecl(name));
@@ -1569,7 +1574,7 @@ public class Shell implements AutoCloseable, Closeable {
 
 		try {
 			int ret = exec(mBody, mBody.getLocation());
-			return this.getReturnValue();
+			return getReturnValue();
 
 		} finally {
 			popLocalVars(save_vars);
@@ -2025,7 +2030,7 @@ public class Shell implements AutoCloseable, Closeable {
 	}
 
 	public IFS getIFS() {
-		String sisf = this.getEnv().getVarString("IFS");
+		String sisf = getEnv().getVarString("IFS");
 		if (mIFS == null || !mIFS.isCurrent(sisf))
 			;
 
@@ -2074,13 +2079,13 @@ public class Shell implements AutoCloseable, Closeable {
 				}
 				for (ShellThread c : children) {
 					waitTime = Util.nextWait(end, waitTime);
-					this.killChild(c, waitTime);
+					killChild(c, waitTime);
 				}
 			}
 			terminateChildProcesses();
 		}
 		waitTime = Util.nextWait(end, waitTime);
-		this.waitAtMostChildren(0, waitTime);
+		waitAtMostChildren(0, waitTime);
 		Thread.yield();
 		return mLogger.exit(mClosed);
 

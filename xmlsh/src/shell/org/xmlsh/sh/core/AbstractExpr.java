@@ -11,6 +11,7 @@ import org.xmlsh.util.Util;
 public abstract class AbstractExpr 
 {
 	
+	@Override
 	public String toString() {
 		return "Expr: " + getName();
 	}
@@ -42,7 +43,7 @@ public abstract class AbstractExpr
 
   public void usage(Shell shell, String message)
   {
-    String cmdName = this.getName();
+    String cmdName = getName();
     SourceLocation sloc = getLocation(shell);
     if( !Util.isBlank(message))
       shell.printErr(cmdName + ": " + message,sloc);

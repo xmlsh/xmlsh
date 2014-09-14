@@ -39,6 +39,7 @@ public class NameValueMap<T> extends HashMap<String,T> implements Cloneable {
 		putAll(that);
 	}
 	
+	@Override
 	public NameValueMap<T> clone() {
 		return new NameValueMap<>( this );
 	}

@@ -63,14 +63,14 @@ public class PortCopier extends AbstractCopier
 
 			if( this != Thread.currentThread() ) {
 				Thread.yield();
-				if( this.isAlive() ) {
+				if( isAlive() ) {
 					try {
-						this.interrupt();  
+						interrupt();  
 						Thread.yield();
 					} catch( SecurityException e ) {
 						mLogger.debug("Security exception interrupting copy thread");
 					}
-					if( this.isAlive() )
+					if( isAlive() )
 						return ;
 				}
 				try {

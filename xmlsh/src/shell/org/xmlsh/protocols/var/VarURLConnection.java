@@ -38,7 +38,7 @@ public class VarURLConnection extends URLConnection {
 	@Override
 	public InputStream getInputStream() throws IOException {
 
-		String name = this.getURL().getPath();
+		String name = getURL().getPath();
 		Shell shell = ThreadLocalShell.get();
 		if (shell != null)
 			try {
@@ -58,7 +58,7 @@ public class VarURLConnection extends URLConnection {
 	@Override
 	public OutputStream getOutputStream() throws IOException {
 
-		String name = this.getURL().getPath();
+		String name = getURL().getPath();
 		Shell shell = ThreadLocalShell.get();
 		if (shell != null) {
 			XVariable var = shell.getEnv().getVar(name);

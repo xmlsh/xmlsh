@@ -6,11 +6,9 @@
 
 package org.xmlsh.core;
 
-import java.io.File;
 import java.net.URL;
 import java.util.List;
 
-import org.xmlsh.sh.shell.IModule;
 import org.xmlsh.sh.shell.RootModule;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.xpath.ThreadLocalShell;

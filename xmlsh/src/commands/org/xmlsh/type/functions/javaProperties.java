@@ -41,7 +41,7 @@ public class javaProperties extends AbstractBuiltinFunction
         if( arg.isInstanceOf( Map.class ) )
           props = XValueProperties.fromMap( arg.asInstanceOf(Map.class));
         else
-          props = (XValueProperties) JavaUtils.convert(arg, XValueProperties.class );
+          props = JavaUtils.convert(arg, XValueProperties.class );
       }
       else {
         if( arg.isInstanceOf( XValueProperties.class ) )

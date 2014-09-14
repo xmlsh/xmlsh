@@ -23,6 +23,7 @@ class FunctionDefinitions extends NameValueMap<IFunctionDecl> implements Cloneab
 
 	}
 
+	@Override
 	public FunctionDefinitions clone() {
 		return new FunctionDefinitions( this );
 	}

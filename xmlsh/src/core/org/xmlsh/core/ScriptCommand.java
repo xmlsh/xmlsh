@@ -6,29 +6,19 @@
 
 package org.xmlsh.core;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.Reader;
-import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 
 import org.apache.logging.log4j.Logger;
-import org.apache.tools.ant.filters.StringInputStream;
 import org.xmlsh.sh.core.SourceLocation;
 import org.xmlsh.sh.grammar.ParseException;
-import org.xmlsh.sh.shell.IModule;
 import org.xmlsh.sh.shell.ModuleHandle;
-import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.sh.shell.StaticContext;
-import org.xmlsh.util.FileUtils;
 import org.xmlsh.util.Util;
 
 public class ScriptCommand implements ICommand {

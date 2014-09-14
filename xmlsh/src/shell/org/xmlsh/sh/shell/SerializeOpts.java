@@ -408,7 +408,7 @@ public class SerializeOpts {
 	 * @param force_text the force_text to set
 	 */
 	public void setSerialize_xml(boolean force_text) {
-		this.serialize_xml = force_text;
+		serialize_xml = force_text;
 	}
 
 	/**

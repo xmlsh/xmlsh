@@ -36,7 +36,7 @@ public class LogFrame extends JFrame {
 		mcontentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		mcontentPane.setLayout(new BorderLayout(0, 0));
 		setContentPane(mcontentPane);
-		this.setDefaultCloseOperation(HIDE_ON_CLOSE);
+		setDefaultCloseOperation(HIDE_ON_CLOSE);
 
 
 		final TextAreaComponent textArea = new TextAreaComponent();
@@ -56,7 +56,7 @@ public class LogFrame extends JFrame {
     org.apache.logging.log4j.core.Logger coreLogger =    
         (org.apache.logging.log4j.core.Logger)LogManager.getLogger( "xmlsh.org" );// LogManager.ROOT_LOGGER_NAME);
 
-    LoggerContext context = (LoggerContext)coreLogger.getContext();
+    LoggerContext context = coreLogger.getContext();
         
     
     ShellAppender appender = new ShellAppender( new TextComponentOutputStream( textArea , mSerializeOps , "log"));

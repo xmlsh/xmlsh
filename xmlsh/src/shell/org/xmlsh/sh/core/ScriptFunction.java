@@ -5,10 +5,8 @@ import java.util.List;
 import org.xmlsh.core.EvalEnv;
 import org.xmlsh.core.IFunction;
 import org.xmlsh.core.XValue;
-import org.xmlsh.sh.shell.IModule;
 import org.xmlsh.sh.shell.ModuleHandle;
 import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.sh.shell.StaticContext;
 
 /*
  * 
@@ -48,12 +46,13 @@ final class ScriptFunction implements IFunction {
 		return parent.withFlagsMasked(EvalEnv.returnValueMask());
 	}
 
+	@Override
 	public ModuleHandle getModule() {
 		return mModule;
 	}
 
 	public void setModule(ModuleHandle module) {
-		this.mModule = module;
+		mModule = module;
 	}
 
 }

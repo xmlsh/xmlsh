@@ -19,7 +19,7 @@ public abstract class ConfigScanner extends PropertiesScanner implements IConfig
   public final void onLine(String line)
   {
     if( line.startsWith(sectionStart) && line.endsWith(sectionEnd ) ) {
-       this.onSectionStart(
+       onSectionStart(
          line.substring(
            sectionStart.length(), 
            line.length() - sectionEnd.length() ).trim() );

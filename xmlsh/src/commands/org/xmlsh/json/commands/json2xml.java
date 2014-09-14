@@ -56,7 +56,7 @@ public class json2xml extends XCommand
 
 		setSerializeOpts(opts);
 
-		InputPort in = args.isEmpty() ? this.getStdin() : this.getInput(args.get(0));
+		InputPort in = args.isEmpty() ? getStdin() : this.getInput(args.get(0));
 		XMLStreamWriter sw = null ;
 
 		JSONSerializeOpts jopts = new JSONSerializeOpts();

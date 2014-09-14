@@ -306,11 +306,11 @@ public class xed extends XCommand {
 	private void replace(MutableNodeInfo node, XValue replace, boolean compat_mode )
 			throws IndexOutOfBoundsException, SaxonApiUncheckedException, SaxonApiException, XPathException {
 		if(  ! replace.isAtomic() ){
-			XdmNode xnode = (XdmNode) replace.asXdmNode();
+			XdmNode xnode = replace.asXdmNode();
 			if( xnode.getNodeKind() == 	XdmNodeKind.ATTRIBUTE ) {
 				NodeInfo anode = xnode.getUnderlyingNode();
 
-				NodeInfo existsAttr = this.findAttribute(node , anode );
+				NodeInfo existsAttr = findAttribute(node , anode );
 				if( existsAttr  != null )
 					node.removeAttribute(existsAttr);
 

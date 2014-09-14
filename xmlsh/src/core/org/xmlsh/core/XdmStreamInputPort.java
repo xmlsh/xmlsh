@@ -79,7 +79,7 @@ public class XdmStreamInputPort extends InputPort {
 	@Override
 	public InputSource asInputSource(SerializeOpts opts) throws CoreException {
 		InputSource in = new InputSource(asInputStream(opts));
-		in.setSystemId(this.getSystemId());
+		in.setSystemId(getSystemId());
 		return in;
 	}
 

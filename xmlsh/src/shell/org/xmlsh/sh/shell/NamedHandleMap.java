@@ -1,21 +1,14 @@
 package org.xmlsh.sh.shell;
 
-import java.io.Closeable;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.xmlsh.core.AbstractCommand;
 import org.xmlsh.core.IHandle;
 import org.xmlsh.core.IHandleable;
-import org.xmlsh.core.IManagedHandle;
-import org.xmlsh.core.IReferenceCountedHandleable;
 import org.xmlsh.core.IReferencedCountedHandle;
 import org.xmlsh.core.IReleasable;
 import org.xmlsh.types.ITypeConverter;
@@ -75,6 +68,7 @@ public class NamedHandleMap<V extends IHandleable ,T extends IReferencedCountedH
 	}
 
 	// Clone map and incr ref counts
+	@Override
 	public NamedHandleMap<V,T> clone() {
 		mLogger.entry();
 
@@ -89,6 +83,7 @@ public class NamedHandleMap<V extends IHandleable ,T extends IReferencedCountedH
 		return mLogger.exit(that);
 	}
 
+	@Override
 	public boolean release() throws IOException {
 		mLogger.entry();
 		for (IHandle<V> hm : mMap.values())

@@ -88,7 +88,7 @@ public class xvalidate extends XCommand {
 	private int run_xsd(String xsd, List<XValue> args) throws Exception {
 
 		Shell shell = getEnv().getShell();
-		ICommand cmd = CommandFactory.getInstance().getCommand( shell , "xsdvalidate", getLocation());
+		ICommand cmd = CommandFactory.getCommand( shell , "xsdvalidate", getLocation());
 		ArrayList<XValue>  al = new ArrayList<XValue>();
 		al.add(XValue.newXValue(xsd));
 		al.addAll( args );
@@ -102,7 +102,7 @@ public class xvalidate extends XCommand {
 	private int run_schematron(String schematron, List<XValue> args) throws Exception {
 
 		Shell shell = getEnv().getShell();
-		ICommand cmd = CommandFactory.getInstance().getCommand( shell , "schematron", getLocation());
+		ICommand cmd = CommandFactory.getCommand( shell , "schematron", getLocation());
 		ArrayList<XValue>  al = new ArrayList<XValue>();
 		al.add(XValue.newXValue(schematron));
 		al.addAll( args );
@@ -117,7 +117,7 @@ public class xvalidate extends XCommand {
 	private int run_rng(String rng ,  List<XValue> args) throws Exception {
 
 		Shell shell = getEnv().getShell();
-		ICommand cmd = CommandFactory.getInstance().getCommand( shell , "rngvalidate",getLocation());
+		ICommand cmd = CommandFactory.getCommand( shell , "rngvalidate",getLocation());
 		ArrayList<XValue>  al = new ArrayList<XValue>();
 		al.add(XValue.newXValue(rng));
 		al.addAll( args );

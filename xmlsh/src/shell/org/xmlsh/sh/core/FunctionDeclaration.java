@@ -19,6 +19,7 @@ import org.xmlsh.sh.shell.Shell;
 public class FunctionDeclaration extends CommandExpr
 {
 	
+	@Override
 	public String toString() {
 		return "FuncDecl: " + mName ;
 	}
@@ -60,6 +61,7 @@ public class FunctionDeclaration extends CommandExpr
   	
     shell.declareFunction(new IFunctionDecl()
       {
+		@Override
 		public String toString() {
 			return "new FuncDelc: " + mName ;
 		}

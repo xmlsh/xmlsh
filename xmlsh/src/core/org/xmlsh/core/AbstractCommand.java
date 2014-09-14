@@ -21,7 +21,6 @@ import org.xmlsh.sh.core.SourceLocation;
 import org.xmlsh.sh.shell.ModuleHandle;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.sh.shell.StaticContext;
 import org.xmlsh.util.HelpUsage;
 import org.xmlsh.util.Util;
 
@@ -177,7 +176,7 @@ public abstract class AbstractCommand implements ICommand {
 
 	public void usage(String message)
 	{
-		String cmdName = this.getName();
+		String cmdName = getName();
 		SourceLocation sloc = getLocation();
 		if( !Util.isBlank(message))
 			mShell.printErr(cmdName + ": " + message,sloc);

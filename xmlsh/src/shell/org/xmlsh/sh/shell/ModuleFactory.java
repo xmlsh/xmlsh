@@ -8,10 +8,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.xmlsh.core.CommandFactory;
 import org.xmlsh.core.CoreException;
-import org.xmlsh.core.ScriptCommand;
+import org.xmlsh.core.ScriptCommand.SourceMode;
 import org.xmlsh.core.ScriptSource;
 import org.xmlsh.core.XValue;
-import org.xmlsh.core.ScriptCommand.SourceMode;
 import org.xmlsh.util.Util;
 
 public class ModuleFactory
@@ -40,7 +39,7 @@ public class ModuleFactory
     else 
     if( nameuri.endsWith(".xsh"))
     {
-       ScriptSource script  = CommandFactory.getInstance().getScriptSource(shell,nameuri ,SourceMode.IMPORT);
+    	ScriptSource script  = CommandFactory.getScriptSource(shell,nameuri ,SourceMode.IMPORT);
        if( script != null )
          mod = createScriptModule(shell ,prefix, script , nameuri );
     } 

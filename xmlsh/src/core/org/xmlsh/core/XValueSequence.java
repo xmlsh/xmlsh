@@ -76,13 +76,15 @@ public  class XValueSequence implements Iterable<XValue>  ,    IXValueSequence<X
   }
 
 
-  public int size()
+  @Override
+public int size()
   {
     return mList.size();
   }
   
 
-  public boolean isAtomic()
+  @Override
+public boolean isAtomic()
   {
     return mList.size() == 1  && mList.get(0).isAtomic() ;
   }

@@ -5,8 +5,6 @@
  */
 
 package org.xmlsh.core;
-import java.io.IOException;
-import java.net.URL;
 import java.util.List;
 
 import org.xmlsh.sh.core.SourceLocation;

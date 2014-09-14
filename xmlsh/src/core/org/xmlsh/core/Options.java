@@ -55,9 +55,9 @@ public class Options
 		public OptionDef( String name , String longname , boolean arg , boolean multi , boolean plus ){
 			this.name = name;
 			this.longname = longname ;
-			this.hasArgs = arg;
-			this.hasMulti = multi;
-			this.hasPlus = plus;
+			hasArgs = arg;
+			hasMulti = multi;
+			hasPlus = plus;
 		}
 
 
@@ -435,14 +435,14 @@ public class Options
 		return mRemainingArgs != null && ! mRemainingArgs.isEmpty();
 	}
 	public double getOptDouble(String opt, double def) {
-		return Util.parseDouble(this.getOptString(opt,""), def);
+		return Util.parseDouble(getOptString(opt,""), def);
 	}
 	public int getOptInt(String opt, int def) {
-		return Util.parseInt(this.getOptString(opt,""), def);
+		return Util.parseInt(getOptString(opt,""), def);
 	}
 
 	public long getOptLong(String opt, long l) {
-		return Util.parseLong(this.getOptString(opt,""), l);
+		return Util.parseLong(getOptString(opt,""), l);
 	}
 	public boolean hasDashDash() { return mDashDash ; }
 

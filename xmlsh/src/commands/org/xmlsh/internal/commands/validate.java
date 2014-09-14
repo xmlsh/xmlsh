@@ -9,12 +9,10 @@ package org.xmlsh.internal.commands;
 import java.util.List;
 
 import org.xmlsh.core.CommandFactory;
-import org.xmlsh.core.ICommand;
 import org.xmlsh.core.ScriptCommand;
 import org.xmlsh.core.ScriptCommand.SourceMode;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
-import org.xmlsh.util.Util;
 
 public class validate extends XCommand  {
 
@@ -37,8 +35,8 @@ public class validate extends XCommand  {
     String name = port.toString();
 
 		try {
-      @SuppressWarnings("unused")
-      ScriptCommand icmd = CommandFactory.getInstance().getScript(mShell, name ,SourceMode.VALIDATE,getLocation());
+	@SuppressWarnings("unused")
+      ScriptCommand icmd = CommandFactory.getScript(mShell, name ,SourceMode.VALIDATE,getLocation());
   		if( icmd == null ){
   		  printErr("script not found: " + name );
   		  return 1;

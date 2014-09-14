@@ -9,7 +9,6 @@ package org.xmlsh.builtin.commands;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
-import java.util.Collection;
 import java.util.List;
 
 import javax.xml.stream.XMLStreamException;
@@ -30,7 +29,6 @@ import org.xmlsh.core.XVariable.XVarFlag;
 import org.xmlsh.sh.shell.FunctionDefinitions;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.util.NameValueMap;
-import org.xmlsh.util.Util;
 
 public class declare extends BuiltinCommand {
 
@@ -79,7 +77,7 @@ public class declare extends BuiltinCommand {
 
 	private void printAllVars() throws UnsupportedEncodingException, CoreException, IOException {
 		
-		try ( PrintWriter w = this.getStdout().asPrintWriter(getSerializeOpts()) ){
+		try ( PrintWriter w = getStdout().asPrintWriter(getSerializeOpts()) ){
 			
 		  for( String var : getShell().getEnv().getVarNames() )
 			w.println(var);
@@ -92,7 +90,7 @@ public class declare extends BuiltinCommand {
 		  FunctionDefinitions fd = getShell().getFunctionDelcs();
 		  if( fd  == null )
 			  return;
-		try ( PrintWriter w = this.getStdout().asPrintWriter(getSerializeOpts()) ){
+		try ( PrintWriter w = getStdout().asPrintWriter(getSerializeOpts()) ){
 			
 		
 			  for( String f :  fd.keySet() )
@@ -103,7 +101,7 @@ public class declare extends BuiltinCommand {
 
 
 	private void printFunc(String name) throws UnsupportedEncodingException, CoreException, IOException {
-		try ( PrintWriter w = this.getStdout().asPrintWriter(getSerializeOpts()) ){
+		try ( PrintWriter w = getStdout().asPrintWriter(getSerializeOpts()) ){
 
 			IFunctionDecl fd = getShell().getFunctionDecl(name);
 			if( fd == null )

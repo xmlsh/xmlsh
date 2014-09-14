@@ -170,7 +170,7 @@ public class XMLUtils
          mLogger.info("Excpetion getting simple type",e);
          
       }
-      return JavaUtils.simpleTypeName( (Object) v );
+      return JavaUtils.simpleTypeName( v );
 
       }
 

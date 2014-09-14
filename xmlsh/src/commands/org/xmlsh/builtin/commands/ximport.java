@@ -6,25 +6,18 @@
 
 package org.xmlsh.builtin.commands;
 
-import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.xmlsh.core.BuiltinCommand;
-import org.xmlsh.core.CommandFactory;
 import org.xmlsh.core.CoreException;
-import org.xmlsh.core.ICommand;
 import org.xmlsh.core.InvalidArgumentException;
-import org.xmlsh.core.ScriptCommand;
-import org.xmlsh.core.ScriptCommand.SourceMode;
 import org.xmlsh.core.XValue;
-import org.xmlsh.sh.shell.IModule;
 import org.xmlsh.sh.shell.ModuleHandle;
 import org.xmlsh.util.StringPair;
 

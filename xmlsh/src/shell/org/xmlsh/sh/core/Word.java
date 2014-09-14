@@ -86,7 +86,7 @@ public abstract class Word {
 
 		StringWriter sw;
 		PrintWriter w = new PrintWriter(sw = new StringWriter());
-		this.print(w);
+		print(w);
 		w.close();
 		return sw.toString();
 	}

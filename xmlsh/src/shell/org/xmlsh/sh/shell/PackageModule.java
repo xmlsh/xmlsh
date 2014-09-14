@@ -18,10 +18,10 @@ import org.xmlsh.core.ICommand;
 import org.xmlsh.core.IFunction;
 import org.xmlsh.core.IFunctionDecl;
 import org.xmlsh.core.ScriptCommand;
+import org.xmlsh.core.ScriptCommand.SourceMode;
 import org.xmlsh.core.ScriptFunctionCommand;
 import org.xmlsh.core.ScriptSource;
 import org.xmlsh.core.XCommand;
-import org.xmlsh.core.ScriptCommand.SourceMode;
 import org.xmlsh.util.JavaUtils;
 import org.xmlsh.util.Util;
 
@@ -94,7 +94,7 @@ public class PackageModule extends AbstractModule
    * @see org.xmlsh.sh.shell.IModule#getFunctionClass(java.lang.String)
    */
   @Override
-  public IFunction getFunctionClass(String name)
+  public IFunction getFunction(String name)
   {
 
     String origName = name;
@@ -189,7 +189,7 @@ public class PackageModule extends AbstractModule
    * @see org.xmlsh.sh.shell.IModule#getCommandClass(java.lang.String)
    */
   @Override
-  public ICommand getCommandClass(String name) throws FileNotFoundException
+  public ICommand getCommand(String name) throws FileNotFoundException
   {
 
     /*

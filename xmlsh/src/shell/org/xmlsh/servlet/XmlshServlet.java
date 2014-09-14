@@ -90,7 +90,7 @@ public class XmlshServlet extends HttpServlet {
 			shell = new Shell(false);
 			shell.setCurdir( new File(mRoot));
 
-			ICommand	script = CommandFactory.getInstance().getScript( shell , path , SourceMode.SOURCE , null );
+			ICommand	script = CommandFactory.getScript( shell , path , SourceMode.SOURCE , null );
 			if( script != null ){
 				ByteArrayOutputStream bos = new ByteArrayOutputStream();
 				XEnvironment env = shell.getEnv();
@@ -188,7 +188,7 @@ public class XmlshServlet extends HttpServlet {
 
 
 
-			ICommand	script = CommandFactory.getInstance().getScript( shell , path , SourceMode.SOURCE , null );
+			ICommand	script = CommandFactory.getScript( shell , path , SourceMode.SOURCE , null );
 			if( script != null ){
 				ByteArrayOutputStream bos = new ByteArrayOutputStream();
 				env.setStdout( new StreamOutputPort(bos ,false) );

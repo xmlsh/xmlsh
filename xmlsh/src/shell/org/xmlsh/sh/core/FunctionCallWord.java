@@ -22,11 +22,9 @@ import org.xmlsh.core.IFunctionDecl;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.grammar.Token;
-import org.xmlsh.sh.shell.IModule;
 import org.xmlsh.sh.shell.ModuleHandle;
 import org.xmlsh.sh.shell.ParseResult;
 import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.sh.shell.StaticContext;
 import org.xmlsh.util.Util;
 
 /*
@@ -98,15 +96,8 @@ public class FunctionCallWord extends Word
 			{
        mLogger.entry();
 
-		// Try builtin functions first
-	  IFunction func = CommandFactory.getInstance().getBuiltinFunction(shell, mFunction, loc);
-
-		if(func == null){
-			IFunctionDecl funcdecl = shell.getFunctionDecl(mFunction);
-			if( funcdecl != null )
-			  func = funcdecl.getFunction();
-		}
-
+       IFunction func = CommandFactory.getFunction(shell, mFunction, loc );
+       
 		if(func == null)
 			throw new InvalidArgumentException("Unknown function: " + mFunction);
 

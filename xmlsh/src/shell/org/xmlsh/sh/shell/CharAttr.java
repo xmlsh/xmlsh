@@ -23,7 +23,7 @@ public enum CharAttr {
 	public boolean isQuote() { 
 		return isSet( (ATTR_SOFT_QUOTE.attr|ATTR_HARD_QUOTE.attr ) ); 
 	}
-	public byte attr() { return (byte) this.attr ; }
+	public byte attr() { return (byte) attr ; }
 
 
 	public static CharAttr valueOf(char c)

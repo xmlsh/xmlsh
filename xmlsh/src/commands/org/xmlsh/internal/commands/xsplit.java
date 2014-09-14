@@ -141,7 +141,7 @@ public class xsplit extends XCommand {
 						setSerializeOpts(opts);
 
 						if( mStream )
-							streamOut  = this.getEnv().getOutputPort(opts.getOptStringRequired("stream"));
+							streamOut  = getEnv().getOutputPort(opts.getOptStringRequired("stream"));
 
 						try ( 
 								InputStream is = in.asInputStream(getSerializeOpts());

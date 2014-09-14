@@ -17,5 +17,13 @@ function run_child() {
    c:child $*
 }
 
-echo initializing A=$A B=$B
+function show() {
+
+echo functions
 declare -f
+echo modules 
+import module
+echo 
+}
+
+show

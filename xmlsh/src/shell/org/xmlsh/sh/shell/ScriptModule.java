@@ -11,9 +11,9 @@ import org.xmlsh.core.ICommand;
 import org.xmlsh.core.IFunction;
 import org.xmlsh.core.IFunctionDecl;
 import org.xmlsh.core.ScriptCommand;
+import org.xmlsh.core.ScriptCommand.SourceMode;
 import org.xmlsh.core.ScriptSource;
 import org.xmlsh.core.XValue;
-import org.xmlsh.core.ScriptCommand.SourceMode;
 
 public class ScriptModule extends AbstractModule
 {
@@ -98,7 +98,7 @@ public void close() throws IOException {
 
 
 @Override
-  public ICommand getCommandClass(String name)
+  public ICommand getCommand(String name)
   {
 	if( mStaticContext == null )
 		return null;
@@ -111,7 +111,7 @@ public void close() throws IOException {
   }
 
   @Override
-  public IFunction getFunctionClass(String name)
+  public IFunction getFunction(String name)
   {
 	  if( mStaticContext == null )
 			return null;
@@ -136,8 +136,8 @@ public void close() throws IOException {
     return getName();
   }
 
-// @TODO
-public StaticContext getStaticContext() {
+  @Override
+  public StaticContext getStaticContext() {
 	return mStaticContext ;
 }
 

@@ -114,13 +114,12 @@ public class xmlsh extends BuiltinCommand {
 					ICommandExpr cmd = new EvalScriptExpr( command );
 					ret = shell.exec(cmd);
 
-
 				}
 				else // Run script 
 				{
 
 					String scmd = args.remove(0).toString();
-					ICommand cmd = CommandFactory.getInstance().getScript( shell , scmd, SourceMode.SOURCE,getLocation() );
+					ICommand cmd = CommandFactory.getScript( shell , scmd, SourceMode.SOURCE,getLocation() );
 					if( cmd == null ){
 						shell.printErr( scmd + ": not found",getLocation());
 					}
@@ -128,7 +127,6 @@ public class xmlsh extends BuiltinCommand {
 
 						// Run as sourced mode, in this shell ...
 						// must set args ourselves
-
 						shell.setArg0( scmd);
 						shell.setArgs(args );
 						ret = cmd.run( shell , scmd , null );

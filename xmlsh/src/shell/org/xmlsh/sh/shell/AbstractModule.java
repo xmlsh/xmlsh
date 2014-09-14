@@ -20,6 +20,14 @@ import org.xmlsh.util.ReferenceCounter;
 
 abstract class AbstractModule implements IModule {
 
+	@Override
+	public StaticContext getStaticContext() {
+
+		getLogger().entry();
+		return null;
+	}
+
+
 	private ReferenceCounter mCounter = new ReferenceCounter();
 	@Override
 	public ReferenceCounter getCounter() {
@@ -129,6 +137,7 @@ abstract class AbstractModule implements IModule {
 		return mName;
 	}
 
+	@Override
 	public URL getResource(String res) {
 		/*
 		 * Undocumented: When using a classloader to get a resource, then the
@@ -157,6 +166,7 @@ abstract class AbstractModule implements IModule {
 	}
 
  
+	@Override
 	public String toString() { return getName() ; }
 }
 

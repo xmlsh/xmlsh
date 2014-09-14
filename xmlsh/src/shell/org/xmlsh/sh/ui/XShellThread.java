@@ -8,9 +8,7 @@ package org.xmlsh.sh.ui;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
@@ -117,8 +115,8 @@ public class XShellThread extends Thread {
 
 
 
-		mResultOutputStream = new TextComponentOutputStream(mResultTextArea, this.mSerializeOpts , "stdout");
-		mResultErrorStream = new TextComponentOutputStream(mResultTextArea, this.mSerializeOpts , "stderr");
+		mResultOutputStream = new TextComponentOutputStream(mResultTextArea, mSerializeOpts , "stdout");
+		mResultErrorStream = new TextComponentOutputStream(mResultTextArea, mSerializeOpts , "stderr");
 		mStopButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -279,7 +277,7 @@ public class XShellThread extends Thread {
 
 	public synchronized void close() {
 		mClosed = true ;
-		this.interrupt();
+		interrupt();
 		if( mShell != null ) {
 			mShell.shutdown(true,100);
 		}

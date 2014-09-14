@@ -503,7 +503,7 @@ public class XShell {
 
 	public void onThreadExit(XShellThread thread )
 	{
-		if( this.mShell == thread ) {
+		if( mShell == thread ) {
 			JFrame top = mframe ;
 			mframe = null ;
 			// unexpected termination 

@@ -6,7 +6,6 @@
 
 package org.xmlsh.builtin.commands;
 
-import java.io.File;
 import java.net.URL;
 import java.util.List;
 
@@ -21,7 +20,6 @@ import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.ScriptCommand;
 import org.xmlsh.core.XValue;
-import org.xmlsh.sh.shell.IModule;
 import org.xmlsh.sh.shell.ModuleHandle;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.util.Util;
@@ -77,11 +75,11 @@ public class xwhich extends BuiltinCommand {
 		for( XValue xname : xvargs ){
 
 			String name = xname.toString();
-			ICommand command = CommandFactory.getInstance().getCommand(mShell , name , getLocation() );
+			ICommand command = CommandFactory.getCommand(mShell , name , getLocation() );
 
 			// Try builtin functions 
 			if( command == null ) {
-				IFunction func = CommandFactory.getInstance().getBuiltinFunction(mShell, name,  getLocation() );
+				IFunction func = CommandFactory.getBuiltinFunction(mShell, name );
 				if( func != null ) {
 					if( ! bNoWrite ){
 

@@ -6,28 +6,17 @@
 
 package org.xmlsh.sh.shell;
 
-import java.io.Closeable;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.xmlsh.builtin.commands.exit;
-import org.xmlsh.core.CoreException;
-import org.xmlsh.core.IHandle;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.util.IManagable;
 import org.xmlsh.util.ManagedObject;
 import org.xmlsh.util.NameValueMap;
-import org.xmlsh.util.StringPair;
-import org.xmlsh.util.Util;
 
 /*
  * Modules are like namespaces.
@@ -60,6 +49,7 @@ public class Modules extends ManagedObject<Modules> implements
 		mLogger.exit();
 	}
 	
+	@Override
 	public Modules clone(){
 		mLogger.entry();
 		return mLogger.exit(new Modules(this));

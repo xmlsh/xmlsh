@@ -1685,17 +1685,20 @@ public class Util
   public static <E> Iterator<E> singletonIterator(final E e) {
       return new Iterator<E>() {
           private boolean hasNext = true;
-          public boolean hasNext() {
+          @Override
+		public boolean hasNext() {
               return hasNext;
           }
-          public E next() {
+          @Override
+		public E next() {
               if (hasNext) {
                   hasNext = false;
                   return e;
               }
               throw new NoSuchElementException();
           }
-          public void remove() {
+          @Override
+		public void remove() {
               throw new UnsupportedOperationException();
           }
       };

@@ -101,7 +101,7 @@ public class XmlshTask extends Task {
 
 	// The setter for the "message" attribute
 	public void setScript(String script) {
-		this.mScript = script;
+		mScript = script;
 	}
 
 	public void addText( String text )

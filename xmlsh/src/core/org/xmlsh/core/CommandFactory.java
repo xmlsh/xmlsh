@@ -7,9 +7,7 @@
 package org.xmlsh.core;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
 import java.util.HashMap;
 
@@ -50,7 +48,6 @@ import org.xmlsh.core.ScriptCommand.SourceMode;
 import org.xmlsh.java.commands.jset;
 import org.xmlsh.json.commands.jsonread;
 import org.xmlsh.sh.core.SourceLocation;
-import org.xmlsh.sh.shell.IModule;
 import org.xmlsh.sh.shell.ModuleHandle;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.sh.shell.ShellConstants;
@@ -58,7 +55,7 @@ import org.xmlsh.text.commands.readconfig;
 import org.xmlsh.util.StringPair;
 import org.xmlsh.util.Util;
 
-public class CommandFactory {
+public abstract class CommandFactory {
 	public static final String kCOMMANDS_HELP_XML = "/org/xmlsh/resources/help/commands.xml";
 	public static final String kFUNCTIONS_HELP_XML = "/org/xmlsh/resources/help/functions.xml";
 
@@ -66,14 +63,14 @@ public class CommandFactory {
 			.getLogger(CommandFactory.class);
 	private static CommandFactory _instance = null;
 
-	private HashMap<String, Class<? extends AbstractCommand>> mBuiltinCommands = new HashMap<>();
+	private static HashMap<String, Class<? extends AbstractCommand>> mBuiltinCommands = new HashMap<>();
 
-	private void addBuiltinCommand(String name,
+	private static void addBuiltinCommand(String name,
 			Class<? extends AbstractCommand> cls) {
 		mBuiltinCommands.put(name, cls);
 	}
 
-	private CommandFactory() {
+    static  {
 		addBuiltinCommand("cd", xcd.class);
 		addBuiltinCommand("xecho", xecho.class);
 		addBuiltinCommand("echo", echo.class);
@@ -114,17 +111,12 @@ public class CommandFactory {
 
 	}
 
-	public synchronized static CommandFactory getInstance() {
-		if (_instance == null)
-			_instance = new CommandFactory();
-		return _instance;
-	}
 
-	public ICommand getCommand(Shell shell, String name, SourceLocation loc)
+	public static ICommand getCommand(Shell shell, String name, SourceLocation loc)
 			throws IOException, CoreException {
 		mLogger.entry(shell, name, loc);
 
-		ICommand cmd = getFunctionCommand(shell, name, loc);
+		ICommand cmd = getCommandFromFunction(shell, name, loc);
 		if (cmd == null)
 			cmd = getBuiltin(shell, name, loc);
 		if (cmd == null)
@@ -143,18 +135,19 @@ public class CommandFactory {
 	 * Path
 	 */
 
-	private ICommand getFunctionCommand(Shell shell, String name,
+	private static ICommand getCommandFromFunction(Shell shell, String name,
 			SourceLocation loc) {
 
 		mLogger.entry(shell, name);
 		IFunctionDecl func = shell.getFunctionDecl(name);
+		
 		if (func != null)
 			return mLogger.exit(new FunctionCommand(func.getModule(), func
 					.getName(), func.getBody(), loc));
 		return mLogger.exit(null);
 	}
 
-	private ICommand getExternal(Shell shell, String name, SourceLocation loc)
+	private static ICommand getExternal(Shell shell, String name, SourceLocation loc)
 			throws IOException {
 		mLogger.entry(shell, name);
 
@@ -183,7 +176,7 @@ public class CommandFactory {
 
 	}
 
-	private ICommand getModuleCommand(Shell shell, String name,
+	private static ICommand getModuleCommand(Shell shell, String name,
 			SourceLocation loc) throws IOException {
 
 		mLogger.entry(shell, name);
@@ -206,9 +199,8 @@ public class CommandFactory {
 			// May look like a namespace but isnt
 	
 			if (m != null) {
-	
 				mLogger.trace("Found module - try getting command" , m , pair.getRight());
-				ICommand cls = m.get().getCommandClass(pair.getRight());
+				ICommand cls = m.get().getCommand(pair.getRight());
 				if (cls != null) {
 					mLogger.debug("Command Class found: " , cls );
 					cls.setLocation(loc);
@@ -225,7 +217,7 @@ public class CommandFactory {
 	   mLogger.debug("Try default modules");
 		for (ModuleHandle m : shell.getDefaultModules() ) {
 			    assert( ! m.isNull() );
-				ICommand cls = m.get().getCommandClass(name);
+				ICommand cls = m.get().getCommand(name);
 				if (cls != null) {
 					cls.setLocation(loc);
 					return mLogger.exit(cls);
@@ -235,6 +227,59 @@ public class CommandFactory {
 		return mLogger.exit(null);
 
 	}
+	
+
+	private static IFunction getModuleFunction(Shell shell, String name,
+			SourceLocation loc) throws IOException {
+
+		mLogger.entry(shell, name);
+
+		StringPair pair = new StringPair(name, ':');
+
+		if (pair.hasLeft()) { // prefix:name , prefix non-empty
+			ModuleHandle m ;
+			mLogger.trace("found prefix - trying command by prefix: ", pair);
+			
+			if( Util.isBlank(pair.getLeft()) ){
+				m = shell.getModule()	;
+				mLogger.trace("blank prefix - use current module",m);
+			} else {
+					m = shell.getModuleByPrefix(pair.getLeft());
+					mLogger.debug("Preix module : " , m );
+			}
+			
+			// Allow C:/xxx/yyy to work
+			// May look like a namespace but isnt
+			if (m != null) {
+	
+				mLogger.trace("Found module - try getting command" , m , pair.getRight());
+				IFunction cls = m.get().getFunction(pair.getRight());
+				if (cls != null) {
+					mLogger.debug("Command Class found: " , cls );
+					return cls;
+				}
+	
+				return mLogger.exit(null);
+			}
+		}
+
+		/*
+		 * Try all default modules
+		 */
+	   mLogger.debug("Try default modules");
+		for (ModuleHandle m : shell.getDefaultModules() ) {
+			    assert( ! m.isNull() );
+				IFunction cls = m.get().getFunction(name);
+				if (cls != null) {
+					return mLogger.exit(cls);
+				}
+			}
+
+		return mLogger.exit(null);
+
+	}
+	
+	
 
 	/*
 	 * public ScriptCommand getScript(Shell shell, String name , InputStream is
@@ -246,7 +291,7 @@ public class CommandFactory {
 	 * }
 	 */
 
-	public ScriptSource getScriptSource(Shell shell, String name,
+	public static ScriptSource getScriptSource(Shell shell, String name,
 			SourceMode sourceMode) throws IOException, CoreException {
 		mLogger.entry(shell, name,sourceMode);
 
@@ -282,7 +327,7 @@ public class CommandFactory {
 
 	}
 
-	public ScriptCommand getScript(Shell shell, String name,
+	public static ScriptCommand getScript(Shell shell, String name,
 			SourceMode sourceMode, SourceLocation loc) throws IOException,
 			CoreException {
 		mLogger.entry(shell, name,sourceMode);
@@ -294,7 +339,7 @@ public class CommandFactory {
 
 	}
 
-	private ICommand getBuiltin(Shell shell, String name, SourceLocation loc) {
+	private static ICommand getBuiltin(Shell shell, String name, SourceLocation loc) {
 		mLogger.entry(shell, name);
 
 		Class<?> cls = mBuiltinCommands.get(name);
@@ -312,7 +357,7 @@ public class CommandFactory {
 			return mLogger.exit(  null);
 	}
 
-	public URL getHelpURL(Shell shell, String name) {
+	public static URL getHelpURL(Shell shell, String name) {
 
 		URL url = null;
 
@@ -326,7 +371,7 @@ public class CommandFactory {
 
 	}
 
-	private URL getNativeHelpURL(Shell shell, String name) {
+	private static URL getNativeHelpURL(Shell shell, String name) {
 
 		StringPair pair = new StringPair(name, ':');
 
@@ -354,15 +399,14 @@ public class CommandFactory {
 
 	}
 
-	private URL getBuiltinHelpURL(Shell shell, String name) {
+	private static URL getBuiltinHelpURL(Shell shell, String name) {
 		if (mBuiltinCommands.containsKey(name))
 			return shell.getResource(kCOMMANDS_HELP_XML);
 		else
 			return null;
 	}
 
-	public IFunction getBuiltinFunction(Shell shell, String name,
-			SourceLocation loc) {
+	public static IFunction getBuiltinFunction(Shell shell, String name) {
 
 		mLogger.entry(shell, name);
 
@@ -386,7 +430,7 @@ public class CommandFactory {
 			if (m != null) {
 
 				mLogger.debug("Found module",m);
-				IFunction cls = m.get().getFunctionClass(pair.getRight());
+				IFunction cls = m.get().getFunction(pair.getRight());
 				if (cls != null) {
 					return mLogger.exit(cls);
 				}
@@ -402,7 +446,7 @@ public class CommandFactory {
 		 mLogger.debug("Try default modules");
 		for ( ModuleHandle m : shell.getDefaultModules() ) {
 			assert( !m.isNull());
-			IFunction cls = m.get().getFunctionClass(name);
+			IFunction cls = m.get().getFunction(name);
 				if (cls != null) 
 					return mLogger.exit(cls);
 
@@ -412,7 +456,7 @@ public class CommandFactory {
 			
 	}
 
-	public ScriptSource getScriptSource(Shell shell, URL url, String name)
+	public static ScriptSource getScriptSource(Shell shell, URL url, String name)
 			throws CoreException, IOException {
 		mLogger.entry(shell, name,url);
 
@@ -420,7 +464,7 @@ public class CommandFactory {
 
 	}
 
-	public ScriptSource getScriptSource(Shell shell, File file, String name)
+	private static ScriptSource getScriptSource(Shell shell, File file, String name)
 			throws CoreException, IOException {
 		mLogger.entry(shell, name,file);
 
@@ -429,7 +473,7 @@ public class CommandFactory {
 
 	}
 
-	public ScriptCommand getScript(Shell shell, URL url, String name,
+	public static ScriptCommand getScript(Shell shell, URL url, String name,
 			SourceMode sourceMode, SourceLocation loc) throws CoreException,
 			IOException {
 		mLogger.entry(shell, url);
@@ -439,7 +483,7 @@ public class CommandFactory {
 
 	}
 
-	public ScriptCommand getScript(Shell shell, File file, String name,
+	public static ScriptCommand getScript(Shell shell, File file, String name,
 			SourceMode sourceMode, SourceLocation loc) throws CoreException,
 			IOException {
 		mLogger.entry(shell, name , file , sourceMode );
@@ -448,6 +492,32 @@ public class CommandFactory {
 				sourceMode, loc, shell.getModule());
 
 	}
+
+	public static IFunction getFunction(Shell shell, String name, SourceLocation loc) throws IOException {
+		
+		 
+		mLogger.entry(shell, name);
+	
+	  // Try builtin functions first
+	  IFunction func = getBuiltinFunction(shell, name);
+	
+	  // global scope shell functions 
+	  if(func == null){
+			IFunctionDecl funcdecl = shell.getFunctionDecl(name);
+			if( funcdecl != null )
+			  func = funcdecl.getFunction();
+		}
+	  // Module scope shell functions
+		if( func == null ){
+			func = getModuleFunction(shell,name,loc);
+		}
+		
+		
+		
+		return mLogger.exit(func );
+	}
+	
+	
 
 }
 //

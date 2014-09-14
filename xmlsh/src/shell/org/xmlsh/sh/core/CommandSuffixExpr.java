@@ -59,7 +59,7 @@ public class CommandSuffixExpr {
 	}
 
 	public void exec(Shell shell, SourceLocation loc) throws Exception {
-		this.mRedirect.exec(shell, loc );
+		mRedirect.exec(shell, loc );
 
 	}
 

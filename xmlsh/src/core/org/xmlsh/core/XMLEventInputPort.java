@@ -47,7 +47,7 @@ public class XMLEventInputPort extends InputPort {
 
 	public XMLEventInputPort(XMLEventReader is, String systemId ) {
 		mReader = is;
-		this.setSystemId(systemId);
+		setSystemId(systemId);
 
 	}
 
@@ -87,7 +87,7 @@ public class XMLEventInputPort extends InputPort {
 
 
 		InputSource in = new InputSource(asInputStream(opts));
-		in.setSystemId(this.getSystemId());
+		in.setSystemId(getSystemId());
 		return in;
 
 	}

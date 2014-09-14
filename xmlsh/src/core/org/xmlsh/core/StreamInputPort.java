@@ -49,8 +49,8 @@ public class StreamInputPort extends InputPort  {
 
 	public StreamInputPort(InputStream is, String systemId, boolean system) {
 		mStream = is;
-		this.setSystemId(systemId);
-		this.setSystem(system);;
+		setSystemId(systemId);
+		setSystem(system);;
 	}
 
 	@Override

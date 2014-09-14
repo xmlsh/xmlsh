@@ -121,8 +121,8 @@ public class XValue implements Iterable<XValue>
 
     }
     else if(args.size() == 1) {
-      this.mTypeFamily = args.get(0).mTypeFamily;
-      this.mValue = args.get(0).mValue;
+      mTypeFamily = args.get(0).mTypeFamily;
+      mValue = args.get(0).mValue;
     }
     else {
 
@@ -366,8 +366,8 @@ public class XValue implements Iterable<XValue>
 
   private void _initSequence(IXValueSequence<?> seq)
   {
-    this.mTypeFamily = TypeFamily.XTYPE;
-    this.mValue = seq == null ? XValueSequence.emptySequence() : seq;
+    mTypeFamily = TypeFamily.XTYPE;
+    mValue = seq == null ? XValueSequence.emptySequence() : seq;
     _init();
 
   }
@@ -615,7 +615,7 @@ public class XValue implements Iterable<XValue>
     if(this == that)
       return true;
 
-    if(this.isAtomic() && that.isAtomic())
+    if(isAtomic() && that.isAtomic())
       return toString().equals(that.toString());
 
     if(mValue != null && that.mValue != null)
@@ -678,14 +678,14 @@ public class XValue implements Iterable<XValue>
     if(mValue == null)
       return false;
 
-    return this.typeFamilyInstance().isAtomic(mValue);
+    return typeFamilyInstance().isAtomic(mValue);
 
   }
 
   public boolean isEmpty() throws InvalidArgumentException
   {
 
-    if(this.isNull())
+    if(isNull())
       return true;
     return getTypeMethods().isEmpty(mValue);
   }

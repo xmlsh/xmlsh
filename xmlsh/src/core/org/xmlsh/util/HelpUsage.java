@@ -30,7 +30,6 @@ import org.xmlsh.core.CommandFactory;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.IOutputPort;
 import org.xmlsh.core.XValue;
-import org.xmlsh.sh.shell.IModule;
 import org.xmlsh.sh.shell.ModuleHandle;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
@@ -94,7 +93,7 @@ public class HelpUsage {
 	}
 	public void doHelp(IOutputPort stdout, String name, boolean bXml, boolean bLaunch ) throws IOException, URISyntaxException, SaxonApiException, CoreException {
 
-		URL helpUrl = CommandFactory.getInstance().getHelpURL(mShell, name);
+		URL helpUrl = CommandFactory.getHelpURL(mShell, name);
 		if( helpUrl == null ){
 			mShell.printErr("No help for " + name );
 			return ;
@@ -145,7 +144,7 @@ public class HelpUsage {
 
 	public void doUsage(IOutputPort stdout, String name ) throws IOException, URISyntaxException, SaxonApiException, CoreException {
 
-		URL helpUrl = CommandFactory.getInstance().getHelpURL(mShell, name);
+		URL helpUrl = CommandFactory.getHelpURL(mShell, name);
 		if( helpUrl == null ){
 			mShell.printErr("No usage for " + name );
 			return ;
@@ -192,7 +191,7 @@ public class HelpUsage {
 
 	private void printxml(XdmNode node, IOutputPort out) throws SaxonApiException, CoreException {
 
-		Util.writeXdmValue(node, out.asDestination(this.mSerializeOpts));
+		Util.writeXdmValue(node, out.asDestination(mSerializeOpts));
 
 
 	}

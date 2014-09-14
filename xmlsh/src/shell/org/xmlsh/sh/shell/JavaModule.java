@@ -130,7 +130,7 @@ public class JavaModule extends AbstractModule
   }
 
   @Override
-  public IFunction getFunctionClass(final String name)
+  public IFunction getFunction(final String name)
   {
 
     return new JavaModuleFunction( new ModuleHandle(this), name, mJavaClass, mClassLoader);
@@ -138,7 +138,7 @@ public class JavaModule extends AbstractModule
   }
 
   @Override
-  public ICommand getCommandClass(String name)
+  public ICommand getCommand(String name)
   {
     return null;
   }

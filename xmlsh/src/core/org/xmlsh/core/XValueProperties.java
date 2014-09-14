@@ -42,7 +42,7 @@ public class XValueProperties extends XValueMap  {
     return new XValueProperties( map  );
   };
   public static XValueProperties fromJavaProperties( Properties props ) {
-    return new XValueProperties( (Map<?,?>) props  );
+    return new XValueProperties( props  );
   };
   
   @Override

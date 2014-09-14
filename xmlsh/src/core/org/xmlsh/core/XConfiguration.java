@@ -178,7 +178,7 @@ public class XConfiguration implements IXValueContainer<XConfiguration> , IXValu
   @Override
   public IXValueList<? extends IXValueList<?>> asXList()
   {
-   return new XValueList(this.values());
+   return new XValueList(values());
   }
 
   @Override
@@ -206,7 +206,8 @@ public class XConfiguration implements IXValueContainer<XConfiguration> , IXValu
     return mSections.keySet();
   }
 
-  public Collection<XValue> values()
+  @Override
+public Collection<XValue> values()
   {
     
    return  Util.toList( iterator() );

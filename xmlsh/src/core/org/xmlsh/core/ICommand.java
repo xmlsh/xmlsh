@@ -7,7 +7,6 @@
 package org.xmlsh.core;
 
 import java.io.Closeable;
-import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.MalformedURLException;
@@ -17,7 +16,6 @@ import java.util.List;
 import org.xmlsh.sh.core.SourceLocation;
 import org.xmlsh.sh.shell.ModuleHandle;
 import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.sh.shell.StaticContext;
 
 public interface ICommand extends Closeable {
 	enum CommandType {
@@ -35,6 +33,7 @@ public interface ICommand extends Closeable {
 	public 	URL 	getURL() throws MalformedURLException;
 	// TEMP:
 	public 	ModuleHandle	getModule();
+	@Override
 	public void		close() throws IOException;
 	public SourceLocation getLocation();
 	public void setLocation( SourceLocation loc);

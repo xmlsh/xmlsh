@@ -37,7 +37,7 @@ public class AutoReleasePool extends ArrayList<IReleasable> implements AutoClose
 				}
 		}
 		finally { 
-			this.clear();
+			clear();
 		}
 		if( et != null )
 			throw et;

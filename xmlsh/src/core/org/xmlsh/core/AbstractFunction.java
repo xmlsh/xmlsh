@@ -4,8 +4,6 @@ package org.xmlsh.core;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.xmlsh.sh.core.AbstractExpr;
-import org.xmlsh.sh.shell.IModule;
-import org.xmlsh.sh.shell.StaticContext;
 
 public abstract class AbstractFunction extends AbstractExpr implements IFunction
 {
