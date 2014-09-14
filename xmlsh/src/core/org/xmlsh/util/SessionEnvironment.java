@@ -6,19 +6,29 @@
 
 package org.xmlsh.util;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class SessionEnvironment extends ManagedObject<SessionEnvironment> {
+import org.xmlsh.core.IHandleable;
+import org.xmlsh.core.IReferenceCounted;
+import org.xmlsh.core.ReferenceCounted;
+import org.xmlsh.core.ReferenceCountedHandle;
 
-	private		Map<String, ManagedObject>		mVars;
+@SuppressWarnings("serial")
+public class SessionEnvironment extends ReferenceCounted implements IManagable , Closeable {
 
+
+	private		Map<String, IReferenceCounted > 		mVars;
+
+	
+	
 	@Override
-	public void close() throws IOException
+	public void doClose() throws IOException
 	{
 		if( mVars != null ){
-			for( ManagedObject<?> obj : mVars.values() )
+			for(  IReferenceCounted obj : mVars.values() )
 				obj.release();
 			mVars.clear();
 			mVars = null;
@@ -30,11 +40,12 @@ public class SessionEnvironment extends ManagedObject<SessionEnvironment> {
 	 * Get a managed object and adds a reference to it
 	 */
 
-	public synchronized ManagedObject<?>	getVar(String key)
+	public synchronized <T extends IReferenceCounted> T getVar(String key)
 	{
 		if( mVars == null )
 			return null;
-		ManagedObject<?> obj = mVars.get(key);
+		@SuppressWarnings("unchecked")
+		T obj = (T) mVars.get(key);
 		if( obj != null )
 			obj.addRef();
 		return obj;
@@ -43,16 +54,17 @@ public class SessionEnvironment extends ManagedObject<SessionEnvironment> {
 	/*
 	 * Sets a Session object and adds a reference
 	 */
-	public synchronized void setVar( String key , ManagedObject<?> obj )
+	public synchronized void setVar( String key ,  IReferenceCounted obj )
 	{
 		if( mVars == null )
 			mVars = new HashMap<>();
 
 			obj.addRef();
-			mVars.put( key , obj );
+			mVars.put(key,  obj );
 
 
 	}
+
 
 }
 

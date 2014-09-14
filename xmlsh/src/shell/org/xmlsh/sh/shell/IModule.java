@@ -14,6 +14,8 @@ import java.util.List;
 
 import org.xmlsh.core.ICommand;
 import org.xmlsh.core.IFunction;
+import org.xmlsh.core.IHandleable;
+import org.xmlsh.core.IReferenceCountedHandleable;
 import org.xmlsh.core.IReleasable;
 import org.xmlsh.core.XValue;
   
@@ -22,7 +24,7 @@ import org.xmlsh.core.XValue;
  * A runtime instance of a module that may have state and may be shared or duplicated
  * in different contexts.
  */
-public interface IModule extends Closeable, IStaticModule 
+public interface IModule extends IReferenceCountedHandleable , Closeable, IStaticModule 
 {
   
   /*

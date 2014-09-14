@@ -27,7 +27,7 @@
 	</Appenders>
 	<Loggers>
 	  
-		<logger name="org.xmlsh" level="DEBUG">
+		<logger name="org.xmlsh" level="TRACE">
 			<AppenderRef ref="A1"  />
 		</logger>
 		<logger name="httpclient" level="WARN" />
@@ -41,10 +41,10 @@
 		
 		 <Root level="ERROR">
 		 	  <!-- 
-		   <AppenderRef ref="SHELL" level="ERROR"/>
+		   <AppenderRef ref="SHELL" level="trace"/>
 	       <AppenderRef ref="CONSOLE" level="ERROR"/>
 	        -->
-		   <AppenderRef ref="A1" level="DEBUG"/>
+		   <AppenderRef ref="A1" level="WARN"/>
 
 		</Root>
 	</Loggers>

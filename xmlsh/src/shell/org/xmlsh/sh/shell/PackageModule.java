@@ -220,12 +220,12 @@ public class PackageModule extends AbstractModule
             return cmd;
           }
           else
-            mLogger.warn("Command class found [ {} ] but is not instance of XCommand." , cls.getName() );
+            getLogger().warn("Command class found [ {} ] but is not instance of XCommand." , cls.getName() );
         }
       }
 
     } catch (Exception e) {
-      mLogger.debug("Exception calling constructor for:" + name, e);
+      getLogger().debug("Exception calling constructor for:" + name, e);
 
     }
 

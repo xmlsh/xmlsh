@@ -50,7 +50,7 @@ public class ximport extends BuiltinCommand
         if(args.isEmpty())
           listModules();
         else for (XValue arg : args)
-          if( importPackage(arg.toString()) == null ) {
+          if( ! importPackage(arg.toString()) ) {
             mShell.printErr("package: " + arg.toString() + " not found");
             ret++;
           }
@@ -60,8 +60,7 @@ public class ximport extends BuiltinCommand
         if(args.isEmpty())
           listModules();
         else for (XValue arg : args) {
-          ModuleHandle mod =importCommands(arg.toString());
-          if( mod == null ){
+          if( ! importCommands(arg.toString())){
             mShell.printErr("xmlsh command extension: " + arg.toString() + " not found");
             ret++;
           }
@@ -186,7 +185,7 @@ public class ximport extends BuiltinCommand
 
   }
 
-  private ModuleHandle importPackage(String fullname) throws Exception
+  private boolean importPackage(String fullname) throws Exception
   {
 
     String name = null;
@@ -203,7 +202,7 @@ public class ximport extends BuiltinCommand
     return mShell.importPackage(prefix, name, Collections.singletonList(name));
   }
 
-  private ModuleHandle importCommands(String fullname) throws Exception
+  private boolean importCommands(String fullname) throws Exception
   {
 
     String name = null;

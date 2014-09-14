@@ -30,11 +30,11 @@ public class JavaModule extends AbstractModule
   static class JavaModuleFunction implements IFunction
   {
     @SuppressWarnings("unused")
-    private IModule mModule;
+    private ModuleHandle mModule;
     private String mFunc;
     private Class<?> mClass;
 
-    public JavaModuleFunction(IModule mod, String func, Class<?> cls, ClassLoader cl)
+    public JavaModuleFunction(ModuleHandle mod, String func, Class<?> cls, ClassLoader cl)
     {
       mModule = mod;
       mFunc = func;
@@ -97,8 +97,7 @@ public class JavaModule extends AbstractModule
 
 	@Override
 	public ModuleHandle getModule() {
-		mLogger.warn("getModule called without impl");
-		return null;
+		return mModule;
 	}
 
   }
@@ -134,7 +133,7 @@ public class JavaModule extends AbstractModule
   public IFunction getFunctionClass(final String name)
   {
 
-    return new JavaModuleFunction(this, name, mJavaClass, mClassLoader);
+    return new JavaModuleFunction( new ModuleHandle(this), name, mJavaClass, mClassLoader);
 
   }
 

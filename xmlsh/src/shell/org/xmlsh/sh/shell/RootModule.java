@@ -20,7 +20,7 @@ public class RootModule extends AbstractModule {
 	}
 	
 	private RootModule() {
-		super("Root");
+		super("builtin");
 	}
 	
 	public String toString() {
@@ -48,7 +48,7 @@ public class RootModule extends AbstractModule {
 
 	@Override
 	public void close() {
-		mLogger.error("Root Module should never be closed");
+		getLogger().error("Root Module should never be closed");
 		assert(false);
 	}
 }

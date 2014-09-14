@@ -23,7 +23,9 @@ import org.xmlsh.core.CoreException;
 import org.xmlsh.core.IHandle;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
+import org.xmlsh.util.IManagable;
 import org.xmlsh.util.ManagedObject;
+import org.xmlsh.util.NameValueMap;
 import org.xmlsh.util.StringPair;
 import org.xmlsh.util.Util;
 
@@ -35,23 +37,26 @@ import org.xmlsh.util.Util;
  */
 
 public class Modules extends ManagedObject<Modules> implements
-		Iterable<ModuleHandle>, Closeable , Cloneable {
+		Iterable<ModuleHandle> , IManagable , Cloneable {
 
 	private static final Logger mLogger = LogManager.getLogger();
 	
 	private NamedHandleMap< IModule ,  ModuleHandle >       mModules ;
-	
-	private boolean bClosed = true;
+	private NameValueMap< String >       mPrefixMap ;
+
 
 	 Modules() {
-		bClosed = false;
+		super();
 	    mModules = new NamedHandleMap<>();
+	    mPrefixMap = new NameValueMap<>();
 	}
 
 	private Modules(Modules that) {
 		
+		this();
 		mLogger.entry(that);
 		mModules = that.mModules.clone();
+		mPrefixMap = that.mPrefixMap.clone();
 		mLogger.exit();
 	}
 	
@@ -61,117 +66,64 @@ public class Modules extends ManagedObject<Modules> implements
 	}
 
 	@Override
-	public synchronized void close() throws IOException {
+	public synchronized void doClose() throws IOException {
 
-		mLogger.entry(bClosed);
-		if (bClosed)
-			return;
+		assert( ! isClosed() );
 		
-		
+		mPrefixMap.clear();
+		mPrefixMap = null ;
 		// Move this to NamedValueMap
 		mModules.release();
 	    mModules = null ;
-		bClosed = true ;
 
 	}
 
 	/**
-	 * Declare/Import a module If prefix is not null and already used then
-	 * re-declare the module
-	 * 
 	 * @param shell
 	 *            TODO
 	 * @param init
 	 * @param init
 	 * @throws Exception
-	 * @returns true if this is a new module 
+	 * @returns true if init was called
 	 * 
 	 */
-	boolean declare(Shell shell, String name , ModuleHandle module,  List<XValue> init)
+	boolean importModule(Shell shell, String prefix , ModuleHandle module,  List<XValue> init)
 			throws Exception {
 
-		mLogger.entry(shell, name, module, init);
+		mLogger.entry(shell, prefix, module, init);
 		assert (module != null && ! module.isNull() );
 		if( module == null || module.isNull() ){
 			throw new InvalidArgumentException("Module is null: ");
 		}
+		
+		boolean bInit=false;
 		if( ! mModules.containsValue( module.get()) ) {
 		   mLogger.debug("Initializing a new module: {}", module );
 		   module.get().onInit(shell, init);
+		   bInit = true ;
 		   module.addRef();
-		   return mLogger.exit( mModules.put(Shell.toModuleUri(module),module) );
-
+		   mModules.put(module.getName(),module);
 		}
-
-		
-		return mLogger.exit(false);
-		
+		if( prefix != null )
+		   mPrefixMap.put( prefix , module.getName()); // should chnage to UUID or UURI
+		return mLogger.exit(bInit);
 
 	}
 
-	public ModuleHandle importModule(Shell shell, String prefix, String name, XValue at,
-			List<XValue> init) throws Exception {
-		
-		mLogger.entry(shell, prefix, name, at, init);
-	   
-		/*
-		 * Dont recreate the same module - but go ahead and import it under different prefixes
-		 */
-
-		ModuleHandle exists = getExistingModuleByName(name);
-		if( exists == null )
-			exists = new ModuleHandle(  ModuleFactory.createModule(shell, prefix, name, at) );
-		else 
-			exists.addRef();
-		
-		boolean bReplaced = declare(shell, prefix, exists , init);
-		return exists ;
-	}
 
 	
-	
-
-	ModuleHandle declarePackageModule(Shell shell, String prefix, String name,
-			List<String> pkgs, String helpXML, List<XValue> init)
-			throws Exception {
-		
-		mLogger.entry(shell,prefix,name,pkgs);
-		ModuleHandle mod = getExistingModuleByName(name);
-		if( mod == null ){
-			mod =  new ModuleHandle(ModuleFactory.createPackageModule(shell, prefix,
-					name, pkgs, helpXML));
-		    mModules.put( Shell.toModuleUri(mod),  mod );
-		}
-		else
-			mod.addRef();
-		
-		return mLogger.exit(mod);
-		
-	}
 
 
-	public ModuleHandle getExistingModule(IModule mod) {
-
-		
+	public ModuleHandle getExistingModuleByIModule(IModule mod) {
 		mLogger.entry(mod);
-	
-		mLogger.error("Shoulndt be called yet");
 		return mModules.getByValue(mod);
 	}
 
-	public ModuleHandle getExistingModuleByURI(String uri) {
-		
-          mLogger.entry(uri);
-		
-		return mLogger.exit( mModules.get(uri));         
-	}
 
 	public ModuleHandle getExistingModuleByName(String name) {
 
-		
 		mLogger.entry(name);
-		
-		return mLogger.exit( mModules.get(Shell.toModuleUri(name)));
+		return mLogger.exit( mModules.get(name));
 
 	}
 
@@ -182,9 +134,27 @@ public class Modules extends ManagedObject<Modules> implements
 		return mLogger.exit(mModules.handleIterator());
 	}
 
-	public boolean moduleExists(String name) {
+	public boolean moduleExistsByName(String name) {
 		return mModules.containsKey(name);
 	}
+
+	public ModuleHandle getExistingModuleByPrefix(String prefix) {
+		if( prefix == null )
+			return null ;
+		mLogger.entry(prefix);
+		String name = mPrefixMap.get(prefix);
+		if( name != null )
+			return getExistingModuleByName( name );
+		else
+			return null ;
+	}
+
+	// true if the module has any prefix mappings
+	public boolean hasAnyPrefixes(ModuleHandle mh) {
+		return mPrefixMap.containsValue(mh.getName());
+	}
+
+
 
 }
 

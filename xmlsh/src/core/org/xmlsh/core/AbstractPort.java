@@ -12,21 +12,26 @@ import java.io.File;
 import org.xmlsh.util.ReferenceCounter;
 
 
-public abstract class AbstractPort implements  IPort {
+public abstract class AbstractPort implements  IReferenceCountedHandleable , IPort {
 
 	// volatile so it can start null 
 	private	volatile ReferenceCounter mCounter = null;
-
-	@SuppressWarnings("unchecked")
-	public <T extends AbstractPort> ReferenceCountedHandle<T> newReference() {
+	@Override
+	public ReferenceCounter getCounter() {
 		if( mCounter == null ) {
 			synchronized( this ) {
 				mCounter = new ReferenceCounter();
 			}
 		}
 		else
-			mCounter.addRef();
-		return new ReferenceCountedHandle<T>( (T) this  , mCounter );
+			mCounter.increment();
+		return mCounter ;
+	}
+
+
+	@SuppressWarnings("unchecked")
+	public <T extends AbstractPort> ReferenceCountedHandle<T> newReference() {
+		return new ReferenceCountedHandle<T>( (T) this  , getCounter() );
 	}
 
 

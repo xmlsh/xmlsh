@@ -12,7 +12,7 @@ package org.xmlsh.util;
 
 public class StringPair {
 	private		String		mString;
-	private		String 		mLeft ;
+	private		String 		mLeft  = null;
 	private		String		mRight;
 
 

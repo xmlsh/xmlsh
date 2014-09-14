@@ -305,7 +305,7 @@ public class CommandFactory {
 				b.setLocation(loc);
 				return b;
 			} catch (Exception e) {
-				mLogger.catching(e);
+				mLogger.debug("caught exception" ,  e );
 				return mLogger.exit(  null	 	);
 			}
 		} else

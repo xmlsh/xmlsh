@@ -15,9 +15,17 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.xmlsh.core.XClassLoader;
 import org.xmlsh.core.XValue;
+import org.xmlsh.util.ReferenceCounter;
 
 
 abstract class AbstractModule implements IModule {
+
+	private ReferenceCounter mCounter = new ReferenceCounter();
+	@Override
+	public ReferenceCounter getCounter() {
+		return mCounter ;
+	}
+
 
 	protected String mName;
 	protected boolean bClosed = true;
@@ -30,9 +38,6 @@ abstract class AbstractModule implements IModule {
 
 	protected HashMap<String, Boolean> mScriptCache = new HashMap<String, Boolean>();
 
-	// Not static - use derived class
-	protected final static Logger mLogger = LogManager.getLogger();
-
 
 	protected AbstractModule(String name) {
 		mName = name;
@@ -42,23 +47,31 @@ abstract class AbstractModule implements IModule {
 	@Override
 	public void close() throws IOException {
 
-		mLogger.entry();
-		if (bClosed)
+		getLogger().entry();
+		if (bClosed){
+			getLogger().error("Multiple close of module");
 			return;
-
+		}
 		mClassCache.clear();
 		mScriptCache.clear();
 		mClassCache = null;
 		mScriptCache = null;
 		mClassLoader = null;
 		bClosed = true ;
+		getLogger().exit();
 		
-		mLogger.exit();
+	}
+
+	protected Logger getLogger(){
+      return LogManager.getLogger( getClass() );
 		
 	}
 
 	protected Class<?> findClass(String className) {
 
+		
+		getLogger().entry(className);
+		assert( ! bClosed );
 		// Find cached class name even if null
 		// This caches failures as well as successes
 		// Consider changing to a WeakHashMap<> if this uses up too much memory
@@ -128,13 +141,13 @@ abstract class AbstractModule implements IModule {
 
 	@Override
 	public void onInit(Shell shell, List<XValue> args) throws Exception {
-		mLogger.trace("module {} onInit()", getName());
+		getLogger().trace("module {} onInit()", getName());
 
 	}
 
 	@Override
 	public void onLoad(Shell shell) {
-		mLogger.trace("module {} onLoad()", getName());
+		getLogger().trace("module {} onLoad()", getName());
 
 	}
 

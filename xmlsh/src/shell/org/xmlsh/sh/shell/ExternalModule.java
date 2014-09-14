@@ -34,7 +34,7 @@ public class ExternalModule extends PackageModule
 
   ExternalModule(Shell shell, String prefix, String nameuri, URI nameURI, XValue at) throws CoreException
   {
-    super(shell,prefix);
+    super(shell,nameuri);
     try {
 
       URL configURL;

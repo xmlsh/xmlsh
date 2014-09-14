@@ -747,13 +747,7 @@ public class XEnvironment implements AutoCloseable, Closeable {
 	public ModuleHandle getModuleByPrefix(String prefix) {
 		
 		mLogger.entry(prefix);
-		// TODO - make name == uri
-		String name = getNamespaces().get(prefix);
-		if( name == null )
-			return mLogger.exit(null );
-		String uri = name ;
-		mLogger.debug("Found module prefix  {} name {} converted to uri {}" , prefix , name , uri );
-		return mLogger.exit(mStaticContext.getModules(true).getExistingModuleByURI(uri));
+		return mLogger.exit(mStaticContext.getModules(true).getExistingModuleByPrefix(prefix));
 		
 	}
 
@@ -785,6 +779,7 @@ public class XEnvironment implements AutoCloseable, Closeable {
 		return mStaticContext.clone();
 		
 	}
+
 
 
 

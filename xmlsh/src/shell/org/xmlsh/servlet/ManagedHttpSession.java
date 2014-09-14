@@ -6,11 +6,15 @@
 
 package org.xmlsh.servlet;
 
+import java.io.IOException;
+
 import javax.servlet.http.HttpSession;
 
+import org.xmlsh.core.ReferenceCounted;
 import org.xmlsh.util.ManagedObject;
 
-public class ManagedHttpSession extends ManagedObject<ManagedHttpSession>
+@SuppressWarnings("serial")
+public class ManagedHttpSession extends ReferenceCounted
 {
 	private		HttpSession 	mSession ;
 
@@ -21,18 +25,18 @@ public class ManagedHttpSession extends ManagedObject<ManagedHttpSession>
 	}
 
 
-	@Override
-	public void close() {
-		mSession = null ;
-
-	}
-
 
 	/**
 	 * @return the session
 	 */
 	public HttpSession getSession() {
 		return mSession;
+	}
+
+
+	@Override
+	public void doClose() throws IOException {
+		mSession = null ;
 	}
 
 

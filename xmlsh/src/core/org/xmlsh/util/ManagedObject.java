@@ -16,42 +16,47 @@ import org.xmlsh.core.IReleasable;
 
 /*
  * Default implementation of a managed object
+ * Simple close on release 
  * 
  */
-public abstract class ManagedObject<T> implements Closeable, IReleasable {
+public abstract class ManagedObject<T extends IManagable >  implements  IManagable , Closeable, IReleasable  {
 
 	private static Logger  mLogger = LogManager.getLogger();
-	private		final ReferenceCounter mCounter = new ReferenceCounter();
+	private volatile boolean bClosed = true ;
+
+	protected boolean isClosed() {
+		return bClosed;
+	}
+
 
 	protected ManagedObject()
 	{
-		mLogger.entry(this,mCounter);
+		bClosed = false ;
+		mLogger.entry(this);
 	}
 	
 	@Override
-	protected void finalize()
+	protected void finalize() throws IOException
 	{
-		Util.safeClose(this);
+		if( ! bClosed )
+		 close();
 	}
 
-	public void addRef() {
-		mLogger.entry(this,mCounter);
-
-		mLogger.entry( mCounter );
-		mCounter.addRef();
-	}
 
 	@Override
 	public synchronized boolean release() throws IOException  {
-		mLogger.entry(this,mCounter);
-		if( mCounter.release() ) {
-			close();
-			return true ;
-		}
-		return false;
+		mLogger.entry(this);
+		if( ! bClosed )
+		  close();
 
+		return mLogger.exit(true);
 	}
-
+	@Override
+	public final void close() throws IOException {
+		if( ! bClosed )
+			  doClose();
+		bClosed = true ;
+	}
 }
 
 

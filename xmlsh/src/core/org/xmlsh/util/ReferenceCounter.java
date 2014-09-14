@@ -2,20 +2,27 @@ package org.xmlsh.util;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class ReferenceCounter  {
+import org.xmlsh.core.IHandleable;
 
-	protected 	final AtomicInteger	mRef = new AtomicInteger(1);
-	public String toString(){ return mRef.toString(); }
-	public void addRef() {
-		mRef.incrementAndGet();
-	}
+@SuppressWarnings("serial")
+public class ReferenceCounter extends AtomicInteger {
 
-	public boolean release() {
-		return mRef.decrementAndGet() <= 0;
+	public ReferenceCounter() {
+		super(1);
 	}
-	// get the current value - not thread safe 
-	public int value() {
-		return mRef.get();
+	public String toString(){ return "[" + getRefCount() + "]";}
+
+	public int getRefCount() {
+		return super.get();
+	}
+	public void initRefCount(int count) {
+		super.set(count);
+	}
+	public int decrement() {
+		return super.decrementAndGet();
+	}
+	public int increment() {
+		return super.incrementAndGet();
 	}
 
 }

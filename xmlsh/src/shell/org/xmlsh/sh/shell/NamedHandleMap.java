@@ -13,15 +13,19 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.xmlsh.core.AbstractCommand;
 import org.xmlsh.core.IHandle;
+import org.xmlsh.core.IHandleable;
 import org.xmlsh.core.IManagedHandle;
+import org.xmlsh.core.IReferenceCountedHandleable;
+import org.xmlsh.core.IReferencedCountedHandle;
 import org.xmlsh.core.IReleasable;
 import org.xmlsh.types.ITypeConverter;
+import org.xmlsh.util.NameValueMap;
 import org.xmlsh.util.TypeConvertingIterator;
 import org.xmlsh.util.Util;
 
 @SuppressWarnings("serial")
-public class NamedHandleMap<V extends Closeable,T extends IManagedHandle<V>> implements Cloneable, IReleasable {
-	Map<String, T> mMap = new HashMap<>();
+public class NamedHandleMap<V extends IHandleable ,T extends IReferencedCountedHandle<V>> implements Cloneable, IReleasable {
+	NameValueMap< T> mMap = new NameValueMap<>();
 	static Logger mLogger = LogManager.getLogger();
 
 	List<V> valueList() {

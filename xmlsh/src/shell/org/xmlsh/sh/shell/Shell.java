@@ -216,20 +216,27 @@ public class Shell implements AutoCloseable, Closeable {
 		mEnv = new XEnvironment(this,  new StaticContext() , bUseStdio);
 		mSession = new SessionEnvironment();
 
-		// Add xmlsh commands
-		getModules().declarePackageModule(this, null, "xmlsh",
-				Arrays.asList(
-						"org.xmlsh.internal.commands", "org.xmlsh.internal.functions"), CommandFactory.kCOMMANDS_HELP_XML, null);
+	
 
 		setGlobalVars();
 
 		ThreadLocalShell.set(this); // cur thread active shell
-
+		importStandardModules();
+	
 	}
 
 	/*
 	 * Populate the environment with any global variables
 	 */
+
+	private void importStandardModules() throws Exception {
+		
+		ModuleHandle hInternal = 
+				 new ModuleHandle(ModuleFactory.createPackageModule(this, null,
+		 					"xmlsh" , Arrays.asList(
+		 							"org.xmlsh.internal.commands", "org.xmlsh.internal.functions"),  CommandFactory.kCOMMANDS_HELP_XML ));
+		 getModules().importModule( this , null , hInternal , null);		
+	}
 
 	private void setGlobalVars() throws InvalidArgumentException {
 
@@ -525,8 +532,7 @@ public class Shell implements AutoCloseable, Closeable {
 
 		} catch (Exception e) {
 			
-			mLogger.catching(e);
-           throw mLogger.throwing(new CoreException("Exception parsing command: " + scmd, e));
+           throw new CoreException("Exception parsing command: " + scmd, e);
 		}
 
 		finally {
@@ -637,19 +643,14 @@ public class Shell implements AutoCloseable, Closeable {
 
 			catch (ThrowException e) {
 				// mLogger.info("Rethrowing throw exception",e);
-				throw mLogger.throwing(	 e); // rethrow
+				throw e ;
 
 			} catch (ExitOnErrorException e) {
-				
-				mLogger.catching(e);
-				// Caught Exit on error from a script
 				exitStatus = e.getValue();
 			}
 
 			
 			catch (Exception | Error e) {
-				mLogger.catching(e);
-
 				printErr(e.getMessage());
 				mLogger.error("Exception parsing statement", e);
 				parser.ReInit(newParserReader(reader,false), source);
@@ -949,7 +950,6 @@ public class Shell implements AutoCloseable, Closeable {
 
 			catch (Exception e) {
 				
-				mLogger.catching(e);
 				printLoc(mLogger, loc);
 
 				printErr("Exception running: " + c.toString(true));
@@ -1629,58 +1629,52 @@ public class Shell implements AutoCloseable, Closeable {
 	/*
 	 * Declare a module using the prefix=value notation
 	 */
-	public ModuleHandle importModule(String moduledef, XValue at, List<XValue> init)
+	public boolean  importModule(String moduledef, XValue at, List<XValue> init)
 			throws Exception {
 		
 		mLogger.entry(moduledef, at, init);
 			StringPair pair = new StringPair(moduledef, '=');
 			
-		ModuleHandle mod = 	getModules().importModule(this, pair.getLeft(), pair.getRight(), at, init);
+		String name = pair.getRight();
+		String prefix = pair.getLeft();
 
+		ModuleHandle mod = getModules().getExistingModuleByName(name);
+		if( mod == null )
+			mod = new ModuleHandle(  ModuleFactory.createModule(this, prefix, name, at) );
+		else 
+			mod.addRef();
+			
+		assert( mod != null && ! mod.isNull() );
+		boolean inited = getModules().importModule(this, prefix , mod ,  init);
+
+		if( inited )
+		  mLogger.debug("Imported module {} fresh init: {}" , mod , inited );
 		assert( mod != null && ! mod.isNull());
-
-		// Add namespace prefix
-		
-		if( pair.hasLeft() )
-			getEnv().declareNamespace(pair.getLeft(),  toModuleUri( mod));
-		
-		return mLogger.exit( mod );
+		return mLogger.exit( true );
 
 	}
 	// Dup function but may need different
-	public ModuleHandle importScript(String moduledef, XValue at, List<XValue> init) throws Exception
+	public boolean importScript(String moduledef, XValue at, List<XValue> init) throws Exception
 	{
 		return importModule( moduledef , at , init );
 	}
 	
-	public static String toModuleUri(ModuleHandle mod) {
-	
-		return toModuleUri( mod.getName());
-	}
-	public static String toModuleUri(String name) {
-		
-		// bogus URI scheme for now
-		URI uri;
-		try {
-			uri = new URI( "module" , name, null );
-			return uri.toASCIIString();
-		} catch (URISyntaxException e) {
-			mLogger.catching(e);
-			return "module:" + name ;
-		}
-	}
-	
 
-
-	public ModuleHandle importPackage(String prefix, String name,
+	// returns true if succceeded
+	public boolean importPackage(String prefix, String name,
 			List<String> packages) throws Exception  {
 		
 		
 		 mLogger.entry(prefix, name, packages);
 	     String sHelp = packages.get(0).replace('.', '/') + "/commands.xml";
 		
-		ModuleHandle h = getModules().declarePackageModule(this, prefix, name, packages , sHelp, null );
-	    return h;
+	 		ModuleHandle mod = getModules().getExistingModuleByName(name);
+	 		if( mod == null )
+	 			mod =  new ModuleHandle(ModuleFactory.createPackageModule(this, prefix,
+	 					name, packages , sHelp ));
+
+	 		boolean inited = getModules().importModule( this , prefix , mod , null );
+	 		return  true ;
 	
 	}
 

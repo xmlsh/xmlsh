@@ -136,15 +136,18 @@ public class SimpleCommandExpr extends CommandExpr {
 			/*
 			 * If there is a prefix then clone the shell, otherwise just clone the IO
 			 */
-			boolean bCloned = false; 
-			if( mPrefix == null )
+			boolean popIO = false; 
+			if( mPrefix == null ){
 				shell.getEnv().saveIO();
+				popIO = true ;
+			}
 			else {
 				saved_shell = shell ;
 				shell = shell.clone(); // must now close shell
 	
-				if( shell == null )
-                 throw mLogger.throwing(new UnexpectedException("Shell is null after close"));
+				assert(shell!=null);
+				if( shell ==null )
+                 throw new UnexpectedException("Shell is null after close");
 				
 			}
 	
@@ -164,12 +167,25 @@ public class SimpleCommandExpr extends CommandExpr {
 				assert( mod != null );
 				refcnt = mod.getRefCount();
 				
-				mLogger.info("pushing module {} " , mod);
-	            shell.pushModule(mod);		
-				return cmd.run(  shell, cmdName , cmdLine );
+				try {
+					mLogger.info("pushing module {} " , mod);
+		            shell.pushModule(mod);		
+					return cmd.run(  shell, cmdName , cmdLine );
+				} finally {
+				    mod = shell.popModule();
+					mLogger.trace("Module popped: {} ref: ", mod , mod.getRefCount() );
+					if( mod.getRefCount() != refcnt )
+						mLogger.error("Ref counts after commands doesnt match {} {}" , refcnt , mod.getRefCount() );
+					
+				}
 	
 	
 			} 
+			catch( ThrowException e )
+			{
+				throw e ;// Rethrow 
+			}
+			
 			catch( Exception e ){
 				logLocation(shell);
 				// Note: shell is the cloned shell ..
@@ -186,13 +202,9 @@ public class SimpleCommandExpr extends CommandExpr {
 				mLogger.trace("exec finally: {}",this);
 				ThreadLocalShell.set(saved_context_shell);
 				
-				ModuleHandle mod = shell.popModule();
-				mLogger.trace("Module popped: {} ref: ", mod , mod.getRefCount() );
-				if( mod.getRefCount() != refcnt )
-					mLogger.error("Ref counts after commands doesnt match {} {}" , refcnt , mod.getRefCount() );
-				
+			
 				// TODO: should I push this back into the mdoule ?
-				if( bCloned  ){
+				if( !popIO  ){
 					mLogger.trace("Closing cloned shell {} saved {}",shell,saved_shell);
 					Util.safeClose(shell);
 				} else

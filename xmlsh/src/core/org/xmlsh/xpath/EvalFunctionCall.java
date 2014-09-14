@@ -93,7 +93,8 @@ public class EvalFunctionCall extends ExtensionFunctionCall
 						return  mLogger.exit(null);;
 					
 				} catch (ThrowException e) {
-					mLogger.catching(e);
+					
+					mLogger.trace("caught throwException");
 					return mLogger.exit(null);
 				} 
 				
@@ -101,8 +102,7 @@ public class EvalFunctionCall extends ExtensionFunctionCall
 			
 			return mLogger.exit(XMLUtils.asSequenceIterator( oValue.toXdmValue() ));
 		} catch (Exception e) {
-			mLogger.catching(e);
-			throw mLogger.throwing(new XPathException(e));
+			throw new XPathException(e);
 		}
 		
 

@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 public interface IInputPort extends IPort {
 
 	public   <T extends AbstractPort> ReferenceCountedHandle<T> newReference();
+	
 	public  InputStream asInputStream(SerializeOpts opts)
 			throws CoreException;
 
