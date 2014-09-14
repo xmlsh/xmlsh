@@ -2161,7 +2161,7 @@ public class Shell implements AutoCloseable, Closeable {
 	public void pushModule(ModuleHandle mod) {
 	   
 	    mLogger.entry(mod);
-		mModule = mLogger.exit(getEnv().pushModule(mod));
+		mModule = mLogger.exit(getEnv().pushModule(mod,mod.get().getStaticContext()));
 	
 	}
 

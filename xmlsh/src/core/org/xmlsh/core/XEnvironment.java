@@ -35,16 +35,14 @@ import org.xmlsh.util.Util;
 
 public class XEnvironment implements AutoCloseable, Closeable {
 
-	@SuppressWarnings("unused")
 	private 	static Logger mLogger = LogManager.getLogger( XEnvironment.class );
 	private 	Shell mShell;
 	private		volatile XIOEnvironment mIO;
 	private		Variables	mVars;
-	private     StaticContext  mStaticContext;
+	private     Stack<StaticContext>  mStaticContextStack;
 	private		Stack<XIOEnvironment>  mSavedIO;
 	private     Stack<ModuleHandle> mModuleStack;
 	private     boolean bClosed = false;
-	private StaticContext ctx;
 
 
 
@@ -63,12 +61,13 @@ public class XEnvironment implements AutoCloseable, Closeable {
 	{
 		
 		mLogger.entry(shell, ctx, bInitIO);
-		mStaticContext = ctx ;
+		mStaticContextStack = new Stack<>();
 		mShell = shell;
 		mVars = new Variables();
 		mIO = new XIOEnvironment();
 		mModuleStack = new Stack<>();
-		pushModule(shell.getModule());
+
+		pushModule(shell.getModule(),ctx);
 
 		if( bInitIO )
 			getIO().initStdio();
@@ -247,7 +246,7 @@ public class XEnvironment implements AutoCloseable, Closeable {
 	{
 		
 		mLogger.entry(shell);
-		XEnvironment 	that = new XEnvironment(shell, mStaticContext.clone() , false);
+		XEnvironment 	that = new XEnvironment(shell, getStaticContext().clone() , false);
 		that.mVars		= new Variables(mVars);
 		that.mIO = new XIOEnvironment(getIO());
 		
@@ -269,7 +268,7 @@ public class XEnvironment implements AutoCloseable, Closeable {
 
 		getIO().release();
 		
-		// close modules
+		// close modulesF
  
 		if( mModuleStack != null && ! mModuleStack.empty()){
 			// Should be 1 module on stack during close 
@@ -280,6 +279,14 @@ public class XEnvironment implements AutoCloseable, Closeable {
 			    mModuleStack.pop().release();
 			mModuleStack = null ;
 		}
+		
+		assert( mStaticContextStack.size()  == 1 );
+		if( mStaticContextStack.size() != 1 ){
+			mLogger.error("Static context size should be 1 : {}",mStaticContextStack.size() );
+			
+		}
+		mStaticContextStack.clear();
+		mStaticContextStack = null ;
 		bClosed = true ;
 				
 	}
@@ -567,7 +574,7 @@ public class XEnvironment implements AutoCloseable, Closeable {
 	
 
 	public Namespaces getNamespaces() {
-		return mStaticContext.getNamespaces();
+		return getStaticContext().getNamespaces();
 	}
 
 
@@ -734,55 +741,58 @@ public class XEnvironment implements AutoCloseable, Closeable {
 
 
 	public StaticContext getStaticContext() {
-		return mStaticContext ;
+		mLogger.entry();
+		return mStaticContextStack.peek() ;
 	}
 
 
 	public Modules getModules(boolean bCreate ) {
-		return mStaticContext.getModules(bCreate);
+		return getStaticContext().getModules(bCreate);
 	}
 
 
 	public ModuleHandle getModuleByPrefix(String prefix) {
 		
 		mLogger.entry(prefix);
-		return mLogger.exit(mStaticContext.getModules(true).getExistingModuleByPrefix(prefix));
+		return mLogger.exit(getStaticContext().getModules(true).getExistingModuleByPrefix(prefix));
 		
 	}
 
 
 	public FunctionDefinitions getFunctions(boolean bCreate) {
-		return mStaticContext.getFunctions(bCreate);
+		return getStaticContext().getFunctions(bCreate);
 	}
 
 
 
-	public ModuleHandle pushModule(ModuleHandle module) {
+	public ModuleHandle pushModule(ModuleHandle module,StaticContext ctx) {
 		mLogger.entry(module , mModuleStack.size() );
 		module.addRef();
 		mModuleStack.push(module);
+		if( ctx == null )
+			ctx = mStaticContextStack.peek();
+		mStaticContextStack.push(ctx);
 		//ctx = module.get().getStaticContext();
 		//mLogger.error("WHAT TO DO WITH PUSHED STATIC CTX: {}",ctx );
 		return mLogger.exit(module) ;
 	}
 
 
-	public ModuleHandle popModule() throws IOException {
+	public ModuleHandle popModule() throws IOException  {
 		mLogger.entry(mModuleStack.size());
 		assert( !mModuleStack.isEmpty());
 	    ModuleHandle mh = mModuleStack.pop();
-		mh.release();
+	    mStaticContextStack.pop();   /// Leak here ?
+		// Release last so we dont mixup stack sizes
+	    mh.release();
 		return mLogger.exit(mh);
 	}
 
 
 	public StaticContext exportStaticContext() {
-		return mStaticContext.clone();
+		return getStaticContext().clone();
 		
 	}
-
-
-
 
 
 }
