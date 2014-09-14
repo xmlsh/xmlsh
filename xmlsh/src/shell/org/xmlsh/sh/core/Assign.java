@@ -76,6 +76,7 @@ public class Assign {
 		{
 			out.print("(");
 			boolean bFirst = true ;
+			if( mRValList != null )
 			for( Word w: mRValList ){
 				if( ! bFirst )
 					out.print(" ");

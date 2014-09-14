@@ -3,6 +3,8 @@ package org.xmlsh.sh.shell;
 import java.io.IOException;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.FunctionCommand;
 import org.xmlsh.core.ICommand;
@@ -17,9 +19,9 @@ public class ScriptModule extends AbstractModule
 {
 
   private ScriptSource mScript ; 
-  private StaticContext mStaticContext;
-  
-  
+  private StaticContext mStaticContext = null ;
+	protected final static Logger mLogger = LogManager.getLogger();
+
   protected ScriptModule(Shell shell, String prefix , ScriptSource script, String nameuri ) throws IOException, CoreException
   {
     super( nameuri );
@@ -50,18 +52,49 @@ public class ScriptModule extends AbstractModule
     try ( Shell sh = shell.clone() ) {
       if( args != null )
          sh.setArgs(args);
-         ScriptCommand cmd = new ScriptCommand( 
+     ModuleHandle hThis = new ModuleHandle(this );
+     try (  ScriptCommand cmd = new ScriptCommand(
+        		 // Holds a refernce to module within cmd 
+    		  mScript ,  SourceMode.IMPORT, shell.getLocation() , hThis  ) ){
+		     // Should addRef the module in the shell ...  
+        	 if(  cmd.run(sh, getName(), args) != 0 )
+		        shell.printErr("Failed to init script:" + getName() );
+		      else {
 
-    		  mScript ,  SourceMode.IMPORT, shell.getLocation() ,new ModuleHandle(this )
-    		  );
-      
-      if(  cmd.run(sh, getName(), args) != 0 )
-        shell.printErr("Failed to init script:" + getName() );
-      else {
-    	  mStaticContext = sh.getExportedContext();
-      }
+		    	  // Extracts a clone of the this modules shell context
+		    	  mStaticContext = sh.getExportedContext();
+		    	  
+				   mLogger.debug("Merging script context into script module {} context " , this , mStaticContext );
+		    	 // Detach the module from the shell so it wont get destroyed
+		    	 mLogger.trace("Adding a reference to this so it wont get closed {} " , hThis );
+				 hThis.addRef();
+		    	 
+		      }
+         }
+    } finally {
+    	
+		mLogger.exit();
+		
     }
   }
+
+
+@Override
+public void close() throws IOException {
+	
+	mLogger.entry();
+	if( ! bClosed ){
+	  try {
+	     super.close();
+	  } finally 
+	  {
+		  if( mStaticContext != null )
+			  mStaticContext.close();
+		  
+	  }
+	}
+	mLogger.exit();
+}
 
 
 @Override

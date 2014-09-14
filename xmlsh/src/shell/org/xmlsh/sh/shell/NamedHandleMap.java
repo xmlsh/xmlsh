@@ -95,11 +95,11 @@ public class NamedHandleMap<V extends Closeable,T extends IManagedHandle<V>> imp
 		return true;
 	}
 
-	public boolean put(String uri, T tv) throws IOException {
+	public boolean put(String name, T tv) throws IOException {
 
-		T t = mMap.put(uri, tv );
+		T t = mMap.put(name, tv );
 		if( t != null ){
-			mLogger.warn("Replacing old hanld with new one by same uri {} mod {}",uri,t);
+			mLogger.warn("Replacing old hanld with new one by same uri {} mod {}",name,t);
 			t.release();
 		}
 		return mLogger.exit(t!=null  );
@@ -112,6 +112,15 @@ public class NamedHandleMap<V extends Closeable,T extends IManagedHandle<V>> imp
 
 	public boolean containsKey(String name) {
 		return mMap.containsKey(name);
+	}
+
+	public T getByValue(V v) {
+		for (T handle : mMap.values()) {
+			if (handle.get().equals(v))
+				return handle;
+		}
+		return null;
+	
 	}
 
 

@@ -55,6 +55,7 @@ public class XEnvironment implements AutoCloseable, Closeable {
 	 */
 	@Override
 	protected void finalize() throws Throwable {
+		if( ! bClosed )
 		close();
 	}
 
@@ -258,8 +259,11 @@ public class XEnvironment implements AutoCloseable, Closeable {
 	@Override
 	public void close() throws IOException  {
 		mLogger.entry(bClosed);
-		if( bClosed )
-			return;
+		if( bClosed ){
+			mLogger.warn("Multiple close");
+			
+			mLogger.exit();
+		}
 		
 		if( this.mSavedIO != null && ! mSavedIO.isEmpty())
 			throw new IOException("Closing XEnvironment when mSavedIO is not empty");
@@ -269,7 +273,10 @@ public class XEnvironment implements AutoCloseable, Closeable {
 		// close modules
  
 		if( mModuleStack != null && ! mModuleStack.empty()){
-			mLogger.warn("Module stack is not empty {} " , mModuleStack.size() );
+			// Should be 1 module on stack during close 
+			if( mModuleStack.size() > 1 )
+				mLogger.error("Module stack is not empty {} " , mModuleStack.size() );
+			
 			while( !mModuleStack.isEmpty() )
 			    mModuleStack.pop().release();
 			mModuleStack = null ;
@@ -740,11 +747,13 @@ public class XEnvironment implements AutoCloseable, Closeable {
 	public ModuleHandle getModuleByPrefix(String prefix) {
 		
 		mLogger.entry(prefix);
-		String uri = getNamespaces().get(prefix);
-		if( uri == null )
+		// TODO - make name == uri
+		String name = getNamespaces().get(prefix);
+		if( name == null )
 			return mLogger.exit(null );
-		
-		return mLogger.exit(mStaticContext.getModules(true).getExistingModuleByName(uri));
+		String uri = name ;
+		mLogger.debug("Found module prefix  {} name {} converted to uri {}" , prefix , name , uri );
+		return mLogger.exit(mStaticContext.getModules(true).getExistingModuleByURI(uri));
 		
 	}
 

@@ -8,6 +8,8 @@ package org.xmlsh.builtin.commands;
 
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.xmlsh.core.BuiltinCommand;
 import org.xmlsh.core.CommandFactory;
 import org.xmlsh.core.ICommand;
@@ -21,6 +23,7 @@ import org.xmlsh.sh.shell.ShellConstants;
 
 public class xmlsh extends BuiltinCommand {
 
+	static Logger mLogger = LogManager.getLogger();
 
 	boolean mTopShell = false ;
 
@@ -28,6 +31,9 @@ public class xmlsh extends BuiltinCommand {
 	public xmlsh()
 	{
 
+		
+		mLogger.entry();
+		
 	}
 
 
@@ -36,6 +42,8 @@ public class xmlsh extends BuiltinCommand {
 	 */
 	public xmlsh( boolean bTopShell )
 	{
+		mLogger.entry(bTopShell);
+
 		mTopShell = bTopShell ;
 	}
 
@@ -43,7 +51,7 @@ public class xmlsh extends BuiltinCommand {
 
 	@Override
 	public int run( List<XValue> args ) throws Exception {
-
+		mLogger.entry(args);
 		Options opts = new Options( "x,v,c:,rcfile:,e,norc,+location,redirect-output:,redirect-input:,redirect-error:"  );
 		opts.parse(args);
 		Shell shell = getShell();
@@ -103,8 +111,6 @@ public class xmlsh extends BuiltinCommand {
 				if(command != null)
 				{
 
-
-
 					ICommandExpr cmd = new EvalScriptExpr( command );
 					ret = shell.exec(cmd);
 
@@ -137,7 +143,7 @@ public class xmlsh extends BuiltinCommand {
 				shell.close();
 
 		}
-		return ret ;
+		return mLogger.exit(ret) ;
 
 	}
 

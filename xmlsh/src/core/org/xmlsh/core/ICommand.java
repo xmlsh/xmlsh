@@ -6,6 +6,7 @@
 
 package org.xmlsh.core;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -18,7 +19,7 @@ import org.xmlsh.sh.shell.ModuleHandle;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.sh.shell.StaticContext;
 
-public interface ICommand {
+public interface ICommand extends Closeable {
 	enum CommandType {
 		CMD_TYPE_BUILTIN ,
 		CMD_TYPE_INTERNAL , 

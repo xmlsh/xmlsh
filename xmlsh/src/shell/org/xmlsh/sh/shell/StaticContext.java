@@ -29,7 +29,7 @@ public class StaticContext implements Cloneable, Closeable {
 	private Modules mModules;                    // Imported modules visible to this module
 	private int id = _id++;
 	private static int _id = 0; 
-	private boolean bClosed = false ;
+	private boolean bClosed = true ;
 	private		Namespaces	mNamespaces = null;
 	
 	
@@ -41,9 +41,7 @@ public class StaticContext implements Cloneable, Closeable {
 	public StaticContext()
 	{
 		mLogger.entry();
-
-
-		
+		bClosed = false ;
 	}
 	
 
@@ -61,11 +59,10 @@ public class StaticContext implements Cloneable, Closeable {
 		
 		if( that.mFunctions != null)
 		    mFunctions = that.mFunctions.clone();
-		
 		if( that.mModules != null )
 			mModules = that.mModules.clone() ;
-		if( this.mNamespaces != null )	
-			that.mNamespaces = new Namespaces( this.mNamespaces );
+		if( that.mNamespaces != null )	
+			mNamespaces = new Namespaces( that.mNamespaces );
 		
 		mLogger.exit();
 		

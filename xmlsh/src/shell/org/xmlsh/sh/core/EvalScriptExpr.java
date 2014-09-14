@@ -15,6 +15,8 @@ package org.xmlsh.sh.core;
 
 import java.io.PrintWriter;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.xmlsh.core.ICommand;
 import org.xmlsh.core.ScriptCommand;
 import org.xmlsh.core.ScriptCommand.SourceMode;
@@ -25,6 +27,7 @@ import org.xmlsh.util.Util;
 public class EvalScriptExpr extends CommandExpr {
 	private String			mCommand;
 
+   static Logger mLogger = LogManager.getLogger();
 	@Override
 	public	boolean		isSimple() { return true ; }
 
@@ -52,29 +55,17 @@ public class EvalScriptExpr extends CommandExpr {
 	 * @see org.xmlsh.sh.core.Command#exec(org.xmlsh.core.XEnvironment)
 	 */
 	@Override
-	public int exec(Shell shell) throws Exception {
-
+	public int exec(Shell sh) throws Exception {
+		mLogger.entry(sh);
 		// Commands run in a sub shell
 
+		ScriptSource ss = new ScriptSource( getName() , mCommand  );
 
-		shell = shell.clone();
-		ScriptCommand cmd = null;
-		try {
-			cmd = new ScriptCommand( new ScriptSource( getName() , mCommand  ) , SourceMode.SOURCE , shell.getLocation() , shell.getModule() );
-			return cmd.run(  shell, "", null );
-
-		} finally {
-
-			if( cmd == null ){
-				SourceLocation loc = getLocation();
-				if( loc != null )
-					shell.printErr(loc.toString());
-
-				shell.printErr(mCommand + ": not found");
-				return 1;
-
-			}	
-			shell.close();
+		// Auto close script and shell 
+		try ( Shell shell = sh.clone();
+			  ScriptCommand cmd = new ScriptCommand( ss , SourceMode.SOURCE , shell.getLocation() , shell.getModule() );
+			){  
+			return mLogger.exit(cmd.run(shell, "", null));
 		}
 
 	}

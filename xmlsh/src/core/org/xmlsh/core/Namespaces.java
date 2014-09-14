@@ -6,6 +6,8 @@
 
 package org.xmlsh.core;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.xmlsh.util.NameValueMap;
 import org.xmlsh.util.StringPair;
 import org.xmlsh.util.Util;
@@ -14,6 +16,7 @@ import org.xmlsh.util.Util;
 public class Namespaces extends NameValueMap<String>
 {
 
+	static Logger mLogger = LogManager.getLogger();
 	public Namespaces() {}
 	public Namespaces(Namespaces that) 
 	{
@@ -22,6 +25,7 @@ public class Namespaces extends NameValueMap<String>
 
 	public void declare( String prefix , String uri )
 	{
+		mLogger.entry(prefix, uri);
 		if( Util.isEmpty(prefix))
 			prefix = "";
 

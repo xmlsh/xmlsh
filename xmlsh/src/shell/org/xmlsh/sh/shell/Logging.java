@@ -10,7 +10,6 @@ import java.io.File;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.Configuration;
 import org.apache.logging.log4j.core.config.ConfigurationFactory;
 import org.apache.logging.log4j.core.config.LoggerConfig;
@@ -45,7 +44,7 @@ class Logging {
 	public static void disableLogging()
 	{
 		@SuppressWarnings("unchecked")
-    LoggerContext ctx = (LoggerContext)LogManager.getContext(false);
+    org.apache.logging.log4j.core.LoggerContext ctx = (org.apache.logging.log4j.core.LoggerContext)LogManager.getContext(false);
     Configuration conf = ctx.getConfiguration();
     for(  LoggerConfig logger :conf.getLoggers().values()  ) {
       if( logger.getName().startsWith("xmlsh") )

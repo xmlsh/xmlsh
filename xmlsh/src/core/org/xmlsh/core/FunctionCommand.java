@@ -31,7 +31,7 @@ public class FunctionCommand implements ICommand {
 	ICommandExpr mFunction;
 	SourceLocation mLocation;
 	ModuleHandle mModule;
-	boolean bClosed = false;
+	boolean bClosed = true;
 	private static Logger mLogger = LogManager.getLogger();
 
 	public FunctionCommand(ModuleHandle moduleHandle, String name,
@@ -39,10 +39,12 @@ public class FunctionCommand implements ICommand {
 		mLogger.entry(moduleHandle, name, func, loc);
 		assert (moduleHandle != null);
 
+		bClosed = false;
 		mName = name;
 		mFunction = func;
 		mLocation = loc;
 		mModule = moduleHandle;
+		mModule.addRef();
 	}
 
 	@Override

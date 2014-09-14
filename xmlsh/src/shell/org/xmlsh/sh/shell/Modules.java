@@ -87,10 +87,10 @@ public class Modules extends ManagedObject<Modules> implements
 	 * @returns true if this is a new module 
 	 * 
 	 */
-	boolean declare(Shell shell, String uri , ModuleHandle module,  List<XValue> init)
+	boolean declare(Shell shell, String name , ModuleHandle module,  List<XValue> init)
 			throws Exception {
 
-		mLogger.entry(shell, uri, module, init);
+		mLogger.entry(shell, name, module, init);
 		assert (module != null && ! module.isNull() );
 		if( module == null || module.isNull() ){
 			throw new InvalidArgumentException("Module is null: ");
@@ -99,7 +99,7 @@ public class Modules extends ManagedObject<Modules> implements
 		   mLogger.debug("Initializing a new module: {}", module );
 		   module.get().onInit(shell, init);
 		   module.addRef();
-		   return mLogger.exit( mModules.put(module.getName(),module) );
+		   return mLogger.exit( mModules.put(Shell.toModuleUri(module),module) );
 
 		}
 
@@ -131,16 +131,16 @@ public class Modules extends ManagedObject<Modules> implements
 	
 	
 
-	ModuleHandle declarePackageModule(Shell shell, String prefix, String uri,
+	ModuleHandle declarePackageModule(Shell shell, String prefix, String name,
 			List<String> pkgs, String helpXML, List<XValue> init)
 			throws Exception {
 		
-		mLogger.entry(shell,prefix,uri,pkgs);
-		ModuleHandle mod = getExistingModuleByName(uri);
+		mLogger.entry(shell,prefix,name,pkgs);
+		ModuleHandle mod = getExistingModuleByName(name);
 		if( mod == null ){
 			mod =  new ModuleHandle(ModuleFactory.createPackageModule(shell, prefix,
-					uri, pkgs, helpXML));
-		    mModules.put(uri ,  mod );
+					name, pkgs, helpXML));
+		    mModules.put( Shell.toModuleUri(mod),  mod );
 		}
 		else
 			mod.addRef();
@@ -152,8 +152,18 @@ public class Modules extends ManagedObject<Modules> implements
 
 	public ModuleHandle getExistingModule(IModule mod) {
 
-		return mModules.get(mod.getName());
+		
+		mLogger.entry(mod);
+	
+		mLogger.error("Shoulndt be called yet");
+		return mModules.getByValue(mod);
+	}
 
+	public ModuleHandle getExistingModuleByURI(String uri) {
+		
+          mLogger.entry(uri);
+		
+		return mLogger.exit( mModules.get(uri));         
 	}
 
 	public ModuleHandle getExistingModuleByName(String name) {
@@ -161,7 +171,7 @@ public class Modules extends ManagedObject<Modules> implements
 		
 		mLogger.entry(name);
 		
-		return mLogger.exit( mModules.get(name));
+		return mLogger.exit( mModules.get(Shell.toModuleUri(name)));
 
 	}
 

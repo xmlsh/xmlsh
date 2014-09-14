@@ -172,7 +172,7 @@ public class Shell implements AutoCloseable, Closeable {
 	private Shell mParent = null;
 	private IFS mIFS;
 	private ThreadGroup mThreadGroup = null;
-	private volatile boolean mClosed = false;
+	private volatile boolean mClosed = true;
 	private final static EvalEnv mPSEnv = EvalEnv.newInstance(false, false,
 			true, false);
 
@@ -205,10 +205,11 @@ public class Shell implements AutoCloseable, Closeable {
 	 */
 	public Shell() throws Exception {
 		this(true);
-
 	}
 
 	public Shell(boolean bUseStdio) throws Exception {
+		mLogger.entry(bUseStdio);
+		mClosed = false ;
 		mModule = RootModule.getInstance();
 		mOpts = new ShellOpts();
 		mSavedCD = System.getProperty(ShellConstants.PROP_USER_DIR);
@@ -355,6 +356,9 @@ public class Shell implements AutoCloseable, Closeable {
 	}
 
 	private Shell(Shell that, ThreadGroup threadGroup) throws IOException {
+		
+		mLogger.entry(that, threadGroup);
+		mClosed = false ;
 		mParent = that;
 		mModule = that.mModule;
 		mThreadGroup = threadGroup == null ? that.getThreadGroup()
@@ -380,11 +384,14 @@ public class Shell implements AutoCloseable, Closeable {
 
 		// Cloning shells doesnt save the condition depth
 		// mConditionDepth = that.mConditionDepth;
+		mLogger.exit();
 
 	}
 
 	@Override
 	public Shell clone() {
+		
+		mLogger.entry();
 		try {
 			return new Shell(this);
 		} catch (IOException e) {
@@ -396,11 +403,18 @@ public class Shell implements AutoCloseable, Closeable {
 
 	@Override
 	public void close() throws IOException {
+		mLogger.entry();
 		// Synchronized only to change states
 		synchronized (this) {
-			if (mClosed)
-				return;
-			mClosed = true;
+			
+			
+			mLogger.trace("closing {} - closed is: {} ", this , mClosed);
+			if (mClosed){
+				 mLogger.exit();
+			   return;
+			}
+			// Mark closed now while syncronized
+			mClosed = true ;
 		}
 
 		if (mParent != null)
@@ -461,6 +475,8 @@ public class Shell implements AutoCloseable, Closeable {
 	 */
 	@Override
 	protected void finalize() throws Throwable {
+		
+		mLogger.entry();
 		close();
 	}
 
@@ -474,6 +490,8 @@ public class Shell implements AutoCloseable, Closeable {
 
 	public ICommandExpr parseScript(Reader reader, String source)
 			throws CoreException {
+		
+		mLogger.entry(reader, source);
 
 		try {
 
@@ -489,12 +507,13 @@ public class Shell implements AutoCloseable, Closeable {
 		finally {
 			exitEval();
 		}
+		
 
 	}
 
 	public ICommandExpr parseEval(String scmd) throws CoreException {
 
-
+		mLogger.entry(scmd);
 
 		try ( Reader reader = Util.toReader(scmd ) ){
 			enterEval();
@@ -502,10 +521,12 @@ public class Shell implements AutoCloseable, Closeable {
 			ShellParser parser = new ShellParser(newParserReader(reader,false),"<eval>");
 
 			ICommandExpr c = parser.script();
-			return c;
+			return mLogger.exit( c);
 
 		} catch (Exception e) {
-			throw new CoreException("Exception parsing command: " + scmd, e);
+			
+			mLogger.catching(e);
+           throw mLogger.throwing(new CoreException("Exception parsing command: " + scmd, e));
 		}
 
 		finally {
@@ -514,6 +535,8 @@ public class Shell implements AutoCloseable, Closeable {
 	}
 
 	private void exitEval() {
+		
+		mLogger.entry();
 		int d;
 		if ((d = mRunDepth.decrementAndGet()) < 0) {
 			mLogger.error("SNH: run depth underrun: " + d
@@ -566,6 +589,7 @@ public class Shell implements AutoCloseable, Closeable {
 			boolean convertReturn) throws ParseException, IOException, ThrowException
 	{
 		
+		mLogger.entry(scriptURL, source, convertReturn);
 		try ( Reader reader = Util.toReader(scriptURL, this.getInputTextEncoding())) {
 			return runScript( reader , source , convertReturn );
 		}
@@ -577,6 +601,7 @@ public class Shell implements AutoCloseable, Closeable {
 			boolean convertReturn) throws ParseException, ThrowException,
 			IOException {
 
+		mLogger.entry(reader, source, convertReturn);
 		try {
 			enterEval();
 			InputStream save = mCommandInput;
@@ -612,15 +637,19 @@ public class Shell implements AutoCloseable, Closeable {
 
 			catch (ThrowException e) {
 				// mLogger.info("Rethrowing throw exception",e);
-				throw e; // rethrow
+				throw mLogger.throwing(	 e); // rethrow
 
 			} catch (ExitOnErrorException e) {
+				
+				mLogger.catching(e);
 				// Caught Exit on error from a script
 				exitStatus = e.getValue();
-
 			}
 
+			
 			catch (Exception | Error e) {
+				mLogger.catching(e);
+
 				printErr(e.getMessage());
 				mLogger.error("Exception parsing statement", e);
 				parser.ReInit(newParserReader(reader,false), source);
@@ -640,7 +669,7 @@ public class Shell implements AutoCloseable, Closeable {
 				exitStatus = getReturnValueAsExitStatus(exitStatus);
 
 			onSignal("EXIT");
-			return new ReturnValue(exitStatus, getReturnValue());
+			return mLogger.exit(new ReturnValue(exitStatus, getReturnValue())) ;
 
 		} finally {
 			exitEval();
@@ -766,6 +795,8 @@ public class Shell implements AutoCloseable, Closeable {
 	}
 
 	public void runRC(String rcfile) throws IOException, Exception {
+		
+		mLogger.entry(rcfile);
 		// Try to source the rcfile
 		if (rcfile != null) {
 			try {
@@ -788,6 +819,8 @@ public class Shell implements AutoCloseable, Closeable {
 				exitEval();
 			}
 		}
+		
+		mLogger.exit();
 	}
 
 	public String getPS(String ps, String def) {
@@ -871,6 +904,8 @@ public class Shell implements AutoCloseable, Closeable {
 
 	public int exec(ICommandExpr c, SourceLocation loc) throws ThrowException,
 	ExitOnErrorException {
+		
+		mLogger.entry(c, loc);
 
 		try {
 			enterEval();
@@ -908,15 +943,13 @@ public class Shell implements AutoCloseable, Closeable {
 				sht.start();
 
 				return mStatus = 0;
-			} catch (ThrowException e) {
-				// mLogger.info("Rethrowing ThrowException",e);
-				throw e;
-			} catch (ExitOnErrorException e) {
-				// rethrow
+			} catch (ThrowException | ExitOnErrorException e ) {
 				throw e;
 			}
 
 			catch (Exception e) {
+				
+				mLogger.catching(e);
 				printLoc(mLogger, loc);
 
 				printErr("Exception running: " + c.toString(true));
@@ -931,12 +964,13 @@ public class Shell implements AutoCloseable, Closeable {
 					if (!isInCommandConndition())
 						throw new ThrowException(XValue.newXValue(mStatus));
 				}
-				return mStatus;
+				return mLogger.exit(mStatus);
 
 			}
 		} finally {
 			exitEval();
 		}
+		
 	}
 
 	public void logExec(ICommandExpr c, boolean bExec, SourceLocation loc) {
@@ -1094,6 +1128,7 @@ public class Shell implements AutoCloseable, Closeable {
 	}
 
 	public static void main(String argv[]) throws Exception {
+		mLogger.entry();
 		List<XValue> vargs = new ArrayList<XValue>(argv.length);
 		for (String a : argv)
 			vargs.add(XValue.newXValue(a));
@@ -1113,6 +1148,8 @@ public class Shell implements AutoCloseable, Closeable {
 			shell.close();
 		}
 
+		
+		mLogger.exit(ret);
 		System.exit(ret);
 
 	}
@@ -1618,19 +1655,20 @@ public class Shell implements AutoCloseable, Closeable {
 	
 	public static String toModuleUri(ModuleHandle mod) {
 	
+		return toModuleUri( mod.getName());
+	}
+	public static String toModuleUri(String name) {
+		
 		// bogus URI scheme for now
 		URI uri;
 		try {
-			uri = new URI( "module" , mod.getName(), null );
+			uri = new URI( "module" , name, null );
 			return uri.toASCIIString();
 		} catch (URISyntaxException e) {
 			mLogger.catching(e);
-			return "module:" + mod.getName();
+			return "module:" + name ;
 		}
-		
-	
 	}
-	
 	
 
 
@@ -2021,8 +2059,10 @@ public class Shell implements AutoCloseable, Closeable {
 	// Dont actually close it - causes too much asyncronous grief
 
 	public boolean shutdown(boolean force, long waitTime) {
+		
+		mLogger.entry(force, waitTime);
 		if (mClosed)
-			return true;
+			return mLogger.exit(true);
 		// Mark us done
 		mExitVal = Integer.valueOf(0);
 
@@ -2048,7 +2088,7 @@ public class Shell implements AutoCloseable, Closeable {
 		waitTime = Util.nextWait(end, waitTime);
 		this.waitAtMostChildren(0, waitTime);
 		Thread.yield();
-		return mClosed;
+		return mLogger.exit(mClosed);
 
 	}
 
@@ -2086,7 +2126,8 @@ public class Shell implements AutoCloseable, Closeable {
 	}
 
 	public ModuleHandle getModuleByPrefix(String prefix) {
-		return getEnv().getModuleByPrefix(prefix);
+		
+		return mLogger.exit(getEnv().getModuleByPrefix(prefix));
 	}
 
 	public FunctionDefinitions getFunctionDelcs() {
@@ -2121,7 +2162,7 @@ public class Shell implements AutoCloseable, Closeable {
 	public void pushModule(ModuleHandle mod) {
 	   
 	    mLogger.entry(mod);
-		mModule = getEnv().pushModule( mod );
+		mModule = mLogger.exit(getEnv().pushModule(mod));
 	
 	}
 

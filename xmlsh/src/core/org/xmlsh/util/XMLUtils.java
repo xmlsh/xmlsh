@@ -58,6 +58,7 @@ public class XMLUtils
 		if(  value == null )  // strange but null is atomic for this 
 		return true ;
 
+		@SuppressWarnings("rawtypes")
 		ValueRepresentation<? extends Item> item = value.getUnderlyingValue();
 		boolean isAtom = ( item instanceof AtomicValue ) || 
 				( item instanceof NodeInfo && ((NodeInfo)item).getNodeKind() == net.sf.saxon.type.Type.TEXT ) ;
@@ -119,11 +120,11 @@ public class XMLUtils
     
     
     public static XdmValue toXdmValue( Object obj ) {
-      return (XdmValue) JavaUtils.convert(obj, XdmValue.class);
+      return JavaUtils.convert(obj, XdmValue.class);
     }
     
     public static XdmItem toXdmItem( Object obj ) {
-      return (XdmItem) JavaUtils.convert(obj, XdmItem.class);
+      return JavaUtils.convert(obj, XdmItem.class);
     }
     
     
@@ -145,14 +146,14 @@ public class XMLUtils
     public static String simpleTypeName( XdmItem v ) 
     {
 
-      String cs = cardinalityString(getCardinality(v));
-
-      Value<?> value = Value.asValue(v.getUnderlyingValue());
+      @SuppressWarnings("rawtypes")
+	Value<? extends Item> value = Value.asValue(v.getUnderlyingValue());
       if(value instanceof EmptySequence) 
         return "empty-sequence()";
       
       try {
-        Item item = value.asItem();
+        @SuppressWarnings("rawtypes")
+		Item item = value.asItem();
         return Type.displayTypeName( item );
         /*
         if (item instanceof NodeInfo) {
@@ -234,12 +235,13 @@ public class XMLUtils
     }
 
 
-    public static SequenceIterator asSequenceIterator(XdmValue value ) throws net.sf.saxon.trans.XPathException
+    @SuppressWarnings("rawtypes")
+	public static SequenceIterator<? extends Item> asSequenceIterator(XdmValue value ) throws net.sf.saxon.trans.XPathException
     {
         if( value == null )
           return null ;
 
-        ValueRepresentation<?> v = value.getUnderlyingValue();
+        ValueRepresentation<? extends Item> v = value.getUnderlyingValue();
         if (v instanceof Value) {
           return  ((Value<?>)v).iterate();
         } else {
@@ -314,16 +316,17 @@ public class XMLUtils
 
 */
     final static class XValueToItemConverter 
-    implements ITypeConverter<XValue,Item >
+    implements ITypeConverter<XValue, Item<?> >
     {
-      @Override
-      public Item convert(XValue xvalue)
+      @SuppressWarnings("rawtypes")
+	@Override
+      public Item<?> convert(XValue xvalue)
       {
         ValueRepresentation<? extends Item> v = xvalue.toXdmItem().getUnderlyingValue();
         assert( v instanceof Item );
         if( !( v instanceof Item ))
           return null ;
-        return (Item) v ;
+        return (Item<?>) v ;
       }
     }
 

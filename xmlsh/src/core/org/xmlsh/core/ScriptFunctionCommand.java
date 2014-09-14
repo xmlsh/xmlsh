@@ -12,6 +12,8 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.List;
 
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.xmlsh.sh.core.SourceLocation;
 import org.xmlsh.sh.shell.IModule;
 import org.xmlsh.sh.shell.Shell;
@@ -23,7 +25,8 @@ public class ScriptFunctionCommand extends AbstractBuiltinFunction implements Cl
 	private URL mScriptURL;
 	private IModule mModule;
 	private SourceLocation mLocation;
-
+ 
+	static Logger mLogger = LogManager.getLogger();
 
 	public ScriptFunctionCommand(String name , URL input, IModule module ) {
 		super(name);
@@ -34,24 +37,19 @@ public class ScriptFunctionCommand extends AbstractBuiltinFunction implements Cl
 
 	public void close() throws IOException
 	{
+		
+		mLogger.entry();
 	}
 
 	@Override
 	public XValue run(Shell shell, List<XValue> args ) throws Exception {
 
 
-		try {
-			Shell sh = shell.clone();
-			try {
+		try ( Shell sh = shell.clone() ){
 				if( args != null )
 					sh.setArgs(args);
 				sh.setArg0(getName());
-				return shell.runScript(mScriptURL , getName(),false).mReturnValue;
-			} finally {
-				// Close shell - even if exception is thrown through sh.runScript and up
-				sh.close();
-
-			}
+				return mLogger.exit( shell.runScript(mScriptURL , getName(),false).mReturnValue);
 
 		}
 

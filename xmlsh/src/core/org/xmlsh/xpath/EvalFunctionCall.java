@@ -24,41 +24,42 @@ import org.xmlsh.core.XValue;
 import org.xmlsh.core.XVariable;
 import org.xmlsh.sh.core.ICommandExpr;
 import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.util.Util;
 import org.xmlsh.util.XMLUtils;
 
+@SuppressWarnings("serial")
 public class EvalFunctionCall extends ExtensionFunctionCall
 {
 	private static Logger	mLogger	= LogManager.getLogger();
 
 	EvalFunctionCall()
 	{
-		// TODO Auto-generated constructor stub
+		
+		mLogger.entry();
 	}
 
+	@SuppressWarnings("rawtypes")
 	@Override
-	public SequenceIterator call(SequenceIterator[] arguments, XPathContext context) throws XPathException
+	public SequenceIterator<? extends Item> call(SequenceIterator<? extends Item>[] arguments, XPathContext context) throws XPathException
 	{
 
+		
+		mLogger.entry(arguments, context);
 		// Arg0 is the command to run
 
 		String command = arguments[0].next().getStringValue();
-		SequenceIterator args = arguments.length > 1 ? arguments[1] : null;
+		SequenceIterator<? extends Item> args = arguments.length > 1 ? arguments[1] : null;
 
-		Shell shell = ThreadLocalShell.get();
+		Shell sh = ThreadLocalShell.get();
 
-		try {
+		try ( Shell shell = newShell(sh) ) { // work around compiler warning
 
-			if(shell == null)
-				shell = new Shell();
-			else
-				shell = shell.clone();
 
 			ICommandExpr cmd = shell.parseEval(command);
 
 			List<XValue> shell_args = new ArrayList<XValue>();
-			Item item = null;
 			if(args != null) {
+				@SuppressWarnings("unused")
+				Item item;
 				while ((item = args.next()) != null) {
 					shell_args.add(XValue.newXValue(item));
 				}
@@ -67,46 +68,63 @@ public class EvalFunctionCall extends ExtensionFunctionCall
 			// Capture stdout
 			XValue oValue = XValue.empytSequence();
 			XVariable oVar = XVariable.anonymousInstance(oValue);
-			try (				
-					VariableOutputPort oPort = new VariableOutputPort(oVar) ){
+			Item contextItem = null;
+			if(arguments.length > 2)
+				contextItem = arguments[2].next();
+			else
+				contextItem = context.getContextItem();
+			
+			try (	VariableOutputPort oPort = new VariableOutputPort(oVar) ;
+					VariableInputPort iPort = newInputPort(context, contextItem); ) { // work around compiler warning
+					
+					
 				shell.getEnv().setStdout(oPort);
 
-				Item contextItem = null;
-				if(arguments.length > 2)
-					contextItem = arguments[2].next();
-				else
-					contextItem = context.getContextItem();
-
 				// set stdin
-				if(context != null) {
-					VariableInputPort iPort = new VariableInputPort(
-					  XVariable.anonymousInstance( XValue.newXValue(contextItem)));
+				if(iPort != null) 
 					shell.getEnv().setStdin(iPort);
-				}
 
 				shell.setArgs(shell_args);
 				try {
 					shell.exec(cmd);
+					oPort.flush();
+					oValue = oVar.getValue();
+					if(oValue == null)
+						return  mLogger.exit(null);;
+					
 				} catch (ThrowException e) {
-					mLogger.info("Caught ThrowException within eval", e);
-					return null;
-				}
-				oPort.flush();
-				oValue = oVar.getValue();
-				if(oValue == null)
-					return null;
+					mLogger.catching(e);
+					return mLogger.exit(null);
+				} 
+				
 			} 
-
-			return XMLUtils.asSequenceIterator( oValue.toXdmValue() );
+			
+			return mLogger.exit(XMLUtils.asSequenceIterator( oValue.toXdmValue() ));
 		} catch (Exception e) {
-			throw new XPathException(e);
+			mLogger.catching(e);
+			throw mLogger.throwing(new XPathException(e));
 		}
+		
 
-		finally {
+	}
 
-			Util.safeClose(shell);
-		}
+	
+	// helper functions for compiler warnings in try-resource
+	private VariableInputPort newInputPort(XPathContext context,
+			@SuppressWarnings("rawtypes") Item contextItem) {
+		if( context == null)
+			return null ;
+		
 
+		return new VariableInputPort(
+				  XVariable.anonymousInstance( XValue.newXValue(contextItem)));
+	}
+
+	private Shell newShell(Shell sh) throws Exception {
+		if( sh == null )
+			return new Shell();
+		else
+			return sh.clone();
 	}
 
 }

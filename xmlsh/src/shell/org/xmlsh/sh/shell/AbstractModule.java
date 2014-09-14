@@ -15,14 +15,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.xmlsh.core.XClassLoader;
 import org.xmlsh.core.XValue;
-import org.xmlsh.util.Util;
 
-import com.sun.xml.internal.bind.annotation.OverrideAnnotationOf;
 
 abstract class AbstractModule implements IModule {
 
 	protected String mName;
-	private boolean bClosed = false;
+	protected boolean bClosed = true;
 
 	protected ClassLoader mClassLoader; // Classloader for this module
 
@@ -38,6 +36,7 @@ abstract class AbstractModule implements IModule {
 
 	protected AbstractModule(String name) {
 		mName = name;
+		bClosed = false ;
 	}
 
 	@Override
@@ -53,6 +52,9 @@ abstract class AbstractModule implements IModule {
 		mScriptCache = null;
 		mClassLoader = null;
 		bClosed = true ;
+		
+		mLogger.exit();
+		
 	}
 
 	protected Class<?> findClass(String className) {

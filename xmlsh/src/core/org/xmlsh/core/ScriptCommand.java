@@ -32,96 +32,86 @@ import org.xmlsh.util.FileUtils;
 import org.xmlsh.util.Util;
 
 public class ScriptCommand implements ICommand {
-  
-  public enum SourceMode {
-    SOURCE ,
-    RUN , 
-    IMPORT ,
-    VALIDATE 
-  };
-  
-  
 
-	private static Logger mLogger = org.apache.logging.log4j.LogManager.getLogger();
+	public enum SourceMode {
+		SOURCE, RUN, IMPORT, VALIDATE
+	};
+
+	private static Logger mLogger = org.apache.logging.log4j.LogManager
+			.getLogger();
 	private SourceMode mSourceMode;
-	private ModuleHandle mModule;        // The module in which the script was located
+	private ModuleHandle mModule; // The module in which the script was located
 	private SourceLocation mLocation;
 	private ScriptSource mSource;
 
-
 	// Finalize script command make sure to close
 	@Override
-	protected void finalize()
-	{
+	protected void finalize() {
 		close();
 	}
 
-
-	public ScriptCommand( ScriptSource source, SourceMode sourceMode, SourceLocation location , ModuleHandle moduleHandle ) throws FileNotFoundException
-	{
-		mLogger.entry(source,sourceMode,location,moduleHandle);
-		assert( moduleHandle != null );
+	public ScriptCommand(ScriptSource source, SourceMode sourceMode,
+			SourceLocation location, ModuleHandle moduleHandle)
+			throws FileNotFoundException {
+		mLogger.entry(source, sourceMode, location, moduleHandle);
+		assert (moduleHandle != null);
 		mSource = source;
 		mSourceMode = sourceMode;
-		mLocation = location ;
-		mModule = moduleHandle ;
-		
+		mLocation = location;
+		mModule = moduleHandle;
 
 	}
-	
-
 
 	@Override
-	public int run(Shell shell, String cmd, List<XValue> args) throws ThrowException, ParseException, IOException, UnimplementedException {
+	public int run(Shell shell, String cmd, List<XValue> args)
+			throws ThrowException, ParseException, IOException,
+			UnimplementedException {
 
-		mLogger.entry(shell,cmd);
-		assert( mModule != null );
+		mLogger.entry(shell, cmd);
+		assert (mModule != null);
 
-		try ( Reader mScriptStreamSource = getScriptSource() ){
-			
-		  switch( mSourceMode ){
-			case SOURCE :
-				return shell.runScript(mScriptStreamSource,mSource.mScriptName,true).mExitStatus;
-			case RUN :
-			{
-				Shell sh = shell.clone();
-				try {
-					if( args != null )
+		try (Reader mScriptStreamSource = getScriptSource()) {
+
+			mLogger.trace("Running {} in {} mode" , cmd , mSourceMode);
+			switch (mSourceMode) {
+			case SOURCE:
+				return shell.runScript(mScriptStreamSource,
+						mSource.mScriptName, true).mExitStatus;
+			case RUN: {
+				try (Shell sh = shell.clone()) {
+					if (args != null)
 						sh.setArgs(args);
 					sh.setArg0(mSource.mScriptName);
-					int ret = sh.runScript(mScriptStreamSource,mSource.mScriptName,true).mExitStatus;
-
+					int ret = sh.runScript(mScriptStreamSource,
+							mSource.mScriptName, true).mExitStatus;
 					return ret;
-				} finally {
-					// Close shell - even if exception is thrown through sh.runScript and up
-					sh.close();
 				}
 			}
-			case VALIDATE: 
-			  
-		    return shell.validateScript( mScriptStreamSource , mSource.mScriptName ) ? 0 : 1 ;
+			case VALIDATE:
 
-			case IMPORT : 
-			{
-          int ret =  shell.runScript( mScriptStreamSource, mSource.mScriptName, true ).mExitStatus;;
-          return ret ;
+				return shell.validateScript(mScriptStreamSource,
+						mSource.mScriptName) ? 0 : 1;
+
+			case IMPORT: {
+				int ret = shell.runScript(mScriptStreamSource,
+						mSource.mScriptName, true).mExitStatus;
+				;
+				return ret;
 			}
-			  
-			
-		default :
-		  mLogger.warn("Run mode not implemented: {}" , mSourceMode );
-		  throw new UnimplementedException("Source mode: " + mSourceMode.toString() + " Not implemented");
+
+			default:
+				mLogger.warn("Run mode not implemented: {}", mSourceMode);
+				throw new UnimplementedException("Source mode: "
+						+ mSourceMode.toString() + " Not implemented");
 			}
-		} finally {
-			close();
 		}
 	}
 
-
 	private Reader getScriptSource() throws IOException {
-		if( mSource.mScriptURL != null )
-		  return new InputStreamReader(mSource.mScriptURL.openStream(), mSource.mEncoding );
-		if(mSource.mScriptBody != null )
+		if (mSource.mScriptURL != null)
+			return new InputStreamReader(mSource.mScriptURL.openStream(),
+					mSource.mEncoding);
+		if (mSource.mScriptBody != null)
 			return Util.toReader(mSource.mScriptBody);
 		throw new IOException("Script body is empty");
 	}
@@ -131,50 +121,45 @@ public class ScriptCommand implements ICommand {
 
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.xmlsh.core.ICommand#getType()
 	 */
 	@Override
 	public CommandType getType() {
-		return CommandType.CMD_TYPE_SCRIPT ;
+		return CommandType.CMD_TYPE_SCRIPT;
 	}
 
 	@Override
 	public URL getURL() {
-		return mSource.mScriptURL ; // may be null 
+		return mSource.mScriptURL; // may be null
 
 	}
 
 	@Override
 	public ModuleHandle getModule() {
-		return mModule ;
+		return mModule;
 	}
 
 	@Override
 	public SourceLocation getLocation() {
-		return mLocation ;
+		return mLocation;
 	}
 
 	@Override
 	public void setLocation(SourceLocation loc) {
-		mLocation = loc ;
+		mLocation = loc;
 
 	}
-
 
 	public String getScriptName() {
 		return mSource.mScriptName;
 	}
 
-
-  @Override
-  public void print(PrintWriter w, boolean bExec)
-  {
-    w.print( mSource.mScriptName );
-  }
-
-
-
-
+	@Override
+	public void print(PrintWriter w, boolean bExec) {
+		w.print(mSource.mScriptName);
+	}
 
 }

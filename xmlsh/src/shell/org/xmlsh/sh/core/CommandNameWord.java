@@ -19,6 +19,8 @@ import net.sf.saxon.s9api.DocumentBuilder;
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XdmNode;
 
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.EvalEnv;
 import org.xmlsh.core.EvalFlag;
@@ -41,7 +43,7 @@ import org.xmlsh.util.Util;
 public class CommandNameWord extends Word {
 	String		mType;	// $( $(< $<( $<(<  `
 	CommandExpr		mCommand;
-
+static Logger mLogger = LogManager.getLogger();
 	public CommandNameWord( Token ttype , CommandExpr c){
 		super(ttype);
 		mType = ttype.toString();
@@ -60,41 +62,30 @@ public class CommandNameWord extends Word {
 	private String expandSubproc(Shell parentShell , CommandExpr c ) throws CoreException, IOException
 	{
 
-		ByteArrayOutputStream out = new ByteArrayOutputStream();
-		ByteFilterOutputStream filterOut = null ;
-		Shell shell = parentShell.clone();
-		try {
+		
+		mLogger.entry(parentShell, c);
+		
+		try ( Shell shell = parentShell.clone() ;
+				ByteArrayOutputStream out  = new ByteArrayOutputStream()  ){
 
-			OutputStream commandOut = shell.getSerializeOpts().isIgncr() ? 
-					filterOut = new ByteFilterOutputStream( out , '\r' ) : out;
-					shell.getEnv().setStdout( commandOut  );
-					shell.getEnv().setStdin( new NullInputStream() );
-					int ret = shell.exec(c);
-					parentShell.setStatus(ret);
-
-
-					commandOut.flush();
-					out.flush();
-					String s = out.toString( shell.getSerializeOpts().getInput_text_encoding());
-
-					// remove trailing newlines
-					s = Util.removeTrailingNewlines(s, shell.getSerializeOpts().isIgncr() );
-					return s;
+			OutputStream commandOut = shell.getSerializeOpts().isIgncr() ? 	new ByteFilterOutputStream( out , '\r' ) : out  ;
+			shell.getEnv().setStdout( commandOut  );
+			shell.getEnv().setStdin( new NullInputStream() );
+			int ret = shell.exec(c);
+			parentShell.setStatus(ret);
+			
+			commandOut.flush();
+			out.flush();
+			String s = out.toString( shell.getSerializeOpts().getInput_text_encoding());
+			
+			// remove trailing newlines
+			s = Util.removeTrailingNewlines(s, shell.getSerializeOpts().isIgncr() );
+			return mLogger.exit(s);
 
 		} 
-		finally {
-
-			Util.safeClose(filterOut);
-			Util.safeClose( shell );
-
-
-		}
-
-
 
 
 	}
-
 
 
 
@@ -112,58 +103,43 @@ public class CommandNameWord extends Word {
 	private XValue parseXCmd(Shell parentShell , CommandExpr cmd) throws IOException, CoreException
 	{
 
+		
+		mLogger.entry(parentShell, cmd);
 
 		XVariable var = XVariable.anonymousInstance(TypeFamily.XDM);
-		VariableOutputPort port = new VariableOutputPort( var );
 
+		try ( VariableOutputPort port = new VariableOutputPort( var )	 ){
 
+			try ( Shell shell = parentShell.clone() ){
+	
+				shell.getEnv().setStdout( port );
+				shell.getEnv().setStdin( new NullInputStream() );
+				int ret= shell.exec(cmd);
+				parentShell.setStatus(ret);
+	
+			} 
 
-		Shell shell = parentShell.clone();
-		try {
-
-			shell.getEnv().setStdout( port );
-			shell.getEnv().setStdin( new NullInputStream() );
-			int ret= shell.exec(cmd);
-			parentShell.setStatus(ret);
-
-
-		} 
-		finally {
-			shell.close();
-
-
-		}
-
-		port.close();
-
-
-
-
-		XValue value = var.getValue();
-		/*
-		 * If port was written to as a text stream then need to reparse it as a document
-		 */
-		if( value != null && port.isAsText() ){
-			String sDoc = value.toString();
-
-
-			DocumentBuilder builder = Shell.getProcessor().newDocumentBuilder();
-			Source source = new StreamSource( new StringReader(sDoc));
-			XdmNode node;
-			try {
-				node = builder.build(source);
-			} catch (SaxonApiException e) {
-				throw new CoreException("Exception parsing as XML Document",e);
+			XValue value = var.getValue();
+			port.flush();
+			/*
+			 * If port was written to as a text stream then need to reparse it as a document
+			 */
+			if( value != null && port.isAsText() ){
+				String sDoc = value.toString();
+	
+	
+				Source source = new StreamSource( new StringReader(sDoc));
+				DocumentBuilder builder = Shell.getProcessor().newDocumentBuilder();
+				XdmNode node;
+				try {
+					node = builder.build(source);
+				} catch (SaxonApiException e) {
+					throw new CoreException("Exception parsing as XML Document",e);
+				}
+				return mLogger.exit(XValue.newXValue(node)) ;
 			}
-			return XValue.newXValue(node) ;
-
-
-
-
+			return mLogger.exit(value );
 		}
-
-
-		return value ;
 
 
 

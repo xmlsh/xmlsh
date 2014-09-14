@@ -8,10 +8,13 @@ package org.xmlsh.sh.core;
 
 import java.io.PrintWriter;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.xmlsh.sh.shell.Shell;
 
 public class SubShell extends CompoundCommandExpr {
 	private CommandExpr		mCommand;
+	static Logger mLogger = LogManager.getLogger();
 	public SubShell( CommandExpr c )
 	{
 		mCommand = c;
@@ -31,6 +34,8 @@ public class SubShell extends CompoundCommandExpr {
 	@Override
 	public int exec(Shell shell) throws Exception {
 
+		
+		mLogger.entry(shell);
 		/*
 		 * Save the IO environment then redirect before cloning
 		 * the shell so that port redirections take place in the parent shell
@@ -38,17 +43,16 @@ public class SubShell extends CompoundCommandExpr {
 		shell.getEnv().saveIO();
 		try {
 			applyRedirect(shell);
-
 			// Clone shell to run command inside new shell
-			Shell subshell = shell.clone();
-			try {
-				return subshell.exec( mCommand);
-			} finally {
-				subshell.close();
+			try ( Shell subshell = shell.clone() ){
+				return mLogger.exit(subshell.exec(mCommand));
 			}
 		} finally {
+			mLogger.trace("Restoring IO after a subshell");
 			shell.getEnv().restoreIO();
+			mLogger.exit();
 		}
+
 
 
 
