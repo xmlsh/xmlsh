@@ -155,16 +155,16 @@ public abstract class CommandFactory {
 
 		if (Util.hasDirectory(name)) {
 
-			cmdFile = shell.getExplicitFile(name, true);
+			cmdFile = shell.getExplicitFile(name, true,true);
 			if (cmdFile == null && !name.endsWith(".exe"))
 				cmdFile = shell.getExplicitFile(name + ".exe", true);
 		}
 
 		if (cmdFile == null) {
 			Path path = shell.getExternalPath();
-			cmdFile = path.getFirstFileInPath(shell, name);
+			cmdFile = path.getFirstFileInPath(shell, name,true);
 			if (cmdFile == null && !name.endsWith(".exe"))
-				cmdFile = path.getFirstFileInPath(shell, name + ".exe");
+				cmdFile = path.getFirstFileInPath(shell, name + ".exe",true);
 
 		}
 
@@ -292,7 +292,7 @@ public abstract class CommandFactory {
 	 */
 
 	public static ScriptSource getScriptSource(Shell shell, String name,
-			SourceMode sourceMode) throws IOException, CoreException {
+			SourceMode sourceMode, XValue at) throws IOException, CoreException {
 		mLogger.entry(shell, name,sourceMode);
 
 		File scriptFile = null;
@@ -304,19 +304,34 @@ public abstract class CommandFactory {
 			return mLogger.exit(getScriptSource(shell, url, name));
 		}
 		// If ends with .xsh OR we are in source mode try it
-		if (name.endsWith(".xsh") || (sourceMode == SourceMode.SOURCE))
-			scriptFile = shell.getExplicitFile(name, true);
-
-		if (Util.hasDirectory(name)) {
+		if (name.endsWith(".xsh") || (sourceMode == SourceMode.SOURCE || sourceMode == SourceMode.IMPORT))
+			scriptFile = shell.getExplicitFile(name, true,true);
+		
+		
+		if (scriptFile == null && Util.hasDirectory(name)) {
 			// try adding a .xsh
-			if (scriptFile == null && !name.endsWith(".xsh"))
-				scriptFile = shell.getExplicitFile(name + ".xsh", true);
+			if ( !name.endsWith(".xsh"))
+				scriptFile = shell.getExplicitFile(name + ".xsh", true,true );
+			
 		} else if (scriptFile == null) {
 
-			Path path = shell.getPath(ShellConstants.XPATH, true);
-			scriptFile = path.getFirstFileInPath(shell, name);
+			// searh in XPATH for include/source and XMODPATH for modules 
+			Path path = null ;
+			switch (sourceMode) {
+			case IMPORT:
+				path = shell.getPath(ShellConstants.XMODPATH, true);
+				break;
+			case RUN:
+			case SOURCE:
+			case VALIDATE:
+			default:
+				path = shell.getPath(ShellConstants.XPATH, true);
+				break ;
+			}
+			
+			scriptFile = path.getFirstFileInPath(shell, name,true);
 			if (scriptFile == null && !name.endsWith(".xsh"))
-				scriptFile = path.getFirstFileInPath(shell, name + ".xsh");
+				scriptFile = path.getFirstFileInPath(shell, name + ".xsh",true);
 		}
 		if (scriptFile == null)
 			return mLogger.exit(null);
@@ -332,7 +347,7 @@ public abstract class CommandFactory {
 			CoreException {
 		mLogger.entry(shell, name,sourceMode);
 
-		ScriptSource source = getScriptSource(shell, name, sourceMode);
+		ScriptSource source = getScriptSource(shell, name, sourceMode,null);
 		if (source == null)
 			return mLogger.exit( null);
 		return mLogger.exit( new ScriptCommand(source, sourceMode, loc, shell.getModule()));

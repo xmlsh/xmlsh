@@ -37,9 +37,9 @@ public class ModuleFactory
     if(nameURI != null && Util.isEqual(nameURI.getScheme(), "java"))
       mod = createJavaModule(shell, prefix, nameURI, at  );
     else 
-    if( nameuri.endsWith(".xsh"))
     {
-    	ScriptSource script  = CommandFactory.getScriptSource(shell,nameuri ,SourceMode.IMPORT);
+    // Try to find script source by usual means 
+       ScriptSource script  = CommandFactory.getScriptSource(shell,nameuri ,SourceMode.IMPORT , at );
        if( script != null )
          mod = createScriptModule(shell ,prefix, script , nameuri );
     } 

@@ -67,16 +67,16 @@ public class Path implements Iterable<String> {
 	}
 
 
-	public 	File	getFirstFileInPath( Shell shell , String fname ) throws IOException
+	public 	File	getFirstFileInPath( Shell shell , String fname ,  boolean isFile ) throws IOException
 	{
-		for ( String path  : mPaths ) {
+		for ( String path  : mPaths ){
 			File dir = shell.getFile(path);
 			File	target = new File( dir  , fname );
-			if( target.exists() )
+			
+			if( target.exists() && ( isFile ? target.isFile() : target.isDirectory() ) )
 				return target;
 		}
-		return null;
-
+		return null ;
 	}
 
 	/*

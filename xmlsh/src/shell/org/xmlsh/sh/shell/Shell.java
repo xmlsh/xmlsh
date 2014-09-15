@@ -1210,6 +1210,16 @@ public class Shell implements AutoCloseable, Closeable {
 		return getExplicitFile(null, name, mustExist);
 	}
 
+	public File getExplicitFile(String name, boolean mustExist, boolean isFile )
+			throws IOException {
+		File f = getExplicitFile(null, name, mustExist);
+		if( f != null && (isFile? f.isFile() : f.isDirectory() ) )
+             return f ;
+		return null ;
+	
+	}
+
+	
 	public File getExplicitFile(File dir, String name, boolean mustExist)
 			throws IOException {
 

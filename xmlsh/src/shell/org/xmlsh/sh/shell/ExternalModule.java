@@ -50,7 +50,7 @@ public class ExternalModule extends PackageModule
       else {
 
         Path path = shell.getPath(ShellConstants.XMODPATH, true);
-        modDir = path.getFirstFileInPath(shell, nameuri);
+        modDir = path.getFirstFileInPath(shell, nameuri,false);
         if(modDir == null)
           throw new InvalidArgumentException("Cannot find module directory for : " + nameuri);
 
