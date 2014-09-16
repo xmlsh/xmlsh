@@ -78,22 +78,14 @@ public class StaticContext implements Cloneable, Closeable {
 		return mFunctions.get(name);
 	}
 
-	private FunctionDefinitions getFunctions() {
-		return mFunctions;
-	}
-
-	public FunctionDefinitions getFunctions(boolean bCreate) {
-		if (mFunctions == null && bCreate )
+	public FunctionDefinitions getFunctions() {
+		if (mFunctions == null  )
 			mFunctions = new FunctionDefinitions();
 		return mFunctions;
 	}
 
-	Modules getModules() {
-		return mModules;
-	}
-
-	public Modules getModules(boolean bCreate) {
-		if( mModules == null && bCreate )
+	public Modules getModules() {
+		if( mModules == null  )
 			mModules = new Modules();
 		return mModules;
 		
@@ -127,10 +119,10 @@ public class StaticContext implements Cloneable, Closeable {
 			if( !  mModules.hasAnyPrefixes( mh )) 
 				all.add(mh );
 		}
-		
 		return mLogger.exit( all );
 		
 		
 	}
+
 
 }

@@ -18,13 +18,13 @@ import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.JavaUtils;
 
-public class javaProperties extends AbstractBuiltinFunction
+public class properties extends AbstractBuiltinFunction
 {
 
 
   private SerializeOpts sopts;
 
-  public javaProperties()
+  public properties()
   {
     super("properties");
   }

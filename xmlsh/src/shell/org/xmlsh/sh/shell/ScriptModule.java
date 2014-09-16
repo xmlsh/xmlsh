@@ -133,7 +133,7 @@ public void close() throws IOException {
   @Override
   public String describe()
   {
-    return getName();
+    return getName() + " [ at " + mScript.mScriptURL.toString() + "]";
   }
 
   @Override

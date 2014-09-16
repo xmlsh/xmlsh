@@ -1535,7 +1535,7 @@ public class Shell implements AutoCloseable, Closeable {
 
 	public Modules getModules() {
 		mLogger.entry();
-		return mLogger.exit( getEnv().getModules(true) );
+		return mLogger.exit( getEnv().getModules() );
 		
 	}
 
@@ -2140,7 +2140,7 @@ public class Shell implements AutoCloseable, Closeable {
 	}
 
 	public FunctionDefinitions getFunctionDelcs() {
-		return getEnv().getFunctions(true) ;
+		return getEnv().getFunctions() ;
 	}
 
 	

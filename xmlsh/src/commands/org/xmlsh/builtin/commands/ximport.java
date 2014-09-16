@@ -17,9 +17,11 @@ import org.apache.logging.log4j.Logger;
 import org.xmlsh.core.BuiltinCommand;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
+import org.xmlsh.core.XEnvironment;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.ModuleHandle;
 import org.xmlsh.util.StringPair;
+import org.xmlsh.util.Util;
 
 public class ximport extends BuiltinCommand
 {
@@ -41,7 +43,7 @@ public class ximport extends BuiltinCommand
         return importModule(args);
       else if(what.toString().equals("package")) {
         if(args.isEmpty())
-          listModules();
+          usage();
         else for (XValue arg : args)
           if( ! importPackage(arg.toString()) ) {
             mShell.printErr("package: " + arg.toString() + " not found");
@@ -51,7 +53,7 @@ public class ximport extends BuiltinCommand
       }
       else if(what.toString().equals("commands")) {
         if(args.isEmpty())
-          listModules();
+          usage();
         else for (XValue arg : args) {
           if( ! importCommands(arg.toString())){
             mShell.printErr("xmlsh command extension: " + arg.toString() + " not found");
@@ -92,7 +94,7 @@ public class ximport extends BuiltinCommand
   {
     
     XValue at = getAt(args);
-    if( at == null ){
+    if( at != null ){
       if( args.isEmpty()){
         usage();
         return 2;
@@ -112,7 +114,10 @@ public class ximport extends BuiltinCommand
   private int importModule(List<XValue> args) throws Exception
   {
     if(args.size() == 0)
-      return listModules();
+    {
+    	usage();
+    	return 2;
+    }
 
     String mod = args.remove(0).toString();
     XValue at = getAt(args);
@@ -218,34 +223,6 @@ public class ximport extends BuiltinCommand
 
   }
 
-  private int listModules()
-  {
-
-	  /*
-	  Set<String> prefixes = mShell.getModules().getPrefixes();
-    for (IModule m : mShell.getModules()  ) {
-   	    StringBuilder sb = new StringBuilder();
-    	for( String p : prefixes ){
-    		IModule pm = mShell.getModuleByPrefix(p) ;
-    		if( pm.equals( m )){
-    			if( sb.length() != 0);
-    			 sb.append(",");
-    			sb.append(p).append("=");
-    		}    			
-    	}
-    	sb.append(" ").append(m.getName()).append("[").append(m.describe()).append("]");
-        mShell.printOut( sb.toString() );
-        */
-	  
-	  for(  ModuleHandle hm : mShell.getModules() ){
-		  mShell.printOut( hm.get().describe());
-		  
-	  }
-    
-
-    return 0;
-
-  }
 
 }
 //

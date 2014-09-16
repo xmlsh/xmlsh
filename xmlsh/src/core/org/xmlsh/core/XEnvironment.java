@@ -16,8 +16,11 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Stack;
+import java.util.Map.Entry;
 
 import javax.xml.transform.Source;
 
@@ -746,21 +749,21 @@ public class XEnvironment implements AutoCloseable, Closeable {
 	}
 
 
-	public Modules getModules(boolean bCreate ) {
-		return getStaticContext().getModules(bCreate);
+	public Modules getModules( ) {
+		return getStaticContext().getModules();
 	}
 
 
 	public ModuleHandle getModuleByPrefix(String prefix) {
 		
 		mLogger.entry(prefix);
-		return mLogger.exit(getStaticContext().getModules(true).getExistingModuleByPrefix(prefix));
+		return mLogger.exit(getStaticContext().getModules().getExistingModuleByPrefix(prefix));
 		
 	}
 
 
-	public FunctionDefinitions getFunctions(boolean bCreate) {
-		return getStaticContext().getFunctions(bCreate);
+	public FunctionDefinitions getFunctions() {
+		return getStaticContext().getFunctions();
 	}
 
 
@@ -794,6 +797,13 @@ public class XEnvironment implements AutoCloseable, Closeable {
 		
 	}
 
+
+	public Collection<String> getPrefixesForModule(ModuleHandle hm) {
+		
+		return mLogger.exit(getStaticContext().getModules().getPrefixesForModule(hm));
+
+	}
+		
 
 }
 //

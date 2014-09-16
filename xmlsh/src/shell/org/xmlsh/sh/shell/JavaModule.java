@@ -154,7 +154,7 @@ public class JavaModule extends AbstractModule
   @Override
   public String describe()
   {
-    return "java:" + mJavaClass.getName();
+    return "java [ class=" + mJavaClass.getName() + " ]";
   }
 
 

@@ -7,6 +7,7 @@
 package org.xmlsh.sh.core;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.EvalEnv;
@@ -28,6 +29,13 @@ public class JoinedWordList extends ListWord  {
 	    super(t);
     }
 
+	// Print out words without a seperator.
+	@Override
+	public void print(PrintWriter out) {
+		 for (Word s : mList ) {
+		      s.print(out);
+		  }
+	}
 
 	@Override
 	public boolean add( Word word ) {

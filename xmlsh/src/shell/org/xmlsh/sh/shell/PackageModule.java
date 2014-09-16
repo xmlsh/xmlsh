@@ -294,7 +294,7 @@ public class PackageModule extends AbstractModule
   @Override
   public String describe()
   {
-    return mName + "[" + Util.join( mPackages , ",");
+    return getName() + "[ packages " + Util.join( mPackages , ",")+ " ]";
   }
 
 

@@ -30,6 +30,8 @@ public class ExternalModule extends PackageModule
    * XMODPATH or a full URI/filename of the module.xml file (must end in
    * ".xml")
    */
+	
+  private String mURI;
   
 
   ExternalModule(Shell shell, String prefix, String nameuri, URI nameURI, XValue at) throws CoreException
@@ -61,6 +63,7 @@ public class ExternalModule extends PackageModule
       }
 
 
+    mURI = configURL.toURI().toString();
 
     XdmNode configNode;
     configNode = Util.asXdmNode(configURL);
@@ -118,6 +121,11 @@ public class ExternalModule extends PackageModule
   }
 
 }
+  @Override
+  public String describe()
+  {
+    return getName() + "[ at " + mURI + " ]";
+  }
 
   private List<String> listFiles(File modDir, String dir) throws IOException
   {

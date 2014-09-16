@@ -26,36 +26,33 @@ import org.xmlsh.util.Util;
 
 public class xwhich extends BuiltinCommand {
 
-
-	private static final String typenames[] = new String[] {
-		"builtin" , "internal" , "user" , "external" , "script" , "function"
+	private static final String typenames[] = new String[] { "builtin",
+		"internal", "user", "external", "script", "function"
 
 	};
 
 	@Override
-	public int run(   List<XValue> args ) throws Exception {
+	public int run(List<XValue> args) throws Exception {
 
-		Options opts = new Options( "n" , SerializeOpts.getOptionDefs());
+		Options opts = new Options("n", SerializeOpts.getOptionDefs());
 		opts.parse(args);
 
 		boolean bNoWrite = opts.hasOpt("n");
 
-
-
 		List<XValue> xvargs = Util.expandSequences(opts.getRemainingArgs());
 
-		if( xvargs.size() < 1  ){
+		if (xvargs.size() < 1) {
 			mShell.printErr("usage: " + getName() + " command ...");
 			return 1;
 		}
 
-		final  String sDocRoot = getName();
+		final String sDocRoot = getName();
 
-		XMLStreamWriter 	out = null ;
-		OutputPort stdout = mShell.getEnv().getStdout();	
+		XMLStreamWriter out = null;
+		OutputPort stdout = mShell.getEnv().getStdout();
 
 		SerializeOpts serializeOpts = getSerializeOpts(opts);
-		if( !bNoWrite ){
+		if (!bNoWrite) {
 
 			out = stdout.asXMLStreamWriter(serializeOpts);
 			out.writeStartDocument();
@@ -65,28 +62,29 @@ public class xwhich extends BuiltinCommand {
 
 		int bad = 0;
 
-		final  String sCmd = "command";
-		final	String sName = "name";
-		final 	String sType = "type";
-		final  String sPath = "path";
+		final String sCmd = "command";
+		final String sName = "name";
+		final String sType = "type";
+		final String sPath = "path";
 		final String sModule = "module";
 
-
-		for( XValue xname : xvargs ){
+		for (XValue xname : xvargs) {
 
 			String name = xname.toString();
-			ICommand command = CommandFactory.getCommand(mShell , name , getLocation() );
+			ICommand command = CommandFactory.getCommand(mShell, name,
+					getLocation());
 
-			// Try builtin functions 
-			if( command == null ) {
-				IFunction func = CommandFactory.getBuiltinFunction(mShell, name );
-				if( func != null ) {
-					if( ! bNoWrite ){
+			// Try builtin functions
+			if (command == null) {
+				IFunction func = CommandFactory
+						.getBuiltinFunction(mShell, name);
+				if (func != null) {
+					if (!bNoWrite) {
 
 						out.writeStartElement(sCmd);
-						out.writeAttribute(sName, name );
+						out.writeAttribute(sName, name);
 						String type = "builtin-function";
-						out.writeAttribute(sType, type );
+						out.writeAttribute(sType, type);
 						out.writeEndElement();
 					}
 					continue;
@@ -94,11 +92,8 @@ public class xwhich extends BuiltinCommand {
 
 			}
 
-			if( command != null ){
-				if( ! bNoWrite ){
-
-
-
+			if (command != null) {
+				if (!bNoWrite) {
 
 					out.writeStartElement(sCmd);
 					out.writeAttribute(sName, name);
@@ -106,22 +101,18 @@ public class xwhich extends BuiltinCommand {
 					String type = typenames[command.getType().ordinal()];
 					out.writeAttribute(sType, type);
 
-
 					URL url = command.getURL();
-					if( url != null )
-						out.writeAttribute(sPath, url.getPath() );
-					else 
-						if( command instanceof ScriptCommand ){
-							ScriptCommand sc  = (ScriptCommand) command;
-							out.writeAttribute(sPath, sc.getScriptName());
-						}
-						else
-							if( command instanceof FunctionCommand ) {
-								FunctionCommand fc = (FunctionCommand) command;
-								out.writeAttribute(sName, type);
-							}
+					if (url != null)
+						out.writeAttribute(sPath, url.getPath());
+					else if (command instanceof ScriptCommand) {
+						ScriptCommand sc = (ScriptCommand) command;
+						out.writeAttribute(sPath, sc.getScriptName());
+					} else if (command instanceof FunctionCommand) {
+						// FunctionCommand fc = (FunctionCommand) command;
+						// out.writeAttribute(sName, type);
+					}
 					ModuleHandle module = command.getModule();
-					if( module != null )
+					if (module != null)
 						out.writeAttribute(sModule, module.getName());
 					out.writeEndElement();
 
@@ -130,7 +121,7 @@ public class xwhich extends BuiltinCommand {
 				bad++;
 
 		}
-		if( ! bNoWrite ){
+		if (!bNoWrite) {
 			out.writeEndElement();
 			out.writeEndDocument();
 			out.flush();
@@ -138,33 +129,32 @@ public class xwhich extends BuiltinCommand {
 			stdout.writeSequenceTerminator(serializeOpts);
 		}
 
-
 		return bad;
 
-
-
 	}
-
-
 
 }
 //
 //
-//Copyright (C) 2008-2014    David A. Lee.
+// Copyright (C) 2008-2014 David A. Lee.
 //
-//The contents of this file are subject to the "Simplified BSD License" (the "License");
-//you may not use this file except in compliance with the License. You may obtain a copy of the
-//License at http://www.opensource.org/licenses/bsd-license.php 
+// The contents of this file are subject to the "Simplified BSD License" (the
+// "License");
+// you may not use this file except in compliance with the License. You may
+// obtain a copy of the
+// License at http://www.opensource.org/licenses/bsd-license.php
 //
-//Software distributed under the License is distributed on an "AS IS" basis,
-//WITHOUT WARRANTY OF ANY KIND, either express or implied.
-//See the License for the specific language governing rights and limitations under the License.
+// Software distributed under the License is distributed on an "AS IS" basis,
+// WITHOUT WARRANTY OF ANY KIND, either express or implied.
+// See the License for the specific language governing rights and limitations
+// under the License.
 //
-//The Original Code is: all this file.
+// The Original Code is: all this file.
 //
-//The Initial Developer of the Original Code is David A. Lee
+// The Initial Developer of the Original Code is David A. Lee
 //
-//Portions created by (your name) are Copyright (C) (your legal entity). All Rights Reserved.
+// Portions created by (your name) are Copyright (C) (your legal entity). All
+// Rights Reserved.
 //
-//Contributor(s): none.
+// Contributor(s): none.
 //
