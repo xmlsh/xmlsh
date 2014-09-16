@@ -42,20 +42,21 @@ public class declare extends BuiltinCommand {
 		opts.parse(args);
 		setSerializeOpts(opts);
 		args = opts.getRemainingArgs();
-		if (opts.hasOpt("f")) {
+		boolean hasP = opts.hasOpt("p");
+		if (hasP || opts.hasOpt("f")) {
 			return printFuncs(opts, args);
-		} else if (opts.hasOpt("v")) {
+		} else if (hasP || opts.hasOpt("v")) {
 			return printVars(opts, args);
-		} else if (opts.hasOpt("m")) {
+		} else if (hasP || opts.hasOpt("m")) {
 			return printModules(opts, args);
-		} else if (opts.hasOpt("n"))
+		} else if (hasP || opts.hasOpt("n"))
 			return printNamespaces(opts, args);
 
-		else if (opts.hasOpt("x")) {
+		else if (hasP || opts.hasOpt("x")) {
 			export(opts.getOptStringRequired("x"));
 			return 0;
 		}
-		if (!opts.hasOpt("p")) {
+		if (!hasP && ! args.isEmpty()) {
 
 			XValue what = args.remove(0);
 			if (what.toString().equals("namespace")) {

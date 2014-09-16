@@ -27,7 +27,7 @@
 	</Appenders>
 	<Loggers>
 	  
-		<logger name="org.xmlsh" level="TRACE">
+		<logger name="org.xmlsh" level="INFO">
 			<AppenderRef ref="A1"  />
 		</logger>
 		<logger name="httpclient" level="WARN" />

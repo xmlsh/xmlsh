@@ -109,30 +109,30 @@ public class XEnvironment implements AutoCloseable, Closeable {
 	 
 		if( name == null ) {
 			// $* 
-	    	 return new XVariable(null, XValue.newXValue(mShell.getArgs()));
+	    	 return XVariable.anonymousInstance( XValue.newXValue(mShell.getArgs()));
 		}
 		
 		switch( name ) {
 		case "*" :
-			return new XVariable(null, XValue.newXValue(mShell.getArgs()));
+			return XVariable.anonymousInstance( XValue.newXValue(mShell.getArgs()));
 		case "@" :
 			return  mShell.getArgs().size() == 0 ? null 
-					: new XVariable(null, XValue.newXValue(mShell.getArgs()));
+					: XVariable.anonymousInstance( XValue.newXValue(mShell.getArgs()));
 	     case "#" :
-      return new XVariable(name, XValue.newXValue(mShell.getArgs().size()));
+      return XVariable.newInstance(name, XValue.newXValue(mShell.getArgs().size()));
 	     case "$" :
-      return new XVariable(name, XValue.newXValue(Thread.currentThread().getId()));
+      return XVariable.newInstance(name, XValue.newXValue(Thread.currentThread().getId()));
 	     case "?" :
-      return new XVariable(name, XValue.newXValue(mShell.getStatus()));
+      return XVariable.newInstance(name, XValue.newXValue(mShell.getStatus()));
 	     case "!" :
-      return new XVariable(name, XValue.newXValue(mShell.getLastThreadId()));
+      return XVariable.newInstance(name, XValue.newXValue(mShell.getLastThreadId()));
 		}
 		if(Util.isInt(name, false)) {
            int n = Util.parseInt(name, -1);
            if(n == 0)
-            return new XVariable(name, XValue.newXValue(mShell.getArg0()));
+            return XVariable.newInstance(name, XValue.newXValue(mShell.getArg0()));
           else if(n > 0 && n <= mShell.getArgs().size())
-            return new XVariable(name, mShell.getArgs().get(n - 1));
+            return XVariable.newInstance(name, mShell.getArgs().get(n - 1));
           else
         	   return null ;
        }
@@ -156,11 +156,11 @@ public class XEnvironment implements AutoCloseable, Closeable {
 	{
 	    XVariable var = mVars.get(name);
         if( var == null )
-           var = new XVariable(name, XValue.newXValue( TypeFamily.XTYPE , new XValueMap()));
-      else
+           var = XVariable.newInstance(name, XValue.newXValue( TypeFamily.XTYPE , new XValueMap()));
+      else 
           var = var.clone();
-          
-      var.setIndexedValue(value, ind);
+      
+        var.setIndexedValue(value, ind);
             
 	    setVar( var );
 	}
@@ -176,7 +176,7 @@ public class XEnvironment implements AutoCloseable, Closeable {
 		XVariable var = mVars.get(name);
 		if( var == null ){
 			// If no existing variable then dont touch
-			setVar(new XVariable(name, xvalue) );
+			setVar(XVariable.newInstance(name, xvalue) );
 			return ;
 		}
 
@@ -193,7 +193,7 @@ public class XEnvironment implements AutoCloseable, Closeable {
     
     XVariable var = mVars.get(name);
     if( var == null )
-      var = new XVariable(name, value);
+      var = XVariable.newInstance(name, value);
     else
       var = var.newValue( value );
     setLocalVar( var );
@@ -217,7 +217,7 @@ public class XEnvironment implements AutoCloseable, Closeable {
 
     XVariable var = mVars.get(name);
     if( var == null )
-      var = new XVariable(name, value);
+      var = XVariable.newInstance(name, value);
     else
       var = var.newValue( value );
     setVar( var );
@@ -463,7 +463,7 @@ public class XEnvironment implements AutoCloseable, Closeable {
 		}
 		else
 		{
-			OutputPort p = new VariableOutputPort(  new XVariable(null, port) );
+			OutputPort p = new VariableOutputPort(  XVariable.anonymousInstance( port) );
 			addAutoRelease(p);
 			return p;
 		}
@@ -626,7 +626,7 @@ public class XEnvironment implements AutoCloseable, Closeable {
 		}
 		else
 		{
-			VariableInputPort p = new VariableInputPort(  new XVariable(null, port) );
+			VariableInputPort p = new VariableInputPort(  XVariable.anonymousInstance( port) );
 			// Port is not managed, add to autorelease
 			addAutoRelease(p);
 			return p;
@@ -803,6 +803,7 @@ public class XEnvironment implements AutoCloseable, Closeable {
 		return mLogger.exit(getStaticContext().getModules().getPrefixesForModule(hm));
 
 	}
+	
 		
 
 }

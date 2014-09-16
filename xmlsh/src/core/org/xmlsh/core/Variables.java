@@ -37,7 +37,6 @@ public class Variables {
 	  XVariable v = mLocals.get(name);
 	  if( v != null )
 	    return v ;
-	  
 	   mLocals.put( name , v = XVariable.newInstance(name) );
 	  return v;
 	  

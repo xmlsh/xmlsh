@@ -6,9 +6,7 @@
 
 package org.xmlsh.core;
 
-import static org.xmlsh.core.XVariable.XVarFlag.EXPORT;
-import static org.xmlsh.core.XVariable.XVarFlag.READONLY;
-import static org.xmlsh.core.XVariable.XVarFlag.UNSET;
+import static org.xmlsh.core.XVariable.XVarFlag.*;
 
 import java.util.EnumSet;
 
@@ -25,7 +23,7 @@ import org.xmlsh.types.ITypeFamily;
 import org.xmlsh.types.TypeFamily;
 import org.xmlsh.util.Util;
 
-public class XVariable {
+public abstract  class XVariable {
 
 	private static final String sName = "name";
 	private static final String sVariable = "variable";
@@ -43,10 +41,9 @@ public class XVariable {
 	public static enum XVarFlag {
 		EXPORT , 		// to be exported to child shells
 		READONLY,
+		LOCAL   , 
 		UNSET
     ;
-
-  
 
 	};
 
@@ -64,39 +61,24 @@ public class XVariable {
 	
 	
 	private		String	mName;
-	private		XValue	mValue;
-	
-	private		EnumSet<XVarFlag>	mFlags;
+	private 	EnumSet<XVarFlag>	mFlags;
 	
 	public final static EnumSet<XVarFlag>  XVAR_STANDARD = EnumSet.noneOf(XVarFlag.class);
-	 public final static EnumSet<XVarFlag>  XVAR_INIT = EnumSet.of( UNSET );
-   public final static EnumSet<XVarFlag>  XVAR_SYSTEM = EnumSet.of( EXPORT );
+	public final static EnumSet<XVarFlag>  XVAR_LOCAL = EnumSet.of(LOCAL);
+	public final static EnumSet<XVarFlag>  XVAR_INIT = EnumSet.of( UNSET );
+    public final static EnumSet<XVarFlag>  XVAR_SYSTEM = EnumSet.of( EXPORT );
 
+    
   
-	protected XVariable( String name , XValue value)
-	{
-		mName = name ;
-		mValue = value;
-		mFlags = XVAR_STANDARD;
+	protected void setFlags(EnumSet<XVarFlag> flags) {
+		mFlags = flags;
 	}
-	
-	 protected XVariable( String name , XValue value, EnumSet<XVarFlag> flags )
+
+	protected XVariable( String name , EnumSet<XVarFlag> flags )
 	  {
 	    mName = name ;
-	    mValue = value;
 	    mFlags = flags;
 	  }
-	
-	
-	
-	@Override
-	public XVariable clone()
-	{
-		XVariable that = new XVariable(mName, getValue());
-		return that ;
-	}
-	
-	
 	
 	
 	// helper for flag tests that requre UNSET to be OFF
@@ -142,8 +124,25 @@ public class XVariable {
     return  hasFlag( EXPORT );
   }
 	
+  public boolean isLocal() {
+	    return  hasFlag( LOCAL );
+	  }
 	
-    /**
+  public void  setLocal(boolean on) {
+	  
+	    if( on ) setFlag( LOCAL );
+	    else clearFlag( LOCAL );
+	  } 
+		
+    private void clearFlag(XVarFlag f) {
+        if( mFlags.contains( READONLY ))
+            throw new InvalidArgumentException("Cannot modify readonly variable: " + getName());
+        mFlags = Util.withEnumRemoved(mFlags,f);
+
+	
+    }
+
+	/**
 	 * @return the name
 	 */
 	public String getName() {
@@ -157,28 +156,7 @@ public class XVariable {
 		mName = name;
 	}
 
-	/**
-	 * @return the raw value
-	 */
-	public XValue getValue() {
-		return mValue;
-	}
-
-	/**
-	 * @param value the value to set
-	 * @throws InvalidArgumentException 
-	 *  Flags are presumed to be already set
-	 */
-
-  public void setValue(XValue value )
-  {
-    if( mFlags.contains( READONLY ))
-      throw new InvalidArgumentException("Cannot modify readonly variable: " + getName());
-
-    mValue = value;
-    
-    
-  }
+	public abstract XValue getValue();
 
   
 	
@@ -193,7 +171,9 @@ public class XVariable {
           setValue(getValueMethods().setXValue(  getValue() , ind, value));
 
 	}
-  public IMethods getValueMethods()
+  abstract void setValue(XValue setXValue);
+
+public IMethods getValueMethods()
   {
     return getValue().typeFamilyInstance();
   }
@@ -214,6 +194,9 @@ public class XVariable {
 
 	public void setFlag( XVarFlag flag )
 	{
+	    if( mFlags.contains( READONLY ))
+	        throw new InvalidArgumentException("Cannot modify readonly variable: " + getName());
+
 	  mFlags = Util.withEnumAdded(mFlags,flag);
 	}
 	public void serialize(XMLStreamWriter writer) throws SAXException, XMLStreamException {
@@ -277,7 +260,7 @@ public class XVariable {
 		if( n <= 0 || getValue() == null )
 			return ;
 
-		mValue = getValue().shift( n );
+		setValue(getValue().shift( n ));
 
 
 	}
@@ -289,13 +272,13 @@ public class XVariable {
 
 	public XValue getValue(Shell shell, EvalEnv env ,  String ind, String tie) throws CoreException {
 
-		XValue xv = mValue ;
+		XValue xv = getValue() ;
 		if( ! Util.isBlank(ind)  ) {
 		  // Special case * @
 		  if( Util.isOneOf( ind , "*" , "@" ) )
-		    return EvalUtils.getValues( env , mValue );
-		    
-		       xv =  EvalUtils.getIndexedValue(env , mValue,  ind );
+		    return EvalUtils.getValues( env ,xv );
+		  else
+			  return EvalUtils.getIndexedValue(env , xv ,  ind );
 		}
 		assert( Util.isEmpty(tie));
 
@@ -323,60 +306,105 @@ public class XVariable {
 	  }
 
 	 
+	   static class  XValueVariable extends XVariable implements Cloneable {
+			private		XValue	mValue;
+		   
+		   private XValueVariable( String name , XValue value, EnumSet<XVarFlag> flags ){
+				super(name,flags);
+				mValue = value ;
+			}
+			@Override
+			public XVariable clone()
+			{
+				XVariable that = new XValueVariable(getName(), getValue(), getFlags() );
+				return that ;
+			}
+			
 
-	public XVariable newValue(XValue value)
+			/**
+			 * @return the raw value
+			 */
+			public XValue getValue() {
+				return mValue;
+			}
+
+			/**
+			 * @param value the value to set
+			 * @throws InvalidArgumentException 
+			 *  Flags are presumed to be already set
+			 */
+
+		 @Override 
+		  public void setValue(XValue value )
+		  {
+		    if( getFlags().contains( READONLY ))
+		      throw new InvalidArgumentException("Cannot modify readonly variable: " + getName());
+		    mValue = value;
+		    
+		    
+		  }
+
+		  
+	  }
+	 
+
+	
+		
+
+  public XVariable newValue(XValue value)
   {
-    XVariable that = new XVariable(mName, value,mFlags);
+    XVariable that = new XValueVariable(mName, value,mFlags);
     return that ;
   }
 	
   public static XVariable newInstance(String name)
   {
-    return new XVariable(name, null);
+    return new XValueVariable(name, null,XVAR_STANDARD);
   }
   
   public static  XVariable newInstance(String name , XValue value )
   {
-    return new XVariable(name, value);
+    return new XValueVariable(name, value,XVAR_STANDARD);
   }
 
   public static XVariable newInstance(String name, XValue value, EnumSet<XVarFlag> flags)
   {
-    return new XVariable(name, value,flags);
+    return new XValueVariable(name, value,flags);
 
   }
   
   public static  XVariable newInstance(String name , String value )
   {
-    return new XVariable(name, XValue.newInstance(value));
+    return new XValueVariable(name, XValue.newInstance(value),XVAR_STANDARD);
     
   }
 
   public static  <T extends Object> XVariable newInstance(String name , T value )
   {
-    return new XVariable(name, XValue.newInstance(value));
+    return new XValueVariable(name, XValue.newInstance(value),XVAR_STANDARD);
   }
 
   public static  XVariable anonymousInstance(TypeFamily type ) {
-    return new XVariable(null,XValue.nullValue(type));
+    return new XValueVariable(null,XValue.nullValue(type),XVAR_STANDARD);
 
   }
 
   public static <T extends XValue> XVariable anonymousInstance(T value )
   {
-     return new XVariable(null,value);
+     return new XValueVariable(null,value,XVAR_STANDARD);
   }
   
   public static <T extends Object> XVariable anonymousInstance(T value )
   {
-     return new XVariable(null, XValue.newInstance(value));
-  }
+     return new XValueVariable(null, XValue.newInstance(value),XVAR_STANDARD);
+  } 
 
   public static EnumSet<XVarFlag> systemFlags()
   {
     return XVAR_SYSTEM ;
   }
-
+  @Override
+  abstract public XVariable clone() ;
 }
 
 
