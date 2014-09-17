@@ -8,14 +8,14 @@ package org.xmlsh.core;
 import java.util.List;
 
 import org.xmlsh.sh.core.SourceLocation;
-import org.xmlsh.sh.shell.ModuleHandle;
+import org.xmlsh.sh.shell.Module;
 import org.xmlsh.sh.shell.RootModule;
 import org.xmlsh.sh.shell.Shell;
 
 public abstract class AbstractBuiltinFunction extends AbstractFunction  {
 	 
 	 @Override
-    public ModuleHandle getModule() 
+    public Module getModule() 
 	{
 		 return RootModule.getInstance();
 	}

@@ -16,7 +16,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.xmlsh.sh.core.ICommandExpr;
 import org.xmlsh.sh.core.SourceLocation;
-import org.xmlsh.sh.shell.ModuleHandle;
+import org.xmlsh.sh.shell.IModule;
+import org.xmlsh.sh.shell.IModule;
 import org.xmlsh.sh.shell.Shell;
 
 public class FunctionCommand implements ICommand {
@@ -24,20 +25,20 @@ public class FunctionCommand implements ICommand {
 	String mName;
 	ICommandExpr mFunction;
 	SourceLocation mLocation;
-	ModuleHandle mModule;
+	IModule mModule;
 	boolean bClosed = true;
 	private static Logger mLogger = LogManager.getLogger();
 
-	public FunctionCommand(ModuleHandle moduleHandle, String name,
+	public FunctionCommand(IModule iModule, String name,
 			ICommandExpr func, SourceLocation loc) {
-		mLogger.entry(moduleHandle, name, func, loc);
-		assert (moduleHandle != null);
+		mLogger.entry(iModule, name, func, loc);
+		assert (iModule != null);
 
 		bClosed = false;
 		mName = name;
 		mFunction = func;
 		mLocation = loc;
-		mModule = moduleHandle;
+		mModule = iModule;
 		mModule.addRef();
 	}
 
@@ -70,7 +71,7 @@ public class FunctionCommand implements ICommand {
 	}
 
 	@Override
-	public ModuleHandle getModule() {
+	public IModule getModule() {
 		return mModule;
 	}
 

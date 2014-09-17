@@ -30,17 +30,17 @@ import org.xmlsh.util.NameValueMap;
  */
 
 public class Modules extends ManagedObject<Modules> implements
-		Iterable<ModuleHandle> , IManagable , Cloneable {
+		Iterable<IModule> , IManagable , Cloneable {
 
 	private static final Logger mLogger = LogManager.getLogger();
 	
-	private NamedHandleMap< IModule ,  ModuleHandle >       mModules ;
+	private NamedReferenceMap<  IModule >       mModules ;
 	private NameValueMap< String >       mPrefixMap ;
 
 
 	 Modules() {
 		super();
-	    mModules = new NamedHandleMap<>();
+	    mModules = new NamedReferenceMap<>();
 	    mPrefixMap = new NameValueMap<>();
 	}
 
@@ -81,25 +81,25 @@ public class Modules extends ManagedObject<Modules> implements
 	 * @returns true if init was called
 	 * 
 	 */
-	boolean importModule(Shell shell, String prefix , ModuleHandle module,  List<XValue> init)
+	boolean importModule(Shell shell, String prefix , IModule mod,  List<XValue> init)
 			throws Exception {
 
-		mLogger.entry(shell, prefix, module, init);
-		assert (module != null && ! module.isNull() );
-		if( module == null || module.isNull() ){
+		mLogger.entry(shell, prefix, mod, init);
+		assert (mod != null );
+		if( mod == null ){
 			throw new InvalidArgumentException("Module is null: ");
 		}
 		
 		boolean bInit=false;
-		if( ! mModules.containsValue( module.get()) ) {
-		   mLogger.debug("Initializing a new module: {}", module );
-		   module.get().onInit(shell, init);
+		if( ! mModules.containsValue( mod) ) {
+		   mLogger.debug("Initializing a new module: {}", mod );
+		   mod.onInit(shell, init);
 		   bInit = true ;
-		   module.addRef();
-		   mModules.put(module.getName(),module);
+		   mod.addRef();
+		   mModules.put(mod.getName(),mod);
 		}
 		if( prefix != null )
-		   mPrefixMap.put( prefix , module.getName()); // should chnage to UUID or UURI
+		   mPrefixMap.put( prefix , mod.getName()); // should chnage to UUID or UURI
 		return mLogger.exit(bInit);
 
 	}
@@ -108,13 +108,13 @@ public class Modules extends ManagedObject<Modules> implements
 	
 
 
-	public ModuleHandle getExistingModuleByIModule(IModule mod) {
+	public IModule getExistingModuleByIModule(IModule mod) {
 		mLogger.entry(mod);
 		return mModules.getByValue(mod);
 	}
 
 
-	public ModuleHandle getExistingModuleByName(String name) {
+	public IModule getExistingModuleByName(String name) {
 
 		mLogger.entry(name);
 		return mLogger.exit( mModules.get(name));
@@ -123,16 +123,16 @@ public class Modules extends ManagedObject<Modules> implements
 
 
 	@Override
-	public Iterator<ModuleHandle> iterator() {
+	public Iterator<IModule> iterator() {
 		
-		return mLogger.exit(mModules.handleIterator());
+		return mModules.valueIterator();
 	}
 
 	public boolean moduleExistsByName(String name) {
 		return mModules.containsKey(name);
 	}
 
-	public ModuleHandle getExistingModuleByPrefix(String prefix) {
+	public IModule getExistingModuleByPrefix(String prefix) {
 		if( prefix == null )
 			return null ;
 		mLogger.entry(prefix);
@@ -144,13 +144,13 @@ public class Modules extends ManagedObject<Modules> implements
 	}
 
 	// true if the module has any prefix mappings
-	public boolean hasAnyPrefixes(ModuleHandle mh) {
+	public boolean hasAnyPrefixes(IModule mh) {
 		return mPrefixMap.containsValue(mh.getName());
 	}
 
 
 
-	public  Collection<String> getPrefixesForModule(ModuleHandle hm) {
+	public  Collection<String> getPrefixesForModule(IModule hm) {
 		List<String> set = new ArrayList<>();
 		for(  Entry<String, String> e : mPrefixMap.entrySet() ){
 			if( e.getValue().equals(hm.getName()))

@@ -19,6 +19,35 @@ import org.xmlsh.util.ReferenceCounter;
 
 
 abstract class AbstractModule implements IModule {
+	private ReferenceCounter mCounter = new ReferenceCounter();
+	static Logger mLogger = LogManager.getLogger();
+	/* (non-Javadoc)
+	 * @see org.xmlsh.core.IManagedHandle#release()
+	 */
+	@Override
+	final public boolean release() throws IOException  {
+		mLogger.entry( this );
+		if( mCounter.decrement() <= 0  ) {
+			mLogger.info("Closing : {} " , this );
+			close();
+			return true ;
+		}
+		return false ;
+	} 
+
+	@Override
+	public void addRef() { 
+
+		mLogger.entry(this);
+		mCounter.increment();
+	}
+	
+	
+	@Override
+	public int getRefCount() {
+		// TODO Auto-generated method stub
+		return mCounter.getRefCount();
+	}
 
 	@Override
 	public StaticContext getStaticContext() {
@@ -28,7 +57,7 @@ abstract class AbstractModule implements IModule {
 	}
 
 
-	private ReferenceCounter mCounter = new ReferenceCounter();
+	
 	@Override
 	public ReferenceCounter getCounter() {
 		return mCounter ;

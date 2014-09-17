@@ -5,3 +5,8 @@ echo initializing $0
 function child() {
   echo child $*
 }
+
+
+function ev() {
+   eval "$@" 
+}

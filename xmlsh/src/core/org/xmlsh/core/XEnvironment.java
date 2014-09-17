@@ -30,7 +30,8 @@ import org.apache.logging.log4j.Logger;
 import org.xml.sax.InputSource;
 import org.xmlsh.core.XVariable.XVarFlag;
 import org.xmlsh.sh.shell.FunctionDefinitions;
-import org.xmlsh.sh.shell.ModuleHandle;
+import org.xmlsh.sh.shell.IModule;
+import org.xmlsh.sh.shell.IModule;
 import org.xmlsh.sh.shell.Modules;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
@@ -46,7 +47,7 @@ public class XEnvironment implements AutoCloseable, Closeable {
 	private		Variables	mVars;
 	private     Stack<StaticContext>  mStaticContextStack;
 	private		Stack<XIOEnvironment>  mSavedIO;
-	private     Stack<ModuleHandle> mModuleStack;
+	private     Stack<IModule> mModuleStack;
 	private     boolean bClosed = false;
 	
 	
@@ -780,7 +781,7 @@ public XVariable exportVar( String name ){
 	}
 
 
-	public ModuleHandle getModuleByPrefix(String prefix) {
+	public IModule getModuleByPrefix(String prefix) {
 		
 		mLogger.entry(prefix);
 		return mLogger.exit(getStaticContext().getModules().getExistingModuleByPrefix(prefix));
@@ -794,7 +795,7 @@ public XVariable exportVar( String name ){
 
 
 
-	public ModuleHandle pushModule(ModuleHandle module,StaticContext ctx) {
+	public IModule pushModule(IModule module,StaticContext ctx) {
 		mLogger.entry(module , mModuleStack.size() );
 		module.addRef();
 		mModuleStack.push(module);
@@ -807,10 +808,10 @@ public XVariable exportVar( String name ){
 	}
 
 
-	public ModuleHandle popModule() throws IOException  {
+	public IModule popModule() throws IOException  {
 		mLogger.entry(mModuleStack.size());
 		assert( !mModuleStack.isEmpty());
-	    ModuleHandle mh = mModuleStack.pop();
+	    IModule mh = mModuleStack.pop();
 	    mStaticContextStack.pop();   /// Leak here ?
 		// Release last so we dont mixup stack sizes
 	    mh.release();
@@ -824,7 +825,7 @@ public XVariable exportVar( String name ){
 	}
 
 
-	public Collection<String> getPrefixesForModule(ModuleHandle hm) {
+	public Collection<String> getPrefixesForModule(IModule hm) {
 		
 		return mLogger.exit(getStaticContext().getModules().getPrefixesForModule(hm));
 

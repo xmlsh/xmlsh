@@ -32,7 +32,7 @@ import org.xmlsh.core.XVariable.XVarFlag;
 import static org.xmlsh.core.XVariable.XVarFlag.*;
 
 import org.xmlsh.sh.shell.FunctionDefinitions;
-import org.xmlsh.sh.shell.ModuleHandle;
+import org.xmlsh.sh.shell.IModule;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.util.NameValueMap;
 import org.xmlsh.util.Util;
@@ -309,7 +309,7 @@ public class declare extends BuiltinCommand {
 
 		boolean bFound = false ;
 		if (args.isEmpty()) {
-			for (ModuleHandle hm : mShell.getEnv().getModules()) {
+			for (IModule hm : mShell.getEnv().getModules()) {
 				printModule(hm);
 
 			}
@@ -317,7 +317,7 @@ public class declare extends BuiltinCommand {
 		} else {
 			for (XValue a : args) {
 				String name = a.toString();
-				ModuleHandle hm = getEnv().getModules()
+				IModule hm = getEnv().getModules()
 						.getExistingModuleByName(name);
 				if( hm != null )
 					bFound |= printModule(hm);
@@ -327,7 +327,7 @@ public class declare extends BuiltinCommand {
 
 	}
 
-	protected boolean  printModule(ModuleHandle hm) {
+	protected boolean  printModule(IModule hm) {
 		assert( hm != null );
 		
 		XEnvironment env = getEnv();
@@ -338,7 +338,7 @@ public class declare extends BuiltinCommand {
 			p = " ";
 		}
 
-		String s = hm.get().describe();
+		String s = hm.describe();
 		if (Util.isBlank(s))
 			sb.append(hm.getName());
 		else

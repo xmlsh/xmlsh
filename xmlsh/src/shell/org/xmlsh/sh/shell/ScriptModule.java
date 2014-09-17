@@ -15,7 +15,7 @@ import org.xmlsh.core.ScriptCommand.SourceMode;
 import org.xmlsh.core.ScriptSource;
 import org.xmlsh.core.XValue;
 
-public class ScriptModule extends AbstractModule
+public class ScriptModule extends Module
 {
 
   private ScriptSource mScript ; 
@@ -52,7 +52,7 @@ public class ScriptModule extends AbstractModule
     try ( Shell sh = shell.clone() ) {
       if( args != null )
          sh.setArgs(args);
-     ModuleHandle hThis = new ModuleHandle(this );
+     Module hThis = this ;
      try (  ScriptCommand cmd = new ScriptCommand(
         		 // Holds a refernce to module within cmd 
     		  mScript ,  SourceMode.IMPORT, shell.getLocation() , hThis  ) ){
@@ -105,7 +105,7 @@ public void close() throws IOException {
     
 	IFunctionDecl func = mStaticContext.getFunctionDecl(name);
 	if( func != null )
-		return new FunctionCommand( new ModuleHandle(this) ,  func.getName() , func.getBody() , null  );
+		return new FunctionCommand( this ,  func.getName() , func.getBody() , null  );
 	return null ;
 	
   }

@@ -14,7 +14,8 @@ import java.net.URL;
 import java.util.List;
 
 import org.xmlsh.sh.core.SourceLocation;
-import org.xmlsh.sh.shell.ModuleHandle;
+import org.xmlsh.sh.shell.IModule;
+import org.xmlsh.sh.shell.Module;
 import org.xmlsh.sh.shell.Shell;
 
 public interface ICommand extends Closeable {
@@ -32,7 +33,7 @@ public interface ICommand extends Closeable {
 	public 	CommandType	getType();
 	public 	URL 	getURL() throws MalformedURLException;
 	// TEMP:
-	public 	ModuleHandle	getModule();
+	public 	IModule	getModule();
 	@Override
 	public void		close() throws IOException;
 	public SourceLocation getLocation();

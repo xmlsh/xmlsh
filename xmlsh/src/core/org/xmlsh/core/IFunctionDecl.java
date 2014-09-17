@@ -7,13 +7,14 @@
 package org.xmlsh.core;
 
 import org.xmlsh.sh.core.ICommandExpr;
-import org.xmlsh.sh.shell.ModuleHandle;
+import org.xmlsh.sh.shell.IModule;
+import org.xmlsh.sh.shell.Module;
 
 public interface IFunctionDecl extends IReleasable {
 	String	getName();
 	ICommandExpr	getBody();
 	IFunction  getFunction();
-	ModuleHandle getModule();
+	IModule getModule();
 
 
 }

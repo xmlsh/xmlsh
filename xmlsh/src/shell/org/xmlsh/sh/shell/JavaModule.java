@@ -24,19 +24,18 @@ import org.xmlsh.types.TypeFamily;
 import org.xmlsh.util.JavaUtils;
 import org.xmlsh.util.Util;
 
-public class JavaModule extends AbstractModule
+public class JavaModule extends Module
 {
 
   static class JavaModuleFunction implements IFunction
   {
-    @SuppressWarnings("unused")
-    private ModuleHandle mModule;
+    private JavaModule mModule;
     private String mFunc;
     private Class<?> mClass;
 
-    public JavaModuleFunction(ModuleHandle mod, String func, Class<?> cls, ClassLoader cl)
+    public JavaModuleFunction(JavaModule javaModule, String func, Class<?> cls, ClassLoader cl)
     {
-      mModule = mod;
+       mModule = javaModule;
       mFunc = func;
       mClass = cls;
     }
@@ -96,7 +95,7 @@ public class JavaModule extends AbstractModule
     }
 
 	@Override
-	public ModuleHandle getModule() {
+	public Module getModule() {
 		return mModule;
 	}
 
@@ -133,7 +132,7 @@ public class JavaModule extends AbstractModule
   public IFunction getFunction(final String name)
   {
 
-    return new JavaModuleFunction( new ModuleHandle(this), name, mJavaClass, mClassLoader);
+    return new JavaModuleFunction( this , name, mJavaClass, mClassLoader);
 
   }
 

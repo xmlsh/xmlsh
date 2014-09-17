@@ -22,7 +22,7 @@ import org.xmlsh.core.IFunctionDecl;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.grammar.Token;
-import org.xmlsh.sh.shell.ModuleHandle;
+import org.xmlsh.sh.shell.IModule;
 import org.xmlsh.sh.shell.ParseResult;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.Util;
@@ -37,7 +37,7 @@ public class FunctionCallWord extends Word
 	String	 mFunction;
 	WordList	mArgs;
 	Word      mPrefix;  // expr . function( ... )
-	private ModuleHandle mod;
+	private IModule mod;
 	private static Logger mLogger = LogManager.getLogger();
 
 	public FunctionCallWord(Token t , String func, WordList args)
@@ -114,7 +114,7 @@ public class FunctionCallWord extends Word
 		int refCount = 0;
 
 		try {
-			ModuleHandle module = func.getModule();
+			IModule module = func.getModule();
 			refCount = module.getRefCount();
 			assert( module != null );
 			mLogger.debug("pushing module {} ref {} " , module , refCount );

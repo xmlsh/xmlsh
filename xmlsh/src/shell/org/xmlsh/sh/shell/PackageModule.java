@@ -25,7 +25,7 @@ import org.xmlsh.core.XCommand;
 import org.xmlsh.util.JavaUtils;
 import org.xmlsh.util.Util;
 
-public class PackageModule extends AbstractModule
+public class PackageModule extends Module
 {
   protected List<String> mPackages;
   protected String mEncoding ;
@@ -216,7 +216,7 @@ public class PackageModule extends AbstractModule
           Object obj = constructor.newInstance();
           if(obj instanceof XCommand) {
             XCommand cmd = (XCommand) obj;
-            cmd.setModule(new ModuleHandle(this));
+            cmd.setModule(this);
             return cmd;
           }
           else
@@ -243,7 +243,7 @@ public class PackageModule extends AbstractModule
     URL scriptURL= getCommandResource(scriptName);
     if(scriptURL != null)
 
-      return new ScriptCommand(new ScriptSource(scriptName,scriptURL,mEncoding), SourceMode.RUN , null,  new ModuleHandle(this));
+      return new ScriptCommand(new ScriptSource(scriptName,scriptURL,mEncoding), SourceMode.RUN , null,  this ) ;
 
     return null;
 

@@ -9,14 +9,14 @@ import org.xmlsh.core.IFunction;
 /*
  * Top level root module for the shell
  */
-public class RootModule extends AbstractModule {
+public class RootModule extends Module {
 
 	
 	// TEMP
 	private static RootModule _instance = new RootModule();
 	
-	public static ModuleHandle getInstance() {
-		return new ModuleHandle(_instance );
+	public static Module getInstance() {
+		return _instance ;
 	}
 	
 	private RootModule() {

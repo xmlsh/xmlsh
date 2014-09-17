@@ -22,8 +22,13 @@ function show() {
 echo functions
 declare -f
 echo modules 
-import module
+declare -m
 echo 
+}
+
+
+function ev() {
+  eval "$@" 
 }
 
 show

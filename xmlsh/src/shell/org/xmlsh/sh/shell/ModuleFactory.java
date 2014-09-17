@@ -18,7 +18,7 @@ public class ModuleFactory
   private  final static Logger mLogger = LogManager.getLogger();
 
 
-  public static IModule createModule(Shell shell, String prefix, String nameuri, XValue at )  throws Exception
+  public static Module createModule(Shell shell, String prefix, String nameuri, XValue at )  throws Exception
   {
     
     URI nameURI = null;
@@ -32,7 +32,7 @@ public class ModuleFactory
       nameURI = null;
     }
     
-    IModule mod = null ;
+    Module mod = null ;
   
     if(nameURI != null && Util.isEqual(nameURI.getScheme(), "java"))
       mod = createJavaModule(shell, prefix, nameURI, at  );
@@ -53,26 +53,26 @@ public class ModuleFactory
 
 
 
-  public static IModule createScriptModule(Shell shell, String prefix, ScriptSource script , String nameuri ) throws CoreException, IOException
+  public static Module createScriptModule(Shell shell, String prefix, ScriptSource script , String nameuri ) throws CoreException, IOException
   {
     return new ScriptModule(shell, prefix, script, nameuri );
   }
 
 
 
-  public static IModule createJavaModule(Shell shell, String prefix, URI nameURI, XValue at) throws CoreException
+  public static Module createJavaModule(Shell shell, String prefix, URI nameURI, XValue at) throws CoreException
   {
     return new JavaModule(shell, prefix, nameURI, at);
   }
 
-  public static IModule createExternalModule(Shell shell, String prefix, String nameuri, URI nameURI, XValue at) throws CoreException
+  public static Module createExternalModule(Shell shell, String prefix, String nameuri, URI nameURI, XValue at) throws CoreException
   {
     return new ExternalModule( shell, prefix,nameuri, nameURI , at );
   }
 
   
   
-  public static IModule createPackageModule(Shell shell, String prefix, String name, List<String> pkgs, String helpURL)
+  public static Module createPackageModule(Shell shell, String prefix, String name, List<String> pkgs, String helpURL)
   {
     return new PackageModule(shell, name, pkgs, helpURL);
   }

@@ -127,7 +127,7 @@ public class Shell implements AutoCloseable, Closeable {
 
 	static Logger mLogger = LogManager.getLogger();
 	private ShellOpts mOpts;
-	private ModuleHandle mModule; // The module currently executing in this shell
+	private IModule mModule; // The module currently executing in this shell
 
 
 	private XEnvironment mEnv = null;
@@ -231,10 +231,10 @@ public class Shell implements AutoCloseable, Closeable {
 
 	private void importStandardModules() throws Exception {
 		
-		ModuleHandle hInternal = 
-				 new ModuleHandle(ModuleFactory.createPackageModule(this, null,
+		IModule hInternal = 
+				 ModuleFactory.createPackageModule(this, null,
 		 					"xmlsh" , Arrays.asList(
-		 							"org.xmlsh.internal.commands", "org.xmlsh.internal.functions"),  CommandFactory.kCOMMANDS_HELP_XML ));
+		 							"org.xmlsh.internal.commands", "org.xmlsh.internal.functions"),  CommandFactory.kCOMMANDS_HELP_XML );
 		 getModules().importModule( this , null , hInternal , null);		
 	}
 
@@ -1651,18 +1651,18 @@ public class Shell implements AutoCloseable, Closeable {
 		String name = pair.getRight();
 		String prefix = pair.getLeft();
 
-		ModuleHandle mod = getModules().getExistingModuleByName(name);
+		IModule mod = getModules().getExistingModuleByName(name);
 		if( mod == null )
-			mod = new ModuleHandle(  ModuleFactory.createModule(this, prefix, name, at) );
+			mod =   ModuleFactory.createModule(this, prefix, name, at );
 		else 
 			mod.addRef();
 			
-		assert( mod != null && ! mod.isNull() );
+		assert( mod != null );
 		boolean inited = getModules().importModule(this, prefix , mod ,  init);
 
 		if( inited )
 		  mLogger.debug("Imported module {} fresh init: {}" , mod , inited );
-		assert( mod != null && ! mod.isNull());
+		assert( mod != null );
 		return mLogger.exit( true );
 
 	}
@@ -1681,10 +1681,10 @@ public class Shell implements AutoCloseable, Closeable {
 		 mLogger.entry(prefix, name, packages);
 	     String sHelp = packages.get(0).replace('.', '/') + "/commands.xml";
 		
-	 		ModuleHandle mod = getModules().getExistingModuleByName(name);
+	 		IModule mod = getModules().getExistingModuleByName(name);
 	 		if( mod == null )
-	 			mod =  new ModuleHandle(ModuleFactory.createPackageModule(this, prefix,
-	 					name, packages , sHelp ));
+	 			mod =  ModuleFactory.createPackageModule(this, prefix,
+	 					name, packages , sHelp );
 
 	 		boolean inited = getModules().importModule( this , prefix , mod , null );
 	 		return  true ;
@@ -1784,7 +1784,7 @@ public class Shell implements AutoCloseable, Closeable {
 
 	}
 
-	public ModuleHandle getModule() {
+	public IModule getModule() {
 		mLogger.entry();
 		assert( mModule != null);
 		return mLogger.exit(mModule);
@@ -1825,8 +1825,8 @@ public class Shell implements AutoCloseable, Closeable {
 		if (url != null)
 			return url;
 
-		for (ModuleHandle m : getModules()) {
-			url = m.get().getResource(res);
+		for (IModule m : getModules()) {
+			url = m.getResource(res);
 			if (url != null)
 				return url;
 		}
@@ -2132,7 +2132,7 @@ public class Shell implements AutoCloseable, Closeable {
 		return mClosed;
 	}
 
-	public ModuleHandle getModuleByPrefix(String prefix) {
+	public IModule getModuleByPrefix(String prefix) {
 		
 		return mLogger.exit(getEnv().getModuleByPrefix(prefix));
 	}
@@ -2155,7 +2155,7 @@ public class Shell implements AutoCloseable, Closeable {
 	}
 
 
-	public Iterable<ModuleHandle> getDefaultModules() {
+	public Iterable<IModule> getDefaultModules() {
 		mLogger.entry();
 		return getStaticContext().getDefaultModules();
 	
@@ -2166,14 +2166,14 @@ public class Shell implements AutoCloseable, Closeable {
 		return mLogger.exit( mEnv.exportStaticContext( ) );
 	}
 
-	public void pushModule(ModuleHandle mod) {
+	public void pushModule(IModule mod) {
 	   
 	    mLogger.entry(mod);
-		mModule = mLogger.exit(getEnv().pushModule(mod,mod.get().getStaticContext()));
+		mModule = mLogger.exit(getEnv().pushModule(mod,mod.getStaticContext()));
 	
 	}
 
-	public ModuleHandle  popModule() throws IOException {
+	public IModule  popModule() throws IOException {
 		mLogger.entry();
 		return mLogger.exit(getEnv().popModule());
 

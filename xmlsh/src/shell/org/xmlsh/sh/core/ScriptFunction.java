@@ -5,7 +5,8 @@ import java.util.List;
 import org.xmlsh.core.EvalEnv;
 import org.xmlsh.core.IFunction;
 import org.xmlsh.core.XValue;
-import org.xmlsh.sh.shell.ModuleHandle;
+import org.xmlsh.sh.shell.IModule;
+import org.xmlsh.sh.shell.Module;
 import org.xmlsh.sh.shell.Shell;
 
 /*
@@ -14,9 +15,9 @@ import org.xmlsh.sh.shell.Shell;
 final class ScriptFunction implements IFunction {
 	private String mName;
 	private ICommandExpr mBody;
-	private ModuleHandle mModule; // containing module
+	private IModule mModule; // containing module
 
-	public ScriptFunction(String name, ICommandExpr body, ModuleHandle module) {
+	public ScriptFunction(String name, ICommandExpr body, IModule module) {
 		mName = name;
 		mBody = body;
 		mModule = module;
@@ -47,11 +48,11 @@ final class ScriptFunction implements IFunction {
 	}
 
 	@Override
-	public ModuleHandle getModule() {
+	public IModule getModule() {
 		return mModule;
 	}
 
-	public void setModule(ModuleHandle module) {
+	public void setModule(IModule module) {
 		mModule = module;
 	}
 

@@ -19,7 +19,7 @@ import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XEnvironment;
 import org.xmlsh.core.XValue;
-import org.xmlsh.sh.shell.ModuleHandle;
+import org.xmlsh.sh.shell.Module;
 import org.xmlsh.util.StringPair;
 import org.xmlsh.util.Util;
 

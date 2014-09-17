@@ -16,7 +16,7 @@ import org.xmlsh.core.ICommand;
 import org.xmlsh.core.ThrowException;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
-import org.xmlsh.sh.shell.ModuleHandle;
+import org.xmlsh.sh.shell.IModule;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.Util;
 import org.xmlsh.xpath.ThreadLocalShell;
@@ -151,7 +151,7 @@ public class SimpleCommandExpr extends CommandExpr {
 				mSuffix.exec( shell, getLocation() );
 	
 				// Push the current module if its different
-				ModuleHandle mod = cmd.getModule();
+				IModule mod = cmd.getModule();
 				assert( mod != null );
 				refcnt = mod.getRefCount();
 				

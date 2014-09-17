@@ -48,7 +48,8 @@ import org.xmlsh.core.ScriptCommand.SourceMode;
 import org.xmlsh.java.commands.jset;
 import org.xmlsh.json.commands.jsonread;
 import org.xmlsh.sh.core.SourceLocation;
-import org.xmlsh.sh.shell.ModuleHandle;
+import org.xmlsh.sh.shell.IModule;
+import org.xmlsh.sh.shell.IModule;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.sh.shell.ShellConstants;
 import org.xmlsh.text.commands.readconfig;
@@ -184,7 +185,7 @@ public abstract class CommandFactory {
 		StringPair pair = new StringPair(name, ':');
 
 		if (pair.hasLeft()) { // prefix:name , prefix non-empty
-			ModuleHandle m ;
+			IModule m ;
 			mLogger.trace("found prefix - trying command by prefix: ", pair);
 			
 			if( Util.isBlank(pair.getLeft()) ){
@@ -200,7 +201,7 @@ public abstract class CommandFactory {
 	
 			if (m != null) {
 				mLogger.trace("Found module - try getting command" , m , pair.getRight());
-				ICommand cls = m.get().getCommand(pair.getRight());
+				ICommand cls = m.getCommand(pair.getRight());
 				if (cls != null) {
 					mLogger.debug("Command Class found: " , cls );
 					cls.setLocation(loc);
@@ -215,9 +216,9 @@ public abstract class CommandFactory {
 		 * Try all default modules
 		 */
 	   mLogger.debug("Try default modules");
-		for (ModuleHandle m : shell.getDefaultModules() ) {
-			    assert( ! m.isNull() );
-				ICommand cls = m.get().getCommand(name);
+		for (IModule m : shell.getDefaultModules() ) {
+			    assert( m != null );
+				ICommand cls = m.getCommand(name);
 				if (cls != null) {
 					cls.setLocation(loc);
 					return mLogger.exit(cls);
@@ -237,7 +238,7 @@ public abstract class CommandFactory {
 		StringPair pair = new StringPair(name, ':');
 
 		if (pair.hasLeft()) { // prefix:name , prefix non-empty
-			ModuleHandle m ;
+			IModule m ;
 			mLogger.trace("found prefix - trying command by prefix: ", pair);
 			
 			if( Util.isBlank(pair.getLeft()) ){
@@ -253,7 +254,7 @@ public abstract class CommandFactory {
 			if (m != null) {
 	
 				mLogger.trace("Found module - try getting command" , m , pair.getRight());
-				IFunction cls = m.get().getFunction(pair.getRight());
+				IFunction cls = m.getFunction(pair.getRight());
 				if (cls != null) {
 					mLogger.debug("Command Class found: " , cls );
 					return cls;
@@ -267,9 +268,8 @@ public abstract class CommandFactory {
 		 * Try all default modules
 		 */
 	   mLogger.debug("Try default modules");
-		for (ModuleHandle m : shell.getDefaultModules() ) {
-			    assert( ! m.isNull() );
-				IFunction cls = m.get().getFunction(name);
+		for (IModule m : shell.getDefaultModules() ) {
+				IFunction cls = m.getFunction(name);
 				if (cls != null) {
 					return mLogger.exit(cls);
 				}
@@ -391,23 +391,22 @@ public abstract class CommandFactory {
 		StringPair pair = new StringPair(name, ':');
 
 		if (pair.hasLeft()) { // prefix:name , prefix non-empty
-			ModuleHandle m = Util.isBlank(pair.getLeft()) ? shell.getModule()
+			IModule m = Util.isBlank(pair.getLeft()) ? shell.getModule()
 					: shell.getModuleByPrefix(pair.getLeft());
 			// Allow C:/xxx/yyy to work
 			// May look like a namespace but isnt
 
-			if (m != null && m.get().hasHelp(pair.getRight()))
-				return m.get().getHelpURL();
+			if (m != null && m.hasHelp(pair.getRight()))
+				return m.getHelpURL();
 			return null;
 		}
 
 		/*
 		 * Try all default modules
 		 */
-		for (ModuleHandle m : shell.getDefaultModules()) {
-			assert( ! m.isNull());
-			if (m.get().hasHelp(name))
-				return m.get().getHelpURL();
+		for (IModule m : shell.getDefaultModules()) {
+			if (m.hasHelp(name))
+				return m.getHelpURL();
 		}
 
 		return null;
@@ -429,7 +428,7 @@ public abstract class CommandFactory {
 
 		
 		if (pair.hasLeft()) { // prefix:name , prefix non-empty
-			ModuleHandle m;
+			IModule m;
 			mLogger.trace("found prefix - trying command by prefix: ", pair);
 		
 			if( Util.isBlank(pair.getLeft()) ){
@@ -445,7 +444,7 @@ public abstract class CommandFactory {
 			if (m != null) {
 
 				mLogger.debug("Found module",m);
-				IFunction cls = m.get().getFunction(pair.getRight());
+				IFunction cls = m.getFunction(pair.getRight());
 				if (cls != null) {
 					return mLogger.exit(cls);
 				}
@@ -459,9 +458,8 @@ public abstract class CommandFactory {
 		 */
 		
 		 mLogger.debug("Try default modules");
-		for ( ModuleHandle m : shell.getDefaultModules() ) {
-			assert( !m.isNull());
-			IFunction cls = m.get().getFunction(name);
+		for ( IModule m : shell.getDefaultModules() ) {
+			IFunction cls = m.getFunction(name);
 				if (cls != null) 
 					return mLogger.exit(cls);
 
@@ -522,7 +520,7 @@ public abstract class CommandFactory {
 			if( funcdecl != null )
 			  func = funcdecl.getFunction();
 		}
-	  // Module scope shell functions
+	  // IModule scope shell functions
 		if( func == null ){
 			func = getModuleFunction(shell,name,loc);
 		}

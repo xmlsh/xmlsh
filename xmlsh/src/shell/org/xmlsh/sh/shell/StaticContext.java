@@ -113,9 +113,9 @@ public class StaticContext implements Cloneable, Closeable {
 		return mNamespaces;
 	}
 
-	public Iterable<ModuleHandle> getDefaultModules() {
-		List<ModuleHandle> all = new ArrayList<>();
-		for( ModuleHandle mh : mModules ){
+	public Iterable<IModule> getDefaultModules() {
+		List<IModule> all = new ArrayList<>();
+		for( IModule mh : mModules ){
 			if( !  mModules.hasAnyPrefixes( mh )) 
 				all.add(mh );
 		}

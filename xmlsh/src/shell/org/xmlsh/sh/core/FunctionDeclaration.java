@@ -13,7 +13,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.xmlsh.core.IFunction;
 import org.xmlsh.core.IFunctionDecl;
-import org.xmlsh.sh.shell.ModuleHandle;
+import org.xmlsh.sh.shell.IModule;
 import org.xmlsh.sh.shell.Shell;
 
 public class FunctionDeclaration extends CommandExpr
@@ -57,7 +57,7 @@ public class FunctionDeclaration extends CommandExpr
   public int exec(Shell shell) throws Exception
   {
     mLogger.entry( this , shell);
-  	final ModuleHandle module = shell.getModule();  // maybe return  handle
+  	final IModule module = shell.getModule();  // maybe return  handle
   	
     shell.declareFunction(new IFunctionDecl()
       {
@@ -87,7 +87,7 @@ public class FunctionDeclaration extends CommandExpr
         }
 
 		@Override
-		public ModuleHandle getModule() {
+		public IModule getModule() {
 			return module;
 		}
 
