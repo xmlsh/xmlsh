@@ -28,7 +28,7 @@ Should be xdm <foo/>
 foo
 bar
 [75] 3 should be 3
-item()+
+object
 [77] 3
 <foo>brace group</foo>
 <bar/>

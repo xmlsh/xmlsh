@@ -256,7 +256,7 @@ public class Shell implements AutoCloseable, Closeable {
 			if (name.equals("PS1"))
 				continue;
 
-			getEnv().setVar(
+			getEnv().initVariable(
 					XVariable.newInstance(name,
 							XValue.newXValue(entry.getValue()),
 							XVariable.systemFlags()));
@@ -265,7 +265,7 @@ public class Shell implements AutoCloseable, Closeable {
 
 		// Export path to shell path
 		String path = FileUtils.toJavaPath(System.getenv(ShellConstants.PATH));
-		getEnv().setVar(
+		getEnv().initVariable(
 				XVariable.newInstance(
 						ShellConstants.PATH,
 						Util.isBlank(path) ? XValue.empytSequence() : XValue
@@ -274,7 +274,7 @@ public class Shell implements AutoCloseable, Closeable {
 
 		String xpath = FileUtils
 				.toJavaPath(System.getenv(ShellConstants.XPATH));
-		getEnv().setVar(
+		getEnv().initVariable(
 				XVariable.newInstance(
 						ShellConstants.XPATH,
 						Util.isBlank(xpath) ? XValue.newXValue(".") : XValue
@@ -284,14 +284,12 @@ public class Shell implements AutoCloseable, Closeable {
 		String xmpath = FileUtils.toJavaPath(System
 				.getenv(ShellConstants.XMODPATH));
 		getEnv().setVar(
-				XVariable.newInstance(
 						ShellConstants.XMODPATH,
 						Util.isBlank(xmpath) ? XValue.empytSequence() : XValue
-								.newXValue(xmpath.split(File.pathSeparator)),
-								XVariable.systemFlags()));
+								.newXValue(xmpath.split(File.pathSeparator)));
 
 		// PWD
-		getEnv().setVar(
+		getEnv().initVariable(
 				new XDynamicVariable(ShellConstants.PWD, EnumSet.of(
 						XVarFlag.READONLY, XVarFlag.EXPORT)) {
 					@Override
@@ -303,7 +301,7 @@ public class Shell implements AutoCloseable, Closeable {
 				});
 
 		// RANDOM
-		getEnv().setVar(
+		getEnv().initVariable(
 				new XDynamicVariable(ShellConstants.VAR_RANDOM, EnumSet
 						.of(XVarFlag.READONLY)) {
 					Random mRand = new Random();
@@ -316,7 +314,7 @@ public class Shell implements AutoCloseable, Closeable {
 				});
 
 		// RANDOM32
-		getEnv().setVar(
+		getEnv().initVariable(
 				new XDynamicVariable(ShellConstants.VAR_RANDOM32, EnumSet
 						.of(XVarFlag.READONLY)) {
 					Random mRand = new Random();
@@ -331,7 +329,7 @@ public class Shell implements AutoCloseable, Closeable {
 				});
 
 		// RANDOM
-		getEnv().setVar(
+		getEnv().initVariable(
 				new XDynamicVariable(ShellConstants.VAR_RANDOM64, EnumSet
 						.of(XVarFlag.READONLY)) {
 					Random mRand = new Random();
@@ -1012,7 +1010,7 @@ public class Shell implements AutoCloseable, Closeable {
 				OutputPort op = getEnv().getOutput(mOpts.mTraceFile, true);
 				try (OutputStream os = op.asOutputStream(getSerializeOpts())) {
 					os.write(strace.getBytes(sEnc));
-					os.write(Util.getNewline(getSerializeOpts()));
+					os.write(Util.getNewlineBytes(getSerializeOpts()));
 					os.flush();
 				}
 			} catch (IOException | CoreException e) {

@@ -15,9 +15,11 @@
 
 	<Appenders>
 		<File name="A1" fileName="${logfile}" append="false">
+			<PatternLayout pattern="%d %-5p [%t] %c{5} %M - %m%n" />
+		</File>
+			<File name="A2" fileName="${logfile}" append="false">
 			<PatternLayout pattern="%d %-5p [%t] %c{5} %M - %m%n%F %L%n" />
 		</File>
-		
 		<Console name="CONSOLE" target="SYSTEM_ERR">
 			<PatternLayout pattern="%m MDC%X%n" />
 		</Console>

@@ -100,15 +100,8 @@ public class IOFile {
 				env.setInput( port ,  env.getVar(var) );
 			else
 				if( mPrefix.equals(">")){
-
-					XVariable xvar = env.getVar(var);
-					if( xvar == null ){
-						xvar = XVariable.newInstance(var);
-						env.setVar(xvar );
-					}
-					else
-						xvar.clear();
-
+					env.unsetVar(var);
+					XVariable xvar =   env.declareVar(var);
 					env.setOutput(port,xvar);
 				}
 				else
@@ -116,8 +109,7 @@ public class IOFile {
 					{
 						XVariable xvar = env.getVar(var);
 						if( xvar == null ){
-							xvar = XVariable.newInstance(var, XValue.nullValue());
-							env.setVar(xvar );
+							xvar =   env.declareVar(var);
 						}
 						env.setOutput(port,xvar);				
 					}

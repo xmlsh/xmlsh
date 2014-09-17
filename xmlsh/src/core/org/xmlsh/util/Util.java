@@ -84,9 +84,9 @@ import org.xmlsh.types.ITypeConverter;
 public class Util
 {
 	private static final String sXSDT_FORMAT_STR = "yyyy-MM-dd'T'HH:mm:ss";
-	public static byte mNewline[];
+	public static volatile  byte mNewLineBytes[];
 	private static Pattern mURIPattern = Pattern.compile("[a-zA-Z][a-zA-Z0-9\\.+-]+:.*");
-	private static String mNewlineString;
+	private static  volatile   String mNewlineString;
 	private static Logger mLogger = org.apache.logging.log4j.LogManager.getLogger( Util.class);
 
 
@@ -648,27 +648,34 @@ public class Util
 	 }
 
 
-	 public static synchronized byte[] getNewline(SerializeOpts opts)
+	 public static byte[] getNewlineBytes(SerializeOpts opts)
 	 {
-		 if( Util.mNewline == null ){
+		 if( Util.mNewLineBytes == null ){
 			 try {
-				 Util.mNewline = System.getProperty("line.separator").getBytes(opts.getOutputTextEncoding());
+				 Util.mNewLineBytes = System.getProperty("line.separator").getBytes(opts.getOutputTextEncoding());
 			 } catch (UnsupportedEncodingException e) {
-				 Util.mNewline = new byte[] { '\n' };
+				 if( isWindows() )
+					 Util.mNewLineBytes = new byte[] { '\r','\n' };
+
+				 else
+					 Util.mNewLineBytes = new byte[] { '\n' };
 			 } 
 		 }
-		 return Util.mNewline;
+		 return Util.mNewLineBytes;
 	 }
 
-	 public static synchronized String getNewlineString()
+	 public static  String getNewlineString()
 	 {
 		 if( Util.mNewlineString == null )
 			 Util.mNewlineString = System.getProperty("line.separator");
-		 if( Util.mNewlineString == null )
-			 Util.mNewlineString = "\n";
+		 if( Util.mNewlineString == null ){
+			 if( isWindows() )
+				 Util.mNewlineString = "\r\n";
+			 else
+				 Util.mNewlineString  = "\n";
+		 }
 		 return Util.mNewlineString;
 	 }
-
 
 	 public static void sortFiles( File[] list )
 	 {
@@ -1031,7 +1038,7 @@ public class Util
 	 public static boolean isPath(String var)
 	 { 
 		 if( isWindows())
-			 return var.equalsIgnoreCase(ShellConstants.PATH)||var.equalsIgnoreCase(ShellConstants.PATH);
+			 return var.equalsIgnoreCase(ShellConstants.PATH)||var.equalsIgnoreCase(ShellConstants.XPATH);
 		 else	
 			 return var.equals(ShellConstants.PATH)||var.equals(ShellConstants.XPATH);
 

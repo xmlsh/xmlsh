@@ -33,15 +33,6 @@ public class Variables {
 		mLocals = locals ;
 	}
 	
-	public XVariable setLocal( String name ) {
-	  XVariable v = mLocals.get(name);
-	  if( v != null )
-	    return v ;
-	   mLocals.put( name , v = XVariable.newInstance(name) );
-	  return v;
-	  
-	}
-
 
 	public XVariable get(String name) {
 		// First look in locals
@@ -51,15 +42,11 @@ public class Variables {
 	  return  v;
 
 	}
-	
-  public void putLocal(XVariable var) {
-    mLocals.put(var.getName() , var  );
-  }
 
 	   
 	public void put(XVariable var) {
 		String name = var.getName();
-    if( mLocals.containsKey(name) ) {
+    if( mLocals.containsKey(name)  || var.isLocal() ) {
 			mLocals.put(name , var  );
 		}
 		else
@@ -77,11 +64,20 @@ public class Variables {
 	public void unset(String name) throws InvalidArgumentException 
 	{
 		// Unsetting a local just sets its value to null
-		XVariable local = mLocals.get(name);
-		if( local != null )
-			local.unset();
+		XVariable var = mLocals.get(name);
+		if( var != null )
+			var.unset();
 		else
-			mGlobals.remove(name);
+		{
+			var = mGlobals.get(name);
+			if( var != null){
+			  var.unset();
+			  mGlobals.remove(name);
+			}
+		}
+			
+
+
 
 	}
 	public boolean containsKey(String name) {

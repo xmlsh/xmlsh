@@ -9,6 +9,7 @@ package org.xmlsh.builtin.commands;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Map.Entry;
 
@@ -27,6 +28,9 @@ import org.xmlsh.core.XEnvironment;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.XVariable;
 import org.xmlsh.core.XVariable.XVarFlag;
+
+import static org.xmlsh.core.XVariable.XVarFlag.*;
+
 import org.xmlsh.sh.shell.FunctionDefinitions;
 import org.xmlsh.sh.shell.ModuleHandle;
 import org.xmlsh.sh.shell.SerializeOpts;
@@ -37,75 +41,136 @@ public class declare extends BuiltinCommand {
 
 	@Override
 	public int run(List<XValue> args) throws Exception {
-		Options opts = new Options("p,r:,t:,x:,f,m,v,",
+		Options opts = new Options("p,r,t,x,f,l,m,v,",
 				SerializeOpts.getOptionDefs());
 		opts.parse(args);
 		setSerializeOpts(opts);
 		args = opts.getRemainingArgs();
+		boolean bFound = false ;
 		boolean hasP = opts.hasOpt("p");
-		if (hasP || opts.hasOpt("f")) {
-			return printFuncs(opts, args);
-		} else if (hasP || opts.hasOpt("v")) {
-			return printVars(opts, args);
-		} else if (hasP || opts.hasOpt("m")) {
-			return printModules(opts, args);
-		} else if (hasP || opts.hasOpt("n"))
-			return printNamespaces(opts, args);
+		boolean hasAny = 
+				 opts.hasOpt("f") ||
+				 opts.hasOpt("v") ||
+				 opts.hasOpt("m") ||
+				 opts.hasOpt("n") ;
+		
+		boolean hasType = 
+				opts.hasOpt("x") ||
+				opts.hasOpt("l") ||
+				opts.hasOpt("f") ||
+				opts.hasOpt("r") ;
+		
 
-		else if (hasP || opts.hasOpt("x")) {
-			export(opts.getOptStringRequired("x"));
-			return 0;
-		}
-		if (!hasP && ! args.isEmpty()) {
+		boolean hasArgs = ! args.isEmpty();
+		boolean hasNS  = hasArgs && args.get(0).toString().equals("namespace");
 
-			XValue what = args.remove(0);
-			if (what.toString().equals("namespace")) {
-				if( args.isEmpty() )
-					return printNamespaces(opts, args);
-				else
-				return declareNamespace(args.get(0));
+		if( ! hasP && ! hasArgs && ! hasNS  )
+			hasP = true ;
+            
+			
+		if( ! hasType && ! hasNS )
+			hasP = true ;
+
+		if( hasP && (!hasAny || opts.hasOpt("f")))
+			bFound |= printFuncs(opts, args);
+		if (hasP &&  (!hasAny || opts.hasOpt("v"))) 
+			bFound |=  printVars(opts, args );
+		if (hasP &&  (!hasAny || opts.hasOpt("m"))) 
+			bFound |=  printModules(opts, args);
+		if (hasP &&  (!hasAny || opts.hasOpt("n")))
+			bFound |=  printNamespaces(opts, args);
+		
+		
+		
+		
+		if( ! hasP && hasArgs ) {
+
+		
+			if( hasType )
+				return declareType( opts , args );
+		    else
+		    if( hasNS ){
+				XValue what = args.remove(0);
+				if (what.toString().equals("namespace")) {
+					if( args.isEmpty() )
+						printNamespaces(opts, args);
+					else
+						declareNamespace(args.get(0));
+				}
+				else 
+					usage();
+				return -1;
 			}
+		} 
+		else 
+		if( ! bFound && !  args.isEmpty() ){
+			mShell.printOut( args.get(0) + ": not found");
+			return 1;
+		}
+			
+		return 0;
+		
+
+
+	}
+
+	private int declareType(Options opts, List<XValue> args) {
+
+		
+		if( opts.hasOpt("f") ){
+			mShell.printErr("predeclaring functions is not implemented.");
+			return 1 ;
+		}
+		
+		EnumSet<XVarFlag> flags = XVariable.standardFlags();
+		
+		if( opts.hasOpt("x") )
+			flags = Util.withEnumAdded(flags, EXPORT);
+		if( opts.hasOpt("l") )
+			flags = Util.withEnumAdded(flags, LOCAL);
+		if( opts.hasOpt("r") )
+			flags = Util.withEnumAdded(flags, READONLY);
+		
+		for( XValue a : args )
+			mShell.getEnv().declareVar(a.toString(), flags);
+		return 0 ;
+		
+		
+	}
+
+	private boolean  printNamespaces(Options opts, List<XValue> args) {
+		boolean bFound = false ;
+		if (args.isEmpty())
+			bFound = listNamespaces();
+		else {
+			for (XValue a : args)
+				bFound |= listNamespace(a.toString());
 		}
 
-		usage();
-
-		return 2;
+		return bFound ;
 
 	}
 
-	private int printNamespaces(Options opts, List<XValue> args) {
-		int ret = 0;
-		if (args.isEmpty())
-			ret = listNamespaces();
-		else
-			for (XValue a : args)
-				ret += listNamespace(a.toString());
-		return ret;
-
-	}
-
-	private int printVars(Options opts, List<XValue> args)
+	private boolean printVars(Options opts, List<XValue> args)
 			throws UnsupportedEncodingException, CoreException, IOException,
 			XMLStreamException, SAXException, SaxonApiException {
 		if (args.size() < 1) {
-			printAllVars();
+			return printAllVars();
 
 		} else
-			printVar(args.get(0).toString());
-
-		return 0;
+			return printVar(args.get(0).toString());
 	}
 
-	private int printFuncs(Options opts, List<XValue> args)
+	private boolean printFuncs(Options opts, List<XValue> args)
 			throws UnsupportedEncodingException, CoreException, IOException {
 		if (args.isEmpty())
-			printAllFuncs();
+			return printAllFuncs();
 		else
-			printFunc(args.get(0).toString());
-		return 0;
+			return printFunc(args.get(0).toString());
+		
 	}
 
-	private int printAllVars() throws UnsupportedEncodingException,
+	private boolean printAllVars() throws UnsupportedEncodingException,
 			CoreException, IOException {
 
 		try (PrintWriter w = getStdout().asPrintWriter(getSerializeOpts())) {
@@ -113,15 +178,15 @@ public class declare extends BuiltinCommand {
 			for (String var : getShell().getEnv().getVarNames())
 				w.println(var);
 		}
-		return 0;
+		return true ;
 
 	}
 
-	private int printAllFuncs() throws UnsupportedEncodingException,
+	private boolean  printAllFuncs() throws UnsupportedEncodingException,
 			CoreException, IOException {
 		FunctionDefinitions fd = getShell().getFunctionDelcs();
 		if (fd == null)
-			return 0;
+			return true ;
 		try (PrintWriter w = getStdout().asPrintWriter(getSerializeOpts())) {
 
 			for (Entry<String, IFunctionDecl> e : getShell().getEnv()
@@ -132,18 +197,18 @@ public class declare extends BuiltinCommand {
 
 			}
 		}
-		return 0;
+		return true  ;
 
 	}
 
-	private int printFunc(String name) throws UnsupportedEncodingException,
+	private boolean printFunc(String name) throws UnsupportedEncodingException,
 			CoreException, IOException {
+		boolean bFound = false;
 		try (PrintWriter w = getStdout().asPrintWriter(getSerializeOpts())) {
 
 			IFunctionDecl fd = getShell().getFunctionDecl(name);
-			if (fd == null)
-				w.println("Function: " + name + " not defined");
-			else {
+			if (fd != null) {
+				bFound = true ;
 
 				w.print(name);
 				w.println("()");
@@ -151,29 +216,23 @@ public class declare extends BuiltinCommand {
 
 			}
 		}
-		return 0;
+		return bFound ;
 
 	}
 
 	private int export(String varname) {
-		XVariable xvar = mShell.getEnv().getVar(varname);
-		if (xvar == null) {
-			xvar = XVariable.newInstance(varname);
-		}
-		xvar.setFlag(XVarFlag.EXPORT);
-		mShell.getEnv().setVar(xvar);
+		getEnv().exportVar(varname);
 		return 0;
 
 	}
 
-	private int printVar(String name) throws XMLStreamException, SAXException,
+	private boolean printVar(String name) throws XMLStreamException, SAXException,
 			IOException, CoreException, SaxonApiException {
 		XEnvironment env = mShell.getEnv();
 
 		XVariable var = env.getVar(name);
 		if (var == null) {
-			this.printErr("Unknown variable: " + name);
-			return 1;
+			return false ; 
 		}
 
 		OutputPort stdout = env.getStdout();
@@ -192,13 +251,13 @@ public class declare extends BuiltinCommand {
 			stdout.writeSequenceTerminator(getSerializeOpts());
 		}
 
-		return 0;
+		return true ;
 
 	}
 
 	private int declareNamespace(List<XValue> args) {
 		if (args.size() == 0)
-			return listNamespaces();
+			 listNamespaces();
 
 		for (XValue arg : args) {
 			declareNamespace(arg);
@@ -208,29 +267,21 @@ public class declare extends BuiltinCommand {
 
 	}
 
-	private int listNamespace(String name) {
-		NameValueMap<String> ns = mShell.getEnv().getNamespaces();
-		if (ns == null)
-			return 0;
-		String uri = ns.get(name);
-		if (uri != null) {
-			mShell.printOut(name + "=" + uri);
-			return 0;
-		} else
-			mShell.printErr("Namespace not found: " + name);
-		return 1;
+	private boolean listNamespace(String name) {
+		String uri =  mShell.getEnv().getNamespaces().get(name);
+		if (uri == null) 
+			return false ;
 
+		mShell.printOut(name + "=" + uri);
+
+		return true ;
 	}
 
-	private int listNamespaces() {
-		NameValueMap<String> ns = mShell.getEnv().getNamespaces();
-		if (ns == null)
-			return 0;
-		for (String name : ns.keySet()) {
-			String uri = ns.get(name);
-			mShell.printOut(name + "=" + uri);
+	private boolean listNamespaces() {
+		for (Entry<String, String> e :  mShell.getEnv().getNamespaces().entrySet() ) {
+			mShell.printOut(e.getKey() + "=" + e.getValue() );
 		}
-		return 0;
+		return true ;
 
 	}
 
@@ -247,36 +298,38 @@ public class declare extends BuiltinCommand {
 
 			mShell.getEnv().declareNamespace(arg.toString());
 
-			return 0;
+			return 0 ;
 
 		} else
 			usage("Unexpected value: " + arg.describe());
 		return 2;
 	}
 
-	private int printModules(Options opts, List<XValue> args) {
-		if (args.isEmpty()) {
+	private boolean printModules(Options opts, List<XValue> args) {
 
+		boolean bFound = false ;
+		if (args.isEmpty()) {
 			for (ModuleHandle hm : mShell.getEnv().getModules()) {
 				printModule(hm);
 
 			}
+			return true ;
 		} else {
 			for (XValue a : args) {
 				String name = a.toString();
 				ModuleHandle hm = getEnv().getModules()
 						.getExistingModuleByName(name);
-				if (hm == null)
-					printErr("Module not found: " + name);
-				else
-					printModule(hm);
+				if( hm != null )
+					bFound |= printModule(hm);
 			}
 		}
-		return 0;
+		return bFound ;
 
 	}
 
-	protected void printModule(ModuleHandle hm) {
+	protected boolean  printModule(ModuleHandle hm) {
+		assert( hm != null );
+		
 		XEnvironment env = getEnv();
 		StringBuilder sb = new StringBuilder();
 		String p = "";
@@ -292,6 +345,7 @@ public class declare extends BuiltinCommand {
 			sb.append(s);
 
 		mShell.printOut(sb.toString());
+		return true ;
 	}
 
 }

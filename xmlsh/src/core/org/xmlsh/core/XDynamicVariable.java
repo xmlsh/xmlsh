@@ -8,12 +8,19 @@ package org.xmlsh.core;
 
 import java.util.EnumSet;
 
+import org.xmlsh.core.XVariable.XVarFlag;
 import org.xmlsh.util.Util;
 
 public abstract class XDynamicVariable extends XVariable {
 
 	public XDynamicVariable(String name,EnumSet<XVarFlag> flags) {
 		super(name,flags);
+
+	}
+
+	@Override
+	public XVariable clone(EnumSet<XVarFlag> flags) {
+		throw new InvalidArgumentException("Cannot clone: " + getName() );
 
 	}
 

@@ -155,7 +155,7 @@ public class xml2csv extends XCommand
 		CSVRecord rec = new CSVRecord(fields);
 		String line = mFormatter.encodeRow(rec);
 		mOutput.write( line.getBytes(getSerializeOpts().getOutputTextEncoding()));
-		mOutput.write( Util.getNewline(getSerializeOpts()));
+		mOutput.write( Util.getNewlineBytes(getSerializeOpts()));
 
 
 

@@ -53,7 +53,7 @@ public class echo extends BuiltinCommand {
 					arg.serialize( out , serializeOpts );
 				}
 				if( ! nolf )
-					out.write(Util.getNewline(serializeOpts));
+					out.write(Util.getNewlineBytes(serializeOpts));
 				out.flush();
 				return 0;
 	}

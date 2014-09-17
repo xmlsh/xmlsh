@@ -34,6 +34,7 @@ import org.xmlsh.core.XValue;
 import org.xmlsh.core.XVariable;
 import org.xmlsh.sh.core.ICommandExpr;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.types.TypeFamily;
 import org.xmlsh.util.Util;
 
 import com.sun.net.httpserver.Headers;
@@ -51,6 +52,7 @@ public class httpserver extends XCommand {
 
 
 	public class MyHandler implements HttpHandler {
+		public static final String sHTTP_HEADERS = "HTTP_HEADERS";
 		private		Shell	 	mShell = null;
 		private	 	File		mInitialCD;
 		private		ICommandExpr	mGet;
@@ -82,7 +84,7 @@ public class httpserver extends XCommand {
 
 			try {
 
-				XVariable headers 	= parseHeaders( http );
+				XValue headers 	= parseHeaders( http );
 
 				mShell.setCurdir(mInitialCD);
 				//  System.out.println("Got request in thread: " + Thread.currentThread().getName() );
@@ -186,7 +188,7 @@ public class httpserver extends XCommand {
 
 		}
 
-		private void execute(ICommandExpr cmd, URI uri, InputStream is, OutputStream os, XVariable headers)
+		private void execute(ICommandExpr cmd, URI uri, InputStream is, OutputStream os, XValue headers)
 				throws CoreException, ThrowException, IOException {
 
 			mShell.getEnv().setStdin( is );
@@ -201,7 +203,7 @@ public class httpserver extends XCommand {
 			args.add( XValue.newXValue(query));
 
 			if( headers != null )
-				mShell.getEnv().setVar(headers);
+				mShell.getEnv().setVar(sHTTP_HEADERS , headers);
 
 			mShell.setArgs(args);
 			mShell.exec(cmd);
@@ -223,10 +225,10 @@ public class httpserver extends XCommand {
 		 * 
 		 */
 		@SuppressWarnings("unchecked")
-		private XVariable parseHeaders(HttpExchange request) throws IOException  {
+		private XValue parseHeaders(HttpExchange request) throws IOException  {
 
 
-			XVariable var = XVariable.newInstance("HTTP_HEADERS");
+			XVariable var = XVariable.anonymousInstance(TypeFamily.XDM);
 			XMLStreamWriter writer = null ;
 			try (
 					VariableOutputPort port = new VariableOutputPort( var );
@@ -257,7 +259,7 @@ public class httpserver extends XCommand {
 				writer.writeEndElement();
 				writer.writeEndDocument();
 				writer.close();
-				return var ;
+				return var.getValue() ;
 			} catch (XMLStreamException|SaxonApiException e) {
 				throw new IOException(e);
 			} finally {

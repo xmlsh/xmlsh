@@ -50,7 +50,7 @@ public class TextFieldStreamPipe implements Closeable {
 					}
 
 					mOut.write( mField.getText().getBytes(opts.getInput_text_encoding()) );
-					mOut.write(  Util.getNewline(opts));
+					mOut.write(  Util.getNewlineBytes(opts));
 					mOut.flush();
 					mField.setText("");
 				} catch (Exception ex) {

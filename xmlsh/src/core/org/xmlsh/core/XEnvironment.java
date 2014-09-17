@@ -18,6 +18,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Stack;
 import java.util.Map.Entry;
@@ -27,6 +28,7 @@ import javax.xml.transform.Source;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.xml.sax.InputSource;
+import org.xmlsh.core.XVariable.XVarFlag;
 import org.xmlsh.sh.shell.FunctionDefinitions;
 import org.xmlsh.sh.shell.ModuleHandle;
 import org.xmlsh.sh.shell.Modules;
@@ -46,8 +48,18 @@ public class XEnvironment implements AutoCloseable, Closeable {
 	private		Stack<XIOEnvironment>  mSavedIO;
 	private     Stack<ModuleHandle> mModuleStack;
 	private     boolean bClosed = false;
+	
+	
+	
+	private     EnumSet<XVarFlag>  getVarFlags() {
+		return XVariable.standardFlags() ; // TODO add a scope default 
+	}
 
-
+	
+	private     EnumSet<XVarFlag>  getVarFlags( EnumSet<XVarFlag> flags ) {
+		return Util.withEnumsAdded(flags , getVarFlags() );
+	}
+	
 
 
 	/* (non-Javadoc)
@@ -139,15 +151,12 @@ public class XEnvironment implements AutoCloseable, Closeable {
 		return mVars.get(name);
 	}
 
-	public void	setVar( XVariable var)
+	protected XVariable	setVar( XVariable var)
 	{
 		mVars.put(var );
+		return var ;
 	}
 
-  public void setLocalVar( XVariable var)
-  {
-    mVars.putLocal(var );
-  }
 
 
   
@@ -191,16 +200,29 @@ public class XEnvironment implements AutoCloseable, Closeable {
   public void setLocalVar(String name, XValue value)
   {
     
-    XVariable var = mVars.get(name);
-    if( var == null )
-      var = XVariable.newInstance(name, value);
-    else
-      var = var.newValue( value );
-    setLocalVar( var );
+    XVariable var = XVariable.newInstance( name , value, getLocalFlags());
+    mVars.put(var);
     
   }
   
-  public XVariable exportVar( String name ){
+  public XVariable declareVar( String name , EnumSet<XVarFlag> flags ){
+	  XVariable var = mVars.get(name);
+	  if( var == null )
+		  var = XVariable.newInstance( name , flags );
+	  else 
+		  var = var.clone(flags);
+	  
+	  mVars.put( var );
+	  return var ;
+  }
+  
+  private EnumSet<XVarFlag> getLocalFlags() {
+   
+	  return getVarFlags( XVariable.localFlags() );
+  }
+
+
+public XVariable exportVar( String name ){
     XVariable var = mVars.get(name);
     if( var == null ){
       var = XVariable.newInstance(name);
@@ -212,15 +234,18 @@ public class XEnvironment implements AutoCloseable, Closeable {
   }
 
 
-  public void setVar( String name , XValue value) throws InvalidArgumentException 
+  public XVariable setVar( String name , XValue value) throws InvalidArgumentException 
   {
 
     XVariable var = mVars.get(name);
-    if( var == null )
-      var = XVariable.newInstance(name, value);
+    if( var == null ){
+      var = XVariable.newInstance(name, value, getVarFlags() );
+    }  
     else
-      var = var.newValue( value );
-    setVar( var );
+      var = var.newValue(value, getVarFlags());
+    
+    return setVar(var);
+
   }
 
 
@@ -405,6 +430,7 @@ public class XEnvironment implements AutoCloseable, Closeable {
 
 
 	public void unsetVar(String name ) throws InvalidArgumentException {
+		
 		mVars.unset( name );
 	}
 
@@ -802,6 +828,22 @@ public class XEnvironment implements AutoCloseable, Closeable {
 		
 		return mLogger.exit(getStaticContext().getModules().getPrefixesForModule(hm));
 
+	}
+
+
+	public XVariable declareVar(String var) {
+		return declareVar( var , getVarFlags() );
+	}
+
+
+	public void initVariable(XVariable var) {
+		
+		if( mVars.containsKey(var.getName())){
+			mLogger.warn("Attempt to initialize a pre-existing variable: {}" , var.getName());
+		} else
+		  mVars.put(var);
+		
+		
 	}
 	
 		

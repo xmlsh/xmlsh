@@ -74,7 +74,7 @@ public class xurlencode extends XCommand {
 						bOdd = ! bOdd ;
 					}
 					if( ! nolf )
-						out.write(Util.getNewline(serializeOpts));
+						out.write(Util.getNewlineBytes(serializeOpts));
 				}
 				// Else copy input to out using text mode exclusively
 				else {
