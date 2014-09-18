@@ -6,7 +6,9 @@
 
 package org.xmlsh.xpath;
 
+import org.apache.logging.log4j.ThreadContext;
 import org.xmlsh.sh.shell.Shell;
+
 
 
 /*
@@ -28,6 +30,10 @@ public class ThreadLocalShell {
 	{
 		Shell old = sInstance.get();
 		sInstance.set(shell);
+		if( shell == null )
+			ThreadContext.remove("tshell" );
+		else
+		    ThreadContext.put( "tshell",  shell.toString() );
 		return old;
 
 	}

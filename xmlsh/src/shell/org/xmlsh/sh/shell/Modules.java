@@ -16,6 +16,7 @@ import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.xmlsh.builtin.commands.exit;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.util.IManagable;
@@ -29,18 +30,18 @@ import org.xmlsh.util.NameValueMap;
  * Modules also have a list of default prefixes, (e.g. "xmlsh")
  */
 
-public class Modules extends ManagedObject<Modules> implements
-		Iterable<IModule> , IManagable , Cloneable {
+public class Modules  implements
+		Iterable<IModule> ,	 Cloneable {
 
 	private static final Logger mLogger = LogManager.getLogger();
 	
-	private NamedReferenceMap<  IModule >       mModules ;
+	private NameValueMap<  IModule >       mModules ;
 	private NameValueMap< String >       mPrefixMap ;
 
 
 	 Modules() {
 		super();
-	    mModules = new NamedReferenceMap<>();
+	    mModules   =   new NameValueMap<>();
 	    mPrefixMap = new NameValueMap<>();
 	}
 
@@ -57,19 +58,6 @@ public class Modules extends ManagedObject<Modules> implements
 	public Modules clone(){
 		mLogger.entry();
 		return mLogger.exit(new Modules(this));
-	}
-
-	@Override
-	public synchronized void doClose() throws IOException {
-
-		assert( ! isClosed() );
-		
-		mPrefixMap.clear();
-		mPrefixMap = null ;
-		// Move this to NamedValueMap
-		mModules.release();
-	    mModules = null ;
-
 	}
 
 	/**
@@ -95,7 +83,6 @@ public class Modules extends ManagedObject<Modules> implements
 		   mLogger.debug("Initializing a new module: {}", mod );
 		   mod.onInit(shell, init);
 		   bInit = true ;
-		   mod.addRef();
 		   mModules.put(mod.getName(),mod);
 		}
 		if( prefix != null )
@@ -125,7 +112,7 @@ public class Modules extends ManagedObject<Modules> implements
 	@Override
 	public Iterator<IModule> iterator() {
 		
-		return mModules.valueIterator();
+		return mModules.values().iterator();
 	}
 
 	public boolean moduleExistsByName(String name) {

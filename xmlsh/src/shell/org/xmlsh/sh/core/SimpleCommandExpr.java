@@ -100,7 +100,7 @@ public class SimpleCommandExpr extends CommandExpr {
 	 */
 	@Override
 	public int exec(Shell shell) throws Exception {
-	       mLogger.entry(mCommand);
+		mLogger.entry(mCommand);
 
 
 
@@ -114,99 +114,92 @@ public class SimpleCommandExpr extends CommandExpr {
 
 		String cmdName = cmdLine.remove(0).toString();
 
-		try ( ICommand cmd = CommandFactory.getCommand( shell , cmdName , getLocation() ) ){
-			if( cmd == null ){
-				logLocation(shell);
-				shell.printErr(mCommand + ": not found");
-				return 1;
-			}
-			Shell		   saved_shell = null;
-			/*
-			 * If there is a prefix then clone the shell, otherwise just clone the IO
-			 */
-			boolean popIO = false; 
-			if( mPrefix == null ){
-				shell.getEnv().saveIO();
-				popIO = true ;
-			}
-			else {
-				saved_shell = shell ;
-				shell = shell.clone(); // must now close shell
-	
-				assert(shell!=null);
-				if( shell ==null )
-                 throw new UnexpectedException("Shell is null after close");
-				
-			}
-	
-			int refcnt = 0;
-			// In case we need to restore it - get it from possibly cloned shell
-			Shell saved_context_shell = ThreadLocalShell.set( shell );
-			
+		ICommand cmd = CommandFactory.getCommand( shell , cmdName , getLocation() );
+		if( cmd == null ){
+			logLocation(shell);
+			shell.printErr(mCommand + ": not found");
+			return 1;
+		}
+		Shell		   saved_shell = null;
+		/*
+		 * If there is a prefix then clone the shell, otherwise just clone the IO
+		 */
+		boolean popIO = false; 
+		if( mPrefix == null ){
+			shell.getEnv().saveIO();
+			popIO = true ;
+		}
+		else {
+			saved_shell = shell ;
+			shell = shell.clone(); // must now close shell
+
+			assert(shell!=null);
+			if( shell ==null )
+				throw new UnexpectedException("Shell is null after close");
+
+		}
+
+		int refcnt = 0;
+		// In case we need to restore it - get it from possibly cloned shell
+		Shell saved_context_shell = ThreadLocalShell.set( shell );
+
+		try {
+
+			if( mPrefix != null )
+				mPrefix.exec( shell, getLocation() );
+
+			mSuffix.exec( shell, getLocation() );
+
+			// Push the current module if its different
+			IModule mod = cmd.getModule();
+			assert( mod != null );
+
 			try {
-	
-				if( mPrefix != null )
-					mPrefix.exec( shell, getLocation() );
-	
-				mSuffix.exec( shell, getLocation() );
-	
-				// Push the current module if its different
-				IModule mod = cmd.getModule();
-				assert( mod != null );
-				refcnt = mod.getRefCount();
-				
-				try {
-					mLogger.info("pushing module {} " , mod);
-		            shell.pushModule(mod);		
-					return cmd.run(  shell, cmdName , cmdLine );
-				} finally {
-				    mod = shell.popModule();
-					mLogger.trace("Module popped: {} ref: ", mod , mod.getRefCount() );
-					if( mod.getRefCount() != refcnt )
-						mLogger.error("Ref counts after commands doesnt match {} {}" , refcnt , mod.getRefCount() );
-					
-				}
-	
-	
-			} 
-			catch( ThrowException e )
+				shell.pushModule(mod);		
+				return cmd.run(  shell, cmdName , cmdLine );
+			} finally {
+				mod = shell.popModule();
+			}
+
+
+		} 
+		catch( ThrowException e )
+		{
+			throw e ;// Rethrow 
+		}
+
+		catch( Exception e ){
+			logLocation(shell);
+			// Note: shell is the cloned shell ..
+			shell.printErr("Exception running: " +  cmdName + "\n" +  e.toString() );
+
+			/*
+			 * Save exception here ???? 
+			 */
+
+			return -1;
+		}
+
+		finally {
+			mLogger.trace("exec finally: {}",this);
+			ThreadLocalShell.set(saved_context_shell);
+
+
+			// TODO: should I push this back into the mdoule ?
+			if( !popIO  ){
+				mLogger.trace("Closing cloned shell {} saved {}",shell,saved_shell);
+				Util.safeClose(shell);
+			} else
 			{
-				throw e ;// Rethrow 
-			}
-			
-			catch( Exception e ){
-				logLocation(shell);
-				// Note: shell is the cloned shell ..
-				shell.printErr("Exception running: " +  cmdName + "\n" +  e.toString() );
-	
-				/*
-				 * Save exception here ???? 
-				 */
-	
-				return -1;
-			}
-	
-			finally {
-				mLogger.trace("exec finally: {}",this);
-				ThreadLocalShell.set(saved_context_shell);
-				
-			
-				// TODO: should I push this back into the mdoule ?
-				if( !popIO  ){
-					mLogger.trace("Closing cloned shell {} saved {}",shell,saved_shell);
-					Util.safeClose(shell);
-				} else
-				{
-					assert( ! shell.isClosed());
-					if( ! shell.isClosed()){
-						mLogger.trace("Restoring shell io {}",shell);
-						shell.getEnv().restoreIO();
-					}
+				assert( ! shell.isClosed());
+				if( ! shell.isClosed()){
+					mLogger.trace("Restoring shell io {}",shell);
+					shell.getEnv().restoreIO();
 				}
-				
-				mLogger.exit();
 			}
-		} // close cmd
+
+			mLogger.exit();
+		}
 
 	}
 

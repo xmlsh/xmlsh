@@ -44,6 +44,11 @@ public class NameValueMap<T> extends HashMap<String,T> implements Cloneable {
 		return new NameValueMap<>( this );
 	}
 	
+	public T getByValue( T v ){
+		if( super.containsValue( v))
+	       return v;
+		return null;
+	}
 
 
 

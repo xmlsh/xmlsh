@@ -38,7 +38,11 @@ public class ScriptCommand implements ICommand {
 	// Finalize script command make sure to close
 	@Override
 	protected void finalize() {
-		close();
+		// Clear refs
+		mSource = null ;
+		mLocation = null ;
+		mModule = null ;
+		
 	}
 
 	public ScriptCommand(ScriptSource source, SourceMode sourceMode,
@@ -105,11 +109,6 @@ public class ScriptCommand implements ICommand {
 		if (mSource.mScriptBody != null)
 			return Util.toReader(mSource.mScriptBody);
 		throw new IOException("Script body is empty");
-	}
-
-	@Override
-	public void close() {
-
 	}
 
 	/*

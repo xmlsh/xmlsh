@@ -61,9 +61,8 @@ public class EvalScriptExpr extends CommandExpr {
 		ScriptSource ss = new ScriptSource( getName() , mCommand  );
 
 		// Auto close script and shell 
-		try ( Shell shell = sh.clone();
-			  ScriptCommand cmd = new ScriptCommand( ss , SourceMode.SOURCE , shell.getLocation() , shell.getModule() );
-			){  
+		try ( Shell shell = sh.clone()){  
+			ScriptCommand cmd = new ScriptCommand( ss , SourceMode.SOURCE , shell.getLocation() , shell.getModule() );
 			return mLogger.exit(cmd.run(shell, "", null));
 		}
 

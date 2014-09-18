@@ -34,7 +34,16 @@ public class ExternalCommand implements ICommand {
 	private		File			mCommandFile;		// command path
 	private		SourceLocation 	mLocation ;
 	private    IModule mModule ;
-
+	
+	
+	@Override
+	protected void finalize() {
+		// Clear refs
+		mCommandFile = null ;
+		mLocation = null ;
+		mModule = null ;
+		
+	}
 	public ExternalCommand( File cmd , SourceLocation location, IModule module )
 	{
 		mLogger.entry(cmd,location,module);
@@ -207,16 +216,6 @@ public class ExternalCommand implements ICommand {
 
 
 
-
-
-	/* (non-Javadoc)
-	 * @see org.xmlsh.core.ICommand#close()
-	 */
-	@Override
-	public void close() {
-		mLogger.info("@TODO Calling unimplemented close()");
-
-	}
 
 
 	@Override

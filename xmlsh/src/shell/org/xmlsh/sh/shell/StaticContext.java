@@ -17,13 +17,12 @@ import org.xmlsh.core.Namespaces;
 // time,
 // but the static context itself is not imutable - it is affected by parse
 // and runtime declarations
-public class StaticContext implements Cloneable, Closeable {
+public class StaticContext implements Cloneable {
 	private static Logger mLogger = LogManager.getLogger();
 	private FunctionDefinitions mFunctions = null;
 	private Modules mModules;                    // Imported modules visible to this module
 	private int id = _id++;
 	private static int _id = 0; 
-	private boolean bClosed = true ;
 	private		Namespaces	mNamespaces = null;
 	
 	
@@ -36,7 +35,6 @@ public class StaticContext implements Cloneable, Closeable {
 	public StaticContext()
 	{
 		mLogger.entry();
-		bClosed = false ;
 	}
 	
 
@@ -44,7 +42,6 @@ public class StaticContext implements Cloneable, Closeable {
 	public StaticContext clone()
 	{
 		mLogger.entry(this);
-		
 		return mLogger.exit(new StaticContext( this ));
 	}
 
@@ -52,7 +49,7 @@ public class StaticContext implements Cloneable, Closeable {
 	// Clone this context 
 	protected StaticContext(StaticContext that) {
 		mLogger.entry(that);
-		
+
 		if( that.mFunctions != null)
 		    mFunctions = that.mFunctions.clone();
 		if( that.mModules != null )
@@ -73,39 +70,27 @@ public class StaticContext implements Cloneable, Closeable {
 
 
 	public IFunctionDecl getFunctionDecl(String name) {
+
 		if (mFunctions == null)
 			return null;
 		return mFunctions.get(name);
 	}
 
 	public FunctionDefinitions getFunctions() {
+
 		if (mFunctions == null  )
 			mFunctions = new FunctionDefinitions();
 		return mFunctions;
 	}
 
 	public Modules getModules() {
+
 		if( mModules == null  )
 			mModules = new Modules();
 		return mModules;
 		
 	}
 
-	@Override
-	public void close() throws IOException {
-		mLogger.entry();
-		if( bClosed )
-			return;
-		if( mModules != null )
-			mModules.release();
-		if( mFunctions != null )
-			mFunctions.clear();
-		
-		mModules = null;
-		mFunctions = null ;
-		bClosed = true ;
-		
-	}
 	public Namespaces getNamespaces()
 	{
 	  if( mNamespaces == null )
@@ -114,8 +99,10 @@ public class StaticContext implements Cloneable, Closeable {
 	}
 
 	public Iterable<IModule> getDefaultModules() {
+
 		List<IModule> all = new ArrayList<>();
 		for( IModule mh : mModules ){
+			
 			if( !  mModules.hasAnyPrefixes( mh )) 
 				all.add(mh );
 		}

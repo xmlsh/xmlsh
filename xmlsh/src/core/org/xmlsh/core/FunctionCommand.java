@@ -26,20 +26,24 @@ public class FunctionCommand implements ICommand {
 	ICommandExpr mFunction;
 	SourceLocation mLocation;
 	IModule mModule;
-	boolean bClosed = true;
 	private static Logger mLogger = LogManager.getLogger();
-
+	@Override
+	protected void finalize() {
+		// Clear refs
+		mFunction = null ;
+		mLocation = null ;
+		mModule = null ;
+		
+	}
 	public FunctionCommand(IModule iModule, String name,
 			ICommandExpr func, SourceLocation loc) {
 		mLogger.entry(iModule, name, func, loc);
 		assert (iModule != null);
 
-		bClosed = false;
 		mName = name;
 		mFunction = func;
 		mLocation = loc;
 		mModule = iModule;
-		mModule.addRef();
 	}
 
 	@Override
@@ -75,20 +79,6 @@ public class FunctionCommand implements ICommand {
 		return mModule;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.xmlsh.core.ICommand#close()
-	 */
-	@Override
-	public void close() throws IOException {
-		mLogger.entry();
-		if (bClosed)
-			return;
-
-		mModule.release();
-		bClosed = true;
-	}
 
 	@Override
 	public SourceLocation getLocation() {

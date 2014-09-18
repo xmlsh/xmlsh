@@ -15,36 +15,37 @@ import org.xmlsh.core.ScriptCommand.SourceMode;
 import org.xmlsh.core.ScriptSource;
 import org.xmlsh.core.XValue;
 
-public class ScriptModule extends Module
-{
+public class ScriptModule extends Module {
 
-  private ScriptSource mScript ; 
-  private StaticContext mStaticContext = null ;
+	private ScriptSource mScript;
+	private StaticContext mStaticContext = null;
 	protected final static Logger mLogger = LogManager.getLogger();
+	
+	protected void finalize() {
+		mScript = null ;
+		mStaticContext = null ;
+	}
 
-  protected ScriptModule(Shell shell, String prefix , ScriptSource script, String nameuri ) throws IOException, CoreException
-  {
-    super( nameuri );
+	protected ScriptModule(Shell shell, String prefix, ScriptSource script,
+			String nameuri) throws IOException, CoreException {
+		super(nameuri);
 
-    mScript = script ;
-    mClassLoader = getClassLoader(null);
+		mScript = script;
+		mClassLoader = getClassLoader(null);
 
-  }
-  
-  
-  @Override
-  public void onLoad(Shell shell)
-  { 
-	  super.onLoad(shell);
-    if( mScript == null ){
-      shell.printErr("script not found: " + getName() );
-      return;
-    }
-    
+	}
 
-  }
+	@Override
+	public void onLoad(Shell shell) {
+		super.onLoad(shell);
+		if (mScript == null) {
+			shell.printErr("script not found: " + getName());
+			return;
+		}
 
-  @Override
+	}
+
+	@Override
   public void onInit(Shell shell, List<XValue> args) throws Exception
   {
 
@@ -53,9 +54,9 @@ public class ScriptModule extends Module
       if( args != null )
          sh.setArgs(args);
      Module hThis = this ;
-     try (  ScriptCommand cmd = new ScriptCommand(
+    	 ScriptCommand cmd = new ScriptCommand(
         		 // Holds a refernce to module within cmd 
-    		  mScript ,  SourceMode.IMPORT, shell.getLocation() , hThis  ) ){
+    		  mScript ,  SourceMode.IMPORT, shell.getLocation() , hThis  ) ;
 		     // Should addRef the module in the shell ...  
         	 if(  cmd.run(sh, getName(), args) != 0 )
 		        shell.printErr("Failed to init script:" + getName() );
@@ -67,78 +68,51 @@ public class ScriptModule extends Module
 				   mLogger.debug("Merging script context into script module {} context " , this , mStaticContext );
 		    	 // Detach the module from the shell so it wont get destroyed
 		    	 mLogger.trace("Adding a reference to this so it wont get closed {} " , hThis );
-				 hThis.addRef();
 		    	 
 		      }
-         }
-    } finally {
-    	
+        	 
 		mLogger.exit();
-		
     }
   }
 
-
-@Override
-public void close() throws IOException {
-	
-	mLogger.entry();
-	if( ! bClosed ){
-	  try {
-	     super.close();
-	  } finally 
-	  {
-		  if( mStaticContext != null )
-			  mStaticContext.close();
-		  
-	  }
-	}
-	mLogger.exit();
-}
-
-
-@Override
-  public ICommand getCommand(String name)
-  {
-	if( mStaticContext == null )
-		return null;
-    
-	IFunctionDecl func = mStaticContext.getFunctionDecl(name);
-	if( func != null )
-		return new FunctionCommand( this ,  func.getName() , func.getBody() , null  );
-	return null ;
-	
-  }
-
-  @Override
-  public IFunction getFunction(String name)
-  {
-	  if( mStaticContext == null )
+	@Override
+	public ICommand getCommand(String name) {
+		if (mStaticContext == null)
 			return null;
-	    
-     IFunctionDecl func = mStaticContext.getFunctionDecl(name);
-     if( func != null )
-    	 return func.getFunction();
-     return null ;
-	
-  }
 
-  @Override
-  public boolean hasHelp(String name)
-  {
-    return false;
-  }
+		IFunctionDecl func = mStaticContext.getFunctionDecl(name);
+		if (func != null)
+			return new FunctionCommand(this, func.getName(), func.getBody(),
+					null);
+		return null;
 
+	}
 
-  @Override
-  public String describe()
-  {
-    return getName() + " [ at " + mScript.mScriptURL.toString() + "]";
-  }
+	@Override
+	public IFunction getFunction(String name) {
+		if (mStaticContext == null)
+			return null;
 
-  @Override
-  public StaticContext getStaticContext() {
-	return mStaticContext ;
-}
+		IFunctionDecl func = mStaticContext.getFunctionDecl(name);
+		if (func != null)
+			return func.getFunction();
+		return null;
+
+	}
+
+	@Override
+	public boolean hasHelp(String name) {
+		return false;
+	}
+
+	@Override
+	public String describe() {
+		return getName() + " [ at " + mScript.mScriptURL.toString() + "]";
+	}
+
+	@Override
+	public StaticContext getStaticContext() {
+		return mStaticContext;
+	}
 
 }

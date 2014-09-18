@@ -438,8 +438,6 @@ public class Shell implements AutoCloseable, Closeable {
 			mSession = null;
 		} 
 		
-		if( mModule != null )
-			mModule.release();
 		mModule = null;
 				
 		
@@ -1654,8 +1652,6 @@ public class Shell implements AutoCloseable, Closeable {
 		IModule mod = getModules().getExistingModuleByName(name);
 		if( mod == null )
 			mod =   ModuleFactory.createModule(this, prefix, name, at );
-		else 
-			mod.addRef();
 			
 		assert( mod != null );
 		boolean inited = getModules().importModule(this, prefix , mod ,  init);
@@ -2175,7 +2171,8 @@ public class Shell implements AutoCloseable, Closeable {
 
 	public IModule  popModule() throws IOException {
 		mLogger.entry();
-		return mLogger.exit(getEnv().popModule());
+		IModule mod = (getEnv().popModule());
+		return mLogger.exit(mod);
 
 	}
 

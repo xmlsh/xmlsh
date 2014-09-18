@@ -66,6 +66,10 @@ public abstract class OutputPort extends AbstractPort implements IOutputPort
 		return new PrintWriter( 		
 				new OutputStreamWriter(asOutputStream(opts) , opts.getOutputTextEncoding() ));
 	}
+	public synchronized PrintWriter asPrintWriter(SerializeOpts opts, boolean autoFlush) throws UnsupportedEncodingException, CoreException {
+		return new PrintWriter( 		
+				new OutputStreamWriter(asOutputStream(opts) , opts.getOutputTextEncoding() ) , autoFlush );
+	}
 
 
 	// These 2 shouldnt really go on the port 

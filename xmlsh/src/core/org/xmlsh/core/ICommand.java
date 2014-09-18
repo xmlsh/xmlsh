@@ -18,7 +18,7 @@ import org.xmlsh.sh.shell.IModule;
 import org.xmlsh.sh.shell.Module;
 import org.xmlsh.sh.shell.Shell;
 
-public interface ICommand extends Closeable {
+public interface ICommand  {
 	enum CommandType {
 		CMD_TYPE_BUILTIN ,
 		CMD_TYPE_INTERNAL , 
@@ -34,8 +34,6 @@ public interface ICommand extends Closeable {
 	public 	URL 	getURL() throws MalformedURLException;
 	// TEMP:
 	public 	IModule	getModule();
-	@Override
-	public void		close() throws IOException;
 	public SourceLocation getLocation();
 	public void setLocation( SourceLocation loc);
     public void print(PrintWriter w, boolean bExec);

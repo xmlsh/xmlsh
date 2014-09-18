@@ -23,8 +23,7 @@ import org.xmlsh.core.XValue;
  * A runtime instance of a module that may have state and may be shared or duplicated
  * in different contexts.
  */
-public interface IModule extends IReferenceCountedHandleable,  IReferenceCounted , Closeable,
-		IStaticModule {
+public interface IModule extends		IStaticModule {
 
 	/*
 	 * Calls into the module

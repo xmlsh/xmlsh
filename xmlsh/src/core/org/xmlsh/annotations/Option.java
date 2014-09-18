@@ -14,9 +14,10 @@ import java.lang.annotation.Target;
 
 @Target( ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
+@XAnnotation
 public @interface Option {
-
-	String value();
+	String name() default "" ;
+	String value() default "" ;
 }
 
 

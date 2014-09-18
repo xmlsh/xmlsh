@@ -6,8 +6,12 @@
 
 package org.xmlsh.annotations;
 
+import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+import com.fasterxml.jackson.annotation.JacksonAnnotation;
 
 /**
  * @author David A. Lee
@@ -15,6 +19,8 @@ import java.lang.annotation.RetentionPolicy;
 
 
 @Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.TYPE,ElementType.METHOD})
+@XAnnotation
 public @interface Command {
 	String value() default "";
 	String name() default "" ;

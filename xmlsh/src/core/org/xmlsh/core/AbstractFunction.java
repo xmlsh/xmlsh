@@ -10,7 +10,7 @@ public abstract class AbstractFunction extends AbstractExpr implements IFunction
 
 
 
-private static Logger mLogger = LogManager.getLogger();
+  private static Logger mLogger = LogManager.getLogger();
   protected AbstractFunction(String name)
   {
     super(name);

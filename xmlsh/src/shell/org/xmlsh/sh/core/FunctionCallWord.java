@@ -115,10 +115,7 @@ public class FunctionCallWord extends Word
 
 		try {
 			IModule module = func.getModule();
-			refCount = module.getRefCount();
 			assert( module != null );
-			mLogger.debug("pushing module {} ref {} " , module , refCount );
-			
 			shell.pushModule(module);
 			
 
@@ -140,10 +137,6 @@ public class FunctionCallWord extends Word
 		finally{
 
 				mod = shell.popModule();
-				mLogger.trace("Module popped: {} ref {} ", mod , mod.getRefCount() );
-			
-				if( mod.getRefCount() != refCount )
-					mLogger.error("Ref counts after commands doesnt match {} {}" , refCount , mod.getRefCount() );
 				
 					// TODO: should I push this back into the mdoule ?
 				

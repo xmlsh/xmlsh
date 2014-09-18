@@ -17,37 +17,8 @@ import org.xmlsh.core.XClassLoader;
 import org.xmlsh.core.XValue;
 import org.xmlsh.util.ReferenceCounter;
 
-
 abstract class AbstractModule implements IModule {
-	private ReferenceCounter mCounter = new ReferenceCounter();
 	static Logger mLogger = LogManager.getLogger();
-	/* (non-Javadoc)
-	 * @see org.xmlsh.core.IManagedHandle#release()
-	 */
-	@Override
-	final public boolean release() throws IOException  {
-		mLogger.entry( this );
-		if( mCounter.decrement() <= 0  ) {
-			mLogger.info("Closing : {} " , this );
-			close();
-			return true ;
-		}
-		return false ;
-	} 
-
-	@Override
-	public void addRef() { 
-
-		mLogger.entry(this);
-		mCounter.increment();
-	}
-	
-	
-	@Override
-	public int getRefCount() {
-		// TODO Auto-generated method stub
-		return mCounter.getRefCount();
-	}
 
 	@Override
 	public StaticContext getStaticContext() {
@@ -56,16 +27,7 @@ abstract class AbstractModule implements IModule {
 		return null;
 	}
 
-
-	
-	@Override
-	public ReferenceCounter getCounter() {
-		return mCounter ;
-	}
-
-
 	protected String mName;
-	protected boolean bClosed = true;
 
 	protected ClassLoader mClassLoader; // Classloader for this module
 
@@ -75,40 +37,33 @@ abstract class AbstractModule implements IModule {
 
 	protected HashMap<String, Boolean> mScriptCache = new HashMap<String, Boolean>();
 
+	// Finalize script command make sure to close
+	@Override
+	protected void finalize() {
+		// Clear refs
+		mClassLoader = null;
+		if (mClassCache != null)
+			mClassCache.clear();
+		mClassCache = null;
+
+		if (mScriptCache != null)
+			mScriptCache.clear();
+		mScriptCache = null;
+
+	}
 
 	protected AbstractModule(String name) {
 		mName = name;
-		bClosed = false ;
 	}
 
-	@Override
-	public void close() throws IOException {
+	protected Logger getLogger() {
+		return LogManager.getLogger(getClass());
 
-		getLogger().entry();
-		if (bClosed){
-			getLogger().error("Multiple close of module");
-			return;
-		}
-		mClassCache.clear();
-		mScriptCache.clear();
-		mClassCache = null;
-		mScriptCache = null;
-		mClassLoader = null;
-		bClosed = true ;
-		getLogger().exit();
-		
-	}
-
-	protected Logger getLogger(){
-      return LogManager.getLogger( getClass() );
-		
 	}
 
 	protected Class<?> findClass(String className) {
 
-		
 		getLogger().entry(className);
-		assert( ! bClosed );
 		// Find cached class name even if null
 		// This caches failures as well as successes
 		// Consider changing to a WeakHashMap<> if this uses up too much memory
@@ -194,9 +149,10 @@ abstract class AbstractModule implements IModule {
 		return resource;
 	}
 
- 
 	@Override
-	public String toString() { return getName() ; }
+	public String toString() {
+		return getName();
+	}
 }
 
 //

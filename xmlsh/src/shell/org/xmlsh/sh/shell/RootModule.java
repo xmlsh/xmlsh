@@ -47,9 +47,4 @@ public class RootModule extends Module {
 		return getName();
 	}
 
-	@Override
-	public void close() {
-		getLogger().error("Root Module should never be closed");
-		assert(false);
-	}
 }

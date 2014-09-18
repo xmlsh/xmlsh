@@ -839,6 +839,18 @@ public class JavaUtils {
 		
 		
 	}
+
+	public static Package convertToPackage(XValue arg) {
+		if( arg.isAtomic() && arg.isString() )
+			return Package.getPackage(arg.toString());
+		Object obj = arg.asObject();
+		if( obj instanceof Package)
+			return (Package) arg.asObject();
+		return null ;
+
+
+	}
+
 }
 
 

@@ -15,10 +15,10 @@
 
 	<Appenders>
 		<File name="A1" fileName="${logfile}" append="false">
-			<PatternLayout pattern="%d %-5p [%t] %c{5} %M - %m%n" />
+			<PatternLayout pattern="%d %-5p [%t] %c{5} %M - %m (%X{tshell})%n" />
 		</File>
-			<File name="A2" fileName="${logfile}" append="false">
-			<PatternLayout pattern="%d %-5p [%t] %c{5} %M - %m%n%F %L%n" />
+		<File name="A2" fileName="${logfile}" append="false">
+			<PatternLayout pattern="%d %-5p [%t] %c{5} %M - %m (%X)%n%F %L%n" />
 		</File>
 		<Console name="CONSOLE" target="SYSTEM_ERR">
 			<PatternLayout pattern="%m MDC%X%n" />
@@ -32,6 +32,10 @@
 		<logger name="org.xmlsh" level="INFO">
 			<AppenderRef ref="A1"  />
 		</logger>
+		<logger name="org.xmlsh.core" level="DEBUG">
+			<AppenderRef ref="A1"  />
+		</logger>
+		
 		<logger name="httpclient" level="WARN" />
 		<logger name="http.wire" level="WARN" />
 		<logger name="org.apache.http" level="WARN" />
@@ -39,6 +43,7 @@
 		<logger name="org.apache.http.impl.conn" level="WARN" />
 		<logger name="org.xmlsh.sh.grammar" level="WARN" additivity="false">
 		   <AppenderRef ref="A1" />
+		   
 		</logger>
 		
 		 <Root level="ERROR">

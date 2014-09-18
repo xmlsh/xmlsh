@@ -299,22 +299,12 @@ public XVariable exportVar( String name ){
 		
 		// close modulesF
  
-		if( mModuleStack != null && ! mModuleStack.empty()){
-			// Should be 1 module on stack during close 
-			if( mModuleStack.size() > 1 )
-				mLogger.error("Module stack is not empty {} " , mModuleStack.size() );
-			
-			while( !mModuleStack.isEmpty() )
-			    mModuleStack.pop().release();
-			mModuleStack = null ;
-		}
-		
-		assert( mStaticContextStack.size()  == 1 );
-		if( mStaticContextStack.size() != 1 ){
-			mLogger.error("Static context size should be 1 : {}",mStaticContextStack.size() );
-			
-		}
-		mStaticContextStack.clear();
+		if( mModuleStack != null )
+			mModuleStack.clear(); // get rid of cycles
+	
+		mModuleStack = null ;
+		if( mStaticContextStack != null )
+     		mStaticContextStack.clear();
 		mStaticContextStack = null ;
 		bClosed = true ;
 				
@@ -797,11 +787,13 @@ public XVariable exportVar( String name ){
 
 	public IModule pushModule(IModule module,StaticContext ctx) {
 		mLogger.entry(module , mModuleStack.size() );
-		module.addRef();
 		mModuleStack.push(module);
+		
 		if( ctx == null )
 			ctx = mStaticContextStack.peek();
+		
 		mStaticContextStack.push(ctx);
+
 		//ctx = module.get().getStaticContext();
 		//mLogger.error("WHAT TO DO WITH PUSHED STATIC CTX: {}",ctx );
 		return mLogger.exit(module) ;
@@ -809,13 +801,12 @@ public XVariable exportVar( String name ){
 
 
 	public IModule popModule() throws IOException  {
-		mLogger.entry(mModuleStack.size());
+		mLogger.entry();
 		assert( !mModuleStack.isEmpty());
-	    IModule mh = mModuleStack.pop();
+	    IModule module = mModuleStack.pop();
+		assert( !mStaticContextStack.isEmpty());
 	    mStaticContextStack.pop();   /// Leak here ?
-		// Release last so we dont mixup stack sizes
-	    mh.release();
-		return mLogger.exit(mh);
+		return mLogger.exit(module);
 	}
 
 
@@ -823,7 +814,6 @@ public XVariable exportVar( String name ){
 		return getStaticContext().clone();
 		
 	}
-
 
 	public Collection<String> getPrefixesForModule(IModule hm) {
 		
