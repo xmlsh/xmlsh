@@ -313,7 +313,9 @@ public abstract class CommandFactory {
 			if ( !name.endsWith(".xsh"))
 				scriptFile = shell.getExplicitFile(name + ".xsh", true,true );
 			
-		} else if (scriptFile == null) {
+		} 
+		
+		if (scriptFile == null) {
 
 			// searh in XPATH for include/source and XMODPATH for modules 
 			Path path = null ;
