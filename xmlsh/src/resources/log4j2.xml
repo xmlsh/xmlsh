@@ -14,8 +14,8 @@
 
 
 	<Appenders>
-		<File name="A1" fileName="${logfile}" append="false">
-			<PatternLayout pattern="%d %-5p [%t] %c{5} %M - %m (%X{tshell})%n" />
+		<File name="A1" fileName="${logfile}" append="false" >
+			<PatternLayout pattern="%d %-5p [%t] %c{5} %M - %m (%X{tshell) %X{module}) | %F %L%n%n" />
 		</File>
 		<File name="A2" fileName="${logfile}" append="false">
 			<PatternLayout pattern="%d %-5p [%t] %c{5} %M - %m (%X)%n%F %L%n" />
@@ -32,7 +32,7 @@
 		<logger name="org.xmlsh" level="INFO">
 			<AppenderRef ref="A1"  />
 		</logger>
-		<logger name="org.xmlsh.core" level="DEBUG">
+		<logger name="org.xmlsh.core" level="TRACE" additivity="false">
 			<AppenderRef ref="A1"  />
 		</logger>
 		

@@ -1281,6 +1281,8 @@ public class Util
 	 }
 
 	 public static <T> String stringJoin(T[] list, String sep) {
+		 if( list == null ) return "()";
+		 
 		 StringBuilder sb = new StringBuilder();
 
 		 for( T s : list ){

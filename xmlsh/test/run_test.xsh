@@ -1,7 +1,6 @@
 # Run a single test and return 0 for success or 1 for failure
 TEST=0
 XPATH=(. $XPATH)
-
 [ $# -gt 0 -a "x$1" = "x-test" ] && { TEST=1 ; S="test"; shift ; }
 [ -f $1 ] || { echo usage: $0 '[-test]' test.xsh ; exit 1 ;  }
 set -location-format true
@@ -12,7 +11,7 @@ set -indent +v +x -location
 # unset all variables if possible - but its not yet
 
 
-[ $# -ne 1 ] && exit 1
+[ $# -ne 1 ] && { echo no args: $# "$@" ; exit 1 ; }
 
 [ -f _out.txt ] && rm _out.txt
 [ -f _err.txt ] && rm _err.txt

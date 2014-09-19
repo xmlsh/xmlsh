@@ -39,7 +39,7 @@ import org.xmlsh.sh.shell.StaticContext;
 import org.xmlsh.types.TypeFamily;
 import org.xmlsh.util.Util;
 
-public class XEnvironment implements AutoCloseable, Closeable {
+public class XEnvironment  {
 
 	private 	static Logger mLogger = LogManager.getLogger( XEnvironment.class );
 	private 	Shell mShell;
@@ -73,7 +73,7 @@ public class XEnvironment implements AutoCloseable, Closeable {
 	}
 
 
-	public XEnvironment(Shell shell, StaticContext ctx , boolean bInitIO ) throws IOException
+	public XEnvironment(Shell shell, StaticContext ctx , IModule mod , boolean bInitIO  ) throws IOException
 	{
 		
 		mLogger.entry(shell, ctx, bInitIO);
@@ -82,8 +82,7 @@ public class XEnvironment implements AutoCloseable, Closeable {
 		mVars = new Variables();
 		mIO = new XIOEnvironment();
 		mModuleStack = new Stack<>();
-
-		pushModule(shell.getModule(),ctx);
+		pushModule(mod ,ctx);
 
 		if( bInitIO )
 			getIO().initStdio();
@@ -257,7 +256,6 @@ public XVariable exportVar( String name ){
 		// TODO When cloning, only export marked for export vars
 		// Add typeset command
 
-
 		try {
 			return clone( mShell );
 		} catch (IOException e) {
@@ -275,16 +273,14 @@ public XVariable exportVar( String name ){
 	{
 		
 		mLogger.entry(shell);
-		XEnvironment 	that = new XEnvironment(shell, getStaticContext().clone() , false);
+		XEnvironment 	that = new XEnvironment(shell, getStaticContext().clone() , getModule() , false );
 		that.mVars		= new Variables(mVars);
 		that.mIO = new XIOEnvironment(getIO());
-		
 		return mLogger.exit( that);
 	}
 
 
-	@Override
-	public void close() throws IOException  {
+	private void close()  {
 		mLogger.entry(bClosed);
 		if( bClosed ){
 			mLogger.warn("Multiple close");
@@ -292,8 +288,7 @@ public XVariable exportVar( String name ){
 			mLogger.exit();
 		}
 		
-		if( mSavedIO != null && ! mSavedIO.isEmpty())
-			throw new IOException("Closing XEnvironment when mSavedIO is not empty");
+		assert( ! ( mSavedIO != null && ! mSavedIO.isEmpty()) );
 
 		getIO().release();
 		
@@ -835,6 +830,20 @@ public XVariable exportVar( String name ){
 		  mVars.put(var);
 		
 		
+	}
+
+
+	public IModule getModule() {
+		assert( mModuleStack.size() > 0);
+		return mModuleStack.peek();
+	}
+
+
+	// like close - but  not a closeable
+	 public void clear() {
+
+		if( ! bClosed )
+			 close();	
 	}
 	
 		

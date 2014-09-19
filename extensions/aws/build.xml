@@ -10,7 +10,7 @@
 
 	<property environment="env"/>
 	<property name="dist" location="_dist"/>
-	<property name="xmlsh" location="../../trunk"/>
+	<property name="xmlsh" location="../../xmlsh"/>
 	<tstamp prefix="bdate"/>
 	<property name="release" value="${bdate.DSTAMP}"/>
 	<property name="install" value="${env.XMODPATH}/aws"/>
@@ -42,10 +42,10 @@
 				<fileset dir="lib">
 					<include name="**/*.jar"/>
 				</fileset>
-				<fileset dir="../../trunk/lib">
+				<fileset dir="${xmlsh}/lib">
 					<include name="**/*.jar"/>
 				</fileset>
-				<fileset dir="../../trunk/bin">
+				<fileset dir="${xmlsh}/bin">
 					<include name="xmlsh-*.jar"/>
 				</fileset>
 			</classpath>

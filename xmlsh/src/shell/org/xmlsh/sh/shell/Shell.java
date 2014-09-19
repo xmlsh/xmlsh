@@ -44,6 +44,7 @@ import net.sf.saxon.s9api.Processor;
 import org.apache.commons.io.output.StringBuilderWriter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.ThreadContext;
 import org.xmlsh.core.CommandFactory;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.EvalEnv;
@@ -127,7 +128,6 @@ public class Shell implements AutoCloseable, Closeable {
 
 	static Logger mLogger = LogManager.getLogger();
 	private ShellOpts mOpts;
-	private IModule mModule; // The module currently executing in this shell
 
 
 	private XEnvironment mEnv = null;
@@ -167,7 +167,6 @@ public class Shell implements AutoCloseable, Closeable {
 	static boolean bInitialized = false;
 	static Properties mSavedSystemProperties;
 	private static Processor mProcessor = null;
-	// private static ModuleURIResolver mModuleURIResolver = null ;
 
 	private Shell mParent = null;
 	private IFS mIFS;
@@ -210,10 +209,9 @@ public class Shell implements AutoCloseable, Closeable {
 	public Shell(boolean bUseStdio) throws Exception {
 		mLogger.entry(bUseStdio);
 		mClosed = false ;
-		mModule = RootModule.getInstance();
 		mOpts = new ShellOpts();
 		mSavedCD = System.getProperty(ShellConstants.PROP_USER_DIR);
-		mEnv = new XEnvironment(this,  new StaticContext() , bUseStdio);
+		mEnv = new XEnvironment(this,  new StaticContext() ,  RootModule.getInstance() , bUseStdio);
 		mSession = new SessionEnvironment();
 
 	
@@ -365,11 +363,10 @@ public class Shell implements AutoCloseable, Closeable {
 		mLogger.entry(that, threadGroup);
 		mClosed = false ;
 		mParent = that;
-		mModule = that.mModule;
 		mThreadGroup = threadGroup == null ? that.getThreadGroup()
 				: threadGroup;
 		mOpts = new ShellOpts(that.mOpts);
-		mEnv = that.getEnv().clone(this);
+		mEnv = that.getEnv().clone(	this );
 		mCommandInput = that.mCommandInput;
 		mArg0 = that.mArg0;
 
@@ -427,7 +424,7 @@ public class Shell implements AutoCloseable, Closeable {
 		mParent = null;
 		mThreadGroup = null;
 		if (mEnv != null) {
-			Util.safeClose(mEnv);
+			mEnv.clear();
 			mEnv = null;
 		}
 		if (mSavedCD != null)
@@ -438,13 +435,8 @@ public class Shell implements AutoCloseable, Closeable {
 			mSession = null;
 		} 
 		
-		mModule = null;
-				
 		
 		mLogger.exit();
-		
-			
-
 	}
 
 	private void notifyChildClose(Shell shell) {
@@ -1782,8 +1774,8 @@ public class Shell implements AutoCloseable, Closeable {
 
 	public IModule getModule() {
 		mLogger.entry();
-		assert( mModule != null);
-		return mLogger.exit(mModule);
+		IModule mod = getEnv().getModule();
+		return mLogger.exit(mod);
 		
 	}
 
@@ -2164,16 +2156,18 @@ public class Shell implements AutoCloseable, Closeable {
 
 	public void pushModule(IModule mod) {
 	   
+		ThreadContext.put("xmodule", mod.describe() );
 	    mLogger.entry(mod);
-		mModule = mLogger.exit(getEnv().pushModule(mod,mod.getStaticContext()));
+		mLogger.exit(getEnv().pushModule(mod,mod.getStaticContext()));
 	
 	}
 
 	public IModule  popModule() throws IOException {
 		mLogger.entry();
-		IModule mod = (getEnv().popModule());
+		getEnv().popModule();
+		IModule mod = getModule();
+		ThreadContext.put("xmodule", mod.describe());
 		return mLogger.exit(mod);
-
 	}
 
 	

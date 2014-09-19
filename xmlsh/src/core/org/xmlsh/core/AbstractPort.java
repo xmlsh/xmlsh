@@ -67,6 +67,11 @@ public abstract class AbstractPort implements  IReferenceCountedHandleable , IPo
 		throw new UnimplementedException("getFile not implemented on this port");
 
 	}
+	
+	@Override 
+	public String toString() {
+	  return getClass().getSimpleName() + "[" + mSystemId + "]" ;
+	}
 
 }
 

@@ -13,7 +13,8 @@
 	<property environment="env" />
 
 	<property name="dist" location="_dist" />
-	<property name="xmlsh" location="../../trunk" />
+	<property name="xmlsh" location="../../xmlsh"/>
+
 	<tstamp prefix="bdate" />
 	<property name="release" value="${bdate.DSTAMP}" />
 	<target name="install.check">
@@ -47,10 +48,10 @@
 				<fileset dir="lib">
 					<include name="**/*.jar" />
 				</fileset>
-				<fileset dir="../../trunk/lib">
+				<fileset dir="${xmlsh}/lib">
 					<include name="**/*.jar" />
 				</fileset>
-				<fileset dir="../../trunk/bin">
+				<fileset dir="${xmlsh}/bin">
 					<include name="**/*.jar" />
 				</fileset>
 			</classpath>
