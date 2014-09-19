@@ -19,7 +19,7 @@ import net.sf.saxon.s9api.XdmNode;
 
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
-import org.xmlsh.core.Path;
+import org.xmlsh.core.SearchPath;
 import org.xmlsh.core.XValue;
 import org.xmlsh.util.Util;
 
@@ -51,7 +51,7 @@ public class ExternalModule extends PackageModule
       }
       else {
 
-        Path path = shell.getPath(ShellConstants.XMODPATH, true);
+        SearchPath path = shell.getPath(ShellConstants.XMODPATH, true);
         modDir = path.getFirstFileInPath(shell, nameuri,false);
         if(modDir == null)
           throw new InvalidArgumentException("Cannot find module directory for : " + nameuri);

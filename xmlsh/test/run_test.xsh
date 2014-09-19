@@ -1,5 +1,7 @@
 # Run a single test and return 0 for success or 1 for failure
 TEST=0
+XPATH=(. $XPATH)
+
 [ $# -gt 0 -a "x$1" = "x-test" ] && { TEST=1 ; S="test"; shift ; }
 [ -f $1 ] || { echo usage: $0 '[-test]' test.xsh ; exit 1 ;  }
 set -location-format true

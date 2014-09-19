@@ -188,14 +188,14 @@ public class ExternalCommand implements ICommand {
 		// Special case for PATH and XPATH
 		XVariable vpath = xenv.getVar(ShellConstants.PATH);
 		if( vpath != null  && vpath.isExport() ){
-			Path p = new Path( vpath.getValue() );
+			SearchPath p = new SearchPath( vpath.getValue() );
 			String ps = p.toOSString();
 			env.put(ShellConstants.PATH, ps);
 		}
 
 		XVariable vxpath = xenv.getVar(ShellConstants.XPATH);
 		if( vxpath != null && vxpath.isExport() ){
-			Path p = new Path( vxpath.getValue() );
+			SearchPath p = new SearchPath( vxpath.getValue() );
 			String ps = p.toOSString();
 			env.put(ShellConstants.XPATH, ps);
 		}

@@ -8,10 +8,17 @@ package org.xmlsh.util;
 
 import java.io.File;
 import java.io.InputStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class FileUtils
 {
 
+
+	static Logger mLogger = LogManager.getLogger();
 	public static String getNullFilePath() {
 		if(Util.isWindows())
 			return "NUL" ;
@@ -47,6 +54,10 @@ public class FileUtils
 	public boolean hasConsole() {
 		return System.console() != null ;
 	}
+	public static boolean hasDirectory(String name) {
+		 Path p = Paths.get(name);
+		 return p.getNameCount() > 1 ;
+	 }
 	public static String convertPath(String name, boolean bSystem) {
 		if( bSystem && File.separatorChar != '/')
 			return name.replace('/', File.separatorChar);
@@ -139,6 +150,31 @@ public class FileUtils
 					return path.substring(startpos );
 				return "";
 
+	}
+	/*
+	 * Return OS localized extension or ""
+	 *   -- tolower if on case insensitive filesystems
+	 * foo.bar => .bar
+	 * /foobaar/xyz => ""
+	 * .foobar  => ""
+	 * /foo/bar/.bar =>""
+	 */
+	
+	public static String getExt(String name) {
+
+		
+		mLogger.entry(name);
+		Path path  = Paths.get(name);
+		assert( path != null && path.getNameCount() > 0);
+		String base = path.getName(path.getNameCount()-1).toString();
+		assert( base != null );
+		
+		int startpos = 0 ;
+		int dotpos = base.lastIndexOf('.');
+		if( dotpos > 0 && dotpos < base.length() ) // ".xyz" not an extension
+			return mLogger.exit(base.substring(dotpos ));
+		return mLogger.exit("");
+		
 	}
 }
 

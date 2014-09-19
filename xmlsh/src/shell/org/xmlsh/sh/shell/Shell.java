@@ -57,7 +57,7 @@ import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.Options.OptionValue;
 import org.xmlsh.core.OutputPort;
-import org.xmlsh.core.Path;
+import org.xmlsh.core.SearchPath;
 import org.xmlsh.core.ScriptCommand.SourceMode;
 import org.xmlsh.core.StreamInputPort;
 import org.xmlsh.core.StreamOutputPort;
@@ -1166,18 +1166,18 @@ public class Shell implements AutoCloseable, Closeable {
 		return boolVal ? 0 : 1;
 	}
 
-	public Path getExternalPath() {
+	public SearchPath getExternalPath() {
 		return getPath(ShellConstants.PATH, true);
 	}
 
-	public Path getPath(String var, boolean bSeqVar) {
+	public SearchPath getPath(String var, boolean bSeqVar) {
 		XValue pathVar = getEnv().getVarValue(var);
 		if (pathVar == null)
-			return new Path();
+			return new SearchPath();
 		if (bSeqVar)
-			return new Path(pathVar);
+			return new SearchPath(pathVar);
 		else
-			return new Path(pathVar.toString().split(File.pathSeparator));
+			return new SearchPath(pathVar.toString().split(File.pathSeparator));
 
 	}
 

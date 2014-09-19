@@ -12,18 +12,28 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.FileUtils;
+import org.xmlsh.util.Util;
 
-public class Path implements Iterable<String> {
+// avoid java.nio.Path
+public class SearchPath implements Iterable<String> {
+	
+	static Logger mLogger = LogManager.getLogger();
+	public String toString() {
+		return "PATH[" + Util.stringJoin(mPaths, ",-") + "]";
+	}
+	
 	List<String>	mPaths = new ArrayList<String>();
 
 	// Empty path
-	public Path( ) {
+	public SearchPath( ) {
 	}
 
 	// Path populated with list of paths from a XValue which could be a sequence
-	public Path( XValue pathVar)
+	public SearchPath( XValue pathVar)
 	{
 		if( pathVar == null || pathVar.isNull())
 			return ;
@@ -32,13 +42,13 @@ public class Path implements Iterable<String> {
 		}
 	}
 
-	public Path( String[] vars )
+	public SearchPath( String[] vars )
 	{
 		for( String v : vars )
 			mPaths.add(v);
 	}
 
-	public Path( String path , String sep )
+	public SearchPath( String path , String sep )
 	{
 		this( path.split(sep));
 	}
@@ -69,14 +79,15 @@ public class Path implements Iterable<String> {
 
 	public 	File	getFirstFileInPath( Shell shell , String fname ,  boolean isFile ) throws IOException
 	{
+		mLogger.entry( fname, isFile);
 		for ( String path  : mPaths ){
 			File dir = shell.getFile(path);
 			File	target = new File( dir  , fname );
 			
 			if( target.exists() && ( isFile ? target.isFile() : target.isDirectory() ) )
-				return target;
+				return mLogger.exit(target);
 		}
-		return null ;
+		return mLogger.exit(null);
 	}
 
 	/*

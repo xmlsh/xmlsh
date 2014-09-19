@@ -1273,17 +1273,23 @@ public class Util
 	 }
 
 
-	 public static boolean hasDirectory(String name) {
-		 File f = new File(name);
-		 return f.getParent() != null ;
-	 }
-
-
 	 public static String readString(File file, SerializeOpts serializeOpts) throws IOException {
 		 InputStream is = new FileInputStream(file);
 		 String s = readString( is , serializeOpts.getInput_text_encoding());
 		 is.close();
 		 return s;
+	 }
+
+	 public static <T> String stringJoin(T[] list, String sep) {
+		 StringBuilder sb = new StringBuilder();
+
+		 for( T s : list ){
+			 if(sb.length() > 0 )
+				 sb.append(sep);
+			 sb.append(s.toString());
+		 }
+		 return sb.toString();
+	 
 	 }
 
 
@@ -1770,6 +1776,30 @@ public static Reader toReader(URL scriptURL, String inputTextEncoding) throws IO
 		return new InputStreamReader( scriptURL.openStream() , inputTextEncoding );
 	
 }
+
+public static <T>  T[] toArray(T... v) {
+    return v;
+}
+
+
+public static <T> boolean contains(T[] array, T v) {
+
+	for( T a : array )
+		if( a.equals(v) )
+			return true;
+	return false ;
+
+}
+
+	
+	public static <T> ILogValue traceArray(final T[] array ) {
+	   return new ILogValue() {
+		   public String toString() {
+			   return "[" + Util.stringJoin(array, ",") + "]" ;
+		   } 
+	   };
+	}
+	
 
 
 

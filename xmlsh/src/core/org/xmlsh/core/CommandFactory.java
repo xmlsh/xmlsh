@@ -9,9 +9,13 @@ package org.xmlsh.core;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.Marker;
+import org.apache.logging.log4j.MarkerManager;
 import org.xmlsh.builtin.commands.colon;
 import org.xmlsh.builtin.commands.declare;
 import org.xmlsh.builtin.commands.echo;
@@ -53,6 +57,7 @@ import org.xmlsh.sh.shell.IModule;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.sh.shell.ShellConstants;
 import org.xmlsh.text.commands.readconfig;
+import org.xmlsh.util.FileUtils;
 import org.xmlsh.util.StringPair;
 import org.xmlsh.util.Util;
 
@@ -154,7 +159,7 @@ public abstract class CommandFactory {
 
 		File cmdFile = null;
 
-		if (Util.hasDirectory(name)) {
+		if (FileUtils.hasDirectory(name)) {
 
 			cmdFile = shell.getExplicitFile(name, true,true);
 			if (cmdFile == null && !name.endsWith(".exe"))
@@ -162,7 +167,7 @@ public abstract class CommandFactory {
 		}
 
 		if (cmdFile == null) {
-			Path path = shell.getExternalPath();
+			SearchPath path = shell.getExternalPath();
 			cmdFile = path.getFirstFileInPath(shell, name,true);
 			if (cmdFile == null && !name.endsWith(".exe"))
 				cmdFile = path.getFirstFileInPath(shell, name + ".exe",true);
@@ -279,16 +284,66 @@ public abstract class CommandFactory {
 
 	}
 	
+	/*
+	 * 
+	 * Try each Path in turn, using each pathExts (or exactly if no extenions) 
+	 * paths and exts may be null 
+	 * If paths not null 
+	 *    If exts is not null try each extension in turn (may be "" ) in the in each path 
+	 * If paths is null 
+	 *    Try file in curdir , with each ext (may be "") 
+	 * If paths is [] do not try any path
+	 * 
+	 */
+	public static File findFirstFileInPaths(Shell shell  , String name , String[] exts , SearchPath [] paths )
+	{		
+	    mLogger.entry(shell, name, Util.traceArray(exts),  Util.traceArray(paths) );
 	
+		if( exts == null )
+			exts = Util.toArray( "" );
+		
+		File file = null ;
+		if( paths == null ){
+			for( String ext : exts ){ 
+				file = tryFile( shell , name + ext );
+				if( file != null )
+					return mLogger.exit(file);
+			}
+			return mLogger.exit(null );
+		}
+		for( SearchPath path : paths ){
+			for( String ext : exts ){
+				try {
+					file = path.getFirstFileInPath(shell, name  + ext ,true);
+				} catch (IOException e) {
+					mLogger.catching(e);
+					continue;
+				}
+				if( file != null )
+					return mLogger.exit(file);
+			}
+		}
+		return mLogger.exit(null);
+	}
+
+	protected static File tryFile(Shell shell, String name) {
+		mLogger.entry(shell, name);
+		File file = null ;
+		try {
+		   file = shell.getExplicitFile(name, true,true);
+	
+		} 
+		catch( IOException e ) {
+			mLogger.catching(e);
+		}
+		return mLogger.exit(file);
+	}
 
 	/*
-	 * public ScriptCommand getScript(Shell shell, String name , InputStream is
-	 * , SourceMode sourceMode , SourceLocation loc ) throws CoreException { if(
-	 * is == null ) return null;
+	 * Search for script in the following 
+	 * If name is a URL try opening the URL as 
+	 * If name ends with .xsh and in SOURCE or IMPORT 
 	 * 
-	 * return new ScriptCommand( name , is , sourceMode , null );
-	 * 
-	 * }
 	 */
 
 	public static ScriptSource getScriptSource(Shell shell, String name,
@@ -303,37 +358,33 @@ public abstract class CommandFactory {
 			mLogger.debug("script has URL {} ", url );
 			return mLogger.exit(getScriptSource(shell, url, name));
 		}
-		// If ends with .xsh OR we are in source mode try it
-		if (name.endsWith(".xsh") || (sourceMode == SourceMode.SOURCE || sourceMode == SourceMode.IMPORT))
-			scriptFile = shell.getExplicitFile(name, true,true);
+		String ext = FileUtils.getExt( name );
+		boolean bIsXsh = ".xsh".equals(ext);
 		
-		
-		if (scriptFile == null && Util.hasDirectory(name)) {
-			// try adding a .xsh
-			if ( !name.endsWith(".xsh"))
-				scriptFile = shell.getExplicitFile(name + ".xsh", true,true );
-			
-		} 
+        if( sourceMode == SourceMode.SOURCE || sourceMode == SourceMode.IMPORT || FileUtils.hasDirectory(name)   ) {
+        	scriptFile = findFirstFileInPaths( shell , name , getExtensions( ext , ".xsh"  ) , null);
+        }
 		
 		if (scriptFile == null) {
-
+			
+			
+            SearchPath[] paths;
+			
 			// searh in XPATH for include/source and XMODPATH for modules 
-			Path path = null ;
+			SearchPath path = null ;
 			switch (sourceMode) {
 			case IMPORT:
-				path = shell.getPath(ShellConstants.XMODPATH, true);
+				paths = new SearchPath[] { shell.getPath(ShellConstants.XMODPATH, true) , shell.getPath(ShellConstants.XPATH, true) } ;
 				break;
 			case RUN:
 			case SOURCE:
 			case VALIDATE:
 			default:
-				path = shell.getPath(ShellConstants.XPATH, true);
+				paths =new SearchPath[] { shell.getPath(ShellConstants.XPATH, true) , shell.getPath(ShellConstants.PATH, true) } ;
 				break ;
 			}
 			
-			scriptFile = path.getFirstFileInPath(shell, name,true);
-			if (scriptFile == null && !name.endsWith(".xsh"))
-				scriptFile = path.getFirstFileInPath(shell, name + ".xsh",true);
+        	scriptFile = findFirstFileInPaths( shell , name , getExtensions( ext , ".xsh"  ) , paths );
 		}
 		if (scriptFile == null)
 			return mLogger.exit(null);
@@ -342,6 +393,22 @@ public abstract class CommandFactory {
 				scriptFile.getPath());
 		return mLogger.exit(ss);
 
+	}
+
+	/*
+	 * Return a list of extensions to try
+	 * Excluding the current extension (convert to ""
+	 */
+	private static String[] getExtensions(String ext, String... exts) {
+      List<String> list = new ArrayList<>();
+      if( Util.contains( exts , ext ))
+    	   list.add("");
+      
+      for( String e : exts )
+    	  if( ! e.equals(ext) )
+             list.add(e);
+      return list.toArray( new String[0] );
+	
 	}
 
 	public static ScriptCommand getScript(Shell shell, String name,
