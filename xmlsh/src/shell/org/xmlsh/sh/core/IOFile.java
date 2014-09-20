@@ -47,7 +47,7 @@ public class IOFile {
 	}
 
 
-	public void exec(Shell shell, String port, SourceLocation loc ) throws IOException, CoreException {
+	public void exec(Shell shell, String port, SourceLocator loc ) throws IOException, CoreException {
 
 		XEnvironment env = shell.getEnv();
 		SerializeOpts sopts = shell.getSerializeOpts();
@@ -58,7 +58,7 @@ public class IOFile {
 			if( mPort != null )
 				file = mPort ;
 		} else
-			file = mFile.expandString(shell, mFileEnv,loc);
+			file = mFile.expandString(shell, mFileEnv);
 
 
 		/*

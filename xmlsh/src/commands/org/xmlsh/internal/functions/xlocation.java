@@ -17,6 +17,7 @@ import org.xmlsh.core.VariableOutputPort;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.XVariable;
 import org.xmlsh.sh.core.SourceLocation;
+import org.xmlsh.sh.core.SourceLocator;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.types.TypeFamily;
@@ -74,7 +75,7 @@ public class xlocation extends AbstractBuiltinFunction {
 
 
 
-	private XValue describe(Shell shell , SourceLocation loc) throws Exception 
+	private XValue describe(Shell shell , SourceLocator loc) throws Exception 
 	{
 
 		XVariable xv = XVariable.anonymousInstance(TypeFamily.XDM);

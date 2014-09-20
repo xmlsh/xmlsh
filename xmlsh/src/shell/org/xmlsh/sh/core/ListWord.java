@@ -67,14 +67,14 @@ public class ListWord extends Word  {
 	}
 
 	@Override
-	protected ParseResult expandToResult(Shell shell, EvalEnv env, SourceLocation loc, ParseResult result) throws IOException,
+	protected ParseResult expandToResult(Shell shell, EvalEnv env, ParseResult result) throws IOException,
 	CoreException
 	{
 
 		// Combine and wild card expand
 		for( Word w : mList ) {
 			result.delim();
-		    result = w.expandToResult(shell, env, loc, result);
+		    result = w.expandToResult(shell, env, result);
 		}
 
 		return result;

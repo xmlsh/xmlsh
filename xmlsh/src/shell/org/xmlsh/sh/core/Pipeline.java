@@ -52,7 +52,7 @@ public class Pipeline extends CommandExpr {
 	 * @see java.util.ArrayList#add(java.lang.Object)
 	 */
 	public boolean add(CommandExpr e) {
-		if (getLocation() == null)
+		if (!e.hasLocation())
 			setLocation(e);
 		return mList.add(e);
 	}
@@ -141,7 +141,7 @@ public class Pipeline extends CommandExpr {
 
 			// Protect ! commands as a condition
 			int ret = mBang ? shell.execCondition(c) : shell.exec(c,
-					this.getLocation());
+					this.getSourceLocation());
 
 			// if( ncmds > 1 )
 			// pipes[0].getOutput().close();

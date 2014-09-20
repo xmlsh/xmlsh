@@ -15,7 +15,7 @@ public interface ICommandExpr
 
   public boolean isWait();
 
-  public SourceLocation getLocation();
+  public SourceLocation getSourceLocation();
 
   public boolean hasLocation();
 

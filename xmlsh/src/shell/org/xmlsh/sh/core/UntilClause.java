@@ -35,7 +35,7 @@ public class UntilClause extends CompoundCommandExpr {
 	public int exec(Shell shell) throws Exception {
 
 		shell.getEnv().saveIO();
-		ControlLoop loop = shell.pushLoop( getLocation() );
+		ControlLoop loop = shell.pushLoop( getSourceLocation() );
 		try {
 			applyRedirect(shell);
 			while( !Shell.toBool( shell.execCondition( mUntil ) ) && shell.keepRunning() ){

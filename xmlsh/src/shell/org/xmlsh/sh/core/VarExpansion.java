@@ -64,10 +64,10 @@ public class VarExpansion extends Word
     }
 
     @Override
-    protected ParseResult expandToResult(Shell shell, EvalEnv env, SourceLocation loc, ParseResult result) throws IOException, CoreException
+    protected ParseResult expandToResult(Shell shell, EvalEnv env, ParseResult result) throws IOException, CoreException
     {
-        String ind = mIndex != null ? mIndex.expandString(shell, indEnv(env), loc) : null ;
-        String field = mField != null ?  mField.expandString(shell, env, loc) : null ;
+        String ind = mIndex != null ? mIndex.expandString(shell, indEnv(env)) : null ;
+        String field = mField != null ?  mField.expandString(shell, env) : null ;
         XVariableExpr expr = new XVariableExpr( mPrefix , mVarname , ind , field );
         return EvalUtils.evalVarToResult(shell, expr, env, env.asCharAttr() , result);
     }

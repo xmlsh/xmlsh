@@ -59,7 +59,7 @@ public class ForClause extends CompoundCommandExpr {
 
 
 		shell.getEnv().saveIO();
-		ControlLoop loop = shell.pushLoop( getLocation()  );
+		ControlLoop loop = shell.pushLoop( getSourceLocation()  );
 		try {
 			applyRedirect(shell);
 			if( mWords == null ) {	// for all args 
@@ -77,7 +77,7 @@ public class ForClause extends CompoundCommandExpr {
 			} else
 				for( Word in : mWords ) {
 
-					List<XValue> inList = in.expandToList( shell , mEnv, getLocation() );
+					List<XValue> inList = in.expandToList( shell , mEnv );
 					if( ! shell.keepRunning() )
 						break ;
 					for( XValue inword : inList ) {

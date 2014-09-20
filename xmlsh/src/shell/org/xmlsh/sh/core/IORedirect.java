@@ -88,7 +88,7 @@ public class IORedirect {
 
 	}
 
-	public void exec(Shell shell,SourceLocation loc ) throws Exception {
+	public void exec(Shell shell,SourceLocator loc ) throws Exception {
 
 		String port = null;
 		if( mPortname != null )

@@ -40,7 +40,6 @@ public class Expander
   private static Logger mLogger = LogManager.getLogger();
 
   public Shell mShell;
-  private SourceLocation mLocation;
 
   /*
    * Attribute enums
@@ -48,10 +47,9 @@ public class Expander
 
   /* this"Is a 'string\' in' a $var "string *.x "*.y" \*.z */
 
-  public Expander(Shell shell, SourceLocation loc)
+  public Expander(Shell shell)
   {
     mShell = shell;
-    mLocation = loc;
   }
 
   /*
@@ -335,7 +333,7 @@ public class Expander
     } catch (SaxonApiException e) {
       String msg = "Error expanding xml expression: " + arg;
       mLogger.warn(msg, e);
-      mShell.printErr(msg, e, mLocation);
+      mShell.printErr(msg, e);
       throw new CoreException(msg, e);
 
     } finally {

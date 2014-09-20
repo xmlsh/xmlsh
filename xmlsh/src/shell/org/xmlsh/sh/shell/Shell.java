@@ -73,6 +73,7 @@ import org.xmlsh.sh.core.CommandExpr;
 import org.xmlsh.sh.core.EvalUtils;
 import org.xmlsh.sh.core.ICommandExpr;
 import org.xmlsh.sh.core.SourceLocation;
+import org.xmlsh.sh.core.SourceLocator;
 import org.xmlsh.sh.grammar.ParseException;
 import org.xmlsh.sh.grammar.ShellParser;
 import org.xmlsh.sh.grammar.ShellParserReader;
@@ -113,7 +114,7 @@ public class Shell implements AutoCloseable, Closeable {
 		public SourceLocation loc;
 
 		public CallStackEntry(String name, ICommandExpr cmd, SourceLocation loc) {
-
+			mLogger.entry(name, cmd, loc);
 			this.name = name;
 			this.cmd = cmd;
 			this.loc = loc;
@@ -609,7 +610,7 @@ public class Shell implements AutoCloseable, Closeable {
 					if (c == null)
 						break;
 
-					setSourceLocation(c.getLocation());
+					setSourceLocation(c.getSourceLocation());
 					if (mOpts.mVerbose || mOpts.mLocation) {
 
 						if (mOpts.mLocation) {
@@ -723,12 +724,12 @@ public class Shell implements AutoCloseable, Closeable {
 
 					if (c == null)
 						break;
-					setSourceLocation(c.getLocation());
+					setSourceLocation(c.getSourceLocation());
 
 					if (mOpts.mVerbose) {
 						String s = c.toString(false);
 						if (s.length() > 0) {
-							SourceLocation loc = getLocation();
+							SourceLocator loc = getLocation();
 							printErr("- " + s);
 						}
 					}
@@ -745,7 +746,7 @@ public class Shell implements AutoCloseable, Closeable {
 					parser.ReInit(newParserReader(false), null);
 				} catch (Exception e) {
 
-					SourceLocation loc = c != null ? c.getLocation() : null;
+					SourceLocation loc = c != null ? c.getSourceLocation() : null;
 
 					if (loc != null) {
 						String sLoc = loc.format(mOpts.mLocationFormat);
@@ -758,7 +759,7 @@ public class Shell implements AutoCloseable, Closeable {
 					parser.ReInit(newParserReader(false), null);
 				} catch (Error e) {
 					printErr("Error: " + e.getMessage());
-					SourceLocation loc = c != null ? c.getLocation() : null;
+					SourceLocation loc = c != null ? c.getSourceLocation() : null;
 					mLogger.error("Exception parsing statement", e);
 					if (loc != null) {
 						String sLoc = loc.format(mOpts.mLocationFormat);
@@ -820,7 +821,7 @@ public class Shell implements AutoCloseable, Closeable {
 		String sps1 = ps1.toString();
 		if (!Util.isBlank(sps1))
 			try {
-				sps1 = EvalUtils.expandStringToString(this, sps1, mPSEnv, null);
+				sps1 = EvalUtils.expandStringToString(this, sps1, mPSEnv);
 			} catch (IOException | CoreException e) {
 				mLogger.debug("Exception getting PS var " + ps, e);
 				return def;
@@ -888,7 +889,7 @@ public class Shell implements AutoCloseable, Closeable {
 	// Default location for command
 	private SourceLocation getLocation(ICommandExpr c) {
 
-		return c.hasLocation() ? c.getLocation() : getLocation();
+		return c.hasLocation() ? c.getSourceLocation() : getLocation();
 	}
 
 	public int exec(ICommandExpr c, SourceLocation loc) throws ThrowException,
@@ -899,7 +900,7 @@ public class Shell implements AutoCloseable, Closeable {
 		try {
 			enterEval();
 			if (loc == null)
-				loc = c.getLocation();
+				loc = c.getSourceLocation();
 
 			setCurrentLocation(loc);
 
@@ -1088,15 +1089,13 @@ public class Shell implements AutoCloseable, Closeable {
 
 	}
 
-	public void printErr(String s, Exception e) {
-		printErr(s, e, null);
-	}
 
-	public void printErr(String s, Exception e, SourceLocation loc) {
+	public void printErr(String s, Exception e) {
 		try (PrintWriter out = getEnv().getStderr().asPrintWriter(
 				getSerializeOpts())) {
-			if (loc == null)
-				loc = getLocation();
+			
+			
+			SourceLocation loc = getLocation();
 			if (loc != null)
 				out.println(formatLocation(loc));
 
@@ -1482,8 +1481,8 @@ public class Shell implements AutoCloseable, Closeable {
 		return 0;
 	}
 
-	public ControlLoop pushLoop(SourceLocation sourceLocation) {
-		ControlLoop loop = new ControlLoop(sourceLocation);
+	public ControlLoop pushLoop(SourceLocator sourceLocator) {
+		ControlLoop loop = new ControlLoop(sourceLocator);
 		getControlStack().add(loop);
 		return loop;
 	}
@@ -1559,19 +1558,19 @@ public class Shell implements AutoCloseable, Closeable {
 	 * Run a function expressed as a command body
 	 */
 	public XValue runCommandFunction(String name, ICommandExpr mBody,
-			SourceLocation location, List<XValue> args) throws ThrowException,
+			List<XValue> args) throws ThrowException,
 			ExitOnErrorException {
 
 		List<XValue> saveArgs = getArgs();
 		String saveArg0 = getArg0();
 		Variables save_vars = pushLocalVars();
 
-		getCallStack().push(new CallStackEntry(name, mBody, location));
+		getCallStack().push(new CallStackEntry(name, mBody, getLocation() ));
 		setArg0(name);
 		setArgs(args);
 
 		try {
-			int ret = exec(mBody, mBody.getLocation());
+			int ret = exec(mBody, mBody.getSourceLocation());
 			return getReturnValue();
 
 		} finally {

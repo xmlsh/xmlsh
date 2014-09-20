@@ -61,14 +61,13 @@ public abstract class AbstractExpr
   {
     
     if( hasLocation() ) 
-      return getLocation() ;
+      return getSourceLocation() ;
     else
       return shell.getLocation();
   }
 
-  protected SourceLocation getLocation()
+  protected SourceLocation getSourceLocation()
   {
-    // TODO Auto-generated method stub
     return null;
   }
 

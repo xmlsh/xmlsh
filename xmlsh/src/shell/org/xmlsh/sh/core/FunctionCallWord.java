@@ -91,12 +91,12 @@ public class FunctionCallWord extends Word
 	}
 
 	@Override
-	protected ParseResult expandToResult(Shell shell, EvalEnv env, SourceLocation loc, ParseResult result)
+	protected ParseResult expandToResult(Shell shell, EvalEnv env, ParseResult result)
 			throws IOException, CoreException
 			{
        mLogger.entry();
 
-       IFunction func = CommandFactory.getFunction(shell, mFunction, loc );
+       IFunction func = CommandFactory.getFunction(shell, mFunction );
        
 		if(func == null)
 			throw new InvalidArgumentException("Unknown function: " + mFunction);
@@ -107,7 +107,7 @@ public class FunctionCallWord extends Word
 
 		if(mArgs != null)
 			for (Word arg : mArgs)
-				args.addAll(arg.expandToList(shell, argEnv, loc));
+				args.addAll(arg.expandToList(shell, argEnv));
 
 		
 
@@ -122,9 +122,9 @@ public class FunctionCallWord extends Word
 			mLogger.warn("Need to also set the shell context");
 			
 			
-		  XValue xret = func.run(shell, loc , args);
+		  XValue xret = func.run(shell, args);
 			// ?? should check ret ?
-			return EvalUtils.expandValueToResult(shell, xret, func.returnEnv(env), loc, result);
+			return EvalUtils.expandValueToResult(shell, xret, func.returnEnv(env), result);
 
 		} 
 		catch( CoreException | IOException e) {

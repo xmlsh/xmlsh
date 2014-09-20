@@ -107,14 +107,14 @@ public class SimpleCommandExpr extends CommandExpr {
 		if( mCommand == null || mCommand.isEmpty() )
 			return execNull( shell );
 
-		List<XValue>	cmdLine = mSuffix.toCmdLine(shell, mCommand , getLocation() );
+		List<XValue>	cmdLine = mSuffix.toCmdLine(shell, mCommand , getSourceLocation() );
 		// Ignore empty or blank command lines
 		if( cmdLine == null || cmdLine.isEmpty() )
 			return 0;
 
 		String cmdName = cmdLine.remove(0).toString();
 
-		ICommand cmd = CommandFactory.getCommand( shell , cmdName , getLocation() );
+		ICommand cmd = CommandFactory.getCommand( shell , cmdName , getSourceLocation() );
 		if( cmd == null ){
 			logLocation(shell);
 			shell.printErr(mCommand + ": not found");
@@ -146,9 +146,9 @@ public class SimpleCommandExpr extends CommandExpr {
 		try {
 
 			if( mPrefix != null )
-				mPrefix.exec( shell, getLocation() );
+				mPrefix.exec( shell, getSourceLocation() );
 
-			mSuffix.exec( shell, getLocation() );
+			mSuffix.exec( shell, getSourceLocation() );
 
 			// Push the current module if its different
 			IModule mod = cmd.getModule();
@@ -206,7 +206,7 @@ public class SimpleCommandExpr extends CommandExpr {
 
 
 	private void logLocation(Shell shell) {
-		shell.printLoc( mLogger , getLocation() );
+		shell.printLoc( mLogger , getSourceLocation() );
 	}
 
 
@@ -214,11 +214,11 @@ public class SimpleCommandExpr extends CommandExpr {
 	private int execNull(Shell shell) throws Exception {
 
 		if( mPrefix != null )
-			mPrefix.exec( shell, getLocation() );
+			mPrefix.exec( shell, getSourceLocation() );
 
 
 		if( mSuffix != null )
-			mSuffix.exec( shell, getLocation() );
+			mSuffix.exec( shell, getSourceLocation() );
 
 		return shell.getStatus();
 	}

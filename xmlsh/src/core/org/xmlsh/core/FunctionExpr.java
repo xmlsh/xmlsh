@@ -5,17 +5,17 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.xmlsh.sh.core.AbstractExpr;
 
-public abstract class AbstractFunction extends AbstractExpr implements IFunction
+public abstract class FunctionExpr extends AbstractExpr implements IFunction
 {
 
 
 
   private static Logger mLogger = LogManager.getLogger();
-  protected AbstractFunction(String name)
+  protected FunctionExpr(String name)
   {
     super(name);
   }
-  protected AbstractFunction(){
+  protected FunctionExpr(){
     super("<anon>");
   }
 

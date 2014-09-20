@@ -49,12 +49,12 @@ public class WordList extends ArrayList<Word>
     if(size() == 0)
       return XValue.newXValue(XValueSequence.emptySequence());
     if(size() == 1)
-      return get(0).expand(shell, env, loc);
+      return get(0).expand(shell, env);
 
     List<XValue> list = new ArrayList<XValue>(size());
 
     for (Word w : this) {
-      XValue v = w.expand(shell, env, loc);
+      XValue v = w.expand(shell, env);
       if((v == null || v.isNull()) && env.omitNulls())
         continue;
 

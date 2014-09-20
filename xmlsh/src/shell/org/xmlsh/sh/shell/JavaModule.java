@@ -19,7 +19,6 @@ import org.xmlsh.core.ICommand;
 import org.xmlsh.core.IFunction;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
-import org.xmlsh.sh.core.SourceLocation;
 import org.xmlsh.types.TypeFamily;
 import org.xmlsh.util.JavaUtils;
 import org.xmlsh.util.Util;
@@ -47,7 +46,7 @@ public class JavaModule extends Module
     }
 
     @Override
-    public XValue run(Shell shell, SourceLocation loc, List<XValue> args) throws Exception
+    public XValue run(Shell shell, List<XValue> args) throws Exception
     {
       XValue retVal = null;
 

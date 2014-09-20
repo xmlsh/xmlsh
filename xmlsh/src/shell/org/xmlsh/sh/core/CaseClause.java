@@ -44,7 +44,7 @@ public class CaseClause  extends CompoundCommandExpr {
 		try {
 			applyRedirect(shell);
 
-			String word = mWord.expandString(shell,mCaseWordEnv,getLocation());
+			String word = mWord.expandString(shell,mCaseWordEnv);
 
 			for( CaseItem item : mList ){
 

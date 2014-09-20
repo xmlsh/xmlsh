@@ -24,7 +24,7 @@ public class DelimWord extends Word
     }
 
     @Override
-    protected ParseResult expandToResult(Shell shell, EvalEnv env, SourceLocation loc, ParseResult result)
+    protected ParseResult expandToResult(Shell shell, EvalEnv env, ParseResult result)
             throws IOException, CoreException {
             
         result.delim();

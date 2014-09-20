@@ -62,9 +62,9 @@ public class StringWord extends Word
 	}
 
 	@Override
-	protected ParseResult expandToResult(Shell shell, EvalEnv env, SourceLocation loc, ParseResult result) throws IOException, CoreException
+	protected ParseResult expandToResult(Shell shell, EvalEnv env, ParseResult result) throws IOException, CoreException
 	{
-		return EvalUtils.expandStringToResult(shell, mString , env, loc, result);
+		return EvalUtils.expandStringToResult(shell, mString , env, result);
 
 
 	}

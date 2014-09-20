@@ -51,9 +51,9 @@ public class CommandSuffixExpr {
 	{
 		ArrayList<XValue>	args = new ArrayList<XValue>();
 
-		args.addAll( command.expandToList(shell,mCmdEnv,loc));
+		args.addAll( command.expandToList(shell,mCmdEnv));
 		for( Word arg : mArgs )
-			args.addAll(arg.expandToList(shell, mArgEnv,loc));
+			args.addAll(arg.expandToList(shell, mArgEnv));
 
 		return args;
 	}

@@ -112,7 +112,7 @@ public class Assign {
 		else
 		if( mRValue != null )
 			// Single variables dont expand wildcards
-			value = mRValue.expand(shell, mSingleVarEnv, loc);
+			value = mRValue.expand(shell, mSingleVarEnv);
 		else
 	    if( mRValList != null )
 				// Sequences expand wildcards
@@ -124,7 +124,7 @@ public class Assign {
 		else {
 		    
 		    if( mInd != null ) {
-		        String ind = mInd.expandString(shell, mListVarEnv, loc);
+		        String ind = mInd.expandString(shell, mListVarEnv);
 	            shell.getEnv().setIndexedVar( getVariable(), value , ind );
 		    }
 		    else

@@ -40,11 +40,11 @@ public class PropertyWord extends Word
 	}
 
 	@Override
-	protected ParseResult expandToResult(Shell shell, EvalEnv env, SourceLocation loc, ParseResult result) throws IOException, CoreException
+	protected ParseResult expandToResult(Shell shell, EvalEnv env, ParseResult result) throws IOException, CoreException
 	        
 	{
-	  String name = mName.expandString(shell, mName.evalEnv(nameEnv(env)), loc);
-		XValue xv = mValue.expand(shell , mValue.evalEnv(valueEnv(env)) , loc );
+	  String name = mName.expandString(shell, mName.evalEnv(nameEnv(env)));
+		XValue xv = mValue.expand(shell , mValue.evalEnv(valueEnv(env)) );
 		result.add( XValue.newXValue(new XValueProperty( name ,xv )) );
 		return result ;
 		

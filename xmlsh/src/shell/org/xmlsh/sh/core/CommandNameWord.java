@@ -165,7 +165,7 @@ static Logger mLogger = LogManager.getLogger();
 	}
 
 	@Override
-	protected ParseResult expandToResult(Shell shell, EvalEnv env, SourceLocation loc, ParseResult result) throws CoreException, IOException 
+	protected ParseResult expandToResult(Shell shell, EvalEnv env, ParseResult result) throws CoreException, IOException 
 	{
 
 		assert( result != null );
@@ -179,7 +179,7 @@ static Logger mLogger = LogManager.getLogger();
 			String 	svalue = expandSubproc( shell, mCommand);
 			XValue value = EvalUtils.splitStringToValue(shell, svalue, evalEnv( env ));
 			result =  
-					EvalUtils.expandValueToResult(shell, value , env.withFlagOff(EvalFlag.EXPAND_VAR), loc, result) ;
+					EvalUtils.expandValueToResult(shell, value , env.withFlagOff(EvalFlag.EXPAND_VAR), result) ;
 
 
 		} else 

@@ -38,7 +38,6 @@ public class xstacktrace extends AbstractBuiltinFunction {
 
 		Shell sh = shell ;
 		while( sh != null ){
-
 			ret = ret.append( xloc.run(sh, opts , -1 ));
 			if( funcCalls && sh.hasCallStack() ) {
 				for( int depth = 0 ; depth < sh.getCallStack().size() ;depth++  ) {

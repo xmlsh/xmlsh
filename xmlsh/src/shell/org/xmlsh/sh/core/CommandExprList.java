@@ -34,7 +34,7 @@ public class CommandExprList extends CommandExpr
 		for( CommandExpr c : mList ) {
 			if( ! shell.keepRunning() )
 				return ret ;
-			ret = shell.exec(c, getLocation() );
+			ret = shell.exec(c);
 
 		}
 		return ret ;

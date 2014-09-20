@@ -38,7 +38,7 @@ public class CaseItem {
 	public boolean matches(Shell shell , String word) throws IOException, CoreException {
 		for( String pattern : mPattern ){
 
-			String p = EvalUtils.expandStringToString(shell, pattern , mEnv, mLocation );
+			String p = EvalUtils.expandStringToString(shell, pattern , mEnv );
 
 
 			if( Util.wildMatches( p, word , true ))
@@ -57,7 +57,7 @@ public class CaseItem {
 	/**
 	 * @return the location
 	 */
-	public SourceLocation getLocation() {
+	public SourceLocator getLocation() {
 		return mLocation;
 	}
 

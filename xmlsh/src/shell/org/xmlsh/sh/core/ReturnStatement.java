@@ -45,7 +45,7 @@ public class ReturnStatement extends CommandExpr {
 		if( mArg == null ) 
 			ret = null ; // will convert to empty sequence and set last exit value
 		else	{
-			List<XValue> vret = mArg.expandToList(shell, mEnv,  getLocation() );
+			List<XValue> vret = mArg.expandToList(shell, mEnv );
 			if( vret == null || vret.isEmpty() )
 				ret = XValue.empytSequence();
 			else

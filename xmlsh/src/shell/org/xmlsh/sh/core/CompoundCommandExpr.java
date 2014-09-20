@@ -30,7 +30,7 @@ class CompoundCommandExpr extends CommandExpr {
 	protected	void	applyRedirect( Shell shell) throws Exception
 	{
 		if( mRedirect != null )
-			mRedirect.exec(shell, getLocation());
+			mRedirect.exec(shell, getSourceLocation());
 
 	}
 

@@ -49,27 +49,27 @@ public abstract class Word {
 	
 
 	// Expand a word into an existing result class 
-	protected abstract ParseResult expandToResult(Shell shell, EvalEnv env, SourceLocation loc, ParseResult result ) throws IOException, CoreException;
+	protected abstract ParseResult expandToResult(Shell shell, EvalEnv env, ParseResult result ) throws IOException, CoreException;
 
 
-	public final XValue expand(Shell shell , EvalEnv env,SourceLocation loc ) throws IOException, CoreException {
+	public final XValue expand(Shell shell , EvalEnv env ) throws IOException, CoreException {
 
 		ParseResult result = new ParseResult(shell);
 		env=evalEnv(env);
-		expandToResult( shell , env , loc , result );
-		return EvalUtils.expandResultToValue(shell, result, env, loc) ;
+		expandToResult( shell , env , result );
+		return EvalUtils.expandResultToValue(shell, result, env) ;
 
 	}
 
 
-	public String expandString(Shell shell, EvalEnv env, SourceLocation loc ) throws IOException, CoreException {
+	public String expandString(Shell shell, EvalEnv env ) throws IOException, CoreException {
 	   env=evalEnv(env);
-		return expand(shell,env,loc).toString();
+		return expand(shell,env).toString();
 	}
 
-	public List<XValue> expandToList(Shell shell, EvalEnv env , SourceLocation loc ) throws IOException, CoreException {
+	public List<XValue> expandToList(Shell shell, EvalEnv env ) throws IOException, CoreException {
 		env = evalEnv(env);
-		XValue v = expand( shell,  env , loc);
+		XValue v = expand( shell,  env);
 		List<XValue> list = new ArrayList<XValue>(1);
 		if( v != null && ! v.isNull() )
 			list.add( v );

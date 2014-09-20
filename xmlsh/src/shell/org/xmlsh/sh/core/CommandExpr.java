@@ -32,12 +32,13 @@ public abstract class CommandExpr extends AbstractExpr implements ICommandExpr  
 	@Override
   public boolean isWait(){ return mWait ; }
 	public	void	setLocation( SourceLocation loc ) { mLocation = loc ; }
-	public void    setLocation(ICommandExpr c) { if( c != null && c.getLocation() != null ) mLocation =  c.getLocation() ;	}
+	public void    setLocation(ICommandExpr c) { if( c != null && c.hasLocation() ) mLocation =  c.getSourceLocation() ;	}
 	/* (non-Javadoc)
    * @see org.xmlsh.sh.core.ICommandExpr#getLocation()
    */
+	
 	@Override
-  public	SourceLocation	getLocation() { return mLocation ; }
+  public	SourceLocation	getSourceLocation() { return mLocation ; }
 	/* (non-Javadoc)
    * @see org.xmlsh.sh.core.ICommandExpr#hasLocation()
    */

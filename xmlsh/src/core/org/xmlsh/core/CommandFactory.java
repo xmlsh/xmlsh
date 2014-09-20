@@ -126,7 +126,7 @@ public abstract class CommandFactory {
 		if (cmd == null)
 			cmd = getBuiltin(shell, name, loc);
 		if (cmd == null)
-			cmd = getModuleCommand(shell, name, loc);
+			cmd = getModuleCommand(shell, name);
 		if (cmd == null)
 			cmd = getScript(shell, name, SourceMode.RUN, loc);
 		if (cmd == null)
@@ -182,8 +182,7 @@ public abstract class CommandFactory {
 
 	}
 
-	private static ICommand getModuleCommand(Shell shell, String name,
-			SourceLocation loc) throws IOException {
+	private static ICommand getModuleCommand(Shell shell, String name) throws IOException {
 
 		mLogger.entry(shell, name);
 
@@ -209,7 +208,6 @@ public abstract class CommandFactory {
 				ICommand cls = m.getCommand(pair.getRight());
 				if (cls != null) {
 					mLogger.debug("Command Class found: " , cls );
-					cls.setLocation(loc);
 					return cls;
 				}
 	
@@ -225,7 +223,6 @@ public abstract class CommandFactory {
 			    assert( m != null );
 				ICommand cls = m.getCommand(name);
 				if (cls != null) {
-					cls.setLocation(loc);
 					return mLogger.exit(cls);
 				}
 			}
@@ -235,8 +232,7 @@ public abstract class CommandFactory {
 	}
 	
 
-	private static IFunction getModuleFunction(Shell shell, String name,
-			SourceLocation loc) throws IOException {
+	private static IFunction getModuleFunction(Shell shell, String name) throws IOException {
 
 		mLogger.entry(shell, name);
 
@@ -575,7 +571,7 @@ public abstract class CommandFactory {
 
 	}
 
-	public static IFunction getFunction(Shell shell, String name, SourceLocation loc) throws IOException {
+	public static IFunction getFunction(Shell shell, String name) throws IOException {
 		
 		 
 		mLogger.entry(shell, name);
@@ -591,7 +587,7 @@ public abstract class CommandFactory {
 		}
 	  // IModule scope shell functions
 		if( func == null ){
-			func = getModuleFunction(shell,name,loc);
+			func = getModuleFunction(shell,name);
 		}
 		
 		

@@ -13,7 +13,7 @@ import org.xmlsh.sh.grammar.Token;
 import org.xmlsh.util.FileUtils;
 import org.xmlsh.util.Util;
 
-public class SourceLocation implements Cloneable {
+public class SourceLocation implements Cloneable, SourceLocator {
 	private static final String kLOCATION_FORMAT = "[%s%s line: %d]";
   private static final String _unknown = "[-]";
 	private    String  mName;  // "" , script , source , function
@@ -60,43 +60,56 @@ public class SourceLocation implements Cloneable {
 		setName(name);
 
 	}
-	/**
-	 * @return the source
+	/* (non-Javadoc)
+	 * @see org.xmlsh.sh.core.SourceLocator#getName()
 	 */
 
+	@Override
 	public String getName() {
 		return Util.notNull(mName);
 	}
+	/* (non-Javadoc)
+	 * @see org.xmlsh.sh.core.SourceLocator#getSource()
+	 */
+	@Override
 	public String getSource() {
 		return getSource(false);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.xmlsh.sh.core.SourceLocator#getSource(boolean)
+	 */
+	@Override
 	public String getSource(boolean relpath) {
 		String src =  Util.notNull(mSource);
 		return relpath ? FileUtils.getPathLikeName( src ) : src ;
 	}
 
-	/**
-	 * @return the startline
+	/* (non-Javadoc)
+	 * @see org.xmlsh.sh.core.SourceLocator#getStartline()
 	 */
+	@Override
 	public int getStartline() {
 		return mStartLine;
 	}
-	/**
-	 * @return the startColumn
+	/* (non-Javadoc)
+	 * @see org.xmlsh.sh.core.SourceLocator#getStartColumn()
 	 */
+	@Override
 	public int getStartColumn() {
 		return mStartColumn;
 	}
-	/**
-	 * @return the endLine
+	/* (non-Javadoc)
+	 * @see org.xmlsh.sh.core.SourceLocator#getEndLine()
 	 */
+	@Override
 	public int getEndLine() {
 		return mEndLine;
 	}
-	/**
-	 * @return the endColumn
+	/* (non-Javadoc)
+	 * @see org.xmlsh.sh.core.SourceLocator#getEndColumn()
 	 */
+	@Override
 	public int getEndColumn() {
 		return mEndColumn;
 	}
@@ -117,9 +130,10 @@ public class SourceLocation implements Cloneable {
 		return format(kDEFAULT_LOCATION_FORMAT);
 	}
 
-	/**
-	 * @return the startLine
+	/* (non-Javadoc)
+	 * @see org.xmlsh.sh.core.SourceLocator#getStartLine()
 	 */
+	@Override
 	public int getStartLine() {
 		return mStartLine;
 	}

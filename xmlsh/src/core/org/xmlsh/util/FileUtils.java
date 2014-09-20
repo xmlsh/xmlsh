@@ -8,6 +8,7 @@ package org.xmlsh.util;
 
 import java.io.File;
 import java.io.InputStream;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -164,15 +165,23 @@ public class FileUtils
 
 		
 		mLogger.entry(name);
+		try {
 		Path path  = Paths.get(name);
 		assert( path != null && path.getNameCount() > 0);
 		String base = path.getName(path.getNameCount()-1).toString();
 		assert( base != null );
 		
-		int startpos = 0 ;
 		int dotpos = base.lastIndexOf('.');
 		if( dotpos > 0 && dotpos < base.length() ) // ".xyz" not an extension
 			return mLogger.exit(base.substring(dotpos ));
+		
+		} catch (InvalidPathException e){
+			mLogger.catching(e);
+			// Try the hard way.
+			int dotpos = name.lastIndexOf('.');
+			if( dotpos > 0 && dotpos < name.length() ) // ".xyz" not an extension
+				return mLogger.exit(name.substring(dotpos ));
+		}
 		return mLogger.exit("");
 		
 	}

@@ -63,7 +63,7 @@ public class EvalUtils
    * Evaluate a variable expression and extract its value
    */
 
-  private static XVariableExpr parseVarExpr(Shell shell, EvalEnv env, String varname, SourceLocation loc)
+  private static XVariableExpr parseVarExpr(Shell shell, EvalEnv env, String varname)
       throws IOException, CoreException
       {
 
@@ -94,7 +94,7 @@ public class EvalUtils
       ind = varname.substring(as + 1, varname.indexOf(']')).trim();
       // Special case - expand index as variables ... really shouldnt do this
       if(ind.startsWith("$"))
-        ind = expandStringToString(shell, ind, env, loc);
+        ind = expandStringToString(shell, ind, env);
       expr.setIndex(ind);
       varname = varname.substring(0, as);
     }
@@ -201,46 +201,44 @@ public class EvalUtils
     }
   }
 
-  public static ParseResult expandStringToResult(Shell shell, String value, EvalEnv env, SourceLocation loc,
-      ParseResult result) throws IOException, CoreException
+  public static ParseResult expandStringToResult(Shell shell, String value, EvalEnv env, ParseResult result) throws IOException, CoreException
       {
-    Expander e = new Expander(shell, loc);
+    Expander e = new Expander(shell);
     return e.expandStringToResult(value, env, result == null ? new ParseResult(shell) : result);
 
       }
 
-  public static ParseResult expandValueToResult(Shell shell, XValue xv, EvalEnv env, SourceLocation loc,
-      ParseResult result) throws IOException, CoreException
+  public static ParseResult expandValueToResult(Shell shell, XValue xv, EvalEnv env, ParseResult result) throws IOException, CoreException
       {
-    Expander e = new Expander(shell, loc);
+    Expander e = new Expander(shell);
     return e.expandValueToResult(xv, env, result == null ? new ParseResult(shell) : result);
       }
 
-  public static List<XValue> expandResultToList(Shell shell, ParseResult result, EvalEnv env, SourceLocation loc)
+  public static List<XValue> expandResultToList(Shell shell, ParseResult result, EvalEnv env)
       throws IOException, CoreException
       {
-    Expander e = new Expander(shell, loc);
+    Expander e = new Expander(shell);
     return e.expandResultToList(env, result);
       }
 
-  public static List<XValue> expandValueToList(Shell shell, XValue xv, EvalEnv env, SourceLocation loc)
+  public static List<XValue> expandValueToList(Shell shell, XValue xv, EvalEnv env)
       throws IOException, CoreException
       {
-    Expander e = new Expander(shell, loc);
+    Expander e = new Expander(shell);
     return e.expandResultToList(env, e.expandValueToResult(xv, env, new ParseResult(shell)));
       }
 
-  public static List<XValue> expandStringToList(Shell shell, String s, EvalEnv env, SourceLocation loc)
+  public static List<XValue> expandStringToList(Shell shell, String s, EvalEnv env)
       throws IOException, CoreException
       {
-    Expander e = new Expander(shell, loc);
+    Expander e = new Expander(shell);
     return e.expandStringToList(s, env);
       }
 
-  public static String expandStringToString(Shell shell, String value, EvalEnv env, SourceLocation loc)
+  public static String expandStringToString(Shell shell, String value, EvalEnv env)
       throws IOException, CoreException
       {
-    List<XValue> ret = expandStringToList(shell, value, env, loc);
+    List<XValue> ret = expandStringToList(shell, value, env);
     if(ret.size() == 0)
       return "";
     else if(ret.size() == 1)
@@ -251,10 +249,10 @@ public class EvalUtils
 
   // Expand a word and return as a single XValue
   // Preserves sequences and expands
-  public static XValue expandStringToValue(Shell shell, String value, EvalEnv env, SourceLocation loc)
+  public static XValue expandStringToValue(Shell shell, String value, EvalEnv env)
       throws IOException, CoreException
       {
-    List<XValue> ret = expandStringToList(shell, value, env, loc);
+    List<XValue> ret = expandStringToList(shell, value, env);
     return expandListToValue(env, ret);
 
       }
@@ -270,20 +268,20 @@ public class EvalUtils
     return XValue.newXValue(ret);
   }
 
-  public static ParseResult expandListToResult(Shell shell, List<XValue> list, EvalEnv env, SourceLocation loc)
+  public static ParseResult expandListToResult(Shell shell, List<XValue> list, EvalEnv env)
       throws IOException, CoreException
       {
-    Expander e = new Expander(shell, loc);
+    Expander e = new Expander(shell);
     ParseResult result = new ParseResult(shell);
     for (XValue xv : list)
       result = e.expandValueToResult(xv, env, result);
     return result;
       }
 
-  public static XValue expandResultToValue(Shell shell, ParseResult result, EvalEnv env, SourceLocation loc)
+  public static XValue expandResultToValue(Shell shell, ParseResult result, EvalEnv env)
       throws IOException, CoreException
       {
-    List<XValue> ret = expandResultToList(shell, result, env, loc);
+    List<XValue> ret = expandResultToList(shell, result, env);
     return expandListToValue(env, ret);
 
       }
@@ -322,10 +320,9 @@ public class EvalUtils
     else return XValue.newXValue(word);
   }
 
-  public static ParseResult splitStringToResult(Shell shell, String word, EvalEnv env, SourceLocation loc,
-      ParseResult result) throws IOException, CoreException
+  public static ParseResult splitStringToResult(Shell shell, String word, EvalEnv env, ParseResult result) throws IOException, CoreException
       {
-    Expander e = new Expander(shell, loc);
+    Expander e = new Expander(shell);
     // if expand word then need to do IFS splitting
     if(env.expandWords() && !env.preserveValue()) {
       for (String s : shell.getIFS().split(word))
@@ -480,7 +477,7 @@ public class EvalUtils
       return evalVarToResult(shell, expr, env.withFlagsOff(EvalFlag.SPLIT_WORDS , EvalFlag.EXPAND_VAR), attr, result);
     }
 
-    XVariableExpr expr = parseVarExpr(shell, env, var, null);
+    XVariableExpr expr = parseVarExpr(shell, env, var);
     return evalVarToResult(shell, expr, env, attr, result);
 
       }

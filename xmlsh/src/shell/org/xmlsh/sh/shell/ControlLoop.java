@@ -6,7 +6,7 @@
 
 package org.xmlsh.sh.shell;
 
-import org.xmlsh.sh.core.SourceLocation;
+import org.xmlsh.sh.core.SourceLocator;
 
 /**
  * A Control loop is created at each nesting level of for,while,until
@@ -18,11 +18,11 @@ public class ControlLoop
 {
 	public	boolean		mBreak;		// loop should break
 	public	boolean		mContinue;	// loop should continue
-	public SourceLocation            mLocation;
+	public SourceLocator            mLocator;
 
-	public ControlLoop(SourceLocation loc)
+	public ControlLoop(SourceLocator loc)
 	{
-		mLocation = loc;
+		mLocator = loc;
 		mBreak = mContinue = false ;
 
 	}

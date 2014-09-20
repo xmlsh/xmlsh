@@ -34,7 +34,7 @@
 		<logger name="org.xmlsh" level="INFO">
 			<AppenderRef ref="A1"  />
 		</logger>
-		<logger name="org.xmlsh.core" level="TRACE" additivity="false">
+		<logger name="org.xmlsh.core" level="INFO" additivity="false">
 			<AppenderRef ref="A1"  />
 		</logger>
 		

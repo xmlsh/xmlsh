@@ -27,7 +27,7 @@ import org.xmlsh.core.StreamInputPort;
 import org.xmlsh.core.ThrowException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.core.ICommandExpr;
-import org.xmlsh.sh.core.SourceLocation;
+import org.xmlsh.sh.core.SourceLocator;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.Util;
@@ -190,7 +190,7 @@ public class XShellThread extends Thread {
 				} catch (Exception e) {
 
 					mLogger .warn("Exception running shell commands",e);
-					SourceLocation loc = c != null ? c.getLocation() : null;
+					SourceLocator loc = c != null ? c.getSourceLocation() : null;
 
 					if (loc != null) {
 						String sLoc = loc.toString();
@@ -204,7 +204,7 @@ public class XShellThread extends Thread {
 					mLogger.info("Error running shell commands",e);
 
 					print("Error: " + e.getMessage());
-					SourceLocation loc = c != null ? c.getLocation() : null;
+					SourceLocator loc = c != null ? c.getSourceLocation() : null;
 
 					if (loc != null) {
 						String sLoc = loc.toString();

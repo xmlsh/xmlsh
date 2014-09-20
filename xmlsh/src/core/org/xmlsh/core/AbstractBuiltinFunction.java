@@ -7,12 +7,11 @@
 package org.xmlsh.core;
 import java.util.List;
 
-import org.xmlsh.sh.core.SourceLocation;
 import org.xmlsh.sh.shell.Module;
 import org.xmlsh.sh.shell.RootModule;
 import org.xmlsh.sh.shell.Shell;
 
-public abstract class AbstractBuiltinFunction extends AbstractFunction  {
+public abstract class AbstractBuiltinFunction extends FunctionExpr  {
 	 
 	 @Override
     public Module getModule() 
@@ -21,11 +20,6 @@ public abstract class AbstractBuiltinFunction extends AbstractFunction  {
 	}
 	 
 	 
-@Override
-  public XValue run(Shell shell, SourceLocation loc, List<XValue> args) throws Exception
-  {
-    return run(shell,args);
-  }
   public abstract XValue  run( Shell shell , List<XValue> args ) throws Exception;
   
   protected AbstractBuiltinFunction( String name )

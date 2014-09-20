@@ -24,10 +24,10 @@ final class ScriptFunction implements IFunction {
 	}
 
 	@Override
-	public XValue run(Shell shell, SourceLocation loc, List<XValue> args)
+	public XValue run(Shell shell, List<XValue> args)
 			throws Exception {
 
-		return shell.runCommandFunction(mName, mBody, loc, args);
+		return shell.runCommandFunction(mName, mBody, args);
 
 	}
 

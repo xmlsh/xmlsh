@@ -83,7 +83,7 @@ public class ShellParser
   {
 
     if( ! command.hasLocation() )
-      command.setLocation( c2.getLocation() );
+      command.setLocation( c2.getSourceLocation() );
   }
 
   public SourceLocation setParentLocation( SourceLocation loc )
