@@ -21,7 +21,6 @@ import net.sf.saxon.s9api.SaxonApiException;
 import org.xml.sax.SAXException;
 import org.xmlsh.core.BuiltinCommand;
 import org.xmlsh.core.CoreException;
-import org.xmlsh.core.IFunctionDecl;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.XEnvironment;
@@ -32,6 +31,7 @@ import org.xmlsh.core.XVariable.XVarFlag;
 import static org.xmlsh.core.XVariable.XVarFlag.*;
 
 import org.xmlsh.sh.shell.FunctionDefinitions;
+import org.xmlsh.sh.shell.IFunctionDecl;
 import org.xmlsh.sh.shell.IModule;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.util.NameValueMap;

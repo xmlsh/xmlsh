@@ -12,7 +12,6 @@ import java.io.PrintWriter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.xmlsh.core.IFunctionExpr;
-import org.xmlsh.core.IFunctionDecl;
 import org.xmlsh.sh.shell.IModule;
 import org.xmlsh.sh.shell.Shell;
 
@@ -59,7 +58,7 @@ public class FunctionDeclaration extends CommandExpr
     mLogger.entry( this , shell);
   	final IModule module = shell.getModule();  // maybe return  handle
   	
-    shell.declareFunction(new IFunctionDecl()
+    shell.declareFunction(new org.xmlsh.sh.shell.IFunctionDecl()
       {
 		@Override
 		public String toString() {
@@ -83,7 +82,7 @@ public class FunctionDeclaration extends CommandExpr
         @Override
         public IFunctionExpr getFunction()
         {
-          return new ScriptFunction(mName,mBody,module);
+          return new ScriptFunctionExpr(mName,mBody,module);
         }
 
 		@Override
@@ -92,11 +91,6 @@ public class FunctionDeclaration extends CommandExpr
 		}
 
 
-		@Override
-		public boolean release() throws IOException {
-			mLogger.entry();
-			return true ;
-		}
       });
     return 0;
   }

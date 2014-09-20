@@ -4,18 +4,18 @@
  *
  */
 
-package org.xmlsh.core;
+package org.xmlsh.sh.shell;
 
+import org.xmlsh.core.IFunctionExpr;
+import org.xmlsh.core.IReleasable;
 import org.xmlsh.sh.core.ICommandExpr;
 import org.xmlsh.sh.core.IExpression;
-import org.xmlsh.sh.shell.IModule;
-import org.xmlsh.sh.shell.Module;
 
 /* 
  * A parsed "script" body decalred as a function 
  */
 
-public interface IFunctionDecl extends IReleasable {
+public interface IFunctionDecl  {
 	String	getName();
 	ICommandExpr	getBody();
 	IFunctionExpr  getFunction();

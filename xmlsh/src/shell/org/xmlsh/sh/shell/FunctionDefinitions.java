@@ -6,7 +6,6 @@
 
 package org.xmlsh.sh.shell;
 
-import org.xmlsh.core.IFunctionDecl;
 import org.xmlsh.util.NameValueMap;
 
 

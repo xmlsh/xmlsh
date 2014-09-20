@@ -12,12 +12,12 @@ import org.xmlsh.sh.shell.Shell;
 /*
  * 
  */
-final class ScriptFunction extends AbstractExpr implements IFunctionExpr {
+final class ScriptFunctionExpr extends AbstractExpr implements IFunctionExpr {
 	private String mName;
 	private ICommandExpr mBody;
 	private IModule mModule; // containing module
 
-	public ScriptFunction(String name, ICommandExpr body, IModule module) {
+	public ScriptFunctionExpr(String name, ICommandExpr body, IModule module) {
 		mName = name;
 		mBody = body;
 		mModule = module;
@@ -33,7 +33,6 @@ final class ScriptFunction extends AbstractExpr implements IFunctionExpr {
 
 	@Override
 	public String getName() {
-		// TODO Auto-generated method stub
 		return mName;
 	}
 

@@ -52,6 +52,7 @@ import org.xmlsh.core.ScriptCommand.SourceMode;
 import org.xmlsh.java.commands.jset;
 import org.xmlsh.json.commands.jsonread;
 import org.xmlsh.sh.core.SourceLocation;
+import org.xmlsh.sh.shell.IFunctionDecl;
 import org.xmlsh.sh.shell.IModule;
 import org.xmlsh.sh.shell.IModule;
 import org.xmlsh.sh.shell.Shell;

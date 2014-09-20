@@ -7,7 +7,6 @@ import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.xmlsh.core.IFunctionDecl;
 import org.xmlsh.core.Namespaces;
 
 // The 'Static Context' (similar to XQuery/XSLT)

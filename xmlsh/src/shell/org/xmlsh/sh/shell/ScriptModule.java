@@ -9,7 +9,6 @@ import org.xmlsh.core.CoreException;
 import org.xmlsh.core.FunctionCommand;
 import org.xmlsh.core.ICommand;
 import org.xmlsh.core.IFunctionExpr;
-import org.xmlsh.core.IFunctionDecl;
 import org.xmlsh.core.ScriptCommand;
 import org.xmlsh.core.ScriptCommand.SourceMode;
 import org.xmlsh.core.ScriptSource;

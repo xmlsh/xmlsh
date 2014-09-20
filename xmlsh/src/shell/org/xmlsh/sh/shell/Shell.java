@@ -52,7 +52,6 @@ import org.xmlsh.core.ExitOnErrorException;
 import org.xmlsh.core.FileInputPort;
 import org.xmlsh.core.FileOutputPort;
 import org.xmlsh.core.ICommand;
-import org.xmlsh.core.IFunctionDecl;
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
