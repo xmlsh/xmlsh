@@ -51,7 +51,6 @@ public class xquery extends XCommand {
 		compiler.setModuleURIResolver(new ShellModuleURIResolver(getEnv().getShell()));
 		XdmItem	context = null;
 
-
 		SerializeOpts serializeOpts = getSerializeOpts(opts);
 		InputPort in = null ; // Save to close 
 
@@ -182,8 +181,6 @@ public class xquery extends XCommand {
 				//QName vqname = Util.fromClarkName(name);
 				QName vqname = Util.resolveQName( name , ns );
 				eval.setExternalVariable( vqname ,  value.toXdmValue() );	
-
-
 			}
 
 
@@ -192,7 +189,6 @@ public class xquery extends XCommand {
 		if( bBool ){
 			XValue value = XValue.newXValue(eval.evaluate());
 			return value.toBoolean() ? 0 : 1 ;
-
 
 		} 
 

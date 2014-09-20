@@ -18,6 +18,7 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE,ElementType.METHOD})
+@XAnnotation
 public @interface Method {
 	String value() default "";
 	String name() default "" ;

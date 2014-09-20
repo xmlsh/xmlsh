@@ -10,6 +10,10 @@ import org.xmlsh.sh.core.ICommandExpr;
 import org.xmlsh.sh.shell.IModule;
 import org.xmlsh.sh.shell.Module;
 
+/* 
+ * A parsed "script" body decalred as a function 
+ */
+
 public interface IFunctionDecl extends IReleasable {
 	String	getName();
 	ICommandExpr	getBody();

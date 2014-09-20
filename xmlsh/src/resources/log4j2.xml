@@ -2,8 +2,13 @@
 <Configuration status="DEBUG" dest="/tmp/log4j.txt">
 	<Properties>
 
-		<!-- Logfile location env XLOGFILE env HOME/xmlsh.log sys user.home/xmlsh.log 
-			sys user.dir/xmlsh.log ./xmlsh.log -->
+		<!-- Logfile location 
+		    env XLOGFILE 
+		    env HOME/xmlsh.log 
+		    sys user.home/xmlsh.log 
+			sys user.dir/xmlsh.log 
+			./xmlsh.log 
+			-->
 		<Property name="user.dir">.</Property>
 		<Property name="user.home">${sys:user.dir}</Property>
 		<Property name="HOME">${sys:user.home}</Property>
@@ -15,10 +20,7 @@
 
 	<Appenders>
 		<File name="A1" fileName="${logfile}" append="false" >
-			<PatternLayout pattern="%d %-5p [%t] %c{5} %M - %m (%X{tshell) %X{module}) | %F %L%n%n" />
-		</File>
-		<File name="A2" fileName="${logfile}" append="false">
-			<PatternLayout pattern="%d %-5p [%t] %c{5} %M - %m (%X)%n%F %L%n" />
+			<PatternLayout pattern="%d %-5p [%t] %c{5} %M - %m (%X{tshell) %X{module}) | %F %L%n" />
 		</File>
 		<Console name="CONSOLE" target="SYSTEM_ERR">
 			<PatternLayout pattern="%m MDC%X%n" />

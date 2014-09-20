@@ -1,22 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <project default="javadoc">
     <target name="javadoc">
-        <javadoc 
-        	access="package" 
-        	author="true" 
-        	classpath="build-lib/servlet-api.jar;lib/trang.jar;lib/xercesImpl.jar;lib/resolver.jar;lib/log4j-1.2.7.jar;lib/saxon9he.jar;lib/jing.jar;lib/tagsoup-1.2.jar;lib/stax2-api-3.0.1.jar;lib/xom-1.2.6.jar;lib/stax-utils.jar;lib/saxon.jar;lib/woodstox-core-asl-4.0.3.jar;build-lib/ant.jar" 
-    		destdir="doc/javadoc" 
-    		doctitle="xmlsh" 
-    		nodeprecated="false" 
-    		nodeprecatedlist="false" 
-    		noindex="false" 
-    		nonavbar="false" 
-    		notree="false" 
-    		packagenames="org.xmlsh.commands.stax,org.xmlsh.util,org.xmlsh.commands.posix,org.xmlsh.commands.util,org.xmlsh.servlet,org.xmlsh.types,org.xmlsh.sh.core,org.xmlsh.protocols.var,org.xmlsh.commands.test,org.xmlsh.sh.grammar,org.xmlsh.ant,org.xmlsh.protocols.port,org.xmlsh.xpath,org.xmlsh.commands.internal,org.xmlsh.core,org.xmlsh.commands.builtin,org.xmlsh.commands.experimental,org.xmlsh.sh.shell,org.xmlsh.commands.xs,org.json,org.xmlsh.schema" 
-        	source="1.6" 
-        	sourcepath="src/shell;src/3rdparty;src/core;src/commands" 
-    		splitindex="false" 
-    		use="true" 
-    	version="true"/>
+        <javadoc access="package" author="false" classpath="lib/httpclient-4.2.3.jar;build-lib/ant.jar;lib/stax2-api-3.1.1.jar;lib/commons-lang3-3.3.2.jar;lib/stax-utils.jar;lib/jackson-dataformat-xml-2.4.1.jar;lib/jackson-module-jaxb-annotations-2.4.1.jar;lib/commons-logging-1.1.1.jar;lib/jing.jar;lib/httpcore-4.2.2.jar;lib/jackson-core-2.4.1.jar;build-lib/servlet-api.jar;lib/log4j-core-2.0.2.jar;lib/saxon9he.jar;lib/commons-codec-1.6.jar;lib/slf4j-api-1.7.5.jar;lib/tagsoup-1.2.jar;lib/resolver.jar;lib/jackson-annotations-2.4.1.jar;lib/xom-1.2.6.jar;lib/saxon.jar;lib/jsonpath.jar;lib/commons-io-2.1.jar;lib/trang.jar;lib/log4j-slf4j-impl-2.0.2.jar;lib/xercesImpl.jar;lib/woodstox-core-asl-4.2.0.jar;lib/log4j-api-2.0.2.jar;lib/jackson-databind-2.4.1.jar" destdir="doc/javadoc" doctitle="xmlsh" nodeprecated="false" nodeprecatedlist="false" noindex="false" nonavbar="false" notree="false" packagenames="org.xmlsh.protocols.port,org.xmlsh.util,org.xmlsh.xpath,org.xmlsh.types,org.xmlsh.servlet,org.xmlsh.core,org.xmlsh.sh.core,org.xmlsh.sh.shell,org.xmlsh.protocols.var,org.xmlsh.ant,org.xmlsh.schema" source="1.7" sourcefiles="src/shell/org/xmlsh/sh/grammar/ParserContext.java,src/shell/org/xmlsh/sh/grammar/ParserState.java,src/shell/org/xmlsh/sh/grammar/ShellParserUtils.java,src/shell/org/xmlsh/sh/grammar/ShellParserReader.java,src/shell/org/xmlsh/sh/grammar/XAbstractToken.java" sourcepath="src/resources;.apt_generated;src/commands;src/generated;src/core;src/shell" splitindex="false" use="true" version="false"/>
     </target>
 </project>

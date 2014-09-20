@@ -19,11 +19,9 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.PACKAGE, ElementType.TYPE})
 @XAnnotation
-
 public @interface Module {
 	String value() default "";
 	String name() default "" ;
-	Option[] options() default  {};
 
 
 }
