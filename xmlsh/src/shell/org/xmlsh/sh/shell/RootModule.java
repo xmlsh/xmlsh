@@ -3,7 +3,7 @@ package org.xmlsh.sh.shell;
 import java.io.IOException;
 
 import org.xmlsh.core.ICommand;
-import org.xmlsh.core.IFunction;
+import org.xmlsh.core.IFunctionExpr;
 
 
 /*
@@ -33,7 +33,7 @@ public class RootModule extends Module {
 	}
 
 	@Override
-	public IFunction getFunction(String name) {
+	public IFunctionExpr getFunction(String name) {
 		return null;
 	}
 

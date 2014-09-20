@@ -8,9 +8,24 @@ import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.HelpUsage;
 import org.xmlsh.util.Util;
 
-public abstract class AbstractExpr 
+public abstract class AbstractExpr implements IExpression
 {
 	
+	@Override
+	public SourceLocation getSourceLocation() {
+		return null;
+	}
+
+	@Override
+	public boolean hasLocation() {
+		return false;
+	}
+
+	@Override
+	public String describe(boolean execMode) {
+          return toString();
+	}
+
 	@Override
 	public String toString() {
 		return "Expr: " + getName();
@@ -44,7 +59,8 @@ public abstract class AbstractExpr
   public void usage(Shell shell, String message)
   {
     String cmdName = getName();
-    SourceLocation sloc = getLocation(shell);
+    SourceLocation sloc =  getSourceLocation();
+    
     if( !Util.isBlank(message))
       shell.printErr(cmdName + ": " + message,sloc);
     else
@@ -57,25 +73,6 @@ public abstract class AbstractExpr
     }
   }
 
-  protected SourceLocation getLocation(Shell shell)
-  {
-    
-    if( hasLocation() ) 
-      return getSourceLocation() ;
-    else
-      return shell.getLocation();
-  }
-
-  protected SourceLocation getSourceLocation()
-  {
-    return null;
-  }
-
-  protected boolean hasLocation()
-  {
-    // TODO Auto-generated method stub
-    return false;
-  }
 
   public void usage(Shell shell)
   {

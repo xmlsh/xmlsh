@@ -15,7 +15,7 @@ import java.net.URL;
 import java.util.List;
 
 import org.xmlsh.core.ICommand;
-import org.xmlsh.core.IFunction;
+import org.xmlsh.core.IFunctionExpr;
 import org.xmlsh.core.IFunctionDecl;
 import org.xmlsh.core.ScriptCommand;
 import org.xmlsh.core.ScriptCommand.SourceMode;
@@ -94,7 +94,7 @@ public class PackageModule extends Module
    * @see org.xmlsh.sh.shell.IModule#getFunctionClass(java.lang.String)
    */
   @Override
-  public IFunction getFunction(String name)
+  public IFunctionExpr getFunction(String name)
   {
 
     String origName = name;
@@ -112,8 +112,8 @@ public class PackageModule extends Module
         Constructor<?> constructor = cls.getConstructor();
         if(constructor != null) {
           Object obj = constructor.newInstance();
-          if( obj instanceof IFunction )
-            return (IFunction) obj ;
+          if( obj instanceof IFunctionExpr )
+            return (IFunctionExpr) obj ;
           
           if(obj instanceof IFunctionDecl) {
             IFunctionDecl cmd = (IFunctionDecl) obj;

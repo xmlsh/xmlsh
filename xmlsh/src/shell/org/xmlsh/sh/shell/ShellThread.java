@@ -13,6 +13,7 @@ import java.io.IOException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.xmlsh.sh.core.ICommandExpr;
+import org.xmlsh.sh.core.IExpression;
 import org.xmlsh.util.Util;
 import org.xmlsh.xpath.ThreadLocalShell;
 
@@ -34,7 +35,7 @@ public class ShellThread extends Thread implements Closeable {
 	}
 
 
-	private static String simpleName(String name, ICommandExpr cmd)
+	private static String simpleName(String name, IExpression cmd)
 	{
 		if(  Util.isBlank(name))
 			name =cmd.getName();
@@ -70,7 +71,7 @@ public class ShellThread extends Thread implements Closeable {
 
 		} catch (Exception e) {
 			// mShell.printErr("Exception running: " + mCommand.toString(true) + "\n" +  e.toString() );
-			mLogger.error("Exception running command: " + mCommand.toString(false) , e );
+			mLogger.error("Exception running command: " + mCommand.describe(false) , e );
 
 		} finally {
 			try {
@@ -84,7 +85,7 @@ public class ShellThread extends Thread implements Closeable {
 
 	}
 
-	public ICommandExpr getCommand(){
+	public IExpression getCommand(){
 		return mCommand ;
 	}
 

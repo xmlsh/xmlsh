@@ -212,7 +212,7 @@ public class declare extends BuiltinCommand {
 
 				w.print(name);
 				w.println("()");
-				w.println(fd.getBody().toString(false));
+				w.println(fd.getBody().describe(false));
 
 			}
 		}

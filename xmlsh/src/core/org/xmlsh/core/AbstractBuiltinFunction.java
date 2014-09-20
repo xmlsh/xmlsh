@@ -7,6 +7,7 @@
 package org.xmlsh.core;
 import java.util.List;
 
+import org.xmlsh.sh.core.SourceLocation;
 import org.xmlsh.sh.shell.Module;
 import org.xmlsh.sh.shell.RootModule;
 import org.xmlsh.sh.shell.Shell;
@@ -14,6 +15,18 @@ import org.xmlsh.sh.shell.Shell;
 public abstract class AbstractBuiltinFunction extends FunctionExpr  {
 	 
 	 @Override
+	public SourceLocation getSourceLocation() {
+		return null;
+	}
+
+
+	@Override
+	public boolean hasLocation() {
+		return false;
+	}
+
+
+	@Override
     public Module getModule() 
 	{
 		 return RootModule.getInstance();

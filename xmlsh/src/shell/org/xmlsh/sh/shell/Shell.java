@@ -72,6 +72,7 @@ import org.xmlsh.core.XVariable.XVarFlag;
 import org.xmlsh.sh.core.CommandExpr;
 import org.xmlsh.sh.core.EvalUtils;
 import org.xmlsh.sh.core.ICommandExpr;
+import org.xmlsh.sh.core.IExpression;
 import org.xmlsh.sh.core.SourceLocation;
 import org.xmlsh.sh.core.SourceLocator;
 import org.xmlsh.sh.grammar.ParseException;
@@ -110,10 +111,10 @@ public class Shell implements AutoCloseable, Closeable {
 
 	class CallStackEntry {
 		public String name;
-		public ICommandExpr cmd;
+		public IExpression cmd;
 		public SourceLocation loc;
 
-		public CallStackEntry(String name, ICommandExpr cmd, SourceLocation loc) {
+		public CallStackEntry(String name, IExpression cmd, SourceLocation loc) {
 			mLogger.entry(name, cmd, loc);
 			this.name = name;
 			this.cmd = cmd;
@@ -484,7 +485,7 @@ public class Shell implements AutoCloseable, Closeable {
 		return mSession;
 	}
 
-	public ICommandExpr parseScript(Reader reader, String source)
+	public IExpression parseScript(Reader reader, String source)
 			throws CoreException {
 		
 		mLogger.entry(reader, source);
@@ -618,7 +619,7 @@ public class Shell implements AutoCloseable, Closeable {
 						}
 
 						if (mOpts.mVerbose) {
-							String s = c.toString(false);
+							String s = c.describe(false);
 
 							if (s.length() > 0) {
 								printErr(s);
@@ -727,7 +728,7 @@ public class Shell implements AutoCloseable, Closeable {
 					setSourceLocation(c.getSourceLocation());
 
 					if (mOpts.mVerbose) {
-						String s = c.toString(false);
+						String s = c.describe(false);
 						if (s.length() > 0) {
 							SourceLocator loc = getLocation();
 							printErr("- " + s);
@@ -887,7 +888,7 @@ public class Shell implements AutoCloseable, Closeable {
 	}
 
 	// Default location for command
-	private SourceLocation getLocation(ICommandExpr c) {
+	private SourceLocation getLocation(IExpression c) {
 
 		return c.hasLocation() ? c.getSourceLocation() : getLocation();
 	}
@@ -941,11 +942,11 @@ public class Shell implements AutoCloseable, Closeable {
 				
 				printLoc(mLogger, loc);
 
-				printErr("Exception running: " + c.toString(true));
+				printErr("Exception running: " + c.describe(true));
 				printErr(e.toString(), loc);
 
 				mLogger.error(
-						"Exception running command: " + c.toString(false), e);
+						"Exception running command: " + c.describe(false), e);
 				mStatus = -1;
 				// If not success then may throw if option 'throw on error' is
 				// set (-e)

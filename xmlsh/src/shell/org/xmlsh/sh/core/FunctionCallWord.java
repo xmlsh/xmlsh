@@ -17,7 +17,7 @@ import org.apache.logging.log4j.Logger;
 import org.xmlsh.core.CommandFactory;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.EvalEnv;
-import org.xmlsh.core.IFunction;
+import org.xmlsh.core.IFunctionExpr;
 import org.xmlsh.core.IFunctionDecl;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
@@ -96,7 +96,7 @@ public class FunctionCallWord extends Word
 			{
        mLogger.entry();
 
-       IFunction func = CommandFactory.getFunction(shell, mFunction );
+       IFunctionExpr func = CommandFactory.getFunction(shell, mFunction );
        
 		if(func == null)
 			throw new InvalidArgumentException("Unknown function: " + mFunction);

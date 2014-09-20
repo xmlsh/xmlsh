@@ -8,18 +8,17 @@ package org.xmlsh.core;
 
 import java.util.List;
 
+import org.xmlsh.sh.core.IExpression;
 import org.xmlsh.sh.shell.IModule;
 import org.xmlsh.sh.shell.Module;
 import org.xmlsh.sh.shell.Shell;
 
-public interface IFunction
+public interface IFunctionExpr extends IExpression
 {
 
   public XValue run(Shell shell, List<XValue> args) throws Exception;
-  public String getName();
   public EvalEnv argumentEnv(EvalEnv env);
   public EvalEnv returnEnv(EvalEnv env);
-  public IModule	getModule();
 
 
 }

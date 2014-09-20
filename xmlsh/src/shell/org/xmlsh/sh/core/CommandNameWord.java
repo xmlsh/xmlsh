@@ -155,7 +155,7 @@ static Logger mLogger = LogManager.getLogger();
 	@Override
 	public String toString()
 	{
-		return mType +  mCommand.toString(false) + ")";
+		return mType +  mCommand.describe(false) + ")";
 	}
 
 	@Override

@@ -15,8 +15,9 @@ import java.util.List;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.EvalEnv;
 import org.xmlsh.core.EvalFlag;
+import org.xmlsh.core.FunctionExpr;
 import org.xmlsh.core.ICommand;
-import org.xmlsh.core.IFunction;
+import org.xmlsh.core.IFunctionExpr;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.types.TypeFamily;
@@ -26,7 +27,7 @@ import org.xmlsh.util.Util;
 public class JavaModule extends Module
 {
 
-  static class JavaModuleFunction implements IFunction
+  static class JavaModuleFunction extends  FunctionExpr
   {
     private JavaModule mModule;
     private String mFunc;
@@ -128,7 +129,7 @@ public class JavaModule extends Module
   }
 
   @Override
-  public IFunction getFunction(final String name)
+  public IFunctionExpr getFunction(final String name)
   {
 
     return new JavaModuleFunction( this , name, mJavaClass, mClassLoader);

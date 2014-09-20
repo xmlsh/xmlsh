@@ -15,7 +15,7 @@ import org.xmlsh.core.BuiltinCommand;
 import org.xmlsh.core.CommandFactory;
 import org.xmlsh.core.FunctionCommand;
 import org.xmlsh.core.ICommand;
-import org.xmlsh.core.IFunction;
+import org.xmlsh.core.IFunctionExpr;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.ScriptCommand;
@@ -76,7 +76,7 @@ public class xwhich extends BuiltinCommand {
 
 			// Try builtin functions
 			if (command == null) {
-				IFunction func = CommandFactory
+				IFunctionExpr func = CommandFactory
 						.getBuiltinFunction(mShell, name);
 				if (func != null) {
 					if (!bNoWrite) {

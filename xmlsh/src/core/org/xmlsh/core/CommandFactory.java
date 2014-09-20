@@ -232,7 +232,7 @@ public abstract class CommandFactory {
 	}
 	
 
-	private static IFunction getModuleFunction(Shell shell, String name) throws IOException {
+	private static IFunctionExpr getModuleFunction(Shell shell, String name) throws IOException {
 
 		mLogger.entry(shell, name);
 
@@ -255,7 +255,7 @@ public abstract class CommandFactory {
 			if (m != null) {
 	
 				mLogger.trace("Found module - try getting command" , m , pair.getRight());
-				IFunction cls = m.getFunction(pair.getRight());
+				IFunctionExpr cls = m.getFunction(pair.getRight());
 				if (cls != null) {
 					mLogger.debug("Command Class found: " , cls );
 					return cls;
@@ -270,7 +270,7 @@ public abstract class CommandFactory {
 		 */
 	   mLogger.debug("Try default modules");
 		for (IModule m : shell.getDefaultModules() ) {
-				IFunction cls = m.getFunction(name);
+				IFunctionExpr cls = m.getFunction(name);
 				if (cls != null) {
 					return mLogger.exit(cls);
 				}
@@ -485,7 +485,7 @@ public abstract class CommandFactory {
 			return null;
 	}
 
-	public static IFunction getBuiltinFunction(Shell shell, String name) {
+	public static IFunctionExpr getBuiltinFunction(Shell shell, String name) {
 
 		mLogger.entry(shell, name);
 
@@ -509,7 +509,7 @@ public abstract class CommandFactory {
 			if (m != null) {
 
 				mLogger.debug("Found module",m);
-				IFunction cls = m.getFunction(pair.getRight());
+				IFunctionExpr cls = m.getFunction(pair.getRight());
 				if (cls != null) {
 					return mLogger.exit(cls);
 				}
@@ -524,7 +524,7 @@ public abstract class CommandFactory {
 		
 		 mLogger.debug("Try default modules");
 		for ( IModule m : shell.getDefaultModules() ) {
-			IFunction cls = m.getFunction(name);
+			IFunctionExpr cls = m.getFunction(name);
 				if (cls != null) 
 					return mLogger.exit(cls);
 
@@ -571,13 +571,13 @@ public abstract class CommandFactory {
 
 	}
 
-	public static IFunction getFunction(Shell shell, String name) throws IOException {
+	public static IFunctionExpr getFunction(Shell shell, String name) throws IOException {
 		
 		 
 		mLogger.entry(shell, name);
 	
 	  // Try builtin functions first
-	  IFunction func = getBuiltinFunction(shell, name);
+	  IFunctionExpr func = getBuiltinFunction(shell, name);
 	
 	  // global scope shell functions 
 	  if(func == null){

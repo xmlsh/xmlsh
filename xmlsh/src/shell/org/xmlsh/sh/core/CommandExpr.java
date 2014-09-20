@@ -9,12 +9,14 @@ package org.xmlsh.sh.core;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
+import org.xmlsh.sh.shell.IModule;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.Util;
 /*
  * An expression that evaluates as running a 'command' by running exec()
  */
 public abstract class CommandExpr extends AbstractExpr implements ICommandExpr  {
+
 	private		SourceLocation	mLocation = null;
 	private		boolean		mWait = true ;
 	private String mSeparator = null ; // "\n ; & "
@@ -26,13 +28,24 @@ public abstract class CommandExpr extends AbstractExpr implements ICommandExpr  
   {
     super(name);
   }
+	
+	@Override
+	public IModule getModule() {
+		/*
+		 * TODO Get module from parser context 
+		 */
+		assert(false);
+		return null;
+	}
+	
+	
   /* (non-Javadoc)
    * @see org.xmlsh.sh.core.ICommandExpr#isWait()
    */
 	@Override
   public boolean isWait(){ return mWait ; }
 	public	void	setLocation( SourceLocation loc ) { mLocation = loc ; }
-	public void    setLocation(ICommandExpr c) { if( c != null && c.hasLocation() ) mLocation =  c.getSourceLocation() ;	}
+	public void    setLocation(IExpression c) { if( c != null && c.hasLocation() ) mLocation =  c.getSourceLocation() ;	}
 	/* (non-Javadoc)
    * @see org.xmlsh.sh.core.ICommandExpr#getLocation()
    */
@@ -66,7 +79,7 @@ public abstract class CommandExpr extends AbstractExpr implements ICommandExpr  
 	@Override
 	public String	toString() {
 
-		return toString(false);
+		return describe(false);
 	}
 
 
@@ -77,7 +90,7 @@ public abstract class CommandExpr extends AbstractExpr implements ICommandExpr  
 			mWait = false ;
 	}
 	@Override
-	public String	toString(boolean bExec) {
+	public String	describe(boolean bExec) {
 		StringWriter sw = new StringWriter();
 		PrintWriter w = new PrintWriter(sw);
 		print(w, bExec);

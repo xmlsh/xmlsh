@@ -11,7 +11,7 @@ import java.io.PrintWriter;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.xmlsh.core.IFunction;
+import org.xmlsh.core.IFunctionExpr;
 import org.xmlsh.core.IFunctionDecl;
 import org.xmlsh.sh.shell.IModule;
 import org.xmlsh.sh.shell.Shell;
@@ -81,7 +81,7 @@ public class FunctionDeclaration extends CommandExpr
         }
 
         @Override
-        public IFunction getFunction()
+        public IFunctionExpr getFunction()
         {
           return new ScriptFunction(mName,mBody,module);
         }

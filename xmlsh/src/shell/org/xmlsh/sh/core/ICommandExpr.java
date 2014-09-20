@@ -10,14 +10,10 @@ import java.io.PrintWriter;
 
 import org.xmlsh.sh.shell.Shell;
 
-public interface ICommandExpr
+public interface ICommandExpr extends IExpression
 {
 
   public boolean isWait();
-
-  public SourceLocation getSourceLocation();
-
-  public boolean hasLocation();
 
   public void print(PrintWriter out, boolean bExec);
 
@@ -26,10 +22,6 @@ public interface ICommandExpr
   // Is a simple command for purposes of throw-on-error
   public boolean isSimple();
 
-  // Default name if none provided
-  public String getName();
-
-  public String toString(boolean b);
 
 }
 

@@ -12,7 +12,7 @@ import java.net.URL;
 import java.util.List;
 
 import org.xmlsh.core.ICommand;
-import org.xmlsh.core.IFunction;
+import org.xmlsh.core.IFunctionExpr;
 import org.xmlsh.core.IHandleable;
 import org.xmlsh.core.IReferenceCounted;
 import org.xmlsh.core.IReferenceCountedHandleable;
@@ -38,7 +38,7 @@ public interface IModule extends		IStaticModule {
 	 */
 	public ICommand getCommand(String name) throws IOException;
 
-	public IFunction getFunction(String name);
+	public IFunctionExpr getFunction(String name);
 
 	public URL getHelpURL();
 
