@@ -77,6 +77,9 @@ import org.xmlsh.sh.core.SourceLocator;
 import org.xmlsh.sh.grammar.ParseException;
 import org.xmlsh.sh.grammar.ShellParser;
 import org.xmlsh.sh.grammar.ShellParserReader;
+import org.xmlsh.sh.module.IModule;
+import org.xmlsh.sh.module.ModuleFactory;
+import org.xmlsh.sh.module.RootModule;
 import org.xmlsh.util.FileUtils;
 import org.xmlsh.util.NullInputStream;
 import org.xmlsh.util.NullOutputStream;
@@ -1498,7 +1501,7 @@ public class Shell implements AutoCloseable, Closeable {
 				break;
 	}
 
-	public void declareFunction(IFunctionDecl func) {
+	public void declareFunction(IFunctionDefiniton func) {
 
 		mLogger.entry(func);
 		StaticContext ctx = getStaticContext();
@@ -1508,7 +1511,7 @@ public class Shell implements AutoCloseable, Closeable {
 
 	}
 
-	public IFunctionDecl getFunctionDecl(String name) {
+	public IFunctionDefiniton getFunctionDecl(String name) {
 		mLogger.entry(name);
 		
 		// First look in the current module
@@ -1517,7 +1520,7 @@ public class Shell implements AutoCloseable, Closeable {
 		
 		StaticContext ctx = getStaticContext();
 		assert( ctx != null );
-		return mLogger.exit( ctx.getFunctionDecl(name));
+		return mLogger.exit( ctx.getFunction(name));
 	}
 
 	public Modules getModules() {

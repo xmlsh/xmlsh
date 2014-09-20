@@ -30,8 +30,8 @@ import org.xmlsh.core.CommandFactory;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.IOutputPort;
 import org.xmlsh.core.XValue;
-import org.xmlsh.sh.shell.IModule;
-import org.xmlsh.sh.shell.Module;
+import org.xmlsh.sh.module.IModule;
+import org.xmlsh.sh.module.Module;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 

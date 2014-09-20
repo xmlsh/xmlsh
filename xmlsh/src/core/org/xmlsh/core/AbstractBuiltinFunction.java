@@ -8,8 +8,8 @@ package org.xmlsh.core;
 import java.util.List;
 
 import org.xmlsh.sh.core.SourceLocation;
-import org.xmlsh.sh.shell.Module;
-import org.xmlsh.sh.shell.RootModule;
+import org.xmlsh.sh.module.Module;
+import org.xmlsh.sh.module.RootModule;
 import org.xmlsh.sh.shell.Shell;
 
 public abstract class AbstractBuiltinFunction extends FunctionExpr  {

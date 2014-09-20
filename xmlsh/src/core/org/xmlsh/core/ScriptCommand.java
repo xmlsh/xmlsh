@@ -17,8 +17,8 @@ import java.util.List;
 import org.apache.logging.log4j.Logger;
 import org.xmlsh.sh.core.SourceLocation;
 import org.xmlsh.sh.grammar.ParseException;
-import org.xmlsh.sh.shell.IModule;
-import org.xmlsh.sh.shell.Module;
+import org.xmlsh.sh.module.IModule;
+import org.xmlsh.sh.module.Module;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.Util;
 

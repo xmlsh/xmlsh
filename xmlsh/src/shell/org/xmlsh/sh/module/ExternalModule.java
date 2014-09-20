@@ -4,7 +4,7 @@
  *
  */
 
-package org.xmlsh.sh.shell;
+package org.xmlsh.sh.module;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,6 +21,8 @@ import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.SearchPath;
 import org.xmlsh.core.XValue;
+import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.sh.shell.ShellConstants;
 import org.xmlsh.util.Util;
 
 public class ExternalModule extends PackageModule

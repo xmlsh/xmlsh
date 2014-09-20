@@ -1,4 +1,4 @@
-package module;
+package org.xmlsh.sh.module;
 
 import java.net.URI;
 

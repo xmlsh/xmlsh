@@ -9,8 +9,8 @@ package org.xmlsh.core;
 import java.util.List;
 
 import org.xmlsh.sh.core.IExpression;
-import org.xmlsh.sh.shell.IModule;
-import org.xmlsh.sh.shell.Module;
+import org.xmlsh.sh.module.IModule;
+import org.xmlsh.sh.module.Module;
 import org.xmlsh.sh.shell.Shell;
 
 public interface IFunctionExpr extends IExpression

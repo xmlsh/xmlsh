@@ -30,9 +30,9 @@ import org.xmlsh.core.XVariable.XVarFlag;
 
 import static org.xmlsh.core.XVariable.XVarFlag.*;
 
+import org.xmlsh.sh.module.IModule;
 import org.xmlsh.sh.shell.FunctionDefinitions;
-import org.xmlsh.sh.shell.IFunctionDecl;
-import org.xmlsh.sh.shell.IModule;
+import org.xmlsh.sh.shell.IFunctionDefiniton;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.util.NameValueMap;
 import org.xmlsh.util.Util;
@@ -189,7 +189,7 @@ public class declare extends BuiltinCommand {
 			return true ;
 		try (PrintWriter w = getStdout().asPrintWriter(getSerializeOpts())) {
 
-			for (Entry<String, IFunctionDecl> e : getShell().getEnv()
+			for (Entry<String, IFunctionDefiniton> e : getShell().getEnv()
 					.getFunctions().entrySet()) {
 
 				w.printf("%s [%s]\n", e.getKey(), e.getValue().getModule()
@@ -206,7 +206,7 @@ public class declare extends BuiltinCommand {
 		boolean bFound = false;
 		try (PrintWriter w = getStdout().asPrintWriter(getSerializeOpts())) {
 
-			IFunctionDecl fd = getShell().getFunctionDecl(name);
+			IFunctionDefiniton fd = getShell().getFunctionDecl(name);
 			if (fd != null) {
 				bFound = true ;
 

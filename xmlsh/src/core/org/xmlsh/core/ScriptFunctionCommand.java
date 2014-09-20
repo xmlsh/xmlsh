@@ -14,7 +14,7 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.xmlsh.sh.core.SourceLocator;
-import org.xmlsh.sh.shell.IModule;
+import org.xmlsh.sh.module.IModule;
 import org.xmlsh.sh.shell.Shell;
 
 public class ScriptFunctionCommand extends AbstractBuiltinFunction implements Closeable {

@@ -8,6 +8,7 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.xmlsh.core.Namespaces;
+import org.xmlsh.sh.module.IModule;
 
 // The 'Static Context' (similar to XQuery/XSLT)
 // Composed of Functions, Modules, Namespaces anything which is determined
@@ -59,7 +60,7 @@ public class StaticContext implements Cloneable {
 		mLogger.exit();
 		
 	}
-	public void declareFunction(IFunctionDecl func) {
+	public void declareFunction(IFunctionDefiniton func) {
 		mLogger.entry(func);
 
 		if (mFunctions == null)
@@ -68,7 +69,7 @@ public class StaticContext implements Cloneable {
 	}
 
 
-	public IFunctionDecl getFunctionDecl(String name) {
+	public IFunctionDefiniton getFunction(String name) {
 
 		if (mFunctions == null)
 			return null;

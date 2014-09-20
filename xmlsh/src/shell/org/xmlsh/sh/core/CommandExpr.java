@@ -9,7 +9,7 @@ package org.xmlsh.sh.core;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
-import org.xmlsh.sh.shell.IModule;
+import org.xmlsh.sh.module.IModule;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.Util;
 /*

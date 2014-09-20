@@ -1,8 +1,8 @@
-package org.xmlsh.sh.shell;
+package org.xmlsh.sh.module;
 
 import java.net.URL;
 
-import module.ModuleClass;
+import org.xmlsh.sh.shell.Shell;
 
 
 /*

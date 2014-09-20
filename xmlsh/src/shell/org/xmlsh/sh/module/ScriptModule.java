@@ -1,4 +1,4 @@
-package org.xmlsh.sh.shell;
+package org.xmlsh.sh.module;
 
 import java.io.IOException;
 import java.util.List;
@@ -13,6 +13,9 @@ import org.xmlsh.core.ScriptCommand;
 import org.xmlsh.core.ScriptCommand.SourceMode;
 import org.xmlsh.core.ScriptSource;
 import org.xmlsh.core.XValue;
+import org.xmlsh.sh.shell.IFunctionDefiniton;
+import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.sh.shell.StaticContext;
 
 public class ScriptModule extends Module {
 
@@ -78,7 +81,7 @@ public class ScriptModule extends Module {
 		if (mStaticContext == null)
 			return null;
 
-		IFunctionDecl func = mStaticContext.getFunctionDecl(name);
+		IFunctionDefiniton func = mStaticContext.getFunction(name);
 		if (func != null)
 			return new FunctionCommand(this, func.getName(), func.getBody(),
 					null);
@@ -91,7 +94,7 @@ public class ScriptModule extends Module {
 		if (mStaticContext == null)
 			return null;
 
-		IFunctionDecl func = mStaticContext.getFunctionDecl(name);
+		IFunctionDefiniton func = mStaticContext.getFunction(name);
 		if (func != null)
 			return func.getFunction();
 		return null;

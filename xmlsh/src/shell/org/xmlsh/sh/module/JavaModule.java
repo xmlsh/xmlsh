@@ -4,7 +4,7 @@
  * 
  */
 
-package org.xmlsh.sh.shell;
+package org.xmlsh.sh.module;
 
 import java.lang.reflect.Method;
 import java.net.URI;
@@ -20,6 +20,7 @@ import org.xmlsh.core.ICommand;
 import org.xmlsh.core.IFunctionExpr;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
+import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.types.TypeFamily;
 import org.xmlsh.util.JavaUtils;
 import org.xmlsh.util.Util;

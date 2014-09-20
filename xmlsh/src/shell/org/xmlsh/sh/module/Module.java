@@ -1,10 +1,8 @@
-package org.xmlsh.sh.shell;
+package org.xmlsh.sh.module;
 
 import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
-
-import module.ModuleClass;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -12,6 +10,8 @@ import org.xmlsh.builtin.commands.jobs;
 import org.xmlsh.core.ReferenceCountedHandle;
 import org.xmlsh.core.XClassLoader;
 import org.xmlsh.core.XValue;
+import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.sh.shell.StaticContext;
 
 public abstract class Module implements IModule 
 {

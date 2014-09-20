@@ -19,6 +19,7 @@ import org.apache.logging.log4j.Logger;
 import org.xmlsh.builtin.commands.exit;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
+import org.xmlsh.sh.module.IModule;
 import org.xmlsh.util.IManagable;
 import org.xmlsh.util.ManagedObject;
 import org.xmlsh.util.NameValueMap;
@@ -69,7 +70,7 @@ public class Modules  implements
 	 * @returns true if init was called
 	 * 
 	 */
-	boolean importModule(Shell shell, String prefix , IModule mod,  List<XValue> init)
+	public boolean importModule(Shell shell, String prefix , IModule mod,  List<XValue> init)
 			throws Exception {
 
 		mLogger.entry(shell, prefix, mod, init);

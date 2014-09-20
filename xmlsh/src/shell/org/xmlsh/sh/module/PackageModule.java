@@ -4,7 +4,7 @@
  *
  */
 
-package org.xmlsh.sh.shell;
+package org.xmlsh.sh.module;
 
 
 import java.io.FileNotFoundException;
@@ -21,6 +21,8 @@ import org.xmlsh.core.ScriptCommand.SourceMode;
 import org.xmlsh.core.ScriptFunctionCommand;
 import org.xmlsh.core.ScriptSource;
 import org.xmlsh.core.XCommand;
+import org.xmlsh.sh.shell.IFunctionDefiniton;
+import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.JavaUtils;
 import org.xmlsh.util.Util;
 
@@ -51,14 +53,6 @@ public class PackageModule extends Module
   }
 
 
-  private InputStream getCommandResourceStream(String name) throws IOException
-  {
-	  URL url =  getCommandResource( name);
-	  if( url != null )
-		  return url.openStream();
-	return null;
-	  
-  }
 
   private URL getCommandResource(String name)
   {
@@ -114,8 +108,8 @@ public class PackageModule extends Module
           if( obj instanceof IFunctionExpr )
             return (IFunctionExpr) obj ;
           
-          if(obj instanceof IFunctionDecl) {
-            IFunctionDecl cmd = (IFunctionDecl) obj;
+          if(obj instanceof IFunctionDefiniton) {
+            IFunctionDefiniton cmd = (IFunctionDefiniton) obj;
             return cmd.getFunction();
           }
         }

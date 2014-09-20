@@ -4,7 +4,7 @@
  * 
  */
 
-package org.xmlsh.sh.shell;
+package org.xmlsh.sh.module;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -18,6 +18,8 @@ import org.xmlsh.core.IReferenceCounted;
 import org.xmlsh.core.IReferenceCountedHandleable;
 import org.xmlsh.core.IReferencedCountedHandle;
 import org.xmlsh.core.XValue;
+import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.sh.shell.StaticContext;
 
 /*
  * A runtime instance of a module that may have state and may be shared or duplicated

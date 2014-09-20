@@ -52,9 +52,8 @@ import org.xmlsh.core.ScriptCommand.SourceMode;
 import org.xmlsh.java.commands.jset;
 import org.xmlsh.json.commands.jsonread;
 import org.xmlsh.sh.core.SourceLocation;
-import org.xmlsh.sh.shell.IFunctionDecl;
-import org.xmlsh.sh.shell.IModule;
-import org.xmlsh.sh.shell.IModule;
+import org.xmlsh.sh.module.IModule;
+import org.xmlsh.sh.shell.IFunctionDefiniton;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.sh.shell.ShellConstants;
 import org.xmlsh.text.commands.readconfig;
@@ -146,7 +145,7 @@ public abstract class CommandFactory {
 			SourceLocation loc) {
 
 		mLogger.entry(shell, name);
-		IFunctionDecl func = shell.getFunctionDecl(name);
+		IFunctionDefiniton func = shell.getFunctionDecl(name);
 		
 		if (func != null)
 			return mLogger.exit(new FunctionCommand(func.getModule(), func
@@ -582,7 +581,7 @@ public abstract class CommandFactory {
 	
 	  // global scope shell functions 
 	  if(func == null){
-			IFunctionDecl funcdecl = shell.getFunctionDecl(name);
+			IFunctionDefiniton funcdecl = shell.getFunctionDecl(name);
 			if( funcdecl != null )
 			  func = funcdecl.getFunction();
 		}

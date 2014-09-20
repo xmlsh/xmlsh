@@ -1,6 +1,6 @@
 package org.xmlsh.sh.core;
 
-import org.xmlsh.sh.shell.IModule;
+import org.xmlsh.sh.module.IModule;
 
 public interface IExpression {
 

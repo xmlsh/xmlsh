@@ -10,12 +10,13 @@ import org.xmlsh.core.IFunctionExpr;
 import org.xmlsh.core.IReleasable;
 import org.xmlsh.sh.core.ICommandExpr;
 import org.xmlsh.sh.core.IExpression;
+import org.xmlsh.sh.module.IModule;
 
 /* 
  * A parsed "script" body decalred as a function 
  */
 
-public interface IFunctionDecl  {
+public interface IFunctionDefiniton  {
 	String	getName();
 	ICommandExpr	getBody();
 	IFunctionExpr  getFunction();

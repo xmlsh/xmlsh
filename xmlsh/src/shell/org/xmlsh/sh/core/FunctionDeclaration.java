@@ -12,7 +12,7 @@ import java.io.PrintWriter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.xmlsh.core.IFunctionExpr;
-import org.xmlsh.sh.shell.IModule;
+import org.xmlsh.sh.module.IModule;
 import org.xmlsh.sh.shell.Shell;
 
 public class FunctionDeclaration extends CommandExpr
@@ -58,7 +58,7 @@ public class FunctionDeclaration extends CommandExpr
     mLogger.entry( this , shell);
   	final IModule module = shell.getModule();  // maybe return  handle
   	
-    shell.declareFunction(new org.xmlsh.sh.shell.IFunctionDecl()
+    shell.declareFunction(new org.xmlsh.sh.shell.IFunctionDefiniton()
       {
 		@Override
 		public String toString() {

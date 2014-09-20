@@ -1,4 +1,4 @@
-package org.xmlsh.sh.shell;
+package org.xmlsh.sh.module;
 
 import java.io.IOException;
 

@@ -14,8 +14,8 @@ import java.net.URL;
 import java.util.List;
 
 import org.xmlsh.sh.core.SourceLocation;
-import org.xmlsh.sh.shell.IModule;
-import org.xmlsh.sh.shell.Module;
+import org.xmlsh.sh.module.IModule;
+import org.xmlsh.sh.module.Module;
 import org.xmlsh.sh.shell.Shell;
 
 public interface ICommand  {

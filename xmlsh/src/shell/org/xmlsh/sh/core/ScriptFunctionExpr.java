@@ -5,8 +5,8 @@ import java.util.List;
 import org.xmlsh.core.EvalEnv;
 import org.xmlsh.core.IFunctionExpr;
 import org.xmlsh.core.XValue;
-import org.xmlsh.sh.shell.IModule;
-import org.xmlsh.sh.shell.Module;
+import org.xmlsh.sh.module.IModule;
+import org.xmlsh.sh.module.Module;
 import org.xmlsh.sh.shell.Shell;
 
 /*

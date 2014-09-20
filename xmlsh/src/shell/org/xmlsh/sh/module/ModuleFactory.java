@@ -1,4 +1,4 @@
-package org.xmlsh.sh.shell;
+package org.xmlsh.sh.module;
 
 import java.io.IOException;
 import java.net.URI;
@@ -11,6 +11,7 @@ import org.xmlsh.core.CoreException;
 import org.xmlsh.core.ScriptCommand.SourceMode;
 import org.xmlsh.core.ScriptSource;
 import org.xmlsh.core.XValue;
+import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.Util;
 
 public class ModuleFactory
