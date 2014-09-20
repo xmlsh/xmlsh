@@ -232,9 +232,9 @@ public class Shell implements AutoCloseable, Closeable {
 	private void importStandardModules() throws Exception {
 		
 		IModule hInternal = 
-				 ModuleFactory.createPackageModule(this, null,
-		 					"xmlsh" , Arrays.asList(
-		 							"org.xmlsh.internal.commands", "org.xmlsh.internal.functions"),  CommandFactory.kCOMMANDS_HELP_XML );
+				 ModuleFactory.createPackageModule(this, "xmlsh",
+		 					Arrays.asList(
+		 							"org.xmlsh.internal.commands", "org.xmlsh.internal.functions") , CommandFactory.kCOMMANDS_HELP_XML );
 		 getModules().importModule( this , null , hInternal , null);		
 	}
 
@@ -1660,7 +1660,6 @@ public class Shell implements AutoCloseable, Closeable {
 		return importModule( moduledef , at , init );
 	}
 	
-
 	// returns true if succceeded
 	public boolean importPackage(String prefix, String name,
 			List<String> packages) throws Exception  {
@@ -1671,8 +1670,8 @@ public class Shell implements AutoCloseable, Closeable {
 		
 	 		IModule mod = getModules().getExistingModuleByName(name);
 	 		if( mod == null )
-	 			mod =  ModuleFactory.createPackageModule(this, prefix,
-	 					name, packages , sHelp );
+	 			mod =  ModuleFactory.createPackageModule(this, name,
+	 					packages, sHelp );
 
 	 		boolean inited = getModules().importModule( this , prefix , mod , null );
 	 		return  true ;

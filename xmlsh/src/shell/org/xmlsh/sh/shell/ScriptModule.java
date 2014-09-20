@@ -26,8 +26,7 @@ public class ScriptModule extends Module {
 		mStaticContext = null ;
 	}
 
-	protected ScriptModule(Shell shell, String prefix, ScriptSource script,
-			String nameuri) throws IOException, CoreException {
+	protected ScriptModule(Shell shell, ScriptSource script, String nameuri) throws IOException, CoreException {
 		super(nameuri);
 
 		mScript = script;

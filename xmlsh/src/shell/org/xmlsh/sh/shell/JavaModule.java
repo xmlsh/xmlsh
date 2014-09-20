@@ -103,7 +103,7 @@ public class JavaModule extends Module
 
   private Class<?> mJavaClass;
 
-  JavaModule(Shell shell, String prefix, URI nameURI, XValue at) throws CoreException
+  JavaModule(Shell shell, URI nameURI, XValue at) throws CoreException
   {
     super(nameURI.toString());
     List<URL> classpath = null;

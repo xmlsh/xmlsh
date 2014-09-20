@@ -35,7 +35,7 @@ public class ModuleFactory
     Module mod = null ;
   
     if(nameURI != null && Util.isEqual(nameURI.getScheme(), "java"))
-      mod = createJavaModule(shell, prefix, nameURI, at  );
+      mod = createJavaModule(shell, nameURI, at  );
     else 
     {
     // Try to find script source by usual means 
@@ -44,7 +44,7 @@ public class ModuleFactory
          mod = createScriptModule(shell ,prefix, script , nameuri );
     } 
     if( mod == null )
-        mod = createExternalModule(shell, prefix, nameuri , nameURI,at);
+        mod = createExternalModule(shell, nameuri, nameURI , at);
     
     if( mod != null )
       mod.onLoad(shell);
@@ -55,24 +55,24 @@ public class ModuleFactory
 
   public static Module createScriptModule(Shell shell, String prefix, ScriptSource script , String nameuri ) throws CoreException, IOException
   {
-    return new ScriptModule(shell, prefix, script, nameuri );
+    return new ScriptModule(shell, script, nameuri );
   }
 
 
 
-  public static Module createJavaModule(Shell shell, String prefix, URI nameURI, XValue at) throws CoreException
+  public static Module createJavaModule(Shell shell, URI nameURI, XValue at) throws CoreException
   {
-    return new JavaModule(shell, prefix, nameURI, at);
+    return new JavaModule(shell, nameURI, at);
   }
 
-  public static Module createExternalModule(Shell shell, String prefix, String nameuri, URI nameURI, XValue at) throws CoreException
+  public static Module createExternalModule(Shell shell, String nameuri, URI nameURI, XValue at) throws CoreException
   {
-    return new ExternalModule( shell, prefix,nameuri, nameURI , at );
+    return new ExternalModule( shell, nameuri,nameURI, at );
   }
 
   
   
-  public static Module createPackageModule(Shell shell, String prefix, String name, List<String> pkgs, String helpURL)
+  public static Module createPackageModule(Shell shell, String name, List<String> pkgs, String helpURL)
   {
     return new PackageModule(shell, name, pkgs, helpURL);
   }

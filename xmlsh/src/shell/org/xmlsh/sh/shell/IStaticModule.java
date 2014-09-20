@@ -2,6 +2,8 @@ package org.xmlsh.sh.shell;
 
 import java.net.URL;
 
+import module.ModuleClass;
+
 
 /*
  * A Module Refernce that has been resolved and bound to a concrete resource.
@@ -9,6 +11,7 @@ import java.net.URL;
  * affects behaviour if the Static Module is shared across Module instances.
  */
 public interface IStaticModule {
+	public abstract ModuleClass getModuleClass();
 	public abstract void onLoad(Shell shell) throws Exception;
 	public abstract String getName();
 	public abstract boolean hasHelp(String name);
