@@ -1634,18 +1634,14 @@ public class Shell implements AutoCloseable, Closeable {
 	/*
 	 * Declare a module using the prefix=value notation
 	 */
-	public boolean  importModule(String moduledef, XValue at, List<XValue> init)
+	public boolean  importModule(String prefix, String name, List<URL> at, List<XValue> init)
 			throws Exception {
 		
-		mLogger.entry(moduledef, at, init);
-			StringPair pair = new StringPair(moduledef, '=');
-			
-		String name = pair.getRight();
-		String prefix = pair.getLeft();
+		mLogger.entry(at, init);
 
 		IModule mod = getModules().getExistingModuleByName(name);
 		if( mod == null )
-			mod =   ModuleFactory.createModule(this, prefix, name, at );
+			mod =   ModuleFactory.createModule(this, name, at );
 			
 		assert( mod != null );
 		boolean inited = getModules().importModule(this, prefix , mod ,  init);
@@ -1657,9 +1653,9 @@ public class Shell implements AutoCloseable, Closeable {
 
 	}
 	// Dup function but may need different
-	public boolean importScript(String moduledef, XValue at, List<XValue> init) throws Exception
+	public boolean importScript(String prefix, String name, List<URL> at, List<XValue> init) throws Exception
 	{
-		return importModule( moduledef , at , init );
+		return importModule( prefix , name , at, init );
 	}
 	
 	// returns true if succceeded
@@ -1680,8 +1676,8 @@ public class Shell implements AutoCloseable, Closeable {
 	
 	}
 
-	public void importJava(XValue uris) throws CoreException {
-		mClassLoader = getClassLoader(uris);
+	public void importJava(List<URL> urls) throws CoreException {
+		mClassLoader = getClassLoader(urls);
 
 	}
 
@@ -1690,8 +1686,6 @@ public class Shell implements AutoCloseable, Closeable {
 		if (url == null)
 			try {
 				url = getFile(file).toURI().toURL();
-			} catch (MalformedURLException e) {
-				throw new CoreException(e);
 			} catch (IOException e) {
 				throw new CoreException(e);
 			}
@@ -1699,12 +1693,35 @@ public class Shell implements AutoCloseable, Closeable {
 
 	}
 
-	public URI getURI(String file) throws MalformedURLException, IOException {
+	public URI getURI(String file) throws CoreException {
 		URI uri = Util.tryURI(file);
 		if (uri == null)
-			uri = getFile(file).toURI();
+			try {
+				uri = getFile(file).toURI();
+			} catch (IOException e) {
+				throw new CoreException(e);
+			}
 		return uri;
 
+	}
+	
+    public List<URL> toUrls( XValue args) throws CoreException {
+    	if( args == null )
+    		return null ;
+    	List<URL> at  = new ArrayList<>();
+	      for(XValue xv : args )
+	    	  at.add( getURL(xv.toString()));
+		return at;
+    
+    }
+    public List<URL> toUrls(List<XValue> args) throws CoreException {
+    	if( args == null || args.isEmpty())
+    		return null ;
+		List<URL> at = new ArrayList<>(args.size());
+	      for(XValue xv : args )
+	    	  for( XValue x : xv )
+	    	     at.add( getURL(x.toString()));
+		return at;
 	}
 
 	public InputPort newInputPort(String file) throws IOException {
@@ -1897,21 +1914,20 @@ public class Shell implements AutoCloseable, Closeable {
 				: ret;
 	}
 
-	public ClassLoader getClassLoader(XValue classpath) throws CoreException {
+	public ClassLoader getClassLoader() throws CoreException {
+		if (mClassLoader != null)
+			return mClassLoader;
+		else
+			return this.getClass().getClassLoader();
+	}
+
+	public ClassLoader getClassLoader(final List<URL> urls) throws CoreException {
 
 		// No class path sent, use this shells or this class
-		if (classpath == null) {
-			if (mClassLoader != null)
-				return mClassLoader;
-			else
-				return this.getClass().getClassLoader();
-		}
-
-		final List<URL> urls = new ArrayList<URL>();
-		for (XValue item : classpath) {
-			String cp = item.toString();
-			URL url = getURL(cp);
-			urls.add(url);
+		if (urls == null) {
+			
+            return getClassLoader();
+			
 		}
 
 		final ClassLoader parent = getClass().getClassLoader();
@@ -1920,8 +1936,8 @@ public class Shell implements AutoCloseable, Closeable {
 				.doPrivileged(new PrivilegedAction<URLClassLoader>() {
 					@Override
 					public URLClassLoader run() {
-						return new URLClassLoader(urls.toArray(new URL[urls
-						                                               .size()]), parent);
+						return new URLClassLoader(
+								urls.toArray(new URL[urls.size()]), parent);
 					}
 				});
 		return loader;

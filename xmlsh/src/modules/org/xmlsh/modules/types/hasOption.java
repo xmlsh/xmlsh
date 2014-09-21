@@ -4,30 +4,35 @@
  *
  */
 
-package org.xmlsh.type.functions;
+package org.xmlsh.modules.types;
 
 import java.util.List;
 
 import org.xmlsh.core.AbstractBuiltinFunction;
+import org.xmlsh.core.Options;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
 
 
-public class isAtomic extends AbstractBuiltinFunction
+public class hasOption extends AbstractBuiltinFunction
 {
 
-  public isAtomic()
+  public hasOption()
   {
-    super("is-atomic");
+    super("hasOption");
   }
 
   @Override
   public XValue run(Shell shell, List<XValue> args) throws Exception
   {
-     if( args.size() != 1 ) 
-    	 return XValue.newXValue(false);
-     return XValue.newXValue( args.get(0).isAtomic() );
-	  
+	  if( args.size() !=2 ||! args.get(0).isInstanceOf( Options.class)){
+	    	usage(shell, "option");
+		    return XValue.newInstance(false);
+	    }
+	    
+	    Options conf = args.get(0).asInstanceOf(Options.class );   
+	    String name = args.get(1).toString();
+	    return XValue.newInstance( conf.hasOpt(name));
   }
 
 }

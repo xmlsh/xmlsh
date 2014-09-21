@@ -42,12 +42,29 @@ public class JavaModule extends Module
     }
 
     @Override
+    public EvalEnv argumentEnv(EvalEnv parent)
+    {
+      return parent.withFlagsOff(EvalFlag.EXPAND_WILD, EvalFlag.SPLIT_WORDS);
+    }
+
+    @Override
+	public Module getModule() {
+		return mModule;
+	}
+
+    @Override
     public String getName()
     {
       return mFunc;
     }
 
     @Override
+    public EvalEnv returnEnv(EvalEnv parent)
+    {
+      return EvalEnv.evalNone();
+    }
+
+	@Override
     public XValue run(Shell shell, List<XValue> args) throws Exception
     {
       XValue retVal = null;
@@ -83,39 +100,14 @@ public class JavaModule extends Module
       return retVal;
     }
 
-    @Override
-    public EvalEnv argumentEnv(EvalEnv parent)
-    {
-      return parent.withFlagsOff(EvalFlag.EXPAND_WILD, EvalFlag.SPLIT_WORDS);
-    }
-
-    @Override
-    public EvalEnv returnEnv(EvalEnv parent)
-    {
-      return EvalEnv.evalNone();
-    }
-
-	@Override
-	public Module getModule() {
-		return mModule;
-	}
-
   }
 
   private Class<?> mJavaClass;
 
-  JavaModule(Shell shell, URI nameURI, XValue at) throws CoreException
+  JavaModule(Shell shell, URI nameURI, List<URL> at) throws CoreException
   {
     super(nameURI.toString());
-    List<URL> classpath = null;
-    if(at != null && !at.isEmpty()) {
-      classpath = new ArrayList<URL>();
-      for (XValue xv : at) {
-        URL classurl = shell.getURL(xv.toString());
-        classpath.add(classurl);
-      }
-    }
-    mClassLoader = getClassLoader(classpath);
+    setClassLoader(getClassLoader(at));
     mHelpURL = null;
     String clsname = nameURI.getRawSchemeSpecificPart();
 
@@ -130,11 +122,9 @@ public class JavaModule extends Module
   }
 
   @Override
-  public IFunctionExpr getFunction(final String name)
+  public String describe()
   {
-
-    return new JavaModuleFunction( this , name, mJavaClass, mClassLoader);
-
+    return "java [ class=" + mJavaClass.getName() + " ]";
   }
 
   @Override
@@ -144,17 +134,19 @@ public class JavaModule extends Module
   }
 
   @Override
-  public boolean hasHelp(String name)
+  public IFunctionExpr getFunction(final String name)
   {
-    // TODO Auto-generated method stub
-    return false;
+
+    return new JavaModuleFunction( this , name, mJavaClass, getClassLoader());
+
   }
 
 
   @Override
-  public String describe()
+  public boolean hasHelp(String name)
   {
-    return "java [ class=" + mJavaClass.getName() + " ]";
+    // TODO Auto-generated method stub
+    return false;
   }
 
 

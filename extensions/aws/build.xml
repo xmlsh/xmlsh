@@ -1,5 +1,5 @@
 <?xml version="1.0" ?>
-<project default="main">
+<project default="main" name="aws">
 	<target name="main" depends="install,test" description="AWS Extension main target">
 		<echo>
             Building AWS xmlsh extension

@@ -13,7 +13,7 @@
 			<attribute name="ignore_optional_problems" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="src" path="src/obsolete"/>
+	<classpathentry kind="src" path="src/modules"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/xercesImpl.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/stax-utils.jar" sourcepath="C:/java/stax-utils-20071202/stax-utils-src.zip">
@@ -80,6 +80,7 @@
 			<attribute name="javadoc_location" value="jar:file:/C:/Java/log4j/apache-log4j-2.0.2-bin/log4j-slf4j-impl-2.0.2-javadoc.jar!/"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="lib/log4j-jcl-2.0.2.jar"/>
 	<classpathentry kind="src" path=".apt_generated">
 		<attributes>
 			<attribute name="optional" value="true"/>

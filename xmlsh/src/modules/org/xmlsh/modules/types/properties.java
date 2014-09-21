@@ -4,7 +4,7 @@
  *
  */
 
-package org.xmlsh.type.functions;
+package org.xmlsh.modules.types;
 
 import java.util.List;
 import java.util.Map;
@@ -18,13 +18,13 @@ import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.JavaUtils;
 
-public class javaProperties extends AbstractBuiltinFunction
+public class properties extends AbstractBuiltinFunction
 {
 
 
   private SerializeOpts sopts;
 
-  public javaProperties()
+  public properties()
   {
     super("properties");
   }

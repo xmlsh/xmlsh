@@ -4,7 +4,7 @@
  *
  */
 
-package org.xmlsh.type.functions;
+package org.xmlsh.modules.types;
 
 import java.util.List;
 
@@ -13,30 +13,22 @@ import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
 
 
-public class getValue extends AbstractBuiltinFunction
+public class containsKey extends AbstractBuiltinFunction
 {
 
-  public getValue()
+  public containsKey()
   {
-    super("get-value");
+    super("contains-key");
   }
 
   @Override
   public XValue run(Shell shell, List<XValue> args) throws Exception
   {
-	  if( args.isEmpty())
-		  return XValue.nullValue();
-	  if( args.size() == 1 )
-		  return args.get(0); // TODO Need default value 
-	  
-     if( args.size() != 2 || args.get(0).isAtomic() ){
-    	 usage(shell, "object key");
-		  return XValue.nullValue();
+     if( args.size() != 2 || ! args.get(0).isAtomic() ){
+    	 usage(shell, "map key");
+    	 return XValue.newXValue(false);
      }
-     
-     
      return XValue.newXValue( args.get(0).getNamedValue( args.get(1).toString() ) );
-	  
   }
 
 }

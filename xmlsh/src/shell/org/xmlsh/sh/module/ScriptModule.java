@@ -23,27 +23,57 @@ public class ScriptModule extends Module {
 	private StaticContext mStaticContext = null;
 	protected final static Logger mLogger = LogManager.getLogger();
 	
+	protected ScriptModule(Shell shell, ScriptSource script, String nameuri) throws IOException, CoreException {
+		super(nameuri);
+
+		mScript = script;
+		setClassLoader(getClassLoader(null));
+
+	}
+
+	@Override
+	public String describe() {
+		return getName() + " [ at " + mScript.getLocation().toString() + "]";
+	}
+
 	protected void finalize() {
 		mScript = null ;
 		mStaticContext = null ;
 	}
 
-	protected ScriptModule(Shell shell, ScriptSource script, String nameuri) throws IOException, CoreException {
-		super(nameuri);
+	@Override
+	public ICommand getCommand(String name) {
+		if (mStaticContext == null)
+			return null;
 
-		mScript = script;
-		mClassLoader = getClassLoader(null);
+		IFunctionDefiniton func = mStaticContext.getFunction(name);
+		if (func != null)
+			return new FunctionCommand(this, func.getName(), func.getBody(),
+					null);
+		return null;
 
 	}
 
 	@Override
-	public void onLoad(Shell shell) {
-		super.onLoad(shell);
-		if (mScript == null) {
-			shell.printErr("script not found: " + getName());
-			return;
-		}
+	public IFunctionExpr getFunction(String name) {
+		if (mStaticContext == null)
+			return null;
 
+		IFunctionDefiniton func = mStaticContext.getFunction(name);
+		if (func != null)
+			return func.getFunction();
+		return null;
+
+	}
+
+	@Override
+	public StaticContext getStaticContext() {
+		return mStaticContext;
+	}
+
+	@Override
+	public boolean hasHelp(String name) {
+		return false;
 	}
 
 	@Override
@@ -77,43 +107,13 @@ public class ScriptModule extends Module {
   }
 
 	@Override
-	public ICommand getCommand(String name) {
-		if (mStaticContext == null)
-			return null;
+	public void onLoad(Shell shell) {
+		super.onLoad(shell);
+		if (mScript == null) {
+			shell.printErr("script not found: " + getName());
+			return;
+		}
 
-		IFunctionDefiniton func = mStaticContext.getFunction(name);
-		if (func != null)
-			return new FunctionCommand(this, func.getName(), func.getBody(),
-					null);
-		return null;
-
-	}
-
-	@Override
-	public IFunctionExpr getFunction(String name) {
-		if (mStaticContext == null)
-			return null;
-
-		IFunctionDefiniton func = mStaticContext.getFunction(name);
-		if (func != null)
-			return func.getFunction();
-		return null;
-
-	}
-
-	@Override
-	public boolean hasHelp(String name) {
-		return false;
-	}
-
-	@Override
-	public String describe() {
-		return getName() + " [ at " + mScript.mScriptURL.toString() + "]";
-	}
-
-	@Override
-	public StaticContext getStaticContext() {
-		return mStaticContext;
 	}
 
 }

@@ -35,7 +35,7 @@ public class jset extends BuiltinCommand {
 
 		args = opts.getRemainingArgs();
 
-		ClassLoader classloader = getClassLoader(null);
+		ClassLoader classloader = getClassLoader();
 
 		XValue obj = null;
 		if (method == null && field == null ) {

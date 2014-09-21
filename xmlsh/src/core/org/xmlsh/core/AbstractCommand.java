@@ -13,6 +13,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.List;
 
 import javax.xml.transform.Source;
 
@@ -207,7 +209,15 @@ public abstract class AbstractCommand implements ICommand {
 		mLocation = source;
 	}
 
+	protected ClassLoader getClassLoader() throws CoreException {
+	
+		return mShell.getClassLoader();
+	}
 	protected ClassLoader getClassLoader(XValue classpath) throws CoreException {
+
+		return getClassLoader( mShell.toUrls(classpath));
+	}
+	protected ClassLoader getClassLoader(List<URL> classpath) throws CoreException {
 		return mShell.getClassLoader(classpath);
 	}
 

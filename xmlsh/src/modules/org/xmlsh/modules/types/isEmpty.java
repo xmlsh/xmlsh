@@ -4,39 +4,30 @@
  *
  */
 
-package org.xmlsh.type.functions;
+package org.xmlsh.modules.types;
 
 import java.util.List;
 
 import org.xmlsh.core.AbstractBuiltinFunction;
-import org.xmlsh.core.Options;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
 
 
-public class getOptionValue extends AbstractBuiltinFunction
+public class isEmpty extends AbstractBuiltinFunction
 {
 
-  public getOptionValue()
+  public isEmpty()
   {
-    super("get-option-value");
+    super("is-emtpy");
   }
 
   @Override
   public XValue run(Shell shell, List<XValue> args) throws Exception
   {
-	  if( args.size() < 3 ||! args.get(0).isInstanceOf( Options.class)){
-	    	usage(shell, "option [default]");
-		    return XValue.nullValue();
-	    }
-	    
-	    Options conf = args.get(0).asInstanceOf(Options.class );   
-	    String name = args.get(1).toString();
-	    XValue v = conf.getOptValue(name);
-	    if( v == null &&  args.size() > 2 ) 
-	    	v = args.get(2);
-
-	    return v ;
+    for( XValue arg : args )
+    	if( ! arg.isEmpty())
+    		return XValue.newXValue(false) ;
+    return XValue.newXValue(true) ;
   }
 
 }

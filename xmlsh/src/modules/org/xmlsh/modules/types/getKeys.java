@@ -4,21 +4,23 @@
  *
  */
 
-package org.xmlsh.type.functions;
+package org.xmlsh.modules.types;
 
 import java.util.List;
 
 import org.xmlsh.core.AbstractBuiltinFunction;
+import org.xmlsh.core.IXValueMap;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.XValueSequence;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.util.Util;
 
-public class getValues extends AbstractBuiltinFunction
+public class getKeys extends AbstractBuiltinFunction
 {
 
-  public getValues()
+  public getKeys()
   {
-    super("get-values");
+    super("get-key");
   }
 
   @Override
@@ -26,8 +28,14 @@ public class getValues extends AbstractBuiltinFunction
   {
     XValueSequence list = new XValueSequence();
     for( XValue x : args ) { 
-      for( XValue v : x.getXValues() ){
-            list.addValue( v );
+      if( x.isXType() ) {
+        Object o = x.asObject();
+        if( o instanceof org.xmlsh.core.IXValueMap ) {
+          IXValueMap<?> m = (IXValueMap<?>) o ;
+          for( String keys : Util.toList(  m.keySet().iterator()) ) {
+            list.addValue( XValue.newXValue(keys) );
+          }
+        }
       }
     }
     return list.asXValue();

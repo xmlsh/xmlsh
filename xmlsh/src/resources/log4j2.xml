@@ -43,15 +43,17 @@
 		<logger name="org.apache.http" level="WARN" />
 		<logger name="com.amazonaws" level="WARN" />
 		<logger name="org.apache.http.impl.conn" level="WARN" />
+		<logger name="com.amazonaws.auth.profile" level="ERROR" />
 		<logger name="org.xmlsh.sh.grammar" level="WARN" additivity="false">
 		   <AppenderRef ref="A1" />
 		   
 		</logger>
 		
 		 <Root level="ERROR">
+            <AppenderRef ref="CONSOLE" level="ERROR"/>
 		 	  <!-- 
 		   <AppenderRef ref="SHELL" level="trace"/>
-	       <AppenderRef ref="CONSOLE" level="ERROR"/>
+	       <AppenderRef ref="CONSOLE" level="WARN"/>
 	        -->
 		   <AppenderRef ref="A1" level="WARN"/>
 

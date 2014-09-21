@@ -764,8 +764,6 @@ public class Util
 	 {
 		 // First check for a-z{2}+
 
-
-
 		 URI uri = null;
 		 Matcher m = mURIPattern.matcher(s);
 		 if(  m.matches() )
@@ -1801,9 +1799,28 @@ public static <T> boolean contains(T[] array, T v) {
 		   } 
 	   };
 	}
+
+
+	public static String stringConcat(String... values)
+	{
+		StringBuilder sb = new StringBuilder();
+        for( String s : values)
+        	sb.append(s);
+        return sb.toString();
+		
+	}
+
+
+	// Safe conversion in known encoding
+	public static byte[] stringToAsciiBytes( String name ){
+		return name.getBytes(java.nio.charset.StandardCharsets.US_ASCII);
+		
+	}
+
+	public static byte[] stringToUTF8Bytes( String name ){
+		return name.getBytes(java.nio.charset.StandardCharsets.UTF_8);
+	}
 	
-
-
 
 
 }

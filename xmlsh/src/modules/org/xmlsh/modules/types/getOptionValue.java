@@ -4,42 +4,41 @@
  *
  */
 
-package org.xmlsh.type.functions;
+package org.xmlsh.modules.types;
 
 import java.util.List;
 
 import org.xmlsh.core.AbstractBuiltinFunction;
-import org.xmlsh.core.IXValueMap;
+import org.xmlsh.core.Options;
 import org.xmlsh.core.XValue;
-import org.xmlsh.core.XValueSequence;
 import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.util.Util;
 
-public class getKeys extends AbstractBuiltinFunction
+
+public class getOptionValue extends AbstractBuiltinFunction
 {
 
-  public getKeys()
+  public getOptionValue()
   {
-    super("get-key");
+    super("get-option-value");
   }
 
   @Override
   public XValue run(Shell shell, List<XValue> args) throws Exception
   {
-    XValueSequence list = new XValueSequence();
-    for( XValue x : args ) { 
-      if( x.isXType() ) {
-        Object o = x.asObject();
-        if( o instanceof org.xmlsh.core.IXValueMap ) {
-          IXValueMap<?> m = (IXValueMap<?>) o ;
-          for( String keys : Util.toList(  m.keySet().iterator()) ) {
-            list.addValue( XValue.newXValue(keys) );
-          }
-        }
-      }
-    }
-    return list.asXValue();
+	  if( args.size() < 3 ||! args.get(0).isInstanceOf( Options.class)){
+	    	usage(shell, "option [default]");
+		    return XValue.nullValue();
+	    }
+	    
+	    Options conf = args.get(0).asInstanceOf(Options.class );   
+	    String name = args.get(1).toString();
+	    XValue v = conf.getOptValue(name);
+	    if( v == null &&  args.size() > 2 ) 
+	    	v = args.get(2);
+
+	    return v ;
   }
+
 }
 
 

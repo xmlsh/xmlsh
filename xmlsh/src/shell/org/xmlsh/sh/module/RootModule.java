@@ -24,7 +24,7 @@ public class RootModule extends Module {
 	}
 	
 	@Override
-	public String toString() {
+	public String describe() {
 		return getName();
 	}
 	@Override
@@ -43,7 +43,7 @@ public class RootModule extends Module {
 	}
 
 	@Override
-	public String describe() {
+	public String toString() {
 		return getName();
 	}
 

@@ -1,5 +1,5 @@
 <?xml version="1.0" ?>
-<project default="main">
+<project default="main" name="marklogic">
 
 
 	<target name="main" depends="clean, compile, jar,dist"
@@ -37,6 +37,7 @@
 		</delete>
 	</target>
 
+	<target name="build" depends="compile"/>
 
 	<target name="compile" description="Compilation target">
 		<mkdir dir="_out" />

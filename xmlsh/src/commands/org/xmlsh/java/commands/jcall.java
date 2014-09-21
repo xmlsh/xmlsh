@@ -105,7 +105,7 @@ public class jcall extends XCommand
 
     }
     if(classloader == null)
-      classloader = getClassLoader(null);
+      classloader = getClassLoader();
 
     SecurityManager oldManager = null;
     if(args.size() < 1)

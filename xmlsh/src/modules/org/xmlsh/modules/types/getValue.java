@@ -4,7 +4,7 @@
  *
  */
 
-package org.xmlsh.type.functions;
+package org.xmlsh.modules.types;
 
 import java.util.List;
 
@@ -13,21 +13,30 @@ import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
 
 
-public class isEmpty extends AbstractBuiltinFunction
+public class getValue extends AbstractBuiltinFunction
 {
 
-  public isEmpty()
+  public getValue()
   {
-    super("is-emtpy");
+    super("get-value");
   }
 
   @Override
   public XValue run(Shell shell, List<XValue> args) throws Exception
   {
-    for( XValue arg : args )
-    	if( ! arg.isEmpty())
-    		return XValue.newXValue(false) ;
-    return XValue.newXValue(true) ;
+	  if( args.isEmpty())
+		  return XValue.nullValue();
+	  if( args.size() == 1 )
+		  return args.get(0); // TODO Need default value 
+	  
+     if( args.size() != 2 || args.get(0).isAtomic() ){
+    	 usage(shell, "object key");
+		  return XValue.nullValue();
+     }
+     
+     
+     return XValue.newXValue( args.get(0).getNamedValue( args.get(1).toString() ) );
+	  
   }
 
 }

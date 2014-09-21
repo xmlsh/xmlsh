@@ -71,25 +71,25 @@ public class ScriptCommand implements ICommand {
 			switch (mSourceMode) {
 			case SOURCE:
 				return shell.runScript(mScriptStreamSource,
-						mSource.mScriptName, true).mExitStatus;
+						mSource.getScriptName(), true).mExitStatus;
 			case RUN: {
 				try (Shell sh = shell.clone()) {
 					if (args != null)
 						sh.setArgs(args);
-					sh.setArg0(mSource.mScriptName);
+					sh.setArg0(mSource.getScriptName());
 					int ret = sh.runScript(mScriptStreamSource,
-							mSource.mScriptName, true).mExitStatus;
+							mSource.getScriptName(), true).mExitStatus;
 					return ret;
 				}
 			}
 			case VALIDATE:
 
 				return shell.validateScript(mScriptStreamSource,
-						mSource.mScriptName) ? 0 : 1;
+						mSource.getScriptName() ) ? 0 : 1;
 
 			case IMPORT: {
 				int ret = shell.runScript(mScriptStreamSource,
-						mSource.mScriptName, true).mExitStatus;
+						mSource.getScriptName(), true).mExitStatus;
 				;
 				return ret;
 			}
@@ -103,12 +103,9 @@ public class ScriptCommand implements ICommand {
 	}
 
 	private Reader getScriptSource() throws IOException {
-		if (mSource.mScriptURL != null)
-			return new InputStreamReader(mSource.mScriptURL.openStream(),
-					mSource.mEncoding);
-		if (mSource.mScriptBody != null)
-			return Util.toReader(mSource.mScriptBody);
-		throw new IOException("Script body is empty");
+		return mSource.openReader();
+		
+		
 	}
 
 	/*
@@ -123,7 +120,7 @@ public class ScriptCommand implements ICommand {
 
 	@Override
 	public URL getURL() {
-		return mSource.mScriptURL; // may be null
+		return mSource.getURL(); // may be null
 
 	}
 
@@ -144,12 +141,12 @@ public class ScriptCommand implements ICommand {
 	}
 
 	public String getScriptName() {
-		return mSource.mScriptName;
+		return mSource.getScriptName();
 	}
 
 	@Override
 	public void print(PrintWriter w, boolean bExec) {
-		w.print(mSource.mScriptName);
+		w.print(mSource.getScriptName());
 	}
 
 }

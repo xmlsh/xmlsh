@@ -8,6 +8,7 @@ package org.xmlsh.sh.module;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
 
@@ -31,14 +32,12 @@ public interface IModule extends		IStaticModule {
 	 * Calls into the module
 	 */
 
-	public void onInit(Shell shell, List<XValue> args) throws Exception;
-
-	// close() is called for an unload
-
 	/*
 	 * Calls TO the module
 	 */
-	public ICommand getCommand(String name) throws IOException;
+	public ICommand getCommand(String name) throws IOException, URISyntaxException;
+
+	// close() is called for an unload
 
 	public IFunctionExpr getFunction(String name);
 
@@ -48,6 +47,8 @@ public interface IModule extends		IStaticModule {
 	public String getName();
 
 	StaticContext getStaticContext();
+
+	public void onInit(Shell shell, List<XValue> args) throws Exception;
 
 }
 

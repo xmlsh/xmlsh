@@ -7,7 +7,9 @@
 package org.xmlsh.core;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -65,7 +67,7 @@ public abstract class CommandFactory {
 	public static final String kCOMMANDS_HELP_XML = "/org/xmlsh/resources/help/commands.xml";
 	public static final String kFUNCTIONS_HELP_XML = "/org/xmlsh/resources/help/functions.xml";
 
-	private static Logger mLogger = org.apache.logging.log4j.LogManager
+	public static Logger mLogger = org.apache.logging.log4j.LogManager
 			.getLogger(CommandFactory.class);
 	private static CommandFactory _instance = null;
 
@@ -119,7 +121,7 @@ public abstract class CommandFactory {
 
 
 	public static ICommand getCommand(Shell shell, String name, SourceLocation loc)
-			throws IOException, CoreException {
+			throws IOException, CoreException, URISyntaxException {
 		mLogger.entry(shell, name, loc);
 
 		ICommand cmd = getCommandFromFunction(shell, name, loc);
@@ -182,7 +184,7 @@ public abstract class CommandFactory {
 
 	}
 
-	private static ICommand getModuleCommand(Shell shell, String name) throws IOException {
+	private static ICommand getModuleCommand(Shell shell, String name) throws IOException, URISyntaxException {
 
 		mLogger.entry(shell, name);
 
@@ -343,17 +345,38 @@ public abstract class CommandFactory {
 	 */
 
 	public static ScriptSource getScriptSource(Shell shell, String name,
-			SourceMode sourceMode, XValue at) throws IOException, CoreException {
-		mLogger.entry(shell, name,sourceMode);
+			SourceMode sourceMode, List<URL> at) throws IOException, CoreException, URISyntaxException {
+		mLogger.entry(shell, name,sourceMode,at);
 
 		File scriptFile = null;
 
+		// If at - try to use it explicitly
+		URL url = null;
+		ScriptSource src = null ;
+		if( at != null ){
+            Exception caught = null;
+			for( URL u : at  ){
+			   try {
+					src = getScriptSource(shell, u, name);
+				} catch (Exception e) {
+				    caught = e ;
+					mLogger.catching(e);
+					continue ;
+				}
+			}
+			if( src != null )
+				return  mLogger.exit(src) ;
+			mLogger.throwing( caught != null  ? caught : new FileNotFoundException(name) );
+		}
+		
 		// If name has a scheme try that first
-		URL url = Util.tryURL(name);
+		url = Util.tryURL(name);
 		if (url != null){
 			mLogger.debug("script has URL {} ", url );
 			return mLogger.exit(getScriptSource(shell, url, name));
 		}
+		
+		
 		String ext = FileUtils.getExt( name );
 		boolean bIsXsh = ".xsh".equals(ext);
 		
@@ -362,8 +385,6 @@ public abstract class CommandFactory {
         }
 		
 		if (scriptFile == null) {
-			
-			
             SearchPath[] paths;
 			
 			// searh in XPATH for include/source and XMODPATH for modules 
@@ -390,7 +411,6 @@ public abstract class CommandFactory {
 		return mLogger.exit(ss);
 
 	}
-
 	/*
 	 * Return a list of extensions to try
 	 * Excluding the current extension (convert to ""
@@ -409,7 +429,7 @@ public abstract class CommandFactory {
 
 	public static ScriptCommand getScript(Shell shell, String name,
 			SourceMode sourceMode, SourceLocation loc) throws IOException,
-			CoreException {
+			CoreException, URISyntaxException {
 		mLogger.entry(shell, name,sourceMode);
 
 		ScriptSource source = getScriptSource(shell, name, sourceMode,null);
@@ -535,7 +555,7 @@ public abstract class CommandFactory {
 	}
 
 	public static ScriptSource getScriptSource(Shell shell, URL url, String name)
-			throws CoreException, IOException {
+			throws CoreException, IOException, URISyntaxException {
 		mLogger.entry(shell, name,url);
 
 		return new ScriptSource(name, url, shell.getInputTextEncoding());
@@ -543,7 +563,7 @@ public abstract class CommandFactory {
 	}
 
 	private static ScriptSource getScriptSource(Shell shell, File file, String name)
-			throws CoreException, IOException {
+			throws CoreException, IOException, URISyntaxException {
 		mLogger.entry(shell, name,file);
 
 		return new ScriptSource(name, file.toURI().toURL(),
@@ -553,7 +573,7 @@ public abstract class CommandFactory {
 
 	public static ScriptCommand getScript(Shell shell, URL url, String name,
 			SourceMode sourceMode, SourceLocation loc) throws CoreException,
-			IOException {
+			IOException, URISyntaxException {
 		mLogger.entry(shell, url);
 
 		return new ScriptCommand(getScriptSource(shell, url, name), sourceMode,
@@ -563,7 +583,7 @@ public abstract class CommandFactory {
 
 	public static ScriptCommand getScript(Shell shell, File file, String name,
 			SourceMode sourceMode, SourceLocation loc) throws CoreException,
-			IOException {
+			IOException, URISyntaxException {
 		mLogger.entry(shell, name , file , sourceMode );
 
 		return new ScriptCommand(getScriptSource(shell, file, name),

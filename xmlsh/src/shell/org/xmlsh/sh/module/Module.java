@@ -6,59 +6,40 @@ import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.xmlsh.builtin.commands.jobs;
-import org.xmlsh.core.ReferenceCountedHandle;
 import org.xmlsh.core.XClassLoader;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.sh.shell.StaticContext;
 
-public abstract class Module implements IModule 
-{
+public abstract class Module implements IModule {
 
 	protected String mName;
-	protected ClassLoader mClassLoader;
+	private ClassLoader mClassLoader;
 	protected URL mHelpURL = null;
+
 	private HashMap<String, Class<?>> mClassCache = new HashMap<String, Class<?>>();
-	protected HashMap<String, Boolean> mScriptCache = new HashMap<String, Boolean>();
+	private HashMap<String, Boolean> mClassCacheMisses = new HashMap<String, Boolean>();
 
-	// TODO
-	public ModuleClass getModuleClass() 
-	{
-		return null ;
-	}
 	protected Module(String name) {
-		mName = name ;
-	}
-
-	@Override
-	public StaticContext getStaticContext() {
-	
-		getLogger().entry();
-		return null;
+		mName = name;
 	}
 
 	@Override
 	protected void finalize() {
 		// Clear refs
-		mClassLoader = null;
+		setClassLoader(null);
 		if (mClassCache != null)
 			mClassCache.clear();
 		mClassCache = null;
-	
-		if (mScriptCache != null)
-			mScriptCache.clear();
-		mScriptCache = null;
-	
-	}
 
-	protected Logger getLogger() {
-		return LogManager.getLogger(getClass());
-	
+		if (mClassCacheMisses != null)
+			mClassCacheMisses.clear();
+		mClassCacheMisses = null;
+
 	}
 
 	protected Class<?> findClass(String className) {
-	
+
 		getLogger().entry(className);
 		// Find cached class name even if null
 		// This caches failures as well as successes
@@ -66,17 +47,17 @@ public abstract class Module implements IModule
 		// caching failed lookups
 		if (mClassCache.containsKey(className))
 			return mClassCache.get(className);
-	
+
 		Class<?> cls = null;
 		try {
-			cls = Class.forName(className, true, mClassLoader);
+			cls = Class.forName(className, true, getClassLoader());
 		} catch (ClassNotFoundException e) {
-	
+
 		}
 		// Store class in cache even if null
 		mClassCache.put(className, cls);
 		return cls;
-	
+
 	}
 
 	protected Class<?> findClass(String name, List<String> packages) {
@@ -88,18 +69,58 @@ public abstract class Module implements IModule
 		return null;
 	}
 
+	protected URL findResourceInPackages(String name, List<String> packages) {
+		/*
+		 * Undocumented: When using a classloader to get a resource, then the
+		 * name should NOT begin with a "/"
+		 */
+
+		/*
+		 * Get cached indication of if there is a resource by this name
+		 */
+
+		if (hasClassLookupFailed(name))
+			return null;
+
+		for (String pkg : packages) {
+			URL is = getClassLoader().getResource(toResourceName(name, pkg));
+			if (is != null) {
+				setCacheHit(name);
+				return is;
+			}
+		}
+		setCacheMissed(name);
+
+		return null;
+	}
+
+	protected ClassLoader getClassLoader() {
+		return mClassLoader;
+	}
+
 	protected ClassLoader getClassLoader(List<URL> classpath) {
 		if (classpath == null || classpath.size() == 0)
 			return getClass().getClassLoader();
-	
+
 		return new XClassLoader(classpath.toArray(new URL[classpath.size()]),
 				getClass().getClassLoader());
-	
+
 	}
 
 	@Override
 	public URL getHelpURL() {
 		return mHelpURL;
+	}
+
+	protected Logger getLogger() {
+		return LogManager.getLogger(getClass());
+
+	}
+
+	// TODO
+	@Override
+	public ModuleClass getModuleClass() {
+		return null;
 	}
 
 	@Override
@@ -115,19 +136,46 @@ public abstract class Module implements IModule
 		 */
 		if (res.startsWith("/"))
 			res = res.substring(1);
-		return mClassLoader.getResource(res);
+		return getClassLoader().getResource(res);
+	}
+
+	@Override
+	public StaticContext getStaticContext() {
+
+		getLogger().entry();
+		return null;
+	}
+
+	protected boolean hasClassLookupFailed(String name) {
+		Boolean hasResource = mClassCacheMisses.get(name);
+		if (hasResource != null && !hasResource.booleanValue())
+			return true;
+		return false;
+
 	}
 
 	@Override
 	public void onInit(Shell shell, List<XValue> args) throws Exception {
 		getLogger().trace("module {} onInit()", getName());
-	
+
 	}
 
 	@Override
 	public void onLoad(Shell shell) {
 		getLogger().trace("module {} onLoad()", getName());
-	
+
+	}
+
+	protected void setCacheHit(String name) {
+		mClassCacheMisses.put(name, true);
+	}
+
+	protected void setCacheMissed(String name) {
+		mClassCacheMisses.put(name, false);
+	}
+
+	protected void setClassLoader(ClassLoader classLoader) {
+		mClassLoader = classLoader;
 	}
 
 	protected String toResourceName(String name, String pkg) {
@@ -139,7 +187,5 @@ public abstract class Module implements IModule
 	public String toString() {
 		return getName();
 	}
-
-
 
 }

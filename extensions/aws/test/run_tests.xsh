@@ -1,7 +1,7 @@
 # Runs all tests 
 # checking for required externals
 
-[ -f "$HOME/initaws.xsh" ] && . $HOME/initaws.xsh
+
 
 # check for missing TMPDIR
 [ -n "$TMPDIR" ] || { echo TMPDIR must be set to run tests ; exit 1 ; }
@@ -9,11 +9,15 @@
 TMPDIR=$(xfile $(xfile -c $TMPDIR))
 [ -d "$TMPDIR" ] || { echo TMPDIR must be a directory: $TMPDIR ; exit 1 ; }
 
-# check for missing AWS_ACCESS_KEY
-[ -n "$AWS_ACCESS_KEY" ] || { echo AWS_ACCESS_KEY must be set to run tests ; exit 1 ; }
 
-# check for missing TMPDIR
-[ -n "$AWS_SECRET_KEY" ] || { echo AWS_SECRET_KEY must be set to run tests ; exit 1 ; }
+if xwhich -n aws && aws configure get region >/dev/null 2>&1  ; then 
+   echo using aws cli configuration 
+else
+  echo you need to configure aws with 'aws configure'
+  aws configure get region
+  exit 1
+fi
+
 
 # Use internal posix module
 import commands posix

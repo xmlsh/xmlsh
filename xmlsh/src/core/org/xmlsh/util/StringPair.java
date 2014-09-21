@@ -6,6 +6,8 @@
 
 package org.xmlsh.util;
 
+import org.xmlsh.core.XValue;
+
 /**
  * A String which can optionally be a pair of strings delimited by a seperator
  */
@@ -26,6 +28,11 @@ public class StringPair {
 
 		} else
 			mRight = string ;
+	}
+
+
+	public StringPair(XValue arg,char delim) {
+		this(arg.toString(),delim);
 	}
 
 

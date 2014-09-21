@@ -8,12 +8,18 @@ package org.xmlsh.util;
 
 import java.io.File;
 import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.xmlsh.core.CommandFactory;
+import org.xmlsh.core.XValue;
+import org.xmlsh.sh.shell.Shell;
 
 public class FileUtils
 {
@@ -55,6 +61,8 @@ public class FileUtils
 	public boolean hasConsole() {
 		return System.console() != null ;
 	}
+
+	
 	public static boolean hasDirectory(String name) {
 		 Path p = Paths.get(name);
 		 return p.getNameCount() > 1 ;

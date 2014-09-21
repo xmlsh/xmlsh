@@ -11,11 +11,11 @@ import org.xmlsh.sh.shell.Shell;
  * affects behaviour if the Static Module is shared across Module instances.
  */
 public interface IStaticModule {
-	public abstract ModuleClass getModuleClass();
-	public abstract void onLoad(Shell shell) throws Exception;
-	public abstract String getName();
-	public abstract boolean hasHelp(String name);
 	public abstract String describe();
+	public abstract ModuleClass getModuleClass();
+	public abstract String getName();
 	public abstract URL getResource(String res);
+	public abstract boolean hasHelp(String name);
+	public abstract void onLoad(Shell shell) throws Exception;
 
 }

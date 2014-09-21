@@ -25,14 +25,14 @@ public class ModuleClass {
 		return mID;
 	}
 
-	// Frienly name for module - but may not be uniqe across all modules
-	public String getName() {
-		return mName;
-	}
-	
 	// Module bound to a location
 	public URI getModuleLocation() {
 		return mLocation;
+	}
+	
+	// Frienly name for module - but may not be uniqe across all modules
+	public String getName() {
+		return mName;
 	} 
 	
 

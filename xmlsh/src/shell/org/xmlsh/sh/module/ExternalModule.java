@@ -36,7 +36,7 @@ public class ExternalModule extends PackageModule
   private String mURI;
   
 
-  ExternalModule(Shell shell, String nameuri, URI nameURI, XValue at) throws CoreException
+  ExternalModule(Shell shell, String nameuri, URI nameURI, List<URL> at) throws CoreException
   {
     super(shell,nameuri);
     try {
@@ -76,7 +76,7 @@ public class ExternalModule extends PackageModule
     String pkg = xv.xpath(shell, "/module/@package/string()").toString();
     // TODO: better support for multi packages
 
-    mPackages = Collections.singletonList(pkg);
+    setPackages(Collections.singletonList(pkg));
     mName = xv.xpath(shell, "/module/@name/string()").toString();
     String require = xv.xpath(shell, "/module/@require/string()").toString();
     if(!Util.isBlank(require)) {
@@ -109,9 +109,9 @@ public class ExternalModule extends PackageModule
 
       }
 
-    mClassLoader = getClassLoader(classpath);
+    setClassLoader(getClassLoader(classpath));
     // TODO: better support for multi packages
-    mHelpURL = mClassLoader.getResource(toResourceName("commands.xml", mPackages.get(0)));
+    mHelpURL = getClassLoader().getResource(toResourceName("commands.xml", getPackages().get(0)));
 
   } catch (CoreException e) {
     throw e;

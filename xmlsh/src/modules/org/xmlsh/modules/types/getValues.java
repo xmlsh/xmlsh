@@ -4,35 +4,33 @@
  *
  */
 
-package org.xmlsh.type.functions;
+package org.xmlsh.modules.types;
 
 import java.util.List;
 
 import org.xmlsh.core.AbstractBuiltinFunction;
-import org.xmlsh.core.XConfiguration;
 import org.xmlsh.core.XValue;
+import org.xmlsh.core.XValueSequence;
 import org.xmlsh.sh.shell.Shell;
 
-public class getConfigSection extends AbstractBuiltinFunction
+public class getValues extends AbstractBuiltinFunction
 {
 
-  public getConfigSection()
+  public getValues()
   {
-    super("get-config-section");
-    // TODO Auto-generated constructor stub
+    super("get-values");
   }
 
   @Override
   public XValue run(Shell shell, List<XValue> args) throws Exception
   {
-    if( args.size() != 2 ||! args.get(0).isInstanceOf( XConfiguration.class)){
-    	usage(shell, "config section-name");
-	    return XValue.nullValue();
+    XValueSequence list = new XValueSequence();
+    for( XValue x : args ) { 
+      for( XValue v : x.getXValues() ){
+            list.addValue( v );
+      }
     }
-    
-    XConfiguration conf = args.get(0).asInstanceOf(XConfiguration.class );   
-    String name = args.get(1).toString();
-    return XValue.newXValue(conf.getSection(name));
+    return list.asXValue();
   }
 }
 

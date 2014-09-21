@@ -8,12 +8,15 @@ package org.xmlsh.builtin.commands;
 
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.xmlsh.annotations.Command;
 import org.xmlsh.core.BuiltinCommand;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
@@ -23,6 +26,7 @@ import org.xmlsh.sh.module.Module;
 import org.xmlsh.util.StringPair;
 import org.xmlsh.util.Util;
 
+@Command(name="import")
 public class ximport extends BuiltinCommand
 {
   private static Logger mLogger = LogManager.getLogger();
@@ -45,7 +49,7 @@ public class ximport extends BuiltinCommand
         if(args.isEmpty())
           usage();
         else for (XValue arg : args)
-          if( ! importPackage(arg.toString()) ) {
+          if( ! importPackage(new StringPair(arg,'='))) {
             mShell.printErr("package: " + arg.toString() + " not found");
             ret++;
           }
@@ -55,7 +59,7 @@ public class ximport extends BuiltinCommand
         if(args.isEmpty())
           usage();
         else for (XValue arg : args) {
-          if( ! importCommands(arg.toString())){
+          if( ! importCommands(new StringPair(arg,'='))){
             mShell.printErr("xmlsh command extension: " + arg.toString() + " not found");
             ret++;
           }
@@ -65,7 +69,7 @@ public class ximport extends BuiltinCommand
       else if(what.toString().equals("java"))
         return importJava(args);
       else 
-        return importScript(what.toString(),args);
+        return importScript(new StringPair(what,'='),args);
     }
 
     catch (InvalidArgumentException e) {
@@ -90,21 +94,14 @@ public class ximport extends BuiltinCommand
    * import foo=script
    * import foo=a.b.c at jar-file
    */
-  private int importScript(String script, List<XValue> args) throws Exception
+  private int importScript(StringPair qname, List<XValue> args) throws Exception
   {
     
-    XValue at = getAt(args);
-    if( at != null ){
-      if( args.isEmpty()){
-        usage();
-        return 2;
-      }
-      at = args.remove(0);
-    }
+    List<URL> at = getAt(args);
     
    // ScriptCommand icmd = CommandFactory.getInstance().getScript(mShell, at.toString() ,SourceMode.IMPORT,getLocation());
 
-    mShell.importScript(script , at , args ); 
+    mShell.importScript(qname.getLeft(),qname.getRight(), at, args ); 
     
     
     return 0;
@@ -120,23 +117,25 @@ public class ximport extends BuiltinCommand
     }
 
     String mod = args.remove(0).toString();
-    XValue at = getAt(args);
+    List<URL> at = getAt(args);
+    StringPair pair = new StringPair(mod, '=');
     
 
-    mShell.importModule(mod, at, args);
+    mShell.importModule(pair.getLeft(),pair.getRight(), at, args);
 
     return 0;
   }
 
-  private XValue getAt(List<XValue> args)
+  private List<URL>  getAt(List<XValue> args) throws CoreException
   {
-    XValue at = null;
+    List<URL> at = null;
     if(args.size() > 1 && args.get(0).isAtomic() && args.get(0).toString().equals("at")) {
       args.remove(0);
-      at = args.remove(0);
+      at = mShell.toUrls(args);
     }
     return at;
   }
+
 
   
   
@@ -154,11 +153,11 @@ public class ximport extends BuiltinCommand
     if(args.size() == 0)
       return listClasspaths();
 
-   XValue at = getAt(args);
-   if( at != null )
-     args.add(0, at);
+   List<URL> at = getAt(args);
+   if( at == null )
+	   at = mShell.toUrls(args);
 
-    mShell.importJava(XValue.newXValue(args)  );
+    mShell.importJava( at  );
 
     return 0;
   }
@@ -183,38 +182,17 @@ public class ximport extends BuiltinCommand
 
   }
 
-  private boolean importPackage(String fullname) throws Exception
+  private boolean importPackage(StringPair qname) throws Exception
   {
 
-    String name = null;
-    String prefix = null;
-
-    /* parse package for prefix=package */
-    StringPair pair = new StringPair(fullname, '=');
-    if(pair.hasLeft()) {
-      prefix = pair.getLeft();
-      name = pair.getRight();
-    }
-    else name = fullname;
-
-    return mShell.importPackage(prefix, name, Collections.singletonList(name));
+    return mShell.importPackage(qname.getLeft(),qname.getRight(), Collections.singletonList(qname.getRight()));
   }
 
-  private boolean importCommands(String fullname) throws Exception
+  private boolean importCommands(StringPair qname) throws Exception
   {
 
-    String name = null;
-    String prefix = null;
 
-    /* parse package for prefix=package */
-    StringPair pair = new StringPair(fullname, '=');
-    if(pair.hasLeft()) {
-      prefix = pair.getLeft();
-      name = pair.getRight();
-    }
-    else name = fullname;
-
-    return mShell.importPackage(prefix, name, internalPackages(name)) ;
+    return mShell.importPackage(qname.getLeft(),qname.getRight(),internalPackages(qname.getRight())) ;
   }
 
   private List<String> internalPackages(String fullname)
