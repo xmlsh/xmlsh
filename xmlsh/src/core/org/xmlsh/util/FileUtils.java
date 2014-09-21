@@ -64,8 +64,12 @@ public class FileUtils
 
 	
 	public static boolean hasDirectory(String name) {
+		/* Dont use Paths ... it bombs on bad names
 		 Path p = Paths.get(name);
 		 return p.getNameCount() > 1 ;
+		 */
+		return name.contains( File.separator) ||
+				( Util.isWindows() && name.contains("/"));
 	 }
 	public static String convertPath(String name, boolean bSystem) {
 		if( bSystem && File.separatorChar != '/')
@@ -173,23 +177,11 @@ public class FileUtils
 
 		
 		mLogger.entry(name);
-		try {
-		Path path  = Paths.get(name);
-		assert( path != null && path.getNameCount() > 0);
-		String base = path.getName(path.getNameCount()-1).toString();
-		assert( base != null );
-		
-		int dotpos = base.lastIndexOf('.');
-		if( dotpos > 0 && dotpos < base.length() ) // ".xyz" not an extension
-			return mLogger.exit(base.substring(dotpos ));
-		
-		} catch (InvalidPathException e){
-			mLogger.catching(e);
+		name = getPathLikeName( name );
 			// Try the hard way.
 			int dotpos = name.lastIndexOf('.');
 			if( dotpos > 0 && dotpos < name.length() ) // ".xyz" not an extension
 				return mLogger.exit(name.substring(dotpos ));
-		}
 		return mLogger.exit("");
 		
 	}
