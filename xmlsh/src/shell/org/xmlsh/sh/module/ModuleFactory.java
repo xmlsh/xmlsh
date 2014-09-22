@@ -39,7 +39,7 @@ public class ModuleFactory
   public static Module createModule(Shell shell, String nameuri, List<URL> at )  throws Exception
   {
 	 
-	  
+	mLogger.entry(shell, nameuri, at);
 	  
     URI nameURI = null;
 	
@@ -68,7 +68,7 @@ public class ModuleFactory
     
     if( mod != null )
       mod.onLoad(shell);
-    return mod ;
+    return mLogger.exit(mod) ;
   }
 
   public static Module createPackageModule(Shell shell, String name, List<String> pkgs, String helpURL)

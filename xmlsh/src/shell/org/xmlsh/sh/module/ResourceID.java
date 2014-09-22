@@ -6,35 +6,21 @@ import java.util.UUID;
 
 public class ResourceID {
 
-	public static URI genURI(String name, String type) throws URISyntaxException {
-		return new URI("urn", type + ":" + name , null  );
-	}
-	private ResourceName   mName ;
-	
-	/*
-	 * name/typ[e only 
-	 */
-
-
+	private String   mName ;
 	private URI      mURI ;
-	public ResourceID(ResourceName name) {
+	public ResourceID(String name) {
 		mName = name ;
 	}
 	
-	public ResourceID(ResourceName name, URI uri) {
+	public ResourceID(String name, URI uri) {
 		mName = name ;
 		mURI = uri ;
 	}
 
 
-	public ResourceID(String name) {
-		mName = new ResourceName(name);
+	public static URI genURI(String name, String type) throws URISyntaxException {
+		return new URI("urn", type + ":" + name , null  );
 	}
-	public ResourceID(String name, URI uri) {
-	   this( new ResourceName(name),uri );
-	}
-
-
 
 	@Override
 	public boolean equals(Object obj) {
@@ -49,7 +35,7 @@ public class ResourceID {
 		return false ;
 	}
 
-	public ResourceName getName() {
+	public String getName() {
 		return mName;
 	}
 
@@ -57,7 +43,7 @@ public class ResourceID {
 		return mURI;
 	}
 
-	public void setName(ResourceName name) {
+	public void setName(String name) {
 		mName = name;
 	}
 	

@@ -11,7 +11,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.xmlsh.sh.module.Resource;
 import org.xmlsh.sh.module.ResourceID;
-import org.xmlsh.sh.module.ResourceLocation;
 import org.xmlsh.util.Util;
 
 public class ScriptSource  extends Resource {
@@ -23,17 +22,17 @@ public class ScriptSource  extends Resource {
 
 
 	public ScriptSource(String scriptName, URL scriptURL, String encoding) throws URISyntaxException {
-		super( new ResourceID( scriptName, scriptURL.toURI()) , new ResourceLocation(scriptURL));
+		super( new ResourceID( scriptName, scriptURL.toURI()) , scriptURL );
 		mEncoding = encoding;
 	}
 
 	public ScriptSource(String scriptName, String scriptBody) {
-		super( new ResourceID( scriptName ) , ResourceLocation.opaqueLocation() );
+		super( new ResourceID( scriptName ) ,null );
 		mScriptBody = scriptBody;
 	}
 
 	public String getScriptName() {
-		return super.getName().getName();
+		return super.getName();
 	}
 
 	public Reader openReader() throws UnsupportedEncodingException, IOException {
