@@ -8,11 +8,11 @@ package org.xmlsh.internal.commands;
 
 import java.util.List;
 
-import org.xmlsh.core.CommandFactory;
 import org.xmlsh.core.ScriptCommand;
 import org.xmlsh.core.ScriptCommand.SourceMode;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
+import org.xmlsh.sh.module.CommandFactory;
 
 public class validate extends XCommand  {
 

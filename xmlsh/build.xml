@@ -56,6 +56,7 @@ version.version=${version}
 			<src path="src/core" />
 			<src path="src/shell"/>
 			<src path="src/commands"/>
+			<src path="src/modules"/>
 			<src path="src/generated" />
 			<src path="src/resources" />
 			<classpath>
@@ -82,6 +83,12 @@ version.version=${version}
 				<include name="**/*.xml"/>
 				<include name="**/*.xquery"/>
 			</fileset>
+			<fileset dir="src/modules">
+				<include name="**/*.xsh"/>
+				<include name="**/*.xsl"/>
+				<include name="**/*.xml"/>
+				<include name="**/*.xquery"/>
+                        </fileset>
 			<fileset dir="src/resources">
 				<include name="log4j2.xml"/>
 			</fileset>

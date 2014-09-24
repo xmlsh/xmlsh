@@ -13,6 +13,7 @@ import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.Options.OptionValue;
 import org.xmlsh.core.XValue;
+import org.xmlsh.util.FileUtils;
 import org.xmlsh.util.Util;
 
 public class SerializeOpts {
@@ -22,7 +23,7 @@ public class SerializeOpts {
 	private boolean indent = true;
 	private boolean omit_xml_declaration = true;
 	private String input_xml_encoding = "UTF-8"; // default encoding
-	private String input_text_encoding = System.getProperty("file.encoding");
+	private String input_text_encoding = FileUtils.getSystemTextEncoding();
 
 	private String output_xml_encoding = input_xml_encoding;
 	private String output_text_encoding = input_xml_encoding;

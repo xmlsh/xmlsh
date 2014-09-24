@@ -23,7 +23,6 @@ import javax.xml.stream.XMLStreamWriter;
 
 import net.sf.saxon.s9api.SaxonApiException;
 
-import org.xmlsh.core.CommandFactory;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.ICommand;
 import org.xmlsh.core.ScriptCommand.SourceMode;
@@ -32,6 +31,7 @@ import org.xmlsh.core.VariableOutputPort;
 import org.xmlsh.core.XEnvironment;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.XVariable;
+import org.xmlsh.sh.module.CommandFactory;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.sh.shell.ShellConstants;
 import org.xmlsh.types.TypeFamily;

@@ -17,8 +17,8 @@ import java.nio.file.Paths;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.xmlsh.core.CommandFactory;
 import org.xmlsh.core.XValue;
+import org.xmlsh.sh.module.CommandFactory;
 import org.xmlsh.sh.shell.Shell;
 
 public class FileUtils
@@ -63,6 +63,9 @@ public class FileUtils
 	}
 
 	
+	public static String getSystemTextEncoding() {
+		return System.getProperty("file.encoding");
+	}
 	public static boolean hasDirectory(String name) {
 		/* Dont use Paths ... it bombs on bad names
 		 Path p = Paths.get(name);

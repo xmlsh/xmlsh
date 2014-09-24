@@ -11,13 +11,13 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.xmlsh.core.BuiltinCommand;
-import org.xmlsh.core.CommandFactory;
 import org.xmlsh.core.ICommand;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.ScriptCommand.SourceMode;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.core.EvalScriptExpr;
 import org.xmlsh.sh.core.ICommandExpr;
+import org.xmlsh.sh.module.CommandFactory;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.sh.shell.ShellConstants;
 

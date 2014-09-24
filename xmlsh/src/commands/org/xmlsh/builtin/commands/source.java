@@ -9,11 +9,11 @@ package org.xmlsh.builtin.commands;
 import java.util.List;
 
 import org.xmlsh.core.BuiltinCommand;
-import org.xmlsh.core.CommandFactory;
 import org.xmlsh.core.ICommand;
 import org.xmlsh.core.ScriptCommand.SourceMode;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
+import org.xmlsh.sh.module.CommandFactory;
 
 public class source extends BuiltinCommand {
 

@@ -45,7 +45,6 @@ import org.apache.commons.io.output.StringBuilderWriter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.ThreadContext;
-import org.xmlsh.core.CommandFactory;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.EvalEnv;
 import org.xmlsh.core.ExitOnErrorException;
@@ -77,10 +76,12 @@ import org.xmlsh.sh.core.SourceLocator;
 import org.xmlsh.sh.grammar.ParseException;
 import org.xmlsh.sh.grammar.ShellParser;
 import org.xmlsh.sh.grammar.ShellParserReader;
+import org.xmlsh.sh.module.CommandFactory;
 import org.xmlsh.sh.module.IModule;
 import org.xmlsh.sh.module.ModuleFactory;
 import org.xmlsh.sh.module.RootModule;
 import org.xmlsh.util.FileUtils;
+import org.xmlsh.util.JavaUtils;
 import org.xmlsh.util.NullInputStream;
 import org.xmlsh.util.NullOutputStream;
 import org.xmlsh.util.SessionEnvironment;
@@ -234,10 +235,13 @@ public class Shell implements AutoCloseable, Closeable {
 	private void importStandardModules() throws Exception {
 		
 		IModule hInternal = 
-				 ModuleFactory.createPackageModule(this, "xmlsh",
-		 					Arrays.asList(
-		 							"org.xmlsh.internal.commands", "org.xmlsh.internal.functions") , CommandFactory.kCOMMANDS_HELP_XML );
-		 getModules().importModule( this , null , hInternal , null);		
+				 ModuleFactory.createPackageModule( this ,
+		 					"xmlsh" , Arrays.asList(
+											"org.xmlsh.internal.commands", "org.xmlsh.internal.functions"),
+		 							CommandFactory.kCOMMANDS_HELP_XML);
+		 getModules().importModule( this , null , hInternal , null);
+		 
+		 
 	}
 
 	private void setGlobalVars() throws InvalidArgumentException {
@@ -1640,6 +1644,7 @@ public class Shell implements AutoCloseable, Closeable {
 		mLogger.entry(at, init);
 
 		IModule mod = getModules().getExistingModuleByName(name);
+		
 		if( mod == null )
 			mod =   ModuleFactory.createModule(this, name, at );
 			
@@ -1668,8 +1673,8 @@ public class Shell implements AutoCloseable, Closeable {
 		
 	 		IModule mod = getModules().getExistingModuleByName(name);
 	 		if( mod == null )
-	 			mod =  ModuleFactory.createPackageModule(this, name,
-	 					packages, sHelp );
+	 			mod =  ModuleFactory.createPackageModule( this ,
+	 					name, packages, sHelp );
 
 	 		boolean inited = getModules().importModule( this , prefix , mod , null );
 	 		return  true ;
@@ -2186,9 +2191,6 @@ public class Shell implements AutoCloseable, Closeable {
 		ThreadContext.put("xmodule", mod.describe());
 		return mLogger.exit(mod);
 	}
-
-	
-
 
 
 
