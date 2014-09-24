@@ -7,11 +7,16 @@
 package org.xmlsh.sh.module;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.xmlsh.core.AbstractCommand;
+import org.xmlsh.core.CoreException;
 import org.xmlsh.core.ICommand;
 import org.xmlsh.core.IFunctionExpr;
 import org.xmlsh.core.ScriptCommand;
@@ -21,31 +26,22 @@ import org.xmlsh.core.ScriptSource;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.sh.shell.IFunctionDefiniton;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.util.FileUtils;
 import org.xmlsh.util.JavaUtils;
+import org.xmlsh.util.StringPair;
 import org.xmlsh.util.Util;
 
 public class PackageModule extends Module {
-	private List<String> mPackages;
-	protected String mEncoding;
-
-	protected PackageModule(Shell shell, String name) {
-		super(name);
-		mEncoding = shell.getInputTextEncoding();
-
-	}
 
 	/*
 	 * Constructor for internal modules like xlmsh
 	 * These dont get their own thread group
 	 */
-	protected PackageModule(Shell shell, String name, List<String> packages,
-			String helpURL) {
-		this(shell, name);
-		mEncoding = shell.getInputTextEncoding();
-		setPackages(packages);
-		setClassLoader(getClassLoader(null));
-		// Undocumented - if you use a class loader to find a resource dont start it with "/"
-		mHelpURL = getClassLoader().getResource(helpURL.replaceFirst("^/", ""));
+	
+	
+	static Logger mLogger = LogManager.getLogger();
+	protected PackageModule( ModuleConfig config ) {
+		super( config );
 	}
 
 	private String convertCamelCase(String name) {
@@ -115,18 +111,20 @@ public class PackageModule extends Module {
 			// Cached in AbstractModule
 			Class<?> cls = findClass(name, getPackages());
 			if (cls != null) {
+				if( isCommandClass( cls )){
 				Constructor<?> constructor = cls.getConstructor();
 				if (constructor != null) {
 					Object obj = constructor.newInstance();
-					if (obj instanceof XCommand) {
-						XCommand cmd = (XCommand) obj;
+					if (obj instanceof AbstractCommand) {
+						AbstractCommand cmd = (AbstractCommand) obj;
 						cmd.setModule(this);
 						return cmd;
 					} else
 						getLogger()
-								.warn("Command class found [ {} ] but is not instance of XCommand.",
+								.warn("Command class found [ {} ] but is not instance of AbstractCommand.",
 										cls.getName());
 				}
+			}
 			}
 
 		} catch (Exception e) {
@@ -149,15 +147,11 @@ public class PackageModule extends Module {
 		if (scriptURL != null)
 
 			return new ScriptCommand(new ScriptSource(scriptName, scriptURL,
-					mEncoding), SourceMode.RUN, null, this);
+					getTextEncoding() ), SourceMode.RUN, null, this);
 
 		return null;
 
 	}
-
-	/*
-	 * Conversts hypen-case to camelCase, also converts from any reserved word
-	 */
 
 	/*
 	 * (non-Javadoc)
@@ -179,19 +173,20 @@ public class PackageModule extends Module {
 			// Cached in AbstractModule
 			Class<?> cls = findClass(name, getPackages());
 			if (cls != null) {
-				Constructor<?> constructor = cls.getConstructor();
-				if (constructor != null) {
-					Object obj = constructor.newInstance();
-					if (obj instanceof IFunctionExpr)
-						return (IFunctionExpr) obj;
-
-					if (obj instanceof IFunctionDefiniton) {
-						IFunctionDefiniton cmd = (IFunctionDefiniton) obj;
-						return cmd.getFunction();
+				if( isFunctionClass( cls )){
+					Constructor<?> constructor = cls.getConstructor();
+					if (constructor != null) {
+						Object obj = constructor.newInstance();
+						if (obj instanceof IFunctionExpr)
+							return (IFunctionExpr) obj;
+	
+						if (obj instanceof IFunctionDefiniton) {
+							IFunctionDefiniton cmd = (IFunctionDefiniton) obj;
+							return cmd.getFunction();
+						}
 					}
-				}
 			}
-
+		}
 		} catch (Exception e) {
 			;
 
@@ -204,11 +199,13 @@ public class PackageModule extends Module {
 		if (scriptURL != null)
 			return new ScriptFunctionCommand(name, scriptURL, this);
 		return null;
-
 	}
 
+	protected ModuleConfig getPackageConfig() {
+		return (ModuleConfig) super.getConfig() ;
+	}
 	protected List<String> getPackages() {
-		return mPackages;
+		return getPackageConfig().getPackages();
 	}
 
 	protected boolean hasCommandResource(String name) {
@@ -244,9 +241,92 @@ public class PackageModule extends Module {
 
 	}
 
-	protected void setPackages(List<String> packages) {
-		mPackages = packages;
+	@Override
+	public URL findResource(String res) {
+		return findResourceInPackages( res, getPackages() );
 	}
+
+	@Override
+	public Module getModule(Shell shell , String qname , List<URL> at ) throws CoreException, IOException, URISyntaxException {
+
+		mLogger.entry(shell, qname, at);
+		
+		// If hame has ":" it might be a schemed or prefixed module 
+		StringPair pair = new StringPair(qname, ':');
+		String name = pair.getRight();
+		String prefix =  pair.getLeft();
+	    
+	    Module mod = null ;
+	  
+	    // special scheme
+	    if(prefix != null && Util.isEqual(prefix, "java"))
+	      mod = ModuleFactory.createJavaModule(shell, name, at  );
+	    
+	    /*
+	    if( mod == null && prefix  == null ){
+	    	mod = ModuleFactory.createInternalModule( name );
+	    	
+	    }
+	    if( mod == null  ){
+	    	mod = ModuleFactory.createModuleModule(shell, pair , at );
+	    }
+	    
+	    */
+	    
+	    if( mod == null )
+	    {
+	    // Try to find script source by usual means 
+	       ScriptSource script  = getScriptSource(shell,qname ,SourceMode.IMPORT , at );
+	       if( script != null )
+	         mod = createScriptModule(shell ,script, qname, at  );
+	    } 
+	    
+	    /*
+	    if( mod == null )
+	        mod = ModuleFactory.createExternalModule(shell, qname, at);
+	    
+	    */
+	    
+	    if( mod != null )
+	      mod.onLoad(shell);
+	    return mLogger.exit(mod) ;
+
+		
+	}
+
+	private ScriptSource getScriptSource(Shell shell, String name,
+			SourceMode import1, List<URL> at) throws URISyntaxException {
+		
+		
+		String ext = FileUtils.getExt( name );
+
+		boolean bIsXsh = ".xsh".equals(ext);
+
+		
+		// Failures are cached with a null command
+		String scriptName = ( bIsXsh || ! Util.isBlank(ext)) ? name : ( name  + ".xsh" ) ;
+		
+		URL scriptURL = findResourceInPackages(scriptName, getPackages());
+		if (scriptURL != null){
+			ScriptSource ss = new ScriptSource(scriptName, scriptURL,
+					getTextEncoding() );
+			if( ss != null )
+				return ss ;
+		}
+		return null;
+	}
+
+	private Module createScriptModule(Shell shell, ScriptSource script,
+			String qname, List<URL> at) throws URISyntaxException, IOException, CoreException {
+		
+		ScriptSource ss = getScriptSource(shell,qname, SourceMode.IMPORT , at );
+		if( ss !=null )
+			return new ScriptModule(shell,ss,qname);
+		return null;
+		
+	
+	}
+
 
 }
 

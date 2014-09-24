@@ -84,7 +84,10 @@ public class Modules  implements
 		   mLogger.debug("Initializing a new module: {}", mod );
 		   mod.onInit(shell, init);
 		   bInit = true ;
-		   mModules.put(mod.getName(),mod);
+		   IModule deleted = mModules.put(mod.getName(),mod);
+		   assert( deleted == null );
+		   if( deleted != null )
+		   mLogger.error( "Replaced module definition by name {}", deleted );
 		}
 		if( prefix != null )
 		   mPrefixMap.put( prefix , mod.getName()); // should chnage to UUID or UURI

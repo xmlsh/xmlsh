@@ -82,7 +82,7 @@ public class ximport extends BuiltinCommand
     }
 
     catch (Exception e) {
-      mLogger.warn("Uncaught exception: " + e);
+      mLogger.throwing(  e);
       throw e;
     }
 
@@ -201,7 +201,11 @@ public class ximport extends BuiltinCommand
 
   }
 
+  private List<String> internalModules(String fullname)
+  {
+    return Arrays.asList("org.xmlsh.modules." + fullname );
 
+  }
 }
 //
 //

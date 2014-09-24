@@ -14,13 +14,13 @@ import java.util.ArrayList;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.xmlsh.core.CommandFactory;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.EvalEnv;
 import org.xmlsh.core.IFunctionExpr;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.grammar.Token;
+import org.xmlsh.sh.module.CommandFactory;
 import org.xmlsh.sh.module.IModule;
 import org.xmlsh.sh.shell.IFunctionDefiniton;
 import org.xmlsh.sh.shell.ParseResult;

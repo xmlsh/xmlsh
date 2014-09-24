@@ -4,7 +4,7 @@
  *
  */
 
-package org.xmlsh.core;
+package org.xmlsh.sh.module;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -50,11 +50,19 @@ import org.xmlsh.builtin.commands.xtrue;
 import org.xmlsh.builtin.commands.xtype;
 import org.xmlsh.builtin.commands.xversion;
 import org.xmlsh.builtin.commands.xwhich;
+import org.xmlsh.core.AbstractCommand;
+import org.xmlsh.core.CoreException;
+import org.xmlsh.core.ExternalCommand;
+import org.xmlsh.core.FunctionCommand;
+import org.xmlsh.core.ICommand;
+import org.xmlsh.core.IFunctionExpr;
+import org.xmlsh.core.ScriptCommand;
+import org.xmlsh.core.ScriptSource;
+import org.xmlsh.core.SearchPath;
 import org.xmlsh.core.ScriptCommand.SourceMode;
 import org.xmlsh.java.commands.jset;
 import org.xmlsh.json.commands.jsonread;
 import org.xmlsh.sh.core.SourceLocation;
-import org.xmlsh.sh.module.IModule;
 import org.xmlsh.sh.shell.IFunctionDefiniton;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.sh.shell.ShellConstants;

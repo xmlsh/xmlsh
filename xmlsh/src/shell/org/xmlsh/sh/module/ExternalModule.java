@@ -36,17 +36,24 @@ public class ExternalModule extends PackageModule
   private String mURI;
   
 
-  ExternalModule(Shell shell, String nameuri, URI nameURI, List<URL> at) throws CoreException
+  ExternalModule(Shell shell, String nameuri, List<URL> at) throws CoreException
   {
-    super(shell,nameuri);
+    super( configure(shell, nameuri,  at));
+  }
+  
+  
+  
+  private static ModuleConfig configure(Shell shell, String nameuri,  List<URL> at) throws CoreException
+  {
     try {
 
       URL configURL;
       File modDir = null;
 
-      if(nameuri.endsWith(".xml") ) {
-        assert( nameURI != null );
-        configURL = nameURI.toURL();
+      
+      if(nameuri.endsWith(".xml") ) {    	
+    	  
+    	configURL  = new URL( nameuri);
         if(configURL.getProtocol().equals("file"))
           modDir = new File(configURL.getPath()).getParentFile();
 
@@ -65,7 +72,6 @@ public class ExternalModule extends PackageModule
       }
 
 
-    mURI = configURL.toURI().toString();
 
     XdmNode configNode;
     configNode = Util.asXdmNode(configURL);
@@ -76,13 +82,13 @@ public class ExternalModule extends PackageModule
     String pkg = xv.xpath(shell, "/module/@package/string()").toString();
     // TODO: better support for multi packages
 
-    setPackages(Collections.singletonList(pkg));
-    mName = xv.xpath(shell, "/module/@name/string()").toString();
+    List<String> packages = Collections.singletonList(pkg);
+    String name  = xv.xpath(shell, "/module/@name/string()").toString();
     String require = xv.xpath(shell, "/module/@require/string()").toString();
     if(!Util.isBlank(require)) {
-      int ret = shell.requireVersion(mName, require);
+      int ret = shell.requireVersion(name, require);
       if(ret != 0)
-        throw new InvalidArgumentException("Module " + mName + " requires version " + require);
+        throw new InvalidArgumentException("Module " + name + " requires version " + require);
     }
 
     // iterate over values
@@ -109,9 +115,8 @@ public class ExternalModule extends PackageModule
 
       }
 
-    setClassLoader(getClassLoader(classpath));
-    // TODO: better support for multi packages
-    mHelpURL = getClassLoader().getResource(toResourceName("commands.xml", getPackages().get(0)));
+    
+    return new ModuleConfig( name , classpath , shell.getSerializeOpts() , packages , "commands.xml" );
 
   } catch (CoreException e) {
     throw e;
@@ -123,13 +128,17 @@ public class ExternalModule extends PackageModule
   }
 
 }
+  
+  public URL getHelpURL() {
+	return  getClassLoader().getResource(toResourceName(getPackageConfig().getHelpURI(), getPackages().get(0)));
+  }
   @Override
   public String describe()
   {
     return getName() + "[ at " + mURI + " ]";
   }
 
-  private List<String> listFiles(File modDir, String dir) throws IOException
+  private static List<String> listFiles(File modDir, String dir) throws IOException
   {
     List<String> files = new ArrayList<String>();
     File file = new File(modDir, dir);

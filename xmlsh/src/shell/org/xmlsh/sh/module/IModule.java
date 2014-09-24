@@ -12,6 +12,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
 
+import org.xmlsh.core.CoreException;
 import org.xmlsh.core.ICommand;
 import org.xmlsh.core.IFunctionExpr;
 import org.xmlsh.core.IHandleable;
@@ -26,15 +27,13 @@ import org.xmlsh.sh.shell.StaticContext;
  * A runtime instance of a module that may have state and may be shared or duplicated
  * in different contexts.
  */
-public interface IModule extends		IStaticModule {
+public interface IModule  {
 
-	/*
-	 * Calls into the module
-	 */
+	public abstract String describe();
+	public abstract URL getResource(String res);
+	public abstract boolean hasHelp(String name);
+	public abstract void onLoad(Shell shell) throws Exception;
 
-	/*
-	 * Calls TO the module
-	 */
 	public ICommand getCommand(String name) throws IOException, URISyntaxException;
 
 	// close() is called for an unload
@@ -42,13 +41,17 @@ public interface IModule extends		IStaticModule {
 	public IFunctionExpr getFunction(String name);
 
 	public URL getHelpURL();
+	// locate a resource in the module ( directory or package )
+	public URL findResource(String res);
+	
+	
 
-	@Override
 	public String getName();
 
 	StaticContext getStaticContext();
 
 	public void onInit(Shell shell, List<XValue> args) throws Exception;
+	public abstract Module getModule(Shell shell , String name , List<URL> ata ) throws CoreException, IOException, URISyntaxException;
 
 }
 

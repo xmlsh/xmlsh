@@ -11,11 +11,11 @@ import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.xmlsh.core.CommandFactory;
 import org.xmlsh.core.ICommand;
 import org.xmlsh.core.ThrowException;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
+import org.xmlsh.sh.module.CommandFactory;
 import org.xmlsh.sh.module.IModule;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.Util;

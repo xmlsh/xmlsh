@@ -1,6 +1,7 @@
 package org.xmlsh.sh.module;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
@@ -24,10 +25,8 @@ public class ScriptModule extends Module {
 	protected final static Logger mLogger = LogManager.getLogger();
 	
 	protected ScriptModule(Shell shell, ScriptSource script, String nameuri) throws IOException, CoreException {
-		super(nameuri);
-
+		super( new ModuleConfig( nameuri , null ,  shell.getSerializeOpts()));
 		mScript = script;
-		setClassLoader(getClassLoader(null));
 
 	}
 
@@ -115,5 +114,13 @@ public class ScriptModule extends Module {
 		}
 
 	}
+	
+	@Override
+	public URL findResource(String res) {
+		mLogger.trace("TODO: maybe look in class's package for resource {}",res);
+		return(null);
+	}
+
+
 
 }

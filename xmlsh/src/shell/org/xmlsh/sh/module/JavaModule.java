@@ -12,6 +12,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.EvalEnv;
 import org.xmlsh.core.EvalFlag;
@@ -103,18 +105,14 @@ public class JavaModule extends Module
   }
 
   private Class<?> mJavaClass;
-
-  JavaModule(Shell shell, URI nameURI, List<URL> at) throws CoreException
+  
+  
+  static Logger mLogger = LogManager.getLogger();
+  JavaModule(Shell shell, String clsname , List<URL> at) throws CoreException
   {
-    super(nameURI.toString());
-    setClassLoader(getClassLoader(at));
-    mHelpURL = null;
-    String clsname = nameURI.getRawSchemeSpecificPart();
+    super(new ModuleConfig("java:" + clsname ,  at , shell.getSerializeOpts()));
 
-    int ldot = clsname.lastIndexOf('.');
-    mName = clsname.substring(ldot + 1);
 
-    // Cached in AbstractModule
     mJavaClass = findClass(clsname);
     if(mJavaClass == null)
       throw new InvalidArgumentException("Class not found:" + clsname);
@@ -148,6 +146,12 @@ public class JavaModule extends Module
     // TODO Auto-generated method stub
     return false;
   }
+
+@Override
+public URL findResource(String res) {
+	mLogger.trace("TODO: maybe look in class's package for resource {}",res);
+	return(null);
+}
 
 
 

@@ -1,33 +1,50 @@
 package org.xmlsh.sh.module;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.xmlsh.core.CoreException;
+import org.xmlsh.core.ICommand;
+import org.xmlsh.core.IFunctionExpr;
 import org.xmlsh.core.XClassLoader;
 import org.xmlsh.core.XValue;
+import org.xmlsh.sh.shell.IFunctionDefiniton;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.sh.shell.StaticContext;
 
 public abstract class Module implements IModule {
 
-	protected String mName;
+	static Logger mLogger = LogManager.getLogger();
+
+	private ModuleConfig mConfig;
+	public List<URL> getClasspath() {
+		return mConfig.getClasspath();
+	}
+
+	public String getTextEncoding() {
+		return mConfig.getInputTextEncoding();
+	}
+
 	private ClassLoader mClassLoader;
-	protected URL mHelpURL = null;
 
 	private HashMap<String, Class<?>> mClassCache = new HashMap<String, Class<?>>();
 	private HashMap<String, Boolean> mClassCacheMisses = new HashMap<String, Boolean>();
 
-	protected Module(String name) {
-		mName = name;
+	protected Module( ModuleConfig config ) {
+		mConfig = config ;
+		mClassLoader = getClassLoader( config.getClasspath());
+		
 	}
 
 	@Override
 	protected void finalize() {
 		// Clear refs
-		setClassLoader(null);
+		mClassLoader = null ;
 		if (mClassCache != null)
 			mClassCache.clear();
 		mClassCache = null;
@@ -109,7 +126,7 @@ public abstract class Module implements IModule {
 
 	@Override
 	public URL getHelpURL() {
-		return mHelpURL;
+		return null ;
 	}
 
 	protected Logger getLogger() {
@@ -117,15 +134,10 @@ public abstract class Module implements IModule {
 
 	}
 
-	// TODO
-	@Override
-	public ModuleClass getModuleClass() {
-		return null;
-	}
 
 	@Override
 	public String getName() {
-		return mName;
+		return mConfig.getName();
 	}
 
 	@Override
@@ -174,9 +186,6 @@ public abstract class Module implements IModule {
 		mClassCacheMisses.put(name, false);
 	}
 
-	protected void setClassLoader(ClassLoader classLoader) {
-		mClassLoader = classLoader;
-	}
 
 	protected String toResourceName(String name, String pkg) {
 		String resource = pkg.replace('.', '/') + "/" + name;
@@ -188,4 +197,53 @@ public abstract class Module implements IModule {
 		return getName();
 	}
 
+	protected ModuleConfig getConfig() {
+		return mConfig;
+	}
+
+	@Override
+	public Module getModule(Shell shell , String name , List<URL> at ) throws CoreException, IOException, URISyntaxException {
+
+		mLogger.error("NOT IMPLEMENTED");
+		return null;
+	
+	}
+	
+	
+	/* 
+	 * Static check if this is a possible function class
+	 */
+	protected static boolean isFunctionClass(Class<?> cls) {
+
+		if( cls == null )
+			return false ;
+		if(  IFunctionDefiniton.class.isAssignableFrom( cls ) ) 
+			return true ;
+		if( IFunctionExpr.class.isAssignableFrom(cls ))
+			return true ;
+		if( cls.getAnnotation(org.xmlsh.annotations.Function.class ) != null )
+			return true ;
+		return false ;
+	
+	
+	}
+
+
+	/* 
+	 * Static check if this is a possible function class
+	 */
+	protected static boolean isCommandClass(Class<?> cls) {
+
+		if( cls == null )
+			return false ;
+		if(  ICommand.class.isAssignableFrom( cls ) ) 
+			return true ;
+		if( IFunctionExpr.class.isAssignableFrom(cls ))
+			return true ;
+		if( cls.getAnnotation(org.xmlsh.annotations.Function.class ) != null )
+			return true ;
+		return false ;
+	
+	
+	}
 }

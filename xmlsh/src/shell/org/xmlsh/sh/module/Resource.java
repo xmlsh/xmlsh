@@ -5,9 +5,9 @@ import java.net.URL;
 
 public abstract class Resource {
 	private ResourceID  mID;
-	private ResourceLocation mLocation;
+	private URL mLocation;
 
-	public Resource(ResourceID id, ResourceLocation location) {
+	public Resource(ResourceID id, URL location) {
 		mID = id;
 		mLocation = location;
 	}
@@ -16,11 +16,11 @@ public abstract class Resource {
 		return mID;
 	}
 
-	public ResourceLocation getLocation() {
+	public URL getLocation() {
 		return mLocation;
 	}
 
-	public ResourceName getName() {
+	public String getName() {
 		return mID.getName();
 	}
 	public URI getURI() {
@@ -28,19 +28,19 @@ public abstract class Resource {
 	}
 	
 	public URL getURL() {
-		return mLocation.getURL();
+		return mLocation;
 	}
 	
 	public int hashCode() {
 		return mID.hashCode();
 	}
 	public boolean isOpaque() {
-		return mLocation.isOpaque();
+		return mLocation == null ;
 	}
 	public void setID(ResourceID iD) {
 		mID = iD;
 	}
-	public void setLocation(ResourceLocation location) {
+	public void setLocation(URL location) {
 		mLocation = location;
 	}
 	public String toString() {
