@@ -30,6 +30,17 @@
 		<echo message="Usage: ant [help build clean]" />
 	</target>
 
+	<target name="build-deps">
+	  <exec executable="aws" dir=".">
+	  	<arg value="--profile"/>
+	  	<arg value="xmlsh"/>
+		<arg value="s3"/>
+		<arg value="sync"/>
+		<arg value="s3://xmlsh-org-release/build-deps/xmlsh-2.0/"/>
+		<arg value="."/>
+	  </exec>
+	</target>
+	  
 
 	<target name="build" depends="clean,main-init">
 		<iterate target="build" />

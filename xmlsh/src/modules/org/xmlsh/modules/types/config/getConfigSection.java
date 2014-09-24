@@ -4,7 +4,7 @@
  *
  */
 
-package org.xmlsh.modules.types;
+package org.xmlsh.modules.types.config;
 
 import java.util.List;
 

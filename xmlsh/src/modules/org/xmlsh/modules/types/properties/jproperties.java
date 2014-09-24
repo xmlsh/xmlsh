@@ -4,7 +4,7 @@
  *
  */
 
-package org.xmlsh.modules.types;
+package org.xmlsh.modules.types.properties;
 
 import java.util.List;
 import java.util.Map;

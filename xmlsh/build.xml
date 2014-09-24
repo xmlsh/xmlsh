@@ -96,6 +96,10 @@ version.version=${version}
 		</copy>
 
 	</target>
+	
+
+	
+	
 
 	<target name="jar" description="Build JAR - jar">
 		<mkdir dir="bin"/>
@@ -107,6 +111,14 @@ version.version=${version}
 
 	</target>
 	<target name="test" description="Test Cases">
+		<!-- build xmlsh.jar first -->
+		<subant target="main">
+			<property name="xmlsh.root" value="${xmlsh.root}"/>
+			<dirset dir="test">
+				<include name="src"/>
+			</dirset>
+		</subant>
+		
 		<java 
   		classname="org.xmlsh.sh.shell.Shell"
   		fork="true"

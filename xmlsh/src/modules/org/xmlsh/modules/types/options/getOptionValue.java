@@ -4,37 +4,41 @@
  *
  */
 
-package org.xmlsh.modules.types;
+package org.xmlsh.modules.types.options;
 
 import java.util.List;
 
 import org.xmlsh.core.AbstractBuiltinFunction;
-import org.xmlsh.core.XConfiguration;
+import org.xmlsh.core.Options;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
 
-public class getConfigValue extends AbstractBuiltinFunction
+
+public class getOptionValue extends AbstractBuiltinFunction
 {
 
-  public getConfigValue()
+  public getOptionValue()
   {
-    super("get-config-value");
-    // TODO Auto-generated constructor stub
+    super("get-option-value");
   }
 
   @Override
   public XValue run(Shell shell, List<XValue> args) throws Exception
   {
-    if( args.size() != 3 ||! args.get(0).isInstanceOf( XConfiguration.class)){
-    	usage(shell, "config section-name key-name");
-	    return XValue.nullValue();
-    }
-    
-    XConfiguration conf = args.get(0).asInstanceOf(XConfiguration.class );   
-    String section = args.get(1).toString();
-    String name = args.get(2).toString();
-    return XValue.newXValue(conf.getProperty(section, name));
+	  if( args.size() < 3 ||! args.get(0).isInstanceOf( Options.class)){
+	    	usage(shell, "option [default]");
+		    return XValue.nullValue();
+	    }
+	    
+	    Options conf = args.get(0).asInstanceOf(Options.class );   
+	    String name = args.get(1).toString();
+	    XValue v = conf.getOptValue(name);
+	    if( v == null &&  args.size() > 2 ) 
+	    	v = args.get(2);
+
+	    return v ;
   }
+
 }
 
 

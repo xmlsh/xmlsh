@@ -4,7 +4,7 @@
  *
  */
 
-package org.xmlsh.modules.types;
+package org.xmlsh.modules.types.options;
 
 import java.util.List;
 
@@ -14,29 +14,25 @@ import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
 
 
-public class getOptionValue extends AbstractBuiltinFunction
+public class hasOption extends AbstractBuiltinFunction
 {
 
-  public getOptionValue()
+  public hasOption()
   {
-    super("get-option-value");
+    super("hasOption");
   }
 
   @Override
   public XValue run(Shell shell, List<XValue> args) throws Exception
   {
-	  if( args.size() < 3 ||! args.get(0).isInstanceOf( Options.class)){
-	    	usage(shell, "option [default]");
-		    return XValue.nullValue();
+	  if( args.size() !=2 ||! args.get(0).isInstanceOf( Options.class)){
+	    	usage(shell, "option");
+		    return XValue.newInstance(false);
 	    }
 	    
 	    Options conf = args.get(0).asInstanceOf(Options.class );   
 	    String name = args.get(1).toString();
-	    XValue v = conf.getOptValue(name);
-	    if( v == null &&  args.size() > 2 ) 
-	    	v = args.get(2);
-
-	    return v ;
+	    return XValue.newInstance( conf.hasOpt(name));
   }
 
 }

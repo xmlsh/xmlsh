@@ -1,4 +1,4 @@
-package org.xmlsh.modules.types;
+package org.xmlsh.modules.types.map;
 
 import java.util.List;
 

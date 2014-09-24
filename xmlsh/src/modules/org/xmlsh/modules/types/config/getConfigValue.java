@@ -4,48 +4,37 @@
  *
  */
 
-package org.xmlsh.modules.types;
+package org.xmlsh.modules.types.config;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.xmlsh.core.AbstractBuiltinFunction;
-import org.xmlsh.core.Options;
-import org.xmlsh.core.Options.OptionDef;
+import org.xmlsh.core.XConfiguration;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.types.TypeFamily;
 
-public class options extends AbstractBuiltinFunction
+public class getConfigValue extends AbstractBuiltinFunction
 {
 
-	public options()
-	{
-		super("options");
-	}
+  public getConfigValue()
+  {
+    super("get-config-value");
+    // TODO Auto-generated constructor stub
+  }
 
-	@Override
-	public XValue run(Shell shell, List<XValue> args) throws Exception
-	{
-		if( args.isEmpty() )
-			return XValue.nullValue();
-		
-		List<OptionDef> defs = parseDefs(args.remove(0));
-		Options opts = new Options( defs  );
-		opts.parse(args);
-		return XValue.newXValue(TypeFamily.JAVA,opts);
-	}
-
-	private List<OptionDef> parseDefs(XValue optdef)
-	{
-		List<OptionDef> defs = new ArrayList<>();
-		for( XValue arg : optdef )
-			defs.addAll( Options.parseDefs(arg.toString()));
-		return defs;
-
-
-	}
-
+  @Override
+  public XValue run(Shell shell, List<XValue> args) throws Exception
+  {
+    if( args.size() != 3 ||! args.get(0).isInstanceOf( XConfiguration.class)){
+    	usage(shell, "config section-name key-name");
+	    return XValue.nullValue();
+    }
+    
+    XConfiguration conf = args.get(0).asInstanceOf(XConfiguration.class );   
+    String section = args.get(1).toString();
+    String name = args.get(2).toString();
+    return XValue.newXValue(conf.getProperty(section, name));
+  }
 }
 
 

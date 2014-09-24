@@ -1,18 +1,20 @@
-package org.xmlsh.modules.types;
+package org.xmlsh.modules.types.array;
 
 import java.util.List;
 
+import org.xmlsh.annotations.Function;
 import org.xmlsh.core.AbstractBuiltinFunction;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.XValueArray;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.types.TypeFamily;
 
+@Function( name="new" )
 public class array extends AbstractBuiltinFunction
 {
 
 	public array() {
-		super("array");
+		super("new");
 	}
 
 	@Override
