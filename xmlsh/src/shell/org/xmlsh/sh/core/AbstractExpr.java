@@ -39,7 +39,7 @@ public abstract class AbstractExpr implements IExpression
     mName = name ;
   }
 
-  public AbstractExpr()
+  protected AbstractExpr()
   {
   }
 

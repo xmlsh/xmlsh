@@ -34,6 +34,9 @@ public abstract class Module implements IModule {
 	}
 
 	private ClassLoader mClassLoader;
+	
+	// Predeclared function classes indexed by *simple name* (no package component)
+	private HashMap<String, Class<?>> mFunctionClassCache = new HashMap<String, Class<?>>();
 
 	private HashMap<String, Class<?>> mClassCache = new HashMap<String, Class<?>>();
 	private HashMap<String, Boolean> mClassCacheMisses = new HashMap<String, Boolean>();
@@ -51,16 +54,26 @@ public abstract class Module implements IModule {
 		if (mClassCache != null)
 			mClassCache.clear();
 		mClassCache = null;
-
-		if (mClassCacheMisses != null)
+		if( mFunctionClassCache != null )
+			mFunctionClassCache.clear();
+		mFunctionClassCache = null;
+		if(mClassCacheMisses != null)
 			mClassCacheMisses.clear();
 		mClassCacheMisses = null;
 
 	}
+	
+	
+	protected Class<?> findFunctionClass(String className) {
 
+		return mFunctionClassCache.get(className);
+	}
+	
+	
+	
 	protected Class<?> findClass(String className) {
 
-		getLogger().entry(className);
+		mLogger.entry(className);
 		// Find cached class name even if null
 		// This caches failures as well as successes
 		// Consider changing to a WeakHashMap<> if this uses up too much memory
@@ -75,12 +88,23 @@ public abstract class Module implements IModule {
 		} catch (ClassNotFoundException e) {
 
 		}
-		// Store class in cache even if null
-		mClassCache.put(className, cls);
+		declareClass(className, cls);
 		return cls;
 
 	}
 
+	protected void declareClass(String className, Class<?> cls) {
+		// Store class in cache even if null
+		mClassCache.put(className, cls);
+	}
+
+
+	protected void declareFunctionClass(String name, Class<?> cls) {
+		mFunctionClassCache.put( name ,  cls  );
+		declareClass( cls.getName() , cls );
+		
+	}
+	
 	protected Class<?> findClass(String name, List<String> packages) {
 		for (String pkg : packages) {
 			Class<?> cls = findClass(pkg + "." + name);

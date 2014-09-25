@@ -9,6 +9,8 @@ import org.xmlsh.sh.module.ModuleConfig;
 import org.xmlsh.sh.module.PackageModule;
 import org.xmlsh.sh.shell.Shell;
 
+
+@org.xmlsh.annotations.Module
 public class Module extends PackageModule {
 	static Logger mLogger = LogManager.getLogger();
 
@@ -31,6 +33,7 @@ public class Module extends PackageModule {
 		
 		mLogger.entry(shell);
 		super.onLoad(shell);
+		reflectModuleClass( shell, propertyFunctions.class );
 	}
 	
 	

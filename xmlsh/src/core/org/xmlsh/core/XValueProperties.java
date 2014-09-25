@@ -26,7 +26,7 @@ import org.xmlsh.types.TypeFamily;
 public class XValueProperties extends XValueMap  {
 	
 
-  protected XValueProperties( Map<?,?> map  ) {
+  public XValueProperties( Map<?,?> map  ) {
     for(Map.Entry<?, ?> e : map.entrySet() ) {
       super.put( e.getKey().toString() , XValue.newInstance(e.getValue()));
     }
@@ -38,12 +38,28 @@ public class XValueProperties extends XValueMap  {
     super();
 	}
 
-  public static XValueProperties fromMap( Map<?,?> map ) {
+  public XValueProperties(XValueProperty prop) {
+  
+	  super();
+	  add(prop);
+	  
+  
+   }
+
+
+
+
+
+public static XValueProperties fromMap( Map<?,?> map ) {
     return new XValueProperties( map  );
   };
   public static XValueProperties fromJavaProperties( Properties props ) {
     return new XValueProperties( props  );
   };
+  
+  public static XValueProperties fromProperty( XValueProperty prop ){
+	    return new XValueProperties( prop  );
+  }
   
   @Override
   public

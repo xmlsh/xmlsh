@@ -16,6 +16,7 @@ import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.xmlsh.annotations.Function;
 import org.xmlsh.core.AbstractCommand;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.ICommand;
@@ -34,6 +35,7 @@ import org.xmlsh.util.JavaUtils;
 import org.xmlsh.util.StringPair;
 import org.xmlsh.util.Util;
 
+
 public class PackageModule extends Module {
 
 	/*
@@ -47,39 +49,12 @@ public class PackageModule extends Module {
 		super( config );
 	}
 
-	private String convertCamelCase(String name) {
-		if (name.indexOf('-') < 0)
-			return name;
-
-		String parts[] = name.split("-");
-		if (parts.length == 1)
-			return name;
-
-		StringBuffer result = new StringBuffer(name.length());
-
-		for (String p : parts) {
-			if (p.length() == 0)
-				continue;
-
-			if (result.length() == 0)
-				result.append(p);
-			else {
-				result.append(Character.toUpperCase(p.charAt(0)));
-				result.append(p.substring(1));
-			}
-
-		}
-
-		return result.toString();
-
-	}
-
 	@Override
 	public String describe() {
 		return getName() + "[ packages " + Util.join(getPackages(), ",") + " ]";
 	}
 
-	private String fromReserved(String name) {
+	public static String fromReserved(String name) {
 		if (JavaUtils.isReserved(name))
 			return "_" + name;
 		else
@@ -99,7 +74,7 @@ public class PackageModule extends Module {
 		 * Convert from hyphen-case to camelCase
 		 */
 
-		name = convertCamelCase(name);
+		name = JavaUtils.convertToCamelCase(name);
 		name = fromReserved(name);
 
 		// Store the camel name not the hyphen name
@@ -165,16 +140,30 @@ public class PackageModule extends Module {
 	public IFunctionExpr getFunction(String name) {
 
 		String origName = name;
+		
+		/* 
+		 * Try unchanged predeclared functions first
+		 */
+		// Try predeclared functions
+					
+		Class<?> cls = findFunctionClass( name );
+						
 		/*
 		 * Convert from camelCase to hypen-case
 		 */
 
-		name = convertCamelCase(name);
+		name = JavaUtils.convertToCamelCase(name);
 		name = fromReserved(name);
 
+		
+		
+		
+		
 		try {
-			// Cached in AbstractModule
-			Class<?> cls = findClass(name, getPackages());
+			
+			if( cls == null )
+			  // Cached in AbstractModule
+		    	cls = findClass(name, getPackages());
 			if (cls != null) {
 				if( isFunctionClass( cls )){
 					Constructor<?> constructor = cls.getConstructor();
@@ -350,17 +339,27 @@ public class PackageModule extends Module {
 	public void onLoad(Shell shell) {
 		
 		super.onLoad(shell);
-		reflectModule( shell );
 
 	}
 
-	private void reflectModule(Shell shell) {
+	protected void reflectModuleClass(Shell shell, Class<?> cls ) 
+	{
+		reflectClass( shell , cls );
+
 		
-		
+	}
+
+	private void reflectClass(Shell shell, Class<?> cls) {
+		// Look for functions 
+		Function fa = cls.getAnnotation(Function.class);
+		if( fa != null  )
+			declareFunctionClass( fa.name()  , cls );
+		for( Class<?>  c : cls.getClasses())
+			reflectClass(shell,c);
+			
 		
 		
 	}
-	
 	
 	
 	

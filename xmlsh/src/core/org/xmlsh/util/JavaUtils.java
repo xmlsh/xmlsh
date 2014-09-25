@@ -58,6 +58,8 @@ public class JavaUtils {
 		mReserved.add( "float" );
 		mReserved.add( "byte" );
 		mReserved.add( "short" );
+		mReserved.add("package");
+		mReserved.add("new");
 
 
 	}
@@ -522,6 +524,8 @@ public class JavaUtils {
 					else
 						if( targetClass == Double.class )
 							value = Double.valueOf(svalue);
+						else 
+							value = null ;
 
 		return (T) value ;
 
@@ -849,6 +853,45 @@ public class JavaUtils {
 		return null ;
 
 
+	}
+
+	public static  String convertToCamelCase(String name) {
+		if (name.indexOf('-') < 0)
+			return name;
+	
+		String parts[] = name.split("-");
+		if (parts.length == 1)
+			return name;
+	
+		StringBuilder result = new StringBuilder(name.length());
+	
+		for (String p : parts) {
+			if (p.length() == 0)
+				continue;
+	
+			if (result.length() == 0)
+				result.append(p);
+			else {
+				result.append(Character.toUpperCase(p.charAt(0)));
+				result.append(p.substring(1));
+			}
+	
+		}
+	
+		return result.toString();
+	
+	}
+
+	public static String convertFromCamelCase(String name) {
+		StringBuilder result = new StringBuilder(name.length());
+		for( char c : name.toCharArray() ){
+			if( Character.isUpperCase(c) ){
+			 result.append('-');
+			 result.append( Character.toLowerCase(c));
+			} else
+				result.append(c);
+		}
+		return result.toString();
 	}
 
 }
