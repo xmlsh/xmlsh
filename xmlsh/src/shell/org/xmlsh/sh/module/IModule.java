@@ -8,6 +8,7 @@ package org.xmlsh.sh.module;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
@@ -19,6 +20,7 @@ import org.xmlsh.core.IHandleable;
 import org.xmlsh.core.IReferenceCounted;
 import org.xmlsh.core.IReferenceCountedHandleable;
 import org.xmlsh.core.IReferencedCountedHandle;
+import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.sh.shell.StaticContext;
@@ -51,7 +53,7 @@ public interface IModule  {
 	StaticContext getStaticContext();
 
 	public void onInit(Shell shell, List<XValue> args) throws Exception;
-	public abstract Module getModule(Shell shell , String name , List<URL> ata ) throws CoreException, IOException, URISyntaxException;
+	public abstract IModule getModule(Shell shell , String name , List<URL> ata ) throws  Exception;
 
 }
 

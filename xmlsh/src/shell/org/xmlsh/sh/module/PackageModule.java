@@ -9,6 +9,7 @@ package org.xmlsh.sh.module;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
@@ -19,11 +20,13 @@ import org.xmlsh.core.AbstractCommand;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.ICommand;
 import org.xmlsh.core.IFunctionExpr;
+import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.ScriptCommand;
 import org.xmlsh.core.ScriptCommand.SourceMode;
 import org.xmlsh.core.ScriptFunctionCommand;
 import org.xmlsh.core.ScriptSource;
 import org.xmlsh.core.XCommand;
+import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.IFunctionDefiniton;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.FileUtils;
@@ -247,7 +250,7 @@ public class PackageModule extends Module {
 	}
 
 	@Override
-	public Module getModule(Shell shell , String qname , List<URL> at ) throws CoreException, IOException, URISyntaxException {
+	public IModule getModule(Shell shell , String qname , List<URL> at ) throws Exception {
 
 		mLogger.entry(shell, qname, at);
 		
@@ -256,7 +259,7 @@ public class PackageModule extends Module {
 		String name = pair.getRight();
 		String prefix =  pair.getLeft();
 	    
-	    Module mod = null ;
+	    IModule mod = null ;
 	  
 	    // special scheme
 	    if(prefix != null && Util.isEqual(prefix, "java"))
@@ -265,13 +268,23 @@ public class PackageModule extends Module {
 	    /*
 	    if( mod == null && prefix  == null ){
 	    	mod = ModuleFactory.createInternalModule( name );
-	    	
 	    }
-	    if( mod == null  ){
+	    */
+	    if( mod == null && prefix == null  ){
+			mLogger.debug("trying to find package module by name: {} " , name );
+			ModuleConfig config  =  ModuleFactory.findPackageModule( shell , name , this.getPackages() , this.getClassLoader());
+			if( config != null ){
+				mod = ModuleFactory.createPackageModule( config, this.getClassLoader()  );
+				if( mod != null )
+				   mLogger.debug("created internal module: ");
+			}
+	    
+	    }
+	    /*
+	    if( mod == nul){
 	    	mod = ModuleFactory.createModuleModule(shell, pair , at );
 	    }
-	    
-	    */
+	    *
 	    
 	    if( mod == null )
 	    {
@@ -326,6 +339,31 @@ public class PackageModule extends Module {
 		
 	
 	}
+
+	@Override
+	public void onInit(Shell shell, List<XValue> args) throws Exception {
+		
+		
+	}
+
+	@Override
+	public void onLoad(Shell shell) {
+		
+		super.onLoad(shell);
+		reflectModule( shell );
+
+	}
+
+	private void reflectModule(Shell shell) {
+		
+		
+		
+		
+	}
+	
+	
+	
+	
 
 
 }

@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.xmlsh.annotations.Function;
 import org.xmlsh.core.AbstractBuiltinFunction;
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.XValue;
@@ -18,6 +19,7 @@ import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.JavaUtils;
 
+@Function( name="properties")
 public class properties extends AbstractBuiltinFunction
 {
 
@@ -40,8 +42,8 @@ public class properties extends AbstractBuiltinFunction
         else
         if( arg.isInstanceOf( Map.class ) )
           props = XValueProperties.fromMap( arg.asInstanceOf(Map.class));
-        else
-          props = JavaUtils.convert(arg, XValueProperties.class );
+        else 
+          props =  (XValueProperties) arg.convert( XValueProperties.class );
       }
       else {
         if( arg.isInstanceOf( XValueProperties.class ) )

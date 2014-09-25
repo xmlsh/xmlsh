@@ -352,20 +352,20 @@ public abstract class CommandFactory {
 	 * 
 	 */
 
-	public static ScriptSource getScriptSource(Shell shell, String name,
+	public static ScriptSource getScriptSource(Shell shell, PName pname,
 			SourceMode sourceMode, List<URL> at) throws IOException, CoreException, URISyntaxException {
-		mLogger.entry(shell, name,sourceMode,at);
+		mLogger.entry(shell, pname,sourceMode,at);
 
 		File scriptFile = null;
 
-		// If at - try to use it explicitly
+		// If at - try to use it explicitly ignoring the name for location
 		URL url = null;
 		ScriptSource src = null ;
 		if( at != null ){
             Exception caught = null;
 			for( URL u : at  ){
 			   try {
-					src = getScriptSource(shell, u, name);
+					src = getScriptSource(shell, u, pname.getName());
 				} catch (Exception e) {
 				    caught = e ;
 					mLogger.catching(e);
@@ -374,42 +374,65 @@ public abstract class CommandFactory {
 			}
 			if( src != null )
 				return  mLogger.exit(src) ;
-			mLogger.throwing( caught != null  ? caught : new FileNotFoundException(name) );
+			mLogger.throwing( caught != null  ? caught : new FileNotFoundException(pname.toString()) );
 		}
 		
 		// If name has a scheme try that first
-		url = Util.tryURL(name);
-		if (url != null){
-			mLogger.debug("script has URL {} ", url );
-			return mLogger.exit(getScriptSource(shell, url, name));
-		}
+		boolean hasPrefix = pname.hasPrefix(true);
+		if( hasPrefix ){
+			url = Util.tryURL(pname.getString());
+			if (url != null){
+				mLogger.debug("script has URL {} ", url );
+				return mLogger.exit(getScriptSource(shell, url, pname.getName() ));
+			}
 		
-		
-		String ext = FileUtils.getExt( name );
-		boolean bIsXsh = ".xsh".equals(ext);
-		
-        if( sourceMode == SourceMode.SOURCE || sourceMode == SourceMode.IMPORT || FileUtils.hasDirectory(name)   ) {
-        	scriptFile = findFirstFileInPaths( shell , name , getExtensions( ext , ".xsh"  ) , null);
-        }
-		
-		if (scriptFile == null) {
-            SearchPath[] paths;
-			
-			// searh in XPATH for include/source and XMODPATH for modules 
-			SearchPath path = null ;
-			switch (sourceMode) {
-			case IMPORT:
-				paths = new SearchPath[] { shell.getPath(ShellConstants.XMODPATH, true) , shell.getPath(ShellConstants.XPATH, true) } ;
-				break;
-			case RUN:
-			case SOURCE:
-			case VALIDATE:
-			default:
-				paths =new SearchPath[] { shell.getPath(ShellConstants.XPATH, true) , shell.getPath(ShellConstants.PATH, true) } ;
-				break ;
+			// Prefix might be a drive leter -- if so try an absolute file
+			if( hasPrefix && Util.isWindows() && FileUtils.rootPathLength(FileUtils.toJavaPath(pname.toString())) > 0 ){
+				mLogger.trace("Trying name as windows file: {} " , pname );
+				scriptFile = shell.getExplicitFile(pname.toString(), true );
+				if( scriptFile != null && ! scriptFile.isFile())
+					scriptFile = null ;
+				
 			}
 			
-        	scriptFile = findFirstFileInPaths( shell , name , getExtensions( ext , ".xsh"  ) , paths );
+			/*
+			 * TODO Resolve against module prefix
+			 */
+			if( scriptFile == null )
+				return mLogger.exit(null);
+		}
+		
+		if( scriptFile == null ){
+		
+			String name = pname.getString();
+			
+			String ext = FileUtils.getExt( name );
+			boolean bIsXsh = ".xsh".equals(ext);
+			
+	        if( sourceMode == SourceMode.SOURCE || sourceMode == SourceMode.IMPORT || FileUtils.hasDirectory(name)   ) {
+	        	scriptFile = findFirstFileInPaths( shell , name , getExtensions( ext , ".xsh"  ) , null);
+	        }
+			
+			
+		   	if (scriptFile == null) {
+	            SearchPath[] paths;
+				
+				// searh in XPATH for include/source and XMODPATH for modules 
+				SearchPath path = null ;
+				switch (sourceMode) {
+				case IMPORT:
+					paths = new SearchPath[] { shell.getPath(ShellConstants.XMODPATH, true) , shell.getPath(ShellConstants.XPATH, true) } ;
+					break;
+				case RUN:
+				case SOURCE:
+				case VALIDATE:
+				default:
+					paths =new SearchPath[] { shell.getPath(ShellConstants.XPATH, true) , shell.getPath(ShellConstants.PATH, true) } ;
+					break ;
+				}
+				
+	        	scriptFile = findFirstFileInPaths( shell , name , getExtensions( ext , ".xsh"  ) , paths );
+			}
 		}
 		if (scriptFile == null)
 			return mLogger.exit(null);
@@ -440,7 +463,7 @@ public abstract class CommandFactory {
 			CoreException, URISyntaxException {
 		mLogger.entry(shell, name,sourceMode);
 
-		ScriptSource source = getScriptSource(shell, name, sourceMode,null);
+		ScriptSource source = getScriptSource(shell, new PName(name), sourceMode,null);
 		if (source == null)
 			return mLogger.exit( null);
 		return mLogger.exit( new ScriptCommand(source, sourceMode, loc, shell.getModule()));

@@ -85,9 +85,15 @@ public class Modules  implements
 		   mod.onInit(shell, init);
 		   bInit = true ;
 		   IModule deleted = mModules.put(mod.getName(),mod);
-		   assert( deleted == null );
+		   /*
+		    * THis isnt necessarily bad - it means a module name cant be fully resolved without loading it
+		    * and that a module may be loaded and initialized many times - fixing that here doesnt sovle it
+		    * as the same thing can happen byh other means, different threads, multiple paths to the same module etc.
+		    *
+		    * Ideally we would have a global module resolution module but that is not necessarily right
+		    * */
 		   if( deleted != null )
-		   mLogger.error( "Replaced module definition by name {}", deleted );
+		       mLogger.info( "Replaced module definition by name {}", deleted );
 		}
 		if( prefix != null )
 		   mPrefixMap.put( prefix , mod.getName()); // should chnage to UUID or UURI

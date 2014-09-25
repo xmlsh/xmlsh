@@ -1,7 +1,10 @@
 package org.xmlsh.sh.module;
 
+import static org.xmlsh.util.Util.stringConcat;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -11,6 +14,7 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.xmlsh.core.CoreException;
+import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.ScriptCommand.SourceMode;
 import org.xmlsh.core.ICommand;
 import org.xmlsh.core.ScriptSource;
@@ -40,7 +44,7 @@ public class ModuleFactory
 
 
   // 
-  static Module createModuleModule(Shell shell , StringPair pair , List<URL> at ) throws CoreException, IOException, URISyntaxException
+  static IModule createModuleModule(Shell shell , StringPair pair , List<URL> at ) throws Exception
   {
 
 
@@ -61,7 +65,7 @@ public class ModuleFactory
 	
 			if (m != null) {
 				mLogger.trace("Found prefixed module - try getting child module" , m , pair.getRight());
-				Module mod = m.getModule(shell,pair.getRight(), at );
+				IModule mod = m.getModule(shell,pair.getRight(), at );
 				if (mod != null) {
 					mLogger.debug("Module Class found: " , mod );
 					return mod;
@@ -99,20 +103,21 @@ public class ModuleFactory
 		return mLogger.exit(null);
 		
   }
-
-  public static Module createModule(Shell shell, String qname, List<URL> at )  throws Exception
+  public static IModule createModule(Shell shell, String name, List<URL> at )  throws Exception
+  {
+	  return createModule(shell, new PName(name), at);
+  }
+  public static IModule createModule(Shell shell, PName qname, List<URL> at )  throws Exception
   {
 	 
 	mLogger.entry(shell, qname, at);
 	  
 
 	
-	// If hame has ":" it might be a schemed or prefixed module 
-	StringPair pair = new StringPair(qname, ':');
-	String name = pair.getRight();
-	String prefix =  pair.getLeft();
+	String name = qname.getName();
+	String prefix =  qname.getPrefix();
     
-    Module mod = null ;
+    IModule mod = null ;
   
     // special scheme
     if(prefix != null && Util.isEqual(prefix, "java"))
@@ -123,7 +128,7 @@ public class ModuleFactory
     	
     }
     if( mod == null  ){
-    	mod = createModuleModule(shell, pair, at );
+    	mod = createModuleModule(shell, qname , at );
     	
     }
     if( mod == null )
@@ -131,10 +136,10 @@ public class ModuleFactory
     // Try to find script source by usual means 
        ScriptSource script  = CommandFactory.getScriptSource(shell,qname ,SourceMode.IMPORT , at );
        if( script != null )
-         mod = createScriptModule(shell ,script, qname );
+         mod = createScriptModule(shell ,script, qname.toString() );
     } 
     if( mod == null )
-        mod = createExternalModule(shell, qname, at);
+        mod = createExternalModule(shell, qname.toString() , at);
     
     if( mod != null )
       mod.onLoad(shell);
@@ -147,17 +152,17 @@ public class ModuleFactory
    * Look for a Class module in the internal packages 
    * 
    */
-static Module createInternalModule(Shell shell, String nameuri ) throws CoreException {
+static IModule createInternalModule(Shell shell, String nameuri ) throws CoreException, InvalidArgumentException, ClassNotFoundException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 	
 	  ClassLoader classLoader = RootModule.getInstance().getClassLoader();
-
-	  Module mod = null ;
+	  List<String> packages = Collections.singletonList("org.xmlsh.modules");
+	  IModule mod = null ;
 	mLogger.debug("trying to find internal module by name: {} " , nameuri );
-	String pkgn =  findInternalModulePackage( nameuri , classLoader  );
-	if( pkgn != null ){
-		mod = createPackageModule(  shell , nameuri , Collections.singletonList(pkgn), null );
+	ModuleConfig config  =  findPackageModule( shell , nameuri , packages , classLoader  );
+	if( config != null ){
+		mod = createPackageModule( config , classLoader );
 		if( mod != null )
-		mLogger.debug("created internal module: ");
+		   mLogger.debug("created internal module: ");
 	}
 	
 	/*
@@ -166,12 +171,35 @@ static Module createInternalModule(Shell shell, String nameuri ) throws CoreExce
 	return mod;
 }
 
-  public static Module createPackageModule( Shell shell, String name, List<String> pkgs, String helpURL)
+  public static IModule createPackageModule( Shell shell, String name, List<String> pkgs, ClassLoader classLoader , String helpURL) throws ClassNotFoundException, InvalidArgumentException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException
   {
-    return new PackageModule( new ModuleConfig( name, null , shell.getSerializeOpts() , pkgs, helpURL) );
+	ModuleConfig config = new ModuleConfig( name, null , shell.getSerializeOpts() , pkgs, helpURL);
+    return createPackageModule( config, classLoader  );
   }
 
-  
+  /*
+   * Create a PackageModule or derived Module based on configuration
+   */
+  public static IModule createPackageModule( ModuleConfig config, ClassLoader classLoader ) throws ClassNotFoundException, InvalidArgumentException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException
+  {
+	
+	mLogger.entry(config, classLoader);
+	if( config== null )
+		return null ;
+	
+	String moduleClassName = config.getModuleClass();
+	if( ! Util.isBlank(moduleClassName)){
+		Class<?> cls = JavaUtils.findClass(moduleClassName, classLoader);
+		if( ! IModule.class.isAssignableFrom(cls) ) {
+			mLogger.warn("Module class does not implement IModule" , cls );
+			return null ;
+		}
+		mLogger.info("Creating custom package module: {} " , cls);
+		return mLogger.exit((IModule) JavaUtils.newObject(cls ,  config ));
+	}
+	
+    return mLogger.exit(new PackageModule( config  ));
+  }
   
   public static Module createScriptModule(Shell shell, ScriptSource script, String nameuri ) throws CoreException, IOException
   {
@@ -184,11 +212,13 @@ static Module createInternalModule(Shell shell, String nameuri ) throws CoreExce
    * for a sub package 
    */
 
-	private static String  findInternalModulePackage( String name ,  ClassLoader classLoader )
+	 static ModuleConfig  findPackageModule( Shell shell , String name ,  List<String> list ,  ClassLoader classLoader )
 	{
 		
 		mLogger.entry( name);
-		for( String p : Util.toArray("org.xmlsh.modules")){
+		ModuleConfig config = new ModuleConfig(); 
+		
+		for( String p : list){
 			/* Look for module under modules */
 			String pkgn = p +  "." + name ;
 			
@@ -196,24 +226,52 @@ static Module createInternalModule(Shell shell, String nameuri ) throws CoreExce
 			if( pkg == null ){
 				try {
 				Class<?> cls = JavaUtils.findClass(pkgn + ".package-info" , classLoader );
-				  mLogger.info("found clas: {} " + cls.getName() );
+				  mLogger.info("found package info clas: {} " + cls.getName() );
+				  
+	
+				  
 				  
 				} catch( ClassNotFoundException e ){
 					// mLogger.catching(e);
 					mLogger.trace("Cant find package-info - skipping ");
 				}
 			    pkg = Package.getPackage( pkgn );
+			   
 			}
 			if( pkg != null ){
 				mLogger.info("Found modules package: {} " , pkg.getName() );
-				return mLogger.exit(pkg.getName());
+				 config.setName(name);
+				 config.setSerialOpts(shell.getSerializeOpts() );
+				 config.setPackages(Collections.singletonList(pkg.getName()));
+			     reflectPackageAnnotations( pkg , config );
+			     
+
+				 return mLogger.exit( config );
 			}
 		}
 
 	     return mLogger.exit(null);
 		
 	}
+
+
+
+	private static void reflectPackageAnnotations(Package pkg, ModuleConfig config) {
+		
 	
-	
+		org.xmlsh.annotations.Module ma = pkg.getAnnotation(org.xmlsh.annotations.Module.class);
+		if( ma != null ){
+			if( !Util.isBlank(ma.name()))
+				config.setName(ma.name());
+			String moduleClass = ma.moduleClass();
+			if( !Util.isBlank(moduleClass) ){
+				if( moduleClass.indexOf('.') <0 )
+					moduleClass = pkg.getName() + "." + moduleClass ;
+				config.setModuleClass(moduleClass);
+			}
+		}
+		
+		
+	}
 
 }

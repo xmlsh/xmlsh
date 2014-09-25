@@ -69,7 +69,7 @@ public class ximport extends BuiltinCommand
       else if(what.toString().equals("java"))
         return importJava(args);
       else 
-        return importScript(new StringPair(what,'='),args);
+        return importModule(new StringPair(what,'='),args);
     }
 
     catch (InvalidArgumentException e) {
@@ -88,25 +88,16 @@ public class ximport extends BuiltinCommand
 
   }
 
-  /*
+/*
    * Implements
    * import module 
    * import foo=script
    * import foo=a.b.c at jar-file
    */
-  private int importScript(StringPair qname, List<XValue> args) throws Exception
-  {
-    
-    List<URL> at = getAt(args);
-    
-   // ScriptCommand icmd = CommandFactory.getInstance().getScript(mShell, at.toString() ,SourceMode.IMPORT,getLocation());
-
-    mShell.importScript(qname.getLeft(),qname.getRight(), at, args ); 
-    
-    
-    return 0;
-    
-  }
+  private int importModule(StringPair stringPair, List<XValue> args) throws Exception {
+	    List<URL> at = getAt(args);
+	    return importModule(args,at,stringPair);
+}
 
   private int importModule(List<XValue> args) throws Exception
   {
@@ -121,10 +112,15 @@ public class ximport extends BuiltinCommand
     StringPair pair = new StringPair(mod, '=');
     
 
-    mShell.importModule(pair.getLeft(),pair.getRight(), at, args);
+    importModule(args, at, pair);
 
     return 0;
   }
+
+protected int importModule(List<XValue> args, List<URL> at, StringPair pair)
+		throws Exception {
+	return mShell.importModule(pair.getLeft(),pair.getRight(), at, args)  ? 0 : 1 ;
+}
 
   private List<URL>  getAt(List<XValue> args) throws CoreException
   {

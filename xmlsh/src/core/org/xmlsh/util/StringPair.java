@@ -29,6 +29,15 @@ public class StringPair {
 		} else
 			mRight = string ;
 	}
+	
+	public StringPair( String left , String right , char delim ){
+		mLeft = left ; 
+		mRight = right ;
+		if( left != null )
+			mString = left + delim + right ;
+		else
+			mString = right ;
+	}
 
 
 	public StringPair(XValue arg,char delim) {

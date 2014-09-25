@@ -238,7 +238,7 @@ public class Shell implements AutoCloseable, Closeable {
 				 ModuleFactory.createPackageModule( this ,
 		 					"xmlsh" , Arrays.asList(
 											"org.xmlsh.internal.commands", "org.xmlsh.internal.functions"),
-		 							CommandFactory.kCOMMANDS_HELP_XML);
+		 							getClassLoader() , CommandFactory.kCOMMANDS_HELP_XML);
 		 getModules().importModule( this , null , hInternal , null);
 		 
 		 
@@ -1674,7 +1674,7 @@ public class Shell implements AutoCloseable, Closeable {
 	 		IModule mod = getModules().getExistingModuleByName(name);
 	 		if( mod == null )
 	 			mod =  ModuleFactory.createPackageModule( this ,
-	 					name, packages, sHelp );
+	 					name, packages, getClassLoader(), sHelp );
 
 	 		boolean inited = getModules().importModule( this , prefix , mod , null );
 	 		return  true ;

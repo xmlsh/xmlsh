@@ -22,6 +22,7 @@ import java.lang.annotation.Target;
 public @interface Module {
 	String value() default "";
 	String name() default "" ;
+	String moduleClass() default "" ; 
 
 
 }

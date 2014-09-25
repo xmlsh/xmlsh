@@ -1,6 +1,7 @@
 package org.xmlsh.sh.module;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.HashMap;
@@ -11,11 +12,13 @@ import org.apache.logging.log4j.Logger;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.ICommand;
 import org.xmlsh.core.IFunctionExpr;
+import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XClassLoader;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.IFunctionDefiniton;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.sh.shell.StaticContext;
+import org.xmlsh.util.JavaUtils;
 
 public abstract class Module implements IModule {
 
@@ -64,6 +67,7 @@ public abstract class Module implements IModule {
 		// caching failed lookups
 		if (mClassCache.containsKey(className))
 			return mClassCache.get(className);
+		
 
 		Class<?> cls = null;
 		try {
@@ -202,7 +206,7 @@ public abstract class Module implements IModule {
 	}
 
 	@Override
-	public Module getModule(Shell shell , String name , List<URL> at ) throws CoreException, IOException, URISyntaxException {
+	public IModule getModule(Shell shell , String name , List<URL> at ) throws  Exception {
 
 		mLogger.error("NOT IMPLEMENTED");
 		return null;

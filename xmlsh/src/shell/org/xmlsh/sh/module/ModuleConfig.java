@@ -11,6 +11,7 @@ public class ModuleConfig {
 	private List<String> mPackages;
 	private String mHelpURI;
 	private SerializeOpts mSerialOpts;
+	private String mModuleClass;
 	
 	public ModuleConfig(String name, List<URL> classpath, SerializeOpts serialOpts,
 			List<String> mPackages, String mHelpURI) {
@@ -23,9 +24,6 @@ public class ModuleConfig {
 		this.mPackages = mPackages;
 		this.mHelpURI = mHelpURI;
 		
-		if( mSerialOpts == null )
-			mSerialOpts = SerializeOpts.defaultOpts ;
-
 	}
 
 
@@ -36,14 +34,13 @@ public class ModuleConfig {
 		this.name = name;
 		this.classpath = classpath;
 		this.mSerialOpts = serialOpts;
-		
-		
-		if( mSerialOpts == null )
-			mSerialOpts = SerializeOpts.defaultOpts ;
-
 	}
 	
 	
+	public ModuleConfig() {
+	}
+
+
 	public String getInputTextEncoding() {
 		return mSerialOpts.getInputTextEncoding();
 	}
@@ -71,6 +68,41 @@ public class ModuleConfig {
 
 	public String getHelpURI() {
 		return mHelpURI;
+	}
+
+
+	public String getModuleClass() {
+		return mModuleClass;
+	}
+
+
+	public SerializeOpts getSerialOpts() {
+		return mSerialOpts == null ?  SerializeOpts.defaultOpts : mSerialOpts;
+	}
+
+
+	public void setSerialOpts(SerializeOpts serialOpts) {
+		mSerialOpts = serialOpts;
+	}
+
+
+	public void setClasspath(List<URL> classpath) {
+		this.classpath = classpath;
+	}
+
+
+	public void setPackages(List<String> packages) {
+		mPackages = packages;
+	}
+
+
+	public void setHelpURI(String helpURI) {
+		mHelpURI = helpURI;
+	}
+
+
+	public void setModuleClass(String moduleClass) {
+		mModuleClass = moduleClass;
 	}
 	
 	
