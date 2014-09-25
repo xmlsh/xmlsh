@@ -98,9 +98,24 @@ public abstract class Module implements IModule {
 		mClassCache.put(className, cls);
 	}
 
-
-	protected void declareFunctionClass(String name, Class<?> cls) {
-		mFunctionClassCache.put( name ,  cls  );
+	/*
+	 * Most derived classes should override parent classes 
+	 * 
+	 */
+	protected void declareFunctionClass(String name, Class<?> cls) { 
+		mLogger.entry(name, cls);
+		Class<?> exists = mFunctionClassCache.get(name);
+		if( exists == null )
+    		mFunctionClassCache.put( name ,  cls  );
+		else {
+			// Override with most derived type
+			if( exists.isAssignableFrom(cls)){ // Exists is equal to or a super class 
+				mLogger.trace("Overriding base class {} with derived class {} ",exists, cls );
+				// Override it with sub class 
+				mFunctionClassCache.put( name , cls );
+			}
+			
+		}
 		declareClass( cls.getName() , cls );
 		
 	}

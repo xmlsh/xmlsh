@@ -910,7 +910,6 @@ public class XValue implements Iterable<XValue>
           return JSONUtils.toByteArray(asJson(), opts);
         case XDM:
           return XMLUtils.toByteArray(toXdmValue(), opts);
-
         }
 
       }

@@ -180,7 +180,7 @@ public class PackageModule extends Module {
 			}
 		}
 		} catch (Exception e) {
-			;
+			mLogger.catching(e);
 
 		}
 
@@ -339,6 +339,7 @@ public class PackageModule extends Module {
 	public void onLoad(Shell shell) {
 		
 		super.onLoad(shell);
+		reflectModuleClass( shell , getClass() );
 
 	}
 
@@ -354,9 +355,11 @@ public class PackageModule extends Module {
 		Function fa = cls.getAnnotation(Function.class);
 		if( fa != null  )
 			declareFunctionClass( fa.name()  , cls );
-		for( Class<?>  c : cls.getClasses())
+		
+		
+		for( Class<?>  c : cls.getClasses()){
 			reflectClass(shell,c);
-			
+		}
 		
 		
 	}

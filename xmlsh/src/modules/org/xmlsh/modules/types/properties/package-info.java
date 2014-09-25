@@ -5,6 +5,6 @@
  * @author DLEE
  * 
  */
-@Module(name="properties" , moduleClass="Module")
+@Module(name="properties" , moduleClass="Properties")
 package org.xmlsh.modules.types.properties;
 import org.xmlsh.annotations.Module;

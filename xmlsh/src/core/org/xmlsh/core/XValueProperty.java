@@ -98,7 +98,7 @@ public class XValueProperty extends XNamedValue implements IXValueMap<XValueProp
   @Override
   public boolean isAtomic()
   {
-    return true;
+    return false;
   }
 
   /*
