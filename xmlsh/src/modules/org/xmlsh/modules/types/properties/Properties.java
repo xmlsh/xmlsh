@@ -16,7 +16,7 @@ import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.Util;
 
 
-@org.xmlsh.annotations.Module( name="properties")
+@org.xmlsh.annotations.Module( name="types.properties")
 public class Properties extends Types {
 	static Logger mLogger = LogManager.getLogger();
 

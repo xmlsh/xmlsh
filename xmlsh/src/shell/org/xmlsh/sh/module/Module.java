@@ -245,7 +245,7 @@ public abstract class Module implements IModule {
 	}
 
 	@Override
-	public IModule getModule(Shell shell , String name , List<URL> at ) throws  Exception {
+	public ModuleConfig getModuleConfig(Shell shell , String name , List<URL> at ) throws  Exception {
 
 		mLogger.error("NOT IMPLEMENTED");
 		return null;

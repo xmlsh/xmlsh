@@ -30,21 +30,20 @@ public class ModuleFactory
   private  final static Logger mLogger = LogManager.getLogger();
 
 
-  public static Module createExternalModule(Shell shell, String nameuri, List<URL> at) throws CoreException
+  public static Module createExternalModule( ModuleConfig config ) throws CoreException
   {
-    return new ExternalModule( shell, nameuri, at );
+    return new ExternalModule( config );
   }
 
 
-
-  public static Module createJavaModule(Shell shell,String  classname, List<URL> at) throws CoreException
+  public static Module createJavaModule(ModuleConfig config ) throws CoreException
   {
-    return new JavaModule(shell, classname, at);
+    return new JavaModule( config ) ;
   }
 
 
   // 
-  static IModule createModuleModule(Shell shell , StringPair pair , List<URL> at ) throws Exception
+  static ModuleConfig createModuleModuleConfig(Shell shell , StringPair pair , List<URL> at ) throws Exception
   {
 
 
@@ -65,10 +64,10 @@ public class ModuleFactory
 	
 			if (m != null) {
 				mLogger.trace("Found prefixed module - try getting child module" , m , pair.getRight());
-				IModule mod = m.getModule(shell,pair.getRight(), at );
-				if (mod != null) {
-					mLogger.debug("Module Class found: " , mod );
-					return mod;
+				ModuleConfig config = m.getModuleConfig(shell,pair.getRight(), at );
+				if (config != null) {
+					mLogger.debug("Module Class found: " , config );
+					return config;
 				}
 	
 				return mLogger.exit(null);
@@ -103,48 +102,88 @@ public class ModuleFactory
 		return mLogger.exit(null);
 		
   }
-  public static IModule createModule(Shell shell, String name, List<URL> at )  throws Exception
-  {
-	  return createModule(shell, new PName(name), at);
-  }
+  /*
   public static IModule createModule(Shell shell, PName qname, List<URL> at )  throws Exception
   {
 	 
 	mLogger.entry(shell, qname, at);
-	  
-
 	
-	String name = qname.getName();
-	String prefix =  qname.getPrefix();
-    
-    IModule mod = null ;
-  
-    // special scheme
-    if(prefix != null && Util.isEqual(prefix, "java"))
-      mod = createJavaModule(shell, name, at  );
-    
-    if( mod == null && prefix  == null ){
-    	mod = createInternalModule( shell, name );
-    	
-    }
-    if( mod == null  ){
-    	mod = createModuleModule(shell, qname , at );
-    	
-    }
-    if( mod == null )
-    {
-    // Try to find script source by usual means 
-       ScriptSource script  = CommandFactory.getScriptSource(shell,qname ,SourceMode.IMPORT , at );
-       if( script != null )
-         mod = createScriptModule(shell ,script, qname.toString() );
-    } 
-    if( mod == null )
-        mod = createExternalModule(shell, qname.toString() , at);
+	ModuleConfig config = getModuleConfig(shell, qname, at);
+    if( config == null )
+    	return mLogger.exit(null);
+	
+	return mLogger.exit(createModule( shell , config ));
+	
+  }
+*/
+
+public static IModule createModule(Shell shell, ModuleConfig config) throws Exception {
+	
+	mLogger.entry(shell, config);
+	assert( config != null );
+
+	IModule mod = null;
+	
+	switch( config.getType() ){
+	case "java" :
+		mod = createJavaModule( config );
+		break ;
+	case "external" :
+		mod = createExternalModule( config );
+		break ;
+		
+	case "script" :
+		mod = createScriptModule( config ) ;
+		break ;
+	case "package" : 
+		mod = createPackageModule( config ) ; 
+		break; 
+	default : 
+		assert(true);
+		mLogger.error("Unexpected module configuration type: {} " , config.getType() );
+		break ;
+	}
     
     if( mod != null )
       mod.onLoad(shell);
     return mLogger.exit(mod) ;
-  }
+}
+
+
+public static ModuleConfig getModuleConfig(Shell shell, PName qname, List<URL> at)
+		throws CoreException, ClassNotFoundException, InstantiationException,
+		IllegalAccessException, InvocationTargetException, Exception,
+		IOException, URISyntaxException {
+	
+	ModuleConfig config = null ;
+	
+	String name = qname.getName();
+	String prefix =  qname.getPrefix();
+    
+  
+    // special scheme
+    if(prefix != null && Util.isEqual(prefix, "java"))
+      config = JavaModule.getConfiguration(shell, name, at) ;
+    
+    if( config  == null && prefix  == null ){
+    	config  = getInternalModuleConfig(shell , name , at );
+    	
+    }
+    if( config == null  ){
+    	config  = createModuleModuleConfig(shell, qname , at );
+    	
+    }
+    if( config == null )
+    {
+    // Try to find script source by usual means 
+       ScriptSource script  = CommandFactory.getScriptSource(shell,qname ,SourceMode.IMPORT , at );
+       if( script != null )
+         config = ScriptModule.getConfiguration(shell ,script,  at  );
+    } 
+    if( config == null )
+        config = ExternalModule.getConfiguration(shell, qname.toString() , at);
+	return config ;
+}
 
 
 
@@ -152,44 +191,40 @@ public class ModuleFactory
    * Look for a Class module in the internal packages 
    * 
    */
-static IModule createInternalModule(Shell shell, String nameuri ) throws CoreException, InvalidArgumentException, ClassNotFoundException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+static ModuleConfig  getInternalModuleConfig(Shell shell, String nameuri, List<URL> at  ) throws CoreException, InvalidArgumentException, ClassNotFoundException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 	
 	  ClassLoader classLoader = RootModule.getInstance().getClassLoader();
 	  List<String> packages = Collections.singletonList("org.xmlsh.modules");
-	  IModule mod = null ;
 	mLogger.debug("trying to find internal module by name: {} " , nameuri );
-	ModuleConfig config  =  findPackageModule( shell , nameuri , packages , classLoader  );
-	if( config != null ){
-		mod = createPackageModule( config , classLoader );
-		if( mod != null )
-		   mLogger.debug("created internal module: ");
-	}
-	
-	/*
-	 * Look for internal scripts - Defer to  modules to find them
-	 */
-	return mod;
+	ModuleConfig config  =  getPackageModuleConfig( shell , nameuri , packages , classLoader , null  );
+	return config;
 }
 
-  public static IModule createPackageModule( Shell shell, String name, List<String> pkgs, ClassLoader classLoader , String helpURL) throws ClassNotFoundException, InvalidArgumentException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException
-  {
-	ModuleConfig config = new ModuleConfig( name, null , shell.getSerializeOpts() , pkgs, helpURL);
-    return createPackageModule( config, classLoader  );
-  }
+
+
+public static ModuleConfig getInternalModuleConfig(Shell shell,
+		String name, List<String> packages, ClassLoader classLoader,
+		String helpXml) {
+	return new ModuleConfig("packages",name,null, shell.getSerializeOpts(), packages, helpXml);
+}
+
+
+
+// ModuleConfig config = new ModuleConfig( "package" , name, null , shell.getSerializeOpts() , pkgs, helpURL);
 
   /*
    * Create a PackageModule or derived Module based on configuration
    */
-  public static IModule createPackageModule( ModuleConfig config, ClassLoader classLoader ) throws ClassNotFoundException, InvalidArgumentException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException
+  public static IModule createPackageModule( ModuleConfig config  ) throws ClassNotFoundException, InvalidArgumentException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException
   {
 	
-	mLogger.entry(config, classLoader);
+	mLogger.entry(config);
 	if( config== null )
 		return null ;
 	
 	String moduleClassName = config.getModuleClass();
 	if( ! Util.isBlank(moduleClassName)){
-		Class<?> cls = JavaUtils.findClass(moduleClassName, classLoader);
+		Class<?> cls = JavaUtils.findClass(moduleClassName, config.getClassLoader());
 		if( ! IModule.class.isAssignableFrom(cls) ) {
 			mLogger.warn("Module class does not implement IModule" , cls );
 			return null ;
@@ -201,9 +236,9 @@ static IModule createInternalModule(Shell shell, String nameuri ) throws CoreExc
     return mLogger.exit(new PackageModule( config  ));
   }
   
-  public static Module createScriptModule(Shell shell, ScriptSource script, String nameuri ) throws CoreException, IOException
+  public static Module createScriptModule(ModuleConfig config ) throws CoreException, IOException
   {
-    return new ScriptModule(shell, script, nameuri );
+    return new ScriptModule( config  );
   }
   
   
@@ -212,25 +247,22 @@ static IModule createInternalModule(Shell shell, String nameuri ) throws CoreExc
    * for a sub package 
    */
 
-	 static ModuleConfig  findPackageModule( Shell shell , String name ,  List<String> list ,  ClassLoader classLoader )
+	public static ModuleConfig  getPackageModuleConfig( Shell shell , String name ,  List<String> packages ,   ClassLoader classLoader , String helpURI )
 	{
 		
 		mLogger.entry( name);
-		ModuleConfig config = new ModuleConfig(); 
+		ModuleConfig config = new ModuleConfig("package"); 
 		
-		for( String p : list){
+		for( String p : packages){
 			/* Look for module under modules */
 			String pkgn = p +  "." + name ;
+			
 			
 			Package pkg = Package.getPackage( pkgn );
 			if( pkg == null ){
 				try {
 				Class<?> cls = JavaUtils.findClass(pkgn + ".package-info" , classLoader );
 				  mLogger.info("found package info clas: {} " + cls.getName() );
-				  
-	
-				  
-				  
 				} catch( ClassNotFoundException e ){
 					// mLogger.catching(e);
 					mLogger.trace("Cant find package-info - skipping ");
@@ -240,12 +272,12 @@ static IModule createInternalModule(Shell shell, String nameuri ) throws CoreExc
 			}
 			if( pkg != null ){
 				mLogger.info("Found modules package: {} " , pkg.getName() );
+			   	config.setHelpURI(helpURI );
 				 config.setName(name);
 				 config.setSerialOpts(shell.getSerializeOpts() );
 				 config.setPackages(Collections.singletonList(pkg.getName()));
+				 config.setClassLoader( classLoader );
 			     reflectPackageAnnotations( pkg , config );
-			     
-
 				 return mLogger.exit( config );
 			}
 		}
@@ -273,5 +305,6 @@ static IModule createInternalModule(Shell shell, String nameuri ) throws CoreExc
 		
 		
 	}
+
 
 }

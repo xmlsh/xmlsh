@@ -108,16 +108,22 @@ public class JavaModule extends Module
   
   
   static Logger mLogger = LogManager.getLogger();
-  JavaModule(Shell shell, String clsname , List<URL> at) throws CoreException
+  JavaModule( ModuleConfig config) throws CoreException
   {
-    super(new ModuleConfig("java:" + clsname ,  at , shell.getSerializeOpts()));
+    super(config);
 
-
-    mJavaClass = findClass(clsname);
+    mJavaClass = findClass(config.getModuleClass());
     if(mJavaClass == null)
-      throw new InvalidArgumentException("Class not found:" + clsname);
+      throw new InvalidArgumentException("Class not found:" + config.getModuleClass());
 
   }
+
+   static ModuleConfig getConfiguration(Shell shell, String clsname,
+		List<URL> at) {
+	ModuleConfig config = new ModuleConfig("java" , "java:" + clsname ,  at , shell.getSerializeOpts());
+	config.setModuleClass(clsname);
+	return config ;
+   }
 
   @Override
   public String describe()

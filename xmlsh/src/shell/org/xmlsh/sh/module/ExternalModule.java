@@ -36,14 +36,14 @@ public class ExternalModule extends PackageModule
   private String mURI;
   
 
-  ExternalModule(Shell shell, String nameuri, List<URL> at) throws CoreException
+  ExternalModule(ModuleConfig config ) throws CoreException
   {
-    super( configure(shell, nameuri,  at));
+    super(config  );
   }
   
   
   
-  private static ModuleConfig configure(Shell shell, String nameuri,  List<URL> at) throws CoreException
+  public  static ModuleConfig getConfiguration(Shell shell, String nameuri,  List<URL> at) throws CoreException
   {
     try {
 
@@ -116,7 +116,7 @@ public class ExternalModule extends PackageModule
       }
 
     
-    return new ModuleConfig( name , classpath , shell.getSerializeOpts() , packages , "commands.xml" );
+    return new ModuleConfig("external", name , classpath , shell.getSerializeOpts() , packages , "commands.xml" );
 
   } catch (CoreException e) {
     throw e;

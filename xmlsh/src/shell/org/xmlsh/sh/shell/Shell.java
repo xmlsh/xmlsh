@@ -78,7 +78,9 @@ import org.xmlsh.sh.grammar.ShellParser;
 import org.xmlsh.sh.grammar.ShellParserReader;
 import org.xmlsh.sh.module.CommandFactory;
 import org.xmlsh.sh.module.IModule;
+import org.xmlsh.sh.module.ModuleConfig;
 import org.xmlsh.sh.module.ModuleFactory;
+import org.xmlsh.sh.module.PName;
 import org.xmlsh.sh.module.RootModule;
 import org.xmlsh.util.FileUtils;
 import org.xmlsh.util.JavaUtils;
@@ -235,10 +237,12 @@ public class Shell implements AutoCloseable, Closeable {
 	private void importStandardModules() throws Exception {
 		
 		IModule hInternal = 
-				 ModuleFactory.createPackageModule( this ,
+				 ModuleFactory.createPackageModule(ModuleFactory.getInternalModuleConfig(this ,
 		 					"xmlsh" , Arrays.asList(
 											"org.xmlsh.internal.commands", "org.xmlsh.internal.functions"),
-		 							getClassLoader() , CommandFactory.kCOMMANDS_HELP_XML);
+		 							getClassLoader() , CommandFactory.kCOMMANDS_HELP_XML));
+		
+		
 		 getModules().importModule( this , null , hInternal , null);
 		 
 		 
@@ -1642,11 +1646,17 @@ public class Shell implements AutoCloseable, Closeable {
 			throws Exception {
 		
 		mLogger.entry(at, init);
+		PName pname = new PName(name);
+		
+		ModuleConfig config = ModuleFactory.getModuleConfig( this , pname , at );
 
-		IModule mod = getModules().getExistingModuleByName(name);
+		if( config == null)
+			return false ;
+		
+		IModule mod = getModules().getExistingModuleByName( config.getName());
 		
 		if( mod == null )
-			mod =   ModuleFactory.createModule(this, name, at );
+			mod =   ModuleFactory.createModule(this, config );
 			
 		assert( mod != null );
 		boolean inited = getModules().importModule(this, prefix , mod ,  init);
@@ -1672,9 +1682,15 @@ public class Shell implements AutoCloseable, Closeable {
 	     String sHelp = packages.get(0).replace('.', '/') + "/commands.xml";
 		
 	 		IModule mod = getModules().getExistingModuleByName(name);
-	 		if( mod == null )
-	 			mod =  ModuleFactory.createPackageModule( this ,
+	 		if( mod == null ){
+	 			ModuleConfig config = ModuleFactory.getInternalModuleConfig( this ,
 	 					name, packages, getClassLoader(), sHelp );
+	 			
+	 	    	if( config != null )
+	 			  mod =  ModuleFactory.createPackageModule(config );
+	 		}
+	 		if( mod == null )
+	 			throw new FileNotFoundException("Cannot locate package module:" + name );
 
 	 		boolean inited = getModules().importModule( this , prefix , mod , null );
 	 		return  true ;

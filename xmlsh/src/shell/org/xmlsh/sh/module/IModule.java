@@ -53,7 +53,7 @@ public interface IModule  {
 	StaticContext getStaticContext();
 
 	public void onInit(Shell shell, List<XValue> args) throws Exception;
-	public abstract IModule getModule(Shell shell , String name , List<URL> ata ) throws  Exception;
+	public abstract ModuleConfig getModuleConfig(Shell shell , String name , List<URL> ata ) throws  Exception;
 
 }
 

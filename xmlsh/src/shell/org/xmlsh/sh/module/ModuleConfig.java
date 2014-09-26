@@ -6,20 +6,38 @@ import java.util.List;
 import org.xmlsh.sh.shell.SerializeOpts;
 
 public class ModuleConfig {
-	private  String name;
-	private List<URL> classpath;
+	private String type;
+	public String getType() {
+		return type;
+	}
+
+
+	private  String mType;
+	private List<URL> mClassPath;
 	private List<String> mPackages;
 	private String mHelpURI;
 	private SerializeOpts mSerialOpts;
 	private String mModuleClass;
+	private ClassLoader mClassLoader ;
 	
-	public ModuleConfig(String name, List<URL> classpath, SerializeOpts serialOpts,
+	public ClassLoader getClassLoader() {
+		return mClassLoader;
+	}
+
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+
+	public ModuleConfig(String type , String name, List<URL> classpath, SerializeOpts serialOpts,
 			List<String> mPackages, String mHelpURI) {
 		assert( serialOpts !=null);
 		assert( name != null );
-		
-		this.name = name;
-		this.classpath = classpath;
+		assert( type != null );
+		this.type =type ;
+		this.mType = name;
+		this.mClassPath = classpath;
 		this.mSerialOpts = serialOpts;
 		this.mPackages = mPackages;
 		this.mHelpURI = mHelpURI;
@@ -27,17 +45,20 @@ public class ModuleConfig {
 	}
 
 
-	public ModuleConfig(String name, List<URL> classpath, 
+	public ModuleConfig(String type , String name, List<URL> classpath, 
 			SerializeOpts serialOpts) {
 		assert( serialOpts !=null);
 		assert( name != null );
-		this.name = name;
-		this.classpath = classpath;
+		assert( type != null );
+		this.type =type ;
+		this.mType = name;
+		this.mClassPath = classpath;
 		this.mSerialOpts = serialOpts;
 	}
 	
 	
-	public ModuleConfig() {
+	public ModuleConfig(String type) {
+		this.type = type ;
 	}
 
 
@@ -52,13 +73,13 @@ public class ModuleConfig {
 
 
 	public String getName() {
-		return name;
+		return mType;
 	}
 	public void setName(String name) {
-		this.name = name;
+		this.mType = name;
 	}
 	public List<URL> getClasspath() {
-		return classpath;
+		return mClassPath;
 	}
 
 	public List<String> getPackages() {
@@ -87,7 +108,7 @@ public class ModuleConfig {
 
 
 	public void setClasspath(List<URL> classpath) {
-		this.classpath = classpath;
+		this.mClassPath = classpath;
 	}
 
 
@@ -103,6 +124,12 @@ public class ModuleConfig {
 
 	public void setModuleClass(String moduleClass) {
 		mModuleClass = moduleClass;
+	}
+
+
+	public void setClassLoader(ClassLoader classLoader) {
+		mClassLoader = classLoader ;
+		
 	}
 	
 	

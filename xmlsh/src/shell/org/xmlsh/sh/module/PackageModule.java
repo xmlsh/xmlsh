@@ -239,10 +239,10 @@ public class PackageModule extends Module {
 	}
 
 	@Override
-	public IModule getModule(Shell shell , String qname , List<URL> at ) throws Exception {
+	public ModuleConfig getModuleConfig(Shell shell , String qname , List<URL> at ) throws Exception {
 
 		mLogger.entry(shell, qname, at);
-		
+		ModuleConfig config = null ;
 		// If hame has ":" it might be a schemed or prefixed module 
 		StringPair pair = new StringPair(qname, ':');
 		String name = pair.getRight();
@@ -252,21 +252,16 @@ public class PackageModule extends Module {
 	  
 	    // special scheme
 	    if(prefix != null && Util.isEqual(prefix, "java"))
-	      mod = ModuleFactory.createJavaModule(shell, name, at  );
+	    	config =  JavaModule.getConfiguration(shell, name, at  );
 	    
 	    /*
 	    if( mod == null && prefix  == null ){
 	    	mod = ModuleFactory.createInternalModule( name );
 	    }
 	    */
-	    if( mod == null && prefix == null  ){
+	    if( config == null && prefix == null  ){
 			mLogger.debug("trying to find package module by name: {} " , name );
-			ModuleConfig config  =  ModuleFactory.findPackageModule( shell , name , this.getPackages() , this.getClassLoader());
-			if( config != null ){
-				mod = ModuleFactory.createPackageModule( config, this.getClassLoader()  );
-				if( mod != null )
-				   mLogger.debug("created internal module: ");
-			}
+			config  =  ModuleFactory.getPackageModuleConfig( shell , name , this.getPackages() , this.getClassLoader(), null );
 	    
 	    }
 	    /*
@@ -289,9 +284,7 @@ public class PackageModule extends Module {
 	    
 	    */
 	    
-	    if( mod != null )
-	      mod.onLoad(shell);
-	    return mLogger.exit(mod) ;
+	    return mLogger.exit(config ) ;
 
 		
 	}
@@ -318,14 +311,13 @@ public class PackageModule extends Module {
 		return null;
 	}
 
-	private Module createScriptModule(Shell shell, ScriptSource script,
+	private ModuleConfig getScriptModuleConfig(Shell shell, ScriptSource script,
 			String qname, List<URL> at) throws URISyntaxException, IOException, CoreException {
 		
 		ScriptSource ss = getScriptSource(shell,qname, SourceMode.IMPORT , at );
 		if( ss !=null )
-			return new ScriptModule(shell,ss,qname);
+			return ScriptModule.getConfiguration(shell, script ,at);
 		return null;
-		
 	
 	}
 

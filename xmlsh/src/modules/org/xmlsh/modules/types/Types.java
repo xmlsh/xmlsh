@@ -15,7 +15,7 @@ import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.Util;
 
 
-@org.xmlsh.annotations.Module
+@org.xmlsh.annotations.Module(name="types")
 public class Types extends PackageModule {
 	static Logger mLogger = LogManager.getLogger();
 

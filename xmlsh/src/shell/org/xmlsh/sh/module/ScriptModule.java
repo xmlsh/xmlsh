@@ -15,28 +15,54 @@ import org.xmlsh.core.ScriptCommand.SourceMode;
 import org.xmlsh.core.ScriptSource;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.IFunctionDefiniton;
+import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.sh.shell.StaticContext;
 
 public class ScriptModule extends Module {
 
-	private ScriptSource mScript;
+	public static class ScriptModuleConfig extends ModuleConfig {
+		private ScriptSource mScript;
+
+		public ScriptModuleConfig(String name,
+				List<URL> classpath, SerializeOpts serialOpts , ScriptSource source ) {
+			super("script", name, classpath, serialOpts);
+			mScript = source ;
+
+		
+		}
+		protected void finalize() {
+              mScript = null ;
+		}
+		
+		
+		// new ModuleConfig( nameuri , null ,  shell.getSerializeOpts())
+		
+	}
+
 	private StaticContext mStaticContext = null;
 	protected final static Logger mLogger = LogManager.getLogger();
 	
-	protected ScriptModule(Shell shell, ScriptSource script, String nameuri) throws IOException, CoreException {
-		super( new ModuleConfig( nameuri , null ,  shell.getSerializeOpts()));
-		mScript = script;
+	static ModuleConfig getConfiguration( Shell shell, ScriptSource script,
+			List<URL> classpath ){
+		return new ScriptModuleConfig( script.getName() , classpath ,  shell.getSerializeOpts(), script);
 
+	}
+	protected ScriptModule(ModuleConfig config ) throws IOException, CoreException {
+		super( config );
+		assert( config instanceof ScriptModuleConfig );
+	}
+	
+	ScriptSource getScript(){
+		return ((ScriptModuleConfig)getConfig()).mScript;
 	}
 
 	@Override
 	public String describe() {
-		return getName() + " [ at " + mScript.getLocation().toString() + "]";
+		return getName() + " [ at " + getScript().getLocation().toString() + "]";
 	}
 
 	protected void finalize() {
-		mScript = null ;
 		mStaticContext = null ;
 	}
 
@@ -86,7 +112,7 @@ public class ScriptModule extends Module {
      Module hThis = this ;
     	 ScriptCommand cmd = new ScriptCommand(
         		 // Holds a refernce to module within cmd 
-    		  mScript ,  SourceMode.IMPORT, shell.getLocation() , hThis  ) ;
+    		  getScript() ,  SourceMode.IMPORT, shell.getLocation() , hThis  ) ;
 		     // Should addRef the module in the shell ...  
         	 if(  cmd.run(sh, getName(), args) != 0 )
 		        shell.printErr("Failed to init script:" + getName() );
@@ -108,7 +134,7 @@ public class ScriptModule extends Module {
 	@Override
 	public void onLoad(Shell shell) {
 		super.onLoad(shell);
-		if (mScript == null) {
+		if (getScript() == null) {
 			shell.printErr("script not found: " + getName());
 			return;
 		}

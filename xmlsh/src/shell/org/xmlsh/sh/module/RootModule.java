@@ -27,7 +27,7 @@ public class RootModule extends Module {
 	}
 	
 	private RootModule() {
-		super( new ModuleConfig("root",null,  SerializeOpts.defaultOpts ));
+		super( new ModuleConfig("internal" , "root",null,  SerializeOpts.defaultOpts ));
 	}
 	
 	@Override

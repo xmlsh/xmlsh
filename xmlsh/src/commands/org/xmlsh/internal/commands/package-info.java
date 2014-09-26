@@ -5,6 +5,6 @@
  * @author DLEE
  * 
  */
-@Module(name="types.config")
-package org.xmlsh.modules.types.config;
+@Module(name="xmlsh")
+package org.xmlsh.internal.commands;
 import org.xmlsh.annotations.Module;
