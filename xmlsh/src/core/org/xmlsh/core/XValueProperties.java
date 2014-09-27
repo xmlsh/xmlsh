@@ -26,7 +26,7 @@ import org.xmlsh.types.TypeFamily;
 public class XValueProperties extends XValueMap  {
 	
 
-  public XValueProperties( Map<?,?> map  ) {
+  public XValueProperties( Map<?,?> map  ) throws InvalidArgumentException {
     for(Map.Entry<?, ?> e : map.entrySet() ) {
       super.put( e.getKey().toString() , XValue.newInstance(e.getValue()));
     }
@@ -50,10 +50,10 @@ public class XValueProperties extends XValueMap  {
 
 
 
-public static XValueProperties fromMap( Map<?,?> map ) {
+public static XValueProperties fromMap( Map<?,?> map ) throws InvalidArgumentException {
     return new XValueProperties( map  );
   };
-  public static XValueProperties fromJavaProperties( Properties props ) {
+  public static XValueProperties fromJavaProperties( Properties props ) throws InvalidArgumentException {
     return new XValueProperties( props  );
   };
   
@@ -63,7 +63,7 @@ public static XValueProperties fromMap( Map<?,?> map ) {
   
   @Override
   public
-  XValue asXValue() {
+  XValue asXValue() throws InvalidArgumentException {
     return XValue.newXValue( TypeFamily.XTYPE , this );
   }
 
@@ -72,7 +72,7 @@ public static XValueProperties fromMap( Map<?,?> map ) {
   /*
    * Expand properties to set of nested properties based on a delimiter
    */
-  public XValueProperties expandTree( String delim ) {
+  public XValueProperties expandTree( String delim ) throws InvalidArgumentException {
     
     
       
@@ -100,7 +100,7 @@ public static XValueProperties fromMap( Map<?,?> map ) {
     
     
  // Create a new property with only keys nested under the parent
-    private XValueProperties nestedProperties(  Set<String> keySet , String parent , String delim )
+    private XValueProperties nestedProperties(  Set<String> keySet , String parent , String delim ) throws InvalidArgumentException
     {
       System.out.println("nestedProperties: parent: " + parent );
       // Create a new Properties object by filtering out only keys starting with parent.
@@ -157,7 +157,7 @@ public static XValueProperties fromMap( Map<?,?> map ) {
    * return a merged set where any property in that overwrites the property in this
    *  
    */
-  public XValueProperties merge( XValueProperties that) 
+  public XValueProperties merge( XValueProperties that) throws InvalidArgumentException 
   {
     if( isEmpty() )
       return that ;

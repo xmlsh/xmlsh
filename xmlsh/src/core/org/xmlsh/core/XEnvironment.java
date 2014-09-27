@@ -205,7 +205,7 @@ public class XEnvironment  {
     
   }
   
-  public XVariable declareVar( String name , EnumSet<XVarFlag> flags ){
+  public XVariable declareVar( String name , EnumSet<XVarFlag> flags ) throws InvalidArgumentException{
 	  XVariable var = mVars.get(name);
 	  if( var == null )
 		  var = XVariable.newInstance( name , flags );
@@ -222,7 +222,7 @@ public class XEnvironment  {
   }
 
 
-public XVariable exportVar( String name ){
+public XVariable exportVar( String name ) throws InvalidArgumentException{
     XVariable var = mVars.get(name);
     if( var == null ){
       var = XVariable.newInstance(name);
@@ -827,7 +827,7 @@ public XVariable exportVar( String name ){
 	}
 
 
-	public XVariable declareVar(String var) {
+	public XVariable declareVar(String var) throws InvalidArgumentException {
 		return declareVar( var , getVarFlags() );
 	}
 

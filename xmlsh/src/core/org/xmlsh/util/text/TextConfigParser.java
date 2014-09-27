@@ -8,6 +8,7 @@ package org.xmlsh.util.text;
 
 import java.util.Scanner;
 
+import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XConfiguration;
 import org.xmlsh.core.XValue;
 
@@ -16,7 +17,7 @@ public abstract class TextConfigParser
   private String currentSection ;
   private XConfiguration config  = new XConfiguration();
 
-  protected abstract XValue parseValue(String currentSection, String name, String value);
+  protected abstract XValue parseValue(String currentSection, String name, String value) throws InvalidArgumentException;
   
   private final class ConfigHelper extends ConfigScanner
   {
@@ -27,7 +28,7 @@ public abstract class TextConfigParser
     }
 
     @Override
-    public void onProperty(String name, String value)
+    public void onProperty(String name, String value) throws InvalidArgumentException
     {
       if( currentSection == null )
         throw new IllegalArgumentException(
@@ -40,7 +41,7 @@ public abstract class TextConfigParser
   }
 
   
-  public XConfiguration loadConfig( Readable r ) {
+  public XConfiguration loadConfig( Readable r ) throws InvalidArgumentException {
     ConfigScanner  cs = new ConfigHelper();
     try( Scanner s =  new Scanner(r) )
     {

@@ -8,6 +8,7 @@ package org.xmlsh.util.text;
 
 import java.util.Scanner;
 
+import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.util.Util;
 
 
@@ -29,7 +30,7 @@ public abstract class TextLineScanner implements ITextLineParser
     beginOfLineComment = s ;
   }
 
-  void run(Scanner scanner) {
+  void run(Scanner scanner) throws InvalidArgumentException {
       while(scanner.hasNextLine()) {
           String line = currentLine = scanner.nextLine().trim();
           if( line.isEmpty() )

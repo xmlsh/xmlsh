@@ -21,6 +21,7 @@ import net.sf.saxon.s9api.SaxonApiException;
 import org.xml.sax.SAXException;
 import org.xmlsh.core.BuiltinCommand;
 import org.xmlsh.core.CoreException;
+import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.XEnvironment;
@@ -114,7 +115,7 @@ public class declare extends BuiltinCommand {
 
 	}
 
-	private int declareType(Options opts, List<XValue> args) {
+	private int declareType(Options opts, List<XValue> args) throws InvalidArgumentException {
 
 		
 		if( opts.hasOpt("f") ){
@@ -220,11 +221,6 @@ public class declare extends BuiltinCommand {
 
 	}
 
-	private int export(String varname) {
-		getEnv().exportVar(varname);
-		return 0;
-
-	}
 
 	private boolean printVar(String name) throws XMLStreamException, SAXException,
 			IOException, CoreException, SaxonApiException {

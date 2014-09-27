@@ -1,5 +1,6 @@
 package org.xmlsh.sh.core;
 
+import java.rmi.UnexpectedException;
 import java.util.List;
 
 import org.xmlsh.core.InvalidArgumentException;
@@ -49,14 +50,22 @@ public abstract class AbstractExpr implements IExpression
   		throw new InvalidArgumentException( getName() + ":" + message );
   
   }
+  
+	
+	/**
+	 * Note that Command usage() only prints a message ,
+	 * Function usage throws an exception
+	 * @throws Exception 
+	 */
 
-  protected void error(Shell shell, Exception e)
+  protected void error(Shell shell, Exception e) throws Exception
   {
     shell.printErr( getName() , e);
-    usage( shell ,  e.toString() );
+    printUsage( shell ,  e.toString() );
+    throw e;
   }
 
-  public void usage(Shell shell, String message)
+  public void printUsage(Shell shell, String message)
   {
     String cmdName = getName();
     SourceLocation sloc =  getSourceLocation();
@@ -65,12 +74,12 @@ public abstract class AbstractExpr implements IExpression
       shell.printErr(cmdName + ": " + message,sloc);
     else
       shell.printErr(cmdName + ":", sloc );
-    HelpUsage helpUsage = new HelpUsage( shell );
-    try {
-      helpUsage.doUsage(shell.getEnv().getStdout(), cmdName);
-    } catch (Exception e) {
-      shell.printErr("Usage: <unknown>",sloc);
-    }
+  }
+  
+  public void usage(Shell shell, String message) throws UnexpectedException
+  {
+	  printUsage( shell , message );
+	  throw new UnexpectedException( message );
   }
 
 

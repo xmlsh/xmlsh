@@ -25,9 +25,9 @@ public interface IXValue<T extends IXValue<T>>
   public boolean isAtomic();
   public boolean isContainer();
   public boolean isSequence();
-  public void serialize(OutputStream out, SerializeOpts opts) throws IOException;
-  public XValue append(XValue item);
-  public XValue asXValue();
+  public void serialize(OutputStream out, SerializeOpts opts) throws IOException, InvalidArgumentException;
+  public XValue append(XValue item) throws InvalidArgumentException;
+  public XValue asXValue() throws InvalidArgumentException;
   public IXValueContainer<? extends IXValueContainer<?> > asXContainer();
   public IXValueMap<? extends IXValueMap<?>> asXMap();
   public IXValueList<? extends IXValueList<?>> asXList();

@@ -17,6 +17,7 @@ import java.util.regex.Pattern;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.EvalEnv;
 import org.xmlsh.core.EvalFlag;
+import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.XValueList;
 import org.xmlsh.core.XVariable;
@@ -482,14 +483,14 @@ public class EvalUtils
 
       }
 
-  public static int getSize(XValue xvalue)
+  public static int getSize(XValue xvalue) throws InvalidArgumentException
   {
     if(xvalue == null || xvalue.isNull())
       return 0;
     return xvalue.getTypeMethods().getSize(xvalue.asObject());
   }
 
-  public static XValue newContainerInstance(TypeFamily family)
+  public static XValue newContainerInstance(TypeFamily family) throws InvalidArgumentException
   {
     switch (family) {
     case XTYPE:
@@ -505,7 +506,7 @@ public class EvalUtils
     return XValue.nullValue();
   }
 
-  public static XValue getValues(EvalEnv env, XValue xvalue)
+  public static XValue getValues(EvalEnv env, XValue xvalue) throws InvalidArgumentException
   {
     if(xvalue == null || xvalue.isNull())
       return XValue.nullValue();

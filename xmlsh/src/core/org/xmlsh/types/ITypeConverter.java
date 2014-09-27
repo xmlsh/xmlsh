@@ -6,12 +6,14 @@
 
 package org.xmlsh.types;
 
+import org.xmlsh.core.InvalidArgumentException;
+
 /*
  * Interface for a conversion from type S(ource) to D(dest)
  */
 public interface ITypeConverter<S,D>
 {
-   D convert(S s);
+   D convert(S s) throws InvalidArgumentException;
 }
 
 

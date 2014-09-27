@@ -11,6 +11,7 @@ import java.util.List;
 import net.sf.saxon.trans.XPathException;
 
 import org.xmlsh.core.AbstractBuiltinFunction;
+import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.json.JSONUtils;
 import org.xmlsh.sh.shell.Shell;
@@ -24,7 +25,7 @@ public class _null extends AbstractBuiltinFunction {
 	}
 
 	@Override
-	public XValue run(Shell shell, List<XValue> args) throws XPathException {
+	public XValue run(Shell shell, List<XValue> args) throws XPathException, InvalidArgumentException {
 
 		return XValue.newXValue( TypeFamily.JSON ,JSONUtils.nullValue() );
 	}

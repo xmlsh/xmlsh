@@ -8,6 +8,7 @@ package org.xmlsh.util;
 
 import java.util.Iterator;
 
+import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.types.ITypeConverter;
 
 public class TypeConvertingIterator<S,D> implements Iterator<D>
@@ -31,7 +32,11 @@ public class TypeConvertingIterator<S,D> implements Iterator<D>
   @Override
   public D next()
   {
-    return converter.convert(iter.next());
+    try {
+		return converter.convert(iter.next());
+	} catch (InvalidArgumentException e) {
+		throw new IllegalArgumentException(e);
+	}
   }
 
   @Override

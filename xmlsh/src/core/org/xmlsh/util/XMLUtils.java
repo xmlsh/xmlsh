@@ -119,11 +119,11 @@ public class XMLUtils
     
     
     
-    public static XdmValue toXdmValue( Object obj ) {
+    public static XdmValue toXdmValue( Object obj ) throws InvalidArgumentException {
       return JavaUtils.convert(obj, XdmValue.class);
     }
     
-    public static XdmItem toXdmItem( Object obj ) {
+    public static XdmItem toXdmItem( Object obj ) throws InvalidArgumentException {
       return JavaUtils.convert(obj, XdmItem.class);
     }
     
@@ -320,7 +320,7 @@ public class XMLUtils
     {
       @SuppressWarnings("rawtypes")
 	@Override
-      public Item<?> convert(XValue xvalue)
+      public Item<?> convert(XValue xvalue) throws InvalidArgumentException
       {
         ValueRepresentation<? extends Item> v = xvalue.toXdmItem().getUnderlyingValue();
         assert( v instanceof Item );
@@ -335,7 +335,7 @@ public class XMLUtils
     implements ITypeConverter<XValue,XdmItem >
     {
       @Override
-      public XdmItem convert(XValue xvalue)
+      public XdmItem convert(XValue xvalue) throws InvalidArgumentException
       {
         return xvalue.toXdmItem();
       }
@@ -345,7 +345,7 @@ public class XMLUtils
     public static final class XdmToXValueConverter implements ITypeConverter<XdmItem, XValue>
     {
       @Override
-      public XValue convert(XdmItem value)
+      public XValue convert(XdmItem value) throws InvalidArgumentException
       {
         return XValue.newXValue(TypeFamily.XDM , value);
       }

@@ -34,6 +34,7 @@ import net.sf.saxon.type.Type;
 
 import org.apache.logging.log4j.Logger;
 import org.xmlsh.core.CoreException;
+import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
 
@@ -115,7 +116,7 @@ public class S9Util extends XdmNode {
 	}
 
 
-	public static XValue createElement(Shell shell, QName name , List<XValue> args) {
+	public static XValue createElement(Shell shell, QName name , List<XValue> args) throws InvalidArgumentException {
 		Processor processor = Shell.getProcessor();
 
 		XQueryCompiler compiler = processor.newXQueryCompiler();

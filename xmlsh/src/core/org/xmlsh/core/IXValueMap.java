@@ -13,7 +13,7 @@ import java.util.Set;
  */
 public interface IXValueMap<T extends IXValueMap<T > > extends  IXValueContainer<T>
 {
-  public XValue get(String name);
+  public XValue get(String name) throws InvalidArgumentException;
   public Set<String> keySet();
   public XValue put(String key, XValue value);
 	public boolean containsKey(String key);

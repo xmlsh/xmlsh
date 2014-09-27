@@ -12,6 +12,7 @@ import java.util.EnumSet;
 
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.EvalEnv;
+import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.XValueArray;
 import org.xmlsh.core.XValuePropertyList;
@@ -137,7 +138,7 @@ public class Assign {
 
 	}
 
-  private XValue nullValue(String typeStr)
+  private XValue nullValue(String typeStr) throws InvalidArgumentException
   {
     switch( typeStr )
     {

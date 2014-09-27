@@ -318,7 +318,7 @@ public class JavaUtils {
 		return best;
 	}
 
-  public static int  hasBeanConstructor(Class<?> targetClass, Class<?> sourceClass)  
+  public static int  hasBeanConstructor(Class<?> targetClass, Class<?> sourceClass) throws InvalidArgumentException  
   { 
    
     Constructor<?> c = getBeanConstructor( targetClass , sourceClass );
@@ -332,7 +332,7 @@ public class JavaUtils {
   }
 
   // Does the target hava a single method constructor from a convertable source
-  public static Constructor<?> getBeanConstructor(Class<?> targetClass, Class<?> sourceClass)  
+  public static Constructor<?> getBeanConstructor(Class<?> targetClass, Class<?> sourceClass) throws InvalidArgumentException  
    {     
        try {
          Constructor<?> c =  targetClass.getConstructor(sourceClass);
@@ -393,7 +393,7 @@ public class JavaUtils {
 
   }
 
-	public static <T> T convert(Object value, Class<T> targetClass) {
+	public static <T> T convert(Object value, Class<T> targetClass) throws InvalidArgumentException {
 
 	  assert( targetClass != null );
 	  

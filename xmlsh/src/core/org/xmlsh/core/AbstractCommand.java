@@ -194,6 +194,12 @@ public abstract class AbstractCommand implements ICommand {
 			mShell.printErr("Usage: <unknown>", sloc);
 		}
 	}
+	
+	
+	/**
+	 * Note that Command usage() only prints a message ,
+	 * Function usage throws an exception
+	 */
 
 	public void usage() {
 		usage(null);

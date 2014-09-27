@@ -17,6 +17,7 @@ import net.sf.saxon.trans.XPathException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.ThrowException;
 import org.xmlsh.core.VariableInputPort;
 import org.xmlsh.core.VariableOutputPort;
@@ -111,7 +112,7 @@ public class EvalFunctionCall extends ExtensionFunctionCall
 	
 	// helper functions for compiler warnings in try-resource
 	private VariableInputPort newInputPort(XPathContext context,
-			@SuppressWarnings("rawtypes") Item contextItem) {
+			@SuppressWarnings("rawtypes") Item contextItem) throws InvalidArgumentException {
 		if( context == null)
 			return null ;
 		

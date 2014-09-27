@@ -19,12 +19,12 @@
 	<property name="release" value="${bdate.DSTAMP}" />
 	<target name="install.check">
 		<condition property="install.exists">
-			<available file="${env.XMODPATH}" type="dir" />
+			<available file="${env.XINSTALL}" type="dir" />
 		</condition>
 	</target>
 
 
-	<property name="install" value="${env.XMODPATH}/marklogic" />
+	<property name="install" value="${env.XINSTALL}/xmlsh_ext/marklogic" />
 
 
 	<target name="clean" description="Clean all">

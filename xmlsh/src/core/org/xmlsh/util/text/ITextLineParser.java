@@ -6,6 +6,8 @@
 
 package org.xmlsh.util.text;
 
+import org.xmlsh.core.InvalidArgumentException;
+
 
 /*
  * A Text parser 
@@ -14,7 +16,7 @@ public interface ITextLineParser extends ITextScanner
 {
   
   // stops parsing if returns false
-  void onLine( String line );
+  void onLine( String line ) throws InvalidArgumentException;
   void onBlankLine();
   void onComment(String line);
   

@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.xmlsh.core.CoreException;
+import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.util.JavaUtils;
@@ -127,7 +128,7 @@ public class JavaTypeFamily extends AbstractTypeFamily implements ITypeFamily
 
     // Get all values of a collection or just this value
     @Override
-    public List<XValue> getXValues(Object obj)
+    public List<XValue> getXValues(Object obj) throws InvalidArgumentException
     {
       if(obj == null)
         return Collections.emptyList();
@@ -135,7 +136,7 @@ public class JavaTypeFamily extends AbstractTypeFamily implements ITypeFamily
     }
 
     @Override
-    public XValue getXValue(Object obj)
+    public XValue getXValue(Object obj) throws InvalidArgumentException
     {
        if( obj == null  )
          return nullXValue() ;
@@ -184,9 +185,13 @@ public class JavaTypeFamily extends AbstractTypeFamily implements ITypeFamily
     }
 
     @Override
-    public XValue nullXValue()
+    public XValue nullXValue() 
     {
-      return XValue.newXValue(this , _nullValue , false);
+      try {
+		return XValue.newXValue(this , _nullValue , false);
+	} catch (InvalidArgumentException e) {
+		throw new IllegalArgumentException(e);
+	}
     }
 
     public static JavaTypeFamily getInstance()

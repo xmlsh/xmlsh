@@ -18,7 +18,7 @@ public class ValueXdmItemInputStream implements IXdmItemInputStream {
 
 
 
-	public ValueXdmItemInputStream(XValue value, SerializeOpts serializeOpts) {
+	public ValueXdmItemInputStream(XValue value, SerializeOpts serializeOpts) throws InvalidArgumentException {
 		if( value == null )
 			mIter = null ;
 		else 	

@@ -9,6 +9,7 @@ package org.xmlsh.builtin.commands;
 import java.util.List;
 
 import org.xmlsh.core.BuiltinCommand;
+import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.XVariable;
 import org.xmlsh.util.Util;
@@ -46,7 +47,7 @@ public class shift  extends BuiltinCommand {
 
 	}
 
-	private void shiftvar(String name, int n) {
+	private void shiftvar(String name, int n) throws InvalidArgumentException {
 		XVariable var = mShell.getEnv().getVar(name);
 		if( var != null )
 			var.shift(n);

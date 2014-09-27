@@ -272,7 +272,7 @@ public class xed extends XCommand {
 
 
 
-	private void add(MutableNodeInfo node, XValue add) throws IndexOutOfBoundsException, SaxonApiUncheckedException, SaxonApiException {
+	private void add(MutableNodeInfo node, XValue add) throws IndexOutOfBoundsException, SaxonApiUncheckedException, SaxonApiException, InvalidArgumentException {
 		if( ! add.isAtomic() ){
 			XdmNode xnode = add.asXdmNode();
 			if( xnode.getNodeKind() == 	XdmNodeKind.ATTRIBUTE ) {
@@ -304,7 +304,7 @@ public class xed extends XCommand {
 
 
 	private void replace(MutableNodeInfo node, XValue replace, boolean compat_mode )
-			throws IndexOutOfBoundsException, SaxonApiUncheckedException, SaxonApiException, XPathException {
+			throws IndexOutOfBoundsException, SaxonApiUncheckedException, SaxonApiException, XPathException, InvalidArgumentException {
 		if(  ! replace.isAtomic() ){
 			XdmNode xnode = replace.asXdmNode();
 			if( xnode.getNodeKind() == 	XdmNodeKind.ATTRIBUTE ) {
@@ -344,7 +344,7 @@ public class xed extends XCommand {
 
 
 	private void replace(XdmItem item , MutableNodeInfo node, XPathSelector replacex)
-			throws IndexOutOfBoundsException, SaxonApiUncheckedException, SaxonApiException, XPathException {
+			throws IndexOutOfBoundsException, SaxonApiUncheckedException, SaxonApiException, XPathException, InvalidArgumentException {
 
 		replacex.setContextItem(item);
 

@@ -64,7 +64,7 @@ public class XConfiguration implements IXValueContainer<XConfiguration> , IXValu
   
   // Merge properties on top of (replacing) all same-name values
   // return the merged properties
-  public XValueProperties mergeSection( String section , XValueProperties properties) {
+  public XValueProperties mergeSection( String section , XValueProperties properties) throws InvalidArgumentException {
     
     XValueProperties old = getSection(section);
     if( properties == null )
@@ -140,7 +140,7 @@ public class XConfiguration implements IXValueContainer<XConfiguration> , IXValu
   }
 
   @Override
-  public void serialize(OutputStream out, SerializeOpts opts) throws IOException
+  public void serialize(OutputStream out, SerializeOpts opts) throws IOException, InvalidArgumentException
   {
     try ( OutputStreamWriter ps = new OutputStreamWriter(out, opts.getInputTextEncoding() ) ){
 
@@ -157,7 +157,7 @@ public class XConfiguration implements IXValueContainer<XConfiguration> , IXValu
 
 
   @Override
-  public XValue asXValue()
+  public XValue asXValue() throws InvalidArgumentException
   {
     return XValue.newXValue( TypeFamily.XTYPE , this );
   }
@@ -230,7 +230,11 @@ public Collection<XValue> values()
         @Override
         public XValue next()
         {
-          return iter.next().asXValue();
+          try {
+			return iter.next().asXValue();
+		} catch (InvalidArgumentException e) {
+			throw new IllegalArgumentException(e);
+		}
         }
 
         @Override
@@ -249,7 +253,7 @@ public Collection<XValue> values()
   }
 
   @Override
-  public XValue get(String name)
+  public XValue get(String name) throws InvalidArgumentException
   {
  
     XValueProperties sect = mSections.get(name);

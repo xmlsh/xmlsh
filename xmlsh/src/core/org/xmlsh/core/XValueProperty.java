@@ -73,7 +73,7 @@ public class XValueProperty extends XNamedValue implements IXValueMap<XValueProp
   }
 
   @Override
-  public void serialize(OutputStream out, SerializeOpts opts) throws IOException
+  public void serialize(OutputStream out, SerializeOpts opts) throws IOException, InvalidArgumentException
   {
 
     XValue value = getValue();
@@ -108,7 +108,7 @@ public class XValueProperty extends XNamedValue implements IXValueMap<XValueProp
    */
 
   @Override
-  public XValue append(XValue item)
+  public XValue append(XValue item) throws InvalidArgumentException
   {
 
     if(item.isEmpty())
@@ -140,7 +140,7 @@ public class XValueProperty extends XNamedValue implements IXValueMap<XValueProp
   }
 
   @Override
-  public XValue asXValue()
+  public XValue asXValue() throws InvalidArgumentException
   {
     return XValue.newXValue(TypeFamily.XTYPE, this);
   }

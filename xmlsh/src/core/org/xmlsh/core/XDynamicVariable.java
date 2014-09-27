@@ -19,7 +19,7 @@ public abstract class XDynamicVariable extends XVariable {
 	}
 
 	@Override
-	public XVariable clone(EnumSet<XVarFlag> flags) {
+	public XVariable clone(EnumSet<XVarFlag> flags) throws InvalidArgumentException {
 		throw new InvalidArgumentException("Cannot clone: " + getName() );
 
 	}
@@ -32,7 +32,12 @@ public abstract class XDynamicVariable extends XVariable {
 	
 	@Override
 	public XVariable clone() {
-		throw new InvalidArgumentException("Cannot clone: " + getName() );
+		try {
+			throw new InvalidArgumentException("Cannot clone: " + getName() );
+		} catch (InvalidArgumentException e) {
+			mLogger.error(e);
+		}
+		return null;
 
 	}
 

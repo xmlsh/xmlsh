@@ -5,6 +5,8 @@ import java.io.OutputStream;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.IXValue;
 import org.xmlsh.core.IXValueContainer;
@@ -21,7 +23,7 @@ public class XTypeFamily extends AbstractTypeFamily implements ITypeFamily
 {
   private static final XTypeFamily _instance = new XTypeFamily();
   private static final Object _nullValue = null;
-
+  static Logger mLogger = LogManager.getLogger();
 
 /*
  * @Override
@@ -139,12 +141,18 @@ public class XTypeFamily extends AbstractTypeFamily implements ITypeFamily
     }
 
     @Override
-    public boolean isEmpty(Object obj) throws InvalidArgumentException
+    public boolean isEmpty(Object obj) 
     {
       if(obj == null)
         return true;
-      IXValue<?> ic = asXType(obj);
-      return ic.isEmpty();
+      IXValue<?> ic;
+	try {
+		ic = asXType(obj);
+		  return ic.isEmpty();
+	} catch (InvalidArgumentException e) {
+		throw new IllegalArgumentException(e);
+	}
+    
 
     }
 
@@ -168,7 +176,7 @@ public class XTypeFamily extends AbstractTypeFamily implements ITypeFamily
     }
 
     @Override
-    public List<XValue> getXValues(Object obj)
+    public List<XValue> getXValues(Object obj) throws InvalidArgumentException
     {
       if(obj == null)
         return Collections.emptyList();
@@ -186,7 +194,7 @@ public class XTypeFamily extends AbstractTypeFamily implements ITypeFamily
     }
 
     @Override
-    public XValue getXValue(Object obj)
+    public XValue getXValue(Object obj) throws InvalidArgumentException
     {
 
       if(obj instanceof XValue)
@@ -198,12 +206,13 @@ public class XTypeFamily extends AbstractTypeFamily implements ITypeFamily
     }
 
     @Override
-    public boolean isAtomic(Object obj)
+    public boolean isAtomic(Object obj) 
     {
       if((obj instanceof IXValue)) {
         return ((IXValue<?>) obj).isAtomic();
       }
-      throw new InvalidArgumentException("Unexpected type: " + describeClass(obj));
+      mLogger.warn("Unexpected type:{} " , describeClass(obj));
+      return false;
     }
 
     @Override
@@ -241,9 +250,13 @@ public class XTypeFamily extends AbstractTypeFamily implements ITypeFamily
   }
 
   @Override
-  public XValue nullXValue()
+  public XValue nullXValue() 
   {
-    return XValue.newXValue(this , _nullValue, false );
+    try {
+		return XValue.newXValue(this , _nullValue, false );
+	} catch (InvalidArgumentException e) {
+		throw new IllegalArgumentException(e);
+	}
   }
 
   public static XTypeFamily getInstance()

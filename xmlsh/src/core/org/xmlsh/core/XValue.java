@@ -212,7 +212,7 @@ public class XValue implements Iterable<XValue>
   /*
    * Prefered way create an XValue from an object - does NOT unwrap an existing XValue
    */
-  public static XValue newInstance(Object obj)
+  public static XValue newInstance(Object obj) throws InvalidArgumentException
   {
     if(obj == null)
       return nullValue();
@@ -251,7 +251,7 @@ public class XValue implements Iterable<XValue>
     return new XValue(item);
   }
 
-  public static XValue newXValue(ITypeFamily type, Object value, boolean convert)
+  public static XValue newXValue(ITypeFamily type, Object value, boolean convert) throws InvalidArgumentException
   {
     if(type == null)
       return newXValue(value);
@@ -286,7 +286,7 @@ public class XValue implements Iterable<XValue>
     return new XValue(n);
   }
 
-  public static XValue newXValue(Object obj)
+  public static XValue newXValue(Object obj) throws InvalidArgumentException
   {
     if(obj == null)
       return nullValue();
@@ -313,7 +313,7 @@ public class XValue implements Iterable<XValue>
     return new XValue(astring);
   }
 
-  public static XValue newXValue(TypeFamily type, Object value)
+  public static XValue newXValue(TypeFamily type, Object value) throws InvalidArgumentException
   {
     if(type == null)
       return newXValue(value);
@@ -372,7 +372,7 @@ public class XValue implements Iterable<XValue>
 
   }
 
-  public XValue append(XdmValue value)
+  public XValue append(XdmValue value) throws InvalidArgumentException
   {
 
     if(mValue == null)
@@ -492,7 +492,7 @@ public class XValue implements Iterable<XValue>
     else throw new InvalidArgumentException("Value is not a Node");
   }
 
-  public XdmSequenceIterator asXdmSequenceIterator()
+  public XdmSequenceIterator asXdmSequenceIterator() throws InvalidArgumentException
   {
     XdmValue value = toXdmValue();
     if(value == null)
@@ -682,7 +682,7 @@ public class XValue implements Iterable<XValue>
 
   }
 
-  public boolean isEmpty() throws InvalidArgumentException
+  public boolean isEmpty() 
   {
 
     if(isNull())
@@ -799,7 +799,7 @@ public class XValue implements Iterable<XValue>
 
   }
 
-  public XValue shift(int n)
+  public XValue shift(int n) throws InvalidArgumentException
   {
     if(mValue == null)
       return this;
@@ -966,7 +966,7 @@ public class XValue implements Iterable<XValue>
     return "";
   }
 
-  public XdmItem toXdmItem()
+  public XdmItem toXdmItem() throws InvalidArgumentException
   {
     if(isXdmItem())
       return asXdmItem();
@@ -975,7 +975,7 @@ public class XValue implements Iterable<XValue>
 
   }
 
-  public XdmValue toXdmValue()
+  public XdmValue toXdmValue() throws InvalidArgumentException
   {
     if(isSequence())
       return XMLUtils.toXdmValue(((XValueSequence) mValue));
@@ -1034,7 +1034,7 @@ public XValue getNamedValue( String key ) throws CoreException {
 
 }
 
-public List<XValue> getXValues() {
+public List<XValue> getXValues() throws InvalidArgumentException {
 	if( mValue == null )
 		return emptyList();
 	return getTypeMethods().getXValues( mValue  ); 

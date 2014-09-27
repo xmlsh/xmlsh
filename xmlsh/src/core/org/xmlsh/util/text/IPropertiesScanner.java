@@ -6,10 +6,12 @@
 
 package org.xmlsh.util.text;
 
+import org.xmlsh.core.InvalidArgumentException;
+
 public interface IPropertiesScanner extends ITextScanner
 {
   
-  void onProperty( String name , String value );
+  void onProperty( String name , String value ) throws InvalidArgumentException;
   
 
 }

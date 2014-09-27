@@ -72,7 +72,7 @@ public class XValuePropertyList  implements     IXValueMap<XValuePropertyList>, 
 
 	// Get like a map - returns a sequence of XValues
 	@Override
-	public XValue get(String name) {
+	public XValue get(String name) throws InvalidArgumentException {
 		
 		XValueList list  = null ;
 		for( XValueProperty p : mList ) {
@@ -135,7 +135,7 @@ public class XValuePropertyList  implements     IXValueMap<XValuePropertyList>, 
 
 
 	@Override
-	public void serialize(OutputStream out, SerializeOpts opts) throws IOException
+	public void serialize(OutputStream out, SerializeOpts opts) throws IOException, InvalidArgumentException
 	{
 		try ( OutputStreamWriter ps = new OutputStreamWriter(out, opts.getInputTextEncoding() ) ){
 			ps.write("[");
@@ -224,7 +224,7 @@ public class XValuePropertyList  implements     IXValueMap<XValuePropertyList>, 
     }
 
     @Override
-    public XValue asXValue()
+    public XValue asXValue() throws InvalidArgumentException
     {
       return XValue.newXValue( TypeFamily.XTYPE , this );
 

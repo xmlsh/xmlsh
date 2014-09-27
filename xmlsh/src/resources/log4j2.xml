@@ -15,19 +15,17 @@
 		<Property name="home">${env:HOME}</Property>
 		<Property name="XLOGFILE">${env:HOME}/xmlsh.log</Property>
 		<Property name="logfile">${env:XLOGFILE}</Property>
-		
-		
-		
+		<Property name="XTRACE">trace-nothing</Property>
 		<property name="tracelog">${env:XTRACE}</property>
 	</Properties>
 
 
 	<Appenders>
 		<File name="A1" fileName="${logfile}" append="false" >
-			<PatternLayout pattern="%d %-5p [%t] %c{5} %M - %m (%X{tshell) %X{module}) | %F %L%n" />
+			<PatternLayout pattern="%d %-5p [%t] %c{5} %M - %m (%X{tshell) %X{module}) | %l%n" />
 		</File>
-		<Console name="CONSOLE" target="SYSTEM_ERR">
-			<PatternLayout pattern="%m MDC%X%n" />
+		<Console name="CONSOLE" target="SYSTEM_ERR" alwaysWriteExceptions="false">
+			<PatternLayout pattern="%m %ex{short}%n" />
 		</Console>
 		<Shell name="SHELL" >
 		

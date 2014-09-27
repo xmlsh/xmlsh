@@ -407,7 +407,7 @@ public class xedit extends XCommand
   }
 
   private void add(MutableNodeInfo node, XValue add, Axis opt_axis) throws IndexOutOfBoundsException,
-      SaxonApiUncheckedException, SaxonApiException
+      SaxonApiUncheckedException, SaxonApiException, InvalidArgumentException
   {
 
     for (XdmItem item : add.toXdmValue()) {

@@ -91,7 +91,7 @@ public class XValueList  extends AbstractList<XValue> implements IXValueContaine
 	}
 
 	@Override
-	public void serialize(OutputStream out, SerializeOpts opts) throws IOException
+	public void serialize(OutputStream out, SerializeOpts opts) throws IOException, InvalidArgumentException
 	{
 		try ( OutputStreamWriter ps = new OutputStreamWriter(out, opts.getInputTextEncoding() ) ){
 			ps.write("[");
@@ -136,13 +136,13 @@ public class XValueList  extends AbstractList<XValue> implements IXValueContaine
     }
 
     @Override
-    public XValue append(XValue item) {
+    public XValue append(XValue item) throws InvalidArgumentException {
         XValueList newList = new XValueList(this);
         newList.add(item);
         return XValue.newXValue( TypeFamily.XTYPE , newList ); 
     }
     @Override
-    public XValue asXValue()
+    public XValue asXValue() throws InvalidArgumentException
     {
       return XValue.newXValue( TypeFamily.XTYPE , this );
     }

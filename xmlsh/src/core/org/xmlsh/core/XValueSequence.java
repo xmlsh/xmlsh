@@ -145,14 +145,14 @@ public boolean isAtomic()
 
 
   @Override
-  public void serialize(OutputStream out, SerializeOpts opts) throws IOException
+  public void serialize(OutputStream out, SerializeOpts opts) throws IOException, InvalidArgumentException
   {
     ( new XValueList( mList )).serialize(out, opts);
   }
 
 
   @Override
-  public XValue append(XValue item)
+  public XValue append(XValue item) throws InvalidArgumentException
   {
     IXValueSequence s = new XValueSequence(this);
     s.addValue(item);
@@ -186,7 +186,7 @@ public boolean isAtomic()
 
 
   @Override
-  public XValue asXValue()
+  public XValue asXValue() throws InvalidArgumentException
   {
     return XValue.newXValue( TypeFamily.XTYPE , this );
   }

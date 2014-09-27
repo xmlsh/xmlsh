@@ -96,7 +96,7 @@ public class javaProperties extends AbstractBuiltinFunction
 		}
 	}
 
-	public XValue newValue(Properties props)
+	public XValue newValue(Properties props) throws InvalidArgumentException
 	{
 		return XValue.newXValue( TypeFamily.JAVA , props );
 	}

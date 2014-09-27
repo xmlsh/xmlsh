@@ -8,13 +8,15 @@ package org.xmlsh.util.text;
 
 import java.util.Scanner;
 
+import org.xmlsh.core.InvalidArgumentException;
+
 public abstract class PropertiesScanner extends TextLineScanner implements IPropertiesScanner
 {
   
   String propertyDelimiter = "[=:]";
   
   @Override
-void run( Scanner scanner ) {
+void run( Scanner scanner ) throws InvalidArgumentException {
     super.run(scanner);
     
   }
@@ -27,7 +29,7 @@ void run( Scanner scanner ) {
    * @see org.xmlsh.util.text.ITextLineParser#onLine(java.lang.String)
    */
   @Override
-  public void  onLine(String line)
+  public void  onLine(String line) throws InvalidArgumentException
   {
     String[] pair = line.split( propertyDelimiter , 2 );
     if( pair.length != 2 )

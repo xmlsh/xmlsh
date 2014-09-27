@@ -12,11 +12,15 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import javax.xml.xpath.XPathVariableResolver;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 @Deprecated
 public class XValueVariableResolver implements XPathVariableResolver {
 
 	Map<String,XValue>		mVariables = new HashMap<String,XValue>();
 
+	static Logger mLogger = LogManager.getLogger();
 	public void	add( String name , XValue value )
 	{
 		mVariables.put(name, value);
@@ -29,7 +33,12 @@ public class XValueVariableResolver implements XPathVariableResolver {
 		XValue value = mVariables.get( variableName.getLocalPart());
 		if( value == null )
 			return null;
-		return value.toXdmItem().getUnderlyingValue();
+		try {
+			return value.toXdmItem().getUnderlyingValue();
+		} catch (InvalidArgumentException e) {
+			mLogger.catching(e);
+			return null;
+		}
 	}
 
 }

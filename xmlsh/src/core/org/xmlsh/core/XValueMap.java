@@ -93,7 +93,7 @@ public class XValueMap extends AbstractMap<String,XValue> implements IXValueMap<
 	}
 
 	@Override
-	public void serialize(OutputStream out, SerializeOpts opts) throws IOException
+	public void serialize(OutputStream out, SerializeOpts opts) throws IOException, InvalidArgumentException
 	{
 		try ( OutputStreamWriter ps = new OutputStreamWriter(out, opts.getInputTextEncoding() ) ){
 			String sep = "";
@@ -120,7 +120,7 @@ public class XValueMap extends AbstractMap<String,XValue> implements IXValueMap<
 		mMap.putAll(map.mMap);
 	}
 
-	public void put(String key, Object value)
+	public void put(String key, Object value) throws InvalidArgumentException
 	{
 		if( value instanceof XValue )
 			put( key , (XValue) value );
@@ -207,7 +207,7 @@ public class XValueMap extends AbstractMap<String,XValue> implements IXValueMap<
 
 
     @Override
-    public XValue asXValue()
+    public XValue asXValue() throws InvalidArgumentException
     {
       return XValue.newXValue( TypeFamily.XTYPE , this );
     }

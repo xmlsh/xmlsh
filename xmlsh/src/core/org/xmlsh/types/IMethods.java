@@ -32,10 +32,10 @@ public interface IMethods
 	public void   serialize( Object obj , OutputStream os , SerializeOpts opts) throws IOException, InvalidArgumentException ;
 	public String  simpleTypeName(Object obj);
 	public String  typeName(Object obj);     // specific type name 
-    public boolean isEmpty(Object obj) throws InvalidArgumentException;
-	public List<XValue>  getXValues(Object obj);    // Get all contents 
-	public boolean isAtomic(Object obj);
-    public boolean hasKey(Object obj , String key );
+    public boolean isEmpty(Object obj) ;
+	public List<XValue>  getXValues(Object obj) throws InvalidArgumentException;    // Get all contents 
+	public boolean isAtomic(Object obj) ;
+    public boolean hasKey(Object obj , String key ) throws InvalidArgumentException;
     
 
 }

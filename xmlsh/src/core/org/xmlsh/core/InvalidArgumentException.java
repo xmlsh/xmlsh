@@ -6,7 +6,7 @@
 
 package org.xmlsh.core;
 
-public class InvalidArgumentException extends IllegalArgumentException {
+public class InvalidArgumentException extends CoreException {
 
 	/**
 	 * 

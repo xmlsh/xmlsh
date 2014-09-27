@@ -37,7 +37,7 @@ public abstract  class XVariable {
 
 
 
-	private static Logger mLogger = LogManager.getLogger();
+	protected static Logger mLogger = LogManager.getLogger();
 
 	public static enum XVarFlag {
 		EXPORT , 		// to be exported to child shells
@@ -130,13 +130,13 @@ public abstract  class XVariable {
 		return  hasFlag( LOCAL );
 	}
 
-	public void  setLocal(boolean on) {
+	public void  setLocal(boolean on) throws InvalidArgumentException {
 
 		if( on ) setFlag( LOCAL );
 		else clearFlag( LOCAL );
 	} 
 
-	private void clearFlag(XVarFlag f) {
+	private void clearFlag(XVarFlag f) throws InvalidArgumentException {
 		checkWrite();
 		mFlags = Util.withEnumRemoved(mFlags,f);
 
@@ -170,7 +170,7 @@ public abstract  class XVariable {
 
 		setValue(getValueMethods().setXValue(  getValue() , ind, value));
 	}
-	abstract void setValue(XValue setXValue);
+	abstract void setValue(XValue setXValue) throws InvalidArgumentException;
 
 	public IMethods getValueMethods()
 	{
@@ -191,7 +191,7 @@ public abstract  class XVariable {
 	}
 
 
-	public void setFlag( XVarFlag flag )
+	public void setFlag( XVarFlag flag ) throws InvalidArgumentException
 	{
 		checkWrite();
 
@@ -251,7 +251,7 @@ public abstract  class XVariable {
 		return getValue() == null ;
 	}
 
-	public void shift(int n) {
+	public void shift(int n) throws InvalidArgumentException {
 
 		if( n <= 0 || getValue() == null )
 			return ;
@@ -282,7 +282,7 @@ public abstract  class XVariable {
 
 	}
 
-	public int getSize()
+	public int getSize() throws InvalidArgumentException
 	{
 		return EvalUtils.getSize( getValue() );
 	}
@@ -335,7 +335,7 @@ public abstract  class XVariable {
 		 */
 
 		@Override 
-		public void setValue(XValue value )
+		public void setValue(XValue value ) throws InvalidArgumentException
 		{
 			checkWrite();
 			mValue = value;
@@ -372,7 +372,7 @@ public abstract  class XVariable {
 
 	}
 
-	public static  XVariable newInstance(String name , String value )
+	public static  XVariable newInstance(String name , String value ) throws InvalidArgumentException
 	{
 		return new XValueVariable(name, XValue.newInstance(value),XVAR_STANDARD);
 
@@ -387,7 +387,7 @@ public abstract  class XVariable {
 	}
 
 	
-	public static  <T extends Object> XVariable newInstance(String name , T value )
+	public static  <T extends Object> XVariable newInstance(String name , T value ) throws InvalidArgumentException
 	{
 		mLogger.entry(name,value);
 		return new XValueVariable(name, XValue.newInstance(value),XVAR_STANDARD);
@@ -407,7 +407,7 @@ public abstract  class XVariable {
 		return new XValueVariable(null,value,XVAR_STANDARD);
 	}
 
-	public static <T extends Object> XVariable anonymousInstance(T value )
+	public static <T extends Object> XVariable anonymousInstance(T value ) throws InvalidArgumentException
 	{
 		return new XValueVariable(null, XValue.newInstance(value),XVAR_STANDARD);
 	} 
@@ -416,7 +416,7 @@ public abstract  class XVariable {
 	{
 		return XVAR_SYSTEM ;
 	}
-	abstract public XVariable clone(EnumSet<XVarFlag> flags) ;
+	abstract public XVariable clone(EnumSet<XVarFlag> flags) throws InvalidArgumentException ;
 
 	public static XVariable newLocalInstance(String name, XValue value) {
 		return newInstance( name , value , localFlags() );
@@ -426,22 +426,27 @@ public abstract  class XVariable {
 		return XVAR_INIT;
 	}
 
-	public void setFlags(EnumSet<XVarFlag> flags) {
+	public void setFlags(EnumSet<XVarFlag> flags) throws InvalidArgumentException {
 		checkWrite();
 		mFlags = getFlags(flags);
 	}
 
 	@Override
 	public XVariable clone() {
-		return clone( getFlags() );
+		try {
+			return clone( getFlags() );
+		} catch (InvalidArgumentException e) {
+		  mLogger.warn(e);
+		}
+		return null;
 	}
-	protected void checkWrite() {
+	protected void checkWrite() throws InvalidArgumentException {
 		if( mFlags.contains( READONLY ))
 			throw new InvalidArgumentException("Cannot modify readonly variable: " + getName());
 	}
 
 	// Set value and flags 
-	public void setValue(XValue value, EnumSet<XVarFlag> flags ) { 
+	public void setValue(XValue value, EnumSet<XVarFlag> flags ) throws InvalidArgumentException { 
 		
 		checkWrite();
 		

@@ -6,6 +6,8 @@
 
 package org.xmlsh.util.text;
 
+import org.xmlsh.core.InvalidArgumentException;
+
 public abstract class ConfigScanner extends PropertiesScanner implements IConfigScanner
 {
 
@@ -16,7 +18,7 @@ public abstract class ConfigScanner extends PropertiesScanner implements IConfig
    * @see org.xmlsh.util.text.PropertiesScanner#onLine(java.lang.String)
    */
   @Override
-  public final void onLine(String line)
+  public final void onLine(String line) throws InvalidArgumentException
   {
     if( line.startsWith(sectionStart) && line.endsWith(sectionEnd ) ) {
        onSectionStart(

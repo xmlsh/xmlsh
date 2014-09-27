@@ -72,15 +72,6 @@ public class JSONTypeFamily extends AbstractTypeFamily implements ITypeFamily
     return TypeFamily.JSON;
   }
 
-    private final class JsongetXValueConverter implements ITypeConverter<JsonNode, XValue>
-    {
-      @Override
-      public XValue convert(JsonNode node)
-      {
-        return getXValue(node);
-      }
-    }
-
     @Override
     public String asString(Object value)
     {
@@ -200,7 +191,7 @@ public class JSONTypeFamily extends AbstractTypeFamily implements ITypeFamily
     }
 
     @Override
-    public List<XValue> getXValues(Object obj)
+    public List<XValue> getXValues(Object obj) throws InvalidArgumentException
     {
       if(obj == null)
         return Collections.emptyList();
@@ -313,9 +304,13 @@ public class JSONTypeFamily extends AbstractTypeFamily implements ITypeFamily
   }
 
   @Override
-  public XValue nullXValue()
+  public XValue nullXValue() 
   {
-   return XValue.newXValue(this , _nullValue , false );
+   try {
+	return XValue.newXValue(this , _nullValue , false );
+} catch (InvalidArgumentException e) {
+	throw new IllegalArgumentException(e);
+}
   }
 
   @Override

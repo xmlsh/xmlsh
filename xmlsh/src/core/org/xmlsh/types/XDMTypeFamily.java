@@ -65,7 +65,7 @@ public final class XDMTypeFamily extends AbstractTypeFamily implements ITypeFami
   }
 
     @Override
-    public XValue append(Object obj, XValue xvalue)
+    public XValue append(Object obj, XValue xvalue) throws InvalidArgumentException
     {
       assert( obj != null );
       assert (obj instanceof XdmItem );
@@ -210,7 +210,7 @@ public final class XDMTypeFamily extends AbstractTypeFamily implements ITypeFami
     
 
     @Override
-    public XValue getXValue(Object obj)
+    public XValue getXValue(Object obj) throws InvalidArgumentException
     {
     
        if( obj == null )
@@ -279,10 +279,15 @@ public final class XDMTypeFamily extends AbstractTypeFamily implements ITypeFami
   }
 
   @Override
-  public XValue nullXValue()
+  public XValue nullXValue() 
   {
    
-   return XValue.newXValue(TypeFamily.XDM, _nullValue);
+   try {
+	return XValue.newXValue(TypeFamily.XDM, _nullValue);
+} catch (InvalidArgumentException e) {
+	throw new IllegalArgumentException(e);
+
+}
   }
 
   public static XDMTypeFamily getInstance()
@@ -291,7 +296,7 @@ public final class XDMTypeFamily extends AbstractTypeFamily implements ITypeFami
   }
 
 @Override
-public boolean hasKey(Object obj, String key) {
+public boolean hasKey(Object obj, String key) throws InvalidArgumentException {
 	if( XMLUtils.isXdmElement(obj)){
 
 		XdmNode element = XMLUtils.asXdmNode(obj);

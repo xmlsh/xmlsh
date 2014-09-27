@@ -502,7 +502,7 @@ public class JSONUtils {
         return getJsonObjectMapper().createArrayNode();
     }
 
-	public static List<XValue> asXList(Iterator<JsonNode> nodes)
+	public static List<XValue> asXList(Iterator<JsonNode> nodes) throws InvalidArgumentException
     {
 		XValueList list = new XValueList();
 

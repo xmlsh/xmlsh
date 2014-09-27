@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Properties;
 
 import org.xmlsh.core.InputPort;
+import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XConfiguration;
@@ -21,7 +22,7 @@ public class readconfig extends XCommand
   private final class IniConfigParser extends TextConfigParser
   {
     @Override
-    protected XValue parseValue(String currentSection, String name, String value)
+    protected XValue parseValue(String currentSection, String name, String value) throws InvalidArgumentException
     {
       return XValue.newInstance(value);
     }
