@@ -28,7 +28,7 @@ public class EvalEnv
   private final static EnumSet<EvalFlag> _expandFlags = EnumSet.of( EXPAND_VAR , EXPAND_SEQUENCES , EXPAND_WILD , SPLIT_WORDS ) ;
 	// Cached instances
 	private final static EvalEnv _evalNone = new EvalEnv();
-	private final static EvalEnv _basicInstance = newInstance( false,false,false,false);
+	private final static EvalEnv _basicInstance = newInstance( true,false,false,false);
 	private final static EvalEnv _fileInstance = newInstance( false,true,true,false);
 	private final static EvalEnv _preserveInstance = newInstance(_preserveFlags);
 	private final static EvalEnv _nopreserveInstance = newInstance( _nopreserveFlags );

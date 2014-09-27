@@ -8,7 +8,10 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.xmlsh.core.Namespaces;
+import org.xmlsh.core.Variables;
+import org.xmlsh.core.XVariable;
 import org.xmlsh.sh.module.IModule;
+import org.xmlsh.util.NameValueMap;
 
 // The 'Static Context' (similar to XQuery/XSLT)
 // Composed of Functions, Modules, Namespaces anything which is determined
@@ -24,8 +27,12 @@ public class StaticContext implements Cloneable {
 	private int id = _id++;
 	private static int _id = 0; 
 	private		Namespaces	mNamespaces = null;
+	private NameValueMap<XVariable> mStaticLocals = null;
 	
-	
+	public NameValueMap<XVariable> getStaticLocals() {
+		return mStaticLocals;
+	}
+
 	// log debugging
 	@Override
 	public String toString() {
@@ -56,6 +63,9 @@ public class StaticContext implements Cloneable {
 			mModules = that.mModules.clone() ;
 		if( that.mNamespaces != null )	
 			mNamespaces = new Namespaces( that.mNamespaces );
+		
+		if( that.mStaticLocals != null )
+			mStaticLocals = that.mStaticLocals.clone();
 		
 		mLogger.exit();
 		
@@ -109,6 +119,17 @@ public class StaticContext implements Cloneable {
 		return mLogger.exit( all );
 		
 		
+	}
+
+	public StaticContext export(NameValueMap<XVariable> localVars) {
+		StaticContext ctx = clone();
+		if( localVars != null && ! localVars.isEmpty()){
+			if( ctx.mStaticLocals == null )
+				ctx.mStaticLocals = localVars.clone() ;
+			else
+				ctx.mStaticLocals.putAll( localVars );
+		}
+		return ctx ;
 	}
 
 

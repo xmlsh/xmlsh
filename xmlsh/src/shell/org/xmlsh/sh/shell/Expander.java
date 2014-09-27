@@ -32,6 +32,7 @@ import org.xmlsh.sh.core.SourceLocation;
 import org.xmlsh.types.XDMTypeFamily;
 import org.xmlsh.util.NameValueMap;
 import org.xmlsh.util.Util;
+import org.xmlsh.util.XMLUtils;
 import org.xmlsh.xpath.EvalDefinition;
 import org.xmlsh.xpath.ThreadLocalShell;
 
@@ -344,6 +345,8 @@ public class Expander
 
   private XdmValue convertValue(XValue xv) throws InvalidArgumentException, UnexpectedException
   {
+	if( xv.isNull())
+		return XMLUtils.emptySequence();
     if(xv.isXdmItem() || xv.canConvert(XdmValue.class) >= 0)
       return xv.toXdmValue();
     return null;

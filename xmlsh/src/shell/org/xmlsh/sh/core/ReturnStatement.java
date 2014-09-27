@@ -15,7 +15,7 @@ import org.xmlsh.sh.shell.Shell;
 
 public class ReturnStatement extends CommandExpr {
 
-	private static final EvalEnv mEnv = EvalEnv.basicInstance();
+	private static final EvalEnv mEnv = EvalEnv.newInstance( false,false,false,false);
 	private		Word	mArg;
 	@Override
 	public	boolean		isSimple() { return false ; }

@@ -62,11 +62,11 @@ import org.xmlsh.core.SearchPath;
 import org.xmlsh.core.ScriptCommand.SourceMode;
 import org.xmlsh.java.commands.jset;
 import org.xmlsh.json.commands.jsonread;
+import org.xmlsh.modules.types.config.readconfig;
 import org.xmlsh.sh.core.SourceLocation;
 import org.xmlsh.sh.shell.IFunctionDefiniton;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.sh.shell.ShellConstants;
-import org.xmlsh.text.commands.readconfig;
 import org.xmlsh.util.FileUtils;
 import org.xmlsh.util.StringPair;
 import org.xmlsh.util.Util;
@@ -398,8 +398,10 @@ public abstract class CommandFactory {
 			/*
 			 * TODO Resolve against module prefix
 			 */
+			/*
 			if( scriptFile == null )
 				return mLogger.exit(null);
+	        */
 		}
 		
 		if( scriptFile == null ){

@@ -6,13 +6,10 @@ import java.util.List;
 import org.xmlsh.sh.shell.SerializeOpts;
 
 public class ModuleConfig {
-	private String type;
-	public String getType() {
-		return type;
-	}
 
 
 	private  String mType;
+	private  String mName ;
 	private List<URL> mClassPath;
 	private List<String> mPackages;
 	private String mHelpURI;
@@ -26,7 +23,7 @@ public class ModuleConfig {
 
 
 	public void setType(String type) {
-		this.type = type;
+		this.mType = type;
 	}
 
 
@@ -35,8 +32,8 @@ public class ModuleConfig {
 		assert( serialOpts !=null);
 		assert( name != null );
 		assert( type != null );
-		this.type =type ;
-		this.mType = name;
+		this.mType =type ;
+		this.mName = name;
 		this.mClassPath = classpath;
 		this.mSerialOpts = serialOpts;
 		this.mPackages = mPackages;
@@ -50,15 +47,15 @@ public class ModuleConfig {
 		assert( serialOpts !=null);
 		assert( name != null );
 		assert( type != null );
-		this.type =type ;
-		this.mType = name;
+		this.mType =type ;
+		this.mName = name;
 		this.mClassPath = classpath;
 		this.mSerialOpts = serialOpts;
 	}
 	
 	
 	public ModuleConfig(String type) {
-		this.type = type ;
+		this.mType = type ;
 	}
 
 
@@ -73,10 +70,10 @@ public class ModuleConfig {
 
 
 	public String getName() {
-		return mType;
+		return mName;
 	}
 	public void setName(String name) {
-		this.mType = name;
+		this.mName = name;
 	}
 	public List<URL> getClasspath() {
 		return mClassPath;
@@ -130,6 +127,21 @@ public class ModuleConfig {
 	public void setClassLoader(ClassLoader classLoader) {
 		mClassLoader = classLoader ;
 		
+	}
+
+
+	public List<URL> getClassPath() {
+		return mClassPath;
+	}
+
+
+	public void setClassPath(List<URL> classPath) {
+		mClassPath = classPath;
+	}
+
+
+	public String getType() {
+		return mType;
 	}
 	
 	

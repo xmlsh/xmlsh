@@ -4,67 +4,66 @@
  * 
  */
 
-package org.xmlsh.text.commands;
+package org.xmlsh.modules.types.config;
 
-import java.io.InputStream;
 import java.util.List;
 import java.util.Properties;
 
-import org.xmlsh.core.BuiltinCommand;
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.Options;
+import org.xmlsh.core.XCommand;
+import org.xmlsh.core.XConfiguration;
 import org.xmlsh.core.XValue;
-import org.xmlsh.core.XValueProperties;
 import org.xmlsh.sh.shell.SerializeOpts;
-public class readproperties extends BuiltinCommand
+import org.xmlsh.util.text.TextConfigParser;
+public class readconfig extends XCommand
 {
+  private final class IniConfigParser extends TextConfigParser
+  {
+    @Override
+    protected XValue parseValue(String currentSection, String name, String value)
+    {
+      return XValue.newInstance(value);
+    }
+  }
+
   @Override
   public int run(List<XValue> args) throws Exception
   {
-    Options opts = new Options("format:,file:,delim:,t=tree", SerializeOpts.getOptionDefs());
+    Options opts = new Options("format:,file:", SerializeOpts.getOptionDefs());
     opts.parse(args);
     setSerializeOpts(opts);
     String format = opts.getOptString("format", "text");
     args = opts.getRemainingArgs();
     if(args.size() != 1) {
-      usage("[-format text|xml|json] file");
+      usage("[-format ini|xml|json] [-file file] variable");
       return 1;
     }
 
     InputPort in = opts.hasOpt("file") ? getInput(opts.getOptValue("file")) : getStdin() ;
-    Properties props = new Properties();
-    if(args.size() < 1)
-      usage("missing variable name");
 
+
+    XConfiguration config = null ;
+    
+    
     String varName = args.get(0).toString();
     mShell.getEnv().unsetVar(varName);
 
     switch (format) {
-    case "text":
-      try (InputStream is = in.asInputStream(getSerializeOpts())) {
-        props.load(is);
-      }
-      ;
+    case "text" :
+    case "ini":
+      
+      TextConfigParser parser = new IniConfigParser();
+      config = parser.loadConfig( in.asReader(getSerializeOpts()));
+      
       break;
     case "xml":
-      try (InputStream is = in.asInputStream(getSerializeOpts())) {
-        props.loadFromXML(is);
-      }
-      ;
-      break;
     case "json":
-      loadFromJSON(props, in);
-      break;
     default:
-      usage("Unknown format: " + format);
+      usage("Unsupported format: " + format);
     }
-
-    XValueProperties xp = XValueProperties.fromMap(props);
-    if( opts.hasOpt("tree") )
-      xp = xp.expandTree(opts.getOptString("delim","."));
-    XValue value = xp.asXValue();
     
-    mShell.getEnv().setVar(varName, value);
+    mShell.getEnv().setVar(varName, config.asXValue() );
     return 0;
 
   }

@@ -113,17 +113,14 @@ public class ScriptModule extends Module {
     	 ScriptCommand cmd = new ScriptCommand(
         		 // Holds a refernce to module within cmd 
     		  getScript() ,  SourceMode.IMPORT, shell.getLocation() , hThis  ) ;
-		     // Should addRef the module in the shell ...  
         	 if(  cmd.run(sh, getName(), args) != 0 )
 		        shell.printErr("Failed to init script:" + getName() );
 		      else {
 
+				   mLogger.debug("Merging script context into script module {} context " , this , mStaticContext );
 		    	  // Extracts a clone of the this modules shell context
 		    	  mStaticContext = sh.getExportedContext();
 		    	  
-				   mLogger.debug("Merging script context into script module {} context " , this , mStaticContext );
-		    	 // Detach the module from the shell so it wont get destroyed
-		    	 mLogger.trace("Adding a reference to this so it wont get closed {} " , hThis );
 		    	 
 		      }
         	 

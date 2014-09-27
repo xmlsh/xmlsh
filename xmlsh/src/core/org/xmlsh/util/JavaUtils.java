@@ -840,9 +840,8 @@ public class JavaUtils {
 	public static boolean isList(Object obj) {
 		return isArrayClass(obj.getClass()) ||
 			 obj instanceof List ;
-		
-		
 	}
+	
 
 	public static Package convertToPackage(XValue arg) {
 		if( arg.isAtomic() && arg.isString() )

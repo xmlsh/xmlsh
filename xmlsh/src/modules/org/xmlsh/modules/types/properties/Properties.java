@@ -24,22 +24,6 @@ public class Properties extends Types {
 		super(config);
 		mLogger.entry(config);
 	}
-
-	@Override
-	public void onInit(Shell shell, List<XValue> args) throws Exception {
-
-		
-		mLogger.entry(shell, args);
-		super.onInit(shell, args);
-		
-	}
-
-	@Override
-	public void onLoad(Shell shell) {
-		
-		mLogger.entry(shell);
-		super.onLoad(shell);
-	}
 	
 	@Function( name="keys")
 	public static class keys extends AbstractBuiltinFunction 
@@ -89,6 +73,25 @@ public class Properties extends Types {
 			return  args.get(0).asInstanceOf(XValueProperties.class).get( args.get(1).toString() );
 	}
 	}
+	
+	
+	@Function( name="has-key")
+	public static class hasKey extends AbstractBuiltinFunction 
+	{
+		@Override
+		public XValue run(Shell shell, List<XValue> args) throws Exception {
+			if( args.size() != 2 ||
+					! args.get(0).isInstanceOf(XValueProperties.class) ){
+				usage(shell, "properties key");
+				return null;
+				
+			}
+			return  XValue.newXValue(
+					args.get(0).asInstanceOf(XValueProperties.class).
+					containsKey(args.get(1).toString()));
+	}
+	}
+	
 	
 	@Function( name="put")
 	public static class set extends AbstractBuiltinFunction 

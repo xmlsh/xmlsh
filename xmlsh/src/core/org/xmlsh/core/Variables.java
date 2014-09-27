@@ -87,10 +87,19 @@ public class Variables {
 	 * Create a copy of the Variables where the globals are identical but the locals are cloned
 	 * 
 	 */
-	public Variables pushLocals() {
-		NameValueMap<XVariable> locals = new NameValueMap<XVariable>();
-		locals.putAll( mLocals );
-		return new Variables( mGlobals ,  locals );
+	public Variables pushLocals(NameValueMap<XVariable> contextLocals) {
+ 
+		NameValueMap<XVariable> locals = mLocals.clone();
+		if( contextLocals != null ){
+			locals.putAll( contextLocals );
+			
+		}
+		return new Variables( mGlobals ,  locals  );
+	}
+	
+	// Returns a direct reference to the local variables
+	public NameValueMap<XVariable>  getLocalVars() {
+		return mLocals;
 	}
 
 }

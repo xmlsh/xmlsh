@@ -36,6 +36,7 @@ import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.sh.shell.StaticContext;
 import org.xmlsh.types.TypeFamily;
+import org.xmlsh.util.NameValueMap;
 import org.xmlsh.util.Util;
 
 public class XEnvironment  {
@@ -703,7 +704,7 @@ public XVariable exportVar( String name ){
 
 	public Variables pushLocalVars() {
 		Variables current = mVars ;
-		mVars = mVars.pushLocals();
+		mVars = mVars.pushLocals(this.getStaticContext().getStaticLocals());
 		return current ;
 
 	}
@@ -787,6 +788,14 @@ public XVariable exportVar( String name ){
 			ctx = mStaticContextStack.peek();
 		
 		mStaticContextStack.push(ctx);
+		
+		
+		/*
+		// Push context locals onto the stack
+		NameValueMap<XVariable> locals = ctx.getStaticLocals();
+		if( locals != null )
+		Push locals when the shell pushes locals
+			*/
 
 		//ctx = module.get().getStaticContext();
 		//mLogger.error("WHAT TO DO WITH PUSHED STATIC CTX: {}",ctx );
@@ -805,7 +814,9 @@ public XVariable exportVar( String name ){
 
 
 	public StaticContext exportStaticContext() {
-		return getStaticContext().clone();
+		StaticContext ctx =  getStaticContext().export( mVars.getLocalVars() );
+		return ctx ;
+		
 		
 	}
 
