@@ -165,7 +165,6 @@ public class Shell implements AutoCloseable, Closeable {
 
 
 	// Current classloader
-	private ClassLoader mClassLoader = null;
 	private SourceLocation mCurrentLocation = null;
 
 	/*
@@ -392,9 +391,6 @@ public class Shell implements AutoCloseable, Closeable {
 		// Pass through the Session Enviornment, keep a reference
 		mSession = that.mSession;
 		mSession.addRef();
-
-		// Reference the parent classloader
-		mClassLoader = that.mClassLoader;
 
 		// Cloning shells doesnt save the condition depth
 		// mConditionDepth = that.mConditionDepth;
@@ -1698,7 +1694,7 @@ public class Shell implements AutoCloseable, Closeable {
 	}
 
 	public void importJava(List<URL> urls) throws CoreException {
-		mClassLoader = getClassLoader(urls);
+		getModule().getConfig().setClassLoader(getClassLoader(urls));
 
 	}
 
@@ -1936,10 +1932,7 @@ public class Shell implements AutoCloseable, Closeable {
 	}
 
 	public ClassLoader getClassLoader() throws CoreException {
-		if (mClassLoader != null)
-			return mClassLoader;
-		else
-			return this.getClass().getClassLoader();
+		return getModule().getClassLoader();
 	}
 
 	public ClassLoader getClassLoader(final List<URL> urls) throws CoreException {

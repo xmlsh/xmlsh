@@ -15,7 +15,7 @@ import org.xmlsh.sh.shell.Shell;
 
 public class ReturnStatement extends CommandExpr {
 
-	private static final EvalEnv mEnv = EvalEnv.newInstance( false,false,false,false);
+	private static final EvalEnv mEnv = EvalEnv.basicInstance();
 	private		Word	mArg;
 	@Override
 	public	boolean		isSimple() { return false ; }
@@ -45,11 +45,9 @@ public class ReturnStatement extends CommandExpr {
 		if( mArg == null ) 
 			ret = null ; // will convert to empty sequence and set last exit value
 		else	{
-			List<XValue> vret = mArg.expandToList(shell, mEnv );
-			if( vret == null || vret.isEmpty() )
+			ret = mArg.expand(shell, mEnv );
+			if( ret == null )
 				ret = XValue.empytSequence();
-			else
-				ret = vret.get(0);
 		}
 		shell.exec_return( ret );
 		return 0;

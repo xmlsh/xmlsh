@@ -1,6 +1,5 @@
 package org.xmlsh.sh.core;
 
-import java.rmi.UnexpectedException;
 import java.util.List;
 
 import org.xmlsh.core.InvalidArgumentException;
@@ -76,10 +75,10 @@ public abstract class AbstractExpr implements IExpression
       shell.printErr(cmdName + ":", sloc );
   }
   
-  public void usage(Shell shell, String message) throws UnexpectedException
+  public void usage(Shell shell, String message) throws InvalidArgumentException 
   {
 	  printUsage( shell , message );
-	  throw new UnexpectedException( message );
+	  throw new InvalidArgumentException( message );
   }
 
 

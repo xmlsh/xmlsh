@@ -4,7 +4,6 @@ package org.xmlsh.marklogic;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.rmi.UnexpectedException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -329,7 +328,7 @@ public class get extends MLCommand {
 	}
 
 
-	private void getContent(String uri, OutputPort out ) throws  UnexpectedException {
+	private void getContent(String uri, OutputPort out )  {
 		if( mContents == null )
 			mContents = 	new ArrayList<SumContent>( mMaxFiles );
 

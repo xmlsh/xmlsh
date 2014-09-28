@@ -1,6 +1,5 @@
 package org.xmlsh.modules.types.options;
 
-import java.rmi.UnexpectedException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -50,7 +49,7 @@ public class Module extends Types {
 	@Function( name="options")
 	public static class options extends AbstractBuiltinFunction {
 		@Override
-		public XValue run(Shell shell, List<XValue> args) throws UnknownOption, UnexpectedException, InvalidArgumentException
+		public XValue run(Shell shell, List<XValue> args) throws UnknownOption, InvalidArgumentException
 		{
 			if( args.isEmpty()){
 		 	  usage(shell, "options( option-defs [args])");

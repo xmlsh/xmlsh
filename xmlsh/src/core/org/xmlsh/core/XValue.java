@@ -698,7 +698,13 @@ public class XValue implements Iterable<XValue>
 
   public boolean isInstanceOf(Class<?> cls)
   {
-    return mValue != null && cls.isAssignableFrom(mValue.getClass());
+	ClassLoader cl1 = getClass().getClassLoader();
+	ClassLoader cl2 = cls.getClassLoader();
+	ClassLoader cl3 = mValue.getClass().getClassLoader();
+	boolean b1 = mValue != null;
+	boolean b2 = b1 
+			&& cls.isAssignableFrom(mValue.getClass());
+    return b1 && b2 ;
   }
    
   public <T> T asInstanceOf( Class<T> cls ){

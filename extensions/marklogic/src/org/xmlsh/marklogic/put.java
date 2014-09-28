@@ -7,7 +7,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
-import java.rmi.UnexpectedException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -695,7 +694,7 @@ public class put extends MLCommand {
 	}
 
 
-	private void putContent(String uri, Content content, Checksum checksum, File deleteFile) throws  UnexpectedException {
+	private void putContent(String uri, Content content, Checksum checksum, File deleteFile)  {
 		if( mContents == null )
 			mContents = 	new ArrayList<SumContent>( mMaxFiles );
 

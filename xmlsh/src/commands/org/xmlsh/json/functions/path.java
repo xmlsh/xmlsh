@@ -6,7 +6,6 @@
 
 package org.xmlsh.json.functions;
 
-import java.rmi.UnexpectedException;
 import java.util.List;
 
 import org.xmlsh.core.AbstractBuiltinFunction;
@@ -26,9 +25,8 @@ public class path extends AbstractBuiltinFunction {
 	}
 
 	@Override
-	public XValue run(Shell shell, List<XValue> args) throws InvalidArgumentException, UnexpectedException  {
-		if( args.size() != 2)
-			throw new UnexpectedException("usage: path( object path )");
+	public XValue run(Shell shell, List<XValue> args) throws InvalidArgumentException  {
+		requires( args.size() == 2, "usage: path( object path )");
 
 		JsonNode node = args.get(0).asJson();
 

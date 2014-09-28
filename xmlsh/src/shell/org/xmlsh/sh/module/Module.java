@@ -33,7 +33,6 @@ public abstract class Module implements IModule {
 		return mConfig.getInputTextEncoding();
 	}
 
-	private ClassLoader mClassLoader;
 	
 	// Predeclared function classes indexed by *simple name* (no package component)
 	private HashMap<String, Class<?>> mFunctionClassCache = new HashMap<String, Class<?>>();
@@ -43,14 +42,13 @@ public abstract class Module implements IModule {
 
 	protected Module( ModuleConfig config ) {
 		mConfig = config ;
-		mClassLoader = getClassLoader( config.getClasspath());
+		mConfig.setClassLoader( getClassLoader( config.getClasspath()));
 		
 	}
 
 	@Override
 	protected void finalize() {
 		// Clear refs
-		mClassLoader = null ;
 		if (mClassCache != null)
 			mClassCache.clear();
 		mClassCache = null;
@@ -153,9 +151,10 @@ public abstract class Module implements IModule {
 
 		return null;
 	}
-
-	protected ClassLoader getClassLoader() {
-		return mClassLoader;
+	
+	@Override
+	public ClassLoader getClassLoader() {
+		return getConfig().getClassLoader();
 	}
 
 	protected ClassLoader getClassLoader(List<URL> classpath) {
@@ -240,7 +239,8 @@ public abstract class Module implements IModule {
 		return getName();
 	}
 
-	protected ModuleConfig getConfig() {
+	@Override
+	public ModuleConfig getConfig() {
 		return mConfig;
 	}
 
