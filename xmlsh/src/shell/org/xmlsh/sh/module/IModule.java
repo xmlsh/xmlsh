@@ -21,6 +21,7 @@ import org.xmlsh.core.IReferenceCounted;
 import org.xmlsh.core.IReferenceCountedHandleable;
 import org.xmlsh.core.IReferencedCountedHandle;
 import org.xmlsh.core.InvalidArgumentException;
+import org.xmlsh.core.XClassLoader;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.sh.shell.StaticContext;
@@ -55,7 +56,8 @@ public interface IModule  {
 	public void onInit(Shell shell, List<XValue> args) throws Exception;
 	public  ModuleConfig getModuleConfig(Shell shell , String name , List<URL> ata ) throws  Exception;
 	public ModuleConfig getConfig();
-	public ClassLoader getClassLoader();
+	public XClassLoader getClassLoader();
+	public void addClassPaths(Shell shell, List<URL> urls) throws CoreException;
 }
 
 /*

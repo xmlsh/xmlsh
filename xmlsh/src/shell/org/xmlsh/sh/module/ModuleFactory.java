@@ -30,15 +30,15 @@ public class ModuleFactory
   private  final static Logger mLogger = LogManager.getLogger();
 
 
-  public static Module createExternalModule( ModuleConfig config ) throws CoreException
+  public static Module createExternalModule( Shell shell , ModuleConfig config ) throws CoreException
   {
-    return new ExternalModule( config );
+    return new ExternalModule( shell , config );
   }
 
 
-  public static Module createJavaModule(ModuleConfig config ) throws CoreException
+  public static Module createJavaModule(Shell shell , ModuleConfig config ) throws CoreException
   {
-    return new JavaModule( config ) ;
+    return new JavaModule( shell , config ) ;
   }
 
 
@@ -126,17 +126,17 @@ public static IModule createModule(Shell shell, ModuleConfig config) throws Exce
 	
 	switch( config.getType() ){
 	case "java" :
-		mod = createJavaModule( config );
+		mod = createJavaModule( shell, config );
 		break ;
 	case "external" :
-		mod = createExternalModule( config );
+		mod = createExternalModule( shell , config );
 		break ;
 		
 	case "script" :
-		mod = createScriptModule( config ) ;
+		mod = createScriptModule( shell ,  config ) ;
 		break ;
 	case "package" : 
-		mod = createPackageModule( config ) ; 
+		mod = createPackageModule( shell ,  config ) ; 
 		break; 
 	default : 
 		assert(true);
@@ -150,7 +150,7 @@ public static IModule createModule(Shell shell, ModuleConfig config) throws Exce
 }
 
 
-public static ModuleConfig getModuleConfig(Shell shell, PName qname, List<URL> at)
+public static ModuleConfig getModuleConfig(Shell shell, PName qname, List<URL> at )
 		throws CoreException, ClassNotFoundException, InstantiationException,
 		IllegalAccessException, InvocationTargetException, Exception,
 		IOException, URISyntaxException {
@@ -196,14 +196,14 @@ static ModuleConfig  getInternalModuleConfig(Shell shell, String nameuri, List<U
 	  ClassLoader classLoader = RootModule.getInstance().getClassLoader();
 	  List<String> packages = Collections.singletonList("org.xmlsh.modules");
 	mLogger.debug("trying to find internal module by name: {} " , nameuri );
-	ModuleConfig config  =  getPackageModuleConfig( shell , nameuri , packages , classLoader , null  );
+	ModuleConfig config  =  getPackageModuleConfig( shell , nameuri , packages , at ,  RootModule.getInstance().getConfig().getHelpURI() );
 	return config;
 }
 
 
 
 public static ModuleConfig getInternalModuleConfig(Shell shell,
-		String name, List<String> packages, ClassLoader classLoader,
+		String name, List<String> packages,
 		String helpXml) {
 	return new ModuleConfig("packages",name,null, shell.getSerializeOpts(), packages, helpXml);
 }
@@ -215,7 +215,7 @@ public static ModuleConfig getInternalModuleConfig(Shell shell,
   /*
    * Create a PackageModule or derived Module based on configuration
    */
-  public static IModule createPackageModule( ModuleConfig config  ) throws ClassNotFoundException, InvalidArgumentException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException
+  public static IModule createPackageModule( Shell shell, ModuleConfig config  ) throws ClassNotFoundException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, CoreException
   {
 	
 	mLogger.entry(config);
@@ -224,7 +224,8 @@ public static ModuleConfig getInternalModuleConfig(Shell shell,
 	
 	String moduleClassName = config.getModuleClass();
 	if( ! Util.isBlank(moduleClassName)){
-		Class<?> cls = JavaUtils.findClass(moduleClassName, config.getClassLoader());
+		ClassLoader loader = shell.getClassLoader( config.getClassPath() );
+		Class<?> cls = JavaUtils.findClass(moduleClassName, loader );
 		if( ! IModule.class.isAssignableFrom(cls) ) {
 			mLogger.warn("Module class does not implement IModule" , cls );
 			return null ;
@@ -233,12 +234,14 @@ public static ModuleConfig getInternalModuleConfig(Shell shell,
 		return mLogger.exit((IModule) JavaUtils.newObject(cls ,  config ));
 	}
 	
-    return mLogger.exit(new PackageModule( config  ));
+    return mLogger.exit(new PackageModule( shell , config  ));
   }
   
-  public static Module createScriptModule(ModuleConfig config ) throws CoreException, IOException
+
+
+public static Module createScriptModule(Shell shell, ModuleConfig config ) throws CoreException, IOException
   {
-    return new ScriptModule( config  );
+    return new ScriptModule( shell , config  );
   }
   
   
@@ -247,7 +250,7 @@ public static ModuleConfig getInternalModuleConfig(Shell shell,
    * for a sub package 
    */
 
-	public static ModuleConfig  getPackageModuleConfig( Shell shell , String name ,  List<String> packages ,   ClassLoader classLoader , String helpURI )
+	public static ModuleConfig  getPackageModuleConfig( Shell shell , String name ,  List<String> packages ,   List<URL> at, String helpURI ) throws CoreException
 	{
 		
 		mLogger.entry( name);
@@ -261,7 +264,7 @@ public static ModuleConfig getInternalModuleConfig(Shell shell,
 			Package pkg = Package.getPackage( pkgn );
 			if( pkg == null ){
 				try {
-				Class<?> cls = JavaUtils.findClass(pkgn + ".package-info" , classLoader );
+				Class<?> cls = JavaUtils.findClass(pkgn + ".package-info" , shell.getClassLoader(at) );
 				  mLogger.info("found package info clas: {} " + cls.getName() );
 				} catch( ClassNotFoundException e ){
 					// mLogger.catching(e);
@@ -272,11 +275,10 @@ public static ModuleConfig getInternalModuleConfig(Shell shell,
 			}
 			if( pkg != null ){
 				mLogger.info("Found modules package: {} " , pkg.getName() );
-			   	config.setHelpURI(helpURI );
+			   	  config.setHelpURI(helpURI );
 				 config.setName(name);
 				 config.setSerialOpts(shell.getSerializeOpts() );
 				 config.setPackages(Collections.singletonList(pkg.getName()));
-				 config.setClassLoader( classLoader );
 			     reflectPackageAnnotations( pkg , config );
 				 return mLogger.exit( config );
 			}

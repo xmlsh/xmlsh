@@ -7,19 +7,25 @@
 package org.xmlsh.aws;
 
 import net.sf.saxon.s9api.SaxonApiException;
+
 import org.xmlsh.aws.util.AWSCFNCommand;
 import org.xmlsh.core.CoreException;
+import org.xmlsh.core.IXValueContainer;
+import org.xmlsh.core.IXValueMap;
+import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.SafeXMLStreamWriter;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
+import org.xmlsh.core.XValueProperty;
 import org.xmlsh.util.StringPair;
 import org.xmlsh.util.Util;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import javax.xml.stream.XMLStreamException;
@@ -39,7 +45,7 @@ public class cfnCreateStack extends AWSCFNCommand {
 
 
 
-		Options opts = getOptions("capability:+,disable-rollback,fail=on-failure:,notification-arn:+,name:,template-file=f:,template-url=url:,timeout:,tag:+");
+		Options opts = getOptions("capability:+,disable-rollback,fail=on-failure:,notification-arn:+,name:,template-file=f:,template-url=url:,timeout:,tag:+,params=parameters:");
 		opts.parse(args);
 
 		args = opts.getRemainingArgs();
@@ -58,7 +64,7 @@ public class cfnCreateStack extends AWSCFNCommand {
 		}
 
 
-		int ret = createStack(args, opts);
+		int ret = createStack( opts);
 
 
 
@@ -69,7 +75,7 @@ public class cfnCreateStack extends AWSCFNCommand {
 
 
 
-	private int createStack(List<XValue> args, Options opts) throws IOException, XMLStreamException, SaxonApiException, CoreException {
+	private int createStack(Options opts) throws IOException, XMLStreamException, SaxonApiException, CoreException {
 
 
 		OutputPort stdout = this.getStdout();
@@ -108,7 +114,7 @@ public class cfnCreateStack extends AWSCFNCommand {
 		if( opts.hasOpt("tag"))
 			request.setTags( getTags( opts.getOptValues("tag")));
 
-		request.setParameters(getParameters( args ));
+		request.setParameters(getParameters( opts ));
 
 		traceCall("createStack");
 
@@ -131,7 +137,66 @@ public class cfnCreateStack extends AWSCFNCommand {
 
 
 
-	private Collection<Parameter> getParameters(List<XValue> args) {
+	/*
+	 * Get CF parameters either as pairs of name/value arguments (legacy)
+	 * Or as a Properties object 
+	 */
+	private Collection<Parameter> getParameters(Options opts) throws InvalidArgumentException {
+		
+		if( opts.hasOpt("parameters")){
+			List<Parameter> parameters = new ArrayList<>();
+			XValue xp = opts.getOptValue("parameters");
+			for( XValue x : xp ) { // iterate over a sequenced param 
+				Collection<? extends Parameter> ps = getParameters( x );
+				if( ps != null )
+				parameters.addAll( ps );
+			}
+			return parameters ;
+		}
+		return getParameters( opts.getRemainingArgs());
+	}
+		
+
+		  
+		
+  // Get one or more parameters from a single XValue
+	private Collection<? extends Parameter> getParameters(XValue x) throws InvalidArgumentException {
+		if( x.isInstanceOf( IXValueMap.class )){
+			List<Parameter> parameters = new ArrayList<>();
+
+			IXValueMap<?> xmap  = x.asInstanceOf(IXValueMap.class);
+			for( String key : xmap.keySet() ){
+				XValue value = xmap.get(key);
+				Parameter param = new Parameter().withParameterKey( key)
+						.withParameterValue(value.toString());
+				parameters.add( param );
+				
+			}
+		
+			return parameters ;
+		}
+		if( x.isInstanceOf(IXValueContainer.class)){
+			List<Parameter> parameters = new ArrayList<>();
+			IXValueContainer<?> c   = x.asInstanceOf(IXValueContainer.class);
+
+			for( XValue xv : c  ){
+				Collection<? extends Parameter> ps = getParameters( xv );
+				if( ps != null )
+				  parameters.addAll( ps );
+				
+			}
+			
+			return parameters ;
+		}
+		return null;
+   
+   
+   }
+
+
+
+private Collection<Parameter> getParameters(List<XValue> args) {
+
 		int sz = args.size();
 		Collection<Parameter> params = new ArrayList<Parameter>( sz );
 		for( int i = 0 ; i < sz ; i += 2 ){

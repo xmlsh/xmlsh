@@ -20,8 +20,9 @@ import java.lang.annotation.Target;
 @Target({ElementType.TYPE,ElementType.METHOD})
 @XAnnotation
 public @interface Function {
-	String value() default "";
-	String name() default "" ;
+	String value() default "";         // Default name with no args
+	String name() default "" ;         // Default name if name=
+	String[] names() default  {} ;     // Alternative names 
 	Option[] options() default  {};
 
 

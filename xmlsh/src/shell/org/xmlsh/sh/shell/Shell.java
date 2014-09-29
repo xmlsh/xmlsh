@@ -54,6 +54,7 @@ import org.xmlsh.core.ICommand;
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
+import org.xmlsh.core.XClassLoader;
 import org.xmlsh.core.Options.OptionValue;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.SearchPath;
@@ -236,10 +237,12 @@ public class Shell implements AutoCloseable, Closeable {
 	private void importStandardModules() throws Exception {
 		
 		IModule hInternal = 
-				 ModuleFactory.createPackageModule(ModuleFactory.getInternalModuleConfig(this ,
+				 ModuleFactory.createPackageModule(this, ModuleFactory.getInternalModuleConfig(this ,
 		 					"xmlsh" , Arrays.asList(
 											"org.xmlsh.internal.commands", "org.xmlsh.internal.functions"),
-		 							getClassLoader() , CommandFactory.kCOMMANDS_HELP_XML));
+		 							CommandFactory.kCOMMANDS_HELP_XML ) 
+		 							
+						 );
 		
 		
 		 getModules().importModule( this , null , hInternal , null);
@@ -1680,10 +1683,10 @@ public class Shell implements AutoCloseable, Closeable {
 	 		IModule mod = getModules().getExistingModuleByName(name);
 	 		if( mod == null ){
 	 			ModuleConfig config = ModuleFactory.getInternalModuleConfig( this ,
-	 					name, packages, getClassLoader(), sHelp );
+	 					name, packages, sHelp );
 	 			
 	 	    	if( config != null )
-	 			  mod =  ModuleFactory.createPackageModule(config );
+	 			  mod =  ModuleFactory.createPackageModule(this, config );
 	 		}
 	 		if( mod == null )
 	 			throw new FileNotFoundException("Cannot locate package module:" + name );
@@ -1694,11 +1697,16 @@ public class Shell implements AutoCloseable, Closeable {
 	}
 
 	public void importJava(List<URL> urls) throws CoreException {
-		getModule().getConfig().setClassLoader(getClassLoader(urls));
+		
+		mLogger.entry(urls);
+		
+		getModule().addClassPaths( this , urls);
+		return ;
 
 	}
 
 	public URL getURL(String file) throws CoreException {
+		mLogger.entry(file);
 		URL url = Util.tryURL(file);
 		if (url == null)
 			try {
@@ -1706,7 +1714,7 @@ public class Shell implements AutoCloseable, Closeable {
 			} catch (IOException e) {
 				throw new CoreException(e);
 			}
-		return url;
+		return mLogger.exit(url);
 
 	}
 
@@ -1931,30 +1939,35 @@ public class Shell implements AutoCloseable, Closeable {
 				: ret;
 	}
 
-	public ClassLoader getClassLoader() throws CoreException {
-		return getModule().getClassLoader();
+	public XClassLoader getClassLoader() throws CoreException {
+		
+		return mLogger.exit(getModule().getClassLoader());
 	}
 
-	public ClassLoader getClassLoader(final List<URL> urls) throws CoreException {
-
-		// No class path sent, use this shells or this class
-		if (urls == null) {
-			
-            return getClassLoader();
-			
+	public XClassLoader getClassLoader(final List<URL> urls) throws CoreException {
+			return getClassLoader( urls , null );
 		}
+	public XClassLoader getClassLoader(final List<URL> urls, XClassLoader parentClassLoader) throws CoreException {
 
-		final ClassLoader parent = getClass().getClassLoader();
+		mLogger.entry(urls);
+		// No class path sent, use this shells or this class
+		if (Util.isEmpty(urls)) {
+			
+            XClassLoader loader = parentClassLoader == null ? getClassLoader() : parentClassLoader;
+			return mLogger.exit( loader );
+		}
+ 
+		
+		if( parentClassLoader == null )
+			parentClassLoader = getClassLoader();
+		if( parentClassLoader == null )
+			parentClassLoader = XClassLoader.newInstance(getContextClassLoader());
+		final ClassLoader parent = parentClassLoader;
+		
+		mLogger.trace("Parent loader for new class loader: {}", parent );
 
-		URLClassLoader loader = AccessController
-				.doPrivileged(new PrivilegedAction<URLClassLoader>() {
-					@Override
-					public URLClassLoader run() {
-						return new URLClassLoader(
-								urls.toArray(new URL[urls.size()]), parent);
-					}
-				});
-		return loader;
+		
+		return mLogger.exit( XClassLoader.newInstance( urls.toArray(new URL[urls.size() ]), parentClassLoader));
 	}
 
 	public void printLoc(Logger logger, SourceLocation loc) {
@@ -2199,6 +2212,24 @@ public class Shell implements AutoCloseable, Closeable {
 		IModule mod = getModule();
 		ThreadContext.put("xmodule", mod.describe());
 		return mLogger.exit(mod);
+	}
+
+	public static ClassLoader getContextClassLoader() {
+		
+		mLogger.entry();
+		/*
+		 * Gets the shell context class loadeder
+		 */
+		try {
+		   ClassLoader loader = Thread.currentThread().getContextClassLoader();
+		   if( loader == null )
+			   loader = ClassLoader.getSystemClassLoader();
+		    return mLogger.exit(loader);
+		} catch( Throwable t ){
+			mLogger.catching(t);
+			return  mLogger.exit(ClassLoader.getSystemClassLoader());
+		}
+		
 	}
 
 

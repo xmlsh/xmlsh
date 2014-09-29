@@ -33,13 +33,12 @@ public class JavaModule extends Module
   static class JavaModuleFunction extends  FunctionExpr
   {
     private JavaModule mModule;
-    private String mFunc;
     private Class<?> mClass;
 
     public JavaModuleFunction(JavaModule javaModule, String func, Class<?> cls, ClassLoader cl)
     {
-       mModule = javaModule;
-      mFunc = func;
+      super(func);
+      mModule = javaModule;
       mClass = cls;
     }
 
@@ -55,12 +54,6 @@ public class JavaModule extends Module
 	}
 
     @Override
-    public String getName()
-    {
-      return mFunc;
-    }
-
-    @Override
     public EvalEnv returnEnv(EvalEnv parent)
     {
       return EvalEnv.evalNone();
@@ -71,12 +64,12 @@ public class JavaModule extends Module
     {
       XValue retVal = null;
 
-      if(Util.isEqual("new", mFunc)) {  // Constructor
+      if(Util.isEqual("new", getName())) {  // Constructor
         retVal = JavaUtils.newXValue(mClass, args);
       }
       else
       // return class as an object
-      if(Util.isEqual("class", mFunc)) {
+      if(Util.isEqual("class", getName())) {
 
         retVal = XValue.newXValue(TypeFamily.JAVA, mClass);
 
@@ -85,16 +78,16 @@ public class JavaModule extends Module
 
         Object thisObj = null;
         // Static first
-        Method m = JavaUtils.getBestMatch(mClass, mFunc, args, true);
+        Method m = JavaUtils.getBestMatch(mClass, getName(), args, true);
         if(m == null && args.size() > 0) {
 
           thisObj = args.remove(0).asObject();
           if(mClass.isInstance(thisObj))
-            m = JavaUtils.getBestMatch(mClass, mFunc, args, false);
+            m = JavaUtils.getBestMatch(mClass, getName(), args, false);
 
         }
         if(m == null)
-          throw new InvalidArgumentException("Cannot find matching method: " + mFunc);
+          throw new InvalidArgumentException("Cannot find matching method: " + getName());
 
         retVal = thisObj != null ? JavaUtils.callMethod(m, thisObj, args) : JavaUtils.callStaticMethod(m, args);
 
@@ -108,9 +101,9 @@ public class JavaModule extends Module
   
   
   static Logger mLogger = LogManager.getLogger();
-  JavaModule( ModuleConfig config) throws CoreException
+  JavaModule( Shell shell, ModuleConfig config) throws CoreException
   {
-    super(config);
+    super(shell,config);
 
     mJavaClass = findClass(config.getModuleClass());
     if(mJavaClass == null)

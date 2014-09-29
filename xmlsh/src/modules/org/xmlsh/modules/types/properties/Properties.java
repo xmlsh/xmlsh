@@ -6,6 +6,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.xmlsh.annotations.Function;
 import org.xmlsh.core.AbstractBuiltinFunction;
+import org.xmlsh.core.CoreException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.XValueProperties;
 import org.xmlsh.core.XValueSequence;
@@ -20,8 +21,8 @@ import org.xmlsh.util.Util;
 public class Properties extends Types {
 	static Logger mLogger = LogManager.getLogger();
 
-	public Properties(ModuleConfig config) {
-		super(config);
+	public Properties(Shell shell,ModuleConfig config) throws CoreException {
+		super(shell, config);
 		mLogger.entry(config);
 	}
 	
@@ -31,7 +32,6 @@ public class Properties extends Types {
 		@Override
 		public XValue run(Shell shell, List<XValue> args) throws Exception {
 			 XValueSequence list = new XValueSequence();
-			 list.addValue(XValue.newXValue("Nonsense"));
 			    for( XValue x : args ) { 
 			      if( x.isInstanceOf(XValueProperties.class))
 			          for( String keys : Util.toList(  

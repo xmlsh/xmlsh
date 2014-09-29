@@ -5,8 +5,10 @@ import java.net.URL;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.xmlsh.core.CoreException;
 import org.xmlsh.core.ICommand;
 import org.xmlsh.core.IFunctionExpr;
+import org.xmlsh.core.XClassLoader;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.FileUtils;
@@ -20,14 +22,20 @@ public class RootModule extends Module {
 	static Logger mLogger = LogManager.getLogger();
 	
 	// TEMP
-	private static RootModule _instance = new RootModule();
+	private static volatile RootModule _instance = null ;
 	
 	public static Module getInstance() {
+		if( _instance == null ){
+			synchronized ( RootModule.class ){
+			    if( _instance == null )
+			    	_instance = new RootModule();
+			}
+		}
 		return _instance ;
 	}
 	
-	private RootModule() {
-		super( new ModuleConfig("internal" , "root",null,  SerializeOpts.defaultOpts ));
+	private RootModule()  {
+		super( new ModuleConfig("internal" , "root",null,  SerializeOpts.defaultOpts ), XClassLoader.getInstance() );
 	}
 	
 	@Override

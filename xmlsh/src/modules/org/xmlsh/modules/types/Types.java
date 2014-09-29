@@ -6,6 +6,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.xmlsh.annotations.Function;
 import org.xmlsh.core.AbstractBuiltinFunction;
+import org.xmlsh.core.CoreException;
 import org.xmlsh.core.IXValueMap;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.XValueSequence;
@@ -19,9 +20,9 @@ import org.xmlsh.util.Util;
 public class Types extends PackageModule {
 	static Logger mLogger = LogManager.getLogger();
 
-	public Types(ModuleConfig config) {
-		super(config);
-		mLogger.entry(config);
+	public Types(Shell shell , ModuleConfig config) throws CoreException {
+		super(shell , config);
+		mLogger.entry(shell , config);
 	}
 
 	@Override

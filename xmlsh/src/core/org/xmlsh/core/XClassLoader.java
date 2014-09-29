@@ -8,25 +8,95 @@ package org.xmlsh.core;
 
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
+import java.util.List;
+
+import org.xmlsh.sh.module.Module;
+import org.xmlsh.sh.module.RootModule;
 
 public class XClassLoader extends URLClassLoader {
 
 
-	public XClassLoader(URL[] urls, ClassLoader parent) {
+	/*
+	 * Cache an instance (singleton if this class is loaded by the same class loader) 
+	 * used as the root of all new class loaders
+	 */
+	
+	
+	private static volatile XClassLoader _instance = null ;
+	
+	public static XClassLoader getInstance() {
+		if( _instance == null ){
+			synchronized ( XClassLoader.class ){
+			    if( _instance == null )
+			    	_instance = newInstance( ClassLoader.getSystemClassLoader() ); 
+			}
+		}
+		return _instance ;
+	}
+	
+	
+	public static XClassLoader newInstance(ClassLoader parent ) {
+
+		return newInstance( new URL[]{} , parent );
+	}
+
+
+	private XClassLoader(URL[] urls, ClassLoader parent) {
 		super(urls, parent);
 
 	}
 
-	public XClassLoader(URL at, ClassLoader parent ) {
-		super( new URL[] {at} , parent );
-	}
-
-	void add( URL url )
+	void add( URL... urls)
 	{
-		super.addURL(url);
+		for( URL u : urls  )
+		  super.addURL(u );
+	}
+	
+	public void add( List<URL> urls ) {
+		for( URL u : urls  )
+			  super.addURL(u );
+	}
+	
+	// A new XClass loader derived from the Root instance
+	public static XClassLoader newInstance( ){ 
+		
+		return new XClassLoader( new URL[] {}  , getInstance() );
+	}
+	// A new XClass loader derived from the Root instance
+	public static XClassLoader newInstance( URL[] urls ){
+		return new XClassLoader( urls  , getInstance() );
 	}
 
+	// A new XClass loader derived from the Root instance
+	// See URL ClassLoader for use of PriviledgeAction 
+	
+	public static XClassLoader newInstance( final URL[] urls , final ClassLoader parent ){
+		
+		XClassLoader loader = AccessController
+				.doPrivileged(new PrivilegedAction<XClassLoader>() {
+					@Override
+					public XClassLoader run() {
+						return new XClassLoader( urls , parent);
+					}
+				});
+		
+		return loader ;
+	}
 
+	public static XClassLoader newInstance(List<URL> classPath, final ClassLoader parent  )  {
+		if( classPath == null || classPath.isEmpty())
+			return newInstance( parent );
+		return newInstance(  classPath.toArray( new URL[classPath.size()]) , parent );
+		
+	}
+
+	public static XClassLoader newInstance(List<URL> classPath) {
+		if( classPath == null || classPath.isEmpty())
+			return newInstance( new URL[] {} );
+		return newInstance( classPath.toArray( new URL[classPath.size()]));
+	}
 }
 
 

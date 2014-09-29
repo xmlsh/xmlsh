@@ -16,7 +16,9 @@ import org.xmlsh.sh.shell.Shell;
 public abstract class AbstractBuiltinFunction extends FunctionExpr  {
 	 
 	protected AbstractBuiltinFunction() {
-		setName( AnnotationUtils.getFunctionName(this.getClass()));
+		super( (String) null );
+		// defer to post super construction to resolve class
+		AnnotationUtils.getFunctionNames(getClass());
 	}
 	
 	@Override
@@ -32,7 +34,7 @@ public abstract class AbstractBuiltinFunction extends FunctionExpr  {
 
 
 	@Override
-    public Module getModule() 
+    public Module getModule() throws CoreException 
 	{
 		 return RootModule.getInstance();
 	}

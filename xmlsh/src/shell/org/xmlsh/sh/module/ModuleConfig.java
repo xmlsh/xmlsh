@@ -1,11 +1,15 @@
 package org.xmlsh.sh.module;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.xmlsh.sh.shell.SerializeOpts;
+import org.xmlsh.util.JavaUtils;
+import org.xmlsh.util.Util;
 
 public class ModuleConfig {
 
@@ -17,7 +21,6 @@ static Logger mLogger = LogManager.getLogger();
 	private String mHelpURI;
 	private SerializeOpts mSerialOpts;
 	private String mModuleClass;
-	private ClassLoader mClassLoader ;
 	
 	public ModuleConfig(String type) {
 		this.mType = type ;
@@ -47,7 +50,7 @@ static Logger mLogger = LogManager.getLogger();
 		assert( type != null );
 		this.mType =type ;
 		this.mName = name;
-		this.mClassPath = classpath;
+		this.mClassPath  = JavaUtils.uniqueList( classpath);
 		this.mSerialOpts = serialOpts;
 		this.mPackages = mPackages;
 		this.mHelpURI = mHelpURI;
@@ -55,17 +58,9 @@ static Logger mLogger = LogManager.getLogger();
 	}
 
 
-	public ClassLoader getClassLoader() {
-		return  mLogger.exit(mClassLoader);
-	}
 	
-	
-	public List<URL> getClasspath() {
-		return mClassPath;
-	}
 
-
-	public List<URL> getClassPath() {
+	public synchronized List<URL> getClassPath() {
 		return mClassPath;
 	}
 
@@ -105,18 +100,6 @@ static Logger mLogger = LogManager.getLogger();
 	}
 
 
-	public void setClassLoader(ClassLoader classLoader) {
-		
-		mLogger.entry(classLoader);
-		mClassLoader = classLoader ;
-		
-	}
-
-
-	public void setClassPath(List<URL> classPath) {
-		mLogger.entry(classPath);
-		mClassPath = classPath;
-	}
 
 
 	public void setHelpURI(String helpURI) {
@@ -148,6 +131,26 @@ static Logger mLogger = LogManager.getLogger();
 
 	public void setType(String type) {
 		this.mType = type;
+	}
+
+
+	public synchronized boolean addClassPaths(List<URL> urls) {
+		    if( Util.isEmpty(mClassPath)){
+		    	mClassPath = JavaUtils.uniqueList(urls);
+		        return ! Util.isEmpty(mClassPath);
+		    }
+		    
+			List<URL>  newPath = new ArrayList<>( mClassPath );
+			if( ! newPath.addAll( urls ) )
+				return false ;
+			newPath = JavaUtils.uniqueList(newPath);
+			
+			if( mClassPath.equals(newPath) )
+				return false ;
+			mClassPath = newPath ;
+			return true ;
+			
+		
 	}
 	
 	

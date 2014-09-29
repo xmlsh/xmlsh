@@ -6,6 +6,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.xmlsh.annotations.Function;
 import org.xmlsh.core.AbstractBuiltinFunction;
+import org.xmlsh.core.CoreException;
 import org.xmlsh.core.XConfiguration;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.XValueProperties;
@@ -21,12 +22,12 @@ import org.xmlsh.util.Util;
 public class Module extends Types {
 	static Logger mLogger = LogManager.getLogger();
 
-	public Module(ModuleConfig config) {
-		super(config);
+	public Module(Shell shell,ModuleConfig config) throws CoreException {
+		super(shell, config);
 		mLogger.entry(config);
 	}
 
-	@Function( name="get-section")
+	@Function( name="get-section" , names={"section","properties"} )
 	public static class getSection extends AbstractBuiltinFunction {
 	  @Override
 	  public XValue run(Shell shell, List<XValue> args) throws Exception
@@ -43,7 +44,7 @@ public class Module extends Types {
 	}
 	
 
-	@Function( name="get-value")
+	@Function( name="get-value" , names={"value" , "property"} )
 	public static class getValue extends AbstractBuiltinFunction {
 		@Override
 	  public XValue run(Shell shell, List<XValue> args) throws Exception
@@ -59,4 +60,9 @@ public class Module extends Types {
 	    return XValue.newXValue(conf.getProperty(section, name));
 	  }
 	}
+	
+	@Function( "sections" )
+	public static class keys extends Types.keys {
+	}
+
 }

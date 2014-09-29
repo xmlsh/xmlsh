@@ -17,6 +17,10 @@
 		<Property name="logfile">${env:XLOGFILE}</Property>
 		<Property name="XTRACE">trace-nothing</Property>
 		<property name="tracelog">${env:XTRACE}</property>
+		<Property name="XLOGLEVEL">WARN</Property>
+		<property name="xloglevel">${env:XLOGLEVEL}</property>
+		
+		
 	</Properties>
 
 
@@ -33,10 +37,10 @@
 	</Appenders>
 	<Loggers>
 	  
-		<logger name="org.xmlsh" level="INFO">
+		<logger name="org.xmlsh" level="${xloglevel}">
 			<AppenderRef ref="A1"  />
 		</logger>
-		<logger name="org.xmlsh.core" level="INFO" additivity="false">
+		<logger name="org.xmlsh.core" level="${xloglevel}" additivity="false">
 			<AppenderRef ref="A1"  />
 		</logger>
 		

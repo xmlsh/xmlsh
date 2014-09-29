@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.Iterator;
 
 
-public interface  IXValueContainer<T extends IXValueContainer<T > > extends IXValue<T>
+public interface  IXValueContainer<T extends IXValueContainer<T > > extends IXValue<T> , Iterable<XValue>
 {
 	public int size();
 	public void removeAll();

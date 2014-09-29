@@ -145,8 +145,8 @@ public class XConfiguration implements IXValueContainer<XConfiguration> , IXValu
     try ( OutputStreamWriter ps = new OutputStreamWriter(out, opts.getInputTextEncoding() ) ){
 
     for( Entry<String, XValueProperties> section : mSections.entrySet() ) {
-       ps.write("["+section.getKey() +"]");
        ps.write( Util.getNewlineString() );
+       ps.write("["+section.getKey() +"]");
        ps.flush();
        XValueProperties prop = section.getValue();
        prop.serialize( out , opts );
@@ -154,7 +154,6 @@ public class XConfiguration implements IXValueContainer<XConfiguration> , IXValu
       
     }
   }
-
 
   @Override
   public XValue asXValue() throws InvalidArgumentException

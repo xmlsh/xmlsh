@@ -10,39 +10,108 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.xmlsh.core.CoreException;
-import org.xmlsh.core.ICommand;
-import org.xmlsh.core.IFunctionExpr;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XClassLoader;
 import org.xmlsh.core.XValue;
-import org.xmlsh.sh.shell.IFunctionDefiniton;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.sh.shell.StaticContext;
 import org.xmlsh.util.JavaUtils;
 
 public abstract class Module implements IModule {
 
+	
+	
 	static Logger mLogger = LogManager.getLogger();
 
+
 	private ModuleConfig mConfig;
-	public List<URL> getClasspath() {
-		return mConfig.getClasspath();
-	}
-
-	public String getTextEncoding() {
-		return mConfig.getInputTextEncoding();
-	}
-
 	
 	// Predeclared function classes indexed by *simple name* (no package component)
 	private HashMap<String, Class<?>> mFunctionClassCache = new HashMap<String, Class<?>>();
 
+	// Maps complete class name to class for caching
 	private HashMap<String, Class<?>> mClassCache = new HashMap<String, Class<?>>();
 	private HashMap<String, Boolean> mClassCacheMisses = new HashMap<String, Boolean>();
 
-	protected Module( ModuleConfig config ) {
+	private XClassLoader mClassLoader;
+	
+	protected Module(  ModuleConfig config ) throws CoreException {
+		this( config  , XClassLoader.newInstance() );
+	}
+
+	protected Module(  ModuleConfig config , XClassLoader classLoader )  {
 		mConfig = config ;
-		mConfig.setClassLoader( getClassLoader( config.getClasspath()));
+		assert( classLoader != null );
+		  mClassLoader = classLoader ;
+		
+	}
+	protected Module( Shell shell , ModuleConfig config  ) throws CoreException {
+		mConfig = config ;
+		List<URL> classPath =  config.getClassPath() ;
+		XClassLoader parent =  shell.getClassLoader();
+		
+		if( classPath == null || classPath.isEmpty() )
+			mClassLoader = parent ;
+		else
+	      mClassLoader = XClassLoader.newInstance( classPath , parent );
+		
+	}
+	@Override
+	public void addClassPaths(Shell shell, List<URL> urls) throws CoreException {
+		// Augment the class path and hence possibly augment the class loader
+		if( mConfig.addClassPaths( urls ) ){ // changed
+			chainClassLoader( shell , urls );
+		}
+		
+	}
+
+	
+	// Map complete class name to class for caching
+	protected void cacheClass(String className, Class<?> cls) {
+		// Store class in cache even if null
+		synchronized( mClassCache ){
+    		mClassCache.put(className, cls);
+		}
+	}
+		
+	/*
+	 * Most derived classes should override parent classes 
+	 * 
+	 */
+	protected void cacheFunctionClass(List<String> names, Class<?> cls) { 
+		mLogger.entry(names, cls);
+		
+		// Names start with primary name and may have aliases
+		for( String name : names ){
+			synchronized( mFunctionClassCache ){
+
+			Class<?> exists = mFunctionClassCache.get(name);
+			if( exists == null )
+	    		mFunctionClassCache.put( name ,  cls  );
+			else {
+				// Override with most derived type
+				if( exists.isAssignableFrom(cls)){ // Exists is equal to or a super class 
+					mLogger.trace("Overriding base class {} with derived class {} ",exists, cls );
+					// Override it with sub class 
+					mFunctionClassCache.put( name , cls );
+				}
+			 }
+			}
+		}
+		cacheClass( cls.getName() , cls );
+	}
+		
+	// 
+	// Reset the modules ClassLoader to be a new one child of the current one
+	private synchronized void chainClassLoader(Shell shell, List<URL> urls) throws CoreException {
+		mLogger.entry(shell, urls );
+
+		synchronized( mClassLoader ){
+			
+			mClassLoader.add( urls );
+		}
+		
+		mLogger.exit( mClassLoader );
 		
 	}
 
@@ -62,13 +131,6 @@ public abstract class Module implements IModule {
 	}
 	
 	
-	protected Class<?> findFunctionClass(String className) {
-
-		return mFunctionClassCache.get(className);
-	}
-	
-	
-	
 	protected Class<?> findClass(String className) {
 
 		mLogger.entry(className);
@@ -76,9 +138,10 @@ public abstract class Module implements IModule {
 		// This caches failures as well as successes
 		// Consider changing to a WeakHashMap<> if this uses up too much memory
 		// caching failed lookups
-		if (mClassCache.containsKey(className))
+		synchronized( mClassCache ){
+		  if (mClassCache.containsKey(className))
 			return mClassCache.get(className);
-		
+		}	
 
 		Class<?> cls = null;
 		try {
@@ -86,37 +149,12 @@ public abstract class Module implements IModule {
 		} catch (ClassNotFoundException e) {
 
 		}
-		declareClass(className, cls);
+		cacheClass(className, cls);
 		return cls;
 
 	}
-
-	protected void declareClass(String className, Class<?> cls) {
-		// Store class in cache even if null
-		mClassCache.put(className, cls);
-	}
-
-	/*
-	 * Most derived classes should override parent classes 
-	 * 
-	 */
-	protected void declareFunctionClass(String name, Class<?> cls) { 
-		mLogger.entry(name, cls);
-		Class<?> exists = mFunctionClassCache.get(name);
-		if( exists == null )
-    		mFunctionClassCache.put( name ,  cls  );
-		else {
-			// Override with most derived type
-			if( exists.isAssignableFrom(cls)){ // Exists is equal to or a super class 
-				mLogger.trace("Overriding base class {} with derived class {} ",exists, cls );
-				// Override it with sub class 
-				mFunctionClassCache.put( name , cls );
-			}
-			
-		}
-		declareClass( cls.getName() , cls );
-		
-	}
+	
+	
 	
 	protected Class<?> findClass(String name, List<String> packages) {
 		for (String pkg : packages) {
@@ -125,6 +163,13 @@ public abstract class Module implements IModule {
 				return cls;
 		}
 		return null;
+	}
+
+	protected Class<?> findFunctionClass(String className) {
+
+		synchronized( mFunctionClassCache ){
+		   return mFunctionClassCache.get(className);
+		}
 	}
 
 	protected URL findResourceInPackages(String name, List<String> packages) {
@@ -153,18 +198,19 @@ public abstract class Module implements IModule {
 	}
 	
 	@Override
-	public ClassLoader getClassLoader() {
-		return getConfig().getClassLoader();
+	public synchronized XClassLoader getClassLoader() {
+		return mClassLoader;
 	}
 
-	protected ClassLoader getClassLoader(List<URL> classpath) {
-		if (classpath == null || classpath.size() == 0)
-			return getClass().getClassLoader();
-
-		return new XClassLoader(classpath.toArray(new URL[classpath.size()]),
-				getClass().getClassLoader());
-
+	public List<URL> getClassPath() {
+		return mConfig.getClassPath();
 	}
+	
+	@Override
+	public ModuleConfig getConfig() {
+		return mConfig;
+	}
+
 
 	@Override
 	public URL getHelpURL() {
@@ -176,6 +222,14 @@ public abstract class Module implements IModule {
 
 	}
 
+
+	@Override
+	public ModuleConfig getModuleConfig(Shell shell , String name , List<URL> at ) throws  Exception {
+
+		mLogger.error("NOT IMPLEMENTED");
+		return null;
+	
+	}
 
 	@Override
 	public String getName() {
@@ -200,11 +254,18 @@ public abstract class Module implements IModule {
 		return null;
 	}
 
-	protected boolean hasClassLookupFailed(String name) {
+	public String getTextEncoding() {
+		return mConfig.getInputTextEncoding();
+	}
+
+	protected boolean hasClassLookupFailed(String name) { 
+		synchronized( mClassCacheMisses ) {
 		Boolean hasResource = mClassCacheMisses.get(name);
+		
 		if (hasResource != null && !hasResource.booleanValue())
 			return true;
 		return false;
+		}
 
 	}
 
@@ -220,14 +281,20 @@ public abstract class Module implements IModule {
 
 	}
 
+
 	protected void setCacheHit(String name) {
+		synchronized( mClassCacheMisses ) {
+
 		mClassCacheMisses.put(name, true);
+		}
 	}
 
 	protected void setCacheMissed(String name) {
-		mClassCacheMisses.put(name, false);
-	}
+		synchronized( mClassCacheMisses ) {
 
+		mClassCacheMisses.put(name, false);
+		}
+	}
 
 	protected String toResourceName(String name, String pkg) {
 		String resource = pkg.replace('.', '/') + "/" + name;
@@ -237,56 +304,5 @@ public abstract class Module implements IModule {
 	@Override
 	public String toString() {
 		return getName();
-	}
-
-	@Override
-	public ModuleConfig getConfig() {
-		return mConfig;
-	}
-
-	@Override
-	public ModuleConfig getModuleConfig(Shell shell , String name , List<URL> at ) throws  Exception {
-
-		mLogger.error("NOT IMPLEMENTED");
-		return null;
-	
-	}
-	
-	
-	/* 
-	 * Static check if this is a possible function class
-	 */
-	protected static boolean isFunctionClass(Class<?> cls) {
-
-		if( cls == null )
-			return false ;
-		if(  IFunctionDefiniton.class.isAssignableFrom( cls ) ) 
-			return true ;
-		if( IFunctionExpr.class.isAssignableFrom(cls ))
-			return true ;
-		if( cls.getAnnotation(org.xmlsh.annotations.Function.class ) != null )
-			return true ;
-		return false ;
-	
-	
-	}
-
-
-	/* 
-	 * Static check if this is a possible function class
-	 */
-	protected static boolean isCommandClass(Class<?> cls) {
-
-		if( cls == null )
-			return false ;
-		if(  ICommand.class.isAssignableFrom( cls ) ) 
-			return true ;
-		if( IFunctionExpr.class.isAssignableFrom(cls ))
-			return true ;
-		if( cls.getAnnotation(org.xmlsh.annotations.Function.class ) != null )
-			return true ;
-		return false ;
-	
-	
 	}
 }

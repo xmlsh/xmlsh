@@ -6,6 +6,8 @@
 
 package org.xmlsh.util.text;
 
+import java.io.IOException;
+import java.io.Reader;
 import java.util.Scanner;
 
 import org.xmlsh.core.InvalidArgumentException;
@@ -16,7 +18,7 @@ public abstract class PropertiesScanner extends TextLineScanner implements IProp
   String propertyDelimiter = "[=:]";
   
   @Override
-void run( Scanner scanner ) throws InvalidArgumentException {
+void run( Reader scanner ) throws InvalidArgumentException, IOException {
     super.run(scanner);
     
   }

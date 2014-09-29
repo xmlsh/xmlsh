@@ -6,6 +6,9 @@
 
 package org.xmlsh.util.text;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.Reader;
 import java.util.Scanner;
 
 import org.xmlsh.core.InvalidArgumentException;
@@ -41,9 +44,9 @@ public abstract class TextConfigParser
   }
 
   
-  public XConfiguration loadConfig( Readable r ) throws InvalidArgumentException {
+  public XConfiguration loadConfig( Reader r ) throws InvalidArgumentException, IOException {
     ConfigScanner  cs = new ConfigHelper();
-    try( Scanner s =  new Scanner(r) )
+    try( Reader s =  new BufferedReader( r ) ) 
     {
        cs.run( s );
     }

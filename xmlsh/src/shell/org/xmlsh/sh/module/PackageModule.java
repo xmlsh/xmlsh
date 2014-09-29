@@ -16,6 +16,7 @@ import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.xmlsh.annotations.AnnotationUtils;
 import org.xmlsh.annotations.Function;
 import org.xmlsh.core.AbstractCommand;
 import org.xmlsh.core.CoreException;
@@ -45,8 +46,8 @@ public class PackageModule extends Module {
 	
 	
 	static Logger mLogger = LogManager.getLogger();
-	protected PackageModule( ModuleConfig config ) {
-		super( config );
+	protected PackageModule( Shell shell , ModuleConfig config ) throws CoreException {
+		super( shell , config );
 	}
 
 	@Override
@@ -89,7 +90,7 @@ public class PackageModule extends Module {
 			// Cached in AbstractModule
 			Class<?> cls = findClass(name, getPackages());
 			if (cls != null) {
-				if( isCommandClass( cls )){
+				if( AnnotationUtils.isCommandClass( cls )){
 				Constructor<?> constructor = cls.getConstructor();
 				if (constructor != null) {
 					Object obj = constructor.newInstance();
@@ -98,9 +99,13 @@ public class PackageModule extends Module {
 						cmd.setModule(this);
 						return cmd;
 					} else
+					if( ! (obj instanceof ICommand) )
 						getLogger()
 								.warn("Command class found [ {} ] but is not instance of AbstractCommand.",
 										cls.getName());
+					else
+						return (ICommand) obj ;
+					
 				}
 			}
 			}
@@ -148,24 +153,22 @@ public class PackageModule extends Module {
 					
 		Class<?> cls = findFunctionClass( name );
 						
-		/*
-		 * Convert from camelCase to hypen-case
-		 */
-
-		name = JavaUtils.convertToCamelCase(name);
-		name = fromReserved(name);
-
-		
-		
 		
 		
 		try {
+			/*
+			 * Convert from camelCase to hypen-case
+			 */
+
+			name = JavaUtils.convertToCamelCase(name);
+			name = fromReserved(name);
+
 			
 			if( cls == null )
 			  // Cached in AbstractModule
 		    	cls = findClass(name, getPackages());
 			if (cls != null) {
-				if( isFunctionClass( cls )){
+				if( AnnotationUtils.isFunctionClass( cls )){
 					Constructor<?> constructor = cls.getConstructor();
 					if (constructor != null) {
 						Object obj = constructor.newInstance();
@@ -249,6 +252,7 @@ public class PackageModule extends Module {
 		String prefix =  pair.getLeft();
 	    
 	    IModule mod = null ;
+	    String helpURL = null ; // TODO:
 	  
 	    // special scheme
 	    if(prefix != null && Util.isEqual(prefix, "java"))
@@ -261,7 +265,7 @@ public class PackageModule extends Module {
 	    */
 	    if( config == null && prefix == null  ){
 			mLogger.debug("trying to find package module by name: {} " , name );
-			config  =  ModuleFactory.getPackageModuleConfig( shell , name , this.getPackages() , this.getClassLoader(), null );
+			config  =  ModuleFactory.getPackageModuleConfig( shell , name , this.getPackages() ,  null, helpURL  );
 	    
 	    }
 	    /*
@@ -343,10 +347,13 @@ public class PackageModule extends Module {
 	}
 
 	private void reflectClass(Shell shell, Class<?> cls) {
+		
 		// Look for functions 
-		Function fa = cls.getAnnotation(Function.class);
-		if( fa != null  )
-			declareFunctionClass( fa.name()  , cls );
+		List<String> names = AnnotationUtils.getFunctionNames(cls);
+		if( ! Util.isEmpty(names) ){
+			cacheFunctionClass( names , cls );
+			
+		}
 		
 		
 		for( Class<?>  c : cls.getClasses()){

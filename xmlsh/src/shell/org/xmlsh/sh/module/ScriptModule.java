@@ -48,8 +48,8 @@ public class ScriptModule extends Module {
 		return new ScriptModuleConfig( script.getName() , classpath ,  shell.getSerializeOpts(), script);
 
 	}
-	protected ScriptModule(ModuleConfig config ) throws IOException, CoreException {
-		super( config );
+	protected ScriptModule(Shell shell, ModuleConfig config ) throws IOException, CoreException {
+		super( shell , config );
 		assert( config instanceof ScriptModuleConfig );
 	}
 	

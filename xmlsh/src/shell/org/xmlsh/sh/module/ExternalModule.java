@@ -36,9 +36,9 @@ public class ExternalModule extends PackageModule
   private String mURI;
   
 
-  ExternalModule(ModuleConfig config ) throws CoreException
+  ExternalModule(Shell shell, ModuleConfig config ) throws CoreException
   {
-    super(config  );
+    super(shell, config  );
   }
   
   

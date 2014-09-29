@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Properties;
 
 import org.xmlsh.core.BuiltinCommand;
+import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.XValue;
@@ -18,7 +19,7 @@ import org.xmlsh.core.XValueProperties;
 import org.xmlsh.sh.shell.SerializeOpts;
 public class readproperties extends BuiltinCommand
 {
-  @Override
+@Override
   public int run(List<XValue> args) throws Exception
   {
     Options opts = new Options("format:,file:,delim:,t=tree", SerializeOpts.getOptionDefs());

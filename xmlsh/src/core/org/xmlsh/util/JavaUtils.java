@@ -16,6 +16,8 @@ import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.URI;
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -891,6 +893,25 @@ public class JavaUtils {
 				result.append(c);
 		}
 		return result.toString();
+	}
+
+	public static  <T> List<T> uniqueList(List<T> list) {
+		if( list == null )
+			return null ;
+		Set<T> set = new HashSet<T>(list);
+		if( set.size() == list.size() )
+			return list ;
+
+		set.clear();
+		List<T> alist = new ArrayList<>( set.size());
+		for( T item : list ){
+			if( set.contains(item))
+				continue;
+			set.add( item );
+			alist.add( item );
+		}
+		return alist ;
+		
 	}
 
 }

@@ -1,6 +1,8 @@
 package org.xmlsh.core;
 
 
+import java.util.List;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.xmlsh.sh.core.AbstractExpr;
@@ -15,8 +17,8 @@ public abstract class FunctionExpr extends AbstractExpr implements IFunctionExpr
   {
     super(name);
   }
-  protected FunctionExpr(){
-    super("<anon>");
+  protected FunctionExpr(List<String> names){
+    super(names);
   }
 
   @Override
