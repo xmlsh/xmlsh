@@ -592,3 +592,6 @@ test/**/_err.txt
 /_out/
 /_out/
 /_out/
+/.apt_generated/
+/_out/
+/_out/
