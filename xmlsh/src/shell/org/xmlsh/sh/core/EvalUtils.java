@@ -341,44 +341,7 @@ public class EvalUtils
       ParseResult result) throws IOException, CoreException
       {
     List<XValue> vs = null;
-/*
- * if( expr.getName().equals("*")){
- * // Add all positional variables as args
- * boolean bFirst = true ;
- * for( XValue v : shell.getArgs() ){
- * if( attr.isSoftQuote() ) {
- * if( ! bFirst )
- * result.append( shell.getIFS().getFirstChar() , attr );
- * result.append( v , env , attr );
- * }
- * else
- * {
- * result.flush();
- * result.add( v );
- * }
- * bFirst = false ;
- * }
- * return result ;
- * 
- * }
- * else
- * if( expr.getName().equals("@")){
- * // Add all positional variables as args except "$@" with 0 args is dropped
- * boolean bFirst = true ;
- * List<XValue> args = shell.getArgs();
- * if( args.isEmpty() )
- * result.resetIfEmpty();
- * else
- * for( XValue v : args ){
- * if( attr.isSoftQuote() && bFirst )
- * result.append( v , env , attr );
- * else
- * result.add( v );
- * bFirst = false ;
- * }
- * return result ;
- * }
- */
+
 
     // TODO: Special case of $@ in quotes
 

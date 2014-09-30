@@ -28,13 +28,12 @@ import org.xmlsh.util.Util;
 
 @org.xmlsh.annotations.Module( name="types.options")
 public class Module extends Types {
+	public Module(ModuleConfig config) throws CoreException {
+		super(config);
+	}
+
 	static Logger mLogger = LogManager.getLogger();
 
-	public Module(Shell shell,ModuleConfig config) throws CoreException {
-		super(shell, config);
-		mLogger.entry(config);
-	}
-	
 	
 	@Function( name="option-defs")
 	public static class optionDefs extends AbstractBuiltinFunction {

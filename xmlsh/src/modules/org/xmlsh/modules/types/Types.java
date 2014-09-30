@@ -20,9 +20,9 @@ import org.xmlsh.util.Util;
 public class Types extends PackageModule {
 	static Logger mLogger = LogManager.getLogger();
 
-	public Types(Shell shell , ModuleConfig config) throws CoreException {
-		super(shell , config);
-		mLogger.entry(shell , config);
+	public Types( ModuleConfig config) throws CoreException {
+		super( config);
+		mLogger.entry( config);
 	}
 
 	@Override

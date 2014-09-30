@@ -49,7 +49,7 @@ public class ScriptModule extends Module {
 
 	}
 	protected ScriptModule(Shell shell, ModuleConfig config ) throws IOException, CoreException {
-		super( shell , config );
+		super( config , shell.getClassLoader(config.getClassPath()));
 		assert( config instanceof ScriptModuleConfig );
 	}
 	

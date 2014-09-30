@@ -21,8 +21,8 @@ import org.xmlsh.util.Util;
 public class Properties extends Types {
 	static Logger mLogger = LogManager.getLogger();
 
-	public Properties(Shell shell,ModuleConfig config) throws CoreException {
-		super(shell, config);
+	public Properties(ModuleConfig config) throws CoreException {
+		super(config);
 		mLogger.entry(config);
 	}
 	

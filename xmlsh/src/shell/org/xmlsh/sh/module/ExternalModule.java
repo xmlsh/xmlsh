@@ -20,6 +20,7 @@ import net.sf.saxon.s9api.XdmNode;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.SearchPath;
+import org.xmlsh.core.XClassLoader;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.sh.shell.ShellConstants;
@@ -36,9 +37,9 @@ public class ExternalModule extends PackageModule
   private String mURI;
   
 
-  ExternalModule(Shell shell, ModuleConfig config ) throws CoreException
+  ExternalModule(ModuleConfig config , XClassLoader loader ) throws CoreException
   {
-    super(shell, config  );
+    super(config , loader );
   }
   
   

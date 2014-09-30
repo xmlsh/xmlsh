@@ -18,6 +18,7 @@ import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.ScriptCommand.SourceMode;
 import org.xmlsh.core.ICommand;
 import org.xmlsh.core.ScriptSource;
+import org.xmlsh.core.XClassLoader;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.FileUtils;
@@ -32,13 +33,13 @@ public class ModuleFactory
 
   public static Module createExternalModule( Shell shell , ModuleConfig config ) throws CoreException
   {
-    return new ExternalModule( shell , config );
+    return new ExternalModule( config , shell.getClassLoader( config.getClassPath()));
   }
 
 
   public static Module createJavaModule(Shell shell , ModuleConfig config ) throws CoreException
   {
-    return new JavaModule( shell , config ) ;
+    return new JavaModule( config, shell.getClassLoader( config.getClassPath())) ;
   }
 
 
@@ -223,8 +224,9 @@ public static ModuleConfig getInternalModuleConfig(Shell shell,
 		return null ;
 	
 	String moduleClassName = config.getModuleClass();
+	XClassLoader loader = shell.getClassLoader( config.getClassPath() );
+
 	if( ! Util.isBlank(moduleClassName)){
-		ClassLoader loader = shell.getClassLoader( config.getClassPath() );
 		Class<?> cls = JavaUtils.findClass(moduleClassName, loader );
 		if( ! IModule.class.isAssignableFrom(cls) ) {
 			mLogger.warn("Module class does not implement IModule" , cls );
@@ -234,7 +236,7 @@ public static ModuleConfig getInternalModuleConfig(Shell shell,
 		return mLogger.exit((IModule) JavaUtils.newObject(cls ,  config ));
 	}
 	
-    return mLogger.exit(new PackageModule( shell , config  ));
+    return mLogger.exit(new PackageModule( config  ,  loader  ));
   }
   
 

@@ -7,12 +7,15 @@
 package org.xmlsh.core;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
+import org.apache.commons.lang3.text.StrLookup;
+import org.apache.commons.lang3.text.StrSubstitutor;
 import org.xmlsh.types.TypeFamily;
 
 
@@ -190,6 +193,89 @@ public static XValueProperties fromMap( Map<?,?> map ) throws InvalidArgumentExc
     }
     return merged ;
   }
+
+
+
+	public void replaceVariables(final StrLookup<String> lookup) {
+		
+		final XValueProperties props  = this ;
+		StrLookup<String> look  = new StrLookup<String>( ) {
+
+			@Override
+			public String lookup(String key) {
+				String value = lookup.lookup(key);
+				if( value == null ){
+					XValue xv = props.get(key);
+					if( xv != null && xv.isAtomic())
+						value = xv.toString();
+			
+				}
+				return value ;
+			}
+		};
+		
+		StrSubstitutor subst = new StrSubstitutor( look );
+		subst.setEnableSubstitutionInVariables(true);
+		
+		for( java.util.Map.Entry<String, XValue> e : entrySet() ){
+			XValue v = e.getValue();
+			if( v.isAtomic() ){
+				StringBuilder sb = new StringBuilder( v.toString() );
+				if( subst.replaceIn(sb) )
+					e.setValue( XValue.newXValue(sb.toString()));
+			}
+			
+		}
+		
+	}
+
+
+	public static  XValueProperties fromXValue(XValue xv) throws InvalidArgumentException
+	{
+		
+		return fromXValues( Collections.singletonList(xv));
+	}
+
+	public static  XValueProperties fromXValues(List<XValue> args)
+			throws InvalidArgumentException {
+		XValueProperties props = null;
+		for (XValue xarg : args) {
+			for (XValue arg : xarg) {
+				if (props == null) {
+					if (arg.isInstanceOf(XValueProperties.class))
+						props = arg.asInstanceOf(XValueProperties.class);
+					else if (arg.isInstanceOf(Map.class))
+						props = fromMap(arg
+								.asInstanceOf(Map.class));
+					else if( arg.isInstanceOf(XValueProperty.class))
+						props = new XValueProperties(arg.asInstanceOf(XValueProperty.class));
+					else if( arg.isInstanceOf( IXValueMap.class )) {
+						props = new XValueProperties( (Map<?, ?>) arg.asInstanceOf( IXValueMap.class ));
+						
+					}
+	
+				} else {
+					if (arg.isInstanceOf(XValueProperties.class))
+						props = props.merge(arg
+								.asInstanceOf(XValueProperties.class));
+					else if (arg.isInstanceOf(Map.class))
+						props = props.merge(fromMap(arg
+								.asInstanceOf(Map.class)));
+					else if( arg.isInstanceOf(XValueProperty.class))
+						props.add( arg.asInstanceOf(XValueProperty.class));
+					else if( arg.isInstanceOf( IXValueMap.class )) {
+						props = props.merge( fromMap((Map<?, ?>) arg.asInstanceOf( IXValueMap.class )));
+					}
+					else {
+						
+					}
+				
+	
+				}
+			}
+		}
+		return props;
+	}
   
 }
 /*

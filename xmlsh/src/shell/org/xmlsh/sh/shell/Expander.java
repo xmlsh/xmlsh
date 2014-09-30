@@ -112,6 +112,21 @@ public class Expander
   {
 
     assert (result != null);
+    
+    CharAttr curAttr = env.asCharAttr();
+    
+    
+    // Special case for "$@" which does NOT 'stringify' arguments
+    /*
+    if( arg.equals("\"$@\"")){
+    	
+        result = EvalUtils.evalVarToResult(mShell, "@", env, curAttr , result);
+        if(curAttr.isSoftQuote())
+            result.resetIfEmpty();
+        return result ;
+    	
+    } */
+    
 
     // <{ big quotes }>
     if(arg.startsWith("<{{") && arg.endsWith("}}>")) {
@@ -128,8 +143,7 @@ public class Expander
 
     char c;
     int i;
-    CharAttr curAttr = env.asCharAttr();
-    ;
+
 
     for (i = 0; i < arg.length(); i++) {
 

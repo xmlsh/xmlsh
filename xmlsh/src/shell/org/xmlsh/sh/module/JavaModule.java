@@ -21,6 +21,7 @@ import org.xmlsh.core.FunctionExpr;
 import org.xmlsh.core.ICommand;
 import org.xmlsh.core.IFunctionExpr;
 import org.xmlsh.core.InvalidArgumentException;
+import org.xmlsh.core.XClassLoader;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.types.TypeFamily;
@@ -101,9 +102,9 @@ public class JavaModule extends Module
   
   
   static Logger mLogger = LogManager.getLogger();
-  JavaModule( Shell shell, ModuleConfig config) throws CoreException
+  JavaModule( ModuleConfig config, XClassLoader loader) throws CoreException
   {
-    super(shell,config);
+    super(config, loader );
 
     mJavaClass = findClass(config.getModuleClass());
     if(mJavaClass == null)

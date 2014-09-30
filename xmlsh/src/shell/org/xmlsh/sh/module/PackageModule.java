@@ -27,6 +27,7 @@ import org.xmlsh.core.ScriptCommand;
 import org.xmlsh.core.ScriptCommand.SourceMode;
 import org.xmlsh.core.ScriptFunctionCommand;
 import org.xmlsh.core.ScriptSource;
+import org.xmlsh.core.XClassLoader;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.IFunctionDefiniton;
@@ -46,10 +47,15 @@ public class PackageModule extends Module {
 	
 	
 	static Logger mLogger = LogManager.getLogger();
-	protected PackageModule( Shell shell , ModuleConfig config ) throws CoreException {
-		super( shell , config );
+	protected PackageModule(  ModuleConfig config ) throws CoreException {
+		super( config );
 	}
 
+	protected PackageModule(  ModuleConfig config , XClassLoader loader ) throws CoreException {
+		super( config , loader );
+	}
+
+	
 	@Override
 	public String describe() {
 		return getName() + "[ packages " + Util.join(getPackages(), ",") + " ]";

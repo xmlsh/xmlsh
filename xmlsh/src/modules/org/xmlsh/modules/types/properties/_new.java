@@ -7,16 +7,13 @@
 package org.xmlsh.modules.types.properties;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
 import org.xmlsh.annotations.Function;
 import org.xmlsh.core.AbstractBuiltinFunction;
-import org.xmlsh.core.IXValueMap;
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.XValueProperties;
-import org.xmlsh.core.XValueProperty;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.JavaUtils;
@@ -28,42 +25,7 @@ public class _new extends AbstractBuiltinFunction {
 
 	@Override
 	public XValue run(Shell shell, List<XValue> args) throws Exception {
-		XValueProperties props = null;
-		for (XValue xarg : args) {
-			for (XValue arg : xarg) {
-				if (props == null) {
-					if (arg.isInstanceOf(XValueProperties.class))
-						props = arg.asInstanceOf(XValueProperties.class);
-					else if (arg.isInstanceOf(Map.class))
-						props = XValueProperties.fromMap(arg
-								.asInstanceOf(Map.class));
-					else if( arg.isInstanceOf(XValueProperty.class))
-						props = new XValueProperties(arg.asInstanceOf(XValueProperty.class));
-					else if( arg.isInstanceOf( IXValueMap.class )) {
-						props = new XValueProperties( (Map<?, ?>) arg.asInstanceOf( IXValueMap.class ));
-						
-					}
-
-				} else {
-					if (arg.isInstanceOf(XValueProperties.class))
-						props = props.merge(arg
-								.asInstanceOf(XValueProperties.class));
-					else if (arg.isInstanceOf(Map.class))
-						props = props.merge(XValueProperties.fromMap(arg
-								.asInstanceOf(Map.class)));
-					else if( arg.isInstanceOf(XValueProperty.class))
-						props.add( arg.asInstanceOf(XValueProperty.class));
-					else if( arg.isInstanceOf( IXValueMap.class )) {
-						props = props.merge( XValueProperties.fromMap((Map<?, ?>) arg.asInstanceOf( IXValueMap.class )));
-					}
-					else {
-						
-					}
-				
-
-				}
-			}
-		}
+		XValueProperties props = XValueProperties.fromXValues(args);
 		return props == null ? new XValueProperties().asXValue() : props
 				.asXValue();
 

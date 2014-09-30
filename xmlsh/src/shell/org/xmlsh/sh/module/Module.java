@@ -36,19 +36,15 @@ public abstract class Module implements IModule {
 	private XClassLoader mClassLoader;
 	
 	protected Module(  ModuleConfig config ) throws CoreException {
-		this( config  , XClassLoader.newInstance() );
+		this( config  , null  );
 	}
 
-	protected Module(  ModuleConfig config , XClassLoader classLoader )  {
-		mConfig = config ;
-		assert( classLoader != null );
-		  mClassLoader = classLoader ;
-		
-	}
-	protected Module( Shell shell , ModuleConfig config  ) throws CoreException {
+	protected Module(  ModuleConfig config , XClassLoader parent )  {
 		mConfig = config ;
 		List<URL> classPath =  config.getClassPath() ;
-		XClassLoader parent =  shell.getClassLoader();
+
+		if( parent == null )
+			 parent = XClassLoader.newInstance(Shell.getContextClassLoader());
 		
 		if( classPath == null || classPath.isEmpty() )
 			mClassLoader = parent ;
