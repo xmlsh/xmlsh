@@ -34,33 +34,33 @@ import org.xmlsh.util.Util;
  */
 public class FunctionCallWord extends Word
 {
-	String	 mFunction;
+	Word	 mFunction;
 	WordList	mArgs;
-	Word      mPrefix;  // expr . function( ... )
-	private IModule mod;
 	private static Logger mLogger = LogManager.getLogger();
 
+	
+	public FunctionCallWord(Word fn, WordList args)
+	{
+		super( fn.getFirstToken() );
+		mFunction = fn;
+		mArgs = args ;
+		
+		
+	}
+
+	
 	public FunctionCallWord(Token t , String func, WordList args)
 	{
 		super(t);
-		mPrefix = null;
-		mFunction = func;
+		mFunction = new StringWord(t,func);
 		mArgs = args;
 
 	}
-  public FunctionCallWord( Word prefix , Token t , String func, WordList args)
-  {
-    super(t);
-    mPrefix = prefix;
-    mFunction = func;
-    mArgs = args;
-
-  }
   
 	@Override
 	public void print(PrintWriter out)
 	{
-		out.print(mFunction);
+		mFunction.print(out);
 		out.print("(");
 		if(mArgs != null)
 			mArgs.print(out);
@@ -71,7 +71,7 @@ public class FunctionCallWord extends Word
 	@Override
 	public boolean isEmpty()
 	{
-		return Util.isEmpty(mFunction);
+		return mFunction == null ;
 	}
 
 	@Override
@@ -87,7 +87,7 @@ public class FunctionCallWord extends Word
 	@Override
 	public String getSimpleName()
 	{
-		return mFunction;
+		return mFunction.getSimpleName();
 	}
 
 	@Override
@@ -95,8 +95,10 @@ public class FunctionCallWord extends Word
 			throws IOException, CoreException
 			{
        mLogger.entry();
+       
+       String fname = mFunction.expandString(shell, env);
 
-       IFunctionExpr func = CommandFactory.getFunction(shell, mFunction );
+       IFunctionExpr func = CommandFactory.getFunction(shell, fname );
        
 		if(func == null)
 			throw new InvalidArgumentException("Unknown function: " + mFunction);
@@ -136,8 +138,8 @@ public class FunctionCallWord extends Word
 		}
 		finally{
 
-				mod = shell.popModule();
-				
+			IModule module = shell.popModule();
+		    mLogger.trace("poped module: {}" , module ); 
 					// TODO: should I push this back into the mdoule ?
 				
 			mLogger.exit();

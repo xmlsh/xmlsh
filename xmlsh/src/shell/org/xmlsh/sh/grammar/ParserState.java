@@ -79,10 +79,6 @@ class ParserState {
         mDelims = EnumSet.noneOf(TokenEnum.class);
     }
 
-    private ParserState( TokenEnum e ) 
-    {
-        mDelims = EnumSet.of( e );
-    }
     private ParserState( EnumSet<TokenEnum> delims ) {
         mDelims = delims ;
     }

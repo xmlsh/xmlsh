@@ -1,0 +1,30 @@
+initializing E:\Work\DEI\github\xmlsh\xmlsh\test\modules\modules_simple1.xsh
+[8]test A Test
+[10]A is
+B is
+C is bar
+[12]A is
+B is
+C is bar
+[16]A is parent
+A is AText
+[19] A is AText
+[20]C is bar
+C is CText
+[22] C is
+A is
+A is ATextMore
+ATextMore
+C is bar
+C is CTextMore
+[28] parent C is
+[29] internal C is bar
+A is ATextMore
+B is
+C is bar
+[31]child Child text
+[34]bar
+[36] child local: 123
+[38] child local: 123
+[40] f1 args
+[42] f2 args

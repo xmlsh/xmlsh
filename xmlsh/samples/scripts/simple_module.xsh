@@ -25,6 +25,10 @@ function setc() {
   C=$*
   echo C is $C
 }
+
+getc() { 
+  return $C ;
+}
 function run_child() {
    c:child $*
 }
@@ -43,4 +47,41 @@ function ev() {
   eval "$@" 
 }
 
-show
+function f1() {
+  return "$@" ;
+}
+
+function f2() {
+   return $@ ; 
+}
+
+function f3() {
+   return f1(f2($*))
+}
+
+function getlocal() {
+  return c:getlocal($*) 
+}
+
+setlocal() {
+  c:setlocal  $@ 
+}
+
+setlocal2() {
+  : setlocal( $@ )
+}
+
+setlocal3() {
+   :setlocal $@ 
+}
+
+getlocal() {
+  return c:getlocal()
+}
+
+varf() {
+  local f=$1
+  shift 
+  return $f( $* )
+}
+
