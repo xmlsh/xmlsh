@@ -35,6 +35,7 @@ import org.xmlsh.util.Util;
 import org.xmlsh.util.XMLUtils;
 import org.xmlsh.xpath.EvalDefinition;
 import org.xmlsh.xpath.ThreadLocalShell;
+import static org.xmlsh.sh.shell.CharAttr.*;
 
 public class Expander
 {
@@ -77,13 +78,15 @@ public class Expander
 
   public List<XValue> expandStringToList(String arg, EvalEnv env) throws IOException, CoreException
   {
-    ParseResult result = new ParseResult(mShell);
+    ParseResult result = new ParseResult();
     return expandResultToList(env, expandStringToResult(arg, env, result));
 
   }
 
   public List<XValue> expandResultToList(EvalEnv env, ParseResult result)
   {
+	
+	mLogger.entry(env, result);
     assert (result != null);
     List<XValue> xvresult = result.expandWild(env, mShell.getCurdir());
     if(xvresult == null)
@@ -93,7 +96,7 @@ public class Expander
       xvresult = Util.expandSequences(xvresult);
     else xvresult = Util.combineSequence(xvresult);
 
-    return xvresult;
+    return mLogger.exit(xvresult);
   }
 
   /*
@@ -109,11 +112,13 @@ public class Expander
    */
   public ParseResult expandStringToResult(String arg, EvalEnv env, ParseResult result) throws IOException,
       CoreException
-  {
+   {
+	  
+	mLogger.entry(arg, env, result);
 
     assert (result != null);
     
-    CharAttr curAttr = env.asCharAttr();
+    CharAttrs curAttr = env.asCharAttrs();
     
     
     // Special case for "$@" which does NOT 'stringify' arguments
@@ -151,8 +156,8 @@ public class Expander
 
       if(env.parseQuotes()) {
         // Quote - if in quotes then clear only the matching quote
-        if(CharAttr.isQuote(c)) {
-          CharAttr ca = CharAttr.valueOf(c);
+        if(CharAttrs.isQuote(c)) {
+          CharAttrs ca = CharAttrs.valueOf(c);
           if(curAttr.isQuote()) { // in quotes
             curAttr.clear(ca);
             if(curAttr.isQuote())
@@ -196,7 +201,7 @@ public class Expander
             }
 
             // For one char we escape
-            CharAttr cAttr = CharAttr.ATTR_ESCAPED;
+            CharAttrs cAttr = CharAttrs.newInstance(ATTR_ESCAPED);
             cAttr.set(curAttr);
             result.append(nextc, cAttr);
           }
@@ -272,13 +277,15 @@ public class Expander
     if(!env.joinValues())
       result.flush();
 
-    return result;
+    return    mLogger.exit( result);
 
   }
 
   private XValue parseXExpr(Shell shell, String arg) throws CoreException
   {
-
+ 
+	
+	mLogger.entry(shell, arg);
     Processor processor = Shell.getProcessor();
 
     XQueryCompiler compiler = processor.newXQueryCompiler();
@@ -344,7 +351,7 @@ public class Expander
       }
 
       XdmValue result = eval.evaluate();
-      return XDMTypeFamily.getInstance().getXValue( result);
+      return mLogger.exit(XDMTypeFamily.getInstance().getXValue( result));
     } catch (SaxonApiException e) {
       String msg = "Error expanding xml expression: " + arg;
       mLogger.warn(msg, e);

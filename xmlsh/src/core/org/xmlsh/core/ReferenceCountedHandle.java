@@ -5,6 +5,7 @@ import java.io.IOException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.xmlsh.builtin.commands.exit;
 import org.xmlsh.util.ReferenceCounter;
 
 @SuppressWarnings("serial")
@@ -22,9 +23,11 @@ public class ReferenceCountedHandle< T extends IHandleable & Closeable >  implem
 	}
 	
 	public ReferenceCountedHandle( T obj , ReferenceCounter counter ) {
+		mLogger.entry(obj, counter);
 		mCounter = counter ;
 		mLogger.entry( obj  );
 		mObj = obj ;
+		mLogger.exit();
 	}
 	
 	/* (non-Javadoc)
@@ -38,22 +41,23 @@ public class ReferenceCountedHandle< T extends IHandleable & Closeable >  implem
 			mLogger.info("Closing : {} " , mObj );
 			mObj.close();
 			mObj = null ;
-			return true ;
+			return mLogger.exit(true) ;
 		}
-		return false ;
+		return mLogger.exit(false) ;
 	} 
 
 	@Override
 	public void addRef() { 
 
+		
+		mLogger.entry();
 		assert( ! isNull() );
 		mLogger.entry(this);
-		mCounter.increment();
+		mLogger.exit(mCounter.increment());
 	}
 	
 	@Override
 	final public T get() {
-		mLogger.entry();
 		return mObj;
 	}
 	
@@ -63,7 +67,6 @@ public class ReferenceCountedHandle< T extends IHandleable & Closeable >  implem
 	}
 	@Override
 	public int getRefCount() {
-		// TODO Auto-generated method stub
 		return mCounter.getRefCount();
 	}
 }

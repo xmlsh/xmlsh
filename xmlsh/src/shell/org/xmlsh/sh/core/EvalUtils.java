@@ -23,6 +23,7 @@ import org.xmlsh.core.XValueList;
 import org.xmlsh.core.XVariable;
 import org.xmlsh.core.XVariableExpr;
 import org.xmlsh.json.JSONUtils;
+import org.xmlsh.sh.shell.CharAttrs;
 import org.xmlsh.sh.shell.CharAttr;
 import org.xmlsh.sh.shell.Expander;
 import org.xmlsh.sh.shell.ParseResult;
@@ -154,7 +155,7 @@ public class EvalUtils
      * If not matched and this is windows
      * try an exact match to the canonical expanson of the dir and wild
      */
-    if(bIsWindows && wild.indexOf(0, '~', CharAttr.ATTR_NONE.attr()) >= 0) {
+    if(bIsWindows && wild.indexOf(0, '~', 0 ) >= 0) {
       String wildString = wild.toString();
       File fwild = new File(dir, wildString);
       if(fwild.exists()) {
@@ -165,7 +166,9 @@ public class EvalUtils
 
     String[] files = dir.list();
 
-    Pattern wp = Util.compileWild(wild, CharAttr.ATTR_ESCAPED.attr(), caseSensitive);
+    
+    // @TODO Convert to Glob
+    Pattern wp = Util.compileWild(wild, CharAttr.ATTR_ESCAPED.toBit() , caseSensitive);
 
     for (String f : files) {
 
@@ -205,14 +208,14 @@ public class EvalUtils
   public static ParseResult expandStringToResult(Shell shell, String value, EvalEnv env, ParseResult result) throws IOException, CoreException
       {
     Expander e = new Expander(shell);
-    return e.expandStringToResult(value, env, result == null ? new ParseResult(shell) : result);
+    return e.expandStringToResult(value, env, result == null ? new ParseResult() : result);
 
       }
 
   public static ParseResult expandValueToResult(Shell shell, XValue xv, EvalEnv env, ParseResult result) throws IOException, CoreException
       {
     Expander e = new Expander(shell);
-    return e.expandValueToResult(xv, env, result == null ? new ParseResult(shell) : result);
+    return e.expandValueToResult(xv, env, result == null ? new ParseResult() : result);
       }
 
   public static List<XValue> expandResultToList(Shell shell, ParseResult result, EvalEnv env)
@@ -226,7 +229,7 @@ public class EvalUtils
       throws IOException, CoreException
       {
     Expander e = new Expander(shell);
-    return e.expandResultToList(env, e.expandValueToResult(xv, env, new ParseResult(shell)));
+    return e.expandResultToList(env, e.expandValueToResult(xv, env, new ParseResult()));
       }
 
   public static List<XValue> expandStringToList(Shell shell, String s, EvalEnv env)
@@ -273,7 +276,7 @@ public class EvalUtils
       throws IOException, CoreException
       {
     Expander e = new Expander(shell);
-    ParseResult result = new ParseResult(shell);
+    ParseResult result = new ParseResult();
     for (XValue xv : list)
       result = e.expandValueToResult(xv, env, result);
     return result;
@@ -337,7 +340,7 @@ public class EvalUtils
   /*
    * Evaluate a variable and return either a list of zero or more values
    */
-  public static ParseResult evalVarToResult(Shell shell, XVariableExpr expr, EvalEnv env, CharAttr attr,
+  public static ParseResult evalVarToResult(Shell shell, XVariableExpr expr, EvalEnv env, CharAttrs attr,
       ParseResult result) throws IOException, CoreException
       {
     List<XValue> vs = null;
@@ -431,7 +434,7 @@ public class EvalUtils
     return v.isAtomic()  ||  v.isSequence() ;
   }
 
-  public static ParseResult evalVarToResult(Shell shell, String var, EvalEnv env, CharAttr attr, ParseResult result)
+  public static ParseResult evalVarToResult(Shell shell, String var, EvalEnv env, CharAttrs attr, ParseResult result)
       throws IOException, CoreException
       {
 

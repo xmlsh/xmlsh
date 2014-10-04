@@ -6,14 +6,11 @@
 
 package org.xmlsh.core;
 
-import static org.xmlsh.core.EvalFlag.EXPAND_SEQUENCES;
-import static org.xmlsh.core.EvalFlag.EXPAND_VAR;
-import static org.xmlsh.core.EvalFlag.EXPAND_WILD;
-import static org.xmlsh.core.EvalFlag.SPLIT_WORDS;
-
+import static org.xmlsh.core.EvalFlag.*;
+import static org.xmlsh.sh.shell.CharAttr.*;
 import java.util.EnumSet;
 
-import org.xmlsh.sh.shell.CharAttr;
+import org.xmlsh.sh.shell.CharAttrs;
 import org.xmlsh.util.Util;
 
 /*
@@ -39,6 +36,11 @@ public class EvalEnv
 		this(EvalFlag._evalFlagsNone);
 	}
 
+	@Override
+	public String toString()
+	{
+		return Util.join(evalFlags);
+	}
 
 	public static EvalEnv newEnv( EvalEnv that , EnumSet<EvalFlag> flags) {
 		return new EvalEnv( that ,  flags );
@@ -211,9 +213,9 @@ public class EvalEnv
 	}
 
 
-	public CharAttr asCharAttr()
+	public final CharAttrs asCharAttrs()
     {
-		return preserveValue() ? CharAttr.ATTR_PRESERVE : CharAttr.ATTR_NONE ;
+		return preserveValue() ? CharAttrs.newInstance(ATTR_PRESERVE) :CharAttrs.newInstance();
     }
 
 

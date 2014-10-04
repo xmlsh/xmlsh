@@ -11,6 +11,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.EvalEnv;
 import org.xmlsh.core.XValue;
@@ -20,6 +21,7 @@ public class CommandSuffixExpr {
 	private static final EvalEnv mCmdEnv = EvalEnv.newInstance(true,true,true,false);
 	private static final EvalEnv mArgEnv = EvalEnv.commandArgsInstance();
 
+	static org.apache.logging.log4j.Logger mLogger = LogManager.getLogger();
 	private WordList		mArgs = new WordList();
 	private	 IORedirectList		mRedirect = new IORedirectList();
 	public CommandSuffixExpr() {
@@ -49,13 +51,15 @@ public class CommandSuffixExpr {
 
 	public List<XValue> toCmdLine(Shell shell, Word command, SourceLocation loc ) throws IOException, CoreException 
 	{
+		
+		mLogger.entry(shell, command, loc);
 		ArrayList<XValue>	args = new ArrayList<XValue>();
 
 		args.addAll( command.expandToList(shell,mCmdEnv));
 		for( Word arg : mArgs )
 			args.addAll(arg.expandToList(shell, mArgEnv));
 
-		return args;
+		return mLogger.exit(args);
 	}
 
 	public void exec(Shell shell, SourceLocation loc) throws Exception {

@@ -50,9 +50,6 @@
 		<logger name="com.amazonaws" level="WARN" />
 		<logger name="org.apache.http.impl.conn" level="WARN" />
 		<logger name="com.amazonaws.auth.profile" level="ERROR" />
-		<logger name="org.xmlsh.sh.grammar" level="WARN" additivity="false">
-		   <AppenderRef ref="A1" />
-		</logger>
 		<logger name="${tracelog}" level="TRACE" >
 		   <appenderRef ref="A1"/>
 		</logger>

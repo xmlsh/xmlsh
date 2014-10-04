@@ -6,69 +6,31 @@
 
 package org.xmlsh.sh.shell;
 
-public enum CharAttr {
-	ATTR_NONE( 0 ),
-	ATTR_SOFT_QUOTE(1),
-	ATTR_HARD_QUOTE(2),
-	ATTR_PRESERVE(4),   // Do not touch, unquote or expand
-	ATTR_ESCAPED(8);
-	private int attr;
-	CharAttr(){
-		attr = 0;
-	}
-	CharAttr(int attr ){
-		this.attr = attr ;
-	}
+import static org.xmlsh.sh.shell.CharAttr.ATTR_HARD_QUOTE;
+import static org.xmlsh.sh.shell.CharAttr.ATTR_SOFT_QUOTE;
 
-	public boolean isQuote() { 
-		return isSet( (ATTR_SOFT_QUOTE.attr|ATTR_HARD_QUOTE.attr ) ); 
-	}
-	public byte attr() { return (byte) attr ; }
+import org.apache.commons.lang3.EnumUtils;
 
+public  enum CharAttr {
+		ATTR_SOFT_QUOTE,
+		ATTR_HARD_QUOTE,
+		ATTR_PRESERVE,   // Do not touch, unquote or expand
+		ATTR_ESCAPED ;
+		
+		public byte toBit() {
+			return (byte) (1 << ordinal());
+		}
+		public static CharAttr fromBit( byte bit ){
+			if( bit == 0)
+				return null;
+			for( CharAttr attr : CharAttr.values() ){
+                if(( bit & (1 << attr.ordinal() )) == 0 )
+                	return attr ;
+			}
+			return null ;
+		}
+ };
 
-	public static CharAttr valueOf(char c)
-	{
-		if( c == '\'')
-			return ATTR_HARD_QUOTE ;
-		else
-			if( c == '\"')
-				return ATTR_SOFT_QUOTE;
-			else
-				return ATTR_NONE ;
-	}
-
-	public boolean isSet( CharAttr ca ) {
-		return ( attr & ca.attr) != 0;
-	}
-	public boolean isSet( int ca ) {
-		return ( attr & ca ) != 0;
-	}
-	public void clear( CharAttr ca ) {
-		attr &= ~ ca.attr;
-	}
-	public void set( CharAttr ca ) {
-		attr |= ca.attr;
-	}
-	public static boolean isQuote( char c ) {
-		return c == '\'' || c == '"';
-	}
-	public boolean isHardQuote()
-	{
-		return  isSet(ATTR_HARD_QUOTE);
-	}
-	public boolean isSoftQuote()
-	{
-		return  isSet(ATTR_SOFT_QUOTE);
-	}
-	public boolean isEscaped()
-	{
-		return  isSet(ATTR_ESCAPED);
-	}
-	public boolean isPreserve()
-	{
-		return isSet( ATTR_PRESERVE );
-	}
-}
 
 
 /*

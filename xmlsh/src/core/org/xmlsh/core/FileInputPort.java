@@ -26,6 +26,7 @@ import org.xml.sax.InputSource;
 import org.xmlsh.json.JSONUtils;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.util.FileUtils;
+import org.xmlsh.util.Util;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -80,7 +81,7 @@ public class FileInputPort extends InputPort
 				FileInputStream fileStream = new FileInputStream(mFile);
 				mStreamPort = new StreamInputPort( fileStream , getSystemId() );
 			} catch (FileNotFoundException e) {
-				mLogger.warn( "Error opening file for input: " + mFile.getAbsolutePath() , e );
+				Util.wrapCoreException( "Error opening file for input: " + mFile.getAbsolutePath() , e );
 			} 
 		return mStreamPort;
 	}

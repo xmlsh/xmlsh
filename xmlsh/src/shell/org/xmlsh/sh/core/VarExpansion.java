@@ -69,7 +69,7 @@ public class VarExpansion extends Word
         String ind = mIndex != null ? mIndex.expandString(shell, indEnv(env)) : null ;
         String field = mField != null ?  mField.expandString(shell, env) : null ;
         XVariableExpr expr = new XVariableExpr( mPrefix , mVarname , ind , field );
-        return EvalUtils.evalVarToResult(shell, expr, env, env.asCharAttr() , result);
+        return EvalUtils.evalVarToResult(shell, expr, env, env.asCharAttrs() , result);
     }
 
     private EvalEnv indEnv(EvalEnv env)

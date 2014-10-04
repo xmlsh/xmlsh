@@ -12,6 +12,7 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.EvalEnv;
 import org.xmlsh.core.XValue;
@@ -29,6 +30,7 @@ public abstract class Word {
 
 	private Token mFirstToken ;
 	public abstract void print( PrintWriter out );
+	static org.apache.logging.log4j.Logger mLogger = LogManager.getLogger();
 
 
 	/*protected Word() {
@@ -54,20 +56,26 @@ public abstract class Word {
 
 	public final XValue expand(Shell shell , EvalEnv env ) throws IOException, CoreException {
 
-		ParseResult result = new ParseResult(shell);
+		
+		mLogger.entry(shell, env);
+		ParseResult result = new ParseResult();
 		env=evalEnv(env);
 		expandToResult( shell , env , result );
-		return EvalUtils.expandResultToValue(shell, result, env) ;
+		return mLogger.exit(EvalUtils.expandResultToValue(shell, result, env)) ;
 
 	}
 
 
 	public String expandString(Shell shell, EvalEnv env ) throws IOException, CoreException {
+		mLogger.entry(shell, env);
+
 	   env=evalEnv(env);
-		return expand(shell,env).toString();
+		return mLogger.exit(expand(shell,env).toString());
 	}
 
 	public List<XValue> expandToList(Shell shell, EvalEnv env ) throws IOException, CoreException {
+		
+		mLogger.entry(shell, env);
 		env = evalEnv(env);
 		XValue v = expand( shell,  env);
 		List<XValue> list = new ArrayList<XValue>(1);
@@ -75,7 +83,7 @@ public abstract class Word {
 			list.add( v );
 		if( env.expandSequences())
 			list = Util.expandSequences(list);
-		return list;
+		return mLogger.exit(list);
 
 	}
 

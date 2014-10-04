@@ -17,6 +17,9 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
+import java.nio.file.PathMatcher;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -72,6 +75,8 @@ import org.xmlsh.core.IReleasable;
 import org.xmlsh.core.Namespaces;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.core.CharAttributeBuffer;
+import org.xmlsh.sh.shell.CharAttr;
+import org.xmlsh.sh.shell.CharAttrs;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.sh.shell.ShellConstants;
@@ -478,8 +483,27 @@ public class Util
 		 return  c == '_' ||Character.isLetter(c) || Character.isDigit(c);
 	 }
 
+	/*
+	 * Wrapper over NIO PathMatcher
+	 */
+
+	 public static PathMatcher getPathMatcher( String pattern ) {
+		 
+		 try {
+		 return
+		 FileSystems.getDefault().getPathMatcher( "glob:" + pattern );
+		 } catch(  IllegalArgumentException |  UnsupportedOperationException  e ) {
+				return null;
+		 }
+
+		 
+	 }
+	 
+	 
 	 /*
-	  * Filename style wildcard matching 
+	  * Filename style wildcard matching - ONLY for non filenames 
+	  * 
+	  * Use getPathMatcher instead for real files
 	  */
 
 	 public static boolean wildMatches(String pattern, String word, boolean caseSensitive ) {
@@ -489,7 +513,6 @@ public class Util
 
 		 return compileWild(pattern,caseSensitive).matcher(word).matches();
 	 }
-
 	 public static Pattern compileWild( String pattern,  boolean caseSensitive) {
 
 		 String reg = "^" + 
@@ -500,7 +523,9 @@ public class Util
 				 replace("*", ".*").
 				 replace("?" , ".").
 				 replace("(","\\(").
-				 replace(")","\\)") + "$";
+				 replace(")","\\)"). 
+				 replace("}", "\\}").
+				 replace("{","/{")+ "$";
 
 		 // Special case, single "[" (test)
 		 if( reg.equals("^[$"))
@@ -510,15 +535,18 @@ public class Util
 
 
 	 }
-
+	
 	 /*
 	  * is the char one of the glob wils  ? * [
 	  */
 	 public static boolean isWildChar( char c ) {
-		 return ( c == '*' || c == '?' || c == '[')  ;
+		 return ( c == '*' || c == '?' || c == '[' || c == '{' | c == '}')  ;
 	 }
 
-	 public static Pattern compileWild( CharAttributeBuffer wild,  int escAttr, boolean caseSensitive) {
+	 
+	 
+	 
+	 public static Pattern compileWild( CharAttributeBuffer wild,  byte escaped , boolean caseSensitive) {
 
 		 StringBuilder reg = new StringBuilder("^");
 		 int len = wild.size();
@@ -526,31 +554,36 @@ public class Util
 			 char c = wild.charAt(i);
 
 			 switch(c) {
-			 case '^' : reg.append("\\^"); break ;
-			 case '+' : reg.append("\\+"); break ;
-			 case '.' : reg.append("\\."); break ;
+			 case '^' : 
+			 case '+' : 
+			 case '.' : 
+			 case '(' : 
+			 case ')' :
+			 case '{' : 
+			 case '}' :
+				 // fall through 
+				 reg.append("\\").append(c); break ;
 			 case '*' : 
-				 if( (wild.attrAt(i) & escAttr) == 0 )
+				 if( (wild.attrAt(i) & escaped) == 0 )
 					 reg.append(".*"); 
 				 else 
 					 reg.append("\\*");
 				 break;
 
 			 case '?' :
-				 if( (wild.attrAt(i) & escAttr) == 0 )
+				 if( (wild.attrAt(i) & escaped) == 0 )
 					 reg.append("."); 
 				 else 
 					 reg.append("\\.");
 				 break;
 			 case '[' :
-				 if( (wild.attrAt(i) & escAttr) == 0 && wild.indexOf(i+1 , ']', 0) > i )
+				 if( (wild.attrAt(i) & escaped) == 0 && wild.indexOf(i+1 , ']', 0) > i )
 					 reg.append("["); 
 				 else 
 					 reg.append("\\[");
 				 break;
 
-			 case '(' : reg.append("\\(");  break ;
-			 case ')' : reg.append("\\)"); break ;
+	
 			 default : 
 				 reg.append(c);
 			 }
@@ -1579,7 +1612,7 @@ public class Util
 	 }
 	 public static void wrapCoreException(String message , Throwable e) throws CoreException {
 
-		 throw new CoreException( message , e );
+		throw mLogger.throwing(new CoreException( message , e) );
 
 	 }
 
@@ -1673,18 +1706,27 @@ public class Util
 		 };
 	 }
 
+	 public static String join(Collection<?> args){
+		 return join(args,",");
+	 }
 
-  public static String join(List<?> args, String sep)
+  public static String join(Collection<?> args, String sep)
   {
-      StringBuffer sb = new StringBuffer();
+	  return join( new StringBuilder() , args , sep ).toString();
+  }
+  public static StringBuilder join(StringBuilder sb , Collection<?> args){
+	  return join( sb , args , ",");
+  }
+
+  public static StringBuilder join(StringBuilder sb , Collection<?> args, String sep)
+  {
       for( Object arg : args ){
         if( sb.length() > 0 )
           sb.append(sep);
         sb.append( arg.toString() );
       }
-      return sb.toString();
+      return sb;
   }
-
 
   public static <T> List<T> toList(Iterator<T> iter)
   {
@@ -1819,6 +1861,12 @@ public static <T> boolean contains(T[] array, T v) {
 
 	public static byte[] stringToUTF8Bytes( String name ){
 		return name.getBytes(java.nio.charset.StandardCharsets.UTF_8);
+	}
+
+
+	public static <E extends Enum<E> > StringBuilder logString(StringBuilder sb , EnumSet<E> set) {
+		return join( sb , set , ",");
+		
 	}
 	
 

@@ -39,7 +39,8 @@ public class SimpleCommandExpr extends CommandExpr {
 	 */
 	public SimpleCommandExpr( Word first, WordList args , IORedirectList redir ) {
 
-		mLogger.entry( first , args );
+		
+		mLogger.entry(first, args, redir);
 		WordList cmdline = new WordList();
 		cmdline.add(first);
 		cmdline.addAll(args);
@@ -59,6 +60,8 @@ public class SimpleCommandExpr extends CommandExpr {
 			for( IORedirect io : redir )
 				mSuffix.addIO( io );
 		}
+		
+		mLogger.exit();
 
 	}
 
@@ -71,6 +74,7 @@ public class SimpleCommandExpr extends CommandExpr {
 		mCommand = command;
 		mSuffix = suffix ;
 
+		mLogger.exit();
 	}
 
 
@@ -103,14 +107,13 @@ public class SimpleCommandExpr extends CommandExpr {
 		mLogger.entry(mCommand);
 
 
-
 		if( mCommand == null || mCommand.isEmpty() )
-			return execNull( shell );
+			return mLogger.exit(execNull( shell ));
 
 		List<XValue>	cmdLine = mSuffix.toCmdLine(shell, mCommand , getSourceLocation() );
 		// Ignore empty or blank command lines
 		if( cmdLine == null || cmdLine.isEmpty() )
-			return 0;
+			return mLogger.exit( 0);
 
 		String cmdName = cmdLine.remove(0).toString();
 
@@ -118,7 +121,7 @@ public class SimpleCommandExpr extends CommandExpr {
 		if( cmd == null ){
 			logLocation(shell);
 			shell.printErr(mCommand + ": not found");
-			return 1;
+			return  mLogger.exit(1);
 		}
 		Shell		   saved_shell = null;
 		/*
@@ -135,7 +138,7 @@ public class SimpleCommandExpr extends CommandExpr {
 
 			assert(shell!=null);
 			if( shell ==null )
-				throw new UnexpectedException("Shell is null after close");
+				throw mLogger.throwing(new UnexpectedException("Shell is null after close"));
 
 		}
 
@@ -177,7 +180,7 @@ public class SimpleCommandExpr extends CommandExpr {
 			 * Save exception here ???? 
 			 */
 
-			return -1;
+			return  mLogger.exit(-1);
 		}
 
 		finally {

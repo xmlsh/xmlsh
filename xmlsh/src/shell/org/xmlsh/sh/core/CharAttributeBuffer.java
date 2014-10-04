@@ -8,6 +8,11 @@ package org.xmlsh.sh.core;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.EnumSet;
+
+import org.apache.commons.lang3.EnumUtils;
+import org.xmlsh.sh.shell.CharAttr;
+import org.xmlsh.sh.shell.CharAttrs;
 
 /*
  * Like StringBuilder but stores extended attributes with each charactor.
@@ -40,9 +45,18 @@ public class CharAttributeBuffer
 	public CharAttributeBuffer(CharAttributeBuffer that ) {
 	    this(that.capacity);
 	    append(that);
+	}	
+	
+	public CharAttributeBuffer(String s, CharAttr attr ){
+		this( s , (byte) attr.toBit() );
 	}
 
-	   
+	public CharAttributeBuffer(String s, CharAttrs attrs ){
+		this( s , (byte) attrs.toBits() );
+	}
+	public CharAttributeBuffer(String s, EnumSet<CharAttr> attrs ){
+		this( s , (byte) CharAttrs.toBits( attrs ) );
+	} 
 	public CharAttributeBuffer(String s, byte attr)
 	{
 		int size = s.length();
@@ -52,6 +66,7 @@ public class CharAttributeBuffer
 		append( s , attr );
 
 	}
+	
 
 	private CharAttributeBuffer(char[] ca , byte[] aa , int len , int c ) {
 		charArray = ca;
@@ -72,7 +87,9 @@ public class CharAttributeBuffer
 	public void append( char c ) {
 		append(c,(byte) 0);
 	}
-
+	public void append( char c , CharAttrs attr ) {
+		append(c, attr.toBits());
+	}
 	public void append( char c , byte attr ) {
 		ensure( length+1 );
 		charArray[length] = c ;
@@ -101,6 +118,14 @@ public class CharAttributeBuffer
 	@Override
 	public String toString( ) {
 		return  new String( charArray , 0 , length );
+	}
+
+	public String decodeString( CharAttributeDecoder decoder ) {
+		StringBuilder sb = new StringBuilder(length);
+		for( int i = 0 ; i <length ; i++ )
+			decoder.decode( sb , charArray[i] , attrArray[i] );
+		
+		return sb.toString();
 	}
 
 
@@ -162,7 +187,7 @@ public class CharAttributeBuffer
 	}
 
 
-	public CharAttributeBuffer[] split(char c)
+	public  CharAttributeBuffer[] split(char c)
 	{
 		ArrayList<CharAttributeBuffer> list = new ArrayList<CharAttributeBuffer>();
 
@@ -230,6 +255,24 @@ public class CharAttributeBuffer
 		System.arraycopy(achars.attrArray, 0 , attrArray , 0 , len );
 		length += len ;
 
+	}
+
+
+	public void append(String s, CharAttrs attr) {
+		append( s , attr.toBits());
+		
+	}
+
+
+	
+	public void logString(StringBuilder sb) {
+ 
+		sb.append("[" );
+		for( int i = 0 ; i < 10 && i < length ; i++ ){
+			if( i > 0 )
+				sb.append(',');
+			sb.append( charArray[i]).append(':').append( CharAttrs.fromBits(attrArray[i]) );
+		}
 	}
 }
 

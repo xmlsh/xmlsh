@@ -9,6 +9,7 @@ package org.xmlsh.sh.shell;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import static org.xmlsh.sh.shell.CharAttr.*;
 
 import org.xmlsh.core.EvalEnv;
 import org.xmlsh.core.EvalFlag;
@@ -21,26 +22,21 @@ public class ParseResult {
 	// Attribute'd char buffer
 	private CharAttributeBuffer    achars = null;
 
-	private Shell mShell;
-	public ParseResult( Shell shell ) {
-		mShell = shell ;
-	}
 
 	public static class RXValue {
 		public XValue         			xvalue;
 		private CharAttributeBuffer    avalue;
-		public boolean       bRaw;
+		public CharAttrs  xvalAttrs ;
 		RXValue( XValue v , boolean r ) {
 			xvalue = v ;
-			bRaw = r;
+			xvalAttrs = r ? CharAttrs.constInstance(ATTR_PRESERVE) : CharAttrs.constInstance();
 		}
 		RXValue( CharAttributeBuffer av ) {
 			avalue  = av ;
-			bRaw = false ;
+			xvalAttrs = CharAttrs.constInstance();
 		}
-		RXValue( String s , CharAttr attr ) {
-
-			avalue = new CharAttributeBuffer(s, attr.attr());
+		RXValue( String s , CharAttrs attr ) {
+			avalue = new CharAttributeBuffer(s, attr);
 		}
 
 		@Override
@@ -59,11 +55,10 @@ public class ParseResult {
 
 		public CharAttributeBuffer toAValue() {
 			return avalue != null ? avalue :
-				new CharAttributeBuffer( xvalue.toString() , 
-						(bRaw ? CharAttr.ATTR_PRESERVE : CharAttr.ATTR_NONE).attr() );
+				new CharAttributeBuffer( xvalue.toString() , xvalAttrs ); 
 		}
 		public boolean isRaw() { 
-			return bRaw ;
+			return xvalAttrs.isPreserve() ;
 		}
 		public boolean isXValue() { 
 			return xvalue != null ;
@@ -105,7 +100,7 @@ public class ParseResult {
 		flush();
 		getResult().add( new RXValue( cb ) );
 	}
-	public void add( String s, CharAttr attr)
+	public void add( String s, CharAttrs attr)
 	{
 		flush();
 		getResult().add(new RXValue(s,attr));
@@ -122,13 +117,13 @@ public class ParseResult {
 		getResult().add( new RXValue(v,r));
 	}
 
-	public void append( String s ,CharAttr attr)
+	public void append( String s ,CharAttrs attr)
 	{
 		ajoin();
 		if( achars == null )
 			achars = new CharAttributeBuffer();
 		if( s != null )
-			achars.append(s,attr.attr());
+			achars.append(s,attr);
 	}
 
 	public void append( CharAttributeBuffer cb ) {
@@ -140,12 +135,12 @@ public class ParseResult {
 	}
 	   
 
-	public void append( char c, CharAttr attr  )
+	public void append( char c, CharAttrs attr  )
 	{
 		ajoin();
 		if( achars == null )
 			achars = new CharAttributeBuffer();
-		achars.append(c,attr.attr());
+		achars.append(c,attr);
 	}
 
 
@@ -159,7 +154,7 @@ public class ParseResult {
 	 * Append a value to the result buffer
 	 * If currently in-quotes then convert the args to strings and seperated by the first char in IFS.
 	 */
-	public void append(XValue value, EvalEnv env , CharAttr attr  ) {
+	public void append(XValue value, EvalEnv env , CharAttrs attr  ) {
 
 		if( (value == null || value.isNull() ) && env.omitNulls() )
 			return ;
@@ -233,12 +228,12 @@ public class ParseResult {
 		}
 
 	}
-
 	private void ajoin() {
 		if( cur != null ){
 			if( achars == null )
-				achars = new CharAttributeBuffer();
-			achars.append(cur.toString(), CharAttr.ATTR_NONE.attr() );  // TODO ? 
+				achars = new CharAttributeBuffer(cur.toAValue());
+			else 
+			    achars.append(cur.toAValue());  
 			cur = null;
 		}
 	}
@@ -366,7 +361,7 @@ public class ParseResult {
 				result2.add( rv.toXValue() );
 			else {
 
-				if( rv.bRaw )
+				if( rv.isRaw() )
 					result2.add( rv.xvalue );
 				else {
 					List<XValue> r = ParseResult.expandWild(  rv, curdir );
@@ -377,6 +372,27 @@ public class ParseResult {
 		}
 
 		return result2;
+	}
+	
+	
+	// For logging
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder("ParseResult");
+		if( cur != null )
+			sb.append( "cur=["  +cur.toString() + "]");
+
+		if(achars != null ){
+			sb.append("achars=[");
+			achars.logString(sb);
+			sb.append("]");
+		}
+		if( result != null ){
+			sb.append("result=[");
+			Util.join(sb, result , ",").append("]");
+		}
+		return sb.toString();
+		
 	}
 
 
