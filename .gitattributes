@@ -1,1 +1,4 @@
 * text=auto
+.gitignore eol=lf
+.sh eol=lf
+.xsh eol=crlf
