@@ -24,6 +24,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.file.Path;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.ArrayList;
@@ -1296,6 +1297,22 @@ public class Shell implements AutoCloseable, Closeable {
 
 	public File getFile(XValue fvalue) throws IOException {
 		return getFile(fvalue.toString());
+	}
+
+	public Path getPath( XValue fvalue ) {
+		return getPath( fvalue.toString());
+	}
+	
+	public Path getPath(String fname) {
+
+		Path dir = getCurpath();
+		return dir.resolve(fname);
+		
+	}
+
+	private Path getCurpath() {
+		File dir = getCurdir();
+		return dir.toPath();
 	}
 
 	public void shift(int num) {

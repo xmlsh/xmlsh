@@ -6,8 +6,14 @@
 
 package org.xmlsh.sh.core;
 
+import static org.xmlsh.util.Util.formatMessage;
+
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.PathMatcher;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -30,6 +36,7 @@ import org.xmlsh.sh.shell.ParseResult;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.sh.shell.ShellConstants;
 import org.xmlsh.types.TypeFamily;
+import org.xmlsh.util.PathMatchOptions;
 import org.xmlsh.util.Util;
 import org.xmlsh.util.XMLUtils;
 
@@ -135,9 +142,12 @@ public class EvalUtils
   /*
    * Recursively Expand a possibly multi-level wildcard rooted at a directory
    */
-  public static List<String> expandDir(File dir, CharAttributeBuffer wild, boolean bDirOnly)
+  public static List<String> expandDir(File dir, CharAttributeBuffer wild, PathMatchOptions matchOptions ) throws IOException
   {
     ArrayList<String> results = new ArrayList<String>();
+    
+    Path path = dir.toPath();
+    
     /*
      * special case for "." and ".." as the directory component
      * They dont show up in dir.list() so should always be considered an exact match
@@ -149,6 +159,8 @@ public class EvalUtils
 
     boolean bIsWindows = Util.isWindows();
     boolean caseSensitive = !bIsWindows;
+    
+    
 
     /*
      * Hack to handle 8.3 windows file names like "Local~1"
@@ -164,35 +176,40 @@ public class EvalUtils
       }
     }
 
-    String[] files = dir.list();
+    
+    
 
     
-    // @TODO Convert to Glob
-    Pattern wp = Util.compileWild(wild, CharAttr.ATTR_ESCAPED.toBit() , caseSensitive);
-
-    for (String f : files) {
-
-      boolean bMatched = wp.matcher(f).matches();
-
-      if(bMatched && (bDirOnly ? (new File(dir, f).isDirectory()) : true)) {
-        results.add(f);
-      }
+    final PathMatcher wp = Util.compileWild( path.getFileSystem() , wild, 
+    		CharAttrs.constInstance(CharAttr.ATTR_ESCAPED) , caseSensitive);
+   
+    if( wp == null ){
+    	 results.add(wild.toString());
+    } else {
+	    
+		try ( DirectoryStream<Path> dirStream = Files.newDirectoryStream(path  ) ){
+	    
+		    for (Path f : dirStream) {
+		    	if( wp.matches(f.getFileName()) && matchOptions.doVisit(f) )
+		              results.add(f.getFileName().toString());
+		    }
+		}
     }
-    if(results.size() == 0)
-      return null;
-    Collections.sort(results);
-    return results;
+	    if(results.size() == 0)
+	      return null;
+	    Collections.sort(results);
+	    return results;
 
   }
 
-  public static void expandDir(File dir, String parent, CharAttributeBuffer wilds[], List<String> results)
+  public static void expandDir(File dir, String parent, CharAttributeBuffer wilds[], List<String> results) throws IOException
   {
     CharAttributeBuffer wild = wilds[0];
     if(wilds.length < 2)
       wilds = null;
     else wilds = Arrays.copyOfRange(wilds, 1, wilds.length);
 
-    List<String> rs = EvalUtils.expandDir(dir, wild, wilds != null);
+    List<String> rs = EvalUtils.expandDir(dir, wild, new PathMatchOptions(false,false,false,wilds != null));
     if(rs == null)
       return;
     for (String r : rs) {

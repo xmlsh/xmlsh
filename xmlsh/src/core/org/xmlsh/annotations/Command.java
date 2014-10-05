@@ -24,6 +24,7 @@ import com.fasterxml.jackson.annotation.JacksonAnnotation;
 public @interface Command {
 	String value() default "";
 	String name() default "" ;
+	String[] names() default {};
 	Option[] options() default  {};
 
 

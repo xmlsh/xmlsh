@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLEventWriter;
@@ -75,6 +76,7 @@ import org.xmlsh.core.IReleasable;
 import org.xmlsh.core.Namespaces;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.core.CharAttributeBuffer;
+import org.xmlsh.sh.core.CharAttributeDecoder;
 import org.xmlsh.sh.shell.CharAttr;
 import org.xmlsh.sh.shell.CharAttrs;
 import org.xmlsh.sh.shell.SerializeOpts;
@@ -543,7 +545,30 @@ public class Util
 		 return ( c == '*' || c == '?' || c == '[' || c == '{' | c == '}')  ;
 	 }
 
-	 
+
+
+		public static PathMatcher compileWild(
+				FileSystem fileSystem, CharAttributeBuffer wild, CharAttrs escapeAttrs,
+				boolean caseSensitive) {
+			
+			final byte bits = escapeAttrs.toBits();
+			CharAttributeDecoder decoder = new CharAttributeDecoder(){
+
+				@Override
+				public void decode(StringBuilder sb, char ch, byte attrs) {
+					if( (attrs & bits) !=0 )
+						sb.append('\\');
+					sb.append(ch);
+				}};
+				String wildstr = wild.decodeString(decoder);
+
+			try {
+				return fileSystem.getPathMatcher("glob:" + wildstr  );
+			} catch (PatternSyntaxException e) {
+				mLogger.trace("Invalid glob expansion: {}" , wildstr , e );
+			}
+			return null;
+		}
 	 
 	 
 	 public static Pattern compileWild( CharAttributeBuffer wild,  byte escaped , boolean caseSensitive) {
@@ -1868,6 +1893,7 @@ public static <T> boolean contains(T[] array, T v) {
 		return join( sb , set , ",");
 		
 	}
+
 	
 
 

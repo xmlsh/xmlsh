@@ -171,7 +171,8 @@ public class SimpleCommandExpr extends CommandExpr {
 			throw e ;// Rethrow 
 		}
 
-		catch( Exception e ){
+		catch( Throwable e ){
+			mLogger.catching(e);
 			logLocation(shell);
 			// Note: shell is the cloned shell ..
 			shell.printErr("Exception running: " +  cmdName + "\n" +  e.toString() );

@@ -7,10 +7,14 @@
 package org.xmlsh.sh.shell;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
 import static org.xmlsh.sh.shell.CharAttr.*;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.xmlsh.core.EvalEnv;
 import org.xmlsh.core.EvalFlag;
 import org.xmlsh.core.XValue;
@@ -21,7 +25,8 @@ import org.xmlsh.util.Util;
 public class ParseResult {
 	// Attribute'd char buffer
 	private CharAttributeBuffer    achars = null;
-
+ 
+	static Logger mLogger = LogManager.getLogger();
 
 	public static class RXValue {
 		public XValue         			xvalue;
@@ -322,15 +327,18 @@ public class ParseResult {
 		}
 
 		CharAttributeBuffer	wilds[] = av.split('/');
-		EvalUtils.expandDir( root == null ? curdir : new File(root) , 
-				parent , 
-				wilds , 
-				rs );
-
-
-		for( String f : rs ){
-			r.add( XValue.newXValue(f));
+		try {
+			EvalUtils.expandDir( root == null ? curdir : new File(root) , 
+					parent , 
+					wilds , 
+					rs );
+			for( String f : rs ){
+				r.add( XValue.newXValue(f));
+			}
+		} catch (IOException e) {
+			mLogger.catching(e);
 		}
+	
 
 		// If no matches then use arg explicitly
 		if( r.size() == 0)

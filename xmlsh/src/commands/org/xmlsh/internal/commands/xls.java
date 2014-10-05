@@ -6,9 +6,21 @@
 
 package org.xmlsh.internal.commands;
 
+
+
 import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.LinkOption;
+import java.nio.file.Path;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.attribute.PosixFilePermission;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
@@ -17,7 +29,11 @@ import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
+import org.xmlsh.posix.commands.ls.ListVisitor;
 import org.xmlsh.sh.shell.SerializeOpts;
+import org.xmlsh.util.FileListVisitor;
+import org.xmlsh.util.FileUtils;
+import org.xmlsh.util.PathMatchOptions;
 import org.xmlsh.util.Util;
 import org.xmlsh.util.XFile;
 
@@ -28,14 +44,18 @@ public class xls extends XCommand {
 	private boolean opt_R = false ;
 	private boolean opt_r = false ;
 	private boolean opt_l = false ;
+	private boolean opt_s = false ; // system
+
+	private Path curDir;
+
 	@Override
 	public int run(  List<XValue> args  )	throws Exception
 	{
-		Options opts = new Options("a=all,l=long,R=recurse,r=relative", SerializeOpts.getOptionDefs() );
+		Options opts = new Options("a=all,l=long,R=recurse,r=relative,s=system", SerializeOpts.getOptionDefs() );
 		opts.parse(args);
 		args = opts.getRemainingArgs();
 
-
+		curDir = getCurdir().toPath();
 
 
 		OutputPort stdout = getStdout();
@@ -45,6 +65,7 @@ public class xls extends XCommand {
 
 		String sDocRoot = "dir";
 		writer.writeStartElement(sDocRoot);
+		writer.writeAttribute("pwd", curDir.toString());
 
 
 		if( args == null )
@@ -56,6 +77,7 @@ public class xls extends XCommand {
 		opt_a = opts.hasOpt("a");
 		opt_R = opts.hasOpt("R");
 		opt_r = opts.hasOpt("r");
+		opt_s = opts.hasOpt("s");
 		int ret = 0;
 		for( XValue arg : args ){
 
@@ -67,12 +89,9 @@ public class xls extends XCommand {
 				ret++;
 				continue;
 			}
-			//			try {
-			list(writer, dir , true);
-			//			} catch (Exception e) {
-			//				System.out.println(e.getMessage());
-			//				e.printStackTrace();
-			//			}
+
+			Files.walkFileTree(dir.toPath(), new ListVisitor(dir.toPath(),
+					writer));
 		}
 		writer.writeEndElement();
 		writer.writeEndDocument();
@@ -84,38 +103,56 @@ public class xls extends XCommand {
 		return ret;
 	}
 
-	private void list(XMLStreamWriter writer, File dir, boolean top ) throws XMLStreamException {
-		if( !dir.isDirectory() ){
 
-			new XFile(dir).serialize(writer, opt_l, true, opt_r ? getEnv().getShell().getCurdir() : null);
-		} else {
+	class ListVisitor extends FileListVisitor {
 
-			if( ! top )
-				new XFile(dir).serialize(writer, opt_l, false, opt_r ? getEnv().getShell().getCurdir() : null);
+		XMLStreamWriter writer;
 
-
-			if( top || opt_R ){
-				File [] files =  dir.listFiles();
-
-				//smcs 30/9/2012 -- check that files is not null before working with it
-				if (files != null) {
-					Util.sortFiles(files);
-
-					for( File f : files ){
-
-						if( ! opt_a && f.getName().startsWith("."))
-							continue;
-
-						list( writer  , f , false );
-					}
-				}
-			}
-			if( ! top )
-				writer.writeEndElement();
+		public ListVisitor(Path root, XMLStreamWriter  writer) {
+			super(root, new PathMatchOptions(opt_R, opt_a, opt_s, false)  );
+			this.writer = writer;
 		}
+
+		@Override
+		public void visitFile( boolean root,Path path, BasicFileAttributes attrs) throws IOException{
+			try {
+				(new XFile(path)).serialize(writer,opt_l, true , curDir , mRoot );
+			} catch (XMLStreamException e) {
+				Util.wrapIOException(e);
+			}
+		}
+		@Override
+		public void enterDirectory(boolean root,Path path, BasicFileAttributes attrs)throws IOException {
+			try {
+				(new XFile(path)).serialize(writer,opt_l, false , curDir , mRoot );
+			} catch (XMLStreamException e) {
+				Util.wrapIOException(e);
+			}
+
+		}
+		@Override
+		public void exitDirectory(boolean root,Path dir )throws IOException {
+			try {
+				writer.writeEndElement();
+			} catch (XMLStreamException e) {
+				Util.wrapIOException(e);
+			}
+		}
+
+
+
+		@Override
+		public void error(String s, Exception e) {
+			printErr( s  , e);
+			
+		}
+
+
+
+
+
+
 	}
-
-
 
 }
 

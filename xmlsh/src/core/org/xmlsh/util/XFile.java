@@ -8,6 +8,16 @@ package org.xmlsh.util;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.FileSystem;
+import java.nio.file.Files;
+import java.nio.file.LinkOption;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.attribute.DosFileAttributes;
+import java.nio.file.attribute.PosixFileAttributes;
+import java.nio.file.attribute.PosixFilePermission;
+import java.util.Set;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
@@ -16,27 +26,30 @@ import org.apache.logging.log4j.Logger;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.util.FileUtils.UnifiedFileAttributes;
+import org.xmlsh.util.FileUtils.UnifiedFileAttributes.FileType;
 
 public class XFile /* implements XSerializble */ {
 	private static Logger mLogger = org.apache.logging.log4j.LogManager.getLogger( XFile.class);
-	private File mFile;
+	private Path mPath;
 
 
 	public XFile(Shell shell , XValue xv )
 	{
+		assert( xv != null);
 		if( xv.isXdmNode() ){
 			try {
 				xv = xv.xpath(shell, "/file/@path/string()");
 			} catch (UnexpectedException e) {
 				mLogger.debug("Ignoring exception converting xvalue to file",e);
 			}
-
 		}
-		mFile = new File(xv.toString());
+		assert( xv != null );
+		mPath = shell.getPath(xv);
 
 	}
-	public XFile(String path) {
-		this(new File(path));
+	public XFile(Path path) {
+		mPath = path ;
 	}
 
 	public XFile(String dir, String base) {
@@ -48,99 +61,88 @@ public class XFile /* implements XSerializble */ {
 	 * then ignore the directory
 	 */
 	private static File resolve(String dir, String base) {
-		File fbase = new File(base);
-		if( fbase.isAbsolute())
-			return fbase;
-		else
-			return new File(dir, base);
+		return resolvePath(dir,base).toFile();
 
 
 	}
+	private static Path resolvePath(String dir, String base) {
+		Path pdir = Paths.get(dir);
+		return pdir.resolve(base);
 
+
+	}
 	public XFile(String dir, String base, String ext) {
 		this(resolve(dir, base + ext));
 	}
 
 	public XFile(File file) {
-		mFile = file;
+		mPath = file.toPath();
 	}
 
 
 	public String getName() {
-		return FileUtils.toJavaPath(mFile.getName());
+		mLogger.entry(mPath);
+		assert( mPath != null);
+		Path pname = mPath.getFileName();
+		String fname = null ;
+		
+		if( pname == null ){
+			if( mPath.getNameCount() > 0)
+				pname = mPath.getName( mPath.getNameCount() - 1);
+			else
+				pname = mPath.getRoot();
+		}
 
+		assert( pname != null );
+		fname = pname.toString();
+		assert(! Util.isEmpty(fname) );
+		
+		String name = FileUtils.toJavaPath(fname);
+
+		return mLogger.exit(name) ;
 	}
 	public File getFile()
 	{
-		return mFile;
+		assert( mPath!= null);
+		return mPath.toFile();
 	}
 
+	public Path toPath(){
+		assert( mPath!= null);
+
+		return mPath;
+	}
 	public String getPath() {
 		try {
-			return FileUtils.toJavaPath(mFile.getCanonicalPath());
+			Path path = mPath.toRealPath(LinkOption.NOFOLLOW_LINKS);
+ 
+			if( path != null)
+			  return FileUtils.toJavaPath(path);
 		} catch (IOException e) {
-			return "";
+			mLogger.catching(e);
 		}
+		return "";
+
 	}
 
-	public String getRelpath(File relpath) {
-		try {
-			String relativeTo = FileUtils.toJavaPath(relpath.getCanonicalPath());
-			String absolutePath = FileUtils.toJavaPath(mFile.getCanonicalPath());
-			String[] absoluteDirectories = absolutePath.split("/");
-			String[] relativeDirectories = relativeTo.split("/");
-
-			int length = absoluteDirectories.length < relativeDirectories.length ? absoluteDirectories.length : relativeDirectories.length;
-			int lastCommonRoot = -1;
-			int index;
-
-			//Find common root
-			for (index = 0; index < length; index++)
-				if (absoluteDirectories[index].equals(relativeDirectories[index]))
-					lastCommonRoot = index;
-				else
-					break;
-
-			if (lastCommonRoot == -1)
-				return absolutePath;
-
-			//Build up the relative path
-			StringBuilder relativePath = new StringBuilder();
-			for (index = lastCommonRoot + 1; index < relativeDirectories.length; index++)
-				if (relativeDirectories[index].length() > 0)
-					relativePath.append("../");
-
-			//Add on the folders
-			for (index = lastCommonRoot + 1; index < absoluteDirectories.length - 1; index++)
-				relativePath.append(absoluteDirectories[index] + "/");
-			relativePath.append(absoluteDirectories[absoluteDirectories.length - 1]);
-
-			return relativePath.toString();
-		} catch (Exception e) {
-			return "";
-		}
+	public Path getRelpath(Path root) {
+		return root.relativize(toPath());
 	}
 
 	public String getDirName() {
-		String dir = FileUtils.toJavaPath(mFile.getParent());
-		return dir == null ? "." : dir;
+		String dir = FileUtils.toJavaPath(mPath.getParent());
+		return Util.isEmpty(dir) ? "." : dir;
 	}
 
 	public String getExt() {
-		String name = getName();
-		int slash = name.lastIndexOf( File.pathSeparatorChar);
-		int pos = name.lastIndexOf('.');
-		if (pos >= 0 && pos > slash )
-			return name.substring(pos);
-		else
-			return "";
+		return FileUtils.getExt(getName());
 
 	}
 
 	public String getBaseName() {
 		String name = getName();
 		int pos = name.lastIndexOf('.');
-		if (pos >= 0)
+		if (pos > 0) // .x  doessnt count
 			return name.substring(0, pos);
 		else
 			return name;
@@ -154,43 +156,78 @@ public class XFile /* implements XSerializble */ {
 			return name;
 	}
 
+	public void serialize(XMLStreamWriter writer, boolean all, boolean end, Path pwdRelative ) throws  XMLStreamException {
+
+		serialize(writer, all, end, pwdRelative, null);
+	}
+	
+	public 	Set<PosixFilePermission> getPosixFilePermissions(boolean followLinks)
+	{
+		return FileUtils.getPosixFilePermissions(toPath(), followLinks);
+	}
+	
+	public PosixFileAttributes  getPosixFileAttributes(boolean followLinks) {
+		return FileUtils.getPosixFileAttributes(toPath(),followLinks);
+	}
+	
+	public BasicFileAttributes  getBasicFileAttributes(boolean followLinks) {
+		return FileUtils.getBasicFileAttributes(toPath(),followLinks);
+	}
+	
+	public DosFileAttributes  getDosFileAttributes(boolean followLinks) {
+		return FileUtils.getDosFileAttributes(toPath(),followLinks);
+	}
+	public UnifiedFileAttributes  getFileAttributes(boolean followLinks) {
+		return FileUtils.getUnifiedFileAttributes(toPath(),followLinks);
+	}
+	
+	public void serialize(XMLStreamWriter writer, boolean all, boolean end, Path pwdRelative , Path rootRelative ) throws  XMLStreamException {
 
 
-	public void serialize(XMLStreamWriter writer, boolean all, boolean end, File relative ) throws  XMLStreamException {
-
-		writer.writeStartElement(mFile.isDirectory() ? "dir" : "file");
+		UnifiedFileAttributes attrs = FileUtils.getUnifiedFileAttributes(mPath, false );
+		
+		writer.writeStartElement(attrs.isDirectory() ? "dir" : "file");
 		writer.writeAttribute("name", getName());
-		writer.writeAttribute("path", relative != null ? getRelpath(relative) : getPath());
+		
+		
+		writer.writeAttribute("path", getPath() );
+		if(pwdRelative != null )
+			writer.writeAttribute("pwd-relpath", FileUtils.toJavaPath(pwdRelative.relativize(toPath()).toString()));
+		if( rootRelative != null )
+			writer.writeAttribute("relpath", FileUtils.toJavaPath(rootRelative.relativize(toPath()).toString()));
+
 		if( all ){
-
-
-			writer.writeAttribute("length", String.valueOf(mFile.length()));
-
-			writer.writeAttribute("type", mFile.isDirectory() ? "dir" : "file");
-			writer.writeAttribute("readable", mFile.canRead()? "true" : "false");
-			writer.writeAttribute("writable", mFile.canWrite()? "true" : "false");
-			writer.writeAttribute("executable", mFile.canExecute() ? "true" : "false");
-			writer.writeAttribute("mtime", Util.formatXSDateTime(mFile.lastModified()));
-
-
+			writer.writeAttribute("length", String.valueOf(attrs.size()));
+			
+			FileType type = attrs.getFileType();
+			
+			
+			writer.writeAttribute("type", type.toString() );
+			writer.writeAttribute("readable", attrs.canRead() ? "true" : "false");
+			writer.writeAttribute("writable", attrs.canWrite()? "true" : "false");
+			writer.writeAttribute("executable", attrs.canExecute() ? "true" : "false");
+			writer.writeAttribute("mtime", Util.formatXSDateTime(attrs.lastModifiedTime().toMillis()));
 
 		}
 		if( end )
 			writer.writeEndElement();
 	}
 
+	public boolean isDirectory() {
+		return Files.isDirectory(mPath, LinkOption.NOFOLLOW_LINKS);
+	}
 	public void serialize(XMLStreamWriter writer, boolean all, boolean end ) throws  XMLStreamException {
 		serialize(writer, all ,end, null);
 	}
 
 	public String noExtension() {
-		String	path = FileUtils.toJavaPath(mFile.getPath());
+		String	path = FileUtils.toJavaPath(getPath());
 		String  ext = getExt();
 		return path.substring(0 , path.length() - ext.length());
 
 	}
 	public String getPathName() {
-		return FileUtils.toJavaPath(mFile.getPath());
+		return FileUtils.toJavaPath(getPath());
 	}
 
 	/*

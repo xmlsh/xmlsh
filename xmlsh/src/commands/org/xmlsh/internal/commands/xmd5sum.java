@@ -10,6 +10,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.List;
 
 import javax.xml.stream.XMLStreamException;
@@ -17,14 +21,19 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.xmlsh.annotations.Command;
 import org.xmlsh.core.CoreException;
+import org.xmlsh.core.FileInputPort;
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
+import org.xmlsh.internal.commands.xls.ListVisitor;
 import org.xmlsh.sh.shell.SerializeOpts;
+import org.xmlsh.util.FileListVisitor;
 import org.xmlsh.util.FileUtils;
+import org.xmlsh.util.PathMatchOptions;
 import org.xmlsh.util.Util;
+import org.xmlsh.util.XFile;
 import org.xmlsh.util.commands.Checksum;
 
 @Command
@@ -34,30 +43,51 @@ public class xmd5sum extends XCommand {
 	private static final String sName = "name";
 	private static final String sMd5 = "md5";
 	private static final String sLen = "length";
+	private static final String sPath = "path";
+	private static final String sPwdRel = "pwd-relpath";
+	private static final String sRootRel = "relpath";
 	private static String sDocRoot = "xmd5";
+	private Path curDir;
+	private boolean opt_a;
+	private boolean opt_s;
 
 	@Override
 	public int run(List<XValue> args) throws Exception {
-		Options opts = new Options("b=binary,x=xml", SerializeOpts
+		Options opts = new Options("b=binary,x=xml,a=all,s=system", SerializeOpts
 				.getOptionDefs());
 		opts.parse(args);
 		args = opts.getRemainingArgs();
+		curDir = getCurdir().toPath();
 
 		XMLStreamWriter out = null;
 		OutputPort stdout = mShell.getEnv().getStdout();
 
-		SerializeOpts serializeOpts = getSerializeOpts(opts);
-
-		out = stdout.asXMLStreamWriter(serializeOpts);
+		setSerializeOpts(opts);
+		opt_a = opts.hasOpt("a");
+		opt_s = opts.hasOpt("s");
+		
+		
+		out = stdout.asXMLStreamWriter(getSerializeOpts());
 		out.writeStartDocument();
 		out.writeStartElement(sDocRoot);
+		out.writeAttribute("pwd",curDir.toString());
 
 		if (args.isEmpty())
 			args.add(XValue.newXValue("-"));
 
 		for (XValue arg : args) {
 
-			writeMD5(arg, out, serializeOpts);
+			String sArg = arg.toString();
+			if( sArg.equals("-") ||  Util.tryURL(sArg) != null )
+				  writeMD5( getInput(arg), sArg,  null, null , null , out );
+
+			else {
+			   File dir = getEnv().getShell().getFile(sArg);
+				Files.walkFileTree(dir.toPath(), new ListVisitor(dir.toPath(),
+						out));
+			} 
+			
+			 
 
 		}
 		out.writeEndElement();
@@ -65,51 +95,88 @@ public class xmd5sum extends XCommand {
 		out.flush();
 		out.close();
 
-		stdout.writeSequenceTerminator(serializeOpts);
+		stdout.writeSequenceTerminator(getSerializeOpts());
 
 		return 0;
 
 	}
 
-	private void writeMD5(XValue arg, XMLStreamWriter out,
-			SerializeOpts serializeOpts) throws CoreException, IOException,
-			XMLStreamException {
+	
+	
 
-		/*
-		 * Attempt to safely recurse if a file/directory
-		 */
-		String sArg = arg.toString();
-		URL url = Util.tryURL(sArg);
-		if (url == null) {
-			File file = mShell.getFile(arg);
-		
-			if (file != null && file.exists() && file.isDirectory() && file.canRead() ) {
-				String[] list;
-				try {
-					list = file.list();
-					for (String child : list){
-						// Use / not File.seperator so that we keep java paths
-						writeMD5(XValue.newXValue(sArg + "/" + child), out,
-								serializeOpts);
-					}
-				} catch (Exception e) {
-					mLogger.catching(e);
-					mShell.printErr("Error listing directory:"+  file.toString(),e );
-				}
-				
 
-				return;
-			}
 
+	class ListVisitor extends FileListVisitor {
+
+		XMLStreamWriter writer;
+
+		public ListVisitor(Path root, XMLStreamWriter  writer) {
+			super(root, new PathMatchOptions(true, opt_a, opt_s, false));
+			this.writer = writer;
 		}
 
-		InputPort inp = getInput(arg);
-		try (InputStream in = inp.asInputStream(serializeOpts)) {
+		@Override
+		public void visitFile( boolean root,Path path, BasicFileAttributes attrs)throws IOException {
+			if( ! attrs.isRegularFile() ){
+
+				printErr("Not a regular file: " + path.toString());
+				return ; 
+			}
+			if( ! Files.isReadable( path )){
+				
+				printErr("File not readable:  " + path.toString());
+				return ; 
+			}
+						
+			
+			try ( InputPort port = new FileInputPort( path.toFile() ) ){
+			   writeMD5(  port , path.getFileName().toString() ,  path.toString() , 
+					   curDir.relativize(path).toString() ,
+					   root ? null : mRoot.relativize(path).toString() , 
+					    writer );
+			} catch (CoreException | XMLStreamException e) {
+				Util.wrapIOException(e);
+			}
+		}
+		@Override
+		public void enterDirectory(boolean root,Path path, BasicFileAttributes attrs)throws IOException {
+
+		}
+		@Override
+		public void exitDirectory(boolean root,Path dir )throws IOException {
+		}
+
+
+
+		@Override
+		public void error(String s, Exception e) {
+			printErr( s  , e);
+			
+		}
+
+
+
+	}
+
+		
+
+		
+	private void writeMD5(InputPort inp , String name , String path , String pwdRel , String rootRel ,  XMLStreamWriter out ) throws CoreException, IOException,
+			XMLStreamException {
+
+		try (InputStream in = inp.asInputStream(getSerializeOpts())) {
 			Checksum cs = Checksum.calcChecksum(in);
 			out.writeStartElement(sFile);
-			String name = arg.toString();
 			if (!Util.isBlank(name))
 				out.writeAttribute(sName, FileUtils.toJavaPath(name));
+			if (!Util.isBlank(sPath))
+				out.writeAttribute(sPath, FileUtils.toJavaPath(path));
+			if (!Util.isBlank(pwdRel))
+				out.writeAttribute(sPwdRel, FileUtils.toJavaPath(pwdRel));
+			if (!Util.isBlank(rootRel))
+				out.writeAttribute(sRootRel, FileUtils.toJavaPath(rootRel));
+			
+			
 			out.writeAttribute(sMd5, cs.getMD5());
 			out.writeAttribute(sLen, String.valueOf(cs.getLength()));
 			out.writeEndElement();
@@ -117,6 +184,8 @@ public class xmd5sum extends XCommand {
 		}
 
 	}
+	
+	
 
 }
 
