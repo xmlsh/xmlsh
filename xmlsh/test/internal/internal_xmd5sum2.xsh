@@ -7,7 +7,7 @@ cp -r ../../samples/data $_DIR
 cd $_DIR || exit 1 ;
 rm -rf data/.svn
 
-xmd5sum data
+xmd5sum -r data
 
 cd $_D
 rm -rf $_DIR

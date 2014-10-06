@@ -16,6 +16,7 @@ public abstract class FileListVisitor extends SimpleFileVisitor<Path>
 {
 	protected Path mRoot;
 	protected PathMatchOptions mOptions;
+	private int mDepth = 0;
 	static Logger mLogger = LogManager.getLogger();
 	public abstract void error( String s , Exception e );
 	public abstract void visitFile( boolean root,Path dir, BasicFileAttributes attrs)throws IOException;
@@ -26,7 +27,6 @@ public abstract class FileListVisitor extends SimpleFileVisitor<Path>
 		
 		mLogger.entry(root, options );
 		mRoot = root;
-	 
 		mOptions = options;
 	}
 
@@ -34,11 +34,11 @@ public abstract class FileListVisitor extends SimpleFileVisitor<Path>
 	public FileVisitResult preVisitDirectory(Path dir,
 			BasicFileAttributes attrs) throws IOException {
 		
-		mLogger.entry(dir, attrs);
-		boolean isRoot = dir.equals(mRoot);
+		mLogger.entry(dir, mDepth , attrs);
+		boolean isRoot = mDepth == 0;
  
 
-		boolean bVisit = mOptions.doVisit(  dir  );
+		boolean bVisit = isRoot || mOptions.doVisit(  dir  );
 		boolean bExit = false ;
 		if( bVisit ){
 			try {
@@ -67,6 +67,7 @@ public abstract class FileListVisitor extends SimpleFileVisitor<Path>
 		} else
 			return mLogger.exit(FileVisitResult.SKIP_SUBTREE);
 
+		mDepth++;
 		return mLogger.exit(FileVisitResult.CONTINUE);
 	}
 
@@ -89,7 +90,7 @@ public abstract class FileListVisitor extends SimpleFileVisitor<Path>
 	final public FileVisitResult visitFileFailed(Path file, IOException exc)
 			throws IOException {
 		
-		mLogger.entry(file, exc);
+		mLogger.entry(file, mDepth, exc);
 		if( exc != null && exc instanceof java.nio.file.AccessDeniedException )
 			mLogger.info("Access denied accessing {} " , file , exc );
 		else
@@ -101,8 +102,10 @@ public abstract class FileListVisitor extends SimpleFileVisitor<Path>
 	final  public FileVisitResult postVisitDirectory(Path dir, IOException exc)
 			throws IOException {
 		
+		mLogger.entry(dir, mDepth , exc);
+		assert( mDepth > 0 );
 		mLogger.entry(dir, exc);
-	     	boolean isRoot = dir.equals(mRoot);
+	    boolean isRoot = --mDepth == 0;
 				  exitDirectory( isRoot , dir );
 				 return mLogger.exit( FileVisitResult.CONTINUE);
 	}

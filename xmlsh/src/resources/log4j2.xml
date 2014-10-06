@@ -55,6 +55,7 @@
 		</logger>
 		
 		 <Root level="ERROR">
+		  <MarkerFilter marker="CATCHING" onMatch="DENY" onMismatch="NEUTRAL"/>
             <AppenderRef ref="CONSOLE" level="ERROR"/>
 		 	  <!-- 
 		   <AppenderRef ref="SHELL" level="trace"/>

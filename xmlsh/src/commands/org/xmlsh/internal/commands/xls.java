@@ -31,6 +31,7 @@ import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.posix.commands.ls.ListVisitor;
 import org.xmlsh.sh.shell.SerializeOpts;
+import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.FileListVisitor;
 import org.xmlsh.util.FileUtils;
 import org.xmlsh.util.PathMatchOptions;
@@ -46,7 +47,6 @@ public class xls extends XCommand {
 	private boolean opt_l = false ;
 	private boolean opt_s = false ; // system
 
-	private Path curDir;
 
 	@Override
 	public int run(  List<XValue> args  )	throws Exception
@@ -55,7 +55,7 @@ public class xls extends XCommand {
 		opts.parse(args);
 		args = opts.getRemainingArgs();
 
-		curDir = getCurdir().toPath();
+		Path curDir = mShell.getCurPath();
 
 
 		OutputPort stdout = getStdout();
@@ -65,7 +65,7 @@ public class xls extends XCommand {
 
 		String sDocRoot = "dir";
 		writer.writeStartElement(sDocRoot);
-		writer.writeAttribute("pwd", curDir.toString());
+		writer.writeAttribute("pwd", FileUtils.toJavaPath(curDir.toString()));
 
 
 		if( args == null )
@@ -76,21 +76,22 @@ public class xls extends XCommand {
 		opt_l = opts.hasOpt("l");
 		opt_a = opts.hasOpt("a");
 		opt_R = opts.hasOpt("R");
-		opt_r = opts.hasOpt("r");
+		opt_r = opts.hasOpt("r");  // output relative to pwd path as path
 		opt_s = opts.hasOpt("s");
 		int ret = 0;
 		for( XValue arg : args ){
 
 			// Must go to Shell API to get raw files
 			String sArg = arg.toString();
-			File dir = getEnv().getShell().getFile(sArg);
-			if( dir == null ||  ! dir.exists() ){
+			Path path = getEnv().getShell().getPath(sArg);
+			if( path == null ||  ! Files.exists(path, LinkOption.NOFOLLOW_LINKS) ){
 				this.printErr("ls: cannot access " + sArg + " : No such file or directory" );
 				ret++;
 				continue;
 			}
 
-			Files.walkFileTree(dir.toPath(), new ListVisitor(dir.toPath(),
+			Files.walkFileTree(path, new ListVisitor(
+					Files.isDirectory(path,LinkOption.NOFOLLOW_LINKS ) ? path : Shell.getCurPath() ,
 					writer));
 		}
 		writer.writeEndElement();
@@ -115,16 +116,21 @@ public class xls extends XCommand {
 
 		@Override
 		public void visitFile( boolean root,Path path, BasicFileAttributes attrs) throws IOException{
+			
+			mLogger.entry(root, path, attrs);
 			try {
-				(new XFile(path)).serialize(writer,opt_l, true , curDir , mRoot );
+				(new XFile(path,mRoot)).serialize(writer,opt_l, true, opt_r);
 			} catch (XMLStreamException e) {
 				Util.wrapIOException(e);
 			}
 		}
 		@Override
 		public void enterDirectory(boolean root,Path path, BasicFileAttributes attrs)throws IOException {
+			
+			mLogger.entry(root, path, attrs);
 			try {
-				(new XFile(path)).serialize(writer,opt_l, false , curDir , mRoot );
+				if( ! root )
+				(new XFile(path,mRoot)).serialize(writer,opt_l, false, opt_r );
 			} catch (XMLStreamException e) {
 				Util.wrapIOException(e);
 			}
@@ -132,7 +138,10 @@ public class xls extends XCommand {
 		}
 		@Override
 		public void exitDirectory(boolean root,Path dir )throws IOException {
+			
+			mLogger.entry(root, dir);
 			try {
+				if( ! root )
 				writer.writeEndElement();
 			} catch (XMLStreamException e) {
 				Util.wrapIOException(e);

@@ -16,6 +16,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumSet;
@@ -394,7 +395,9 @@ public XVariable exportVar( String name ) throws InvalidArgumentException{
 	public File getCurdir() {
 		return mShell.getCurdir();
 	}
-
+	public Path getCurPath() {
+		return mShell.getCurPath();
+	}
 
 	/**
 	 * @param cd

@@ -26,12 +26,14 @@ import org.apache.logging.log4j.Logger;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.sh.shell.ShellThread;
 import org.xmlsh.util.FileUtils.UnifiedFileAttributes;
 import org.xmlsh.util.FileUtils.UnifiedFileAttributes.FileType;
 
 public class XFile /* implements XSerializble */ {
 	private static Logger mLogger = org.apache.logging.log4j.LogManager.getLogger( XFile.class);
 	private Path mPath;
+	private Path mCurdir;		// Current directory at time of creation
 
 
 	public XFile(Shell shell , XValue xv )
@@ -39,66 +41,66 @@ public class XFile /* implements XSerializble */ {
 		assert( xv != null);
 		if( xv.isXdmNode() ){
 			try {
-				xv = xv.xpath(shell, "/file/@path/string()");
+				xv = xv.xpath(shell, "/(file|dir)/@path/string()");
 			} catch (UnexpectedException e) {
 				mLogger.debug("Ignoring exception converting xvalue to file",e);
 			}
 		}
 		assert( xv != null );
-		mPath = shell.getPath(xv);
+		mCurdir = Shell.getCurPath().normalize();
+		Path path = Paths.get( xv.toString() );
+		mPath = path;
 
+	}
+	public XFile( Path dir , Path base ){
+		mPath =  base.resolve(dir);
+ 	    mCurdir = Shell.getCurPath();
+		
 	}
 	public XFile(Path path) {
 		mPath = path ;
+		mCurdir = Shell.getCurPath() ;
 	}
 
 	public XFile(String dir, String base) {
-		this(resolve(dir, base));
+		this( Paths.get(dir,base) );
 	}
 	/* 
 	 * Resolves a base against a directory
 	 * Similar to URI Resolution, if base is an absolute path
 	 * then ignore the directory
 	 */
-	private static File resolve(String dir, String base) {
-		return resolvePath(dir,base).toFile();
-
-
+	private static Path resolve(String dir, String base) {
+		return resolvePath( Paths.get(dir) , Paths.get(base) );
 	}
-	private static Path resolvePath(String dir, String base) {
-		Path pdir = Paths.get(dir);
+	
+	
+	private static Path resolvePath(Path pdir,  Path base) {
 		return pdir.resolve(base);
 
 
 	}
 	public XFile(String dir, String base, String ext) {
-		this(resolve(dir, base + ext));
+		this(Paths.get(dir), Paths.get(base + ext));
 	}
 
 	public XFile(File file) {
-		mPath = file.toPath();
+		this( file.toPath());
 	}
 
 
+	// Get the simple name 
 	public String getName() {
 		mLogger.entry(mPath);
 		assert( mPath != null);
-		Path pname = mPath.getFileName();
-		String fname = null ;
+		String name = mPath.getFileName().toString();
+		/*
+		if( mBasedir != null )
+			name =  mBasedir.relativize(mPath).toString();
+		if( name == null && mCurdir != null )
+			return mCurdir.relativize( mPath).toString();
+		*/
 		
-		if( pname == null ){
-			if( mPath.getNameCount() > 0)
-				pname = mPath.getName( mPath.getNameCount() - 1);
-			else
-				pname = mPath.getRoot();
-		}
-
-		assert( pname != null );
-		fname = pname.toString();
-		assert(! Util.isEmpty(fname) );
-		
-		String name = FileUtils.toJavaPath(fname);
-
 		return mLogger.exit(name) ;
 	}
 	public File getFile()
@@ -110,18 +112,16 @@ public class XFile /* implements XSerializble */ {
 	public Path toPath(){
 		assert( mPath!= null);
 
-		return mPath;
+		return mPath.normalize();
 	}
+	
+	// Get the full path name but dont try to turn into a real file 
 	public String getPath() {
-		try {
-			Path path = mPath.toRealPath(LinkOption.NOFOLLOW_LINKS);
- 
+			Path path = toPath();
 			if( path != null)
 			  return FileUtils.toJavaPath(path);
-		} catch (IOException e) {
-			mLogger.catching(e);
-		}
-		return "";
+			else
+				return "";
 
 	}
 
@@ -156,10 +156,6 @@ public class XFile /* implements XSerializble */ {
 			return name;
 	}
 
-	public void serialize(XMLStreamWriter writer, boolean all, boolean end, Path pwdRelative ) throws  XMLStreamException {
-
-		serialize(writer, all, end, pwdRelative, null);
-	}
 	
 	public 	Set<PosixFilePermission> getPosixFilePermissions(boolean followLinks)
 	{
@@ -181,7 +177,7 @@ public class XFile /* implements XSerializble */ {
 		return FileUtils.getUnifiedFileAttributes(toPath(),followLinks);
 	}
 	
-	public void serialize(XMLStreamWriter writer, boolean all, boolean end, Path pwdRelative , Path rootRelative ) throws  XMLStreamException {
+	public void serialize(XMLStreamWriter writer, boolean all, boolean end, boolean pathrel ) throws  XMLStreamException {
 
 
 		UnifiedFileAttributes attrs = FileUtils.getUnifiedFileAttributes(mPath, false );
@@ -189,14 +185,14 @@ public class XFile /* implements XSerializble */ {
 		writer.writeStartElement(attrs.isDirectory() ? "dir" : "file");
 		writer.writeAttribute("name", getName());
 		
-		
-		writer.writeAttribute("path", getPath() );
-		if(pwdRelative != null )
-			writer.writeAttribute("pwd-relpath", FileUtils.toJavaPath(pwdRelative.relativize(toPath()).toString()));
-		if( rootRelative != null )
-			writer.writeAttribute("relpath", FileUtils.toJavaPath(rootRelative.relativize(toPath()).toString()));
+		writer.writeAttribute("path", pathrel ? getPwdRelativeName() : getPath()  );
+
 
 		if( all ){
+			writer.writeAttribute("abspath",  getPath()  );
+
+			if(mCurdir != null )
+				writer.writeAttribute("relpath",getPwdRelativeName() );
 			writer.writeAttribute("length", String.valueOf(attrs.size()));
 			
 			FileType type = attrs.getFileType();
@@ -212,23 +208,24 @@ public class XFile /* implements XSerializble */ {
 		if( end )
 			writer.writeEndElement();
 	}
+	public String getPwdRelativeName() {
+		return FileUtils.toJavaPath(mCurdir.relativize(toPath()).toString());
+	}
 
 	public boolean isDirectory() {
 		return Files.isDirectory(mPath, LinkOption.NOFOLLOW_LINKS);
 	}
-	public void serialize(XMLStreamWriter writer, boolean all, boolean end ) throws  XMLStreamException {
-		serialize(writer, all ,end, null);
-	}
 
 	public String noExtension() {
-		String	path = FileUtils.toJavaPath(getPath());
+		String	path = FileUtils.toJavaPath( mPath.toString() );
 		String  ext = getExt();
 		return path.substring(0 , path.length() - ext.length());
 
 	}
 	public String getPathName() {
-		return FileUtils.toJavaPath(getPath());
+		return FileUtils.toJavaPath(mPath.toString());
 	}
+	
 
 	/*
 	 * 

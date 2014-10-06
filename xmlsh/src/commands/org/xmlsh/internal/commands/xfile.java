@@ -45,7 +45,7 @@ public class xfile extends XCommand
 	@Override
 	public int run(  List<XValue> args  )	throws Exception
 	{
-		Options opts = new Options("n=name,b=base,d=dir,a=all,c=conanical,e=extension,B=basename,N,s=sys,u=uri,r=rel",SerializeOpts.getOptionDefs());
+		Options opts = new Options("n=name,b=base,d=dir,a=absolute,c=conanical,e=extension,B=basename,N,s=sys,u=uri,r=rel",SerializeOpts.getOptionDefs());
 		opts.parse(args);
 		args = opts.getRemainingArgs();
 
@@ -90,13 +90,13 @@ public class xfile extends XCommand
 									out.println( xf.getExt());
 								else
 									if( opts.hasOpt("N"))
-										out.println(toSys( xf.getPathName(),opt_sys));
+										out.println(toSys( xf.getPath(),opt_sys));
 									else
 										if( opts.hasOpt("u"))
 											out.println( xf.getFile().toURI().toString());
 										else
 											if( opts.hasOpt("r"))
-												out.println( toSys(xf.getRelpath(mShell.getCurdir().toPath()).toString(),opt_sys));
+												out.println( toSys(xf.getPwdRelativeName(),opt_sys));
 											else
 												out.println( toSys(xf.getPath(),opt_sys));
 

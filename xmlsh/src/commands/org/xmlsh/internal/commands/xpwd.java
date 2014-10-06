@@ -40,7 +40,7 @@ public class xpwd extends XCommand
 
 		writer.writeStartDocument();
 
-		file.serialize(writer,false,false);
+		file.serialize(writer,false,false, false);
 
 		writer.writeEndDocument();
 		writer.close();

@@ -12,6 +12,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.List;
@@ -29,6 +30,7 @@ import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.internal.commands.xls.ListVisitor;
 import org.xmlsh.sh.shell.SerializeOpts;
+import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.FileListVisitor;
 import org.xmlsh.util.FileUtils;
 import org.xmlsh.util.PathMatchOptions;
@@ -44,20 +46,19 @@ public class xmd5sum extends XCommand {
 	private static final String sMd5 = "md5";
 	private static final String sLen = "length";
 	private static final String sPath = "path";
-	private static final String sPwdRel = "pwd-relpath";
-	private static final String sRootRel = "relpath";
 	private static String sDocRoot = "xmd5";
-	private Path curDir;
 	private boolean opt_a;
 	private boolean opt_s;
+	private boolean opt_r;
 
 	@Override
 	public int run(List<XValue> args) throws Exception {
-		Options opts = new Options("b=binary,x=xml,a=all,s=system", SerializeOpts
+		
+		mLogger.entry(args);
+		Options opts = new Options("b=binary,x=xml,a=all,s=system,r=relative", SerializeOpts
 				.getOptionDefs());
 		opts.parse(args);
 		args = opts.getRemainingArgs();
-		curDir = getCurdir().toPath();
 
 		XMLStreamWriter out = null;
 		OutputPort stdout = mShell.getEnv().getStdout();
@@ -65,26 +66,38 @@ public class xmd5sum extends XCommand {
 		setSerializeOpts(opts);
 		opt_a = opts.hasOpt("a");
 		opt_s = opts.hasOpt("s");
+		opt_r = opts.hasOpt("r");
 		
 		
 		out = stdout.asXMLStreamWriter(getSerializeOpts());
 		out.writeStartDocument();
 		out.writeStartElement(sDocRoot);
-		out.writeAttribute("pwd",curDir.toString());
+		
 
 		if (args.isEmpty())
 			args.add(XValue.newXValue("-"));
+		//else
+		//  out.writeAttribute("pwd",FileUtils.toJavaPath(curDir.toString()));
 
 		for (XValue arg : args) {
 
 			String sArg = arg.toString();
 			if( sArg.equals("-") ||  Util.tryURL(sArg) != null )
-				  writeMD5( getInput(arg), sArg,  null, null , null , out );
+				  writeMD5( getInput(arg), sArg, null,  out );
+
 
 			else {
-			   File dir = getEnv().getShell().getFile(sArg);
-				Files.walkFileTree(dir.toPath(), new ListVisitor(dir.toPath(),
-						out));
+
+				Path path = getEnv().getShell().getPath(sArg);
+				if( path == null ||  ! Files.exists(path, LinkOption.NOFOLLOW_LINKS) ){
+					this.printErr("xmd5sum: cannot access " + sArg + " : No such file or directory" );
+					continue;
+				}
+				
+				Files.walkFileTree(path, 
+					new ListVisitor(
+						Files.isDirectory(path,LinkOption.NOFOLLOW_LINKS ) ? path : Shell.getCurPath() ,
+								out));				
 			} 
 			
 			 
@@ -97,7 +110,7 @@ public class xmd5sum extends XCommand {
 
 		stdout.writeSequenceTerminator(getSerializeOpts());
 
-		return 0;
+		return mLogger.exit(0);
 
 	}
 
@@ -117,6 +130,8 @@ public class xmd5sum extends XCommand {
 
 		@Override
 		public void visitFile( boolean root,Path path, BasicFileAttributes attrs)throws IOException {
+			
+			mLogger.entry(root, path, attrs);
 			if( ! attrs.isRegularFile() ){
 
 				printErr("Not a regular file: " + path.toString());
@@ -130,10 +145,9 @@ public class xmd5sum extends XCommand {
 						
 			
 			try ( InputPort port = new FileInputPort( path.toFile() ) ){
-			   writeMD5(  port , path.getFileName().toString() ,  path.toString() , 
-					   curDir.relativize(path).toString() ,
-					   root ? null : mRoot.relativize(path).toString() , 
-					    writer );
+				XFile xf = new XFile(path,mRoot);
+				
+			   writeMD5(  port , xf.getName(), xf , writer );
 			} catch (CoreException | XMLStreamException e) {
 				Util.wrapIOException(e);
 			}
@@ -161,27 +175,31 @@ public class xmd5sum extends XCommand {
 		
 
 		
-	private void writeMD5(InputPort inp , String name , String path , String pwdRel , String rootRel ,  XMLStreamWriter out ) throws CoreException, IOException,
+	private void writeMD5(InputPort inp ,String name , XFile xf ,   XMLStreamWriter out ) throws CoreException, IOException,
 			XMLStreamException {
 
+		mLogger.entry(inp, xf,  out);
 		try (InputStream in = inp.asInputStream(getSerializeOpts())) {
 			Checksum cs = Checksum.calcChecksum(in);
 			out.writeStartElement(sFile);
-			if (!Util.isBlank(name))
-				out.writeAttribute(sName, FileUtils.toJavaPath(name));
-			if (!Util.isBlank(sPath))
-				out.writeAttribute(sPath, FileUtils.toJavaPath(path));
-			if (!Util.isBlank(pwdRel))
-				out.writeAttribute(sPwdRel, FileUtils.toJavaPath(pwdRel));
-			if (!Util.isBlank(rootRel))
-				out.writeAttribute(sRootRel, FileUtils.toJavaPath(rootRel));
+			out.writeAttribute(sName, name);
+			if( opt_r){
+			  if (xf != null && !Util.isBlank(xf.getPwdRelativeName()))
+				 out.writeAttribute(sPath,xf.getPwdRelativeName());
+			} else
+			{
+				  if (xf != null && !Util.isBlank( xf.getPath()))
+						 out.writeAttribute(sPath, xf.getPath());
 			
+			}
 			
 			out.writeAttribute(sMd5, cs.getMD5());
 			out.writeAttribute(sLen, String.valueOf(cs.getLength()));
 			out.writeEndElement();
 
 		}
+		
+		mLogger.exit();
 
 	}
 	

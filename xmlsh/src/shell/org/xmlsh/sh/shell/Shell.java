@@ -25,6 +25,7 @@ import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.ArrayList;
@@ -1186,9 +1187,11 @@ public class Shell implements AutoCloseable, Closeable {
 	/*
 	 * Current Directory
 	 */
-	public File getCurdir() {
+	public static File getCurdir() {
 		return new File(System.getProperty(ShellConstants.PROP_USER_DIR));
-
+	}
+	public static Path getCurPath() {
+		return Paths.get(System.getProperty(ShellConstants.PROP_USER_DIR));
 	}
 
 	public void setCurdir(File cd) throws IOException {
@@ -1305,15 +1308,11 @@ public class Shell implements AutoCloseable, Closeable {
 	
 	public Path getPath(String fname) {
 
-		Path dir = getCurpath();
+		Path dir = getCurPath();
 		return dir.resolve(fname);
 		
 	}
 
-	private Path getCurpath() {
-		File dir = getCurdir();
-		return dir.toPath();
-	}
 
 	public void shift(int num) {
 		num = Math.min(num, mArgs.size());
