@@ -5,6 +5,7 @@
      Edit these for every release
 -->
 	<property name="jar" value="xmlsh-test.jar"/>
+  <property name="jarfile" value="../bin/${jar}" />
 
 
 	
@@ -14,13 +15,13 @@
         </echo>
     </target>
 	
-	
 
 
 	
 	<target name="clean" description="Clean all">
 		  <delete includeEmptyDirs="true" quiet="true">
 		  	<fileset dir="_out" />
+		    <file name="${jarfile}"/>
 			
 		  </delete>
 	</target>
@@ -47,7 +48,7 @@
   <target name="jar" description="Build JAR - xmlsh-test.jar">
 		<mkdir dir="../bin"/>
         <jar 
-        jarfile="../bin/${jar}" 
+        jarfile="${jarfile}"
         basedir="_out" 
   
         />

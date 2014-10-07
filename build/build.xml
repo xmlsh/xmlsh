@@ -27,7 +27,7 @@
 
 
 	<target name="help">
-		<echo message="Usage: ant [help build clean]" />
+		<echo message="Usage: ant [help build clean clean install dist clean-all build-all build-deps]" />
 	</target>
 
 	<target name="build-deps">

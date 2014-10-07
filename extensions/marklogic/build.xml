@@ -37,8 +37,8 @@
 		</delete>
 	</target>
 
-	<target name="build" depends="compile"/>
-
+	<target name="build" depends="clean,compile,jar"/>
+	<target name="build-all" depends="build,dist"/>
 	<target name="compile" description="Compilation target">
 		<mkdir dir="_out" />
 
@@ -104,7 +104,7 @@
 
 
 	</target>
-	<target name="install" depends="install.check" if="install.exists" description="Install to modules">
+	<target name="install" depends="install.check,build-all" if="install.exists" description="Install to modules">
 	    <echo>Installing to ${install}</echo>
 		<copy todir="${install}" filtering="on">
 			<fileset dir="bin" includes="*.jar module.xml" />

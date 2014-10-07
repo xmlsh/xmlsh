@@ -13,15 +13,13 @@
 	<property name="xmlsh" location="../../xmlsh"/>
 	<tstamp prefix="bdate"/>
 	<property name="release" value="${bdate.DSTAMP}"/>
-	<property name="install" value="${env.XMODPATH}/aws"/>
+	<property name="install" value="${env.XINSTALL}/xmlsh_ext/aws"/>
 	<target name="install.check">
 			<condition property="install.exists">
 				<available file="${env.XINSTALL}" type="dir" />
 			</condition>
 		</target>
-	<property name="install" value="${env.XINSTALL}/xmlsh_ext/marklogic" />
 
-	<property name="install" value="${env.XMODPATH}/xmlsh_ext/aws" />
 	<target name="clean" description="Clean all">
 		<delete includeEmptyDirs="true" quiet="true">
 			<fileset dir="${dist}" includes="*"/>

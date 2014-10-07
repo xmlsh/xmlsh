@@ -46,8 +46,19 @@
 			<fileset dir="bin" includes="**/*" />
 			<fileset dir="." includes="xmlsh.log" />
 		</delete>
+		<subant target="clean">
+			<property name="xmlsh.root" value="${xmlsh.root}"/>
+			<dirset dir="test">
+				<include name="src"/>
+			</dirset>
+		</subant>
 	</target>
 
+	<target name="clobber" depends="clean,clean-generated" description="Clean and remove all generated and dependants">
+     <!-- delete build-lib -->
+  </target>
+    
+     
 	<target name="grammar" description="Build parser from javaCC grammar">
 		<javacc
 		    target="src/shell/org/xmlsh/sh/grammar/ShellParser.jj"
