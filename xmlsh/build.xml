@@ -21,11 +21,11 @@
             Building xmlsh
         </echo>
 	</target>
-	
+
 	<target name="install.check">
-			<condition property="install.exists">
-				<available file="${env.XINSTALL}" type="dir" />
-			</condition>
+		<condition property="install.exists">
+			<available file="${env.XINSTALL}" type="dir" />
+		</condition>
 	</target>
 	<property name="install" value="${env.XINSTALL}/xmlsh" />
 
@@ -48,7 +48,23 @@
 		</delete>
 	</target>
 
-	<target name="compile" description="Compilation target">
+	<target name="grammar" description="Build parser from javaCC grammar">
+		<javacc
+		    target="src/shell/org/xmlsh/sh/grammar/ShellParser.jj"
+		    outputdirectory="src/generated/org/xmlsh/sh/grammar"
+		    javacchome="build-lib"
+		    static="false"
+			jdkversion="1.7"
+			
+		/>
+	</target>
+	<target name="clean-generated" description="Clean generated files">
+		<delete includeEmptyDirs="false" quiet="false">
+			<fileset dir="src" includes="**/version.properties **/*.bak"/>
+			<fileset dir="src" includes="generated/org/xmlsh/sh/grammar/*.java"/>
+		</delete>
+	</target>
+	<target name="compile" depends="grammar" description="Compilation target">
 		<mkdir dir="_out"/>
 		<echo file="src/shell/org/xmlsh/sh/shell/version.properties" append="false">
 version.build_date=${bdate.datetime}
@@ -91,7 +107,7 @@ version.version=${version}
 				<include name="**/*.xsl"/>
 				<include name="**/*.xml"/>
 				<include name="**/*.xquery"/>
-                        </fileset>
+			</fileset>
 			<fileset dir="src/resources">
 				<include name="log4j2.xml"/>
 			</fileset>
@@ -99,10 +115,10 @@ version.version=${version}
 		</copy>
 
 	</target>
-	
 
-	
-	
+
+
+
 
 	<target name="jar" depends="compile" description="Build JAR - jar">
 		<mkdir dir="bin"/>
@@ -121,7 +137,7 @@ version.version=${version}
 				<include name="src"/>
 			</dirset>
 		</subant>
-		
+
 		<java 
   		classname="org.xmlsh.sh.shell.Shell"
   		fork="true"
@@ -184,13 +200,13 @@ version.version=${version}
 
 		</ant>
 	</target>
-	
+
 	<target name="install" depends="install.check,dist" if="install.exists" description="Install to xmlsh">
-	    <echo>Installing to ${install}</echo>
-        <unzip dest="${install}" src="${dist}/xmlsh_${release}.zip">
-        	<cutdirsmapper dirs="1"/>
-        </unzip>
-		
+		<echo>Installing to ${install}</echo>
+		<unzip dest="${install}" src="${dist}/xmlsh_${release}.zip">
+			<cutdirsmapper dirs="1"/>
+		</unzip>
+
 	</target>
 
 
