@@ -89,7 +89,6 @@ public class Options
 		void addValue( XValue v )
 		{
 			values.add(v);
-
 		}
 
 
@@ -103,7 +102,10 @@ public class Options
 		 * @return the arg
 		 */
 		public XValue getValue() {
-			return values.get(0);
+			if( values.isEmpty())
+				return null ;
+			else
+			  return values.get(0);
 		}
 
 		public List<XValue> getValues() {
@@ -402,13 +404,13 @@ public class Options
 		if( ov == null )
 			return null;
 		else
-			return ov.values.get(0);
+			return ov.getValue();
 	}
 
 	public XValue getOptValueRequired(String arg) throws InvalidArgumentException {
 		OptionValue ov = getOpt(arg);
 		if( ov != null )
-			return ov.values.get(0);
+			return ov.getValue();
 		throw new InvalidArgumentException("Required option: -" + arg );
 	}
 

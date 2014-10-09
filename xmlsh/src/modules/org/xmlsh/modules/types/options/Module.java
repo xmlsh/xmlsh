@@ -107,7 +107,7 @@ public class Module extends Types {
 	  public XValue run(Shell shell, List<XValue> args) throws Exception
 	  {
 		  if( args.size() !=2 ||! args.get(0).isInstanceOf( Options.class)){
-		    	usage(shell, "option");
+		    	usage(shell, "has-opt( options option-name");
 			    return XValue.newInstance(false);
 		    }
 		    
