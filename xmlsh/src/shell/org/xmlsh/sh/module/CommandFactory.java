@@ -172,15 +172,23 @@ public abstract class CommandFactory {
 		if (FileUtils.hasDirectory(name)) {
 
 			cmdFile = shell.getExplicitFile(name, true,true);
-			if (cmdFile == null && !name.endsWith(".exe"))
+			if (cmdFile == null && !name.endsWith(".exe")  && Util.isWindows())
 				cmdFile = shell.getExplicitFile(name + ".exe", true);
+			if (cmdFile == null && !name.endsWith(".bat")  && Util.isWindows())
+				cmdFile = shell.getExplicitFile(name + ".bat", true);
+			if (cmdFile == null && !name.endsWith(".cmd")  && Util.isWindows())
+				cmdFile = shell.getExplicitFile(name + ".cmd", true);
 		}
 
 		if (cmdFile == null) {
 			SearchPath path = shell.getExternalPath();
 			cmdFile = path.getFirstFileInPath(shell, name,true);
-			if (cmdFile == null && !name.endsWith(".exe"))
+			if (cmdFile == null && !name.endsWith(".exe") && Util.isWindows()  )
 				cmdFile = path.getFirstFileInPath(shell, name + ".exe",true);
+			if (cmdFile == null && !name.endsWith(".bat") && Util.isWindows()  )
+				cmdFile = path.getFirstFileInPath(shell, name + ".bat",true);
+			if (cmdFile == null && !name.endsWith(".cmd") && Util.isWindows()  )
+				cmdFile = path.getFirstFileInPath(shell, name + ".cmd",true);
 
 		}
 

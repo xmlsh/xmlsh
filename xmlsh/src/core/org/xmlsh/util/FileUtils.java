@@ -13,6 +13,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.FileStore;
+import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.LinkOption;
@@ -25,15 +26,14 @@ import java.nio.file.attribute.DosFileAttributeView;
 import java.nio.file.attribute.DosFileAttributes;
 import java.nio.file.attribute.FileAttributeView;
 import java.nio.file.attribute.FileOwnerAttributeView;
-import java.nio.file.attribute.FileTime;
 import java.nio.file.attribute.GroupPrincipal;
 import java.nio.file.attribute.PosixFileAttributeView;
 import java.nio.file.attribute.PosixFileAttributes;
 import java.nio.file.attribute.PosixFilePermission;
 import java.nio.file.attribute.UserDefinedFileAttributeView;
-import java.nio.file.attribute.UserPrincipal;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -43,17 +43,22 @@ import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.xmlsh.core.XValue;
+import org.xmlsh.posix.commands.ls.ListVisitor;
 import org.xmlsh.sh.module.CommandFactory;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.util.UnifiedFileAttributes.PathMatchOptions;
 
 
 public class FileUtils
 {
 
+	
 	static volatile Map<java.nio.file.FileStore,Collection<Class<? extends FileAttributeView> > > 
 	   sSupportedAttributes  = new HashMap<>();
 	
-	   
+	static LinkOption[] _pathFollowLinks = new LinkOption[] { LinkOption.NOFOLLOW_LINKS } ;
+	static LinkOption[] _pathNoFollowLinks = new LinkOption[0] ;
+	
 
 	static Logger mLogger = LogManager.getLogger();
 	public static String getNullFilePath() {
@@ -93,18 +98,29 @@ public class FileUtils
 	}
 
 	
+	public static Comparator<Path> alphaPathComparator() {
+		return new Comparator<Path>(){
+	
+			@Override
+			public int compare(Path o1, Path o2) {
+				// Default use Path compareTo
+				return o1.compareTo(o2);
+				
+			}
+		
+		};
+	}
 	public static Set<PosixFilePermission> getPosixFilePermissions(Path path, boolean followLink ) {
 		if( supportsAttributeView(path, PosixFileAttributeView.class)){
 			try {
 				return 
-						Files.getPosixFilePermissions(path,
-						  LinkOption.NOFOLLOW_LINKS );
+						Files.getPosixFilePermissions(path, pathLinkOptions(followLink));
 			} catch (IOException e) {
 				mLogger.catching(e);
 			}
 		}
 
-		return emulatePosixFilePermissions(path);
+		return emulatePosixFilePermissions(path,followLink);
 		
 	}
 	
@@ -112,9 +128,10 @@ public class FileUtils
 	public static <A extends BasicFileAttributes, V extends BasicFileAttributeView> A
 	      getFileAttributes( Path path , Class<A> attrClass , Class<V> viewClass , boolean followLinks) {
 		
+		// Returns null instead of exception 
 		   if( supportsAttributeView(path, viewClass)){
 			   try {
-					A attrs = Files.readAttributes(path, attrClass, LinkOption.NOFOLLOW_LINKS);
+					A attrs = Files.readAttributes(path, attrClass, pathLinkOptions(followLinks));
 					if( attrs != null )
 						return attrs;
 				} catch (IOException e) {
@@ -124,7 +141,16 @@ public class FileUtils
 		   return null;
 	}
 	
-   public static PosixFileAttributes getPosixFileAttributes(Path path, boolean followLinks ) {
+   public static LinkOption[] pathLinkOptions(boolean followLinks) {
+
+	   if( followLinks )
+		   return _pathFollowLinks ;
+	   else
+		   return _pathNoFollowLinks ;
+	   
+   
+   }
+    public static PosixFileAttributes getPosixFileAttributes(Path path, boolean followLinks ) {
 	   return getFileAttributes(path,PosixFileAttributes.class,PosixFileAttributeView.class,followLinks);
 	}
 	
@@ -133,140 +159,25 @@ public class FileUtils
    }
    
    public static DosFileAttributes getDosFileAttributes(Path path, boolean followLinks ) {
-	   return getFileAttributes(path,DosFileAttributes.class,DosFileAttributeView.class,followLinks);
+	   DosFileAttributes dos =  getFileAttributes(path,DosFileAttributes.class,DosFileAttributeView.class,followLinks);
+	   return dos ;
+   
    }
 
-   public static class UnifiedFileAttributes {
-	   public static enum FileType {
-		   FILE("file"),
-		   DIRECTORY("dir"),
-		   SYMLINK("link"),
-		   OTHER("other") ;
-		   
-		   private String name;
-		   FileType( String name){
-			   this.name = name ;
-		   }
-		   
-		   public String toString() 
-		   { 
-		      return name ;
-		   }
-	   };
-	  
-
-	   public PosixFileAttributes  posix;
-	   public BasicFileAttributes  basic;
-	   public DosFileAttributes    dos ;
-	   private Set<PosixFilePermission>  posixPermissions;
-	   private Path mPath ;
-	   
-	   
-	public UnifiedFileAttributes(Path path, boolean followLinks) {
-		mPath = path;
-		   posix = getPosixFileAttributes( path , followLinks );
-		   dos   = getDosFileAttributes( path , followLinks );
-		   if( posix != null ){
-			   basic = posix ;
-			   posixPermissions = posix.permissions();
-		   }
-		   else
-		   if( dos != null )
-			   basic = dos  ;
-		   else
-			   basic =  getBasicFileAttributes( path , followLinks );
-	 
-		   if(posixPermissions  == null ){
-			   posixPermissions= emulatePosixFilePermissions(path);
-		   }
-		   
-		   
-	}
-	public UserPrincipal owner() {
-		return posix.owner();
-	}
-	public FileTime lastModifiedTime() {
-		return basic.lastModifiedTime();
-	}
-	public FileTime lastAccessTime() {
-		return basic.lastAccessTime();
-	}
-	public FileTime creationTime() {
-		return basic.creationTime();
-	}
-	public boolean isRegularFile() {
-		return basic.isRegularFile();
-	}
-	public boolean isDirectory() {
-		return basic.isDirectory();
-	}
-	public boolean isSymbolicLink() {
-		return basic.isSymbolicLink();
-	}
-	public boolean isOther() {
-		return basic.isOther();
-	}
-	public long size() {
-		return basic.size();
-	}
-	public Object fileKey() {
-		return basic.fileKey();
-	}
-	public boolean isArchive() {
-		return dos.isArchive();
-	}
-	public boolean isSystem() {
-		return dos.isSystem();
-	}
-	public Set<PosixFilePermission> getPermissions() {
-		return posixPermissions;
-	}
-	
-	public boolean isHidden() {
-
-		if( dos != null && dos.isHidden())
-			return true ;
-		return FileUtils.isHidden( mPath );
-		
-	}
-	
-	public FileType  getFileType() {
-		if( isDirectory() )
-			return FileType.DIRECTORY ;
-		if( isRegularFile() )
-			return FileType.FILE ;
-		if( isOther() )
-			return FileType.OTHER ;
-		if( isSymbolicLink())
-			return FileType.SYMLINK ;
-		return FileType.OTHER ;
-	}
-	public boolean canRead() {
-		return Files.isReadable(mPath);
-	}
-	public boolean canWrite() {
-		return Files.isWritable(mPath);
-
-	}
-	public boolean canExecute() {
-		return Files.isExecutable(mPath);
-
-	}
-	
-	   
-	   
-	   
-   };
-   
    public static UnifiedFileAttributes getUnifiedFileAttributes(Path path, boolean followLinks)
    {
-	   
 	  return  new UnifiedFileAttributes(path, followLinks );
-	
 	   
    }
-   protected static Set<PosixFilePermission> emulatePosixFilePermissions(Path path ) {
-	Set<PosixFilePermission> perms = EnumSet
+   
+	public static UnifiedFileAttributes getUnifiedFileAttributes(Path path,
+			BasicFileAttributes attrs, boolean followLinks) {
+		  return  new UnifiedFileAttributes(path, attrs , followLinks );
+
+	}
+   protected static Set<PosixFilePermission> emulatePosixFilePermissions(Path path, boolean followLinks ) {
+	   
+	   Set<PosixFilePermission> perms = EnumSet
 				.noneOf(PosixFilePermission.class);
 		if (Files.isReadable(path))
 			perms.add(PosixFilePermission.OWNER_READ);
@@ -428,6 +339,10 @@ public class FileUtils
 						set.add(UserDefinedFileAttributeView.class);
 					if( store.supportsFileAttributeView(PosixFileAttributeView.class))
 						set.add(PosixFileAttributeView.class);
+					if( store.supportsFileAttributeView(DosFileAttributeView.class))
+						set.add(DosFileAttributeView.class);
+					
+					
 				}
 				synchronized( sSupportedAttributes ){
 					sSupportedAttributes.put( store ,  set );
@@ -463,23 +378,14 @@ public class FileUtils
 		return mLogger.exit("");
 		
 	}
-	public static boolean isHidden(Path path) {
-		try {
-			if(  path == null || Files.isHidden(path) )
-				return true ;
-			// Specical check on windows 
-			if( Util.isWindows() ){
-				int names =  path.getNameCount() ;
-				if( names > 0 &&   path.getName(names-1).toString().startsWith(".") )
-					return true ;
-				return false ;
-			}
-		} catch (Throwable e) {
-			mLogger.catching(e);;
+	/* IsHidden by name only - do Not check file attributes */
 	
-		}
-		return false ;
+	public static boolean isHiddenName(Path path) {
+			if(  path == null  )
+				return true ;
+			return path.getFileName().toString().startsWith(".");
 	}
+	
 	public static boolean isSystem(Path path) {
 		DosFileAttributes view = getDosFileAttributes(path, false);
 		if( view == null )
@@ -487,6 +393,15 @@ public class FileUtils
 		return view.isSystem();
 		
 	}
+	
+	/*
+	 * Our own version of a FileTreeWalker that is sortable and doesnt follow links
+	 */
+	public static <V extends IPathTreeVisitor>  void walkPathTree( Path start , boolean recursive , V visitor, PathMatchOptions options ) throws IOException {
+		(new PathTreeWalker( start , recursive , options )).walk(visitor);
+		
+	}
+
 	
 }
 

@@ -9,6 +9,7 @@ package org.xmlsh.posix.commands;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.file.FileVisitResult;
 import java.nio.file.FileVisitor;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
@@ -18,8 +19,12 @@ import java.nio.file.attribute.PosixFilePermission;
 import java.nio.file.attribute.PosixFilePermissions;
 
 import static java.nio.file.attribute.PosixFilePermission.*;
+import static org.xmlsh.util.UnifiedFileAttributes.MatchFlag.*;
+
+import org.xmlsh.util.UnifiedFileAttributes.PathMatchOptions;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -31,10 +36,15 @@ import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
+import org.xmlsh.internal.commands.xls.ListVisitor;
 import org.xmlsh.sh.shell.SerializeOpts;
-import org.xmlsh.util.FileListVisitor;
+import org.xmlsh.util.IPathTreeVisitor;
+import org.xmlsh.util.PathTreeVisitor;
 import org.xmlsh.util.FileUtils;
-import org.xmlsh.util.PathMatchOptions;
+import org.xmlsh.util.UnifiedFileAttributes;
+
+import static org.xmlsh.util.UnifiedFileAttributes.MatchFlag.*;
+
 import org.xmlsh.util.Util;
 import org.xmlsh.util.XFile;
 
@@ -87,15 +97,17 @@ public class ls extends XCommand {
 				ret++;
 				continue;
 			}
-			if (!dir.canRead()) {
-				printErr("ls: cannot read " + sArg);
-				ret++;
-				continue;
+			FileUtils.walkPathTree(dir.toPath(),  
+					opt_R , 
+					new ListVisitor(writer),
+					(new PathMatchOptions()).
+					   withFlag( HIDDEN_SYS , opt_a ).
+					   withFlag( HIDDEN_NAME , opt_a ).
+					   withFlag( SYSTEM  , opt_s )
 
-			}
-			Path root = dir.isDirectory() ? dir.toPath() : dir.getParentFile().toPath();
 
-			Files.walkFileTree(dir.toPath(), new ListVisitor(root ,writer));
+					
+					);
 
 		}
 		// writer.write(serializeOpts.getSequence_term());
@@ -104,51 +116,66 @@ public class ls extends XCommand {
 		return ret;
 	}
 
-	public  class ListVisitor extends FileListVisitor {
+	public  class ListVisitor implements IPathTreeVisitor {
 
 		PrintWriter writer;
 
-		public ListVisitor(Path root, PrintWriter writer) {
-			super(root, new PathMatchOptions(opt_R, opt_a, opt_s, false) );
+		public ListVisitor( PrintWriter writer) {
 			this.writer = writer;
 		}
 
+
 		@Override
-		public void visitFile( boolean root,Path path, BasicFileAttributes attrs)throws IOException {
+		public FileVisitResult enterDirectory(Path root, Path directory,
+				UnifiedFileAttributes attrs) {
+			return FileVisitResult.CONTINUE;
+		}
+
+		@Override
+		public FileVisitResult exitDirectory(Path root, Path directory,
+				UnifiedFileAttributes attrs) {
+			return FileVisitResult.CONTINUE;
+		}
+
+		@Override
+		public FileVisitResult visitDirectory(Path root, Path directory,
+				UnifiedFileAttributes attrs) throws IOException {
+			if( root.equals(directory))
+				return FileVisitResult.CONTINUE;
 			if (opt_l)
-				writeFlags(path, attrs);
-			writer.write(mRoot.relativize(path).toString());
+				writeFlags(directory, attrs);
+			writer.write(FileUtils.toJavaPath(root.relativize(directory).toString()));
 			writer.write(getSerializeOpts().getSequence_sep());
-
+			return FileVisitResult.CONTINUE;
 		}
+
 		@Override
-		public void enterDirectory(boolean root,Path path, BasicFileAttributes attrs)throws IOException {
-			if( root )
-				return ;
+		public FileVisitResult visitFile(Path root, Path path,
+				UnifiedFileAttributes uattrs) throws IOException {
 			if (opt_l)
-				writeFlags(path, attrs);
-			writer.write(mRoot.relativize(path).toString());
+				writeFlags(path, uattrs);
+			if( path.equals(root))
+			   writer.write(FileUtils.toJavaPath(path.getFileName().toString()));
+			else
+				writer.write(FileUtils.toJavaPath(root.relativize(path).toString()));
+
+			
 			writer.write(getSerializeOpts().getSequence_sep());
-
-		}
-		@Override
-		public void exitDirectory(boolean root,Path dir )throws IOException {
-			
+			return FileVisitResult.CONTINUE ;
 		}
 
-			
 
-		private void writeFlags(Path path, BasicFileAttributes attrs)
+		private void writeFlags(Path path, UnifiedFileAttributes uattrs)
 				throws IOException {
 			StringBuffer flags = new StringBuffer();
 			Set<PosixFilePermission> perms = FileUtils.getPosixFilePermissions(path,false);
 			
 
-			flags.append(attrs.isDirectory() ? "d" : "-");
+			flags.append(uattrs.isDirectory() ? "d" : "-");
 			flags.append( PosixFilePermissions.toString( perms ) );
 			flags.append(" ");
 
-			long len = attrs.size();
+			long len = uattrs.size();
 			String slen = String.valueOf(len);
 			slen = String.format("%1$10s", slen);
 			flags.append(slen);
@@ -163,14 +190,11 @@ public class ls extends XCommand {
 
 		}
 
-
-
-		@Override
+		
 		public void error(String s, Exception e) {
 			printErr( s  , e);
 			
 		}
-
 
 
 

@@ -27,14 +27,13 @@ import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.sh.shell.ShellThread;
-import org.xmlsh.util.FileUtils.UnifiedFileAttributes;
-import org.xmlsh.util.FileUtils.UnifiedFileAttributes.FileType;
+import org.xmlsh.util.UnifiedFileAttributes.FileType;
 
 public class XFile /* implements XSerializble */ {
 	private static Logger mLogger = org.apache.logging.log4j.LogManager.getLogger( XFile.class);
 	private Path mPath;
 	private Path mCurdir;		// Current directory at time of creation
-
+    private UnifiedFileAttributes mAttrs;
 
 	public XFile(Shell shell , XValue xv )
 	{
@@ -52,7 +51,12 @@ public class XFile /* implements XSerializble */ {
 		mPath = path;
 
 	}
-	public XFile( Path dir , Path base ){
+
+	public XFile( Path dir , Path base ,UnifiedFileAttributes attrs ){
+		this(dir,base);
+		mAttrs = attrs;
+	}
+	public XFile( Path dir , Path base  ){
 		mPath =  base.resolve(dir);
  	    mCurdir = Shell.getCurPath();
 		
@@ -61,7 +65,11 @@ public class XFile /* implements XSerializble */ {
 		mPath = path ;
 		mCurdir = Shell.getCurPath() ;
 	}
-
+	public XFile(Path path, UnifiedFileAttributes attrs) {
+		this( path );
+		mAttrs = attrs ;
+	
+	}
 	public XFile(String dir, String base) {
 		this( Paths.get(dir,base) );
 	}
@@ -159,22 +167,24 @@ public class XFile /* implements XSerializble */ {
 	
 	public 	Set<PosixFilePermission> getPosixFilePermissions(boolean followLinks)
 	{
-		return FileUtils.getPosixFilePermissions(toPath(), followLinks);
+		return getFileAttributes(followLinks).getPermissions();
 	}
 	
 	public PosixFileAttributes  getPosixFileAttributes(boolean followLinks) {
-		return FileUtils.getPosixFileAttributes(toPath(),followLinks);
+		return getFileAttributes(followLinks).getPosix();
 	}
 	
 	public BasicFileAttributes  getBasicFileAttributes(boolean followLinks) {
-		return FileUtils.getBasicFileAttributes(toPath(),followLinks);
+		return getFileAttributes(followLinks).getBasic();
 	}
 	
 	public DosFileAttributes  getDosFileAttributes(boolean followLinks) {
-		return FileUtils.getDosFileAttributes(toPath(),followLinks);
+		return getFileAttributes(followLinks).getDos();
 	}
 	public UnifiedFileAttributes  getFileAttributes(boolean followLinks) {
-		return FileUtils.getUnifiedFileAttributes(toPath(),followLinks);
+		if( mAttrs == null )
+		  mAttrs = FileUtils.getUnifiedFileAttributes(toPath(),followLinks);
+		return mAttrs;
 	}
 	
 	public void serialize(XMLStreamWriter writer, boolean all, boolean end, boolean pathrel ) throws  XMLStreamException {

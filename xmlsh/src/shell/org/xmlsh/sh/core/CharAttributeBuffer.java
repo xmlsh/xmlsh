@@ -117,8 +117,8 @@ public class CharAttributeBuffer
 
 	@Override
 	public String toString( ) {
-		return  new String( charArray , 0 , length );
-	}
+		return new String( charArray , 0 , length );
+     }
 
 	public String decodeString( CharAttributeDecoder decoder ) {
 		StringBuilder sb = new StringBuilder(length);
@@ -126,6 +126,23 @@ public class CharAttributeBuffer
 			decoder.decode( sb , charArray[i] , attrArray[i] );
 		
 		return sb.toString();
+	}
+	
+	public static CharAttributeDecoder defaultDecoder() {
+		
+     return new 	
+	CharAttributeDecoder(){
+		@Override
+		public void decode(StringBuilder sb, char ch, byte attrs) {
+			if( (attrs & CharAttr.ATTR_ESCAPED.toBit() ) !=0 )
+				sb.append('\\');
+			sb.append(ch);
+		}};
+		
+	}
+	
+	public String decodeString() {
+		return decodeString( defaultDecoder() );
 	}
 
 

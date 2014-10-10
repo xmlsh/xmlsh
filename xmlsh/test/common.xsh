@@ -21,3 +21,8 @@ function error() {
   echo loc() "$@" >(error)
   log "error in " loc() "$@"
 }
+
+function die() {
+   error "$@" 
+   exit 1
+}

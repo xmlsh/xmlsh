@@ -8,6 +8,9 @@ package org.xmlsh.internal.commands;
 
 
 
+import static org.xmlsh.util.UnifiedFileAttributes.MatchFlag.HIDDEN_NAME;
+import static org.xmlsh.util.UnifiedFileAttributes.MatchFlag.HIDDEN_SYS;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -17,6 +20,7 @@ import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.PosixFilePermission;
+import java.nio.file.attribute.PosixFilePermissions;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -32,9 +36,13 @@ import org.xmlsh.core.XValue;
 import org.xmlsh.posix.commands.ls.ListVisitor;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.util.FileListVisitor;
+import org.xmlsh.util.IPathTreeVisitor;
+import org.xmlsh.util.PathTreeVisitor;
 import org.xmlsh.util.FileUtils;
-import org.xmlsh.util.PathMatchOptions;
+import org.xmlsh.util.UnifiedFileAttributes;
+import static org.xmlsh.util.UnifiedFileAttributes.MatchFlag.*;
+import org.xmlsh.util.UnifiedFileAttributes.PathMatchOptions;
+
 import org.xmlsh.util.Util;
 import org.xmlsh.util.XFile;
 
@@ -90,9 +98,16 @@ public class xls extends XCommand {
 				continue;
 			}
 
-			Files.walkFileTree(path, new ListVisitor(
-					Files.isDirectory(path,LinkOption.NOFOLLOW_LINKS ) ? path : Shell.getCurPath() ,
-					writer));
+			FileUtils.walkPathTree(path,  
+					opt_R , 
+					new ListVisitor(writer),
+					(new PathMatchOptions()).
+					   withFlag( HIDDEN_SYS , opt_a ).
+					   withFlag( HIDDEN_NAME , opt_a ).
+					   withFlag( SYSTEM  , opt_s )
+					
+					);
+			
 		}
 		writer.writeEndElement();
 		writer.writeEndDocument();
@@ -105,7 +120,69 @@ public class xls extends XCommand {
 	}
 
 
-	class ListVisitor extends FileListVisitor {
+	public  class ListVisitor implements IPathTreeVisitor {
+
+		XMLStreamWriter writer;
+
+		public ListVisitor( XMLStreamWriter writer) {
+			this.writer = writer;
+		}
+
+
+		@Override
+		public FileVisitResult enterDirectory(Path root, Path directory,
+				UnifiedFileAttributes attrs) {
+			
+			return FileVisitResult.CONTINUE;
+		}
+
+		@Override
+		public FileVisitResult exitDirectory(Path root, Path directory,
+				UnifiedFileAttributes attrs) {
+			return FileVisitResult.CONTINUE;
+		}
+
+		@Override
+		public FileVisitResult visitDirectory(Path root, Path directory,
+				UnifiedFileAttributes uattrs) throws IOException {
+			mLogger.entry(root, directory, uattrs);
+			if( root.equals(directory))
+				return FileVisitResult.CONTINUE;
+			try {
+				(new XFile(directory,uattrs)).serialize(writer,opt_l, true, opt_r);
+			} catch (XMLStreamException e) {
+				Util.wrapIOException(e);
+			}
+			return FileVisitResult.CONTINUE;
+		}
+
+		
+		@Override
+		public FileVisitResult visitFile(Path root, Path path,
+				UnifiedFileAttributes uattrs) throws IOException {
+			mLogger.entry(root, path, uattrs);
+			try {
+				(new XFile(path,uattrs)).serialize(writer,opt_l, true, opt_r);
+			} catch (XMLStreamException e) {
+				Util.wrapIOException(e);
+			}
+			
+			return FileVisitResult.CONTINUE ;
+		}
+
+
+
+		
+		public void error(String s, Exception e) {
+			printErr( s  , e);
+			
+		}
+
+
+
+	}
+/*
+	class ListVisitor extends PathTreeVisitor {
 
 		XMLStreamWriter writer;
 
@@ -162,7 +239,7 @@ public class xls extends XCommand {
 
 
 	}
-
+*/
 }
 
 //

@@ -31,9 +31,13 @@ import org.xmlsh.core.XValue;
 import org.xmlsh.internal.commands.xls.ListVisitor;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.util.FileListVisitor;
+import org.xmlsh.util.IPathTreeVisitor;
+import org.xmlsh.util.PathTreeVisitor;
 import org.xmlsh.util.FileUtils;
-import org.xmlsh.util.PathMatchOptions;
+import org.xmlsh.util.UnifiedFileAttributes;
+import org.xmlsh.util.UnifiedFileAttributes.PathMatchOptions;
+import static org.xmlsh.util.UnifiedFileAttributes.MatchFlag.*;
+
 import org.xmlsh.util.Util;
 import org.xmlsh.util.XFile;
 import org.xmlsh.util.commands.Checksum;
@@ -93,11 +97,19 @@ public class xmd5sum extends XCommand {
 					this.printErr("xmd5sum: cannot access " + sArg + " : No such file or directory" );
 					continue;
 				}
+			
 				
-				Files.walkFileTree(path, 
-					new ListVisitor(
-						Files.isDirectory(path,LinkOption.NOFOLLOW_LINKS ) ? path : Shell.getCurPath() ,
-								out));				
+
+				FileUtils.walkPathTree(path,  
+						true , 
+						new ListVisitor(out),
+						(new PathMatchOptions()).
+						   withFlagHidden( HIDDEN_SYS , opt_a ).
+						   withFlagHidden( HIDDEN_NAME , opt_a ).
+						   withFlagHidden( HIDDEN_SYS , opt_s )
+						
+						);
+			
 			} 
 			
 			 
@@ -114,12 +126,82 @@ public class xmd5sum extends XCommand {
 
 	}
 
+
+	public  class ListVisitor implements IPathTreeVisitor {
+
+		XMLStreamWriter writer;
+
+		public ListVisitor( XMLStreamWriter writer) {
+			this.writer = writer;
+		}
+
+
+		@Override
+		public FileVisitResult enterDirectory(Path root, Path directory,
+				UnifiedFileAttributes attrs) {
+			
+			return FileVisitResult.CONTINUE;
+		}
+
+		@Override
+		public FileVisitResult exitDirectory(Path root, Path directory,
+				UnifiedFileAttributes attrs) {
+			return FileVisitResult.CONTINUE;
+		}
+
+		@Override
+		public FileVisitResult visitDirectory(Path root, Path directory,
+				UnifiedFileAttributes uattrs) throws IOException {
+			mLogger.entry(root, directory, uattrs);
+				return FileVisitResult.CONTINUE;
+		}
+
+		
+		@Override
+		public FileVisitResult visitFile(Path root, Path path,
+				UnifiedFileAttributes attrs) throws IOException {
+			mLogger.entry(root, path, attrs);
+			
+			if( ! attrs.isRegularFile() ){
+
+				printErr("Not a regular file: " + path.toString());
+				return FileVisitResult.CONTINUE ; 
+			}
+			if( ! Files.isReadable( path )){
+				
+				printErr("File not readable:  " + path.toString());
+				return FileVisitResult.CONTINUE;
+			}
+						
+			
+			try ( InputPort port = new FileInputPort( path.toFile() ) ){
+				XFile xf = new XFile(path,root,attrs);
+				
+			   writeMD5(  port , xf.getName(), xf , writer );
+			} catch (CoreException | XMLStreamException e) {
+				Util.wrapIOException(e);
+			}
+			
+			return FileVisitResult.CONTINUE ;
+		}
+
+
+
+		
+		public void error(String s, Exception e) {
+			printErr( s  , e);
+			
+		}
+
+
+
+	}
+
 	
-	
 
+/*
 
-
-	class ListVisitor extends FileListVisitor {
+	class ListVisitor extends PathTreeVisitor {
 
 		XMLStreamWriter writer;
 
@@ -172,7 +254,7 @@ public class xmd5sum extends XCommand {
 
 	}
 
-		
+		*/
 
 		
 	private void writeMD5(InputPort inp ,String name , XFile xf ,   XMLStreamWriter out ) throws CoreException, IOException,

@@ -552,15 +552,7 @@ public class Util
 				boolean caseSensitive) {
 			
 			final byte bits = escapeAttrs.toBits();
-			CharAttributeDecoder decoder = new CharAttributeDecoder(){
-
-				@Override
-				public void decode(StringBuilder sb, char ch, byte attrs) {
-					if( (attrs & bits) !=0 )
-						sb.append('\\');
-					sb.append(ch);
-				}};
-				String wildstr = wild.decodeString(decoder);
+		    String wildstr = wild.decodeString();
 
 			try {
 				return fileSystem.getPathMatcher("glob:" + wildstr  );

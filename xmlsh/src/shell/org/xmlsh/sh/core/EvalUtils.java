@@ -12,14 +12,18 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.EvalEnv;
 import org.xmlsh.core.EvalFlag;
@@ -36,13 +40,19 @@ import org.xmlsh.sh.shell.ParseResult;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.sh.shell.ShellConstants;
 import org.xmlsh.types.TypeFamily;
-import org.xmlsh.util.PathMatchOptions;
+import org.xmlsh.util.UnifiedFileAttributes.PathMatchOptions;
+
+import static org.xmlsh.util.UnifiedFileAttributes.MatchFlag.*;
+
+import org.xmlsh.util.FileUtils;
+import org.xmlsh.util.UnifiedFileAttributes;
 import org.xmlsh.util.Util;
 import org.xmlsh.util.XMLUtils;
 
 public class EvalUtils
 {
-
+ 
+	static Logger mLogger = LogManager.getLogger();
   /*
    * Eval a var expression ${ [ prefix ] varname [ '[' ind ']' ] [':' suffix ] }
    */
@@ -142,18 +152,21 @@ public class EvalUtils
   /*
    * Recursively Expand a possibly multi-level wildcard rooted at a directory
    */
-  public static List<String> expandDir(File dir, CharAttributeBuffer wild, PathMatchOptions matchOptions ) throws IOException
+  public static List<String> expandDir(File dir, CharAttributeBuffer wild, org.xmlsh.util.UnifiedFileAttributes.PathMatchOptions matchOptions ) throws IOException
   {
+	
+	mLogger.entry(dir, wild, matchOptions);
     ArrayList<String> results = new ArrayList<String>();
     
     Path path = dir.toPath();
+    String swild = wild.toString();  // Undecoded e.g \. == . 
     
     /*
      * special case for "." and ".." as the directory component
      * They dont show up in dir.list() so should always be considered an exact match
      */
-    if(wild.stringEquals(".") || wild.stringEquals("..")) {
-      results.add(wild.toString());
+    if(swild.equals(".") || swild.equals("..")) {
+      results.add(swild);
       return results;
     }
 
@@ -167,31 +180,63 @@ public class EvalUtils
      * If not matched and this is windows
      * try an exact match to the canonical expanson of the dir and wild
      */
-    if(bIsWindows && wild.indexOf(0, '~', 0 ) >= 0) {
-      String wildString = wild.toString();
-      File fwild = new File(dir, wildString);
+    if(bIsWindows && swild.indexOf(0, '~' ) >= 0) {
+      File fwild = new File(dir, swild);
       if(fwild.exists()) {
-        results.add(wildString);
+        results.add(swild);
         return results;
       }
+    }
+    /*
+     * If path isnt a directory then path/wild shouldnt expand just return literally
+     */
+
+    if( ! Files.isDirectory(path, FileUtils.pathLinkOptions(true))){
+    	mLogger.trace("path isnt directory {}" , path);
+    	return results ;
+    }
+    
+
+    
+    // If the glob matches a file exactly then choose it - depending on the options 
+    try {
+    	Path wpath =  path.resolve(swild);
+    	if( Files.exists(wpath, FileUtils.pathLinkOptions(false))){
+    		UnifiedFileAttributes attrs	 = FileUtils.getUnifiedFileAttributes(wpath, false);
+			if( matchOptions.doVisit(wpath,attrs  ) )
+				results.add( swild );
+			return results;
+    	}
+
+    }
+    catch( InvalidPathException | SecurityException e ){
+    	mLogger.trace("Invalid path in glob exansion: " + swild ,   e );
     }
 
     
     
-
     
     final PathMatcher wp = Util.compileWild( path.getFileSystem() , wild, 
     		CharAttrs.constInstance(CharAttr.ATTR_ESCAPED) , caseSensitive);
    
     if( wp == null ){
-    	 results.add(wild.toString());
+    	 results.add(swild);
     } else {
-	    
+        boolean dotStart = swild.startsWith(".");
+        
+ 
+        
+
 		try ( DirectoryStream<Path> dirStream = Files.newDirectoryStream(path  ) ){
 	    
 		    for (Path f : dirStream) {
-		    	if( wp.matches(f.getFileName()) && matchOptions.doVisit(f) )
-		              results.add(f.getFileName().toString());
+		    	UnifiedFileAttributes attrs = FileUtils.getUnifiedFileAttributes(f, false);
+		    	if( wp.matches(f.getFileName()) && matchOptions.doVisit(f,attrs) ){
+		            // Special case - only show .* files if the wildcard starts with them
+		    		if(   ! dotStart && f.getFileName().toString().startsWith(".") )
+		    			continue ;
+		    	    results.add(f.getFileName().toString());
+		    	}
 		    }
 		}
     }
@@ -209,7 +254,8 @@ public class EvalUtils
       wilds = null;
     else wilds = Arrays.copyOfRange(wilds, 1, wilds.length);
 
-    List<String> rs = EvalUtils.expandDir(dir, wild, new PathMatchOptions(false,false,false,wilds != null));
+    List<String> rs = EvalUtils.expandDir(dir, wild, 
+    		(new PathMatchOptions()).withFlagHidden(HIDDEN_SYS));//.withFlagHidden(DIRECTORIES,wilds == null));
     if(rs == null)
       return;
     for (String r : rs) {

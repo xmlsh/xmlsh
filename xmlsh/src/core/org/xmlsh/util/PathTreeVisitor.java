@@ -2,40 +2,50 @@ package org.xmlsh.util;
 
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
+import java.nio.file.FileVisitor;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.Comparator;
+import java.util.Objects;
 
 import javax.xml.stream.XMLStreamException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-public abstract class FileListVisitor extends SimpleFileVisitor<Path> 
+ 
+/*
+ * A Breadth first sortable FileVisitor  like FileVisitor
+ * 
+ */
+public abstract class PathTreeVisitor    
 {
-	protected Path mRoot;
-	protected PathMatchOptions mOptions;
-	private int mDepth = 0;
+	
+	/*
 	static Logger mLogger = LogManager.getLogger();
-	public abstract void error( String s , Exception e );
-	public abstract void visitFile( boolean root,Path dir, BasicFileAttributes attrs)throws IOException;
-	public abstract void enterDirectory(boolean root,Path dir, BasicFileAttributes attrs)throws IOException;
-	public abstract void exitDirectory(boolean root,Path dir )throws IOException;
+	
+	protected void error( String s , Exception e ) {
+		mLogger.error(s,e);
+	}
+	protected abstract void visitFile( Path root , Path dir, BasicFileAttributes attrs)throws IOException;
+	protected abstract void visitDirectory( Path root , Path dir, BasicFileAttributes attrs)throws IOException;
 
-	public FileListVisitor(Path root, PathMatchOptions options ) {
+	protected PathTreeVisitor(Path root,  PathMatchOptions options ) {
 		
 		mLogger.entry(root, options );
 		mRoot = root;
 		mOptions = options;
 	}
 
-	@Override
-	public FileVisitResult preVisitDirectory(Path dir,
+	
+	
+
+	public final FileVisitResult preVisitDirectory(Path dir,
 			BasicFileAttributes attrs) throws IOException {
 		
-		mLogger.entry(dir, mDepth , attrs);
-		boolean isRoot = mDepth == 0;
+		mLogger.entry(dir, mCurrentDepth , attrs);
+		boolean isRoot = mCurrentDepth == 0;
  
 
 		boolean bVisit = isRoot || mOptions.doVisit(  dir  );
@@ -67,7 +77,7 @@ public abstract class FileListVisitor extends SimpleFileVisitor<Path>
 		} else
 			return mLogger.exit(FileVisitResult.SKIP_SUBTREE);
 
-		mDepth++;
+		mCurrentDepth++;
 		return mLogger.exit(FileVisitResult.CONTINUE);
 	}
 
@@ -90,7 +100,7 @@ public abstract class FileListVisitor extends SimpleFileVisitor<Path>
 	final public FileVisitResult visitFileFailed(Path file, IOException exc)
 			throws IOException {
 		
-		mLogger.entry(file, mDepth, exc);
+		mLogger.entry(file, mCurrentDepth, exc);
 		if( exc != null && exc instanceof java.nio.file.AccessDeniedException )
 			mLogger.info("Access denied accessing {} " , file , exc );
 		else
@@ -102,12 +112,14 @@ public abstract class FileListVisitor extends SimpleFileVisitor<Path>
 	final  public FileVisitResult postVisitDirectory(Path dir, IOException exc)
 			throws IOException {
 		
-		mLogger.entry(dir, mDepth , exc);
-		assert( mDepth > 0 );
+		mLogger.entry(dir, mCurrentDepth , exc);
+		assert( mCurrentDepth > 0 );
 		mLogger.entry(dir, exc);
-	    boolean isRoot = --mDepth == 0;
+	    boolean isRoot = --mCurrentDepth == 0;
 				  exitDirectory( isRoot , dir );
 				 return mLogger.exit( FileVisitResult.CONTINUE);
 	}
+	
+	*/
 
 }
