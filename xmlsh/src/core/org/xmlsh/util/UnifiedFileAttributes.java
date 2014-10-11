@@ -130,11 +130,11 @@ public static class PathMatchOptions {
 		   setPosix(FileUtils.getPosixFileAttributes( path , followLinks ));
 		   setDos(FileUtils.getDosFileAttributes( path , followLinks ));
 		   if( getPosix() != null  ){
-			   if( getBasic() != null )
+			   if( getBasic() == null )
 			      setBasic(getPosix()) ;
 			   posixPermissions = getPosix().permissions();
 		   }
-		   else
+		   
 		   if( getBasic() == null ){
 			   if( getDos() != null )
 				   setBasic(getDos())  ;
