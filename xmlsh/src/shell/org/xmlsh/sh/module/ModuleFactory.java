@@ -31,9 +31,35 @@ public class ModuleFactory
   private  final static Logger mLogger = LogManager.getLogger();
 
 
-  public static Module createExternalModule( Shell shell , ModuleConfig config ) throws CoreException
-  {
-    return new ExternalModule( config , shell.getClassLoader( config.getClassPath()));
+  public static Module createExternalModule( Shell shell , ModuleConfig config ) throws CoreException, ClassNotFoundException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException
+  { 
+	  /* 
+	   * If the module has a class try to use it
+	   * 
+	   */
+	  
+	  
+    XClassLoader classLoader = shell.getClassLoader( config.getClassPath());
+	String modClassName = config.getModuleClass();
+	if( ! Util.isBlank(modClassName)){
+	    mLogger.info("Loading module class: {}", modClassName);
+		Class<?> modCls = JavaUtils.findClass(modClassName, classLoader);
+	    if(  modCls != null  ){
+	    	mLogger.info("Found class for external module: {}", modCls );
+	    	if( ! (Module.class.isAssignableFrom(modCls) ) ){
+	  	      throw new InvalidArgumentException("Module class: is not an instance of Module: " + modCls);
+	    	}
+	    	Object mod = JavaUtils.newObject(modCls, config , classLoader);
+	    	if( mod == null )
+	  	      throw new InvalidArgumentException("Module could not be created: " +modClassName);
+	    	if( !( mod instanceof Module))
+		  	      throw new InvalidArgumentException("Module created is wrong class type: " +mod.getClass());
+		    return mLogger.exit((Module)mod );
+	    }
+	}
+	  
+   
+	return mLogger.exit(new ExternalModule( config , classLoader));
   }
 
 

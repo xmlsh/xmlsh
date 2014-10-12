@@ -59,7 +59,7 @@ public class ExternalCommand implements ICommand {
 	@Override
 	public int run(Shell shell, String cmd, List<XValue> args) throws Exception
 	{
-		File curdir = shell.getCurdir();
+		File curdir = Shell.getCurdir().getAbsoluteFile();
 		mLogger.debug("Run external command: " + mCommandFile.getPath() + " in directory: " + curdir.getPath());
 
 		ArrayList<XValue> cmdlist = new ArrayList<XValue>();

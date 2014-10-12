@@ -97,14 +97,19 @@ public class FileUtils
 		return System.console() != null ;
 	}
 
-	
+	/*
+	 * Compare paths strictly by name not pathwise
+	 * Intended only for simple names not full paths
+	 */
 	public static Comparator<Path> alphaPathComparator() {
 		return new Comparator<Path>(){
 	
 			@Override
 			public int compare(Path o1, Path o2) {
-				// Default use Path compareTo
-				return o1.compareTo(o2);
+				// Default use Path compareT
+				if( o1 == o2 )
+					return 0;
+				return  o1.getFileName().toString().compareTo(o2.getFileName().toString());
 				
 			}
 		

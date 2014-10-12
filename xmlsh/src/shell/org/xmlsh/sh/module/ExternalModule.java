@@ -37,15 +37,19 @@ public class ExternalModule extends PackageModule
   private String mURI;
   
 
-  ExternalModule(ModuleConfig config , XClassLoader loader ) throws CoreException
+  protected ExternalModule(ModuleConfig config , XClassLoader loader ) throws CoreException
   {
     super(config , loader );
   }
   
   
   
-  public  static ModuleConfig getConfiguration(Shell shell, String nameuri,  List<URL> at) throws CoreException
+
+
+public  static ModuleConfig getConfiguration(Shell shell, String nameuri,  List<URL> at) throws CoreException
   {
+	
+	mLogger.entry(shell, nameuri, at);
     try {
 
       URL configURL;
@@ -81,9 +85,16 @@ public class ExternalModule extends PackageModule
 
     XValue xv = XValue.newXValue(configNode);
     String pkg = xv.xpath(shell, "/module/@package/string()").toString();
-    // TODO: better support for multi packages
+    List<String> packages = new ArrayList<>();
+    if( ! Util.isBlank(pkg))
+    	packages.add(pkg);
 
-    List<String> packages = Collections.singletonList(pkg);
+    for (XValue v : xv.xpath(shell, "/module/packages/package/string()") ){
+    	packages.add(v.toString());
+    	
+    }
+
+
     String name  = xv.xpath(shell, "/module/@name/string()").toString();
     String require = xv.xpath(shell, "/module/@require/string()").toString();
     if(!Util.isBlank(require)) {
@@ -115,10 +126,17 @@ public class ExternalModule extends PackageModule
         }
 
       }
+    
+    String modClassName = xv.xpath(shell, "/module/main/classname/string()").toString();
+    	
 
     
-    return new ModuleConfig("external", name , classpath , shell.getSerializeOpts() , packages , "commands.xml" );
+    ModuleConfig config = new ModuleConfig("external", name , classpath , shell.getSerializeOpts() , packages , "commands.xml" );
 
+    if( ! Util.isBlank(modClassName))
+    	config.setModuleClass(modClassName);
+    
+    return mLogger.exit(config);
   } catch (CoreException e) {
     throw e;
 
@@ -127,6 +145,7 @@ public class ExternalModule extends PackageModule
   catch (Exception e) {
     throw new CoreException(e);
   }
+
 
 }
   

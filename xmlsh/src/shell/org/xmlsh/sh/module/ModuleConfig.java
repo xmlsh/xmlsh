@@ -13,7 +13,6 @@ import org.xmlsh.util.Util;
 
 public class ModuleConfig {
 
-static Logger mLogger = LogManager.getLogger();
 	private  String mType;
 	private  String mName ;
 	private List<URL> mClassPath;
@@ -21,6 +20,8 @@ static Logger mLogger = LogManager.getLogger();
 	private String mHelpURI;
 	private SerializeOpts mSerialOpts;
 	private String mModuleClass;
+	
+	static Logger mLogger = LogManager.getLogger();
 	
 	public ModuleConfig(String type) {
 		this.mType = type ;
@@ -30,7 +31,6 @@ static Logger mLogger = LogManager.getLogger();
 	public ModuleConfig(String type , String name, List<URL> classpath, 
 			SerializeOpts serialOpts) {
 		
-		mLogger.entry(type, name, classpath, serialOpts);
 		assert( serialOpts !=null);
 		assert( name != null );
 		assert( type != null );
@@ -44,7 +44,11 @@ static Logger mLogger = LogManager.getLogger();
 	public ModuleConfig(String type , String name, List<URL> classpath, SerializeOpts serialOpts,
 			List<String> mPackages, String mHelpURI) {
 		
+
 		mLogger.entry(type, name, classpath, serialOpts, mPackages, mHelpURI);
+		
+		
+		
 		assert( serialOpts !=null);
 		assert( name != null );
 		assert( type != null );
