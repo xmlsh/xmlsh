@@ -6,7 +6,13 @@
 
 package org.xmlsh.aws;
 
+import java.io.IOException;
+import java.util.List;
+
+import javax.xml.stream.XMLStreamException;
+
 import net.sf.saxon.s9api.SaxonApiException;
+
 import org.xmlsh.aws.util.AWSCFNCommand;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.Options;
@@ -14,11 +20,6 @@ import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.SafeXMLStreamWriter;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
-
-import java.io.IOException;
-import java.util.List;
-
-import javax.xml.stream.XMLStreamException;
 
 import com.amazonaws.services.cloudformation.model.DeleteStackRequest;
 
@@ -76,7 +77,7 @@ public class cfnDeleteStack extends AWSCFNCommand {
 
 		traceCall("deleteStack");
 
-		mAmazon.deleteStack(request);
+		getAWSClient().deleteStack(request);
 
 		endElement();
 		endDocument();

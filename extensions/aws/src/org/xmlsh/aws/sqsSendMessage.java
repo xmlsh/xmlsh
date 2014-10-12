@@ -1,6 +1,13 @@
 package org.xmlsh.aws;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
+
+import javax.xml.stream.XMLStreamException;
+
 import net.sf.saxon.s9api.SaxonApiException;
+
 import org.xmlsh.aws.util.AWSSQSCommand;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InputPort;
@@ -9,12 +16,6 @@ import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.util.Util;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
-
-import javax.xml.stream.XMLStreamException;
 
 import com.amazonaws.services.sqs.model.SendMessageRequest;
 import com.amazonaws.services.sqs.model.SendMessageResult;
@@ -112,7 +113,7 @@ public class sqsSendMessage extends AWSSQSCommand {
 
 		traceCall("sendMessage");
 
-		SendMessageResult result = mAmazon.sendMessage(request);
+		SendMessageResult result = getAWSClient().sendMessage(request);
 
 		OutputPort stdout = this.getStdout();
 		mWriter = stdout.asXMLStreamWriter(getSerializeOpts());

@@ -6,7 +6,16 @@
 
 package org.xmlsh.aws.util;
 
+import java.io.IOException;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import javax.xml.stream.XMLStreamException;
+
 import net.sf.saxon.s9api.SaxonApiException;
+
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
@@ -17,16 +26,6 @@ import org.xmlsh.core.XValue;
 import org.xmlsh.util.StringPair;
 import org.xmlsh.util.Util;
 
-import java.io.IOException;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
-import javax.xml.stream.XMLStreamException;
-
-import com.amazonaws.regions.RegionUtils;
-import com.amazonaws.services.ec2.AmazonEC2;
 import com.amazonaws.services.ec2.AmazonEC2Client;
 import com.amazonaws.services.ec2.model.BlockDeviceMapping;
 import com.amazonaws.services.ec2.model.EbsBlockDevice;
@@ -45,40 +44,16 @@ import com.amazonaws.services.ec2.model.Volume;
 import com.amazonaws.services.ec2.model.VolumeAttachment;
 import com.amazonaws.services.ec2.model.VolumeType;
 
-public abstract class AWSEC2Command extends AWSCommand {
-
-	protected	AmazonEC2		mAmazon ;
-
-
-
-
+public abstract class AWSEC2Command extends AWSCommand<AmazonEC2Client> {
 
 	public AWSEC2Command() {
 		super();
 	}
-	@Override
-	protected Object getClient() {
-		return mAmazon; 
-	}
-
 
 	protected void getEC2Client( Options opts ) throws UnexpectedException, InvalidArgumentException {
-		mAmazon =  new AmazonEC2Client(
-				new AWSCommandCredentialsProviderChain( mShell , opts )
-				);
-
-		setRegion(opts);
-		setEndpoint(opts);
+		setAmazon(AWSClientFactory.newEC2lient( mShell , opts ));
 	}
 
-	/* (non-Javadoc)
-	 * @see org.xmlsh.aws.util.AWSCommand#setRegion(java.lang.String)
-	 */
-	@Override
-	public void setRegion(String region) {
-		mAmazon.setRegion( RegionUtils.getRegion(region));
-
-	}
 	protected void writeStateChages(List<InstanceStateChange> states) throws IOException, XMLStreamException,
 	SaxonApiException, CoreException {
 
@@ -355,12 +330,6 @@ public abstract class AWSEC2Command extends AWSCommand {
 
 	}
 
-
-	@Override
-	public void setEndpoint( String endpoint )
-	{
-		mAmazon.setEndpoint( endpoint );
-	}
 
 
 	protected void writeLaunchPermissions(List<LaunchPermission> launchPermissions) throws XMLStreamException {

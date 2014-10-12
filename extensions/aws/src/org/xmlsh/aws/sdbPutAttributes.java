@@ -1,6 +1,13 @@
 package org.xmlsh.aws;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.xml.stream.XMLStreamException;
+
 import net.sf.saxon.s9api.SaxonApiException;
+
 import org.xmlsh.aws.util.AWSSDBCommand;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.Options;
@@ -8,12 +15,6 @@ import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.util.Util;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.xml.stream.XMLStreamException;
 
 import com.amazonaws.services.simpledb.model.PutAttributesRequest;
 import com.amazonaws.services.simpledb.model.ReplaceableAttribute;
@@ -92,7 +93,7 @@ public class sdbPutAttributes	 extends  AWSSDBCommand {
 
 		traceCall("putAttributes");
 
-		mAmazon.putAttributes(request);
+		getAWSClient().putAttributes(request);
 
 		if( ! bQuiet ){
 			OutputPort stdout = this.getStdout();

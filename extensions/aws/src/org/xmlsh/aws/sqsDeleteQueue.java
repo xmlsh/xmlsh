@@ -1,17 +1,18 @@
 package org.xmlsh.aws;
 
+import java.io.IOException;
+import java.util.List;
+
+import javax.xml.stream.XMLStreamException;
+
 import net.sf.saxon.s9api.SaxonApiException;
+
 import org.xmlsh.aws.util.AWSSQSCommand;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
-
-import java.io.IOException;
-import java.util.List;
-
-import javax.xml.stream.XMLStreamException;
 
 import com.amazonaws.services.sqs.model.DeleteQueueRequest;
 
@@ -77,7 +78,7 @@ public class sqsDeleteQueue extends AWSSQSCommand {
 
 		traceCall("deleteQueue");
 
-		mAmazon.deleteQueue(request);
+		getAWSClient().deleteQueue(request);
 
 		OutputPort stdout = this.getStdout();
 		mWriter = stdout.asXMLStreamWriter(getSerializeOpts());

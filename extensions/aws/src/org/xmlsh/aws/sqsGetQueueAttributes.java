@@ -1,6 +1,13 @@
 package org.xmlsh.aws;
 
+import java.io.IOException;
+import java.util.List;
+import java.util.Map.Entry;
+
+import javax.xml.stream.XMLStreamException;
+
 import net.sf.saxon.s9api.SaxonApiException;
+
 import org.xmlsh.aws.util.AWSSQSCommand;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.Options;
@@ -8,12 +15,6 @@ import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.util.Util;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.Map.Entry;
-
-import javax.xml.stream.XMLStreamException;
 
 import com.amazonaws.services.sqs.model.GetQueueAttributesRequest;
 import com.amazonaws.services.sqs.model.GetQueueAttributesResult;
@@ -85,7 +86,7 @@ public class sqsGetQueueAttributes extends AWSSQSCommand {
 		request.setAttributeNames(attrNames);
 		traceCall("getQueueAttributes");
 
-		GetQueueAttributesResult attrsResult = mAmazon.getQueueAttributes(request);
+		GetQueueAttributesResult attrsResult = getAWSClient().getQueueAttributes(request);
 		for( Entry<String, String>  attr : attrsResult.getAttributes().entrySet() ){
 			startElement("attribute");
 			attribute("name" , attr.getKey() );

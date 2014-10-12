@@ -1,17 +1,18 @@
 package org.xmlsh.aws;
 
+import java.io.IOException;
+import java.util.List;
+
+import javax.xml.stream.XMLStreamException;
+
 import net.sf.saxon.s9api.SaxonApiException;
+
 import org.xmlsh.aws.util.AWSSDBCommand;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
-
-import java.io.IOException;
-import java.util.List;
-
-import javax.xml.stream.XMLStreamException;
 
 import com.amazonaws.services.simpledb.model.ListDomainsRequest;
 import com.amazonaws.services.simpledb.model.ListDomainsResult;
@@ -79,7 +80,7 @@ public class sdbListDomains	 extends  AWSSDBCommand {
 
 			traceCall("listDomains");
 
-			ListDomainsResult result = mAmazon.listDomains(listDomainsRequest);
+			ListDomainsResult result = getAWSClient().listDomains(listDomainsRequest);
 			writeStringList(  null , "domain" , "name" ,  result.getDomainNames() );
 			token = result.getNextToken();
 		} while( token != null );

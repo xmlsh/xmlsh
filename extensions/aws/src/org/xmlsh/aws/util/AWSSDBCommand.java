@@ -6,58 +6,30 @@
 
 package org.xmlsh.aws.util;
 
-import org.xmlsh.core.InvalidArgumentException;
-import org.xmlsh.core.Options;
-import org.xmlsh.core.UnexpectedException;
-
 import java.util.List;
 
 import javax.xml.stream.XMLStreamException;
 
-import com.amazonaws.regions.RegionUtils;
-import com.amazonaws.services.simpledb.AmazonSimpleDB;
+import org.xmlsh.core.InvalidArgumentException;
+import org.xmlsh.core.Options;
+import org.xmlsh.core.UnexpectedException;
+
 import com.amazonaws.services.simpledb.AmazonSimpleDBClient;
 import com.amazonaws.services.simpledb.model.Attribute;
 
-public abstract class AWSSDBCommand extends AWSCommand {
+public abstract class AWSSDBCommand extends AWSCommand<AmazonSimpleDBClient> {
 
-
-	protected		AmazonSimpleDB mAmazon ;
 
 	public AWSSDBCommand() {
 		super();
-	}
-	@Override
-	protected Object getClient() {
-		return mAmazon; 
 	}
 
 	protected void getSDBClient(Options opts) throws UnexpectedException, InvalidArgumentException {
 
 
-		mAmazon =  new AmazonSimpleDBClient(
-				new AWSCommandCredentialsProviderChain( mShell, opts  ) 
-
-				);
-
-		setEndpoint(opts);
-		setRegion(opts);
+		setAmazon(AWSClientFactory.newSDBClient(mShell, opts  )) ;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.xmlsh.aws.util.AWSCommand#setRegion(java.lang.String)
-	 */
-	@Override
-	public void setRegion(String region) {
-		mAmazon.setRegion( RegionUtils.getRegion(region));
-
-	}
-
-	@Override
-	public void setEndpoint( String endpoint )
-	{
-		mAmazon.setEndpoint( endpoint );
-	}
 
 	protected void writeAttribute(Attribute attr) throws XMLStreamException {
 		startElement("attribute");

@@ -1,17 +1,18 @@
 package org.xmlsh.aws;
 
+import java.io.IOException;
+import java.util.List;
+
+import javax.xml.stream.XMLStreamException;
+
 import net.sf.saxon.s9api.SaxonApiException;
+
 import org.xmlsh.aws.util.AWSELBCommand;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
-
-import java.io.IOException;
-import java.util.List;
-
-import javax.xml.stream.XMLStreamException;
 
 import com.amazonaws.services.elasticloadbalancing.model.DeregisterInstancesFromLoadBalancerRequest;
 import com.amazonaws.services.elasticloadbalancing.model.DeregisterInstancesFromLoadBalancerResult;
@@ -79,7 +80,7 @@ public class elbDeregister<x> extends AWSELBCommand {
 
 		DeregisterInstancesFromLoadBalancerRequest request = new DeregisterInstancesFromLoadBalancerRequest(elb , instances(args));
 		traceCall("deregisterInstancesFromLoadBalancer");
-		DeregisterInstancesFromLoadBalancerResult result = mAmazon.deregisterInstancesFromLoadBalancer(request);
+		DeregisterInstancesFromLoadBalancerResult result = getAWSClient().deregisterInstancesFromLoadBalancer(request);
 		for( Instance instance : result.getInstances()){
 
 			startElement("instance");

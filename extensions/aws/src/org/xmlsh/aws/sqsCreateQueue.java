@@ -1,13 +1,5 @@
 package org.xmlsh.aws;
 
-import net.sf.saxon.s9api.SaxonApiException;
-import org.xmlsh.aws.util.AWSSQSCommand;
-import org.xmlsh.core.CoreException;
-import org.xmlsh.core.Options;
-import org.xmlsh.core.OutputPort;
-import org.xmlsh.core.UnexpectedException;
-import org.xmlsh.core.XValue;
-
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
@@ -15,6 +7,15 @@ import java.util.List;
 import java.util.Map;
 
 import javax.xml.stream.XMLStreamException;
+
+import net.sf.saxon.s9api.SaxonApiException;
+
+import org.xmlsh.aws.util.AWSSQSCommand;
+import org.xmlsh.core.CoreException;
+import org.xmlsh.core.Options;
+import org.xmlsh.core.OutputPort;
+import org.xmlsh.core.UnexpectedException;
+import org.xmlsh.core.XValue;
 
 import com.amazonaws.services.sqs.model.CreateQueueRequest;
 import com.amazonaws.services.sqs.model.CreateQueueResult;
@@ -94,13 +95,13 @@ public class sqsCreateQueue extends AWSSQSCommand {
 
 		traceCall("createQueue");
 
-		CreateQueueResult result = mAmazon.createQueue(request);
+		CreateQueueResult result = getAWSClient().createQueue(request);
 
 
 		List<String> qa = Collections.singletonList(QUEUE_ARN);
 
 
-		GetQueueAttributesResult aresult = mAmazon.getQueueAttributes( result.getQueueUrl() ,qa );
+		GetQueueAttributesResult aresult = getAWSClient().getQueueAttributes( result.getQueueUrl() ,qa );
 
 
 

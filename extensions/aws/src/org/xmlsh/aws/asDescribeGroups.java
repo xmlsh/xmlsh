@@ -6,7 +6,13 @@
 
 package org.xmlsh.aws;
 
+import java.io.IOException;
+import java.util.List;
+
+import javax.xml.stream.XMLStreamException;
+
 import net.sf.saxon.s9api.SaxonApiException;
+
 import org.xmlsh.aws.util.AWSASCommand;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.Options;
@@ -15,11 +21,6 @@ import org.xmlsh.core.SafeXMLStreamWriter;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.util.Util;
-
-import java.io.IOException;
-import java.util.List;
-
-import javax.xml.stream.XMLStreamException;
 
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.autoscaling.model.AutoScalingGroup;
@@ -95,7 +96,7 @@ public class asDescribeGroups extends AWSASCommand {
 		int delay = retryDelay ;
 		do {
 			try {
-				result = mAmazon.describeAutoScalingGroups(request);
+				result = getAWSClient().describeAutoScalingGroups(request);
 				break;
 
 			} catch( AmazonServiceException e ){

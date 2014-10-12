@@ -6,47 +6,27 @@
 
 package org.xmlsh.aws.util;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import com.amazonaws.regions.RegionUtils;
 import com.amazonaws.services.elasticloadbalancing.AmazonElasticLoadBalancingClient;
 import com.amazonaws.services.elasticloadbalancing.model.Instance;
 
-public abstract class AWSELBCommand extends AWSCommand {
-
-
-	protected		AmazonElasticLoadBalancingClient mAmazon ;
+public abstract class AWSELBCommand extends AWSCommand<AmazonElasticLoadBalancingClient> {
 
 	public AWSELBCommand() {
 		super();
 	}
-	@Override
-	protected Object getClient() {
-		return mAmazon; 
-	}
 
-	protected void getELBClient(Options opts) throws UnexpectedException {
+	protected void getELBClient(Options opts) throws UnexpectedException, InvalidArgumentException {
 
 
-		mAmazon =  new AmazonElasticLoadBalancingClient(
-				new AWSCommandCredentialsProviderChain( mShell, opts  ) 
-
-				);
-
-		setRegion(opts);
-	}
-	/* (non-Javadoc)
-	 * @see org.xmlsh.aws.util.AWSCommand#setRegion(java.lang.String)
-	 */
-	@Override
-	public void setRegion(String region) {
-		mAmazon.setRegion( RegionUtils.getRegion(region));
-
+		setAmazon(AWSClientFactory.newELBClient( mShell , opts ));
 	}
 
 	protected List<Instance> instances(List<XValue> args) {
@@ -55,12 +35,6 @@ public abstract class AWSELBCommand extends AWSCommand {
 			li.add( new Instance( a.toString()));
 		return li;
 
-	}
-
-	@Override
-	public void setEndpoint( String endpoint )
-	{
-		mAmazon.setEndpoint( endpoint );
 	}
 
 

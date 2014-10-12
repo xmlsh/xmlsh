@@ -1,6 +1,13 @@
 package org.xmlsh.aws;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
+
+import javax.xml.stream.XMLStreamException;
+
 import net.sf.saxon.s9api.SaxonApiException;
+
 import org.xmlsh.aws.util.AWSGlacierCommand;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.Options;
@@ -8,12 +15,6 @@ import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.util.Util;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
-
-import javax.xml.stream.XMLStreamException;
 
 import com.amazonaws.services.glacier.model.DescribeJobRequest;
 import com.amazonaws.services.glacier.model.DescribeJobResult;
@@ -90,7 +91,7 @@ public class glacierInventoryVault	 extends  AWSGlacierCommand {
 
 		traceCall("initiateJob");
 
-		InitiateJobResult result = mAmazon.initiateJob(initiateJobRequest);
+		InitiateJobResult result = getAWSClient().initiateJob(initiateJobRequest);
 
 		DescribeJobRequest describeJobRequest = new DescribeJobRequest(vault,result.getJobId());
 
@@ -99,7 +100,7 @@ public class glacierInventoryVault	 extends  AWSGlacierCommand {
 		do {
 			traceCall("describeJob");
 
-			describeResult = mAmazon.describeJob(describeJobRequest);
+			describeResult = getAWSClient().describeJob(describeJobRequest);
 
 			status = describeResult.getStatusCode();
 
@@ -118,7 +119,7 @@ public class glacierInventoryVault	 extends  AWSGlacierCommand {
 
 			traceCall("getJobOutput");
 
-			GetJobOutputResult jobOutputResult = mAmazon.getJobOutput(getJobOutputRequest);
+			GetJobOutputResult jobOutputResult = getAWSClient().getJobOutput(getJobOutputRequest);
 			InputStream jobOutput = jobOutputResult.getBody();
 			Util.copyStream(jobOutput, stdout.asOutputStream(getSerializeOpts()));
 			jobOutput.close();

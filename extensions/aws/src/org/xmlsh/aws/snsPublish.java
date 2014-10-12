@@ -1,17 +1,18 @@
 package org.xmlsh.aws;
 
+import java.io.IOException;
+import java.util.List;
+
+import javax.xml.stream.XMLStreamException;
+
 import net.sf.saxon.s9api.SaxonApiException;
+
 import org.xmlsh.aws.util.AWSSNSCommand;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
-
-import java.io.IOException;
-import java.util.List;
-
-import javax.xml.stream.XMLStreamException;
 
 import com.amazonaws.services.sns.model.PublishRequest;
 import com.amazonaws.services.sns.model.PublishResult;
@@ -71,7 +72,7 @@ public class snsPublish extends AWSSNSCommand {
 		PublishRequest request = new PublishRequest().withTopicArn(topic).withMessage(message).withSubject(subject);
 		traceCall("publish");
 
-		PublishResult result = mAmazon.publish(request);
+		PublishResult result = getAWSClient().publish(request);
 
 
 

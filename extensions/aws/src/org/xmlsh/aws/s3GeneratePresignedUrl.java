@@ -1,7 +1,16 @@
 package org.xmlsh.aws;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.URL;
+import java.util.Date;
+import java.util.List;
+
+import javax.xml.stream.XMLStreamException;
+
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.trans.XPathException;
+
 import org.xmlsh.aws.util.AWSS3Command;
 import org.xmlsh.aws.util.S3Path;
 import org.xmlsh.core.InvalidArgumentException;
@@ -10,14 +19,6 @@ import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.util.Util;
-
-import java.io.IOException;
-import java.io.OutputStream;
-import java.net.URL;
-import java.util.Date;
-import java.util.List;
-
-import javax.xml.stream.XMLStreamException;
 
 import com.amazonaws.HttpMethod;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
@@ -90,7 +91,7 @@ public class s3GeneratePresignedUrl extends AWSS3Command {
 
 		traceCall("generatePresignedUrl");
 
-		URL url = mAmazon.generatePresignedUrl(request);
+		URL url = getAWSClient().generatePresignedUrl(request);
 
 		mOutput.write( url.toString().getBytes(getSerializeOpts().getOutputTextEncoding() ));
 		mOutput.write( Util.getNewlineBytes(getSerializeOpts()));

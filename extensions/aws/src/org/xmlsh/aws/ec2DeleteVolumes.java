@@ -1,17 +1,18 @@
 package org.xmlsh.aws;
 
+import java.io.IOException;
+import java.util.List;
+
+import javax.xml.stream.XMLStreamException;
+
 import net.sf.saxon.s9api.SaxonApiException;
+
 import org.xmlsh.aws.util.AWSEC2Command;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.util.Util;
-
-import java.io.IOException;
-import java.util.List;
-
-import javax.xml.stream.XMLStreamException;
 
 import com.amazonaws.services.ec2.model.DeleteVolumeRequest;
 
@@ -76,7 +77,7 @@ public class ec2DeleteVolumes extends AWSEC2Command {
 		for( String volid : resources ){
 
 			DeleteVolumeRequest deleteVolumeRequest  = new DeleteVolumeRequest(volid);
-			mAmazon.deleteVolume(deleteVolumeRequest);
+			getAWSClient().deleteVolume(deleteVolumeRequest);
 
 		}
 

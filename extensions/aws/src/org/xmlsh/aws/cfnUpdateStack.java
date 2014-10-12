@@ -6,7 +6,15 @@
 
 package org.xmlsh.aws;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import javax.xml.stream.XMLStreamException;
+
 import net.sf.saxon.s9api.SaxonApiException;
+
 import org.xmlsh.aws.util.AWSCFNCommand;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.Options;
@@ -15,13 +23,6 @@ import org.xmlsh.core.SafeXMLStreamWriter;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.util.Util;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
-import javax.xml.stream.XMLStreamException;
 
 import com.amazonaws.services.cloudformation.model.Parameter;
 import com.amazonaws.services.cloudformation.model.UpdateStackRequest;
@@ -99,7 +100,7 @@ public class cfnUpdateStack extends AWSCFNCommand {
 
 		traceCall("updateStack");
 
-		UpdateStackResult result = mAmazon.updateStack(request);
+		UpdateStackResult result = getAWSClient().updateStack(request);
 
 		writeStackResult(result);
 

@@ -1,6 +1,14 @@
 package org.xmlsh.aws;
 
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.xml.stream.XMLStreamException;
+
 import net.sf.saxon.s9api.SaxonApiException;
+
 import org.xmlsh.aws.util.AWSDDBCommand;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
@@ -9,13 +17,6 @@ import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.util.StringPair;
-
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.xml.stream.XMLStreamException;
 
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.amazonaws.services.dynamodbv2.model.ExpectedAttributeValue;
@@ -84,7 +85,7 @@ public class ddbPutItem	 extends  AWSDDBCommand {
 
 		traceCall("putItem");
 
-		PutItemResult result = mAmazon.putItem(putItemRequest);
+		PutItemResult result = getAWSClient().putItem(putItemRequest);
 
 		if( ! bQuiet ){
 			OutputPort stdout = this.getStdout();

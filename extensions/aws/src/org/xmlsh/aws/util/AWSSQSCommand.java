@@ -10,49 +10,21 @@ import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.UnexpectedException;
 
-import com.amazonaws.regions.RegionUtils;
-import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.AmazonSQSClient;
 
-public abstract class AWSSQSCommand extends AWSCommand {
+public abstract class AWSSQSCommand extends AWSCommand<AmazonSQSClient> {
 
-	protected		AmazonSQS mAmazon ;
 
 	public AWSSQSCommand() {
 		super();
 	}
-	@Override
-	protected Object getClient() {
-		return mAmazon; 
-	}
 
 	protected void getSQSClient(Options opts) throws UnexpectedException, InvalidArgumentException {
 
-
-		mAmazon =  new AmazonSQSClient(
-				new AWSCommandCredentialsProviderChain( mShell, opts  ) 
-
-				);
-
-		setRegion(opts);
-		setEndpoint(opts);
-	}
-
-
-
-	@Override
-	public void setEndpoint( String endpoint )
-	{
-		mAmazon.setEndpoint( endpoint );
-	}
-	/* (non-Javadoc)
-	 * @see org.xmlsh.aws.util.AWSCommand#setRegion(java.lang.String)
-	 */
-	@Override
-	public void setRegion(String region) {
-		mAmazon.setRegion( RegionUtils.getRegion(region));
+		setAmazon(AWSClientFactory.newSQSClient(mShell, opts));
 
 	}
+
 
 }
 

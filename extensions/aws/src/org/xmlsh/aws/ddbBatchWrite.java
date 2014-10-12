@@ -1,16 +1,5 @@
 package org.xmlsh.aws;
 
-import net.sf.saxon.s9api.SaxonApiException;
-import org.xmlsh.aws.util.AWSDDBCommand;
-import org.xmlsh.core.CoreException;
-import org.xmlsh.core.InputPort;
-import org.xmlsh.core.Options;
-import org.xmlsh.core.UnexpectedException;
-import org.xmlsh.core.XValue;
-import org.xmlsh.util.Util;
-import org.xmlsh.util.commands.CSVParser;
-import org.xmlsh.util.commands.CSVRecord;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -23,6 +12,18 @@ import java.util.concurrent.TimeUnit;
 
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLStreamException;
+
+import net.sf.saxon.s9api.SaxonApiException;
+
+import org.xmlsh.aws.util.AWSDDBCommand;
+import org.xmlsh.core.CoreException;
+import org.xmlsh.core.InputPort;
+import org.xmlsh.core.Options;
+import org.xmlsh.core.UnexpectedException;
+import org.xmlsh.core.XValue;
+import org.xmlsh.util.Util;
+import org.xmlsh.util.commands.CSVParser;
+import org.xmlsh.util.commands.CSVRecord;
 
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.amazonaws.services.dynamodbv2.model.BatchWriteItemRequest;
@@ -79,7 +80,7 @@ public class ddbBatchWrite extends AWSDDBCommand {
 						+ Thread.currentThread().getName() + " Writing " + n);
 				BatchWriteItemRequest request = new BatchWriteItemRequest();
 				request.setRequestItems(requestItems);
-				BatchWriteItemResult result = mAmazon.batchWriteItem(request);
+				BatchWriteItemResult result = getAWSClient().batchWriteItem(request);
 				requestItems = result.getUnprocessedItems();
 				n = entries(requestItems);
 

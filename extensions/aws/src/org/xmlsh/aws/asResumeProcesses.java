@@ -6,7 +6,13 @@
 
 package org.xmlsh.aws;
 
+import java.io.IOException;
+import java.util.List;
+
+import javax.xml.stream.XMLStreamException;
+
 import net.sf.saxon.s9api.SaxonApiException;
+
 import org.xmlsh.annotations.Command;
 import org.xmlsh.aws.util.AWSASCommand;
 import org.xmlsh.core.CoreException;
@@ -16,11 +22,6 @@ import org.xmlsh.core.SafeXMLStreamWriter;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.util.Util;
-
-import java.io.IOException;
-import java.util.List;
-
-import javax.xml.stream.XMLStreamException;
 
 import com.amazonaws.services.autoscaling.model.ResumeProcessesRequest;
 
@@ -87,7 +88,7 @@ public class asResumeProcesses extends AWSASCommand {
 
 		traceCall("resumeProcesses");
 
-		mAmazon.resumeProcesses(request);
+		getAWSClient().resumeProcesses(request);
 
 		endElement();
 		endDocument();

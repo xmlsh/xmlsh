@@ -6,57 +6,31 @@
 
 package org.xmlsh.aws.util;
 
+import java.util.List;
+
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
 
-import java.util.List;
-
-import com.amazonaws.regions.RegionUtils;
-import com.amazonaws.services.autoscaling.AmazonAutoScaling;
 import com.amazonaws.services.autoscaling.AmazonAutoScalingClient;
 
-public abstract class AWSASCommand extends AWSCommand {
+public abstract class AWSASCommand extends AWSCommand<AmazonAutoScalingClient> {
 
-	protected	AmazonAutoScaling		mAmazon ;
 
 	public AWSASCommand() {
 		super();
 	}
 
-	@Override
-	protected Object getClient() {
-		return mAmazon; 
-	}
 
 	protected void getASClient( Options opts ) throws UnexpectedException, IllegalArgumentException, InvalidArgumentException {
-		mAmazon = new AmazonAutoScalingClient(
-				new AWSCommandCredentialsProviderChain( mShell , opts )
-				);
-
-		setRegion(opts);
-		setEndpoint(opts);		
+		setAmazon(AWSClientFactory.newASClient( mShell , opts ));
 
 	}
 
 
 
-	@Override
-	public void setEndpoint( String endpoint )
-	{
-		mAmazon.setEndpoint( endpoint );
-	}
-
-
-	/* (non-Javadoc)
-	 * @see org.xmlsh.aws.util.AWSCommand#setRegion(java.lang.String)
-	 */
-	@Override
-	public void setRegion(String region) {
-		mAmazon.setRegion( RegionUtils.getRegion(region));
-
-	}
+	
 
 
 	/* (non-Javadoc)

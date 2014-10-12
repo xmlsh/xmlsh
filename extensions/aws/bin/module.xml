@@ -1,11 +1,18 @@
 <module 
 	module_version="1.0"
 	name="aws"
-	package="org.xmlsh.aws"
 	require="2.0.0"
 >
 <classpath>
   <directory url="."/>
 </classpath>
+<packages>
+  <package>org.xmlsh.aws</package>
+  <package>org.xmlsh.aws.functions</package>
+ 
+ </packages>
+<main>
+  <classname>org.xmlsh.aws.module.AWSModule</classname>
+</main>
 </module>
 

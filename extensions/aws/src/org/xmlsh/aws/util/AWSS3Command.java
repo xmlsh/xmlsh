@@ -6,65 +6,58 @@
 
 package org.xmlsh.aws.util;
 
-import net.sf.saxon.s9api.SaxonApiException;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.bouncycastle.openssl.PEMReader;
-import org.xmlsh.core.CoreException;
-import org.xmlsh.core.InvalidArgumentException;
-import org.xmlsh.core.Options;
-import org.xmlsh.core.XValue;
-import org.xmlsh.util.Util;
-
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.security.KeyPair;
-import java.security.Security;
 import java.util.Map.Entry;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.ThreadPoolExecutor;
 
 import javax.xml.stream.XMLStreamException;
 
-import com.amazonaws.ClientConfiguration;
-import com.amazonaws.regions.RegionUtils;
-import com.amazonaws.services.s3.AmazonS3;
+import net.sf.saxon.s9api.SaxonApiException;
+
+import org.xmlsh.aws.clients.S3Client;
+import org.xmlsh.core.CoreException;
+import org.xmlsh.core.InvalidArgumentException;
+import org.xmlsh.core.Options;
+import org.xmlsh.util.Util;
+
 import com.amazonaws.services.s3.AmazonS3Client;
-import com.amazonaws.services.s3.AmazonS3EncryptionClient;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
-import com.amazonaws.services.s3.model.CryptoConfiguration;
-import com.amazonaws.services.s3.model.EncryptionMaterials;
 import com.amazonaws.services.s3.model.ListMultipartUploadsRequest;
 import com.amazonaws.services.s3.model.ListObjectsRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.StaticEncryptionMaterialsProvider;
 import com.amazonaws.services.s3.transfer.TransferManager;
 
-public abstract class AWSS3Command extends AWSCommand {
+public abstract class AWSS3Command extends AWSCommand<AmazonS3Client> {
 
 
-	protected		AmazonS3 mAmazon ;
-	public String sMetaDataElem = "metadata";
-	public String sUserMetaDataElem = "user";
-	private TransferManager tm = null;
-	private int mThreads = 10 ;
-
-
-	protected ThreadPoolExecutor createDefaultExecutorService() {
-		ThreadFactory threadFactory = new ThreadFactory() {
-			private int threadCount = 1;
-
-			@Override
-			public Thread newThread(Runnable r) {
-				Thread thread = new Thread(r);
-				thread.setName("s3-transfer-manager-worker-" + threadCount++);
-				return thread;
-			}
-		};
-		return (ThreadPoolExecutor)Executors.newFixedThreadPool(mThreads, threadFactory);
+	public S3Path getPath(String bucket, String key) {
+		return getS3Client().getPath(bucket, key);
 	}
 
+	private S3Client getS3Client() {
+		return (S3Client) getClient();
+	}
 
+	public CannedAccessControlList getAcl(String acl) {
+		return getS3Client().getAcl(acl);
+	}
+
+	public int setAcl(S3Path src, String acl) throws CoreException,
+			IOException, XMLStreamException, SaxonApiException {
+		return getS3Client().setAcl(src, acl);
+	}
+
+	public TransferManager getTransferManager() {
+		return getS3Client().getTransferManager();
+	}
+
+	public void shutdownTransferManager() {
+		getS3Client().shutdownTransferManager();
+	}
+
+	public String sMetaDataElem = "metadata";
+	public String sUserMetaDataElem = "user";
+	
 	public AWSS3Command() {
 		super();
 	}
@@ -74,69 +67,15 @@ public abstract class AWSS3Command extends AWSCommand {
 		return super.getCommonOpts() + ",crypt,keypair:,threads:" ;
 	}
 
-	@Override
-	protected Object getClient() {
-		return mAmazon; 
-	}
-
 
 
 	protected void getS3Client(Options opts) throws UnsupportedEncodingException, IOException, CoreException {
 
-		ClientConfiguration clientConfig = new ClientConfiguration();
-		if( opts.hasOpt("crypt")){
-
-			synchronized( AWSS3Command.class  ){
-				if( Security.getProperty(BouncyCastleProvider.PROVIDER_NAME) == null ) 
-					Security.addProvider(new BouncyCastleProvider());
-			}
-
-			XValue sKeypair = opts.getOptValueRequired("keypair");
-
-
-			KeyPair keyPair = (KeyPair) readPEM(sKeypair);
-
-			mAmazon =  new AmazonS3EncryptionClient(
-					new AWSCommandCredentialsProviderChain( mShell, opts  ) ,
-					new StaticEncryptionMaterialsProvider(
-							new EncryptionMaterials( keyPair )),
-							clientConfig ,  new CryptoConfiguration() 
-
-					);
-
-
-		} else
-			mAmazon =  new AmazonS3Client(
-					new AWSCommandCredentialsProviderChain( mShell, opts  ) ,
-					clientConfig 
-
-					);
-
-		setEndpoint(opts);
-		setRegion(opts);
-
-		if( opts.hasOpt("threads"))
-			mThreads = opts.getOptInt("threads", mThreads);
-
-	}
-
-	/* (non-Javadoc)
-	 * @see org.xmlsh.aws.util.AWSCommand#setRegion(java.lang.String)
-	 */
-	@Override
-	public void setRegion(String region) {
-		mAmazon.setRegion( RegionUtils.getRegion(region));
-
+	   setAmazon(AWSClientFactory.newS3Client(  mShell , opts ));
+	
 	}
 
 
-	private Object readPEM(XValue sPrivate) throws IOException, UnsupportedEncodingException,
-	CoreException {
-		PEMReader reader = new PEMReader( getInput(sPrivate).asReader( this.getSerializeOpts() ));
-		Object obj = reader.readObject();
-		reader.close();
-		return obj;
-	}
 
 	protected ListObjectsRequest getListRequest(S3Path path, String delim) {
 		ListObjectsRequest req = new ListObjectsRequest();
@@ -190,58 +129,9 @@ public abstract class AWSS3Command extends AWSCommand {
 		endElement();
 		endDocument();
 
-
-
-
-
-
 	}
 
 
-	protected S3Path getPath( String bucket , String key )
-	{
-		if( Util.isBlank(bucket) )
-			return new S3Path( key );
-		else
-			return new S3Path( bucket , key );
-	}
-
-
-	@Override
-	public void setEndpoint( String endpoint )
-	{
-		mAmazon.setEndpoint( endpoint );
-	}
-
-	protected CannedAccessControlList getAcl(String acl) {
-
-		for(CannedAccessControlList c : CannedAccessControlList.values())
-			if( c.toString().equals(acl))
-				return c;
-		return null ;
-
-	}
-
-	protected int setAcl(S3Path src, String acl) throws CoreException, IOException,
-	XMLStreamException, SaxonApiException {
-
-		traceCall("setObjectAcl");
-
-		mAmazon.setObjectAcl(src.getBucket(),src.getKey(), getAcl(acl));
-		return 0;
-
-	}
-
-	protected TransferManager getTransferManager() {
-		if( tm == null)
-			tm =new TransferManager( mAmazon ,  createDefaultExecutorService() );
-		return tm;
-	}
-
-	protected void shutdownTransferManager() {
-		if( tm != null)
-			tm.shutdownNow();
-	}
 
 
 }

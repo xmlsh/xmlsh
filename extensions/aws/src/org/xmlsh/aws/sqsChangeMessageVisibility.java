@@ -1,16 +1,17 @@
 package org.xmlsh.aws;
 
+import java.io.IOException;
+import java.util.List;
+
+import javax.xml.stream.XMLStreamException;
+
 import net.sf.saxon.s9api.SaxonApiException;
+
 import org.xmlsh.aws.util.AWSSQSCommand;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
-
-import java.io.IOException;
-import java.util.List;
-
-import javax.xml.stream.XMLStreamException;
 
 import com.amazonaws.services.sqs.model.ChangeMessageVisibilityRequest;
 
@@ -76,7 +77,7 @@ public class sqsChangeMessageVisibility extends AWSSQSCommand {
 
 		traceCall("changeMessageVisibility");
 
-		mAmazon.changeMessageVisibility(request);
+		getAWSClient().changeMessageVisibility(request);
 
 
 

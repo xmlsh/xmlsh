@@ -10,50 +10,20 @@ import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.UnexpectedException;
 
-import com.amazonaws.regions.RegionUtils;
-import com.amazonaws.services.cloudwatch.AmazonCloudWatch;
 import com.amazonaws.services.cloudwatch.AmazonCloudWatchClient;
 
-public abstract class AWSMonCommand extends AWSCommand {
+public abstract class AWSMonCommand extends AWSCommand<AmazonCloudWatchClient> {
 
-	protected		AmazonCloudWatch mAmazon ;
 
 	public AWSMonCommand() {
 		super();
-	}
-	@Override
-	protected Object getClient() {
-		return mAmazon; 
 	}
 
 	protected void getMonClient(Options opts) throws UnexpectedException, InvalidArgumentException {
 
 
-		mAmazon =  new AmazonCloudWatchClient(
-				new AWSCommandCredentialsProviderChain( mShell, opts  ) 
-
-				);
-
-		setEndpoint(opts);
-		setRegion(opts);
-
+		setAmazon(AWSClientFactory.newCloudWatchClient(mShell, opts));
 	}
-
-	@Override
-	public void setEndpoint( String endpoint )
-	{
-		mAmazon.setEndpoint( endpoint );
-	}
-
-	/* (non-Javadoc)
-	 * @see org.xmlsh.aws.util.AWSCommand#setRegion(java.lang.String)
-	 */
-	@Override
-	public void setRegion(String region) {
-		mAmazon.setRegion( RegionUtils.getRegion(region));
-
-	}
-
 }
 
 //

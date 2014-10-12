@@ -1,16 +1,17 @@
 package org.xmlsh.aws;
 
+import java.io.IOException;
+import java.util.List;
+
+import javax.xml.stream.XMLStreamException;
+
 import net.sf.saxon.s9api.SaxonApiException;
+
 import org.xmlsh.aws.util.AWSSNSCommand;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
-
-import java.io.IOException;
-import java.util.List;
-
-import javax.xml.stream.XMLStreamException;
 
 import com.amazonaws.services.sns.model.DeleteTopicRequest;
 
@@ -76,7 +77,7 @@ public class snsDeleteTopic extends AWSSNSCommand {
 		request.setTopicArn(name);
 		traceCall("deleteTopic");
 
-		mAmazon.deleteTopic(request);
+		getAWSClient().deleteTopic(request);
 
 
 

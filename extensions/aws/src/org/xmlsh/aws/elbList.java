@@ -1,6 +1,12 @@
 package org.xmlsh.aws;
 
+import java.io.IOException;
+import java.util.List;
+
+import javax.xml.stream.XMLStreamException;
+
 import net.sf.saxon.s9api.SaxonApiException;
+
 import org.xmlsh.aws.util.AWSELBCommand;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.Options;
@@ -8,11 +14,6 @@ import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.util.Util;
-
-import java.io.IOException;
-import java.util.List;
-
-import javax.xml.stream.XMLStreamException;
 
 import com.amazonaws.services.elasticloadbalancing.model.DescribeInstanceHealthRequest;
 import com.amazonaws.services.elasticloadbalancing.model.DescribeInstanceHealthResult;
@@ -90,7 +91,7 @@ public class elbList	 extends  AWSELBCommand {
 
 
 						traceCall("describeLoadBalancers");
-						DescribeLoadBalancersResult result = mAmazon.describeLoadBalancers(request);
+						DescribeLoadBalancersResult result = getAWSClient().describeLoadBalancers(request);
 
 						for(LoadBalancerDescription desc :  result.getLoadBalancerDescriptions() ){
 
@@ -104,7 +105,7 @@ public class elbList	 extends  AWSELBCommand {
 							writeZones(zones);
 							DescribeInstanceHealthRequest healthRequest = 
 									new DescribeInstanceHealthRequest(desc.getLoadBalancerName());
-							DescribeInstanceHealthResult healthResult = mAmazon.describeInstanceHealth(healthRequest);
+							DescribeInstanceHealthResult healthResult = getAWSClient().describeInstanceHealth(healthRequest);
 							List<InstanceState> instanceStates = healthResult.getInstanceStates();
 
 

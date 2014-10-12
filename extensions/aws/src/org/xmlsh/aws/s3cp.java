@@ -1,14 +1,14 @@
 package org.xmlsh.aws;
 
+import java.io.IOException;
+import java.util.List;
+
 import org.xmlsh.aws.util.AWSS3Command;
 import org.xmlsh.aws.util.AWSUtil;
 import org.xmlsh.aws.util.S3Path;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
-
-import java.io.IOException;
-import java.util.List;
 
 import com.amazonaws.services.s3.model.CopyObjectResult;
 
@@ -80,10 +80,10 @@ public class s3cp extends AWSS3Command {
 		if( mOnlyIfExists ){
 			String destETag ;
 			String sourceETag ;
-			destETag = AWSUtil.getChecksum(mAmazon , dest ); 
+			destETag = AWSUtil.getChecksum(getAWSClient() , dest ); 
 
 			if( destETag != null  ){
-				sourceETag = AWSUtil.getChecksum( mAmazon , src  );
+				sourceETag = AWSUtil.getChecksum( getAWSClient() , src  );
 				if( sourceETag != null )
 					if( destETag.equals(sourceETag))
 						bCopy = false ;
@@ -95,7 +95,7 @@ public class s3cp extends AWSS3Command {
 
 			traceCall("copyObject");
 
-			CopyObjectResult result = mAmazon.copyObject(src.getBucket(), src.getKey(), dest.getBucket(), dest.getKey() );
+			CopyObjectResult result = getAWSClient().copyObject(src.getBucket(), src.getKey(), dest.getBucket(), dest.getKey() );
 
 			return 0;
 

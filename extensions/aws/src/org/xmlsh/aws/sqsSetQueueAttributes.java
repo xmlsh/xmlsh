@@ -1,19 +1,20 @@
 package org.xmlsh.aws;
 
-import net.sf.saxon.s9api.SaxonApiException;
-import org.xmlsh.aws.util.AWSSQSCommand;
-import org.xmlsh.core.InvalidArgumentException;
-import org.xmlsh.core.Options;
-import org.xmlsh.core.UnexpectedException;
-import org.xmlsh.core.XValue;
-import org.xmlsh.util.Util;
-
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.xml.stream.XMLStreamException;
+
+import net.sf.saxon.s9api.SaxonApiException;
+
+import org.xmlsh.aws.util.AWSSQSCommand;
+import org.xmlsh.core.InvalidArgumentException;
+import org.xmlsh.core.Options;
+import org.xmlsh.core.UnexpectedException;
+import org.xmlsh.core.XValue;
+import org.xmlsh.util.Util;
 
 import com.amazonaws.services.sqs.model.SetQueueAttributesRequest;
 
@@ -86,7 +87,7 @@ public class sqsSetQueueAttributes extends AWSSQSCommand {
 
 		SetQueueAttributesRequest request = new SetQueueAttributesRequest(name,attrs);
 		traceCall("setQueueAttributes");
-		mAmazon.setQueueAttributes(request);
+		getAWSClient().setQueueAttributes(request);
 		return 0;
 	}
 

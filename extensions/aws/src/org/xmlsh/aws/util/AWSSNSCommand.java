@@ -10,50 +10,22 @@ import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.UnexpectedException;
 
-import com.amazonaws.regions.RegionUtils;
-import com.amazonaws.services.sns.AmazonSNS;
 import com.amazonaws.services.sns.AmazonSNSClient;
 
-public abstract class AWSSNSCommand extends AWSCommand {
+public abstract class AWSSNSCommand extends AWSCommand<AmazonSNSClient> {
 
 
-	protected		AmazonSNS mAmazon ;
 
 	public AWSSNSCommand() {
 		super();
-	}
-	@Override
-	protected Object getClient() {
-		return mAmazon; 
 	}
 
 	protected void getSNSClient(Options opts) throws UnexpectedException, InvalidArgumentException {
 
 
-		mAmazon =  new AmazonSNSClient(
-				new AWSCommandCredentialsProviderChain( mShell, opts  ) 
-
-				);
-		setRegion(opts);
-		setEndpoint(opts);
-
+		setAmazon(AWSClientFactory.newSNSClient(mShell, opts));
 	}
-
-	/* (non-Javadoc)
-	 * @see org.xmlsh.aws.util.AWSCommand#setRegion(java.lang.String)
-	 */
-	@Override
-	public void setRegion(String region) {
-		mAmazon.setRegion( RegionUtils.getRegion(region));
-
-	}
-
-	@Override
-	public void setEndpoint( String endpoint )
-	{
-		mAmazon.setEndpoint( endpoint );
-	}
-
+	
 
 
 }

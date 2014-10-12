@@ -1,6 +1,12 @@
 package org.xmlsh.aws;
 
+import java.io.IOException;
+import java.util.List;
+
+import javax.xml.stream.XMLStreamException;
+
 import net.sf.saxon.s9api.SaxonApiException;
+
 import org.xmlsh.aws.util.AWSMonCommand;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.Options;
@@ -8,11 +14,6 @@ import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.util.Util;
-
-import java.io.IOException;
-import java.util.List;
-
-import javax.xml.stream.XMLStreamException;
 
 import com.amazonaws.services.cloudwatch.model.Dimension;
 import com.amazonaws.services.cloudwatch.model.ListMetricsRequest;
@@ -86,7 +87,7 @@ public class monListMetrics	 extends  AWSMonCommand {
 
 			traceCall("listMetrics");
 
-			ListMetricsResult result = mAmazon.listMetrics(listMetricsRequest);
+			ListMetricsResult result = getAWSClient().listMetrics(listMetricsRequest);
 
 			for( Metric metric : result.getMetrics()){ 
 				startElement("metric");

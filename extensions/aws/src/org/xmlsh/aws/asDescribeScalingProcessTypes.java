@@ -6,7 +6,13 @@
 
 package org.xmlsh.aws;
 
+import java.io.IOException;
+import java.util.List;
+
+import javax.xml.stream.XMLStreamException;
+
 import net.sf.saxon.s9api.SaxonApiException;
+
 import org.xmlsh.annotations.Command;
 import org.xmlsh.annotations.Option;
 import org.xmlsh.aws.util.AWSASCommand;
@@ -16,11 +22,6 @@ import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.SafeXMLStreamWriter;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
-
-import java.io.IOException;
-import java.util.List;
-
-import javax.xml.stream.XMLStreamException;
 
 import com.amazonaws.services.autoscaling.model.DescribeScalingProcessTypesRequest;
 import com.amazonaws.services.autoscaling.model.DescribeScalingProcessTypesResult;
@@ -73,7 +74,7 @@ public class asDescribeScalingProcessTypes extends AWSASCommand
 		traceCall("describeScalingProcessTypes");
 
 		DescribeScalingProcessTypesRequest request = new DescribeScalingProcessTypesRequest();
-		DescribeScalingProcessTypesResult result = mAmazon
+		DescribeScalingProcessTypesResult result = getAWSClient()
 				.describeScalingProcessTypes(request);
 
 		writeScalingProceessTypes(result);

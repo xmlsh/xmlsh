@@ -1,6 +1,13 @@
 package org.xmlsh.aws;
 
+import java.io.IOException;
+import java.util.Collection;
+import java.util.List;
+
+import javax.xml.stream.XMLStreamException;
+
 import net.sf.saxon.s9api.SaxonApiException;
+
 import org.xmlsh.aws.util.AWSEC2Command;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.Options;
@@ -8,12 +15,6 @@ import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.SafeXMLStreamWriter;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
-
-import java.io.IOException;
-import java.util.Collection;
-import java.util.List;
-
-import javax.xml.stream.XMLStreamException;
 
 import com.amazonaws.services.ec2.model.BlockDeviceMapping;
 import com.amazonaws.services.ec2.model.CreateImageRequest;
@@ -80,7 +81,7 @@ public class ec2CreateImage extends AWSEC2Command {
 
 		traceCall("createImage");
 
-		CreateImageResult  result = mAmazon.createImage(request);
+		CreateImageResult  result = getAWSClient().createImage(request);
 
 		writeResult( result );
 

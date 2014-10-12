@@ -1,6 +1,12 @@
 package org.xmlsh.aws;
 
+import java.io.IOException;
+import java.util.List;
+
+import javax.xml.stream.XMLStreamException;
+
 import net.sf.saxon.s9api.SaxonApiException;
+
 import org.xmlsh.aws.util.AWSGlacierCommand;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.Options;
@@ -8,11 +14,6 @@ import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.util.Util;
-
-import java.io.IOException;
-import java.util.List;
-
-import javax.xml.stream.XMLStreamException;
 
 import com.amazonaws.services.elasticloadbalancing.model.InstanceState;
 import com.amazonaws.services.glacier.model.DescribeVaultOutput;
@@ -78,7 +79,7 @@ public class glacierListVaults	 extends  AWSGlacierCommand {
 
 		traceCall("listVaults");
 
-		ListVaultsResult result = mAmazon.listVaults(request);
+		ListVaultsResult result = getAWSClient().listVaults(request);
 
 		for( DescribeVaultOutput vault  : result.getVaultList() ){
 			startElement("valut");

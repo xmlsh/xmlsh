@@ -1,5 +1,12 @@
 package org.xmlsh.aws;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.LinkedList;
+import java.util.List;
+
 import org.xmlsh.aws.util.AWSS3Command;
 import org.xmlsh.aws.util.S3Path;
 import org.xmlsh.core.CoreException;
@@ -9,13 +16,6 @@ import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.util.Util;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.LinkedList;
-import java.util.List;
 
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
@@ -143,7 +143,7 @@ public class s3get extends AWSS3Command {
 			ListObjectsRequest request = getListRequest( src ,null  );
 			traceCall("listObjects");
 
-			ObjectListing list = mAmazon.listObjects(request);
+			ObjectListing list = getAWSClient().listObjects(request);
 
 			do {
 
@@ -157,7 +157,7 @@ public class s3get extends AWSS3Command {
 				waitForDownloads();
 				if( list.isTruncated()){
 					// String marker = list.getNextMarker();
-					list = mAmazon.listNextBatchOfObjects(list);
+					list = getAWSClient().listNextBatchOfObjects(list);
 				}
 				else
 					break;
@@ -228,7 +228,7 @@ public class s3get extends AWSS3Command {
 			{
 				traceCall("getObject");
 
-				S3Object obj = mAmazon.getObject(request);
+				S3Object obj = getAWSClient().getObject(request);
 				meta = obj.getObjectMetadata() ;
 
 				InputStream is = obj.getObjectContent();

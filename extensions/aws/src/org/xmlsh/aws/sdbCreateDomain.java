@@ -1,6 +1,12 @@
 package org.xmlsh.aws;
 
+import java.io.IOException;
+import java.util.List;
+
+import javax.xml.stream.XMLStreamException;
+
 import net.sf.saxon.s9api.SaxonApiException;
+
 import org.xmlsh.aws.util.AWSSDBCommand;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.Options;
@@ -8,11 +14,6 @@ import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.util.Util;
-
-import java.io.IOException;
-import java.util.List;
-
-import javax.xml.stream.XMLStreamException;
 
 import com.amazonaws.services.elasticloadbalancing.model.InstanceState;
 import com.amazonaws.services.simpledb.model.CreateDomainRequest;
@@ -82,7 +83,7 @@ public class sdbCreateDomain	 extends  AWSSDBCommand {
 
 			traceCall("createDomain");
 			CreateDomainRequest createDomainRequest = new CreateDomainRequest().withDomainName(domainName);
-			mAmazon.createDomain(createDomainRequest);
+			getAWSClient().createDomain(createDomainRequest);
 
 			writeElementAttribute("domain", "name", domainName);
 

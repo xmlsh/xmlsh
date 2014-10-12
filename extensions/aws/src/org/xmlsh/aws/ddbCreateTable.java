@@ -1,6 +1,14 @@
 package org.xmlsh.aws;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import javax.xml.stream.XMLStreamException;
+
 import net.sf.saxon.s9api.SaxonApiException;
+
 import org.xmlsh.aws.util.AWSDDBCommand;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
@@ -9,13 +17,6 @@ import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.util.StringPair;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
-import javax.xml.stream.XMLStreamException;
 
 import com.amazonaws.services.dynamodbv2.model.AttributeDefinition;
 import com.amazonaws.services.dynamodbv2.model.CreateTableRequest;
@@ -100,7 +101,7 @@ public class ddbCreateTable	 extends  AWSDDBCommand {
 
 		traceCall("createTable");
 
-		CreateTableResult result = mAmazon.createTable(createTableRequest);
+		CreateTableResult result = getAWSClient().createTable(createTableRequest);
 		writeTableDescription(result.getTableDescription());
 
 

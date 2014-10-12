@@ -1,6 +1,13 @@
 package org.xmlsh.aws;
 
+import java.io.IOException;
+import java.util.List;
+
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
+
 import net.sf.saxon.s9api.SaxonApiException;
+
 import org.xmlsh.aws.util.AWSS3Command;
 import org.xmlsh.aws.util.S3Path;
 import org.xmlsh.core.CoreException;
@@ -9,12 +16,6 @@ import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.util.Util;
-
-import java.io.IOException;
-import java.util.List;
-
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
 
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.services.s3.model.Bucket;
@@ -109,7 +110,7 @@ public class s3ls extends AWSS3Command {
 
 		traceCall("listBuckets");
 
-		List<Bucket> buckets = mAmazon.listBuckets();
+		List<Bucket> buckets = getAWSClient().listBuckets();
 		for( Bucket  bucket : buckets ){
 			startElement("bucket");
 			attribute("name", bucket.getName());
@@ -155,7 +156,7 @@ public class s3ls extends AWSS3Command {
 
 
 		ListMultipartUploadsRequest request = getListMultipartRequest( path , mDelim );
-		MultipartUploadListing list = mAmazon.listMultipartUploads(request);
+		MultipartUploadListing list = getAWSClient().listMultipartUploads(request);
 
 
 		do {
@@ -188,7 +189,7 @@ public class s3ls extends AWSS3Command {
 			if( list.isTruncated()){
 				request.setUploadIdMarker(list.getUploadIdMarker());
 				request.setKeyMarker( list.getKeyMarker());
-				list = mAmazon.listMultipartUploads(request);
+				list = getAWSClient().listMultipartUploads(request);
 			}
 			else
 				break;
@@ -232,7 +233,7 @@ public class s3ls extends AWSS3Command {
 		ListObjectsRequest request = getListRequest( path ,mDelim );
 		traceCall("listObjects");
 
-		ObjectListing list = mAmazon.listObjects(request);
+		ObjectListing list = getAWSClient().listObjects(request);
 
 
 
@@ -265,7 +266,7 @@ public class s3ls extends AWSS3Command {
 			}
 			if( list.isTruncated()){
 				// String marker = list.getNextMarker();
-				list = mAmazon.listNextBatchOfObjects(list);
+				list = getAWSClient().listNextBatchOfObjects(list);
 			}
 			else
 				break;

@@ -1,6 +1,12 @@
 package org.xmlsh.aws;
 
+import java.io.IOException;
+import java.util.List;
+
+import javax.xml.stream.XMLStreamException;
+
 import net.sf.saxon.s9api.SaxonApiException;
+
 import org.xmlsh.aws.util.AWSS3Command;
 import org.xmlsh.aws.util.S3Path;
 import org.xmlsh.core.CoreException;
@@ -8,11 +14,6 @@ import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
-
-import java.io.IOException;
-import java.util.List;
-
-import javax.xml.stream.XMLStreamException;
 
 import com.amazonaws.services.s3.model.GetObjectMetadataRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
@@ -87,7 +88,7 @@ public class s3GetObjectMetadata extends AWSS3Command {
 
 		traceCall("getObjectMetadata");
 
-		ObjectMetadata data = mAmazon.getObjectMetadata(request  );
+		ObjectMetadata data = getAWSClient().getObjectMetadata(request  );
 		mWriter = metaPort.asXMLStreamWriter(getSerializeOpts());
 		writeMeta( data );
 		mWriter.close();

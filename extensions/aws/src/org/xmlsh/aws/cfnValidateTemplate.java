@@ -6,7 +6,13 @@
 
 package org.xmlsh.aws;
 
+import java.io.IOException;
+import java.util.List;
+
+import javax.xml.stream.XMLStreamException;
+
 import net.sf.saxon.s9api.SaxonApiException;
+
 import org.xmlsh.aws.util.AWSCFNCommand;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.Options;
@@ -15,11 +21,6 @@ import org.xmlsh.core.SafeXMLStreamWriter;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.util.Util;
-
-import java.io.IOException;
-import java.util.List;
-
-import javax.xml.stream.XMLStreamException;
 
 import com.amazonaws.services.cloudformation.model.ValidateTemplateRequest;
 import com.amazonaws.services.cloudformation.model.ValidateTemplateResult;
@@ -77,7 +78,7 @@ public class cfnValidateTemplate extends AWSCFNCommand {
 
 		traceCall("validateTemplate");
 
-		ValidateTemplateResult result = mAmazon.validateTemplate(request);
+		ValidateTemplateResult result = getAWSClient().validateTemplate(request);
 
 
 		OutputPort stdout = this.getStdout();

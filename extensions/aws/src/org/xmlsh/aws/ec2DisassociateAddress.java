@@ -1,6 +1,12 @@
 package org.xmlsh.aws;
 
+import java.io.IOException;
+import java.util.List;
+
+import javax.xml.stream.XMLStreamException;
+
 import net.sf.saxon.s9api.SaxonApiException;
+
 import org.xmlsh.aws.util.AWSEC2Command;
 import org.xmlsh.aws.util.AWSUtil;
 import org.xmlsh.core.CoreException;
@@ -11,11 +17,6 @@ import org.xmlsh.core.SafeXMLStreamWriter;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.util.Util;
-
-import java.io.IOException;
-import java.util.List;
-
-import javax.xml.stream.XMLStreamException;
 
 import com.amazonaws.services.ec2.model.DisassociateAddressRequest;
 
@@ -83,7 +84,7 @@ public class ec2DisassociateAddress extends AWSEC2Command {
 
 		DisassociateAddressRequest request = new DisassociateAddressRequest(raw_ip);
 		traceCall("disassociateAddress");
-		mAmazon.disassociateAddress(request);
+		getAWSClient().disassociateAddress(request);
 		writeResult(raw_ip);
 
 		return 0;

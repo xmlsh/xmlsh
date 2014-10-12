@@ -6,7 +6,13 @@
 
 package org.xmlsh.aws;
 
+import java.io.IOException;
+import java.util.List;
+
+import javax.xml.stream.XMLStreamException;
+
 import net.sf.saxon.s9api.SaxonApiException;
+
 import org.xmlsh.annotations.Command;
 import org.xmlsh.aws.util.AWSASCommand;
 import org.xmlsh.core.CoreException;
@@ -17,12 +23,6 @@ import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.util.Util;
 
-import java.io.IOException;
-import java.util.List;
-
-import javax.xml.stream.XMLStreamException;
-
-import com.amazonaws.services.autoscaling.model.ResumeProcessesRequest;
 import com.amazonaws.services.autoscaling.model.SuspendProcessesRequest;
 
 @Command("as-suspend-processes")
@@ -84,7 +84,7 @@ public class asSuspendProcesses extends AWSASCommand {
 
 		traceCall("resumeProcesses");
 
-		mAmazon.suspendProcesses(request);
+		getAWSClient().suspendProcesses(request);
 
 		endElement();
 		endDocument();

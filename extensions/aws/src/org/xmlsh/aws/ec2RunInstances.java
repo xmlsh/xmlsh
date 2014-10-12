@@ -1,6 +1,13 @@
 package org.xmlsh.aws;
 
+import java.io.IOException;
+import java.util.Collection;
+import java.util.List;
+
+import javax.xml.stream.XMLStreamException;
+
 import net.sf.saxon.s9api.SaxonApiException;
+
 import org.xmlsh.aws.util.AWSEC2Command;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.Options;
@@ -10,12 +17,6 @@ import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.util.StringPair;
 import org.xmlsh.util.Util;
-
-import java.io.IOException;
-import java.util.Collection;
-import java.util.List;
-
-import javax.xml.stream.XMLStreamException;
 
 import com.amazonaws.services.ec2.model.BlockDeviceMapping;
 import com.amazonaws.services.ec2.model.Placement;
@@ -164,7 +165,7 @@ public class ec2RunInstances extends AWSEC2Command {
 
 
 		traceCall("runInstances");
-		RunInstancesResult  result = mAmazon.runInstances(request);
+		RunInstancesResult  result = getAWSClient().runInstances(request);
 
 		writeResult( result );
 

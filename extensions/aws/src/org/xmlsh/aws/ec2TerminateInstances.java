@@ -1,18 +1,19 @@
 package org.xmlsh.aws;
 
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+
+import javax.xml.stream.XMLStreamException;
+
 import net.sf.saxon.s9api.SaxonApiException;
+
 import org.xmlsh.aws.util.AWSEC2Command;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.util.Util;
-
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-
-import javax.xml.stream.XMLStreamException;
 
 import com.amazonaws.services.ec2.model.InstanceStateChange;
 import com.amazonaws.services.ec2.model.TerminateInstancesRequest;
@@ -76,7 +77,7 @@ public class ec2TerminateInstances extends AWSEC2Command {
 		TerminateInstancesRequest  request = new TerminateInstancesRequest( Arrays.asList(instances));
 
 		traceCall("terminateInstances");
-		TerminateInstancesResult result = mAmazon.terminateInstances(request);
+		TerminateInstancesResult result = getAWSClient().terminateInstances(request);
 
 		List<InstanceStateChange> changes = result.getTerminatingInstances();
 		writeStateChages( changes);

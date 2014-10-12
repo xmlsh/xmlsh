@@ -1,17 +1,18 @@
 package org.xmlsh.aws;
 
+import java.io.IOException;
+import java.util.List;
+
+import javax.xml.stream.XMLStreamException;
+
 import net.sf.saxon.s9api.SaxonApiException;
+
 import org.xmlsh.aws.util.AWSS3Command;
 import org.xmlsh.aws.util.S3Path;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
-
-import java.io.IOException;
-import java.util.List;
-
-import javax.xml.stream.XMLStreamException;
 
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.DeleteObjectsRequest;
@@ -81,7 +82,7 @@ public class s3Delete extends AWSS3Command {
 		.withQuiet(true);
 
 		@SuppressWarnings("unused")
-		DeleteObjectsResult result = mAmazon.deleteObjects(deleteObjectsRequest);
+		DeleteObjectsResult result = getAWSClient().deleteObjects(deleteObjectsRequest);
 		return 0;
 
 
@@ -99,7 +100,7 @@ public class s3Delete extends AWSS3Command {
 			ListObjectsRequest request = getListRequest( path ,null );
 			traceCall("listObjects");
 
-			ObjectListing list = mAmazon.listObjects(request);
+			ObjectListing list = getAWSClient().listObjects(request);
 
 
 			do {
@@ -114,7 +115,7 @@ public class s3Delete extends AWSS3Command {
 
 				if( list.isTruncated()){
 					// String marker = list.getNextMarker();
-					list = mAmazon.listNextBatchOfObjects(list);
+					list = getAWSClient().listNextBatchOfObjects(list);
 				}
 				else
 					break;
@@ -130,7 +131,7 @@ public class s3Delete extends AWSS3Command {
 			traceCall("deleteObject");
 
 
-			mAmazon.deleteObject(request );
+			getAWSClient().deleteObject(request );
 
 			return 0;
 

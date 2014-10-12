@@ -1,10 +1,15 @@
 package org.xmlsh.aws;
 
+import java.io.IOException;
+import java.util.Collection;
+import java.util.List;
+
+import javax.xml.stream.XMLStreamException;
+
 import net.sf.saxon.s9api.SaxonApiException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
 import org.xmlsh.aws.util.AWSEC2Command;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.Options;
@@ -13,12 +18,6 @@ import org.xmlsh.core.SafeXMLStreamWriter;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.util.Util;
-
-import java.io.IOException;
-import java.util.Collection;
-import java.util.List;
-
-import javax.xml.stream.XMLStreamException;
 
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.ec2.model.DescribeInstancesRequest;
@@ -101,7 +100,7 @@ public class ec2DescribeInstances extends AWSEC2Command {
 		int delay = retryDelay ;
 		do {
 			try {
-				result = mAmazon.describeInstances(request).getReservations();
+				result = getAWSClient().describeInstances(request).getReservations();
 				break ;
 			} catch( AmazonServiceException e ){
 				mShell.printErr("AmazonServiceException" , e );

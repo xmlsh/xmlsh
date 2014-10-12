@@ -1,17 +1,18 @@
 package org.xmlsh.aws;
 
+import java.io.IOException;
+import java.util.List;
+
+import javax.xml.stream.XMLStreamException;
+
 import net.sf.saxon.s9api.SaxonApiException;
+
 import org.xmlsh.aws.util.AWSSDBCommand;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
-
-import java.io.IOException;
-import java.util.List;
-
-import javax.xml.stream.XMLStreamException;
 
 import com.amazonaws.services.simpledb.model.GetAttributesRequest;
 import com.amazonaws.services.simpledb.model.GetAttributesResult;
@@ -85,7 +86,7 @@ public class sdbGetAttributes	 extends  AWSSDBCommand {
 
 		traceCall("getAttributes");
 
-		GetAttributesResult result = mAmazon.getAttributes(getAttributesRequest);
+		GetAttributesResult result = getAWSClient().getAttributes(getAttributesRequest);
 
 		if( result.getAttributes().size() > 0 )
 			writeItem(itemName, result);

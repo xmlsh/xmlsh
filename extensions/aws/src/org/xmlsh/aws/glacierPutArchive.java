@@ -1,18 +1,20 @@
 package org.xmlsh.aws;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+
+import javax.xml.stream.XMLStreamException;
+
 import net.sf.saxon.s9api.SaxonApiException;
+
+import org.xmlsh.aws.util.AWSCommandCredentialsProviderChain;
 import org.xmlsh.aws.util.AWSGlacierCommand;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
-
-import javax.xml.stream.XMLStreamException;
 
 import com.amazonaws.services.elasticloadbalancing.model.InstanceState;
 import com.amazonaws.services.glacier.transfer.ArchiveTransferManager;
@@ -61,7 +63,7 @@ public class glacierPutArchive	 extends  AWSGlacierCommand {
 
 
 		int ret = -1;
-		ret = put(vault,desc, args );
+		ret = put(vault,desc, args , opts );
 
 
 
@@ -71,13 +73,13 @@ public class glacierPutArchive	 extends  AWSGlacierCommand {
 	}
 
 
-	private int put(String vault, String desc, List<XValue> files ) throws IOException, XMLStreamException, SaxonApiException, CoreException 
+	private int put(String vault, String desc, List<XValue> files, Options opts ) throws IOException, XMLStreamException, SaxonApiException, CoreException 
 	{
 
 		OutputPort stdout = this.getStdout();
 		mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
 
-		ArchiveTransferManager tm = new ArchiveTransferManager(mAmazon, mCredentials);
+		ArchiveTransferManager tm = new ArchiveTransferManager(getAWSClient(),  new AWSCommandCredentialsProviderChain( getShell() , opts ));
 
 
 

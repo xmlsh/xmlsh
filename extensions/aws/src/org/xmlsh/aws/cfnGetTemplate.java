@@ -6,7 +6,14 @@
 
 package org.xmlsh.aws;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.List;
+
+import javax.xml.stream.XMLStreamException;
+
 import net.sf.saxon.s9api.SaxonApiException;
+
 import org.xmlsh.aws.util.AWSCFNCommand;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.Options;
@@ -15,12 +22,6 @@ import org.xmlsh.core.SafeXMLStreamWriter;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.SerializeOpts;
-
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.List;
-
-import javax.xml.stream.XMLStreamException;
 
 import com.amazonaws.services.cloudformation.model.GetTemplateRequest;
 import com.amazonaws.services.cloudformation.model.GetTemplateResult;
@@ -78,7 +79,7 @@ public class cfnGetTemplate extends AWSCFNCommand {
 
 		traceCall("getTemplate");
 
-		GetTemplateResult result = mAmazon.getTemplate(request);
+		GetTemplateResult result = getAWSClient().getTemplate(request);
 
 
 

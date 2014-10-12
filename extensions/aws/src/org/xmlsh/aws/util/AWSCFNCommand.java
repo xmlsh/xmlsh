@@ -6,55 +6,28 @@
 
 package org.xmlsh.aws.util;
 
-import org.xmlsh.core.InvalidArgumentException;
-import org.xmlsh.core.Options;
-import org.xmlsh.core.UnexpectedException;
-
 import java.util.List;
 
 import javax.xml.stream.XMLStreamException;
 
-import com.amazonaws.regions.RegionUtils;
-import com.amazonaws.services.cloudformation.AmazonCloudFormation;
+import org.xmlsh.core.InvalidArgumentException;
+import org.xmlsh.core.Options;
+import org.xmlsh.core.UnexpectedException;
+
 import com.amazonaws.services.cloudformation.AmazonCloudFormationClient;
 import com.amazonaws.services.cloudformation.model.Parameter;
 import com.amazonaws.services.cloudformation.model.TemplateParameter;
 
-public abstract class AWSCFNCommand extends AWSCommand {
+public abstract class AWSCFNCommand extends AWSCommand<AmazonCloudFormationClient >{
 
-	protected	AmazonCloudFormation		mAmazon ;
 
 	public AWSCFNCommand() {
 		super();
 	}
 
-	@Override
-	protected Object getClient() {
-		return mAmazon; 
-	}
 
 	protected void getCFNClient( Options opts ) throws UnexpectedException, InvalidArgumentException {
-		mAmazon =  new AmazonCloudFormationClient(
-				new AWSCommandCredentialsProviderChain( mShell , opts )
-				);
-
-		setRegion(opts);
-		setEndpoint(opts);
-
-	}
-
-	@Override
-	public void setEndpoint( String endpoint )
-	{
-		mAmazon.setEndpoint( endpoint );
-	}
-
-	/* (non-Javadoc)
-	 * @see org.xmlsh.aws.util.AWSCommand#setRegion(java.lang.String)
-	 */
-	@Override
-	public void setRegion(String region) {
-		mAmazon.setRegion( RegionUtils.getRegion(region));
+		setAmazon(AWSClientFactory.newCFNClient(mShell, opts));
 
 	}
 

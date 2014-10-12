@@ -1,12 +1,12 @@
 package org.xmlsh.aws;
 
+import java.io.IOException;
+import java.util.List;
+
 import org.xmlsh.aws.util.AWSS3Command;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
-
-import java.io.IOException;
-import java.util.List;
 
 
 public class s3CreateBucket extends AWSS3Command {
@@ -56,7 +56,7 @@ public class s3CreateBucket extends AWSS3Command {
 		try {
 			traceCall("createBucket");
 
-			mAmazon.createBucket(bucketName);
+			getAWSClient().createBucket(bucketName);
 		} catch (Exception e) {
 			mShell.printErr("Exception creating " + bucketName , e);
 			ret = 1;

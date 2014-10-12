@@ -6,6 +6,13 @@
 
 package org.xmlsh.aws;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import javax.xml.stream.XMLStreamException;
+
 import net.sf.saxon.s9api.SaxonApiException;
 
 import org.xmlsh.aws.util.AWSCFNCommand;
@@ -18,17 +25,8 @@ import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.SafeXMLStreamWriter;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
-import org.xmlsh.core.XValueProperty;
 import org.xmlsh.util.StringPair;
 import org.xmlsh.util.Util;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
-import javax.xml.stream.XMLStreamException;
 
 import com.amazonaws.services.cloudformation.model.CreateStackRequest;
 import com.amazonaws.services.cloudformation.model.CreateStackResult;
@@ -118,7 +116,7 @@ public class cfnCreateStack extends AWSCFNCommand {
 
 		traceCall("createStack");
 
-		CreateStackResult result = mAmazon.createStack(request);
+		CreateStackResult result = getAWSClient().createStack(request);
 
 		writeStackResult(result,request.getStackName());
 

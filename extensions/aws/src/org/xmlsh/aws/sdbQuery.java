@@ -1,18 +1,19 @@
 package org.xmlsh.aws;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.xml.stream.XMLStreamException;
+
 import net.sf.saxon.s9api.SaxonApiException;
+
 import org.xmlsh.aws.util.AWSSDBCommand;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.xml.stream.XMLStreamException;
 
 import com.amazonaws.services.simpledb.model.Item;
 import com.amazonaws.services.simpledb.model.ReplaceableAttribute;
@@ -95,7 +96,7 @@ public class sdbQuery	 extends  AWSSDBCommand {
 
 			traceCall("select");
 
-			SelectResult result = mAmazon.select(selectRequest).withNextToken(token);
+			SelectResult result = getAWSClient().select(selectRequest).withNextToken(token);
 			for( Item item :result.getItems())
 				writeItem(item);
 			token = result.getNextToken();

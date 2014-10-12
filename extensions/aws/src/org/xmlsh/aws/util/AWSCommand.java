@@ -7,28 +7,29 @@
 package org.xmlsh.aws.util;
 
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.xmlsh.core.InvalidArgumentException;
-import org.xmlsh.core.Options;
-import org.xmlsh.core.XCommand;
-import org.xmlsh.sh.shell.SerializeOpts;
-import org.xmlsh.util.Util;
-
 import java.util.Date;
 import java.util.List;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import com.amazonaws.regions.Regions;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.xmlsh.core.Options;
+import org.xmlsh.core.XCommand;
+import org.xmlsh.sh.shell.SerializeOpts;
+import org.xmlsh.util.Util;
 
-public abstract class AWSCommand extends XCommand {
+import com.amazonaws.AmazonWebServiceClient;
+
+public abstract class AWSCommand<T extends AmazonWebServiceClient>  extends XCommand {
+
+	private	AWSClient<T>	mAmazon ;
 
 	Logger mLogger = LogManager.getLogger( );
 
 	protected XMLStreamWriter mWriter;
-	protected static final String sCOMMON_OPTS = "region:,endpoint:,client:,config:,accessKey:,secretKey:,rate-retry:,retry-delay:,result-format:" ;
+	public static final String sCOMMON_OPTS = "region:,endpoint:,client:,config:,accessKey:,secretKey:,rate-retry:,retry-delay:,result-format:" ;
 	protected int rateRetry = 0;
 	protected int retryDelay = 10000; // 10 seconds default
 
@@ -38,16 +39,12 @@ public abstract class AWSCommand extends XCommand {
 		super();
 	}
 
-	abstract protected Object getClient();
+
 
 
 	protected	Options getOptions()	
 	{
-
 		return new Options( getCommonOpts()  , SerializeOpts.getOptionDefs());
-
-
-
 	}
 
 
@@ -60,8 +57,6 @@ public abstract class AWSCommand extends XCommand {
 	{
 
 		return new Options( getCommonOpts() + "," + sopts , SerializeOpts.getOptionDefs());
-
-
 
 	}
 
@@ -163,28 +158,7 @@ public abstract class AWSCommand extends XCommand {
 	}
 
 
-	protected void setEndpoint(Options opts) throws InvalidArgumentException {
-
-		if( opts.hasOpt("endpoint") )
-			setEndpoint(opts.getOptStringRequired("endpoint"));
-
-
-	}
-	protected void setRegion(Options opts){
-		if( opts.hasOpt("region"))
-			setRegion(opts.getOptString("region",Regions.DEFAULT_REGION.getName()) );
-		else {
-			String region = mShell.getEnv().getVarString("AWS_REGION");
-			if( Util.isBlank(region))
-				region = mShell.getEnv().getVarString("EC2_REGION");  // ec2 command line compatibility
-			if( !Util.isBlank(region))
-				setRegion(region);
-		}
-
-	}
-
-	public abstract void setEndpoint(String endpoint);
-	public abstract void setRegion( String region );
+	
 
 
 	protected void emptyDocument() throws XMLStreamException {
@@ -203,7 +177,7 @@ public abstract class AWSCommand extends XCommand {
 
 	protected void traceCall( String method )
 	{
-		Object obj = getClient();
+		T obj = getAWSClient();
 
 		mLogger.info( "AWS Method Call: " + obj.getClass().toString() + "." + method );
 	}
@@ -216,6 +190,24 @@ public abstract class AWSCommand extends XCommand {
 
 
 	}
+
+	protected T getAWSClient() {
+		return mAmazon.getClient();
+	}
+
+
+	protected void setAmazon(	AWSClient<T> a)
+	{
+		mAmazon = a;
+	}
+
+
+	protected AWSClient<T> getClient() {
+		return mAmazon;
+	}
+
+
+
 
 }
 

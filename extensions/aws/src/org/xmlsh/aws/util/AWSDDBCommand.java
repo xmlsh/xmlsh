@@ -6,16 +6,6 @@
 
 package org.xmlsh.aws.util;
 
-import org.xmlsh.core.InvalidArgumentException;
-import org.xmlsh.core.Options;
-import org.xmlsh.core.UnexpectedException;
-import org.xmlsh.core.XValue;
-import org.xmlsh.util.Base64;
-import org.xmlsh.util.StringPair;
-import org.xmlsh.util.Util;
-import org.xmlsh.util.commands.CSVParser;
-import org.xmlsh.util.commands.CSVRecord;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -34,7 +24,16 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 
-import com.amazonaws.regions.RegionUtils;
+import org.xmlsh.core.InvalidArgumentException;
+import org.xmlsh.core.Options;
+import org.xmlsh.core.UnexpectedException;
+import org.xmlsh.core.XValue;
+import org.xmlsh.util.Base64;
+import org.xmlsh.util.StringPair;
+import org.xmlsh.util.Util;
+import org.xmlsh.util.commands.CSVParser;
+import org.xmlsh.util.commands.CSVRecord;
+
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
 import com.amazonaws.services.dynamodbv2.model.AttributeDefinition;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
@@ -44,7 +43,7 @@ import com.amazonaws.services.dynamodbv2.model.Projection;
 import com.amazonaws.services.dynamodbv2.model.ProvisionedThroughputDescription;
 import com.amazonaws.services.dynamodbv2.model.TableDescription;
 
-public abstract class AWSDDBCommand extends AWSCommand {
+public abstract class AWSDDBCommand extends AWSCommand<AmazonDynamoDBClient> {
 
 
 	private static final QName Q_TYPE = new QName("type");
@@ -54,63 +53,18 @@ public abstract class AWSDDBCommand extends AWSCommand {
 	private static final QName Q_ATTRIBUTE = new QName("attribute");
 
 
-	protected		AmazonDynamoDBClient mAmazon ;
-
-	private String mRegion = null;
-	private String mEndpoint = null ;
-
 
 	public AWSDDBCommand() {
 		super();
-	}
-	@Override
-	protected Object getClient() {
-		return mAmazon; 
 	}
 
 	protected void getDDBClient(Options opts) throws UnexpectedException, InvalidArgumentException {
 
 
-		mAmazon =  new AmazonDynamoDBClient(
-				new AWSCommandCredentialsProviderChain( mShell, opts  ) 
-
-				);
-
-
-		setRegion(opts);
-		setEndpoint(opts);
-
-		if( Util.isEqual(mRegion,"local") && mEndpoint != null )
-			mAmazon.setEndpoint( mEndpoint , "dynamodb" , mRegion );
-		else {
-			if( mRegion != null )
-				mAmazon.setRegion(RegionUtils.getRegion(mRegion));
-			if( mEndpoint != null )
-				mAmazon.setEndpoint( mEndpoint );
-
-		}
-
-
-
-
-
-
+		setAmazon(AWSClientFactory.newDDBClient(mShell,opts));
 
 	}
 
-	/* (non-Javadoc)
-	 * @see org.xmlsh.aws.util.AWSCommand#setRegion(java.lang.String)
-	 */
-	@Override
-	public void setRegion(String region) {
-		mRegion = region;
-	}
-
-	@Override
-	public void setEndpoint( String endpoint )
-	{
-		mEndpoint = endpoint ;
-	}
 
 	protected void writeAttribute(String key, AttributeValue avalue) throws XMLStreamException, IOException {
 
