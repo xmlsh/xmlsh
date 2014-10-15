@@ -1185,7 +1185,7 @@ CommandSuffixExpr cmd_suffix() :{  CommandSuffixExpr s = new CommandSuffixExpr
 
 
    
-Word filename_word() :{  Word w;  Token t;  String s;  CommandExpr c;}{  w=word_or_name()  {    return w;  }| t = < VAR_SUBPROC > c = compound_list() < RPAREN >  {    return new CommandNameWord(t, c);  }| t = < VAR_SUBPROC_FILE > w = word_or_name() < RPAREN >  {    return new FileWordExpr(t, w);  }|     t=< LBRACE >   w=word_or_name()   < MRBRACE >  {   return new StringWord( t,"{" + w.toString()  + "}");  }}String separator_op() :{}{  ( < AMP > | < SEMI > )
+Word filename_word() :{  Word w;  Token t;  String s;  CommandExpr c;}{  w=word_or_name()  {    return w;  }| t = < VAR_SUBPROC > c = compound_list() < RPAREN >  {    return new CommandNameWord(t, c);  }| t = < VAR_SUBPROC_FILE > w = word_or_name() < RPAREN >  {    return new FileWordExpr(t, w);  }|     t=< LBRACE >     s= varname()   < MRBRACE >  {   return new BraceIOWord( t,s);  }}String separator_op() :{}{  ( < AMP > | < SEMI > )
   {    return token.toString();  }}
 
 

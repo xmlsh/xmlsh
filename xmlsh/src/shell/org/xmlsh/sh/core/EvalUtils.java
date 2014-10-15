@@ -85,6 +85,9 @@ public class EvalUtils
   private static XVariableExpr parseVarExpr(Shell shell, EvalEnv env, String varname)
       throws IOException, CoreException
       {
+	  mLogger.entry(shell, env, varname);
+	
+	
 
     XVariableExpr expr = new XVariableExpr();
     // ${#var} notation
@@ -119,9 +122,9 @@ public class EvalUtils
     }
 
     expr.setName(varname);
-    return expr;
+    return mLogger.exit(expr );
 
-      }
+  }
 
   public static XValue getIndexedValue(EvalEnv env, XValue xvalue, String ind) throws CoreException
   {
@@ -173,8 +176,6 @@ public class EvalUtils
     boolean bIsWindows = Util.isWindows();
     boolean caseSensitive = !bIsWindows;
     
-    
-
     /*
      * Hack to handle 8.3 windows file names like "Local~1"
      * If not matched and this is windows
@@ -184,7 +185,8 @@ public class EvalUtils
       File fwild = new File(dir, swild);
       if(fwild.exists()) {
         results.add(swild);
-        return results;
+        return mLogger.exit(results)
+		;
       }
     }
     /*
@@ -193,7 +195,8 @@ public class EvalUtils
 
     if( ! Files.isDirectory(path, FileUtils.pathLinkOptions(true))){
     	mLogger.trace("path isnt directory {}" , path);
-    	return results ;
+    	return mLogger.exit(results)
+		 ;
     }
     
 
@@ -205,7 +208,8 @@ public class EvalUtils
     		UnifiedFileAttributes attrs	 = FileUtils.getUnifiedFileAttributes(wpath, false);
 			if( matchOptions.doVisit(wpath,attrs  ) )
 				results.add( swild );
-			return results;
+			return mLogger.exit(results)
+			;
     	}
 
     }
@@ -224,9 +228,7 @@ public class EvalUtils
     } else {
         boolean dotStart = swild.startsWith(".");
         
- 
-        
-
+		mLogger.trace("opening a directory stream on: {}",path);
 		try ( DirectoryStream<Path> dirStream = Files.newDirectoryStream(path  ) ){
 	    
 		    for (Path f : dirStream) {
@@ -241,14 +243,17 @@ public class EvalUtils
 		}
     }
 	    if(results.size() == 0)
-	      return null;
+	      return mLogger.exit(null);
 	    Collections.sort(results);
-	    return results;
+	    return mLogger.exit(results);
 
   }
 
   public static void expandDir(File dir, String parent, CharAttributeBuffer wilds[], List<String> results) throws IOException
   {
+	  mLogger.entry(dir, parent, wilds, results);
+	
+	
     CharAttributeBuffer wild = wilds[0];
     if(wilds.length < 2)
       wilds = null;
@@ -266,6 +271,8 @@ public class EvalUtils
       else expandDir(new File(dir, r), path, wilds, results);
 
     }
+    mLogger.exit();
+	
   }
 
   public static ParseResult expandStringToResult(Shell shell, String value, EvalEnv env, ParseResult result) throws IOException, CoreException
@@ -406,6 +413,10 @@ public class EvalUtils
   public static ParseResult evalVarToResult(Shell shell, XVariableExpr expr, EvalEnv env, CharAttrs attr,
       ParseResult result) throws IOException, CoreException
       {
+	  
+	  mLogger.entry(shell, expr, env, attr, result);
+	
+	
     List<XValue> vs = null;
 
 
@@ -474,9 +485,9 @@ public class EvalUtils
         result.append(xv, env, attr);
       }
     }
-    return result;
+    return mLogger.exit(result);
 
-      }
+  }
 
   // What kinds of values do we peek into
   private static boolean isExpandable(XValue v, EvalEnv env)
@@ -497,20 +508,24 @@ public class EvalUtils
     return v.isAtomic()  ||  v.isSequence() ;
   }
 
-  public static ParseResult evalVarToResult(Shell shell, String var, EvalEnv env, CharAttrs attr, ParseResult result)
-      throws IOException, CoreException
-      {
+	public static ParseResult evalVarToResult(Shell shell, String var,
+			EvalEnv env, CharAttrs attr, ParseResult result)
+			throws IOException, CoreException {
+	
+	mLogger.entry(shell, var, env, attr, result);
+		if (Util.isOneOf(var, "*", "@")) {
+			XVariableExpr expr = new XVariableExpr();
+			expr.setName(var);
+			return evalVarToResult(shell, expr, env.withFlagsOff(
+					EvalFlag.SPLIT_WORDS, EvalFlag.EXPAND_VAR), attr, result);
+		}
 
-    if(Util.isOneOf(var,"*", "@")) {
-      XVariableExpr expr = new XVariableExpr();
-      expr.setName(var);
-      return evalVarToResult(shell, expr, env.withFlagsOff(EvalFlag.SPLIT_WORDS , EvalFlag.EXPAND_VAR), attr, result);
-    }
+		XVariableExpr expr = parseVarExpr(shell, env, var);
+		ParseResult res = evalVarToResult(shell, expr, env, attr, result);
+        return mLogger.exit(res);
+		
 
-    XVariableExpr expr = parseVarExpr(shell, env, var);
-    return evalVarToResult(shell, expr, env, attr, result);
-
-      }
+	}
 
   public static int getSize(XValue xvalue) throws InvalidArgumentException
   {

@@ -12,139 +12,146 @@ import java.nio.file.attribute.UserPrincipal;
 import java.util.EnumSet;
 import java.util.Set;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 
 public class UnifiedFileAttributes {
-	   public static enum FileType {
-		   FILE("file"),
-		   DIRECTORY("dir"),
-		   SYMLINK("link"),
-		   OTHER("other") ;
-		   
-		   private String name;
-		   FileType( String name){
-			   this.name = name ;
-		   }
-		   
-		   public String toString() 
-		   { 
-		      return name ;
-		   }
-	   };
-	   
+	public static enum FileType {
+		FILE("file"),
+		DIRECTORY("dir"),
+		SYMLINK("link"),
+		OTHER("other") ;
 
-		public static enum MatchFlag {
-			HIDDEN_SYS,
-			HIDDEN_NAME,
-			SYSTEM,
-			FILES,
-			DIRECTORIES,
-			LINKS,
-			OTHER,
-			READABLE,
-			WRITABLE,
-			EXECUTABLE
-			
+		private String name;
+		FileType( String name){
+			this.name = name ;
 		}
 
-public static class PathMatchOptions {
-	EnumSet<MatchFlag>  mMatchMask;
-	EnumSet<MatchFlag>  mHideMask;     // Hide mask has precidence 
-
-	
-	
-	public PathMatchOptions() {
-		mMatchMask = EnumSet.allOf(MatchFlag.class);
-		mHideMask  = EnumSet.noneOf(MatchFlag.class);
-	}
-	public PathMatchOptions(EnumSet<MatchFlag> matchFlags , EnumSet<MatchFlag> hideFlags) {
-		mMatchMask = matchFlags;
-		mHideMask  =hideFlags;
-	}
-	
-	public PathMatchOptions withFlagMatching( MatchFlag flag ){
-		mMatchMask = Util.withEnumAdded(mMatchMask , flag );
-		return this ;
-	}
-	public PathMatchOptions withFlagMatching( MatchFlag flag , boolean on ){
-		mMatchMask = on ? Util.withEnumAdded(mMatchMask , flag ) : 
-			Util.withEnumRemoved(mHideMask , flag ) ; 
-		return this ;
-	}
-	
-	public PathMatchOptions withFlagHidden( MatchFlag flag ){
-		mHideMask = Util.withEnumAdded(mHideMask , flag );
-		return this ;
-	}
-	public PathMatchOptions withFlagHidden( MatchFlag flag , boolean on ){
-		mHideMask = on ? Util.withEnumAdded(mHideMask , flag ) : 
-			Util.withEnumRemoved(mHideMask , flag ) ; 
-		return this ;
-	}
-
-	public PathMatchOptions withFlag( MatchFlag flag , boolean showHide ){
-	  if( showHide )
-		  mMatchMask = Util.withEnumAdded(mMatchMask , flag);
-	  
-	  else
-		  mHideMask = Util.withEnumAdded(mHideMask , flag ) ;
- 
-		  return this ;
-    	
-	}
-	
-	public boolean doVisit( Path path , boolean followLinks ){
-		return doVisit( path , FileUtils.getUnifiedFileAttributes(path, followLinks));
-	} 
-	
-	
-	public boolean doVisit( Path path , UnifiedFileAttributes attrs ){
-
-		if( attrs.isAnyFlagMatch(mHideMask) )
-			return false ;
-		
-		return attrs.isAnyFlagMatch(mMatchMask) ;
-	}
+		public String toString() 
+		{ 
+			return name ;
+		}
+	};
 
 
-	
-	
-	
-}
-	  
+	public static enum MatchFlag {
+		HIDDEN_SYS,
+		HIDDEN_NAME,
+		SYSTEM,
+		FILES,
+		DIRECTORIES,
+		LINKS,
+		OTHER,
+		READABLE,
+		WRITABLE,
+		EXECUTABLE
 
-	   private PosixFileAttributes  posix;
-	   private BasicFileAttributes  basic;
-	   private DosFileAttributes    dos ;
-	   private Set<PosixFilePermission>  posixPermissions;
-	   private Path mPath ;
-	   
-	   
+	}
+
+	static Logger mLogger = LogManager.getLogger();
+	public static class PathMatchOptions {
+		EnumSet<MatchFlag>  mMatchMask;
+		EnumSet<MatchFlag>  mHideMask;     // Hide mask has precidence 
+
+
+
+		public PathMatchOptions() {
+			mMatchMask = EnumSet.allOf(MatchFlag.class);
+			mHideMask  = EnumSet.noneOf(MatchFlag.class);
+		}
+		public PathMatchOptions(EnumSet<MatchFlag> matchFlags , EnumSet<MatchFlag> hideFlags) {
+			mMatchMask = matchFlags;
+			mHideMask  =hideFlags;
+		}
+
+		public PathMatchOptions withFlagMatching( MatchFlag flag ){
+			mMatchMask = Util.withEnumAdded(mMatchMask , flag );
+			return this ;
+		}
+		public PathMatchOptions withFlagMatching( MatchFlag flag , boolean on ){
+			mMatchMask = on ? Util.withEnumAdded(mMatchMask , flag ) : 
+				Util.withEnumRemoved(mHideMask , flag ) ; 
+			return this ;
+		}
+
+		public PathMatchOptions withFlagHidden( MatchFlag flag ){
+			mHideMask = Util.withEnumAdded(mHideMask , flag );
+			return this ;
+		}
+		public PathMatchOptions withFlagHidden( MatchFlag flag , boolean on ){
+			mHideMask = on ? Util.withEnumAdded(mHideMask , flag ) : 
+				Util.withEnumRemoved(mHideMask , flag ) ; 
+			return this ;
+		}
+
+		public PathMatchOptions withFlag( MatchFlag flag , boolean showHide ){
+			if( showHide )
+				mMatchMask = Util.withEnumAdded(mMatchMask , flag);
+
+			else
+				mHideMask = Util.withEnumAdded(mHideMask , flag ) ;
+
+			return this ;
+
+		}
+
+		public boolean doVisit( Path path , boolean followLinks ){
+			return doVisit( path , FileUtils.getUnifiedFileAttributes(path, followLinks));
+		} 
+
+
+		public boolean doVisit( Path path , UnifiedFileAttributes attrs ){
+
+			if( attrs.isAnyFlagMatch(mHideMask) )
+				return false ;
+
+			return attrs.isAnyFlagMatch(mMatchMask) ;
+		}
+
+
+	}
+
+
+	private PosixFileAttributes  posix;
+	private BasicFileAttributes  basic;
+	private DosFileAttributes    dos ;
+	private Set<PosixFilePermission>  posixPermissions;
+	private Path mPath ;
+
+
 	public UnifiedFileAttributes(Path path, boolean followLinks) {
 		this( path , null , followLinks );
-		   
-		   
+
+
 	}
 	public UnifiedFileAttributes(Path path, BasicFileAttributes attrs, boolean followLinks) {
-		   mPath = path;
-		   setBasic(attrs) ;
-		   setPosix(FileUtils.getPosixFileAttributes( path , followLinks ));
-		   setDos(FileUtils.getDosFileAttributes( path , followLinks ));
-		   if( getPosix() != null  ){
-			   if( getBasic() == null )
-			      setBasic(getPosix()) ;
-			   posixPermissions = getPosix().permissions();
-		   }
-		   
-		   if( getBasic() == null ){
-			   if( getDos() != null )
-				   setBasic(getDos())  ;
-			   else
-				   setBasic(FileUtils.getBasicFileAttributes( path , followLinks ));
-		   }
-		   if(posixPermissions  == null ){
-			   posixPermissions= FileUtils.emulatePosixFilePermissions(path, followLinks );
-		   }
-	
+		mLogger.entry(path, attrs, followLinks);
+
+
+		mPath = path;
+		setBasic(attrs) ;
+		setPosix(FileUtils.getPosixFileAttributes( path , followLinks ));
+		setDos(FileUtils.getDosFileAttributes( path , followLinks ));
+		if( getPosix() != null  ){
+			if( getBasic() == null )
+				setBasic(getPosix()) ;
+			posixPermissions = getPosix().permissions();
+		}
+
+		if( getBasic() == null ){
+			if( getDos() != null )
+				setBasic(getDos())  ;
+			else
+				setBasic(FileUtils.getBasicFileAttributes( path , followLinks ));
+		}
+		if(posixPermissions  == null ){
+			posixPermissions= FileUtils.emulatePosixFilePermissions(path, followLinks );
+		}
+		mLogger.exit( );
+
+
+
 	}
 	public boolean hasBasic() {
 		return getBasic() != null ;
@@ -190,16 +197,16 @@ public static class PathMatchOptions {
 	}
 	public boolean isArchive() { 
 		return 
-		 (getDos() == null) ? false : getDos().isArchive();
+				(getDos() == null) ? false : getDos().isArchive();
 	}
 	public boolean isSystem() {
 		return 
-				 (getDos() == null) ? false : getDos().isSystem();
+				(getDos() == null) ? false : getDos().isSystem();
 	}
 	public Set<PosixFilePermission> getPermissions() {
 		return posixPermissions;
 	}
-	
+
 	public boolean isHidden() {
 		if( getDos() != null && getDos().isHidden())
 			return true ;
@@ -212,13 +219,13 @@ public static class PathMatchOptions {
 		}
 		return false ;
 	}
-	
+
 	public boolean isHiddenName() {
 		return FileUtils.isHiddenName( mPath );
 
 	}
 
-	
+
 	public UnifiedFileAttributes.FileType  getFileType() {
 		if( isDirectory() )
 			return FileType.DIRECTORY ;
@@ -264,10 +271,10 @@ public static class PathMatchOptions {
 	}
 	public boolean isFlagMatch(  MatchFlag flag )
 	{
-	    switch( flag ){
-	    case DIRECTORIES :
-	    	return isDirectory();
-	    	
+		switch( flag ){
+		case DIRECTORIES :
+			return isDirectory();
+
 		case EXECUTABLE:
 			return canExecute();
 		case FILES:
@@ -288,17 +295,17 @@ public static class PathMatchOptions {
 			return canRead();
 		default:
 			return false ;
-	    }
-	
+		}
+
 	}
 	public boolean isAnyFlagMatch( EnumSet<MatchFlag> flags )
 	{
 		for( MatchFlag flag : flags )
 			if( isFlagMatch(flag))
 				return true ;
-	   return false ;
-   }
-	   
-	   
-	   
-   }
+		return false ;
+	}
+
+
+
+}

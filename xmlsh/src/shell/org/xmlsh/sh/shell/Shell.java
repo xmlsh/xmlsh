@@ -653,7 +653,7 @@ public class Shell implements AutoCloseable, Closeable {
 			
 			catch (Exception | Error e) {
 				printErr(e.getMessage());
-				mLogger.error("Exception parsing statement", e);
+				mLogger.warn("Exception parsing statement", e);
 				parser.ReInit(newParserReader(reader,false), source);
 
 			} finally {
@@ -767,12 +767,12 @@ public class Shell implements AutoCloseable, Closeable {
 					}
 
 					printErr(e.getMessage());
-					mLogger.error("Exception parsing statement", e);
+					mLogger.warn("Exception parsing statement", e);
 					parser.ReInit(newParserReader(false), null);
 				} catch (Error e) {
 					printErr("Error: " + e.getMessage());
 					SourceLocation loc = c != null ? c.getSourceLocation() : null;
-					mLogger.error("Exception parsing statement", e);
+					mLogger.warn("Exception parsing statement", e);
 					if (loc != null) {
 						String sLoc = loc.format(mOpts.mLocationFormat);
 

@@ -57,7 +57,8 @@ public class IOFile {
 		if( mFile == null) {
 			if( mPort != null )
 				file = mPort ;
-		} else
+		}  else
+			
 			file = mFile.expandString(shell, mFileEnv);
 
 

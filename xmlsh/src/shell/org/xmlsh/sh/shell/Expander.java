@@ -137,13 +137,13 @@ public class Expander
     if(arg.startsWith("<{{") && arg.endsWith("}}>")) {
       // Add as a raw value
       result.add(XValue.newXValue(arg.substring(3, arg.length() - 3)), true);
-      return result;
+      return mLogger.exit(result);
     }
 
     // <[ XEXPR ]>
     if(arg.startsWith("<[") && arg.endsWith("]>")) {
       result.add(parseXExpr(mShell, arg.substring(2, arg.length() - 2)), true);
-      return result;
+      return mLogger.exit(result);
     }
 
     char c;
@@ -277,7 +277,7 @@ public class Expander
     if(!env.joinValues())
       result.flush();
 
-    return    mLogger.exit( result);
+    return  mLogger.exit( result);
 
   }
 
