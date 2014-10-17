@@ -46,18 +46,58 @@ public class Options
 
 	public static class	OptionDef
 	{
-		public 		String 		name;		// short name typically 1 letter
-		public		String		longname;	// long name/alias
-		public 		boolean		hasArgs;	// expects an argument
-		public 		boolean 	hasMulti;	// may occur multiple times
-		public 		boolean		hasPlus;	// may be preceeded by + 
+		private 		String 		name;		// short name typically 1 letter
+		private		String		longname;	// long name/alias
+		private 		boolean		expectsArg;	// expects an argument
+		private 		boolean 	multiple;	// may occur multiple times
+		private 		boolean		flag;	// may be preceeded by + 
 
 		public OptionDef( String name , String longname , boolean arg , boolean multi , boolean plus ){
+			setName(name);
+			setLongname(longname) ;
+			setExpectsArg(arg);
+			setMultiple(multi);
+			setFlag(plus);
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		public void setName(String name) {
 			this.name = name;
-			this.longname = longname ;
-			hasArgs = arg;
-			hasMulti = multi;
-			hasPlus = plus;
+		}
+
+		public String getLongname() {
+			return longname;
+		}
+
+		public void setLongname(String longname) {
+			this.longname = longname;
+		}
+
+		public boolean isExpectsArg() {
+			return expectsArg;
+		}
+
+		public void setExpectsArg(boolean expectsArg) {
+			this.expectsArg = expectsArg;
+		}
+
+		public boolean isMultiple() {
+			return multiple;
+		}
+
+		public void setMultiple(boolean multiple) {
+			this.multiple = multiple;
+		}
+
+		public boolean isFlag() {
+			return flag;
+		}
+
+		public void setFlag(boolean flag) {
+			this.flag = flag;
 		}
 
 
@@ -80,7 +120,7 @@ public class Options
 		// Set a single value
 		void setValue( XValue v  )
 		{
-			if( ! option.hasMulti )
+			if( ! option.isMultiple() )
 				values.clear();
 			values.add( v );
 		}
@@ -219,7 +259,7 @@ public class Options
 	{
 		// 	mDefs.addAll( option_list ); - Dont duplicate !
 		for( OptionDef def : option_list ){
-			OptionDef exists = getOptDef( def.name );
+			OptionDef exists = getOptDef( def.getName() );
 			if( exists != null )
 				mDefs.remove(exists);
 			mDefs.add(def);
@@ -237,8 +277,8 @@ public class Options
 
 		for (OptionDef opt : mDefs) {
 
-			if( Util.isEqual( str , opt.name ) ||
-					Util.isEqual( str , opt.longname )
+			if( Util.isEqual( str , opt.getName() ) ||
+					Util.isEqual( str , opt.getLongname() )
 					)
 				return opt;
 
@@ -272,22 +312,22 @@ public class Options
 				if( def == null )
 					throw new UnknownOption("Unknown option: " + a);
 
-				if( flag == '+' && ! def.hasPlus )
+				if( flag == '+' && ! def.isFlag() )
 					throw new UnknownOption("Option : " + a + " cannot start with +");
 
 
 				OptionValue ov = this.getOpt(def);
 				boolean bReuse = (ov != null);
 
-				if( ov != null && ! def.hasMulti )
+				if( ov != null && ! def.isMultiple() )
 					throw new UnknownOption("Unexpected multiple use of option: " + arg);
 				if( ov == null )
 					ov = new OptionValue(def  , flag == '-');
 				ov.option = def ;
-				if( def.hasArgs ){
+				if( def.isExpectsArg() ){
 					if( !I.hasNext() )
 						throw new UnknownOption("Option has no args: " + arg);
-					if( def.hasMulti )
+					if( def.isMultiple() )
 						ov.addValue(I.next());
 					else
 						ov.setValue( I.next());
@@ -336,8 +376,8 @@ public class Options
 	public OptionValue	getOpt( String opt )
 	{
 		for( OptionValue ov : mOptions ){
-			if( Util.isEqual(opt,ov.getOptionDef().name)||
-					Util.isEqual(opt,ov.getOptionDef().longname )
+			if( Util.isEqual(opt,ov.getOptionDef().getName())||
+					Util.isEqual(opt,ov.getOptionDef().getLongname() )
 					)
 				return ov;
 

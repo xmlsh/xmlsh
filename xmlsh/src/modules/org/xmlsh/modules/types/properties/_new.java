@@ -18,7 +18,7 @@ import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.JavaUtils;
 
-@Function(name = "new")
+@Function(name = "new", names={"properties"})
 public class _new extends AbstractBuiltinFunction {
 
 	private SerializeOpts sopts;

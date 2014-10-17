@@ -1,0 +1,15 @@
+value of true [true] original type: java.lang.String boolean type: xs:boolean
+value of false [false] original type: java.lang.String boolean type: xs:boolean
+value of 1 [true] original type: java.lang.String boolean type: xs:boolean
+value of 0 [false] original type: java.lang.String boolean type: xs:boolean
+value of yes [false] original type: java.lang.String boolean type: xs:boolean
+value of no [false] original type: java.lang.String boolean type: xs:boolean
+value of nota [false] original type: java.lang.String boolean type: xs:boolean
+value of  [false] original type: java.lang.String boolean type: xs:boolean
+value of  [false] original type: org.xmlsh.core.XValueSequence boolean type: xs:boolean
+value of true [true] original type: xs:boolean boolean type: xs:boolean
+value of false [false] original type: xs:boolean boolean type: xs:boolean
+value of true [true] original type: xs:boolean boolean type: xs:boolean
+value of false [false] original type: xs:boolean boolean type: xs:boolean
+value of 1 [true] original type: xs:integer boolean type: xs:boolean
+value of a 1 <foo/> 2 bar [true] original type: org.xmlsh.core.XValueSequence boolean type: xs:boolean

@@ -113,10 +113,10 @@ public class SerializeOpts {
 
 	public void setOption(OptionValue ov) throws InvalidArgumentException {
 
-		if (ov.getOptionDef().hasArgs)
-			setOption(ov.getOptionDef().name, ov.getValue());
+		if (ov.getOptionDef().isExpectsArg())
+			setOption(ov.getOptionDef().getName(), ov.getValue());
 		else
-			setOption(ov.getOptionDef().name, ov.getFlag());
+			setOption(ov.getOptionDef().getName(), ov.getFlag());
 
 	}
 

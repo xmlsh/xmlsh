@@ -110,16 +110,15 @@ public class Module extends Types {
 		    	usage(shell, "has-opt( options option-name");
 			    return XValue.newInstance(false);
 		    }
-		    
-		    Options conf = args.get(0).asInstanceOf(Options.class );   
+		    Options opts = args.get(0).asInstanceOf(Options.class );   
 		    String name = args.get(1).toString();
-		    return XValue.newInstance( conf.hasOpt(name));
+		    return XValue.newInstance( opts.hasOpt(name));
 	  }
 
 	}
 	
 
-	@Function( name="get-opt")
+	@Function( name="get-opt",names={"option","flag","value"	})
 	public static class getOpt extends AbstractBuiltinFunction
 	{
 	
@@ -127,21 +126,30 @@ public class Module extends Types {
 	  public XValue run(Shell shell, List<XValue> args) throws Exception
 	  {
 		    if( args.size() < 2 ||! args.get(0).isInstanceOf( Options.class)){
-		    	usage(shell, "option [default]");
+		    	usage(shell, "options option [default]");
 			    return XValue.nullValue();
 		    }
 		    
-		    Options conf = args.get(0).asInstanceOf(Options.class );   
+		    Options opts = args.get(0).asInstanceOf(Options.class );   
 		    String name = args.get(1).toString();
-		    XValue v = conf.getOptValue(name);
-		    if( v == null &&  args.size() > 2 ) 
-		    	v = args.get(2);
+		    XValue defaultValue  = args.size() > 2 ? args.get(2) :  null ;
+		    
+			OptionDef def = opts.getOptDef(name);
+			if( def == null )
+				return XValue.nullValue();
+			if( def.isFlag()) 
+			   return  
+					     XValue.newXValue( opts.getOptFlag(name, defaultValue == null ?  true  : defaultValue.toBoolean() ) );
+		    
+		    XValue v = opts.getOptValue(name);
+		    if( v == null )
+		    	v = defaultValue ;
 		    return v ;
 	  }
 	
 	}
 	
-	@Function( name="get-args")
+	@Function( name="get-args" , names={"args","remaining-args","remaining"})
 	public static class getArgs extends AbstractBuiltinFunction
 	{
 	

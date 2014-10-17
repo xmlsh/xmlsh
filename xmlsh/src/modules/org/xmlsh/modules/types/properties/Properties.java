@@ -106,6 +106,9 @@ public class Properties extends Types {
 			return  args.get(0).asInstanceOf(XValueProperties.class).put( args.get(1).toString() , args.get(2) );
 	}
 	}
-
+	@Function( name="get-value" , names={"value" , "property"} )
+	public static class getValue extends  Types.value  {
+	  }
+	
 
 }

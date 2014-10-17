@@ -114,7 +114,7 @@ public class xgetopts extends XCommand {
 
 
 					for( OptionDef def : pass_optdefs ){
-						OptionValue value = prog_opts.getOpt(def.name);
+						OptionValue value = prog_opts.getOpt(def.getName());
 						if( value != null ){
 							writeOption( stdout , serializeOpts , out , value );
 
@@ -131,10 +131,10 @@ public class xgetopts extends XCommand {
 	}
 
 	private void writeOption(OutputPort stdout, SerializeOpts serializeOpts, IXdmItemOutputStream out, OptionValue value) throws CoreException, IOException, SaxonApiException {
-		XdmItem argFlag = (XValue.newXValue((value.getFlag() ? "-" : "+") + value.getOptionDef().name)).toXdmItem();
+		XdmItem argFlag = (XValue.newXValue((value.getFlag() ? "-" : "+") + value.getOptionDef().getName())).toXdmItem();
 
 
-		if( ! value.getOptionDef().hasArgs ){
+		if( ! value.getOptionDef().isExpectsArg() ){
 			out.write( argFlag );
 			stdout.writeSequenceSeperator(serializeOpts);
 			return ;
@@ -163,15 +163,15 @@ public class xgetopts extends XCommand {
 
 
 		for( OptionValue option : prog_optvalues ){
-			if( ignoreOpts != null && ignoreOpts.getOptDef(option.getOptionDef().name) != null )
+			if( ignoreOpts != null && ignoreOpts.getOptDef(option.getOptionDef().getName()) != null )
 				continue ;
 
 			out.writeStartElement(kOPTION);
-			out.writeAttribute("name",option.getOptionDef().name);
-			if( ! Util.isEmpty(option.getOptionDef().longname) )
-			    out.writeAttribute("long-name",option.getOptionDef().longname);
+			out.writeAttribute("name",option.getOptionDef().getName());
+			if( ! Util.isEmpty(option.getOptionDef().getLongname()) )
+			    out.writeAttribute("long-name",option.getOptionDef().getLongname());
 
-			if( option.getOptionDef().hasArgs  ){
+			if( option.getOptionDef().isExpectsArg()  ){
 
 
 				for( XValue value : option.getValues() ) {

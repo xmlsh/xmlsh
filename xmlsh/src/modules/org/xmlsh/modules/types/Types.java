@@ -153,6 +153,22 @@ public static class containsKey extends AbstractBuiltinFunction
   }
 
 }
+@Function( name = "put",names={"set"})
+public static class put  extends AbstractBuiltinFunction
+{
+
+
+  @Override
+  public XValue run(Shell shell, List<XValue> args) throws Exception
+  {
+	 super.requires(args.size() == 3, "put( obj , key , value )");
+	 super.requires(args.get(0).isXType(), "obj must be an XType");
+	 requires(args.get(1).isAtomic() , "key must be atomic");
+     return  args.get(0).getTypeMethods().setXValue( args.get(0), args.get(1).toString() , args.get(2)  );
+  }
+
+}
+
 
 
 
