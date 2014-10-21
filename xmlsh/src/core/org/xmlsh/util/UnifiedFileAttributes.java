@@ -115,11 +115,11 @@ public class UnifiedFileAttributes {
 
 
 		public boolean doVisit( Path path , UnifiedFileAttributes attrs ){
+                   mLogger.entry(path,attrs);
 
 			if( attrs.isAnyFlagMatch(mHideMask) )
-				return false ;
-
-			return attrs.isAnyFlagMatch(mMatchMask) ;
+				return mLogger.exit(false );
+			return mLogger.exit(attrs.isAnyFlagMatch(mMatchMask)) ;
 		}
 
 
@@ -144,9 +144,9 @@ public class UnifiedFileAttributes {
 	public UnifiedFileAttributes(Path path, BasicFileAttributes attrs, LinkOption...  followLinks) {
 		mLogger.entry(path, attrs, followLinks);
 		mPath = path;
-		mLogger.exit( );
 		mLinkOpts = followLinks;
 		setBasic(attrs);
+		mLogger.exit( );
 
 	}
 	
@@ -397,13 +397,15 @@ public class UnifiedFileAttributes {
 	}
 	public boolean isAnyFlagMatch( EnumSet<MatchFlag> flags )
 	{
+          mLogger.entry( flags );
 		if( ! bInit ) init() ;
-		if( ! bExists ) return false ;
+		if( ! bExists ) 
+			return mLogger.exit(false );
 
 		for( MatchFlag flag : flags )
 			if( isFlagMatch(flag))
-				return true ;
-		return false ;
+				return mLogger.exit(true );
+		return mLogger.exit(false );
 	}
 
 
