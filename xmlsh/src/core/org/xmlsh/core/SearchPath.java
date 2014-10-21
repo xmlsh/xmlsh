@@ -8,6 +8,7 @@ package org.xmlsh.core;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -16,6 +17,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.FileUtils;
+import org.xmlsh.util.UnifiedFileAttributes;
+import org.xmlsh.util.UnifiedFileAttributes.PathMatchOptions;
 import org.xmlsh.util.Util;
 
 // avoid java.nio.Path
@@ -77,15 +80,15 @@ public class SearchPath implements Iterable<String> {
 	}
 
 
-	public 	File	getFirstFileInPath( Shell shell , String fname ,  boolean isFile ) throws IOException
+	public 	File 	getFirstFileInPath( Shell shell , String fname ,  PathMatchOptions match  ) throws IOException
 	{
-		mLogger.entry( fname, isFile);
+		mLogger.entry( fname, match);
 		for ( String path  : mPaths ){
-			File dir = shell.getFile(path);
-			File	target = new File( dir  , fname );
+			Path dir = shell.getPath(path);
+			Path 	target =  dir.resolve(fname);
 			
-			if( target.exists() && ( isFile ? target.isFile() : target.isDirectory() ) )
-				return mLogger.exit(target);
+			if( match.doVisit(  target  ,  FileUtils.getUnifiedFileAttributes(target)))
+					return mLogger.exit( target.normalize().toFile());
 		}
 		return mLogger.exit(null);
 	}

@@ -168,7 +168,7 @@ public class ls extends XCommand {
 		private void writeFlags(Path path, UnifiedFileAttributes uattrs)
 				throws IOException {
 			StringBuffer flags = new StringBuffer();
-			Set<PosixFilePermission> perms = FileUtils.getPosixFilePermissions(path,false);
+			Set<PosixFilePermission> perms = FileUtils.getPosixFilePermissions(path,LinkOption.NOFOLLOW_LINKS);
 			
 
 			flags.append(uattrs.isDirectory() ? "d" : "-");

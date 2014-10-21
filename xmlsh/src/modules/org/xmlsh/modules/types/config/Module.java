@@ -1,5 +1,7 @@
 package org.xmlsh.modules.types.config;
 
+import static org.apache.logging.log4j.LogManager.exists;
+
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
@@ -34,6 +36,9 @@ public class Module extends Types {
 	  @Override
 	  public XValue run(Shell shell, List<XValue> args) throws Exception
 	  {
+		mLogger.entry(shell, args);
+		
+		
 	    if( args.size() != 2 ||! args.get(0).isInstanceOf( XConfiguration.class)){
 	    	usage(shell, "config section-name");
 		    return XValue.nullValue();
@@ -41,7 +46,8 @@ public class Module extends Types {
 	    
 	    XConfiguration conf = args.get(0).asInstanceOf(XConfiguration.class );   
 	    String name = args.get(1).toString();
-	    return XValue.newXValue(conf.getSection(name));
+		return mLogger.exit(XValue.newXValue(conf.getSection(name)));
+		
 	  }
 	}
 	
@@ -51,6 +57,10 @@ public class Module extends Types {
 		@Override
 	  public XValue run(Shell shell, List<XValue> args) throws Exception
 	  {
+	   
+	    mLogger.entry(shell, args);
+		
+		
 	    if( args.size() < 2 ||! args.get(0).isInstanceOf( XConfiguration.class))
 	    	usage(shell, "config section-name key-name");
 	    XConfiguration conf = args.get(0).asInstanceOf(XConfiguration.class );   

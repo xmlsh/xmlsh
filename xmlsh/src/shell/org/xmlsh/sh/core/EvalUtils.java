@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
 import java.nio.file.Paths;
@@ -204,8 +205,8 @@ public class EvalUtils
     // If the glob matches a file exactly then choose it - depending on the options 
     try {
     	Path wpath =  path.resolve(swild);
-    	if( Files.exists(wpath, FileUtils.pathLinkOptions(false))){
-    		UnifiedFileAttributes attrs	 = FileUtils.getUnifiedFileAttributes(wpath, false);
+    	if( Files.exists(wpath, LinkOption.NOFOLLOW_LINKS)){
+    		UnifiedFileAttributes attrs	 = FileUtils.getUnifiedFileAttributes(wpath, LinkOption.NOFOLLOW_LINKS);
 			if( matchOptions.doVisit(wpath,attrs  ) )
 				results.add( swild );
 			return mLogger.exit(results)
@@ -232,7 +233,7 @@ public class EvalUtils
 		try ( DirectoryStream<Path> dirStream = Files.newDirectoryStream(path  ) ){
 	    
 		    for (Path f : dirStream) {
-		    	UnifiedFileAttributes attrs = FileUtils.getUnifiedFileAttributes(f, false);
+		    	UnifiedFileAttributes attrs = FileUtils.getUnifiedFileAttributes(f, LinkOption.NOFOLLOW_LINKS);
 		    	if( wp.matches(f.getFileName()) && matchOptions.doVisit(f,attrs) ){
 		            // Special case - only show .* files if the wildcard starts with them
 		    		if(   ! dotStart && f.getFileName().toString().startsWith(".") )

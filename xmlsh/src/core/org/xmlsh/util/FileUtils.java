@@ -115,11 +115,11 @@ public class FileUtils
 		
 		};
 	}
-	public static Set<PosixFilePermission> getPosixFilePermissions(Path path, boolean followLink ) {
+	public static Set<PosixFilePermission> getPosixFilePermissions(Path path, LinkOption followLink ) {
 		if( supportsAttributeView(path, PosixFileAttributeView.class)){
 			try {
 				return 
-						Files.getPosixFilePermissions(path, pathLinkOptions(followLink));
+						Files.getPosixFilePermissions(path, (followLink));
 			} catch (IOException e) {
 				mLogger.catching(e);
 			}
@@ -131,12 +131,12 @@ public class FileUtils
 	
 	
 	public static <A extends BasicFileAttributes, V extends BasicFileAttributeView> A
-	      getFileAttributes( Path path , Class<A> attrClass , Class<V> viewClass , boolean followLinks) {
+	      getFileAttributes( Path path , Class<A> attrClass , Class<V> viewClass , LinkOption... followLinks) {
 		
 		// Returns null instead of exception 
 		   if( supportsAttributeView(path, viewClass)){
 			   try {
-					A attrs = Files.readAttributes(path, attrClass, pathLinkOptions(followLinks));
+					A attrs = Files.readAttributes(path, attrClass, followLinks);
 					if( attrs != null )
 						return attrs;
 				} catch (IOException e) {
@@ -155,32 +155,34 @@ public class FileUtils
 	   
    
    }
-    public static PosixFileAttributes getPosixFileAttributes(Path path, boolean followLinks ) {
+    public static PosixFileAttributes getPosixFileAttributes(Path path, LinkOption... followLinks ) {
 	   return getFileAttributes(path,PosixFileAttributes.class,PosixFileAttributeView.class,followLinks);
 	}
 	
-   public static BasicFileAttributes getBasicFileAttributes(Path path, boolean followLinks ) {
+   public static BasicFileAttributes getBasicFileAttributes(Path path, LinkOption... followLinks ) {
+	   
+	   
 	   return getFileAttributes(path,BasicFileAttributes.class,BasicFileAttributeView.class,followLinks);
    }
    
-   public static DosFileAttributes getDosFileAttributes(Path path, boolean followLinks ) {
+   public static DosFileAttributes getDosFileAttributes(Path path, LinkOption... followLinks ) {
 	   DosFileAttributes dos =  getFileAttributes(path,DosFileAttributes.class,DosFileAttributeView.class,followLinks);
 	   return dos ;
    
    }
 
-   public static UnifiedFileAttributes getUnifiedFileAttributes(Path path, boolean followLinks)
+   public static UnifiedFileAttributes getUnifiedFileAttributes(Path path, LinkOption...  followLinks)
    {
 	  return  new UnifiedFileAttributes(path, followLinks );
 	   
    }
    
 	public static UnifiedFileAttributes getUnifiedFileAttributes(Path path,
-			BasicFileAttributes attrs, boolean followLinks) {
+			BasicFileAttributes attrs, LinkOption followLinks) {
 		  return  new UnifiedFileAttributes(path, attrs , followLinks );
 
 	}
-   protected static Set<PosixFilePermission> emulatePosixFilePermissions(Path path, boolean followLinks ) {
+   protected static Set<PosixFilePermission> emulatePosixFilePermissions(Path path, LinkOption...  followLinks ) {
 	   
 	   Set<PosixFilePermission> perms = EnumSet
 				.noneOf(PosixFilePermission.class);
@@ -392,7 +394,7 @@ public class FileUtils
 	}
 	
 	public static boolean isSystem(Path path) {
-		DosFileAttributes view = getDosFileAttributes(path, false);
+		DosFileAttributes view = getDosFileAttributes(path);
 		if( view == null )
 			return false ;
 		return view.isSystem();

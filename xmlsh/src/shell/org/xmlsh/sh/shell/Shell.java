@@ -91,6 +91,7 @@ import org.xmlsh.util.NullInputStream;
 import org.xmlsh.util.NullOutputStream;
 import org.xmlsh.util.SessionEnvironment;
 import org.xmlsh.util.StringPair;
+import org.xmlsh.util.UnifiedFileAttributes.PathMatchOptions;
 import org.xmlsh.util.Util;
 import org.xmlsh.xpath.EvalDefinition;
 import org.xmlsh.xpath.ThreadLocalShell;
@@ -1140,6 +1141,9 @@ public class Shell implements AutoCloseable, Closeable {
 		try {
 			shell.enterEval();
 			ret = cmd.run(shell, "xmlsh", vargs);
+		} catch (ThrowException e){
+			ret = shell.convertReturnValueToExitStatus( e.getValue());
+			
 		} catch (Throwable e) {
 			mLogger.error("Uncaught exception in main", e);
 		} finally {
@@ -1220,6 +1224,14 @@ public class Shell implements AutoCloseable, Closeable {
 	
 	}
 
+	public File getExplicitFile(String name, PathMatchOptions match )
+			throws IOException {
+		File f = getExplicitFile(null, name, true);
+		if( f != null && match.doVisit(f.toPath()))
+             return f ;
+		return null ;
+	
+	}
 	
 	public File getExplicitFile(File dir, String name, boolean mustExist)
 			throws IOException {

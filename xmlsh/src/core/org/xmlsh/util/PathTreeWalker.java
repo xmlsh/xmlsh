@@ -58,11 +58,11 @@ public class PathTreeWalker {
 
     	try {
     		
-    		BasicFileAttributes attrs = FileUtils.getBasicFileAttributes(start, false);
+    		BasicFileAttributes attrs = FileUtils.getBasicFileAttributes(start,LinkOption.NOFOLLOW_LINKS);
     		if( attrs == null )
     			return FileVisitResult.CONTINUE;
        	   
-    	    UnifiedFileAttributes uattrs = FileUtils.getUnifiedFileAttributes(start, attrs , false );
+    	    UnifiedFileAttributes uattrs = FileUtils.getUnifiedFileAttributes(start, attrs , LinkOption.NOFOLLOW_LINKS );
        	    
     	    // Start is a file not a directory 
     	    if( depth == 0 &&  ! uattrs.isDirectory()){
@@ -74,7 +74,7 @@ public class PathTreeWalker {
     		
     		try ( DirectoryStream<Path>  ds =  Files.newDirectoryStream(start) ){
 			    for (Path path : ds) {
-		    	    UnifiedFileAttributes ua = FileUtils.getUnifiedFileAttributes(path, false );
+		    	    UnifiedFileAttributes ua = FileUtils.getUnifiedFileAttributes(path, LinkOption.NOFOLLOW_LINKS );
 			    	if( mMatchOptions.doVisit(path, ua ))
 			    		paths.add( ua );
 			    }

@@ -1,7 +1,9 @@
 package org.xmlsh.util;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.DosFileAttributes;
@@ -51,8 +53,8 @@ public class UnifiedFileAttributes {
 
 	static Logger mLogger = LogManager.getLogger();
 	public static class PathMatchOptions {
-		EnumSet<MatchFlag>  mMatchMask;
-		EnumSet<MatchFlag>  mHideMask;     // Hide mask has precidence 
+		private  EnumSet<MatchFlag>  mMatchMask;
+		private EnumSet<MatchFlag>  mHideMask;     // Hide mask has precidence 
 
 
 
@@ -74,6 +76,16 @@ public class UnifiedFileAttributes {
 				Util.withEnumRemoved(mHideMask , flag ) ; 
 			return this ;
 		}
+		public PathMatchOptions withFlagsMatching( MatchFlag... flags)
+		{
+			mMatchMask = Util.withEnumsAdded(mMatchMask, flags);
+			return this ;
+		}
+		public PathMatchOptions withFlagsHidden( MatchFlag... flags)
+		{
+			mHideMask = Util.withEnumsAdded(mHideMask, flags);
+			return this ;
+		}
 
 		public PathMatchOptions withFlagHidden( MatchFlag flag ){
 			mHideMask = Util.withEnumAdded(mHideMask , flag );
@@ -84,6 +96,7 @@ public class UnifiedFileAttributes {
 				Util.withEnumRemoved(mHideMask , flag ) ; 
 			return this ;
 		}
+		
 
 		public PathMatchOptions withFlag( MatchFlag flag , boolean showHide ){
 			if( showHide )
@@ -96,7 +109,7 @@ public class UnifiedFileAttributes {
 
 		}
 
-		public boolean doVisit( Path path , boolean followLinks ){
+		public boolean doVisit( Path path , LinkOption... followLinks ){
 			return doVisit( path , FileUtils.getUnifiedFileAttributes(path, followLinks));
 		} 
 
@@ -118,96 +131,169 @@ public class UnifiedFileAttributes {
 	private DosFileAttributes    dos ;
 	private Set<PosixFilePermission>  posixPermissions;
 	private Path mPath ;
+	private boolean bInit = false ;
+	private boolean bExists = false ;
 
+	private LinkOption[] mLinkOpts;
 
-	public UnifiedFileAttributes(Path path, boolean followLinks) {
+	public UnifiedFileAttributes(Path path, LinkOption...  followLinks) {
 		this( path , null , followLinks );
 
 
 	}
-	public UnifiedFileAttributes(Path path, BasicFileAttributes attrs, boolean followLinks) {
+	public UnifiedFileAttributes(Path path, BasicFileAttributes attrs, LinkOption...  followLinks) {
 		mLogger.entry(path, attrs, followLinks);
-
-
 		mPath = path;
-		setBasic(attrs) ;
-		setPosix(FileUtils.getPosixFileAttributes( path , followLinks ));
-		setDos(FileUtils.getDosFileAttributes( path , followLinks ));
-		if( getPosix() != null  ){
-			if( getBasic() == null )
-				setBasic(getPosix()) ;
-			posixPermissions = getPosix().permissions();
-		}
-
-		if( getBasic() == null ){
-			if( getDos() != null )
-				setBasic(getDos())  ;
-			else
-				setBasic(FileUtils.getBasicFileAttributes( path , followLinks ));
-		}
-		if(posixPermissions  == null ){
-			posixPermissions= FileUtils.emulatePosixFilePermissions(path, followLinks );
-		}
 		mLogger.exit( );
-
-
+		mLinkOpts = followLinks;
+		setBasic(attrs);
 
 	}
+	
+
+	private void init()
+	{
+
+		try {
+			if( bInit )
+				return ;
+			// No basic attrs passed - check existance
+			if( basic == null ){
+				// Check if file exists first
+				if( ! Files.exists(mPath, mLinkOpts))
+					return ;
+				basic = FileUtils.getBasicFileAttributes(mPath, mLinkOpts);
+				if( basic == null )
+					return ;
+				
+			}
+			bExists = true ;
+
+			this.posix = FileUtils.getPosixFileAttributes( mPath , mLinkOpts );
+			this.dos = FileUtils.getDosFileAttributes( mPath , mLinkOpts );
+			if( posix != null  ){
+				if( basic == null )
+					basic = posix ;
+				posixPermissions =posix.permissions();
+			}
+	
+			if( basic == null ){
+				if( dos != null )
+					basic  = dos  ;
+				else
+					basic = FileUtils.getBasicFileAttributes( mPath , mLinkOpts );
+			}
+			if(posixPermissions  == null ){
+				posixPermissions= FileUtils.emulatePosixFilePermissions(mPath, mLinkOpts );
+			}
+		} finally {
+			bInit = true ;
+		}
+		
+		
+	}
 	public boolean hasBasic() {
+		if( ! bInit ) init() ;
+		
 		return getBasic() != null ;
 	}
 	public boolean hasPosix() {
+		if( ! bInit ) init() ;
+
 		return getPosix() != null ;
 	}
 	public boolean hasDos() {
+		if( ! bInit ) init() ;
 		return getDos() != null ;
 	}
 	public boolean hasAny() {
+		if( ! bInit ) init() ;
+		if( ! bExists ) return false ;
+
 		return hasBasic() || hasDos() || hasPosix() ;
 	}
 	public UserPrincipal owner() {
+		if( ! bInit ) init() ;
+
 		return getPosix().owner();
 	}
 	public FileTime lastModifiedTime() {
+		if( ! bInit ) init() ;
+
 		return getBasic().lastModifiedTime();
 	}
 	public FileTime lastAccessTime() {
+		if( ! bInit ) init() ;
+
 		return getBasic().lastAccessTime();
 	}
 	public FileTime creationTime() {
+		if( ! bInit ) init() ;
+		if( ! bExists ) return null; ;
+
 		return getBasic().creationTime();
 	}
 	public boolean isRegularFile() {
+		if( ! bInit ) init() ;
+		if( ! bExists ) return false  ;
+
 		return getBasic().isRegularFile();
 	}
 	public boolean isDirectory() {
+		if( ! bInit ) init() ;
+		if( ! bExists ) return false  ;
+
+
 		return getBasic().isDirectory();
 	}
 	public boolean isSymbolicLink() {
+		if( ! bInit ) init() ;
+		if( ! bExists ) return false  ;
+
 		return getBasic().isSymbolicLink();
 	}
 	public boolean isOther() {
+		if( ! bInit ) init() ;
+		if( ! bExists ) return true  ;
+
 		return getBasic().isOther();
 	}
 	public long size() {
+		if( ! bInit ) init() ;
+		if( ! bExists ) return -1;
+
 		return getBasic().size();
 	}
 	public Object fileKey() {
+		if( ! bInit ) init() ;
+		if( ! bExists ) return null  ;
+
 		return getBasic().fileKey();
 	}
 	public boolean isArchive() { 
+		if( ! bInit ) init() ;
+		if( ! bExists ) return false ;
+
 		return 
 				(getDos() == null) ? false : getDos().isArchive();
 	}
 	public boolean isSystem() {
+		if( ! bInit ) init() ;
+		if( ! bExists ) return false ;
+
 		return 
 				(getDos() == null) ? false : getDos().isSystem();
 	}
 	public Set<PosixFilePermission> getPermissions() {
+		if( ! bInit ) init() ;
+	
 		return posixPermissions;
 	}
 
 	public boolean isHidden() {
+		if( ! bInit ) init() ;
+		if( ! bExists ) return false ;
+
 		if( getDos() != null && getDos().isHidden())
 			return true ;
 		try {
@@ -221,12 +307,16 @@ public class UnifiedFileAttributes {
 	}
 
 	public boolean isHiddenName() {
+		
 		return FileUtils.isHiddenName( mPath );
 
 	}
 
 
 	public UnifiedFileAttributes.FileType  getFileType() {
+		if( ! bInit ) init() ;
+		if( ! bExists ) return FileType.OTHER;
+
 		if( isDirectory() )
 			return FileType.DIRECTORY ;
 		if( isRegularFile() )
@@ -252,25 +342,32 @@ public class UnifiedFileAttributes {
 		return mPath ;
 	}
 	public DosFileAttributes getDos() {
+		if( ! bInit ) init() ;
 		return dos;
 	}
-	public void setDos(DosFileAttributes dos) {
+	private void setDos(DosFileAttributes dos) {
 		this.dos = dos;
 	}
 	public BasicFileAttributes getBasic() {
+		if( ! bInit ) init() ;
 		return basic;
 	}
-	public void setBasic(BasicFileAttributes basic) {
+	private void setBasic(BasicFileAttributes basic) {
 		this.basic = basic;
 	}
 	public PosixFileAttributes getPosix() {
+		if( ! bInit ) init() ;
 		return posix;
 	}
-	public void setPosix(PosixFileAttributes posix) {
+	private void setPosix(PosixFileAttributes posix) {
 		this.posix = posix;
 	}
 	public boolean isFlagMatch(  MatchFlag flag )
 	{
+		if( ! bInit ) init() ;
+
+		if( ! bExists ) return false ;
+		
 		switch( flag ){
 		case DIRECTORIES :
 			return isDirectory();
@@ -300,6 +397,9 @@ public class UnifiedFileAttributes {
 	}
 	public boolean isAnyFlagMatch( EnumSet<MatchFlag> flags )
 	{
+		if( ! bInit ) init() ;
+		if( ! bExists ) return false ;
+
 		for( MatchFlag flag : flags )
 			if( isFlagMatch(flag))
 				return true ;

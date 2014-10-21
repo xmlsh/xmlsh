@@ -165,23 +165,23 @@ public class XFile /* implements XSerializble */ {
 	}
 
 	
-	public 	Set<PosixFilePermission> getPosixFilePermissions(boolean followLinks)
+	public 	Set<PosixFilePermission> getPosixFilePermissions(LinkOption... followLinks)
 	{
 		return getFileAttributes(followLinks).getPermissions();
 	}
 	
-	public PosixFileAttributes  getPosixFileAttributes(boolean followLinks) {
+	public PosixFileAttributes  getPosixFileAttributes(LinkOption... followLinks) {
 		return getFileAttributes(followLinks).getPosix();
 	}
 	
-	public BasicFileAttributes  getBasicFileAttributes(boolean followLinks) {
+	public BasicFileAttributes  getBasicFileAttributes(LinkOption... followLinks) {
 		return getFileAttributes(followLinks).getBasic();
 	}
 	
-	public DosFileAttributes  getDosFileAttributes(boolean followLinks) {
+	public DosFileAttributes  getDosFileAttributes(LinkOption... followLinks) {
 		return getFileAttributes(followLinks).getDos();
 	}
-	public UnifiedFileAttributes  getFileAttributes(boolean followLinks) {
+	public UnifiedFileAttributes  getFileAttributes(LinkOption... followLinks) {
 		if( mAttrs == null )
 		  mAttrs = FileUtils.getUnifiedFileAttributes(toPath(),followLinks);
 		return mAttrs;
@@ -190,7 +190,7 @@ public class XFile /* implements XSerializble */ {
 	public void serialize(XMLStreamWriter writer, boolean all, boolean end, boolean pathrel ) throws  XMLStreamException {
 
 
-		UnifiedFileAttributes attrs = FileUtils.getUnifiedFileAttributes(mPath, false );
+		UnifiedFileAttributes attrs = FileUtils.getUnifiedFileAttributes(mPath, LinkOption.NOFOLLOW_LINKS );
 		
 		writer.writeStartElement(attrs.isDirectory() ? "dir" : "file");
 		writer.writeAttribute("name", getName());

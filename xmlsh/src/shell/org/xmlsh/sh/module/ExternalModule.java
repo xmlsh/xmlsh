@@ -24,6 +24,9 @@ import org.xmlsh.core.XClassLoader;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.sh.shell.ShellConstants;
+import org.xmlsh.util.UnifiedFileAttributes.PathMatchOptions;
+import static  org.xmlsh.util.UnifiedFileAttributes.MatchFlag.*;
+
 import org.xmlsh.util.Util;
 
 public class ExternalModule extends PackageModule
@@ -34,7 +37,8 @@ public class ExternalModule extends PackageModule
    * ".xml")
    */
 	
-  private String mURI;
+  private static PathMatchOptions matchDirectory = new PathMatchOptions().withFlagsMatching(DIRECTORIES,READABLE);
+private String mURI;
   
 
   protected ExternalModule(ModuleConfig config , XClassLoader loader ) throws CoreException
@@ -66,7 +70,7 @@ public  static ModuleConfig getConfiguration(Shell shell, String nameuri,  List<
       else {
 
         SearchPath path = shell.getPath(ShellConstants.XMODPATH, true);
-        modDir = path.getFirstFileInPath(shell, nameuri,false);
+        modDir = path.getFirstFileInPath(shell, nameuri, matchDirectory );
         if(modDir == null)
           throw new InvalidArgumentException("Cannot find module directory for : " + nameuri);
 

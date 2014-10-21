@@ -11,6 +11,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -69,6 +70,8 @@ import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.sh.shell.ShellConstants;
 import org.xmlsh.util.FileUtils;
 import org.xmlsh.util.StringPair;
+import static org.xmlsh.util.UnifiedFileAttributes.MatchFlag.*;
+import org.xmlsh.util.UnifiedFileAttributes.PathMatchOptions;
 import org.xmlsh.util.Util;
 
 public abstract class CommandFactory {
@@ -80,7 +83,13 @@ public abstract class CommandFactory {
 	private static CommandFactory _instance = null;
 
 	private static HashMap<String, Class<? extends AbstractCommand>> mBuiltinCommands = new HashMap<>();
+	
+	private static PathMatchOptions sExecutablePath  = new PathMatchOptions().withFlagsHidden( DIRECTORIES,HIDDEN_NAME,HIDDEN_SYS).
+			withFlagsMatching(FILES,EXECUTABLE,READABLE);
 
+	private static PathMatchOptions sExplicitPath  = new PathMatchOptions().withFlagHidden( DIRECTORIES).
+			withFlagsMatching(FILES,READABLE);
+	
 	private static void addBuiltinCommand(String name,
 			Class<? extends AbstractCommand> cls) {
 		mBuiltinCommands.put(name, cls);
@@ -166,29 +175,30 @@ public abstract class CommandFactory {
 	private static ICommand getExternal(Shell shell, String name, SourceLocation loc)
 			throws IOException {
 		mLogger.entry(shell, name);
+		
+		
 
 		File cmdFile = null;
 
 		if (FileUtils.hasDirectory(name)) {
-
 			cmdFile = shell.getExplicitFile(name, true,true);
 			if (cmdFile == null && !name.endsWith(".exe")  && Util.isWindows())
-				cmdFile = shell.getExplicitFile(name + ".exe", true);
+				cmdFile = shell.getExplicitFile(name + ".exe", sExecutablePath);
 			if (cmdFile == null && !name.endsWith(".bat")  && Util.isWindows())
-				cmdFile = shell.getExplicitFile(name + ".bat", true);
+				cmdFile = shell.getExplicitFile(name + ".bat", sExecutablePath);
 			if (cmdFile == null && !name.endsWith(".cmd")  && Util.isWindows())
-				cmdFile = shell.getExplicitFile(name + ".cmd", true);
+				cmdFile = shell.getExplicitFile(name + ".cmd", sExecutablePath);
 		}
 
 		if (cmdFile == null) {
 			SearchPath path = shell.getExternalPath();
-			cmdFile = path.getFirstFileInPath(shell, name,true);
+			cmdFile = path.getFirstFileInPath(shell, name,sExecutablePath);
 			if (cmdFile == null && !name.endsWith(".exe") && Util.isWindows()  )
-				cmdFile = path.getFirstFileInPath(shell, name + ".exe",true);
+				cmdFile = path.getFirstFileInPath(shell, name + ".exe",sExecutablePath);
 			if (cmdFile == null && !name.endsWith(".bat") && Util.isWindows()  )
-				cmdFile = path.getFirstFileInPath(shell, name + ".bat",true);
+				cmdFile = path.getFirstFileInPath(shell, name + ".bat",sExecutablePath);
 			if (cmdFile == null && !name.endsWith(".cmd") && Util.isWindows()  )
-				cmdFile = path.getFirstFileInPath(shell, name + ".cmd",true);
+				cmdFile = path.getFirstFileInPath(shell, name + ".cmd",sExecutablePath);
 
 		}
 
@@ -309,7 +319,7 @@ public abstract class CommandFactory {
 	 * If paths is [] do not try any path
 	 * 
 	 */
-	public static File findFirstFileInPaths(Shell shell  , String name , String[] exts , SearchPath [] paths )
+	public static File  findFirstFileInPaths(Shell shell  , String name , String[] exts , SearchPath [] paths )
 	{		
 	    mLogger.entry(shell, name, Util.traceArray(exts),  Util.traceArray(paths) );
 	
@@ -328,7 +338,7 @@ public abstract class CommandFactory {
 		for( SearchPath path : paths ){
 			for( String ext : exts ){
 				try {
-					file = path.getFirstFileInPath(shell, name  + ext ,true);
+					file = path.getFirstFileInPath(shell, name  + ext , sExplicitPath);
 				} catch (IOException e) {
 					mLogger.catching(e);
 					continue;
@@ -344,7 +354,7 @@ public abstract class CommandFactory {
 		mLogger.entry(shell, name);
 		File file = null ;
 		try {
-		   file = shell.getExplicitFile(name, true,true);
+		   file = shell.getExplicitFile(name, sExplicitPath);
 	
 		} 
 		catch( IOException e ) {
