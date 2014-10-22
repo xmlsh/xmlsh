@@ -53,3 +53,6 @@ dir see test
 .dir/*/*
 .dir/.dir2/.hide2
 [57]
+see
+[59]
+.dir/see

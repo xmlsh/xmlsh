@@ -186,6 +186,12 @@ public class EvalEnv
 
 		return newInstance( this , Util.withEnumsMasked(evalFlags, mask)  );
 	}
+	// Allow ONLY the set of flags in mask 
+	public  EvalEnv  withFlagsMasked( EvalFlag f, EvalFlag... flag ){
+
+		return newInstance( this , Util.withEnumsMasked(evalFlags,f ,  flag)  );
+	}
+
 
 	public EvalEnv withFlagsOff( EvalFlag... flags ) {
 		return newInstance( this, Util.withEnumsRemoved( evalFlags , flags  ));

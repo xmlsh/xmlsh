@@ -41,10 +41,13 @@ public class CharAttributeBuffer
 		attrArray = new byte[capacity];
 	}
 
+	public CharAttributeBuffer clone() {
+		return new CharAttributeBuffer(this);
+	}
 
 	public CharAttributeBuffer(CharAttributeBuffer that ) {
-	    this(that.capacity);
-	    append(that);
+	    this(that == null ? 0 : that.capacity);
+	    if( that != null ) append(that);
 	}	
 	
 	public CharAttributeBuffer(String s, CharAttr attr ){
@@ -124,7 +127,6 @@ public class CharAttributeBuffer
 		StringBuilder sb = new StringBuilder(length);
 		for( int i = 0 ; i <length ; i++ )
 			decoder.decode( sb , charArray[i] , attrArray[i] );
-		
 		return sb.toString();
 	}
 	
@@ -204,6 +206,7 @@ public class CharAttributeBuffer
 	}
 
 
+	// split using c as a repeatable seperator  e.g. a/b//c  == [a,b,c]
 	public  CharAttributeBuffer[] split(char c)
 	{
 		ArrayList<CharAttributeBuffer> list = new ArrayList<CharAttributeBuffer>();
@@ -212,6 +215,8 @@ public class CharAttributeBuffer
 		for( int i = 0 ; i < length ; i++ ) {
 			if( charArray[i] == c ) {
 				list.add( subsequence( start , i ) );
+				while( i < length && charArray[i+1] == c )
+					i++;
 				start = i+1;
 			}
 		}
@@ -266,12 +271,13 @@ public class CharAttributeBuffer
 
 	public void append(CharAttributeBuffer achars)
 	{
+		if( achars != null ){
 		int len = achars.length;
-		ensure( length + len );
-		System.arraycopy(achars.charArray, 0 , charArray , 0 , len );
-		System.arraycopy(achars.attrArray, 0 , attrArray , 0 , len );
-		length += len ;
-
+			ensure( length + len );
+			System.arraycopy(achars.charArray, 0 , charArray , 0 , len );
+			System.arraycopy(achars.attrArray, 0 , attrArray , 0 , len );
+			length += len ;
+		}
 	}
 
 

@@ -497,15 +497,15 @@ public class Util
 		 } catch(  IllegalArgumentException |  UnsupportedOperationException  e ) {
 				return null;
 		 }
-
 		 
 	 }
 	 
+	
 	 
 	 /*
 	  * Filename style wildcard matching - ONLY for non filenames 
 	  * 
-	  * Use getPathMatcher instead for real files
+	  * Use getPathMatcher instead for real files - or maybe not ...
 	  */
 
 	 public static boolean wildMatches(String pattern, String word, boolean caseSensitive ) {
@@ -515,6 +515,95 @@ public class Util
 
 		 return compileWild(pattern,caseSensitive).matcher(word).matches();
 	 }
+	 public static boolean containsWild( CharAttributeBuffer pattern ){
+			 
+		 int inbrack  = 0;
+			 byte[] attrs = pattern.getAttrArray();
+			 char[] chars = pattern.getCharArray() ;
+			 // ANY of the char attrs prevents wild expansion  
+
+			 for( int i = 0 ; i < chars.length ; i++ ){
+				 if( attrs[i] != 0 ){
+					 continue ;
+				 }
+				 
+				 switch( chars[i]) {
+				 case '*' :
+				 case '?' :
+					 return true ;
+				 case '[' :
+					 inbrack++;
+					 break;
+				 case ']' :
+					 if( inbrack > 0 )
+						 return true ;
+				 }
+
+			 }
+			 return false ;
+		 
+	 }
+	 
+	 
+	 public static Pattern compileWild( CharAttributeBuffer pattern ,  boolean caseSensitive) {
+		 
+		 StringBuilder sb = new StringBuilder();
+		 StringBuilder literal = new StringBuilder();
+		 
+		 byte[] attrs = pattern.getAttrArray();
+		 char[] chars = pattern.getCharArray() ;
+		 
+		 byte escape = CharAttr.ATTR_ESCAPED.toBit() ;
+
+		 for( int i = 0 ; i < chars.length ; i++ ){
+			 if( (attrs[i] & escape) == escape )
+				 literal.append( '\\');
+			 // ANY of the char attrs prevents wild expansion  
+			 if( attrs[i] != 0 ){
+				 literal.append( chars[i]);
+				 continue ;
+			 }
+			 
+			 String wild = null ;
+			 switch( chars[i]) {
+			 case '*' :
+				 wild = ".*";
+				 break ;
+			 case '?' :
+				 wild = ".";
+				 break ;
+			 case '[' :
+				 int p = i+1;
+				 while( p < chars.length  && chars[p] != ']' ){
+					 p++;
+				 }
+				 if( p < chars.length ){
+					 wild = pattern.subsequence(i, p+1).toString().toString();
+					 i = p;
+					 break ;
+				 }
+
+				 // Fall through
+		     default:
+		    	 literal.append( chars[i]);
+		    	 continue;
+			 }
+			 if( literal.length() > 0){ 
+				 sb.append( Pattern.quote(literal.toString()));
+				 literal.setLength(0);
+			 }
+			 if( wild != null )
+			   sb.append(wild);
+		 }
+		 if( literal.length() > 0) 
+			 sb.append( Pattern.quote(literal.toString()));
+
+		 return Pattern.compile(sb.toString() ,  caseSensitive ? 0 : Pattern.CASE_INSENSITIVE );
+		 
+	 }
+		 
+	 
+	 
 	 public static Pattern compileWild( String pattern,  boolean caseSensitive) {
 
 		 String reg = "^" + 
@@ -538,20 +627,12 @@ public class Util
 
 	 }
 	
-	 /*
-	  * is the char one of the glob wils  ? * [
-	  */
-	 public static boolean isWildChar( char c ) {
-		 return ( c == '*' || c == '?' || c == '[' || c == '{' | c == '}')  ;
-	 }
-
 
 
 		public static PathMatcher compileWild(
 				FileSystem fileSystem, CharAttributeBuffer wild, CharAttrs escapeAttrs,
 				boolean caseSensitive) {
 			
-			final byte bits = escapeAttrs.toBits();
 		    String wildstr = wild.decodeString();
 
 			try {
@@ -562,56 +643,6 @@ public class Util
 			return null;
 		}
 	 
-	 
-	 public static Pattern compileWild( CharAttributeBuffer wild,  byte escaped , boolean caseSensitive) {
-
-		 StringBuilder reg = new StringBuilder("^");
-		 int len = wild.size();
-		 for( int i = 0 ; i < len ; i++ ) {
-			 char c = wild.charAt(i);
-
-			 switch(c) {
-			 case '^' : 
-			 case '+' : 
-			 case '.' : 
-			 case '(' : 
-			 case ')' :
-			 case '{' : 
-			 case '}' :
-				 // fall through 
-				 reg.append("\\").append(c); break ;
-			 case '*' : 
-				 if( (wild.attrAt(i) & escaped) == 0 )
-					 reg.append(".*"); 
-				 else 
-					 reg.append("\\*");
-				 break;
-
-			 case '?' :
-				 if( (wild.attrAt(i) & escaped) == 0 )
-					 reg.append("."); 
-				 else 
-					 reg.append("\\.");
-				 break;
-			 case '[' :
-				 if( (wild.attrAt(i) & escaped) == 0 && wild.indexOf(i+1 , ']', 0) > i )
-					 reg.append("["); 
-				 else 
-					 reg.append("\\[");
-				 break;
-
-	
-			 default : 
-				 reg.append(c);
-			 }
-		 }
-
-		 reg.append("$");
-
-		 return Pattern.compile(reg.toString(), caseSensitive ? 0 : Pattern.CASE_INSENSITIVE );
-
-
-	 }
 
 	 public static boolean hasAnyChar(String s, String any) {
 		 for( int i = 0 ; i < any.length() ; i++ ){
@@ -893,7 +924,11 @@ public class Util
 	 {
 		 return System.getProperty("os.name").startsWith("Windows");
 	 }
-
+	
+	 public static boolean isOSX() {
+		    String osName = System.getProperty("os.name");
+		    return osName.contains("OS X");
+	 }
 
 
 
@@ -1495,25 +1530,27 @@ public class Util
 
 
 
-
-
 	 /*
 	  * EnumSet helpers
 	  */
 	 public static <T extends Enum<T>> boolean setContainsAll( EnumSet<T> set , T...  items ) 
 	 {
+		 if( items.length == 0 )
+			 return true ;
+		 
 		 for( T item : items )
-			 if( ! set.contains(item ))
+			 // null item is ignored
+			 if( item != null  && ! set.contains(item ))
 				 return false;
 		 return true ;
 	 }
 
 	 public static <T extends Enum<T>> boolean setContainsAny( EnumSet<T> set , T...  items ) 
 	 {
-		 if( set.size() == 0  )
+		 if( set.size() == 0 || items.length == 0  )
 			 return false ;
 		 for( T e : items )
-			 if( set.contains(e))
+			 if( e != null &&  set.contains(e))
 				 return true ;
 		 return false ;
 	 }
@@ -1522,8 +1559,11 @@ public class Util
 	 {		
 		 if( set.size() == 0  )
 			 return false ;
+		 if( items == null || items.size() == 0 )
+			 return false ;
+		 
 		 for( T e : items )
-			 if( set.contains(e))
+			 if( e != null && set.contains(e))
 				 return true ;
 		 return false ;
 
@@ -1535,7 +1575,8 @@ public class Util
 		 EnumSet<T> set = EnumSet.of(e);
 		 if( enums.length > 0 )
 			 for( T v : enums ) {
-				 set.add(v);
+				 if( v != null )
+  				 set.add(v);
 			 }
 		 return set ;
 	 }
@@ -1545,7 +1586,7 @@ public class Util
 
 	 public static <T extends Enum<T>> EnumSet<T> withEnumAdded(EnumSet<T> set, T on)
 	 {
-		 if( set.contains(on))
+		 if( on == null || set.contains(on))
 			 return set;
 		 set = set.clone();
 		 set.add(on);
@@ -1564,9 +1605,13 @@ public class Util
 	 }
 	 public static <T extends Enum<T>> EnumSet<T> withEnumsAdded(EnumSet<T> set, T... on )
 	 {
+		 if(  on.length == 0 )
+			 return set ;
+		 
 		 set = set.clone();
 		 for( T v : on ) 
-			 set.add(v);
+			if( v != null)
+			   set.add(v);
 
 		 return set;
 	 }
@@ -1574,7 +1619,7 @@ public class Util
 
 	 public static <T extends Enum<T>> EnumSet<T> withEnumRemoved(EnumSet<T> set, T  off)
 	 {
-		 if( set.isEmpty() || !set.contains(off))
+		 if( off == null || set.isEmpty() || !set.contains(off))
 			 return set;
 
 		 set = set.clone();
@@ -1588,6 +1633,7 @@ public class Util
 			 return set ;
 		 set = set.clone();
 		 for( T e : off )
+		    if( e != null)
 			 set.remove(e);
 		 return set ;
 	 }
@@ -1595,7 +1641,7 @@ public class Util
 
 	 public static <T extends Enum<T>> EnumSet<T> withEnumsRemoved(EnumSet<T> set, EnumSet<T>  off)
 	 {
-		 if( set.isEmpty()  ||  ! setContainsAny( set , off) )
+		 if(  set.isEmpty()  || off.isEmpty() ||  ! setContainsAny( set , off) )
 			 return set;
 		 set = set.clone();
 		 set.removeAll(off);
@@ -1612,7 +1658,10 @@ public class Util
 		 set.retainAll(mask);
 		 return set ;
 	 }
-
+	 public static <T extends Enum<T>> EnumSet<T> withEnumsMasked(EnumSet<T> set, T first , T...mask)
+	 {
+		 return withEnumsMasked( set , EnumSet.of( first , mask ) );
+	 }
 
 	 public static void wrapIOException(Throwable e) throws IOException {
 

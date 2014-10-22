@@ -24,7 +24,8 @@ import org.xmlsh.core.XClassLoader;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.sh.shell.ShellConstants;
-import org.xmlsh.util.UnifiedFileAttributes.PathMatchOptions;
+import org.xmlsh.util.PathMatchOptions;
+
 import static  org.xmlsh.util.UnifiedFileAttributes.MatchFlag.*;
 
 import org.xmlsh.util.Util;

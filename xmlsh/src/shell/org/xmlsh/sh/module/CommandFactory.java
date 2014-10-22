@@ -69,9 +69,11 @@ import org.xmlsh.sh.shell.IFunctionDefiniton;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.sh.shell.ShellConstants;
 import org.xmlsh.util.FileUtils;
+import org.xmlsh.util.PathMatchOptions;
 import org.xmlsh.util.StringPair;
+
 import static org.xmlsh.util.UnifiedFileAttributes.MatchFlag.*;
-import org.xmlsh.util.UnifiedFileAttributes.PathMatchOptions;
+
 import org.xmlsh.util.Util;
 
 public abstract class CommandFactory {
@@ -84,10 +86,10 @@ public abstract class CommandFactory {
 
 	private static HashMap<String, Class<? extends AbstractCommand>> mBuiltinCommands = new HashMap<>();
 	
-	private static PathMatchOptions sExecutablePath  = new PathMatchOptions().withFlagsHidden( DIRECTORIES,HIDDEN_NAME,HIDDEN_SYS).
+	private static PathMatchOptions sExecutablePath  = new PathMatchOptions().withFlagsHidden( DIRECTORIES,HIDDEN_NAME,HIDDEN_SYS, SYSTEM ).
 			withFlagsMatching(FILES,EXECUTABLE,READABLE);
 
-	private static PathMatchOptions sExplicitPath  = new PathMatchOptions().withFlagHidden( DIRECTORIES).
+	private static PathMatchOptions sExplicitPath  = new PathMatchOptions().withFlagsHidden( DIRECTORIES ).
 			withFlagsMatching(FILES,READABLE);
 	
 	private static void addBuiltinCommand(String name,

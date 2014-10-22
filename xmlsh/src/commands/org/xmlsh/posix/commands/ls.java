@@ -21,8 +21,6 @@ import java.nio.file.attribute.PosixFilePermissions;
 import static java.nio.file.attribute.PosixFilePermission.*;
 import static org.xmlsh.util.UnifiedFileAttributes.MatchFlag.*;
 
-import org.xmlsh.util.UnifiedFileAttributes.PathMatchOptions;
-
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
@@ -39,6 +37,7 @@ import org.xmlsh.core.XValue;
 import org.xmlsh.internal.commands.xls.ListVisitor;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.util.IPathTreeVisitor;
+import org.xmlsh.util.PathMatchOptions;
 import org.xmlsh.util.PathTreeVisitor;
 import org.xmlsh.util.FileUtils;
 import org.xmlsh.util.UnifiedFileAttributes;
@@ -97,14 +96,22 @@ public class ls extends XCommand {
 				ret++;
 				continue;
 			}
-			FileUtils.walkPathTree(dir.toPath(),  
+			
+			Path pdir = FileUtils.asValidPath(dir);
+			if( pdir == null ){
+				printErr("ls: cannot access " + sArg
+						+ " : No such file or directory");
+				ret++;
+				continue;
+			}
+			
+			FileUtils.walkPathTree(pdir,
 					opt_R , 
 					new ListVisitor(writer),
 					(new PathMatchOptions()).
-					   withFlag( HIDDEN_SYS , opt_a ).
-					   withFlag( HIDDEN_NAME , opt_a ).
-					   withFlag( SYSTEM  , opt_s )
-
+					   withFlagsHidden( opt_a ? null  : HIDDEN_SYS , 
+							   opt_a ? null  : HIDDEN_NAME ,
+							   opt_s ? null : SYSTEM )
 
 					
 					);

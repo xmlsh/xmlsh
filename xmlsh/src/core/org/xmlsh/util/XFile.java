@@ -93,7 +93,7 @@ public class XFile /* implements XSerializble */ {
 	}
 
 	public XFile(File file) {
-		this( file.toPath());
+		this( file.toPath() );
 	}
 
 

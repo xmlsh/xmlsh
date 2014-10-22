@@ -17,8 +17,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.FileUtils;
+import org.xmlsh.util.PathMatchOptions;
 import org.xmlsh.util.UnifiedFileAttributes;
-import org.xmlsh.util.UnifiedFileAttributes.PathMatchOptions;
 import org.xmlsh.util.Util;
 
 // avoid java.nio.Path

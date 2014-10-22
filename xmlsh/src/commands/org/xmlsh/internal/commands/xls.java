@@ -10,6 +10,7 @@ package org.xmlsh.internal.commands;
 
 import static org.xmlsh.util.UnifiedFileAttributes.MatchFlag.HIDDEN_NAME;
 import static org.xmlsh.util.UnifiedFileAttributes.MatchFlag.HIDDEN_SYS;
+import static org.xmlsh.util.UnifiedFileAttributes.MatchFlag.SYSTEM;
 
 import java.io.File;
 import java.io.IOException;
@@ -37,11 +38,12 @@ import org.xmlsh.posix.commands.ls.ListVisitor;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.IPathTreeVisitor;
+import org.xmlsh.util.PathMatchOptions;
 import org.xmlsh.util.PathTreeVisitor;
 import org.xmlsh.util.FileUtils;
 import org.xmlsh.util.UnifiedFileAttributes;
+
 import static org.xmlsh.util.UnifiedFileAttributes.MatchFlag.*;
-import org.xmlsh.util.UnifiedFileAttributes.PathMatchOptions;
 
 import org.xmlsh.util.Util;
 import org.xmlsh.util.XFile;
@@ -102,9 +104,9 @@ public class xls extends XCommand {
 					opt_R , 
 					new ListVisitor(writer),
 					(new PathMatchOptions()).
-					   withFlag( HIDDEN_SYS , opt_a ).
-					   withFlag( HIDDEN_NAME , opt_a ).
-					   withFlag( SYSTEM  , opt_s )
+					   withFlagsHidden( opt_a ? null  : HIDDEN_SYS , 
+							   opt_a ? null  : HIDDEN_NAME ,
+							   opt_s ? null : SYSTEM )
 					
 					);
 			

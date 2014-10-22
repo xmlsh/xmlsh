@@ -50,8 +50,9 @@ public class JoinedWordList extends ListWord  {
 	protected ParseResult expandToResult(Shell shell, EvalEnv env, ParseResult result) throws IOException,
 	CoreException
 	{
-	  env = evalEnv(env);
+	    // env = env.withFlagsMasked(EvalFlag.JOIN_VALUES , EvalFlag.OMIT_NULL , EvalFlag. );
 
+		env = evalEnv(env);
 		// Combine and wild card expand
 		for( Word w : mList ) {
 			result = w.expandToResult(shell, env, result);

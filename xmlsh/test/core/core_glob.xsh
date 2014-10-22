@@ -55,5 +55,8 @@ echo loc()
 echo .dir/*/*
 echo .d*/.*/.*
 echo loc()
+echo [abcs][de]*
+echo loc()
+echo .d*/[abcs][de]*
 
 

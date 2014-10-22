@@ -46,7 +46,6 @@ import org.xmlsh.core.XValue;
 import org.xmlsh.posix.commands.ls.ListVisitor;
 import org.xmlsh.sh.module.CommandFactory;
 import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.util.UnifiedFileAttributes.PathMatchOptions;
 
 
 public class FileUtils
@@ -316,13 +315,27 @@ public class FileUtils
 	}
 	
 	public static boolean supportsAttributeView( File file , Class<? extends FileAttributeView> view ){
+		Path path = asValidPath(file);
+		if( path == null )
+			return false ;
 		try {
-			return supportsAttributeView( Files.getFileStore(file.toPath()) , view );
+			return supportsAttributeView( Files.getFileStore(path) , view );
 		} catch (IOException e) {
 			mLogger.trace("Catching:",e);
 		}
 		return false ;
 
+	}
+	
+	public static Path asValidPath( File file ){
+		if( file == null )
+			return null ;
+		try {
+		  return file.toPath();
+		} catch(java.nio.file.InvalidPathException e ){
+			mLogger.trace("Invalid path: " , e );
+			return null ;
+		}
 	}
 
 	
@@ -407,6 +420,12 @@ public class FileUtils
 	public static <V extends IPathTreeVisitor>  void walkPathTree( Path start , boolean recursive , V visitor, PathMatchOptions options ) throws IOException {
 		(new PathTreeWalker( start , recursive , options )).walk(visitor);
 		
+	}
+	public static boolean isFilesystemCaseSensitive() {
+
+	    boolean bIsWindows = Util.isWindows();
+	    boolean caseSensitive = !bIsWindows;
+	    return caseSensitive ;
 	}
 
 	

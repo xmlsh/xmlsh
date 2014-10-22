@@ -41,11 +41,11 @@ import org.xmlsh.sh.shell.ParseResult;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.sh.shell.ShellConstants;
 import org.xmlsh.types.TypeFamily;
-import org.xmlsh.util.UnifiedFileAttributes.PathMatchOptions;
 
 import static org.xmlsh.util.UnifiedFileAttributes.MatchFlag.*;
 
 import org.xmlsh.util.FileUtils;
+import org.xmlsh.util.PathMatchOptions;
 import org.xmlsh.util.UnifiedFileAttributes;
 import org.xmlsh.util.Util;
 import org.xmlsh.util.XMLUtils;
@@ -156,32 +156,25 @@ public class EvalUtils
   /*
    * Recursively Expand a possibly multi-level wildcard rooted at a directory
    */
-  public static List<String> expandDir(File dir, CharAttributeBuffer wild, org.xmlsh.util.UnifiedFileAttributes.PathMatchOptions matchOptions ) throws IOException
+  public static List<String> expandDir(File dir, org.xmlsh.util.PathMatchOptions matchOptions ) throws IOException
   {
 	
-	mLogger.entry(dir, wild, matchOptions);
+	mLogger.entry(dir, matchOptions);
     ArrayList<String> results = new ArrayList<String>();
     
-    Path path = dir.toPath();
-    String swild = wild.toString();  // Undecoded e.g \. == . 
-    
-    /*
-     * special case for "." and ".." as the directory component
-     * They dont show up in dir.list() so should always be considered an exact match
-     */
-    if(swild.equals(".") || swild.equals("..")) {
-      results.add(swild);
-      return results;
+    Path path = FileUtils.asValidPath(dir);
+    if( path == null ){
+    	return mLogger.exit(results );
     }
+    	
+    
 
-    boolean bIsWindows = Util.isWindows();
-    boolean caseSensitive = !bIsWindows;
     
     /*
      * Hack to handle 8.3 windows file names like "Local~1"
      * If not matched and this is windows
      * try an exact match to the canonical expanson of the dir and wild
-     */
+
     if(bIsWindows && swild.indexOf(0, '~' ) >= 0) {
       File fwild = new File(dir, swild);
       if(fwild.exists()) {
@@ -190,6 +183,7 @@ public class EvalUtils
 		;
       }
     }
+         */
     /*
      * If path isnt a directory then path/wild shouldnt expand just return literally
      */
@@ -203,6 +197,7 @@ public class EvalUtils
 
     
     // If the glob matches a file exactly then choose it - depending on the options 
+    /*
     try {
     	Path wpath =  path.resolve(swild);
     	if( Files.exists(wpath, LinkOption.NOFOLLOW_LINKS)){
@@ -217,32 +212,27 @@ public class EvalUtils
     catch( InvalidPathException | SecurityException e ){
     	mLogger.trace("Invalid path in glob exansion: " + swild ,   e );
     }
-
+  */
     
     
     
-    final PathMatcher wp = Util.compileWild( path.getFileSystem() , wild, 
-    		CharAttrs.constInstance(CharAttr.ATTR_ESCAPED) , caseSensitive);
+//    final PathMatcher wp = Util.compileWild( path.getFileSystem() , wild, 
+ //   		CharAttrs.constInstance(CharAttr.ATTR_ESCAPED) , caseSensitive);
    
-    if( wp == null ){
-    	 results.add(swild);
-    } else {
-        boolean dotStart = swild.startsWith(".");
-        
+    
+    
 		mLogger.trace("opening a directory stream on: {}",path);
 		try ( DirectoryStream<Path> dirStream = Files.newDirectoryStream(path  ) ){
 	    
 		    for (Path f : dirStream) {
 		    	UnifiedFileAttributes attrs = FileUtils.getUnifiedFileAttributes(f, LinkOption.NOFOLLOW_LINKS);
-		    	if( wp.matches(f.getFileName()) && matchOptions.doVisit(f,attrs) ){
-		            // Special case - only show .* files if the wildcard starts with them
-		    		if(   ! dotStart && f.getFileName().toString().startsWith(".") )
-		    			continue ;
+		    	
+		    	if( matchOptions.doVisit(f,attrs) ){
+		    		String name = f.getFileName().toString();
 		    	    results.add(f.getFileName().toString());
 		    	}
 		    }
 		}
-    }
 	    if(results.size() == 0)
 	      return mLogger.exit(null);
 	    Collections.sort(results);
@@ -258,22 +248,44 @@ public class EvalUtils
     CharAttributeBuffer wild = wilds[0];
     if(wilds.length < 2)
       wilds = null;
-    else wilds = Arrays.copyOfRange(wilds, 1, wilds.length);
+    else 
+      wilds = Arrays.copyOfRange(wilds, 1, wilds.length);
+    
+    assert( ! wild.isEmpty() );
+    if( Util.containsWild( wild )){
+	    Pattern pattern = Util.compileWild(wild, FileUtils.isFilesystemCaseSensitive() );
+	    
+	    PathMatchOptions withWildMatching = (new PathMatchOptions()).withWildMatching( pattern );
+	    			
+	    
+	    // If wild literaly starts with a . then dont hide hidden files
+		if( wild.charAt(0) != '.' )
+			withWildMatching = withWildMatching.withFlagsHidden(HIDDEN_SYS,HIDDEN_NAME);
+	    
+		List<String> rs = EvalUtils.expandDir(dir, withWildMatching); 
+	    
+	    if(rs == null)
+	      return;
 
-    List<String> rs = EvalUtils.expandDir(dir, wild, 
-    		(new PathMatchOptions()).withFlagHidden(HIDDEN_SYS));//.withFlagHidden(DIRECTORIES,wilds == null));
-    if(rs == null)
-      return;
-    for (String r : rs) {
-      String path = parent == null ? r : parent + (parent.endsWith("/") ? "" : "/") + r;
+	    for (String r : rs) {
+	      String path = parent == null ? r : parent + (parent.endsWith("/") ? "" : "/") + r;
+	      if(wilds == null)
+	        results.add(path);
+	      else 
+	    	  expandDir(new File(dir, r), path, wilds, results);
+	
+	    }
+    } else {
+    	String fname = wild.decodeString();
+	      String path = parent == null ? fname  : parent + (parent.endsWith("/") ? "" : "/") + fname;
 
-      if(wilds == null)
-        results.add(path);
-      else expandDir(new File(dir, r), path, wilds, results);
-
+    	if( wilds == null )
+           results.add( path );
+    	else
+    		expandDir( new File( dir , fname  ) , path , wilds , results);
+    	
     }
     mLogger.exit();
-	
   }
 
   public static ParseResult expandStringToResult(Shell shell, String value, EvalEnv env, ParseResult result) throws IOException, CoreException

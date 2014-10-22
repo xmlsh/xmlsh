@@ -89,9 +89,9 @@ import org.xmlsh.util.FileUtils;
 import org.xmlsh.util.JavaUtils;
 import org.xmlsh.util.NullInputStream;
 import org.xmlsh.util.NullOutputStream;
+import org.xmlsh.util.PathMatchOptions;
 import org.xmlsh.util.SessionEnvironment;
 import org.xmlsh.util.StringPair;
-import org.xmlsh.util.UnifiedFileAttributes.PathMatchOptions;
 import org.xmlsh.util.Util;
 import org.xmlsh.xpath.EvalDefinition;
 import org.xmlsh.xpath.ThreadLocalShell;
@@ -1227,7 +1227,10 @@ public class Shell implements AutoCloseable, Closeable {
 	public File getExplicitFile(String name, PathMatchOptions match )
 			throws IOException {
 		File f = getExplicitFile(null, name, true);
-		if( f != null && match.doVisit(f.toPath()))
+		Path path = FileUtils.asValidPath( f) ;
+		if( path == null )
+			return null ;
+		if( f != null && match.doVisit(path))
              return f ;
 		return null ;
 	

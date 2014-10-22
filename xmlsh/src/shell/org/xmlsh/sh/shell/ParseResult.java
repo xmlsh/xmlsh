@@ -9,6 +9,7 @@ package org.xmlsh.sh.shell;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static org.xmlsh.sh.shell.CharAttr.*;
@@ -59,7 +60,7 @@ public class ParseResult {
 		}
 
 		public CharAttributeBuffer toAValue() {
-			return avalue != null ? avalue :
+			return avalue != null ? avalue.clone()  :
 				new CharAttributeBuffer( xvalue.toString() , xvalAttrs ); 
 		}
 		public boolean isRaw() { 
@@ -250,47 +251,20 @@ public class ParseResult {
 	}
 
 	public static List<XValue> expandWild( RXValue rv, File curdir ) {
-		ArrayList<XValue> r = new ArrayList<XValue>();
-
-		if( rv.isEmpty())
-			return r;
-
-		if( rv.isRaw() ){
-			r.add( rv.toXValue());
-			return r;
-		}
-
-		if( rv.isXValue()) {
-			XValue xv = null;
-			xv = rv.toXValue();
-			if( ! xv.isAtomic() ){
-				r.add( xv);
-				return r;
-			}
-		}
+	
+		assert( rv != null );
+	    assert( ! rv.isEmpty() );
+	    assert( ! rv.isRaw() );
+	    
 
 		CharAttributeBuffer av = rv.toAValue();
-		int vslen = av.size();
+	
+		if( ! Util.containsWild(av))
+			return Collections.singletonList(rv.toXValue() );
+			
 
-		boolean wildUnQuoted = false ;
-		for( int i = 0 ; i < vslen ; i++ ){
-			char c = av.charAt(i);
-			// To expand wild there must be NO quoting attributes at all
-			if(  Util.isWildChar(c) && ( av.attrAt(i) == 0 ) ) {
-				wildUnQuoted = true ;
-				break ;
-			}
-		}
-
-		if( ! wildUnQuoted ){
-
-			r.add( rv.toXValue() );
-			return r;
-		}
-
-
-		List<String>	rs = new ArrayList<String>();
-
+		ArrayList<XValue> r = new ArrayList<XValue>();	
+		
 		/*
 		 * If vs starts with / (or on dos x:) then use that directory as the root
 		 * instead of the current directory
@@ -299,13 +273,17 @@ public class ParseResult {
 		String root = null ;
 		String parent = null;
 
-
+        
+		
 		if( av.charAt(0) == '/' ){
 			root = "/";
 			parent = "";
 			av.delete( 0, 1 );
 		}
 
+		
+		/*  Moove to FilesSystem.getRoot */
+		
 		if( Util.isWindows() && av.size() >= 2 ) {
 
 			char drive = av.charAt(0);
@@ -326,20 +304,29 @@ public class ParseResult {
 			}
 		}
 
-		CharAttributeBuffer	wilds[] = av.split('/');
-		try {
-			EvalUtils.expandDir( root == null ? curdir : new File(root) , 
-					parent , 
-					wilds , 
-					rs );
-			for( String f : rs ){
-				r.add( XValue.newXValue(f));
-			}
-		} catch (IOException e) {
-			mLogger.catching(e);
-		}
-	
+		/*******/
+		if( ! av.isEmpty() ){
+			
+			CharAttributeBuffer	wilds[] = av.split('/');
+			if( wilds.length > 0 ){
 
+				List<String>	rs = new ArrayList<String>();
+
+				try {
+					EvalUtils.expandDir( root == null ? curdir : new File(root) , 
+							parent , 
+							wilds , 
+							rs );
+					for( String f : rs ){
+						r.add( XValue.newXValue(f));
+					}
+				} catch (IOException e) {
+					mLogger.catching(e);
+				}
+		    }
+
+		}
+	    
 		// If no matches then use arg explicitly
 		if( r.size() == 0)
 			r.add( rv.toXValue());
@@ -365,12 +352,12 @@ public class ParseResult {
 		 * Globbing
 		 */
 		for( RXValue rv : resolved ){
-			if( ! env.expandWild() )
-				result2.add( rv.toXValue() );
+			if( ! env.expandWild()  ||  rv.isRaw() )
+				result2.add( rv.toXValue() ); 
 			else {
 
-				if( rv.isRaw() )
-					result2.add( rv.xvalue );
+				if( rv.isXValue() && ! rv.toXValue().isAtomic() )
+					result2.add( rv.toXValue() );
 				else {
 					List<XValue> r = ParseResult.expandWild(  rv, curdir );
 					if( r != null )

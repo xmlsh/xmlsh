@@ -32,10 +32,11 @@ import org.xmlsh.internal.commands.xls.ListVisitor;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.IPathTreeVisitor;
+import org.xmlsh.util.PathMatchOptions;
 import org.xmlsh.util.PathTreeVisitor;
 import org.xmlsh.util.FileUtils;
 import org.xmlsh.util.UnifiedFileAttributes;
-import org.xmlsh.util.UnifiedFileAttributes.PathMatchOptions;
+
 import static org.xmlsh.util.UnifiedFileAttributes.MatchFlag.*;
 
 import org.xmlsh.util.Util;
@@ -104,9 +105,9 @@ public class xmd5sum extends XCommand {
 						true , 
 						new ListVisitor(out),
 						(new PathMatchOptions()).
-						   withFlagHidden( HIDDEN_SYS , opt_a ).
-						   withFlagHidden( HIDDEN_NAME , opt_a ).
-						   withFlagHidden( HIDDEN_SYS , opt_s )
+						   withFlagsHidden( opt_a ? null  : HIDDEN_SYS , 
+								   opt_a ? null  : HIDDEN_NAME ,
+								   opt_s ? null : SYSTEM )
 						
 						);
 			
