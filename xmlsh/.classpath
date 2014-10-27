@@ -68,27 +68,16 @@
 			<attribute name="javadoc_location" value="jar:file:/E:/Java/apache-commons/commons-lang3-3.3.2/commons-lang3-3.3.2-javadoc.jar!/"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="lib/log4j-api-2.0.2.jar" sourcepath="C:/Java/log4j/apache-log4j-2.0.2-bin/log4j-api-2.0.2-sources.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="jar:file:/C:/Java/log4j/apache-log4j-2.0.2-bin/log4j-api-2.0.2-javadoc.jar!/"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="lib/log4j-core-2.0.2.jar" sourcepath="C:/Java/log4j/apache-log4j-2.0.2-bin/log4j-core-2.0.2-sources.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="jar:file:/C:/Java/log4j/apache-log4j-2.0.2-bin/log4j-core-2.0.2-javadoc.jar!/"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="lib/log4j-slf4j-impl-2.0.2.jar" sourcepath="C:/Java/log4j/apache-log4j-2.0.2-bin/log4j-slf4j-impl-2.0.2-sources.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="jar:file:/C:/Java/log4j/apache-log4j-2.0.2-bin/log4j-slf4j-impl-2.0.2-javadoc.jar!/"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="lib/log4j-jcl-2.0.2.jar"/>
+	<classpathentry kind="lib" path="lib/log4j-api-2.1.jar"/>
+	<classpathentry kind="lib" path="lib/log4j-core-2.1.jar"/>
+	<classpathentry kind="lib" path="lib/log4j-jcl-2.1.jar"/>
+	<classpathentry kind="lib" path="lib/log4j-slf4j-impl-2.1.jar"/>
 	<classpathentry kind="src" path=".apt_generated">
 		<attributes>
 			<attribute name="optional" value="true"/>
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="lib/httpcore-4.2.2.jar"/>
+	<classpathentry kind="lib" path="lib/jline-1.1.jar"/>
 	<classpathentry kind="output" path="_out"/>
 </classpath>

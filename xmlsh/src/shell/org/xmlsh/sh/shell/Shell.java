@@ -851,6 +851,9 @@ public class Shell implements AutoCloseable, Closeable {
 	private void setCommandInput(InputStream in) {
 		mCommandInput = in;
 		if (mCommandInput == null) {
+			// the way jline is used on windows can fail horribly so dont enable it
+			// To fix this is likely going to require that command inputs be line based not InputStream based
+			// which will allow for other improvements such as PS2 prompting.
 			if (!Util.isWindows())
 				try {
 					/*
