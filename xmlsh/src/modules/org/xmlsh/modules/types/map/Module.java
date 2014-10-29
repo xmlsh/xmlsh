@@ -42,6 +42,10 @@ public class Module extends Types {
 	@Function( name="get-value" , names={"value" , "property"} )
 	public static class getValue extends  Types.value  {
 	  }
+	@Function( name="put" , names={"set" , "set-value"} )
+	public static class setValue extends  Types.put  {
+	  }
+	
 	
 	
 	@Function( "keys" )
