@@ -237,7 +237,6 @@ public class XValueMap extends AbstractMap<String,XValue> implements IXValueMap<
     @Override
     public IXValueMap<? extends IXValueMap<?>> asXMap()
     {
-      // TODO Auto-generated method stub
       return this;
     }
 

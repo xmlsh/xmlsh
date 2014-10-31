@@ -183,7 +183,7 @@ public class XConfiguration implements IXValueContainer<XConfiguration> , IXValu
   @Override
   public IXValueSequence<? extends IXValueSequence<?>> asXSequence()
   {
-    return null ;
+    return new XValueSequence(  ) ;
   }
 
   @Override

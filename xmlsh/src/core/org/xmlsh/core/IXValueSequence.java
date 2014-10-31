@@ -12,7 +12,7 @@ public interface IXValueSequence<T extends IXValueSequence<T > >  extends IXValu
   public void addValue(XValue v);
   public XValue getAt(int index);
   public XValue setAt(int index, XValue value);
-  public IXValueSequence subSequence(int n);
+  public IXValueSequence<T> subSequence(int n);
 
 }
 

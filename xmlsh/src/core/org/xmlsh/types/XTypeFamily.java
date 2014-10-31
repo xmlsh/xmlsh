@@ -165,13 +165,26 @@ public class XTypeFamily extends AbstractTypeFamily implements ITypeFamily
         throw new CoreException("Cannot set indexed value to null object");
       
       IXValue<?> ic = asXType(xobj.asObject());
+      Object o = null;
       // map first
-      if( ic.isMap() )
-        return ic.asXMap().put(ind,value);      
-      if( ic.isList() ) 
-        return ic.asXList().setAt(Util.parseInt(ind, 0),value);
-
+      if( ic.isMap() ){
+    	  IXValueMap<? extends IXValueMap<?>> map = ic.asXMap();
+    	  map.put(ind,value);
+    	  if( map != ic )
+    		  xobj = map.asXValue();
+      }
+      else
+      if( ic.isList() ) {
+    	  IXValueList<? extends IXValueList<?>> list = ic.asXList();
+    	  list.setAt(Util.parseInt(ind, 0),value);
+    	  if( ic != list )
+    		  xobj = list.asXValue();
+    	  
+      }
+      else
       throw new CoreException("Cannot set non-indexed object");
+      
+      return xobj ;
 
     }
 
@@ -226,11 +239,23 @@ public class XTypeFamily extends AbstractTypeFamily implements ITypeFamily
       if(xobj == null || xobj.isNull())
         throw new CoreException("Cannot set indexed value to null object");
       
-      if( ic.isList() ) 
-        return ic.asXList().setAt(index,value);
-      if( ic.isMap() )
-        return ic.asXMap().put(String.valueOf(index),value);      
+      if( ic.isList() ) {
+        IXValueList<? extends IXValueList<?>> list = ic.asXList();
+		list.setAt(index,value);
+		if( ic != list )
+			xobj = list.asXValue();
+      }
+      else
+      if( ic.isMap() ){
+        IXValueMap<? extends IXValueMap<?>> map = ic.asXMap();
+		map.put(String.valueOf(index),value);  
+		if( map != ic )
+			xobj = map.asXValue();
+      }
+      else
+      
       throw new CoreException("Cannot set non indexed value");
+      return xobj;
 
     }
 

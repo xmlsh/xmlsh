@@ -51,6 +51,16 @@ public class XValueProperties extends XValueMap  {
 
 
 
+	
+	
+	public XValueProperties(List<XValueProperty> list) {
+ 
+		for( XValueProperty p : list )
+			add(p);
+			
+		
+	}
+
 
 
 public static XValueProperties fromMap( Map<?,?> map ) throws InvalidArgumentException {
@@ -62,6 +72,9 @@ public static XValueProperties fromMap( Map<?,?> map ) throws InvalidArgumentExc
   
   public static XValueProperties fromProperty( XValueProperty prop ){
 	    return new XValueProperties( prop  );
+  }
+  public static XValueProperties fromPropertyList( List<XValueProperty> list ){
+	  return new XValueProperties(list);
   }
   
   @Override

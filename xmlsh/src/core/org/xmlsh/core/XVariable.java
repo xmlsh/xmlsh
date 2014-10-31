@@ -168,7 +168,7 @@ public abstract  class XVariable {
 
 		assert( ! Util.isBlank(ind));
 
-		setValue(getValueMethods().setXValue(  getValue() , ind, value));
+		getValueMethods().setXValue(  getValue() , ind, value);
 	}
 	abstract void setValue(XValue setXValue) throws InvalidArgumentException;
 

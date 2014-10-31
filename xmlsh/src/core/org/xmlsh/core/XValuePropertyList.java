@@ -251,8 +251,7 @@ public class XValuePropertyList  implements     IXValueMap<XValuePropertyList>, 
     @Override
     public IXValueMap<? extends IXValueMap<?>> asXMap()
     {
-      // TODO Auto-generated method stub
-      return this;
+      return XValueProperties.fromPropertyList(mList);
     }
 
 
@@ -265,7 +264,8 @@ public class XValuePropertyList  implements     IXValueMap<XValuePropertyList>, 
     @Override
     public IXValueSequence<? extends IXValueSequence<?>> asXSequence()
     {
-      return null;
+     
+    	return null;
     }
 
     @Override

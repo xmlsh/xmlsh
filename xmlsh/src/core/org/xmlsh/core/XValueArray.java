@@ -212,7 +212,7 @@ public class XValueArray extends AbstractList<XValue> implements IXValueMap<XVal
     @Override
     public IXValueSequence<? extends IXValueSequence<?>> asXSequence()
     {
-      return null;
+      return new XValueSequence( this );
     }
 
     public static Object emptyArray()

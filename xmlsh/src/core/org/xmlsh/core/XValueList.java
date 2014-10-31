@@ -174,12 +174,12 @@ public class XValueList  extends AbstractList<XValue> implements IXValueContaine
     @Override
     public IXValueSequence<? extends IXValueSequence<?>> asXSequence()
     {
-      return null;
+      return new XValueSequence(mList);
     }
     @Override
     public List<XValue> asList()
     {
-      return Util.toList(iterator());
+      return this ;
     }
 
 }

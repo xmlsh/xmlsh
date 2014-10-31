@@ -23,7 +23,7 @@ import org.xmlsh.util.Util;
  */
 public  class XValueSequence implements Iterable<XValue>  ,    IXValueSequence<XValueSequence>
 {
-  private static IXValueSequence _emptySequence = new XValueSequence();
+  private static IXValueSequence<XValueSequence> _emptySequence = new XValueSequence();
 
   private List<XValue> mList;
   
@@ -46,7 +46,7 @@ public  class XValueSequence implements Iterable<XValue>  ,    IXValueSequence<X
   }
   
   
-  public static IXValueSequence emptySequence() {
+  public static IXValueSequence<XValueSequence> emptySequence() {
     return _emptySequence;
   }
   
@@ -154,7 +154,7 @@ public boolean isAtomic()
   @Override
   public XValue append(XValue item) throws InvalidArgumentException
   {
-    IXValueSequence s = new XValueSequence(this);
+    IXValueSequence<?> s = new XValueSequence(this);
     s.addValue(item);
 
     return XValue.newXValue( TypeFamily.XTYPE , s );
