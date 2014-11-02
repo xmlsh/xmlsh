@@ -9,10 +9,10 @@ if [ $# -gt 0 ] ; then
 	exit 0;
 fi 
 
-xmlsh $0 Arg1 Arg2
+xmlsh -norc $0 Arg1 Arg2
 
 
 echo In parent shell
-xmlsh -c 'echo In sub shell ; exit 1'
+xmlsh -norc -c 'echo In sub shell ; exit 1'
 echo Exit value is $?
 exit 0
