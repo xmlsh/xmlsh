@@ -1,0 +1,74 @@
+<project basedir=".." default="help" name="build-xmlsh">
+	<property name="xmlsh.root" value="${basedir}/trunk"/>
+
+	<macrodef name="iterate">
+		<attribute name="target"/>
+		<sequential>
+		
+			<!-- build xmlsh.jar first -->
+			<subant target="@{target}">
+				<property name="xmlsh.root" value="${xmlsh.root}"/>
+				<dirset dir=".">
+					<include name="xmlsh"/>
+				</dirset>
+			</subant>
+
+			<subant target="@{target}">
+				<property name="xmlsh.root" value="${xmlsh.root}"/>
+				<dirset dir="extensions">
+					<include name="aws"/>
+					<include name="marklogic"/>
+				</dirset>
+			</subant>
+		</sequential>
+	</macrodef>
+
+
+
+
+	<target name="help">
+		<echo message="Usage: ant [help build clean clean install dist clean-all build-all build-deps]" />
+	</target>
+
+	<target name="build-deps">
+	  <exec executable="aws" dir=".">
+	  	<arg value="--profile"/>
+	  	<arg value="xmlsh"/>
+		<arg value="s3"/>
+		<arg value="sync"/>
+		<arg value="s3://xmlsh-org-release/build-deps/xmlsh-1.2.6/"/>
+		<arg value="."/>
+	  </exec>
+	</target>
+	  
+
+	<target name="build" depends="clean,main-init">
+		<iterate target="build" />
+	</target>
+
+	<target name="main-init">
+
+	</target>
+	<target name="install" depends="build">
+		<iterate target="install" />
+	</target>
+	<target name="test build">
+		<iterate target="test" />
+	</target>
+	<target name="dist" depends="build" >
+		<iterate target="dist" />
+	</target>
+
+	<target name="clean">
+		<iterate target="clean" />
+	</target>
+
+	<target name="build-all" depends="main-init,build,install,dist" />
+
+	<target name="clean-all" depends="clean">
+	</target>
+
+
+</project>
+
+
