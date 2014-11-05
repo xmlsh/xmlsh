@@ -1,19 +1,27 @@
 <?xml version="1.0" ?>
-<project default="main">
+<project default="main" name="aws">
 
 	
-    <target name="main" depends="clean, compile, jar, test, dist" description="AWS Extension main target">
+	<target name="main" depends="install,test" description="AWS Extension main target">
         <echo>
             Building AWS xmlsh extension
         </echo>
     </target>
-	
-	
+	<target name="build" depends="clean,compile,jar"/>
+	<target name="build-all" depends="build,dist"/>
+
 	<property name="dist" location="_dist"/>
-	<property name="xmlsh" location="../../trunk"/>
+	<property name="xmlsh" location="../../xmlsh"/>
 	 <tstamp prefix="bdate"/>
-	<property name="release" value="${bdate.DSTAMP}"/>
-	<property name="install" value="/usr/local/xmlsh/aws"/>
+	<property name="release" value="${bdate.DSTAMP}" />
+	<target name="install.check">
+		<condition property="install.exists">
+			<available file="${env.XINSTALL}" type="dir" />
+		</condition>
+	</target>
+			
+			
+	<property name="install" value="${env.XINSTALL}/xmlsh_ext/aws"/>
 		
 	<target name="clean" description="Clean all">
 		  <delete includeEmptyDirs="true" quiet="true">
@@ -35,11 +43,11 @@
     				<fileset dir="lib">
     	                  	<include name="**/*.jar"/>
     				</fileset>
-    				<fileset dir="../../trunk/lib">
+				<fileset dir="${xmlsh}/lib">
     				    <include name="**/*.jar"/>
     				   </fileset>
-    				   <fileset dir="../../trunk/bin">
-    				    <include name="xmlsh-1.2.jar"/>
+				<fileset dir="${xmlsh}/bin">
+					<include name="xmlsh-*.jar"/>
     				   </fileset>
     	     </classpath>
     	 </javac>
@@ -104,7 +112,7 @@
 
   </target>
   
-  <target name="install" description="Install to modules">
+	<target name="install" depends="install.check,build-all" if="install.exists" description="Install to modules">
   		 <copy todir="${install}" filtering="on">
 			<fileset dir="bin" includes="*.jar module.xml"/>
 			<fileset dir="lib" includes="*.jar"/>

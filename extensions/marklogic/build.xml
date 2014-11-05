@@ -1,8 +1,8 @@
 <?xml version="1.0" ?>
-<project default="main">
+<project default="main" name="marklogic">
 
 	
-    <target name="main" depends="clean, compile, jar,dist" description="Main target">
+	<target name="main" depends="clean, compile, jar,dist">
         <echo>
             Building marklogic_ext xmlsh extension
         </echo>
@@ -10,11 +10,17 @@
 	
 	
 	<property name="dist" location="_dist"/>
-	<property name="xmlsh" location="../../trunk"/>
+	<property name="xmlsh" location="../../xmlsh"/>
 	<tstamp prefix="bdate"/>
 	<property name="release" value="${bdate.DSTAMP}"/>
-	<property name="install" value="/usr/local/xmlsh/marklogic"/>
-		
+	<property name="install" value="${env.XINSTALL}/xmlsh_ext/marklogic" />
+
+	<target name="install.check">
+		<condition property="install.exists">
+			<available file="${env.XINSTALL}" type="dir" />
+		</condition>
+	</target>
+	
 	<target name="clean" description="Clean all">
 		  <delete includeEmptyDirs="true" quiet="true">
 		    <fileset dir="${dist}" includes="*"/>
@@ -25,21 +31,23 @@
 		  </delete>
 	</target>
 
-  
+	<target name="build" depends="clean,compile,jar"/>
+	<target name="build-all" depends="build,dist"/>
+
     <target name="compile" description="Compilation target">
   		<mkdir dir="_out"/>
     
-    	 <javac destdir="_out" debug="on" source="1.6" target="1.6">
+		<javac includeantruntime="false" destdir="_out" debug="on">
     	        <src path="src" />
     	 	<classpath>
     				<fileset dir="lib">
     	                  	<include name="**/*.jar"/>
     				</fileset>
-    				<fileset dir="../../trunk/lib">
+				<fileset dir="${xmlsh}/lib">
     				    <include name="**/*.jar"/>
     				   </fileset>
-    				   <fileset dir="../../trunk/bin">
-    				    <include name="xmlsh-1.2.jar"/>
+				<fileset dir="${xmlsh}/bin">
+					<include name="**/*.jar" />
     				   </fileset>
     	     </classpath>
     	 </javac>
@@ -57,16 +65,13 @@
   
   <target name="jar" description="Build JAR - jar">
 		<mkdir dir="bin"/>
-        <jar 
-        jarfile="bin/marklogic_ext.jar" 
-        basedir="_out" 
-         manifest="src/WEB-INF/MANIFEST.MF"
+		<jar jarfile="bin/marklogic_ext.jar" basedir="_out"
+			manifest="src/WEB-INF/MANIFEST.MF" 
         />
 
   </target>
   <target name="test" description="Test Cases">
-  	<java 
-  		classname="org.xmlsh.sh.shell.Shell"
+		<java classname="org.xmlsh.sh.shell.Shell" fork="true" dir="test">
   		fork="true"
   	    dir="test">
   	    <classpath>
@@ -87,7 +92,8 @@
   		
   		<mkdir dir="${dist}"/>
 		<zip destfile="${dist}/marklogic_${release}.zip" >
-			<zipfileset dir="." includes="bin/** test/** doc/** notices/** license.txt README.txt" 
+			<zipfileset dir="." 	
+			includes="bin/** test/** doc/** notices/** license.txt README.txt"
 					excludes="**/sh_histo" prefix="marklogic_${release}"/>
   		</zip>
 		<zip destfile="${dist}/marklogic_src_${release}.zip" >
@@ -97,7 +103,7 @@
 
 
   </target>
-  	<target name="install" description="Install to modules">
+	<target name="install" depends="install.check,build-all" if="install.exists" description="Install to modules">
 	  		 <copy todir="${install}" filtering="on">
 				<fileset dir="bin" includes="*.jar module.xml"/>
 				<fileset dir="lib" includes="*.jar"/>

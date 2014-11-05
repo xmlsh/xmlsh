@@ -5,6 +5,8 @@
 // DEBUG_TOKEN_MANAGER=true;
   // FORCE_LA_CHECK=true;
   UNICODE_INPUT=true;
+ OUTPUT_DIRECTORY="../../../../../generated/org/xmlsh/sh/grammar";
+  
 }
 PARSER_BEGIN(ShellParser)package org.xmlsh.sh.grammar;import org.xmlsh.sh.core.*;import java.io.PrintWriter;import java.util.ArrayList;import org.xmlsh.core.XEnvironment;public class ShellParser{  private String mSource;  public ShellParser(java.io.InputStream stream, String encoding, String source)  {    this (stream, encoding);    mSource = source;  }  public ShellParser(java.io.Reader stream, String source)  {    this (stream);    mSource = source;  }  public String getSource()  {    return mSource;  }  public void ReInit(java.io.InputStream stream, String encoding, String source)  {    this.ReInit(stream, encoding);    mSource = source;  }  public void ReInit(java.io.Reader stream, String source)  {    this.ReInit(stream);    mSource = source;  }  public SourceLocation getLocation(Token t)  {    return new SourceLocation(getSource(), t == null ? token : t);  }  public void setLocation(Command command, Token t)  {    command.setLocation(getLocation(t));  }  public void setLocation(Command command)  {    setLocation(command, token);  }}PARSER_END(ShellParser)TOKEN_MGR_DECLS :{  boolean in_for = false;  boolean in_backtick = false;
 
