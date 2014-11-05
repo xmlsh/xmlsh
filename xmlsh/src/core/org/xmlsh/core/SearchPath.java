@@ -8,6 +8,7 @@ package org.xmlsh.core;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -84,11 +85,16 @@ public class SearchPath implements Iterable<String> {
 	{
 		mLogger.entry( fname, match);
 		for ( String path  : mPaths ){
-			Path dir = shell.getPath(path);
-			Path 	target =  dir.resolve(fname);
+			try {
+				Path dir = shell.getPath(path);
+				Path 	target =  dir.resolve(fname);
+				
+				if( match.doVisit(  target  ,  FileUtils.getUnifiedFileAttributes(target)))
+						return mLogger.exit( target.normalize().toFile());
+			} catch (InvalidPathException e){
+				mLogger.trace("Invalid path - ignoring", e);
+			}
 			
-			if( match.doVisit(  target  ,  FileUtils.getUnifiedFileAttributes(target)))
-					return mLogger.exit( target.normalize().toFile());
 		}
 		return mLogger.exit(null);
 	}

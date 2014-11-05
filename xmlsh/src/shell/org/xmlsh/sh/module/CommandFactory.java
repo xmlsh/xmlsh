@@ -290,9 +290,11 @@ public abstract class CommandFactory {
 					mLogger.debug("Command Class found: " , cls );
 					return cls;
 				}
-	
-				return mLogger.exit(null);
+
 			}
+			
+			// Has prefix but cant find - 
+			return mLogger.exit(null);
 		}
 
 		/*
@@ -399,21 +401,23 @@ public abstract class CommandFactory {
 		
 		// If name has a scheme try that first
 		boolean hasPrefix = pname.hasPrefix(true);
+		String psname = pname.toString();
 		if( hasPrefix ){
-			url = Util.tryURL(pname.getString());
+			url = Util.tryURL(psname);
 			if (url != null){
 				mLogger.debug("script has URL {} ", url );
 				return mLogger.exit(getScriptSource(shell, url, pname.getName() ));
 			}
 		
 			// Prefix might be a drive leter -- if so try an absolute file
-			if( hasPrefix && Util.isWindows() && FileUtils.rootPathLength(FileUtils.toJavaPath(pname.toString())) > 0 ){
+			if( Util.isWindows() && FileUtils.rootPathLength(FileUtils.toJavaPath(psname)) > 0 ){
 				mLogger.trace("Trying name as windows file: {} " , pname );
 				scriptFile = shell.getExplicitFile(pname.toString(), true );
 				if( scriptFile != null && ! scriptFile.isFile())
 					scriptFile = null ;
 				
-			}
+			} else
+				mLogger.exit(null); // 
 			
 			/*
 			 * TODO Resolve against module prefix
@@ -426,7 +430,7 @@ public abstract class CommandFactory {
 		
 		if( scriptFile == null ){
 		
-			String name = pname.getString();
+			String name = psname;
 			
 			String ext = FileUtils.getExt( name );
 			boolean bIsXsh = ".xsh".equals(ext);

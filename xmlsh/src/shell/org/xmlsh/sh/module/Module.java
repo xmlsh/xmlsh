@@ -16,6 +16,7 @@ import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.sh.shell.StaticContext;
 import org.xmlsh.util.JavaUtils;
+import org.xmlsh.util.Util;
 
 public abstract class Module implements IModule {
 
@@ -153,8 +154,10 @@ public abstract class Module implements IModule {
 	
 	
 	protected Class<?> findClass(String name, List<String> packages) {
+		
+		
 		for (String pkg : packages) {
-			Class<?> cls = findClass(pkg + "." + name);
+			Class<?> cls = findClass(Util.isEmpty(pkg) ? name : (pkg + "." + name));
 			if (cls != null)
 				return cls;
 		}
@@ -299,6 +302,6 @@ public abstract class Module implements IModule {
 
 	@Override
 	public String toString() {
-		return getName();
+		return describe();
 	}
 }

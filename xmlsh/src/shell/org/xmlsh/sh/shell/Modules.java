@@ -160,7 +160,7 @@ public class Modules  implements
 		List<String> set = new ArrayList<>();
 		for(  Entry<String, String> e : mPrefixMap.entrySet() ){
 			if( e.getValue().equals(hm.getName()))
-					set.add(e.getValue());
+					set.add(e.getKey());
 			
 		}
 		return set ;

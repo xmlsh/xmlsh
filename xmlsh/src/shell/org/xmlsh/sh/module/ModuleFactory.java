@@ -278,15 +278,17 @@ public static Module createScriptModule(Shell shell, ModuleConfig config ) throw
    * for a sub package 
    */
 
-	public static ModuleConfig  getPackageModuleConfig( Shell shell , String name ,  List<String> packages ,   List<URL> at, String helpURI ) throws CoreException
+	public static ModuleConfig  getPackageModuleConfig( Shell shell , String nameuri ,  List<String> packages ,   List<URL> at, String helpURI ) throws CoreException
 	{
 		
-		mLogger.entry( name);
+		mLogger.entry( nameuri);
+	
+		
 		ModuleConfig config = new ModuleConfig("package"); 
 		
 		for( String p : packages){
 			/* Look for module under modules */
-			String pkgn = p +  "." + name ;
+			String pkgn = p +  "." + nameuri ;
 			
 			
 			Package pkg = Package.getPackage( pkgn );
@@ -299,12 +301,14 @@ public static Module createScriptModule(Shell shell, ModuleConfig config ) throw
 					mLogger.trace("Cant find package-info - skipping ");
 				}
 			    pkg = Package.getPackage( pkgn );
+			    
+			    
 			   
 			}
 			if( pkg != null ){
 				mLogger.info("Found modules package: {} " , pkg.getName() );
-			   	  config.setHelpURI(helpURI );
-				 config.setName(name);
+			   	 config.setHelpURI(helpURI );
+		    	 config.setName(pkg.getName());
 				 config.setSerialOpts(shell.getSerializeOpts() );
 				 config.setPackages(Collections.singletonList(pkg.getName()));
 			     reflectPackageAnnotations( pkg , config );
@@ -331,7 +335,15 @@ public static Module createScriptModule(Shell shell, ModuleConfig config ) throw
 					moduleClass = pkg.getName() + "." + moduleClass ;
 				config.setModuleClass(moduleClass);
 			}
+			if( ma.classes() != null ){
+				for( String clsname : ma.classes()  )
+						config.addClassName( clsname );
+			}
+			
+			
 		}
+		
+		
 		
 		
 	}

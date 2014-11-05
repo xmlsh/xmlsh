@@ -24,6 +24,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.AccessController;
@@ -1320,11 +1321,13 @@ public class Shell implements AutoCloseable, Closeable {
 		return getFile(fvalue.toString());
 	}
 
-	public Path getPath( XValue fvalue ) {
+	
+	// unchecked exceptions
+	public Path getPath( XValue fvalue ) throws InvalidPathException {
 		return getPath( fvalue.toString());
 	}
 	
-	public Path getPath(String fname) {
+	public Path getPath(String fname) throws InvalidPathException  {
 
 		Path dir = getCurPath();
 		return dir.resolve(fname);

@@ -23,7 +23,8 @@ public @interface Module {
 	String value() default "";
 	String name() default "" ;
 	String moduleClass() default "" ; 
-
+	String[] classes() default  {} ;     // Classes to reflect
+	String[] scripts() default  {} ;     // Scripts to reflect
 
 }
 

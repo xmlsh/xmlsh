@@ -13,6 +13,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.FileStore;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
 import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
@@ -245,24 +247,23 @@ public class FileUtils
 	}
 	// Return the number of chars that include the root part of a path 
 	// Include windows drive: 
-	// Assumes java path format
+	// Assumes java path format  and dont try to convert path to a NIO Path
 	public static int rootPathLength(String path)
 	{
 
-		int len = 0;
-		int plen = path.length();
-		if( Util.isWindows() && plen >= 2 ) {
-			char drive = path.charAt(0);
-			// Character.isAlphabetic() is V7 only
-			if( Character.isLetter(drive) && path.charAt(1) == ':')
-				len = 2 ;
-
+		if( Util.isBlank(path))
+			return 0;
+		path = path.toLowerCase();
+		
+		FileSystem fs = FileSystems.getDefault();
+		for( Path root : fs.getRootDirectories() ){
+		   String sr = root.toString().toLowerCase(); 
+		   
+		   if( path.startsWith(sr))
+			   return sr.length();
 		}
-
-		while( len < plen && path.charAt(len) == '/' )
-			len++;
-
-		return len ;
+		return 0;
+		
 	}
 	/*
 	 * Special function that would return basename without extension if this is path-like

@@ -12,6 +12,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
@@ -342,7 +343,36 @@ public class PackageModule extends Module {
 		
 		super.onLoad(shell);
 		reflectModuleClass( shell , getClass() );
+		reflectClassNames( shell ,  getConfig().getClassNames() );
 
+	}
+
+	private void reflectClassNames(Shell shell, List<String> classNames) {
+		mLogger.entry(shell, classNames);
+		
+		if( classNames == null )
+			return ;
+		
+		
+		// Try exact name , module class package relative and package relative
+		
+		List<String> pkgs = new ArrayList<>();
+
+		pkgs.add(null);
+		pkgs.addAll(getPackages()); 
+		
+		for( String className : classNames ){
+		  mLogger.trace("Looking for module referenced class: {}" , className);
+			Class<?> cls = findClass(className,pkgs);
+		  if( cls != null ){
+			  mLogger.debug("Found for module referenced class: {}" , cls.getName());
+			  reflectClass( shell , cls );
+		  }
+		  
+		}
+
+		mLogger.exit();
+		
 	}
 
 	protected void reflectModuleClass(Shell shell, Class<?> cls ) 
@@ -353,9 +383,11 @@ public class PackageModule extends Module {
 	}
 
 	private void reflectClass(Shell shell, Class<?> cls) {
+		mLogger.entry(shell, cls);
 		
-		// Look for functions 
 		List<String> names = AnnotationUtils.getFunctionNames(cls);
+
+		// Look for functions 
 		if( ! Util.isEmpty(names) ){
 			cacheFunctionClass( names , cls );
 			
@@ -366,6 +398,7 @@ public class PackageModule extends Module {
 			reflectClass(shell,c);
 		}
 		
+		mLogger.exit();
 		
 	}
 	

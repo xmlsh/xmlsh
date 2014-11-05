@@ -21,6 +21,19 @@ public class ModuleConfig {
 	private SerializeOpts mSerialOpts;
 	private String mModuleClass;
 	
+	// Additional class names to search 
+	private List<String>  mClassNames;
+	
+	
+	public List<String> getClassNames() {
+		return mClassNames;
+	}
+
+
+	public void setClassNames(List<String> classNames) {
+		mClassNames = classNames;
+	}
+
 	static Logger mLogger = LogManager.getLogger();
 	
 	public ModuleConfig(String type) {
@@ -154,6 +167,15 @@ public class ModuleConfig {
 			mClassPath = newPath ;
 			return true ;
 			
+		
+	}
+
+	public synchronized void addClassName(String clsname) {
+ 
+		if( mClassNames == null )
+			mClassNames = new ArrayList<>();
+
+	    mClassNames.add( clsname );
 		
 	}
 	
