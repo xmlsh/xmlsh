@@ -310,6 +310,36 @@ public boolean hasKey(Object obj, String key) {
 	return false ;
 }
 
+@Override
+public XValue append(Object value, XValue v) throws InvalidArgumentException {
+	assert( value instanceof JsonNode );
+	ArrayNode a = JSONUtils.newJsonArray();
+
+	JsonNode node = (JsonNode) value ;
+	    switch (node.getNodeType()) {
+	    case ARRAY:
+			a.addAll( (ArrayNode) v.asJson() );
+			break;
+	    case OBJECT:
+	    default :
+	    	a.add( v.asJson() );
+	    }	
+      return XValue.newXValue(TypeFamily.JSON, a) ;
+
+}
+
+@Override
+public boolean isContainer(Object obj) {
+    JsonNode node = (JsonNode) obj;
+    switch (node.getNodeType()) {
+    case ARRAY:
+    case OBJECT:
+      return true ;
+    default:
+      return false ;
+    }
+}
+
 
 
 }

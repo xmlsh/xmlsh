@@ -735,6 +735,12 @@ public class XValue implements Iterable<XValue>
   {
     return mValue instanceof IXValueSequence;
   }
+  public boolean isContainer() 
+  {
+      return getTypeMethods().isContainer(mValue);
+  }
+  
+  
 
   public boolean isString()
   {
@@ -986,6 +992,10 @@ public class XValue implements Iterable<XValue>
     if(isSequence())
       return XMLUtils.toXdmValue(((XValueSequence) mValue));
     else
+    if( isContainer() ){
+        return XMLUtils.toXdmValue( getXValues() );
+        
+    }
 
     return XMLUtils.toXdmValue(mValue);
 

@@ -494,11 +494,11 @@ public class JSONUtils {
         return value.size()  == 0 ;
     }
 
-    public static Object newJsonObject() {
+    public static ObjectNode newJsonObject() {
         return getJsonObjectMapper().createObjectNode();
     }
 
-    public static Object newJsonArray() {
+    public static ArrayNode newJsonArray() {
         return getJsonObjectMapper().createArrayNode();
     }
 

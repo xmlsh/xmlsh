@@ -2,12 +2,18 @@ package org.xmlsh.types;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
+import org.xmlsh.core.XValueList;
+import org.xmlsh.core.XValueSequence;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.util.JavaUtils;
 import org.xmlsh.util.Util;
@@ -16,6 +22,7 @@ public class JavaTypeFamily extends AbstractTypeFamily implements ITypeFamily
 {
   private static final JavaTypeFamily _instance = new JavaTypeFamily();
   private static final Object _nullValue = null ;
+private List<XValue> values;
 
 
   @Override
@@ -108,11 +115,34 @@ public class JavaTypeFamily extends AbstractTypeFamily implements ITypeFamily
     }
 
     // Get all values of a collection or just this value
-    @Override
+    @SuppressWarnings("unchecked")
+	@Override
     public List<XValue> getXValues(Object obj) throws InvalidArgumentException
     {
       if(obj == null)
         return Collections.emptyList();
+      if( JavaUtils.isContainerOf( obj , XValue.class ) )  
+    		return JavaUtils.<XValue>getValues( obj );
+
+      if( JavaUtils.isCollectionOf(obj ,XValue.class) )
+		 return JavaUtils.<XValue>getValues( obj );
+
+      if( obj instanceof XValue )
+    	  return ((XValue)obj).getXValues();
+      
+      if(JavaUtils.isContainer(obj)){
+          List<?> list = JavaUtils.getValues(obj);
+
+          List<XValue> xlist = new ArrayList<>(list.size());
+         for( Object o : list ){
+             xlist.add( XValue.newXValue(o));
+         }
+         return xlist ;
+          
+         
+      }
+      
+      
       return Collections.singletonList(getXValue(obj));
     }
 
@@ -190,17 +220,23 @@ public class JavaTypeFamily extends AbstractTypeFamily implements ITypeFamily
 	@Override
 	public XValue append(Object value, XValue v)
 			throws InvalidArgumentException {
-		
+	
+	
 		if( isContainer(value)){
+			/*
 			Class common = JavaUtils.getCommonAncestor( JavaUtils.getContainedType(value) , v.asObject() );
 			Object newContainer = JavaUtils.newConatainerOf( value.getClass() , common );
 			JavaUtils.addAll(  newContainer , value );
 			JavaUtils.add( newContainer , v.asObject() );
-			
-			
-			return getXValue( newContainer );
+			*/
+	
+			List<Object> ret = JavaUtils.getValues(value );
+			ret.add((Object) v.asObject());
+			return XValue.newXValue( TypeFamily.JAVA , ret );
 			
 		}
+		
+		return XValue.newXValue( TypeFamily.JAVA , Arrays.asList( value  , v.asObject()) );
 		
 		
 	}

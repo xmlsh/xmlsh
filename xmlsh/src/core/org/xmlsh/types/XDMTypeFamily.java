@@ -308,5 +308,11 @@ public boolean hasKey(Object obj, String key) throws InvalidArgumentException {
 		
 }
 
+@Override
+public boolean isContainer(Object obj) {
+	return ( obj instanceof XValueSequence)  ;
+	
+}
+
 
 }

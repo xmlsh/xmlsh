@@ -19,6 +19,7 @@ import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +32,8 @@ import net.sf.saxon.s9api.XdmAtomicValue;
 import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XdmValue;
 
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.ClassUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.xmlsh.core.CoreException;
@@ -663,6 +666,11 @@ public class JavaUtils {
 		return cls == null ;
 	}
 
+	public static boolean isContainer( Object obj)
+	{
+	   return isContainerClass( obj.getClass());
+	}
+
 	public static boolean isContainerClass(Class<?> cls)
 	{
 		if( cls == null )
@@ -784,7 +792,8 @@ public class JavaUtils {
   }
 
     public static  boolean isArrayOf(Object value, Class<?> cls) {
-      return  value.getClass().isArray() &&  cls.isAssignableFrom(value.getClass().getComponentType());
+      return  value.getClass().isArray() &&  
+    		  cls.isAssignableFrom(value.getClass().getComponentType());
     }
 
     public static Object getIndexValue(Object obj, int index )
@@ -798,8 +807,36 @@ public class JavaUtils {
     }
       return res;
     }
+  
+    public static <T> List<T> getValues( Object obj  ){
+    	
+    	 if(obj.getClass().isArray() ) { 
+    		Object array = obj ;
+			int len = ArrayUtils.getLength(array);
+    		ArrayList<T> list = new ArrayList<>(len);
+			for( int i = 0 ;i < len ; i++ )
+				list.add( (T) Array.get(array, i));
 
-    public static String simpleTypeName(Object value)
+    	   return list ;
+    	 }
+    	 if( obj instanceof Collection ){
+    		@SuppressWarnings({ "rawtypes", "unchecked" })
+			Collection<T> c = ((Collection)obj) ;
+     		ArrayList<T> list = new ArrayList<>( c.size() );
+     		list.addAll( c );
+     		return list;
+
+    	 }
+    	 return (List<T>) Collections.singletonList(obj);
+    	
+    }
+    
+
+    public static boolean isCollection(Object obj) {
+		return obj instanceof Collection;
+	}
+
+	public static String simpleTypeName(Object value)
     {
       if( value == null )
         return "null";
@@ -915,6 +952,36 @@ public class JavaUtils {
 	}
 
 	public static Class<?> getContainedType(Object value) {
+		
+		Class<?> c = getClass( value );
+		
+		return c.getComponentType();
+
+	}
+
+	public static Class<?> getClass(Object value) {
+		assert( value != null );
+		if( value instanceof Class )
+			return (Class<?>) value ;
+		return value.getClass();
+	}
+
+	public static boolean isContainerOf(Object obj, Class<?> c ) {
+		assert( obj != null );
+		return isArrayOf( obj , c ) ||
+				isCollectionOf( obj , c );
+	}
+
+	public static boolean isCollectionOf(Object obj, Class<?> c) {
+			if( obj instanceof Collection ){
+				Collection col = (Collection<?>) obj;
+			    if( col.isEmpty())
+			    	return true ; // sure WTF
+			    return ClassUtils.isAssignable(col.iterator().next().getClass(), c );
+				
+			}
+
+			return false ;
 
 	}
 

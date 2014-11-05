@@ -301,5 +301,12 @@ public boolean hasKey(Object obj, String key) {
 	
 }
 
+@Override
+public boolean isContainer(Object obj) {
+
+	return obj instanceof IXValueContainer ;
+	
+}
+
 
 }

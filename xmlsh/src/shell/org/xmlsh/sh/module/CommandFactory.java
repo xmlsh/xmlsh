@@ -474,11 +474,13 @@ public abstract class CommandFactory {
 	 */
 	private static String[] getExtensions(String ext, String... exts) {
       List<String> list = new ArrayList<>();
-      if( Util.contains( exts , ext ))
+      list.add("");
+      
+      if( ! Util.isBlank(ext) && Util.contains( exts , ext ))
     	   list.add("");
       
       for( String e : exts )
-    	  if( ! e.equals(ext) )
+    	  if( ! Util.isBlank(e)  && ! e.equals(ext) )
              list.add(e);
       return list.toArray( new String[0] );
 	
