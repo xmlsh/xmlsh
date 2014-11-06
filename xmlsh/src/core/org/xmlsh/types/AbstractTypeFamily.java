@@ -22,17 +22,6 @@ abstract class AbstractTypeFamily implements ITypeFamily
   
 
   @Override
-  public XValue append(Object o , XValue v) throws InvalidArgumentException
-  {
-    if( o == null )
-      return v; 
-    return getXValue( JavaUtils.concat( o , v.asObject() ));
-
-
-  }
-
-
-  @Override
   public String asString(Object obj)
   {
     return obj.toString();

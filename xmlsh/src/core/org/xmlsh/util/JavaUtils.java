@@ -715,7 +715,7 @@ public class JavaUtils {
 		return Class.class.isAssignableFrom(cls);
 	}
 
-	public static Object concat(Object o, Object that)
+	public static Object stringConcat(Object o, Object that)
 	{
 
 		return o.toString() + that.toString() ;
@@ -912,6 +912,10 @@ public class JavaUtils {
 		}
 		return alist ;
 		
+	}
+
+	public static Class<?> getContainedType(Object value) {
+
 	}
 
 }

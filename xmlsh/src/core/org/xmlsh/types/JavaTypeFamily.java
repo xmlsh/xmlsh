@@ -17,26 +17,7 @@ public class JavaTypeFamily extends AbstractTypeFamily implements ITypeFamily
   private static final JavaTypeFamily _instance = new JavaTypeFamily();
   private static final Object _nullValue = null ;
 
-/*
- * @Override
- * protected
- * XTypeKind inferKind( Class<?> cls ) {
- * if( JavaUtils.isNullClass( cls ) )
- * return XTypeKind.NULL ;
- * if( JavaUtils.isObjectClass( cls ) )
- * return XTypeKind.MAP ;
- * if( JavaUtils.isArrayClass( cls ) )
- * return XTypeKind.ARRAY ;
- * if( JavaUtils.isContainerClass( cls ) )
- * return XTypeKind.CONTAINER ;
- * if( JavaUtils.isAtomicClass( cls ) )
- * return XTypeKind.ATOMIC ;
- * if( JavaUtils.isClassClass( cls ) )
- * return XTypeKind.CLASS ;
- * else
- * return XTypeKind.MAP ;
- * }
- */
+
   @Override
   public boolean isClassOfFamily(Class<?> cls)
   {
@@ -203,6 +184,33 @@ public class JavaTypeFamily extends AbstractTypeFamily implements ITypeFamily
 	@Override
 	public boolean hasKey(Object obj, String key) {
 	   return JavaUtils.hasKey( obj , key );
+		
+	}
+
+	@Override
+	public XValue append(Object value, XValue v)
+			throws InvalidArgumentException {
+		
+		if( isContainer(value)){
+			Class common = JavaUtils.getCommonAncestor( JavaUtils.getContainedType(value) , v.asObject() );
+			Object newContainer = JavaUtils.newConatainerOf( value.getClass() , common );
+			JavaUtils.addAll(  newContainer , value );
+			JavaUtils.add( newContainer , v.asObject() );
+			
+			
+			return getXValue( newContainer );
+			
+		}
+		
+		
+	}
+
+	@Override
+	public boolean isContainer(Object obj) {
+		assert( obj != null );
+		return JavaUtils.isContainerClass(obj.getClass());
+		
+		
 		
 	}
 

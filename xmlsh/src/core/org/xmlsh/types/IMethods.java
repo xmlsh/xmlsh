@@ -35,6 +35,7 @@ public interface IMethods
     public boolean isEmpty(Object obj) ;
 	public List<XValue>  getXValues(Object obj) throws InvalidArgumentException;    // Get all contents 
 	public boolean isAtomic(Object obj) ;
+	public boolean isContainer( Object obj );
     public boolean hasKey(Object obj , String key ) throws InvalidArgumentException;
     
 

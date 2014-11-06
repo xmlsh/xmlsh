@@ -31,29 +31,6 @@ public class JSONTypeFamily extends AbstractTypeFamily implements ITypeFamily
   
   private final static Object _nullValue = JSONUtils.nullValue();
 
-/*
- * @Override
- * protected XTypeKind inferKind( Class<?> cls ) {
- * if( cls == null )
- * return XTypeKind.NULL;
- * if( JSONUtils.isNullClass( cls ) )
- * return XTypeKind.NULL ;
- * if( JSONUtils.isObjectClass( cls ) )
- * return XTypeKind.MAP ;
- * if( JSONUtils.isArrayClass( cls ) )
- * return XTypeKind.ARRAY ;
- * if( JSONUtils.isContainerClass( cls ) )
- * return XTypeKind.CONTAINER ;
- * if( JSONUtils.isAtomicClass( cls ) )
- * return XTypeKind.ATOMIC ;
- * if( JSONUtils.isClassClass( cls ) )
- * return XTypeKind.CLASS ;
- * else
- * return XTypeKind.UNKNOWN;
- * 
- * }
- */
-
   @Override
   public boolean isClassOfFamily(Class<?> cls)
   {
