@@ -5,7 +5,7 @@ options
 {
   JDK_VERSION = "1.7";
   STATIC = false; 
-//  DEBUG_PARSER=true ; 
+// DEBUG_PARSER=true ; 
 //   DEBUG_LOOKAHEAD=true;
 //      DEBUG_TOKEN_MANAGER=true;
 // FORCE_LA_CHECK=true;
@@ -314,6 +314,8 @@ TOKEN :
 |   <#_ID :     < _LETTER > (( "-" )? < _LETNUM > )* >
 |   <#_VARNAME : < _ID >>
 |   <#_POSVAR  : < _NUMBER > >
+|   <#_ALPHANUM : ( < _ALPHA > | < _NUMBER > ) >
+
 }
 
 // Patterns
@@ -341,14 +343,14 @@ TOKEN :
     )*
     "\'" 
     >
-|  < #_ESCAPED : "\\" ~[ ] >
 |  < #_SPECIAL_VARNAME : ( 
         < _VARNAME > | < _POSVAR > |  [ "#", "?", "*", "@", "$", "!" ] ) >
 
 
 |  < VAR_EXP :
      "$" < _SPECIAL_VARNAME > >
-
+     
+|   <#_ESCAPED : "\\" ~[ ] >
 } 
 
 /* 
@@ -443,7 +445,8 @@ TOKEN :
 // Single charactor words that need to be words themselfs in some cases
 | < #_WORD_SPECIAL :     ( "[" | "$" | "," | "." | ":" ) >
 | < #_WORD_PUNC :     ( "=" ) >
-
+|   < #_GCHAR  : ( ~[ "\"", "\\" , "[" , "]" , ")" , "(" ] | < _ESCAPED > )+ >
+|   < #_GLOB  : ( ( "["  < _GCHAR >  "]" ) | "*" | "?" )+ >
 // Word Expressions that shold be tokenized together
 
 
@@ -802,15 +805,24 @@ Token reserved() :
 }
 
 
-
+/*
 String wordname() :{  Token t;}{
   LOOKAHEAD(1,reserved()) t=reserved()
   {    return t.toString();
    }
+| < GLOB : < _GLOB > >
+ {
+    return token.toString();
+  } 
 |  <NAME>          { return token.toString(); }
 | < WORD >         { return token.toString(); }
 | < XEXPR >        { return token.toString(); }| < BIGQUOTE >     { return token.toString(); }
-}WordList wordlist() :{  WordList list = new WordList();  Word w;}{  (    w = expr()    {      list.add(w);    }  )+  {    return list;  }}CaseClause case_clause() :{  Word s;  CaseList l = null;
+
+ 
+}
+
+
+*/WordList wordlist() :{  WordList list = new WordList();  Word w;}{  (    w = expr()    {      list.add(w);    }  )+  {    return list;  }}CaseClause case_clause() :{  Word s;  CaseList l = null;
   Token t;}{   t="case" s = expr() "in"
   linebreak()  l = case_list()   {   CaseClause c= new CaseClause(s, l);
    setLocation(c,t);
@@ -826,7 +838,39 @@ Token reserved() :
   ) *  {    return list;  }}
 
 CaseItem case_item() :{  StringList p;  CommandExpr c = null;  Token t;}{  [ < LPAREN > ] p = pattern() t = < RPAREN >  linebreak() [ c = compound_list() ]  < DSEMI > linebreak()  {
-    return new CaseItem(p, c, getLocation(t));  }}StringList pattern() :{  StringList list = new StringList();  String s;}{  s = wordname()  {    list.add(s);  }  (    < PIPE > s = wordname()    {      list.add(s);    }  )*  {    return list;  }}IfClause if_clause() :{  CommandExpr ip = null, tp = null, ep = null;  Token t;  IfClause ifc;}{  t ="if" ip = compound_list() "then" tp = compound_list()  [    LOOKAHEAD(1, ( < ELIF > | < ELSE > ) )    ep = else_part()  ]  "fi"  {    ifc = new IfClause(ip, tp, ep);    setLocation(ifc, t);    return ifc;  }}CommandExpr else_part() :{  CommandExpr ip = null, tp = null, ep = null;}{  "elif" ip = compound_list() "then" tp = compound_list() [ ep = else_part() ]  {    return new IfClause(ip, tp, ep);  }|   "else" ep = compound_list()  {    return ep;  }}WhileClause while_clause() :{  CommandExpr w, d;}{  "while" w = compound_list() d = do_group()  {    return new WhileClause(w, d);  }}UntilClause until_clause() :{  CommandExpr w, d;}{  "until" w = compound_list() d = do_group()  {    return new UntilClause(w, d);  }}
+    return new CaseItem(p, c, getLocation(t));  }}StringList pattern() :{  StringList list = new StringList();  String s;
+  Word w;}{ w = pattern_word()  {    list.add( w.toString() );  }  (    < PIPE > w = pattern_word()    {      list.add( w.toString() );    }  )*  {    return list;  }}
+
+// a word , name, variable expansion/expression
+Word pattern_word() :
+{
+  Word  n=null;
+  Word  w=null ;
+  Token t;
+}
+{
+   LOOKAHEAD(1 , <WORD > , {  isKind(1,WORD) && isDelim( getToken(1))})  < WORD >
+	{
+	   return new DelimWord( token ) ;
+	 }
+ |
+  (  
+      (    t=<WORD > | t=<NAME>  )
+              { w = newJoinedWord(t) ;  } 
+   )
+
+   (
+         LOOKAHEAD( 1 , (  <WORD > | <NAME>  ),
+            {  isJoinable(getToken(1))} )     
+               n=pattern_word()
+     )?
+    {
+      return  newJoinedWord( w , n );
+      
+    }
+}
+
+IfClause if_clause() :{  CommandExpr ip = null, tp = null, ep = null;  Token t;  IfClause ifc;}{  t ="if" ip = compound_list() "then" tp = compound_list()  [    LOOKAHEAD(1, ( < ELIF > | < ELSE > ) )    ep = else_part()  ]  "fi"  {    ifc = new IfClause(ip, tp, ep);    setLocation(ifc, t);    return ifc;  }}CommandExpr else_part() :{  CommandExpr ip = null, tp = null, ep = null;}{  "elif" ip = compound_list() "then" tp = compound_list() [ ep = else_part() ]  {    return new IfClause(ip, tp, ep);  }|   "else" ep = compound_list()  {    return ep;  }}WhileClause while_clause() :{  CommandExpr w, d;}{  "while" w = compound_list() d = do_group()  {    return new WhileClause(w, d);  }}UntilClause until_clause() :{  CommandExpr w, d;}{  "until" w = compound_list() d = do_group()  {    return new UntilClause(w, d);  }}
 ReturnStatement return_stmt() :
 {
   Word w = null ;
