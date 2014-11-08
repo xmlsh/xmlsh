@@ -47,7 +47,6 @@ import static org.xmlsh.util.UnifiedFileAttributes.MatchFlag.*;
 import org.xmlsh.util.Util;
 import org.xmlsh.util.XFile;
 
-import com.icl.saxon.exslt.Sets;
 
 /**
  * Posix command ls

@@ -7,11 +7,17 @@
 package org.xmlsh.util;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetDecoder;
+import java.nio.charset.CharsetEncoder;
 import java.nio.file.FileStore;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
@@ -19,8 +25,10 @@ import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.LinkOption;
+import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.nio.file.attribute.AclFileAttributeView;
 import java.nio.file.attribute.BasicFileAttributeView;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -388,7 +396,6 @@ public class FileUtils
 	
 	
 	public static String getExt(String name) {
-
 		
 		mLogger.entry(name);
 		name = getPathLikeName( name );
@@ -428,7 +435,84 @@ public class FileUtils
 	    boolean caseSensitive = !bIsWindows;
 	    return caseSensitive ;
 	}
+	
+	public static boolean isScriptFile( Path path , String encoding ){
+		
+		mLogger.entry(path,encoding);
+		try ( InputStream is = Files.newInputStream(path, StandardOpenOption.READ ) ){
+		    byte data[] = new byte[1024];
+		    long len = is.read(data);
+		    if( len <= 0 )
+		    	return false ;
+		java.nio.ByteBuffer bb = ByteBuffer.wrap(data);
 
+		CharsetDecoder decoder=  
+				Charset.forName(encoding).newDecoder();  
+		
+		CharBuffer ret = decoder.decode(bb);
+		if( ret.length() <= 0)
+			return false ;
+        // Look for some alpaha or reserved word
+
+		int good = 0;
+		for( char c : ret.array() ){
+			if( good > 10)
+				return mLogger.exit(true) ;
+			
+			
+			if( !Character.isDefined(c) )
+				return mLogger.exit(false) ;
+
+			switch( c ){
+			case '\0' :
+				return mLogger.exit(false) ;
+			case '\n' :
+			case '\r' :
+			case '\t' :
+			case '\b' :
+			case '\f' :
+			case '#' :
+			case '!' :
+			case '-' :
+			case '_' :
+			case '(' :
+			case ')' :
+			case '{' :
+			case '}' :
+			case '|' :
+			case '"' :
+			case '\'':
+			case '[' :
+			case ']' :
+			    good++;
+			    continue;
+			}
+			
+			if( Character.isJavaIdentifierPart(c)||
+			    Character.isJavaIdentifierStart(c)||
+				Character.isLetterOrDigit(c) ||
+			    Character.isUnicodeIdentifierStart(c) ||
+			    Character.isUnicodeIdentifierPart(c)
+			    )
+				good++;
+			else
+		    if( ! Character.isWhitespace(c)){
+		    	if( Character.isISOControl(c) )
+		    		return false ;
+				good = 0;
+		    }				
+		}
+		
+		
+	}
+ 
+    
+	catch (Exception e) {
+
+		return mLogger.exit(false) ;
+    }
+		return mLogger.exit(true) ;
+	}
 	
 }
 

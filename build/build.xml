@@ -41,7 +41,6 @@
 	  	<arg value="--recursive"/>
 	  	<arg value="--exclude"/>
 	  	<arg value="*/"/>
-	  	<arg value="--delete"/>
 	  </exec>
 	</target>
 	  

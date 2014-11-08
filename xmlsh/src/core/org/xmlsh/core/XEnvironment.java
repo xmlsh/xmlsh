@@ -838,9 +838,11 @@ public XVariable exportVar( String name ) throws InvalidArgumentException{
 	public void initVariable(XVariable var) {
 		
 		if( mVars.containsKey(var.getName())){
-			mLogger.warn("Attempt to initialize a pre-existing variable: {}" , var.getName());
-		} else
-		  mVars.put(var);
+			mLogger.debug("Attempt to initialize a pre-existing variable: {}" , var.getName());
+		} 
+		 
+		
+		mVars.put(var);
 		
 		
 	}

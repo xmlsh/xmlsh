@@ -333,7 +333,7 @@ public abstract class CommandFactory {
 		File file = null ;
 		if( paths == null ){
 			for( String ext : exts ){ 
-				file = tryFile( shell , name + ext );
+				file = tryScriptFile( shell , name + ext );
 				if( file != null )
 					return mLogger.exit(file);
 			}
@@ -343,12 +343,13 @@ public abstract class CommandFactory {
 			for( String ext : exts ){
 				try {
 					file = path.getFirstFileInPath(shell, name  + ext , sExplicitPath);
+					if( file != null && FileUtils.isScriptFile(file.toPath(), shell.getInputTextEncoding()) )
+						return mLogger.exit(file);
 				} catch (IOException e) {
 					mLogger.catching(e);
 					continue;
 				}
-				if( file != null )
-					return mLogger.exit(file);
+			
 			}
 		}
 		return mLogger.exit(null);
@@ -413,8 +414,10 @@ public abstract class CommandFactory {
 			if( Util.isWindows() && FileUtils.rootPathLength(FileUtils.toJavaPath(psname)) > 0 ){
 				mLogger.trace("Trying name as windows file: {} " , pname );
 				scriptFile = shell.getExplicitFile(pname.toString(), true );
-				if( scriptFile != null && ! scriptFile.isFile())
+				if( scriptFile != null && ! scriptFile.isFile() )
 					scriptFile = null ;
+				if( scriptFile != null && ! FileUtils.isScriptFile(scriptFile.toPath(), shell.getInputTextEncoding()))
+					scriptFile = null;
 				
 			} else
 				mLogger.exit(null); // 
@@ -435,7 +438,12 @@ public abstract class CommandFactory {
 			String ext = FileUtils.getExt( name );
 			boolean bIsXsh = ".xsh".equals(ext);
 			
-	        if( sourceMode == SourceMode.SOURCE || sourceMode == SourceMode.IMPORT || FileUtils.hasDirectory(name)   ) {
+			if( FileUtils.hasDirectory(name) ){
+				scriptFile = tryScriptFile(shell, name);
+			}
+			
+	        if( scriptFile == null && sourceMode == SourceMode.SOURCE || sourceMode == SourceMode.IMPORT ){
+	        	
 	        	scriptFile = findFirstFileInPaths( shell , name , getExtensions( ext , ".xsh"  ) , null);
 	        }
 			
@@ -453,7 +461,7 @@ public abstract class CommandFactory {
 				case SOURCE:
 				case VALIDATE:
 				default:
-					paths =new SearchPath[] { shell.getPath(ShellConstants.XPATH, true) , shell.getPath(ShellConstants.PATH, true) } ;
+					paths = new SearchPath[] { shell.getPath(ShellConstants.XPATH, true) , shell.getPath(ShellConstants.PATH, true) } ;
 					break ;
 				}
 				
@@ -468,6 +476,16 @@ public abstract class CommandFactory {
 		return mLogger.exit(ss);
 
 	}
+		
+		// tryFile but make sure its text like
+	private static File tryScriptFile(Shell shell, String name) {
+		mLogger.entry(shell,name);
+		File f = tryFile( shell , name );
+		if( f != null && FileUtils.isScriptFile( f.toPath() , shell.getInputTextEncoding() ))
+				return mLogger.exit(f);
+		return mLogger.exit(null) ;
+	}
+
 	/*
 	 * Return a list of extensions to try
 	 * Excluding the current extension (convert to ""
