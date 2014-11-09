@@ -17,7 +17,7 @@ import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.SerializeOpts;
 
-//import com.icl.saxon.expr.StringValue;
+import com.icl.saxon.expr.StringValue;
 
 public class xslt1 extends XCommand {
 
@@ -67,7 +67,7 @@ public class xslt1 extends XCommand {
 					String name = args.get(i * 2).toString();
 					XValue value = args.get(i * 2 + 1);
 
-					//transformer.setParameter(name, new StringValue(value.toString()));
+					transformer.setParameter(name, new StringValue(value.toString()));
 				}
 			}
 
@@ -85,9 +85,8 @@ public class xslt1 extends XCommand {
 
 	private synchronized Templates tryCache(String path) throws TransformerException, java.io.IOException {
 
-	//	com.icl.saxon.TransformerFactoryImpl factory = new com.icl.saxon.TransformerFactoryImpl();
-	//	return factory.newTemplates(new StreamSource(new File(path)));
-return null;
+	  com.icl.saxon.TransformerFactoryImpl factory = new com.icl.saxon.TransformerFactoryImpl();
+	  return factory.newTemplates(new StreamSource(new File(path)));
 
 	}
 

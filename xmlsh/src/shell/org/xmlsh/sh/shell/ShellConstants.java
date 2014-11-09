@@ -48,7 +48,15 @@ public class ShellConstants
 
 		if( Shell.bInitialized )
 			return ;
-
+		// Force xerces for XML so saxon.jar doesnt get picked
+		try {
+		    System.setProperty("javax.xml.parsers.SAXParserFactory","org.apache.xerces.jaxp.SAXParserFactoryImpl");
+		} catch( Throwable e)
+		{
+		    // logging not yet initialized
+		}
+		
+		
 		String logging = System.getenv(ShellConstants.ENV_XDISABLE_LOGGING);
 		Logging.configureLogger(Util.parseBoolean(logging) );
 

@@ -1,8 +1,7 @@
 #!/bin/sh
 [ -d "$XMLSH" ] || { echo "xmlsh requires environment variable XMLSH set" 1>&2 ;  exit 1 ; }
 CP="$XMLSH/bin/*:$XMLSH/lib/*"
-[ -z "$XMLSH_JVMOPTS" ] &&  export XMLSH_JVMOPTS="-XX:+UseConcMarkSweepGC -Xmx1024m -Xms256m"
-java -cp "$CP" $XMLSH_JVMOPTS org.xmlsh.sh.shell.Shell   "$@"
+[ -z "$XMLSH_JVMOPTS" ] &&  XMLSH_JVMOPTS="-XX:+UseConcMarkSweepGC -Xmx1024m -Xms256m"
+_JVMDEFS=-Djavax.xml.parsers.SAXParserFactory=org.apache.xerces.jaxp.SAXParserFactoryImpl
+java $_JVMDEFS -cp "$CP" $XMLSH_JVMOPTS org.xmlsh.sh.shell.Shell   "$@"
 
-# Adjust VM args below to your taste
-java -cp "$CP" $XMLSH_JVMOPTS org.xmlsh.sh.ui.XShell   "$@"

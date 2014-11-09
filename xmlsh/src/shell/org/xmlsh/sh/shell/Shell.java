@@ -100,6 +100,17 @@ import org.xmlsh.xpath.ThreadLocalShell;
 public class Shell implements AutoCloseable, Closeable {
 	private static volatile int __id = 0;
 	private final int _id = ++__id ;
+	
+	private static String[] _reservedEnvVars = {
+	     ShellConstants.PATH , 
+	     ShellConstants.PS1 ,
+	     ShellConstants.PS2 ,
+	     ShellConstants.PWD,
+	     ShellConstants.VAR_RANDOM ,
+	     ShellConstants.VAR_RANDOM32,
+	     ShellConstants.VAR_RANDOM64 ,
+	     ShellConstants.XMODPATH 
+	};
 	@Override
 	public String toString() {
 		return "Shell[" + _id + "]";
@@ -257,6 +268,7 @@ public class Shell implements AutoCloseable, Closeable {
 	private void setGlobalVars() throws InvalidArgumentException {
 
 		Map<String, String> env = System.getenv();
+		
 
 		for (Map.Entry<String, String> entry : env.entrySet()) {
 
@@ -268,8 +280,8 @@ public class Shell implements AutoCloseable, Closeable {
 			if (!name.matches("^[a-zA-Z_0-9]+$"))
 				continue;
 
-			// Ignore PS1
-			if (name.equals("PS1"))
+			// Ignore reserved vars that are set internally
+			if (Util.contains(_reservedEnvVars , name ))
 				continue;
 
 			getEnv().initVariable(

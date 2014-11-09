@@ -58,11 +58,11 @@
 	  	<arg value="--exclude"/>
 	  	<arg value="*/"/>
 	  	<arg value="--include"/>
-	  	<arg value="xmlsh/lib/*"/>
+	  	<arg value="xmlsh/lib/*.jar"/>
 	  	<arg value="--include"/>
-	  	<arg value="xmlsh/build-lib/*"/>
+	  	<arg value="xmlsh/build-lib/*.jar"/>
 	  	<arg value="--include"/>
-	  	<arg value="extensions/*/lib/*"/>
+	  	<arg value="extensions/*/lib/*.jar"/>
 	  	<arg value="--delete"/>
 	  </exec>
 	</target>
