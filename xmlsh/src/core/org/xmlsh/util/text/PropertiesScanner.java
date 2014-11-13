@@ -8,43 +8,42 @@ package org.xmlsh.util.text;
 
 import java.io.IOException;
 import java.io.Reader;
-import java.util.Scanner;
 
 import org.xmlsh.core.InvalidArgumentException;
 
 public abstract class PropertiesScanner extends TextLineScanner implements IPropertiesScanner
 {
-  
-  String propertyDelimiter = "[=:]";
-  
-  @Override
-void run( Reader scanner ) throws InvalidArgumentException, IOException {
-    super.run(scanner);
-    
-  }
-  void setDelimiter( String delim ) {
-    propertyDelimiter = delim ;
-  }
-  
 
-  /* (non-Javadoc)
-   * @see org.xmlsh.util.text.ITextLineParser#onLine(java.lang.String)
-   */
-  @Override
-  public void  onLine(String line) throws InvalidArgumentException
-  {
-    String[] pair = line.split( propertyDelimiter , 2 );
-    if( pair.length != 2 )
-      throw new IllegalArgumentException(
-        "Invalid property format: no " + propertyDelimiter + " pattern is found in the line ["
-                + line + "].");
-      
-    String key = pair[0].trim();
-    String value = pair[1].trim();
-    onProperty( key , value );
-    
-  }
-  
+    String propertyDelimiter = "[=:]";
+
+    @Override
+    void run( Reader scanner ) throws InvalidArgumentException, IOException {
+        super.run(scanner);
+
+    }
+    void setDelimiter( String delim ) {
+        propertyDelimiter = delim ;
+    }
+
+
+    /* (non-Javadoc)
+     * @see org.xmlsh.util.text.ITextLineParser#onLine(java.lang.String)
+     */
+    @Override
+    public void  onLine(String line) throws InvalidArgumentException
+    {
+        String[] pair = line.split( propertyDelimiter , 2 );
+        if( pair.length != 2 )
+            throw new IllegalArgumentException(
+                    "Invalid property format: no " + propertyDelimiter + " pattern is found in the line ["
+                            + line + "].");
+
+        String key = pair[0].trim();
+        String value = pair[1].trim();
+        onProperty( key , value );
+
+    }
+
 
 }
 

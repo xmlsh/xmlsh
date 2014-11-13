@@ -63,13 +63,7 @@ public class xproperties extends XCommand
 
 
 
-
-
-
 		String comment = opts.getOptString("c", null);
-
-
-
 
 		Properties props = new Properties();
 
@@ -113,8 +107,6 @@ public class xproperties extends XCommand
 				writeXML(props, comment);
 			else
 				writeText(props,comment,serializeOpts);
-
-
 
 
 		return 0;

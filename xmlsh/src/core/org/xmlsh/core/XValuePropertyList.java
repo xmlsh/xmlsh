@@ -17,6 +17,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import org.xmlsh.core.XValueProperties.XPropertiesLookup;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.types.TypeFamily;
 import org.xmlsh.util.Util;
@@ -27,7 +28,7 @@ import org.xmlsh.util.Util;
 public class XValuePropertyList  implements     IXValueMap<XValuePropertyList>, IXValueList<XValuePropertyList>
 {
 	private static final XValuePropertyList _emptyList = new XValuePropertyList();
-  private  	List<XValueProperty>   mList;
+    private  	List<XValueProperty>   mList;
 
 	public XValuePropertyList(XValueProperty p) {
 		mList = new LinkedList<>();
@@ -74,20 +75,26 @@ public class XValuePropertyList  implements     IXValueMap<XValuePropertyList>, 
 	@Override
 	public XValue get(String name) throws InvalidArgumentException {
 		
-		XValueList list  = null ;
-		for( XValueProperty p : mList ) {
-		  if( p.nameEquals(name) ) {
-		    if( list == null )
-		      list = new XValueList();
-		    list.add( p.getValue() );
-		  }
-		}
+	    XValueList list  = getAll(name);
 		if( list == null )
 		  return XValue.newXValue(TypeFamily.XTYPE,null);
 		if( list.size() == 1 )
 		  return list.get(0);
 		return XValue.newXValue(TypeFamily.XTYPE, list );
 		
+	}
+	
+	public XValueList getAll( String name ){
+	    XValueList list  = null ;
+        for( XValueProperty p : mList ) {
+          if( p.nameEquals(name) ) {
+            if( list == null )
+              list = new XValueList();
+            list.add( p.getValue() );
+          }
+        }
+        return list ;
+	    
 	}
 
 	@Override
@@ -293,6 +300,38 @@ public class XValuePropertyList  implements     IXValueMap<XValuePropertyList>, 
 		}
 		return false ;
 	}
+	
+	
+	   
+    public static class XPropertiesListLookup extends XStringLookup {
+
+        XValuePropertyList mProps ;
+        /**
+         * @param xValueProperties
+         * @param lookup
+         */
+        public XPropertiesListLookup(XValuePropertyList props, XStringLookup parent) {
+            super(parent);
+            mProps = props;
+        }
+
+        @Override
+        protected XValue lookupXValue(String value) throws InvalidArgumentException {
+               return mProps.get(value);
+        }        
+    }
+    
+    public void replaceVariables(final XStringLookup lookup) {
+        XStringSubstituter subst = new XStringSubstituter(new XPropertiesListLookup(this, lookup));
+        for( XValueProperty p : mList ) {
+           
+            XValue v = p.getValue();
+            XValue vnew = v.replace(subst);
+            if (vnew != v)
+                p.setValue(vnew);
+          }
+    }
+        
 }
 
 

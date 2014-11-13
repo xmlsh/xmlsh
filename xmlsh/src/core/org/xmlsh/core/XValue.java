@@ -1042,31 +1042,44 @@ public class XValue implements Iterable<XValue>
     }
   }
 
+  /*
+   * StrReplace based replacement of values
+   * 
+   */
+  public XValue replace( XStringSubstituter subst )
+  {
+      if( isAtomic() ){
+          StringBuilder sb = new StringBuilder( toString() );
+          if( subst.replaceIn(sb) )
+             return XValue.newXValue(sb.toString());
+      }
+      return this ;
+  }
 
-
-public XValue getNamedValue( String key ) throws CoreException {
-	
-	return typeFamilyInstance().getXValue( mValue, key );
-
-}
-
-public List<XValue> getXValues() throws InvalidArgumentException {
-	if( mValue == null )
-		return emptyList();
-	return getTypeMethods().getXValues( mValue  ); 
-}
-
-/*
- * A reasonable version of toString that wont be a bazillion bytes
- */
-public String describe()
-{
-   if( isNull() )
-     return "null";
-
-   return typeFamilyInstance().simpleTypeName(mValue);
-
-}
+    
+    public XValue getNamedValue( String key ) throws CoreException {
+    	
+    	return typeFamilyInstance().getXValue( mValue, key );
+    
+    }
+    
+    public List<XValue> getXValues() throws InvalidArgumentException {
+    	if( mValue == null )
+    		return emptyList();
+    	return getTypeMethods().getXValues( mValue  ); 
+    }
+    
+    /*
+     * A reasonable version of toString that wont be a bazillion bytes
+     */
+    public String describe()
+    {
+       if( isNull() )
+         return "null";
+    
+       return typeFamilyInstance().simpleTypeName(mValue);
+    
+    }
 
 }
 //

@@ -4,12 +4,13 @@
  * 
  */
 
-package org.xmlsh.modules.types.properties;
+package org.xmlsh.internal.commands;
 
 import java.io.InputStream;
 import java.util.List;
 import java.util.Properties;
 
+import org.xmlsh.annotations.Command;
 import org.xmlsh.core.BuiltinCommand;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InputPort;
@@ -17,12 +18,14 @@ import org.xmlsh.core.Options;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.XValueProperties;
 import org.xmlsh.sh.shell.SerializeOpts;
+
+@Command( name = "readpoperties")
 public class readproperties extends BuiltinCommand
 {
 @Override
   public int run(List<XValue> args) throws Exception
   {
-    Options opts = new Options("format:,file:,delim:,t=tree", SerializeOpts.getOptionDefs());
+    Options opts = new Options("format:,file:,delim:", SerializeOpts.getOptionDefs());
     opts.parse(args);
     setSerializeOpts(opts);
     String format = opts.getOptString("format", "text");
@@ -61,8 +64,6 @@ public class readproperties extends BuiltinCommand
     }
 
     XValueProperties xp = XValueProperties.fromMap(props);
-    if( opts.hasOpt("tree") )
-      xp = xp.expandTree(opts.getOptString("delim","."));
     XValue value = xp.asXValue();
     
     mShell.getEnv().setVar(varName, value);

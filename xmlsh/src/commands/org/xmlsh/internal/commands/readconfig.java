@@ -4,63 +4,31 @@
  * 
  */
 
-package org.xmlsh.modules.types.config;
+package org.xmlsh.internal.commands;
 
 import java.util.List;
 import java.util.Properties;
 
-import org.apache.commons.lang3.text.StrLookup;
 import org.apache.commons.lang3.text.StrSubstitutor;
 import org.apache.logging.log4j.LogManager;
+import org.xmlsh.annotations.Command;
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XConfiguration;
+import org.xmlsh.core.XStringLookup;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.XValueProperties;
 import org.xmlsh.sh.shell.SerializeOpts;
-import org.xmlsh.util.StringPair;
 import org.xmlsh.util.text.TextConfigParser;
+
+@Command(name="readconfig")
+
 public class readconfig extends XCommand
 {  
-    static org.apache.logging.log4j.Logger mLogger = LogManager.getLogger();
-	private static class XConfigLookup extends StrLookup<String> {
-
-		private XConfiguration mConfig ;
-		private XValueProperties  mDefault ;
-		
-		public XConfigLookup(XConfiguration config, XValueProperties defaults ) {
-			super();
-			mConfig = config;
-			mDefault = defaults ;
-		}
-
-		@Override
-		public String lookup(String key) {
-			
-			mLogger.entry(key);
-			StringPair pair = new StringPair(key,':');
-			String section = pair.getLeft();
-			String name = pair.getRight();
-			XValue value  = null ;
-			if( section == null ){
-				if( mDefault != null )
-			      value = mDefault.get(name);
-			}
-			else 
-				value = mConfig.getProperty(section, name  );
-			
-			String result  = null ;
-			if( value != null && value.isAtomic() )
-				result = value.toString();
-			return mLogger.exit(result);
-			
-			
-		}
-		
-	}
-  private final class IniConfigParser extends TextConfigParser
+    public static org.apache.logging.log4j.Logger mLogger = LogManager.getLogger();
+	private final class IniConfigParser extends TextConfigParser
   {
     @Override
     protected XValue parseValue(String currentSection, String name, String value) throws InvalidArgumentException
@@ -69,9 +37,13 @@ public class readconfig extends XCommand
     }
   }
 
+  
   @Override
   public int run(List<XValue> args) throws Exception
   {
+	
+	mLogger.entry(args);
+	
     Options opts = new Options("format:,file:,+r=replace,defaults:", SerializeOpts.getOptionDefs());
     opts.parse(args);
     setSerializeOpts(opts);
@@ -79,10 +51,11 @@ public class readconfig extends XCommand
     args = opts.getRemainingArgs();
     if(args.size() != 1) {
       usage("[-format ini|xml|json] [-file file] variable");
-      return 1;
+      return mLogger.exit(1);
     }
 
     String defSection = opts.getOptString("default", "default");
+    
     InputPort in = opts.hasOpt("file") ? getInput(opts.getOptValue("file")) : getStdin() ;
 
     boolean bReplace = opts.getOptFlag("replace", true );
@@ -107,19 +80,28 @@ public class readconfig extends XCommand
       usage("Unsupported format: " + format);
     }
     
+    if( config == null ){
+    	printErr("Unknown error reading config file");
+    	return mLogger.exit(1);
+    }
+    
+    config.setDefaultSectionName( defSection);
+    
     XValue def = opts.getOptValue("defaults");
     XValueProperties defProps = def == null ? null : XValueProperties.fromXValue(def);
 	if( bReplace )
-    	replaceVariables( config , defProps  );
+    	replaceVariables( config   );
     
     
     mShell.getEnv().setVar(varName, config.asXValue() );
-    return 0;
+    
+	return mLogger.exit(0);
 
   }
 
-  private void replaceVariables(XConfiguration config, XValueProperties defaults ) {
-	  XConfigLookup lookup = new XConfigLookup( config , defaults ) ;
+  private void replaceVariables(XConfiguration config ) {
+      XStringLookup lookup = new XConfiguration.XConfigLookup(config, null);
+      
 	  for( String sectName : config.keySet() ){
 		  XValueProperties props = config.getSection(sectName,false);
 		  props.replaceVariables( lookup );
@@ -130,7 +112,7 @@ public class readconfig extends XCommand
 
 private void loadFromJSON(Properties props, InputPort in)
   {
-    return;
+    
   }
 
 }
