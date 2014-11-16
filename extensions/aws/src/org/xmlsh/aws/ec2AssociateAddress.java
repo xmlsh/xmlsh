@@ -12,10 +12,10 @@ import org.xmlsh.aws.util.AWSUtil;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
-import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.SafeXMLStreamWriter;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
+import org.xmlsh.core.io.OutputPort;
 import org.xmlsh.util.Util;
 
 import com.amazonaws.services.ec2.model.AssociateAddressRequest;

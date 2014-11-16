@@ -4,7 +4,7 @@
  *
  */
 
-package org.xmlsh.core;
+package org.xmlsh.core.io;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -27,7 +27,11 @@ import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
 
 import org.xml.sax.InputSource;
-import org.xmlsh.core.io.IXdmItemInputStream;
+import org.xmlsh.core.CoreException;
+import org.xmlsh.core.InputPort;
+import org.xmlsh.core.InvalidArgumentException;
+import org.xmlsh.core.XValue;
+import org.xmlsh.core.XVariable;
 import org.xmlsh.json.JSONUtils;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;

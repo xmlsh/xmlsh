@@ -10,11 +10,11 @@ import java.util.List;
 import org.xmlsh.aws.util.AWSS3Command;
 import org.xmlsh.aws.util.S3Path;
 import org.xmlsh.core.CoreException;
-import org.xmlsh.core.FileOutputPort;
 import org.xmlsh.core.Options;
-import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
+import org.xmlsh.core.io.FileOutputPort;
+import org.xmlsh.core.io.OutputPort;
 import org.xmlsh.util.Util;
 
 import com.amazonaws.AmazonClientException;

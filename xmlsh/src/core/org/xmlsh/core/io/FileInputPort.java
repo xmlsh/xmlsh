@@ -4,7 +4,7 @@
  *
  */
 
-package org.xmlsh.core;
+package org.xmlsh.core.io;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -23,7 +23,9 @@ import net.sf.saxon.s9api.XdmNode;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.xml.sax.InputSource;
-import org.xmlsh.core.io.StreamInputPort;
+import org.xmlsh.core.CoreException;
+import org.xmlsh.core.InputPort;
+import org.xmlsh.core.UnimplementedException;
 import org.xmlsh.json.JSONUtils;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.util.FileUtils;

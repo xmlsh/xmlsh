@@ -18,9 +18,9 @@ import net.sf.saxon.s9api.SaxonApiException;
 
 import org.xmlsh.core.AbstractBuiltinFunction;
 import org.xmlsh.core.CoreException;
-import org.xmlsh.core.VariableInputPort;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.XVariable;
+import org.xmlsh.core.io.VariableInputPort;
 import org.xmlsh.json.JSONUtils;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.JavaUtils;

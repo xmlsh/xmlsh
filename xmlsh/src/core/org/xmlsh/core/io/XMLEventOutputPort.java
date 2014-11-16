@@ -32,7 +32,6 @@ import org.xml.sax.ContentHandler;
 import org.xml.sax.helpers.DefaultHandler;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
-import org.xmlsh.core.OutputPort;
 import org.xmlsh.sh.shell.SerializeOpts;
 
 /*

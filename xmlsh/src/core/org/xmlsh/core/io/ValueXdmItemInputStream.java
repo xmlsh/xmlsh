@@ -4,13 +4,15 @@
  *
  */
 
-package org.xmlsh.core;
+package org.xmlsh.core.io;
 
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmSequenceIterator;
 import net.sf.saxon.s9api.XdmValue;
 
-import org.xmlsh.core.io.IXdmItemInputStream;
+import org.xmlsh.core.CoreException;
+import org.xmlsh.core.InvalidArgumentException;
+import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.SerializeOpts;
 
 public class ValueXdmItemInputStream implements IXdmItemInputStream {

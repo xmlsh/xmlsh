@@ -27,7 +27,7 @@ import org.xmlsh.core.CoreException;
 import org.xmlsh.core.ICommand;
 import org.xmlsh.core.ScriptCommand.SourceMode;
 import org.xmlsh.core.io.StreamOutputPort;
-import org.xmlsh.core.VariableOutputPort;
+import org.xmlsh.core.io.VariableOutputPort;
 import org.xmlsh.core.XEnvironment;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.XVariable;

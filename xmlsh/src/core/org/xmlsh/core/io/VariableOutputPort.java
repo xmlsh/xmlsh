@@ -4,7 +4,7 @@
  *
  */
 
-package org.xmlsh.core;
+package org.xmlsh.core.io;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -31,8 +31,10 @@ import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.trans.XPathException;
 
 import org.xml.sax.ContentHandler;
-import org.xmlsh.core.io.AbstractXdmItemOutputStream;
-import org.xmlsh.core.io.IXdmItemOutputStream;
+import org.xmlsh.core.CoreException;
+import org.xmlsh.core.InvalidArgumentException;
+import org.xmlsh.core.XValue;
+import org.xmlsh.core.XVariable;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.Util;

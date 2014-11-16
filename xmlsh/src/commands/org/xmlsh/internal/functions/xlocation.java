@@ -13,9 +13,9 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.xmlsh.core.AbstractBuiltinFunction;
 import org.xmlsh.core.Options;
-import org.xmlsh.core.VariableOutputPort;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.XVariable;
+import org.xmlsh.core.io.VariableOutputPort;
 import org.xmlsh.sh.core.SourceLocation;
 import org.xmlsh.sh.core.SourceLocator;
 import org.xmlsh.sh.shell.SerializeOpts;

@@ -4,8 +4,8 @@ package org.xmlsh.marklogic;
 import java.util.List;
 
 import org.xmlsh.core.Options;
-import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.XValue;
+import org.xmlsh.core.io.OutputPort;
 import org.xmlsh.marklogic.util.MLCommand;
 import org.xmlsh.marklogic.util.MLUtil;
 import org.xmlsh.sh.shell.SerializeOpts;

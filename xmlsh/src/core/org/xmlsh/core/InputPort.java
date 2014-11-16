@@ -24,6 +24,7 @@ import org.xml.sax.InputSource;
 import org.xmlsh.core.io.AbstractPort;
 import org.xmlsh.core.io.IInputPort;
 import org.xmlsh.core.io.IXdmItemInputStream;
+import org.xmlsh.core.io.ValueXdmItemInputStream;
 import org.xmlsh.sh.shell.SerializeOpts;
 
 import com.fasterxml.jackson.databind.JsonNode;

@@ -33,7 +33,6 @@ import org.apache.logging.log4j.Logger;
 import org.xml.sax.ContentHandler;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
-import org.xmlsh.core.OutputPort;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.SynchronizedOutputStream;

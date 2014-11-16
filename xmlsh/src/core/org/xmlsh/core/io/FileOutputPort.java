@@ -4,7 +4,7 @@
  *
  */
 
-package org.xmlsh.core;
+package org.xmlsh.core.io;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -26,8 +26,8 @@ import net.sf.saxon.trans.XPathException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.xml.sax.ContentHandler;
-import org.xmlsh.core.io.IXdmItemOutputStream;
-import org.xmlsh.core.io.StreamOutputPort;
+import org.xmlsh.core.CoreException;
+import org.xmlsh.core.UnimplementedException;
 import org.xmlsh.sh.shell.SerializeOpts;
 
 
@@ -125,7 +125,7 @@ public class FileOutputPort extends OutputPort
 	}
 	/**
 	 * @return
-	 * @see org.xmlsh.core.OutputPort#isFile()
+	 * @see org.xmlsh.core.io.OutputPort#isFile()
 	 */
 	@Override
 	public boolean isFile() {

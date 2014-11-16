@@ -4,9 +4,10 @@
  *
  */
 
-package org.xmlsh.core;
+package org.xmlsh.core.io;
 
-import org.xmlsh.core.io.AbstractPort;
+import org.xmlsh.core.IHandle;
+import org.xmlsh.core.ReferenceCountedHandle;
 import org.xmlsh.util.INameValue;
 import org.xmlsh.util.NameValue;
 import org.xmlsh.util.NameValueList;

@@ -12,9 +12,9 @@ import org.xmlsh.aws.util.AWSCommandCredentialsProviderChain;
 import org.xmlsh.aws.util.AWSGlacierCommand;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.Options;
-import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
+import org.xmlsh.core.io.OutputPort;
 
 import com.amazonaws.services.elasticloadbalancing.model.InstanceState;
 import com.amazonaws.services.glacier.transfer.ArchiveTransferManager;

@@ -9,7 +9,7 @@ package org.xmlsh.util;
 import java.io.IOException;
 
 import org.xmlsh.core.InputPort;
-import org.xmlsh.core.OutputPort;
+import org.xmlsh.core.io.OutputPort;
 import org.xmlsh.core.io.XdmItemPipe;
 import org.xmlsh.core.io.XdmStreamInputPort;
 import org.xmlsh.core.io.XdmStreamOutputPort;

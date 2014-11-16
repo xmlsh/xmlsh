@@ -13,11 +13,11 @@ import net.sf.saxon.s9api.XdmItem;
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
-import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.io.IXdmItemInputStream;
 import org.xmlsh.core.io.IXdmItemOutputStream;
+import org.xmlsh.core.io.OutputPort;
 import org.xmlsh.sh.shell.SerializeOpts;
 
 public class xidentity extends XCommand {

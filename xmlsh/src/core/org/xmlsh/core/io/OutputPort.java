@@ -4,7 +4,7 @@
  *
  */
 
-package org.xmlsh.core;
+package org.xmlsh.core.io;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,9 +23,9 @@ import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.trans.XPathException;
 
 import org.xml.sax.ContentHandler;
-import org.xmlsh.core.io.AbstractPort;
-import org.xmlsh.core.io.IOutputPort;
-import org.xmlsh.core.io.IXdmItemOutputStream;
+import org.xmlsh.core.CoreException;
+import org.xmlsh.core.InvalidArgumentException;
+import org.xmlsh.core.UnimplementedException;
 import org.xmlsh.sh.shell.SerializeOpts;
 
 /*

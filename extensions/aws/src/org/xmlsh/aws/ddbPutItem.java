@@ -13,9 +13,9 @@ import org.xmlsh.aws.util.AWSDDBCommand;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
-import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
+import org.xmlsh.core.io.OutputPort;
 import org.xmlsh.util.StringPair;
 
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;

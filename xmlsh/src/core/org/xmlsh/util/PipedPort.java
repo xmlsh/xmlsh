@@ -10,7 +10,7 @@ import java.io.Closeable;
 import java.io.IOException;
 
 import org.xmlsh.core.InputPort;
-import org.xmlsh.core.OutputPort;
+import org.xmlsh.core.io.OutputPort;
 
 
 public abstract class PipedPort  implements Closeable {

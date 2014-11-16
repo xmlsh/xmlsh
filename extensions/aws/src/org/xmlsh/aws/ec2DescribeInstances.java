@@ -13,10 +13,10 @@ import org.apache.logging.log4j.Logger;
 import org.xmlsh.aws.util.AWSEC2Command;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.Options;
-import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.SafeXMLStreamWriter;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
+import org.xmlsh.core.io.OutputPort;
 import org.xmlsh.util.Util;
 
 import com.amazonaws.AmazonServiceException;
