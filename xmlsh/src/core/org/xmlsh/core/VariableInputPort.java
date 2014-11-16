@@ -27,6 +27,7 @@ import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
 
 import org.xml.sax.InputSource;
+import org.xmlsh.core.io.IXdmItemInputStream;
 import org.xmlsh.json.JSONUtils;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;

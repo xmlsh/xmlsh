@@ -8,14 +8,14 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.xmlsh.core.CoreException;
-import org.xmlsh.core.IXValue;
-import org.xmlsh.core.IXValueContainer;
-import org.xmlsh.core.IXValueList;
-import org.xmlsh.core.IXValueMap;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
-import org.xmlsh.core.XValueList;
 import org.xmlsh.sh.shell.SerializeOpts;
+import org.xmlsh.types.xtypes.IXValue;
+import org.xmlsh.types.xtypes.IXValueContainer;
+import org.xmlsh.types.xtypes.IXValueList;
+import org.xmlsh.types.xtypes.IXValueMap;
+import org.xmlsh.types.xtypes.XValueList;
 import org.xmlsh.util.JavaUtils;
 import org.xmlsh.util.Util;
 
@@ -25,22 +25,6 @@ public class XTypeFamily extends AbstractTypeFamily implements ITypeFamily
   private static final Object _nullValue = null;
   static Logger mLogger = LogManager.getLogger();
 
-/*
- * @Override
- * protected XTypeKind inferKind( Class<?> cls ) {
- * if( cls == null )
- * return XTypeKind.NULL;
- * if( XValueArray.class.isAssignableFrom(cls) ||
- * XValueList.class.isAssignableFrom(cls) )
- * return XTypeKind.ARRAY ;
- * if( XValueMap.class.isAssignableFrom(cls) )
- * return XTypeKind.MAP ;
- * if( IXValueContainer.class.isAssignableFrom(cls) )
- * return XTypeKind.CONTAINER ;
- * return XTypeKind.ATOMIC;
- * 
- * }
- */
   @Override
   public boolean isClassOfFamily(Class<?> cls)
   {

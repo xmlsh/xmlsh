@@ -10,9 +10,9 @@ import java.io.IOException;
 
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.OutputPort;
-import org.xmlsh.core.XdmItemPipe;
-import org.xmlsh.core.XdmStreamInputPort;
-import org.xmlsh.core.XdmStreamOutputPort;
+import org.xmlsh.core.io.XdmItemPipe;
+import org.xmlsh.core.io.XdmStreamInputPort;
+import org.xmlsh.core.io.XdmStreamOutputPort;
 import org.xmlsh.sh.shell.SerializeOpts;
 
 public class PipedXDMPort extends PipedPort {

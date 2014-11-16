@@ -21,11 +21,11 @@ import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
 
 import org.xmlsh.core.CoreException;
-import org.xmlsh.core.IXdmItemOutputStream;
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.Namespaces;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.Options.OptionValue;
+import org.xmlsh.core.io.IXdmItemOutputStream;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;

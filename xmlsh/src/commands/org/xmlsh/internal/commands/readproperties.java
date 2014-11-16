@@ -16,8 +16,8 @@ import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.XValue;
-import org.xmlsh.core.XValueProperties;
 import org.xmlsh.sh.shell.SerializeOpts;
+import org.xmlsh.types.xtypes.XValueProperties;
 
 @Command( name = "readpoperties")
 public class readproperties extends BuiltinCommand

@@ -436,7 +436,7 @@ public class FileUtils
 	    return caseSensitive ;
 	}
 	
-	public static boolean isScriptFile( Path path , String encoding ){
+	public static boolean isTextFile( Path path , String encoding ){
 		
 		mLogger.entry(path,encoding);
 		try ( InputStream is = Files.newInputStream(path, StandardOpenOption.READ ) ){

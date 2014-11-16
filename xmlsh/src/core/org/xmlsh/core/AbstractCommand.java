@@ -19,6 +19,8 @@ import java.util.List;
 import javax.xml.transform.Source;
 
 import org.apache.logging.log4j.Logger;
+import org.xmlsh.core.io.IInputPort;
+import org.xmlsh.core.io.IOutputPort;
 import org.xmlsh.sh.core.SourceLocation;
 import org.xmlsh.sh.module.IModule;
 import org.xmlsh.sh.module.Module;

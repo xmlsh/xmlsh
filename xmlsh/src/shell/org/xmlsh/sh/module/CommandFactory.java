@@ -181,25 +181,27 @@ public abstract class CommandFactory {
 		
 
 		File cmdFile = null;
+		
+		String ext = FileUtils.getExt(name).toLowerCase();
 
 		if (FileUtils.hasDirectory(name)) {
 			cmdFile = shell.getExplicitFile(name, true,true);
-			if (cmdFile == null && !name.endsWith(".exe")  && Util.isWindows())
+			if (cmdFile == null && !ext.equals(".exe")  && Util.isWindows())
 				cmdFile = shell.getExplicitFile(name + ".exe", sExecutablePath);
-			if (cmdFile == null && !name.endsWith(".bat")  && Util.isWindows())
+			if (cmdFile == null && !ext.equals(".bat")  && Util.isWindows())
 				cmdFile = shell.getExplicitFile(name + ".bat", sExecutablePath);
-			if (cmdFile == null && !name.endsWith(".cmd")  && Util.isWindows())
+			if (cmdFile == null && !ext.equals(".cmd")  && Util.isWindows())
 				cmdFile = shell.getExplicitFile(name + ".cmd", sExecutablePath);
 		}
 
 		if (cmdFile == null) {
 			SearchPath path = shell.getExternalPath();
 			cmdFile = path.getFirstFileInPath(shell, name,sExecutablePath);
-			if (cmdFile == null && !name.endsWith(".exe") && Util.isWindows()  )
+			if (cmdFile == null && !ext.equals(".exe") && Util.isWindows()  )
 				cmdFile = path.getFirstFileInPath(shell, name + ".exe",sExecutablePath);
-			if (cmdFile == null && !name.endsWith(".bat") && Util.isWindows()  )
+			if (cmdFile == null && !ext.equals(".bat") && Util.isWindows()  )
 				cmdFile = path.getFirstFileInPath(shell, name + ".bat",sExecutablePath);
-			if (cmdFile == null && !name.endsWith(".cmd") && Util.isWindows()  )
+			if (cmdFile == null && !ext.equals(".cmd") && Util.isWindows()  )
 				cmdFile = path.getFirstFileInPath(shell, name + ".cmd",sExecutablePath);
 
 		}
@@ -343,7 +345,7 @@ public abstract class CommandFactory {
 			for( String ext : exts ){
 				try {
 					file = path.getFirstFileInPath(shell, name  + ext , sExplicitPath);
-					if( file != null && FileUtils.isScriptFile(file.toPath(), shell.getInputTextEncoding()) )
+					if( file != null && FileUtils.isTextFile(file.toPath(), shell.getInputTextEncoding()) )
 						return mLogger.exit(file);
 				} catch (IOException e) {
 					mLogger.catching(e);
@@ -380,6 +382,18 @@ public abstract class CommandFactory {
 		mLogger.entry(shell, pname,sourceMode,at);
 
 		File scriptFile = null;
+		
+		/*
+		 * Refuse to serve up known windows non scripts as scripts
+		 */
+		if( Util.isWindows()){
+		    String ext  = FileUtils.getExt(pname.getName()).toLowerCase();
+		    if(Util.isEqual(ext,".exe")||
+		       Util.isEqual(ext, ".cmd") ||
+		       Util.isEqual(ext, ".bat"))
+		        return null ;
+		}
+		
 
 		// If at - try to use it explicitly ignoring the name for location
 		URL url = null;
@@ -416,7 +430,7 @@ public abstract class CommandFactory {
 				scriptFile = shell.getExplicitFile(pname.toString(), true );
 				if( scriptFile != null && ! scriptFile.isFile() )
 					scriptFile = null ;
-				if( scriptFile != null && ! FileUtils.isScriptFile(scriptFile.toPath(), shell.getInputTextEncoding()))
+				if( scriptFile != null && ! FileUtils.isTextFile(scriptFile.toPath(), shell.getInputTextEncoding()))
 					scriptFile = null;
 				
 			} else
@@ -436,7 +450,6 @@ public abstract class CommandFactory {
 			String name = psname;
 			
 			String ext = FileUtils.getExt( name );
-			boolean bIsXsh = ".xsh".equals(ext);
 			
 			if( FileUtils.hasDirectory(name) ){
 				scriptFile = tryScriptFile(shell, name);
@@ -481,7 +494,7 @@ public abstract class CommandFactory {
 	private static File tryScriptFile(Shell shell, String name) {
 		mLogger.entry(shell,name);
 		File f = tryFile( shell , name );
-		if( f != null && FileUtils.isScriptFile( f.toPath() , shell.getInputTextEncoding() ))
+		if( f != null && FileUtils.isTextFile( f.toPath() , shell.getInputTextEncoding() ))
 				return mLogger.exit(f);
 		return mLogger.exit(null) ;
 	}

@@ -23,6 +23,7 @@ import net.sf.saxon.s9api.XdmNode;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.xml.sax.InputSource;
+import org.xmlsh.core.io.StreamInputPort;
 import org.xmlsh.json.JSONUtils;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.util.FileUtils;
@@ -64,7 +65,7 @@ public class FileInputPort extends InputPort
 
 	/**
 	 * @param systemId
-	 * @see org.xmlsh.core.AbstractPort#setSystemId(java.lang.String)
+	 * @see org.xmlsh.core.io.AbstractPort#setSystemId(java.lang.String)
 	 */
 	@Override
 	public void setSystemId(String systemId) {
@@ -93,7 +94,7 @@ public class FileInputPort extends InputPort
 	 * @param opts
 	 * @return
 	 * @throws CoreException
-	 * @see org.xmlsh.core.StreamInputPort#asInputStream(org.xmlsh.sh.shell.SerializeOpts)
+	 * @see org.xmlsh.core.io.StreamInputPort#asInputStream(org.xmlsh.sh.shell.SerializeOpts)
 	 */
 	@Override
 	public InputStream asInputStream(SerializeOpts opts) throws CoreException {
@@ -106,7 +107,7 @@ public class FileInputPort extends InputPort
 
 	/**
 	 * @throws IOException 
-	 * @see org.xmlsh.core.StreamInputPort#close()
+	 * @see org.xmlsh.core.io.StreamInputPort#close()
 	 */
 	@Override
 	public void close() throws IOException {
@@ -122,7 +123,7 @@ public class FileInputPort extends InputPort
 	 * @param opts
 	 * @return
 	 * @throws CoreException
-	 * @see org.xmlsh.core.StreamInputPort#asSource(org.xmlsh.sh.shell.SerializeOpts)
+	 * @see org.xmlsh.core.io.StreamInputPort#asSource(org.xmlsh.sh.shell.SerializeOpts)
 	 */
 	@Override
 	public Source asSource(SerializeOpts opts) throws CoreException {
@@ -161,7 +162,7 @@ public class FileInputPort extends InputPort
 	 * @param opts
 	 * @return
 	 * @throws CoreException
-	 * @see org.xmlsh.core.StreamInputPort#asInputSource(org.xmlsh.sh.shell.SerializeOpts)
+	 * @see org.xmlsh.core.io.StreamInputPort#asInputSource(org.xmlsh.sh.shell.SerializeOpts)
 	 */
 	@Override
 	public InputSource asInputSource(SerializeOpts opts) throws CoreException {
@@ -176,7 +177,7 @@ public class FileInputPort extends InputPort
 	 * @param opts
 	 * @return
 	 * @throws CoreException
-	 * @see org.xmlsh.core.StreamInputPort#asXdmNode(org.xmlsh.sh.shell.SerializeOpts)
+	 * @see org.xmlsh.core.io.StreamInputPort#asXdmNode(org.xmlsh.sh.shell.SerializeOpts)
 	 */
 	@Override
 	public XdmNode asXdmNode(SerializeOpts opts) throws CoreException {
@@ -191,7 +192,7 @@ public class FileInputPort extends InputPort
 	 * @param opts
 	 * @throws CoreException
 	 * @throws IOException
-	 * @see org.xmlsh.core.StreamInputPort#copyTo(java.io.OutputStream, org.xmlsh.sh.shell.SerializeOpts)
+	 * @see org.xmlsh.core.io.StreamInputPort#copyTo(java.io.OutputStream, org.xmlsh.sh.shell.SerializeOpts)
 	 */
 	@Override
 	public void copyTo(OutputStream out, SerializeOpts opts) throws CoreException, IOException {
@@ -206,7 +207,7 @@ public class FileInputPort extends InputPort
 	 * @param opts
 	 * @return
 	 * @throws CoreException
-	 * @see org.xmlsh.core.StreamInputPort#asXMLEventReader(org.xmlsh.sh.shell.SerializeOpts)
+	 * @see org.xmlsh.core.io.StreamInputPort#asXMLEventReader(org.xmlsh.sh.shell.SerializeOpts)
 	 */
 	@Override
 	public XMLEventReader asXMLEventReader(SerializeOpts opts) throws CoreException {
@@ -221,7 +222,7 @@ public class FileInputPort extends InputPort
 	 * @param opts
 	 * @return
 	 * @throws CoreException
-	 * @see org.xmlsh.core.StreamInputPort#asXMLStreamReader(org.xmlsh.sh.shell.SerializeOpts)
+	 * @see org.xmlsh.core.io.StreamInputPort#asXMLStreamReader(org.xmlsh.sh.shell.SerializeOpts)
 	 */
 	@Override
 	public XMLStreamReader asXMLStreamReader(SerializeOpts opts) throws CoreException {
@@ -235,7 +236,7 @@ public class FileInputPort extends InputPort
 	 * @param serializeOpts
 	 * @return
 	 * @throws CoreException
-	 * @see org.xmlsh.core.StreamInputPort#asXdmItem(org.xmlsh.sh.shell.SerializeOpts)
+	 * @see org.xmlsh.core.io.StreamInputPort#asXdmItem(org.xmlsh.sh.shell.SerializeOpts)
 	 */
 	@Override
 	public XdmItem asXdmItem(SerializeOpts serializeOpts) throws CoreException {

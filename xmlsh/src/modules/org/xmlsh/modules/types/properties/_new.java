@@ -13,9 +13,9 @@ import org.xmlsh.annotations.Function;
 import org.xmlsh.core.AbstractBuiltinFunction;
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.XValue;
-import org.xmlsh.core.XValueProperties;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.types.xtypes.XValueProperties;
 import org.xmlsh.util.JavaUtils;
 
 @Function(name = "new", names={"properties"})

@@ -19,8 +19,8 @@ import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XConfiguration;
 import org.xmlsh.core.XStringLookup;
 import org.xmlsh.core.XValue;
-import org.xmlsh.core.XValueProperties;
 import org.xmlsh.sh.shell.SerializeOpts;
+import org.xmlsh.types.xtypes.XValueProperties;
 import org.xmlsh.util.text.TextConfigParser;
 
 @Command(name="readconfig")

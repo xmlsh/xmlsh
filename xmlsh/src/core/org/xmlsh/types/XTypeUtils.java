@@ -6,10 +6,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 
-import org.xmlsh.core.IXValueMap;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
-import org.xmlsh.core.XValueMap;
+import org.xmlsh.types.xtypes.IXValueMap;
+import org.xmlsh.types.xtypes.XValueMap;
 import org.xmlsh.util.StringPair;
 import org.xmlsh.util.XNamedValue;
 

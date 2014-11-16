@@ -12,8 +12,8 @@ import javanet.staxutils.XMLEventPipe;
 
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.OutputPort;
-import org.xmlsh.core.XMLEventInputPort;
-import org.xmlsh.core.XMLEventOutputPort;
+import org.xmlsh.core.io.XMLEventInputPort;
+import org.xmlsh.core.io.XMLEventOutputPort;
 import org.xmlsh.sh.shell.SerializeOpts;
 
 public class PipedXEventPort extends PipedPort {

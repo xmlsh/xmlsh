@@ -10,6 +10,7 @@ import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmSequenceIterator;
 import net.sf.saxon.s9api.XdmValue;
 
+import org.xmlsh.core.io.IXdmItemInputStream;
 import org.xmlsh.sh.shell.SerializeOpts;
 
 public class ValueXdmItemInputStream implements IXdmItemInputStream {

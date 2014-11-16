@@ -14,13 +14,13 @@ import org.xmlsh.core.CoreException;
 import org.xmlsh.core.EvalEnv;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
-import org.xmlsh.core.XValueArray;
-import org.xmlsh.core.XValuePropertyList;
-import org.xmlsh.core.XValueSequence;
 import org.xmlsh.core.XVariable;
 import org.xmlsh.core.XVariable.XVarFlag;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.types.TypeFamily;
+import org.xmlsh.types.xtypes.XValueArray;
+import org.xmlsh.types.xtypes.XValuePropertyList;
+import org.xmlsh.types.xtypes.XValueSequence;
 
 public class Assign {
   

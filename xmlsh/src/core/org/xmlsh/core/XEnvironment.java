@@ -30,6 +30,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.xml.sax.InputSource;
 import org.xmlsh.core.XVariable.XVarFlag;
+import org.xmlsh.core.io.AbstractPort;
+import org.xmlsh.core.io.StreamInputPort;
+import org.xmlsh.core.io.StreamOutputPort;
 import org.xmlsh.sh.module.IModule;
 import org.xmlsh.sh.shell.FunctionDefinitions;
 import org.xmlsh.sh.shell.Modules;
@@ -37,6 +40,7 @@ import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.sh.shell.StaticContext;
 import org.xmlsh.types.TypeFamily;
+import org.xmlsh.types.xtypes.XValueMap;
 import org.xmlsh.util.NameValueMap;
 import org.xmlsh.util.Util;
 

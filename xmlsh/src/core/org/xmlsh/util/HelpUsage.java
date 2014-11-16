@@ -27,8 +27,8 @@ import net.sf.saxon.s9api.XQueryExecutable;
 import net.sf.saxon.s9api.XdmNode;
 
 import org.xmlsh.core.CoreException;
-import org.xmlsh.core.IOutputPort;
 import org.xmlsh.core.XValue;
+import org.xmlsh.core.io.IOutputPort;
 import org.xmlsh.sh.module.CommandFactory;
 import org.xmlsh.sh.module.IModule;
 import org.xmlsh.sh.module.Module;

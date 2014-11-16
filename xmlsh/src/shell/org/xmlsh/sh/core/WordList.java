@@ -15,9 +15,9 @@ import java.util.List;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.EvalEnv;
 import org.xmlsh.core.XValue;
-import org.xmlsh.core.XValueSequence;
 import org.xmlsh.sh.grammar.Token;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.types.xtypes.XValueSequence;
 
 @SuppressWarnings("serial")
 public class WordList extends ArrayList<Word>

@@ -30,7 +30,6 @@ import org.xmlsh.core.EvalEnv;
 import org.xmlsh.core.EvalFlag;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
-import org.xmlsh.core.XValueList;
 import org.xmlsh.core.XVariable;
 import org.xmlsh.core.XVariableExpr;
 import org.xmlsh.json.JSONUtils;
@@ -41,6 +40,7 @@ import org.xmlsh.sh.shell.ParseResult;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.sh.shell.ShellConstants;
 import org.xmlsh.types.TypeFamily;
+import org.xmlsh.types.xtypes.XValueList;
 
 import static org.xmlsh.util.UnifiedFileAttributes.MatchFlag.*;
 

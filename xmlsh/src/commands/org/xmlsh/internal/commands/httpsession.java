@@ -10,10 +10,10 @@ import java.io.IOException;
 import java.util.List;
 
 import org.xmlsh.core.CoreException;
-import org.xmlsh.core.IXdmItemOutputStream;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
+import org.xmlsh.core.io.IXdmItemOutputStream;
 import org.xmlsh.servlet.ManagedHttpSession;
 import org.xmlsh.sh.shell.SerializeOpts;
 

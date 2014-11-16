@@ -14,11 +14,11 @@ import net.sf.saxon.s9api.XdmNodeKind;
 import net.sf.saxon.s9api.XdmValue;
 
 import org.xmlsh.core.BuiltinCommand;
-import org.xmlsh.core.IXdmItemOutputStream;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.XValue;
+import org.xmlsh.core.io.IXdmItemOutputStream;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.util.Util;
 

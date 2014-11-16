@@ -31,11 +31,12 @@ import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XdmAtomicValue;
 import net.sf.saxon.trans.XPathException;
 import net.sf.saxon.value.AtomicValue;
+
 import org.xmlsh.core.CoreException;
-import org.xmlsh.core.IXdmItemOutputStream;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.XValue;
+import org.xmlsh.core.io.IXdmItemOutputStream;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.Util;

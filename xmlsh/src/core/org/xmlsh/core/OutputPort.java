@@ -23,6 +23,9 @@ import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.trans.XPathException;
 
 import org.xml.sax.ContentHandler;
+import org.xmlsh.core.io.AbstractPort;
+import org.xmlsh.core.io.IOutputPort;
+import org.xmlsh.core.io.IXdmItemOutputStream;
 import org.xmlsh.sh.shell.SerializeOpts;
 
 /*

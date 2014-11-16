@@ -7,12 +7,12 @@ import org.apache.logging.log4j.Logger;
 import org.xmlsh.annotations.Function;
 import org.xmlsh.core.AbstractBuiltinFunction;
 import org.xmlsh.core.CoreException;
-import org.xmlsh.core.IXValueMap;
 import org.xmlsh.core.XValue;
-import org.xmlsh.core.XValueSequence;
 import org.xmlsh.sh.module.ModuleConfig;
 import org.xmlsh.sh.module.PackageModule;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.types.xtypes.IXValueMap;
+import org.xmlsh.types.xtypes.XValueSequence;
 import org.xmlsh.util.Util;
 
 
@@ -125,7 +125,7 @@ public static class keys extends AbstractBuiltinFunction
     for( XValue x : args ) { 
       if( x.isXType() ) {
         Object o = x.asObject();
-        if( o instanceof org.xmlsh.core.IXValueMap ) {
+        if( o instanceof org.xmlsh.types.xtypes.IXValueMap ) {
           IXValueMap<?> m = (IXValueMap<?>) o ;
           for( String keys : Util.toList(  m.keySet().iterator()) ) {
             list.addValue( XValue.newXValue(keys) );

@@ -20,9 +20,9 @@ import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
-import org.xmlsh.core.XValueMap;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.types.XTypeUtils;
+import org.xmlsh.types.xtypes.XValueMap;
 import org.xmlsh.util.Util;
 
 public class template extends XCommand

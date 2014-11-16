@@ -18,13 +18,14 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import net.sf.saxon.s9api.XdmItem;
+
 import org.xmlsh.core.CoreException;
-import org.xmlsh.core.IXdmItemInputStream;
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.UnimplementedException;
 import org.xmlsh.core.XValue;
+import org.xmlsh.core.io.IXdmItemInputStream;
 import org.xmlsh.marklogic.util.MLCommand;
 import org.xmlsh.marklogic.util.MLUtil;
 import org.xmlsh.sh.shell.SerializeOpts;

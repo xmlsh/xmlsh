@@ -11,6 +11,9 @@ import java.io.OutputStream;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.xmlsh.core.io.AbstractPort;
+import org.xmlsh.core.io.StreamInputPort;
+import org.xmlsh.core.io.StreamOutputPort;
 import org.xmlsh.util.AutoReleasePool;
 import org.xmlsh.util.INameValue;
 import org.xmlsh.util.NameValue;

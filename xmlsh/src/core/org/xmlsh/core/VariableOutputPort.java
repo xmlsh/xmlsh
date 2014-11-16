@@ -31,6 +31,8 @@ import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.trans.XPathException;
 
 import org.xml.sax.ContentHandler;
+import org.xmlsh.core.io.AbstractXdmItemOutputStream;
+import org.xmlsh.core.io.IXdmItemOutputStream;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.Util;

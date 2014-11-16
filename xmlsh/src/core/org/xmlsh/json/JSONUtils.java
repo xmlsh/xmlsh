@@ -22,9 +22,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
-import org.xmlsh.core.XValueList;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.types.TypeFamily;
+import org.xmlsh.types.xtypes.XValueList;
 import org.xmlsh.util.Util;
 
 import com.fasterxml.jackson.core.JsonFactory;

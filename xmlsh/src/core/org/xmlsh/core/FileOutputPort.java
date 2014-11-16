@@ -26,6 +26,8 @@ import net.sf.saxon.trans.XPathException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.xml.sax.ContentHandler;
+import org.xmlsh.core.io.IXdmItemOutputStream;
+import org.xmlsh.core.io.StreamOutputPort;
 import org.xmlsh.sh.shell.SerializeOpts;
 
 
@@ -80,7 +82,7 @@ public class FileOutputPort extends OutputPort
 
 	/**
 	 * @param systemId
-	 * @see org.xmlsh.core.AbstractPort#setSystemId(java.lang.String)
+	 * @see org.xmlsh.core.io.AbstractPort#setSystemId(java.lang.String)
 	 */
 	@Override
 	public void setSystemId(String systemId) {
@@ -92,7 +94,7 @@ public class FileOutputPort extends OutputPort
 	 * @param opts
 	 * @return
 	 * @throws CoreException 
-	 * @see org.xmlsh.core.StreamOutputPort#asOutputStream(org.xmlsh.sh.shell.SerializeOpts)
+	 * @see org.xmlsh.core.io.StreamOutputPort#asOutputStream(org.xmlsh.sh.shell.SerializeOpts)
 	 */
 	@Override
 	public OutputStream asOutputStream(SerializeOpts opts) throws CoreException {
@@ -101,7 +103,7 @@ public class FileOutputPort extends OutputPort
 	/**
 	 * @throws IOException 
 	 * @throws CoreException
-	 * @see org.xmlsh.core.StreamOutputPort#flush()
+	 * @see org.xmlsh.core.io.StreamOutputPort#flush()
 	 */
 	@Override
 	public void flush() throws IOException  {
@@ -110,7 +112,7 @@ public class FileOutputPort extends OutputPort
 	}
 	/**
 	 * @throws CoreException
-	 * @see org.xmlsh.core.StreamOutputPort#close()
+	 * @see org.xmlsh.core.io.StreamOutputPort#close()
 	 */
 	@Override
 	public void close() throws IOException {
@@ -133,7 +135,7 @@ public class FileOutputPort extends OutputPort
 	 * @param opts
 	 * @return
 	 * @throws CoreException 
-	 * @see org.xmlsh.core.StreamOutputPort#asPrintStream(org.xmlsh.sh.shell.SerializeOpts)
+	 * @see org.xmlsh.core.io.StreamOutputPort#asPrintStream(org.xmlsh.sh.shell.SerializeOpts)
 	 */
 	@Override
 	public PrintStream asPrintStream(SerializeOpts opts) throws CoreException {
@@ -143,7 +145,7 @@ public class FileOutputPort extends OutputPort
 	 * @param opts
 	 * @return
 	 * @throws CoreException
-	 * @see org.xmlsh.core.StreamOutputPort#asDestination(org.xmlsh.sh.shell.SerializeOpts)
+	 * @see org.xmlsh.core.io.StreamOutputPort#asDestination(org.xmlsh.sh.shell.SerializeOpts)
 	 */
 	@Override
 	public Destination asDestination(SerializeOpts opts) throws CoreException {
@@ -154,7 +156,7 @@ public class FileOutputPort extends OutputPort
 	 * @return
 	 * @throws UnsupportedEncodingException
 	 * @throws CoreException 
-	 * @see org.xmlsh.core.StreamOutputPort#asPrintWriter(org.xmlsh.sh.shell.SerializeOpts)
+	 * @see org.xmlsh.core.io.StreamOutputPort#asPrintWriter(org.xmlsh.sh.shell.SerializeOpts)
 	 */
 	@Override
 	public PrintWriter asPrintWriter(SerializeOpts opts) throws UnsupportedEncodingException, CoreException {
@@ -164,7 +166,7 @@ public class FileOutputPort extends OutputPort
 	 * @param opts
 	 * @throws IOException
 	 * @throws CoreException 
-	 * @see org.xmlsh.core.StreamOutputPort#writeSequenceSeperator(org.xmlsh.sh.shell.SerializeOpts)
+	 * @see org.xmlsh.core.io.StreamOutputPort#writeSequenceSeperator(org.xmlsh.sh.shell.SerializeOpts)
 	 */
 	@Override
 	public void writeSequenceSeperator(SerializeOpts opts) throws IOException,
@@ -175,7 +177,7 @@ public class FileOutputPort extends OutputPort
 	 * @param opts
 	 * @throws IOException
 	 * @throws CoreException 
-	 * @see org.xmlsh.core.StreamOutputPort#writeSequenceTerminator(org.xmlsh.sh.shell.SerializeOpts)
+	 * @see org.xmlsh.core.io.StreamOutputPort#writeSequenceTerminator(org.xmlsh.sh.shell.SerializeOpts)
 	 */
 	@Override
 	public void writeSequenceTerminator(SerializeOpts opts) throws IOException, CoreException {
@@ -186,7 +188,7 @@ public class FileOutputPort extends OutputPort
 	 * @return
 	 * @throws SaxonApiException
 	 * @throws CoreException 
-	 * @see org.xmlsh.core.StreamOutputPort#asXMLStreamWriter(org.xmlsh.sh.shell.SerializeOpts)
+	 * @see org.xmlsh.core.io.StreamOutputPort#asXMLStreamWriter(org.xmlsh.sh.shell.SerializeOpts)
 	 */
 	@Override
 	public XMLStreamWriter asXMLStreamWriter(SerializeOpts opts) throws SaxonApiException, CoreException {
@@ -198,7 +200,7 @@ public class FileOutputPort extends OutputPort
 	 * @throws XMLStreamException
 	 * @throws IOException 
 	 * @throws CoreException 
-	 * @see org.xmlsh.core.StreamOutputPort#asXMLEventWriter(org.xmlsh.sh.shell.SerializeOpts)
+	 * @see org.xmlsh.core.io.StreamOutputPort#asXMLEventWriter(org.xmlsh.sh.shell.SerializeOpts)
 	 */
 	@Override
 	public XMLEventWriter asXMLEventWriter(SerializeOpts opts) throws XMLStreamException, IOException, CoreException {
@@ -208,7 +210,7 @@ public class FileOutputPort extends OutputPort
 	 * @param opts
 	 * @return
 	 * @throws CoreException
-	 * @see org.xmlsh.core.StreamOutputPort#asXdmItemOutputStream(org.xmlsh.sh.shell.SerializeOpts)
+	 * @see org.xmlsh.core.io.StreamOutputPort#asXdmItemOutputStream(org.xmlsh.sh.shell.SerializeOpts)
 	 */
 	@Override
 	public IXdmItemOutputStream asXdmItemOutputStream(SerializeOpts opts) throws CoreException {
@@ -219,7 +221,7 @@ public class FileOutputPort extends OutputPort
 	 * @return
 	 * @throws XPathException
 	 * @throws CoreException 
-	 * @see org.xmlsh.core.StreamOutputPort#asContentHandler(org.xmlsh.sh.shell.SerializeOpts)
+	 * @see org.xmlsh.core.io.StreamOutputPort#asContentHandler(org.xmlsh.sh.shell.SerializeOpts)
 	 */
 	@Override
 	public ContentHandler asContentHandler(SerializeOpts opts) throws XPathException, CoreException {

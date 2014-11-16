@@ -17,14 +17,14 @@ import net.sf.saxon.s9api.SaxonApiException;
 
 import org.xmlsh.aws.util.AWSCFNCommand;
 import org.xmlsh.core.CoreException;
-import org.xmlsh.core.IXValueContainer;
-import org.xmlsh.core.IXValueMap;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.SafeXMLStreamWriter;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
+import org.xmlsh.types.xtypes.IXValueContainer;
+import org.xmlsh.types.xtypes.IXValueMap;
 import org.xmlsh.util.StringPair;
 import org.xmlsh.util.Util;
 

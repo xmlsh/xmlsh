@@ -23,9 +23,9 @@ import javax.swing.SwingUtilities;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.xmlsh.core.StreamInputPort;
 import org.xmlsh.core.ThrowException;
 import org.xmlsh.core.XValue;
+import org.xmlsh.core.io.StreamInputPort;
 import org.xmlsh.sh.core.IExpression;
 import org.xmlsh.sh.core.SourceLocator;
 import org.xmlsh.sh.shell.SerializeOpts;

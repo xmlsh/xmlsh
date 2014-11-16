@@ -5,9 +5,9 @@ import java.util.List;
 import org.xmlsh.annotations.Function;
 import org.xmlsh.core.AbstractBuiltinFunction;
 import org.xmlsh.core.XValue;
-import org.xmlsh.core.XValueArray;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.types.TypeFamily;
+import org.xmlsh.types.xtypes.XValueArray;
 
 @Function( name="new" )
 public class array extends AbstractBuiltinFunction

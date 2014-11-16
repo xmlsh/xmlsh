@@ -13,9 +13,9 @@ import org.xmlsh.core.CoreException;
 import org.xmlsh.core.EvalEnv;
 import org.xmlsh.core.EvalFlag;
 import org.xmlsh.core.XValue;
-import org.xmlsh.core.XValueProperty;
 import org.xmlsh.sh.shell.ParseResult;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.types.xtypes.XValueProperty;
 
 public class PropertyWord extends Word
 {

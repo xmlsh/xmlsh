@@ -6,6 +6,7 @@
 
 package org.xmlsh.core;
 
+import org.xmlsh.core.io.AbstractPort;
 import org.xmlsh.util.INameValue;
 import org.xmlsh.util.NameValue;
 import org.xmlsh.util.NameValueList;

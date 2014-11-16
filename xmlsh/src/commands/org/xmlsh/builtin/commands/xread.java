@@ -11,12 +11,12 @@ import java.util.List;
 import net.sf.saxon.s9api.XdmItem;
 
 import org.xmlsh.core.BuiltinCommand;
-import org.xmlsh.core.IXdmItemInputStream;
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
-import org.xmlsh.core.StreamInputPort;
 import org.xmlsh.core.XValue;
+import org.xmlsh.core.io.IXdmItemInputStream;
+import org.xmlsh.core.io.StreamInputPort;
 import org.xmlsh.sh.shell.SerializeOpts;
 
 public class xread extends BuiltinCommand {

@@ -10,14 +10,14 @@ import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XConfiguration;
 import org.xmlsh.core.XValue;
-import org.xmlsh.core.XValueProperties;
-import org.xmlsh.core.XValueSequence;
 import org.xmlsh.modules.types.Types;
 import org.xmlsh.sh.module.ModuleConfig;
 import org.xmlsh.sh.module.PackageModule;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.types.TypeFamily;
 import org.xmlsh.types.XTypeUtils;
+import org.xmlsh.types.xtypes.XValueProperties;
+import org.xmlsh.types.xtypes.XValueSequence;
 import org.xmlsh.util.StringPair;
 import org.xmlsh.util.Util;
 
