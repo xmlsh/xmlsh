@@ -625,7 +625,6 @@ public class Shell implements AutoCloseable, Closeable {
 		mLogger.entry(reader, source, convertReturn);
 		try {
 			enterEval();
-			InputStream save = mCommandInput;
 			SourceLocation saveLoc = getLocation();
 			int exitStatus = 0;
 			ShellParser parser = null;
@@ -671,7 +670,6 @@ public class Shell implements AutoCloseable, Closeable {
 				parser.ReInit(newParserReader(reader,false), source);
 
 			} finally {
-				mCommandInput = save;
 				setCurrentLocation(saveLoc);
 
 			}
@@ -722,17 +720,12 @@ public class Shell implements AutoCloseable, Closeable {
 		return getSerializeOpts().getInputTextEncoding();
 	}
 
-	public int interactive() throws Exception {
-		return interactive(null);
-	}
-
-	public int interactive(InputStream input) throws Exception
-
+	public int interactive() throws Exception
 	{
 		mIsInteractive = true;
 		int ret = 0;
 
-		setCommandInput(input);
+		setCommandInput();
 		try {
 			enterEval();
 
@@ -861,8 +854,7 @@ public class Shell implements AutoCloseable, Closeable {
 	 * use it otherwise default to System.in
 	 */
 
-	private void setCommandInput(InputStream in) {
-		mCommandInput = in;
+	private void setCommandInput() {
 		if (mCommandInput == null) {
 			// the way jline is used on windows can fail horribly so dont enable it
 			// To fix this is likely going to require that command inputs be line based not InputStream based
