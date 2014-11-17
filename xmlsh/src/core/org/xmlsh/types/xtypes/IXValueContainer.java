@@ -5,8 +5,11 @@ import java.util.Iterator;
 
 import org.xmlsh.core.XValue;
 
+/*
+ * Type that can contain other types.
+ */
 
-public interface  IXValueContainer<T extends IXValueContainer<T > > extends IXValue<T> , Iterable<XValue>
+public interface  IXValueContainer extends IXValue, Iterable<XValue>
 {
 	public int size();
 	public void removeAll();

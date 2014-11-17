@@ -36,7 +36,7 @@ import org.xmlsh.util.Util;
  * 
  * Composed of XValueProperties in "sections"
  */
-public class XConfiguration implements IXValueContainer<XConfiguration>, IXValueMap<XConfiguration> {
+public class XConfiguration implements IXValueContainer, IXValueMap {
 
 
     static Logger mLogger = LogManager.getLogger();
@@ -207,18 +207,18 @@ public class XConfiguration implements IXValueContainer<XConfiguration>, IXValue
     }
 
     @Override
-    public IXValueContainer<? extends IXValueContainer<?>> asXContainer() {
+    public IXValueContainer asXContainer() {
 
         return this;
     }
 
     @Override
-    public IXValueMap<? extends IXValueMap<?>> asXMap() {
+    public IXValueMap asXMap() {
         return this;
     }
 
     @Override
-    public IXValueList<? extends IXValueList<?>> asXList() {
+    public IXValueList asXList() {
         return new XValueList(values());
     }
 

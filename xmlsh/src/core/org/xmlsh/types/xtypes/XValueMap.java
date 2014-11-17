@@ -30,7 +30,7 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter;
  * Generic Properties 
  * A set of Name/Value pairs to any object 
  */
-public class XValueMap extends AbstractMap<String,XValue> implements IXValueMap<XValueMap>  {
+public class XValueMap extends AbstractMap<String,XValue> implements IXValueMap  {
 	private  	Map<String,XValue>   mMap;
 
 	public XValueMap(XValueMap that) {
@@ -230,20 +230,20 @@ public class XValueMap extends AbstractMap<String,XValue> implements IXValueMap<
 
 
     @Override
-    public IXValueContainer<? extends IXValueContainer<?>> asXContainer()
+    public IXValueContainer asXContainer()
     {
       // TODO Auto-generated method stub
       return this;
     }
 
     @Override
-    public IXValueMap<? extends IXValueMap<?>> asXMap()
+    public IXValueMap asXMap()
     {
       return this;
     }
 
     @Override
-    public IXValueList<? extends IXValueList<?>> asXList()
+    public IXValueList asXList()
     {
       // TODO Auto-generated method stub
       return null;

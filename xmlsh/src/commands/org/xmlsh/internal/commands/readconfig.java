@@ -7,6 +7,7 @@
 package org.xmlsh.internal.commands;
 
 import java.util.List;
+
 import java.util.Properties;
 
 import org.apache.commons.lang3.text.StrSubstitutor;

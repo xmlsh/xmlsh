@@ -28,7 +28,7 @@ public class PortList<P extends AbstractPort> extends NameValueList< ReferenceCo
 			e.getValue().release();
 	}
 
-	PortList( PortList<P> that )
+	public PortList( PortList<P> that )
 	{
 		for( INameValue<ReferenceCountedHandle<P>> e : that ){
 			e.getValue().addRef();
@@ -36,7 +36,7 @@ public class PortList<P extends AbstractPort> extends NameValueList< ReferenceCo
 		}
 	}
 
-	IHandle<P> getPort( String name )
+	public IHandle<P> getPort( String name )
 	{
 
 		INameValue<ReferenceCountedHandle< P >> np = findName(name);

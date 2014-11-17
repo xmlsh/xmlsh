@@ -14,12 +14,12 @@ import org.xmlsh.core.XValue;
 /*
  * Map specific values
  */
-public interface IXValueMap<T extends IXValueMap<T > > extends  IXValueContainer<T>
+public interface IXValueMap  extends  IXValueContainer
 {
   public XValue get(String name) throws InvalidArgumentException;
   public Set<String> keySet();
-  public XValue put(String key, XValue value);
-	public boolean containsKey(String key);
+  public XValue put(String key, XValue value); 
+  public boolean containsKey(String key);
 
 
 }

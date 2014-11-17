@@ -29,7 +29,7 @@ import org.xmlsh.util.Util;
 /*
  * A list of objects indexable by string or index (1 based for strings)
  */
-public class XValuePropertyList  implements     IXValueMap<XValuePropertyList>, IXValueList<XValuePropertyList>
+public class XValuePropertyList  implements     IXValueMap, IXValueList
 {
 	private static final XValuePropertyList _emptyList = new XValuePropertyList();
     private  	List<XValueProperty>   mList;
@@ -254,20 +254,20 @@ public class XValuePropertyList  implements     IXValueMap<XValuePropertyList>, 
     }
 
     @Override
-    public IXValueContainer<? extends IXValueContainer<?>> asXContainer()
+    public IXValueContainer asXContainer()
     {
       return this;
     }
 
     @Override
-    public IXValueMap<? extends IXValueMap<?>> asXMap()
+    public IXValueMap asXMap()
     {
       return XValueProperties.fromPropertyList(mList);
     }
 
 
     @Override
-    public IXValueList<? extends IXValueList<?>> asXList()
+    public IXValueList asXList()
     {
       return this;
     }

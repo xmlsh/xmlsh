@@ -162,7 +162,7 @@ public class cfnCreateStack extends AWSCFNCommand {
 		if( x.isInstanceOf( IXValueMap.class )){
 			List<Parameter> parameters = new ArrayList<>();
 
-			IXValueMap<?> xmap  = x.asInstanceOf(IXValueMap.class);
+			IXValueMap xmap  = x.asInstanceOf(IXValueMap.class);
 			for( String key : xmap.keySet() ){
 				XValue value = xmap.get(key);
 				Parameter param = new Parameter().withParameterKey( key)
@@ -175,7 +175,7 @@ public class cfnCreateStack extends AWSCFNCommand {
 		}
 		if( x.isInstanceOf(IXValueContainer.class)){
 			List<Parameter> parameters = new ArrayList<>();
-			IXValueContainer<?> c   = x.asInstanceOf(IXValueContainer.class);
+			IXValueContainer c   = x.asInstanceOf(IXValueContainer.class);
 
 			for( XValue xv : c  ){
 				Collection<? extends Parameter> ps = getParameters( xv );

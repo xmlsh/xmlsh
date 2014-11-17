@@ -126,7 +126,7 @@ public static class keys extends AbstractBuiltinFunction
       if( x.isXType() ) {
         Object o = x.asObject();
         if( o instanceof org.xmlsh.types.xtypes.IXValueMap ) {
-          IXValueMap<?> m = (IXValueMap<?>) o ;
+          IXValueMap m = (IXValueMap) o ;
           for( String keys : Util.toList(  m.keySet().iterator()) ) {
             list.addValue( XValue.newXValue(keys) );
           }

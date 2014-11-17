@@ -18,7 +18,7 @@ import org.xmlsh.sh.shell.SerializeOpts;
  * All FamilyType.XTYPE Objects derive implement this interface
  * 
  */
-public interface IXValue<T extends IXValue<T>>
+public interface IXValue
 {
 
   public boolean isEmpty();
@@ -30,9 +30,9 @@ public interface IXValue<T extends IXValue<T>>
   public void serialize(OutputStream out, SerializeOpts opts) throws IOException, InvalidArgumentException;
   public XValue append(XValue item) throws InvalidArgumentException;
   public XValue asXValue() throws InvalidArgumentException;
-  public IXValueContainer<? extends IXValueContainer<?> > asXContainer();
-  public IXValueMap<? extends IXValueMap<?>> asXMap();
-  public IXValueList<? extends IXValueList<?>> asXList();
+  public IXValueContainer asXContainer();
+  public IXValueMap asXMap();
+  public IXValueList asXList();
   public IXValueSequence<? extends IXValueSequence<?>> asXSequence();
 
   

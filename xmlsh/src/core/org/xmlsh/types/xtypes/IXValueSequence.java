@@ -8,7 +8,7 @@ package org.xmlsh.types.xtypes;
 
 import org.xmlsh.core.XValue;
 
-public interface IXValueSequence<T extends IXValueSequence<T > >  extends IXValueContainer<T>
+public interface IXValueSequence<T extends IXValueSequence<T > >  extends IXValueContainer
 {
 
   public void addValue(XValue v);

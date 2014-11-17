@@ -95,12 +95,12 @@ public class XValue implements Iterable<XValue>
     this(S9Util.wrapItem(item));
   }
 
-  private XValue(IXValueList<?> list)
+  private XValue(IXValueList list)
   {
     this(TypeFamily.XTYPE, list);
   }
 
-  private XValue(IXValueMap<?> map)
+  private XValue(IXValueMap map)
   {
     this(TypeFamily.XTYPE, map);
   }
@@ -267,12 +267,12 @@ public class XValue implements Iterable<XValue>
 
   }
 
-  public static XValue newXValue(IXValueList<?> list)
+  public static XValue newXValue(IXValueList list)
   {
     return new XValue(list);
   }
 
-  public static XValue newXValue(IXValueMap<?> map)
+  public static XValue newXValue(IXValueMap map)
   {
     return new XValue(map);
   }

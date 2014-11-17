@@ -23,7 +23,7 @@ import org.xmlsh.util.Util;
  * Default starts at index 1 (not 0)
  * 
  */
-public class XValueArray extends AbstractList<XValue> implements IXValueMap<XValueArray> , IXValueList<XValueArray> 
+public class XValueArray extends AbstractList<XValue> implements IXValueMap, IXValueList 
 {
 	private static XValueArray _emptyArray = new XValueArray();
   private     TreeMap<Integer,XValue>   mArray;
@@ -193,20 +193,20 @@ public class XValueArray extends AbstractList<XValue> implements IXValueMap<XVal
 
 
     @Override
-    public IXValueContainer<? extends IXValueContainer<?>> asXContainer()
+    public IXValueContainer asXContainer()
     {
       // TODO Auto-generated method stub
       return this;
     }
 
     @Override
-    public IXValueMap<? extends IXValueMap<?>> asXMap()
+    public IXValueMap asXMap()
     {
       return this;
     }
 
     @Override
-    public IXValueList<? extends IXValueList<?>> asXList()
+    public IXValueList asXList()
     {
       return this;
     }

@@ -10,7 +10,7 @@ import java.util.List;
 
 import org.xmlsh.core.XValue;
 
-public interface IXValueList<T extends IXValueList<T > > extends IXValueContainer<T>
+public interface IXValueList extends IXValueContainer
 {
 
   public List<XValue> asList();

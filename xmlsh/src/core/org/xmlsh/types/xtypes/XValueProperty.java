@@ -24,7 +24,7 @@ import org.xmlsh.util.XNamedValue;
 /*
  * A single "Property" - substitutable for a Map
  */
-public class XValueProperty extends XNamedValue implements IXValueMap<XValueProperty>, Map.Entry<String, XValue>
+public class XValueProperty extends XNamedValue implements IXValueMap, Map.Entry<String, XValue>
 {
 
   public XValueProperty(String name, XValue value)
@@ -160,19 +160,19 @@ public class XValueProperty extends XNamedValue implements IXValueMap<XValueProp
   }
 
   @Override
-  public IXValueContainer<? extends IXValueContainer<?>> asXContainer()
+  public IXValueContainer asXContainer()
   {
     return this;
   }
 
   @Override
-  public IXValueMap<? extends IXValueMap<?>> asXMap()
+  public IXValueMap asXMap()
   {
     return this;
   }
 
   @Override
-  public IXValueList<? extends IXValueList<?>> asXList()
+  public IXValueList asXList()
   {
     return new XValuePropertyList(this);
   }

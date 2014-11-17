@@ -170,7 +170,7 @@ public abstract  class XVariable {
 
 		getValueMethods().setXValue(  getValue() , ind, value);
 	}
-	abstract void setValue(XValue setXValue) throws InvalidArgumentException;
+	public abstract void setValue(XValue setXValue) throws InvalidArgumentException;
 
 	public IMethods getValueMethods()
 	{

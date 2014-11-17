@@ -65,7 +65,7 @@ public class XTypeFamily extends AbstractTypeFamily implements ITypeFamily
     public int getSize(Object obj) throws InvalidArgumentException
     {
 
-      IXValue<?> ic = asXType(obj);
+      IXValue ic = asXType(obj);
       assert( obj != null );
       if( obj == null )
         return 0;
@@ -80,7 +80,7 @@ public class XTypeFamily extends AbstractTypeFamily implements ITypeFamily
     {
       if(obj == null)
         return nullXValue();
-      IXValue<?> ic = asXType(obj);
+      IXValue ic = asXType(obj);
 
       if(Util.isBlank(ind))
         return  XValue.newXValue( this , obj , false );
@@ -97,7 +97,7 @@ public class XTypeFamily extends AbstractTypeFamily implements ITypeFamily
     @Override
     public XValue getXValue(Object obj, int index) throws CoreException
     {
-      IXValue<?> ic = asXType(obj);
+      IXValue ic = asXType(obj);
       if(ic.isList())
         return ic.asXList().getAt(index);
       throw new InvalidArgumentException("Not an indexable type: " + describeClass(obj));
@@ -110,7 +110,7 @@ public class XTypeFamily extends AbstractTypeFamily implements ITypeFamily
     {
       if(obj == null)
         return;
-      IXValue<?> ic = asXType(obj);
+      IXValue ic = asXType(obj);
       ic.serialize(out, opts);
     }
 
@@ -129,7 +129,7 @@ public class XTypeFamily extends AbstractTypeFamily implements ITypeFamily
     {
       if(obj == null)
         return true;
-      IXValue<?> ic;
+      IXValue ic;
 	try {
 		ic = asXType(obj);
 		  return ic.isEmpty();
@@ -148,18 +148,18 @@ public class XTypeFamily extends AbstractTypeFamily implements ITypeFamily
       if(xobj == null || xobj.isNull())
         throw new CoreException("Cannot set indexed value to null object");
       
-      IXValue<?> ic = asXType(xobj.asObject());
+      IXValue ic = asXType(xobj.asObject());
       Object o = null;
       // map first
       if( ic.isMap() ){
-    	  IXValueMap<? extends IXValueMap<?>> map = ic.asXMap();
+    	  IXValueMap map = ic.asXMap();
     	  map.put(ind,value);
     	  if( map != ic )
     		  xobj = map.asXValue();
       }
       else
       if( ic.isList() ) {
-    	  IXValueList<? extends IXValueList<?>> list = ic.asXList();
+    	  IXValueList list = ic.asXList();
     	  list.setAt(Util.parseInt(ind, 0),value);
     	  if( ic != list )
     		  xobj = list.asXValue();
@@ -179,9 +179,9 @@ public class XTypeFamily extends AbstractTypeFamily implements ITypeFamily
         return Collections.emptyList();
       if((obj instanceof IXValueContainer)) {
         if(obj instanceof IXValueList)
-          return ((IXValueList<?>) obj).asList();
+          return ((IXValueList) obj).asList();
         XValueList list = new XValueList();
-        list.addAll(((IXValueContainer<?>) obj).values());
+        list.addAll(((IXValueContainer) obj).values());
         return list;
       }
       else if((obj instanceof XValue))
@@ -206,7 +206,7 @@ public class XTypeFamily extends AbstractTypeFamily implements ITypeFamily
     public boolean isAtomic(Object obj) 
     {
       if((obj instanceof IXValue)) {
-        return ((IXValue<?>) obj).isAtomic();
+        return ((IXValue) obj).isAtomic();
       }
       mLogger.warn("Unexpected type:{} " , describeClass(obj));
       return false;
@@ -218,20 +218,20 @@ public class XTypeFamily extends AbstractTypeFamily implements ITypeFamily
 
       assert (xobj != null && !xobj.isNull());
 
-      IXValue<?> ic = asXType(xobj.asObject());
+      IXValue ic = asXType(xobj.asObject());
 
       if(xobj == null || xobj.isNull())
         throw new CoreException("Cannot set indexed value to null object");
       
       if( ic.isList() ) {
-        IXValueList<? extends IXValueList<?>> list = ic.asXList();
+        IXValueList list = ic.asXList();
 		list.setAt(index,value);
 		if( ic != list )
 			xobj = list.asXValue();
       }
       else
       if( ic.isMap() ){
-        IXValueMap<? extends IXValueMap<?>> map = ic.asXMap();
+        IXValueMap map = ic.asXMap();
 		map.put(String.valueOf(index),value);  
 		if( map != ic )
 			xobj = map.asXValue();
@@ -243,10 +243,10 @@ public class XTypeFamily extends AbstractTypeFamily implements ITypeFamily
 
     }
 
-  protected static IXValue<?> asXType(Object obj) throws InvalidArgumentException
+  protected static IXValue asXType(Object obj) throws InvalidArgumentException
   {
     if((obj instanceof IXValue)) {
-      return ((IXValue<?>) obj);
+      return ((IXValue) obj);
     }
     throw new InvalidArgumentException("Unexpected type: " + describeClass(obj));
 
@@ -277,7 +277,7 @@ public class XTypeFamily extends AbstractTypeFamily implements ITypeFamily
 @Override
 public boolean hasKey(Object obj, String key) {
 	if( obj instanceof IXValueContainer ){
-		IXValueMap<?> c = (IXValueMap<?>) obj ;
+		IXValueMap c = (IXValueMap) obj ;
 		return 	c.containsKey(key);
 	}
 	return false;

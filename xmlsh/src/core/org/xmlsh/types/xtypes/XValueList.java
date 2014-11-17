@@ -24,7 +24,7 @@ import org.xmlsh.util.Util;
 /*
  * A list of objects indexable by string or index (1 based for strings)
  */
-public class XValueList  extends AbstractList<XValue> implements IXValueContainer<XValueList>, IXValueList<XValueList> 
+public class XValueList  extends AbstractList<XValue> implements IXValueContainer, IXValueList 
 {
 	private  	List<XValue>   mList;
 
@@ -159,17 +159,17 @@ public class XValueList  extends AbstractList<XValue> implements IXValueContaine
       return false;
     }
     @Override
-    public IXValueContainer<? extends IXValueContainer<?>> asXContainer()
+    public IXValueContainer asXContainer()
     {
       return this;
     }
     @Override
-    public IXValueMap<? extends IXValueMap<?>> asXMap()
+    public IXValueMap asXMap()
     {
       return  null;
     }
     @Override
-    public IXValueList<? extends IXValueList<?>> asXList()
+    public IXValueList asXList()
     {
       return this;
     }

@@ -213,7 +213,7 @@ public boolean isAtomic()
 
 
   @Override
-  public IXValueContainer<? extends IXValueContainer<?>> asXContainer()
+  public IXValueContainer asXContainer()
   {
     return this;
   }
@@ -221,7 +221,7 @@ public boolean isAtomic()
 
 
   @Override
-  public IXValueMap<? extends IXValueMap<?>> asXMap()
+  public IXValueMap asXMap()
   {
     return null;
   }
@@ -229,7 +229,7 @@ public boolean isAtomic()
 
 
   @Override
-  public IXValueList<? extends IXValueList<?>> asXList()
+  public IXValueList asXList()
   {
     return new XValueList(mList);
   }
