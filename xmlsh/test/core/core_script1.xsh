@@ -45,14 +45,14 @@ echo loc() "Source of $T4 Should Succeed"
 
 . $T4
 echo VAR is now $VAR
-echo loc() "Source of ${T}3 Should Succeed and resolve to $T3"
+echo loc() 'Source of ${T}3 Should Succeed and resolve to $T3'
 . ${T}3 || echo FAILED
 
 echo loc() Should fail to run
-. ${T1} || echo SHOULD FAIL 
+. ${T1} 2>/dev/null || echo SHOULD FAIL 
 
 echo loc() Should fail to run
-. ${T2} || echo SHOULD FAIL
+. ${T2} 2>/dev/null || echo SHOULD FAIL
 
 echo loc() Should Succeed
 . ${T3} && echo SUCCEEDED || echo FAILED

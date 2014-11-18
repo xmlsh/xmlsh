@@ -5,8 +5,8 @@ java.lang.String
 element()
 document-node()
 java.lang.String
-org.xmlsh.core.XValueSequence
+org.xmlsh.types.xtypes.XValueSequence
 java.lang.String
-org.xmlsh.core.XValueSequence
+org.xmlsh.types.xtypes.XValueSequence
 xs:integer
 xs:decimal

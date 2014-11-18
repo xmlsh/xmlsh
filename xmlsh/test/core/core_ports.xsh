@@ -42,14 +42,12 @@ echo -n bar >>{_var}
 echo loc() $_var should be foobar
 
 # Test mixed string and xml 
-echo loc() Should be text 'foobar<foo/>'
+echo loc() Should be sequence "foobar" , '<foo/>'
 xecho <[ <foo/> ]> >>{_var}
-echo loc() $_var
-echo loc() should be "foobar" followed by XML encoded
-xecho $_var
-echo loc() should be "foobar" followed by XML encoded
+xecho loc() $_var
+echo loc() Should be same 
 xecho {$_var}
-echo loc() should be string
+echo loc() should be sequence or array
 xtype -s -v _var
 xtype -s ${_var}
 # Note: this results in a string 

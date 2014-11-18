@@ -1,6 +1,6 @@
-org.xmlsh.core.XValuePropertyList
-org.xmlsh.core.XValuePropertyList
+org.xmlsh.types.xtypes.XValuePropertyList
+org.xmlsh.types.xtypes.XValuePropertyList
 value 2
-org.xmlsh.core.XValuePropertyList
-org.xmlsh.core.XValueProperty
+org.xmlsh.types.xtypes.XValuePropertyList
+org.xmlsh.types.xtypes.XValueProperty
 [value ,value 2 ]

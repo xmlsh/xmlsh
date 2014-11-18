@@ -1,7 +1,7 @@
-[44] Source of C:/Users/DLEE/AppData/Local/Temp//xmlsh1-s4 Should Succeed
+[44] Source of C:/temp//xmlsh1-s4 Should Succeed
 This is an xsh script
 VAR is now 2
-[48] Source of C:/Users/DLEE/AppData/Local/Temp//xmlsh1-s3 Should Succeed and resolve to C:/Users/DLEE/AppData/Local/Temp//xmlsh1-s3.xsh
+[48] Source of ${T}3 Should Succeed and resolve to $T3
 This is an xsh script
 [51] Should fail to run
 SHOULD FAIL
