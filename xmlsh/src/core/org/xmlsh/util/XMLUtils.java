@@ -7,10 +7,12 @@ import java.util.Iterator;
 import java.util.List;
 
 import net.sf.saxon.expr.StaticProperty;
+import net.sf.saxon.om.EmptyAtomicSequence;
 import net.sf.saxon.om.Item;
 import net.sf.saxon.om.NodeInfo;
 import net.sf.saxon.om.SequenceIterator;
-import net.sf.saxon.om.ValueRepresentation;
+import net.sf.saxon.om.Sequence;
+import net.sf.saxon.om.SequenceTool;
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.SaxonApiUncheckedException;
 import net.sf.saxon.s9api.Serializer;
@@ -19,11 +21,11 @@ import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XdmNodeKind;
 import net.sf.saxon.s9api.XdmValue;
+import net.sf.saxon.trans.XPathException;
 import net.sf.saxon.tree.iter.SingletonIterator;
 import net.sf.saxon.type.Type;
 import net.sf.saxon.value.AtomicValue;
 import net.sf.saxon.value.EmptySequence;
-import net.sf.saxon.value.Value;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -59,7 +61,7 @@ public class XMLUtils
 		return true ;
 
 		@SuppressWarnings("rawtypes")
-		ValueRepresentation<? extends Item> item = value.getUnderlyingValue();
+		Sequence item = value.getUnderlyingValue();
 		boolean isAtom = ( item instanceof AtomicValue ) || 
 				( item instanceof NodeInfo && ((NodeInfo)item).getNodeKind() == net.sf.saxon.type.Type.TEXT ) ;
 		return isAtom;
@@ -140,20 +142,21 @@ public class XMLUtils
 
       
     public static int getCardinality( XdmValue value ) {
-      return Value.asValue(value.getUnderlyingValue()).getCardinality();
+        Sequence v = value.getUnderlyingValue();
+        
+        
+      return SequenceTool.getCardinality(v);
     }
     
     public static String simpleTypeName( XdmItem v ) 
     {
 
-      @SuppressWarnings("rawtypes")
-	Value<? extends Item> value = Value.asValue(v.getUnderlyingValue());
-      if(value instanceof EmptySequence) 
+        Sequence s = v.getUnderlyingValue();
+      if(s instanceof EmptySequence || s instanceof EmptyAtomicSequence || SequenceTool.getCardinality(s) == StaticProperty.ALLOWS_ZERO ) 
         return "empty-sequence()";
       
       try {
-        @SuppressWarnings("rawtypes")
-		Item item = value.asItem();
+          Item item = SequenceTool.asItem(s);
         return Type.displayTypeName( item );
         /*
         if (item instanceof NodeInfo) {
@@ -234,19 +237,23 @@ public class XMLUtils
         }
     }
 
-
     @SuppressWarnings("rawtypes")
-	public static SequenceIterator<? extends Item> asSequenceIterator(XdmValue value ) throws net.sf.saxon.trans.XPathException
+    public static Sequence asSequence(XdmValue value )
     {
         if( value == null )
           return null ;
 
-        ValueRepresentation<? extends Item> v = value.getUnderlyingValue();
-        if (v instanceof Value) {
-          return  ((Value<?>)v).iterate();
-        } else {
-          return SingletonIterator.makeIterator((NodeInfo)v);
-        }
+        Sequence s = value.getUnderlyingValue();
+        return s ;
+      }
+    @SuppressWarnings("rawtypes")
+	public static SequenceIterator asSequenceIterator(XdmValue value ) throws XPathException 
+    {
+        if( value == null )
+          return null ;
+
+        Sequence s = value.getUnderlyingValue();
+        return s.iterate();
       }
     public static XdmValue toXdmValue( Iterator<XValue> iter )
     {
@@ -316,17 +323,16 @@ public class XMLUtils
 
 */
     final static class XValueToItemConverter 
-    implements ITypeConverter<XValue, Item<?> >
+    implements ITypeConverter<XValue, Item >
     {
       @SuppressWarnings("rawtypes")
 	@Override
-      public Item<?> convert(XValue xvalue) throws InvalidArgumentException
+      public Item convert(XValue xvalue) throws XPathException, InvalidArgumentException
       {
-        ValueRepresentation<? extends Item> v = xvalue.toXdmItem().getUnderlyingValue();
-        assert( v instanceof Item );
-        if( !( v instanceof Item ))
-          return null ;
-        return (Item<?>) v ;
+        Sequence s = xvalue.toXdmItem().getUnderlyingValue();
+        if( SequenceTool.getLength(s) == 1 )
+          return s.head();
+        return null;
       }
     }
 

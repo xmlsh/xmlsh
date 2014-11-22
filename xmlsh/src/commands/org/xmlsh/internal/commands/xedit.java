@@ -398,7 +398,7 @@ public class xedit extends XCommand
 
   private void delete(MutableNodeInfo node, Axis opt_axis)
   {
-    AxisIterator<?> iter = node.iterateAxis(opt_axis.getAxisNumber());
+    AxisIterator iter = node.iterateAxis(opt_axis.getAxisNumber());
     while (true) {
       NodeInfo n = iter.next();
       ((MutableNodeInfo) n).delete();
@@ -587,7 +587,7 @@ public class xedit extends XCommand
     // Make the children a text node
     parent.replaceStringValue(replace);
 
-    Item<?> item = parent.iterateAxis(net.sf.saxon.om.Axis.CHILD).next();
+    Item item = parent.iterateAxis(net.sf.saxon.om.AxisInfo.CHILD).next();
     return (NodeInfo) item;
 
   }
@@ -637,7 +637,7 @@ public class xedit extends XCommand
     // Otherwise the source is just returned unchnaged
 
     if(src instanceof DocumentInfo)
-      src = (((DocumentInfo) src).iterateAxis(net.sf.saxon.om.Axis.CHILD).next());
+      src = (((DocumentInfo) src).iterateAxis(net.sf.saxon.om.AxisInfo.CHILD).next());
     return mBuilder.build(src);
 
   }
@@ -651,8 +651,8 @@ public class xedit extends XCommand
   {
 
     // Write attributes
-    AxisIterator<?> iter = node.iterateAxis(net.sf.saxon.om.Axis.ATTRIBUTE);
-    Item<?> item;
+    AxisIterator iter = node.iterateAxis(net.sf.saxon.om.AxisInfo.ATTRIBUTE);
+    Item item;
     while ((item = iter.next()) != null) {
       NodeInfo a = (NodeInfo) item;
       if(a.getURI().equals(attr.getURI()) && a.getLocalPart().equals(attr.getLocalPart()))

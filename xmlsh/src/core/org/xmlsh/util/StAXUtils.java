@@ -12,7 +12,7 @@ import javax.xml.stream.XMLEventWriter;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import net.sf.saxon.om.Axis;
+import net.sf.saxon.om.AxisInfo;
 import net.sf.saxon.om.Item;
 import net.sf.saxon.om.NamePool;
 import net.sf.saxon.om.NamespaceBinding;
@@ -52,7 +52,7 @@ public class StAXUtils {
 
 
 			// Write attributes
-			AxisIterator iter = node.iterateAxis(Axis.ATTRIBUTE);
+			AxisIterator iter = node.iterateAxis(AxisInfo.ATTRIBUTE);
 			Item item;
 			while( ( item = iter.next() ) != null ){
 				NodeInfo attr = (NodeInfo) item;
@@ -62,7 +62,7 @@ public class StAXUtils {
 
 
 			// Child nodes 
-			iter = node.iterateAxis(Axis.CHILD);
+			iter = node.iterateAxis(AxisInfo.CHILD);
 			while( ( item = iter.next() ) != null ){
 				NodeInfo child = (NodeInfo) item ;
 				copy( child , writer );
@@ -95,7 +95,7 @@ public class StAXUtils {
 		case	Type.DOCUMENT :
 		{
 			// writer.writeStartDocument();
-			AxisIterator iter = node.iterateAxis(Axis.CHILD);
+			AxisIterator iter = node.iterateAxis(AxisInfo.CHILD);
 			Item item;
 			while( ( item = iter.next() ) != null ){
 				NodeInfo child = (NodeInfo) item ;

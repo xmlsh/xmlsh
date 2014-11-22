@@ -188,7 +188,7 @@ public class XIOEnvironment {
 	}
 
 
-	public void initStdio()  
+	public void initFromStdio()  
 	{
 
 		mInputs.add( 

@@ -25,8 +25,10 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 import javax.xml.transform.stream.StreamSource;
 
+import net.sf.saxon.om.Item;
 import net.sf.saxon.om.NodeInfo;
-import net.sf.saxon.om.ValueRepresentation;
+import net.sf.saxon.om.Sequence;
+import net.sf.saxon.om.SequenceTool;
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XdmAtomicValue;
 import net.sf.saxon.trans.XPathException;
@@ -292,8 +294,15 @@ public class MLUtil {
 			return true ;
 		
 		@SuppressWarnings("rawtypes")
-		ValueRepresentation value = item.getUnderlyingValue();
-		boolean isAtom = ( value instanceof AtomicValue ) || ( value instanceof NodeInfo && ((NodeInfo)value).getNodeKind() == net.sf.saxon.type.Type.TEXT ) ;
+		Sequence value = item.getUnderlyingValue();
+		Item i;
+        try {
+            i = SequenceTool.asItem(value);
+        } catch (XPathException e) {
+           return false ;
+        }
+		
+		boolean isAtom = ( i instanceof AtomicValue ) || ( value instanceof NodeInfo && ((NodeInfo)value).getNodeKind() == net.sf.saxon.type.Type.TEXT ) ;
 		return isAtom;
 	
 		

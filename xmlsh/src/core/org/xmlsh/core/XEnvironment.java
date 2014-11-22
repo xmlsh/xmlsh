@@ -94,7 +94,7 @@ public class XEnvironment  {
 		pushModule(mod ,ctx);
 
 		if( bInitIO )
-			getIO().initStdio();
+			getIO().initFromStdio();
 
 
 		mLogger.exit();

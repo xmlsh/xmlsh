@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.xml.namespace.NamespaceContext;
 import javax.xml.stream.XMLEventFactory;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLEventWriter;
@@ -104,7 +105,13 @@ public class xdelattribute extends XCommand {
 							if( ! matches( attr.getName() , attrs , bExcept ) )
 								newAttrs.add(attr);
 						}
-						e = mFactory.createStartElement(se.getName(), newAttrs.iterator() , namespaces);
+						NamespaceContext nsc = se.getNamespaceContext(); 
+						  e = mFactory.createStartElement(se.getName().getPrefix() ,
+                                  se.getName().getNamespaceURI() ,
+                                  se.getName().getLocalPart() ,
+                                  newAttrs.iterator() , namespaces, nsc
+                                  );
+
 
 
 					}

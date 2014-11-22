@@ -8,6 +8,8 @@ package org.xmlsh.util;
 
 import java.util.Iterator;
 
+import net.sf.saxon.trans.XPathException;
+
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.types.ITypeConverter;
 
@@ -34,9 +36,10 @@ public class TypeConvertingIterator<S,D> implements Iterator<D>
   {
     try {
 		return converter.convert(iter.next());
-	} catch (InvalidArgumentException e) {
-		throw new IllegalArgumentException(e);
-	}
+	} catch (InvalidArgumentException|XPathException  e) {
+        throw new IllegalArgumentException(e);
+
+    }
   }
 
   @Override

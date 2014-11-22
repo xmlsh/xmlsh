@@ -6,7 +6,7 @@ import java.net.URI;
 import java.util.List;
 
 import net.sf.saxon.om.Item;
-import net.sf.saxon.om.ValueRepresentation;
+import net.sf.saxon.om.Sequence;
 import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XdmAtomicValue;
@@ -42,7 +42,7 @@ public final class XDMTypeFamily extends AbstractTypeFamily implements ITypeFami
     assert( cls != null );
     if( cls == null ) 
       return false;
-    return XdmItem.class.isAssignableFrom(cls) || ValueRepresentation.class.isAssignableFrom(cls) ||
+    return XdmItem.class.isAssignableFrom(cls) || Sequence.class.isAssignableFrom(cls) ||
         QName.class.isAssignableFrom(cls) ;
   }
 
@@ -52,7 +52,7 @@ public final class XDMTypeFamily extends AbstractTypeFamily implements ITypeFami
     if( obj == null )
       return true ;
 
-    if(  obj instanceof XdmItem || obj instanceof ValueRepresentation || obj instanceof QName  || obj instanceof URI )
+    if(  obj instanceof XdmItem || obj instanceof Sequence || obj instanceof QName  || obj instanceof URI )
       return true ;
     return false ;
 
@@ -242,8 +242,8 @@ public final class XDMTypeFamily extends AbstractTypeFamily implements ITypeFami
        if( obj instanceof URI )
          obj = new XdmAtomicValue( (URI) obj );
        else
-       if( obj instanceof Item<?> )
-         obj = S9Util.wrapItem((Item<?>)obj);
+       if( obj instanceof Item )
+         obj = S9Util.wrapItem((Item)obj);
        else
          return XValue.newXValue(obj);
 

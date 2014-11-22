@@ -19,7 +19,8 @@ import javax.xml.transform.Source;
 
 import net.sf.saxon.om.Item;
 import net.sf.saxon.om.NodeInfo;
-import net.sf.saxon.om.ValueRepresentation;
+import net.sf.saxon.om.Sequence;
+import net.sf.saxon.om.SequenceTool;
 import net.sf.saxon.s9api.ItemType;
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.QName;
@@ -38,7 +39,6 @@ import net.sf.saxon.value.DecimalValue;
 import net.sf.saxon.value.DoubleValue;
 import net.sf.saxon.value.FloatValue;
 import net.sf.saxon.value.IntegerValue;
-import net.sf.saxon.value.Value;
 
 import org.apache.logging.log4j.Logger;
 import org.xmlsh.json.JSONUtils;
@@ -63,6 +63,7 @@ import org.xmlsh.util.XMLUtils;
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.icl.saxon.expr.Value;
 
 /*
  * A XValue is a single value or a sequence of 0 or more values
@@ -90,7 +91,7 @@ public class XValue implements Iterable<XValue>
     this(TypeFamily.XDM, new XdmAtomicValue(n));
   }
 
-  private XValue(Item<?> item)
+  private XValue(Item item)
   {
     this(S9Util.wrapItem(item));
   }
@@ -252,7 +253,7 @@ public class XValue implements Iterable<XValue>
     return new XValue(n);
   }
 
-  public static XValue newXValue(Item<?> item)
+  public static XValue newXValue(Item item)
   {
     return new XValue(item);
   }
@@ -645,16 +646,16 @@ public class XValue implements Iterable<XValue>
 
       XdmValue xv = (XdmValue) mValue;
 
-      ValueRepresentation<?> value = xv.getUnderlyingValue();
+      Sequence value = xv.getUnderlyingValue();
       // Special case for text nodes treat as String
       if(value instanceof NodeInfo && ((NodeInfo) value).getNodeKind() == net.sf.saxon.type.Type.TEXT)
-        return value.getStringValue();
+        return ((NodeInfo)value).getStringValue();
 
       if(!(value instanceof AtomicValue))
         return value;
 
       AtomicValue av = (AtomicValue) value;
-      Object java = Value.convertToJava(av);
+      Object java = SequenceTool.convertToJava(av);
 
       return java;
     } catch (Exception e) {
@@ -758,7 +759,7 @@ public class XValue implements Iterable<XValue>
     if(!(mValue instanceof XdmItem))
       return false;
 
-    ValueRepresentation<? extends Item> value = asXdmItem().getUnderlyingValue();
+    Sequence value = asXdmItem().getUnderlyingValue();
     boolean isString = (value instanceof net.sf.saxon.value.StringValue) ||
         (value instanceof NodeInfo && ((NodeInfo) value).getNodeKind() == net.sf.saxon.type.Type.TEXT);
     return isString;

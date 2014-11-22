@@ -400,7 +400,7 @@ public class xed extends XCommand {
 	    builder.characters(value.toString(), 0, 0);
 	    builder.endDocument();
 	    builder.close();
-	    return builder.getCurrentRoot().iterateAxis(net.sf.saxon.om.Axis.CHILD).next();
+	    return builder.getCurrentRoot().iterateAxis(net.sf.saxon.om.AxisInfo.CHILD).next();
       
 	    
 	    /*
@@ -445,7 +445,7 @@ public class xed extends XCommand {
 		// Otherwise the source is just returned unchnaged
 
 		if( src instanceof DocumentInfo  )
-			src = (((DocumentInfo)src).iterateAxis(net.sf.saxon.om.Axis.CHILD).next());
+			src = (((DocumentInfo)src).iterateAxis(net.sf.saxon.om.AxisInfo.CHILD).next());
 		return mBuilder.build(src);
 
 	}
@@ -460,7 +460,7 @@ public class xed extends XCommand {
 	{
 
 		// Write attributes
-		AxisIterator iter = node.iterateAxis(net.sf.saxon.om.Axis.ATTRIBUTE);
+		AxisIterator iter = node.iterateAxis(net.sf.saxon.om.AxisInfo.ATTRIBUTE);
 		Item item;
 		while( ( item = iter.next() ) != null ){
 			NodeInfo a = (NodeInfo) item;

@@ -12,6 +12,7 @@ import java.util.List;
 import net.sf.saxon.expr.XPathContext;
 import net.sf.saxon.lib.ExtensionFunctionCall;
 import net.sf.saxon.om.Item;
+import net.sf.saxon.om.Sequence;
 import net.sf.saxon.om.SequenceIterator;
 import net.sf.saxon.trans.XPathException;
 
@@ -37,18 +38,16 @@ public class EvalFunctionCall extends ExtensionFunctionCall
 		
 		mLogger.entry();
 	}
-
-	@SuppressWarnings("rawtypes")
-	@Override
-	public SequenceIterator<? extends Item> call(SequenceIterator<? extends Item>[] arguments, XPathContext context) throws XPathException
-	{
+	 @Override
+	    public Sequence call(XPathContext context, Sequence[] arguments)
+	            throws XPathException {
 
 		
 		mLogger.entry(arguments, context);
 		// Arg0 is the command to run
 
-		String command = arguments[0].next().getStringValue();
-		SequenceIterator<? extends Item> args = arguments.length > 1 ? arguments[1] : null;
+		String command = arguments[0].head().getStringValue();
+		SequenceIterator args = arguments.length > 1 ? arguments[1].iterate() : null;
 
 		Shell sh = ThreadLocalShell.get();
 
@@ -71,7 +70,7 @@ public class EvalFunctionCall extends ExtensionFunctionCall
 			XVariable oVar = XVariable.anonymousInstance(oValue);
 			Item contextItem = null;
 			if(arguments.length > 2)
-				contextItem = arguments[2].next();
+				contextItem = arguments[2].head();
 			else
 				contextItem = context.getContextItem();
 			
@@ -101,7 +100,7 @@ public class EvalFunctionCall extends ExtensionFunctionCall
 				
 			} 
 			
-			return mLogger.exit(XMLUtils.asSequenceIterator( oValue.toXdmValue() ));
+			return mLogger.exit(XMLUtils.asSequence( oValue.toXdmValue() ));
 		} catch (Exception e) {
 			throw new XPathException(e);
 		}
@@ -127,6 +126,8 @@ public class EvalFunctionCall extends ExtensionFunctionCall
 		else
 			return sh.clone();
 	}
+
+   
 
 }
 

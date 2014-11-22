@@ -227,6 +227,15 @@ public class Shell implements AutoCloseable, Closeable {
 	public Shell() throws Exception {
 		this(true);
 	}
+	
+	
+	/*
+	 * Create a new Shell.
+	 * 
+	 * If this is the first shell in the classloader then initialize the console according
+	 * to bUseConsole.
+	 * 
+	 */
 
 	public Shell(boolean bUseStdio) throws Exception {
 		mLogger.entry(bUseStdio);
@@ -236,7 +245,6 @@ public class Shell implements AutoCloseable, Closeable {
 		mEnv = new XEnvironment(this,  new StaticContext() ,  RootModule.getInstance() , bUseStdio);
 		mSession = new SessionEnvironment();
 
-	
 
 		setGlobalVars();
 

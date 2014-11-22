@@ -4,7 +4,7 @@ declare namespace a=http://www.xmlsh.org/a
 declare namespace b=http://www.xmlsh.org/b
 
 xml=<[
-<a:list b:attr="battr">
+<a:list b:attr="battr" xmlns:a="http://www.xmlsh.org/a">
   <a:item a:attr="attra" b:attr="attrb"/>
   <a:item2 a:attr="attra" b:attr2="attrb"/>
 

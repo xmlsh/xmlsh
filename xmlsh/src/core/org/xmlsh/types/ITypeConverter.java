@@ -6,6 +6,8 @@
 
 package org.xmlsh.types;
 
+import net.sf.saxon.trans.XPathException;
+
 import org.xmlsh.core.InvalidArgumentException;
 
 /*
@@ -13,7 +15,7 @@ import org.xmlsh.core.InvalidArgumentException;
  */
 public interface ITypeConverter<S,D>
 {
-   D convert(S s) throws InvalidArgumentException;
+   D convert(S s) throws InvalidArgumentException, XPathException;
 }
 
 
