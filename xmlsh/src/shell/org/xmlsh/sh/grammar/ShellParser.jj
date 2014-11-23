@@ -39,18 +39,29 @@ public class ShellParser
 
   private ParserContext mContext = null ;
   private Logger mLogger = LogManager.getLogger() ;
+  private java.io.Reader in;
 
   /*
    * Active delimiter stack for joinable tokens
    */
 
 
+ 
   public ShellParser(java.io.Reader stream, String source)
   {
     this (stream);
+    in=stream;
     mContext = new ParserContext( this , source );
 
   }
+
+  public void reset()
+  {
+    try    {      
+      in.reset();	} catch( Exception e )	{	      }
+
+  }
+  
   public String getSource()
   {
     return mContext.getSource();
@@ -59,6 +70,7 @@ public class ShellParser
   public void ReInit(java.io.Reader stream, String source)
   {
     this.ReInit(stream);
+    in=stream;
     token_source.clear();
     mContext = new ParserContext( this , source );
   }

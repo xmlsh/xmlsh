@@ -3,6 +3,8 @@ package org.xmlsh.core.io;
 import java.io.Console;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.io.Reader;
+import java.io.Writer;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -19,24 +21,29 @@ public class ShellIO {
     
     static Logger mLogger = LogManager.getLogger();
     
-    private ShellConsole mConsole ; // Console if available
+    private ShellConsole mConsole ; // Console object 
+    
+    private Reader mIn;
+    private Writer mOut;
+    private Writer mErr;
     
     
     
-    public ShellIO() {
-        this( true );
-    }
 
 
-
-    public ShellIO(boolean bTryConsole ) {
-      if( bTryConsole )
+    public ShellIO(boolean interactive ) {
+      if( interactive ){
           mConsole =  ShellConsole.getConsole(); // may return null if no console available
+      }    
       else
           mConsole = null ;
-
       
     }
+    
+    
+    
+    
+    
     
     
     

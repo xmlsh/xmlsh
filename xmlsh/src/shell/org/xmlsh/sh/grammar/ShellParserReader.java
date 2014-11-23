@@ -33,6 +33,17 @@ public class ShellParserReader extends FilterReader {
 
 	}
 
+	
+
+    // Start of a new command 
+    public void reset() {
+        try {
+            super.reset();
+        } catch (IOException e) {
+           
+        }
+        
+    } 
 	/*
 	 * Opposite of InputStream, Readers require you to override read(byte[] .... ) - this is used as just a helper function.
 	 * 

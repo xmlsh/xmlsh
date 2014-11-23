@@ -69,6 +69,7 @@ import org.xmlsh.core.XVariable.XVarFlag;
 import org.xmlsh.core.io.FileInputPort;
 import org.xmlsh.core.io.FileOutputPort;
 import org.xmlsh.core.io.OutputPort;
+import org.xmlsh.core.io.ShellConsole;
 import org.xmlsh.core.io.StreamInputPort;
 import org.xmlsh.core.io.StreamOutputPort;
 import org.xmlsh.sh.core.CommandExpr;
@@ -155,7 +156,6 @@ public class Shell implements AutoCloseable, Closeable {
 
 	private XEnvironment mEnv = null;
 	private List<XValue> mArgs = new CopyOnWriteArrayList<XValue>();
-	private InputStream mCommandInput = null;
 	private String mArg0 = "xmlsh";
 	private SessionEnvironment mSession = null;
 
@@ -405,7 +405,6 @@ public class Shell implements AutoCloseable, Closeable {
 				: threadGroup;
 		mOpts = new ShellOpts(that.mOpts);
 		mEnv = that.getEnv().clone(	this );
-		mCommandInput = that.mCommandInput;
 		mArg0 = that.mArg0;
 
 		// clone $1..$N
@@ -702,15 +701,15 @@ public class Shell implements AutoCloseable, Closeable {
 		return !(mExitVal == null && mReturnVal == null);
 	}
 
-	private ShellParserReader newParserReader(boolean bSkipBOM)
-			throws IOException {
-		return newParserReader(mCommandInput, bSkipBOM);
-	}
+	private ShellParserReader newInteractiveParserReader()
+			throws IOException, CoreException {
 
-	private ShellParserReader newParserReader(InputStream stream,
-			boolean bSkipBOM) throws IOException {
-		return newParserReader(new InputStreamReader(stream,
-				getInputTextEncoding()), bSkipBOM);
+	        return newParserReader( ShellConsole.newConsoleReader(
+	                getPS(ShellConstants.PS1,"$ " ),
+	                getPS(ShellConstants.PS2,"> " )
+
+	                ), false );
+	    
 	}
 
 	private ShellParserReader newParserReader(Reader reader,boolean bSkipBOM)
@@ -718,11 +717,6 @@ public class Shell implements AutoCloseable, Closeable {
 		return new ShellParserReader(reader, bSkipBOM );
 	}
 
-	private void prompt(boolean ps1) {
-		System.out.print(getPS(ps1 ? ShellConstants.PS1 : ShellConstants.PS2,
-				ps1 ? "$ " : " >"));
-		System.out.flush();
-	}
 
 	public String getInputTextEncoding() {
 		return getSerializeOpts().getInputTextEncoding();
@@ -733,20 +727,19 @@ public class Shell implements AutoCloseable, Closeable {
 		mIsInteractive = true;
 		int ret = 0;
 
-		setCommandInput();
 		try {
 			enterEval();
 
 			// ShellParser parser= new
 			// ShellParser(mCommandInput,Shell.getEncoding());
-			ShellParser parser = new ShellParser(newParserReader(false),
+			ShellParser parser = new ShellParser(newInteractiveParserReader(),
 					"stdin");
 
 			while (mExitVal == null) {
 
 				CommandExpr c = null;
 				try {
-					prompt(true);
+				    parser.reset();
 					c = parser.command_line();
 
 					if (c == null)
@@ -770,7 +763,7 @@ public class Shell implements AutoCloseable, Closeable {
 				} catch (ThrowException e) {
 					printErr("Ignoring thrown value: " + e.getMessage());
 					mLogger.error("Ignoring throw value", e);
-					parser.ReInit(newParserReader(false), null);
+					parser.ReInit(newInteractiveParserReader(), null);
 				} catch (Exception e) {
 
 					SourceLocation loc = c != null ? c.getSourceLocation() : null;
@@ -783,7 +776,7 @@ public class Shell implements AutoCloseable, Closeable {
 
 					printErr(e.getMessage());
 					mLogger.warn("Exception parsing statement", e);
-					parser.ReInit(newParserReader(false), null);
+					parser.ReInit(newInteractiveParserReader(), null);
 				} catch (Error e) {
 					printErr("Error: " + e.getMessage());
 					SourceLocation loc = c != null ? c.getSourceLocation() : null;
@@ -794,7 +787,7 @@ public class Shell implements AutoCloseable, Closeable {
 						mLogger.info(loc.format(mOpts.mLocationFormat));
 						printErr(sLoc);
 					}
-					parser.ReInit(newParserReader(false), null);
+					parser.ReInit(newInteractiveParserReader(), null);
 				}
 			}
 			if (mExitVal != null)
@@ -857,53 +850,6 @@ public class Shell implements AutoCloseable, Closeable {
 
 	}
 
-	/*
-	 * Setup the mCommandInput Try to locate jline if its in the classpath and
-	 * use it otherwise default to System.in
-	 */
-
-	private void setCommandInput() {
-		if (mCommandInput == null) {
-			// the way jline is used on windows can fail horribly so dont enable it
-			// To fix this is likely going to require that command inputs be line based not InputStream based
-			// which will allow for other improvements such as PS2 prompting.
-			if (false && !Util.isWindows())
-				try {
-					/*
-					 * import jline.ConsoleReader; import
-					 * jline.ConsoleReaderInputStream;
-					 */
-					Class<?> consoleReaderClass = Class
-							.forName("jline.ConsoleReader");
-
-					if (consoleReaderClass != null) {
-						Class<?> consoleInputClass = Class
-								.forName("jline.ConsoleReaderInputStream");
-						if (consoleInputClass != null) {
-							// ConsoleReader jline = new ConsoleReader();
-							Object jline = consoleReaderClass.newInstance();
-
-							Constructor<?> constructor = consoleInputClass
-									.getConstructor(consoleReaderClass);
-							// mCommandInput = new
-							// ConsoleReaderInputStream(jline);
-
-							if (constructor != null) {
-								mCommandInput = (InputStream) constructor
-										.newInstance(jline);
-								// System.err.println("using jline");
-							}
-
-						}
-					}
-
-				} catch (Exception e1) {
-					mLogger.info("Exception loading jline");
-				}
-		}
-		if (mCommandInput == null)
-			mCommandInput = System.in;
-	}
 
 	/*
 	 * Main entry point for executing commands. All command execution should go
