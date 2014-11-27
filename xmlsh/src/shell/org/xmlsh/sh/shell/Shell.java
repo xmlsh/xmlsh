@@ -68,8 +68,10 @@ import org.xmlsh.core.XVariable;
 import org.xmlsh.core.XVariable.XVarFlag;
 import org.xmlsh.core.io.FileInputPort;
 import org.xmlsh.core.io.FileOutputPort;
+import org.xmlsh.core.io.IShellPrompt;
 import org.xmlsh.core.io.OutputPort;
 import org.xmlsh.core.io.ShellConsole;
+import org.xmlsh.core.io.ShellIO;
 import org.xmlsh.core.io.StreamInputPort;
 import org.xmlsh.core.io.StreamOutputPort;
 import org.xmlsh.sh.core.CommandExpr;
@@ -98,7 +100,7 @@ import org.xmlsh.util.Util;
 import org.xmlsh.xpath.EvalDefinition;
 import org.xmlsh.xpath.ThreadLocalShell;
 
-public class Shell implements AutoCloseable, Closeable {
+public class Shell implements AutoCloseable, Closeable , IShellPrompt {
 	private static volatile int __id = 0;
 	private final int _id = ++__id ;
 	
@@ -116,6 +118,7 @@ public class Shell implements AutoCloseable, Closeable {
 	public String toString() {
 		return "Shell[" + _id + "]";
 	}
+	
 	
 
 	// The return of a function and/or command
@@ -152,6 +155,7 @@ public class Shell implements AutoCloseable, Closeable {
 
 	static Logger mLogger = LogManager.getLogger();
 	private ShellOpts mOpts;
+	private ShellIO   mIO; // Command and event IO environment
 
 
 	private XEnvironment mEnv = null;
@@ -224,8 +228,9 @@ public class Shell implements AutoCloseable, Closeable {
 	/*
 	 * New top level shell
 	 */
-	public Shell() throws Exception {
-		this(true);
+	public Shell() throws Exception { 
+	    this( new ShellIO(true) );
+	    
 	}
 	
 	
@@ -237,12 +242,14 @@ public class Shell implements AutoCloseable, Closeable {
 	 * 
 	 */
 
-	public Shell(boolean bUseStdio) throws Exception {
-		mLogger.entry(bUseStdio);
+	public Shell(ShellIO io) throws Exception {
+		mLogger.entry(io);
+		mIO = io ;
+		mIO.setPrompt(this);
 		mClosed = false ;
 		mOpts = new ShellOpts();
 		mSavedCD = System.getProperty(ShellConstants.PROP_USER_DIR);
-		mEnv = new XEnvironment(this,  new StaticContext() ,  RootModule.getInstance() , bUseStdio);
+		mEnv = new XEnvironment(this,  new StaticContext() ,  RootModule.getInstance() , io );
 		mSession = new SessionEnvironment();
 
 
@@ -399,6 +406,7 @@ public class Shell implements AutoCloseable, Closeable {
 	private Shell(Shell that, ThreadGroup threadGroup) throws IOException {
 		
 		mLogger.entry(that, threadGroup);
+		mIO = that.mIO ;
 		mClosed = false ;
 		mParent = that;
 		mThreadGroup = threadGroup == null ? that.getThreadGroup()
@@ -704,11 +712,7 @@ public class Shell implements AutoCloseable, Closeable {
 	private ShellParserReader newInteractiveParserReader()
 			throws IOException, CoreException {
 
-	        return newParserReader( ShellConsole.newConsoleReader(
-	                getPS(ShellConstants.PS1,"$ " ),
-	                getPS(ShellConstants.PS2,"> " )
-
-	                ), false );
+	        return newParserReader(  mIO.getReader(), false );
 	    
 	}
 
@@ -1095,7 +1099,8 @@ public class Shell implements AutoCloseable, Closeable {
 		for (String a : argv)
 			vargs.add(XValue.newXValue(a));
 
-		Shell shell = new Shell(true);
+		
+		Shell shell = new Shell();
 		org.xmlsh.builtin.commands.xmlsh cmd = new org.xmlsh.builtin.commands.xmlsh(
 				true);
 
@@ -1673,7 +1678,7 @@ public class Shell implements AutoCloseable, Closeable {
 		
 		
 		 mLogger.entry(prefix, name, packages);
-	     String sHelp = packages.get(0).replace('.', '/') + "/commands.xml";
+	     String sHelp = packages.get(0).replace(ShellConstants.kDOT_CHAR, '/') + "/commands.xml";
 		
 	 		IModule mod = getModules().getExistingModuleByName(name);
 	 		if( mod == null ){
@@ -2227,6 +2232,19 @@ public class Shell implements AutoCloseable, Closeable {
 		
 	}
 
+
+    @Override
+    public String getPrompt(int level) {
+        switch( level ){
+        case 0 :
+            return getPS(ShellConstants.PS1,"$ " );
+        case 1:
+            return getPS(ShellConstants.PS2,"> " );
+        default: 
+            return null ;
+        }
+
+    }
 
 
 }

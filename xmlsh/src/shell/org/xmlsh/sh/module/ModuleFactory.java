@@ -21,6 +21,7 @@ import org.xmlsh.core.ScriptSource;
 import org.xmlsh.core.XClassLoader;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.sh.shell.ShellConstants;
 import org.xmlsh.util.FileUtils;
 import org.xmlsh.util.JavaUtils;
 import org.xmlsh.util.StringPair;
@@ -331,7 +332,7 @@ public static Module createScriptModule(Shell shell, ModuleConfig config ) throw
 				config.setName(ma.name());
 			String moduleClass = ma.moduleClass();
 			if( !Util.isBlank(moduleClass) ){
-				if( moduleClass.indexOf('.') <0 )
+				if( moduleClass.indexOf(ShellConstants.kDOT_CHAR) <0 )
 					moduleClass = pkg.getName() + "." + moduleClass ;
 				config.setModuleClass(moduleClass);
 			}

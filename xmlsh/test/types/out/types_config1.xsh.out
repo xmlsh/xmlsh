@@ -1,3 +1,19 @@
-parameter 1
-aws default params
-parameter 2
+[10] parameter 1
+[11] aws default servers servers.server1 params section
+[12] parameter 2
+[13] parameter 2
+[14] TBD dotted properties
+[16] parameter dot 3
+[17] {[name.dot]=Dotted Name ,[name]=server1 }
+[18] {[name.dot]=Dotted Name ,[name]=server1 }
+[19] {[name.dot]=Dotted Name ,[name]=server1 }
+[20] server1
+[23] This is the default name
+[24] http://www.xmlsh.org
+[27] server1
+[28] Dotted Name
+[31] 1
+[32] This is the default name
+[33] VARIABLE 1
+[34] server1
+[35] TBD dotted properties

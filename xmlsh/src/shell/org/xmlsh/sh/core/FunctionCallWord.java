@@ -10,7 +10,10 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -28,14 +31,33 @@ import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.Util;
 
 /*
- * A Value that evaulates to a "cmd_word" which is either a simple string,
- * or a subprocess expression 
+ * A function call invocation expression
  * 
  */
 public class FunctionCallWord extends Word
 {
 	Word	 mFunction;
 	WordList	mArgs;
+	
+
+	// Return static argument cardinality
+	// 0 - no args 
+	// -1 variable
+	// > 0 delimited
+	public int getArgumentCardinality()
+	{
+	
+	    if( mArgs.isEmpty())
+	        return 0;
+	    int delims = 0;
+	    for( Word arg : mArgs )
+	        if( arg.isDelim() )
+	            delims++;
+	    return delims > 0 ? delims + 1 :    -1 ;
+	    
+	}
+	
+	
 	private static Logger mLogger = LogManager.getLogger();
 
 	
@@ -103,17 +125,62 @@ public class FunctionCallWord extends Word
 		if(func == null)
 			throw new InvalidArgumentException("Unknown function: " + mFunction);
 
-		ArrayList<XValue> args = new ArrayList<XValue>();
-
+		List<XValue> args = null ;
 		EvalEnv argEnv = func.argumentEnv(env);
 
-		if(mArgs != null)
-			for (Word arg : mArgs)
-				args.addAll(arg.expandToList(shell, argEnv));
-
+		// func( arg ,  , , , arg ) 
+		// every delimiter makes sure that atlesast 1 arg was added
+		// Empty args are the default XValue null
+		// DO NOT:! !!Any delimiter collects previous args into a single sequence argument 
+		// TODO: until we have function signatures, some functions assume the last args are varargs
+		// like  option( option-defs , $@ )
+		// so for the last arg in cardinality expand as usual
 		
+		if(mArgs != null){
+		    
+		    int card = getArgumentCardinality();
+		    
+		     // zero args
+		     if( card == 0)
+		         args = XValue.emptyList();
+		    
+		    
+		    // Multi args no delims 
+		    else  if( card < 0 )
+		    {
+		       args = new ArrayList<XValue>();
+		       for (Word arg : mArgs)
+		         args.addAll(  arg.expandToList(shell, argEnv));
+		    } 
+		      // Delimited fixed args
+		    else {
+		        
+               @SuppressWarnings("unchecked")
+               List<XValue> av[] = new List[card];
+		       int i = 0;
+		       for (Word arg : mArgs){
+		           if( ! arg.isDelim() ){
+		               av[i] = Util.appendList( av[i] , arg.expandToList(shell, argEnv));
+		           } 
+		           else 
+		             i++;
+		       }
+	
+		       args = new ArrayList<XValue>(card);
+		       for(  i = 0 ; i < card-1 ; i++ )
+		           args.add( XValue.newXValue(av[i] ) );
+		       // AddAll the last option
+		       
+		       if( av[i] == null )
+		           args.add( XValue.empytSequence());
+		       else
+		           args.addAll( av[i] );
+		       
+		    }
+		    
 
-		int refCount = 0;
+			    
+		}
 
 		try {
 			IModule module = func.getModule();

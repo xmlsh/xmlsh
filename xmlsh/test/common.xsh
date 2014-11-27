@@ -2,7 +2,7 @@
 # function to help test positional params and expansions
 function args () 
 {
-	echo '$#' $#
+	echo '$#' $# ;   local a;
 	for a ; do
 	   echo $a
 	done

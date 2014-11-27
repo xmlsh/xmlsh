@@ -1,7 +1,7 @@
 # Test of functions using function call syntax
 
 function f1() {
-	return $@
+  return $@
 }
 
 xtype -s f1( a 1 <[2,3,4]> )
@@ -32,12 +32,12 @@ echo mult( add( <[1,3]> ) mult( <[ 4,5]> ) )
 
 function a-b()
 {
-	echo function a-b
+  echo function a-b
 }
 
 #function -()
 #{ 
-#	echo function -
+# echo function -
 #}
 
 a-b

@@ -1,7 +1,10 @@
 * text=auto
 .gitignore eol=lf
 .sh eol=lf
-.xsh eol=crlf
+unix/* eol=lf
+win32/* eol=crlf
+
+
 
 # Custom for Visual Studio
 *.cs     diff=csharp

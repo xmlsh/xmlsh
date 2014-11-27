@@ -13,9 +13,11 @@ import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XConfiguration;
 import org.xmlsh.core.XValue;
 import org.xmlsh.modules.types.Types;
+import org.xmlsh.modules.types.properties.PropertiesModule;
 import org.xmlsh.sh.module.ModuleConfig;
 import org.xmlsh.sh.module.PackageModule;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.sh.shell.ShellConstants;
 import org.xmlsh.types.xtypes.XValueProperties;
 import org.xmlsh.types.xtypes.XValueSequence;
 import org.xmlsh.util.StringPair;
@@ -23,10 +25,10 @@ import org.xmlsh.util.Util;
 
 
 @org.xmlsh.annotations.Module( name="types.config")
-public class Module extends Types {
+public class ConfigModule extends Types {
 	static Logger mLogger = LogManager.getLogger();
 
-	public Module(ModuleConfig config) throws CoreException {
+	public ConfigModule(ModuleConfig config) throws CoreException {
 		super(config);
 		mLogger.entry(config);
 	}
@@ -52,8 +54,8 @@ public class Module extends Types {
 	}
 	
 
-	@Function( name="get-value" , names={"value" , "property"} )
-	public static class getValue extends AbstractBuiltinFunction {
+	@Function( name="get" , names={"value" , "get-value", "property"} )
+	public static class get extends PropertiesModule.get {
 		@Override
 	  public XValue run(Shell shell, List<XValue> args) throws Exception
 	  {
@@ -80,11 +82,8 @@ public class Module extends Types {
 		}
 		
 		public XValue run( Shell shell , XConfiguration conf,  String name ) throws InvalidArgumentException{
-			StringPair pair = new StringPair(name,'.');
-			if( pair.hasLeft() )
-			  return XValue.newXValue(conf.getProperty(pair.getLeft(), pair.getRight()));
-			else
-				return XValue.newXValue( conf.getSection(name));
+		    
+		    return conf.get(name);
 		}
 	}
 	

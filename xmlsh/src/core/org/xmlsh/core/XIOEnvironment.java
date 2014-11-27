@@ -14,6 +14,7 @@ import org.apache.logging.log4j.Logger;
 import org.xmlsh.core.io.AbstractPort;
 import org.xmlsh.core.io.OutputPort;
 import org.xmlsh.core.io.PortList;
+import org.xmlsh.core.io.ShellIO;
 import org.xmlsh.core.io.StreamInputPort;
 import org.xmlsh.core.io.StreamOutputPort;
 import org.xmlsh.util.AutoReleasePool;
@@ -188,20 +189,21 @@ public class XIOEnvironment {
 	}
 
 
-	public void initFromStdio()  
+	public void initFromIO(ShellIO io)  
 	{
 
+	    
 		mInputs.add( 
-				kSTDIN ,  new StreamInputPort(System.in,null,true) 
+				kSTDIN ,  io.getInputPort()
 				);
 
 		mOutputs.add( 
-				kSTDOUT, new StreamOutputPort(System.out,false,true)  
+				kSTDOUT,  io.getOutuptPort()
 				);
 
 
 		mOutputs.add( 
-				kSTDERR ,  new StreamOutputPort(System.err,false,true) 
+				kSTDERR ,  io.getErrorPort()
 				);
 
 	}

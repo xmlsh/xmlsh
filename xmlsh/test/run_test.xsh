@@ -16,7 +16,7 @@ set -indent +v +x -location
 [ -f _out.txt ] && rm _out.txt
 [ -f _err.txt ] && rm _err.txt
 
-
+DIFFCR=--strip-trailing-cr
 
 has_diff() {
   xwhich -n diff && xwhich -n head 
@@ -24,10 +24,10 @@ has_diff() {
 
 
 diff_text() {
-   has_diff && { diff $1 $2 | head -10 ; }
+   has_diff && { diff  $DIFFCR $1 $2 | head -20 ; }
 }
 diff_xml() {
-   has_diff && { diff $1 $2 | head -10 ; }
+   has_diff && { diff   $DIFFCR $1 $2 | head -20 ; }
 }
 
 

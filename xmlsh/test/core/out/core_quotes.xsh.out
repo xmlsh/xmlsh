@@ -102,7 +102,11 @@ bar spambletch
 xfoo
 ""
 bar spambletch
-[126] <foo bletch="abc" bar="spam">"Text Here in Quotes"</foo>
-<foo bletch="abc" bar="spam">"Text Here in Quotes"</foo>
-[128] <foo bletch="abc" bar="spam">"Text Here in Quotes"</foo>
-[129] foo<foo bletch="abc" bar="spam">"Text Here in Quotes"</foo>bar
+[126] <foo bar="spam">"Text Here in Quotes"</foo>
+<foo bar="spam">"Text Here in Quotes"</foo>
+[128] <foo bar="spam">"Text Here in Quotes"</foo>
+[129] foo<foo bar="spam">"Text Here in Quotes"</foo>bar
+[132] <foo bar="spam">'Text Here in "Quotes"'</foo>
+<foo bar="spam">'Text Here in "Quotes"'</foo>
+[134] <foo bar="spam">'Text Here in "Quotes"'</foo>
+[135] foo<foo bar="spam">'Text Here in "Quotes"'</foo>bar

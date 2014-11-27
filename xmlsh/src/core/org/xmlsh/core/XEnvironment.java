@@ -33,6 +33,7 @@ import org.xmlsh.core.XVariable.XVarFlag;
 import org.xmlsh.core.io.AbstractPort;
 import org.xmlsh.core.io.FileOutputPort;
 import org.xmlsh.core.io.OutputPort;
+import org.xmlsh.core.io.ShellIO;
 import org.xmlsh.core.io.StreamInputPort;
 import org.xmlsh.core.io.StreamOutputPort;
 import org.xmlsh.core.io.VariableInputPort;
@@ -82,10 +83,10 @@ public class XEnvironment  {
 	}
 
 
-	public XEnvironment(Shell shell, StaticContext ctx , IModule mod , boolean bInitIO  ) throws IOException
+	public XEnvironment(Shell shell, StaticContext ctx , IModule mod , ShellIO io  ) throws IOException
 	{
 		
-		mLogger.entry(shell, ctx, bInitIO);
+		mLogger.entry(shell, ctx, io);
 		mStaticContextStack = new Stack<>();
 		mShell = shell;
 		mVars = new Variables();
@@ -93,8 +94,9 @@ public class XEnvironment  {
 		mModuleStack = new Stack<>();
 		pushModule(mod ,ctx);
 
-		if( bInitIO )
-			getIO().initFromStdio();
+
+		if( io != null )
+		getIO().initFromIO(io );
 
 
 		mLogger.exit();
@@ -282,7 +284,7 @@ public XVariable exportVar( String name ) throws InvalidArgumentException{
 	{
 		
 		mLogger.entry(shell);
-		XEnvironment 	that = new XEnvironment(shell, getStaticContext().clone() , getModule() , false );
+		XEnvironment 	that = new XEnvironment(shell, getStaticContext().clone() , getModule() , null );
 		that.mVars		= new Variables(mVars);
 		that.mIO = new XIOEnvironment(getIO());
 		return mLogger.exit( that);

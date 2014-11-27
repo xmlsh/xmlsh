@@ -27,8 +27,8 @@ import org.xmlsh.util.Util;
 
 
 @org.xmlsh.annotations.Module( name="types.options")
-public class Module extends Types {
-	public Module(ModuleConfig config) throws CoreException {
+public class OptionsModule extends Types {
+	public OptionsModule(ModuleConfig config) throws CoreException {
 		super(config);
 	}
 

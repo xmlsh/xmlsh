@@ -1,6 +1,7 @@
 package org.xmlsh.core.io;
 
 import java.io.Console;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.Reader;
@@ -8,6 +9,7 @@ import java.io.Writer;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.xmlsh.core.InputPort;
 
 import jline.ConsoleReader;
 
@@ -19,32 +21,80 @@ import jline.ConsoleReader;
 
 public class ShellIO {
     
+    private boolean mUseConsole ;
+    
+
     static Logger mLogger = LogManager.getLogger();
-    
-    private ShellConsole mConsole ; // Console object 
-    
-    private Reader mIn;
-    private Writer mOut;
-    private Writer mErr;
+    private IShellPrompt mPrompt = null ;
+
+
+    private ShellReader mReader;
     
     
     
 
-
-    public ShellIO(boolean interactive ) {
-      if( interactive ){
-          mConsole =  ShellConsole.getConsole(); // may return null if no console available
-      }    
-      else
-          mConsole = null ;
-      
+    public ShellReader getReader(){
+        if( mReader == null )
+            // TODO: Dont allocatre ShellConsole if not needed 
+          setReader(ShellConsole.getConsole().newReader( mUseConsole , mPrompt )); // may return null if no console available
+        return mReader;
     }
     
     
+
+    public ShellIO(boolean bUseConsole ) {
+        mUseConsole = bUseConsole ;
+    }
     
     
+    public String readCommandLine( int promptLevel ) throws IOException
+    {
+        return getReader().readLine(promptLevel);
+        
+        
+    }
+    
+    public void   writeOutputLine( String line ) {
+        
+        
+    }
+    public void   writeErrorLine( String line ) {
+    }
     
     
+    public InputPort getInputPort()
+    {
+       return getReader().getInputPort();
+    }
+    
+    public OutputPort getOutuptPort()
+    {
+        return getReader().getOutuptPort();
+    }
+    public OutputPort getErrorPort()
+    {
+        return getReader().getErrorPort();
+    }
+
+
+
+    public IShellPrompt getPrompt() {
+        return mPrompt;
+    }
+
+
+
+    public void setPrompt(IShellPrompt prompt) {
+        mPrompt = prompt;
+    }
+
+
+
+
+    private void setReader(ShellReader reader) {
+        mReader = reader;
+    }
+
     
     
 }

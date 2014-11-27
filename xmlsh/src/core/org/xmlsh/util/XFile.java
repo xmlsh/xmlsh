@@ -26,6 +26,7 @@ import org.apache.logging.log4j.Logger;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.sh.shell.ShellConstants;
 import org.xmlsh.sh.shell.ShellThread;
 import org.xmlsh.util.UnifiedFileAttributes.FileType;
 
@@ -149,7 +150,7 @@ public class XFile /* implements XSerializble */ {
 
 	public String getBaseName() {
 		String name = getName();
-		int pos = name.lastIndexOf('.');
+		int pos = name.lastIndexOf(ShellConstants.kDOT_CHAR);
 		if (pos > 0) // .x  doessnt count
 			return name.substring(0, pos);
 		else

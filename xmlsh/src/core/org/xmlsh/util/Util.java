@@ -1130,10 +1130,12 @@ public class Util
 
 	 /*
 	  * Convert a List of XValues into a List with 1 XValue 
-	  * If the original list is all XDM types they are combined into a sequence XValue
 	  */
 
 	 public static List<XValue> combineSequence(List<XValue> result) {
+	     if( result == null )
+	         return XValue.emptyList();
+	     
 		 if( result.size() < 2 )
 			 return result ;
 
@@ -1934,6 +1936,24 @@ public static <T> boolean contains(T[] array, T v) {
 		return join( sb , set , ",");
 		
 	}
+
+
+    public static <T> List<T> appendList(List<T> list1, List<T> list2 ) {
+        if( list1 == null || list1.isEmpty() )
+            return list2 ;
+        if( list2 == null || list2.isEmpty() )
+            return list1; 
+        
+        int n = list1.size() + list2.size();
+        List<T> list = new ArrayList<T>( n );
+        list.addAll( list1 );
+        list.addAll(list2);
+        return list ;
+        
+        
+        
+        
+    }
 
 	
 

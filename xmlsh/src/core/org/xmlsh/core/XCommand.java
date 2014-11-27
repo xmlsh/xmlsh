@@ -12,6 +12,7 @@ import java.util.List;
 
 import org.xmlsh.sh.module.RootModule;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.sh.shell.ShellConstants;
 import org.xmlsh.xpath.ThreadLocalShell;
 
 public abstract class XCommand extends AbstractCommand {
@@ -34,8 +35,8 @@ public abstract class XCommand extends AbstractCommand {
 	public String getName()
 	{
 		String name = getClass().getSimpleName();
-		if (name.lastIndexOf('.') > 0) {
-			name = name.substring(name.lastIndexOf('.')+1);  
+		if (name.lastIndexOf(ShellConstants.kDOT_CHAR) > 0) {
+			name = name.substring(name.lastIndexOf(ShellConstants.kDOT_CHAR)+1);  
 		}
 
 

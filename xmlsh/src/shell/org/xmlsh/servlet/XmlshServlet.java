@@ -90,7 +90,7 @@ public class XmlshServlet extends HttpServlet {
 
 			List<XValue> vargs = new ArrayList<XValue>();
 
-			shell = new Shell(false);
+			shell = new Shell(null);
 			shell.setCurdir( new File(mRoot));
 
 			ICommand	script = CommandFactory.getScript( shell , path , SourceMode.SOURCE , null );
@@ -178,7 +178,7 @@ public class XmlshServlet extends HttpServlet {
 
 
 
-			shell = new Shell(false);
+			shell = new Shell(null);
 			shell.setCurdir( new File(mRoot));
 
 			Enumeration<?> names = request.getParameterNames();

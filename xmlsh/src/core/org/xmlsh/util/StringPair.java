@@ -17,11 +17,17 @@ public class StringPair {
 	private		String 		mLeft  = null;
 	private		String		mRight;
 
+    public StringPair( String string , char delim )
+    {
+        this( string , delim , true );
+    }
 
-	public StringPair( String string , char delim  )
+	
+	public StringPair( String string , char delim , boolean bFirst )
 	{
 		mString = string ;
-		int cpos = string.indexOf(delim);
+		
+		int cpos = bFirst ? string.indexOf(delim) : string.lastIndexOf(delim);
 		if( cpos >= 0 ){
 			mLeft = string.substring(0,cpos);
 			mRight = string.substring(cpos+1);
@@ -39,9 +45,15 @@ public class StringPair {
 			mString = right ;
 	}
 
-
+	
+	 
+	
 	public StringPair(XValue arg,char delim) {
-		this(arg.toString(),delim);
+
+	    this( arg , delim , true );
+	}
+	public StringPair(XValue arg,char delim, boolean bFirst) {
+		this(arg.toString(),delim, bFirst);
 	}
 
 

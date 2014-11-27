@@ -23,10 +23,10 @@ import org.xmlsh.util.Util;
 
 
 @org.xmlsh.annotations.Module( name="types.map")
-public class Module extends Types {
+public class MapModule extends Types {
 	static Logger mLogger = LogManager.getLogger();
 
-	public Module(ModuleConfig config) throws CoreException {
+	public MapModule(ModuleConfig config) throws CoreException {
 		super(config);
 		mLogger.entry(config);
 	}
@@ -39,14 +39,16 @@ public class Module extends Types {
 			return XValue.newXValue(TypeFamily.XTYPE ,  XTypeUtils.newMapFromList(args));
 		}
 	}
-	@Function( name="get-value" , names={"value" , "property"} )
+	@Function( name="get-value" , names={"get","value" , "property"} )
 	public static class getValue extends  Types.value  {
 	  }
 	@Function( name="put" , names={"set" , "set-value"} )
 	public static class setValue extends  Types.put  {
 	  }
 	
-	
+	   @Function( "has-key" )
+	    public static class hasKey extends Types.containsKey {
+	    }
 	
 	@Function( "keys" )
 	public static class keys extends Types.keys {

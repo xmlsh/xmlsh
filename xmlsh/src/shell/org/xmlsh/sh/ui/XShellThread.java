@@ -154,7 +154,8 @@ public class XShellThread extends Thread {
 					setRunning(false);
 					clearResult();
 
-					mShell = new Shell(false);
+					//@TODO: Use  ShellIO 
+					mShell = new Shell(null);
 					mShell.setArgs(mArgs == null ? new ArrayList<XValue>() : mArgs );
 					mShell.setArg0("xmlshui");
 

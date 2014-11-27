@@ -18,6 +18,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.xmlsh.internal.commands.readconfig;
 import org.xmlsh.sh.shell.SerializeOpts;
+import org.xmlsh.sh.shell.ShellConstants;
 import org.xmlsh.types.TypeFamily;
 import org.xmlsh.types.xtypes.IXValueContainer;
 import org.xmlsh.types.xtypes.IXValueList;
@@ -62,14 +63,12 @@ public class XConfiguration implements IXValueContainer, IXValueMap {
          */
         @Override
         protected XValue lookupXValue(String name) {
-            StringPair pair = new StringPair(name,'.');
-            if( pair.hasLeft()){
-                XValueProperties section = null;
-                section = mConfig.getSection(pair.getLeft(),false);
-                if( section != null )
-                    return section.get( pair.getRight() );
-            } 
-            return null;
+            try {
+                return mConfig.get(name);
+            } catch (InvalidArgumentException e) {
+                mLogger.catching(e);
+            }
+            return null ;
            
         }
         
@@ -140,6 +139,7 @@ public class XConfiguration implements IXValueContainer, IXValueMap {
 
     public XValue getProperty(String section, String name) {
 
+        
         XValueProperties sect = getSection(section);
         XValue value = null ;
         if (sect != null)
@@ -283,17 +283,45 @@ public class XConfiguration implements IXValueContainer, IXValueMap {
     public XValue append(XValue item) {
         throw new UnsupportedOperationException();
     }
+    
+    
+    // Get property in "section.value" format or just "value" to use default
+    // Formats
+    // property
+    // section
+    // dotted.section
+    // section.property
+    // dotted.section.property
+    
 
     @Override
     public XValue get(String name) throws InvalidArgumentException {
-        return getProperty(name);
+        assert( name != null);
+        // Try a section first
+        if( mSections.containsKey(name))
+            return mSections.get(name).asXValue();
+    
+        // try a plain property
+        if( name.indexOf(ShellConstants.kDOT_CHAR) < 0 )
+            return getProperty(name);
+         
+        // right to left find kDOT_CHAR
+        // TODO handle  [a.b] c.d=value   , [a.b.c] d=value
+        StringPair pair = new StringPair( name , ShellConstants.kDOT_CHAR, false );
+        
+        return getProperty( pair.getLeft() , pair.getRight());
+        
+        
     }
     
-    // Get property in "section.value" format or just "value" to use default
+   
     
     public XValue getProperty(String name) throws InvalidArgumentException {
 
-        StringPair pair = new StringPair(name,'.');
+        // 1) try a section first
+        
+        
+        StringPair pair = new StringPair(name,ShellConstants.kDOT_CHAR);
         XValue value = null;
         // secion . name 
         if( pair.hasLeft()){

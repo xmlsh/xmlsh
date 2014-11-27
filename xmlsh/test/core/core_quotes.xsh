@@ -122,9 +122,15 @@ args "x$@bletch"
 echo -n loc()
 args "x${@}bletch"
 
-
+set -indent
 # Test preserving quotes in XML expressoins
-a=<[ <foo bar="spam" bletch='abc'>"Text Here in Quotes"</foo> ]>
+a=<[ <foo bar="spam">"Text Here in Quotes"</foo> ]>
+echo loc() $a
+xecho $a
+echo loc() "$a"
+echo loc() "foo${a}bar"
+
+a=<[ <foo bar='spam'>'Text Here in &quot;Quotes&quot;'</foo> ]>
 echo loc() $a
 xecho $a
 echo loc() "$a"

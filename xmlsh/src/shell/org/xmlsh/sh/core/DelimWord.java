@@ -2,9 +2,11 @@ package org.xmlsh.sh.core;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.List;
 
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.EvalEnv;
+import org.xmlsh.core.XValue;
 import org.xmlsh.sh.grammar.Token;
 import org.xmlsh.sh.shell.ParseResult;
 import org.xmlsh.sh.shell.Shell;
@@ -45,5 +47,12 @@ public class DelimWord extends Word
     boolean isDelim() {
         return true ;
     }
+    
+    @Override
+    public List<XValue> expandToList(Shell shell, EvalEnv env ) throws IOException, CoreException {
+        return null ;
+    }
+
+        
 
 }

@@ -259,7 +259,7 @@ public class EvalUtils
 	    			
 	    
 	    // If wild literaly starts with a . then dont hide hidden files
-		if( wild.charAt(0) != '.' )
+		if( wild.charAt(0) != ShellConstants.kDOT_CHAR )
 			withWildMatching = withWildMatching.withFlagsHidden(HIDDEN_SYS,HIDDEN_NAME);
 	    
 		List<String> rs = EvalUtils.expandDir(dir, withWildMatching); 
@@ -347,7 +347,7 @@ public class EvalUtils
   // Converts a List<XValue> into single XValue
   public static XValue expandListToValue(EvalEnv env, List<XValue> ret)
   {
-    if(ret == null || ret.size() == 0)
+    if(ret == null || ret.isEmpty() )
       return env.omitNulls() ? XValue.nullValue() : XValue.empytSequence() ;
     else if(ret.size() == 1)
       return ret.get(0);

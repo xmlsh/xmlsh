@@ -56,6 +56,7 @@ import org.xmlsh.core.XValue;
 import org.xmlsh.posix.commands.ls.ListVisitor;
 import org.xmlsh.sh.module.CommandFactory;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.sh.shell.ShellConstants;
 
 
 public class FileUtils
@@ -282,7 +283,7 @@ public class FileUtils
 		path = getPathLikeName(path);
 
 		int startpos = 0 ;
-		int dotpos = path.indexOf('.', startpos);
+		int dotpos = path.indexOf(ShellConstants.kDOT_CHAR, startpos);
 		if( dotpos < 0 )
 			dotpos = path.length();
 		return path.substring(startpos,dotpos);
@@ -400,7 +401,7 @@ public class FileUtils
 		mLogger.entry(name);
 		name = getPathLikeName( name );
 			// Try the hard way.
-			int dotpos = name.lastIndexOf('.');
+			int dotpos = name.lastIndexOf(ShellConstants.kDOT_CHAR);
 			if( dotpos > 0 && dotpos < name.length() ) // ".xyz" not an extension
 				return mLogger.exit(name.substring(dotpos ));
 		return mLogger.exit("");

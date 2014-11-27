@@ -87,6 +87,9 @@ public class ShellConstants
 
 	}
 
+
+    public static final char kDOT_CHAR = '.';
+
 }
 
 

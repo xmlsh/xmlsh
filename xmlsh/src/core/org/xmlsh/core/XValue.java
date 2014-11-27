@@ -118,12 +118,13 @@ public class XValue implements Iterable<XValue>
 
   /*
    * Create an XValue by combining a list of XValue objects into a single XValue as a sequence
+   * null or empty list becomes an empty sequence
    */
   private XValue(List<XValue> args)
   {
-    assert (args != null);
 
-    if(args.isEmpty()) {
+      
+    if(args == null || args.isEmpty()) {
       _initSequence(null);
 
     }

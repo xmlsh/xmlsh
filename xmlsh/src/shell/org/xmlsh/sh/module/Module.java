@@ -14,6 +14,7 @@ import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XClassLoader;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.sh.shell.ShellConstants;
 import org.xmlsh.sh.shell.StaticContext;
 import org.xmlsh.util.JavaUtils;
 import org.xmlsh.util.Util;
@@ -296,7 +297,7 @@ public abstract class Module implements IModule {
 	}
 
 	protected String toResourceName(String name, String pkg) {
-		String resource = pkg.replace('.', '/') + "/" + name;
+		String resource = pkg.replace(ShellConstants.kDOT_CHAR, '/') + "/" + name;
 		return resource;
 	}
 
