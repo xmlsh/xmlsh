@@ -29,6 +29,8 @@
 			<available file="${env.XINSTALL}" type="dir" />
 		</condition>
 	</target>
+   <property name="install" value="${env.XINSTALL}/xmlsh" />
+
 
 	<tstamp>
 	   <format property="bdate.date" pattern="yyyy-MM-dd"/>
@@ -170,6 +172,7 @@ version.version=${version}
 	<target name="build" depends="clean, compile, jar"/>
 	  
 		<target name="grammar" description="Build parser from javaCC grammar">
+  		<mkdir dir="src/generated/org/xmlsh/sh/grammar"/>
 			<javacc
 			    target="src/shell/org/xmlsh/sh/grammar/ShellParser.jj"
 			    outputdirectory="src/generated/org/xmlsh/sh/grammar"

@@ -10,18 +10,21 @@
 	<target name="build" depends="clean,compile,jar"/>
 	<target name="build-all" depends="build,dist"/>
 
+ <property environment="env"/>
 	<property name="dist" location="_dist"/>
 	<property name="xmlsh" location="../../xmlsh"/>
 	 <tstamp prefix="bdate"/>
 	<property name="release" value="${bdate.DSTAMP}" />
 	<target name="install.check">
+    <echo message="checking for ${env.XINSTALL}"/>
 		<condition property="install.exists">
 			<available file="${env.XINSTALL}" type="dir" />
 		</condition>
 	</target>
 			
 			
-	<property name="install" value="${env.XINSTALL}/xmlsh_ext/aws"/>
+	<property name="install_root" value="${env.XINSTALL}/xmlsh_ext"/>
+	<property name="install" value="${install_root}/aws"/>
 		
 	<target name="clean" description="Clean all">
 		  <delete includeEmptyDirs="true" quiet="true">
@@ -113,6 +116,7 @@
   </target>
   
 	<target name="install" depends="install.check,build-all" if="install.exists" description="Install to modules">
+      <echo message="installing to ${install}"/> 
   		 <copy todir="${install}" filtering="on">
 			<fileset dir="bin" includes="*.jar module.xml"/>
 			<fileset dir="lib" includes="*.jar"/>
