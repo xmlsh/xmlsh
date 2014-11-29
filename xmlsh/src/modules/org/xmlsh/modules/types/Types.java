@@ -145,11 +145,11 @@ public static class containsKey extends AbstractBuiltinFunction
   @Override
   public XValue run(Shell shell, List<XValue> args) throws Exception
   {
-     if( args.size() != 2 || ! args.get(0).isAtomic() ){
+     if( args.size() != 2 || ! args.get(1).isAtomic() ){
     	 usage(shell, "container key");
     	 return XValue.newXValue(false);
      }
-     return XValue.newXValue( args.get(0).getNamedValue( args.get(1).toString() ) );
+     return XValue.newXValue( args.get(0).getTypeMethods().hasKey( args.get(0).asObject() , args.get(1).toString() ) );
   }
 
 }

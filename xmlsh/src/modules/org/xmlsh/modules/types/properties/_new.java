@@ -7,16 +7,13 @@
 package org.xmlsh.modules.types.properties;
 
 import java.util.List;
-import java.util.Properties;
 
 import org.xmlsh.annotations.Function;
 import org.xmlsh.core.AbstractBuiltinFunction;
-import org.xmlsh.core.InputPort;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.types.xtypes.XValueProperties;
-import org.xmlsh.util.JavaUtils;
 
 @Function(name = "new", names={"properties"})
 public class _new extends AbstractBuiltinFunction {

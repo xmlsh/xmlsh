@@ -11,19 +11,14 @@ import org.xmlsh.core.AbstractBuiltinFunction;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
-import org.xmlsh.core.UnknownOption;
-import org.xmlsh.core.XConfiguration;
-import org.xmlsh.core.XValue;
 import org.xmlsh.core.Options.OptionDef;
+import org.xmlsh.core.UnknownOption;
+import org.xmlsh.core.XValue;
 import org.xmlsh.modules.types.Types;
 import org.xmlsh.sh.module.ModuleConfig;
-import org.xmlsh.sh.module.PackageModule;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.types.TypeFamily;
-import org.xmlsh.types.xtypes.XValueProperties;
-import org.xmlsh.types.xtypes.XValueSequence;
 import org.xmlsh.util.JavaUtils;
-import org.xmlsh.util.Util;
 
 
 @org.xmlsh.annotations.Module( name="types.options")

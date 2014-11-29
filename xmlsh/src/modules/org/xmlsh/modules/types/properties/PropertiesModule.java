@@ -11,7 +11,6 @@ import org.xmlsh.core.XValue;
 import org.xmlsh.modules.types.Types;
 import org.xmlsh.modules.types.map.MapModule;
 import org.xmlsh.sh.module.ModuleConfig;
-import org.xmlsh.sh.module.PackageModule;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.types.xtypes.XValueProperties;
 import org.xmlsh.types.xtypes.XValueSequence;
@@ -19,7 +18,7 @@ import org.xmlsh.util.Util;
 
 
 @org.xmlsh.annotations.Module( name="types.properties")
-public class PropertiesModule extends Types {
+public class PropertiesModule extends MapModule {
 	static Logger mLogger = LogManager.getLogger();
 
 	public PropertiesModule(ModuleConfig config) throws CoreException {
@@ -28,55 +27,19 @@ public class PropertiesModule extends Types {
 	}
 	
 	@Function( name="keys")
-	public static class keys extends AbstractBuiltinFunction 
+	public static class keys extends MapModule.keys 
 	{
-		@Override
-		public XValue run(Shell shell, List<XValue> args) throws Exception {
-			 XValueSequence list = new XValueSequence();
-			    for( XValue x : args ) { 
-			      if( x.isInstanceOf(XValueProperties.class))
-			          for( String keys : Util.toList(  
-			        		    ((XValueProperties)x.asInstanceOf(XValueProperties.class)).keySet().iterator()) ) 
-			        		{
-			            list.addValue( XValue.newXValue(keys) );
-			          }
-			        }
-			    return list.asXValue();
-		}
 	}
 	
 	@Function( name="values")
-	public static class values extends AbstractBuiltinFunction 
+	public static class values extends  MapModule.values 
 	{
-		@Override
-		public XValue run(Shell shell, List<XValue> args) throws Exception {
-			 XValueSequence list = new XValueSequence();
-			    for( XValue x : args ) { 
-			      if( x.isInstanceOf(XValueProperties.class))
-			          for( XValue xv  :  ((XValueProperties)x.asInstanceOf(XValueProperties.class)).values() )
-			            list.addValue( xv );
-			          }
-			    return list.asXValue();
-		}
 	}
 
-	
 	
 	@Function( name="has-key")
 	public static class hasKey extends MapModule.hasKey 
 	{
-		@Override
-		public XValue run(Shell shell, List<XValue> args) throws Exception {
-			if( args.size() != 2 ||
-					! args.get(0).isInstanceOf(XValueProperties.class) ){
-				usage(shell, "properties key");
-				return null;
-				
-			}
-			return  XValue.newXValue(
-					args.get(0).asInstanceOf(XValueProperties.class).
-					containsKey(args.get(1).toString()));
-	}
 	}
 	
 	
@@ -95,18 +58,8 @@ public class PropertiesModule extends Types {
 	}
 	   
     @Function( name="get", names={"value" , "property","get-value"} )
-    public static class get extends  MapModule.getValue 
+    public static class get extends  MapModule.get 
     {
-        @Override
-        public XValue run(Shell shell, List<XValue> args) throws Exception {
-            if( args.size() != 2 ||
-                    ! args.get(0).isInstanceOf(XValueProperties.class) ){
-                usage(shell, "properties key");
-                return null;
-                
-            }
-            return  args.get(0).asInstanceOf(XValueProperties.class).get( args.get(1).toString() );
-    }
     }
 
 }

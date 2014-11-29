@@ -1,3 +1,28 @@
-This is the default name
-This is the default name
-This is the default name
+[9] Testing default resolution to name
+[10] server.name: This is the default name
+[11] servers.name: This is the default name
+[12] test.name: This is the default name
+[13] name: This is the default name
+[14] Only exists in servers
+[15] server.web:
+[16] servers.web: http://www.xmlsh.org
+[17] test.web:
+[18] has key server.name true
+[19] has key server,name true
+[20] has key servers.name true
+[21] has key servers name true
+[22] has key test.name true
+[23] has key name true
+[24] has key servers true
+[25] has key nope false
+[26] The folloiwng is TBD:
+[27] has key nope.name true
+[28] But its consistant with the following
+[29] get of key nope.name: This is the default name
+[30] value of key nope.name: This is the default name
+[31] value of key nope name: This is the default name
+[32] get section server - should be blank
+[33]
+[34] get section on servers
+[35] {web=http://www.xmlsh.org}
+[36] {web=http://www.xmlsh.org}

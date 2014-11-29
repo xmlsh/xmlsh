@@ -7,6 +7,6 @@
 <variable name="B"
           type-family="XDM"
           type="net.sf.saxon.s9api.XdmNode"
-          simple-type="element(xml, xs:untyped)"
+          simple-type="element()"
           flags="[]"/>
 </builtin_set>

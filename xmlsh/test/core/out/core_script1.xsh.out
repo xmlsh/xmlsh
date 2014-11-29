@@ -1,12 +1,12 @@
-[44] Source of C:/temp//xmlsh1-s4 Should Succeed
-This is an xsh script
-VAR is now 2
-[48] Source of ${T}3 Should Succeed and resolve to $T3
-This is an xsh script
-[51] Should fail to run
-SHOULD FAIL
-[54] Should fail to run
-SHOULD FAIL
-[57] Should Succeed
-This is an xsh script
-SUCCEEDED
+[42] Source of $T4 Should Succeed
+[2] This is an xsh script
+[45] VAR is now 2
+[46] Source of ${T}3 Should Succeed and resolve to $T3
+[2] This is an xsh script
+[49] Should fail to run
+[50] SUCCEED SHOULD FAIL
+[52] Should fail to run
+[53] SUCCEED SHOULD FAIL
+[55] Should Succeed
+[2] This is an xsh script
+[56] SUCCEEDED

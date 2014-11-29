@@ -174,7 +174,8 @@ public class FunctionCallWord extends Word
 		       if( av[i] == null )
 		           args.add( XValue.empytSequence());
 		       else
-		           args.addAll( av[i] );
+		        if(!args.addAll( av[i] ))
+		            args.add(XValue.empytSequence());
 		       
 		    }
 		    

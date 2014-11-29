@@ -9,6 +9,7 @@ package org.xmlsh.core;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map.Entry;
@@ -138,8 +139,9 @@ public class XConfiguration implements IXValueContainer, IXValueMap {
     }
 
     public XValue getProperty(String section, String name) {
+        if( section == null )
+            return null ;
 
-        
         XValueProperties sect = getSection(section);
         XValue value = null ;
         if (sect != null)
@@ -303,7 +305,7 @@ public class XConfiguration implements IXValueContainer, IXValueMap {
     
         // try a plain property
         if( name.indexOf(ShellConstants.kDOT_CHAR) < 0 )
-            return getProperty(name);
+            return getProperty(mDefaultSectionName, name);
          
         // right to left find kDOT_CHAR
         // TODO handle  [a.b] c.d=value   , [a.b.c] d=value
@@ -320,9 +322,10 @@ public class XConfiguration implements IXValueContainer, IXValueMap {
 
         // 1) try a section first
         
-        
         StringPair pair = new StringPair(name,ShellConstants.kDOT_CHAR);
         XValue value = null;
+        
+        
         // secion . name 
         if( pair.hasLeft()){
            value = getProperty( pair.getLeft() , pair.getRight() );
@@ -350,8 +353,37 @@ public class XConfiguration implements IXValueContainer, IXValueMap {
 
     @Override
     public boolean containsKey(String key) {
-        return mSections.containsKey(key);
+        // Simulate getting values ... could be key section.key including defaults
+        
+        if( mSections.containsKey(key) )
+            return true ;
+        XValueProperties defs = getDefaultSection();
+        if( defs != null &&  defs.containsKey(key))
+           return true ;
+        
+        // TODO handle  [a.b] c.d=value   , [a.b.c] d=value
+        StringPair pair = new StringPair( key , ShellConstants.kDOT_CHAR, false );
+        return containsKey( pair.getLeft() , pair.getRight());
+        
+        
     }
+    
+    // Not sure this should allow missing sections with default values
+    // e.g
+    // "notexist" "name"
+    public boolean containsKey(String sectname, String key) {
+        XValueProperties sect = getSection(sectname);
+        
+        if( sect != null && sect.containsKey(key) )
+            return true ;
+        
+        XValueProperties defs = getDefaultSection();
+        if( defs != null &&  defs.containsKey(key))
+            return true ;
+        return false ;
+        
+    }
+    
 
     public void setDefaultSectionName(String defSection) {
         mDefaultSectionName = defSection ;
@@ -368,7 +400,8 @@ public class XConfiguration implements IXValueContainer, IXValueMap {
            return getSection( mDefaultSectionName );
         return null ;
     }
-    
+
+
     
 }
 

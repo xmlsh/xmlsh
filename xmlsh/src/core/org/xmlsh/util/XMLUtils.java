@@ -8,6 +8,7 @@ import java.util.List;
 
 import net.sf.saxon.expr.StaticProperty;
 import net.sf.saxon.om.EmptyAtomicSequence;
+import net.sf.saxon.om.FunctionItem;
 import net.sf.saxon.om.Item;
 import net.sf.saxon.om.NodeInfo;
 import net.sf.saxon.om.SequenceIterator;
@@ -23,10 +24,12 @@ import net.sf.saxon.s9api.XdmNodeKind;
 import net.sf.saxon.s9api.XdmValue;
 import net.sf.saxon.trans.XPathException;
 import net.sf.saxon.tree.iter.SingletonIterator;
+import net.sf.saxon.type.SchemaType;
 import net.sf.saxon.type.Type;
 import net.sf.saxon.value.AtomicValue;
 import net.sf.saxon.value.EmptySequence;
-
+import net.sf.saxon.value.ObjectValue;
+import net.sf.saxon.type.Type;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.xmlsh.core.InvalidArgumentException;
@@ -156,9 +159,10 @@ public class XMLUtils
         return "empty-sequence()";
       
       try {
+          
           Item item = SequenceTool.asItem(s);
-        return Type.displayTypeName( item );
-        /*
+       /*
+          return Type.displayTypeName( item );
         if (item instanceof NodeInfo) {
             return ((NodeInfo)item).getDisplayName() + cs ;
         } else if (item instanceof AtomicValue) {
@@ -169,10 +173,44 @@ public class XMLUtils
             return ((FunctionItem<?>)item).getFunctionName().toString()  + cs ;
         }
         */
+      
+          if (item instanceof NodeInfo) {
+              NodeInfo node = (NodeInfo) item;
+              switch (node.getNodeKind()) {
+                  case Type.DOCUMENT:
+                      return "document-node()";
+                  case Type.ELEMENT:
+                      return "element()";
+                  case Type.ATTRIBUTE:
+                      return "attribute()";
+                  case Type.TEXT:
+                      return "text()";
+                  case Type.COMMENT:
+                      return "comment()";
+                  case Type.PROCESSING_INSTRUCTION:
+                      return "processing-instruction()";
+                  case Type.NAMESPACE:
+                      return "namespace()";
+                  default:
+                      return "";
+              }
+          } else if (item instanceof ObjectValue) {
+              return ((ObjectValue<?>) item).getObject().getClass().toString();
+          } else if (item instanceof AtomicValue) {
+              return ((AtomicValue) item).getItemType().toString();
+          } else if (item instanceof FunctionItem) {
+              return "function(*)";
+          } else {
+              return item.getClass().toString();
+          }
+      
+      
       } catch (net.sf.saxon.trans.XPathException e) {
          mLogger.info("Excpetion getting simple type",e);
          
       }
+      
+      
       return JavaUtils.simpleTypeName( v );
 
       }

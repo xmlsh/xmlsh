@@ -1,7 +1,5 @@
 package org.xmlsh.modules.types.config;
 
-import static org.apache.logging.log4j.LogManager.exists;
-
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
@@ -12,20 +10,13 @@ import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XConfiguration;
 import org.xmlsh.core.XValue;
-import org.xmlsh.modules.types.Types;
 import org.xmlsh.modules.types.properties.PropertiesModule;
 import org.xmlsh.sh.module.ModuleConfig;
-import org.xmlsh.sh.module.PackageModule;
 import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.sh.shell.ShellConstants;
-import org.xmlsh.types.xtypes.XValueProperties;
-import org.xmlsh.types.xtypes.XValueSequence;
-import org.xmlsh.util.StringPair;
-import org.xmlsh.util.Util;
 
 
 @org.xmlsh.annotations.Module( name="types.config")
-public class ConfigModule extends Types {
+public class ConfigModule extends PropertiesModule {
 	static Logger mLogger = LogManager.getLogger();
 
 	public ConfigModule(ModuleConfig config) throws CoreException {
@@ -88,8 +79,42 @@ public class ConfigModule extends Types {
 	}
 	
 	
-	@Function( "sections" )
-	public static class keys extends Types.keys {
+	@Function( name="sections" )
+	public static class keys extends PropertiesModule.keys {
 	}
+	
+   
+    
+	// Extend Properties module so has-key overrides/exchangable  
+    @Function( name="has-key")
+    public static class hasKey extends PropertiesModule.hasKey 
+    {
+        @Override
+        public XValue run(Shell shell, List<XValue> args) throws Exception {
+
+            if( args.size() > 0 && ! 
+                args.get(0).isInstanceOf(XConfiguration.class)
+            ) {
+                usage(shell, "$1 must be a Configuration object");
+                return null;
+            }
+            
+            XConfiguration config = args.get(0).asInstanceOf(XConfiguration.class);
+            switch(args.size())
+            {
+            case 2:
+                return XValue.newXValue(config.containsKey(args.get(1).toString()));
+            case 3:
+                return XValue.newXValue(config.containsKey(args.get(1).toString(),args.get(2).toString()));
+            default:
+                usage(shell, "config section [key]");
+                return null ;
+                
+            }
+    }
+    }
+	
 
 }
+
+
