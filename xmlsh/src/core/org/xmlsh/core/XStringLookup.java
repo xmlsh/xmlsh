@@ -3,6 +3,8 @@
  */
 package org.xmlsh.core;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -11,6 +13,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.StringPair;
+import org.xmlsh.util.Util;
 import org.xmlsh.xpath.ThreadLocalShell;
 
 /**
@@ -52,6 +55,30 @@ public abstract class XStringLookup extends StrLookup<String> {
                         return null;
                         
                     }} );
+                sDefaultSchemes.put("date", new XStringLookup(null,null){
+
+                    @Override
+                    protected XValue lookupXValue(String name) {
+
+                        String ds = "";
+                        Date now = new Date();
+                        try {
+                            if( Util.isEmpty(name))
+                                ds = SimpleDateFormat.getDateInstance().format(now);
+                            else
+                                ds = new SimpleDateFormat(name).format(now);
+                        } catch (Exception e) {
+                            mLogger.catching(e);
+                            ds="";
+                        }
+                             
+                        if( Util.isEmpty(ds))
+                            ds = (new Date()).toString();
+                        return XValue.newXValue(ds);
+                        
+                        
+                    }} );
+                
                 
             }
         }

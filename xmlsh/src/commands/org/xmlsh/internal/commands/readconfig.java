@@ -7,10 +7,8 @@
 package org.xmlsh.internal.commands;
 
 import java.util.List;
-
 import java.util.Properties;
 
-import org.apache.commons.lang3.text.StrSubstitutor;
 import org.apache.logging.log4j.LogManager;
 import org.xmlsh.annotations.Command;
 import org.xmlsh.core.InputPort;
@@ -57,6 +55,7 @@ public class readconfig extends XCommand
 
     String defSection = opts.getOptString("default", "default");
     
+    @SuppressWarnings("resource")
     InputPort in = opts.hasOpt("file") ? getInput(opts.getOptValue("file")) : getStdin() ;
 
     boolean bReplace = opts.getOptFlag("replace", true );
