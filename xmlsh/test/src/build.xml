@@ -1,14 +1,13 @@
 <?xml version="1.0" ?>
 <project default="main">
 
-<!-- Global properties 
-     Edit these for every release
--->
 	<property name="jar" value="xmlsh-test.jar"/>
+     <property name="jarfile" value="../bin/${jar}" />
 
 
+	<target name="build" depends="compile,jar"/>
 	
-    <target name="main" depends="clean, compile, jar" description="Main target">
+    <target name="main" depends="clean, build" description="Main target">
         <echo>
             Building xmlsh-test.jar
         </echo>
@@ -16,12 +15,13 @@
 	
 	
 
-
+	<target name="clobber" depends="clean">
+	</target>
 	
 	<target name="clean" description="Clean all">
 		  <delete includeEmptyDirs="true" quiet="true">
 		  	<fileset dir="_out" />
-			
+		    <file name="${jarfile}"/>
 		  </delete>
 	</target>
 
@@ -31,7 +31,14 @@
  
     	 <javac destdir="_out" debug="on" source="1.6" target="1.6">
     	        <src path="." />
-
+    	        <classpath>
+				<fileset dir="../../lib">
+					<include name="**/*.jar"/>
+				</fileset>
+				<fileset dir="../../bin">
+					<include name="xmlsh*.jar"/>
+				</fileset>
+			</classpath>
     	        </javac>
    
 
@@ -40,7 +47,7 @@
   <target name="jar" description="Build JAR - xmlsh-test.jar">
 		<mkdir dir="../bin"/>
         <jar 
-        jarfile="../bin/${jar}" 
+        jarfile="${jarfile}"
         basedir="_out" 
   
         />
