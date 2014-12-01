@@ -1,70 +1,11 @@
 <project basedir=".." default="help" name="build-xmlsh">
-	<property name="xmlsh.root" value="${basedir}/xmlsh"/>
 
-	<macrodef name="iterate">
-		<attribute name="target"/>
-		<sequential>
-		
-			<!-- build xmlsh.jar first -->
-			<subant target="@{target}">
-				<property name="xmlsh.root" value="${xmlsh.root}"/>
-				<dirset dir=".">
-					<include name="xmlsh"/>
-				</dirset>
-			</subant>
+	<import file="common.xml"/>
 
-			<subant target="@{target}">
-				<property name="xmlsh.root" value="${xmlsh.root}"/>
-				<dirset dir="extensions">
-					<include name="aws"/>
-					<include name="marklogic"/>
-				</dirset>
-			</subant>
-		</sequential>
-	</macrodef>
-
-
-
-
+	
+	
 	<target name="help">
 		<echo message="Usage: ant [help build clean clean install dist clean-all build-all build-deps]" />
-	</target>
-
-	<target name="build-deps">
-	  <exec executable="aws" dir=".">
-		<arg value="s3"/>
-		<arg value="sync"/>
-		<arg value="s3://xmlsh-org-release/build-deps/xmlsh-2.0/"/>
-		<arg value="."/>
-	  	<arg value="--profile"/>
-	  	<arg value="xmlsh"/>
-	  	<arg value="--recursive"/>
-	  	<arg value="--exclude"/>
-	  	<arg value="*/"/>
-	  </exec>
-	</target>
-	  
-	<target name="push-deps">
-	  <exec executable="aws" dir=".">
-		<arg value="s3"/>
-		<arg value="sync"/>
-		<arg value="."/>
-		<arg value="s3://xmlsh-org-release/build-deps/xmlsh-2.0/"/>
-	  	<arg value="--profile"/>
-	  	<arg value="xmlsh"/>
-	  	<arg value="--recursive"/>
-	  	<arg value="--exclude"/>
-	  	<arg value="*"/>
-	  	<arg value="--exclude"/>
-	  	<arg value="*/"/>
-	  	<arg value="--include"/>
-	  	<arg value="xmlsh/lib/*.jar"/>
-	  	<arg value="--include"/>
-	  	<arg value="xmlsh/build-lib/*.jar"/>
-	  	<arg value="--include"/>
-	  	<arg value="extensions/*/lib/*.jar"/>
-	  	<arg value="--delete"/>
-	  </exec>
 	</target>
 	  
 
@@ -76,6 +17,10 @@
 
 	</target>
 	<target name="install" depends="build">
+
+				
+		
+		
 		<iterate target="install" />
 	</target>
 	<target name="test build">
@@ -93,7 +38,10 @@
 
 	<target name="clean-all" depends="clean">
 	</target>
-
+	
+	<target name="deps">
+		<iterate target="deps" />
+    </target>
 
 </project>
 

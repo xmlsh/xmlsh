@@ -4,6 +4,8 @@
 	<!-- Global properties 
      Edit these for every release
 -->
+	<import file="../build/common.xml"/>
+		
 	<property name="release" value="2_0_0"/>
 	<property name="version" value="2.0.0"/>
 	<property name="jar" value="xmlsh-2.0.jar"/>
@@ -22,12 +24,6 @@
         </echo>
 	</target>
 
-	<target name="install.check">
-		<condition property="install.exists">
-			<available file="${env.XINSTALL}" type="dir" />
-		</condition>
-	</target>
-	<property name="install" value="${env.XINSTALL}/xmlsh" />
 
 	<target name="build" depends="clean, compile, jar"/>
 
@@ -213,12 +209,13 @@ version.version=${version}
 	</target>
 
 	<target name="install" depends="install.check,dist" if="install.exists" description="Install to xmlsh">
-		<echo>Installing to ${install}</echo>
-		<unzip dest="${install}" src="${dist}/xmlsh_${release}.zip">
+		<echo>Installing to ${install.dir}</echo>
+		<unzip dest="${install.dir}" src="${dist}/xmlsh_${release}.zip">
 			<cutdirsmapper dirs="1"/>
 		</unzip>
 
 	</target>
+
 
 
 </project>

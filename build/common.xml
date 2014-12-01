@@ -1,0 +1,66 @@
+<project basedir=".." name="build-common">
+	 
+	<property environment="env"/>
+	<property name="xmlsh.root" value="${basedir}"/>
+	<property name="xmlsh.builddir" value="${xmlsh.root}/build"/>
+	<property name="xmlsh.version" value="2.0"/>
+	<property name="install.dir" value="${install_root}/${ant.project.name}"/>
+	<property name="s3.src" value="s3://xmlsh-org-release/build-deps/xmlsh/${xmlsh.version}/${component}/${ant.project.name}/"/>
+
+	<target name="install.check" depends="install_root.check">
+		<mkdir dir="${install.dir}"/>
+		<condition property="install.exists">
+			<available file="${install.dir}" type="dir" />
+		</condition>
+	</target>
+	
+	<target name="install_root.check">
+    <echo message="checking for ${install_root}"/>
+	<condition property="install_root.exists">
+			<available file="${install_root}" type="dir" />
+		</condition>
+	</target>
+				
+	
+	<macrodef name="iterate">
+		<attribute name="target"/>
+		<sequential>
+		
+			<!-- build xmlsh.jar first -->
+			<subant target="@{target}">
+				<property name="xmlsh.root" value="${xmlsh.root}"/>
+				<property name="install_root" value="${env.XINSTALL}"/>
+				<property name="component" value="xmlsh"/>
+				<dirset dir=".">
+					<include name="xmlsh"/>
+				</dirset>
+			</subant>
+
+			<subant target="@{target}">
+				<property name="xmlsh.root" value="${xmlsh.root}"/>
+				<property name="install_root" value="${env.XINSTALL_MOD}"/>
+				<property name="component" value="extensions"/>
+				<dirset dir="extensions">
+					<include name="aws"/>
+					<include name="marklogic"/>
+				</dirset>
+			</subant>
+		</sequential>
+	</macrodef>
+	
+	
+	<target name="deps">
+	  <echo message="building deps in ${s3.src}"/>
+	  <exec executable="aws" dir=".">
+	  	<arg value="--profile"/>
+	  	<arg value="xmlsh"/>
+		<arg value="s3"/>
+		<arg value="cp"/>
+		<arg value="${s3.src}"/> 
+		<arg value="."/>
+		<arg value="--recursive"/>
+	  </exec>
+  </target>	
+</project>
+
+
