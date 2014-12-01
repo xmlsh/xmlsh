@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <project default="main" name="marklogic">
 
+	<import file="../../build/common.xml"/>
 	
 	<target name="main" depends="clean, compile, jar,dist">
         <echo>
@@ -8,19 +9,12 @@
         </echo>
     </target>
 
- <property environment="env"/>
 	
 	<property name="dist" location="_dist"/>
 	<property name="xmlsh" location="../../xmlsh"/>
 	<tstamp prefix="bdate"/>
 	<property name="release" value="${bdate.DSTAMP}"/>
-	<property name="install" value="${env.XINSTALL}/xmlsh_ext/marklogic" />
 
-	<target name="install.check">
-		<condition property="install.exists">
-			<available file="${env.XINSTALL}" type="dir" />
-		</condition>
-	</target>
 	
 	<target name="clean" description="Clean all">
 		  <delete includeEmptyDirs="true" quiet="true">
@@ -105,7 +99,7 @@
 
   </target>
 	<target name="install" depends="install.check,build-all" if="install.exists" description="Install to modules">
-	  		 <copy todir="${install}" filtering="on">
+	  		 <copy todir="${install.dir}" filtering="on">
 				<fileset dir="bin" includes="*.jar module.xml"/>
 				<fileset dir="lib" includes="*.jar"/>
 
