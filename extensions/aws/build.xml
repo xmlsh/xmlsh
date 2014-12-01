@@ -1,8 +1,11 @@
 <?xml version="1.0" ?>
 <project default="main" name="aws">
 
+
+  <property name="component" value="extensions"/>
 	<import file="../../build/common.xml"/>
-		
+	
+
 	<target name="main" depends="install,test" description="AWS Extension main target">
         <echo>
             Building AWS xmlsh extension
@@ -11,6 +14,9 @@
 	<target name="build" depends="clean,compile,jar"/>
 	<target name="build-all" depends="build,dist"/>
 	
+	<target name="deps-init">
+	  <mkdir dir="lib"/>
+	</target>
 
  <property environment="env"/>
 	<property name="dist" location="_dist"/>
@@ -25,9 +31,17 @@
 		  	<fileset dir="_out" includes="**/*" />
 		  	<fileset dir="test" includes="**/_out.txt"/>
 		  	<fileset dir="bin" includes="**/*.jar" />
-		  	<fileset dir="." includes="xmlsh.log" />
+		  	<fileset dir="." includes="**/xmlsh.log" />
 		  </delete>
 	</target>
+	
+	<target name="clobber" depends="clean">
+		<delete quiet="true" includeEmptyDirs="true">
+	    <fileset dir="${dist}"/>
+	  	<fileset dir="_out"/>
+			<fileset dir="lib" includes="**/*.jar"/>
+		</delete> 
+		</target>
 
   
     <target name="compile" description="Compilation target">

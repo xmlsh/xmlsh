@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <project default="main" name="marklogic">
-
+  <property name="component" value="extensions"/>
 	<import file="../../build/common.xml"/>
 	
 	<target name="main" depends="clean, compile, jar,dist">
@@ -16,15 +16,30 @@
 	<property name="release" value="${bdate.DSTAMP}"/>
 
 	
+	
+	<target name="deps-init">
+	  <mkdir dir="lib"/>
+	</target>
+
+	  	
+	  	
 	<target name="clean" description="Clean all">
 		  <delete includeEmptyDirs="true" quiet="true">
 		    <fileset dir="${dist}" includes="*"/>
 		  	<fileset dir="_out" includes="**/*" />
 		  	<fileset dir="test" includes="**/_out.txt"/>
 		  	<fileset dir="bin" includes="**/*.jar" />
-		  	<fileset dir="." includes="xmlsh.log" />
+		  	<fileset dir="." includes="**/xmlsh.log" />
 		  </delete>
 	</target>
+	
+	<target name="clobber" depends="clean">
+		<delete quiet="true" includeEmptyDirs="true">
+	    <fileset dir="${dist}"/>
+	  	<fileset dir="_out"/>
+			<fileset dir="lib" includes="**/*.jar"/>
+		</delete> 
+		</target>
 
 	<target name="build" depends="clean,compile,jar"/>
 	<target name="build-all" depends="build,dist"/>

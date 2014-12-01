@@ -4,6 +4,8 @@
 	<!-- Global properties 
      Edit these for every release
 -->
+  <property name="component" value="xmlsh"/>
+
 	<import file="../build/common.xml"/>
 		
 	<property name="release" value="2_0_0"/>
@@ -24,7 +26,14 @@
         </echo>
 	</target>
 
-
+	
+	<target name="deps-init">
+	  <mkdir dir="lib"/>
+	  <mkdir dir="build-lib"/>
+	  <mkdir dir="bin"/>
+		
+		
+	</target>
 	<target name="build" depends="clean, compile, jar"/>
 
 
@@ -40,20 +49,29 @@
 			<fileset dir="test" includes="**/_out.txt"/>
 			<fileset dir="src" includes="**/version.properties **/*.bak"/>
 			<fileset dir="bin" includes="**/*" />
-			<fileset dir="." includes="xmlsh.log" />
+			<fileset dir="." includes="**/xmlsh.log" />
 		</delete>
-		<subant target="clean">
+		<subant target="clean"  buildpath="test/src">
 			<property name="xmlsh.root" value="${xmlsh.root}"/>
-			<dirset dir="test">
-				<include name="src"/>
-			</dirset>
 		</subant>
-	</target>
-
+	</target> 
+	
+	
 	<target name="clobber" depends="clean,clean-generated" description="Clean and remove all generated and dependants">
-     <!-- delete build-lib -->
+		<delete quiet="true" includeEmptyDirs="true">
+	    <fileset dir="${dist}"/>
+	  	<fileset dir="_out"/>
+	  	<fileset dir="build-lib" includes="**/*.jar"/>
+			<fileset dir="lib" includes="**/*.jar"/>
+		</delete> 
+	  <subant target="clobber"  buildpath="test/src">
+			<property name="xmlsh.root" value="${xmlsh.root}"/>
+    </subant>
   </target>
-    
+			
+			
+
+
      
 	<target name="grammar" description="Build parser from javaCC grammar">
 		<javacc
@@ -120,6 +138,11 @@ version.version=${version}
 			</fileset>
 
 		</copy>
+	  <subant target="compile" buildpath="test/src">
+			<property name="xmlsh.root" value="${xmlsh.root}"/>
+			</subant>
+
+
 
 	</target>
 
@@ -138,11 +161,8 @@ version.version=${version}
 	</target>
 	<target name="test" description="Test Cases">
 		<!-- build xmlsh.jar first -->
-		<subant target="main">
+		<subant target="main" buildpath="test/src">
 			<property name="xmlsh.root" value="${xmlsh.root}"/>
-			<dirset dir="test">
-				<include name="src"/>
-			</dirset>
 		</subant>
 
 		<java 

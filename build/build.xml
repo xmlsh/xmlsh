@@ -1,4 +1,4 @@
-<project basedir=".." default="help" name="build-xmlsh">
+<project basedir=".." default="help" name="build-all">
 
 	<import file="common.xml"/>
 
@@ -17,7 +17,6 @@
 
 	</target>
 	<target name="install" depends="build">
-
 				
 		
 		
@@ -32,6 +31,9 @@
 
 	<target name="clean">
 		<iterate target="clean" />
+	</target>
+	<target name="clobber">
+		<iterate target="clobber" />
 	</target>
 
 	<target name="build-all" depends="main-init,build,install,dist" />

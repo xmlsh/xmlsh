@@ -21,7 +21,10 @@
 		</condition>
 	</target>
 				
-	
+	<target name="deps-init">
+	</target>
+		
+		
 	<macrodef name="iterate">
 		<attribute name="target"/>
 		<sequential>
@@ -49,7 +52,7 @@
 	</macrodef>
 	
 	
-	<target name="deps">
+	<target name="deps" depends="deps-init">
 	  <echo message="building deps in ${s3.src}"/>
 	  <exec executable="aws" dir=".">
 	  	<arg value="--profile"/>
