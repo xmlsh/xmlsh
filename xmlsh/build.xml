@@ -1,29 +1,34 @@
 <?xml version="1.0" ?>
-<project name="xmlsh" default="main">
+<project name="xmlsh" default="help">
+	<echo>Entering Ant target: ${ant.project.default-target}</echo>
 
 	<!-- Global properties 
      Edit these for every release
 -->
   <property name="component" value="xmlsh"/>
-
 	<import file="../build/common.xml"/>
-		
 	<property name="release" value="2_0_0"/>
 	<property name="version" value="2.0.0"/>
 	<property name="jar" value="xmlsh-2.0.jar"/>
 	<property environment="env"/>
+	<echo>Ant target: ${ant.project.default-target}</echo>
 	<echo>Ant Version: ${ant.version}</echo>
 	<echo>Ant lib: ${ant.core.lib}</echo>
 	<echo>Java Version via Ant: ${ant.java.version}</echo>
 	<echo>Java Version System Prop: ${java.version}</echo>
 
+	<tstamp>
+		<format property="bdate.date" pattern="yyyy-MM-dd"/>
+		<format property="bdate.datetime" pattern="yyyy-MM-dd'T'HH:mm:ss"/>
+	</tstamp>
 
 	<property name="dist" location="_dist"/>
 
-	<target name="main" depends="build,test,dist" description="Main target">
+	<target name="main" depends="help" description="Main target [help]"/>
+	<target name="help" description="Usage">
 		<echo>
-            Building xmlsh
-        </echo>
+    usage: ant [deps init clean build jar test clobber]
+    </echo>
 	</target>
 
 	
@@ -31,22 +36,21 @@
 	  <mkdir dir="lib"/>
 	  <mkdir dir="build-lib"/>
 	  <mkdir dir="bin"/>
-		
-		
 	</target>
-	<target name="build" depends="clean, compile, jar"/>
-
-
-	<tstamp>
-		<format property="bdate.date" pattern="yyyy-MM-dd"/>
-		<format property="bdate.datetime" pattern="yyyy-MM-dd'T'HH:mm:ss"/>
-	</tstamp>
+	  
+	<target name="build" depends="compile, jar">
+		<echo>calling build</echo>
+	  <mkdir dir="bin"/>
+		<subant target="build" buildpath="test/src">
+			<property name="xmlsh.root" value="${xmlsh.root}"/>
+		</subant>
+   </target> 
 
 	<target name="clean" description="Clean all">
 		<delete includeEmptyDirs="true" quiet="true">
 			<fileset dir="${dist}" includes="*"/>
 			<fileset dir="_out" includes="**/*" />
-			<fileset dir="test" includes="**/_out.txt"/>
+			<fileset dir="test" includes="**/_out.txt **/_err.txt"/>
 			<fileset dir="src" includes="**/version.properties **/*.bak"/>
 			<fileset dir="bin" includes="**/*" />
 			<fileset dir="." includes="**/xmlsh.log" />
@@ -139,12 +143,7 @@ version.version=${version}
 
 		</copy>
 
-
-
 	</target>
-
-
-
 
 
 	<target name="jar" depends="compile" description="Build JAR - jar">
@@ -157,10 +156,6 @@ version.version=${version}
 
 	</target>
 	<target name="test" description="Test Cases">
-		<!-- build xmlsh.jar first -->
-		<subant target="main" buildpath="test/src">
-			<property name="xmlsh.root" value="${xmlsh.root}"/>
-		</subant>
 
 		<java 
   		classname="org.xmlsh.sh.shell.Shell"
@@ -208,7 +203,6 @@ version.version=${version}
 
 	</target>
 
-	<mkdir dir="bin"/>
 
 	<target name="combine" description="Create Distribution">
 		<jar destfile="bin/xmlsh_all.jar" basedir="_out"
@@ -232,7 +226,6 @@ version.version=${version}
 		</unzip>
 
 	</target>
-
 
 
 </project>
