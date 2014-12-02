@@ -1,5 +1,5 @@
-<project basedir=".." name="build-common">
-	 
+<project basedir=".." name="build-common" default="">
+  <echo message="Included ${ant.project.name}"/>	 
 	<property environment="env"/>
 	<property name="xmlsh.root" value="${basedir}"/>
 	<property name="xmlsh.builddir" value="${xmlsh.root}/build"/>
@@ -28,6 +28,7 @@
 	<macrodef name="iterate">
 		<attribute name="target"/>
 		<sequential>
+		  <echo>Iterating for @{target}</echo>
 		
 			<!-- build xmlsh.jar first -->
 			<subant target="@{target}">

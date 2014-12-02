@@ -1,15 +1,13 @@
 <?xml version="1.0" ?>
-<project default="main">
+<project name="test-src" default="main">
 
 	<property name="jar" value="xmlsh-test.jar"/>
      <property name="jarfile" value="../bin/${jar}" />
 
-
 	<target name="build" depends="compile,jar"/>
-	
     <target name="main" depends="clean, build" description="Main target">
         <echo>
-            Building xmlsh-test.jar
+            Building ${jarfile}
         </echo>
     </target>
 	
@@ -19,9 +17,10 @@
 	</target>
 	
 	<target name="clean" description="Clean all">
+		  <echo message="cleaning ${ant.project.name}"/>
 		  <delete includeEmptyDirs="true" quiet="true">
 		  	<fileset dir="_out" />
-		    <file name="${jarfile}"/>
+		  	<fileset file="${jarfile}" />
 		  </delete>
 	</target>
 

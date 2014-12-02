@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 <?xml version="1.0" ?>
 <project name="xmlsh" default="main">
 
@@ -6,9 +5,7 @@
      Edit these for every release
 -->
   <property name="component" value="xmlsh"/>
-
 	<import file="../build/common.xml"/>
-		
 	<property name="release" value="1_3_0"/>
 	<property name="version" value="1.3.0"/>
 	<property name="jar" value="xmlsh-1.3.jar"/>
@@ -18,39 +15,43 @@
 	<echo>Java Version via Ant: ${ant.java.version}</echo>
 	<echo>Java Version System Prop: ${java.version}</echo>
 
+	<tstamp>
+		<format property="bdate.date" pattern="yyyy-MM-dd"/>
+		<format property="bdate.datetime" pattern="yyyy-MM-dd'T'HH:mm:ss"/>
+	</tstamp>
 
 	<property name="dist" location="_dist"/>
 
-	<target name="main" depends="build,test,dist" description="Main target">
+	<target name="main" depends="help" description="Main target [help]"/>
+	<target name="help">
         <echo>
-            Building xmlsh
+    usage: ant [deps init clean build jar test clobber]
         </echo>
-    </target>
+  </target>
 	
 	
 	<target name="deps-init">
 	  <mkdir dir="lib"/>
 	  <mkdir dir="build-lib"/>
 	  <mkdir dir="bin"/>
-		
-		
 	</target>
-	<target name="build" depends="clean, compile, jar"/>
-
-
-	<tstamp>
-	   <format property="bdate.date" pattern="yyyy-MM-dd"/>
-	   <format property="bdate.datetime" pattern="yyyy-MM-dd'T'HH:mm:ss"/>
-	</tstamp>
+	  
+	<target name="build" depends="compile, jar">
+		<echo>calling build</echo>
+	  <mkdir dir="bin"/>
+		<subant target="build" buildpath="test/src">
+			<property name="xmlsh.root" value="${xmlsh.root}"/>
+		</subant>
+   </target> 
 		
 	<target name="clean" description="Clean all">
 		  <delete includeEmptyDirs="true" quiet="true">
 		    <fileset dir="${dist}" includes="*"/>
 		  	<fileset dir="_out" includes="**/*" />
-		  	<fileset dir="test" includes="**/_out.txt"/>
+			<fileset dir="test" includes="**/_out.txt **/_err.txt"/>
 		  	<fileset dir="src" includes="**/version.properties **/*.bak"/>
 			<fileset dir="bin" includes="**/*" />
-		  	<fileset dir="." includes="xmlsh.log" />
+			<fileset dir="." includes="**/xmlsh.log" />
 		</delete>
 		<subant target="clean"  buildpath="test/src">
 			<property name="xmlsh.root" value="${xmlsh.root}"/>
@@ -70,6 +71,27 @@
     </subant>
   </target>
   
+			
+
+
+     
+		<target name="grammar" description="Build parser from javaCC grammar">
+  		<mkdir dir="src/generated/org/xmlsh/sh/grammar"/>
+			<javacc
+			    target="src/shell/org/xmlsh/sh/grammar/ShellParser.jj"
+			    outputdirectory="src/generated/org/xmlsh/sh/grammar"
+			    javacchome="build-lib"
+			    static="false"
+				jdkversion="1.6"
+				
+			/>
+		</target>
+		<target name="clean-generated" description="Clean generated files">
+			<delete includeEmptyDirs="false" quiet="false">
+				<fileset dir="src" includes="**/version.properties **/*.bak"/>
+				<fileset dir="src" includes="generated/org/xmlsh/sh/grammar/*.java"/>
+			</delete>
+		</target>
 	<target name="compile" depends="grammar" description="Compilation target">
   		<mkdir dir="_out"/>
     	<echo file="src/shell/org/xmlsh/sh/shell/version.properties" append="false">
@@ -98,7 +120,6 @@ version.version=${version}
     	            <fileset dir="src/shell">
     	                <include name="**/*.properties"/>
     	                <include name="**/*.xquery"/>
-    	                
     	            </fileset>
     	 			<fileset dir="src/commands">
     	 				<include name="**/*.xsh"/>
@@ -120,10 +141,7 @@ version.version=${version}
 
   </target>
   <target name="test" description="Test Cases">
-		<!-- build xmlsh.jar first -->
-     <subant target="main" buildpath="test/src">
-			<property name="xmlsh.root" value="${xmlsh.root}"/>
-	 </subant>
+
   	<java 
   		classname="org.xmlsh.sh.shell.Shell"
   		fork="true"
@@ -170,7 +188,6 @@ version.version=${version}
 
   </target>
   
-  <mkdir dir="bin"/>
         
    <target name="combine" description="Create Distribution">
   	<jar destfile="bin/xmlsh_all.jar" basedir="_out"
@@ -187,28 +204,12 @@ version.version=${version}
       </ant>
     </target>
 	
-	<target name="build" depends="clean, compile, jar"/>
 	  
-		<target name="grammar" description="Build parser from javaCC grammar">
-  		<mkdir dir="src/generated/org/xmlsh/sh/grammar"/>
-			<javacc
-			    target="src/shell/org/xmlsh/sh/grammar/ShellParser.jj"
-			    outputdirectory="src/generated/org/xmlsh/sh/grammar"
-			    javacchome="build-lib"
-			    static="false"
-				jdkversion="1.6"
-				
-			/>
-		</target>
-		<target name="clean-generated" description="Clean generated files">
-			<delete includeEmptyDirs="false" quiet="false">
-				<fileset dir="src" includes="**/version.properties **/*.bak"/>
-				<fileset dir="src" includes="generated/org/xmlsh/sh/grammar/*.java"/>
-			</delete>
-		</target>
-
 	<target name="install" depends="install.check,dist" if="install.exists" description="Install to xmlsh">
 		<echo>Installing to ${install.dir}</echo>
+		  <delete includeEmptyDirs="false" quiet="true">
+		    <fileset dir="${install.dir}" includes="*"/>
+		 </delete>
 		<unzip dest="${install.dir}" src="${dist}/xmlsh_${release}.zip">
 			<cutdirsmapper dirs="1"/>
 		</unzip>

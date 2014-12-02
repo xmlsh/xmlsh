@@ -5,21 +5,17 @@
 	
 	
 	<target name="help">
-		<echo message="Usage: ant [help build clean clean install dist clean-all build-all build-deps]" />
+		<echo message="Usage: ant [init help build clean clean install dist clean-all build-all build-deps]" />
 	</target>
 	  
 
-	<target name="build" depends="clean,main-init">
+	<target name="build" depends="clean">
 		<iterate target="build" />
 	</target>
 
-	<target name="main-init">
-
-	</target>
+	<target name="main-init" depends="init"/>
+	<target name="init" depends="deps"/>
 	<target name="install" depends="build">
-				
-		
-		
 		<iterate target="install" />
 	</target>
 	<target name="test build">
@@ -43,7 +39,7 @@
 	
 	<target name="deps">
 		<iterate target="deps" />
-    </target>
+  </target>
 
 </project>
 
