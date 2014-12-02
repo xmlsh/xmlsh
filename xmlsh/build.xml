@@ -138,9 +138,6 @@ version.version=${version}
 			</fileset>
 
 		</copy>
-	  <subant target="compile" buildpath="test/src">
-			<property name="xmlsh.root" value="${xmlsh.root}"/>
-			</subant>
 
 
 

@@ -1,6 +1,6 @@
 # Simple module with 1 function
 
-echo initializing $0
+echo initializing $(xfile -n $0)
 local _LOCAL=123
 
 function child() {
