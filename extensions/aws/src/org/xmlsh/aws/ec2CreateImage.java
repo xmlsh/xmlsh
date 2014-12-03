@@ -1,11 +1,13 @@
 package org.xmlsh.aws;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
 
 import javax.xml.stream.XMLStreamException;
 
 import net.sf.saxon.s9api.SaxonApiException;
+
 import org.xmlsh.aws.util.AWSEC2Command;
 import org.xmlsh.aws.util.SafeXMLStreamWriter;
 import org.xmlsh.core.CoreException;
@@ -14,6 +16,7 @@ import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
 
+import com.amazonaws.services.ec2.model.BlockDeviceMapping;
 import com.amazonaws.services.ec2.model.CreateImageRequest;
 import com.amazonaws.services.ec2.model.CreateImageResult;
 
@@ -79,7 +82,11 @@ public class ec2CreateImage extends AWSEC2Command {
 		if( opts.hasOpt("no-reboot"))
 			request.setNoReboot(true);
 		
-		
+
+		Collection<BlockDeviceMapping>	blockDeviceMappings = getBlockDeviceMappings( opts );
+		if( blockDeviceMappings != null )
+			request.setBlockDeviceMappings(blockDeviceMappings);
+
 	
 		traceCall("createImage");
 

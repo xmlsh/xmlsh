@@ -685,6 +685,7 @@ public class Shell {
 	
 	private void setCommandInput() {
 		mCommandInput = null ;
+		if( ! Util.isWindows() )
 		try {
 			/*
 			 * import jline.ConsoleReader;
