@@ -44,6 +44,10 @@ public abstract class AWSCommand extends XCommand {
 		LogManager.getLogger("org.apache.http").setLevel(Level.WARN);
 		LogManager.getLogger("com.amazonaws").setLevel(Level.WARN);
 		
+		LogManager.getLogger("org.apache.http.impl.conn").setLevel(Level.WARN);
+		LogManager.getLogger("com.amazonaws.auth.profile").setLevel(Level.ERROR);
+		LogManager.getLogger("com.amazonaws.auth.profile.internal").setLevel(Level.ERROR);
+		
 	}
 	
 	
