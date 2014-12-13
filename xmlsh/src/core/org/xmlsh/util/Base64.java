@@ -718,7 +718,7 @@ public class Base64
 		try {
 			encoded = encodeBytes(source, 0, source.length, NO_OPTIONS);
 		} catch (java.io.IOException ex) {
-			assert false : ex.getMessage();
+			assert(false);
 		}   // end catch
 		assert encoded != null;
 		return encoded;

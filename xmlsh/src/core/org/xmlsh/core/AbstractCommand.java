@@ -61,7 +61,7 @@ public abstract class AbstractCommand implements ICommand {
 	public final IModule getModule() {
 		mLogger.entry();
 
-		assert (mModule != null);
+		assert(mModule != null);
 		return mModule;
 	}
 

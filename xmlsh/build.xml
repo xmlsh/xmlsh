@@ -5,7 +5,7 @@
 	<!-- Global properties 
      Edit these for every release
 -->
-  <property name="component" value="xmlsh"/>
+	<property name="component" value="xmlsh"/>
 	<import file="../build/common.xml"/>
 	<property name="release" value="2_0_0"/>
 	<property name="version" value="2.0.0"/>
@@ -31,20 +31,20 @@
     </echo>
 	</target>
 
-	
+
 	<target name="deps-init">
-	  <mkdir dir="lib"/>
-	  <mkdir dir="build-lib"/>
-	  <mkdir dir="bin"/>
+		<mkdir dir="lib"/>
+		<mkdir dir="build-lib"/>
+		<mkdir dir="bin"/>
+		
 	</target>
 	  
-	<target name="build" depends="compile, jar">
-		<echo>calling build</echo>
-	  <mkdir dir="bin"/>
-		<subant target="build" buildpath="test/src">
+	<target name="build" depends="clean, compile, jar">
+		<subant target="compile" buildpath="test/src">
 			<property name="xmlsh.root" value="${xmlsh.root}"/>
 		</subant>
-   </target> 
+	</target>
+
 
 	<target name="clean" description="Clean all">
 		<delete includeEmptyDirs="true" quiet="true">
@@ -58,25 +58,25 @@
 		<subant target="clean"  buildpath="test/src">
 			<property name="xmlsh.root" value="${xmlsh.root}"/>
 		</subant>
-	</target> 
-	
-	
+	</target>
+
+
 	<target name="clobber" depends="clean,clean-generated" description="Clean and remove all generated and dependants">
 		<delete quiet="true" includeEmptyDirs="true">
-	    <fileset dir="${dist}"/>
-	  	<fileset dir="_out"/>
-	  	<fileset dir="build-lib" includes="**/*.jar"/>
+			<fileset dir="${dist}"/>
+			<fileset dir="_out"/>
+			<fileset dir="build-lib" includes="**/*.jar"/>
 			<fileset dir="lib" includes="**/*.jar"/>
-		</delete> 
-	  <subant target="clobber"  buildpath="test/src">
+		</delete>
+		<subant target="clobber"  buildpath="test/src">
 			<property name="xmlsh.root" value="${xmlsh.root}"/>
-    </subant>
-  </target>
-			
-			
+		</subant>
+	</target>
 
 
-     
+
+
+
 	<target name="grammar" description="Build parser from javaCC grammar">
 		<javacc
 		    target="src/shell/org/xmlsh/sh/grammar/ShellParser.jj"
@@ -142,7 +142,6 @@ version.version=${version}
 			</fileset>
 
 		</copy>
-
 	</target>
 
 

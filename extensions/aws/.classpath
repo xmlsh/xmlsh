@@ -6,5 +6,6 @@
 	<classpathentry kind="lib" path="lib/bcprov-jdk16-146.jar"/>
 	<classpathentry kind="lib" path="lib/joda-time-2.2.jar"/>
 	<classpathentry kind="lib" path="/xmlsh/lib/log4j-api-2.1.jar"/>
+	<classpathentry kind="lib" path="lib/aws-java-sdk-1.9.8.jar" sourcepath="lib/aws/aws-java-sdk-1.9.8-sources.jar"/>
 	<classpathentry kind="output" path="_out"/>
 </classpath>

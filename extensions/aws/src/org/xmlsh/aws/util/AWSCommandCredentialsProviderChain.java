@@ -15,13 +15,13 @@ import com.amazonaws.auth.profile.ProfilesConfigFile;
 
 public class AWSCommandCredentialsProviderChain extends AWSCredentialsProviderChain
 {
-	static String getDefaultProfileName(Shell shell) {
+	static String getDefaultProfileName(Shell shell, boolean legacy) {
 		String profile = shell.getEnv().getVarString("AWS_DEFAULT_PROFILE"); // AWS CLI env var for default profile
 		if( Util.isBlank(profile))
 			profile = ProfilesConfigFile.DEFAULT_PROFILE_NAME;
 		else
 			// AWS CLI compatible
-			profile = "profile " + profile ;
+			profile = (legacy? "profile " : "") + profile ;
 		return profile ;
 	}
 
@@ -30,7 +30,8 @@ public class AWSCommandCredentialsProviderChain extends AWSCredentialsProviderCh
 				new AWSOptionsCredentialsProvider( shell , opts),
 				new AWSEnvCredentialsProvider(shell),
 				new EnvironmentVariableCredentialsProvider(),
-				new ProfileCredentialsProvider(getDefaultProfileName(shell)),
+	                        new ProfileCredentialsProvider(getDefaultProfileName(shell,true)),
+				new ProfileCredentialsProvider(getDefaultProfileName(shell,false)),
 				new SystemPropertiesCredentialsProvider(),
 				new InstanceProfileCredentialsProvider());
 		   

@@ -5,11 +5,11 @@
 	
 	
 	<target name="help">
-		<echo message="Usage: ant [init help build clean clean install dist clean-all build-all build-deps]" />
+		<echo message="Usage: ant [build-all init help build clean clean install dist clean-all build-all build-deps]" />
 	</target>
 	  
 
-	<target name="build" depends="clean,main-init">
+	<target name="build" depends="clean">
 		<iterate target="build" />
 	</target>
 

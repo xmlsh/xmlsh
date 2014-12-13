@@ -129,8 +129,8 @@ public class EvalUtils
 
   public static XValue getIndexedValue(EvalEnv env, XValue xvalue, String ind) throws CoreException
   {
-    assert (xvalue != null);
-    assert (!Util.isBlank(ind));
+    assert(xvalue != null);
+    assert(!Util.isBlank(ind));
 
     if(xvalue == null)
       return XValue.nullValue();
