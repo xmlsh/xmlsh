@@ -49,6 +49,7 @@ public class ShellConsole {
     
     public static ShellConsole getConsole() {
     
+    	   mLogger.entry();
         if( _instance == null ){
             synchronized( ShellConsole.class){
                 if( _instance == null )
@@ -68,6 +69,7 @@ public class ShellConsole {
         mLogger.entry();
         
         sJavaConsole = System.console();
+        mLogger.debug(sJavaConsole == null ? "Found Java Console" : "No JAVA Console found");
         sSystemIn = System.in;
         sSystemOut = System.out;
         sSystemErr = System.err;
