@@ -5,12 +5,17 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.xmlsh.annotations.Function;
+import org.xmlsh.aws.clients.EC2Client;
+import org.xmlsh.aws.util.AWSClientFactory;
+import org.xmlsh.aws.util.AWSCommand;
 import org.xmlsh.core.AbstractBuiltinFunction;
 import org.xmlsh.core.CoreException;
+import org.xmlsh.core.Options;
 import org.xmlsh.core.XClassLoader;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.module.ExternalModule;
 import org.xmlsh.sh.module.ModuleConfig;
+import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 
 @org.xmlsh.annotations.Module
@@ -44,8 +49,10 @@ public class AWSModule extends ExternalModule {
 		  @Override
 		  public XValue run(Shell shell, List<XValue> args) throws Exception
 		  {
-
-			  return null ;
+		      Options opts = new Options( AWSCommand.sCOMMON_OPTS   , SerializeOpts.getOptionDefs());
+		      opts.parse(args);
+		      EC2Client client = AWSClientFactory.newEC2lient(shell,opts);
+		      return XValue.newXValue(client);
 			  
 		  }
 		

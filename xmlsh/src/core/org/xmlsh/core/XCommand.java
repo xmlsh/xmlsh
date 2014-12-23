@@ -17,109 +17,109 @@ import org.xmlsh.xpath.ThreadLocalShell;
 
 public abstract class XCommand extends AbstractCommand {
 
-	public XCommand() {
-		super(RootModule.getInstance());
-	}
+    public XCommand() {
+        super(RootModule.getInstance());
+    }
 
 
 
-	protected void throwInvalidArg(String string)
-			throws InvalidArgumentException {
-		printErr(string);
-		throw new InvalidArgumentException( string );
+    protected void throwInvalidArg(String string)
+            throws InvalidArgumentException {
+        printErr(string);
+        throw new InvalidArgumentException( string );
 
-	}
-
-
-	@Override
-	public String getName()
-	{
-		String name = getClass().getSimpleName();
-		if (name.lastIndexOf(ShellConstants.kDOT_CHAR) > 0) {
-			name = name.substring(name.lastIndexOf(ShellConstants.kDOT_CHAR)+1);  
-		}
+    }
 
 
-		/*
-		 * Convert from camelCase to hyphen-case
-		 */
+    @Override
+    public String getName()
+    {
+        String name = getClass().getSimpleName();
+        if (name.lastIndexOf(ShellConstants.kDOT_CHAR) > 0) {
+            name = name.substring(name.lastIndexOf(ShellConstants.kDOT_CHAR)+1);  
+        }
 
 
-		return fromCamelCase(name);
-	}
+        /*
+         * Convert from camelCase to hyphen-case
+         */
 
 
-
-	private String fromCamelCase(String name) {
-		StringBuffer result = new StringBuffer( name.length() + 5 );
-
-		for( char c : name.toCharArray() ){
-			if( Character.isUpperCase(c)){
-				result.append('-');
-				result.append( Character.toLowerCase(c));
-			} else
-				result.append(c);
+        return fromCamelCase(name);
+    }
 
 
 
-		}
+    private String fromCamelCase(String name) {
+        StringBuffer result = new StringBuffer( name.length() + 5 );
 
-		return result.toString();
-
-
-
-	}
-
-	/* (non-Javadoc)
-	 * @see org.xmlsh.core.ICommand#run(org.xmlsh.sh.shell.Shell, java.lang.String[])
-	 */
-	@Override
-	public int run(Shell shell, String cmd, List<XValue> args) throws Exception 
-	{
-		Shell saved_shell = ThreadLocalShell.set(shell);
-
-
-		try {
-			return run(  args , shell.getEnv() );
-		} 
-		catch( UnknownOption e )
-		{
-			error( e);
-			return -1;
-		}
+        for( char c : name.toCharArray() ){
+            if( Character.isUpperCase(c)){
+                result.append('-');
+                result.append( Character.toLowerCase(c));
+            } else
+                result.append(c);
 
 
 
-		finally{
-			ThreadLocalShell.set(saved_shell);
-		}
+        }
 
-	}
-
-	abstract public int run( List<XValue>  args ) throws Exception;
+        return result.toString();
 
 
-	public int run( List<XValue>  args, XEnvironment env ) throws Exception
-	{
-		mEnvironment = env ;
-		mShell = env.getShell();
-		return run(args);
 
-	}
+    }
 
-	/* (non-Javadoc)
-	 * @see org.xmlsh.core.ICommand#getType()
-	 */
-	@Override
-	public CommandType getType() {
-		return CommandType.CMD_TYPE_INTERNAL ;
-	}
+    /* (non-Javadoc)
+     * @see org.xmlsh.core.ICommand#run(org.xmlsh.sh.shell.Shell, java.lang.String[])
+     */
+    @Override
+    public int run(Shell shell, String cmd, List<XValue> args) throws Exception 
+    {
+        Shell saved_shell = ThreadLocalShell.set(shell);
 
-	@Override
-	public URL getURL() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+
+        try {
+            return run(  args , shell.getEnv() );
+        } 
+        catch( UnknownOption e )
+        {
+            error( e);
+            return -1;
+        }
+
+
+
+        finally{
+            ThreadLocalShell.set(saved_shell);
+        }
+
+    }
+
+    abstract public int run( List<XValue>  args ) throws Exception;
+
+
+    public int run( List<XValue>  args, XEnvironment env ) throws Exception
+    {
+        mEnvironment = env ;
+        mShell = env.getShell();
+        return run(args);
+
+    }
+
+    /* (non-Javadoc)
+     * @see org.xmlsh.core.ICommand#getType()
+     */
+    @Override
+    public CommandType getType() {
+        return CommandType.CMD_TYPE_INTERNAL ;
+    }
+
+    @Override
+    public URL getURL() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
 
 

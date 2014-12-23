@@ -53,7 +53,7 @@ public abstract class AWSCommand<T extends AmazonWebServiceClient>  extends XCom
 	}
 
 
-	protected	Options getOptions( String sopts )	
+	protected Options getOptions( String sopts )	
 	{
 
 		return new Options( getCommonOpts() + "," + sopts , SerializeOpts.getOptionDefs());

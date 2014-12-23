@@ -56,7 +56,6 @@ import javax.swing.event.PopupMenuListener;
 import javax.swing.tree.TreePath;
 
 import org.xmlsh.core.Options;
-import org.xmlsh.marklogic.util.MLUtil;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.Util;
