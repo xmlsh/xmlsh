@@ -1,5 +1,5 @@
 /**
- * $Id$
+f * $Id$
  * $Date$
  * 
  */
@@ -236,9 +236,6 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt {
 	
 	/*
 	 * Create a new Shell.
-	 * 
-	 * If this is the first shell in the classloader then initialize the console according
-	 * to bUseConsole.
 	 * 
 	 */
 

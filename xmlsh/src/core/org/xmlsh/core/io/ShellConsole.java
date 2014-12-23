@@ -1,18 +1,21 @@
 package org.xmlsh.core.io;
 
 import java.io.Console;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.io.Reader;
 import java.lang.reflect.Constructor;
+
+import jline.Terminal;
+import jline.TerminalFactory;
+import jline.console.ConsoleReader;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.xmlsh.core.InputPort;
 import org.xmlsh.util.Util;
-
-import jline.ConsoleReader;
 
 /*
  * Singleton Console support for all shells
@@ -27,10 +30,12 @@ public class ShellConsole {
     
     private static volatile ShellConsole _instance = null ;
     private Console sJavaConsole ;               // JRE  6 Console if available 
-    private ConsoleReader sJLineConsole ;        // JLine 2 Console Reader if available
+    private Terminal    sJLineTerminal ;        // JLine 2 Console Reader if available
     private InputStream   sSystemIn;             // System.in 
     private PrintStream   sSystemOut;            // System.out
     private PrintStream   sSystemErr;            // System.err 
+
+	private ConsoleReader jJLineConsole;
 
     /*
     private Reader mReader ;
@@ -67,6 +72,19 @@ public class ShellConsole {
     private ShellConsole() 
     {
         mLogger.entry();
+        // Try jLine first
+        sJLineTerminal = TerminalFactory.get();
+        if( sJLineTerminal != null ){
+        	  if( sJLineTerminal.isSupported() ){
+        		 try {
+					jJLineConsole = new ConsoleReader("xmlsh", System.in , System.out , sJLineTerminal , null );
+				} catch (IOException e) {
+					mLogger.catching(e);
+					jJLineConsole = null;
+					sJLineTerminal = null;
+				}
+        	  }
+        }
         
         sJavaConsole = System.console();
         mLogger.debug(sJavaConsole == null ? "Found Java Console" : "No JAVA Console found");
@@ -83,7 +101,7 @@ public class ShellConsole {
     public boolean hasInput() {
         if( sJavaConsole != null )
             return true ;
-        if( sJLineConsole != null )
+        if( jJLineConsole != null )
             return true ;
     
         return sSystemIn != null ;
@@ -92,7 +110,7 @@ public class ShellConsole {
     public boolean hasOutput() {
         if( sJavaConsole != null )
             return true ;
-        if( sJLineConsole != null )
+        if( jJLineConsole != null )
             return true ;
     
         return sSystemOut != null ;
@@ -101,7 +119,7 @@ public class ShellConsole {
     public boolean hasErr() {
         if( sJavaConsole != null )
             return true ;
-        if( sJLineConsole != null )
+        if( jJLineConsole != null )
             return true ;
         return sSystemErr != null ;
     }
@@ -134,11 +152,44 @@ public class ShellConsole {
          
          
     }
+
+    private class ShellJLineReader extends ShellReader {
+
+        	ShellJLineReader(IShellPrompt prompt) {
+            super(prompt);
+        }
+
+        @Override
+        protected String readLine(int promptLevel) throws IOException {
+            
+        	   return jJLineConsole.readLine(getPrompt(promptLevel));
+        }
+
+        public  InputPort getInputPort()
+        {
+ 
+            return new StreamInputPort( sSystemIn , null , true    );
+         }
+         
+         public OutputPort getOutuptPort()
+         {
+             return new StreamOutputPort(sSystemOut,false,true)   ;
+         }
+         public OutputPort getErrorPort()
+         {
+             return new StreamOutputPort(sSystemErr,false,true)  ;
+         }
+         
+         
+    }
     
     
     public  ShellReader newReader(boolean bUseConsole , IShellPrompt prompt) { 
         
         mLogger.entry();
+        if( this.jJLineConsole != null )
+        	  return new ShellJLineReader(prompt);
+        
         if( sJavaConsole != null )
             return new ShellConsoleReader(prompt) ;
         else {

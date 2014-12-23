@@ -1,17 +1,11 @@
 package org.xmlsh.core.io;
 
-import java.io.Console;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintWriter;
-import java.io.Reader;
-import java.io.Writer;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.xmlsh.core.InputPort;
 
-import jline.ConsoleReader;
 
 /*
  * Shell IO interface, may be shared across shells and threads.

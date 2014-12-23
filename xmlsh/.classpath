@@ -61,7 +61,7 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="lib/httpcore-4.2.2.jar"/>
-	<classpathentry kind="lib" path="lib/jline-1.1.jar"/>
+	<classpathentry kind="lib" path="lib/jline-2.12.jar" sourcepath="/jline/src/main/java"/>
 	<classpathentry kind="lib" path="lib/jackson-annotations-2.4.3.jar"/>
 	<classpathentry kind="lib" path="lib/jackson-core-2.4.3.jar" sourcepath="E:/Java/jackson/jackson-2.4.3/jackson-core-2.4.3-sources.jar">
 		<attributes>
