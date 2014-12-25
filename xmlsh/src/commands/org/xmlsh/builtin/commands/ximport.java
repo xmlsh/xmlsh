@@ -8,23 +8,18 @@ package org.xmlsh.builtin.commands;
 
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.xmlsh.annotations.Command;
 import org.xmlsh.core.BuiltinCommand;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
-import org.xmlsh.core.XEnvironment;
 import org.xmlsh.core.XValue;
-import org.xmlsh.sh.module.Module;
 import org.xmlsh.util.StringPair;
-import org.xmlsh.util.Util;
 
 @Command(name="import")
 public class ximport extends BuiltinCommand

@@ -8,7 +8,6 @@ package org.xmlsh.core;
 
 import static org.xmlsh.core.XVariable.XVarFlag.EXPORT;
 
-import java.io.Closeable;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -17,12 +16,9 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumSet;
-import java.util.List;
 import java.util.Stack;
-import java.util.Map.Entry;
 
 import javax.xml.transform.Source;
 
@@ -46,7 +42,6 @@ import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.sh.shell.StaticContext;
 import org.xmlsh.types.TypeFamily;
 import org.xmlsh.types.xtypes.XValueMap;
-import org.xmlsh.util.NameValueMap;
 import org.xmlsh.util.Util;
 
 public class XEnvironment  {

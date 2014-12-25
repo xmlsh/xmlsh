@@ -15,7 +15,6 @@ import org.xmlsh.core.io.AbstractPort;
 import org.xmlsh.core.io.OutputPort;
 import org.xmlsh.core.io.PortList;
 import org.xmlsh.core.io.ShellIO;
-import org.xmlsh.core.io.StreamInputPort;
 import org.xmlsh.core.io.StreamOutputPort;
 import org.xmlsh.util.AutoReleasePool;
 import org.xmlsh.util.INameValue;

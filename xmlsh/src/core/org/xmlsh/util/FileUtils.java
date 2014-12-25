@@ -7,27 +7,18 @@
 package org.xmlsh.util;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
-import java.nio.charset.CharsetEncoder;
 import java.nio.file.FileStore;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
-import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
-import java.nio.file.InvalidPathException;
 import java.nio.file.LinkOption;
-import java.nio.file.OpenOption;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.nio.file.attribute.AclFileAttributeView;
 import java.nio.file.attribute.BasicFileAttributeView;
@@ -35,8 +26,6 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.DosFileAttributeView;
 import java.nio.file.attribute.DosFileAttributes;
 import java.nio.file.attribute.FileAttributeView;
-import java.nio.file.attribute.FileOwnerAttributeView;
-import java.nio.file.attribute.GroupPrincipal;
 import java.nio.file.attribute.PosixFileAttributeView;
 import java.nio.file.attribute.PosixFileAttributes;
 import java.nio.file.attribute.PosixFilePermission;
@@ -46,16 +35,11 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.xmlsh.core.XValue;
-import org.xmlsh.posix.commands.ls.ListVisitor;
-import org.xmlsh.sh.module.CommandFactory;
-import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.sh.shell.ShellConstants;
 
 

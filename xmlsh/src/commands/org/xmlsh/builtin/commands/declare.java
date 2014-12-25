@@ -6,6 +6,10 @@
 
 package org.xmlsh.builtin.commands;
 
+import static org.xmlsh.core.XVariable.XVarFlag.EXPORT;
+import static org.xmlsh.core.XVariable.XVarFlag.LOCAL;
+import static org.xmlsh.core.XVariable.XVarFlag.READONLY;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
@@ -28,14 +32,10 @@ import org.xmlsh.core.XValue;
 import org.xmlsh.core.XVariable;
 import org.xmlsh.core.XVariable.XVarFlag;
 import org.xmlsh.core.io.OutputPort;
-
-import static org.xmlsh.core.XVariable.XVarFlag.*;
-
 import org.xmlsh.sh.module.IModule;
 import org.xmlsh.sh.shell.FunctionDefinitions;
 import org.xmlsh.sh.shell.IFunctionDefiniton;
 import org.xmlsh.sh.shell.SerializeOpts;
-import org.xmlsh.util.NameValueMap;
 import org.xmlsh.util.Util;
 
 public class declare extends BuiltinCommand {

@@ -1,11 +1,7 @@
 package org.xmlsh.sh.module;
 
-import static org.xmlsh.util.Util.stringConcat;
-
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Collections;
@@ -16,13 +12,10 @@ import org.apache.logging.log4j.Logger;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.ScriptCommand.SourceMode;
-import org.xmlsh.core.ICommand;
 import org.xmlsh.core.ScriptSource;
 import org.xmlsh.core.XClassLoader;
-import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.sh.shell.ShellConstants;
-import org.xmlsh.util.FileUtils;
 import org.xmlsh.util.JavaUtils;
 import org.xmlsh.util.StringPair;
 import org.xmlsh.util.Util;

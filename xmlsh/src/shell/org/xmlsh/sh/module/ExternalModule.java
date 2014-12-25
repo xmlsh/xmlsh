@@ -6,12 +6,13 @@
 
 package org.xmlsh.sh.module;
 
+import static org.xmlsh.util.UnifiedFileAttributes.MatchFlag.DIRECTORIES;
+import static org.xmlsh.util.UnifiedFileAttributes.MatchFlag.READABLE;
+
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import net.sf.saxon.s9api.QName;
@@ -25,9 +26,6 @@ import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.sh.shell.ShellConstants;
 import org.xmlsh.util.PathMatchOptions;
-
-import static  org.xmlsh.util.UnifiedFileAttributes.MatchFlag.*;
-
 import org.xmlsh.util.Util;
 
 public class ExternalModule extends PackageModule

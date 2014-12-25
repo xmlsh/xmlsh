@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
-import java.io.PrintWriter;
 import java.io.Reader;
 
 import org.xmlsh.core.InputPort;
@@ -46,7 +45,7 @@ abstract class ShellReader extends Reader {
             return new StreamInputPort( System.in , null , true    );
          }
          
-         public OutputPort getOutuptPort()
+         public OutputPort getOutputPort()
          {
              return new StreamOutputPort(System.out,false,true)   ;
          }
@@ -137,7 +136,7 @@ abstract class ShellReader extends Reader {
     
     // InputPort is for Non prompting data reads 
     public abstract InputPort getInputPort();
-    public abstract OutputPort getOutuptPort();
+    public abstract OutputPort getOutputPort();
     public abstract OutputPort getErrorPort();
     
 }

@@ -1,6 +1,5 @@
 package org.xmlsh.types;
 
-import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
 
 

@@ -63,7 +63,7 @@ public class ShellIO {
     
     public OutputPort getOutuptPort()
     {
-        return getReader().getOutuptPort();
+        return getReader().getOutputPort();
     }
     public OutputPort getErrorPort()
     {

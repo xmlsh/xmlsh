@@ -12,9 +12,6 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.List;
 
-import org.xmlsh.sh.module.Module;
-import org.xmlsh.sh.module.RootModule;
-
 public class XClassLoader extends URLClassLoader {
 
 

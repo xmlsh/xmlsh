@@ -8,10 +8,8 @@ package org.xmlsh.util.text;
 
 import java.io.IOException;
 import java.io.Reader;
-import java.util.Scanner;
 
 import org.xmlsh.core.InvalidArgumentException;
-import org.xmlsh.util.Util;
 
 
 /*

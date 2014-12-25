@@ -6,17 +6,15 @@
 
 package org.xmlsh.sh.core;
 
-import static org.xmlsh.util.Util.formatMessage;
+import static org.xmlsh.util.UnifiedFileAttributes.MatchFlag.HIDDEN_NAME;
+import static org.xmlsh.util.UnifiedFileAttributes.MatchFlag.HIDDEN_SYS;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
-import java.nio.file.InvalidPathException;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
-import java.nio.file.PathMatcher;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -34,16 +32,12 @@ import org.xmlsh.core.XVariable;
 import org.xmlsh.core.XVariableExpr;
 import org.xmlsh.json.JSONUtils;
 import org.xmlsh.sh.shell.CharAttrs;
-import org.xmlsh.sh.shell.CharAttr;
 import org.xmlsh.sh.shell.Expander;
 import org.xmlsh.sh.shell.ParseResult;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.sh.shell.ShellConstants;
 import org.xmlsh.types.TypeFamily;
 import org.xmlsh.types.xtypes.XValueList;
-
-import static org.xmlsh.util.UnifiedFileAttributes.MatchFlag.*;
-
 import org.xmlsh.util.FileUtils;
 import org.xmlsh.util.PathMatchOptions;
 import org.xmlsh.util.UnifiedFileAttributes;

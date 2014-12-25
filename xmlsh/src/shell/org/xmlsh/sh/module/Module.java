@@ -1,8 +1,5 @@
 package org.xmlsh.sh.module;
 
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
@@ -10,13 +7,11 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.xmlsh.core.CoreException;
-import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XClassLoader;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.sh.shell.ShellConstants;
 import org.xmlsh.sh.shell.StaticContext;
-import org.xmlsh.util.JavaUtils;
 import org.xmlsh.util.Util;
 
 public abstract class Module implements IModule {

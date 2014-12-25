@@ -16,8 +16,6 @@ import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.util.S9Util;
-import org.xmlsh.util.XMLUtils;
 
 @Function( name="boolean")
 public class _boolean extends AbstractBuiltinFunction {

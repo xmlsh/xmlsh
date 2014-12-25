@@ -23,7 +23,6 @@ import org.xmlsh.core.XStringSubstituter;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.types.TypeFamily;
-import org.xmlsh.types.xtypes.XValueProperties.XPropertiesLookup;
 import org.xmlsh.util.Util;
 
 /*

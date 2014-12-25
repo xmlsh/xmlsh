@@ -6,10 +6,7 @@
 
 package org.xmlsh.sh.core;
 
-import java.io.PrintWriter;
-
 import org.xmlsh.core.EvalEnv;
-import org.xmlsh.core.EvalFlag;
 import org.xmlsh.sh.grammar.Token;
 
 

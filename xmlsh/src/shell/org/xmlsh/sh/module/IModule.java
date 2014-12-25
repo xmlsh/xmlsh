@@ -6,9 +6,7 @@
 
 package org.xmlsh.sh.module;
 
-import java.io.Closeable;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
@@ -16,11 +14,6 @@ import java.util.List;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.ICommand;
 import org.xmlsh.core.IFunctionExpr;
-import org.xmlsh.core.IHandleable;
-import org.xmlsh.core.IReferenceCounted;
-import org.xmlsh.core.IReferenceCountedHandleable;
-import org.xmlsh.core.IReferencedCountedHandle;
-import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XClassLoader;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;

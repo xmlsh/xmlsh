@@ -6,8 +6,12 @@
 
 package org.xmlsh.core;
 
-import static org.xmlsh.core.EvalFlag.*;
-import static org.xmlsh.sh.shell.CharAttr.*;
+import static org.xmlsh.core.EvalFlag.EXPAND_SEQUENCES;
+import static org.xmlsh.core.EvalFlag.EXPAND_VAR;
+import static org.xmlsh.core.EvalFlag.EXPAND_WILD;
+import static org.xmlsh.core.EvalFlag.SPLIT_WORDS;
+import static org.xmlsh.sh.shell.CharAttr.ATTR_PRESERVE;
+
 import java.util.EnumSet;
 
 import org.xmlsh.sh.shell.CharAttrs;

@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
 
-import org.apache.commons.lang3.EnumUtils;
 import org.xmlsh.sh.shell.CharAttr;
 import org.xmlsh.sh.shell.CharAttrs;
 

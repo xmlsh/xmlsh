@@ -2,19 +2,15 @@ package org.xmlsh.types;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.SerializeOpts;
-import org.xmlsh.types.xtypes.XValueList;
-import org.xmlsh.types.xtypes.XValueSequence;
 import org.xmlsh.util.JavaUtils;
 import org.xmlsh.util.Util;
 

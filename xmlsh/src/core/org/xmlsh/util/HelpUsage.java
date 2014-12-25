@@ -31,7 +31,6 @@ import org.xmlsh.core.XValue;
 import org.xmlsh.core.io.IOutputPort;
 import org.xmlsh.sh.module.CommandFactory;
 import org.xmlsh.sh.module.IModule;
-import org.xmlsh.sh.module.Module;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 

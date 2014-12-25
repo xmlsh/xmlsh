@@ -11,7 +11,6 @@ import java.util.List;
 
 import org.xmlsh.core.EvalEnv;
 import org.xmlsh.core.XValue;
-import org.xmlsh.core.XVariable;
 import org.xmlsh.sh.shell.ControlLoop;
 import org.xmlsh.sh.shell.Shell;
 

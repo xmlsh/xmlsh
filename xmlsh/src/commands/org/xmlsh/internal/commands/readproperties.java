@@ -12,7 +12,6 @@ import java.util.Properties;
 
 import org.xmlsh.annotations.Command;
 import org.xmlsh.core.BuiltinCommand;
-import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.XValue;

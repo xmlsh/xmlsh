@@ -2,7 +2,6 @@ package org.xmlsh.sh.module;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.UUID;
 
 public class ResourceID {
 

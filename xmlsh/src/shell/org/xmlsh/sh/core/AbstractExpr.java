@@ -6,7 +6,6 @@ import java.util.List;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.util.HelpUsage;
 import org.xmlsh.util.Util;
 
 public abstract class AbstractExpr implements IExpression

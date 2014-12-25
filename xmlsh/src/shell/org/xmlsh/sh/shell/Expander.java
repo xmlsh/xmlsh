@@ -5,6 +5,8 @@
 
 package org.xmlsh.sh.shell;
 
+import static org.xmlsh.sh.shell.CharAttr.ATTR_ESCAPED;
+
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
@@ -28,14 +30,12 @@ import org.xmlsh.core.Variables;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.XVariable;
 import org.xmlsh.sh.core.EvalUtils;
-import org.xmlsh.sh.core.SourceLocation;
 import org.xmlsh.types.XDMTypeFamily;
 import org.xmlsh.util.NameValueMap;
 import org.xmlsh.util.Util;
 import org.xmlsh.util.XMLUtils;
 import org.xmlsh.xpath.EvalDefinition;
 import org.xmlsh.xpath.ThreadLocalShell;
-import static org.xmlsh.sh.shell.CharAttr.*;
 
 public class Expander
 {

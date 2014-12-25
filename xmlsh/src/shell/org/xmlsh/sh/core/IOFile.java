@@ -17,7 +17,6 @@ import org.xmlsh.core.EvalEnv;
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XEnvironment;
-import org.xmlsh.core.XValue;
 import org.xmlsh.core.XVariable;
 import org.xmlsh.core.io.OutputPort;
 import org.xmlsh.sh.shell.SerializeOpts;

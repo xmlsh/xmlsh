@@ -6,10 +6,6 @@
 
 package org.xmlsh.sh.shell;
 
-import static org.xmlsh.sh.shell.CharAttr.ATTR_HARD_QUOTE;
-import static org.xmlsh.sh.shell.CharAttr.ATTR_SOFT_QUOTE;
-
-import org.apache.commons.lang3.EnumUtils;
 
 public  enum CharAttr {
 		ATTR_SOFT_QUOTE,

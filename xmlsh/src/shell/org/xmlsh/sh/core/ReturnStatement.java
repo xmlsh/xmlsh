@@ -7,7 +7,6 @@
 package org.xmlsh.sh.core;
 
 import java.io.PrintWriter;
-import java.util.List;
 
 import org.xmlsh.core.EvalEnv;
 import org.xmlsh.core.XValue;

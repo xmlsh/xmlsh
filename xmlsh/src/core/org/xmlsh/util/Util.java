@@ -76,7 +76,6 @@ import org.xmlsh.core.IReleasable;
 import org.xmlsh.core.Namespaces;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.core.CharAttributeBuffer;
-import org.xmlsh.sh.core.CharAttributeDecoder;
 import org.xmlsh.sh.shell.CharAttr;
 import org.xmlsh.sh.shell.CharAttrs;
 import org.xmlsh.sh.shell.SerializeOpts;

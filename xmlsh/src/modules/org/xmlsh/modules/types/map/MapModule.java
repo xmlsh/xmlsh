@@ -14,7 +14,6 @@ import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.types.TypeFamily;
 import org.xmlsh.types.XTypeUtils;
 import org.xmlsh.types.xtypes.IXValueMap;
-import org.xmlsh.util.Util;
 
 @org.xmlsh.annotations.Module(name = "types.map")
 public class MapModule extends Types {

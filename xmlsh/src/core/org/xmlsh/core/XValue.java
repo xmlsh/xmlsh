@@ -63,7 +63,6 @@ import org.xmlsh.util.XMLUtils;
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.icl.saxon.expr.Value;
 
 /*
  * A XValue is a single value or a sequence of 0 or more values

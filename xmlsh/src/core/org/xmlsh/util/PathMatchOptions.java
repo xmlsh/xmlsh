@@ -2,12 +2,10 @@ package org.xmlsh.util;
 
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
-import java.nio.file.PathMatcher;
 import java.util.EnumSet;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-import org.xmlsh.sh.core.CharAttributeBuffer;
 import org.xmlsh.util.UnifiedFileAttributes.MatchFlag;
 
 /*

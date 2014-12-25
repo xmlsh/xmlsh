@@ -12,20 +12,13 @@ import static org.xmlsh.util.UnifiedFileAttributes.MatchFlag.HIDDEN_NAME;
 import static org.xmlsh.util.UnifiedFileAttributes.MatchFlag.HIDDEN_SYS;
 import static org.xmlsh.util.UnifiedFileAttributes.MatchFlag.SYSTEM;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.nio.file.attribute.PosixFilePermission;
-import java.nio.file.attribute.PosixFilePermissions;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
@@ -34,17 +27,11 @@ import org.xmlsh.core.Options;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.io.OutputPort;
-import org.xmlsh.posix.commands.ls.ListVisitor;
 import org.xmlsh.sh.shell.SerializeOpts;
-import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.util.FileUtils;
 import org.xmlsh.util.IPathTreeVisitor;
 import org.xmlsh.util.PathMatchOptions;
-import org.xmlsh.util.PathTreeVisitor;
-import org.xmlsh.util.FileUtils;
 import org.xmlsh.util.UnifiedFileAttributes;
-
-import static org.xmlsh.util.UnifiedFileAttributes.MatchFlag.*;
-
 import org.xmlsh.util.Util;
 import org.xmlsh.util.XFile;
 

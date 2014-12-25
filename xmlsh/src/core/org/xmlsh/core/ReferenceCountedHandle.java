@@ -5,7 +5,6 @@ import java.io.IOException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.xmlsh.builtin.commands.exit;
 import org.xmlsh.util.ReferenceCounter;
 
 @SuppressWarnings("serial")

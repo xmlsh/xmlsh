@@ -6,9 +6,9 @@
 
 package org.xmlsh.core.io;
 
-import org.xmlsh.core.CoreException;
-
 import net.sf.saxon.s9api.XdmItem;
+
+import org.xmlsh.core.CoreException;
 
 public interface IXdmItemInputStream {
 

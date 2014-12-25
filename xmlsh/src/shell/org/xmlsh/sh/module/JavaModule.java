@@ -7,9 +7,7 @@
 package org.xmlsh.sh.module;
 
 import java.lang.reflect.Method;
-import java.net.URI;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;

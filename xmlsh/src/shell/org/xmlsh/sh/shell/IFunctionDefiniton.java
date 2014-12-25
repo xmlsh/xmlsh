@@ -7,9 +7,7 @@
 package org.xmlsh.sh.shell;
 
 import org.xmlsh.core.IFunctionExpr;
-import org.xmlsh.core.IReleasable;
 import org.xmlsh.sh.core.ICommandExpr;
-import org.xmlsh.sh.core.IExpression;
 import org.xmlsh.sh.module.IModule;
 
 /* 

@@ -6,7 +6,10 @@
 
 package org.xmlsh.core;
 
-import static org.xmlsh.core.XVariable.XVarFlag.*;
+import static org.xmlsh.core.XVariable.XVarFlag.EXPORT;
+import static org.xmlsh.core.XVariable.XVarFlag.LOCAL;
+import static org.xmlsh.core.XVariable.XVarFlag.READONLY;
+import static org.xmlsh.core.XVariable.XVarFlag.UNSET;
 
 import java.util.EnumSet;
 
@@ -16,7 +19,6 @@ import javax.xml.stream.XMLStreamWriter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.xml.sax.SAXException;
-import org.xmlsh.core.XVariable.XVarFlag;
 import org.xmlsh.sh.core.EvalUtils;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.types.IMethods;

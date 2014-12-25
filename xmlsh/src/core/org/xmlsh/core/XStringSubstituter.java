@@ -3,10 +3,6 @@
  */
 package org.xmlsh.core;
 
-import java.util.Map;
-
-import org.apache.commons.lang3.text.StrLookup;
-import org.apache.commons.lang3.text.StrMatcher;
 import org.apache.commons.lang3.text.StrSubstitutor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

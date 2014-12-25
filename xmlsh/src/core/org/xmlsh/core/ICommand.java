@@ -6,8 +6,6 @@
 
 package org.xmlsh.core;
 
-import java.io.Closeable;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -15,7 +13,6 @@ import java.util.List;
 
 import org.xmlsh.sh.core.SourceLocation;
 import org.xmlsh.sh.module.IModule;
-import org.xmlsh.sh.module.Module;
 import org.xmlsh.sh.shell.Shell;
 
 public interface ICommand  {

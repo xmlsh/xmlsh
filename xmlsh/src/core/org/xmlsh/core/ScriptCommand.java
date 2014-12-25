@@ -8,7 +8,6 @@ package org.xmlsh.core;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.Reader;
 import java.net.URL;
@@ -18,9 +17,7 @@ import org.apache.logging.log4j.Logger;
 import org.xmlsh.sh.core.SourceLocation;
 import org.xmlsh.sh.grammar.ParseException;
 import org.xmlsh.sh.module.IModule;
-import org.xmlsh.sh.module.Module;
 import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.util.Util;
 
 public class ScriptCommand implements ICommand {
 

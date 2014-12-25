@@ -19,7 +19,6 @@ import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.types.TypeFamily;
-import org.xmlsh.util.Util;
 
 /*
  * A list of objects indexable by string or index (1 based for strings)

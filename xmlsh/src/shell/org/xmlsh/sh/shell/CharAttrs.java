@@ -1,11 +1,14 @@
 package org.xmlsh.sh.shell;
 
+import static org.xmlsh.sh.shell.CharAttr.ATTR_ESCAPED;
+import static org.xmlsh.sh.shell.CharAttr.ATTR_HARD_QUOTE;
+import static org.xmlsh.sh.shell.CharAttr.ATTR_PRESERVE;
+import static org.xmlsh.sh.shell.CharAttr.ATTR_SOFT_QUOTE;
+
 import java.util.EnumSet;
 
 import org.apache.commons.lang3.EnumUtils;
 import org.xmlsh.util.Util;
-
-import static org.xmlsh.sh.shell.CharAttr.*;
 public class CharAttrs  implements Cloneable {
 	private static CharAttrs[] constInstances = {
 		new CharAttrs(ATTR_SOFT_QUOTE),

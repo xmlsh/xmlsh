@@ -2,7 +2,6 @@ package org.xmlsh.sh.module;
 
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;

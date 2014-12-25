@@ -10,9 +10,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
@@ -25,7 +23,6 @@ import org.xmlsh.core.XValue;
 import org.xmlsh.sh.grammar.Token;
 import org.xmlsh.sh.module.CommandFactory;
 import org.xmlsh.sh.module.IModule;
-import org.xmlsh.sh.shell.IFunctionDefiniton;
 import org.xmlsh.sh.shell.ParseResult;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.Util;

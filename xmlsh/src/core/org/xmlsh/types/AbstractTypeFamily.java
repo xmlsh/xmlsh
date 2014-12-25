@@ -6,8 +6,6 @@
 
 package org.xmlsh.types;
 
-import org.xmlsh.core.InvalidArgumentException;
-import org.xmlsh.core.XValue;
 import org.xmlsh.util.JavaUtils;
 
 abstract class AbstractTypeFamily implements ITypeFamily

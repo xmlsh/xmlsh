@@ -5,13 +5,10 @@ import java.net.URL;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.xmlsh.core.CoreException;
 import org.xmlsh.core.ICommand;
 import org.xmlsh.core.IFunctionExpr;
 import org.xmlsh.core.XClassLoader;
 import org.xmlsh.sh.shell.SerializeOpts;
-import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.util.FileUtils;
 
 
 /*

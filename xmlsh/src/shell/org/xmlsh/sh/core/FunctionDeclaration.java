@@ -6,7 +6,6 @@
 
 package org.xmlsh.sh.core;
 
-import java.io.IOException;
 import java.io.PrintWriter;
 
 import org.apache.logging.log4j.LogManager;

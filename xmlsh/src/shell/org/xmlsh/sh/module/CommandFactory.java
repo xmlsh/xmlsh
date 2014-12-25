@@ -6,19 +6,24 @@
 
 package org.xmlsh.sh.module;
 
+import static org.xmlsh.util.UnifiedFileAttributes.MatchFlag.DIRECTORIES;
+import static org.xmlsh.util.UnifiedFileAttributes.MatchFlag.EXECUTABLE;
+import static org.xmlsh.util.UnifiedFileAttributes.MatchFlag.FILES;
+import static org.xmlsh.util.UnifiedFileAttributes.MatchFlag.HIDDEN_NAME;
+import static org.xmlsh.util.UnifiedFileAttributes.MatchFlag.HIDDEN_SYS;
+import static org.xmlsh.util.UnifiedFileAttributes.MatchFlag.READABLE;
+import static org.xmlsh.util.UnifiedFileAttributes.MatchFlag.SYSTEM;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.Marker;
-import org.apache.logging.log4j.MarkerManager;
 import org.xmlsh.builtin.commands.colon;
 import org.xmlsh.builtin.commands.declare;
 import org.xmlsh.builtin.commands.echo;
@@ -58,9 +63,9 @@ import org.xmlsh.core.FunctionCommand;
 import org.xmlsh.core.ICommand;
 import org.xmlsh.core.IFunctionExpr;
 import org.xmlsh.core.ScriptCommand;
+import org.xmlsh.core.ScriptCommand.SourceMode;
 import org.xmlsh.core.ScriptSource;
 import org.xmlsh.core.SearchPath;
-import org.xmlsh.core.ScriptCommand.SourceMode;
 import org.xmlsh.internal.commands.readconfig;
 import org.xmlsh.java.commands.jset;
 import org.xmlsh.json.commands.jsonread;
@@ -71,9 +76,6 @@ import org.xmlsh.sh.shell.ShellConstants;
 import org.xmlsh.util.FileUtils;
 import org.xmlsh.util.PathMatchOptions;
 import org.xmlsh.util.StringPair;
-
-import static org.xmlsh.util.UnifiedFileAttributes.MatchFlag.*;
-
 import org.xmlsh.util.Util;
 
 public abstract class CommandFactory {
