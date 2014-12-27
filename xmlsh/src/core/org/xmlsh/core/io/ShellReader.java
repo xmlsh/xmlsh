@@ -31,8 +31,7 @@ abstract class ShellReader extends Reader {
         }
 
         @Override
-        protected String readLine(int promptLevel ) throws IOException {
-            String prompt = getPrompt(promptLevel);
+        protected String readLine( String prompt ) throws IOException {
             if( prompt != null ){
               sSystemOut.print( prompt );
               sSystemOut.flush();
@@ -58,7 +57,11 @@ abstract class ShellReader extends Reader {
          
 
     }
-    protected String getPrompt(int level) {
+    protected String getPrompt() {
+        return getPrompt(promptLevel);
+    }
+        
+    private String getPrompt(int level) {
         if( mShellPrompt != null && promptLevel >= 0 )
             return mShellPrompt.getPrompt(level);
         else
@@ -89,7 +92,7 @@ abstract class ShellReader extends Reader {
         
         assert( len >0 );
         if( buf == null ){
-           String line = readLine(promptLevel);
+           String line = readLine();
            if( line == null )
                return -1;
            buf = line.toCharArray();
@@ -131,8 +134,10 @@ abstract class ShellReader extends Reader {
         boff = -1;
         
     }
-    protected abstract String readLine(int promptLevel) throws IOException;
-    
+    protected abstract String readLine(String prompt) throws IOException;
+    protected String readLine() throws IOException {
+        return readLine(getPrompt());
+    }
     
     // InputPort is for Non prompting data reads 
     public abstract InputPort getInputPort();

@@ -41,11 +41,9 @@ public class ShellIO {
     }
     
     
-    public String readCommandLine( int promptLevel ) throws IOException
+    public String readCommandLine(String prompt) throws IOException
     {
-        return getReader().readLine(promptLevel);
-        
-        
+        return getReader().readLine(prompt);
     }
     
     public void   writeOutputLine( String line ) {

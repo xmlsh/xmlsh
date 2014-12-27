@@ -996,7 +996,7 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt {
 		mConditionDepth--;
 	}
 
-	private boolean isInteractive() {
+	public boolean isInteractive() {
 		return mIsInteractive;
 	}
 
@@ -1052,7 +1052,10 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt {
 			mLogger.error("Exception writing output: " + s, e);
 			return;
 		}
-
+	}
+	
+	public String readCommandLine(String prompt) throws IOException{
+	    return mIO.readCommandLine(prompt);
 	}
 
 

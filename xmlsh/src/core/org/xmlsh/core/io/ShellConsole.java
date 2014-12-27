@@ -81,12 +81,15 @@ public class ShellConsole {
         //    Java does detect a console and TERM=xterm 
         
 
-        boolean useJLineExplicit = Boolean.getBoolean("xmlsh.jline");
-        boolean useJLine = (sJavaConsole != null || useJLineExplicit);
+        
+        String  sUseJLine = System.getProperty("xmlsh.jline");
+        boolean useJLine = 
+                (sUseJLine != null ? Util.parseBoolean(sUseJLine) : 
+                (sJavaConsole != null ));
         
         mLogger.debug("Has Console: {} xmlsh.jline: {} useJLine: {}",
             sJavaConsole != null ,
-            useJLineExplicit,
+            sUseJLine,
             useJLine);
                 
         if ( useJLine )
@@ -150,9 +153,9 @@ public class ShellConsole {
         }
 
         @Override
-        protected String readLine(int promptLevel) {
+        protected String readLine(String prompt) {
 
-            return sJavaConsole.readLine(getPrompt(promptLevel));
+            return sJavaConsole.readLine(prompt);
         }
 
         public InputPort getInputPort()
@@ -180,9 +183,9 @@ public class ShellConsole {
         }
 
         @Override
-        protected String readLine(int promptLevel) throws IOException {
+        protected String readLine(String prompt) throws IOException {
 
-            return jJLineConsole.readLine(getPrompt(promptLevel));
+            return jJLineConsole.readLine(prompt);
         }
 
         public InputPort getInputPort()
