@@ -309,7 +309,8 @@ TOKEN :
   < BACKTICK2 : "`" >
  | < MRBRACE : "}" > : DEFAULT
  | < RSBRACE : "]" > : DEFAULT
- | < LSBRACE : "[" > : DEFAULT 
+ | < LSBRACE : "[" > : DEFAULT
+ | < FOR : "for" > 
 }
 
 // Global patterns 
@@ -428,7 +429,6 @@ TOKEN :{
  */
 TOKEN :
 {  < CATCH : "catch" >
-| < FOR : "for" > 
 | < IF : "if" >| < ELIF : "elif" >| < THEN : "then" >| < ELSE : "else" >| < FI : "fi" >| < DO : "do" > | < CASE : "case" >| < WHILE : "while" >| < UNTIL : "until" >| < TRY : "try" > | < ESAC: "esac" > | < FINALLY : "finally" >
 | < RETURN : "return" > | < DONE : "done" >
 | < IN   : "in" >
@@ -626,7 +626,7 @@ Token eol_or_semi() :
 {
    "{" 
 |  "(" 
-|  "for" 
+|  FOR() 
 |  "case" 
 |  "if" 
 | "try"
@@ -767,12 +767,22 @@ void term_stop_lookahead() :
     
    (        ";;" |  <RPAREN> | <MRBRACE> | "else" | "then" | "do" | "done"  | "fi" | "elif" | <NL > | < RSBRACE >)
 }
-ForClause for_clause() :{  CommandExpr c;  String n;  WordList w = null;  Token t;  ForClause f;}{  t="for" n=varname() linebreak()  (";" linebreak() |
+ForClause for_clause() :{  CommandExpr c;  String n;  WordList w = null;  Token t;  ForClause f;}{  t=FOR() n=varname() linebreak()  (";" linebreak() |
     "in" (
        sequential_sep()
        | w= for_in_words() sequential_sep()
      ) 
   )?  c = do_group()  {    f = new ForClause(n, w, c);    setLocation(f, t);    return f;  }}
+
+Token FOR():
+{
+  Token t;}
+{   ( LOOKAHEAD({ isKind(1,NAME,"for" )}) 
+  t=< NAME >  {
+    t.kind = FOR ;
+    return t;  }
+  )
+}
 
 WordList for_in_words() :
 {  WordList w ;
@@ -794,7 +804,6 @@ Token reserved() :
 {
 }
 {(  < CATCH >
-| < FOR >
 | < IF >
 | < ELIF >
 | < THEN >
