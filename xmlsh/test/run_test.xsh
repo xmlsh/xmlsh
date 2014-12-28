@@ -91,19 +91,23 @@ fi
 if [ -f _err.txt -a -f out/$1.err ] ; then
 	xcmp -b _err.txt out/$1.err 
 	if [ $? -ne 0 ] ; then
-		echo $1 out/$1.err different output
-		diff_text _err.txt out/$1.err
-    if [ $TEST -eq 1 -a -f out/$1.err.$S ] ; then 
+    if [ -s _err.txt -a -s out/$1.err.$S ] ; then
+       echo $1 out/$1.err.$S different output - OK
+    elif [ $TEST -eq 1 -a -f out/$1.err.$S ] ; then
       xcmp -b _err.txt out/$1.err.$S
       if [ $? -ne 0 ] ; then
-        echo $1 out/$1.err.$S different output
-	     	diff_text _err.txt out/$1.err.$S
-         exit 1
+        if  [ -s _err.txt && -s out/$1.err.$S ] ; then
+           echo $1 out/$1.err.$S different output - OK
+        else 
+	     	  diff_text _err.txt out/$1.err.$S
+          exit 1 
+        fi
       else
         echo $1 out/$1.err.$S - OK 
       fi
    else
-     exit 1
+ 	  	diff_text _err.txt out/$1.err
+      exit 1
    fi 
 	fi
 elif [ -s _err.txt ] ; then 

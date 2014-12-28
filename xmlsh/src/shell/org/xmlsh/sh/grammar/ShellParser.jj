@@ -5,9 +5,9 @@ options
 {
   JDK_VERSION = "1.7";
   STATIC = false; 
-// DEBUG_PARSER=true ; 
+// DEBUG_PARSER=true ;
 //   DEBUG_LOOKAHEAD=true;
-//      DEBUG_TOKEN_MANAGER=true;
+//       DEBUG_TOKEN_MANAGER=true;
 // FORCE_LA_CHECK=true;
 //   UNICODE_INPUT=true;
  TOKEN_EXTENDS="XAbstractToken";
@@ -41,6 +41,9 @@ public class ShellParser
   private Logger mLogger = LogManager.getLogger() ;
   private java.io.Reader in;
 
+// REMOVE WITH ANY TRACING
+  private int trace_indent = 0 ; 
+
   /*
    * Active delimiter stack for joinable tokens
    */
@@ -55,9 +58,13 @@ public class ShellParser
 
   }
 
+  public void reset_trace()
+  {      trace_indent = 0 ;
+  }
   public void reset()
   {
-    try    {      
+    reset_trace();
+    try    {      // TURN OFF WITH N
       in.reset();	} catch( Exception e )	{	      }
 
   }
@@ -173,7 +180,9 @@ public class ShellParser
            t.image.equals(value) ;
   }
   public boolean isKind( int pos , int kind , String value ){
-    return isKind( getToken(pos) , kind , value );
+
+    boolean is= isKind( getToken(pos) , kind , value );
+         return is; 
   }
 
   public boolean isWord( Token t , String value ){
@@ -196,7 +205,15 @@ public class ShellParser
    {
      String s = t.toString();
      return s.substring( pre.length() , s.length() - post.length()).trim();
-   }}
+   }
+   public <T> T DEB(T x , String s)    {
+     mLogger.info("DEB:{} return :{}" , s,x);
+     return x;
+   }
+   public void DEB(String s)
+   {     mLogger.info("DEB:{}" , s);
+
+   }     }
 
 PARSER_END(ShellParser)
 
@@ -310,8 +327,28 @@ TOKEN :
  | < MRBRACE : "}" > : DEFAULT
  | < RSBRACE : "]" > : DEFAULT
  | < LSBRACE : "[" > : DEFAULT
- | < FOR : "for" > 
-}
+ | < FOR : "for" >
+ | < IF : "if" >
+ | < CASE : "case" >
+| < WHILE : "while" >
+| < UNTIL : "until" >
+| < TRY : "try" > 
+| < CATCH : "catch" >
+| < ELIF : "elif" >
+| < THEN : "then" >
+| < ELSE : "else" >
+| < FI : "fi" >
+| < DO : "do" > 
+| < ESAC: "esac" > 
+| < FINALLY : "finally" >
+| < RETURN : "return" > 
+| < DONE : "done" >
+| < IN   : "in" >
+| < FUNCTION : "function" >
+| < LOCAL : "local" >
+ 
+
+ }
 
 // Global patterns 
 <DEFAULT>
@@ -428,13 +465,7 @@ TOKEN :{
  * If its an exact match and no longer then these will be triggered first
  */
 TOKEN :
-{  < CATCH : "catch" >
-| < IF : "if" >| < ELIF : "elif" >| < THEN : "then" >| < ELSE : "else" >| < FI : "fi" >| < DO : "do" > | < CASE : "case" >| < WHILE : "while" >| < UNTIL : "until" >| < TRY : "try" > | < ESAC: "esac" > | < FINALLY : "finally" >
-| < RETURN : "return" > | < DONE : "done" >
-| < IN   : "in" >
-| < FUNCTION : "function" >
-| < LOCAL : "local" >
-| < NLESSANDN :  < _DIGITS > "<&" < _DIGITS > > 
+{  < NLESSANDN :  < _DIGITS > "<&" < _DIGITS > > 
 | < NGTANDN   :  < _DIGITS > ">&" < _DIGITS > > 
 | < NLTN      :  < _DIGITS > "<" < _DIGITS >  > 
 | < NGTN      :  < _DIGITS > ">" < _DIGITS >  > 
@@ -599,9 +630,9 @@ Token eol_or_semi() :
   
 }{
 
- LOOKAHEAD( 1 , compound_command_lookahead() ) c = compound_command()   [    r = redirect_list()    {      c.setRedirect(r);    }  ]  {    return c;  }
+  c = compound_command()   [    r = redirect_list()    {      c.setRedirect(r);    }  ]  {    return c;  }
 | 
-  LOOKAHEAD( 1 , <FUNCTION> , { isKind(1, FUNCTION)  })
+  LOOKAHEAD( 1 , FUNCTION() )
   f = function_declaration()
   { 
     return f;
@@ -618,20 +649,6 @@ Token eol_or_semi() :
     return sc;
   }  
 
-}
-
-// Detect the start of a compound command void compound_command_lookahead() :
-{
-}
-{
-   "{" 
-|  "(" 
-|  FOR() 
-|  "case" 
-|  "if" 
-| "try"
-| "while"
-| "until"
 }
 
 
@@ -765,24 +782,241 @@ void term_stop_lookahead() :
 {}
 {
     
-   (        ";;" |  <RPAREN> | <MRBRACE> | "else" | "then" | "do" | "done"  | "fi" | "elif" | <NL > | < RSBRACE >)
+   (        ";;" |  <RPAREN> | <MRBRACE> | ELSE() | THEN() | DO() | DONE() | FI() | ELIF () | <NL > | < RSBRACE >)
 }
 ForClause for_clause() :{  CommandExpr c;  String n;  WordList w = null;  Token t;  ForClause f;}{  t=FOR() n=varname() linebreak()  (";" linebreak() |
-    "in" (
+    IN() (
        sequential_sep()
        | w= for_in_words() sequential_sep()
      ) 
   )?  c = do_group()  {    f = new ForClause(n, w, c);    setLocation(f, t);    return f;  }}
 
+
+/*
+ * RESERVED WORD PRODUCTIONS
+ */
 Token FOR():
 {
-  Token t;}
-{   ( LOOKAHEAD({ isKind(1,NAME,"for" )}) 
-  t=< NAME >  {
-    t.kind = FOR ;
-    return t;  }
+}
+{  ( LOOKAHEAD( { isKind(1,NAME,"for" )}) < NAME >  {
+   return token ;  }
   )
 }
+Token IF():
+{
+}
+{
+   ( LOOKAHEAD( { isKind(1,NAME,"if" )})  < NAME > 
+   {
+   return token ;
+  }
+  )
+}
+
+Token CASE():
+{
+  Token t ;
+}
+{
+   ( LOOKAHEAD( { isKind(1,NAME,"case" ) }) < NAME >
+  {
+   return DEB(token,"got case"); 
+  }
+  )
+}
+
+Token TRY():
+{
+}
+{
+  ( LOOKAHEAD( { isKind(1,NAME,"try" )}) < NAME >
+  {
+   return token ;
+  }
+  )
+}
+
+
+Token WHILE():
+{
+}
+{
+  ( LOOKAHEAD( { isKind(1,NAME,"while" )}) < NAME >
+  {
+   return token ;
+  }
+  )
+}
+
+
+Token UNTIL():
+{
+}
+{
+  ( LOOKAHEAD( { isKind(1,NAME,"until" )}) < NAME >
+  {
+   return token ;
+  }
+  )
+}
+
+
+
+Token CATCH():
+{
+}
+{
+  ( LOOKAHEAD( { isKind(1,NAME,"catch" )}) < NAME >
+  {
+   return token ;
+  }
+  )
+}
+
+
+
+Token ELIF():
+{
+}
+{
+  ( LOOKAHEAD( { isKind(1,NAME,"elif" )}) < NAME >
+  {
+   return token ;
+  }
+  )
+}
+
+Token THEN():
+{
+}
+{
+  ( LOOKAHEAD( { isKind(1,NAME,"then" )}) < NAME >
+  {
+   return token ;
+  }
+  )
+}
+
+
+
+Token ELSE():
+{
+}
+{
+  ( LOOKAHEAD( { isKind(1,NAME,"else" )}) < NAME >
+  {
+   return token ;
+  }
+  )
+}
+
+
+Token FI():
+{
+}
+{
+  ( LOOKAHEAD( { isKind(1,NAME,"fi" )}) < NAME >
+  {
+   return token ;
+  }
+  )
+}
+
+
+
+
+Token DO():
+{
+}
+{
+  ( LOOKAHEAD( { isKind(1,NAME,"do" )}) < NAME >
+  {
+   return token ;
+  }
+  )
+}
+
+
+Token ESAC():
+{
+}
+{
+  ( LOOKAHEAD( { isKind(1,NAME,"esac" )}) < NAME >
+  {
+   return token ;
+  }
+  )
+}
+
+
+Token FINALLY():
+{
+}
+{
+  ( LOOKAHEAD( { isKind(1,NAME,"finally" )}) < NAME >
+  {
+   return token ;
+  }
+  )
+}
+
+
+Token RETURN():
+{
+}
+{
+  ( LOOKAHEAD( { isKind(1,NAME,"return" )}) < NAME >
+  {
+   return token ;
+  }
+  )
+}
+
+Token DONE():
+{
+}
+{
+  ( LOOKAHEAD( { isKind(1,NAME,"done" )}) < NAME >
+  {
+   return token ;
+  }
+  )
+}
+
+Token IN():
+{
+}
+{
+  ( LOOKAHEAD( { isKind(1,NAME,"in" )}) < NAME >
+  {
+   return token ;
+  }
+  )
+}
+
+Token FUNCTION():
+{
+}
+{
+  ( LOOKAHEAD( { isKind(1,NAME,"function" )}) < NAME >
+  {
+   return token ;
+  }
+  )
+}
+
+
+Token LOCAL():
+{
+}
+{
+  ( LOOKAHEAD( { isKind(1,NAME,"local" )}) < NAME >
+  {
+   return token ;
+  }
+  )
+}
+
 
 WordList for_in_words() :
 {  WordList w ;
@@ -792,66 +1026,21 @@ WordList for_in_words() :
 	   return w ;
 	} 
 }
-TryCatchFinally trycatch_clause() :{  CommandExpr cTry, cCatch, cFinally = null;  String sCatch;}{  "try" linebreak() < LBRACE > cTry = compound_list() < MRBRACE > linebreak()   "catch" sCatch = varname()  linebreak() < LBRACE > cCatch = compound_list() < MRBRACE >   [ "finally" linebreak() < LBRACE > cFinally = compound_list() < MRBRACE > ]  {    return new TryCatchFinally(cTry, sCatch, cCatch, cFinally);  }}
+TryCatchFinally trycatch_clause() :{  CommandExpr cTry, cCatch, cFinally = null;  String sCatch;}{  TRY() linebreak() < LBRACE > cTry = compound_list() < MRBRACE > linebreak()   CATCH() sCatch = varname()  linebreak() < LBRACE > cCatch = compound_list() < MRBRACE >   [ FINALLY() linebreak() < LBRACE > cFinally = compound_list() < MRBRACE > ]  {    return new TryCatchFinally(cTry, sCatch, cCatch, cFinally);  }}
 
 
-// Any word that passes the varname testString varname() :{  Token t;}{  LOOKAHEAD(1,reserved()) t=reserved()
-  {    return t.toString() ;
-  }
-| t=< NAME >  {    return t.toString() ;
+// Any word that passes the varname testString varname() :{  Token t;}{ t=< NAME >  {    return t.toString() ;
  }}
-Token reserved() :
-{
-}
-{(  < CATCH >
-| < IF >
-| < ELIF >
-| < THEN >
-| < ELSE >
-| < FI >
-| < DO >
-| < CASE >
-| < WHILE >
-| < UNTIL >
-| < TRY >
-| < ESAC >
-| < FINALLY >
-| < RETURN >
-| < DONE >
-| < IN > 
-| < LOCAL > 
-| < FUNCTION > )
-{   return token ;
- }
-}
 
-
-/*
-String wordname() :{  Token t;}{
-  LOOKAHEAD(1,reserved()) t=reserved()
-  {    return t.toString();
-   }
-| < GLOB : < _GLOB > >
- {
-    return token.toString();
-  } 
-|  <NAME>          { return token.toString(); }
-| < WORD >         { return token.toString(); }
-| < XEXPR >        { return token.toString(); }| < BIGQUOTE >     { return token.toString(); }
-
- 
-}
-
-
-*/WordList wordlist() :{  WordList list = new WordList();  Word w;}{  (    w = expr()    {      list.add(w);    }  )+  {    return list;  }}CaseClause case_clause() :{  Word s;  CaseList l = null;
-  Token t;}{   t="case" s = expr() "in"
+WordList wordlist() :{  WordList list = new WordList();  Word w;}{  (    w = expr()    {      list.add(w);    }  )+  {    return list;  }}CaseClause case_clause() :{  Word s;  CaseList l = null;
+  Token t;}{   t=CASE() s = expr() IN()
   linebreak()  l = case_list()   {   CaseClause c= new CaseClause(s, l);
    setLocation(c,t);
    return c ;   }}CaseList case_list() :{  CaseList list = new CaseList();  CaseItem c;}{
    (
-     LOOKAHEAD( 1 , "esac"  ) "esac" 
+     ESAC()
      {
-       return list ;
+       return list ; 
      }
   |     
      c = case_item()     {
@@ -891,7 +1080,7 @@ Word pattern_word() :
     }
 }
 
-IfClause if_clause() :{  CommandExpr ip = null, tp = null, ep = null;  Token t;  IfClause ifc;}{  t ="if" ip = compound_list() "then" tp = compound_list()  [    LOOKAHEAD(1, ( < ELIF > | < ELSE > ) )    ep = else_part()  ]  "fi"  {    ifc = new IfClause(ip, tp, ep);    setLocation(ifc, t);    return ifc;  }}CommandExpr else_part() :{  CommandExpr ip = null, tp = null, ep = null;}{  "elif" ip = compound_list() "then" tp = compound_list() [ ep = else_part() ]  {    return new IfClause(ip, tp, ep);  }|   "else" ep = compound_list()  {    return ep;  }}WhileClause while_clause() :{  CommandExpr w, d;}{  "while" w = compound_list() d = do_group()  {    return new WhileClause(w, d);  }}UntilClause until_clause() :{  CommandExpr w, d;}{  "until" w = compound_list() d = do_group()  {    return new UntilClause(w, d);  }}
+IfClause if_clause() :{  CommandExpr ip = null, tp = null, ep = null;  Token t;  IfClause ifc;}{  t = IF() ip = compound_list() THEN() tp = compound_list()  [    LOOKAHEAD(1, ( ELIF() | ELSE() ) )    ep = else_part()  ]  FI()  {    ifc = new IfClause(ip, tp, ep);    setLocation(ifc, t);    return ifc;  }}CommandExpr else_part() :{  CommandExpr ip = null, tp = null, ep = null;}{  ELIF() ip = compound_list() THEN() tp = compound_list() [ ep = else_part() ]  {    return new IfClause(ip, tp, ep);  }|   ELSE() ep = compound_list()  {    return ep;  }}WhileClause while_clause() :{  CommandExpr w, d;}{  WHILE() w = compound_list() d = do_group()  {    return new WhileClause(w, d);  }}UntilClause until_clause() :{  CommandExpr w, d;}{  UNTIL() w = compound_list() d = do_group()  {    return new UntilClause(w, d);  }}
 ReturnStatement return_stmt() :
 {
   Word w = null ;
@@ -899,7 +1088,7 @@ ReturnStatement return_stmt() :
   ReturnStatement rs;
 }
 {
-  t="return"
+  t=RETURN()
 
   [ w= expr() ]
   {
@@ -956,7 +1145,12 @@ WordList brace_expr_list() :
 FunctionDeclaration function_declaration() :{  Token t;  CompoundCommandExpr b;  SourceLocation parentLoc ;
   SourceLocation funcLoc ;
 }{
-  (   <FUNCTION> t=<NAME>  [ <LPAREN> <RPAREN> ]     |  t=<NAME> <LPAREN> <RPAREN> )  {
+  // function name { ||
+  // name()
+  // function name ()        
+  (     FUNCTION() t=<NAME > [ <LPAREN> <RPAREN> ]
+  |  t=< NAME > <LPAREN > <RPAREN > )
+    {
      parentLoc = setParentLocation( funcLoc = getLocation( t ) );
   }
   linebreak() b = function_body()  {
@@ -970,7 +1164,7 @@ WordList brace_expr_list() :
   }}
 
 CompoundCommandExpr function_body() :{  CompoundCommandExpr c;}{  c = compound_command()  {
-    setLocation(c);    return c;  }}BraceGroup brace_group() :{  CommandExpr c;}{  < LBRACE > c = compound_list() < MRBRACE >  {    return new BraceGroup(c);  }}CommandExpr do_group() :{  CommandExpr c;}{  "do" c = compound_list() "done"  {    return c;  }}CommandExpr simple_command() :{  Word c = null;
+    setLocation(c);    return c;  }}BraceGroup brace_group() :{  CommandExpr c;}{  < LBRACE > c = compound_list() < MRBRACE >  {    return new BraceGroup(c);  }}CommandExpr do_group() :{  CommandExpr c;}{  DO() c = compound_list() DONE()  {    return c;  }}CommandExpr simple_command() :{  Word c = null;
   WordList wl =  null;
   IORedirectList redir = null ;  Token t = null;
   CommandPrefixExpr p = null ;
@@ -979,7 +1173,7 @@ WordList brace_expr_list() :
   CommandSuffixExpr s;
 }{
   // Special case for return statement - bad desig
-   LOOKAHEAD( 1, <RETURN >  ) rs=return_stmt()
+   LOOKAHEAD( 1, RETURN()  ) rs=return_stmt()
   {
     return rs ;
   }
@@ -1033,17 +1227,12 @@ Word var_expansion() :
 }
 {
 
-  LOOKAHEAD(1,reserved()) t=reserved()
-  {
-     return  new StringWord(t) ;
-   }
 
-
- |  ( ( <NAME>  |  < WORD > )
+   ( ( <NAME>  |  < WORD > )
      { w= newJoinedWord( token) ; } 
      | w=var_expansion() ) 
      (
-        LOOKAHEAD( 1, ( reserved() | var_expansion() | <NAME> |  < WORD > ) , 
+        LOOKAHEAD( 1, (  var_expansion() | <NAME> |  < WORD > ) , 
 	       {  isJoinable( getToken(1) ) } )	           n=cmd_name_word()  )?
   {
       return newJoinedWord( w, n );
@@ -1062,11 +1251,11 @@ Word word_or_name() :
 	   return new DelimWord( token ) ;
 	 }
  | (  
-      (   t=reserved()  | t=< ARRAY_WORD > |   t=<ASSIGN_WORD_EQ> |  t=<WORD > |t=<NAME>  )
+      (  t=< ARRAY_WORD > |   t=<ASSIGN_WORD_EQ> |  t=<WORD > |t=<NAME>  )
               { w = newJoinedWord(t) ;  } 
     | w  = var_expansion()  
    )   (
-         LOOKAHEAD( 1 , ( reserved() | var_expansion() | < ARRAY_WORD >|  <ASSIGN_WORD_EQ>  | <WORD > | <NAME>  ),
+         LOOKAHEAD( 1 , (  var_expansion() | < ARRAY_WORD >|  <ASSIGN_WORD_EQ>  | <WORD > | <NAME>  ),
             {  isJoinable(getToken(1))} )     
                n=word_or_name()
      )?
@@ -1136,12 +1325,12 @@ WordList function_args() :{  WordList wl = new WordList();  Word w;}{
   Word ind = null ;  WordList ws;  String s;
   Token local = null ;}{ 
 
-  LOOKAHEAD( 2 , <LOCAL> <NAME> )  <LOCAL> t1 = < NAME > 
+  LOOKAHEAD( 2 , LOCAL() <NAME> )  LOCAL()  t1 = < NAME > 
   {
     s = t1.toString();
     return new Assign(true , "=" , s , "=",new StringWord(t1,""));
   }
-|   [ local=<LOCAL> ] 
+|   [ local=LOCAL()  ] 
    (
       t1=< ASSIGN_WORD_EMPTYBRACE >
       {

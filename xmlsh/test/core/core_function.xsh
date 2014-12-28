@@ -17,7 +17,7 @@ function bar()
   local _A=bar
 }
 
-# Alternate function syntax
+# Alternate function syntax  # really obscure
 function spam
 {
    echo in spam

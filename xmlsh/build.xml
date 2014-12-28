@@ -40,7 +40,7 @@
 	</target>
 	  
 	<target name="build" depends="clean, compile, jar">
-		<subant target="compile" buildpath="test/src">
+		<subant target="build" buildpath="test/src">
 			<property name="xmlsh.root" value="${xmlsh.root}"/>
 		</subant>
 	</target>
