@@ -23,7 +23,10 @@ public class CommandExprList extends CommandExpr
 
 
 	public void add( CommandExpr cmd ) {
-		mList.add(cmd);
+	   if( cmd instanceof CommandExprList )
+	       mList.addAll( ((CommandExprList)cmd).mList);
+	    else
+		   mList.add(cmd);
 	}
 
 

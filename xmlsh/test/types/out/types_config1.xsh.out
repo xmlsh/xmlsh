@@ -1,5 +1,5 @@
 [10] parameter 1
-[11] aws default servers servers.server1 params section
+[11] aws default params section servers servers.server1
 [12] parameter 2
 [13] parameter 2
 [14] TBD dotted properties

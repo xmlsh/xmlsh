@@ -361,7 +361,7 @@ public class XConfiguration implements IXValueContainer, IXValueMap {
         
         // TODO handle  [a.b] c.d=value   , [a.b.c] d=value
         StringPair pair = new StringPair( key , ShellConstants.kDOT_CHAR, false );
-        return containsKey( pair.getLeft() , pair.getRight());
+        return pair.hasLeft() ? containsKey( pair.getLeft() , pair.getRight()) : false ;
         
         
     }

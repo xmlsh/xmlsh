@@ -68,17 +68,17 @@ elif [ -f out/$1.xml ] ; then
 	if [ $? -ne 0 ] ; then
 		echo $1 out/$1.xml different output
 		diff_xml _out.txt out/$1.xml
-  if [ $TEST -eq 1 -a -f out/$1.xml.$S ] ; then 
+    if [ $TEST -eq 1 -a -f out/$1.xml.$S ] ; then 
       xcmp -x -b _out.txt out/$1.xml.$S
       if [ $? -ne 0 ] ; then
         echo $1 out/$1.xml.$S different output
-	     	diff_xml _out.txt out/$1.xml.$S
+        diff_xml _out.txt out/$1.xml.$S
          exit 1
       else
         echo $1 out/$1.xml.$S - OK 
       fi
-   else
-     exit 1
+    else
+       exit 1
    fi
 	fi
 	[ -f _out.txt ] && rm _out.txt

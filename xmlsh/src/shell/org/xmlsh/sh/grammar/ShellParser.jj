@@ -674,55 +674,27 @@ Token eol_or_semi() :
 CommandExpr list() :
 {
   CommandExprList list = null;
-  CommandExpr first;
+  CommandExpr expr;
   String op = null;
 }
 {
-  first = and_or()
+  expr = and_or()
   (
 	    LOOKAHEAD( separator_op() term_stop_lookahead() )  op=separator_op()
-	    {	      first.setSeparator(op);
+	    {	      expr.setSeparator(op);
+	      return expr ;
 	    }
 	  | LOOKAHEAD( separator_op() )  op = separator_op()
-	    {	       first.setSeparator( op );
+	    {	       expr.setSeparator( op );
+	       list = new CommandExprList(expr);
 	    }
-	    list=list2( new CommandExprList(first))
-  ) ?
+	    expr  = list()	    {
+	      list.add(expr);	    }
+  ) *
 	  {
-	    return list == null ? first : list;
+	    return list == null ? expr : list;
 	  }
 }
-
-
-CommandExprList list2(CommandExprList list) :
-{
-  String op = null;
-  CommandExpr first ;
-}
-{
-  <EOF>
-  { return list ; }
-|
-  first = list()
-  {
-    list.add(first);
-  }
-  (
-       LOOKAHEAD( separator_op() term_stop_lookahead() )  op=separator_op()
-       {
-         first.setSeparator(op);
-       }
-  |   LOOKAHEAD( separator_op() )  op = separator_op()
-	  {
-       first.setSeparator( op );
-      }
-      list=list2( list )
-  ) ?
-  {
-    return list ;
-  }
-}
-
 
 /*
  * term() only occurs in compound_list
@@ -731,46 +703,25 @@ CommandExprList list2(CommandExprList list) :
  *
  * Implement term as a sequence of lists 
  */
-CommandExpr term() :{  CommandExpr first;
-  CommandExpr next ;  CommandExprList list = null ;}{  first = list()
-
+CommandExpr term() :{  CommandExpr expr;
+  CommandExpr next ;  CommandExprList list = null ;}{  expr = list()
   (    	LOOKAHEAD( (< NL >)+ term_stop_lookahead() ) (< NL >)+
 	    {
-	       first.setSeparator("\n");	     }     |   
-	    (< NL >)+	     {
-	       first.setSeparator("\n");
+	       expr.setSeparator("\n");
+	       return expr;
+	       	     }     |   
+	  	LOOKAHEAD( (< NL >)+ )  (< NL >)+	     {
+	       expr.setSeparator("\n");
+           list = new CommandExprList(expr); 
 	     }
-         list = term2( new CommandExprList(first)  ) 
-  ) ?
-  {    return list != null ? list : first ;  }
+	     expr = term()
+         {           list.add(expr);
+         }
+           
+  ) *
+  {    return list != null ? list : expr ;  }
 }
 
-
-CommandExprList term2(CommandExprList list) :
-{
-  
-  CommandExpr first ;
-}
-{
-  first = list()
-  {    list.add(first);
-  }
-  (
-    LOOKAHEAD( (< NL >)+ term_stop_lookahead() ) (< NL >)+
-      {
-	       first.setSeparator("\n");
-	  }
-  |    
-	    (< NL >)+
-	     {
-	       first.setSeparator("\n");
-	     }
-         list = term2( list  ) 
-  ) ?
-  {
-    return list ;
-  }
-}
 
 
 /*
