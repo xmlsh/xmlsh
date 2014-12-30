@@ -1,0 +1,12 @@
+[42] Source of $T4 Should Succeed
+[2] This is an xsh script
+[45] VAR is now 2
+[46] Source of ${T}3 Should Succeed and resolve to $T3
+[2] This is an xsh script
+[49] Should fail to run
+[2] THIS IS A DOS BAT SCRIPT
+[52] Should fail to run
+[2] THIS IS A DOS BAT SCRIPT
+[55] Should Succeed
+[2] This is an xsh script
+[56] SUCCEEDED

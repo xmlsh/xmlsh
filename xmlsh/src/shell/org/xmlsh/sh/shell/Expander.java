@@ -312,7 +312,7 @@ public class Expander
     Variables variables = shell.getEnv().getVars();
     Collection<String> varnames = variables.getVarNames();
 
-    NameValueMap<XdmValue> usedVars = new NameValueMap<XdmValue>(args.size() + varnames.size());
+    NameValueMap<XdmValue> usedVars = new NameValueMap<XdmValue>();
 
     for (String name : varnames) {
       XVariable var = variables.get(name);

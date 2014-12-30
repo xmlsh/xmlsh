@@ -91,7 +91,7 @@ fi
 if [ -f _err.txt -a -f out/$1.err ] ; then
 	xcmp -b _err.txt out/$1.err 
 	if [ $? -ne 0 ] ; then
-    if [ -s _err.txt -a -s out/$1.err.$S ] ; then
+    if [ -s _err.txt -a -s out/$1.err ] ; then
        echo $1 out/$1.err.$S different output - OK
     elif [ $TEST -eq 1 -a -f out/$1.err.$S ] ; then
       xcmp -b _err.txt out/$1.err.$S
