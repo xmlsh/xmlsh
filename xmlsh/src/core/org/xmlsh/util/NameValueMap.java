@@ -7,6 +7,7 @@
 package org.xmlsh.util;
 
 import java.util.HashMap;
+import java.util.TreeMap;
 
 /*
  * A Name/Value map that maps String to templated type and has iterators
@@ -18,17 +19,13 @@ import java.util.HashMap;
 
 
 @SuppressWarnings("serial")
-public class NameValueMap<T> extends HashMap<String,T> implements Cloneable {
+public class NameValueMap<T> extends TreeMap<String,T> implements Cloneable {
 
 	/*
 	 * Default Constructor
 	 */
 	public	NameValueMap()
 	{}
-
-  public  NameValueMap(int size) {
-    super(size);
-  }
 
 
 	/*
