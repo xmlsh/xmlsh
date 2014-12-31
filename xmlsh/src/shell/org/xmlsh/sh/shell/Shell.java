@@ -372,13 +372,13 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt {
 
 		getEnv().setVar(
 				ShellConstants.ENV_TMPDIR,
-				XValue.newInstance(FileUtils.toJavaPath(System
+				XValue.newXValue(FileUtils.toJavaPath(System
 						.getProperty(ShellConstants.PROP_JAVA_IO_TMPDIR))));
 
 		if (getEnv().getVar(ShellConstants.ENV_HOME) == null)
 			getEnv().setVar(
 					ShellConstants.ENV_HOME,
-					XValue.newInstance(FileUtils.toJavaPath(System
+					XValue.newXValue(FileUtils.toJavaPath(System
 							.getProperty(ShellConstants.PROP_USER_HOME))));
 
 	}

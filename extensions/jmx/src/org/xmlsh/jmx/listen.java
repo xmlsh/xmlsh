@@ -45,12 +45,12 @@ public class listen extends JMXCommand {
 				mShell.getEnv().setStdin(new NullInputStream());
 				mShell.setArg0("listen");
 				List<XValue> args = new ArrayList<XValue>();
-				args.add( new XValue( TypeFamily.XTYPE , notification.getSource() ));			// $1 == source 
-				args.add( new XValue( notification.getType()));				// $2 == type
-				args.add( new XValue( notification.getTimeStamp() ));		// $3 == timestamp
-				args.add( new XValue( notification.getSequenceNumber() )); 	// $4 == sequence#
-				args.add( new XValue( notification.getMessage())); 			// $5 == message
-				args.add( new XValue(  TypeFamily.XTYPE , notification.getUserData() ));		// $6 == userdata
+				args.add( XValue.newXValue( TypeFamily.XTYPE , notification.getSource() ));			// $1 == source 
+				args.add( XValue.newXValue( notification.getType()));				// $2 == type
+				args.add( XValue.newXValue( notification.getTimeStamp() ));		// $3 == timestamp
+				args.add( XValue.newXValue( notification.getSequenceNumber() )); 	// $4 == sequence#
+				args.add( XValue.newXValue( notification.getMessage())); 			// $5 == message
+				args.add( XValue.newXValue(  TypeFamily.XTYPE , notification.getUserData() ));		// $6 == userdata
 
 				
 				mShell.setArgs(args);

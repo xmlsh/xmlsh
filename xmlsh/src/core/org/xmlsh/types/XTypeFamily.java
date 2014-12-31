@@ -198,7 +198,7 @@ public class XTypeFamily extends AbstractTypeFamily implements ITypeFamily
         return (XValue) obj;
       if( isInstanceOfFamily( obj ) ) 
         return XValue.newXValue( this , obj , false );
-      return XValue.newInstance(obj);
+      return XValue.newXValue(obj);
 
     }
 

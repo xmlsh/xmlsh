@@ -186,7 +186,7 @@ public class XmlshServlet extends HttpServlet {
 			while( names.hasMoreElements() ){
 				String name = (String) names.nextElement();
 				String value = request.getParameter(name);
-				env.setVar(name, XValue.newInstance(value));
+				env.setVar(name, XValue.newXValue(value));
 			}
 
 

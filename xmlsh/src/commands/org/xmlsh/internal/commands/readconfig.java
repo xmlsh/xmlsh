@@ -32,7 +32,7 @@ public class readconfig extends XCommand
     @Override
     protected XValue parseValue(String currentSection, String name, String value) throws InvalidArgumentException
     {
-      return XValue.newInstance(value);
+      return XValue.newXValue(value);
     }
   }
 

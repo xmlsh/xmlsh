@@ -27,7 +27,7 @@ public class XValueProperties extends XValueMap {
 
     public XValueProperties(Map<?, ?> map) throws InvalidArgumentException {
         for (Map.Entry<?, ?> e : map.entrySet()) {
-            super.put(e.getKey().toString(), XValue.newInstance(e.getValue()));
+            super.put(e.getKey().toString(), XValue.newXValue(e.getValue()));
         }
     }
 

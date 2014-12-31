@@ -103,11 +103,11 @@ public class OptionsModule extends Types {
 	  {
 		  if( args.size() !=2 ||! args.get(0).isInstanceOf( Options.class)){
 		    	usage(shell, "has-opt( options option-name");
-			    return XValue.newInstance(false);
+			    return XValue.newXValue(false);
 		    }
 		    Options opts = args.get(0).asInstanceOf(Options.class );   
 		    String name = args.get(1).toString();
-		    return XValue.newInstance( opts.hasOpt(name));
+		    return XValue.newXValue( opts.hasOpt(name));
 	  }
 
 	}

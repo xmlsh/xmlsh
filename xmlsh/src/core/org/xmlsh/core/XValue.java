@@ -216,19 +216,6 @@ public class XValue implements Iterable<XValue>
 
   }
 
-  /*
-   * Prefered way create an XValue from an object - does NOT unwrap an existing XValue
-   */
-  public static XValue newInstance(Object obj) throws InvalidArgumentException
-  {
-    if(obj == null)
-      return nullValue();
-
-    assert (obj == null || !(obj instanceof XValue));
-
-    return XValue.newXValue(obj);
-
-  }
 
   public static XValue newXValue(BigDecimal n)
   {
@@ -832,7 +819,7 @@ public class XValue implements Iterable<XValue>
     if(seq.size() <= n)
       return empytSequence();
 
-    return XValue.newInstance(seq.subSequence(n));
+    return XValue.newXValue(seq.subSequence(n));
   }
 
   public BigDecimal toBigDecimal() throws XPathException

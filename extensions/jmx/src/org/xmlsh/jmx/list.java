@@ -22,8 +22,8 @@ import javax.management.remote.JMXConnector;
 import javax.xml.stream.XMLStreamException;
 
 import org.xmlsh.core.Options;
-import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.XValue;
+import org.xmlsh.core.io.OutputPort;
 import org.xmlsh.jmx.util.JMXCommand;
 import org.xmlsh.sh.shell.SerializeOpts;
 

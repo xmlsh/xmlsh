@@ -376,7 +376,7 @@ public abstract  class XVariable {
 
 	public static  XVariable newInstance(String name , String value ) throws InvalidArgumentException
 	{
-		return new XValueVariable(name, XValue.newInstance(value),XVAR_STANDARD);
+		return new XValueVariable(name, XValue.newXValue(value),XVAR_STANDARD);
 
 	}
 	// Catch bad calls !
@@ -392,7 +392,7 @@ public abstract  class XVariable {
 	public static  <T extends Object> XVariable newInstance(String name , T value ) throws InvalidArgumentException
 	{
 		mLogger.entry(name,value);
-		return new XValueVariable(name, XValue.newInstance(value),XVAR_STANDARD);
+		return new XValueVariable(name, XValue.newXValue(value),XVAR_STANDARD);
 	}
 
 	public static  XVariable anonymousInstance( ) {
@@ -411,7 +411,7 @@ public abstract  class XVariable {
 
 	public static <T extends Object> XVariable anonymousInstance(T value ) throws InvalidArgumentException
 	{
-		return new XValueVariable(null, XValue.newInstance(value),XVAR_STANDARD);
+		return new XValueVariable(null, XValue.newXValue(value),XVAR_STANDARD);
 	} 
 
 	public static EnumSet<XVarFlag> systemFlags()
