@@ -20,6 +20,7 @@ options
 PARSER_BEGIN(ShellParser)
 package org.xmlsh.sh.grammar;
 import org.xmlsh.sh.core.*;
+import org.xmlsh.util.Util;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import org.xmlsh.core.XEnvironment;
@@ -213,7 +214,19 @@ public class ShellParser
    public void DEB(String s)
    {     mLogger.info("DEB:{}" , s);
 
-   }     }
+   }
+     boolean isTermStop( Token t )     {       //        ";;" |  <RPAREN> | <MRBRACE> | ELSE() | THEN() | DO() | DONE() | FI() | ELIF () | <NL > | < RSBRACE >)
+       switch( t.kind )       {         case DSEMI: case RPAREN: case MRBRACE :
+         case NL: case RSBRACE :
+           return true ;
+         case WORD:
+         case NAME:
+         if( Util.isOneOf( t.image , "else","then","do","done","fi","elif" ) )
+           return true ;
+         default :
+           return false ;
+        }
+      }}
 
 PARSER_END(ShellParser)
 
@@ -680,16 +693,16 @@ CommandExpr list() :
 {
   expr = and_or()
   (
-	    LOOKAHEAD( separator_op() term_stop_lookahead() )  op=separator_op()
-	    {	      expr.setSeparator(op);
-	      return expr ;
+      LOOKAHEAD(1,separator_op())
+      op=separator_op()
+       {
+	      expr.setSeparator(op);
+          if( isTermStop(getToken(1) ))
+            return expr;
+                      list = new CommandExprList(expr);
 	    }
-	  | LOOKAHEAD( separator_op() )  op = separator_op()
-	    {	       expr.setSeparator( op );
-	       list = new CommandExprList(expr);
-	    }
-	    expr  = list()	    {
-	      list.add(expr);	    }
+	 expr  = list()	  {
+	      list.add(expr);	  }
   ) *
 	  {
 	    return list == null ? expr : list;
@@ -705,17 +718,15 @@ CommandExpr list() :
  */
 CommandExpr term() :{  CommandExpr expr;
   CommandExpr next ;  CommandExprList list = null ;}{  expr = list()
-  (    	LOOKAHEAD( (< NL >)+ term_stop_lookahead() ) (< NL >)+
-	    {
-	       expr.setSeparator("\n");
-	       return expr;
-	       	     }     |   
-	  	LOOKAHEAD( (< NL >)+ )  (< NL >)+	     {
-	       expr.setSeparator("\n");
+  (  LOOKAHEAD(1,<NL >)
+    ( < NL >) +
+    {	       expr.setSeparator("\n");
+	       if(  isTermStop( getToken(1) ) )
+	         return expr;
            list = new CommandExprList(expr); 
-	     }
-	     expr = term()
-         {           list.add(expr);
+	 }
+	 expr = term()
+       {           list.add(expr);
          }
            
   ) *
@@ -723,19 +734,7 @@ CommandExpr term() :{  CommandExpr expr;
 }
 
 
-
-/*
- * Used ONLY to determine if to go into an and_or from a term
- * Do this by terminating on
- * ;; ) } else then do done elif fi 
- */
-void term_stop_lookahead() :
-{}
-{
-    
-   (        ";;" |  <RPAREN> | <MRBRACE> | ELSE() | THEN() | DO() | DONE() | FI() | ELIF () | <NL > | < RSBRACE >)
-}
-ForClause for_clause() :{  CommandExpr c;  String n;  WordList w = null;  Token t;  ForClause f;}{  t=FOR() n=varname() linebreak()  (";" linebreak() |
+ForClause for_clause() :{  CommandExpr c;  String n;  WordList w = null;  Token t;  ForClause f;}{  t=FOR() n=varname() linebreak()  (";" linebreak() |
     IN() (
        sequential_sep()
        | w= for_in_words() sequential_sep()
@@ -988,7 +987,7 @@ WordList for_in_words() :
   linebreak()  l = case_list()   {   CaseClause c= new CaseClause(s, l);
    setLocation(c,t);
    return c ;   }}CaseList case_list() :{  CaseList list = new CaseList();  CaseItem c;}{
-   (
+   ( LOOKAHEAD(1,ESAC())
      ESAC()
      {
        return list ; 
@@ -1099,7 +1098,8 @@ WordList brace_expr_list() :
   // function name { ||
   // name()
   // function name ()        
-  (     FUNCTION() t=<NAME > [ <LPAREN> <RPAREN> ]
+  (
+    LOOKAHEAD(1,FUNCTION())     FUNCTION() t=<NAME > [ <LPAREN> <RPAREN> ]
   |  t=< NAME > <LPAREN > <RPAREN > )
     {
      parentLoc = setParentLocation( funcLoc = getLocation( t ) );
@@ -1255,10 +1255,9 @@ Word word_or_name() :
 
 WordList function_args() :{  WordList wl = new WordList();  Word w;}{
    ( 
-   
-    (<NL>)+ 
-   |
+    (LOOKAHEAD(1) <NL>)*
      w = expr()     {      wl.add(w);    }
+    ( LOOKAHEAD(1) < NL >)*      
   )*
   
     <RPAREN> {
@@ -1406,7 +1405,7 @@ void newline_list() :
 void linebreak() :
 {}
 {
-  ( < NL >)*
+  ( LOOKAHEAD(1) < NL >)*
 }
 
 /*
