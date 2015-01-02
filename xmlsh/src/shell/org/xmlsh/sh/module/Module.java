@@ -77,7 +77,6 @@ public abstract class Module implements IModule {
 		// Names start with primary name and may have aliases
 		for( String name : names ){
 			synchronized( mFunctionClassCache ){
-
 			Class<?> exists = mFunctionClassCache.get(name);
 			if( exists == null )
 	    		mFunctionClassCache.put( name ,  cls  );
@@ -94,6 +93,12 @@ public abstract class Module implements IModule {
 		cacheClass( cls.getName() , cls );
 	}
 		
+	
+	   protected void cacheCommandClass(List<String> names, Class<?> cls) { 
+	       cacheFunctionClass( names , cls );
+	   }
+
+	       
 	// 
 	// Reset the modules ClassLoader to be a new one child of the current one
 	private synchronized void chainClassLoader(Shell shell, List<URL> urls) throws CoreException {
@@ -166,6 +171,15 @@ public abstract class Module implements IModule {
 		   return mFunctionClassCache.get(className);
 		}
 	}
+	
+       protected Class<?> findCommandClass(String className) {
+    
+            synchronized( mFunctionClassCache ){
+               return mFunctionClassCache.get(className);
+            }
+        }
+
+	   
 
 	protected URL findResourceInPackages(String name, List<String> packages) {
 		/*

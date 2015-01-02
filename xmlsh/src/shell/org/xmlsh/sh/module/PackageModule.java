@@ -83,15 +83,17 @@ public class PackageModule extends Module {
 
 		// Store the camel name not the hyphen name
 		String origName = name;
+		
+        Class<?> cls = findCommandClass( name );
 
 		/*
 		 * First try to find a class that matches name
 		 */
 
 		try {
-
-			// Cached in AbstractModule
-			Class<?> cls = findClass(name, getPackages());
+            if( cls == null )
+                // Cached in AbstractModule
+                  cls = findClass(name, getPackages());
 			if (cls != null) {
 				if( AnnotationUtils.isCommandClass( cls )){
 				Constructor<?> constructor = cls.getConstructor();
@@ -382,13 +384,19 @@ public class PackageModule extends Module {
 		mLogger.entry(shell, cls);
 		
 		List<String> names = AnnotationUtils.getFunctionNames(cls);
-
 		// Look for functions 
 		if( ! Util.isEmpty(names) ){
+		    mLogger.debug("found function annotations {}" , names );
 			cacheFunctionClass( names , cls );
-			
 		}
 		
+		names = AnnotationUtils.getCommandNames( cls );
+	      // Look for commands 
+        if( ! Util.isEmpty(names) ){
+            mLogger.debug("found command annotations {}" , names );
+            cacheCommandClass( names , cls );
+            
+        }
 		
 		for( Class<?>  c : cls.getClasses()){
 			reflectClass(shell,c);

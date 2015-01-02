@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<commands>
+	<command name="bshui" url="http://www.xmlsh.org/BSHui">
+		<synopsis>Bean Shell Console</synopsis>
+		<usage>
+			<para>bshui [options]</para>
+		</usage>
+	
+	</command>
+</commands>

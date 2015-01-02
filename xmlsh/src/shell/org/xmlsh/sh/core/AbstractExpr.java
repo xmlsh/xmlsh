@@ -83,6 +83,15 @@ public abstract class AbstractExpr implements IExpression
 		printUsage( shell ,  e.toString() );
 		throw e;
 	}
+	
+	   protected void error(Shell shell, String s , Exception e) throws Exception
+	    {
+	        shell.printErr( getName() + " " + s  , e);
+	        printUsage( shell ,  s + " " + e.toString() );
+	        throw e;
+	    }
+
+	   
 
 	public void printUsage(Shell shell, String message)
 	{

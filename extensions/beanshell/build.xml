@@ -1,11 +1,11 @@
 <?xml version="1.0" ?>
-<project default="main" name="jmx">
+<project default="main" name="beanshell">
 
 	<import file="../../build/common.xml"/>
 		
-	<target name="main" depends="install,test" description="JMX Extension main target">
+	<target name="main" depends="install,test" description="BeanShell Extension main target">
         <echo>
-            Building JMX xmlsh extension
+            Building BeanShell xmlsh extension
         </echo>
     </target>
 	<target name="build" depends="clean,compile,jar"/>
@@ -33,6 +33,7 @@
 		<delete quiet="true" includeEmptyDirs="true">
 	    <fileset dir="${dist}"/>
 	  	<fileset dir="_out"/>
+			<fileset dir="lib" includes="**/*.jar"/>
 		</delete> 
 		</target>
 
@@ -43,6 +44,9 @@
     	 <javac destdir="_out" debug="on" source="1.7" target="1.7">
     	        <src path="src" />
     	 	<classpath>
+    				<fileset dir="lib">
+    	                  	<include name="**/*.jar"/>
+    				</fileset>
 				<fileset dir="${xmlsh}/lib">
     				    <include name="**/*.jar"/>
     				   </fileset>
@@ -66,7 +70,7 @@
   <target name="jar" description="Build JAR - jar">
 		<mkdir dir="bin"/>
         <jar 
-        jarfile="bin/jmx_ext.jar" 
+        jarfile="bin/bsh_ext.jar" 
         basedir="_out" 
          manifest="src/WEB-INF/MANIFEST.MF"
         />
@@ -75,7 +79,7 @@
 	
   <target name="test" description="Test Cases">
     <echo>
-        Running JMX xmlsh tests
+        Running BeanShell xmlsh tests
     </echo>
   	<java 
   		classname="org.xmlsh.sh.shell.Shell"
@@ -99,13 +103,14 @@
   <target name="dist" description="Create Distribution">
   		
   		<mkdir dir="${dist}"/>
-		<zip destfile="${dist}/jmx_${release}.zip" >
+		<zip destfile="${dist}/bsh_${release}.zip" >
 			<zipfileset dir="." includes="bin/** test/** doc/** notices/** license.txt README.txt" 
-					excludes="**/sh_histo" prefix="jmx_${release}"/>
+					excludes="**/sh_histo" prefix="bsh_${release}"/>
+			<zipfileset dir="lib" includes="*.jar" prefix="bsh_${release}/bin"/>
   		</zip>
-		<zip destfile="${dist}/jmx_src_${release}.zip" >
+		<zip destfile="${dist}/bsh_src_${release}.zip" >
 			<zipfileset dir="." includes="src/** license.txt README.txt build.xml" 
-				excludes="**/sh_histo _out/** bin/** _dist/** lib/**"  prefix="jmx_${release}"/>
+				excludes="**/sh_histo _out/** bin/** _dist/** lib/**"  prefix="bsh_${release}"/>
 		</zip>
 
 
@@ -115,6 +120,7 @@
       <echo message="installing to ${install.dir}"/> 
   		 <copy todir="${install.dir}" filtering="on">
 			<fileset dir="bin" includes="*.jar module.xml"/>
+			<fileset dir="lib" includes="*.jar"/>
 
     	 </copy>
   	</target>

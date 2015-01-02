@@ -120,6 +120,14 @@ public abstract class XCommand extends AbstractCommand {
         // TODO Auto-generated method stub
         return null;
     }
+    
+    
+    protected void requires(boolean condition, String message) throws InvalidArgumentException
+    {
+        if( ! condition )
+            throw new InvalidArgumentException( getName() + ":" + message );
+
+    }
 
 
 

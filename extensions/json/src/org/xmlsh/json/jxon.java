@@ -28,6 +28,7 @@ import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XdmValue;
 import net.sf.saxon.trans.XPathException;
+
 import org.apache.xerces.xs.XSAnnotation;
 import org.apache.xerces.xs.XSAttributeDeclaration;
 import org.apache.xerces.xs.XSAttributeUse;
@@ -46,12 +47,12 @@ import org.apache.xerces.xs.XSTypeDefinition;
 import org.xml.sax.ContentHandler;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.Options;
-import org.xmlsh.core.OutputPort;
-import org.xmlsh.core.VariableOutputPort;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XEnvironment;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.XVariable;
+import org.xmlsh.core.io.OutputPort;
+import org.xmlsh.core.io.VariableOutputPort;
 import org.xmlsh.schema.Schema;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
@@ -457,7 +458,7 @@ public class jxon  extends XCommand{
 		}
 
 		private AnnotationEntry getGlobalAnnotations() throws XPathException,
-				XMLStreamException, CoreException, SaxonApiException {
+				XMLStreamException, CoreException, SaxonApiException, IOException {
 			XSObjectList annotations = mSchema.getAnnotations();
 			
 			AnnotationList value = getAnnotations( annotations );
@@ -470,7 +471,7 @@ public class jxon  extends XCommand{
 
 
 		private void getAnnotations(XSParticle particle, AnnotationEntry parent ) throws XPathException,	
-			XMLStreamException, CoreException, SaxonApiException {
+			XMLStreamException, CoreException, SaxonApiException, IOException {
 			
 //			if( level > 40)
 //				return ;
@@ -558,7 +559,7 @@ public class jxon  extends XCommand{
 		}
 
 		private void getElementAnnotations( AnnotationEntry parent ) throws XPathException,
-				XMLStreamException, CoreException, SaxonApiException {
+				XMLStreamException, CoreException, SaxonApiException, IOException {
 			
 			
 			XSModel model = mSchema.getModel();
@@ -599,7 +600,7 @@ public class jxon  extends XCommand{
 		
 		
 		private void getAnnotations(XSElementDeclaration obj, AnnotationEntry parent ) throws XPathException,
-				XMLStreamException, CoreException, SaxonApiException {
+				XMLStreamException, CoreException, SaxonApiException, IOException {
 			{
 
 				
@@ -668,7 +669,7 @@ public class jxon  extends XCommand{
 
 
 
-		private void getTypeAnnotations( AnnotationEntry parent) throws XPathException,	XMLStreamException, CoreException, SaxonApiException {
+		private void getTypeAnnotations( AnnotationEntry parent) throws XPathException,	XMLStreamException, CoreException, SaxonApiException, IOException {
 			XSModel model = mSchema.getModel();
 			XSNamedMap types  = model.getComponents(XSConstants.TYPE_DEFINITION);
 			for( int i = 0 ; i < types.getLength() ; i++ ){

@@ -3,8 +3,11 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/xmlsh"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="lib/bcprov-jdk16-146.jar"/>
-	<classpathentry kind="lib" path="lib/joda-time-2.2.jar"/>
-	<classpathentry kind="lib" path="lib/aws-java-sdk-1.9.8.jar" sourcepath="lib/aws/aws-java-sdk-1.9.8-sources.jar"/>
+	<classpathentry kind="lib" path="lib/bsh-2.2.0.jar" sourcepath="E:/Work/DEI/beanshell2/src"/>
+	<classpathentry kind="src" path=".apt_generated">
+		<attributes>
+			<attribute name="optional" value="true"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="_out"/>
 </classpath>

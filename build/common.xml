@@ -46,6 +46,8 @@
 				<property name="component" value="extensions"/>
 				<dirset dir="extensions">
 					<include name="aws"/>
+					<include name="beanshell"/>
+					<include name="jmx"/>
 					<include name="marklogic"/>
 				</dirset>
 			</subant>

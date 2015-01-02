@@ -27,7 +27,7 @@ import javax.xml.stream.XMLStreamException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.XValue;
 import org.xmlsh.jmx.util.JMXCommand;
-import org.xmlsh.sh.core.Command;
+import org.xmlsh.sh.core.ICommandExpr;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.types.TypeFamily;
 import org.xmlsh.util.NullInputStream;
@@ -70,7 +70,7 @@ public class listen extends JMXCommand {
 	}
 	
 	
-	private		Command	mCommand;
+	private		ICommandExpr	mCommand;
 	
 	@Override
 	public int run(List<XValue> args) throws Exception {

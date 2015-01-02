@@ -67,6 +67,37 @@ public class AnnotationUtils {
 	
 	}
 
+    
+    public static List<String> getCommandNames(
+            Class<?> cls) 
+    {
+
+        Command a = cls.getAnnotation(Command.class);
+        if( a != null ){
+            List<String> names = new ArrayList<>();
+            // Use name= over default
+            if( ! Util.isBlank(a.name()) )
+                names.add(a.name());
+            if( ! Util.isBlank( a.value()))
+                names.add(a.value());
+            if( a.names() != null && a.names().length > 0 )
+                for( String name : a.names())
+                    names.add( name );
+            return names;
+        }
+        if( isCommandClass( cls )){
+            String name = cls.getSimpleName();
+            if( name.startsWith("_"))
+                name = name.substring(0);
+            else
+                name = JavaUtils.convertFromCamelCase( name );
+            return Collections.singletonList(name);
+        }
+        return null;
+            
+
+    }
+
 	/* 
 	 * Static check if this is a possible command class
 	 */
