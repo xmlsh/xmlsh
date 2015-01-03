@@ -118,7 +118,7 @@ public class xpath extends XCommand {
 				ns2.putAll(ns);
 
 			// Add custom name spaces
-			for (XValue v : opts.getOpt("ns").getValues())
+			for (XValue v : opts.getOptValues("ns"))
 				ns2.declare(v);
 
 			ns = ns2;

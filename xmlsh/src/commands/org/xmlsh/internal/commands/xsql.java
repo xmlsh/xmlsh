@@ -429,7 +429,7 @@ public class xsql extends XCommand {
 
 
 			// Add custom name spaces
-			for (XValue v : opts.getOpt("o").getValues()){
+			for (XValue v : opts.getOptValues("o")){
 				String vs[] = v.toString().split("=",2);
 				options.put(vs[0], vs[1]);
 

@@ -23,6 +23,10 @@ public class ShellOpts
   public boolean mLocationFormat = defaultLocationFormat();      // TODO : convert to enum
   public boolean mTrace = false ;
   public String  mTraceFile = null;
+  public boolean mAllLocal = false;
+  public boolean mAllExport = false ;
+  public String  mLocalMatch = null ;
+  
 
   SerializeOpts mSerialize;
   public Level mTraceLevel = Level.INFO ;
@@ -50,6 +54,9 @@ public class ShellOpts
     mLocationFormat = that.mLocationFormat;
     mTrace = that.mTrace;
     mTraceFile = that.mTraceFile;
+    mAllLocal = that.mAllLocal;
+    mAllExport = that.mAllExport;
+    mLocalMatch = that.mLocalMatch ;
 
   }
 
@@ -93,8 +100,10 @@ public class ShellOpts
 
     if(ov.getOptionDef().isExpectsArg())
       setOption(ov.getOptionDef().getName(), ov.getValue());
-    else setOption(ov.getOptionDef().getName(), ov.getFlag());
-
+    else
+    if( ov.getOptionDef().isFlag() )
+        setOption(ov.getOptionDef().getName(), ov.getFlag());
+    
   }
 
 }

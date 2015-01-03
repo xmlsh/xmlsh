@@ -60,16 +60,14 @@ public class rngconvert extends XCommand {
 		outputType = opts.getOptString("O",null);
 
 		if( opts.hasOpt("i")){
-			OptionValue iv = opts.getOpt("i");
-			inputParamArray = Util.toStringArray(iv.getValues()); 
+			inputParamArray = Util.toStringArray(opts.getOptValues("i")); 
 
 		} else
 			inputParamArray = new String[0];
 
 
 		if( opts.hasOpt("o")){
-			OptionValue iv = opts.getOpt("o");
-			outputParamArray = Util.toStringArray(iv.getValues()); 
+			outputParamArray = Util.toStringArray(opts.getOptValues("o")); 
 		} else
 			outputParamArray = new String[0];
 

@@ -139,14 +139,13 @@ public class xgetopts extends XCommand {
 			stdout.writeSequenceSeperator(serializeOpts);
 			return ;
 		}
-
-		for( XValue v : value.getValues() ){
-			out.write( argFlag );
-			stdout.writeSequenceSeperator(serializeOpts);
-			out.write( v.toXdmItem() );
-			stdout.writeSequenceSeperator(serializeOpts);
-
-		}
+			
+		
+		out.write( argFlag );
+		stdout.writeSequenceSeperator(serializeOpts);
+ 
+		out.write( value.getValue().toXdmItem() );
+		stdout.writeSequenceSeperator(serializeOpts);
 
 
 	}
@@ -173,11 +172,8 @@ public class xgetopts extends XCommand {
 
 			if( option.getOptionDef().isExpectsArg()  ){
 
-
-				for( XValue value : option.getValues() ) {
-					out.writeStartElement( kVALUE );
-
-
+			    XValue value = option.getValue();
+			   out.writeStartElement( kVALUE );
 					if( ! bNoValues ){
 						if( value.isAtomic())
 							out.writeCharacters(value.toString());
@@ -186,9 +182,6 @@ public class xgetopts extends XCommand {
 
 					}
 					out.writeEndElement();
-
-
-				}
 			}
 			out.writeEndElement();
 

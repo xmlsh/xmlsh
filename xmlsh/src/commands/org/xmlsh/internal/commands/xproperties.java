@@ -78,13 +78,13 @@ public class xproperties extends XCommand
 		 * Delete values as specified
 		 */
 		if( opts.hasOpt("d"))
-			for (XValue d : opts.getOpt("d").getValues())
+			for (XValue d : opts.getOptValues("d"))
 				props.remove(d.toString());
 
 		List<String> printVars = null ;
 		if( opts.hasOpt("v")){
 			printVars = new ArrayList<String>();
-			for (XValue var : opts.getOpt("v").getValues())
+			for (XValue var : opts.getOptValues("v"))
 				printVars.add(var.toString() );
 		}
 
@@ -93,7 +93,7 @@ public class xproperties extends XCommand
 		// Add value 
 
 		if (opts.hasOpt("a")) {
-			for (XValue add : opts.getOpt("a").getValues()){
+			for (XValue add : opts.getOptValues("a")){
 				StringPair pair = new StringPair( add.toString() , '=');
 				props.setProperty( pair.getLeft(), pair.getRight() );
 			}

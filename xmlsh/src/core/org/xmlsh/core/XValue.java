@@ -845,7 +845,7 @@ public class XValue implements Iterable<XValue>
     return BigDecimal.valueOf(Double.valueOf(mValue.toString()));
   }
 
-  public boolean toBoolean() throws InvalidArgumentException, UnexpectedException
+  public boolean toBoolean() throws InvalidArgumentException, UnexpectedException 
   {
     /*
      * Check for Java boolean and integer values

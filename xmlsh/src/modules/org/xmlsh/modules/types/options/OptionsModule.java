@@ -12,6 +12,7 @@ import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.Options.OptionDef;
+import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.UnknownOption;
 import org.xmlsh.core.XValue;
 import org.xmlsh.modules.types.Types;
@@ -44,7 +45,7 @@ public class OptionsModule extends Types {
 	@Function( name="options")
 	public static class options extends AbstractBuiltinFunction {
 		@Override
-		public XValue run(Shell shell, List<XValue> args) throws UnknownOption, InvalidArgumentException
+		public XValue run(Shell shell, List<XValue> args) throws UnknownOption, InvalidArgumentException, UnexpectedException
 		{
 			if( args.isEmpty()){
 		 	  usage(shell, "options( option-defs [args])");

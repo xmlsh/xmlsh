@@ -154,10 +154,9 @@ public class http extends XCommand {
 
 		setOptions( client , host ,  opts );
 
-		OptionValue headers = opts.getOpt("H");
+		List<XValue> headers = opts.getOptValues("H");
 		if( headers != null ){
-
-			for( XValue v : headers.getValues() ){
+			for( XValue v : headers ){
 				StringPair pair = new StringPair( v.toString() , '=');
 				method.addHeader(pair.getLeft(), pair.getRight());
 			}

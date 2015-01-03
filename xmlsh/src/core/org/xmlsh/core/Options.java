@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.xmlsh.util.StringPair;
 import org.xmlsh.util.Util;
 
@@ -100,6 +102,29 @@ public class Options
 			this.flag = flag;
 		}
 
+		@Override
+        public
+		boolean equals( Object that ){
+		    if( ! ( that instanceof OptionDef ))
+		        return false ;
+		    
+		    OptionDef othat = (OptionDef) that ;
+		    if( this == that )
+		        return true ;
+
+		    return name.equals(othat.name) && 
+		           longname.equals(othat.longname) &&
+		           expectsArg == othat.expectsArg  &&
+		           multiple == othat.multiple &&
+		           flag == othat.flag ;
+		}
+		
+		public boolean isOption( String str ){
+		    assert( str != null );
+ 	         return Util.isEqual( str , name ) ||
+	                    Util.isEqual( str , longname )
+	                    ;
+		}
 
 	}
 
@@ -110,7 +135,7 @@ public class Options
 	{
 		private OptionDef		option;
 		private	 boolean		optflag = true; // true if '-' , false if '+'
-		private List<XValue>	values = new ArrayList<XValue>(); // in the case of multiple values possible
+		private  XValue	        value = null;
 
 		OptionValue( OptionDef def , boolean flag ) {
 			option = def ;
@@ -118,19 +143,16 @@ public class Options
 		}
 
 		// Set a single value
-		void setValue( XValue v  )
+		void setValue( XValue v  ) throws UnexpectedException, InvalidArgumentException
 		{
-			if( ! option.isMultiple() )
-				values.clear();
-			values.add( v );
+			if( option.isExpectsArg() )
+				value = v ;
+			else 
+			if( option.isFlag() )
+			  optflag = v.toBoolean() ? true : false ;
+			else
+                throw new UnexpectedException("Unexpected use of option: " + option.name);
 		}
-
-		// Add to a multi value
-		void addValue( XValue v )
-		{
-			values.add(v);
-		}
-
 
 		/**
 		 * @return the option
@@ -142,15 +164,9 @@ public class Options
 		 * @return the arg
 		 */
 		public XValue getValue() {
-			if( values.isEmpty())
-				return null ;
-			else
-			  return values.get(0);
+		    return option.isExpectsArg() ? value : XValue.newXValue(optflag) ;
 		}
 
-		public List<XValue> getValues() {
-			return values;
-		}
 
 		public boolean getFlag()
 		{
@@ -164,6 +180,7 @@ public class Options
 	private List<OptionValue> mOptions;
 	private boolean	  mDashDash = false ;
 
+	static Logger mLogger = LogManager.getLogger();
 
 	/*
 	 * Parse a string list shorthand for options defs
@@ -260,8 +277,11 @@ public class Options
 		// 	mDefs.addAll( option_list ); - Dont duplicate !
 		for( OptionDef def : option_list ){
 			OptionDef exists = getOptDef( def.getName() );
-			if( exists != null )
+			
+			if( exists != null ){
+			    mLogger.warn("Redefined option def: {}" , def.getName() );
 				mDefs.remove(exists);
+			}
 			mDefs.add(def);
 
 		}
@@ -287,7 +307,7 @@ public class Options
 	}
 
 
-	public List<OptionValue>	parse(List<XValue> args) throws UnknownOption
+	public List<OptionValue>	parse(List<XValue> args) throws UnknownOption, UnexpectedException, InvalidArgumentException
 	{
 		if( mOptions != null )
 			return mOptions;
@@ -314,29 +334,20 @@ public class Options
 
 				if( flag == '+' && ! def.isFlag() )
 					throw new UnknownOption("Option : " + a + " cannot start with +");
+				
+				boolean bRepeat = this.hasOpt(def);
 
-
-				OptionValue ov = this.getOpt(def);
-				boolean bReuse = (ov != null);
-
-				if( ov != null && ! def.isMultiple() )
+				if( bRepeat && ! def.isMultiple() )
 					throw new UnknownOption("Unexpected multiple use of option: " + arg);
-				if( ov == null )
-					ov = new OptionValue(def  , flag == '-');
-				ov.option = def ;
+				OptionValue ov = new OptionValue(def  , flag == '-');
 				if( def.isExpectsArg() ){
 					if( !I.hasNext() )
 						throw new UnknownOption("Option has no args: " + arg);
-					if( def.isMultiple() )
-						ov.addValue(I.next());
-					else
-						ov.setValue( I.next());
+					ov.setValue( I.next());
 				}
-				if( ! bReuse )
-					mOptions.add(ov);
+				mOptions.add(ov);
 
 			} else {
-
 				mRemainingArgs = new ArrayList<XValue>( );
 
 				if( arg.isAtomic() && arg.equals("--") ){
@@ -364,26 +375,28 @@ public class Options
 	}
 
 	public OptionValue getOpt(OptionDef def) {
+	    assert( def != null );
 		for( OptionValue ov : mOptions ){
 
-			if( ov.option == def )
+			if( ov.option.equals(def) )
 				return ov;
 		}
 		return null;
 	}
 
+	public boolean hasOpt( OptionDef def ){
+	    return getOpt(def) != null ;
+	}
 
 	public OptionValue	getOpt( String opt )
 	{
 		for( OptionValue ov : mOptions ){
-			if( Util.isEqual(opt,ov.getOptionDef().getName())||
-					Util.isEqual(opt,ov.getOptionDef().getLongname() )
-					)
-				return ov;
-
+		    if( ov.getOptionDef().isOption(opt))
+		        return ov ;
 		}
 		return null;
 	}
+
 	public boolean		hasOpt( String opt )
 	{
 		return getOpt(opt) != null;
@@ -455,19 +468,24 @@ public class Options
 	}
 
 	public List<XValue> getOptValuesRequired(String arg) throws InvalidArgumentException {
-		OptionValue ov = getOpt(arg);
-		if( ov != null )
-			return ov.values;
-		throw new InvalidArgumentException("Required option: -" + arg );
+
+	    List<XValue> values = getOptValues(arg);
+	    if( values == null || values.isEmpty() )
+		  throw new InvalidArgumentException("Required option: -" + arg );
+	
+	    return values ;
 	}
 
 
 	public List<XValue> getOptValues(String arg) throws InvalidArgumentException {
-		OptionValue ov = getOpt(arg);
-		if( ov != null )
-			return ov.values;
-		else
-			return null ;
+	    
+	    ArrayList<XValue> values = new ArrayList<>();
+        for( OptionValue ov : mOptions ){
+             if( ov.getOptionDef().isOption(arg))
+                 values.add( ov.getValue() );
+
+         }
+        return values.isEmpty() ? null : values ;
 	}
 
 
