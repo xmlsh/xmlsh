@@ -25,6 +25,10 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.TreeNode;
+import com.fasterxml.jackson.core.util.JsonParserDelegate;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.fasterxml.jackson.dataformat.xml.deser.FromXmlParser;
 import com.fasterxml.jackson.dataformat.xml.ser.ToXmlGenerator;
 
@@ -32,11 +36,17 @@ public class JacksonConverter extends JXConverter
 {
 	public static Logger	mLogger	     = LogManager.getLogger();
 
-
 	public JacksonConverter(JSONSerializeOpts jsonSerializeOpts, SerializeOpts serializeOpts, List<XValue> mArgs)
 	{
 		super(jsonSerializeOpts, serializeOpts, mArgs);
 	}
+
+
+    protected XmlMapper getXmlMapper() {
+        XmlMapper xmlMapper = JSONUtils.newXmlMapper();
+        xmlMapper.setPropertyNamingStrategy( PropertyNamingStrategy.CAMEL_CASE_TO_LOWER_CASE_WITH_UNDERSCORES);
+        return xmlMapper;
+    }
 
 	class JSONConverter  implements IJSONConverter {
 
@@ -49,7 +59,8 @@ public class JacksonConverter extends JXConverter
 		{
 			super();
 			try {
-				mParser = JSONUtils.getXmlMapper().getFactory().createParser(reader);
+				XmlMapper xmlMapper = getXmlMapper();
+                mParser = xmlMapper.getFactory().createParser(reader);
 				mGenerator = JSONUtils.getJsonObjectMapper().getFactory().createGenerator(os);
 			} catch (IOException e) {
 
@@ -62,11 +73,17 @@ public class JacksonConverter extends JXConverter
 		public boolean parse() throws ConverterException
 		{
 			try {
-				/*
-				mParser.nextToken();
-	            mGenerator.copyCurrentStructure(mParser);
-				 */
-				TreeNode tree = mParser.readValueAsTree();
+                JsonParserDelegate parser = new JsonParserDelegate(mParser) {
+                    @Override
+                    public String getCurrentName() throws IOException,
+                            JsonParseException {
+                        String name = super.getCurrentName();
+                        if( name !=null ){
+                            name = Util.decodeFromNCName(name);
+                        }
+                        return name ;
+                    } };
+                TreeNode tree = parser.readValueAsTree();
 				mGenerator.writeTree(tree);
 				return true ;
 			} catch (IOException e) {
@@ -103,8 +120,10 @@ public class JacksonConverter extends JXConverter
 			mWriter = new SafeXMLStreamWriter(sw);
 
 			try {
-				mParser = JSONUtils.getJsonObjectMapper().getFactory().createParser(is);
-				mGenerator = JSONUtils.getXmlMapper().getFactory().createGenerator(mWriter);
+				ObjectMapper objMapper = JSONUtils.newJsonObjectMapper();
+                mParser = objMapper.getFactory().createParser(is);
+				XmlMapper xmlMapper =getXmlMapper();
+                mGenerator = xmlMapper.getFactory().createGenerator(mWriter);
 			} catch (JsonParseException e) {
 				throw new ConverterException(e);
 			} catch (IOException e) {
@@ -118,7 +137,21 @@ public class JacksonConverter extends JXConverter
 		public boolean parse() throws ConverterException
 		{
 			try { 
-				TreeNode tree = mParser.readValueAsTree();
+			    
+			    JsonParserDelegate parser = new JsonParserDelegate(mParser) {
+
+                    @Override
+                    public String getCurrentName() throws IOException,
+                            JsonParseException {
+                        String name = super.getCurrentName();
+                        if( name !=null ){
+                            name = Util.encodeForNCName(name);
+                        }
+                        return name ;
+                    } };
+			    
+				TreeNode tree = parser.readValueAsTree();
+				
 				mGenerator.writeTree(tree);
 
 				/*

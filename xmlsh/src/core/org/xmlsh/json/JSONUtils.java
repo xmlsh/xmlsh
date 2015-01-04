@@ -162,13 +162,18 @@ public class JSONUtils {
 		// lets play and avoid syncronization
 		// on the off chance this is concurrent 2 mappers are created and one gets GC'd
 		if( _theXmlMapper == null ) {
-			XmlMapper mapper = new XmlMapper(getXmlFactory(),getXmlModule());
-			mapper.registerModule( new JaxbAnnotationModule());
+			XmlMapper mapper = newXmlMapper();
 			if( _theXmlMapper == null ) 
 				_theXmlMapper = mapper ;
 		}
 		return _theXmlMapper ;
 	}
+
+    public static XmlMapper newXmlMapper() {
+        XmlMapper mapper = new XmlMapper(getXmlFactory(),getXmlModule());
+        mapper.registerModule( new JaxbAnnotationModule());
+        return mapper;
+    }
 
 	public static ObjectWriter getObjectWriter() {
 		return getJsonObjectMapper().writer();
