@@ -21,6 +21,10 @@ import org.xmlsh.types.TypeFamily;
 import org.xmlsh.util.Util;
 import org.xmlsh.util.XNamedValue;
 
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonValue;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
 /*
  * A single "Property" - substitutable for a Map
  */
@@ -84,6 +88,9 @@ public class XValueProperty extends XNamedValue implements IXValueMap, Map.Entry
     value.serialize(out, opts);
 
   }
+  @JsonValue
+  public Map<String,XValue> asMap(){ return Collections.singletonMap(getKey(),getValue()) ; }
+
 
   @Override
   public boolean isMap()

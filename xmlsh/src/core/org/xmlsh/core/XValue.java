@@ -60,6 +60,7 @@ import org.xmlsh.util.StringPair;
 import org.xmlsh.util.Util;
 import org.xmlsh.util.XMLUtils;
 
+import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -411,6 +412,7 @@ public class XValue implements Iterable<XValue>
     return asXdmNode().getUnderlyingNode();
   }
 
+  @JsonValue
   public Object asObject()
   {
     return mValue;
