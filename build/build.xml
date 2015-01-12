@@ -9,7 +9,7 @@
 	</target>
 	  
 
-	<target name="build" depends="clean">
+	<target name="build">
 		<iterate target="build" />
 	</target>
 
