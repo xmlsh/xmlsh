@@ -51,8 +51,8 @@
 			<attribute name="javadoc_location" value="jar:file:/E:/Java/apache-commons/commons-lang3-3.3.2/commons-lang3-3.3.2-javadoc.jar!/"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="lib/log4j-api-2.1.jar" sourcepath="E:/Java/log4j/apache-log4j-2.1-src/log4j-api/src/main/java"/>
-	<classpathentry kind="lib" path="lib/log4j-core-2.1.jar" sourcepath="E:/Java/log4j/apache-log4j-2.1-src/log4j-core/src/main/java"/>
+	<classpathentry exported="true" kind="lib" path="lib/log4j-api-2.1.jar" sourcepath="C:/Java/log4j/apache-log4j-2.1-src/log4j-api/src/main/java"/>
+	<classpathentry kind="lib" path="lib/log4j-core-2.1.jar" sourcepath="C:/Java/log4j/apache-log4j-2.1-src/log4j-core/src/main/java"/>
 	<classpathentry kind="lib" path="lib/log4j-jcl-2.1.jar"/>
 	<classpathentry kind="lib" path="lib/log4j-slf4j-impl-2.1.jar"/>
 	<classpathentry kind="src" path=".apt_generated">

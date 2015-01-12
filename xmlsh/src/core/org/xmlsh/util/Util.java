@@ -383,7 +383,12 @@ public class Util
 	  * @param string2
 	  * @return
 	  */
-	 public static boolean isEqual(String string1, String string2)
+
+	 public static boolean isEqual(String string1, String string2 ){
+	     return isEqual(string1,string2,false);
+	 }
+
+	 public static boolean isEqual(String string1, String string2,boolean ignCase)
 	 {
 		 // DAL: 2010-11-10  Optimize out multiple calls to isEmpty
 
@@ -400,7 +405,7 @@ public class Util
 		 if( bIsEmpty1 || bIsEmpty2 )
 			 return false ;
 
-		 return string1.equals(string2);            
+		 return ignCase ? string1.equalsIgnoreCase(string2) : string1.equals(string2);            
 
 	 }
 
@@ -1952,6 +1957,14 @@ public static <T> boolean contains(T[] array, T v) {
         
         
         
+    }
+
+
+    public static String stringJoin(String string, String sep, int length) {
+        StringBuilder sb = new StringBuilder(string);
+        while(--length > 0 )
+            sb.append(sep).append(string);
+        return sb.toString();
     }
 
 	

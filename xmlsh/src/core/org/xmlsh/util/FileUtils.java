@@ -421,14 +421,36 @@ public class FileUtils
 	    return caseSensitive ;
 	}
 	
-	public static boolean isTextFile( Path path , String encoding ){
-		
+	/*
+	 * Guess the file type for purposes of script or cmd execution
+	 */
+	
+	public static boolean isScript( Path path , String encoding ){
+		String ext = getExt(path.toString());
+		if( Util.isEqual( ext , "xsh" ) )
+		    return true ;
+		if( Util.isBlank(ext) ){
+		    String line = getTextFileMagic( path , encoding );
+		    if( line  != null && line.startsWith("#!") ){
+		        line=basePathLikeName(line.substring(2));
+		        if( Util.isEqual(line,"xmlsh",true) )
+		            return true ;
+		    }
+		    return false ;
+		} 
+	    return false ;
+	    
+	}
+	
+	
+	public static String getTextFileMagic(Path path ,String encoding ){
+	    
 		mLogger.entry(path,encoding);
 		try ( InputStream is = Files.newInputStream(path, StandardOpenOption.READ ) ){
 		    byte data[] = new byte[1024];
 		    long len = is.read(data);
 		    if( len <= 0 )
-		    	return false ;
+		    	return null ;
 		java.nio.ByteBuffer bb = ByteBuffer.wrap(data);
 
 		CharsetDecoder decoder=  
@@ -436,23 +458,29 @@ public class FileUtils
 		
 		CharBuffer ret = decoder.decode(bb);
 		if( ret.length() <= 0)
-			return false ;
+			return null  ;
         // Look for some alpaha or reserved word
 
 		int good = 0;
+		
+		int p = 0;
 		for( char c : ret.array() ){
-			if( good > 10)
-				return mLogger.exit(true) ;
+		    p++;
+		    if( good > 100)
+				return mLogger.exit("text");
 			
 			
 			if( !Character.isDefined(c) )
-				return mLogger.exit(false) ;
+				return mLogger.exit(null) ;
 
 			switch( c ){
 			case '\0' :
-				return mLogger.exit(false) ;
+				return mLogger.exit(null) ;
 			case '\n' :
 			case '\r' :
+			    if( good > 2 )
+			      return ret.subSequence(0, p).toString();
+			    		    
 			case '\t' :
 			case '\b' :
 			case '\f' :
@@ -483,8 +511,8 @@ public class FileUtils
 			else
 		    if( ! Character.isWhitespace(c)){
 		    	if( Character.isISOControl(c) )
-		    		return false ;
-				good = 0;
+		    		return good > 20 ? ret.subSequence(0, p).toString()  : null ;
+			good = 0;
 		    }				
 		}
 		
@@ -494,9 +522,9 @@ public class FileUtils
     
 	catch (Exception e) {
 
-		return mLogger.exit(false) ;
+		return mLogger.exit(null) ;
     }
-		return mLogger.exit(true) ;
+		return mLogger.exit(null ) ;
 	}
 	
 }

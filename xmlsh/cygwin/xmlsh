@@ -19,9 +19,14 @@ if [ $? -ne 0 -o -z "$TTY" -o \
     ${TERM:-cygwin} = "cygwin" -o  ${TTY%%[0-9]} = "/dev/cons"  ] ; then 
     _JVMDEFS="$_JVMDEFS -Dxmlsh.jline=false"
 elif [ ${TTY%%[0-9]} = "/dev/pty" ] ; then 
-  _JVMDEFS="$_JVMDEFS -Dxmlsh.jline=true -Djline.terminal=unix"
    stty -icanon min 1 -echo
-   trap 'stty icanon echo' EXIT
+   restore=$(stty -g)
+   trap 'stty $restore' EXIT
+   set $(stty size) "$@"
+   export LINES=$1 COLS=$2
+   shift 2
+ _JVMDEFS="$_JVMDEFS -Dxmlsh.jline=true -Djline.terminal=mintty"
+#  _JVMDEFS="$_JVMDEFS -Dxmlsh.jline=true -Djline.terminal=unix -Djline.tty=$TTY" 
 fi
 
 java $_JVMDEFS -cp "$CP" $XMLSH_JVMOPTS org.xmlsh.sh.shell.Shell   "$@"

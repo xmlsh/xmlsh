@@ -43,7 +43,7 @@ public class ShellParser
   private java.io.Reader in;
 
 // REMOVE WITH ANY TRACING
-  private int trace_indent = 0 ; 
+        private int trace_indent = 0 ; 
 
   /*
    * Active delimiter stack for joinable tokens
@@ -471,7 +471,8 @@ MORE :
 TOKEN :{
   < SEMI : ";" >
 | < AMP  : "&" >|  < AND_IF : "&&" > | < OR_IF : "||" > |  < DGREAT : ">>" >
-| < DSEMI : ";;" >| < CLOBBER : ">|" >}
+| < DSEMI : ";;" >| < CLOBBER : ">|" >
+| < PROPASSIGN : ":=" >}
 
 /*
  * Words which are possibly resserved - catch first
@@ -1051,44 +1052,46 @@ ReturnStatement return_stmt() :
 
 
 /*
- * Brace expressions are lists of expressions and property words
+ * Brace expressions are either a single expression with limited expansion
+ * or a property list 
  */
 
 WordList brace_expr_list() :
 {
   WordList wl = new WordList();
-  Word w1;
-  Word w2 ;
+  WordList wlret = null;
+  Word w=null,w2=null;
 }
 {
-   ( 
-   
-     
-    (<NL>)+ 
-   |
-    <MRBRACE> {
-      popState();
-      return wl ;
-    }
-    
-    |  
-    
-     w1= expr() 
-    (
-       LOOKAHEAD( 1 , <WORD > ,       {          isWord(1,":")        }      ) < WORD >  w2=expr()
-       {
-       w1 = new PropertyWord(  w1 , w2 );
-       }
-     ) ?
-    {
-       wl.add( w1 );
-    }
-  )*
-  {
-    return wl;
-  }
+w=simple_expr()
 
+(  LOOKAHEAD(1,<PROPASSIGN>) < PROPASSIGN > w2=expr()
+  {
+    wl.add( new PropertyWord( w , w2 ) ) ;
+  }
+    ( LOOKAHEAD(1,< WORD >,  { isKind( 1,WORD , ",") }) < WORD >
+    w=simple_expr() < PROPASSIGN > w2=expr()
+   {
+    wl.add( new PropertyWord( w , w2 ) ) ;
+    w=null;
+    }
+    ) *
+ 
+| 
+  (
+    LOOKAHEAD(1,< WORD >,{ isKind( 1,WORD , ",")})< WORD >
+   w2=simple_expr()   {
+     if( w != null )
+       wl.add(w);
+     w = null;     wl.add(w2);   }  ) *
+)
+{
+ if( w != null ) wl.add(w);  return wl;
 }
+  
+}
+
+
 
   
 
@@ -1215,6 +1218,13 @@ Word word_or_name() :
     }
 }
 
+Word simple_expr() :
+{
+  Word w ;}
+{  w = word_or_name()
+  {    return w ;
+  }
+}
 /*
  * Expression  that evaluates as a single 'word'
  */Word expr() :{  Token t;  String s;  CommandExpr c;  WordList wl; 
@@ -1224,8 +1234,9 @@ Word word_or_name() :
   {
     pushState( StateEnum.BRACE_WORD );
   }
-   wl = brace_expr_list()  
+  wl = brace_expr_list() <MRBRACE> 
   {
+    popState();
     w = new BraceWord( wl );
     return w;
   }

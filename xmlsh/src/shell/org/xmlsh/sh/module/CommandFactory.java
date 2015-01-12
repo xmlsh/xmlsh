@@ -19,6 +19,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -187,25 +188,29 @@ public abstract class CommandFactory {
 		String ext = FileUtils.getExt(name).toLowerCase();
 
 		if (FileUtils.hasDirectory(name)) {
-			cmdFile = shell.getExplicitFile(name, true,true);
-			if (cmdFile == null && !ext.equals(".exe")  && Util.isWindows())
-				cmdFile = shell.getExplicitFile(name + ".exe", sExecutablePath);
-			if (cmdFile == null && !ext.equals(".bat")  && Util.isWindows())
-				cmdFile = shell.getExplicitFile(name + ".bat", sExecutablePath);
-			if (cmdFile == null && !ext.equals(".cmd")  && Util.isWindows())
-				cmdFile = shell.getExplicitFile(name + ".cmd", sExecutablePath);
+		    // dont try to exec non extension files with IACL X perms
+		    if( !Util.isBlank(ext) || ! Util.isWindows() )
+			  cmdFile = shell.getExplicitFile(name, sExecutablePath );
+			if( cmdFile == null &&  Util.isEmpty(ext)){
+    			if (cmdFile == null && !ext.equals(".exe")  && Util.isWindows())
+    				cmdFile = shell.getExplicitFile(name + ".exe", sExecutablePath );
+    			if (cmdFile == null && !ext.equals(".bat")  && Util.isWindows())
+    				cmdFile = shell.getExplicitFile(name + ".bat", sExecutablePath);
+    			if (cmdFile == null && !ext.equals(".cmd")  && Util.isWindows())
+    				cmdFile = shell.getExplicitFile(name + ".cmd", sExecutablePath);
+			}
 		}
 
 		if (cmdFile == null) {
 			SearchPath path = shell.getExternalPath();
-			cmdFile = path.getFirstFileInPath(shell, name,sExecutablePath);
+	        if( !Util.isBlank(ext) || ! Util.isWindows() )
+			    cmdFile = path.getFirstFileInPath(shell, name,sExecutablePath);
 			if (cmdFile == null && !ext.equals(".exe") && Util.isWindows()  )
 				cmdFile = path.getFirstFileInPath(shell, name + ".exe",sExecutablePath);
 			if (cmdFile == null && !ext.equals(".bat") && Util.isWindows()  )
 				cmdFile = path.getFirstFileInPath(shell, name + ".bat",sExecutablePath);
 			if (cmdFile == null && !ext.equals(".cmd") && Util.isWindows()  )
 				cmdFile = path.getFirstFileInPath(shell, name + ".cmd",sExecutablePath);
-
 		}
 
 		if (cmdFile == null)
@@ -347,7 +352,7 @@ public abstract class CommandFactory {
 			for( String ext : exts ){
 				try {
 					file = path.getFirstFileInPath(shell, name  + ext , sExplicitPath);
-					if( file != null && FileUtils.isTextFile(file.toPath(), shell.getInputTextEncoding()) )
+					if( file != null && isXScriptFile(file.toPath(), shell.getInputTextEncoding()) )
 						return mLogger.exit(file);
 				} catch (IOException e) {
 					mLogger.catching(e);
@@ -359,7 +364,12 @@ public abstract class CommandFactory {
 		return mLogger.exit(null);
 	}
 
-	protected static File tryFile(Shell shell, String name) {
+	private static boolean isXScriptFile(Path path, String encoding) {
+
+	    return FileUtils.isScript(path,encoding);
+    }
+
+    protected static File tryFile(Shell shell, String name) {
 		mLogger.entry(shell, name);
 		File file = null ;
 		try {
@@ -432,7 +442,7 @@ public abstract class CommandFactory {
 				scriptFile = shell.getExplicitFile(pname.toString(), true );
 				if( scriptFile != null && ! scriptFile.isFile() )
 					scriptFile = null ;
-				if( scriptFile != null && ! FileUtils.isTextFile(scriptFile.toPath(), shell.getInputTextEncoding()))
+				if( scriptFile != null && ! isXScriptFile(scriptFile.toPath(), shell.getInputTextEncoding()))
 					scriptFile = null;
 				
 			} else
@@ -496,7 +506,7 @@ public abstract class CommandFactory {
 	private static File tryScriptFile(Shell shell, String name) {
 		mLogger.entry(shell,name);
 		File f = tryFile( shell , name );
-		if( f != null && FileUtils.isTextFile( f.toPath() , shell.getInputTextEncoding() ))
+		if( f != null && isXScriptFile( f.toPath() , shell.getInputTextEncoding() ))
 				return mLogger.exit(f);
 		return mLogger.exit(null) ;
 	}

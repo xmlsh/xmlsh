@@ -1,15 +1,18 @@
 package org.xmlsh.core.io;
 
+import static org.xmlsh.util.Util.stringConcat;
+
 import java.io.Console;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.util.Arrays;
 
 import jline.Terminal;
 import jline.TerminalFactory;
 import jline.console.ConsoleReader;
-
+import jline.Logger.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.xmlsh.core.InputPort;
@@ -23,9 +26,38 @@ import org.xmlsh.util.Util;
  */
 
 public class ShellConsole {
-
     static Logger mLogger = LogManager.getLogger();
 
+    private static class JLineLogger implements jline.Logger {
+        static org.apache.logging.log4j.Level[] levels = {
+            org.apache.logging.log4j.Level.TRACE ,
+            org.apache.logging.log4j.Level.DEBUG ,
+            org.apache.logging.log4j.Level.INFO,
+            org.apache.logging.log4j.Level.WARN,
+            org.apache.logging.log4j.Level.ERROR
+        };
+
+        //Sstatic Logger mLogger = LogManager.getLogger("jline.internal.Log");
+        @Override
+        public void log( jline.Logger.Level level, Object... messages) {
+
+            org.apache.logging.log4j.Level l4l = levels[level.ordinal()] ;
+            if( !mLogger.isEnabled(l4l))
+                return ;
+     
+            if( messages.length > 0 && messages[messages.length-1] instanceof Throwable ){
+                Throwable t = (Throwable) messages[messages.length-1];
+                messages = Arrays.copyOf(messages, messages.length-1);
+                if( messages.length > 0)
+                  mLogger.log( l4l, Util.stringJoin("{}"," ",messages.length) , messages , t );
+                else
+                  mLogger.log(l4l,t);
+           
+            } else
+                mLogger.log(l4l, Util.stringJoin("{}"," ",messages.length) , messages);
+        }
+        
+    }
     private static volatile ShellConsole _instance = null;
     private Console sJavaConsole;               // JRE 6 Console if available
     private Terminal sJLineTerminal;        // JLine 2 Console Reader if available
@@ -92,13 +124,18 @@ public class ShellConsole {
             sUseJLine,
             useJLine);
                 
-        if ( useJLine )
+        if ( useJLine ){
+            mLogger.debug("Setting jline logger");
+            jline.internal.Log.setLogger( new JLineLogger() );
               sJLineTerminal = TerminalFactory.get();
-        
+            jline.internal.Log.trace("Trace event from xmlsh");
+        }
         if (sJLineTerminal != null) {
+            mLogger.trace("Using JLine Terminal");
             try {
                 jJLineConsole = new ConsoleReader("xmlsh", System.in,
                         System.out, sJLineTerminal, sEncoding );
+                mLogger.trace("Using jline ConsoleReader");
             } catch (IOException e) {
                 mLogger.catching(e);
                 mLogger.debug("Failed to load jline console");
