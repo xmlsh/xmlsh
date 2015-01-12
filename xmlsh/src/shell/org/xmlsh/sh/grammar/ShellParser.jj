@@ -1063,31 +1063,13 @@ WordList brace_expr_list() :
   Word w=null,w2=null;
 }
 {
-w=simple_expr()
-
-(  LOOKAHEAD(1,<PROPASSIGN>) < PROPASSIGN > w2=expr()
+  (LOOKAHEAD(1,<NL >) <NL> )*
+  [ w=expr() ]
+  (LOOKAHEAD(1,<NL>) <NL> )*
+  
   {
-    wl.add( new PropertyWord( w , w2 ) ) ;
+   if( w != null ) wl.add(w);    return wl; 
   }
-    ( LOOKAHEAD(1,< WORD >,  { isKind( 1,WORD , ",") }) < WORD >
-    w=simple_expr() < PROPASSIGN > w2=expr()
-   {
-    wl.add( new PropertyWord( w , w2 ) ) ;
-    w=null;
-    }
-    ) *
- 
-| 
-  (
-    LOOKAHEAD(1,< WORD >,{ isKind( 1,WORD , ",")})< WORD >
-   w2=simple_expr()   {
-     if( w != null )
-       wl.add(w);
-     w = null;     wl.add(w2);   }  ) *
-)
-{
- if( w != null ) wl.add(w);  return wl;
-}
   
 }
 

@@ -423,18 +423,23 @@ public class FileUtils
 	
 	/*
 	 * Guess the file type for purposes of script or cmd execution
+	 * if bScripty then any texty like thing will do
 	 */
 	
-	public static boolean isScript( Path path , String encoding ){
+	public static boolean isXScript( Path path , boolean bScripty ,  String encoding ){
 		String ext = getExt(path.toString());
-		if( Util.isEqual( ext , "xsh" ) )
+		if( Util.isEqual( ext , ".xsh" ) )
 		    return true ;
 		if( Util.isBlank(ext) ){
 		    String line = getTextFileMagic( path , encoding );
-		    if( line  != null && line.startsWith("#!") ){
-		        line=basePathLikeName(line.substring(2));
-		        if( Util.isEqual(line,"xmlsh",true) )
+		    if( line  != null ){
+		        if( bScripty )
 		            return true ;
+		        if( line.startsWith("#!") ){
+		          line=basePathLikeName(line.substring(2));
+		          if( Util.isEqual(line,"xmlsh",true) )
+		            return true ;
+		        }
 		    }
 		    return false ;
 		} 

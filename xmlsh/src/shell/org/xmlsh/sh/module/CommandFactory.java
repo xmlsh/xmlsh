@@ -366,7 +366,7 @@ public abstract class CommandFactory {
 
 	private static boolean isXScriptFile(Path path, String encoding) {
 
-	    return FileUtils.isScript(path,encoding);
+	    return FileUtils.isXScript(path, true  , encoding);
     }
 
     protected static File tryFile(Shell shell, String name) {

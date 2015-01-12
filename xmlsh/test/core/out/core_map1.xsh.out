@@ -1,6 +1,4 @@
-org.xmlsh.types.xtypes.XValuePropertyList
-org.xmlsh.types.xtypes.XValuePropertyList
-value 2
-org.xmlsh.types.xtypes.XValuePropertyList
-org.xmlsh.types.xtypes.XValueProperty
-[value ,value 2 ]
+org.xmlsh.types.xtypes.XValueMap
+org.xmlsh.types.xtypes.XValueMap
+Value 2
+{[a1]=value1 ,[a2]=value2 }
