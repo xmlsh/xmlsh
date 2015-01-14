@@ -26,6 +26,8 @@ import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.xml.sax.InputSource;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InputPort;
@@ -50,14 +52,20 @@ public class VariableInputPort extends InputPort {
 
 	private XVariable mVariable;
 
-
+ 
+	static Logger mLogger = LogManager.getLogger();
 
 	/*
 	 * Standard input stream - created on first request
 	 */
 
-	public VariableInputPort(XVariable value) throws InvalidArgumentException {
-		mVariable = value;
+	public VariableInputPort(XVariable value) throws InvalidArgumentException { 
+	       
+	    mLogger.entry(value);
+	    assert( value != null && ! value.isNull() );
+	    mVariable = value;
+		
+		
 		if( value.getValue().isXdmNode()  )
 			setSystemId( value.getValue().asXdmNode().getBaseURI().toString() );
 	}

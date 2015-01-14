@@ -546,6 +546,7 @@ public XVariable exportVar( String name ) throws InvalidArgumentException{
 
 	public InputPort setInput(String name, XVariable variable) throws IOException, InvalidArgumentException {
 
+	    assert( variable != null && ! variable.isNull() );
 		return getIO().setInput( name,new VariableInputPort(variable));
 	}
 

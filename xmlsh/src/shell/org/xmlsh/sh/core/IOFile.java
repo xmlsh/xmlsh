@@ -96,8 +96,12 @@ public class IOFile {
 			if( Util.isBlank(var))
 				throw new CoreException("Invalid blank name for output variable");
 
-			if( mPrefix.equals("<"))
-				env.setInput( port ,  env.getVar(var) );
+			XVariable vvar = env.getVar(var);
+			if( vvar == null || vvar.isNull() )
+	             throw new CoreException("Undefined variable: " + var);
+
+            if( mPrefix.equals("<"))
+				env.setInput( port ,  vvar );
 			else
 				if( mPrefix.equals(">")){
 					env.unsetVar(var);
@@ -107,7 +111,7 @@ public class IOFile {
 				else
 					if( mPrefix.equals(">>"))
 					{
-						XVariable xvar = env.getVar(var);
+						XVariable xvar = vvar;
 						if( xvar == null ){
 							xvar =   env.declareVar(var);
 						}
