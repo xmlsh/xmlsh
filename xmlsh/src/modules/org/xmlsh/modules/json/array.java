@@ -4,8 +4,9 @@
  *
  */
 
-package org.xmlsh.json.functions;
+package org.xmlsh.modules.json;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.xmlsh.core.AbstractBuiltinFunction;
@@ -14,26 +15,33 @@ import org.xmlsh.core.XValue;
 import org.xmlsh.json.JSONUtils;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.types.TypeFamily;
-import org.xmlsh.types.XTypeUtils;
 
-public class value extends AbstractBuiltinFunction {
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 
-	public value()
+public class array extends AbstractBuiltinFunction {
+
+	public array()
 	{
-		super("value");
+		super("array");
 	}
-
-
 
 	@Override
 	public XValue run(Shell shell, List<XValue> args) throws InvalidArgumentException {
-		if( args.size() == 0 )
-      return XTypeUtils.getInstance(TypeFamily.JSON).nullXValue();
 
-		return XValue.newXValue(TypeFamily.JSON,  JSONUtils.toJsonType( args.get(0)) );
+		ArrayList<Object> list = new ArrayList<Object>();
+
+
+		ObjectMapper mapper = JSONUtils.getJsonObjectMapper();
+		ArrayNode node = mapper.createArrayNode();
+
+		for( XValue arg : args ){
+			node.add(JSONUtils.toJsonType(arg) );
+		}
+
+
+		return XValue.newXValue( TypeFamily.JSON ,node );
 	}
-
-
 
 }
 

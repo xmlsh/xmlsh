@@ -4,39 +4,38 @@
  *
  */
 
-package org.xmlsh.json.functions;
+package org.xmlsh.modules.json;
 
 import java.util.List;
 
 import org.xmlsh.core.AbstractBuiltinFunction;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
-import org.xmlsh.json.JSONUtils;
 import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.sh.shell.ShellConstants;
 import org.xmlsh.types.TypeFamily;
-import org.xmlsh.util.Util;
 
-public class string extends AbstractBuiltinFunction {
+import com.fasterxml.jackson.databind.JsonNode;
+import com.nebhale.jsonpath.JsonPath;
 
-	public string()
+public class path extends AbstractBuiltinFunction {
+
+	public path()
 	{
-		super("string");
+		super("object");
 	}
 
 	@Override
-	public XValue run(Shell shell, List<XValue> args) throws InvalidArgumentException {
+	public XValue run(Shell shell, List<XValue> args) throws InvalidArgumentException  {
+		requires( args.size() == 2, "usage: path( object path )");
 
-		if( args.isEmpty() )
-			return XValue.newXValue( TypeFamily.JSON, JSONUtils.toJsonString((String)null));
-
-		if( args.size() == 1 )
-			return XValue.newXValue( TypeFamily.JSON , JSONUtils.toJsonString(args.get(0)));
+		JsonNode node = args.get(0).asJson();
 
 
-		String sjson = Util.joinValues(args,ShellConstants.ARG_SEPARATOR );
+		JsonPath path = JsonPath.compile(args.get(1).toString());
+		XValue xvr = XValue.newXValue(TypeFamily.JSON, path.read(node, JsonNode.class));
 
-		return XValue.newXValue( TypeFamily.JSON,  JSONUtils.toJsonString(sjson) );
+		return xvr ;
+
 	}
 
 }

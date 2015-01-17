@@ -984,6 +984,20 @@ public class JavaUtils {
 
 	}
 
+    public static String toGetterName(String f) {
+
+        return "get" + toFirstUpperCase(f);
+    
+    }
+    public static String toSetterName(String f) {
+
+        return "set" + toFirstUpperCase(f);
+    
+    }
+    protected static String toFirstUpperCase(String f) {
+        return Character.toUpperCase(f.charAt(0)) + f.substring(1);
+    }
+
 }
 
 

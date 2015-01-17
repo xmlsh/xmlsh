@@ -4,7 +4,7 @@
  *
  */
 
-package org.xmlsh.java.functions;
+package org.xmlsh.modules.java;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -12,6 +12,7 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Properties;
 
+import org.xmlsh.annotations.Function;
 import org.xmlsh.core.AbstractBuiltinFunction;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
@@ -22,12 +23,13 @@ import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.types.TypeFamily;
 import org.xmlsh.util.StringPair;
 
-public class javaProperties extends AbstractBuiltinFunction
+@Function
+public class properties extends AbstractBuiltinFunction
 {
 
 	private SerializeOpts sopts;
 
-	public javaProperties()
+	public properties()
 	{
 		super("properties");
 	}

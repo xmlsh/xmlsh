@@ -55,6 +55,17 @@
 	<classpathentry kind="lib" path="lib/log4j-core-2.1.jar" sourcepath="C:/Java/log4j/apache-log4j-2.1-src/log4j-core/src/main/java"/>
 	<classpathentry kind="lib" path="lib/log4j-jcl-2.1.jar"/>
 	<classpathentry kind="lib" path="lib/log4j-slf4j-impl-2.1.jar"/>
+	<classpathentry kind="lib" path="lib/jackson-annotations-2.5.0.jar"/>
+	<classpathentry kind="lib" path="lib/jackson-core-2.5.0.jar"/>
+	<classpathentry kind="lib" path="lib/jackson-databind-2.5.0.jar"/>
+	<classpathentry kind="lib" path="lib/jackson-dataformat-xml-2.5.0.jar"/>
+	<classpathentry kind="lib" path="lib/jackson-module-jaxb-annotations-2.5.0.jar"/>
+	<classpathentry kind="lib" path="lib/jackson-module-jsonSchema-2.5.0.jar"/>
+	<classpathentry kind="lib" path="lib/byte-buddy-0.5.1.jar" sourcepath="C:/Java/byte-buddy/byte-buddy-0.5.1-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/C:/Java/byte-buddy/byte-buddy-0.5.1-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="src" path=".apt_generated">
 		<attributes>
 			<attribute name="optional" value="true"/>
@@ -62,51 +73,6 @@
 	</classpathentry>
 	<classpathentry kind="lib" path="lib/httpcore-4.2.2.jar"/>
 	<classpathentry kind="lib" path="lib/jline-2.12.jar" sourcepath="/jline/src/main/java"/>
-	<classpathentry exported="true" kind="lib" path="lib/jackson-annotations-2.4.3.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jackson-core-2.4.3.jar" sourcepath="E:/Java/jackson/jackson-2.4.3/jackson-core-2.4.3-sources.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="jar:file:/E:/Java/jackson/jackson-2.4.3/jackson-core-2.4.3-javadoc.jar!/"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="lib/jackson-databind-2.4.3.jar" sourcepath="E:/Java/jackson/jackson-2.4.3/jackson-databind-2.4.3-sources.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="jar:file:/E:/Java/jackson/jackson-2.4.3/jackson-databind-2.4.3-javadoc.jar!/"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="lib/jackson-dataformat-xml-2.4.3.jar" sourcepath="E:/Java/jackson/jackson-2.4.3/jackson-dataformat-xml-2.4.3-sources.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="jar:file:/E:/Java/jackson/jackson-2.4.3/jackson-dataformat-xml-2.4.3-javadoc.jar!/"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="lib/jackson-datatype-jdk7-2.4.3.jar" sourcepath="E:/Java/jackson/jackson-2.4.3/jackson-datatype-jdk7-2.4.3-sources.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="jar:file:/C:/Java/jackson/jackson-2.4.3/jackson-datatype-jdk7-2.4.3-javadoc.jar!/"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="lib/jackson-module-jaxb-annotations-2.4.3.jar" sourcepath="E:/Java/jackson/jackson-2.4.3/jackson-annotations-2.4.3-sources.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="jar:file:/E:/Java/jackson/jackson-2.4.3/jackson-annotations-2.4.3-javadoc.jar!/"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="lib/jackson-module-jsonSchema-2.4.3.jar" sourcepath="E:/Java/jackson/jackson-2.4.3/jackson-module-jsonSchema-2.4.3-sources.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="jar:file:/E:/Java/jackson/jackson-2.4.3/jackson-module-jsonSchema-2.4.3-javadoc.jar!/"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="lib/jackson-module-mrbean-2.4.3.jar" sourcepath="E:/Java/jackson/jackson-2.4.3/jackson-module-mrbean-2.4.3-sources.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="jar:file:/E:/Java/jackson/jackson-2.4.3/jackson-module-mrbean-2.4.3-javadoc.jar!/"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="lib/jackson-module-parameter-names-2.4.3.jar" sourcepath="E:/Java/jackson/jackson-2.4.3/jackson-module-parameter-names-2.4.3-sources.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="jar:file:/E:/Java/jackson/jackson-2.4.3/jackson-module-parameter-names-2.4.3-javadoc.jar!/"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="lib/jackson-module-paranamer-2.4.3.jar" sourcepath="E:/Java/jackson/jackson-2.4.3/jackson-module-paranamer-2.4.3-sources.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="jar:file:/E:/Java/jackson/jackson-2.4.3/jackson-module-paranamer-2.4.3-javadoc.jar!/"/>
-		</attributes>
-	</classpathentry>
+	<classpathentry kind="lib" path="C:/Users/DLEE/.m2/repository/org/ow2/asm/asm/5.0.3/asm-5.0.3.jar"/>
 	<classpathentry kind="output" path="_out"/>
 </classpath>

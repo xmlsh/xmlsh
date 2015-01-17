@@ -15,7 +15,7 @@ import org.xmlsh.core.Options.OptionDef;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.UnknownOption;
 import org.xmlsh.core.XValue;
-import org.xmlsh.modules.types.Types;
+import org.xmlsh.modules.types.TypesModule;
 import org.xmlsh.sh.module.ModuleConfig;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.types.TypeFamily;
@@ -23,7 +23,7 @@ import org.xmlsh.util.JavaUtils;
 
 
 @org.xmlsh.annotations.Module( name="types.options")
-public class OptionsModule extends Types {
+public class OptionsModule extends TypesModule {
 	public OptionsModule(ModuleConfig config) throws CoreException {
 		super(config);
 	}

@@ -1,2 +1,2 @@
-import commands json=json
+import module json=json
 echo json:parse( '{ "a" : 1.5 , "b" : [ 1 , true , null , "xyz" ] }' )

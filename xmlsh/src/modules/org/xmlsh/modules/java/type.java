@@ -4,36 +4,43 @@
  *
  */
 
-package org.xmlsh.json.functions;
+package org.xmlsh.modules.java;
 
 import java.util.List;
 
+import net.bytebuddy.ByteBuddy;
+import net.bytebuddy.dynamic.ClassLoadingStrategy;
+import net.bytebuddy.dynamic.DynamicType;
+import net.bytebuddy.modifier.Visibility;
+
+import org.xmlsh.annotations.Function;
 import org.xmlsh.core.AbstractBuiltinFunction;
-import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
-import org.xmlsh.json.JSONUtils;
 import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.types.TypeFamily;
+import org.xmlsh.util.JavaUtils;
 
-public class _boolean extends AbstractBuiltinFunction {
-
-	public _boolean()
-	{
-		super("boolean");
-	}
+@Function(name="type",names={"declare-type"})
+public class type extends AbstractBuiltinFunction {
 
 	@Override
-	public XValue run(Shell shell, List<XValue> args) throws InvalidArgumentException   {
-
-		if( args.size() == 0 )
-			return XValue.newXValue(Boolean.FALSE);
-
-		XValue arg = args.get(0);
+	public XValue run(Shell shell, List<XValue> args) throws Exception {
 
 
+        String name = args.remove(0).toString();
+        
+        DynamicType.Builder<?> b = new ByteBuddy().subclass(Object.class).name(name);
+        
+
+        for( XValue a : args ){
+            b=b.defineField( a.toString(), String.class, Visibility.PUBLIC );
+
+        }
+        Class<?> bean = b.make()
+                .load(getClass().getClassLoader(), ClassLoadingStrategy.Default.WRAPPER)
+                .getLoaded();
+            return XValue.newXValue((Object)bean);
 
 
-		return XValue.newXValue( TypeFamily.JSON ,JSONUtils.toJsonBoolean( arg ));
 	}
 
 }

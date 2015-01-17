@@ -4,49 +4,49 @@
  *
  */
 
-package org.xmlsh.json.functions;
+package org.xmlsh.modules.json;
 
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.xmlsh.core.AbstractBuiltinFunction;
 import org.xmlsh.core.CoreException;
+import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.json.JSONUtils;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.types.TypeFamily;
-import org.xmlsh.types.XTypeUtils;
+import org.xmlsh.util.JavaUtils;
 
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.jsonschema.JsonSchema;
 
-public class json extends AbstractBuiltinFunction {
+public class toSchema extends AbstractBuiltinFunction {
 
-	public json()
+	public toSchema()
 	{
-		super("json");
+		super("to-schema");
 	}
 
-	@Override
-	public XValue run(Shell shell, List<XValue> args) throws ClassNotFoundException, CoreException, JsonParseException, JsonMappingException, IOException 
-	{
-		List<JsonNode> nodes = new ArrayList<JsonNode>(args.size());
-		ObjectMapper mapper = JSONUtils.getJsonObjectMapper();
-		for( XValue arg : args ) {
-			Object o = arg.asObject();
-			nodes.add( mapper.valueToTree(o) );
-		}
-		if( nodes.isEmpty())
-			return XTypeUtils.getInstance(TypeFamily.JSON).nullXValue();
 
-		else
-			if( nodes.size() > 1 ) 
-				return XValue.newXValue(TypeFamily.JSON, mapper.createArrayNode().addAll(nodes));
-			else
-				return XValue.newXValue( TypeFamily.JSON, nodes.get(0 ) );
+	@SuppressWarnings("deprecation")
+	@Override
+	public XValue run(Shell shell, List<XValue> args) throws ClassNotFoundException, CoreException, JsonMappingException {
+
+		if( args.size() == 0)
+			throw new InvalidArgumentException("usage: to-schema( class )");
+
+		XValue arg = args.get(0);
+
+		Class<?> cls = JavaUtils.convertToClass( arg, shell );
+
+
+		ObjectMapper mapper = JSONUtils.getJsonObjectMapper();
+
+		@SuppressWarnings("deprecation")
+		JsonSchema schema = mapper.generateJsonSchema(cls);
+
+		return XValue.newXValue(TypeFamily.JSON,  schema.getSchemaNode());
 
 	}
 

@@ -1,7 +1,7 @@
 #
 # Test basic types using TestTypes.class
 #
-import commands java 
+import module java 
 import java ../bin/xmlsh-test.jar
 log $0 should not need the "{}" around expressions 
 

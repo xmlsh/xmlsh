@@ -4,11 +4,9 @@
  *
  */
 
-package org.xmlsh.json.functions;
+package org.xmlsh.modules.json;
 
 import java.util.List;
-
-import net.sf.saxon.trans.XPathException;
 
 import org.xmlsh.core.AbstractBuiltinFunction;
 import org.xmlsh.core.InvalidArgumentException;
@@ -16,19 +14,26 @@ import org.xmlsh.core.XValue;
 import org.xmlsh.json.JSONUtils;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.types.TypeFamily;
+import org.xmlsh.types.XTypeUtils;
 
-public class _null extends AbstractBuiltinFunction {
+public class value extends AbstractBuiltinFunction {
 
-	public _null()
+	public value()
 	{
-		super("null");
+		super("value");
 	}
+
+
 
 	@Override
-	public XValue run(Shell shell, List<XValue> args) throws XPathException, InvalidArgumentException {
+	public XValue run(Shell shell, List<XValue> args) throws InvalidArgumentException {
+		if( args.size() == 0 )
+      return XTypeUtils.getInstance(TypeFamily.JSON).nullXValue();
 
-		return XValue.newXValue( TypeFamily.JSON ,JSONUtils.nullValue() );
+		return XValue.newXValue(TypeFamily.JSON,  JSONUtils.toJsonType( args.get(0)) );
 	}
+
+
 
 }
 

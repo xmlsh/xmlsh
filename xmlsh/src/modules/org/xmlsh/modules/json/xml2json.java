@@ -4,7 +4,7 @@
  *
  */
 
-package org.xmlsh.json.commands;
+package org.xmlsh.modules.json;
 
 import java.io.OutputStream;
 import java.util.List;

@@ -24,7 +24,8 @@ import org.xmlsh.types.TypeFamily;
 
 public class xlocation extends AbstractBuiltinFunction {
 
-	public static final String XLOC_OPTS = "d=depth:,f=function,n=name,s=source,start=start-line,end=end-line,scol=start-column,ecol=end-column";
+	public static final String XLOC_OPTS = 
+	        "d=depth:,f=function,n=name,s=source,start=start-line,end=end-line,scol=start-column,ecol=end-column,r=relpath,p=path,f=file";
 
 	public xlocation()
 	{
@@ -55,13 +56,12 @@ public class xlocation extends AbstractBuiltinFunction {
 			return null ;
 		if( opts.hasOpt("name") && loc.hasName() )
 			xv.add( XValue.newXValue( describeName(depth,loc)));
-		if( opts.hasOpt("s") ) 
-			xv.add( XValue.newXValue(loc.getSource()) );
+		if( opts.hasOpt("s") || opts.hasOpt("f") || opts.hasOpt("p")  ) 
+			xv.add( XValue.newXValue(loc.getSource(opts.hasOpt("r") || (opts.hasOpt("f")&&!opts.hasOpt("p")) )) );
 		if( opts.hasOpt("start") ) 
 			xv.add( XValue.newXValue(loc.getStartline()));
 		if( opts.hasOpt("end") ) 
 			xv.add( XValue.newXValue(loc.getEndLine()));
-
 		if( opts.hasOpt("scol") ) 
 			xv.add( XValue.newXValue(loc.getStartColumn()));
 		if( opts.hasOpt("ecol") ) 
@@ -75,7 +75,7 @@ public class xlocation extends AbstractBuiltinFunction {
 
 
 
-	private XValue describe(Shell shell , SourceLocator loc) throws Exception 
+	private XValue describe(Shell shell , SourceLocation loc) throws Exception 
 	{
 
 		XVariable xv = XVariable.anonymousInstance(TypeFamily.XDM);
@@ -86,7 +86,9 @@ public class xlocation extends AbstractBuiltinFunction {
 			writer.writeStartDocument();
 			writer.writeStartElement(getName());
 			writer.writeAttribute("name", loc.getName() );
-			writer.writeAttribute("source", loc.getSource() );
+			writer.writeAttribute("scope" , loc.hasName() ? "function" : "");
+			writer.writeAttribute("source", loc.getSource(false) );
+			writer.writeAttribute("file-name", loc.getSource(true) );
 			writer.writeAttribute("end-column", String.valueOf(	loc.getEndColumn()));
 			writer.writeAttribute("start-column",String.valueOf(loc.getStartColumn()));
 			writer.writeAttribute("end-line", String.valueOf(	loc.getEndLine()));

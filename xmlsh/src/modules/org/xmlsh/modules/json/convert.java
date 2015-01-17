@@ -4,38 +4,44 @@
  *
  */
 
-package org.xmlsh.java.functions;
+package org.xmlsh.modules.json;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.xmlsh.core.AbstractBuiltinFunction;
+import org.xmlsh.core.CoreException;
 import org.xmlsh.core.XValue;
+import org.xmlsh.json.JSONUtils;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.types.TypeFamily;
 import org.xmlsh.util.JavaUtils;
 
-public class jnew extends AbstractBuiltinFunction {
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-	public jnew() {
-		super("jnew");
+public class convert extends AbstractBuiltinFunction {
 
+	public convert()
+	{
+		super("convert");
 	}
 
 	@Override
-	public XValue run(Shell shell, List<XValue> args) throws Exception {
+	public XValue run(Shell shell, List<XValue> args) throws ClassNotFoundException, CoreException, JsonParseException, JsonMappingException, IOException 
+	{
+		requires( args.size() == 2 , " two arguments required");
 
+		Class<?> cls = null ;
+		Object from = args.get(0).asObject();
+		cls = JavaUtils.convertToClass(args.get(1) , shell );
+		if( cls == null )
+			cls = JSONUtils.jsonNodeClass();
 
-
-		String classname = args.remove(0).toString();
-
-
-		ClassLoader classloader =shell.getClassLoader(null);
-
-
-		XValue obj = null;
-		obj = JavaUtils.newXValue(classname, args, classloader);
-		return obj;
-
-
+		ObjectMapper mapper = JSONUtils.getJsonObjectMapper();
+		Object value = mapper.convertValue(from, cls);
+		return XValue.newXValue( TypeFamily.XTYPE , value );
 	}
 
 }

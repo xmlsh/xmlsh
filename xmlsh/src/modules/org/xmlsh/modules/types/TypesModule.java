@@ -17,10 +17,10 @@ import org.xmlsh.util.Util;
 
 
 @org.xmlsh.annotations.Module(name="types")
-public class Types extends PackageModule {
+public class TypesModule extends PackageModule {
 	static Logger mLogger = LogManager.getLogger();
 
-	public Types( ModuleConfig config) throws CoreException {
+	public TypesModule( ModuleConfig config) throws CoreException {
 		super( config);
 		mLogger.entry( config);
 	}

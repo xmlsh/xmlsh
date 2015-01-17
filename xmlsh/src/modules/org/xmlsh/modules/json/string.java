@@ -4,44 +4,39 @@
  *
  */
 
-package org.xmlsh.json.functions;
+package org.xmlsh.modules.json;
 
-import java.io.IOException;
 import java.util.List;
 
 import org.xmlsh.core.AbstractBuiltinFunction;
-import org.xmlsh.core.CoreException;
+import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.json.JSONUtils;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.sh.shell.ShellConstants;
 import org.xmlsh.types.TypeFamily;
-import org.xmlsh.util.JavaUtils;
+import org.xmlsh.util.Util;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+public class string extends AbstractBuiltinFunction {
 
-public class convert extends AbstractBuiltinFunction {
-
-	public convert()
+	public string()
 	{
-		super("convert");
+		super("string");
 	}
 
 	@Override
-	public XValue run(Shell shell, List<XValue> args) throws ClassNotFoundException, CoreException, JsonParseException, JsonMappingException, IOException 
-	{
-		requires( args.size() == 2 , " two arguments required");
+	public XValue run(Shell shell, List<XValue> args) throws InvalidArgumentException {
 
-		Class<?> cls = null ;
-		Object from = args.get(0).asObject();
-		cls = JavaUtils.convertToClass(args.get(1) , shell );
-		if( cls == null )
-			cls = JSONUtils.jsonNodeClass();
+		if( args.isEmpty() )
+			return XValue.newXValue( TypeFamily.JSON, JSONUtils.toJsonString((String)null));
 
-		ObjectMapper mapper = JSONUtils.getJsonObjectMapper();
-		Object value = mapper.convertValue(from, cls);
-		return XValue.newXValue( TypeFamily.XTYPE , value );
+		if( args.size() == 1 )
+			return XValue.newXValue( TypeFamily.JSON , JSONUtils.toJsonString(args.get(0)));
+
+
+		String sjson = Util.joinValues(args,ShellConstants.ARG_SEPARATOR );
+
+		return XValue.newXValue( TypeFamily.JSON,  JSONUtils.toJsonString(sjson) );
 	}
 
 }

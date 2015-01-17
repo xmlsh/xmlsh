@@ -4,7 +4,7 @@
  *
  */
 
-package org.xmlsh.json.functions;
+package org.xmlsh.modules.json;
 
 import java.util.List;
 
@@ -15,23 +15,25 @@ import org.xmlsh.json.JSONUtils;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.types.TypeFamily;
 
-import com.fasterxml.jackson.databind.JsonNode;
+public class _boolean extends AbstractBuiltinFunction {
 
-
-/*
- * Parse json text to a Json Node or object
- */
-public class parse extends AbstractBuiltinFunction {
-
-	public parse()
+	public _boolean()
 	{
-		super("parse");
+		super("boolean");
 	}
 
 	@Override
-	public XValue run(Shell shell, List<XValue> args) throws InvalidArgumentException {
-		JsonNode model = JSONUtils.toJsonNode( getFirstArg(args).toString() );
-		return XValue.newXValue( TypeFamily.JSON, model );
+	public XValue run(Shell shell, List<XValue> args) throws InvalidArgumentException   {
+
+		if( args.size() == 0 )
+			return XValue.newXValue(Boolean.FALSE);
+
+		XValue arg = args.get(0);
+
+
+
+
+		return XValue.newXValue( TypeFamily.JSON ,JSONUtils.toJsonBoolean( arg ));
 	}
 
 }

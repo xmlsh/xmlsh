@@ -1,5 +1,5 @@
 # test of xml2json
-import commands json
+import module json
 F=../../samples/data/youtube.json
 json2xml -format jsonx < $F
 

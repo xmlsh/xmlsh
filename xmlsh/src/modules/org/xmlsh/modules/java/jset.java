@@ -4,16 +4,18 @@
  *
  */
 
-package org.xmlsh.java.commands;
+package org.xmlsh.modules.java;
 
 import java.util.List;
 
+import org.xmlsh.annotations.Command;
 import org.xmlsh.core.BuiltinCommand;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.XValue;
 import org.xmlsh.util.JavaUtils;
 import org.xmlsh.util.Util;
 
+@Command
 public class jset extends BuiltinCommand {
 
 	static final String sDocRoot = "env";

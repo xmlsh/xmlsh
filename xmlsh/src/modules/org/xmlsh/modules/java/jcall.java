@@ -4,7 +4,7 @@
  * 
  */
 
-package org.xmlsh.java.commands;
+package org.xmlsh.modules.java;
 
 import java.io.InputStream;
 import java.io.PrintStream;
@@ -13,6 +13,7 @@ import java.lang.reflect.Method;
 import java.security.Permission;
 import java.util.List;
 
+import org.xmlsh.annotations.Command;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
@@ -26,6 +27,7 @@ import org.xmlsh.util.Util;
  * jcall class args
  */
 
+@Command
 public class jcall extends XCommand
 {
   @SuppressWarnings("serial")

@@ -1,7 +1,7 @@
 # 
 # Test of jnew 
 # 
-import commands java
+import module java
 # Integer
 i=jnew(java.lang.Integer 1)
 xtype -j -v i

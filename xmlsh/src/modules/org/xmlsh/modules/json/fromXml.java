@@ -4,7 +4,7 @@
  *
  */
 
-package org.xmlsh.json.functions;
+package org.xmlsh.modules.json;
 
 import java.io.IOException;
 import java.util.List;

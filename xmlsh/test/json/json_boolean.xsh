@@ -1,5 +1,5 @@
 # test json:boolean
-import commands json=json
+import module json=json
 
 echo json:boolean( 1 )
 echo json:boolean( true )

@@ -1,5 +1,5 @@
 # test of jsonpath
-import commands json
+import module json
 # read from a hear document
 jsonpath -q $.B <<EOF
 { "A" : 1 ,

@@ -2,7 +2,7 @@
 #
 # String
 import module s="java:java.lang.String"
-import commands java
+import module java
 a=s:new(Hi)
 echo Value: $a
 echo Length: s:length($a)

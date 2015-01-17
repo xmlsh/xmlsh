@@ -5,7 +5,7 @@
  * @author DLEE
  * 
  */
-@Module(name="module.json",moduleClass="Java")
+@Module(name="module.java",moduleClass="JavaModule")
 package org.xmlsh.modules.java;
 import org.xmlsh.annotations.Module;
 
