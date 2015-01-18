@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <project default="main" name="beanshell">
-   <property name="component" value="extension"/>
+  <property name="component" value="extension"/>
 
 	<import file="../../build/common.xml"/>
 		
@@ -77,7 +77,7 @@
         />
 
   </target>
-	
+
   <target name="test" description="Test Cases">
     <echo>
         Running BeanShell xmlsh tests
