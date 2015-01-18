@@ -520,7 +520,7 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt {
 		try {
 
 			enterEval();
-			ShellParser parser = new ShellParser(
+			ShellParser parser = new ShellParser( this, 
 					newParserReader(reader, true), source);
 			return parser.script();
 
@@ -542,7 +542,7 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt {
 		try ( Reader reader = Util.toReader(scmd ) ){
 			enterEval();
 
-			ShellParser parser = new ShellParser(newParserReader(reader,false),"<eval>");
+			ShellParser parser = new ShellParser(this,newParserReader(reader,false),"<eval>");
 
 			ICommandExpr c = parser.script();
 			return mLogger.exit( c);
@@ -584,7 +584,7 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt {
 		boolean bSuccess = false;
 		try {
 			enterEval();
-			parser = new ShellParser(newParserReader(reader, true), source);
+			parser = new ShellParser(this,newParserReader(reader, true), source);
 
 			while (parser.command_line() != null)
 				;
@@ -631,7 +631,7 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt {
 			int exitStatus = 0;
 			ShellParser parser = null;
 			try {
-				parser = new ShellParser(newParserReader(reader,true), source);
+				parser = new ShellParser(this,newParserReader(reader,true), source);
 				while (!hasReturned()) {
 					CommandExpr c = parser.command_line();
 					if (c == null)
@@ -723,7 +723,7 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt {
 
 			// ShellParser parser= new
 			// ShellParser(mCommandInput,Shell.getEncoding());
-			ShellParser parser = new ShellParser(newInteractiveParserReader(),
+			ShellParser parser = new ShellParser(this,newInteractiveParserReader(),
 					"stdin");
 
 			while (mExitVal == null) {

@@ -9,6 +9,7 @@ import org.xmlsh.sh.core.SourceLocation;
 import org.xmlsh.sh.core.StringWord;
 import org.xmlsh.sh.core.Word;
 import org.xmlsh.sh.grammar.ParserState.StateEnum;
+import org.xmlsh.sh.shell.Shell;
 
 
 
@@ -18,10 +19,16 @@ class ParserContext
     private String mSource ;
     private SourceLocation mParentLocation  ;
     private ShellParser mParser;
+    private Shell mShell;
     
     
-    ParserContext( ShellParser parser , String source ){
+    public Shell getShell() {
+        return mShell;
+    }
+
+    ParserContext( Shell shell,ShellParser parser , String source ){
         mParser = parser ;
+        mShell = shell ;
         setSource(source) ;
         mStateStack.push( ParserState.instanceOf(StateEnum.START) );
 

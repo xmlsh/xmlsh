@@ -1,11 +1,11 @@
 CLEAR_CONSOLE=true
-JAVACC_OPTIONS=-GENERATE_CHAINED_EXCEPTION\=true -JDK_VERSION\=1.7 -GRAMMAR_ENCODING\=UTF8
-JJDOC_OPTIONS=-OUTPUT_FILE\=ShellParser.html
+JAVACC_OPTIONS=
+JJDOC_OPTIONS=
 JJTREE_OPTIONS=
 JJ_NATURE=true
 JTB_OPTIONS=-ia -jd -tk
 MARK_GEN_FILES_AS_DERIVED=true
-RUNTIME_JJJAR=C\:\\Work\\DEI\\xmlsh\\xmlsh\\build-lib\\javacc.jar
+RUNTIME_JJJAR=C\:\\Work\\DEI\\xmlsh\\2.0\\xmlsh\\build-lib\\javacc.jar
 RUNTIME_JTBJAR=
 SUPPRESS_WARNINGS=false
 eclipse.preferences.version=1

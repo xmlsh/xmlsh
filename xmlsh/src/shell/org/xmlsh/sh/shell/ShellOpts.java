@@ -57,7 +57,6 @@ public class ShellOpts
     mAllLocal = that.mAllLocal;
     mAllExport = that.mAllExport;
     mLocalMatch = that.mLocalMatch ;
-
   }
 
   public void setOption(String opt, boolean on)
@@ -87,15 +86,23 @@ public class ShellOpts
     if(opt.equals("location-format"))
       mLocationFormat = Util.parseBoolean(value.toString(),mLocationFormat);
     else
-      if(
-    opt.equals("trace-file"))
+    if(opt.equals("trace-file"))
       mTraceFile = value.toString();
+    if( opt.equals("trace-level"))
+      mTraceLevel = Level.toLevel(value.toString());
     
     mSerialize.setOption(opt, value);
 
   }
 
-  public void setOption(OptionValue ov) throws InvalidArgumentException
+  public Level getTraceLevel() {
+    return mTraceLevel;
+}
+
+  public boolean isTraceEnabled() {
+      return mTrace ;
+  }
+public void setOption(OptionValue ov) throws InvalidArgumentException
   {
 
     if(ov.getOptionDef().isExpectsArg())

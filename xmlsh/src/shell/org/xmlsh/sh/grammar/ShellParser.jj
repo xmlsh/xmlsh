@@ -6,7 +6,7 @@ options
   JDK_VERSION = "1.7";
   STATIC = false; 
 // DEBUG_PARSER=true ;
- //  DEBUG_LOOKAHEAD=true;
+//   DEBUG_LOOKAHEAD=true;
 //       DEBUG_TOKEN_MANAGER=true;
 // FORCE_LA_CHECK=true;
 //   UNICODE_INPUT=true;
@@ -20,6 +20,7 @@ options
 PARSER_BEGIN(ShellParser)
 package org.xmlsh.sh.grammar;
 import org.xmlsh.sh.core.*;
+import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.Util;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -51,22 +52,30 @@ public class ShellParser
 
 
  
-  public ShellParser(java.io.Reader stream, String source)
+  public ShellParser(Shell shell,java.io.Reader stream, String source)
   {
     this (stream);
     in=stream;
-    mContext = new ParserContext( this , source );
+    token_source.setShell(shell);
+    mContext = new ParserContext( shell , this , source );
 
   }
 
   public void reset_trace()
-  {      trace_indent = 0 ;
+  {
+      trace_indent = 0 ;
   }
   public void reset()
   {
     reset_trace();
-    try    {      // TURN OFF WITH N
-      in.reset();	} catch( Exception e )	{	      }
+    try
+    {
+      // TURN OFF WITH N
+      in.reset();
+	} catch( Exception e )
+	{
+	  
+    }
 
   }
   
@@ -80,7 +89,7 @@ public class ShellParser
     this.ReInit(stream);
     in=stream;
     token_source.clear();
-    mContext = new ParserContext( this , source );
+    mContext = new ParserContext( mContext.getShell() , this , source );
   }
 
   public SourceLocation getLocation(Token t)
@@ -113,7 +122,8 @@ public class ShellParser
 
   
   // Create a string word or string list 
-  public Word newJoinedWord( Token t , Word next )  {
+  public Word newJoinedWord( Token t , Word next )
+  {
     return mContext.newJoinedWord(t , next );
   }
   public Word newJoinedWord( Token t  )
@@ -131,7 +141,8 @@ public class ShellParser
   }
   
 
-  public boolean isJoinable( Token t )  {
+  public boolean isJoinable( Token t )
+  {
         return mContext.isJoinable(t );
   }
 
@@ -141,7 +152,8 @@ public class ShellParser
   }
 
   public boolean isJoinableKind( Token t , int kind )
-  {     return t.kind == kind && isJoinable( t ) ;
+  {
+     return t.kind == kind && isJoinable( t ) ;
   }
     public boolean isJoinableKind( Token t , int kind , String s )
   {
@@ -159,7 +171,8 @@ public class ShellParser
      return isJoinableKind( t , kind , s );
   }
   public boolean isJoinable( int lookahead , String s )
-  {     return isJoinable( getToken( lookahead ) , s );
+  {
+     return isJoinable( getToken( lookahead ) , s );
    }
   
   public boolean isJoinable( Word w )
@@ -192,13 +205,18 @@ public class ShellParser
     public boolean isWord( int pos , String value ){
      return isKind( getToken(pos) , WORD , value );
   }
-  public boolean isDelim( Token t )  {       return mContext.isDelim(t );
+  public boolean isDelim( Token t )
+  {
+       return mContext.isDelim(t );
   }
 
-  public void pushState( StateEnum s )  {     mContext.pushState( ParserState.instanceOf(s) );
+  public void pushState( StateEnum s )
+  {
+     mContext.pushState( ParserState.instanceOf(s) );
   }
 
-  public void popState( )  {
+  public void popState( )
+  {
     mContext.popState();
   }
   
@@ -207,34 +225,50 @@ public class ShellParser
      String s = t.toString();
      return s.substring( pre.length() , s.length() - post.length()).trim();
    }
-   public <T> T DEB(T x , String s)    {
+   public <T> T DEB(T x , String s) 
+   {
      mLogger.info("DEB:{} return :{}" , s,x);
      return x;
    }
    public void DEB(String s)
-   {     mLogger.info("DEB:{}" , s);
+   {
+     mLogger.info("DEB:{}" , s);
+   }
 
-   }
-     boolean isTermStop( Token t )     {       //        ";;" |  <RPAREN> | <MRBRACE> | ELSE() | THEN() | DO() | DONE() | FI() | ELIF () | <NL > | < RSBRACE >)
-       switch( t.kind )       {         case DSEMI: case RPAREN: case MRBRACE :
+     boolean isTermStop( Token t )
+     {
+       //        ";;" |  <RPAREN> | <RBRACE> | ELSE() | THEN() | DO() | DONE() | FI() | ELIF () | <NL > | < RSBRACE >)
+       switch( t.kind )
+       {
+         case DSEMI: case RPAREN: case RBRACE :
          case NL: case RSBRACE :
            return true ;
          case WORD:
          case NAME:
          if( Util.isOneOf( t.image , "else","then","do","done","fi","elif" ) )
-           return true ;
+           return DEB(true, t.image ) ;
          default :
-           return false ;
+           return DEB(false ,t.image);
         }
-      }}
+      }
+}
 
 PARSER_END(ShellParser)
 
 TOKEN_MGR_DECLS :
 {
 
+  private Shell mShell = null;
   private Logger mLogger = LogManager.getLogger() ;
-  
+
+  Shell getShell()
+  {
+     return mShell ;
+   }
+  void setShell(Shell shell)
+  {
+    mShell = shell;
+  }
   public void clear()
   {
     XAbstractToken.clearAll();
@@ -301,9 +335,9 @@ TOKEN_MGR_DECLS :
   } 
   
    public void CommonTokenAction(Token t) {
-      System.err.println( state() + ":[" + tokenImage[ t.kind ] + "]=("+t.image + ") #" + t.get(t.kind)  );
-    //   if( mLogger.isTraceEnabled() )
-     //     mLogger.trace(  "token [{}]  \"{}\" ", t.kind , t.image );
+      if( getShell().getOpts().isTraceEnabled() )
+         mLogger.log(  getShell().getOpts().getTraceLevel() ,
+           "token <{}> [{}]  \"{}\" ",  tokenImage[ t.kind ] , t.kind , t.image );
     }
     
     
@@ -321,7 +355,10 @@ TOKEN_MGR_DECLS :
 
 /* COMMENTS */
 < DEFAULT >
-SPECIAL_TOKEN :{     < WHITESPACE :  < _WS > >|    <SINGLE_LINE_COMMENT: "#" (~["\n","\r"])*>
+SPECIAL_TOKEN :
+{
+     < WHITESPACE :  < _WS > >
+|    <SINGLE_LINE_COMMENT: "#" (~["\n","\r"])*>
 }
 
 <DEFAULT>
@@ -337,9 +374,8 @@ TOKEN :
 TOKEN :
 {
   < BACKTICK2 : "`" >
- | < MRBRACE : "}" > : DEFAULT
- | < RSBRACE : "]" > : DEFAULT
- | < LSBRACE : "[" > : DEFAULT
+  | < RSBRACE : "]" > : DEFAULT 
+|  < LSBRACE : "[" > : DEFAULT
  | < FOR : "for" >
  | < IF : "if" >
  | < CASE : "case" >
@@ -387,7 +423,8 @@ TOKEN :
 {
    < #_STRING_LITERAL : (
        < _STRING_LITERAL1 > | < _STRING_LITERAL2 >
-     ) >|   < #_STRING_LITERAL1 :
+     ) >
+|   < #_STRING_LITERAL1 :
     "\""
     (
       (~[ "\"", "\\" ])
@@ -426,9 +463,6 @@ TOKEN:
      < VAR_EXPR1 :  "${" (< _SPECIAL_VARNAME > |( < _VARNAME > | < _POSVAR >  )) "}" > 
 |    < VAR_EXPR2 :  "${#" ( < _VARNAME > | < _POSVAR >  ) "}" > 
 |    < VAR_EXPR3 :  "${" ( < _VARNAME > | < _POSVAR >  ) "[" > 
-    { 
-      matchedToken.enter( LBRACE ) ; 
-    }
 |    < VAR_EXPR4 :  "${" ( < _VARNAME > | < _POSVAR >  ) ":" >     { 
     } : IN_VAR_FIELD
     
@@ -468,18 +502,26 @@ MORE :
 
 
 
-TOKEN :{
+TOKEN :
+{
   < SEMI : ";" >
-| < AMP  : "&" >|  < AND_IF : "&&" > | < OR_IF : "||" > |  < DGREAT : ">>" >
-| < DSEMI : ";;" >| < CLOBBER : ">|" >
-| < PROPASSIGN : ":=" >}
+| < AMP  : "&" >
+|  < AND_IF : "&&" > 
+| < OR_IF : "||" > 
+|  < DGREAT : ">>" >
+| < DSEMI : ";;" >
+| < CLOBBER : ">|" >
+| < PROPASSIGN : ":=" >
+}
+
 
 /*
  * Words which are possibly resserved - catch first
  * If its an exact match and no longer then these will be triggered first
  */
 TOKEN :
-{  < NLESSANDN :  < _DIGITS > "<&" < _DIGITS > > 
+{
+  < NLESSANDN :  < _DIGITS > "<&" < _DIGITS > > 
 | < NGTANDN   :  < _DIGITS > ">&" < _DIGITS > > 
 | < NLTN      :  < _DIGITS > "<" < _DIGITS >  > 
 | < NGTN      :  < _DIGITS > ">" < _DIGITS >  > 
@@ -500,7 +542,7 @@ TOKEN :
 | < #_DIGITS  : [ "1"-"2" ] >
 | < #_PORTWORD :  "("  < _PORTID >   ")" >
 // Single charactor words that need to be words themselfs in some cases
-| < #_WORD_SPECIAL :     ( "[" | "$" | "," | "." | ":" ) >
+| < #_WORD_SPECIAL :     ( "[" | "$" | "," | "." | ":" | "]" ) >
 | < #_WORD_PUNC :     ( "=" ) >
 |   < #_GCHAR  : ( ~[ "\"", "\\" , "[" , "]" , ")" , "(" ] | < _ESCAPED > )+ >
 |   < #_GLOB  : ( ( "["  < _GCHAR >  "]" ) | "*" | "?" )+ >
@@ -523,15 +565,12 @@ TOKEN :
   {
     matchedToken.image = readHere();
   }
-| < LBRACE : "{" > {  matchedToken.enter( LBRACE ) ; } 
+| < LBRACE : "{" >
 | < LPAREN : "(" >
 | < RBRACE : "}" > 
-  { 
-    if( matchedToken.exit( LBRACE ) )
-         matchedToken.kind = MRBRACE ;
-   }
 | < RPAREN : ")" >
-| < PIPE : "|" > | < NAME :   <_ID>  >
+| < PIPE : "|" > 
+| < NAME :   <_ID>  >
   // Word with extra stuff allowed 
  | < WORD :
    (<_WORD_PUNC>)?
@@ -549,18 +588,27 @@ TOKEN :
   >
 
 
-|   < VAR_SUBPROC :    "$("  | "$<("     > 
-|   < VAR_SUBPROC_FILE :    "$(<"  | "$<(<"     >
-|   < BACKTICK1 : "`" >  {
-    if( matchedToken.get(BACKTICK1 ) >0)    {      matchedToken.exit( BACKTICK1 );
+|   < VAR_SUBPROC :
+    "$("
+  | "$<(" 
+    > 
+| 
+  < VAR_SUBPROC_FILE :
+    "$(<"
+  | "$<(<" 
+    >
+|   < BACKTICK1 : "`" >
+  {
+    if( matchedToken.get(BACKTICK1 ) >0)
+    {
+      matchedToken.exit( BACKTICK1 );
       matchedToken.kind = BACKTICK2;
-    }    else
-      matchedToken.enter( BACKTICK1 );  }
-|  < ASSIGN_WORD_SEQ   :  < _VARNAME > "=(" >
-|  < ASSIGN_WORD_ARRAY :  < _VARNAME > "=[" >
-{   matchedToken.enter(LSBRACE);
-}
- 
+    }
+    else
+      matchedToken.enter( BACKTICK1 );
+  }
+|  < ASSIGN_WORD_SEQ   :  < _VARNAME > "=(" >
+|  < ASSIGN_WORD_ARRAY :  < _VARNAME > "=[]" >
 |  < ARRAY_WORD:  < _VARNAME > "[" >
 {
    matchedToken.enter(ASSIGN_WORD_ARRAY);
@@ -569,21 +617,20 @@ TOKEN :
 |  < ASSIGN_WORDPE_SEQ : < _VARNAME > "+=(" > 
 |  < ASSIGN_WORDPE : < _VARNAME > "+=" > 
 |  < ASSIGN_WORD_EQ : < _VARNAME > "=" >
-| < RSBRACE2 : "]" > 
-  { 
-    if(  matchedToken.get( LSBRACE ) == 0 ) 
-         matchedToken.kind = WORD ;
-    else    {      matchedToken.exit( LSBRACE );
-      matchedToken.kind = RSBRACE ;
-   }
- }
-}
-
-Token eol() :{
 }
-{  < NL >
-  {    return token ;  }  
-}  
+
+
+Token eol() :
+{
+}
+{
+  < NL >
+  {
+    return token ;
+  }
+  
+}
+  
 
 Token eol_or_eof() :
 {
@@ -607,12 +654,29 @@ Token eol_or_semi() :
 
 
 
-CommandExpr script() :{  CommandExpr c;}{ 
+
+CommandExpr script() :
+{
+  CommandExpr c;
+}
+{ 
 	 < EOF > {
 	     return null ;
-	  }	|
-	  c = compound_list() < EOF >	  {	    return c;	  }
-}CommandExpr command_line() :{  CommandExpr c;  String op = "";  Token t;}{
+	  }
+	|
+	  c = compound_list() < EOF >
+	  {
+	    return c;
+	  }
+}
+
+CommandExpr command_line() :
+{
+  CommandExpr c;
+  String op = "";
+  Token t;
+}
+{
   t = eol()
   {
     c = new NullCommandExpr();
@@ -625,26 +689,125 @@ Token eol_or_semi() :
   }
 | 
     c = complete_command() eol_or_eof()
-    {      return c ;
-    }
-    }CommandExpr complete_command() :{  CommandExpr c;}{  c = list()  {    return c;  }}CommandExpr and_or() :{  AndOr andor = null;  CommandExpr first;  CommandExpr c = null;  String op = null;}{  first = pipeline()  (
-    op = andor_if() linebreak() c = pipeline()    {      if (andor == null)         andor = new AndOr(first, op, c);      else          andor = new AndOr(andor, op, c);    }  )*  {    return andor == null ? first : andor;  }}String andor_if() :{}{   (    < AND_IF > |    < OR_IF >
-  )  {    return token.toString();  }}Pipeline pipeline() :{  Pipeline p;}{   LOOKAHEAD( 1 , <WORD> , {
+    {
+      return c ;
+    }
+
+    
+}
+
+CommandExpr complete_command() :
+{
+  CommandExpr c;
+}
+{
+  c = list()
+  {
+    return c;
+  }
+}
+
+CommandExpr and_or() :
+{
+  AndOr andor = null;
+  CommandExpr first;
+  CommandExpr c = null;
+  String op = null;
+}
+{
+  first = pipeline()
+  (
+    op = andor_if() linebreak() c = pipeline()
+    {
+      if (andor == null) 
+        andor = new AndOr(first, op, c);
+      else 
+         andor = new AndOr(andor, op, c);
+    }
+  )*
+  {
+    return andor == null ? first : andor;
+  }
+}
+
+String andor_if() :
+{
+}
+{ 
+  (
+    < AND_IF > |
+    < OR_IF >
+  )
+  {
+    return token.toString();
+  }
+}
+
+Pipeline pipeline() :
+{
+  Pipeline p;
+}
+{
+ 
+  LOOKAHEAD( 1 , <WORD> , {
     getToken(1).image.equals("!") })
-     <WORD>  p = pipe_sequence()  {    p.setBang(true);
-    return p;  }
+     <WORD>  p = pipe_sequence()
+  {
+    p.setBang(true);
+    return p;
+  }
 |  p = pipe_sequence()
   {
     return p;
-  }}Pipeline pipe_sequence() :{  Pipeline p = new Pipeline(false);  CommandExpr c;}{  c = command()  {
-    setLocation(p,c);    p.add(c);  }  (    < PIPE > linebreak() c = command()    {      p.add(c);    }  )*  {
-    popState();    return p;  }}CommandExpr command() :{  CommandExpr sc;  CompoundCommandExpr c;  FunctionDeclaration f;  IORedirectList r;
+  }
+}
+
+Pipeline pipe_sequence() :
+{
+  Pipeline p = new Pipeline(false);
+  CommandExpr c;
+}
+{
+  c = command()
+  {
+    setLocation(p,c);
+    p.add(c);
+  }
+  (
+    < PIPE > linebreak() c = command()
+    {
+      p.add(c);
+    }
+  )*
+  {
+    popState();
+    return p;
+  }
+}
+
+CommandExpr command() :
+{
+  CommandExpr sc;
+  CompoundCommandExpr c;
+  FunctionDeclaration f;
+  IORedirectList r;
 
   pushState( StateEnum.START );
   
-}{
 
-  c = compound_command()   [    r = redirect_list()    {      c.setRedirect(r);    }  ]  {    return c;  }
+}
+{
+
+  c = compound_command()
+   [
+    r = redirect_list()
+    {
+      c.setRedirect(r);
+    }
+  ]
+  {
+    return c;
+  }
 | 
   LOOKAHEAD( 1 , FUNCTION() )
   f = function_declaration()
@@ -661,12 +824,63 @@ Token eol_or_semi() :
  sc = simple_command()
   {
     return sc;
-  }  
+  }  
+
 
 }
 
 
-CompoundCommandExpr compound_command() :{  CompoundCommandExpr c;}{  c = brace_group()  {    return c;  }| c = subshell()  {    return c;  }| c = for_clause()   {    return c;  }| c = case_clause()  {    return c;  }| c = if_clause()  {    return c;  }| c = trycatch_clause()  {    return c;  }| c = while_clause()  {    return c;  }| c = until_clause()  {    return c;  }}SubShell subshell() :{  CommandExpr c;}{  < LPAREN > c = compound_list() < RPAREN >  {    return new SubShell(c);  }}
+
+CompoundCommandExpr compound_command() :
+{
+  CompoundCommandExpr c;
+}
+{
+  c = brace_group()
+  {
+    return c;
+  }
+| c = subshell()
+  {
+    return c;
+  }
+| c = for_clause() 
+  {
+    return c;
+  }
+| c = case_clause()
+  {
+    return c;
+  }
+| c = if_clause()
+  {
+    return c;
+  }
+| c = trycatch_clause()
+  {
+    return c;
+  }
+| c = while_clause()
+  {
+    return c;
+  }
+| c = until_clause()
+  {
+    return c;
+  }
+}
+
+SubShell subshell() :
+{
+  CommandExpr c;
+}
+{
+  < LPAREN > c = compound_list() < RPAREN >
+  {
+    return new SubShell(c);
+  }
+}
+
 
 /*
  * List vs term()
@@ -676,15 +890,26 @@ Token eol_or_semi() :
  */
  
 
-CommandExpr compound_list() :{  CommandExpr c;  String op = "";
-  Token t;}{
 
-  ( < NL > ) *    
+CommandExpr compound_list() :
+{
+  CommandExpr c;
+  String op = "";
+  Token t;
+}
+{
+
+  ( < NL > ) *
+    
   c = term()
 
   ( < NL > ) *
-  {    return c ;  }
-}
+  {
+    return c ;
+  }
+}
+
+
 CommandExpr list() :
 {
   CommandExprList list = null;
@@ -700,10 +925,13 @@ CommandExpr list() :
 	      expr.setSeparator(op);
           if( isTermStop(getToken(1) ))
             return expr;
-                      list = new CommandExprList(expr);
+            
+          list = new CommandExprList(expr);
 	    }
-	 expr  = list()	  {
-	      list.add(expr);	  }
+	 expr  = list()
+	  {
+	      list.add(expr);
+	  }
   ) *
 	  {
 	    return list == null ? expr : list;
@@ -717,30 +945,58 @@ CommandExpr list() :
  *
  * Implement term as a sequence of lists 
  */
-CommandExpr term() :{  CommandExpr expr;
-  CommandExpr next ;  CommandExprList list = null ;}{  expr = list()
+CommandExpr term() :
+{
+  CommandExpr expr;
+  CommandExpr next ;
+  CommandExprList list = null ;
+}
+{
+  expr = list()
   (  LOOKAHEAD(1,<NL >)
     ( < NL >) +
-    {	       expr.setSeparator("\n");
+    {
+	       expr.setSeparator("\n");
 	       if(  isTermStop( getToken(1) ) )
 	         return expr;
            list = new CommandExprList(expr); 
 	 }
 	 expr = term()
-       {           list.add(expr);
+       {
+           list.add(expr);
          }
            
   ) *
-  {    return list != null ? list : expr ;  }
+  {
+    return list != null ? list : expr ;
+  }
+
 }
 
 
-ForClause for_clause() :{  CommandExpr c;  String n;  WordList w = null;  Token t;  ForClause f;}{  t=FOR() n=varname() linebreak()  (";" linebreak() |
+ForClause for_clause() :
+{
+  CommandExpr c;
+  String n;
+  WordList w = null;
+  Token t;
+  ForClause f;
+}
+{
+  t=FOR() n=varname() linebreak()
+  (";" linebreak() |
     IN() (
        sequential_sep()
        | w= for_in_words() sequential_sep()
      ) 
-  )?  c = do_group()  {    f = new ForClause(n, w, c);    setLocation(f, t);    return f;  }}
+  )?
+  c = do_group()
+  {
+    f = new ForClause(n, w, c);
+    setLocation(f, t);
+    return f;
+  }
+}
 
 
 /*
@@ -749,8 +1005,11 @@ ForClause for_clause() :{  CommandExpr c;  String n;  WordList w = null;  T
 Token FOR():
 {
 }
-{  ( LOOKAHEAD( { isKind(1,NAME,"for" )}) < NAME >  {
-   return token ;  }
+{
+  ( LOOKAHEAD( { isKind(1,NAME,"for" )}) < NAME >
+  {
+   return token ;
+  }
   )
 }
 Token IF():
@@ -770,7 +1029,8 @@ Token CASE():
 }
 {
    ( LOOKAHEAD( { isKind(1,NAME,"case" ) }) < NAME >
-   {     return token;
+   {
+     return token;
   }
   )
 }
@@ -969,37 +1229,139 @@ Token LOCAL():
 
 
 WordList for_in_words() :
-{  WordList w ;
+{
+  WordList w ;
   Token t;
 }
-{    w=wordlist()	{
+{
+    w=wordlist()
+	{
 	   return w ;
 	} 
 }
-TryCatchFinally trycatch_clause() :{  CommandExpr cTry, cCatch, cFinally = null;  String sCatch;}{  TRY() linebreak() < LBRACE > cTry = compound_list() < MRBRACE > linebreak()   CATCH() sCatch = varname()  linebreak() < LBRACE > cCatch = compound_list() < MRBRACE >   [ FINALLY() linebreak() < LBRACE > cFinally = compound_list() < MRBRACE > ]  {    return new TryCatchFinally(cTry, sCatch, cCatch, cFinally);  }}
+
+TryCatchFinally trycatch_clause() :
+{
+  CommandExpr cTry, cCatch, cFinally = null;
+  String sCatch;
+}
+{
+  TRY() linebreak() < LBRACE > cTry = compound_list() < RBRACE > linebreak() 
+  CATCH() sCatch = varname()
+  linebreak() < LBRACE > cCatch = compound_list() < RBRACE > 
+  [ FINALLY() linebreak() < LBRACE > cFinally = compound_list() < RBRACE > ]
+  {
+    return new TryCatchFinally(cTry, sCatch, cCatch, cFinally);
+  }
+}
 
 
-// Any word that passes the varname testString varname() :{  Token t;}{ t=< NAME >  {    return t.toString() ;
- }}
+// Any word that passes the varname test
+String varname() :
+{
+  Token t;
+}
+{
+ t=< NAME >
+  {
+    return t.toString() ;
+ }
+}
 
-WordList wordlist() :{  WordList list = new WordList();  Word w;}{  (    w = expr()    {      list.add(w);    }  )+  {    return list;  }}CaseClause case_clause() :{  Word s;  CaseList l = null;
-  Token t;}{   t=CASE() s = expr() IN()
-  linebreak()  l = case_list()   {   CaseClause c= new CaseClause(s, l);
+
+
+WordList wordlist() :
+{
+  WordList list = new WordList();
+  Word w;
+}
+{
+  (
+    w = expr()
+    {
+      list.add(w);
+    }
+  )+
+  {
+    return list;
+  }
+}
+
+CaseClause case_clause() :
+{
+  Word s;
+  CaseList l = null;
+  Token t;
+}
+{
+   t=CASE() s = expr() IN()
+  linebreak()  l = case_list() 
+  {
+   CaseClause c= new CaseClause(s, l);
    setLocation(c,t);
-   return c ;   }}CaseList case_list() :{  CaseList list = new CaseList();  CaseItem c;}{
+   return c ; 
+  }
+}
+
+CaseList case_list() :
+{
+  CaseList list = new CaseList();
+  CaseItem c;
+}
+{
    ( LOOKAHEAD(1,ESAC())
      ESAC()
      {
        return list ; 
      }
   |     
-     c = case_item()     {
-      list.add(c);    }
-  ) *  {    return list;  }}
+     c = case_item() 
+    {
+      list.add(c);
+    }
+  ) *
+  {
+    return list;
+  }
+}
 
-CaseItem case_item() :{  StringList p;  CommandExpr c = null;  Token t;}{  [ < LPAREN > ] p = pattern() t = < RPAREN >  linebreak() [ c = compound_list() ]  < DSEMI > linebreak()  {
-    return new CaseItem(p, c, getLocation(t));  }}StringList pattern() :{  StringList list = new StringList();  String s;
-  Word w;}{ w = pattern_word()  {    list.add( w.toString() );  }  (    < PIPE > w = pattern_word()    {      list.add( w.toString() );    }  )*  {    return list;  }}
+
+
+CaseItem case_item() :
+{
+  StringList p;
+  CommandExpr c = null;
+  Token t;
+}
+{
+  [ < LPAREN > ] p = pattern() t = < RPAREN >
+  linebreak() [ c = compound_list() ]  < DSEMI > linebreak()
+  {
+    return new CaseItem(p, c, getLocation(t));
+  }
+}
+
+StringList pattern() :
+{
+  StringList list = new StringList();
+  String s;
+  Word w;
+}
+{
+ w = pattern_word()
+  {
+    list.add( w.toString() );
+  }
+  (
+    < PIPE > w = pattern_word()
+    {
+      list.add( w.toString() );
+    }
+  )*
+  {
+    return list;
+  }
+}
 
 // a word , name, variable expansion/expression
 Word pattern_word() :
@@ -1030,7 +1392,66 @@ Word pattern_word() :
     }
 }
 
-IfClause if_clause() :{  CommandExpr ip = null, tp = null, ep = null;  Token t;  IfClause ifc;}{  t = IF() ip = compound_list() THEN() tp = compound_list()  [    LOOKAHEAD(1, ( ELIF() | ELSE() ) )    ep = else_part()  ]  FI()  {    ifc = new IfClause(ip, tp, ep);    setLocation(ifc, t);    return ifc;  }}CommandExpr else_part() :{  CommandExpr ip = null, tp = null, ep = null;}{  ELIF() ip = compound_list() THEN() tp = compound_list() [ ep = else_part() ]  {    return new IfClause(ip, tp, ep);  }|   ELSE() ep = compound_list()  {    return ep;  }}WhileClause while_clause() :{  CommandExpr w, d;}{  WHILE() w = compound_list() d = do_group()  {    return new WhileClause(w, d);  }}UntilClause until_clause() :{  CommandExpr w, d;}{  UNTIL() w = compound_list() d = do_group()  {    return new UntilClause(w, d);  }}
+
+
+IfClause if_clause() :
+{
+  CommandExpr ip = null, tp = null, ep = null;
+  Token t;
+  IfClause ifc;
+}
+{
+  t = IF() ip = compound_list() THEN() tp = compound_list()
+  [
+    LOOKAHEAD(1, ( ELIF() | ELSE() ) )
+    ep = else_part()
+  ]
+  FI()
+  {
+    ifc = new IfClause(ip, tp, ep);
+    setLocation(ifc, t);
+    return ifc;
+  }
+}
+
+CommandExpr else_part() :
+{
+  CommandExpr ip = null, tp = null, ep = null;
+}
+{
+  ELIF() ip = compound_list() THEN() tp = compound_list() [ ep = else_part() ]
+  {
+    return new IfClause(ip, tp, ep);
+  }
+| 
+  ELSE() ep = compound_list()
+  {
+    return ep;
+  }
+}
+
+WhileClause while_clause() :
+{
+  CommandExpr w, d;
+}
+{
+  WHILE() w = compound_list() d = do_group()
+  {
+    return new WhileClause(w, d);
+  }
+}
+
+UntilClause until_clause() :
+{
+  CommandExpr w, d;
+}
+{
+  UNTIL() w = compound_list() d = do_group()
+  {
+    return new UntilClause(w, d);
+  }
+}
+
 ReturnStatement return_stmt() :
 {
   Word w = null ;
@@ -1067,7 +1488,8 @@ WordList brace_expr_list() :
   (LOOKAHEAD(1,<NL>) <NL> )*
   
   {
-   if( w != null ) wl.add(w);    return wl; 
+   if( w != null ) wl.add(w);
+    return wl; 
   }
   
 }
@@ -1076,47 +1498,121 @@ WordList brace_expr_list() :
 
   
 
-FunctionDeclaration function_declaration() :{  Token t;  CompoundCommandExpr b;  SourceLocation parentLoc ;
+
+FunctionDeclaration function_declaration() :
+{
+  Token t;
+  CompoundCommandExpr b;
+  SourceLocation parentLoc ;
   SourceLocation funcLoc ;
-}{
+}
+{
   // function name { ||
   // name()
-  // function name ()        
+  // function name ()
+    
+    
   (
-    LOOKAHEAD(1,FUNCTION())     FUNCTION() t=<NAME > [ <LPAREN> <RPAREN> ]
+    LOOKAHEAD(1,FUNCTION())
+     FUNCTION() t=<NAME > [ <LPAREN> <RPAREN> ]
   |  t=< NAME > <LPAREN > <RPAREN > )
-    {
+  
+  {
      parentLoc = setParentLocation( funcLoc = getLocation( t ) );
   }
-  linebreak() b = function_body()  {
+  linebreak() b = function_body()
+  {
     String name = t.toString();
     funcLoc.setName( name );
     setParentLocation( parentLoc );
-    FunctionDeclaration func =     	new FunctionDeclaration(name.trim(), b);
+    FunctionDeclaration func = 
+    	new FunctionDeclaration(name.trim(), b);
     func.setLocation( funcLoc );    
     return func;
     
-  }}
+  }
+}
 
-CompoundCommandExpr function_body() :{  CompoundCommandExpr c;}{  c = compound_command()  {
-    setLocation(c);    return c;  }}BraceGroup brace_group() :{  CommandExpr c;}{  < LBRACE > c = compound_list() < MRBRACE >  {    return new BraceGroup(c);  }}CommandExpr do_group() :{  CommandExpr c;}{  DO() c = compound_list() DONE()  {    return c;  }}CommandExpr simple_command() :{  Word c = null;
+
+CompoundCommandExpr function_body() :
+{
+  CompoundCommandExpr c;
+}
+{
+  c = compound_command()
+  {
+    setLocation(c);
+    return c;
+  }
+}
+
+BraceGroup brace_group() :
+{
+  CommandExpr c;
+}
+{
+  < LBRACE > c = compound_list() < RBRACE >
+  {
+    return new BraceGroup(c);
+  }
+}
+
+CommandExpr do_group() :
+{
+  CommandExpr c;
+}
+{
+  DO() c = compound_list() DONE()
+  {
+    return c;
+  }
+}
+
+CommandExpr simple_command() :
+{
+  Word c = null;
   WordList wl =  null;
-  IORedirectList redir = null ;  Token t = null;
+  IORedirectList redir = null ;
+  Token t = null;
   CommandPrefixExpr p = null ;
   ReturnStatement rs ;
   SimpleCommandExpr sc = null;
   CommandSuffixExpr s;
-}{
+}
+{
   // Special case for return statement - bad desig
    LOOKAHEAD( 1, RETURN()  ) rs=return_stmt()
   {
     return rs ;
   }
-|    p = cmd_prefix()
-  [    c = cmd_name_word()    {      t = token;    }  ]  s = cmd_suffix()
-    {    sc = new SimpleCommandExpr(p, c, s);    setLocation(sc, t);    return sc;  }| 
-   c = cmd_name_word()  {    t = token;  }  s = cmd_suffix()  {
-    sc = new SimpleCommandExpr(null, c, s);    setLocation(sc, t);    return sc;  }}
+|  
+  p = cmd_prefix()
+  [
+    c = cmd_name_word()
+    {
+      t = token;
+    }
+  ]
+  s = cmd_suffix()
+  
+  {
+    sc = new SimpleCommandExpr(p, c, s);
+    setLocation(sc, t);
+    return sc;
+  }
+| 
+ 
+  c = cmd_name_word()
+  {
+    t = token;
+  }
+  s = cmd_suffix()
+  {
+    sc = new SimpleCommandExpr(null, c, s);
+    setLocation(sc, t);
+    return sc;
+  }
+}
 
 Word var_expansion() : 
 { 
@@ -1144,7 +1640,6 @@ Word var_expansion() :
     // ${ name ["
  | t=<VAR_EXPR3>  w=expr() "]}"
    {
-      t.exit( LBRACE );
       
       return  new VarExpansion( token , null , trim(  t , "${" , "}" )  , w , null ) ;
     }
@@ -1155,7 +1650,10 @@ Word var_expansion() :
       return  new VarExpansion( t , null , trim( t , "${" , ":" ) ,  null ,
            new StringWord(t2,trim(t2,"","}")) ) ;
     }
-}Word cmd_name_word() :{
+}
+
+Word cmd_name_word() :
+{
  Token t=null;
  Word w=null;
  Word n=null;
@@ -1168,12 +1666,14 @@ Word var_expansion() :
      | w=var_expansion() ) 
      (
         LOOKAHEAD( 1, (  var_expansion() | <NAME> |  < WORD > ) , 
-	       {  isJoinable( getToken(1) ) } )	           n=cmd_name_word()  )?
+	       {  isJoinable( getToken(1) ) } )
+	           n=cmd_name_word()  )?
   {
       return newJoinedWord( w, n );
       
     }
-}
+}
+
 // a word , name, variable expansion/expression
 Word word_or_name() :
 {
@@ -1181,7 +1681,8 @@ Word word_or_name() :
   Word  w=null ;
   Token t;
 }
-{   LOOKAHEAD(1 , <WORD > , {  isKind(1,WORD) && isDelim( getToken(1))})  < WORD >
+{
+   LOOKAHEAD(1 , <WORD > , {  isKind(1,WORD) && isDelim( getToken(1))})  < WORD >
 	{
 	   return new DelimWord( token ) ;
 	 }
@@ -1195,27 +1696,40 @@ Word word_or_name() :
                n=word_or_name()
      )?
     {
-      return  newJoinedWord( w , n );      
+      return  newJoinedWord( w , n );
+      
     }
 }
 
 Word simple_expr() :
 {
-  Word w ;}
-{  w = word_or_name()
-  {    return w ;
+  Word w ;
+}
+{
+  w = word_or_name()
+  {
+    return w ;
   }
 }
-/*
+
+
+/*
  * Expression  that evaluates as a single 'word'
- */Word expr() :{  Token t;  String s;  CommandExpr c;  WordList wl; 
+ */
+Word expr() :
+{
+  Token t;
+  String s;
+  CommandExpr c;
+  WordList wl; 
   Word w,fcw;
-}{
+}
+{
     t=< LBRACE >
   {
     pushState( StateEnum.BRACE_WORD );
   }
-  wl = brace_expr_list() <MRBRACE> 
+  wl = brace_expr_list() <RBRACE> 
   {
     popState();
     w = new BraceWord( wl );
@@ -1226,7 +1740,8 @@ Word simple_expr() :
 
   (
      LOOKAHEAD( 1, <LPAREN > ,{  isJoinableKind( 1 , LPAREN )  }  )
-     < LPAREN >	   {
+     < LPAREN >
+	   {
 	    pushState( StateEnum.FUNCTION_CALL ) ;
 	    
 	   }
@@ -1241,38 +1756,92 @@ Word simple_expr() :
 
   ) ?
   
-  {    return w ;  }|   < XEXPR >    {  return new StringWord(token); }
-| < BIGQUOTE >   {  return new StringWord(token); }| t = < VAR_SUBPROC > c = compound_list() < RPAREN >  {    return new CommandNameWord(t, c);  }| t = < VAR_SUBPROC_FILE > w  = word_or_name() < RPAREN >  {    return new FileWordExpr(t, w);  }| t=< BACKTICK1 > c = compound_list() < BACKTICK2 >  {    return new CommandNameWord(t, c);  }}
+  {
+    return w ;
+  }
+|   < XEXPR >    {  return new StringWord(token); }
+| < BIGQUOTE >   {  return new StringWord(token); }
+| t = < VAR_SUBPROC > c = compound_list() < RPAREN >
+  {
+    return new CommandNameWord(t, c);
+  }
+| t = < VAR_SUBPROC_FILE > w  = word_or_name() < RPAREN >
+  {
+    return new FileWordExpr(t, w);
+  }
+| t=< BACKTICK1 > c = compound_list() < BACKTICK2 >
+  {
+    return new CommandNameWord(t, c);
+  }
+}
 
 
-WordList function_args() :{  WordList wl = new WordList();  Word w;}{
+
+
+WordList function_args() :
+{
+  WordList wl = new WordList();
+  Word w;
+}
+{
    ( 
     (LOOKAHEAD(1) <NL>)*
-     w = expr()     {      wl.add(w);    }
-    ( LOOKAHEAD(1) < NL >)*      
+     w = expr() 
+    {
+      wl.add(w);
+    }
+    ( LOOKAHEAD(1) < NL >)*
+      
   )*
   
     <RPAREN> {
       return wl ;
     }
     
-}
-CommandPrefixExpr cmd_prefix() :{  CommandPrefixExpr p = new CommandPrefixExpr();  Assign a;}{  (    a = assign()    {      p.add(a);
-    }  )+   {    return p;  }}
+}
 
-Assign assign() :{
-     Token t1;
+
+CommandPrefixExpr cmd_prefix() :
+{
+  CommandPrefixExpr p = new CommandPrefixExpr();
+  Assign a;
+}
+{
+  (
+    a = assign()
+    {
+      p.add(a);
+    }
+  )+ 
+  {
+    return p;
+  }
+}
+
+
+
+Assign assign() :
+{
+   
+  Token t1;
   Token op ;
-    Word w = null;
-  Word ind = null ;  WordList ws;  String s;
-  Token local = null ;}{ 
+  
+  Word w = null;
+  Word ind = null ;
+  WordList ws;
+  String s;
+  Token local = null ;
+}
+{ 
 
-  LOOKAHEAD( 2 , LOCAL() <NAME> )  LOCAL()  t1 = < NAME > 
+  LOOKAHEAD( 2 , LOCAL() <NAME> )
+  LOCAL()  t1 = < NAME > 
   {
     s = t1.toString();
     return new Assign(true , "=" , s , "=",new StringWord(t1,""));
   }
-|   [ local=LOCAL()  ] 
+
+|   [ local=LOCAL()  ] 
    (
       t1=< ASSIGN_WORD_EMPTYBRACE >
       {
@@ -1283,49 +1852,130 @@ WordList function_args() :{  WordList wl = new WordList();  Word w;}{
          
       t1=<  ARRAY_WORD > ind=expr() "]=" w= expr()
       {
-        s = t1.toString();            return new Assign( local != null , "[]" ,  s.substring(0, s.length() - 1) , ind , "=" , w );
+        s = t1.toString();
+            return new Assign( local != null , "[]" ,  s.substring(0, s.length() - 1) , ind , "=" , w );
       }
-| 	   t1 = < ASSIGN_WORDPE > w = expr()	  {	    s = t1.toString();	    return new Assign( local != null , "+=", s.substring(0, s.length() - 2), "+=", w);	  }	| 	   t1 =  < ASSIGN_WORD_SEQ >
-	   { pushState( StateEnum.SEQUENCE_LIST  ) ; }
-
-	   ws = cmd_words() <RPAREN >	  {
-	    popState();	    s = t1.toString();	    return new Assign( local != null , "()" ,s.substring(0, s.length() - 2), "=", ws);	  }
-
-      |      LOOKAHEAD(2 , < ASSIGN_WORD_ARRAY >  < RSBRACE > )	   t1 =  < ASSIGN_WORD_ARRAY >   < RSBRACE > 
+| 	   t1 = < ASSIGN_WORDPE > w = expr()
 	  {
 	    s = t1.toString();
-	    return new Assign( local != null , "[]" , s.substring(0, s.length() - 2), "=", (Word) null );
+	    return new Assign( local != null , "+=", s.substring(0, s.length() - 2), "+=", w);
 	  }
-   | 
-	   t1 =  < ASSIGN_WORD_ARRAY >	   { pushState( StateEnum.ARRAY_LIST ) ; }	 	      ws = cmd_words() < RSBRACE >
+	| 
+	   t1 =  < ASSIGN_WORD_SEQ >
+	   { pushState( StateEnum.SEQUENCE_LIST  ) ; }
+
+	   ws = cmd_words() <RPAREN >
 	  {
 	    popState();
 	    s = t1.toString();
-	    return new Assign( local != null , "[]" , s.substring(0, s.length() - 2), "=", ws);
-	  }	| 	  t1 =  < ASSIGN_WORDPE_SEQ >
+	    return new Assign( local != null , "()" ,s.substring(0, s.length() - 2), "=", ws);
+	  }
+
+      |      LOOKAHEAD(1 , < ASSIGN_WORD_ARRAY > )
+	   t1 =  < ASSIGN_WORD_ARRAY > 
+	  {
+	    s = t1.toString();
+	    return new Assign( local != null , "[]" , s.substring(0, s.length() - 3), "=", (Word) null );
+	  }
+	| 
+	  t1 =  < ASSIGN_WORDPE_SEQ >
 	   { pushState( StateEnum.SEQUENCE_LIST ) ; }
 
-	  ws = cmd_words() < RPAREN >	  {	    s = t1.toString();
-	     popState();	    return new Assign( local != null ,"()" , s.substring(0, s.length() - 3), "+=", ws);	  }
+	  ws = cmd_words() < RPAREN >
+	  {
+	    s = t1.toString();
+	     popState();
+	    return new Assign( local != null ,"()" , s.substring(0, s.length() - 3), "+=", ws);
+	  }
 	| t1=< ASSIGN_WORD_EQ > (
 	     LOOKAHEAD( 1 , expr() , {  isJoinable(1) }) w=expr()
-	         )?
+	    
+     )?
       { s = t1.toString();
          if( w == null )
            w = new StringWord(t1,"") ;
            
-      return new Assign( local != null ,"=" , s.substring(0, s.length() - 1), "=", w); 	}
+      return new Assign( local != null ,"=" , s.substring(0, s.length() - 1), "=", w); 
+	}
 	  
-  )}
-
-WordList cmd_words() :{  WordList ws = new WordList();  Word w;}{  (    (      w = expr()    )    {      ws.add(w);    }  )*  {    return ws;  }}
-
+  )
+}
 
 
-CommandSuffixExpr cmd_suffix() :{  CommandSuffixExpr s = new CommandSuffixExpr();  Word w;  IORedirect io;}{  (      w = expr()    {      s.addArg(w);    }  )*  (    io = io_redirect()    {      s.addIO(io);    }  )*  {    return s;  }}
-IORedirectList redirect_list() :{  IORedirectList r = new IORedirectList();  IORedirect io;}{  (    io = io_redirect()    {      r.add(io);    }  )+  {    return r;  }}IORedirect io_redirect() :{  Word s;
-  Token t;  String ts;
-  String port;}{      < NLESSANDN >  { return new IORedirect(token,null, token.toString() , null ); }
+WordList cmd_words() :
+{
+  WordList ws = new WordList();
+  Word w;
+}
+{
+  (
+    (
+      w = expr()
+    )
+    {
+      ws.add(w);
+    }
+  )*
+  {
+    return ws;
+  }
+}
+
+
+
+
+CommandSuffixExpr cmd_suffix() :
+{
+  CommandSuffixExpr s = new CommandSuffixExpr();
+  Word w;
+  IORedirect io;
+}
+{
+  (
+      w = expr()
+    {
+      s.addArg(w);
+    }
+  )*
+  (
+    io = io_redirect()
+    {
+      s.addIO(io);
+    }
+  )*
+  {
+    return s;
+  }
+}
+
+
+IORedirectList redirect_list() :
+{
+  IORedirectList r = new IORedirectList();
+  IORedirect io;
+}
+{
+  (
+    io = io_redirect()
+    {
+      r.add(io);
+    }
+  )+
+  {
+    return r;
+  }
+}
+
+IORedirect io_redirect() :
+{
+  Word s;
+  Token t;
+  String ts;
+  String port;
+}
+
+{
+      < NLESSANDN >  { return new IORedirect(token,null, token.toString() , null ); }
 |     <  NGTANDN >   { return new IORedirect(token,null, token.toString() , null ); }
 |     < NLTN >       { return new IORedirect(token,null, token.toString() , null ); }
 |     <  NGTN >      { return new IORedirect(token,null, token.toString() , null ); }
@@ -1343,7 +1993,9 @@ CommandSuffixExpr cmd_suffix() :{  CommandSuffixExpr s = new CommandSuffixExpr
      }
      
      s = filename_word()
-   {      return new IORedirect(t,null, t.toString(), s);   }
+   {
+      return new IORedirect(t,null, t.toString(), s);
+   }
 
 |   < PLESSANDP >   {  return new IORedirect( token,  token.toString() ) ; }
 |   < PGTANDP >     {  return new IORedirect( token,  token.toString() ) ; }
@@ -1381,8 +2033,46 @@ CommandSuffixExpr cmd_suffix() :{  CommandSuffixExpr s = new CommandSuffixExpr
 
 
    
-Word filename_word() :{  Word w;  Token t;  String s;  CommandExpr c;}{  w=word_or_name()  {    return w;  }| t = < VAR_SUBPROC > c = compound_list() < RPAREN >  {    return new CommandNameWord(t, c);  }| t = < VAR_SUBPROC_FILE > w = word_or_name() < RPAREN >  {    return new FileWordExpr(t, w);  }|     t=< LBRACE >     s= varname()   < MRBRACE >  {   return new BraceIOWord( t,s);  }}String separator_op() :{}{  ( < AMP > | < SEMI > )
-  {    return token.toString();  }}
+
+Word filename_word() :
+{
+  Word w;
+  Token t;
+  String s;
+  CommandExpr c;
+}
+{
+  w=word_or_name()
+  {
+    return w;
+  }
+| t = < VAR_SUBPROC > c = compound_list() < RPAREN >
+  {
+    return new CommandNameWord(t, c);
+  }
+| t = < VAR_SUBPROC_FILE > w = word_or_name() < RPAREN >
+  {
+    return new FileWordExpr(t, w);
+  }
+| 
+    t=< LBRACE >
+     s= varname()
+   < RBRACE >
+  {
+   return new BraceIOWord( t,s);
+  }
+}
+
+
+String separator_op() :
+{}
+{
+  ( < AMP > | < SEMI > )
+  {
+    return token.toString();
+  }
+}
+
 
 
 // One or more newlines 
@@ -1403,12 +2093,30 @@ void linebreak() :
 /*
  * occurs ONLY in complete command (trailing) or between lists (in terms)
  */
-String separator() :{  String op;}{  op = separator_op() linebreak()  {    return op;  }
+
+String separator() :
+{
+  String op;
+}
+{
+ 
+ op = separator_op() linebreak()
+  {
+    return op;
+  }
 | 
     newline_list()
   {
     return "\n";
-  }}void sequential_sep() :{}{  
-  < SEMI > linebreak() | newline_list()}
+  }
+}
+
+void sequential_sep() :
+{}
+{
+  
+  < SEMI > linebreak()
+ | newline_list()
+}
 
 
