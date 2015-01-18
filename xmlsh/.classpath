@@ -73,6 +73,5 @@
 	</classpathentry>
 	<classpathentry kind="lib" path="lib/httpcore-4.2.2.jar"/>
 	<classpathentry kind="lib" path="lib/jline-2.12.jar" sourcepath="/jline/src/main/java"/>
-	<classpathentry kind="lib" path="C:/Users/DLEE/.m2/repository/org/ow2/asm/asm/5.0.3/asm-5.0.3.jar"/>
 	<classpathentry kind="output" path="_out"/>
 </classpath>

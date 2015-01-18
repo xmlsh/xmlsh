@@ -1,8 +1,6 @@
 <?xml version="1.0" ?>
 <project default="main" name="beanshell">
-  <property name="component" value="extension"/>
-
-	<import file="../../build/common.xml"/>
+	<import file="../../build/common_ext.xml"/>
 		
 	<target name="main" depends="install,test" description="BeanShell Extension main target">
         <echo>

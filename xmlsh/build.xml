@@ -2,15 +2,17 @@
 <project name="xmlsh" default="help">
 	<echo>Entering Ant target: ${ant.project.default-target}</echo>
 
-	<!-- Global properties 
+<!-- Global properties 
      Edit these for every release
 -->
+	<property environment="env"/>
 	<property name="component" value="xmlsh"/>
+        <property name="install_root" value="${env.XINSTALL}"/>
+  
 	<import file="../build/common.xml"/>
 	<property name="release" value="2_0_0"/>
 	<property name="version" value="2.0.0"/>
 	<property name="jar" value="xmlsh-2.0.jar"/>
-	<property environment="env"/>
 	<echo>Ant target: ${ant.project.default-target}</echo>
 	<echo>Ant Version: ${ant.version}</echo>
 	<echo>Ant lib: ${ant.core.lib}</echo>

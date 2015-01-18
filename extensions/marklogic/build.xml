@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <project default="main" name="marklogic">
-  <property name="component" value="extensions"/>
-	<import file="../../build/common.xml"/>
+	<import file="../../build/common_ext.xml"/>
 	
 	<target name="main" depends="clean, compile, jar,dist">
         <echo>

@@ -1,10 +1,7 @@
 <?xml version="1.0" ?>
 <project default="main" name="aws">
 
-
-  <property name="component" value="extensions"/>
-	<import file="../../build/common.xml"/>
-	
+	<import file="../../build/common_ext.xml"/>
 
 	<target name="main" depends="install,test" description="AWS Extension main target">
         <echo>

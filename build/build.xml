@@ -1,9 +1,6 @@
 <project basedir=".." default="help" name="build-all">
 
 	<import file="common.xml"/>
-
-	
-	
 	<target name="help">
 		<echo message="Usage: ant [build-all init help build clean clean install dist clean-all build-all build-deps]" />
 	</target>

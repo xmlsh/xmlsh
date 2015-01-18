@@ -6,7 +6,7 @@ options
   JDK_VERSION = "1.7";
   STATIC = false; 
 // DEBUG_PARSER=true ;
-//   DEBUG_LOOKAHEAD=true;
+ //  DEBUG_LOOKAHEAD=true;
 //       DEBUG_TOKEN_MANAGER=true;
 // FORCE_LA_CHECK=true;
 //   UNICODE_INPUT=true;
@@ -301,9 +301,9 @@ TOKEN_MGR_DECLS :
   } 
   
    public void CommonTokenAction(Token t) {
-     // System.err.println( tokenImage[ t.kind ] + "=" + t.kind   + " depth " + t.get(t.kind) );
-       if( mLogger.isTraceEnabled() )
-          mLogger.trace(  "token [{}]  \"{}\" ", t.kind , t.image );
+      System.err.println( state() + ":[" + tokenImage[ t.kind ] + "]=("+t.image + ") #" + t.get(t.kind)  );
+    //   if( mLogger.isTraceEnabled() )
+     //     mLogger.trace(  "token [{}]  \"{}\" ", t.kind , t.image );
     }
     
     
@@ -770,8 +770,7 @@ Token CASE():
 }
 {
    ( LOOKAHEAD( { isKind(1,NAME,"case" ) }) < NAME >
-  {
-   return DEB(token,"got case"); 
+   {     return token;
   }
   )
 }

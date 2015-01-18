@@ -1,5 +1,7 @@
 <?xml version="1.0" ?>
-<project default="main">
+<project default="main" name="json">
+	<import file="../../build/common_ext.xml"/>
+
     <target name="main" depends="clean, compile, jar,dist" description="Main target">
         <echo>
             Building json_ext xmlsh extension

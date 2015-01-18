@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <project default="main" name="jmx">
 
-	<import file="../../build/common.xml"/>
+	<import file="../../build/common_ext.xml"/>
 		
 	<target name="main" depends="install,test" description="JMX Extension main target">
         <echo>

@@ -1,7 +1,8 @@
 <?xml version="1.0" ?>
 <project default="main">
 
-	
+		<import file="../../build/common_ext.xml"/>
+
     <target name="main" depends="clean, compile, jar,dist" description="Exist Extension main target">
         <echo>
             Building exist xmlsh extension

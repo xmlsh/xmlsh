@@ -8,7 +8,6 @@
 	<property name="s3.src" value="s3://xmlsh-org-release/build-deps/xmlsh/${xmlsh.version}/${component}/${ant.project.name}/"/>
 
 	<target name="install.check" depends="install_root.check">
-		<mkdir dir="${install.dir}"/>
 		<condition property="install.exists">
 			<available file="${install.dir}" type="dir" />
 		</condition>
@@ -32,18 +31,12 @@
 		
 			<!-- build xmlsh.jar first -->
 			<subant target="@{target}">
-				<property name="xmlsh.root" value="${xmlsh.root}"/>
-				<property name="install_root" value="${env.XINSTALL}"/>
-				<property name="component" value="xmlsh"/>
 				<dirset dir=".">
 					<include name="xmlsh"/>
 				</dirset>
 			</subant>
 
 			<subant target="@{target}">
-				<property name="xmlsh.root" value="${xmlsh.root}"/>
-				<property name="install_root" value="${env.XINSTALL_MOD}"/>
-				<property name="component" value="extensions"/>
 				<dirset dir="extensions">
 					<include name="aws"/>
 					<include name="beanshell"/>
