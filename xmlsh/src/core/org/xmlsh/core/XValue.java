@@ -1077,6 +1077,12 @@ public class XValue implements Iterable<XValue>
     
     }
 
+    public JsonNode toJson() throws InvalidArgumentException {
+        
+        return JSONUtils.toJsonType( this );
+        
+    }
+
 }
 //
 //

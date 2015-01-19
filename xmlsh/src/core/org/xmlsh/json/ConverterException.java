@@ -7,6 +7,7 @@
 package org.xmlsh.json;
 
 
+@SuppressWarnings("serial")
 public class ConverterException extends org.xmlsh.core.CoreException
 {
 

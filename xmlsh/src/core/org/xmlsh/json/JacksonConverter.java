@@ -1,7 +1,7 @@
 /**
  * $Id: $
  * $Date: $
- *
+ * 
  */
 
 package org.xmlsh.json;
@@ -21,6 +21,7 @@ import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.util.Util;
 
+import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
@@ -34,168 +35,138 @@ import com.fasterxml.jackson.dataformat.xml.ser.ToXmlGenerator;
 
 public class JacksonConverter extends JXConverter
 {
-	public static Logger	mLogger	     = LogManager.getLogger();
+    public static Logger mLogger = LogManager.getLogger();
 
-	public JacksonConverter(JSONSerializeOpts jsonSerializeOpts, SerializeOpts serializeOpts, List<XValue> mArgs)
-	{
-		super(jsonSerializeOpts, serializeOpts, mArgs);
-	}
-
+    public JacksonConverter(JSONSerializeOpts jsonSerializeOpts,
+            SerializeOpts serializeOpts, List<XValue> mArgs)
+    {
+        super(jsonSerializeOpts, serializeOpts, mArgs);
+    }
 
     protected XmlMapper getXmlMapper() {
         XmlMapper xmlMapper = JSONUtils.newXmlMapper();
-        xmlMapper.setPropertyNamingStrategy( PropertyNamingStrategy.CAMEL_CASE_TO_LOWER_CASE_WITH_UNDERSCORES);
+        xmlMapper
+                .setPropertyNamingStrategy(PropertyNamingStrategy.CAMEL_CASE_TO_LOWER_CASE_WITH_UNDERSCORES);
         return xmlMapper;
     }
 
-	class JSONConverter  implements IJSONConverter {
+    class JSONConverter implements IJSONConverter {
 
-		private JsonGenerator mGenerator;
-		private FromXmlParser mParser;
+        private JsonGenerator mGenerator;
+        private FromXmlParser mParser;
 
+        protected JSONConverter(XMLStreamReader reader, OutputStream os)
+                throws ConverterException
+        {
+            super();
+            try {
+                mParser =  getXmlMapper().getFactory().createParser(reader);
+                mGenerator = JSONUtils.getJsonObjectMapper().getFactory()
+                        .createGenerator(os);
+            } catch (IOException e) {
 
+                throw new ConverterException(e);
+            }
+        }
 
-		protected JSONConverter(XMLStreamReader reader, OutputStream os) throws ConverterException
-		{
-			super();
-			try {
-				XmlMapper xmlMapper = getXmlMapper();
-                mParser = xmlMapper.getFactory().createParser(reader);
-				mGenerator = JSONUtils.getJsonObjectMapper().getFactory().createGenerator(os);
-			} catch (IOException e) {
+        @Override
+        public boolean parse() throws ConverterException
+        {
+            try  (
+                JsonParserDelegate parser = new JsonRenamingParserDelegate(mParser, false ) ){
 
-				throw new ConverterException(e);
-			}
-		}
-
-
-		@Override
-		public boolean parse() throws ConverterException
-		{
-			try {
-                JsonParserDelegate parser = new JsonParserDelegate(mParser) {
-                    @Override
-                    public String getCurrentName() throws IOException,
-                            JsonParseException {
-                        String name = super.getCurrentName();
-                        if( name !=null ){
-                            name = Util.decodeFromNCName(name);
-                        }
-                        return name ;
-                    } };
                 TreeNode tree = parser.readValueAsTree();
-				mGenerator.writeTree(tree);
-				return true ;
-			} catch (IOException e) {
-				throw new ConverterException(e);
-			}
+                mGenerator.writeTree(tree);
+                return true;
+            } catch (IOException e) {
+                throw new ConverterException(e);
+            }
 
-		}
+        }
 
+        @Override
+        public void close() throws ConverterException
+        {
+            JSONUtils.safeClose(mGenerator);
+            JSONUtils.safeClose(mParser);
+            mGenerator = null;
+            mParser = null;
 
-		@Override
-		public void close() throws ConverterException
-		{
-			JSONUtils.safeClose(mGenerator);
-			JSONUtils.safeClose(mParser);
-			mGenerator = null;
-			mParser = null ;
+        }
 
-		}
+    }
 
-	}
+    class XMLConverter implements IXMLConverter {
 
+        JsonParser mParser;
+        InputStream mInput;
+        XMLStreamWriter mWriter;
+        ToXmlGenerator mGenerator;
 
-	class XMLConverter implements IXMLConverter {
+        protected XMLConverter(InputStream is, XMLStreamWriter sw)
+                throws ConverterException
+        {
+            mInput = is;
+            mWriter = new SafeXMLStreamWriter(sw);
 
-		JsonParser mParser;
-		InputStream mInput;
-		XMLStreamWriter mWriter;
-		ToXmlGenerator mGenerator;
-
-
-		protected XMLConverter(InputStream is, XMLStreamWriter sw ) throws ConverterException
-		{
-			mInput = is ;
-			mWriter = new SafeXMLStreamWriter(sw);
-
-			try {
-				ObjectMapper objMapper = JSONUtils.newJsonObjectMapper();
-                mParser = objMapper.getFactory().createParser(is);
-				XmlMapper xmlMapper =getXmlMapper();
+            try {
+                mParser = JSONUtils.getJsonFactory().createParser(is);
+                XmlMapper xmlMapper = getXmlMapper();
                 mGenerator = xmlMapper.getFactory().createGenerator(mWriter);
-			} catch (JsonParseException e) {
-				throw new ConverterException(e);
-			} catch (IOException e) {
-				throw new ConverterException(e);
-			}
+            } catch (JsonParseException e) {
+                throw new ConverterException(e);
+            } catch (IOException e) {
+                throw new ConverterException(e);
+            }
 
-		}
+        }
 
+        @Override
+        public boolean parse() throws ConverterException
+        {
+            try (
+                JsonParserDelegate parser = new JsonRenamingParserDelegate(mParser, true /*toxml*/ ) ){
 
-		@Override
-		public boolean parse() throws ConverterException
-		{
-			try { 
-			    
-			    JsonParserDelegate parser = new JsonParserDelegate(mParser) {
+                TreeNode tree = parser.readValueAsTree();
 
-                    @Override
-                    public String getCurrentName() throws IOException,
-                            JsonParseException {
-                        String name = super.getCurrentName();
-                        if( name !=null ){
-                            name = Util.encodeForNCName(name);
-                        }
-                        return name ;
-                    } };
-			    
-				TreeNode tree = parser.readValueAsTree();
-				
-				mGenerator.writeTree(tree);
+                mGenerator.writeTree(tree);
 
-				/*
-				mParser.nextToken();
-	            mGenerator.copyCurrentStructure(mParser);
-				 */
-				return true ;
-			} catch (IOException e) {
-				throw new ConverterException(e);
-			}
-		}
+                /*
+                 * mParser.nextToken();
+                 * mGenerator.copyCurrentStructure(mParser);
+                 */
+                return true;
+            } catch (IOException e) {
+                throw new ConverterException(e);
+            }
+        }
 
+        @Override
+        public void close() throws ConverterException
+        {
+            JSONUtils.safeClose(mGenerator);
+            JSONUtils.safeClose(mParser);
+            Util.safeClose(mWriter);
+            mGenerator = null;
+            mParser = null;
+            mWriter = null;
+        }
 
-		@Override
-		public void close() throws ConverterException
-		{
-			JSONUtils.safeClose(mGenerator);
-			JSONUtils.safeClose(mParser);
-			Util.safeClose(mWriter);
-			mGenerator = null;
-			mParser = null ;
-			mWriter = null ;
-		}
+    }
 
-	}
+    @Override
+    IJSONConverter newJConverter(XMLStreamReader reader, OutputStream os)
+            throws ConverterException
+    {
+        return new JSONConverter(reader, os);
+    }
 
-
-	@Override
-	IJSONConverter newJConverter(XMLStreamReader reader, OutputStream os ) throws ConverterException
-	{
-		return new JSONConverter(reader, os);
-	}
-
-
-
-	@Override
-	IXMLConverter newXMLConverter(InputStream is, XMLStreamWriter sw) throws ConverterException
-	{
-		return new XMLConverter(is, sw);
-	}
-
-
-
-
+    @Override
+    IXMLConverter newXMLConverter(InputStream is, XMLStreamWriter sw)
+            throws ConverterException
+    {
+        return new XMLConverter(is, sw);
+    }
 
 }
 

@@ -22,66 +22,49 @@ import org.xmlsh.core.XValue;
 import org.xmlsh.core.XVariable;
 import org.xmlsh.core.io.VariableInputPort;
 import org.xmlsh.json.JSONUtils;
+import org.xmlsh.json.JsonRenamingParserDelegate;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.JavaUtils;
 import org.xmlsh.util.Util;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.TreeNode;
+import com.fasterxml.jackson.core.util.JsonParserDelegate;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.dataformat.xml.JacksonXmlModule;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
+import com.fasterxml.jackson.dataformat.xml.deser.FromXmlParser;
 
 public class fromXml	extends AbstractBuiltinFunction {
 
-
-    @JacksonXmlRootElement(localName = "dynaBean", namespace = "")
-    @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "class", include = JsonTypeInfo.As.PROPERTY)
-    public static class DynaBean {
-        private final Map<String, String> _properties = new TreeMap<String, String>();
-
-        public DynaBean(Map<String, String> values) {
-            _properties.putAll(values);
-        }
-
-        @JsonAnyGetter
-        @JacksonXmlProperty(isAttribute = false)
-        public Map<String, String> getProperties() {
-            return _properties;
-        }
-    }    
 	public fromXml()
 	{
 		super("from-xml");
 	}
-
+    protected XmlMapper getXmlMapper() {
+        XmlMapper xmlMapper = JSONUtils.newXmlMapper();
+        xmlMapper
+                .setPropertyNamingStrategy(PropertyNamingStrategy.CAMEL_CASE_TO_LOWER_CASE_WITH_UNDERSCORES);
+        return xmlMapper;
+    }
 	@Override
 	public XValue run(Shell shell, List<XValue> args) throws SaxonApiException, IOException, XMLStreamException, ClassNotFoundException, CoreException {
 
-		JacksonXmlModule module = new     JacksonXmlModule();
-		// to default to using "unwrapped" Lists:
-		module.setDefaultUseWrapper(false);
-		XmlMapper xmlMapper = new XmlMapper(module);
-		XmlMapper mapper = JSONUtils.getXmlMapper();
-		Class<?> cls = 
-				args.size() > 1 ? JavaUtils.convertToClass(args.get(1) , shell ) : null ;
-		if( cls == null )
-			cls = DynaBean.class ; // JSONUtils.jsonNodeClass();
-		XMLStreamReader reader = null ;
-		
-		try ( 
-			VariableInputPort iPort = new VariableInputPort(XVariable.anonymousInstance( args.get(0))) ){
-		
-			reader = iPort.asXMLStreamReader(shell.getSerializeOpts());
-		
-			Object obj = mapper.readValue( reader , cls );
-
-		    return XValue.newXValue(null,obj);
+	    XMLStreamReader reader = null;
+        try ( VariableInputPort iPort = new VariableInputPort(XVariable.anonymousInstance( args.get(0))) ){
+            reader = iPort.asXMLStreamReader(shell.getSerializeOpts());
+            FromXmlParser mParser =  getXmlMapper().getFactory().createParser(reader);
+            JsonParserDelegate parser = new JsonRenamingParserDelegate(mParser, false );
+            TreeNode tree = parser.readValueAsTree();
+		    return XValue.newXValue(null,tree);
 		} finally {
-			Util.safeClose(reader);
+		    Util.safeClose( reader );
+		    
 		}
-
 	}
 
 }

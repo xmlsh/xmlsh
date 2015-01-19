@@ -56,9 +56,9 @@
 	<classpathentry kind="lib" path="lib/log4j-jcl-2.1.jar"/>
 	<classpathentry kind="lib" path="lib/log4j-slf4j-impl-2.1.jar"/>
 	<classpathentry kind="lib" path="lib/jackson-annotations-2.5.0.jar"/>
-	<classpathentry kind="lib" path="lib/jackson-core-2.5.0.jar"/>
-	<classpathentry kind="lib" path="lib/jackson-databind-2.5.0.jar"/>
-	<classpathentry kind="lib" path="lib/jackson-dataformat-xml-2.5.0.jar"/>
+	<classpathentry kind="lib" path="lib/jackson-core-2.5.0.jar" sourcepath="C:/Users/DLEE/.m2/repository/com/fasterxml/jackson/core/jackson-core/2.5.0/jackson-core-2.5.0-sources.jar"/>
+	<classpathentry kind="lib" path="lib/jackson-databind-2.5.0.jar" sourcepath="C:/Users/DLEE/.m2/repository/com/fasterxml/jackson/core/jackson-databind/2.5.0/jackson-databind-2.5.0-sources.jar"/>
+	<classpathentry kind="lib" path="lib/jackson-dataformat-xml-2.5.0.jar" sourcepath="/jackson-dataformat-xml/src/main/java"/>
 	<classpathentry kind="lib" path="lib/jackson-module-jaxb-annotations-2.5.0.jar"/>
 	<classpathentry kind="lib" path="lib/jackson-module-jsonSchema-2.5.0.jar"/>
 	<classpathentry kind="src" path=".apt_generated">
@@ -68,6 +68,6 @@
 	</classpathentry>
 	<classpathentry kind="lib" path="lib/httpcore-4.2.2.jar"/>
 	<classpathentry kind="lib" path="lib/jline-2.12.jar" sourcepath="/jline/src/main/java"/>
-	<classpathentry kind="lib" path="lib/byte-buddy-0.6.jar"/>
+	<classpathentry kind="lib" path="lib/byte-buddy-0.6.jar" sourcepath="/byte-buddy-dep/src/main/java"/>
 	<classpathentry kind="output" path="_out"/>
 </classpath>
