@@ -13,7 +13,7 @@ import java.util.List;
 
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.ICommand;
-import org.xmlsh.core.IFunctionExpr;
+import org.xmlsh.core.IXFunction;
 import org.xmlsh.core.XClassLoader;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
@@ -34,7 +34,7 @@ public interface IModule  {
 
 	// close() is called for an unload
 
-	public IFunctionExpr getFunction(String name);
+	public IXFunction getFunction(String name);
 
 	public URL getHelpURL();
 	// locate a resource in the module ( directory or package )

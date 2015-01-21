@@ -13,7 +13,7 @@ import org.xmlsh.sh.module.Module;
 import org.xmlsh.sh.module.RootModule;
 import org.xmlsh.sh.shell.Shell;
 
-public abstract class AbstractBuiltinFunction extends FunctionExpr  {
+public abstract class AbstractBuiltinFunction extends XFunction  {
 	 
 	protected AbstractBuiltinFunction() {
 		super( (String) null );
@@ -21,20 +21,10 @@ public abstract class AbstractBuiltinFunction extends FunctionExpr  {
 		AnnotationUtils.getFunctionNames(getClass());
 	}
 	
-	@Override
-	public SourceLocation getSourceLocation() {
-		return null;
-	}
 
 
 	@Override
-	public boolean hasLocation() {
-		return false;
-	}
-
-
-	@Override
-    public Module getModule() throws CoreException 
+    public Module getModule() 
 	{
 		 return RootModule.getInstance();
 	}

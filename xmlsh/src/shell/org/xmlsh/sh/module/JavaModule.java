@@ -15,9 +15,9 @@ import org.apache.logging.log4j.Logger;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.EvalEnv;
 import org.xmlsh.core.EvalFlag;
-import org.xmlsh.core.FunctionExpr;
+import org.xmlsh.core.XFunction;
 import org.xmlsh.core.ICommand;
-import org.xmlsh.core.IFunctionExpr;
+import org.xmlsh.core.IXFunction;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XClassLoader;
 import org.xmlsh.core.XValue;
@@ -29,7 +29,7 @@ import org.xmlsh.util.Util;
 public class JavaModule extends Module
 {
 
-  static class JavaModuleFunction extends  FunctionExpr
+  static class JavaModuleFunction extends  XFunction
   {
     private JavaModule mModule;
     private Class<?> mClass;
@@ -130,7 +130,7 @@ public class JavaModule extends Module
   }
 
   @Override
-  public IFunctionExpr getFunction(final String name)
+  public IXFunction getFunction(final String name)
   {
 
     return new JavaModuleFunction( this , name, mJavaClass, getClassLoader());

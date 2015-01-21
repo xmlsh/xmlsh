@@ -13,9 +13,11 @@ import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.ScriptCommand.SourceMode;
 import org.xmlsh.core.ScriptSource;
+import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XClassLoader;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.sh.shell.ShellConstants;
+import org.xmlsh.util.Assertions;
 import org.xmlsh.util.JavaUtils;
 import org.xmlsh.util.StringPair;
 import org.xmlsh.util.Util;
@@ -164,6 +166,7 @@ public static IModule createModule(Shell shell, ModuleConfig config) throws Exce
 		mLogger.error("Unexpected module configuration type: {} " , config.getType() );
 		break ;
 	}
+	assert( mod != null );
     
     if( mod != null )
       mod.onLoad(shell);
@@ -240,8 +243,9 @@ public static ModuleConfig getInternalModuleConfig(Shell shell,
   {
 	
 	mLogger.entry(config);
-	if( config== null )
-		return null ;
+	assert( config != null );
+
+	Util.require( Assertions.isNotNull( config ) , "configuration required");
 	
 	String moduleClassName = config.getModuleClass();
 	XClassLoader loader = shell.getClassLoader( config.getClassPath() );
@@ -250,7 +254,8 @@ public static ModuleConfig getInternalModuleConfig(Shell shell,
 		Class<?> cls = JavaUtils.findClass(moduleClassName, loader );
 		if( ! IModule.class.isAssignableFrom(cls) ) {
 			mLogger.warn("Module class does not implement IModule" , cls );
-			return null ;
+	        mLogger.throwing(new UnexpectedException( 
+	                "Module configuration specifies an invalid class type: " + cls.toString() ) );
 		}
 		mLogger.info("Creating custom package module: {} " , cls);
 		return mLogger.exit((IModule) JavaUtils.newObject(cls ,  config ));

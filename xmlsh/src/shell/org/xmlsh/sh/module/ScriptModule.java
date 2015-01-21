@@ -9,7 +9,7 @@ import org.apache.logging.log4j.Logger;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.FunctionCommand;
 import org.xmlsh.core.ICommand;
-import org.xmlsh.core.IFunctionExpr;
+import org.xmlsh.core.IXFunction;
 import org.xmlsh.core.ScriptCommand;
 import org.xmlsh.core.ScriptCommand.SourceMode;
 import org.xmlsh.core.ScriptSource;
@@ -80,7 +80,7 @@ public class ScriptModule extends Module {
 	}
 
 	@Override
-	public IFunctionExpr getFunction(String name) {
+	public IXFunction getFunction(String name) {
 		if (mStaticContext == null)
 			return null;
 

@@ -52,6 +52,7 @@ import org.xmlsh.core.Options.OptionValue;
 import org.xmlsh.core.ScriptCommand.SourceMode;
 import org.xmlsh.core.SearchPath;
 import org.xmlsh.core.ThrowException;
+import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.Variables;
 import org.xmlsh.core.XClassLoader;
 import org.xmlsh.core.XDynamicVariable;
@@ -1646,7 +1647,9 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt {
 		
 		if( mod == null )
 			mod =   ModuleFactory.createModule(this, config );
-			
+	 
+		if( mod == null )
+		    throw new UnexpectedException("Module could not be created: " + name );
 		assert( mod != null );
 		boolean inited = getModules().importModule(this, prefix , mod ,  init);
 

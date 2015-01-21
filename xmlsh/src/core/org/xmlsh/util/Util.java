@@ -74,6 +74,7 @@ import org.apache.logging.log4j.Logger;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.IReleasable;
 import org.xmlsh.core.Namespaces;
+import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.core.CharAttributeBuffer;
 import org.xmlsh.sh.shell.CharAttr;
@@ -1966,7 +1967,12 @@ public static <T> boolean contains(T[] array, T v) {
             sb.append(sep).append(string);
         return sb.toString();
     }
-
+    
+    public static void require( boolean test , String message ) throws UnexpectedException
+    {
+        if( ! test )
+            throw new UnexpectedException( message );
+    }
 	
 
 

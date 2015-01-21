@@ -6,7 +6,7 @@
 
 package org.xmlsh.sh.shell;
 
-import org.xmlsh.core.IFunctionExpr;
+import org.xmlsh.core.IXFunction;
 import org.xmlsh.sh.core.ICommandExpr;
 import org.xmlsh.sh.module.IModule;
 
@@ -17,7 +17,7 @@ import org.xmlsh.sh.module.IModule;
 public interface IFunctionDefiniton  {
 	String	getName();
 	ICommandExpr	getBody();
-	IFunctionExpr  getFunction();
+	IXFunction  getFunction();
 	IModule getModule();
 
 

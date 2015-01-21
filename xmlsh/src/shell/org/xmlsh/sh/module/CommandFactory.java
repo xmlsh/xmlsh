@@ -62,7 +62,7 @@ import org.xmlsh.core.CoreException;
 import org.xmlsh.core.ExternalCommand;
 import org.xmlsh.core.FunctionCommand;
 import org.xmlsh.core.ICommand;
-import org.xmlsh.core.IFunctionExpr;
+import org.xmlsh.core.IXFunction;
 import org.xmlsh.core.ScriptCommand;
 import org.xmlsh.core.ScriptCommand.SourceMode;
 import org.xmlsh.core.ScriptSource;
@@ -271,7 +271,7 @@ public abstract class CommandFactory {
 	}
 	
 
-	private static IFunctionExpr getModuleFunction(Shell shell, String name) throws IOException {
+	private static IXFunction getModuleFunction(Shell shell, String name) throws IOException {
 
 		mLogger.entry(shell, name);
 
@@ -294,7 +294,7 @@ public abstract class CommandFactory {
 			if (m != null) {
 	
 				mLogger.trace("Found module - try getting command" , m , pair.getRight());
-				IFunctionExpr cls = m.getFunction(pair.getRight());
+				IXFunction cls = m.getFunction(pair.getRight());
 				if (cls != null) {
 					mLogger.debug("Command Class found: " , cls );
 					return cls;
@@ -311,7 +311,7 @@ public abstract class CommandFactory {
 		 */
 	   mLogger.debug("Try default modules");
 		for (IModule m : shell.getDefaultModules() ) {
-				IFunctionExpr cls = m.getFunction(name);
+				IXFunction cls = m.getFunction(name);
 				if (cls != null) {
 					return mLogger.exit(cls);
 				}
@@ -607,7 +607,7 @@ public abstract class CommandFactory {
 			return null;
 	}
 
-	public static IFunctionExpr getBuiltinFunction(Shell shell, String name) {
+	public static IXFunction getBuiltinFunction(Shell shell, String name) {
 
 		mLogger.entry(shell, name);
 
@@ -631,7 +631,7 @@ public abstract class CommandFactory {
 			if (m != null) {
 
 				mLogger.debug("Found module",m);
-				IFunctionExpr cls = m.getFunction(pair.getRight());
+				IXFunction cls = m.getFunction(pair.getRight());
 				if (cls != null) {
 					return mLogger.exit(cls);
 				}
@@ -646,7 +646,7 @@ public abstract class CommandFactory {
 		
 		 mLogger.debug("Try default modules");
 		for ( IModule m : shell.getDefaultModules() ) {
-			IFunctionExpr cls = m.getFunction(name);
+			IXFunction cls = m.getFunction(name);
 				if (cls != null) 
 					return mLogger.exit(cls);
 
@@ -693,13 +693,13 @@ public abstract class CommandFactory {
 
 	}
 
-	public static IFunctionExpr getFunction(Shell shell, String name) throws IOException {
+	public static IXFunction getFunction(Shell shell, String name) throws IOException {
 		
 		 
 		mLogger.entry(shell, name);
 	
 	  // Try builtin functions first
-	  IFunctionExpr func = getBuiltinFunction(shell, name);
+	  IXFunction func = getBuiltinFunction(shell, name);
 	
 	  // global scope shell functions 
 	  if(func == null){

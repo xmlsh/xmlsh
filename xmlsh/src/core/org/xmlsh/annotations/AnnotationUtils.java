@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.xmlsh.core.ICommand;
-import org.xmlsh.core.IFunctionExpr;
+import org.xmlsh.core.IXFunction;
 import org.xmlsh.sh.shell.IFunctionDefiniton;
 import org.xmlsh.util.JavaUtils;
 import org.xmlsh.util.Util;
@@ -58,7 +58,7 @@ public class AnnotationUtils {
 			return false ;
 		if(  IFunctionDefiniton.class.isAssignableFrom( cls ) ) 
 			return true ;
-		if( IFunctionExpr.class.isAssignableFrom(cls ))
+		if( IXFunction.class.isAssignableFrom(cls ))
 			return true ;
 		if( cls.getAnnotation(org.xmlsh.annotations.Function.class ) != null )
 			return true ;

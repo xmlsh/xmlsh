@@ -3,7 +3,7 @@ package org.xmlsh.sh.core;
 import java.util.List;
 
 import org.xmlsh.core.EvalEnv;
-import org.xmlsh.core.IFunctionExpr;
+import org.xmlsh.core.IXFunction;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.module.IModule;
 import org.xmlsh.sh.shell.Shell;
@@ -11,7 +11,7 @@ import org.xmlsh.sh.shell.Shell;
 /*
  * 
  */
-final class ScriptFunctionExpr extends AbstractExpr implements IFunctionExpr {
+final class ScriptFunctionExpr extends AbstractExpr implements IXFunction {
 	private String mName;
 	private ICommandExpr mBody;
 	private IModule mModule; // containing module

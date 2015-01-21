@@ -20,7 +20,7 @@ import org.xmlsh.annotations.AnnotationUtils;
 import org.xmlsh.core.AbstractCommand;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.ICommand;
-import org.xmlsh.core.IFunctionExpr;
+import org.xmlsh.core.IXFunction;
 import org.xmlsh.core.ScriptCommand;
 import org.xmlsh.core.ScriptCommand.SourceMode;
 import org.xmlsh.core.ScriptFunctionCommand;
@@ -147,7 +147,7 @@ public class PackageModule extends Module {
 	 * @see org.xmlsh.sh.shell.IModule#getFunctionClass(java.lang.String)
 	 */
 	@Override
-	public IFunctionExpr getFunction(String name) {
+	public IXFunction getFunction(String name) {
 
 		String origName = name;
 		
@@ -177,8 +177,8 @@ public class PackageModule extends Module {
 					Constructor<?> constructor = cls.getConstructor();
 					if (constructor != null) {
 						Object obj = constructor.newInstance();
-						if (obj instanceof IFunctionExpr)
-							return (IFunctionExpr) obj;
+						if (obj instanceof IXFunction)
+							return (IXFunction) obj;
 	
 						if (obj instanceof IFunctionDefiniton) {
 							IFunctionDefiniton cmd = (IFunctionDefiniton) obj;
