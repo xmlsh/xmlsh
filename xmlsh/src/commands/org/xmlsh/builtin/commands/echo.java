@@ -43,7 +43,7 @@ public class echo extends BuiltinCommand {
 
 				args = opts.getRemainingArgs();
 
-				args = Util.expandSequences( args);
+				//args = Util.expandSequences( args);
 				boolean bFirst = true;
 				for ( XValue arg : args ){
 					if( ! bFirst )

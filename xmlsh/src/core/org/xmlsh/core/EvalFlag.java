@@ -14,7 +14,7 @@ public enum EvalFlag {
 	PARSE_QUOTES,    // Process ",\ and '
 	EXPAND_VAR,      // Expand variable references -> list of XValue
 	JOIN_VALUES,      // Join values in string context 
-	SPLIT_WORDS,     // Split string info words (IFS expansion)
+	SPLIT_WORDS,     // Split string into words (IFS expansion)
 	EXPAND_WILD,     // Glob (wildcards) the result
 	OMIT_NULL,       // drop null values
 	EXPAND_SEQUENCES // expand single values as sequences into multiple values 
@@ -38,9 +38,9 @@ public enum EvalFlag {
 		return  EnumSet.of( EvalFlag.EXPAND_WILD );
 	}
 
-	// Was tongs
+	// { expr } parssing  expand vars and parse quotes but nothing else
 	public static EnumSet<EvalFlag>  preserveValueFlags() {
-		return  EnumSet.of( EvalFlag.EXPAND_VAR);
+		return  EnumSet.noneOf(EvalFlag.class);
 	}
 
 

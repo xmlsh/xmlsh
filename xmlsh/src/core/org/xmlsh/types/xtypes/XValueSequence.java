@@ -2,6 +2,7 @@ package org.xmlsh.types.xtypes;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -149,7 +150,19 @@ public boolean isAtomic()
   @Override
   public void serialize(OutputStream out, SerializeOpts opts) throws IOException, InvalidArgumentException
   {
-    ( new XValueList( mList )).serialize(out, opts);
+      // @TODO - serialization needs an overhaul
+      if( isEmpty() )
+          return ;
+      try ( OutputStreamWriter ps = new OutputStreamWriter(out, opts.getInputTextEncoding() ) ){
+          String sep = "";
+          for( XValue value : mList  ) {
+              ps.write( sep );
+              ps.flush();
+              value.serialize(out, opts);
+              sep = ",";
+          }
+      }
+      
   }
 
 

@@ -20,4 +20,15 @@ local
 catch for if elif then else fi do case while until try esac finally return done in function local
 catch for if elif then else fi do case while until try esac finally return done in function local
 catch= for= catch, fi, if, =if if= :if if:
+[correct] the {} will add an extra empty argument
+if ,if if, ,if, do ,,do =do =:do done ,done done  done
+Should be 13: 13
+[correct] the {} will vanish on arg expansion
 if ,if if, ,if, do ,,do =do =:do done ,done done done
+if ,if if, ,if, do ,,do =do =:do done ,done done done
+TODO: conversion from sequence to array or string - any way to preserve
+if ,if if, ,if, do ,,do =do =:do done ,done done done
+if ,if if, ,if, do ,,do =do =:do done ,done done done
+if,,if,if,,,if,,do,,,do,=do,=:do,done,,done,done,done
+if,,if,if,,,if,,do,,,do,=do,=:do,done,,done,done,done
+12

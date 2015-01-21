@@ -210,7 +210,7 @@ public class Expander
 
       }
 
-      if(!curAttr.isHardQuote() && c == '$') {
+      if(c == '$' && env.expandVar() && curAttr.isEvalable() ) {
         if(++i == arg.length()) {
           result.append('$', curAttr); // Special case of a single "$"
           break;

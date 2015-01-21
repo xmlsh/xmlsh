@@ -80,6 +80,11 @@ public class CharAttrs  implements Cloneable {
 	public static boolean isQuote( char c ) {
 		return c == '\'' || c == '"';
 	}
+	
+	// Quote Evaulatable - i.e not in hard quote, escaped or preserved
+	public boolean isEvalable(){
+	    return ! Util.setContainsAny( mSet , ATTR_HARD_QUOTE , ATTR_ESCAPED , ATTR_PRESERVE );
+	}
 	public boolean isHardQuote()
 	{
 		return  isSet(ATTR_HARD_QUOTE);

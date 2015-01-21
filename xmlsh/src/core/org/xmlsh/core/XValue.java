@@ -136,7 +136,6 @@ public class XValue implements Iterable<XValue>
 
       _initSequence(new XValueSequence(args));
     }
-    _init();
 
   }
 
