@@ -1,23 +1,23 @@
-package org.xmlsh.sh.core;
+package org.xmlsh.sh.module;
 
 import java.util.List;
 
 import org.xmlsh.core.EvalEnv;
 import org.xmlsh.core.IXFunction;
+import org.xmlsh.core.XFunction;
 import org.xmlsh.core.XValue;
-import org.xmlsh.sh.module.IModule;
+import org.xmlsh.sh.core.ICommandExpr;
 import org.xmlsh.sh.shell.Shell;
 
 /*
  * 
  */
-final class ScriptFunctionExpr extends AbstractExpr implements IXFunction {
-	private String mName;
+public class ScriptFunction extends XFunction {
 	private ICommandExpr mBody;
 	private IModule mModule; // containing module
 
-	public ScriptFunctionExpr(String name, ICommandExpr body, IModule module) {
-		mName = name;
+	public ScriptFunction(String name, ICommandExpr body, IModule module) {
+	    super(name);
 		mBody = body;
 		mModule = module;
 	}
@@ -26,13 +26,8 @@ final class ScriptFunctionExpr extends AbstractExpr implements IXFunction {
 	public XValue run(Shell shell, List<XValue> args)
 			throws Exception {
 
-		return shell.runCommandFunction(mName, mBody, args);
+		return shell.runCommandFunction(getName(), mBody, args);
 
-	}
-
-	@Override
-	public String getName() {
-		return mName;
 	}
 
 	@Override
@@ -50,8 +45,5 @@ final class ScriptFunctionExpr extends AbstractExpr implements IXFunction {
 		return mModule;
 	}
 
-	public void setModule(IModule module) {
-		mModule = module;
-	}
 
 }

@@ -21,9 +21,6 @@ public abstract class XFunction  implements IXFunction
   {
       mName=name;
   }
-  protected XFunction(List<String> names){
-      mName = names.isEmpty()?"<>" :  names.get(0);
-  }
 
   @Override
   public EvalEnv argumentEnv(EvalEnv parent)
