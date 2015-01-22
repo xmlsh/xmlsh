@@ -17,7 +17,6 @@ import org.xmlsh.core.Options;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.io.OutputPort;
-import org.xmlsh.json.JSONSerializeOpts;
 import org.xmlsh.json.JXConverter;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.util.Util;
@@ -59,8 +58,7 @@ public class json2xml extends XCommand
 		InputPort in = args.isEmpty() ? getStdin() : this.getInput(args.get(0));
 		XMLStreamWriter sw = null ;
 
-		JSONSerializeOpts jopts = new JSONSerializeOpts();
-		JXConverter converter = JXConverter.getConverter(format,jopts,getSerializeOpts(), args);
+		JXConverter converter = JXConverter.getConverter(format,getSerializeOpts(), args);
 
 		try (
 				InputStream is = in.asInputStream(getSerializeOpts());

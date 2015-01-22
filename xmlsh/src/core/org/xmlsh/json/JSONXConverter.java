@@ -331,9 +331,9 @@ public class JSONXConverter extends JXConverter
 
 	}
 
-	public JSONXConverter(JSONSerializeOpts jsonSerializeOpts, SerializeOpts serializeOpts, List<XValue> mArgs)
+	public JSONXConverter(SerializeOpts serializeOpts, List<XValue> mArgs)
 	{
-		super(jsonSerializeOpts, serializeOpts, mArgs);
+		super( serializeOpts, mArgs);
 	}
 
 	@Override

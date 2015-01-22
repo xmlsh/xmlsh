@@ -26,7 +26,7 @@ import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.types.TypeFamily;
 import org.xmlsh.types.xtypes.XValueList;
 import org.xmlsh.util.Util;
-
+import com.fasterxml.jackson.databind.SerializationFeature.*;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -40,6 +40,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.databind.SerializationConfig;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.BooleanNode;
@@ -95,6 +96,11 @@ public class JSONUtils {
 
     public static ObjectMapper getJsonObjectMapper()
     {
+        return getJsonObjectMapper(null);
+    }
+    
+    public static ObjectMapper getJsonObjectMapper(SerializeOpts opts)
+    {
 
         // lets play and avoid syncronization
         // on the off chance this is concurrent 2 mappers are created and one gets GC'd
@@ -125,6 +131,11 @@ public class JSONUtils {
                 _theObjectMapper = mapper;
 
         }
+        
+        if( opts != null && _theObjectMapper.getSerializationConfig().isEnabled(SerializationFeature.INDENT_OUTPUT) 
+                   != opts.getIndentJson() )
+            return
+                    _theObjectMapper.configure(SerializationFeature.INDENT_OUTPUT, opts.getIndentJson());
 
         return _theObjectMapper;
 
@@ -404,7 +415,7 @@ public class JSONUtils {
             SerializeOpts opt) throws JsonGenerationException,
             JsonMappingException, IOException
     {
-        ObjectMapper mapper = getJsonObjectMapper();
+        ObjectMapper mapper = getJsonObjectMapper(opt);
         mapper.writeValue(os, value);
     }
 
@@ -421,11 +432,11 @@ public class JSONUtils {
     }
 
     public static JsonGenerator createGenerator(OutputStream os,
-            JSONSerializeOpts jopts) throws IOException
+            SerializeOpts jopts) throws IOException
     {
         JsonGenerator gen = getJsonFactory().createGenerator(os);
-        if (jopts.getPretyPrint())
-            gen.useDefaultPrettyPrinter();
+        if (jopts.getIndentJson() )
+           return gen.useDefaultPrettyPrinter();
         return gen;
     }
 

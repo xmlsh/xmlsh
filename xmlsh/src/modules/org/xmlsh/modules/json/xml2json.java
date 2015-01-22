@@ -16,7 +16,6 @@ import org.xmlsh.core.Options;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.io.OutputPort;
-import org.xmlsh.json.JSONSerializeOpts;
 import org.xmlsh.json.JXConverter;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.util.Util;
@@ -35,17 +34,14 @@ import org.xmlsh.util.Util;
 public class xml2json extends XCommand
 {
 
-	private 	boolean bIndent = false ;
-
 
 	@Override
 	public int run(  List<XValue> args  )	throws Exception
 	{
-		Options opts = new Options("p=print,f=format:",SerializeOpts.getOptionDefs());
+		Options opts = new Options("f=format:",SerializeOpts.getOptionDefs());
 
 		opts.parse(args);
 
-		bIndent = opts.hasOpt("p");
 		String format = opts.getOptString("format", "jxon");
 
 		args = opts.getRemainingArgs();
@@ -56,15 +52,12 @@ public class xml2json extends XCommand
 
 		setSerializeOpts(opts);
 		XMLStreamReader reader = inp.asXMLStreamReader(getSerializeOpts());
-		JSONSerializeOpts jopts = new JSONSerializeOpts();
-		if( bIndent )
-			jopts.setPretyPrint(bIndent);
 
 		try ( 
 				// Override the text encoding to UTF-8 - JSON is *always* USTF8
 				OutputStream os = stdout.asOutputStream(getSerializeOpts());
 				){
-			JXConverter converter = JXConverter.getConverter(format,jopts,getSerializeOpts(), args);
+			JXConverter converter = JXConverter.getConverter(format,getSerializeOpts(), args);
 
 			converter.convertToJson( reader , os );
 			return 0;

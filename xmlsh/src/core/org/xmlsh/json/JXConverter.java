@@ -39,12 +39,14 @@ public abstract class JXConverter
 	 * A class helper/config for JSON to XML conversions
 	 */
 
-	private JSONSerializeOpts mJsonSerializeOpts;
 	private SerializeOpts mSerializeOpts;
 	private List<XValue> mArgs;
 
 
-	interface IJSONConverter
+    SerializeOpts getSerializeOpts() {
+        return mSerializeOpts;
+    }
+    interface IJSONConverter
 	{
 
 		public abstract boolean parse() throws ConverterException;
@@ -61,7 +63,7 @@ public abstract class JXConverter
 	}
 
 
-	// Private class for cnverting FROM JSON 
+	// Private class for converting FROM JSON 
 	abstract class JSONConverter implements IJSONConverter {
 		XMLEventReader mReader;
 		XMLStreamReader mStreamReader;
@@ -74,7 +76,7 @@ public abstract class JXConverter
 			mStreamReader = reader;
 
 			try {
-				mGenerator = JSONUtils.createGenerator(os, mJsonSerializeOpts);
+				mGenerator = JSONUtils.createGenerator(os, getSerializeOpts());
 				mReader = XMLInputFactory.newInstance().createXMLEventReader(mStreamReader);
 			} catch (XMLStreamException e) {
 				throw new ConverterException(e);
@@ -367,10 +369,9 @@ public abstract class JXConverter
 	/*
 	 * Converter To and/or From JSON
 	 */
-	public JXConverter(JSONSerializeOpts jsonSerializeOpts, SerializeOpts serializeOpts , List<XValue> args )
+	public JXConverter(SerializeOpts serializeOpts , List<XValue> args )
 	{
 		super();
-		mJsonSerializeOpts = jsonSerializeOpts;
 		mSerializeOpts = serializeOpts;
 		mArgs = args ;
 	}
@@ -407,16 +408,16 @@ public abstract class JXConverter
 
 
 
-	public static JXConverter getConverter(String format, JSONSerializeOpts jopts, SerializeOpts serializeOpts, List<XValue> args) throws InvalidArgumentException
+	public static JXConverter getConverter(String format, SerializeOpts serializeOpts, List<XValue> args) throws InvalidArgumentException
 	{
 		if( Util.isEqual(format,"jxon"))
-			return new JXONConverter( jopts , serializeOpts, args );
+			return new JXONConverter(  serializeOpts, args );
 		else
 			if(  Util.isEqual(format,"jsonx")) 
-				return new JSONXConverter( jopts , serializeOpts, args );
+				return new JSONXConverter( serializeOpts , args );
 			else
 				if( Util.isEqual(format,"jackson"))
-					return new JacksonConverter( jopts , serializeOpts , args );
+					return new JacksonConverter(  serializeOpts , args );
 				else
 					throw new InvalidArgumentException("Unknown convert format: " + format );
 

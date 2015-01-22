@@ -13,6 +13,7 @@ import java.io.Reader;
 import com.fasterxml.jackson.core.io.IOContext;
 import com.fasterxml.jackson.core.io.InputDecorator;
 
+@SuppressWarnings("serial")
 public class JSONPInputDecorator extends InputDecorator
 {
 

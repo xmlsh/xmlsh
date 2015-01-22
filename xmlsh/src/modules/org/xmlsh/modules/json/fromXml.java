@@ -8,8 +8,6 @@ package org.xmlsh.modules.json;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
@@ -24,19 +22,12 @@ import org.xmlsh.core.io.VariableInputPort;
 import org.xmlsh.json.JSONUtils;
 import org.xmlsh.json.JsonRenamingParserDelegate;
 import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.util.JavaUtils;
 import org.xmlsh.util.Util;
 
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.TreeNode;
 import com.fasterxml.jackson.core.util.JsonParserDelegate;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
-import com.fasterxml.jackson.dataformat.xml.JacksonXmlModule;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import com.fasterxml.jackson.dataformat.xml.deser.FromXmlParser;
 
 public class fromXml	extends AbstractBuiltinFunction {

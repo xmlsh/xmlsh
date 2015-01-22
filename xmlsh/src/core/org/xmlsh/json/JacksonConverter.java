@@ -37,10 +37,10 @@ public class JacksonConverter extends JXConverter
 {
     public static Logger mLogger = LogManager.getLogger();
 
-    public JacksonConverter(JSONSerializeOpts jsonSerializeOpts,
+    public JacksonConverter(
             SerializeOpts serializeOpts, List<XValue> mArgs)
     {
-        super(jsonSerializeOpts, serializeOpts, mArgs);
+        super( serializeOpts, mArgs);
     }
 
     protected XmlMapper getXmlMapper() {
@@ -61,8 +61,7 @@ public class JacksonConverter extends JXConverter
             super();
             try {
                 mParser =  getXmlMapper().getFactory().createParser(reader);
-                mGenerator = JSONUtils.getJsonObjectMapper().getFactory()
-                        .createGenerator(os);
+                mGenerator = JSONUtils.createGenerator(os,getSerializeOpts() );
             } catch (IOException e) {
 
                 throw new ConverterException(e);

@@ -6,19 +6,15 @@
 
 package org.xmlsh.modules.json;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.List;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
-import javax.xml.transform.Source;
-import javax.xml.transform.stream.StreamSource;
 
 import net.sf.saxon.s9api.BuildingStreamWriter;
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.SaxonApiException;
-import net.sf.saxon.s9api.XdmNode;
 
 import org.xmlsh.core.AbstractBuiltinFunction;
 import org.xmlsh.core.InvalidArgumentException;
@@ -28,11 +24,9 @@ import org.xmlsh.json.JSONUtils;
 import org.xmlsh.json.JsonRenamingParserDelegate;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.types.TypeFamily;
-import org.xmlsh.util.XMLUtils;
 
 import com.fasterxml.jackson.core.TreeNode;
 import com.fasterxml.jackson.core.util.JsonParserDelegate;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.node.TreeTraversingParser;

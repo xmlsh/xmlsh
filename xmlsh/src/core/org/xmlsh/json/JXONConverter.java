@@ -141,7 +141,7 @@ public class JXONConverter extends JXConverter
 			}
 
 			// If Unwrap then trim off <html> and leading and trailing blanks
-			if(Util.parseBoolean(chars)) {
+			if(Util.parseBoolean(unwrap)) {
 				chars = unwrap(chars);
 
 			}
@@ -179,11 +179,14 @@ public class JXONConverter extends JXConverter
 		private String unwrap(String value)
 		{
 			value = value.trim();
-			if("<html>".equalsIgnoreCase(value.substring(0, 6)))
-				value = value.substring(6);
-			if("</html>".equalsIgnoreCase(value.substring(value.length() - 7)))
-				value = value.substring(0, value.length() - 7);
-
+		    if(  value.length() < 6 || ! "<html>".equalsIgnoreCase(value.substring(0, 6)))
+		        return value ;
+			
+			value = value.substring(6);
+			if(value.length() < 7 ||!  "</html>".equalsIgnoreCase(value.substring(value.length() - 7)))
+				return value ;
+			
+			value = value.substring(0, value.length() - 7);
 			return value.trim();
 
 		}
@@ -494,9 +497,9 @@ public class JXONConverter extends JXConverter
 
 	}
 
-	public JXONConverter(JSONSerializeOpts jsonSerializeOpts, SerializeOpts serializeOpts, List<XValue> mArgs)
+	public JXONConverter( SerializeOpts serializeOpts, List<XValue> mArgs)
 	{
-		super(jsonSerializeOpts, serializeOpts, mArgs);
+		super(serializeOpts, mArgs);
 	}
 
 	@Override

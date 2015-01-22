@@ -230,13 +230,14 @@ public abstract class AbstractCommand implements ICommand {
 		return mShell.getClassLoader(classpath);
 	}
 
-	protected void setSerializeOpts(SerializeOpts opts) {
-		mSerializeOpts = opts;
+	protected SerializeOpts setSerializeOpts(SerializeOpts opts) {
+		return mSerializeOpts = opts;
 	}
 
-	protected void setSerializeOpts(Options opts)
+	protected SerializeOpts setSerializeOpts(Options opts)
 			throws InvalidArgumentException {
-		mSerializeOpts = this.getSerializeOpts(opts);
+		return mSerializeOpts = this.getSerializeOpts(opts);
+		
 	}
 
 	protected SerializeOpts getSerializeOpts() {

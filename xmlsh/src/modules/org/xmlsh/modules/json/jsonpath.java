@@ -43,7 +43,7 @@ public class jsonpath extends XCommand {
 
 		JsonNode context = null;
 
-		SerializeOpts serializeOpts = getSerializeOpts(opts);
+		SerializeOpts serializeOpts = setSerializeOpts(opts);
 		if( ! opts.hasOpt("n" ) ){ // Has XML data input
 			// Order of prevelence 
 			// -context
@@ -89,9 +89,9 @@ public class jsonpath extends XCommand {
 		JsonNode result = path.read(context, JsonNode.class); // TODO can convert to other types here
 
 		OutputPort stdout = getStdout();
-		PrintStream os = stdout.asPrintStream(getSerializeOpts());
+		PrintStream os = stdout.asPrintStream(serializeOpts);
 
-		JSONUtils.writeJsonNode( result , os );
+		JSONUtils.writeJsonNode( result , os  , serializeOpts );
 
 		os.println( result );
 		os.close();
