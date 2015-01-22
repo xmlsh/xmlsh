@@ -329,7 +329,7 @@ public class XValuePropertyList  implements     IXValueMap, IXValueList
         for( XValueProperty p : mList ) {
            
             XValue v = p.getValue();
-            XValue vnew = v.replace(subst);
+            XValue vnew = v.substitute(subst);
             if (vnew != v)
                 p.setValue(vnew);
           }

@@ -15,8 +15,9 @@ public class XStringSubstituter extends StrSubstitutor {
     static Logger mLogger = LogManager.getLogger();
 
     public XStringSubstituter() {
-        // TODO Auto-generated constructor stub
+        super();
         mLogger.entry( /* TODO */);
+        setEnableSubstitutionInVariables(true);
     }
 
     /**
@@ -25,5 +26,7 @@ public class XStringSubstituter extends StrSubstitutor {
     public XStringSubstituter(XStringLookup resolver) {
         super(resolver);
         mLogger.entry( resolver);
+        setEnableSubstitutionInVariables(true);
+
     }
 }

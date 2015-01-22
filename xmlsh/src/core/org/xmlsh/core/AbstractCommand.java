@@ -254,6 +254,20 @@ public abstract class AbstractCommand implements ICommand {
         mShell.printErr(getName() + " " + s , e);
         usage(s +  " " + e.toString());
     }
+    
+    // XCommand requires returns an error ,  XFunction require throws exception
+    protected boolean requires( boolean test , String message ){
+        if( ! test )
+            error( message );
+        return test;
+    }
+
+    private void error(String message) {
+        mShell.printErr(getName() + " " + message );
+        usage( message );
+
+        
+    }
 
 }
 

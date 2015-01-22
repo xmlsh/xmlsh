@@ -76,6 +76,15 @@ public class XValue implements Iterable<XValue>
   private TypeFamily mTypeFamily = null; // default null defers to a runtime evaluatiion
   private Object mValue;		// String , XdmItem , Object , List<XValue> ...
 
+  // Cache of ints
+  private static final  XValue _intValues[] = new XValue[] {
+          new XValue(TypeFamily.JAVA , 0),
+          new XValue(TypeFamily.JAVA,1),
+          new XValue(TypeFamily.JAVA,2)
+  };
+  
+  private static final XValue _true = new XValue( TypeFamily.JAVA , true );
+  private static final XValue _false = new XValue(TypeFamily.JAVA ,  false );
   private XValue(BigDecimal n)
   {
     this(TypeFamily.XDM, new XdmAtomicValue(n));
@@ -83,7 +92,7 @@ public class XValue implements Iterable<XValue>
   
   private XValue(boolean n)
   {
-    this(TypeFamily.XDM, new XdmAtomicValue(n));
+    this(TypeFamily.JAVA , n);
   }
 
   private XValue(int n)
@@ -232,12 +241,12 @@ public class XValue implements Iterable<XValue>
 
   public static XValue newXValue(boolean n)
   {
-    return new XValue(n);
+    return n ? _true : _false ;
   }
 
   public static XValue newXValue(int n)
   {
-    return new XValue(n);
+    return intValue(n);
   }
 
   public static XValue newXValue(Item item)
@@ -1041,7 +1050,7 @@ public class XValue implements Iterable<XValue>
    * StrReplace based replacement of values
    * 
    */
-  public XValue replace( XStringSubstituter subst )
+  public XValue substitute( XStringSubstituter subst )
   {
       if( isAtomic() ){
           StringBuilder sb = new StringBuilder( toString() );
@@ -1081,6 +1090,15 @@ public class XValue implements Iterable<XValue>
         return JSONUtils.toJsonType( this );
         
     }
+
+    public static XValue intValue(int i) {
+       if( i >= 0 && i < _intValues.length )
+           return _intValues[i];
+       return new XValue(TypeFamily.JAVA, i);
+        
+    }
+    
+
 
 }
 //

@@ -208,7 +208,7 @@ public class XValueProperties extends XValueMap {
 
         for (java.util.Map.Entry<String, XValue> e : entrySet()) {
             XValue v = e.getValue();
-            XValue vnew = v.replace(subst);
+            XValue vnew = v.substitute(subst);
             if (vnew != v)
                 e.setValue(vnew);
 
