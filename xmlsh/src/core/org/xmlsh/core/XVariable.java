@@ -332,6 +332,7 @@ public abstract  class XVariable {
 
 		/**
 		 * @param value the value to set
+		 * @return 
 		 * @throws InvalidArgumentException 
 		 *  Flags are presumed to be already set
 		 */

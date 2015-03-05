@@ -161,5 +161,19 @@ public class OptionsModule extends TypesModule {
 	
 	}
 	
-
+	@Function( name="has-args" , names={"any-args"})
+    public static class hasArgs extends AbstractBuiltinFunction
+    {
+    
+      @Override
+      public XValue run(Shell shell, List<XValue> args) throws Exception
+      {
+            if( args.size() != 1 ||! args.get(0).isInstanceOf( Options.class)){
+                usage(shell, "get-args(opts)");
+                return XValue.nullValue();
+            }
+            return XValue.newXValue(((Options) args.get(0).asInstanceOf(Options.class)).getRemainingArgs());
+      }
+    
+    }
 }

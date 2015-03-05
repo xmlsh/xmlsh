@@ -110,6 +110,11 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt {
 		return "Shell[" + _id + "]";
 	}
 	
+
+	public boolean isInFunction()
+	{
+	    return mCallStack != null && !mCallStack.isEmpty();
+	}
 	
 
 	// The return of a function and/or command
@@ -173,8 +178,6 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt {
 	// Depth of conditions used for 'throw on error'
 	private int mConditionDepth = 0;
 
-
-
 	// Current classloader
 	private SourceLocation mCurrentLocation = null;
 
@@ -237,7 +240,8 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt {
 		mClosed = false ;
 		mOpts = new ShellOpts();
 		mSavedCD = System.getProperty(ShellConstants.PROP_USER_DIR);
-		mEnv = new XEnvironment(this,  new StaticContext() ,  RootModule.getInstance() , io );
+		mEnv = new XEnvironment(this,  new StaticContext() , 
+		        RootModule.getInstance() , io );
 		mSession = new SessionEnvironment();
 
 
@@ -317,7 +321,9 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt {
 		getEnv().setVar(
 						ShellConstants.XMODPATH,
 						Util.isBlank(xmpath) ? XValue.empytSequence() : XValue
-								.newXValue(xmpath.split(File.pathSeparator)));
+								.newXValue(xmpath.split(File.pathSeparator)),
+		      XVariable.standardFlags()
+		        );
 
 		// PWD
 		getEnv().initVariable(
@@ -374,13 +380,15 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt {
 		getEnv().setVar(
 				ShellConstants.ENV_TMPDIR,
 				XValue.newXValue(FileUtils.toJavaPath(System
-						.getProperty(ShellConstants.PROP_JAVA_IO_TMPDIR))));
+						.getProperty(ShellConstants.PROP_JAVA_IO_TMPDIR))),
+						XVariable.systemFlags());
 
 		if (getEnv().getVar(ShellConstants.ENV_HOME) == null)
 			getEnv().setVar(
 					ShellConstants.ENV_HOME,
 					XValue.newXValue(FileUtils.toJavaPath(System
-							.getProperty(ShellConstants.PROP_USER_HOME))));
+							.getProperty(ShellConstants.PROP_USER_HOME))),
+							XVariable.systemFlags());
 
 	}
 
@@ -1156,7 +1164,7 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt {
 		return Paths.get(System.getProperty(ShellConstants.PROP_USER_DIR));
 	}
 
-	public void setCurdir(File cd) throws IOException {
+	public static void  setCurdir(File cd) throws IOException {
 		String dir = cd.getCanonicalPath();
 		SystemEnvironment.getInstance().setProperty(
 				ShellConstants.PROP_USER_DIR, dir);

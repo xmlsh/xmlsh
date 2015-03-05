@@ -9,6 +9,7 @@ import org.xmlsh.sh.shell.Shell;
 
 import com.amazonaws.regions.Region;
 import com.amazonaws.services.autoscaling.AmazonAutoScalingClient;
+import com.amazonaws.services.autoscaling.model.CreateLaunchConfigurationRequest;
 
 public final class ASClient extends AWSClient<AmazonAutoScalingClient> {
 
@@ -27,5 +28,14 @@ public final class ASClient extends AWSClient<AmazonAutoScalingClient> {
 	@Override
 	public void setRegion(Region region) {
 		mClient.setRegion(region);
+	}
+	
+	public bool createLaunchConfig(){
+	    mClient.withRegion(mRegion)).
+	      createLaunchConfiguration(
+	         new  CreateLaunchConfigurationRequest().
+	           withKeyName("Name").
+	              withImageId("ami-eb14341") );
+	      
 	}
 }

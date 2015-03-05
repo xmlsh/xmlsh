@@ -6,15 +6,20 @@
 
 package org.xmlsh.sh.shell;
 
+import java.util.EnumSet;
+
 import org.apache.logging.log4j.Level;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options.OptionValue;
 import org.xmlsh.core.XValue;
+import org.xmlsh.core.XVariable;
+import org.xmlsh.core.XVariable.XVarFlag;
 import org.xmlsh.util.Util;
 
 public class ShellOpts
 {
   private static final String XLOCFORMAT = "XLOCFORMAT";
+  public static final String SHELL_OPTS = "+x,+v,+xpipe,+e,+location,location-format:,+trace,trace-file:,o:,+a,trace-level:";
   public boolean mVerbose = false;		// -v
   public boolean mExec = false;		// -x
   public boolean mXPipe = false;		// -xpipe
@@ -54,44 +59,64 @@ public class ShellOpts
     mLocationFormat = that.mLocationFormat;
     mTrace = that.mTrace;
     mTraceFile = that.mTraceFile;
-    mAllLocal = that.mAllLocal;
-    mAllExport = that.mAllExport;
+  //  mAllLocal = that.mAllLocal;
+  //  mAllExport = that.mAllExport;
     mLocalMatch = that.mLocalMatch ;
   }
 
   public void setOption(String opt, boolean on)
-  {
-    if(opt.equals("x"))
+  { 
+       
+    switch( opt ){
+    case "x" :
       mExec = on;
-    else if(opt.equals("v"))
+      break;
+    case "v":
       mLocation = mVerbose = on;
-    else if(opt.equals("xpipe"))
+    break; case "xpipe":
       mXPipe = on;
-    else if(opt.equals("e"))
+    break; case "e":
       mThrowOnError = on;
-    else if(opt.equals("location"))
+    break; case "location":
       mLocation = on;
-    else 
-      if(opt.equals("trace"))
+    break; 
+      case "trace":
         mTrace = on ;
-      
-    else mSerialize.setOption(opt, on);
-
+        break;
+  case "local" :
+      mAllLocal=true;
+      break;
+  case "nolocal" :
+      mAllLocal=false ;
+      break;
+  default : 
+    mSerialize.setOption(opt, on);
+    }
+    
   }
 
   public void setOption(String opt, XValue value) throws InvalidArgumentException
   {
 
     // No shell options take a string value so just defer to serialization options
-    if(opt.equals("location-format"))
+
+    assert( value.isAtomic() );
+    switch(opt){
+    case "location-format" :
       mLocationFormat = Util.parseBoolean(value.toString(),mLocationFormat);
-    else
-    if(opt.equals("trace-file"))
+      break;
+    case "trace-file" :
       mTraceFile = value.toString();
-    if( opt.equals("trace-level"))
+      break;
+    case "trace-level" :
       mTraceLevel = Level.toLevel(value.toString());
-    
-    mSerialize.setOption(opt, value);
+      break;
+    case "o" : 
+      setOption( value.toString() , true );
+      break ;
+    default:
+       mSerialize.setOption(opt, value);
+    }
 
   }
 
@@ -99,6 +124,9 @@ public class ShellOpts
     return mTraceLevel;
 }
 
+  public boolean isAllLocal(){
+      return mAllLocal;
+  }
   public boolean isTraceEnabled() {
       return mTrace ;
   }

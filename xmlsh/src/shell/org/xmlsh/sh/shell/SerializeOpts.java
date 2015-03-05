@@ -125,7 +125,7 @@ public class SerializeOpts {
 
     }
 
-    public void setOption(String name, boolean value) {
+    public boolean setOption(String name, boolean value) {
         switch( name ){
         case "omit-xml-declaration":
             omit_xml_declaration = value;
@@ -147,7 +147,9 @@ public class SerializeOpts {
         case "igncr": 
             igncr = value;break;
         default :
+            return false ;
         }
+        return true ;
 
 
     }

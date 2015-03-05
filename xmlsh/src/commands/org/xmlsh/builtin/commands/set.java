@@ -20,6 +20,7 @@ import org.xmlsh.core.XValue;
 import org.xmlsh.core.XVariable;
 import org.xmlsh.core.io.OutputPort;
 import org.xmlsh.sh.shell.SerializeOpts;
+import org.xmlsh.sh.shell.ShellOpts;
 import org.xmlsh.util.Util;
 
 public class set extends BuiltinCommand {
@@ -34,11 +35,9 @@ public class set extends BuiltinCommand {
 			return 0;
 		}
 
-		Options opts = new Options( "+x,+v,+xpipe,+e,E=expand,+location,location-format:,+trace,trace-file:,o:,+a,trace-level:" , SerializeOpts.getOptionDefs()  );
+		Options opts = new Options( ShellOpts.SHELL_OPTS , SerializeOpts.getOptionDefs()  );
 		opts.parse(args);
 		setSerializeOpts(opts);
-		boolean bFlatten = opts.hasOpt("E");
-
 		setShellOptions(opts);
 
 
@@ -47,8 +46,6 @@ public class set extends BuiltinCommand {
 		// Only set args here if there are any left
 		// could be set +x which would clear $*
 		if( args != null && (args.size() > 0  || opts.hasDashDash() )){
-			if( bFlatten )
-				args = Util.expandSequences(args);
 			mShell.setArgs(args);
 
 		}
@@ -75,7 +72,6 @@ public class set extends BuiltinCommand {
 		Collection<String> names = env.getVarNames();
 		String[] anames = names.toArray( new String[names.size()]);
 		Arrays.sort(anames);
-
 
 		for( String name : anames ){
 			XVariable var = env.getVar(name);

@@ -55,18 +55,6 @@ public class XEnvironment  {
 	private     Stack<IModule> mModuleStack;
 	private     boolean bClosed = false;
 	
-	
-	
-	private     EnumSet<XVarFlag>  getVarFlags() {
-		return XVariable.standardFlags() ; // TODO add a scope default 
-	}
-
-	
-	private     EnumSet<XVarFlag>  getVarFlags( EnumSet<XVarFlag> flags ) {
-		return Util.withEnumsAdded(flags , getVarFlags() );
-	}
-	
-
 
 	/* (non-Javadoc)
 	 * @see java.lang.Object#finalize()
@@ -89,10 +77,8 @@ public class XEnvironment  {
 		mModuleStack = new Stack<>();
 		pushModule(mod ,ctx);
 
-
 		if( io != null )
 		getIO().initFromIO(io );
-
 
 		mLogger.exit();
 	}
@@ -171,7 +157,8 @@ public class XEnvironment  {
 	{
 	    XVariable var = mVars.get(name);
         if( var == null )
-           var = XVariable.newInstance(name, XValue.newXValue( TypeFamily.XTYPE , new XValueMap()));
+           var = XVariable.newInstance(name, XValue.newXValue( TypeFamily.XTYPE , new XValueMap()),
+                   effectiveFlags(null) );
       else 
           var = var.clone();
       
@@ -202,31 +189,44 @@ public class XEnvironment  {
 
 	}
 	
-
-  public void setLocalVar(String name, XValue value)
-  {
-    
-    XVariable var = XVariable.newInstance( name , value, getLocalFlags());
-    mVars.put(var);
-    
-  }
+	public XVariable declareVar( String name , EnumSet<XVarFlag> flags  ) throws InvalidArgumentException 
+	  {
+	      XVariable var = mVars.get(name);
+	      if( var == null )
+	          var = XVariable.newInstance( name , effectiveFlags( flags ) );
+	      else 
+	          var = var.clone(effectiveFlags( effectiveFlags( flags ) ));
+	      
+	      mVars.put( var );
+	      return var ;
+	  }
   
-  public XVariable declareVar( String name , EnumSet<XVarFlag> flags ) throws InvalidArgumentException{
-	  XVariable var = mVars.get(name);
+  public XVariable declareVar( String name , EnumSet<XVarFlag> flags , XValue value ) throws InvalidArgumentException 
+  {
+      XVariable var = mVars.get(name);
 	  if( var == null )
-		  var = XVariable.newInstance( name , flags );
-	  else 
-		  var = var.clone(flags);
-	  
+		  var = XVariable.newInstance( name , value , effectiveFlags( flags ) );
+	  else {
+		  var = var.clone(effectiveFlags( flags ));
+		  var.setValue(value);
+	  };
 	  mVars.put( var );
 	  return var ;
   }
   
-  private EnumSet<XVarFlag> getLocalFlags() {
-   
-	  return getVarFlags( XVariable.localFlags() );
-  }
-
+        
+  // TODO: Hook here for variable specific flag settings
+   private EnumSet<XVarFlag> effectiveFlags(EnumSet<XVarFlag> explicitFlags) {
+       
+       EnumSet<XVarFlag> flags = getStaticContext().getVarFlags() ;
+       if( mShell.getOpts().isAllLocal() &&
+           mShell.isInFunction() )
+             flags = Util.withEnumsAdded(flags,XVariable.localFlags());
+       if( explicitFlags != null )
+           flags = Util.withEnumsAdded(flags, explicitFlags );
+       return flags ;
+       
+}
 
 public XVariable exportVar( String name ) throws InvalidArgumentException{
     XVariable var = mVars.get(name);
@@ -240,15 +240,22 @@ public XVariable exportVar( String name ) throws InvalidArgumentException{
   }
 
 
-  public XVariable setVar( String name , XValue value) throws InvalidArgumentException 
+
+  public XVariable setVar( String name , XValue value ) throws InvalidArgumentException
+  {
+     return setVar( name , value , null );
+      
+  }
+
+  public XVariable setVar( String name , XValue value, EnumSet<XVarFlag>  explicitFlags ) throws InvalidArgumentException 
   {
 
     XVariable var = mVars.get(name);
     if( var == null ){
-      var = XVariable.newInstance(name, value, getVarFlags() );
+      var = XVariable.newInstance(name, value, effectiveFlags(explicitFlags) );
     }  
     else
-      var = var.newValue(value, getVarFlags());
+      var = var.newValue(value, effectiveFlags(explicitFlags));
     
     return setVar(var);
 
@@ -397,11 +404,11 @@ public XVariable exportVar( String name ) throws InvalidArgumentException{
 	 * @return
 	 * @see org.xmlsh.sh.shell.Shell#getCurdir()
 	 */
-	public File getCurdir() {
-		return mShell.getCurdir();
+	public  File getCurdir() {
+		return Shell.getCurdir();
 	}
 	public Path getCurPath() {
-		return mShell.getCurPath();
+		return Shell.getCurPath();
 	}
 
 	/**
@@ -410,7 +417,7 @@ public XVariable exportVar( String name ) throws InvalidArgumentException{
 	 * @see org.xmlsh.sh.shell.Shell#setCurdir(java.io.File)
 	 */
 	public void setCurdir(File cd) throws IOException {
-		mShell.setCurdir(cd);
+		Shell.setCurdir(cd);
 	}
 
 
@@ -836,10 +843,6 @@ public XVariable exportVar( String name ) throws InvalidArgumentException{
 	}
 
 
-	public XVariable declareVar(String var) throws InvalidArgumentException {
-		return declareVar( var , getVarFlags() );
-	}
-
 
 	public void initVariable(XVariable var) {
 		
@@ -866,6 +869,11 @@ public XVariable exportVar( String name ) throws InvalidArgumentException{
 		if( ! bClosed )
 			 close();	
 	}
+
+
+    public XVariable declareVar(String var) throws InvalidArgumentException {
+       return declareVar( var , null );
+    }
 	
 		
 

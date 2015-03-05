@@ -1,12 +1,14 @@
 package org.xmlsh.sh.shell;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.xmlsh.core.Namespaces;
 import org.xmlsh.core.XVariable;
+import org.xmlsh.core.XVariable.XVarFlag;
 import org.xmlsh.sh.module.IModule;
 import org.xmlsh.util.NameValueMap;
 
@@ -24,6 +26,7 @@ public class StaticContext implements Cloneable {
 	private int id = _id++;
 	private static int _id = 0; 
 	private		Namespaces	mNamespaces = null;
+	private EnumSet<XVarFlag> mVarFlags = XVariable.standardFlags();
 	private NameValueMap<XVariable> mStaticLocals = null;
 	
 	public NameValueMap<XVariable> getStaticLocals() {
@@ -63,7 +66,8 @@ public class StaticContext implements Cloneable {
 		
 		if( that.mStaticLocals != null )
 			mStaticLocals = that.mStaticLocals.clone();
-		
+		if( that.mVarFlags != null )
+		    mVarFlags = that.mVarFlags;
 		mLogger.exit();
 		
 	}
@@ -95,7 +99,10 @@ public class StaticContext implements Cloneable {
 		if( mModules == null  )
 			mModules = new Modules();
 		return mModules;
-		
+	}
+	
+	public EnumSet<XVarFlag>  getVarFlags() {
+	    return mVarFlags ;
 	}
 
 	public Namespaces getNamespaces()
@@ -128,6 +135,7 @@ public class StaticContext implements Cloneable {
 		}
 		return ctx ;
 	}
+
 
 
 }

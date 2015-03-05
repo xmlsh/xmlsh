@@ -6,6 +6,8 @@
 
 package org.xmlsh.sh.core;
 
+import static org.xmlsh.util.Util.hasAnyChar;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.EnumSet;
@@ -27,7 +29,6 @@ public class Assign {
   
 	private static final EvalEnv mListVarEnv = EvalEnv.newInstance(false, true,false, false);
 	private static final EvalEnv mSingleVarEnv = EvalEnv.basicInstance();
-  private static final EnumSet<XVarFlag> VAR_FLAGS = XVariable.standardFlags();
 	private boolean	mLocal = false ;
 	private	 String		mVariable;
 	private String		mOp;		// "=" or "+-" 
@@ -129,14 +130,15 @@ public class Assign {
 	            shell.getEnv().setIndexedVar( getVariable(), value , ind );
 		    }
 		    else
-		      if( mLocal )
-	           shell.getEnv().setLocalVar( getVariable(), value );
-
-		      else
-			       shell.getEnv().setVar( getVariable(), value );
+		    if( mLocal )
+		        shell.getEnv().declareVar( getVariable(), XVariable.localFlags(), value);
+		    else
+			  shell.getEnv().setVar( getVariable(), value ); 
 		}
 
 	}
+	
+ 
 
   private XValue nullValue(String typeStr) throws InvalidArgumentException
   {
