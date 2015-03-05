@@ -14,6 +14,7 @@ import org.xmlsh.core.Options.OptionValue;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.XVariable;
 import org.xmlsh.core.XVariable.XVarFlag;
+import org.xmlsh.types.xtypes.XValueProperties;
 import org.xmlsh.util.Util;
 
 public class ShellOpts
@@ -30,7 +31,6 @@ public class ShellOpts
   public String  mTraceFile = null;
   public boolean mAllLocal = false;
   public boolean mAllExport = false ;
-  public String  mLocalMatch = null ;
   
 
   SerializeOpts mSerialize;
@@ -61,7 +61,6 @@ public class ShellOpts
     mTraceFile = that.mTraceFile;
   //  mAllLocal = that.mAllLocal;
   //  mAllExport = that.mAllExport;
-    mLocalMatch = that.mLocalMatch ;
   }
 
   public void setOption(String opt, boolean on)
@@ -140,6 +139,25 @@ public void setOption(OptionValue ov) throws InvalidArgumentException
         setOption(ov.getOptionDef().getName(), ov.getFlag());
     
   }
+
+    public XValueProperties getOptionsAsProperties() throws InvalidArgumentException {
+        XValueProperties props = new XValueProperties();
+        
+        props.put("v", mVerbose );
+        props.put("x", mExec );
+        props.put("xpipe",mXPipe );
+        props.put("e",mThrowOnError);
+        props.put("location",mLocation);
+        props.put("location-format",mLocationFormat);
+        props.put("trace",mTrace);
+        props.put("trace-file",mTraceFile);
+        props.put("local",mAllLocal);
+        props.put("export",mAllExport);
+        props.put("trace-file",mTraceFile);
+        
+        return props;
+        
+    }
 
 }
 

@@ -10,9 +10,11 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.AbstractMap;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -120,9 +122,15 @@ public class XValueMap extends AbstractMap<String,XValue> implements IXValueMap 
 	public void addAll( XValueMap map )
 	{
 		mMap.putAll(map.mMap);
+
+	
 	}
 
-	public void put(String key, Object value) throws InvalidArgumentException
+	public void put(String key , boolean value )
+	{
+	    put( key , XValue.newXValue(value));
+	}
+	public  <T>  void put(String key, T value) throws InvalidArgumentException
 	{
 		if( value instanceof XValue )
 			put( key , (XValue) value );
@@ -134,7 +142,6 @@ public class XValueMap extends AbstractMap<String,XValue> implements IXValueMap 
 	public void put( XValueProperty prop ) {
 	    put( prop.getName() , prop.getValue() );
 	}
-	
 	
 	
 	@Override
@@ -235,7 +242,15 @@ public class XValueMap extends AbstractMap<String,XValue> implements IXValueMap 
       // TODO Auto-generated method stub
       return this;
     }
-
+    public List<XValueProperty> asPropertyList() {
+        List<XValueProperty> list = new ArrayList<>(this.size());
+        Set<java.util.Map.Entry<String, XValue>> entries = entrySet();
+        for( java.util.Map.Entry<String, XValue> e : entries )
+            list.add(new XValueProperty( e.getKey(), e.getValue()));
+        return list ;
+        
+    }
+    
     @Override
     public IXValueMap asXMap()
     {
@@ -245,15 +260,13 @@ public class XValueMap extends AbstractMap<String,XValue> implements IXValueMap 
     @Override
     public IXValueList asXList()
     {
-      // TODO Auto-generated method stub
-      return null;
+      return new XValueList( values() );
     }
 
     @Override
     public IXValueSequence<? extends IXValueSequence<?>> asXSequence()
     {
-      // TODO Auto-generated method stub
-      return null;
+      return new XValueSequence( values( ));
     }
 
     public void put(java.util.Map.Entry<String, XValue> e)

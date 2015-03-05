@@ -52,6 +52,7 @@ import org.xmlsh.builtin.commands.xmkpipe;
 import org.xmlsh.builtin.commands.xmlsh;
 import org.xmlsh.builtin.commands.xmlshui;
 import org.xmlsh.builtin.commands.xread;
+import org.xmlsh.builtin.commands.xshopt;
 import org.xmlsh.builtin.commands.xthrow;
 import org.xmlsh.builtin.commands.xtrue;
 import org.xmlsh.builtin.commands.xtype;
@@ -138,6 +139,7 @@ public abstract class CommandFactory {
 		addBuiltinCommand("jsonread", jsonread.class);
 		addBuiltinCommand("propread", readconfig.class);
 		addBuiltinCommand("trap", trap.class);
+		addBuiltinCommand("xshopt",xshopt.class);
 
 	}
 

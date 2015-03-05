@@ -29,13 +29,15 @@ public final class ASClient extends AWSClient<AmazonAutoScalingClient> {
 	public void setRegion(Region region) {
 		mClient.setRegion(region);
 	}
+/*
 	
-	public bool createLaunchConfig(){
-	    mClient.withRegion(mRegion)).
+	public boolean createLaunchConfig(){
+	    mClient.
 	      createLaunchConfiguration(
 	         new  CreateLaunchConfigurationRequest().
 	           withKeyName("Name").
 	              withImageId("ami-eb14341") );
 	      
 	}
+*/
 }

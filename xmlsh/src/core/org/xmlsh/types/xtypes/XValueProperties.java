@@ -69,6 +69,8 @@ public class XValueProperties extends XValueMap {
     public XValue asXValue() throws InvalidArgumentException {
         return XValue.newXValue(TypeFamily.XTYPE, this);
     }
+    
+    
 
     /*
      * Expand properties to set of nested properties based on a delimiter

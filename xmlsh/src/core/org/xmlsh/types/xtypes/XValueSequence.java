@@ -39,7 +39,7 @@ public  class XValueSequence implements Iterable<XValue>  ,    IXValueSequence<X
 
 
   
-  public XValueSequence( List<XValue> values ){
+  public XValueSequence( Collection<XValue> values ){
     // Flatten sequence - dont let them stack
     mList = new ArrayList<XValue>();
     for( XValue v : values ) {
@@ -48,6 +48,8 @@ public  class XValueSequence implements Iterable<XValue>  ,    IXValueSequence<X
     
   }
   
+  
+
   
   public static IXValueSequence<XValueSequence> emptySequence() {
     return _emptySequence;
@@ -71,8 +73,10 @@ public  class XValueSequence implements Iterable<XValue>  ,    IXValueSequence<X
   }
 
   
-  
-  @Override
+
+
+
+@Override
   public Iterator<XValue> iterator()
   {
    return mList.iterator();
