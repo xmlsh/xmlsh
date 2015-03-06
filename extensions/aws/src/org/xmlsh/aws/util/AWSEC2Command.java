@@ -161,7 +161,7 @@ public abstract class AWSEC2Command extends AWSCommand<AmazonEC2Client> {
 	public void writeInstanceBlockDeviceMappings(List<InstanceBlockDeviceMapping> mappings) throws XMLStreamException {
 		startElement("devices");
 		for( InstanceBlockDeviceMapping device : mappings ){
-			writeInstanceDeviceMapping( device);	
+			writeInstanceDeviceMapping( device);
 		}
 		endElement();
 	}
@@ -262,6 +262,7 @@ public abstract class AWSEC2Command extends AWSCommand<AmazonEC2Client> {
 		attribute( "device", attachment.getDevice());
 		attribute( "instance-id", attachment.getInstanceId() );
 		attribute( "volume-id", attachment.getVolumeId());
+		attribute("state",attachment.getState());
 		endElement();
 	}
 
@@ -367,6 +368,12 @@ public abstract class AWSEC2Command extends AWSCommand<AmazonEC2Client> {
 		attribute( "create-date", Util.formatXSDateTime(volume.getCreateTime()));
 		attribute( "size", volume.getSize().toString());
 		attribute( "state" , volume.getState());
+		attribute("volume-type", volume.getVolumeType());
+		attribute("iops", volume.getIops());
+		attribute("encrypted",volume.getEncrypted());
+		attribute("kms-key-id",volume.getKmsKeyId());
+
+
 		writeAttachements( volume.getAttachments());
 		writeTags( volume.getTags());
 	}
