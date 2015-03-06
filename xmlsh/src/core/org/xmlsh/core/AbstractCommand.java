@@ -246,25 +246,25 @@ public abstract class AbstractCommand implements ICommand {
 		return mSerializeOpts;
 	}
 
-	protected void error(Exception e) {
+	protected void error(Exception e) throws Exception {
 		mShell.printErr(getName(), e);
 		usage(e.toString());
+		throw e ;
 	}
     protected void error(String s ,Exception e) {
         mShell.printErr(getName() + " " + s , e);
         usage(s +  " " + e.toString());
     }
     
-    // XCommand requires returns an error ,  XFunction require throws exception
-    protected boolean requires( boolean test , String message ){
+    protected void requires( boolean test , String message ) throws InvalidArgumentException{
         if( ! test )
             error( message );
-        return test;
     }
 
-    private void error(String message) {
+    private void error(String message) throws InvalidArgumentException {
         mShell.printErr(getName() + " " + message );
         usage( message );
+        throw new InvalidArgumentException( message );
 
         
     }

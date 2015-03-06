@@ -12,6 +12,7 @@ import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.Options.OptionDef;
+import org.xmlsh.core.Options.OptionDefs;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.UnknownOption;
 import org.xmlsh.core.XValue;
@@ -53,22 +54,22 @@ public class OptionsModule extends TypesModule {
 			}
 	    	requires(! args.isEmpty() , "Usage: options( option-defs [args])");
             XValue xdefs = args.remove(0);
-            List<OptionDef> defs = parseDefs( xdefs );
+            OptionDefs defs = parseDefs( xdefs );
 		
 			Options opts = new Options( defs  );
 			opts.parse(args);
 			return XValue.newXValue(TypeFamily.JAVA,opts);
 		}
     }
-   protected static List<OptionDef> parseDefs( List<XValue> args) {
-		List<OptionDef> defs = new ArrayList<>();
+   protected static OptionDefs parseDefs( List<XValue> args) {
+	   OptionDefs defs = new OptionDefs();
 		for( XValue arg : args )
 			defs.addAll( parseDefs(arg ) );
 		return defs;
    }
 
-	protected static List<OptionDef> parseDefs(XValue args) {
-		List<OptionDef> defs = new ArrayList<>();
+	protected static OptionDefs parseDefs(XValue args) {
+		OptionDefs defs = new OptionDefs();
 		for( XValue arg : args ){
 			if( arg.isInstanceOf( OptionDef.class ))
 				defs.add( arg.asInstanceOf(OptionDef.class));
@@ -78,19 +79,19 @@ public class OptionsModule extends TypesModule {
 		return defs;
 	}
 	
-	protected static List<OptionDef> parseDefs(Object obj) {
-		List<OptionDef> defs = new ArrayList<>();
+	protected static OptionDefs parseDefs(Object obj) {
+		OptionDefs defs = new OptionDefs();
 		if( obj instanceof OptionDef )
-			defs.add( (OptionDef) obj );
+			defs.addOptionDef( (OptionDef) obj );
 		else
 	    if( JavaUtils.isArrayOf(obj,OptionDef.class  ) )
-	    	defs.addAll(  Arrays.asList( (OptionDef[]) obj ));
+	    	defs.addOptionDefs( (OptionDef[]) obj );
 	    else
 	    if( obj instanceof List )
 	    	for( Object o : (List<?>)obj )
-	    		defs.addAll( parseDefs( o ));
+	    		defs.addOptionDefs( parseDefs( o ));
 	    else
-	    	defs.addAll( Options.parseDefs( obj.toString() ));
+	    	defs.addOptionDefs( OptionDefs.parseDefs( obj.toString() ));
 		return defs;
 
 	}

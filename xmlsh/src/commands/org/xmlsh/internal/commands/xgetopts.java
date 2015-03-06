@@ -19,6 +19,7 @@ import net.sf.saxon.s9api.XdmNode;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.Options.OptionDef;
+import org.xmlsh.core.Options.OptionDefs;
 import org.xmlsh.core.Options.OptionValue;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
@@ -73,7 +74,7 @@ public class xgetopts extends XCommand {
 
 
 
-		List<OptionDef> ignore_opts = null ;
+		OptionDefs ignore_opts = null ;
 
 
 		Options prog_opts = new Options(optdef , bSerialize ? SerializeOpts.getOptionDefs() : null );
@@ -151,7 +152,8 @@ public class xgetopts extends XCommand {
 	}
 
 	private void writeOptions( Options opts, boolean bNoArgs, boolean bNoValues,
-			Options prog_opts, List<OptionValue> prog_optvalues, List<OptionDef> ignore_list) throws XMLStreamException, IOException, SaxonApiException, CoreException {
+			Options prog_opts, List<OptionValue> prog_optvalues, 
+			OptionDefs ignore_list) throws XMLStreamException, IOException, SaxonApiException, CoreException {
 		XMLStreamWriter out = getStdout().asXMLStreamWriter(getSerializeOpts(opts));
 
 		out.writeStartDocument();

@@ -17,7 +17,6 @@ import org.xmlsh.types.xtypes.IXValueMap;
 
 @org.xmlsh.annotations.Module(name = "types.map")
 public class MapModule extends TypesModule {
-    static Logger mLogger = LogManager.getLogger();
 
     public MapModule(ModuleConfig config) throws CoreException {
         super(config);

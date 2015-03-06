@@ -15,7 +15,6 @@ import org.xmlsh.types.xtypes.XValueProperties;
 
 @org.xmlsh.annotations.Module( name="types.properties")
 public class PropertiesModule extends MapModule {
-	static Logger mLogger = LogManager.getLogger();
 
 	public PropertiesModule(ModuleConfig config) throws CoreException {
 		super(config);
@@ -46,7 +45,7 @@ public class PropertiesModule extends MapModule {
 		public XValue run(Shell shell, List<XValue> args) throws Exception {
 			if( args.size() != 3 ||
 					! args.get(0).isInstanceOf(XValueProperties.class) ){
-				usage(shell, "properties key");
+				usage(shell, "properties key value");
 				return null;
 			}
 			return  args.get(0).asInstanceOf(XValueProperties.class).put( args.get(1).toString() , args.get(2) );

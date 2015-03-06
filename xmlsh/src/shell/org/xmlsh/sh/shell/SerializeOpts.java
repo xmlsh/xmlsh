@@ -11,6 +11,7 @@ import java.util.List;
 
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
+import org.xmlsh.core.Options.OptionDefs;
 import org.xmlsh.core.Options.OptionValue;
 import org.xmlsh.core.XValue;
 import org.xmlsh.util.FileUtils;
@@ -43,10 +44,10 @@ public class SerializeOpts {
     /*
      * Parsed standardized serialization option definitions
      */
-    private static final List<Options.OptionDef> mOptionDefs = Options
-            .parseDefs("+igncr,+force-text,+indent,+omit-xml-declaration,encoding:,text-encoding:,input-encoding:,output-encoding:,xml-encoding:,+xinclude,content-type:,method:,+supports-dtd,sequence-sep:,sequence-term:,input-xml-encoding:,output-xml-encoding:,input-text-encoding:,output-text-encoding:,+indent-xml,+indent-json");
+    private static final OptionDefs mOptionDefs = 
+    		OptionDefs.parseDefs("+igncr,+force-text,+indent,+omit-xml-declaration,encoding:,text-encoding:,input-encoding:,output-encoding:,xml-encoding:,+xinclude,content-type:,method:,+supports-dtd,sequence-sep:,sequence-term:,input-xml-encoding:,output-xml-encoding:,input-text-encoding:,output-text-encoding:,+indent-xml,+indent-json");
 
-    public static List<Options.OptionDef> getOptionDefs() {
+    public static OptionDefs getOptionDefs() {
         return mOptionDefs;
     }
 
