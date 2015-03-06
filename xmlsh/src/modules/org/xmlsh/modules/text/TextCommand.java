@@ -23,7 +23,6 @@ import org.xmlsh.core.io.OutputPort;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.util.Util;
 
-import com.sun.javafx.scene.EnteredExitedHandler;
 
 
 abstract public class TextCommand extends XCommand {
