@@ -1,5 +1,7 @@
 package org.xmlsh.util;
 
+import static java.nio.file.attribute.PosixFilePermission.*;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
@@ -10,6 +12,7 @@ import java.nio.file.attribute.FileTime;
 import java.nio.file.attribute.PosixFileAttributes;
 import java.nio.file.attribute.PosixFilePermission;
 import java.nio.file.attribute.UserPrincipal;
+import java.util.Collection;
 import java.util.EnumSet;
 import java.util.Set;
 
@@ -109,9 +112,14 @@ public class UnifiedFileAttributes {
 				else
 					basic = FileUtils.getBasicFileAttributes( mPath , mLinkOpts );
 			}
-			if(posixPermissions  == null ){
-				posixPermissions= FileUtils.emulatePosixFilePermissions(mPath, mLinkOpts );
+			
+			if(posixPermissions  == null && dos != null ){
+			    
+	             posixPermissions= FileUtils.emulatePosixFilePermissions(dos , mLinkOpts );
+				
 			}
+			if( posixPermissions == null )
+			   posixPermissions= FileUtils.emulatePosixFilePermissions(mPath, mLinkOpts );
 		} finally {
 			bInit = true ;
 		}
@@ -210,9 +218,25 @@ public class UnifiedFileAttributes {
 		return 
 				(getDos() == null) ? false : getDos().isSystem();
 	}
+   public boolean isReadOnly() {
+        if( ! bInit ) init() ;
+        if( ! bExists ) return false ;
+
+        if( hasDos()  )
+            return getDos().isReadOnly();
+        if( hasPosix()){
+            Set<PosixFilePermission> perms = getPosix().permissions();
+            return !( perms.contains(OWNER_WRITE ) ||
+                    perms.contains(GROUP_WRITE ) ||
+                    perms.contains(OTHERS_WRITE ) );
+            
+        }
+
+        return false ;
+    }
+	   
 	public Set<PosixFilePermission> getPermissions() {
 		if( ! bInit ) init() ;
-	
 		return posixPermissions;
 	}
 

@@ -26,9 +26,15 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.DosFileAttributeView;
 import java.nio.file.attribute.DosFileAttributes;
 import java.nio.file.attribute.FileAttributeView;
+import java.nio.file.attribute.FileStoreAttributeView;
+import java.nio.file.attribute.FileTime;
 import java.nio.file.attribute.PosixFileAttributeView;
 import java.nio.file.attribute.PosixFileAttributes;
 import java.nio.file.attribute.PosixFilePermission;
+
+import static java.nio.file.attribute.PosixFilePermission.*;
+import static org.xmlsh.util.Util.enumSetOf;
+
 import java.nio.file.attribute.UserDefinedFileAttributeView;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -53,6 +59,9 @@ public class FileUtils
 	static LinkOption[] _pathFollowLinks = new LinkOption[] { LinkOption.NOFOLLOW_LINKS } ;
 	static LinkOption[] _pathNoFollowLinks = new LinkOption[0] ;
 	
+	public static Set<PosixFilePermission> _allRead = enumSetOf( OWNER_READ , GROUP_READ , OTHERS_READ );
+	public static Set<PosixFilePermission> _allWrite = enumSetOf( OWNER_WRITE , GROUP_WRITE , OTHERS_WRITE );
+    public static Set<PosixFilePermission> _allExec = enumSetOf( OWNER_EXECUTE , GROUP_EXECUTE , OTHERS_EXECUTE );
 
 	static Logger mLogger = LogManager.getLogger();
 	public static String getNullFilePath() {
@@ -178,16 +187,25 @@ public class FileUtils
 	}
    protected static Set<PosixFilePermission> emulatePosixFilePermissions(Path path, LinkOption...  followLinks ) {
 	   
-	   Set<PosixFilePermission> perms = EnumSet
+	   EnumSet<PosixFilePermission> perms = EnumSet
 				.noneOf(PosixFilePermission.class);
 		if (Files.isReadable(path))
-			perms.add(PosixFilePermission.OWNER_READ);
+			perms.addAll(_allRead);
 		if (Files.isWritable(path))
-			perms.add(PosixFilePermission.OWNER_WRITE);
+			perms.addAll(_allWrite);
 		if (Files.isExecutable(path))
-			perms.add(PosixFilePermission.OWNER_EXECUTE); 
+			perms.addAll(_allExec); 
 		return perms ;
    }
+ protected static Set<PosixFilePermission> emulatePosixFilePermissions(DosFileAttributes dos , LinkOption...  followLinks ) {
+       
+       Set<PosixFilePermission> perms = EnumSet
+                .noneOf(PosixFilePermission.class);
+        if (!dos.isReadOnly())
+            perms.addAll(_allWrite);
+        perms.addAll( _allRead );
+        return perms;
+  }
    
 	public static String getSystemTextEncoding() {
 		return System.getProperty("file.encoding");
@@ -257,6 +275,11 @@ public class FileUtils
 		}
 		return 0;
 		
+	}
+	
+ 
+	static FileSystem getFileSystem( Path path ){
+	    return FileSystems.getFileSystem(path.toUri());
 	}
 	/*
 	 * Special function that would return basename without extension if this is path-like
@@ -332,7 +355,11 @@ public class FileUtils
 		}
 	}
 
-	
+    public static  <V extends FileAttributeView> V getAttributeView( Path path , Class<V> view ) throws IOException
+    {
+        return Files.getFileAttributeView(path, view );
+    }
+
 	public static boolean    supportsAttributeView( FileStore store , Class<? extends FileAttributeView> view )
 	{
 
@@ -364,7 +391,6 @@ public class FileUtils
 		}
 
 		return set.contains(view);
-		
 	}
 
 	
@@ -531,6 +557,70 @@ public class FileUtils
     }
 		return mLogger.exit(null ) ;
 	}
+	   public static void changeFilePermissions(Path path,
+	            Set<PosixFilePermission> change , LinkOption... links ) 
+	   {
+	       changeFilePermissions( path ,  getUnifiedFileAttributes(path, links) , change , links );
+	   }
+
+    public static void changeFilePermissions(Path path,
+            UnifiedFileAttributes orig,
+            Set<PosixFilePermission> change ,
+            LinkOption... links) 
+ 
+    {
+        mLogger.entry(path,change);
+    
+        if( supportsAttributeView(path, PosixFileAttributeView.class)){
+            mLogger.debug("using PosixFileAttributeView" );
+            try {
+                Files.setPosixFilePermissions(path, change);
+            } catch (IOException e) {
+                mLogger.catching(e);
+            }
+        }
+        
+        if( supportsAttributeView(path, DosFileAttributeView.class)){
+            mLogger.debug("supports DosFileAttributeView" );
+            try {
+                DosFileAttributeView dosView = getAttributeView( path , DosFileAttributeView.class );
+                if( dosView != null ){
+                    mLogger.debug("using DosFileAttributeView");
+                    DosFileAttributes origView = orig.getDos();
+                    boolean anyRead = Util.setContainsAny( change , _allWrite );
+                    if( anyRead == origView.isReadOnly() )
+                        dosView.setReadOnly(!anyRead);
+                    
+                    
+                }
+                else {
+                    mLogger.error("using File" );
+                    boolean anyRead = Util.setContainsAny( change , _allRead );
+
+                    
+                    File f = path.toFile();  
+                    if( anyRead == orig.isReadOnly()  ){
+                     if( ! anyRead )
+                      f.setReadOnly( );
+                     else
+                      f.setWritable( anyRead );
+                    }
+                     boolean anyWrite = Util.setContainsAny( change , _allWrite);
+
+                    if( anyWrite != orig.canWrite() )
+                      f.setWritable( anyWrite );
+                    boolean anyExec = Util.setContainsAny( change , _allExec);
+
+                    if( anyExec != orig.canExecute() )
+                        f.setExecutable( anyExec );
+                }
+            } catch (IOException e) {
+                mLogger.catching(e);
+            }
+        }
+        return ;
+    }
+        
 	
 }
 

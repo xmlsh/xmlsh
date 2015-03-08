@@ -14,6 +14,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Path;
 import java.util.List;
 
 import javax.xml.transform.Source;
@@ -27,6 +28,7 @@ import org.xmlsh.sh.module.IModule;
 import org.xmlsh.sh.module.Module;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.util.FileUtils;
 import org.xmlsh.util.HelpUsage;
 import org.xmlsh.util.Util;
 
@@ -174,10 +176,16 @@ public abstract class AbstractCommand implements ICommand {
 		return mShell.getFile(fname);
 	}
 
+	   protected Path getPath(String fname) throws IOException {
+	        return FileUtils.asValidPath(getFile(fname));
+	    }
+
 	protected File getFile(XValue fname) throws IOException {
 		return mShell.getFile(fname);
 	}
-
+	protected Path getPath(XValue fname) throws IOException {
+        return  FileUtils.asValidPath(getFile(fname));
+    }
 	protected Shell getShell() {
 		return mShell;
 	}

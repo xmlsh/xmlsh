@@ -1269,7 +1269,7 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt {
 	 */
 	public void setStatus(int status) {
 		mStatus = status;
-	}
+  }
 
 	public File getFile(File dir, String file) throws IOException {
 		return getExplicitFile(dir, file, false);

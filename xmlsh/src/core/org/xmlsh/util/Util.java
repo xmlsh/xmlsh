@@ -31,6 +31,7 @@ import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -1552,7 +1553,7 @@ public class Util
 		 return true ;
 	 }
 
-	 public static <T extends Enum<T>> boolean setContainsAny( EnumSet<T> set , T...  items ) 
+	 public static <T extends Enum<T>> boolean setContainsAny( Set<T> set , T...  items ) 
 	 {
 		 if( set.size() == 0 || items.length == 0  )
 			 return false ;
@@ -1562,7 +1563,7 @@ public class Util
 		 return false ;
 	 }
 
-	 public static <T extends Enum<T>> boolean setContainsAny( EnumSet<T> set , EnumSet<T> items) 
+	 public static <T extends Enum<T>> boolean setContainsAny( Set<T> set , Set<T> items) 
 	 {		
 		 if( set.size() == 0  )
 			 return false ;
