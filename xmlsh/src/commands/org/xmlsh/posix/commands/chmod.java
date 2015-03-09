@@ -335,8 +335,8 @@ public class chmod extends XCommand {
 	public int run(List<XValue> args) throws Exception {
 
 
-		Options opts = new Options( "R=recurse" );
-		opts.parse(args);
+		Options opts = new Options( "R=recurse");
+		opts.parse(args,true); // ignore unknown args 
 		args = opts.getRemainingArgs();
 		bRecurse = opts.hasOpt("R");
 		
