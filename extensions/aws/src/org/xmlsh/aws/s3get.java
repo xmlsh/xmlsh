@@ -83,7 +83,7 @@ public class s3get extends AWSS3Command {
 
 		case	1 :
 		{
-			src  = getPath(args.get(0));
+			src  = getS3Path(args.get(0));
 
 
 			dest = getStdout();
@@ -99,7 +99,7 @@ public class s3get extends AWSS3Command {
 			XValue xds  = srcs.remove(args.size()-1);
 
 			for( XValue s : srcs ){
-				src = getPath( s );
+				src = getS3Path( s );
 				String prefix = null ;
 				if( bRecurse )
 					prefix = src.getKey() ;
@@ -125,8 +125,8 @@ public class s3get extends AWSS3Command {
 
 	}
 
-	private S3Path getPath(XValue key) {
-		return getPath( bucket , key.toString() );
+	private S3Path getS3Path(XValue key) {
+		return getS3Path( bucket , key.toString() );
 	}
 
 	private int get( S3Path src , XValue dest, OutputPort metaPort , String prefix ) throws CoreException, IOException, AmazonServiceException, AmazonClientException, InterruptedException 
@@ -149,7 +149,7 @@ public class s3get extends AWSS3Command {
 
 				List<S3ObjectSummary>  objs = list.getObjectSummaries();
 				for ( S3ObjectSummary obj : objs ){
-					S3Path s = getPath( obj.getBucketName() , obj.getKey());
+					S3Path s = getS3Path( obj.getBucketName() , obj.getKey());
 					if( s.isDirectory() )
 						continue ;
 					ret += get( s , dest , metaPort , prefix );

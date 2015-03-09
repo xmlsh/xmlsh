@@ -6,6 +6,8 @@
 	<property name="xmlsh.version" value="2.0"/>
 	<property name="install.dir" value="${install_root}/${ant.project.name}"/>
 	<property name="s3.src" value="s3://xmlsh-org-release/build-deps/xmlsh/${xmlsh.version}/${component}/${ant.project.name}/"/>
+	<property name="javac.source" value="1.8"/>
+	<property name="javac.target" value="1.8"/>
 
 	<target name="install.check" depends="install_root.check">
             <echo message="checking for ${install.dir}"/>

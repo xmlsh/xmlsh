@@ -341,10 +341,12 @@ public abstract class CommandFactory {
 		if( exts == null )
 			exts = Util.toArray( "" );
 		
+		
+		
 		File file = null ;
 		if( paths == null ){
 			for( String ext : exts ){ 
-				file = tryScriptFile( shell , name + ext );
+				file = tryScriptFile( shell , name + ext , false );
 				if( file != null )
 					return mLogger.exit(file);
 			}
@@ -354,7 +356,7 @@ public abstract class CommandFactory {
 			for( String ext : exts ){
 				try {
 					file = path.getFirstFileInPath(shell, name  + ext , sExplicitPath);
-					if( file != null && isXScriptFile(file.toPath(), shell.getInputTextEncoding()) )
+					if( file != null && isXScriptFile(file.toPath(), shell.getInputTextEncoding() , false ) )
 						return mLogger.exit(file);
 				} catch (IOException e) {
 					mLogger.catching(e);
@@ -366,9 +368,9 @@ public abstract class CommandFactory {
 		return mLogger.exit(null);
 	}
 
-	private static boolean isXScriptFile(Path path, String encoding) {
+	private static boolean isXScriptFile(Path path, String encoding , boolean anyScripty) {
 
-	    return FileUtils.isXScript(path, false  , encoding);
+	    return FileUtils.isXScript(path, anyScripty  , encoding);
     }
 
     protected static File tryFile(Shell shell, String name) {
@@ -444,7 +446,7 @@ public abstract class CommandFactory {
 				scriptFile = shell.getExplicitFile(pname.toString(), true );
 				if( scriptFile != null && ! scriptFile.isFile() )
 					scriptFile = null ;
-				if( scriptFile != null && ! isXScriptFile(scriptFile.toPath(), shell.getInputTextEncoding()))
+				if( scriptFile != null && ! isXScriptFile(scriptFile.toPath(), shell.getInputTextEncoding(), false ))
 					scriptFile = null;
 				
 			} else
@@ -466,12 +468,12 @@ public abstract class CommandFactory {
 			String ext = FileUtils.getExt( name );
 			
 			if( FileUtils.hasDirectory(name) ){
-				scriptFile = tryScriptFile(shell, name);
+				scriptFile = tryScriptFile(shell, name, true ) ;
 			}
 			
 	        if( scriptFile == null && sourceMode == SourceMode.SOURCE || sourceMode == SourceMode.IMPORT ){
 	        	
-	        	scriptFile = findFirstFileInPaths( shell , name , getExtensions( ext , ".xsh"  ) , null);
+	        	scriptFile = findFirstFileInPaths( shell , name , getExtensions( ext , ShellConstants.XSH_EXTENSION  ) , null);
 	        }
 			
 			
@@ -492,7 +494,7 @@ public abstract class CommandFactory {
 					break ;
 				}
 				
-	        	scriptFile = findFirstFileInPaths( shell , name , getExtensions( ext , ".xsh"  ) , paths );
+	        	scriptFile = findFirstFileInPaths( shell , name , getExtensions( ext , ShellConstants.XSH_EXTENSION  ) , paths );
 			}
 		}
 		if (scriptFile == null)
@@ -505,10 +507,10 @@ public abstract class CommandFactory {
 	}
 		
 		// tryFile but make sure its text like
-	private static File tryScriptFile(Shell shell, String name) {
+	private static File tryScriptFile(Shell shell, String name, boolean anyScripty) {
 		mLogger.entry(shell,name);
 		File f = tryFile( shell , name );
-		if( f != null && isXScriptFile( f.toPath() , shell.getInputTextEncoding() ))
+		if( f != null && isXScriptFile( f.toPath() , shell.getInputTextEncoding() , anyScripty))
 				return mLogger.exit(f);
 		return mLogger.exit(null) ;
 	}

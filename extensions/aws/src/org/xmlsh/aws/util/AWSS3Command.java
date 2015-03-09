@@ -30,8 +30,8 @@ import com.amazonaws.services.s3.transfer.TransferManager;
 public abstract class AWSS3Command extends AWSCommand<AmazonS3Client> {
 
 
-	public S3Path getPath(String bucket, String key) {
-		return getS3Client().getPath(bucket, key);
+	public S3Path getS3Path(String bucket, String key) {
+		return getS3Client().getS3Path(bucket, key);
 	}
 
 	private S3Client getS3Client() {

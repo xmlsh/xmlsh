@@ -454,7 +454,7 @@ public class FileUtils
 	
 	public static boolean isXScript( Path path , boolean bScripty ,  String encoding ){
 		String ext = getExt(path.toString());
-		if( Util.isEqual( ext , ".xsh" ) )
+		if( Util.isEqual( ext,  ShellConstants.XSH_EXTENSION ) )
 		    return true ;
 		if( Util.isBlank(ext) ){
 		    String line = getTextFileMagic( path , encoding );
