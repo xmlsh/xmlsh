@@ -324,15 +324,21 @@ public class Options {
 		return mDefs.getOptionDef(str);
 
 	}
+    public List<OptionValue> parse(List<XValue> args) throws UnknownOption, UnexpectedException, InvalidArgumentException
+    {
+        return parse( args , false );
+    }
+    
 
-	public List<OptionValue> parse(List<XValue> args) throws UnknownOption,
+	public List<OptionValue> parse(List<XValue> args, boolean stopOnUnknown) throws UnknownOption,
 			UnexpectedException, InvalidArgumentException {
 		if (mOptions != null)
 			return mOptions;
 
 		mOptions = new ArrayList<OptionValue>();
-
-		for (Iterator<XValue> I = args.iterator(); I.hasNext();) {
+        mRemainingArgs = new ArrayList<XValue>();
+        Iterator<XValue> I = args.iterator();
+		while ( I.hasNext()) {
 			XValue arg = I.next();
 
 			String sarg = (arg.isAtomic() ? arg.toString() : null);
@@ -343,9 +349,13 @@ public class Options {
 				char flag = sarg.charAt(0);
 
 				OptionDef def = getOptDef(a);
-				if (def == null)
+				if (def == null){
+				    if( stopOnUnknown ) {   
+	                    mRemainingArgs.add(arg);
+	                    break ;
+				    }
 					throw new UnknownOption("Unknown option: " + a);
-
+				}
 				if (flag == '+' && !def.isFlag())
 					throw new UnknownOption("Option : " + a
 							+ " cannot start with +");
@@ -364,7 +374,6 @@ public class Options {
 				mOptions.add(ov);
 
 			} else {
-				mRemainingArgs = new ArrayList<XValue>();
 
 				if (arg.isAtomic() && arg.equals("--")) {
 					arg = null;
@@ -372,14 +381,14 @@ public class Options {
 				}
 				if (arg != null)
 					mRemainingArgs.add(arg);
-				while (I.hasNext())
-					mRemainingArgs.add(I.next());
 
 				break;
 
 			}
 
 		}
+		while (I.hasNext())
+              mRemainingArgs.add(I.next());
 		return mOptions;
 
 	}
