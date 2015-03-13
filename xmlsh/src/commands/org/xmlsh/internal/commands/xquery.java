@@ -179,7 +179,7 @@ public class xquery extends XCommand {
 				XValue value = xvargs.get(i*2+1);
 				// DAL: Bug in 9.1.1 QName vqname = QName.fromClarkName(name );
 				//QName vqname = Util.fromClarkName(name);
-				QName vqname = Util.resolveQName( name , ns );
+				QName vqname = new  QName(Util.resolveQName( name , ns ));
 				eval.setExternalVariable( vqname ,  value.toXdmValue() );	
 			}
 

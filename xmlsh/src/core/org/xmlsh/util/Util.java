@@ -36,6 +36,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
+import javax.xml.namespace.QName;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLEventWriter;
 import javax.xml.stream.XMLStreamException;
@@ -61,7 +62,6 @@ import net.sf.saxon.lib.FeatureKeys;
 import net.sf.saxon.om.Item;
 import net.sf.saxon.om.NodeInfo;
 import net.sf.saxon.s9api.Destination;
-import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.Serializer;
 import net.sf.saxon.s9api.XdmAtomicValue;
@@ -1035,7 +1035,7 @@ public class Util
 			 localName = expandedName;
 		 }
 
-		 return new QName("", namespaceURI, localName);
+		 return new QName( namespaceURI, localName, "");
 	 }
 
 	 /*
@@ -1065,7 +1065,7 @@ public class Util
 			 uri = ns.get(prefix);
 		 if( uri == null ) uri = "";
 
-		 return new QName( prefix , uri , local );
+		 return new QName(  uri , local , prefix );
 
 
 
@@ -1211,6 +1211,16 @@ public class Util
 
 
 	 }
+	 
+	 public static QName encodeForQName( String name )
+	 {
+	     
+	     if( !name.contains("::"))
+	         return new QName( encodeForNCName(name ) );
+	     String ns[] = name.split("::");
+	     return new QName( null , encodeForNCName(ns[0]) , encodeForNCName(ns[1]) );
+	     
+	 }
 	 // Simplified compatible versions of xdmp:encode-for-NCName and xdmp:decode-from-NCName
 	 public static String encodeForNCName( String name )
 	 {
@@ -1247,7 +1257,14 @@ public class Util
 		 return sb.toString();
 
 	 }
+	 public static String  decodeFromQName( QName qname ){
+	     
+	     if( Util.isBlank(qname.getPrefix()) )
+             return decodeFromNCName(qname.getLocalPart()) ;
+	     else
+	         return qname.getPrefix() + "::" + decodeFromNCName(qname.getLocalPart());
 
+	 }
 	 public static String decodeFromNCName( String name )
 	 {
 

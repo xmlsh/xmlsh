@@ -30,7 +30,6 @@ import com.amazonaws.services.s3.transfer.Download;
 
 public class s3get extends AWSS3Command {
 
-	private String bucket = null ;
 
 	private boolean bRecurse = false ;
 	private boolean bVerbose = false ;
@@ -45,7 +44,7 @@ public class s3get extends AWSS3Command {
 	public int run(List<XValue> args) throws Exception {
 
 
-		Options opts = getOptions("meta:,r=recurse,b=bucket:,v=verbose");
+		Options opts = getOptions("meta:,r=recurse,v=verbose");
 		opts.parse(args);
 
 
@@ -55,7 +54,6 @@ public class s3get extends AWSS3Command {
 
 		args = opts.getRemainingArgs();
 
-		bucket = opts.getOptString("bucket", null);
 
 		bRecurse = opts.hasOpt("recurse");
 		bVerbose = opts.hasOpt("verbose");
@@ -126,7 +124,7 @@ public class s3get extends AWSS3Command {
 	}
 
 	private S3Path getS3Path(XValue key) {
-		return getS3Path( bucket , key.toString() );
+		return getS3Path( key.toString() );
 	}
 
 	private int get( S3Path src , XValue dest, OutputPort metaPort , String prefix ) throws CoreException, IOException, AmazonServiceException, AmazonClientException, InterruptedException 

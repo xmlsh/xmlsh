@@ -8,7 +8,9 @@ package org.xmlsh.xs.functions;
 
 import java.util.List;
 
-import net.sf.saxon.s9api.QName;
+
+
+import javax.xml.namespace.QName;
 
 import org.xmlsh.core.AbstractBuiltinFunction;
 import org.xmlsh.core.InvalidArgumentException;

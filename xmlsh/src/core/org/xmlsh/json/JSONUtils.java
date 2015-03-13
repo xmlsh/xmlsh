@@ -8,31 +8,54 @@ package org.xmlsh.json;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.PrintStream;
+import java.io.Reader;
+import java.io.UnsupportedEncodingException;
+import java.io.Writer;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.stream.XMLEventWriter;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLStreamWriter;
+import javax.xml.transform.Result;
+
+import net.sf.saxon.s9api.SaxonApiException;
+import net.sf.saxon.s9api.Serializer;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.codehaus.stax2.ri.Stax2WriterAdapter;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.SerializeOpts;
+import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.types.TypeFamily;
 import org.xmlsh.types.xtypes.XValueList;
 import org.xmlsh.util.Util;
+import org.xmlsh.util.XMLDelegateOutputFactory;
+
 import com.fasterxml.jackson.databind.SerializationFeature.*;
+import com.fasterxml.jackson.core.JsonEncoding;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonParser.Feature;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.ObjectCodec;
+import com.fasterxml.jackson.core.io.IOContext;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -58,11 +81,60 @@ import com.fasterxml.jackson.databind.type.SimpleType;
 import com.fasterxml.jackson.dataformat.xml.JacksonXmlModule;
 import com.fasterxml.jackson.dataformat.xml.XmlFactory;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import com.fasterxml.jackson.dataformat.xml.deser.FromXmlParser;
+import com.fasterxml.jackson.dataformat.xml.ser.ToXmlGenerator;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 
 public class JSONUtils {
-
+    
+    
+    @SuppressWarnings("serial")
     private static final class RenamingXmlFactory extends XmlFactory {
+
+        public RenamingXmlFactory() {
+            super(null,null,_createOuputFactory() );
+            // TODO Auto-generated constructor stub
+        }
+
+        private static XMLOutputFactory _createOuputFactory() {
+            XMLOutputFactory fact = 
+                    new XMLDelegateOutputFactory( XMLOutputFactory.newInstance()  )
+            {
+
+                @Override
+                public XMLStreamWriter createXMLStreamWriter(
+                        OutputStream stream, String encoding)
+                        throws XMLStreamException {
+                    try {
+                        return createXMLStreamWriter(
+                                new OutputStreamWriter(stream, encoding) );
+                    } catch (UnsupportedEncodingException e) {
+                        throw mLogger.throwing( new XMLStreamException(e )  );
+                    }
+                }
+
+                @Override
+                public XMLStreamWriter createXMLStreamWriter(Writer w)
+                        throws XMLStreamException {
+                    
+                 // Saxon 9.3 supports serialization as a StreamWriter
+                    Serializer ser = Util.getSerializer(SerializeOpts.getDefaultopts());
+                    ser.setOutputWriter(w);
+                    try {
+                        return ser.getXMLStreamWriter();
+                    } catch (SaxonApiException e) {
+                        throw mLogger.throwing( new XMLStreamException(e )  );
+                    }
+
+                }
+            };
+            return fact;
+        }
+
+        public RenamingXmlFactory(ObjectCodec oc) {
+            super(oc,null, _createOuputFactory() );
+        }
+        
     }
 
     private static volatile ObjectMapper _theObjectMapper = null;

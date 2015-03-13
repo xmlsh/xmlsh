@@ -379,7 +379,7 @@ public abstract class JXConverter
 	public void convertToJson(XMLStreamReader reader, OutputStream os) throws ConverterException {
 
 
-		IJSONConverter converter = newJConverter(reader,os);
+		IJSONConverter converter = newJConverter( new XMLRewritingStreamReader(reader),os);
 		try {
 			converter.parse( );
 

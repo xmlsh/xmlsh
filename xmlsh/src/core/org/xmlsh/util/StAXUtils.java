@@ -8,16 +8,19 @@ package org.xmlsh.util;
 
 import javanet.staxutils.XMLEventStreamWriter;
 
+import javax.xml.namespace.QName;
 import javax.xml.stream.XMLEventWriter;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import net.sf.saxon.om.AxisInfo;
 import net.sf.saxon.om.Item;
 import net.sf.saxon.om.NamePool;
 import net.sf.saxon.om.NamespaceBinding;
 import net.sf.saxon.om.NodeInfo;
-import net.sf.saxon.s9api.QName;
 import net.sf.saxon.tree.iter.AxisIterator;
 import net.sf.saxon.type.Type;
 
@@ -149,6 +152,7 @@ public class StAXUtils {
 
 
 	};
+    static Logger mLogger = LogManager.getLogger();
 
 	public static String getEventTypeName(int type) {
 		if( type >= 0 && type <= eventTypes.length )
@@ -166,12 +170,14 @@ public class StAXUtils {
 	}
 
 	public static boolean matchesQName(javax.xml.namespace.QName name, QName qname) {
-		return Util.isEqual(name.getNamespaceURI(), qname.getNamespaceURI() ) &&
-				Util.isEqual(name.getLocalPart(), qname.getLocalName() );
+	    mLogger.entry( name , qname );
+		boolean bMatch = Util.isEqual(name.getNamespaceURI(), qname.getNamespaceURI() ) &&
+				Util.isEqual(name.getLocalPart(), qname.getLocalPart() );
+		return mLogger.exit( bMatch );
 	}
 
 	public static javax.xml.namespace.QName getQName(QName name) {
-		return new javax.xml.namespace.QName(name.getNamespaceURI(), name.getLocalName(), name.getPrefix());
+		return new javax.xml.namespace.QName(name.getNamespaceURI(), name.getLocalPart(), name.getPrefix());
 
 	}
 

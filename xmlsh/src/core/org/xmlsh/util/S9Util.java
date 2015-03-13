@@ -17,11 +17,12 @@ package org.xmlsh.util;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.namespace.QName;
+
 import net.sf.saxon.om.Item;
 import net.sf.saxon.om.NodeInfo;
 import net.sf.saxon.s9api.DocumentBuilder;
 import net.sf.saxon.s9api.Processor;
-import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XQueryCompiler;
 import net.sf.saxon.s9api.XQueryEvaluator;
@@ -95,8 +96,8 @@ public class S9Util extends XdmNode {
 			XQueryEvaluator eval = expr.load();
 
 
-			eval.setExternalVariable( new QName("name" ) , new XdmAtomicValue(name) );
-			eval.setExternalVariable( new QName("value"),  new XdmAtomicValue(value) );
+			eval.setExternalVariable( new net.sf.saxon.s9api.QName("name" ) , new XdmAtomicValue( new net.sf.saxon.s9api.QName(name)) );
+			eval.setExternalVariable( new net.sf.saxon.s9api.QName("value"),  new XdmAtomicValue(value) );
 
 
 			XdmValue result =  eval.evaluate();
@@ -158,8 +159,8 @@ public class S9Util extends XdmNode {
 
 
 
-			eval.setExternalVariable( new QName("name" ) , new XdmAtomicValue(name) );
-			eval.setExternalVariable( new QName("value") , value  );
+			eval.setExternalVariable( new net.sf.saxon.s9api.QName("name" ) , new XdmAtomicValue(new net.sf.saxon.s9api.QName(name)) );
+			eval.setExternalVariable( new net.sf.saxon.s9api.QName("value") , value  );
 
 
 			XdmValue result =  eval.evaluate();

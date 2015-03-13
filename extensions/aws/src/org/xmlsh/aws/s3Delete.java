@@ -35,12 +35,12 @@ public class s3Delete extends AWSS3Command {
 	public int run(List<XValue> args) throws Exception {
 
 
-		Options opts = getOptions("b=bucket:,r=recurse");
+		Options opts = getOptions("r=recurse");
 		opts.parse(args);
 
 		args = opts.getRemainingArgs();
 
-		String bucket = opts.getOptString("b", null);
+		String bucket = getBucket();
 		boolean bRecurse = opts.hasOpt("r");
 
 		setSerializeOpts(this.getSerializeOpts(opts));

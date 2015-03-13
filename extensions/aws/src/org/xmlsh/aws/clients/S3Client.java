@@ -105,10 +105,9 @@ public final class S3Client extends AWSClient<AmazonS3Client> {
 	}
 
 	
-
 	public S3Path getS3Path( String bucket , String key )
 	{
-		if( Util.isBlank(bucket) )
+		if( Util.isBlank(bucket) || key.startsWith("s3://") )
 			return new S3Path( key );
 		else
 			return new S3Path( bucket , key );

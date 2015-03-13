@@ -8,11 +8,11 @@ package org.xmlsh.stax.functions;
 
 import java.util.List;
 
+import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.XMLEvent;
 
-import net.sf.saxon.s9api.QName;
 import net.sf.saxon.trans.XPathException;
 
 import org.xmlsh.core.AbstractBuiltinFunction;

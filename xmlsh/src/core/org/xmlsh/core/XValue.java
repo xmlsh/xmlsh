@@ -15,6 +15,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
 
 import net.sf.saxon.om.Item;
@@ -23,7 +24,6 @@ import net.sf.saxon.om.Sequence;
 import net.sf.saxon.om.SequenceTool;
 import net.sf.saxon.s9api.ItemType;
 import net.sf.saxon.s9api.Processor;
-import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XPathCompiler;
 import net.sf.saxon.s9api.XPathExecutable;
@@ -440,8 +440,8 @@ public class XValue implements Iterable<XValue>
     String qn = null;
     if(mValue instanceof XdmAtomicValue) {
       Object v = ((XdmAtomicValue) mValue).getValue();
-      if(v instanceof QName)
-        return (QName) v;
+      if(v instanceof net.sf.saxon.s9api.QName)
+        return (( net.sf.saxon.s9api.QName)v).getStructuredQName().toJaxpQName();
       qn = v.toString();
     }
     if(qn == null && !isAtomic())
@@ -454,7 +454,7 @@ public class XValue implements Iterable<XValue>
     StringPair pair = new StringPair(qn, ':');
 
     String uri = shell.getEnv().getNamespaces().get(pair.getLeft());
-    return new QName(pair.getLeft(), uri, pair.getRight());
+    return new QName( uri, pair.getRight() , pair.getLeft());
 
   }
 

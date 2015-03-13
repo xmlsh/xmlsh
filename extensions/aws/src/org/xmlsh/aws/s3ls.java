@@ -218,8 +218,6 @@ public class s3ls extends AWSS3Command {
 
 
 
-
-
 		OutputPort stdout = this.getStdout();
 		XMLStreamWriter writer = stdout.asXMLStreamWriter(getSerializeOpts());
 

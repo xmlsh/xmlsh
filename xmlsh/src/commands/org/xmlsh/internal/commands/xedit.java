@@ -9,6 +9,7 @@ package org.xmlsh.internal.commands;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
 
 import net.sf.saxon.om.CodedName;
@@ -21,7 +22,6 @@ import net.sf.saxon.om.TreeModel;
 import net.sf.saxon.s9api.Axis;
 import net.sf.saxon.s9api.DocumentBuilder;
 import net.sf.saxon.s9api.Processor;
-import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.SaxonApiUncheckedException;
 import net.sf.saxon.s9api.XPathCompiler;
@@ -160,7 +160,7 @@ public class xedit extends XCommand
       // Read pairs from args to set
       for (int i = 0; i < xvargs.size() / 2; i++) {
         String name = xvargs.get(i * 2).toString();
-        mCompiler.declareVariable(new QName(name));
+        mCompiler.declareVariable(new net.sf.saxon.s9api.QName(name));
       }
     }
 
@@ -262,7 +262,7 @@ public class xedit extends XCommand
         String name = xvargs.get(i * 2).toString();
         XValue value = xvargs.get(i * 2 + 1);
         if(eval_matchx != null)
-          eval_matchx.setVariable(new QName(name), value.toXdmValue());
+          eval_matchx.setVariable(new net.sf.saxon.s9api.QName(name), value.toXdmValue());
       }
     }
 
@@ -520,10 +520,10 @@ public class xedit extends XCommand
   private void rename(MutableNodeInfo node, XValue xv)
   {
 
-    QName qn = xv.asQName(getShell());
+     QName qn = xv.asQName(getShell());
 
     NamePool pool = node.getNamePool();
-    int newNameCode = pool.allocate(qn.getPrefix(), qn.getNamespaceURI(), qn.getLocalName());
+    int newNameCode = pool.allocate(qn.getPrefix(), qn.getNamespaceURI(), qn.getLocalPart());
 
     CodedName name = new CodedName(newNameCode, pool);
     node.rename(name);

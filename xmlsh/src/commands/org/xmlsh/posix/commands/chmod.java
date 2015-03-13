@@ -152,9 +152,14 @@ public class chmod extends XCommand {
                         break;
                     pos++;
                 }
-                if (!u && !g && !o)
+                
+                if (!u && !g && !o){
+                    if( done && pos == 0 ){
+                        u = true; g = true; o = true; 
+                    }
+                    else
                     throw new IllegalArgumentException("Invalid mode");
-     
+                }
                 // get operator and permissions
                 char op = expr.charAt(pos++);
                 String mask = (expr.length() == pos) ? "" : expr.substring(pos);

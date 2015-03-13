@@ -61,7 +61,7 @@ public class JacksonConverter extends JXConverter
             super();
             try {
                 mParser =  getXmlMapper().getFactory().createParser(reader);
-                mGenerator = JSONUtils.createGenerator(os,getSerializeOpts() );
+                mGenerator = JSONUtils.createGenerator( os,getSerializeOpts() );
             } catch (IOException e) {
 
                 throw new ConverterException(e);
@@ -106,7 +106,7 @@ public class JacksonConverter extends JXConverter
                 throws ConverterException
         {
             mInput = is;
-            mWriter = new SafeXMLStreamWriter(sw);
+            mWriter = new SafeXMLStreamWriter(new XMLRewritingStreamWriter(sw));
 
             try {
                 mParser = JSONUtils.getJsonFactory().createParser(is);

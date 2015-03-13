@@ -2,6 +2,8 @@ package org.xmlsh.json;
 
 import java.io.IOException;
 
+import javax.xml.namespace.QName;
+
 import org.xmlsh.util.INamingStrategy;
 
 import com.fasterxml.jackson.core.JsonParseException;
@@ -23,7 +25,8 @@ public class JsonRenamingParserDelegate extends
             JsonParseException {
         String name = super.getCurrentName();
         if (name != null) {
-            name = mTo ? mNamingStrategy.toXmlName(name) : mNamingStrategy.fromXmlName(name);
+            //name = mTo ? mNamingStrategy.toXmlName(name).getLocalPart() : mNamingStrategy.fromXmlName(new QName(name));
+            name = mTo ? name :  mNamingStrategy.fromXmlName(new QName(name));
         }
         return name;
     }
