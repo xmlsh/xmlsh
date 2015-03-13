@@ -1218,7 +1218,8 @@ public class Util
 	     if( !name.contains("::"))
 	         return new QName( encodeForNCName(name ) );
 	     String ns[] = name.split("::");
-	     return new QName( null , encodeForNCName(ns[0]) , encodeForNCName(ns[1]) );
+	     // TODO: Lookup actual namespace
+	     return new QName( encodeForNCName(ns[0]) , encodeForNCName(ns[1]) , encodeForNCName(ns[0]) );
 	     
 	 }
 	 // Simplified compatible versions of xdmp:encode-for-NCName and xdmp:decode-from-NCName

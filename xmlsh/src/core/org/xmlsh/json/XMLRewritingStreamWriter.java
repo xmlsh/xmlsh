@@ -51,7 +51,7 @@ public class XMLRewritingStreamWriter extends StreamWriterDelegate {
     public void writeStartElement(String prefix, String local, String ns )
             throws XMLStreamException {
         QName qn = mNamingStrategy.toXmlName(local);
-        super.writeStartElement(qn.getPrefix(), qn.getLocalPart(), qn.getPrefix());
+        super.writeStartElement(qn.getPrefix(), qn.getLocalPart(), qn.getNamespaceURI());
 
     }
     
