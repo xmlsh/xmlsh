@@ -1,5 +1,6 @@
 package org.xmlsh.util;
 
+import java.io.File;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.util.EnumSet;
@@ -77,6 +78,11 @@ public class PathMatchOptions {
 		mNameMatcher = new NameMatcher( literal , bCase );
 		return this ;
 	}
+	public PathMatchOptions withNameMatching(String wild) {
+		return withNameMatching( wild ,  FileUtils.isFilesystemCaseSensitive() );
+	}
+
+	
 	public PathMatchOptions withWildMatching( Pattern pattern ) {
 		mNameMatcher = new NameMatcher(pattern) ;
 		return this;
@@ -94,7 +100,7 @@ public class PathMatchOptions {
 	public PathMatchOptions withWildMatching(String wild) {
 		return withWildMatching( wild ,  FileUtils.isFilesystemCaseSensitive() );
 	}
-
+ 
 	
 	public PathMatchOptions withFlagsMatching( MatchFlag... flags)
 	{
@@ -135,6 +141,23 @@ public class PathMatchOptions {
 		return true ;
 	}
 
+	public boolean isNameMatcher() {
+		return mNameMatcher != null ;
+	}
 	
+	public boolean isLiteralNameMatch() {
+		return isNameMatcher() && mNameMatcher.mMatchLiteral != null ;
+	}
+
+	public boolean isPatternNameMatch() {
+		return isNameMatcher() && mNameMatcher.mMatchPattern!= null ;
+	}
+
+	public String getNameString() {
+		assert( mNameMatcher != null );
+		return ( mNameMatcher.mMatchLiteral != null) ? 
+				mNameMatcher.mMatchLiteral  : mNameMatcher.mMatchPattern.toString();
+	}
+
 
 }
