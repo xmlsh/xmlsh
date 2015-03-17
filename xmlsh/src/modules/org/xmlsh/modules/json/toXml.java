@@ -21,12 +21,12 @@ import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.SafeXMLStreamWriter;
 import org.xmlsh.core.XValue;
 import org.xmlsh.json.JSONUtils;
-import org.xmlsh.json.JsonRenamingParserDelegate;
+import org.xmlsh.json.XMLRewritingStreamWriter;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.types.TypeFamily;
 
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.TreeNode;
-import com.fasterxml.jackson.core.util.JsonParserDelegate;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.node.TreeTraversingParser;
@@ -57,7 +57,7 @@ public class toXml extends AbstractBuiltinFunction {
         BuildingStreamWriter bw = proc.newDocumentBuilder()
                 .newBuildingStreamWriter();
 
-        XMLStreamWriter xd = new SafeXMLStreamWriter(bw);
+        XMLStreamWriter xd = new XMLRewritingStreamWriter( new SafeXMLStreamWriter(bw));
         XmlMapper xmlMapper = getXmlMapper();
         ObjectMapper mapper = JSONUtils.getJsonObjectMapper();
         
@@ -68,8 +68,8 @@ public class toXml extends AbstractBuiltinFunction {
                 
 
             try (
-            JsonParserDelegate parser = new JsonRenamingParserDelegate(
-                    new TreeTraversingParser(arg.toJson(), mapper ), true) ){
+                    JsonParser parser = 
+                    new TreeTraversingParser(arg.toJson(), mapper  )){
               TreeNode tree = parser.readValueAsTree();
             
               mGenerator.writeTree(tree);

@@ -20,12 +20,11 @@ import org.xmlsh.core.XValue;
 import org.xmlsh.core.XVariable;
 import org.xmlsh.core.io.VariableInputPort;
 import org.xmlsh.json.JSONUtils;
-import org.xmlsh.json.JsonRenamingParserDelegate;
+import org.xmlsh.json.XMLRewritingStreamReader;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.Util;
 
 import com.fasterxml.jackson.core.TreeNode;
-import com.fasterxml.jackson.core.util.JsonParserDelegate;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.fasterxml.jackson.dataformat.xml.deser.FromXmlParser;
@@ -47,9 +46,8 @@ public class fromXml	extends AbstractBuiltinFunction {
 
 	    XMLStreamReader reader = null;
         try ( VariableInputPort iPort = new VariableInputPort(XVariable.anonymousInstance( args.get(0))) ){
-            reader = iPort.asXMLStreamReader(shell.getSerializeOpts());
-            FromXmlParser mParser =  getXmlMapper().getFactory().createParser(reader);
-            JsonParserDelegate parser = new JsonRenamingParserDelegate(mParser, false );
+             reader =  new XMLRewritingStreamReader(iPort.asXMLStreamReader(shell.getSerializeOpts()) );
+            FromXmlParser parser =  getXmlMapper().getFactory().createParser(reader);
             TreeNode tree = parser.readValueAsTree();
 		    return XValue.newXValue(null,tree);
 		} finally {

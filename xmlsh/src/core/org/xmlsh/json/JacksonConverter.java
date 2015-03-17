@@ -21,13 +21,10 @@ import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.util.Util;
 
-import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.TreeNode;
-import com.fasterxml.jackson.core.util.JsonParserDelegate;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.fasterxml.jackson.dataformat.xml.deser.FromXmlParser;
@@ -63,7 +60,6 @@ public class JacksonConverter extends JXConverter
                 mParser =  getXmlMapper().getFactory().createParser(reader);
                 mGenerator = JSONUtils.createGenerator( os,getSerializeOpts() );
             } catch (IOException e) {
-
                 throw new ConverterException(e);
             }
         }
@@ -71,10 +67,8 @@ public class JacksonConverter extends JXConverter
         @Override
         public boolean parse() throws ConverterException
         {
-            try  (
-                JsonParserDelegate parser = new JsonRenamingParserDelegate(mParser, false ) ){
-
-                TreeNode tree = parser.readValueAsTree();
+            try  {
+                TreeNode tree = mParser.readValueAsTree();
                 mGenerator.writeTree(tree);
                 return true;
             } catch (IOException e) {
@@ -123,11 +117,9 @@ public class JacksonConverter extends JXConverter
         @Override
         public boolean parse() throws ConverterException
         {
-            try (
-                JsonParserDelegate parser = new JsonRenamingParserDelegate(mParser, true /*toxml*/ ) ){
+            try {
 
-                TreeNode tree = parser.readValueAsTree();
-
+                TreeNode tree = mParser.readValueAsTree();
                 mGenerator.writeTree(tree);
 
                 /*
