@@ -205,6 +205,12 @@ public class XValue implements Iterable<XValue>
 
   }
 
+  private XValue( XValue xv ){
+     mTypeFamily = xv.mTypeFamily;
+     mValue = xv.mValue ;
+     _init();
+      
+  }
   public XValue(TypeFamily family)
   {
     mTypeFamily = family;
@@ -225,6 +231,10 @@ public class XValue implements Iterable<XValue>
 
   }
 
+  public XValue newInstance( ) throws InvalidArgumentException{
+      
+      return getTypeMethods().getXValue(mValue);
+  }
 
   public static XValue newXValue(BigDecimal n)
   {

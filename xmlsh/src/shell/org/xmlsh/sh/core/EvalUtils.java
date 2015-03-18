@@ -130,6 +130,11 @@ public class EvalUtils
       return XValue.nullValue();
     if(Util.isBlank(ind))
       return xvalue;
+    if( xvalue.isAtomic() ) {
+        if( ind.equals("0") )
+            return xvalue.newInstance();
+        return XValue.nullValue(xvalue.typeFamily()) ;
+    }
     return xvalue.getTypeMethods().getXValue(xvalue.asObject(), ind);
   }
 
@@ -141,9 +146,14 @@ public class EvalUtils
     if(xvalue == null)
       return XValue.nullValue();
     if(index < 0)
-      return XValue.nullValue();
+      return XValue.nullValue(xvalue.typeFamily()) ;
     //  throw new InvalidArgumentException("Invalid index for indexed expression: " + index);
 
+    if( xvalue.isAtomic() ) {
+        if( index == 0  )
+            return xvalue.newInstance();
+        return XValue.nullValue(xvalue.typeFamily()) ;
+    }
     return xvalue.getTypeMethods().getXValue(xvalue.asObject(), index);
   }
 

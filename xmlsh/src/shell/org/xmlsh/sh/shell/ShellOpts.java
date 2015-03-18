@@ -20,7 +20,7 @@ import org.xmlsh.util.Util;
 public class ShellOpts
 {
   private static final String XLOCFORMAT = "XLOCFORMAT";
-  public static final String SHELL_OPTS = "+x,+v,+xpipe,+e,+location,location-format:,+trace,trace-file:,o:,+a,trace-level:";
+  public static final String SHELL_OPTS = "+x,+v,+xpipe,+e,+location,location-format:,+trace,trace-file:,o:,+a,trace-level:+local,+export,-nolocal";
   public boolean mVerbose = false;		// -v
   public boolean mExec = false;		// -x
   public boolean mXPipe = false;		// -xpipe
