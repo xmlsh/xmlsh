@@ -34,49 +34,57 @@ public class xshopt extends BuiltinCommand {
     public int run(   List<XValue> args ) throws Exception {
 
 
- 
-        
+
+
         Options opts = new Options( "" , SerializeOpts.getOptionDefs()  );
         opts.parse(args);
         setSerializeOpts(opts);
         args=opts.getRemainingArgs();
-         
+
         printOpts( opts  );
 
         return 0;
 
     }
     private void printOpts(Options opts) throws XMLStreamException, IOException, CoreException, SaxonApiException
-            {
+    {
         OutputPort stdout = getStdout();
         XMLStreamWriter writer = stdout.asXMLStreamWriter(getSerializeOpts());
 
         try {
             writer.writeStartDocument();
             writer.writeStartElement( sDocRoot );
-    
-        
-            XValueProperties props = mShell.getOpts().getOptionsAsProperties() ;
-            for( XValueProperty prop : props.asPropertyList()  ){
 
-                writer.writeStartElement( "option");
-                writer.writeAttribute( "name", prop.getKey());
-                XValue value = prop.getValue();
-                if( ! value.isNull() ){
+
+            XValueProperties props = mShell.getOpts().getOptionsAsProperties() ;
+            writeOptions(writer, props);
+
+            writer.writeEndElement();
+            writer.writeEndDocument();
+
+        } finally {
+            writer.close();
+            stdout.writeSequenceTerminator(getSerializeOpts());
+        }
+    }
+    private void writeOptions(XMLStreamWriter writer, XValueProperties props)
+            throws XMLStreamException, InvalidArgumentException,
+            UnexpectedException {
+        for( XValueProperty prop : props.asPropertyList()  ){
+            writer.writeStartElement( "option");
+            writer.writeAttribute( "name", prop.getKey());
+            XValue value = prop.getValue();
+            if( ! value.isNull() ){
+                if( value.isInstanceOf(XValueProperties.class) )
+                    writeOptions( writer , value.asInstanceOf(XValueProperties.class));
+                else
+
                     if( value.isInstanceOf( Boolean.class) )
                         writer.writeCharacters( value.toBoolean() ?"on" : "off");
                     else
                         writer.writeCharacters( value.toString());
-                }
-                writer.writeEndElement();
             }
-
             writer.writeEndElement();
-            writer.writeEndDocument();
-            
-        } finally {
-            writer.close();
-            stdout.writeSequenceTerminator(getSerializeOpts());
         }
     }
 
