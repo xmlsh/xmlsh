@@ -11,6 +11,7 @@ import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.SerializeOpts;
+import org.xmlsh.types.xtypes.XValueSequence;
 import org.xmlsh.util.JavaUtils;
 import org.xmlsh.util.Util;
 
@@ -18,9 +19,6 @@ public class JavaTypeFamily extends AbstractTypeFamily implements ITypeFamily
 {
   private static final JavaTypeFamily _instance = new JavaTypeFamily();
   private static final Object _nullValue = null ;
-private List<XValue> values;
-
-
   @Override
   public boolean isClassOfFamily(Class<?> cls)
   {
@@ -111,8 +109,7 @@ private List<XValue> values;
     }
 
     // Get all values of a collection or just this value
-    @SuppressWarnings("unchecked")
-	@Override
+    @Override
     public List<XValue> getXValues(Object obj) throws InvalidArgumentException
     {
       if(obj == null)
@@ -231,10 +228,9 @@ private List<XValue> values;
 			return XValue.newXValue( TypeFamily.JAVA , ret );
 			
 		}
-		
-		return XValue.newXValue( TypeFamily.JAVA , Arrays.asList( value  , v.asObject()) );
-		
-		
+		// Atomics - turn into Sequences 
+	      return XValue.newXValue(new XValueSequence( getXValue(value) , v ));
+
 	}
 
 	@Override

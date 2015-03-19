@@ -9,44 +9,48 @@ Modern Library
 [42] foobar should be foobar
 [45] Should be sequence foobar , <foo/>
 [47]
-foobar<foo/>
+foobar
+<foo/>
 [48] Should be same
-foobar<foo/>
+foobar
+<foo/>
 [50] should be sequence or array
-array
-array
-[58] test append to an unset var
+object
+[52] should be string / element()
 string
-[62] empty
+element()
+[59] test append to an unset var
+string
+[63] empty
 full
-[63] 1
+[64] 1
 Should be xdm <foo/>
 <foo/>
-[71] should be 3 lines
+[72] should be 3 lines
 <foo/>
 foo
 bar
-[73] 3 should be 3
+[74] 3 should be 3
 object
-[75] 3
+[76] 3
 <foo>brace group</foo>
 <bar/>
 <foo>sub shell</foo>
 <bar/>
-[89] testing port (output)
+[90] testing port (output)
 output
-[91] output2
+[92] output2
 output3 should be output3 on stdout once
 output4
 output5
-[101] testing output then break should be output6 once
+[102] testing output then break should be output6 once
 output6
-[106] should be output7 then output 8
+[107] should be output7 then output 8
 output7
 output8
-[110] testing redirect through compound statements
-[112] input1
+[111] testing redirect through compound statements
+[113] input1
 input2
 input3
 input4
-[116] done
+[117] done

@@ -49,6 +49,7 @@ echo loc() Should be same
 xecho {$_var}
 echo loc() should be sequence or array
 xtype -s -v _var
+echo loc() 'should be string / element()'
 xtype -s ${_var}
 # Note: this results in a string 
 
