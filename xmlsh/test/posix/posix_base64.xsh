@@ -1,6 +1,6 @@
 # Test base command
 import commands posix=posix
-
+# requires rm in path
 rm -rf $TMPDIR/_xmlsh
 mkdir $TMPDIR/_xmlsh
 

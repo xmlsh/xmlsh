@@ -8,6 +8,8 @@ package org.xmlsh.internal.functions;
 
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.xmlsh.core.AbstractBuiltinFunction;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
@@ -15,7 +17,7 @@ import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.types.TypeFamily;
 
 public class QName extends AbstractBuiltinFunction {
-
+   static Logger mLogger = LogManager.getLogger();
 	public QName()
 	{
 		super("qname");
@@ -23,18 +25,22 @@ public class QName extends AbstractBuiltinFunction {
 
 	@Override
 	public XValue run(Shell shell, List<XValue> args) throws InvalidArgumentException {
+	    mLogger.entry( shell , args );
 		switch( args.size())
 		{
 		case	1: // Clarke or local ?
-			return XValue.newXValue( TypeFamily.XDM , args.get(0).asQName(shell) );
+		  
+		    return mLogger.exit( XValue.newXValue( TypeFamily.XDM , 
+			        new net.sf.saxon.s9api.QName(args.get(0).asQName(shell)) ));
 		case	2:
-			return XValue.newXValue( TypeFamily.XDM , new net.sf.saxon.s9api.QName(args.get(0).toString() , args.get(1).toString()) );
+			return  mLogger.exit( XValue.newXValue( TypeFamily.XDM , new net.sf.saxon.s9api.QName(args.get(0).toString() , 
+			        args.get(1).toString()) ));
 		case	3 :
-			return XValue.newXValue(TypeFamily.XDM ,  new net.sf.saxon.s9api.QName(args.get(0).toString() , args.get(1).toString() , args.get(2).toString() ) );
+			return  mLogger.exit( XValue.newXValue(TypeFamily.XDM ,  new net.sf.saxon.s9api.QName(args.get(0).toString() , args.get(1).toString() , args.get(2).toString() )) );
 
 
 		default:
-			return null ;
+			return mLogger.exit(null ) ;
 
 		}
 

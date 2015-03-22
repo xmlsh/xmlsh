@@ -121,32 +121,6 @@ public class EvalUtils
 
   }
 
-  public static XValue getIndexedValue(EvalEnv env, XValue xvalue, String ind) throws CoreException
-  {
-    assert(xvalue != null);
-    assert(!Util.isBlank(ind));
-
-    if(xvalue == null)
-      return XValue.nullValue();
-    if(Util.isBlank(ind))
-      return xvalue;
-    return xvalue.getTypeMethods().getXValue(xvalue.asObject(), ind);
-  }
-
-  public static XValue getIndexedValue(EvalEnv env, XValue xvalue, int index) throws CoreException
-  {
-    assert (xvalue != null);
-   // assert (index >= 0);
-
-    if(xvalue == null)
-      return XValue.nullValue();
-    if(index < 0)
-      return XValue.nullValue();
-    //  throw new InvalidArgumentException("Invalid index for indexed expression: " + index);
-
-    return xvalue.getTypeMethods().getXValue(xvalue.asObject(), index);
-  }
-
   /*
    * Recursively Expand a possibly multi-level wildcard rooted at a directory
    */
@@ -163,7 +137,6 @@ public class EvalUtils
     	
     
 
-    
     /*
      * Hack to handle 8.3 windows file names like "Local~1"
      * If not matched and this is windows
@@ -187,33 +160,24 @@ public class EvalUtils
     	return mLogger.exit(results)
 		 ;
     }
-    
-
-    
     // If the glob matches a file exactly then choose it - depending on the options 
-    /*
-    try {
-    	Path wpath =  path.resolve(swild);
-    	if( Files.exists(wpath, LinkOption.NOFOLLOW_LINKS)){
-    		UnifiedFileAttributes attrs	 = FileUtils.getUnifiedFileAttributes(wpath, LinkOption.NOFOLLOW_LINKS);
-			if( matchOptions.doVisit(wpath,attrs  ) )
-				results.add( swild );
-			return mLogger.exit(results)
-			;
-    	}
 
-    }
-    catch( InvalidPathException | SecurityException e ){
-    	mLogger.trace("Invalid path in glob exansion: " + swild ,   e );
-    }
-  */
-    
+    assert( matchOptions.isNameMatcher());
+    if( matchOptions.isLiteralNameMatch()){
+        	Path f =  path.resolve(matchOptions.getNameString());
+    		UnifiedFileAttributes attrs = FileUtils.getUnifiedFileAttributes(f, LinkOption.NOFOLLOW_LINKS);
+	    	if( matchOptions.doVisit(f,attrs) ){
+	    		String name = f.getFileName().toString();
+	    	    results.add(name);
+	    	}
+    	} 
+   else
+    if( matchOptions.isPatternNameMatch() ){
     
     
 //    final PathMatcher wp = Util.compileWild( path.getFileSystem() , wild, 
  //   		CharAttrs.constInstance(CharAttr.ATTR_ESCAPED) , caseSensitive);
    
-    
     
 		mLogger.trace("opening a directory stream on: {}",path);
 		try ( DirectoryStream<Path> dirStream = Files.newDirectoryStream(path  ) ){
@@ -223,10 +187,11 @@ public class EvalUtils
 		    	
 		    	if( matchOptions.doVisit(f,attrs) ){
 		    		String name = f.getFileName().toString();
-		    	    results.add(f.getFileName().toString());
+		    	    results.add(name );
 		    	}
 		    }
 		}
+    }
 	    if(results.size() == 0)
 	      return mLogger.exit(null);
 	    Collections.sort(results);
@@ -234,53 +199,60 @@ public class EvalUtils
 
   }
 
-  public static void expandDir(File dir, String parent, CharAttributeBuffer wilds[], List<String> results) throws IOException
-  {
-	  mLogger.entry(dir, parent, wilds, results);
-	
-	
-    CharAttributeBuffer wild = wilds[0];
-    if(wilds.length < 2)
-      wilds = null;
-    else 
-      wilds = Arrays.copyOfRange(wilds, 1, wilds.length);
-    
-    assert( ! wild.isEmpty() );
-    if( Util.containsWild( wild )){
-	    Pattern pattern = Util.compileWild(wild, FileUtils.isFilesystemCaseSensitive() );
-	    
-	    PathMatchOptions withWildMatching = (new PathMatchOptions()).withWildMatching( pattern );
-	    			
-	    
-	    // If wild literaly starts with a . then dont hide hidden files
-		if( wild.charAt(0) != ShellConstants.kDOT_CHAR )
-			withWildMatching = withWildMatching.withFlagsHidden(HIDDEN_SYS,HIDDEN_NAME);
-	    
-		List<String> rs = EvalUtils.expandDir(dir, withWildMatching); 
-	    
-	    if(rs == null)
-	      return;
+	public static void expandDir(File dir, String parent,
+			CharAttributeBuffer wilds[], List<String> results)
+			throws IOException {
+		mLogger.entry(dir, parent, wilds, results);
 
-	    for (String r : rs) {
-	      String path = parent == null ? r : parent + (parent.endsWith("/") ? "" : "/") + r;
-	      if(wilds == null)
-	        results.add(path);
-	      else 
-	    	  expandDir(new File(dir, r), path, wilds, results);
-	
-	    }
-    } else {
-    	String fname = wild.decodeString();
-	      String path = parent == null ? fname  : parent + (parent.endsWith("/") ? "" : "/") + fname;
+		CharAttributeBuffer wild = wilds[0];
+		if (wilds.length < 2)
+			wilds = null;
+		else
+			wilds = Arrays.copyOfRange(wilds, 1, wilds.length);
 
-    	if( wilds == null )
-           results.add( path );
-    	else
-    		expandDir( new File( dir , fname  ) , path , wilds , results);
-    	
-    }
-    mLogger.exit();
-  }
+		assert (!wild.isEmpty());
+		PathMatchOptions matchOpts = null;
+		if (Util.containsWild(wild)) {
+			Pattern pattern = Util.compileWild(wild,
+					FileUtils.isFilesystemCaseSensitive());
+			matchOpts = (new PathMatchOptions()).withWildMatching(pattern);
+		} else {
+			String fname = wild.decodeString();
+			// Last path segment with no wilds - only match if passes match test
+			if (wilds == null) {
+				matchOpts = (new PathMatchOptions()).withNameMatching(fname);
+
+			} else {
+				String path = parent == null ? fname : parent
+						+ (parent.endsWith("/") ? "" : "/") + fname;
+				expandDir(new File(dir, fname), path, wilds, results);
+				mLogger.exit();
+				return;
+			}
+		}
+
+		assert( matchOpts != null );
+		// If wild literaly starts with a . then dont hide hidden files
+		if (wild.charAt(0) != ShellConstants.kDOT_CHAR)
+			matchOpts = matchOpts.withFlagsHidden(HIDDEN_SYS, HIDDEN_NAME);
+
+		List<String> rs = EvalUtils.expandDir(dir, matchOpts);
+
+		if (rs == null)
+			return;
+
+		for (String r : rs) {
+			String path = parent == null ? r : parent
+					+ (parent.endsWith("/") ? "" : "/") + r;
+			if (wilds == null)
+				results.add(path);
+			else
+				expandDir(new File(dir, r), path, wilds, results);
+
+		}
+
+		mLogger.exit();
+	}
 
   public static ParseResult expandStringToResult(Shell shell, String value, EvalEnv env, ParseResult result) throws IOException, CoreException
       {

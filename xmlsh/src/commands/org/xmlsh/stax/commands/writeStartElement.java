@@ -8,10 +8,10 @@ package org.xmlsh.stax.commands;
 
 import java.util.List;
 
+import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import net.sf.saxon.s9api.QName;
 import net.sf.saxon.trans.XPathException;
 
 import org.xmlsh.core.CoreException;
@@ -35,7 +35,7 @@ public class writeStartElement extends XCommand {
 		XValue arg0 = args.get(0);
 		Object arg = arg0.asObject();
 		if( arg instanceof XMLStreamWriter )
-			((XMLStreamWriter)arg).writeStartElement(name.getPrefix() , name.getLocalName(), name.getNamespaceURI() );
+			((XMLStreamWriter)arg).writeStartElement(name.getPrefix() , name.getLocalPart(), name.getNamespaceURI() );
 
 		return 0;
 

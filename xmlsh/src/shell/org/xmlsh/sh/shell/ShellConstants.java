@@ -90,6 +90,8 @@ public class ShellConstants
 
     public static final char kDOT_CHAR = '.';
 
+    public static final String XSH_EXTENSION = ".xsh";
+
 }
 
 

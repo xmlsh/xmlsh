@@ -1,9 +1,0 @@
-<dir pwd="C:/Work/DEI/xmlsh">
-   <file name="README.md" path="C:/Work/DEI/xmlsh/README.md"/>
-   <dir name="build" path="C:/Work/DEI/xmlsh/build"/>
-   <dir name="extensions" path="C:/Work/DEI/xmlsh/extensions"/>
-   <file name="git-daemon-export-ok"
-         path="C:/Work/DEI/xmlsh/git-daemon-export-ok"/>
-   <file name="out.xml" path="C:/Work/DEI/xmlsh/out.xml"/>
-   <dir name="xmlsh" path="C:/Work/DEI/xmlsh/xmlsh"/>
-</dir>

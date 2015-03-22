@@ -85,7 +85,7 @@
 		    outputdirectory="src/generated/org/xmlsh/sh/grammar"
 		    javacchome="build-lib"
 		    static="false"
-			jdkversion="1.7"
+			jdkversion="1.8"
 			
 		/>
 	</target>
@@ -102,7 +102,7 @@ version.build_date=${bdate.datetime}
 version.release=${release}
 version.version=${version}
 </echo>
-		<javac  includeantruntime="false" destdir="_out" debug="on" source="1.7" target="1.7">
+		<javac  includeantruntime="false" destdir="_out" debug="on" source="${javac.source}" target="${javac.target}">
 			<src path="src/core" />
 			<src path="src/shell"/>
 			<src path="src/commands"/>

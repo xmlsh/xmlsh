@@ -29,9 +29,20 @@ import com.amazonaws.services.s3.transfer.TransferManager;
 
 public abstract class AWSS3Command extends AWSCommand<AmazonS3Client> {
 
+ 
+    private String mBucket = null;
+    
+	protected String getBucket() {
+        return mBucket;
+    }
+
+    public S3Path getS3Path(String key) {
+        
+        return  getS3Client().getS3Path( mBucket ,key );
+    }
 
 	public S3Path getS3Path(String bucket, String key) {
-		return getS3Client().getPath(bucket, key);
+		return getS3Client().getS3Path(bucket == null ? mBucket : bucket , key);
 	}
 
 	private S3Client getS3Client() {
@@ -64,7 +75,7 @@ public abstract class AWSS3Command extends AWSCommand<AmazonS3Client> {
 
 	@Override
 	protected String getCommonOpts() {
-		return super.getCommonOpts() + ",crypt,keypair:,threads:" ;
+		return super.getCommonOpts() + ",crypt,keypair:,threads:,bucket:" ;
 	}
 
 
@@ -72,6 +83,7 @@ public abstract class AWSS3Command extends AWSCommand<AmazonS3Client> {
 	protected void getS3Client(Options opts) throws UnsupportedEncodingException, IOException, CoreException {
 
 	   setAmazon(AWSClientFactory.newS3Client(  mShell , opts ));
+	   mBucket = opts.getOptString("bucket", mBucket );
 	
 	}
 

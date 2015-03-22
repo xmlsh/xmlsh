@@ -8,10 +8,10 @@ package org.xmlsh.stax.commands;
 
 import java.util.List;
 
+import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import net.sf.saxon.s9api.QName;
 import net.sf.saxon.trans.XPathException;
 
 import org.xmlsh.core.CoreException;
@@ -36,7 +36,7 @@ public class writeAttribute extends XCommand {
 		XValue arg0 = args.get(0);
 		Object arg = arg0.asObject();
 		if( arg instanceof XMLStreamWriter )
-			((XMLStreamWriter)arg).writeAttribute(name.getPrefix() ,name.getNamespaceURI() ,  name.getLocalName(),  value );
+			((XMLStreamWriter)arg).writeAttribute(name.getPrefix() ,name.getNamespaceURI() ,  name.getLocalPart(),  value );
 
 		return 0;
 

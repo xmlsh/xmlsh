@@ -2,6 +2,8 @@ package org.xmlsh.json;
 
 import java.util.Collection;
 
+import javax.xml.namespace.QName;
+
 import org.xmlsh.util.INamingStrategy;
 
 import com.fasterxml.jackson.databind.AnnotationIntrospector;
@@ -44,7 +46,7 @@ final class RenamingXmlModule extends JacksonXmlModule {
             
             @Override
             public JavaType typeFromId(DatabindContext context, String id) {
-                return super.typeFromId(context,  mNamingStrategy.fromXmlName(id));
+                return super.typeFromId(context,  mNamingStrategy.fromXmlName(new QName(id)));
                    
             }
         }
@@ -65,7 +67,7 @@ final class RenamingXmlModule extends JacksonXmlModule {
             
             @Override
             public JavaType typeFromId(DatabindContext context, String id) {
-                return super.typeFromId(context, mNamingStrategy.toXmlName(id));
+                return super.typeFromId(context, mNamingStrategy.toXmlName(id).getLocalPart());
             }
         }
 

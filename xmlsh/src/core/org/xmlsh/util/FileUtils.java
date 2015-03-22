@@ -38,6 +38,7 @@ import static org.xmlsh.util.Util.enumSetOf;
 import java.nio.file.attribute.UserDefinedFileAttributeView;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -204,7 +205,7 @@ public class FileUtils
         if (!dos.isReadOnly())
             perms.addAll(_allWrite);
         perms.addAll( _allRead );
-        return perms;
+        return Collections.unmodifiableSet(perms);
   }
    
 	public static String getSystemTextEncoding() {
@@ -454,7 +455,7 @@ public class FileUtils
 	
 	public static boolean isXScript( Path path , boolean bScripty ,  String encoding ){
 		String ext = getExt(path.toString());
-		if( Util.isEqual( ext , ".xsh" ) )
+		if( Util.isEqual( ext,  ShellConstants.XSH_EXTENSION ) )
 		    return true ;
 		if( Util.isBlank(ext) ){
 		    String line = getTextFileMagic( path , encoding );
@@ -587,28 +588,29 @@ public class FileUtils
                 if( dosView != null ){
                     mLogger.debug("using DosFileAttributeView");
                     DosFileAttributes origView = orig.getDos();
-                    boolean anyRead = Util.setContainsAny( change , _allWrite );
-                    if( anyRead == origView.isReadOnly() )
-                        dosView.setReadOnly(!anyRead);
+                    boolean anyWrite = Util.setContainsAny( change , _allWrite );
+                    boolean origRO = origView.isReadOnly();
+                    if( !anyWrite != origRO )
+                        dosView.setReadOnly(!anyWrite);
                     
                     
                 }
                 else {
                     mLogger.error("using File" );
+                    boolean anyWrite = Util.setContainsAny( change , _allWrite );
                     boolean anyRead = Util.setContainsAny( change , _allRead );
 
                     
                     File f = path.toFile();  
-                    if( anyRead == orig.isReadOnly()  ){
-                     if( ! anyRead )
+                    if( !anyWrite && ! orig.isReadOnly()  )
                       f.setReadOnly( );
-                     else
-                      f.setWritable( anyRead );
-                    }
-                     boolean anyWrite = Util.setContainsAny( change , _allWrite);
-
+                    
                     if( anyWrite != orig.canWrite() )
                       f.setWritable( anyWrite );
+                    
+                    if( anyRead != f.canRead())
+                        f.setReadable(anyRead);
+                    
                     boolean anyExec = Util.setContainsAny( change , _allExec);
 
                     if( anyExec != orig.canExecute() )

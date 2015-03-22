@@ -10,8 +10,9 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
 
+import javax.xml.namespace.QName;
+
 import net.sf.saxon.s9api.Processor;
-import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XQueryCompiler;
 import net.sf.saxon.s9api.XQueryEvaluator;
@@ -32,7 +33,7 @@ import org.xmlsh.types.TypeFamily;
 import org.xmlsh.util.Util;
 
 public class xtype extends BuiltinCommand {
-	private QName mVqname;
+	private net.sf.saxon.s9api.QName mVqname;
 	private XQueryEvaluator mEval;
 
 	@Override
@@ -61,7 +62,7 @@ public class xtype extends BuiltinCommand {
 
 
 		mEval = expr.load();	
-		mVqname = Util.resolveQName( "A", null );
+		mVqname = new net.sf.saxon.s9api.QName(Util.resolveQName( "A", null ));
 
 		OutputPort mOut = mShell.getEnv().getStdout();
     try ( PrintWriter w = mOut.asPrintWriter(getSerializeOpts()) )

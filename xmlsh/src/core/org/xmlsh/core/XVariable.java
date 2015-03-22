@@ -180,11 +180,6 @@ public abstract  class XVariable {
 	}
 
 
-	private int parsePositionalIndex(String ind)
-	{
-		return Util.parseInt(ind , 1 ) - 1 ;
-	}
-
 	/**
 	 * @return the flags
 	 */
@@ -268,7 +263,7 @@ public abstract  class XVariable {
 	 * Get a variable value with an optional index and tie expression
 	 */
 
-	public XValue getValue(Shell shell, EvalEnv env ,  String ind, String tie) throws CoreException {
+	public  XValue getValue(Shell shell, EvalEnv env ,  String ind, String tie) throws CoreException {
 
 		XValue xv = getValue() ;
 		if( ! Util.isBlank(ind)  ) {
@@ -276,7 +271,7 @@ public abstract  class XVariable {
 			if( Util.isOneOf( ind , "*" , "@" ) )
 				return EvalUtils.getValues( env ,xv );
 			else
-				return EvalUtils.getIndexedValue(env , xv ,  ind );
+				return XVariable.getIndexedValue(env , xv ,  ind );
 		}
 		assert( Util.isEmpty(tie));
 
@@ -456,6 +451,45 @@ public abstract  class XVariable {
 		setValue( value );
 		mFlags = getFlags(flags);
 	}
+
+
+    public static XValue getIndexedValue(EvalEnv env, XValue xvalue, String ind) throws CoreException
+      {
+        assert(xvalue != null);
+        assert(!Util.isBlank(ind));
+    
+        if(xvalue == null)
+          return XValue.nullValue();
+        if(Util.isBlank(ind))
+          return xvalue;
+        if( xvalue.isAtomic() ) {
+            if( ind.equals("1") )
+                return xvalue.newInstance();
+            return XValue.nullValue(xvalue.typeFamily()) ;
+        }
+        return xvalue.getTypeMethods().getXValue(xvalue.asObject(), ind);
+      }
+
+
+    public static XValue getIndexedValue(EvalEnv env, XValue xvalue, int index) throws CoreException
+      {
+        assert (xvalue != null);
+       // assert (index >= 0);
+    
+        if(xvalue == null)
+          return XValue.nullValue();
+        if(index < 0)
+          return XValue.nullValue(xvalue.typeFamily()) ;
+        //  throw new InvalidArgumentException("Invalid index for indexed expression: " + index);
+    /*
+        if( xvalue.isAtomic() ) {
+            if( index == 0  )
+                return xvalue.newInstance();
+            return XValue.nullValue(xvalue.typeFamily()) ;
+        }
+        */
+        return xvalue.getTypeMethods().getXValue(xvalue.asObject(), index);
+      }
 }
 
 

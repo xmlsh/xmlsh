@@ -13,6 +13,7 @@ import java.nio.file.attribute.PosixFileAttributes;
 import java.nio.file.attribute.PosixFilePermission;
 import java.nio.file.attribute.UserPrincipal;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Set;
 
@@ -103,7 +104,7 @@ public class UnifiedFileAttributes {
 			if( posix != null  ){
 				if( basic == null )
 					basic = posix ;
-				posixPermissions =posix.permissions();
+				posixPermissions = Collections.unmodifiableSet(posix.permissions());
 			}
 	
 			if( basic == null ){
@@ -237,7 +238,7 @@ public class UnifiedFileAttributes {
 	   
 	public Set<PosixFilePermission> getPermissions() {
 		if( ! bInit ) init() ;
-		return posixPermissions;
+		return Collections.unmodifiableSet(posixPermissions);
 	}
 
 	public boolean isHidden() {

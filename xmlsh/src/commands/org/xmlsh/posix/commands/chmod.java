@@ -152,9 +152,14 @@ public class chmod extends XCommand {
                         break;
                     pos++;
                 }
-                if (!u && !g && !o)
+                
+                if (!u && !g && !o){
+                    if( done && pos == 0 ){
+                        u = true; g = true; o = true; 
+                    }
+                    else
                     throw new IllegalArgumentException("Invalid mode");
-     
+                }
                 // get operator and permissions
                 char op = expr.charAt(pos++);
                 String mask = (expr.length() == pos) ? "" : expr.substring(pos);
@@ -254,6 +259,7 @@ public class chmod extends XCommand {
             return new Changer() {
                 @Override
                 public Set<PosixFilePermission> change( Set<PosixFilePermission> posix) {
+                    posix = EnumSet.copyOf(posix);
     
                     posix.addAll(toAdd);
                     posix.removeAll(toRemove);
@@ -334,24 +340,14 @@ public class chmod extends XCommand {
 	public int run(List<XValue> args) throws Exception {
 
 
-		Options opts = new Options( "R=recurse,+r,+x,+w" );
-		opts.parse(args);
+		Options opts = new Options( "R=recurse");
+		opts.parse(args,true); // ignore unknown args 
 		args = opts.getRemainingArgs();
 		bRecurse = opts.hasOpt("R");
 		
-		requires(!args.isEmpty(),"Missing arguments");
-		List<String> modes = new ArrayList<>();
-		if( opts.hasOpt("x"))
-		    modes.add( "a" + (opts.getOptFlag("x", true) ? "-" : "+" )  + "x" );
-          if( opts.hasOpt("r"))
-                modes.add( "a" + (!opts.getOptFlag("r", true) ? "-" : "+" )  + "r" );
-          if( opts.hasOpt("w"))
-              modes.add( "a" + (!opts.getOptFlag("w", true) ? "-" : "+" )  + "w" );
-        String mode;
-        if( modes.isEmpty())
-            mode = args.remove(0).toString();
-        else
-            mode = Util.stringJoin(modes, ",");
+		requires(args.size() > 1 ,"Missing arguments");
+
+		String mode = args.remove(0).toString();
 	
      // compile the symbolic mode expressions
         Changer changer = Chmod.compile(mode);

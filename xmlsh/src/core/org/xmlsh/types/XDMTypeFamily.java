@@ -7,7 +7,6 @@ import java.util.List;
 
 import net.sf.saxon.om.Item;
 import net.sf.saxon.om.Sequence;
-import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XdmAtomicValue;
 import net.sf.saxon.s9api.XdmItem;
@@ -43,7 +42,7 @@ public final class XDMTypeFamily extends AbstractTypeFamily implements ITypeFami
     if( cls == null ) 
       return false;
     return XdmItem.class.isAssignableFrom(cls) || Sequence.class.isAssignableFrom(cls) ||
-        QName.class.isAssignableFrom(cls) ;
+            net.sf.saxon.s9api.QName.class.isAssignableFrom(cls) ;
   }
 
   @Override
@@ -52,7 +51,7 @@ public final class XDMTypeFamily extends AbstractTypeFamily implements ITypeFami
     if( obj == null )
       return true ;
 
-    if(  obj instanceof XdmItem || obj instanceof Sequence || obj instanceof QName  || obj instanceof URI )
+    if(  obj instanceof XdmItem || obj instanceof Sequence || obj instanceof net.sf.saxon.s9api.QName  || obj instanceof URI )
       return true ;
     return false ;
 
@@ -233,8 +232,8 @@ public final class XDMTypeFamily extends AbstractTypeFamily implements ITypeFami
        if( obj instanceof XdmItem ) 
          assert( ( (XdmItem) obj ).size() <= 1 );
        else       
-       if( obj instanceof QName )
-         obj = new XdmAtomicValue( (QName) obj );
+       if( obj instanceof net.sf.saxon.s9api.QName )
+         obj = new XdmAtomicValue( (net.sf.saxon.s9api.QName) obj );
        else
        if( obj instanceof String )
          obj = new XdmAtomicValue( (String) obj );
@@ -301,7 +300,7 @@ public boolean hasKey(Object obj, String key) throws InvalidArgumentException {
 
 		XdmNode element = XMLUtils.asXdmNode(obj);
 
-		if( element.getAttributeValue( new QName(key) ) != null )
+		if( element.getAttributeValue( new net.sf.saxon.s9api.QName(key) ) != null )
 			return true ;
 	}
 	return false ;

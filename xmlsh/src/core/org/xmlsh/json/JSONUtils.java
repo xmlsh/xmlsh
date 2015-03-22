@@ -11,12 +11,22 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.PrintStream;
+import java.io.UnsupportedEncodingException;
+import java.io.Writer;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
+
+import net.sf.saxon.s9api.SaxonApiException;
+import net.sf.saxon.s9api.Serializer;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -34,6 +44,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonParser.Feature;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.ObjectCodec;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -65,6 +76,14 @@ import com.jayway.jsonpath.JsonPath;
 public class JSONUtils {
 
     
+    /*
+     * NOTE TO DAL: 
+     * DO NOT try to extend XmlFatory to do renaming - its too invasive and complicated,
+     * all the right places to override are final methods and its very tricky
+     * Instead use the XMLRewritingStreamXXX classes
+     * Or if you must fork the xml dataformat project and change the source
+     *      
+     */
     private static volatile ObjectMapper _theObjectMapper = null;
 
     private static volatile XmlFactory _theXmlFactory = null;

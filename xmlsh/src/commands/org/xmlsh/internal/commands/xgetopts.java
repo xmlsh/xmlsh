@@ -40,13 +40,14 @@ public class xgetopts extends XCommand {
 	@Override
 	public int run(List<XValue> args) throws Exception {
 
-		Options opts = new Options("i=ignore:,a=argindex,o=optdef:,c=command:,p=passthrough:,+s=seralize,+ps=pass-serialize,noargs,novalues",SerializeOpts.getOptionDefs());
+		Options opts = new Options("i=ignore:I=ignore-all,a=argindex,o=optdef:,c=command:,p=passthrough:,+s=seralize,+ps=pass-serialize,noargs,novalues",SerializeOpts.getOptionDefs());
 		opts.parse(args);
 
 		// String command = opts.getOptString("c", getShell().getArg0());
 		String optdef = opts.getOptString("o", null);
 		String passthrough = opts.getOptString("p", null);
 		String ignore = opts.getOptString("i", null);
+		boolean bIgnoreAll = opts.hasOpt("I");
 		boolean bSerialize = opts.getOptFlag("s", true);
 		boolean bPassSerialize = opts.getOptFlag("ps", true);
 		boolean bArgIndex = opts.hasOpt("a");
@@ -88,7 +89,7 @@ public class xgetopts extends XCommand {
 
 
 
-		List<OptionValue>  prog_optvalues = prog_opts.parse(args);
+		List<OptionValue>  prog_optvalues = prog_opts.parse(args,bIgnoreAll);
 
 		SerializeOpts serializeOpts = this.getSerializeOpts(opts);
 

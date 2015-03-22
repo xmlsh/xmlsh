@@ -12,6 +12,7 @@ import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
+import org.xmlsh.types.xtypes.XValueList;
 
 import com.amazonaws.services.s3.model.DeleteBucketRequest;
 
@@ -50,10 +51,13 @@ public class s3DeleteBucket extends AWSS3Command {
 
 
 		int ret = 0 ;
-		if(args.size() < 1 ){
-			usage();
-			return 1;
+		if(args.size() < 1  ) {
+    		if(    getBucket() == null  )
+    			usage();
+    		else 
+    			args = XValue.newXValue(getBucket()).asXList();
 		}
+    		
 
 		for( XValue arg : args )
 			ret += deleteBucket(  arg.toString()  );

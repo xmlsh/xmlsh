@@ -1,20 +1,22 @@
 package org.xmlsh.util;
 
+import javax.xml.namespace.QName;
+
 
 
 public interface INamingStrategy {
-    String  toXmlName( String name );
-    String  fromXmlName( String name );
+    QName  toXmlName( String name );
+    String  fromXmlName( QName name );
     
     public static class EncodedNamingStrategy implements INamingStrategy {
         @Override
-        public String toXmlName(String name) {
-            return Util.encodeForNCName(name);
+        public QName toXmlName(String name) {
+            return Util.encodeForQName(name);
         }
 
         @Override
-        public String fromXmlName(String name) {
-            return Util.decodeFromNCName(name);
+        public String fromXmlName(QName name) {
+            return Util.decodeFromQName(name);
         }
     }
     public static INamingStrategy DefaultNamingStrategy = new EncodedNamingStrategy();

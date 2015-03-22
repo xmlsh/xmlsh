@@ -40,7 +40,7 @@
     <target name="compile" description="Compilation target">
   		<mkdir dir="_out"/>
     
-    	 <javac destdir="_out" debug="on" source="1.7" target="1.7">
+    	 <javac destdir="_out" debug="on" source="${javac.source}" target="${javac.target}">
     	        <src path="src" />
     	 	<classpath>
     				<fileset dir="lib">
