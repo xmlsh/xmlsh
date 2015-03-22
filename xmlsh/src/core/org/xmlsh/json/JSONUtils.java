@@ -26,6 +26,7 @@ import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.types.TypeFamily;
 import org.xmlsh.types.xtypes.XValueList;
 import org.xmlsh.util.Util;
+
 import com.fasterxml.jackson.databind.SerializationFeature.*;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerationException;
@@ -59,12 +60,11 @@ import com.fasterxml.jackson.dataformat.xml.JacksonXmlModule;
 import com.fasterxml.jackson.dataformat.xml.XmlFactory;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
+import com.jayway.jsonpath.JsonPath;
 
 public class JSONUtils {
 
-    private static final class RenamingXmlFactory extends XmlFactory {
-    }
-
+    
     private static volatile ObjectMapper _theObjectMapper = null;
 
     private static volatile XmlFactory _theXmlFactory = null;
@@ -161,7 +161,7 @@ public class JSONUtils {
         // lets play and avoid syncronization
         // on the off chance this is concurrent 2 mappers are created and one gets GC'd
         if (_theXmlFactory == null) {
-            XmlFactory factory = new RenamingXmlFactory();
+            XmlFactory factory = new XmlFactory();
             if (_theXmlFactory == null)
                 _theXmlFactory = factory;
         }
@@ -533,6 +533,10 @@ public class JSONUtils {
     {
 
         return isAtomicClass(value.getClass());
+    }
+
+    public static JsonPath compileJsonPath(String xpath) {
+        return JsonPath.compile(xpath);
     }
 
 }

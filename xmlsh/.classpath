@@ -37,9 +37,8 @@
 	<classpathentry kind="lib" path="lib/commons-codec-1.6.jar"/>
 	<classpathentry kind="lib" path="lib/commons-logging-1.1.1.jar"/>
 	<classpathentry kind="lib" path="lib/commons-io-2.1.jar" sourcepath="C:/Users/DLEE/.m2/repository/commons-io/commons-io/2.1/commons-io-2.1-sources.jar"/>
-	<classpathentry kind="lib" path="lib/httpclient-4.2.3.jar"/>
+	<classpathentry kind="lib" path="lib/httpclient-4.2.3.jar" sourcepath="E:/Java/httpclient/httpclient-4.2.3-sources.jar"/>
 	<classpathentry kind="lib" path="lib/slf4j-api-1.7.5.jar"/>
-	<classpathentry kind="lib" path="lib/jsonpath.jar" sourcepath="/jsonpath/src"/>
 	<classpathentry kind="lib" path="lib/stax2-api-3.1.1.jar" sourcepath="E:/Java/woodstox/stax2-3.1.1/src/java"/>
 	<classpathentry kind="lib" path="lib/woodstox-core-asl-4.2.0.jar" sourcepath="E:/Java/woodstox/woodstox-4.2.0/src/java">
 		<attributes>
@@ -61,6 +60,7 @@
 	<classpathentry kind="lib" path="lib/jackson-dataformat-xml-2.5.0.jar" sourcepath="/jackson-dataformat-xml/src/main/java"/>
 	<classpathentry kind="lib" path="lib/jackson-module-jaxb-annotations-2.5.0.jar"/>
 	<classpathentry kind="lib" path="lib/jackson-module-jsonSchema-2.5.0.jar"/>
+	<classpathentry kind="lib" path="lib/json-path-2.0.0.jar"/>
 	<classpathentry kind="src" path=".apt_generated">
 		<attributes>
 			<attribute name="optional" value="true"/>

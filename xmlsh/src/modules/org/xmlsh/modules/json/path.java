@@ -11,11 +11,12 @@ import java.util.List;
 import org.xmlsh.core.AbstractBuiltinFunction;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
+import org.xmlsh.json.JSONUtils;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.types.TypeFamily;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.nebhale.jsonpath.JsonPath;
+import com.jayway.jsonpath.JsonPath;
 
 public class path extends AbstractBuiltinFunction {
 
@@ -31,8 +32,8 @@ public class path extends AbstractBuiltinFunction {
 		JsonNode node = args.get(0).asJson();
 
 
-		JsonPath path = JsonPath.compile(args.get(1).toString());
-		XValue xvr = XValue.newXValue(TypeFamily.JSON, path.read(node, JsonNode.class));
+		JsonPath path = JSONUtils.compileJsonPath(args.get(1).toString());
+		XValue xvr = XValue.newXValue(TypeFamily.JSON, path.read(node));
 
 		return xvr ;
 

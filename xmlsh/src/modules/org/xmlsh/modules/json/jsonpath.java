@@ -9,7 +9,9 @@ package org.xmlsh.modules.json;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InputPort;
@@ -23,10 +25,17 @@ import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.util.Util;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.nebhale.jsonpath.JsonPath;
+import com.jayway.jsonpath.Configuration;
+import com.jayway.jsonpath.JsonPath;
+import com.jayway.jsonpath.Option;
+import com.jayway.jsonpath.spi.json.JacksonJsonProvider;
+import com.jayway.jsonpath.spi.json.JsonProvider;
+import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
+import com.jayway.jsonpath.spi.mapper.MappingProvider;
 
 public class jsonpath extends XCommand {
 
+   
 
 	@Override
 	public int run(List<XValue> args) throws Exception {
@@ -84,9 +93,9 @@ public class jsonpath extends XCommand {
 			xpath = xvargs.remove(0).toString();
 
 
-		JsonPath path = JsonPath.compile(xpath);
+		JsonPath path = JSONUtils.compileJsonPath(xpath);
 
-		JsonNode result = path.read(context, JsonNode.class); // TODO can convert to other types here
+		JsonNode result = path.read(context); // TODO can convert to other types here
 
 		OutputPort stdout = getStdout();
 		PrintStream os = stdout.asPrintStream(serializeOpts);
@@ -100,7 +109,7 @@ public class jsonpath extends XCommand {
 		return 0;
 	}
 
-	private String readString(XValue v, SerializeOpts opts) throws CoreException, IOException  {
+    private String readString(XValue v, SerializeOpts opts) throws CoreException, IOException  {
 
 		InputPort in = getInput( v );
 		try (
