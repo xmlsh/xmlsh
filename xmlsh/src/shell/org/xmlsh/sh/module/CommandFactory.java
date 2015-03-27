@@ -448,17 +448,7 @@ public abstract class CommandFactory {
 					scriptFile = null ;
 				if( scriptFile != null && ! isXScriptFile(scriptFile.toPath(), shell.getInputTextEncoding(), false ))
 					scriptFile = null;
-				
-			} else
-				mLogger.exit(null); // 
-			
-			/*
-			 * TODO Resolve against module prefix
-			 */
-			/*
-			if( scriptFile == null )
-				return mLogger.exit(null);
-	        */
+			}
 		}
 		
 		if( scriptFile == null ){

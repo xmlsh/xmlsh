@@ -1,0 +1,2 @@
+#!/bin/xmlsh
+echo hi

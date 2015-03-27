@@ -11,9 +11,14 @@ import static org.xmlsh.util.UnifiedFileAttributes.MatchFlag.READABLE;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.XdmNode;
@@ -25,7 +30,9 @@ import org.xmlsh.core.XClassLoader;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.sh.shell.ShellConstants;
+import org.xmlsh.util.FileUtils;
 import org.xmlsh.util.PathMatchOptions;
+import org.xmlsh.util.StreamUtils;
 import org.xmlsh.util.Util;
 
 public class ExternalModule extends PackageModule
@@ -63,7 +70,7 @@ public  static ModuleConfig getConfiguration(Shell shell, String nameuri,  List<
     	  
     	configURL  = new URL( nameuri);
         if(configURL.getProtocol().equals("file"))
-          modDir = new File(configURL.getPath()).getParentFile();
+          modDir = shell.getExplicitFile(configURL.getPath(),true).getParentFile();
 
       }
       else {
@@ -84,19 +91,20 @@ public  static ModuleConfig getConfiguration(Shell shell, String nameuri,  List<
     XdmNode configNode;
     configNode = Util.asXdmNode(configURL);
 
-    List<URL> classpath = new ArrayList<URL>();
+
 
     XValue xv = XValue.newXValue(configNode);
-    String pkg = xv.xpath(shell, "/module/@package/string()").toString();
-    List<String> packages = new ArrayList<>();
-    if( ! Util.isBlank(pkg))
-    	packages.add(pkg);
-
-    for (XValue v : xv.xpath(shell, "/module/packages/package/string()") ){
-    	packages.add(v.toString());
-    	
-    }
-
+    
+    
+    List<String> packages =  xv.xpath(shell, "/module/(@package|packages/package/(.|@url))/string()").asStringList().stream()
+            .collect(Collectors.toList() );
+    
+    final File md = modDir;
+   List<URL> modpath = xv.xpath(shell, "/module/modpath/directory/(.|@url)/string()").asStringList().stream()
+           .filter( Util::notBlank)
+           .map( s -> safeNewUrl(configURL, s) )
+           .filter( Objects::nonNull )
+           .collect(Collectors.toList() );
 
     String name  = xv.xpath(shell, "/module/@name/string()").toString();
     String require = xv.xpath(shell, "/module/@require/string()").toString();
@@ -105,36 +113,31 @@ public  static ModuleConfig getConfiguration(Shell shell, String nameuri,  List<
       if(ret != 0)
         throw new InvalidArgumentException("Module " + name + " requires version " + require);
     }
+    List<URL> classpath =  xv.xpath(shell, "/module/classpath/file").asStringList().stream()
+            .filter( Util::notBlank )
+            .map( s -> safeNewUrl(configURL, s) )
+            .collect(Collectors.toList() );
 
-    // iterate over values
-    for (XValue v : xv.xpath(shell, "/module/classpath/file") ){
-      if(v.isXdmNode()) {
-        String file =v.asXdmNode().getAttributeValue(new QName("url"));
-        URL classurl = new URL(configURL, file);
-        classpath.add(classurl);
+    if(modDir != null){
 
-      }
 
+       xv.xpath(shell, "/module/classpath/directory/(.|@url)/string()").asStringList().stream()
+       .filter( Util::notBlank )
+       .forEach(  s -> {
+                 File sFile = new File( md , s );
+                 if( sFile.isDirectory() ){
+                     classpath.add(  safeNewUrl( configURL , s ) ) ;
+                   listJarFiles(sFile).stream()
+                   .map( f -> safeNewUrl(configURL, f) )
+                   .forEach( u -> classpath.add(u)) ;
+                 }
+               
+             }
+       );
     }
-
-    if(modDir != null)
-      for (XValue v :  xv.xpath(shell, "/module/classpath/directory")) {
-        if(v.isXdmNode()) {
-          String dir = v.asXdmNode().getAttributeValue(new QName("url"));
-          for (String file : listFiles(modDir, dir)) {
-            URL classurl = new URL(configURL, file);
-            classpath.add(classurl);
-          }
-
-        }
-
-      }
-    
     String modClassName = xv.xpath(shell, "/module/main/classname/string()").toString();
-    	
-
     
-    ModuleConfig config = new ModuleConfig("external", name , classpath , shell.getSerializeOpts() , packages , "commands.xml" );
+    ModuleConfig config = new ModuleConfig("external", name , classpath,  modpath, shell.getSerializeOpts() , packages , "commands.xml" );
 
     if( ! Util.isBlank(modClassName))
     	config.setModuleClass(modClassName);
@@ -151,6 +154,26 @@ public  static ModuleConfig getConfiguration(Shell shell, String nameuri,  List<
 
 
 }
+
+
+
+
+
+private static URL safeNewUrl(URL configURL, String s) {
+    try {
+        return new URL( configURL , s );
+    } catch (MalformedURLException e) {
+       mLogger.catching(e);
+       return null;
+    }
+}
+
+
+
+   private static String getAttributeValue( XValue v , String name ) throws InvalidArgumentException{
+       return v.asXdmNode().getAttributeValue(new QName("url"));
+   }
+   
   
   public URL getHelpURL() {
 	return  getClassLoader().getResource(toResourceName(getPackageConfig().getHelpURI(), getPackages().get(0)));
@@ -161,16 +184,18 @@ public  static ModuleConfig getConfiguration(Shell shell, String nameuri,  List<
     return getName() + "[ at " + mURI + " ]";
   }
 
-  private static List<String> listFiles(File modDir, String dir) throws IOException
+  private static List<String> listJarFiles(File dir) 
   {
     List<String> files = new ArrayList<String>();
-    File file = new File(modDir, dir);
-    for (String f : file.list())
+    for (String f : dir.list())
       if(f.endsWith(".jar"))
         files.add(f);
     return files;
 
   }
+
+
+
 
 }
 

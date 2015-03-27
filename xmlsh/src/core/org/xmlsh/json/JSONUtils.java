@@ -17,9 +17,11 @@ import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -71,7 +73,15 @@ import com.fasterxml.jackson.dataformat.xml.JacksonXmlModule;
 import com.fasterxml.jackson.dataformat.xml.XmlFactory;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
+import com.jayway.jsonpath.Configuration;
+import com.jayway.jsonpath.Configuration.Defaults;
 import com.jayway.jsonpath.JsonPath;
+import com.jayway.jsonpath.Option;
+import com.jayway.jsonpath.spi.json.JacksonJsonNodeJsonProvider;
+import com.jayway.jsonpath.spi.json.JacksonJsonProvider;
+import com.jayway.jsonpath.spi.json.JsonProvider;
+import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
+import com.jayway.jsonpath.spi.mapper.MappingProvider;
 
 public class JSONUtils {
 
@@ -93,6 +103,29 @@ public class JSONUtils {
 
     private final static JavaType JSON_NODE_TYPE = SimpleType
             .constructUnsafe(JsonNode.class);
+    
+    static {
+        Configuration.setDefaults(new Configuration.Defaults() {
+
+            private final JsonProvider jsonProvider = new JacksonJsonNodeJsonProvider();
+            private final MappingProvider mappingProvider = new JacksonMappingProvider();
+
+            @Override
+            public JsonProvider jsonProvider() {
+                return jsonProvider;
+            }
+
+            @Override
+            public MappingProvider mappingProvider() {
+                return mappingProvider;
+            }
+
+            @Override
+            public Set<Option> options() {
+                return EnumSet.noneOf(Option.class);
+            }
+        });
+    }
 
     /*
      * TEST CODE ... needs to go into AWS
@@ -553,8 +586,20 @@ public class JSONUtils {
 
         return isAtomicClass(value.getClass());
     }
-
+    
+    
+    /*
+    
+    public static JsonPath getJsonPath() {
+        JsonProvider provider;
+        MappingProvider mapper;
+        static Configuation config = new Configuration.ConfigurationBuilder().jsonProvider(provider).mappingProvider(mapper).build();
+        return JsonPath.using(Configuration.defaultConfiguration());
+    }
+        */
+    
     public static JsonPath compileJsonPath(String xpath) {
+       // Configuration configuration = Configuration.setDefaults(defaults);
         return JsonPath.compile(xpath);
     }
 

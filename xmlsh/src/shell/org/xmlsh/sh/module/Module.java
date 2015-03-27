@@ -306,6 +306,8 @@ public abstract class Module implements IModule {
 	}
 
 	protected String toResourceName(String name, String pkg) {
+	    if( Util.isBlank(pkg))
+	        return name ;
 		String resource = pkg.replace(ShellConstants.kDOT_CHAR, '/') + "/" + name;
 		return resource;
 	}

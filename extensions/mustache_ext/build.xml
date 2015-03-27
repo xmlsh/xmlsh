@@ -1,0 +1,128 @@
+<?xml version="1.0" ?>
+<project default="main" name="mustache">
+	<import file="../../build/common_ext.xml"/>
+		
+	<target name="main" depends="install,test" description="Mustache CLI Extension main target">
+        <echo>
+            Building Mustache CLI xmlsh extension
+        </echo>
+    </target>
+	<target name="build" depends="clean,compile,jar"/>
+	<target name="build-all" depends="build,dist"/>
+	
+
+ <property environment="env"/>
+	<property name="dist" location="_dist"/>
+	<property name="xmlsh" location="../../xmlsh"/>
+	<tstamp prefix="bdate"/>
+	<property name="release" value="${bdate.DSTAMP}" />
+
+			
+	<target name="clean" description="Clean all">
+		  <delete includeEmptyDirs="true" quiet="true">
+		    <fileset dir="${dist}" includes="*"/>
+		  	<fileset dir="_out" includes="**/*" />
+		  	<fileset dir="test" includes="**/_out.txt"/>
+		  	<fileset dir="bin" includes="**/*.jar" />
+		  	<fileset dir="." includes="**/xmlsh.log" />
+		  </delete>
+	</target>
+	
+	<target name="clobber" depends="clean">
+		<delete quiet="true" includeEmptyDirs="true">
+	    <fileset dir="${dist}"/>
+	  	<fileset dir="_out"/>
+			<fileset dir="lib" includes="**/*.jar"/>
+		</delete> 
+		</target>
+
+  
+    <target name="compile" description="Compilation target">
+  		<mkdir dir="_out"/>
+    
+    	 <javac destdir="_out" debug="on" source="${javac.source}" target="${javac.target}">
+    	        <src path="src" />
+    	 	<classpath>
+    				<fileset dir="lib">
+    	                  	<include name="**/*.jar"/>
+    				</fileset>
+				<fileset dir="${xmlsh}/lib">
+    				    <include name="**/*.jar"/>
+    				   </fileset>
+				<fileset dir="${xmlsh}/bin">
+					<include name="xmlsh-*.jar"/>
+    				   </fileset>
+    	     </classpath>
+    	 </javac>
+    	 <copy todir="_out" filtering="on">
+    	            <fileset dir="src">
+    	                <include name="**/*.properties"/>
+    	 				<include name="**/*.xsh"/>
+    	 				<include name="**/*.xquery"/>
+    	 				<include name="**/*.xml"/>
+    	 				
+    	 			</fileset>
+    	        </copy>
+
+   	</target>
+  
+  <target name="jar" description="Build JAR - jar">
+		<mkdir dir="bin"/>
+        <jar 
+        jarfile="bin/mustache_ext.jar" 
+        basedir="_out" 
+         manifest="src/WEB-INF/MANIFEST.MF"
+        />
+
+  </target>
+
+  <target name="test" description="Test Cases">
+    <echo>
+        Running BeanShell xmlsh tests
+    </echo>
+  	<java 
+  		classname="org.xmlsh.sh.shell.Shell"
+  		fork="true"
+  	    dir="test">
+  	    <classpath>
+				<fileset dir="${xmlsh}/lib">
+	                  	<include name="**/*.jar"/>
+	                  	<exclude name="**/saxon9ee.jar"/>
+	                  	<exclude name="**/saxon9pe.jar"/>
+				</fileset>
+				 <fileset dir="${xmlsh}/bin">
+	                  	<include name="**/*.jar"/>
+				</fileset>
+	     </classpath>
+	     
+  	    	<arg value="-norc"/>
+  			<arg value="./run_tests.xsh"/>
+  	</java>
+  </target>
+  <target name="dist" description="Create Distribution">
+  		
+  		<mkdir dir="${dist}"/>
+		<zip destfile="${dist}/mustache_${release}.zip" >
+			<zipfileset dir="." includes="bin/** test/** doc/** notices/** license.txt README.txt" 
+					excludes="**/sh_histo" prefix="mustache_${release}"/>
+			<zipfileset dir="lib" includes="*.jar" prefix="mustache_${release}/bin"/>
+  		</zip>
+		<zip destfile="${dist}/mustache_src_${release}.zip" >
+			<zipfileset dir="." includes="src/** license.txt README.txt build.xml" 
+				excludes="**/sh_histo _out/** bin/** _dist/** lib/**"  prefix="mustache_${release}"/>
+		</zip>
+
+
+  </target>
+  
+	<target name="install" depends="install.check,build-all" if="install.exists" description="Install to modules">
+      <echo message="installing to ${install.dir}"/> 
+  		 <copy todir="${install.dir}" filtering="on">
+			<fileset dir="bin" includes="*.jar module.xml"/>
+			<fileset dir="lib" includes="*.jar"/>
+
+    	 </copy>
+  	</target>
+         
+  
+</project>

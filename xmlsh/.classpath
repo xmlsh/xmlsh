@@ -60,7 +60,7 @@
 	<classpathentry kind="lib" path="lib/jackson-dataformat-xml-2.5.0.jar" sourcepath="E:/Work/DEI/github/jackson-dataformat-xml/src"/>
 	<classpathentry kind="lib" path="lib/jackson-module-jaxb-annotations-2.5.0.jar"/>
 	<classpathentry kind="lib" path="lib/jackson-module-jsonSchema-2.5.0.jar"/>
-	<classpathentry kind="lib" path="lib/json-path-2.0.0.jar"/>
+	<classpathentry kind="lib" path="lib/json-path-2.0.1-SNAPSHOT.jar" sourcepath="/json-path/src"/>
 	<classpathentry kind="src" path=".apt_generated">
 		<attributes>
 			<attribute name="optional" value="true"/>

@@ -1,0 +1,14 @@
+<module 
+	module_version="1.0"
+	name="mml"
+	require="2.0.0"
+> 
+  <modpath>
+    <directory url="."/>
+  </modpath>
+<classpath>
+  <directory url="."/>
+</classpath>
+ <packages><package/></packages>
+</module>
+

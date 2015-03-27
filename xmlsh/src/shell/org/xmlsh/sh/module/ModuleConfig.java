@@ -2,6 +2,7 @@ package org.xmlsh.sh.module;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
@@ -10,12 +11,14 @@ import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.util.JavaUtils;
 import org.xmlsh.util.Util;
 
+
 public class ModuleConfig {
 
 	private  String mType;
 	private  String mName ;
 	private List<URL> mClassPath;
 	private List<String> mPackages;
+	private List<URL> mModulePath;
 	private String mHelpURI;
 	private SerializeOpts mSerialOpts;
 	private String mModuleClass;
@@ -39,26 +42,37 @@ public class ModuleConfig {
 		this.mType = type ;
 	}
 
-
+	
+	@Deprecated
 	public ModuleConfig(String type , String name, List<URL> classpath, 
+            SerializeOpts serialOpts) {
+        this( type,name,null,classpath,classpath,serialOpts);
+    }
+
+
+	public ModuleConfig(String type , String name, 
+	        String modclass ,
+	        List<URL> classpath, 
+	        List<URL> modpath,
 			SerializeOpts serialOpts) {
 		
 		assert( serialOpts !=null);
 		assert( name != null );
 		assert( type != null );
+		
 		this.mType =type ;
 		this.mName = name;
+		this.mModuleClass = modclass;
 		this.mClassPath = classpath;
+		this.mModulePath = modpath;
 		this.mSerialOpts = serialOpts;
 	}
 
 
-	public ModuleConfig(String type , String name, List<URL> classpath, SerializeOpts serialOpts,
+	public ModuleConfig(String type , String name, List<URL> classpath, List<URL> modpath, SerializeOpts serialOpts,
 			List<String> mPackages, String mHelpURI) {
-		
 
-		mLogger.entry(type, name, classpath, serialOpts, mPackages, mHelpURI);
-		
+		mLogger.entry(type, name, classpath, modpath , serialOpts, mPackages, mHelpURI);
 		
 		
 		assert( serialOpts !=null);
@@ -67,6 +81,7 @@ public class ModuleConfig {
 		this.mType =type ;
 		this.mName = name;
 		this.mClassPath  = JavaUtils.uniqueList( classpath);
+		this.mModulePath = JavaUtils.uniqueList(modpath);
 		this.mSerialOpts = serialOpts;
 		this.mPackages = mPackages;
 		this.mHelpURI = mHelpURI;
@@ -77,9 +92,12 @@ public class ModuleConfig {
 	
 
 	public synchronized List<URL> getClassPath() {
-		return mClassPath;
+	    return mClassPath;
 	}
 
+    public synchronized List<URL> getModulePath() {
+        return mModulePath;
+    }
 
 	public String getHelpURI() {
 		return mHelpURI;
@@ -177,7 +195,6 @@ public class ModuleConfig {
 	    mClassNames.add( clsname );
 		
 	}
-	
 	
 	
 

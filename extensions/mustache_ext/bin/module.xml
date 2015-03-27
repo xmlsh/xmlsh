@@ -1,0 +1,16 @@
+<module 
+	module_version="1.0"
+	name="mustache"
+	require="2.0.0"
+>
+<classpath>
+  <directory url="."/>
+</classpath>
+<packages>
+  <package>org.xmlsh.mustache.module</package>
+ </packages>
+<main>
+  <classname>org.xmlsh.mustache.module.Module</classname>
+</main>
+</module>
+

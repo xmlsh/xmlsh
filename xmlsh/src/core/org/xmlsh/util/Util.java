@@ -441,6 +441,15 @@ public class Util
 		 return str;
 	 }
 
+	 public static boolean notEmpty(String str) {
+
+	     return ! isEmpty(str) ;
+	 }
+	 public static boolean  notBlank(String str) {
+	      return ! isBlank(str) ;
+
+     }
+	 
 	 public	static String	nullIfBlank( String str )
 	 {
 		 return isBlank(str) ? null : str.trim(); 

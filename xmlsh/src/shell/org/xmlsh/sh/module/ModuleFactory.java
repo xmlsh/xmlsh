@@ -229,7 +229,7 @@ static ModuleConfig  getInternalModuleConfig(Shell shell, String nameuri, List<U
 public static ModuleConfig getInternalModuleConfig(Shell shell,
 		String name, List<String> packages,
 		String helpXml) {
-	return new ModuleConfig("packages",name,null, shell.getSerializeOpts(), packages, helpXml);
+	return new ModuleConfig("packages",name,null, null,shell.getSerializeOpts(), packages, helpXml);
 }
 
 
