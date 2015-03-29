@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.xmlsh.core.ScriptSource;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.util.JavaUtils;
 import org.xmlsh.util.Util;
@@ -21,10 +22,33 @@ public class ModuleConfig {
 	private List<URL> mModulePath;
 	private String mHelpURI;
 	private SerializeOpts mSerialOpts;
+	private URL mModuleRoot;
 	private String mModuleClass;
-	
-	// Additional class names to search 
-	private List<String>  mClassNames;
+	private String mModuleScriptName; // main script entry point
+   private ScriptSource mModuleScript; // main script entry point
+   // Additional class names to search 
+   private List<String>  mClassNames;
+   
+   
+	protected String getModuleScriptName() {
+        return mModuleScriptName;
+    }
+
+
+    protected void setModuleScriptName(String moduleScript) {
+        mModuleScriptName = moduleScript;
+    }
+
+
+    protected void setClassPath(List<URL> classPath) {
+        mClassPath = classPath;
+    }
+
+
+    protected void setModulePath(List<URL> modulePath) {
+        mModulePath = modulePath;
+    }
+
 	
 	
 	public List<String> getClassNames() {
@@ -44,42 +68,38 @@ public class ModuleConfig {
 
 	
 	@Deprecated
-	public ModuleConfig(String type , String name, List<URL> classpath, 
-            SerializeOpts serialOpts) {
-        this( type,name,null,classpath,classpath,serialOpts);
+	public ModuleConfig(String type , String name,
+            List<URL> classpath, SerializeOpts serialOpts) {
+        this( type,name,null,null,classpath, null , serialOpts);
     }
 
 
-	public ModuleConfig(String type , String name, 
-	        String modclass ,
-	        List<URL> classpath, 
-	        List<URL> modpath,
+	public ModuleConfig(
+	        String type , 
+	        String name, 
+	        String modclass, 
+	        URL modRoot, 
+	        List<URL> classpath,
+			List<URL> modpath, 
 			SerializeOpts serialOpts) {
-		
-		assert( serialOpts !=null);
-		assert( name != null );
-		assert( type != null );
-		
-		this.mType =type ;
-		this.mName = name;
-		this.mModuleClass = modclass;
-		this.mClassPath = classpath;
-		this.mModulePath = modpath;
-		this.mSerialOpts = serialOpts;
+		this( type , name , modclass , modRoot , classpath  , modpath , serialOpts , null , null );
+
 	}
 
 
-	public ModuleConfig(String type , String name, List<URL> classpath, List<URL> modpath, SerializeOpts serialOpts,
-			List<String> mPackages, String mHelpURI) {
+	public ModuleConfig(String type , String name, String modClass , 
+	        URL modRoot, List<URL> classpath, List<URL> modpath,
+			SerializeOpts serialOpts, List<String> mPackages, String mHelpURI) {
 
 		mLogger.entry(type, name, classpath, modpath , serialOpts, mPackages, mHelpURI);
-		
 		
 		assert( serialOpts !=null);
 		assert( name != null );
 		assert( type != null );
 		this.mType =type ;
 		this.mName = name;
+		this.mModuleClass = modClass ;
+		this.mModuleRoot = modRoot ;
 		this.mClassPath  = JavaUtils.uniqueList( classpath);
 		this.mModulePath = JavaUtils.uniqueList(modpath);
 		this.mSerialOpts = serialOpts;
@@ -195,6 +215,31 @@ public class ModuleConfig {
 	    mClassNames.add( clsname );
 		
 	}
+
+
+    protected void finalize() {
+        mModuleScript = null ;
+    }
+
+
+    public ScriptSource getModuleScript() {
+        return mModuleScript;
+    }
+
+
+    public void setModuleScript(ScriptSource moduleScript) {
+        mModuleScript = moduleScript;
+    }
+
+
+    public URL getModuleRoot() {
+        return mModuleRoot;
+    }
+
+
+    public void setModuleRoot(URL moduleRoot) {
+        mModuleRoot = moduleRoot;
+    }
 	
 	
 

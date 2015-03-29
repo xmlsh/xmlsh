@@ -37,7 +37,16 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 public abstract class InputPort extends AbstractPort implements IInputPort
 {
-	/* (non-Javadoc)
+	/*
+     * An InputPort represents an input source of data, either Stream (bytes) or XML
+     * data
+     * 
+     */
+    
+    
+
+
+    /* (non-Javadoc)
 	 * @see org.xmlsh.core.IInputPort#asInputStream(org.xmlsh.sh.shell.SerializeOpts)
 	 */
 	@Override

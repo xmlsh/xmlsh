@@ -1,0 +1,9 @@
+import m=mustache
+import j=json
+m:mustache -t foo  
+m:mustache -t 'foo {{bar}} x' -j '{ "bar" : 1 } '
+import m=mustache
+import j=json
+a=j:object( b j:object( c j:array( j:object( d e ) j:object( f h ) 4 ) i "JJJJJ" k j:object( k 10 )))
+
+ m:mustache -t 'FOO {{b.k}} spam'  -j {$a}

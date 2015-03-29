@@ -299,7 +299,7 @@ public class PackageModule extends Module {
 	}
 
 	private ScriptSource getScriptSource(Shell shell, String name,
-			SourceMode import1, List<URL> at) throws URISyntaxException {
+			List<URL> at) throws URISyntaxException {
 		
 		
 		String ext = FileUtils.getExt( name );
@@ -323,7 +323,7 @@ public class PackageModule extends Module {
 	private ModuleConfig getScriptModuleConfig(Shell shell, ScriptSource script,
 			String qname, List<URL> at) throws URISyntaxException, IOException, CoreException {
 		
-		ScriptSource ss = getScriptSource(shell,qname, SourceMode.IMPORT , at );
+		ScriptSource ss = getScriptSource(shell,qname, at );
 		if( ss !=null )
 			return ScriptModule.getConfiguration(shell, script ,at);
 		return null;

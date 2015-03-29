@@ -45,6 +45,7 @@
 					<include name="beanshell"/>
 					<include name="jmx"/>
 					<include name="marklogic"/>
+					<include name="jstache"/>
 				</dirset>
 			</subant>
 		</sequential>

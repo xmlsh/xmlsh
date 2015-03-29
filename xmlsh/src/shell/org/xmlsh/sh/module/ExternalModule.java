@@ -12,9 +12,11 @@ import static org.xmlsh.util.UnifiedFileAttributes.MatchFlag.READABLE;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collector;
@@ -25,9 +27,12 @@ import net.sf.saxon.s9api.XdmNode;
 
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
+import org.xmlsh.core.ScriptCommand;
+import org.xmlsh.core.ScriptSource;
 import org.xmlsh.core.SearchPath;
 import org.xmlsh.core.XClassLoader;
 import org.xmlsh.core.XValue;
+import org.xmlsh.core.ScriptCommand.SourceMode;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.sh.shell.ShellConstants;
 import org.xmlsh.util.FileUtils;
@@ -86,7 +91,7 @@ public  static ModuleConfig getConfiguration(Shell shell, String nameuri,  List<
         configURL = config.toURI().toURL();
       }
 
-
+      URL modRoot =  modDir.toURI().toURL();
 
     XdmNode configNode;
     configNode = Util.asXdmNode(configURL);
@@ -136,11 +141,12 @@ public  static ModuleConfig getConfiguration(Shell shell, String nameuri,  List<
        );
     }
     String modClassName = xv.xpath(shell, "/module/main/classname/string()").toString();
-    
-    ModuleConfig config = new ModuleConfig("external", name , classpath,  modpath, shell.getSerializeOpts() , packages , "commands.xml" );
+    String modScriptName = xv.xpath(shell, "/module/main/scriptname/string()").toString();
+    ModuleConfig config = new ModuleConfig("external", name , modClassName,  modRoot ,  classpath, modpath , shell.getSerializeOpts() , packages, "commands.xml" );
 
-    if( ! Util.isBlank(modClassName))
-    	config.setModuleClass(modClassName);
+    if( ! Util.isBlank(modScriptName))
+        config.setModuleScriptName(modScriptName);
+    
     
     return mLogger.exit(config);
   } catch (CoreException e) {
@@ -170,11 +176,6 @@ private static URL safeNewUrl(URL configURL, String s) {
 
 
 
-   private static String getAttributeValue( XValue v , String name ) throws InvalidArgumentException{
-       return v.asXdmNode().getAttributeValue(new QName("url"));
-   }
-   
-  
   public URL getHelpURL() {
 	return  getClassLoader().getResource(toResourceName(getPackageConfig().getHelpURI(), getPackages().get(0)));
   }
@@ -193,6 +194,68 @@ private static URL safeNewUrl(URL configURL, String s) {
     return files;
 
   }
+
+
+
+
+
+@Override
+public void onInit(Shell shell, List<XValue> args) throws Exception {
+    super.onInit(shell, args);
+    ScriptSource script = getConfig().getModuleScript();
+    
+    // Auto run main script if any 
+    if( script != null ) { 
+        mLogger.debug("Running onInit module script {} "  , script );
+    
+        try ( Shell sh = shell.clone() ) {
+          if( args != null )
+             sh.setArgs(args);
+             Module hThis = this ;
+             ScriptCommand cmd = new ScriptCommand(
+                     // Holds a refernce to module within cmd 
+                     getConfig().getModuleScript()  ,  SourceMode.IMPORT, shell.getLocation() , hThis  ) ;
+                 if(  cmd.run(sh, getName(), args) != 0 )
+                    shell.printErr("Failed to init script:" + getName() );
+                  else {
+                      // Extracts a clone of the this modules shell context
+                      mStaticContext = sh.getExportedContext();
+                  }
+        } 
+    }
+    
+}
+
+
+
+
+
+@Override
+public void onLoad(Shell shell) {
+    super.onLoad(shell);
+    mLogger.entry(shell);
+    
+    
+    String scriptName = getConfig().getModuleScriptName();
+    if( Util.notBlank(scriptName ) ){
+
+        mLogger.trace("Locating init script {}", scriptName);
+        try {
+            // Try to find script source by usual means 
+            URL moduleRoot = getConfig().getModuleRoot();
+            ScriptSource script  = CommandFactory.getScriptSource(shell, new PName(scriptName) ,
+                    SourceMode.IMPORT , Collections.singletonList( moduleRoot) );
+            
+            if( script != null ){
+                getConfig().setModuleScript(script);
+                mLogger.debug("Loaded module script from {}" , moduleRoot);
+            }
+        } catch( IOException | CoreException | URISyntaxException e ){
+            mLogger.catching(e);
+        }
+    }
+    
+}
 
 
 

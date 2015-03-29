@@ -157,6 +157,10 @@ public class Options {
 			return optflag;
 		}
 
+        public String toStringValue() {
+           return getValue().toString();
+        }
+
 	}
 
 	@SuppressWarnings("serial")
@@ -306,7 +310,6 @@ public class Options {
 	public Options(String option_str, OptionDefs option_list) {
 		this(parseDefs(option_str).withOptions(option_list));
 	}
-
 	public OptionDefs addOptionDefs(String option_str) {
 		OptionDefs option_list = parseDefs(option_str);
 		addOptionDefs(option_list);
@@ -435,7 +438,7 @@ public class Options {
 	public String getOptString(String opt, String defValue) {
 		OptionValue value = getOpt(opt);
 		if (value != null)
-			return value.getValue().toString();
+			return value.toStringValue();
 		else
 			return defValue;
 

@@ -7,6 +7,7 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.xmlsh.core.CoreException;
+import org.xmlsh.core.ScriptSource;
 import org.xmlsh.core.XClassLoader;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
@@ -16,8 +17,6 @@ import org.xmlsh.util.Util;
 
 public abstract class Module implements IModule {
 
-	
-	
 	static Logger mLogger = LogManager.getLogger();
 
 
@@ -31,6 +30,9 @@ public abstract class Module implements IModule {
 	private HashMap<String, Boolean> mClassCacheMisses = new HashMap<String, Boolean>();
 
 	private XClassLoader mClassLoader;
+
+
+    protected StaticContext mStaticContext = null;
 	
 	protected Module(  ModuleConfig config ) throws CoreException {
 		this( config  , null  );
@@ -258,9 +260,8 @@ public abstract class Module implements IModule {
 
 	@Override
 	public StaticContext getStaticContext() {
-
 		getLogger().entry();
-		return null;
+		return mStaticContext;
 	}
 
 	public String getTextEncoding() {
@@ -316,4 +317,7 @@ public abstract class Module implements IModule {
 	public String toString() {
 		return describe();
 	}
+
+
+    
 }

@@ -32,7 +32,7 @@ public class RootModule extends Module {
 	}
 	
 	private RootModule()  {
-		super( new ModuleConfig("internal" , "root",null,  SerializeOpts.defaultOpts ), XClassLoader.getInstance() );
+		super( new ModuleConfig("internal" , "root", RootModule.class.getName() ,  null, null, null, SerializeOpts.defaultOpts ), XClassLoader.getInstance() );
 	}
 	
 	@Override

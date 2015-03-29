@@ -6,6 +6,7 @@
 
 package org.xmlsh.internal.commands;
 
+import java.io.IOException;
 import java.util.List;
 
 import javax.xml.namespace.QName;
@@ -27,6 +28,7 @@ import org.xmlsh.core.XValue;
 import org.xmlsh.core.XVariable;
 import org.xmlsh.core.io.OutputPort;
 import org.xmlsh.core.io.VariableInputPort;
+import org.xmlsh.core.io.XValueInputPort;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.NameValueMap;
@@ -165,14 +167,13 @@ public class xcat extends XCommand {
 	}
 
 
-	private void writeWrapperStart(XValue wrapper, XMLEventWriter writer, SerializeOpts opts) throws XMLStreamException, CoreException {
+	private void writeWrapperStart(XValue wrapper, XMLEventWriter writer, SerializeOpts opts) throws XMLStreamException, CoreException, IOException {
 		if( wrapper.isAtomic() )
 			writer.add( mFactory.createStartElement(new QName(wrapper.toString()), null, null));
 
 		else
 		{
-			XVariable var = XVariable.anonymousInstance(wrapper);
-			VariableInputPort nodep = new VariableInputPort( var );
+			InputPort nodep = new XValueInputPort( wrapper );
 			XMLEventReader reader = nodep.asXMLEventReader(opts);
 			XMLEvent event ;
 			while( reader.hasNext() ){
@@ -191,14 +192,13 @@ public class xcat extends XCommand {
 		}
 	}
 
-	private void writeWrapperEnd(XValue wrapper, XMLEventWriter writer, SerializeOpts opts) throws XMLStreamException, CoreException {
+	private void writeWrapperEnd(XValue wrapper, XMLEventWriter writer, SerializeOpts opts) throws XMLStreamException, CoreException, IOException {
 		if( wrapper.isAtomic() )
 			writer.add( mFactory.createEndElement(new QName(wrapper.toString()), null));
 
 		else
 		{
-			XVariable var = XVariable.anonymousInstance(wrapper);
-			VariableInputPort nodep = new VariableInputPort( var );
+			InputPort nodep = new XValueInputPort( wrapper);
 			XMLEventReader reader = nodep.asXMLEventReader(opts);
 			XMLEvent event ;
 			while( reader.hasNext() ){

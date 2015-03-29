@@ -34,6 +34,8 @@ import org.xmlsh.core.io.StreamInputPort;
 import org.xmlsh.core.io.StreamOutputPort;
 import org.xmlsh.core.io.VariableInputPort;
 import org.xmlsh.core.io.VariableOutputPort;
+import org.xmlsh.core.io.XValueInputPort;
+import org.xmlsh.core.io.XValueOutputPort;
 import org.xmlsh.sh.module.IModule;
 import org.xmlsh.sh.shell.FunctionDefinitions;
 import org.xmlsh.sh.shell.Modules;
@@ -473,7 +475,7 @@ public XVariable exportVar( String name ) throws InvalidArgumentException{
 	/*
 	 * Create or return an output port - managed by the autorelease pool
 	 */
-	public OutputPort getOutput( XValue port, boolean append ) throws IOException
+	public OutputPort getOutput( XValue port, boolean append ) throws IOException, InvalidArgumentException
 	{
 
 
@@ -490,7 +492,7 @@ public XVariable exportVar( String name ) throws InvalidArgumentException{
 		}
 		else
 		{
-			OutputPort p = new VariableOutputPort(  XVariable.anonymousInstance( port) );
+			OutputPort p = new XValueOutputPort(  port );
 			addAutoRelease(p);
 			return p;
 		}
@@ -498,7 +500,7 @@ public XVariable exportVar( String name ) throws InvalidArgumentException{
 
 	}
 
-	public OutputPort getOutput( String port , boolean append) throws IOException
+	public OutputPort getOutput( String port , boolean append) throws IOException, InvalidArgumentException
 	{
 		return getOutput( XValue.newXValue(port) , append );
 	}
@@ -654,7 +656,7 @@ public XVariable exportVar( String name ) throws InvalidArgumentException{
 		}
 		else
 		{
-			VariableInputPort p = new VariableInputPort(  XVariable.anonymousInstance( port) );
+			XValueInputPort p = new XValueInputPort(  port  );
 			// Port is not managed, add to autorelease
 			addAutoRelease(p);
 			return p;

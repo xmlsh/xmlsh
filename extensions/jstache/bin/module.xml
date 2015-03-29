@@ -1,0 +1,16 @@
+<module 
+	module_version="1.0"
+	name="jstache"
+	require="2.0.0"
+>
+<classpath>
+  <directory url="."/>
+</classpath>
+<packages>
+  <package>org.xmlsh.jstache</package>
+ </packages>
+<main>
+  <classname>org.xmlsh.jstache.Module</classname>
+</main>
+</module>
+

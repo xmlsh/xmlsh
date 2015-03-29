@@ -24,6 +24,7 @@ import org.xmlsh.core.XValue;
 import org.xmlsh.core.XVariable;
 import org.xmlsh.core.io.VariableInputPort;
 import org.xmlsh.core.io.VariableOutputPort;
+import org.xmlsh.core.io.XValueInputPort;
 import org.xmlsh.sh.core.ICommandExpr;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.XMLUtils;
@@ -116,8 +117,7 @@ public class EvalFunctionCall extends ExtensionFunctionCall
 			return null ;
 		
 
-		return new VariableInputPort(
-				  XVariable.anonymousInstance( XValue.newXValue(contextItem)));
+		return new XValueInputPort(XValue.newXValue(contextItem));
 	}
 
 	private Shell newShell(Shell sh) throws Exception {

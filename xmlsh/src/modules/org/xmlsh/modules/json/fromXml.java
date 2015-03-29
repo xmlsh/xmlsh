@@ -16,9 +16,11 @@ import net.sf.saxon.s9api.SaxonApiException;
 
 import org.xmlsh.core.AbstractBuiltinFunction;
 import org.xmlsh.core.CoreException;
+import org.xmlsh.core.InputPort;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.XVariable;
 import org.xmlsh.core.io.VariableInputPort;
+import org.xmlsh.core.io.XValueInputPort;
 import org.xmlsh.json.JSONUtils;
 import org.xmlsh.json.XMLRewritingStreamReader;
 import org.xmlsh.sh.shell.Shell;
@@ -45,7 +47,7 @@ public class fromXml	extends AbstractBuiltinFunction {
 	public XValue run(Shell shell, List<XValue> args) throws SaxonApiException, IOException, XMLStreamException, ClassNotFoundException, CoreException {
 
 	    XMLStreamReader reader = null;
-        try ( VariableInputPort iPort = new VariableInputPort(XVariable.anonymousInstance( args.get(0))) ){
+        try ( InputPort iPort = new XValueInputPort(args.get(0)) ){
              reader =  new XMLRewritingStreamReader(iPort.asXMLStreamReader(shell.getSerializeOpts()) );
             FromXmlParser parser =  getXmlMapper().getFactory().createParser(reader);
             TreeNode tree = parser.readValueAsTree();

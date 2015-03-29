@@ -112,7 +112,7 @@ public class JavaModule extends Module
 
    static ModuleConfig getConfiguration(Shell shell, String clsname,
 		List<URL> at) {
-	ModuleConfig config = new ModuleConfig("java" , "java:" + clsname ,  at , shell.getSerializeOpts());
+	ModuleConfig config = new ModuleConfig("java" , "java:" + clsname  , at, shell.getSerializeOpts());
 	config.setModuleClass(clsname);
 	return config ;
    }

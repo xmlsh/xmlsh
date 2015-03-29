@@ -474,7 +474,7 @@ public abstract class CommandFactory {
 				SearchPath path = null ;
 				switch (sourceMode) {
 				case IMPORT:
-					paths = new SearchPath[] { shell.getPath(ShellConstants.XMODPATH, true) , shell.getPath(ShellConstants.XPATH, true) } ;
+					paths = new SearchPath[] { shell.getPath(ShellConstants.XMODPATH, true)  } ;
 					break;
 				case RUN:
 				case SOURCE:
