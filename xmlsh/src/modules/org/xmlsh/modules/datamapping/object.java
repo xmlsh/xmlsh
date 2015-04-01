@@ -4,7 +4,7 @@
  *
  */
 
-package org.xmlsh.modules.java;
+package org.xmlsh.modules.datamapping;
 
 import java.util.Collections;
 import java.util.List;
@@ -44,29 +44,26 @@ import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.JavaUtils;
 
-@Function(name="interface",names={"new-interface"} )
-public class _interface extends AbstractBuiltinFunction {
+@Function(name="object",names={"new-object"} )
+public class object extends AbstractBuiltinFunction {
     @SuppressWarnings({ "unchecked" })
     @Override
 	public XValue run(Shell shell, List<XValue> args) throws Exception {
 
 	    String name = args.remove(0).toString();
 	    
-	    DynamicType.Builder<?> b = new ByteBuddy().
-	            makeInterface().name(name);
+	    DynamicType.Builder<?> b = new ByteBuddy().subclass(Object.class).name(name);
 
 	    for( XValue a : args ){
 	        String f = a.toString();
-            b=b.defineMethod( JavaUtils.toSetterName(f)  ,Void.TYPE, ( List<Class<?>> )(List)  Collections.
-                    singletonList(String.class) , Visibility.PUBLIC).withoutCode().
-                defineMethod( JavaUtils.toGetterName(f) , String.class ,( List<Class<?>> ) (List) Collections.emptyList() , Visibility.PUBLIC ).withoutCode();
-	    }
+	        b=b.defineField( f, String.class, Visibility.PUBLIC );	        
+        }
 
-	    Class cls = b.make()
+	    Object bean = b.make()
 	                .load(getClass().getClassLoader(), ClassLoadingStrategy.Default.WRAPPER)
-	                .getLoaded();
+	                .getLoaded().newInstance();
 
-	   		return XValue.newXValue( cls  );
+	   		return XValue.newXValue((Object) bean  );
 
 
 	}

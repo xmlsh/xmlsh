@@ -4,7 +4,7 @@
  *
  */
 
-package org.xmlsh.modules.java;
+package org.xmlsh.modules.datamapping;
 
 import java.util.List;
 

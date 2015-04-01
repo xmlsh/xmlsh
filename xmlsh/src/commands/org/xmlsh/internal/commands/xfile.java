@@ -45,6 +45,7 @@ public class xfile extends XCommand
 	@Override
 	public int run(  List<XValue> args  )	throws Exception
 	{
+	    mLogger.entry(args);
 		Options opts = new Options("n=name,b=base,d=dir,a=absolute,c=conanical,e=extension,B=basename,N,s=sys,u=uri,r=rel",SerializeOpts.getOptionDefs());
 		opts.parse(args);
 		args = opts.getRemainingArgs();
@@ -62,7 +63,7 @@ public class xfile extends XCommand
 			usage("Unexpected argument");
 			return 1;
 		}
-
+		mLogger.debug("file: {}" , xf );
 		boolean opt_sys = opts.hasOpt("s");
 
 		SerializeOpts serializeOpts = getSerializeOpts(opts);

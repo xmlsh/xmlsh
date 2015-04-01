@@ -7,7 +7,8 @@
 -->
 	<property environment="env"/>
 	<property name="component" value="xmlsh"/>
-        <property name="install_root" value="${env.XINSTALL}"/>
+  <property name="XINSTALL" value="${env.XINSTALL}"/>
+  <property name="install_root" value="${XINSTALL}"/>
   
 	<import file="../build/common.xml"/>
 	<property name="release" value="2_0_0"/>

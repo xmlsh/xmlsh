@@ -4,7 +4,7 @@
  *
  */
 
-package org.xmlsh.modules.java;
+package org.xmlsh.modules.datamapping;
 
 import java.util.Collections;
 import java.util.List;
@@ -44,29 +44,41 @@ import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.JavaUtils;
 
-@Function(name="object",names={"new-object"} )
-public class object extends AbstractBuiltinFunction {
-    @SuppressWarnings({ "unchecked" })
-    @Override
-	public XValue run(Shell shell, List<XValue> args) throws Exception {
+@Function(name="bean",names={"new-bean"} )
+public class bean extends AbstractBuiltinFunction {
+        @Override
+    	public XValue run(Shell shell, List<XValue> args) throws Exception {
+    
+    	    String name = args.remove(0).toString();
+    	    
+    	    DynamicType.Builder<?> b = new ByteBuddy().subclass(Object.class).name(name);
+    	    
+    
+    	    for( XValue a : args ){
+    	        b = newProperty(b, a.toString(), String.class );
+    	        
+            }
+    
+    	    Object bean = b.make()
+    	                .load(getClass().getClassLoader(), ClassLoadingStrategy.Default.WRAPPER)
+    	                .getLoaded().newInstance();
+    
+    	   		return XValue.newXValue((Object) bean  );
+    
+    
+    	}
 
-	    String name = args.remove(0).toString();
-	    
-	    DynamicType.Builder<?> b = new ByteBuddy().subclass(Object.class).name(name);
-
-	    for( XValue a : args ){
-	        String f = a.toString();
-	        b=b.defineField( f, String.class, Visibility.PUBLIC );	        
+        protected DynamicType.Builder<?> newProperty(DynamicType.Builder<?> b,
+                String name, Class<?> cls) {
+            b=b.defineField( name, String.class, Visibility.PUBLIC ).
+              defineMethod( JavaUtils.toSetterName(name)  ,Void.TYPE, ( List<Class<?>> )(List)  Collections.singletonList(cls) , Visibility.PUBLIC).
+              intercept( FieldAccessor.ofField(name) ).
+             defineMethod(JavaUtils.toGetterName(name),cls , Collections.EMPTY_LIST, Visibility.PUBLIC).
+                     intercept( FieldAccessor.ofField(name) );
+            return b;
         }
+    
 
-	    Object bean = b.make()
-	                .load(getClass().getClassLoader(), ClassLoadingStrategy.Default.WRAPPER)
-	                .getLoaded().newInstance();
-
-	   		return XValue.newXValue((Object) bean  );
-
-
-	}
 
 }
 

@@ -16,7 +16,7 @@ public abstract class XFunction  implements IXFunction
 
 
   private String mName;
-  private static Logger mLogger = LogManager.getLogger();
+  protected static Logger mLogger = LogManager.getLogger();
   protected XFunction(String name)
   {
       mName=name;

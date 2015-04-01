@@ -47,6 +47,8 @@ public class XFile /* implements XSerializble */ {
 		mCurdir = Shell.getCurPath().normalize();
 		Path path = Paths.get( xv.toString() );
 		mPath = path;
+		assert( mPath != null );
+        assert( mCurdir != null );
 
 	}
 
@@ -57,15 +59,25 @@ public class XFile /* implements XSerializble */ {
 	public XFile( Path dir , Path base  ){
 		mPath =  base.resolve(dir);
  	    mCurdir = Shell.getCurPath();
+        assert( mPath != null );
+        assert( mCurdir != null );
+
+
 		
 	}
 	public XFile(Path path) {
 		mPath = path ;
 		mCurdir = Shell.getCurPath() ;
+	      assert( mPath != null );
+	        assert( mCurdir != null );
+
 	}
 	public XFile(Path path, UnifiedFileAttributes attrs) {
 		this( path );
 		mAttrs = attrs ;
+	      assert( mPath != null );
+	        assert( mCurdir != null );
+
 	
 	}
 	public XFile(String dir, String base) {
@@ -136,6 +148,8 @@ public class XFile /* implements XSerializble */ {
 	}
 
 	public String getDirName() {
+	    mLogger.entry();
+	    assert( mPath != null);
 		String dir = FileUtils.toJavaPath(mPath.getParent());
 		return Util.isEmpty(dir) ? "." : dir;
 	}

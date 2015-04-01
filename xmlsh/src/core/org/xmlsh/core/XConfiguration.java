@@ -11,6 +11,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -31,12 +32,22 @@ import org.xmlsh.util.NameValueMap;
 import org.xmlsh.util.StringPair;
 import org.xmlsh.util.Util;
 
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonValue;
+
 /*
  * Universal/Generic configuration object
  * 
  * Composed of XValueProperties in "sections"
  */
-public class XConfiguration implements IXValueContainer, IXValueMap {
+
+@JsonAutoDetect( fieldVisibility = Visibility.NONE , getterVisibility = Visibility.NONE, 
+     setterVisibility = Visibility.NONE)
+public class XConfiguration implements IXValueContainer, IXValueMap  {
 
 
     static Logger mLogger = LogManager.getLogger();
@@ -121,6 +132,8 @@ public class XConfiguration implements IXValueContainer, IXValueMap {
         return properties;
     }
 
+  //  @JsonInclude
+ //   @JsonAnySetter
     public void setProperty(String section, XValueProperty prop) {
         getSection(section, true).put(prop);
     }
@@ -293,7 +306,8 @@ public class XConfiguration implements IXValueContainer, IXValueMap {
     // section.property
     // dotted.section.property
     
-
+   // @JsonInclude
+  //  @JsonAnySetter
     @Override
     public XValue get(String name) throws InvalidArgumentException {
         assert( name != null);
@@ -397,6 +411,13 @@ public class XConfiguration implements IXValueContainer, IXValueMap {
         if( mDefaultSectionName != null )
            return getSection( mDefaultSectionName );
         return null ;
+    }
+
+   // @JsonAnyGetter
+    @JsonInclude
+    @JsonValue
+    public Map<String,XValueProperties> asMap() { 
+       return mSections;
     }
 
 

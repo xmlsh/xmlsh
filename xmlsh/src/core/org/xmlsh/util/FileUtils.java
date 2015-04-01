@@ -220,6 +220,7 @@ public class FileUtils
 				( Util.isWindows() && name.contains("/"));
 	 }
 	public static String convertPath(String name, boolean bSystem) {
+	    assert( name!= null);
 		if( bSystem && File.separatorChar != '/')
 			return name.replace('/', File.separatorChar);
 		else
@@ -244,6 +245,9 @@ public class FileUtils
 	 */
 	public static String toJavaPath( Path path )
 	{
+	    mLogger.entry(path);
+	    if( path == null )
+	        return "";
 		return toJavaPath( path.toString());
 	}
 
