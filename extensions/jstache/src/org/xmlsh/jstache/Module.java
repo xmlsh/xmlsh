@@ -99,13 +99,13 @@ public class Module extends ExternalModule {
      * Opt.option ( "--json").with("Use JSON encoded data for variable expansion"),
      * Opt.option ( "--html").with("Use HTML encoded data for variable expansion"),
      * Opt.option ( "-h","--help").with("Help")
-     * );
+     * );f
      */
     @Command(name = "jstache",names={"mustache"})
     public static class jstache extends XCommand {
         private static Options.OptionDefs optDefs = Options.OptionDefs
                 .parseDefs(
-                        "D=template-dir:",
+                        "root=template-dir:",
                         "f=template-file:",
                         "t=template:",
                         "d=template-data:",
