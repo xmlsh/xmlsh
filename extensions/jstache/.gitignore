@@ -1,2 +1,5 @@
 /_out/
+
 /.apt_generated/
+/.settings/
+/.gradle/
