@@ -43,7 +43,7 @@ public class readconfig extends XCommand
 	
 	mLogger.entry(args);
 	
-    Options opts = new Options("format:,file:,+r=replace,defaults:", SerializeOpts.getOptionDefs());
+    Options opts = new Options("format:,file:,+r=replace,default=default-section:,defaults=default=values:", SerializeOpts.getOptionDefs());
     opts.parse(args);
     setSerializeOpts(opts);
     String format = opts.getOptString("format", "text");
@@ -88,9 +88,8 @@ public class readconfig extends XCommand
     config.setDefaultSectionName( defSection);
     
     XValue def = opts.getOptValue("defaults");
-    XValueProperties defProps = def == null ? null : XValueProperties.fromXValue(def);
-	if( bReplace )
-    	replaceVariables( config   );
+    if( bReplace )
+     config = 	replaceVariables( config  , def   );
     
     
     mShell.getEnv().setVar(varName, config.asXValue() );
@@ -99,15 +98,9 @@ public class readconfig extends XCommand
 
   }
 
-  private void replaceVariables(XConfiguration config ) {
-      XStringLookup lookup = new XConfiguration.XConfigLookup(config, null);
-      
-	  for( String sectName : config.keySet() ){
-		  XValueProperties props = config.getSection(sectName,false);
-		  props.replaceVariables( lookup );
-	  }
-	  
-	  
+  private XConfiguration replaceVariables(XConfiguration config, XValue def ) {
+	  return config.replace( def == null ? null : XStringLookup.newInstance( def ) );
+    
 }
 
 private void loadFromJSON(Properties props, InputPort in)

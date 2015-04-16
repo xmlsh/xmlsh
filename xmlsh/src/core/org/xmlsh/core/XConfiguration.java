@@ -81,9 +81,6 @@ public class XConfiguration implements IXValueContainer, IXValueMap  {
             return null ;
            
         }
-        
-        
-
     }
 
 
@@ -94,6 +91,11 @@ public class XConfiguration implements IXValueContainer, IXValueMap  {
     public XConfiguration(NameValueMap<XValueProperties> sections) {
         mSections = sections;
     }
+    public XConfiguration(NameValueMap<XValueProperties> sections,String defName ) {
+        mSections = sections;
+        mDefaultSectionName = defName ;
+    }
+
 
     public XConfiguration withSection(String section, XValueProperties props) {
         addSection(section, props);
@@ -150,21 +152,23 @@ public class XConfiguration implements IXValueContainer, IXValueMap  {
     }
 
     public XValue getProperty(String section, String name) {
+        mLogger.entry( section , name );
         if( section == null )
             return null ;
-
         XValueProperties sect = getSection(section);
         XValue value = null ;
         if (sect != null)
-            value = sect.get(name);
+            value = sect.getProperty(name);
+        
 
          // default section 
         if( value == null ){
             XValueProperties s = getDefaultSection( );
-            if( section != null )
-                value = s.get(name);
+            if( s != null )
+                value = s.getProperty(name);
         }
-        return value ;
+        
+        return mLogger.exit(value );
     
     }
 
@@ -332,6 +336,7 @@ public class XConfiguration implements IXValueContainer, IXValueMap  {
     
     public XValue getProperty(String name) throws InvalidArgumentException {
 
+        mLogger.entry(name);
         // 1) try a section first
         
         StringPair pair = new StringPair(name,ShellConstants.kDOT_CHAR);
@@ -346,10 +351,10 @@ public class XConfiguration implements IXValueContainer, IXValueMap  {
         if( value == null ){
             XValueProperties section = getDefaultSection( );
             if( section != null )
-                value = section.get(name);
+                value = section.getProperty(name);
             
         }
-        return value ;
+        return mLogger.exit( value );
     }
 
     @Override
@@ -419,6 +424,21 @@ public class XConfiguration implements IXValueContainer, IXValueMap  {
     public Map<String,XValueProperties> asMap() { 
        return mSections;
     }
+
+	public XConfiguration replace(XStringLookup parent) {
+		XConfiguration that = new XConfiguration();
+		that.setDefaultSectionName(getDefaultSectionName());
+		  XStringLookup lookup = getLookup(parent);
+		  for( Entry<String, XValueProperties> sect : mSections.entrySet() ){
+			  that.addSection( sect.getKey() ,  sect.getValue().replaceVariables(lookup));
+		  }
+		  return that ;
+		  
+	}
+
+	public XConfigLookup getLookup(XStringLookup parent) {
+		return new XConfiguration.XConfigLookup(this,parent);
+	}
 
 
     

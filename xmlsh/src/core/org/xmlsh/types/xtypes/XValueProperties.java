@@ -203,20 +203,24 @@ public class XValueProperties extends XValueMap {
             return mProps.get( value );
             
         }
-        
     }
-    public void replaceVariables(final XStringLookup lookup) {
-        XStringSubstituter subst = new XStringSubstituter(new XPropertiesLookup(this, lookup));
+    public XValueProperties replaceVariables(final XStringLookup lookup) {
+        XStringSubstituter subst = new XStringSubstituter(getLookup(lookup));
+        XValueProperties that = new XValueProperties();
 
         for (java.util.Map.Entry<String, XValue> e : entrySet()) {
             XValue v = e.getValue();
             XValue vnew = v.substitute(subst);
-            if (vnew != v)
-                e.setValue(vnew);
+            that.put( e.getKey() , vnew );
 
         }
+        return that ;
 
     }
+
+	public XPropertiesLookup getLookup(final XStringLookup lookup) {
+		return new XPropertiesLookup(this, lookup);
+	}
 
     public static XValueProperties fromXValue(XValue xv) throws InvalidArgumentException {
 
@@ -257,6 +261,11 @@ public class XValueProperties extends XValueMap {
         }
         return props;
     }
+
+	public XValue getProperty(String name) {
+         return get( name );
+	
+	}
 
 }
 /*

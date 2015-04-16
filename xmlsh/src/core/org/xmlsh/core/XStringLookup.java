@@ -110,9 +110,9 @@ public abstract class XStringLookup extends StrLookup<String> {
     }
     
     
-    protected abstract XValue lookupXValue( String value ) throws InvalidArgumentException;
+    protected abstract XValue lookupXValue( String value ) throws InvalidArgumentException, CoreException;
     
-    protected XValue lookupXValue( String scheme , String name ) throws InvalidArgumentException{
+    protected XValue lookupXValue( String scheme , String name ) throws CoreException{
         XValue value = null;
         
          // Scheme specific lookup 
@@ -143,7 +143,7 @@ public abstract class XStringLookup extends StrLookup<String> {
         XValue value=null;
         try {
             value = lookupXValue( scheme , name );
-        } catch (InvalidArgumentException e) {
+        } catch (CoreException e) {
             // TODO Auto-generated catch block
             mLogger.catching(e);
         }
@@ -154,5 +154,18 @@ public abstract class XStringLookup extends StrLookup<String> {
         return mLogger.exit(value.toString());
     
     }
+
+
+	public static XStringLookup  newInstance(XValue def) {
+
+		return new XStringLookup() { 
+			@Override
+			protected XValue lookupXValue(String name)
+					throws CoreException {
+				return def.getNamedValue(name);
+			}
+		};
+	
+	}
 
 }
