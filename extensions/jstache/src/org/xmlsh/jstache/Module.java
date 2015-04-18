@@ -110,8 +110,8 @@ public class Module extends ExternalModule {
                         "t=template:",
                         "d=template-data:",
                         "p=properties-file:",
-                        "j=json-data:",
-                        "J=json-file:",
+                        "j=json-data:+",
+                        "J=json-file:+",
                         "o=output:",
                         "n=name:",
                         "S=delim-start:",
@@ -137,14 +137,14 @@ public class Module extends ExternalModule {
             Options opts =  new Options( optDefs );
             opts.parse( args );
             args = opts.getRemainingArgs();
-            mContext.setRoot( Shell.getCurdir() );
+            mContext.addTemplateRoot( Shell.getCurdir() );
 
             for( OptionValue ov : opts.getOpts() ){
  
                 String name = ov.getOptionDef().getName() ;
                 switch( name   ){
                 case "D" : 
-                    mContext.setRoot( getShell().getExplicitFile(  ov.getValue().toString() , true , false )) ;
+                    mContext.addTemplateRoot( getShell().getExplicitFile(  ov.getValue().toString() , true , false )) ;
                     break;
 
                 case "f":
