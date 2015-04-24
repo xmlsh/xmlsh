@@ -1,6 +1,7 @@
 package org.xmlsh.jstache;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -27,6 +28,7 @@ import org.xmlsh.core.Options.OptionValue;
 import org.xmlsh.core.XClassLoader;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
+import org.xmlsh.core.io.FileInputPort;
 import org.xmlsh.core.io.XValueInputPort;
 import org.xmlsh.json.JSONUtils;
 import org.xmlsh.sh.module.ExternalModule;
@@ -105,7 +107,7 @@ public class Module extends ExternalModule {
     public static class jstache extends XCommand {
         private static Options.OptionDefs optDefs = Options.OptionDefs
                 .parseDefs(
-                        "root=template-dir:",
+                        "R=template-dir:+",
                         "f=template-file:",
                         "t=template:",
                         "d=template-data:",
@@ -120,15 +122,15 @@ public class Module extends ExternalModule {
                         "html=html-encoding"
                         );
 
-        private MustacheContext mContext = new MustacheContext();
+        private MustacheContext mContext = new MustacheContext( Shell.getCurdir() );
         private boolean bInputUsed = false ;
 
         private Reader getInputFromFile(XValue v) throws CoreException, IOException{
-            InputPort input = getShell().getEnv().getInput(v);
-            if( input.equals( getShell().getEnv().getStdin() ))
-                    bInputUsed = true ;
-            Reader r = input.asReader(getSerializeOpts());
-            return r;
+            if( v.isAtomic() && v.equals("-")){
+                bInputUsed = true ;
+            	return getShell().getEnv().getStdin().asReader(getSerializeOpts()); 
+            }
+            return mContext.getFileReader(v.toString());
             
         }
         @Override
@@ -143,7 +145,7 @@ public class Module extends ExternalModule {
  
                 String name = ov.getOptionDef().getName() ;
                 switch( name   ){
-                case "D" : 
+                case "R" : 
                     mContext.addTemplateRoot( getShell().getExplicitFile(  ov.getValue().toString() , true , false )) ;
                     break;
 
