@@ -126,6 +126,12 @@ public class Module extends ExternalModule {
         private boolean bInputUsed = false ;
 
         private Reader getInputFromFile(XValue v) throws CoreException, IOException{
+            	return getShell().getEnv().getInput(v).asReader(getSerializeOpts()); 
+        }
+        
+
+        // Get a Template file using the context paths
+        private Reader getTemplateFromFile(XValue v) throws CoreException, IOException{
             if( v.isAtomic() && v.equals("-")){
                 bInputUsed = true ;
             	return getShell().getEnv().getStdin().asReader(getSerializeOpts()); 
@@ -133,6 +139,8 @@ public class Module extends ExternalModule {
             return mContext.getFileReader(v.toString());
             
         }
+        
+        
         @Override
         public int run(List<XValue> args) throws Exception {
 
@@ -151,7 +159,7 @@ public class Module extends ExternalModule {
 
                 case "f":
                 case "template-file": {
-                    mContext.setTemplate(getInputFromFile(ov.getValue()));
+                    mContext.setTemplate(getTemplateFromFile(ov.getValue()));
                     mContext.setTemplate_name(ov.getValue().toString()) ;
                     break;
                 }
