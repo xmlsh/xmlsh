@@ -99,7 +99,7 @@ version.build_date=${bdate.datetime}
 version.release=${release}
 version.version=${version}
 </echo>
-		<javac  includeantruntime="false" destdir="_out" debug="on" source="1.6" target="1.6">
+		<javac  includeantruntime="false" destdir="_out" debug="on" source="${java.source.version}" target="${java.target.version}">
     	        <src path="src/core" />
     	 		<src path="src/shell"/>
         	 	<src path="src/commands"/>

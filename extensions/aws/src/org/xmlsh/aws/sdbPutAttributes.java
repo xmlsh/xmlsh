@@ -82,8 +82,6 @@ public class sdbPutAttributes	 extends  AWSSDBCommand {
 		if( ! Util.isEmpty(updateName))
 			cond =  new UpdateCondition( updateName , updateExists , ! Util.isEmpty(updateExists)) ;
 		
-		
-		
 			List<ReplaceableAttribute> attributes = getAttributes( args , bReplace );
          
 		PutAttributesRequest request = new PutAttributesRequest(domain,item,attributes,cond);

@@ -20,7 +20,9 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
+import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XCommand;
+import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.util.Util;
 
@@ -234,6 +236,12 @@ public abstract class AWSCommand extends XCommand {
 	
 		
 	}
+
+	protected XValue xpath(XValue xv, String expr)
+			throws UnexpectedException {
+				return xv.xpath(getShell(), expr);
+				
+			}
 
 }
 

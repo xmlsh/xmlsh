@@ -1,11 +1,6 @@
 package org.xmlsh.aws;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +8,7 @@ import java.util.Map;
 import javax.xml.stream.XMLStreamException;
 
 import net.sf.saxon.s9api.SaxonApiException;
+
 import org.xmlsh.aws.util.AWSDDBCommand;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
@@ -20,9 +16,7 @@ import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
-import org.xmlsh.util.Base64;
 import org.xmlsh.util.StringPair;
-import org.xmlsh.util.Util;
 
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.amazonaws.services.dynamodbv2.model.ExpectedAttributeValue;
@@ -40,14 +34,19 @@ public class ddbPutItem	 extends  AWSDDBCommand {
 	 */
 	@Override
 	public int run(List<XValue> args) throws Exception {
+		Options opts = getOptions("update:,exists:,+r=replace,q=quiet:");
 
-		Options opts = getOptions("expected:+,q=quiet");
+	//	Options opts = getOptions("expected:+,q=quiet");
 		opts.parse(args);
 
 		args = opts.getRemainingArgs();
 		
 		mSerializeOpts = this.getSerializeOpts(opts);
 		
+		String updateName = opts.getOptString("update", null);
+		String updateExists = opts.getOptString("exists",null);
+		boolean bReplace = opts.getOptFlag("replace",true);
+	
 		try {
 			 getDDBClient(opts);
 		} catch (UnexpectedException e) {
@@ -57,7 +56,7 @@ public class ddbPutItem	 extends  AWSDDBCommand {
 		}
 		
 		if( args.size() < 3 ){
-			usage(getName()+ ":" + "table item attributes ...");
+			usage(getName()+ ":" + "table attributes ...");
 			
 		}
 		String table = args.remove(0).toString();
@@ -78,8 +77,9 @@ public class ddbPutItem	 extends  AWSDDBCommand {
 	{
 		
 		
-	    Map<String,AttributeValue> itemMap = getAttributes( args  );
-		PutItemRequest putItemRequest = new PutItemRequest().withTableName(tableName).withItem(itemMap);
+	    Map<String,AttributeValue> itemMap = parseAttributeValues( args  );
+		PutItemRequest putItemRequest = new PutItemRequest().
+				withTableName(tableName).withItem(itemMap);
 		
 		Map<String, ExpectedAttributeValue> expected = parseExpected(opts);
 		if( expected != null )
@@ -159,85 +159,10 @@ public class ddbPutItem	 extends  AWSDDBCommand {
 		
 	}
 
-
-	private  Map<String,AttributeValue> getAttributes(List<XValue> args) throws IOException, UnexpectedException 
-	{
-		 Map<String,AttributeValue> attrs = new  HashMap<String,AttributeValue>();
-		while( !args.isEmpty()){
-
-			StringPair sp = new StringPair(args.remove(0).toString(),':');
-			String type = sp.getLeft();
-			AttributeValue av  = new AttributeValue();
-			
-			XValue xv = args.remove(0);
-
-			if( type == "N" )
-				av.setN( xv.toString() );
-			else
-			if( type == "NS")
-				av.setNS( parseSS( xv ) );
-			else
-			if( type == "S" )
-				av.setS( xv.toString());
-			else
-			if( type == "SS" )
-			    av.setSS( parseSS(xv));
-			else
-		    if( type == "B" )
-		    	av.setB( parseBinary(xv) );
-		    else
-		    if( type == "BS" ) 
-		    	av.setBS( parseBS( xv ));
-			
-
-		    else
-		    	throw new UnexpectedException("Unknown type: " + type );
-			
-			
-			String value = args.isEmpty() ? "" : args.remove(0).toString();
- 
-			attrs.put(sp.getRight(),av);
-			
-		
-		}
-		return attrs ;
-	}
-
-
-
-	private Collection<ByteBuffer> parseBS(XValue xv) throws IOException {
-
-		ArrayList<ByteBuffer> ret = new ArrayList<ByteBuffer>();
-		for( String s : xv.asStringList() )
-			ret.add( parseBinary( s ));
-		
-		return ret; 
-		
-		
-	}
-	private ByteBuffer parseBinary(XValue xv) throws IOException {
-		return parseBinary( xv.toString() );
-
-	}
-
-
-	private ByteBuffer parseBinary(String s) throws IOException {
-		
-		
-		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		
-		Base64.InputStream b64 = new Base64.InputStream(new ByteArrayInputStream(s.getBytes("UTF8")), Base64.DECODE );
-		Util.copyStream(b64, bos);
-		b64.close();
-		return ByteBuffer.wrap( bos.toByteArray());
-		
-	}
-
-
-	private Collection<String> parseSS(XValue xv) {
-		return xv.asStringList();
-	}
-
+	
+	// pairs for 
+	//  type:name value
+	// if type is empty then == "S"
 
 	public void usage() {
 		super.usage();

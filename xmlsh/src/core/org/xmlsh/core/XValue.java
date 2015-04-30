@@ -44,6 +44,7 @@ import net.sf.saxon.value.DoubleValue;
 import net.sf.saxon.value.FloatValue;
 import net.sf.saxon.value.IntegerValue;
 import net.sf.saxon.value.Value;
+
 import org.apache.log4j.Logger;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
@@ -779,6 +780,10 @@ public class XValue {
 		return isString ;
 		
 
+	}
+
+	public String getTypeName() {
+		return isNull() ? "null" : asObject().getClass().getSimpleName();
 	}
 
 	

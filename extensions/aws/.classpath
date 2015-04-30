@@ -4,7 +4,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/xmlsh"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/joda-time-2.2.jar"/>
-	<classpathentry kind="lib" path="lib/aws-java-sdk-1.9.8.jar" sourcepath="E:/Java/aws/aws-java-sdk-1.9.8/lib/aws-java-sdk-1.9.8-sources.jar"/>
 	<classpathentry kind="lib" path="lib/bcprov-jdk16-146.jar"/>
 	<classpathentry kind="lib" path="lib/aspectjrt.jar"/>
 	<classpathentry kind="lib" path="lib/aspectjweaver.jar"/>
@@ -13,5 +12,6 @@
 	<classpathentry kind="lib" path="lib/jackson-core-2.3.2.jar"/>
 	<classpathentry kind="lib" path="lib/jackson-databind-2.3.2.jar"/>
 	<classpathentry kind="lib" path="lib/javax.mail-api-1.4.6.jar"/>
+	<classpathentry kind="lib" path="lib/aws-java-sdk-1.9.33.jar" sourcepath="/space/Java/aws/aws-java-sdk-1.9.33/lib/aws-java-sdk-1.9.33-sources.jar"/>
 	<classpathentry kind="output" path="_out"/>
 </classpath>

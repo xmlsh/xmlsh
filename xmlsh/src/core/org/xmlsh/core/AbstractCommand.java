@@ -131,7 +131,7 @@ public abstract class AbstractCommand implements ICommand {
 		return mShell.getFile(fname);
 	}	
 	
-	protected Shell getShell() {
+	public Shell getShell() {
 		return mShell;
 	}
 

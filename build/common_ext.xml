@@ -1,0 +1,10 @@
+<project basedir=".." name="build-common-ext" default="">
+  <echo message="Included ${ant.project.name}"/>	 
+	 <property environment="env"/>
+	 <property name="component" value="extensions"/>
+     <property name="install_root" value="${env.XINSTALL_MOD}"/>
+	<import file="common.xml"/>
+
+</project>
+
+
