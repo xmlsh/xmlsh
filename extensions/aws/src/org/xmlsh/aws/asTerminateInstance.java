@@ -12,10 +12,10 @@ import java.util.List;
 import javax.xml.stream.XMLStreamException;
 
 import net.sf.saxon.s9api.SaxonApiException;
+
 import org.xmlsh.aws.util.AWSASCommand;
 import org.xmlsh.aws.util.SafeXMLStreamWriter;
 import org.xmlsh.core.CoreException;
-import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.UnexpectedException;

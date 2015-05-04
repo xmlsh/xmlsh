@@ -16,11 +16,11 @@ import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
 
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
-import com.amazonaws.services.dynamodbv2.model.PutItemRequest;
-import com.amazonaws.services.dynamodbv2.model.PutItemResult;
+import com.amazonaws.services.dynamodbv2.model.DeleteItemRequest;
+import com.amazonaws.services.dynamodbv2.model.DeleteItemResult;
 
 
-public class ddbPutItem	 extends  AWSDDBCommand {
+public class ddbDeleteItem	 extends  AWSDDBCommand {
     
     private boolean bQuiet = false ;
 	
@@ -41,13 +41,15 @@ public class ddbPutItem	 extends  AWSDDBCommand {
 	        String tableName = opts.getOptStringRequired("table");
 	        Map<String, AttributeValue> attrs = parseKeyOptions(opts);
 	        
-	     if( !args.isEmpty() ) 
-	       attrs.putAll( parseAttributeValues(args) );
-	       
+	     if( !args.isEmpty() ){
+	         usage("Unexpected arguments");
+	         return 1;
+	     }
 
 		mSerializeOpts = this.getSerializeOpts(opts);
 		
 		bQuiet = opts.hasOpt("quiet");
+	
 		try {
 			 getDDBClient(opts);
 		} catch (UnexpectedException e) {
@@ -56,9 +58,8 @@ public class ddbPutItem	 extends  AWSDDBCommand {
 			
 		}
 		
-
 		int ret = -1;
-		ret = put(tableName, attrs , opts.getOptString("condition", null) , opts.getOptString("return-values", null ) );
+		ret = delete(tableName, attrs , opts.getOptString("condition", null) , opts.getOptString("return-values", null ) );
 
 		
 		
@@ -68,22 +69,19 @@ public class ddbPutItem	 extends  AWSDDBCommand {
 	}
 
 
-	private int put(String tableName, Map<String, AttributeValue> attrs, String condition ,String returnValues ) throws IOException, XMLStreamException, SaxonApiException, CoreException 
+	private int delete(String tableName, Map<String, AttributeValue> key, String condition ,String returnValues ) throws IOException, XMLStreamException, SaxonApiException, CoreException 
 	{
 		
 	     
-		PutItemRequest putItemRequest = new PutItemRequest().
-				withTableName(tableName).withItem(attrs);
+		DeleteItemRequest deleteItemRequest = new DeleteItemRequest().
+				withTableName(tableName).withKey(key);
 		if( condition != null)
-		    putItemRequest.setConditionExpression(condition);
+		    deleteItemRequest.setConditionExpression(condition);
 		if( returnValues != null )
-		    putItemRequest.setReturnValues(returnValues);
-		
-		
-		traceCall("putItem");
+		    deleteItemRequest.setReturnValues(returnValues);
+		traceCall("deleteItem");
 
-		PutItemResult result = mAmazon.putItem(putItemRequest);
-		
+		DeleteItemResult result = mAmazon.deleteItem(deleteItemRequest);
 		
 		if( ! bQuiet ){
 			OutputPort stdout = this.getStdout();
@@ -113,6 +111,15 @@ public class ddbPutItem	 extends  AWSDDBCommand {
 		
 	}
 
+
+	
+	// pairs for 
+	//  type:name value
+	// if type is empty then == "S"
+
+public void usage() {
+		super.usage();
+	}
 
 
 

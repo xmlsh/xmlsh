@@ -265,7 +265,7 @@ public class http extends XCommand {
 
 
 
-	private void setOptions(DefaultHttpClient client, HttpHost host, Options opts) throws KeyManagementException, NoSuchAlgorithmException, UnrecoverableKeyException, CertificateException, FileNotFoundException, KeyStoreException, IOException {
+	private void setOptions(DefaultHttpClient client, HttpHost host, Options opts) throws KeyManagementException, NoSuchAlgorithmException, UnrecoverableKeyException, CertificateException, FileNotFoundException, KeyStoreException, IOException, InvalidArgumentException {
 		
 		HttpParams params = client.getParams();
 		HttpConnectionParamBean connection = new HttpConnectionParamBean(params);

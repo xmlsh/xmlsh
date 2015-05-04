@@ -12,9 +12,6 @@ import java.util.List;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import com.amazonaws.regions.RegionUtils;
-import com.amazonaws.regions.Regions;
-
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -25,6 +22,8 @@ import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.util.Util;
+
+import com.amazonaws.regions.Regions;
 
 public abstract class AWSCommand extends XCommand {
 	
@@ -190,7 +189,7 @@ public abstract class AWSCommand extends XCommand {
 		
 		
 	}
-	protected void setRegion(Options opts){
+	protected void setRegion(Options opts) {
 	    if( opts.hasOpt("region"))
 	    	setRegion(opts.getOptString("region",Regions.DEFAULT_REGION.getName()) );
 	    else {
@@ -228,7 +227,7 @@ public abstract class AWSCommand extends XCommand {
 		mLogger.info( "AWS Method Call: " + obj.getClass().toString() + "." + method );
 	}
 
-	protected void parseCommonOptions(Options opts) {
+	protected void parseCommonOptions(Options opts) throws InvalidArgumentException {
 		
 		rateRetry = opts.getOptInt("rate-retry", 0);
 		retryDelay = opts.getOptInt("retry-delay", 10000);

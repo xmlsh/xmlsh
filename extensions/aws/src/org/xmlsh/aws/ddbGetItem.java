@@ -1,24 +1,20 @@
 package org.xmlsh.aws;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import javax.xml.stream.XMLStreamException;
 
 import net.sf.saxon.s9api.SaxonApiException;
 
 import org.xmlsh.aws.util.AWSDDBCommand;
-import org.xmlsh.aws.util.AWSSDBCommand;
 import org.xmlsh.core.CoreException;
-import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.UnexpectedException;
-import org.xmlsh.core.UnimplementedException;
 import org.xmlsh.core.XValue;
+import org.xmlsh.util.Util;
 
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.amazonaws.services.dynamodbv2.model.GetItemRequest;
@@ -33,12 +29,17 @@ public class ddbGetItem extends AWSDDBCommand {
 	@Override
 	public int run(List<XValue> args) throws Exception {
 
-		Options opts = getOptions("c=consistant");
+		Options opts = getOptions("table=table-name:,key-name:+,key-value:+,key:+,c=consistant");
 		opts.parse(args);
 
-		args = opts.getRemainingArgs();
+		String tableName = opts.getOptStringRequired("table");
 
-		boolean bConsistant = opts.hasOpt("consistant");
+		Map<String, AttributeValue> keys = parseKeyOptions(opts);
+
+        boolean bConsistant = opts.hasOpt("consistant");
+		args = opts.getRemainingArgs();
+ 
+		List<String> attrs = Util.toStringList(args);
 
 		mSerializeOpts = this.getSerializeOpts(opts);
 
@@ -50,28 +51,14 @@ public class ddbGetItem extends AWSDDBCommand {
 
 		}
 
-		if (args.size() < 3) {
-			usage(getName() + " table name/value [name/value]");
-			return 1;
-
-		}
-		String table = args.remove(0).toString();
 		int ret = -1;
-		ret = getItem(table, parseKeys(args), bConsistant);
+		ret = getItem(tableName, keys, attrs,bConsistant);
 		return ret;
 
 	}
 
-	private Map<String, AttributeValue> parseKeys(List<XValue> args)
-			throws UnexpectedException, UnimplementedException, IOException, InvalidArgumentException {
-
-		if (args.isEmpty())
-			usage("table hash_key [range-key]");
-		return parseAttributeValues(args);
-	}
-
-	private int getItem(String domainName, Map<String, AttributeValue> key,
-			boolean bConsistantRead) throws IOException, XMLStreamException,
+    private int getItem(String tableName, Map<String, AttributeValue> key,
+			List<String> attrs, boolean bConsistantRead) throws IOException, XMLStreamException,
 			SaxonApiException, CoreException {
 
 		OutputPort stdout = this.getStdout();
@@ -80,9 +67,11 @@ public class ddbGetItem extends AWSDDBCommand {
 		startDocument();
 		startElement(getName());
 
-		GetItemRequest getItemRequest = new GetItemRequest().withTableName(domainName).withKey(key)
+		GetItemRequest getItemRequest = new GetItemRequest().withTableName(tableName).withKey(key)
 				.withConsistentRead(bConsistantRead);
-
+		if( attrs != null && !attrs.isEmpty())
+		  getItemRequest.setProjectionExpression(Util.stringJoin(attrs, ","));
+		
 		traceCall("getItem");
 
 		GetItemResult result = mAmazon.getItem(getItemRequest);
@@ -98,18 +87,4 @@ public class ddbGetItem extends AWSDDBCommand {
 		return 0;
 
 	}
-
-	private void writeItem(Map<String, AttributeValue> result)
-			throws XMLStreamException, IOException {
-		startElement("item");
-
-		for (Entry<String, AttributeValue> a : result.entrySet())
-			super.writeAttribute(a.getKey(), a.getValue());
-		endElement();
-	}
-
-	public void usage() {
-		super.usage();
-	}
-
 }

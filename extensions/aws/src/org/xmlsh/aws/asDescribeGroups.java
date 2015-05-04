@@ -12,6 +12,7 @@ import java.util.List;
 import javax.xml.stream.XMLStreamException;
 
 import net.sf.saxon.s9api.SaxonApiException;
+
 import org.xmlsh.aws.util.AWSASCommand;
 import org.xmlsh.aws.util.SafeXMLStreamWriter;
 import org.xmlsh.core.CoreException;
@@ -29,7 +30,6 @@ import com.amazonaws.services.autoscaling.model.EnabledMetric;
 import com.amazonaws.services.autoscaling.model.Instance;
 import com.amazonaws.services.autoscaling.model.SuspendedProcess;
 import com.amazonaws.services.autoscaling.model.TagDescription;
-import com.amazonaws.services.ec2.model.DescribeVolumesRequest;
 
 public class asDescribeGroups extends AWSASCommand {
 

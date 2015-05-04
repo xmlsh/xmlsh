@@ -14,7 +14,6 @@ import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
 
 import com.amazonaws.regions.RegionUtils;
-import com.amazonaws.regions.Regions;
 import com.amazonaws.services.elasticloadbalancing.AmazonElasticLoadBalancingClient;
 import com.amazonaws.services.elasticloadbalancing.model.Instance;
 

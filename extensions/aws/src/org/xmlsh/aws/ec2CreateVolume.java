@@ -21,7 +21,6 @@ import org.xmlsh.util.Util;
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.ec2.model.CreateVolumeRequest;
 import com.amazonaws.services.ec2.model.CreateVolumeResult;
-import com.amazonaws.services.ec2.model.EbsBlockDevice;
 import com.amazonaws.services.ec2.model.VolumeType;
 
 

@@ -34,12 +34,12 @@ public class ddbCreateTable extends AWSDDBCommand {
 	@Override
 	public int run(List<XValue> args) throws Exception {
 
-		Options opts = getOptions("read-capacity:,write-capacity:,attribute:+,global-secondary-index:+,local-secondary-index:+,key:+");
+		Options opts = getOptions("table:,read-capacity:,write-capacity:,attribute:+,global-secondary-index:+,local-secondary-index:+,key:+");
 		opts.parse(args);
 
 		args = opts.getRemainingArgs();
 
-		if (args.size() != 1) {
+		if (args.size() != 0) {
 			usage();
 			return 1;
 		}
@@ -55,15 +55,17 @@ public class ddbCreateTable extends AWSDDBCommand {
 		}
 
 		int ret = -1;
-		ret = create(args.get(0).toString(), opts);
+		ret = create(  opts);
 
 		return ret;
 
 	}
 
-	private int create(String tableName, Options opts) throws IOException,
+	private int create(Options opts) throws IOException,
 			XMLStreamException, SaxonApiException, CoreException {
 
+	    String tableName = opts.getOptStringRequired("table");
+	    
 		OutputPort stdout = this.getStdout();
 		mWriter = stdout.asXMLStreamWriter(mSerializeOpts);
 

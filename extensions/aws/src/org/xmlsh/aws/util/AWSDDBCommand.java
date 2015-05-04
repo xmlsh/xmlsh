@@ -19,7 +19,6 @@ import java.util.Map.Entry;
 
 import javax.xml.stream.XMLStreamException;
 
-import net.sf.saxon.s9api.Axis;
 import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
@@ -38,8 +37,10 @@ import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
 import com.amazonaws.services.dynamodbv2.model.AttributeDefinition;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+import com.amazonaws.services.dynamodbv2.model.ConsumedCapacity;
 import com.amazonaws.services.dynamodbv2.model.GlobalSecondaryIndex;
 import com.amazonaws.services.dynamodbv2.model.GlobalSecondaryIndexDescription;
+import com.amazonaws.services.dynamodbv2.model.ItemCollectionMetrics;
 import com.amazonaws.services.dynamodbv2.model.KeySchemaElement;
 import com.amazonaws.services.dynamodbv2.model.KeyType;
 import com.amazonaws.services.dynamodbv2.model.LocalSecondaryIndex;
@@ -52,6 +53,59 @@ import com.amazonaws.services.dynamodbv2.model.TableDescription;
 public abstract class AWSDDBCommand extends AWSCommand {
 
     protected AmazonDynamoDB mAmazon;
+    
+    /*
+     * Attribute Name/Type 
+     *   Type is optional and defaults to "S" and stored in Left
+     *   Name is stored in right
+     */
+    public static class NameType {
+        private String name;
+        private String type;
+        private void _init( String def ){
+            StringPair pair = new StringPair( def , ':');
+            name = pair.getRight();
+            type = pair.hasLeft() ? pair.getLeft() : "S";
+        }
+        NameType( String def ) {
+            _init(def);
+        }
+        NameType( String name ,String type ){
+            this.name = name ;
+            this.type = type ;
+        }
+        NameType( XValue xv ) throws InvalidArgumentException {
+             _init(xv);
+        }
+
+        private void _init( XValue xv ) throws InvalidArgumentException{
+            if( xv.isXdmNode() ){
+                _init( xv.asXdmNode());
+            } 
+            else
+            if( xv.isString() )
+                _init( xv.toString() );
+            else
+                throw new InvalidArgumentException(
+                        "Unexpected argument type for attribute: " + xv.getTypeName());
+        }
+        NameType( XdmNode node ){
+            _init( node );
+        }
+
+
+        private void _init( XdmNode node ) {
+            type = node.getAttributeValue( new QName("type"));
+            name = node.getAttributeValue(new QName("name"));
+        }
+        String getName() {
+            return name;
+        }
+        String getType() { 
+            return type;
+        }
+        
+    }
 
     public AWSDDBCommand() {
         super();
@@ -84,20 +138,10 @@ public abstract class AWSDDBCommand extends AWSCommand {
 
     protected AttributeDefinition parseKeyAttribute(XValue xv)
             throws InvalidArgumentException, UnexpectedException {
-        if (xv.isString()) {
-            StringPair sp = new StringPair(xv.toString(), '=');
-            return new AttributeDefinition().withAttributeName(sp.getRight())
-                    .withAttributeType(sp.getLeft());
-        }
-        if (xv.isXdmNode()) {
-            return new AttributeDefinition().withAttributeName(
-                    xpath(xv, "string(./(@name|name)").toString())
-                    .withAttributeType(
-                            xpath(xv, "string(./(@type|type)").toString());
+        NameType  ant = new NameType(xv);
+            return new AttributeDefinition().withAttributeName(ant.getName())
+                    .withAttributeType( ant.getType() );
 
-        }
-        throw new InvalidArgumentException(
-                "Unexpected argument type for attribute: " + xv.getTypeName());
     }
 
     // Parses one global secondary index
@@ -119,13 +163,13 @@ public abstract class AWSDDBCommand extends AWSCommand {
         return gi;
     }
 
-    protected KeySchemaElement parseKeySchemaElement(XValue xv) {
+    protected KeySchemaElement parseKeySchemaElement(XValue xv) throws InvalidArgumentException {
 
-        StringPair sp = new StringPair(xv.toString(), ':');
-
+        // Note: overload of 'type' for hash/range 
+        NameType ant = new NameType(xv);
         KeySchemaElement keyElement = new KeySchemaElement().withAttributeName(
-                sp.getRight()).withKeyType(
-                KeyType.valueOf(sp.getLeft().toUpperCase()));
+                ant.getName()).withKeyType(
+                KeyType.valueOf(ant.getType().toUpperCase()));
         return keyElement;
     }
 
@@ -136,11 +180,10 @@ public abstract class AWSDDBCommand extends AWSCommand {
             // value->sequence->item
             for (XdmItem item : xpath(xv, "key-schema/key-element-name")
                     .asXdmValue()) {
-                if (item instanceof XdmNode)
-                    list.add(new KeySchemaElement(((XdmNode) item)
-                            .getAttributeValue(new QName("name")),
-                            ((XdmNode) item)
-                                    .getAttributeValue(new QName("type"))));
+                if (item instanceof XdmNode){
+                    NameType ant = new NameType( (XdmNode) item );
+                    list.add(new KeySchemaElement(ant.getName(), ant.getType() ));
+                }
                 else
                     throw new UnexpectedException("Unexpected node type: "
                             + item.getClass().getName());
@@ -423,47 +466,103 @@ public abstract class AWSDDBCommand extends AWSCommand {
 
     }
 
+    protected AttributeValue parseAttributeValue( String type , XValue xv ) throws UnimplementedException, IOException, UnexpectedException{
+        AttributeValue av;
+        
+        if (type.equals( "N"))
+            return new AttributeValue().withN(xv.toString());
+        else if (type.equals( "NS"))
+            return new AttributeValue().withNS(parseNS(xv));
+        else if (type.equals( "S"))
+            return new AttributeValue().withS(xv.toString());
+        else if (type.equals( "SS"))
+            return new AttributeValue().withSS(parseSS(xv));
+        else if (type.equals( "B"))
+            return new AttributeValue().withB(parseBinary(xv));
+        else if (type.equals( "BS"))
+            return new AttributeValue().withBS(parseBS(xv));
+        else if (type.equals( "BOOL"))
+            return new AttributeValue().withBOOL(Util.parseBoolean(xv.toString()));
+        else if (type.equals( "NULL"))
+            return new AttributeValue().withNULL(Util.parseBoolean(xv.toString()));
+        else if (type.equals( "L"))
+            return new AttributeValue().withL(parseL(xv));
+        else if (type.equals( "M"))
+            return new AttributeValue().withM(parseM(xv));
+        else
+            throw new UnexpectedException("Unknown type: " + type);
+        
+    } 
+    /*
+     * Parse a set of attributes 
+     *   [type:]Name Value ... 
+     *               -> any value of type 
+     *   
+     *   <attribute name="name" type="type">
+     *          value
+     *   <attribute>
+     *      
+     *   
+     */
+    
+    protected Map<String, AttributeValue> parseAttributeNameValue( XValue name, XValue xv ) throws UnimplementedException, UnexpectedException, IOException, InvalidArgumentException {
+        Map<String, AttributeValue> attrs = new HashMap<String, AttributeValue>();
+        AttributeValue av  = parseAttributeValue(parseAttribteType(xv) , xv );
+        attrs.put(name.toString(), av);
+        return attrs;
+    }
+        
+    private String parseAttribteType(XValue xv) throws InvalidArgumentException {
+
+        if( xv.isString() )
+            return "S" ;
+        if( xv.isNull())
+            return "NULL" ;
+        if( xv.isAtomic()){
+           return  "S" ;
+        }
+        throw new InvalidArgumentException("Unexpected type for attribute: " + xv.getTypeName() );
+
+    }
+
+    protected Map<String, AttributeValue> parseAttributeValue(XValue a) throws InvalidArgumentException, UnimplementedException, UnexpectedException, IOException{
+        if( a.isXdmNode() ){
+            Map<String, AttributeValue> attrs = new HashMap<String, AttributeValue>();
+            NameType ant = new NameType( a.asXdmNode() );
+            AttributeValue av  = parseAttributeValue(ant.getType(), a);
+            attrs.put(ant.getName(), av);
+            return attrs;
+        }
+        throw new InvalidArgumentException("Unexpected type for attribute: " + a.getTypeName() );
+
+    }
+
     protected Map<String, AttributeValue> parseAttributeValues(List<XValue> args)
             throws IOException, UnexpectedException, UnimplementedException,
             InvalidArgumentException {
         Map<String, AttributeValue> attrs = new HashMap<String, AttributeValue>();
         while (!args.isEmpty()) {
-            if (args.size() < 2)
-                throw new InvalidArgumentException(
-                        "Expecting name attribute [name value]");
-
-            StringPair sp = new StringPair(args.remove(0).toString(), ':');
-            String type = sp.hasLeft() ? sp.getLeft() : "S";
-            AttributeValue av = new AttributeValue();
-
-            XValue xv = args.remove(0);
-
-            if (type.equals( "N"))
-                av.setN(xv.toString());
-            else if (type.equals( "NS"))
-                av.setNS(parseNS(xv));
-            else if (type.equals( "S"))
-                av.setS(xv.toString());
-            else if (type.equals( "SS"))
-                av.setSS(parseSS(xv));
-            else if (type.equals( "B"))
-                av.setB(parseBinary(xv));
-            else if (type.equals( "BS"))
-                av.setBS(parseBS(xv));
-            else if (type.equals( "BOOL"))
-                av.setBOOL(Util.parseBoolean(xv.toString()));
-            else if (type.equals( "NULL"))
-                av.setNULL(Util.parseBoolean(xv.toString()));
-            else if (type.equals( "L"))
-                av.setL(parseL(xv));
-            else if (type.equals( "M"))
-                av.setM(parseM(xv));
-
+            
+            XValue a = args.remove(0);
+            NameType ant;
+            // <attribute element>
+            if( a.isXdmNode() )
+                ant = new NameType( a.asXdmNode() );
             else
-                throw new UnexpectedException("Unknown type: " + type);
+            // [type:]Name Value
+            if( a.isString()){
+                if( args.isEmpty())
+                  throw new InvalidArgumentException("Expected value after name: " + a.toString() );
+                ant = new NameType( a.toString());
+                a = args.remove(0);
+            }
+            else
+                throw new InvalidArgumentException("Unexpected type for attribute: " + a.getTypeName() );
 
+            
+            AttributeValue av  = parseAttributeValue(ant.getType(), a);
 
-            attrs.put(sp.getRight(), av);
+            attrs.put(ant.getName(), av);
 
         }
         return attrs;
@@ -515,6 +614,53 @@ public abstract class AWSDDBCommand extends AWSCommand {
 
     protected Collection<String> parseNS(XValue xv) {
         return parseSS(xv); // numbers
+    }
+
+    protected Map<String, AttributeValue> parseKey(XValue key) throws UnexpectedException,
+            UnimplementedException, IOException, InvalidArgumentException {
+                return  parseAttributeValue( key );
+                
+            }
+
+    protected Map<String, AttributeValue> parseKey(XValue name, XValue value)
+            throws UnexpectedException, UnimplementedException, IOException,
+            InvalidArgumentException {
+                return  parseAttributeNameValue(name, value);
+            }
+
+    protected void writeItem(Map<String, AttributeValue> result) throws XMLStreamException,
+            IOException {
+            	startElement("item");
+            	for (Entry<String, AttributeValue> a : result.entrySet())
+            		this.writeAttribute(a.getKey(), a.getValue());
+            	endElement();
+            }
+
+    protected Map<String, AttributeValue> parseKeyOptions(Options opts)
+            throws InvalidArgumentException, UnexpectedException,
+            UnimplementedException, IOException {
+                Map<String, AttributeValue> keys = new HashMap<String, AttributeValue>();
+            	if( opts.hasOpt("key"))
+                  for( XValue k : opts.getOptValues("key"))
+            	    keys.putAll( parseKey(k));
+            
+              if( opts.hasOpt("key-name")){
+            	   List<XValue> keyValues = opts.getOptValues("key-value");
+            	  int i = 0;
+                  for( XValue keyName : opts.getOptValues("key-name"))
+                      keys.putAll( parseKey(keyName, keyValues.get(i++)));
+                }
+                return keys;
+            }
+
+    protected void writeItemCollectionMetrics(ItemCollectionMetrics itemCollectionMetrics) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    protected void writeConsumedCapacity(ConsumedCapacity consumedCapacity) {
+        // TODO Auto-generated method stub
+        
     }
 
 }

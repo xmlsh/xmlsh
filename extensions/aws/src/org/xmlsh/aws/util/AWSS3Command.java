@@ -18,6 +18,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import javax.xml.stream.XMLStreamException;
 
 import net.sf.saxon.s9api.SaxonApiException;
+
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.openssl.PEMReader;
 import org.xmlsh.core.CoreException;
@@ -27,7 +28,6 @@ import org.xmlsh.core.XValue;
 import org.xmlsh.util.Util;
 
 import com.amazonaws.regions.RegionUtils;
-import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.AmazonS3EncryptionClient;

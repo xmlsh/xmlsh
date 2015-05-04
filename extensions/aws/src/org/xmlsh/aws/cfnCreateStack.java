@@ -18,7 +18,6 @@ import net.sf.saxon.s9api.SaxonApiException;
 import org.xmlsh.aws.util.AWSCFNCommand;
 import org.xmlsh.aws.util.SafeXMLStreamWriter;
 import org.xmlsh.core.CoreException;
-import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.UnexpectedException;
@@ -28,7 +27,6 @@ import org.xmlsh.util.Util;
 
 import com.amazonaws.services.cloudformation.model.CreateStackRequest;
 import com.amazonaws.services.cloudformation.model.CreateStackResult;
-import com.amazonaws.services.cloudformation.model.OnFailure;
 import com.amazonaws.services.cloudformation.model.Parameter;
 import com.amazonaws.services.cloudformation.model.Tag;
 

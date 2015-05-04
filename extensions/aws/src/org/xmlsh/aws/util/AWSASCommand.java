@@ -14,7 +14,6 @@ import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
 
 import com.amazonaws.regions.RegionUtils;
-import com.amazonaws.regions.Regions;
 import com.amazonaws.services.autoscaling.AmazonAutoScaling;
 import com.amazonaws.services.autoscaling.AmazonAutoScalingClient;
 

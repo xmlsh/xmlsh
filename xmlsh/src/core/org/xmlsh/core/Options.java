@@ -71,7 +71,29 @@ public class Options
 		private OptionDef		option;
 		private	 boolean		optflag = true; // true if '-' , false if '+'
 		private List<XValue>	values = new ArrayList<XValue>(); // in the case of multiple values possible
-		
+		public String toString() {
+		   StringBuffer sb = new StringBuffer(); 
+		   if( option.hasPlus ){
+		       sb.append( optflag ? '-' : '+' );
+		       sb.append(option.toString());
+		   } else {
+		       sb.append("-" + option.toString());
+		       
+		       if( values.size() > 1) {
+		           sb.append("=[");
+		         String delim=",";
+  		         for( XValue xv : values ){
+		           sb.append( xv.toString() );
+		           sb.append(delim);    
+		           delim="";
+		         }
+	               sb.append("]");
+		       }
+		       else if( ! values.isEmpty())
+		           sb.append("=").append(values.get(0)).toString();
+		   }
+		   return sb.toString();
+		}
 		OptionValue( OptionDef def , boolean flag ) {
 			option = def ;
 			optflag = flag ;
@@ -101,8 +123,12 @@ public class Options
 		}
 		/**
 		 * @return the arg
+		 * @throws InvalidArgumentException 
 		 */
-		public XValue getValue() {
+		public XValue getValue()  {
+		    if( values.isEmpty() )
+		        throw new IllegalArgumentException("Option: " + option.toString() + " has no value");
+		    
 			return values.get(0);
 		}
 		
@@ -114,6 +140,12 @@ public class Options
 		{
 			return optflag ;
 		}
+        public boolean hasValue() { 
+            return hasValue(0);
+        }
+        public boolean hasValue(int n) {
+            return values.size() > n && values.get(n) != null ;
+        }
 		
 	}
 	
@@ -360,7 +392,7 @@ public class Options
 	public String getOptString( String opt , String defValue )
 	{
 		OptionValue value = getOpt(opt);
-		if( value != null )
+		if( value != null && value.hasValue() )
 			return value.getValue().toString();
 		else
 			return defValue ;
@@ -369,7 +401,7 @@ public class Options
 	public String getOptStringRequired( String opt  ) throws InvalidArgumentException 
 	{
 		OptionValue value = getOpt(opt);
-		if(value != null)
+		if(value != null && value.hasValue() ) 
 			return value.getValue().toString();
 	
 		throw new InvalidArgumentException("Required option: -" + opt );
@@ -379,7 +411,7 @@ public class Options
 	public boolean getOptBool( String opt, boolean defValue )
 	{
 		OptionValue value = getOpt(opt);
-		if( value != null )
+		if( value != null && value.hasValue())
 			try {
 				return value.getValue().toBoolean();
 			} catch (Exception e) {
@@ -399,7 +431,7 @@ public class Options
 
 	public XValue getOptValue(String arg) {
 		OptionValue ov = getOpt(arg);
-		if( ov == null )
+		if( ov == null || ! ov.hasValue() )
 			return null;
 		else
 			return ov.values.get(0);
@@ -407,14 +439,14 @@ public class Options
 
 	public XValue getOptValueRequired(String arg) throws InvalidArgumentException {
 		OptionValue ov = getOpt(arg);
-		if( ov != null )
+		if( ov != null && ov.hasValue() )
 			return ov.values.get(0);
 		throw new InvalidArgumentException("Required option: -" + arg );
 	}
 	
 	public List<XValue> getOptValuesRequired(String arg) throws InvalidArgumentException {
 		OptionValue ov = getOpt(arg);
-		if( ov != null )
+		if( ov != null && ov.hasValue() )
 			return ov.values;
 		throw new InvalidArgumentException("Required option: -" + arg );
 	}
