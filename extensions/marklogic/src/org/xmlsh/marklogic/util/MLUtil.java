@@ -26,11 +26,12 @@ import javax.net.ssl.X509TrustManager;
 import javax.xml.transform.stream.StreamSource;
 
 import net.sf.saxon.om.NodeInfo;
-import net.sf.saxon.om.ValueRepresentation;
+import net.sf.saxon.om.Sequence;
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XdmAtomicValue;
 import net.sf.saxon.trans.XPathException;
 import net.sf.saxon.value.AtomicValue;
+
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.IXdmItemOutputStream;
 import org.xmlsh.core.InvalidArgumentException;
@@ -299,7 +300,7 @@ public class MLUtil {
 		
 		
 		@SuppressWarnings("rawtypes")
-		ValueRepresentation value = item.getUnderlyingValue();
+		Sequence value = item.getUnderlyingValue();
 		boolean isAtom = ( value instanceof AtomicValue ) || ( value instanceof NodeInfo && ((NodeInfo)value).getNodeKind() == net.sf.saxon.type.Type.TEXT ) ;
 		return isAtom;
 	

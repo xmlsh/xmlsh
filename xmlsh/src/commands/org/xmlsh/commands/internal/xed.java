@@ -11,6 +11,7 @@ import java.util.List;
 
 import javax.xml.transform.Source;
 
+import net.sf.saxon.om.AxisInfo;
 import net.sf.saxon.om.CodedName;
 import net.sf.saxon.om.DocumentInfo;
 import net.sf.saxon.om.Item;
@@ -36,6 +37,7 @@ import net.sf.saxon.tree.iter.AxisIterator;
 import net.sf.saxon.tree.linked.DocumentImpl;
 import net.sf.saxon.type.BuiltInAtomicType;
 import net.sf.saxon.type.Type;
+
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Namespaces;
@@ -347,7 +349,7 @@ public class xed extends XCommand {
 		replacex.setContextItem(item);
 		
 		// Convert to string and turn into an XdmItem
-		String replace =replacex.evaluateSingle().getUnderlyingValue().getStringValue();
+		String replace = new XValue(replacex.evaluateSingle()).toString();
 		if( node.getNodeKind() == Type.ATTRIBUTE )
 			node.replaceStringValue( replace );
 		else {
@@ -398,7 +400,7 @@ public class xed extends XCommand {
 		// Make the children a text node 
 		parent.replaceStringValue(replace);
 		
-		Item item  = parent.iterateAxis( net.sf.saxon.om.Axis.CHILD ).next();
+		Item item  = parent.iterateAxis( AxisInfo.CHILD ).next();
 		return (NodeInfo) item ;
 		
 		
@@ -437,7 +439,7 @@ public class xed extends XCommand {
 		// Otherwise the source is just returned unchnaged
 		
 		if( src instanceof DocumentInfo  )
-			src = (NodeInfo)(((DocumentInfo)src).iterateAxis(net.sf.saxon.om.Axis.CHILD).next());
+			src = (NodeInfo)(((DocumentInfo)src).iterateAxis(AxisInfo.CHILD).next());
 		return mBuilder.build(src);
 		
 	}
@@ -452,7 +454,7 @@ public class xed extends XCommand {
 	{
 		
 		// Write attributes
-		AxisIterator iter = node.iterateAxis(net.sf.saxon.om.Axis.ATTRIBUTE);
+		AxisIterator iter = node.iterateAxis(AxisInfo.ATTRIBUTE);
 		Item item;
 		while( ( item = iter.next() ) != null ){
 			NodeInfo a = (NodeInfo) item;

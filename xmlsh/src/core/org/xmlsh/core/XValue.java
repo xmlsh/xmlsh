@@ -20,8 +20,9 @@ import com.jayway.jsonpath.JsonModel;
 
 import net.sf.saxon.om.Item;
 import net.sf.saxon.om.NodeInfo;
+import net.sf.saxon.om.Sequence;
 import net.sf.saxon.om.SequenceIterator;
-import net.sf.saxon.om.ValueRepresentation;
+import net.sf.saxon.om.SequenceTool;
 import net.sf.saxon.s9api.ItemType;
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.QName;
@@ -43,7 +44,6 @@ import net.sf.saxon.value.DecimalValue;
 import net.sf.saxon.value.DoubleValue;
 import net.sf.saxon.value.FloatValue;
 import net.sf.saxon.value.IntegerValue;
-import net.sf.saxon.value.Value;
 
 import org.apache.log4j.Logger;
 import org.xmlsh.sh.shell.SerializeOpts;
@@ -130,7 +130,6 @@ public class XValue {
 			return (XdmValue) mValue ;
 		else
 			return null ;
-		
 	}
 
 	
@@ -298,8 +297,7 @@ public class XValue {
 		if( ! (mValue instanceof XdmValue ))
 			return false ;
 		
-		
-		ValueRepresentation<? extends Item> value = asXdmValue().getUnderlyingValue();
+		Sequence value = asXdmValue().getUnderlyingValue();
 		boolean isAtom = ( value instanceof AtomicValue ) || ( value instanceof NodeInfo && ((NodeInfo)value).getNodeKind() == net.sf.saxon.type.Type.TEXT ) ;
 		return isAtom;
 	
@@ -495,24 +493,6 @@ public class XValue {
 	}
 	
 	
-	
-	public SequenceIterator asSequenceIterator()
-	{
-		XdmValue value = asXdmValue();
-		if( value == null )
-			return null ;
-		
-		try {
-			ValueRepresentation v = value.getUnderlyingValue();
-			if (v instanceof Value) {
-				return  ((Value)v).iterate();
-			} else {
-				return SingletonIterator.makeIterator((NodeInfo)v);
-			}
-		} catch (XPathException e) {
-			throw new SaxonApiUncheckedException(e);
-		}
-	}
 
 	public XValue shift(int n) {
 		if( mValue == null )
@@ -687,19 +667,16 @@ public class XValue {
 			return mValue ;
 		
 		XdmValue xv = (XdmValue)mValue ;
-		
-		ValueRepresentation value = xv.getUnderlyingValue();
-		// Special case for text nodes treat as String
-		if( value instanceof NodeInfo &&  ((NodeInfo)value).getNodeKind() == net.sf.saxon.type.Type.TEXT ) 
-			return value.getStringValue();
+      Sequence value = xv.getUnderlyingValue();
+      // Special case for text nodes treat as String
+      if(value instanceof NodeInfo && ((NodeInfo) value).getNodeKind() == net.sf.saxon.type.Type.TEXT)
+        return ((NodeInfo)value).getStringValue();
 		
 		if( ! ( value instanceof AtomicValue ))
 			return value ;
 		
-		AtomicValue av = (AtomicValue) value ;
-		Object java = AtomicValue.convertToJava(av);
-			
-		
+	      AtomicValue av = (AtomicValue) value;
+	      Object java = SequenceTool.convertToJava(av);
 		return java;
 	}
 
@@ -775,8 +752,9 @@ public class XValue {
 			return false ;
 		
 		
-		ValueRepresentation<? extends Item> value = asXdmValue().getUnderlyingValue();
-		boolean isString = ( value instanceof net.sf.saxon.value.StringValue ) || ( value instanceof NodeInfo && ((NodeInfo)value).getNodeKind() == net.sf.saxon.type.Type.TEXT ) ;
+	    Sequence value = asXdmItem().getUnderlyingValue();
+	    boolean isString = (value instanceof net.sf.saxon.value.StringValue) ||
+	        (value instanceof NodeInfo && ((NodeInfo) value).getNodeKind() == net.sf.saxon.type.Type.TEXT);
 		return isString ;
 		
 

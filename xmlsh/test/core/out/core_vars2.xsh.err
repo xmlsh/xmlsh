@@ -1,6 +1,6 @@
-[E:/Work/DEI/github/xmlsh_r1/xmlsh/test/core/core_vars2.xsh line: 37]
+[/home/dlee/git.repo/xmlsh-1.3/xmlsh/test/core/core_vars2.xsh line: 37]
 Exception running: echo
 org.xmlsh.core.CoreException: Invalid blank name for output variable
-[E:/Work/DEI/github/xmlsh_r1/xmlsh/test/core/core_vars2.xsh line: 39]
+[/home/dlee/git.repo/xmlsh-1.3/xmlsh/test/core/core_vars2.xsh line: 39]
 Exception running: echo
 org.xmlsh.core.CoreException: Invalid blank name for output variable

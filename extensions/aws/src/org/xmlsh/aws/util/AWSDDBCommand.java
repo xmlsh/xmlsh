@@ -663,6 +663,32 @@ public abstract class AWSDDBCommand extends AWSCommand {
         
     }
 
+    protected Map<String, AttributeValue> parseAttrValueExprs(List<XValue> optValues)
+            throws UnexpectedException, UnimplementedException,
+            InvalidArgumentException, IOException {
+                
+                return parseAttributeValues( optValues );
+                
+            }
+
+    protected Map<String, String> parseAttrNameExprs(List<XValue> nameExprs)
+            throws InvalidArgumentException {
+                Map<String, String> map =  new HashMap<String, String>();
+                for( XValue v : nameExprs ){
+                    // placeholder=literal
+                    if( v.isString() ){
+                        StringPair pair=new StringPair( v.toString() , '=' );
+                        if( ! pair.hasLeft() )
+                            throw new InvalidArgumentException("Unexpected attribute name expression. expected 'placeholder=literal'  : " + v.toString()  );
+                        map.put(pair.getLeft(), pair.getRight() );
+                    } else
+                        throw new InvalidArgumentException("Unexpected attribute name expression. expected 'placeholder=literal'  : " + v.toString()  );
+                }
+                return map;
+                
+                
+            }
+
 }
 
 //
