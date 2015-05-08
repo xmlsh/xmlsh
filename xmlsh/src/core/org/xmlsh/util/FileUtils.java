@@ -269,11 +269,14 @@ public class FileUtils
 
 		if( Util.isBlank(path))
 			return 0;
-		path = path.toLowerCase();
+		if( ! isFilesystemCaseSensitive() )
+		   path = path.toLowerCase();
 		
 		FileSystem fs = FileSystems.getDefault();
 		for( Path root : fs.getRootDirectories() ){
-		   String sr = root.toString().toLowerCase(); 
+		   String sr = toJavaPath(root.toString());
+	       if( ! isFilesystemCaseSensitive() )
+	           sr = sr.toLowerCase();
 		   
 		   if( path.startsWith(sr))
 			   return sr.length();
@@ -487,7 +490,7 @@ public class FileUtils
 		    long len = is.read(data);
 		    if( len <= 0 )
 		    	return null ;
-		java.nio.ByteBuffer bb = ByteBuffer.wrap(data);
+		java.nio.ByteBuffer bb = ByteBuffer.wrap(data,0,(int)len);
 
 		CharsetDecoder decoder=  
 				Charset.forName(encoding).newDecoder();  
@@ -498,11 +501,11 @@ public class FileUtils
         // Look for some alpaha or reserved word
 
 		int good = 0;
-		
+		int max = Math.min( 100 ,  ret.length() );
 		int p = 0;
 		for( char c : ret.array() ){
 		    p++;
-		    if( good > 100)
+		    if( good > max )
 				return mLogger.exit("text");
 			
 			
@@ -533,6 +536,20 @@ public class FileUtils
 			case '\'':
 			case '[' :
 			case ']' :
+			case '=' :
+			case ';' :
+			
+			    good++;
+			    continue;
+			}
+			switch( Character.getType(c)){
+			case Character.CONNECTOR_PUNCTUATION :
+			case Character.CURRENCY_SYMBOL : 
+			case Character. DIRECTIONALITY_PARAGRAPH_SEPARATOR :
+			case Character.LINE_SEPARATOR :
+			case Character.INITIAL_QUOTE_PUNCTUATION :
+			case Character.ENCLOSING_MARK :
+			case Character.OTHER_PUNCTUATION :
 			    good++;
 			    continue;
 			}
@@ -541,20 +558,23 @@ public class FileUtils
 			    Character.isJavaIdentifierStart(c)||
 				Character.isLetterOrDigit(c) ||
 			    Character.isUnicodeIdentifierStart(c) ||
-			    Character.isUnicodeIdentifierPart(c)
+			    Character.isUnicodeIdentifierPart(c) 
+			    
 			    )
 				good++;
 			else
-		    if( ! Character.isWhitespace(c)){
+	    if( ! Character.isWhitespace(c)){
 		    	if( Character.isISOControl(c) )
 		    		return good > 20 ? ret.subSequence(0, p).toString()  : null ;
 			good = 0;
 		    }				
 		}
 		
-		
+		  if( good > 0 )
+	            return mLogger.exit("text");
 	}
- 
+  
+	
     
 	catch (Exception e) {
 

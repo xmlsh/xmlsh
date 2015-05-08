@@ -60,7 +60,6 @@
 	<classpathentry kind="lib" path="lib/jackson-dataformat-xml-2.5.0.jar" sourcepath="E:/Work/DEI/GitExt/jackson-dataformat-xml/src/main/java"/>
 	<classpathentry kind="lib" path="lib/jackson-module-jaxb-annotations-2.5.0.jar"/>
 	<classpathentry kind="lib" path="lib/jackson-module-jsonSchema-2.5.0.jar"/>
-	<classpathentry kind="lib" path="/home/dlee/git.repo/xmlsh/xmlsh/lib/json-path-2.0.1.jar" sourcepath="/json-path/src"/>
 	<classpathentry kind="src" path=".apt_generated">
 		<attributes>
 			<attribute name="optional" value="true"/>
@@ -69,5 +68,6 @@
 	<classpathentry kind="lib" path="lib/httpcore-4.2.2.jar"/>
 	<classpathentry kind="lib" path="lib/jline-2.12.jar" sourcepath="/jline/src/main/java"/>
 	<classpathentry kind="lib" path="lib/byte-buddy-0.6.jar" sourcepath="/byte-buddy-dep/src/main/java"/>
+	<classpathentry kind="lib" path="lib/json-path-2.0.1-SNAPSHOT.jar"/>
 	<classpathentry kind="output" path="_out"/>
 </classpath>

@@ -446,7 +446,8 @@ public abstract class CommandFactory {
 				scriptFile = shell.getExplicitFile(pname.toString(), true );
 				if( scriptFile != null && ! scriptFile.isFile() )
 					scriptFile = null ;
-				if( scriptFile != null && ! isXScriptFile(scriptFile.toPath(), shell.getInputTextEncoding(), false ))
+				// Explicit rooted path - anything close to text mathces
+				if( scriptFile != null && ! isXScriptFile(scriptFile.toPath(), shell.getInputTextEncoding(), true ))
 					scriptFile = null;
 			}
 		}
