@@ -23,14 +23,9 @@ public class jnew extends BuiltinFunctionCommand {
 	@Override
 	public XValue run(Shell shell, List<XValue> args) throws Exception {
 		
-		
-		
 		String classname = args.remove(0).toString();
 		
-
 		ClassLoader classloader =shell.getClassLoader(null);
-		
-
 		XValue obj = null;
 		obj = JavaUtils.newObject(classname, args, classloader);
 		return obj;

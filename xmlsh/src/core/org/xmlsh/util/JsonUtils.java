@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Map;
 
 import net.sf.saxon.trans.XPathException;
+
+import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
 
@@ -65,7 +67,7 @@ public class JsonUtils {
 		
 	}
 
-	public static Object toNumber(XValue arg) throws XPathException {
+	public static Object toNumber(XValue arg) throws XPathException, InvalidArgumentException {
 		Object obj = null;
 		if( arg.isJson())
 			obj = arg.asJson().getJsonObject();
@@ -90,7 +92,7 @@ public class JsonUtils {
 			return JavaUtils.convert( obj ,  Double.class );
 	}
 
-	public static Boolean toBoolean(XValue arg) throws UnexpectedException, XPathException {
+	public static Boolean toBoolean(XValue arg) throws UnexpectedException, XPathException, InvalidArgumentException {
 		
 		if( arg == null || arg.isNull() )
 			return false ;

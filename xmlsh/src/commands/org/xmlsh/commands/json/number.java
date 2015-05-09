@@ -9,7 +9,9 @@ package org.xmlsh.commands.json;
 import java.util.List;
 
 import net.sf.saxon.trans.XPathException;
+
 import org.xmlsh.core.BuiltinFunctionCommand;
+import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.JsonUtils;
@@ -22,7 +24,7 @@ public class number extends BuiltinFunctionCommand {
 	}
 	
 	@Override
-	public XValue run(Shell shell, List<XValue> args) throws XPathException {
+	public XValue run(Shell shell, List<XValue> args) throws XPathException, InvalidArgumentException {
 
 	      
 		XValue arg = args.get(0);

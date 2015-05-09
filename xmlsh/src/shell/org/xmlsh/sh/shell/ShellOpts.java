@@ -16,6 +16,7 @@ public class ShellOpts
 	public boolean mExec	 		= false;		// -x
 	public boolean	 mXPipe	 		= false;		// -xpipe
 	public	boolean	 mThrowOnError 	= false;		// -e
+	public boolean mNoExec = false ; // -n
 
 
 	
@@ -31,6 +32,7 @@ public class ShellOpts
 		mExec=  that.mExec ;
 		mXPipe = that.mXPipe;
 		mThrowOnError = that.mThrowOnError;
+		mNoExec = that.mNoExec;
 
 		mSerialize = new SerializeOpts( that.mSerialize );
 		
@@ -51,6 +53,9 @@ public class ShellOpts
 		else
 		if( opt.equals("e"))
 			mThrowOnError = on ;
+		else
+		if( opt.equals("n"))
+		    mNoExec = on;
 		else
 			mSerialize.setOption( opt , on);
 		

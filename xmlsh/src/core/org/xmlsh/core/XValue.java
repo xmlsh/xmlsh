@@ -362,7 +362,7 @@ public class XValue {
 	
 
 
-    public boolean toBoolean() throws UnexpectedException, XPathException {
+    public boolean toBoolean() throws UnexpectedException, XPathException, InvalidArgumentException {
 		if( mValue == null )
 			return false ;
 		
@@ -571,30 +571,30 @@ public class XValue {
 	 */
 
 
-	public  int canConvert( Class<?> c) throws XPathException {
-		Object value = mValue ;
-		if( value == null )
-			return -1;
-		
-		Class<? extends Object> vclass = value.getClass();
+	public  int canConvert( Class<?> c) throws XPathException, InvalidArgumentException {
+	    Object value = mValue;
+	    if(value == null)
+	      return -1;
 
-		int ret = canConvert( vclass , c );
-		if( ret >= 0 )
-			return ret ;
-		
-		// Try converting 
-		if( value instanceof XdmValue ){
-			value = getJavaNative();
-			if( value == null )
-				return -1 ;
-			 vclass = value.getClass();
-			ret = canConvert( vclass , c );
-		
-		}
-		
-		
-		return ret ;
-		
+	    Class<? extends Object> vclass = value.getClass();
+
+	    // This can be very heavy weight
+	    int ret = JavaUtils.canConvertClass(vclass, c);
+	    if(ret >= 0)
+	      return ret;
+
+	    // Is this a Xdm and want to convert to something else
+	    // SNH : in JavaUtils
+	    if(value instanceof XdmValue) {
+
+	      value = getJavaNative();
+	      if(value == null)
+	        return -1;
+	      vclass = value.getClass();
+	      ret = JavaUtils.canConvertClass(vclass, c);
+	    }
+
+	    return ret ;
 		
 		
 	}
@@ -616,18 +616,14 @@ public class XValue {
 		// Directly assignable
 		if( targetClass.isAssignableFrom(sourceClass))
 			return 1 ;
-	
+		
 		
 		// Boxable 
 		// int <-> Integer
 		if( JavaUtils.isIntClass(sourceClass) && JavaUtils.isIntClass(targetClass))
 			return 2 ;
 		
-		
-		
-		
 		return -1;
-		
 		
 	}
 
@@ -635,27 +631,48 @@ public class XValue {
 	/*
 	 * Returns true if the class is an Integer like class
 	 */
-	
-	public Object convert( Class<?> c) throws XPathException{
-			
-			Object value = mValue ;
-			if( value == null )
-				return null;
-			
 
-			if( c.isInstance(value))
-				return c.cast(value);
-			
-			if( value instanceof XdmValue && ! XdmValue.class.equals(c))
-				value = getJavaNative();
-			
-			
-			
-			return JavaUtils.convert(value, c);
-			
-			
+	  public Object convert(Class<?> c) throws InvalidArgumentException
+	  {
 
-	}
+	    try {
+	      Object value = mValue;
+	      if(value == null)
+	        return null;
+
+	      if(c.isAssignableFrom(value.getClass()))
+	        return value;
+
+	      if(c.isInstance(value))
+	        return c.cast(value);
+/*
+	      if(c.isAssignableFrom(XdmValue.class)) {
+	        if(isSequence()) {
+	          if(isEmptySequence())
+	            return XMLUtils.emptySequence();
+	          else return XMLUtils.toXdmValue(this);
+	        }
+	      }
+*/
+	      
+	      boolean bothXdm =  c.isAssignableFrom(XdmValue.class) && (value instanceof XdmValue) ;
+	      if(! bothXdm && value instanceof XdmValue )
+	            value = getJavaNative();
+	      
+	      if(JavaUtils.canConvertClass(value.getClass(), c) >= 0) {
+	        Object obj = JavaUtils.convert(value, c);
+	        if(obj != null)
+	          return obj;
+	      }
+
+	  
+
+	      return JavaUtils.convert(value, c);
+	    } catch (Exception e) {
+	      throw new InvalidArgumentException(e);
+	    }
+	  }
+
 
 	public Object getJavaNative() throws XPathException
 	{

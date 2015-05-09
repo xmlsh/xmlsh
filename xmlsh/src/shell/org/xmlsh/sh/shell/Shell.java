@@ -468,8 +468,6 @@ public class Shell {
 		      	Command c = parser.command_line();
 		      	if( c == null )
 		      		break;
-		      
-		    	
 		      	if( mOpts.mVerbose ){
 		      		String s  = c.toString(false);
 		      		if( s.length() > 0){
@@ -484,12 +482,10 @@ public class Shell {
 		      				printErr( "- " + s );
 		      		}
 		      	}
-		      	
+		      	if( mOpts.mNoExec)
+		      	    continue ;
 		      	ret = exec( c );
 			}
-					
-			
-		
 		} 
 		catch( ThrowException e )
 		{
@@ -552,17 +548,11 @@ public class Shell {
 	{
 		mIsInteractive = true ;
 		int		ret = 0;
-		
-		
-		
 		setCommandInput();
-		
-		
 		// ShellParser parser= new ShellParser(mCommandInput,Shell.getEncoding());
 		ShellParser parser= new ShellParser(new ShellParserReader(mCommandInput,getInputTextEncoding()));
 		
 		while (mExitVal == null) {
-			
 			  System.out.print(getPS1());
 			  Command c = null ;
 		      try {
@@ -581,8 +571,6 @@ public class Shell {
 		      				printErr( "- " + s );
 		      		}
 		      	}
-		      	
-		      	
 		      	ret = exec( c );
 		      	
 		      	// PrintWriter out = new PrintWriter( System.out );

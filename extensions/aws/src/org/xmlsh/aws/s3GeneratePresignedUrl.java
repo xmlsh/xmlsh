@@ -112,7 +112,7 @@ public class s3GeneratePresignedUrl extends AWSS3Command {
 	}
 
 
-	private Date parseDate(XValue value) throws XPathException {
+	private Date parseDate(XValue value) throws XPathException, InvalidArgumentException {
 		
 		return (Date) value.convert( Date.class );
 		

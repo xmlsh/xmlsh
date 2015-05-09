@@ -9,7 +9,9 @@ package org.xmlsh.commands.json;
 import java.util.List;
 
 import net.sf.saxon.trans.XPathException;
+
 import org.xmlsh.core.BuiltinFunctionCommand;
+import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
@@ -23,7 +25,7 @@ public class _boolean extends BuiltinFunctionCommand {
 	}
 	
 	@Override
-	public XValue run(Shell shell, List<XValue> args) throws UnexpectedException, XPathException  {
+	public XValue run(Shell shell, List<XValue> args) throws UnexpectedException, XPathException, InvalidArgumentException  {
 
 		if( args.size() == 0 )
 			return new XValue( Boolean.FALSE );
