@@ -581,29 +581,33 @@ public class XValue implements Iterable<XValue>
       if(c.isInstance(value))
         return c.cast(value);
 
+      boolean bothXdm = false ;
       if(c.isAssignableFrom(XdmValue.class)) {
+         bothXdm = (value instanceof XdmValue);
         if(isSequence()) {
           if(isEmptySequence())
             return XMLUtils.emptySequence();
-          else return XMLUtils.toXdmValue(this);
-        }
+          else 
+        	  return XMLUtils.toXdmValue(this);
+        } 
       }
 
+      if(! bothXdm && value instanceof XdmValue )
+        value = getJavaNative();
+      
       if(JavaUtils.canConvertClass(value.getClass(), c) >= 0) {
         Object obj = JavaUtils.convert(value, c);
         if(obj != null)
           return obj;
       }
-
-      if(value instanceof XdmValue)
-        value = getJavaNative();
-
-      return JavaUtils.convert(value, c);
+      
     } catch (Exception e) {
       Util.wrapException(e, InvalidArgumentException.class);
 
       return null; // SNH
     }
+    throw new InvalidArgumentException( "Cannot convert class: " + mValue.getClass().getSimpleName() + " to " + c.getSimpleName() );
+
   }
 
   @Override

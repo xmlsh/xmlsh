@@ -442,10 +442,10 @@ public class JavaUtils {
 
     }
 
-
+    boolean bAtomic = isAtomic( value );
 		Class<?> vclass = value.getClass();
 
-		if( targetClass.isPrimitive() ){
+		if( targetClass.isPrimitive() && bAtomic ){
 
 			 /* Try to match non-primative types
 			 */
@@ -458,6 +458,9 @@ public class JavaUtils {
 					else
 						if( vclass== Byte.class )
 							value = Integer.valueOf( ((Byte)value).intValue() );
+						else 
+							value = Integer.valueOf( value.toString() );
+						
 			}
 			else
 				if( targetClass == Long.TYPE ){
@@ -469,6 +472,8 @@ public class JavaUtils {
 						else
 							if( vclass == Byte.class )
 								value = Long.valueOf( ((Byte)value).intValue() );
+					value = Long.valueOf( value.toString() );
+
 				}
 
 				else
@@ -481,6 +486,8 @@ public class JavaUtils {
 							else
 								if( vclass== Byte.class )
 									value = Short.valueOf((short) ((Byte)value).intValue() );
+						value = Short.valueOf( value.toString() );
+
 					}
 
 					else
@@ -493,7 +500,10 @@ public class JavaUtils {
 								else
 									if( vclass == Short.class )
 										value = Byte.valueOf((byte) ((Short)value).intValue() );
+							value = Byte.valueOf( value.toString() );
 						}
+						else 
+							; // skip
 
 			return (T) value ;
 		}
