@@ -114,8 +114,7 @@ public  static ModuleConfig getConfiguration(Shell shell, String nameuri,  List<
     String name  = xv.xpath(shell, "/module/@name/string()").toString();
     String require = xv.xpath(shell, "/module/@require/string()").toString();
     if(!Util.isBlank(require)) {
-      int ret = shell.requireVersion(name, require);
-      if(ret != 0)
+      if( ! shell.requireVersion(name, require) )
         throw new InvalidArgumentException("Module " + name + " requires version " + require);
     }
     List<URL> classpath =  xv.xpath(shell, "/module/classpath/file").asStringList().stream()

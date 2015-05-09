@@ -15,43 +15,38 @@ import org.xmlsh.core.Options;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.io.OutputPort;
 import org.xmlsh.sh.shell.SerializeOpts;
-import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.sh.shell.Version;
+import org.xmlsh.sh.shell.Version.Key;
 
 public class xversion extends BuiltinCommand {
-
-
+   
+    
 	@Override
 	public int run(  List<XValue> args ) throws Exception {
 
 
 		OutputPort stdout = mShell.getEnv().getStdout();
-		Options opts = new Options(SerializeOpts.getOptionDefs());
+		Options opts = new Options("key:",SerializeOpts.getOptionDefs());
 		opts.parse(args);
 		SerializeOpts serializeOpts = getSerializeOpts(opts);
+		args = opts.getRemainingArgs();
 
+		Key key = opts.hasOpt("key") ? Key.getKey(opts.getOptStringRequired("key")) :
+		       ( args.isEmpty() ? null : Key.getKey( args.get(0).toString()));
 
+		if( key != null ){
+		    mShell.printOut( key.get() );
+		    return 0;
+		}
+		
 		XMLStreamWriter writer = stdout.asXMLStreamWriter(serializeOpts);
 
 		writer.writeStartDocument();
 
 
-		final String sBuild = "build";
-		final String sRelease = "release";
-		final String sVersion = "version";
-		final String sDocRoot = sVersion;
-		final String sSaxon = "saxon_version";
-		final String sSaxonEdition = "saxon_edition";
-
-
-		writer.writeStartElement(sDocRoot);
-		writer.writeAttribute(sBuild, Version.getBuildDate());
-		writer.writeAttribute(sRelease, Version.getRelease() );
-		writer.writeAttribute(sVersion, Version.getVersion() );
-		writer.writeAttribute(sSaxon, Shell.getProcessor().getSaxonProductVersion() );
-		writer.writeAttribute(sSaxonEdition, Shell.getProcessor().getUnderlyingConfiguration().getEditionCode() );
-
-
+		writer.writeStartElement( getName() );
+		for( Key k : Version.Key.values() )
+		 writer.writeAttribute( k.getName() , k.get() );
 
 		writer.writeEndElement();
 		writer.writeEndDocument();

@@ -105,7 +105,7 @@ public class declare extends BuiltinCommand {
 		} 
 		else 
 		if( ! bFound && !  args.isEmpty() ){
-			mShell.printOut( args.get(0) + ": not found");
+		    mShell.printErr( args.get(0) + ": not found");
 			return 1;
 		}
 			

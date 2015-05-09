@@ -9,32 +9,83 @@ package org.xmlsh.builtin.commands;
 import java.util.List;
 
 import org.xmlsh.core.BuiltinCommand;
+import org.xmlsh.core.Options.OptionDefs;
+import org.xmlsh.core.Options;
 import org.xmlsh.core.ThrowException;
 import org.xmlsh.core.XValue;
-
+import org.xmlsh.sh.shell.SerializeOpts;
+import org.xmlsh.sh.shell.Version;
+import org.xmlsh.sh.shell.Version.Op;
 public class require extends BuiltinCommand {
 
-	@Override
+    @Override
 	protected int run(List<XValue> args) throws Exception {
 
 		// Require with no args simply requires the require command exists
 		// Added in version 1.0.1
 		if( args.size() == 0 )
 			return 0;
-
-		String sreq = args.get(0).toString();
-
-		int ret = mShell.requireVersion(null,sreq);
+		
+		OptionDefs defs = new OptionDefs(   "v=version,java=java-version,version-property:,property:,matches:,gt:,gte:,lt:,lte:,eq=equals:");
+		Options opts = new Options(defs,SerializeOpts.getOptionDefs() );
+		opts.parse(args);
+		args = opts.getRemainingArgs();
+		 
+		String vtype = "version" ;
+		String value = null;
+		
+	        
+		if( opts.hasOpt("v")){
+		    vtype = "version";
+		    value = Version.getVersion();
+		}
+		else
+		if( opts.hasOpt("java")){
+		    vtype = "java";
+		    value = Version.getJavaVersion();
+		}
+		else
+		if( opts.hasOpt("version-property")){
+		    vtype = "version-property";
+		   value = Version.getProperty(opts.getOptStringRequired("version-property"));
+		}
+		else
+		      if( opts.hasOpt("property")){
+		            vtype = "property";
+		            value = Version.getJavaProperty(opts.getOptStringRequired("property"));
+		        }
+	   Version.Op op = Op.GTE;
+	   String matches = null;
+		
+		for( String sop : new String [] { "gt","lt","gte","lte","eq","matches" } ){
+		   if( opts.hasOpt(sop)){
+		       op =  Version.Op.getOp(sop);
+		       matches = opts.getOptStringRequired(sop);
+		       break ;
+		   }
+		}
+		  
+	
+		int ret = 0;
+		if( matches == null ){
+		   
+		    requires( !args.isEmpty(), "Expected version match argument");
+		    matches = args.get(0).toString();
+		}
+		    requires( op != null , "Missing matching operator");
+		    if( value == null )
+		        value = Version.getVersion();
+		     ret = Version.matches( value , matches , op ) ? 0 : 1;
+		     
+		
 		if( ret == 0 )
 			return 0;
-
 		if( mShell.isInCommandConndition() )
 			return 1;
 
 
-		String err = "requires version: " + sreq ;  
+		String err = "requires " + vtype + " "+ value + " " + op.name() + " " + matches ;  
 		printErr(err);
-
 		throw new ThrowException(XValue.newXValue(err) );
 
 

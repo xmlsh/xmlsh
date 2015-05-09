@@ -1024,6 +1024,9 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt {
 	}
 
 	public void printErr(String s, SourceLocation loc) {
+	    mLogger.entry(s,loc);
+	    mLogger.warn("printOut: {}" , s );
+
 		try (PrintWriter out = new PrintWriter(new BufferedWriter(
 				new OutputStreamWriter(getEnv().getStderr().asOutputStream(
 						getSerializeOpts()), getSerializeOpts()
@@ -1036,6 +1039,8 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt {
 		} catch (UnsupportedEncodingException | CoreException e) {
 			mLogger.error("Exception writing output: " + s, e);
 
+		} finally {
+		    mLogger.exit();
 		}
 
 	}
@@ -1051,6 +1056,8 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt {
 	}
 
 	public void printOut(String s) {
+	    mLogger.entry(s);
+	    mLogger.debug("printOut: {}" , s );
 		try (PrintWriter out = new PrintWriter(new BufferedWriter(
 				new OutputStreamWriter(getEnv().getStdout().asOutputStream(
 						getSerializeOpts()), getSerializeOpts()
@@ -1061,6 +1068,9 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt {
 			mLogger.error("Exception writing output: " + s, e);
 			return;
 		}
+		finally {
+		    mLogger.exit();
+		}
 	}
 	
 	public String readCommandLine(String prompt) throws IOException{
@@ -1069,6 +1079,10 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt {
 
 
 	public void printErr(String s, Exception e) {
+	       
+	    mLogger.entry( s,e);
+	    mLogger.warn("printOut: {}" , s );
+
 		try (PrintWriter out = getEnv().getStderr().asPrintWriter(
 				getSerializeOpts())) {
 			
@@ -1087,7 +1101,9 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt {
 			out.flush();
 		} catch (IOException | CoreException e1) {
 			mLogger.error("Exception writing output: " + s, e);
-			return;
+			return ;
+		} finally {
+		    mLogger.exit();
 		}
 
 	}
@@ -1905,7 +1921,7 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt {
 
 	}
 
-	public int requireVersion(String module, String sreq) {
+	public boolean requireVersion(String module, String sreq) {
 		// Creates a 3-4 element array [ "1" , "0" , "1" , ? ]
 		String aver[] = Version.getVersion().split("\\.");
 		String areq[] = sreq.split("\\.");
@@ -1923,11 +1939,11 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt {
 			else if (ireq < iver)
 				break;
 			else if (ireq > iver) {
-				return -1;
+				return false;
 			}
 
 		}
-		return 0;
+		return true;
 	}
 
 	/*

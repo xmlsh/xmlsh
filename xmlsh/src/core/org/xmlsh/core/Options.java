@@ -301,9 +301,11 @@ public class Options {
 		this(parseDefs(options));
 	}
 
-	public Options(OptionDefs options) {
-		mDefs = options;
-
+	public Options(OptionDefs... options) {
+	    mDefs = new OptionDefs();
+		for( OptionDefs o : options ){
+		        mDefs.addOptionDefs(o);
+		}
 	}
 
 	// @Depreciated
