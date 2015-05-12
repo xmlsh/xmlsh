@@ -316,22 +316,6 @@ public abstract class AWSEC2Command extends AWSCommand<AmazonEC2Client> {
 
 	}
 
-	public void writeTags(List<Tag> tags) throws XMLStreamException {
-		if( tags == null )
-			return ;
-		startElement("tags");
-
-		for(Tag tag :  tags){
-			startElement("tag");
-			attribute( "key" , tag.getKey());
-			attribute("value", tag.getValue());
-			endElement();
-		}
-		endElement();
-
-	}
-
-
 
 	protected void writeLaunchPermissions(List<LaunchPermission> launchPermissions) throws XMLStreamException {
 		startElement("launch-permissions");
@@ -501,7 +485,26 @@ ephemeral[0..3] - An instance store volume to be mapped to the device. For examp
 		return map;
 
 	}
+	 protected void writeTags(List<Tag> tags) throws XMLStreamException {
+	    if( tags == null )
+	      return ;      
+	    startElement("tags");
+	          for( Tag t : tags )
+	            writeTag( t );
+	          endElement();
+	    
+	  }
 
+
+
+
+	  public void writeTag(Tag t) throws XMLStreamException {
+	    startElement("tag");
+	    attribute( "key" , t.getKey());
+	    attribute("value", t.getValue());
+	    endElement();
+	    
+	  }
 
 }
 

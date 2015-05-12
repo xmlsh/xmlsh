@@ -21,6 +21,7 @@ import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.util.Util;
 
 import com.amazonaws.AmazonWebServiceClient;
+import com.amazonaws.services.cloudformation.model.Tag;
 
 public abstract class AWSCommand<T extends AmazonWebServiceClient>  extends XCommand {
 
@@ -205,6 +206,11 @@ public abstract class AWSCommand<T extends AmazonWebServiceClient>  extends XCom
 	protected AWSClient<T> getClient() {
 		return mAmazon;
 	}
+
+
+
+
+ 
 
 
 

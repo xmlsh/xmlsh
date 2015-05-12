@@ -15,7 +15,9 @@ import org.xmlsh.core.Options;
 import org.xmlsh.core.UnexpectedException;
 
 import com.amazonaws.services.cloudformation.AmazonCloudFormationClient;
+import com.amazonaws.services.cloudformation.model.Output;
 import com.amazonaws.services.cloudformation.model.Parameter;
+import com.amazonaws.services.cloudformation.model.Tag;
 import com.amazonaws.services.cloudformation.model.TemplateParameter;
 
 public abstract class AWSCFNCommand extends AWSCommand<AmazonCloudFormationClient >{
@@ -79,6 +81,45 @@ public abstract class AWSCFNCommand extends AWSCommand<AmazonCloudFormationClien
 		endElement();
 
 	}
+
+
+  protected void writeOutputs(List<Output> outputs) throws XMLStreamException {
+  	startElement("outputs")	;
+  	for( Output o : outputs )
+  		writeOutput( o );
+  	endElement();
+  
+  }
+
+
+  private void writeOutput(Output o) throws XMLStreamException {
+  	startElement("output")	;
+  	attribute("description" ,o.getDescription());
+  	attribute("output-key" ,o.getOutputKey());
+  	attribute("output-value" ,o.getOutputValue());
+  	endElement();
+  
+  }
+  protected void writeTags(List<Tag> tags) throws XMLStreamException {
+    if( tags == null )
+      return ;      
+    startElement("tags");
+          for( Tag t : tags )
+            writeTag( t );
+          endElement();
+    
+  }
+
+
+
+
+  public void writeTag(Tag t) throws XMLStreamException {
+    startElement("tag");
+    attribute( "key" , t.getKey());
+    attribute("value", t.getValue());
+    endElement();
+    
+  }
 
 
 

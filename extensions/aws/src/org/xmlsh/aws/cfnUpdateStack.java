@@ -135,9 +135,6 @@ public class cfnUpdateStack extends AWSCFNCommand {
 
 
 
-
-
-
 	private void writeStackResult(UpdateStackResult result) throws XMLStreamException {
 		startElement("stack");
 		attribute("stack-id",result.getStackId());

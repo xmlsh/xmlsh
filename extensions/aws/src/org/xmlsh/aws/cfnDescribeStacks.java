@@ -23,7 +23,6 @@ import org.xmlsh.core.io.OutputPort;
 
 import com.amazonaws.services.cloudformation.model.DescribeStacksRequest;
 import com.amazonaws.services.cloudformation.model.DescribeStacksResult;
-import com.amazonaws.services.cloudformation.model.Output;
 import com.amazonaws.services.cloudformation.model.Stack;
 
 public class cfnDescribeStacks extends AWSCFNCommand {
@@ -84,11 +83,14 @@ public class cfnDescribeStacks extends AWSCFNCommand {
 
 		DescribeStacksResult result = getAWSClient().describeStacks(request);
 
+		do {
+        		for( Stack  stack : result.getStacks() ){
+        			writeStack( stack );
+        		}
+                        request.setNextToken(result.getNextToken());
+		} while( request.getNextToken() != null );
 
-		for( Stack  stack : result.getStacks() )
-			writeStack( stack )
-			;
-
+		
 		endElement();
 		endDocument();
 		closeWriter();
@@ -99,7 +101,6 @@ public class cfnDescribeStacks extends AWSCFNCommand {
 
 	}
 
-
 	private void writeStack(Stack stack) throws XMLStreamException {
 		startElement("stack");
 		attribute("creation-time" , stack.getCreationTime());
@@ -107,40 +108,16 @@ public class cfnDescribeStacks extends AWSCFNCommand {
 		attribute("disable-rollback" ,stack.getDisableRollback());
 		attribute("last-update-time" ,stack.getLastUpdatedTime());
 		attribute("stack-id" ,stack.getStackId());
-		attribute("name" ,stack.getStackName());
-		attribute("status" ,stack.getStackStatus());
-		attribute("reason" ,stack.getStackStatusReason());
-
-
+		attribute("stack-name" ,stack.getStackName());
+		attribute("stack-status" ,stack.getStackStatus());
+		attribute("stack-status-reason" ,stack.getStackStatusReason());
+		attribute("timeout",stack.getTimeoutInMinutes());
 
 		writeParameters( stack.getParameters() );
-
 		writeOutputs( stack.getOutputs() );
-
 		writeCapibilities(stack.getCapabilities());
 		writeNotifications(stack.getNotificationARNs());
-
-	}
-
-
-
-	private void writeOutputs(List<Output> outputs) throws XMLStreamException {
-		startElement("outputs")	;
-		for( Output o : outputs )
-			writeOutput( o );
-		endElement();
-
-	}
-
-
-
-	private void writeOutput(Output o) throws XMLStreamException {
-		startElement("output")	;
-		attribute("description" ,o.getDescription());
-		attribute("output-key" ,o.getOutputKey());
-		attribute("output-value" ,o.getOutputValue());
-		endElement();
-
+		writeTags( stack.getTags() );
 	}
 
 

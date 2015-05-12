@@ -68,6 +68,6 @@
 	<classpathentry kind="lib" path="lib/httpcore-4.2.2.jar"/>
 	<classpathentry kind="lib" path="lib/jline-2.12.jar" sourcepath="/jline/src/main/java"/>
 	<classpathentry kind="lib" path="lib/byte-buddy-0.6.jar" sourcepath="/byte-buddy-dep/src/main/java"/>
-	<classpathentry kind="lib" path="lib/json-path-2.0.1-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="lib/json-path-2.0.1.jar" sourcepath="/home/dlee/git.repo/JsonPath/json-path/src/main/java"/>
 	<classpathentry kind="output" path="_out"/>
 </classpath>

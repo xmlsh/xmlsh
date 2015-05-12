@@ -38,8 +38,6 @@ public class asDescribeGroups extends AWSASCommand {
 	@Override
 	public int run(List<XValue> args) throws Exception {
 
-
-
 		Options opts = getOptions();
 		opts.parse(args);
 
@@ -164,7 +162,7 @@ public class asDescribeGroups extends AWSASCommand {
 		writeInstances(group.getInstances());
 		writeELBNames(group.getLoadBalancerNames());
 		writeSuspendedProcesses(group.getSuspendedProcesses());
-		writeTags(group.getTags());
+		writeTagDescriptions(group.getTags());
 		endElement();
 
 
@@ -172,17 +170,17 @@ public class asDescribeGroups extends AWSASCommand {
 	}
 
 
-	private void writeTags(List<TagDescription> tags) throws XMLStreamException {
+	private void writeTagDescriptions(List<TagDescription> tags) throws XMLStreamException {
 		startElement("tags");
 		for( TagDescription  tag : tags )
-			writeTag( tag );
+			writeTagDescription( tag );
 		endElement();
 
 	}
 
 
 
-	private void writeTag(TagDescription tag) throws XMLStreamException {
+	private void writeTagDescription(TagDescription tag) throws XMLStreamException {
 		startElement("tag");
 		attribute("key",tag.getKey());
 		attribute("propagate-at-launch",tag.getPropagateAtLaunch());
