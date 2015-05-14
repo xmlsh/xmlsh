@@ -39,9 +39,8 @@ public class cfnValidateTemplate extends AWSCFNCommand {
 
 		args = opts.getRemainingArgs();
 		
+        setSerializeOpts(this.getSerializeOpts(opts));
 
-		
-		mSerializeOpts = this.getSerializeOpts(opts);
 		
 		
 		try {
@@ -71,7 +70,7 @@ public class cfnValidateTemplate extends AWSCFNCommand {
 		
 		ValidateTemplateRequest request = new ValidateTemplateRequest();
 		if( opts.hasOpt("template-file"))
-			request.setTemplateBody( Util.readString( mShell.getFile(opts.getOptValue("template-file")), mSerializeOpts.getInput_text_encoding()));
+			request.setTemplateBody( Util.readString( mShell.getFile(opts.getOptValue("template-file")), getSerializeOpts().getInput_text_encoding()));
 		else
 			request.setTemplateURL( opts.getOptStringRequired("template-url"));
 		
@@ -82,7 +81,7 @@ public class cfnValidateTemplate extends AWSCFNCommand {
 
 		
 		OutputPort stdout = this.getStdout();
-		mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(mSerializeOpts));
+		mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(getSerializeOpts()));
 		
 		
 		startDocument();
@@ -97,7 +96,7 @@ public class cfnValidateTemplate extends AWSCFNCommand {
 		endDocument();
 		closeWriter();
 		
-		stdout.writeSequenceTerminator(mSerializeOpts);
+		stdout.writeSequenceTerminator(getSerializeOpts());
 		stdout.release();
 		
 		return 0;

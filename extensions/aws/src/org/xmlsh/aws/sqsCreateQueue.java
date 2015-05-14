@@ -36,6 +36,7 @@ public class sqsCreateQueue extends AWSSQSCommand {
 		
 		Options opts = getOptions("t=timeout:");
 		opts.parse(args);
+        setSerializeOpts(this.getSerializeOpts(opts));
 
 		args = opts.getRemainingArgs();
 		
@@ -45,11 +46,6 @@ public class sqsCreateQueue extends AWSSQSCommand {
 		}
 		
 
-		
-		mSerializeOpts = this.getSerializeOpts(opts);
-		
-		
-		
 		int timeout = opts.getOptInt("t", 30);
 		String name = args.get(0).toString();
 		
@@ -93,7 +89,7 @@ public class sqsCreateQueue extends AWSSQSCommand {
 		CreateQueueResult result = mAmazon.createQueue(request);
 		
 		OutputPort stdout = this.getStdout();
-		mWriter = stdout.asXMLStreamWriter(mSerializeOpts);
+		mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
 		
 		
 		startDocument();
@@ -110,7 +106,7 @@ public class sqsCreateQueue extends AWSSQSCommand {
 		endElement();
 		endDocument();
 		closeWriter();
-		stdout.writeSequenceTerminator(mSerializeOpts);
+		stdout.writeSequenceTerminator(getSerializeOpts());
 		stdout.release();
 		
 

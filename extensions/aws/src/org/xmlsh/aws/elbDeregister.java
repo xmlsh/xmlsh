@@ -38,11 +38,8 @@ public class elbDeregister<x> extends AWSELBCommand {
 		opts.parse(args);
 
 		args = opts.getRemainingArgs();
-		
 
-		
-		mSerializeOpts = this.getSerializeOpts(opts);
-		
+        setSerializeOpts(this.getSerializeOpts(opts));
 		if( args.size()  < 2 ){ 
 			usage();
 			return -1;
@@ -72,7 +69,7 @@ public class elbDeregister<x> extends AWSELBCommand {
 		
 
 		OutputPort stdout = this.getStdout();
-		mWriter = stdout.asXMLStreamWriter(mSerializeOpts);
+		mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
 		
 		startDocument();
 		startElement(getName());

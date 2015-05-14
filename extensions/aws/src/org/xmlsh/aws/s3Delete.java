@@ -37,16 +37,13 @@ public class s3Delete extends AWSS3Command {
 		
 		Options opts = getOptions("b=bucket:,r=recurse");
 		opts.parse(args);
+        setSerializeOpts(this.getSerializeOpts(opts));
 
 		args = opts.getRemainingArgs();
 		
 		String bucket = opts.getOptString("b", null);
 		boolean bRecurse = opts.hasOpt("r");
-		
-		mSerializeOpts = this.getSerializeOpts(opts);
-		
-		
-		
+
 		try {
 			 getS3Client(opts);
 		} catch (UnexpectedException e) {

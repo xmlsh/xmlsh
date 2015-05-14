@@ -33,6 +33,7 @@ public class ec2DeleteVolumes extends AWSEC2Command {
 		Options opts = getOptions("");
 		opts.parse(args);
 
+        setSerializeOpts(this.getSerializeOpts(opts));
 		args = opts.getRemainingArgs();
 		
 		
@@ -40,9 +41,7 @@ public class ec2DeleteVolumes extends AWSEC2Command {
 			usage(null);
 			return 1;
 		}
-		
 
-		mSerializeOpts = this.getSerializeOpts(opts);
 		try {
 			 getEC2Client(opts);
 		} catch (UnexpectedException e) {

@@ -34,6 +34,7 @@ public class asExecutePolicy extends AWSASCommand {
 		
 		Options opts = getOptions();
 		opts.parse(args);
+        setSerializeOpts(this.getSerializeOpts(opts));;
 
 		args = opts.getRemainingArgs();
 		
@@ -45,7 +46,6 @@ public class asExecutePolicy extends AWSASCommand {
 		String group = args.get(0).toString();
 		String policy = args.get(1).toString();
 		
-		mSerializeOpts = this.getSerializeOpts(opts);
 		
 		
 		try {
@@ -73,7 +73,7 @@ public class asExecutePolicy extends AWSASCommand {
 	{
 
 		OutputPort stdout = this.getStdout();
-		mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(mSerializeOpts));
+		mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(getSerializeOpts()));
 		
 		
 		startDocument();

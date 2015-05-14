@@ -42,13 +42,12 @@ public class asDescribeGroups extends AWSASCommand {
 		
 		Options opts = getOptions();
 		opts.parse(args);
-
+        setSerializeOpts(opts);
+        
 		args = opts.getRemainingArgs();
 		parseCommonOptions(opts);
 
 
-		
-		mSerializeOpts = this.getSerializeOpts(opts);
 		
 		
 		try {
@@ -75,7 +74,7 @@ public class asDescribeGroups extends AWSASCommand {
 		
 
 		OutputPort stdout = this.getStdout();
-		mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(mSerializeOpts));
+		mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(getSerializeOpts()));
 		
 		
 		startDocument();
@@ -126,7 +125,7 @@ public class asDescribeGroups extends AWSASCommand {
 		endDocument();
 		closeWriter();
 		
-		stdout.writeSequenceTerminator(mSerializeOpts);
+		stdout.writeSequenceTerminator(getSerializeOpts());
 		stdout.release();
 		
 		return 0;

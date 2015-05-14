@@ -1332,11 +1332,8 @@ public class Shell {
 	 * Declare a module using the prefix=value notation
 	 */
 	public void importModule(String moduledef,  List<XValue> init) throws  CoreException {
-
-		
 		
 		mModules.declare(this, moduledef,  init );
-		
 	}
 	
 	public void importPackage(String prefix ,String name , String pkg ) throws CoreException {

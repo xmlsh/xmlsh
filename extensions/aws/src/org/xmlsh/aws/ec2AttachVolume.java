@@ -36,7 +36,7 @@ public class ec2AttachVolume extends AWSEC2Command {
 		
 		Options opts = getOptions("i=instance:,d=device:");
 		opts.parse(args);
-
+        setSerializeOpts(this.getSerializeOpts(opts));
 		parseCommonOptions(opts);
 		args = opts.getRemainingArgs();
 		
@@ -45,9 +45,6 @@ public class ec2AttachVolume extends AWSEC2Command {
 			usage(null);
 			return 1;
 		}
-		
-
-		mSerializeOpts = this.getSerializeOpts(opts);
 		try {
 			getEC2Client(opts);
 		} catch (UnexpectedException e) {
@@ -110,7 +107,7 @@ public class ec2AttachVolume extends AWSEC2Command {
 	{
 		
 		OutputPort stdout = this.getStdout();
-		mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(mSerializeOpts));
+		mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(getSerializeOpts()));
 		
 		
 		startDocument();

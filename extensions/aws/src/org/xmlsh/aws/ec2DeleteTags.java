@@ -34,20 +34,14 @@ public class ec2DeleteTags extends AWSEC2Command {
 		
 		Options opts = getOptions("t=tag:+");
 		opts.parse(args);
+        setSerializeOpts(this.getSerializeOpts(opts));
 
 		args = opts.getRemainingArgs();
-		
-
-		
-		
-		
 		if( args.size() < 1 ){
 			usage(null);
 			return 1;
 		}
-		
 
-		mSerializeOpts = this.getSerializeOpts(opts);
 		try {
 			 getEC2Client(opts);
 		} catch (UnexpectedException e) {

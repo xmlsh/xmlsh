@@ -136,9 +136,6 @@ public class Module {
 
 			mClassLoader = getClassLoader(classpath);
 			mHelpURL = mClassLoader.getResource(toResourceName("commands.xml"));
-			
-			
-			
 
 		} 
 		catch( CoreException e )
@@ -228,8 +225,6 @@ public class Module {
 		
 		// Store the camel name not the hyphen name
 		String origName = name ;
-		
-		
 		
 		/*
 		 * First try to find a class that matches name

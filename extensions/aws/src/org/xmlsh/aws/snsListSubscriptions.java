@@ -37,14 +37,8 @@ public class snsListSubscriptions extends AWSSNSCommand {
 		opts.parse(args);
 
 		args = opts.getRemainingArgs();
-		
+        setSerializeOpts(this.getSerializeOpts(opts));
 
-		
-		mSerializeOpts = this.getSerializeOpts(opts);
-		
-
-		
-		
 		try {
 			 getSNSClient(opts);
 		} catch (UnexpectedException e) {
@@ -71,7 +65,7 @@ public class snsListSubscriptions extends AWSSNSCommand {
 		
 
 		OutputPort stdout = this.getStdout();
-		mWriter = stdout.asXMLStreamWriter(mSerializeOpts);
+		mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
 		
 		
 		startDocument();
@@ -103,7 +97,7 @@ public class snsListSubscriptions extends AWSSNSCommand {
 		endElement();
 		endDocument();
 		closeWriter();
-		stdout.writeSequenceTerminator(mSerializeOpts);
+		stdout.writeSequenceTerminator(getSerializeOpts());
 		stdout.release();
 		
 
@@ -120,7 +114,7 @@ public class snsListSubscriptions extends AWSSNSCommand {
 		
 
 		OutputPort stdout = this.getStdout();
-		mWriter = stdout.asXMLStreamWriter(mSerializeOpts);
+		mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
 		
 		
 		startDocument();
@@ -151,7 +145,7 @@ public class snsListSubscriptions extends AWSSNSCommand {
 		endElement();
 		endDocument();
 		closeWriter();
-		stdout.writeSequenceTerminator(mSerializeOpts);
+		stdout.writeSequenceTerminator(getSerializeOpts());
 		stdout.release();
 		
 

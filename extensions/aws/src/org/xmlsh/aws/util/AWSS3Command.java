@@ -125,7 +125,7 @@ public abstract class AWSS3Command extends AWSCommand {
 
 	private Object readPEM(XValue sPrivate) throws IOException, UnsupportedEncodingException,
 			CoreException {
-		PEMReader reader = new PEMReader( getInput(sPrivate).asReader( this.mSerializeOpts ));
+		PEMReader reader = new PEMReader( getInput(sPrivate).asReader( this.getSerializeOpts() ));
 		Object obj = reader.readObject();
 		reader.close();
 		return obj;

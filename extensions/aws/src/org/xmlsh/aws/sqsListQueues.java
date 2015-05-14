@@ -33,11 +33,9 @@ public class sqsListQueues extends AWSSQSCommand {
 		Options opts = getOptions();
 		opts.parse(args);
 
-		args = opts.getRemainingArgs();
-		
+		args = opts.getRemainingArgs();      
+		setSerializeOpts(this.getSerializeOpts(opts));
 
-		
-		mSerializeOpts = this.getSerializeOpts(opts);
 		
 		String prefix = null ;
 		if( args.size() > 0 )
@@ -68,7 +66,7 @@ public class sqsListQueues extends AWSSQSCommand {
 		
 
 		OutputPort stdout = this.getStdout();
-		mWriter = stdout.asXMLStreamWriter(mSerializeOpts);
+		mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
 		
 		
 		startDocument();
@@ -97,7 +95,7 @@ public class sqsListQueues extends AWSSQSCommand {
 		endElement();
 		endDocument();
 		closeWriter();
-		stdout.writeSequenceTerminator(mSerializeOpts);
+		stdout.writeSequenceTerminator(getSerializeOpts());
 		stdout.release();
 		
 

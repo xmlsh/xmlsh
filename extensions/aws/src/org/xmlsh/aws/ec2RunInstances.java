@@ -52,18 +52,13 @@ public class ec2RunInstances extends AWSEC2Command {
 		opts.parse(args);
 
 		args = opts.getRemainingArgs();
-		
+		setSerializeOpts(this.getSerializeOpts(opts));
 
-		
-		
 		
 		if( args.size() != 1 ){
 			usage(null);
 			return 1;
-		}
-		
-
-		mSerializeOpts = this.getSerializeOpts(opts);
+		}        
 		try {
 			 getEC2Client(opts);
 		} catch (UnexpectedException e) {
@@ -178,7 +173,7 @@ public class ec2RunInstances extends AWSEC2Command {
 
 	private void writeResult(RunInstancesResult result) throws IOException, XMLStreamException, SaxonApiException, CoreException {
 		OutputPort stdout = this.getStdout();
-		mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(mSerializeOpts));
+		mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(getSerializeOpts()));
 		
 		startDocument();
 		startElement(this.getName());
@@ -190,7 +185,7 @@ public class ec2RunInstances extends AWSEC2Command {
 		endDocument();
 		closeWriter();
 		
-		stdout.writeSequenceTerminator(mSerializeOpts);
+		stdout.writeSequenceTerminator(getSerializeOpts());
 		stdout.release();
 		
 		
@@ -222,7 +217,7 @@ public class ec2RunInstances extends AWSEC2Command {
 		
 		XValue file = opts.getOptValue("f");
 		if( file != null )
-			return Util.readString(mShell.getFile(file), mSerializeOpts.getInputTextEncoding());
+			return Util.readString(mShell.getFile(file), getSerializeOpts().getInputTextEncoding());
 		return null;
 		
 		

@@ -36,6 +36,7 @@ public class ddbCreateTable extends AWSDDBCommand {
 
 		Options opts = getOptions("table:,read-capacity:,write-capacity:,attribute:+,global-secondary-index:+,local-secondary-index:+,key:+");
 		opts.parse(args);
+        setSerializeOpts(opts);
 
 		args = opts.getRemainingArgs();
 
@@ -44,7 +45,6 @@ public class ddbCreateTable extends AWSDDBCommand {
 			return 1;
 		}
 
-		mSerializeOpts = this.getSerializeOpts(opts);
 
 		try {
 			getDDBClient(opts);
@@ -67,11 +67,11 @@ public class ddbCreateTable extends AWSDDBCommand {
 	    String tableName = opts.getOptStringRequired("table");
 	    
 		OutputPort stdout = this.getStdout();
-		mWriter = stdout.asXMLStreamWriter(mSerializeOpts);
+		mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
 
 		ProvisionedThroughput provisionedThroughput = new ProvisionedThroughput()
-				.withReadCapacityUnits(opts.getOptLong("readCapacity", 5L))
-				.withWriteCapacityUnits(opts.getOptLong("writeCapacity", 5L));
+				.withReadCapacityUnits(opts.getOptLong("read-capacity", 5L))
+				.withWriteCapacityUnits(opts.getOptLong("write-capacity", 5L));
 
 		startDocument();
 		startElement(getName());
@@ -92,12 +92,11 @@ public class ddbCreateTable extends AWSDDBCommand {
 
 		CreateTableResult result = mAmazon.createTable(createTableRequest);
 		writeTableDescription(result.getTableDescription());
-
 		endElement();
 		endDocument();
 
 		closeWriter();
-		stdout.writeSequenceTerminator(mSerializeOpts);
+		stdout.writeSequenceTerminator(getSerializeOpts());
 		stdout.release();
 
 		return 0;

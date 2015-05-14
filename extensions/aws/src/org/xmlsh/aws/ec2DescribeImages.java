@@ -46,10 +46,7 @@ public class ec2DescribeImages extends AWSEC2Command {
 		opts.parse(args);
 
 		args = opts.getRemainingArgs();
-		
-
-		
-		mSerializeOpts = this.getSerializeOpts(opts);
+        setSerializeOpts(this.getSerializeOpts(opts));
 		
 		try {
 			 getEC2Client(opts);
@@ -106,7 +103,7 @@ public class ec2DescribeImages extends AWSEC2Command {
 		
 
 		OutputPort stdout = this.getStdout();
-		mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(mSerializeOpts));
+		mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(getSerializeOpts()));
 		
 		
 		startDocument();
@@ -140,7 +137,7 @@ public class ec2DescribeImages extends AWSEC2Command {
 		endDocument();
 		closeWriter();
 		
-		stdout.writeSequenceTerminator(mSerializeOpts);
+		stdout.writeSequenceTerminator(getSerializeOpts());
 		stdout.release();
 		
 		return 0;

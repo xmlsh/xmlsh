@@ -37,6 +37,7 @@ public class sqsReceiveMessages extends AWSSQSCommand {
 		
 		Options opts = getOptions("f=file:,m=max:,t=timeout:,w=wait:");
 		opts.parse(args);
+        setSerializeOpts(this.getSerializeOpts(opts));
 
 		args = opts.getRemainingArgs();
 		
@@ -44,12 +45,7 @@ public class sqsReceiveMessages extends AWSSQSCommand {
 			usage();
 			return 1;
 		}
-		
 
-		
-		mSerializeOpts = this.getSerializeOpts(opts);
-		
-		
 		String url = args.get(0).toString();
 		OutputPort	out ;
 		
@@ -115,7 +111,7 @@ public class sqsReceiveMessages extends AWSSQSCommand {
 		ReceiveMessageResult result = mAmazon.receiveMessage(request);
 		
 		OutputPort stdout = this.getStdout();
-		mWriter = stdout.asXMLStreamWriter(mSerializeOpts);
+		mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
 		
 		
 		startDocument();
@@ -146,7 +142,7 @@ public class sqsReceiveMessages extends AWSSQSCommand {
 		endElement();
 		endDocument();
 		closeWriter();
-		stdout.writeSequenceTerminator(mSerializeOpts);
+		stdout.writeSequenceTerminator(getSerializeOpts());
 		stdout.release();
 		
 

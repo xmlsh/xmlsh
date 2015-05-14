@@ -37,7 +37,8 @@ public class asTerminateInstance extends AWSASCommand {
 		
 		Options opts = getOptions("d=decrement");
 		opts.parse(args);
-
+        setSerializeOpts(this.getSerializeOpts(opts));
+        
 		args = opts.getRemainingArgs();
 		
 		if( args.size() != 1 )
@@ -47,8 +48,6 @@ public class asTerminateInstance extends AWSASCommand {
 		boolean bDecrement = opts.hasOpt("decrement");
 		String instanceId = args.get(0).toString();
 
-		
-		mSerializeOpts = this.getSerializeOpts(opts);
 		
 		
 		try {
@@ -76,7 +75,7 @@ public class asTerminateInstance extends AWSASCommand {
 	{
 
 		OutputPort stdout = this.getStdout();
-		mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(mSerializeOpts));
+		mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(getSerializeOpts()));
 		
 		
 		startDocument();
@@ -101,7 +100,7 @@ public class asTerminateInstance extends AWSASCommand {
 		
 	closeWriter();
 		
-		stdout.writeSequenceTerminator(mSerializeOpts);
+		stdout.writeSequenceTerminator(getSerializeOpts());
 		stdout.release();
 	
 		

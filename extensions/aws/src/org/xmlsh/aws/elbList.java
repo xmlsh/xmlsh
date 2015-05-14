@@ -43,16 +43,8 @@ public class elbList	 extends  AWSELBCommand {
 		opts.parse(args);
 
 		args = opts.getRemainingArgs();
-		
 
-		
-		mSerializeOpts = this.getSerializeOpts(opts);
-		
-		
-		
-		
-		
-		
+        setSerializeOpts(this.getSerializeOpts(opts));
 		try {
 			 getELBClient(opts);
 		} catch (UnexpectedException e) {
@@ -77,7 +69,7 @@ public class elbList	 extends  AWSELBCommand {
 	{
 
 		OutputPort stdout = this.getStdout();
-		mWriter = stdout.asXMLStreamWriter(mSerializeOpts);
+		mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
 		
 		DescribeLoadBalancersRequest request = 
 				elbs.size() == 0 ?
@@ -169,7 +161,7 @@ public class elbList	 extends  AWSELBCommand {
 		
 		
 		closeWriter();
-		stdout.writeSequenceTerminator(mSerializeOpts);
+		stdout.writeSequenceTerminator(getSerializeOpts());
 		stdout.release();
 		
 

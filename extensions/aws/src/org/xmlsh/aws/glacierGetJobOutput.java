@@ -40,12 +40,8 @@ public class glacierGetJobOutput	 extends  AWSGlacierCommand {
 		args = opts.getRemainingArgs();
 		if( args.size() != 1 )
 			usage();
-		
 
-		
-		mSerializeOpts = this.getSerializeOpts(opts);
-		
-		
+        setSerializeOpts(this.getSerializeOpts(opts));
 		
 		
 		String vault = args.get(0).toString();
@@ -103,7 +99,7 @@ public class glacierGetJobOutput	 extends  AWSGlacierCommand {
 			
 			GetJobOutputResult jobOutputResult = mAmazon.getJobOutput(getJobOutputRequest);
 			InputStream jobOutput = jobOutputResult.getBody();
-            Util.copyStream(jobOutput, stdout.asOutputStream(mSerializeOpts));
+            Util.copyStream(jobOutput, stdout.asOutputStream(getSerializeOpts()));
             jobOutput.close();
 			
 			

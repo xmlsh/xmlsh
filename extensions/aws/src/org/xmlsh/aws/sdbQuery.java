@@ -35,16 +35,11 @@ public class sdbQuery	 extends  AWSSDBCommand {
 		opts.parse(args);
 
 		args = opts.getRemainingArgs();
-		
+        setSerializeOpts(this.getSerializeOpts(opts));
+
 
 		boolean bConsistant = opts.hasOpt("consistant");
-		
-		mSerializeOpts = this.getSerializeOpts(opts);
-		
-		
-		
-		
-		
+
 		
 		try {
 			 getSDBClient(opts);
@@ -76,7 +71,7 @@ public class sdbQuery	 extends  AWSSDBCommand {
 	{
 
 		OutputPort stdout = this.getStdout();
-		mWriter = stdout.asXMLStreamWriter(mSerializeOpts);
+		mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
 		
 		
 		
@@ -114,7 +109,7 @@ public class sdbQuery	 extends  AWSSDBCommand {
 		
 		
 		closeWriter();
-		stdout.writeSequenceTerminator(mSerializeOpts);
+		stdout.writeSequenceTerminator(getSerializeOpts());
 		stdout.release();
 		return 0;
 		

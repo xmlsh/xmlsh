@@ -23,6 +23,7 @@ import net.sf.saxon.om.NodeInfo;
 import net.sf.saxon.om.Sequence;
 import net.sf.saxon.om.SequenceIterator;
 import net.sf.saxon.om.SequenceTool;
+import net.sf.saxon.om.StructuredQName;
 import net.sf.saxon.s9api.ItemType;
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.QName;
@@ -44,6 +45,7 @@ import net.sf.saxon.value.DecimalValue;
 import net.sf.saxon.value.DoubleValue;
 import net.sf.saxon.value.FloatValue;
 import net.sf.saxon.value.IntegerValue;
+import net.sf.saxon.value.StringValue;
 
 import org.apache.log4j.Logger;
 import org.xmlsh.sh.shell.SerializeOpts;
@@ -296,9 +298,14 @@ public class XValue {
 		// Non-XdmValues not considered atomic.
 		if( ! (mValue instanceof XdmValue ))
 			return false ;
-		
+		if( (mValue instanceof XdmAtomicValue   ) ||                 ( mValue instanceof QName ) )
+		    return true ;
+		            
 		Sequence value = asXdmValue().getUnderlyingValue();
-		boolean isAtom = ( value instanceof AtomicValue ) || ( value instanceof NodeInfo && ((NodeInfo)value).getNodeKind() == net.sf.saxon.type.Type.TEXT ) ;
+		boolean isAtom = ( value instanceof AtomicValue ) || 
+		        ( value instanceof StringValue) ||
+		        ( value instanceof StructuredQName ) ||
+		        ( value instanceof NodeInfo && ((NodeInfo)value).getNodeKind() == net.sf.saxon.type.Type.TEXT ) ;
 		return isAtom;
 	
 		

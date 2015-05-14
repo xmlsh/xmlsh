@@ -33,6 +33,7 @@ public class ec2RebootInstances extends AWSEC2Command {
 		
 		Options opts = getOptions();
 		opts.parse(args);
+        setSerializeOpts(this.getSerializeOpts(opts));
 
 		args = opts.getRemainingArgs();
 		
@@ -46,7 +47,7 @@ public class ec2RebootInstances extends AWSEC2Command {
 		}
 		
 
-		mSerializeOpts = this.getSerializeOpts(opts);
+        setSerializeOpts(this.getSerializeOpts(opts));
 		try {
 			 getEC2Client(opts);
 		} catch (UnexpectedException e) {

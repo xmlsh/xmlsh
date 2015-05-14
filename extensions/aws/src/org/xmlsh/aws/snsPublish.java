@@ -34,18 +34,13 @@ public class snsPublish extends AWSSNSCommand {
 		opts.parse(args);
 
 		args = opts.getRemainingArgs();
-		
+        setSerializeOpts(this.getSerializeOpts(opts));
+
 		
 		String topic = opts.getOptStringRequired("topic");
 		String message = opts.getOptStringRequired("message");
 		String subject = opts.getOptString("subject", null );
-		
 
-		
-		mSerializeOpts = this.getSerializeOpts(opts);
-		
-
-		
 		
 		try {
 			 getSNSClient(opts);
@@ -77,7 +72,7 @@ public class snsPublish extends AWSSNSCommand {
 		
 
 		OutputPort stdout = this.getStdout();
-		mWriter = stdout.asXMLStreamWriter(mSerializeOpts);
+		mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
 		
 		
 		startDocument();
@@ -90,7 +85,7 @@ public class snsPublish extends AWSSNSCommand {
 		endElement();
 		endDocument();
 		closeWriter();
-		stdout.writeSequenceTerminator(mSerializeOpts);
+		stdout.writeSequenceTerminator(getSerializeOpts());
 		stdout.release();
 		
 		

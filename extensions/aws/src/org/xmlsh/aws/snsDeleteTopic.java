@@ -32,6 +32,7 @@ public class snsDeleteTopic extends AWSSNSCommand {
 		
 		Options opts = getOptions();
 		opts.parse(args);
+        setSerializeOpts(this.getSerializeOpts(opts));
 
 		args = opts.getRemainingArgs();
 		
@@ -39,13 +40,7 @@ public class snsDeleteTopic extends AWSSNSCommand {
 			usage();
 			return 1;
 		}
-		
 
-		
-		mSerializeOpts = this.getSerializeOpts(opts);
-		
-		
-		
 
 		String name = args.get(0).toString();
 		

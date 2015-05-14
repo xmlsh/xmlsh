@@ -6,7 +6,6 @@
 
 package org.xmlsh.aws.util;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -15,6 +14,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.AbstractMap.SimpleImmutableEntry;
 import java.util.Map.Entry;
 
 import javax.xml.stream.XMLStreamException;
@@ -23,20 +23,24 @@ import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
 
+import org.xmlsh.aws.util.DDBTypes.AttrType;
+import org.xmlsh.commands.xs.element;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.UnimplementedException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.util.Base64;
-import org.xmlsh.util.StringPair;
 import org.xmlsh.util.Util;
 
 import com.amazonaws.regions.RegionUtils;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
+import com.amazonaws.services.dynamodbv2.document.DynamoDB;
 import com.amazonaws.services.dynamodbv2.model.AttributeDefinition;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+import com.amazonaws.services.dynamodbv2.model.Capacity;
 import com.amazonaws.services.dynamodbv2.model.ConsumedCapacity;
 import com.amazonaws.services.dynamodbv2.model.GlobalSecondaryIndex;
 import com.amazonaws.services.dynamodbv2.model.GlobalSecondaryIndexDescription;
@@ -50,61 +54,31 @@ import com.amazonaws.services.dynamodbv2.model.ProvisionedThroughput;
 import com.amazonaws.services.dynamodbv2.model.ProvisionedThroughputDescription;
 import com.amazonaws.services.dynamodbv2.model.TableDescription;
 
+import  static org.xmlsh.aws.util.DDBTypes.AttrType.*;
+
 public abstract class AWSDDBCommand extends AWSCommand {
-
     protected AmazonDynamoDB mAmazon;
+    private DynamoDB mDynamo = null ;
+    private DynamoDBMapper mMapper = null ;
     
-    /*
-     * Attribute Name/Type 
-     *   Type is optional and defaults to "S" and stored in Left
-     *   Name is stored in right
-     */
-    public static class NameType {
-        private String name;
-        private String type;
-        private void _init( String def ){
-            StringPair pair = new StringPair( def , ':');
-            name = pair.getRight();
-            type = pair.hasLeft() ? pair.getLeft() : "S";
-        }
-        NameType( String def ) {
-            _init(def);
-        }
-        NameType( String name ,String type ){
-            this.name = name ;
-            this.type = type ;
-        }
-        NameType( XValue xv ) throws InvalidArgumentException {
-             _init(xv);
+    public static class RequestMetrics {
+        public int count ;
+        public int scanCount;
+        public ConsumedCapacity capacity;
+        public ItemCollectionMetrics itemMetrics;
+        public RequestMetrics(int count, int scanCount, ConsumedCapacity capacity) {
+            super();
+            this.count = count;
+            this.scanCount = scanCount;
+            this.capacity = capacity;
         }
 
-        private void _init( XValue xv ) throws InvalidArgumentException{
-            if( xv.isXdmNode() ){
-                _init( xv.asXdmNode());
-            } 
-            else
-            if( xv.isString() )
-                _init( xv.toString() );
-            else
-                throw new InvalidArgumentException(
-                        "Unexpected argument type for attribute: " + xv.getTypeName());
+        public RequestMetrics(ConsumedCapacity consumedCapacity, ItemCollectionMetrics itemCollectionMetrics) {
+            count=0;
+            scanCount=0;
+            this.capacity=consumedCapacity;
+            this.itemMetrics = itemCollectionMetrics;
         }
-        NameType( XdmNode node ){
-            _init( node );
-        }
-
-
-        private void _init( XdmNode node ) {
-            type = node.getAttributeValue( new QName("type"));
-            name = node.getAttributeValue(new QName("name"));
-        }
-        String getName() {
-            return name;
-        }
-        String getType() { 
-            return type;
-        }
-        
     }
 
     public AWSDDBCommand() {
@@ -124,23 +98,50 @@ public abstract class AWSDDBCommand extends AWSCommand {
         return mAmazon;
     }
 
-    protected void getDDBClient(Options opts) throws UnexpectedException,
-            InvalidArgumentException {
-
+    protected void getDDBClient(Options opts) throws UnexpectedException, InvalidArgumentException {
         mAmazon = new AmazonDynamoDBClient(
                 new AWSCommandCredentialsProviderChain(mShell, opts)
+                );
+        setDDBClientOpts(opts);
+    }
 
-        );
-
+    private void setDDBClientOpts(Options opts) throws InvalidArgumentException {
         setEndpoint(opts);
         setRegion(opts);
+    }
+    
+
+    private void setDynamoDBOpts(Options options) {
+    }
+
+    protected  DynamoDB getDynamotDB(Options opts) throws UnexpectedException, InvalidArgumentException {
+        if( mAmazon == null )
+            getDDBClient(opts);
+        assert(mAmazon != null );
+        if( mDynamo == null )
+            mDynamo = new DynamoDB( mAmazon );
+        setDynamoDBOpts(opts);
+        return mDynamo;
+    }
+    protected  DynamoDBMapper getMapper(Options opts) throws UnexpectedException, InvalidArgumentException {
+        if( mAmazon == null )
+            getDDBClient(opts);
+        assert(mAmazon != null );
+        if( mMapper == null )
+            mMapper= new DynamoDBMapper( mAmazon );
+        setMapperOpts(opts);
+        return mMapper;
+    }
+    
+    private void setMapperOpts(Options opts) {
+        
     }
 
     protected AttributeDefinition parseKeyAttribute(XValue xv)
             throws InvalidArgumentException, UnexpectedException {
-        NameType  ant = new NameType(xv);
-            return new AttributeDefinition().withAttributeName(ant.getName())
-                    .withAttributeType( ant.getType() );
+        DDBTypes.NameType  ant = new DDBTypes.NameType(xv);
+        return new AttributeDefinition().withAttributeName(ant.getName())
+                .withAttributeType( ant.getTypeName() );
 
     }
 
@@ -166,10 +167,10 @@ public abstract class AWSDDBCommand extends AWSCommand {
     protected KeySchemaElement parseKeySchemaElement(XValue xv) throws InvalidArgumentException {
 
         // Note: overload of 'type' for hash/range 
-        NameType ant = new NameType(xv);
+        DDBTypes.NameType ant = new DDBTypes.NameType(xv);
         KeySchemaElement keyElement = new KeySchemaElement().withAttributeName(
                 ant.getName()).withKeyType(
-                KeyType.valueOf(ant.getType().toUpperCase()));
+                        KeyType.valueOf(ant.getTypeName().toUpperCase()));
         return keyElement;
     }
 
@@ -181,8 +182,8 @@ public abstract class AWSDDBCommand extends AWSCommand {
             for (XdmItem item : xpath(xv, "key-schema/key-element-name")
                     .asXdmValue()) {
                 if (item instanceof XdmNode){
-                    NameType ant = new NameType( (XdmNode) item );
-                    list.add(new KeySchemaElement(ant.getName(), ant.getType() ));
+                    DDBTypes.NameType ant = new DDBTypes.NameType( (XdmNode) item );
+                    list.add(new KeySchemaElement(ant.getName(), ant.getTypeName() ));
                 }
                 else
                     throw new UnexpectedException("Unexpected node type: "
@@ -217,7 +218,7 @@ public abstract class AWSDDBCommand extends AWSCommand {
     }
 
     private Projection parseProjection(XValue xv) throws UnexpectedException,
-            InvalidArgumentException {
+    InvalidArgumentException {
         if (xv.isXdmNode()) {
             XdmNode node = xv.asXdmNode();
             if (!node.getNodeName().getLocalName().equals("projection"))
@@ -228,7 +229,7 @@ public abstract class AWSDDBCommand extends AWSCommand {
                     node.getAttributeValue(new QName("projection-type")))
                     .withNonKeyAttributes(
                             xpath(xv, "./non-key-attribute/string()")
-                                    .asStringList());
+                            .asStringList());
             return p;
         } else
             throw new UnexpectedException("Unexpected type: "
@@ -269,71 +270,80 @@ public abstract class AWSDDBCommand extends AWSCommand {
     protected void writeAttributeValue(AttributeValue avalue)
             throws XMLStreamException, IOException {
         if (avalue.getS() != null) {
-            attribute("type", "S");
+            attribute(AttrType.S);
             characters(avalue.getS());
         }
         else
-        if (avalue.getN() != null) {
-            attribute("type", "N");
-            characters(avalue.getN());
-        }
-        else
-
-        if (avalue.getB() != null) {
-            attribute("type", "B");
-            binary(avalue.getB().array());
-        }
-        else
-        if (avalue.getSS() != null) {
-            attribute("type", "SS");
-            for (String s : avalue.getSS()) {
-                startElement("value");
-                characters(s);
-                endElement();
+            if (avalue.getN() != null) {
+                attribute(AttrType.N);
+                characters(avalue.getN());
             }
+            else
 
-        }
-        else
-        if (avalue.getNS() != null) {
-            attribute("type", "NS");
-            for (String s : avalue.getNS()) {
-                startElement("value");
-                characters(s);
-                endElement();
-            }
-        }
-        else
-        if (avalue.getBS() != null) {
-            attribute("type", "BS");
-            for (ByteBuffer s : avalue.getBS()) {
-                startElement("value");
-                binary(s.array());
-                endElement();
-            }
-        }
-        else
-        if (avalue.getL() != null) {
-            attribute("type", "L");
-            for (AttributeValue av : avalue.getL()) {
-                startElement("value");
-                writeAttributeValue(av);
-                endElement();
-            }
-        } else if (avalue.getM() != null) {
-            attribute("type", "M");
-            for (Entry<String, AttributeValue> e : avalue.getM().entrySet()) {
-                writeAttribute(e.getKey(), e.getValue());
+                if (avalue.getB() != null) {
+                    attribute(AttrType.B);
+                    binary(avalue.getB().array());
+                }
+                else
+                    if (avalue.getSS() != null) {
+                        attribute(AttrType.SS);
 
-            }
-        } else if (avalue.isBOOL()) {
-            attribute("type", "BOOL");
-            characters(avalue.getBOOL() ? "true" : "false");
-        } else if (avalue.isNULL()) {
-            attribute("type", "NULL");
-            characters(avalue.getNULL() ? "true" : "false");
+                        for (String s : avalue.getSS()) {
+                            startElement("value");
+                            characters(s);
+                            endElement();
+                        }
 
-        }
+                    }
+                    else
+                        if (avalue.getNS() != null) {
+                            attribute(AttrType.NS);
 
+                            for (String s : avalue.getNS()) {
+                                startElement("value");
+                                characters(s);
+                                endElement();
+                            }
+                        }
+                        else
+                            if (avalue.getBS() != null) {
+                                attribute(AttrType.BS);
+
+                                for (ByteBuffer s : avalue.getBS()) {
+                                    startElement("value");
+                                    binary(s.array());
+                                    endElement();
+                                }
+                            }
+                            else
+                                if (avalue.getL() != null) {
+                                    attribute(AttrType.L);
+                                    for (AttributeValue av : avalue.getL()) {
+                                        startElement("value");
+                                        writeAttributeValue(av);
+                                        endElement();
+                                    }
+                                } else if (avalue.getM() != null) {
+                                    attribute(AttrType.M);;
+
+                                    for (Entry<String, AttributeValue> e : avalue.getM().entrySet()) {
+                                        writeAttribute(e.getKey(), e.getValue());
+
+                                    }
+                                } else if (avalue.isBOOL()) {
+                                    attribute(AttrType.BOOL);
+                                    characters(avalue.getBOOL() ? "true" : "false");
+                                } else if (avalue.isNULL()) {
+                                    attribute(AttrType.NULL);
+
+                                    characters(avalue.getNULL() ? "true" : "false");
+
+                                }
+
+    }
+
+    protected void attribute(AttrType t) throws XMLStreamException {
+        attribute("type" , t.name() );
     }
 
     private void writeAttributeDefinition(AttributeDefinition def)
@@ -346,7 +356,7 @@ public abstract class AWSDDBCommand extends AWSCommand {
 
     private void writeAttributeDefinitions(
             List<AttributeDefinition> attributeDefinitions)
-            throws XMLStreamException {
+                    throws XMLStreamException {
         startElement("attribute-definitions");
         for (AttributeDefinition def : attributeDefinitions)
             writeAttributeDefinition(def);
@@ -371,7 +381,7 @@ public abstract class AWSDDBCommand extends AWSCommand {
 
     private void writeGlobalSecondaryIndexes(
             List<GlobalSecondaryIndexDescription> globalSecondaryIndexes)
-            throws XMLStreamException {
+                    throws XMLStreamException {
         startElement("global-secondary-indexes");
         if (globalSecondaryIndexes != null)
             for (GlobalSecondaryIndexDescription index : globalSecondaryIndexes)
@@ -409,7 +419,7 @@ public abstract class AWSDDBCommand extends AWSCommand {
 
     private void writeLocalSecondaryIndexes(
             List<LocalSecondaryIndexDescription> localSecondaryIndexes)
-            throws XMLStreamException {
+                    throws XMLStreamException {
         startElement("local-secondary-indexes");
         if (localSecondaryIndexes != null)
             for (LocalSecondaryIndexDescription index : localSecondaryIndexes)
@@ -431,7 +441,7 @@ public abstract class AWSDDBCommand extends AWSCommand {
 
     private void writeProvisionedThroughput(
             ProvisionedThroughputDescription provisionedThroughput)
-            throws XMLStreamException {
+                    throws XMLStreamException {
         startElement("provisioned-throughput");
         attribute("last-decrease",
                 provisionedThroughput.getLastDecreaseDateTime());
@@ -465,229 +475,102 @@ public abstract class AWSDDBCommand extends AWSCommand {
         writeProvisionedThroughput(tableDescription.getProvisionedThroughput());
 
     }
-
-    protected AttributeValue parseAttributeValue( String type , XValue xv ) throws UnimplementedException, IOException, UnexpectedException{
-        AttributeValue av;
-        
-        if (type.equals( "N"))
-            return new AttributeValue().withN(xv.toString());
-        else if (type.equals( "NS"))
-            return new AttributeValue().withNS(parseNS(xv));
-        else if (type.equals( "S"))
-            return new AttributeValue().withS(xv.toString());
-        else if (type.equals( "SS"))
-            return new AttributeValue().withSS(parseSS(xv));
-        else if (type.equals( "B"))
-            return new AttributeValue().withB(parseBinary(xv));
-        else if (type.equals( "BS"))
-            return new AttributeValue().withBS(parseBS(xv));
-        else if (type.equals( "BOOL"))
-            return new AttributeValue().withBOOL(Util.parseBoolean(xv.toString()));
-        else if (type.equals( "NULL"))
-            return new AttributeValue().withNULL(Util.parseBoolean(xv.toString()));
-        else if (type.equals( "L"))
-            return new AttributeValue().withL(parseL(xv));
-        else if (type.equals( "M"))
-            return new AttributeValue().withM(parseM(xv));
-        else
-            throw new UnexpectedException("Unknown type: " + type);
-        
-    } 
-    /*
-     * Parse a set of attributes 
-     *   [type:]Name Value ... 
-     *               -> any value of type 
-     *   
-     *   <attribute name="name" type="type">
-     *          value
-     *   <attribute>
-     *      
-     *   
-     */
-    
-    protected Map<String, AttributeValue> parseAttributeNameValue( XValue name, XValue xv ) throws UnimplementedException, UnexpectedException, IOException, InvalidArgumentException {
-        Map<String, AttributeValue> attrs = new HashMap<String, AttributeValue>();
-        AttributeValue av  = parseAttributeValue(parseAttribteType(xv) , xv );
-        attrs.put(name.toString(), av);
-        return attrs;
+    protected void writeAttrNameValue(String elem ,Map<String, AttributeValue> result) throws XMLStreamException,   IOException {
+        startElement(elem);
+        for (Entry<String, AttributeValue> a : result.entrySet())
+            this.writeAttribute(a.getKey(), a.getValue());
+        endElement();
     }
-        
-    private String parseAttribteType(XValue xv) throws InvalidArgumentException {
-
-        if( xv.isString() )
-            return "S" ;
-        if( xv.isNull())
-            return "NULL" ;
-        if( xv.isAtomic()){
-           return  "S" ;
-        }
-        throw new InvalidArgumentException("Unexpected type for attribute: " + xv.getTypeName() );
-
+    protected void writeItem(Map<String, AttributeValue> result) throws XMLStreamException, IOException {
+        writeAttrNameValue("item", result);
     }
-
-    protected Map<String, AttributeValue> parseAttributeValue(XValue a) throws InvalidArgumentException, UnimplementedException, UnexpectedException, IOException{
-        if( a.isXdmNode() ){
-            Map<String, AttributeValue> attrs = new HashMap<String, AttributeValue>();
-            NameType ant = new NameType( a.asXdmNode() );
-            AttributeValue av  = parseAttributeValue(ant.getType(), a);
-            attrs.put(ant.getName(), av);
-            return attrs;
-        }
-        throw new InvalidArgumentException("Unexpected type for attribute: " + a.getTypeName() );
-
-    }
-
-    protected Map<String, AttributeValue> parseAttributeValues(List<XValue> args)
-            throws IOException, UnexpectedException, UnimplementedException,
-            InvalidArgumentException {
-        Map<String, AttributeValue> attrs = new HashMap<String, AttributeValue>();
-        while (!args.isEmpty()) {
-            
-            XValue a = args.remove(0);
-            NameType ant;
-            // <attribute element>
-            if( a.isXdmNode() )
-                ant = new NameType( a.asXdmNode() );
-            else
-            // [type:]Name Value
-            if( a.isString()){
-                if( args.isEmpty())
-                  throw new InvalidArgumentException("Expected value after name: " + a.toString() );
-                ant = new NameType( a.toString());
-                a = args.remove(0);
-            }
-            else
-                throw new InvalidArgumentException("Unexpected type for attribute: " + a.getTypeName() );
-
-            
-            AttributeValue av  = parseAttributeValue(ant.getType(), a);
-
-            attrs.put(ant.getName(), av);
-
-        }
-        return attrs;
-    }
-
-    private Map<String, AttributeValue> parseM(XValue xv)
-            throws UnimplementedException {
-        throw new UnimplementedException("Map type unimplemented");
-
-    }
-
-    private Collection<AttributeValue> parseL(XValue xv)
-            throws UnimplementedException {
-
-        throw new UnimplementedException("List<Attribute> type unimplemented");
-
-    }
-
-    protected Collection<ByteBuffer> parseBS(XValue xv) throws IOException {
-
-        ArrayList<ByteBuffer> ret = new ArrayList<ByteBuffer>();
-        for (String s : xv.asStringList())
-            ret.add(parseBinary(s));
-
-        return ret;
-
-    }
-
-    private ByteBuffer parseBinary(XValue xv) throws IOException {
-        return parseBinary(xv.toString());
-
-    }
-
-    protected ByteBuffer parseBinary(String s) throws IOException {
-
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-
-        Base64.InputStream b64 = new Base64.InputStream(
-                new ByteArrayInputStream(s.getBytes("UTF8")), Base64.DECODE);
-        Util.copyStream(b64, bos);
-        b64.close();
-        return ByteBuffer.wrap(bos.toByteArray());
-
-    }
-
-    protected Collection<String> parseSS(XValue xv) {
-        return xv.asStringList();
-    }
-
-    protected Collection<String> parseNS(XValue xv) {
-        return parseSS(xv); // numbers
-    }
-
-    protected Map<String, AttributeValue> parseKey(XValue key) throws UnexpectedException,
-            UnimplementedException, IOException, InvalidArgumentException {
-                return  parseAttributeValue( key );
-                
-            }
-
-    protected Map<String, AttributeValue> parseKey(XValue name, XValue value)
-            throws UnexpectedException, UnimplementedException, IOException,
-            InvalidArgumentException {
-                return  parseAttributeNameValue(name, value);
-            }
-
-    protected void writeItem(Map<String, AttributeValue> result) throws XMLStreamException,
-            IOException {
-            	startElement("item");
-            	for (Entry<String, AttributeValue> a : result.entrySet())
-            		this.writeAttribute(a.getKey(), a.getValue());
-            	endElement();
-            }
-
     protected Map<String, AttributeValue> parseKeyOptions(Options opts)
             throws InvalidArgumentException, UnexpectedException,
             UnimplementedException, IOException {
-                Map<String, AttributeValue> keys = new HashMap<String, AttributeValue>();
-            	if( opts.hasOpt("key"))
-                  for( XValue k : opts.getOptValues("key"))
-            	    keys.putAll( parseKey(k));
-            
-              if( opts.hasOpt("key-name")){
-            	   List<XValue> keyValues = opts.getOptValues("key-value");
-            	  int i = 0;
-                  for( XValue keyName : opts.getOptValues("key-name"))
-                      keys.putAll( parseKey(keyName, keyValues.get(i++)));
-                }
-                return keys;
-            }
+        Map<String, AttributeValue> keys = new HashMap<String, AttributeValue>();
+        if( opts.hasOpt("key"))
+            for( XValue k : opts.getOptValues("key"))
+                keys.putAll( DDBTypes.parseKey(k));
 
-    protected void writeItemCollectionMetrics(ItemCollectionMetrics itemCollectionMetrics) {
-        // TODO Auto-generated method stub
-        
+        if( opts.hasOpt("key-name")){
+            List<XValue> keyValues = opts.getOptValues("key-value");
+            int i = 0;
+            for( XValue keyName : opts.getOptValues("key-name"))
+                keys.putAll( DDBTypes.parseKey(keyName, keyValues.get(i++)));
+        }
+        return keys;
     }
 
-    protected void writeConsumedCapacity(ConsumedCapacity consumedCapacity) {
-        // TODO Auto-generated method stub
-        
+    protected void writeItemCollectionMetrics(ItemCollectionMetrics itemCollectionMetrics) throws XMLStreamException, IOException {
+        startElement("item-collection-metrics");
+        writeAttrNameValue( "item-collection-key",  itemCollectionMetrics.getItemCollectionKey());
+        for( Double r : itemCollectionMetrics.getSizeEstimateRangeGB() ){
+            super.startElement("size");
+            attribute("value", r );
+            endElement();
+        }
+        endElement();
+    }
+
+    protected void writeConsumedCapacity(ConsumedCapacity consumedCapacity) throws XMLStreamException
+    {
+        if( consumedCapacity == null ) 
+            return;
+        startElement("consumed-capacity");
+        attribute("total-units", consumedCapacity.getCapacityUnits());
+        startElement("table");
+        writeCapacity( "table-name" , consumedCapacity.getTableName() ,  consumedCapacity.getTable());
+        endElement();
+        startElement( "local-secondary-indexes");
+        for(   Entry<String, Capacity> ce : consumedCapacity.getLocalSecondaryIndexes().entrySet() ) 
+            writeCapacity( "index-name" , ce.getKey() , ce.getValue() );
+        endElement();
+
+        startElement("global-secondary-indexes");
+        for(   Entry<String, Capacity> ce : consumedCapacity.getGlobalSecondaryIndexes().entrySet() )
+            writeCapacity( "index-name" , ce.getKey() , ce.getValue() );
+        endElement();
+        endElement();
+
+    }
+    private void writeCapacity(String attr, String attrValue, Capacity cap ) throws XMLStreamException {
+        attribute(attr,attrValue);
+        attribute("capacity-units" , cap.getCapacityUnits());
+    }
+
+    private void attribute(String localName, Double d) throws XMLStreamException {
+        attribute( localName , d.toString() );
     }
 
     protected Map<String, AttributeValue> parseAttrValueExprs(List<XValue> optValues)
             throws UnexpectedException, UnimplementedException,
             InvalidArgumentException, IOException {
-                
-                return parseAttributeValues( optValues );
-                
-            }
 
-    protected Map<String, String> parseAttrNameExprs(List<XValue> nameExprs)
-            throws InvalidArgumentException {
-                Map<String, String> map =  new HashMap<String, String>();
-                for( XValue v : nameExprs ){
-                    // placeholder=literal
-                    if( v.isString() ){
-                        StringPair pair=new StringPair( v.toString() , '=' );
-                        if( ! pair.hasLeft() )
-                            throw new InvalidArgumentException("Unexpected attribute name expression. expected 'placeholder=literal'  : " + v.toString()  );
-                        map.put(pair.getLeft(), pair.getRight() );
-                    } else
-                        throw new InvalidArgumentException("Unexpected attribute name expression. expected 'placeholder=literal'  : " + v.toString()  );
-                }
-                return map;
-                
-                
-            }
+        return DDBTypes.parseAttributeValues( optValues );
+
+    }
+
+    protected void writeMetrics(ArrayList<RequestMetrics> metrics) throws XMLStreamException, IOException {
+        startElement("request-metrics");
+        for( RequestMetrics m : metrics ){
+            writeMetric(m);
+        }
+        endElement();
+
+    }
+
+    public void writeMetric(RequestMetrics m) throws XMLStreamException, IOException {
+
+        startElement("request-metric");
+        attribute("count",m.count);
+        attribute("scanCount",m.scanCount);
+        if ( m.capacity != null) 
+            writeConsumedCapacity(m.capacity);
+        if( m.itemMetrics != null )
+            writeItemCollectionMetrics(m.itemMetrics);
+
+        endElement();
+    }
 
 }
 

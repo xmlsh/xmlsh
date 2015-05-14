@@ -40,14 +40,15 @@ public class ddbDescribeTable extends AWSDDBCommand {
 		Options opts = getOptions("table:");
 		opts.parse(args);
 
+
+        setSerializeOpts(this.getSerializeOpts(opts));
 		args = opts.getRemainingArgs();
 
 		if (args.size() != 0) {
 			usage();
 			return 1;
 		}
-
-		mSerializeOpts = this.getSerializeOpts(opts);
+    
 
 		try {
 			getDDBClient(opts);
@@ -70,7 +71,7 @@ public class ddbDescribeTable extends AWSDDBCommand {
 	    String tableName = opts.getOptStringRequired("table");
 	    
 		OutputPort stdout = this.getStdout();
-		mWriter = stdout.asXMLStreamWriter(mSerializeOpts);
+		mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
 
 		startDocument();
 		startElement(getName());
@@ -89,7 +90,7 @@ public class ddbDescribeTable extends AWSDDBCommand {
 		endDocument();
 
 		closeWriter();
-		stdout.writeSequenceTerminator(mSerializeOpts);
+		stdout.writeSequenceTerminator(getSerializeOpts());
 		stdout.release();
 
 		return 0;

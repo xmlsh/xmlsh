@@ -9,6 +9,7 @@ import javax.xml.stream.XMLStreamException;
 import net.sf.saxon.s9api.SaxonApiException;
 
 import org.xmlsh.aws.util.AWSDDBCommand;
+import org.xmlsh.aws.util.AWSDDBCommand.RequestMetrics;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
@@ -36,6 +37,8 @@ public class ddbDeleteItem	 extends  AWSDDBCommand {
 	//	Options opts = getOptions("expected:+,q=quiet");
 		opts.parse(args);
 
+        setSerializeOpts(this.getSerializeOpts(opts));
+    
 		args = opts.getRemainingArgs();
 		  opts.parse(args);
 	        String tableName = opts.getOptStringRequired("table");
@@ -46,8 +49,6 @@ public class ddbDeleteItem	 extends  AWSDDBCommand {
 	         return 1;
 	     }
 
-		mSerializeOpts = this.getSerializeOpts(opts);
-		
 		bQuiet = opts.hasOpt("quiet");
 	
 		try {
@@ -85,24 +86,18 @@ public class ddbDeleteItem	 extends  AWSDDBCommand {
 		
 		if( ! bQuiet ){
 			OutputPort stdout = this.getStdout();
-			mWriter = stdout.asXMLStreamWriter(mSerializeOpts);
+			mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
 			 startDocument();
 		     startElement(getName());
 
 			if( result.getAttributes() != null ){
 			    writeItem( result.getAttributes() );
 			}
-
-			if( result.getConsumedCapacity() != null ){
-			    writeConsumedCapacity( result.getConsumedCapacity() );
-			}
-			if( result.getItemCollectionMetrics() != null ){
-			    writeItemCollectionMetrics( result.getItemCollectionMetrics());
-			}
+            writeMetric(  new RequestMetrics( result.getConsumedCapacity() , result.getItemCollectionMetrics() ));
 			endElement();
 			endDocument();
 			closeWriter();
-			stdout.writeSequenceTerminator(mSerializeOpts);
+			stdout.writeSequenceTerminator(getSerializeOpts());
 			stdout.release();
 		}	
 		
@@ -110,17 +105,6 @@ public class ddbDeleteItem	 extends  AWSDDBCommand {
 		return 0;
 		
 	}
-
-
-	
-	// pairs for 
-	//  type:name value
-	// if type is empty then == "S"
-
-public void usage() {
-		super.usage();
-	}
-
 
 
 	

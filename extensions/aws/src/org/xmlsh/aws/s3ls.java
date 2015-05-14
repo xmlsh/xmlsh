@@ -28,50 +28,30 @@ import com.amazonaws.services.s3.model.S3ObjectSummary;
 
 
 public class s3ls extends AWSS3Command {
-
-	
-
 	private boolean bLongListing;
 	private String mDelim;
-
-
 	/**
 	 * @param args
 	 * @throws IOException 
 	 */
 	@Override
 	public int run(List<XValue> args) throws Exception {
-
-		
 		Options opts = getOptions("delim:,r=recurse,l=long,m=multipart");
 		opts.parse(args);
-
 		args = opts.getRemainingArgs();
-		
-		
-
-		
-		mSerializeOpts = this.getSerializeOpts(opts);
-		
-		
-		
-		
+        setSerializeOpts(this.getSerializeOpts(opts));
 		bLongListing = opts.hasOpt("l");
-		
 		
 		try {
 			 getS3Client(opts);
 		} catch (UnexpectedException e) {
 			usage( e.getLocalizedMessage() );
 			return 1;
-			
 		}
 		
 		mDelim = opts.getOptString("delim", "/" );
 		if( opts.hasOpt("r") )
 			mDelim = null ;
-
-
 		int ret;
 		switch(args.size()){
 		case	0:
@@ -83,18 +63,11 @@ public class s3ls extends AWSS3Command {
 			else
 		     	ret = list( args.get(0).toString());
 			break;
-			
 		default :
 				usage();
 				return 1;
 		}
-
-
-		
-		
 		return ret;
-		
-		
 	}
 
 
@@ -102,7 +75,7 @@ public class s3ls extends AWSS3Command {
 		
 
 		OutputPort stdout = this.getStdout();
-		mWriter = stdout.asXMLStreamWriter(mSerializeOpts);
+		mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
 		
 		
 		startDocument();
@@ -131,7 +104,7 @@ public class s3ls extends AWSS3Command {
 		endElement();
 		endDocument();
 		closeWriter();
-		stdout.writeSequenceTerminator(mSerializeOpts);
+		stdout.writeSequenceTerminator(getSerializeOpts());
 		stdout.release();
 		
 
@@ -156,7 +129,7 @@ public class s3ls extends AWSS3Command {
 
 		
 		OutputPort stdout = this.getStdout();
-		XMLStreamWriter writer = stdout.asXMLStreamWriter(mSerializeOpts);
+		XMLStreamWriter writer = stdout.asXMLStreamWriter(getSerializeOpts());
 		
 		
 		writePath(path, writer);
@@ -206,7 +179,7 @@ public class s3ls extends AWSS3Command {
 		writer.writeEndDocument();
 		writer.flush();
 		writer.close();
-		stdout.writeSequenceTerminator(mSerializeOpts);
+		stdout.writeSequenceTerminator(getSerializeOpts());
 		stdout.release();
 
 		return 0;
@@ -216,35 +189,18 @@ public class s3ls extends AWSS3Command {
 	private int list(String s) throws IOException, XMLStreamException,
 			SaxonApiException, AmazonClientException,  CoreException {
 		
-		
 		S3Path path = new S3Path(s);
 		if( ! path.hasBucket()){
 			usage();
 			return 1;
 			
 		}
-		
-			
-			
-		
-		
 		OutputPort stdout = this.getStdout();
-		XMLStreamWriter writer = stdout.asXMLStreamWriter(mSerializeOpts);
-		
-		
+		XMLStreamWriter writer = stdout.asXMLStreamWriter(getSerializeOpts());
 		writePath(path, writer);
-		
-		
-		
-		
-		
 		ListObjectsRequest request = getListRequest( path ,mDelim );
 		traceCall("listObjects");
-
 		ObjectListing list = mAmazon.listObjects(request);
-		
-		
-		
 		do {
 			
 			List<String> prefixes = list.getCommonPrefixes();
@@ -254,7 +210,6 @@ public class s3ls extends AWSS3Command {
 					writer.writeAttribute("name",p);
 					writer.writeEndElement();
 				}
-				
 			}
 			
 			List<S3ObjectSummary>  objs = list.getObjectSummaries();
@@ -284,7 +239,7 @@ public class s3ls extends AWSS3Command {
 		writer.writeEndDocument();
 		writer.flush();
 		writer.close();
-		stdout.writeSequenceTerminator(mSerializeOpts);
+		stdout.writeSequenceTerminator(getSerializeOpts());
 		stdout.release();
 		return 0;
 	}

@@ -37,14 +37,13 @@ public class cfnGetTemplate extends AWSCFNCommand {
 		
 		Options opts = getOptions("j=json,n=name:");
 		opts.parse(args);
- 
+        setSerializeOpts(this.getSerializeOpts(opts));
+
 		
 		args = opts.getRemainingArgs();
 		
 		boolean bJson = opts.hasOpt("json");
 
-		
-		mSerializeOpts = this.getSerializeOpts(opts);
 		
 		
 		try {
@@ -84,7 +83,7 @@ public class cfnGetTemplate extends AWSCFNCommand {
 		
 		
 		if( bJson ){
-			SerializeOpts opts = mSerializeOpts.clone();
+			SerializeOpts opts = getSerializeOpts().clone();
 			opts.setOutput_text_encoding("utf-8");
 			
 			PrintWriter w = stdout.asPrintWriter(opts);
@@ -93,7 +92,7 @@ public class cfnGetTemplate extends AWSCFNCommand {
 
 			
 		} else {
-			mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(mSerializeOpts));
+			mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(getSerializeOpts()));
 			
 			
 			startDocument();
@@ -109,7 +108,7 @@ public class cfnGetTemplate extends AWSCFNCommand {
 			endDocument();
 			closeWriter();
 			
-			stdout.writeSequenceTerminator(mSerializeOpts);
+			stdout.writeSequenceTerminator(getSerializeOpts());
 		}
 		stdout.release();
 		return 0;

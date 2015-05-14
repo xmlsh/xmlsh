@@ -37,12 +37,10 @@ public class glacierListVaults	 extends  AWSGlacierCommand {
 		Options opts = getOptions();
 		opts.parse(args);
 
-		args = opts.getRemainingArgs();
-		
+		args = opts.getRemainingArgs();        
+		setSerializeOpts(this.getSerializeOpts(opts));
 
-		
-		mSerializeOpts = this.getSerializeOpts(opts);
-		
+        
 		
 		try {
 			 getGlacierClient(opts);
@@ -68,7 +66,7 @@ public class glacierListVaults	 extends  AWSGlacierCommand {
 	{
 
 		OutputPort stdout = this.getStdout();
-		mWriter = stdout.asXMLStreamWriter(mSerializeOpts);
+		mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
 		
 		 
 		ListVaultsRequest request = new ListVaultsRequest();
@@ -106,7 +104,7 @@ public class glacierListVaults	 extends  AWSGlacierCommand {
 		
 		
 		closeWriter();
-		stdout.writeSequenceTerminator(mSerializeOpts);
+		stdout.writeSequenceTerminator(getSerializeOpts());
 		stdout.release();
 		
 

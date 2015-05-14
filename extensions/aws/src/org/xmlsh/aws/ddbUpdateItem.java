@@ -9,6 +9,8 @@ import javax.xml.stream.XMLStreamException;
 import net.sf.saxon.s9api.SaxonApiException;
 
 import org.xmlsh.aws.util.AWSDDBCommand;
+import org.xmlsh.aws.util.AWSDDBCommand.RequestMetrics;
+import org.xmlsh.aws.util.DDBTypes;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
@@ -30,13 +32,14 @@ public class ddbUpdateItem extends AWSDDBCommand {
      */
     @Override
     public int run(List<XValue> args) throws Exception {
-        Options opts = getOptions("table=table-name:,key-name:+,key-value:+,key:,c=condition:,q=quiet,return=return-values:,attr-name-expr:+,attr-value-expr:+");
+        Options opts = getOptions("update:,table=table-name:,key-name:+,key-value:+,key:,c=condition:,q=quiet,return=return-values:,attr-name-expr:+,attr-value-expr:+");
 
         // Options opts = getOptions("expected:+,q=quiet");
         opts.parse(args);
+        setSerializeOpts(this.getSerializeOpts(opts));
+        
 
         args = opts.getRemainingArgs();
-        opts.parse(args);
         String tableName = opts.getOptStringRequired("table");
         Map<String, AttributeValue> attrs = parseKeyOptions(opts);
         
@@ -49,12 +52,10 @@ public class ddbUpdateItem extends AWSDDBCommand {
         
         
         if( opts.hasOpt("attr-name-expr"))
-            attrNamesExpr = parseAttrNameExprs( opts.getOptValues("attr-name-expr"));
+            attrNamesExpr = DDBTypes.parseAttrNameExprs( opts.getOptValues("attr-name-expr"));
 
         if( opts.hasOpt("attr-value-expr"))
-            attrValuesExpr = parseAttrValueExprs( opts.getOptValues("attr-name-expr"));
-        
-
+            attrValuesExpr = parseAttrValueExprs( opts.getOptValues("attr-value-expr"));
 
         String updateExpr = opts.getOptString("update", null);
         if (!args.isEmpty()) {
@@ -67,8 +68,6 @@ public class ddbUpdateItem extends AWSDDBCommand {
             usage("Update expression required");
             return 1;
         }
-
-        mSerializeOpts = this.getSerializeOpts(opts);
 
         bQuiet = opts.hasOpt("quiet");
 
@@ -115,24 +114,19 @@ public class ddbUpdateItem extends AWSDDBCommand {
 
         if (!bQuiet) {
             OutputPort stdout = this.getStdout();
-            mWriter = stdout.asXMLStreamWriter(mSerializeOpts);
+            mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
             startDocument();
             startElement(getName());
 
             if (result.getAttributes() != null) {
                 writeItem(result.getAttributes());
             }
+            writeMetric(  new RequestMetrics( result.getConsumedCapacity() , result.getItemCollectionMetrics() ));
 
-            if (result.getConsumedCapacity() != null) {
-                writeConsumedCapacity(result.getConsumedCapacity());
-            }
-            if (result.getItemCollectionMetrics() != null) {
-                writeItemCollectionMetrics(result.getItemCollectionMetrics());
-            }
             endElement();
             endDocument();
             closeWriter();
-            stdout.writeSequenceTerminator(mSerializeOpts);
+            stdout.writeSequenceTerminator(getSerializeOpts());
             stdout.release();
         }
 

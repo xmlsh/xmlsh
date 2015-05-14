@@ -42,10 +42,9 @@ public class ec2CreateVolume extends AWSEC2Command {
 		opts.parse(args);
 
 		args = opts.getRemainingArgs();
-		
-		rateRetry = opts.getOptInt("rate-retry", 0);
+        setSerializeOpts(this.getSerializeOpts(opts));
 
-		mSerializeOpts = this.getSerializeOpts(opts);
+		rateRetry = opts.getOptInt("rate-retry", 0);
 		try {
 			getEC2Client(opts);
 		} catch (UnexpectedException e) {
@@ -187,7 +186,7 @@ public class ec2CreateVolume extends AWSEC2Command {
 	{
 		
 		OutputPort stdout = this.getStdout();
-		mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(mSerializeOpts));
+		mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(getSerializeOpts()));
 		
 		
 		startDocument();

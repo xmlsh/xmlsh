@@ -33,14 +33,14 @@ public class sdbListDomains	 extends  AWSSDBCommand {
 		Options opts = getOptions();
 		opts.parse(args);
 
+        setSerializeOpts(this.getSerializeOpts(opts));
+        
 		args = opts.getRemainingArgs();
 		
 		if( args.size() != 0 ){
 			usage();
 			return 1;
 		}
-		
-		mSerializeOpts = this.getSerializeOpts(opts);
 		
 		try {
 			 getSDBClient(opts);
@@ -66,7 +66,7 @@ public class sdbListDomains	 extends  AWSSDBCommand {
 	{
 
 		OutputPort stdout = this.getStdout();
-		mWriter = stdout.asXMLStreamWriter(mSerializeOpts);
+		mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
 		
 		startDocument();
 		startElement(getName());
@@ -95,7 +95,7 @@ public class sdbListDomains	 extends  AWSSDBCommand {
 		
 		
 		closeWriter();
-		stdout.writeSequenceTerminator(mSerializeOpts);
+		stdout.writeSequenceTerminator(getSerializeOpts());
 		stdout.release();
 		
 

@@ -10,9 +10,11 @@ import net.sf.saxon.s9api.SaxonApiException;
 
 import org.xmlsh.aws.util.AWSDDBCommand;
 import org.xmlsh.core.CoreException;
+import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.UnexpectedException;
+import org.xmlsh.core.UnimplementedException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.util.Util;
 
@@ -29,20 +31,13 @@ public class ddbGetItem extends AWSDDBCommand {
 	@Override
 	public int run(List<XValue> args) throws Exception {
 
-		Options opts = getOptions("table=table-name:,key-name:+,key-value:+,key:+,c=consistant");
+		Options opts = getOptions("table=table-name:,key-name:+,key-value:+,key:+,c=consistant,projection-expression:");
 		opts.parse(args);
 
-		String tableName = opts.getOptStringRequired("table");
-
-		Map<String, AttributeValue> keys = parseKeyOptions(opts);
-
-        boolean bConsistant = opts.hasOpt("consistant");
 		args = opts.getRemainingArgs();
- 
-		List<String> attrs = Util.toStringList(args);
 
-		mSerializeOpts = this.getSerializeOpts(opts);
 
+        setSerializeOpts(this.getSerializeOpts(opts));
 		try {
 			getDDBClient(opts);
 		} catch (UnexpectedException e) {
@@ -52,37 +47,47 @@ public class ddbGetItem extends AWSDDBCommand {
 		}
 
 		int ret = -1;
-		ret = getItem(tableName, keys, attrs,bConsistant);
+		ret = getItem(opts);
 		return ret;
-
 	}
 
-    private int getItem(String tableName, Map<String, AttributeValue> key,
-			List<String> attrs, boolean bConsistantRead) throws IOException, XMLStreamException,
-			SaxonApiException, CoreException {
-
+    private int getItem( Options opts ) throws XMLStreamException, SaxonApiException, IOException, CoreException{
 		OutputPort stdout = this.getStdout();
-		mWriter = stdout.asXMLStreamWriter(mSerializeOpts);
+		mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
 
+        String tableName = opts.getOptStringRequired("table");
+        Map<String, AttributeValue> keys = parseKeyOptions(opts);
+        boolean bConsistantRead = opts.hasOpt("consistant");
+        
 		startDocument();
 		startElement(getName());
 
-		GetItemRequest getItemRequest = new GetItemRequest().withTableName(tableName).withKey(key)
-				.withConsistentRead(bConsistantRead);
-		if( attrs != null && !attrs.isEmpty())
-		  getItemRequest.setProjectionExpression(Util.stringJoin(attrs, ","));
-		
+		GetItemRequest getItemRequest = new GetItemRequest().
+		        withTableName(tableName).withKey(keys).
+				withConsistentRead(bConsistantRead);
+
+		if( opts.hasOpt("projection-expression"))
+		    getItemRequest.setProjectionExpression( 
+		            opts.getOptStringRequired("projection-expression")); 
+
+		else {
+		    if( opts.hasRemainingArgs() )
+		        getItemRequest.setProjectionExpression( 
+		                Util.stringJoin(Util.toStringList( opts.getRemainingArgs()),","));
+		}
+		    
 		traceCall("getItem");
 
 		GetItemResult result = mAmazon.getItem(getItemRequest);
 		if (result.getItem() != null)
 			writeItem(result.getItem());
 
+		writeMetric( new RequestMetrics( result.getConsumedCapacity(),null) );
 		endElement();
 		endDocument();
 
 		closeWriter();
-		stdout.writeSequenceTerminator(mSerializeOpts);
+		stdout.writeSequenceTerminator(getSerializeOpts());
 		stdout.release();
 		return 0;
 

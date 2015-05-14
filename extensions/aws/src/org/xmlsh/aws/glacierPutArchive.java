@@ -38,10 +38,8 @@ public class glacierPutArchive	 extends  AWSGlacierCommand {
 
 		args = opts.getRemainingArgs();
 		
+        setSerializeOpts(this.getSerializeOpts(opts));
 
-		
-		mSerializeOpts = this.getSerializeOpts(opts);
-		
 		
         if( args.size() <3)
         	usage();
@@ -76,7 +74,7 @@ public class glacierPutArchive	 extends  AWSGlacierCommand {
 	{
 
 		OutputPort stdout = this.getStdout();
-		mWriter = stdout.asXMLStreamWriter(mSerializeOpts);
+		mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
 		
 		 ArchiveTransferManager tm = new ArchiveTransferManager(mAmazon, mCredentials);
 	    
@@ -114,7 +112,7 @@ public class glacierPutArchive	 extends  AWSGlacierCommand {
 		
 		
 		closeWriter();
-		stdout.writeSequenceTerminator(mSerializeOpts);
+		stdout.writeSequenceTerminator(getSerializeOpts());
 		stdout.release();
 		
 

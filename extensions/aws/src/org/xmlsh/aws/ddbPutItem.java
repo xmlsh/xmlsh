@@ -9,6 +9,7 @@ import javax.xml.stream.XMLStreamException;
 import net.sf.saxon.s9api.SaxonApiException;
 
 import org.xmlsh.aws.util.AWSDDBCommand;
+import org.xmlsh.aws.util.DDBTypes;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
@@ -36,17 +37,16 @@ public class ddbPutItem	 extends  AWSDDBCommand {
 	//	Options opts = getOptions("expected:+,q=quiet");
 		opts.parse(args);
 
+        setSerializeOpts(this.getSerializeOpts(opts));
+    
 		args = opts.getRemainingArgs();
 		  opts.parse(args);
 	        String tableName = opts.getOptStringRequired("table");
 	        Map<String, AttributeValue> attrs = parseKeyOptions(opts);
 	        
 	     if( !args.isEmpty() ) 
-	       attrs.putAll( parseAttributeValues(args) );
-	       
+	       attrs.putAll( DDBTypes.parseAttributeValues(args) );
 
-		mSerializeOpts = this.getSerializeOpts(opts);
-		
 		bQuiet = opts.hasOpt("quiet");
 		try {
 			 getDDBClient(opts);
@@ -83,30 +83,23 @@ public class ddbPutItem	 extends  AWSDDBCommand {
 		traceCall("putItem");
 
 		PutItemResult result = mAmazon.putItem(putItemRequest);
-		
-		
-		if( ! bQuiet ){
+
 			OutputPort stdout = this.getStdout();
-			mWriter = stdout.asXMLStreamWriter(mSerializeOpts);
+			mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
 			 startDocument();
 		     startElement(getName());
 
 			if( result.getAttributes() != null ){
 			    writeItem( result.getAttributes() );
 			}
-
-			if( result.getConsumedCapacity() != null ){
-			    writeConsumedCapacity( result.getConsumedCapacity() );
-			}
-			if( result.getItemCollectionMetrics() != null ){
-			    writeItemCollectionMetrics( result.getItemCollectionMetrics());
-			}
+			
+	        writeMetric(  new RequestMetrics( result.getConsumedCapacity() , result.getItemCollectionMetrics() ));
 			endElement();
 			endDocument();
 			closeWriter();
-			stdout.writeSequenceTerminator(mSerializeOpts);
+			stdout.writeSequenceTerminator(getSerializeOpts());
 			stdout.release();
-		}	
+			
 		
 		
 		return 0;

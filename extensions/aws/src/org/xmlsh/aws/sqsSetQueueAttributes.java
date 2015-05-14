@@ -35,6 +35,7 @@ public class sqsSetQueueAttributes extends AWSSQSCommand {
 		
 		Options opts = getOptions();
 		opts.parse(args);
+        setSerializeOpts(this.getSerializeOpts(opts));
 
 		args = opts.getRemainingArgs();
 		
@@ -44,12 +45,7 @@ public class sqsSetQueueAttributes extends AWSSQSCommand {
 		}
 		
 		String name = args.remove(0).toString();
-		
 
-		
-		mSerializeOpts = this.getSerializeOpts(opts);
-		
-		
 		
 		try {
 			 getSQSClient(opts);

@@ -39,14 +39,8 @@ public class monPutData	 extends  AWSMonCommand {
 		opts.parse(args);
 
 		args = opts.getRemainingArgs();
-		
+        setSerializeOpts(this.getSerializeOpts(opts));
 
-		
-		mSerializeOpts = this.getSerializeOpts(opts);
-		
-		
-		
-		
 		String namespace = opts.getOptStringRequired("namespace");
 		
 		
@@ -76,7 +70,7 @@ public class monPutData	 extends  AWSMonCommand {
 	{
 
 		OutputPort stdout = this.getStdout();
-		mWriter = stdout.asXMLStreamWriter(mSerializeOpts);
+		mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
 		
 		
 		
@@ -108,7 +102,7 @@ public class monPutData	 extends  AWSMonCommand {
 		
 		
 		closeWriter();
-		stdout.writeSequenceTerminator(mSerializeOpts);
+		stdout.writeSequenceTerminator(getSerializeOpts());
 		stdout.release();
 		
 		

@@ -33,6 +33,7 @@ public class sqsDeleteQueue extends AWSSQSCommand {
 		
 		Options opts = getOptions();
 		opts.parse(args);
+        setSerializeOpts(this.getSerializeOpts(opts));
 
 		args = opts.getRemainingArgs();
 		
@@ -40,13 +41,7 @@ public class sqsDeleteQueue extends AWSSQSCommand {
 			usage();
 			return 1;
 		}
-		
 
-		
-		mSerializeOpts = this.getSerializeOpts(opts);
-		
-		
-		
 		String name = args.get(0).toString();
 		
 		
@@ -81,7 +76,7 @@ public class sqsDeleteQueue extends AWSSQSCommand {
 		mAmazon.deleteQueue(request);
 		
 		OutputPort stdout = this.getStdout();
-		mWriter = stdout.asXMLStreamWriter(mSerializeOpts);
+		mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
 		
 		
 		startDocument();
@@ -98,7 +93,7 @@ public class sqsDeleteQueue extends AWSSQSCommand {
 		endElement();
 		endDocument();
 		closeWriter();
-		stdout.writeSequenceTerminator(mSerializeOpts);
+		stdout.writeSequenceTerminator(getSerializeOpts());
 		stdout.release();
 		
 

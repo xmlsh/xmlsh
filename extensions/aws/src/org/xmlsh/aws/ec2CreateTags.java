@@ -36,18 +36,13 @@ public class ec2CreateTags extends AWSEC2Command {
 		opts.parse(args);
 
 		args = opts.getRemainingArgs();
-		
 
-		
-		
+        setSerializeOpts(this.getSerializeOpts(opts));
 		
 		if( args.size() < 1 ){
 			usage(null);
 			return 1;
 		}
-		
-
-		mSerializeOpts = this.getSerializeOpts(opts);
 		try {
 			 getEC2Client(opts);
 		} catch (UnexpectedException e) {

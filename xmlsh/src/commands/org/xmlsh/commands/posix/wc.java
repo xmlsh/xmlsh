@@ -38,7 +38,6 @@ public class wc extends XCommand {
 	private	 int	total_lc = 0;
 	private	 int	total_cc = 0;
 	private	 int	total_wc = 0;
-	private SerializeOpts  mSerializeOpts ;
 	
 	
 	public int run(  List<XValue> args  )	throws Exception
@@ -46,8 +45,7 @@ public class wc extends XCommand {
 		Options opts = new Options("l,c,w", SerializeOpts.getOptionDefs());
 		opts.parse(args);
 		args = opts.getRemainingArgs();
-		
-		mSerializeOpts = this.getSerializeOpts(opts);
+		setSerializeOpts(opts);
 		
 
 	      
@@ -85,7 +83,7 @@ public class wc extends XCommand {
 	private void count(PrintWriter writer, XValue file ) throws XMLStreamException, CoreException, IOException {
 		
 		InputPort inp = getShell().getEnv().getInput(file);
-		BufferedReader reader = new BufferedReader(inp.asReader( mSerializeOpts ));
+		BufferedReader reader = new BufferedReader(inp.asReader( getSerializeOpts() ));
 
 		
 		int lc=0,wc=0,cc=0;
@@ -130,7 +128,7 @@ public class wc extends XCommand {
 	    if(! file.equals("-") )
 	    	flags.append(file);
 		writer.write(flags.toString());
-		writer.write(mSerializeOpts.getSequence_sep());
+		writer.write(getSerializeOpts().getSequence_sep());
 		
 		
 	}

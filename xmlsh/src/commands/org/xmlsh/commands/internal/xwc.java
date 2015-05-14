@@ -54,12 +54,12 @@ public class xwc extends XCommand {
 			
 			setSerializeOpts(opts);
 			
-			XMLStreamReader reader = stdin.asXMLStreamReader(mSerializeOpts);
+			XMLStreamReader reader = stdin.asXMLStreamReader(getSerializeOpts());
 			count(reader);
 			reader.close();
 			
  
-			XMLStreamWriter writer =stdout.asXMLStreamWriter(mSerializeOpts);
+			XMLStreamWriter writer =stdout.asXMLStreamWriter(getSerializeOpts());
 			output(writer);
 			writer.flush();
 			writer.close();

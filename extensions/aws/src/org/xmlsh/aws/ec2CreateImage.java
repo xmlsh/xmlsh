@@ -41,19 +41,15 @@ public class ec2CreateImage extends AWSEC2Command {
 		Options opts = getOptions("name:,description:,no-reboot");
 		opts.parse(args);
 
-		args = opts.getRemainingArgs();
-		
 
-		
-		
+        setSerializeOpts(this.getSerializeOpts(opts));
+		args = opts.getRemainingArgs();
 		
 		if( args.size() != 1 ){
 			usage(null);
 			return 1;
 		}
-		
 
-		mSerializeOpts = this.getSerializeOpts(opts);
 		try {
 			 getEC2Client(opts);
 		} catch (UnexpectedException e) {
@@ -100,7 +96,7 @@ public class ec2CreateImage extends AWSEC2Command {
 
 	private void writeResult(CreateImageResult result) throws IOException, XMLStreamException, SaxonApiException, CoreException {
 		OutputPort stdout = this.getStdout();
-		mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(mSerializeOpts));
+		mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(getSerializeOpts()));
 		
 		
 		startDocument();
@@ -114,7 +110,7 @@ public class ec2CreateImage extends AWSEC2Command {
 		endDocument();
 		closeWriter();
 		
-		stdout.writeSequenceTerminator(mSerializeOpts);
+		stdout.writeSequenceTerminator(getSerializeOpts());
 		stdout.release();
 		
 		

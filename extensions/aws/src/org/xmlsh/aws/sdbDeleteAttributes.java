@@ -35,11 +35,9 @@ public class sdbDeleteAttributes	 extends  AWSSDBCommand {
 		Options opts = getOptions("update:,exists:,q=quiet");
 		opts.parse(args);
 
-		args = opts.getRemainingArgs();
-		
+		args = opts.getRemainingArgs();        
+		setSerializeOpts(this.getSerializeOpts(opts));
 
-		
-		mSerializeOpts = this.getSerializeOpts(opts);
 		
 		String updateName = opts.getOptString("update", null);
 		String updateExists = opts.getOptString("exists",null);
@@ -94,12 +92,12 @@ public class sdbDeleteAttributes	 extends  AWSSDBCommand {
 		
 	    if( ! bQuiet ){
 	        OutputPort stdout = this.getStdout();
-			mWriter = stdout.asXMLStreamWriter(mSerializeOpts);
+			mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
 	
 			emptyDocument();
 
 			closeWriter();
-			stdout.writeSequenceTerminator(mSerializeOpts);
+			stdout.writeSequenceTerminator(getSerializeOpts());
 			stdout.release();
 		
 	    }

@@ -30,7 +30,7 @@ public class s3SetObjectAcl extends AWSS3Command {
 		
 		args = opts.getRemainingArgs();
 		
-		mSerializeOpts = this.getSerializeOpts(opts);
+        setSerializeOpts(this.getSerializeOpts(opts));
 		
 		try {
 			 getS3Client(opts);

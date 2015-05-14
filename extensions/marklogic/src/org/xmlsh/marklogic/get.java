@@ -95,9 +95,6 @@ public class get extends MLCommand {
 	
 	private 	List<SumContent> 	mContents = null;
 	private		int					mMaxFiles = 1;
-	private SerializeOpts mSerializeOpts;
-	
-	
 	
 	/**
 	 * 
@@ -127,12 +124,13 @@ public class get extends MLCommand {
 		XValue 	outName = opts.getOptValue("o");
 		
 		bVerbose = opts.hasOpt("v");
-		
+
+	    setSerializeOpts( opts );
+
 		
 		int maxThreads = Util.parseInt(opts.getOptString("maxthreads", "1"),1);
 		
 		
-		mSerializeOpts = getSerializeOpts( opts );
 		
 		
 			
@@ -140,7 +138,7 @@ public class get extends MLCommand {
 		mSession = mContentSource.newSession();
 		
 		
-		mOutput = getEnv().getStderr().asPrintWriter(mSerializeOpts);
+		mOutput = getEnv().getStderr().asPrintWriter(getSerializeOpts());
 
 		
 		/*
@@ -259,11 +257,11 @@ public class get extends MLCommand {
 		request.setOptions (options);
 
 	    ResultSequence rs = session.submitRequest (request);
-	    MLUtil.writeResult(rs, output , mSerializeOpts, bText , bBinary );
+	    MLUtil.writeResult(rs, output , getSerializeOpts(), bText , bBinary );
 	    rs.close();
 	    
 	    if( ! bText && ! bBinary )
-	    	output.writeSequenceTerminator(mSerializeOpts);
+	    	output.writeSequenceTerminator(getSerializeOpts());
 	    
 	    output.release();
 	

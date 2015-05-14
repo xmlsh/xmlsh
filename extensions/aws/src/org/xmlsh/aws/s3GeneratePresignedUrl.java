@@ -41,9 +41,8 @@ public class s3GeneratePresignedUrl extends AWSS3Command {
 		opts.parse(args);
 
 		args = opts.getRemainingArgs();
-		
-		mSerializeOpts = this.getSerializeOpts(opts);
-		
+        setSerializeOpts(this.getSerializeOpts(opts));
+
 		try {
 			 getS3Client(opts);
 		} catch (UnexpectedException e) {
@@ -59,7 +58,7 @@ public class s3GeneratePresignedUrl extends AWSS3Command {
 				return 1;
 		}
 		OutputPort outp = this.getStdout();
-		mOutput = outp.asOutputStream(mSerializeOpts);
+		mOutput = outp.asOutputStream(getSerializeOpts());
 		
 		
 
@@ -93,8 +92,8 @@ public class s3GeneratePresignedUrl extends AWSS3Command {
 
 		URL url = mAmazon.generatePresignedUrl(request);
 			
-		mOutput.write( url.toString().getBytes(mSerializeOpts.getOutputTextEncoding() ));
-		mOutput.write( Util.getNewline(mSerializeOpts));
+		mOutput.write( url.toString().getBytes(getSerializeOpts().getOutputTextEncoding() ));
+		mOutput.write( Util.getNewline(getSerializeOpts()));
 
 			
 		return 0;

@@ -36,12 +36,12 @@ public class ec2CopyImage extends AWSEC2Command {
 		Options opts = getOptions("r=source-region:,s=source-ami-id:,n=name:,d=description:,c=client-token:");
 		opts.parse(args);
 
+
+        setSerializeOpts(this.getSerializeOpts(opts));
 		args = opts.getRemainingArgs();
 		
 
-		
-		
-		mSerializeOpts = this.getSerializeOpts(opts);
+
 		try {
 			 getEC2Client(opts);
 		} catch (UnexpectedException e) {
@@ -97,7 +97,7 @@ public class ec2CopyImage extends AWSEC2Command {
 	private void writeResult(CopyImageResult result) throws IOException, InvalidArgumentException, XMLStreamException, SaxonApiException {
 		
 		OutputPort stdout = this.getStdout();
-		mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(mSerializeOpts));
+		mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(getSerializeOpts()));
 		
 		
 		startDocument();

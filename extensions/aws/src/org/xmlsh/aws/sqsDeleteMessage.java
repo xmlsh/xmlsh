@@ -32,6 +32,7 @@ public class sqsDeleteMessage extends AWSSQSCommand {
 		
 		Options opts = getOptions();
 		opts.parse(args);
+        setSerializeOpts(this.getSerializeOpts(opts));
 
 		args = opts.getRemainingArgs();
 		
@@ -39,14 +40,7 @@ public class sqsDeleteMessage extends AWSSQSCommand {
 			usage();
 			return 1;
 		}
-		
 
-		
-		mSerializeOpts = this.getSerializeOpts(opts);
-		
-		
-		
-		
 		
 		try {
 			 getSQSClient(opts);

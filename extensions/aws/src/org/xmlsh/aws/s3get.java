@@ -47,6 +47,7 @@ public class s3get extends AWSS3Command {
 		
 		Options opts = getOptions("meta:,r=recurse,b=bucket:,v=verbose");
 		opts.parse(args);
+        setSerializeOpts(this.getSerializeOpts(opts));
 
 		
 		OutputPort	metaPort = null ;
@@ -59,9 +60,7 @@ public class s3get extends AWSS3Command {
 		
 		bRecurse = opts.hasOpt("recurse");
 		bVerbose = opts.hasOpt("verbose");
-		
-		mSerializeOpts = this.getSerializeOpts(opts);
-		
+
 		try {
 			 getS3Client(opts);
 		} catch (UnexpectedException e) {
@@ -234,14 +233,14 @@ public class s3get extends AWSS3Command {
 			    meta = obj.getObjectMetadata() ;
 				
 				InputStream is = obj.getObjectContent();
-				OutputStream os = dest.asOutputStream(mSerializeOpts);
+				OutputStream os = dest.asOutputStream(getSerializeOpts());
 				Util.copyStream(is, os);
 				os.close();
 				is.close();
 			}
 			
 			if( metaPort != null ){
-				mWriter = metaPort.asXMLStreamWriter(mSerializeOpts);
+				mWriter = metaPort.asXMLStreamWriter(getSerializeOpts());
 			
 				writeMeta( meta );
 				mWriter.close();

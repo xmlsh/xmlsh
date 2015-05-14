@@ -34,12 +34,8 @@ public class s3DeleteBucket extends AWSS3Command {
 
 		args = opts.getRemainingArgs();
 		
+        setSerializeOpts(this.getSerializeOpts(opts));
 
-		
-		mSerializeOpts = this.getSerializeOpts(opts);
-		
-		
-		
 		try {
 			 getS3Client(opts);
 		} catch (UnexpectedException e) {

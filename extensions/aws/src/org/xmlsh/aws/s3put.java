@@ -44,7 +44,7 @@ public class s3put extends AWSS3Command {
 
 		args = opts.getRemainingArgs();
 
-		mSerializeOpts = this.getSerializeOpts(opts);
+        setSerializeOpts(this.getSerializeOpts(opts));
 
 		try {
 			 getS3Client(opts);
@@ -278,7 +278,7 @@ public class s3put extends AWSS3Command {
 				request = new PutObjectRequest( dest.getBucket() , dest.getKey() , src.getFile() );
 			}
 			else {
-				is = src.asInputStream( mSerializeOpts );
+				is = src.asInputStream( getSerializeOpts() );
 				request = new PutObjectRequest( dest.getBucket() , dest.getKey() , is , metadata);
 			}
 

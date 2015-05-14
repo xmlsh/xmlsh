@@ -82,14 +82,14 @@ public class xml2csv extends XCommand
 		 
 		
 		mFormatter = new CSVFormatter(delim.charAt(0),quote.charAt(0));
-		mOutput = getStdout().asOutputStream(mSerializeOpts);
+		mOutput = getStdout().asOutputStream(getSerializeOpts());
 
 	
 		
 		Processor processor = Shell.getProcessor();
 		mCompiler = processor.newXQueryCompiler();
 		InputPort  in = getStdin();
-		XdmNode	context = in.asXdmNode(mSerializeOpts);
+		XdmNode	context = in.asXdmNode(getSerializeOpts());
 
 		
 
@@ -152,8 +152,8 @@ public class xml2csv extends XCommand
 		}
 		CSVRecord rec = new CSVRecord(fields);
 		String line = mFormatter.encodeRow(rec);
-		mOutput.write( line.getBytes(mSerializeOpts.getOutputTextEncoding()));
-		mOutput.write( Util.getNewline(mSerializeOpts));
+		mOutput.write( line.getBytes(getSerializeOpts().getOutputTextEncoding()));
+		mOutput.write( Util.getNewline(getSerializeOpts()));
 		
 		
 		

@@ -40,6 +40,8 @@ public class ddbListTables extends AWSDDBCommand {
         Options opts = getOptions("limit:,exclusive-start-table=last-table:");
         opts.parse(args);
 
+
+        setSerializeOpts(this.getSerializeOpts(opts));
         args = opts.getRemainingArgs();
 
         if (args.size() != 0) {
@@ -47,7 +49,6 @@ public class ddbListTables extends AWSDDBCommand {
             return 1;
         }
 
-        mSerializeOpts = this.getSerializeOpts(opts);
 
         try {
             getDDBClient(opts);
@@ -68,7 +69,7 @@ public class ddbListTables extends AWSDDBCommand {
             SaxonApiException, CoreException {
 
         OutputPort stdout = this.getStdout();
-        mWriter = stdout.asXMLStreamWriter(mSerializeOpts);
+        mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
 
         startDocument();
         startElement(getName());
@@ -101,7 +102,7 @@ public class ddbListTables extends AWSDDBCommand {
         endDocument();
 
         closeWriter();
-        stdout.writeSequenceTerminator(mSerializeOpts);
+        stdout.writeSequenceTerminator(getSerializeOpts());
         stdout.release();
 
         return 0;

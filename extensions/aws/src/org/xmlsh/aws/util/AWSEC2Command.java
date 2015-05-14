@@ -81,7 +81,7 @@ public abstract class AWSEC2Command extends AWSCommand {
 			SaxonApiException, CoreException {
 
 				OutputPort stdout = this.getStdout();
-				mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(mSerializeOpts));
+				mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(getSerializeOpts()));
 
 
 				startDocument();
@@ -96,7 +96,7 @@ public abstract class AWSEC2Command extends AWSCommand {
 				endDocument();
 
 				closeWriter();
-				stdout.writeSequenceTerminator(mSerializeOpts);
+				stdout.writeSequenceTerminator(getSerializeOpts());
 				stdout.release();
 
 

@@ -42,9 +42,8 @@ public class cfnUpdateStack extends AWSCFNCommand {
 
 		args = opts.getRemainingArgs();
 		
-		
-		mSerializeOpts = this.getSerializeOpts(opts);
-		
+        setSerializeOpts(this.getSerializeOpts(opts));
+
 		
 		try {
 			getCFNClient(opts);
@@ -70,7 +69,7 @@ public class cfnUpdateStack extends AWSCFNCommand {
 		
 
 		OutputPort stdout = this.getStdout();
-		mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(mSerializeOpts));
+		mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(getSerializeOpts()));
 		
 		
 		startDocument();
@@ -91,7 +90,7 @@ public class cfnUpdateStack extends AWSCFNCommand {
 		request.setStackName( opts.getOptStringRequired("name"));
 
 		if( opts.hasOpt("template-file"))
-			request.setTemplateBody( Util.readString( mShell.getFile(opts.getOptValue("template-file")), mSerializeOpts.getInput_text_encoding()));
+			request.setTemplateBody( Util.readString( mShell.getFile(opts.getOptValue("template-file")), getSerializeOpts().getInput_text_encoding()));
 		else
 			request.setTemplateURL( opts.getOptStringRequired("template-url"));
 		
@@ -111,7 +110,7 @@ public class cfnUpdateStack extends AWSCFNCommand {
 		endDocument();
 		closeWriter();
 		
-		stdout.writeSequenceTerminator(mSerializeOpts);
+		stdout.writeSequenceTerminator(getSerializeOpts());
 		stdout.release();
 		
 		return 0;

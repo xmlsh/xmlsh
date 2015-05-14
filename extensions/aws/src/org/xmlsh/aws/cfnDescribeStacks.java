@@ -39,11 +39,8 @@ public class cfnDescribeStacks extends AWSCFNCommand {
 		opts.parse(args);
 
 		args = opts.getRemainingArgs();
-		
+	      setSerializeOpts(this.getSerializeOpts(opts));
 
-		
-		mSerializeOpts = this.getSerializeOpts(opts);
-		
 		
 		try {
 			getCFNClient(opts);
@@ -69,7 +66,7 @@ public class cfnDescribeStacks extends AWSCFNCommand {
 		
 
 		OutputPort stdout = this.getStdout();
-		mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(mSerializeOpts));
+		mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(getSerializeOpts()));
 		
 		
 		startDocument();
@@ -94,7 +91,7 @@ public class cfnDescribeStacks extends AWSCFNCommand {
 		endDocument();
 		closeWriter();
 		
-		stdout.writeSequenceTerminator(mSerializeOpts);
+		stdout.writeSequenceTerminator(getSerializeOpts());
 		stdout.release();
 		
 		return 0;

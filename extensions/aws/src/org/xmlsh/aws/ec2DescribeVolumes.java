@@ -40,9 +40,8 @@ public class ec2DescribeVolumes extends AWSEC2Command {
 
 		args = opts.getRemainingArgs();
 		parseCommonOptions(opts);
-		
-		mSerializeOpts = this.getSerializeOpts(opts);
-			
+
+        setSerializeOpts(this.getSerializeOpts(opts));
 		try {
 			 getEC2Client(opts);
 		} catch (UnexpectedException e) {
@@ -66,7 +65,7 @@ public class ec2DescribeVolumes extends AWSEC2Command {
 
 	private int describe(List<XValue> args) throws IOException, XMLStreamException, SaxonApiException, CoreException, InterruptedException {
 		OutputPort stdout = this.getStdout();
-		mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(mSerializeOpts));
+		mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(getSerializeOpts()));
 		startDocument();
 		startElement(this.getName());
 		
@@ -113,7 +112,7 @@ public class ec2DescribeVolumes extends AWSEC2Command {
 		endDocument();
 		closeWriter();
 		
-		stdout.writeSequenceTerminator(mSerializeOpts);
+		stdout.writeSequenceTerminator(getSerializeOpts());
 		stdout.release();
 		
 		return 0;

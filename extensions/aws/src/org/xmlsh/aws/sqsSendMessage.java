@@ -37,6 +37,7 @@ public class sqsSendMessage extends AWSSQSCommand {
 		
 		Options opts = getOptions("f=file:");
 		opts.parse(args);
+        setSerializeOpts(this.getSerializeOpts(opts));
 
 		args = opts.getRemainingArgs();
 		
@@ -46,10 +47,6 @@ public class sqsSendMessage extends AWSSQSCommand {
 		}
 		
 
-		
-		mSerializeOpts = this.getSerializeOpts(opts);
-		
-		
 		String url = args.get(0).toString();
 		String body = null;
 		
@@ -99,8 +96,8 @@ public class sqsSendMessage extends AWSSQSCommand {
 
 	private String readMessage(InputPort input) throws CoreException, IOException {
 		
-		InputStream is = input.asInputStream(mSerializeOpts);
-		String body = Util.readString(is, mSerializeOpts.getInputTextEncoding() );
+		InputStream is = input.asInputStream(getSerializeOpts());
+		String body = Util.readString(is, getSerializeOpts().getInputTextEncoding() );
 		is.close();
 		input.release();
 		return body ;
@@ -120,7 +117,7 @@ public class sqsSendMessage extends AWSSQSCommand {
 		SendMessageResult result = mAmazon.sendMessage(request);
 		
 		OutputPort stdout = this.getStdout();
-		mWriter = stdout.asXMLStreamWriter(mSerializeOpts);
+		mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
 		
 		
 		startDocument();
@@ -137,7 +134,7 @@ public class sqsSendMessage extends AWSSQSCommand {
 		endElement();
 		endDocument();
 		closeWriter();
-		stdout.writeSequenceTerminator(mSerializeOpts);
+		stdout.writeSequenceTerminator(getSerializeOpts());
 		stdout.release();
 		
 

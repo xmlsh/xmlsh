@@ -39,8 +39,7 @@ public class ec2DescribeAddresses extends AWSEC2Command {
 		args = opts.getRemainingArgs();
 		
 
-		
-		mSerializeOpts = this.getSerializeOpts(opts);
+        setSerializeOpts(this.getSerializeOpts(opts));
 		
 			
 		try {
@@ -80,7 +79,7 @@ public class ec2DescribeAddresses extends AWSEC2Command {
 		
 
 		OutputPort stdout = this.getStdout();
-		mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(mSerializeOpts));
+		mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(getSerializeOpts()));
 		
 		
 		startDocument();
@@ -119,7 +118,7 @@ public class ec2DescribeAddresses extends AWSEC2Command {
 		endDocument();
 		closeWriter();
 		
-		stdout.writeSequenceTerminator(mSerializeOpts);
+		stdout.writeSequenceTerminator(getSerializeOpts());
 		stdout.release();
 		
 		return 0;

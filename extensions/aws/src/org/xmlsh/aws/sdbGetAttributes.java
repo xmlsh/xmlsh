@@ -30,18 +30,13 @@ public class sdbGetAttributes	 extends  AWSSDBCommand {
 
 		Options opts = getOptions("c=consistant");
 		opts.parse(args);
+        setSerializeOpts(this.getSerializeOpts(opts));
 
 		args = opts.getRemainingArgs();
 		
 
 		boolean bConsistant = opts.hasOpt("consistant");
-		
-		mSerializeOpts = this.getSerializeOpts(opts);
-		
-		
-		
-		
-		
+
 		
 		try {
 			 getSDBClient(opts);
@@ -74,7 +69,7 @@ public class sdbGetAttributes	 extends  AWSSDBCommand {
 	{
 
 		OutputPort stdout = this.getStdout();
-		mWriter = stdout.asXMLStreamWriter(mSerializeOpts);
+		mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
 		
 		
 		startDocument();
@@ -97,7 +92,7 @@ public class sdbGetAttributes	 extends  AWSSDBCommand {
 		
 		
 		closeWriter();
-		stdout.writeSequenceTerminator(mSerializeOpts);
+		stdout.writeSequenceTerminator(getSerializeOpts());
 		stdout.release();
 		return 0;
 		

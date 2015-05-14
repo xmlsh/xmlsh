@@ -30,7 +30,6 @@ public abstract class AWSCommand extends XCommand {
 	Logger mLogger = LogManager.getLogger( this.getClass() );
 	
 	protected XMLStreamWriter mWriter;
-	protected SerializeOpts mSerializeOpts;
 	
 	protected static final String sCOMMON_OPTS = "region:,endpoint:,client:,config:,accessKey:,secretKey:,rate-retry:,retry-delay:" ;
 	protected int rateRetry = 0;
@@ -62,11 +61,7 @@ public abstract class AWSCommand extends XCommand {
 	
 	protected	Options getOptions()	
 	{
-
 		return new Options( getCommonOpts()  , SerializeOpts.getOptionDefs());
-		
-	
-			
 	}
 
 

@@ -38,10 +38,7 @@ public class elbRegister extends AWSELBCommand {
 		opts.parse(args);
 
 		args = opts.getRemainingArgs();
-		
-
-		
-		mSerializeOpts = this.getSerializeOpts(opts);
+        setSerializeOpts(this.getSerializeOpts(opts));
 		
 		if( args.size()  < 2 ){ 
 			usage();
@@ -71,7 +68,7 @@ public class elbRegister extends AWSELBCommand {
 		
 	
 		OutputPort stdout = this.getStdout();
-		mWriter = stdout.asXMLStreamWriter(mSerializeOpts);
+		mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
 		
 		startDocument();
 		startElement(getName());

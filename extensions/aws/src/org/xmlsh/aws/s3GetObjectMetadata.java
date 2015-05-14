@@ -36,9 +36,8 @@ public class s3GetObjectMetadata extends AWSS3Command {
 
 		
 		args = opts.getRemainingArgs();
-		
-		mSerializeOpts = this.getSerializeOpts(opts);
-		
+        setSerializeOpts(this.getSerializeOpts(opts));
+
 		try {
 			 getS3Client(opts);
 		} catch (UnexpectedException e) {
@@ -89,7 +88,7 @@ public class s3GetObjectMetadata extends AWSS3Command {
 		traceCall("getObjectMetadata");
 
 		ObjectMetadata data = mAmazon.getObjectMetadata(request  );
-		mWriter = metaPort.asXMLStreamWriter(mSerializeOpts);
+		mWriter = metaPort.asXMLStreamWriter(getSerializeOpts());
 		writeMeta( data );
 		mWriter.close();
 		metaPort.release();

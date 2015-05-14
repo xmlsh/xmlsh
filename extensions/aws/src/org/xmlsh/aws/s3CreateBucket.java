@@ -26,9 +26,8 @@ public class s3CreateBucket extends AWSS3Command {
 		opts.parse(args);
 
 		args = opts.getRemainingArgs();
-		
-		mSerializeOpts = this.getSerializeOpts(opts);
-		
+        setSerializeOpts(this.getSerializeOpts(opts));
+
 		try {
 			 getS3Client(opts);
 		} catch (UnexpectedException e) {

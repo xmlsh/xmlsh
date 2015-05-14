@@ -36,12 +36,8 @@ public class sdbPutAttributes	 extends  AWSSDBCommand {
 		opts.parse(args);
 
 		args = opts.getRemainingArgs();
-		
-		
+        setSerializeOpts(this.getSerializeOpts(opts));
 
-		
-		mSerializeOpts = this.getSerializeOpts(opts);
-		
 		String updateName = opts.getOptString("update", null);
 		String updateExists = opts.getOptString("exists",null);
 		boolean bReplace = opts.getOptFlag("replace",true);
@@ -95,10 +91,10 @@ public class sdbPutAttributes	 extends  AWSSDBCommand {
 		
 		if( ! bQuiet ){
 			OutputPort stdout = this.getStdout();
-			mWriter = stdout.asXMLStreamWriter(mSerializeOpts);
+			mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
 			emptyDocument();
 			closeWriter();
-			stdout.writeSequenceTerminator(mSerializeOpts);
+			stdout.writeSequenceTerminator(getSerializeOpts());
 			stdout.release();
 		}	
 		

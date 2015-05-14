@@ -109,7 +109,7 @@ public class jsonpath extends XCommand {
 			result = JsonModel.create(result);
 
 	    OutputPort stdout = getStdout();
-	    PrintStream os = stdout.asPrintStream(mSerializeOpts);
+	    PrintStream os = stdout.asPrintStream(getSerializeOpts());
 	    os.println( xvr.toString() );
 	    
 		
