@@ -11,6 +11,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.xmlsh.aws.util.AWSEC2Command;
 import org.xmlsh.aws.util.SafeXMLStreamWriter;
+import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
@@ -61,7 +62,7 @@ public class ec2CreateVolume extends AWSEC2Command {
 	}
 
 
-	private int create(Options opts ) throws InvalidArgumentException, IOException, XMLStreamException, SaxonApiException, InterruptedException  
+	private int create(Options opts ) throws IOException, XMLStreamException, SaxonApiException, InterruptedException, CoreException  
 	{
 	
 		
@@ -182,24 +183,14 @@ public class ec2CreateVolume extends AWSEC2Command {
 
 }
 
-	private	void writeResult(CreateVolumeResult result) throws IOException, InvalidArgumentException, XMLStreamException, SaxonApiException 
+	private	void writeResult(CreateVolumeResult result) throws IOException, XMLStreamException, SaxonApiException, CoreException 
 	{
 		
-		OutputPort stdout = this.getStdout();
-		mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(getSerializeOpts()));
-		
-		
-		startDocument();
-		startElement(this.getName());
 
+	    startResult();
 
 		writeVolume( result.getVolume() );
-		
-		
-		
-		endElement();
-		endDocument();
-		closeWriter();		
+		endResult();
 
 	}
 

@@ -6,23 +6,29 @@
 
 package org.xmlsh.aws.util;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import net.sf.saxon.s9api.SaxonApiException;
+
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
+import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.util.Util;
 
+import com.amazonaws.AmazonClientException;
 import com.amazonaws.regions.Regions;
 
 public abstract class AWSCommand extends XCommand {
@@ -30,13 +36,20 @@ public abstract class AWSCommand extends XCommand {
 	Logger mLogger = LogManager.getLogger( this.getClass() );
 	
 	protected XMLStreamWriter mWriter;
+	private OutputPort mResultOut;
 	
 	protected static final String sCOMMON_OPTS = "region:,endpoint:,client:,config:,accessKey:,secretKey:,rate-retry:,retry-delay:" ;
 	protected int rateRetry = 0;
 	protected int retryDelay = 10000; // 10 seconds default
 
+    private boolean bSetEndpoint = false ;
+
 	
-	static {
+	protected void setEndpointSet(boolean v) {
+        this.bSetEndpoint = v ;
+    }
+
+    static {
 		
 		LogManager.getLogger("httpclient").setLevel(Level.WARN);
 		LogManager.getLogger("http.wire").setLevel(Level.WARN);
@@ -72,18 +85,28 @@ public abstract class AWSCommand extends XCommand {
 	
 	protected	Options getOptions( String sopts )	
 	{
-
 		return new Options( getCommonOpts() + "," + sopts , SerializeOpts.getOptionDefs());
-		
-	
-			
 	}
 	
 	
 	
-	protected void closeWriter() throws XMLStreamException {
-		mWriter.flush();
-		mWriter.close();
+	protected void closeWriter() throws XMLStreamException, IOException, CoreException, SaxonApiException {
+	    if( mWriter != null ){
+	      try { 
+	        mWriter.flush();
+	        mWriter.close();
+	        
+	      } finally {
+	          mWriter = null;
+	      }
+	    }
+	    if( mResultOut != null ) {
+	        try {
+	           mResultOut.writeSequenceTerminator(getSerializeOpts());
+	        } finally {
+	           mResultOut = null ;
+	        }
+	    }
 	}
 
 
@@ -179,12 +202,23 @@ public abstract class AWSCommand extends XCommand {
 
 	protected void setEndpoint(Options opts) throws InvalidArgumentException {
 		
-		if( opts.hasOpt("endpoint") )
+		if( opts.hasOpt("endpoint") ){
 			setEndpoint(opts.getOptStringRequired("endpoint"));
+			bSetEndpoint = true ;
+		}
 		
 		
 	}
+	protected boolean hasSetEndpoint() {
+	    return bSetEndpoint;
+	    
+	}
 	protected void setRegion(Options opts) {
+	    if( hasSetEndpoint() )
+	        return ;
+	    if( mShell.getEnv().getVarString("AWS_DDBLOCAL") != null )
+	        setEndpoint( mShell.getEnv().getVarString("AWS_DDBLOCAL") );
+	    else
 	    if( opts.hasOpt("region"))
 	    	setRegion(opts.getOptString("region",Regions.DEFAULT_REGION.getName()) );
 	    else {
@@ -236,6 +270,54 @@ public abstract class AWSCommand extends XCommand {
 				return xv.xpath(getShell(), expr);
 				
 			}
+
+    protected int handleException(AmazonClientException e) throws XMLStreamException, SaxonApiException, IOException, CoreException {
+        
+        OutputPort stderr = null;
+        closeWriter(); // let exception occur
+       try {
+           startResult( getStderr() );
+          
+            attribute("status","exception");
+            attribute("retryable", e.isRetryable());
+            startElement("exception");
+            attribute("name",e.getClass().getSimpleName() );
+            characters( e.getLocalizedMessage());
+            endElement();
+            endResult();
+            return e.isRetryable() ? 1 : -1 ;
+        } 
+       finally {
+           closeWriter();
+       }
+         
+        
+    }
+    protected void startResult() throws XMLStreamException, SaxonApiException, IOException, CoreException {
+       startResult(getStdout());
+    }
+    
+    protected void startResult(OutputPort out) throws XMLStreamException, SaxonApiException, IOException, CoreException {
+        if( mWriter != null )
+            closeWriter();
+        mResultOut = out;
+        mWriter = mResultOut.asXMLStreamWriter(getSerializeOpts());
+        startDocument();
+        startElement(getName());
+    }
+
+    protected void endResult() throws XMLStreamException, IOException, CoreException, SaxonApiException {
+        if( mWriter == null )
+            return ;
+        
+        endElement();
+    	endDocument();
+    	closeWriter();
+    	
+    }
+
+
+    
 
 }
 

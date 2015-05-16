@@ -18,6 +18,7 @@ import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.util.Util;
 
+import com.amazonaws.AmazonClientException;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.amazonaws.services.dynamodbv2.model.UpdateItemRequest;
 import com.amazonaws.services.dynamodbv2.model.UpdateItemResult;
@@ -37,37 +38,6 @@ public class ddbUpdateItem extends AWSDDBCommand {
         // Options opts = getOptions("expected:+,q=quiet");
         opts.parse(args);
         setSerializeOpts(this.getSerializeOpts(opts));
-        
-
-        args = opts.getRemainingArgs();
-        String tableName = opts.getOptStringRequired("table");
-        Map<String, AttributeValue> attrs = parseKeyOptions(opts);
-        
-        // Exprs are constants used in expressions like
-        //  Update SET #a1 = :v1  
-        // placehoder for attribute values "v1" -> expr 
-        Map<String, AttributeValue> attrValuesExpr=null;
-        // placehoder for attribute names "v1" -> expr 
-        Map<String, String> attrNamesExpr=null;
-        
-        
-        if( opts.hasOpt("attr-name-expr"))
-            attrNamesExpr = DDBTypes.parseAttrNameExprs( opts.getOptValues("attr-name-expr"));
-
-        if( opts.hasOpt("attr-value-expr"))
-            attrValuesExpr = parseAttrValueExprs( opts.getOptValues("attr-value-expr"));
-
-        String updateExpr = opts.getOptString("update", null);
-        if (!args.isEmpty()) {
-            if (updateExpr == null)
-                updateExpr = args.remove(0).toString();
-            else
-                usage("Unexpected arguments");
-        }
-        if (!args.isEmpty() || Util.isBlank(updateExpr)) {
-            usage("Update expression required");
-            return 1;
-        }
 
         bQuiet = opts.hasOpt("quiet");
 
@@ -81,53 +51,64 @@ public class ddbUpdateItem extends AWSDDBCommand {
 
         int ret = -1;
 
-        ret = update(tableName, attrs, updateExpr,
-                opts.getOptString("condition", null),
-                opts.getOptString("return-values", null), attrValuesExpr,
-                attrNamesExpr);
+        ret = update(opts);
 
         return ret;
 
     }
 
-    private int update(String tableName, Map<String, AttributeValue> key,
-            String updateExpr, String condition, String returnValues,
-            Map<String, AttributeValue> attrValuesExpr,
-            Map<String, String> attrNamesExpr) throws IOException,
+    private int update( Options opts) throws IOException,
             XMLStreamException, SaxonApiException, CoreException {
+        String condition = opts.getOptString("condition", null);
+        String returnValues = opts.getOptString("return-values", null);
+        String tableName = opts.getOptStringRequired("table");
+        Map<String, AttributeValue> key = parseKeyOptions(opts);
+        
+        String updateExpr = opts.getOptString("update", null);
+        List<XValue> args = opts.getRemainingArgs();
+
+        if (!args.isEmpty()) {
+            if (updateExpr == null)
+                updateExpr = args.remove(0).toString();
+            else
+                usage("Unexpected arguments");
+        }
+
+        if (!args.isEmpty() || Util.isBlank(updateExpr)) {
+            usage("Update expression required");
+            return 1;
+        }
 
         UpdateItemRequest updateItemRequest = new UpdateItemRequest()
-        .withTableName(tableName).withKey(key)
-        .withUpdateExpression(updateExpr);
+            .withTableName(tableName).withKey(key)
+            .withUpdateExpression(updateExpr). 
+            withExpressionAttributeNames(DDBTypes.parseAttrNameExprs(opts)).
+            withExpressionAttributeValues(DDBTypes.parseAttrValueExprs(opts));
+        
         if (condition != null)
             updateItemRequest.setConditionExpression(condition);
         if (returnValues != null)
             updateItemRequest.setReturnValues(returnValues);
-        if (attrValuesExpr != null)
-            updateItemRequest.setExpressionAttributeValues(attrValuesExpr);
-        if (attrNamesExpr != null)
-            updateItemRequest.setExpressionAttributeNames(attrNamesExpr);
 
         traceCall("updateItem");
+               
+        UpdateItemResult result ; 
 
-        UpdateItemResult result = mAmazon.updateItem(updateItemRequest);
+        try {
+            result = mAmazon.updateItem(updateItemRequest);
+        } catch (AmazonClientException e) {
+            return handleException(e);
+        }
 
         if (!bQuiet) {
-            OutputPort stdout = this.getStdout();
-            mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
-            startDocument();
-            startElement(getName());
 
+            startResult();
             if (result.getAttributes() != null) {
                 writeItem(result.getAttributes());
             }
             writeMetric(  new RequestMetrics( result.getConsumedCapacity() , result.getItemCollectionMetrics() ));
-
-            endElement();
-            endDocument();
-            closeWriter();
-            stdout.writeSequenceTerminator(getSerializeOpts());
-            stdout.release();
+ 
+            endResult();
         }
 
         return 0;

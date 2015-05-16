@@ -16,7 +16,9 @@ import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
+import org.xmlsh.util.Util;
 
+import com.amazonaws.AmazonClientException;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.amazonaws.services.dynamodbv2.model.QueryRequest;
 import com.amazonaws.services.dynamodbv2.model.QueryResult;
@@ -33,7 +35,7 @@ public class ddbScan extends AWSDDBCommand {
      */
     @Override
     public int run(List<XValue> args) throws Exception {
-        Options opts = getOptions("limit:,table=table-name:,key-name:+,key-value:+,key:+,query:" + 
+        Options opts = getOptions("limit:,table=table-name:," + 
             "attr-name-expr:,attr-value-expr:,c=consistant,filter=filter-expression:,select:,index-name:,key-condition-expression:,projection-expression:");
         opts.parse(args);
 
@@ -45,7 +47,6 @@ public class ddbScan extends AWSDDBCommand {
         } catch (UnexpectedException e) {
             usage(e.getLocalizedMessage());
             return 1;
-
         }
         
         int ret = -1;
@@ -60,24 +61,12 @@ public class ddbScan extends AWSDDBCommand {
         OutputPort stdout = this.getStdout();
         mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
         String filterExpression = opts.getOptString("filter", null);
-        startDocument();
-        startElement(getName());
-        
-        Map<String, AttributeValue> exclusiveStartKey =null;
-        // placehoder for attribute values "v1" -> expr 
-        Map<String, AttributeValue> attrValuesExpr=null;
-        // placehoder for attribute names "v1" -> expr 
-        Map<String, String> attrNamesExpr=null;
-        
-        
-        if( opts.hasOpt("attr-name-expr"))
-            attrNamesExpr = DDBTypes.parseAttrNameExprs( opts.getOptValues("attr-name-expr"));
-
-        if( opts.hasOpt("attr-value-expr"))
-            attrValuesExpr = parseAttrValueExprs( opts.getOptValues("attr-name-expr"));
+   
         
         ScanRequest scanRequest = new ScanRequest().
-                withTableName(opts.getOptStringRequired("table"));
+                withTableName(opts.getOptStringRequired("table")). 
+                withExpressionAttributeNames(DDBTypes.parseAttrNameExprs(opts)).
+                withExpressionAttributeValues(DDBTypes.parseAttrValueExprs(opts));
         
         int userLimit = opts.getOptInt("limit", 0);
         if (userLimit > 0)
@@ -91,23 +80,25 @@ public class ddbScan extends AWSDDBCommand {
                     opts.getOptStringRequired("projection-expression"));             
         if (filterExpression != null)
             scanRequest.setFilterExpression(filterExpression);
-        if (attrValuesExpr != null)
-            scanRequest.setExpressionAttributeValues(attrValuesExpr);
-        if (attrNamesExpr != null)
-            scanRequest.setExpressionAttributeNames(attrNamesExpr);
-        
         if( opts.hasOpt("select"))
             scanRequest.setSelect(parseSelect(opts.getOptStringRequired("select")));
         
         ArrayList<RequestMetrics> metrics = new ArrayList<RequestMetrics>();
+        Map<String, AttributeValue> exclusiveStartKey =null;
+
         
-    
         do {
 
             traceCall("query");
             if (exclusiveStartKey != null)
                 scanRequest.setExclusiveStartKey(exclusiveStartKey);
-            ScanResult result = mAmazon.scan(scanRequest);
+            ScanResult result = null;
+            try {
+                result = mAmazon.scan(scanRequest);
+            } catch (AmazonClientException e) {
+                return handleException(e);
+            }
+            startResult();
             metrics.add( new RequestMetrics(result.getCount(), result.getScannedCount(), result.getConsumedCapacity()));
             
             for( Map<String, AttributeValue> item :  result.getItems() ){
@@ -118,12 +109,7 @@ public class ddbScan extends AWSDDBCommand {
         } while( exclusiveStartKey != null );
         
         writeMetrics( metrics );
-        
-        endElement();
-        endDocument();
-        closeWriter();
-        stdout.writeSequenceTerminator(getSerializeOpts());
-        stdout.release();
+        endResult();
         return 0;
     }
 

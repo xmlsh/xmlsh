@@ -527,6 +527,16 @@ public class XValue {
 		}
 		return list;
 	}
+	// bogus - really means it could be 0..N
+	public boolean isSequence() {
+	   if( isXdmNode() )
+	       return true ;
+	   return false ;
+	}
+	
+	public boolean isEmptySequence() {
+	    return (isXdmNode() &&  ((XdmNode) mValue).size() == 0 );
+	}
 
 	public boolean isEmpty() {
 		

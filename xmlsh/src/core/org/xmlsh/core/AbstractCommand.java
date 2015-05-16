@@ -53,7 +53,7 @@ public abstract class AbstractCommand implements ICommand {
 
 	protected InputPort getStdin() throws IOException { return mEnvironment.getStdin();}
 
-	protected OutputPort getStdout() throws IOException { return mEnvironment.getStdout();}
+	public OutputPort getStdout() throws IOException { return mEnvironment.getStdout();}
 
 	protected OutputPort getStderr() throws IOException { return mEnvironment.getStderr();}
 
@@ -176,7 +176,7 @@ public abstract class AbstractCommand implements ICommand {
 		mSerializeOpts = this.getSerializeOpts(opts) ;
 	}
 	
-	protected SerializeOpts getSerializeOpts()
+	public SerializeOpts getSerializeOpts()
 	{
 		if( mSerializeOpts == null )
 			mSerializeOpts = mShell.getSerializeOpts();

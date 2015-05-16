@@ -8,6 +8,7 @@ import javax.xml.stream.XMLStreamException;
 import net.sf.saxon.s9api.SaxonApiException;
 
 import org.xmlsh.aws.util.AWSELBCommand;
+import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
@@ -64,7 +65,7 @@ public class elbRegister extends AWSELBCommand {
 	}
 
 	protected int register(String elb, List<XValue> args) throws XMLStreamException, IOException,
-	InvalidArgumentException, SaxonApiException {
+	SaxonApiException, CoreException {
 		
 	
 		OutputPort stdout = this.getStdout();

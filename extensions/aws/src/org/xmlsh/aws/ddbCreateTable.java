@@ -17,6 +17,7 @@ import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
 
+import com.amazonaws.AmazonClientException;
 import com.amazonaws.services.dynamodbv2.model.AttributeDefinition;
 import com.amazonaws.services.dynamodbv2.model.CreateTableRequest;
 import com.amazonaws.services.dynamodbv2.model.CreateTableResult;
@@ -66,15 +67,12 @@ public class ddbCreateTable extends AWSDDBCommand {
 
 	    String tableName = opts.getOptStringRequired("table");
 	    
-		OutputPort stdout = this.getStdout();
-		mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
+	
 
 		ProvisionedThroughput provisionedThroughput = new ProvisionedThroughput()
 				.withReadCapacityUnits(opts.getOptLong("read-capacity", 5L))
 				.withWriteCapacityUnits(opts.getOptLong("write-capacity", 5L));
 
-		startDocument();
-		startElement(getName());
 
 		Collection<AttributeDefinition> attributeDefinitions = parseAttributes(opts);
 		Collection<KeySchemaElement> keySchema = parseKeySchema(opts);
@@ -89,21 +87,23 @@ public class ddbCreateTable extends AWSDDBCommand {
 		parseLocalSecondaryIndexList(opts, createTableRequest);
 
 		traceCall("createTable");
-
-		CreateTableResult result = mAmazon.createTable(createTableRequest);
+		CreateTableResult result = null ;
+		try {
+		    result = mAmazon.createTable(createTableRequest);
+		} catch( AmazonClientException e ) {
+		    return handleException(e);
+		}
+		
+		
+        startResult();
 		writeTableDescription(result.getTableDescription());
-		endElement();
-		endDocument();
-
-		closeWriter();
-		stdout.writeSequenceTerminator(getSerializeOpts());
-		stdout.release();
+		endResult();
 
 		return 0;
 
 	}
 
-	private void parseLocalSecondaryIndexList(Options opts,
+    private void parseLocalSecondaryIndexList(Options opts,
 			CreateTableRequest createTableRequest)
 			throws InvalidArgumentException, UnexpectedException {
 

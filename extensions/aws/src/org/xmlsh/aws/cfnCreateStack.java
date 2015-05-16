@@ -37,8 +37,6 @@ public class cfnCreateStack extends AWSCFNCommand {
 	@Override
 	public int run(List<XValue> args) throws Exception {
 
-
-
 		Options opts = getOptions("capability:+,disable-rollback,fail=on-failure:,notification-arn:+,name:,template-file=f:,template-url=url:,timeout:,tag:+,params=parameters:");
 		opts.parse(args);
         setSerializeOpts(this.getSerializeOpts(opts));
@@ -54,13 +52,8 @@ public class cfnCreateStack extends AWSCFNCommand {
 
 		}
 
-
 		int ret = createStack( opts);
-
-
-
 		return ret;
-
 
 	}
 

@@ -574,6 +574,23 @@ public class JavaUtils {
     {
         return Class.class.isAssignableFrom(cls);
     }
+
+
+    public static boolean isNumber(String v) {
+        return toNumber(v,null) != null ;
+    }
+
+
+    public static Number toNumber(String v, Number def) {
+        try {
+            if( Util.isInt(v, true))
+                return Long.parseLong(v);
+            return Double.parseDouble(v);
+        } catch (NumberFormatException e) {
+            // silent
+            return def;
+        }
+    }
 }
 
 

@@ -20,27 +20,40 @@ import java.util.Map.Entry;
 import javax.xml.stream.XMLStreamException;
 
 import net.sf.saxon.s9api.QName;
+import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
+import net.sf.saxon.trans.XPathException;
 
 import org.xmlsh.aws.util.DDBTypes.AttrType;
+import org.xmlsh.commands.stax.newEventReader;
 import org.xmlsh.commands.xs.element;
+import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
+import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.UnimplementedException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.util.Base64;
+import org.xmlsh.util.JavaUtils;
+import org.xmlsh.util.StringPair;
 import org.xmlsh.util.Util;
 
+import com.amazonaws.AmazonClientException;
+import com.amazonaws.AmazonServiceException;
 import com.amazonaws.regions.RegionUtils;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.document.DynamoDB;
+import com.amazonaws.services.dynamodbv2.document.PrimaryKey;
+import com.amazonaws.services.dynamodbv2.document.spec.GetItemSpec;
+import com.amazonaws.services.dynamodbv2.document.spec.PutItemSpec;
 import com.amazonaws.services.dynamodbv2.model.AttributeDefinition;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.amazonaws.services.dynamodbv2.model.Capacity;
+import com.amazonaws.services.dynamodbv2.model.ConditionalCheckFailedException;
 import com.amazonaws.services.dynamodbv2.model.ConsumedCapacity;
 import com.amazonaws.services.dynamodbv2.model.GlobalSecondaryIndex;
 import com.amazonaws.services.dynamodbv2.model.GlobalSecondaryIndexDescription;
@@ -52,20 +65,33 @@ import com.amazonaws.services.dynamodbv2.model.LocalSecondaryIndexDescription;
 import com.amazonaws.services.dynamodbv2.model.Projection;
 import com.amazonaws.services.dynamodbv2.model.ProvisionedThroughput;
 import com.amazonaws.services.dynamodbv2.model.ProvisionedThroughputDescription;
+import com.amazonaws.services.dynamodbv2.model.ReturnValue;
 import com.amazonaws.services.dynamodbv2.model.TableDescription;
+import com.amazonaws.util.json.JSONUtils;
 
-import  static org.xmlsh.aws.util.DDBTypes.AttrType.*;
+import static org.xmlsh.aws.util.DDBTypes.AttrType.*;
 
 public abstract class AWSDDBCommand extends AWSCommand {
+    static Object parseToJavaValue(String v) {
+        if( v == null )
+            return null ;
+        if( v.isEmpty() )
+            return v;
+        Number num = JavaUtils.toNumber( v , null  );
+        if( num != null )
+            return num ;
+        return v;
+    }
     protected AmazonDynamoDB mAmazon;
-    private DynamoDB mDynamo = null ;
-    private DynamoDBMapper mMapper = null ;
-    
+    private DynamoDB mDynamo = null;
+    private DynamoDBMapper mMapper = null;
+
     public static class RequestMetrics {
-        public int count ;
+        public int count;
         public int scanCount;
         public ConsumedCapacity capacity;
         public ItemCollectionMetrics itemMetrics;
+
         public RequestMetrics(int count, int scanCount, ConsumedCapacity capacity) {
             super();
             this.count = count;
@@ -74,9 +100,9 @@ public abstract class AWSDDBCommand extends AWSCommand {
         }
 
         public RequestMetrics(ConsumedCapacity consumedCapacity, ItemCollectionMetrics itemCollectionMetrics) {
-            count=0;
-            scanCount=0;
-            this.capacity=consumedCapacity;
+            count = 0;
+            scanCount = 0;
+            this.capacity = consumedCapacity;
             this.itemMetrics = itemCollectionMetrics;
         }
     }
@@ -109,39 +135,39 @@ public abstract class AWSDDBCommand extends AWSCommand {
         setEndpoint(opts);
         setRegion(opts);
     }
-    
 
     private void setDynamoDBOpts(Options options) {
     }
 
-    protected  DynamoDB getDynamotDB(Options opts) throws UnexpectedException, InvalidArgumentException {
-        if( mAmazon == null )
+    protected DynamoDB getDynamotDB(Options opts) throws UnexpectedException, InvalidArgumentException {
+        if (mAmazon == null)
             getDDBClient(opts);
-        assert(mAmazon != null );
-        if( mDynamo == null )
-            mDynamo = new DynamoDB( mAmazon );
+        assert (mAmazon != null);
+        if (mDynamo == null)
+            mDynamo = new DynamoDB(mAmazon);
         setDynamoDBOpts(opts);
         return mDynamo;
     }
-    protected  DynamoDBMapper getMapper(Options opts) throws UnexpectedException, InvalidArgumentException {
-        if( mAmazon == null )
+
+    protected DynamoDBMapper getMapper(Options opts) throws UnexpectedException, InvalidArgumentException {
+        if (mAmazon == null)
             getDDBClient(opts);
-        assert(mAmazon != null );
-        if( mMapper == null )
-            mMapper= new DynamoDBMapper( mAmazon );
+        assert (mAmazon != null);
+        if (mMapper == null)
+            mMapper = new DynamoDBMapper(mAmazon);
         setMapperOpts(opts);
         return mMapper;
     }
-    
+
     private void setMapperOpts(Options opts) {
-        
+
     }
 
     protected AttributeDefinition parseKeyAttribute(XValue xv)
             throws InvalidArgumentException, UnexpectedException {
-        DDBTypes.NameType  ant = new DDBTypes.NameType(xv);
+        DDBTypes.NameType ant = new DDBTypes.NameType(xv);
         return new AttributeDefinition().withAttributeName(ant.getName())
-                .withAttributeType( ant.getTypeName() );
+                .withAttributeType(ant.getTypeName());
 
     }
 
@@ -166,7 +192,7 @@ public abstract class AWSDDBCommand extends AWSCommand {
 
     protected KeySchemaElement parseKeySchemaElement(XValue xv) throws InvalidArgumentException {
 
-        // Note: overload of 'type' for hash/range 
+        // Note: overload of 'type' for hash/range
         DDBTypes.NameType ant = new DDBTypes.NameType(xv);
         KeySchemaElement keyElement = new KeySchemaElement().withAttributeName(
                 ant.getName()).withKeyType(
@@ -181,9 +207,9 @@ public abstract class AWSDDBCommand extends AWSCommand {
             // value->sequence->item
             for (XdmItem item : xpath(xv, "key-schema/key-element-name")
                     .asXdmValue()) {
-                if (item instanceof XdmNode){
-                    DDBTypes.NameType ant = new DDBTypes.NameType( (XdmNode) item );
-                    list.add(new KeySchemaElement(ant.getName(), ant.getTypeName() ));
+                if (item instanceof XdmNode) {
+                    DDBTypes.NameType ant = new DDBTypes.NameType((XdmNode) item);
+                    list.add(new KeySchemaElement(ant.getName(), ant.getTypeName()));
                 }
                 else
                     throw new UnexpectedException("Unexpected node type: "
@@ -244,6 +270,7 @@ public abstract class AWSDDBCommand extends AWSCommand {
     @Override
     public void setEndpoint(String endpoint) {
         mAmazon.setEndpoint(endpoint);
+        super.setEndpointSet(true);
     }
 
     /*
@@ -253,7 +280,12 @@ public abstract class AWSDDBCommand extends AWSCommand {
      */
     @Override
     public void setRegion(String region) {
-        mAmazon.setRegion(RegionUtils.getRegion(region));
+        if( Util.isBlank(region) ||   super.hasSetEndpoint())
+            return ;
+        if( region.equals("local"))
+            setEndpoint("http://localhost:8000");
+        else
+          mAmazon.setRegion(RegionUtils.getRegion(region));
 
     }
 
@@ -273,77 +305,68 @@ public abstract class AWSDDBCommand extends AWSCommand {
             attribute(AttrType.S);
             characters(avalue.getS());
         }
+        else if (avalue.getN() != null) {
+            attribute(AttrType.N);
+            characters(avalue.getN());
+        }
         else
-            if (avalue.getN() != null) {
-                attribute(AttrType.N);
-                characters(avalue.getN());
+
+            if (avalue.getB() != null) {
+                attribute(AttrType.B);
+                binary(avalue.getB().array());
             }
-            else
+            else if (avalue.getSS() != null) {
+                attribute(AttrType.SS);
 
-                if (avalue.getB() != null) {
-                    attribute(AttrType.B);
-                    binary(avalue.getB().array());
+                for (String s : avalue.getSS()) {
+                    startElement("value");
+                    characters(s);
+                    endElement();
                 }
-                else
-                    if (avalue.getSS() != null) {
-                        attribute(AttrType.SS);
 
-                        for (String s : avalue.getSS()) {
-                            startElement("value");
-                            characters(s);
-                            endElement();
-                        }
+            }
+            else if (avalue.getNS() != null) {
+                attribute(AttrType.NS);
 
-                    }
-                    else
-                        if (avalue.getNS() != null) {
-                            attribute(AttrType.NS);
+                for (String s : avalue.getNS()) {
+                    startElement("value");
+                    characters(s);
+                    endElement();
+                }
+            }
+            else if (avalue.getBS() != null) {
+                attribute(AttrType.BS);
 
-                            for (String s : avalue.getNS()) {
-                                startElement("value");
-                                characters(s);
-                                endElement();
-                            }
-                        }
-                        else
-                            if (avalue.getBS() != null) {
-                                attribute(AttrType.BS);
-
-                                for (ByteBuffer s : avalue.getBS()) {
-                                    startElement("value");
-                                    binary(s.array());
-                                    endElement();
-                                }
-                            }
-                            else
-                                if (avalue.getL() != null) {
-                                    attribute(AttrType.L);
-                                    for (AttributeValue av : avalue.getL()) {
-                                        startElement("value");
-                                        writeAttributeValue(av);
-                                        endElement();
-                                    }
-                                } else if (avalue.getM() != null) {
-                                    attribute(AttrType.M);;
-
-                                    for (Entry<String, AttributeValue> e : avalue.getM().entrySet()) {
-                                        writeAttribute(e.getKey(), e.getValue());
-
-                                    }
-                                } else if (avalue.isBOOL()) {
-                                    attribute(AttrType.BOOL);
-                                    characters(avalue.getBOOL() ? "true" : "false");
-                                } else if (avalue.isNULL()) {
-                                    attribute(AttrType.NULL);
-
-                                    characters(avalue.getNULL() ? "true" : "false");
-
-                                }
+                for (ByteBuffer s : avalue.getBS()) {
+                    startElement("value");
+                    binary(s.array());
+                    endElement();
+                }
+            }
+            else if (avalue.getL() != null) {
+                attribute(AttrType.L);
+                for (AttributeValue av : avalue.getL()) {
+                    startElement("value");
+                    writeAttributeValue(av);
+                    endElement();
+                }
+            } else if (avalue.getM() != null) {
+                attribute(AttrType.M);
+                for (Entry<String, AttributeValue> e : avalue.getM().entrySet()) {
+                    writeAttribute(e.getKey(), e.getValue());
+                }
+            } else if (avalue.isBOOL() != null) {
+                attribute(AttrType.BOOL);
+                characters(avalue.getBOOL().booleanValue() ? "true" : "false");
+            } else if (avalue.isNULL() != null) {
+                attribute(AttrType.NULL);
+                characters(avalue.getNULL().booleanValue() ? "true" : "false");
+            }
 
     }
 
     protected void attribute(AttrType t) throws XMLStreamException {
-        attribute("type" , t.name() );
+        attribute("type", t.name());
     }
 
     private void writeAttributeDefinition(AttributeDefinition def)
@@ -475,38 +498,43 @@ public abstract class AWSDDBCommand extends AWSCommand {
         writeProvisionedThroughput(tableDescription.getProvisionedThroughput());
 
     }
-    protected void writeAttrNameValue(String elem ,Map<String, AttributeValue> result) throws XMLStreamException,   IOException {
+
+    protected void writeAttrNameValue(String elem, Map<String, AttributeValue> result) throws XMLStreamException,
+    IOException {
         startElement(elem);
         for (Entry<String, AttributeValue> a : result.entrySet())
             this.writeAttribute(a.getKey(), a.getValue());
         endElement();
     }
+
     protected void writeItem(Map<String, AttributeValue> result) throws XMLStreamException, IOException {
         writeAttrNameValue("item", result);
     }
+
     protected Map<String, AttributeValue> parseKeyOptions(Options opts)
             throws InvalidArgumentException, UnexpectedException,
             UnimplementedException, IOException {
         Map<String, AttributeValue> keys = new HashMap<String, AttributeValue>();
-        if( opts.hasOpt("key"))
-            for( XValue k : opts.getOptValues("key"))
-                keys.putAll( DDBTypes.parseKey(k));
+        if (opts.hasOpt("key"))
+            for (XValue k : opts.getOptValues("key"))
+                keys.putAll(DDBTypes.parseKey(k));
 
-        if( opts.hasOpt("key-name")){
+        if (opts.hasOpt("key-name")) {
             List<XValue> keyValues = opts.getOptValues("key-value");
             int i = 0;
-            for( XValue keyName : opts.getOptValues("key-name"))
-                keys.putAll( DDBTypes.parseKey(keyName, keyValues.get(i++)));
+            for (XValue keyName : opts.getOptValues("key-name"))
+                keys.putAll(DDBTypes.parseKey(keyName, keyValues.get(i++)));
         }
         return keys;
     }
-
-    protected void writeItemCollectionMetrics(ItemCollectionMetrics itemCollectionMetrics) throws XMLStreamException, IOException {
+    
+    protected void writeItemCollectionMetrics(ItemCollectionMetrics itemCollectionMetrics) throws XMLStreamException,
+    IOException {
         startElement("item-collection-metrics");
-        writeAttrNameValue( "item-collection-key",  itemCollectionMetrics.getItemCollectionKey());
-        for( Double r : itemCollectionMetrics.getSizeEstimateRangeGB() ){
+        writeAttrNameValue("item-collection-key", itemCollectionMetrics.getItemCollectionKey());
+        for (Double r : itemCollectionMetrics.getSizeEstimateRangeGB()) {
             super.startElement("size");
-            attribute("value", r );
+            attribute("value", r);
             endElement();
         }
         endElement();
@@ -514,45 +542,39 @@ public abstract class AWSDDBCommand extends AWSCommand {
 
     protected void writeConsumedCapacity(ConsumedCapacity consumedCapacity) throws XMLStreamException
     {
-        if( consumedCapacity == null ) 
+        if (consumedCapacity == null)
             return;
         startElement("consumed-capacity");
         attribute("total-units", consumedCapacity.getCapacityUnits());
         startElement("table");
-        writeCapacity( "table-name" , consumedCapacity.getTableName() ,  consumedCapacity.getTable());
+        writeCapacity("table-name", consumedCapacity.getTableName(), consumedCapacity.getTable());
         endElement();
-        startElement( "local-secondary-indexes");
-        for(   Entry<String, Capacity> ce : consumedCapacity.getLocalSecondaryIndexes().entrySet() ) 
-            writeCapacity( "index-name" , ce.getKey() , ce.getValue() );
+        startElement("local-secondary-indexes");
+        for (Entry<String, Capacity> ce : consumedCapacity.getLocalSecondaryIndexes().entrySet())
+            writeCapacity("index-name", ce.getKey(), ce.getValue());
         endElement();
 
         startElement("global-secondary-indexes");
-        for(   Entry<String, Capacity> ce : consumedCapacity.getGlobalSecondaryIndexes().entrySet() )
-            writeCapacity( "index-name" , ce.getKey() , ce.getValue() );
+        for (Entry<String, Capacity> ce : consumedCapacity.getGlobalSecondaryIndexes().entrySet())
+            writeCapacity("index-name", ce.getKey(), ce.getValue());
         endElement();
         endElement();
 
     }
-    private void writeCapacity(String attr, String attrValue, Capacity cap ) throws XMLStreamException {
-        attribute(attr,attrValue);
-        attribute("capacity-units" , cap.getCapacityUnits());
+
+    private void writeCapacity(String attr, String attrValue, Capacity cap) throws XMLStreamException {
+        attribute(attr, attrValue);
+        attribute("capacity-units", cap.getCapacityUnits());
     }
 
     private void attribute(String localName, Double d) throws XMLStreamException {
-        attribute( localName , d.toString() );
+        attribute(localName, d.toString());
     }
 
-    protected Map<String, AttributeValue> parseAttrValueExprs(List<XValue> optValues)
-            throws UnexpectedException, UnimplementedException,
-            InvalidArgumentException, IOException {
-
-        return DDBTypes.parseAttributeValues( optValues );
-
-    }
 
     protected void writeMetrics(ArrayList<RequestMetrics> metrics) throws XMLStreamException, IOException {
         startElement("request-metrics");
-        for( RequestMetrics m : metrics ){
+        for (RequestMetrics m : metrics) {
             writeMetric(m);
         }
         endElement();
@@ -562,15 +584,53 @@ public abstract class AWSDDBCommand extends AWSCommand {
     public void writeMetric(RequestMetrics m) throws XMLStreamException, IOException {
 
         startElement("request-metric");
-        attribute("count",m.count);
-        attribute("scanCount",m.scanCount);
-        if ( m.capacity != null) 
+        attribute("count", m.count);
+        attribute("scanCount", m.scanCount);
+        if (m.capacity != null)
             writeConsumedCapacity(m.capacity);
-        if( m.itemMetrics != null )
+        if (m.itemMetrics != null)
             writeItemCollectionMetrics(m.itemMetrics);
 
         endElement();
     }
+    protected int handleException(AmazonClientException e) throws XMLStreamException, SaxonApiException, IOException, CoreException {
+        if( e instanceof ConditionalCheckFailedException )
+            return handleConditionException((ConditionalCheckFailedException) e);
+        return super.handleException(e);
+    }
+    protected GetItemSpec parseGetItemSpec(Options opts) throws InvalidArgumentException, XPathException, UnexpectedException, UnimplementedException, IOException {
+        GetItemSpec spec = new GetItemSpec().withPrimaryKey( getPrimaryKey(opts) ).withConsistentRead( opts.hasOpt("consistant") );
+        if( opts.hasRemainingArgs() )
+            spec.withProjectionExpression( 
+                    Util.stringJoin(Util.toStringList( opts.getRemainingArgs()),","));
+        return spec;
+
+    }
+
+    private  static  PrimaryKey getPrimaryKey(Options opts) throws InvalidArgumentException, XPathException, UnexpectedException, UnimplementedException, IOException {
+        Map<String, Object> keys = DDBTypes.parseKeyValueObjectOptions(opts);
+        PrimaryKey key = new PrimaryKey();
+        for(    Entry<String, Object> e : keys.entrySet()  ) 
+            key.addComponent( e.getKey() , e.getValue() );
+        return key ;
+    }
+
+    protected int handleConditionException(ConditionalCheckFailedException ce) throws XMLStreamException,
+    SaxonApiException, IOException, CoreException {
+        startResult( getStderr() );
+        attribute("status", "condition-failed");
+        attribute("retryable", ce.isRetryable());
+        startElement("exception");
+        attribute("name", ce.getClass().getSimpleName());
+        characters(ce.getLocalizedMessage());
+        endElement();
+        endResult();
+        return ce.isRetryable() ? 2 : -1;
+
+    }
+    
+
+    
 
 }
 

@@ -94,25 +94,16 @@ public class ec2CopyImage extends AWSEC2Command {
 
 
 
-	private void writeResult(CopyImageResult result) throws IOException, InvalidArgumentException, XMLStreamException, SaxonApiException {
+	private void writeResult(CopyImageResult result) throws IOException, XMLStreamException, SaxonApiException, CoreException {
 		
-		OutputPort stdout = this.getStdout();
-		mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(getSerializeOpts()));
-		
-		
-		startDocument();
-		startElement(this.getName());
+    	startResult();
 		
 		
 		startElement("image");
 		attribute("image-id", result.getImageId());
 	    endElement();
 		
-		
-		
-		endElement();
-		endDocument();
-		closeWriter();		
+		endResult();
 	}
 
 

@@ -17,7 +17,9 @@ import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
+import org.xmlsh.util.Util;
 
+import com.amazonaws.AmazonClientException;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.amazonaws.services.dynamodbv2.model.QueryRequest;
 import com.amazonaws.services.dynamodbv2.model.QueryResult;
@@ -31,7 +33,7 @@ public class ddbQuery extends AWSDDBCommand {
      */
     @Override
     public int run(List<XValue> args) throws Exception {
-        Options opts = getOptions("limit:,table=table-name:,key-name:+,key-value:+,key:+,query:" + 
+        Options opts = getOptions("j=json,document,limit:,table=table-name:,key-name:+,key-value:+,key:+,query:" + 
             "attr-name-expr:,attr-value-expr:,c=consistant,filter=filter-expression:,select:,index-name:,key-condition-expression:,projection-expression:");
         opts.parse(args);
 
@@ -57,28 +59,18 @@ public class ddbQuery extends AWSDDBCommand {
     private int query(Options opts) throws IOException, XMLStreamException, SaxonApiException, CoreException 
     {
 
-        OutputPort stdout = this.getStdout();
-        mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
         boolean bConsistantRead = opts.hasOpt("consistant");
         String filterExpression = opts.getOptString("filter", null);
-        startDocument();
-        startElement(getName());
         
         Map<String, AttributeValue> exclusiveStartKey =null;
-        // placehoder for attribute values "v1" -> expr 
-        Map<String, AttributeValue> attrValuesExpr=null;
-        // placehoder for attribute names "v1" -> expr 
-        Map<String, String> attrNamesExpr=null;
         
-        if( opts.hasOpt("attr-name-expr"))
-            attrNamesExpr = DDBTypes.parseAttrNameExprs( opts.getOptValues("attr-name-expr"));
-
-        if( opts.hasOpt("attr-value-expr"))
-            attrValuesExpr = parseAttrValueExprs( opts.getOptValues("attr-value-expr"));
         
         QueryRequest queryRequest = new QueryRequest().
                 withTableName(opts.getOptStringRequired("table")).
-                withConsistentRead(bConsistantRead);
+                withConsistentRead(bConsistantRead).
+                withExpressionAttributeNames(DDBTypes.parseAttrNameExprs(opts)).
+                withExpressionAttributeValues(DDBTypes.parseAttrValueExprs(opts));
+        
         
         int userLimit = opts.getOptInt("limit", 0);
         if (userLimit > 0)
@@ -86,7 +78,6 @@ public class ddbQuery extends AWSDDBCommand {
    
         if( opts.hasOpt("index-name"))
             queryRequest.setIndexName( opts.getOptStringRequired("index-name"));
-
         if( opts.hasOpt("key-condition-expression"))
             queryRequest.setKeyConditionExpression(opts.getOptStringRequired("key-condition-expression"));
         if( opts.hasOpt("projection-expression"))
@@ -94,19 +85,22 @@ public class ddbQuery extends AWSDDBCommand {
                     opts.getOptStringRequired("projection-expression"));             
         if (filterExpression != null)
             queryRequest.setFilterExpression(filterExpression);
-        if (attrValuesExpr != null)
-            queryRequest.setExpressionAttributeValues(attrValuesExpr);
-        if (attrNamesExpr != null)
-            queryRequest.setExpressionAttributeNames(attrNamesExpr);
         if( opts.hasOpt("select"))
             queryRequest.setSelect(parseSelect(opts.getOptStringRequired("select")));
-        ArrayList<RequestMetrics> metrics = new ArrayList<RequestMetrics>();
+        ArrayList<RequestMetrics> metrics = new ArrayList<RequestMetrics>(); 
+        
+        
         do {
-
             traceCall("query");
             if (exclusiveStartKey != null)
                 queryRequest.setExclusiveStartKey(exclusiveStartKey);
-            QueryResult result = mAmazon.query(queryRequest);
+            QueryResult result;
+            try {
+                result = mAmazon.query(queryRequest);
+            } catch (AmazonClientException e) {
+                return handleException(e);
+            }
+            startResult();
             for( Map<String, AttributeValue> item :  result.getItems() )
                writeItem(item);
             metrics.add( new RequestMetrics(result.getCount(), result.getScannedCount(), result.getConsumedCapacity()));
@@ -116,12 +110,7 @@ public class ddbQuery extends AWSDDBCommand {
         } while( exclusiveStartKey != null );
 
         writeMetrics( metrics );
-        
-        endElement();
-        endDocument();
-        closeWriter();
-        stdout.writeSequenceTerminator(getSerializeOpts());
-        stdout.release();
+        endResult();
         return 0;
     }
 
