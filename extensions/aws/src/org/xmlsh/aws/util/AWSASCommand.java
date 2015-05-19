@@ -66,6 +66,11 @@ public abstract class AWSASCommand extends AWSCommand {
 		// TODO Auto-generated method stub
 		return 0;
 	}
+
+    @Override
+    protected String getCommonOpts() { 
+        return AWSCommand.sCOMMON_OPTS;
+    }
 	
 	
 	

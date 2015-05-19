@@ -42,7 +42,8 @@ import com.amazonaws.services.s3.transfer.TransferManager;
 public abstract class AWSS3Command extends AWSCommand {
 	
 
-	protected		AmazonS3 mAmazon ;
+	public static final String sCOMMON_OPTIONS = Options.joinOptions(AWSCommand.sCOMMON_OPTS ,",crypt,keypair:,threads:");
+    protected		AmazonS3 mAmazon ;
 	public String sMetaDataElem = "metadata";
 	public String sUserMetaDataElem = "user";
 	private TransferManager tm = null;
@@ -68,7 +69,7 @@ public abstract class AWSS3Command extends AWSCommand {
 	}
 
 	protected String getCommonOpts() {
-		return super.getCommonOpts() + ",crypt,keypair:,threads:" ;
+		return sCOMMON_OPTIONS ;
 	}
 	
 	protected Object getClient() {

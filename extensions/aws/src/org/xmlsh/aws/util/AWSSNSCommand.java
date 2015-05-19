@@ -25,7 +25,10 @@ public abstract class AWSSNSCommand extends AWSCommand {
 	protected Object getClient() {
 		return mAmazon; 
 	}
-
+	   @Override
+	    protected String getCommonOpts() { 
+	        return AWSCommand.sCOMMON_OPTS;
+	    }
 	protected void getSNSClient(Options opts) throws UnexpectedException, InvalidArgumentException {
 		
 			

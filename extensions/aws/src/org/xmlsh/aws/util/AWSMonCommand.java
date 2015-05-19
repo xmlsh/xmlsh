@@ -52,6 +52,10 @@ public abstract class AWSMonCommand extends AWSCommand {
 	    mAmazon.setRegion( RegionUtils.getRegion(region));
 		
 	}
+	   @Override
+	    protected String getCommonOpts() { 
+	        return AWSCommand.sCOMMON_OPTS;
+	    }
 
 }
 

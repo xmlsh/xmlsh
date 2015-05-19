@@ -21,8 +21,10 @@ import org.apache.log4j.Logger;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
+import org.xmlsh.core.Options.OptionValue;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.UnexpectedException;
+import org.xmlsh.core.UnknownOption;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.SerializeOpts;
@@ -70,22 +72,18 @@ public abstract class AWSCommand extends XCommand {
 	}
 	
 	abstract protected Object getClient();
-	
-	
-	protected	Options getOptions()	
-	{
-		return new Options( getCommonOpts()  , SerializeOpts.getOptionDefs());
-	}
 
+	protected abstract String getCommonOpts() ;
+	
+	public List<OptionValue> parseOptions(Options options, List<XValue> args) throws UnknownOption, InvalidArgumentException {
+        List<OptionValue> opts = options.parse(args);
+        parseCommonOptions(options);
+        return opts ;
+    }
 
-	protected String getCommonOpts() {
-		return sCOMMON_OPTS;
-	}
-	
-	
-	protected	Options getOptions( String sopts )	
+    protected	Options getOptions( String... sopts )	
 	{
-		return new Options( getCommonOpts() + "," + sopts , SerializeOpts.getOptionDefs());
+		return new Options( Options.joinOptions(getCommonOpts() , Options.joinOptions(sopts) )  , SerializeOpts.getOptionDefs());
 	}
 	
 	
@@ -216,9 +214,7 @@ public abstract class AWSCommand extends XCommand {
 	protected void setRegion(Options opts) {
 	    if( hasSetEndpoint() )
 	        return ;
-	    if( mShell.getEnv().getVarString("AWS_DDBLOCAL") != null )
-	        setEndpoint( mShell.getEnv().getVarString("AWS_DDBLOCAL") );
-	    else
+
 	    if( opts.hasOpt("region"))
 	    	setRegion(opts.getOptString("region",Regions.DEFAULT_REGION.getName()) );
 	    else {
@@ -260,9 +256,6 @@ public abstract class AWSCommand extends XCommand {
 		
 		rateRetry = opts.getOptInt("rate-retry", 0);
 		retryDelay = opts.getOptInt("retry-delay", 10000);
-		
-	
-		
 	}
 
 	protected XValue xpath(XValue xv, String expr)

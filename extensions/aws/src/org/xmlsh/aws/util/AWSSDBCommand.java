@@ -30,7 +30,10 @@ protected		AmazonSimpleDB mAmazon ;
 	protected Object getClient() {
 		return mAmazon; 
 	}
-
+	   @Override
+	    protected String getCommonOpts() { 
+	        return AWSCommand.sCOMMON_OPTS;
+	    }
 	protected void getSDBClient(Options opts) throws UnexpectedException, InvalidArgumentException {
 		
 			

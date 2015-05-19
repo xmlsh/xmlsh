@@ -8,27 +8,24 @@ import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
 
-public class ddbAttribute extends BuiltinFunctionCommand {
+import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 
-    public ddbAttribute() {
-        super("ddb-attribute");
+public class ddbValue extends BuiltinFunctionCommand {
+
+    public ddbValue() {
+        super("ddb-value");
     }
 
-    @Override 
-    // Attribute
-    // name/type Value
-    // name type value
+    @Override
     public XValue run(Shell shell, List<XValue> args) throws Exception {
         switch( args.size() ){
-  
-        case 1:
-            return new XValue( DDBTypes.parseAttrNameValue( args.get(0) ));
-        case 2:
-            return new XValue( DDBTypes.parseAttrNameValue( args.get(0) , args.get(1) ));
-        case 3:
-            return new XValue( DDBTypes.parseAttrNameValue( args.get(0) , args.get(1), args.get(2) ));
-        default :
         case 0:
+            return new XValue( new AttributeValue() );
+        case 1:
+            return new XValue( DDBTypes.parseAttrValue( args.get(0) )); 
+        case 2:
+            return new XValue( DDBTypes.parseAttrValue(args.get(0),args.get(1)));
+        default :
             throw new InvalidArgumentException("Unexpected arguments: Usage: " + getName() +  " [type [value]" );
         }
 

@@ -11,10 +11,8 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.AbstractMap.SimpleImmutableEntry;
 import java.util.Map.Entry;
 
 import javax.xml.stream.XMLStreamException;
@@ -26,22 +24,24 @@ import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.trans.XPathException;
 
 import org.xmlsh.aws.util.DDBTypes.AttrType;
-import org.xmlsh.commands.stax.newEventReader;
-import org.xmlsh.commands.xs.element;
+import org.xmlsh.aws.util.DDBTypes.IAttrNameExpr;
+import org.xmlsh.aws.util.DDBTypes.IAttrObjectExpr;
+import org.xmlsh.aws.util.DDBTypes.IAttrValueExpr;
+import org.xmlsh.aws.util.DDBTypes.IKeyAttrValueMap;
+import org.xmlsh.aws.util.DDBTypes.INameObjectMap;
+import org.xmlsh.aws.util.DDBTypes.KeyAttrValueMap;
+import org.xmlsh.aws.util.DDBTypes.NameMap;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
-import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.UnimplementedException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.util.Base64;
 import org.xmlsh.util.JavaUtils;
-import org.xmlsh.util.StringPair;
 import org.xmlsh.util.Util;
 
 import com.amazonaws.AmazonClientException;
-import com.amazonaws.AmazonServiceException;
 import com.amazonaws.regions.RegionUtils;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
@@ -49,7 +49,6 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.document.DynamoDB;
 import com.amazonaws.services.dynamodbv2.document.PrimaryKey;
 import com.amazonaws.services.dynamodbv2.document.spec.GetItemSpec;
-import com.amazonaws.services.dynamodbv2.document.spec.PutItemSpec;
 import com.amazonaws.services.dynamodbv2.model.AttributeDefinition;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.amazonaws.services.dynamodbv2.model.Capacity;
@@ -65,13 +64,22 @@ import com.amazonaws.services.dynamodbv2.model.LocalSecondaryIndexDescription;
 import com.amazonaws.services.dynamodbv2.model.Projection;
 import com.amazonaws.services.dynamodbv2.model.ProvisionedThroughput;
 import com.amazonaws.services.dynamodbv2.model.ProvisionedThroughputDescription;
-import com.amazonaws.services.dynamodbv2.model.ReturnValue;
 import com.amazonaws.services.dynamodbv2.model.TableDescription;
-import com.amazonaws.util.json.JSONUtils;
-
-import static org.xmlsh.aws.util.DDBTypes.AttrType.*;
 
 public abstract class AWSDDBCommand extends AWSCommand {
+    public static final String sATTR_NAME_EXPR_OPTIONS = "ne=attr-name-expr:+";
+
+    public static final String sATTR_EXPR_OPTIONS = Options.joinOptions("ve=attr-value-expr:+",sATTR_NAME_EXPR_OPTIONS);
+    public static final String sTABLE_OPTIONS = "t=table:";
+    public static final String sKEY_OPTIONS = "k=key:,kn=key-name:+,kv=key-value:+";
+    public static final String sCONDITION_OPTIONS = "c=condition:";
+    public static final String sRETURN_OPTIONS = "return=return-values:";
+    public static final String sDDB_COMMON_OPTS = "q=quiet:,o+:";
+    public static final String sDOCUMENT_OPTS = "document,j=json";
+    public static final String sCONSISTANT_OPTS = "c=consistant";
+    
+    protected boolean bQuiet = false ;
+    
     static Object parseToJavaValue(String v) {
         if( v == null )
             return null ;
@@ -109,8 +117,15 @@ public abstract class AWSDDBCommand extends AWSCommand {
 
     public AWSDDBCommand() {
         super();
-    }
-
+    } 
+    @Override
+    protected void parseCommonOptions(Options opts) throws InvalidArgumentException {
+      {
+          super.parseCommonOptions(opts);
+          bQuiet = opts.hasOpt("quiet");
+      }
+            
+     }
     void binary(byte[] array) throws IOException {
 
         ByteArrayOutputStream os = new ByteArrayOutputStream();
@@ -136,6 +151,24 @@ public abstract class AWSDDBCommand extends AWSCommand {
         setRegion(opts);
     }
 
+    @Override
+    protected void setEndpoint(Options opts) throws InvalidArgumentException {
+        // TODO Auto-generated method stub
+        super.setEndpoint(opts);
+    }
+    @Override
+    protected void setRegion(Options opts) {
+        if( mShell.getEnv().getVarString("AWS_DDBLOCAL") != null )
+            setEndpoint( mShell.getEnv().getVarString("AWS_DDBLOCAL") );
+        else
+            super.setRegion(opts);
+
+    }
+    @Override
+    public int run(List<XValue> args) throws Exception {
+        // TODO Auto-generated method stub
+        return 0;
+    }
     private void setDynamoDBOpts(Options options) {
     }
 
@@ -511,10 +544,10 @@ public abstract class AWSDDBCommand extends AWSCommand {
         writeAttrNameValue("item", result);
     }
 
-    protected Map<String, AttributeValue> parseKeyOptions(Options opts)
+    protected IKeyAttrValueMap parseKeyOptions(Options opts)
             throws InvalidArgumentException, UnexpectedException,
             UnimplementedException, IOException {
-        Map<String, AttributeValue> keys = new HashMap<String, AttributeValue>();
+        IKeyAttrValueMap keys = new KeyAttrValueMap();
         if (opts.hasOpt("key"))
             for (XValue k : opts.getOptValues("key"))
                 keys.putAll(DDBTypes.parseKey(k));
@@ -599,7 +632,8 @@ public abstract class AWSDDBCommand extends AWSCommand {
         return super.handleException(e);
     }
     protected GetItemSpec parseGetItemSpec(Options opts) throws InvalidArgumentException, XPathException, UnexpectedException, UnimplementedException, IOException {
-        GetItemSpec spec = new GetItemSpec().withPrimaryKey( getPrimaryKey(opts) ).withConsistentRead( opts.hasOpt("consistant") );
+        GetItemSpec spec = new GetItemSpec().withPrimaryKey( getPrimaryKey(opts) ).
+                withConsistentRead( opts.hasOpt("consistant") ).withNameMap( parseAttrNameExprs(opts));
         if( opts.hasRemainingArgs() )
             spec.withProjectionExpression( 
                     Util.stringJoin(Util.toStringList( opts.getRemainingArgs()),","));
@@ -608,13 +642,30 @@ public abstract class AWSDDBCommand extends AWSCommand {
     }
 
     private  static  PrimaryKey getPrimaryKey(Options opts) throws InvalidArgumentException, XPathException, UnexpectedException, UnimplementedException, IOException {
-        Map<String, Object> keys = DDBTypes.parseKeyValueObjectOptions(opts);
+         INameObjectMap keys = DDBTypes.parseKeyValueObjectOptions(opts);
         PrimaryKey key = new PrimaryKey();
         for(    Entry<String, Object> e : keys.entrySet()  ) 
             key.addComponent( e.getKey() , e.getValue() );
         return key ;
     }
 
+    protected IAttrObjectExpr parseAttrValueObjectExprs(Options opts) throws InvalidArgumentException {
+        return DDBTypes.parseAttrValueObjectExprs(opts);
+    }
+    protected IAttrNameExpr parseAttrNameExprs(Options opts) throws InvalidArgumentException, UnexpectedException,
+            UnimplementedException, IOException {
+        IAttrNameExpr exprs =  DDBTypes.parseAttrNameExprs(opts);
+        if( exprs == null || exprs.isEmpty() )
+            return exprs ;
+        return DDBTypes.addNamePrefix( exprs );
+    }
+    protected IAttrValueExpr parseAttrValueExprs(Options opts) throws InvalidArgumentException,
+            UnexpectedException, UnimplementedException, IOException {
+        IAttrValueExpr exprs =  DDBTypes.parseAttrValueExprs(opts);
+        if( exprs == null || exprs.isEmpty() )
+            return exprs ;
+        return DDBTypes.addValuePrefix(exprs);
+    }
     protected int handleConditionException(ConditionalCheckFailedException ce) throws XMLStreamException,
     SaxonApiException, IOException, CoreException {
         startResult( getStderr() );
@@ -628,7 +679,12 @@ public abstract class AWSDDBCommand extends AWSCommand {
         return ce.isRetryable() ? 2 : -1;
 
     }
-    
+
+    @Override
+    protected String getCommonOpts() { 
+        return Options.joinOptions(AWSCommand.sCOMMON_OPTS, sDDB_COMMON_OPTS );
+    }
+
 
     
 

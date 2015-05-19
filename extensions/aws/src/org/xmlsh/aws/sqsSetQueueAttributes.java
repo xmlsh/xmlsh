@@ -21,73 +21,73 @@ import com.amazonaws.services.sqs.model.SetQueueAttributesRequest;
 
 public class sqsSetQueueAttributes extends AWSSQSCommand {
 
-	
 
 
 
-	/**
-	 * @param args
-	 * @throws IOException 
-	 */
-	@Override
-	public int run(List<XValue> args) throws Exception {
 
-		
-		Options opts = getOptions();
-		opts.parse(args);
+    /**
+     * @param args
+     * @throws IOException 
+     */
+    @Override
+    public int run(List<XValue> args) throws Exception {
+
+
+        Options opts = getOptions();
+        parseOptions(opts, args);
         setSerializeOpts(this.getSerializeOpts(opts));
 
-		args = opts.getRemainingArgs();
-		
-		if( args.size() < 2 ){
-			usage();
-			return 1;
-		}
-		
-		String name = args.remove(0).toString();
+        args = opts.getRemainingArgs();
 
-		
-		try {
-			 getSQSClient(opts);
-		} catch (UnexpectedException e) {
-			usage( e.getLocalizedMessage() );
-			return 1;
-			
-		}
-		
-		int ret;
-		
-		
-		
-		ret = setAttributes( name , parseAttributes( Util.toStringList(args) ) );
-		
-		
-		return ret;
-		
-	}
+        if( args.size() < 2 ){
+            usage();
+            return 1;
+        }
+
+        String name = args.remove(0).toString();
 
 
-	private Map<String, String> parseAttributes(List<String> list) {
-		
-		Map<String,String> map = new HashMap<String,String>(list.size());
-		
-		for( int i = 0 ; i < list.size() ; ){
-			map.put( list.get(i), list.get(i+1));
-			i+=2;
-		}
-		return map ;
-	}
+        try {
+            getSQSClient(opts);
+        } catch (UnexpectedException e) {
+            usage( e.getLocalizedMessage() );
+            return 1;
+
+        }
+
+        int ret;
 
 
-	private int setAttributes(String name , Map<String,String> attrs ) throws IOException, XMLStreamException, InvalidArgumentException, SaxonApiException {
 
-		SetQueueAttributesRequest request = new SetQueueAttributesRequest(name,attrs);
-		traceCall("setQueueAttributes");
-		mAmazon.setQueueAttributes(request);
-		return 0;
-	}
+        ret = setAttributes( name , parseAttributes( Util.toStringList(args) ) );
 
 
-	
+        return ret;
+
+    }
+
+
+    private Map<String, String> parseAttributes(List<String> list) {
+
+        Map<String,String> map = new HashMap<String,String>(list.size());
+
+        for( int i = 0 ; i < list.size() ; ){
+            map.put( list.get(i), list.get(i+1));
+            i+=2;
+        }
+        return map ;
+    }
+
+
+    private int setAttributes(String name , Map<String,String> attrs ) throws IOException, XMLStreamException, InvalidArgumentException, SaxonApiException {
+
+        SetQueueAttributesRequest request = new SetQueueAttributesRequest(name,attrs);
+        traceCall("setQueueAttributes");
+        mAmazon.setQueueAttributes(request);
+        return 0;
+    }
+
+
+
 
 }

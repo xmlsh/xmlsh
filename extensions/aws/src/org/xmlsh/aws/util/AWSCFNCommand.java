@@ -31,7 +31,10 @@ public abstract class AWSCFNCommand extends AWSCommand {
 	protected Object getClient() {
 		return mAmazon; 
 	}
-
+	   @Override
+	    protected String getCommonOpts() { 
+	        return AWSCommand.sCOMMON_OPTS;
+	    }
 	protected void getCFNClient( Options opts ) throws UnexpectedException, InvalidArgumentException {
 		mAmazon =  new AmazonCloudFormationClient(
 				new AWSCommandCredentialsProviderChain( mShell , opts )

@@ -24,7 +24,10 @@ public abstract class AWSSQSCommand extends AWSCommand {
 	protected Object getClient() {
 		return mAmazon; 
 	}
-
+	   @Override
+	    protected String getCommonOpts() { 
+	        return AWSCommand.sCOMMON_OPTS;
+	    }
 	protected void getSQSClient(Options opts) throws UnexpectedException, InvalidArgumentException {
 		
 			

@@ -49,6 +49,11 @@ public abstract class AWSGlacierCommand extends AWSCommand {
     {
     	mAmazon.setEndpoint( endpoint );
     }
+
+	   @Override
+	    protected String getCommonOpts() { 
+	        return AWSCommand.sCOMMON_OPTS;
+	    }
 	
 
 

@@ -9,6 +9,7 @@ package org.xmlsh.aws.util;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -29,6 +30,8 @@ import com.amazonaws.regions.RegionUtils;
 import com.amazonaws.services.ec2.AmazonEC2;
 import com.amazonaws.services.ec2.AmazonEC2Client;
 import com.amazonaws.services.ec2.model.BlockDeviceMapping;
+import com.amazonaws.services.ec2.model.CreateTagsRequest;
+import com.amazonaws.services.ec2.model.DeleteTagsRequest;
 import com.amazonaws.services.ec2.model.EbsBlockDevice;
 import com.amazonaws.services.ec2.model.EbsInstanceBlockDevice;
 import com.amazonaws.services.ec2.model.Instance;
@@ -249,10 +252,10 @@ public abstract class AWSEC2Command extends AWSCommand {
 
 
 
-	protected List<Tag> parseTags(Options opts) throws InvalidArgumentException {
+	protected List<Tag> parseTags(List<XValue> tv) throws InvalidArgumentException {
 		List<Tag> tags = new ArrayList<Tag>( );
 
-		for( XValue xt : opts.getOptValuesRequired("t") ) {
+		for( XValue xt :  tv ) {
 			StringPair pair = new StringPair( xt.toString() , '=');
 
 			tags.add(
@@ -519,7 +522,36 @@ ephemeral[0..3] - An instance store volume to be mapped to the device. For examp
 		return map;
 
 	}
-
+	   @Override
+	    protected String getCommonOpts() { 
+	        return AWSCommand.sCOMMON_OPTS;
+	    }
+    protected int createTags(List<Tag> tags, List<String> resources) throws InvalidArgumentException, IOException,
+            XMLStreamException, SaxonApiException {
+            
+                CreateTagsRequest request = new CreateTagsRequest().withTags(tags).withResources(resources);
+            
+                traceCall("createTags");
+            
+                mAmazon.createTags(request);
+            
+                return 0;
+            
+            }
+    protected int deleteTags(List<Tag> tags, String[] resources) throws InvalidArgumentException, IOException,
+            XMLStreamException, SaxonApiException {
+            
+                DeleteTagsRequest request = new DeleteTagsRequest().withTags(tags).withResources(Arrays.asList(resources));
+            
+            
+            
+                mAmazon.deleteTags(request);
+            
+                return 0;
+            
+            
+            
+            }
 	
 	
 }
