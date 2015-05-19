@@ -7,6 +7,7 @@
 package org.xmlsh.core;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -485,6 +486,21 @@ public class Options
 	public List<OptionDef> getOptDefs() {
 		return mDefs;
 	}
+
+
+    public static String joinOptions( String... sopts){
+        if( sopts == null || sopts.length == 0 )
+            return "" ;
+        StringBuilder sb = new StringBuilder();
+        for( String s : sopts ){
+            if(!Util.isBlank(s)){
+            	if(sb.length() > 0 )
+            		sb.append(",");
+            	sb.append(s);
+            }
+        }
+        return sb.toString();
+    }
 }
 
 //

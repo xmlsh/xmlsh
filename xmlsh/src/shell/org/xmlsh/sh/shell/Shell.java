@@ -31,9 +31,11 @@ import java.util.Properties;
 import java.util.Random;
 import java.util.Stack;
 
+import net.sf.saxon.lib.FeatureKeys;
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.XdmEmptySequence;
 import net.sf.saxon.s9api.XdmItem;
+
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.xmlsh.core.CommandFactory;
@@ -1134,6 +1136,8 @@ public class Shell {
 			String saxon_ee = System.getenv("XMLSH_SAXON_EE");
 			boolean bEE = Util.isEmpty(saxon_ee) ? true : Util.parseBoolean(saxon_ee);
 			mProcessor  = new Processor( bEE  );
+			mProcessor.setXmlVersion("1.1");
+			mProcessor.setConfigurationProperty(FeatureKeys.XQUERY_VERSION, "3.0");
 			
 			
 			/*

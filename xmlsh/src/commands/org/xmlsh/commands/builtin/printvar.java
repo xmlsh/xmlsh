@@ -45,14 +45,20 @@ public class printvar extends BuiltinCommand {
 		args = Util.expandSequences( args);
 		boolean bFirst = true;
 		for ( XValue arg : args ){
-			    if( ! bFirst )
-				      stdout.writeSequenceSeperator(serializeOpts);
-				XValue value = mShell.getEnv().getVarValue(arg.toString());
-				
-				bFirst = false;
-				value.serialize( out , serializeOpts );
+			    if( ! bFirst  && !nolf )  
+			           stdout.writeSequenceSeperator(serializeOpts);
+				if( arg.isNull() )
+				    continue;
+			    String varname = arg.toString();
+                XValue value = mShell.getEnv().getVarValue(varname);
+				if( value == null )
+				    mShell.printErr("not found: " + varname);
+				else {
+				  bFirst = false;
+				  value.serialize( out , serializeOpts );
+				}
 		}
-		
+		if( !nolf )
 		stdout.writeSequenceTerminator(serializeOpts);
 		return 0;
 	}

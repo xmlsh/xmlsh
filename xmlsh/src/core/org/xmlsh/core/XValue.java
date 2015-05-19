@@ -12,6 +12,7 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.xml.transform.Source;
@@ -132,6 +133,21 @@ public class XValue {
 			return (XdmValue) mValue ;
 		else
 			return null ;
+	}
+	public List<XValue> asList() {
+	    // only for XdmValue now 
+	    XdmValue xv = asXdmValue() ;
+	    int size = xv.size();
+        if( xv == null || size == 0 )
+	        return Collections.emptyList();
+	    if( size  == 1 )
+	        return Collections.singletonList(new XValue( xv ));
+	    ArrayList<XValue> list = new ArrayList<XValue>( size);
+	    for( XdmItem item : xv ){
+	        list.add( new XValue(item) );
+	    }
+	    return list;
+	        
 	}
 
 	
@@ -527,19 +543,8 @@ public class XValue {
 		}
 		return list;
 	}
-	// bogus - really means it could be 0..N
-	public boolean isSequence() {
-	   if( isXdmNode() )
-	       return true ;
-	   return false ;
-	}
 	
-	public boolean isEmptySequence() {
-	    return (isXdmNode() &&  ((XdmNode) mValue).size() == 0 );
-	}
-
 	public boolean isEmpty() {
-		
 		if( this.isNull() )
 			return true ;
 		XdmValue value = asXdmValue();
@@ -798,7 +803,17 @@ public class XValue {
 		return isNull() ? "null" : asObject().getClass().getSimpleName();
 	}
 
-	
+	public boolean isInstanceOf(Class<?> cls)
+	  {
+	    boolean b1 = mValue != null;
+	    boolean b2 = b1 
+	            && cls.isAssignableFrom(mValue.getClass());
+	    return b1 && b2 ;
+	  }
+	   
+	  public <T> T asInstanceOf( Class<T> cls ){
+	    return  cls.cast( mValue ); 
+	  }
 }
 //
 //

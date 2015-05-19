@@ -375,6 +375,10 @@ public class JavaUtils {
                             value = Byte.valueOf( value.toString() );
                         }
                         else 
+               if( targetClass == Character.TYPE ){
+                   if( vclass == Byte.class )
+                       value = Character.valueOf((char) ((Byte)value).intValue());
+               }
                             ; // skip
 
             return (T) value ;
@@ -400,9 +404,8 @@ public class JavaUtils {
                             value = Double.valueOf(svalue);
                         else 
                             value = null ;
-
+        
         return (T) value ;
-
 
     }
 
@@ -490,12 +493,14 @@ public class JavaUtils {
         }   
 
         boolean targetString = isStringClass(targetClass);
-        if( targetClass.isPrimitive() && soruceString )
-            // convert string to primative, yes
-            return 4 ;
-
-        if( targetString )
+        if( targetString && soruceString )
             return 5 ;
+        if( targetClass.isPrimitive() && soruceString ){
+            // convert string to primative, 
+            if( isBooleanClass(targetClass) || isIntClass(targetClass) || isStringClass(targetClass) || isNullClass(targetClass) )
+                return 6 ;
+        }
+            
         return -1;
 
     }
@@ -557,8 +562,8 @@ public class JavaUtils {
 
     public static boolean isStringClass( Class<?> cls) {
 
-        return String.class.isAssignableFrom(cls ) ||
-                CharSequence.class.isAssignableFrom(cls );
+        return cls.isAssignableFrom(String.class)  ||
+              cls.isAssignableFrom(CharSequence.class);
 
     }
     public static boolean isAtomicClass(Class<?> cls)

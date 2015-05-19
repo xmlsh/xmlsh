@@ -7,6 +7,7 @@
 package org.xmlsh.sh.shell;
 
 import javax.xml.transform.ErrorListener;
+import javax.xml.transform.SourceLocator;
 import javax.xml.transform.TransformerException;
 
 import org.apache.log4j.LogManager;
@@ -21,9 +22,12 @@ public class XmlshErrorListener implements ErrorListener {
 		StringBuffer sb  = new StringBuffer();
 		 String errcat = (isFatal ? "Fatal error" : "Error");
          sb.append(errcat + " reported by XML parser: " + e.getMessage() + '\n');
-         sb.append("  URL:    " + e.getLocator().getSystemId() + '\n');
-         sb.append("  Line:   " + e.getLocator().getLineNumber() + '\n');
-         sb.append("  Column: " + e.getLocator().getColumnNumber() + '\n');
+         SourceLocator loc = e.getLocator();
+         if( loc != null ){
+             sb.append("  URL:    " + e.getLocator().getSystemId() + '\n');
+             sb.append("  Line:   " + e.getLocator().getLineNumber() + '\n');
+             sb.append("  Column: " + e.getLocator().getColumnNumber() + '\n');
+         }
          return sb.toString();
 	}
 	

@@ -871,9 +871,9 @@ class Expander {
     }
 
     public XdmValue convertVar(XVariable var) throws CoreException {
-        if (var.getFlags().contains(XVariable.XVarFlag.XEXPR) && !var.isNull())
-            return convertValue(var.getValue());
-        return null;
+        if (var.isNull())
+            return null;
+      return convertValue(var.getValue());
     }
 
 }
