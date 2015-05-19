@@ -10,14 +10,10 @@ import javax.xml.stream.XMLStreamException;
 import net.sf.saxon.s9api.SaxonApiException;
 
 import org.xmlsh.aws.util.AWSDDBCommand;
-import org.xmlsh.aws.util.AWSDDBCommand.RequestMetrics;
-import org.xmlsh.aws.util.DDBTypes;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.Options;
-import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
-import org.xmlsh.util.Util;
 
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
@@ -33,14 +29,15 @@ public class ddbQuery extends AWSDDBCommand {
      */
     @Override
     public int run(List<XValue> args) throws Exception {
-        Options opts = getOptions("j=json,document,limit:,table=table-name:,key-name:+,key-value:+,key:+,query:" + 
-            "attr-name-expr:,attr-value-expr:,c=consistant,filter=filter-expression:,select:,index-name:,key-condition-expression:,projection-expression:");
-        opts.parse(args);
+        Options opts = getOptions(sTABLE_OPTIONS, sKEY_OPTIONS , sRETURN_OPTIONS , sCONSISTANT_OPTS ,
+                sDOCUMENT_OPTS , sATTR_EXPR_OPTIONS ,
+                "limit:,query:,filter=filter-expression:,select:,index-name:,key-condition-expression:,projection-expression:");
+        parseOptions(opts, args);
 
         args = opts.getRemainingArgs();
 
         setSerializeOpts(this.getSerializeOpts(opts));
-    
+
         try {
             getDDBClient(opts);
         } catch (UnexpectedException e) {
@@ -48,7 +45,7 @@ public class ddbQuery extends AWSDDBCommand {
             return 1;
 
         }
-        
+
 
         int ret = -1;
         ret = query(opts);
@@ -61,21 +58,21 @@ public class ddbQuery extends AWSDDBCommand {
 
         boolean bConsistantRead = opts.hasOpt("consistant");
         String filterExpression = opts.getOptString("filter", null);
-        
+
         Map<String, AttributeValue> exclusiveStartKey =null;
-        
-        
+
+
         QueryRequest queryRequest = new QueryRequest().
                 withTableName(opts.getOptStringRequired("table")).
                 withConsistentRead(bConsistantRead).
-                withExpressionAttributeNames(DDBTypes.parseAttrNameExprs(opts)).
-                withExpressionAttributeValues(DDBTypes.parseAttrValueExprs(opts));
-        
-        
+                withExpressionAttributeNames(parseAttrNameExprs(opts)).
+                withExpressionAttributeValues(parseAttrValueExprs(opts));
+
+
         int userLimit = opts.getOptInt("limit", 0);
         if (userLimit > 0)
             queryRequest.setLimit(Math.min(userLimit, kLIMIT));
-   
+
         if( opts.hasOpt("index-name"))
             queryRequest.setIndexName( opts.getOptStringRequired("index-name"));
         if( opts.hasOpt("key-condition-expression"))
@@ -88,8 +85,8 @@ public class ddbQuery extends AWSDDBCommand {
         if( opts.hasOpt("select"))
             queryRequest.setSelect(parseSelect(opts.getOptStringRequired("select")));
         ArrayList<RequestMetrics> metrics = new ArrayList<RequestMetrics>(); 
-        
-        
+
+
         do {
             traceCall("query");
             if (exclusiveStartKey != null)
@@ -102,11 +99,11 @@ public class ddbQuery extends AWSDDBCommand {
             }
             startResult();
             for( Map<String, AttributeValue> item :  result.getItems() )
-               writeItem(item);
+                writeItem(item);
             metrics.add( new RequestMetrics(result.getCount(), result.getScannedCount(), result.getConsumedCapacity()));
 
             exclusiveStartKey = result.getLastEvaluatedKey();
-            
+
         } while( exclusiveStartKey != null );
 
         writeMetrics( metrics );

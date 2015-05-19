@@ -15,114 +15,104 @@ import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.util.Util;
 
-import com.amazonaws.services.elasticloadbalancing.model.InstanceState;
 import com.amazonaws.services.simpledb.model.CreateDomainRequest;
 
 
 public class sdbCreateDomain	 extends  AWSSDBCommand {
 
-	
 
-	/**
-	 * @param args
-	 * @throws IOException 
-	 */
-	@Override
-	public int run(List<XValue> args) throws Exception {
 
-		Options opts = getOptions();
-		opts.parse(args);
+    /**
+     * @param args
+     * @throws IOException 
+     */
+    @Override
+    public int run(List<XValue> args) throws Exception {
 
-		args = opts.getRemainingArgs();
+        Options opts = getOptions();
+        parseOptions(opts, args);
+
+        args = opts.getRemainingArgs();
         setSerializeOpts(this.getSerializeOpts(opts));
 
-		
-		try {
-			 getSDBClient(opts);
-		} catch (UnexpectedException e) {
-			usage( e.getLocalizedMessage() );
-			return 1;
-			
-		}
-		
 
-		int ret = -1;
-		ret = create(Util.toStringList(args));
+        try {
+            getSDBClient(opts);
+        } catch (UnexpectedException e) {
+            usage( e.getLocalizedMessage() );
+            return 1;
 
-		
-		
-		return ret;
-		
-		
-	}
+        }
 
 
-	private int create(List<String> domains) throws IOException, XMLStreamException, SaxonApiException, CoreException 
-	{
-
-		OutputPort stdout = this.getStdout();
-		mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
-		
-		
-		
-		
-		
-		startDocument();
-		startElement(getName());
-         
-		
-		
-		for( String domainName : domains ){
-		
-			traceCall("createDomain");
-			CreateDomainRequest createDomainRequest = new CreateDomainRequest().withDomainName(domainName);
-		    mAmazon.createDomain(createDomainRequest);
-		    
-			   writeElementAttribute("domain", "name", domainName);
-
-			
-		}
-		endElement();
-		endDocument();
-		
-		
-				
-		
-		
-		
-		
-		
-		closeWriter();
-		stdout.writeSequenceTerminator(getSerializeOpts());
-		stdout.release();
-		
-
-		
-		
-		return 0;
-		
-		
-		
-		
-	}
-
-
-	private void writeInstanceState( InstanceState s) throws XMLStreamException {
-		attribute(	"description",	s.getDescription() );
-		attribute( "reason_code" ,  s.getReasonCode() );
-		attribute( "state" , s.getState() );
-		
-		
-		
-	}
-
-
-	public void usage() {
-		super.usage();
-	}
+        int ret = -1;
+        ret = create(Util.toStringList(args));
 
 
 
-	
+        return ret;
+
+
+    }
+
+
+    private int create(List<String> domains) throws IOException, XMLStreamException, SaxonApiException, CoreException 
+    {
+
+        OutputPort stdout = getStdout();
+        mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
+
+
+
+
+
+        startDocument();
+        startElement(getName());
+
+
+
+        for( String domainName : domains ){
+
+            traceCall("createDomain");
+            CreateDomainRequest createDomainRequest = new CreateDomainRequest().withDomainName(domainName);
+            mAmazon.createDomain(createDomainRequest);
+
+            writeElementAttribute("domain", "name", domainName);
+
+
+        }
+        endElement();
+        endDocument();
+
+
+
+
+
+
+
+
+        closeWriter();
+        stdout.writeSequenceTerminator(getSerializeOpts());
+        stdout.release();
+
+
+
+
+        return 0;
+
+
+
+
+    }
+
+
+    @Override
+    public void usage() {
+        super.usage();
+    }
+
+
+
+
 
 }

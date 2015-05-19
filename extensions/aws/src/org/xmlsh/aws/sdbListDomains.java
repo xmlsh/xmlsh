@@ -20,101 +20,102 @@ import com.amazonaws.services.simpledb.model.ListDomainsResult;
 
 public class sdbListDomains	 extends  AWSSDBCommand {
 
-	
 
-	/**
-	 * @param args
-	 * @throws IOException 
-	 */
-	@Override
-	public int run(List<XValue> args) throws Exception {
 
-		
-		Options opts = getOptions();
-		opts.parse(args);
+    /**
+     * @param args
+     * @throws IOException 
+     */
+    @Override
+    public int run(List<XValue> args) throws Exception {
+
+
+        Options opts = getOptions();
+        parseOptions(opts, args);
 
         setSerializeOpts(this.getSerializeOpts(opts));
-        
-		args = opts.getRemainingArgs();
-		
-		if( args.size() != 0 ){
-			usage();
-			return 1;
-		}
-		
-		try {
-			 getSDBClient(opts);
-		} catch (UnexpectedException e) {
-			usage( e.getLocalizedMessage() );
-			return 1;
-			
-		}
-		
 
-		int ret = -1;
-		ret = list();
+        args = opts.getRemainingArgs();
 
-		
-		
-		return ret;
-		
-		
-	}
+        if( args.size() != 0 ){
+            usage();
+            return 1;
+        }
+
+        try {
+            getSDBClient(opts);
+        } catch (UnexpectedException e) {
+            usage( e.getLocalizedMessage() );
+            return 1;
+
+        }
 
 
-	private int list() throws IOException, XMLStreamException, SaxonApiException, CoreException 
-	{
-
-		OutputPort stdout = this.getStdout();
-		mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
-		
-		startDocument();
-		startElement(getName());
-		
-		String token = null ;
-		
-		do {
-			ListDomainsRequest listDomainsRequest = new ListDomainsRequest();
-			if( token != null )
-				listDomainsRequest.setNextToken(token);
-	
-			traceCall("listDomains");
-
-			ListDomainsResult result = mAmazon.listDomains(listDomainsRequest);
-			writeStringList(  null , "domain" , "name" ,  result.getDomainNames() );
-			token = result.getNextToken();
-		} while( token != null );
-		endElement();
-		endDocument();
-		
-		
-				
-		
-		
-		
-		
-		
-		closeWriter();
-		stdout.writeSequenceTerminator(getSerializeOpts());
-		stdout.release();
-		
-
-		
-		
-		return 0;
-		
-		
-		
-		
-	}
-
-
-	public void usage() {
-		super.usage();
-	}
+        int ret = -1;
+        ret = list();
 
 
 
-	
+        return ret;
+
+
+    }
+
+
+    private int list() throws IOException, XMLStreamException, SaxonApiException, CoreException 
+    {
+
+        OutputPort stdout = getStdout();
+        mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
+
+        startDocument();
+        startElement(getName());
+
+        String token = null ;
+
+        do {
+            ListDomainsRequest listDomainsRequest = new ListDomainsRequest();
+            if( token != null )
+                listDomainsRequest.setNextToken(token);
+
+            traceCall("listDomains");
+
+            ListDomainsResult result = mAmazon.listDomains(listDomainsRequest);
+            writeStringList(  null , "domain" , "name" ,  result.getDomainNames() );
+            token = result.getNextToken();
+        } while( token != null );
+        endElement();
+        endDocument();
+
+
+
+
+
+
+
+
+        closeWriter();
+        stdout.writeSequenceTerminator(getSerializeOpts());
+        stdout.release();
+
+
+
+
+        return 0;
+
+
+
+
+    }
+
+
+    @Override
+    public void usage() {
+        super.usage();
+    }
+
+
+
+
 
 }

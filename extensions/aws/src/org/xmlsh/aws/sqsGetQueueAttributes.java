@@ -22,96 +22,95 @@ import com.amazonaws.services.sqs.model.GetQueueAttributesResult;
 
 public class sqsGetQueueAttributes extends AWSSQSCommand {
 
-	
 
-	/**
-	 * @param args
-	 * @throws IOException 
-	 */
-	@Override
-	public int run(List<XValue> args) throws Exception {
 
-		
-		Options opts = getOptions();
-		opts.parse(args);
+    /**
+     * @param args
+     * @throws IOException 
+     */
+    @Override
+    public int run(List<XValue> args) throws Exception {
 
-		args = opts.getRemainingArgs();
-		
+
+        Options opts = getOptions();
+        parseOptions(opts, args);
+
+        args = opts.getRemainingArgs();
+
         setSerializeOpts(this.getSerializeOpts(opts));
 
-		String prefix = null ;
-		if( args.size() < 2 ){
-			usage();
-			return 1;
-		}
-		
-		
-		String name = args.remove(0).toString();
-		
-		
-		
-		try {
-			 getSQSClient(opts);
-		} catch (UnexpectedException e) {
-			usage( e.getLocalizedMessage() );
-			return 1;
-			
-		}
-		
-		int ret;
-		
-		ret = list(name , Util.toStringList(args) );		
-		
-		return ret;
-		
-		
-	}
+        if( args.size() < 2 ){
+            usage();
+            return 1;
+        }
 
 
-	private int list(String name , List<String> attrNames ) throws IOException, XMLStreamException, SaxonApiException, CoreException {
-		
-
-		OutputPort stdout = this.getStdout();
-		mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
-		
-		
-		startDocument();
-		startElement(getName());
-		
-
-		
-		GetQueueAttributesRequest request = new GetQueueAttributesRequest(name);
-		request.setAttributeNames(attrNames);
-		traceCall("getQueueAttributes");
-
-		GetQueueAttributesResult attrsResult = mAmazon.getQueueAttributes(request);
-		for( Entry<String, String>  attr : attrsResult.getAttributes().entrySet() ){
-			startElement("attribute");
-			attribute("name" , attr.getKey() );
-			characters( attr.getValue());
-			endElement();
-		}
-		
-		
-		
-		
-		endElement();
-		endDocument();
-		closeWriter();
-		stdout.writeSequenceTerminator(getSerializeOpts());
-		stdout.release();
-		
-
-		
-		
-		return 0;
-		
-		
-		
-		
-	}
+        String name = args.remove(0).toString();
 
 
-	
+
+        try {
+            getSQSClient(opts);
+        } catch (UnexpectedException e) {
+            usage( e.getLocalizedMessage() );
+            return 1;
+
+        }
+
+        int ret;
+
+        ret = list(name , Util.toStringList(args) );		
+
+        return ret;
+
+
+    }
+
+
+    private int list(String name , List<String> attrNames ) throws IOException, XMLStreamException, SaxonApiException, CoreException {
+
+
+        OutputPort stdout = getStdout();
+        mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
+
+
+        startDocument();
+        startElement(getName());
+
+
+
+        GetQueueAttributesRequest request = new GetQueueAttributesRequest(name);
+        request.setAttributeNames(attrNames);
+        traceCall("getQueueAttributes");
+
+        GetQueueAttributesResult attrsResult = mAmazon.getQueueAttributes(request);
+        for( Entry<String, String>  attr : attrsResult.getAttributes().entrySet() ){
+            startElement("attribute");
+            attribute("name" , attr.getKey() );
+            characters( attr.getValue());
+            endElement();
+        }
+
+
+
+
+        endElement();
+        endDocument();
+        closeWriter();
+        stdout.writeSequenceTerminator(getSerializeOpts());
+        stdout.release();
+
+
+
+
+        return 0;
+
+
+
+
+    }
+
+
+
 
 }

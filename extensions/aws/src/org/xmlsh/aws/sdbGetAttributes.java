@@ -21,100 +21,101 @@ import com.amazonaws.services.simpledb.model.GetAttributesResult;
 public class sdbGetAttributes	 extends  AWSSDBCommand {
 
 
-	/**
-	 * @param args
-	 * @throws IOException 
-	 */
-	@Override
-	public int run(List<XValue> args) throws Exception {
+    /**
+     * @param args
+     * @throws IOException 
+     */
+    @Override
+    public int run(List<XValue> args) throws Exception {
 
-		Options opts = getOptions("c=consistant");
-		opts.parse(args);
+        Options opts = getOptions("c=consistant");
+        parseOptions(opts, args);
         setSerializeOpts(this.getSerializeOpts(opts));
 
-		args = opts.getRemainingArgs();
-		
-
-		boolean bConsistant = opts.hasOpt("consistant");
-
-		
-		try {
-			 getSDBClient(opts);
-		} catch (UnexpectedException e) {
-			usage( e.getLocalizedMessage() );
-			return 1;
-			
-		}
-		
-		if( args.size() !=2 ){
-			usage(getName()+ " domain item");
-			
-		}
-		String domain = args.remove(0).toString();
-		String item = args.remove(0).toString();
-		
-
-		int ret = -1;
-		ret = getAttributes(domain,item,bConsistant);
-
-		
-		
-		return ret;
-		
-		
-	}
+        args = opts.getRemainingArgs();
 
 
-	private int getAttributes( String domainName, String itemName , boolean bConsistantRead ) throws IOException, XMLStreamException, SaxonApiException, CoreException 
-	{
-
-		OutputPort stdout = this.getStdout();
-		mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
-		
-		
-		startDocument();
-		startElement(getName());
+        boolean bConsistant = opts.hasOpt("consistant");
 
 
-		GetAttributesRequest getAttributesRequest = 
-				new GetAttributesRequest( domainName, itemName ).withConsistentRead(bConsistantRead);
-		
-		traceCall("getAttributes");
+        try {
+            getSDBClient(opts);
+        } catch (UnexpectedException e) {
+            usage( e.getLocalizedMessage() );
+            return 1;
 
-		GetAttributesResult result = mAmazon.getAttributes(getAttributesRequest);
+        }
 
-		if( result.getAttributes().size() > 0 )
-		     writeItem(itemName, result);
-			
-			
-		endElement();
-		endDocument();
-		
-		
-		closeWriter();
-		stdout.writeSequenceTerminator(getSerializeOpts());
-		stdout.release();
-		return 0;
-		
-		
-	}
+        if( args.size() !=2 ){
+            usage(getName()+ " domain item");
+
+        }
+        String domain = args.remove(0).toString();
+        String item = args.remove(0).toString();
 
 
-	private void writeItem(String itemName, GetAttributesResult result) throws XMLStreamException {
-		startElement("item");
-		attribute("name",itemName);
-		writeAttributes(result.getAttributes());
-		endElement();
-	}
+        int ret = -1;
+        ret = getAttributes(domain,item,bConsistant);
 
 
 
-	public void usage() {
-		super.usage();
-	}
+        return ret;
+
+
+    }
+
+
+    private int getAttributes( String domainName, String itemName , boolean bConsistantRead ) throws IOException, XMLStreamException, SaxonApiException, CoreException 
+    {
+
+        OutputPort stdout = getStdout();
+        mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
+
+
+        startDocument();
+        startElement(getName());
+
+
+        GetAttributesRequest getAttributesRequest = 
+                new GetAttributesRequest( domainName, itemName ).withConsistentRead(bConsistantRead);
+
+        traceCall("getAttributes");
+
+        GetAttributesResult result = mAmazon.getAttributes(getAttributesRequest);
+
+        if( result.getAttributes().size() > 0 )
+            writeItem(itemName, result);
+
+
+        endElement();
+        endDocument();
+
+
+        closeWriter();
+        stdout.writeSequenceTerminator(getSerializeOpts());
+        stdout.release();
+        return 0;
+
+
+    }
+
+
+    private void writeItem(String itemName, GetAttributesResult result) throws XMLStreamException {
+        startElement("item");
+        attribute("name",itemName);
+        writeAttributes(result.getAttributes());
+        endElement();
+    }
 
 
 
-	
+    @Override
+    public void usage() {
+        super.usage();
+    }
+
+
+
+
 
 }

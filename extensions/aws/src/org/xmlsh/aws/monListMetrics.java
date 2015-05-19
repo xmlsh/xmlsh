@@ -23,109 +23,110 @@ import com.amazonaws.services.cloudwatch.model.Metric;
 
 public class monListMetrics	 extends  AWSMonCommand {
 
-	
 
-	/**
-	 * @param args
-	 * @throws IOException 
-	 */
-	@Override
-	public int run(List<XValue> args) throws Exception {
 
-		
-		Options opts = getOptions();
-		opts.parse(args);
+    /**
+     * @param args
+     * @throws IOException 
+     */
+    @Override
+    public int run(List<XValue> args) throws Exception {
 
-		args = opts.getRemainingArgs();
+
+        Options opts = getOptions();
+        parseOptions(opts, args);
+
+        args = opts.getRemainingArgs();
         setSerializeOpts(this.getSerializeOpts(opts));
 
-		
-		
-		
-		try {
-			 getMonClient(opts);
-		} catch (UnexpectedException e) {
-			usage( e.getLocalizedMessage() );
-			return 1;
-			
-		}
-		
-
-		int ret = -1;
-		ret = list(Util.toStringList(args));
-
-		
-		
-		return ret;
-		
-		
-	}
 
 
-	
 
-	private int list(List<String> elbs) throws IOException, XMLStreamException, SaxonApiException, CoreException 
-	{
+        try {
+            getMonClient(opts);
+        } catch (UnexpectedException e) {
+            usage( e.getLocalizedMessage() );
+            return 1;
 
-		OutputPort stdout = this.getStdout();
-		mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
-		
-		
-		
-		startDocument();
-		startElement(getName());
-		
-		String nextToken = null ;
-		do {
-	         
-			ListMetricsRequest listMetricsRequest = new ListMetricsRequest().withNextToken(nextToken);
-			
-			traceCall("listMetrics");
+        }
 
-			ListMetricsResult result = mAmazon.listMetrics(listMetricsRequest);
-			
-			for( Metric metric : result.getMetrics()){ 
-				startElement("metric");
-				attribute("name" , metric.getMetricName());
-				attribute("namespace",metric.getNamespace());
-				for( Dimension dim : metric.getDimensions()){
-					startElement("dimension");
-					attribute("name",dim.getName());
+
+        int ret = -1;
+        ret = list(Util.toStringList(args));
+
+
+
+        return ret;
+
+
+    }
+
+
+
+
+    private int list(List<String> elbs) throws IOException, XMLStreamException, SaxonApiException, CoreException 
+    {
+
+        OutputPort stdout = getStdout();
+        mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
+
+
+
+        startDocument();
+        startElement(getName());
+
+        String nextToken = null ;
+        do {
+
+            ListMetricsRequest listMetricsRequest = new ListMetricsRequest().withNextToken(nextToken);
+
+            traceCall("listMetrics");
+
+            ListMetricsResult result = mAmazon.listMetrics(listMetricsRequest);
+
+            for( Metric metric : result.getMetrics()){ 
+                startElement("metric");
+                attribute("name" , metric.getMetricName());
+                attribute("namespace",metric.getNamespace());
+                for( Dimension dim : metric.getDimensions()){
+                    startElement("dimension");
+                    attribute("name",dim.getName());
                     characters( dim.getValue());
                     endElement();
-					
-				}
-				endElement();
-				
-				
 
-			}
-			nextToken = result.getNextToken();
-			
-		} while( nextToken != null );
-			
-		endElement();
-		endDocument();
-		
-		
-		closeWriter();
-		stdout.writeSequenceTerminator(getSerializeOpts());
-		stdout.release();
-		
-		
-		return 0;
-		
-		
-		
-		
-	}
-
-	public void usage() {
-		super.usage();
-	}
+                }
+                endElement();
 
 
 
-	
+            }
+            nextToken = result.getNextToken();
+
+        } while( nextToken != null );
+
+        endElement();
+        endDocument();
+
+
+        closeWriter();
+        stdout.writeSequenceTerminator(getSerializeOpts());
+        stdout.release();
+
+
+        return 0;
+
+
+
+
+    }
+
+    @Override
+    public void usage() {
+        super.usage();
+    }
+
+
+
+
 
 }

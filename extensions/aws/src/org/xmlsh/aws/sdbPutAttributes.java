@@ -23,119 +23,120 @@ import com.amazonaws.services.simpledb.model.UpdateCondition;
 
 public class sdbPutAttributes	 extends  AWSSDBCommand {
 
-	
 
-	/**
-	 * @param args
-	 * @throws IOException 
-	 */
-	@Override
-	public int run(List<XValue> args) throws Exception {
 
-		Options opts = getOptions("update:,exists:,+r=replace,q=quiet:");
-		opts.parse(args);
+    /**
+     * @param args
+     * @throws IOException 
+     */
+    @Override
+    public int run(List<XValue> args) throws Exception {
 
-		args = opts.getRemainingArgs();
+        Options opts = getOptions("update:,exists:,+r=replace,q=quiet:");
+        parseOptions(opts, args);
+
+        args = opts.getRemainingArgs();
         setSerializeOpts(this.getSerializeOpts(opts));
 
-		String updateName = opts.getOptString("update", null);
-		String updateExists = opts.getOptString("exists",null);
-		boolean bReplace = opts.getOptFlag("replace",true);
-		
-		
-		try {
-			 getSDBClient(opts);
-		} catch (UnexpectedException e) {
-			usage( e.getLocalizedMessage() );
-			return 1;
-			
-		}
-		
-		if( args.size() < 3 ){
-			usage(getName()+ ":" + "domain item attributes ...");
-			
-		}
-		String domain = args.remove(0).toString();
-		String item   = args.remove(0).toString();
-		
-
-		int ret = -1;
-		ret = put(domain,item,args,updateName,updateExists,bReplace, opts.hasOpt("q"));
-
-		
-		
-		return ret;
-		
-		
-	}
+        String updateName = opts.getOptString("update", null);
+        String updateExists = opts.getOptString("exists",null);
+        boolean bReplace = opts.getOptFlag("replace",true);
 
 
-	private int put(String domain, String item, List<XValue > args, String updateName, String updateExists, boolean bReplace, boolean bQuiet) throws IOException, XMLStreamException, SaxonApiException, CoreException 
-	{
+        try {
+            getSDBClient(opts);
+        } catch (UnexpectedException e) {
+            usage( e.getLocalizedMessage() );
+            return 1;
 
-		
-		
-		UpdateCondition cond = null  ;
-		if( ! Util.isEmpty(updateName))
-			cond =  new UpdateCondition( updateName , updateExists , ! Util.isEmpty(updateExists)) ;
-		
-			List<ReplaceableAttribute> attributes = getAttributes( args , bReplace );
-         
-		PutAttributesRequest request = new PutAttributesRequest(domain,item,attributes,cond);
-		
-		
-		
-		traceCall("putAttributes");
+        }
 
-		mAmazon.putAttributes(request);
-		
-		if( ! bQuiet ){
-			OutputPort stdout = this.getStdout();
-			mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
-			emptyDocument();
-			closeWriter();
-			stdout.writeSequenceTerminator(getSerializeOpts());
-			stdout.release();
-		}	
-		
-		
-				
-		
-		
-		
-		
-		
+        if( args.size() < 3 ){
+            usage(getName()+ ":" + "domain item attributes ...");
 
-		return 0;
-		
-		
-	}
+        }
+        String domain = args.remove(0).toString();
+        String item   = args.remove(0).toString();
 
 
-	private List<ReplaceableAttribute> getAttributes(List<XValue> args, boolean bReplace) 
-	{
-		List<ReplaceableAttribute> attrs = new ArrayList<ReplaceableAttribute>();
-		while( !args.isEmpty()){
-
-			String name = args.remove(0).toString();
-			String value = args.isEmpty() ? "" : args.remove(0).toString();
- 
-			
-			attrs.add( 
-					new ReplaceableAttribute().withName(name).withValue(value).withReplace(bReplace));
-		
-		}
-		return attrs ;
-	}
+        int ret = -1;
+        ret = put(domain,item,args,updateName,updateExists,bReplace, opts.hasOpt("q"));
 
 
 
-	public void usage() {
-		super.usage();
-	}
+        return ret;
+
+
+    }
+
+
+    private int put(String domain, String item, List<XValue > args, String updateName, String updateExists, boolean bReplace, boolean bQuiet) throws IOException, XMLStreamException, SaxonApiException, CoreException 
+    {
 
 
 
-	
+        UpdateCondition cond = null  ;
+        if( ! Util.isEmpty(updateName))
+            cond =  new UpdateCondition( updateName , updateExists , ! Util.isEmpty(updateExists)) ;
+
+        List<ReplaceableAttribute> attributes = getAttributes( args , bReplace );
+
+        PutAttributesRequest request = new PutAttributesRequest(domain,item,attributes,cond);
+
+
+
+        traceCall("putAttributes");
+
+        mAmazon.putAttributes(request);
+
+        if( ! bQuiet ){
+            OutputPort stdout = getStdout();
+            mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
+            emptyDocument();
+            closeWriter();
+            stdout.writeSequenceTerminator(getSerializeOpts());
+            stdout.release();
+        }	
+
+
+
+
+
+
+
+
+
+        return 0;
+
+
+    }
+
+
+    private List<ReplaceableAttribute> getAttributes(List<XValue> args, boolean bReplace) 
+    {
+        List<ReplaceableAttribute> attrs = new ArrayList<ReplaceableAttribute>();
+        while( !args.isEmpty()){
+
+            String name = args.remove(0).toString();
+            String value = args.isEmpty() ? "" : args.remove(0).toString();
+
+
+            attrs.add( 
+                    new ReplaceableAttribute().withName(name).withValue(value).withReplace(bReplace));
+
+        }
+        return attrs ;
+    }
+
+
+
+    @Override
+    public void usage() {
+        super.usage();
+    }
+
+
+
+
 
 }

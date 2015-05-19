@@ -1,8 +1,6 @@
 package org.xmlsh.aws;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import javax.xml.stream.XMLStreamException;
@@ -11,21 +9,13 @@ import net.sf.saxon.s9api.SaxonApiException;
 
 import org.xmlsh.aws.util.AWSDDBCommand;
 import org.xmlsh.core.CoreException;
-import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
 
-import com.amazonaws.services.dynamodbv2.model.AttributeDefinition;
-import com.amazonaws.services.dynamodbv2.model.CreateTableRequest;
-import com.amazonaws.services.dynamodbv2.model.CreateTableResult;
-import com.amazonaws.services.dynamodbv2.model.GlobalSecondaryIndex;
-import com.amazonaws.services.dynamodbv2.model.KeySchemaElement;
 import com.amazonaws.services.dynamodbv2.model.ListTablesRequest;
 import com.amazonaws.services.dynamodbv2.model.ListTablesResult;
-import com.amazonaws.services.dynamodbv2.model.LocalSecondaryIndex;
-import com.amazonaws.services.dynamodbv2.model.ProvisionedThroughput;
 
 public class ddbListTables extends AWSDDBCommand {
 
@@ -38,7 +28,7 @@ public class ddbListTables extends AWSDDBCommand {
     public int run(List<XValue> args) throws Exception {
 
         Options opts = getOptions("limit:,exclusive-start-table=last-table:");
-        opts.parse(args);
+        parseOptions(opts, args);
 
 
         setSerializeOpts(this.getSerializeOpts(opts));
@@ -66,9 +56,9 @@ public class ddbListTables extends AWSDDBCommand {
     }
 
     private int list(Options opts) throws IOException, XMLStreamException,
-            SaxonApiException, CoreException {
+    SaxonApiException, CoreException {
 
-        OutputPort stdout = this.getStdout();
+        OutputPort stdout = getStdout();
         mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
 
         startDocument();

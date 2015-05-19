@@ -25,72 +25,72 @@ import com.amazonaws.services.autoscaling.model.ExecutePolicyRequest;
 
 public class asExecutePolicy extends AWSASCommand {
 
-	
 
-	@Override
-	public int run(List<XValue> args) throws Exception {
-		
-		
-		
-		Options opts = getOptions();
-		opts.parse(args);
+
+    @Override
+    public int run(List<XValue> args) throws Exception {
+
+
+
+        Options opts = getOptions();
+        parseOptions(opts, args);
         setSerializeOpts(this.getSerializeOpts(opts));;
 
-		args = opts.getRemainingArgs();
-		
-		if( args.size() != 2 )
-			usage("as-execute-policy group policy");
-		
+        args = opts.getRemainingArgs();
+
+        if( args.size() != 2 )
+            usage("as-execute-policy group policy");
 
 
-		String group = args.get(0).toString();
-		String policy = args.get(1).toString();
-		
-		
-		
-		try {
-			getASClient(opts);
-		} catch (UnexpectedException e) {
-			usage( e.getLocalizedMessage() );
-			return 1;
-			
-		}
-		
-	
-		int ret = execute( group , policy );
-		
-		
-		
-		return ret;
-		
-		
-	}
 
-	
+        String group = args.get(0).toString();
+        String policy = args.get(1).toString();
 
 
-	private int execute(String group, String policy) throws IOException, InvalidArgumentException, XMLStreamException, SaxonApiException 
-	{
 
-		OutputPort stdout = this.getStdout();
-		mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(getSerializeOpts()));
-		
-		
-		startDocument();
-		startElement(this.getName());
-		
-		ExecutePolicyRequest request = new ExecutePolicyRequest().withAutoScalingGroupName(group).withPolicyName(policy);
-		
-		traceCall("executePolicy");
+        try {
+            getASClient(opts);
+        } catch (UnexpectedException e) {
+            usage( e.getLocalizedMessage() );
+            return 1;
 
-		mAmazon.executePolicy(request);
-		
-		endElement();
-		endDocument();
-		return 0 ;
-	
-	
-	}
+        }
+
+
+        int ret = execute( group , policy );
+
+
+
+        return ret;
+
+
+    }
+
+
+
+
+    private int execute(String group, String policy) throws IOException, InvalidArgumentException, XMLStreamException, SaxonApiException 
+    {
+
+        OutputPort stdout = getStdout();
+        mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(getSerializeOpts()));
+
+
+        startDocument();
+        startElement(getName());
+
+        ExecutePolicyRequest request = new ExecutePolicyRequest().withAutoScalingGroupName(group).withPolicyName(policy);
+
+        traceCall("executePolicy");
+
+        mAmazon.executePolicy(request);
+
+        endElement();
+        endDocument();
+        return 0 ;
+
+
+    }
 
 
 }

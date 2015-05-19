@@ -24,107 +24,108 @@ import com.amazonaws.services.glacier.model.GetJobOutputResult;
 
 public class glacierGetJobOutput	 extends  AWSGlacierCommand {
 
-	
 
-	/**
-	 * @param args
-	 * @throws IOException 
-	 */
-	@Override
-	public int run(List<XValue> args) throws Exception {
 
-		
-		Options opts = getOptions();
-		opts.parse(args);
+    /**
+     * @param args
+     * @throws IOException 
+     */
+    @Override
+    public int run(List<XValue> args) throws Exception {
 
-		args = opts.getRemainingArgs();
-		if( args.size() != 1 )
-			usage();
+
+        Options opts = getOptions();
+        parseOptions(opts, args);
+
+        args = opts.getRemainingArgs();
+        if( args.size() != 1 )
+            usage();
 
         setSerializeOpts(this.getSerializeOpts(opts));
-		
-		
-		String vault = args.get(0).toString();
-		String job = args.get(1).toString();
-		
-		try {
-			 getGlacierClient(opts);
-		} catch (UnexpectedException e) {
-			usage( e.getLocalizedMessage() );
-			return 1;
-			
-		}
-		
-
-		int ret = -1;
-		ret = getOutput(vault,job);
-
-		
-		
-		return ret;
-		
-		
-	}
 
 
-	private int getOutput(String vault,String job) throws IOException, XMLStreamException, SaxonApiException, CoreException, InterruptedException 
-	{
+        String vault = args.get(0).toString();
+        String job = args.get(1).toString();
 
-		OutputPort stdout = this.getStdout();
+        try {
+            getGlacierClient(opts);
+        } catch (UnexpectedException e) {
+            usage( e.getLocalizedMessage() );
+            return 1;
 
-		
-		DescribeJobRequest describeJobRequest = new DescribeJobRequest(vault, job );
-		
-		String status = null;
-		DescribeJobResult describeResult= null;
-		do {
-			traceCall("describeJob");
+        }
 
-		      describeResult = mAmazon.describeJob(describeJobRequest);
-        
-		      status = describeResult.getStatusCode();
-		      
-		      mShell.printOut(status);
-		      if( ! status.equals("InProgress"))
-		    	  break ;
-		      
-		      Thread.sleep(10*1000);
-		      
-		      
-		} while( true );
-		
-		if( status.equals("Succeeded")){
-			
-			GetJobOutputRequest getJobOutputRequest= new GetJobOutputRequest(vault, job , null);
-			
-			GetJobOutputResult jobOutputResult = mAmazon.getJobOutput(getJobOutputRequest);
-			InputStream jobOutput = jobOutputResult.getBody();
+
+        int ret = -1;
+        ret = getOutput(vault,job);
+
+
+
+        return ret;
+
+
+    }
+
+
+    private int getOutput(String vault,String job) throws IOException, XMLStreamException, SaxonApiException, CoreException, InterruptedException 
+    {
+
+        OutputPort stdout = getStdout();
+
+
+        DescribeJobRequest describeJobRequest = new DescribeJobRequest(vault, job );
+
+        String status = null;
+        DescribeJobResult describeResult= null;
+        do {
+            traceCall("describeJob");
+
+            describeResult = mAmazon.describeJob(describeJobRequest);
+
+            status = describeResult.getStatusCode();
+
+            mShell.printOut(status);
+            if( ! status.equals("InProgress"))
+                break ;
+
+            Thread.sleep(10*1000);
+
+
+        } while( true );
+
+        if( status.equals("Succeeded")){
+
+            GetJobOutputRequest getJobOutputRequest= new GetJobOutputRequest(vault, job , null);
+
+            GetJobOutputResult jobOutputResult = mAmazon.getJobOutput(getJobOutputRequest);
+            InputStream jobOutput = jobOutputResult.getBody();
             Util.copyStream(jobOutput, stdout.asOutputStream(getSerializeOpts()));
             jobOutput.close();
-			
-			
-		}
-		
-		
-		stdout.release();
-		
-
-		
-		
-		return 0;
-		
-		
-		
-		
-	}
 
 
-	public void usage() {
-		super.usage();
-	}
+        }
+
+
+        stdout.release();
 
 
 
-	
+
+        return 0;
+
+
+
+
+    }
+
+
+    @Override
+    public void usage() {
+        super.usage();
+    }
+
+
+
+
 
 }

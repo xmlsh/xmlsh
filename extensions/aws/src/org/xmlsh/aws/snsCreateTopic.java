@@ -20,95 +20,95 @@ import com.amazonaws.services.sns.model.CreateTopicResult;
 
 public class snsCreateTopic extends AWSSNSCommand {
 
-	
 
 
 
-	/**
-	 * @param args
-	 * @throws IOException 
-	 */
-	@Override
-	public int run(List<XValue> args) throws Exception {
 
-		
-		Options opts = getOptions();
-		opts.parse(args);
+    /**
+     * @param args
+     * @throws IOException 
+     */
+    @Override
+    public int run(List<XValue> args) throws Exception {
+
+
+        Options opts = getOptions();
+        parseOptions(opts, args);
         setSerializeOpts(this.getSerializeOpts(opts));
 
-		args = opts.getRemainingArgs();
-		
-		if( args.size() != 1 ){
-			usage();
-			return 1;
-		}
+        args = opts.getRemainingArgs();
+
+        if( args.size() != 1 ){
+            usage();
+            return 1;
+        }
 
 
-		String name = args.get(0).toString();
-		
-		
-		
-		try {
-			 getSNSClient(opts);
-		} catch (UnexpectedException e) {
-			usage( e.getLocalizedMessage() );
-			return 1;
-			
-		}
-		
-		int ret;
-		
-		ret = create(name );
-		
-		
-		return ret;
-		
-		
-	}
+        String name = args.get(0).toString();
 
 
-	private int create(String name ) throws IOException, XMLStreamException, SaxonApiException, CoreException {
-		
 
-		CreateTopicRequest request = new CreateTopicRequest();
-		request.setName(name);
-		traceCall("createTopic");
+        try {
+            getSNSClient(opts);
+        } catch (UnexpectedException e) {
+            usage( e.getLocalizedMessage() );
+            return 1;
 
-		CreateTopicResult result = mAmazon.createTopic(request);
-		
-		OutputPort stdout = this.getStdout();
-		mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
-		
-		
-		startDocument();
-		startElement(getName());
-		
-		
-			startElement("topic");
-			attribute("arn", result.getTopicArn());
+        }
 
-			endElement();
-			
-		
-		
-		endElement();
-		endDocument();
-		closeWriter();
-		stdout.writeSequenceTerminator(getSerializeOpts());
-		stdout.release();
-		
+        int ret;
+
+        ret = create(name );
 
 
-		
-		
-		return 0;
-		
-		
-		
-		
-	}
+        return ret;
 
 
-	
+    }
+
+
+    private int create(String name ) throws IOException, XMLStreamException, SaxonApiException, CoreException {
+
+
+        CreateTopicRequest request = new CreateTopicRequest();
+        request.setName(name);
+        traceCall("createTopic");
+
+        CreateTopicResult result = mAmazon.createTopic(request);
+
+        OutputPort stdout = getStdout();
+        mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
+
+
+        startDocument();
+        startElement(getName());
+
+
+        startElement("topic");
+        attribute("arn", result.getTopicArn());
+
+        endElement();
+
+
+
+        endElement();
+        endDocument();
+        closeWriter();
+        stdout.writeSequenceTerminator(getSerializeOpts());
+        stdout.release();
+
+
+
+
+
+        return 0;
+
+
+
+
+    }
+
+
+
 
 }

@@ -13,52 +13,52 @@ import org.xmlsh.util.Util;
 
 public class s3SetObjectAcl extends AWSS3Command {
 
-	
 
-	/**
-	 * @param args
-	 * @throws IOException 
-	 */
-	@Override
-	public int run(List<XValue> args) throws Exception {
 
-		
-		Options opts = getOptions("acl:");
-		opts.parse(args);
+    /**
+     * @param args
+     * @throws IOException 
+     */
+    @Override
+    public int run(List<XValue> args) throws Exception {
 
-		String acl = opts.getOptStringRequired("acl");
-		
-		args = opts.getRemainingArgs();
-		
+
+        Options opts = getOptions("acl:");
+        parseOptions(opts, args);
+
+        String acl = opts.getOptStringRequired("acl");
+
+        args = opts.getRemainingArgs();
+
         setSerializeOpts(this.getSerializeOpts(opts));
-		
-		try {
-			 getS3Client(opts);
-		} catch (UnexpectedException e) {
-			usage( e.getLocalizedMessage() );
-			return 1;
-			
-		}
-			
-		int ret = 0 ;
-		for( String arg : Util.toStringList(args)){
-			S3Path path = new S3Path( arg );
-			
-			ret += setAcl( path , acl );
-			
-			
-		}
-		
-		
-		return ret;
-		
-	}
+
+        try {
+            getS3Client(opts);
+        } catch (UnexpectedException e) {
+            usage( e.getLocalizedMessage() );
+            return 1;
+
+        }
+
+        int ret = 0 ;
+        for( String arg : Util.toStringList(args)){
+            S3Path path = new S3Path( arg );
+
+            ret += setAcl( path , acl );
+
+
+        }
+
+
+        return ret;
+
+    }
 
 
 
 
 
 
-	
+
 
 }

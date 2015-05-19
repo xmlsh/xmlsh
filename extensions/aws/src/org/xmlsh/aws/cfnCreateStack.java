@@ -34,132 +34,132 @@ public class cfnCreateStack extends AWSCFNCommand {
 
 
 
-	@Override
-	public int run(List<XValue> args) throws Exception {
+    @Override
+    public int run(List<XValue> args) throws Exception {
 
-		Options opts = getOptions("capability:+,disable-rollback,fail=on-failure:,notification-arn:+,name:,template-file=f:,template-url=url:,timeout:,tag:+,params=parameters:");
-		opts.parse(args);
+        Options opts = getOptions("capability:+,disable-rollback,fail=on-failure:,notification-arn:+,name:,template-file=f:,template-url=url:,timeout:,tag:+,params=parameters:");
+        parseOptions(opts, args);
         setSerializeOpts(this.getSerializeOpts(opts));
 
-		args = opts.getRemainingArgs();
+        args = opts.getRemainingArgs();
 
 
-		try {
-			getCFNClient(opts);
-		} catch (UnexpectedException e) {
-			usage( e.getLocalizedMessage() );
-			return 1;
+        try {
+            getCFNClient(opts);
+        } catch (UnexpectedException e) {
+            usage( e.getLocalizedMessage() );
+            return 1;
 
-		}
+        }
 
-		int ret = createStack( opts);
-		return ret;
+        int ret = createStack( opts);
+        return ret;
 
-	}
-
-
-
-	private int createStack(Options opts) throws IOException, XMLStreamException, SaxonApiException, CoreException {
-
-
-		OutputPort stdout = this.getStdout();
-		mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(getSerializeOpts()));
-
-
-		startDocument();
-		startElement(this.getName());
-
-		CreateStackRequest request = new CreateStackRequest();
-
-		// "capability:+,disable-rollback,notification-arn:+,name:,template:,timeout:,tag:+");
-
-		if( opts.hasOpt("capability") )
-			request.setCapabilities(Util.toStringList(opts.getOptValues("capability")));
-
-		request.setDisableRollback(opts.getOptFlag("disable-rollback", false));
-
-		if( opts.hasOpt("notification-arn"))
-			request.setNotificationARNs(Util.toStringList(opts.getOptValues("notification-arn")));
-
-		request.setStackName( opts.getOptStringRequired("name"));
-
-		if( opts.hasOpt("template-file"))
-			request.setTemplateBody( Util.readString( mShell.getFile(opts.getOptValue("template-file")), getSerializeOpts().getInput_text_encoding()));
-		else
-			request.setTemplateURL( opts.getOptStringRequired("template-url"));
-
-		if( opts.hasOpt("timeout" ))
-			request.setTimeoutInMinutes((int) opts.getOptLong("timeout", 10));
-		if( opts.hasOpt("tag"))
-			request.setTags( getTags( opts.getOptValues("tag")));
-
-		request.setParameters(getParameters( opts.getRemainingArgs() ));
-
-		traceCall("createStack");
-
-		CreateStackResult result = mAmazon.createStack(request);
-
-		writeStackResult(result,request.getStackName());
+    }
 
 
 
-
-		endElement();
-		endDocument();
-		closeWriter();
-
-		stdout.writeSequenceTerminator(getSerializeOpts());
-		stdout.release();
-
-		return 0;
-
-	}
+    private int createStack(Options opts) throws IOException, XMLStreamException, SaxonApiException, CoreException {
 
 
-
-	private Collection<Parameter> getParameters(List<XValue> args) {
-		int sz = args.size();
-		Collection<Parameter> params = new ArrayList<Parameter>( sz );
-		for( int i = 0 ; i < sz ; i += 2 ){
-			String name = args.get(i).toString();
-
-			String value = i+1 >= sz ? "" : args.get(i+1).toString();
-			params.add( new Parameter().withParameterKey(name).withParameterValue(value)) ;
-
-		}
-		return params;
+        OutputPort stdout = getStdout();
+        mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(getSerializeOpts()));
 
 
-	}
+        startDocument();
+        startElement(getName());
 
+        CreateStackRequest request = new CreateStackRequest();
 
+        // "capability:+,disable-rollback,notification-arn:+,name:,template:,timeout:,tag:+");
 
-	private Collection<Tag> getTags(List<XValue> values) {
+        if( opts.hasOpt("capability") )
+            request.setCapabilities(Util.toStringList(opts.getOptValues("capability")));
 
-		Collection<Tag> tags = new ArrayList<Tag>( values.size() );
-		for( XValue v : values )
-			tags.add( parseTag( v ));
-		return tags ;
-	}
+        request.setDisableRollback(opts.getOptFlag("disable-rollback", false));
 
+        if( opts.hasOpt("notification-arn"))
+            request.setNotificationARNs(Util.toStringList(opts.getOptValues("notification-arn")));
 
+        request.setStackName( opts.getOptStringRequired("name"));
 
-	private Tag parseTag(XValue v) {
-		StringPair pair = new StringPair( v.toString() , '=');
-		return new Tag().withKey(pair.getLeft()).withValue( pair.getRight());
+        if( opts.hasOpt("template-file"))
+            request.setTemplateBody( Util.readString( mShell.getFile(opts.getOptValue("template-file")), getSerializeOpts().getInput_text_encoding()));
+        else
+            request.setTemplateURL( opts.getOptStringRequired("template-url"));
 
+        if( opts.hasOpt("timeout" ))
+            request.setTimeoutInMinutes((int) opts.getOptLong("timeout", 10));
+        if( opts.hasOpt("tag"))
+            request.setTags( getTags( opts.getOptValues("tag")));
 
-	}
+        request.setParameters(getParameters( opts.getRemainingArgs() ));
+
+        traceCall("createStack");
+
+        CreateStackResult result = mAmazon.createStack(request);
+
+        writeStackResult(result,request.getStackName());
 
 
 
-	private void writeStackResult(CreateStackResult result, String name ) throws XMLStreamException {
-		startElement("stack");
-		attribute("stack-id",result.getStackId());
-		attribute("stack-name",name);
-		endElement();
 
-	}
+        endElement();
+        endDocument();
+        closeWriter();
+
+        stdout.writeSequenceTerminator(getSerializeOpts());
+        stdout.release();
+
+        return 0;
+
+    }
+
+
+
+    private Collection<Parameter> getParameters(List<XValue> args) {
+        int sz = args.size();
+        Collection<Parameter> params = new ArrayList<Parameter>( sz );
+        for( int i = 0 ; i < sz ; i += 2 ){
+            String name = args.get(i).toString();
+
+            String value = i+1 >= sz ? "" : args.get(i+1).toString();
+            params.add( new Parameter().withParameterKey(name).withParameterValue(value)) ;
+
+        }
+        return params;
+
+
+    }
+
+
+
+    private Collection<Tag> getTags(List<XValue> values) {
+
+        Collection<Tag> tags = new ArrayList<Tag>( values.size() );
+        for( XValue v : values )
+            tags.add( parseTag( v ));
+        return tags ;
+    }
+
+
+
+    private Tag parseTag(XValue v) {
+        StringPair pair = new StringPair( v.toString() , '=');
+        return new Tag().withKey(pair.getLeft()).withValue( pair.getRight());
+
+
+    }
+
+
+
+    private void writeStackResult(CreateStackResult result, String name ) throws XMLStreamException {
+        startElement("stack");
+        attribute("stack-id",result.getStackId());
+        attribute("stack-name",name);
+        endElement();
+
+    }
 
 
 }

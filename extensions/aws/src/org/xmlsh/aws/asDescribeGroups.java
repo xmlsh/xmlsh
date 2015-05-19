@@ -33,229 +33,229 @@ import com.amazonaws.services.autoscaling.model.TagDescription;
 
 public class asDescribeGroups extends AWSASCommand {
 
-	
 
-	@Override
-	public int run(List<XValue> args) throws Exception {
-		
-		
-		
-		Options opts = getOptions();
-		opts.parse(args);
+
+    @Override
+    public int run(List<XValue> args) throws Exception {
+
+
+
+        Options opts = getOptions();
+        parseOptions(opts, args);
         setSerializeOpts(opts);
-        
-		args = opts.getRemainingArgs();
-		parseCommonOptions(opts);
+
+        args = opts.getRemainingArgs();
+        parseCommonOptions(opts);
 
 
-		
-		
-		try {
-			getASClient(opts);
-		} catch (UnexpectedException e) {
-			usage( e.getLocalizedMessage() );
-			return 1;
-			
-		}
-		
-	
+
+
+        try {
+            getASClient(opts);
+        } catch (UnexpectedException e) {
+            usage( e.getLocalizedMessage() );
+            return 1;
+
+        }
+
+
         int ret = describe(args);
 
-		
-		
-		return ret;
-		
-		
-	}
+
+
+        return ret;
+
+
+    }
 
 
 
-	private int describe(List<XValue> args) throws IOException, XMLStreamException, SaxonApiException, CoreException, InterruptedException {
-		
-
-		OutputPort stdout = this.getStdout();
-		mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(getSerializeOpts()));
-		
-		
-		startDocument();
-		startElement(this.getName());
-		
-		
-		DescribeAutoScalingGroupsRequest request = new DescribeAutoScalingGroupsRequest();
-		if( ! args.isEmpty())
-		   request.setAutoScalingGroupNames( Util.toStringList(args));
-		
-	
-		
-		traceCall("describeAutoScalingGroups");
-		DescribeAutoScalingGroupsResult result = null ; 
-		
-		
-		int retry = rateRetry ;
-		int delay = retryDelay ;
-		do {
-			try {
-				result = mAmazon.describeAutoScalingGroups(request);
-			    break;
-				
-			} catch( AmazonServiceException e ){
-				mShell.printErr("AmazonServiceException" , e );
-				if( retry > 0 && Util.isEqual("RequestLimitExceeded",e.getErrorCode())){
-					mShell.printErr("AWS RequestLimitExceeded - sleeping " + delay );
-					Thread.sleep( delay );
-					retry--;
-					delay *= 2 ;
-				}
-				else
-					throw e;
-			}
-		} while( retry > 0 );
-		
-		
-		
-		
-		for( AutoScalingGroup group :  result.getAutoScalingGroups())
-			write(group);
-		
-		
-		
-		
-		
-		endElement();
-		endDocument();
-		closeWriter();
-		
-		stdout.writeSequenceTerminator(getSerializeOpts());
-		stdout.release();
-		
-		return 0;
-
-	}
+    private int describe(List<XValue> args) throws IOException, XMLStreamException, SaxonApiException, CoreException, InterruptedException {
 
 
-	private void write(AutoScalingGroup group) throws XMLStreamException {
-		startElement("group");
-		attribute( "group-arn" , group.getAutoScalingGroupARN() );
-		attribute( "name" , group.getAutoScalingGroupName() );
-		
-
-		attribute("create-time" , group.getCreatedTime());
-		attribute( "default-cooldown" , group.getDefaultCooldown());
-		attribute( "desired-capacity" , group.getDesiredCapacity());
-
-		attribute("health-check-grace-period" , group.getHealthCheckGracePeriod());
-		attribute( "health-check-type" , group.getHealthCheckType());
-
-		attribute("launch-configuration-name" , group.getLaunchConfigurationName());
-
-		
-		attribute("max-size",group.getMaxSize());
-		attribute("min-size",group.getMinSize());
-		attribute("placement-group",group.getPlacementGroup());
-
-		attribute("status" , group.getStatus());
-
-		attribute("vpc-zone-id", group.getVPCZoneIdentifier());
-		writeStringList( "termination-policies" , "termination-policy" , "name" , group.getTerminationPolicies());
-		
-		
-		writeZones(group.getAvailabilityZones());
-		writeMetrics(group.getEnabledMetrics());
-		writeInstances(group.getInstances());
-		writeELBNames(group.getLoadBalancerNames());
-		writeSuspendedProcesses(group.getSuspendedProcesses());
-		writeTags(group.getTags());
-		
-		
-			
-		
-	}
+        OutputPort stdout = getStdout();
+        mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(getSerializeOpts()));
 
 
-	private void writeTags(List<TagDescription> tags) throws XMLStreamException {
-		startElement("tags");
-		for( TagDescription  tag : tags )
-			writeTag( tag );
-		endElement();
-		
-	}
+        startDocument();
+        startElement(getName());
+
+
+        DescribeAutoScalingGroupsRequest request = new DescribeAutoScalingGroupsRequest();
+        if( ! args.isEmpty())
+            request.setAutoScalingGroupNames( Util.toStringList(args));
 
 
 
-	private void writeTag(TagDescription tag) throws XMLStreamException {
-		startElement("tag");
-		attribute("key",tag.getKey());
-	    attribute("propagate-at-launch",tag.getPropagateAtLaunch());
-		attribute("resource-id",tag.getResourceId());
-		attribute("resource-type",tag.getResourceType());
-		attribute("value",tag.getValue());
-		endElement();
-	    
-	}
+        traceCall("describeAutoScalingGroups");
+        DescribeAutoScalingGroupsResult result = null ; 
+
+
+        int retry = rateRetry ;
+        int delay = retryDelay ;
+        do {
+            try {
+                result = mAmazon.describeAutoScalingGroups(request);
+                break;
+
+            } catch( AmazonServiceException e ){
+                mShell.printErr("AmazonServiceException" , e );
+                if( retry > 0 && Util.isEqual("RequestLimitExceeded",e.getErrorCode())){
+                    mShell.printErr("AWS RequestLimitExceeded - sleeping " + delay );
+                    Thread.sleep( delay );
+                    retry--;
+                    delay *= 2 ;
+                }
+                else
+                    throw e;
+            }
+        } while( retry > 0 );
 
 
 
-	private void writeSuspendedProcesses(List<SuspendedProcess> suspendedProcesses) throws XMLStreamException {
-       startElement("suspended-processes");
-       for( SuspendedProcess proc : suspendedProcesses )
-    	   writeSuspendedProcess( proc );
-       endElement();
-		
-	}
+
+        for( AutoScalingGroup group :  result.getAutoScalingGroups())
+            write(group);
 
 
 
-	private void writeSuspendedProcess(SuspendedProcess proc) throws XMLStreamException {
-		startElement("process");
-		attribute("name",proc.getProcessName());
-		attribute("reason",proc.getSuspensionReason());
-		endElement();
-		
-		
-	}
+
+
+        endElement();
+        endDocument();
+        closeWriter();
+
+        stdout.writeSequenceTerminator(getSerializeOpts());
+        stdout.release();
+
+        return 0;
+
+    }
+
+
+    private void write(AutoScalingGroup group) throws XMLStreamException {
+        startElement("group");
+        attribute( "group-arn" , group.getAutoScalingGroupARN() );
+        attribute( "name" , group.getAutoScalingGroupName() );
+
+
+        attribute("create-time" , group.getCreatedTime());
+        attribute( "default-cooldown" , group.getDefaultCooldown());
+        attribute( "desired-capacity" , group.getDesiredCapacity());
+
+        attribute("health-check-grace-period" , group.getHealthCheckGracePeriod());
+        attribute( "health-check-type" , group.getHealthCheckType());
+
+        attribute("launch-configuration-name" , group.getLaunchConfigurationName());
+
+
+        attribute("max-size",group.getMaxSize());
+        attribute("min-size",group.getMinSize());
+        attribute("placement-group",group.getPlacementGroup());
+
+        attribute("status" , group.getStatus());
+
+        attribute("vpc-zone-id", group.getVPCZoneIdentifier());
+        writeStringList( "termination-policies" , "termination-policy" , "name" , group.getTerminationPolicies());
+
+
+        writeZones(group.getAvailabilityZones());
+        writeMetrics(group.getEnabledMetrics());
+        writeInstances(group.getInstances());
+        writeELBNames(group.getLoadBalancerNames());
+        writeSuspendedProcesses(group.getSuspendedProcesses());
+        writeTags(group.getTags());
 
 
 
-	private void writeELBNames(List<String> loadBalancerNames) throws XMLStreamException {
-		writeStringList( "elb-names" , "elb" , "name" , loadBalancerNames );
-		
-	}
+
+    }
+
+
+    private void writeTags(List<TagDescription> tags) throws XMLStreamException {
+        startElement("tags");
+        for( TagDescription  tag : tags )
+            writeTag( tag );
+        endElement();
+
+    }
 
 
 
-	private void writeInstances(List<Instance> instances) throws XMLStreamException {
-		startElement("instances");
-		for( Instance inst : instances ){
-			startElement("instance");
-			attribute("availability-zone",inst.getAvailabilityZone());
-			attribute("health-status",inst.getHealthStatus());
-			attribute("instance-id",inst.getInstanceId());
-			attribute("launch-configuration",inst.getLaunchConfigurationName());
-			attribute("lifecycle-state",inst.getLifecycleState());
-			endElement();
-			
-		}
-		endElement();
-		
-	}
+    private void writeTag(TagDescription tag) throws XMLStreamException {
+        startElement("tag");
+        attribute("key",tag.getKey());
+        attribute("propagate-at-launch",tag.getPropagateAtLaunch());
+        attribute("resource-id",tag.getResourceId());
+        attribute("resource-type",tag.getResourceType());
+        attribute("value",tag.getValue());
+        endElement();
+
+    }
 
 
 
-	private void writeMetrics(List<EnabledMetric> enabledMetrics) throws XMLStreamException {
-		startElement("enabled-metrics");
-		for( EnabledMetric metric : enabledMetrics ){
-			startElement("enabled-metric");
-			attribute("granularity",metric.getGranularity());
-			attribute("metric",metric.getMetric());
-			endElement();
+    private void writeSuspendedProcesses(List<SuspendedProcess> suspendedProcesses) throws XMLStreamException {
+        startElement("suspended-processes");
+        for( SuspendedProcess proc : suspendedProcesses )
+            writeSuspendedProcess( proc );
+        endElement();
 
-		}
-		endElement();
+    }
 
-	}
-		
-		
-	
+
+
+    private void writeSuspendedProcess(SuspendedProcess proc) throws XMLStreamException {
+        startElement("process");
+        attribute("name",proc.getProcessName());
+        attribute("reason",proc.getSuspensionReason());
+        endElement();
+
+
+    }
+
+
+
+    private void writeELBNames(List<String> loadBalancerNames) throws XMLStreamException {
+        writeStringList( "elb-names" , "elb" , "name" , loadBalancerNames );
+
+    }
+
+
+
+    private void writeInstances(List<Instance> instances) throws XMLStreamException {
+        startElement("instances");
+        for( Instance inst : instances ){
+            startElement("instance");
+            attribute("availability-zone",inst.getAvailabilityZone());
+            attribute("health-status",inst.getHealthStatus());
+            attribute("instance-id",inst.getInstanceId());
+            attribute("launch-configuration",inst.getLaunchConfigurationName());
+            attribute("lifecycle-state",inst.getLifecycleState());
+            endElement();
+
+        }
+        endElement();
+
+    }
+
+
+
+    private void writeMetrics(List<EnabledMetric> enabledMetrics) throws XMLStreamException {
+        startElement("enabled-metrics");
+        for( EnabledMetric metric : enabledMetrics ){
+            startElement("enabled-metric");
+            attribute("granularity",metric.getGranularity());
+            attribute("metric",metric.getMetric());
+            endElement();
+
+        }
+        endElement();
+
+    }
+
+
+
 }
 
 

@@ -1,7 +1,6 @@
 package org.xmlsh.aws;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.stream.XMLStreamException;
@@ -16,7 +15,6 @@ import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
 
 import com.amazonaws.services.simpledb.model.Item;
-import com.amazonaws.services.simpledb.model.ReplaceableAttribute;
 import com.amazonaws.services.simpledb.model.SelectRequest;
 import com.amazonaws.services.simpledb.model.SelectResult;
 
@@ -24,134 +22,115 @@ import com.amazonaws.services.simpledb.model.SelectResult;
 public class sdbQuery	 extends  AWSSDBCommand {
 
 
-	/**
-	 * @param args
-	 * @throws IOException 
-	 */
-	@Override
-	public int run(List<XValue> args) throws Exception {
+    /**
+     * @param args
+     * @throws IOException 
+     */
+    @Override
+    public int run(List<XValue> args) throws Exception {
 
-		Options opts = getOptions("c=consistant");
-		opts.parse(args);
+        Options opts = getOptions("c=consistant");
+        parseOptions(opts, args);
 
-		args = opts.getRemainingArgs();
+        args = opts.getRemainingArgs();
         setSerializeOpts(this.getSerializeOpts(opts));
 
 
-		boolean bConsistant = opts.hasOpt("consistant");
-
-		
-		try {
-			 getSDBClient(opts);
-		} catch (UnexpectedException e) {
-			usage( e.getLocalizedMessage() );
-			return 1;
-			
-		}
-		
-		if( args.size() !=1 ){
-			usage(getName()+ ":" + "select ...");
-			
-		}
-		String select = args.remove(0).toString();
-		
-
-		int ret = -1;
-		ret = query(bConsistant,select);
-
-		
-		
-		return ret;
-		
-		
-	}
+        boolean bConsistant = opts.hasOpt("consistant");
 
 
-	private int query(boolean bConsistant, String select) throws IOException, XMLStreamException, SaxonApiException, CoreException 
-	{
+        try {
+            getSDBClient(opts);
+        } catch (UnexpectedException e) {
+            usage( e.getLocalizedMessage() );
+            return 1;
 
-		OutputPort stdout = this.getStdout();
-		mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
-		
-		
-		
-		
-		
-		startDocument();
-		startElement(getName());
-		
-		
+        }
 
-		
+        if( args.size() !=1 ){
+            usage(getName()+ ":" + "select ...");
 
-		SelectRequest selectRequest = new SelectRequest(select,bConsistant);
-
-		String token = null ;
-		do {
-
-			traceCall("select");
-
-			SelectResult result = mAmazon.select(selectRequest).withNextToken(token);
-			for( Item item :result.getItems())
-			   writeItem(item);
-			token = result.getNextToken();
-			
-		} while( token != null );
-		
-		endElement();
-		endDocument();
-		
-		
-				
-		
-		
-		
-		
-		
-		closeWriter();
-		stdout.writeSequenceTerminator(getSerializeOpts());
-		stdout.release();
-		return 0;
-		
-		
-	}
+        }
+        String select = args.remove(0).toString();
 
 
-	private void writeItem(Item item) throws XMLStreamException {
-		startElement("item");
-		attribute("name" , item.getName());
-		writeAttributes( item.getAttributes());
-		endElement();
-		
-	}
-
-
-	private List<ReplaceableAttribute> getAttributes(List<XValue> args) 
-	{
-		List<ReplaceableAttribute> attrs = new ArrayList<ReplaceableAttribute>();
-		while( !args.isEmpty()){
-
-			String name = args.remove(0).toString();
-			String value = args.isEmpty() ? "" : args.remove(0).toString();
- 
-			
-			attrs.add( 
-					new ReplaceableAttribute().withName(name).withValue(value));
-		
-
-		
-		}
-		return attrs ;
-	}
+        int ret = -1;
+        ret = query(bConsistant,select);
 
 
 
-	public void usage() {
-		super.usage();
-	}
+        return ret;
+
+
+    }
+
+
+    private int query(boolean bConsistant, String select) throws IOException, XMLStreamException, SaxonApiException, CoreException 
+    {
+
+        OutputPort stdout = getStdout();
+        mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
 
 
 
-	
+
+
+        startDocument();
+        startElement(getName());
+
+
+
+
+
+        SelectRequest selectRequest = new SelectRequest(select,bConsistant);
+
+        String token = null ;
+        do {
+
+            traceCall("select");
+
+            SelectResult result = mAmazon.select(selectRequest).withNextToken(token);
+            for( Item item :result.getItems())
+                writeItem(item);
+            token = result.getNextToken();
+
+        } while( token != null );
+
+        endElement();
+        endDocument();
+
+
+
+
+
+
+
+
+        closeWriter();
+        stdout.writeSequenceTerminator(getSerializeOpts());
+        stdout.release();
+        return 0;
+
+
+    }
+
+
+    private void writeItem(Item item) throws XMLStreamException {
+        startElement("item");
+        attribute("name" , item.getName());
+        writeAttributes( item.getAttributes());
+        endElement();
+
+    }
+
+
+    @Override
+    public void usage() {
+        super.usage();
+    }
+
+
+
+
 
 }

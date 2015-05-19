@@ -19,95 +19,95 @@ import com.amazonaws.services.sqs.model.DeleteQueueRequest;
 
 public class sqsDeleteQueue extends AWSSQSCommand {
 
-	
 
 
 
-	/**
-	 * @param args
-	 * @throws IOException 
-	 */
-	@Override
-	public int run(List<XValue> args) throws Exception {
 
-		
-		Options opts = getOptions();
-		opts.parse(args);
+    /**
+     * @param args
+     * @throws IOException 
+     */
+    @Override
+    public int run(List<XValue> args) throws Exception {
+
+
+        Options opts = getOptions();
+        parseOptions(opts, args);
         setSerializeOpts(this.getSerializeOpts(opts));
 
-		args = opts.getRemainingArgs();
-		
-		if( args.size() != 1 ){
-			usage();
-			return 1;
-		}
+        args = opts.getRemainingArgs();
 
-		String name = args.get(0).toString();
-		
-		
-		
-		try {
-			 getSQSClient(opts);
-		} catch (UnexpectedException e) {
-			usage( e.getLocalizedMessage() );
-			return 1;
-			
-		}
-		
-		int ret;
-		
-		ret = delete(name  );
-		
-		
-		return ret;
-		
-		
-	}
+        if( args.size() != 1 ){
+            usage();
+            return 1;
+        }
+
+        String name = args.get(0).toString();
 
 
-	private int delete(String name  ) throws IOException, XMLStreamException, SaxonApiException, CoreException {
-		
 
-		DeleteQueueRequest request = new DeleteQueueRequest();
-		request.setQueueUrl(name);
+        try {
+            getSQSClient(opts);
+        } catch (UnexpectedException e) {
+            usage( e.getLocalizedMessage() );
+            return 1;
 
-		traceCall("deleteQueue");
+        }
 
-		mAmazon.deleteQueue(request);
-		
-		OutputPort stdout = this.getStdout();
-		mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
-		
-		
-		startDocument();
-		startElement(getName());
-		
-		
-			startElement("queue");
-			attribute("url",name);
+        int ret;
 
-			endElement();
-			
-		
-		
-		endElement();
-		endDocument();
-		closeWriter();
-		stdout.writeSequenceTerminator(getSerializeOpts());
-		stdout.release();
-		
+        ret = delete(name  );
 
 
-		
-		
-		return 0;
-		
-		
-		
-		
-	}
+        return ret;
 
 
-	
+    }
+
+
+    private int delete(String name  ) throws IOException, XMLStreamException, SaxonApiException, CoreException {
+
+
+        DeleteQueueRequest request = new DeleteQueueRequest();
+        request.setQueueUrl(name);
+
+        traceCall("deleteQueue");
+
+        mAmazon.deleteQueue(request);
+
+        OutputPort stdout = getStdout();
+        mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
+
+
+        startDocument();
+        startElement(getName());
+
+
+        startElement("queue");
+        attribute("url",name);
+
+        endElement();
+
+
+
+        endElement();
+        endDocument();
+        closeWriter();
+        stdout.writeSequenceTerminator(getSerializeOpts());
+        stdout.release();
+
+
+
+
+
+        return 0;
+
+
+
+
+    }
+
+
+
 
 }

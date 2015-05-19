@@ -20,96 +20,97 @@ import com.amazonaws.services.simpledb.model.DeleteDomainRequest;
 
 public class sdbDeleteDomain	 extends  AWSSDBCommand {
 
-	
 
-	/**
-	 * @param args
-	 * @throws IOException 
-	 */
-	@Override
-	public int run(List<XValue> args) throws Exception {
 
-		Options opts = getOptions();
-		opts.parse(args);
+    /**
+     * @param args
+     * @throws IOException 
+     */
+    @Override
+    public int run(List<XValue> args) throws Exception {
 
-		args = opts.getRemainingArgs();
+        Options opts = getOptions();
+        parseOptions(opts, args);
+
+        args = opts.getRemainingArgs();
         setSerializeOpts(this.getSerializeOpts(opts));
 
-		
-		try {
-			 getSDBClient(opts);
-		} catch (UnexpectedException e) {
-			usage( e.getLocalizedMessage() );
-			return 1;
-			
-		}
-		
 
-		int ret = -1;
-		ret = delete(Util.toStringList(args));
+        try {
+            getSDBClient(opts);
+        } catch (UnexpectedException e) {
+            usage( e.getLocalizedMessage() );
+            return 1;
 
-		
-		
-		return ret;
-		
-		
-	}
+        }
 
 
-	private int delete(List<String> domains) throws IOException, XMLStreamException, SaxonApiException, CoreException 
-	{
-
-		OutputPort stdout = this.getStdout();
-		mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
-		
-		startDocument();
-		startElement(getName());
-         
-		
-		
-		for( String domainName : domains ){
-			
-			DeleteDomainRequest deleteDomainRequest = new DeleteDomainRequest().withDomainName(domainName);
-			traceCall("deleteDomain");
-
-			mAmazon.deleteDomain(deleteDomainRequest);
-			
-		     
-			   writeElementAttribute("domain", "name", domainName);
-
-			
-		}
-		endElement();
-		endDocument();
-		
-		
-				
-		
-		
-		
-		
-		
-		closeWriter();
-		stdout.writeSequenceTerminator(getSerializeOpts());
-		stdout.release();
-		
-
-		
-		
-		return 0;
-		
-		
-		
-		
-	}
-
-
-	public void usage() {
-		super.usage();
-	}
+        int ret = -1;
+        ret = delete(Util.toStringList(args));
 
 
 
-	
+        return ret;
+
+
+    }
+
+
+    private int delete(List<String> domains) throws IOException, XMLStreamException, SaxonApiException, CoreException 
+    {
+
+        OutputPort stdout = getStdout();
+        mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
+
+        startDocument();
+        startElement(getName());
+
+
+
+        for( String domainName : domains ){
+
+            DeleteDomainRequest deleteDomainRequest = new DeleteDomainRequest().withDomainName(domainName);
+            traceCall("deleteDomain");
+
+            mAmazon.deleteDomain(deleteDomainRequest);
+
+
+            writeElementAttribute("domain", "name", domainName);
+
+
+        }
+        endElement();
+        endDocument();
+
+
+
+
+
+
+
+
+        closeWriter();
+        stdout.writeSequenceTerminator(getSerializeOpts());
+        stdout.release();
+
+
+
+
+        return 0;
+
+
+
+
+    }
+
+
+    @Override
+    public void usage() {
+        super.usage();
+    }
+
+
+
+
 
 }

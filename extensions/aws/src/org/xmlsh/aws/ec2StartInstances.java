@@ -22,71 +22,71 @@ import com.amazonaws.services.ec2.model.StartInstancesResult;
 
 public class ec2StartInstances extends AWSEC2Command {
 
-	
 
 
 
 
-	/**
-	 * @param args
-	 * @throws IOException 
-	 */
-	@Override
-	public int run(List<XValue> args) throws Exception {
 
-		
-		Options opts = getOptions();
-		opts.parse(args);
+    /**
+     * @param args
+     * @throws IOException 
+     */
+    @Override
+    public int run(List<XValue> args) throws Exception {
 
-		args = opts.getRemainingArgs();
+
+        Options opts = getOptions();
+        parseOptions(opts, args);
+
+        args = opts.getRemainingArgs();
         setSerializeOpts(this.getSerializeOpts(opts));
 
-		if( args.size() < 1 ){
-			usage(null);
-			return 1;
-		}
+        if( args.size() < 1 ){
+            usage(null);
+            return 1;
+        }
 
-		try {
-			 getEC2Client(opts);
-		} catch (UnexpectedException e) {
-			usage( e.getLocalizedMessage() );
-			return 1;
-			
-		}
-		
-		int ret = start( Util.toStringArray(args) );
-		
-		
-		
-		
-		
-		return ret;
-		
-		
-	}
+        try {
+            getEC2Client(opts);
+        } catch (UnexpectedException e) {
+            usage( e.getLocalizedMessage() );
+            return 1;
+
+        }
+
+        int ret = start( Util.toStringArray(args) );
 
 
 
 
-	private int start( String[] instances ) throws IOException, XMLStreamException, SaxonApiException, CoreException 
-	{
-	
-		StartInstancesRequest  request = new StartInstancesRequest( Arrays.asList(instances));
-		
-		traceCall("startInstances");
-		StartInstancesResult result = mAmazon.startInstances(request);
-		
-		List<InstanceStateChange> changes = result.getStartingInstances();
-		writeStateChages( changes);
-		return 0;
-		
-	
-	
-	}
+
+        return ret;
+
+
+    }
 
 
 
-	
-	
+
+    private int start( String[] instances ) throws IOException, XMLStreamException, SaxonApiException, CoreException 
+    {
+
+        StartInstancesRequest  request = new StartInstancesRequest( Arrays.asList(instances));
+
+        traceCall("startInstances");
+        StartInstancesResult result = mAmazon.startInstances(request);
+
+        List<InstanceStateChange> changes = result.getStartingInstances();
+        writeStateChages( changes);
+        return 0;
+
+
+
+    }
+
+
+
+
+
 
 }

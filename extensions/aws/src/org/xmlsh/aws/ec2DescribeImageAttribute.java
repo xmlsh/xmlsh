@@ -24,110 +24,111 @@ import com.amazonaws.services.ec2.model.ProductCode;
 
 public class ec2DescribeImageAttribute extends AWSEC2Command {
 
-	/**
-	 * @param args
-	 * @throws IOException 
-	 */
-	@Override
-	public int run(List<XValue> args) throws Exception {
+    /**
+     * @param args
+     * @throws IOException 
+     */
+    @Override
+    public int run(List<XValue> args) throws Exception {
 
-		
-		Options opts = getOptions("p=product-codes,l=launch");
-		opts.parse(args);
 
-		args = opts.getRemainingArgs();
+        Options opts = getOptions("p=product-codes,l=launch");
+        parseOptions(opts, args);
+
+        args = opts.getRemainingArgs();
 
         setSerializeOpts(this.getSerializeOpts(opts));
-		try {
-			 getEC2Client(opts);
-		} catch (UnexpectedException e) {
-			usage( e.getLocalizedMessage() );
-			return 1;
-			
-		}
-		
-	
+        try {
+            getEC2Client(opts);
+        } catch (UnexpectedException e) {
+            usage( e.getLocalizedMessage() );
+            return 1;
 
-
-		if( args.size() != 1 ){
-			usage(null);
-			return 1;
-		}
-		
-		int ret = describe( args.get(0).toString() , opts );
-
-		
-		
-		return ret;
-		
-		
-	}
-
-
-	private int describe(String ami_id ,Options opts) throws IOException, XMLStreamException, SaxonApiException, CoreException {
-		
-
-		OutputPort stdout = this.getStdout();
-		mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(getSerializeOpts()));
-		
-		
-		startDocument();
-		startElement(this.getName());
-
-		String attribute	 = opts.hasOpt("launch") ? "launchPermission" : "productCodes" ;
-		
-		DescribeImageAttributeRequest  request = new DescribeImageAttributeRequest(ami_id , attribute);
-		
-		traceCall("describeImageAttribute");
-
-		DescribeImageAttributeResult result = mAmazon.describeImageAttribute(request);
-		
-		
-	
-		writeImageAttribute(result.getImageAttribute());
-		
-		
-		
-		
-		
-		endElement();
-		endDocument();
-		closeWriter();
-		
-		stdout.writeSequenceTerminator(getSerializeOpts());
-		stdout.release();
-		
-		return 0;
-
-	}
-
-
-	
-
-	private void writeImageAttribute(ImageAttribute imageAttribute) throws XMLStreamException {
-		startElement("image-attribute");
-		attribute("image-id", imageAttribute.getImageId());
-		
-		writeLaunchPermissions(imageAttribute.getLaunchPermissions());
-		
-		List<ProductCode> codes = imageAttribute.getProductCodes();
-		writeProductCodes(codes);
-		List<BlockDeviceMapping> deviceMappings = imageAttribute.getBlockDeviceMappings();
-		writeBlockDeviceMappings(deviceMappings);
-		
-		
-		endElement();
-		
-	}
-
-
-	public void usage() {
-		super.usage("Usage: ec2-describe-images [options] [image-id]");
-	}
+        }
 
 
 
 
-	
+        if( args.size() != 1 ){
+            usage(null);
+            return 1;
+        }
+
+        int ret = describe( args.get(0).toString() , opts );
+
+
+
+        return ret;
+
+
+    }
+
+
+    private int describe(String ami_id ,Options opts) throws IOException, XMLStreamException, SaxonApiException, CoreException {
+
+
+        OutputPort stdout = getStdout();
+        mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(getSerializeOpts()));
+
+
+        startDocument();
+        startElement(getName());
+
+        String attribute	 = opts.hasOpt("launch") ? "launchPermission" : "productCodes" ;
+
+        DescribeImageAttributeRequest  request = new DescribeImageAttributeRequest(ami_id , attribute);
+
+        traceCall("describeImageAttribute");
+
+        DescribeImageAttributeResult result = mAmazon.describeImageAttribute(request);
+
+
+
+        writeImageAttribute(result.getImageAttribute());
+
+
+
+
+
+        endElement();
+        endDocument();
+        closeWriter();
+
+        stdout.writeSequenceTerminator(getSerializeOpts());
+        stdout.release();
+
+        return 0;
+
+    }
+
+
+
+
+    private void writeImageAttribute(ImageAttribute imageAttribute) throws XMLStreamException {
+        startElement("image-attribute");
+        attribute("image-id", imageAttribute.getImageId());
+
+        writeLaunchPermissions(imageAttribute.getLaunchPermissions());
+
+        List<ProductCode> codes = imageAttribute.getProductCodes();
+        writeProductCodes(codes);
+        List<BlockDeviceMapping> deviceMappings = imageAttribute.getBlockDeviceMappings();
+        writeBlockDeviceMappings(deviceMappings);
+
+
+        endElement();
+
+    }
+
+
+    @Override
+    public void usage() {
+        super.usage("Usage: ec2-describe-images [options] [image-id]");
+    }
+
+
+
+
+
 
 }

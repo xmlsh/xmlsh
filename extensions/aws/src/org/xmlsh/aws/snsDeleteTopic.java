@@ -18,72 +18,72 @@ import com.amazonaws.services.sns.model.DeleteTopicRequest;
 
 public class snsDeleteTopic extends AWSSNSCommand {
 
-	
 
 
 
-	/**
-	 * @param args
-	 * @throws IOException 
-	 */
-	@Override
-	public int run(List<XValue> args) throws Exception {
 
-		
-		Options opts = getOptions();
-		opts.parse(args);
+    /**
+     * @param args
+     * @throws IOException 
+     */
+    @Override
+    public int run(List<XValue> args) throws Exception {
+
+
+        Options opts = getOptions();
+        parseOptions(opts, args);
         setSerializeOpts(this.getSerializeOpts(opts));
 
-		args = opts.getRemainingArgs();
-		
-		if( args.size() != 1 ){
-			usage();
-			return 1;
-		}
+        args = opts.getRemainingArgs();
+
+        if( args.size() != 1 ){
+            usage();
+            return 1;
+        }
 
 
-		String name = args.get(0).toString();
-		
-		
-		
-		try {
-			 getSNSClient(opts);
-		} catch (UnexpectedException e) {
-			usage( e.getLocalizedMessage() );
-			return 1;
-			
-		}
-		
-		int ret;
-		
-		ret = delete(name );
-		
-		
-		return ret;
-		
-		
-	}
+        String name = args.get(0).toString();
 
 
-	private int delete(String name ) throws IOException, XMLStreamException, InvalidArgumentException, SaxonApiException {
-		
 
-		DeleteTopicRequest request = new DeleteTopicRequest();
-		request.setTopicArn(name);
-		traceCall("deleteTopic");
+        try {
+            getSNSClient(opts);
+        } catch (UnexpectedException e) {
+            usage( e.getLocalizedMessage() );
+            return 1;
 
-		mAmazon.deleteTopic(request);
-		
-		
-		
-		return 0;
-		
-		
-		
-		
-	}
+        }
+
+        int ret;
+
+        ret = delete(name );
 
 
-	
+        return ret;
+
+
+    }
+
+
+    private int delete(String name ) throws IOException, XMLStreamException, InvalidArgumentException, SaxonApiException {
+
+
+        DeleteTopicRequest request = new DeleteTopicRequest();
+        request.setTopicArn(name);
+        traceCall("deleteTopic");
+
+        mAmazon.deleteTopic(request);
+
+
+
+        return 0;
+
+
+
+
+    }
+
+
+
 
 }

@@ -22,69 +22,69 @@ import com.amazonaws.services.ec2.model.TerminateInstancesResult;
 
 public class ec2TerminateInstances extends AWSEC2Command {
 
-	
 
 
-	/**
-	 * @param args
-	 * @throws IOException 
-	 */
-	@Override
-	public int run(List<XValue> args) throws Exception {
 
-		
-		Options opts = getOptions();
-		opts.parse(args);
+    /**
+     * @param args
+     * @throws IOException 
+     */
+    @Override
+    public int run(List<XValue> args) throws Exception {
 
-		args = opts.getRemainingArgs();
+
+        Options opts = getOptions();
+        parseOptions(opts, args);
+
+        args = opts.getRemainingArgs();
 
         setSerializeOpts(this.getSerializeOpts(opts));	
-		if( args.size() < 1 ){
-			usage(null);
-			return 1;
-		}
-		
+        if( args.size() < 1 ){
+            usage(null);
+            return 1;
+        }
 
-		try {
-			 getEC2Client(opts);
-		} catch (UnexpectedException e) {
-			usage( e.getLocalizedMessage() );
-			return 1;
-			
-		}
-		
-		int ret = stop( Util.toStringArray(args) );
-		
-		
-		
-		
-		
-		return ret;
-		
-		
-	}
+
+        try {
+            getEC2Client(opts);
+        } catch (UnexpectedException e) {
+            usage( e.getLocalizedMessage() );
+            return 1;
+
+        }
+
+        int ret = stop( Util.toStringArray(args) );
 
 
 
 
-	private int stop( String[] instances ) throws IOException, XMLStreamException, SaxonApiException, CoreException 
-	{
-	
-		TerminateInstancesRequest  request = new TerminateInstancesRequest( Arrays.asList(instances));
-		
-		traceCall("terminateInstances");
-		TerminateInstancesResult result = mAmazon.terminateInstances(request);
-		
-		List<InstanceStateChange> changes = result.getTerminatingInstances();
-		writeStateChages( changes);
-		return 0;
-		
-	
-	
-	}
+
+        return ret;
 
 
-	
-	
+    }
+
+
+
+
+    private int stop( String[] instances ) throws IOException, XMLStreamException, SaxonApiException, CoreException 
+    {
+
+        TerminateInstancesRequest  request = new TerminateInstancesRequest( Arrays.asList(instances));
+
+        traceCall("terminateInstances");
+        TerminateInstancesResult result = mAmazon.terminateInstances(request);
+
+        List<InstanceStateChange> changes = result.getTerminatingInstances();
+        writeStateChages( changes);
+        return 0;
+
+
+
+    }
+
+
+
+
 
 }

@@ -22,70 +22,70 @@ import com.amazonaws.services.ec2.model.StopInstancesResult;
 
 public class ec2StopInstances extends AWSEC2Command {
 
-	
 
 
-	/**
-	 * @param args
-	 * @throws IOException 
-	 */
-	@Override
-	public int run(List<XValue> args) throws Exception {
 
-		
-		Options opts = getOptions();
-		opts.parse(args);
+    /**
+     * @param args
+     * @throws IOException 
+     */
+    @Override
+    public int run(List<XValue> args) throws Exception {
 
-		args = opts.getRemainingArgs();
+
+        Options opts = getOptions();
+        parseOptions(opts, args);
+
+        args = opts.getRemainingArgs();
         setSerializeOpts(this.getSerializeOpts(opts));
 
-		
-		if( args.size() < 1 ){
-			usage(null);
-			return 1;
-		}
 
-		try {
-			 getEC2Client(opts);
-		} catch (UnexpectedException e) {
-			usage( e.getLocalizedMessage() );
-			return 1;
-			
-		}
-		
-		int ret = stop( Util.toStringArray(args) );
-		
-		
-		
-		
-		
-		return ret;
-		
-		
-	}
+        if( args.size() < 1 ){
+            usage(null);
+            return 1;
+        }
+
+        try {
+            getEC2Client(opts);
+        } catch (UnexpectedException e) {
+            usage( e.getLocalizedMessage() );
+            return 1;
+
+        }
+
+        int ret = stop( Util.toStringArray(args) );
 
 
 
 
-	private int stop( String[] instances ) throws IOException, XMLStreamException, SaxonApiException, CoreException 
-	{
-	
-		StopInstancesRequest  request = new StopInstancesRequest( Arrays.asList(instances));
-		
-		traceCall("stopInstances");
-		StopInstancesResult result = mAmazon.stopInstances(request);
-		
-		List<InstanceStateChange> changes = result.getStoppingInstances();
-		writeStateChages( changes);
-		
-		return 0;
-		
-	
-	
-	}
+
+        return ret;
 
 
-	
-	
+    }
+
+
+
+
+    private int stop( String[] instances ) throws IOException, XMLStreamException, SaxonApiException, CoreException 
+    {
+
+        StopInstancesRequest  request = new StopInstancesRequest( Arrays.asList(instances));
+
+        traceCall("stopInstances");
+        StopInstancesResult result = mAmazon.stopInstances(request);
+
+        List<InstanceStateChange> changes = result.getStoppingInstances();
+        writeStateChages( changes);
+
+        return 0;
+
+
+
+    }
+
+
+
+
 
 }

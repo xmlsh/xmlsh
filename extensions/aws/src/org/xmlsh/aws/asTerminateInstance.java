@@ -28,106 +28,106 @@ import com.amazonaws.services.autoscaling.model.TerminateInstanceInAutoScalingGr
 
 public class asTerminateInstance extends AWSASCommand {
 
-	
 
-	@Override
-	public int run(List<XValue> args) throws Exception {
-		
-		
-		
-		Options opts = getOptions("d=decrement");
-		opts.parse(args);
+
+    @Override
+    public int run(List<XValue> args) throws Exception {
+
+
+
+        Options opts = getOptions("d=decrement");
+        parseOptions(opts, args);
         setSerializeOpts(this.getSerializeOpts(opts));
-        
-		args = opts.getRemainingArgs();
-		
-		if( args.size() != 1 )
-			usage("as-terminate-instance -decrement instance-id");
-		
 
-		boolean bDecrement = opts.hasOpt("decrement");
-		String instanceId = args.get(0).toString();
+        args = opts.getRemainingArgs();
 
-		
-		
-		try {
-			getASClient(opts);
-		} catch (UnexpectedException e) {
-			usage( e.getLocalizedMessage() );
-			return 1;
-			
-		}
-		
-	
-		int ret = terminate( instanceId , bDecrement );
-		
-		
-		
-		return ret;
-		
-		
-	}
-
-	
+        if( args.size() != 1 )
+            usage("as-terminate-instance -decrement instance-id");
 
 
-	private int terminate(String instanceId, boolean bDecrement) throws IOException, XMLStreamException, SaxonApiException, CoreException 
-	{
+        boolean bDecrement = opts.hasOpt("decrement");
+        String instanceId = args.get(0).toString();
 
-		OutputPort stdout = this.getStdout();
-		mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(getSerializeOpts()));
-		
-		
-		startDocument();
-		startElement(this.getName());
-		 
-		
-		
-		
-		
-		traceCall("terminateInstanceInAutoScalingGroup");
 
-		TerminateInstanceInAutoScalingGroupRequest request = new TerminateInstanceInAutoScalingGroupRequest( ).
-				withInstanceId(instanceId).withShouldDecrementDesiredCapacity(bDecrement);
-		TerminateInstanceInAutoScalingGroupResult result = mAmazon.terminateInstanceInAutoScalingGroup(request);
-		
-		writeActivity( result.getActivity() );
-		
-		
-		
-		endElement();
-		endDocument();
-		
-	closeWriter();
-		
-		stdout.writeSequenceTerminator(getSerializeOpts());
-		stdout.release();
-	
-		
-		return 0 ;
-	
-	
-	}
+
+        try {
+            getASClient(opts);
+        } catch (UnexpectedException e) {
+            usage( e.getLocalizedMessage() );
+            return 1;
+
+        }
+
+
+        int ret = terminate( instanceId , bDecrement );
+
+
+
+        return ret;
+
+
+    }
 
 
 
 
-	private void writeActivity(Activity activity) throws XMLStreamException {
-		startElement("activity");
-		attribute( "activity-id", activity.getActivityId());
-		attribute( "group-name", activity.getAutoScalingGroupName()); 
-		attribute( "cause", activity.getCause()); 
-		attribute( "description", activity.getDescription()); 
-		attribute( "details", activity.getDetails());
-		attribute( "end-time", activity.getEndTime());
-		attribute( "progress", activity.getProgress());
-		attribute( "start-time" , activity.getStartTime() );
-		attribute( "status-code" , activity.getStatusCode());
-		attribute( "status-message" , activity.getStatusMessage() );
-		endElement();
-		
-		
-	}
+    private int terminate(String instanceId, boolean bDecrement) throws IOException, XMLStreamException, SaxonApiException, CoreException 
+    {
+
+        OutputPort stdout = getStdout();
+        mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(getSerializeOpts()));
+
+
+        startDocument();
+        startElement(getName());
+
+
+
+
+
+        traceCall("terminateInstanceInAutoScalingGroup");
+
+        TerminateInstanceInAutoScalingGroupRequest request = new TerminateInstanceInAutoScalingGroupRequest( ).
+                withInstanceId(instanceId).withShouldDecrementDesiredCapacity(bDecrement);
+        TerminateInstanceInAutoScalingGroupResult result = mAmazon.terminateInstanceInAutoScalingGroup(request);
+
+        writeActivity( result.getActivity() );
+
+
+
+        endElement();
+        endDocument();
+
+        closeWriter();
+
+        stdout.writeSequenceTerminator(getSerializeOpts());
+        stdout.release();
+
+
+        return 0 ;
+
+
+    }
+
+
+
+
+    private void writeActivity(Activity activity) throws XMLStreamException {
+        startElement("activity");
+        attribute( "activity-id", activity.getActivityId());
+        attribute( "group-name", activity.getAutoScalingGroupName()); 
+        attribute( "cause", activity.getCause()); 
+        attribute( "description", activity.getDescription()); 
+        attribute( "details", activity.getDetails());
+        attribute( "end-time", activity.getEndTime());
+        attribute( "progress", activity.getProgress());
+        attribute( "start-time" , activity.getStartTime() );
+        attribute( "status-code" , activity.getStatusCode());
+        attribute( "status-message" , activity.getStatusMessage() );
+        endElement();
+
+
+    }
 
 
 }

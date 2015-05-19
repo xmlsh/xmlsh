@@ -20,83 +20,83 @@ import com.amazonaws.services.sns.model.PublishResult;
 
 public class snsPublish extends AWSSNSCommand {
 
-	
 
-	/**
-	 * @param args
-	 * @throws IOException 
-	 */
-	@Override
-	public int run(List<XValue> args) throws Exception {
 
-		
-		Options opts = getOptions("t=topic:,m=message:,s=subject:");
-		opts.parse(args);
+    /**
+     * @param args
+     * @throws IOException 
+     */
+    @Override
+    public int run(List<XValue> args) throws Exception {
 
-		args = opts.getRemainingArgs();
+
+        Options opts = getOptions("t=topic:,m=message:,s=subject:");
+        parseOptions(opts, args);
+
+        args = opts.getRemainingArgs();
         setSerializeOpts(this.getSerializeOpts(opts));
 
-		
-		String topic = opts.getOptStringRequired("topic");
-		String message = opts.getOptStringRequired("message");
-		String subject = opts.getOptString("subject", null );
 
-		
-		try {
-			 getSNSClient(opts);
-		} catch (UnexpectedException e) {
-			usage( e.getLocalizedMessage() );
-			return 1;
-			
-		}
-		
-		int ret;
-		
-		ret = publish(topic,subject,message);
-		
-		
-		return ret;
-		
-		
-	}
+        String topic = opts.getOptStringRequired("topic");
+        String message = opts.getOptStringRequired("message");
+        String subject = opts.getOptString("subject", null );
 
 
-	private int publish(String topic,String subject, String message) throws IOException, XMLStreamException, SaxonApiException, CoreException {
-		
+        try {
+            getSNSClient(opts);
+        } catch (UnexpectedException e) {
+            usage( e.getLocalizedMessage() );
+            return 1;
 
-		PublishRequest request = new PublishRequest().withTopicArn(topic).withMessage(message).withSubject(subject);
-		traceCall("publish");
+        }
 
-		PublishResult result = mAmazon.publish(request);
-		
-		
+        int ret;
 
-		OutputPort stdout = this.getStdout();
-		mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
-		
-		
-		startDocument();
-		startElement(getName());
-		
-		startElement("message");
-		attribute("id" , result.getMessageId() );
-		endElement();
-
-		endElement();
-		endDocument();
-		closeWriter();
-		stdout.writeSequenceTerminator(getSerializeOpts());
-		stdout.release();
-		
-		
-		return 0;
-		
-		
-		
-		
-	}
+        ret = publish(topic,subject,message);
 
 
-	
+        return ret;
+
+
+    }
+
+
+    private int publish(String topic,String subject, String message) throws IOException, XMLStreamException, SaxonApiException, CoreException {
+
+
+        PublishRequest request = new PublishRequest().withTopicArn(topic).withMessage(message).withSubject(subject);
+        traceCall("publish");
+
+        PublishResult result = mAmazon.publish(request);
+
+
+
+        OutputPort stdout = getStdout();
+        mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
+
+
+        startDocument();
+        startElement(getName());
+
+        startElement("message");
+        attribute("id" , result.getMessageId() );
+        endElement();
+
+        endElement();
+        endDocument();
+        closeWriter();
+        stdout.writeSequenceTerminator(getSerializeOpts());
+        stdout.release();
+
+
+        return 0;
+
+
+
+
+    }
+
+
+
 
 }

@@ -27,96 +27,96 @@ import com.amazonaws.services.cloudformation.model.ValidateTemplateResult;
 
 public class cfnValidateTemplate extends AWSCFNCommand {
 
-	
 
-	@Override
-	public int run(List<XValue> args) throws Exception {
-		
-		
-		
-		Options opts = getOptions("template-file=f:,template-url=url:");
-		opts.parse(args);
 
-		args = opts.getRemainingArgs();
-		
+    @Override
+    public int run(List<XValue> args) throws Exception {
+
+
+
+        Options opts = getOptions("template-file=f:,template-url=url:");
+        parseOptions(opts, args);
+
+        args = opts.getRemainingArgs();
+
         setSerializeOpts(this.getSerializeOpts(opts));
 
-		
-		
-		try {
-			getCFNClient(opts);
-		} catch (UnexpectedException e) {
-			usage( e.getLocalizedMessage() );
-			return 1;
-			
-		}
-		
-	
+
+
+        try {
+            getCFNClient(opts);
+        } catch (UnexpectedException e) {
+            usage( e.getLocalizedMessage() );
+            return 1;
+
+        }
+
+
         int ret = validate(opts );
 
-		
-		
-		return ret;
-		
-		
-	}
+
+
+        return ret;
+
+
+    }
 
 
 
-	private int validate(Options opts) throws IOException, XMLStreamException, SaxonApiException, CoreException {
-		
-
-		
-		
-		ValidateTemplateRequest request = new ValidateTemplateRequest();
-		if( opts.hasOpt("template-file"))
-			request.setTemplateBody( Util.readString( mShell.getFile(opts.getOptValue("template-file")), getSerializeOpts().getInput_text_encoding()));
-		else
-			request.setTemplateURL( opts.getOptStringRequired("template-url"));
-		
-	
-		traceCall("validateTemplate");
-
-		ValidateTemplateResult result = mAmazon.validateTemplate(request);
-
-		
-		OutputPort stdout = this.getStdout();
-		mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(getSerializeOpts()));
-		
-		
-		startDocument();
-		startElement(this.getName());
-		
-	
-		
-		writeResult( result );
-		
-		
-		endElement();
-		endDocument();
-		closeWriter();
-		
-		stdout.writeSequenceTerminator(getSerializeOpts());
-		stdout.release();
-		
-		return 0;
-
-	}
+    private int validate(Options opts) throws IOException, XMLStreamException, SaxonApiException, CoreException {
 
 
-	private void writeResult(ValidateTemplateResult result) throws XMLStreamException {
-		startElement("template");
-		
-		attribute("capabilities-reason" , result.getCapabilitiesReason());
-		attribute("description" , result.getDescription());
-		
-		writeTemplateParameters( result.getParameters() );
-		
-		writeCapibilities(result.getCapabilities());
-		endElement();
-		
-	}	
-	
+
+
+        ValidateTemplateRequest request = new ValidateTemplateRequest();
+        if( opts.hasOpt("template-file"))
+            request.setTemplateBody( Util.readString( mShell.getFile(opts.getOptValue("template-file")), getSerializeOpts().getInput_text_encoding()));
+        else
+            request.setTemplateURL( opts.getOptStringRequired("template-url"));
+
+
+        traceCall("validateTemplate");
+
+        ValidateTemplateResult result = mAmazon.validateTemplate(request);
+
+
+        OutputPort stdout = getStdout();
+        mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(getSerializeOpts()));
+
+
+        startDocument();
+        startElement(getName());
+
+
+
+        writeResult( result );
+
+
+        endElement();
+        endDocument();
+        closeWriter();
+
+        stdout.writeSequenceTerminator(getSerializeOpts());
+        stdout.release();
+
+        return 0;
+
+    }
+
+
+    private void writeResult(ValidateTemplateResult result) throws XMLStreamException {
+        startElement("template");
+
+        attribute("capabilities-reason" , result.getCapabilitiesReason());
+        attribute("description" , result.getDescription());
+
+        writeTemplateParameters( result.getParameters() );
+
+        writeCapibilities(result.getCapabilities());
+        endElement();
+
+    }	
+
 }
 
 

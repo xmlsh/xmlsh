@@ -28,123 +28,123 @@ import com.amazonaws.services.cloudformation.model.Stack;
 
 public class cfnDescribeStacks extends AWSCFNCommand {
 
-	
 
-	@Override
-	public int run(List<XValue> args) throws Exception {
-		
-		
-		
-		Options opts = getOptions("n=name:");
-		opts.parse(args);
 
-		args = opts.getRemainingArgs();
-	      setSerializeOpts(this.getSerializeOpts(opts));
+    @Override
+    public int run(List<XValue> args) throws Exception {
 
-		
-		try {
-			getCFNClient(opts);
-		} catch (UnexpectedException e) {
-			usage( e.getLocalizedMessage() );
-			return 1;
-			
-		}
-		
-	
+
+
+        Options opts = getOptions("n=name:");
+        parseOptions(opts, args);
+
+        args = opts.getRemainingArgs();
+        setSerializeOpts(this.getSerializeOpts(opts));
+
+
+        try {
+            getCFNClient(opts);
+        } catch (UnexpectedException e) {
+            usage( e.getLocalizedMessage() );
+            return 1;
+
+        }
+
+
         int ret = describe(opts.getOptString("name", null ) );
 
-		
-		
-		return ret;
-		
-		
-	}
+
+
+        return ret;
+
+
+    }
 
 
 
-	private int describe(String name) throws IOException, XMLStreamException, SaxonApiException, CoreException {
-		
-
-		OutputPort stdout = this.getStdout();
-		mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(getSerializeOpts()));
-		
-		
-		startDocument();
-		startElement(this.getName());
-		
-		
-		
-		DescribeStacksRequest request = new DescribeStacksRequest();
-		if( name != null )
-			request.setStackName(name);
-		
-		traceCall("describeStacks");
-
-		DescribeStacksResult result = mAmazon.describeStacks(request);
-		
-
-		for( Stack  stack : result.getStacks() )
-			writeStack( stack )
-		;
-		
-		endElement();
-		endDocument();
-		closeWriter();
-		
-		stdout.writeSequenceTerminator(getSerializeOpts());
-		stdout.release();
-		
-		return 0;
-
-	}
+    private int describe(String name) throws IOException, XMLStreamException, SaxonApiException, CoreException {
 
 
-	private void writeStack(Stack stack) throws XMLStreamException {
-		startElement("stack");
-		attribute("creation-time" , stack.getCreationTime());
-		attribute("description" ,stack.getDescription());
-		attribute("disable-rollback" ,stack.getDisableRollback());
-		attribute("last-update-time" ,stack.getLastUpdatedTime());
-		attribute("stack-id" ,stack.getStackId());
-		attribute("name" ,stack.getStackName());
-		attribute("status" ,stack.getStackStatus());
-		attribute("reason" ,stack.getStackStatusReason());
-		
-		
-		
-		writeParameters( stack.getParameters() );
+        OutputPort stdout = getStdout();
+        mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(getSerializeOpts()));
 
-		writeOutputs( stack.getOutputs() );
-		
-		writeCapibilities(stack.getCapabilities());
-		writeNotifications(stack.getNotificationARNs());
-		
-	}
+
+        startDocument();
+        startElement(getName());
 
 
 
-	private void writeOutputs(List<Output> outputs) throws XMLStreamException {
-		startElement("outputs")	;
-		for( Output o : outputs )
-			writeOutput( o );
-		endElement();
-		
-	}
+        DescribeStacksRequest request = new DescribeStacksRequest();
+        if( name != null )
+            request.setStackName(name);
+
+        traceCall("describeStacks");
+
+        DescribeStacksResult result = mAmazon.describeStacks(request);
+
+
+        for( Stack  stack : result.getStacks() )
+            writeStack( stack )
+            ;
+
+        endElement();
+        endDocument();
+        closeWriter();
+
+        stdout.writeSequenceTerminator(getSerializeOpts());
+        stdout.release();
+
+        return 0;
+
+    }
+
+
+    private void writeStack(Stack stack) throws XMLStreamException {
+        startElement("stack");
+        attribute("creation-time" , stack.getCreationTime());
+        attribute("description" ,stack.getDescription());
+        attribute("disable-rollback" ,stack.getDisableRollback());
+        attribute("last-update-time" ,stack.getLastUpdatedTime());
+        attribute("stack-id" ,stack.getStackId());
+        attribute("name" ,stack.getStackName());
+        attribute("status" ,stack.getStackStatus());
+        attribute("reason" ,stack.getStackStatusReason());
 
 
 
-	private void writeOutput(Output o) throws XMLStreamException {
-		startElement("output")	;
-		attribute("description" ,o.getDescription());
-		attribute("output-key" ,o.getOutputKey());
-		attribute("output-value" ,o.getOutputValue());
-		endElement();
+        writeParameters( stack.getParameters() );
 
-	}
+        writeOutputs( stack.getOutputs() );
+
+        writeCapibilities(stack.getCapabilities());
+        writeNotifications(stack.getNotificationARNs());
+
+    }
 
 
-		
-	
+
+    private void writeOutputs(List<Output> outputs) throws XMLStreamException {
+        startElement("outputs")	;
+        for( Output o : outputs )
+            writeOutput( o );
+        endElement();
+
+    }
+
+
+
+    private void writeOutput(Output o) throws XMLStreamException {
+        startElement("output")	;
+        attribute("description" ,o.getDescription());
+        attribute("output-key" ,o.getOutputKey());
+        attribute("output-value" ,o.getOutputValue());
+        endElement();
+
+    }
+
+
+
+
 }
 
 

@@ -16,7 +16,6 @@ import org.xmlsh.core.XValue;
 
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.DeleteObjectsRequest;
-import com.amazonaws.services.s3.model.DeleteObjectsResult;
 import com.amazonaws.services.s3.model.ListObjectsRequest;
 import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
@@ -24,133 +23,132 @@ import com.amazonaws.services.s3.model.S3ObjectSummary;
 
 public class s3Delete extends AWSS3Command {
 
-	
 
 
-	/**
-	 * @param args
-	 * @throws IOException 
-	 */
-	@Override
-	public int run(List<XValue> args) throws Exception {
 
-		
-		Options opts = getOptions("b=bucket:,r=recurse");
-		opts.parse(args);
+    /**
+     * @param args
+     * @throws IOException 
+     */
+    @Override
+    public int run(List<XValue> args) throws Exception {
+
+
+        Options opts = getOptions("b=bucket:,r=recurse");
+        parseOptions(opts, args);
         setSerializeOpts(this.getSerializeOpts(opts));
 
-		args = opts.getRemainingArgs();
-		
-		String bucket = opts.getOptString("b", null);
-		boolean bRecurse = opts.hasOpt("r");
+        args = opts.getRemainingArgs();
 
-		try {
-			 getS3Client(opts);
-		} catch (UnexpectedException e) {
-			usage( e.getLocalizedMessage() );
-			return 1;
-			
-		}
+        String bucket = opts.getOptString("b", null);
+        boolean bRecurse = opts.hasOpt("r");
 
+        try {
+            getS3Client(opts);
+        } catch (UnexpectedException e) {
+            usage( e.getLocalizedMessage() );
+            return 1;
 
-		int ret = 0 ;
-		if(args.size() < 1 ){
-				usage();
-				return 1;
-		}
-
-			for( XValue arg : args ){
-				ret += delete( 
-						bucket != null ? 
-							new S3Path( bucket , arg.toString() ) : 
-							new S3Path( arg.toString() ), bRecurse  );
-	
-			}
-		
-		
-		return ret;
-		
-		
-	}
-
-	private int deleteBatch( String bucket , String[]  keys ){
-		DeleteObjectsRequest deleteObjectsRequest = new DeleteObjectsRequest(bucket)
-			.withKeys(keys)
-			.withQuiet(true);
-		
-		@SuppressWarnings("unused")
-		DeleteObjectsResult result = mAmazon.deleteObjects(deleteObjectsRequest);
-		return 0;
-		
-		
-		
-		
-	}
-
-	private int delete(S3Path path, boolean bRecurse ) throws IOException, XMLStreamException, InvalidArgumentException, SaxonApiException {
-		
-		
-		
-		if( bRecurse ){
-
-			
-			ListObjectsRequest request = getListRequest( path ,null );
-			traceCall("listObjects");
-
-			ObjectListing list = mAmazon.listObjects(request);
-			
-			
-			do {
-				
-				
-				List<S3ObjectSummary>  objs = list.getObjectSummaries();
-				String[] keys  =  getKeys( objs );
-				// Delete in batches, magically the max size of getObjectSummaries matches the max size for batch deletes (1000)
-				deleteBatch( path.getBucket() , keys );
-				
-				
-				
-				if( list.isTruncated()){
-					// String marker = list.getNextMarker();
-					list = mAmazon.listNextBatchOfObjects(list);
-				}
-				else
-					break;
-			} while( true );
-			
-			return 0;
-			
-			
-		} else {
-		
-			
-			DeleteObjectRequest request = new DeleteObjectRequest(path.getBucket(), path.getKey());
-			traceCall("deleteObject");
+        }
 
 
-			mAmazon.deleteObject(request );
-			
-			return 0;
-		
-		}
-		
-		
-	}
+        int ret = 0 ;
+        if(args.size() < 1 ){
+            usage();
+            return 1;
+        }
 
-	private String[] getKeys(List<S3ObjectSummary> objs) {
-		
-		String[] keys = new String[ objs.size()];
-		int i = 0;
-		for( S3ObjectSummary obj : objs )
-			keys[i++] = obj.getKey();
-		return keys ;
-		
-		
-	}
+        for( XValue arg : args ){
+            ret += delete( 
+                    bucket != null ? 
+                            new S3Path( bucket , arg.toString() ) : 
+                                new S3Path( arg.toString() ), bRecurse  );
+
+        }
+
+
+        return ret;
+
+
+    }
+
+    private int deleteBatch( String bucket , String[]  keys ){
+        DeleteObjectsRequest deleteObjectsRequest = new DeleteObjectsRequest(bucket)
+        .withKeys(keys)
+        .withQuiet(true);
+
+        mAmazon.deleteObjects(deleteObjectsRequest);
+        return 0;
 
 
 
 
-	
+    }
+
+    private int delete(S3Path path, boolean bRecurse ) throws IOException, XMLStreamException, InvalidArgumentException, SaxonApiException {
+
+
+
+        if( bRecurse ){
+
+
+            ListObjectsRequest request = getListRequest( path ,null );
+            traceCall("listObjects");
+
+            ObjectListing list = mAmazon.listObjects(request);
+
+
+            do {
+
+
+                List<S3ObjectSummary>  objs = list.getObjectSummaries();
+                String[] keys  =  getKeys( objs );
+                // Delete in batches, magically the max size of getObjectSummaries matches the max size for batch deletes (1000)
+                deleteBatch( path.getBucket() , keys );
+
+
+
+                if( list.isTruncated()){
+                    // String marker = list.getNextMarker();
+                    list = mAmazon.listNextBatchOfObjects(list);
+                }
+                else
+                    break;
+            } while( true );
+
+            return 0;
+
+
+        } else {
+
+
+            DeleteObjectRequest request = new DeleteObjectRequest(path.getBucket(), path.getKey());
+            traceCall("deleteObject");
+
+
+            mAmazon.deleteObject(request );
+
+            return 0;
+
+        }
+
+
+    }
+
+    private String[] getKeys(List<S3ObjectSummary> objs) {
+
+        String[] keys = new String[ objs.size()];
+        int i = 0;
+        for( S3ObjectSummary obj : objs )
+            keys[i++] = obj.getKey();
+        return keys ;
+
+
+    }
+
+
+
+
+
 
 }

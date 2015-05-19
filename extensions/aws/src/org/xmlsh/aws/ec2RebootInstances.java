@@ -20,73 +20,73 @@ import com.amazonaws.services.ec2.model.RebootInstancesRequest;
 
 public class ec2RebootInstances extends AWSEC2Command {
 
-	
 
 
-	/**
-	 * @param args
-	 * @throws IOException 
-	 */
-	@Override
-	public int run(List<XValue> args) throws Exception {
 
-		
-		Options opts = getOptions();
-		opts.parse(args);
+    /**
+     * @param args
+     * @throws IOException 
+     */
+    @Override
+    public int run(List<XValue> args) throws Exception {
+
+
+        Options opts = getOptions();
+        parseOptions(opts, args);
         setSerializeOpts(this.getSerializeOpts(opts));
 
-		args = opts.getRemainingArgs();
-		
+        args = opts.getRemainingArgs();
 
-		
-		
-		
-		if( args.size() < 1 ){
-			usage(null);
-			return 1;
-		}
-		
+
+
+
+
+        if( args.size() < 1 ){
+            usage(null);
+            return 1;
+        }
+
 
         setSerializeOpts(this.getSerializeOpts(opts));
-		try {
-			 getEC2Client(opts);
-		} catch (UnexpectedException e) {
-			usage( e.getLocalizedMessage() );
-			return 1;
-			
-		}
-		
-		int ret = reboot( Util.toStringArray(args) );
-		
-		
-		
-		
-		
-		return ret;
-		
-		
-	}
+        try {
+            getEC2Client(opts);
+        } catch (UnexpectedException e) {
+            usage( e.getLocalizedMessage() );
+            return 1;
+
+        }
+
+        int ret = reboot( Util.toStringArray(args) );
 
 
 
 
-	private int reboot( String[] instances ) throws IOException, XMLStreamException, SaxonApiException, CoreException 
-	{
-	
-		RebootInstancesRequest  request = new RebootInstancesRequest( Arrays.asList(instances));
-		
-		
-		traceCall("rebootInstances");
-		mAmazon.rebootInstances(request);
-		
-		return 0;
-		
-	
-	
-	}
+
+        return ret;
 
 
-	
-	
+    }
+
+
+
+
+    private int reboot( String[] instances ) throws IOException, XMLStreamException, SaxonApiException, CoreException 
+    {
+
+        RebootInstancesRequest  request = new RebootInstancesRequest( Arrays.asList(instances));
+
+
+        traceCall("rebootInstances");
+        mAmazon.rebootInstances(request);
+
+        return 0;
+
+
+
+    }
+
+
+
+
 
 }

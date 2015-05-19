@@ -18,69 +18,69 @@ import com.amazonaws.services.sqs.model.DeleteMessageRequest;
 
 public class sqsDeleteMessage extends AWSSQSCommand {
 
-	
 
 
 
-	/**
-	 * @param args
-	 * @throws IOException 
-	 */
-	@Override
-	public int run(List<XValue> args) throws Exception {
 
-		
-		Options opts = getOptions();
-		opts.parse(args);
+    /**
+     * @param args
+     * @throws IOException 
+     */
+    @Override
+    public int run(List<XValue> args) throws Exception {
+
+
+        Options opts = getOptions();
+        parseOptions(opts, args);
         setSerializeOpts(this.getSerializeOpts(opts));
 
-		args = opts.getRemainingArgs();
-		
-		if( args.size() != 2 ){
-			usage();
-			return 1;
-		}
+        args = opts.getRemainingArgs();
 
-		
-		try {
-			 getSQSClient(opts);
-		} catch (UnexpectedException e) {
-			usage( e.getLocalizedMessage() );
-			return 1;
-			
-		}
-		
-		int ret;
-		ret = delete( args.get(0).toString() , args.get(1).toString() );
-		
-		
-		return ret;
-		
-		
-	}
+        if( args.size() != 2 ){
+            usage();
+            return 1;
+        }
 
 
-	private int delete(String url , String message) throws IOException, XMLStreamException, InvalidArgumentException, SaxonApiException {
-		
-		
-		DeleteMessageRequest request = new DeleteMessageRequest();
-		request.setQueueUrl(url);
-		request.setReceiptHandle(message);
+        try {
+            getSQSClient(opts);
+        } catch (UnexpectedException e) {
+            usage( e.getLocalizedMessage() );
+            return 1;
 
-		traceCall("deleteMessage");
+        }
 
-		mAmazon.deleteMessage(request);
-		
-				
-		
-		return 0;
-		
-		
-		
-		
-	}
+        int ret;
+        ret = delete( args.get(0).toString() , args.get(1).toString() );
 
 
-	
+        return ret;
+
+
+    }
+
+
+    private int delete(String url , String message) throws IOException, XMLStreamException, InvalidArgumentException, SaxonApiException {
+
+
+        DeleteMessageRequest request = new DeleteMessageRequest();
+        request.setQueueUrl(url);
+        request.setReceiptHandle(message);
+
+        traceCall("deleteMessage");
+
+        mAmazon.deleteMessage(request);
+
+
+
+        return 0;
+
+
+
+
+    }
+
+
+
 
 }

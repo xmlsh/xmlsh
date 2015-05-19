@@ -13,16 +13,13 @@ import net.sf.saxon.trans.XPathException;
 import org.xmlsh.aws.util.AWSDDBCommand;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.Options;
-import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.UnexpectedException;
-import org.xmlsh.core.UnimplementedException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.util.Util;
 
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.services.dynamodbv2.document.DynamoDB;
 import com.amazonaws.services.dynamodbv2.document.Item;
-import com.amazonaws.services.dynamodbv2.document.KeyAttribute;
 import com.amazonaws.services.dynamodbv2.document.Table;
 import com.amazonaws.services.dynamodbv2.document.spec.GetItemSpec;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
@@ -37,10 +34,9 @@ public class ddbGetItem extends AWSDDBCommand {
      */
     @Override
     public int run(List<XValue> args) throws Exception {
-
-        Options opts = getOptions("table=table-name:,key-name:+,key-value:+,key:+,c=consistant,projection-expression:,j=json,d=document");
-        opts.parse(args);
-
+        Options opts = getOptions(sTABLE_OPTIONS, sKEY_OPTIONS , sRETURN_OPTIONS , 
+                sDOCUMENT_OPTS , sATTR_NAME_EXPR_OPTIONS, sCONSISTANT_OPTS , "projection-expression:");
+        parseOptions(opts, args);
         args = opts.getRemainingArgs();
 
 
@@ -90,7 +86,8 @@ public class ddbGetItem extends AWSDDBCommand {
 
         GetItemRequest getItemRequest = new GetItemRequest().
                 withTableName(tableName).withKey(keys).
-                withConsistentRead(bConsistantRead);
+                withConsistentRead(bConsistantRead).withExpressionAttributeNames( parseAttrNameExprs(opts) );
+
 
         if( opts.hasOpt("projection-expression"))
             getItemRequest.setProjectionExpression( 

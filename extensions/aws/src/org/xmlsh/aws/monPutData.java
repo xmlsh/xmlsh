@@ -25,157 +25,156 @@ import com.amazonaws.services.cloudwatch.model.StatisticSet;
 
 public class monPutData	 extends  AWSMonCommand {
 
-	
 
-	/**
-	 * @param args
-	 * @throws IOException 
-	 */
-	@Override
-	public int run(List<XValue> args) throws Exception {
 
-		
-		Options opts = getOptions("n=namespace:");
-		opts.parse(args);
+    /**
+     * @param args
+     * @throws IOException 
+     */
+    @Override
+    public int run(List<XValue> args) throws Exception {
 
-		args = opts.getRemainingArgs();
+
+        Options opts = getOptions("n=namespace:");
+        parseOptions(opts, args);
+
+        args = opts.getRemainingArgs();
         setSerializeOpts(this.getSerializeOpts(opts));
 
-		String namespace = opts.getOptStringRequired("namespace");
-		
-		
-		try {
-			 getMonClient(opts);
-		} catch (UnexpectedException e) {
-			usage( e.getLocalizedMessage() );
-			return 1;
-			
-		}
-		
-
-		int ret = -1;
-		ret = put(namespace,args);
-
-		
-		
-		return ret;
-		
-		
-	}
+        String namespace = opts.getOptStringRequired("namespace");
 
 
-	
+        try {
+            getMonClient(opts);
+        } catch (UnexpectedException e) {
+            usage( e.getLocalizedMessage() );
+            return 1;
 
-	private int put(String namespace , List<XValue> metrics ) throws IOException, XMLStreamException, SaxonApiException, CoreException 
-	{
+        }
 
-		OutputPort stdout = this.getStdout();
-		mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
-		
-		
-		
-		startDocument();
-		startElement(getName());
-		
-		String nextToken = null ;
-			
-			Collection<MetricDatum> datumList = new ArrayList<MetricDatum >();
-			for( XValue xm : metrics )
-				datumList.add( parseMetric(xm));
-			
-			
-			
-			
-			PutMetricDataRequest request = new PutMetricDataRequest().
-					withNamespace(namespace).withMetricData(datumList);
-			
-			traceCall("putMetricData");
 
-			mAmazon.putMetricData(request);
-	         
-			
+        int ret = -1;
+        ret = put(namespace,args);
 
 
 
-		endElement();
-		endDocument();
-		
-		
-		closeWriter();
-		stdout.writeSequenceTerminator(getSerializeOpts());
-		stdout.release();
-		
-		
-		return 0;
-		
-		
-		
-		
-	}
-	private MetricDatum parseMetric(XValue xv) throws UnexpectedException {
-		
+        return ret;
 
-		return new MetricDatum().
-				withDimensions( parseDimensions(xv) ).
-				withMetricName(parseName(xv)).
-				withStatisticValues(parseStatistics(xv)).
-				withUnit(parseUnit(xv)).withValue(parseValue(xv));
-		
-	}
 
-	private double parseValue(XValue xv) throws UnexpectedException {
-		return xv.xpath( mShell , "xs:double(@value)").toDouble();
-	}
+    }
 
 
 
 
-	private String parseUnit(XValue xv) throws UnexpectedException {
-		return xv.xpath( mShell, "xs:string(@unit)" ).toString();
-	}
+    private int put(String namespace , List<XValue> metrics ) throws IOException, XMLStreamException, SaxonApiException, CoreException 
+    {
+
+        OutputPort stdout = getStdout();
+        mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
+
+
+
+        startDocument();
+        startElement(getName());
+
+        Collection<MetricDatum> datumList = new ArrayList<MetricDatum >();
+        for( XValue xm : metrics )
+            datumList.add( parseMetric(xm));
 
 
 
 
-	private StatisticSet parseStatistics(XValue xv) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+        PutMetricDataRequest request = new PutMetricDataRequest().
+                withNamespace(namespace).withMetricData(datumList);
+
+        traceCall("putMetricData");
+
+        mAmazon.putMetricData(request);
 
 
 
 
-	private String parseName(XValue xv) throws UnexpectedException {
-		return xv.xpath( mShell, "xs:string(@name)" ).toString();
-	}
+
+        endElement();
+        endDocument();
+
+
+        closeWriter();
+        stdout.writeSequenceTerminator(getSerializeOpts());
+        stdout.release();
+
+
+        return 0;
 
 
 
 
-	private Collection<Dimension>  parseDimensions(XValue xv) throws UnexpectedException {
-
-		List<Dimension> list = new ArrayList<Dimension>();
-		
-	    for( String nv : xv.xpath(mShell, "xs:string(@dimensions)").toString().split(",") ){
-	    	StringPair pair = new StringPair( nv , '=');
-	    	list.add( new Dimension().withName(pair.getLeft()).withValue(pair.getRight()));
-	    	
-	    	
-	    }
-	    return list ;
-
-		
-	}
+    }
+    private MetricDatum parseMetric(XValue xv) throws UnexpectedException {
 
 
+        return new MetricDatum().
+                withDimensions( parseDimensions(xv) ).
+                withMetricName(parseName(xv)).
+                withStatisticValues(parseStatistics(xv)).
+                withUnit(parseUnit(xv)).withValue(parseValue(xv));
 
+    }
 
-	public void usage() {
-		super.usage();
-	}
+    private double parseValue(XValue xv) throws UnexpectedException {
+        return xv.xpath( mShell , "xs:double(@value)").toDouble();
+    }
 
 
 
-	
+
+    private String parseUnit(XValue xv) throws UnexpectedException {
+        return xv.xpath( mShell, "xs:string(@unit)" ).toString();
+    }
+
+
+
+
+    private StatisticSet parseStatistics(XValue xv) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+
+
+
+    private String parseName(XValue xv) throws UnexpectedException {
+        return xv.xpath( mShell, "xs:string(@name)" ).toString();
+    }
+
+
+
+
+    private Collection<Dimension>  parseDimensions(XValue xv) throws UnexpectedException {
+
+        List<Dimension> list = new ArrayList<Dimension>();
+
+        for( String nv : xv.xpath(mShell, "xs:string(@dimensions)").toString().split(",") ){
+            StringPair pair = new StringPair( nv , '=');
+            list.add( new Dimension().withName(pair.getLeft()).withValue(pair.getRight()));
+
+
+        }
+        return list ;
+
+
+    }
+
+
+
+
+    @Override
+    public void usage() {
+        super.usage();
+    }
+
+
+
+
 
 }
