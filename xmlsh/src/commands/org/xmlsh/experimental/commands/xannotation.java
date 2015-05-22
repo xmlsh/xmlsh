@@ -66,10 +66,15 @@ public class xannotation extends XCommand {
 		
 		try {
 			Class<?> cls = org.xmlsh.util.JavaUtils.convertToClass(arg , getShell() );
-			printClassAnnotations(pw , cls , "");
-			printPackageAnnotations( pw , cls.getPackage() , "");
+			if( cls == null )
+				pw.println("Cound not locate class: " + arg.toString() );
+			else {
+
+		    	printClassAnnotations(pw , cls , "");
+			  printPackageAnnotations( pw , cls.getPackage() , "");
+			}
 		
-		} catch (ClassNotFoundException | CoreException e) {
+		} catch (CoreException e) {
 			pw.println("Cound not locate class: " +  e.getMessage());
 		}
 	}

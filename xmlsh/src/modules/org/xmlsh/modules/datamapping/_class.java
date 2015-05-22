@@ -44,20 +44,18 @@ import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.JavaUtils;
 
-@Function(name="object",names={"new-object"} )
-public class object extends AbstractBuiltinFunction {
+@Function(name="class",names={"new-class"} )
+public class _class extends AbstractBuiltinFunction {
     @SuppressWarnings({ "unchecked" })
     @Override
 	public XValue run(Shell shell, List<XValue> args) throws Exception {
 	    ClassLoader classLoader = getClass().getClassLoader();
 
-    	requires( args.size() >= 2, "object( name parent-class [name type ...]");
 	    String name = args.remove(0).toString();
 	    XValue xpclass = args.remove(0);
 	    Class<?> pclass= DataMappingModule.resolveClass( null , xpclass , classLoader );
 	    
 	    DynamicType.Builder<?> b = new ByteBuddy().subclass( (Class<?>) (pclass!=null ? pclass :Object.class) ).name(name);
-
 	    
 		while(  ! args.isEmpty() ){
 	    	XValue xv = args.remove(0);
@@ -69,11 +67,11 @@ public class object extends AbstractBuiltinFunction {
 	        b=b.defineField( f, cls, Visibility.PUBLIC );	        
         }
 
-	    Object bean = b.make()
-	                .load(classLoader, ClassLoadingStrategy.Default.INJECTION)
-	                .getLoaded().newInstance();
+	    Class<?> cls = b.make()
+	                .load(classLoader, ClassLoadingStrategy.Default.INJECTION )
+	                .getLoaded();
 
-	   		return XValue.newXValue((Object) bean  );
+	   		return XValue.newXValue((Object) cls  );
 
 
 	}

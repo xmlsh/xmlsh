@@ -388,6 +388,27 @@ public class JavaUtils {
 	  return false ;
 	}
   
+  public static Class<?> fromPrimativeName( String name )
+  {
+	  
+	  switch( name ) {
+	  case "boolean" :  return java.lang.Boolean.TYPE ;
+	  case "char" :  return java.lang.Character.TYPE ;
+	  case "byte"  :  return java.lang.Byte.TYPE;
+	  case "short" :  return java.lang.Short.TYPE;
+	  case "int"   : return  java.lang.Integer.TYPE;
+	  case "long"  : return  java.lang.Long.TYPE;
+	  case "float" : return  java.lang.Float.TYPE;
+	  case "double" :return   java.lang.Double.TYPE;
+	  case "void"  : return java.lang.Void.TYPE;
+	  default :
+		  return null;
+	  }
+	  
+	  
+  }
+   
+  
 
   
   public  static boolean isBooleanClass(  Class<?> c )
@@ -634,16 +655,21 @@ public class JavaUtils {
 		return canConvertClass( sourceObject.getClass() , targetClass );
 	}
 
-	public static Class<?> convertToClass(XValue arg, Shell shell) throws ClassNotFoundException, CoreException
+	public static Class<?> convertToClass(XValue arg, Shell shell) throws CoreException 
 	{
 		return convertToClass(arg, 	shell.getClassLoader(null));
 
 	}
 
-	public static Class<?> convertToClass(XValue arg,  ClassLoader classLoader) throws ClassNotFoundException, CoreException
+	public static Class<?> convertToClass(XValue arg,  ClassLoader classLoader) 
 	{
 		if( arg.isAtomic() && arg.isString() )
-			return findClass(arg.toString(),classLoader);
+			try {
+				return findClass(arg.toString(),classLoader);
+			} catch (ClassNotFoundException e) {
+				mLogger.catching( e );
+				return null;
+			}
 		Object obj = arg.asObject();
 		if( obj instanceof Class )
 			return (Class<?>) obj ;

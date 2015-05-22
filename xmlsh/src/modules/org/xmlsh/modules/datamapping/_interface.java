@@ -51,7 +51,8 @@ public class _interface extends AbstractBuiltinFunction {
 	public XValue run(Shell shell, List<XValue> args) throws Exception {
 
 	    String name = args.remove(0).toString();
-	    
+	    ClassLoader classLoader = getClass().getClassLoader();
+
 	    DynamicType.Builder<?> b = new ByteBuddy().
 	            makeInterface().name(name);
 
@@ -63,7 +64,7 @@ public class _interface extends AbstractBuiltinFunction {
 	    }
 
 	    Class cls = b.make()
-	                .load(getClass().getClassLoader(), ClassLoadingStrategy.Default.WRAPPER)
+	                .load(classLoader, ClassLoadingStrategy.Default.INJECTION)
 	                .getLoaded();
 
 	   		return XValue.newXValue( cls  );

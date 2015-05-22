@@ -14,6 +14,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.util.List;
 
@@ -108,7 +109,17 @@ public class xdescribe extends XCommand {
 	}
 
 	private void printField(PrintWriter pw, String indent, Field f) {
-	    pw.println(  f.toString() );
+		int mods = f.getModifiers();
+		pw.print(indent);
+		if( mods != 0 ){
+			pw.print(Modifier.toString(mods));
+			pw.print(" ");
+			
+		}
+		pw.print( f.getType().getName() );
+		pw.print(" ");
+	    pw.print( f.getName() );
+		pw.println(";");
     }
 
     protected void printMethod(PrintWriter pw, String indent, Method m) {

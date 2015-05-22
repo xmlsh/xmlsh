@@ -11,6 +11,7 @@ import java.util.List;
 
 import org.xmlsh.core.AbstractBuiltinFunction;
 import org.xmlsh.core.CoreException;
+import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.json.JSONUtils;
 import org.xmlsh.sh.shell.Shell;
@@ -29,13 +30,14 @@ public class convert extends AbstractBuiltinFunction {
 	}
 
 	@Override
-	public XValue run(Shell shell, List<XValue> args) throws ClassNotFoundException, CoreException, JsonParseException, JsonMappingException, IOException 
+	public XValue run(Shell shell, List<XValue> args) throws CoreException
 	{
 		requires( args.size() == 2 , " two arguments required");
 
+		ClassLoader cl = shell.getClassLoader(); // TBD
 		Class<?> cls = null ;
 		Object from = args.get(0).asObject();
-		cls = JavaUtils.convertToClass(args.get(1) , shell );
+		cls = JavaUtils.convertToClass(args.get(1) , cl );
 		if( cls == null )
 			cls = JSONUtils.jsonNodeClass();
 

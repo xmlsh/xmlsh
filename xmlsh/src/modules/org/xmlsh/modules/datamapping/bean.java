@@ -48,19 +48,23 @@ import org.xmlsh.util.JavaUtils;
 public class bean extends AbstractBuiltinFunction {
         @Override
     	public XValue run(Shell shell, List<XValue> args) throws Exception {
-    
+    	    ClassLoader classLoader = getClass().getClassLoader();
+
     	    String name = args.remove(0).toString();
-    	    
-    	    DynamicType.Builder<?> b = new ByteBuddy().subclass(Object.class).name(name);
-    	    
+    	    XValue xpclass = args.remove(0);
     
+    	    
+    	    Class<?> pclass= DataMappingModule.resolveClass( null , xpclass , classLoader );
+    	    
+    	    DynamicType.Builder<?> b = new ByteBuddy().subclass( (Class<?>) (pclass!=null ? pclass :Object.class) ).name(name);
+
     	    for( XValue a : args ){
     	        b = newProperty(b, a.toString(), String.class );
     	        
             }
     
     	    Object bean = b.make()
-    	                .load(getClass().getClassLoader(), ClassLoadingStrategy.Default.WRAPPER)
+    	                .load(classLoader, ClassLoadingStrategy.Default.INJECTION)
     	                .getLoaded().newInstance();
     
     	   		return XValue.newXValue((Object) bean  );

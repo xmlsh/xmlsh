@@ -43,7 +43,7 @@ public class PackageModule extends Module {
 	 */
 	
 	
-	static Logger mLogger = LogManager.getLogger();
+	protected static Logger mLogger = LogManager.getLogger();
 	protected PackageModule(  ModuleConfig config ) throws CoreException {
 		super( config );
 	}
