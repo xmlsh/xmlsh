@@ -12,7 +12,7 @@ import org.xmlsh.sh.shell.Shell;
 public class ddbAttributes extends BuiltinFunctionCommand {
 
     public ddbAttributes() {
-        super("ddb-attribute");
+        super("ddb-attributes");
     }
 
     @Override

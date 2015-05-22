@@ -46,7 +46,6 @@ public class ddbGetItem extends AWSDDBCommand {
         } catch (UnexpectedException e) {
             usage(e.getLocalizedMessage());
             return 1;
-
         }
 
         int ret = -1;
@@ -64,7 +63,6 @@ public class ddbGetItem extends AWSDDBCommand {
         GetItemSpec itemSpec = parseGetItemSpec( opts );
 
         PrintStream ostream = mShell.getEnv().getStdout().asPrintStream(getSerializeOpts());
-
         try {
             Item item = table.getItem( itemSpec );
             ostream.print( item.toJSONPretty() );
@@ -111,9 +109,7 @@ public class ddbGetItem extends AWSDDBCommand {
         startResult();
         if (result.getItem() != null)
             writeItem(result.getItem());
-
         writeMetric( new RequestMetrics( result.getConsumedCapacity(),null) );
-
         endResult();
 
         return 0;

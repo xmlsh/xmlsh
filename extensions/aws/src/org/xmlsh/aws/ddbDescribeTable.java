@@ -14,6 +14,7 @@ import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
 
+import com.amazonaws.AmazonClientException;
 import com.amazonaws.services.dynamodbv2.model.DescribeTableRequest;
 import com.amazonaws.services.dynamodbv2.model.DescribeTableResult;
 
@@ -61,8 +62,6 @@ public class ddbDescribeTable extends AWSDDBCommand {
         OutputPort stdout = getStdout();
         mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
 
-        startDocument();
-        startElement(getName());
 
 
         DescribeTableRequest describeTableRequest = new DescribeTableRequest()
@@ -70,16 +69,16 @@ public class ddbDescribeTable extends AWSDDBCommand {
 
 
         traceCall("describeTable");
-
-        DescribeTableResult result = mAmazon.describeTable(describeTableRequest);
+        DescribeTableResult result  = null;
+        try {
+            result = mAmazon.describeTable(describeTableRequest);
+        } catch (AmazonClientException e) {
+                return handleException(e);
+        }
+        startResult();
         writeTableDescription( result.getTable() );
+        endResult();
 
-        endElement();
-        endDocument();
-
-        closeWriter();
-        stdout.writeSequenceTerminator(getSerializeOpts());
-        stdout.release();
 
         return 0;
 

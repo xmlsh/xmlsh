@@ -84,13 +84,11 @@ public class ddbUpdateItem extends AWSDDBCommand {
         traceCall("updateItem");
 
         UpdateItemResult result ; 
-
         try {
             result = mAmazon.updateItem(updateItemRequest);
         } catch (AmazonClientException e) {
             return handleException(e);
         }
-
         if (!bQuiet) {
 
             startResult();
@@ -98,7 +96,6 @@ public class ddbUpdateItem extends AWSDDBCommand {
                 writeItem(result.getAttributes());
             }
             writeMetric(  new RequestMetrics( result.getConsumedCapacity() , result.getItemCollectionMetrics() ));
-
             endResult();
         }
 

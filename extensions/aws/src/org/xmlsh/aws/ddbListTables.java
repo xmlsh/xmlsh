@@ -14,6 +14,7 @@ import org.xmlsh.core.OutputPort;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
 
+import com.amazonaws.AmazonClientException;
 import com.amazonaws.services.dynamodbv2.model.ListTablesRequest;
 import com.amazonaws.services.dynamodbv2.model.ListTablesResult;
 
@@ -61,8 +62,7 @@ public class ddbListTables extends AWSDDBCommand {
         OutputPort stdout = getStdout();
         mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
 
-        startDocument();
-        startElement(getName());
+   
 
         traceCall("listTables");
 
@@ -72,12 +72,25 @@ public class ddbListTables extends AWSDDBCommand {
             listTablesRequest.setLimit(Math.min(userLimit, kLIMIT));
 
         String lastTable = opts.getOptString("exclusive-start-table", null);
+        boolean bStarted = false ;
 
         int nlist = 0;
         do {
             if (lastTable != null)
                 listTablesRequest.setExclusiveStartTableName(lastTable);
-            ListTablesResult result = mAmazon.listTables(listTablesRequest);
+            ListTablesResult result = null;
+            try {
+                result = mAmazon.listTables(listTablesRequest);
+            } catch (AmazonClientException e) {
+                    return handleException(e);
+            }
+            finally {
+                if( bStarted )
+                   endResult();
+            }
+            
+            if( ! bStarted )
+                bStarted = startResult();
             int n = result.getTableNames().size();
             if (n <= 0)
                 break;
@@ -88,12 +101,7 @@ public class ddbListTables extends AWSDDBCommand {
             lastTable = result.getLastEvaluatedTableName();
         } while (lastTable != null);
 
-        endElement();
-        endDocument();
-
-        closeWriter();
-        stdout.writeSequenceTerminator(getSerializeOpts());
-        stdout.release();
+         endResult();
 
         return 0;
 

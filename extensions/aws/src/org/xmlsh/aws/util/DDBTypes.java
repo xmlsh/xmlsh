@@ -576,7 +576,7 @@ public class DDBTypes implements INameAttrExpr {
 
     public static AttributeValue parseAttrValue(XValue type, XValue xv) throws UnexpectedException, UnimplementedException, InvalidArgumentException, IOException 
     {
-        return parseAttrValue( parseAttrType(xv) , xv );
+        return parseAttrValue( parseAttrType(type) , xv );
     }
     public static AttributeValue parseAttrValue(AttrType type, XValue xv) throws UnexpectedException,
     UnimplementedException, IOException, InvalidArgumentException {

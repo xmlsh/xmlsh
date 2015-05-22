@@ -13,7 +13,7 @@ import org.xmlsh.sh.shell.Shell;
 public class ddbAttrNameExpr extends BuiltinFunctionCommand {
 
     public ddbAttrNameExpr() {
-        super("ddb-attr-value-expr");
+        super("ddb-attr-name-expr");
     }
 
     @Override

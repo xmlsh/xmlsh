@@ -29,6 +29,9 @@ import net.sf.saxon.s9api.XdmDestination;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.trans.XPathException;
+
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.xml.sax.ContentHandler;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
@@ -73,23 +76,15 @@ public class VariableOutputPort extends OutputPort
 	private		ByteArrayOutputStream 	mByteArrayOutputStream;
 	private		BuildingStreamWriter	mBuilder;
 	private		SerializeOpts 			mSerializeOpts; 	// for converting from ByteArray to string  
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
+    private static Logger mLogger = LogManager.getLogger( VariableOutputPort.class);
 	public VariableOutputPort( XVariable var)
 	{
 		mVariable = var ;
+		mLogger.trace("VariableOutputPort : " + var==null?"<null>" : var.getName() );
+		if( var == null )
+		    mLogger.warn("null variable");
 	}
-	
 	
 	/*
 	 * Standard input stream - created on first request
@@ -109,12 +104,9 @@ public class VariableOutputPort extends OutputPort
 	@Override
 	public synchronized void flush() throws  CoreException, SaxonApiException
 	{
-			
-			
+	    mLogger.trace("flush");
 			if (mXdmDestination != null)
 				appendVar( mXdmDestination.getXdmNode());
-
-			
 			// else
 			if (mByteArrayOutputStream != null)
 				try {
@@ -138,9 +130,7 @@ public class VariableOutputPort extends OutputPort
 
 	@Override
 	public synchronized void close() throws CoreException {
-		
-		
-		
+	      mLogger.trace("close");
 	}
 
 
@@ -201,6 +191,12 @@ public class VariableOutputPort extends OutputPort
 	 */
 	private void appendVar( XdmItem xitem ) throws InvalidArgumentException
 	{
+
+	    if( xitem ==  null ){
+	     mLogger.warn("appendVar: null item");
+	    return;
+	    }
+	            
 		if( xitem instanceof XdmNode ){
 			XdmNode node = (XdmNode)xitem;
 			node.getUnderlyingNode().setSystemId(getSystemId());

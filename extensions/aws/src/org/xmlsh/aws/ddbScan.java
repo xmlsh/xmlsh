@@ -55,10 +55,7 @@ public class ddbScan extends AWSDDBCommand {
     private int scan(Options opts) throws IOException, XMLStreamException, SaxonApiException, CoreException 
     {
 
-        OutputPort stdout = getStdout();
-        mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
         String filterExpression = opts.getOptString("filter", null);
-
 
         ScanRequest scanRequest = new ScanRequest().
                 withTableName(opts.getOptStringRequired("table")). 
@@ -82,20 +79,25 @@ public class ddbScan extends AWSDDBCommand {
 
         ArrayList<RequestMetrics> metrics = new ArrayList<RequestMetrics>();
         Map<String, AttributeValue> exclusiveStartKey =null;
-
+        boolean bStarted = false ;
 
         do {
 
-            traceCall("query");
+            traceCall("scan");
             if (exclusiveStartKey != null)
                 scanRequest.setExclusiveStartKey(exclusiveStartKey);
             ScanResult result = null;
             try {
                 result = mAmazon.scan(scanRequest);
             } catch (AmazonClientException e) {
-                return handleException(e);
+                    return handleException(e);
             }
-            startResult();
+               finally {
+                   if( bStarted )
+                      endResult();
+            }
+                if( ! bStarted )
+                    bStarted = startResult();
             metrics.add( new RequestMetrics(result.getCount(), result.getScannedCount(), result.getConsumedCapacity()));
 
             for( Map<String, AttributeValue> item :  result.getItems() ){

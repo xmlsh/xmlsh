@@ -42,7 +42,7 @@ public class ddbPutItem	 extends  AWSDDBCommand {
     @Override
     public int run(List<XValue> args) throws Exception {
         Options opts = getOptions(sTABLE_OPTIONS, sKEY_OPTIONS , sRETURN_OPTIONS , sCONDITION_OPTIONS ,
-                sDOCUMENT_OPTS , sATTR_NAME_EXPR_OPTIONS );
+                sDOCUMENT_OPTS , sATTR_EXPR_OPTIONS );
 
         //	Options opts = getOptions("expected:+,q=quiet");
         parseOptions(opts, args);
@@ -124,8 +124,6 @@ public class ddbPutItem	 extends  AWSDDBCommand {
         PutItemResult result = null;
         try {
             result = mAmazon.putItem(putItemRequest);
-        } catch (ConditionalCheckFailedException ce) {
-            return handleConditionException(ce);
         } catch (AmazonClientException e) {
             return handleException(e);
         }

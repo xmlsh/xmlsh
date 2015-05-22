@@ -881,12 +881,10 @@ public class Shell {
 			return ;
 		}
 		out.println(s);
-		
 
 		out.println(e.getMessage());
 		for( Throwable t = e.getCause() ; t != null ; t = t.getCause() ){
 	       out.println("  Caused By: " + t.getMessage());		
-			
 		}
 		
 		out.flush();

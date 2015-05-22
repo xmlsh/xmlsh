@@ -263,46 +263,31 @@ public abstract class AWSCommand extends XCommand {
 				return xv.xpath(getShell(), expr);
 				
 			}
-
-    protected int handleException(AmazonClientException e) throws XMLStreamException, SaxonApiException, IOException, CoreException {
-        
-        OutputPort stderr = null;
-        closeWriter(); // let exception occur
-       try {
-           startResult( getStderr() );
-          
-            attribute("status","exception");
-            attribute("retryable", e.isRetryable());
-            startElement("exception");
-            attribute("name",e.getClass().getSimpleName() );
-            characters( e.getLocalizedMessage());
-            endElement();
-            endResult();
-            return e.isRetryable() ? 1 : -1 ;
-        } 
-       finally {
-           closeWriter();
+    protected int handleException(AmazonClientException e)  {
+       mLogger.error("AWS Exception in " + getName() , e );
+       mShell.printErr("AWS Exception in " + getName() , e);
+       return -1 ;
        }
          
+    protected boolean startResult() throws XMLStreamException, SaxonApiException, IOException, CoreException {
+        if( mWriter != null ){
+          mLogger.warn(getName() + ": AWS startResult previously called for this request");
+          return false ; 
+        }
+        if( mResultOut != null ){
+            mLogger.warn(getName() + ": AWS startResult with result port open - closing");
+        }
+        mResultOut = this.getStdout();
         
-    }
-    protected void startResult() throws XMLStreamException, SaxonApiException, IOException, CoreException {
-       startResult(getStdout());
-    }
-    
-    protected void startResult(OutputPort out) throws XMLStreamException, SaxonApiException, IOException, CoreException {
-        if( mWriter != null )
-            closeWriter();
-        mResultOut = out;
-        mWriter = mResultOut.asXMLStreamWriter(getSerializeOpts());
-        startDocument();
-        startElement(getName());
+         mWriter = mResultOut.asXMLStreamWriter(getSerializeOpts());
+            startDocument();
+            startElement(getName());
+        return true ;
     }
 
     protected void endResult() throws XMLStreamException, IOException, CoreException, SaxonApiException {
         if( mWriter == null )
             return ;
-        
         endElement();
     	endDocument();
     	closeWriter();

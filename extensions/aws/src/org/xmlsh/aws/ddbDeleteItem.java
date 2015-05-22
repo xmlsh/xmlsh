@@ -82,9 +82,7 @@ public class ddbDeleteItem	 extends  AWSDDBCommand {
 
 
         if( ! bQuiet ){
-
             startResult();
-
             if( result.getAttributes() != null ){
                 writeItem( result.getAttributes() );
             }

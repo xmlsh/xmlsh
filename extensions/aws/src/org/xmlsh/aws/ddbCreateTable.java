@@ -65,8 +65,6 @@ public class ddbCreateTable extends AWSDDBCommand {
 
         String tableName = opts.getOptStringRequired("table");
 
-
-
         ProvisionedThroughput provisionedThroughput = new ProvisionedThroughput()
         .withReadCapacityUnits(opts.getOptLong("read-capacity", 5L))
         .withWriteCapacityUnits(opts.getOptLong("write-capacity", 5L));
@@ -91,7 +89,6 @@ public class ddbCreateTable extends AWSDDBCommand {
         } catch( AmazonClientException e ) {
             return handleException(e);
         }
-
 
         startResult();
         writeTableDescription(result.getTableDescription());

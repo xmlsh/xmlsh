@@ -68,8 +68,9 @@ import com.amazonaws.services.dynamodbv2.model.TableDescription;
 
 public abstract class AWSDDBCommand extends AWSCommand {
     public static final String sATTR_NAME_EXPR_OPTIONS = "ne=attr-name-expr:+";
+    public static final String sATTR_VALUE_EXPR_OPTIONS = "ve=attr-value-expr:+";
 
-    public static final String sATTR_EXPR_OPTIONS = Options.joinOptions("ve=attr-value-expr:+",sATTR_NAME_EXPR_OPTIONS);
+    public static final String sATTR_EXPR_OPTIONS = Options.joinOptions(sATTR_VALUE_EXPR_OPTIONS,sATTR_NAME_EXPR_OPTIONS);
     public static final String sTABLE_OPTIONS = "t=table:";
     public static final String sKEY_OPTIONS = "k=key:,kn=key-name:+,kv=key-value:+";
     public static final String sCONDITION_OPTIONS = "c=condition:";
@@ -626,7 +627,7 @@ public abstract class AWSDDBCommand extends AWSCommand {
 
         endElement();
     }
-    protected int handleException(AmazonClientException e) throws XMLStreamException, SaxonApiException, IOException, CoreException {
+    protected int handleException(AmazonClientException e) {
         if( e instanceof ConditionalCheckFailedException )
             return handleConditionException((ConditionalCheckFailedException) e);
         return super.handleException(e);
@@ -666,18 +667,11 @@ public abstract class AWSDDBCommand extends AWSCommand {
             return exprs ;
         return DDBTypes.addValuePrefix(exprs);
     }
-    protected int handleConditionException(ConditionalCheckFailedException ce) throws XMLStreamException,
-    SaxonApiException, IOException, CoreException {
-        startResult( getStderr() );
-        attribute("status", "condition-failed");
-        attribute("retryable", ce.isRetryable());
-        startElement("exception");
-        attribute("name", ce.getClass().getSimpleName());
-        characters(ce.getLocalizedMessage());
-        endElement();
-        endResult();
+    protected int handleConditionException(ConditionalCheckFailedException ce)  {
+        mShell.printErr("Conditional check failed for "  + getName() + ". retryable: " + ce.isRetryable()  );
+        mShell.printErr( ce.getLocalizedMessage());
+        mLogger.trace("Conditional check failed for "  + getName() , ce );
         return ce.isRetryable() ? 2 : -1;
-
     }
 
     @Override

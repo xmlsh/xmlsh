@@ -11,7 +11,7 @@ import org.xmlsh.sh.shell.Shell;
 public class ddbValues extends BuiltinFunctionCommand {
 
     public ddbValues() {
-        super("ddb-value");
+        super("ddb-values");
     }
 
     @Override

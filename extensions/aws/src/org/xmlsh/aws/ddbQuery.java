@@ -86,7 +86,9 @@ public class ddbQuery extends AWSDDBCommand {
             queryRequest.setSelect(parseSelect(opts.getOptStringRequired("select")));
         ArrayList<RequestMetrics> metrics = new ArrayList<RequestMetrics>(); 
 
-
+        // start result eary due to looping 
+ 
+        boolean bStarted = false ;
         do {
             traceCall("query");
             if (exclusiveStartKey != null)
@@ -95,13 +97,17 @@ public class ddbQuery extends AWSDDBCommand {
             try {
                 result = mAmazon.query(queryRequest);
             } catch (AmazonClientException e) {
-                return handleException(e);
+                   return handleException(e);
             }
-            startResult();
+              finally {
+                  if( bStarted )
+                     endResult();
+            }
+            if( ! bStarted )
+                bStarted = startResult();
             for( Map<String, AttributeValue> item :  result.getItems() )
                 writeItem(item);
             metrics.add( new RequestMetrics(result.getCount(), result.getScannedCount(), result.getConsumedCapacity()));
-
             exclusiveStartKey = result.getLastEvaluatedKey();
 
         } while( exclusiveStartKey != null );
