@@ -20,7 +20,7 @@ public class matches extends BuiltinFunctionCommand {
 
     public matches()
     {
-        super("join");
+        super("matches");
     }
 
     // tokenize( string regex )

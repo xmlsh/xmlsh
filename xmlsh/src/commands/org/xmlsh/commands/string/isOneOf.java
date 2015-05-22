@@ -17,19 +17,28 @@ import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.Util;
 
-public class length extends BuiltinFunctionCommand {
+public class isOneOf extends BuiltinFunctionCommand {
 
-    public length()
+    public isOneOf()
     {
-        super("length");
+        super("is-one-of");
     }
 
     // string:join( sep , arg ... )
     @Override
     public XValue run(Shell shell, List<XValue> args) throws UnexpectedException, XPathException,
             InvalidArgumentException {
-        return new XValue(args.size() > 0 ? args.get(0).toString().length() : 0 );
-    }
+
+        if (args.size() < 2)
+            return new XValue(false);
+
+        String str = args.remove(0).toString();
+        for( XValue a : args ){
+            if( Util.isEqual( str, a.toString() ))
+                return new XValue(true);
+        }
+        return new XValue(false);
+     }
 
 }
 

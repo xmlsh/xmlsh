@@ -17,19 +17,22 @@ import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.Util;
 
-public class length extends BuiltinFunctionCommand {
+public class isEqual extends BuiltinFunctionCommand {
 
-    public length()
+    public isEqual()
     {
-        super("length");
+        super("is-equalf");
     }
 
     // string:join( sep , arg ... )
     @Override
     public XValue run(Shell shell, List<XValue> args) throws UnexpectedException, XPathException,
             InvalidArgumentException {
-        return new XValue(args.size() > 0 ? args.get(0).toString().length() : 0 );
-    }
+
+        if (args.size() != 2)
+            return new XValue(false);
+        return new XValue( Util.isEqual( args.get(0).toString() , args.get(1).toString() ));
+     }
 
 }
 

@@ -17,18 +17,18 @@ import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.Util;
 
-public class length extends BuiltinFunctionCommand {
+public class trim extends BuiltinFunctionCommand {
 
-    public length()
+    public trim()
     {
-        super("length");
+        super("trim");
     }
 
     // string:join( sep , arg ... )
     @Override
     public XValue run(Shell shell, List<XValue> args) throws UnexpectedException, XPathException,
             InvalidArgumentException {
-        return new XValue(args.size() > 0 ? args.get(0).toString().length() : 0 );
+        return new XValue(Util.stringJoin(Util.toStringList(args), "").trim());
     }
 
 }

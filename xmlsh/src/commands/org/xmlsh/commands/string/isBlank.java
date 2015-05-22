@@ -17,18 +17,19 @@ import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.Util;
 
-public class length extends BuiltinFunctionCommand {
+public class isBlank extends BuiltinFunctionCommand {
 
-    public length()
+    public isBlank()
     {
-        super("length");
+        super("is-blank");
     }
 
     // string:join( sep , arg ... )
     @Override
     public XValue run(Shell shell, List<XValue> args) throws UnexpectedException, XPathException,
             InvalidArgumentException {
-        return new XValue(args.size() > 0 ? args.get(0).toString().length() : 0 );
+        String s = args.size() > 0 ? args.get(0).toString() : null ;
+        return new XValue(Util.isBlank(s));
     }
 
 }
