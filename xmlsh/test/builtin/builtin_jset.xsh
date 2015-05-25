@@ -1,3 +1,4 @@
+import module java
 jset -v int -c java.lang.Integer 12345
 xtype -j -v int
 echo $int 

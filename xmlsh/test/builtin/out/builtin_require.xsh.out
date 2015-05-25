@@ -5,4 +5,4 @@ Require 9.0.2 failed correctly
 entering require test
 Correctly failed require 99999
 Correctly caught failed require in sub
-requires version: 99999
+requires version 2.0.0 GTE 99999

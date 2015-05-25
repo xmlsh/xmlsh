@@ -25,7 +25,7 @@ import org.xmlsh.util.Util;
 
 
 /**
- * Command: Cat
+ * Command: xconv
  * 
  * 
  * @author David A. Lee

@@ -276,7 +276,7 @@ public abstract class JXConverter
 				writeString(getStringValue());
 				break;
 			case VALUE_TRUE:
-				writeBoolean(false);
+				writeBoolean(true);
 				break;
 			default:
 				break;
