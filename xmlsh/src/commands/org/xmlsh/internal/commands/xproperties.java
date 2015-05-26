@@ -6,7 +6,6 @@
 
 package org.xmlsh.internal.commands;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -17,7 +16,6 @@ import java.util.Properties;
 
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLEventWriter;
-import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 
 import net.sf.saxon.s9api.SaxonApiException;
@@ -28,6 +26,7 @@ import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.util.StringPair;
+import org.xmlsh.util.XMLUtils;
 
 /*
  * 
@@ -143,11 +142,7 @@ public class xproperties extends XCommand
 
 		ByteArrayOutputStream oss = new ByteArrayOutputStream();
 		props.storeToXML( oss , comment , serializeOpts.getOutputXmlEncoding());
-		ByteArrayInputStream iss = new ByteArrayInputStream( oss.toByteArray());
-
-		XMLInputFactory factory = XMLInputFactory.newInstance();
-		factory.setProperty(XMLInputFactory.SUPPORT_DTD, Boolean.valueOf(false)); // Dont try to reference http://java.sun.com/dtd/properties.dtd !!!
-		XMLEventReader reader = factory.createXMLEventReader( null , iss);
+		XMLEventReader reader = XMLUtils.createEventReader(oss.toByteArray());
 		XMLEventWriter writer = getStdout().asXMLEventWriter(serializeOpts);
 		writer.add(reader);
 		reader.close();

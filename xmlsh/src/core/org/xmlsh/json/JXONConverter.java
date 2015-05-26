@@ -19,6 +19,8 @@ import javanet.staxutils.OutputFactory;
 
 import javax.xml.crypto.dsig.TransformException;
 import javax.xml.namespace.QName;
+import javax.xml.stream.FactoryConfigurationError;
+import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLEventWriter;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -39,18 +41,20 @@ import net.sf.saxon.s9api.XdmNode;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.xmlsh.builtin.commands.exit;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.sh.shell.ShellConstants;
 import org.xmlsh.util.Util;
+import org.xmlsh.util.XMLUtils;
 
 import com.fasterxml.jackson.core.JsonToken;
+import com.fasterxml.jackson.core.json.JsonWriteContext;
 
 public class JXONConverter extends JXConverter
 {
-	static final String	 kENCODING_UTF_8	= "UTF-8";
-
 	static final String	 kJXML_URI	     = "http://www.xmlsh.org/jxml";
 	static final QName	 kATTR_ENCODING	 = new QName("encoding");
 	static final QName	 kATTR_NAME	     = new QName("name");
@@ -71,8 +75,6 @@ public class JXONConverter extends JXConverter
 	class JConverter extends JSONConverter
 	{
 
-		private int	mLevel	= 0;
-
 		protected JConverter(XMLStreamReader reader, OutputStream os) throws ConverterException
 		{
 			super(reader, os);
@@ -81,18 +83,15 @@ public class JXONConverter extends JXConverter
 		@Override
 		public boolean startElement(StartElement start, QName name) throws ConverterException
 		{
+
+			mLogger.entry(start, name);
 			try {
-				mLevel++;
+			
 				if(name.equals(kELEM_XJSON)) {
-					if(mLevel != 1)
-						throw new ConverterException("XJSON element must be at document root");
-
-					// Children become the new roots
-
-					mLevel = 0;
 					while (parse())
 						;
-					return false;
+					
+					return  mLogger.exit( false);
 				} else if(name.equals(kELEM_FILE))
 					throw new ConverterException("Depreciated element not supported: " + kELEM_FILE.toString());
 				else
@@ -117,25 +116,27 @@ public class JXONConverter extends JXConverter
 				throw e;
 			} catch (Exception e) {
 				Util.wrapException(e, ConverterException.class);
-			}
-			return true;
+			} 
+			return mLogger.exit(true );
+			
 		}
 
 		private void writeString(StartElement start) throws XMLStreamException, UnsupportedEncodingException,
 		FileNotFoundException, IOException, TransformException,
 		SaxonApiException, CoreException
 		{
+			mLogger.entry(start );
+			
 			String value = getAttr(start, kATTR_VALUE);
+			@SuppressWarnings("unused")
 			String encoding = getAttr(start, kATTR_ENCODING);
 			String unwrap = getAttr(start, kATTR_UNWRAP);
 			String html = getAttr(start, kATTR_HTML);
-			boolean bReadToEnd = true;
 			String chars;
 			if(value != null)
 				chars = value;
 			else {
 				// readString eats the close tag
-				bReadToEnd = false;
 				chars = readString(Util.parseBoolean(html));
 
 			}
@@ -147,8 +148,12 @@ public class JXONConverter extends JXConverter
 			}
 
 			mGenerator.writeString(chars);
-			if(bReadToEnd)
-				readToEnd();
+			
+			mLogger.trace("writeString({}) leaving. prevLevel: {} level: {} " , chars );
+
+			
+			mLogger.exit(   );
+			
 
 		}
 
@@ -159,15 +164,16 @@ public class JXONConverter extends JXConverter
 
 		private String readString(boolean bHTML) throws TransformException, XMLStreamException, SaxonApiException,
 		IOException
-		{
+		{ 
+			mLogger.entry(bHTML);
 
 			byte[] bytes = bHTML ? serializeAsXML() : serializeAsString();
 
 			// String xs = new String(xhtml,klENCODING_UTF_8);
 			if(bHTML)
-				return formatAsHtml(bytes);
+				return mLogger.exit( formatAsHtml(bytes));
 			else
-				return new String(bytes, kENCODING_UTF_8);
+				return  mLogger.exit(new String(bytes, ShellConstants.kENCODING_UTF_8));
 
 		}
 
@@ -201,33 +207,44 @@ public class JXONConverter extends JXConverter
 
 		private void writeNull() throws IOException, ConverterException
 		{
+			mLogger.entry(  );
 			mGenerator.writeNull();
-			readToEnd();
+			mLogger.exit( );
+
 		}
 
 		private void writeBoolean(StartElement start) throws XMLStreamException, IOException, ConverterException
 		{
+
+			mLogger.entry(start);
+			
 			String chars;
 			Attribute v = start.getAttributeByName(kATTR_VALUE);
-			if(v != null)
-				chars = v.getValue();
-			else
-				chars = readString();
 
+			if(v != null) 
+				chars = v.getValue(); 
+			else {
+				chars = readString();
+			}
 			chars = chars.trim();
 			mGenerator.writeBoolean(Util.parseBoolean(chars));
-			readToEnd();
+			
+			mLogger.exit(  );
+
 		}
 
 		private void writeNumber(StartElement start) throws ConverterException, IOException, XMLStreamException
 		{
-
+			mLogger.entry(start);
+			
 			String chars;
 			Attribute v = start.getAttributeByName(kATTR_VALUE);
+
 			if(v != null)
 				chars = v.getValue();
-			else
+				else {
 				chars = readString();
+				}
 
 			chars = chars.trim();
 
@@ -235,21 +252,24 @@ public class JXONConverter extends JXConverter
 
 			mGenerator.writeNumber(chars);
 
+			mLogger.exit();
 		}
 
 		private void writeMember(StartElement start) throws IOException, ConverterException
 		{
 
+			mLogger.entry(start);
 			String name = start.getAttributeByName(kATTR_NAME).getValue();
 			mGenerator.writeFieldName(name);
-			if(parse())
-				readToEnd();
+			parse();
+			mLogger.exit();
 
 		}
 
 		private void writeArray(StartElement start) throws IOException, ConverterException
 		{
 
+			mLogger.entry( start  );			
 			mGenerator.writeStartArray();
 			do {
 
@@ -257,12 +277,14 @@ public class JXONConverter extends JXConverter
 					break;
 			} while (true);
 			mGenerator.writeEndArray();
+			mLogger.exit();
 
 		}
 
 		private void writeObject(StartElement start) throws IOException, ConverterException
 		{
-
+			
+			mLogger.entry( start );
 			mGenerator.writeStartObject();
 			do {
 
@@ -270,7 +292,8 @@ public class JXONConverter extends JXConverter
 					break;
 			} while (true);
 			mGenerator.writeEndObject();
-
+			mLogger.exit();
+			
 		}
 
 		/*
@@ -286,7 +309,7 @@ public class JXONConverter extends JXConverter
 			ser.setOutputProperty(Serializer.Property.INDENT, "no");
 
 			ser.setOutputProperty(Serializer.Property.METHOD, "html");
-			ser.setOutputProperty(Serializer.Property.ENCODING, kENCODING_UTF_8);
+			ser.setOutputProperty(Serializer.Property.ENCODING, ShellConstants.kENCODING_UTF_8);
 			ser.setOutputStream(bos);
 
 			Processor processor = Shell.getProcessor();
@@ -294,49 +317,43 @@ public class JXONConverter extends JXConverter
 			builder.setWhitespaceStrippingPolicy(WhitespaceStrippingPolicy.ALL);
 			XdmNode node = builder.build(new StreamSource(new ByteArrayInputStream(xhtml)));
 			processor.writeXdmValue(node, ser);
-			return bos.toString(kENCODING_UTF_8).trim();
+			return bos.toString(ShellConstants.kENCODING_UTF_8).trim();
 
 		}
 
 		/*
 		 * Serialize as XML
 		 */
-		private byte[] serializeAsXML() throws XMLStreamException
+		private byte[] serializeAsXML() throws XMLStreamException, UnsupportedEncodingException, FactoryConfigurationError, IOException 
 		{
 
-			ByteArrayOutputStream bos = new ByteArrayOutputStream();
-			XMLOutputFactory fact = new OutputFactory();
-
-			XMLEventWriter writer = fact.createXMLEventWriter(bos, kENCODING_UTF_8);
-			while (mReader.hasNext()) {
-				XMLEvent event = mReader.nextEvent();
-
-				if(event.isEndElement() && event.asEndElement().getName().equals(kELEM_STRING))
-					break;
-				writer.add(event);
+			mLogger.entry( );
+			
+	
+			XMLEventWriter writer = null;
+			XMLEventReader reader = null;
+			
+			try {
+				ByteArrayOutputStream bos = new ByteArrayOutputStream();
+				XMLOutputFactory ofact = new OutputFactory();
+				writer = ofact.createXMLEventWriter(bos, ShellConstants.kENCODING_UTF_8) ; 
+			    reader = XMLUtils.createEventReader( readString() );
+				writer.add(reader);
+				writer.flush();
+				return mLogger.exit( bos.toByteArray() );
+			} finally {
+				Util.safeClose(reader);
+				Util.safeClose(writer);
 			}
 
-			writer.flush();
-			writer.close();
-			return bos.toByteArray();
 
 		}
 
 		private byte[] serializeAsString() throws XMLStreamException, UnsupportedEncodingException, IOException
 		{
-
-			ByteArrayOutputStream bos = new ByteArrayOutputStream();
-
-			while (mReader.hasNext()) {
-				XMLEvent event = mReader.nextEvent();
-
-				if(event.isEndElement() && event.asEndElement().getName().equals(kELEM_STRING))
-					break;
-				if(event.isCharacters())
-					bos.write(event.asCharacters().getData().getBytes(kENCODING_UTF_8));
-			}
-
-			return bos.toByteArray();
+			
+			String s = readString();
+			return s.getBytes(ShellConstants.kENCODING_UTF_8);
 
 		}
 
@@ -344,31 +361,33 @@ public class JXONConverter extends JXConverter
 		protected
 		boolean startDocument(XMLEvent e) throws ConverterException
 		{
-			return true;
+			mLogger.entry( e );
+			return mLogger.exit(true );
+
 
 		}
 
 		@Override
 		protected
-		boolean endElement(EndElement asEndElement) throws ConverterException
+		boolean endElement(EndElement e ) throws ConverterException
 		{
-
-			return false;
+			mLogger.entry( e );
+			return mLogger.exit(false  );
 		}
 
 		@Override
 		protected
 		boolean endDocument(XMLEvent e) throws ConverterException
 		{
-			return false;
-		}
+			mLogger.entry( e);
+			return mLogger.exit(false );		}
 
 		@Override
 		protected
 		boolean characters(XMLEvent e)
 		{
 			// Ignore unexpected chars
-			return true;
+			return mLogger.exit(true );
 		}
 
 	}
@@ -387,6 +406,8 @@ public class JXONConverter extends JXConverter
 		void writeArray() throws ConverterException
 		{
 
+			mLogger.entry( );
+			
 			try {
 				JsonToken tok;
 				writeStartElement( kELEM_ARRAY );
@@ -405,6 +426,8 @@ public class JXONConverter extends JXConverter
 		void writeObject() throws ConverterException
 		{
 
+			mLogger.entry( );
+			
 			JsonToken tok;
 
 			try {
@@ -426,6 +449,8 @@ public class JXONConverter extends JXConverter
 
 		private void writeMember() throws ConverterException
 		{
+			mLogger.entry( );
+			
 			try {
 				writeStartElement( kELEM_MEMBER );
 				String name = mParser.getCurrentName();
@@ -443,6 +468,8 @@ public class JXONConverter extends JXConverter
 		@Override
 		void writeBoolean(boolean value) throws ConverterException
 		{
+			mLogger.entry(value);
+			
 
 			try {
 
@@ -458,6 +485,8 @@ public class JXONConverter extends JXConverter
 		@Override
 		void writeNull() throws ConverterException
 		{
+			mLogger.entry( );
+			
 			try {
 				writeStartElement(kELEM_NULL);
 				writeEndElement();
@@ -469,7 +498,9 @@ public class JXONConverter extends JXConverter
 
 		@Override
 		void writeNumber() throws ConverterException
-		{
+		{ 
+			mLogger.entry( );
+			
 			try {
 				writeStartElement(kELEM_NUMBER);
 				writeCharacters( getStringValue() ); 
@@ -485,6 +516,8 @@ public class JXONConverter extends JXConverter
 		void writeString(String s) throws ConverterException
 		{
 
+			mLogger.entry(s);
+			
 			try {
 				writeStartElement(kELEM_STRING);
 				writeCharacters(s);

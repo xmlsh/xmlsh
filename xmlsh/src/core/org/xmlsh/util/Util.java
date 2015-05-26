@@ -368,7 +368,7 @@ public class Util
 	 {
 		 try
 		 {
-			 return URLEncoder.encode(value, "UTF-8");
+			 return URLEncoder.encode(value, ShellConstants.kENCODING_UTF_8);
 		 }
 		 catch (UnsupportedEncodingException e)
 		 {

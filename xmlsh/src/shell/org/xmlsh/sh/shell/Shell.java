@@ -107,7 +107,7 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt {
 	};
 	@Override
 	public String toString() {
-		return "Shell[" + _id + "]";
+		return "[" + _id + "," +  mLastThreadId +  "]" ;
 	}
 	
 

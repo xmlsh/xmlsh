@@ -1,10 +1,17 @@
 package org.xmlsh.util;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.Iterator;
 import java.util.List;
+
+import javax.xml.stream.FactoryConfigurationError;
+import javax.xml.stream.XMLEventReader;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
 
 import net.sf.saxon.expr.StaticProperty;
 import net.sf.saxon.om.EmptyAtomicSequence;
@@ -33,6 +40,7 @@ import org.apache.logging.log4j.Logger;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.SerializeOpts;
+import org.xmlsh.sh.shell.ShellConstants;
 import org.xmlsh.types.ITypeConverter;
 import org.xmlsh.types.TypeFamily;
 
@@ -406,6 +414,20 @@ public class XMLUtils
 			return node.getNodeKind() == XdmNodeKind.ELEMENT;
 		}
 		return false ;
+	}
+	public static  XMLEventReader createEventReader( String s ) throws UnsupportedEncodingException, FactoryConfigurationError, XMLStreamException
+	{
+		return createEventReader(s.getBytes(ShellConstants.kENCODING_UTF_8) );
+	}
+
+
+	public static  XMLEventReader createEventReader(byte[] bytes)
+			throws FactoryConfigurationError, XMLStreamException {
+		ByteArrayInputStream iss = new ByteArrayInputStream( bytes );
+		XMLInputFactory factory = XMLInputFactory.newInstance();
+		factory.setProperty(XMLInputFactory.SUPPORT_DTD, Boolean.valueOf(false)); // Dont try to reference http://java.sun.com/dtd/properties.dtd !!!
+		XMLEventReader reader = factory.createXMLEventReader( null , iss);
+		return reader;
 	}
 
 

@@ -30,6 +30,7 @@ import org.xmlsh.sh.core.IExpression;
 import org.xmlsh.sh.core.SourceLocator;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.sh.shell.ShellConstants;
 import org.xmlsh.util.Util;
 // Use a different name to avoid confusion with sh.shell.ShellThread
 public class XShellThread extends Thread {
@@ -159,8 +160,8 @@ public class XShellThread extends Thread {
 					mShell.setArgs(mArgs == null ? new ArrayList<XValue>() : mArgs );
 					mShell.setArg0("xmlshui");
 
-					mShell.getSerializeOpts().setInputTextEncoding("UTF-8");
-					mShell.getSerializeOpts().setOutputTextEncoding("UTF-8");
+					mShell.getSerializeOpts().setInputTextEncoding(ShellConstants.kENCODING_UTF_8);
+					mShell.getSerializeOpts().setOutputTextEncoding(ShellConstants.kENCODING_UTF_8);
 
 					mShell.getEnv().setStdout(mResultOutputStream);
 					mShell.getEnv().setStderr(mResultErrorStream);

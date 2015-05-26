@@ -15,6 +15,7 @@ import org.xmlsh.core.Options;
 import org.xmlsh.core.Options.OptionValue;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
+import org.xmlsh.sh.shell.ShellConstants;
 import org.xmlsh.util.Util;
 
 import com.thaiopensource.relaxng.edit.SchemaCollection;
@@ -38,7 +39,7 @@ public class rngconvert extends XCommand {
 	private final ErrorHandlerImpl eh = new ErrorHandlerImpl();
 	private String inputType;
 	private String outputType;
-	private static final String DEFAULT_OUTPUT_ENCODING = "UTF-8";
+	private static final String DEFAULT_OUTPUT_ENCODING = ShellConstants.kENCODING_UTF_8;
 	private static final int DEFAULT_LINE_LENGTH = 72;
 	private static final int DEFAULT_INDENT = 2;
 

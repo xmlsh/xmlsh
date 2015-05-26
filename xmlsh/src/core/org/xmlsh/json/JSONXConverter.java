@@ -36,8 +36,6 @@ import com.fasterxml.jackson.core.JsonToken;
 
 public class JSONXConverter extends JXConverter
 {
-	static final String	 kENCODING_UTF_8	= "UTF-8";
-
 	static final String	 kJXML_URI	     = "http://www.ibm.com/xmlns/prod/2009/jsonx";
 	static final QName	 kATTR_NAME	     = new QName("name");
 	static final QName	 kELEM_OBJECT	 = new QName(kJXML_URI, "object");	 // A JSON Object
@@ -115,7 +113,6 @@ public class JSONXConverter extends JXConverter
 		{
 			writeNameField( start );
 			mGenerator.writeNull();
-			readToEnd();
 		}
 
 		private void writeBoolean(StartElement start) throws XMLStreamException, IOException, ConverterException

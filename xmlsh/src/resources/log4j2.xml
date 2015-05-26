@@ -26,7 +26,11 @@
 
 	<Appenders>
 		<File name="A1" fileName="${logfile}" append="false" >
+		<!-- 
 			<PatternLayout pattern="%d %-5p [%t] %c{5} %M - %m (%X{tshell) %X{module}) | %l%n" />
+		 -->
+		 			<PatternLayout pattern="%d %-5p [%t] %c{5} %M - %m (%X{tshell))%n" />
+		 
 		</File>
 		<Console name="CONSOLE" target="SYSTEM_ERR" alwaysWriteExceptions="false">
 			<PatternLayout pattern="%m %ex{short}%n" />

@@ -92,6 +92,8 @@ public class ShellConstants
 
     public static final String XSH_EXTENSION = ".xsh";
 
+	public static final String kENCODING_UTF_8 = "UTF-8";
+
 }
 
 
