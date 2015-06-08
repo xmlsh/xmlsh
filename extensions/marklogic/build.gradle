@@ -1,0 +1,10 @@
+
+dependencies {
+   compile  'com.marklogic:marklogic-xcc:8.0.2'
+        
+  }
+  
+  repositories {
+        maven {url "http://developer.marklogic.com/maven2/"}
+        maven {url "http://rjrudin.github.io/marklogic-java/releases"}
+}

@@ -1,0 +1,233 @@
+<?xml version="1.0" ?>
+<project name="xmlsh" default="help">
+	<echo>Entering Ant target: ${ant.project.default-target}</echo>
+
+<!-- Global properties 
+     Edit these for every release
+-->
+	<property environment="env"/>
+	<property name="component" value="xmlsh"/>
+  <property name="XINSTALL" value="${env.XINSTALL}"/>
+  <property name="install_root" value="${XINSTALL}"/>
+  
+	<import file="../build/common.xml"/>
+	<property name="release" value="2_0_0"/>
+	<property name="version" value="2.0.0"/>
+	<property name="jar" value="xmlsh-2.0.jar"/>
+	<echo>Ant target: ${ant.project.default-target}</echo>
+	<echo>Ant Version: ${ant.version}</echo>
+	<echo>Ant lib: ${ant.core.lib}</echo>
+	<echo>Java Version via Ant: ${ant.java.version}</echo>
+	<echo>Java Version System Prop: ${java.version}</echo>
+
+	<tstamp>
+		<format property="bdate.date" pattern="yyyy-MM-dd"/>
+		<format property="bdate.datetime" pattern="yyyy-MM-dd'T'HH:mm:ss"/>
+	</tstamp>
+
+	<property name="dist" location="_dist"/>
+
+	<target name="main" depends="help" description="Main target [help]"/>
+	<target name="help" description="Usage">
+		<echo>
+    usage: ant [deps init clean build jar test clobber]
+    </echo>
+	</target>
+
+
+	<target name="deps-init">
+		<mkdir dir="lib"/>
+		<mkdir dir="build-lib"/>
+		<mkdir dir="bin"/>
+		
+	</target>
+	  
+	<target name="build" depends="compile, jar">
+		<subant target="build" buildpath="test/src">
+			<property name="xmlsh.root" value="${xmlsh.root}"/>
+		</subant>
+	</target>
+
+
+	<target name="clean" description="Clean all">
+		<delete includeEmptyDirs="true" quiet="true">
+			<fileset dir="${dist}" includes="*"/>
+			<fileset dir="_out" includes="**/*" />
+			<fileset dir="test" includes="**/_out.txt **/_err.txt"/>
+			<fileset dir="src" includes="**/version.properties **/*.bak"/>
+			<fileset dir="bin" includes="**/*" />
+			<fileset dir="." includes="**/xmlsh.log" />
+		</delete>
+		<subant target="clean"  buildpath="test/src">
+			<property name="xmlsh.root" value="${xmlsh.root}"/>
+		</subant>
+	</target>
+
+
+	<target name="clobber" depends="clean,clean-generated" description="Clean and remove all generated and dependants">
+		<delete quiet="true" includeEmptyDirs="true">
+			<fileset dir="${dist}"/>
+			<fileset dir="_out"/>
+			<fileset dir="build-lib" includes="**/*.jar"/>
+			<fileset dir="lib" includes="**/*.jar"/>
+		</delete>
+		<subant target="clobber"  buildpath="test/src">
+			<property name="xmlsh.root" value="${xmlsh.root}"/>
+		</subant>
+	</target>
+
+
+
+
+
+	<target name="grammar" description="Build parser from javaCC grammar">
+		<javacc
+		    target="src/shell/org/xmlsh/sh/grammar/ShellParser.jj"
+		    outputdirectory="src/generated/org/xmlsh/sh/grammar"
+		    javacchome="build-lib"
+		    static="false"
+			jdkversion="1.8"
+			
+		/>
+	</target>
+	<target name="clean-generated" description="Clean generated files">
+		<delete includeEmptyDirs="false" quiet="false">
+			<fileset dir="src" includes="**/version.properties **/*.bak"/>
+			<fileset dir="src" includes="generated/org/xmlsh/sh/grammar/*.java"/>
+		</delete>
+	</target>
+	<target name="compile" depends="grammar" description="Compilation target">
+		<mkdir dir="_out"/>
+		<echo file="src/shell/org/xmlsh/sh/shell/version.properties" append="false">
+version.build_date=${bdate.datetime}
+version.release=${release}
+version.version=${version}
+</echo>
+		<javac  includeantruntime="false" destdir="_out" debug="on" source="${javac.source}" target="${javac.target}">
+			<src path="src/core" />
+			<src path="src/shell"/>
+			<src path="src/commands"/>
+			<src path="src/modules"/>
+			<src path="src/generated" />
+			<src path="src/resources" />
+			<classpath>
+				<fileset dir="lib">
+					<include name="**/*.jar"/>
+					<exclude name="**/saxon9ee.jar"/>
+					<exclude name="**/saxon9pe.jar"/>
+
+				</fileset>
+				<fileset dir="build-lib">
+					<include name="**/*.jar"/>
+				</fileset>
+
+			</classpath>
+		</javac>
+		<copy todir="_out" filtering="on">
+			<fileset dir="src/shell">
+				<include name="**/*.properties"/>
+				<include name="**/*.xquery"/>
+			</fileset>
+			<fileset dir="src/commands">
+				<include name="**/*.xsh"/>
+				<include name="**/*.xsl"/>
+				<include name="**/*.xml"/>
+				<include name="**/*.xquery"/>
+			</fileset>
+			<fileset dir="src/modules">
+				<include name="**/*.xsh"/>
+				<include name="**/*.xsl"/>
+				<include name="**/*.xml"/>
+				<include name="**/*.xquery"/>
+			</fileset>
+			<fileset dir="src/resources">
+				<include name="log4j2.xml"/>
+			</fileset>
+
+		</copy>
+	</target>
+
+
+	<target name="jar" depends="compile" description="Build JAR - jar">
+		<mkdir dir="bin"/>
+		<jar 
+        jarfile="bin/${jar}" 
+        basedir="_out" 
+        manifest="src/resources/WEB-INF/MANIFEST.MF"
+        />
+
+	</target>
+	<target name="test" description="Test Cases">
+
+		<java 
+  		classname="org.xmlsh.sh.shell.Shell"
+  		fork="true"
+  		dir="test">
+			<classpath>
+				<fileset dir="lib">
+					<include name="**/*.jar"/>
+					<exclude name="**/saxon9ee.jar"/>
+					<exclude name="**/saxon9pe.jar"/>
+				</fileset>
+				<fileset dir="bin">
+					<include name="**/*.jar"/>
+				</fileset>
+			</classpath>
+
+			<!--
+  	    	<jvmarg value="-XX:MaxPermSize=128m"/>
+		-->
+			<arg value="./run_tests.xsh"/>
+			<arg value="extra"/>
+		</java>
+	</target>
+	<target name="dist" depends="jar" description="Create Distribution">
+
+		<mkdir dir="${dist}"/>
+		<zip destfile="${dist}/xmlsh_${release}.zip" >
+			<zipfileset dir="." includes="bin/${jar} test/** win32/** lib/** samples/** unix/** cygwin/** notices/** license.txt README.txt" 
+					excludes="**/sh_histo lib/saxon-license.lic lib/saxon9pe.jar lib/saxon9ee.jar" prefix="xmlsh_${release}"/>
+
+		</zip>
+		<zip destfile="${dist}/xmlsh_src_${release}.zip" >
+			<zipfileset dir="." includes="*/**" 
+				excludes=".settings/* **/sh_histo _out/** bin/** _dist/** lib/** build-lib/** test/** samples/** win32/** unix/** cygwin/**"  prefix="xmlsh_${release}"/>
+		</zip>
+
+		<!--
+		<tar destfile="${dist}/xmlsh_${release}.tar.gz" compression="gzip">
+  		  <zipfileset src="_dist/xmlsh_${release}.zip"/>
+  		</tar>
+		<tar destfile="${dist}/xmlsh_src_${release}.tar.gz" compression="gzip">
+		  <zipfileset src="_dist/xmlsh_src_${release}.zip"/>
+		</tar>
+	-->
+
+	</target>
+
+
+	<target name="combine" description="Create Distribution">
+		<jar destfile="bin/xmlsh_all.jar" basedir="_out"
+  		index="true"
+  		filesetmanifest="merge">
+
+			<zipgroupfileset dir="lib" includes="*.jar" />
+		</jar>
+	</target>
+
+	<target name="javadoc">
+		<ant antfile="javadoc.xml" target="javadoc" >
+
+		</ant>
+	</target>
+
+	<target name="install" depends="install.check,dist" if="install.exists" description="Install to xmlsh">
+		<echo>Installing to ${install.dir}</echo>
+		<unzip dest="${install.dir}" src="${dist}/xmlsh_${release}.zip">
+			<cutdirsmapper dirs="1"/>
+		</unzip>
+
+	</target>
+
+
+</project>

@@ -1,0 +1,131 @@
+apply plugin: 'application'
+
+//  apply from: "$rootDir/utils.gradle"
+mainClassName = 'org.xmlsh.sh.shell.Shell'
+applicationName = 'xmlsh'
+group = "org.xmlsh"
+version = 2.0
+
+
+dependencies {
+	compile project(":xmlsh")
+	
+}
+
+distributions {
+	main {
+	   baseName = "xmlsh"
+		contents {
+        exclude "app-${version}.jar"
+		}
+	}
+}
+  
+uploadArchives {
+    repositories {
+       flatDir {
+           dirs 'repos'
+       }
+    }
+}
+
+    /*
+  publishing {
+
+	  repositories {
+		  ivy {
+			  // change to point to your repo, e.g. http://my.org/repo
+			  url "${rootProject.buildDir}/_ivy_repo"
+		  }
+		  maven {
+			  // change to point to your repo, e.g. http://my.org/repo
+			  url "${rootProject.buildDir}/_maven_repo"
+		  }
+	  }
+	  publications {
+		  mavenJava(MavenPublication) {
+			  from components.java
+			  artifact sourceJar {
+				  classifier "sources"
+			  }
+  
+		  }
+		  
+
+    mavenDist(MavenPublication) {
+			from installDist.outputs
+			artifact dist {
+			  classifier "runtime"
+			}
+			pom.withXml {
+			  def root = asNode()
+			  root.appendNode('description', 'A CLI for mustache.java')
+			  root.children().last() + pomConfig
+			}
+		  }
+		  ivyJava(IvyPublication) {
+			  from components.java
+			  artifact(sourceJar) {
+				  type "source"
+				  conf "runtime"
+			  }
+			  descriptor.withXml {
+				  asNode().info[0].appendNode('description', description)
+			  }
+		  }
+
+	  }
+	   
+  } */
+  /*
+  bintray {
+	
+	user = project.bintrayUser
+	key = project.bintrayKey
+	
+  
+	filesSpec {
+	   from installDist.outputs
+	   into 'org/xmlsh/'
+	}
+	dryRun = true //Whether to run this as dry-run, without deploying
+	publish = false //If version should be auto published after an upload
+	//Package configuration. The plugin will use the repo and name properties to check if the package already exists. In that case, there's no need to configure the other package properties (like userOrg, desc, etc).
+	
+	
+		pkg {
+		repo = 'xmlsh'
+		name = 'xmslh'
+		userOrg = ''
+		desc ='XMLSH A command line shell for the new N(ot)O(nly) XML generation'
+		websiteUrl = 'https://github.com/DALDEI/xmlsh'
+		issueTrackerUrl = 'https://github.com/DALDEI/xmlsh/issues'
+		vcsUrl = 'https://github.com/DALDEI/xmlsh.git'
+		licenses = ['BSD Simplified']
+		labels = ['shell','xml','json','scriping', 'java' , 'cli']
+		publicDownloadNumbers = true
+		// attributes= ['a': ['ay1', 'ay2'], 'b': ['bee'], c: 'cee'] //Optional package-level attributes
+		//Optional version descriptor
+		version {
+			name = 'release-2.0' //Bintray logical version name
+		  //  desc = //Optional - Version-specific description'
+		  //  released  = //Optional - Date of the version release. 2 possible values: date in the format of 'yyyy-MM-dd'T'HH:mm:ss.SSSZZ' OR a java.util.Date instance
+			vcsTag = 'release-2.0'
+		  //  attributes = ['gradle-plugin': 'com.use.less:com.use.less.gradle:gradle-useless-plugin'] //Optional version-level attributes
+			//Optional configuration for GPG signing
+		//    gpg {
+	   //         sign = true //Determines whether to GPG sign the files. The default is false
+	  //          passphrase = 'passphrase' //Optional. The passphrase for GPG signing'
+	  //      }
+			//Optional configuration for Maven Central sync of the version
+		 //   mavenCentralSync {
+		 //       sync = true //Optional (true by default). Determines whether to sync the version to Maven Central.
+		 //       user = 'userToken' //OSS user token
+		//        password = 'paasword' //OSS user password
+		//        close = '1' //Optional property. By default the staging repository is closed and artifacts are released to Maven Central. You can optionally turn this behaviour off (by puting 0 as value) and release the version manually.
+		//    }
+		}
+	}
+  }
+  
+  */

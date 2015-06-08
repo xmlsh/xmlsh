@@ -14,6 +14,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import org.apache.logging.log4j.Logger;
+import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.util.Util;
 
 public class Version {
@@ -92,12 +93,16 @@ public class Version {
 	static Logger mLogger = org.apache.logging.log4j.LogManager.getLogger();
 	static {
 		mProperties = new Properties();
-		try {
-			InputStream stream = Version.class.getResourceAsStream("version.properties");
-			mProperties.load( stream);
-			stream.close();
+		try (
+			InputStream stream = Version.class.getResourceAsStream("version.properties"); ){
+			assert( stream != null );
+			if( stream == null )
+				mLogger.throwing(new UnexpectedException("Cannot locate version.properties in classpath"));
+			else 
+			   mProperties.load( stream);
+			
 		} catch (IOException e) {
-			mLogger.debug("Exception loading version.properties",e);
+			mLogger.throwing(new UnexpectedException("Cannot locate version.properties in classpath",e));
 		}
 	}
 

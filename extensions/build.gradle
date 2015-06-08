@@ -1,0 +1,25 @@
+
+subprojects { 
+	apply plugin: 'java-library-distribution'
+	configurations { 
+	  providedCompile 
+	}
+	
+	dependencies {
+		providedCompile  project( ":xmlsh"  ) 
+  }
+  
+  compileJava {
+         sourceSets.main.compileClasspath += [configurations.providedCompile]
+  }
+  
+
+  eclipse {
+    classpath {
+      plusConfigurations += [configurations.providedCompile]
+    }
+  }
+
+
+}
+

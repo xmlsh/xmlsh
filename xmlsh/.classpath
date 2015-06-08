@@ -1,73 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
+	<classpathentry kind="src" path="build/generated-resources/main"/>
 	<classpathentry kind="src" path="src/commands"/>
 	<classpathentry kind="src" path="src/core"/>
-	<classpathentry kind="src" path="src/shell"/>
-	<classpathentry kind="src" path="src/generated">
-		<attributes>
-			<attribute name="ignore_optional_problems" value="true"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="src" path="src/resources">
-		<attributes>
-			<attribute name="ignore_optional_problems" value="true"/>
-		</attributes>
-	</classpathentry>
+	<classpathentry kind="src" path="src/generated"/>
 	<classpathentry kind="src" path="src/modules"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry exported="true" kind="lib" path="lib/xercesImpl.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/stax-utils.jar" sourcepath="C:/java/stax-utils-20071202/stax-utils-src.zip">
-		<attributes>
-			<attribute name="javadoc_location" value="file:/C:/java/stax-utils-20071202/docs/javadoc/"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="lib/jing.jar" sourcepath="C:/java/jing-20091111/src.zip"/>
-	<classpathentry kind="lib" path="lib/resolver.jar"/>
-	<classpathentry kind="lib" path="build-lib/ant.jar" sourcepath="C:/Users/DLEE/.m2/repository/org/apache/ant/ant/1.7.1/ant-1.7.1-sources.jar"/>
-	<classpathentry kind="lib" path="lib/saxon.jar" sourcepath="C:/java/saxon6.5/source.zip"/>
-	<classpathentry kind="lib" path="build-lib/servlet-api.jar"/>
-	<classpathentry kind="lib" path="lib/trang.jar" sourcepath="C:/java/trang-20091111/src.zip"/>
-	<classpathentry kind="lib" path="lib/tagsoup-1.2.jar" sourcepath="C:/java/tagsoup/tagsoup-1.2-src.zip"/>
-	<classpathentry kind="lib" path="lib/xom-1.2.6.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/saxon9he.jar" sourcepath="E:/Java/Saxon9.6/src">
-		<attributes>
-			<attribute name="javadoc_location" value="file:/E:/Java/Saxon9.6/resources/doc/javadoc/"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="lib/commons-codec-1.6.jar"/>
-	<classpathentry kind="lib" path="lib/commons-logging-1.1.1.jar"/>
-	<classpathentry kind="lib" path="lib/commons-io-2.1.jar" sourcepath="C:/Users/DLEE/.m2/repository/commons-io/commons-io/2.1/commons-io-2.1-sources.jar"/>
-	<classpathentry kind="lib" path="lib/httpclient-4.2.3.jar" sourcepath="E:/Java/httpclient/httpclient-4.2.3-sources.jar"/>
-	<classpathentry kind="lib" path="lib/slf4j-api-1.7.5.jar"/>
-	<classpathentry kind="lib" path="lib/stax2-api-3.1.1.jar" sourcepath="E:/Java/woodstox/stax2-3.1.1/src/java"/>
-	<classpathentry kind="lib" path="lib/woodstox-core-asl-4.2.0.jar" sourcepath="E:/Java/woodstox/woodstox-4.2.0/src/java">
-		<attributes>
-			<attribute name="javadoc_location" value="jar:file:/E:/Java/woodstox/woodstox-core-asl-4.2.0-javadoc.jar!/"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="lib/commons-lang3-3.3.2.jar" sourcepath="E:/Java/apache-commons/commons-lang3-3.3.2-src/src">
-		<attributes>
-			<attribute name="javadoc_location" value="jar:file:/E:/Java/apache-commons/commons-lang3-3.3.2/commons-lang3-3.3.2-javadoc.jar!/"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="lib/log4j-api-2.1.jar" sourcepath="C:/Java/log4j/apache-log4j-2.1-src/log4j-api/src/main/java"/>
-	<classpathentry kind="lib" path="lib/log4j-core-2.1.jar" sourcepath="C:/Java/log4j/apache-log4j-2.1-src/log4j-core/src/main/java"/>
-	<classpathentry kind="lib" path="lib/log4j-jcl-2.1.jar"/>
-	<classpathentry kind="lib" path="lib/log4j-slf4j-impl-2.1.jar"/>
-	<classpathentry kind="lib" path="lib/jackson-annotations-2.5.0.jar"/>
-	<classpathentry kind="lib" path="lib/jackson-core-2.5.0.jar" sourcepath="C:/Users/DLEE/.m2/repository/com/fasterxml/jackson/core/jackson-core/2.5.0/jackson-core-2.5.0-sources.jar"/>
-	<classpathentry kind="lib" path="lib/jackson-databind-2.5.0.jar" sourcepath="E:/Work/DEI/GitExt/jackson-databind/src/main/java"/>
-	<classpathentry kind="lib" path="lib/jackson-dataformat-xml-2.5.0.jar" sourcepath="E:/Work/DEI/GitExt/jackson-dataformat-xml/src/main/java"/>
-	<classpathentry kind="lib" path="lib/jackson-module-jaxb-annotations-2.5.0.jar"/>
-	<classpathentry kind="lib" path="lib/jackson-module-jsonSchema-2.5.0.jar"/>
+	<classpathentry kind="src" path="src/resources"/>
+	<classpathentry kind="src" path="src/shell"/>
+	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry exported="true" kind="con" path="org.springsource.ide.eclipse.gradle.classpathcontainer"/>
 	<classpathentry kind="src" path=".apt_generated">
 		<attributes>
 			<attribute name="optional" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="lib/httpcore-4.2.2.jar"/>
-	<classpathentry kind="lib" path="lib/jline-2.12.jar" sourcepath="/jline/src/main/java"/>
-	<classpathentry kind="lib" path="lib/byte-buddy-0.6.jar" sourcepath="/byte-buddy-dep/src/main/java"/>
-	<classpathentry kind="lib" path="lib/json-path-2.0.1.jar" sourcepath="/home/dlee/git.repo/JsonPath/json-path/src/main/java"/>
 	<classpathentry kind="output" path="_out"/>
 </classpath>

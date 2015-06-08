@@ -117,26 +117,31 @@ public  static ModuleConfig getConfiguration(Shell shell, String nameuri,  List<
       if( ! shell.requireVersion(name, require) )
         throw new InvalidArgumentException("Module " + name + " requires version " + require);
     }
-    List<URL> classpath =  xv.xpath(shell, "/module/classpath/file").asStringList().stream()
+    List<URL> classpath =  xv.xpath(shell, "/module/classpath/(@file|file)/string()").asStringList().stream()
             .filter( Util::notBlank )
             .map( s -> safeNewUrl(configURL, s) )
+            .filter( Objects::nonNull )
             .collect(Collectors.toList() );
 
+    mLogger.debug("modDir: {} file classpaths: ", modDir , classpath );
     if(modDir != null){
 
 
        xv.xpath(shell, "/module/classpath/directory/(.|@url)/string()").asStringList().stream()
        .filter( Util::notBlank )
        .forEach(  s -> {
+           mLogger.debug("directory: {}", s  );
+             try {
                  File sFile = new File( md , s );
-                 if( sFile.isDirectory() ){
-                     classpath.add(  safeNewUrl( configURL , s ) ) ;
-                   listJarFiles(sFile).stream()
-                   .map( f -> safeNewUrl(configURL, f) )
+                 if( sFile.isDirectory() ){ 
+                   listJarFiles(sFile)
                    .forEach( u -> classpath.add(u)) ;
                  }
                
+             } catch (IOException e){
+                 mLogger.catching( e );
              }
+          }
        );
     }
     String modClassName = xv.xpath(shell, "/module/main/classname/string()").toString();
@@ -164,15 +169,26 @@ public  static ModuleConfig getConfiguration(Shell shell, String nameuri,  List<
 
 
 
-private static URL safeNewUrl(URL configURL, String s) {
+private static URL safeNewUrl(URL baseUrl, String s) {
+    mLogger.entry( baseUrl , s );
     try {
-        return new URL( configURL , s );
+        return mLogger.exit(new URL( baseUrl , s ));
     } catch (MalformedURLException e) {
        mLogger.catching(e);
        return null;
     }
 }
 
+
+private static URL safeNewUrl( java.nio.file.Path p) {
+    mLogger.entry( p  );
+    try {
+        return mLogger.exit( p.toUri().toURL() );
+    } catch (MalformedURLException e) {
+       mLogger.catching(e);
+       return null;
+    }
+}
 
 
   public URL getHelpURL() {
@@ -184,13 +200,14 @@ private static URL safeNewUrl(URL configURL, String s) {
     return getName() + "[ at " + mURI + " ]";
   }
 
-  private static List<String> listJarFiles(File dir) 
+  private static List<URL> listJarFiles(File dir) throws  IOException 
   {
-    List<String> files = new ArrayList<String>();
-    for (String f : dir.list())
-      if(f.endsWith(".jar"))
-        files.add(f);
-    return files;
+    mLogger.entry( dir );
+    return Files.list( dir.toPath() )
+         .filter( (p) -> p.toString().endsWith(".jar"))
+         .map( (p) -> safeNewUrl(p) )
+       .filter( Objects::nonNull)
+       .collect(Collectors.toList() );
 
   }
 

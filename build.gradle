@@ -1,0 +1,111 @@
+
+
+plugins {
+	id "com.jfrog.bintray" version "1.1"
+  }
+
+
+def getDate() {
+	def date = new Date()
+	def formattedDate = date.format("yyyy-MM-dd'T'HH:mm:ss")
+	return formattedDate
+}
+
+ext   {
+  xversion_build_date = getDate()
+  xversion_release = '2_0_0'
+  xversion_version = '2.0.0'
+  version_version  = 2.0
+} 
+
+allprojects {
+
+task wrapper(type: Wrapper) {
+  gradleVersion='2.4'
+}
+}
+
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'eclipse'
+	  
+	  apply plugin: "maven"
+	  apply plugin: 'ivy-publish'
+	  apply plugin: 'maven-publish'
+	  group = "org.xmlsh"
+	  version = '2.0'
+	  
+	
+
+  repositories {
+    mavenLocal()
+    jcenter()
+     flatDir { 
+          dirs  "$rootDir/lib" 
+	}
+	
+  }
+  
+  compileJava {
+	  sourceCompatibility = 1.8
+	  targetCompatibility = 1.8
+  }
+
+    jar {
+        manifest.attributes provider: 'David A. Lee'
+    }
+	
+	sourceSets {
+		main {
+			java {
+				exclude 'src/java'
+		    exclude "src/main/java"	
+			}
+		}
+	}
+	
+	/***  Sample eclipse block from https://docs.gradle.org/current/dsl/org.gradle.plugins.ide.eclipse.model.EclipseClasspath.html
+	 * 
+	 */
+	
+eclipse {
+	
+	/*
+  //if you want parts of paths in resulting file to be replaced by variables (files):
+  pathVariables 'GRADLE_HOME': file('/best/software/gradle'), 'TOMCAT_HOME': file('../tomcat')
+*/
+  classpath {
+    //you can tweak the classpath of the Eclipse project by adding extra configurations:
+   // plusConfigurations += [ configurations.provided ]
+
+    //you can also remove configurations from the classpath:
+   // minusConfigurations += [ configurations.someBoringConfig ]
+
+    //if you don't want some classpath entries 'exported' in Eclipse
+   // noExportConfigurations += [ configurations.provided ]
+
+    //if you want to append extra containers:
+   // containers 'someFriendlyContainer', 'andYetAnotherContainer'
+
+    //customizing the classes output directory:
+    defaultOutputDir = file('_out')
+
+    //default settings for downloading sources and Javadoc:
+    downloadSources = true
+    downloadJavadoc = true
+  }
+}
+
+  clean << {
+	  println "Cleaning Eclipse output"
+	  project.delete(eclipse.classpath.defaultOutputDir );
+  }
+	  
+  
+  
+  
+	
+}
+
+
+

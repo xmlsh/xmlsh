@@ -1,0 +1,141 @@
+
+  plugins {
+    id "ca.coglinc.javacc" version "2.1.0"
+  }
+
+  apply plugin: 'java-library-distribution'
+
+  
+  ext.sourceDirs = ['src/shell'
+    		, 'src/commands'
+    		, 'src/core'
+    		, 'src/modules'
+			, 'src/generated' ] 
+  
+  repositories {
+     flatDir { 
+         dirs 'build-lib' }
+}
+  
+ 
+  
+  
+  compileJavacc {
+    inputDirectory = file('src/shell/org/xmlsh/sh/grammar')
+    outputDirectory = file('src/generated/org/xmlsh/sh/grammar')
+  }
+  
+		 
+	  
+
+  
+ext.generatedResources = "$buildDir/generated-resources/main"
+
+
+task createVersion  {
+	 ext.destDir = new File( generatedResources ,"org/xmlsh/sh/shell");
+	 outputs.dir destDir ;
+	 doLast {
+		def destFile = new File(destDir, "version.properties");
+		destDir.mkdirs()
+		destFile.text = """version.build_date=${xversion_build_date}
+version.release=${xversion_release}
+version.version=${xversion_version}
+"""
+	 }
+}
+
+  
+  
+  sourceSets {
+    main {  
+     output.dir(generatedResources, builtBy: 'createVersion')
+    	java { 
+    		srcDirs = sourceDirs 
+    	} 
+		resources {
+    		srcDirs = sourceDirs
+			srcDir 'src/resources'
+			srcDir generatedResources
+		}
+    }
+	
+  }
+
+  sourceSets.all { set ->
+	  def jarTask = task("${set.name}Jar", type: Jar) {
+		  baseName = baseName + "-$set.name"
+		  from set.output
+	  }
+	  artifacts {
+		  archives jarTask
+	  }
+  }
+  
+ ext.coreDeps =  [
+	':byte-buddy-0.6',
+	':commons-codec-1.6',
+	':commons-io-2.1',
+	':commons-lang3-3.3.2',
+	':commons-logging-1.1.1',
+	':httpclient-4.2.3',
+	':httpcore-4.2.2',
+	':jackson-annotations-2.5.0',
+	':jackson-core-2.5.0',
+	':jackson-databind-2.5.0',
+	':jackson-dataformat-xml-2.5.0',
+	':jackson-module-jaxb-annotations-2.5.0',
+	':jackson-module-jsonSchema-2.5.0',
+	':jing',
+	':jline-2.12',
+	':json-path-2.0.1',
+	':log4j-api-2.1',
+	':log4j-core-2.1',
+	':log4j-jcl-2.1',
+	':log4j-slf4j-impl-2.1',
+	':resolver',
+	':saxon9he',
+	':saxon',
+	':slf4j-api-1.7.5',
+	':stax2-api-3.1.1',
+	':stax-utils',
+	':tagsoup-1.2',
+	':trang',
+	':woodstox-core-asl-4.2.0',
+	':xercesImpl',
+	':xom-1.2.6'
+	
+]
+// http://stackoverflow.com/questions/10405970/how-do-i-define-a-compile-time-only-classpath-in-gradle
+configurations { 
+   provided 
+   
+}
+dependencies {
+    provided ":servlet-api"
+    provided ":javacc"
+    provided ":ant"
+    
+    compile coreDeps
+  }
+  //Include provided for compilation
+sourceSets.main.compileClasspath += [configurations.provided]
+
+eclipse {
+  classpath {
+    plusConfigurations += [configurations.provided]
+  }
+}
+  
+task sourceJar(type: Jar) {
+    from sourceSets.main.allJava
+}
+
+jar {
+	manifest {
+		attributes 'Implementation-Title': 'XMLSH A command line shell for the new N(ot)O(nly) XML generation',
+				   'Implementation-Version': version_version
+	}
+  from sourceSets.main.output
+}
+
