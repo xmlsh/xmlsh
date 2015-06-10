@@ -8,3 +8,10 @@ dependencies {
         maven {url "http://developer.marklogic.com/maven2/"}
         maven {url "http://rjrudin.github.io/marklogic-java/releases"}
 }
+  
+  distributions {
+	  main {
+		 baseName = "marklogic"
+	  }
+	  }
+  

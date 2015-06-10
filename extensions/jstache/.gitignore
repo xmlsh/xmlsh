@@ -3,3 +3,4 @@
 /.apt_generated/
 /.settings/
 /.gradle/
+/build/

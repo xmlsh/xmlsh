@@ -1,6 +1,7 @@
 
 subprojects { 
 	apply plugin: 'java-library-distribution'
+	group 'org.xmlsh.extensions'
 	configurations { 
 	  providedCompile 
 	}

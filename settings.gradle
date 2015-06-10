@@ -1,6 +1,7 @@
 include "xmlsh", 
        "extensions:aws" , 
        "extensions:marklogic" ,
+	   "extensions:jstache",
 	   "app"
 
 //      "extensions:jstache"

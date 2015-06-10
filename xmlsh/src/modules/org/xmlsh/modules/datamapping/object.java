@@ -6,43 +6,17 @@
 
 package org.xmlsh.modules.datamapping;
 
-import java.util.Collections;
 import java.util.List;
 
 import net.bytebuddy.ByteBuddy;
-import net.bytebuddy.dynamic.ClassLoadingStrategy;
+import net.bytebuddy.description.modifier.Visibility;
 import net.bytebuddy.dynamic.DynamicType;
-import net.bytebuddy.instrumentation.FieldAccessor;
-import net.bytebuddy.modifier.Visibility;
-import static net.bytebuddy.matcher.ElementMatchers.*;
-import static net.bytebuddy.utility.ByteBuddyCommons.*;
-import net.bytebuddy.asm.ClassVisitorWrapper;
-import net.bytebuddy.dynamic.ClassFileLocator;
-import net.bytebuddy.dynamic.DynamicType;
-import net.bytebuddy.dynamic.scaffold.BridgeMethodResolver;
-import net.bytebuddy.dynamic.scaffold.FieldRegistry;
-import net.bytebuddy.dynamic.scaffold.MethodRegistry;
-import net.bytebuddy.dynamic.scaffold.inline.InlineDynamicTypeBuilder;
-import net.bytebuddy.dynamic.scaffold.inline.MethodRebaseResolver;
-import net.bytebuddy.dynamic.scaffold.subclass.ConstructorStrategy;
-import net.bytebuddy.dynamic.scaffold.subclass.SubclassDynamicTypeBuilder;
-import net.bytebuddy.instrumentation.Instrumentation;
-import net.bytebuddy.instrumentation.ModifierContributor;
-import net.bytebuddy.instrumentation.attribute.FieldAttributeAppender;
-import net.bytebuddy.instrumentation.attribute.MethodAttributeAppender;
-import net.bytebuddy.instrumentation.attribute.TypeAttributeAppender;
-import net.bytebuddy.instrumentation.method.MethodDescription;
-import net.bytebuddy.instrumentation.method.MethodLookupEngine;
-import net.bytebuddy.instrumentation.type.TypeDescription;
-import net.bytebuddy.instrumentation.type.TypeList;
-import net.bytebuddy.matcher.ElementMatcher;
-import net.bytebuddy.modifier.TypeManifestation;
+import net.bytebuddy.dynamic.loading.ClassLoadingStrategy;
 
 import org.xmlsh.annotations.Function;
 import org.xmlsh.core.AbstractBuiltinFunction;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.util.JavaUtils;
 
 @Function(name="object",names={"new-object"} )
 public class object extends AbstractBuiltinFunction {

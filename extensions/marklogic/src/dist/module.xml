@@ -6,6 +6,7 @@
 >
 <classpath>
   <directory url="."/>
+  <directory url="lib"/>
 </classpath>
 <main>
   <classname>org.xmlsh.marklogic.modules.MarkLogicModule</classname>

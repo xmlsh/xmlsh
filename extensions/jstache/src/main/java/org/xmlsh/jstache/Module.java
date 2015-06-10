@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import org.xmlsh.tools.mustache.cli.api.MustacheContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.xmlsh.annotations.Command;
@@ -41,10 +42,6 @@ import org.xmlsh.sh.module.ExternalModule;
 import org.xmlsh.sh.module.ModuleConfig;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.tools.mustache.cli.api.JacksonObjectHandler;
-import org.xmlsh.tools.mustache.cli.api.MustacheContext;
-import org.xmlsh.tools.mustache.cli.main.Main.Usage;
-import org.xmlsh.tools.mustache.cli.main.Main.UsageException;
 import org.xmlsh.types.XTypeFamily;
 import org.xmlsh.types.xtypes.XValueProperty;
 import org.xmlsh.util.Util;
@@ -54,7 +51,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.github.mustachejava.MustacheException;
 import com.github.mustachejava.util.HtmlEscaper;
 
 @org.xmlsh.annotations.Module
@@ -283,7 +279,7 @@ public class Module extends ExternalModule {
                 case "json" :
                     break;
                 case "html" :
-                    mContext.setEncoder((v,w) -> HtmlEscaper.escape(v,w));
+                    mContext.setEncoder((v,w) -> HtmlEscaper.escape(v,w,true));
                     break;
                 case "h" : case "help"  :
                     usage();

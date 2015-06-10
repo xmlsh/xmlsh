@@ -73,35 +73,13 @@ version.version=${xversion_version}
   }
   
  ext.coreDeps =  [
-	':byte-buddy-0.6',
-	':commons-codec-1.6',
-	':commons-io-2.1',
-	':commons-lang3-3.3.2',
-	':commons-logging-1.1.1',
-	':httpclient-4.2.3',
-	':httpcore-4.2.2',
-	':jackson-annotations-2.5.0',
-	':jackson-core-2.5.0',
-	':jackson-databind-2.5.0',
-	':jackson-dataformat-xml-2.5.0',
-	':jackson-module-jaxb-annotations-2.5.0',
-	':jackson-module-jsonSchema-2.5.0',
-	':jing',
-	':jline-2.12',
+
 	':json-path-2.0.1',
-	':log4j-api-2.1',
-	':log4j-core-2.1',
-	':log4j-jcl-2.1',
-	':log4j-slf4j-impl-2.1',
 	':resolver',
 	':saxon9he',
 	':saxon',
-	':slf4j-api-1.7.5',
-	':stax2-api-3.1.1',
-	':stax-utils',
+
 	':tagsoup-1.2',
-	':trang',
-	':woodstox-core-asl-4.2.0',
 	':xercesImpl',
 	':xom-1.2.6'
 	
@@ -117,7 +95,37 @@ dependencies {
     provided ":ant"
     
     compile coreDeps
-  }
+
+	compile 'org.apache.logging.log4j:log4j-api:2.+' , 
+	        'org.apache.logging.log4j:log4j-core:2.+'
+	
+	compile 'com.fasterxml.jackson.core:jackson-annotations:2.5.+',
+	        'com.fasterxml.jackson.core:jackson-core:2.5.+',
+	        'com.fasterxml.jackson.core:jackson-databind:2.5.+',
+	        'com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.5.+',
+	        'com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.4+',
+	        'com.fasterxml.jackson.module:jackson-module-jsonSchema:2.5.+' 
+	 compile 'commons-codec:commons-codec:1+',
+			 'commons-io:commons-io:2.+',
+			 'org.apache.commons:commons-lang3:latest.release',
+			 'commons-logging:commons-logging:1.2+'
+	compile  'org.apache.httpcomponents:httpclient:latest.release',
+			'org.apache.httpcomponents:httpcore:latest.release'
+     compile 'com.fasterxml.woodstox:woodstox-core:latest.release'
+	 compile 'org.slf4j:slf4j-api:latest.release',
+	         'org.codehaus.woodstox:stax2-api:latest.release',
+			 'org.xmlsh:stax-utils:latest.release'
+
+	compile 'com.thaiopensource:trang:20091111',
+			'com.thaiopensource:jing:latest-release' 
+	
+    compile 'net.bytebuddy:byte-buddy:0.7-SNAPSHOT'
+	compile 'jline:jline:2.13-SNAPSHOT'
+			
+	runtime  group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl' , version: '2.+'
+	
+	
+}
   //Include provided for compilation
 sourceSets.main.compileClasspath += [configurations.provided]
 

@@ -8,8 +8,6 @@ package org.xmlsh.modules.datamapping;
 
 import java.util.List;
 
-import net.bytebuddy.modifier.Visibility;
-
 import org.xmlsh.annotations.Function;
 import org.xmlsh.core.AbstractBuiltinFunction;
 import org.xmlsh.core.XValue;
