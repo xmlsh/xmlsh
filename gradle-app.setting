@@ -4,7 +4,20 @@
   <setting name="task-tab"> 
     <setting name="show-description" value="true"/> 
   </setting>  
-  <setting name="favorites-tab"/>  
+  <setting name="favorites-tab">
+    <setting name="favorites">
+      <setting name="favorite">
+        <setting name="full-command-line" value=":xmlsh:dependencyInsight --dependency xml-apis"/>
+        <setting name="display-name" value=":xmlsh:dependencyInsight --dependency xml-apis"/>
+        <setting name="show-output" value="false"/>
+      </setting>
+      <setting name="favorite">
+        <setting name="full-command-line" value=":xmlsh:dependencies --configuration compile"/>
+        <setting name="display-name" value=":xmlsh:dependencies --configuration compile"/>
+        <setting name="show-output" value="false"/>
+      </setting>
+    </setting>
+  </setting>  
   <setting name="command_line-tab"/>  
   <setting name="setup-tab"> 
     <setting name="setup"> 
@@ -15,7 +28,7 @@
     </setting> 
   </setting>  
   <setting name="SinglePaneUIInstance_splitter-id"> 
-    <setting name="divider_location" value="509"/> 
+    <setting name="divider_location" value="347"/> 
   </setting>  
   <setting name="Application_window-id"> 
     <setting name="window_x" value="800"/>  
@@ -25,6 +38,6 @@
     <setting name="extended-state" value="0"/> 
   </setting>  
   <setting name="main_panel"> 
-    <setting name="current-tab" value="Task Tree"/> 
+    <setting name="current-tab" value="Favorites"/> 
   </setting> 
 </root>

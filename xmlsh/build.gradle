@@ -59,7 +59,6 @@ version.version=${xversion_version}
 			srcDir generatedResources
 		}
     }
-	
   }
 
   sourceSets.all { set ->
@@ -72,18 +71,6 @@ version.version=${xversion_version}
 	  }
   }
   
- ext.coreDeps =  [
-
-	':json-path-2.0.1',
-	':resolver',
-	':saxon9he',
-	':saxon',
-
-	':tagsoup-1.2',
-	':xercesImpl',
-	':xom-1.2.6'
-	
-]
 // http://stackoverflow.com/questions/10405970/how-do-i-define-a-compile-time-only-classpath-in-gradle
 configurations { 
    provided 
@@ -93,8 +80,7 @@ dependencies {
     provided ":servlet-api"
     provided ":javacc"
     provided ":ant"
-    
-    compile coreDeps
+
 
 	compile 'org.apache.logging.log4j:log4j-api:2.+' , 
 	        'org.apache.logging.log4j:log4j-core:2.+'
@@ -114,13 +100,18 @@ dependencies {
      compile 'com.fasterxml.woodstox:woodstox-core:latest.release'
 	 compile 'org.slf4j:slf4j-api:latest.release',
 	         'org.codehaus.woodstox:stax2-api:latest.release',
-			 'org.xmlsh:stax-utils:latest.release'
+			 'org.xmlsh:stax-utils:1+'
 
 	compile 'com.thaiopensource:trang:20091111',
-			'com.thaiopensource:jing:latest-release' 
+	         'com.thaiopensource:jing:20091111' 
 	
     compile 'net.bytebuddy:byte-buddy:0.7-SNAPSHOT'
-	compile 'jline:jline:2.13-SNAPSHOT'
+	compile 'jline:jline2:2.13-SNAPSHOT'
+	compile 'com.jayway.jsonpath:json-path:2.+'
+	compile 'org.ccil.cowan.tagsoup:tagsoup:1.+' 
+	compile  'xerces:xercesImpl:2.+', 'xml-resolver:xml-resolver:1.2+' , 'xom:xom:latest.release'
+	compile 'net.sf.saxon:Saxon-HE:9.6.+' , 'saxon:saxon:6.5.+'
+
 			
 	runtime  group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl' , version: '2.+'
 	

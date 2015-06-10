@@ -28,24 +28,39 @@ task wrapper(type: Wrapper) {
 subprojects {
     apply plugin: 'java'
     apply plugin: 'eclipse'
-	  
-	  apply plugin: "maven"
-	  apply plugin: 'ivy-publish'
-	  apply plugin: 'maven-publish'
-	  group = "org.xmlsh"
-	  version = '2.0'
-	  
-	
+    apply plugin: "maven"
+    apply plugin: 'ivy-publish'
+    apply plugin: 'maven-publish'
+    group = "org.xmlsh"
+    version = '2.0'
 
-  repositories {
-    mavenLocal()
-    jcenter()
-     flatDir { 
-          dirs  "$rootDir/lib" 
-	}
+dependencies {
+// Dont pull in xml-apis:2.x
+        compile ('xml-apis:xml-apis:1.4+'){
+               force=true
+        } 
+}	  
 	
+  repositories {
+    jcenter()
+  
+  maven {
+	  url "${awsRepoBucket}/maven2"
+	  credentials(AwsCredentials) {
+		  accessKey "${awsAccessKey}"
+		  secretKey "${awsSecretKey}"
+	  }
   }
   
+  ivy {
+	  url "${awsRepoBucket}/ivyrepo"
+	  credentials(AwsCredentials) {
+		  accessKey "${awsAccessKey}"
+		  secretKey "${awsSecretKey}"
+	  }
+  }
+  
+}
   compileJava {
 	  sourceCompatibility = 1.8
 	  targetCompatibility = 1.8
@@ -98,6 +113,7 @@ eclipse {
 
   clean << {
 	  println "Cleaning Eclipse output"
+      println eclipse.classpath.defaultOutputDir 
 	  project.delete(eclipse.classpath.defaultOutputDir );
   }
 	  
