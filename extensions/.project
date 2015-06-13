@@ -1,30 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<filteredResources>
-		<filter>
-			<id>1433793010556</id>
-			<name/>
-			<type>26</type>
-			<matcher>
-				<id>org.eclipse.ui.ide.orFilterMatcher</id>
-				<arguments>
-					<matcher>
-						<id>org.eclipse.ui.ide.multiFilter</id>
-						<arguments>1.0-projectRelativePath-equals-true-false-aws</arguments>
-					</matcher>
-					<matcher>
-						<id>org.eclipse.ui.ide.multiFilter</id>
-						<arguments>1.0-projectRelativePath-equals-true-false-marklogic</arguments>
-					</matcher>
-				</arguments>
-			</matcher>
-		</filter>
-	</filteredResources>
 	<name>extensions</name>
 	<comment/>
 	<projects/>
 	<natures>
-		<nature>org.springsource.ide.eclipse.gradle.core.nature</nature>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 	</natures>
 	<buildSpec>

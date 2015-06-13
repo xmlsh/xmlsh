@@ -4,40 +4,40 @@
   <setting name="task-tab"> 
     <setting name="show-description" value="true"/> 
   </setting>  
-  <setting name="favorites-tab">
-    <setting name="favorites">
-      <setting name="favorite">
-        <setting name="full-command-line" value=":xmlsh:dependencyInsight --dependency xml-apis"/>
-        <setting name="display-name" value=":xmlsh:dependencyInsight --dependency xml-apis"/>
-        <setting name="show-output" value="false"/>
-      </setting>
-      <setting name="favorite">
-        <setting name="full-command-line" value=":xmlsh:dependencies --configuration compile"/>
-        <setting name="display-name" value=":xmlsh:dependencies --configuration compile"/>
-        <setting name="show-output" value="false"/>
-      </setting>
-    </setting>
+  <setting name="favorites-tab"> 
+    <setting name="favorites"> 
+      <setting name="favorite"> 
+        <setting name="full-command-line" value=":xmlsh:dependencyInsight --dependency xml-apis"/>  
+        <setting name="display-name" value=":xmlsh:dependencyInsight --dependency xml-apis"/>  
+        <setting name="show-output" value="false"/> 
+      </setting>  
+      <setting name="favorite"> 
+        <setting name="full-command-line" value=":xmlsh:dependencies --configuration compile"/>  
+        <setting name="display-name" value=":xmlsh:dependencies --configuration compile"/>  
+        <setting name="show-output" value="false"/> 
+      </setting> 
+    </setting> 
   </setting>  
   <setting name="command_line-tab"/>  
   <setting name="setup-tab"> 
     <setting name="setup"> 
       <setting name="custom-gradle-executor"/>  
-      <setting name="current-directory" value="E:\Work\DEI\git.repo\xmlsh-gradle"/>  
+      <setting name="current-directory" value="/home/dlee/git.repo/xmlsh-gradle"/>  
       <setting name="log-level" value="LIFECYCLE"/>  
       <setting name="stack-trace-level" value="ALWAYS_FULL"/> 
     </setting> 
   </setting>  
   <setting name="SinglePaneUIInstance_splitter-id"> 
-    <setting name="divider_location" value="347"/> 
+    <setting name="divider_location" value="443"/> 
   </setting>  
   <setting name="Application_window-id"> 
-    <setting name="window_x" value="800"/>  
-    <setting name="window_y" value="40"/>  
+    <setting name="window_x" value="717"/>  
+    <setting name="window_y" value="236"/>  
     <setting name="window_width" value="971"/>  
     <setting name="window_height" value="945"/>  
     <setting name="extended-state" value="0"/> 
   </setting>  
   <setting name="main_panel"> 
-    <setting name="current-tab" value="Favorites"/> 
+    <setting name="current-tab" value="Task Tree"/> 
   </setting> 
 </root>

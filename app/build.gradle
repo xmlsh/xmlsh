@@ -12,15 +12,32 @@ dependencies {
 	
 }
 
+
 distributions {
 	main {
 	   baseName = "xmlsh"
-		contents {
-        exclude "app-${version}.jar"
-		}
+         contents {
+              exclude "app-${version}.jar"
+
+            }
 	}
 }
+
+
+evaluationDependsOn ":extensions"
+
+applicationDistribution.
+      from( project(":extensions:aws").installDist ) {
+   into("modules/aws")
+
+}
   
+applicationDistribution.
+      from( project(":extensions:marklogic").installDist ) {
+   into("modules/marklogic")
+
+}
+    
 uploadArchives {
     repositories {
        flatDir {
@@ -29,7 +46,7 @@ uploadArchives {
     }
 }
 
-    /*
+    /*zz
   publishing {
 
 	  repositories {

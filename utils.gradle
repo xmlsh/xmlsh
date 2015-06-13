@@ -1,4 +1,6 @@
 gradle.taskGraph.afterTask { task ->
+  if( project.hasProperty("printTaskGraph")  &&
+      project.printTaskGraph == "true" )  {
     StringBuffer taskDetails = new StringBuffer()
     taskDetails << """-------------
 name:$task.name group:$task.group : $task.description
@@ -14,7 +16,7 @@ inputs:
         }
         taskDetails << "-------------"
         println taskDetails
-		
+ }
 
 }
 
@@ -26,6 +28,8 @@ sourceSets  {
 }
 
 project.afterEvaluate { 
+  if( project.hasProperty("printResources") &&
+      project.printResources == "true" )  {
 	println " ------- RESOURCES --------"
 	sourceSets.all { ss ->
 		println "Name: ${ss.name} - "
@@ -33,4 +37,5 @@ project.afterEvaluate {
 			 println " --- Resource File: ${r.path}"
 		}
 	}
+   }
 }
