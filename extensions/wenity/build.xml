@@ -1,0 +1,32 @@
+<project default="main">
+
+    <tstamp>
+        <format property="NOW" pattern="yyyy-MM-dd HH:mm:ss"/>
+    </tstamp>
+
+    <target name="clean">
+        <delete dir="build"/>
+    </target>
+
+    <target name="compile">
+        <mkdir dir="build/classes"/>
+        <javac srcdir="src" destdir="build/classes">
+            <compilerarg line="-g:none"/>
+        </javac>
+    </target>
+
+    <target name="jar" depends="compile">
+        <mkdir dir="build/jar"/>
+        <jar destfile="build/jar/wenity.jar" basedir="build/classes">
+            <manifest>
+                <attribute name="Main-Class" value="wenity.Main"/>
+                <attribute name="Build-Date" value="${NOW}"/>
+            </manifest>
+        </jar>
+        <copyfile src="build/jar/wenity.jar" dest="0Release/RunImage/wenity.jar"/>
+        <delete dir="build"/>
+    </target>
+
+    <target name="main" depends="clean,jar"/>
+
+</project>

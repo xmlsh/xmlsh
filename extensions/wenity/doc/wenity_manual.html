@@ -1,0 +1,548 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <title>Wenity User's Guide</title>
+    <meta name="description" content="Wenity User's Guide">
+    <link rel="stylesheet" href="kksw.css" type="text/css">
+    <style type="text/css">
+        table, th, td {
+            border: 1pt dotted gray;
+            border-collapse: collapse;
+            padding: 3px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="page_header">Wenity User's Guide v1.5</div>
+
+[<a href="#changes">changes in this version</a>]
+
+<p class="paragraph_header1"> Introduction </p>
+
+<p>
+    Wenity <sup>[<a href="http://kksw.zzl.org" target="_blank">home</a>]</sup>
+    is a multiplatform
+    Zenity <sup>[<a href="http://library.gnome.org/users/zenity/stable/" target="_blank">home</a>]</sup>
+    clone aimed at (shell) script writers helping them to
+    interact with their users by GUI dialogs.
+</p>
+
+<p>
+    The premise is to call Wenity from your scripts and the exit code/response file
+    will contain the user selection.
+</p>
+
+<p>
+    Main properties of Wenity:
+</p>
+<ul>
+    <li>written in Java, so supports any operating system with Java and GUI installed</li>
+    <li>supports complex return types by using response files</li>
+    <li>module based architecture supporting different functions:</li>
+    <ul>
+        <li>simple dialogs (user input, information, question, error/warning)</li>
+        <li>progress indicator dialog</li>
+        <li>notification in system tray</li>
+        <li>file chooser dialog</li>
+        <li>file viewer (text and html)</li>
+        <li>file system interaction</li>
+    </ul>
+</ul>
+
+
+
+
+
+<p class="paragraph_header1"> Example Gallery </p>
+<a id="gallery"> </a>
+<p>
+    Same example dialogs made by using Wenity.
+</p>
+<table>
+    <tr>
+        <td align="center" style="font-weight: bold;">Custom Dialog (Linux)</td>
+        <td align="center" style="font-weight: bold;">Html Viewer (Windows)</td>
+    </tr>
+    <tr>
+        <td><img src="wenity-custom-dlg-linux.png" alt="Custom Dialog"></td>
+        <td><img src="wenity-html-viewer-win.png" alt="Html Viewer" width="460" height="345"></td>
+    </tr>
+    <tr>
+        <td align="center" style="font-weight: bold;">Progress Indicator (Linux)</td>
+        <td align="center" style="font-weight: bold;">Notification Balloon (Windows)</td>
+    </tr>
+    <tr>
+        <td><img src="wenity-progess-indicator-linux.png" alt="Progress Indicator"></td>
+        <td><img src="wenity-notification-win.png" alt="Notification"></td>
+    </tr>
+</table>
+
+
+
+
+
+
+
+
+<p> &nbsp;</p>
+
+<p class="paragraph_header1"> Change History</p>
+<a id="changes"> </a>
+
+<dl>
+    <dt><b>v1.5 - Mar 6, 2013</b></dt>
+    <dd>[NEW] <a href="#fileSystem">file system</a> module</dd>
+    <dd>[NEW] <a href="#notifier">notifier</a> module</dd>
+    <dd>[NEW] <a href="#progressIndicator">progress indicator</a> module</dd>
+    <dd>[NEW] <a href="#fileViewer">file viewer</a> shows html files</dd>
+    <dd>[NEW] <a href="#dialog">dialog</a> supports custom dialogs based on definition files</dd>
+    <dd>
+        [NEW] <a href="#fileSelector">file selector</a> accepts file name filters [<span style="color:red;">not compatible with 1.1]</span>
+    </dd>
+
+    <dt><b>v1.1 - Feb 6, 2013</b></dt>
+    <dd>[NEW] <a href="#fileViewer">file viewer</a> module</dd>
+</dl>
+
+
+<p class="paragraph_header1">Installation</p>
+
+<p>
+    Wenity requires installed Java 6 or higher and, if running on Linux, an X Server.
+    To check if you have the correct Java version, issue <span class="file_name">java -version</span>
+    from the command line.
+</p>
+
+
+<p class="paragraph_header1">Using Wenity</p>
+
+<p>
+    The general syntax for Wenity is:
+</p>
+
+<p class="output">
+    java -jar wenity.jar [-d] module_name module_parameters
+</p>
+
+<p> where </p>
+
+<table>
+    <tr>
+        <td>java -jar wenity.jar</td>
+        <td>starts wenity</td>
+    </tr>
+    <tr>
+        <td>-d</td>
+        <td>enables debug mode (optional)</td>
+    </tr>
+    <tr>
+        <td>module_name</td>
+        <td>is the name of the module to be invoked</td>
+    </tr>
+    <tr>
+        <td>module_parameters</td>
+        <td>are specific to the module to be run</td>
+    </tr>
+</table>
+
+<p>
+    As an example, if you issue:
+</p>
+
+<p class="output">
+    java -jar wenity.jar dialog question "Please select a button bellow:" "Yes,No,Perhaps"
+</p>
+
+<p>
+    Wenity will show you the following dialog (Linux/Windows)
+</p>
+
+<table>
+    <tr>
+        <td><img src="wenity-question-dlg-linux.png" alt="Wenity on Linux Screenshot"></td>
+        <td><img src="wenity-question-dlg-win.png" alt="Wenity on Windows Screenshot"></td>
+    </tr>
+</table>
+
+<p>
+    and the exit code
+    (<span class="file_name">%ERRORLEVEL%</span> on Windows or
+    <span class="file_name">$?</span> on Linux)
+    will contain the selected button's number counting from 1 (e.g for 'No' it will be 2).
+</p>
+
+
+<div class="page_header">Modules</div>
+
+<p>
+    This chapter describes the available Wenity modules; for usage examples
+    please refer to the example scripts (<span class="file_name">example.sh/example.bat</span>).
+</p>
+
+<strong>Processing User Selection</strong>
+
+<p>
+    Wenity returns user selection either in the <strong>exit code</strong>
+    (<span class="file_name">%ERRORLEVEL%</span> or
+    <span class="file_name">$?</span>) or in a
+    <strong>response file</strong>
+    (<span class="file_name">wenity_response.txt</span>)
+    based on the selected module.
+</p>
+
+<p>
+    General exit code values (valid for all modules):
+</p>
+
+<ul>
+    <li>255 ➞ application error (possibly caused by passing wrong arguments)</li>
+    <li>254 ➞ user cancellation (the dialog is closed/cancelled by the user w/o any selection)</li>
+    <li>1..250 ➞ module specific return value</li>
+    <li>0 ➞ the response file containing user input was created successfully (used only,
+        if module creates response file)
+    </li>
+</ul>
+
+<strong>Notes</strong>
+
+<ul>
+    <li>Don't forget to clean-up response files after you processed them.
+        To make your script robust you can try to delete them before and after your script runs
+        (see example scripts).
+    </li>
+    <li>All input/output should be interpreted as UTF-8 string.</li>
+    <li>Although Wenity can run on multiple operating systems, please note that the file specification must be in the
+        form what the OS expects.
+    </li>
+    <li>If something does not work as expected, try enabling debug mode (-d).</li>
+</ul>
+
+
+<p class="paragraph_header1" style="color: #3b3dff;">Dialog Module</p>
+<a id="dialog"> </a>
+
+<p>
+    The dialog module shows a dialog to the user and returns user selection. Invocation:
+</p>
+
+<p class="output">
+    java -jar wenity.jar [-d] dialog dialog_type dialog_text button_captions
+</p>
+
+<p>where</p>
+
+<table>
+    <tr>
+        <td>dialog</td>
+        <td>is the module name</td>
+    </tr>
+    <tr>
+        <td>dialog_type</td>
+        <td>specifies the dialog type: <br>
+            &nbsp;&nbsp;<i>INPUT</i>: allows a single line of user input to be entered (in a dialog with OK and Cancel
+            buttons showing a question mark icon)<br>
+            &nbsp;&nbsp;<i>QUESTION, INFO, WARNING, ERROR</i>: shows a dialog with the specified icon type and buttons<br>
+            &nbsp;&nbsp;<i>CUSTOM</i>: lets you display a dialog defined in a dialog definition file (DDF); the ddf file
+            full path is specified as the next argument (<i>dialog_text</i>); <br>
+            &nbsp;&nbsp;DDF file format: <br>
+            <pre>
+                dialog header text
+                title for input field 1
+                ...
+                title for input field N
+                button caption 1, button caption 2, ..., cancel button caption </pre>
+        </td>
+    </tr>
+    <tr>
+        <td>dialog_text</td>
+        <td>is the text to be shown in the dialog; you can use the pipe (|) to break text into more lines;
+            <!--CUSTOM: is the full path (in OS specific format) to the dialog definition file;<br>-->
+        </td>
+    </tr>
+    <tr>
+        <td>button_captions</td>
+        <td>is the comma separated list of button captions (QUESTION, INFO, WARNING, ERROR only)</td>
+    </tr>
+</table>
+
+<p><strong>Return value(s)</strong></p>
+
+<p>
+    Dialog module returns user selection in exit code based on the <span class="file_name">dialog_type</span>:
+</p>
+
+<ul>
+    <li>
+        QUESTION, INFO, WARNING, ERROR ➞ returns the selected button as a number where the first button in the dialog is
+        one (1).
+    </li>
+    <li>
+        INPUT ➞ if exit code is zero (0) then the response file contains the user input as a UTF-8 string.
+    </li>
+    <li>
+        CUSTOM ➞ if exit code is zero (0) then the response file contains the user input as a UTF-8 string in the form of: <br>
+        <pre>
+        selected button number (counted from 1)
+        user input for first field
+        ...
+        user input for last field</pre>
+        Please note that the file is created using unix-style line separator (line feed).
+    </li>
+</ul>
+
+
+<p class="paragraph_header1" style="color: #3b3dff;">File Selector Module</p>
+<a id="fileSelector"> </a>
+
+<p>
+    The file selector module shows a file chooser dialog and returns the user selected file. Invocation:
+</p>
+
+<p class="output">
+    java -jar wenity.jar [-d] fileSelector dialog_caption filter [no_file_error_message]
+</p>
+
+<p>where</p>
+
+<table>
+    <tr>
+        <td>fileSelector</td>
+        <td>is the module name</td>
+    </tr>
+    <tr>
+        <td>dialog_caption</td>
+        <td>specifies the caption of the dialog</td>
+    </tr>
+    <tr>
+        <td>filter</td>
+        <td>specifies the file name filter: <br>
+            &nbsp;&nbsp;<i>all</i>: show all files <br>
+            &nbsp;&nbsp;<i>dir</i>: show directories only <br>
+            &nbsp;&nbsp;<i>ext1,ext2</i>: show files having the specified extension only <br>
+        </td>
+    </tr>
+    <tr>
+        <td>no_file_error_message</td>
+        <td>if specified the user must select an existing file; if a non-existing file is selected this text will be
+            shown
+        </td>
+    </tr>
+</table>
+
+<p><strong>Return value(s)</strong></p>
+
+<p>
+    If exit code is zero (0) then the response file contains the full path (in OS specific format) to the selected file.
+</p>
+
+
+<p class="paragraph_header1" style="color: #3b3dff;">File Viewer Module</p>
+<a id="fileViewer"> </a>
+
+<p>
+    The file viewer module is a text/html file viewer with customizable buttons. Invocation:
+</p>
+
+<p class="output">
+    java -jar wenity.jar [-d] fileViewer full_file_path header_text button_caption(s)
+</p>
+
+<p>where</p>
+
+<table>
+    <tr>
+        <td>fileViewer</td>
+        <td>is the module name</td>
+    </tr>
+    <tr>
+        <td>full_file_path</td>
+        <td>specifies the full path (in OS specific format) to the file to be shown;<br>
+            if file extension is 'html' or 'htm' it will be shown as HTML document;
+            <br>
+
+        </td>
+    </tr>
+    <tr>
+        <td>header_text</td>
+        <td>is the text that is shown at the top of the dialog</td>
+    </tr>
+    <tr>
+        <td>button_captions</td>
+        <td>is the comma separated list of button captions</td>
+    </tr>
+</table>
+
+<p><strong>Notes</strong></p>
+
+<ul>
+    <li>The html viewer is just a basic solution, not a full-blown browser.</li>
+    <li>[Windows only] Due to the limitations of the html renderer the path of the html file must be in a specific
+        format, please refer to <span class="file_name">html_file_viewer_example.bat</span> for an example.
+    </li>
+</ul>
+
+<p><strong>Return value(s)</strong></p>
+
+<p>
+    The selected button as a number, where the first button in the dialog is one (1).
+</p>
+
+
+<p class="paragraph_header1" style="color: #3b3dff;">File System Module</p>
+<a id="fileSystem"> </a>
+
+<p>
+    The file system module gives file system information. Invocation:
+</p>
+
+<p class="output">
+    java -jar wenity.jar [-d] fileSystem operation_name full_path [req_free_space_in_mb]
+</p>
+
+<p>where</p>
+
+<table>
+    <tr>
+        <td>fileSystem</td>
+        <td>is the module name</td>
+    </tr>
+    <tr>
+        <td>operation_name</td>
+        <td>specifies the operation to be executed: <br>
+            &nbsp;&nbsp;<i>hasFreeSpace</i>: returns one (1) if the free space at the location specified by
+            <i>full_path</i>
+            is larger than or equal with <i>req_free_space_in_mb</i> <br>
+            &nbsp;&nbsp;<i>pathExists</i>: returns one (1) if <i>full_path</i> exists
+        </td>
+    </tr>
+    <tr>
+        <td>full_path</td>
+        <td>specifies the full path (in OS specific format) to the file or folder to be acted upon</td>
+    </tr>
+    <tr>
+        <td>req_free_space_in_mb</td>
+        <td>the requested free space in megabytes (used only for <i>hasFreeSpace</i>)</td>
+    </tr>
+</table>
+
+<p><strong>Return value(s)</strong></p>
+
+<p>
+    If operation is finished normally (path exists/free space available) then the return value is one (1).
+</p>
+
+
+<p class="paragraph_header1" style="color: #3b3dff;">Notifier Module</p>
+<a id="notifier"> </a>
+
+<p>
+    The notifier module shows a notification balloon on the system tray. Invocation:
+</p>
+
+<p class="output">
+    java -jar wenity.jar [-d] notifier type title message display_time_in_sec
+</p>
+
+<p>where</p>
+
+<table>
+    <tr>
+        <td>notifier</td>
+        <td>is the module name</td>
+    </tr>
+    <tr>
+        <td>type</td>
+        <td>specifies the notification type (INFO, WARNING, ERROR)<br></td>
+    </tr>
+    <tr>
+        <td>title</td>
+        <td>specifies the title of the notification balloon</td>
+    </tr>
+    <tr>
+        <td>message</td>
+        <td>specifies the message of the notification balloon</td>
+    </tr>
+    <tr>
+        <td>display_time_in_sec</td>
+        <td>specifies the time while the notification should be shown (note: the GUI might not honor this value)</td>
+    </tr>
+</table>
+
+<p><strong>Return value(s)</strong></p>
+
+<p>
+    If notification is shown then the return value is one (1).
+</p>
+
+
+<p class="paragraph_header1" style="color: #3b3dff;">Progress Indicator Module</p>
+<a id="progressIndicator"> </a>
+
+<p>
+    The progress indicator module shows a progress monitor dialog until the specified status file is created.
+    Invocation:
+</p>
+
+<p class="output">
+    java -jar wenity.jar [-d] progressIndicator status_file_full_path header_text
+</p>
+
+<p>where</p>
+
+<table>
+    <tr>
+        <td>progressIndicator</td>
+        <td>is the module name</td>
+    </tr>
+    <tr>
+        <td>status_file_full_path</td>
+        <td>specifies the full path (in OS specific format) to the status file; the polling period for this file is 1
+            second
+        </td>
+    </tr>
+    <tr>
+        <td>header_text</td>
+        <td>is the text that is shown above the progress bar</td>
+    </tr>
+</table>
+
+<p><strong>Return value(s)</strong></p>
+
+<p>
+    If progress monitor is closed by the creation of the status file then the return value is one (1).
+</p>
+
+
+<div class="page_header">Application Status</div>
+
+<p align="center">
+    Wenity is developed by Károly Kálmán<sup>[<a href="http://kksw.zzl.org" target="_blank">home</a>]</sup>.
+    This program is <strong>free to use</strong> and distribute (in original form).
+</p>
+
+<p align="center">
+    Please note that Wenity is provided as is, without warranty of any kind and
+    the author can not warrant that it is free from errors.
+</p>
+
+<p align="center"><strong> Use Wenity at your own risk! </strong></p>
+
+<p align="center"><strong> THANK YOU! </strong></p>
+
+<p class="lastupd">Last modified: March 2013</p>
+
+</body>
+</html>
+
+<!--
+    Sep 21, 2012:    initial
+    Jan 31, 2013:    v1.1 - file viewer
+    Feb 27, 2013:    v1.5 - file system
+    Feb 28, 2013:    v1.5 - file selector filter
+    Mar  1, 2013:    v1.5 - notifier, progress indicator
+    Mar  5, 2013:    v1.5 - custom dialog
+-->
+
+
