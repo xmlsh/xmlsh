@@ -1,7 +1,114 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry excluding="src/java|src/main/java" kind="src" path="src/main/java"/>
-	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry exported="true" kind="con" path="org.springsource.ide.eclipse.gradle.classpathcontainer"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER" exported="true"/>
+	<classpathentry kind="con" path="org.springsource.ide.eclipse.gradle.classpathcontainer" exported="true"/>
 	<classpathentry kind="output" path="_out"/>
+	<classpathentry kind="src" path="/xmlsh" exported="true"/>
+	<classpathentry sourcepath="/home/dlee/.gradle/caches/modules-2/files-2.1/com.amazonaws/aws-java-sdk-s3/1.9.40/70465b7518b482b9e0e1dc74a900cc9213194a70/aws-java-sdk-s3-1.9.40-sources.jar" kind="lib" path="/home/dlee/.gradle/caches/modules-2/files-2.1/com.amazonaws/aws-java-sdk-s3/1.9.40/7f26efe572846ad3dc7c5e2386d34466ac1536bc/aws-java-sdk-s3-1.9.40.jar" exported="true">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/home/dlee/.gradle/caches/modules-2/files-2.1/com.amazonaws/aws-java-sdk-s3/1.9.40/4831b118f134c1a2433b016035a395c2eaad0277/aws-java-sdk-s3-1.9.40-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="/home/dlee/.gradle/caches/modules-2/files-2.1/com.amazonaws/aws-java-sdk-simpledb/1.9.40/ecc4fa6c41ba47477265ef02b0840f3000a1b67d/aws-java-sdk-simpledb-1.9.40-sources.jar" kind="lib" path="/home/dlee/.gradle/caches/modules-2/files-2.1/com.amazonaws/aws-java-sdk-simpledb/1.9.40/d7468bf37e4cfe1449530e7ae5eca8377b41ae98/aws-java-sdk-simpledb-1.9.40.jar" exported="true">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/home/dlee/.gradle/caches/modules-2/files-2.1/com.amazonaws/aws-java-sdk-simpledb/1.9.40/a02c740c6c0d1f56924e61bcc3339dc9b4f39994/aws-java-sdk-simpledb-1.9.40-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="/home/dlee/.gradle/caches/modules-2/files-2.1/com.amazonaws/aws-java-sdk-cloudformation/1.9.40/c61cb62e395f5535f458782f650a5147f47e283a/aws-java-sdk-cloudformation-1.9.40-sources.jar" kind="lib" path="/home/dlee/.gradle/caches/modules-2/files-2.1/com.amazonaws/aws-java-sdk-cloudformation/1.9.40/4a6e58f635b5dbfd94f779ec2b1aca0ce9f49429/aws-java-sdk-cloudformation-1.9.40.jar" exported="true">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/home/dlee/.gradle/caches/modules-2/files-2.1/com.amazonaws/aws-java-sdk-cloudformation/1.9.40/f1860485247e425735329261a4d0bdc985683716/aws-java-sdk-cloudformation-1.9.40-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="/home/dlee/.gradle/caches/modules-2/files-2.1/com.amazonaws/aws-java-sdk-ec2/1.9.40/6392f805aca153a1758555c694c29f87ac810833/aws-java-sdk-ec2-1.9.40-sources.jar" kind="lib" path="/home/dlee/.gradle/caches/modules-2/files-2.1/com.amazonaws/aws-java-sdk-ec2/1.9.40/4b470bd4af5c5c46d4af9526a65ac7d04d6f17bc/aws-java-sdk-ec2-1.9.40.jar" exported="true">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/home/dlee/.gradle/caches/modules-2/files-2.1/com.amazonaws/aws-java-sdk-ec2/1.9.40/6bb837a26a7f60d5259f2c23d53c0adce0f023f9/aws-java-sdk-ec2-1.9.40-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="/home/dlee/.gradle/caches/modules-2/files-2.1/com.amazonaws/aws-java-sdk-elasticloadbalancing/1.9.40/33982358ea2c026f10fde2f33d91358b2c4180f9/aws-java-sdk-elasticloadbalancing-1.9.40-sources.jar" kind="lib" path="/home/dlee/.gradle/caches/modules-2/files-2.1/com.amazonaws/aws-java-sdk-elasticloadbalancing/1.9.40/1ad7cfd55a07a08a4037ab357a700fd682f1c0f/aws-java-sdk-elasticloadbalancing-1.9.40.jar" exported="true">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/home/dlee/.gradle/caches/modules-2/files-2.1/com.amazonaws/aws-java-sdk-elasticloadbalancing/1.9.40/8ad86a9a54cdf2b4ab56cdd20ad03c13f41c4957/aws-java-sdk-elasticloadbalancing-1.9.40-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="/home/dlee/.gradle/caches/modules-2/files-2.1/com.amazonaws/aws-java-sdk-dynamodb/1.9.40/27ecfa14ab5934e9b1a56b1b76aa788eb735e963/aws-java-sdk-dynamodb-1.9.40-sources.jar" kind="lib" path="/home/dlee/.gradle/caches/modules-2/files-2.1/com.amazonaws/aws-java-sdk-dynamodb/1.9.40/99ab2552754d74bdb4d616a06aa00c90a7db2d9b/aws-java-sdk-dynamodb-1.9.40.jar" exported="true">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/home/dlee/.gradle/caches/modules-2/files-2.1/com.amazonaws/aws-java-sdk-dynamodb/1.9.40/84188abe825ecbab21ce2db245fd4255ca2607da/aws-java-sdk-dynamodb-1.9.40-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="/home/dlee/.gradle/caches/modules-2/files-2.1/com.amazonaws/aws-java-sdk-cloudwatch/1.9.40/5d32a64075583acbfa60ca5573571867e0f217f7/aws-java-sdk-cloudwatch-1.9.40-sources.jar" kind="lib" path="/home/dlee/.gradle/caches/modules-2/files-2.1/com.amazonaws/aws-java-sdk-cloudwatch/1.9.40/a485b8a245dd734e2e72b7b5d6304f65256a9cde/aws-java-sdk-cloudwatch-1.9.40.jar" exported="true">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/home/dlee/.gradle/caches/modules-2/files-2.1/com.amazonaws/aws-java-sdk-cloudwatch/1.9.40/9ad6a2d383ceff2b3cbd7ccd2b88fa003654e58c/aws-java-sdk-cloudwatch-1.9.40-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="/home/dlee/.gradle/caches/modules-2/files-2.1/com.amazonaws/aws-java-sdk-sqs/1.9.40/c3c769408fc1bdb29fd9506d2035bdffc6808e5d/aws-java-sdk-sqs-1.9.40-sources.jar" kind="lib" path="/home/dlee/.gradle/caches/modules-2/files-2.1/com.amazonaws/aws-java-sdk-sqs/1.9.40/1246180b1f69981dc1297750f92af45020f38950/aws-java-sdk-sqs-1.9.40.jar" exported="true">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/home/dlee/.gradle/caches/modules-2/files-2.1/com.amazonaws/aws-java-sdk-sqs/1.9.40/1858b51d7472ec7e5a5400720046065cb60fe979/aws-java-sdk-sqs-1.9.40-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="/home/dlee/.gradle/caches/modules-2/files-2.1/com.amazonaws/aws-java-sdk-sns/1.9.40/dbc14e9383ba64e9506b02b74bca228f72011489/aws-java-sdk-sns-1.9.40-sources.jar" kind="lib" path="/home/dlee/.gradle/caches/modules-2/files-2.1/com.amazonaws/aws-java-sdk-sns/1.9.40/b8e26203fbffccc7e4286034096973865567e58/aws-java-sdk-sns-1.9.40.jar" exported="true">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/home/dlee/.gradle/caches/modules-2/files-2.1/com.amazonaws/aws-java-sdk-sns/1.9.40/98f1421a32f2e270b6a7587e33da1809a9b57863/aws-java-sdk-sns-1.9.40-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="/home/dlee/.gradle/caches/modules-2/files-2.1/com.amazonaws/aws-java-sdk-glacier/1.9.40/70dec8f9c4529a13910a4c310c461720faecd00b/aws-java-sdk-glacier-1.9.40-sources.jar" kind="lib" path="/home/dlee/.gradle/caches/modules-2/files-2.1/com.amazonaws/aws-java-sdk-glacier/1.9.40/59797adfc8d27577f908c59f3bc17e07530566c7/aws-java-sdk-glacier-1.9.40.jar" exported="true">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/home/dlee/.gradle/caches/modules-2/files-2.1/com.amazonaws/aws-java-sdk-glacier/1.9.40/f5efdc3c4e1e476f2c3898f9885b300d0e1c9542/aws-java-sdk-glacier-1.9.40-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="/home/dlee/.gradle/caches/modules-2/files-2.1/com.amazonaws/aws-java-sdk-autoscaling/1.9.40/4f814ade7afc514d0344d8ab1edbdcf34bf388d5/aws-java-sdk-autoscaling-1.9.40-sources.jar" kind="lib" path="/home/dlee/.gradle/caches/modules-2/files-2.1/com.amazonaws/aws-java-sdk-autoscaling/1.9.40/83cb71f4654a059efef45d10e0a8ce87db9e0fa6/aws-java-sdk-autoscaling-1.9.40.jar" exported="true">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/home/dlee/.gradle/caches/modules-2/files-2.1/com.amazonaws/aws-java-sdk-autoscaling/1.9.40/6e593d7d46c2bdb8767fb35683c4b6a0be22f47/aws-java-sdk-autoscaling-1.9.40-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/home/dlee/.gradle/caches/modules-2/files-2.1/bouncycastle/bcprov-jdk16/140/41efb2a94041ddced6d2b3f2f80d218853aac6c9/bcprov-jdk16-140.jar" exported="true"/>
+	<classpathentry sourcepath="/home/dlee/.gradle/caches/modules-2/files-2.1/com.amazonaws/aws-java-sdk-kms/1.9.40/4adb77c703e2215cb3f6d32a07d6c6c8220ccd8f/aws-java-sdk-kms-1.9.40-sources.jar" kind="lib" path="/home/dlee/.gradle/caches/modules-2/files-2.1/com.amazonaws/aws-java-sdk-kms/1.9.40/265b5b23ff8d87c97bcea519e10917778f4d2fe8/aws-java-sdk-kms-1.9.40.jar" exported="true">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/home/dlee/.gradle/caches/modules-2/files-2.1/com.amazonaws/aws-java-sdk-kms/1.9.40/da8e6d4f46f34081db97924b5b1f71a1ef098f68/aws-java-sdk-kms-1.9.40-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="/home/dlee/.gradle/caches/modules-2/files-2.1/com.amazonaws/aws-java-sdk-core/1.9.40/4adac998a8dc8eb1891cf14732aa45705daeae29/aws-java-sdk-core-1.9.40-sources.jar" kind="lib" path="/home/dlee/.gradle/caches/modules-2/files-2.1/com.amazonaws/aws-java-sdk-core/1.9.40/62e5b9452a14a1dd29f5d05698ff41e672fb9ebb/aws-java-sdk-core-1.9.40.jar" exported="true">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/home/dlee/.gradle/caches/modules-2/files-2.1/com.amazonaws/aws-java-sdk-core/1.9.40/cb20de9cd487cc5e11e17b36c85b7ba31fda3528/aws-java-sdk-core-1.9.40-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="/home/dlee/.gradle/caches/modules-2/files-2.1/commons-logging/commons-logging/1.1.3/28bb0405fddaf04f15058fbfbe01fe2780d7d3b6/commons-logging-1.1.3-sources.jar" kind="lib" path="/home/dlee/.gradle/caches/modules-2/files-2.1/commons-logging/commons-logging/1.1.3/f6f66e966c70a83ffbdb6f17a0919eaf7c8aca7f/commons-logging-1.1.3.jar" exported="true">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/home/dlee/.gradle/caches/modules-2/files-2.1/commons-logging/commons-logging/1.1.3/8a9805acc4e492afb6a400b6e32cfd98ed263caa/commons-logging-1.1.3-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="/home/dlee/.gradle/caches/modules-2/files-2.1/org.apache.httpcomponents/httpclient/4.3.4/7a14aafed8c5e2c4e360a2c1abd1602efa768b1f/httpclient-4.3.4-sources.jar" kind="lib" path="/home/dlee/.gradle/caches/modules-2/files-2.1/org.apache.httpcomponents/httpclient/4.3.4/a9a1fef2faefed639ee0d0fba5b3b8e4eb2ff2d8/httpclient-4.3.4.jar" exported="true">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/home/dlee/.gradle/caches/modules-2/files-2.1/org.apache.httpcomponents/httpclient/4.3.4/17426bc651941a08701a7e7d899f12739798fcb5/httpclient-4.3.4-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="/home/dlee/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-databind/2.3.2/1db5aeeb9d117597942671c6c28d99ef820e5685/jackson-databind-2.3.2-sources.jar" kind="lib" path="/home/dlee/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-databind/2.3.2/c75edc740a6d8cb1cef6fa82fa594e0bce561916/jackson-databind-2.3.2.jar" exported="true">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/home/dlee/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-databind/2.3.2/2467addaea44733c2b443b330507c5948a397555/jackson-databind-2.3.2-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="/home/dlee/.gradle/caches/modules-2/files-2.1/joda-time/joda-time/2.8/c5af7fffd48cf620183ba19d12f55f6154f039f2/joda-time-2.8-sources.jar" kind="lib" path="/home/dlee/.gradle/caches/modules-2/files-2.1/joda-time/joda-time/2.8/9f2785d7184b97d005a44241ccaf980f43b9ccdb/joda-time-2.8.jar" exported="true">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/home/dlee/.gradle/caches/modules-2/files-2.1/joda-time/joda-time/2.8/518ffdcb107419b0af37036b232f0d36e61a4920/joda-time-2.8-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="/home/dlee/.gradle/caches/modules-2/files-2.1/org.apache.httpcomponents/httpcore/4.3.2/4809f38359edeea9487f747e09aa58ec8d3a54c5/httpcore-4.3.2-sources.jar" kind="lib" path="/home/dlee/.gradle/caches/modules-2/files-2.1/org.apache.httpcomponents/httpcore/4.3.2/31fbbff1ddbf98f3aa7377c94d33b0447c646b6e/httpcore-4.3.2.jar" exported="true">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/home/dlee/.gradle/caches/modules-2/files-2.1/org.apache.httpcomponents/httpcore/4.3.2/37b4a5362830a9b29e68f1a1d179f3aa544fb623/httpcore-4.3.2-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="/home/dlee/.gradle/caches/modules-2/files-2.1/commons-codec/commons-codec/1.6/61e9f9d11fe3e12ec62f633006e99d75fd7f19c8/commons-codec-1.6-sources.jar" kind="lib" path="/home/dlee/.gradle/caches/modules-2/files-2.1/commons-codec/commons-codec/1.6/b7f0fc8f61ecadeb3695f0b9464755eee44374d4/commons-codec-1.6.jar" exported="true">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/home/dlee/.gradle/caches/modules-2/files-2.1/commons-codec/commons-codec/1.6/3c2c41ec5e3ca4131f83cf611f5fd837892220bd/commons-codec-1.6-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="/home/dlee/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-annotations/2.3.0/cc964b08f8d37e3d8465de923b9e6321107a5429/jackson-annotations-2.3.0-sources.jar" kind="lib" path="/home/dlee/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-annotations/2.3.0/f5e853a20b60758922453d56f9ae1e64af5cb3da/jackson-annotations-2.3.0.jar" exported="true">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/home/dlee/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-annotations/2.3.0/bd4dbde5cfee2706ba23a273be219226de6622a3/jackson-annotations-2.3.0-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="/home/dlee/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-core/2.3.2/520cc7be579515c777cb6f33b6e0cf9e391c7435/jackson-core-2.3.2-sources.jar" kind="lib" path="/home/dlee/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-core/2.3.2/559b70ac8a0d5cad611da4223137a920147201ba/jackson-core-2.3.2.jar" exported="true">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/home/dlee/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-core/2.3.2/809a86b6449b8ee34f21687cde65e1d02ba96fd9/jackson-core-2.3.2-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
 </classpath>

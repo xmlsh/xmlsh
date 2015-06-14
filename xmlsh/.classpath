@@ -7,7 +7,164 @@
 	<classpathentry kind="src" path="src/modules"/>
 	<classpathentry kind="src" path="src/resources"/>
 	<classpathentry kind="src" path="src/shell"/>
-	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry exported="true" kind="con" path="org.springsource.ide.eclipse.gradle.classpathcontainer"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER" exported="true"/>
+	<classpathentry kind="con" path="org.springsource.ide.eclipse.gradle.classpathcontainer" exported="true"/>
 	<classpathentry kind="output" path="_out"/>
+	<classpathentry sourcepath="/home/dlee/.gradle/caches/modules-2/files-2.1/com.thaiopensource/trang/20091111/4955d1afae2e875ebf995d05394511b59b9adb8a/trang-20091111-sources.jar" kind="lib" path="/home/dlee/.gradle/caches/modules-2/files-2.1/com.thaiopensource/trang/20091111/f66f18561a4a821910b5bd7e3af58ee187af5a00/trang-20091111.jar" exported="true">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/home/dlee/.gradle/caches/modules-2/files-2.1/com.thaiopensource/trang/20091111/d8802046e77931b56ec4454624256e3e6fbd50a4/trang-20091111-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="/home/dlee/.gradle/caches/modules-2/files-2.1/com.thaiopensource/jing/20091111/bdd8441db40a47232b1c93e43bb21065b3f4bc6d/jing-20091111-sources.jar" kind="lib" path="/home/dlee/.gradle/caches/modules-2/files-2.1/com.thaiopensource/jing/20091111/daa0cf7b1679264f8e68171f7f253255794773f7/jing-20091111.jar" exported="true">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/home/dlee/.gradle/caches/modules-2/files-2.1/com.thaiopensource/jing/20091111/d8802046e77931b56ec4454624256e3e6fbd50a4/jing-20091111-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="/home/dlee/.gradle/caches/modules-2/files-2.1/org.apache.logging.log4j/log4j-api/2.3/2083f2f885111e2d672a28b5657c465360559663/log4j-api-2.3-sources.jar" kind="lib" path="/home/dlee/.gradle/caches/modules-2/files-2.1/org.apache.logging.log4j/log4j-api/2.3/8d85ef2675d1b45fe78adad021f809bdf12f2eeb/log4j-api-2.3.jar" exported="true">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/home/dlee/.gradle/caches/modules-2/files-2.1/org.apache.logging.log4j/log4j-api/2.3/a2cca02f1edf32cbf5b6d7b7f32785ebcc51952d/log4j-api-2.3-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="/home/dlee/.gradle/caches/modules-2/files-2.1/org.apache.logging.log4j/log4j-core/2.3/25185a3609b7a37dcb152daab7d9855cb4e915b6/log4j-core-2.3-sources.jar" kind="lib" path="/home/dlee/.gradle/caches/modules-2/files-2.1/org.apache.logging.log4j/log4j-core/2.3/58a3e964db5307e30650817c5daac1e8c8ede648/log4j-core-2.3.jar" exported="true">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/home/dlee/.gradle/caches/modules-2/files-2.1/org.apache.logging.log4j/log4j-core/2.3/fd9665172cee688b1555b139dcfa487da3c33e1d/log4j-core-2.3-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="/home/dlee/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-annotations/2.5.4/ea497e77b3695405373364f8d1d6d9513ef2c8b1/jackson-annotations-2.5.4-sources.jar" kind="lib" path="/home/dlee/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-annotations/2.5.4/7a93b60f5d2d43024f34e15893552ee6defdb971/jackson-annotations-2.5.4.jar" exported="true">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/home/dlee/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-annotations/2.5.4/3c2eed06d48fefe7f98bbba5158bf0fad79ca441/jackson-annotations-2.5.4-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="/home/dlee/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-core/2.5.4/c906e414014890b228358bfcbeeb6b29afa62276/jackson-core-2.5.4-sources.jar" kind="lib" path="/home/dlee/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-core/2.5.4/a57a2df1a23ca1ee32f129173ba7f5feaa9ac24/jackson-core-2.5.4.jar" exported="true">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/home/dlee/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-core/2.5.4/2fce3f409f9c6070ef1e88ef04aa01855ab1652a/jackson-core-2.5.4-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="/home/dlee/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-databind/2.5.4/5d94b8a16dc19bddcf5394af6d23f32b62ed71dd/jackson-databind-2.5.4-sources.jar" kind="lib" path="/home/dlee/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-databind/2.5.4/5dfa42af84584b4a862ea488da84bbbebbb06c35/jackson-databind-2.5.4.jar" exported="true">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/home/dlee/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-databind/2.5.4/661dfef53af20a1f6ca77edfab5efef5f3ca6105/jackson-databind-2.5.4-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="/home/dlee/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.dataformat/jackson-dataformat-xml/2.5.4/f1f6860fda6333f6437252399762630c6e757649/jackson-dataformat-xml-2.5.4-sources.jar" kind="lib" path="/home/dlee/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.dataformat/jackson-dataformat-xml/2.5.4/8ff36f45279beb68af3b2b50eacdf4fb4e7fef52/jackson-dataformat-xml-2.5.4.jar" exported="true">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/home/dlee/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.dataformat/jackson-dataformat-xml/2.5.4/7b49cac0dd639f687b9a0b9aea35af0e180bf307/jackson-dataformat-xml-2.5.4-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="/home/dlee/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.module/jackson-module-jsonSchema/2.5.4/89c9c892dd3d02c883e15b3ddfcefd8b83d96770/jackson-module-jsonSchema-2.5.4-sources.jar" kind="lib" path="/home/dlee/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.module/jackson-module-jsonSchema/2.5.4/d00ad74d4290144d55689433d5dcc1f481a3d6e/jackson-module-jsonSchema-2.5.4.jar" exported="true">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/home/dlee/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.module/jackson-module-jsonSchema/2.5.4/d34a1c7feecfe013b173c2ee8f5bcae3ca9acf3c/jackson-module-jsonSchema-2.5.4-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="/home/dlee/.gradle/caches/modules-2/files-2.1/commons-codec/commons-codec/1.10/11fb3d88ae7e3b757d70237064210ceb954a5a04/commons-codec-1.10-sources.jar" kind="lib" path="/home/dlee/.gradle/caches/modules-2/files-2.1/commons-codec/commons-codec/1.10/4b95f4897fa13f2cd904aee711aeafc0c5295cd8/commons-codec-1.10.jar" exported="true">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/home/dlee/.gradle/caches/modules-2/files-2.1/commons-codec/commons-codec/1.10/8176f1eb181cde7c9e4b5290f0365652777b3b87/commons-codec-1.10-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="/home/dlee/.gradle/caches/modules-2/files-2.1/commons-io/commons-io/2.4/f2d8698c46d1167ff24b06a840a87d91a02db891/commons-io-2.4-sources.jar" kind="lib" path="/home/dlee/.gradle/caches/modules-2/files-2.1/commons-io/commons-io/2.4/b1b6ea3b7e4aa4f492509a4952029cd8e48019ad/commons-io-2.4.jar" exported="true">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/home/dlee/.gradle/caches/modules-2/files-2.1/commons-io/commons-io/2.4/3b5b0183c509963d5ffdf0d9d452a4a7521aeaa3/commons-io-2.4-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="/home/dlee/.gradle/caches/modules-2/files-2.1/org.apache.commons/commons-lang3/3.4/b49dafc9cfef24c356827f322e773e7c26725dd2/commons-lang3-3.4-sources.jar" kind="lib" path="/home/dlee/.gradle/caches/modules-2/files-2.1/org.apache.commons/commons-lang3/3.4/5fe28b9518e58819180a43a850fbc0dd24b7c050/commons-lang3-3.4.jar" exported="true">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/home/dlee/.gradle/caches/modules-2/files-2.1/org.apache.commons/commons-lang3/3.4/75412eddcd8c9f4d338e09966b6df2f01c7df9ff/commons-lang3-3.4-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="/home/dlee/.gradle/caches/modules-2/files-2.1/commons-logging/commons-logging/1.2/ecf26c7507d67782a3bbd148d170b31dfad001aa/commons-logging-1.2-sources.jar" kind="lib" path="/home/dlee/.gradle/caches/modules-2/files-2.1/commons-logging/commons-logging/1.2/4bfc12adfe4842bf07b657f0369c4cb522955686/commons-logging-1.2.jar" exported="true">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/home/dlee/.gradle/caches/modules-2/files-2.1/commons-logging/commons-logging/1.2/83033ee697035dfb9ce3503e1ac0c5a33021e503/commons-logging-1.2-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="/home/dlee/.gradle/caches/modules-2/files-2.1/org.apache.httpcomponents/httpclient/4.5/c9504d3448744739d334bde12bfbc91fd7f85115/httpclient-4.5-sources.jar" kind="lib" path="/home/dlee/.gradle/caches/modules-2/files-2.1/org.apache.httpcomponents/httpclient/4.5/a1e6cbb3cc2c5f210dd1310ff9fcb2c09c0d1438/httpclient-4.5.jar" exported="true">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/home/dlee/.gradle/caches/modules-2/files-2.1/org.apache.httpcomponents/httpclient/4.5/837946d7784b9141e6ed2f79e5ad11e176913e3f/httpclient-4.5-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="/home/dlee/.gradle/caches/modules-2/files-2.1/org.apache.httpcomponents/httpcore/4.4.1/9700be0d0a331691654a8e901943c9a74e33c5fc/httpcore-4.4.1-sources.jar" kind="lib" path="/home/dlee/.gradle/caches/modules-2/files-2.1/org.apache.httpcomponents/httpcore/4.4.1/f5aa318bda4c6c8d688c9d00b90681dcd82ce636/httpcore-4.4.1.jar" exported="true">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/home/dlee/.gradle/caches/modules-2/files-2.1/org.apache.httpcomponents/httpcore/4.4.1/ee000b614136eae09ba1d3ccc95e8e72fa5466b4/httpcore-4.4.1-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="/home/dlee/.gradle/caches/modules-2/files-2.1/com.fasterxml.woodstox/woodstox-core/5.0.1/ee9d421201670475f9c7712ed6bf6c5e0405234c/woodstox-core-5.0.1-sources.jar" kind="lib" path="/home/dlee/.gradle/caches/modules-2/files-2.1/com.fasterxml.woodstox/woodstox-core/5.0.1/13a9863ea0153c8b3353dacecee37a139d80b649/woodstox-core-5.0.1.jar" exported="true">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/home/dlee/.gradle/caches/modules-2/files-2.1/com.fasterxml.woodstox/woodstox-core/5.0.1/b91028cb098c140e29410b89373d5d4a42a42db/woodstox-core-5.0.1-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="/home/dlee/.gradle/caches/modules-2/files-2.1/org.slf4j/slf4j-api/1.7.12/58697792617f38bf86d8e26bc004aac505e516a9/slf4j-api-1.7.12-sources.jar" kind="lib" path="/home/dlee/.gradle/caches/modules-2/files-2.1/org.slf4j/slf4j-api/1.7.12/8e20852d05222dc286bf1c71d78d0531e177c317/slf4j-api-1.7.12.jar" exported="true">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/home/dlee/.gradle/caches/modules-2/files-2.1/org.slf4j/slf4j-api/1.7.12/c21183a6b1d9d18f7835236181bba9d510b6b383/slf4j-api-1.7.12-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="/home/dlee/.gradle/caches/modules-2/files-2.1/org.xmlsh/stax-utils/1.0/e041e4c897bd9a52f84950e4314430158737284f/stax-utils-1.0-sources.jar" kind="lib" path="/home/dlee/.gradle/caches/modules-2/files-2.1/org.xmlsh/stax-utils/1.0/8d519ef1783011017e014ce2e70f888149465708/stax-utils-1.0.jar" exported="true"/>
+	<classpathentry kind="lib" path="/home/dlee/.gradle/caches/modules-2/files-2.1/net.bytebuddy/byte-buddy/0.7-SNAPSHOT/930ef3bcf8c93ea6ab031dc171e6a2b50c3fdc50/byte-buddy-0.7-SNAPSHOT.jar" exported="true"/>
+	<classpathentry sourcepath="/home/dlee/.gradle/caches/modules-2/files-2.1/jline/jline2/2.13-SNAPSHOT/1adf31add6920561347c71d34d52f2f5f3fd15d1/jline2-2.13-SNAPSHOT-sources.jar" kind="lib" path="/home/dlee/.gradle/caches/modules-2/files-2.1/jline/jline2/2.13-SNAPSHOT/3a0aaf5374b7a01edcea70c7b7b9fddb8c38c3b7/jline2-2.13-SNAPSHOT.jar" exported="true"/>
+	<classpathentry sourcepath="/home/dlee/.gradle/caches/modules-2/files-2.1/com.jayway.jsonpath/json-path/2.0.0/a37794ada34a38747f692e93720c33c451e8a2e/json-path-2.0.0-sources.jar" kind="lib" path="/home/dlee/.gradle/caches/modules-2/files-2.1/com.jayway.jsonpath/json-path/2.0.0/26b8555596b3fb9652c1ffe193fa9123945b32cc/json-path-2.0.0.jar" exported="true">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/home/dlee/.gradle/caches/modules-2/files-2.1/com.jayway.jsonpath/json-path/2.0.0/723e8b065d3ef92e91a491891bd3f1eb70cc7d89/json-path-2.0.0-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="/home/dlee/.gradle/caches/modules-2/files-2.1/org.ccil.cowan.tagsoup/tagsoup/1.2.1/31cbf81bece906e382034d2b04e2e5c47e864c17/tagsoup-1.2.1-sources.jar" kind="lib" path="/home/dlee/.gradle/caches/modules-2/files-2.1/org.ccil.cowan.tagsoup/tagsoup/1.2.1/5584627487e984c03456266d3f8802eb85a9ce97/tagsoup-1.2.1.jar" exported="true">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/home/dlee/.gradle/caches/modules-2/files-2.1/org.ccil.cowan.tagsoup/tagsoup/1.2.1/3218791a1731510e12650d46d884097ecb3abbe4/tagsoup-1.2.1-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="/home/dlee/.gradle/caches/modules-2/files-2.1/xml-resolver/xml-resolver/1.2/6b72432ea1c5296783007365bb7c9a6b39dfb730/xml-resolver-1.2-sources.jar" kind="lib" path="/home/dlee/.gradle/caches/modules-2/files-2.1/xml-resolver/xml-resolver/1.2/3d0f97750b3a03e0971831566067754ba4bfd68c/xml-resolver-1.2.jar" exported="true"/>
+	<classpathentry sourcepath="/home/dlee/.gradle/caches/modules-2/files-2.1/xom/xom/1.2.5/89b7d070b6725921605a900b070bd9034ede720d/xom-1.2.5-sources.jar" kind="lib" path="/home/dlee/.gradle/caches/modules-2/files-2.1/xom/xom/1.2.5/4166493b9f04e91b858ba4150b28b4d197f8f8ea/xom-1.2.5.jar" exported="true">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/home/dlee/.gradle/caches/modules-2/files-2.1/xom/xom/1.2.5/2690755d22cd198d03eaf0cac8506bbbbe9741db/xom-1.2.5-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="/home/dlee/.gradle/caches/modules-2/files-2.1/net.sf.saxon/Saxon-HE/9.6.0-6/59c5fa9f8b17341029828e71c8f7cad0fb973889/Saxon-HE-9.6.0-6-sources.jar" kind="lib" path="/home/dlee/.gradle/caches/modules-2/files-2.1/net.sf.saxon/Saxon-HE/9.6.0-6/539822fc0b0bb92631f1382a6ab9c75f99c9ce54/Saxon-HE-9.6.0-6.jar" exported="true">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/home/dlee/.gradle/caches/modules-2/files-2.1/net.sf.saxon/Saxon-HE/9.6.0-6/3c2bae29c614962465501c902317673b9515505b/Saxon-HE-9.6.0-6-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/home/dlee/.gradle/caches/modules-2/files-2.1/saxon/saxon/6.5.3/2c4d29d52d0ae2335f3670b94e0a7412f446e948/saxon-6.5.3.jar" exported="true"/>
+	<classpathentry sourcepath="/home/dlee/.gradle/caches/modules-2/files-2.1/xerces/xercesImpl/2.11.0/af86e59459a503adec5e9b47426dd9fa2ac5f1f6/xercesImpl-2.11.0-sources.jar" kind="lib" path="/home/dlee/.gradle/caches/modules-2/files-2.1/xerces/xercesImpl/2.11.0/9bb329db1cfc4e22462c9d6b43a8432f5850e92c/xercesImpl-2.11.0.jar" exported="true">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/home/dlee/.gradle/caches/modules-2/files-2.1/xerces/xercesImpl/2.11.0/3b1288d462866db6ea33593d5b3898b48eb75d3e/xercesImpl-2.11.0-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="/home/dlee/.gradle/caches/modules-2/files-2.1/org.apache.logging.log4j/log4j-slf4j-impl/2.3/beec0bdc01afecd7dd6e5a0b4819238727030a5b/log4j-slf4j-impl-2.3-sources.jar" kind="lib" path="/home/dlee/.gradle/caches/modules-2/files-2.1/org.apache.logging.log4j/log4j-slf4j-impl/2.3/57868006655a34050ad39e78c5b12aa9c74927f7/log4j-slf4j-impl-2.3.jar" exported="true">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/home/dlee/.gradle/caches/modules-2/files-2.1/org.apache.logging.log4j/log4j-slf4j-impl/2.3/41dfa07271b8cd696e70944e2690ca8bdd152514/log4j-slf4j-impl-2.3-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="/home/dlee/.gradle/caches/modules-2/files-2.1/xml-apis/xml-apis/2.0.2/281e2df846eaa47a60cd74e0513195b1d140bf1c/xml-apis-2.0.2-sources.jar" kind="lib" path="/home/dlee/.gradle/caches/modules-2/files-2.1/xml-apis/xml-apis/2.0.2/3136ca936f64c9d68529f048c2618bd356bf85c9/xml-apis-2.0.2.jar" exported="true"/>
+	<classpathentry kind="lib" path="/home/dlee/.gradle/caches/modules-2/files-2.1/net.sf.saxon/saxon/8.7/68f963a06e2c384ab8d60aaa89ed0363928f6e84/saxon-8.7.jar" exported="true"/>
+	<classpathentry kind="lib" path="/home/dlee/.gradle/caches/modules-2/files-2.1/isorelax/isorelax/20030108/b21859c352bd959ea22d06b2fe8c93b2e24531b9/isorelax-20030108.jar" exported="true"/>
+	<classpathentry sourcepath="/home/dlee/.gradle/caches/modules-2/files-2.1/org.codehaus.woodstox/stax2-api/3.1.4/b40604d61c01cc081a4a7bdfc562aa9847ee8857/stax2-api-3.1.4-sources.jar" kind="lib" path="/home/dlee/.gradle/caches/modules-2/files-2.1/org.codehaus.woodstox/stax2-api/3.1.4/ac19014b1e6a7c08aad07fe114af792676b685b7/stax2-api-3.1.4.jar" exported="true">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/home/dlee/.gradle/caches/modules-2/files-2.1/org.codehaus.woodstox/stax2-api/3.1.4/819aa74f907d379c6afc2e0376808ca9feadcbb1/stax2-api-3.1.4-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="/home/dlee/.gradle/caches/modules-2/files-2.1/javax.validation/validation-api/1.1.0.Final/7d49b53caed9bd81d172807c3e096d24f3c57090/validation-api-1.1.0.Final-sources.jar" kind="lib" path="/home/dlee/.gradle/caches/modules-2/files-2.1/javax.validation/validation-api/1.1.0.Final/8613ae82954779d518631e05daa73a6a954817d5/validation-api-1.1.0.Final.jar" exported="true">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/home/dlee/.gradle/caches/modules-2/files-2.1/javax.validation/validation-api/1.1.0.Final/9f3d019c10d629fa8259af61ac83e88bb186c4e9/validation-api-1.1.0.Final-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="/home/dlee/.gradle/caches/modules-2/files-2.1/org.fusesource.jansi/jansi/1.11/2f0e4b53b6b0eec426dad7118bf54b3deb58000b/jansi-1.11-sources.jar" kind="lib" path="/home/dlee/.gradle/caches/modules-2/files-2.1/org.fusesource.jansi/jansi/1.11/655c643309c2f45a56a747fda70e3fadf57e9f11/jansi-1.11.jar" exported="true">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/home/dlee/.gradle/caches/modules-2/files-2.1/org.fusesource.jansi/jansi/1.11/b27814181cfd1b1c22ea6a287aeace376c53ffa7/jansi-1.11-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="/home/dlee/.gradle/caches/modules-2/files-2.1/net.minidev/json-smart/2.1.1/45cf5fe4b585af94ba39bfd26ea3c61002072d04/json-smart-2.1.1-sources.jar" kind="lib" path="/home/dlee/.gradle/caches/modules-2/files-2.1/net.minidev/json-smart/2.1.1/922d12fb1f394e2b6999ae0f7936ab13f4dffb81/json-smart-2.1.1.jar" exported="true"/>
+	<classpathentry sourcepath="/home/dlee/.gradle/caches/modules-2/files-2.1/xalan/xalan/2.7.0/fe8fb14a14470c747d80c611852985ded830dab5/xalan-2.7.0-sources.jar" kind="lib" path="/home/dlee/.gradle/caches/modules-2/files-2.1/xalan/xalan/2.7.0/a33c0097f1c70b20fa7ded220ea317eb3500515e/xalan-2.7.0.jar" exported="true"/>
+	<classpathentry sourcepath="/home/dlee/.gradle/caches/modules-2/files-2.1/net.minidev/asm/1.0.2/5b3717024a5fbe8b4fbac67b93910c3841701cb6/asm-1.0.2-sources.jar" kind="lib" path="/home/dlee/.gradle/caches/modules-2/files-2.1/net.minidev/asm/1.0.2/63900a15f524db0b8c4fb2d9e24c0cb179842ea5/asm-1.0.2.jar" exported="true">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/home/dlee/.gradle/caches/modules-2/files-2.1/net.minidev/asm/1.0.2/a2a85a00c647c1966cbe1f8eb1d199940f5ba902/asm-1.0.2-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="/home/dlee/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.module/jackson-module-jaxb-annotations/2.5.4/60a86bf9ea853a07739193324365c469106ba213/jackson-module-jaxb-annotations-2.5.4-sources.jar" kind="lib" path="/home/dlee/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.module/jackson-module-jaxb-annotations/2.5.4/52c516db26a89b726a1351f7f24347c640204343/jackson-module-jaxb-annotations-2.5.4.jar" exported="true">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/home/dlee/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.module/jackson-module-jaxb-annotations/2.5.4/3015516fb4e92f964a0834965a01eb8f6597050c/jackson-module-jaxb-annotations-2.5.4-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="/home/dlee/.gradle/caches/modules-2/files-2.1/org.apache.ant/ant/1.9.5/528517e9b962642eac8011b34bc343d572d4c17c/ant-1.9.5-sources.jar" kind="lib" path="/home/dlee/.gradle/caches/modules-2/files-2.1/org.apache.ant/ant/1.9.5/4459894b14486279ccfe578c2886971a23d55101/ant-1.9.5.jar" exported="true">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/home/dlee/.gradle/caches/modules-2/files-2.1/org.apache.ant/ant/1.9.5/16b8c42fe1bfc2e404edbc056e5bd5dc4b8c4d2f/ant-1.9.5-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="/home/dlee/.gradle/caches/modules-2/files-2.1/org.apache.ant/ant-launcher/1.9.5/1f5a766e423c8545d802506967d187d9a32b375b/ant-launcher-1.9.5-sources.jar" kind="lib" path="/home/dlee/.gradle/caches/modules-2/files-2.1/org.apache.ant/ant-launcher/1.9.5/b61302e44fb1109293916cdc2928fa610b977200/ant-launcher-1.9.5.jar" exported="true"/>
+	<classpathentry kind="lib" path="/home/dlee/git.repo/xmlsh/xmlsh/build/generated-resources/main" exported="true"/>
 </classpath>

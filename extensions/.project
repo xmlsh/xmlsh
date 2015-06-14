@@ -1,24 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>extensions</name>
-	<comment></comment>
-	<projects>
-	</projects>
-	<buildSpec>
-		<buildCommand>
-			<name>org.eclipse.jdt.core.javabuilder</name>
-			<arguments>
-			</arguments>
-		</buildCommand>
-	</buildSpec>
-	<natures>
-		<nature>org.springsource.ide.eclipse.gradle.core.nature</nature>
-		<nature>org.eclipse.jdt.core.javanature</nature>
-	</natures>
 	<filteredResources>
 		<filter>
 			<id>1434292027607</id>
-			<name></name>
+			<name/>
 			<type>26</type>
 			<matcher>
 				<id>org.eclipse.ui.ide.orFilterMatcher</id>
@@ -39,4 +24,18 @@
 			</matcher>
 		</filter>
 	</filteredResources>
+	<name>extensions</name>
+	<comment/>
+	<projects/>
+	<natures>
+		<nature>org.springsource.ide.eclipse.gradle.core.nature</nature>
+		<nature>org.eclipse.jdt.core.javanature</nature>
+	</natures>
+	<buildSpec>
+		<buildCommand>
+			<name>org.eclipse.jdt.core.javabuilder</name>
+			<arguments/>
+		</buildCommand>
+	</buildSpec>
+	<linkedResources/>
 </projectDescription>
