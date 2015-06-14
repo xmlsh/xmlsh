@@ -1,0 +1,15 @@
+<module 
+	module_version="2.0"
+	name="marklogic"
+	package="org.xmlsh.marklogic"
+	require="2.0.0"
+>
+<classpath>
+  <directory url="."/>
+  <directory url="lib"/>
+</classpath>
+<main>
+  <classname>org.xmlsh.marklogic.modules.MarkLogicModule</classname>
+</main>
+</module>
+

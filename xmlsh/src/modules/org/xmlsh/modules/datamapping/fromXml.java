@@ -19,8 +19,6 @@ import org.xmlsh.core.AbstractBuiltinFunction;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.XValue;
-import org.xmlsh.core.XVariable;
-import org.xmlsh.core.io.VariableInputPort;
 import org.xmlsh.core.io.XValueInputPort;
 import org.xmlsh.json.JSONUtils;
 import org.xmlsh.json.XMLRewritingStreamReader;
@@ -28,10 +26,8 @@ import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.JavaUtils;
 import org.xmlsh.util.Util;
 
-import com.fasterxml.jackson.core.TreeNode;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
-import com.fasterxml.jackson.dataformat.xml.deser.FromXmlParser;
 
 @Function(name="from-xml",names={"convert-from-xml"} )
 public class fromXml	extends AbstractBuiltinFunction {

@@ -1,25 +1,18 @@
 package org.xmlsh.modules.datamapping;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import net.bytebuddy.ByteBuddy;
-import net.bytebuddy.dynamic.ClassLoadingStrategy;
-import net.bytebuddy.dynamic.ClassLoadingStrategy.Default;
 import net.bytebuddy.dynamic.DynamicType;
-import net.bytebuddy.dynamic.DynamicType.Builder;
+import net.bytebuddy.dynamic.loading.ClassLoadingStrategy;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.xmlsh.annotations.Function;
-import org.xmlsh.core.AbstractBuiltinFunction;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.module.ModuleConfig;
 import org.xmlsh.sh.module.PackageModule;
-import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.types.TypeFamily;
 import org.xmlsh.util.JavaUtils;
 
 @org.xmlsh.annotations.Module(name="java")

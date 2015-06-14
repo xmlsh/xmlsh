@@ -1,0 +1,11 @@
+dependencies {
+	compile "org.xmlsh:mustache-cli:1.0"
+}
+
+
+
+distributions {
+	main {
+	   baseName = "jstache"
+	}
+	}

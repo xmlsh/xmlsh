@@ -8,3 +8,7 @@ _dist/
 test/_out.txt
 test/_err.txt
 /eclipse_settings
+/build/
+.gradle
+.settings
+*~

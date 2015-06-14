@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<root> 
+  <setting name="task-tab"> 
+    <setting name="show-description" value="true"/> 
+  </setting>  
+  <setting name="favorites-tab"/>  
+  <setting name="command_line-tab"/>  
+  <setting name="setup-tab"> 
+    <setting name="setup"> 
+      <setting name="custom-gradle-executor"/>  
+      <setting name="current-directory" value="/home/dlee/git.repo/xmlsh-gradle/xmlsh"/>  
+      <setting name="log-level" value="LIFECYCLE"/>  
+      <setting name="stack-trace-level" value="INTERNAL_EXCEPTIONS"/> 
+    </setting> 
+  </setting>  
+  <setting name="SinglePaneUIInstance_splitter-id"> 
+    <setting name="divider_location" value="508"/> 
+  </setting>  
+  <setting name="main_panel"> 
+    <setting name="current-tab" value="Task Tree"/> 
+  </setting>  
+  <setting name="Application_window-id"> 
+    <setting name="window_x" value="1919"/>  
+    <setting name="window_y" value="34"/>  
+    <setting name="window_width" value="1922"/>  
+    <setting name="window_height" value="1137"/>  
+    <setting name="extended-state" value="6"/> 
+  </setting> 
+</root>
