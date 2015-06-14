@@ -1,6 +1,5 @@
 _out/
 *.class
-*.jar
 *.bak
 _dist/
 *.war
