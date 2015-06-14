@@ -1,6 +1,6 @@
 apply plugin: 'application'
 
-apply from: "$rootDir/utils.gradle"
+
 mainClassName = 'org.xmlsh.sh.shell.Shell'
 applicationName = 'xmlsh'
 group = "org.xmlsh"
@@ -9,7 +9,10 @@ version = 2.0
 
 dependencies {
 	compile project(":xmlsh")
-	
+	// Dont pull in xml-apis:2.x
+	compile ('xml-apis:xml-apis:1.4+'){
+		   force=true
+	}
 }
 
 

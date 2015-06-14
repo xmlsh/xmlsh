@@ -1,14 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="output" path="_out"/>
 	<classpathentry excluding="src/java|src/main/java" kind="src" path="src/main/java"/>
 	<classpathentry kind="src" path="src/main/resources"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER" exported="true"/>
-	<classpathentry kind="src" path="/xmlsh" exported="true"/>
-	<classpathentry sourcepath="/home/dlee/.gradle/caches/modules-2/files-2.1/xml-apis/xml-apis/1.4.01/5502da0c4c0a7916a604356ef19394ccfa30cd4b/xml-apis-1.4.01-sources.jar" kind="lib" path="/home/dlee/.gradle/caches/modules-2/files-2.1/xml-apis/xml-apis/1.4.01/3789d9fada2d3d458c4ba2de349d48780f381ee3/xml-apis-1.4.01.jar" exported="true">
-		<attributes>
-			<attribute name="javadoc_location" value="jar:file:/home/dlee/.gradle/caches/modules-2/files-2.1/xml-apis/xml-apis/1.4.01/bec4716e07b42754be3c0eca6705714893c97f37/xml-apis-1.4.01-javadoc.jar!/"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/home/dlee/.gradle/caches/modules-2/files-2.1/com.marklogic/marklogic-xcc/8.0.2/a5715105b4403be9b9292a2a24bcc8a602c3cef/marklogic-xcc-8.0.2.jar" exported="true"/>
+	<classpathentry exported="true" kind="con" path="org.springsource.ide.eclipse.gradle.classpathcontainer"/>
+	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="output" path="_out"/>
 </classpath>

@@ -75,12 +75,23 @@ version.version=${xversion_version}
 configurations { 
    provided 
    
+   provided.exclude group: 'xml-apis'
+
+   provided.exclude group: 'saxon'
+   
+   all*.exclude group: 'asm'
+   
 }
 dependencies {
-    provided ":servlet-api"
-    provided ":javacc"
-    provided ":ant"
 
+ //   provided ":javacc"
+    provided "org.apache.ant:ant:1.9+"
+
+	
+	compile 'com.thaiopensource:trang:20091111'
+   
+    compile 'com.thaiopensource:jing:20091111' 
+  
 
 	compile 'org.apache.logging.log4j:log4j-api:2.+' , 
 	        'org.apache.logging.log4j:log4j-core:2.+'
@@ -99,17 +110,17 @@ dependencies {
 			'org.apache.httpcomponents:httpcore:latest.release'
      compile 'com.fasterxml.woodstox:woodstox-core:latest.release'
 	 compile 'org.slf4j:slf4j-api:latest.release',
-	         'org.codehaus.woodstox:stax2-api:latest.release',
 			 'org.xmlsh:stax-utils:1+'
 
-	compile 'com.thaiopensource:trang:20091111',
-	         'com.thaiopensource:jing:20091111' 
+	
 	
     compile 'net.bytebuddy:byte-buddy:0.7-SNAPSHOT'
 	compile 'jline:jline2:2.13-SNAPSHOT'
 	compile 'com.jayway.jsonpath:json-path:2.+'
 	compile 'org.ccil.cowan.tagsoup:tagsoup:1.+' 
-	compile  'xerces:xercesImpl:2.+', 'xml-resolver:xml-resolver:1.2+' , 'xom:xom:latest.release'
+	runtime  'xerces:xercesImpl:2.+'
+	compile 'xml-resolver:xml-resolver:1.2+' 
+	compile 'xom:xom:latest.release'
 	compile 'net.sf.saxon:Saxon-HE:9.6.+' , 'saxon:saxon:6.5.+'
 
 			
