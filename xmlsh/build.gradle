@@ -59,6 +59,7 @@ version.version=${xversion_version}
 			srcDir generatedResources
 		}
     }
+
   }
 
   sourceSets.all { set ->

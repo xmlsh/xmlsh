@@ -9,7 +9,7 @@ echo Length: s:length($a)
 
 
 
-import module test="java:org.xmlsh.test.TestTypes" at ../bin/xmlsh-test.jar
+import module test="java:org.xmlsh.test.TestTypes" at ../lib/xmlsh-2.0-tests.jar
 
 # Static method
 echo test:staticAsString()

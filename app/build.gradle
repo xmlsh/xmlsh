@@ -1,12 +1,23 @@
 apply plugin: 'application'
 
-
 mainClassName = 'org.xmlsh.sh.shell.Shell'
 applicationName = 'xmlsh'
 group = "org.xmlsh"
 version = 2.0
+applicationDefaultJvmArgs=['-Djavax.xml.parsers.SAXParserFactory=org.apache.xerces.jaxp.SAXParserFactoryImpl']
 
+//apply from: "$rootDir/utils.gradle"
 
+configurations {
+	test 
+}
+
+jar { 
+	println "disableing jar task"
+	 enabled = false  
+}
+configurations.runtime.artifacts.removeAll { it.archiveTask.is jar }
+	
 dependencies {
 	compile project(":xmlsh")
 	// Dont pull in xml-apis:2.x
@@ -15,6 +26,11 @@ dependencies {
 	}
 }
 
+task testJar(type: Jar)  {
+	baseName 'xmlsh'
+	classifier = 'tests'
+	from sourceSets.test.output
+  }
 
 distributions {
 	main {
@@ -22,7 +38,13 @@ distributions {
          contents {
               exclude "app-${version}.jar"
 
-            }
+        }
+		contents {  
+			from(testJar) {
+				into "test/lib"
+			} 
+		}
+		 
 	}
 }
 

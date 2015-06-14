@@ -28,7 +28,7 @@ xtype {$i1}
 echo loc()  Length: $i1
 
 # Import test
-import java ../bin/xmlsh-test.jar
+import java ../lib/xmlsh-2.0-tests.jar
 
 # Default constructor
 jset -v t1 -c org.xmlsh.test.TestTypes

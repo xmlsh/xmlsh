@@ -2,7 +2,7 @@
 # Test basic types using TestTypes.class
 #
 import module java 
-import java ../bin/xmlsh-test.jar
+import java ../lib/xmlsh-2.0-tests.jar
 log $0 should not need the "{}" around expressions 
 
 function getConstructor() {

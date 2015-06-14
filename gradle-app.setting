@@ -22,7 +22,7 @@
   <setting name="setup-tab"> 
     <setting name="setup"> 
       <setting name="custom-gradle-executor"/>  
-      <setting name="current-directory" value="/home/dlee/git.repo/xmlsh-gradle"/>  
+      <setting name="current-directory" value="E:\Work\DEI\git.repo\xmlsh-gradle"/>  
       <setting name="log-level" value="LIFECYCLE"/>  
       <setting name="stack-trace-level" value="ALWAYS_FULL"/> 
     </setting> 
