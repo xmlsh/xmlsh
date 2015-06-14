@@ -1,3 +1,0 @@
-[C:\Work\DEI\xmlsh\extensions\exist\test\core\core_query.xsh line: 2]
-Exception running: e:query
-java.net.ConnectException: Connection timed out: connect
