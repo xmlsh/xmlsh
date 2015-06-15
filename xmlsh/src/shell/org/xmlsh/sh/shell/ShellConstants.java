@@ -25,16 +25,14 @@ public class ShellConstants
 	public static final String VAR_RANDOM = "RANDOM";
 	public static final String PROP_USER_DIR = "user.dir";
 	public static final String ENV_XDISABLE_LOGGING = "XDISABLE_LOGGING";
-	/*
-	 * Predefined env and shell variable names
-	 */
+    public static final String ENV_XMLSH = "XMLSH";
 	public static final String XLOGFILE = "XLOGFILE";
 	public static final String XLOG4JPATH = "XLOG4JPATH";
 	public static final String XMLSHRC = "XMLSHRC";
 	public static final String HOME = "HOME";
 	public static final String PATH = "PATH";
-	public static final String XPATH = "XPATH";
-	public static final String XMODPATH = "XMODPATH";
+	public static final String ENV_XPATH = "XPATH";
+	public static final String ENV_XMODPATH = "XMODPATH";
 	public static final String PWD = "PWD";
 	public static final String PS1 = "PS1";
 	public static final String PS2 = "PS2";
@@ -93,6 +91,7 @@ public class ShellConstants
     public static final String XSH_EXTENSION = ".xsh";
 
 	public static final String kENCODING_UTF_8 = "UTF-8";
+
 
 }
 

@@ -193,11 +193,11 @@ public class ExternalCommand implements ICommand {
 			env.put(ShellConstants.PATH, ps);
 		}
 
-		XVariable vxpath = xenv.getVar(ShellConstants.XPATH);
+		XVariable vxpath = xenv.getVar(ShellConstants.ENV_XPATH);
 		if( vxpath != null && vxpath.isExport() ){
 			SearchPath p = new SearchPath( vxpath.getValue() );
 			String ps = p.toOSString();
-			env.put(ShellConstants.XPATH, ps);
+			env.put(ShellConstants.ENV_XPATH, ps);
 		}
 
 

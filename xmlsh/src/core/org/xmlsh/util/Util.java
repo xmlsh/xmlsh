@@ -1136,9 +1136,9 @@ public class Util
 	 public static boolean isPath(String var)
 	 { 
 		 if( isWindows())
-			 return var.equalsIgnoreCase(ShellConstants.PATH)||var.equalsIgnoreCase(ShellConstants.XPATH);
+			 return var.equalsIgnoreCase(ShellConstants.PATH)||var.equalsIgnoreCase(ShellConstants.ENV_XPATH);
 		 else	
-			 return var.equals(ShellConstants.PATH)||var.equals(ShellConstants.XPATH);
+			 return var.equals(ShellConstants.PATH)||var.equals(ShellConstants.ENV_XPATH);
 
 
 	 }

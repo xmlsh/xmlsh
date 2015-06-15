@@ -80,7 +80,7 @@ public  static ModuleConfig getConfiguration(Shell shell, String nameuri,  List<
       }
       else {
 
-        SearchPath path = shell.getPath(ShellConstants.XMODPATH, true);
+        SearchPath path = shell.getPath(ShellConstants.ENV_XMODPATH, true);
         modDir = path.getFirstFileInPath(shell, nameuri, matchDirectory );
         if(modDir == null)
           throw new InvalidArgumentException("Cannot find module directory for : " + nameuri);

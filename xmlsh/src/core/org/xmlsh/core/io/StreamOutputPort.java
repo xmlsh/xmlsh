@@ -22,6 +22,7 @@ import javax.xml.stream.XMLStreamWriter;
 import net.sf.saxon.Configuration;
 import net.sf.saxon.event.PipelineConfiguration;
 import net.sf.saxon.event.ReceivingContentHandler;
+import net.sf.saxon.event.StreamWriterToReceiver;
 import net.sf.saxon.s9api.Destination;
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.Serializer;
@@ -166,7 +167,9 @@ public class StreamOutputPort extends OutputPort
 
 
 
-		XMLStreamWriter sw = ser.getXMLStreamWriter();
+		 StreamWriterToReceiver sw = ser.getXMLStreamWriter();
+		 // DAL: Saxon 9.6 is more picky about namespaces
+		 sw.setCheckValues(false);
 		return sw;
 
 

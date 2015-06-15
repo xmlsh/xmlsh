@@ -1,5 +1,5 @@
 import module json=json
-import commands java
+import module java
 txt=$(<../../samples/data/log.json)
 j=json:parse( {$txt} )
 xt=json:path( {$j} $.Message )

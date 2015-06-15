@@ -103,7 +103,7 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt {
 	     ShellConstants.VAR_RANDOM ,
 	     ShellConstants.VAR_RANDOM32,
 	     ShellConstants.VAR_RANDOM64 ,
-	     ShellConstants.XMODPATH 
+	     ShellConstants.ENV_XMODPATH 
 	};
 	@Override
 	public String toString() {
@@ -274,9 +274,9 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt {
 
 	private void setGlobalVars() throws InvalidArgumentException {
 
+	    
+	    // System env first 
 		Map<String, String> env = System.getenv();
-		
-
 		for (Map.Entry<String, String> entry : env.entrySet()) {
 
 			String name = entry.getKey();
@@ -297,9 +297,13 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt {
 							XVariable.systemFlags()));
 
 		}
+		
+		
+		
 
+		// Builtins may come from env or properties 
 		// Export path to shell path
-		String path = FileUtils.toJavaPath(System.getenv(ShellConstants.PATH));
+		String path = FileUtils.toJavaPath(  getSysProp(  ShellConstants.PATH ) );
 		getEnv().initVariable(
 				XVariable.newInstance(
 						ShellConstants.PATH,
@@ -308,20 +312,39 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt {
 								XVariable.systemFlags()));
 
 		String xpath = FileUtils
-				.toJavaPath(System.getenv(ShellConstants.XPATH));
+				.toJavaPath( getSysProp(ShellConstants.ENV_XPATH));
 		getEnv().initVariable(
 				XVariable.newInstance(
-						ShellConstants.XPATH,
+						ShellConstants.ENV_XPATH,
 						Util.isBlank(xpath) ? XValue.newXValue(".") : XValue
 								.newXValue(xpath.split(File.pathSeparator)),
 								XVariable.systemFlags()));
 
-		String xmpath = FileUtils.toJavaPath(System
-				.getenv(ShellConstants.XMODPATH));
+		String xmlsh  = getSysProp( ShellConstants.ENV_XMLSH );
+		List<String> modpath = new ArrayList<>();
+		if( ! Util.isBlank( xmlsh ) ) { 
+		    try {
+                File xmlshDir =  getExplicitFile( xmlsh , true , false );
+                if( xmlshDir != null ) { 
+                    mLogger.debug("Using XMLSH: {}" , xmlshDir );
+                    File modDir = getExplicitFile( xmlshDir , "modules" , true );
+                    if( modDir != null  ){
+                        mLogger.debug("Using default modules root: {}", modDir  );
+                        modpath.add( FileUtils.toJavaPath( modDir.getPath() ));
+                    }
+                }
+		    } catch (IOException e) {
+                mLogger.catching( e );
+            }
+		}
+		String xmpath = FileUtils.toJavaPath(getSysProp(ShellConstants.ENV_XMODPATH));
+		if( !  Util.isBlank(xmpath)  )
+		    for(String p :  xmpath.split(File.pathSeparator)) 
+		        modpath.add(p);
+		
 		getEnv().setVar(
-						ShellConstants.XMODPATH,
-						Util.isBlank(xmpath) ? XValue.empytSequence() : XValue
-								.newXValue(xmpath.split(File.pathSeparator)),
+						ShellConstants.ENV_XMODPATH,
+						XValue.newXValue( modpath.toArray(new String[modpath.size()])  ) ,
 		      XVariable.standardFlags()
 		        );
 
@@ -392,7 +415,12 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt {
 
 	}
 
-	/*
+	private String getSysProp(String name) {
+	    return System.getProperty("xmlsh.env." + name , System.getenv(name));
+    }
+
+
+    /*
 	 * Cloned shell for sub-thread execution
 	 */
 	private Shell(Shell that) throws IOException {

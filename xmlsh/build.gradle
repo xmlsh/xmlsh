@@ -81,17 +81,18 @@ configurations {
    provided.exclude group: 'saxon'
    
    all*.exclude group: 'asm'
+   all*.exclude group: 'net.sf.saxon' , module: 'saxon' 
+
    
 }
 dependencies {
 
  //   provided ":javacc"
     provided "org.apache.ant:ant:1.9+"
-
+    
 	
-	compile 'com.thaiopensource:trang:20091111'
-   
-    compile 'com.thaiopensource:jing:20091111' 
+	compile 'com.thaiopensource:trang:20091111' ,
+          'com.thaiopensource:jing:20091111' 
   
 
 	compile 'org.apache.logging.log4j:log4j-api:2.+' , 
@@ -122,7 +123,11 @@ dependencies {
 	runtime  'xerces:xercesImpl:2.+'
 	compile 'xml-resolver:xml-resolver:1.2+' 
 	compile 'xom:xom:latest.release'
-	compile 'net.sf.saxon:Saxon-HE:9.6.+' , 'saxon:saxon:6.5.+'
+	compile ('net.sf.saxon:Saxon-HE:9.6.+' ){
+        force=true 
+    }
+   
+     compile  'saxon:saxon:6.5.+'
 
 			
 	runtime  group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl' , version: '2.+'

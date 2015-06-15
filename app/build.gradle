@@ -4,7 +4,9 @@ mainClassName = 'org.xmlsh.sh.shell.Shell'
 applicationName = 'xmlsh'
 group = "org.xmlsh"
 version = 2.0
-applicationDefaultJvmArgs=['-Djavax.xml.parsers.SAXParserFactory=org.apache.xerces.jaxp.SAXParserFactoryImpl']
+applicationDefaultJvmArgs=[
+     '-Djavax.xml.parsers.SAXParserFactory=org.apache.xerces.jaxp.SAXParserFactoryImpl',
+     '-Dxmlsh.env.XMODPATH=$APP_HOME']
 
 //apply from: "$rootDir/utils.gradle"
 

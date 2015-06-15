@@ -471,13 +471,13 @@ public abstract class CommandFactory {
 				SearchPath path = null ;
 				switch (sourceMode) {
 				case IMPORT:
-					paths = new SearchPath[] { shell.getPath(ShellConstants.XMODPATH, true)  } ;
+					paths = new SearchPath[] { shell.getPath(ShellConstants.ENV_XMODPATH, true)  } ;
 					break;
 				case RUN:
 				case SOURCE:
 				case VALIDATE:
 				default:
-					paths = new SearchPath[] { shell.getPath(ShellConstants.XPATH, true) , shell.getPath(ShellConstants.PATH, true) } ;
+					paths = new SearchPath[] { shell.getPath(ShellConstants.ENV_XPATH, true) , shell.getPath(ShellConstants.PATH, true) } ;
 					break ;
 				}
 				
