@@ -258,7 +258,7 @@ public static ModuleConfig getInternalModuleConfig(Shell shell,
 	                "Module configuration specifies an invalid class type: " + cls.toString() ) );
 		}
 		mLogger.info("Creating custom package module: {} " , cls);
-		return mLogger.exit((IModule) JavaUtils.newObject(cls ,  config ));
+		return mLogger.exit((IModule) JavaUtils.newObject(cls ,  config , loader ));
 	}
 	
     return mLogger.exit(new PackageModule( config  ,  loader  ));

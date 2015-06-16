@@ -26,6 +26,8 @@ public class ShellConstants
 	public static final String PROP_USER_DIR = "user.dir";
 	public static final String ENV_XDISABLE_LOGGING = "XDISABLE_LOGGING";
     public static final String ENV_XMLSH = "XMLSH";
+    public static final String ENV_XMLSH_HOME = "XMLSH_HOME";
+
 	public static final String XLOGFILE = "XLOGFILE";
 	public static final String XLOG4JPATH = "XLOG4JPATH";
 	public static final String XMLSHRC = "XMLSHRC";

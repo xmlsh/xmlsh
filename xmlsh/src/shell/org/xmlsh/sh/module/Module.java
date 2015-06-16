@@ -34,10 +34,6 @@ public abstract class Module implements IModule {
 
     protected StaticContext mStaticContext = null;
 	
-	protected Module(  ModuleConfig config ) throws CoreException {
-		this( config  , null  );
-	}
-
 	protected Module(  ModuleConfig config , XClassLoader parent )  {
 		mConfig = config ;
 		List<URL> classPath =  config.getClassPath() ;

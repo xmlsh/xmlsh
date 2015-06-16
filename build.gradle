@@ -2,8 +2,7 @@
 
 plugins {
 	id "com.jfrog.bintray" version "1.1"
-  }
-
+}
 
 def getDate() {
 	def date = new Date()
@@ -19,7 +18,6 @@ ext   {
 } 
 
 allprojects {
-
 
 	
 task wrapper(type: Wrapper) {
@@ -114,12 +112,39 @@ eclipse {
       println eclipse.classpath.defaultOutputDir 
 	  project.delete(eclipse.classpath.defaultOutputDir );
   }
-	  
-  
-  
-  
-	
+
+  // Disable install of sub projects
+  tasks.remove( install ) 
 }
 
+
+	  
+
+/*
+ * Convenience task
+ *
+ */
+
+
+task install( type: Task , dependsOn: ':app:installDist' ) { 
+  description 'Install to directory "installDir"'
+  doFirst { 
+   if( ! project.hasProperty('installDir' ) ) {
+      ant.fail('usage: gradle install -PinstallDir=full-path-to-install')
+    }
+  }
+  
+  doLast {
+    
+
+    def dest = new File(project.installDir)
+  println "Installing into: ${dest.absolutePath}"
+  copy { 
+ 
+    from ( project(':app').installDist )
+    into dest
+  }
+  }
+}
 
 

@@ -7,6 +7,7 @@ import org.apache.logging.log4j.Logger;
 import org.xmlsh.annotations.Function;
 import org.xmlsh.core.AbstractBuiltinFunction;
 import org.xmlsh.core.CoreException;
+import org.xmlsh.core.XClassLoader;
 import org.xmlsh.core.XValue;
 import org.xmlsh.modules.types.TypesModule;
 import org.xmlsh.sh.module.ModuleConfig;
@@ -18,9 +19,9 @@ import org.xmlsh.types.xtypes.IXValueMap;
 @org.xmlsh.annotations.Module(name = "types.map")
 public class MapModule extends TypesModule {
 
-    public MapModule(ModuleConfig config) throws CoreException {
-        super(config);
-        mLogger.entry(config);
+    public MapModule(ModuleConfig config, XClassLoader loader) throws CoreException {
+        super(config, loader);
+        mLogger.entry(config,loader);
     }
 
     @Function(name = "new", names = { "map" })

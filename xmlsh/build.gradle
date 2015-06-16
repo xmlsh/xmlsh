@@ -12,11 +12,6 @@
     		, 'src/modules'
 			, 'src/generated' ] 
   
-  repositories {
-     flatDir { 
-         dirs 'build-lib' }
-}
-  
  
   
   
@@ -62,15 +57,6 @@ version.version=${xversion_version}
 
   }
 
-  sourceSets.all { set ->
-	  def jarTask = task("${set.name}Jar", type: Jar) {
-		  baseName = baseName + "-$set.name"
-		  from set.output
-	  }
-	  artifacts {
-		  archives jarTask
-	  }
-  }
   
 // http://stackoverflow.com/questions/10405970/how-do-i-define-a-compile-time-only-classpath-in-gradle
 configurations { 

@@ -44,9 +44,6 @@ public class PackageModule extends Module {
 	
 	
 	protected static Logger mLogger = LogManager.getLogger();
-	protected PackageModule(  ModuleConfig config ) throws CoreException {
-		super( config );
-	}
 
 	protected PackageModule(  ModuleConfig config , XClassLoader loader ) throws CoreException {
 		super( config , loader );

@@ -8,6 +8,7 @@ import org.xmlsh.annotations.Function;
 import org.xmlsh.core.AbstractBuiltinFunction;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
+import org.xmlsh.core.XClassLoader;
 import org.xmlsh.core.XConfiguration;
 import org.xmlsh.core.XValue;
 import org.xmlsh.modules.types.properties.PropertiesModule;
@@ -19,8 +20,8 @@ import org.xmlsh.sh.shell.Shell;
 public class ConfigModule extends PropertiesModule {
 	static Logger mLogger = LogManager.getLogger();
 
-	public ConfigModule(ModuleConfig config) throws CoreException {
-		super(config);
+	public ConfigModule(ModuleConfig config, XClassLoader loader) throws CoreException {
+		super(config, loader);
 		mLogger.entry(config);
 	}
 

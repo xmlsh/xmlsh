@@ -5,6 +5,7 @@ import java.util.List;
 import org.xmlsh.annotations.Function;
 import org.xmlsh.core.AbstractBuiltinFunction;
 import org.xmlsh.core.CoreException;
+import org.xmlsh.core.XClassLoader;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.module.ModuleConfig;
 import org.xmlsh.sh.module.PackageModule;
@@ -15,8 +16,8 @@ import org.xmlsh.util.JavaUtils;
 @org.xmlsh.annotations.Module(name="java")
 public class JavaModule extends PackageModule {
 
-	public JavaModule(ModuleConfig config) throws CoreException {
-		super(config);
+	public JavaModule(ModuleConfig config, XClassLoader loader) throws CoreException {
+		super(config, loader);
 		// TODO Auto-generated constructor stub
 	}
 	

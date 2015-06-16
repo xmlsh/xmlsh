@@ -471,7 +471,7 @@ public abstract class CommandFactory {
 				SearchPath path = null ;
 				switch (sourceMode) {
 				case IMPORT:
-					paths = new SearchPath[] { shell.getPath(ShellConstants.ENV_XMODPATH, true)  } ;
+					paths = new SearchPath[] { shell.getModulePath() } ;
 					break;
 				case RUN:
 				case SOURCE:
@@ -492,6 +492,8 @@ public abstract class CommandFactory {
 		return mLogger.exit(ss);
 
 	}
+
+
 		
 		// tryFile but make sure its text like
 	private static File tryScriptFile(Shell shell, String name, boolean anyScripty) {

@@ -18,10 +18,13 @@ import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.CodeSource;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -103,7 +106,11 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt {
 	     ShellConstants.VAR_RANDOM ,
 	     ShellConstants.VAR_RANDOM32,
 	     ShellConstants.VAR_RANDOM64 ,
-	     ShellConstants.ENV_XMODPATH 
+	     ShellConstants.ENV_XMODPATH,
+	     ShellConstants.ENV_XMLSH_HOME , 
+	     ShellConstants.ENV_XMLSH, 
+	     ShellConstants.ENV_XPATH
+         
 	};
 	@Override
 	public String toString() {
@@ -320,31 +327,36 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt {
 								.newXValue(xpath.split(File.pathSeparator)),
 								XVariable.systemFlags()));
 
+		
+		
+		
 		String xmlsh  = getSysProp( ShellConstants.ENV_XMLSH );
-		List<String> modpath = new ArrayList<>();
-		if( ! Util.isBlank( xmlsh ) ) { 
-		    try {
-                File xmlshDir =  getExplicitFile( xmlsh , true , false );
-                if( xmlshDir != null ) { 
-                    mLogger.debug("Using XMLSH: {}" , xmlshDir );
-                    File modDir = getExplicitFile( xmlshDir , "modules" , true );
-                    if( modDir != null  ){
-                        mLogger.debug("Using default modules root: {}", modDir  );
-                        modpath.add( FileUtils.toJavaPath( modDir.getPath() ));
-                    }
-                }
-		    } catch (IOException e) {
-                mLogger.catching( e );
-            }
+		String xmlshhome = getSysProp( ShellConstants.ENV_XMLSH_HOME  );
+		if( Util.isBlank(xmlshhome))
+		    xmlshhome = xmlsh ;
+		
+		if( Util.isBlank( xmlshhome))
+		    xmlshhome = tryFindHome();
+		
+		if( Util.isBlank(xmlsh))
+		    xmlsh = xmlshhome ;
+		
+		if( Util.isBlank(xmlshhome)) { 
+		    mLogger.warn("Required  property {} missing - limited functionalty." , ShellConstants.ENV_XMLSH_HOME);
 		}
+		getEnv().setVar(
+                ShellConstants.ENV_XMLSH, XValue.newXValue(FileUtils.toJavaPath(xmlsh)) , XVariable.standardFlags() );
+		
+        getEnv().setVar(
+                ShellConstants.ENV_XMLSH_HOME, XValue.newXValue(FileUtils.toJavaPath(xmlshhome)) , XVariable.standardFlags() );
+		
+
 		String xmpath = FileUtils.toJavaPath(getSysProp(ShellConstants.ENV_XMODPATH));
-		if( !  Util.isBlank(xmpath)  )
-		    for(String p :  xmpath.split(File.pathSeparator)) 
-		        modpath.add(p);
 		
 		getEnv().setVar(
 						ShellConstants.ENV_XMODPATH,
-						XValue.newXValue( modpath.toArray(new String[modpath.size()])  ) ,
+						Util.isBlank(xmpath)  ? XValue.empytSequence() : 
+						XValue.newXValue( xmpath.split(File.pathSeparator)  ) ,
 		      XVariable.standardFlags()
 		        );
 
@@ -415,7 +427,43 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt {
 
 	}
 
-	private String getSysProp(String name) {
+	// Try to find the install root
+	// http://stackoverflow.com/questions/320542/how-to-get-the-path-of-a-running-jar-file
+	private static String tryFindHome() {
+	    mLogger.entry();
+	    try {
+          CodeSource cs = Shell.class.getProtectionDomain().getCodeSource();
+          if( cs != null ){
+               Path p = Paths.get( cs.getLocation().toURI());
+               String sdir  = null ;
+               while( (p = FileUtils.resolveLink( p  ) ) != null ){
+                   if( ! Files.isDirectory( p ) )
+                       continue ;
+                   if( sdir == null)
+                      sdir = p.toString(); // first dir found
+                   
+                   Path parent =  FileUtils.getParent( p );
+                   if( parent == null || parent == p || Files.isSameFile(parent, p ))
+                       break ;
+                   p=parent;
+                   if( p != null ){
+                       if(   Files.isDirectory( p.resolve( "modules") ) ||
+                              Files.isDirectory( p.resolve( "lib") ) ) 
+                              return mLogger.exit(p.toString());
+                   }
+               }
+               return mLogger.exit(sdir );
+          }
+          
+	    } catch( SecurityException | URISyntaxException  | IOException e ){
+	        mLogger.catching(e);
+	    }
+
+	    return null;
+    }
+
+
+    private String getSysProp(String name) {
 	    return System.getProperty("xmlsh.env." + name , System.getenv(name));
     }
 
@@ -1189,7 +1237,7 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt {
 
 	public SearchPath getPath(String var, boolean bSeqVar) {
 		XValue pathVar = getEnv().getVarValue(var);
-		if (pathVar == null)
+		if (pathVar == null || pathVar.isEmpty() )
 			return new SearchPath();
 		if (bSeqVar)
 			return new SearchPath(pathVar);
@@ -1330,6 +1378,8 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt {
 	
 	// unchecked exceptions
 	public Path getPath( XValue fvalue ) throws InvalidPathException {
+	    if( fvalue == null || fvalue.isNull() )
+	        return null ; 
 		return getPath( fvalue.toString());
 	}
 	
@@ -2289,6 +2339,26 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt {
             return null ;
         }
 
+    }
+    
+    public String getShellHome() {
+        XValue h = getEnv().getVarValue(ShellConstants.ENV_XMLSH_HOME);
+        if( h == null || h.isEmpty() )
+            return null ;
+        return FileUtils.toJavaPath(getPath( h ));
+
+        
+    }
+    
+    public SearchPath getModulePath() {
+        String home = getShellHome();
+        SearchPath xm = null;
+        if( home != null )
+           xm = new SearchPath( Paths.get( home , "modules" ) );
+        else
+            xm = new SearchPath();
+        xm.add( getPath(ShellConstants.ENV_XMODPATH, true)); 
+        return xm;
     }
 
 

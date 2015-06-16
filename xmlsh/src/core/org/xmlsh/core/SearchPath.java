@@ -44,6 +44,12 @@ public class SearchPath implements Iterable<String> {
 			mPaths.add( v.toString() );
 		}
 	}
+	
+
+	public SearchPath( Path path ){
+	    if( path != null )
+	      mPaths.add( path.toString() );
+	}
 
 	public SearchPath( String[] vars )
 	{
@@ -115,6 +121,10 @@ public class SearchPath implements Iterable<String> {
 		}
 		return sb.toString();
 	}
+
+    public void add(SearchPath path) {
+        addAll( path.getPaths() );
+    }
 
 }
 //

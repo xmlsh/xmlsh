@@ -5,6 +5,7 @@ import java.util.List;
 import org.xmlsh.annotations.Function;
 import org.xmlsh.core.AbstractBuiltinFunction;
 import org.xmlsh.core.CoreException;
+import org.xmlsh.core.XClassLoader;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.module.ModuleConfig;
 import org.xmlsh.sh.module.PackageModule;
@@ -13,8 +14,8 @@ import org.xmlsh.sh.shell.Shell;
 public class RegexModule  extends PackageModule  {
 
 	
-    protected RegexModule(ModuleConfig config) throws CoreException {
-		super(config);
+    protected RegexModule(ModuleConfig config, XClassLoader loader) throws CoreException {
+		super(config, loader);
 	}
 
 	@Function(name="replace",names={"regex-replace"})

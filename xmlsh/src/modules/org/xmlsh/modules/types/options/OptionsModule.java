@@ -11,6 +11,7 @@ import org.xmlsh.core.AbstractBuiltinFunction;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
+import org.xmlsh.core.XClassLoader;
 import org.xmlsh.core.Options.OptionDef;
 import org.xmlsh.core.Options.OptionDefs;
 import org.xmlsh.core.UnexpectedException;
@@ -25,8 +26,8 @@ import org.xmlsh.util.JavaUtils;
 
 @org.xmlsh.annotations.Module( name="types.options")
 public class OptionsModule extends TypesModule {
-	public OptionsModule(ModuleConfig config) throws CoreException {
-		super(config);
+	public OptionsModule(ModuleConfig config, XClassLoader loader) throws CoreException {
+		super(config,loader);
 	}
 
 	static Logger mLogger = LogManager.getLogger();

@@ -646,7 +646,30 @@ public class FileUtils
         }
         return ;
     }
-        
+    public static Path resolveLink(Path p) {
+        if( p == null ) return null ;
+        p = p.normalize();
+        try {
+          p=p.toRealPath(_pathFollowLinks);
+          if( Files.isSymbolicLink(p ))
+               return Files.readSymbolicLink(p );
+            }  catch( IOException e){
+                mLogger.catching(e);
+            }
+    return p;
+    }
+    public static Path getParent(Path p) {
+        if( p != null ){
+          File pf = p.toFile();
+          if( pf != null ){
+              pf = pf.getParentFile();
+              if( pf != null )
+                  return pf.toPath();
+          }
+
+      }
+        return null;
+    }
 	
 }
 

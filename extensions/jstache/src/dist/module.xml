@@ -5,6 +5,8 @@
 >
 <classpath>
   <directory url="."/>
+  <directory url="lib"/>
+
 </classpath>
 <packages>
   <package>org.xmlsh.jstache</package>

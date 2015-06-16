@@ -10,6 +10,7 @@ import net.bytebuddy.dynamic.loading.ClassLoadingStrategy;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.xmlsh.core.CoreException;
+import org.xmlsh.core.XClassLoader;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.module.ModuleConfig;
 import org.xmlsh.sh.module.PackageModule;
@@ -34,8 +35,8 @@ public class DataMappingModule extends PackageModule {
 		
 	};
 
-	public DataMappingModule(ModuleConfig config) throws CoreException {
-		super(config);
+	public DataMappingModule(ModuleConfig config, XClassLoader loader) throws CoreException {
+		super(config, loader);
 	}
 
 	static  Class<?> newType(String name, Class<Object> baseClass,
