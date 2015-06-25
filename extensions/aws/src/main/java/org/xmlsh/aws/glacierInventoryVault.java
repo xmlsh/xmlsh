@@ -39,7 +39,8 @@ public class glacierInventoryVault	 extends  AWSGlacierCommand {
 
 
 		Options opts = getOptions();
-		opts.parse(args);
+        parseOptions(opts, args);
+        setSerializeOpts(this.getSerializeOpts(opts));
 
 		args = opts.getRemainingArgs();
 		if( args.size() != 1 )
@@ -47,7 +48,6 @@ public class glacierInventoryVault	 extends  AWSGlacierCommand {
 
 
 
-		setSerializeOpts(this.getSerializeOpts(opts));
 
 
 

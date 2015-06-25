@@ -33,7 +33,7 @@ public class sdbDeleteAttributes	 extends  AWSSDBCommand {
 	public int run(List<XValue> args) throws Exception {
 
 		Options opts = getOptions("update:,exists:,q=quiet");
-		opts.parse(args);
+        parseOptions(opts, args);
 
 		args = opts.getRemainingArgs();
 

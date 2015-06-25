@@ -31,7 +31,7 @@ public class sdbCreateDomain	 extends  AWSSDBCommand {
 	public int run(List<XValue> args) throws Exception {
 
 		Options opts = getOptions();
-		opts.parse(args);
+        parseOptions(opts, args);
 
 		args = opts.getRemainingArgs();
 

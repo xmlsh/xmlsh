@@ -32,7 +32,8 @@ public class sqsDeleteQueue extends AWSSQSCommand {
 
 
 		Options opts = getOptions();
-		opts.parse(args);
+        parseOptions(opts, args);
+        setSerializeOpts(this.getSerializeOpts(opts));
 
 		args = opts.getRemainingArgs();
 
@@ -43,7 +44,6 @@ public class sqsDeleteQueue extends AWSSQSCommand {
 
 
 
-		setSerializeOpts(this.getSerializeOpts(opts));
 
 
 

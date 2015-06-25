@@ -32,7 +32,7 @@ public class s3GetObjectMetadata extends AWSS3Command {
 
 
 		Options opts = getOptions();
-		opts.parse(args);
+        parseOptions(opts, args);
 
 
 		args = opts.getRemainingArgs();

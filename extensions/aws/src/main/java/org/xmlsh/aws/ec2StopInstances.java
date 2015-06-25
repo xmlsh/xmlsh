@@ -34,7 +34,7 @@ public class ec2StopInstances extends AWSEC2Command {
 
 
 		Options opts = getOptions();
-		opts.parse(args);
+        parseOptions(opts, args);
 
 		args = opts.getRemainingArgs();
 
@@ -48,7 +48,6 @@ public class ec2StopInstances extends AWSEC2Command {
 		}
 
 
-		setSerializeOpts(this.getSerializeOpts(opts));
 		try {
 			getEC2Client(opts);
 		} catch (UnexpectedException e) {

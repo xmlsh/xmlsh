@@ -9,7 +9,6 @@ import org.xmlsh.sh.shell.Shell;
 
 import com.amazonaws.regions.Region;
 import com.amazonaws.services.autoscaling.AmazonAutoScalingClient;
-import com.amazonaws.services.autoscaling.model.CreateLaunchConfigurationRequest;
 
 public final class ASClient extends AWSClient<AmazonAutoScalingClient> {
 

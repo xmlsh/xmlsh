@@ -32,7 +32,7 @@ public class sdbQuery	 extends  AWSSDBCommand {
 	public int run(List<XValue> args) throws Exception {
 
 		Options opts = getOptions("c=consistant");
-		opts.parse(args);
+        parseOptions(opts, args);
 
 		args = opts.getRemainingArgs();
 

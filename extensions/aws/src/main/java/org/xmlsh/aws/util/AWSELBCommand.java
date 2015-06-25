@@ -18,7 +18,10 @@ import com.amazonaws.services.elasticloadbalancing.AmazonElasticLoadBalancingCli
 import com.amazonaws.services.elasticloadbalancing.model.Instance;
 
 public abstract class AWSELBCommand extends AWSCommand<AmazonElasticLoadBalancingClient> {
+	
 
+	protected		AmazonElasticLoadBalancingClient mAmazon ;
+	
 	public AWSELBCommand() {
 		super();
 	}
@@ -28,6 +31,10 @@ public abstract class AWSELBCommand extends AWSCommand<AmazonElasticLoadBalancin
 
 		setAmazon(AWSClientFactory.newELBClient( mShell , opts ));
 	}
+	/* (non-Javadoc)
+	 * @see org.xmlsh.aws.util.AWSCommand#setRegion(java.lang.String)
+	 */
+		
 
 	protected List<Instance> instances(List<XValue> args) {
 		List<Instance> li = new ArrayList<Instance>(args.size());
@@ -37,6 +44,7 @@ public abstract class AWSELBCommand extends AWSCommand<AmazonElasticLoadBalancin
 
 	}
 
+	
 
 
 }

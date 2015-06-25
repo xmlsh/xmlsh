@@ -35,7 +35,7 @@ public class glacierGetJobOutput	 extends  AWSGlacierCommand {
 
 
 		Options opts = getOptions();
-		opts.parse(args);
+        parseOptions(opts, args);
 
 		args = opts.getRemainingArgs();
 		if( args.size() != 1 )

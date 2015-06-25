@@ -42,7 +42,6 @@ public class sqsDeleteMessage extends AWSSQSCommand {
 
 
 
-		setSerializeOpts(this.getSerializeOpts(opts));
 
 
 

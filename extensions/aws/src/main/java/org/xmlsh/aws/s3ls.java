@@ -44,7 +44,7 @@ public class s3ls extends AWSS3Command {
 
 
 		Options opts = getOptions("delim:,r=recurse,l=long,m=multipart");
-		opts.parse(args);
+        parseOptions(opts, args);
 
 		args = opts.getRemainingArgs();
 

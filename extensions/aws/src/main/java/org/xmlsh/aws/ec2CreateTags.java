@@ -1,22 +1,13 @@
 package org.xmlsh.aws;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 
-import javax.xml.stream.XMLStreamException;
-
-import net.sf.saxon.s9api.SaxonApiException;
-
 import org.xmlsh.aws.util.AWSEC2Command;
-import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.util.Util;
-
-import com.amazonaws.services.ec2.model.CreateTagsRequest;
-import com.amazonaws.services.ec2.model.Tag;
 
 
 public class ec2CreateTags extends AWSEC2Command {
@@ -33,11 +24,11 @@ public class ec2CreateTags extends AWSEC2Command {
 
 
 		Options opts = getOptions("t=tag:+");
-		opts.parse(args);
+        parseOptions(opts, args);
 
 		args = opts.getRemainingArgs();
 
-
+        setSerializeOpts(this.getSerializeOpts(opts));
 
 
 
@@ -47,7 +38,6 @@ public class ec2CreateTags extends AWSEC2Command {
 		}
 
 
-		setSerializeOpts(this.getSerializeOpts(opts));
 		try {
 			getEC2Client(opts);
 		} catch (UnexpectedException e) {
@@ -56,7 +46,7 @@ public class ec2CreateTags extends AWSEC2Command {
 
 		}
 
-		int ret = createTags( parseTags(opts) , Util.toStringArray(args) );
+        int ret = createTags( parseTags(opts.getOptValuesRequired("tag")) , Util.toStringList(args) );
 
 
 
@@ -71,23 +61,6 @@ public class ec2CreateTags extends AWSEC2Command {
 
 
 
-
-
-	private int createTags( List<Tag> tags , String[] resources ) throws InvalidArgumentException, IOException, XMLStreamException, SaxonApiException 
-	{
-
-		CreateTagsRequest request = new CreateTagsRequest().withTags(tags).withResources(Arrays.asList(resources));
-
-
-		traceCall("createTags");
-
-		getAWSClient().createTags(request);
-
-		return 0;
-
-
-
-	}
 
 
 

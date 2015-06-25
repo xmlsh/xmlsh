@@ -20,6 +20,7 @@ import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.UnexpectedException;
+import org.xmlsh.core.UnimplementedException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.util.Util;
 import org.xmlsh.util.commands.CSVParser;
@@ -163,6 +164,10 @@ public class ddbBatchWrite extends AWSDDBCommand {
 
 	}
 
+	private CSVRecord parseCols(XValue mColNames2) throws UnimplementedException {
+		throw new UnimplementedException("Not Implemented");
+	}
+
 	private int batchWrite(String tableName, InputPort port, boolean bQuiet)
 			throws IOException, XMLStreamException, SaxonApiException,
 			CoreException, InterruptedException {
@@ -182,7 +187,7 @@ public class ddbBatchWrite extends AWSDDBCommand {
 
 	}
 
-	private void writeConsumedCapacity(List<ConsumedCapacity> listCapacity)
+	protected void writeConsumedCapacity(List<ConsumedCapacity> listCapacity)
 			throws XMLStreamException {
 		startElement("consumed-capacity");
 		for (ConsumedCapacity cap : listCapacity)
@@ -190,7 +195,7 @@ public class ddbBatchWrite extends AWSDDBCommand {
 		endElement();
 	}
 
-	private void writeConsumedCapacity(ConsumedCapacity cap)
+	protected void writeConsumedCapacity(ConsumedCapacity cap)
 			throws XMLStreamException {
 		startElement("capacity");
 
@@ -226,7 +231,7 @@ public class ddbBatchWrite extends AWSDDBCommand {
 	}
 
 	private Map<String, List<WriteRequest>> readRequests(int maxBatch)
-			throws IOException, UnexpectedException, XMLStreamException {
+			throws IOException, UnexpectedException, XMLStreamException, UnimplementedException {
 
 		Map<String, List<WriteRequest>> items = null;
 
@@ -242,7 +247,7 @@ public class ddbBatchWrite extends AWSDDBCommand {
 	}
 
 	private Map<String, List<WriteRequest>> readRequestsCSV(int maxBatch)
-			throws IOException, UnexpectedException, XMLStreamException {
+			throws IOException, UnexpectedException, XMLStreamException, UnimplementedException {
 
 		Map<String, List<WriteRequest>> result = new HashMap<String, List<WriteRequest>>();
 
@@ -263,7 +268,7 @@ public class ddbBatchWrite extends AWSDDBCommand {
 	}
 
 	private WriteRequest readWriteRequestCSV() throws UnexpectedException,
-	IOException, XMLStreamException {
+	IOException, XMLStreamException, UnimplementedException {
 
 		Map<String, AttributeValue> item = readItemCSV(mReader, mParser,
 				mHeader, mListSep, mColTypes);
@@ -272,9 +277,15 @@ public class ddbBatchWrite extends AWSDDBCommand {
 		return new WriteRequest(new PutRequest(item));
 	}
 
-	private Map<String, List<WriteRequest>> readRequestsXML(int maxBatch) {
+	private Map<String, AttributeValue> readItemCSV(BufferedReader mReader2,
+			CSVParser mParser2, CSVRecord mHeader2, String mListSep2,
+			CSVRecord mColTypes2) throws UnimplementedException {
+		throw new UnimplementedException("Not Implemented");
+	}
+
+	private Map<String, List<WriteRequest>> readRequestsXML(int maxBatch) throws UnimplementedException {
 		// TODO Auto-generated method stub
-		return null;
+		throw new UnimplementedException("Not Implemented");
 	}
 
 	@Override

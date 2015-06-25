@@ -34,9 +34,11 @@ public class ec2CreateImage extends AWSEC2Command {
 	public int run(List<XValue> args) throws Exception {
 
 
-		Options opts = getOptions("name:,description:,no-reboot,block-device-mapping:+");
-		opts.parse(args);
+        Options opts = getOptions("name:,description:,no-reboot");
+        parseOptions(opts, args);
 
+
+        setSerializeOpts(this.getSerializeOpts(opts));
 		args = opts.getRemainingArgs();
 
 		if( args.size() != 1 ){
@@ -44,8 +46,6 @@ public class ec2CreateImage extends AWSEC2Command {
 			return 1;
 		}
 
-
-		setSerializeOpts(this.getSerializeOpts(opts));
 		try {
 			getEC2Client(opts);
 		} catch (UnexpectedException e) {

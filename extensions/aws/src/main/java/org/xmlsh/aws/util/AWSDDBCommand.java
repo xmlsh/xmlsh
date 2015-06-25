@@ -6,463 +6,655 @@
 
 package org.xmlsh.aws.util;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.Reader;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
-import javax.xml.namespace.QName;
-import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.events.StartElement;
-import javax.xml.stream.events.XMLEvent;
 
+import net.sf.saxon.s9api.QName;
+import net.sf.saxon.s9api.XdmItem;
+import net.sf.saxon.s9api.XdmNode;
+import net.sf.saxon.trans.XPathException;
+
+import org.xmlsh.aws.util.DDBTypes.AttrType;
+import org.xmlsh.aws.util.DDBTypes.IAttrNameExpr;
+import org.xmlsh.aws.util.DDBTypes.IAttrObjectExpr;
+import org.xmlsh.aws.util.DDBTypes.IAttrValueExpr;
+import org.xmlsh.aws.util.DDBTypes.IKeyAttrValueMap;
+import org.xmlsh.aws.util.DDBTypes.INameObjectMap;
+import org.xmlsh.aws.util.DDBTypes.KeyAttrValueMap;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.UnexpectedException;
+import org.xmlsh.core.UnimplementedException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.util.Base64;
-import org.xmlsh.util.StringPair;
+import org.xmlsh.util.JavaUtils;
 import org.xmlsh.util.Util;
-import org.xmlsh.util.commands.CSVParser;
-import org.xmlsh.util.commands.CSVRecord;
 
+import com.amazonaws.AmazonClientException;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
+import com.amazonaws.services.dynamodbv2.document.DynamoDB;
+import com.amazonaws.services.dynamodbv2.document.PrimaryKey;
+import com.amazonaws.services.dynamodbv2.document.spec.GetItemSpec;
 import com.amazonaws.services.dynamodbv2.model.AttributeDefinition;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+import com.amazonaws.services.dynamodbv2.model.Capacity;
+import com.amazonaws.services.dynamodbv2.model.ConditionalCheckFailedException;
+import com.amazonaws.services.dynamodbv2.model.ConsumedCapacity;
+import com.amazonaws.services.dynamodbv2.model.GlobalSecondaryIndex;
+import com.amazonaws.services.dynamodbv2.model.GlobalSecondaryIndexDescription;
+import com.amazonaws.services.dynamodbv2.model.ItemCollectionMetrics;
 import com.amazonaws.services.dynamodbv2.model.KeySchemaElement;
+import com.amazonaws.services.dynamodbv2.model.KeyType;
+import com.amazonaws.services.dynamodbv2.model.LocalSecondaryIndex;
 import com.amazonaws.services.dynamodbv2.model.LocalSecondaryIndexDescription;
 import com.amazonaws.services.dynamodbv2.model.Projection;
+import com.amazonaws.services.dynamodbv2.model.ProvisionedThroughput;
 import com.amazonaws.services.dynamodbv2.model.ProvisionedThroughputDescription;
 import com.amazonaws.services.dynamodbv2.model.TableDescription;
 
-public abstract class AWSDDBCommand extends AWSCommand<AmazonDynamoDBClient> {
+public abstract class AWSDDBCommand extends  AWSCommand<AmazonDynamoDBClient> {
+    public static final String sATTR_NAME_EXPR_OPTIONS = "ne=attr-name-expr:+";
+    public static final String sATTR_VALUE_EXPR_OPTIONS = "ve=attr-value-expr:+";
 
+    public static final String sATTR_EXPR_OPTIONS = Options.joinOptions(sATTR_VALUE_EXPR_OPTIONS,sATTR_NAME_EXPR_OPTIONS);
+    public static final String sTABLE_OPTIONS = "t=table:";
+    public static final String sKEY_OPTIONS = "k=key:,kn=key-name:+,kv=key-value:+";
+    public static final String sCONDITION_OPTIONS = "c=condition:";
+    public static final String sRETURN_OPTIONS = "return=return-values:";
+    public static final String sDDB_COMMON_OPTS = "q=quiet:,o+:";
+    public static final String sDOCUMENT_OPTS = "document,j=json";
+    public static final String sCONSISTANT_OPTS = "c=consistant";
+    
+    protected boolean bQuiet = false ;
+    
+    static Object parseToJavaValue(String v) {
+        if( v == null )
+            return null ;
+        if( v.isEmpty() )
+            return v;
+        Number num = JavaUtils.toNumber( v , null  );
+        if( num != null )
+            return num ;
+        return v;
+    }
+    private DynamoDB mDynamo = null;
+    private DynamoDBMapper mMapper = null;
 
-	private static final QName Q_TYPE = new QName("type");
-	private static final QName Q_NAME = new QName("name");
-	private static final QName Q_ITEM = new QName("item");
-	private static final QName Q_VALUE = new QName("value");
-	private static final QName Q_ATTRIBUTE = new QName("attribute");
+    public static class RequestMetrics {
+        public int count;
+        public int scanCount;
+        public ConsumedCapacity capacity;
+        public ItemCollectionMetrics itemMetrics;
 
+        public RequestMetrics(int count, int scanCount, ConsumedCapacity capacity) {
+            super();
+            this.count = count;
+            this.scanCount = scanCount;
+            this.capacity = capacity;
+        }
 
+        public RequestMetrics(ConsumedCapacity consumedCapacity, ItemCollectionMetrics itemCollectionMetrics) {
+            count = 0;
+            scanCount = 0;
+            this.capacity = consumedCapacity;
+            this.itemMetrics = itemCollectionMetrics;
+        }
+    }
 
-	public AWSDDBCommand() {
-		super();
-	}
+    public AWSDDBCommand() {
+        super();
+    } 
+    @Override
+    protected void parseCommonOptions(Options opts) {
+      {
+          super.parseCommonOptions(opts);
+          bQuiet = opts.hasOpt("quiet");
+      }
+            
+     }
+    void binary(byte[] array) throws IOException {
 
-	protected void getDDBClient(Options opts) throws UnexpectedException, InvalidArgumentException {
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        Base64.OutputStream b64 = new Base64.OutputStream(os, Base64.ENCODE);
+        b64.write(array);
+        b64.close();
 
+    }
 
+    protected void getDDBClient(Options opts) throws UnexpectedException, InvalidArgumentException {
 		setAmazon(AWSClientFactory.newDDBClient(mShell,opts));
 
 	}
 
 
-	protected void writeAttribute(String key, AttributeValue avalue) throws XMLStreamException, IOException {
-
-		startElement("attribute");
-		attribute("name" , key);
-
-
-		if (avalue.getS() != null) { 
-			attribute("type","S");
-			characters( avalue.getS());
-		}
-		if (avalue.getN() != null) {
-			attribute("type" , "N");
-			characters( avalue.getN());
-		}
-
-		if (avalue.getB() != null) {
-			attribute("type","B");
-			binary( avalue.getB().array() );	
-		}
-		if (avalue.getSS() != null) {
-			attribute("type","SS");
-			for( String s : avalue.getSS() ){
-				startElement("value");
-				characters( s );
-				endElement();
-			}
 
-		}
-		if (avalue.getNS() != null) {
-			attribute("type","NS");
-			for( String s : avalue.getNS() ){
-				startElement("value");
-				characters( s );
-				endElement();
-			}
-		}
-		if (avalue.getBS() != null) {
-			attribute("type","BS");
-			for( ByteBuffer s : avalue.getBS() ){
-				startElement("value");
-				binary( s.array() );
-				endElement();
-			}
-		}
-
-		endElement();
-	}
-
-
-	protected CSVRecord parseCols(XValue cols) {
-
-		if( cols.isAtomic() )
-			return new CSVRecord( Arrays.asList( cols.toString().split(",")));
-		else
-			return new CSVRecord(cols.asStringList());
-
-
-	}
-	void binary( byte[] array ) throws IOException
-	{
-
-		ByteArrayOutputStream os = new ByteArrayOutputStream();
-		Base64.OutputStream b64 = new Base64.OutputStream( os , Base64.ENCODE  ); 
-		b64.write(array);
-		b64.close();
-
-
-
-	}
-
-	protected void writeTableDescription(TableDescription tableDescription) throws XMLStreamException {
-		startElement("table");
-		attribute("name",tableDescription.getTableName());
-		attribute("status",		tableDescription.getTableStatus() );
-		attribute("create-date", Util.formatXSDateTime(tableDescription.getCreationDateTime()));
-		attribute("item-count",tableDescription.getItemCount());
-		attribute("size",tableDescription.getTableSizeBytes() );
-
-
-		writeAttributeDefinitions(tableDescription.getAttributeDefinitions());
-		writeKeySchema(tableDescription.getKeySchema());
-		writeLocalSecondaryIndexes(tableDescription.getLocalSecondaryIndexes());
-		writeProvisionedThroughput(tableDescription.getProvisionedThroughput());
-
-
-	}
-
-	private void writeLocalSecondaryIndexes(List<LocalSecondaryIndexDescription> localSecondaryIndexes) throws XMLStreamException {
-		startElement("local-secondary-indexes");
-		if( localSecondaryIndexes != null )
-			for( LocalSecondaryIndexDescription index : localSecondaryIndexes)
-				writeLocalSecondaryIndex( index );
-		endElement();
-
-	}
-
-	private void writeLocalSecondaryIndex(LocalSecondaryIndexDescription index) throws XMLStreamException {
-
-		startElement("local-secondary-index");
-		attribute("index-name",index.getIndexName());
-		attribute("index-size",index.getIndexSizeBytes());
-		attribute("item-count",index.getItemCount());
-
-		writeKeySchema(index.getKeySchema());
-		writeProjection(index.getProjection());
-		endElement();
-
-	}
-
-	private void writeProjection(Projection projection) throws XMLStreamException {
-		startElement("projection");
-		attribute("projection-type",projection.getProjectionType());
-		for( String s : projection.getNonKeyAttributes() )
-			textElement("non-key-attribute", s );
-
-
-		endElement();
-
-	}
-
-	private void writeProvisionedThroughput(ProvisionedThroughputDescription provisionedThroughput) {
-		// TODO Auto-generated method stub
-
-	}
-
-	private void writeKeySchema(List<KeySchemaElement> keySchema) {
-		// TODO Auto-generated method stub
-
-	}
-
-	private void writeAttributeDefinitions(List<AttributeDefinition> attributeDefinitions) throws XMLStreamException {
-		startElement("attribute-definitions");
-		for( AttributeDefinition def :  attributeDefinitions )
-			writeAttributeDefinition( def );
-		endElement();
-
-	}
-
-	private void writeAttributeDefinition(AttributeDefinition def) throws XMLStreamException {
-		startElement("attribute-definition");
-		attribute("name" , def.getAttributeName());
-		attribute("type" , def.getAttributeType());
-		endElement();
-	}
-
-	public Collection<ByteBuffer> parseBS(XValue xv) throws IOException {
-
-		ArrayList<ByteBuffer> ret = new ArrayList<ByteBuffer>();
-		for( String s : xv.asStringList() )
-			ret.add( parseBinary( s ));
-
-		return ret; 
-
-
-	}
-	public Collection<ByteBuffer> parseBinary(String[] strings) throws IOException {
-
-		ByteBuffer bb[] = new ByteBuffer[strings.length];
-		for( int i = 0 ; i < strings.length ; i++ )
-			bb[i] = parseBinary(strings[i]);
-		return Arrays.asList(bb);
-
-	}
-
-	private ByteBuffer parseBinary(XValue xv) throws IOException {
-		return parseBinary( xv.toString() );
-
-	}
-
-
-	protected ByteBuffer parseBinary(String s) throws IOException {
-
-
-		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-
-		Base64.InputStream b64 = new Base64.InputStream(new ByteArrayInputStream(s.getBytes("UTF8")), Base64.DECODE );
-		Util.copyStream(b64, bos);
-		b64.close();
-		return ByteBuffer.wrap( bos.toByteArray());
-
-	}
-
-
-	public Collection<String> parseSS(XValue xv) {
-		return xv.asStringList();
-	}
-
-	protected Map<String,AttributeValue> readAttributesXML(XMLEventReader xreader ) throws IOException, UnexpectedException, XMLStreamException {
-
-		Map<String,AttributeValue> attributes = new HashMap<String,AttributeValue>();
-		while( xreader.hasNext() ){
-			XMLEvent tag = xreader.nextTag();
-			if( isStartElement(tag,Q_ATTRIBUTE) ){
-				StartElement e = tag.asStartElement();
-				attributes.put( attributeValue(e,Q_NAME) ,
-						parseAttributeValue( attributeValue(e,Q_TYPE ) , xreader ) );
-				readEndElement(xreader);
-
-			}
-			else
-				throw new UnexpectedException("Unexpected tag: " + tag.toString() );
-		}
-		return attributes;
-	}
-
-
-
-	protected Map<String,AttributeValue> readItemCSV(Reader reader , CSVParser parser,  CSVRecord header , String listSep, CSVRecord types ) 
-			throws IOException, UnexpectedException, XMLStreamException 
-			{
-
-		String line = Util.readLine(reader);
-		if( line == null )
-			return null ;
-
-		CSVRecord r = parser.parseLine(line);
-		Map<String,AttributeValue> attributes = new HashMap<String,AttributeValue>();
-		for( int i = 0 ; i < r.getNumFields() ; i++ ){
-			if( i >= header.getNumFields() )
-				break ;
-			String value= r.getField(i);
-			String name = header.getField(i);
-			attributes.put(name ,  parseAttributeValue( types.getField(i) , value , listSep ) );
-		}
-		return attributes;
-			}
-
-	private AttributeValue parseAttributeValue(String type, String value, String listSep ) throws XMLStreamException, UnexpectedException, IOException 
-	{
-		AttributeValue av  = new AttributeValue();
-
-		if( type.equals("N" ))
-			av.setN( value );
-		else
-			if( type.equals("NS"))
-				av.setNS( Arrays.asList(value.split( listSep )	) );
-			else
-				if( type.equals("S" ))
-					av.setS(value);
-				else
-					if( type.equals("SS" ))
-						av.setSS( Arrays.asList(value.split( listSep )	));
-					else
-						if( type.equals("B" ))
-							av.setB( parseBinary(value) );
-						else
-							if( type.equals("BS" )) 
-								av.setBS( parseBinary( value.split(listSep)));
-							else
-								throw new UnexpectedException("Unknown type: " + type );
-		return av;
-	}
-
-
-	protected Map<String,AttributeValue> readItemXML(XMLEventReader xreader ) throws IOException, UnexpectedException, XMLStreamException {
-
-		if( xreader.hasNext() ){
-			XMLEvent tag = xreader.nextTag();
-			if( isStartElement(tag, Q_ITEM) ){
-				Map<String,AttributeValue> attributes =  readAttributesXML(xreader);
-				readEndElement(xreader);
-				return attributes ;
-			}
-			else
-				throw new UnexpectedException("Unexpected tag: " + tag.toString() );
-		} 
-		return null ;
-
-	}
-
-	private String attributeValue(StartElement e, QName name) {
-		return e.getAttributeByName( name ).getValue();
-	}
-	private boolean isStartElement(XMLEvent tag,QName name ) {
-		return tag.isStartElement() && tag.asStartElement().getName().equals(name);
-	}
-	private AttributeValue parseAttributeValue(String type, XMLEventReader xreader) throws XMLStreamException, UnexpectedException, IOException {
-		AttributeValue av  = new AttributeValue();
-
-
-		if( type.equals("N" ))
-			av.setN( readString(xreader));
-		else
-			if( type.equals("NS"))
-				av.setNS( readStrings(xreader) );
-			else
-				if( type.equals("S" ))
-					av.setS( readString(xreader));
-				else
-					if( type.equals("SS" ))
-						av.setSS( readStrings(xreader));
-					else
-						if( type.equals("B" ))
-							av.setB( readBinary(xreader) );
-						else
-							if( type.equals("BS" )) 
-								av.setBS( readBinarys( xreader ));
-
-
-							else
-								throw new UnexpectedException("Unknown type: " + type );
-
-		return av;
-	}
-	private Collection<ByteBuffer> readBinarys(XMLEventReader xreader) throws XMLStreamException, IOException {
-		Collection<ByteBuffer> result = new ArrayList<ByteBuffer>();
-		while( xreader.hasNext() ){
-			XMLEvent tag = xreader.nextTag();
-			if( tag.isEndElement() )
-				break;
-			if( isStartElement( tag , Q_VALUE ))
-				result.add( readBinary(xreader));
-
-		}
-		return result ;
-
-	}
-	private ByteBuffer readBinary(XMLEventReader xreader) throws IOException, XMLStreamException {
-		return parseBinary( readString(xreader) );
-	}
-	private Collection<String> readStrings(XMLEventReader xreader) throws XMLStreamException {
-		Collection<String> result = new ArrayList<String>();
-
-		while( xreader.hasNext() ){
-			XMLEvent tag = xreader.nextTag();
-			if( tag.isEndElement() )
-				break;
-			if( isStartElement( tag , Q_VALUE ))
-				result.add( readString(xreader));
-
-		}
-		return result;
-
-	}
-
-	private String readString(XMLEventReader xreader) throws XMLStreamException {
-		String s = xreader.getElementText();
-		readEndElement( xreader );
-		return s;
-	}
-
-	private void readEndElement( XMLEventReader xreader ) throws XMLStreamException{
-		while(xreader.hasNext() )
-			if( xreader.nextTag().isEndElement() )
-				return ;
-
-	}
-	protected Map<String,AttributeValue> getAttributes(List<XValue> args) throws IOException, UnexpectedException {
-		Map<String,AttributeValue> attrs = new  HashMap<String,AttributeValue>();
-		while( !args.isEmpty()){
-
-			StringPair sp = new StringPair(args.remove(0).toString(),':');
-			String type = sp.getLeft();
-			AttributeValue av  = new AttributeValue();
-
-			XValue xv = args.remove(0);
-
-			if( type.equals("N" ))
-				av.setN( xv.toString() );
-			else
-				if( type.equals("NS"))
-					av.setNS( parseSS( xv ) );
-				else
-					if( type.equals("S" ))
-						av.setS( xv.toString());
-					else
-						if( type.equals("SS" ))
-							av.setSS( parseSS(xv));
-						else
-							if( type.equals("B" ))
-								av.setB( parseBinary(xv) );
-							else
-								if( type.equals("BS" )) 
-									av.setBS( parseBS( xv ));
-
-
-								else
-									throw new UnexpectedException("Unknown type: " + type );
-
-
-			String value = args.isEmpty() ? "" : args.remove(0).toString();
-
-			attrs.put(sp.getRight(),av);
-
-
-		}
-		return attrs ;
-	}
-
-
-
+    @Override
+    public int run(List<XValue> args) throws Exception {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+    private void setDynamoDBOpts(Options options) {
+    }
+
+    protected DynamoDB getDynamotDB(Options opts) throws UnexpectedException, InvalidArgumentException {
+        if (getAWSClient() == null)
+            getDDBClient(opts);
+        assert (getAWSClient()!= null);
+        if (mDynamo == null)
+            mDynamo = new DynamoDB(getAWSClient());
+        setDynamoDBOpts(opts);
+        return mDynamo;
+    }
+
+    protected DynamoDBMapper getMapper(Options opts) throws UnexpectedException, InvalidArgumentException {
+        if (getAWSClient() == null)
+            getDDBClient(opts);
+        assert (getAWSClient()!= null);
+        if (mMapper == null)
+            mMapper = new DynamoDBMapper(getAWSClient());
+        setMapperOpts(opts);
+        return mMapper;
+    }
+
+    private void setMapperOpts(Options opts) {
+
+    }
+
+    protected AttributeDefinition parseKeyAttribute(XValue xv)
+            throws InvalidArgumentException, UnexpectedException {
+        DDBTypes.NameType ant = new DDBTypes.NameType(xv);
+        return new AttributeDefinition().withAttributeName(ant.getName())
+                .withAttributeType(ant.getTypeName());
+
+    }
+
+    // Parses one global secondary index
+    protected GlobalSecondaryIndex parseGlobalSecondaryIndex(XValue xv)
+            throws InvalidArgumentException, UnexpectedException {
+        if (!xv.isXdmNode())
+            throw new InvalidArgumentException(
+                    "Unexpected argument type for global secondary index: "
+                            + xv.describe() );
+
+        GlobalSecondaryIndex gi = new GlobalSecondaryIndex();
+
+        gi.setIndexName(xv.xpath(getShell(), "./@name").toString());
+        gi.setKeySchema(parseKeySchemaList(xv.xpath(getShell(), "./key-schema")));
+        gi.setProjection(parseProjection(xv.xpath(getShell(), "./projection")));
+        gi.setProvisionedThroughput(parseProvisionedThroughput(xv.xpath(
+                getShell(), "./provisioned-throughput")));
+
+        return gi;
+    }
+
+    protected KeySchemaElement parseKeySchemaElement(XValue xv) throws InvalidArgumentException {
+
+        // Note: overload of 'type' for hash/range
+        DDBTypes.NameType ant = new DDBTypes.NameType(xv);
+        KeySchemaElement keyElement = new KeySchemaElement().withAttributeName(
+                ant.getName()).withKeyType(
+                        KeyType.valueOf(ant.getTypeName().toUpperCase()));
+        return keyElement;
+    }
+
+    private Collection<KeySchemaElement> parseKeySchemaList(XValue xv)
+            throws UnexpectedException, InvalidArgumentException {
+        Collection<KeySchemaElement> list = new ArrayList<KeySchemaElement>();
+        if (xv.isXdmNode()) {
+            // value->sequence->item
+            for (XdmItem item : xpath(xv, "key-schema/key-element-name")
+                    .toXdmValue()) {
+                if (item instanceof XdmNode) {
+                    DDBTypes.NameType ant = new DDBTypes.NameType((XdmNode) item);
+                    list.add(new KeySchemaElement(ant.getName(), ant.getTypeName()));
+                }
+                else
+                    throw new UnexpectedException("Unexpected node type: "
+                            + item.getClass().getName());
+            }
+        } else
+            throw new UnexpectedException("Unexpected type: "
+                    + xv.describe());
+        return list;
+
+    }
+
+    protected LocalSecondaryIndex parseLocalSecondaryIndex(XValue xv)
+            throws InvalidArgumentException, UnexpectedException {
+
+        if (!xv.isXdmNode())
+            throw new InvalidArgumentException(
+                    "Unexpected argument type for global secondary index: "
+                            + xv.describe());
+        XdmNode node = xv.asXdmNode();
+        if (!node.getNodeName().getLocalName().equals("local-secondary-index"))
+            throw new InvalidArgumentException("Unexpected element: "
+                    + node.getNodeName().toString()
+                    + " expected: local-secondary-index");
+
+        LocalSecondaryIndex li = new LocalSecondaryIndex().withIndexName(node
+                .getAttributeValue(new QName("index-name")));
+
+        li.setKeySchema(parseKeySchemaList(xpath(xv, "./key-schema")));
+        return li;
+
+    }
+
+    private Projection parseProjection(XValue xv) throws UnexpectedException,
+    InvalidArgumentException {
+        if (xv.isXdmNode()) {
+            XdmNode node = xv.asXdmNode();
+            if (!node.getNodeName().getLocalName().equals("projection"))
+                throw new UnexpectedException("unexpected element name: "
+                        + node.getNodeName().toString());
+
+            Projection p = new Projection().withProjectionType(
+                    node.getAttributeValue(new QName("projection-type")))
+                    .withNonKeyAttributes(
+                            xpath(xv, "./non-key-attribute/string()")
+                            .asStringList());
+            return p;
+        } else
+            throw new UnexpectedException("Unexpected type: "
+                    + xv.describe());
+
+    }
+
+    private ProvisionedThroughput parseProvisionedThroughput(XValue xpath) {
+        return null;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.xmlsh.aws.util.AWSCommand#setRegion(java.lang.String)
+     */
+    
+    /*
+    @Override
+    public void setRegionXXX(String region) {
+        if( Util.isBlank(region) ||   super.hasSetEndpoint())
+            return ;
+        if( region.equals("local"))
+            setEndpoint("http://localhost:8000");
+        else
+          mAmazon.setRegion(RegionUtils.getRegion(region));
+
+    }
+*/
+    protected void writeAttribute(String key, AttributeValue avalue)
+            throws XMLStreamException, IOException {
+
+        startElement("attribute");
+        attribute("name", key);
+        writeAttributeValue(avalue);
+
+        endElement();
+    }
+
+    protected void writeAttributeValue(AttributeValue avalue)
+            throws XMLStreamException, IOException {
+        if (avalue.getS() != null) {
+            attribute(AttrType.S);
+            characters(avalue.getS());
+        }
+        else if (avalue.getN() != null) {
+            attribute(AttrType.N);
+            characters(avalue.getN());
+        }
+        else
+
+            if (avalue.getB() != null) {
+                attribute(AttrType.B);
+                binary(avalue.getB().array());
+            }
+            else if (avalue.getSS() != null) {
+                attribute(AttrType.SS);
+
+                for (String s : avalue.getSS()) {
+                    startElement("value");
+                    characters(s);
+                    endElement();
+                }
+
+            }
+            else if (avalue.getNS() != null) {
+                attribute(AttrType.NS);
+
+                for (String s : avalue.getNS()) {
+                    startElement("value");
+                    characters(s);
+                    endElement();
+                }
+            }
+            else if (avalue.getBS() != null) {
+                attribute(AttrType.BS);
+
+                for (ByteBuffer s : avalue.getBS()) {
+                    startElement("value");
+                    binary(s.array());
+                    endElement();
+                }
+            }
+            else if (avalue.getL() != null) {
+                attribute(AttrType.L);
+                for (AttributeValue av : avalue.getL()) {
+                    startElement("value");
+                    writeAttributeValue(av);
+                    endElement();
+                }
+            } else if (avalue.getM() != null) {
+                attribute(AttrType.M);
+                for (Entry<String, AttributeValue> e : avalue.getM().entrySet()) {
+                    writeAttribute(e.getKey(), e.getValue());
+                }
+            } else if (avalue.isBOOL() != null) {
+                attribute(AttrType.BOOL);
+                characters(avalue.getBOOL().booleanValue() ? "true" : "false");
+            } else if (avalue.isNULL() != null) {
+                attribute(AttrType.NULL);
+                characters(avalue.getNULL().booleanValue() ? "true" : "false");
+            }
+
+    }
+
+    protected void attribute(AttrType t) throws XMLStreamException {
+        attribute("type", t.name());
+    }
+
+    private void writeAttributeDefinition(AttributeDefinition def)
+            throws XMLStreamException {
+        startElement("attribute-definition");
+        attribute("name", def.getAttributeName());
+        attribute("type", def.getAttributeType());
+        endElement();
+    }
+
+    private void writeAttributeDefinitions(
+            List<AttributeDefinition> attributeDefinitions)
+                    throws XMLStreamException {
+        startElement("attribute-definitions");
+        for (AttributeDefinition def : attributeDefinitions)
+            writeAttributeDefinition(def);
+        endElement();
+
+    }
+
+    private void writeGlobalSecondaryIndex(GlobalSecondaryIndexDescription index)
+            throws XMLStreamException {
+
+        startElement("global-secondary-index");
+        attribute("index-name", index.getIndexName());
+        attribute("index-size", index.getIndexSizeBytes());
+        attribute("index-status", index.getIndexStatus());
+        attribute("item-count", index.getItemCount());
+        writeKeySchemaList(index.getKeySchema());
+        writeProjection(index.getProjection());
+        writeProvisionedThroughput(index.getProvisionedThroughput());
+        endElement();
+
+    }
+
+    private void writeGlobalSecondaryIndexes(
+            List<GlobalSecondaryIndexDescription> globalSecondaryIndexes)
+                    throws XMLStreamException {
+        startElement("global-secondary-indexes");
+        if (globalSecondaryIndexes != null)
+            for (GlobalSecondaryIndexDescription index : globalSecondaryIndexes)
+                writeGlobalSecondaryIndex(index);
+        endElement();
+
+    }
+
+    private void writeKeySchemaList(List<KeySchemaElement> keySchema)
+            throws XMLStreamException {
+
+        startElement("key-schema");
+        for (KeySchemaElement key : keySchema) {
+            startElement("key-schema-element");
+            attribute("name", key.getAttributeName());
+            attribute("type", key.getKeyType());
+            endElement();
+        }
+
+    }
+
+    private void writeLocalSecondaryIndex(LocalSecondaryIndexDescription index)
+            throws XMLStreamException {
+
+        startElement("local-secondary-index");
+        attribute("index-name", index.getIndexName());
+        attribute("index-size", index.getIndexSizeBytes());
+        attribute("item-count", index.getItemCount());
+
+        writeKeySchemaList(index.getKeySchema());
+        writeProjection(index.getProjection());
+        endElement();
+
+    }
+
+    private void writeLocalSecondaryIndexes(
+            List<LocalSecondaryIndexDescription> localSecondaryIndexes)
+                    throws XMLStreamException {
+        startElement("local-secondary-indexes");
+        if (localSecondaryIndexes != null)
+            for (LocalSecondaryIndexDescription index : localSecondaryIndexes)
+                writeLocalSecondaryIndex(index);
+        endElement();
+
+    }
+
+    private void writeProjection(Projection projection)
+            throws XMLStreamException {
+        startElement("projection");
+        attribute("projection-type", projection.getProjectionType());
+        for (String s : projection.getNonKeyAttributes())
+            textElement("non-key-attribute", s);
+
+        endElement();
+
+    }
+
+    private void writeProvisionedThroughput(
+            ProvisionedThroughputDescription provisionedThroughput)
+                    throws XMLStreamException {
+        startElement("provisioned-throughput");
+        attribute("last-decrease",
+                provisionedThroughput.getLastDecreaseDateTime());
+        attribute("last-increase",
+                provisionedThroughput.getLastIncreaseDateTime());
+        attribute("decreases-today",
+                provisionedThroughput.getNumberOfDecreasesToday());
+        attribute("read-capacity", provisionedThroughput.getReadCapacityUnits());
+        attribute("write-capacity",
+                provisionedThroughput.getWriteCapacityUnits());
+        endElement();
+
+    }
+
+    protected void writeTableDescription(TableDescription tableDescription)
+            throws XMLStreamException {
+        startElement("table");
+        attribute("name", tableDescription.getTableName());
+        attribute("status", tableDescription.getTableStatus());
+        attribute("create-date",
+                Util.formatXSDateTime(tableDescription.getCreationDateTime()));
+        attribute("item-count", tableDescription.getItemCount());
+        attribute("size", tableDescription.getTableSizeBytes());
+        attribute("item-count", tableDescription.getItemCount());
+
+        writeAttributeDefinitions(tableDescription.getAttributeDefinitions());
+        writeKeySchemaList(tableDescription.getKeySchema());
+        writeLocalSecondaryIndexes(tableDescription.getLocalSecondaryIndexes());
+        writeGlobalSecondaryIndexes(tableDescription
+                .getGlobalSecondaryIndexes());
+        writeProvisionedThroughput(tableDescription.getProvisionedThroughput());
+
+    }
+
+    protected void writeAttrNameValue(String elem, Map<String, AttributeValue> result) throws XMLStreamException,
+    IOException {
+        startElement(elem);
+        for (Entry<String, AttributeValue> a : result.entrySet())
+            this.writeAttribute(a.getKey(), a.getValue());
+        endElement();
+    }
+
+    protected void writeItem(Map<String, AttributeValue> result) throws XMLStreamException, IOException {
+        writeAttrNameValue("item", result);
+    }
+
+    protected IKeyAttrValueMap parseKeyOptions(Options opts)
+            throws InvalidArgumentException, UnexpectedException,
+            UnimplementedException, IOException {
+        IKeyAttrValueMap keys = new KeyAttrValueMap();
+        if (opts.hasOpt("key"))
+            for (XValue k : opts.getOptValues("key"))
+                keys.putAll(DDBTypes.parseKey(k));
+
+        if (opts.hasOpt("key-name")) {
+            List<XValue> keyValues = opts.getOptValues("key-value");
+            int i = 0;
+            for (XValue keyName : opts.getOptValues("key-name"))
+                keys.putAll(DDBTypes.parseKey(keyName, keyValues.get(i++)));
+        }
+        return keys;
+    }
+    
+    protected void writeItemCollectionMetrics(ItemCollectionMetrics itemCollectionMetrics) throws XMLStreamException,
+    IOException {
+        startElement("item-collection-metrics");
+        writeAttrNameValue("item-collection-key", itemCollectionMetrics.getItemCollectionKey());
+        for (Double r : itemCollectionMetrics.getSizeEstimateRangeGB()) {
+            super.startElement("size");
+            attribute("value", r);
+            endElement();
+        }
+        endElement();
+    }
+
+    protected void writeConsumedCapacity(ConsumedCapacity consumedCapacity) throws XMLStreamException
+    {
+        if (consumedCapacity == null)
+            return;
+        startElement("consumed-capacity");
+        attribute("total-units", consumedCapacity.getCapacityUnits());
+        startElement("table");
+        writeCapacity("table-name", consumedCapacity.getTableName(), consumedCapacity.getTable());
+        endElement();
+        startElement("local-secondary-indexes");
+        for (Entry<String, Capacity> ce : consumedCapacity.getLocalSecondaryIndexes().entrySet())
+            writeCapacity("index-name", ce.getKey(), ce.getValue());
+        endElement();
+
+        startElement("global-secondary-indexes");
+        for (Entry<String, Capacity> ce : consumedCapacity.getGlobalSecondaryIndexes().entrySet())
+            writeCapacity("index-name", ce.getKey(), ce.getValue());
+        endElement();
+        endElement();
+
+    }
+
+    private void writeCapacity(String attr, String attrValue, Capacity cap) throws XMLStreamException {
+        attribute(attr, attrValue);
+        attribute("capacity-units", cap.getCapacityUnits());
+    }
+
+    private void attribute(String localName, Double d) throws XMLStreamException {
+        attribute(localName, d.toString());
+    }
+
+
+    protected void writeMetrics(ArrayList<RequestMetrics> metrics) throws XMLStreamException, IOException {
+        startElement("request-metrics");
+        for (RequestMetrics m : metrics) {
+            writeMetric(m);
+        }
+        endElement();
+
+    }
+
+    public void writeMetric(RequestMetrics m) throws XMLStreamException, IOException {
+
+        startElement("request-metric");
+        attribute("count", m.count);
+        attribute("scanCount", m.scanCount);
+        if (m.capacity != null)
+            writeConsumedCapacity(m.capacity);
+        if (m.itemMetrics != null)
+            writeItemCollectionMetrics(m.itemMetrics);
+
+        endElement();
+    }
+    protected int handleException(AmazonClientException e) {
+        if( e instanceof ConditionalCheckFailedException )
+            return handleConditionException((ConditionalCheckFailedException) e);
+        return super.handleException(e);
+    }
+    protected GetItemSpec parseGetItemSpec(Options opts) throws InvalidArgumentException, XPathException, UnexpectedException, UnimplementedException, IOException {
+        GetItemSpec spec = new GetItemSpec().withPrimaryKey( getPrimaryKey(opts) ).
+                withConsistentRead( opts.hasOpt("consistant") ).withNameMap( parseAttrNameExprs(opts));
+        if( opts.hasRemainingArgs() )
+            spec.withProjectionExpression( 
+                    Util.stringJoin(Util.toStringList( opts.getRemainingArgs()),","));
+        return spec;
+
+    }
+
+    private  static  PrimaryKey getPrimaryKey(Options opts) throws InvalidArgumentException, XPathException, UnexpectedException, UnimplementedException, IOException {
+         INameObjectMap keys = DDBTypes.parseKeyValueObjectOptions(opts);
+        PrimaryKey key = new PrimaryKey();
+        for(    Entry<String, Object> e : keys.entrySet()  ) 
+            key.addComponent( e.getKey() , e.getValue() );
+        return key ;
+    }
+
+    protected IAttrObjectExpr parseAttrValueObjectExprs(Options opts) throws InvalidArgumentException {
+        return DDBTypes.parseAttrValueObjectExprs(opts);
+    }
+    protected IAttrNameExpr parseAttrNameExprs(Options opts) throws InvalidArgumentException, UnexpectedException,
+            UnimplementedException, IOException {
+        IAttrNameExpr exprs =  DDBTypes.parseAttrNameExprs(opts);
+        if( exprs == null || exprs.isEmpty() )
+            return exprs ;
+        return DDBTypes.addNamePrefix( exprs );
+    }
+    protected IAttrValueExpr parseAttrValueExprs(Options opts) throws InvalidArgumentException,
+            UnexpectedException, UnimplementedException, IOException {
+        IAttrValueExpr exprs =  DDBTypes.parseAttrValueExprs(opts);
+        if( exprs == null || exprs.isEmpty() )
+            return exprs ;
+        return DDBTypes.addValuePrefix(exprs);
+    }
+    protected int handleConditionException(ConditionalCheckFailedException ce)  {
+        mShell.printErr("Conditional check failed for "  + getName() + ". retryable: " + ce.isRetryable()  );
+        mShell.printErr( ce.getLocalizedMessage());
+        mLogger.trace("Conditional check failed for "  + getName() , ce );
+        return ce.isRetryable() ? 2 : -1;
+    }
+
+    @Override
+    protected String getCommonOpts() { 
+        return Options.joinOptions(AWSCommand.sCOMMON_OPTS, sDDB_COMMON_OPTS );
+    }
+
+
+    
 
 }
 
 //
 //
-// Copyright (C) 2008-2014    David A. Lee.
+// Copyright (C) 2008-2014 David A. Lee.
 //
 // The contents of this file are subject to the "Simplified BSD License" (the
 // "License");

@@ -31,9 +31,10 @@ public class snsPublish extends AWSSNSCommand {
 
 
 		Options opts = getOptions("t=topic:,m=message:,s=subject:");
-		opts.parse(args);
+        parseOptions(opts, args);
 
 		args = opts.getRemainingArgs();
+        setSerializeOpts(this.getSerializeOpts(opts));
 
 
 		String topic = opts.getOptStringRequired("topic");
@@ -42,7 +43,6 @@ public class snsPublish extends AWSSNSCommand {
 
 
 
-		setSerializeOpts(this.getSerializeOpts(opts));
 
 
 

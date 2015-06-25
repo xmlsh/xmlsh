@@ -1,179 +1,162 @@
 package org.xmlsh.aws;
 
 import java.io.IOException;
-import java.util.HashMap;
+import java.io.PrintStream;
 import java.util.List;
 import java.util.Map;
 
 import javax.xml.stream.XMLStreamException;
 
 import net.sf.saxon.s9api.SaxonApiException;
+import net.sf.saxon.trans.XPathException;
 
 import org.xmlsh.aws.util.AWSDDBCommand;
+import org.xmlsh.aws.util.DDBTypes;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.UnexpectedException;
+import org.xmlsh.core.UnimplementedException;
 import org.xmlsh.core.XValue;
-import org.xmlsh.core.io.OutputPort;
-import org.xmlsh.util.StringPair;
+import org.xmlsh.util.Util;
 
+import com.amazonaws.AmazonClientException;
+import com.amazonaws.services.dynamodbv2.document.DynamoDB;
+import com.amazonaws.services.dynamodbv2.document.Item;
+import com.amazonaws.services.dynamodbv2.document.PutItemOutcome;
+import com.amazonaws.services.dynamodbv2.document.Table;
+import com.amazonaws.services.dynamodbv2.document.spec.PutItemSpec;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
-import com.amazonaws.services.dynamodbv2.model.ExpectedAttributeValue;
 import com.amazonaws.services.dynamodbv2.model.PutItemRequest;
 import com.amazonaws.services.dynamodbv2.model.PutItemResult;
+import com.amazonaws.services.dynamodbv2.model.ReturnValue;
 
 
 public class ddbPutItem	 extends  AWSDDBCommand {
 
+    /**
+     * @param args
+     * @throws IOException 
+     */
+    @Override
+    public int run(List<XValue> args) throws Exception {
+        Options opts = getOptions(sTABLE_OPTIONS, sKEY_OPTIONS , sRETURN_OPTIONS , sCONDITION_OPTIONS ,
+                sDOCUMENT_OPTS , sATTR_EXPR_OPTIONS );
+
+        //	Options opts = getOptions("expected:+,q=quiet");
+        parseOptions(opts, args);
+        setSerializeOpts(this.getSerializeOpts(opts));
+
+        try {
+            getDDBClient(opts);
+        } catch (UnexpectedException e) {
+            usage( e.getLocalizedMessage() );
+            return 1;
+
+        }
+
+        int ret = -1;
+        if( opts.hasOpt("json" ) || opts.hasOpt("document") )
+            ret = putDocument(opts);
+        else
+            ret = put(opts);
+        return ret;
 
 
-	/**
-	 * @param args
-	 * @throws IOException 
-	 */
-	@Override
-	public int run(List<XValue> args) throws Exception {
+    }
 
-		Options opts = getOptions("expected:+,q=quiet,xml,csv,header,types:,delim:,quote:,colnames:");
-		opts.parse(args);
+    private int putDocument( Options opts ) throws XPathException, IOException, XMLStreamException, SaxonApiException, CoreException {
+        String tableName = opts.getOptStringRequired("table");
+        DynamoDB dynamoDB = super.getDynamotDB(opts);
+        Table table = dynamoDB.getTable(tableName);
+        PutItemSpec itemSpec = parsePutItemSpec( opts );
+        PrintStream ostream = null;
+        try {
+            PutItemOutcome item =    table.putItem(itemSpec);
+            Item r = item.getItem() ;
+            if( r != null ){
+                assert( r != null );
+                ostream = mShell.getEnv().getStdout().asPrintStream(getSerializeOpts());
+                ostream.print( r.toJSON());
+                ostream.close(); 
+                ostream=null;
+            }
+        } catch (AmazonClientException e) {
+            return handleException(e);
+        } finally {
+            if( ostream != null ) ostream.close();
+        }
 
-		args = opts.getRemainingArgs();
-
-		setSerializeOpts(this.getSerializeOpts(opts));
-
-		String delim = opts.getOptString("delim", ",");
-		String quote = opts.getOptString("quote", "\"");
-		boolean bHeader = opts.hasOpt("header");
-
-		try {
-			getDDBClient(opts);
-		} catch (UnexpectedException e) {
-			usage( e.getLocalizedMessage() );
-			return 1;
-
-		}
-
-		if( args.size() < 1 ){
-			usage(getName()+ ":" + "table item attributes ...");
-
-		}
-		String table = args.remove(0).toString();
+        return 0;
 
 
-		int ret = -1;
-		Map<String, AttributeValue> itemMap = readItem(args, opts);
-		Map<String, ExpectedAttributeValue> expected = parseExpected(opts);
-		ret = put(table,itemMap, expected, opts.hasOpt("q"));
+    }
 
+    private int put(Options opts)
+            throws IOException, XMLStreamException, SaxonApiException, CoreException
+    {
+        String condition = opts.getOptString("condition", null);
+        String returnValues = opts.getOptString("return-values", null ) ;
 
+        List<XValue> args = opts.getRemainingArgs();
+        String tableName = opts.getOptStringRequired("table");
+        Map<String, AttributeValue> item = parseKeyOptions(opts);
 
-		return ret;
+        if( !args.isEmpty() ) 
+            // allow args to be sequences 
+            item.putAll( DDBTypes.parseAttrNameValue(  Util.expandSequences(args) ));
 
+        PutItemRequest putItemRequest = new PutItemRequest().
+                withTableName(tableName).
+                withItem(item).
+                withExpressionAttributeNames(parseAttrNameExprs(opts)).
+                withExpressionAttributeValues(parseAttrValueExprs(opts));
 
-	}
-
-
-	private int put(String tableName, Map<String,AttributeValue> itemMap,Map<String, ExpectedAttributeValue> expected, boolean bQuiet) throws IOException, XMLStreamException, SaxonApiException, CoreException 
-	{
-
-		PutItemRequest putItemRequest = new PutItemRequest().withTableName(tableName).withItem(itemMap);
-
-		if( expected != null )
-			putItemRequest.setExpected(expected);
-
-
-		traceCall("putItem");
-
-		PutItemResult result = getAWSClient().putItem(putItemRequest);
-
-		if( ! bQuiet ){
-			OutputPort stdout = this.getStdout();
-			mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
-			emptyDocument();
-			closeWriter();
-			stdout.writeSequenceTerminator(getSerializeOpts());
-		}	
-
-
-		return 0;
-
-	}
-
-
-	private Map<String, AttributeValue> readItem(List<XValue> args, Options opts)
-			throws IOException, UnexpectedException, XMLStreamException, CoreException {
-		Map<String, AttributeValue> itemMap;
-		if( opts.hasOpt("xml"))
-			itemMap = readAttributesXML( mShell.getEnv().getInput(args.size() == 0 ? null : args.get(0) ).asXMLEventReader(getSerializeOpts()));
-
-		else	
-			itemMap = getAttributes( args  );
-		return itemMap;
-	}
-
-
-	private Map<String, ExpectedAttributeValue> parseExpected(Options opts) throws InvalidArgumentException, IOException {
-
-		List<XValue> list = opts.getOptValues("expected");
-		if( list == null )
-			return null ;
-
-
-		Map<String, ExpectedAttributeValue> result = new  HashMap<String, ExpectedAttributeValue>();
-		for( XValue xv : list ){
-			StringPair namevalue=new StringPair( xv.toString() , '=');
-			if(! namevalue.hasRight())
-				result.put( namevalue.getLeft() , new ExpectedAttributeValue(true));
-
-			else {
-				StringPair typename = new StringPair( namevalue.getLeft(), ':');
-				String type = typename.getLeft();
-				String value = namevalue.getRight();
-
-				AttributeValue  av= new AttributeValue();
+        if (condition != null)
+            putItemRequest.setConditionExpression(condition);
+        if (returnValues != null)
+            putItemRequest.setReturnValues(returnValues);
 
 
 
-				if( type == "N" )
-					av.setN( value );
-				else
-					if( type == "NS")
-						av.setNS( parseSS( XValue.newXValue(value)) );
-					else
-						if( type == "S" )
-							av.setS( value );
-						else
-							if( type == "SS" )
-								av.setSS( parseSS( XValue.newXValue(value)));
-							else
-								if( type == "B" )
-									av.setB( parseBinary(value) );
-								else
-									if( type == "BS" ) 
-										av.setBS( parseBS(xv ));
+        traceCall("putItem");
+        PutItemResult result = null;
+        try {
+            result = getAWSClient().putItem(putItemRequest);
+        } catch (AmazonClientException e) {
+            return handleException(e);
+        }
+        startResult();
+        if (result.getAttributes() != null) {
+            writeItem(result.getAttributes());
+        }
+        writeMetric(new RequestMetrics(result.getConsumedCapacity(), result.getItemCollectionMetrics()));
+        endResult();
 
+        return 0;
 
-				result.put( namevalue.getRight() , new ExpectedAttributeValue(av));
-
-
-			}
-
-		}
-		return result;
-
-
-	}
+    }
 
 
 
 
-	@Override
-	public void usage() {
-		super.usage();
-	}
+    protected PutItemSpec parsePutItemSpec(Options opts) throws InvalidArgumentException, UnexpectedException, UnimplementedException, IOException, XPathException {
+        PutItemSpec spec = new PutItemSpec().withItem(   Item.fromMap(DDBTypes.parseItemValueObject(opts)) ).
+                withNameMap( parseAttrNameExprs(opts)).
+                withValueMap( parseAttrValueObjectExprs(opts) );
+
+        String condition = opts.getOptString("condition", null);
+        String returnValues = opts.getOptString("return-values", null ) ;
+        if (condition != null)
+            spec = spec.withConditionExpression(condition);
+        if( returnValues != null)
+            spec = spec.withReturnValues( ReturnValue.fromValue(returnValues ));
 
 
+        if( opts.hasRemainingArgs() )
+            return spec;
+        return spec;
+    }
 
 
 

@@ -36,7 +36,8 @@ public class sqsSendMessage extends AWSSQSCommand {
 
 
 		Options opts = getOptions("f=file:");
-		opts.parse(args);
+        parseOptions(opts, args);
+        setSerializeOpts(this.getSerializeOpts(opts));
 
 		args = opts.getRemainingArgs();
 
@@ -47,7 +48,6 @@ public class sqsSendMessage extends AWSSQSCommand {
 
 
 
-		setSerializeOpts(this.getSerializeOpts(opts));
 
 
 		String url = args.get(0).toString();

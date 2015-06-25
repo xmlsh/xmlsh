@@ -33,7 +33,7 @@ public class sqsGetQueueAttributes extends AWSSQSCommand {
 
 
 		Options opts = getOptions();
-		opts.parse(args);
+        parseOptions(opts, args);
 
 		args = opts.getRemainingArgs();
 
@@ -41,7 +41,6 @@ public class sqsGetQueueAttributes extends AWSSQSCommand {
 
 		setSerializeOpts(this.getSerializeOpts(opts));
 
-		String prefix = null ;
 		if( args.size() < 2 ){
 			usage();
 			return 1;
@@ -73,7 +72,7 @@ public class sqsGetQueueAttributes extends AWSSQSCommand {
 	private int list(String name , List<String> attrNames ) throws IOException, XMLStreamException, SaxonApiException, CoreException {
 
 
-		OutputPort stdout = this.getStdout();
+        OutputPort stdout = getStdout();
 		mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
 
 

@@ -36,7 +36,8 @@ public class asTerminateInstance extends AWSASCommand {
 
 
 		Options opts = getOptions("d=decrement");
-		opts.parse(args);
+        parseOptions(opts, args);
+        setSerializeOpts(this.getSerializeOpts(opts));
 
 		args = opts.getRemainingArgs();
 
@@ -48,7 +49,6 @@ public class asTerminateInstance extends AWSASCommand {
 		String instanceId = args.get(0).toString();
 
 
-		setSerializeOpts(this.getSerializeOpts(opts));
 
 
 		try {
@@ -75,12 +75,12 @@ public class asTerminateInstance extends AWSASCommand {
 	private int terminate(String instanceId, boolean bDecrement) throws IOException, XMLStreamException, SaxonApiException, CoreException 
 	{
 
-		OutputPort stdout = this.getStdout();
+        OutputPort stdout = getStdout();
 		mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(getSerializeOpts()));
 
 
 		startDocument();
-		startElement(this.getName());
+        startElement(getName());
 
 
 

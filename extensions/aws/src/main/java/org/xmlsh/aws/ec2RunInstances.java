@@ -48,10 +48,13 @@ public class ec2RunInstances extends AWSEC2Command {
 	public int run(List<XValue> args) throws Exception {
 
 
-		Options opts = getOptions("n:,g=group:+,k=key:,d=user-data:,f=user-data-file:,t=instance-type:,availability-zone:,kernel:,ramdisk:,block-device-mapping:+,monitor,disable-api-termination,instance-initiated-shutdown-behavior:,placement-group:,tenancy:,subnet:,private-ip-address:,client-token:,additional-info:,tag:");
-		opts.parse(args);
+        Options opts = getOptions("n:,g=group:+,k=key:,d=user-data:,f=user-data-file:,t=instance-type:,availability-zone:," +
+             "kernel:,ramdisk:,block-device-mapping:+,monitor,disable-api-termination,instance-initiated-shutdown-behavior:," +
+             "placement-group:,tenancy:,subnet:,private-ip-address:,client-token:,additional-info:,tag:+,ebs=ebs-optimized");
+        parseOptions(opts, args);
 
 		args = opts.getRemainingArgs();
+        setSerializeOpts(this.getSerializeOpts(opts));
 
 
 		if( args.size() != 1 ){
@@ -60,7 +63,6 @@ public class ec2RunInstances extends AWSEC2Command {
 		}
 
 
-		setSerializeOpts(this.getSerializeOpts(opts));
 		try {
 			getEC2Client(opts);
 		} catch (UnexpectedException e) {

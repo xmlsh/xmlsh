@@ -34,7 +34,7 @@ public class cfnDescribeStacks extends AWSCFNCommand {
 
 
 		Options opts = getOptions("n=name:");
-		opts.parse(args);
+        parseOptions(opts, args);
 
 		args = opts.getRemainingArgs();
 
@@ -66,12 +66,12 @@ public class cfnDescribeStacks extends AWSCFNCommand {
 	private int describe(String name) throws IOException, XMLStreamException, SaxonApiException, CoreException {
 
 
-		OutputPort stdout = this.getStdout();
+        OutputPort stdout = getStdout();
 		mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(getSerializeOpts()));
 
 
 		startDocument();
-		startElement(this.getName());
+        startElement(getName());
 
 
 

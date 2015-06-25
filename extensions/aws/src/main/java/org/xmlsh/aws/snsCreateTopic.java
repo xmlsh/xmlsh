@@ -33,7 +33,8 @@ public class snsCreateTopic extends AWSSNSCommand {
 
 
 		Options opts = getOptions();
-		opts.parse(args);
+        parseOptions(opts, args);
+        setSerializeOpts(this.getSerializeOpts(opts));
 
 		args = opts.getRemainingArgs();
 
@@ -44,7 +45,6 @@ public class snsCreateTopic extends AWSSNSCommand {
 
 
 
-		setSerializeOpts(this.getSerializeOpts(opts));
 
 
 

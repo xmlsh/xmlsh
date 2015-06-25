@@ -23,7 +23,6 @@ public class elbDeregister<x> extends AWSELBCommand {
 
 
 
-	private boolean bLongListing;
 
 
 	/**
@@ -35,7 +34,7 @@ public class elbDeregister<x> extends AWSELBCommand {
 
 
 		Options opts = getOptions();
-		opts.parse(args);
+        parseOptions(opts, args);
 
 		args = opts.getRemainingArgs();
 

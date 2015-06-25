@@ -410,13 +410,6 @@ public class JavaUtils {
    
   
 
-  
-  public  static boolean isBooleanClass(  Class<?> c )
-  {
-    return c == Boolean.TYPE ||
-        Boolean.class.isAssignableFrom( c ) ;
-
-  }
 
 	public static <T> T convert(Object value, Class<T> targetClass) throws InvalidArgumentException {
 
@@ -727,6 +720,7 @@ public class JavaUtils {
 		return false ;
 
 	}
+
 	
 	public static boolean isObjectClass(Class<?> cls)
 	{
@@ -736,8 +730,15 @@ public class JavaUtils {
 
 	}
 	
+  public  static boolean isBooleanClass(  Class<?> c )
+    {
+        return c == Boolean.TYPE ||
+                Boolean.class.isAssignableFrom( c ) ;
+
+    }
 	
 
+//DAL: TODO: See 1.3
 	public static boolean isStringClass( Class<?> cls) {
 
 		return String.class.isAssignableFrom(cls ) ||
@@ -764,7 +765,9 @@ public class JavaUtils {
 		return o.toString() + that.toString() ;
 	}
 
-	
+	    public static boolean isNumber(String v) {
+        return toNumber(v,null) != null ;
+    }
 	// Is a or attomic collection type that is empty 
     public static boolean isEmpty(Object value) {
        
@@ -1006,6 +1009,18 @@ public class JavaUtils {
 		return isArrayOf( obj , c ) ||
 				isCollectionOf( obj , c );
 	}
+
+
+    public static Number toNumber(String v, Number def) {
+        try {
+            if( Util.isInt(v, true))
+                return Long.parseLong(v);
+            return Double.parseDouble(v);
+        } catch (NumberFormatException e) {
+            // silent
+            return def;
+        }
+    }
 
 	public static boolean isCollectionOf(Object obj, Class<?> c) {
 			if( obj instanceof Collection ){

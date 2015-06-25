@@ -31,8 +31,9 @@ public class sdbListDomains	 extends  AWSSDBCommand {
 
 
 		Options opts = getOptions();
-		opts.parse(args);
+        parseOptions(opts, args);
 
+        setSerializeOpts(this.getSerializeOpts(opts));
 		args = opts.getRemainingArgs();
 
 		if( args.size() != 0 ){

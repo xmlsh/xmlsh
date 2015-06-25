@@ -44,13 +44,13 @@ public class cfnCreateStack extends AWSCFNCommand {
 
 
 		Options opts = getOptions("capability:+,disable-rollback,fail=on-failure:,notification-arn:+,name:,template-file=f:,template-url=url:,timeout:,tag:+,params=parameters:");
-		opts.parse(args);
+        parseOptions(opts, args);
+        setSerializeOpts(this.getSerializeOpts(opts));
 
 		args = opts.getRemainingArgs();
 
 
 
-		setSerializeOpts(this.getSerializeOpts(opts));
 
 
 		try {
@@ -76,12 +76,12 @@ public class cfnCreateStack extends AWSCFNCommand {
 	private int createStack(Options opts) throws IOException, XMLStreamException, SaxonApiException, CoreException {
 
 
-		OutputPort stdout = this.getStdout();
+        OutputPort stdout = getStdout();
 		mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(getSerializeOpts()));
 
 
 		startDocument();
-		startElement(this.getName());
+        startElement(getName());
 
 		CreateStackRequest request = new CreateStackRequest();
 

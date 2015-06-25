@@ -36,7 +36,7 @@ public class monPutData	 extends  AWSMonCommand {
 
 
 		Options opts = getOptions("n=namespace:");
-		opts.parse(args);
+        parseOptions(opts, args);
 
 		args = opts.getRemainingArgs();
 

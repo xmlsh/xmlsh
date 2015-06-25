@@ -30,13 +30,13 @@ public class sdbGetAttributes	 extends  AWSSDBCommand {
 
 		Options opts = getOptions("c=consistant");
 		opts.parse(args);
+        setSerializeOpts(this.getSerializeOpts(opts));
 
 		args = opts.getRemainingArgs();
 
 
 		boolean bConsistant = opts.hasOpt("consistant");
 
-		setSerializeOpts(this.getSerializeOpts(opts));
 
 
 

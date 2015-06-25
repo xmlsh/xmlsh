@@ -12,10 +12,8 @@ import org.xmlsh.aws.util.AWSUtil;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
-import org.xmlsh.core.SafeXMLStreamWriter;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
-import org.xmlsh.core.io.OutputPort;
 import org.xmlsh.util.Util;
 
 import com.amazonaws.services.ec2.model.AssociateAddressRequest;
@@ -36,8 +34,9 @@ public class ec2AssociateAddress extends AWSEC2Command {
 
 
 		Options opts = getOptions();
-		opts.parse(args);
+        parseOptions(opts, args);
 
+        setSerializeOpts(this.getSerializeOpts(opts));
 		args = opts.getRemainingArgs();
 
 
@@ -50,7 +49,6 @@ public class ec2AssociateAddress extends AWSEC2Command {
 		}
 
 
-		setSerializeOpts(this.getSerializeOpts(opts));
 		try {
 			getEC2Client(opts);
 		} catch (UnexpectedException e) {
@@ -91,21 +89,11 @@ public class ec2AssociateAddress extends AWSEC2Command {
 	private	void writeResult(AssociateAddressResult result) throws IOException, XMLStreamException, SaxonApiException, CoreException 
 	{
 
-		OutputPort stdout = this.getStdout();
-		mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(getSerializeOpts()));
-
-
-		startDocument();
-		startElement(this.getName());
-
-		startElement("association" );
-		attribute("associate-id" , result.getAssociationId() );
-		endElement();
-
-
-		endElement();
-		endDocument();
-		closeWriter();		
+        startResult();
+        startElement("association" );
+        attribute("associate-id" , result.getAssociationId() );
+        endElement();
+        endResult();
 
 	}
 

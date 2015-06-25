@@ -15,9 +15,9 @@ import org.xmlsh.core.XValue;
 
 import com.amazonaws.services.autoscaling.AmazonAutoScalingClient;
 
+
 public abstract class AWSASCommand extends AWSCommand<AmazonAutoScalingClient> {
-
-
+	
 	public AWSASCommand() {
 		super();
 	}
@@ -27,10 +27,6 @@ public abstract class AWSASCommand extends AWSCommand<AmazonAutoScalingClient> {
 		setAmazon(AWSClientFactory.newASClient( mShell , opts ));
 
 	}
-
-
-
-	
 
 
 	/* (non-Javadoc)
@@ -43,9 +39,7 @@ public abstract class AWSASCommand extends AWSCommand<AmazonAutoScalingClient> {
 	}
 
 
-
-
-
+	 
 
 
 }

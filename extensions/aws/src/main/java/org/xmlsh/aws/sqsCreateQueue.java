@@ -40,7 +40,8 @@ public class sqsCreateQueue extends AWSSQSCommand {
 
 
 		Options opts = getOptions("t=timeout:");
-		opts.parse(args);
+        parseOptions(opts, args);
+        setSerializeOpts(this.getSerializeOpts(opts));
 
 		args = opts.getRemainingArgs();
 
@@ -51,7 +52,6 @@ public class sqsCreateQueue extends AWSSQSCommand {
 
 
 
-		setSerializeOpts(this.getSerializeOpts(opts));
 
 
 

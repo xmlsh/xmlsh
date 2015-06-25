@@ -38,7 +38,7 @@ public class s3GeneratePresignedUrl extends AWSS3Command {
 
 
 		Options opts = getOptions("expiration:,method:");
-		opts.parse(args);
+        parseOptions(opts, args);
 
 		args = opts.getRemainingArgs();
 

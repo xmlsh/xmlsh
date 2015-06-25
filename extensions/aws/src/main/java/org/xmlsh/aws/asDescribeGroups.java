@@ -39,14 +39,14 @@ public class asDescribeGroups extends AWSASCommand {
 	public int run(List<XValue> args) throws Exception {
 
 		Options opts = getOptions();
-		opts.parse(args);
+        parseOptions(opts, args);
+        setSerializeOpts(opts);
 
 		args = opts.getRemainingArgs();
 		parseCommonOptions(opts);
 
 
 
-		setSerializeOpts(this.getSerializeOpts(opts));
 
 
 		try {
@@ -72,12 +72,12 @@ public class asDescribeGroups extends AWSASCommand {
 	private int describe(List<XValue> args) throws IOException, XMLStreamException, SaxonApiException, CoreException, InterruptedException {
 
 
-		OutputPort stdout = this.getStdout();
+        OutputPort stdout = getStdout();
 		mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(getSerializeOpts()));
 
 
 		startDocument();
-		startElement(this.getName());
+        startElement(getName());
 
 
 		DescribeAutoScalingGroupsRequest request = new DescribeAutoScalingGroupsRequest();

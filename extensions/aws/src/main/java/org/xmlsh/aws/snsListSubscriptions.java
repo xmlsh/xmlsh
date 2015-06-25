@@ -34,7 +34,7 @@ public class snsListSubscriptions extends AWSSNSCommand {
 
 
 		Options opts = getOptions();
-		opts.parse(args);
+        parseOptions(opts, args);
 
 		args = opts.getRemainingArgs();
 

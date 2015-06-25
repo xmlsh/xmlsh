@@ -23,7 +23,7 @@ public class s3CreateBucket extends AWSS3Command {
 
 
 		Options opts = getOptions( );
-		opts.parse(args);
+        parseOptions(opts, args);
 
 		args = opts.getRemainingArgs();
 

@@ -36,7 +36,8 @@ public class cfnGetTemplate extends AWSCFNCommand {
 
 
 		Options opts = getOptions("j=json,n=name:");
-		opts.parse(args);
+        parseOptions(opts, args);
+        setSerializeOpts(this.getSerializeOpts(opts));
 
 
 		args = opts.getRemainingArgs();
@@ -44,7 +45,6 @@ public class cfnGetTemplate extends AWSCFNCommand {
 		boolean bJson = opts.hasOpt("json");
 
 
-		setSerializeOpts(this.getSerializeOpts(opts));
 
 
 		try {
@@ -71,7 +71,7 @@ public class cfnGetTemplate extends AWSCFNCommand {
 
 
 
-		OutputPort stdout = this.getStdout();
+        OutputPort stdout = getStdout();
 
 
 
@@ -79,7 +79,7 @@ public class cfnGetTemplate extends AWSCFNCommand {
 
 		traceCall("getTemplate");
 
-		GetTemplateResult result = getAWSClient().getTemplate(request);
+        GetTemplateResult result = mAmazon.getTemplate(request);
 
 
 

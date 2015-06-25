@@ -12,7 +12,6 @@ import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
-import org.xmlsh.types.xtypes.XValueList;
 
 import com.amazonaws.services.s3.model.DeleteBucketRequest;
 
@@ -31,7 +30,7 @@ public class s3DeleteBucket extends AWSS3Command {
 
 
 		Options opts = getOptions("r=recurse");
-		opts.parse(args);
+        parseOptions(opts, args);
 
 		args = opts.getRemainingArgs();
 

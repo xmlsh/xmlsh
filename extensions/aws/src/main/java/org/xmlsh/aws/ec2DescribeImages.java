@@ -1,6 +1,7 @@
 package org.xmlsh.aws;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -15,6 +16,7 @@ import org.xmlsh.core.SafeXMLStreamWriter;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.io.OutputPort;
+import org.xmlsh.util.StringPair;
 import org.xmlsh.util.Util;
 
 import com.amazonaws.services.ec2.model.BlockDeviceMapping;
@@ -35,12 +37,12 @@ public class ec2DescribeImages extends AWSEC2Command {
 	@Override
 	public int run(List<XValue> args) throws Exception {
 
-		Options opts = getOptions("f=filter:+");
-		opts.parse(args);
 
-		args = opts.getRemainingArgs();
+        Options opts = getOptions("f=filter:+");
+        parseOptions(opts, args);
 
-		setSerializeOpts(this.getSerializeOpts(opts));
+        args = opts.getRemainingArgs();
+        setSerializeOpts(this.getSerializeOpts(opts));
 
 		try {
 			getEC2Client(opts);
@@ -50,8 +52,10 @@ public class ec2DescribeImages extends AWSEC2Command {
 
 		}
 
-		Collection<Filter> filters = opts.hasOpt("filter") ? parseFilters(Util
-				.toStringList(opts.getOptValues("filter"))) : null;
+
+        Collection<Filter> filters = 
+                opts.hasOpt("filter") ?
+                        parseFilters( Util.toStringList(opts.getOptValues("filter"))) : null ;
 
 		int ret;
 		switch (args.size()) {
@@ -71,12 +75,31 @@ public class ec2DescribeImages extends AWSEC2Command {
 
 	}
 
-	private int describe(List<XValue> args, Collection<Filter> filters)
-			throws IOException, XMLStreamException, SaxonApiException,
-			CoreException {
 
-	
+    protected Collection<Filter> parseFilters(List<String> values) {
+        if( values == null || values.size() == 0 )
+            return null;
 
+        ArrayList<Filter> filters = new ArrayList<Filter>(values.size());
+
+        for( String v : values ){
+            StringPair nv = new StringPair( v , '=' );
+            Filter filter = new Filter().withName(nv.getLeft()).withValues( nv.getRight().split(","));
+            filters.add(filter);
+        }
+        return filters;
+    }
+
+
+    private int describe(List<XValue> args, Collection<Filter> filters) throws IOException, XMLStreamException, SaxonApiException, CoreException {
+
+
+        OutputPort stdout = getStdout();
+        mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(getSerializeOpts()));
+
+
+        startDocument();
+        startElement(getName());
 		DescribeImagesRequest request = new DescribeImagesRequest();
 		if (args != null) {
 
@@ -90,12 +113,8 @@ public class ec2DescribeImages extends AWSEC2Command {
 		traceCall("describeImages");
 
 		DescribeImagesResult result = getAWSClient().describeImages(request);
-		OutputPort stdout = this.getStdout();
-		mWriter = new SafeXMLStreamWriter(stdout
-				.asXMLStreamWriter(getSerializeOpts()));
 
-		startDocument();
-		startElement(this.getName());
+
 		
 		for (Image image : result.getImages())
 			writeImage(image);

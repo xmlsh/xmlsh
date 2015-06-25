@@ -2,9 +2,10 @@
 <classpath>
 	<classpathentry excluding="src/java|src/main/java" kind="src" path="src/main/java"/>
 	<classpathentry kind="src" path="src/main/resources"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER" exported="true"/>
-	<classpathentry kind="con" path="org.springsource.ide.eclipse.gradle.classpathcontainer" exported="true"/>
+	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry exported="true" kind="con" path="org.springsource.ide.eclipse.gradle.classpathcontainer"/>
+	<classpathentry kind="con" path="org.springsource.ide.eclipse.gradle.dsld.classpathcontainer"/>
+	<classpathentry kind="con" path="GROOVY_DSL_SUPPORT"/>
+	<classpathentry kind="con" path="GROOVY_SUPPORT"/>
 	<classpathentry kind="output" path="_out"/>
-	<classpathentry kind="src" path="/xmlsh" exported="true"/>
-	<classpathentry kind="lib" path="/home/dlee/.gradle/caches/modules-2/files-2.1/com.marklogic/marklogic-xcc/8.0.2/a5715105b4403be9b9292a2a24bcc8a602c3cef/marklogic-xcc-8.0.2.jar" exported="true"/>
 </classpath>

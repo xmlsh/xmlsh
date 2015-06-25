@@ -13,17 +13,14 @@ import org.xmlsh.aws.util.AWSEC2Command;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
-import org.xmlsh.core.SafeXMLStreamWriter;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
-import org.xmlsh.core.io.OutputPort;
 import org.xmlsh.util.Util;
 
+import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.ec2.model.CreateVolumeRequest;
 import com.amazonaws.services.ec2.model.CreateVolumeResult;
-import com.amazonaws.services.ec2.model.EbsBlockDevice;
 import com.amazonaws.services.ec2.model.VolumeType;
-import com.amazonaws.AmazonServiceException;
 
 public class ec2CreateVolume extends AWSEC2Command {
 
@@ -40,13 +37,13 @@ public class ec2CreateVolume extends AWSEC2Command {
 
 		
 		Options opts = getOptions("t=type:,s=size:,zone=availability-zone:,iops:,snapshot=snapshot-id:,spec=volspec:,+encrypted");
-		opts.parse(args);
+        parseOptions(opts, args);
 
 		args = opts.getRemainingArgs();
+        setSerializeOpts(this.getSerializeOpts(opts));
 
 		rateRetry = opts.getOptInt("rate-retry", 0);
 
-		setSerializeOpts(this.getSerializeOpts(opts));
 		try {
 			getEC2Client(opts);
 		} catch (UnexpectedException e) {
@@ -187,18 +184,11 @@ public class ec2CreateVolume extends AWSEC2Command {
 	private	void writeResult(CreateVolumeResult result) throws IOException, XMLStreamException, SaxonApiException, CoreException 
 	{
 
-		OutputPort stdout = this.getStdout();
-		mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(getSerializeOpts()));
 
-		startDocument();
-		startElement(this.getName());
+        startResult();
 
-		writeVolume( result.getVolume() );
-
-
-		endElement();
-		endDocument();
-		closeWriter();		
+        writeVolume( result.getVolume() );
+        endResult();
 
 	}
 

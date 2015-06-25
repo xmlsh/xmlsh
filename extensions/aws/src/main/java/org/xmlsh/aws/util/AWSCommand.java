@@ -6,22 +6,31 @@
 
 package org.xmlsh.aws.util;
 
-
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import net.sf.saxon.s9api.SaxonApiException;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.xmlsh.core.CoreException;
+import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
+import org.xmlsh.core.Options.OptionValue;
+import org.xmlsh.core.UnexpectedException;
+import org.xmlsh.core.UnknownOption;
 import org.xmlsh.core.XCommand;
+import org.xmlsh.core.XValue;
+import org.xmlsh.core.io.OutputPort;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.util.Util;
 
+import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonWebServiceClient;
-import com.amazonaws.services.cloudformation.model.Tag;
 
 public abstract class AWSCommand<T extends AmazonWebServiceClient>  extends XCommand {
 
@@ -30,19 +39,33 @@ public abstract class AWSCommand<T extends AmazonWebServiceClient>  extends XCom
 	Logger mLogger = LogManager.getLogger( );
 
 	protected XMLStreamWriter mWriter;
-	public static final String sCOMMON_OPTS = "region:,endpoint:,client:,config:,accessKey:,secretKey:,rate-retry:,retry-delay:,result-format:" ;
+	private OutputPort mResultOut;
+	
+	public static final String sCOMMON_OPTS = "region:,endpoint:,client:,config:,accessKey:,secretKey:,rate-retry:,retry-delay:" ;
 	protected int rateRetry = 0;
 	protected int retryDelay = 10000; // 10 seconds default
 
+    private boolean bSetEndpoint = false ;
 
+	
+	protected void setEndpointSet(boolean v) {
+        this.bSetEndpoint = v ;
+    }
 
+	
 	public AWSCommand() {
 		super();
 	}
 
 
 
-
+	public List<OptionValue> parseOptions(Options options, List<XValue> args) throws UnknownOption, InvalidArgumentException, UnexpectedException {
+        List<OptionValue> opts = options.parse(args);
+        parseCommonOptions(options);
+        return opts ;
+    }
+	
+	
 	protected	Options getOptions()	
 	{
 		return new Options( getCommonOpts()  , SerializeOpts.getOptionDefs());
@@ -54,18 +77,30 @@ public abstract class AWSCommand<T extends AmazonWebServiceClient>  extends XCom
 	}
 
 
-	protected Options getOptions( String sopts )	
+    protected	Options getOptions( String... sopts )	
 	{
-
-		return new Options( getCommonOpts() + "," + sopts , SerializeOpts.getOptionDefs());
-
+		return new Options( Options.joinOptions(getCommonOpts() , Options.joinOptions(sopts) )  , SerializeOpts.getOptionDefs());
 	}
 
 
-
-	protected void closeWriter() throws XMLStreamException {
-		mWriter.flush();
-		mWriter.close();
+	
+	protected void closeWriter() throws XMLStreamException, IOException, CoreException, SaxonApiException{
+	    if( mWriter != null ){
+	      try { 
+	        mWriter.flush();
+	        mWriter.close();
+	        
+	      } finally {
+	          mWriter = null;
+	      }
+	    }
+	    if( mResultOut != null ) {
+	        try {
+	           mResultOut.writeSequenceTerminator(getSerializeOpts());
+	        } finally {
+	           mResultOut = null ;
+	        }
+	    }
 	}
 
 
@@ -155,10 +190,39 @@ public abstract class AWSCommand<T extends AmazonWebServiceClient>  extends XCom
 
 	protected void attribute(String name, long n) throws XMLStreamException {
 		attribute( name , String.valueOf(n));
-
+		
 	}
 
+	/*
+	protected void setEndpointXX(Options opts) throws InvalidArgumentException {
+		
+		if( opts.hasOpt("endpoint") ){
+			setEndpoint(opts.getOptStringRequired("endpoint"));
+			bSetEndpoint = true ;
+		}
+		
+		
+	}
+	protected boolean hasSetEndpoint() {
+	    return bSetEndpoint;
+	    
+	}
 
+	protected void setRegionXX(Options opts) {
+	    if( hasSetEndpoint() )
+	        return ;
+
+	    if( opts.hasOpt("region"))
+	    	setRegion(opts.getOptString("region",Regions.DEFAULT_REGION.getName()) );
+	    else {
+	    	String region = mShell.getEnv().getVarString("AWS_REGION");
+	    	if( Util.isBlank(region))
+	    		region = mShell.getEnv().getVarString("EC2_REGION");  // ec2 command line compatibility
+	    	if( !Util.isBlank(region))
+	    		setRegion(region);
+	    }
+
+	}*/
 	
 
 
@@ -179,7 +243,6 @@ public abstract class AWSCommand<T extends AmazonWebServiceClient>  extends XCom
 	protected void traceCall( String method )
 	{
 		T obj = getAWSClient();
-
 		mLogger.info( "AWS Method Call: " + obj.getClass().toString() + "." + method );
 	}
 
@@ -187,15 +250,22 @@ public abstract class AWSCommand<T extends AmazonWebServiceClient>  extends XCom
 
 		rateRetry = opts.getOptInt("rate-retry", 0);
 		retryDelay = opts.getOptInt("retry-delay", 10000);
+	}
 
-
-
+	protected XValue xpath(XValue xv, String expr)
+			throws UnexpectedException {
+				return xv.xpath(getShell(), expr);
+				
+			}
+    protected int handleException(AmazonClientException e)  {
+       mLogger.error("AWS Exception in " + getName() , e );
+       mShell.printErr("AWS Exception in " + getName() , e);
+       return -1 ;
 	}
 
 	protected T getAWSClient() {
 		return mAmazon.getClient();
 	}
-
 
 	protected void setAmazon(	AWSClient<T> a)
 	{
@@ -207,12 +277,30 @@ public abstract class AWSCommand<T extends AmazonWebServiceClient>  extends XCom
 		return mAmazon;
 	}
 
+    protected boolean startResult() throws InvalidArgumentException, XMLStreamException, SaxonApiException, CoreException, IOException {
+        if( mWriter != null ){
+          mLogger.warn(getName() + ": AWS startResult previously called for this request");
+          return false ; 
+        }
+        if( mResultOut != null ){
+            mLogger.warn(getName() + ": AWS startResult with result port open - closing");
+        }
+        mResultOut = this.getStdout();
+        
+         mWriter = mResultOut.asXMLStreamWriter(getSerializeOpts());
+            startDocument();
+            startElement(getName());
+        return true ;
+    }
 
-
-
- 
-
-
+    protected void endResult() throws XMLStreamException, IOException, CoreException, SaxonApiException {
+        if( mWriter == null )
+            return ;
+        endElement();
+    	endDocument();
+    	closeWriter();
+    	
+    }
 
 
 }

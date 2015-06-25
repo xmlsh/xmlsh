@@ -33,11 +33,10 @@ public class ec2DescribeAddresses extends AWSEC2Command {
 	public int run(List<XValue> args) throws Exception {
 
 
-		Options opts = getOptions();
-		opts.parse(args);
+        Options opts = getOptions();
+        parseOptions(opts, args);
 
-		args = opts.getRemainingArgs();
-
+        args = opts.getRemainingArgs();
 
 
 		setSerializeOpts(this.getSerializeOpts(opts));

@@ -39,11 +39,11 @@ public class ec2DescribeInstances extends AWSEC2Command {
 	public int run(List<XValue> args) throws Exception {
 
 
-		Options opts = getOptions("f=filter:+");
-		opts.parse(args);
+        Options opts = getOptions();
+        parseOptions(opts, args);
 
-		args = opts.getRemainingArgs();
-		parseCommonOptions( opts );
+        args = opts.getRemainingArgs();
+        parseCommonOptions( opts );
 
 		setSerializeOpts(this.getSerializeOpts(opts));
 

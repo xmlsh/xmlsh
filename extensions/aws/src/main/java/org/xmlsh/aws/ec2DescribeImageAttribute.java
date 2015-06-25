@@ -32,8 +32,8 @@ public class ec2DescribeImageAttribute extends AWSEC2Command {
 	public int run(List<XValue> args) throws Exception {
 
 
-		Options opts = getOptions("p=product-codes,l=launch");
-		opts.parse(args);
+        Options opts = getOptions("p=product-codes,l=launch");
+        parseOptions(opts, args);
 
 		args = opts.getRemainingArgs();
 

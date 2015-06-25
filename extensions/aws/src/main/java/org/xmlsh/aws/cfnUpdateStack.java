@@ -38,7 +38,7 @@ public class cfnUpdateStack extends AWSCFNCommand {
 
 
 		Options opts = getOptions("capability:+,name:,template-file=f:,template-url=url:");
-		opts.parse(args);
+        parseOptions(opts, args);
 
 		args = opts.getRemainingArgs();
 
@@ -69,12 +69,12 @@ public class cfnUpdateStack extends AWSCFNCommand {
 	private int updateStack(List<XValue> args, Options opts) throws IOException, XMLStreamException, SaxonApiException, CoreException {
 
 
-		OutputPort stdout = this.getStdout();
+        OutputPort stdout = getStdout();
 		mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(getSerializeOpts()));
 
 
 		startDocument();
-		startElement(this.getName());
+        startElement(getName());
 
 
 

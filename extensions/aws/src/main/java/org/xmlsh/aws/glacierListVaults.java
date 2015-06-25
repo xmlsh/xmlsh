@@ -35,7 +35,7 @@ public class glacierListVaults	 extends  AWSGlacierCommand {
 
 
 		Options opts = getOptions();
-		opts.parse(args);
+        parseOptions(opts, args);
 
 		args = opts.getRemainingArgs();
 

@@ -31,7 +31,7 @@ public class sqsListQueues extends AWSSQSCommand {
 
 
 		Options opts = getOptions();
-		opts.parse(args);
+        parseOptions(opts, args);
 
 		args = opts.getRemainingArgs();
 
@@ -67,7 +67,7 @@ public class sqsListQueues extends AWSSQSCommand {
 	private int list(String prefix) throws IOException, XMLStreamException, SaxonApiException, CoreException {
 
 
-		OutputPort stdout = this.getStdout();
+        OutputPort stdout = getStdout();
 		mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
 
 

@@ -36,10 +36,10 @@ public class ec2ModifyImageAttribute extends AWSEC2Command {
 
 
 		Options opts = getOptions("p=product-codes,l=launch,a=add:+,r=remove:+");
-		opts.parse(args);
+        parseOptions(opts, args);
 
 		args = opts.getRemainingArgs();
-
+        setSerializeOpts(this.getSerializeOpts(opts));
 
 
 

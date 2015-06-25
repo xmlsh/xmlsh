@@ -14,24 +14,26 @@ import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.UnexpectedException;
 
+import com.amazonaws.services.cloudformation.AmazonCloudFormation;
 import com.amazonaws.services.cloudformation.AmazonCloudFormationClient;
 import com.amazonaws.services.cloudformation.model.Output;
 import com.amazonaws.services.cloudformation.model.Parameter;
 import com.amazonaws.services.cloudformation.model.Tag;
 import com.amazonaws.services.cloudformation.model.TemplateParameter;
 
-public abstract class AWSCFNCommand extends AWSCommand<AmazonCloudFormationClient >{
-
-
+public abstract class AWSCFNCommand extends AWSCommand<AmazonCloudFormationClient> {
+	
+	protected	AmazonCloudFormation		mAmazon ;
+	
 	public AWSCFNCommand() {
 		super();
 	}
-
 
 	protected void getCFNClient( Options opts ) throws UnexpectedException, InvalidArgumentException {
 		setAmazon(AWSClientFactory.newCFNClient(mShell, opts));
 
 	}
+
 
 
 	protected void writeNotifications(List<String> notificationARNs) throws XMLStreamException {
@@ -40,10 +42,10 @@ public abstract class AWSCFNCommand extends AWSCommand<AmazonCloudFormationClien
 
 
 	protected void writeCapibilities(List<String> capabilities) throws XMLStreamException {
-
+	
 		writeStringList("capabilities", "capability", "name" , capabilities);
-
-
+		
+		
 	}
 
 
@@ -60,7 +62,7 @@ public abstract class AWSCFNCommand extends AWSCommand<AmazonCloudFormationClien
 		attribute("key",p.getParameterKey());
 		attribute("value",p.getParameterValue());
 		endElement();
-
+		
 	}
 
 
@@ -79,7 +81,7 @@ public abstract class AWSCFNCommand extends AWSCommand<AmazonCloudFormationClien
 		attribute("no-echo",p.getNoEcho());
 		attribute("default",p.getDefaultValue());
 		endElement();
-
+		
 	}
 
 
@@ -119,7 +121,7 @@ public abstract class AWSCFNCommand extends AWSCommand<AmazonCloudFormationClien
     attribute("value", t.getValue());
     endElement();
     
-  }
+	}
 
 
 

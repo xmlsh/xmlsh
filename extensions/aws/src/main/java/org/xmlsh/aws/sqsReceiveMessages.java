@@ -35,8 +35,9 @@ public class sqsReceiveMessages extends AWSSQSCommand {
 	public int run(List<XValue> args) throws Exception {
 
 
-		Options opts = getOptions("f=file:,p=port:,m=max:,t=timeout:,w=wait:");
-		opts.parse(args);
+        Options opts = getOptions("f=file:,m=max:,t=timeout:,w=wait:");
+        parseOptions(opts, args);
+        setSerializeOpts(this.getSerializeOpts(opts));
 
 		args = opts.getRemainingArgs();
 
@@ -47,7 +48,6 @@ public class sqsReceiveMessages extends AWSSQSCommand {
 
 
 
-		setSerializeOpts(this.getSerializeOpts(opts));
 
 
 		String url = args.get(0).toString();

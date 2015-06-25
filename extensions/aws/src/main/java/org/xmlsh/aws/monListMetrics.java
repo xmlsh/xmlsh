@@ -34,7 +34,7 @@ public class monListMetrics	 extends  AWSMonCommand {
 
 
 		Options opts = getOptions();
-		opts.parse(args);
+        parseOptions(opts, args);
 
 		args = opts.getRemainingArgs();
 

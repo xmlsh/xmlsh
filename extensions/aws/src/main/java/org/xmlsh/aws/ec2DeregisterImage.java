@@ -16,21 +16,14 @@ import org.xmlsh.core.SafeXMLStreamWriter;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.io.OutputPort;
-import org.xmlsh.stax.commands.writeAttribute;
 import org.xmlsh.util.Util;
 
 import com.amazonaws.services.ec2.model.BlockDeviceMapping;
 import com.amazonaws.services.ec2.model.DeleteSnapshotRequest;
 import com.amazonaws.services.ec2.model.DeregisterImageRequest;
-import com.amazonaws.services.ec2.model.DescribeImageAttributeRequest;
-import com.amazonaws.services.ec2.model.DescribeImageAttributeResult;
 import com.amazonaws.services.ec2.model.DescribeImagesRequest;
 import com.amazonaws.services.ec2.model.DescribeImagesResult;
-import com.amazonaws.services.ec2.model.DescribeSnapshotAttributeRequest;
-import com.amazonaws.services.ec2.model.DescribeSnapshotsRequest;
-import com.amazonaws.services.ec2.model.Filter;
 import com.amazonaws.services.ec2.model.Image;
-import com.amazonaws.services.ec2.model.ImageAttributeName;
 
 
 public class ec2DeregisterImage extends AWSEC2Command {
@@ -45,10 +38,13 @@ public class ec2DeregisterImage extends AWSEC2Command {
     @Override
     public int run(List<XValue> args) throws Exception {
 
-        Options opts = getOptions("+delsnap=delete-snapshot");
-        opts.parse(args);
+
+        Options opts = getOptions();
+        parseOptions(opts, args);
 
         args = opts.getRemainingArgs();
+
+        setSerializeOpts(this.getSerializeOpts(opts));
 
         if( args.size() != 1 ){
             usage(null);

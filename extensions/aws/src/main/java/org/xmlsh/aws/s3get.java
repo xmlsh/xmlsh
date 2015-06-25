@@ -46,7 +46,8 @@ public class s3get extends AWSS3Command {
 
 
 		Options opts = getOptions("meta:,r=recurse,b=bucket:,v=verbose");
-		opts.parse(args);
+        parseOptions(opts, args);
+        setSerializeOpts(this.getSerializeOpts(opts));
 
 
 		OutputPort	metaPort = null ;
@@ -60,7 +61,6 @@ public class s3get extends AWSS3Command {
 		bRecurse = opts.hasOpt("recurse");
 		bVerbose = opts.hasOpt("verbose");
 
-		setSerializeOpts(this.getSerializeOpts(opts));
 
 		try {
 			getS3Client(opts);
@@ -108,7 +108,6 @@ public class s3get extends AWSS3Command {
 			}
 
 		}
-
 
 		waitForDownloads();
 		shutdownTransferManager();

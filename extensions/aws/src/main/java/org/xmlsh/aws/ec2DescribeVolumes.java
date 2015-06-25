@@ -36,7 +36,7 @@ public class ec2DescribeVolumes extends AWSEC2Command {
 
 
 		Options opts = getOptions();
-		opts.parse(args);
+        parseOptions(opts, args);
 
 		args = opts.getRemainingArgs();
 		parseCommonOptions(opts);

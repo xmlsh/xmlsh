@@ -27,7 +27,7 @@ public class s3cp extends AWSS3Command {
 	@Override
 	public int run(List<XValue> args) throws Exception {
 		Options opts =  getOptions("m=metadata,a=acl,s=storage:,v=verbose,e=exists");
-		opts.parse(args);
+        parseOptions(opts, args);
         args = opts.getRemainingArgs();
 	    String storage = opts.getOptString("storage", null);
 

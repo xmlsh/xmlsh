@@ -33,7 +33,8 @@ public class asExecutePolicy extends AWSASCommand {
 
 
 		Options opts = getOptions();
-		opts.parse(args);
+        parseOptions(opts, args);
+        setSerializeOpts(this.getSerializeOpts(opts));;
 
 		args = opts.getRemainingArgs();
 
@@ -45,7 +46,6 @@ public class asExecutePolicy extends AWSASCommand {
 		String group = args.get(0).toString();
 		String policy = args.get(1).toString();
 
-		setSerializeOpts(this.getSerializeOpts(opts));
 
 
 		try {
@@ -72,12 +72,12 @@ public class asExecutePolicy extends AWSASCommand {
 	private int execute(String group, String policy) throws IOException, XMLStreamException, SaxonApiException, CoreException 
 	{
 
-		OutputPort stdout = this.getStdout();
+        OutputPort stdout = getStdout();
 		mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(getSerializeOpts()));
 
 
 		startDocument();
-		startElement(this.getName());
+        startElement(getName());
 
 		ExecutePolicyRequest request = new ExecutePolicyRequest().withAutoScalingGroupName(group).withPolicyName(policy);
 

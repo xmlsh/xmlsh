@@ -40,7 +40,7 @@ public class s3put extends AWSS3Command {
 
 
 		Options opts = getOptions("m=meta:+,s=storage:,r=recurse,v=verbose");
-		opts.parse(args);
+        parseOptions(opts, args);
 
 		args = opts.getRemainingArgs();
 
@@ -76,7 +76,7 @@ public class s3put extends AWSS3Command {
 		{
 			S3Path dest;
 			dest = new S3Path(args.get(0).toString());
-			InputPort src = this.getStdin();
+            InputPort src = getStdin();
 			ret = put(  src , dest , meta , storage  );
 
 			break;
