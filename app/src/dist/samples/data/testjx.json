@@ -1,0 +1,458 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Create a single az, load balanced, MarkLogic System. DDB {RPM} ",
+  "Parameters": {
+    "AdminUser": {
+      "Description": "The MarkLogic Administrator Username",
+      "Type": "String"
+    },
+    "AdminPass": {
+      "Description": "The MarkLogic Administrator Password",
+      "Type": "String",
+      "NoEcho": true
+    },
+    "InstanceType": {
+      "Description": "Type of EC2 instance to launch",
+      "Type": "String",
+      "Default": "r3.8xlarge",
+      "AllowedValues": [
+        "t2.small",
+        "t2.medium",
+        "m3.medium",
+        "m3.large",
+        "m3.xlarge",
+        "m3.2xlarge",
+        "cc1.4xlarge",
+        "cc2.8xlarge",
+        "c3.large",
+        "c3.xlarge",
+        "c3.2xlarge",
+        "c3.4xlarge",
+        "c3.8xlarge",
+        "cr1.8xlarge",
+        "r3.large",
+        "r3.xlarge",
+        "r3.2xlarge",
+        "r3.4xlarge",
+        "r3.8xlarge",
+        "i2.xlarge",
+        "i2.2xlarge",
+        "i2.4xlarge",
+        "i2.8xlarge",
+        "hi1.4xlarge",
+        "hs1.8xlarge"
+      ]
+    },
+    "IAMRole": {
+      "Description": "IAM Role",
+      "Type": "String"
+    },
+    "KeyName": {
+      "Description": "Name of and existing EC2 KeyPair to enable SSH access to the instance",
+      "Type": "String"
+    },
+    "Licensee": {
+      "Description": "The MarkLogic Licensee or 'none'",
+      "Type": "String",
+      "Default": "none"
+    },
+    "LicenseKey": {
+      "Description": "The MarkLogic License Key or 'none'",
+      "Type": "String",
+      "Default": "none"
+    },
+    "LogSNS": {
+      "Description": "SNS Topic for logging - optional/advanced",
+      "Type": "String",
+      "Default": "none"
+    },
+    "Nodes": {
+      "Description": "Set to 1 to initialize, 0 to shutdown/hibernate",
+      "Type": "Number",
+      "MinValue": 0,
+      "MaxValue": 1,
+      "Default": 1
+    },
+    "SpotPrice": {
+      "Description": "Spot price for instances in USD/Hour - Optional/advanced",
+      "Type": "Number",
+      "MinValue": 0,
+      "MaxValue": 2,
+      "Default": 0
+    },
+    "VolumeSize": {
+      "Description": "The EBS Data volume size (GB)",
+      "Type": "Number",
+      "MinValue": 10,
+      "MaxValue": 1000,
+      "Default": 10
+    },
+    "VolumeType": {
+      "Description": "The EBS Data volume Type",
+      "Type": "String",
+      "AllowedValues": [
+        "standard",
+        "gp2"
+      ],
+      "Default": "gp2"
+    },
+    "Zone": {
+      "Description": "The AZ Zone (e.g. us-west-2a)",
+      "Type": "String",
+      "AllowedValues": [
+        "ap-northeast-1a",
+        "ap-northeast-1b",
+        "ap-northeast-1c",
+        "ap-southeast-1a",
+        "ap-southeast-1b",
+        "ap-southeast-2a",
+        "ap-southeast-2b",
+        "eu-west-1a",
+        "eu-west-1b",
+        "eu-west-1c",
+        "sa-east-1a",
+        "sa-east-1b",
+        "us-east-1a",
+        "us-east-1b",
+        "us-east-1c",
+        "us-east-1d",
+        "us-east-1e",
+        "us-west-1a",
+        "us-west-1b",
+        "us-west-1c",
+        "us-west-2a",
+        "us-west-2b",
+        "us-west-2c"
+      ]
+    }
+  },
+  "Conditions": {
+    "UseLogSNS": {"Fn::Not": [{"Fn::Equals": [
+      {"Ref": "LogSNS"},
+      "none"
+    ]}]},
+    "UseSpot": {"Fn::Not": [{"Fn::Equals": [
+      {"Ref": "SpotPrice"},
+      0
+    ]}]}
+  },
+  "Mappings": {
+    "AWSInstanceType2Arch": {
+      "c1.medium": {"Arch": "PVM"},
+      "c1.xlarge": {"Arch": "PVM"},
+      "c3.2xlarge": {"Arch": "HVM"},
+      "c3.4xlarge": {"Arch": "HVM"},
+      "c3.8xlarge": {"Arch": "HVM"},
+      "c3.large": {"Arch": "HVM"},
+      "c3.xlarge": {"Arch": "HVM"},
+      "cc2.8xlarge": {"Arch": "HVM"},
+      "cr1.8xlarge": {"Arch": "HVM"},
+      "hi1.4xlarge": {"Arch": "HVM"},
+      "hs1.8xlarge": {"Arch": "HVM"},
+      "i2.2xlarge": {"Arch": "HVM"},
+      "i2.4xlarge": {"Arch": "HVM"},
+      "i2.8xlarge": {"Arch": "HVM"},
+      "i2.xlarge": {"Arch": "HVM"},
+      "m1.large": {"Arch": "PVM"},
+      "m1.medium": {"Arch": "PVM"},
+      "m1.small": {"Arch": "PVM"},
+      "m1.xlarge": {"Arch": "PVM"},
+      "m2.2xlarge": {"Arch": "PVM"},
+      "m2.4xlarge": {"Arch": "PVM"},
+      "m2.xlarge": {"Arch": "PVM"},
+      "m3.2xlarge": {"Arch": "HVM"},
+      "m3.large": {"Arch": "HVM"},
+      "m3.medium": {"Arch": "HVM"},
+      "m3.xlarge": {"Arch": "HVM"},
+      "r3.2xlarge": {"Arch": "HVM"},
+      "r3.4xlarge": {"Arch": "HVM"},
+      "r3.8xlarge": {"Arch": "HVM"},
+      "r3.large": {"Arch": "HVM"},
+      "r3.xlarge": {"Arch": "HVM"},
+      "t2.medium": {"Arch": "HVM"},
+      "t2.small": {"Arch": "HVM"}
+    },
+    "AWSRegionArch2AMI": {
+      "us-east-1": {"HVM": "ami-7439221c"},
+      "us-west-1": {"HVM": "ami-6bf9172f"},
+      "us-west-2": {"HVM": "ami-9daf9fad"},
+      "eu-west-1": {"HVM": "ami-f7f49f80"},
+      "ap-southeast-1": {"HVM": "ami-64704e36"},
+      "ap-southeast-2": {"HVM": "ami-f79ce3cd"},
+      "ap-northeast-1": {"HVM": "ami-4ab27b4a"},
+      "sa-east-1": {"HVM": "ami-45058258"}
+    }
+  },
+  "Resources": {
+    "MarklogicVolume": {
+      "Type": "AWS::EC2::Volume",
+      "Properties": {
+        "AvailabilityZone": {"Ref": "Zone"},
+        "Size": {"Ref": "VolumeSize"},
+        "Tags": [{
+          "Key": "Name",
+          "Value": "MarkLogicData"
+        }],
+        "VolumeType": {"Ref": "VolumeType"}
+      }
+    },
+   "MarkLogicDDBTable" : {
+      "Type" : "AWS::DynamoDB::Table",
+      "Properties" : {
+        "AttributeDefinitions" : [ {
+          "AttributeName" : "node",
+          "AttributeType" : "S"
+        } ],
+        "KeySchema" : [ {
+          "KeyType" : "HASH",
+          "AttributeName" : "node"
+        } ],
+        "ProvisionedThroughput" : {
+          "WriteCapacityUnits" : 5,
+          "ReadCapacityUnits" : 5
+        }
+       }
+    },
+    "MarkLogicServerGroup": {
+      "Type": "AWS::AutoScaling::AutoScalingGroup",
+      "Properties": {
+        "AvailabilityZones": [{"Ref": "Zone"}],
+        "LaunchConfigurationName": {"Ref": "LaunchConfig"},
+        "MinSize": 0,
+        "MaxSize": 1,
+        "DesiredCapacity": {"Ref": "Nodes"},
+        "Cooldown": 300,
+        "HealthCheckType": "EC2",
+        "HealthCheckGracePeriod": 300,
+        "LoadBalancerNames": [{"Ref": "ElasticLoadBalancer"}],
+        "NotificationConfiguration": {"Fn::If": [
+          "UseLogSNS",
+          {
+            "TopicARN": {"Ref": "LogSNS"},
+            "NotificationTypes": [
+              "autoscaling:EC2_INSTANCE_LAUNCH",
+              "autoscaling:EC2_INSTANCE_LAUNCH_ERROR",
+              "autoscaling:EC2_INSTANCE_TERMINATE",
+              "autoscaling:EC2_INSTANCE_TERMINATE_ERROR"
+            ]
+          },
+          {"Ref": "AWS::NoValue"}
+        ]}
+      }
+    },
+    "LaunchConfig": {
+      "Type": "AWS::AutoScaling::LaunchConfiguration",
+      "Properties": {
+        "KeyName": {"Ref": "KeyName"},
+        "ImageId": {"Fn::FindInMap": [
+          "AWSRegionArch2AMI",
+          {"Ref": "AWS::Region"},
+          {"Fn::FindInMap": [
+            "AWSInstanceType2Arch",
+            {"Ref": "InstanceType"},
+            "Arch"
+          ]}
+        ]},
+        "UserData": {"Fn::Base64": {"Fn::Join": [
+          "",
+          [
+            "MARKLOGIC_CLUSTER_NAME=",
+            {"Ref": "MarkLogicDDBTable"},
+            "\n",
+            "MARKLOGIC_EBS_VOLUME=",
+            {"Ref": "MarklogicVolume"},
+            "\n",
+            "MARKLOGIC_NODE_NAME=Node1\n",
+            "MARKLOGIC_ADMIN_USERNAME=",
+            {"Ref": "AdminUser"},
+            "\n",
+            "MARKLOGIC_ADMIN_PASSWORD=",
+            {"Ref": "AdminPass"},
+            "\n",
+            "MARKLOGIC_CLUSTER_MASTER=1\n",
+            "MARKLOGIC_LICENSEE=",
+            {"Ref": "Licensee"},
+            "\n",
+            "MARKLOGIC_LICENSE_KEY=",
+            {"Ref": "LicenseKey"},
+            "\n",
+            {"Fn::If": [
+              "UseLogSNS",
+              {"Fn::Join": [
+                "",
+                [
+                  "MARKLOGIC_LOG_SNS=",
+                  {"Ref": "LogSNS"},
+                  "\n"
+                ]
+              ]},
+              ""
+            ]}
+          ]
+        ]}},
+        "SecurityGroups": [{"Ref": "InstanceSecurityGroup"}],
+        "InstanceType": {"Ref": "InstanceType"},
+        "IamInstanceProfile": {"Ref": "IAMRole"},
+        "SpotPrice": {"Fn::If": [
+          "UseSpot",
+          {"Ref": "SpotPrice"},
+          {"Ref": "AWS::NoValue"}
+        ]}
+      }
+    },
+    "ElasticLoadBalancer": {
+      "Type": "AWS::ElasticLoadBalancing::LoadBalancer",
+      "Properties": {
+        "AppCookieStickinessPolicy": [{
+          "CookieName": "SessionID",
+          "PolicyName": "MLSession"
+        }],
+        "AvailabilityZones": [{"Ref": "Zone"}],
+        "ConnectionDrainingPolicy": {
+          "Enabled": true,
+          "Timeout": 60
+        },
+        "CrossZone": true,
+        "Listeners": [
+          {
+            "LoadBalancerPort": 8000,
+            "InstancePort": 8000,
+            "Protocol": "HTTP",
+            "PolicyNames": ["MLSession"]
+          },
+          {
+            "LoadBalancerPort": 8001,
+            "InstancePort": 8001,
+            "Protocol": "HTTP",
+            "PolicyNames": ["MLSession"]
+          },
+          {
+            "LoadBalancerPort": 8002,
+            "InstancePort": 8002,
+            "Protocol": "HTTP",
+            "PolicyNames": ["MLSession"]
+          },
+          {
+            "LoadBalancerPort": 8003,
+            "InstancePort": 8003,
+            "Protocol": "HTTP",
+            "PolicyNames": ["MLSession"]
+          },
+          {
+            "LoadBalancerPort": 8004,
+            "InstancePort": 8004,
+            "Protocol": "HTTP",
+            "PolicyNames": ["MLSession"]
+          },
+          {
+            "LoadBalancerPort": 8005,
+            "InstancePort": 8005,
+            "Protocol": "HTTP",
+            "PolicyNames": ["MLSession"]
+          },
+          {
+            "LoadBalancerPort": 8006,
+            "InstancePort": 8006,
+            "Protocol": "HTTP",
+            "PolicyNames": ["MLSession"]
+          },
+          {
+            "LoadBalancerPort": 8007,
+            "InstancePort": 8007,
+            "Protocol": "HTTP",
+            "PolicyNames": ["MLSession"]
+          },
+          {
+            "LoadBalancerPort": 8008,
+            "InstancePort": 8008,
+            "Protocol": "HTTP",
+            "PolicyNames": ["MLSession"]
+          }
+        ],
+        "HealthCheck": {
+          "Target": "HTTP:7997/",
+          "HealthyThreshold": 3,
+          "UnhealthyThreshold": 5,
+          "Interval": 10,
+          "Timeout": 5
+        }
+      }
+    },
+    "InstanceSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "Enable SSH access and HTTP access on the inbound port",
+        "SecurityGroupIngress": [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 22,
+            "ToPort": 22,
+            "CidrIp": "0.0.0.0/0"
+          },
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 7998,
+            "ToPort": 7998,
+            "CidrIp": "0.0.0.0/0"
+          },
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 8000,
+            "ToPort": 8010,
+            "SourceSecurityGroupOwnerId": {"Fn::GetAtt": [
+              "ElasticLoadBalancer",
+              "SourceSecurityGroup.OwnerAlias"
+            ]},
+            "SourceSecurityGroupName": {"Fn::GetAtt": [
+              "ElasticLoadBalancer",
+              "SourceSecurityGroup.GroupName"
+            ]}
+          },
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 8000,
+            "ToPort": 8010,
+            "CidrIp": "0.0.0.0/0"
+          },
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 7997,
+            "ToPort": 7997,
+            "SourceSecurityGroupOwnerId": {"Fn::GetAtt": [
+              "ElasticLoadBalancer",
+              "SourceSecurityGroup.OwnerAlias"
+            ]},
+            "SourceSecurityGroupName": {"Fn::GetAtt": [
+              "ElasticLoadBalancer",
+              "SourceSecurityGroup.GroupName"
+            ]}
+          }
+        ]
+      }
+    },
+    "InstanceSecurityGroupIngress": {
+      "Type": "AWS::EC2::SecurityGroupIngress",
+      "Properties": {
+        "IpProtocol": "tcp",
+        "GroupName": {"Ref": "InstanceSecurityGroup"},
+        "FromPort": 7999,
+        "ToPort": 7999,
+        "SourceSecurityGroupName": {"Ref": "InstanceSecurityGroup"}
+      }
+    }
+  },
+  "Outputs": {"URL": {
+    "Description": "The URL of the MarkLogic Cluster",
+    "Value": {"Fn::Join": [
+      "",
+      [
+        "http://",
+        {"Fn::GetAtt": [
+          "ElasticLoadBalancer",
+          "DNSName"
+        ]},
+        ":8001"
+      ]
+    ]}
+  }}
+}
