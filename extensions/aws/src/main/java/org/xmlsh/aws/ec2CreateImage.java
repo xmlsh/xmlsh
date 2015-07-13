@@ -34,7 +34,7 @@ public class ec2CreateImage extends AWSEC2Command {
 	public int run(List<XValue> args) throws Exception {
 
 
-        Options opts = getOptions("name:,description:,no-reboot");
+        Options opts = getOptions("name:,description:,no-reboot,block-device-mapping:+");
         parseOptions(opts, args);
 
 
