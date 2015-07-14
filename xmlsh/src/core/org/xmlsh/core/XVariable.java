@@ -248,13 +248,14 @@ public abstract  class XVariable {
 		return getValue() == null ;
 	}
 
-	public void shift(int n) throws InvalidArgumentException {
+	public boolean shift(int n) throws InvalidArgumentException {
 
 		if( n <= 0 || getValue() == null )
-			return ;
+			return false ;
 
 		setValue(getValue().shift( n ));
 
+		return true;
 
 	}
 

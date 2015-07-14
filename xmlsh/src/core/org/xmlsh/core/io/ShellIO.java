@@ -21,12 +21,9 @@ public class ShellIO {
     static Logger mLogger = LogManager.getLogger();
     private IShellPrompt mPrompt = null ;
 
-
     private ShellReader mReader;
     
     
-    
-
     public ShellReader getReader(){
         if( mReader == null )
             // TODO: Dont allocatre ShellConsole if not needed 
@@ -39,18 +36,15 @@ public class ShellIO {
     public ShellIO(boolean bUseConsole ) {
         mUseConsole = bUseConsole ;
     }
+    public ShellIO(ShellReader reader) {
+        mReader = reader;
+        mUseConsole = false ;
+    }
     
     
     public String readCommandLine(String prompt) throws IOException
     {
         return getReader().readLine(prompt);
-    }
-    
-    public void   writeOutputLine( String line ) {
-        
-        
-    }
-    public void   writeErrorLine( String line ) {
     }
     
     
@@ -69,17 +63,14 @@ public class ShellIO {
     }
 
 
-
     public IShellPrompt getPrompt() {
         return mPrompt;
     }
 
 
-
     public void setPrompt(IShellPrompt prompt) {
         mPrompt = prompt;
     }
-
 
 
 

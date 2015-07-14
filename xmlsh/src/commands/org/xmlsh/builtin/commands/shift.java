@@ -21,36 +21,29 @@ public class shift  extends BuiltinCommand {
 	public int run( List<XValue> args ) throws Exception {
 
 		if( args.size() == 0 ){
-			mShell.shift(1);
-			return 0;
+			return mShell.shift(1) ? 0 : 1;
 
 		}
 
 		if( args.size() == 1 ){
 			String a1 = args.get(0).toString();
 			if( Util.isInt(a1, false))
-				mShell.shift(Util.parseInt(a1, 1));
+				return mShell.shift(Util.parseInt(a1, 1)) ? 0 : 1;
 			else
-				shiftvar( a1 ,1 );
-
-			return 0;
+				return shiftvar( a1 ,1  ) ? 0 : 1 ;
 		}
 
-		if( args.size() == 2 ){
-
-			shiftvar( args.get(0).toString() , Util.parseInt(args.get(1), 1));
-
-
-		}
-
-		return 0;
+		if( args.size() == 2 )
+			return shiftvar( args.get(0).toString() , Util.parseInt(args.get(1), 1)) ? 0 : 1 ;
+	    usage();
+	    return -1 ;
 
 	}
 
-	private void shiftvar(String name, int n) throws InvalidArgumentException {
+	private boolean  shiftvar(String name, int n) throws InvalidArgumentException {
 		XVariable var = mShell.getEnv().getVar(name);
 		if( var != null )
-			var.shift(n);
+			return var.shift(n);
 		else
 		{
 			// Try positional params 
@@ -58,15 +51,16 @@ public class shift  extends BuiltinCommand {
 			if( Util.isInt(name, false)){
 				int np = Util.parseInt(name,-1);
 				// Only shift params 1..
-
 				List<XValue> args = mShell.getArgs();
 				if( np > 1 && np < args.size()  ){
 					XValue val = args.get(np-1);
 					val = val.shift(n);
 					args.set(np-1, val);
+					return true ;
 				}
 
-			}
+			} 
+			return false ;
 		}
 	}
 

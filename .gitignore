@@ -4,10 +4,10 @@ _out/
 _dist/
 *.war
 *.tmp/
-test/_out.txt
-test/_err.txt
 /eclipse_settings
 /build/
 .gradle
 .settings
 *~
+_out.txt
+_err.txt

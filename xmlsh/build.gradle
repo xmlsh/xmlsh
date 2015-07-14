@@ -107,6 +107,7 @@ dependencies {
 	compile 'com.jayway.jsonpath:json-path:2.+'
 	compile 'org.ccil.cowan.tagsoup:tagsoup:1.+' 
 	runtime  'xerces:xercesImpl:2.+'
+	runtime 'xml-apis:xml-apis:1.4.+'
 	compile 'xml-resolver:xml-resolver:1.2+' 
 	compile 'xom:xom:latest.release'
 	compile ('net.sf.saxon:Saxon-HE:9.6.+' ){
@@ -141,3 +142,13 @@ jar {
   from sourceSets.main.output
 }
 
+ publishing {
+        publications {
+            mavenJava(MavenPublication) {
+               artifactId 'xmlsh-core'
+               version '2.0'
+             }
+        
+        }
+}
+        

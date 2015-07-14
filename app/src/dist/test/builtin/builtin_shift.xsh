@@ -16,4 +16,13 @@ a=(foo bar 1 2 3 4 5)
 shift a 2
 [ ${#a} -eq 5 ] || echo Shift Failed
 
+# Test shift return 
+set -- a b c d e
+ARG=$1
+while shift ; do
+  echo ARG: $ARG
+  ARG=$1
+done
+
+
 exit 0

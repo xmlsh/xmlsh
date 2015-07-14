@@ -711,7 +711,7 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt {
 
 		mLogger.entry(reader, source, convertReturn);
 		try {
-			enterEval();
+			enterEval(); 
 			SourceLocation saveLoc = getLocation();
 			int exitStatus = 0;
 			ShellParser parser = null;
@@ -1391,12 +1391,12 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt {
 	}
 
 
-	public void shift(int num) {
+	public boolean shift(int num) {
 		num = Math.min(num, mArgs.size());
 		if (num <= 0)
-			return;
+			return false;
 		mArgs = mArgs.subList(num, mArgs.size());
-
+        return true ;
 	}
 
 	/*

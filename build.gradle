@@ -74,7 +74,12 @@ subprojects {
 			}
 		}
 	}
-	
+	 
+	publishing {
+		publications {
+			mavenJava(MavenPublication) { from components.java }
+		}
+	}
 	/***  Sample eclipse block from https://docs.gradle.org/current/dsl/org.gradle.plugins.ide.eclipse.model.EclipseClasspath.html
 	 * 
 	 */
