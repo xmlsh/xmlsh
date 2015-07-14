@@ -43,7 +43,7 @@ public class readconfig extends XCommand
 	
 	mLogger.entry(args);
 	
-    Options opts = new Options("format:,file:,+r=replace,default=default-section:,defaults=default=values:", SerializeOpts.getOptionDefs());
+    Options opts = new Options("format:,file:,+r=replace,default=default-section:,defaults=default-values:", SerializeOpts.getOptionDefs());
     opts.parse(args);
     setSerializeOpts(opts);
     String format = opts.getOptString("format", "text");

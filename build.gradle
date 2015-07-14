@@ -113,9 +113,10 @@ eclipse {
 }
 
   clean << {
-	  println "Cleaning Eclipse output"
-      println eclipse.classpath.defaultOutputDir 
+  println "Cleaning Eclipse output"
+      	println eclipse.classpath.defaultOutputDir 
 	  project.delete(eclipse.classpath.defaultOutputDir );
+          project.delete("libs")
   }
 
   // Disable install of sub projects
