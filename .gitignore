@@ -11,3 +11,4 @@ _dist/
 *~
 _out.txt
 _err.txt
+/bin/

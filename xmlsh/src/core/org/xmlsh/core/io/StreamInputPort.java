@@ -43,7 +43,6 @@ public class StreamInputPort extends InputPort  {
 
 	// An Input Port may be either a Stream or an XML value
 	private InputStream mStream;
-	private Logger mLogger = LogManager.getLogger();
 
 	public StreamInputPort(InputStream is, String systemId ) {
 		this(is,systemId,false);
@@ -106,7 +105,7 @@ public class StreamInputPort extends InputPort  {
 
 
 	@Override
-	public synchronized XdmNode asXdmNode(SerializeOpts opts) throws CoreException  {
+	public synchronized XdmNode asXdmNode(SerializeOpts opts) throws CoreException, IOException  {
 
 		net.sf.saxon.s9api.DocumentBuilder builder = Shell.getProcessor().newDocumentBuilder();
 
@@ -158,7 +157,7 @@ public class StreamInputPort extends InputPort  {
 	}
 
 	@Override
-	public  XdmItem asXdmItem(SerializeOpts serializeOpts) throws CoreException
+	public  XdmItem asXdmItem(SerializeOpts serializeOpts) throws CoreException, IOException
 	{
 		return asXdmNode(serializeOpts);
 	}

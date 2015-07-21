@@ -50,7 +50,7 @@ public class XdmStreamInputPort extends InputPort {
 	}
 
 	@Override
-	public InputStream asInputStream(SerializeOpts opts) throws CoreException {
+	public InputStream asInputStream(SerializeOpts opts) throws CoreException, IOException {
 
 		XdmValue value = mReader.read();
 		if( value == null )
@@ -80,7 +80,7 @@ public class XdmStreamInputPort extends InputPort {
 	}
 
 	@Override
-	public InputSource asInputSource(SerializeOpts opts) throws CoreException {
+	public InputSource asInputSource(SerializeOpts opts) throws CoreException, IOException {
 		InputSource in = new InputSource(asInputStream(opts));
 		in.setSystemId(getSystemId());
 		return in;
@@ -114,7 +114,7 @@ public class XdmStreamInputPort extends InputPort {
 	}
 
 	@Override
-	public XMLStreamReader asXMLStreamReader(SerializeOpts opts) throws CoreException {
+	public XMLStreamReader asXMLStreamReader(SerializeOpts opts) throws CoreException, IOException {
 
 		// TODO: This code was copied from VariableInputPort 
 

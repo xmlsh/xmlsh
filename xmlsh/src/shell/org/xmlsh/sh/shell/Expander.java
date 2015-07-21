@@ -281,7 +281,7 @@ public class Expander
 
   }
 
-  private XValue parseXExpr(Shell shell, String arg) throws CoreException
+  private XValue parseXExpr(Shell shell, String arg) throws IOException, CoreException
   {
  
 	

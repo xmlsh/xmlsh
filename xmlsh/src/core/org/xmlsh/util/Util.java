@@ -467,7 +467,7 @@ public class Util
 
 	 public static TransformerHandler getTransformerHander(OutputStream stdout,SerializeOpts opts)
 			 throws TransformerFactoryConfigurationError, TransformerConfigurationException,
-			 IllegalArgumentException {
+			 IllegalArgumentException, IOException {
 		 return getTransformerHander( new StreamResult(stdout),opts);
 
 	 }
@@ -477,7 +477,7 @@ public class Util
 
 	 public static TransformerHandler getTransformerHander(Result result, SerializeOpts opts )
 			 throws TransformerFactoryConfigurationError, TransformerConfigurationException,
-			 IllegalArgumentException {
+			 IllegalArgumentException, IOException {
 
 		 SAXTransformerFactory tf = (SAXTransformerFactory) TransformerFactory.newInstance();
 		 tf.setAttribute(FeatureKeys.CONFIGURATION, Shell.getProcessor().getUnderlyingConfiguration());
@@ -807,14 +807,14 @@ public class Util
 	 }
 
 
-	 public static void writeXdmValue(XdmValue value, Destination destination) throws SaxonApiException 
+	 public static void writeXdmValue(XdmValue value, Destination destination) throws SaxonApiException, IOException 
 	 {
 		 for (Iterator<XdmItem> it = value.iterator(); it.hasNext();) {
 			 XdmItem item = it.next();
 			 writeXdmItem(item, destination );
 		 }
 	 }
-	 public static void writeXdmItem(XdmItem item, Destination destination) throws SaxonApiException {
+	 public static void writeXdmItem(XdmItem item, Destination destination) throws SaxonApiException, IOException {
 		 try {
 
 			 if( item instanceof XdmNode ){
@@ -912,7 +912,7 @@ public class Util
 	 }
 
 
-	 public static Destination streamToDestination(OutputStream out, SerializeOpts opts) {
+	 public static Destination streamToDestination(OutputStream out, SerializeOpts opts) throws IOException {
 
 		 Serializer dest = getSerializer(opts);
 		 dest.setOutputStream(out);	
@@ -920,7 +920,7 @@ public class Util
 	 }
 
 
-	 public static Serializer getSerializer(SerializeOpts opts) {
+	 public static Serializer getSerializer(SerializeOpts opts) throws IOException {
 
 		 Serializer ser = Shell.getProcessor().newSerializer();
 		 ser.setOutputProperty( Serializer.Property.OMIT_XML_DECLARATION, 

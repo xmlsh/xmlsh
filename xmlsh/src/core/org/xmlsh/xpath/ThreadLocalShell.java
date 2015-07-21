@@ -6,6 +6,8 @@
 
 package org.xmlsh.xpath;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.ThreadContext;
 import org.xmlsh.sh.shell.Shell;
 
@@ -17,6 +19,7 @@ import org.xmlsh.sh.shell.Shell;
 
 public class ThreadLocalShell {
 
+	private static Logger mLogger = LogManager.getLogger();
 	static ThreadLocal<Shell>		sInstance = new ThreadLocal<Shell>()
 			{
 		@Override
@@ -28,13 +31,14 @@ public class ThreadLocalShell {
 
 	public static Shell set( Shell shell )
 	{
+		mLogger.entry(shell);
 		Shell old = sInstance.get();
 		sInstance.set(shell);
 		if( shell == null )
 			ThreadContext.remove("tshell" );
 		else
 		    ThreadContext.put( "tshell",  shell.toString() );
-		return old;
+		return mLogger.exit(old);
 
 	}
 

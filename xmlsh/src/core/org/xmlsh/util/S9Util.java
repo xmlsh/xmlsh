@@ -14,6 +14,7 @@
 
 package org.xmlsh.util;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -65,7 +66,7 @@ public class S9Util extends XdmNode {
 
 
 
-	public static XValue createAttribute(Shell shell, QName name, String value) {
+	public static XValue createAttribute(Shell shell, QName name, String value) throws IOException {
 		Processor processor = Shell.getProcessor();
 
 		XQueryCompiler compiler = processor.newXQueryCompiler();
@@ -117,7 +118,7 @@ public class S9Util extends XdmNode {
 	}
 
 
-	public static XValue createElement(Shell shell, QName name , List<XValue> args) throws InvalidArgumentException {
+	public static XValue createElement(Shell shell, QName name , List<XValue> args) throws InvalidArgumentException, IOException {
 		Processor processor = Shell.getProcessor();
 
 		XQueryCompiler compiler = processor.newXQueryCompiler();
@@ -180,7 +181,7 @@ public class S9Util extends XdmNode {
 	}
 
 
-	public static XdmNode wrapDocument(XdmNode node) throws CoreException  {
+	public static XdmNode wrapDocument(XdmNode node) throws CoreException, IOException  {
 		if( node.getUnderlyingNode().getNodeKind() == Type.DOCUMENT  )
 			return node ;
 		return wrapDocument( node.getUnderlyingNode() );
@@ -189,7 +190,7 @@ public class S9Util extends XdmNode {
 	}
 
 
-	public static XdmNode wrapDocument(NodeInfo nodeInfo) throws CoreException  {
+	public static XdmNode wrapDocument(NodeInfo nodeInfo) throws CoreException, IOException  {
 
 
 		// If is document already 

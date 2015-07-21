@@ -2,7 +2,8 @@
   plugins {
     id "ca.coglinc.javacc" version "2.1.0"
   }
-
+  apply from: "$rootDir/utils.gradle"
+  
   apply plugin: 'java-library-distribution'
 
   
@@ -130,14 +131,14 @@ eclipse {
   }
 }
   
-task sourceJar(type: Jar) {
-    from sourceSets.main.allJava
-}
+
 
 jar {
 	manifest {
-		attributes 'Implementation-Title': 'XMLSH A command line shell for the new N(ot)O(nly) XML generation',
-				   'Implementation-Version': version_version
+	  attributes 'Implementation-Title': 'XMLSH A command line shell for the new N(ot)O(nly) XML generation',
+		'Implementation-Version': version_version ,
+    'Main-Class': 'org.xmlsh.sh.shell.Shell',
+    'Class-Path': configurations.runtime.files.collect { "$it.name" }.join(' ')
 	}
   from sourceSets.main.output
 }

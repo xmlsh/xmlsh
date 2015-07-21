@@ -6,6 +6,7 @@
 
 package org.xmlsh.internal.commands;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -77,7 +78,7 @@ public class xedit extends XCommand
   private XPathCompiler mCompiler;
   private Processor mProcessor;
 
-  private void setupBuilders()
+  private void setupBuilders() throws IOException
   {
     /*
      * mProcessor = new Processor(false);
@@ -326,7 +327,7 @@ public class xedit extends XCommand
 
   }
 
-  private XQueryEvaluator parseXQuery(String string) throws SaxonApiException
+  private XQueryEvaluator parseXQuery(String string) throws SaxonApiException, IOException
   {
     Processor processor = Shell.getProcessor();
     XQueryCompiler compiler = processor.newXQueryCompiler();

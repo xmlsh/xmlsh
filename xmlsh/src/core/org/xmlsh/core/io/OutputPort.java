@@ -42,14 +42,14 @@ public abstract class OutputPort extends AbstractPort implements IOutputPort
 	 * @see org.xmlsh.core.IOutputPort#asOutputStream(org.xmlsh.sh.shell.SerializeOpts)
 	 */
 	@Override
-	public	abstract OutputStream asOutputStream(SerializeOpts opts) throws CoreException;
+	public	abstract OutputStream asOutputStream(SerializeOpts opts) throws CoreException, IOException;
 
 
 	/* (non-Javadoc)
 	 * @see org.xmlsh.core.IOutputPort#asPrintStream(org.xmlsh.sh.shell.SerializeOpts)
 	 */
 	@Override
-	public synchronized PrintStream asPrintStream(SerializeOpts opts) throws CoreException 
+	public synchronized PrintStream asPrintStream(SerializeOpts opts) throws CoreException, IOException 
 	{
 		return new PrintStream(asOutputStream(opts));
 	}
@@ -58,18 +58,18 @@ public abstract class OutputPort extends AbstractPort implements IOutputPort
 	 * @see org.xmlsh.core.IOutputPort#asDestination(org.xmlsh.sh.shell.SerializeOpts)
 	 */
 	@Override
-	public abstract Destination asDestination(SerializeOpts opts) throws CoreException;
+	public abstract Destination asDestination(SerializeOpts opts) throws CoreException, IOException;
 
 
 	/* (non-Javadoc)
 	 * @see org.xmlsh.core.IOutputPort#asPrintWriter(org.xmlsh.sh.shell.SerializeOpts)
 	 */
 	@Override
-	public synchronized PrintWriter asPrintWriter(SerializeOpts opts) throws UnsupportedEncodingException, CoreException {
+	public synchronized PrintWriter asPrintWriter(SerializeOpts opts) throws CoreException, IOException {
 		return new PrintWriter( 		
 				new OutputStreamWriter(asOutputStream(opts) , opts.getOutputTextEncoding() ));
 	}
-	public synchronized PrintWriter asPrintWriter(SerializeOpts opts, boolean autoFlush) throws UnsupportedEncodingException, CoreException {
+	public synchronized PrintWriter asPrintWriter(SerializeOpts opts, boolean autoFlush) throws CoreException, IOException {
 		return new PrintWriter( 		
 				new OutputStreamWriter(asOutputStream(opts) , opts.getOutputTextEncoding() ) , autoFlush );
 	}
@@ -93,7 +93,7 @@ public abstract class OutputPort extends AbstractPort implements IOutputPort
 	 * @see org.xmlsh.core.IOutputPort#asXMLStreamWriter(org.xmlsh.sh.shell.SerializeOpts)
 	 */
 	@Override
-	public abstract XMLStreamWriter asXMLStreamWriter(SerializeOpts opts) throws InvalidArgumentException, XMLStreamException, SaxonApiException, CoreException;
+	public abstract XMLStreamWriter asXMLStreamWriter(SerializeOpts opts) throws InvalidArgumentException, XMLStreamException, SaxonApiException, CoreException, IOException;
 	/* (non-Javadoc)
 	 * @see org.xmlsh.core.IOutputPort#asXMLEventWriter(org.xmlsh.sh.shell.SerializeOpts)
 	 */
@@ -104,13 +104,13 @@ public abstract class OutputPort extends AbstractPort implements IOutputPort
 	 * @see org.xmlsh.core.IOutputPort#asXdmItemOutputStream(org.xmlsh.sh.shell.SerializeOpts)
 	 */
 	@Override
-	public abstract	IXdmItemOutputStream	asXdmItemOutputStream(SerializeOpts opts) throws CoreException;
+	public abstract	IXdmItemOutputStream	asXdmItemOutputStream(SerializeOpts opts) throws CoreException, IOException;
 
 	/* (non-Javadoc)
 	 * @see org.xmlsh.core.IOutputPort#asContentHandler(org.xmlsh.sh.shell.SerializeOpts)
 	 */
 	@Override
-	public abstract	ContentHandler			asContentHandler( SerializeOpts opts) throws XPathException, SaxonApiException, CoreException;
+	public abstract	ContentHandler			asContentHandler( SerializeOpts opts) throws XPathException, SaxonApiException, CoreException, IOException;
 
 	/* (non-Javadoc)
 	 * @see org.xmlsh.core.IOutputPort#isFile()

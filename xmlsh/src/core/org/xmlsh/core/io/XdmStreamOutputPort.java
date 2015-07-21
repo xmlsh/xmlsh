@@ -127,7 +127,7 @@ public class XdmStreamOutputPort extends OutputPort {
 	}
 
 	@Override
-	public synchronized Destination asDestination(SerializeOpts opts) throws InvalidArgumentException
+	public synchronized Destination asDestination(SerializeOpts opts) throws InvalidArgumentException, IOException
 	{
 
 		// If forcing text output then serialize to stream 
@@ -158,7 +158,7 @@ public class XdmStreamOutputPort extends OutputPort {
 	}
 
 	@Override
-	public synchronized XMLStreamWriter asXMLStreamWriter(SerializeOpts opts) throws SaxonApiException {
+	public synchronized XMLStreamWriter asXMLStreamWriter(SerializeOpts opts) throws SaxonApiException, IOException {
 
 
 		// If forcing text output then serialize to stream 
@@ -216,7 +216,7 @@ public class XdmStreamOutputPort extends OutputPort {
 	}
 
 	@Override
-	public IXdmItemOutputStream asXdmItemOutputStream(SerializeOpts opts) throws CoreException {
+	public IXdmItemOutputStream asXdmItemOutputStream(SerializeOpts opts) throws CoreException, IOException {
 
 		if( opts.isSerialize_xml())
 			return new DestinationXdmValueOutputStream( asDestination(opts) );
@@ -226,7 +226,7 @@ public class XdmStreamOutputPort extends OutputPort {
 
 	@Override
 	public ContentHandler asContentHandler(SerializeOpts opts) throws XPathException,
-	SaxonApiException {
+	SaxonApiException, IOException {
 		XMLStreamWriter sw = asXMLStreamWriter(opts);
 		return new ContentHandlerToXMLStreamWriter(sw);
 	}

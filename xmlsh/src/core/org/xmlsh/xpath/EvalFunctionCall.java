@@ -9,11 +9,13 @@ package org.xmlsh.xpath;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.sf.saxon.Configuration;
 import net.sf.saxon.expr.XPathContext;
 import net.sf.saxon.lib.ExtensionFunctionCall;
 import net.sf.saxon.om.Item;
 import net.sf.saxon.om.Sequence;
 import net.sf.saxon.om.SequenceIterator;
+import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.trans.XPathException;
 
 import org.apache.logging.log4j.LogManager;
@@ -47,12 +49,16 @@ public class EvalFunctionCall extends ExtensionFunctionCall
 		mLogger.entry(arguments, context);
 		// Arg0 is the command to run
 
+		Configuration config = context.getConfiguration();
+		mLogger.trace("Configuration: {} " , config );
+		
+		
 		String command = arguments[0].head().getStringValue();
 		SequenceIterator args = arguments.length > 1 ? arguments[1].iterate() : null;
 
-		Shell sh = ThreadLocalShell.get();
+	
 
-		try ( Shell shell = newShell(sh) ) { // work around compiler warning
+		try ( Shell shell = newShell(context) ) { // work around compiler warning
 
 
 			ICommandExpr cmd = shell.parseEval(command);
@@ -120,11 +126,16 @@ public class EvalFunctionCall extends ExtensionFunctionCall
 		return new XValueInputPort(XValue.newXValue(contextItem));
 	}
 
-	private Shell newShell(Shell sh) throws Exception {
+	private Shell newShell(XPathContext context) throws Exception {
+		
+		Shell sh = ThreadLocalShell.get();
+		
 		if( sh == null )
-			return new Shell();
+			sh =  new Shell();
 		else
-			return sh.clone();
+			sh = sh.clone();
+		sh.getLocalProcessor(context.getConfiguration());
+		return sh;
 	}
 
    

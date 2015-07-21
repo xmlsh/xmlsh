@@ -189,7 +189,7 @@ public class HelpUsage {
 		}
 	}
 
-	private void printxml(XdmNode node, IOutputPort out) throws SaxonApiException, CoreException {
+	private void printxml(XdmNode node, IOutputPort out) throws SaxonApiException, CoreException, IOException {
 
 		Util.writeXdmValue(node, out.asDestination(mSerializeOpts));
 

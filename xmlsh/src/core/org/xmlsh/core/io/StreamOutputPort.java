@@ -119,7 +119,7 @@ public class StreamOutputPort extends OutputPort
 	}
 
 	@Override
-	public synchronized Destination asDestination(SerializeOpts opts) throws CoreException
+	public synchronized Destination asDestination(SerializeOpts opts) throws CoreException, IOException
 	{
 
 		return Util.streamToDestination(asOutputStream(opts), opts);
@@ -159,7 +159,7 @@ public class StreamOutputPort extends OutputPort
 
 
 	@Override
-	public XMLStreamWriter asXMLStreamWriter(SerializeOpts opts) throws SaxonApiException {
+	public XMLStreamWriter asXMLStreamWriter(SerializeOpts opts) throws SaxonApiException, IOException {
 
 		// Saxon 9.3 supports serialization as a StreamWriter
 		Serializer ser = Util.getSerializer(opts);
@@ -203,7 +203,7 @@ public class StreamOutputPort extends OutputPort
 	 * @see org.xmlsh.core.OutputPort#asXdmItemOutputStream(org.xmlsh.sh.shell.SerializeOpts)
 	 */
 	@Override
-	public IXdmItemOutputStream asXdmItemOutputStream(SerializeOpts opts) throws CoreException {
+	public IXdmItemOutputStream asXdmItemOutputStream(SerializeOpts opts) throws CoreException, IOException {
 
 		return new DestinationXdmValueOutputStream( asDestination(opts) );
 
@@ -213,7 +213,7 @@ public class StreamOutputPort extends OutputPort
 	 * @see org.xmlsh.core.OutputPort#asContentHandler(org.xmlsh.sh.shell.SerializeOpts)
 	 */
 	@Override
-	public ContentHandler asContentHandler(SerializeOpts opts) throws XPathException {
+	public ContentHandler asContentHandler(SerializeOpts opts) throws XPathException, IOException {
 
 		ReceivingContentHandler  handler = new ReceivingContentHandler();
 		Configuration config = Shell.getProcessor().getUnderlyingConfiguration();

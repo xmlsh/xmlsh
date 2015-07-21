@@ -300,7 +300,7 @@ public class JXONConverter extends JXConverter
 		 * Serialize the body as HTML and return as a string
 		 */
 
-		private String formatAsHtml(byte[] xhtml) throws SaxonApiException, UnsupportedEncodingException
+		private String formatAsHtml(byte[] xhtml) throws SaxonApiException, IOException
 		{
 
 			ByteArrayOutputStream bos = new ByteArrayOutputStream();

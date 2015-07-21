@@ -5,8 +5,10 @@ if [ $# = 0 ] ; then
   :jsonread J 
   printvar J
 else
-  do :jsonread J  < "$1"
+  while [ $# -gt 0 ] ; do 
+    :jsonread J  < "$1" 
     printvar J
-  while shift 
+    shift 
+  done
 fi
   

@@ -17,6 +17,7 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -38,6 +39,9 @@ import java.util.Stack;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import javax.xml.transform.TransformerException;
+
+import net.sf.saxon.Configuration;
 import net.sf.saxon.s9api.Processor;
 
 import org.apache.commons.io.output.StringBuilderWriter;
@@ -68,6 +72,7 @@ import org.xmlsh.core.io.FileOutputPort;
 import org.xmlsh.core.io.IShellPrompt;
 import org.xmlsh.core.io.OutputPort;
 import org.xmlsh.core.io.ShellIO;
+import org.xmlsh.core.io.ShellReader;
 import org.xmlsh.core.io.StreamInputPort;
 import org.xmlsh.core.io.StreamOutputPort;
 import org.xmlsh.sh.core.CommandExpr;
@@ -94,7 +99,7 @@ import org.xmlsh.util.Util;
 import org.xmlsh.xpath.EvalDefinition;
 import org.xmlsh.xpath.ThreadLocalShell;
 
-public class Shell implements AutoCloseable, Closeable , IShellPrompt {
+public class Shell implements AutoCloseable, Closeable , IShellPrompt  , net.sf.saxon.lib.Initializer {
 	private static volatile int __id = 0;
 	private final int _id = ++__id ;
 	
@@ -193,7 +198,7 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt {
 	 */
 	static boolean bInitialized = false;
 	static Properties mSavedSystemProperties;
-	private static Processor mProcessor = null;
+	private Processor mProcessor = null;
 
 	private Shell mParent = null;
 	private IFS mIFS;
@@ -214,7 +219,6 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt {
 		if (!bInitialized)
 			return;
 
-		mProcessor = null;
 		System.setProperties(mSavedSystemProperties);
 		mSavedSystemProperties = null;
 		SystemEnvironment.uninitialize();
@@ -229,8 +233,8 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt {
 	/*
 	 * New top level shell
 	 */
-	public Shell() throws Exception { 
-	    this( new ShellIO(true) );
+	public Shell() throws IOException, CoreException  { 
+	    this( new ShellIO( ShellReader.newNullReader() ) );
 	    
 	}
 	
@@ -240,7 +244,7 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt {
 	 * 
 	 */
 
-	public Shell(ShellIO io) throws Exception {
+	public Shell(ShellIO io) throws IOException, CoreException {
 		mLogger.entry(io);
 		mIO = io ;
 		mIO.setPrompt(this);
@@ -255,7 +259,13 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt {
 		setGlobalVars();
 
 		ThreadLocalShell.set(this); // cur thread active shell
-		importStandardModules();
+		try {
+			importStandardModules();
+		} catch (ClassNotFoundException | InstantiationException
+				| IllegalAccessException | IllegalArgumentException
+				| InvocationTargetException | CoreException e) {
+			Util.wrapCoreException("Exception importing standard modules", e);
+		}
 	
 	}
 
@@ -263,7 +273,7 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt {
 	 * Populate the environment with any global variables
 	 */
 
-	private void importStandardModules() throws Exception {
+	private void importStandardModules() throws ClassNotFoundException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, CoreException, IOException {
 		
 		IModule hInternal = 
 				 ModuleFactory.createPackageModule(this, ModuleFactory.getInternalModuleConfig(this ,
@@ -437,8 +447,11 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt {
                Path p = Paths.get( cs.getLocation().toURI());
                String sdir  = null ;
                while( (p = FileUtils.resolveLink( p  ) ) != null ){
-                   if( ! Files.isDirectory( p ) )
-                       continue ;
+                   while( p != null && ! Files.isDirectory( p )  )
+                       p = FileUtils.getParent(p);
+                   if( p == null )
+                	   break ;
+                   
                    if( sdir == null)
                       sdir = p.toString(); // first dir found
                    
@@ -481,6 +494,7 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt {
 		mIO = that.mIO ;
 		mClosed = false ;
 		mParent = that;
+		mProcessor = that.mProcessor;
 		mThreadGroup = threadGroup == null ? that.getThreadGroup()
 				: threadGroup;
 		mOpts = new ShellOpts(that.mOpts);
@@ -1112,7 +1126,7 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt {
 			}
 			out.println(s);
 			out.flush();
-		} catch (UnsupportedEncodingException | CoreException e) {
+		} catch (CoreException | IOException e) {
 			mLogger.error("Exception writing output: " + s, e);
 
 		} finally {
@@ -1191,7 +1205,7 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt {
 			vargs.add(XValue.newXValue(a));
 
 		
-		Shell shell = new Shell();
+		Shell shell = new Shell( new ShellIO(true));
 		org.xmlsh.builtin.commands.xmlsh cmd = new org.xmlsh.builtin.commands.xmlsh(
 				true);
 
@@ -1402,37 +1416,62 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt {
 	/*
 	 * Returns the singleton processor for all of Xmlsh
 	 */
-	public static synchronized Processor getProcessor() {
-		if (mProcessor == null) {
-			String saxon_ee = System.getenv("XMLSH_SAXON_EE");
-			boolean bEE = Util.isEmpty(saxon_ee) ? true : Util
-					.parseBoolean(saxon_ee);
-			mProcessor = new Processor(bEE);
-
-			/*
-			 * mProcessor.getUnderlyingConfiguration().getEditionCode();
-			 * 
-			 * System.err.println("Version " +
-			 * mProcessor.getSaxonProductVersion() );
-			 * System.err.println("XQuery " +
-			 * mProcessor.getConfigurationProperty
-			 * (FeatureKeys.XQUERY_SCHEMA_AWARE) ); System.err.println("XSLT " +
-			 * mProcessor
-			 * .getConfigurationProperty(FeatureKeys.XSLT_SCHEMA_AWARE) );
-			 * System.err.println("Schema " +
-			 * mProcessor.getConfigurationProperty(FeatureKeys.SCHEMA_VALIDATION
-			 * ));
-			 */
-
-			// mProcessor.setConfigurationProperty(FeatureKeys.TREE_MODEL,
-			// net.sf.saxon.event.Builder.LINKED_TREE);
-			mProcessor.registerExtensionFunction(new EvalDefinition());
-			mProcessor.getUnderlyingConfiguration().setSerializerFactory(
-					new XmlshSerializerFactory(mProcessor
-							.getUnderlyingConfiguration()));
-			mProcessor.getUnderlyingConfiguration().setErrorListener(
-					new XmlshErrorListener());
-
+	public static Processor getProcessor() throws IOException  {
+		mLogger.entry();
+		Shell sh = ThreadLocalShell.get();
+		if( sh == null ){
+			try {
+				sh = new Shell();
+			} catch (CoreException e) {
+				Util.wrapIOException(e);
+			}
+		}
+		
+		return sh.getLocalProcessor(null);
+	}
+	
+	public synchronized Processor getLocalProcessor(Configuration config)
+	{
+		mLogger.entry(config);
+		if( config != null ){
+			if( mProcessor == null || 	!mProcessor.getUnderlyingConfiguration().equals(config)) {
+				mLogger.trace("Allocating new processor. Old={}", mProcessor );
+				mProcessor = new Processor(config);
+			}
+			return mProcessor ;
+		}
+		 
+			
+		if (mProcessor == null ) {
+			mLogger.info("Allocating new processor");
+				String saxon_ee = System.getenv("XMLSH_SAXON_EE");
+				boolean bEE = Util.isEmpty(saxon_ee) ? true : Util
+						.parseBoolean(saxon_ee);
+				mProcessor = new Processor(bEE);
+	
+				/*
+				 * mProcessor.getUnderlyingConfiguration().getEditionCode();
+				 * 
+				 * System.err.println("Version " +
+				 * mProcessor.getSaxonProductVersion() );
+				 * System.err.println("XQuery " +
+				 * mProcessor.getConfigurationProperty
+				 * (FeatureKeys.XQUERY_SCHEMA_AWARE) ); System.err.println("XSLT " +
+				 * mProcessor
+				 * .getConfigurationProperty(FeatureKeys.XSLT_SCHEMA_AWARE) );
+				 * System.err.println("Schema " +
+				 * mProcessor.getConfigurationProperty(FeatureKeys.SCHEMA_VALIDATION
+				 * ));
+				 */
+	
+				// mProcessor.setConfigurationProperty(FeatureKeys.TREE_MODEL,
+				// net.sf.saxon.event.Builder.LINKED_TREE);
+				mProcessor.registerExtensionFunction(new EvalDefinition());
+				mProcessor.getUnderlyingConfiguration().setSerializerFactory(
+						new XmlshSerializerFactory(mProcessor
+								.getUnderlyingConfiguration()));
+				mProcessor.getUnderlyingConfiguration().setErrorListener(
+						new XmlshErrorListener());
 		}
 
 		return mProcessor;
@@ -2360,6 +2399,20 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt {
         xm.add( getPath(ShellConstants.ENV_XMODPATH, true)); 
         return xm;
     }
+
+
+    /*
+     * Saxon Integraton 
+     * (non-Javadoc)
+     * @see net.sf.saxon.lib.Initializer#initialize(net.sf.saxon.Configuration)
+     */
+	@Override
+	public void initialize(Configuration config) throws TransformerException {
+		mLogger.debug("initialization {} " , config );
+		config.getLogger().info("initialze in xmlsh: " + this.toString());
+		config.registerExtensionFunction(new EvalDefinition());
+		
+	}
 
 
 }

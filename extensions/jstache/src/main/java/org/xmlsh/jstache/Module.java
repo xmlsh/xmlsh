@@ -332,8 +332,7 @@ public class Module extends ExternalModule {
             mContext.addJsonScope(v.toString());            
         }
 
-        private Reader getReader(XValue v) throws UnsupportedEncodingException,
-        CoreException, InvalidArgumentException {
+        private Reader getReader(XValue v) throws CoreException, InvalidArgumentException, IOException {
             return new XValueInputPort(v).asReader(getSerializeOpts());
         }
     }

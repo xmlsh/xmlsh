@@ -6,6 +6,7 @@
 
 package org.xmlsh.xs.functions;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.xmlsh.core.AbstractBuiltinFunction;
@@ -25,7 +26,7 @@ public class document extends AbstractBuiltinFunction {
 	}
 
 	@Override
-	public XValue run(Shell shell, List<XValue> args) throws CoreException 
+	public XValue run(Shell shell, List<XValue> args) throws CoreException, IOException 
 	{
 		if( args.size() != 1 )
 			throw new InvalidArgumentException("document() requres a single argument");

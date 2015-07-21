@@ -186,7 +186,7 @@ public class VariableInputPort extends InputPort {
 
 
 	@Override
-	public XMLStreamReader asXMLStreamReader(SerializeOpts opts) throws CoreException
+	public XMLStreamReader asXMLStreamReader(SerializeOpts opts) throws CoreException, IOException
 	{
 
 

@@ -6,6 +6,7 @@
 
 package org.xmlsh.sh.shell;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -14,10 +15,15 @@ import java.util.Map.Entry;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.module.IModule;
 import org.xmlsh.util.NameValueMap;
+import org.xmlsh.util.Util;
+
+import com.jayway.jsonpath.internal.Utils;
+import com.sun.corba.se.impl.logging.UtilSystemException;
 
 /*
  * Modules are like namespaces.
@@ -61,12 +67,14 @@ public class Modules  implements
 	 *            TODO
 	 * @param init
 	 * @param init
+	 * @throws IOException 
+	 * @throws CoreException 
 	 * @throws Exception
 	 * @returns true if init was called
 	 * 
 	 */
-	public boolean importModule(Shell shell, String prefix , IModule mod,  List<XValue> init)
-			throws Exception {
+	public boolean importModule(Shell shell, String prefix , IModule mod,  List<XValue> init) throws IOException, CoreException
+			 {
 
 		mLogger.entry(shell, prefix, mod, init);
 		assert (mod != null );
@@ -94,6 +102,8 @@ public class Modules  implements
 			    * */
 			   if( deleted != null )
 			       mLogger.info( "Replaced module definition by name {}", deleted );
+		} catch (Exception e) {
+			Util.wrapCoreException("Unexpected exception in importModule", e);
 		} finally {
 			IModule pmod = shell.popModule();
 		}

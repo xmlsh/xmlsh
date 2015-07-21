@@ -8,7 +8,7 @@ applicationDefaultJvmArgs=[
      '-Djavax.xml.parsers.SAXParserFactory=org.apache.xerces.jaxp.SAXParserFactoryImpl',
      '-Dxmlsh.env.XMODPATH=$APP_HOME']
 
-//apply from: "$rootDir/utils.gradle"
+apply from: "$rootDir/utils.gradle"
 
 configurations {
 	test 

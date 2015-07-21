@@ -145,10 +145,11 @@ public class FileOutputPort extends OutputPort
 	 * @param opts
 	 * @return
 	 * @throws CoreException
+	 * @throws IOException 
 	 * @see org.xmlsh.core.io.StreamOutputPort#asDestination(org.xmlsh.sh.shell.SerializeOpts)
 	 */
 	@Override
-	public Destination asDestination(SerializeOpts opts) throws CoreException {
+	public Destination asDestination(SerializeOpts opts) throws CoreException, IOException {
 		return getStreamPort().asDestination(opts);
 	}
 	/**
@@ -188,10 +189,11 @@ public class FileOutputPort extends OutputPort
 	 * @return
 	 * @throws SaxonApiException
 	 * @throws CoreException 
+	 * @throws IOException 
 	 * @see org.xmlsh.core.io.StreamOutputPort#asXMLStreamWriter(org.xmlsh.sh.shell.SerializeOpts)
 	 */
 	@Override
-	public XMLStreamWriter asXMLStreamWriter(SerializeOpts opts) throws SaxonApiException, CoreException {
+	public XMLStreamWriter asXMLStreamWriter(SerializeOpts opts) throws SaxonApiException, CoreException, IOException {
 		return getStreamPort().asXMLStreamWriter(opts);
 	}
 	/**
@@ -210,10 +212,11 @@ public class FileOutputPort extends OutputPort
 	 * @param opts
 	 * @return
 	 * @throws CoreException
+	 * @throws IOException 
 	 * @see org.xmlsh.core.io.StreamOutputPort#asXdmItemOutputStream(org.xmlsh.sh.shell.SerializeOpts)
 	 */
 	@Override
-	public IXdmItemOutputStream asXdmItemOutputStream(SerializeOpts opts) throws CoreException {
+	public IXdmItemOutputStream asXdmItemOutputStream(SerializeOpts opts) throws CoreException, IOException {
 		return getStreamPort().asXdmItemOutputStream(opts);
 	}
 	/**
@@ -221,10 +224,11 @@ public class FileOutputPort extends OutputPort
 	 * @return
 	 * @throws XPathException
 	 * @throws CoreException 
+	 * @throws IOException 
 	 * @see org.xmlsh.core.io.StreamOutputPort#asContentHandler(org.xmlsh.sh.shell.SerializeOpts)
 	 */
 	@Override
-	public ContentHandler asContentHandler(SerializeOpts opts) throws XPathException, CoreException {
+	public ContentHandler asContentHandler(SerializeOpts opts) throws XPathException, CoreException, IOException {
 		return getStreamPort().asContentHandler(opts);
 	}
 

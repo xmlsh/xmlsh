@@ -909,11 +909,11 @@ public class XValue implements Iterable<XValue>
     if(value.size() == 0)
       return false;
 
-    Processor processor = Shell.getProcessor();
 
-    XPathCompiler compiler = processor.newXPathCompiler();
 
     try {
+        Processor processor = Shell.getProcessor();
+        XPathCompiler compiler = processor.newXPathCompiler();
       XPathExecutable exec = compiler.compile(".");
 
       XPathSelector eval = exec.load();
@@ -1031,21 +1031,21 @@ public class XValue implements Iterable<XValue>
     if(mValue == null || !(mValue instanceof XdmValue))
       return null;
 
-    Processor processor = Shell.getProcessor();
-
-    XPathCompiler compiler = processor.newXPathCompiler();
-
-    Namespaces ns = shell.getEnv().getNamespaces();
-    if(ns != null) {
-      for (String prefix : ns.keySet()) {
-        String uri = ns.get(prefix);
-        compiler.declareNamespace(prefix, uri);
-
-      }
-
-    }
+  
 
     try {
+    	  Processor processor = Shell.getProcessor();
+    	    XPathCompiler compiler = processor.newXPathCompiler();
+
+    	    Namespaces ns = shell.getEnv().getNamespaces();
+    	    if(ns != null) {
+    	      for (String prefix : ns.keySet()) {
+    	        String uri = ns.get(prefix);
+    	        compiler.declareNamespace(prefix, uri);
+
+    	      }
+
+    	    }
       XPathExecutable exec = compiler.compile(expr);
 
       XPathSelector eval = exec.load();

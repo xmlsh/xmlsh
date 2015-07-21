@@ -6,7 +6,9 @@
 
 package org.xmlsh.xs.functions;
 
+import java.io.IOException;
 import java.util.List;
+
 
 
 
@@ -26,7 +28,7 @@ public class attribute extends AbstractBuiltinFunction {
 	}
 
 	@Override
-	public XValue run(Shell shell, List<XValue> args) throws InvalidArgumentException 
+	public XValue run(Shell shell, List<XValue> args) throws InvalidArgumentException, IOException 
 	{
 		if( args.size() != 2 )
 			throw new InvalidArgumentException("Expected name value");

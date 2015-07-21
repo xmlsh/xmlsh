@@ -92,11 +92,14 @@ public class PackageModule extends Module {
                 // Cached in AbstractModule
                   cls = findClass(name, getPackages());
 			if (cls != null) {
-				if( AnnotationUtils.isCommandClass( cls )){
+				mLogger.trace("Found class matching command: {} " , cls );
+				if(  AnnotationUtils.isCommandClass( cls ) || true ){
 				Constructor<?> constructor = cls.getConstructor();
 				if (constructor != null) {
+					mLogger.trace("Found constructor for class : {} " , constructor );
 					Object obj = constructor.newInstance();
 					if (obj instanceof AbstractCommand) {
+						mLogger.trace("Is instanceof AbstractCommand");
 						AbstractCommand cmd = (AbstractCommand) obj;
 						cmd.setModule(this);
 						return cmd;
@@ -105,8 +108,8 @@ public class PackageModule extends Module {
 						getLogger()
 								.warn("Command class found [ {} ] but is not instance of AbstractCommand.",
 										cls.getName());
-					else
-						return (ICommand) obj ;
+					else 
+						return mLogger.exit((ICommand) obj );
 					
 				}
 			}
@@ -131,10 +134,10 @@ public class PackageModule extends Module {
 		URL scriptURL = findResourceInPackages(scriptName, getPackages());
 		if (scriptURL != null)
 
-			return new ScriptCommand(new ScriptSource(scriptName, scriptURL,
-					getTextEncoding() ), SourceMode.RUN, null, this);
+			return mLogger.exit(new ScriptCommand(new ScriptSource(scriptName, scriptURL,
+					getTextEncoding() ), SourceMode.RUN, null, this));
 
-		return null;
+		return mLogger.exit(null);
 
 	}
 

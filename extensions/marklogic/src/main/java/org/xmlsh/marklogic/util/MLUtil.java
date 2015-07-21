@@ -124,7 +124,7 @@ public class MLUtil {
 	}
 
 	public static  XdmVariable newVariable(String name, XValue value, SerializeOpts opts)
-			throws XPathException, InvalidArgumentException, SaxonApiException {
+			throws XPathException, InvalidArgumentException, SaxonApiException, IOException {
 		XName xname = new XName(name);
 	
 		com.marklogic.xcc.types.XdmValue xvalue = MLUtil.newValue(value, opts);
@@ -153,7 +153,7 @@ public class MLUtil {
 	 * Truncates sequences to 1 element because ML doesnt support sequences
 	 */
 	public  static com.marklogic.xcc.types.XdmValue newValue(XValue value, SerializeOpts opts)
-			throws XPathException, InvalidArgumentException, SaxonApiException {
+			throws XPathException, InvalidArgumentException, SaxonApiException, IOException {
 	
 		if( ! value.isXdmItem() ){
 			String s = value.toString();
@@ -308,7 +308,7 @@ public class MLUtil {
 		
 	}
 
-	public static  byte[] bytesFromItem( net.sf.saxon.s9api.XdmItem item, SerializeOpts opts ) throws SaxonApiException, UnsupportedEncodingException 
+	public static  byte[] bytesFromItem( net.sf.saxon.s9api.XdmItem item, SerializeOpts opts ) throws SaxonApiException, IOException 
 	{
 	    if( isAtomic(item) )
 	    	return item.toString().getBytes("UTF8");
@@ -319,7 +319,7 @@ public class MLUtil {
 		return		buf.toByteArray();
 	}
 
-	public static net.sf.saxon.s9api.XdmItem asSaxonItem( XdmItem it ) throws SaxonApiException
+	public static net.sf.saxon.s9api.XdmItem asSaxonItem( XdmItem it ) throws SaxonApiException, IOException
 	{
 		ItemType type = it.getItemType();
 		if( type.isAtomic() ){

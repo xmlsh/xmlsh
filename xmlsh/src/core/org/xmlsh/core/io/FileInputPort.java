@@ -179,10 +179,11 @@ public class FileInputPort extends InputPort
 	 * @param opts
 	 * @return
 	 * @throws CoreException
+	 * @throws IOException 
 	 * @see org.xmlsh.core.io.StreamInputPort#asXdmNode(org.xmlsh.sh.shell.SerializeOpts)
 	 */
 	@Override
-	public XdmNode asXdmNode(SerializeOpts opts) throws CoreException {
+	public XdmNode asXdmNode(SerializeOpts opts) throws CoreException, IOException {
 		return getStreamPort().asXdmNode(opts);
 	}
 
@@ -238,10 +239,11 @@ public class FileInputPort extends InputPort
 	 * @param serializeOpts
 	 * @return
 	 * @throws CoreException
+	 * @throws IOException 
 	 * @see org.xmlsh.core.io.StreamInputPort#asXdmItem(org.xmlsh.sh.shell.SerializeOpts)
 	 */
 	@Override
-	public XdmItem asXdmItem(SerializeOpts serializeOpts) throws CoreException {
+	public XdmItem asXdmItem(SerializeOpts serializeOpts) throws CoreException, IOException {
 		return getStreamPort().asXdmItem(serializeOpts);
 	}
 

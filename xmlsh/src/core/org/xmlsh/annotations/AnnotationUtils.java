@@ -9,13 +9,15 @@ import org.xmlsh.core.IXFunction;
 import org.xmlsh.sh.shell.IFunctionDefiniton;
 import org.xmlsh.util.JavaUtils;
 import org.xmlsh.util.Util;
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 public class AnnotationUtils {
 
 	/*
 	 * Get function names in order of  
 	 *    name/default + aliases
 	 */
+	protected static Logger mLogger = LogManager.getLogger();
 	
 	public static List<String> getFunctionNames(
 			Class<?> cls) 
@@ -102,7 +104,9 @@ public class AnnotationUtils {
 	 * Static check if this is a possible command class
 	 */
 	public static boolean isCommandClass(Class<?> cls) {
-	
+	  mLogger.entry(cls);
+	  mLogger.trace("ICommand.class {} {} " , ICommand.class , ICommand.class.getClass() );
+
 		if( cls == null )
 			return false ;
 		if(  ICommand.class.isAssignableFrom( cls ) ) 

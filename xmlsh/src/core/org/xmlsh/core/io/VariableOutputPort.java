@@ -100,8 +100,9 @@ public class VariableOutputPort extends OutputPort
 	 */
 
 	@Override
-	public	synchronized OutputStream asOutputStream(	SerializeOpts serializeOpts  )
+	public	synchronized OutputStream asOutputStream(	SerializeOpts serializeOpts  ) throws IOException
 	{
+		flush();
 		mAsText = true ;
 		/*
 		 * If going to a variable, then create a variable stream
@@ -147,18 +148,19 @@ public class VariableOutputPort extends OutputPort
 
 
 	@Override
-	public synchronized PrintStream asPrintStream(SerializeOpts opts)
+	public synchronized PrintStream asPrintStream(SerializeOpts opts) throws IOException
 	{
+		flush();
 		mAsText = true ;
 		return new PrintStream(asOutputStream(opts));
 	}
 
 	@Override
-	public synchronized Destination asDestination(SerializeOpts opts) throws InvalidArgumentException
+	public synchronized Destination asDestination(SerializeOpts opts) throws InvalidArgumentException, IOException
 	{
+		flush();
 		// mVariable.clear();
 		mXdmDestination = newXdmDestination();
-
 		return mXdmDestination;
 	}
 
@@ -167,6 +169,7 @@ public class VariableOutputPort extends OutputPort
 
 
 	private XdmDestination newXdmDestination() {
+		
 		XdmDestination dest = new XdmDestination();
 		// setupDestination(dest);
 		return dest;
@@ -174,7 +177,9 @@ public class VariableOutputPort extends OutputPort
 	}
 
 	@Override
-	public synchronized PrintWriter asPrintWriter(SerializeOpts opts) throws UnsupportedEncodingException {
+	public synchronized PrintWriter asPrintWriter(SerializeOpts opts) throws IOException {
+		flush();
+ 
 		mAsText = true ;
 
 		return new PrintWriter( 		
@@ -238,9 +243,7 @@ public class VariableOutputPort extends OutputPort
 	{
 		if( mXdmDestination != null ){
 			appendVar(mXdmDestination.getXdmNode() );
-
 			mXdmDestination.reset();
-
 		}
 		else
 			if( mBuilder != null ){
@@ -253,17 +256,16 @@ public class VariableOutputPort extends OutputPort
 
 	@Override
 	public void writeSequenceTerminator(SerializeOpts opts) throws IOException {
-
+		flush();
 	}
 
 
 	@Override
-	public synchronized XMLStreamWriter asXMLStreamWriter(SerializeOpts opts) throws SaxonApiException {
+	public synchronized XMLStreamWriter asXMLStreamWriter(SerializeOpts opts) throws SaxonApiException, IOException {
+		flush();
 
 		Processor proc = Shell.getProcessor();
 		BuildingStreamWriter bw = proc.newDocumentBuilder().newBuildingStreamWriter();
-
-
 		mBuilder = bw;
 		return bw;
 
@@ -275,21 +277,17 @@ public class VariableOutputPort extends OutputPort
 	 * @see org.xmlsh.core.OutputPort#asXMLEventWriter(org.xmlsh.sh.shell.SerializeOpts)
 	 */
 	@Override
-	public XMLEventWriter asXMLEventWriter(SerializeOpts opts) throws InvalidArgumentException, SaxonApiException {
-
+	public XMLEventWriter asXMLEventWriter(SerializeOpts opts) throws InvalidArgumentException, SaxonApiException, IOException {
+		flush();
 		XMLStreamWriter sw = asXMLStreamWriter(opts);
 		return new XMLStreamEventWriter( sw );
-
-
-
-
-
 	}
 
 
 	@Override
-	public	IXdmItemOutputStream	asXdmItemOutputStream(SerializeOpts opts) throws CoreException
+	public	IXdmItemOutputStream	asXdmItemOutputStream(SerializeOpts opts) throws CoreException, IOException
 	{
+		flush();
 		return new VariableXdmItemOutputStream(  );
 	}
 
@@ -305,8 +303,8 @@ public class VariableOutputPort extends OutputPort
 	 * @see org.xmlsh.core.OutputPort#asContentHandler(org.xmlsh.sh.shell.SerializeOpts)
 	 */
 	@Override
-	public synchronized ContentHandler asContentHandler(SerializeOpts opts) throws XPathException, SaxonApiException {
-
+	public synchronized ContentHandler asContentHandler(SerializeOpts opts) throws XPathException, SaxonApiException, IOException {
+		flush();
 		XMLStreamWriter sw = asXMLStreamWriter(opts);
 		return new ContentHandlerToXMLStreamWriter(sw);
 

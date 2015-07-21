@@ -25,16 +25,16 @@ import org.xmlsh.sh.shell.SerializeOpts;
 public interface IOutputPort extends IPort , Flushable {
 
 	public  OutputStream asOutputStream(SerializeOpts opts)
-			throws CoreException;
+			throws CoreException, IOException;
 
 	public  PrintStream asPrintStream(SerializeOpts opts)
-			throws CoreException;
+			throws CoreException, IOException;
 
 	public  Destination asDestination(SerializeOpts opts)
-			throws CoreException;
+			throws CoreException, IOException;
 
 	public  PrintWriter asPrintWriter(SerializeOpts opts)
-			throws UnsupportedEncodingException, CoreException;
+			throws UnsupportedEncodingException, CoreException, IOException;
 
 	// These 2 shouldnt really go on the port 
 	public  void writeSequenceSeperator(SerializeOpts serializeOpts)
@@ -46,17 +46,17 @@ public interface IOutputPort extends IPort , Flushable {
 
 	public  XMLStreamWriter asXMLStreamWriter(SerializeOpts opts)
 			throws InvalidArgumentException, XMLStreamException,
-			SaxonApiException, CoreException;
+			SaxonApiException, CoreException, IOException;
 
 	public  XMLEventWriter asXMLEventWriter(SerializeOpts opts)
 			throws InvalidArgumentException, XMLStreamException,
 			SaxonApiException, IOException, CoreException;
 
 	public  IXdmItemOutputStream asXdmItemOutputStream(
-			SerializeOpts opts) throws CoreException;
+			SerializeOpts opts) throws CoreException, IOException;
 
 	public  ContentHandler asContentHandler(SerializeOpts opts)
-			throws XPathException, SaxonApiException, CoreException;
+			throws XPathException, SaxonApiException, CoreException, IOException;
 
 	@Override
 	public  boolean isFile();

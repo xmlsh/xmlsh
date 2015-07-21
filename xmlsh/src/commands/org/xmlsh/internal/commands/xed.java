@@ -6,6 +6,7 @@
 
 package org.xmlsh.internal.commands;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -59,7 +60,7 @@ public class xed extends XCommand {
 	private XPathCompiler mCompiler;
 	private Processor mProcessor;
 
-	private void setupBuilders()
+	private void setupBuilders() throws IOException
 	{
 		/*		
 		mProcessor = new Processor(false);

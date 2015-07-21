@@ -50,7 +50,7 @@ public abstract class InputPort extends AbstractPort implements IInputPort
 	 * @see org.xmlsh.core.IInputPort#asInputStream(org.xmlsh.sh.shell.SerializeOpts)
 	 */
 	@Override
-	public	abstract InputStream asInputStream(SerializeOpts opts) throws CoreException ;
+	public	abstract InputStream asInputStream(SerializeOpts opts) throws CoreException, IOException ;
 
 
 	/* (non-Javadoc)
@@ -62,14 +62,14 @@ public abstract class InputPort extends AbstractPort implements IInputPort
 	 * @see org.xmlsh.core.IInputPort#asInputSource(org.xmlsh.sh.shell.SerializeOpts)
 	 */
 	@Override
-	public abstract InputSource	asInputSource(SerializeOpts opts) throws CoreException;
+	public abstract InputSource	asInputSource(SerializeOpts opts) throws CoreException, IOException;
 
 
 	/* (non-Javadoc)
 	 * @see org.xmlsh.core.IInputPort#asXdmNode(org.xmlsh.sh.shell.SerializeOpts)
 	 */
 	@Override
-	public abstract XdmNode asXdmNode(SerializeOpts opts) throws CoreException;
+	public abstract XdmNode asXdmNode(SerializeOpts opts) throws CoreException, IOException;
 
 	/* (non-Javadoc)
 	 * @see org.xmlsh.core.IInputPort#copyTo(java.io.OutputStream, org.xmlsh.sh.shell.SerializeOpts)
@@ -86,21 +86,21 @@ public abstract class InputPort extends AbstractPort implements IInputPort
 	 * @see org.xmlsh.core.IInputPort#asXMLStreamReader(org.xmlsh.sh.shell.SerializeOpts)
 	 */
 	@Override
-	public abstract XMLStreamReader asXMLStreamReader(SerializeOpts opts) throws  CoreException;
+	public abstract XMLStreamReader asXMLStreamReader(SerializeOpts opts) throws  CoreException, IOException;
 
 
 	/* (non-Javadoc)
 	 * @see org.xmlsh.core.IInputPort#asXdmItem(org.xmlsh.sh.shell.SerializeOpts)
 	 */
 	@Override
-	public abstract XdmItem asXdmItem(SerializeOpts serializeOpts) throws CoreException;
+	public abstract XdmItem asXdmItem(SerializeOpts serializeOpts) throws CoreException, IOException;
 
 
 	/* (non-Javadoc)
 	 * @see org.xmlsh.core.IInputPort#asReader(org.xmlsh.sh.shell.SerializeOpts)
 	 */
 	@Override
-	public Reader 	asReader( SerializeOpts serializeOpts ) throws UnsupportedEncodingException, CoreException {
+	public Reader 	asReader( SerializeOpts serializeOpts ) throws CoreException, IOException {
 		return new InputStreamReader( asInputStream(serializeOpts) , serializeOpts.getInputTextEncoding()); 
 	}
 
@@ -110,7 +110,7 @@ public abstract class InputPort extends AbstractPort implements IInputPort
 	 */
 	@Override
 	public IXdmItemInputStream asXdmItemInputStream(SerializeOpts serializeOpts)
-			throws CoreException {
+			throws CoreException, IOException {
 
 		return new ValueXdmItemInputStream( asXdmItem( serializeOpts),serializeOpts);
 	}

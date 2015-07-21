@@ -1,6 +1,7 @@
 package org.xmlsh.core.io;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -9,6 +10,8 @@ import java.io.PrintStream;
 import java.io.Reader;
 
 import org.xmlsh.core.InputPort;
+import org.xmlsh.util.NullInputStream;
+import org.xmlsh.util.NullOutputStream;
 
 public abstract class ShellReader extends Reader {
 
@@ -17,6 +20,33 @@ public abstract class ShellReader extends Reader {
     private int  boff = -1;
     private int promptLevel = 0;
 
+    public static class ShellNullReader extends ShellReader {
+
+		public ShellNullReader() {
+			super(null);
+		}
+
+		@Override
+		protected String readLine(String prompt) throws IOException {
+			return null;
+		}
+
+		@Override
+		public InputPort getInputPort() {
+				return new StreamInputPort( new NullInputStream(), "");
+		}
+
+		@Override
+		public OutputPort getOutputPort() {
+			return new StreamOutputPort( new NullOutputStream());
+		}
+
+		@Override
+		public OutputPort getErrorPort() {
+			return new StreamOutputPort( new NullOutputStream());
+		}
+    	
+    }
 
     /*
      * Shell Reader with stdio from supplied streams and Interactive/command IO from supplied in/out 
@@ -90,7 +120,9 @@ public abstract class ShellReader extends Reader {
             return null;
     }
     
-    
+    public static ShellReader newNullReader() {
+    	return new ShellNullReader();
+    }
     public static ShellReader  newSystemReader( IShellPrompt prompt)
     {
         return new ShellSystemReader( System.in, System.out ,prompt);

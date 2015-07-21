@@ -161,10 +161,20 @@ public class Version {
     }
 
     public static String getSaxonEdition() {
-        return Shell.getProcessor().getUnderlyingConfiguration().getEditionCode();
+        try {
+			return Shell.getProcessor().getUnderlyingConfiguration().getEditionCode();
+		} catch (IOException e) {
+			mLogger.catching(e);
+			return "";
+		}
     }
 
     public static String getSaxonVersion() {
-        return Shell.getProcessor().getSaxonProductVersion();
+        try {
+			return Shell.getProcessor().getSaxonProductVersion();
+		} catch (IOException e) {
+			mLogger.catching(e);
+			return "";
+		}
     }
 }

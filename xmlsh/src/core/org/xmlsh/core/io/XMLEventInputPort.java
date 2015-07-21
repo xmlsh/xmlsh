@@ -96,7 +96,7 @@ public class XMLEventInputPort extends InputPort {
 
 
 	@Override
-	public synchronized XdmNode asXdmNode(SerializeOpts opts) throws CoreException {
+	public synchronized XdmNode asXdmNode(SerializeOpts opts) throws CoreException, IOException {
 
 		net.sf.saxon.s9api.DocumentBuilder builder = Shell.getProcessor().newDocumentBuilder();
 		try {
@@ -112,7 +112,7 @@ public class XMLEventInputPort extends InputPort {
 	 * @see org.xmlsh.core.InputPort#asXdmItem(org.xmlsh.sh.shell.SerializeOpts)
 	 */
 	@Override
-	public XdmItem asXdmItem(SerializeOpts serializeOpts) throws CoreException {
+	public XdmItem asXdmItem(SerializeOpts serializeOpts) throws CoreException, IOException {
 		return asXdmNode(serializeOpts);
 	}
 
