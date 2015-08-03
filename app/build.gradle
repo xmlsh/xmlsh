@@ -34,6 +34,9 @@ task testJar(type: Jar)  {
 	from sourceSets.test.output
   }
 
+task test {
+   dependsOn 
+
 distributions {
 	main {
 	   baseName = "xmlsh"
@@ -73,7 +76,16 @@ applicationDistribution.
 
 }
  
+ 
+publishing {
+ publications {
+  mavenJava {
+    artifacts = [] 
+  }
+  }
+}
 
+    
     
     /*zz
   publishing {

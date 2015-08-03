@@ -130,6 +130,12 @@ public class XValueMap extends AbstractMap<String,XValue> implements IXValueMap 
 	{
 	    put( key , XValue.newXValue(value));
 	}
+	
+	// special string->string that avoids conversion exception 
+	public  void put(String key, String value) {
+		put( key , XValue.newXValue(value));
+		
+	}
 	public  <T>  void put(String key, T value) throws InvalidArgumentException
 	{
 		if( value instanceof XValue )

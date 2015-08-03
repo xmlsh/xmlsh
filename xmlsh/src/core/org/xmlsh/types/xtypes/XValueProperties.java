@@ -53,8 +53,11 @@ public class XValueProperties extends XValueMap {
         return new XValueProperties(map);
     };
 
-    public static XValueProperties fromJavaProperties(Properties props) throws InvalidArgumentException {
-        return new XValueProperties(props);
+    public static XValueProperties fromJavaProperties(Properties props)  {
+        final XValueProperties xp = new XValueProperties();
+    	props.stringPropertyNames().forEach( (s) -> xp.put( s , props.getProperty(s) ));
+        return xp;
+        
     };
 
     public static XValueProperties fromProperty(XValueProperty prop) {

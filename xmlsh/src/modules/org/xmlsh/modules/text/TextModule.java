@@ -12,7 +12,7 @@ import org.xmlsh.sh.module.ModuleConfig;
 import org.xmlsh.sh.module.PackageModule;
 import org.xmlsh.sh.shell.Shell;
 
-@org.xmlsh.annotations.Module(name="text.regex")
+@org.xmlsh.annotations.Module(name="text")
 public class TextModule  extends PackageModule  {
     public TextModule(ModuleConfig config, XClassLoader loader) throws CoreException {
         super(config, loader);
