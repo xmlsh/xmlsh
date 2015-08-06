@@ -24,7 +24,9 @@ import org.xmlsh.json.JSONUtils;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.util.Util;
 
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.Option;
@@ -40,13 +42,9 @@ public class jsonpath extends XCommand {
 	@Override
 	public int run(List<XValue> args) throws Exception {
 
-		Options opts = new Options("c=context:,cf=context-file:,f=file:,i=input:,q=query:,n,e=exists,b=bool,s=string", SerializeOpts.getOptionDefs());
+		Options opts = new Options("c=context:,cf=context-file:,p=path,f=file:,i=input:,q=query:,n,e=exists,b=bool,s=string", SerializeOpts.getOptionDefs());
 		opts.parse(args);
 
-
-		boolean bString = 	opts.hasOpt("s");
-
-		InputPort in = null;
 
 		// boolean bReadStdin = false ;
 
@@ -63,22 +61,18 @@ public class jsonpath extends XCommand {
 				context = opts.getOptValue("c").asJson();
 			else
 				if( opts.hasOpt("cf"))
-					context = (in=getInput( XValue.newXValue(opts.getOptString("cf", "-")))).asJson(serializeOpts);
+					context = (getInput( XValue.newXValue(opts.getOptString("cf", "-")))).asJson(serializeOpts);
 				else
 					if( opts.hasOpt("i") )
-						context = (in=getInput( opts.getOptValue("i"))).asJson(serializeOpts);
+						context = (getInput( opts.getOptValue("i"))).asJson(serializeOpts);
 					else
-						context = (in=getStdin()).asJson(serializeOpts);
+						context = (getStdin()).asJson(serializeOpts);
 
 		}
 
 		List<XValue> xvargs = opts.getRemainingArgs();
 
-		boolean bQuiet = opts.hasOpt("e");
-		boolean bBool = opts.hasOpt("b");
-		if (bBool)
-			bQuiet = true;
-
+		
 		OptionValue ov = opts.getOpt("f");
 		String xpath = null;
 		if (ov != null)
@@ -93,18 +87,15 @@ public class jsonpath extends XCommand {
 			xpath = xvargs.remove(0).toString();
 
 
-		JsonPath path = JSONUtils.compileJsonPath(xpath);
-
-		JsonNode result = path.read(context); // TODO can convert to other types here
+		Configuration conf = Configuration.defaultConfiguration();
+		if( opts.hasOpt("path") )
+			conf = conf.addOptions( Option.AS_PATH_LIST );
 
 		OutputPort stdout = getStdout();
-		PrintStream os = stdout.asPrintStream(serializeOpts);
-
-		JSONUtils.writeJsonNode( result , os  , serializeOpts );
-
-		os.println( result );
-		os.close();
-
+		  JsonNode result = JsonPath.using(conf).parse(context).read(xpath);
+		try ( JsonGenerator gen = stdout.asJsonGenerator(serializeOpts);){
+			JSONUtils.writeJsonNode(gen, result);
+		}
 
 		return 0;
 	}

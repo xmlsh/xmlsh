@@ -14,13 +14,14 @@ import java.lang.annotation.Target;
 /**
  * @author David A. Lee
  */
-/**
- * Meta-annotation (annotations used on other annotations)
- * used for marking all annotations that are part of xmlsh
- */
-@Target({ElementType.ANNOTATION_TYPE})
+
+
 @Retention(RetentionPolicy.RUNTIME)
-public @interface XAnnotation {
+@Target({ElementType.TYPE_USE,ElementType.METHOD})
+@XAnnotation
+public @interface Bug {
+	String value() default "";
+
 
 }
 

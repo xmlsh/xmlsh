@@ -26,7 +26,10 @@ import org.xml.sax.ContentHandler;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.UnimplementedException;
+import org.xmlsh.json.JSONUtils;
 import org.xmlsh.sh.shell.SerializeOpts;
+
+import com.fasterxml.jackson.core.JsonGenerator;
 
 /*
  * An OutputPort represents an output sync of data, either Stream (bytes) or XML data
@@ -37,6 +40,8 @@ import org.xmlsh.sh.shell.SerializeOpts;
 
 public abstract class OutputPort extends AbstractPort implements IOutputPort 
 {
+
+
 
 	/* (non-Javadoc)
 	 * @see org.xmlsh.core.IOutputPort#asOutputStream(org.xmlsh.sh.shell.SerializeOpts)
@@ -135,6 +140,18 @@ public abstract class OutputPort extends AbstractPort implements IOutputPort
 	{
 		// TODO Auto-generated method stub
 		return false;
+	}
+	
+
+	/*
+	 * Default Implementaiton
+	 * (non-Javadoc)
+	 * @see org.xmlsh.core.io.IOutputPort#asJsonGenerator(org.xmlsh.sh.shell.SerializeOpts)
+	 */
+	@Override
+	public JsonGenerator asJsonGenerator(SerializeOpts opts) throws IOException, CoreException {
+		return JSONUtils.createGenerator( asOutputStream(opts) , opts );
+
 	}
 
 }

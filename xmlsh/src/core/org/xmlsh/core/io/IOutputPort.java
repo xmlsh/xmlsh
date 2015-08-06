@@ -22,6 +22,8 @@ import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.UnimplementedException;
 import org.xmlsh.sh.shell.SerializeOpts;
 
+import com.fasterxml.jackson.core.JsonGenerator;
+
 public interface IOutputPort extends IPort , Flushable {
 
 	public  OutputStream asOutputStream(SerializeOpts opts)
@@ -57,6 +59,9 @@ public interface IOutputPort extends IPort , Flushable {
 
 	public  ContentHandler asContentHandler(SerializeOpts opts)
 			throws XPathException, SaxonApiException, CoreException, IOException;
+	
+	public JsonGenerator asJsonGenerator(SerializeOpts opts) 
+	       throws IOException, CoreException ;
 
 	@Override
 	public  boolean isFile();

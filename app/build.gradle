@@ -34,8 +34,6 @@ task testJar(type: Jar)  {
 	from sourceSets.test.output
   }
 
-task test {
-   dependsOn 
 
 distributions {
 	main {
@@ -180,8 +178,9 @@ publishing {
 		 //       sync = true //Optional (true by default). Determines whether to sync the version to Maven Central.
 		 //       user = 'userToken' //OSS user token
 		//        password = 'paasword' //OSS user password
-		//        close = '1' //Optional property. By default the staging repository is closed and artifacts are released to Maven Central. You can optionally turn this behaviour off (by puting 0 as value) and release the version manually.
-		//    }
+		//        close = '1' //Optional property. By default the staging repository is closed and artifacts are released to Maven Central. 
+		// You can optionally turn this behaviour off (by puting 0 as value) and release the version manually.
+	   //   }
 		}
 	}
   }

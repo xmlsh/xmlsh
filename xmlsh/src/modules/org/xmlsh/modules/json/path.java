@@ -16,6 +16,7 @@ import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.types.TypeFamily;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.JsonPath;
 
 public class path extends AbstractBuiltinFunction {
@@ -31,9 +32,9 @@ public class path extends AbstractBuiltinFunction {
 
 		JsonNode node = args.get(0).asJson();
 
-
-		JsonPath path = JSONUtils.compileJsonPath(args.get(1).toString());
-		XValue xvr = XValue.newXValue(TypeFamily.JSON, path.read(node));
+		Configuration conf = Configuration.defaultConfiguration();
+		JsonNode result = JsonPath.using(conf).parse(node).read(args.get(1).toString());
+		XValue xvr = XValue.newXValue(TypeFamily.JSON, result );
 
 		return xvr ;
 

@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.xmlsh.core.InvalidArgumentException;
@@ -57,6 +56,7 @@ import com.fasterxml.jackson.databind.node.POJONode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import com.fasterxml.jackson.databind.node.ValueNode;
 import com.fasterxml.jackson.databind.type.SimpleType;
+import com.fasterxml.jackson.databind.util.TokenBuffer;
 import com.fasterxml.jackson.dataformat.xml.JacksonXmlModule;
 import com.fasterxml.jackson.dataformat.xml.XmlFactory;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
@@ -471,6 +471,23 @@ public class JSONUtils {
 
     }
 
+    public static class JsonNodeBuilder extends  TokenBuffer {
+    	public JsonNodeBuilder() { 
+    		super(getJsonObjectMapper() , false);
+    	}
+    	
+    	public JsonNode build() throws JsonProcessingException, IOException { 
+            try ( JsonParser jp = asParser() ) {
+            	return getJsonObjectMapper().readTree(jp);
+            } 
+        } 
+    };
+    
+    public static JsonNodeBuilder createJsonNodeBuilder( ){
+    	return new JsonNodeBuilder();
+    };
+    
+    
     public static JsonGenerator createGenerator(OutputStream os,
             SerializeOpts jopts) throws IOException
     {
@@ -574,22 +591,12 @@ public class JSONUtils {
 
         return isAtomicClass(value.getClass());
     }
+
+	public static void writeJsonNode(JsonGenerator gen, JsonNode result) throws JsonGenerationException, JsonMappingException, IOException {
+		getObjectWriter().writeValue(gen,result);		
+	}
     
     
-    /*
-    
-    public static JsonPath getJsonPath() {
-        JsonProvider provider;
-        MappingProvider mapper;
-        static Configuation config = new Configuration.ConfigurationBuilder().jsonProvider(provider).mappingProvider(mapper).build();
-        return JsonPath.using(Configuration.defaultConfiguration());
-    }
-        */
-    
-    public static JsonPath compileJsonPath(String xpath) {
-       // Configuration configuration = Configuration.setDefaults(defaults);
-        return JsonPath.compile(xpath);
-    }
 
 }
 

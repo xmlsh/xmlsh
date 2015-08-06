@@ -8,11 +8,14 @@ package org.xmlsh.core.io;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 
 import javanet.staxutils.ContentHandlerToXMLStreamWriter;
 import javanet.staxutils.XMLStreamEventWriter;
@@ -35,9 +38,26 @@ import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.XVariable;
+import org.xmlsh.json.JSONUtils;
+import org.xmlsh.json.JSONUtils.JsonNodeBuilder;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.types.TypeFamily;
 import org.xmlsh.util.Util;
+
+import com.fasterxml.jackson.core.Base64Variant;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonGenerator.Feature;
+import com.fasterxml.jackson.core.JsonStreamContext;
+import com.fasterxml.jackson.core.ObjectCodec;
+import com.fasterxml.jackson.core.SerializableString;
+import com.fasterxml.jackson.core.TreeNode;
+import com.fasterxml.jackson.core.Version;
+import com.fasterxml.jackson.core.base.GeneratorBase;
+import com.fasterxml.jackson.core.json.JsonWriteContext;
+import com.fasterxml.jackson.core.util.JsonGeneratorDelegate;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.jayway.jsonpath.internal.Utils;
 
 /*
  * An OutputPort represents an output sync of data, either Stream (bytes) or XML data
@@ -50,13 +70,35 @@ import org.xmlsh.util.Util;
 public class VariableOutputPort extends OutputPort 
 {
 
+
+
+	public class VariableJsonGenerator extends JsonGeneratorDelegate {
+		
+		@Override
+		public void close() throws IOException {
+			JsonNodeBuilder b = getNodeBuilder();
+			super.close();
+			try {
+				appendVar(XValue.newXValue(TypeFamily.JSON  , b.build() ));
+			} catch (InvalidArgumentException e) {
+				Util.wrapIOException(e);
+			}
+		}
+		public VariableJsonGenerator() {
+			super( JSONUtils.createJsonNodeBuilder());
+			// TODO Auto-generated constructor stub
+		}
+		JsonNodeBuilder getNodeBuilder() { return (JsonNodeBuilder) getDelegate(); }
+	}
+
+
+
 	// Set to true if any asXXX method was caused which used a non-xml stream or access 
 	private		boolean		mAsText = false ;
 
 
 	private class VariableXdmItemOutputStream extends AbstractXdmItemOutputStream 
 	{
-
 		@Override
 		public void write(XdmItem item) throws IOException  {
 
@@ -65,15 +107,8 @@ public class VariableOutputPort extends OutputPort
 			} catch (InvalidArgumentException e) {
 				throw new IOException(e);
 			}
-
 		}
-
 	}
-
-
-
-
-
 
 
 	private	 XVariable		 mVariable;
@@ -83,8 +118,6 @@ public class VariableOutputPort extends OutputPort
 	private		ByteArrayOutputStream 	mByteArrayOutputStream;
 	private		BuildingStreamWriter	mBuilder;
 	private		SerializeOpts 			mSerializeOpts; 	// for converting from ByteArray to string  
-
-
 
 
 
@@ -217,7 +250,17 @@ public class VariableOutputPort extends OutputPort
 
 
 	}
+	private void appendVar(XValue xv) throws InvalidArgumentException 
+	{
+		XValue value = mVariable.getValue();
+		if (value == null || value.isNull())
+			mVariable.setValue(xv);
+		else {
+			mVariable.setValue(value.append(xv));
+		}
 
+
+	}
 
 	/*
 	 * Append an item to the current output
@@ -235,7 +278,6 @@ public class VariableOutputPort extends OutputPort
 		else {
 			mVariable.setValue( value.append(xitem));
 		}
-
 	}
 
 	@Override
@@ -307,10 +349,14 @@ public class VariableOutputPort extends OutputPort
 		flush();
 		XMLStreamWriter sw = asXMLStreamWriter(opts);
 		return new ContentHandlerToXMLStreamWriter(sw);
-
-
-
 	}
+	
+	@Override
+	public JsonGenerator asJsonGenerator(SerializeOpts opts)
+			throws IOException, CoreException {
+		return new VariableJsonGenerator();
+	}
+	
 
 }
 
