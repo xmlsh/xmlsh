@@ -136,9 +136,7 @@ eclipse {
 jar {
 	manifest {
 	  attributes 'Implementation-Title': 'XMLSH A command line shell for the new N(ot)O(nly) XML generation',
-		'Implementation-Version': version_version ,
-    'Main-Class': 'org.xmlsh.sh.shell.Shell',
-    'Class-Path': configurations.runtime.files.collect { "$it.name" }.join(' ')
+		'Implementation-Version': version_version 
 	}
   from sourceSets.main.output
 }
