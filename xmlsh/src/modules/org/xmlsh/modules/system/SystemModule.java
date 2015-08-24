@@ -70,8 +70,17 @@ public class SystemModule  extends PackageModule  {
 		}
     }
     
+    @Function( name="isUnix" , names={ "is-unix" }) 
+    public static class isUnix extends AbstractBuiltinFunction {
+		@Override
+		public XValue run(Shell shell, List<XValue> args) throws Exception {
+			requires( args.isEmpty() , "no arguments");
+	return XValue.newXValue( System.getProperty("os.name").toLowerCase().contains("linux") ||
+			 System.getProperty("os.name").toLowerCase().contains("Mac") );
+      }
+    }
     
-    @Function( name="isLinux" , names={ "is-unix" , "isUnix" , "is-linux" }) 
+    @Function( name="isLinux" , names={ "is-linux" }) 
     public static class isLinux extends AbstractBuiltinFunction {
 		@Override
 		public XValue run(Shell shell, List<XValue> args) throws Exception {
@@ -79,8 +88,13 @@ public class SystemModule  extends PackageModule  {
 			return XValue.newXValue( System.getProperty("os.name").toLowerCase().contains("linux") );
 		}
     }
-    
-    
-    
+    @Function( name="isMac" , names={ "is-mac" , "is-macos" }) 
+    public static class isMac extends AbstractBuiltinFunction {
+		@Override
+		public XValue run(Shell shell, List<XValue> args) throws Exception {
+			requires( args.isEmpty() , "no arguments");
+			return XValue.newXValue( System.getProperty("os.name").toLowerCase().contains("Mac") );
+		}
+    }
     
 }
