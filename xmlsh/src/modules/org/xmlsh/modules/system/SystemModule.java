@@ -93,7 +93,7 @@ public class SystemModule  extends PackageModule  {
 		@Override
 		public XValue run(Shell shell, List<XValue> args) throws Exception {
 			requires( args.isEmpty() , "no arguments");
-			return XValue.newXValue( System.getProperty("os.name").toLowerCase().contains("Mac") );
+			return XValue.newXValue( System.getProperty("os.name").toLowerCase().contains("mac") );
 		}
     }
     
