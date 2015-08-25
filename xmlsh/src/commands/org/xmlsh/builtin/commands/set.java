@@ -45,7 +45,7 @@ public class set extends BuiltinCommand {
 		args = opts.getRemainingArgs();
 		// Only set args here if there are any left
 		// could be set +x which would clear $*
-		if( args != null && (args.size() > 0  || opts.hasDashDash() )){
+		if( args != null && (args.size() > 0 )){
 			mShell.setArgs(args);
 
 		}
@@ -93,7 +93,7 @@ public class set extends BuiltinCommand {
 //
 //The contents of this file are subject to the "Simplified BSD License" (the "License");
 //you may not use this file except in compliance with the License. You may obtain a copy of the
-//License at http://www.opensource.org/licenses/bsd-license.php 
+//License at http://www.opensource.org/licenses/bsd-license.php
 //
 //Software distributed under the License is distributed on an "AS IS" basis,
 //WITHOUT WARRANTY OF ANY KIND, either express or implied.

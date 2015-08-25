@@ -40,7 +40,7 @@ public class xgetopts extends XCommand {
 	@Override
 	public int run(List<XValue> args) throws Exception {
 
-		Options opts = new Options("i=ignore:I=ignore-all,a=argindex,o=optdef:,c=command:,p=passthrough:,+s=seralize,+ps=pass-serialize,noargs,novalues",SerializeOpts.getOptionDefs());
+		Options opts = new Options("i=ignore:I=ignore-all,a=argindex,o=optdef:,c=command:,p=passthrough:,+s=seralize,+ps=pass-serialize,noargs,novalues,if-absent:",SerializeOpts.getOptionDefs());
 		opts.parse(args);
 
 		// String command = opts.getOptString("c", getShell().getArg0());
@@ -51,6 +51,7 @@ public class xgetopts extends XCommand {
 		boolean bSerialize = opts.getOptFlag("s", true);
 		boolean bPassSerialize = opts.getOptFlag("ps", true);
 		boolean bArgIndex = opts.hasOpt("a");
+        boolean ifAbsent = opts.hasOpt("if-absent");
 
 		args = opts.getRemainingArgs();
 
@@ -80,29 +81,29 @@ public class xgetopts extends XCommand {
 
 		Options prog_opts = new Options(optdef , bSerialize ? SerializeOpts.getOptionDefs() : null );
 		if( ignore != null )
-			ignore_opts = prog_opts.addOptionDefs(ignore );
+			ignore_opts = prog_opts.addOptionDefs(ignore,ifAbsent );
 
 
 		if( passthrough != null && passthrough != optdef )
-			prog_opts.addOptionDefs(passthrough);
+			prog_opts.addOptionDefs(passthrough, ifAbsent );
 
 
 
 
-		List<OptionValue>  prog_optvalues = prog_opts.parse(args,bIgnoreAll);
+		List<OptionValue>  prog_optvalues = prog_opts.parse(args,bIgnoreAll).getOpts();
 
 		SerializeOpts serializeOpts = this.getSerializeOpts(opts);
 
 
 		List<XValue> remaining_args = prog_opts.getRemainingArgs();
-		int	arg_index = remaining_args.isEmpty() ? 
+		int	arg_index = remaining_args.isEmpty() ?
 				args.size() : args.indexOf(remaining_args.get(0));
 
 
 				if( passthrough == null )
 					writeOptions( opts, bNoArgs, bNoValues, prog_opts, prog_optvalues, ignore_opts);
 
-				else  
+				else
 				{
 					/*
 					 * Passthrough only those options specified ingoring all others
@@ -141,11 +142,11 @@ public class xgetopts extends XCommand {
 			stdout.writeSequenceSeperator(serializeOpts);
 			return ;
 		}
-			
-		
+
+
 		out.write( argFlag );
 		stdout.writeSequenceSeperator(serializeOpts);
- 
+
 		out.write( value.getValue().toXdmItem() );
 		stdout.writeSequenceSeperator(serializeOpts);
 
@@ -153,7 +154,7 @@ public class xgetopts extends XCommand {
 	}
 
 	private void writeOptions( Options opts, boolean bNoArgs, boolean bNoValues,
-			Options prog_opts, List<OptionValue> prog_optvalues, 
+			Options prog_opts, List<OptionValue> prog_optvalues,
 			OptionDefs ignore_list) throws XMLStreamException, IOException, SaxonApiException, CoreException {
 		XMLStreamWriter out = getStdout().asXMLStreamWriter(getSerializeOpts(opts));
 
@@ -238,7 +239,7 @@ public class xgetopts extends XCommand {
 //
 //The contents of this file are subject to the "Simplified BSD License" (the "License");
 //you may not use this file except in compliance with the License. You may obtain a copy of the
-//License at http://www.opensource.org/licenses/bsd-license.php 
+//License at http://www.opensource.org/licenses/bsd-license.php
 //
 //Software distributed under the License is distributed on an "AS IS" basis,
 //WITHOUT WARRANTY OF ANY KIND, either express or implied.

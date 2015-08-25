@@ -1,45 +1,36 @@
 
-  if( project.hasProperty("printTaskDetails") &&
-        project.printResources == "true" )  {
-  gradle.taskGraph.afterTask { 
-
-  task ->
-      StringBuffer taskDetails = new StringBuffer()
-      taskDetails << """-------------
+if( project.hasProperty("printTaskDetails") &&
+project.printResources == "true" )  {
+    gradle.taskGraph.afterTask {  task ->
+        StringBuffer taskDetails = new StringBuffer()
+        taskDetails << """-------------
   name:$task.name group:$task.group : $task.description
   conv:$task.convention.plugins
   inputs:
   """
-          task.inputs.files.each{ it ->
-              taskDetails << "   ${it.absolutePath}\n"
-          }
-          taskDetails << "outputs:\n"
-          task.outputs.files.each{ it ->
-              taskDetails << "   ${it.absolutePath}\n"
-          }
-          taskDetails << "-------------"
-          println taskDetails
-
-  }
+        task.inputs.files.each{ it -> taskDetails << "   ${it.absolutePath}\n" }
+        taskDetails << "outputs:\n"
+        task.outputs.files.each{ it -> taskDetails << "   ${it.absolutePath}\n" }
+        taskDetails << "-------------"
+        println taskDetails
+    }
 }
-  /*
-  sourceSets  { 
-  	 main {
-  	   println "Resources"
-  	   println resources.srcDirs  
-  	 }
-  }
-  */
+/*
+ sourceSets  {
+ main {
+ println "Resources"
+ println resources.srcDirs
+ }
+ }
+ */
 
-  project.afterEvaluate { 
+project.afterEvaluate {
     if( project.hasProperty("printResources") &&
-        project.printResources == "true" )  {
-  	println " ------- RESOURCES --------"
-  	sourceSets.all { ss ->
-  		println "Name: ${ss.name} - "
-  		ss.resources.each { r ->
-  			 println " --- Resource File: ${r.path}"
-  		}
-  	}
-     }
-  }
+    project.printResources == "true" )  {
+        println " ------- RESOURCES --------"
+        sourceSets.all { ss ->
+            println "Name: ${ss.name} - "
+            ss.resources.each { r -> println " --- Resource File: ${r.path}" }
+        }
+    }
+}

@@ -9,6 +9,7 @@ package org.xmlsh.core;
 import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
@@ -18,29 +19,29 @@ import org.apache.logging.log4j.Logger;
 import org.xmlsh.util.StringPair;
 import org.xmlsh.util.Util;
 
-public class Options {
+public class Options implements Cloneable {
 
 	/*
 	 * A single option is of the form [+]short[=long][:[+]] Multiple options are
 	 * separated by ","
-	 * 
+	 *
 	 * [+] If option starts with a "+" then it is a boolean option that at
 	 * runtime can start with a + or -. for example cmd +opt short The short
 	 * form of the option. Typically a single letter =long The long form of the
 	 * option. Typically a word [:[+]] If followed by a ":" then the option is
 	 * required to have a value which is taken from the next arg If followed by
 	 * a ":+" then the option can be specified multiple times
-	 * 
-	 * 
+	 *
+	 *
 	 * Examples
-	 * 
+	 *
 	 * a Single optional option "-a" a=all Long form accepted either "-a" or
 	 * "-all" +v=verbose Long or short form may be specified with - or + e.g. -v
 	 * or +verbose i: Option requires a value. e.g -i inputfile i:+ Option may
 	 * be specified multiple times with values. e.g. -i input1 -i input2
 	 */
 
-	public static class OptionDef {
+	public static class OptionDef implements Cloneable {
 		private String name; // short name typically 1 letter
 		private String longname; // long name/alias
 		private boolean expectsArg; // expects an argument
@@ -56,6 +57,20 @@ public class Options {
 			setFlag(plus);
 		}
 
+		// Clone
+		public OptionDef( OptionDef that ){
+		    this( that.name , that.longname , that.expectsArg, that.multiple , that.flag );
+		}
+
+		public OptionDef copy(){
+		    return new OptionDef(this);
+		}
+
+		@Override
+		public Object clone(){
+		    return copy();
+
+		}
 		public String getName() {
 			return name;
 		}
@@ -164,12 +179,16 @@ public class Options {
 	}
 
 	@SuppressWarnings("serial")
-	public static class OptionDefs extends ArrayList<OptionDef> {
+	public static class OptionDefs extends ArrayList<OptionDef> implements Cloneable {
 		public OptionDefs() {
 			super();
 		}
+
+		public OptionDefs( OptionDefs that ){
+		    that.forEach( o-> super.add( o.copy() ));
+		}
 		public OptionDefs( String sdefs ){
-			parseDefs(this,sdefs);
+			this(parseDefs(sdefs));
 		}
 
 		public OptionDefs(List<? extends OptionDef> c) {
@@ -178,13 +197,17 @@ public class Options {
 		}
 
 		public OptionDefs(OptionDef o) {
-			super.add(o); // Safe - only 1 option 
+			super.add(o); // Safe - only 1 option
 		}
-
-		public OptionDefs addOptionDef(OptionDef def) {
+        public OptionDefs addOptionDef(OptionDef def) {
+            return addOptionDef( def , false );
+        }
+		public OptionDefs addOptionDef(OptionDef def, boolean ifAbsent ) {
 			OptionDef exists = getOptionDef(def.getName());
-			if (exists != null) {
-				mLogger.warn("Redefined option def: {}", def.getName());
+			if (exists != null ) {
+			    if( ifAbsent )
+			        return this ;
+			    mLogger.warn("Redefined option def: {}", def.getName());
 				remove(exists);
 			}
 			add(def);
@@ -194,12 +217,27 @@ public class Options {
 		public OptionDefs(OptionDef... defs) {
 			addOptionDefs( defs );
 		}
-
-		public OptionDefs addOptionDefs(OptionDefs defs) {
+        public OptionDefs addOptionDefs(OptionDefs defs) {
+            return addOptionDefs( defs , false );
+        }
+        public OptionDefs addOptionDefsIfAbsent(OptionDefs defs) {
+            return addOptionDefs( defs , true );
+        }
+		public OptionDefs addOptionDefs(OptionDefs defs, boolean ifAbsent) {
 			for (OptionDef def : defs)
-				addOptionDef(def);
+				addOptionDef(def, ifAbsent);
 			return this;
 		}
+
+        public OptionDefs addOptionDefsIfAbsent(OptionDef... defs) {
+            return addOptionDefs( true , defs );
+        }
+		public OptionDefs addOptionDefs(boolean ifAbsent , OptionDef... defs) {
+            for (OptionDef od : defs)
+                addOptionDef(od,ifAbsent);
+            return this ;
+
+        }
 
 		public OptionDefs addOptionDefs(OptionDef... defs) {
 			for (OptionDef od : defs)
@@ -216,58 +254,65 @@ public class Options {
 			}
 			return null;
 		}
-		
 
-		public OptionDefs withOption(OptionDef def) {
-			return addOptionDef(def);
+        public OptionDefs withOption(OptionDef def) {
+            return addOptionDef(def);
+        }
+		public OptionDefs withOption(OptionDef def, boolean ifAbsent) {
+			return addOptionDef(def,ifAbsent);
 		}
+
+        public OptionDefs withOptions(OptionDefs defs, boolean ifAbsent) {
+            return addOptionDefs(defs,ifAbsent);
+        }
 
 		public OptionDefs withOptions(OptionDefs defs) {
 			return addOptionDefs(defs);
 		}
 
 		public OptionDefs withOptions(String sdefs) {
-			return parseDefs(this, sdefs);
+			return withOptions( parseDefs(sdefs) );
 		}
+        public OptionDefs withOptions(String sdefs, boolean ifAbsent) {
+            return withOptions(parseDefs( sdefs) , ifAbsent );
+        }
 
+
+        public static OptionDef parseDef(String sdef) {
+            boolean bHasArgs = false;
+            boolean bHasMulti = false;
+            boolean bPlus = false;
+
+            if (sdef.startsWith("+")) {
+                bPlus = true;
+                sdef = sdef.substring(1);
+            } else
+
+            if (sdef.endsWith(":")) {
+                sdef = sdef.substring(0, sdef.length() - 1);
+                bHasArgs = true;
+            } else if (sdef.endsWith(":+")) {
+                sdef = sdef.substring(0, sdef.length() - 2);
+                bHasArgs = true;
+                bHasMulti = true;
+            }
+
+            // Check for optional long-name
+            // a=longer
+            StringPair pair = new StringPair(sdef, '=');
+            if (pair.hasDelim())
+                return new OptionDef(pair.getLeft(), pair
+                        .getRight(), bHasArgs, bHasMulti, bPlus);
+            else
+                return new OptionDef(sdef, null, bHasArgs,
+                        bHasMulti, bPlus);
+        }
 		public static OptionDefs parseDefs(String sdefs) {
 
-			return parseDefs(new OptionDefs(), sdefs);
-		}
-
-		public static OptionDefs parseDefs(OptionDefs defs, String sdefs) {
-
+		    OptionDefs defs = new OptionDefs();
 			String[] adefs = sdefs.trim().split("\\s*,\\s*");
 			for (String sdef : adefs) {
-				boolean bHasArgs = false;
-				boolean bHasMulti = false;
-				boolean bPlus = false;
-
-				if (sdef.startsWith("+")) {
-					bPlus = true;
-					sdef = sdef.substring(1);
-				} else
-
-				if (sdef.endsWith(":")) {
-					sdef = sdef.substring(0, sdef.length() - 1);
-					bHasArgs = true;
-				} else if (sdef.endsWith(":+")) {
-					sdef = sdef.substring(0, sdef.length() - 2);
-					bHasArgs = true;
-					bHasMulti = true;
-				}
-
-				// Check for optional long-name
-				// a=longer
-				StringPair pair = new StringPair(sdef, '=');
-
-				if (pair.hasDelim())
-					defs.addOptionDef(new OptionDef(pair.getLeft(), pair
-							.getRight(), bHasArgs, bHasMulti, bPlus));
-				else
-					defs.addOptionDef(new OptionDef(sdef, null, bHasArgs,
-							bHasMulti, bPlus));
-
+			    defs.addOptionDef(parseDef(sdef));
 			}
 			return defs;
 		}
@@ -275,8 +320,7 @@ public class Options {
 		public static OptionDefs parseDefs(String defs1, String... defsv) {
 			OptionDefs defs = parseDefs(defs1);
 			for (String sd : defsv)
-				defs = OptionDefs.parseDefs(defs, sd);
-
+				defs.addOptionDef(parseDef(sd));
 			return defs;
 		}
 
@@ -284,7 +328,6 @@ public class Options {
 	private OptionDefs mDefs;
 	private List<XValue> mRemainingArgs;
 	private List<OptionValue> mOptions;
-	private boolean mDashDash = false;
 
 	static Logger mLogger = LogManager.getLogger();
 
@@ -312,36 +355,83 @@ public class Options {
 	public Options(String option_str, OptionDefs option_list) {
 		this(parseDefs(option_str).withOptions(option_list));
 	}
-	public OptionDefs addOptionDefs(String option_str) {
+    // Default constructor
+    public Options() {
+        mDefs = new OptionDefs();
+    }
+
+
+	public OptionDefs addOptionDefs(String option_str,boolean ifAbsent) {
 		OptionDefs option_list = parseDefs(option_str);
-		addOptionDefs(option_list);
+		addOptionDefs(option_list,ifAbsent);
 		return option_list;
-
 	}
+    public OptionDef addOptionDef(String option_str,boolean ifAbsent) {
+        OptionDef opt = parseDef(option_str);
+        addOptionDef(opt,ifAbsent);
+        return opt;
+    }
+	private  OptionDef parseDef(String option_str) {
+        return OptionDefs.parseDef( option_str );
+    }
 
-	public void addOptionDefs(OptionDefs option_list) {
-		mDefs.addOptionDefs(option_list);
-
+    public Options addOptionDefs(OptionDefs option_list, boolean ifAbsent) {
+		mDefs.addOptionDefs(option_list, ifAbsent);
+		return this;
 	}
+	public Options withOptionDef( OptionDef def, boolean ifAbsent ){
+	    return addOptionDef( def , ifAbsent );
+	}
+    public Options withOptionDefs( OptionDefs def , boolean ifAbsent){
+        return addOptionDefs( def, ifAbsent );
+    }
+	public Options addOptionDef(OptionDef def,boolean ifAbsent) {
+        mDefs.addOptionDef(def,ifAbsent);
+        return this;
+    }
 
-	public OptionDef getOptDef(String str) {
+    public OptionDef getOptDef(String str) {
 		assert (mDefs != null);
 		return mDefs.getOptionDef(str);
 
 	}
-    public List<OptionValue> parse(List<XValue> args) throws UnknownOption, UnexpectedException, InvalidArgumentException
+    public Options withDefaultOptions(List<OptionValue> defaults){
+        defaults.forEach(
+                v ->   {
+                    OptionValue ev = this.getOpt(v.getOptionDef());
+                    if( ev == null )
+                        mOptions.add(ev);
+                });
+        return this ;
+    }
+
+    public Options withDefaultArgs( List<XValue> defaults ) throws UnexpectedException, InvalidArgumentException, UnknownOption{
+        if( defaults == null || defaults.isEmpty() )
+            return this ;
+        return withDefaultOptions(   parseValues( mDefs   ,   defaults , new ArrayList<XValue>() , true ) );
+    }
+
+
+    public Options parse(List<XValue> args, List<XValue> defaults) throws UnknownOption, UnexpectedException, InvalidArgumentException
+    {
+        return parse( args ).withDefaultArgs( defaults );
+    }
+    public Options parse(List<XValue> args) throws UnknownOption, UnexpectedException, InvalidArgumentException
     {
         return parse( args , false );
     }
-    
 
-	public List<OptionValue> parse(List<XValue> args, boolean stopOnUnknown) throws UnknownOption,
+    public Options parse(List<XValue> args, boolean stopOnUnknown) throws UnexpectedException, InvalidArgumentException, UnknownOption
+    {
+         mOptions = parseValues( mDefs,   args , mRemainingArgs = new ArrayList<XValue>() , stopOnUnknown );
+         return this ;
+    }
+
+
+    // Parse but do not store into mOptions
+	public static List<OptionValue> parseValues( OptionDefs defs ,  List<XValue> args,  List<XValue> remainingArgs , boolean stopOnUnknown) throws UnknownOption,
 			UnexpectedException, InvalidArgumentException {
-		if (mOptions != null)
-			return mOptions;
-
-		mOptions = new ArrayList<OptionValue>();
-        mRemainingArgs = new ArrayList<XValue>();
+	    List<OptionValue> options = new ArrayList<>();
         Iterator<XValue> I = args.iterator();
 		while ( I.hasNext()) {
 			XValue arg = I.next();
@@ -353,10 +443,10 @@ public class Options {
 				String a = sarg.substring(1);
 				char flag = sarg.charAt(0);
 
-				OptionDef def = getOptDef(a);
+				OptionDef def = defs.getOptionDef(a);
 				if (def == null){
-				    if( stopOnUnknown ) {   
-	                    mRemainingArgs.add(arg);
+				    if( stopOnUnknown ) {
+				        remainingArgs.add(arg);
 	                    break ;
 				    }
 					throw new UnknownOption("Unknown option: " + a);
@@ -365,7 +455,7 @@ public class Options {
 					throw new UnknownOption("Option : " + a
 							+ " cannot start with +");
 
-				boolean bRepeat = this.hasOpt(def);
+				boolean bRepeat =hasOpt(options,def);
 
 				if (bRepeat && !def.isMultiple())
 					throw new UnknownOption(
@@ -376,16 +466,16 @@ public class Options {
 						throw new UnknownOption("Option has no args: " + arg);
 					ov.setValue(I.next());
 				}
-				mOptions.add(ov);
+				options.add(ov);
 
 			} else {
 
 				if (arg.isAtomic() && arg.equals("--")) {
 					arg = null;
-					mDashDash = true;
+					// mDashDash = true;
 				}
 				if (arg != null)
-					mRemainingArgs.add(arg);
+					remainingArgs.add(arg);
 
 				break;
 
@@ -393,8 +483,8 @@ public class Options {
 
 		}
 		while (I.hasNext())
-              mRemainingArgs.add(I.next());
-		return mOptions;
+		    remainingArgs.add(I.next());
+		return options;
 
 	}
 
@@ -402,18 +492,25 @@ public class Options {
 		return mOptions;
 	}
 
-	public OptionValue getOpt(OptionDef def) {
-		assert (def != null);
-		for (OptionValue ov : mOptions) {
 
-			if (ov.option.equals(def))
-				return ov;
-		}
-		return null;
+    private static OptionValue getOpt(List<OptionValue>opts, OptionDef def) {
+        assert (def != null);
+        assert( opts != null );
+        for (OptionValue ov : opts ) {
+            if (ov.option.equals(def))
+                return ov;
+        }
+        return null;
+    }
+	public OptionValue getOpt(OptionDef def) {
+	    return getOpt( mOptions , def );
 	}
+    private static boolean hasOpt(List<OptionValue> opts , OptionDef def) {
+        return getOpt(opts,def) != null ;
+    }
 
 	public boolean hasOpt(OptionDef def) {
-		return getOpt(def) != null;
+		return getOpt(mOptions,def) != null;
 	}
 
 	public OptionValue getOpt(String opt) {
@@ -528,17 +625,13 @@ public class Options {
 		return Util.parseLong(getOptString(opt, ""), l);
 	}
 
-	public boolean hasDashDash() {
-		return mDashDash;
-	}
-
 	/**
 	 * @return the defs
 	 */
 	public OptionDefs getOptDefs() {
 		return mDefs;
 	}
-	
+
 	  public static String joinOptions( String... sopts){
 	        if( sopts == null || sopts.length == 0 )
 	            return "" ;
@@ -552,7 +645,7 @@ public class Options {
 	        }
 	        return sb.toString();
 	    }
-	  
+
 }
 
 //
