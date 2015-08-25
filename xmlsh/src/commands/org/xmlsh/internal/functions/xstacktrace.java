@@ -22,12 +22,12 @@ public class xstacktrace extends AbstractBuiltinFunction {
 	}
 
 	@Override
-	public XValue run(Shell shell, List<XValue> args) throws Exception 
+	public XValue run(Shell shell, List<XValue> args) throws Exception
 	{
 
 		Options opts = new Options(xlocation.XLOC_OPTS,SerializeOpts.getOptionDefs());
 
-		opts.addOptionDefs("f=function");
+		opts.addOptionDef("f=function",true );
 		opts.parse(args);
 
 		boolean funcCalls = opts.hasOpt("f" )  && ! opts.hasOpt("depth") ;
@@ -67,7 +67,7 @@ public class xstacktrace extends AbstractBuiltinFunction {
 //
 //The contents of this file are subject to the "Simplified BSD License" (the "License");
 //you may not use this file except in compliance with the License. You may obtain a copy of the
-//License at http://www.opensource.org/licenses/bsd-license.php 
+//License at http://www.opensource.org/licenses/bsd-license.php
 //
 //Software distributed under the License is distributed on an "AS IS" basis,
 //WITHOUT WARRANTY OF ANY KIND, either express or implied.

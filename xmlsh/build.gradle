@@ -1,153 +1,140 @@
 
-  plugins {
-    id "ca.coglinc.javacc" version "2.1.0"
-  }
-  apply from: "$rootDir/utils.gradle"
-  
-  apply plugin: 'java-library-distribution'
+plugins { id "ca.coglinc.javacc" version "2.1.0" }
+apply from: "$rootDir/utils.gradle"
 
-  
-  ext.sourceDirs = ['src/shell'
-    		, 'src/commands'
-    		, 'src/core'
-    		, 'src/modules'
-			, 'src/generated' ] 
-  
- 
-  
-  
-  compileJavacc {
+apply plugin: 'java-library-distribution'
+
+
+ext.sourceDirs = ['src/shell'
+    , 'src/commands'
+    , 'src/core'
+    , 'src/modules'
+    , 'src/generated' ]
+
+compileJavacc {
     inputDirectory = file('src/shell/org/xmlsh/sh/grammar')
     outputDirectory = file('src/generated/org/xmlsh/sh/grammar')
-  }
-  
-		 
-	  
+}
 
-  
+
 ext.generatedResources = "$buildDir/generated-resources/main"
 
 
 task createVersion  {
-	 ext.destDir = new File( generatedResources ,"org/xmlsh/sh/shell");
-	 outputs.dir destDir ;
-	 doLast {
-		def destFile = new File(destDir, "version.properties");
-		destDir.mkdirs()
-		destFile.text = """version.build_date=${xversion_build_date}
+    ext.destDir = new File( generatedResources ,"org/xmlsh/sh/shell");
+    outputs.dir destDir ;
+    doLast {
+        def destFile = new File(destDir, "version.properties");
+        destDir.mkdirs()
+        destFile.text = """version.build_date=${xversion_build_date}
 version.release=${xversion_release}
 version.version=${xversion_version}
 """
-	 }
+    }
 }
 
-  
-  
-  sourceSets {
-    main {  
-     output.dir(generatedResources, builtBy: 'createVersion')
-    	java { 
-    		srcDirs = sourceDirs 
-    	} 
-		resources {
-    		srcDirs = sourceDirs
-			srcDir 'src/resources'
-			srcDir generatedResources
-		}
+
+
+sourceSets {
+    main {
+        output.dir(generatedResources, builtBy: 'createVersion')
+        java {  srcDirs = sourceDirs  }
+        resources {
+            srcDirs = sourceDirs
+            srcDir 'src/resources'
+            srcDir generatedResources
+        }
     }
+}
 
-  }
 
-  
 // http://stackoverflow.com/questions/10405970/how-do-i-define-a-compile-time-only-classpath-in-gradle
-configurations { 
-   provided 
-   
-   provided.exclude group: 'xml-apis'
+configurations {
+    provided
 
-   provided.exclude group: 'saxon'
-   
-   all*.exclude group: 'asm'
-   all*.exclude group: 'net.sf.saxon' , module: 'saxon' 
+    provided.exclude group: 'xml-apis'
 
-   
+    provided.exclude group: 'saxon'
+
+    all*.exclude group: 'asm'
+    all*.exclude group: 'net.sf.saxon' , module: 'saxon'
+
+
 }
 dependencies {
 
- //   provided ":javacc"
+    //   provided ":javacc"
     provided "org.apache.ant:ant:1.9+"
-    
-	
-	compile 'com.thaiopensource:trang:20091111' ,
-          'com.thaiopensource:jing:20091111' 
-  
 
-	compile 'org.apache.logging.log4j:log4j-api:2.+' , 
-	        'org.apache.logging.log4j:log4j-core:2.+'
-	
-	compile 'com.fasterxml.jackson.core:jackson-annotations:2.5.+',
-	        'com.fasterxml.jackson.core:jackson-core:2.5.+',
-	        'com.fasterxml.jackson.core:jackson-databind:2.5.+',
-	        'com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.5.+',
-	        'com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.4+',
-	        'com.fasterxml.jackson.module:jackson-module-jsonSchema:2.5.+' 
-	 compile 'commons-codec:commons-codec:1+',
-			 'commons-io:commons-io:2.+',
-			 'org.apache.commons:commons-lang3:latest.release',
-			 'commons-logging:commons-logging:1.2+'
-	compile  'org.apache.httpcomponents:httpclient:latest.release',
-			'org.apache.httpcomponents:httpcore:latest.release'
-     compile 'com.fasterxml.woodstox:woodstox-core:latest.release'
-	 compile 'org.slf4j:slf4j-api:latest.release',
-			 'org.xmlsh:stax-utils:1+'
 
-	
-	
+    compile 'com.thaiopensource:trang:20091111' ,
+            'com.thaiopensource:jing:20091111'
+
+
+    compile 'org.apache.logging.log4j:log4j-api:2.+' ,
+            'org.apache.logging.log4j:log4j-core:2.+'
+
+    compile 'com.fasterxml.jackson.core:jackson-annotations:2.5.+',
+            'com.fasterxml.jackson.core:jackson-core:2.5.+',
+            'com.fasterxml.jackson.core:jackson-databind:2.5.+',
+            'com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.5.+',
+            'com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.4+',
+            'com.fasterxml.jackson.module:jackson-module-jsonSchema:2.5.+'
+    compile 'commons-codec:commons-codec:1+',
+            'commons-io:commons-io:2.+',
+            'org.apache.commons:commons-lang3:latest.release',
+            'commons-logging:commons-logging:1.2+'
+    compile  'org.apache.httpcomponents:httpclient:latest.release',
+            'org.apache.httpcomponents:httpcore:latest.release'
+    compile 'com.fasterxml.woodstox:woodstox-core:latest.release'
+    compile 'org.slf4j:slf4j-api:latest.release',
+            'org.xmlsh:stax-utils:1+'
+
+
+
     compile 'net.bytebuddy:byte-buddy:0.7-SNAPSHOT'
-	compile 'jline:jline2:2.13-SNAPSHOT'
-	compile 'com.jayway.jsonpath:json-path:2.+'
-	compile 'org.ccil.cowan.tagsoup:tagsoup:1.+' 
-	runtime  'xerces:xercesImpl:2.+'
-	runtime 'xml-apis:xml-apis:1.4.+'
-	compile 'xml-resolver:xml-resolver:1.2+' 
-	compile 'xom:xom:latest.release'
-	compile ('net.sf.saxon:Saxon-HE:9.6.+' ){
-        force=true 
-    }
-   
-     compile  'saxon:saxon:6.5.+'
+    compile 'jline:jline2:2.13-SNAPSHOT'
+    compile 'com.jayway.jsonpath:json-path:2.+'
+    compile 'org.ccil.cowan.tagsoup:tagsoup:1.+'
+    runtime  'xerces:xercesImpl:2.+'
+    runtime 'xml-apis:xml-apis:1.4.+'
+    compile 'xml-resolver:xml-resolver:1.2+'
+    compile 'xom:xom:latest.release'
+    compile ('net.sf.saxon:Saxon-HE:9.6.+' ){ force=true  }
 
-			
-	runtime  group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl' , version: '2.+'
-	
-	
+    compile  'saxon:saxon:6.5.+'
+
+
+    runtime  group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl' , version: '2.+'
+
+
 }
-  //Include provided for compilation
+//Include provided for compilation
 sourceSets.main.compileClasspath += [configurations.provided]
 
 eclipse {
-  classpath {
-    plusConfigurations += [configurations.provided]
-  }
+    classpath {
+        plusConfigurations += [configurations.provided]
+    }
 }
-  
+
 
 
 jar {
-	manifest {
-	  attributes 'Implementation-Title': 'XMLSH A command line shell for the new N(ot)O(nly) XML generation',
-		'Implementation-Version': version_version 
-	}
-  from sourceSets.main.output
+    manifest {
+        attributes 'Implementation-Title': 'XMLSH A command line shell for the new N(ot)O(nly) XML generation',
+        'Implementation-Version': version_version
+    }
+    from sourceSets.main.output
 }
 
- publishing {
-        publications {
-            mavenJava(MavenPublication) {
-               artifactId 'xmlsh-core'
-               version '2.0'
-             }
-        
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifactId 'xmlsh-core'
+            version '2.0'
         }
+
+    }
 }
-        
+

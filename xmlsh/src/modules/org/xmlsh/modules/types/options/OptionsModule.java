@@ -32,7 +32,7 @@ public class OptionsModule extends TypesModule {
 
 	static Logger mLogger = LogManager.getLogger();
 
-	
+
 	@Function( name="option-defs")
 	public static class optionDefs extends AbstractBuiltinFunction {
 	  @Override
@@ -42,8 +42,8 @@ public class OptionsModule extends TypesModule {
 			return XValue.newXValue(TypeFamily.JAVA, defs);
 		}
 	}
-	
-	
+
+
 	@Function( name="options")
 	public static class options extends AbstractBuiltinFunction {
 		@Override
@@ -55,44 +55,56 @@ public class OptionsModule extends TypesModule {
 			}
 	    	requires(! args.isEmpty() , "Usage: options( option-defs [args])");
             XValue xdefs = args.remove(0);
-            OptionDefs defs = parseDefs( xdefs );
-		
+            OptionDefs defs = parseDefs( xdefs ,true);
 			Options opts = new Options( defs  );
 			opts.parse(args);
 			return XValue.newXValue(TypeFamily.JAVA,opts);
 		}
+		  @Function( name="with-defaults")
+		    public static class withDefaults extends AbstractBuiltinFunction {
+		        @Override
+		        public XValue run(Shell shell, List<XValue> args) throws InvalidArgumentException, UnexpectedException, UnknownOption  {
+		            requires(! args.isEmpty() , "withDefaults( options [args])");
+		            if( args.get(0).isInstanceOf( Options.class)){
+		                usage(shell, "with-defaults( options [args]" );
+		            }
+		            Options opts = args.remove(0).asInstanceOf(Options.class );
+		            opts.withDefaultArgs( args );
+		            return XValue.newXValue(TypeFamily.JAVA,opts);
+		        }
+		  }
     }
    protected static OptionDefs parseDefs( List<XValue> args) {
 	   OptionDefs defs = new OptionDefs();
 		for( XValue arg : args )
-			defs.addAll( parseDefs(arg ) );
+			defs.addAll( parseDefs(arg ,true) );
 		return defs;
    }
 
-	protected static OptionDefs parseDefs(XValue args) {
+	protected static OptionDefs parseDefs(XValue args, boolean ifAbsent) {
 		OptionDefs defs = new OptionDefs();
 		for( XValue arg : args ){
 			if( arg.isInstanceOf( OptionDef.class ))
 				defs.add( arg.asInstanceOf(OptionDef.class));
 			else
-			    defs.addAll( parseDefs( arg.asObject()));
+			    defs.addOptionDefs( parseDefs( arg.asObject(),ifAbsent));
 		}
 		return defs;
 	}
-	
-	protected static OptionDefs parseDefs(Object obj) {
+
+	protected static OptionDefs parseDefs(Object obj, boolean ifAbsent ) {
 		OptionDefs defs = new OptionDefs();
 		if( obj instanceof OptionDef )
-			defs.addOptionDef( (OptionDef) obj );
+			defs.addOptionDef( (OptionDef) obj , ifAbsent );
 		else
 	    if( JavaUtils.isArrayOf(obj,OptionDef.class  ) )
-	    	defs.addOptionDefs( (OptionDef[]) obj );
+	    	defs.addOptionDefs(ifAbsent, (OptionDef[]) obj  );
 	    else
 	    if( obj instanceof List )
 	    	for( Object o : (List<?>)obj )
-	    		defs.addOptionDefs( parseDefs( o ));
+	    		defs.addOptionDefs( parseDefs( o ,ifAbsent) , ifAbsent );
 	    else
-	    	defs.addOptionDefs( OptionDefs.parseDefs( obj.toString() ));
+	    	defs.addOptionDefs( OptionDefs.parseDefs( obj.toString() ) , ifAbsent );
 		return defs;
 
 	}
@@ -108,18 +120,18 @@ public class OptionsModule extends TypesModule {
 		    	usage(shell, "has-opt( options option-name");
 			    return XValue.newXValue(false);
 		    }
-		    Options opts = args.get(0).asInstanceOf(Options.class );   
+		    Options opts = args.get(0).asInstanceOf(Options.class );
 		    String name = args.get(1).toString();
 		    return XValue.newXValue( opts.hasOpt(name));
 	  }
 
 	}
-	
+
 
 	@Function( name="get-opt",names={"option","flag","value"	})
 	public static class getOpt extends AbstractBuiltinFunction
 	{
-	
+
 	  @Override
 	  public XValue run(Shell shell, List<XValue> args) throws Exception
 	  {
@@ -127,30 +139,30 @@ public class OptionsModule extends TypesModule {
 		    	usage(shell, "options option [default]");
 			    return XValue.nullValue();
 		    }
-		    
-		    Options opts = args.get(0).asInstanceOf(Options.class );   
+
+		    Options opts = args.get(0).asInstanceOf(Options.class );
 		    String name = args.get(1).toString();
 		    XValue defaultValue  = args.size() > 2 ? args.get(2) :  null ;
-		    
+
 			OptionDef def = opts.getOptDef(name);
 			if( def == null )
 				return XValue.nullValue();
-			if( def.isFlag()) 
-			   return  
+			if( def.isFlag())
+			   return
 					     XValue.newXValue( opts.getOptFlag(name, defaultValue == null ?  true  : defaultValue.toBoolean() ) );
-		    
+
 		    XValue v = opts.getOptValue(name);
 		    if( v == null )
 		    	v = defaultValue ;
 		    return v ;
 	  }
-	
+
 	}
-	
+
 	@Function( name="get-args" , names={"args","remaining-args","remaining"})
 	public static class getArgs extends AbstractBuiltinFunction
 	{
-	
+
 	  @Override
 	  public XValue run(Shell shell, List<XValue> args) throws Exception
 	  {
@@ -160,13 +172,13 @@ public class OptionsModule extends TypesModule {
 		    }
 		    return XValue.newXValue(((Options) args.get(0).asInstanceOf(Options.class)).getRemainingArgs());
 	  }
-	
+
 	}
-	
+
 	@Function( name="has-args" , names={"any-args"})
     public static class hasArgs extends AbstractBuiltinFunction
     {
-    
+
       @Override
       public XValue run(Shell shell, List<XValue> args) throws Exception
       {
@@ -176,6 +188,6 @@ public class OptionsModule extends TypesModule {
             }
             return XValue.newXValue(((Options) args.get(0).asInstanceOf(Options.class)).getRemainingArgs());
       }
-    
+
     }
 }

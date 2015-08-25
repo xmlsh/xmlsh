@@ -1,5 +1,7 @@
 apply plugin: 'application'
-
+apply plugin: 'java-library-distribution'
+apply plugin: 'ivy-publish'
+apply plugin: 'maven-publish'
 mainClassName = 'org.xmlsh.sh.shell.Shell'
 applicationName = 'xmlsh'
 group = "org.xmlsh"
@@ -10,15 +12,34 @@ applicationDefaultJvmArgs=[
 
 apply from: "$rootDir/utils.gradle"
 
-configurations {
-	test 
-}
 
+ configurations {
+        provided
+        compile.extendsFrom provided
+    }
+    
+  
+    
+    
+// FAT jar
 jar { 
-	println "disableing jar task"
-	 enabled = false  
+    dependsOn configurations.runtime
+    from {
+        (configurations.runtime - configurations.provided).collect {
+            it.isDirectory() ? it : zipTree(it)
+        }
+    } {
+       // exclude "META-INF/*.SF"
+        exclude "META-INF/*.DSA"
+        exclude "META-INF/*.RSA"
+    }
+    manifest {
+        attributes 'Implementation-Title': 'XMLSH A command line shell for the new N(ot)O(nly) XML generation',
+                   'Implementation-Version': version_version ,
+                   'Main-Class': 'org.xmlsh.sh.shell.Shell'
+    }
 }
-configurations.runtime.artifacts.removeAll { it.archiveTask.is jar }
+// configurations.runtime.artifacts.removeAll { it.archiveTask.is jar }
 	
 dependencies {
 	compile project(":xmlsh")
@@ -26,7 +47,21 @@ dependencies {
 	compile ('xml-apis:xml-apis:1.4+'){
 		   force=true
 	}
+    provided  'xerces:xercesImpl:2.+'
+    provided 'xml-apis:xml-apis:1.4.+'
+    provided 'xml-resolver:xml-resolver:1.2+' 
+    provided 'xom:xom:latest.release'
+    provided 'net.sf.saxon:Saxon-HE:9.6.+' 
+     provided 'saxon:saxon:6.5.+'
+
 }
+
+/*
+dependencies {
+    provided "org.apache.storm:storm-core:0.9.2-incubating"
+    compile "org.twitter4j:twitter4j-stream:4.0.2"
+}
+*/
 
 task testJar(type: Jar)  {
 	baseName 'xmlsh'

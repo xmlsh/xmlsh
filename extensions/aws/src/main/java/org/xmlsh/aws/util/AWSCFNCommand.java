@@ -23,7 +23,6 @@ import com.amazonaws.services.cloudformation.model.TemplateParameter;
 
 public abstract class AWSCFNCommand extends AWSCommand<AmazonCloudFormationClient> {
 	
-	protected	AmazonCloudFormation		mAmazon ;
 	
 	public AWSCFNCommand() {
 		super();

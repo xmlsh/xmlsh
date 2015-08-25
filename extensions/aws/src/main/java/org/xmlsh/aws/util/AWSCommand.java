@@ -40,19 +40,19 @@ public abstract class AWSCommand<T extends AmazonWebServiceClient>  extends XCom
 
 	protected XMLStreamWriter mWriter;
 	private OutputPort mResultOut;
-	
+
 	public static final String sCOMMON_OPTS = "region:,endpoint:,client:,config:,accessKey:,secretKey:,rate-retry:,retry-delay:" ;
 	protected int rateRetry = 0;
 	protected int retryDelay = 10000; // 10 seconds default
 
     private boolean bSetEndpoint = false ;
 
-	
+
 	protected void setEndpointSet(boolean v) {
         this.bSetEndpoint = v ;
     }
 
-	
+
 	public AWSCommand() {
 		super();
 	}
@@ -60,13 +60,13 @@ public abstract class AWSCommand<T extends AmazonWebServiceClient>  extends XCom
 
 
 	public List<OptionValue> parseOptions(Options options, List<XValue> args) throws UnknownOption, InvalidArgumentException, UnexpectedException {
-        List<OptionValue> opts = options.parse(args);
+        List<OptionValue> opts = options.parse(args).getOpts();
         parseCommonOptions(options);
         return opts ;
     }
-	
-	
-	protected	Options getOptions()	
+
+
+	protected	Options getOptions()
 	{
 		return new Options( getCommonOpts()  , SerializeOpts.getOptionDefs());
 	}
@@ -77,19 +77,19 @@ public abstract class AWSCommand<T extends AmazonWebServiceClient>  extends XCom
 	}
 
 
-    protected	Options getOptions( String... sopts )	
+    protected	Options getOptions( String... sopts )
 	{
 		return new Options( Options.joinOptions(getCommonOpts() , Options.joinOptions(sopts) )  , SerializeOpts.getOptionDefs());
 	}
 
 
-	
+
 	protected void closeWriter() throws XMLStreamException, IOException, CoreException, SaxonApiException{
 	    if( mWriter != null ){
-	      try { 
+	      try {
 	        mWriter.flush();
 	        mWriter.close();
-	        
+
 	      } finally {
 	          mWriter = null;
 	      }
@@ -190,22 +190,22 @@ public abstract class AWSCommand<T extends AmazonWebServiceClient>  extends XCom
 
 	protected void attribute(String name, long n) throws XMLStreamException {
 		attribute( name , String.valueOf(n));
-		
+
 	}
 
 	/*
 	protected void setEndpointXX(Options opts) throws InvalidArgumentException {
-		
+
 		if( opts.hasOpt("endpoint") ){
 			setEndpoint(opts.getOptStringRequired("endpoint"));
 			bSetEndpoint = true ;
 		}
-		
-		
+
+
 	}
 	protected boolean hasSetEndpoint() {
 	    return bSetEndpoint;
-	    
+
 	}
 
 	protected void setRegionXX(Options opts) {
@@ -223,7 +223,7 @@ public abstract class AWSCommand<T extends AmazonWebServiceClient>  extends XCom
 	    }
 
 	}*/
-	
+
 
 
 	protected void emptyDocument() throws XMLStreamException {
@@ -255,7 +255,7 @@ public abstract class AWSCommand<T extends AmazonWebServiceClient>  extends XCom
 	protected XValue xpath(XValue xv, String expr)
 			throws UnexpectedException {
 				return xv.xpath(getShell(), expr);
-				
+
 			}
     protected int handleException(AmazonClientException e)  {
        mLogger.error("AWS Exception in " + getName() , e );
@@ -280,13 +280,13 @@ public abstract class AWSCommand<T extends AmazonWebServiceClient>  extends XCom
     protected boolean startResult() throws InvalidArgumentException, XMLStreamException, SaxonApiException, CoreException, IOException {
         if( mWriter != null ){
           mLogger.warn(getName() + ": AWS startResult previously called for this request");
-          return false ; 
+          return false ;
         }
         if( mResultOut != null ){
             mLogger.warn(getName() + ": AWS startResult with result port open - closing");
         }
         mResultOut = this.getStdout();
-        
+
          mWriter = mResultOut.asXMLStreamWriter(getSerializeOpts());
             startDocument();
             startElement(getName());
@@ -299,7 +299,7 @@ public abstract class AWSCommand<T extends AmazonWebServiceClient>  extends XCom
         endElement();
     	endDocument();
     	closeWriter();
-    	
+
     }
 
 

@@ -79,7 +79,7 @@ public class Module extends ExternalModule {
     }
 
     /*
-     * 
+     *
      * public void run() throws IOException {
      * try {
      * getMustacheFactory().setObjectHandler(new JacksonObjectHandler());
@@ -91,8 +91,8 @@ public class Module extends ExternalModule {
      * output.close();
      * }
      * }
-     * 
-     * 
+     *
+     *
      * Opt.option ( "--root" , "-R" ,"--template-dir" ).with("Template directory root"),
      * Opt.option ( "-f", "--template-file").with("Template file (or '-') "),
      * Opt.option ( "-t", "--template","--template-data").with("Template data (inline) "),
@@ -108,12 +108,12 @@ public class Module extends ExternalModule {
      * Opt.option ( "-h","--help").with("Help")
      * );f
      */
-    
+
     /*
      * Experimental option defs
      */
 
-    static class Opt { 
+    static class Opt {
       OptionDefs mDef;
       String description;
       Opt( String s,String l){
@@ -125,7 +125,7 @@ public class Module extends ExternalModule {
       }
       static Opt option( String l,String r ) {
         return new Opt(l,r);
-      } 
+      }
       OptionDefs def() { return mDef ; }
       public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -155,20 +155,20 @@ public class Module extends ExternalModule {
        Opt.option("json","json-encoding").with("Use JSON encoded data for variable expansion"),
        Opt.option("html","html-encoding").with("Use HTML encoded data for variable expansion"),
        Opt.option("h","help").with("Help")
-      );        
+      );
    public static class Usage {
      public List<String> message;
      public String header = "Usage: jstache [options] [template] [context]";
-     
+
      Usage( String... msg ){
          message = Arrays.asList(msg);
      }
-     
+
      public void getOptions( Consumer<String> out ) {
         for( Opt o : opts  ){
             out.accept( o.toString() );
         }
-      } 
+      }
      public void write(Shell sh) {
        message.forEach( sh::printOut );
        sh.printOut(header);
@@ -176,12 +176,12 @@ public class Module extends ExternalModule {
    }
    };
 
- 
+
 
     @Command(name = "jstache",names={"mustache"})
     public static class jstache extends XCommand {
         @SuppressWarnings("serial")
-        private static Options.OptionDefs optDefs = new OptionDefs() { 
+        private static Options.OptionDefs optDefs = new OptionDefs() {
           {
             for( Opt o : opts)
               addOptionDefs( o.def() );
@@ -189,7 +189,7 @@ public class Module extends ExternalModule {
         };
 
         @Override
-        public 
+        public
         void usage() {
           Usage u = new Usage();
           u.write(getShell());
@@ -200,21 +200,21 @@ public class Module extends ExternalModule {
         private boolean bInputUsed = false ;
 
         private Reader getInputFromFile(XValue v) throws CoreException, IOException{
-            	return getShell().getEnv().getInput(v).asReader(getSerializeOpts()); 
+            	return getShell().getEnv().getInput(v).asReader(getSerializeOpts());
         }
-        
+
 
         // Get a Template file using the context paths
         private Reader getTemplateFromFile(XValue v) throws CoreException, IOException{
             if( v.isAtomic() && v.equals("-")){
                 bInputUsed = true ;
-            	return getShell().getEnv().getStdin().asReader(getSerializeOpts()); 
+            	return getShell().getEnv().getStdin().asReader(getSerializeOpts());
             }
             return mContext.getFileReader(v.toString());
-            
+
         }
-        
-        
+
+
         @Override
         public int run(List<XValue> args) throws Exception {
 
@@ -225,10 +225,10 @@ public class Module extends ExternalModule {
             mContext.addTemplateRoot( Shell.getCurdir() );
 
             for( OptionValue ov : opts.getOpts() ){
- 
+
                 String name = ov.getOptionDef().getName() ;
                 switch( name   ){
-                case "R" : 
+                case "R" :
                     mContext.addTemplateRoot( getShell().getExplicitFile(  ov.getValue().toString() , true , false )) ;
                     break;
 
@@ -246,14 +246,14 @@ public class Module extends ExternalModule {
                 case "p":
                 case "properties-file":
                     mContext.addPropertiesScope(getInputFromFile(ov.getValue()));
-                    
+
                     break;
-                case "j":      
+                case "j":
                 case "json-data":
                     addJsonScope( ov.getValue() );
                     break;
                 case "J":
-                case "json-file": 
+                case "json-file":
                   try {
                     mContext.addJsonScope(getInputFromFile(ov.getValue()));
                   } catch (Exception e) {
@@ -265,21 +265,21 @@ public class Module extends ExternalModule {
                     mContext.setTemplate_name(ov.toStringValue());
                     break;
                 case "ov":
-                case "output": 
+                case "output":
                     mContext.setOutput(getShell().getEnv().getOutput( ov.getValue(), false).asPrintWriter(getSerializeOpts()));
                     break;
                 case "S" :
                 case "delim-start" :
-                    mContext.setDelimStart(ov.toStringValue()); 
+                    mContext.setDelimStart(ov.toStringValue());
                     break;
                 case "E" :
                 case "delim-end" :
-                    mContext.setDelimEnd(ov.toStringValue()); 
+                    mContext.setDelimEnd(ov.toStringValue());
                     break ;
                 case "json" :
                     break;
                 case "html" :
-                    mContext.setEncoder((v,w) -> HtmlEscaper.escape(v,w,true));
+                    mContext.setEncoder((v,w) -> HtmlEscaper.escape(v,w));
                     break;
                 case "h" : case "help"  :
                     usage();
@@ -287,23 +287,23 @@ public class Module extends ExternalModule {
 
                 }
             }
-            
-            // Read name=value pairs 
+
+            // Read name=value pairs
             for( XValue a : args){
-                
+
                 if( a.isAtomic() ){
                     mContext.addStringScope( a.toString());
                 }
-                else 
+                else
                 if( a.isJson()){
                     mContext.addJsonScope(a.asJson());
                 }
                 else
                     mContext.addObjectScope( a.asObject());
-                
+
             }
 
- 
+
             if (mContext.getTemplate() == null) {
                    usage();
                    return 1;
@@ -313,7 +313,7 @@ public class Module extends ExternalModule {
             }
           }  catch( Exception e ){
             throw mLogger.throwing(e);
-            
+
           }
         try {
                 mContext.execute();
@@ -325,11 +325,11 @@ public class Module extends ExternalModule {
         }
 
         private void addJsonScope(XValue v) throws InvalidArgumentException, JsonProcessingException, IOException {
-            if( v.isJson()) 
+            if( v.isJson())
                 mContext.addJsonScope(v.asJson());
             else
               // TODO - other json convertable types
-            mContext.addJsonScope(v.toString());            
+            mContext.addJsonScope(v.toString());
         }
 
         private Reader getReader(XValue v) throws CoreException, InvalidArgumentException, IOException {
