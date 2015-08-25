@@ -26,9 +26,11 @@ public class xstacktrace extends AbstractBuiltinFunction {
 	{
 
 		Options opts = new Options(xlocation.XLOC_OPTS,SerializeOpts.getOptionDefs());
+
+		opts.addOptionDef("f=function",true );
 		opts.parse(args);
 
-		boolean funcCalls = opts.hasOpt("function" )  && ! opts.hasOpt("depth") ;
+		boolean funcCalls = opts.hasOpt("f" )  && ! opts.hasOpt("depth") ;
 
 
 		xlocation xloc = new xlocation();
