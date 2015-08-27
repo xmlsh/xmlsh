@@ -24,8 +24,8 @@ import org.xmlsh.types.TypeFamily;
 
 public class xlocation extends AbstractBuiltinFunction {
 
-	public static final String XLOC_OPTS = 
-	        "d=depth:,f=function,n=name,s=source,start=start-line,end=end-line,scol=start-column,ecol=end-column,r=relpath,p=path,f=file";
+	public static final String XLOC_OPTS =
+	        "d=depth:,function,n=name,source,start=start-line,end=end-line,scol=start-column,ecol=end-column,relpath,path,file";
 
 	public xlocation()
 	{
@@ -56,15 +56,15 @@ public class xlocation extends AbstractBuiltinFunction {
 			return null ;
 		if( opts.hasOpt("name") && loc.hasName() )
 			xv.add( XValue.newXValue( describeName(depth,loc)));
-		if( opts.hasOpt("s") || opts.hasOpt("f") || opts.hasOpt("p")  ) 
-			xv.add( XValue.newXValue(loc.getSource(opts.hasOpt("r") || (opts.hasOpt("f")&&!opts.hasOpt("p")) )) );
-		if( opts.hasOpt("start") ) 
+		if( opts.hasOpt("source") || opts.hasOpt("file") || opts.hasOpt("path")  )
+			xv.add( XValue.newXValue(loc.getSource(opts.hasOpt("relpath") || (opts.hasOpt("file")&&!opts.hasOpt("path")) )) );
+		if( opts.hasOpt("start") )
 			xv.add( XValue.newXValue(loc.getStartline()));
-		if( opts.hasOpt("end") ) 
+		if( opts.hasOpt("end") )
 			xv.add( XValue.newXValue(loc.getEndLine()));
-		if( opts.hasOpt("scol") ) 
+		if( opts.hasOpt("scol") )
 			xv.add( XValue.newXValue(loc.getStartColumn()));
-		if( opts.hasOpt("ecol") ) 
+		if( opts.hasOpt("ecol") )
 			xv.add( XValue.newXValue(loc.getEndColumn()));
 
 		if( xv.isEmpty() )
@@ -75,7 +75,7 @@ public class xlocation extends AbstractBuiltinFunction {
 
 
 
-	private XValue describe(Shell shell , SourceLocation loc) throws Exception 
+	private XValue describe(Shell shell , SourceLocation loc) throws Exception
 	{
 
 		XVariable xv = XVariable.anonymousInstance(TypeFamily.XDM);
@@ -122,7 +122,7 @@ public class xlocation extends AbstractBuiltinFunction {
 //
 //The contents of this file are subject to the "Simplified BSD License" (the "License");
 //you may not use this file except in compliance with the License. You may obtain a copy of the
-//License at http://www.opensource.org/licenses/bsd-license.php 
+//License at http://www.opensource.org/licenses/bsd-license.php
 //
 //Software distributed under the License is distributed on an "AS IS" basis,
 //WITHOUT WARRANTY OF ANY KIND, either express or implied.
