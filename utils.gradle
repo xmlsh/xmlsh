@@ -1,6 +1,6 @@
 
 if( project.hasProperty("printTaskDetails") &&
-project.printResources == "true" )  {
+  project.printTaskDetails == "true" )  {
     gradle.taskGraph.afterTask {  task ->
         StringBuffer taskDetails = new StringBuffer()
         taskDetails << """-------------
