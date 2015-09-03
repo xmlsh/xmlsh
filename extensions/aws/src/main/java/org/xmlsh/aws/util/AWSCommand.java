@@ -45,11 +45,15 @@ public abstract class AWSCommand<T extends AmazonWebServiceClient>  extends XCom
 	protected XMLStreamWriter mWriter;
 	private OutputPort mResultOut;
 
-	public static final String sCOMMON_OPTS = "region:,endpoint:,client:,config:,accessKey:,secretKey:,rate-retry:,retry-delay:" ;
+	public static final String sCOMMON_OPTS = "dry-run,region:,endpoint:,client:,config:,accessKey:,secretKey:,rate-retry:,retry-delay:" ;
 	protected int rateRetry = 0;
 	protected int retryDelay = 10000; // 10 seconds default
 
+<<<<<<< refs/remotes/codecommit/master
     private boolean bSetEndpoint = false ;
+=======
+  private boolean bSetEndpoint = false ;
+>>>>>>> HEAD~0
   protected boolean bMayDryRun = false ;
 
 
@@ -86,7 +90,6 @@ public abstract class AWSCommand<T extends AmazonWebServiceClient>  extends XCom
 	{
 		return new Options( Options.joinOptions(getCommonOpts() , Options.joinOptions(sopts) )  , SerializeOpts.getOptionDefs());
 	}
-
 
 
 	protected void closeWriter() throws XMLStreamException, IOException, CoreException, SaxonApiException{
@@ -268,7 +271,7 @@ public abstract class AWSCommand<T extends AmazonWebServiceClient>  extends XCom
        mShell.printErr("AWS Exception in " + getName() , e);
        return -1 ;
 	}
-
+    protected int handleException(AmazonServiceException e) throws InvalidArgumentException, XMLStreamException, SaxonApiException, CoreException, IOException  {
       startResult();
       startElement("service-exception");
       attribute("error-code",e.getErrorCode());
