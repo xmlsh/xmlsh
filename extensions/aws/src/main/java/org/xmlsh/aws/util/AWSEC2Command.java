@@ -27,10 +27,15 @@ import org.xmlsh.core.io.OutputPort;
 import org.xmlsh.util.StringPair;
 import org.xmlsh.util.Util;
 
+import com.amazonaws.AmazonClientException;
+import com.amazonaws.AmazonServiceException;
+import com.amazonaws.AmazonWebServiceRequest;
 import com.amazonaws.services.ec2.AmazonEC2Client;
 import com.amazonaws.services.ec2.model.BlockDeviceMapping;
 import com.amazonaws.services.ec2.model.CreateTagsRequest;
 import com.amazonaws.services.ec2.model.DeleteTagsRequest;
+import com.amazonaws.services.ec2.model.DryRunResult;
+import com.amazonaws.services.ec2.model.DryRunSupportedRequest;
 import com.amazonaws.services.ec2.model.EbsBlockDevice;
 import com.amazonaws.services.ec2.model.EbsInstanceBlockDevice;
 import com.amazonaws.services.ec2.model.Filter;
@@ -57,6 +62,44 @@ public abstract class AWSEC2Command extends AWSCommand<AmazonEC2Client> {
 			InvalidArgumentException {
 		setAmazon(AWSClientFactory.newEC2lient(mShell, opts));
 	}
+
+
+
+  protected boolean isDryRun( AmazonWebServiceRequest req ){
+    return bMayDryRun && req instanceof DryRunSupportedRequest;
+  }
+
+  protected <X extends AmazonWebServiceRequest> int dryRun(DryRunSupportedRequest<X> request) throws XMLStreamException, InvalidArgumentException, SaxonApiException, CoreException, IOException
+  {
+
+      DryRunResult<X> result ;
+
+      try {
+        result = this.getAWSClient().dryRun( request );
+      } catch( AmazonServiceException e ) {
+        if( e.isRetryable())
+          throw e ;
+        return super.handleException(e);
+      }
+      catch( AmazonClientException e){
+        if( e.getCause() instanceof AmazonServiceException )
+          return super.handleException((AmazonServiceException)e.getCause());
+        return super.handleException(e);
+      }
+
+
+      startResult();
+      startElement( "dry-run");
+      attribute( "success" , result.isSuccessful());
+      if( ! result.isSuccessful() )
+        textElement("message", result.getMessage());
+
+      endElement();
+      endResult();
+      return 0;
+
+
+  }
 
 	protected void writeStateChages(List<InstanceStateChange> states)
 			throws IOException, XMLStreamException, SaxonApiException,
@@ -385,7 +428,7 @@ public abstract class AWSEC2Command extends AWSCommand<AmazonEC2Client> {
 	 * <devicename>=<blockdevice>. The devicename is the device name of the
 	 * physical device on the instance to map. The blockdevice can be one of the
 	 * following values:
-	 * 
+	 *
 	 * none - Suppresses an existing mapping of the device from the AMI used to
 	 * launch the instance. For example: "/dev/sdc=none". ephemeral[0..3] - An
 	 * instance store volume to be mapped to the device. For example:
@@ -498,7 +541,7 @@ public abstract class AWSEC2Command extends AWSCommand<AmazonEC2Client> {
 		endElement();
 
 	}
-	
+
 	protected void writeTag(Tag tag) throws XMLStreamException {
 			startElement("tag");
 			attribute( "key" , tag.getKey());

@@ -21,10 +21,10 @@ ext.generatedResources = "$buildDir/generated-resources/main"
 
 
 task createVersion  {
-    ext.destDir = new File( generatedResources ,"org/xmlsh/sh/shell");
-    outputs.dir destDir ;
+    def destDir = new File( generatedResources ,"org/xmlsh/sh/shell")
+    def destFile = project.file(destDir.path + "/version.properties")
+    outputs.file destFile
     doLast {
-        def destFile = new File(destDir, "version.properties");
         destDir.mkdirs()
         destFile.text = """version.build_date=${xversion_build_date}
 version.release=${xversion_release}
@@ -33,7 +33,7 @@ version.version=${xversion_version}
     }
 }
 
-
+build.dependsOn createVersion
 
 sourceSets {
     main {
@@ -42,7 +42,6 @@ sourceSets {
         resources {
             srcDirs = sourceDirs
             srcDir 'src/resources'
-            srcDir generatedResources
         }
     }
 }

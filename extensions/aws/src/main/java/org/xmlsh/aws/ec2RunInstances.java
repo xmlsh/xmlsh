@@ -1,6 +1,7 @@
 package org.xmlsh.aws;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -10,6 +11,7 @@ import net.sf.saxon.s9api.SaxonApiException;
 
 import org.xmlsh.aws.util.AWSEC2Command;
 import org.xmlsh.core.CoreException;
+import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.SafeXMLStreamWriter;
 import org.xmlsh.core.UnexpectedException;
@@ -18,7 +20,11 @@ import org.xmlsh.core.io.OutputPort;
 import org.xmlsh.util.StringPair;
 import org.xmlsh.util.Util;
 
+import com.amazonaws.AmazonClientException;
+import com.amazonaws.AmazonWebServiceRequest;
+import com.amazonaws.services.dynamodbv2.model.CreateTableResult;
 import com.amazonaws.services.ec2.model.BlockDeviceMapping;
+import com.amazonaws.services.ec2.model.InstanceNetworkInterfaceSpecification;
 import com.amazonaws.services.ec2.model.Placement;
 import com.amazonaws.services.ec2.model.RunInstancesRequest;
 import com.amazonaws.services.ec2.model.RunInstancesResult;
@@ -33,31 +39,34 @@ public class ec2RunInstances extends AWSEC2Command {
 
 	/**
 	 * @param args
-	 * @throws IOException 
-	 * 
-	 	ec2-run-instances ami_id [-n instance_count] [-g group [-g group ...]] 
-	 		[-k keypair] [-d user_data |-f user_data_file] 
-	 		[-instance-type instance_type] [-availability-zone zone] [-kernel kernel_id] 
-	 		[-ramdisk ramdisk_id] [-block-device-mapping block_device_mapping] [-monitor] 
-	 		[-disable-api-termination] [-instance-initiated-shutdown-behavior behavior] 
-	 		[-placement-group placement-group] [-tenancy tenancy] [-subnet subnet] 
-	 		[-private-ip-address ip_address] [-client-token token] [-additional-info info] 
+	 * @throws IOException
+	 *
+	 	ec2-run-instances ami_id [-n instance_count] [-g group [-g group ...]]
+	 		[-k keypair] [-d user_data |-f user_data_file]
+	 		[-instance-type instance_type] [-availability-zone zone] [-kernel kernel_id]
+	 		[-ramdisk ramdisk_id] [-block-device-mapping block_device_mapping] [-monitor]
+	 		[-disable-api-termination] [-instance-initiated-shutdown-behavior behavior]
+	 		[-placement-group placement-group] [-tenancy tenancy] [-subnet subnet]
+	 		[-private-ip-address ip_address] [-client-token token] [-additional-info info]
+	 		[-dry-run]
 
 	 */
 	@Override
 	public int run(List<XValue> args) throws Exception {
 
 
-        Options opts = getOptions("n:,g=group:+,k=key:,d=user-data:,f=user-data-file:,t=instance-type:,availability-zone:," +
+        Options opts = getOptions("ami=image:,n:,g=group:+,group-id:+,k=key:,d=user-data:,f=user-data-file:,t=instance-type:,availability-zone:," +
              "kernel:,ramdisk:,block-device-mapping:+,monitor,disable-api-termination,instance-initiated-shutdown-behavior:," +
-             "placement-group:,tenancy:,subnet:,private-ip-address:,client-token:,additional-info:,tag:+,ebs=ebs-optimized");
+             "placement-group:,tenancy:,subnet:,private-ip-address:,client-token:,additional-info:,tag:+,ebs=ebs-optimized",
+             "dry-run:q,network=network-interface:+");
         parseOptions(opts, args);
 
 		args = opts.getRemainingArgs();
         setSerializeOpts(this.getSerializeOpts(opts));
 
+    String image = opts.getOptString("image", (args.isEmpty() ? null : args.get(0).toString() ) );
 
-		if( args.size() != 1 ){
+		if( image == null ){
 			usage(null);
 			return 1;
 		}
@@ -77,19 +86,19 @@ public class ec2RunInstances extends AWSEC2Command {
 
 
 
-		return ret;	
+		return ret;
 	}
 
-	private int runInstance( String ami_id, Options opts ) throws IOException, XMLStreamException, SaxonApiException, CoreException 
+	private int runInstance( String ami_id, Options opts ) throws IOException, XMLStreamException, SaxonApiException, CoreException
 	{
 		/*
- 	ec2-run-instances ami_id [-n instance_count] [-g group [-g group ...]] 
-	 		[-k keypair] [-d user_data |-f user_data_file] 
-	 		[-instance-type instance_type] [-availability-zone zone] [-kernel kernel_id] 
-	 		[-ramdisk ramdisk_id] [-block-device-mapping block_device_mapping] [-monitor] 
-	 		[-disable-api-termination] [-instance-initiated-shutdown-behavior behavior] 
-	 		[-placement-group placement-group] [-tenancy tenancy] [-subnet subnet] 
-	 		[-private-ip-address ip_address] [-client-token token]
+ 	ec2-run-instances ami_id [-n instance_count] [-g group [-g group ...]]
+	 		[-k keypair] [-d user_data |-f user_data_file]
+	 		[-instance-type instance_type] [-availability-zone zone] [-kernel kernel_id]
+	 		[-ramdisk ramdisk_id] [-block-device-mapping block_device_mapping] [-monitor]
+	 		[-disable-api-termination] [-instance-initiated-shutdown-behavior behavior]
+	 		[-placement-group placement-group] [-tenancy tenancy] [-subnet subnet]
+	 		[-private-ip-address ip_address] [-client-token token] [-network-interface ...]
 
 
 		 */
@@ -107,10 +116,18 @@ public class ec2RunInstances extends AWSEC2Command {
 
 		RunInstancesRequest request = new RunInstancesRequest(ami_id, min , max );
 
-		// -g group 
-		List<XValue> xgroups = opts.getOptValues("g");
+		// -g group
+		List<XValue> xgroups = opts.getOptValues("group");
 		if( xgroups != null )
 			request.setSecurityGroups( Util.toStringList(xgroups));
+	  // -g group
+    List<XValue> xgroupids = opts.getOptValues("group-id");
+    if( xgroupids != null )
+      request.setSecurityGroupIds( Util.toStringList(xgroupids));
+
+    List<XValue> nifs  = opts.getOptValues("network-interface");
+    if( nifs != null )
+      request.setNetworkInterfaces( parseNetworkInterfaces(nifs));
 
 
 		// -k keypair
@@ -165,17 +182,43 @@ public class ec2RunInstances extends AWSEC2Command {
 		if( info != null )
 			request.setAdditionalInfo(info);
 
+    RunInstancesResult result;
 
-		traceCall("runInstances");
-		RunInstancesResult  result = getAWSClient().runInstances(request);
+    if( isDryRun( request ))
+       return dryRun( request);
 
-		writeResult( result );
+    try {
+
+
+      result = getAWSClient().runInstances(request);
+
+    } catch( AmazonClientException e ) {
+        return handleException(e);
+    }
+
+    startResult();
+    writeResult(result);
+    endResult();
 
 
 		return 0;
 	}
 
-	private void writeResult(RunInstancesResult result) throws IOException, XMLStreamException, SaxonApiException, CoreException {
+	private Collection<InstanceNetworkInterfaceSpecification> parseNetworkInterfaces(List<XValue> nifs) throws InvalidArgumentException, UnexpectedException {
+
+	   List<InstanceNetworkInterfaceSpecification> nis = new ArrayList<>();
+	   for( XValue xni : nifs ){
+	     if( xni.canConvert(InstanceNetworkInterfaceSpecification.class) < 0)
+	       throw new UnexpectedException("InstanceNetworkInterfaceSpecification expected, got: "+ xni.describe() );
+
+	     nis.add( xni.convert(InstanceNetworkInterfaceSpecification.class) );
+	   }
+    return nis;
+
+
+	}
+
+  private void writeResult(RunInstancesResult result) throws IOException, XMLStreamException, SaxonApiException, CoreException {
 		OutputPort stdout = this.getStdout();
 		mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(getSerializeOpts()));
 

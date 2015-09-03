@@ -7,7 +7,11 @@ import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.sh.shell.Shell;
 
+import com.amazonaws.AmazonServiceException;
+import com.amazonaws.AmazonWebServiceRequest;
 import com.amazonaws.services.ec2.AmazonEC2Client;
+import com.amazonaws.services.ec2.model.DryRunResult;
+import com.amazonaws.services.ec2.model.DryRunSupportedRequest;
 
 public final class EC2Client extends AWSClient<AmazonEC2Client> {
 
@@ -16,5 +20,9 @@ public final class EC2Client extends AWSClient<AmazonEC2Client> {
 		setRegion(shell,opts);
 		setEndpoint(shell,opts);
 	}
-	
+
+
+
+
+
 }

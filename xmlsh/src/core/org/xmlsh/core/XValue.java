@@ -1,7 +1,7 @@
 /**
  * $Id$
  * $Date$
- * 
+ *
  */
 
 package org.xmlsh.core;
@@ -82,14 +82,14 @@ public class XValue implements Iterable<XValue>
           new XValue(TypeFamily.JAVA,1),
           new XValue(TypeFamily.JAVA,2)
   };
-  
+
   private static final XValue _true = new XValue( TypeFamily.JAVA , true );
   private static final XValue _false = new XValue(TypeFamily.JAVA ,  false );
   private XValue(BigDecimal n)
   {
     this(TypeFamily.XDM, new XdmAtomicValue(n));
   }
-  
+
   private XValue(boolean n)
   {
     this(TypeFamily.JAVA , n);
@@ -132,7 +132,7 @@ public class XValue implements Iterable<XValue>
   private XValue(List<XValue> args)
   {
 
-      
+
     if(args == null || args.isEmpty()) {
       _initSequence(null);
 
@@ -209,7 +209,7 @@ public class XValue implements Iterable<XValue>
      mTypeFamily = xv.mTypeFamily;
      mValue = xv.mValue ;
      _init();
-      
+
   }
   public XValue(TypeFamily family)
   {
@@ -232,7 +232,7 @@ public class XValue implements Iterable<XValue>
   }
 
   public XValue newInstance( ) throws InvalidArgumentException{
-      
+
       return getTypeMethods().getXValue(mValue);
   }
 
@@ -242,10 +242,10 @@ public class XValue implements Iterable<XValue>
   }
 
   /*
-   * 
+   *
    * public XValue append(XValue v) {
    * return append( v.asXdmValue() );
-   * 
+   *
    * }
    */
 
@@ -398,10 +398,10 @@ public class XValue implements Iterable<XValue>
      * List<XdmItem> items = new ArrayList<XdmItem>();
      * for (XdmItem item : asXdmValue())
      * items.add(item);
-     * 
+     *
      * for( XdmItem item : xvalue )
      * items.add(item);
-     * 
+     *
      * return XValue.asXValue(new XdmValue(items));
      */
     return append(XValue.newXValue(value));
@@ -567,7 +567,7 @@ public class XValue implements Iterable<XValue>
 
   }
 
-  public Object convert(Class<?> c) throws InvalidArgumentException
+  public <T> T convert(Class<T> c) throws InvalidArgumentException
   {
 
     try {
@@ -576,7 +576,7 @@ public class XValue implements Iterable<XValue>
         return null;
 
       if(c.isAssignableFrom(value.getClass()))
-        return value;
+        return c.cast(value);
 
       if(c.isInstance(value))
         return c.cast(value);
@@ -586,21 +586,21 @@ public class XValue implements Iterable<XValue>
          bothXdm = (value instanceof XdmValue);
         if(isSequence()) {
           if(isEmptySequence())
-            return XMLUtils.emptySequence();
-          else 
-        	  return XMLUtils.toXdmValue(this);
-        } 
+            return c.cast(XMLUtils.emptySequence());
+          else
+        	  return c.cast(XMLUtils.toXdmValue(this));
+        }
       }
 
       if(! bothXdm && value instanceof XdmValue )
         value = getJavaNative();
-      
+
       if(JavaUtils.canConvertClass(value.getClass(), c) >= 0) {
-        Object obj = JavaUtils.convert(value, c);
+        T obj = JavaUtils.convert(value, c);
         if(obj != null)
           return obj;
       }
-      
+
     } catch (Exception e) {
       Util.wrapException(e, InvalidArgumentException.class);
 
@@ -700,7 +700,7 @@ public class XValue implements Iterable<XValue>
 
   }
 
-  public boolean isEmpty() 
+  public boolean isEmpty()
   {
 
     if(isNull())
@@ -717,16 +717,16 @@ public class XValue implements Iterable<XValue>
   public boolean isInstanceOf(Class<?> cls)
   {
 	boolean b1 = mValue != null;
-	boolean b2 = b1 
+	boolean b2 = b1
 			&& cls.isAssignableFrom(mValue.getClass());
     return b1 && b2 ;
   }
-   
+
   public <T> T asInstanceOf( Class<T> cls ){
-    return  cls.cast( mValue ); 
+    return  cls.cast( mValue );
   }
-  
-  
+
+
   public boolean isJson()
   {
     if(mTypeFamily == TypeFamily.JSON)
@@ -750,12 +750,12 @@ public class XValue implements Iterable<XValue>
   {
     return mValue instanceof IXValueSequence;
   }
-  public boolean isContainer() 
+  public boolean isContainer()
   {
       return getTypeMethods().isContainer(mValue);
   }
-  
-  
+
+
 
   public boolean isString()
   {
@@ -866,7 +866,7 @@ public class XValue implements Iterable<XValue>
     return BigDecimal.valueOf(Double.valueOf(mValue.toString()));
   }
 
-  public boolean toBoolean() throws InvalidArgumentException, UnexpectedException 
+  public boolean toBoolean() throws InvalidArgumentException, UnexpectedException
   {
     /*
      * Check for Java boolean and integer values
@@ -1009,7 +1009,7 @@ public class XValue implements Iterable<XValue>
     else
     if( isContainer() ){
         return XMLUtils.toXdmValue( getXValues() );
-        
+
     }
 
     return XMLUtils.toXdmValue(mValue);
@@ -1031,7 +1031,7 @@ public class XValue implements Iterable<XValue>
     if(mValue == null || !(mValue instanceof XdmValue))
       return null;
 
-  
+
 
     try {
     	  Processor processor = Shell.getProcessor();
@@ -1059,7 +1059,7 @@ public class XValue implements Iterable<XValue>
 
   /*
    * StrReplace based replacement of values
-   * 
+   *
    */
   public XValue substitute( XStringSubstituter subst )
   {
@@ -1071,19 +1071,19 @@ public class XValue implements Iterable<XValue>
       return this ;
   }
 
-    
+
     public XValue getNamedValue( String key ) throws CoreException {
-    	
+
     	return typeFamilyInstance().getXValue( mValue, key );
-    
+
     }
-    
+
     public List<XValue> getXValues() throws InvalidArgumentException {
     	if( mValue == null )
     		return emptyList();
-    	return getTypeMethods().getXValues( mValue  ); 
+    	return getTypeMethods().getXValues( mValue  );
     }
-    
+
     /*
      * A reasonable version of toString that wont be a bazillion bytes
      */
@@ -1091,24 +1091,24 @@ public class XValue implements Iterable<XValue>
     {
        if( isNull() )
          return "null";
-    
+
        return typeFamilyInstance().simpleTypeName(mValue);
-    
+
     }
 
     public JsonNode toJson() throws InvalidArgumentException {
-        
+
         return JSONUtils.toJsonType( this );
-        
+
     }
 
     public static XValue intValue(int i) {
        if( i >= 0 && i < _intValues.length )
            return _intValues[i];
        return new XValue(TypeFamily.JAVA, i);
-        
+
     }
-    
+
 
 
 }

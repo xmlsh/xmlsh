@@ -30,7 +30,11 @@ import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.util.Util;
 
 import com.amazonaws.AmazonClientException;
+import com.amazonaws.AmazonServiceException;
 import com.amazonaws.AmazonWebServiceClient;
+import com.amazonaws.AmazonWebServiceRequest;
+import com.amazonaws.services.ec2.model.DryRunResult;
+import com.amazonaws.services.ec2.model.DryRunSupportedRequest;
 
 public abstract class AWSCommand<T extends AmazonWebServiceClient>  extends XCommand {
 
@@ -41,11 +45,12 @@ public abstract class AWSCommand<T extends AmazonWebServiceClient>  extends XCom
 	protected XMLStreamWriter mWriter;
 	private OutputPort mResultOut;
 
-	public static final String sCOMMON_OPTS = "region:,endpoint:,client:,config:,accessKey:,secretKey:,rate-retry:,retry-delay:" ;
+	public static final String sCOMMON_OPTS = "dry-run,region:,endpoint:,client:,config:,accessKey:,secretKey:,rate-retry:,retry-delay:" ;
 	protected int rateRetry = 0;
 	protected int retryDelay = 10000; // 10 seconds default
 
-    private boolean bSetEndpoint = false ;
+  private boolean bSetEndpoint = false ;
+  protected boolean bMayDryRun = false ;
 
 
 	protected void setEndpointSet(boolean v) {
@@ -81,7 +86,6 @@ public abstract class AWSCommand<T extends AmazonWebServiceClient>  extends XCom
 	{
 		return new Options( Options.joinOptions(getCommonOpts() , Options.joinOptions(sopts) )  , SerializeOpts.getOptionDefs());
 	}
-
 
 
 	protected void closeWriter() throws XMLStreamException, IOException, CoreException, SaxonApiException{
@@ -250,6 +254,7 @@ public abstract class AWSCommand<T extends AmazonWebServiceClient>  extends XCom
 
 		rateRetry = opts.getOptInt("rate-retry", 0);
 		retryDelay = opts.getOptInt("retry-delay", 10000);
+		bMayDryRun = opts.hasOpt("dry-run");
 	}
 
 	protected XValue xpath(XValue xv, String expr)
@@ -262,7 +267,18 @@ public abstract class AWSCommand<T extends AmazonWebServiceClient>  extends XCom
        mShell.printErr("AWS Exception in " + getName() , e);
        return -1 ;
 	}
-
+    protected int handleException(AmazonServiceException e) throws InvalidArgumentException, XMLStreamException, SaxonApiException, CoreException, IOException  {
+      startResult();
+      startElement("service-exception");
+      attribute("error-code",e.getErrorCode());
+      attribute("error-message",e.getErrorMessage());
+      attribute("service-name",e.getServiceName());
+      attribute("request-id",e.getRequestId());
+      attribute("status-code",e.getStatusCode());
+      endElement();
+      endResult();
+      return e.getStatusCode();
+ }
 	protected T getAWSClient() {
 		return mAmazon.getClient();
 	}
