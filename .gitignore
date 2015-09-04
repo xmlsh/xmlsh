@@ -14,3 +14,4 @@ _err.txt
 .project
 .classpath
 /bin/
+.metadata
