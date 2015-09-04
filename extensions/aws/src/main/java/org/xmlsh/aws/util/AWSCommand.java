@@ -49,11 +49,7 @@ public abstract class AWSCommand<T extends AmazonWebServiceClient>  extends XCom
 	protected int rateRetry = 0;
 	protected int retryDelay = 10000; // 10 seconds default
 
-<<<<<<< refs/remotes/codecommit/master
     private boolean bSetEndpoint = false ;
-=======
-  private boolean bSetEndpoint = false ;
->>>>>>> HEAD~0
   protected boolean bMayDryRun = false ;
 
 
