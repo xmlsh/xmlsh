@@ -133,26 +133,17 @@ subprojects {
  *
  */
 
-
-task install( type: Task , dependsOn: ':app:installDist' ) {
+evaluationDependsOn ":app"
+task install( type: Sync  , dependsOn: ':app:installDist' ) {
     description 'MAIN: Install to directory "installDir"'
+    def dest = new File(project.installDir)
+    from  project(':app').getProperty('installDist')
+            into dest
     doFirst {
         if( ! project.hasProperty('installDir' ) ) {
             ant.fail('usage: gradle install -PinstallDir=full-path-to-install')
         }
-    }
-
-    doLast {
-
-
-        def dest = new File(project.installDir)
         println "Installing into: ${dest.absolutePath}"
-        copy {
-
-            from ( project(':app').installDist )
-            into dest
-        }
     }
 }
-
 

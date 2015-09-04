@@ -10,7 +10,7 @@ mkdir $TMPDIR/_xmlsh
 echo "Hello Word" | posix:base64 | posix:base64 -d 
 
 # Use a known binary file for testing
-posix:cp ../../lib/saxon9he.jar $TMPDIR/_xmlsh/binary.dat
+posix:cp ../../lib/[Ss]axon*[hH][eE]*9*.jar $TMPDIR/_xmlsh/binary.dat
 cd $TMPDIR/_xmlsh
 xmd5sum -r binary.dat
 posix:base64 -w binary.dat > binary.b64
