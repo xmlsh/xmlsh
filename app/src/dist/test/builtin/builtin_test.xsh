@@ -130,6 +130,13 @@ b=<[ (1,2,3) ]>
 [ \( 1 = 0 \) -o \( 2 = 2 \) ] && echo Success
 [ \( 1 \) ] && echo success
 
+# binop - failed 9/10/15
+import t=types
+[ t:is-empty() -o t:is-empty() ] && echo Success
+[ "a" = "b" -o <[ fn:true() ]> ] && echo Success
+[ t:is-empty() -o "a = "b" ] && echo Success
+[ 1 -eq 2 -o  t:is-emtpy( full ) -o t:is-empty() ] && echo success
+
 # Should fail
 [ \( ] && echo Success
 [ \) ] && echo Success

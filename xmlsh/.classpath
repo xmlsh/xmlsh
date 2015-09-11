@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="build/generated-resources/main"/>
 	<classpathentry kind="src" path="src/commands"/>
 	<classpathentry kind="src" path="src/core"/>
 	<classpathentry kind="src" path="src/generated"/>
