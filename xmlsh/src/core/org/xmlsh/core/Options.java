@@ -400,7 +400,7 @@ public class Options implements Cloneable {
                 v ->   {
                     OptionValue ev = this.getOpt(v.getOptionDef());
                     if( ev == null )
-                        mOptions.add(ev);
+                        mOptions.add(v);
                 });
         return this ;
     }
