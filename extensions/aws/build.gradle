@@ -15,7 +15,7 @@ def sdks = [
 
 dependencies {
    sdks.each {
-     compile( group:'com.amazonaws' , name: it, version: '1.+' )
+     compile( group:'com.amazonaws' , name: it, version: '1.10.17+' )
    }
 
     compile 'bouncycastle:bcprov-jdk16:140'
