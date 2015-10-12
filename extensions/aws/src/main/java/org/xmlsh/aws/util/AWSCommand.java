@@ -88,6 +88,7 @@ public abstract class AWSCommand<T extends AmazonWebServiceClient>  extends XCom
 	}
 
 
+
 	protected void closeWriter() throws XMLStreamException, IOException, CoreException, SaxonApiException{
 	    if( mWriter != null ){
 	      try {

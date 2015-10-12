@@ -42,6 +42,7 @@ sourceSets {
         resources {
             srcDirs = sourceDirs
             srcDir 'src/resources'
+            srcDir generatedResources
         }
     }
 }
