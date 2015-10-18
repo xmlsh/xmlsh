@@ -16,6 +16,8 @@ apply from: "$rootDir/utils.gradle"
  configurations {
         provided
         compile.extendsFrom provided
+        runtime.exclude module: 'ant'
+        
     }
     
   
@@ -52,7 +54,7 @@ dependencies {
     provided 'xml-resolver:xml-resolver:1.2+' 
     provided 'xom:xom:latest.release'
     provided 'net.sf.saxon:Saxon-HE:9.6.+' 
-     provided 'saxon:saxon:6.5.+'
+    provided 'saxon:saxon:6.5.+'
 
 }
 
@@ -75,7 +77,6 @@ distributions {
 	   baseName = "xmlsh"
          contents {
               exclude "app-${version}.jar"
-
         }
 		contents {  
 			from(testJar) {
@@ -92,10 +93,11 @@ distributions {
 evaluationDependsOn ":extensions"
 
 applicationDistribution.
-      from( project(":extensions:aws").installDist ) {
-   into("modules/aws")
+      from(  project(":extensions:aws").installDist  ){
+         into("modules/aws")  
+         exclude { it.file.name in project(":xmlsh").configurations.exported.files.name }
 
-}
+    }
   
 applicationDistribution.
       from( project(":extensions:marklogic").installDist ) {

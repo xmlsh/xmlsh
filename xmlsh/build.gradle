@@ -50,16 +50,20 @@ sourceSets {
 // http://stackoverflow.com/questions/10405970/how-do-i-define-a-compile-time-only-classpath-in-gradle
 configurations {
     provided
-
-    provided.exclude group: 'xml-apis'
-
-    provided.exclude group: 'saxon'
+    exported
+   // provided.exclude group: 'xml-apis'
+   // provided.exclude group: 'saxon'
 
     all*.exclude group: 'asm'
     all*.exclude group: 'net.sf.saxon' , module: 'saxon'
 
-
+   compile.extendsFrom provided
+   runtime.exclude group: 'org.apache.ant' , module: 'ant' 
+   
+   exported.extendsFrom  runtime
+   exported.exclude module: 'ant'
 }
+
 dependencies {
 
     //   provided ":javacc"
@@ -105,11 +109,10 @@ dependencies {
 
 
     runtime  group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl' , version: '2.+'
+    
 
 
 }
-//Include provided for compilation
-sourceSets.main.compileClasspath += [configurations.provided]
 
 
 jar {

@@ -2,19 +2,21 @@
 subprojects { 
 	apply plugin: 'java-library-distribution'
 	group 'org.xmlsh.extensions'
-	configurations { 
-	  providedCompile 
-	}
 	
-	dependencies {
-		providedCompile  project( ":xmlsh"  ) 
-  }
-  
-  compileJava {
-         sourceSets.main.compileClasspath += [configurations.providedCompile]
-  }
-  
+    
+    dependencies {
+       compile project( path: ":xmlsh" , configuration: "exported" )
+    }
 
 
+	distributions {
+		main {
+		   contents {
+		      exclude {  it.file.name in project(":xmlsh").configurations.exported.files.name }
+		      exclude "**/xmlsh*.jar"
+		   } 
+		} 
+		
+}
 }
 

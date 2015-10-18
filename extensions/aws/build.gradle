@@ -27,5 +27,6 @@ dependencies {
 distributions {
 	main {
 	   baseName = "aws"
-	}
-	}
+	} 
+	
+}
