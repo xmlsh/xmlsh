@@ -1,8 +1,8 @@
 
 
-//plugins {
-//    id "com.jfrog.bintray" version "1.3.1"
-//}
+plugins {
+    id "com.jfrog.bintray" version "1.3.1"
+}
 
 def getDate() {
     def date = new Date()
