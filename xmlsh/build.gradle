@@ -49,7 +49,6 @@ sourceSets {
 
 // http://stackoverflow.com/questions/10405970/how-do-i-define-a-compile-time-only-classpath-in-gradle
 configurations {
-    provided
     exported
    // provided.exclude group: 'xml-apis'
    // provided.exclude group: 'saxon'
@@ -57,7 +56,6 @@ configurations {
     all*.exclude group: 'asm'
     all*.exclude group: 'net.sf.saxon' , module: 'saxon'
 
-   compile.extendsFrom provided
    runtime.exclude group: 'org.apache.ant' , module: 'ant' 
    
    exported.extendsFrom  runtime
@@ -66,8 +64,7 @@ configurations {
 
 dependencies {
 
-    //   provided ":javacc"
-    provided "org.apache.ant:ant:1.9+"
+    compile "org.apache.ant:ant:1.9+"
 
 
     compile 'com.thaiopensource:trang:20091111' ,
