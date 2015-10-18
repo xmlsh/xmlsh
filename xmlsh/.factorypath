@@ -1,5 +1,0 @@
-<factorypath>
-    <factorypathentry kind="PLUGIN" id="com.amazonaws.eclipse.simpleworkflow" enabled="true" runInBatchMode="false"/>
-    <factorypathentry kind="PLUGIN" id="org.eclipse.jst.ws.annotations.core" enabled="true" runInBatchMode="false"/>
-    <factorypathentry kind="WKSPJAR" id="/xmlsh/lib/log4j-core-2.1.jar" enabled="true" runInBatchMode="false"/>
-</factorypath>

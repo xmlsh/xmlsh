@@ -111,13 +111,6 @@ dependencies {
 //Include provided for compilation
 sourceSets.main.compileClasspath += [configurations.provided]
 
-eclipse {
-    classpath {
-        plusConfigurations += [configurations.provided]
-    }
-}
-
-
 
 jar {
     manifest {

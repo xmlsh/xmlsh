@@ -15,12 +15,6 @@ subprojects {
   }
   
 
-  eclipse {
-    classpath {
-      plusConfigurations += [configurations.providedCompile]
-    }
-  }
-
 
 }
 

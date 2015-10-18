@@ -19,7 +19,6 @@ ext   {
 
 subprojects {
     apply plugin: 'java'
-    apply plugin: 'eclipse'
     apply plugin: "maven"
     apply plugin: 'ivy-publish'
     apply plugin: 'maven-publish'
@@ -76,38 +75,6 @@ subprojects {
             }
         }
     }
-    /***  Sample eclipse block from https://docs.gradle.org/current/dsl/org.gradle.plugins.ide.eclipse.model.EclipseClasspath.html
-     *
-     */
-
-    eclipse {
-
-        /*
-         //if you want parts of paths in resulting file to be replaced by variables (files):
-         pathVariables 'GRADLE_HOME': file('/best/software/gradle'), 'TOMCAT_HOME': file('../tomcat')
-         */
-        classpath {
-            //you can tweak the classpath of the Eclipse project by adding extra configurations:
-            // plusConfigurations += [ configurations.provided ]
-
-            //you can also remove configurations from the classpath:
-            // minusConfigurations += [ configurations.someBoringConfig ]
-
-            //if you don't want some classpath entries 'exported' in Eclipse
-            // noExportConfigurations += [ configurations.provided ]
-
-            //if you want to append extra containers:
-            // containers 'someFriendlyContainer', 'andYetAnotherContainer'
-
-            //customizing the classes output directory:
-            defaultOutputDir = file('_out')
-
-            //default settings for downloading sources and Javadoc:
-            downloadSources = true
-            downloadJavadoc = true
-        }
-    }
-
     clean << {
         println "Cleaning Eclipse output"
         println eclipse.classpath.defaultOutputDir

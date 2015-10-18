@@ -40,7 +40,7 @@ public class XShellThread extends Thread {
 
 	private TextResultPane mResultTextArea;
 	private JButton mStopButton;
-	private JButton mStartButton; 
+	private JButton mStartButton;
 
 	private BlockingQueue<String> mCommandQueue = new ArrayBlockingQueue<String>(2, true);
 	private OutputStream mResultOutputStream;
@@ -62,7 +62,7 @@ public class XShellThread extends Thread {
 
 
 
-	public XShellThread(XShell xshell, ThreadGroup group , List<XValue> args, TextResultPane resultTextArea, JTextField commandField , 
+	public XShellThread(XShell xshell, ThreadGroup group , List<XValue> args, TextResultPane resultTextArea, JTextField commandField ,
 			JButton startButton , JButton stopButton, SerializeOpts serializeOpts) throws IOException {
 		super(group , "xmlshui" );
 
@@ -130,7 +130,7 @@ public class XShellThread extends Thread {
 						Thread.yield();
 					}
 					mShell.shutdown(true,0);
-				}				
+				}
 
 			}
 
@@ -139,7 +139,7 @@ public class XShellThread extends Thread {
 
 
 
-		try {				
+		try {
 			cmdPipe = new TextFieldStreamPipe( mCommandField , mSerializeOpts);
 			setRunning(false);
 
@@ -148,15 +148,15 @@ public class XShellThread extends Thread {
 
 					if(( sCmd = mCommandQueue.take()) == null)
 						break ;
-						
+
 				try (
 						StreamInputPort inp =  new StreamInputPort(cmdPipe.getIn(), null) ){
 
 					setRunning(false);
 					clearResult();
 
-					//@TODO: Use  ShellIO 
-					mShell = new Shell(null);
+					//@TODO: Use  ShellIO
+					mShell = new Shell();
 					mShell.setArgs(mArgs == null ? new ArrayList<XValue>() : mArgs );
 					mShell.setArg0("xmlshui");
 
@@ -183,8 +183,8 @@ public class XShellThread extends Thread {
 						print(e.getMessage());
 					}
 
-				} 
-				
+				}
+
 				catch (ThrowException e) {
 					mLogger.info("Throw running shell commands",e);
 					print("Ignoring thrown value: " + e.getMessage());
@@ -230,7 +230,7 @@ public class XShellThread extends Thread {
 				}
 			}
 
-		} 
+		}
 
 		catch( Exception e ) {
 			mLogger .warn("Exception running shell commands",e);
@@ -262,7 +262,7 @@ public class XShellThread extends Thread {
 	/**
 	 * @return the blockingQueue
 	 * @throws InterruptedException
-	 * 
+	 *
 	 * Called by the AWT event thread
 	 */
 
