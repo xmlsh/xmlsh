@@ -97,7 +97,7 @@ public class csv2xml extends XCommand
 			ir = getInput( xvargs.get(0) ).asReader(getSerializeOpts());
 
 
-		CSVParser parser = new CSVParser( delim.charAt(0), quote.charAt(0) , maxFields );
+		CSVParser parser = new CSVParser( ir , delim.charAt(0), quote.charAt(0) , maxFields );
 
 		while( skip-- > 0 )
 			readLine(ir);
@@ -105,9 +105,7 @@ public class csv2xml extends XCommand
 
 		CSVRecord header = null ;
 		if( bHeader ){
-			String line = readLine(ir);
-			if( line != null )
-				header = parser.parseLine(line);
+				header = parser.parseLine();
 		} 
 
 		// Even if bHeader override the colnames
@@ -117,9 +115,8 @@ public class csv2xml extends XCommand
 
 
 
-		String line;
-		while( (line = readLine(ir)) != null ){
-			CSVRecord csv = parser.parseLine(line);
+		CSVRecord csv ;
+		while( (csv = parser.parseLine()) != null ){
 			addElement( writer , csv , row , col , bAttr , header,bTrim );
 		}
 		writer.writeEndElement();

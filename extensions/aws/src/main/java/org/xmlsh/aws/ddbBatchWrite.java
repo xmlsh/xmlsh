@@ -137,11 +137,13 @@ public class ddbBatchWrite extends AWSDDBCommand {
 				mColNames = opts.getOptValue("colnames");
 
 			}
-			mParser = new CSVParser(mDelim.charAt(0), mQuote.charAt(0));
 			mReader = new BufferedReader(port.asReader(getSerializeOpts()));
 
+			mParser = new CSVParser(mReader, mDelim.charAt(0), mQuote.charAt(0));
+
 			if (mBHeader)
-				mHeader = mParser.parseLine(Util.readLine(mReader));
+				mHeader = mParser.parseLine();
+			
 			// Even if bHeader override the colnames
 			if (mColNames != null)
 				mHeader = parseCols(mColNames);

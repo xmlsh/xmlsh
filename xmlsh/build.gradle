@@ -50,16 +50,11 @@ sourceSets {
 // http://stackoverflow.com/questions/10405970/how-do-i-define-a-compile-time-only-classpath-in-gradle
 configurations {
     exported
-   // provided.exclude group: 'xml-apis'
-   // provided.exclude group: 'saxon'
-
     all*.exclude group: 'asm'
     all*.exclude group: 'net.sf.saxon' , module: 'saxon'
 
-   runtime.exclude group: 'org.apache.ant' , module: 'ant' 
    
    exported.extendsFrom  runtime
-   exported.exclude module: 'ant'
 }
 
 dependencies {
@@ -103,7 +98,7 @@ dependencies {
     compile ('net.sf.saxon:Saxon-HE:9.6.+' ){ force=true  }
 
     compile  'saxon:saxon:6.5.+'
-
+	compile 'net.sf.supercsv:super-csv:2.3+'
 
     runtime  group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl' , version: '2.+'
     

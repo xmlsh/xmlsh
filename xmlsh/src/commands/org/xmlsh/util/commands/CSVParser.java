@@ -1,6 +1,14 @@
 package org.xmlsh.util.commands;
+import org.supercsv.io.CsvListReader;
+import org.supercsv.prefs.CsvPreference;
+import org.xmlsh.util.Util;
 
+import com.jayway.jsonpath.internal.Utils;
+
+import java.io.IOException;
+import java.io.Reader;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 
@@ -10,30 +18,32 @@ import java.util.ArrayList;
  */
 public class CSVParser
 {
-	private char mDelim = ','; // csv
-	private char mQuote = '"';
+	
+	CsvListReader csvReader;
 	private int mMax ;
 
 
 
 
+	public CSVParser(Reader r ) {
 
-	public CSVParser() {
-
+		csvReader = new org.supercsv.io.CsvListReader( r , CsvPreference.STANDARD_PREFERENCE);
+		
 
 	}
 
-	public CSVParser( char delim , char quote )
+	public CSVParser( Reader r , char delim , char quote )
 	{
-		mDelim = delim ;
-		mQuote = quote ;
+		csvReader = new CsvListReader( r , 
+				new CsvPreference.Builder( quote , delim , Util.getNewlineString()).build() );
+
 		mMax   = 0;
 	}
 
-	public CSVParser( char delim , char quote , int max )
+	public CSVParser( Reader r, char delim , char quote , int max )
 	{
-		mDelim = delim ;
-		mQuote = quote ;
+		csvReader = new CsvListReader( r , 
+				new CsvPreference.Builder( quote , delim , Util.getNewlineString()).build() );
 		mMax   = max ;
 	}
 
@@ -41,63 +51,17 @@ public class CSVParser
 	/**
 	 * Parse a single line into String[] each string is 1 csv field
 	 * If combine 
+	 * @throws IOException 
 	 */
 
-	public CSVRecord parseLine( String line ){
-		if( line == null )
-			return null;
-
-		ArrayList<String>v = new ArrayList<String>();
-
-		int len = line.length();
-		char c;
-		int i;
-		boolean sof = true ; // start of field
-
-		StringBuffer	buf = new StringBuffer();
-		for( i = 0 ; i < len ; )
-		{
-			c = line.charAt(i++);
-
-			if( c == mDelim && (mMax <= 0 ||  mMax > v.size() )){
-				v.add( buf.toString());
-				buf = new StringBuffer();
-				sof = true ;
-				continue;
-			}
-			// Start quotes only recognized at sof
-			if( sof && c == mQuote ){
-				while ( i < len ){
-					c = line.charAt(i++);
-					if( c == mQuote ){
-						if( i == len || (i < len && line.charAt(i) != mQuote ) )
-							break;
-						c = line.charAt(i++);
-					}
-					buf.append(c);
-				}
-			}
-			else
-				buf.append(c);
-			sof=false ;
-		}
-
-		// Left over data - add a new field or combine with the last one
-		if( i>0 ){
-			if( mMax <= 0 || mMax > v.size() ) 
-				v.add( buf.toString());
-			else {
-				int last = v.size() - 1;
-
-				v.set( last , v.get(last) + buf.toString() );
-			}
-		}
+	public CSVRecord parseLine(  ) throws IOException{
 
 
-
-
-
-		return new CSVRecord( v.toArray( new String[ v.size() ] )  );
+		List<String> row = csvReader.read();
+		if( row == null )
+			return null ;
+		
+		return new CSVRecord( row );
 
 	}
 

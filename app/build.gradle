@@ -13,21 +13,13 @@ applicationDefaultJvmArgs=[
 apply from: "$rootDir/utils.gradle"
 
 
- configurations {
-        provided
-        compile.extendsFrom provided
-        runtime.exclude module: 'ant'
-        
-    }
-    
-  
     
     
 // FAT jar
 jar { 
     dependsOn configurations.runtime
     from {
-        (configurations.runtime - configurations.provided).collect {
+        (configurations.runtime - configurations.compile).collect {
             it.isDirectory() ? it : zipTree(it)
         }
     } {
@@ -49,18 +41,18 @@ dependencies {
 	compile ('xml-apis:xml-apis:1.4+'){
 		   force=true
 	}
-    provided  'xerces:xercesImpl:2.+'
-    provided 'xml-apis:xml-apis:1.4.+'
-    provided 'xml-resolver:xml-resolver:1.2+' 
-    provided 'xom:xom:latest.release'
-    provided 'net.sf.saxon:Saxon-HE:9.6.+' 
-    provided 'saxon:saxon:6.5.+'
+    compile  'xerces:xercesImpl:2.+'
+    compile 'xml-apis:xml-apis:1.4.+'
+    compile 'xml-resolver:xml-resolver:1.2+' 
+    runtime 'xom:xom:latest.release'
+    compile 'net.sf.saxon:Saxon-HE:9.6.+' 
+    compile 'saxon:saxon:6.5.+'
 
 }
 
 /*
 dependencies {
-    provided "org.apache.storm:storm-core:0.9.2-incubating"
+    compile "org.apache.storm:storm-core:0.9.2-incubating"
     compile "org.twitter4j:twitter4j-stream:4.0.2"
 }
 */
