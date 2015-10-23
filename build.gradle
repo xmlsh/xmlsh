@@ -96,6 +96,7 @@ subprojects {
 evaluationDependsOn ":app"
 task install( type: Sync  , dependsOn: ':app:installDist' ) {
     description 'MAIN: Install to directory "installDir"'
+    dependsOn subprojects.tasks["build"]
     def dest = new File(project.installDir)
     from  project(':app').getProperty('installDist')
             into dest
