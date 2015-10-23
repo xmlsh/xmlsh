@@ -8,6 +8,9 @@ package org.xmlsh.internal.commands;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,6 +30,7 @@ import org.xmlsh.core.InputPort;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
+import org.xmlsh.core.io.OutputPort;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.INamingStrategy;
@@ -56,8 +60,6 @@ public class xml2csv extends XCommand
 
 	private XQueryCompiler mCompiler;
 
-	private CSVFormatter mFormatter;
-	private OutputStream mOutput;
 
 	INamingStrategy mNamingStrategy  ;
 
@@ -86,52 +88,54 @@ public class xml2csv extends XCommand
 		if( opts.hasOpt("tab"))
 			delim = "\t";
 		mNamingStrategy = Util.getNamingStrategy( opts.getOptString("nameing-strategy","simple"));
+		OutputPort stdout = getStdout();
+		
+		try (  OutputStream os =  stdout.asOutputStream(getSerializeOpts()) ;
+			   Writer w = new OutputStreamWriter( os , getSerializeOpts().getOutput_text_encoding() ) ;
+		    CSVFormatter mFormatter = new CSVFormatter(w , delim.charAt(0),quote.charAt(0)) ) {
+			
 
-
-		mFormatter = new CSVFormatter(delim.charAt(0),quote.charAt(0));
-		mOutput = getStdout().asOutputStream(getSerializeOpts());
-
-
-
-		Processor processor = Shell.getProcessor();
-		mCompiler = processor.newXQueryCompiler();
-		InputPort  in = getStdin();
-		XdmNode	context = in.asXdmNode(getSerializeOpts());
-
-
-
-		// List<XValue> xvargs = opts.getRemainingArgs();
-		if( bAttr ){
-			mFieldXPath  = "for $a in @* order by $a/name() return $a/string()";
-			mHeaderXPath = "for $a in @* order by $a/name() return $a/node-name()";
-
-
-		}
-
-		XQueryExecutable expr = mCompiler.compile( mRowXpath );
-
-		XQueryEvaluator eval = expr.load();
-		if( context != null )
-			eval.setContextItem(context);
-
-		mLogger.trace("compiling header xpath: {}" , mHeaderXPath );
-		XQueryExecutable headerExpr = mCompiler.compile( mHeaderXPath );
-		XQueryEvaluator headerEval = headerExpr.load();
-
-		mLogger.trace("compiling field xpath: {}" , mFieldXPath );
-		XQueryExecutable fieldExpr = mCompiler.compile( mFieldXPath );
-		XQueryEvaluator fieldEval = fieldExpr.load();
-
-
-		boolean bFirst = true ;
-		for( XdmItem row : eval ){
-			if( bFirst && bHeader ){
-				writeHeader(row,headerEval);
-				bFirst = false ;
+			Processor processor = Shell.getProcessor();
+			mCompiler = processor.newXQueryCompiler();
+			InputPort  in = getStdin();
+			XdmNode	context = in.asXdmNode(getSerializeOpts());
+	
+	
+			// List<XValue> xvargs = opts.getRemainingArgs();
+			if( bAttr ){
+				mFieldXPath  = "for $a in @* order by $a/name() return $a/string()";
+				mHeaderXPath = "for $a in @* order by $a/name() return $a/node-name()";
+	
+	
 			}
-			writeLine(row, fieldEval,false );
+	
+			XQueryExecutable expr = mCompiler.compile( mRowXpath );
+	
+			XQueryEvaluator eval = expr.load();
+			if( context != null )
+				eval.setContextItem(context);
+	
+			mLogger.trace("compiling header xpath: {}" , mHeaderXPath );
+			XQueryExecutable headerExpr = mCompiler.compile( mHeaderXPath );
+			XQueryEvaluator headerEval = headerExpr.load();
+	
+			mLogger.trace("compiling field xpath: {}" , mFieldXPath );
+			XQueryExecutable fieldExpr = mCompiler.compile( mFieldXPath );
+			XQueryEvaluator fieldEval = fieldExpr.load();
+	
+	
+			boolean bFirst = true ;
+			for( XdmItem row : eval ){
+				if( bFirst && bHeader ){
+					writeHeader(mFormatter, row,headerEval);
+					bFirst = false ;
+				}
+				writeLine(mFormatter, row, fieldEval,false );
+	
+			}
 
 		}
+		
 		return 0;
 
 
@@ -139,7 +143,7 @@ public class xml2csv extends XCommand
 
 
 
-	private void writeLine(XdmItem row,  XQueryEvaluator eval , boolean bHeader ) throws SaxonApiException, IOException {
+	private void writeLine(CSVFormatter mFormatter, XdmItem row,  XQueryEvaluator eval , boolean bHeader ) throws SaxonApiException, IOException {
 		mLogger.entry(row,eval,bHeader);
 		List<String> fields = new ArrayList<String>();
 
@@ -153,10 +157,10 @@ public class xml2csv extends XCommand
 
 		}
 		CSVRecord rec = new CSVRecord(fields);
-		String line = mFormatter.encodeRow(rec);
-		mOutput.write( line.getBytes(getSerializeOpts().getOutputTextEncoding()));
-		mOutput.write( Util.getNewlineBytes(getSerializeOpts()));
-
+		if( bHeader )
+			mFormatter.writeHeader(rec);
+		else
+			mFormatter.writeRow(rec);
 
 
 	}
@@ -177,10 +181,10 @@ public class xml2csv extends XCommand
 
 
 
-	private void writeHeader(XdmItem row, XQueryEvaluator eval) throws SaxonApiException, IOException 
+	private void writeHeader(CSVFormatter mFormatter,  XdmItem row, XQueryEvaluator eval) throws SaxonApiException, IOException 
 	{
 		mLogger.entry(row,eval);
-		writeLine(row,eval,true);
+		writeLine(mFormatter ,row,eval,true);
 
 
 	}

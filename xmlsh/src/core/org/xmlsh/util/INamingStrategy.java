@@ -37,6 +37,11 @@ public interface INamingStrategy {
     static INamingStrategy SimpleNamingStrategy = 
     		new NamingStrategy( 
     				 Util::decodeFromQNameSimple , 
-    				 Util::encodeForQNameSimple ); 
+    				 Util::encodeForQNameSimple );  
+    static INamingStrategy LocalNamingStrategy = 
+    		new NamingStrategy( 
+    		     q -> q.getLocalPart()	,
+    		        QName::new
+    		) ;
     
 }

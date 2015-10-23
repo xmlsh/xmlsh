@@ -2070,9 +2070,12 @@ public static <T> boolean contains(T[] array, T v) {
 			return INamingStrategy.DefaultNamingStrategy ;	
 		case "simple" :
 		case "default": 
-		default:
-		
 			return INamingStrategy.SimpleNamingStrategy ;
+		case "none" :
+		case "local" :
+		case "null":
+		default :
+			return INamingStrategy.LocalNamingStrategy ;
 		
 		}
 	}

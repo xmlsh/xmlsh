@@ -1,106 +1,81 @@
 package org.xmlsh.util.commands;
+import java.io.IOException;
+import java.io.Writer;
 
+import org.supercsv.io.CsvListReader;
+import org.supercsv.io.CsvListWriter;
+import org.supercsv.prefs.CsvPreference;
+import org.xmlsh.util.Util;
 /**
  * 
  * 
  * @author David A. Lee
  * @version $Revision$
  */
-public class CSVFormatter
+public class CSVFormatter implements AutoCloseable
 {
+	CsvListWriter csvWriter;
 
 	private char mDelim = ','; // csv
 	private char mQuote = '"';
 
-	public CSVFormatter() {}
+	public CSVFormatter(Writer w) {
+		csvWriter = new CsvListWriter(w, CsvPreference.STANDARD_PREFERENCE );
+	}
 
-	public CSVFormatter( char delim , char quote )
+	public CSVFormatter( Writer w , char delim , char quote )
 	{
-		mDelim = delim ;
-		mQuote = quote ;
+		csvWriter = new CsvListWriter( w , 
+				new CsvPreference.Builder(
+						quote,delim,Util.getNewlineString()).build());
 	}
 
 
-	/**
-	 *  Forcibly quote/encode a character string
-	 */
-
-	private String encodeQuote(String str)
-	{
-		StringBuffer sb = new StringBuffer();
-		sb.append(mQuote);
-
-		char ch;
-		int len = str.length();
-		for (int i = 0; i < len; i++)
-		{
-			ch = str.charAt(i);
-			if (ch == mQuote ){		// double-quote quote chars
-				sb.append(mQuote);
-				sb.append(mQuote);
-			}
-			else
-				if( ch == '\n')	// newlines to nl 
-					sb.append("\\n");
-				else
-					if( ch == '\r')	// cr to \\r 
-						sb.append("\\r");
-
-					else                  
-						sb.append(ch);
-		}
-		sb.append(mQuote);
-		return sb.toString();
-	}
-
-	/**
-	 *  CSV Encode a single string
-	 * If no ","  " " or \" then leave alone
-	 * Otherwise double-quote and double-double qouote literal quotes
-	 */
-
-	public String encodeField(String str)
-	{
-		if (str == null)
-			return ""; //$NON-NLS-1$
-
-		// Check to see if we have any \" or \, 
-		char ch;
-		int len = str.length();
-		for (int i = 0; i < len; i++)
-		{
-			ch = str.charAt(i);
-			if (ch == mQuote || ch == mDelim || ch == '\n' || ch == '\r')
-				return encodeQuote(str);
-
-		}
-
-		return str;
-	}
 
 	/**
 	 * Helper method to write out an array of  strings as a CSV "record" onto the writer
+	 * @throws IOException 
 	 */
 
-	public String encodeRow(String[] csv)
+	@Deprecated
+	public void encodeRow(String... csv) throws IOException
 	{
+		csvWriter.write(csv);
+	}
 
-		int n = csv.length;
-		StringBuffer sb = new StringBuffer();
-		for (int i = 0; i < n; i++)
-		{
-			sb.append(encodeField(csv[i]));
-			if (i < n - 1)
-				sb.append(mDelim);
+	@Deprecated
+	public  void encodeRow(CSVRecord rec) throws IOException
+	{
+		csvWriter.write( rec.getFields() );
+	}
+	
+	public  void writeRow(CSVRecord rec) throws IOException
+	{
+		csvWriter.write( rec.getFields() );
+	}
+	
+	public void writeRow(String... csv) throws IOException
+	{
+		csvWriter.write(csv);
+	}
+	public void writeHeader(String... csv) throws IOException{
+		csvWriter.writeHeader(csv);
+	}
+
+	public void writeHeader(CSVRecord rec) throws IOException {
+		csvWriter.writeHeader(rec.getFields());
+		
+	}
+
+	@Override
+	public void close() throws Exception {
+		if( csvWriter != null ){
+			csvWriter.close();
+			csvWriter = null ;
 		}
-
-		return sb.toString();
+		
 	}
 
-	public  String encodeRow(CSVRecord rec)
-	{
-		return encodeRow( rec.getFields() );
-	}
 
 }
 

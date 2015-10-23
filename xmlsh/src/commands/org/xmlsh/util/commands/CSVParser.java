@@ -2,12 +2,8 @@ package org.xmlsh.util.commands;
 import org.supercsv.io.CsvListReader;
 import org.supercsv.prefs.CsvPreference;
 import org.xmlsh.util.Util;
-
-import com.jayway.jsonpath.internal.Utils;
-
 import java.io.IOException;
 import java.io.Reader;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
