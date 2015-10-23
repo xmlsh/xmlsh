@@ -1183,14 +1183,22 @@ public class Util
 	 }
 
 
+	 private static int fromHexChar( char c ){
+		 if( c >= 'A' && c <= 'F')
+			 return (c-'A');
+		if( c >= '0' && c <= '9')
+			return (c-'0');
+		 return -1;
+	 }
 
 	 public static int  fromHexChars( char[] chars , int i )
 	 {
-
-
-		 int n1 = chars[i] >= 'A' ? (10 + (chars[i] - 'A')) : ( chars[i] - '0');
-		 i++;
-		 int n2 = chars[i] >= 'A' ? (10 + (chars[i] - 'A')) : ( chars[i] - '0');
+		 if( chars.length < i+2 )
+			 return -1;
+		 int n1 = fromHexChar(chars[i]);
+		 if( n1 <0 ) return -1;
+		 int n2 = fromHexChar(chars[i+1]);
+		 if( n2 <0) return -1;
 		 byte b = (byte)( (n1 << 4) | n2 );
 		 return b & 0xFF;
 
@@ -1283,9 +1291,9 @@ public class Util
 	 public static String  decodeFromQNameSimple( QName qname ){
 	     
 	     if( Util.isBlank(qname.getPrefix()) )
-             return decodeFromNCName(qname.getLocalPart()) ;
+             return decodeFromNCNameSimple(qname.getLocalPart()) ;
 	     else
-	         return qname.getPrefix() + "::" + decodeFromNCName(qname.getLocalPart());
+	         return qname.getPrefix() + "::" + decodeFromNCNameSimple(qname.getLocalPart());
 
 	 }
 	 
@@ -1358,19 +1366,20 @@ public class Util
 						 break ;
 					 }
 					 c <<= 8;
-					 c |= fromHexChars( chars , i );
-					 i +=2 ;
-
-
+					 int cn = fromHexChars(chars,i);
+					 if( cn >= 0){
+					   c |= cn ;
+					   i +=2 ;
+					 }else {
+						 mLogger.warn("Invalid encoded QName sequence {} {}", chars[i] , chars[i+1] );
+						 break ;
+					 }
 				 } 
 
 				 if( c == 0 )
 					 sb.append('_');
 				 else
 					 sb.append( c );
-
-
-
 			 } else  
 				 sb.append(ch);
 		 }
