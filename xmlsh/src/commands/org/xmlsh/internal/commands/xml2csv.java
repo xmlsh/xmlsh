@@ -11,6 +11,8 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.namespace.QName;
+
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XQueryCompiler;
@@ -19,12 +21,15 @@ import net.sf.saxon.s9api.XQueryExecutable;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.util.INamingStrategy;
 import org.xmlsh.util.Util;
 import org.xmlsh.util.commands.CSVFormatter;
 import org.xmlsh.util.commands.CSVRecord;
@@ -46,18 +51,17 @@ public class xml2csv extends XCommand
 	private boolean bHeader = false ;
 	private String mRowXpath 	 = "/*/*";
 	private String mFieldXPath  = "*/string()";
-	private String mHeaderXPath = "*/name()";
+	private String mHeaderXPath = "*/node-name()";
 	private boolean bAttr = false ;
-
 
 	private XQueryCompiler mCompiler;
 
 	private CSVFormatter mFormatter;
 	private OutputStream mOutput;
 
+	INamingStrategy mNamingStrategy  ;
 
-
-
+	private static Logger mLogger = LogManager.getLogger();
 
 
 	@Override
@@ -65,7 +69,7 @@ public class xml2csv extends XCommand
 	{
 
 
-		Options opts = new Options( "header,attr,delim:,quote:,tab,newline:" , SerializeOpts.getOptionDefs() );
+		Options opts = new Options( "nameing=nameing-strategy:,header,attr,delim:,quote:,tab,newline:" , SerializeOpts.getOptionDefs() );
 		opts.parse(args);
 		setSerializeOpts(opts);
 
@@ -81,6 +85,7 @@ public class xml2csv extends XCommand
 		// -tab overrides -delim
 		if( opts.hasOpt("tab"))
 			delim = "\t";
+		mNamingStrategy = Util.getNamingStrategy( opts.getOptString("nameing-strategy","simple"));
 
 
 		mFormatter = new CSVFormatter(delim.charAt(0),quote.charAt(0));
@@ -98,13 +103,10 @@ public class xml2csv extends XCommand
 		// List<XValue> xvargs = opts.getRemainingArgs();
 		if( bAttr ){
 			mFieldXPath  = "for $a in @* order by $a/name() return $a/string()";
-			mHeaderXPath = "for $a in @* order by $a/name() return $a/name()";
+			mHeaderXPath = "for $a in @* order by $a/name() return $a/node-name()";
 
 
 		}
-
-
-
 
 		XQueryExecutable expr = mCompiler.compile( mRowXpath );
 
@@ -112,10 +114,11 @@ public class xml2csv extends XCommand
 		if( context != null )
 			eval.setContextItem(context);
 
+		mLogger.trace("compiling header xpath: {}" , mHeaderXPath );
 		XQueryExecutable headerExpr = mCompiler.compile( mHeaderXPath );
 		XQueryEvaluator headerEval = headerExpr.load();
 
-
+		mLogger.trace("compiling field xpath: {}" , mFieldXPath );
 		XQueryExecutable fieldExpr = mCompiler.compile( mFieldXPath );
 		XQueryEvaluator fieldEval = fieldExpr.load();
 
@@ -132,15 +135,12 @@ public class xml2csv extends XCommand
 		return 0;
 
 
-
 	}
 
 
 
 	private void writeLine(XdmItem row,  XQueryEvaluator eval , boolean bHeader ) throws SaxonApiException, IOException {
-
-
-
+		mLogger.entry(row,eval,bHeader);
 		List<String> fields = new ArrayList<String>();
 
 
@@ -148,8 +148,8 @@ public class xml2csv extends XCommand
 			eval.setContextItem(row);
 
 		for( XdmItem field : eval ){
-			String name = field.toString();
-			fields.add( bHeader ? Util.decodeFromNCName(name) : name );
+			fields.add( bHeader ?
+					mNamingStrategy.fromXmlName( fromSaxonName(field) ) : field.toString() );
 
 		}
 		CSVRecord rec = new CSVRecord(fields);
@@ -163,8 +163,23 @@ public class xml2csv extends XCommand
 
 
 
+	private QName fromSaxonName(XdmItem field) {
+		mLogger.entry(field);
+		if( field instanceof XdmNode ){
+		   net.sf.saxon.s9api.QName se = ((XdmNode)field ).getNodeName();
+		 return new QName( 
+				se.getNamespaceURI(),
+				se.getLocalName() ,se.getPrefix() );
+		}
+		else
+			return new QName( field.getStringValue() );
+	}
+
+
+
 	private void writeHeader(XdmItem row, XQueryEvaluator eval) throws SaxonApiException, IOException 
 	{
+		mLogger.entry(row,eval);
 		writeLine(row,eval,true);
 
 

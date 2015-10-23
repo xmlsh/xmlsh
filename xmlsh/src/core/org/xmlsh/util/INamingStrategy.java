@@ -1,23 +1,42 @@
 package org.xmlsh.util;
-
+import java.util.Comparator;
+import java.util.function.Function;
 import javax.xml.namespace.QName;
 
 
-
 public interface INamingStrategy {
-    QName  toXmlName( String name );
-    String  fromXmlName( QName name );
+	
+	QName toXmlName(String name);
+    String fromXmlName(QName qname);
     
-    public static class EncodedNamingStrategy implements INamingStrategy {
-        @Override
-        public QName toXmlName(String name) {
-            return Util.encodeForQName(name);
-        }
+    static class NamingStrategy implements INamingStrategy {
+    	private Function<String,QName> toXml;
+    	private  Function<QName,String> fromXml ;
+    	public NamingStrategy( 
+    			Function<QName,String>  from, 
+    			Function<String, QName>  to ) {
+    		fromXml = from  ;
+    		toXml = to ;
+    	}
+		@Override
+		public QName toXmlName(String name) {
+			return toXml.apply(name);
+		}
 
-        @Override
-        public String fromXmlName(QName name) {
-            return Util.decodeFromQName(name);
-        }
-    }
-    public static INamingStrategy DefaultNamingStrategy = new EncodedNamingStrategy();
+		@Override
+		public String fromXmlName(QName qname) {
+			return fromXml.apply(qname);
+		}
+    };
+    
+    static INamingStrategy DefaultNamingStrategy = 
+    		new NamingStrategy( 
+    				 Util::decodeFromQName , 
+    				 Util::encodeForQName ); 
+    
+    static INamingStrategy SimpleNamingStrategy = 
+    		new NamingStrategy( 
+    				 Util::decodeFromQNameSimple , 
+    				 Util::encodeForQNameSimple ); 
+    
 }

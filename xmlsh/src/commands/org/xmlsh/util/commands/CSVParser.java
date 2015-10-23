@@ -23,8 +23,6 @@ public class CSVParser
 	private int mMax ;
 
 
-
-
 	public CSVParser(Reader r ) {
 
 		csvReader = new org.supercsv.io.CsvListReader( r , CsvPreference.STANDARD_PREFERENCE);
@@ -55,8 +53,6 @@ public class CSVParser
 	 */
 
 	public CSVRecord parseLine(  ) throws IOException{
-
-
 		List<String> row = csvReader.read();
 		if( row == null )
 			return null ;

@@ -1220,6 +1220,10 @@ public class Util
 
 
 	 }
+	 public static QName encodeForQNameSimple( String name ){
+		 return new QName( encodeForNCNameSimple(name));
+	 }
+
 	 
 	 public static QName encodeForQName( String name )
 	 {
@@ -1275,7 +1279,64 @@ public class Util
 	         return qname.getPrefix() + "::" + decodeFromNCName(qname.getLocalPart());
 
 	 }
-	 public static String decodeFromNCName( String name )
+	 
+	 public static String  decodeFromQNameSimple( QName qname ){
+	     
+	     if( Util.isBlank(qname.getPrefix()) )
+             return decodeFromNCName(qname.getLocalPart()) ;
+	     else
+	         return qname.getPrefix() + "::" + decodeFromNCName(qname.getLocalPart());
+
+	 }
+	 
+	 public static String decodeFromNCNameSimple( String name )
+	 {
+		 StringBuffer sb = new StringBuffer( name.length() * 2 );
+		 char[] chars = name.toCharArray();
+		 for( char ch : chars ){
+			 if( ch == '_' )
+				 ch = ' ' ;
+		     sb.append(ch);	
+		 }
+		 return sb.toString();
+		 
+	 }
+	 
+	 
+	 public static String encodeForNCNameSimple( String name )
+	 {
+		 StringBuffer sb = new StringBuffer( name.length() * 2 );
+		 char[] chars = name.toCharArray();
+		 boolean bFirst = true ;
+		 for( char ch : chars ){
+			 if( bFirst && !isInitialNameChar(ch) )
+				 sb.append( encodeIntiallNameCharSimple(ch));
+			 else
+			 if( ! bFirst && ! isNameChar(ch))
+				 sb.append( encodeNameCharSimple(ch));
+			else
+				sb.append(ch);	
+			 bFirst = false ;
+		 }
+		 return sb.toString();
+		 
+	 }
+
+	 public static String encodeNameCharSimple(char ch) {
+		 switch( ch ){
+		 case ' ' :  return "_" ;
+		 default : return String.valueOf(ch);
+		 }
+		 
+	}
+
+
+	 public static String encodeIntiallNameCharSimple(char ch) {
+		 return encodeNameCharSimple(ch);
+	}
+
+
+	public static String decodeFromNCName( String name )
 	 {
 
 		 StringBuffer sb = new StringBuffer( name.length() * 2 );
@@ -1520,7 +1581,6 @@ public class Util
 
 	 }
 
-	 @SuppressWarnings("unchecked")
 	 public static <T extends Throwable> void wrapException( String message,Throwable e, Class<T> cls ) throws T
 	 {
 		 // Need to add the message
@@ -2003,9 +2063,19 @@ public static <T> boolean contains(T[] array, T v) {
     }
 
 
-
-
-
+	public static INamingStrategy getNamingStrategy(String strategy) {
+		switch( strategy ){
+		case "json" :
+		case "full" :
+			return INamingStrategy.DefaultNamingStrategy ;	
+		case "simple" :
+		case "default": 
+		default:
+		
+			return INamingStrategy.SimpleNamingStrategy ;
+		
+		}
+	}
 }
 
 //

@@ -2,6 +2,8 @@ package org.xmlsh.util.commands;
 
 import java.util.List;
 
+import org.xmlsh.util.Util;
+
 /**
  * A single 'record' of CVS.
  * <br>
@@ -27,7 +29,8 @@ public class CSVRecord
 
 	public String getField( int id )
 	{
-		return id < mFields.length ? mFields[id] : "" ; //$NON-NLS-1$
+		return id < mFields.length ?
+				Util.notNull(mFields[id]) : "" ; //$NON-NLS-1$
 	}    
 
 	public int getNumFields() {

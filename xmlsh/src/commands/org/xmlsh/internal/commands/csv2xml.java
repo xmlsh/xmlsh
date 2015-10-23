@@ -11,6 +11,7 @@ import java.io.Reader;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
@@ -19,6 +20,7 @@ import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.io.OutputPort;
 import org.xmlsh.sh.shell.SerializeOpts;
+import org.xmlsh.util.INamingStrategy;
 import org.xmlsh.util.Util;
 import org.xmlsh.util.commands.CSVParser;
 import org.xmlsh.util.commands.CSVRecord;
@@ -43,6 +45,7 @@ import org.xmlsh.util.commands.CSVRecord;
 public class csv2xml extends XCommand
 {
 
+	INamingStrategy mNamingStrategy  ;
 
 	@Override
 	public int run(  List<XValue> args )	throws Exception
@@ -50,7 +53,7 @@ public class csv2xml extends XCommand
 
 
 
-		Options opts = new Options( "root:,row:,col:,header,attr,delim:,quote:,colnames:,tab,skip:,trim,max:", SerializeOpts.getOptionDefs() );
+		Options opts = new Options( "nameing=naming-strategy:,root:,row:,col:,header,attr,delim:,quote:,colnames:,tab,skip:,trim,max:", SerializeOpts.getOptionDefs() );
 		opts.parse(args);
 		setSerializeOpts(opts);
 
@@ -60,6 +63,9 @@ public class csv2xml extends XCommand
 		String col = opts.getOptString("col", "col");
 		String delim = opts.getOptString("delim", ",");
 		String quote = opts.getOptString("quote", "\"");
+		mNamingStrategy = Util.getNamingStrategy( opts.getOptString("nameing-strategy","simple"));
+
+
 		boolean bHeader = opts.hasOpt("header");
 		boolean bAttr = opts.hasOpt("attr");
 		int	skip = Util.parseInt(opts.getOptString("skip", "0"),0);
@@ -162,19 +168,21 @@ public class csv2xml extends XCommand
 		// Attribute normal format
 		if( battr ){
 			for( int i = 0 ; i < csv.getNumFields() ; i++ ){
-				String name = getAttrName( i , col , header,bTrim);
+				QName name = getAttrName( i , col , header,bTrim);
 				if( name != null )
-					writer.writeAttribute(name,csv.getField(i));
+					// writer.writeAttribute(name.getPrefix(),name.getNamespaceURI(),name.getLocalPart(),csv.getField(i));
+					// SAXON BUG# 2481 
+					writer.writeAttribute(name.toString(),csv.getField(i));
+					
 			}
-
 
 		} else {
 
 
 			for( int i = 0 ; i < csv.getNumFields() ; i++ ){
-				String name = getColName( i , col , header,bTrim );
+				QName name = getColName( i , col , header,bTrim );
 				if( name != null ){
-					writer.writeStartElement(name);
+					writer.writeStartElement(name.getPrefix(),name.getLocalPart(),name.getNamespaceURI());
 					writer.writeCharacters(csv.getField(i));
 					writer.writeEndElement();
 				}
@@ -187,37 +195,31 @@ public class csv2xml extends XCommand
 			}
 
 
-	private String getColName(int i, String col, CSVRecord header, boolean bTrim ) {
+	private QName getColName(int i, String col, CSVRecord header, boolean bTrim ) {
 		if( header != null  ){
 			if( header.getNumFields() <= i )
-				return bTrim ? null : col ;
+				return bTrim ? null : new QName(col) ;
 
-			return toXmlName( header.getField(i));
+			return mNamingStrategy.toXmlName( header.getField(i));
 		}
 		else
-			return col ;
+			return new QName(col );
 	}
 
 
 
 	// Get an attribute name 
-	private String getAttrName(int i, String col, CSVRecord header, boolean bTrim ) {
+	private QName getAttrName(int i, String col, CSVRecord header, boolean bTrim ) {
 		if( header != null ){
 			if( header.getNumFields() <= i )
-				return bTrim ? null : col + (i + 1) ;
+				return new QName( bTrim ? null : col + (i + 1)) ;
 
-			return toXmlName( header.getField(i));
+			return mNamingStrategy.toXmlName( header.getField(i));
 		}
 
 		else
-			return col + (i + 1)  ;
+			return new QName( col + (i + 1))  ;
 
-	}
-
-
-
-	private String toXmlName(String field) {
-		return Util.encodeForNCName(field);
 	}
 
 

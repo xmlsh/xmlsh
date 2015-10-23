@@ -13,11 +13,14 @@
 		<Property name="user.home">${sys:user.dir}</Property>
 		<Property name="HOME">${sys:user.home}</Property>
 		<Property name="home">${env:HOME}</Property>
-		<Property name="XLOGFILE">${env:HOME}/xmlsh.log</Property>
-		<Property name="logfile">${env:XLOGFILE}</Property>
-		<Property name="XTRACE">trace-nothing</Property>
+		<Property name="xmlsh.XLOGFILE">${env:HOME}/xmlsh.log</Property>
+	  <Property name="XLOGFILE">${sys:xmlsh.XLOGFILE}</Property>
+    <Property name="logfile">${env:XLOGFILE}</Property>
+		<Property name="xmlsh.XTRACE">trace-nothing</Property>
+	  <Property name="XTRACE">${sys:xmlsh.XTRACE}</Property>
 		<property name="tracelog">${env:XTRACE}</property>
-		<Property name="XLOGLEVEL">WARN</Property>
+    <Property name="xmlsh.XLOGLEVEL">WARN</Property>
+    <Property name="XLOGLEVEL">${sys:xmlsh.XLOGLEVEL}</Property>
 		<property name="xloglevel">${env:XLOGLEVEL}</property>
 		
 		

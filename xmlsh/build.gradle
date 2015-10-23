@@ -17,27 +17,8 @@ compileJavacc {
 }
 
 
-ext.generatedResources = "$buildDir/generated-resources/main"
-
-
-task createVersion  {
-    def destDir = new File( generatedResources ,"org/xmlsh/sh/shell")
-    def destFile = project.file(destDir.path + "/version.properties")
-    outputs.file destFile
-    doLast {
-        destDir.mkdirs()
-        destFile.text = """version.build_date=${xversion_build_date}
-version.release=${xversion_release}
-version.version=${xversion_version}
-"""
-    }
-}
-
-build.dependsOn createVersion
-
 sourceSets {
     main {
-        output.dir(generatedResources, builtBy: 'createVersion')
         java {  srcDirs = sourceDirs  }
         resources {
             srcDirs = sourceDirs
@@ -46,6 +27,24 @@ sourceSets {
     }
 }
 
+
+
+task createVersion  {
+    ext.outputDir =  project.file("src/generated/org/xmlsh/sh/shell")
+    ext.destFile = new File(outputDir, "version.properties")
+    outputs.file destFile
+    outputs.upToDateWhen {false }
+    doLast {    
+        outputDir.exists() || outputDir.mkdir()
+        def destFile = new File(outputDir, "version.properties")
+        destFile.text = """version.build_date=${xversion_build_date}
+version.release=${xversion_release}
+version.version=${xversion_version}
+"""
+    }
+}
+
+build.dependsOn createVersion
 
 // http://stackoverflow.com/questions/10405970/how-do-i-define-a-compile-time-only-classpath-in-gradle
 configurations {
@@ -91,8 +90,8 @@ dependencies {
     compile 'jline:jline2:2.13-SNAPSHOT'
     compile 'com.jayway.jsonpath:json-path:2.+'
     compile 'org.ccil.cowan.tagsoup:tagsoup:1.+'
-    runtime  'xerces:xercesImpl:2.+'
-    runtime 'xml-apis:xml-apis:1.4.+'
+    compile  'xerces:xercesImpl:2.+'
+    compile 'xml-apis:xml-apis:1.4.+'
     compile 'xml-resolver:xml-resolver:1.2+'
     compile 'xom:xom:latest.release'
     compile ('net.sf.saxon:Saxon-HE:9.6.+' ){ force=true  }
@@ -100,7 +99,7 @@ dependencies {
     compile  'saxon:saxon:6.5.+'
 	compile 'net.sf.supercsv:super-csv:2.3+'
 
-    runtime  group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl' , version: '2.+'
+    compile  group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl' , version: '2.+'
     
 
 

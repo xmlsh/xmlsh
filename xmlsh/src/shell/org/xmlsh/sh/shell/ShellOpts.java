@@ -45,7 +45,7 @@ public class ShellOpts
 
     public static final boolean defaultLocationFormat()
     {
-        String format = System.getenv(XLOCFORMAT);
+        String format = Shell.getSystemProperty(XLOCFORMAT);
         return Util.parseBoolean(format, false);
     }
 

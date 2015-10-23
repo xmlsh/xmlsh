@@ -18,7 +18,8 @@ class Logging {
 
   static {
     
-    String log4jpath = System.getenv(ShellConstants.XLOG4JPATH);
+    String log4jpath = Shell.getSystemProperty(ShellConstants.XLOG4JPATH);
+    
     if( log4jpath != null  ) {
       File f = new File(log4jpath ) ;
       if( f.isFile() && f.canRead() ) {
@@ -31,7 +32,7 @@ class Logging {
   }
 
 
-	static void configureLogger(boolean bDisabled)
+static void configureLogger(boolean bDisabled)
 	{
 		// Only configure logger if it has not already been configured
 		// This avoids adding appenders to embedded invocations of xmlsh

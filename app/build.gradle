@@ -112,6 +112,16 @@ publishing {
   }
 }
 
+
+
+run {
+    standardInput = System.in
+     /* Can pass all the properties: */
+    // systemProperties System.getProperties()
+
+    /* Or just each by name: */
+    // systemProperty "xmlsh.XLOGLEVEL", "TRACE"
+}
     
     
     /*zz

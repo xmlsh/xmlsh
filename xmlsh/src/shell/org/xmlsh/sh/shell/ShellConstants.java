@@ -57,10 +57,10 @@ public class ShellConstants
 		}
 		
 		
-		String logging = System.getenv(ShellConstants.ENV_XDISABLE_LOGGING);
-		Logging.configureLogger(Util.parseBoolean(logging) );
+		String logging = Shell.getSystemProperty(ShellConstants.ENV_XDISABLE_LOGGING);
+		Logging.configureLogger(Util.parseBoolean(logging,false) );
 
-		Shell.mLogger.info("xmlsh initialize");
+		Shell.postInit("Logging Initialized");
 
 		/*
 		 * Workaround a saxon bug - pre-initialize processor
@@ -93,6 +93,8 @@ public class ShellConstants
     public static final String XSH_EXTENSION = ".xsh";
 
 	public static final String kENCODING_UTF_8 = "UTF-8";
+
+	static final String kXMLSH_PROP_PREFIX = "xmlsh.";
 
 
 }

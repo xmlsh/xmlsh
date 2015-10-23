@@ -38,6 +38,7 @@ import java.util.Random;
 import java.util.Stack;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 import javax.xml.transform.TransformerException;
 
@@ -117,6 +118,10 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt  , net.sf.
 	     ShellConstants.ENV_XPATH
          
 	};
+
+
+
+
 	@Override
 	public String toString() {
 		return "[" + _id + "," +  mLastThreadId +  "]" ;
@@ -148,7 +153,7 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt  , net.sf.
 		public SourceLocation loc;
 
 		public CallStackEntry(String name, IExpression cmd, SourceLocation loc) {
-			mLogger.entry(name, cmd, loc);
+			getLogger().entry(name, cmd, loc);
 			this.name = name;
 			this.cmd = cmd;
 			this.loc = loc;
@@ -160,8 +165,15 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt  , net.sf.
 			return s;
 		}
 	}
+	private static Logger _mLogger = null ;
 
-	static Logger mLogger = LogManager.getLogger();
+	static private Logger getLogger(){
+		if( _mLogger == null )
+			_mLogger = LogManager.getLogger();
+
+		return _mLogger;
+	}
+
 	private ShellOpts mOpts;
 	private ShellIO   mIO; // Command and event IO environment
 
@@ -227,6 +239,9 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt  , net.sf.
 	}
 
 	static {
+		// Make this happen first ? 
+		Logger fake = _mLogger;
+		assert(fake == null );
 		ShellConstants.initialize();
 	}
 
@@ -245,7 +260,7 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt  , net.sf.
 	 */
 
 	public Shell(ShellIO io) throws IOException, CoreException {
-		mLogger.entry(io);
+		getLogger().entry(io);
 		mIO = io ;
 		mIO.setPrompt(this);
 		mClosed = false ;
@@ -293,34 +308,31 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt  , net.sf.
 
 	    
 	    // System env first 
-		Map<String, String> env = System.getenv();
-		for (Map.Entry<String, String> entry : env.entrySet()) {
-
-			String name = entry.getKey();
-			if (Util.isPath(name))
-				continue;
-			if (Util.isBlank(name))
-				continue;
-			if (!name.matches("^[a-zA-Z_0-9]+$"))
-				continue;
-
+		Map<String, String> env = new HashMap<>();
+		
+		env.putAll(System.getenv());
+		Properties props = System.getProperties();
+		props.stringPropertyNames().stream().filter( s -> s.startsWith(ShellConstants.kXMLSH_PROP_PREFIX)).
+		 forEach(key -> 
+				env.putIfAbsent( key.substring(ShellConstants.kXMLSH_PROP_PREFIX.length() ), props.getProperty(key) ));
+				
+		
+		env.keySet().stream().filter( name -> (
+			! Util.isBlank(name) && 
+			! Util.isPath(name) &&
+			  name.matches("^[a-zA-Z_0-9]+$") &&
 			// Ignore reserved vars that are set internally
-			if (Util.contains(_reservedEnvVars , name ))
-				continue;
-
+			! Util.contains(_reservedEnvVars , name ) ) ).
+		forEach( name ->
 			getEnv().initVariable(
-					XVariable.newInstance(name,
-							XValue.newXValue(entry.getValue()),
-							XVariable.systemFlags()));
-
-		}
-		
-		
+			XVariable.newInstance(name,
+				XValue.newXValue(env.get(name)) ,
+				XVariable.systemFlags())));
 		
 
 		// Builtins may come from env or properties 
 		// Export path to shell path
-		String path = FileUtils.toJavaPath(  getSysProp(  ShellConstants.PATH ) );
+		String path = FileUtils.toJavaPath(  getSystemProperty(  ShellConstants.PATH ) );
 		getEnv().initVariable(
 				XVariable.newInstance(
 						ShellConstants.PATH,
@@ -329,7 +341,7 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt  , net.sf.
 								XVariable.systemFlags()));
 
 		String xpath = FileUtils
-				.toJavaPath( getSysProp(ShellConstants.ENV_XPATH));
+				.toJavaPath( getSystemProperty(ShellConstants.ENV_XPATH));
 		getEnv().initVariable(
 				XVariable.newInstance(
 						ShellConstants.ENV_XPATH,
@@ -340,8 +352,8 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt  , net.sf.
 		
 		
 		
-		String xmlsh  = getSysProp( ShellConstants.ENV_XMLSH );
-		String xmlshhome = getSysProp( ShellConstants.ENV_XMLSH_HOME  );
+		String xmlsh  = getSystemProperty( ShellConstants.ENV_XMLSH );
+		String xmlshhome = getSystemProperty( ShellConstants.ENV_XMLSH_HOME  );
 		if( Util.isBlank(xmlshhome))
 		    xmlshhome = xmlsh ;
 		
@@ -352,7 +364,7 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt  , net.sf.
 		    xmlsh = xmlshhome ;
 		
 		if( Util.isBlank(xmlshhome)) { 
-		    mLogger.warn("Required  property {} missing - limited functionalty." , ShellConstants.ENV_XMLSH_HOME);
+		    getLogger().warn("Required  property {} missing - limited functionalty." , ShellConstants.ENV_XMLSH_HOME);
 		}
 		getEnv().setVar(
                 ShellConstants.ENV_XMLSH, XValue.newXValue(FileUtils.toJavaPath(xmlsh)) , XVariable.standardFlags() );
@@ -361,7 +373,7 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt  , net.sf.
                 ShellConstants.ENV_XMLSH_HOME, XValue.newXValue(FileUtils.toJavaPath(xmlshhome)) , XVariable.standardFlags() );
 		
 
-		String xmpath = FileUtils.toJavaPath(getSysProp(ShellConstants.ENV_XMODPATH));
+		String xmpath = FileUtils.toJavaPath(getSystemProperty(ShellConstants.ENV_XMODPATH));
 		
 		getEnv().setVar(
 						ShellConstants.ENV_XMODPATH,
@@ -440,7 +452,7 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt  , net.sf.
 	// Try to find the install root
 	// http://stackoverflow.com/questions/320542/how-to-get-the-path-of-a-running-jar-file
 	private static String tryFindHome() {
-	    mLogger.entry();
+	    getLogger().entry();
 	    try {
           CodeSource cs = Shell.class.getProtectionDomain().getCodeSource();
           if( cs != null ){
@@ -462,22 +474,25 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt  , net.sf.
                    if( p != null ){
                        if(   Files.isDirectory( p.resolve( "modules") ) ||
                               Files.isDirectory( p.resolve( "lib") ) ) 
-                              return mLogger.exit(p.toString());
+                              return getLogger().exit(p.toString());
                    }
                }
-               return mLogger.exit(sdir );
+               return getLogger().exit(sdir );
           }
           
 	    } catch( SecurityException | URISyntaxException  | IOException e ){
-	        mLogger.catching(e);
+	        getLogger().catching(e);
 	    }
 
 	    return null;
     }
 
 
-    private String getSysProp(String name) {
-	    return System.getProperty("xmlsh.env." + name , System.getenv(name));
+    static String getSystemProperty(String prop) {
+    		String propValue = System.getenv(prop);
+    	    if( propValue == null )
+    	    	propValue = System.getProperty(ShellConstants.kXMLSH_PROP_PREFIX + prop );
+    		return propValue;
     }
 
 
@@ -490,7 +505,7 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt  , net.sf.
 
 	private Shell(Shell that, ThreadGroup threadGroup) throws IOException {
 		
-		mLogger.entry(that, threadGroup);
+		getLogger().entry(that, threadGroup);
 		mIO = that.mIO ;
 		mClosed = false ;
 		mParent = that;
@@ -514,14 +529,14 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt  , net.sf.
 
 		// Cloning shells doesnt save the condition depth
 		// mConditionDepth = that.mConditionDepth;
-		mLogger.exit();
+		getLogger().exit();
 
 	}
 
 	@Override
 	public Shell clone() {
 		
-		mLogger.entry();
+		getLogger().entry();
 		try {
 			return new Shell(this);
 		} catch (IOException e) {
@@ -533,14 +548,14 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt  , net.sf.
 
 	@Override
 	public void close() throws IOException {
-		mLogger.entry();
+		getLogger().entry();
 		// Synchronized only to change states
 		synchronized (this) {
 			
 			
-			mLogger.trace("closing {} - closed is: {} ", this , mClosed);
+			getLogger().trace("closing {} - closed is: {} ", this , mClosed);
 			if (mClosed){
-				 mLogger.exit();
+				 getLogger().exit();
 			   return;
 			}
 			// Mark closed now while syncronized
@@ -564,7 +579,7 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt  , net.sf.
 		} 
 		
 		
-		mLogger.exit();
+		getLogger().exit();
 	}
 
 	private void notifyChildClose(Shell shell) {
@@ -599,7 +614,7 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt  , net.sf.
 	@Override
 	protected void finalize() throws Throwable {
 		
-		mLogger.entry();
+		getLogger().entry();
 		close();
 	}
 
@@ -614,7 +629,7 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt  , net.sf.
 	public IExpression parseScript(Reader reader, String source)
 			throws CoreException {
 		
-		mLogger.entry(reader, source);
+		getLogger().entry(reader, source);
 
 		try {
 
@@ -636,7 +651,7 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt  , net.sf.
 
 	public ICommandExpr parseEval(String scmd) throws CoreException {
 
-		mLogger.entry(scmd);
+		getLogger().entry(scmd);
 
 		try ( Reader reader = Util.toReader(scmd ) ){
 			enterEval();
@@ -644,7 +659,7 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt  , net.sf.
 			ShellParser parser = new ShellParser(this,newParserReader(reader,false),"<eval>");
 
 			ICommandExpr c = parser.script();
-			return mLogger.exit( c);
+			return getLogger().exit( c);
 
 		} catch (Exception e) {
 			
@@ -658,10 +673,10 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt  , net.sf.
 
 	private void exitEval() {
 		
-		mLogger.entry();
+		getLogger().entry();
 		int d;
 		if ((d = mRunDepth.decrementAndGet()) < 0) {
-			mLogger.error("SNH: run depth underrun: " + d
+			getLogger().error("SNH: run depth underrun: " + d
 					+ " resetting to 0: stack {}", (Object[]) Thread
 					.currentThread().getStackTrace());
 			mRunDepth.compareAndSet(d, 0);
@@ -711,7 +726,7 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt  , net.sf.
 			boolean convertReturn) throws ParseException, IOException, ThrowException
 	{
 		
-		mLogger.entry(scriptURL, source, convertReturn);
+		getLogger().entry(scriptURL, source, convertReturn);
 		try ( Reader reader = Util.toReader(scriptURL, getInputTextEncoding())) {
 			return runScript( reader , source , convertReturn );
 		}
@@ -723,7 +738,7 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt  , net.sf.
 			boolean convertReturn) throws ParseException, ThrowException,
 			IOException {
 
-		mLogger.entry(reader, source, convertReturn);
+		getLogger().entry(reader, source, convertReturn);
 		try {
 			enterEval(); 
 			SourceLocation saveLoc = getLocation();
@@ -740,7 +755,7 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt  , net.sf.
 					if (mOpts.mVerbose || mOpts.mLocation) {
 
 						if (mOpts.mLocation) {
-							mLogger.info(formatLocation());
+							getLogger().info(formatLocation());
 						}
 
 						if (mOpts.mVerbose) {
@@ -767,7 +782,7 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt  , net.sf.
 			
 			catch (Exception | Error e) {
 				printErr(e.getMessage());
-				mLogger.warn("Exception parsing statement", e);
+				getLogger().warn("Exception parsing statement", e);
 				parser.ReInit(newParserReader(reader,false), source);
 
 			} finally {
@@ -784,7 +799,7 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt  , net.sf.
 				exitStatus = getReturnValueAsExitStatus(exitStatus);
 
 			onSignal("EXIT");
-			return mLogger.exit(new ReturnValue(exitStatus, getReturnValue())) ;
+			return getLogger().exit(new ReturnValue(exitStatus, getReturnValue())) ;
 
 		} finally {
 			exitEval();
@@ -852,7 +867,7 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt  , net.sf.
 
 				} catch (ThrowException e) {
 					printErr("Ignoring thrown value: " + e.getMessage());
-					mLogger.error("Ignoring throw value", e);
+					getLogger().error("Ignoring throw value", e);
 					parser.ReInit(newInteractiveParserReader(), null);
 				} catch (Exception e) {
 
@@ -860,21 +875,21 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt  , net.sf.
 
 					if (loc != null) {
 						String sLoc = loc.format(mOpts.mLocationFormat);
-						mLogger.info(loc.format(mOpts.mLocationFormat));
+						getLogger().info(loc.format(mOpts.mLocationFormat));
 						printErr(sLoc);
 					}
 
 					printErr(e.getMessage());
-					mLogger.warn("Exception parsing statement", e);
+					getLogger().warn("Exception parsing statement", e);
 					parser.ReInit(newInteractiveParserReader(), null);
 				} catch (Error e) {
 					printErr("Error: " + e.getMessage());
 					SourceLocation loc = c != null ? c.getSourceLocation() : null;
-					mLogger.warn("Exception parsing statement", e);
+					getLogger().warn("Exception parsing statement", e);
 					if (loc != null) {
 						String sLoc = loc.format(mOpts.mLocationFormat);
 
-						mLogger.info(loc.format(mOpts.mLocationFormat));
+						getLogger().info(loc.format(mOpts.mLocationFormat));
 						printErr(sLoc);
 					}
 					parser.ReInit(newInteractiveParserReader(), null);
@@ -896,7 +911,7 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt  , net.sf.
 
 	public void runRC(String rcfile) throws IOException, Exception {
 		
-		mLogger.entry(rcfile);
+		getLogger().entry(rcfile);
 		// Try to source the rcfile
 		if (rcfile != null) {
 			try {
@@ -920,7 +935,7 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt  , net.sf.
 			}
 		}
 		
-		mLogger.exit();
+		getLogger().exit();
 	}
 
 	public String getPS(String ps, String def) {
@@ -933,7 +948,7 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt  , net.sf.
 			try {
 				sps1 = EvalUtils.expandStringToString(this, sps1, mPSEnv);
 			} catch (IOException | CoreException e) {
-				mLogger.debug("Exception getting PS var " + ps, e);
+				getLogger().debug("Exception getting PS var " + ps, e);
 				return def;
 			}
 		return sps1;
@@ -960,7 +975,7 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt  , net.sf.
 	public int exec(ICommandExpr c, SourceLocation loc) throws ThrowException,
 	ExitOnErrorException {
 		
-		mLogger.entry(c, loc);
+		getLogger().entry(c, loc);
 
 		try {
 			enterEval();
@@ -1004,12 +1019,12 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt  , net.sf.
 
 			catch (Exception e) {
 				
-				printLoc(mLogger, loc);
+				printLoc(getLogger(), loc);
 
 				printErr("Exception running: " + c.describe(true));
 				printErr(e.toString(), loc);
 
-				mLogger.error(
+				getLogger().error(
 						"Exception running command: " + c.describe(false), e);
 				mStatus = -1;
 				// If not success then may throw if option 'throw on error' is
@@ -1018,7 +1033,7 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt  , net.sf.
 					if (!isInCommandConndition())
 						throw new ThrowException(XValue.newXValue(mStatus));
 				}
-				return mLogger.exit(mStatus);
+				return getLogger().exit(mStatus);
 
 			}
 		} finally {
@@ -1039,7 +1054,7 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt  , net.sf.
 
 		if (sb.length() > 0) {
 			String scmd = sb.toString();
-			if (mOpts.mTrace && mLogger.isEnabled(mOpts.mTraceLevel)) {
+			if (mOpts.mTrace && getLogger().isEnabled(mOpts.mTraceLevel)) {
 				traceExec(loc, scmd);
 			}
 			if (mOpts.mExec) {
@@ -1070,11 +1085,11 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt  , net.sf.
 					os.flush();
 				}
 			} catch (IOException | CoreException e) {
-				mLogger.debug("Exception tracing output", e);
+				getLogger().debug("Exception tracing output", e);
 			}
 
 		} else
-			mLogger.log(mOpts.mTraceLevel, strace);
+			getLogger().log(mOpts.mTraceLevel, strace);
 
 	}
 
@@ -1114,8 +1129,8 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt  , net.sf.
 	}
 
 	public void printErr(String s, SourceLocation loc) {
-	    mLogger.entry(s,loc);
-	    mLogger.warn("printOut: {}" , s );
+	    getLogger().entry(s,loc);
+	    getLogger().warn("printOut: {}" , s );
 
 		try (PrintWriter out = new PrintWriter(new BufferedWriter(
 				new OutputStreamWriter(getEnv().getStderr().asOutputStream(
@@ -1127,10 +1142,10 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt  , net.sf.
 			out.println(s);
 			out.flush();
 		} catch (CoreException | IOException e) {
-			mLogger.error("Exception writing output: " + s, e);
+			getLogger().error("Exception writing output: " + s, e);
 
 		} finally {
-		    mLogger.exit();
+		    getLogger().exit();
 		}
 
 	}
@@ -1146,8 +1161,8 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt  , net.sf.
 	}
 
 	public void printOut(String s) {
-	    mLogger.entry(s);
-	    mLogger.debug("printOut: {}" , s );
+	    getLogger().entry(s);
+	    getLogger().debug("printOut: {}" , s );
 		try (PrintWriter out = new PrintWriter(new BufferedWriter(
 				new OutputStreamWriter(getEnv().getStdout().asOutputStream(
 						getSerializeOpts()), getSerializeOpts()
@@ -1155,11 +1170,11 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt  , net.sf.
 			out.println(s);
 			out.flush();
 		} catch (IOException | CoreException e) {
-			mLogger.error("Exception writing output: " + s, e);
+			getLogger().error("Exception writing output: " + s, e);
 			return;
 		}
 		finally {
-		    mLogger.exit();
+		    getLogger().exit();
 		}
 	}
 	
@@ -1170,8 +1185,8 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt  , net.sf.
 
 	public void printErr(String s, Exception e) {
 	       
-	    mLogger.entry( s,e);
-	    mLogger.warn("printOut: {}" , s );
+	    getLogger().entry( s,e);
+	    getLogger().warn("printOut: {}" , s );
 
 		try (PrintWriter out = getEnv().getStderr().asPrintWriter(
 				getSerializeOpts())) {
@@ -1190,16 +1205,16 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt  , net.sf.
 
 			out.flush();
 		} catch (IOException | CoreException e1) {
-			mLogger.error("Exception writing output: " + s, e);
+			getLogger().error("Exception writing output: " + s, e);
 			return ;
 		} finally {
-		    mLogger.exit();
+		    getLogger().exit();
 		}
 
 	}
 
 	public static void main(String argv[]) throws Exception {
-		mLogger.entry();
+		getLogger().entry();
 		List<XValue> vargs = new ArrayList<XValue>(argv.length);
 		for (String a : argv)
 			vargs.add(XValue.newXValue(a));
@@ -1217,14 +1232,14 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt  , net.sf.
 			ret = shell.convertReturnValueToExitStatus( e.getValue());
 			
 		} catch (Throwable e) {
-			mLogger.error("Uncaught exception in main", e);
+			getLogger().error("Uncaught exception in main", e);
 		} finally {
 			shell.exitEval();
 			shell.close();
 		}
 
 		
-		mLogger.exit(ret);
+		getLogger().exit(ret);
 		System.exit(ret);
 
 	}
@@ -1317,7 +1332,7 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt  , net.sf.
 		try {
 			file = file.getCanonicalFile();
 		} catch (IOException e) {
-			mLogger.info("Exception translating file to canonical file", e);
+			getLogger().info("Exception translating file to canonical file", e);
 			// try to still use file
 		}
 		if (mustExist && !file.exists())
@@ -1417,7 +1432,7 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt  , net.sf.
 	 * Returns the singleton processor for all of Xmlsh
 	 */
 	public static Processor getProcessor() throws IOException  {
-		mLogger.entry();
+		getLogger().entry();
 		Shell sh = ThreadLocalShell.get();
 		if( sh == null ){
 			try {
@@ -1432,10 +1447,10 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt  , net.sf.
 	
 	public synchronized Processor getLocalProcessor(Configuration config)
 	{
-		mLogger.entry(config);
+		getLogger().entry(config);
 		if( config != null ){
 			if( mProcessor == null || 	!mProcessor.getUnderlyingConfiguration().equals(config)) {
-				mLogger.trace("Allocating new processor. Old={}", mProcessor );
+				getLogger().trace("Allocating new processor. Old={}", mProcessor );
 				mProcessor = new Processor(config);
 			}
 			return mProcessor ;
@@ -1443,8 +1458,8 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt  , net.sf.
 		 
 			
 		if (mProcessor == null ) {
-			mLogger.info("Allocating new processor");
-				String saxon_ee = System.getenv("XMLSH_SAXON_EE");
+			getLogger().info("Allocating new processor");
+				String saxon_ee = getSystemProperty("XMLSH_SAXON_EE");
 				boolean bEE = Util.isEmpty(saxon_ee) ? true : Util
 						.parseBoolean(saxon_ee);
 				mProcessor = new Processor(bEE);
@@ -1494,7 +1509,7 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt  , net.sf.
 					job.shutdown(true, waitTime);
 				} catch (Exception e) {
 
-					mLogger.warn("Exception trying to close child shell: "
+					getLogger().warn("Exception trying to close child shell: "
 							+ job.describe());
 				}
 			} else
@@ -1505,14 +1520,14 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt  , net.sf.
 				try {
 					job.join(waitTime);
 				} catch (InterruptedException e) {
-					mLogger.warn("Exception trying to wait for shell: "
+					getLogger().warn("Exception trying to wait for shell: "
 							+ job.describe());
 				}
 			}
 			Thread.yield();
 
 			if (job.isAlive())
-				mLogger.warn("Failed to kill child shell: " + job.describe());
+				getLogger().warn("Failed to kill child shell: " + job.describe());
 		}
 	}
 
@@ -1554,7 +1569,7 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt  , net.sf.
 					}
 
 			} catch (InterruptedException e) {
-				mLogger.warn("interrupted while waiting for job to complete", e);
+				getLogger().warn("interrupted while waiting for job to complete", e);
 			} finally {
 				exitEval();
 				waitTime = Util.nextWait(end, waitTime);
@@ -1642,16 +1657,16 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt  , net.sf.
 
 	public void declareFunction(IFunctionDefiniton func) {
 
-		mLogger.entry(func);
+		getLogger().entry(func);
 		StaticContext ctx = getStaticContext();
 		assert( ctx != null );
 		ctx.declareFunction(func);
-	    mLogger.exit();
+	    getLogger().exit();
 
 	}
 
 	public IFunctionDefiniton getFunctionDecl(String name) {
-		mLogger.entry(name);
+		getLogger().entry(name);
 		
 		// First look in the current module
 	//	IFunctionDecl funcd = mModule.get().getFunction(name);
@@ -1659,12 +1674,12 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt  , net.sf.
 		
 		StaticContext ctx = getStaticContext();
 		assert( ctx != null );
-		return mLogger.exit( ctx.getFunction(name));
+		return getLogger().exit( ctx.getFunction(name));
 	}
 
 	public Modules getModules() {
-		mLogger.entry();
-		return mLogger.exit( getEnv().getModules() );
+		getLogger().entry();
+		return getLogger().exit( getEnv().getModules() );
 		
 	}
 
@@ -1764,7 +1779,7 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt  , net.sf.
 		try {
 			return value.toBoolean() ? 0 : 1;
 		} catch (Exception e) {
-			mLogger.error("Exception parsing value as boolean", e);
+			getLogger().error("Exception parsing value as boolean", e);
 			return -1;
 		}
 
@@ -1776,7 +1791,7 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt  , net.sf.
 	public boolean  importModule(String prefix, String name, List<URL> at, List<XValue> init)
 			throws Exception {
 		
-		mLogger.entry(at, init);
+		getLogger().entry(at, init);
 		PName pname = new PName(name);
 		
 		ModuleConfig config = ModuleFactory.getModuleConfig( this , pname , at );
@@ -1795,9 +1810,9 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt  , net.sf.
 		boolean inited = getModules().importModule(this, prefix , mod ,  init);
 
 		if( inited )
-		  mLogger.debug("Imported module {} fresh init: {}" , mod , inited );
+		  getLogger().debug("Imported module {} fresh init: {}" , mod , inited );
 		assert( mod != null );
-		return mLogger.exit( true );
+		return getLogger().exit( true );
 
 	}
 	// Dup function but may need different
@@ -1811,7 +1826,7 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt  , net.sf.
 			List<String> packages) throws Exception  {
 		
 		
-		 mLogger.entry(prefix, name, packages);
+		 getLogger().entry(prefix, name, packages);
 	     String sHelp = packages.get(0).replace(ShellConstants.kDOT_CHAR, '/') + "/commands.xml";
 		
 	 		IModule mod = getModules().getExistingModuleByName(name);
@@ -1832,7 +1847,7 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt  , net.sf.
 
 	public void importJava(List<URL> urls) throws CoreException {
 		
-		mLogger.entry(urls);
+		getLogger().entry(urls);
 		
 		getModule().addClassPaths( this , urls);
 		return ;
@@ -1840,7 +1855,7 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt  , net.sf.
 	}
 
 	public URL getURL(String file) throws CoreException {
-		mLogger.entry(file);
+		getLogger().entry(file);
 		URL url = Util.tryURL(file);
 		if (url == null)
 			try {
@@ -1848,7 +1863,7 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt  , net.sf.
 			} catch (IOException e) {
 				throw new CoreException(e);
 			}
-		return mLogger.exit(url);
+		return getLogger().exit(url);
 
 	}
 
@@ -1950,9 +1965,9 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt  , net.sf.
 	}
 
 	public IModule getModule() {
-		mLogger.entry();
+		getLogger().entry();
 		IModule mod = getEnv().getModule();
-		return mLogger.exit(mod);
+		return getLogger().exit(mod);
 		
 	}
 
@@ -2033,7 +2048,7 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt  , net.sf.
 
 	public void popLocalVars(Variables vars) {
 		
-		mLogger.entry(vars);
+		getLogger().entry(vars);
 		mEnv.popLocalVars(vars);
 
 	}
@@ -2075,7 +2090,7 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt  , net.sf.
 
 	public XClassLoader getClassLoader() throws CoreException {
 		
-		return mLogger.exit(getModule().getClassLoader());
+		return getLogger().exit(getModule().getClassLoader());
 	}
 
 	public XClassLoader getClassLoader(final List<URL> urls) throws CoreException {
@@ -2083,12 +2098,12 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt  , net.sf.
 		}
 	public XClassLoader getClassLoader(final List<URL> urls, XClassLoader parentClassLoader) throws CoreException {
 
-		mLogger.entry(urls);
+		getLogger().entry(urls);
 		// No class path sent, use this shells or this class
 		if (Util.isEmpty(urls)) {
 			
             XClassLoader loader = parentClassLoader == null ? getClassLoader() : parentClassLoader;
-			return mLogger.exit( loader );
+			return getLogger().exit( loader );
 		}
  
 		
@@ -2098,10 +2113,10 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt  , net.sf.
 			parentClassLoader = XClassLoader.newInstance(getContextClassLoader());
 		final ClassLoader parent = parentClassLoader;
 		
-		mLogger.trace("Parent loader for new class loader: {}", parent );
+		getLogger().trace("Parent loader for new class loader: {}", parent );
 
 		
-		return mLogger.exit( XClassLoader.newInstance( urls.toArray(new URL[urls.size() ]), parentClassLoader));
+		return getLogger().exit( XClassLoader.newInstance( urls.toArray(new URL[urls.size() ]), parentClassLoader));
 	}
 
 	public void printLoc(Logger logger, SourceLocation loc) {
@@ -2198,7 +2213,7 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt  , net.sf.
 	public void setCurrentLocation(SourceLocation loc) {
 
 		if (loc == null && mCurrentLocation != null)
-			mLogger.debug("Overriting current location with null");
+			getLogger().debug("Overriting current location with null");
 		else
 			mCurrentLocation = loc;
 	}
@@ -2233,9 +2248,9 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt  , net.sf.
 
 	public boolean shutdown(boolean force, long waitTime) {
 		
-		mLogger.entry(force, waitTime);
+		getLogger().entry(force, waitTime);
 		if (mClosed)
-			return mLogger.exit(true);
+			return getLogger().exit(true);
 		// Mark us done
 		mExitVal = Integer.valueOf(0);
 
@@ -2261,7 +2276,7 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt  , net.sf.
 		waitTime = Util.nextWait(end, waitTime);
 		waitAtMostChildren(0, waitTime);
 		Thread.yield();
-		return mLogger.exit(mClosed);
+		return getLogger().exit(mClosed);
 
 	}
 
@@ -2300,7 +2315,7 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt  , net.sf.
 
 	public IModule getModuleByPrefix(String prefix) {
 		
-		return mLogger.exit(getEnv().getModuleByPrefix(prefix));
+		return getLogger().exit(getEnv().getModuleByPrefix(prefix));
 	}
 
 	public FunctionDefinitions getFunctionDelcs() {
@@ -2315,42 +2330,42 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt  , net.sf.
 
 
 	public StaticContext getStaticContext() {
-		mLogger.entry();
-		return mLogger.exit(getEnv().getStaticContext());
+		getLogger().entry();
+		return getLogger().exit(getEnv().getStaticContext());
 		
 	}
 
 
 	public Iterable<IModule> getDefaultModules() {
-		mLogger.entry();
+		getLogger().entry();
 		return getStaticContext().getDefaultModules();
 	
 	}
 
 	public StaticContext getExportedContext() {
-		mLogger.entry();
-		return mLogger.exit( mEnv.exportStaticContext( ) );
+		getLogger().entry();
+		return getLogger().exit( mEnv.exportStaticContext( ) );
 	}
 
 	public void pushModule(IModule mod) {
 	   
 		ThreadContext.put("xmodule", mod.describe() );
-	    mLogger.entry(mod);
-		mLogger.exit(getEnv().pushModule(mod,mod.getStaticContext()));
+	    getLogger().entry(mod);
+		getLogger().exit(getEnv().pushModule(mod,mod.getStaticContext()));
 	
 	}
 
 	public IModule  popModule() throws IOException {
-		mLogger.entry();
+		getLogger().entry();
 		getEnv().popModule();
 		IModule mod = getModule();
 		ThreadContext.put("xmodule", mod.describe());
-		return mLogger.exit(mod);
+		return getLogger().exit(mod);
 	}
 
 	public static ClassLoader getContextClassLoader() {
 		
-		mLogger.entry();
+		getLogger().entry();
 		/*
 		 * Gets the shell context class loadeder
 		 */
@@ -2358,10 +2373,10 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt  , net.sf.
 		   ClassLoader loader = Thread.currentThread().getContextClassLoader();
 		   if( loader == null )
 			   loader = ClassLoader.getSystemClassLoader();
-		    return mLogger.exit(loader);
+		    return getLogger().exit(loader);
 		} catch( Throwable t ){
-			mLogger.catching(t);
-			return  mLogger.exit(ClassLoader.getSystemClassLoader());
+			getLogger().catching(t);
+			return  getLogger().exit(ClassLoader.getSystemClassLoader());
 		}
 		
 	}
@@ -2408,9 +2423,15 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt  , net.sf.
      */
 	@Override
 	public void initialize(Configuration config) throws TransformerException {
-		mLogger.debug("initialization {} " , config );
+		getLogger().debug("initialization {} " , config );
 		config.getLogger().info("initialze in xmlsh: " + this.toString());
 		config.registerExtensionFunction(new EvalDefinition());
+		
+	}
+
+
+	public static void postInit(String string) {
+		getLogger().info("Initialized logging");
 		
 	}
 
