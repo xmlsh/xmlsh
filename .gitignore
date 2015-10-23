@@ -11,7 +11,5 @@ _dist/
 *~
 _out.txt
 _err.txt
-.project
-.classpath
 /bin/
 .metadata
