@@ -11,6 +11,8 @@ ext.sourceDirs = ['src/shell'
     , 'src/modules'
     , 'src/generated' ]
 
+ext.versionOutputDir =  project.file("src/generated/org/xmlsh/sh/shell")
+ext.versionDestFile = new File(outputDir, "version.properties")
 compileJavacc {
     inputDirectory = file('src/shell/org/xmlsh/sh/grammar')
     outputDirectory = file('src/generated/org/xmlsh/sh/grammar')
@@ -30,11 +32,10 @@ sourceSets {
 
 
 task createVersion  {
-    ext.outputDir =  project.file("src/generated/org/xmlsh/sh/shell")
-    ext.destFile = new File(outputDir, "version.properties")
-    outputs.file destFile
+    outputs.file vesionDestFile
     outputs.upToDateWhen {false }
     doLast {    
+        def outputDir=versionOutputDir
         outputDir.exists() || outputDir.mkdir()
         def destFile = new File(outputDir, "version.properties")
         destFile.text = """version.build_date=${xversion_build_date}
