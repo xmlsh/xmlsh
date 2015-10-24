@@ -1,0 +1,22 @@
+repositories {
+  maven {
+   url( 'http://csvjdbc.sourceforge.net/maven2' )
+  }
+  jcenter()
+}
+configurations {
+  main 
+}
+
+dependencies {
+  main 'net.sourceforge.csvjdbc:csvjdbc:1+'
+  main 'mysql:mysql-connector-java:5.1.+'
+  main 'org.xerial:sqlite-jdbc:3.8.+'
+}
+
+task build( type:Copy , dependsOn: configurations.main ) {
+   from configurations.main
+   into 'lib'
+}
+  
+  
