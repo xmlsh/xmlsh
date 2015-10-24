@@ -36,8 +36,8 @@ EOF
 
 
 
-
-import java /java/sqlitejdbc/*.jar
+# test imported library into global classloader
+import java lib/*sqlite*.jar
 
 [ -d $TMPDIR/_xmlsh ] && rm -rf $TMPDIR/_xmlsh
 mkdir $TMPDIR/_xmlsh

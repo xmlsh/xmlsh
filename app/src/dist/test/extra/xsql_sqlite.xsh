@@ -39,7 +39,7 @@ document {
 
 
 
-CP=/java/sqlitejdbc/*.jar
+CP=$PWD/lib/*sqlite*.jar
 mkdir $TMPDIR/_xmlsh
 cd $TMPDIR/_xmlsh
 

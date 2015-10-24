@@ -59,7 +59,7 @@ document {
 
 
 
-CP=/java/mysql-connector-java-5.1.7/mysql-connector-java-5.1.7-bin.jar
+CP=$PWD/lib/mysql-connector-java*.jar
 
 xsql -cp $CP -c jdbc:mysql://localhost/xmlsh -u xmlsh -p password -d org.gjt.mm.mysql.Driver  -execute 'DROP table books' >/dev/null
 xsql -cp $CP -c jdbc:mysql://localhost/xmlsh -u xmlsh -p password -d org.gjt.mm.mysql.Driver  -execute {$_DDL} >/dev/null
