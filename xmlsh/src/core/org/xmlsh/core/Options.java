@@ -575,6 +575,9 @@ public class Options implements Cloneable {
 		OptionValue ov = getOpt(arg);
 		if (ov == null)
 			return null;
+		else 
+		if( ov.getOptionDef().isMultiple() )
+			return XValue.newXValue( getOptValues(arg) );
 		else
 			return ov.getValue();
 	}
@@ -582,9 +585,12 @@ public class Options implements Cloneable {
 	public XValue getOptValueRequired(String arg)
 			throws InvalidArgumentException {
 		OptionValue ov = getOpt(arg);
-		if (ov != null)
-			return ov.getValue();
-		throw new InvalidArgumentException("Required option: -" + arg);
+		if (ov == null)
+			throw new InvalidArgumentException("Required option: -" + arg);
+		if( ov.getOptionDef().isMultiple() )
+			return XValue.newXValue( getOptValues(arg) );
+	   else
+		   return ov.getValue();
 	}
 
 	public List<XValue> getOptValuesRequired(String arg)
@@ -597,9 +603,7 @@ public class Options implements Cloneable {
 		return values;
 	}
 
-	public List<XValue> getOptValues(String arg)
-			throws InvalidArgumentException {
-
+	public List<XValue> getOptValues(String arg) {
 		ArrayList<XValue> values = new ArrayList<>();
 		for (OptionValue ov : mOptions) {
 			if (ov.getOptionDef().isOption(arg))

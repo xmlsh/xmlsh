@@ -59,7 +59,7 @@ document {
 
 
 
-CP=/java/mysql-connector-java-5.1.7/mysql-connector-java-5.1.7-bin.jar
+CP=$PWD/lib/mysql-connector-java-*.jar
 
 # just open the connection
 set -e
