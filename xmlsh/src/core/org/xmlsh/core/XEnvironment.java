@@ -419,7 +419,7 @@ public XVariable exportVar( String name ) throws InvalidArgumentException{
 	 * @see org.xmlsh.sh.shell.Shell#setCurdir(java.io.File)
 	 */
 	public void setCurdir(File cd) throws IOException {
-		Shell.setCurdir(cd);
+		mShell.setCurdir(cd);
 	}
 
 
@@ -876,6 +876,12 @@ public XVariable exportVar( String name ) throws InvalidArgumentException{
     public XVariable declareVar(String var) throws InvalidArgumentException {
        return declareVar( var , null );
     }
+
+
+	public void setVar(String name, String value) throws InvalidArgumentException {
+		setVar( name , XValue.newXValue(value));
+		
+	}
 	
 		
 

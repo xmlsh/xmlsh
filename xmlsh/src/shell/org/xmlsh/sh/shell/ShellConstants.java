@@ -35,7 +35,9 @@ public class ShellConstants
 	public static final String PATH = "PATH";
 	public static final String ENV_XPATH = "XPATH";
 	public static final String ENV_XMODPATH = "XMODPATH";
-	public static final String PWD = "PWD";
+	public static final String ENV_PWD = "PWD";
+	public static final String ENV_OLDPWD = "OLDPWD";
+
 	public static final String PS1 = "PS1";
 	public static final String PS2 = "PS2";
 
@@ -95,6 +97,7 @@ public class ShellConstants
 	public static final String kENCODING_UTF_8 = "UTF-8";
 
 	static final String kXMLSH_PROP_PREFIX = "xmlsh.";
+
 
 
 }

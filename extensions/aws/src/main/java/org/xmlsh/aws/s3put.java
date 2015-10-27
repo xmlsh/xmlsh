@@ -75,7 +75,7 @@ public class s3put extends AWSS3Command {
 		case 1 :
 		{
 			S3Path dest;
-			dest = new S3Path(args.get(0).toString());
+			dest = getS3Path(args.get(0));
             InputPort src = getStdin();
 			ret = put(  src , dest , meta , storage  );
 
@@ -84,7 +84,7 @@ public class s3put extends AWSS3Command {
 		case 2:  // s3put src dest if 
 		{
 			S3Path dest;
-			dest = new S3Path(args.get(1).toString());
+			dest = getS3Path(args.get(1));
 			if( ! bRecurse ){
 				InputPort src = mShell.getEnv().getInput(args.get(0));
 				if( ! src.isFile() ||  ! src.getFile().isDirectory() ){

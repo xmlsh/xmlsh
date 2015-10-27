@@ -39,8 +39,8 @@ public abstract class AbstractCommand implements ICommand {
 		w.print(getName());
 	}
 
-	protected static Logger mLogger = org.apache.logging.log4j.LogManager
-			.getLogger();
+	protected Logger mLogger = org.apache.logging.log4j.LogManager
+			.getLogger( this.getClass() );
 
 	protected Shell mShell;
 	protected XEnvironment mEnvironment;

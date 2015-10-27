@@ -10,8 +10,10 @@ import org.xmlsh.util.Util;
 
 public class S3Path {
 
-	private		String 	mBucket;
-	private		String	mKey;
+	private		String 	mBucket = null;
+	private		String	mKey = null;
+  private String mDelim = kDEF_DELIM ;
+  public static final String kDEF_DELIM = "/";
 
 
 	/*
@@ -25,35 +27,43 @@ public class S3Path {
 
 	public S3Path(String	path)
 	{
-		if( path.startsWith("s3://"))
-			path = path.substring(5);
-
-		int spos = path.indexOf('/');
-		if( spos < 0 )
-			mBucket = Util.nullIfBlank(path) ;
-		else {
-			mBucket = Util.nullIfBlank( path.substring(0,spos));
-			mKey = Util.nullIfBlank(path.substring(spos+1));
-		}
-
+     initFromPath( path );
+	}
+	  
+	private void initFromPath( String path ){
+	  if( Util.isBlank(path))
+       return ;
+  		if( path.startsWith("s3://"))
+  			path = path.substring(5);
+  
+  		int spos = path.indexOf(mDelim);
+  		if( spos < 0 )
+  			mBucket = Util.nullIfBlank(path) ;
+  		else {
+  			mBucket = Util.nullIfBlank( path.substring(0,spos));
+  			mKey = Util.nullIfBlank(path.substring(spos+mDelim.length()));
+  		}
 	}
 
 
 	public S3Path( String bucket , String key )
 	{
-		mBucket = Util.nullIfBlank(bucket) ;
-		mKey = Util.nullIfBlank(key) ;
-
-
+	  if( Util.isBlank(bucket) || 
+	       ( !Util.isBlank(key ) && key.startsWith("s3:/") ))
+	    initFromPath( key );
+	  else {
+		  mBucket = Util.nullIfBlank(bucket) ;
+		  mKey = Util.nullIfBlank(key) ;
+	  }
 	}
 
 	public S3Path( S3Path parent , String child )
 	{
 		mBucket = parent.mBucket ; 
-		if (child.startsWith("/")) child = child.substring(1);
+		if (child.startsWith(mDelim)) child = child.substring(1);
 		mKey = child;
 		if(parent.hasKey())
-			mKey = (parent.mKey.endsWith("/") ? parent.mKey : parent.mKey + "/") + mKey ;		
+			mKey = (parent.mKey.endsWith(mDelim) ? parent.mKey : parent.mKey + mDelim) + mKey ;		
 	}
 
 	public 	String	getBucket(){
@@ -87,14 +97,14 @@ public class S3Path {
 	@Override
 	public String toString() {
 
-		return "s3://" + Util.notNull(mBucket) + ( hasKey() ? ("/" + mKey) : "" );
+		return "s3://" + Util.notNull(mBucket) + ( hasKey() ? (mDelim + mKey) : "" );
 
 
 	}
 
 	public boolean isDirectory()
 	{
-		return mKey == null || mKey.endsWith("/");
+    return mKey == null || mKey.endsWith(mDelim);
 	}
 
 	public void appendPath( String path )
@@ -102,10 +112,10 @@ public class S3Path {
 		if( mKey == null )
 			mKey = path ;
 		else
-			if( mKey.endsWith("/"))
+			if( mKey.endsWith(mDelim))
 				mKey = mKey + path ;
 			else
-				mKey = mKey + "/" + path ;
+				mKey = mKey + mDelim + path ;
 
 	}
 
@@ -128,7 +138,14 @@ public class S3Path {
 
 	}
 
+  public static boolean isDirectory(String key, String delim ) {
+    return key != null && delim != null && key.endsWith(delim);
+  }
 
+
+  public static boolean isDirectory(String key) {
+    return key != null && key.endsWith(kDEF_DELIM);
+  }
 }
 
 

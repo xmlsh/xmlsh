@@ -25,8 +25,6 @@ import com.amazonaws.services.s3.model.S3ObjectSummary;
 public class s3Delete extends AWSS3Command {
 
 
-
-
 	/**
 	 * @param args
 	 * @throws IOException 
@@ -57,6 +55,7 @@ public class s3Delete extends AWSS3Command {
 
 
 		int ret = 0 ;
+		
 		if(args.size() < 1 ){
 			usage();
 			return 1;

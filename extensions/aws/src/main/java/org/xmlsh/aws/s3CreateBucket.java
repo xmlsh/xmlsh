@@ -7,6 +7,7 @@ import org.xmlsh.aws.util.AWSS3Command;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
+import org.xmlsh.util.Util;
 
 
 public class s3CreateBucket extends AWSS3Command {
@@ -37,15 +38,22 @@ public class s3CreateBucket extends AWSS3Command {
 
 		}
 
+		String bucket = getBucket();
 
-		if(args.size() != 1 ){
-			usage();
-			return 1;
+		if(Util.isBlank(bucket)  ){
+		  if( args.size() != 1 ){
+			  usage();
+			  return 1;
+		  }
+			      
+			bucket = args.get(0).toString();
+		}
+		if( Util.isBlank(bucket)){
+		  usage();
+		  return 1;
 		}
 
-		String bucketName = args.get(0).toString();
-
-		return createBucket(bucketName);
+		return createBucket(bucket);
 
 	}
 

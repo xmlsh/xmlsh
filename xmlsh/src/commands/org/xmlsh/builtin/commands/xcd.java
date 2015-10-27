@@ -12,6 +12,7 @@ import java.util.List;
 import org.xmlsh.core.BuiltinCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.XVariable;
+import org.xmlsh.sh.shell.ShellConstants;
 
 public class xcd extends BuiltinCommand {
 
@@ -20,14 +21,14 @@ public class xcd extends BuiltinCommand {
 
 	@Override
 	public int run(  List<XValue> args ) throws Exception {
+		mLogger.entry();
 		String sdir = null;
+		String oldpwd = mShell.getEnv().getVarString(ShellConstants.ENV_PWD);
 		if( args.size() < 1 ){
-			XVariable xhome = mShell.getEnv().getVar("HOME");
-
+			XVariable xhome = mShell.getEnv().getVar(ShellConstants.ENV_HOME);
 			String home = xhome == null ? null : xhome.getValue().toString();
 			if( home == null )
-				home = System.getProperty("user.home");
-
+				home = System.getProperty(ShellConstants.PROP_USER_HOME);
 			if( home == null ){
 				mShell.printErr("cd: Cannot cd to HOME");
 				return 1;
@@ -36,10 +37,14 @@ public class xcd extends BuiltinCommand {
 		}
 		else
 			sdir = args.get(0).toString();
+		
+		if( sdir.equals("-") )
+			sdir = mShell.getEnv().getVarString(ShellConstants.ENV_OLDPWD);
 
 		File newDir = mShell.getFile( sdir);
 		if( newDir != null && newDir.exists() && newDir.isDirectory() && newDir.canRead() ){
 			mShell.setCurdir(newDir);
+			mShell.getEnv().setVar(ShellConstants.ENV_OLDPWD, oldpwd);
 			return 0;
 		}
 		else {

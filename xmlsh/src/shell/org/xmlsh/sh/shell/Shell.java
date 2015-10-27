@@ -108,7 +108,7 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt  , net.sf.
 	     ShellConstants.PATH , 
 	     ShellConstants.PS1 ,
 	     ShellConstants.PS2 ,
-	     ShellConstants.PWD,
+	     ShellConstants.ENV_PWD,
 	     ShellConstants.VAR_RANDOM ,
 	     ShellConstants.VAR_RANDOM32,
 	     ShellConstants.VAR_RANDOM64 ,
@@ -384,7 +384,7 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt  , net.sf.
 
 		// PWD
 		getEnv().initVariable(
-				new XDynamicVariable(ShellConstants.PWD, EnumSet.of(
+				new XDynamicVariable(ShellConstants.ENV_PWD, EnumSet.of(
 						XVarFlag.READONLY, XVarFlag.EXPORT)) {
 					@Override
 					public XValue getValue() {
@@ -1285,7 +1285,9 @@ public class Shell implements AutoCloseable, Closeable , IShellPrompt  , net.sf.
 		return Paths.get(System.getProperty(ShellConstants.PROP_USER_DIR));
 	}
 
-	public static void  setCurdir(File cd) throws IOException {
+	// While this can be static because of the thread-local  
+	// use non-static to enforce per-shell behaviour
+	public void  setCurdir(File cd) throws IOException {
 		String dir = cd.getCanonicalPath();
 		SystemEnvironment.getInstance().setProperty(
 				ShellConstants.PROP_USER_DIR, dir);

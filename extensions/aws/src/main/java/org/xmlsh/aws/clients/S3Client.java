@@ -33,6 +33,7 @@ import com.amazonaws.services.s3.AmazonS3EncryptionClient;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.CryptoConfiguration;
 import com.amazonaws.services.s3.model.EncryptionMaterials;
+import com.amazonaws.services.s3.model.GetBucketAclRequest;
 import com.amazonaws.services.s3.model.StaticEncryptionMaterialsProvider;
 import com.amazonaws.services.s3.transfer.TransferManager;
 
@@ -107,12 +108,8 @@ public final class S3Client extends AWSClient<AmazonS3Client> {
 	
 	public S3Path getS3Path( String bucket , String key )
 	{
-		if( Util.isBlank(bucket) || key.startsWith("s3://") )
-			return new S3Path( key );
-		else
 			return new S3Path( bucket , key );
 	}
-
 
 
 	public CannedAccessControlList getAcl(String acl) {

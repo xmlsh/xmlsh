@@ -969,6 +969,8 @@ public class Util
 
 	 public static String formatXSDateTime(Date date) {
 		 // YYYY-MM-DDThh:mm:ss
+	   if( date == null )
+	     return "" ; // @TODO: zero date ?
 		 return (new SimpleDateFormat(sXSDT_FORMAT_STR)).format(date);
 	 }
 

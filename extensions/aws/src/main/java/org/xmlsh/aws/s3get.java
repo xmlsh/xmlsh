@@ -30,13 +30,12 @@ import com.amazonaws.services.s3.transfer.Download;
 
 public class s3get extends AWSS3Command {
 
-	private String bucket = null ;
-
 	private boolean bRecurse = false ;
 	private boolean bVerbose = false ;
 
 	private List<Download> mDownloads = new LinkedList<Download>();
-
+  private String mDelim = S3Path.kDEF_DELIM;
+  private boolean bForce = false ;
 	/**
 	 * @param args
 	 * @throws IOException 
@@ -45,7 +44,7 @@ public class s3get extends AWSS3Command {
 	public int run(List<XValue> args) throws Exception {
 
 
-		Options opts = getOptions("meta:,r=recurse,b=bucket:,v=verbose");
+		Options opts = getOptions("f=force,meta:,r=recurse,v=verbose,delim:");
         parseOptions(opts, args);
         setSerializeOpts(this.getSerializeOpts(opts));
 
@@ -56,10 +55,11 @@ public class s3get extends AWSS3Command {
 
 		args = opts.getRemainingArgs();
 
-		bucket = opts.getOptString("bucket", null);
-
 		bRecurse = opts.hasOpt("recurse");
-		bVerbose = opts.hasOpt("verbose");
+		bVerbose = opts.hasOpt("verbose"); 
+    mDelim = opts.getOptString("delim", S3Path.kDEF_DELIM);
+    bForce = opts.hasOpt("force");
+
 
 
 		try {
@@ -77,15 +77,12 @@ public class s3get extends AWSS3Command {
 
 		switch( args.size() ){
 		case 0 :
-
-			usage() ; 
+		  src = getS3Path();
 			return 1; 
 
 		case	1 :
 		{
 			src  = getS3Path(args.get(0));
-
-
 			dest = getStdout();
 
 			ret += get(  src , dest , metaPort   );
@@ -124,17 +121,13 @@ public class s3get extends AWSS3Command {
 
 	}
 
-	S3Path getS3Path(XValue key) {
-		return getS3Path( bucket , key.toString() );
-	}
-
 	private int get( S3Path src , XValue dest, OutputPort metaPort , String prefix ) throws CoreException, IOException, AmazonServiceException, AmazonClientException, InterruptedException 
 	{
 
 
 		if( src.isDirectory()){
 			int ret = 0;
-			if( ! bRecurse ){
+			if( ! bRecurse && ! bForce  ){
 				mShell.printErr("Skipping directory: " + src.getKey());
 				return 0;
 			}
@@ -177,18 +170,18 @@ public class s3get extends AWSS3Command {
 		String key = src.getKey();
 
 		if( ! Util.isBlank(prefix)){
-			if( !key.startsWith(prefix)){
+			if( !key.startsWith(prefix) && ! bForce ){
 				mShell.printErr("Skipping key - does not start with prefix: " + key );
 				return null ;
 			}
 			key = key.substring( prefix.length() );
-			while( key.startsWith("/"))
+			while( key.startsWith(mDelim))
 				key = key.substring(1);
 
 		}
 
 		File out = getFile( fname );
-		if( out.isDirectory() || fname.endsWith("/"))
+		if( out.isDirectory() || fname.endsWith(mDelim))
 			out = new File( out , key );
 
 		File parent = out.getParentFile();
@@ -239,8 +232,9 @@ public class s3get extends AWSS3Command {
 
 			if( metaPort != null ){
 				mWriter = metaPort.asXMLStreamWriter(getSerializeOpts());
-
+				startDocument();
 				writeMeta( meta );
+				endDocument();
 				mWriter.close();
 			}
 

@@ -18,6 +18,7 @@ import org.xmlsh.aws.clients.S3Client;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
+import org.xmlsh.core.XValue;
 import org.xmlsh.util.Util;
 
 import com.amazonaws.services.s3.AmazonS3Client;
@@ -31,18 +32,27 @@ public abstract class AWSS3Command extends AWSCommand<AmazonS3Client> {
 
  
     private String mBucket = null;
+    private String mKey = null ;
     
 	protected String getBucket() {
         return mBucket;
     }
 
-    public S3Path getS3Path(String key) {
-        
-        return  getS3Client().getS3Path( mBucket ,key );
+	 public S3Path getS3Path() {
+	    return getS3Client().getS3Path(mBucket , mKey );
+	 }
+    public S3Path getS3Path(String keyOrArg) {
+      return  getS3Client().getS3Path( mBucket , 
+          Util.isBlank(keyOrArg) ? mKey : keyOrArg );
     }
 
+    public S3Path getS3Path(XValue keyOrArg) { 
+      return  getS3Path( mBucket , keyOrArg == null ? mKey :  keyOrArg.toString()  );
+  }
 	public S3Path getS3Path(String bucket, String key) {
-		return getS3Client().getS3Path(bucket == null ? mBucket : bucket , key);
+		return getS3Client().getS3Path(
+		        Util.isBlank(bucket)? mBucket : bucket , 
+		        Util.isBlank(key) ? mKey : key);
 	}
 
 	private S3Client getS3Client() {
@@ -75,7 +85,7 @@ public abstract class AWSS3Command extends AWSCommand<AmazonS3Client> {
 
 	@Override
 	protected String getCommonOpts() {
-		return super.getCommonOpts() + ",crypt,keypair:,threads:,bucket:" ;
+		return super.getCommonOpts() + ",crypt,keypair:,threads:,bucket:,key:" ;
 	}
 
 
@@ -113,9 +123,7 @@ public abstract class AWSS3Command extends AWSCommand<AmazonS3Client> {
 	protected void writeMeta(ObjectMetadata m) throws InvalidArgumentException, XMLStreamException,
 	SaxonApiException {
 
-
-
-		startDocument();
+	  mLogger.entry(m);
 		startElement(sMetaDataElem);
 
 
@@ -127,6 +135,17 @@ public abstract class AWSS3Command extends AWSCommand<AmazonS3Client> {
 		attribute("version-id" , m.getVersionId() );
 		attribute("content-length" , String.valueOf(m.getContentLength()) );
 		attribute("last-modified" , Util.formatXSDateTime(m.getLastModified()) );
+		attribute("expiration-time" , Util.formatXSDateTime(m.getExpirationTime()));
+		attribute("expiration-time-rule-id" , m.getExpirationTimeRuleId() );
+		attribute("httpExpiresDate" , Util.formatXSDateTime(m.getHttpExpiresDate()));
+		attribute("ongoingRestore" , m.getOngoingRestore());
+    attribute("restore-expiration-time" , Util.formatXSDateTime(m.getRestoreExpirationTime()));
+    attribute("instance-length" , m.getInstanceLength() );
+    attribute("sse-algorithm" , m.getSSEAlgorithm());
+    attribute("sse-aws-kms-key-id" , m.getSSEAwsKmsKeyId());
+    attribute("sse-customer-algorithm" , m.getSSECustomerAlgorithm());
+    attribute("sse-customer-key-md5" , m.getSSECustomerKeyMd5());
+    attribute("storage-class",m.getStorageClass());
 
 		startElement("user-metadata");
 		for( Entry<String, String> user : m.getUserMetadata().entrySet()  ){
@@ -135,12 +154,11 @@ public abstract class AWSS3Command extends AWSCommand<AmazonS3Client> {
 			attribute("value", user.getValue() );
 			endElement();
 
-
 		}
 		endElement();
 		endElement();
-		endDocument();
 
+		mLogger.exit();
 	}
 
 

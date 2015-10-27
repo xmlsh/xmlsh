@@ -42,7 +42,7 @@ public class s3SetObjectAcl extends AWSS3Command {
 
 		int ret = 0 ;
 		for( String arg : Util.toStringList(args)){
-			S3Path path = new S3Path( arg );
+			S3Path path = getS3Path( arg );
 
 			ret += setAcl( path , acl );
 

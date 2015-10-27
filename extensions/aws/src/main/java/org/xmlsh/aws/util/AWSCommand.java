@@ -132,6 +132,10 @@ public abstract class AWSCommand<T extends AmazonWebServiceClient>  extends XCom
 		mWriter.writeAttribute(localName, Util.notNull(value));
 	}
 
+  protected void attribute( String localname , Boolean value ) throws XMLStreamException
+  {
+    attribute( localname, value == null ? false : value.booleanValue() );
+  }
 
 
 	protected	  void characters( String value ) throws XMLStreamException

@@ -50,10 +50,11 @@ public class s3GetObjectMetadata extends AWSS3Command {
 		S3Path 		src;
 
 		switch( args.size() ){
+		case  0 :
+		  src = getS3Path();
 		case	1 :
-			src  = new S3Path(args.get(0).toString());
+			src  = getS3Path(args.get(0));
 			break;
-
 		default	:
 
 			usage() ; 
@@ -89,9 +90,13 @@ public class s3GetObjectMetadata extends AWSS3Command {
 		traceCall("getObjectMetadata");
 
 		ObjectMetadata data = getAWSClient().getObjectMetadata(request  );
+
 		mWriter = metaPort.asXMLStreamWriter(getSerializeOpts());
+    startDocument();
 		writeMeta( data );
+    endDocument();
 		mWriter.close();
+
 
 		return 0;
 
