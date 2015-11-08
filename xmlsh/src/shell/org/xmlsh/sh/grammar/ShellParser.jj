@@ -5,10 +5,10 @@ options
 {
   JDK_VERSION = "1.7";
   STATIC = false; 
-// DEBUG_PARSER=true ;
-//   DEBUG_LOOKAHEAD=true;
-//       DEBUG_TOKEN_MANAGER=true;
-// FORCE_LA_CHECK=true;
+ // DEBUG_PARSER=true ;
+//  DEBUG_LOOKAHEAD=true;
+//  DEBUG_TOKEN_MANAGER=true;
+//  FORCE_LA_CHECK=true;
 //   UNICODE_INPUT=true;
  TOKEN_EXTENDS="XAbstractToken";
  COMMON_TOKEN_ACTION=true;
@@ -179,7 +179,22 @@ public class ShellParser
   {
         return mContext.isJoinable(w );
   }
-  
+
+  public boolean isAssignOp( int lookahead )  {
+    Token t = getToken( lookahead );
+    if( ! isJoinable( t ) )
+      return false ;
+    switch( t.image )    {    case  "={}":
+    case   "=[":
+    case   "+=":
+    case  "=(":
+    case  "=[]":
+    case  "+=(":
+    case "=" :
+      return true;
+    }
+    return false ;
+  }
   public boolean isKind( Token t , int kind )
   {
      return t.kind == kind ;
@@ -414,7 +429,6 @@ TOKEN :
 |   <#_VARNAME : < _ID >>
 |   <#_POSVAR  : < _NUMBER > >
 |   <#_ALPHANUM : ( < _ALPHA > | < _NUMBER > ) >
-
 }
 
 // Patterns
@@ -538,16 +552,18 @@ TOKEN :
 | < GTP       :   ">" < _PORTWORD > >
 | < LTP       :   "<" < _PORTWORD > >
 | < GT        : ">" >
-| < LT        : "<" > 
+| < PLE       : "+=" >
+| < PLES       : "+=(" >
+| < SLE       : "=(" >
+| < LT        : "<" >
+| < EQ        : "=" >
 | < #_DIGITS  : [ "1"-"2" ] >
 | < #_PORTWORD :  "("  < _PORTID >   ")" >
 // Single charactor words that need to be words themselfs in some cases
-| < #_WORD_SPECIAL :     ( "[" | "$" | "," | "." | ":" | "]" ) >
-| < #_WORD_PUNC :     ( "=" ) >
+| < #_WORD_SPECIAL :     ( "[" | "$" | "," | "." | ":" | "]"  |"+") >
 |   < #_GCHAR  : ( ~[ "\"", "\\" , "[" , "]" , ")" , "(" ] | < _ESCAPED > )+ >
 |   < #_GLOB  : ( ( "["  < _GCHAR >  "]" ) | "*" | "?" )+ >
 // Word Expressions that shold be tokenized together
-
 
 | < PDLESSMINUS : < _PORTWORD > "<<-" >
   {
@@ -573,17 +589,15 @@ TOKEN :
 | < NAME :   <_ID>  >
   // Word with extra stuff allowed 
  | < WORD :
-   (<_WORD_PUNC>)?
    (
     (
         ~[ "|" , "&" , "<" , ">" , "," , "(" , ")" , "$" , "`" , "\\" , "\"" , "'" , " " , 
-        "\t" , "\n" , "\r" , ":",
+        "\t" , "\n" , "\r" , ":", "+",
          "=" , ";","#" , "{" , "}" , "[","]" , "." ] 
       |   < _ESCAPED >
       |   < _STRING_LITERAL >
     )+ 
     | < _WORD_SPECIAL > 
-    | <_WORD_PUNC> 
    )
   >
 
@@ -607,16 +621,7 @@ TOKEN :
     else
       matchedToken.enter( BACKTICK1 );
   }
-|  < ASSIGN_WORD_SEQ   :  < _VARNAME > "=(" >
-|  < ASSIGN_WORD_ARRAY :  < _VARNAME > "=[]" >
-|  < ARRAY_WORD:  < _VARNAME > "[" >
-{
-   matchedToken.enter(ASSIGN_WORD_ARRAY);
-}
-| < ASSIGN_WORD_EMPTYBRACE : <_VARNAME > "={}" >
-|  < ASSIGN_WORDPE_SEQ : < _VARNAME > "+=(" > 
-|  < ASSIGN_WORDPE : < _VARNAME > "+=" > 
-|  < ASSIGN_WORD_EQ : < _VARNAME > "=" >
+
 }
 
 
@@ -677,13 +682,14 @@ CommandExpr command_line() :
   Token t;
 }
 {
+  LOOKAHEAD(1,eol())
   t = eol()
   {
     c = new NullCommandExpr();
     setLocation(c, t);
     return c;
   }
-| < EOF >
+| LOOKAHEAD(1) < EOF >
   {
     return null;
   }
@@ -1578,15 +1584,19 @@ CommandExpr simple_command() :
   ReturnStatement rs ;
   SimpleCommandExpr sc = null;
   CommandSuffixExpr s;
+  Token local = null ;
 }
 {
+  
   // Special case for return statement - bad desig
    LOOKAHEAD( 1, RETURN()  ) rs=return_stmt()
   {
     return rs ;
   }
-|  
+|
+  LOOKAHEAD(2)
   p = cmd_prefix()
+  
   [
     c = cmd_name_word()
     {
@@ -1687,11 +1697,11 @@ Word word_or_name() :
 	   return new DelimWord( token ) ;
 	 }
  | (  
-      (  t=< ARRAY_WORD > |   t=<ASSIGN_WORD_EQ> |  t=<WORD > |t=<NAME>  )
+      (   t=<WORD > |t=<NAME>  | t=< EQ > )
               { w = newJoinedWord(t) ;  } 
     | w  = var_expansion()  
    )   (
-         LOOKAHEAD( 1 , (  var_expansion() | < ARRAY_WORD >|  <ASSIGN_WORD_EQ>  | <WORD > | <NAME>  ),
+         LOOKAHEAD( 1 , (  var_expansion()  | <WORD > | <NAME> | < EQ >  ),
             {  isJoinable(getToken(1))} )     
                n=word_or_name()
      )?
@@ -1725,7 +1735,9 @@ Word expr() :
   Word w,fcw;
 }
 {
-    t=< LBRACE >
+
+  LOOKAHEAD(1)
+  t=< LBRACE >
   {
     pushState( StateEnum.BRACE_WORD );
   }
@@ -1799,28 +1811,52 @@ WordList function_args() :
     }
     
 }
-
+// Lookahead only 
+void assignLookahead() :{}
+{
+  LOOKAHEAD(2 , <NAME > ASSIGN_OP() ,  {
+     isKind(1,NAME) &&      isAssignOp(2 )   })
+   < NAME > ASSIGN_OP()}
 
 CommandPrefixExpr cmd_prefix() :
 {
   CommandPrefixExpr p = new CommandPrefixExpr();
   Assign a;
+  Token local = null ;
 }
 {
+
+  LOOKAHEAD(3 , LOCAL() assignLookahead() )
+    local = LOCAL() a=assign( local )
+    {      p.add(a) ;
+      return p;
+   }
+| LOOKAHEAD( 2 , LOCAL() < NAME > )
+   local=LOCAL() < NAME >   {
+     a = new Assign( local != null , "=",  token.toString(), "=", (Word)null);
+     p.add(a);
+     return p;
+        }
+| 
   (
-    a = assign()
+    LOOKAHEAD( 2, assignLookahead( ) ,    {    isKind(1,NAME) && 
+     isAssignOp(2 )    }    )
+    a = assign(local)
     {
       p.add(a);
     }
-  )+ 
-  {
+  )+
+   {
     return p;
   }
+  
+ 
 }
 
-
-
-Assign assign() :
+Token ASSIGN_OP() :{}{  ( LOOKAHEAD(1 ,{ isAssignOp(1)} )     "={}" | "=[" |  "+=" |"=("| "=[]"| "+=("| "=" )    {
+      return token ;    }    
+}  
+Assign assign(Token local) :
 {
    
   Token t1;
@@ -1830,76 +1866,62 @@ Assign assign() :
   Word ind = null ;
   WordList ws;
   String s;
-  Token local = null ;
 }
-{ 
 
-  LOOKAHEAD( 2 , LOCAL() <NAME> )
-  LOCAL()  t1 = < NAME > 
-  {
-    s = t1.toString();
-    return new Assign(true , "=" , s , "=",new StringWord(t1,""));
-  }
+/*
+|  < ASSIGN_WORD_SEQ   :  < _VARNAME > "=(" >
+|  < ASSIGN_WORD_ARRAY :  < _VARNAME > "=[]" >
+|  < ARRAY_WORD:  < _VARNAME > "[" >
+{
+   matchedToken.enter(ASSIGN_WORD_ARRAY);
+}
+| < ASSIGN_WORD_EMPTYBRACE : <_VARNAME > "={}" >
+|  < ASSIGN_WORDPE_SEQ : < _VARNAME > "+=(" > 
+|  < ASSIGN_WORDPE : < _VARNAME > "+=" > 
+|  < ASSIGN_WORD_EQ : < _VARNAME > "=" >
+*/
+{
 
-|   [ local=LOCAL()  ] 
-   (
-      t1=< ASSIGN_WORD_EMPTYBRACE >
+
+    
+   LOOKAHEAD( 2  )  t1=< NAME >  "={}"  
       {
-         s = t1.toString();
-         return new Assign( local != null , "{}" ,  s.substring(0, s.length() - 3) , null , "=" , null );
-        }
-| 
-         
-      t1=<  ARRAY_WORD > ind=expr() "]=" w= expr()
-      {
-        s = t1.toString();
-            return new Assign( local != null , "[]" ,  s.substring(0, s.length() - 1) , ind , "=" , w );
+         return new Assign( local != null , "{}" , t1.toString() , null , "=" , null );
       }
-| 	   t1 = < ASSIGN_WORDPE > w = expr()
+  | LOOKAHEAD( 2 ) t1=< NAME > "=["  ind=expr() "]=" w= expr()
+      {
+            return new Assign( local != null , "[]" , t1.toString(), ind , "=" , w );
+      }
+  | LOOKAHEAD( 2 )  t1=< NAME > "+="  w = expr()
 	  {
-	    s = t1.toString();
-	    return new Assign( local != null , "+=", s.substring(0, s.length() - 2), "+=", w);
+	    return new Assign( local != null , "+=",  t1.toString(), "+=", w);
 	  }
-	| 
-	   t1 =  < ASSIGN_WORD_SEQ >
-	   { pushState( StateEnum.SEQUENCE_LIST  ) ; }
-
-	   ws = cmd_words() <RPAREN >
+  |  LOOKAHEAD( 2 )  t1=< NAME > "=("
+	 { pushState( StateEnum.SEQUENCE_LIST  ) ; }
+     ws = cmd_words() <RPAREN >
 	  {
 	    popState();
-	    s = t1.toString();
-	    return new Assign( local != null , "()" ,s.substring(0, s.length() - 2), "=", ws);
+	    return new Assign( local != null , "()" ,t1.toString(), "=", ws);
 	  }
-
-      |      LOOKAHEAD(1 , < ASSIGN_WORD_ARRAY > )
-	   t1 =  < ASSIGN_WORD_ARRAY > 
+  | LOOKAHEAD( 2 )   t1=< NAME > "=[]"
 	  {
-	    s = t1.toString();
-	    return new Assign( local != null , "[]" , s.substring(0, s.length() - 3), "=", (Word) null );
+	    return new Assign( local != null , "[]" , t1.toString(), "=", (Word) null );
 	  }
-	| 
-	  t1 =  < ASSIGN_WORDPE_SEQ >
+  | LOOKAHEAD(2)  t1=< NAME > "+=("
 	   { pushState( StateEnum.SEQUENCE_LIST ) ; }
-
 	  ws = cmd_words() < RPAREN >
 	  {
-	    s = t1.toString();
 	     popState();
-	    return new Assign( local != null ,"()" , s.substring(0, s.length() - 3), "+=", ws);
-	  }
-	| t1=< ASSIGN_WORD_EQ > (
-	     LOOKAHEAD( 1 , expr() , {  isJoinable(1) }) w=expr()
-	    
-     )?
-      { s = t1.toString();
+	    return new Assign( local != null ,"()" ,t1.toString(), "+=", ws);
+	  } 
+  |  LOOKAHEAD(2) t1=< NAME > "=" [ w=expr() ]
+     {
          if( w == null )
            w = new StringWord(t1,"") ;
            
-      return new Assign( local != null ,"=" , s.substring(0, s.length() - 1), "=", w); 
+      return new Assign( local != null ,"=" , t1.toString() , "=", w); 
 	}
-	  
-  )
-}
+}
 
 
 WordList cmd_words() :

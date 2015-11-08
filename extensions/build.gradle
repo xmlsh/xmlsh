@@ -5,7 +5,7 @@ subprojects {
 	
     
     dependencies {
-       compile project( path: ":xmlsh" , configuration: "exported" )
+       compile project( ":xmlsh"  )
     }
 
 

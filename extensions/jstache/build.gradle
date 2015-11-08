@@ -8,4 +8,4 @@ distributions {
 	main {
 	   baseName = "jstache"
 	}
-	}
+      }
