@@ -9,6 +9,16 @@ def getDate() {
     def formattedDate = date.format("yyyy-MM-dd'T'HH:mm:ss")
     return formattedDate
 }
+buildscript {
+  repositories {
+    jcenter()
+  }
+  dependencies {
+    classpath 'net.saliman:gradle-properties-plugin:1.4.4'
+
+  }
+}
+
 
 ext   {
     xversion_build_date = getDate()
@@ -17,7 +27,25 @@ ext   {
     version_version  = 2.0
 }
 
+wrapper {
+  gradleVersion='2.8'
+}
+
+
+
+allprojects {
+   apply plugin: 'net.saliman.properties'
+   apply plugin: 'project-report'
+   apply plugin: 'build-dashboard'
+}
+task validate()  {
+       recommendedProperties names: ["awsRepoBucket", "awsAccessKey", "awsSecretKey"], 
+            defaultFile: '$HOME/.gradle/gradle.properties'
+}
 subprojects {
+    tasks.whenTaskAdded { task ->
+     task.dependsOn rootProject.tasks["validate"];
+    }
     apply plugin: 'java'
     apply plugin: 'eclipse'
     apply plugin: "maven"
@@ -32,7 +60,6 @@ subprojects {
 
     repositories {
         jcenter()
-
         maven {
             url "${awsRepoBucket}/maven2"
             credentials(AwsCredentials) {
@@ -48,7 +75,6 @@ subprojects {
                 secretKey "${awsSecretKey}"
             }
         }
-
     }
     compileJava {
         sourceCompatibility = 1.8

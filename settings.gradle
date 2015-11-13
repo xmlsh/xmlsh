@@ -11,3 +11,5 @@ println project(':xmlsh')
 
 rootProject.name = 'xmlsh_main'
 project(':xmlsh').projectDir = new File(settingsDir, 'xmlsh')
+
+assert hasProperty('awsAccessKey')
