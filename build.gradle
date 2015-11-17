@@ -1,15 +1,23 @@
 
+buildscript {
+  repositories {
+    jcenter()
+  }
+  dependencies {
+    classpath 'net.saliman:gradle-properties-plugin:1.4.4'
+
+  }
+}
+
 
 plugins {
     id "com.jfrog.bintray" version "1.3.1"
 }
-
 def getDate() {
     def date = new Date()
     def formattedDate = date.format("yyyy-MM-dd'T'HH:mm:ss")
     return formattedDate
 }
-
 ext   {
     xversion_build_date = getDate()
     xversion_release = '2_0_1'
@@ -17,7 +25,26 @@ ext   {
     version_version  = 2.0
 }
 
+wrapper {
+  gradleVersion='2.8'
+}
+
+
+
+allprojects {
+   apply plugin: 'net.saliman.properties'
+   apply plugin: 'project-report'
+   apply plugin: 'build-dashboard'
+}
+task validate()  {
+       recommendedProperties names: ["installDir"],
+          defaultFile: '$HOME/.gradle/gradle.properties'
+       requiredProperties 'awsRepoBucket'
+}
 subprojects {
+    tasks.whenTaskAdded { task ->
+     task.dependsOn rootProject.tasks["validate"];
+    }
     apply plugin: 'java'
     apply plugin: "maven"
     apply plugin: 'ivy-publish'
@@ -31,23 +58,13 @@ subprojects {
 
     repositories {
         jcenter()
-
         maven {
             url "${awsRepoBucket}/maven2"
-            credentials(AwsCredentials) {
-                accessKey "${awsAccessKey}"
-                secretKey "${awsSecretKey}"
-            }
         }
 
         ivy {
             url "${awsRepoBucket}/ivyrepo"
-            credentials(AwsCredentials) {
-                accessKey "${awsAccessKey}"
-                secretKey "${awsSecretKey}"
-            }
         }
-
     }
     compileJava {
         sourceCompatibility = 1.8

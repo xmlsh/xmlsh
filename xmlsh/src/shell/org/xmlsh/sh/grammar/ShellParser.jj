@@ -195,6 +195,9 @@ public class ShellParser
     }
     return false ;
   }
+  public boolean isAssign() {
+    return  isKind(1,NAME) &&      isAssignOp(2 );
+  }
   public boolean isKind( Token t , int kind )
   {
      return t.kind == kind ;
@@ -1814,8 +1817,7 @@ WordList function_args() :
 // Lookahead only 
 void assignLookahead() :{}
 {
-  LOOKAHEAD(2 , <NAME > ASSIGN_OP() ,  {
-     isKind(1,NAME) &&      isAssignOp(2 )   })
+  LOOKAHEAD(2 , <NAME > ASSIGN_OP() ,  { isAssign()   })
    < NAME > ASSIGN_OP()}
 
 CommandPrefixExpr cmd_prefix() :
@@ -1839,9 +1841,7 @@ CommandPrefixExpr cmd_prefix() :
         }
 | 
   (
-    LOOKAHEAD( 2, assignLookahead( ) ,    {    isKind(1,NAME) && 
-     isAssignOp(2 )    }    )
-    a = assign(local)
+    LOOKAHEAD( 2, assignLookahead( ) , { isAssign() } )    a = assign(local)
     {
       p.add(a);
     }
@@ -1914,11 +1914,14 @@ Assign assign(Token local) :
 	     popState();
 	    return new Assign( local != null ,"()" ,t1.toString(), "+=", ws);
 	  } 
-  |  LOOKAHEAD(2) t1=< NAME > "=" [ w=expr() ]
+  |  LOOKAHEAD(3, <NAME> "=" expr() , { isAssign() && isJoinable(2,"=") && isJoinable(3) }) 
+     t1=< NAME > "="  w=expr() 
      {
-         if( w == null )
+      return new Assign( local != null ,"=" , t1.toString() , "=", w); 
+	}
+	|   t1=<NAME> "="
+ {
            w = new StringWord(t1,"") ;
-           
       return new Assign( local != null ,"=" , t1.toString() , "=", w); 
 	}
 }
