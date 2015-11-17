@@ -39,8 +39,9 @@ allprojects {
    apply plugin: 'build-dashboard'
 }
 task validate()  {
-       recommendedProperties names: ["awsRepoBucket", "awsAccessKey", "awsSecretKey"], 
-            defaultFile: '$HOME/.gradle/gradle.properties'
+       recommendedProperties names: ["installDir"],
+          defaultFile: '$HOME/.gradle/gradle.properties'
+       requiredProperties 'awsRepoBucket'
 }
 subprojects {
     tasks.whenTaskAdded { task ->
@@ -62,18 +63,10 @@ subprojects {
         jcenter()
         maven {
             url "${awsRepoBucket}/maven2"
-            credentials(AwsCredentials) {
-                accessKey "${awsAccessKey}"
-                secretKey "${awsSecretKey}"
-            }
         }
 
         ivy {
             url "${awsRepoBucket}/ivyrepo"
-            credentials(AwsCredentials) {
-                accessKey "${awsAccessKey}"
-                secretKey "${awsSecretKey}"
-            }
         }
     }
     compileJava {
