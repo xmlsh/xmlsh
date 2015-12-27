@@ -360,11 +360,19 @@ public class JSONUtils {
 
     }
 
-    public static String jsonToString(JsonNode value)
+    public static String jsonToString(JsonNode value, boolean serialized)
             throws JsonProcessingException
     {
+      
+      if( value == null ) return "";
+      if( serialized ){
         ObjectMapper mapper = getJsonObjectMapper();
         return mapper.writeValueAsString(value);
+      } else
+       if( value.isValueNode() )
+          return value.asText("");
+       else
+         return value.toString();
     }
 
     /*

@@ -25,6 +25,7 @@ import com.amazonaws.HttpMethod;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.amazonaws.services.s3.model.ResponseHeaderOverrides;
 import com.amazonaws.services.s3.model.SSEAlgorithm;
+import com.amazonaws.services.s3.model.SSECustomerKey;
 
 
 public class s3GeneratePresignedUrl extends AWSS3Command {
@@ -96,6 +97,9 @@ public class s3GeneratePresignedUrl extends AWSS3Command {
         if( opts.hasOpt("sse-algorithm"))
             request.setSSEAlgorithm(SSEAlgorithm.fromString(opts.getOptStringRequired("sse-algorithm")));
         
+
+        if( opts.hasOpt("sse-customer-key") )
+           request.setSSECustomerKey( new SSECustomerKey(opts.getOptStringRequired("sse-customer-key")));
 
         if( opts.hasOpt("sse-customer-key-algorithm"))
             request.setSSECustomerKeyAlgorithm(SSEAlgorithm.fromString(opts.getOptStringRequired("sse-customer-key-algorithm")));

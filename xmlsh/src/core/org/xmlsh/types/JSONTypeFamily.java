@@ -53,7 +53,7 @@ public class JSONTypeFamily extends AbstractTypeFamily implements ITypeFamily
     public String asString(Object value)
     {
       try {
-        return JSONUtils.jsonToString((JsonNode) value);
+        return JSONUtils.jsonToString((JsonNode) value,false);
       } catch (JsonProcessingException e1) {
         mLogger.warn("Exception serializing Json value", e1);
       }
@@ -77,6 +77,9 @@ public class JSONTypeFamily extends AbstractTypeFamily implements ITypeFamily
       if(obj == null)
         return nullXValue();
       assert (obj instanceof JsonNode);
+      
+      if( Util.isEmpty(ind))
+        return getXValue(obj);
 
       JsonNode node = (JsonNode) obj;
       switch (node.getNodeType()) {
@@ -100,9 +103,11 @@ public class JSONTypeFamily extends AbstractTypeFamily implements ITypeFamily
 
       assert (value instanceof JsonNode);
       JsonNode node = (JsonNode) value;
-
       try {
-        JSONUtils.writeJsonNode(node, out, opts);
+        if( ! opts.getSerializeJson() && node.isValueNode() )
+          out.write(node.asText().getBytes(opts.getOutput_text_encoding()) );
+        else
+          JSONUtils.writeJsonNode(node, out, opts);
       } catch (JsonGenerationException | JsonMappingException e) {
         Util.wrapIOException(e);
       }

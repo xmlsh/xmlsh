@@ -153,13 +153,10 @@ public class ShellOpts
         props.put("location-format",mLocationFormat);
         props.put("trace",mTrace);
         props.put("trace-file",mTraceFile);
-
-        XValueProperties opts = new XValueProperties();
-        opts.put("local",mAllLocal);
-        opts.put("export",mAllExport);
-        opts.put("trace-file",mTraceFile);
-        props.put( "o",opts);
-
+        props.put("local",mAllLocal);
+        props.put("export",mAllExport);
+        props.put("trace-file",mTraceFile);
+        props.put( "serialize-opts", mSerialize.getOptionsAsProperties() );
         return props;
 
     }

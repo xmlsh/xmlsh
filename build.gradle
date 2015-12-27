@@ -60,11 +60,21 @@ subprojects {
         jcenter()
         maven {
             url "${awsRepoBucket}/maven2"
+            credentials(AwsCredentials) { 
+                accessKey "$awsAccessKey"
+                secretKey  "$awsSecretKey"
+
+            }
         }
 
         ivy {
             url "${awsRepoBucket}/ivyrepo"
-        }
+            credentials(AwsCredentials) { 
+                accessKey "$awsAccessKey"
+                secretKey  "$awsSecretKey"
+
+            }
+       } 
     }
     compileJava {
         sourceCompatibility = 1.8
