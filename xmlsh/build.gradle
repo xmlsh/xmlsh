@@ -86,8 +86,8 @@ dependencies {
 
 
 
-    compile 'net.bytebuddy:byte-buddy:0.7-SNAPSHOT'
-    compile 'jline:jline2:2.13-SNAPSHOT'
+    compile 'net.bytebuddy:byte-buddy:0.7.+'
+    compile 'org.xmlsh:jline2:2.14-SNAPSHOT'
     compile 'com.jayway.jsonpath:json-path:2.+'
     compile 'org.ccil.cowan.tagsoup:tagsoup:1.+'
     compile  'xerces:xercesImpl:2.+'

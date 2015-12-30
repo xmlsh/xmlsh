@@ -8,6 +8,8 @@ _dist/
 /build/
 .gradle
 .settings
+.classpath
+.project
 *~
 _out.txt
 _err.txt
