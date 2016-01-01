@@ -61,7 +61,7 @@ subprojects {
         jcenter()
         maven {
             url "${awsRepoBucket}/maven2"
-            credentials(AwsCredentials) { 
+            credentials(AwsCredentials) {
                 accessKey "$awsAccessKey"
                 secretKey  "$awsSecretKey"
 
@@ -70,12 +70,12 @@ subprojects {
 
         ivy {
             url "${awsRepoBucket}/ivyrepo"
-            credentials(AwsCredentials) { 
+            credentials(AwsCredentials) {
                 accessKey "$awsAccessKey"
                 secretKey  "$awsSecretKey"
 
             }
-       } 
+       }
     }
     compileJava {
         sourceCompatibility = 1.8
@@ -122,17 +122,17 @@ subprojects {
  */
 
 evaluationDependsOn ":app"
-task install( type: Sync  , dependsOn: ':app:installDist' ) {
-    description 'MAIN: Install to directory "installDir"'
+task install( type: Sync  , dependsOn: [ ':validate' , ':app:installDist' ]  ) {
+    requiredProperties 'installDir'
+    dependsOn rootProject.tasks["validate"]
     dependsOn subprojects.tasks["build"]
-    def dest = new File(project.installDir)
-    from  project(':app').getProperty('installDist')
-            into dest
-    doFirst {
-        if( ! project.hasProperty('installDir' ) ) {
-            ant.fail('usage: gradle install -PinstallDir=full-path-to-install')
-        }
-        println "Installing into: ${dest.absolutePath}"
-    }
+     if( rootProject.hasProperty("installDir")) {
+      def dest = new File("${-> rootProject.installDir}" )
+        from  project(':app').getProperty('installDist')
+              into dest
+        doFirst {
+          println "Installing into: ${dest.absolutePath}"
+       }
+     }
 }
 

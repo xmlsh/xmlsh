@@ -6,12 +6,10 @@ _dist/
 *.tmp/
 /eclipse_settings
 /build/
-.gradle
-.settings
-.classpath
-.project
+.gradle/
 *~
 _out.txt
 _err.txt
 /bin/
 .metadata
+version.properties
