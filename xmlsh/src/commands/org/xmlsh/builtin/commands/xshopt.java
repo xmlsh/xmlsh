@@ -25,6 +25,9 @@ import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.sh.shell.ShellOpts;
 import org.xmlsh.types.xtypes.XValueProperties;
 import org.xmlsh.types.xtypes.XValueProperty;
+import org.xmlsh.util.Util;
+
+import com.jayway.jsonpath.internal.Utils;
 
 
 public class xshopt extends BuiltinCommand {
@@ -36,17 +39,27 @@ public class xshopt extends BuiltinCommand {
 
 
 
-        Options opts = new Options( "" , SerializeOpts.getOptionDefs()  );
+        Options opts = new Options( "+s,+u" , SerializeOpts.getOptionDefs()  );
         opts.parse(args);
         setSerializeOpts(opts);
-        args=opts.getRemainingArgs();
-
-        printOpts( opts  );
+        if( opts.hasOpt("s") )
+          setOpts( Util.toStringList(opts.getRemainingArgs()) , true );
+        else if(opts.hasOpt("u") )
+          setOpts(Util.toStringList(opts.getRemainingArgs()), false);
+        else
+          printOpts( Util.toStringList(opts.getRemainingArgs()) );
 
         return 0;
 
     }
-    private void printOpts(Options opts) throws XMLStreamException, IOException, CoreException, SaxonApiException
+    private void setOpts(List<String> remainingArgs, boolean flag) {
+      remainingArgs.forEach( name -> 
+      getShell().setOption( name, flag ) 
+      );
+    
+      
+    }
+    private void printOpts(List<String> list) throws XMLStreamException, IOException, CoreException, SaxonApiException
     {
         OutputPort stdout = getStdout();
         XMLStreamWriter writer = stdout.asXMLStreamWriter(getSerializeOpts());
@@ -57,7 +70,7 @@ public class xshopt extends BuiltinCommand {
 
 
             XValueProperties props = mShell.getOpts().getOptionsAsProperties() ;
-            writeOptions(writer, props);
+            writeOptions(writer, props ,  list );
 
             writer.writeEndElement();
             writer.writeEndDocument();
@@ -67,7 +80,7 @@ public class xshopt extends BuiltinCommand {
             stdout.writeSequenceTerminator(getSerializeOpts());
         }
     }
-    private void writeOptions(XMLStreamWriter writer, XValueProperties props)
+    private void writeOptions(XMLStreamWriter writer, XValueProperties props, List<String> list)
             throws XMLStreamException, InvalidArgumentException,
             UnexpectedException {
         for( XValueProperty prop : props.asPropertyList()  ){
@@ -76,7 +89,7 @@ public class xshopt extends BuiltinCommand {
             XValue value = prop.getValue();
             if( ! value.isNull() ){
                 if( value.isInstanceOf(XValueProperties.class) )
-                    writeOptions( writer , value.asInstanceOf(XValueProperties.class));
+                    writeOptions( writer , value.asInstanceOf(XValueProperties.class)  , list );
                 else
 
                     if( value.isInstanceOf( Boolean.class) )

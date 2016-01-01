@@ -104,15 +104,6 @@ applicationDistribution.
 }
  
  
-publishing {
- publications {
-  mavenJava {
-    artifacts = [] 
-  }
-  }
-}
-
-
 
 run {
     standardInput = System.in
@@ -122,56 +113,52 @@ run {
     /* Or just each by name: */
     // systemProperty "xmlsh.XLOGLEVEL", "TRACE"
 }
-    
-    
-    /*zz
-  publishing {
+publishing   {
+  publications {
+  mavenJava(MavenPublication) { 
+     artifacts = []
+   }
+  }
+}
+   /* 
+publishing {
+    repositories {
+        maven {
+            url "${awsRepoBucket}/maven2"
+            credentials(AwsCredentials) { 
+                accessKey "$awsAccessKey"
+                secretKey  "$awsSecretKey"
 
-	  repositories {
-		  ivy {
-			  // change to point to your repo, e.g. http://my.org/repo
-			  url "${rootProject.buildDir}/_ivy_repo"
-		  }
-		  maven {
-			  // change to point to your repo, e.g. http://my.org/repo
-			  url "${rootProject.buildDir}/_maven_repo"
-		  }
-	  }
-	  publications {
-		  mavenJava(MavenPublication) {
-			  from components.java
-			  artifact sourceJar {
-				  classifier "sources"
-			  }
-  
-		  }
-		  
+            }
+        }
 
-    mavenDist(MavenPublication) {
-			from installDist.outputs
-			artifact dist {
-			  classifier "runtime"
-			}
-			pom.withXml {
-			  def root = asNode()
-			  root.appendNode('description', 'A CLI for mustache.java')
-			  root.children().last() + pomConfig
-			}
-		  }
-		  ivyJava(IvyPublication) {
-			  from components.java
-			  artifact(sourceJar) {
-				  type "source"
-				  conf "runtime"
-			  }
-			  descriptor.withXml {
-				  asNode().info[0].appendNode('description', description)
-			  }
-		  }
+        ivy {
+            url "${awsRepoBucket}/ivyrepo"
+            credentials(AwsCredentials) { 
+                accessKey "$awsAccessKey"
+                secretKey  "$awsSecretKey"
 
-	  }
-	   
-  } */
+            }
+       } 
+    }
+
+  publications {
+  mavenJava(MavenPublication) { 
+     artifacts = []
+   }
+  ivyJava(IvyPublication) {
+    from components.java
+    artifact(sourceJar) {
+        type "source"
+        conf "runtime"
+    }
+    descriptor.withXml {
+      asNode().info[0].appendNode('description', description)
+  }
+ }
+}
+}
+	  */ 
   /*
   bintray {
 	

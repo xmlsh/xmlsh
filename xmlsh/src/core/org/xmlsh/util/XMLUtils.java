@@ -21,9 +21,13 @@ import net.sf.saxon.om.NodeInfo;
 import net.sf.saxon.om.Sequence;
 import net.sf.saxon.om.SequenceIterator;
 import net.sf.saxon.om.SequenceTool;
+import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.SaxonApiUncheckedException;
 import net.sf.saxon.s9api.Serializer;
+import net.sf.saxon.s9api.XPathCompiler;
+import net.sf.saxon.s9api.XPathExecutable;
+import net.sf.saxon.s9api.XPathSelector;
 import net.sf.saxon.s9api.XdmEmptySequence;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
@@ -38,8 +42,10 @@ import net.sf.saxon.value.ObjectValue;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.xmlsh.core.InvalidArgumentException;
+import org.xmlsh.core.Namespaces;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.SerializeOpts;
+import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.sh.shell.ShellConstants;
 import org.xmlsh.types.ITypeConverter;
 import org.xmlsh.types.TypeFamily;
@@ -429,6 +435,28 @@ public class XMLUtils
 		XMLEventReader reader = factory.createXMLEventReader( null , iss);
 		return reader;
 	}
+
+
+  public static XPathSelector evalXPath(XdmValue value, String expr, Shell shell) throws IOException, SaxonApiException {
+    
+      Processor processor = Shell.getProcessor();
+      XPathCompiler compiler = processor.newXPathCompiler();
+    XPathExecutable exec = compiler.compile(expr);
+
+    if( shell != null ){
+      Namespaces ns = shell.getEnv().getNamespaces();
+      if(ns != null) {
+        for (String prefix : ns.keySet()) {
+          String uri = ns.get(prefix);
+          compiler.declareNamespace(prefix, uri);
+        }
+      }
+    }
+      
+    XPathSelector eval = exec.load();
+    eval.setContextItem(value.itemAt(0));
+    return eval;
+  }
 
 
   

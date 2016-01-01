@@ -2,17 +2,21 @@ package org.xmlsh.core.io;
 
 import static org.xmlsh.util.Util.stringConcat;
 
+import java.io.BufferedReader;
 import java.io.Console;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.io.StringReader;
+import java.nio.CharBuffer;
 import java.util.Arrays;
 
 import jline.Terminal;
 import jline.TerminalFactory;
 import jline.console.ConsoleReader;
 import jline.Logger.Level;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.xmlsh.core.InputPort;
@@ -44,7 +48,7 @@ public class ShellConsole {
             org.apache.logging.log4j.Level l4l = levels[level.ordinal()] ;
             if( !mLogger.isEnabled(l4l))
                 return ;
-     
+
             if( messages.length > 0 && messages[messages.length-1] instanceof Throwable ){
                 Throwable t = (Throwable) messages[messages.length-1];
                 messages = Arrays.copyOf(messages, messages.length-1);
@@ -52,11 +56,11 @@ public class ShellConsole {
                   mLogger.log( l4l, Util.stringJoin("{}"," ",messages.length) , messages , t );
                 else
                   mLogger.log(l4l,t);
-           
+
             } else
                 mLogger.log(l4l, Util.stringJoin("{}"," ",messages.length) , messages);
         }
-        
+
     }
     private static volatile ShellConsole _instance = null;
     private Console sJavaConsole;               // JRE 6 Console if available
@@ -70,8 +74,8 @@ public class ShellConsole {
 
     /*
      * private Reader mReader ;
-     * 
-     * 
+     *
+     *
      * public ShellReader getReader() {
      * mLogger.entry();
      * if( sJavaConsole != null )
@@ -79,7 +83,7 @@ public class ShellConsole {
      * else {
      * return new ShellSystemReader(ps1,ps2);
      * }
-     * 
+     *
      * }
      */
 
@@ -106,24 +110,24 @@ public class ShellConsole {
         sJavaConsole = System.console();
         // If no console dont use jLine for now
         // cygwin note:
-        
+
         // if running cygwin under cmd.exe then use do NOT use jline
         //    Java does not detect a Console and TERM=cygwin
         // if running cygwin under mintty then do USE jline
-        //    Java does detect a console and TERM=xterm 
-        
+        //    Java does detect a console and TERM=xterm
 
-        
+
+
         String  sUseJLine = System.getProperty("xmlsh.jline");
-        boolean useJLine = 
-                (sUseJLine != null ? Util.parseBoolean(sUseJLine) : 
+        boolean useJLine =
+                (sUseJLine != null ? Util.parseBoolean(sUseJLine) :
                 (sJavaConsole != null ));
-        
+
         mLogger.debug("Has Console: {} xmlsh.jline: {} useJLine: {}",
             sJavaConsole != null ,
             sUseJLine,
             useJLine);
-                
+
         if ( useJLine ){
             mLogger.debug("Setting jline logger");
             jline.internal.Log.setLogger( new JLineLogger() );
@@ -244,7 +248,7 @@ public class ShellConsole {
                         String sline = jJLineConsole.readLine("");
                         if( sline == null )
                            return (pos = -1) ;
-                    
+
                         if( sline.isEmpty() )
                             line = Util.mNewLineBytes;
                         else
@@ -262,20 +266,35 @@ public class ShellConsole {
         public OutputPort getOutputPort()
         {
             OutputStream out = new OutputStream() {
+              private char[] onechar = new char[1];
 
                 @Override
                 public void write(int b) throws IOException {
-                    String s = String.valueOf((char) b); // horrible
-                    jJLineConsole.print(s);
+                    if( b == '\r' ) return ;
+                    if( b == '\n' ) jJLineConsole.println();
+                    onechar[0] = (char)b ;
+                    jJLineConsole.print( CharBuffer.wrap(onechar));
 
                 }
 
                 @Override
                 public void write(byte[] b, int off, int len)
                         throws IOException {
-                    jJLineConsole.print( new String(b,off,len,sEncoding));
+                  mLogger.entry( b , off , len );
+                  int last = off;
+                  int i = off;
+                  while( i < len   ){
+                    if( b[i] == '\n'){
+                      if( i == last )
+                        jJLineConsole.println();
+                      else
+                         jJLineConsole.println( new String(b,last,i-last,sEncoding));
+                      last = ++i;
+                    } else i++;
+                  }
+                  if( last < i )
+                    jJLineConsole.print( new String(b,last,i-last,sEncoding));
                 }
-
                 @Override
                 public void flush() throws IOException {
                     jJLineConsole.flush();

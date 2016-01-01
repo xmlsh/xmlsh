@@ -17,6 +17,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
+import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.UnimplementedException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.SerializeOpts;
@@ -109,15 +110,21 @@ public final class XDMTypeFamily extends AbstractTypeFamily implements ITypeFami
 
     // Named index XValue
     @Override
-    public XValue getXValue(Object obj, String ind) throws InvalidArgumentException
+    public XValue getXValue(Object obj, String ind) throws CoreException
     {
       if( obj == null )
         return nullXValue();
       
       assert( obj != null );
       assert( obj instanceof XdmItem );
-
-      throw new InvalidArgumentException("Invalid named index for XDM Value:" + ind);
+      if( Util.isEmpty(ind))
+        return getXValue(obj);
+      
+      if( Util.isInt(ind, false))
+        return  getXValue( obj , Util.parseInt(ind, 0)-1);
+      
+      XValue xv = getXValue(obj);
+      return xv.xpath( null , ind   );
 
     }
 
@@ -256,11 +263,11 @@ public final class XDMTypeFamily extends AbstractTypeFamily implements ITypeFami
     {
       if(obj == null)
         return nullXValue();
-      assert (obj instanceof XdmItem);
-      XdmItem v = (XdmItem) obj;
+      assert (obj instanceof XdmValue);
+      XdmValue v = (XdmValue) obj;
 
       if(index < 0 || index >= v.size())
-        throw new InvalidArgumentException("Invalid index for sequence");
+        throw new InvalidArgumentException("Invalid index for sequence: " + index);
       return XValue.newXValue(this,v.itemAt(index),false);
     }
 

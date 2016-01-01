@@ -25,7 +25,7 @@ import org.xmlsh.types.TypeFamily;
 public class xlocation extends AbstractBuiltinFunction {
 
 	public static final String XLOC_OPTS =
-	        "d=depth:,function,n=name,source,start=start-line,end=end-line,scol=start-column,ecol=end-column,relpath,path,file";
+	        "d=depth:,function,n=name,s=source,start=start-line,end=end-line,scol=start-column,ecol=end-column,relpath,path,file";
 
 	public xlocation()
 	{
