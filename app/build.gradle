@@ -36,13 +36,13 @@ jar {
 // configurations.runtime.artifacts.removeAll { it.archiveTask.is jar }
 	
 dependencies {
-	compile project(":xmlsh")
-	// Dont pull in xml-apis:2.x
-	compile ('xml-apis:xml-apis:1.4+'){
-		   force=true
-	}
+    compile project(":xmlsh")
+   // Dont pull in xml-apis:2.x
+    compile ('xml-apis:xml-apis:1.4+'){
+             force=true
+    }
     compile  'xerces:xercesImpl:2.+'
-    compile 'xml-apis:xml-apis:1.4.+'
+    //compile 'xml-apis:xml-apis:1.4.+'
     compile 'xml-resolver:xml-resolver:1.2+' 
     runtime 'xom:xom:latest.release'
     compile 'net.sf.saxon:Saxon-HE:9.6.+' 

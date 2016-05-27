@@ -40,7 +40,7 @@ public class xgetopts extends XCommand {
 	@Override
 	public int run(List<XValue> args) throws Exception {
 
-		Options opts = new Options("i=ignore:I=ignore-all,a=argindex,o=optdef:,c=command:,p=passthrough:,+s=seralize,+ps=pass-serialize,noargs,novalues,if-absent:",SerializeOpts.getOptionDefs());
+		Options opts = new Options("i=ignore:,I=ignore-all,a=argindex,o=optdef:,c=command:,p=passthrough:,+s=seralize,+ps=pass-serialize,noargs,novalues,if-absent:",SerializeOpts.getOptionDefs());
 		opts.parse(args);
 
 		// String command = opts.getOptString("c", getShell().getArg0());
@@ -57,18 +57,18 @@ public class xgetopts extends XCommand {
 
 		// Backwards compatible - arg[0] is optdef
 		if( optdef == null ){
-
 			if( passthrough != null )
 				optdef = passthrough ;
-			else
-			{// backwards compatiblity take first arg as optdef
-				if( args.size() == 0 ){
-					usage();
-					return 1;
-				}
+			else {
+                          if( ! opts.hasDashDash() && args.size()>0 ) 
 				optdef = args.remove(0).toString();
+                          // backwards compatiblity take first arg as optdef
 			}
 		}
+                if( optdef == null ){
+                    usage();
+                    return 1;
+                }
 
 		boolean bNoArgs = opts.hasOpt("noargs");
 		boolean bNoValues = opts.hasOpt("novalues");

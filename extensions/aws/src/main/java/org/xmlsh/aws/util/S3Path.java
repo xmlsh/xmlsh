@@ -22,20 +22,20 @@ public class S3Path {
 	 * 		bucket/prefix
 	 * 		s3://bucket
 	 * 		s3://bucket/prefix
-	 * 		
+	 *
 	 */
 
 	public S3Path(String	path)
 	{
      initFromPath( path );
 	}
-	  
+
 	private void initFromPath( String path ){
 	  if( Util.isBlank(path))
        return ;
   		if( path.startsWith("s3://"))
   			path = path.substring(5);
-  
+
   		int spos = path.indexOf(mDelim);
   		if( spos < 0 )
   			mBucket = Util.nullIfBlank(path) ;
@@ -48,7 +48,7 @@ public class S3Path {
 
 	public S3Path( String bucket , String key )
 	{
-	  if( Util.isBlank(bucket) || 
+	  if( Util.isBlank(bucket) ||
 	       ( !Util.isBlank(key ) && key.startsWith("s3:/") ))
 	    initFromPath( key );
 	  else {
@@ -59,11 +59,11 @@ public class S3Path {
 
 	public S3Path( S3Path parent , String child )
 	{
-		mBucket = parent.mBucket ; 
+		mBucket = parent.mBucket ;
 		if (child.startsWith(mDelim)) child = child.substring(1);
 		mKey = child;
 		if(parent.hasKey())
-			mKey = (parent.mKey.endsWith(mDelim) ? parent.mKey : parent.mKey + mDelim) + mKey ;		
+			mKey = (parent.mKey.endsWith(mDelim) ? parent.mKey : parent.mKey + mDelim) + mKey ;
 	}
 
 	public 	String	getBucket(){
@@ -85,7 +85,7 @@ public class S3Path {
 	}
 
 
-	// Synonym to getPrefix 
+	// Synonym to getPrefix
 	public String getKey() {
 		return mKey ;
 	}
@@ -156,7 +156,7 @@ public class S3Path {
 //
 //The contents of this file are subject to the "Simplified BSD License" (the "License");
 //you may not use this file except in compliance with the License. You may obtain a copy of the
-//License at http://www.opensource.org/licenses/bsd-license.php 
+//License at http://www.opensource.org/licenses/bsd-license.php
 //
 //Software distributed under the License is distributed on an "AS IS" basis,
 //WITHOUT WARRANTY OF ANY KIND, either express or implied.

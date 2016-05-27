@@ -4,13 +4,25 @@
       <col>Jane Austen</col>
       <col>Modern Library</col>
       <col>12/31/2002</col>
-      <col>English4.95,187,679601686,352,8.3 5.7 1.1,6.1</col>
+      <col>English</col>
+      <col>4.95</col>
+      <col>187</col>
+      <col>679601686</col>
+      <col>352</col>
+      <col>8.3 5.7 1.1</col>
+      <col>6.1</col>
    </item>
    <item>
       <col>Wuthering Heights</col>
       <col>Charlotte Bront</col>
       <col>Penguin Classics</col>
       <col>12/31/2002</col>
-      <col>English6.58,113,141439556,430,1.0 5.2 7.8,11.2</col>
+      <col>English</col>
+      <col>6.58</col>
+      <col>113</col>
+      <col>141439556</col>
+      <col>430</col>
+      <col>1.0 5.2 7.8</col>
+      <col>11.2</col>
    </item>
 </books>

@@ -51,7 +51,7 @@ public class put extends MLCommand {
 	private ContentCreateOptions mCreateOptions;
 	private ThreadPoolExecutor mPool = null;
 
-	
+      private static final Checksum.Format md5format = Checksum.Format.HEX ;	
 	private static class SumContent
 	{
 		String		mURI;
@@ -754,7 +754,7 @@ public class put extends MLCommand {
 		
 		return 
 			"xdmp:document-set-property( " + MLUtil.quote(uri) +
-			", <xmd5 md5='" + sum.getMD5() + 
+			", <xmd5 md5='" + sum.getMD5(md5format) + 
 			"' length='"+ String.valueOf(sum.getLength()) + "'/>),\n" ;
 			
 					

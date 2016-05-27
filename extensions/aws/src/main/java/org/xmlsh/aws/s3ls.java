@@ -7,6 +7,7 @@ import javax.xml.stream.XMLStreamException;
 
 import net.sf.saxon.s9api.SaxonApiException;
 
+import org.xmlsh.annotations.Command;
 import org.xmlsh.aws.util.AWSS3Command;
 import org.xmlsh.aws.util.S3Path;
 import org.xmlsh.core.CoreException;
@@ -19,18 +20,23 @@ import com.amazonaws.AmazonClientException;
 import com.amazonaws.services.s3.model.Bucket;
 import com.amazonaws.services.s3.model.ListMultipartUploadsRequest;
 import com.amazonaws.services.s3.model.ListObjectsRequest;
+import com.amazonaws.services.s3.model.ListVersionsRequest;
 import com.amazonaws.services.s3.model.MultipartUpload;
 import com.amazonaws.services.s3.model.MultipartUploadListing;
 import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
+import com.amazonaws.services.s3.model.S3VersionSummary;
+import com.amazonaws.services.s3.model.VersionListing;
 
+@Command( name="s3ls" )
 public class s3ls extends AWSS3Command {
 
   private boolean bLongListing;
   private String mDelim = S3Path.kDEF_DELIM;
   private boolean bMetadata;
   private boolean bRecurse = false;
+  private boolean bVersions;
 
   /**
    * @param args
@@ -39,7 +45,7 @@ public class s3ls extends AWSS3Command {
   @Override
   public int run(List<XValue> args) throws Exception {
 
-    Options opts = getOptions("delim:,r=recurse,l=long,lm=long-metadata,m=multipart,meta=metadata");
+    Options opts = getOptions("delim:,r=recurse,l=long,lm=long-metadata,m=multipart,meta=metadata,versions");
     parseOptions(opts, args);
 
     args = opts.getRemainingArgs();
@@ -48,7 +54,8 @@ public class s3ls extends AWSS3Command {
 
     bLongListing = opts.hasOpt("l") || opts.hasOpt("lm");
     bMetadata = opts.hasOpt("metadata") || opts.hasOpt("lm");
-    
+    bVersions = opts.hasOpt("versions");
+
 
     try {
       getS3Client(opts);
@@ -62,8 +69,8 @@ public class s3ls extends AWSS3Command {
     bRecurse = opts.hasOpt("r");
 
     int ret;
-    
-    
+
+
     S3Path s3path = null ;
     switch (args.size()) {
     case 0:
@@ -76,9 +83,12 @@ public class s3ls extends AWSS3Command {
       usage();
       return 1;
     }
-    
+
     if( ! s3path.hasBucket() )
      ret = listBuckets();
+    else
+    if( bVersions )
+      ret = listVersions(s3path );
     else
     if (opts.hasOpt("m"))
       ret = listMultipart(s3path);
@@ -127,7 +137,7 @@ public class s3ls extends AWSS3Command {
     }
 
     startResult();
-    
+
     writePath(path);
 
     ListMultipartUploadsRequest request = getListMultipartRequest(path, this.bRecurse ? null : mDelim);
@@ -197,11 +207,11 @@ public class s3ls extends AWSS3Command {
       for (S3ObjectSummary obj : objs) {
         startElement("file");
         attribute("key", obj.getKey());
-        attribute("type", S3Path.isDirectory(obj.getKey(), mDelim ) ? "directory" : "file" ); 
+        attribute("type", S3Path.isDirectory(obj.getKey(), mDelim ) ? "directory" : "file" );
         if (bLongListing) {
 
           attribute("size", Long.toString(obj.getSize()));
-          attribute("md5", obj.getETag());
+          attribute("etag", obj.getETag());
           attribute("mod-date",
               Util.formatXSDateTime(obj.getLastModified()));
           attribute("owner", obj.getOwner().getDisplayName());
@@ -211,7 +221,8 @@ public class s3ls extends AWSS3Command {
           ObjectMetadata data = getAWSClient().getObjectMetadata( path.getBucket()  , obj.getKey()  );
           writeMeta( data );
         }
-        
+
+
         endElement();
 
       }
@@ -226,6 +237,70 @@ public class s3ls extends AWSS3Command {
     return 0;
   }
 
+  private int listVersions(S3Path path) throws IOException, XMLStreamException,
+  SaxonApiException, AmazonClientException, CoreException {
+
+    if (!path.hasBucket()) {
+      usage();
+      return 1;
+
+    }
+
+    startResult();
+    writePath(path);
+
+    ListVersionsRequest request = getListVersionsRequest(path, bRecurse?null: mDelim);
+    traceCall("listVersions");
+
+    VersionListing list = getAWSClient().listVersions(request);
+
+    do {
+
+      List<String> prefixes = list.getCommonPrefixes();
+      if (prefixes != null && prefixes.size() > 0) {
+        for (String p : prefixes) {
+          startElement("directory");
+          attribute("name", p);
+          endElement();
+        }
+      }
+
+      List<S3VersionSummary> objs = list.getVersionSummaries();
+      for (S3VersionSummary obj : objs) {
+        startElement("file");
+        attribute("key", obj.getKey());
+        attribute("type", S3Path.isDirectory(obj.getKey(), mDelim ) ? "directory" : "file" );
+
+        attribute("version", obj.getVersionId());
+
+        if (bLongListing) {
+
+          attribute("size", Long.toString(obj.getSize()));
+          attribute("etag", obj.getETag());
+          attribute("mod-date",
+              Util.formatXSDateTime(obj.getLastModified()));
+          attribute("owner", obj.getOwner().getDisplayName());
+          attribute("storage-class", obj.getStorageClass());
+        }
+
+        if( bMetadata ){
+          ObjectMetadata data = getAWSClient().getObjectMetadata( path.getBucket()  , obj.getKey()  );
+          writeMeta( data );
+        }
+
+        endElement();
+
+      }
+      if (list.isTruncated()) {
+        // String marker = list.getNextMarker();
+        list = getAWSClient().listNextBatchOfVersions(list);
+      } else
+        break;
+    } while (true);
+
+    endResult();
+    return 0;
+  }
   private void writePath(S3Path path)
       throws XMLStreamException {
     attribute("bucket", path.getBucket());

@@ -38,9 +38,9 @@ allprojects {
    apply plugin: 'build-dashboard'
 }
 task validate()  {
-       recommendedProperties names: ["installDir"],
+       recommendedProperties names: ["xmlsh.installDir"],
           defaultFile: '$HOME/.gradle/gradle.properties'
-       requiredProperties 'awsRepoBucket'
+       requiredProperties 'xmlsh.awsRepoBucket'
 }
 subprojects {
     tasks.whenTaskAdded { task ->
@@ -61,19 +61,19 @@ subprojects {
     repositories {
         jcenter()
         maven {
-            url "${awsRepoBucket}/maven2"
+            url rootProject.getProperty("xmlsh.awsRepoBucket") + "/maven2"
             credentials(AwsCredentials) {
-                accessKey "$awsAccessKey"
-                secretKey  "$awsSecretKey"
+                accessKey rootProject.getProperty("xmlsh.awsAccessKey")
+                secretKey rootProject.getProperty("xmlsh.awsSecretKey")
 
             }
         }
 
         ivy {
-            url "${awsRepoBucket}/ivyrepo"
+            url rootProject.getProperty("xmlsh.awsRepoBucket") + "/ivyrepo"
             credentials(AwsCredentials) {
-                accessKey "$awsAccessKey"
-                secretKey  "$awsSecretKey"
+                accessKey rootProject.getProperty("xmlsh.awsAccessKey")
+                secretKey rootProject.getProperty("xmlsh.awsSecretKey")
 
             }
        }
@@ -124,11 +124,11 @@ subprojects {
 
 evaluationDependsOn ":app"
 task install( type: Sync  , dependsOn: [ ':validate' , ':app:installDist' ]  ) {
-    requiredProperties 'installDir'
+    requiredProperties 'xmlsh.installDir'
     dependsOn rootProject.tasks["validate"]
     dependsOn subprojects.tasks["build"]
-     if( rootProject.hasProperty("installDir")) {
-      def dest = new File("${-> rootProject.installDir}" )
+     if( rootProject.hasProperty("xmlsh.installDir")) {
+      def dest = new File(rootProject.getProperty("xmlsh.installDir"))
         from  project(':app').getProperty('installDist')
               into dest
         doFirst {

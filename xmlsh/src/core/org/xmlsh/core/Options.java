@@ -57,6 +57,14 @@ public class Options implements Cloneable {
 			setFlag(plus);
 		}
 
+		OptionDef() {
+		  name = longname = "-";
+		  expectsArg=false;
+		  multiple = false;
+		  flag = false ;
+
+		}
+
 		// Clone
 		public OptionDef( OptionDef that ){
 		    this( that.name , that.longname , that.expectsArg, that.multiple , that.flag );
@@ -132,10 +140,18 @@ public class Options implements Cloneable {
 
 	}
 
+  static OptionDef mDashDash = new OptionDef();
+
+
 	public static class OptionValue {
 		private OptionDef option;
 		private boolean optflag = true; // true if '-' , false if '+'
 		private XValue value = null;
+
+		OptionValue() {
+		  option = mDashDash ;
+
+		}
 
 		OptionValue(OptionDef def, boolean flag) {
 			option = def;
@@ -336,7 +352,11 @@ public class Options implements Cloneable {
 	 * ("a",false),("b",true),("cde",true)
 	 */
 
-	public static OptionDefs parseDefs(String sdefs) {
+	public boolean hasDashDash() {
+    return hasOpt(mDashDash);
+  }
+
+  public static OptionDefs parseDefs(String sdefs) {
 		return OptionDefs.parseDefs(sdefs);
 	}
 
@@ -429,7 +449,8 @@ public class Options implements Cloneable {
 
 
     // Parse but do not store into mOptions
-	public static List<OptionValue> parseValues( OptionDefs defs ,  List<XValue> args,  List<XValue> remainingArgs , boolean stopOnUnknown) throws UnknownOption,
+	public static List<OptionValue> parseValues( OptionDefs defs ,  List<XValue> args,
+	    List<XValue> remainingArgs , boolean stopOnUnknown) throws UnknownOption,
 			UnexpectedException, InvalidArgumentException {
 	    List<OptionValue> options = new ArrayList<>();
         Iterator<XValue> I = args.iterator();
@@ -472,7 +493,7 @@ public class Options implements Cloneable {
 
 				if (arg.isAtomic() && arg.equals("--")) {
 					arg = null;
-					// mDashDash = true;
+					options.add( new OptionValue());
 				}
 				if (arg != null)
 					remainingArgs.add(arg);
@@ -575,7 +596,7 @@ public class Options implements Cloneable {
 		OptionValue ov = getOpt(arg);
 		if (ov == null)
 			return null;
-		else 
+		else
 		if( ov.getOptionDef().isMultiple() )
 			return XValue.newXValue( getOptValues(arg) );
 		else

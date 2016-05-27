@@ -5,8 +5,8 @@
  */
 
 package org.xmlsh.util.commands;
-
-
+import org.xmlsh.util.Base64Coder;
+import java.math.BigInteger;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -25,10 +25,15 @@ import org.xmlsh.core.CoreException;
  */
 public class Checksum
 {
-	private		String	mMD5;
+  public enum Format {
+    HEX,
+    BINARY,
+    BASE64
+  };
+	private		byte[]	mMD5;
 	private		long	mLength;
 
-	private Checksum( String md5 , long len )
+	private Checksum( byte[] md5 , long len )
 	{
 		mMD5 = md5;
 		mLength = len ;
@@ -89,7 +94,7 @@ public class Checksum
 					out.write(buf , 0 , len );
 			}
 
-			return new Checksum( toHexString(digest.digest()) , totlen );
+			return new Checksum(digest.digest() , totlen );
 		}
 		catch (NoSuchAlgorithmException e)
 		{
@@ -136,8 +141,17 @@ public class Checksum
 	/**
 	 * @return the mD5
 	 */
-	public String getMD5() {
-		return mMD5;
+	public String getMD5(Format format) {
+            switch( format )
+            {
+             case BINARY :
+                return new BigInteger(mMD5).toString();
+            case BASE64:
+               return new String( Base64Coder.encode( mMD5 , mMD5.length ) );
+            case HEX :
+            default:
+		return toHexString(mMD5);
+            }
 	}
 
 	/**

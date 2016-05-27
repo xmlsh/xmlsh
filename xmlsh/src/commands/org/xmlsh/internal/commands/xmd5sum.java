@@ -50,12 +50,12 @@ public class xmd5sum extends XCommand {
 	private boolean opt_a;
 	private boolean opt_s;
 	private boolean opt_r;
-
+        private Checksum.Format format = Checksum.Format.HEX ;
 	@Override
 	public int run(List<XValue> args) throws Exception {
 		
 		mLogger.entry(args);
-		Options opts = new Options("b=binary,x=xml,a=all,s=system,r=relative", SerializeOpts
+		Options opts = new Options("b=binary,x=xml,a=all,s=system,r=relative,format:", SerializeOpts
 				.getOptionDefs());
 		opts.parse(args);
 		args = opts.getRemainingArgs();
@@ -67,7 +67,26 @@ public class xmd5sum extends XCommand {
 		opt_a = opts.hasOpt("a");
 		opt_s = opts.hasOpt("s");
 		opt_r = opts.hasOpt("r");
-		
+                if( opts.hasOpt("format") ){
+                  String sf = opts.getOptString( "format",null );
+                  switch( sf){
+                  case "binary" :
+                  case "bin" :
+                     format = Checksum.Format.BINARY;
+                     break;
+	          case "hex" :	
+                     format = Checksum.Format.HEX;
+                     break;
+                  case "64" :
+                  case "base64":
+                     format = Checksum.Format.BASE64;
+                     break;
+                  default: 
+                     this.printErr("Invalid format: " + sf );
+                     return 1;
+                  }
+                }    
+
 		
 		out = stdout.asXMLStreamWriter(getSerializeOpts());
 		out.writeStartDocument();
@@ -271,7 +290,7 @@ public class xmd5sum extends XCommand {
 			
 			}
 			
-			out.writeAttribute(sMd5, cs.getMD5());
+			out.writeAttribute(sMd5, cs.getMD5(format));
 			out.writeAttribute(sLen, String.valueOf(cs.getLength()));
 			out.writeEndElement();
 

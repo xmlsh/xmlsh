@@ -25,15 +25,16 @@ import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ListMultipartUploadsRequest;
 import com.amazonaws.services.s3.model.ListObjectsRequest;
+import com.amazonaws.services.s3.model.ListVersionsRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.transfer.TransferManager;
 
 public abstract class AWSS3Command extends AWSCommand<AmazonS3Client> {
 
- 
+
     private String mBucket = null;
     private String mKey = null ;
-    
+
 	protected String getBucket() {
         return mBucket;
     }
@@ -42,16 +43,16 @@ public abstract class AWSS3Command extends AWSCommand<AmazonS3Client> {
 	    return getS3Client().getS3Path(mBucket , mKey );
 	 }
     public S3Path getS3Path(String keyOrArg) {
-      return  getS3Client().getS3Path( mBucket , 
+      return  getS3Client().getS3Path( mBucket ,
           Util.isBlank(keyOrArg) ? mKey : keyOrArg );
     }
 
-    public S3Path getS3Path(XValue keyOrArg) { 
+    public S3Path getS3Path(XValue keyOrArg) {
       return  getS3Path( mBucket , keyOrArg == null ? mKey :  keyOrArg.toString()  );
   }
 	public S3Path getS3Path(String bucket, String key) {
 		return getS3Client().getS3Path(
-		        Util.isBlank(bucket)? mBucket : bucket , 
+		        Util.isBlank(bucket)? mBucket : bucket ,
 		        Util.isBlank(key) ? mKey : key);
 	}
 
@@ -78,7 +79,7 @@ public abstract class AWSS3Command extends AWSCommand<AmazonS3Client> {
 
 	public String sMetaDataElem = "metadata";
 	public String sUserMetaDataElem = "user";
-	
+
 	public AWSS3Command() {
 		super();
 	}
@@ -94,10 +95,23 @@ public abstract class AWSS3Command extends AWSCommand<AmazonS3Client> {
 
 	   setAmazon(AWSClientFactory.newS3Client(  mShell , opts ));
 	   mBucket = opts.getOptString("bucket", mBucket );
-	
+
 	}
 
 
+
+  protected ListVersionsRequest getListVersionsRequest(S3Path path, String delim) {
+    ListVersionsRequest req = new ListVersionsRequest();
+    req.setBucketName(path.getBucket());
+    if( ! Util.isBlank(delim))
+      req.setDelimiter(delim);
+    if( ! Util.isBlank(path.getPrefix()))
+      req.setPrefix(path.getPrefix());
+
+    return req;
+
+
+  }
 
 	protected ListObjectsRequest getListRequest(S3Path path, String delim) {
 		ListObjectsRequest req = new ListObjectsRequest();
