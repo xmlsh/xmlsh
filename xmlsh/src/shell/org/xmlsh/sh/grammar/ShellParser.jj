@@ -5,9 +5,9 @@ options
 {
   JDK_VERSION = "1.7";
   STATIC = false; 
- // DEBUG_PARSER=true ;
-//  DEBUG_LOOKAHEAD=true;
-//  DEBUG_TOKEN_MANAGER=true;
+// DEBUG_PARSER=true ;
+ // DEBUG_LOOKAHEAD=true;
+ // DEBUG_TOKEN_MANAGER=true;
 //  FORCE_LA_CHECK=true;
 //   UNICODE_INPUT=true;
  TOKEN_EXTENDS="XAbstractToken";
@@ -44,7 +44,7 @@ public class ShellParser
   private java.io.Reader in;
 
 // REMOVE WITH ANY TRACING
-        private int trace_indent = 0 ; 
+   private int trace_indent = 0 ;
 
   /*
    * Active delimiter stack for joinable tokens
@@ -180,23 +180,28 @@ public class ShellParser
         return mContext.isJoinable(w );
   }
 
-  public boolean isAssignOp( int lookahead )  {
+  public boolean isAssignOp( int lookahead )
+  {
     Token t = getToken( lookahead );
     if( ! isJoinable( t ) )
       return false ;
-    switch( t.image )    {    case  "={}":
+    switch( t.image )
+    {
+    case  "={}":
     case   "=[":
     case   "+=":
     case  "=(":
     case  "=[]":
     case  "+=(":
     case "=" :
+    case "[" :
       return true;
     }
     return false ;
   }
   public boolean isAssign() {
-    return  isKind(1,NAME) &&      isAssignOp(2 );
+    return  isKind(1,NAME) && 
+     isAssignOp(2 );
   }
   public boolean isKind( Token t , int kind )
   {
@@ -1815,10 +1820,14 @@ WordList function_args() :
     
 }
 // Lookahead only 
-void assignLookahead() :{}
+void assignLookahead() :
 {
-  LOOKAHEAD(2 , <NAME > ASSIGN_OP() ,  { isAssign()   })
-   < NAME > ASSIGN_OP()}
+}
+{
+  LOOKAHEAD(2 , <NAME > ASSIGN_OP() ,
+  { isAssign()   })
+   < NAME > ASSIGN_OP()
+}
 
 CommandPrefixExpr cmd_prefix() :
 {
@@ -1830,18 +1839,22 @@ CommandPrefixExpr cmd_prefix() :
 
   LOOKAHEAD(3 , LOCAL() assignLookahead() )
     local = LOCAL() a=assign( local )
-    {      p.add(a) ;
+    {
+      p.add(a) ;
       return p;
    }
 | LOOKAHEAD( 2 , LOCAL() < NAME > )
-   local=LOCAL() < NAME >   {
+   local=LOCAL() < NAME >
+   {
      a = new Assign( local != null , "=",  token.toString(), "=", (Word)null);
      p.add(a);
      return p;
-        }
+     
+   }
 | 
   (
-    LOOKAHEAD( 2, assignLookahead( ) , { isAssign() } )    a = assign(local)
+    LOOKAHEAD( 2, assignLookahead( ) , { isAssign() } )
+    a = assign(local)
     {
       p.add(a);
     }
@@ -1853,9 +1866,18 @@ CommandPrefixExpr cmd_prefix() :
  
 }
 
-Token ASSIGN_OP() :{}{  ( LOOKAHEAD(1 ,{ isAssignOp(1)} )     "={}" | "=[" |  "+=" |"=("| "=[]"| "+=("| "=" )    {
-      return token ;    }    
-}  
+Token ASSIGN_OP() :
+{
+}
+{
+  ( LOOKAHEAD(1 ,{ isAssignOp(1)} ) 
+    "[" | "={}" | "=[" |  "+=" |"=("| "=[]"| "+=("| "=" )
+    {
+      return token ;
+    }
+    
+}
+  
 Assign assign(Token local) :
 {
    
@@ -1876,19 +1898,18 @@ Assign assign(Token local) :
    matchedToken.enter(ASSIGN_WORD_ARRAY);
 }
 | < ASSIGN_WORD_EMPTYBRACE : <_VARNAME > "={}" >
-|  < ASSIGN_WORDPE_SEQ : < _VARNAME > "+=(" > 
-|  < ASSIGN_WORDPE : < _VARNAME > "+=" > 
+|  < ASSIGN_WORDPE_SEQ : < _VARNAME > "+=(" >
+|  < ASSIGN_WORDPE : < _VARNAME > "+=" >
 |  < ASSIGN_WORD_EQ : < _VARNAME > "=" >
 */
 {
 
-
-    
-   LOOKAHEAD( 2  )  t1=< NAME >  "={}"  
+  LOOKAHEAD( 2  )  t1=< NAME >  "={}"
       {
          return new Assign( local != null , "{}" , t1.toString() , null , "=" , null );
       }
-  | LOOKAHEAD( 2 ) t1=< NAME > "=["  ind=expr() "]=" w= expr()
+  |  LOOKAHEAD(3, <NAME> <WORD> expr() , { isWord(2,"[") && isJoinable(2) })
+      t1=< NAME > <WORD>  ind=expr() "]=" w= expr()
       {
             return new Assign( local != null , "[]" , t1.toString(), ind , "=" , w );
       }
@@ -1924,7 +1945,8 @@ Assign assign(Token local) :
            w = new StringWord(t1,"") ;
       return new Assign( local != null ,"=" , t1.toString() , "=", w); 
 	}
-}
+
+}
 
 
 WordList cmd_words() :
