@@ -13,9 +13,7 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-
 import javax.xml.stream.XMLStreamWriter;
-
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.XCommand;
@@ -26,156 +24,143 @@ import org.xmlsh.util.Util;
 
 public class xunzip extends XCommand {
 
-	@Override
-	public int run( List<XValue> args )	throws Exception
-	{
+  @Override
+  public int run(List<XValue> args) throws Exception {
 
+    Options opts = new Options("f=file:,l=list,d=dest:",
+        SerializeOpts.getOptionDefs());
+    opts.parse(args);
 
+    boolean bList = opts.hasOpt("l");
+    String dest = opts.getOptString("d", ".");
+    XValue zipfile = opts.getOptValue("f");
 
-		Options opts = new Options( "f=file:,l=list,d=dest:" ,  SerializeOpts.getOptionDefs() );
-		opts.parse(args);
+    args = opts.getRemainingArgs();
 
-		boolean bList = opts.hasOpt("l");
-		String dest = opts.getOptString("d", ".");
-		XValue zipfile = opts.getOptValue("f");
+    SerializeOpts serializeOpts = getSerializeOpts(opts);
 
-		args = opts.getRemainingArgs();
+    InputPort iport = (zipfile == null ? getStdin() : getInput(zipfile));
 
-		SerializeOpts serializeOpts = getSerializeOpts(opts);
+    try (
+        InputStream is = iport.asInputStream(serializeOpts);
+        ZipInputStream zis = new ZipInputStream(is);) {
+      int ret = 0;
+      if(bList) {
+        ret = list(zis, serializeOpts, args);
 
-		InputPort iport = (zipfile == null ? getStdin() : getInput(zipfile));
+      }
+      else
+        ret = unzip(zis, getFile(dest), args);
+      // Central directory may be pesent at the end read past it to avoid a
+      // broken pipe
+      while(is.read() >= 0)
+        ;
 
+      return ret;
+    }
 
-		try (
-				InputStream is = iport.asInputStream(serializeOpts); 
-				ZipInputStream zis = new ZipInputStream(is);
-				){
-			int ret = 0;
-			if( bList ){
-				ret = list(zis,serializeOpts,args);
+  }
 
-			}
-			else
-				ret = unzip( zis , getFile(dest) , args );
-			// Central directory may be pesent at the end read past it to avoid a broken pipe
-			while( is.read() >= 0 )
-				;
+  private int unzip(ZipInputStream zis, File dest, List<XValue> args)
+      throws IOException {
 
-			return ret;
-		}
+    ZipEntry entry;
+    while((entry = zis.getNextEntry()) != null) {
 
+      if(matches(entry.getName(), args)) {
+        File outf = getShell().getFile(dest, entry.getName());
+        // printErr(outf.getAbsolutePath());
+        if(entry.isDirectory())
+          outf.mkdirs();
+        else {
+          // In matching case dir may not exist
+          File dir = outf.getParentFile();
+          if(!dir.exists())
+            dir.mkdirs();
 
+          FileOutputStream fos = new FileOutputStream(outf);
+          Util.copyStream(zis, fos);
+          fos.close();
+          outf.setLastModified(entry.getTime());
 
-	}
+        }
 
-	private int unzip(ZipInputStream zis, File dest, List<XValue> args) throws IOException {
+      }
+      zis.closeEntry();
 
+    }
 
+    return 0;
+  }
 
-		ZipEntry entry ;
-		while( (entry = zis.getNextEntry()) != null ){
+  private boolean matches(String name, List<XValue> args) {
+    if(args == null || args.size() == 0)
+      return true; // 0 args matches all
 
-			if( matches( entry.getName() , args )){
-				File outf = getShell().getFile( dest , entry.getName());
-				// printErr(outf.getAbsolutePath());
-				if( entry.isDirectory())
-					outf.mkdirs();
-				else
-				{
-					// In matching case dir may not exist
-					File dir = outf.getParentFile();
-					if( ! dir.exists() )
-						dir.mkdirs();
+    for(XValue v : args)
+      if(Util.isEqual(name, v.toString()))
+        return true;
+    return false;
 
+  }
 
-					FileOutputStream fos = new FileOutputStream(outf);
-					Util.copyStream(zis, fos);
-					fos.close();
-					outf.setLastModified(entry.getTime());
+  private int list(ZipInputStream zis, SerializeOpts serializeOpts,
+      List<XValue> args) throws Exception {
+    OutputPort stdout = getStdout();
+    XMLStreamWriter writer = stdout.asXMLStreamWriter(serializeOpts);
+    writer.writeStartDocument();
 
-				}
+    writer.writeStartElement("zip");
 
-			}
-			zis.closeEntry();
+    ZipEntry entry;
+    while((entry = zis.getNextEntry()) != null) {
 
+      if(matches(entry.getName(), args)) {
 
-		}
+        writer.writeStartElement("entry");
+        writer.writeAttribute("name", entry.getName());
+        if(entry.getComment() != null)
+          writer.writeAttribute("comment", entry.getComment());
+        writer.writeAttribute("size", String.valueOf(entry.getSize()));
+        writer.writeAttribute("compressed_size",
+            String.valueOf(entry.getCompressedSize()));
+        writer.writeAttribute("directory", String.valueOf(entry.isDirectory()));
 
-		return 0;
-	}
+        writer.writeAttribute("time", Util.formatXSDateTime(entry.getTime()));
+        writer.writeEndElement();
+      }
+      zis.closeEntry();
 
-	private boolean matches(String name, List<XValue> args) {
-		if( args == null || args.size() == 0)
-			return true ; // 0 args matches all
-
-		for( XValue v : args )
-			if( Util.isEqual(name, v.toString()))
-				return true ;
-		return false ;
-
-
-
-
-	}
-
-	private int list(ZipInputStream zis,SerializeOpts serializeOpts, List<XValue> args) throws Exception {
-		OutputPort stdout = getStdout();
-		XMLStreamWriter writer = stdout.asXMLStreamWriter(serializeOpts);
-		writer.writeStartDocument();
-
-
-		writer.writeStartElement("zip");
-
-
-		ZipEntry entry ;
-		while( (entry = zis.getNextEntry()) != null ){
-
-			if( matches( entry.getName() , args )){
-
-
-				writer.writeStartElement("entry");
-				writer.writeAttribute("name", entry.getName());
-				if( entry.getComment() != null )
-					writer.writeAttribute("comment", entry.getComment());
-				writer.writeAttribute("size", String.valueOf(entry.getSize()));
-				writer.writeAttribute("compressed_size", String.valueOf(entry.getCompressedSize()));
-				writer.writeAttribute("directory", String.valueOf(entry.isDirectory()));
-
-
-
-				writer.writeAttribute("time", Util.formatXSDateTime( entry.getTime()));
-				writer.writeEndElement();
-			}
-			zis.closeEntry();
-
-		}
-		writer.writeEndElement();
-		writer.writeEndDocument();
-		writer.close();
-		return 0;
-	}
-
-
+    }
+    writer.writeEndElement();
+    writer.writeEndDocument();
+    writer.close();
+    return 0;
+  }
 
 }
 
 //
-// 
-//Copyright (C) 2008-2014    David A. Lee.
-// 
-//The contents of this file are subject to the "Simplified BSD License" (the "License");
-//you may not use this file except in compliance with the License. You may obtain a copy of the
-//License at http://www.opensource.org/licenses/bsd-license.php 
 //
-//Software distributed under the License is distributed on an "AS IS" basis,
-//WITHOUT WARRANTY OF ANY KIND, either express or implied.
-//See the License for the specific language governing rights and limitations under the License.
+// Copyright (C) 2008-2014 David A. Lee.
 //
-//The Original Code is: all this file.
+// The contents of this file are subject to the "Simplified BSD License" (the
+// "License");
+// you may not use this file except in compliance with the License. You may
+// obtain a copy of the
+// License at http://www.opensource.org/licenses/bsd-license.php
 //
-//The Initial Developer of the Original Code is David A. Lee
+// Software distributed under the License is distributed on an "AS IS" basis,
+// WITHOUT WARRANTY OF ANY KIND, either express or implied.
+// See the License for the specific language governing rights and limitations
+// under the License.
 //
-//Portions created by (your name) are Copyright (C) (your legal entity). All Rights Reserved.
+// The Original Code is: all this file.
 //
-//Contributor(s): none.
+// The Initial Developer of the Original Code is David A. Lee
+//
+// Portions created by (your name) are Copyright (C) (your legal entity). All
+// Rights Reserved.
+//
+// Contributor(s): none.
 //

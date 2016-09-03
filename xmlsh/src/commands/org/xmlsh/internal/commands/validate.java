@@ -7,70 +7,71 @@
 package org.xmlsh.internal.commands;
 
 import java.util.List;
-
 import org.xmlsh.core.ScriptCommand;
 import org.xmlsh.core.ScriptCommand.SourceMode;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.module.CommandFactory;
 
-public class validate extends XCommand  {
+public class validate extends XCommand {
 
-	/*
-	 * Evaluate all arguments as as string
-	 * and parse them as a command 
-	 * 
-	 */
+  /*
+   * Evaluate all arguments as as string
+   * and parse them as a command
+   * 
+   */
 
-	@Override
-	public int run(  List<XValue> args ) throws Exception {
+  @Override
+  public int run(List<XValue> args) throws Exception {
 
-	  if( args.isEmpty() ){
-	    usage();
-	    return -1;
-	  }
+    if(args.isEmpty()) {
+      usage();
+      return -1;
+    }
 
-
-		XValue port = args.remove(0);
+    XValue port = args.remove(0);
     String name = port.toString();
 
-		try {
-	@SuppressWarnings("unused")
-      ScriptCommand icmd = CommandFactory.getScript(mShell, name ,SourceMode.VALIDATE,getLocation());
-  		if( icmd == null ){
-  		  printErr("script not found: " + name );
-  		  return 1;
-  		}
+    try {
+      @SuppressWarnings("unused")
+      ScriptCommand icmd = CommandFactory.getScript(mShell, name,
+          SourceMode.VALIDATE, getLocation());
+      if(icmd == null) {
+        printErr("script not found: " + name);
+        return 1;
+      }
       return icmd.run(getShell(), name, args);
-      
-		} catch( Exception  e ){
-		  printErr("Exception validating script: " + name, e );
-		  return -1;
-		  
-		}
 
-	}
+    } catch (Exception e) {
+      printErr("Exception validating script: " + name, e);
+      return -1;
 
+    }
 
+  }
 
 }
 //
 //
-//Copyright (C) 2008-2014    David A. Lee.
+// Copyright (C) 2008-2014 David A. Lee.
 //
-//The contents of this file are subject to the "Simplified BSD License" (the "License");
-//you may not use this file except in compliance with the License. You may obtain a copy of the
-//License at http://www.opensource.org/licenses/bsd-license.php 
+// The contents of this file are subject to the "Simplified BSD License" (the
+// "License");
+// you may not use this file except in compliance with the License. You may
+// obtain a copy of the
+// License at http://www.opensource.org/licenses/bsd-license.php
 //
-//Software distributed under the License is distributed on an "AS IS" basis,
-//WITHOUT WARRANTY OF ANY KIND, either express or implied.
-//See the License for the specific language governing rights and limitations under the License.
+// Software distributed under the License is distributed on an "AS IS" basis,
+// WITHOUT WARRANTY OF ANY KIND, either express or implied.
+// See the License for the specific language governing rights and limitations
+// under the License.
 //
-//The Original Code is: all this file.
+// The Original Code is: all this file.
 //
-//The Initial Developer of the Original Code is David A. Lee
+// The Initial Developer of the Original Code is David A. Lee
 //
-//Portions created by (your name) are Copyright (C) (your legal entity). All Rights Reserved.
+// Portions created by (your name) are Copyright (C) (your legal entity). All
+// Rights Reserved.
 //
-//Contributor(s): none.
+// Contributor(s): none.
 //

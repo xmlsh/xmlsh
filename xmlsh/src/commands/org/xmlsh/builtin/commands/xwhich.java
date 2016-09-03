@@ -8,9 +8,7 @@ package org.xmlsh.builtin.commands;
 
 import java.net.URL;
 import java.util.List;
-
 import javax.xml.stream.XMLStreamWriter;
-
 import org.xmlsh.core.BuiltinCommand;
 import org.xmlsh.core.FunctionCommand;
 import org.xmlsh.core.ICommand;
@@ -26,112 +24,114 @@ import org.xmlsh.util.Util;
 
 public class xwhich extends BuiltinCommand {
 
-	private static final String typenames[] = new String[] { "builtin",
-		"internal", "user", "external", "script", "function"
+  private static final String typenames[] = new String[] { "builtin",
+      "internal", "user", "external", "script", "function"
 
-	};
+  };
 
-	@Override
-	public int run(List<XValue> args) throws Exception {
+  @Override
+  public int run(List<XValue> args) throws Exception {
 
-		Options opts = new Options("n", SerializeOpts.getOptionDefs());
-		opts.parse(args);
+    Options opts = new Options("n", SerializeOpts.getOptionDefs());
+    opts.parse(args);
 
-		boolean bNoWrite = opts.hasOpt("n");
+    boolean bNoWrite = opts.hasOpt("n");
 
-		List<XValue> xvargs = Util.expandSequences(opts.getRemainingArgs());
+    List<XValue> xvargs = Util.expandSequences(opts.getRemainingArgs());
 
-		if (xvargs.size() < 1) {
-			mShell.printErr("usage: " + getName() + " command ...");
-			return 1;
-		}
+    if(xvargs.size() < 1) {
+      mShell.printErr("usage: " + getName() + " command ...");
+      return 1;
+    }
 
-		final String sDocRoot = getName();
+    final String sDocRoot = getName();
 
-		XMLStreamWriter out = null;
-		OutputPort stdout = mShell.getEnv().getStdout();
+    XMLStreamWriter out = null;
+    OutputPort stdout = mShell.getEnv().getStdout();
 
-		SerializeOpts serializeOpts = getSerializeOpts(opts);
-		if (!bNoWrite) {
+    SerializeOpts serializeOpts = getSerializeOpts(opts);
+    if(!bNoWrite) {
 
-			out = stdout.asXMLStreamWriter(serializeOpts);
-			out.writeStartDocument();
-			out.writeStartElement(sDocRoot);
+      out = stdout.asXMLStreamWriter(serializeOpts);
+      out.writeStartDocument();
+      out.writeStartElement(sDocRoot);
 
-		}
+    }
 
-		int bad = 0;
+    int bad = 0;
 
-		final String sCmd = "command";
-		final String sName = "name";
-		final String sType = "type";
-		final String sPath = "path";
-		final String sModule = "module";
+    final String sCmd = "command";
+    final String sName = "name";
+    final String sType = "type";
+    final String sPath = "path";
+    final String sModule = "module";
 
-		for (XValue xname : xvargs) {
+    for(XValue xname : xvargs) {
 
-			String name = xname.toString();
-			ICommand command = CommandFactory.getCommand(mShell, name,
-					getLocation());
+      String name = xname.toString();
+      ICommand command = CommandFactory.getCommand(mShell, name,
+          getLocation());
 
-			// Try builtin functions
-			if (command == null) {
-				IXFunction func = CommandFactory
-						.getBuiltinFunction(mShell, name);
-				if (func != null) {
-					if (!bNoWrite) {
+      // Try builtin functions
+      if(command == null) {
+        IXFunction func = CommandFactory
+            .getBuiltinFunction(mShell, name);
+        if(func != null) {
+          if(!bNoWrite) {
 
-						out.writeStartElement(sCmd);
-						out.writeAttribute(sName, name);
-						String type = "builtin-function";
-						out.writeAttribute(sType, type);
-						out.writeEndElement();
-					}
-					continue;
-				}
+            out.writeStartElement(sCmd);
+            out.writeAttribute(sName, name);
+            String type = "builtin-function";
+            out.writeAttribute(sType, type);
+            out.writeEndElement();
+          }
+          continue;
+        }
 
-			}
+      }
 
-			if (command != null) {
-				if (!bNoWrite) {
+      if(command != null) {
+        if(!bNoWrite) {
 
-					out.writeStartElement(sCmd);
-					out.writeAttribute(sName, name);
+          out.writeStartElement(sCmd);
+          out.writeAttribute(sName, name);
 
-					String type = typenames[command.getType().ordinal()];
-					out.writeAttribute(sType, type);
+          String type = typenames[command.getType().ordinal()];
+          out.writeAttribute(sType, type);
 
-					URL url = command.getURL();
-					if (url != null)
-						out.writeAttribute(sPath, url.getPath());
-					else if (command instanceof ScriptCommand) {
-						ScriptCommand sc = (ScriptCommand) command;
-						out.writeAttribute(sPath, sc.getScriptName());
-					} else if (command instanceof FunctionCommand) {
-						// FunctionCommand fc = (FunctionCommand) command;
-						// out.writeAttribute(sName, type);
-					}
-					IModule module = command.getModule();
-					if (module != null)
-						out.writeAttribute(sModule, module.getName());
-					out.writeEndElement();
+          URL url = command.getURL();
+          if(url != null)
+            out.writeAttribute(sPath, url.getPath());
+          else if(command instanceof ScriptCommand) {
+            ScriptCommand sc = (ScriptCommand) command;
+            out.writeAttribute(sPath, sc.getScriptName());
+          }
+          else if(command instanceof FunctionCommand) {
+            // FunctionCommand fc = (FunctionCommand) command;
+            // out.writeAttribute(sName, type);
+          }
+          IModule module = command.getModule();
+          if(module != null)
+            out.writeAttribute(sModule, module.getName());
+          out.writeEndElement();
 
-				}
-			} else
-				bad++;
+        }
+      }
+      else
+        bad++;
 
-		}
-		if (!bNoWrite) {
-			out.writeEndElement();
-			out.writeEndDocument();
-			out.flush();
-			out.close();
-			stdout.writeSequenceTerminator(serializeOpts);
-		}
+    }
+    if(!bNoWrite) {
+      out.writeEndElement();
+      out.writeEndDocument();
+      out.flush();
+      out.close();
+      stdout.writeSequenceTerminator(serializeOpts);
+    }
 
-		return bad;
+    return bad;
 
-	}
+  }
 
 }
 //

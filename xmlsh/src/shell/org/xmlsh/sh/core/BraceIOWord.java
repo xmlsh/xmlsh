@@ -9,31 +9,23 @@ package org.xmlsh.sh.core;
 import org.xmlsh.core.EvalEnv;
 import org.xmlsh.sh.grammar.Token;
 
-
 /*
- *   File IO to variable 
- *   <{var}
- *   >{var|
+ * File IO to variable
+ * <{var}
+ * >{var|
  * 
  */
-public class BraceIOWord extends StringWord
-{
+public class BraceIOWord extends StringWord {
 
+  public BraceIOWord(Token t, String s) {
+    super(t, "{" + s + "}");
 
-	public BraceIOWord( Token  t, String s )
-	{
-		super( t , "{"+s+"}");
-	    
-	}
+  }
 
-
-
-	@Override
-	public EvalEnv evalEnv(EvalEnv parent)
-	{
-		return EvalEnv.evalNone();
-	}
-
+  @Override
+  public EvalEnv evalEnv(EvalEnv parent) {
+    return EvalEnv.evalNone();
+  }
 
 }
 

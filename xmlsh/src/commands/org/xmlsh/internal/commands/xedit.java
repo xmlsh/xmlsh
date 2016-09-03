@@ -9,10 +9,21 @@ package org.xmlsh.internal.commands;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
-
+import org.xmlsh.core.InputPort;
+import org.xmlsh.core.InvalidArgumentException;
+import org.xmlsh.core.Namespaces;
+import org.xmlsh.core.Options;
+import org.xmlsh.core.Options.OptionValue;
+import org.xmlsh.core.XCommand;
+import org.xmlsh.core.XValue;
+import org.xmlsh.core.io.OutputPort;
+import org.xmlsh.sh.shell.SerializeOpts;
+import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.util.NameValueMap;
+import org.xmlsh.util.Util;
+import org.xmlsh.xpath.EvalDefinition;
 import net.sf.saxon.om.CodedName;
 import net.sf.saxon.om.DocumentInfo;
 import net.sf.saxon.om.Item;
@@ -42,35 +53,17 @@ import net.sf.saxon.tree.linked.DocumentImpl;
 import net.sf.saxon.type.BuiltInAtomicType;
 import net.sf.saxon.type.Type;
 
-import org.xmlsh.core.InputPort;
-import org.xmlsh.core.InvalidArgumentException;
-import org.xmlsh.core.Namespaces;
-import org.xmlsh.core.Options;
-import org.xmlsh.core.Options.OptionValue;
-import org.xmlsh.core.XCommand;
-import org.xmlsh.core.XValue;
-import org.xmlsh.core.io.OutputPort;
-import org.xmlsh.sh.shell.SerializeOpts;
-import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.util.NameValueMap;
-import org.xmlsh.util.Util;
-import org.xmlsh.xpath.EvalDefinition;
+public class xedit extends XCommand {
 
-public class xedit extends XCommand
-{
-
-  enum Operation
-  {
+  enum Operation {
     DELETE, ADD, REPLACE, RENAME
   };
 
-  enum Match
-  {
+  enum Match {
     XPATH, XQUERY, XSLT
   };
 
-  enum Value
-  {
+  enum Value {
     XPATH, XQUERY, VALUE
   };
 
@@ -78,11 +71,11 @@ public class xedit extends XCommand
   private XPathCompiler mCompiler;
   private Processor mProcessor;
 
-  private void setupBuilders() throws IOException
-  {
+  private void setupBuilders() throws IOException {
     /*
      * mProcessor = new Processor(false);
-     * mProcessor.setConfigurationProperty(FeatureKeys.TREE_MODEL, net.sf.saxon.event.Builder.LINKED_TREE);
+     * mProcessor.setConfigurationProperty(FeatureKeys.TREE_MODEL,
+     * net.sf.saxon.event.Builder.LINKED_TREE);
      */
     mProcessor = Shell.getProcessor();
 
@@ -92,7 +85,7 @@ public class xedit extends XCommand
 
     Namespaces ns = getEnv().getNamespaces();
     if(ns != null) {
-      for (String prefix : ns.keySet()) {
+      for(String prefix : ns.keySet()) {
         String uri = ns.get(prefix);
         mCompiler.declareNamespace(prefix, uri);
 
@@ -103,8 +96,7 @@ public class xedit extends XCommand
   }
 
   @Override
-  public int run(List<XValue> args) throws Exception
-  {
+  public int run(List<XValue> args) throws Exception {
 
     Operation opt_op = null;
     // What to operate on
@@ -117,13 +109,14 @@ public class xedit extends XCommand
     XValue opt_value = null;
 
     // Options opts = new Options(
-    // "i=input:,e=xpath:,n,v,r=replace:,a=add:,d=delete,m=matches:,rx=replacex:,ren=rename:" ,
+    // "i=input:,e=xpath:,n,v,r=replace:,a=add:,d=delete,m=matches:,rx=replacex:,ren=rename:"
+    // ,
 
     // Backwards compatible for now
     Options opts = new Options(
-            "axis:,i=input:,n,v,mv=match-value:,mx=match-xpath:,mq=match-xquery:,"
-          + "o=op:,r=replace:,a=add:,d=delete,vx=value-xpath:,vq=value-xquery:,v,rx=replacex:,ren-rename:,e=xpath:,m=matches:",
-      SerializeOpts.getOptionDefs());
+        "axis:,i=input:,n,v,mv=match-value:,mx=match-xpath:,mq=match-xquery:,"
+            + "o=op:,r=replace:,a=add:,d=delete,vx=value-xpath:,vq=value-xquery:,v,rx=replacex:,ren-rename:,e=xpath:,m=matches:",
+        SerializeOpts.getOptionDefs());
     opts.parse(args);
 
     setupBuilders();
@@ -139,7 +132,8 @@ public class xedit extends XCommand
       if(ov != null && ov.getValue().isXdmItem()) {
         XdmItem item = ov.getValue().asXdmItem();
         if(item instanceof XdmNode)
-          // context = (XdmNode) item ; // builder.build(((XdmNode)item).asSource());
+          // context = (XdmNode) item ; //
+          // builder.build(((XdmNode)item).asSource());
           // context = (XdmNode) ov.getValue().toXdmValue();
           context = importNode((XdmNode) item);
 
@@ -159,7 +153,7 @@ public class xedit extends XCommand
 
     if(opts.hasOpt("v")) {
       // Read pairs from args to set
-      for (int i = 0; i < xvargs.size() / 2; i++) {
+      for(int i = 0; i < xvargs.size() / 2; i++) {
         String name = xvargs.get(i * 2).toString();
         mCompiler.declareVariable(new net.sf.saxon.s9api.QName(name));
       }
@@ -180,8 +174,7 @@ public class xedit extends XCommand
       opt_value = opts.getOptValue("replace");
       opt_value_type = Value.VALUE;
     }
-    
-    
+
     if(opts.hasOpt("rx")) {
       opt_value = opts.getOptValue("rx");
       opt_value_type = Value.XPATH;
@@ -201,7 +194,7 @@ public class xedit extends XCommand
       opt_match = opts.getOptStringRequired("e");
       opt_match_type = Match.XPATH;
     }
-    
+
     if(opts.hasOpt("mq")) {
       opt_match = opts.getOptStringRequired("mq");
       opt_match_type = Match.XQUERY;
@@ -219,7 +212,7 @@ public class xedit extends XCommand
       opt_value = opts.getOptValue("vx");
       opt_value_type = Value.XPATH;
     }
-  
+
     if(opts.hasOpt("vq")) {
       opt_value = opts.getOptValue("vq");
       opt_value_type = Value.XQUERY;
@@ -229,12 +222,12 @@ public class xedit extends XCommand
       opt_value_type = Value.VALUE;
     }
 
-
     if(opts.hasOpt("axis"))
       opt_axis = Axis.valueOf(opts.getOptStringRequired("axis"));
 
     if(opt_match_type == null || opt_match == null)
-      throw new InvalidArgumentException("option xpath , xquery or matches must be specified");
+      throw new InvalidArgumentException(
+          "option xpath , xquery or matches must be specified");
 
     if(opt_op == null)
       throw new InvalidArgumentException("option opperation required");
@@ -245,7 +238,7 @@ public class xedit extends XCommand
     XPathSelector eval_matchx = null;
     XQueryEvaluator eval_matchq = null;
 
-    switch (opt_match_type) {
+    switch(opt_match_type){
     case XPATH:
       eval_matchx = parseXpath(opt_match);
       break;
@@ -259,18 +252,19 @@ public class xedit extends XCommand
 
     if(opts.hasOpt("v")) {
       // Read pairs from args to set
-      for (int i = 0; i < xvargs.size() / 2; i++) {
+      for(int i = 0; i < xvargs.size() / 2; i++) {
         String name = xvargs.get(i * 2).toString();
         XValue value = xvargs.get(i * 2 + 1);
         if(eval_matchx != null)
-          eval_matchx.setVariable(new net.sf.saxon.s9api.QName(name), value.toXdmValue());
+          eval_matchx.setVariable(new net.sf.saxon.s9api.QName(name),
+              value.toXdmValue());
       }
     }
 
     XPathSelector valuex = null;
     XQueryEvaluator valueq = null;
 
-    switch (opt_value_type) {
+    switch(opt_value_type){
     case XPATH:
       valuex = parseXpath(opt_value.toString());
       break;
@@ -279,17 +273,18 @@ public class xedit extends XCommand
       break;
 
     case VALUE:
-      
+
       break;
     }
 
-    Iterable<XdmItem> results = getResults(eval_matchx, context, opt_match_type == Match.XSLT);
-    for (XdmItem item : results) {
+    Iterable<XdmItem> results = getResults(eval_matchx, context,
+        opt_match_type == Match.XSLT);
+    for(XdmItem item : results) {
       Object obj = item.getUnderlyingValue();
       if(obj instanceof MutableNodeInfo) {
         MutableNodeInfo node = (MutableNodeInfo) obj;
         XValue xv = null;
-        switch (opt_value_type) {
+        switch(opt_value_type){
         case XPATH:
           xv = eval_xpath(item, valuex);
           break;
@@ -301,7 +296,7 @@ public class xedit extends XCommand
           xv = opt_value;
         }
 
-        switch (opt_op) {
+        switch(opt_op){
         case REPLACE:
           replace(node, xv, opt_axis);
           break;
@@ -327,8 +322,8 @@ public class xedit extends XCommand
 
   }
 
-  private XQueryEvaluator parseXQuery(String string) throws SaxonApiException, IOException
-  {
+  private XQueryEvaluator parseXQuery(String string)
+      throws SaxonApiException, IOException {
     Processor processor = Shell.getProcessor();
     XQueryCompiler compiler = processor.newXQueryCompiler();
 
@@ -337,7 +332,7 @@ public class xedit extends XCommand
     compiler.declareNamespace("xmlsh", EvalDefinition.kXMLSH_EXT_NAMESPACE);
     NameValueMap<String> ns = getEnv().getNamespaces();
     if(ns != null) {
-      for (String prefix : ns.keySet()) {
+      for(String prefix : ns.keySet()) {
         String uri = ns.get(prefix);
         compiler.declareNamespace(prefix, uri);
 
@@ -349,24 +344,22 @@ public class xedit extends XCommand
 
   }
 
-  private XPathSelector parseXpath(String match) throws SaxonApiException
-  {
+  private XPathSelector parseXpath(String match) throws SaxonApiException {
     XPathExecutable expr;
     expr = mCompiler.compile(match);
     XPathSelector eval = expr.load();
     return eval;
   }
 
-  private XPathSelector parseXslt(String match) throws SaxonApiException
-  {
+  private XPathSelector parseXslt(String match) throws SaxonApiException {
     XPathExecutable expr;
     expr = mCompiler.compilePattern(match);
     XPathSelector eval = expr.load();
     return eval;
   }
 
-  private Iterable<XdmItem> getResults(XPathSelector eval, XdmNode root, boolean opt_matches) throws SaxonApiException
-  {
+  private Iterable<XdmItem> getResults(XPathSelector eval, XdmNode root,
+      boolean opt_matches) throws SaxonApiException {
 
     if(!opt_matches) {
       if(root != null)
@@ -378,14 +371,15 @@ public class xedit extends XCommand
       return results;
 
     XdmSequenceIterator iter = root.axisIterator(Axis.DESCENDANT_OR_SELF);
-    while (iter.hasNext()) {
+    while(iter.hasNext()) {
       XdmItem item = iter.next();
       eval.setContextItem(item);
       if(eval.effectiveBooleanValue())
         results.add(item);
       if(item instanceof XdmNode) {
-        XdmSequenceIterator aiter = ((XdmNode) item).axisIterator(Axis.ATTRIBUTE);
-        while (aiter.hasNext()) {
+        XdmSequenceIterator aiter = ((XdmNode) item)
+            .axisIterator(Axis.ATTRIBUTE);
+        while(aiter.hasNext()) {
           XdmItem item2 = aiter.next();
           eval.setContextItem(item2);
           if(eval.effectiveBooleanValue())
@@ -397,49 +391,48 @@ public class xedit extends XCommand
     return results;
   }
 
-  private void delete(MutableNodeInfo node, Axis opt_axis)
-  {
+  private void delete(MutableNodeInfo node, Axis opt_axis) {
     AxisIterator iter = node.iterateAxis(opt_axis.getAxisNumber());
-    while (true) {
+    while(true) {
       NodeInfo n = iter.next();
       ((MutableNodeInfo) n).delete();
     }
 
   }
 
-  private void add(MutableNodeInfo node, XValue add, Axis opt_axis) throws IndexOutOfBoundsException,
-      SaxonApiUncheckedException, SaxonApiException, InvalidArgumentException
-  {
+  private void add(MutableNodeInfo node, XValue add, Axis opt_axis)
+      throws IndexOutOfBoundsException,
+      SaxonApiUncheckedException, SaxonApiException, InvalidArgumentException {
 
-    for (XdmItem item : add.toXdmValue()) {
+    for(XdmItem item : add.toXdmValue()) {
       if(item.isAtomicValue())
         node.replaceStringValue(node.getStringValue() + item.toString());
       else {
         XdmNode inode = (XdmNode) item;
         if(isAttribute(inode)) {
           NodeInfo anode = inode.getUnderlyingNode();
-          addAttribute(node, anode.getPrefix(), anode.getURI(), anode.getLocalPart(), anode.getStringValue());
+          addAttribute(node, anode.getPrefix(), anode.getURI(),
+              anode.getLocalPart(), anode.getStringValue());
         }
         else {
-          node.insertChildren(new NodeInfo[] { getNodeInfo(inode) }, false, true);
+          node.insertChildren(new NodeInfo[] { getNodeInfo(inode) }, false,
+              true);
         }
       }
 
     }
   }
 
-  private boolean isAttribute(XdmNode inode)
-  {
+  private boolean isAttribute(XdmNode inode) {
     return inode.getNodeKind() == XdmNodeKind.ATTRIBUTE;
   }
 
-  private boolean isAttribute(NodeInfo node)
-  {
+  private boolean isAttribute(NodeInfo node) {
     return node.getNodeKind() == Type.ATTRIBUTE;
   }
 
-  private void addAttribute(MutableNodeInfo node, String prefix, String uri, String local, String value)
-  {
+  private void addAttribute(MutableNodeInfo node, String prefix, String uri,
+      String local, String value) {
 
     NamePool pool = node.getNamePool();
     int nameCode = pool.allocate(prefix, uri, local);
@@ -452,11 +445,11 @@ public class xedit extends XCommand
     }
   }
 
-  private void replace(MutableNodeInfo node, XValue replace, Axis opt_axis) throws IndexOutOfBoundsException,
-      SaxonApiUncheckedException, SaxonApiException, InvalidArgumentException
-  {
+  private void replace(MutableNodeInfo node, XValue replace, Axis opt_axis)
+      throws IndexOutOfBoundsException,
+      SaxonApiUncheckedException, SaxonApiException, InvalidArgumentException {
 
-    switch (node.getNodeKind()) {
+    switch(node.getNodeKind()){
     // String children types
     case Type.ATTRIBUTE:
     case Type.COMMENT:
@@ -468,7 +461,8 @@ public class xedit extends XCommand
       node.replace(getNodeInfoList(node, replace.toXdmValue()), false);
       break;
     default:
-      throw new InvalidArgumentException("Unexpected node type: " + node.getNodeKind());
+      throw new InvalidArgumentException(
+          "Unexpected node type: " + node.getNodeKind());
     }
 
     /*
@@ -479,8 +473,10 @@ public class xedit extends XCommand
      * if( replace.isAtomic() )
      * node.replaceStringValue( replace.toString());
      * else
-     * if( ! (replace.isXdmNode() && replace.asXdmNode().getNodeKind() == XdmNodeKind.ATTRIBUTE ))
-     * throw new InvalidArgumentException("Unexpected replacement node type: " + replace.asXdmNode().getNodeKind() );
+     * if( ! (replace.isXdmNode() && replace.asXdmNode().getNodeKind() ==
+     * XdmNodeKind.ATTRIBUTE ))
+     * throw new InvalidArgumentException("Unexpected replacement node type: " +
+     * replace.asXdmNode().getNodeKind() );
      * XdmNode xnode = (XdmNode) replace.asXdmNode();
      * node.replace( new NodeInfo[] { getNodeInfo( xnode ) } , true );
      * break ;
@@ -495,7 +491,8 @@ public class xedit extends XCommand
      * node.replaceStringValue(getName());
      * else
      * if( replace.isXdmNode() )
-     * node.replace( new NodeInfo[] { getNodeInfo( replace.asXdmNode() ) } , true );
+     * node.replace( new NodeInfo[] { getNodeInfo( replace.asXdmNode() ) } ,
+     * true );
      * else
      * node.replaceStringValue( replace.toString() );
      * break ;
@@ -504,35 +501,38 @@ public class xedit extends XCommand
      * case Type.DOCUMENT :
      * if( replace.isXdmNode() ) {
      * if( replace.asXdmNode().getNodeKind() != XdmNodeKind.ATTRIBUTE )
-     * node.replace( new NodeInfo[] { getNodeInfo( replace.asXdmNode() ) } , true );
+     * node.replace( new NodeInfo[] { getNodeInfo( replace.asXdmNode() ) } ,
+     * true );
      * else
-     * node.replace( new NodeInfo[] {createTextNode( node , replace.toString() )} , true );
+     * node.replace( new NodeInfo[] {createTextNode( node , replace.toString()
+     * )} , true );
      * }
      * else
      * break ;
      * default :
-     * throw new InvalidArgumentException("Unexpected node type: " + node.getNodeKind() );
+     * throw new InvalidArgumentException("Unexpected node type: " +
+     * node.getNodeKind() );
      * }
      * }
      */
 
   }
 
-  private void rename(MutableNodeInfo node, XValue xv)
-  {
+  private void rename(MutableNodeInfo node, XValue xv) {
 
-     QName qn = xv.asQName(getShell());
+    QName qn = xv.asQName(getShell());
 
     NamePool pool = node.getNamePool();
-    int newNameCode = pool.allocate(qn.getPrefix(), qn.getNamespaceURI(), qn.getLocalPart());
+    int newNameCode = pool.allocate(qn.getPrefix(), qn.getNamespaceURI(),
+        qn.getLocalPart());
 
     CodedName name = new CodedName(newNameCode, pool);
     node.rename(name);
 
   }
 
-  private XValue eval_xpath(XdmItem item, XPathSelector valuex) throws SaxonApiException
-  {
+  private XValue eval_xpath(XdmItem item, XPathSelector valuex)
+      throws SaxonApiException {
 
     valuex.setContextItem(item);
 
@@ -541,8 +541,8 @@ public class xedit extends XCommand
     return xv;
   }
 
-  private XValue eval_xquery(XdmItem item, XQueryEvaluator valueq) throws XPathException, SaxonApiException
-  {
+  private XValue eval_xquery(XdmItem item, XQueryEvaluator valueq)
+      throws XPathException, SaxonApiException {
 
     valueq.setContextItem(item);
 
@@ -552,16 +552,17 @@ public class xedit extends XCommand
 
   }
 
-  private NodeInfo createTextNode(MutableNodeInfo parent, String replace)
-  {
+  private NodeInfo createTextNode(MutableNodeInfo parent, String replace) {
     /*
-     * net.sf.saxon.om.Orphan textNode = new net.sf.saxon.om.Orphan(mProcessor.getUnderlyingConfiguration());
+     * net.sf.saxon.om.Orphan textNode = new
+     * net.sf.saxon.om.Orphan(mProcessor.getUnderlyingConfiguration());
      * textNode.setNodeKind( Type.TEXT );
      * textNode.setStringValue( replace );
      */
 
     /*
-     * net.sf.saxon.tree.TextImpl textNode = new net.sf.saxon.tree.TextImpl( null , replace);
+     * net.sf.saxon.tree.TextImpl textNode = new net.sf.saxon.tree.TextImpl(
+     * null , replace);
      */
 
     /*
@@ -596,49 +597,50 @@ public class xedit extends XCommand
   /*
    * Import the node using the builder into this object model
    */
-  private XdmNode importNode(XdmNode node) throws SaxonApiException
-  {
+  private XdmNode importNode(XdmNode node) throws SaxonApiException {
     Source src = node.asSource();
     return build(src);
   }
 
-  private NodeInfo[] getNodeInfoList(MutableNodeInfo parent, XdmValue v) throws IndexOutOfBoundsException,
-      SaxonApiUncheckedException, SaxonApiException
-  {
+  private NodeInfo[] getNodeInfoList(MutableNodeInfo parent, XdmValue v)
+      throws IndexOutOfBoundsException,
+      SaxonApiUncheckedException, SaxonApiException {
 
     NodeInfo[] nl = new NodeInfo[v.size()];
     int i = 0;
-    for (XdmItem item : v) {
+    for(XdmItem item : v) {
       if(item.isAtomicValue())
         nl[i++] = createTextNode(parent, item.toString());
-      else nl[i++] = getNodeInfo((XdmNode) item);
+      else
+        nl[i++] = getNodeInfo((XdmNode) item);
 
     }
     return nl;
 
   }
 
-  private NodeInfo getNodeInfo(XdmNode node) throws IndexOutOfBoundsException, SaxonApiUncheckedException,
-      SaxonApiException
-  {
+  private NodeInfo getNodeInfo(XdmNode node)
+      throws IndexOutOfBoundsException, SaxonApiUncheckedException,
+      SaxonApiException {
 
     XdmNode xnode = importNode(node);
 
-    return ((DocumentImpl) xnode.getUnderlyingNode().getDocumentRoot()).getDocumentElement();
+    return ((DocumentImpl) xnode.getUnderlyingNode().getDocumentRoot())
+        .getDocumentElement();
   }
 
   /*
    * Creates/Builds a Tree (LINKED_TREE) type node from any source
    */
 
-  private XdmNode build(Source src) throws SaxonApiException
-  {
+  private XdmNode build(Source src) throws SaxonApiException {
     // @TODO: To get over a bug in Saxon's build() have to use the root element
     // instead of a document node to force building of a linked tree model
     // Otherwise the source is just returned unchnaged
 
     if(src instanceof DocumentInfo)
-      src = (((DocumentInfo) src).iterateAxis(net.sf.saxon.om.AxisInfo.CHILD).next());
+      src = (((DocumentInfo) src).iterateAxis(net.sf.saxon.om.AxisInfo.CHILD)
+          .next());
     return mBuilder.build(src);
 
   }
@@ -648,15 +650,15 @@ public class xedit extends XCommand
    * Compare URI and local part
    */
 
-  private NodeInfo findAttribute(NodeInfo node, NodeInfo attr)
-  {
+  private NodeInfo findAttribute(NodeInfo node, NodeInfo attr) {
 
     // Write attributes
     AxisIterator iter = node.iterateAxis(net.sf.saxon.om.AxisInfo.ATTRIBUTE);
     Item item;
-    while ((item = iter.next()) != null) {
+    while((item = iter.next()) != null) {
       NodeInfo a = (NodeInfo) item;
-      if(a.getURI().equals(attr.getURI()) && a.getLocalPart().equals(attr.getLocalPart()))
+      if(a.getURI().equals(attr.getURI())
+          && a.getLocalPart().equals(attr.getLocalPart()))
 
         return a;
 
@@ -670,19 +672,23 @@ public class xedit extends XCommand
 //
 // Copyright (C) 2008-2014 David A. Lee.
 //
-// The contents of this file are subject to the "Simplified BSD License" (the "License");
-// you may not use this file except in compliance with the License. You may obtain a copy of the
+// The contents of this file are subject to the "Simplified BSD License" (the
+// "License");
+// you may not use this file except in compliance with the License. You may
+// obtain a copy of the
 // License at http://www.opensource.org/licenses/bsd-license.php
 //
 // Software distributed under the License is distributed on an "AS IS" basis,
 // WITHOUT WARRANTY OF ANY KIND, either express or implied.
-// See the License for the specific language governing rights and limitations under the License.
+// See the License for the specific language governing rights and limitations
+// under the License.
 //
 // The Original Code is: all this file.
 //
 // The Initial Developer of the Original Code is David A. Lee
 //
-// Portions created by (your name) are Copyright (C) (your legal entity). All Rights Reserved.
+// Portions created by (your name) are Copyright (C) (your legal entity). All
+// Rights Reserved.
 //
 // Contributor(s): none.
 //

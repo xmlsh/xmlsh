@@ -1,8 +1,15 @@
 package org.xmlsh.internal.commands;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-
+import org.xmlsh.core.Namespaces;
+import org.xmlsh.core.Options;
+import org.xmlsh.core.XCommand;
+import org.xmlsh.core.XValue;
+import org.xmlsh.sh.shell.Shell;
+import org.xmlsh.util.Util;
+import org.xmlsh.util.XFile;
 import net.sf.saxon.s9api.DocumentBuilder;
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.SaxonApiException;
@@ -12,15 +19,6 @@ import net.sf.saxon.s9api.XPathSelector;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
 
-import org.xmlsh.core.Namespaces;
-import org.xmlsh.core.Options;
-import org.xmlsh.core.XCommand;
-import org.xmlsh.core.XValue;
-import org.xmlsh.sh.shell.Shell;
-import org.xmlsh.util.Util;
-import org.xmlsh.util.XFile;
-
-
 /**
  * Renames one or more files based on an xpath expresion
  * 
@@ -28,129 +26,121 @@ import org.xmlsh.util.XFile;
  *
  */
 
-
 public class xmove extends XCommand {
 
-	@Override
-	public int run( List<XValue> args )
-			throws Exception 
-			{
-		Options opts = new Options("x=xpath:,d=dir:,e=ext:,ns:+,f=force,mkdir,q");
-		opts.parse(args);
+  @Override
+  public int run(List<XValue> args)
+      throws Exception {
+    Options opts = new Options("x=xpath:,d=dir:,e=ext:,ns:+,f=force,mkdir,q");
+    opts.parse(args);
 
-		String xpath = opts.getOptStringRequired("x");
-		String dir = opts.getOptString("d",".");
-		String ext = opts.getOptString("e",null);
-		boolean bForce = opts.hasOpt("f");
-		boolean bQuiet = opts.hasOpt("q");
-		boolean bMkdir = opts.hasOpt("mkdir");
+    String xpath = opts.getOptStringRequired("x");
+    String dir = opts.getOptString("d", ".");
+    String ext = opts.getOptString("e", null);
+    boolean bForce = opts.hasOpt("f");
+    boolean bQuiet = opts.hasOpt("q");
+    boolean bMkdir = opts.hasOpt("mkdir");
 
+    List<XValue> xargs = opts.getRemainingArgs();
 
-		List<XValue> xargs = opts.getRemainingArgs();
+    /*
+     * Precompile the xpath
+     */
 
-		/*
-		 * Precompile the xpath
-		 */
+    Processor processor = Shell.getProcessor();
+    XPathCompiler compiler = processor.newXPathCompiler();
+    Namespaces ns = null;
 
-		Processor processor = Shell.getProcessor();
-		XPathCompiler compiler = processor.newXPathCompiler();
-		Namespaces ns = null;
+    /*
+     * Add namespaces
+     */
 
-		/*
-		 * Add namespaces
-		 */
+    if(!opts.hasOpt("nons"))
+      ns = getEnv().getNamespaces();
+    if(opts.hasOpt("ns")) {
+      Namespaces ns2 = new Namespaces();
+      if(ns != null)
+        ns2.putAll(ns);
 
-		if (!opts.hasOpt("nons"))
-			ns = getEnv().getNamespaces();
-		if (opts.hasOpt("ns")) {
-			Namespaces ns2 = new Namespaces();
-			if (ns != null)
-				ns2.putAll(ns);
+      // Add custom name spaces
+      for(XValue v : opts.getOptValues("ns"))
+        ns2.declare(v);
+      ns = ns2;
+    }
 
-			// Add custom name spaces
-			for (XValue v : opts.getOptValues("ns"))
-				ns2.declare(v);
-			ns = ns2;
-		}
+    if(ns != null) {
+      for(String prefix : ns.keySet()) {
+        String uri = ns.get(prefix);
+        compiler.declareNamespace(prefix, uri);
 
-		if (ns != null) {
-			for (String prefix : ns.keySet()) {
-				String uri = ns.get(prefix);
-				compiler.declareNamespace(prefix, uri);
+      }
+    }
 
-			}
-		}
+    XPathExecutable expr = compiler.compile(xpath);
 
+    int failed = 0;
+    for(XValue v : xargs) {
 
-		XPathExecutable expr = compiler.compile(xpath);
+      XFile inFile = new XFile(getFile(v));
 
-		int failed = 0;
-		for( XValue v : xargs ){
+      String extension = ext;
+      if(extension == null)
+        extension = inFile.getExt();
 
-			XFile inFile =  new XFile( getFile(v) );
+      if(!move(inFile.getFile(), expr, dir, extension, bForce, bQuiet, bMkdir))
+        failed++;
 
-			String extension = ext ;
-			if( extension == null )
-				extension = inFile.getExt();
+    }
 
-			if( !move( inFile.getFile() , expr , dir , extension,bForce ,bQuiet,bMkdir ) )
-				failed++;
+    return failed;
 
+  }
 
-		}
+  /**
+   * Do the actual rename by
+   * Evaluating the xpath expression as a string
+   * Optionally adding the extension
+   * 
+   * @throws IOException
+   * @throws SaxonApiException
+   */
 
-		return failed;
+  private boolean move(File inFile, XPathExecutable expr, String dir,
+      String ext, boolean force, boolean bQuiet, boolean bMkdir)
+      throws IOException, SaxonApiException {
 
+    expr.load();
 
-			}
+    DocumentBuilder builder = Shell.getProcessor().newDocumentBuilder();
+    XdmNode context = builder.build(inFile);
+    XPathSelector eval = expr.load();
+    eval.setContextItem(context);
 
-	/** 
-	 * Do the actual rename by 
-	 * Evaluating the xpath expression as a string
-	 * Optionally adding the extension
-	 * @throws IOException 
-	 * @throws SaxonApiException 
-	 */
+    XdmItem res = eval.evaluateSingle();
+    String base = res == null ? null : res.getStringValue();
 
-	private boolean move(File inFile, XPathExecutable expr, String dir, String ext, boolean force, boolean bQuiet , boolean bMkdir ) throws IOException, SaxonApiException {
+    if(Util.isBlank(base)) {
+      this.printErr("XPath expression evalates to null string - skipping "
+          + inFile.getName());
+      return false;
+    }
 
-		expr.load();
+    String toName = base + ext;
+    File toFile = new File(getFile(dir), toName);
+    if(!bQuiet)
+      printErr(
+          "Moving " + inFile.getName() + " to " + toFile.getAbsolutePath());
 
+    if(bMkdir) {
+      File parent = toFile.getParentFile();
+      if(parent != null && !parent.exists())
+        parent.mkdirs();
 
+    }
 
-		DocumentBuilder builder = Shell.getProcessor().newDocumentBuilder();
-		XdmNode context = builder.build( inFile );
-		XPathSelector eval = expr.load();
-		eval.setContextItem(context);
+    Util.moveFile(inFile, toFile, force);
 
-		XdmItem res = eval.evaluateSingle();
-		String base = res == null ? null : res.getStringValue() ;
+    return true;
 
-
-		if( Util.isBlank(base) ){
-			this.printErr("XPath expression evalates to null string - skipping " + inFile.getName() );
-			return false ;
-		}
-
-		String toName = base + ext ;
-		File toFile =  new File( getFile(dir) , toName );
-		if( ! bQuiet )
-			printErr("Moving " + inFile.getName() + " to " + toFile.getAbsolutePath() );  
-
-		if( bMkdir ){
-			File parent = toFile.getParentFile();
-			if( parent !=null && ! parent.exists() )
-				parent.mkdirs();
-
-		}
-
-
-		Util.moveFile( inFile ,toFile,force);
-
-		return true ;
-
-
-
-
-	}
+  }
 };

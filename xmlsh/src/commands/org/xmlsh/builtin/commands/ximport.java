@@ -11,7 +11,6 @@ import java.net.URLClassLoader;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.xmlsh.annotations.Command;
@@ -21,14 +20,12 @@ import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.util.StringPair;
 
-@Command(name="import")
-public class ximport extends BuiltinCommand
-{
+@Command(name = "import")
+public class ximport extends BuiltinCommand {
   private static Logger mLogger = LogManager.getLogger();
 
   @Override
-  public int run(List<XValue> args) throws Exception
-  {
+  public int run(List<XValue> args) throws Exception {
     int ret = 0;
     if(args.size() < 1) {
       usage();
@@ -43,95 +40,94 @@ public class ximport extends BuiltinCommand
       else if(what.toString().equals("package")) {
         if(args.isEmpty())
           usage();
-        else for (XValue arg : args)
-          if( ! importPackage(new StringPair(arg,'='))) {
-            mShell.printErr("package: " + arg.toString() + " not found");
-            ret++;
-          }
+        else
+          for(XValue arg : args)
+            if(!importPackage(new StringPair(arg, '='))) {
+              mShell.printErr("package: " + arg.toString() + " not found");
+              ret++;
+            }
         return ret;
       }
       else if(what.toString().equals("commands")) {
         if(args.isEmpty())
           usage();
-        else for (XValue arg : args) {
-          if( ! importCommands(new StringPair(arg,'='))){
-            mShell.printErr("xmlsh command extension: " + arg.toString() + " not found");
-            ret++;
+        else
+          for(XValue arg : args) {
+            if(!importCommands(new StringPair(arg, '='))) {
+              mShell.printErr(
+                  "xmlsh command extension: " + arg.toString() + " not found");
+              ret++;
+            }
           }
-        }
         return ret;
       }
       else if(what.toString().equals("java"))
         return importJava(args);
-      else 
-        return importModule(new StringPair(what,'='),args);
+      else
+        return importModule(new StringPair(what, '='), args);
     }
 
     catch (InvalidArgumentException e) {
-      mLogger.info("invalid argument exception importing: " + what.toString(), e);
+      mLogger.info("invalid argument exception importing: " + what.toString(),
+          e);
       if(mShell.isInCommandConndition())
         return -1;
-      // mShell.printErr("invalid argument exception importing: "+ what.toString() ,e );
+      // mShell.printErr("invalid argument exception importing: "+
+      // what.toString() ,e );
       throw e;
 
     }
 
     catch (Exception e) {
-      mLogger.throwing(  e);
+      mLogger.throwing(e);
       throw e;
     }
 
   }
 
-/*
+  /*
    * Implements
-   * import module 
+   * import module
    * import foo=script
    * import foo=a.b.c at jar-file
    */
-  private int importModule(StringPair stringPair, List<XValue> args) throws Exception {
-	    List<URL> at = getAt(args);
-	    return importModule(args,at,stringPair);
-}
+  private int importModule(StringPair stringPair, List<XValue> args)
+      throws Exception {
+    List<URL> at = getAt(args);
+    return importModule(args, at, stringPair);
+  }
 
-  private int importModule(List<XValue> args) throws Exception
-  {
-    if(args.size() == 0)
-    {
-    	usage();
-    	return 2;
+  private int importModule(List<XValue> args) throws Exception {
+    if(args.size() == 0) {
+      usage();
+      return 2;
     }
 
     String mod = args.remove(0).toString();
     List<URL> at = getAt(args);
     StringPair pair = new StringPair(mod, '=');
-    
 
     importModule(args, at, pair);
 
     return 0;
   }
 
-protected int importModule(List<XValue> args, List<URL> at, StringPair pair)
-		throws Exception {
-	return mShell.importModule(pair.getLeft(),pair.getRight(), at, args)  ? 0 : 1 ;
-}
+  protected int importModule(List<XValue> args, List<URL> at, StringPair pair)
+      throws Exception {
+    return mShell.importModule(pair.getLeft(), pair.getRight(), at, args) ? 0
+        : 1;
+  }
 
-  private List<URL>  getAt(List<XValue> args) throws CoreException
-  {
+  private List<URL> getAt(List<XValue> args) throws CoreException {
     List<URL> at = null;
-    if(args.size() > 1 && args.get(0).isAtomic() && args.get(0).toString().equals("at")) {
+    if(args.size() > 1 && args.get(0).isAtomic()
+        && args.get(0).toString().equals("at")) {
       args.remove(0);
       at = mShell.toUrls(args);
     }
     return at;
   }
 
-
-  
-  
-  
-  
   /*
    * Implements
    * import java
@@ -139,16 +135,15 @@ protected int importModule(List<XValue> args, List<URL> at, StringPair pair)
    * import java at a.jar
    */
 
-  private int importJava(List<XValue> args) throws CoreException
-  {
+  private int importJava(List<XValue> args) throws CoreException {
     if(args.size() == 0)
       return listClasspaths();
 
-   List<URL> at = getAt(args);
-   if( at == null )
-	   at = mShell.toUrls(args);
+    List<URL> at = getAt(args);
+    if(at == null)
+      at = mShell.toUrls(args);
 
-    mShell.importJava( at  );
+    mShell.importJava(at);
 
     return 0;
   }
@@ -158,12 +153,11 @@ protected int importModule(List<XValue> args, List<URL> at, StringPair pair)
    * import package foo.bar.spam
    */
 
-  private int listClasspaths() throws CoreException
-  {
+  private int listClasspaths() throws CoreException {
     ClassLoader cl = mShell.getClassLoader(null);
-    while (cl != null) {
+    while(cl != null) {
       if(cl instanceof URLClassLoader) {
-        for (URL url : ((URLClassLoader) cl).getURLs())
+        for(URL url : ((URLClassLoader) cl).getURLs())
           mShell.printOut(url.toString());
 
       }
@@ -173,28 +167,26 @@ protected int importModule(List<XValue> args, List<URL> at, StringPair pair)
 
   }
 
-  private boolean importPackage(StringPair qname) throws Exception
-  {
+  private boolean importPackage(StringPair qname) throws Exception {
 
-    return mShell.importPackage(qname.getLeft(),qname.getRight(), Collections.singletonList(qname.getRight()));
+    return mShell.importPackage(qname.getLeft(), qname.getRight(),
+        Collections.singletonList(qname.getRight()));
   }
 
-  private boolean importCommands(StringPair qname) throws Exception
-  {
+  private boolean importCommands(StringPair qname) throws Exception {
 
-
-    return mShell.importPackage(qname.getLeft(),qname.getRight(),internalPackages(qname.getRight())) ;
+    return mShell.importPackage(qname.getLeft(), qname.getRight(),
+        internalPackages(qname.getRight()));
   }
 
-  private List<String> internalPackages(String fullname)
-  {
-    return Arrays.asList("org.xmlsh." + fullname + ".commands", "org.xmlsh." + fullname + ".functions");
+  private List<String> internalPackages(String fullname) {
+    return Arrays.asList("org.xmlsh." + fullname + ".commands",
+        "org.xmlsh." + fullname + ".functions");
 
   }
 
-  private List<String> internalModules(String fullname)
-  {
-    return Arrays.asList("org.xmlsh.modules." + fullname );
+  private List<String> internalModules(String fullname) {
+    return Arrays.asList("org.xmlsh.modules." + fullname);
 
   }
 }
@@ -202,19 +194,23 @@ protected int importModule(List<XValue> args, List<URL> at, StringPair pair)
 //
 // Copyright (C) 2008-2014 David A. Lee.
 //
-// The contents of this file are subject to the "Simplified BSD License" (the "License");
-// you may not use this file except in compliance with the License. You may obtain a copy of the
+// The contents of this file are subject to the "Simplified BSD License" (the
+// "License");
+// you may not use this file except in compliance with the License. You may
+// obtain a copy of the
 // License at http://www.opensource.org/licenses/bsd-license.php
 //
 // Software distributed under the License is distributed on an "AS IS" basis,
 // WITHOUT WARRANTY OF ANY KIND, either express or implied.
-// See the License for the specific language governing rights and limitations under the License.
+// See the License for the specific language governing rights and limitations
+// under the License.
 //
 // The Original Code is: all this file.
 //
 // The Initial Developer of the Original Code is David A. Lee
 //
-// Portions created by (your name) are Copyright (C) (your legal entity). All Rights Reserved.
+// Portions created by (your name) are Copyright (C) (your legal entity). All
+// Rights Reserved.
 //
 // Contributor(s): none.
 //

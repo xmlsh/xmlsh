@@ -10,16 +10,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.List;
-
-import net.sf.saxon.s9api.Processor;
-import net.sf.saxon.s9api.QName;
-import net.sf.saxon.s9api.XPathCompiler;
-import net.sf.saxon.s9api.XPathExecutable;
-import net.sf.saxon.s9api.XPathSelector;
-import net.sf.saxon.s9api.XdmAtomicValue;
-import net.sf.saxon.s9api.XdmItem;
-import net.sf.saxon.s9api.XdmNode;
-
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.Namespaces;
@@ -32,189 +22,198 @@ import org.xmlsh.core.io.OutputPort;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.Util;
+import net.sf.saxon.s9api.Processor;
+import net.sf.saxon.s9api.QName;
+import net.sf.saxon.s9api.XPathCompiler;
+import net.sf.saxon.s9api.XPathExecutable;
+import net.sf.saxon.s9api.XPathSelector;
+import net.sf.saxon.s9api.XdmAtomicValue;
+import net.sf.saxon.s9api.XdmItem;
+import net.sf.saxon.s9api.XdmNode;
 
 public class xpath extends XCommand {
 
-	@Override
-	public int run(List<XValue> args) throws Exception {
+  @Override
+  public int run(List<XValue> args) throws Exception {
 
-		Options opts = new Options("c=context:,cf=context-file:,f=file:,i=input:,q=query:,n,v,e=exists,b=bool,nons,ns:+,s=string", SerializeOpts.getOptionDefs());
-		opts.parse(args);
+    Options opts = new Options(
+        "c=context:,cf=context-file:,f=file:,i=input:,q=query:,n,v,e=exists,b=bool,nons,ns:+,s=string",
+        SerializeOpts.getOptionDefs());
+    opts.parse(args);
 
+    boolean bString = opts.hasOpt("s");
 
-		boolean bString = 	opts.hasOpt("s");
+    Processor processor = Shell.getProcessor();
 
-		Processor processor = Shell.getProcessor();
+    XPathCompiler compiler = processor.newXPathCompiler();
+    XdmItem context = null;
+    InputPort in = null;
 
-		XPathCompiler compiler = processor.newXPathCompiler();
-		XdmItem context = null;
-		InputPort in = null;
+    // boolean bReadStdin = false ;
 
-		// boolean bReadStdin = false ;
+    setSerializeOpts(getSerializeOpts(opts));
+    if(!opts.hasOpt("n")) { // Has XML data input
+      // Order of prevelence
+      // -context
+      // -context-file
+      // -i
 
-		setSerializeOpts(getSerializeOpts(opts));
-		if( ! opts.hasOpt("n" ) ){ // Has XML data input
-			// Order of prevelence 
-			// -context
-			// -context-file
-			// -i
+      if(opts.hasOpt("c"))
+        context = opts.getOptValue("c").asXdmItem();
+      else if(opts.hasOpt("cf"))
+        context = (in = getInput(
+            XValue.newXValue(opts.getOptString("cf", "-"))))
+                .asXdmItem(getSerializeOpts());
+      else if(opts.hasOpt("i"))
+        context = (in = getInput(opts.getOptValue("i")))
+            .asXdmItem(getSerializeOpts());
+      else
+        context = (in = getStdin()).asXdmItem(getSerializeOpts());
 
-			if( opts.hasOpt("c") )
-				context = opts.getOptValue("c").asXdmItem();
-			else
-				if( opts.hasOpt("cf"))
-					context = (in=getInput( XValue.newXValue(opts.getOptString("cf", "-")))).asXdmItem(getSerializeOpts());
-				else
-					if( opts.hasOpt("i") )
-						context = (in=getInput( opts.getOptValue("i"))).asXdmItem(getSerializeOpts());
-					else
-						context = (in=getStdin()).asXdmItem(getSerializeOpts());
+    }
 
-		}
+    List<XValue> xvargs = opts.getRemainingArgs();
 
-		List<XValue> xvargs = opts.getRemainingArgs();
+    boolean bQuiet = opts.hasOpt("e");
+    boolean bBool = opts.hasOpt("b");
+    if(bBool)
+      bQuiet = true;
 
-		boolean bQuiet = opts.hasOpt("e");
-		boolean bBool = opts.hasOpt("b");
-		if (bBool)
-			bQuiet = true;
+    OptionValue ov = opts.getOpt("f");
+    String xpath = null;
+    if(ov != null)
+      xpath = readString(ov.getValue(), getSerializeOpts());
+    else {
+      ov = opts.getOpt("q");
+      if(ov != null)
+        xpath = ov.getValue().toString();
+    }
 
-		OptionValue ov = opts.getOpt("f");
-		String xpath = null;
-		if (ov != null)
-			xpath = readString(ov.getValue(),getSerializeOpts());
-		else {
-			ov = opts.getOpt("q");
-			if (ov != null)
-				xpath = ov.getValue().toString();
-		}
+    if(xpath == null)
+      xpath = xvargs.remove(0).toString();
 
-		if (xpath == null)
-			xpath = xvargs.remove(0).toString();
+    if(opts.hasOpt("v")) {
+      // Read pairs from args to set
+      for(int i = 0; i < xvargs.size() / 2; i++) {
+        String name = xvargs.get(i * 2).toString();
 
-		if (opts.hasOpt("v")) {
-			// Read pairs from args to set
-			for (int i = 0; i < xvargs.size() / 2; i++) {
-				String name = xvargs.get(i * 2).toString();
+        compiler.declareVariable(new QName(name));
 
-				compiler.declareVariable(new QName(name));
+      }
 
-			}
+    }
 
-		}
+    /*
+     * Add namespaces If -nons option then dont use global namespaces If -ns
+     * options then add additional namespaces
+     */
 
-		/*
-		 * Add namespaces If -nons option then dont use global namespaces If -ns
-		 * options then add additional namespaces
-		 */
+    Namespaces ns = null;
 
-		Namespaces ns = null;
+    if(!opts.hasOpt("nons"))
+      ns = getEnv().getNamespaces();
+    if(opts.hasOpt("ns")) {
+      Namespaces ns2 = new Namespaces();
+      if(ns != null)
+        ns2.putAll(ns);
 
-		if (!opts.hasOpt("nons"))
-			ns = getEnv().getNamespaces();
-		if (opts.hasOpt("ns")) {
-			Namespaces ns2 = new Namespaces();
-			if (ns != null)
-				ns2.putAll(ns);
+      // Add custom name spaces
+      for(XValue v : opts.getOptValues("ns"))
+        ns2.declare(v);
 
-			// Add custom name spaces
-			for (XValue v : opts.getOptValues("ns"))
-				ns2.declare(v);
+      ns = ns2;
+    }
 
-			ns = ns2;
-		}
+    if(ns != null) {
+      for(String prefix : ns.keySet()) {
+        String uri = ns.get(prefix);
+        compiler.declareNamespace(prefix, uri);
 
-		if (ns != null) {
-			for (String prefix : ns.keySet()) {
-				String uri = ns.get(prefix);
-				compiler.declareNamespace(prefix, uri);
+      }
 
-			}
+    }
 
-		}
+    XPathExecutable expr = compiler.compile(xpath);
 
+    XPathSelector eval = expr.load();
+    if(context != null)
+      eval.setContextItem(context);
 
+    if(opts.hasOpt("v")) {
+      // Read pairs from args to set
+      for(int i = 0; i < xvargs.size() / 2; i++) {
+        String name = xvargs.get(i * 2).toString();
+        XValue value = xvargs.get(i * 2 + 1);
 
-		XPathExecutable expr = compiler.compile(xpath);
+        eval.setVariable(new QName(name), value.toXdmValue());
+      }
+    }
+    // Return the effective boolean value intead of any output
+    if(bBool) {
+      boolean bRet = eval.effectiveBooleanValue();
+      return bRet ? 0 : 1;
 
-		XPathSelector eval = expr.load();
-		if (context != null)
-			eval.setContextItem(context);
+    }
+    else {
 
-		if (opts.hasOpt("v")) {
-			// Read pairs from args to set
-			for (int i = 0; i < xvargs.size() / 2; i++) {
-				String name = xvargs.get(i * 2).toString();
-				XValue value = xvargs.get(i * 2 + 1);
+      OutputPort stdout = getStdout();
+      IXdmItemOutputStream ser = stdout
+          .asXdmItemOutputStream(getSerializeOpts());
+      boolean bAnyOutput = false;
+      boolean bFirst = true;
 
-				eval.setVariable(new QName(name), value.toXdmValue());
-			}
-		}
-		// Return the effective boolean value intead of any output
-		if (bBool) {
-			boolean bRet = eval.effectiveBooleanValue();
-			return bRet ? 0 : 1 ;
+      for(XdmItem item : eval) {
+        bAnyOutput = true;
 
+        if(bQuiet)
+          break;
 
-		} else {
+        if(!bFirst)
+          stdout.writeSequenceSeperator(getSerializeOpts()); // Thrashes
+                                                             // variable
+        // output !
+        else {
+          if(item instanceof XdmNode) {
+            URI uri = ((XdmNode) item).getBaseURI();
+            stdout.setSystemId(uri.toString());
+          }
+        }
+        bFirst = false;
+        if(item instanceof XdmNode) {
+          XdmNode node = (XdmNode) item;
+          if(bString)
+            item = new XdmAtomicValue(node.getStringValue());
 
-			OutputPort stdout = getStdout();
-			IXdmItemOutputStream ser = stdout.asXdmItemOutputStream(getSerializeOpts());
-			boolean bAnyOutput = false;
-			boolean bFirst = true;
+        }
 
-			for (XdmItem item : eval) {
-				bAnyOutput = true;
+        // Util.writeXdmValue(item, ser);
+        ser.write(item);
 
-				if (bQuiet)
-					break;
+      }
+      if(!bQuiet && bAnyOutput)
+        stdout.writeSequenceTerminator(getSerializeOpts());
 
-				if (!bFirst)
-					stdout.writeSequenceSeperator(getSerializeOpts()); // Thrashes variable
-				// output !
-				else {
-					if (item instanceof XdmNode) {
-						URI uri = ((XdmNode) item).getBaseURI();
-						stdout.setSystemId(uri.toString());
-					}
-				}
-				bFirst = false;
-				if( item instanceof XdmNode ){
-					XdmNode node = (XdmNode) item ;
-					if( bString  )
-						item = new XdmAtomicValue( node.getStringValue());
+      return bAnyOutput ? 0 : 1;
+    }
 
-				}
+  }
 
-				// Util.writeXdmValue(item, ser);
-				ser.write(item);
+  private String readString(XValue v, SerializeOpts opts)
+      throws CoreException, IOException {
 
-			}
-			if (!bQuiet && bAnyOutput)
-				stdout.writeSequenceTerminator(getSerializeOpts());
+    InputPort in = getInput(v);
+    try (InputStream is = in.asInputStream(opts)) {
 
-			return bAnyOutput ? 0 : 1;
-		}
-
-
-
-	}
-
-	private String readString(XValue v, SerializeOpts opts) throws CoreException, IOException  {
-
-		InputPort in = getInput( v );
-		try (  InputStream is = in.asInputStream(opts) ){
-
-			String s = Util.readString(is,opts.getInputTextEncoding());
-			return s ;
-		}
-	}
+      String s = Util.readString(is, opts.getInputTextEncoding());
+      return s;
+    }
+  }
 
 }
 
 //
 //
-// Copyright (C) 2008-2014    David A. Lee.
+// Copyright (C) 2008-2014 David A. Lee.
 //
 // The contents of this file are subject to the "Simplified BSD License" (the
 // "License");

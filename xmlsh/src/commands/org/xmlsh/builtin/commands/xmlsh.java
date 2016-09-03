@@ -7,7 +7,6 @@
 package org.xmlsh.builtin.commands;
 
 import java.util.List;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.xmlsh.core.BuiltinCommand;
@@ -50,65 +49,68 @@ public class xmlsh extends BuiltinCommand {
     opts.parse(args);
     Shell shell = getShell();
 
-    if (!mTopShell)
+    if(!mTopShell)
       shell = shell.clone();
 
     int ret = 0;
     try {
-      if (opts.hasOpt("v"))
+      if(opts.hasOpt("v"))
         shell.setOption("v", true);
-      if (opts.hasOpt("x"))
+      if(opts.hasOpt("x"))
         shell.setOption("x", true);
 
-      if (opts.hasOpt("e"))
+      if(opts.hasOpt("e"))
         shell.setOption("e", true);
-      if (opts.hasOpt("location"))
+      if(opts.hasOpt("location"))
         shell.setOption("location", opts.getOptFlag("location", true));
 
       String command = null;
-      if (opts.hasOpt("c"))
+      if(opts.hasOpt("c"))
         command = opts.getOptStringRequired("c").toString();
 
       boolean bNoRc = opts.hasOpt("norc");
       args = opts.getRemainingArgs();
 
       String rcfile = opts.getOptString("rcfile", null);
-      if (rcfile == null) {
+      if(rcfile == null) {
         XValue xrc = shell.getEnv().getVarValue(ShellConstants.XMLSHRC);
-        if (xrc != null)
+        if(xrc != null)
           rcfile = xrc.toString();
-        if (rcfile == null) {
+        if(rcfile == null) {
           XValue home = shell.getEnv().getVarValue(ShellConstants.HOME);
-          if (home != null) {
+          if(home != null) {
             rcfile = home.toString() + "/.xmlshrc";
           }
         }
       }
 
-      if (!bNoRc && rcfile != null)
+      if(!bNoRc && rcfile != null)
         shell.runRC(rcfile);
 
-      if (args.size() == 0 && command == null) {
+      if(args.size() == 0 && command == null) {
 
         ret = shell.interactive();
 
-      } else {
+      }
+      else {
 
         // Run command
-        if (command != null) {
+        if(command != null) {
           shell.setArgs(args);
           ICommandExpr cmd = new EvalScriptExpr(command);
           ret = shell.exec(cmd);
 
-        } else // Run script
+        }
+        else // Run script
         {
 
           String scmd = args.remove(0).toString();
           ICommand cmd = CommandFactory.getScript(shell, scmd,
               SourceMode.SOURCE, getLocation());
-          if (cmd == null) {
+          if(cmd == null) {
             shell.printErr(scmd + ": not found", getLocation());
-          } else {
+          }
+          else {
 
             // Run as sourced mode, in this shell ...
             // must set args ourselves
@@ -121,7 +123,7 @@ public class xmlsh extends BuiltinCommand {
 
       }
     } finally {
-      if (!mTopShell)
+      if(!mTopShell)
         shell.close();
 
     }

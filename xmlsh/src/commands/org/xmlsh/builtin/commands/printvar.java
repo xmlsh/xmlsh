@@ -8,7 +8,6 @@ package org.xmlsh.builtin.commands;
 
 import java.io.OutputStream;
 import java.util.List;
-
 import org.xmlsh.core.BuiltinCommand;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
@@ -19,43 +18,43 @@ import org.xmlsh.util.Util;
 
 public class printvar extends BuiltinCommand {
 
-	@Override
-	public int run(List<XValue> args) throws Exception {
+  @Override
+  public int run(List<XValue> args) throws Exception {
 
-		Options opts = new Options("n,p=port:", SerializeOpts.getOptionDefs());
-		opts.parse(args);
+    Options opts = new Options("n,p=port:", SerializeOpts.getOptionDefs());
+    opts.parse(args);
 
-		boolean nolf = opts.hasOpt("n");
-		String port = opts.getOptString("p", null);
+    boolean nolf = opts.hasOpt("n");
+    String port = opts.getOptString("p", null);
 
-		@SuppressWarnings("resource")
-		OutputPort stdout = port != null ? mShell.getEnv().getOutputPort(port)
-				: mShell.getEnv().getStdout();
+    @SuppressWarnings("resource")
+    OutputPort stdout = port != null ? mShell.getEnv().getOutputPort(port)
+        : mShell.getEnv().getStdout();
 
-		if (stdout == null)
-			throw new InvalidArgumentException("Output port not found: " + port);
+    if(stdout == null)
+      throw new InvalidArgumentException("Output port not found: " + port);
 
-		SerializeOpts serializeOpts = getSerializeOpts(opts);
+    SerializeOpts serializeOpts = getSerializeOpts(opts);
 
-		OutputStream out = stdout.asOutputStream(serializeOpts);
+    OutputStream out = stdout.asOutputStream(serializeOpts);
 
-		args = opts.getRemainingArgs();
+    args = opts.getRemainingArgs();
 
-		args = Util.expandSequences(args);
-		boolean bFirst = true;
-		for (XValue arg : args) {
-			if (!bFirst)
-				stdout.writeSequenceSeperator(serializeOpts);
-			XValue value = mShell.getEnv().getVarValue(arg.toString());
+    args = Util.expandSequences(args);
+    boolean bFirst = true;
+    for(XValue arg : args) {
+      if(!bFirst)
+        stdout.writeSequenceSeperator(serializeOpts);
+      XValue value = mShell.getEnv().getVarValue(arg.toString());
 
-			bFirst = false;
-			value.serialize(out, serializeOpts);
-		}
+      bFirst = false;
+      value.serialize(out, serializeOpts);
+    }
 
-		if (!nolf)
-			stdout.writeSequenceTerminator(serializeOpts);
-		return 0;
-	}
+    if(!nolf)
+      stdout.writeSequenceTerminator(serializeOpts);
+    return 0;
+  }
 }
 //
 //

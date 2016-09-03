@@ -8,7 +8,6 @@ package org.xmlsh.sh.core;
 
 import static org.xmlsh.util.UnifiedFileAttributes.MatchFlag.HIDDEN_NAME;
 import static org.xmlsh.util.UnifiedFileAttributes.MatchFlag.HIDDEN_SYS;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
@@ -20,7 +19,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.xmlsh.core.CoreException;
@@ -44,15 +42,15 @@ import org.xmlsh.util.UnifiedFileAttributes;
 import org.xmlsh.util.Util;
 import org.xmlsh.util.XMLUtils;
 
-public class EvalUtils
-{
- 
-	static Logger mLogger = LogManager.getLogger();
+public class EvalUtils {
+
+  static Logger mLogger = LogManager.getLogger();
+
   /*
    * Eval a var expression ${ [ prefix ] varname [ '[' ind ']' ] [':' suffix ] }
    */
-  public static XValue evalVar(Shell shell, EvalEnv env, XVariableExpr expr) throws IOException, CoreException
-  {
+  public static XValue evalVar(Shell shell, EvalEnv env, XVariableExpr expr)
+      throws IOException, CoreException {
 
     XVariable var = shell.getEnv().getVar(expr.getName());
     if(var == null) {
@@ -70,19 +68,18 @@ public class EvalUtils
 
     if(Util.isBlank(expr.getIndex()) && Util.isBlank(expr.getField()))
       return var.getValue();
-    else return var.getValue(shell, env, expr.getIndex(), expr.getField());
+    else
+      return var.getValue(shell, env, expr.getIndex(), expr.getField());
   }
 
   /*
    * Evaluate a variable expression and extract its value
    */
 
-  private static XVariableExpr parseVarExpr(Shell shell, EvalEnv env, String varname)
-      throws IOException, CoreException
-      {
-	  mLogger.entry(shell, env, varname);
-	
-	
+  private static XVariableExpr parseVarExpr(Shell shell, EvalEnv env,
+      String varname)
+      throws IOException, CoreException {
+    mLogger.entry(shell, env, varname);
 
     XVariableExpr expr = new XVariableExpr();
     // ${#var} notation
@@ -117,180 +114,183 @@ public class EvalUtils
     }
 
     expr.setName(varname);
-    return mLogger.exit(expr );
+    return mLogger.exit(expr);
 
   }
 
   /*
    * Recursively Expand a possibly multi-level wildcard rooted at a directory
    */
-  public static List<String> expandDir(File dir, org.xmlsh.util.PathMatchOptions matchOptions ) throws IOException
-  {
-	
-	mLogger.entry(dir, matchOptions);
+  public static List<String> expandDir(File dir,
+      org.xmlsh.util.PathMatchOptions matchOptions) throws IOException {
+
+    mLogger.entry(dir, matchOptions);
     ArrayList<String> results = new ArrayList<String>();
-    
+
     Path path = FileUtils.asValidPath(dir);
-    if( path == null ){
-    	return mLogger.exit(results );
+    if(path == null) {
+      return mLogger.exit(results);
     }
-    	
-    
 
     /*
      * Hack to handle 8.3 windows file names like "Local~1"
      * If not matched and this is windows
      * try an exact match to the canonical expanson of the dir and wild
-
-    if(bIsWindows && swild.indexOf(0, '~' ) >= 0) {
-      File fwild = new File(dir, swild);
-      if(fwild.exists()) {
-        results.add(swild);
-        return mLogger.exit(results)
-		;
-      }
-    }
-         */
+     * 
+     * if(bIsWindows && swild.indexOf(0, '~' ) >= 0) {
+     * File fwild = new File(dir, swild);
+     * if(fwild.exists()) {
+     * results.add(swild);
+     * return mLogger.exit(results)
+     * ;
+     * }
+     * }
+     */
     /*
-     * If path isnt a directory then path/wild shouldnt expand just return literally
+     * If path isnt a directory then path/wild shouldnt expand just return
+     * literally
      */
 
-    if( ! Files.isDirectory(path, FileUtils.pathLinkOptions(true))){
-    	mLogger.trace("path isnt directory {}" , path);
-    	return mLogger.exit(results)
-		 ;
+    if(!Files.isDirectory(path, FileUtils.pathLinkOptions(true))) {
+      mLogger.trace("path isnt directory {}", path);
+      return mLogger.exit(results);
     }
-    // If the glob matches a file exactly then choose it - depending on the options 
+    // If the glob matches a file exactly then choose it - depending on the
+    // options
 
-    assert( matchOptions.isNameMatcher());
-    if( matchOptions.isLiteralNameMatch()){
-        	Path f =  path.resolve(matchOptions.getNameString());
-    		UnifiedFileAttributes attrs = FileUtils.getUnifiedFileAttributes(f, LinkOption.NOFOLLOW_LINKS);
-	    	if( matchOptions.doVisit(f,attrs) ){
-	    		String name = f.getFileName().toString();
-	    	    results.add(name);
-	    	}
-    	} 
-   else
-    if( matchOptions.isPatternNameMatch() ){
-    
-    
-//    final PathMatcher wp = Util.compileWild( path.getFileSystem() , wild, 
- //   		CharAttrs.constInstance(CharAttr.ATTR_ESCAPED) , caseSensitive);
-   
-    
-		mLogger.trace("opening a directory stream on: {}",path);
-		try ( DirectoryStream<Path> dirStream = Files.newDirectoryStream(path  ) ){
-	    
-		    for (Path f : dirStream) {
-		    	UnifiedFileAttributes attrs = FileUtils.getUnifiedFileAttributes(f, LinkOption.NOFOLLOW_LINKS);
-		    	
-		    	if( matchOptions.doVisit(f,attrs) ){
-		    		String name = f.getFileName().toString();
-		    	    results.add(name );
-		    	}
-		    }
-		}
+    assert (matchOptions.isNameMatcher());
+    if(matchOptions.isLiteralNameMatch()) {
+      Path f = path.resolve(matchOptions.getNameString());
+      UnifiedFileAttributes attrs = FileUtils.getUnifiedFileAttributes(f,
+          LinkOption.NOFOLLOW_LINKS);
+      if(matchOptions.doVisit(f, attrs)) {
+        String name = f.getFileName().toString();
+        results.add(name);
+      }
     }
-	    if(results.size() == 0)
-	      return mLogger.exit(null);
-	    Collections.sort(results);
-	    return mLogger.exit(results);
+    else if(matchOptions.isPatternNameMatch()) {
+
+      // final PathMatcher wp = Util.compileWild( path.getFileSystem() , wild,
+      // CharAttrs.constInstance(CharAttr.ATTR_ESCAPED) , caseSensitive);
+
+      mLogger.trace("opening a directory stream on: {}", path);
+      try (DirectoryStream<Path> dirStream = Files.newDirectoryStream(path)) {
+
+        for(Path f : dirStream) {
+          UnifiedFileAttributes attrs = FileUtils.getUnifiedFileAttributes(f,
+              LinkOption.NOFOLLOW_LINKS);
+
+          if(matchOptions.doVisit(f, attrs)) {
+            String name = f.getFileName().toString();
+            results.add(name);
+          }
+        }
+      }
+    }
+    if(results.size() == 0)
+      return mLogger.exit(null);
+    Collections.sort(results);
+    return mLogger.exit(results);
 
   }
 
-	public static void expandDir(File dir, String parent,
-			CharAttributeBuffer wilds[], List<String> results)
-			throws IOException {
-		mLogger.entry(dir, parent, wilds, results);
+  public static void expandDir(File dir, String parent,
+      CharAttributeBuffer wilds[], List<String> results)
+      throws IOException {
+    mLogger.entry(dir, parent, wilds, results);
 
-		CharAttributeBuffer wild = wilds[0];
-		if (wilds.length < 2)
-			wilds = null;
-		else
-			wilds = Arrays.copyOfRange(wilds, 1, wilds.length);
+    CharAttributeBuffer wild = wilds[0];
+    if(wilds.length < 2)
+      wilds = null;
+    else
+      wilds = Arrays.copyOfRange(wilds, 1, wilds.length);
 
-		assert (!wild.isEmpty());
-		PathMatchOptions matchOpts = null;
-		if (Util.containsWild(wild)) {
-			Pattern pattern = Util.compileWild(wild,
-					FileUtils.isFilesystemCaseSensitive());
-			matchOpts = (new PathMatchOptions()).withWildMatching(pattern);
-		} else {
-			String fname = wild.decodeString();
-			// Last path segment with no wilds - only match if passes match test
-			if (wilds == null) {
-				matchOpts = (new PathMatchOptions()).withNameMatching(fname);
-
-			} else {
-				String path = parent == null ? fname : parent
-						+ (parent.endsWith("/") ? "" : "/") + fname;
-				expandDir(new File(dir, fname), path, wilds, results);
-				mLogger.exit();
-				return;
-			}
-		}
-
-		assert( matchOpts != null );
-		// If wild literaly starts with a . then dont hide hidden files
-		if (wild.charAt(0) != ShellConstants.kDOT_CHAR)
-			matchOpts = matchOpts.withFlagsHidden(HIDDEN_SYS, HIDDEN_NAME);
-
-		List<String> rs = EvalUtils.expandDir(dir, matchOpts);
-
-		if (rs == null)
-			return;
-
-		for (String r : rs) {
-			String path = parent == null ? r : parent
-					+ (parent.endsWith("/") ? "" : "/") + r;
-			if (wilds == null)
-				results.add(path);
-			else
-				expandDir(new File(dir, r), path, wilds, results);
-
-		}
-
-		mLogger.exit();
-	}
-
-  public static ParseResult expandStringToResult(Shell shell, String value, EvalEnv env, ParseResult result) throws IOException, CoreException
-      {
-    Expander e = new Expander(shell);
-    return e.expandStringToResult(value, env, result == null ? new ParseResult() : result);
+    assert (!wild.isEmpty());
+    PathMatchOptions matchOpts = null;
+    if(Util.containsWild(wild)) {
+      Pattern pattern = Util.compileWild(wild,
+          FileUtils.isFilesystemCaseSensitive());
+      matchOpts = (new PathMatchOptions()).withWildMatching(pattern);
+    }
+    else {
+      String fname = wild.decodeString();
+      // Last path segment with no wilds - only match if passes match test
+      if(wilds == null) {
+        matchOpts = (new PathMatchOptions()).withNameMatching(fname);
 
       }
-
-  public static ParseResult expandValueToResult(Shell shell, XValue xv, EvalEnv env, ParseResult result) throws IOException, CoreException
-      {
-    Expander e = new Expander(shell);
-    return e.expandValueToResult(xv, env, result == null ? new ParseResult() : result);
+      else {
+        String path = parent == null ? fname : parent
+            + (parent.endsWith("/") ? "" : "/") + fname;
+        expandDir(new File(dir, fname), path, wilds, results);
+        mLogger.exit();
+        return;
       }
+    }
 
-  public static List<XValue> expandResultToList(Shell shell, ParseResult result, EvalEnv env)
-      throws IOException, CoreException
-      {
+    assert (matchOpts != null);
+    // If wild literaly starts with a . then dont hide hidden files
+    if(wild.charAt(0) != ShellConstants.kDOT_CHAR)
+      matchOpts = matchOpts.withFlagsHidden(HIDDEN_SYS, HIDDEN_NAME);
+
+    List<String> rs = EvalUtils.expandDir(dir, matchOpts);
+
+    if(rs == null)
+      return;
+
+    for(String r : rs) {
+      String path = parent == null ? r : parent
+          + (parent.endsWith("/") ? "" : "/") + r;
+      if(wilds == null)
+        results.add(path);
+      else
+        expandDir(new File(dir, r), path, wilds, results);
+
+    }
+
+    mLogger.exit();
+  }
+
+  public static ParseResult expandStringToResult(Shell shell, String value,
+      EvalEnv env, ParseResult result) throws IOException, CoreException {
+    Expander e = new Expander(shell);
+    return e.expandStringToResult(value, env,
+        result == null ? new ParseResult() : result);
+
+  }
+
+  public static ParseResult expandValueToResult(Shell shell, XValue xv,
+      EvalEnv env, ParseResult result) throws IOException, CoreException {
+    Expander e = new Expander(shell);
+    return e.expandValueToResult(xv, env,
+        result == null ? new ParseResult() : result);
+  }
+
+  public static List<XValue> expandResultToList(Shell shell, ParseResult result,
+      EvalEnv env)
+      throws IOException, CoreException {
     Expander e = new Expander(shell);
     return e.expandResultToList(env, result);
-      }
+  }
 
-  public static List<XValue> expandValueToList(Shell shell, XValue xv, EvalEnv env)
-      throws IOException, CoreException
-      {
+  public static List<XValue> expandValueToList(Shell shell, XValue xv,
+      EvalEnv env)
+      throws IOException, CoreException {
     Expander e = new Expander(shell);
-    return e.expandResultToList(env, e.expandValueToResult(xv, env, new ParseResult()));
-      }
+    return e.expandResultToList(env,
+        e.expandValueToResult(xv, env, new ParseResult()));
+  }
 
-  public static List<XValue> expandStringToList(Shell shell, String s, EvalEnv env)
-      throws IOException, CoreException
-      {
+  public static List<XValue> expandStringToList(Shell shell, String s,
+      EvalEnv env)
+      throws IOException, CoreException {
     Expander e = new Expander(shell);
     return e.expandStringToList(s, env);
-      }
+  }
 
-  public static String expandStringToString(Shell shell, String value, EvalEnv env)
-      throws IOException, CoreException
-      {
+  public static String expandStringToString(Shell shell, String value,
+      EvalEnv env)
+      throws IOException, CoreException {
     List<XValue> ret = expandStringToList(shell, value, env);
     if(ret.size() == 0)
       return "";
@@ -298,54 +298,53 @@ public class EvalUtils
       return ret.get(0).toString();
     return Util.joinValues(ret, ShellConstants.ARG_SEPARATOR);
 
-      }
+  }
 
   // Expand a word and return as a single XValue
   // Preserves sequences and expands
-  public static XValue expandStringToValue(Shell shell, String value, EvalEnv env)
-      throws IOException, CoreException
-      {
+  public static XValue expandStringToValue(Shell shell, String value,
+      EvalEnv env)
+      throws IOException, CoreException {
     List<XValue> ret = expandStringToList(shell, value, env);
     return expandListToValue(env, ret);
 
-      }
+  }
 
   // Converts a List<XValue> into single XValue
-  public static XValue expandListToValue(EvalEnv env, List<XValue> ret)
-  {
-    if(ret == null || ret.isEmpty() )
-      return env.omitNulls() ? XValue.nullValue() : XValue.empytSequence() ;
+  public static XValue expandListToValue(EvalEnv env, List<XValue> ret) {
+    if(ret == null || ret.isEmpty())
+      return env.omitNulls() ? XValue.nullValue() : XValue.empytSequence();
     else if(ret.size() == 1)
       return ret.get(0);
 
     return XValue.newXValue(ret);
   }
 
-  public static ParseResult expandListToResult(Shell shell, List<XValue> list, EvalEnv env)
-      throws IOException, CoreException
-      {
+  public static ParseResult expandListToResult(Shell shell, List<XValue> list,
+      EvalEnv env)
+      throws IOException, CoreException {
     Expander e = new Expander(shell);
     ParseResult result = new ParseResult();
-    for (XValue xv : list)
+    for(XValue xv : list)
       result = e.expandValueToResult(xv, env, result);
     return result;
-      }
+  }
 
-  public static XValue expandResultToValue(Shell shell, ParseResult result, EvalEnv env)
-      throws IOException, CoreException
-      {
+  public static XValue expandResultToValue(Shell shell, ParseResult result,
+      EvalEnv env)
+      throws IOException, CoreException {
     List<XValue> ret = expandResultToList(shell, result, env);
     return expandListToValue(env, ret);
 
-      }
+  }
 
-  public static int readToMatching(String arg, int i, StringBuffer sbv, char match)
-  {
+  public static int readToMatching(String arg, int i, StringBuffer sbv,
+      char match) {
     char start = arg.charAt(i++);
     int matchCount = 1;
 
     // Eat up to match char '}'
-    for (; i < arg.length(); i++) {
+    for(; i < arg.length(); i++) {
       char c = arg.charAt(i);
       if(c == match) {
         if(--matchCount == 0)
@@ -360,44 +359,43 @@ public class EvalUtils
     return i;
   }
 
-  public static XValue splitStringToValue(Shell shell, String word, EvalEnv env) throws IOException
-  {
-    assert( word != null );
-    if( word == null|word.isEmpty() )
+  public static XValue splitStringToValue(Shell shell, String word, EvalEnv env)
+      throws IOException {
+    assert (word != null);
+    if(word == null | word.isEmpty())
       return XValue.newXValue(word);
-    
-    
+
     // if expand word then need to do IFS splitting
     if(env.expandWords() && !env.preserveValue())
       return XValue.newXValue((String[]) shell.getIFS().split(word).toArray());
-    else return XValue.newXValue(word);
+    else
+      return XValue.newXValue(word);
   }
 
-  public static ParseResult splitStringToResult(Shell shell, String word, EvalEnv env, ParseResult result) throws IOException, CoreException
-      {
+  public static ParseResult splitStringToResult(Shell shell, String word,
+      EvalEnv env, ParseResult result) throws IOException, CoreException {
     Expander e = new Expander(shell);
     // if expand word then need to do IFS splitting
     if(env.expandWords() && !env.preserveValue()) {
-      for (String s : shell.getIFS().split(word))
+      for(String s : shell.getIFS().split(word))
         result = e.expandStringToResult(s, env, result);
     }
-    else e.expandStringToResult(word, env, result);
+    else
+      e.expandStringToResult(word, env, result);
     return result;
 
-      }
+  }
 
   /*
    * Evaluate a variable and return either a list of zero or more values
    */
-  public static ParseResult evalVarToResult(Shell shell, XVariableExpr expr, EvalEnv env, CharAttrs attr,
-      ParseResult result) throws IOException, CoreException
-      {
-	  
-	  mLogger.entry(shell, expr, env, attr, result);
-	
-	
-    List<XValue> vs = null;
+  public static ParseResult evalVarToResult(Shell shell, XVariableExpr expr,
+      EvalEnv env, CharAttrs attr,
+      ParseResult result) throws IOException, CoreException {
 
+    mLogger.entry(shell, expr, env, attr, result);
+
+    List<XValue> vs = null;
 
     // TODO: Special case of $@ in quotes
 
@@ -412,17 +410,22 @@ public class EvalUtils
       // Non tong null values go away
       else if(!attr.isPreserve() && v.isNull())
         vs = null;
-      
+
       if(!isExpandable(v, env))
         vs = Collections.singletonList(v);
 
-      else
-      if(! attr.isQuote() && ( v.isSequence() ||  ! env.expandAny()) ) {  // $* $@ or other sequence like lists
-         vs = v.asXList();
+      else if(!attr.isQuote() && (v.isSequence() || !env.expandAny())) {  // $*
+                                                                          // $@
+                                                                          // or
+                                                                          // other
+                                                                          // sequence
+                                                                          // like
+                                                                          // lists
+        vs = v.asXList();
       }
       else {
         List<String> fields;
-        if(attr.isQuote() || ! isExpandable(v, env) )
+        if(attr.isQuote() || !isExpandable(v, env))
           vs = Collections.singletonList(v);
 
         else {
@@ -439,14 +442,15 @@ public class EvalUtils
 
             else {
               vs = new ArrayList<XValue>(fields.size());
-              for (String f : fields) {
+              for(String f : fields) {
                 if(Util.isEmpty(f))
                   continue;
                 vs.add(XValue.newXValue(f));
               }
             }
           }
-          else vs = Collections.singletonList(XValue.newXValue(s));
+          else
+            vs = Collections.singletonList(XValue.newXValue(s));
         }
       }
     }
@@ -457,7 +461,7 @@ public class EvalUtils
 
     if(vs != null) {
       int vsize = vs.size();
-      for (int vi = 0; vi < vsize; vi++) {
+      for(int vi = 0; vi < vsize; vi++) {
         XValue xv = vs.get(vi);
         if(vi > 0)
           result.flush();
@@ -469,53 +473,51 @@ public class EvalUtils
   }
 
   // What kinds of values do we peek into
-  private static boolean isExpandable(XValue v, EvalEnv env)
-  {
-    if(env.preserveValue() || ! env.expandAny() )
+  private static boolean isExpandable(XValue v, EvalEnv env) {
+    if(env.preserveValue() || !env.expandAny())
       return false;
     /*
-    if( v.isAtomic()   )
-      return true ;
-    
-    // HACK
-    //
-    if( v.isXdmValue() || (v.isXType() && v.isInstanceOf(XValueSequence.class) ) )
-      return true;
-    
-    return false ;
-*/
-    return v.isAtomic()  ||  v.isSequence() ;
+     * if( v.isAtomic() )
+     * return true ;
+     * 
+     * // HACK
+     * //
+     * if( v.isXdmValue() || (v.isXType() &&
+     * v.isInstanceOf(XValueSequence.class) ) )
+     * return true;
+     * 
+     * return false ;
+     */
+    return v.isAtomic() || v.isSequence();
   }
 
-	public static ParseResult evalVarToResult(Shell shell, String var,
-			EvalEnv env, CharAttrs attr, ParseResult result)
-			throws IOException, CoreException {
-	
-	mLogger.entry(shell, var, env, attr, result);
-		if (Util.isOneOf(var, "*", "@")) {
-			XVariableExpr expr = new XVariableExpr();
-			expr.setName(var);
-			return evalVarToResult(shell, expr, env.withFlagsOff(
-					EvalFlag.SPLIT_WORDS, EvalFlag.EXPAND_VAR), attr, result);
-		}
+  public static ParseResult evalVarToResult(Shell shell, String var,
+      EvalEnv env, CharAttrs attr, ParseResult result)
+      throws IOException, CoreException {
 
-		XVariableExpr expr = parseVarExpr(shell, env, var);
-		ParseResult res = evalVarToResult(shell, expr, env, attr, result);
-        return mLogger.exit(res);
-		
+    mLogger.entry(shell, var, env, attr, result);
+    if(Util.isOneOf(var, "*", "@")) {
+      XVariableExpr expr = new XVariableExpr();
+      expr.setName(var);
+      return evalVarToResult(shell, expr, env.withFlagsOff(
+          EvalFlag.SPLIT_WORDS, EvalFlag.EXPAND_VAR), attr, result);
+    }
 
-	}
+    XVariableExpr expr = parseVarExpr(shell, env, var);
+    ParseResult res = evalVarToResult(shell, expr, env, attr, result);
+    return mLogger.exit(res);
 
-  public static int getSize(XValue xvalue) throws InvalidArgumentException
-  {
+  }
+
+  public static int getSize(XValue xvalue) throws InvalidArgumentException {
     if(xvalue == null || xvalue.isNull())
       return 0;
     return xvalue.getTypeMethods().getSize(xvalue.asObject());
   }
 
-  public static XValue newContainerInstance(TypeFamily family) throws InvalidArgumentException
-  {
-    switch (family) {
+  public static XValue newContainerInstance(TypeFamily family)
+      throws InvalidArgumentException {
+    switch(family){
     case XTYPE:
     case JAVA:
       return XValue.newXValue(family, new XValueList());
@@ -529,8 +531,8 @@ public class EvalUtils
     return XValue.nullValue();
   }
 
-  public static XValue getValues(EvalEnv env, XValue xvalue) throws InvalidArgumentException
-  {
+  public static XValue getValues(EvalEnv env, XValue xvalue)
+      throws InvalidArgumentException {
     if(xvalue == null || xvalue.isNull())
       return XValue.nullValue();
 
@@ -544,19 +546,23 @@ public class EvalUtils
 /*
  * Copyright (C) 2008-2012 David A. Lee.
  * 
- * The contents of this file are subject to the "Simplified BSD License" (the "License");
- * you may not use this file except in compliance with the License. You may obtain a copy of the
+ * The contents of this file are subject to the "Simplified BSD License" (the
+ * "License");
+ * you may not use this file except in compliance with the License. You may
+ * obtain a copy of the
  * License at http://www.opensource.org/licenses/bsd-license.php
  * 
  * Software distributed under the License is distributed on an "AS IS" basis,
  * WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * See the License for the specific language governing rights and limitations under the License.
+ * See the License for the specific language governing rights and limitations
+ * under the License.
  * 
  * The Original Code is: all this file.
  * 
  * The Initial Developer of the Original Code is David A. Lee
  * 
- * Portions created by (your name) are Copyright (C) (your legal entity). All Rights Reserved.
+ * Portions created by (your name) are Copyright (C) (your legal entity). All
+ * Rights Reserved.
  * 
  * Contributor(s): David A. Lee
  */

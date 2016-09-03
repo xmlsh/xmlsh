@@ -3,7 +3,6 @@ package org.xmlsh.sh.core;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.EnumSet;
-
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.EvalEnv;
 import org.xmlsh.core.EvalFlag;
@@ -19,73 +18,73 @@ import org.xmlsh.util.Util;
  * ${ [#|!] varname [ '[' index ']' ] [ ':' expr }
  * 
  */
-public class VarExpansion extends Word
-{
-	private final static EnumSet<EvalFlag> _indMskFlags = 
-	     EnumSet.of( EvalFlag.EXPAND_VAR , EvalFlag.PARSE_QUOTES , EvalFlag.JOIN_VALUES , EvalFlag.OMIT_NULL);
-	private String mPrefix ; //"#" | "!"
-    private String mVarname ;
-    private Word   mIndex ; 
-    private Word  mField;
-    
-	// Single token expansion 
-    public VarExpansion(Token t, String simplevar )
-    {
-    	super(t);
-	    mVarname = simplevar;
-    }
+public class VarExpansion extends Word {
+  private final static EnumSet<EvalFlag> _indMskFlags = EnumSet.of(
+      EvalFlag.EXPAND_VAR, EvalFlag.PARSE_QUOTES, EvalFlag.JOIN_VALUES,
+      EvalFlag.OMIT_NULL);
+  private String mPrefix; // "#" | "!"
+  private String mVarname;
+  private Word mIndex;
+  private Word mField;
 
-    public VarExpansion(Token t, String prefix , String var , Word ind , Word field   )
-    {
-    	super(t);
-    	mPrefix = prefix ;
-	    mVarname = var;
-	    mIndex = ind ;
-	    mField = field ;
-    }
+  // Single token expansion
+  public VarExpansion(Token t, String simplevar) {
+    super(t);
+    mVarname = simplevar;
+  }
 
+  public VarExpansion(Token t, String prefix, String var, Word ind,
+      Word field) {
+    super(t);
+    mPrefix = prefix;
+    mVarname = var;
+    mIndex = ind;
+    mField = field;
+  }
 
-    @Override
-    public void print(PrintWriter out) {
-        out.print("${");
-        if( mPrefix != null )
-            out.print(mPrefix);
-        out.print( mVarname );
-        if( mIndex != null ) {
-            out.print("[");
-            mIndex.print(out);
-            out.print("]");
-        }
-        if( mField != null ) {
-            out.print(":" );
-            mField.print(out);
-        }
-        out.print("}");
+  @Override
+  public void print(PrintWriter out) {
+    out.print("${");
+    if(mPrefix != null)
+      out.print(mPrefix);
+    out.print(mVarname);
+    if(mIndex != null) {
+      out.print("[");
+      mIndex.print(out);
+      out.print("]");
     }
+    if(mField != null) {
+      out.print(":");
+      mField.print(out);
+    }
+    out.print("}");
+  }
 
-    @Override
-    protected ParseResult expandToResult(Shell shell, EvalEnv env, ParseResult result) throws IOException, CoreException
-    {
-        String ind = mIndex != null ? mIndex.expandString(shell, indEnv(env)) : null ;
-        String field = mField != null ?  mField.expandString(shell, env) : null ;
-        XVariableExpr expr = new XVariableExpr( mPrefix , mVarname , ind , field );
-        return EvalUtils.evalVarToResult(shell, expr, env, env.asCharAttrs() , result);
-    }
+  @Override
+  protected ParseResult expandToResult(Shell shell, EvalEnv env,
+      ParseResult result) throws IOException, CoreException {
+    String ind = mIndex != null ? mIndex.expandString(shell, indEnv(env))
+        : null;
+    String field = mField != null ? mField.expandString(shell, env) : null;
+    XVariableExpr expr = new XVariableExpr(mPrefix, mVarname, ind, field);
+    return EvalUtils.evalVarToResult(shell, expr, env, env.asCharAttrs(),
+        result);
+  }
 
-    private EvalEnv indEnv(EvalEnv env)
-    {
-	   return env.withFlagsMasked( _indMskFlags );
-    }
-	@Override
-    public boolean isEmpty() {
+  private EvalEnv indEnv(EvalEnv env) {
+    return env.withFlagsMasked(_indMskFlags);
+  }
 
-    	return Util.isEmpty(mVarname);
-    	
-    }
+  @Override
+  public boolean isEmpty() {
 
-    @Override
-    String getSimpleName() {
-       return mVarname ;
-    }
+    return Util.isEmpty(mVarname);
+
+  }
+
+  @Override
+  String getSimpleName() {
+    return mVarname;
+  }
 
 }

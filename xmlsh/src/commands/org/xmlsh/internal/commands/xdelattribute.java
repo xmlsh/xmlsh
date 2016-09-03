@@ -9,7 +9,6 @@ package org.xmlsh.internal.commands;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLEventFactory;
@@ -18,9 +17,6 @@ import javax.xml.stream.XMLEventWriter;
 import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
-
-
-
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
@@ -33,163 +29,142 @@ import org.xmlsh.util.Util;
 
 public class xdelattribute extends XCommand {
 
+  @SuppressWarnings("unchecked")
+  @Override
+  public int run(List<XValue> args) throws Exception {
 
+    Options opts = new Options("a=attribute:+,v,e=element:+",
+        SerializeOpts.getOptionDefs());
+    opts.parse(args);
+    args = opts.getRemainingArgs();
 
+    List<QName> attrs = getQNames(opts.getOptValuesRequired("a"));
+    boolean bExcept = opts.hasOpt("v");
+    List<QName> elements = getQNames(opts.getOptValues("e"));
 
+    XMLEventFactory mFactory = XMLEventFactory.newInstance();
 
+    InputPort stdin = null;
+    if(args.size() > 0)
+      stdin = getInput(args.get(0));
+    else
+      stdin = getStdin();
+    if(stdin == null)
+      throw new InvalidArgumentException("Cannot open input");
 
+    SerializeOpts sopts = getSerializeOpts(opts);
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public int run(List<XValue> args) throws Exception {
+    XMLEventReader reader = stdin.asXMLEventReader(sopts);
+    OutputPort stdout = getStdout();
+    XMLEventWriter writer = stdout.asXMLEventWriter(sopts);
 
-		Options opts = new Options( "a=attribute:+,v,e=element:+" , SerializeOpts.getOptionDefs() );
-		opts.parse(args);
-		args = opts.getRemainingArgs();
+    stdout.setSystemId(stdin.getSystemId());
+    XMLEvent e;
 
-		List<QName>	attrs 		=	getQNames( opts.getOptValuesRequired("a"));
-		boolean bExcept 		= opts.hasOpt("v");
-		List<QName>	elements 	= getQNames( opts.getOptValues("e"));
+    while(reader.hasNext()) {
+      e = (XMLEvent) reader.next();
+      if(e.isStartElement()) {
+        StartElement se = e.asStartElement();
 
+        // Only look at elements in list, or all elements if null
+        if(elements == null || matches(se.getName(), elements, false)) {
 
-		XMLEventFactory	mFactory = XMLEventFactory.newInstance();
+          // If matching (or excluding) attributes delete them
+          Iterator<Attribute> iter = se.getAttributes();
 
+          boolean bMatches = false;
+          while(iter.hasNext()) {
+            Attribute attr = iter.next();
+            if(matches(attr.getName(), attrs, bExcept)) {
+              bMatches = true;
+              break;
+            }
 
+          }
 
-		InputPort stdin = null;
-		if( args.size() > 0 )
-			stdin = getInput( args.get(0));
-		else
-			stdin = getStdin();
-		if( stdin == null )
-			throw new InvalidArgumentException("Cannot open input");
+          // If any match then synthesize a new start element
+          if(bMatches) {
+            Iterator namespaces = se.getNamespaces();
+            List<Attribute> newAttrs = new ArrayList<Attribute>();
+            iter = se.getAttributes();
+            while(iter.hasNext()) {
+              Attribute attr = iter.next();
+              if(!matches(attr.getName(), attrs, bExcept))
+                newAttrs.add(attr);
+            }
+            NamespaceContext nsc = se.getNamespaceContext();
+            e = mFactory.createStartElement(se.getName().getPrefix(),
+                se.getName().getNamespaceURI(),
+                se.getName().getLocalPart(),
+                newAttrs.iterator(), namespaces, nsc);
 
-		SerializeOpts sopts = getSerializeOpts(opts);
+          }
 
-		XMLEventReader	reader = stdin.asXMLEventReader(sopts);
-		OutputPort stdout = getStdout();
-		XMLEventWriter  writer = stdout.asXMLEventWriter(sopts);
+        }
 
-		stdout.setSystemId(stdin.getSystemId());
-		XMLEvent e;
+      }
 
-		while( reader.hasNext() ){
-			e = (XMLEvent) reader.next();
-			if( e.isStartElement()){
-				StartElement se = e.asStartElement();
+      writer.add(e);
+    }
+    // writer.add(reader);
+    Util.safeClose(reader);
+    Util.safeClose(writer);
+    return 0;
 
-				// Only look at elements in list, or all elements if null 
-				if( elements == null || matches( se.getName() , elements , false)){
+  }
 
-					// If matching (or excluding) attributes delete them 
-					Iterator<Attribute> iter = se.getAttributes();
+  /*
+   * Returns true if name matches (or does not match) any name in list of names
+   * 
+   */
 
-					boolean bMatches  = false ;
-					while( iter.hasNext() ){
-						Attribute attr = iter.next();
-						if( matches(attr.getName() , attrs , bExcept )){
-							bMatches = true ;
-							break ;
-						}
+  private boolean matches(javax.xml.namespace.QName name, List<QName> names,
+      boolean bExcept) {
+    for(QName qname : names) {
+      if(StAXUtils.matchesQName(name, qname))
+        return bExcept ? false : true;
 
+    }
+    return bExcept ? true : false;
 
+  }
 
-					}
+  private List<QName> getQNames(List<XValue> opts) {
+    if(opts == null || opts.size() == 0)
+      return null;
+    List<QName> names = new ArrayList<QName>();
 
-					// If any match then synthesize a new start element 
-					if( bMatches ){
-						Iterator	namespaces = se.getNamespaces();
-						List<Attribute>  newAttrs = new ArrayList<Attribute>();
-						iter = se.getAttributes();
-						while( iter.hasNext() ){
-							Attribute attr = iter.next();
-							if( ! matches( attr.getName() , attrs , bExcept ) )
-								newAttrs.add(attr);
-						}
-						NamespaceContext nsc = se.getNamespaceContext(); 
-						  e = mFactory.createStartElement(se.getName().getPrefix() ,
-                                  se.getName().getNamespaceURI() ,
-                                  se.getName().getLocalPart() ,
-                                  newAttrs.iterator() , namespaces, nsc
-                                  );
+    for(XValue v : opts) {
+      names.add(v.asQName(getShell()));
 
+    }
 
-
-					}
-
-				}
-
-
-
-
-			}
-
-
-			writer.add(e);
-		}
-		// writer.add(reader);
-		Util.safeClose(reader);
-		Util.safeClose(writer);
-		return 0;
-
-
-	}
-
-	/*
-	 * Returns true if name matches (or does not match) any name in list of names 
-	 * 
-	 */
-
-
-	private boolean matches(javax.xml.namespace.QName name, List<QName> names, boolean bExcept) 
-	{
-		for( QName qname : names ){
-			if( StAXUtils.matchesQName(name, qname) ) 
-				return bExcept ? false : true ;
-
-		}
-		return bExcept ? true : false ;
-
-
-
-
-	}
-
-	private List<QName> getQNames(List<XValue> opts) {
-		if( opts == null || opts.size() == 0 )
-			return null ;
-		List<QName>		names = new ArrayList<QName>();
-
-		for( XValue v : opts ){
-			names.add( v.asQName(getShell()) );
-
-		}
-
-
-		return names ;
-	}
+    return names;
+  }
 
 }
 
-
-
 //
 //
-//Copyright (C) 2008-2014    David A. Lee.
+// Copyright (C) 2008-2014 David A. Lee.
 //
-//The contents of this file are subject to the "Simplified BSD License" (the "License");
-//you may not use this file except in compliance with the License. You may obtain a copy of the
-//License at http://www.opensource.org/licenses/bsd-license.php 
+// The contents of this file are subject to the "Simplified BSD License" (the
+// "License");
+// you may not use this file except in compliance with the License. You may
+// obtain a copy of the
+// License at http://www.opensource.org/licenses/bsd-license.php
 //
-//Software distributed under the License is distributed on an "AS IS" basis,
-//WITHOUT WARRANTY OF ANY KIND, either express or implied.
-//See the License for the specific language governing rights and limitations under the License.
+// Software distributed under the License is distributed on an "AS IS" basis,
+// WITHOUT WARRANTY OF ANY KIND, either express or implied.
+// See the License for the specific language governing rights and limitations
+// under the License.
 //
-//The Original Code is: all this file.
+// The Original Code is: all this file.
 //
-//The Initial Developer of the Original Code is David A. Lee
+// The Initial Developer of the Original Code is David A. Lee
 //
-//Portions created by (your name) are Copyright (C) (your legal entity). All Rights Reserved.
+// Portions created by (your name) are Copyright (C) (your legal entity). All
+// Rights Reserved.
 //
-//Contributor(s): none.
+// Contributor(s): none.
 //
