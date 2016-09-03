@@ -126,6 +126,8 @@ subprojects {
 
 evaluationDependsOn ":app"
 task install( type: Sync  , dependsOn: [ ':validate' , ':app:installDist' ]  ) {
+  group 'distribution'
+  description "Install application to local directory specified by property xmlsh.installDir"
     requiredProperties 'xmlsh.installDir'
     dependsOn rootProject.tasks["validate"]
     dependsOn subprojects.tasks["build"]
