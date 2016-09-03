@@ -34,7 +34,7 @@ task createVersion  {
     ext.destFile = new File(outputDir, "version.properties")
     outputs.file destFile
     outputs.upToDateWhen {false }
-    doLast {    
+    doLast {
         outputDir.exists() || outputDir.mkdir()
         def destFile = new File(outputDir, "version.properties")
         destFile.text = """version.build_date=${xversion_build_date}
@@ -52,7 +52,7 @@ configurations {
     all*.exclude group: 'asm'
     all*.exclude group: 'net.sf.saxon' , module: 'saxon'
 
-   
+
    exported.extendsFrom  runtime
 }
 
@@ -101,7 +101,9 @@ dependencies {
 	compile 'net.sf.supercsv:super-csv:2.3+'
 
     compile  group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl' , version: '2.+'
-    
+
+    testCompile 'junit:junit:4.+'
+    testRuntime project(":app")
 
 
 }

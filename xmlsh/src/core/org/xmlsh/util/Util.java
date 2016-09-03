@@ -1305,7 +1305,7 @@ public class Util
 		 char[] chars = name.toCharArray();
 		 for( char ch : chars ){
 			 if( ch == '_' )
-				 ch = ' ' ;
+				 ch = '-' ;
 		     sb.append(ch);	
 		 }
 		 return sb.toString();
@@ -1319,31 +1319,16 @@ public class Util
 		 char[] chars = name.toCharArray();
 		 boolean bFirst = true ;
 		 for( char ch : chars ){
-			 if( bFirst && !isInitialNameChar(ch) )
-				 sb.append( encodeIntiallNameCharSimple(ch));
-			 else
-			 if( ! bFirst && ! isNameChar(ch))
-				 sb.append( encodeNameCharSimple(ch));
-			else
-				sb.append(ch);	
-			 bFirst = false ;
+		   if( bFirst ? isInitialNameChar(ch)  : isNameChar(ch) )
+		     sb .append(ch);
+		   else
+		     sb.append('_');
+                    bFirst = false ;
 		 }
 		 return sb.toString();
 		 
 	 }
 
-	 public static String encodeNameCharSimple(char ch) {
-		 switch( ch ){
-		 case ' ' :  return "_" ;
-		 default : return String.valueOf(ch);
-		 }
-		 
-	}
-
-
-	 public static String encodeIntiallNameCharSimple(char ch) {
-		 return encodeNameCharSimple(ch);
-	}
 
 
 	public static String decodeFromNCName( String name )

@@ -36,7 +36,7 @@ public abstract class XCommand extends AbstractCommand {
     {
         String name = getClass().getSimpleName();
         if (name.lastIndexOf(ShellConstants.kDOT_CHAR) > 0) {
-            name = name.substring(name.lastIndexOf(ShellConstants.kDOT_CHAR)+1);  
+            name = name.substring(name.lastIndexOf(ShellConstants.kDOT_CHAR)+1);
         }
 
 
@@ -74,14 +74,14 @@ public abstract class XCommand extends AbstractCommand {
      * @see org.xmlsh.core.ICommand#run(org.xmlsh.sh.shell.Shell, java.lang.String[])
      */
     @Override
-    public int run(Shell shell, String cmd, List<XValue> args) throws Exception 
+    public int run(Shell shell, String cmd, List<XValue> args) throws Exception
     {
         Shell saved_shell = ThreadLocalShell.set(shell);
 
 
         try {
             return run(  args , shell.getEnv() );
-        } 
+        }
         catch( UnknownOption e )
         {
             error( e);
@@ -96,7 +96,7 @@ public abstract class XCommand extends AbstractCommand {
 
     }
 
-    abstract public int run( List<XValue>  args ) throws Exception;
+    abstract protected int run( List<XValue>  args ) throws Exception;
 
 
     public int run( List<XValue>  args, XEnvironment env ) throws Exception
@@ -120,7 +120,7 @@ public abstract class XCommand extends AbstractCommand {
         // TODO Auto-generated method stub
         return null;
     }
-    
+
 
 }
 //
@@ -129,7 +129,7 @@ public abstract class XCommand extends AbstractCommand {
 //
 //The contents of this file are subject to the "Simplified BSD License" (the "License");
 //you may not use this file except in compliance with the License. You may obtain a copy of the
-//License at http://www.opensource.org/licenses/bsd-license.php 
+//License at http://www.opensource.org/licenses/bsd-license.php
 //
 //Software distributed under the License is distributed on an "AS IS" basis,
 //WITHOUT WARRANTY OF ANY KIND, either express or implied.

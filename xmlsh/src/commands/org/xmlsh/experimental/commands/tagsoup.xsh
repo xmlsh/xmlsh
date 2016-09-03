@@ -1,3 +1,3 @@
 # tagsoup quick implementation
-import commands java
+import module java
 jcall org.ccil.cowan.tagsoup.CommandLine $@

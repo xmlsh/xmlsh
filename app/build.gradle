@@ -13,10 +13,10 @@ applicationDefaultJvmArgs=[
 apply from: "$rootDir/utils.gradle"
 
 
-    
-    
+
+
 // FAT jar
-jar { 
+jar {
     dependsOn configurations.runtime
     from {
         (configurations.runtime - configurations.compile).collect {
@@ -34,7 +34,7 @@ jar {
     }
 }
 // configurations.runtime.artifacts.removeAll { it.archiveTask.is jar }
-	
+
 dependencies {
     compile project(":xmlsh")
    // Dont pull in xml-apis:2.x
@@ -43,9 +43,9 @@ dependencies {
     }
     compile  'xerces:xercesImpl:2.+'
     //compile 'xml-apis:xml-apis:1.4.+'
-    compile 'xml-resolver:xml-resolver:1.2+' 
+    compile 'xml-resolver:xml-resolver:1.2+'
     runtime 'xom:xom:latest.release'
-    compile 'net.sf.saxon:Saxon-HE:9.6.+' 
+    compile 'net.sf.saxon:Saxon-HE:9.6.+'
     compile 'saxon:saxon:6.5.+'
 
 }
@@ -70,12 +70,12 @@ distributions {
          contents {
               exclude "app-${version}.jar"
         }
-		contents {  
+		contents {
 			from(testJar) {
 				into "test/lib"
-			} 
+			}
 		}
-		 
+
 	}
 }
 
@@ -86,11 +86,11 @@ evaluationDependsOn ":extensions"
 
 applicationDistribution.
       from(  project(":extensions:aws").installDist  ){
-         into("modules/aws")  
+         into("modules/aws")
          exclude { it.file.name in project(":xmlsh").configurations.exported.files.name }
 
     }
-  
+
 applicationDistribution.
       from( project(":extensions:marklogic").installDist ) {
    into("modules/marklogic")
@@ -102,8 +102,8 @@ applicationDistribution.
    into("modules/jstache")
 
 }
- 
- 
+
+
 
 run {
     standardInput = System.in
@@ -115,17 +115,17 @@ run {
 }
 publishing   {
   publications {
-  mavenJava(MavenPublication) { 
+  mavenJava(MavenPublication) {
      artifacts = []
    }
   }
 }
-   /* 
+   /*
 publishing {
     repositories {
         maven {
             url "${awsRepoBucket}/maven2"
-            credentials(AwsCredentials) { 
+            credentials(AwsCredentials) {
                 accessKey "$awsAccessKey"
                 secretKey  "$awsSecretKey"
 
@@ -134,16 +134,16 @@ publishing {
 
         ivy {
             url "${awsRepoBucket}/ivyrepo"
-            credentials(AwsCredentials) { 
+            credentials(AwsCredentials) {
                 accessKey "$awsAccessKey"
                 secretKey  "$awsSecretKey"
 
             }
-       } 
+       }
     }
 
   publications {
-  mavenJava(MavenPublication) { 
+  mavenJava(MavenPublication) {
      artifacts = []
    }
   ivyJava(IvyPublication) {
@@ -158,14 +158,14 @@ publishing {
  }
 }
 }
-	  */ 
+	  */
   /*
   bintray {
-	
+
 	user = project.bintrayUser
 	key = project.bintrayKey
-	
-  
+
+
 	filesSpec {
 	   from installDist.outputs
 	   into 'org/xmlsh/'
@@ -173,8 +173,8 @@ publishing {
 	dryRun = true //Whether to run this as dry-run, without deploying
 	publish = false //If version should be auto published after an upload
 	//Package configuration. The plugin will use the repo and name properties to check if the package already exists. In that case, there's no need to configure the other package properties (like userOrg, desc, etc).
-	
-	
+
+
 		pkg {
 		repo = 'xmlsh'
 		name = 'xmslh'
@@ -204,11 +204,11 @@ publishing {
 		 //       sync = true //Optional (true by default). Determines whether to sync the version to Maven Central.
 		 //       user = 'userToken' //OSS user token
 		//        password = 'paasword' //OSS user password
-		//        close = '1' //Optional property. By default the staging repository is closed and artifacts are released to Maven Central. 
+		//        close = '1' //Optional property. By default the staging repository is closed and artifacts are released to Maven Central.
 		// You can optionally turn this behaviour off (by puting 0 as value) and release the version manually.
 	   //   }
 		}
 	}
   }
-  
+
   */
