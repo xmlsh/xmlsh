@@ -9,9 +9,7 @@ package org.xmlsh.builtin.commands;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-
 import javax.xml.stream.XMLStreamWriter;
-
 import org.xmlsh.core.BuiltinCommand;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
@@ -25,85 +23,85 @@ import org.xmlsh.util.Util;
 
 public class set extends BuiltinCommand {
 
-	static final String sDocRoot = "env";
-	@Override
-	public int run(   List<XValue> args ) throws Exception {
+  static final String sDocRoot = "env";
 
+  @Override
+  public int run(List<XValue> args) throws Exception {
 
-		if( args == null || args.size() == 0 )	{
-			printVars(  );
-			return 0;
-		}
+    if(args == null || args.size() == 0) {
+      printVars();
+      return 0;
+    }
 
-		Options opts = new Options( ShellOpts.SHELL_OPTS , SerializeOpts.getOptionDefs()  );
-		opts.parse(args);
-		setSerializeOpts(opts);
-		setShellOptions(opts);
+    Options opts = new Options(ShellOpts.SHELL_OPTS,
+        SerializeOpts.getOptionDefs());
+    opts.parse(args);
+    setSerializeOpts(opts);
+    setShellOptions(opts);
 
+    args = opts.getRemainingArgs();
+    // Only set args here if there are any left
+    // could be set +x which would clear $*
+    if(args != null && (args.size() > 0)) {
+      mShell.setArgs(args);
 
+    }
+    return 0;
+  }
 
-		args = opts.getRemainingArgs();
-		// Only set args here if there are any left
-		// could be set +x which would clear $*
-		if( args != null && (args.size() > 0 )){
-			mShell.setArgs(args);
+  private void setShellOptions(Options opts) throws InvalidArgumentException {
+    mShell.setOptions(opts);
+  }
 
-		}
-		return 0;
-	}
+  private void printVars() throws Exception {
 
-	private void setShellOptions(Options opts) throws InvalidArgumentException {
-		mShell.setOptions( opts );
-	}
+    XEnvironment env = mShell.getEnv();
 
-	private void printVars() throws Exception {
+    OutputPort stdout = env.getStdout();
+    XMLStreamWriter writer = stdout
+        .asXMLStreamWriter(mShell.getSerializeOpts());
 
+    writer.writeStartDocument();
+    writer.writeStartElement(sDocRoot);
 
-		XEnvironment env = mShell.getEnv();
+    Collection<String> names = env.getVarNames();
+    String[] anames = names.toArray(new String[names.size()]);
+    Arrays.sort(anames);
 
+    for(String name : anames) {
+      XVariable var = env.getVar(name);
+      var.serialize(writer);
 
-		OutputPort stdout = env.getStdout();
-		XMLStreamWriter writer = stdout.asXMLStreamWriter(mShell.getSerializeOpts());
+    }
+    writer.writeEndElement();
+    writer.writeEndDocument();
 
-		writer.writeStartDocument();
-		writer.writeStartElement( sDocRoot );
+    writer.close();
+    stdout.writeSequenceTerminator(getSerializeOpts());
 
-
-		Collection<String> names = env.getVarNames();
-		String[] anames = names.toArray( new String[names.size()]);
-		Arrays.sort(anames);
-
-		for( String name : anames ){
-			XVariable var = env.getVar(name);
-			var.serialize(writer);
-
-		}
-		writer.writeEndElement();
-		writer.writeEndDocument();
-
-		writer.close();
-		stdout.writeSequenceTerminator(getSerializeOpts());
-
-
-	}
+  }
 }
 //
 //
-//Copyright (C) 2008-2014    David A. Lee.
+// Copyright (C) 2008-2014 David A. Lee.
 //
-//The contents of this file are subject to the "Simplified BSD License" (the "License");
-//you may not use this file except in compliance with the License. You may obtain a copy of the
-//License at http://www.opensource.org/licenses/bsd-license.php
+// The contents of this file are subject to the "Simplified BSD License" (the
+// "License");
+// you may not use this file except in compliance with the License. You may
+// obtain a copy of the
+// License at http://www.opensource.org/licenses/bsd-license.php
 //
-//Software distributed under the License is distributed on an "AS IS" basis,
-//WITHOUT WARRANTY OF ANY KIND, either express or implied.
-//See the License for the specific language governing rights and limitations under the License.
+// Software distributed under the License is distributed on an "AS IS" basis,
+// WITHOUT WARRANTY OF ANY KIND, either express or implied.
+// See the License for the specific language governing rights and limitations
+// under the License.
 //
-//The Original Code is: all this file.
+// The Original Code is: all this file.
 //
-//The Initial Developer of the Original Code is David A. Lee
+// The Initial Developer of the Original Code is David A. Lee
 //
-//Portions created by (your name) are Copyright (C) (your legal entity). All Rights Reserved.
+// Portions created by (your name) are Copyright (C) (your legal entity). All
+// Rights Reserved.
 //
-//Contributor(s): none.
+// Contributor(s): none.
 //

@@ -9,7 +9,6 @@ package org.xmlsh.internal.commands;
 import static org.xmlsh.util.UnifiedFileAttributes.MatchFlag.HIDDEN_NAME;
 import static org.xmlsh.util.UnifiedFileAttributes.MatchFlag.HIDDEN_SYS;
 import static org.xmlsh.util.UnifiedFileAttributes.MatchFlag.SYSTEM;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.FileVisitResult;
@@ -17,10 +16,8 @@ import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.util.List;
-
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
-
 import org.xmlsh.annotations.Command;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InputPort;
@@ -41,266 +38,252 @@ import org.xmlsh.util.commands.Checksum;
 @Command
 public class xmd5sum extends XCommand {
 
-	private static final String sFile = "file";
-	private static final String sName = "name";
-	private static final String sMd5 = "md5";
-	private static final String sLen = "length";
-	private static final String sPath = "path";
-	private static String sDocRoot = "xmd5";
-	private boolean opt_a;
-	private boolean opt_s;
-	private boolean opt_r;
-        private Checksum.Format format = Checksum.Format.HEX ;
-	@Override
-	public int run(List<XValue> args) throws Exception {
-		
-		mLogger.entry(args);
-		Options opts = new Options("b=binary,x=xml,a=all,s=system,r=relative,format:", SerializeOpts
-				.getOptionDefs());
-		opts.parse(args);
-		args = opts.getRemainingArgs();
+  private static final String sFile = "file";
+  private static final String sName = "name";
+  private static final String sMd5 = "md5";
+  private static final String sLen = "length";
+  private static final String sPath = "path";
+  private static String sDocRoot = "xmd5";
+  private boolean opt_a;
+  private boolean opt_s;
+  private boolean opt_r;
+  private Checksum.Format format = Checksum.Format.HEX;
 
-		XMLStreamWriter out = null;
-		OutputPort stdout = mShell.getEnv().getStdout();
+  @Override
+  public int run(List<XValue> args) throws Exception {
 
-		setSerializeOpts(opts);
-		opt_a = opts.hasOpt("a");
-		opt_s = opts.hasOpt("s");
-		opt_r = opts.hasOpt("r");
-                if( opts.hasOpt("format") ){
-                  String sf = opts.getOptString( "format",null );
-                  switch( sf){
-                  case "binary" :
-                  case "bin" :
-                     format = Checksum.Format.BINARY;
-                     break;
-	          case "hex" :	
-                     format = Checksum.Format.HEX;
-                     break;
-                  case "64" :
-                  case "base64":
-                     format = Checksum.Format.BASE64;
-                     break;
-                  default: 
-                     this.printErr("Invalid format: " + sf );
-                     return 1;
-                  }
-                }    
+    mLogger.entry(args);
+    Options opts = new Options(
+        "b=binary,x=xml,a=all,s=system,r=relative,format:", SerializeOpts
+            .getOptionDefs());
+    opts.parse(args);
+    args = opts.getRemainingArgs();
 
-		
-		out = stdout.asXMLStreamWriter(getSerializeOpts());
-		out.writeStartDocument();
-		out.writeStartElement(sDocRoot);
-		
+    XMLStreamWriter out = null;
+    OutputPort stdout = mShell.getEnv().getStdout();
 
-		if (args.isEmpty())
-			args.add(XValue.newXValue("-"));
-		//else
-		//  out.writeAttribute("pwd",FileUtils.toJavaPath(curDir.toString()));
+    setSerializeOpts(opts);
+    opt_a = opts.hasOpt("a");
+    opt_s = opts.hasOpt("s");
+    opt_r = opts.hasOpt("r");
+    if(opts.hasOpt("format")) {
+      String sf = opts.getOptString("format", null);
+      switch(sf){
+      case "binary":
+      case "bin":
+        format = Checksum.Format.BINARY;
+        break;
+      case "hex":
+        format = Checksum.Format.HEX;
+        break;
+      case "64":
+      case "base64":
+        format = Checksum.Format.BASE64;
+        break;
+      default:
+        this.printErr("Invalid format: " + sf);
+        return 1;
+      }
+    }
 
-		for (XValue arg : args) {
+    out = stdout.asXMLStreamWriter(getSerializeOpts());
+    out.writeStartDocument();
+    out.writeStartElement(sDocRoot);
 
-			String sArg = arg.toString();
-			if( sArg.equals("-") ||  Util.tryURL(sArg) != null )
-				  writeMD5( getInput(arg), sArg, null,  out );
+    if(args.isEmpty())
+      args.add(XValue.newXValue("-"));
+    // else
+    // out.writeAttribute("pwd",FileUtils.toJavaPath(curDir.toString()));
 
+    for(XValue arg : args) {
 
-			else {
+      String sArg = arg.toString();
+      if(sArg.equals("-") || Util.tryURL(sArg) != null)
+        writeMD5(getInput(arg), sArg, null, out);
 
-				Path path = getEnv().getShell().getPath(sArg);
-				if( path == null ||  ! Files.exists(path, LinkOption.NOFOLLOW_LINKS) ){
-					this.printErr("xmd5sum: cannot access " + sArg + " : No such file or directory" );
-					continue;
-				}
-			
-				
+      else {
 
-				FileUtils.walkPathTree(path,  
-						true , 
-						new ListVisitor(out),
-						(new PathMatchOptions()).
-						   withFlagsHidden( opt_a ? null  : HIDDEN_SYS , 
-								   opt_a ? null  : HIDDEN_NAME ,
-								   opt_s ? null : SYSTEM )
-						
-						);
-			
-			} 
-			
-			 
+        Path path = getEnv().getShell().getPath(sArg);
+        if(path == null || !Files.exists(path, LinkOption.NOFOLLOW_LINKS)) {
+          this.printErr("xmd5sum: cannot access " + sArg
+              + " : No such file or directory");
+          continue;
+        }
 
-		}
-		out.writeEndElement();
-		out.writeEndDocument();
-		out.flush();
-		out.close();
+        FileUtils.walkPathTree(path,
+            true,
+            new ListVisitor(out),
+            (new PathMatchOptions()).withFlagsHidden(opt_a ? null : HIDDEN_SYS,
+                opt_a ? null : HIDDEN_NAME,
+                opt_s ? null : SYSTEM)
 
-		stdout.writeSequenceTerminator(getSerializeOpts());
+        );
 
-		return mLogger.exit(0);
+      }
 
-	}
+    }
+    out.writeEndElement();
+    out.writeEndDocument();
+    out.flush();
+    out.close();
 
+    stdout.writeSequenceTerminator(getSerializeOpts());
 
-	public  class ListVisitor implements IPathTreeVisitor {
+    return mLogger.exit(0);
 
-		XMLStreamWriter writer;
+  }
 
-		public ListVisitor( XMLStreamWriter writer) {
-			this.writer = writer;
-		}
+  public class ListVisitor implements IPathTreeVisitor {
 
+    XMLStreamWriter writer;
 
-		@Override
-		public FileVisitResult enterDirectory(Path root, Path directory,
-				UnifiedFileAttributes attrs) {
-			
-			return FileVisitResult.CONTINUE;
-		}
+    public ListVisitor(XMLStreamWriter writer) {
+      this.writer = writer;
+    }
 
-		@Override
-		public FileVisitResult exitDirectory(Path root, Path directory,
-				UnifiedFileAttributes attrs) {
-			return FileVisitResult.CONTINUE;
-		}
+    @Override
+    public FileVisitResult enterDirectory(Path root, Path directory,
+        UnifiedFileAttributes attrs) {
 
-		@Override
-		public FileVisitResult visitDirectory(Path root, Path directory,
-				UnifiedFileAttributes uattrs) throws IOException {
-			mLogger.entry(root, directory, uattrs);
-				return FileVisitResult.CONTINUE;
-		}
+      return FileVisitResult.CONTINUE;
+    }
 
-		
-		@Override
-		public FileVisitResult visitFile(Path root, Path path,
-				UnifiedFileAttributes attrs) throws IOException {
-			mLogger.entry(root, path, attrs);
-			
-			if( ! attrs.isRegularFile() ){
+    @Override
+    public FileVisitResult exitDirectory(Path root, Path directory,
+        UnifiedFileAttributes attrs) {
+      return FileVisitResult.CONTINUE;
+    }
 
-				printErr("Not a regular file: " + path.toString());
-				return FileVisitResult.CONTINUE ; 
-			}
-			if( ! Files.isReadable( path )){
-				
-				printErr("File not readable:  " + path.toString());
-				return FileVisitResult.CONTINUE;
-			}
-						
-			
-			try ( InputPort port = new FileInputPort( path.toFile() ) ){
-				XFile xf = new XFile(path,root,attrs);
-				
-			   writeMD5(  port , xf.getName(), xf , writer );
-			} catch (CoreException | XMLStreamException e) {
-				Util.wrapIOException(e);
-			}
-			
-			return FileVisitResult.CONTINUE ;
-		}
+    @Override
+    public FileVisitResult visitDirectory(Path root, Path directory,
+        UnifiedFileAttributes uattrs) throws IOException {
+      mLogger.entry(root, directory, uattrs);
+      return FileVisitResult.CONTINUE;
+    }
 
+    @Override
+    public FileVisitResult visitFile(Path root, Path path,
+        UnifiedFileAttributes attrs) throws IOException {
+      mLogger.entry(root, path, attrs);
 
+      if(!attrs.isRegularFile()) {
 
-		
-		public void error(String s, Exception e) {
-			printErr( s  , e);
-			
-		}
+        printErr("Not a regular file: " + path.toString());
+        return FileVisitResult.CONTINUE;
+      }
+      if(!Files.isReadable(path)) {
 
+        printErr("File not readable:  " + path.toString());
+        return FileVisitResult.CONTINUE;
+      }
 
+      try (InputPort port = new FileInputPort(path.toFile())) {
+        XFile xf = new XFile(path, root, attrs);
 
-	}
+        writeMD5(port, xf.getName(), xf, writer);
+      } catch (CoreException | XMLStreamException e) {
+        Util.wrapIOException(e);
+      }
 
-	
+      return FileVisitResult.CONTINUE;
+    }
 
-/*
+    public void error(String s, Exception e) {
+      printErr(s, e);
 
-	class ListVisitor extends PathTreeVisitor {
+    }
 
-		XMLStreamWriter writer;
+  }
 
-		public ListVisitor(Path root, XMLStreamWriter  writer) {
-			super(root, new PathMatchOptions(true, opt_a, opt_s, false));
-			this.writer = writer;
-		}
+  /*
+   * 
+   * class ListVisitor extends PathTreeVisitor {
+   * 
+   * XMLStreamWriter writer;
+   * 
+   * public ListVisitor(Path root, XMLStreamWriter writer) {
+   * super(root, new PathMatchOptions(true, opt_a, opt_s, false));
+   * this.writer = writer;
+   * }
+   * 
+   * @Override
+   * public void visitFile( boolean root,Path path, BasicFileAttributes
+   * attrs)throws IOException {
+   * 
+   * mLogger.entry(root, path, attrs);
+   * if( ! attrs.isRegularFile() ){
+   * 
+   * printErr("Not a regular file: " + path.toString());
+   * return ;
+   * }
+   * if( ! Files.isReadable( path )){
+   * 
+   * printErr("File not readable:  " + path.toString());
+   * return ;
+   * }
+   * 
+   * 
+   * try ( InputPort port = new FileInputPort( path.toFile() ) ){
+   * XFile xf = new XFile(path,mRoot);
+   * 
+   * writeMD5( port , xf.getName(), xf , writer );
+   * } catch (CoreException | XMLStreamException e) {
+   * Util.wrapIOException(e);
+   * }
+   * }
+   * 
+   * @Override
+   * public void enterDirectory(boolean root,Path path, BasicFileAttributes
+   * attrs)throws IOException {
+   * 
+   * }
+   * 
+   * @Override
+   * public void exitDirectory(boolean root,Path dir )throws IOException {
+   * }
+   * 
+   * 
+   * 
+   * @Override
+   * public void error(String s, Exception e) {
+   * printErr( s , e);
+   * 
+   * }
+   * 
+   * 
+   * 
+   * }
+   * 
+   */
 
-		@Override
-		public void visitFile( boolean root,Path path, BasicFileAttributes attrs)throws IOException {
-			
-			mLogger.entry(root, path, attrs);
-			if( ! attrs.isRegularFile() ){
+  private void writeMD5(InputPort inp, String name, XFile xf,
+      XMLStreamWriter out) throws CoreException, IOException,
+      XMLStreamException {
 
-				printErr("Not a regular file: " + path.toString());
-				return ; 
-			}
-			if( ! Files.isReadable( path )){
-				
-				printErr("File not readable:  " + path.toString());
-				return ; 
-			}
-						
-			
-			try ( InputPort port = new FileInputPort( path.toFile() ) ){
-				XFile xf = new XFile(path,mRoot);
-				
-			   writeMD5(  port , xf.getName(), xf , writer );
-			} catch (CoreException | XMLStreamException e) {
-				Util.wrapIOException(e);
-			}
-		}
-		@Override
-		public void enterDirectory(boolean root,Path path, BasicFileAttributes attrs)throws IOException {
+    mLogger.entry(inp, xf, out);
+    try (InputStream in = inp.asInputStream(getSerializeOpts())) {
+      Checksum cs = Checksum.calcChecksum(in);
+      out.writeStartElement(sFile);
+      out.writeAttribute(sName, name);
+      if(opt_r) {
+        if(xf != null && !Util.isBlank(xf.getPwdRelativeName()))
+          out.writeAttribute(sPath, xf.getPwdRelativeName());
+      }
+      else {
+        if(xf != null && !Util.isBlank(xf.getPath()))
+          out.writeAttribute(sPath, xf.getPath());
 
-		}
-		@Override
-		public void exitDirectory(boolean root,Path dir )throws IOException {
-		}
+      }
 
+      out.writeAttribute(sMd5, cs.getMD5(format));
+      out.writeAttribute(sLen, String.valueOf(cs.getLength()));
+      out.writeEndElement();
 
+    }
 
-		@Override
-		public void error(String s, Exception e) {
-			printErr( s  , e);
-			
-		}
+    mLogger.exit();
 
-
-
-	}
-
-		*/
-
-		
-	private void writeMD5(InputPort inp ,String name , XFile xf ,   XMLStreamWriter out ) throws CoreException, IOException,
-			XMLStreamException {
-
-		mLogger.entry(inp, xf,  out);
-		try (InputStream in = inp.asInputStream(getSerializeOpts())) {
-			Checksum cs = Checksum.calcChecksum(in);
-			out.writeStartElement(sFile);
-			out.writeAttribute(sName, name);
-			if( opt_r){
-			  if (xf != null && !Util.isBlank(xf.getPwdRelativeName()))
-				 out.writeAttribute(sPath,xf.getPwdRelativeName());
-			} else
-			{
-				  if (xf != null && !Util.isBlank( xf.getPath()))
-						 out.writeAttribute(sPath, xf.getPath());
-			
-			}
-			
-			out.writeAttribute(sMd5, cs.getMD5(format));
-			out.writeAttribute(sLen, String.valueOf(cs.getLength()));
-			out.writeEndElement();
-
-		}
-		
-		mLogger.exit();
-
-	}
-	
-	
+  }
 
 }
 
@@ -308,19 +291,23 @@ public class xmd5sum extends XCommand {
 //
 // Copyright (C) 2008-2014 David A. Lee.
 //
-// The contents of this file are subject to the "Simplified BSD License" (the "License");
-// you may not use this file except in compliance with the License. You may obtain a copy of the
+// The contents of this file are subject to the "Simplified BSD License" (the
+// "License");
+// you may not use this file except in compliance with the License. You may
+// obtain a copy of the
 // License at http://www.opensource.org/licenses/bsd-license.php
 //
 // Software distributed under the License is distributed on an "AS IS" basis,
 // WITHOUT WARRANTY OF ANY KIND, either express or implied.
-// See the License for the specific language governing rights and limitations under the License.
+// See the License for the specific language governing rights and limitations
+// under the License.
 //
 // The Original Code is: all this file.
 //
 // The Initial Developer of the Original Code is David A. Lee
 //
-// Portions created by (your name) are Copyright (C) (your legal entity). All Rights Reserved.
+// Portions created by (your name) are Copyright (C) (your legal entity). All
+// Rights Reserved.
 //
 // Contributor(s): none.
 //

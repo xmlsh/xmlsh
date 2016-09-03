@@ -9,9 +9,7 @@ package org.xmlsh.sh.core;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
-
 import net.sf.saxon.s9api.XdmNode;
-
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.EvalEnv;
 import org.xmlsh.core.InputPort;
@@ -26,131 +24,126 @@ import org.xmlsh.util.ByteFilterInputStream;
 import org.xmlsh.util.Util;
 
 /*
- * CommandFileWord is a SubProc syntax that comes from a file 
- * $(<file)  or $<(<file) 
+ * CommandFileWord is a SubProc syntax that comes from a file
+ * $(<file) or $<(<file)
  */
 public class FileWordExpr extends Word {
-	private 	String		mType;	// String value
-	private		Word		mFile;
-	private static final EvalEnv mEnv = EvalEnv.fileInstance();
+  private String mType;	// String value
+  private Word mFile;
+  private static final EvalEnv mEnv = EvalEnv.fileInstance();
 
-	public FileWordExpr( Token t,  Word file ){
-		super(t);
-		mType = t.toString();
-		mFile = file;
-	}
+  public FileWordExpr(Token t, Word file) {
+    super(t);
+    mType = t.toString();
+    mFile = file;
+  }
 
-	@Override
-	public void print( PrintWriter out )
-	{
-		out.print(mType);
-		mFile.print(out);
-		out.print(")");
-	}
+  @Override
+  public void print(PrintWriter out) {
+    out.print(mType);
+    mFile.print(out);
+    out.print(")");
+  }
 
+  private String expandFile(Shell shell, Word cmd)
+      throws IOException, CoreException {
 
-	private String expandFile( Shell shell , Word cmd) throws IOException, CoreException
-	{
+    XValue files = cmd.expand(shell, mEnv);
+    String file;
+    if(files.isAtomic())
+      file = files.toString();
+    else
+      throw new InvalidArgumentException("Invalid expansion for redirection");
 
+    SerializeOpts sopts = shell.getSerializeOpts();
+    try (
+        InputPort ip = shell.newInputPort(file);
+        InputStream is = ip.asInputStream(sopts);) {
 
-		XValue 	files = cmd.expand(shell, mEnv);
-		String file;
-		if( files.isAtomic() )
-			file = files.toString();
-		else 
-			throw new InvalidArgumentException("Invalid expansion for redirection");
+      ByteFilterInputStream filterIn = null;
 
-		SerializeOpts sopts = shell.getSerializeOpts();
-		try (
-				InputPort ip = shell.newInputPort(file);
-				InputStream is = ip.asInputStream(sopts);
-				){
+      InputStream commandIn = sopts.isIgncr()
+          ? (filterIn = new ByteFilterInputStream(is, '\r')) : is;
+      String s = Util.readString(commandIn, sopts.getInputTextEncoding());
+      s = Util.removeTrailingNewlines(s, shell.getSerializeOpts().isIgncr());
+      return s;
+    }
 
-			ByteFilterInputStream filterIn = null ;
+  }
 
-			InputStream commandIn = sopts.isIgncr() ? (filterIn= new ByteFilterInputStream(is,'\r')) : is;
-			String s =  Util.readString( commandIn , sopts.getInputTextEncoding());
-			s = Util.removeTrailingNewlines(s, shell.getSerializeOpts().isIgncr() );
-			return s;
-		} 
+  private XdmNode expandXFile(Shell shell, Word xfile)
+      throws IOException, CoreException {
+    XValue files = xfile.expand(shell, mEnv);
+    String file;
+    if(files.isAtomic())
+      file = files.toString();
+    else
+      throw new InvalidArgumentException("Invalid expansion for redirection");
 
-	}
-	private XdmNode	expandXFile( Shell shell , Word xfile ) throws IOException, CoreException{
-		XValue 	files = xfile.expand(shell, mEnv);
-		String file;
-		if( files.isAtomic() )
-			file = files.toString();
-		else 
-			throw new InvalidArgumentException("Invalid expansion for redirection");
+    try (
+        InputPort ip = shell.newInputPort(file);) {
 
-		try (
-				InputPort ip = shell.newInputPort(file);
-				){
+      XdmNode node = ip.asXdmNode(shell.getSerializeOpts());
+      return node;
+    }
+  }
 
-			XdmNode node = ip.asXdmNode( shell.getSerializeOpts());
-			return node;
-		} 
-	}
+  @Override
+  public boolean isEmpty() {
+    return mFile == null || mFile.isEmpty();
+  }
 
+  @Override
+  public String toString() {
+    return mType + mFile + ")";
+  }
 
+  @Override
+  String getSimpleName() {
+    return mType + mFile.getSimpleName() + ")";
+  }
 
+  @Override
+  protected ParseResult expandToResult(Shell shell, EvalEnv env,
+      ParseResult result) throws IOException,
+      CoreException {
 
-	@Override
-	public boolean isEmpty() {
-		return mFile == null ||  mFile.isEmpty();
-	}
+    if(mType.equals("$(<")) {
 
-	@Override
-	public String toString()
-	{
-		return mType + mFile + ")";
-	}
+      String value = expandFile(shell, mFile);
+      result.add(XValue.newXValue(value), true);
 
-	@Override
-	String getSimpleName()
-	{
-		return mType + mFile.getSimpleName()  + ")";
-	}
-
-	@Override
-	protected ParseResult expandToResult(Shell shell, EvalEnv env, ParseResult result) throws IOException,
-	CoreException
-	{
-
-		if(mType.equals("$(<")){
-
-			String value = expandFile( shell , mFile );
-			result.add( XValue.newXValue(value) , true );
-
-		} else
-			if( mType.equals("$<(<")){
-				XdmNode node = expandXFile(shell , mFile);
-				result.add( XValue.newXValue( TypeFamily.XDM,node) , true );
-			}
-		return result ;
-	}
+    }
+    else if(mType.equals("$<(<")) {
+      XdmNode node = expandXFile(shell, mFile);
+      result.add(XValue.newXValue(TypeFamily.XDM, node), true);
+    }
+    return result;
+  }
 
 }
 
-
-
 //
 //
-//Copyright (C) 2008-2014    David A. Lee.
+// Copyright (C) 2008-2014 David A. Lee.
 //
-//The contents of this file are subject to the "Simplified BSD License" (the "License");
-//you may not use this file except in compliance with the License. You may obtain a copy of the
-//License at http://www.opensource.org/licenses/bsd-license.php 
+// The contents of this file are subject to the "Simplified BSD License" (the
+// "License");
+// you may not use this file except in compliance with the License. You may
+// obtain a copy of the
+// License at http://www.opensource.org/licenses/bsd-license.php
 //
-//Software distributed under the License is distributed on an "AS IS" basis,
-//WITHOUT WARRANTY OF ANY KIND, either express or implied.
-//See the License for the specific language governing rights and limitations under the License.
+// Software distributed under the License is distributed on an "AS IS" basis,
+// WITHOUT WARRANTY OF ANY KIND, either express or implied.
+// See the License for the specific language governing rights and limitations
+// under the License.
 //
-//The Original Code is: all this file.
+// The Original Code is: all this file.
 //
-//The Initial Developer of the Original Code is David A. Lee
+// The Initial Developer of the Original Code is David A. Lee
 //
-//Portions created by (your name) are Copyright (C) (your legal entity). All Rights Reserved.
+// Portions created by (your name) are Copyright (C) (your legal entity). All
+// Rights Reserved.
 //
-//Contributor(s): none.
+// Contributor(s): none.
 //

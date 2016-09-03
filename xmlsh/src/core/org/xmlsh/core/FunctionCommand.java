@@ -10,7 +10,6 @@ import java.io.PrintWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.xmlsh.sh.core.ICommandExpr;
@@ -20,77 +19,78 @@ import org.xmlsh.sh.shell.Shell;
 
 public class FunctionCommand implements ICommand {
 
-	String mName;
-	ICommandExpr mFunction;
-	SourceLocation mLocation;
-	IModule mModule;
-	private static Logger mLogger = LogManager.getLogger();
-	@Override
-	protected void finalize() {
-		// Clear refs
-		mFunction = null ;
-		mLocation = null ;
-		mModule = null ;
-		
-	}
-	public FunctionCommand(IModule iModule, String name,
-			ICommandExpr func, SourceLocation loc) {
-		mLogger.entry(iModule, name, func, loc);
-		assert (iModule != null);
+  String mName;
+  ICommandExpr mFunction;
+  SourceLocation mLocation;
+  IModule mModule;
+  private static Logger mLogger = LogManager.getLogger();
 
-		mName = name;
-		mFunction = func;
-		mLocation = loc;
-		mModule = iModule;
-	}
+  @Override
+  protected void finalize() {
+    // Clear refs
+    mFunction = null;
+    mLocation = null;
+    mModule = null;
 
-	@Override
-	public URL getURL() throws MalformedURLException {
-		// TODO Auto-generated method stub
-		return null;
-	}
+  }
 
-	@Override
-	public int run(Shell shell, String cmd, List<XValue> args) throws Exception {
-		mLogger.entry(shell, cmd);
+  public FunctionCommand(IModule iModule, String name,
+      ICommandExpr func, SourceLocation loc) {
+    mLogger.entry(iModule, name, func, loc);
+    assert (iModule != null);
 
-		int ret = shell
-				.execFunctionAsCommand(mName, mFunction, mLocation, args);
-		if (ret == 0)
-			ret = shell.getReturnValueAsExitStatus(ret);
+    mName = name;
+    mFunction = func;
+    mLocation = loc;
+    mModule = iModule;
+  }
 
-		return ret;
-	}
+  @Override
+  public URL getURL() throws MalformedURLException {
+    // TODO Auto-generated method stub
+    return null;
+  }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.xmlsh.core.ICommand#getType()
-	 */
-	@Override
-	public CommandType getType() {
-		return CommandType.CMD_TYPE_FUNCTION;
-	}
+  @Override
+  public int run(Shell shell, String cmd, List<XValue> args) throws Exception {
+    mLogger.entry(shell, cmd);
 
-	@Override
-	public IModule getModule() {
-		return mModule;
-	}
+    int ret = shell
+        .execFunctionAsCommand(mName, mFunction, mLocation, args);
+    if(ret == 0)
+      ret = shell.getReturnValueAsExitStatus(ret);
 
+    return ret;
+  }
 
-	@Override
-	public SourceLocation getLocation() {
-		return mLocation;
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.xmlsh.core.ICommand#getType()
+   */
+  @Override
+  public CommandType getType() {
+    return CommandType.CMD_TYPE_FUNCTION;
+  }
 
-	@Override
-	public void setLocation(SourceLocation loc) {
-		mLocation = loc;
-	}
+  @Override
+  public IModule getModule() {
+    return mModule;
+  }
 
-	@Override
-	public void print(PrintWriter w, boolean bExec) {
-		w.print(mName);
-	}
+  @Override
+  public SourceLocation getLocation() {
+    return mLocation;
+  }
+
+  @Override
+  public void setLocation(SourceLocation loc) {
+    mLocation = loc;
+  }
+
+  @Override
+  public void print(PrintWriter w, boolean bExec) {
+    w.print(mName);
+  }
 
 }

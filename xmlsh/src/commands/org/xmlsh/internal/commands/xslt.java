@@ -7,20 +7,10 @@
 package org.xmlsh.internal.commands;
 
 import java.util.List;
-
 import javax.xml.transform.ErrorListener;
 import javax.xml.transform.Source;
 import javax.xml.transform.SourceLocator;
 import javax.xml.transform.TransformerException;
-
-import net.sf.saxon.s9api.MessageListener;
-import net.sf.saxon.s9api.Processor;
-import net.sf.saxon.s9api.QName;
-import net.sf.saxon.s9api.XdmNode;
-import net.sf.saxon.s9api.XsltCompiler;
-import net.sf.saxon.s9api.XsltExecutable;
-import net.sf.saxon.s9api.XsltTransformer;
-
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.Options.OptionValue;
@@ -30,140 +20,147 @@ import org.xmlsh.core.io.OutputPort;
 import org.xmlsh.sh.shell.SerializeOpts;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.sh.shell.ShellURIResolver;
+import net.sf.saxon.s9api.MessageListener;
+import net.sf.saxon.s9api.Processor;
+import net.sf.saxon.s9api.QName;
+import net.sf.saxon.s9api.XdmNode;
+import net.sf.saxon.s9api.XsltCompiler;
+import net.sf.saxon.s9api.XsltExecutable;
+import net.sf.saxon.s9api.XsltTransformer;
 
 public class xslt extends XCommand {
 
-	private class myErrorListener implements ErrorListener {
+  private class myErrorListener implements ErrorListener {
 
-		@Override
-		public void error(TransformerException exception) throws TransformerException {
-			printErr("Error: " + exception.getMessageAndLocation());
+    @Override
+    public void error(TransformerException exception)
+        throws TransformerException {
+      printErr("Error: " + exception.getMessageAndLocation());
 
-		}
+    }
 
-		@Override
-		public void fatalError(TransformerException exception) throws TransformerException {
-			printErr("Fatal Error: " + exception.getMessageAndLocation());
+    @Override
+    public void fatalError(TransformerException exception)
+        throws TransformerException {
+      printErr("Fatal Error: " + exception.getMessageAndLocation());
 
+    }
 
-		}
+    @Override
+    public void warning(TransformerException exception)
+        throws TransformerException {
+      printErr("Warning : " + exception.getMessageAndLocation());
 
-		@Override
-		public void warning(TransformerException exception) throws TransformerException {
-			printErr("Warning : " + exception.getMessageAndLocation());
+    }
 
-		}
+  }
 
-	}
+  private class myMessageListener implements MessageListener {
 
-	private class myMessageListener implements MessageListener {
+    @Override
+    public void message(XdmNode content, boolean terminate,
+        SourceLocator locator) {
+      printErr(content.getStringValue());
 
-		@Override
-		public void message(XdmNode content, boolean terminate, SourceLocator locator) {
-			printErr(content.getStringValue());
+    }
 
-		}
+  }
 
-	}
+  @Override
+  public int run(List<XValue> args) throws Exception {
 
-	@Override
-	public int run(List<XValue> args) throws Exception {
+    Options opts = new Options(
+        "c=context:,cf=context-file:,f=file:,i=input:,n,v",
+        SerializeOpts.getOptionDefs());
+    opts.parse(args);
 
-		Options opts = new Options("c=context:,cf=context-file:,f=file:,i=input:,n,v",SerializeOpts.getOptionDefs());
-		opts.parse(args);
+    Processor processor = Shell.getProcessor();
 
-		Processor processor = Shell.getProcessor();
+    XsltCompiler compiler = processor.newXsltCompiler();
+    compiler.setErrorListener(new myErrorListener());
+    Source context = null;
 
-		XsltCompiler compiler = processor.newXsltCompiler();
-		compiler.setErrorListener(new myErrorListener());
-		Source context = null;
+    InputPort in = null;
 
-		InputPort in = null;
+    // Use a copy of the serialize opts so we can override the method
+    SerializeOpts serializeOpts = getSerializeOpts(opts);
 
+    if(!opts.hasOpt("n")) { // Has XML data input
+      // Order of prevelence
+      // -context
+      // -context-file
+      // -i
 
-		// Use a copy of the serialize opts so we can override the method 
-		SerializeOpts serializeOpts = getSerializeOpts(opts);
+      if(opts.hasOpt("c"))
+        context = opts.getOptValue("c").asSource();
+      else if(opts.hasOpt("cf"))
+        context = (in = getInput(
+            XValue.newXValue(opts.getOptString("cf", "-"))))
+                .asSource(serializeOpts);
+      else if(opts.hasOpt("i"))
+        context = (in = getInput(opts.getOptValue("i")))
+            .asSource(serializeOpts);
+      else
+        context = (in = getStdin()).asSource(serializeOpts);
 
+    }
 
+    Source source = null;
+    InputPort closePort = null;
+    List<XValue> xvargs = opts.getRemainingArgs();
 
+    OptionValue ov = opts.getOpt("f");
+    if(ov != null) {
+      closePort = getInput(ov.getValue());
+      if(closePort != null)
+        source = closePort.asSource(serializeOpts);
+    }
 
+    if(source == null) {
+      throwInvalidArg("No xslt source specified");
+    }
 
+    /*
+     * Add namespaces -- DOESNT WORK FOR XSLT
+     * { NameValueMap<String> ns = getEnv().getShell().getNamespaces();
+     * if( ns != null ){ for( String prefix : ns.keySet() ){ String uri =
+     * ns.get(prefix); compiler.declareNamespace(prefix, uri);
+     * }
+     * } }
+     */
 
-		if( ! opts.hasOpt("n" ) ){ // Has XML data input
-			// Order of prevelence 
-			// -context
-			// -context-file
-			// -i
+    XsltExecutable expr = compiler.compile(source);
 
-			if( opts.hasOpt("c") )
-				context = opts.getOptValue("c").asSource();
-			else
-				if( opts.hasOpt("cf"))
-					context = (in=getInput( XValue.newXValue(opts.getOptString("cf", "-")))).asSource(serializeOpts);
-				else
-					if( opts.hasOpt("i") )
-						context = (in=getInput( opts.getOptValue("i"))).asSource(serializeOpts);
-					else
-						context = (in=getStdin()).asSource(serializeOpts);
+    compiler.setURIResolver(new ShellURIResolver(compiler.getURIResolver()));
+    XsltTransformer eval = expr.load();
+    eval.setMessageListener(new myMessageListener());
 
-		}
+    if(context != null)
+      eval.setSource(context);
 
-		Source source = null;
-		InputPort closePort = null ;
-		List<XValue> xvargs = opts.getRemainingArgs();
+    if(opts.hasOpt("v")) {
+      // Read pairs from args to set
+      for(int i = 0; i < xvargs.size() / 2; i++) {
+        String name = xvargs.get(i * 2).toString();
+        XValue value = xvargs.get(i * 2 + 1);
 
-		OptionValue ov = opts.getOpt("f");
-		if (ov != null) {
-			closePort = getInput(ov.getValue());
-			if( closePort != null)
-				source = closePort.asSource(serializeOpts);
-		}
+        eval.setParameter(new QName(name), value.toXdmValue());
+      }
+    }
 
-		if (source == null) {
-			throwInvalidArg("No xslt source specified");
-		}
+    OutputPort stdout = getStdout();
+    eval.setDestination(stdout.asDestination(serializeOpts));
 
-		/*
-		 * Add namespaces -- DOESNT WORK FOR XSLT
-		 *  { NameValueMap<String> ns = getEnv().getShell().getNamespaces();
-		 * if( ns != null ){ for( String prefix : ns.keySet() ){ String uri =
-		 * ns.get(prefix); compiler.declareNamespace(prefix, uri);
-		 *  }
-		 *  } }
-		 */
+    eval.transform();
+    stdout.writeSequenceTerminator(serializeOpts);
 
-		XsltExecutable expr = compiler.compile(source);
+    return 0;
 
-		compiler.setURIResolver(new ShellURIResolver(compiler.getURIResolver()));
-		XsltTransformer eval = expr.load();
-		eval.setMessageListener(new myMessageListener());
-
-		if (context != null)
-			eval.setSource(context);
-
-		if (opts.hasOpt("v")) {
-			// Read pairs from args to set
-			for (int i = 0; i < xvargs.size() / 2; i++) {
-				String name = xvargs.get(i * 2).toString();
-				XValue value = xvargs.get(i * 2 + 1);
-
-				eval.setParameter(new QName(name), value.toXdmValue());
-			}
-		}
-
-		OutputPort stdout = getStdout();
-		eval.setDestination(stdout.asDestination(serializeOpts));
-
-		eval.transform();
-		stdout.writeSequenceTerminator(serializeOpts);
-
-		return 0;
-
-	}
+  }
 
 }
 
-// Copyright (C) 2008-2014    David A. Lee.
+// Copyright (C) 2008-2014 David A. Lee.
 
 // The contents of this file are subject to the "Simplified BSD License" (the
 // "License");
@@ -184,4 +181,3 @@ public class xslt extends XCommand {
 // Rights Reserved.
 
 // Contributor(s): none.
-

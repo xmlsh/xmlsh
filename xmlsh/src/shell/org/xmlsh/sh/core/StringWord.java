@@ -8,7 +8,6 @@ package org.xmlsh.sh.core;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.EvalEnv;
 import org.xmlsh.sh.grammar.Token;
@@ -17,57 +16,47 @@ import org.xmlsh.sh.shell.Shell;
 
 /*
  * A Value that evaulates to a "cmd_word" which is either a simple string,
- * or a subprocess expression 
+ * or a subprocess expression
  * 
  */
-public class StringWord extends Word
-{
-	private String	mString; // String value
+public class StringWord extends Word {
+  private String mString; // String value
 
-	public StringWord(Token t )
-	{
-		this( t , t.toString()) ;
-	}
-	public StringWord(Token t , String s )
-	{
-		super(t);
-		mString = s ;
-	}
+  public StringWord(Token t) {
+    this(t, t.toString());
+  }
 
-	@Override
-	public void print(PrintWriter out)
-	{
-		out.print(mString);
-	}
+  public StringWord(Token t, String s) {
+    super(t);
+    mString = s;
+  }
 
+  @Override
+  public void print(PrintWriter out) {
+    out.print(mString);
+  }
 
+  @Override
+  public boolean isEmpty() {
+    return mString.isEmpty();
+  }
 
-	@Override
-	public boolean isEmpty()
-	{
-		return mString.isEmpty();
-	}
+  @Override
+  public String toString() {
+    return mString;
+  }
 
+  @Override
+  public String getSimpleName() {
+    return isEmpty() ? "<null>" : mString;
+  }
 
-	@Override
-	public String toString()
-	{
-		return mString;
-	}
+  @Override
+  protected ParseResult expandToResult(Shell shell, EvalEnv env,
+      ParseResult result) throws IOException, CoreException {
+    return EvalUtils.expandStringToResult(shell, mString, env, result);
 
-	@Override
-	public String getSimpleName()
-	{
-		return isEmpty() ? "<null>" : mString;
-	}
-
-	@Override
-	protected ParseResult expandToResult(Shell shell, EvalEnv env, ParseResult result) throws IOException, CoreException
-	{
-		return EvalUtils.expandStringToResult(shell, mString , env, result);
-
-
-	}
+  }
 }
 
 //

@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.zip.GZIPOutputStream;
-
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.XCommand;
@@ -19,56 +18,50 @@ import org.xmlsh.sh.shell.SerializeOpts;
 
 public class xgzip extends XCommand {
 
-	@Override
-	public int run( List<XValue> args )	throws Exception
-	{
+  @Override
+  public int run(List<XValue> args) throws Exception {
 
+    Options opts = new Options("f=file:", SerializeOpts.getOptionDefs());
+    opts.parse(args);
 
+    XValue zipfile = opts.getOptValue("f");
 
-		Options opts = new Options( "f=file:" ,  SerializeOpts.getOptionDefs() );
-		opts.parse(args);
+    args = opts.getRemainingArgs();
 
-		XValue zipfile = opts.getOptValue("f");
+    SerializeOpts serializeOpts = getSerializeOpts(opts);
 
-		args = opts.getRemainingArgs();
+    try (
+        GZIPOutputStream zos = new GZIPOutputStream(
+            zipfile == null ? getStdout().asOutputStream(serializeOpts)
+                : getOutputStream(zipfile.toString(), false, serializeOpts))) {
 
-		SerializeOpts serializeOpts = getSerializeOpts(opts);
+      XValue xin = args.size() > 0 ? args.get(0) : null;
 
-		try (
-				GZIPOutputStream zos = new GZIPOutputStream( 
-						zipfile == null ?
-								getStdout().asOutputStream(serializeOpts) :
-									getOutputStream( zipfile.toString(), false, serializeOpts )
-						))
-						{
+      InputPort iport = this.getInput(xin);
 
-			XValue xin = args.size() > 0 ? args.get(0) : null ;
+      int ret = 0;
+      ret = gzip(iport.asInputStream(serializeOpts), zos);
 
-			InputPort iport = this.getInput(xin);
+      zos.finish();
+      return ret;
 
-			int ret = 0;
-			ret = gzip( iport.asInputStream(serializeOpts), zos  );
+    }
 
-			zos.finish();
-			return ret;
+  }
 
-						}
+  private int gzip(InputStream is, GZIPOutputStream zos) throws IOException {
+    int ret = 0;
 
-	}
+    byte[] buf = new byte[1024];
+    int len;
+    while((len = is.read(buf)) > 0)
+      zos.write(buf, 0, len);
 
-	private int gzip(InputStream is, GZIPOutputStream zos) throws IOException {
-		int ret = 0;
+    is.close();
+    zos.close();
+    return ret;
 
-		byte[] buf = new byte[1024];
-		int len;
-		while ((len = is.read(buf)) > 0)
-			zos.write(buf, 0, len);
-
-		is.close();
-		zos.close();
-		return ret;
-
-	}
+  }
 }
 
 //

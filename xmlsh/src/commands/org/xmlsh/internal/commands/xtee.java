@@ -8,11 +8,9 @@ package org.xmlsh.internal.commands;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLEventWriter;
 import javax.xml.stream.events.XMLEvent;
-
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.XCommand;
@@ -23,48 +21,48 @@ import org.xmlsh.util.Util;
 
 public class xtee extends XCommand {
 
-	@Override
-	public int run(List<XValue> args) throws Exception {
+  @Override
+  public int run(List<XValue> args) throws Exception {
 
-		Options opts = new Options(SerializeOpts.getOptionDefs());
-		opts.parse(args);
-		args = opts.getRemainingArgs();
+    Options opts = new Options(SerializeOpts.getOptionDefs());
+    opts.parse(args);
+    args = opts.getRemainingArgs();
 
-		// List of outputs to tee to
-		List<XMLEventWriter> writers = new ArrayList<XMLEventWriter>();
+    // List of outputs to tee to
+    List<XMLEventWriter> writers = new ArrayList<XMLEventWriter>();
 
-		InputPort stdin = getStdin();
+    InputPort stdin = getStdin();
 
-		XMLEventReader reader = null;
-		try {
-			SerializeOpts sopts = getSerializeOpts(opts);
-			reader = stdin.asXMLEventReader(sopts);
-			OutputPort stdout = getStdout();
+    XMLEventReader reader = null;
+    try {
+      SerializeOpts sopts = getSerializeOpts(opts);
+      reader = stdin.asXMLEventReader(sopts);
+      OutputPort stdout = getStdout();
 
-			writers.add(stdout.asXMLEventWriter(sopts));
+      writers.add(stdout.asXMLEventWriter(sopts));
 
-			for (XValue arg : args) {
-				OutputPort output = getEnv().getOutput(arg, false);
-				writers.add(output.asXMLEventWriter(sopts));
-			}
+      for(XValue arg : args) {
+        OutputPort output = getEnv().getOutput(arg, false);
+        writers.add(output.asXMLEventWriter(sopts));
+      }
 
-			stdout.setSystemId(stdin.getSystemId());
-			XMLEvent e;
+      stdout.setSystemId(stdin.getSystemId());
+      XMLEvent e;
 
-			while (reader.hasNext()) {
-				e = (XMLEvent) reader.next();
-				for (XMLEventWriter writer : writers)
-					writer.add(e);
-			}
+      while(reader.hasNext()) {
+        e = (XMLEvent) reader.next();
+        for(XMLEventWriter writer : writers)
+          writer.add(e);
+      }
 
-		} finally {
-			Util.safeClose(reader);
-			for (XMLEventWriter writer : writers)
-				Util.safeClose(writer);
-		}
-		return 0;
+    } finally {
+      Util.safeClose(reader);
+      for(XMLEventWriter writer : writers)
+        Util.safeClose(writer);
+    }
+    return 0;
 
-	}
+  }
 
 }
 

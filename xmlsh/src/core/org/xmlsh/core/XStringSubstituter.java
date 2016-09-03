@@ -12,21 +12,21 @@ import org.apache.logging.log4j.Logger;
  * 
  */
 public class XStringSubstituter extends StrSubstitutor {
-    static Logger mLogger = LogManager.getLogger();
+  static Logger mLogger = LogManager.getLogger();
 
-    public XStringSubstituter() {
-        super();
-        mLogger.entry( /* TODO */);
-        setEnableSubstitutionInVariables(true);
-    }
+  public XStringSubstituter() {
+    super();
+    mLogger.entry( /* TODO */);
+    setEnableSubstitutionInVariables(true);
+  }
 
-    /**
-     * @param variableResolver
-     */
-    public XStringSubstituter(XStringLookup resolver) {
-        super(resolver);
-        mLogger.entry( resolver);
-        setEnableSubstitutionInVariables(true);
+  /**
+   * @param variableResolver
+   */
+  public XStringSubstituter(XStringLookup resolver) {
+    super(resolver);
+    mLogger.entry(resolver);
+    setEnableSubstitutionInVariables(true);
 
-    }
+  }
 }

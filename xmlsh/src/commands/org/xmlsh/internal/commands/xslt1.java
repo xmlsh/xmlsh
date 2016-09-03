@@ -3,99 +3,90 @@ package org.xmlsh.internal.commands;
 import java.io.File;
 import java.io.OutputStream;
 import java.util.List;
-
 import javax.xml.transform.Source;
 import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
-
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.XCommand;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.shell.SerializeOpts;
-
 import com.icl.saxon.expr.StringValue;
 
 public class xslt1 extends XCommand {
 
-	@Override
-	public int run(List<XValue> args) throws Exception {
+  @Override
+  public int run(List<XValue> args) throws Exception {
 
-		Options opts = new Options("i:,f:,v", SerializeOpts.getOptionDefs());
-		opts.parse(args);
-		args = opts.getRemainingArgs();
+    Options opts = new Options("i:,f:,v", SerializeOpts.getOptionDefs());
+    opts.parse(args);
+    args = opts.getRemainingArgs();
 
-		String style = opts.getOptStringRequired("f");
+    String style = opts.getOptStringRequired("f");
 
-		SerializeOpts serializeOpts = getSerializeOpts(opts);
+    SerializeOpts serializeOpts = getSerializeOpts(opts);
 
+    InputPort in = null;
 
-		InputPort in = null;
+    Source source = null;
 
+    if(opts.hasOpt("i"))
+      source = (in = getInput(opts.getOptValue("i"))).asSource(serializeOpts);
+    else
+      source = (in = getStdin()).asSource(serializeOpts);
 
-		Source source = null;
+    apply(style, source, getStdout().asOutputStream(serializeOpts),
+        opts.hasOpt("v") ? args : null, serializeOpts);
 
-		if( opts.hasOpt("i") )
-			source = (in=getInput( opts.getOptValue("i"))).asSource(serializeOpts);
-		else
-			source = (in=getStdin()).asSource(serializeOpts);
+    return 0;
 
-		apply( style , source, getStdout().asOutputStream(serializeOpts) , opts.hasOpt("v") ? args : null, serializeOpts);
+  }
 
-		return 0;
+  private void apply(String style, Source source, OutputStream out,
+      List<XValue> args, SerializeOpts serializeOpts)
+      throws Exception {
 
-	}
+    try {
+      Templates pss = tryCache(style);
+      Transformer transformer = pss.newTransformer();
+      // Properties details = pss.getOutputProperties();
 
-	private void apply(String style, Source source, OutputStream out, List<XValue> args, SerializeOpts serializeOpts )
-			throws Exception {
+      if(args != null) {
+        // Read pairs from args to set
+        for(int i = 0; i < args.size() / 2; i++) {
+          String name = args.get(i * 2).toString();
+          XValue value = args.get(i * 2 + 1);
 
+          transformer.setParameter(name, new StringValue(value.toString()));
+        }
+      }
 
+      transformer.setOutputProperty(javax.xml.transform.OutputKeys.METHOD,
+          serializeOpts.getMethod());
 
+      transformer.transform(source, new StreamResult(out));
+    } catch (Exception err) {
+      throw err;
+    }
 
-		try {
-			Templates pss = tryCache(style);
-			Transformer transformer = pss.newTransformer();
-			// Properties details = pss.getOutputProperties();
+  }
 
+  private synchronized Templates tryCache(String path)
+      throws TransformerException, java.io.IOException {
 
-			if (args != null ) {
-				// Read pairs from args to set
-				for (int i = 0; i < args.size() / 2; i++) {
-					String name = args.get(i * 2).toString();
-					XValue value = args.get(i * 2 + 1);
+    com.icl.saxon.TransformerFactoryImpl factory = new com.icl.saxon.TransformerFactoryImpl();
+    return factory.newTemplates(new StreamSource(new File(path)));
 
-					transformer.setParameter(name, new StringValue(value.toString()));
-				}
-			}
-
-
-
-			transformer.setOutputProperty(javax.xml.transform.OutputKeys.METHOD, serializeOpts.getMethod() );
-
-			transformer.transform(source, new StreamResult(out));
-		} catch (Exception err) {
-			throw err; 
-		}
-
-	}
-
-
-	private synchronized Templates tryCache(String path) throws TransformerException, java.io.IOException {
-
-	  com.icl.saxon.TransformerFactoryImpl factory = new com.icl.saxon.TransformerFactoryImpl();
-	  return factory.newTemplates(new StreamSource(new File(path)));
-
-	}
-
+  }
 
 }
 
 //
 //
-// Copyright (C) 2008-2014    David A. Lee.
+// Copyright (C) 2008-2014 David A. Lee.
 //
 // The contents of this file are subject to the "Simplified BSD License" (the
 // "License");
