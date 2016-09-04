@@ -81,6 +81,37 @@ public abstract class XCommand extends AbstractCommand {
   }
 
   abstract public int run(List<XValue> args) throws Exception;
+    /* (non-Javadoc)
+     * @see org.xmlsh.core.ICommand#run(org.xmlsh.sh.shell.Shell, java.lang.String[])
+     */
+    @Override
+    public int run(Shell shell, String cmd, List<XValue> args) throws Exception
+    {
+        Shell saved_shell = ThreadLocalShell.set(shell);
+
+
+        try {
+            return run(  args , shell.getEnv() );
+        }
+        catch( UnknownOption e )
+        {
+            error( e);
+            return -1;
+        }
+
+
+
+        finally{
+            ThreadLocalShell.set(saved_shell);
+        }
+
+    }
+
+    finally {
+      ThreadLocalShell.set(saved_shell);
+    }
+
+  }
 
   public int run(List<XValue> args, XEnvironment env) throws Exception {
     mEnvironment = env;
