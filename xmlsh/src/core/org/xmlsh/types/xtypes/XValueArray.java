@@ -25,7 +25,6 @@ import org.xmlsh.util.Util;
  */
 public class XValueArray extends AbstractList<XValue> implements IXValueMap, IXValueList 
 {
-	private static XValueArray _emptyArray = new XValueArray();
   private     TreeMap<Integer,XValue>   mArray;
 	private     int maxIndex = -1; // maximum integer value
 	public XValueArray() {
@@ -217,9 +216,9 @@ public class XValueArray extends AbstractList<XValue> implements IXValueMap, IXV
       return new XValueSequence( this );
     }
 
-    public static Object emptyArray()
+    public static XValueArray emptyArray()
     {
-      return _emptyArray;
+      return new XValueArray();
     }
 
     @Override

@@ -26,8 +26,6 @@ import org.xmlsh.util.Util;
  */
 public  class XValueSequence implements Iterable<XValue>  ,    IXValueSequence<XValueSequence>
 {
-  private static IXValueSequence<XValueSequence> _emptySequence = new XValueSequence();
-
   private List<XValue> mList;
   
 
@@ -52,7 +50,7 @@ public  class XValueSequence implements Iterable<XValue>  ,    IXValueSequence<X
 
   
   public static IXValueSequence<XValueSequence> emptySequence() {
-    return _emptySequence;
+    return new XValueSequence();
   }
   
 

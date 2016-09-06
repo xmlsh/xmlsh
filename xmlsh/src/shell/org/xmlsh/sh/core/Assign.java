@@ -19,6 +19,7 @@ import org.xmlsh.core.XVariable.XVarFlag;
 import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.types.TypeFamily;
 import org.xmlsh.types.xtypes.XValueArray;
+import org.xmlsh.types.xtypes.XValueMap;
 import org.xmlsh.types.xtypes.XValuePropertyList;
 import org.xmlsh.types.xtypes.XValueSequence;
 
@@ -149,7 +150,7 @@ public class Assign {
       return XValue.newXValue(TypeFamily.XTYPE, XValueArray.emptyArray());
     case "{}":
       return XValue.newXValue(TypeFamily.XTYPE,
-          XValuePropertyList.emptyPropertyList());
+          XValueMap.emptyMap());
     case "()":
       return XValue.newXValue(TypeFamily.XTYPE, XValueSequence.emptySequence());
     }

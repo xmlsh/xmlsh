@@ -30,7 +30,6 @@ import org.xmlsh.util.Util;
  */
 public class XValuePropertyList  implements     IXValueMap, IXValueList
 {
-	private static final XValuePropertyList _emptyList = new XValuePropertyList();
     private  	List<XValueProperty>   mList;
 
 	public XValuePropertyList(XValueProperty p) {
@@ -287,7 +286,7 @@ public class XValuePropertyList  implements     IXValueMap, IXValueList
     public static XValuePropertyList emptyPropertyList()
     {
 
-      return _emptyList ;
+      return new XValuePropertyList() ;
     }
     @Override
     public List<XValue> asList()

@@ -6,20 +6,10 @@
 package org.xmlsh.sh.shell;
 
 import static org.xmlsh.sh.shell.CharAttr.ATTR_ESCAPED;
-
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map.Entry;
-
-import net.sf.saxon.s9api.Processor;
-import net.sf.saxon.s9api.QName;
-import net.sf.saxon.s9api.SaxonApiException;
-import net.sf.saxon.s9api.XQueryCompiler;
-import net.sf.saxon.s9api.XQueryEvaluator;
-import net.sf.saxon.s9api.XQueryExecutable;
-import net.sf.saxon.s9api.XdmValue;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.xmlsh.core.CoreException;
@@ -36,9 +26,15 @@ import org.xmlsh.util.Util;
 import org.xmlsh.util.XMLUtils;
 import org.xmlsh.xpath.EvalDefinition;
 import org.xmlsh.xpath.ThreadLocalShell;
+import net.sf.saxon.s9api.Processor;
+import net.sf.saxon.s9api.QName;
+import net.sf.saxon.s9api.SaxonApiException;
+import net.sf.saxon.s9api.XQueryCompiler;
+import net.sf.saxon.s9api.XQueryEvaluator;
+import net.sf.saxon.s9api.XQueryExecutable;
+import net.sf.saxon.s9api.XdmValue;
 
-public class Expander
-{
+public class Expander {
   private static Logger mLogger = LogManager.getLogger();
 
   public Shell mShell;
@@ -49,8 +45,7 @@ public class Expander
 
   /* this"Is a 'string\' in' a $var "string *.x "*.y" \*.z */
 
-  public Expander(Shell shell)
-  {
+  public Expander(Shell shell) {
     mShell = shell;
   }
 
@@ -58,13 +53,14 @@ public class Expander
    * Expand a value into a Results buffer
    * Used for combining possible joined values by repeated calls
    */
-  public ParseResult expandValueToResult(XValue value, EvalEnv env, ParseResult result) throws IOException,
-      CoreException
-  {
+  public ParseResult expandValueToResult(XValue value, EvalEnv env,
+      ParseResult result) throws IOException,
+      CoreException {
     assert (result != null);
     if(!env.preserveValue() && value.isAtomic())
       result = expandStringToResult(value.toString(), env, result);
-    else result.add(value, env.preserveValue());
+    else
+      result.add(value, env.preserveValue());
     return result;
   }
 
@@ -76,17 +72,16 @@ public class Expander
    * 4) globbing
    */
 
-  public List<XValue> expandStringToList(String arg, EvalEnv env) throws IOException, CoreException
-  {
+  public List<XValue> expandStringToList(String arg, EvalEnv env)
+      throws IOException, CoreException {
     ParseResult result = new ParseResult();
     return expandResultToList(env, expandStringToResult(arg, env, result));
 
   }
 
-  public List<XValue> expandResultToList(EvalEnv env, ParseResult result)
-  {
-	
-	mLogger.entry(env, result);
+  public List<XValue> expandResultToList(EvalEnv env, ParseResult result) {
+
+    mLogger.entry(env, result);
     assert (result != null);
     List<XValue> xvresult = result.expandWild(env, mShell.getCurdir());
     if(xvresult == null)
@@ -94,7 +89,8 @@ public class Expander
 
     if(env.expandSequences())
       xvresult = Util.expandSequences(xvresult);
-    else xvresult = Util.combineSequence(xvresult);
+    else
+      xvresult = Util.combineSequence(xvresult);
 
     return mLogger.exit(xvresult);
   }
@@ -107,31 +103,31 @@ public class Expander
    * "literal" simpmle literal
    * "$var literal $var" quoted mixed literal
    * 
-   * If bPreserve is set then this is inside {value} which is used to eval/expand the value but do NO substitution
+   * If bPreserve is set then this is inside {value} which is used to
+   * eval/expand the value but do NO substitution
    * NO globbing is done
    */
-  public ParseResult expandStringToResult(String arg, EvalEnv env, ParseResult result) throws IOException,
-      CoreException
-   {
-	  
-	mLogger.entry(arg, env, result);
+  public ParseResult expandStringToResult(String arg, EvalEnv env,
+      ParseResult result) throws IOException,
+      CoreException {
+
+    mLogger.entry(arg, env, result);
 
     assert (result != null);
-    
+
     CharAttrs curAttr = env.asCharAttrs();
-    
-    
+
     // Special case for "$@" which does NOT 'stringify' arguments
     /*
-    if( arg.equals("\"$@\"")){
-    	
-        result = EvalUtils.evalVarToResult(mShell, "@", env, curAttr , result);
-        if(curAttr.isSoftQuote())
-            result.resetIfEmpty();
-        return result ;
-    	
-    } */
-    
+     * if( arg.equals("\"$@\"")){
+     * 
+     * result = EvalUtils.evalVarToResult(mShell, "@", env, curAttr , result);
+     * if(curAttr.isSoftQuote())
+     * result.resetIfEmpty();
+     * return result ;
+     * 
+     * }
+     */
 
     // <{ big quotes }>
     if(arg.startsWith("<{{") && arg.endsWith("}}>")) {
@@ -149,8 +145,7 @@ public class Expander
     char c;
     int i;
 
-
-    for (i = 0; i < arg.length(); i++) {
+    for(i = 0; i < arg.length(); i++) {
 
       c = arg.charAt(i);
 
@@ -177,7 +172,8 @@ public class Expander
         // 'foo\\bar' -> 'foo\\bar'
 
         /*
-         * http://pubs.opengroup.org/onlinepubs/009695399/utilities/xcu_chap02.html
+         * http://pubs.opengroup.org/onlinepubs/009695399/utilities/xcu_chap02.
+         * html
          */
         else if(c == '\\') {
           if(curAttr.isHardQuote())
@@ -187,7 +183,7 @@ public class Expander
           if(i < arg.length()) {
             char nextc = arg.charAt(++i);
             if(curAttr.isSoftQuote()) {
-              switch (nextc) {
+              switch(nextc){
               case '$':
               case '`':
               case '"':
@@ -210,7 +206,7 @@ public class Expander
 
       }
 
-      if(c == '$' && env.expandVar() && curAttr.isEvalable() ) {
+      if(c == '$' && env.expandVar() && curAttr.isEvalable()) {
         if(++i == arg.length()) {
           result.append('$', curAttr); // Special case of a single "$"
           break;
@@ -225,7 +221,8 @@ public class Expander
           // Speical case
           // $? $* $@ $$ $0...$9
           c = arg.charAt(i);
-          if(c == '?' || c == '@' || c == '$' || c == '#' || c == '*' || c == '!' || Character.isDigit(c)) {
+          if(c == '?' || c == '@' || c == '$' || c == '#' || c == '*'
+              || c == '!' || Character.isDigit(c)) {
             boolean bKeepGoing;
             do {
               bKeepGoing = false;
@@ -235,16 +232,17 @@ public class Expander
               // NOTE: Differs from sh/bsh/ksh - $11 is [arg 11] not [arg 1]1
               //
               if(Character.isDigit(c)) {
-                if(i < arg.length() - 1 && Character.isDigit(c = arg.charAt(i + 1))) {
+                if(i < arg.length() - 1
+                    && Character.isDigit(c = arg.charAt(i + 1))) {
                   i++;
                   bKeepGoing = true;
                 }
               }
-            } while (bKeepGoing);
+            } while(bKeepGoing);
           }
           else {
             // Eat up all a-zA-Z_
-            for (; i < arg.length(); i++) {
+            for(; i < arg.length(); i++) {
               c = arg.charAt(i);
               if(Util.isIdentifier(c))
                 sbv.append(c);
@@ -265,7 +263,8 @@ public class Expander
             result.resetIfEmpty();
 
         }
-        else result.append('$', curAttr);
+        else
+          result.append('$', curAttr);
 
       }
       else {
@@ -277,15 +276,14 @@ public class Expander
     if(!env.joinValues())
       result.flush();
 
-    return  mLogger.exit( result);
+    return mLogger.exit(result);
 
   }
 
-  private XValue parseXExpr(Shell shell, String arg) throws IOException, CoreException
-  {
- 
-	
-	mLogger.entry(shell, arg);
+  private XValue parseXExpr(Shell shell, String arg)
+      throws IOException, CoreException {
+
+    mLogger.entry(shell, arg);
     Processor processor = Shell.getProcessor();
 
     XQueryCompiler compiler = processor.newXQueryCompiler();
@@ -297,7 +295,7 @@ public class Expander
 
     NameValueMap<String> ns = shell.getEnv().getNamespaces();
     if(ns != null) {
-      for (String prefix : ns.keySet()) {
+      for(String prefix : ns.keySet()) {
         String uri = ns.get(prefix);
         compiler.declareNamespace(prefix, uri);
 
@@ -314,7 +312,7 @@ public class Expander
 
     NameValueMap<XdmValue> usedVars = new NameValueMap<XdmValue>();
 
-    for (String name : varnames) {
+    for(String name : varnames) {
       XVariable var = variables.get(name);
       XdmValue xdmValue = convertVar(var);
       if(xdmValue != null) {
@@ -327,7 +325,7 @@ public class Expander
     // Express each positional parameter as $_1 $_2 ...
     // then each
     int i = 0;
-    for (XValue xv : args) {
+    for(XValue xv : args) {
       i++;
       XdmValue xdmValue = convertValue(xv);
       if(xdmValue != null) {
@@ -345,13 +343,13 @@ public class Expander
 
       XQueryEvaluator eval = expr.load();
 
-      for (Entry<String, XdmValue> entry : usedVars.entrySet()) {
+      for(Entry<String, XdmValue> entry : usedVars.entrySet()) {
         XdmValue v = entry.getValue();
         eval.setExternalVariable(new QName(entry.getKey()), v);
       }
 
       XdmValue result = eval.evaluate();
-      return mLogger.exit(XDMTypeFamily.getInstance().getXValue( result));
+      return mLogger.exit(XDMTypeFamily.getInstance().getXValue(result));
     } catch (SaxonApiException e) {
       String msg = "Error expanding xml expression: " + arg;
       mLogger.warn(msg, e);
@@ -364,18 +362,18 @@ public class Expander
 
   }
 
-  private XdmValue convertValue(XValue xv) throws InvalidArgumentException, UnexpectedException
-  {
-	if( xv.isNull())
-		return XMLUtils.emptySequence();
+  private XdmValue convertValue(XValue xv)
+      throws InvalidArgumentException, UnexpectedException {
+    if(xv.isNull())
+      return XMLUtils.emptySequence();
     if(xv.isXdmItem() || xv.canConvert(XdmValue.class) >= 0)
       return xv.toXdmValue();
     return null;
   }
 
-  public XdmValue convertVar(XVariable var) throws InvalidArgumentException, UnexpectedException
-  {
-    if(!var.isNull() )
+  public XdmValue convertVar(XVariable var)
+      throws InvalidArgumentException, UnexpectedException {
+    if(!var.isNull())
       return convertValue(var.getValue());
 
     return null;
@@ -387,20 +385,23 @@ public class Expander
 //
 // Copyright (C) 2008-2014 David A. Lee.
 //
-// The contents of this file are subject to the "Simplified BSD License" (the "License");
-// you may not use this file except in compliance with the License. You may obtain a copy of the
+// The contents of this file are subject to the "Simplified BSD License" (the
+// "License");
+// you may not use this file except in compliance with the License. You may
+// obtain a copy of the
 // License at http://www.opensource.org/licenses/bsd-license.php
 //
 // Software distributed under the License is distributed on an "AS IS" basis,
 // WITHOUT WARRANTY OF ANY KIND, either express or implied.
-// See the License for the specific language governing rights and limitations under the License.
+// See the License for the specific language governing rights and limitations
+// under the License.
 //
 // The Original Code is: all this file.
 //
 // The Initial Developer of the Original Code is David A. Lee
 //
-// Portions created by (your name) are Copyright (C) (your legal entity). All Rights Reserved.
+// Portions created by (your name) are Copyright (C) (your legal entity). All
+// Rights Reserved.
 //
 // Contributor(s): none.
 //
-

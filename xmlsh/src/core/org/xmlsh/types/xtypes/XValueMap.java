@@ -49,6 +49,9 @@ public class XValueMap extends AbstractMap<String,XValue> implements IXValueMap 
       
   }
 
+    public static XValueMap emptyMap() {
+      return new XValueMap();
+   }
   @Override
 	public XValue get( String name ) {
 		return mMap.get(name);

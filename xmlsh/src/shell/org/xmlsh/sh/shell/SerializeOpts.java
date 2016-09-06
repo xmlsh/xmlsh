@@ -7,14 +7,12 @@
 package org.xmlsh.sh.shell;
 
 import java.nio.charset.Charset;
-import java.util.List;
-
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.Options.OptionDefs;
 import org.xmlsh.core.Options.OptionValue;
-import org.xmlsh.types.xtypes.XValueProperties;
 import org.xmlsh.core.XValue;
+import org.xmlsh.types.xtypes.XValueProperties;
 import org.xmlsh.util.FileUtils;
 import org.xmlsh.util.Util;
 
@@ -89,7 +87,7 @@ public class SerializeOpts {
    * Set serialize options based on a parsed options
    */
   public void setOptions(Options opts) throws InvalidArgumentException {
-    for (OptionValue ov : opts.getOpts())
+    for(OptionValue ov : opts.getOpts())
       setOption(ov);
 
   }
@@ -123,7 +121,7 @@ public class SerializeOpts {
 
   public void setOption(OptionValue ov) throws InvalidArgumentException {
 
-    if (ov.getOptionDef().isExpectsArg())
+    if(ov.getOptionDef().isExpectsArg())
       setOption(ov.getOptionDef().getName(), ov.getValue());
     else
       setOption(ov.getOptionDef().getName(), ov.getFlag());
@@ -131,7 +129,7 @@ public class SerializeOpts {
   }
 
   public boolean setOption(String name, boolean value) {
-    switch (name) {
+    switch(name){
     case "omit-xml-declaration":
       omit_xml_declaration = value;
       break;
@@ -172,38 +170,38 @@ public class SerializeOpts {
     // if text-encoding then set text encoding only
     // if xml-encoding then set xml encoding only
 
-    if (opt.equals("text-encoding") || opt.equals("input-text-encoding")
+    if(opt.equals("text-encoding") || opt.equals("input-text-encoding")
         || opt.equals("encoding"))
       setInputTextEncoding(value.toString());
 
-    if (opt.equals("text-encoding") || opt.equals("output-text-encoding")
+    if(opt.equals("text-encoding") || opt.equals("output-text-encoding")
         || opt.equals("encoding"))
       setOutputTextEncoding(value.toString());
 
-    if (opt.equals("xml-encoding") || opt.equals("input-xml-encoding")
+    if(opt.equals("xml-encoding") || opt.equals("input-xml-encoding")
         || opt.equals("encoding"))
       setInputXmlEncoding(value.toString());
 
-    if (opt.equals("xml-encoding") || opt.equals("output-xml-encoding")
+    if(opt.equals("xml-encoding") || opt.equals("output-xml-encoding")
         || opt.equals("encoding"))
       setOutputXmlEncoding(value.toString());
 
-    if (opt.equals("input-encoding")) {
+    if(opt.equals("input-encoding")) {
       setInputTextEncoding(value.toString());
       setInputXmlEncoding(value.toString());
     }
-    if (opt.equals("output-encoding")) {
+    if(opt.equals("output-encoding")) {
       setOutputTextEncoding(value.toString());
       setOutputXmlEncoding(value.toString());
     }
 
-    if (opt.equals("content-type"))
+    if(opt.equals("content-type"))
       setContent_type(value.toString());
-    else if (opt.equals("method"))
+    else if(opt.equals("method"))
       setMethod(value.toString());
-    else if (opt.equals("sequence-sep"))
+    else if(opt.equals("sequence-sep"))
       setSequence_sep(value.toString());
-    else if (opt.equals("sequence-term"))
+    else if(opt.equals("sequence-term"))
       setSequence_term(value.toString());
 
   }
@@ -235,7 +233,7 @@ public class SerializeOpts {
    */
   public void setInputXmlEncoding(String enc) throws InvalidArgumentException {
 
-    if (!Charset.isSupported(enc))
+    if(!Charset.isSupported(enc))
       throw new InvalidArgumentException("encoding not supported: " + enc);
     input_xml_encoding = enc;
 
@@ -243,7 +241,7 @@ public class SerializeOpts {
 
   public void setOutputXmlEncoding(String enc) throws InvalidArgumentException {
 
-    if (!Charset.isSupported(enc))
+    if(!Charset.isSupported(enc))
       throw new InvalidArgumentException("encoding not supported: " + enc);
     output_xml_encoding = enc;
 
@@ -251,7 +249,7 @@ public class SerializeOpts {
 
   public void setInputTextEncoding(String enc) throws InvalidArgumentException {
 
-    if (!Charset.isSupported(enc))
+    if(!Charset.isSupported(enc))
       throw new InvalidArgumentException("encoding not supported: " + enc);
     input_text_encoding = enc;
 
@@ -260,7 +258,7 @@ public class SerializeOpts {
   public void setOutputTextEncoding(String enc)
       throws InvalidArgumentException {
 
-    if (!Charset.isSupported(enc))
+    if(!Charset.isSupported(enc))
       throw new InvalidArgumentException("encoding not supported: " + enc);
     output_text_encoding = enc;
 
@@ -348,7 +346,7 @@ public class SerializeOpts {
    * @throws InvalidArgumentException
    */
   public void setMethod(String method) throws InvalidArgumentException {
-    if (method.equals("xml") || method.equals("html") || method.equals("xhtml")
+    if(method.equals("xml") || method.equals("html") || method.equals("xhtml")
         || method.equals("text"))
       this.method = method;
     else
