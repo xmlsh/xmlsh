@@ -2051,8 +2051,8 @@ IORedirect io_redirect() :
 |   < PGTGP > 		{  return new IORedirect( token,  token.toString() ) ; }
 |   < GTP > 		{  return new IORedirect( token,  token.toString() ) ; }
 |   < LTP > 		{  return new IORedirect( token,  token.toString() ) ; }
-|  <PGT > s=filename_word() { return new IORedirect( token , token.toString() , s  );  }
-|  <PLT > s=filename_word() { return new IORedirect( token , token.toString() , s  );  }
+|  t=<PGT > s=filename_word() { return new IORedirect( token , t.toString() , s  );  }
+|  t=<PLT > s=filename_word() { return new IORedirect( token , t.toString() , s  );  }
 |  < PDLESS > 
   {
     ts = token.toString();

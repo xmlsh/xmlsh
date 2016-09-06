@@ -57,14 +57,14 @@ public class IOFile {
 
     String file = null;
 
-    mLogger.trace("File: {} Port: {}" , mFile , mPort );
     if(mFile == null) {
       if(mPort != null)
         file = mPort;
     }
     else
-
       file = mFile.expandString(shell, mFileEnv);
+    mLogger.trace("file {} File: {} Port: {}" , file , mFile , mPort );
+
 
     /*
      * File-less redirections 1>&2 2>&1
@@ -91,7 +91,7 @@ public class IOFile {
     boolean isVar = file.startsWith("{") &&
         file.endsWith("}");
     if(isVar) {
-      mLogger.trace("isvar file is var: {}", file);
+      mLogger.trace("isvar file is: {}", file);
       String var = file.substring(1, file.length() - 1);
       if(Util.isBlank(var))
         throw new CoreException("Invalid blank name for output variable");

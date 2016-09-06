@@ -29,9 +29,10 @@ public class IORedirect {
     // OP(POT)
     if(portstring.startsWith("<(") ||
         portstring.startsWith(">(")) {
-
       String op = portstring.substring(0, 1);
       String port = portstring.substring(1);
+      mLogger.debug("OP(PORT) {} {}", op, port);
+
       mFile = new IOFile(op, port);
 
     }
@@ -42,6 +43,8 @@ public class IORedirect {
       String op = portstring.substring(mPortname.length(),
           portstring.lastIndexOf('('));
       String port2 = portstring.substring(mPortname.length() + op.length());
+      mLogger.debug("mPortname: {} (port)OP<port {} {}", mPortname, op, port2);
+
       mFile = new IOFile(op, port2);
     }
 
@@ -49,10 +52,13 @@ public class IORedirect {
 
   /* (port)OP fileWord */
   public IORedirect(Token t, String portstring, Word file) {
+    mLogger.entry(t,portstring,file);
     mFirstToken = t;
     if(portstring.startsWith("(")) {
       mPortname = portstring.substring(0, portstring.indexOf(')') + 1);
       String op = portstring.substring(mPortname.length());
+      mLogger.debug("mPortname: {} OP {}", mPortname, op);
+
       mFile = new IOFile(op, file);
     }
     else
@@ -60,7 +66,8 @@ public class IORedirect {
   }
 
   // <port> op file
-  public IORedirect(Token t, String portstring, String op, Word file) {
+  public IORedirect(Token t, String portstring, String op, Word file) { 
+    mLogger.entry(t,portstring,op,file);
     mFirstToken = t;
 
     mPortname = portstring;
@@ -68,6 +75,7 @@ public class IORedirect {
   }
 
   public IORedirect(Token t, String portname, IOHere here) {
+    mLogger.entry(t,portname,here);
     mFirstToken = t;
     mPortname = portname;
     mFile = null;
@@ -96,6 +104,7 @@ public class IORedirect {
       port = mPortname.substring(
           mPortname.indexOf('(') + 1,
           mPortname.indexOf(')'));
+    mLogger.trace("port",port);
     if(mFile != null){
       mFile.exec(shell, port, loc);
       mLogger.trace("to redirect to file. file{} port {} loc {}", mFile , port,loc);
