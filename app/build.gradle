@@ -93,7 +93,6 @@ applicationDistribution.
 applicationDistribution.
       from( project(":extensions:jstache").installDist ) {
    into("modules/jstache")
-
 }
 
 
@@ -106,15 +105,10 @@ run {
     /* Or just each by name: */
     // systemProperty "xmlsh.XLOGLEVEL", "TRACE"
 }
-publishing   {
-  publications {
-  mavenJava(MavenPublication) {
-     artifacts = []
-   }
-  }
-}
-/*
-publishing {
+
+
+apply plugin: 'maven'
+uploadArchives {
     repositories {
         maven {
             url rootProject.getProperty("xmlsh.awsRepoBucket") + "/maven2"
@@ -125,40 +119,10 @@ publishing {
             }
         }
 
-        ivy {
-            url rootProject.getProperty("xmlsh.awsRepoBucket") + "/ivyrepo"
-            credentials(AwsCredentials) {
-               accessKey rootProject.getProperty("xmlsh.awsAccessKey")
-               secretKey rootProject.getProperty("xmlsh.awsSecretKey")
-
-            }
-       }
     }
 
-  publications {
-    mavenJava(MavenPublication) {
-       artifacts = []
-     }
-  ivyJava(IvyPublication) {
-    from components.java
-    artifact(sourceJar) {
-        type "source"
-        conf "runtime"
-    }
-    descriptor.withXml {
-      asNode().info[0].appendNode('description', description)
   }
-  }
-  ivy(IvyPublication) {
-    from applicationDistribution
-    artifact( distZip ) {
-        type "application"
-        conf "runtime"
-    }
-   }
-  }
- }
-*/
+
   /*
   bintray {
 
