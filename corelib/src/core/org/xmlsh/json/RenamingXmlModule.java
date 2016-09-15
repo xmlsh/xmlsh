@@ -3,7 +3,7 @@ package org.xmlsh.json;
 import java.util.Collection;
 
 import javax.xml.namespace.QName;
-
+import java.io.IOException;
 import org.xmlsh.util.INamingStrategy;
 
 import com.fasterxml.jackson.databind.AnnotationIntrospector;
@@ -37,16 +37,10 @@ final class RenamingXmlModule extends JacksonXmlModule {
                 super(baseType, typeFactory);
             }
 
-            // SNH
-            @SuppressWarnings("deprecation")
             @Override
-            public JavaType typeFromId(String id) {
-                return this.typeFromId(null,id);
-            }
-            
-            @Override
-            public JavaType typeFromId(DatabindContext context, String id) {
-                return super.typeFromId(context,  mNamingStrategy.fromXmlName(new QName(id)));
+            public JavaType _typeFromId(String id , DatabindContext context ) 
+             throws IOException {
+                return super._typeFromId(mNamingStrategy.fromXmlName(new QName(id)),context);
                    
             }
         }
@@ -58,16 +52,10 @@ final class RenamingXmlModule extends JacksonXmlModule {
                 super(baseType, typeFactory);
             }
 
-            // SNH
-            @SuppressWarnings("deprecation")
             @Override
-            public JavaType typeFromId(String id) {
-                return this.typeFromId(null,id);
-            }
-            
-            @Override
-            public JavaType typeFromId(DatabindContext context, String id) {
-                return super.typeFromId(context, mNamingStrategy.toXmlName(id).getLocalPart());
+            public JavaType _typeFromId(String id, DatabindContext context) 
+              throws IOException {
+                return super._typeFromId(mNamingStrategy.toXmlName(id).getLocalPart(),context);
             }
         }
 

@@ -132,10 +132,6 @@ distributions {
    }
 }
 
-evaluationDependsOn ":app"
-applicationDistribution.
-    from  project(":app").installDist
-      
 
 evaluationDependsOn ":extensions"
 applicationDistribution.
@@ -157,9 +153,6 @@ applicationDistribution.
    into("modules/jstache") {
          exclude { it.file.name in project(":xmlsh-core").configurations.exported.files.name }
   }
-}
-dependencies {
-  runtime  project(":app")
 }
 
 run {
@@ -193,7 +186,6 @@ uploadArchives {
  *
  */
 
-evaluationDependsOn ":app"
 task installLocal(  type: Sync  , dependsOn: [ ':validate' , 'installDist' ]  ) {
   group 'distribution'
   description "Install application to local directory specified by property xmlsh.installDir"
@@ -213,3 +205,17 @@ task installLocal(  type: Sync  , dependsOn: [ ':validate' , 'installDist' ]  ) 
 htmlDependencyReport {
   projects = project.allprojects
 }
+
+
+dependencies {
+    compile project(":xmlsh-core")
+    runtime 'xml-apis:xml-apis:1.4.+'
+    compile  'xerces:xercesImpl:2.+'
+    //compile 'xml-apis:xml-apis:1.4.+'
+    compile 'xml-resolver:xml-resolver:1.2+'
+    runtime 'xom:xom:latest.release'
+    compile 'net.sf.saxon:Saxon-HE:9.6.+'
+    compile 'saxon:saxon:6.5.+'
+
+}
+
