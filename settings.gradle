@@ -2,7 +2,7 @@ include "xmlsh",
        "extensions:aws" , 
        "extensions:marklogic" ,
 	   "extensions:jstache",
-	   "app"
+	   "xmlsh-app"
 
 //      "extensions:jstache"
 
@@ -11,4 +11,6 @@ println project(':xmlsh')
 
 rootProject.name = 'xmlsh_main'
 project(':xmlsh').projectDir = new File(settingsDir, 'xmlsh')
+project(':xmlsh-app').projectDir = new File(settingsDir, 'app')
+
 

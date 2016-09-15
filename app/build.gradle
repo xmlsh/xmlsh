@@ -51,23 +51,20 @@ dependencies {
 }
 
 task testJar(type: Jar)  {
-	baseName 'xmlsh'
+	baseName 'xmlsh-runtime'
 	classifier = 'tests'
 	from sourceSets.test.output
   }
 
 
 distributions {
-	main {
-	   baseName = "xmlsh"
-         contents {
-              exclude "app-${version}.jar"
-        }
-		contents {
-			from(testJar) {
-				into "test/lib"
-			}
-		}
+   main {
+	baseName = "xmlsh"
+        contents {
+              from(testJar) {
+          into "test/lib"
+              }
+          }
 
 	}
 }
