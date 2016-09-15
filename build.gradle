@@ -126,33 +126,33 @@ distributions {
 	main {
 	 baseName = "xmlsh"
          contents {
-              exclude "app-${version}.jar"
-
+              exclude "xmlsh-${version}.jar"
         }
    }
 }
 
-
 evaluationDependsOn ":extensions"
+evaluationDependsOn ":extensions:aws"
 applicationDistribution.
       from(  project(":extensions:aws").installDist  ){
          into("modules/aws")
          exclude { it.file.name in project(":xmlsh-core").configurations.exported.files.name }
       }
-
+evaluationDependsOn ":extensions"
+evaluationDependsOn ":extensions:marklogic"
 applicationDistribution.
       from( project(":extensions:marklogic").installDist ) {
-   into("modules/marklogic"){
+   into("/modules/marklogic")
          exclude { it.file.name in project(":xmlsh-core").configurations.exported.files.name }
-   }
 
 }
 
+evaluationDependsOn ":extensions:jstache"
 applicationDistribution.
       from( project(":extensions:jstache").installDist ) {
-   into("modules/jstache") {
+   into("modules/jstache") 
          exclude { it.file.name in project(":xmlsh-core").configurations.exported.files.name }
-  }
+  
 }
 
 run {
