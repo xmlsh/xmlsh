@@ -30,10 +30,8 @@ dependencies {
     compile 'bouncycastle:bcprov-jdk16:140'
   // testCompile "org.hamcrest:hamcrest-all:$hamcrestVersion"
    testCompile "org.mockito:mockito-core:$mockitoCoreVersion"
-	// Dont pull in xml-apis:2.x
-	testRuntime ('xml-apis:xml-apis:1.4+'){
-		   force=true
-	}
+     
+    testRuntime 'xml-apis:xml-apis:1.4.+'
     testRuntime  'xerces:xercesImpl:2.+'
     testRuntime 'xml-resolver:xml-resolver:1.2+' 
     testRuntime 'xom:xom:latest.release'

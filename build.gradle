@@ -1,4 +1,3 @@
-
 buildscript {
   repositories {
     jcenter()
@@ -9,10 +8,14 @@ buildscript {
   }
 }
 
+apply plugin: 'application'
+mainClassName = 'org.xmlsh.sh.shell.Shell'
+applicationName = 'xmlsh'
 
-plugins {
-    id "com.jfrog.bintray" version "1.3.1"
-}
+applicationDefaultJvmArgs=[
+     '-Djavax.xml.parsers.SAXParserFactory=org.apache.xerces.jaxp.SAXParserFactoryImpl',
+     '-Dxmlsh.env.XMODPATH=$APP_HOME']
+
 def getDate() {
     def date = new Date()
     def formattedDate = date.format("yyyy-MM-dd'T'HH:mm:ss")
@@ -29,6 +32,8 @@ wrapper {
   gradleVersion='2.12'
 }
 
+version = ext.version_version
+group = "org.xmlsh"
 
 
 allprojects {
@@ -36,28 +41,11 @@ allprojects {
    apply plugin: 'net.saliman.properties'
    apply plugin: 'project-report'
    apply plugin: 'build-dashboard'
-}
-task validate()  {
-       recommendedProperties names: ["xmlsh.installDir"],
-          defaultFile: '$HOME/.gradle/gradle.properties'
-       requiredProperties 'xmlsh.awsRepoBucket'
-}
-subprojects {
-    tasks.whenTaskAdded { task ->
-     if( task.name == "install" ) 
-     task.dependsOn rootProject.tasks["validate"];
-    }
     apply plugin: 'java'
     apply plugin: "maven"
     apply plugin: 'ivy-publish'
     apply plugin: 'maven-publish'
-    group = "org.xmlsh"
-    version = '2.0'
-
-
     apply from: "$rootDir/utils.gradle"
-
-
     repositories {
         jcenter()
         maven {
@@ -78,6 +66,22 @@ subprojects {
             }
        }
     }
+   configurations.all {
+      resolutionStrategy.force 'xml-apis:xml-apis:1.4.01'
+   }
+}
+
+task validate()  {
+       recommendedProperties names: ["xmlsh.installDir"],
+          defaultFile: '$HOME/.gradle/gradle.properties'
+       requiredProperties 'xmlsh.awsRepoBucket'
+}
+subprojects {
+    tasks.whenTaskAdded { task ->
+     if( task.name == "install" ) 
+        task.dependsOn rootProject.tasks["validate"];
+    }
+
     compileJava {
         sourceCompatibility = 1.8
         targetCompatibility = 1.8
@@ -116,8 +120,73 @@ subprojects {
     task allDeps(type: DependencyReportTask) {}
 }
 
+tasks.remove( jar )
+
+distributions {
+	main {
+	 baseName = "xmlsh"
+         contents {
+              exclude "app-${version}.jar"
+
+        }
+   }
+}
+
+evaluationDependsOn ":app"
+applicationDistribution.
+    from  project(":app").installDist
+      
+
+evaluationDependsOn ":extensions"
+applicationDistribution.
+      from(  project(":extensions:aws").installDist  ){
+         into("modules/aws")
+         exclude { it.file.name in project(":xmlsh-core").configurations.exported.files.name }
+      }
+
+applicationDistribution.
+      from( project(":extensions:marklogic").installDist ) {
+   into("modules/marklogic"){
+         exclude { it.file.name in project(":xmlsh-core").configurations.exported.files.name }
+   }
+
+}
+
+applicationDistribution.
+      from( project(":extensions:jstache").installDist ) {
+   into("modules/jstache") {
+         exclude { it.file.name in project(":xmlsh-core").configurations.exported.files.name }
+  }
+}
+dependencies {
+  runtime  project(":app")
+}
+
+run {
+    standardInput = System.in
+     /* Can pass all the properties: */
+    // systemProperties System.getProperties()
+
+    /* Or just each by name: */
+    // systemProperty "xmlsh.XLOGLEVEL", "TRACE"
+}
 
 
+apply plugin: 'maven'
+uploadArchives {
+    repositories {
+        maven {
+            url rootProject.getProperty("xmlsh.awsRepoBucket") + "/maven2"
+            credentials(AwsCredentials) {
+               accessKey rootProject.getProperty("xmlsh.awsAccessKey")
+               secretKey rootProject.getProperty("xmlsh.awsSecretKey")
+
+            }
+        }
+
+    }
+
+  }
 
 /*
  * Convenience task
@@ -125,7 +194,7 @@ subprojects {
  */
 
 evaluationDependsOn ":app"
-task install( type: Sync  , dependsOn: [ ':validate' , ':app:installDist' ]  ) {
+task installLocal(  type: Sync  , dependsOn: [ ':validate' , 'installDist' ]  ) {
   group 'distribution'
   description "Install application to local directory specified by property xmlsh.installDir"
     requiredProperties 'xmlsh.installDir'
@@ -133,7 +202,7 @@ task install( type: Sync  , dependsOn: [ ':validate' , ':app:installDist' ]  ) {
     dependsOn subprojects.tasks["build"]
      if( rootProject.hasProperty("xmlsh.installDir")) {
       def dest = new File(rootProject.getProperty("xmlsh.installDir"))
-        from  project(':app').getProperty('installDist')
+        from  getProperty('installDist')
               into dest
         doFirst {
           println "Installing into: ${dest.absolutePath}"

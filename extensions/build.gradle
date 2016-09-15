@@ -5,15 +5,15 @@ subprojects {
 	
     
     dependencies {
-       compile project( ":xmlsh"  )
-       testCompile project(":xmlsh")
+       compileOnly project( ":xmlsh-core"  )
+       testCompile project(":xmlsh-core")
     }
 
 
 	distributions {
 		main {
 		   contents {
-		      exclude {  it.file.name in project(":xmlsh").configurations.exported.files.name }
+		      // exclude {  it.file.name in project(":xmlsh-core").configurations.exported.files.name }
 		      exclude "**/xmlsh*.jar"
 		   } 
 		} 

@@ -91,7 +91,8 @@ dependencies {
     compile 'com.jayway.jsonpath:json-path:2.+'
     compile 'org.ccil.cowan.tagsoup:tagsoup:1.+'
     compile  'xerces:xercesImpl:2.+'
-    compile 'xml-apis:xml-apis:1.4.+'
+    // do not use 2.0
+    runtime 'xml-apis:xml-apis:1.4.+'
     compile 'xml-resolver:xml-resolver:1.2+'
     compile 'xom:xom:latest.release'
     compile ('net.sf.saxon:Saxon-HE:9.6.+' ){ force=true  }

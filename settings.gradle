@@ -1,4 +1,4 @@
-include "xmlsh", 
+include "xmlsh-core", 
        "extensions:aws" , 
        "extensions:marklogic" ,
 	   "extensions:jstache",
@@ -6,9 +6,6 @@ include "xmlsh",
 
 //      "extensions:jstache"
 
-println rootProject.name
-println project(':xmlsh')
+project(":xmlsh-core").projectDir=file("corelib")
 
-rootProject.name = 'xmlsh_main'
-project(':xmlsh').projectDir = new File(settingsDir, 'xmlsh')
 

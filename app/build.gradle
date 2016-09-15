@@ -1,17 +1,5 @@
-apply plugin: 'application'
 apply plugin: 'java-library-distribution'
-apply plugin: 'ivy-publish'
-apply plugin: 'maven-publish'
-mainClassName = 'org.xmlsh.sh.shell.Shell'
-applicationName = 'xmlsh'
-group = "org.xmlsh"
-version = 2.0
-applicationDefaultJvmArgs=[
-     '-Djavax.xml.parsers.SAXParserFactory=org.apache.xerces.jaxp.SAXParserFactoryImpl',
-     '-Dxmlsh.env.XMODPATH=$APP_HOME']
-
 apply from: "$rootDir/utils.gradle"
-
 
 
 
@@ -33,14 +21,11 @@ jar {
                    'Main-Class': 'org.xmlsh.sh.shell.Shell'
     }
 }
-// configurations.runtime.artifacts.removeAll { it.archiveTask.is jar }
+configurations.runtime.artifacts.removeAll { it.archiveTask.is jar }
 
 dependencies {
-    compile project(":xmlsh")
-   // Dont pull in xml-apis:2.x
-    compile ('xml-apis:xml-apis:1.4+'){
-             force=true
-    }
+    compile project(":xmlsh-core")
+    runtime 'xml-apis:xml-apis:1.4.+'
     compile  'xerces:xercesImpl:2.+'
     //compile 'xml-apis:xml-apis:1.4.+'
     compile 'xml-resolver:xml-resolver:1.2+'
@@ -56,123 +41,8 @@ task testJar(type: Jar)  {
 	from sourceSets.test.output
   }
 
-
-distributions {
-	main {
-	   baseName = "xmlsh"
-         contents {
-              exclude "app-${version}.jar"
-        }
-		contents {
-			from(testJar) {
-				into "test/lib"
-			}
-		}
-
-	}
-}
-
-/*
- * TODO: better way to refer to extensions
-*/
-evaluationDependsOn ":extensions"
-
-applicationDistribution.
-      from(  project(":extensions:aws").installDist  ){
-         into("modules/aws")
-         exclude { it.file.name in project(":xmlsh").configurations.exported.files.name }
-
-    }
-
-applicationDistribution.
-      from( project(":extensions:marklogic").installDist ) {
-   into("modules/marklogic")
-
-}
-
-applicationDistribution.
-      from( project(":extensions:jstache").installDist ) {
-   into("modules/jstache")
-}
-
-
-
-run {
-    standardInput = System.in
-     /* Can pass all the properties: */
-    // systemProperties System.getProperties()
-
-    /* Or just each by name: */
-    // systemProperty "xmlsh.XLOGLEVEL", "TRACE"
-}
-
-
-apply plugin: 'maven'
-uploadArchives {
-    repositories {
-        maven {
-            url rootProject.getProperty("xmlsh.awsRepoBucket") + "/maven2"
-            credentials(AwsCredentials) {
-               accessKey rootProject.getProperty("xmlsh.awsAccessKey")
-               secretKey rootProject.getProperty("xmlsh.awsSecretKey")
-
-            }
-        }
-
-    }
-
+task jar(overwrite: true ){ 
+   doLast {
+     printing "Look ma no jar"
   }
-
-  /*
-  bintray {
-
-	user = project.bintrayUser
-	key = project.bintrayKey
-
-
-	filesSpec {
-	   from installDist.outputs
-	   into 'org/xmlsh/'
-	}
-	dryRun = true //Whether to run this as dry-run, without deploying
-	publish = false //If version should be auto published after an upload
-	//Package configuration. The plugin will use the repo and name properties to check if the package already exists. In that case, there's no need to configure the other package properties (like userOrg, desc, etc).
-
-
-		pkg {
-		repo = 'xmlsh'
-		name = 'xmslh'
-		userOrg = ''
-		desc ='XMLSH A command line shell for the new N(ot)O(nly) XML generation'
-		websiteUrl = 'https://github.com/DALDEI/xmlsh'
-		issueTrackerUrl = 'https://github.com/DALDEI/xmlsh/issues'
-		vcsUrl = 'https://github.com/DALDEI/xmlsh.git'
-		licenses = ['BSD Simplified']
-		labels = ['shell','xml','json','scriping', 'java' , 'cli']
-		publicDownloadNumbers = true
-		// attributes= ['a': ['ay1', 'ay2'], 'b': ['bee'], c: 'cee'] //Optional package-level attributes
-		//Optional version descriptor
-		version {
-			name = 'release-2.0' //Bintray logical version name
-		  //  desc = //Optional - Version-specific description'
-		  //  released  = //Optional - Date of the version release. 2 possible values: date in the format of 'yyyy-MM-dd'T'HH:mm:ss.SSSZZ' OR a java.util.Date instance
-			vcsTag = 'release-2.0'
-		  //  attributes = ['gradle-plugin': 'com.use.less:com.use.less.gradle:gradle-useless-plugin'] //Optional version-level attributes
-			//Optional configuration for GPG signing
-		//    gpg {
-	   //         sign = true //Determines whether to GPG sign the files. The default is false
-	  //          passphrase = 'passphrase' //Optional. The passphrase for GPG signing'
-	  //      }
-			//Optional configuration for Maven Central sync of the version
-		 //   mavenCentralSync {
-		 //       sync = true //Optional (true by default). Determines whether to sync the version to Maven Central.
-		 //       user = 'userToken' //OSS user token
-		//        password = 'paasword' //OSS user password
-		//        close = '1' //Optional property. By default the staging repository is closed and artifacts are released to Maven Central.
-		// You can optionally turn this behaviour off (by puting 0 as value) and release the version manually.
-	   //   }
-		}
-	}
-  }
-
-  */
+}
