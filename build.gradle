@@ -142,7 +142,7 @@ evaluationDependsOn ":extensions"
 evaluationDependsOn ":extensions:marklogic"
 applicationDistribution.
       from( project(":extensions:marklogic").installDist ) {
-   into("/modules/marklogic")
+   into("modules/marklogic")
          exclude { it.file.name in project(":xmlsh-core").configurations.exported.files.name }
 
 }
