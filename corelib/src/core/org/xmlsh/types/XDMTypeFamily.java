@@ -87,8 +87,9 @@ public final class XDMTypeFamily extends AbstractTypeFamily implements ITypeFami
       
       if(obj instanceof XdmItem) {
         try {
-          return new String(XMLUtils.toByteArray((XdmItem) obj, SerializeOpts.defaultOpts),
-            SerializeOpts.defaultOpts.getOutput_xml_encoding());
+          SerializeOpts shellLocalOpts = SerializeOpts.getShellLocalOpts();
+		return new String(XMLUtils.toByteArray((XdmItem) obj, shellLocalOpts),
+            shellLocalOpts.getOutput_xml_encoding());
         } catch (SaxonApiException | IOException e) {
           mLogger.warn("Exception serializing XDM value", e);
           return "";

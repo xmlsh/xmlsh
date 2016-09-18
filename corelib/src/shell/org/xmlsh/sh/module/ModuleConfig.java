@@ -145,7 +145,7 @@ public class ModuleConfig {
 
 
 	public SerializeOpts getSerialOpts() {
-		return mSerialOpts == null ?  SerializeOpts.defaultOpts : mSerialOpts;
+		return mSerialOpts == null ?  SerializeOpts.getShellLocalOpts() : mSerialOpts;
 	}
 
 

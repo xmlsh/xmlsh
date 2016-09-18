@@ -23,6 +23,7 @@ public class echo extends BuiltinCommand {
 
     Options opts = new Options("n,p=port:", SerializeOpts.getOptionDefs());
     opts.parse(args);
+    
 
     boolean nolf = opts.hasOpt("n");
     String port = opts.getOptString("p", null);

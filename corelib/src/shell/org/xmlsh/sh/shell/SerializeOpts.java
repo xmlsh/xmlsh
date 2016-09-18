@@ -15,10 +15,13 @@ import org.xmlsh.core.XValue;
 import org.xmlsh.types.xtypes.XValueProperties;
 import org.xmlsh.util.FileUtils;
 import org.xmlsh.util.Util;
+import org.xmlsh.xpath.ThreadLocalShell;
 
+import lombok.extern.log4j.Log4j2;
+@Log4j2
 public class SerializeOpts {
 
-  public final static SerializeOpts defaultOpts = new SerializeOpts();
+  private final static SerializeOpts defaultOpts = new SerializeOpts();
 
   private boolean indent_xml = true;
   private boolean indent_json = true;
@@ -288,6 +291,15 @@ public class SerializeOpts {
     return defaultOpts;
   }
 
+  public static SerializeOpts getShellLocalOpts() {
+      mLogger.traceEntry();
+	  Shell tshell = ThreadLocalShell.get() ;
+	  if( tshell != null ) 
+		  return 
+			  mLogger.traceExit(tshell.getSerializeOpts());
+	  return mLogger.traceExit(defaultOpts);
+	  
+  }
   /**
    * @return the supports_dtd
    */
