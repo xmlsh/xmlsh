@@ -32,9 +32,10 @@ sourceSets {
 task createVersion  {
     ext.outputDir =  project.file("src/generated/org/xmlsh/sh/shell")
     ext.destFile = new File(outputDir, "version.properties")
+    inputs.property 'xversion_build_date' , xversion_build_date
     outputs.file destFile
-    outputs.upToDateWhen {false }
     doLast {
+        println "Creating version.properties : ${xversion_build_date}"
         outputDir.exists() || outputDir.mkdir()
         def destFile = new File(outputDir, "version.properties")
         destFile.text = """version.build_date=${xversion_build_date}
