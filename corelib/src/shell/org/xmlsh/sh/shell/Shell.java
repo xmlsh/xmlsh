@@ -260,8 +260,9 @@ public class Shell implements AutoCloseable, Closeable, IShellPrompt,
     mSession = new SessionEnvironment();
 
     setGlobalVars();
-
     ThreadLocalShell.set(this); // cur thread active shell
+    // create processor before subshells are created
+    getProcessor();
     try {
       importStandardModules();
     } catch (ClassNotFoundException | InstantiationException
@@ -1421,14 +1422,16 @@ public class Shell implements AutoCloseable, Closeable, IShellPrompt,
 
   public synchronized Processor getLocalProcessor(Configuration config) {
     getLogger().entry(config);
+    boolean init = false ;
     if(config != null) {
-      if(mProcessor == null
-          || !mProcessor.getUnderlyingConfiguration().equals(config)) {
-        getLogger().trace("Allocating new processor. Old={}", mProcessor);
-        mProcessor = new Processor(config);
+      if(  mProcessor == null || !mProcessor.getUnderlyingConfiguration().equals(config)) {
+          getLogger().debug("different configurations processor {} old {} new {}" , 
+              mProcessor ,
+          mProcessor.getUnderlyingConfiguration(), config ) ;
+          mProcessor = new Processor(config);
+         init = true ;
+        }
       }
-      return mProcessor;
-    }
 
     if(mProcessor == null) {
       getLogger().info("Allocating new processor");
@@ -1436,7 +1439,8 @@ public class Shell implements AutoCloseable, Closeable, IShellPrompt,
       boolean bEE = Util.isEmpty(saxon_ee) ? true : Util
           .parseBoolean(saxon_ee);
       mProcessor = new Processor(bEE);
-
+   }
+   if( init ){
       /*
        * mProcessor.getUnderlyingConfiguration().getEditionCode();
        * 
@@ -1444,11 +1448,10 @@ public class Shell implements AutoCloseable, Closeable, IShellPrompt,
        * mProcessor.getSaxonProductVersion() );
        * System.err.println("XQuery " +
        * mProcessor.getConfigurationProperty
-       * (FeatureKeys.XQUERY_SCHEMA_AWARE) ); System.err.println("XSLT " +
-       * mProcessor
-       * .getConfigurationProperty(FeatureKeys.XSLT_SCHEMA_AWARE) );
+       * FeatureKeys.XQUERY_SCHEMA_AWARE) ); System.err.println("XSLT " +
+       *    mProcessor.getConfigurationProperty(FeatureKeys.XSLT_SCHEMA_AWARE) );
        * System.err.println("Schema " +
-       * mProcessor.getConfigurationProperty(FeatureKeys.SCHEMA_VALIDATION
+       *   mProcessor.getConfigurationProperty(FeatureKeys.SCHEMA_VALIDATION
        * ));
        */
 
