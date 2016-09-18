@@ -1439,6 +1439,7 @@ public class Shell implements AutoCloseable, Closeable, IShellPrompt,
       boolean bEE = Util.isEmpty(saxon_ee) ? true : Util
           .parseBoolean(saxon_ee);
       mProcessor = new Processor(bEE);
+      init = true ;
    }
    if( init ){
       /*
