@@ -118,6 +118,7 @@ public class XValueArray extends AbstractList<XValue> implements IXValueMap, IXV
 				ps.write(" ");
 				sep = ",";
 			}
+			ps.write("]");
 		}
 
 	}
