@@ -1,0 +1,91 @@
+[10] Should be 4
+$# 4
+null
+one
+two
+three
+[12] Should be 2 [] {}
+$# 2
+[]
+{}
+[15] Should be 4
+$# 4
+[]
+{}
+
+
+[18] Should be 4
+$# 4
+null
+one
+two
+three
+[20] Should be 2
+$# 2
+[]
+{}
+[22] Should be 6
+[24] Should be 4
+$# 4
+null
+one
+two
+three
+[26] Should be 3
+$# 3
+null one
+
+three
+[28] Should be 5
+$# 5
+null
+one
+
+three
+
+[30] Should be 0
+$# 0
+[32] Should be 4
+$# 4
+[]
+{}
+
+
+[34] Should be 4
+$# 4
+[]
+{}
+
+
+[36] Should be 4
+$# 4
+
+[]
+
+
+[38] Should be 5
+$# 5
+
+[]
+
+
+
+[40] Should be 4
+$# 4
+[]
+{}
+
+
+[42] Should be 4
+$# 4
+
+[]
+
+
+[44] Should be 5
+$# 5
+
+[]
+
+
+
