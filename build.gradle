@@ -29,7 +29,7 @@ ext   {
 }
 
 wrapper {
-  gradleVersion='2.12'
+  gradleVersion='3.0'
 }
 
 version = ext.version_version

@@ -1,0 +1,39 @@
+buildscript {
+ repositories() { 
+   jcenter()
+  }
+  dependencies {
+    classpath 'com.bmuschko:gradle-docker-plugin:3+'
+  }
+
+}
+apply plugin: 'java'
+apply plugin: 'application'
+apply plugin: 'com.bmuschko.docker-java-application'
+version = '1.0'
+sourceCompatibility = '1.8'
+
+repositories {
+  jcenter()
+        maven {
+            url rootProject.getProperty("xmlsh.awsRepoBucket") + "/maven2"
+            credentials(AwsCredentials) {
+                accessKey rootProject.getProperty("xmlsh.awsAccessKey")
+                secretKey rootProject.getProperty("xmlsh.awsSecretKey"
+            }
+        }
+}
+dependencies {
+  compile 'org.xmlsh:xmlsh:2.0'
+}
+
+docker {
+   url = 'https://rancher:2896
+}
+mainClassName = 'org.xmlsh.sh.shell.Shell'
+
+docker {
+  javaApplication {
+    maintainer = 'David lee "dlee@xmlsh.org"'
+  }
+}
