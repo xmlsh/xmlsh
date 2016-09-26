@@ -19,16 +19,24 @@ repositories {
             url rootProject.getProperty("xmlsh.awsRepoBucket") + "/maven2"
             credentials(AwsCredentials) {
                 accessKey rootProject.getProperty("xmlsh.awsAccessKey")
-                secretKey rootProject.getProperty("xmlsh.awsSecretKey"
+                secretKey rootProject.getProperty("xmlsh.awsSecretKey")
             }
         }
 }
 dependencies {
-  compile 'org.xmlsh:xmlsh:2.0'
+  compile 'org.xmlsh:xmlsh:2.0@zip'
 }
 
 docker {
-   url = 'https://rancher:2896
+   url = System.getenv("DOCKER_HOST")
+   certPath =  new File( System.getenv("DOCKER_CERT_PATH") )
+/*
+DOCKER_HOST=tcp://rancher:2376
+DOCKER_MACHINE_NAME=rancher
+DOCKER_TLS_VERIFY=1
+DOCKER_CERT_PATH=/Users/dlee/.docker/machine/machines/rancher
+DOCKER_REGISTRY=nexstra-docker-dockerv2-local.artifactoryonline.com
+*/
 }
 mainClassName = 'org.xmlsh.sh.shell.Shell'
 
