@@ -4,7 +4,7 @@ buildscript {
   }
   dependencies {
     classpath 'net.saliman:gradle-properties-plugin:1.4.4'
-
+    classpath 'com.bmuschko:gradle-docker-plugin:3+'
   }
 }
 
@@ -223,5 +223,43 @@ dependencies {
     compile 'saxon:saxon:6.5.+'
     testCompile   'junit:junit:4.+'
 
+}
+
+buildscript {
+ repositories() { 
+   jcenter()
+  }
+
+}
+apply plugin: 'java'
+apply plugin: 'application'
+apply plugin: 'com.bmuschko.docker-java-application'
+version = '1.0'
+sourceCompatibility = '1.8'
+
+repositories {
+  jcenter()
+        maven {
+            url rootProject.getProperty("xmlsh.awsRepoBucket") + "/maven2"
+            credentials(AwsCredentials) {
+                accessKey rootProject.getProperty("xmlsh.awsAccessKey")
+                secretKey rootProject.getProperty("xmlsh.awsSecretKey")
+            }
+        }
+}
+
+
+docker {
+   if( System.getenv("DOCKER_HOST") != null )
+     url = System.getenv("DOCKER_HOST")
+
+   if( System.getenv("DOCKER_CERT_PATH") != null )
+     certPath =  new File( System.getenv("DOCKER_CERT_PATH") )
+}
+
+docker {
+  javaApplication {
+    maintainer = 'David lee "dlee@xmlsh.org"'
+  }
 }
 
