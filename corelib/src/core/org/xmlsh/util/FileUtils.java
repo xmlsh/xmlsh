@@ -164,9 +164,24 @@ public class FileUtils
 	}
 	
    public static BasicFileAttributes getBasicFileAttributes(Path path, LinkOption... followLinks ) {
-	   
-	   
-	   return getFileAttributes(path,BasicFileAttributes.class,BasicFileAttributeView.class,followLinks);
+     BasicFileAttributes basic = getFileAttributes(path,BasicFileAttributes.class,BasicFileAttributeView.class,followLinks);
+     mLogger.entry(path,followLinks);
+     if( basic == null) { // fake it out -- bug on overlay fs
+       mLogger.debug("No basic atribues - simulating with File methods");
+        File file = path.toFile();
+       basic = new BasicFileAttributes() {
+          public FileTime creationTime() { return FileTime.fromMillis(file.lastModified()); }
+          public Object  fileKey() { return file.hashCode() ; }
+          public  boolean isDirectory() { return file.isDirectory() ; }
+          public boolean isOther() { return ! file.isDirectory() && ! file.isFile() ; }
+          public boolean isRegularFile() { return file.isFile() ; }
+          public boolean isSymbolicLink() { return false ; }
+          public  FileTime  lastAccessTime() { return creationTime(); }
+          public FileTime  lastModifiedTime() { return creationTime(); }
+          public long  size() { return file.length() ; }
+      };
+    }
+      return mLogger.exit(basic) ;
    }
    
    public static DosFileAttributes getDosFileAttributes(Path path, LinkOption... followLinks ) {

@@ -19,8 +19,8 @@ import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-
+import lombok.extern.log4j.Log4j2;
+@Log4j2
 public class UnifiedFileAttributes {
 	public static enum FileType {
 		FILE("file"),
@@ -54,7 +54,6 @@ public class UnifiedFileAttributes {
 
 	}
 
-	static Logger mLogger = LogManager.getLogger();
 	private PosixFileAttributes  posix;
 	private BasicFileAttributes  basic;
 	private DosFileAttributes    dos ;
@@ -83,7 +82,7 @@ public class UnifiedFileAttributes {
 
 	private void init()
 	{
-
+          mLogger.entry();
 		try {
 			if( bInit )
 				return ;
@@ -93,9 +92,6 @@ public class UnifiedFileAttributes {
 				if( ! Files.exists(mPath, mLinkOpts))
 					return ;
 				basic = FileUtils.getBasicFileAttributes(mPath, mLinkOpts);
-				if( basic == null )
-					return ;
-				
 			}
 			bExists = true ;
 
@@ -110,8 +106,6 @@ public class UnifiedFileAttributes {
 			if( basic == null ){
 				if( dos != null )
 					basic  = dos  ;
-				else
-					basic = FileUtils.getBasicFileAttributes( mPath , mLinkOpts );
 			}
 			
 			if(posixPermissions  == null && dos != null ){
@@ -124,17 +118,15 @@ public class UnifiedFileAttributes {
 		} finally {
 			bInit = true ;
 		}
-		
+	  mLogger.exit();	
 		
 	}
 	public boolean hasBasic() {
 		if( ! bInit ) init() ;
-		
 		return getBasic() != null ;
 	}
 	public boolean hasPosix() {
 		if( ! bInit ) init() ;
-
 		return getPosix() != null ;
 	}
 	public boolean hasDos() {
@@ -144,7 +136,6 @@ public class UnifiedFileAttributes {
 	public boolean hasAny() {
 		if( ! bInit ) init() ;
 		if( ! bExists ) return false ;
-
 		return hasBasic() || hasDos() || hasPosix() ;
 	}
 	public UserPrincipal owner() {
@@ -177,8 +168,6 @@ public class UnifiedFileAttributes {
 	public boolean isDirectory() {
 		if( ! bInit ) init() ;
 		if( ! bExists ) return false  ;
-
-
 		return getBasic().isDirectory();
 	}
 	public boolean isSymbolicLink() {
@@ -208,7 +197,6 @@ public class UnifiedFileAttributes {
 	public boolean isArchive() { 
 		if( ! bInit ) init() ;
 		if( ! bExists ) return false ;
-
 		return 
 				(getDos() == null) ? false : getDos().isArchive();
 	}

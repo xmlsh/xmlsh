@@ -259,6 +259,7 @@ docker {
 
 docker {
   javaApplication {
+    baseImage = 'daldei/centos7-java8'
     maintainer = 'David lee "dlee@xmlsh.org"'
   }
 }
