@@ -234,7 +234,6 @@ buildscript {
 apply plugin: 'java'
 apply plugin: 'application'
 apply plugin: 'com.bmuschko.docker-java-application'
-version = '1.0'
 sourceCompatibility = '1.8'
 
 repositories {
