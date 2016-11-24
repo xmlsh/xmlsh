@@ -6,7 +6,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.LinkedList;
 import java.util.List;
-
 import org.xmlsh.aws.util.AWSS3Command;
 import org.xmlsh.aws.util.S3Path;
 import org.xmlsh.core.CoreException;
@@ -16,7 +15,6 @@ import org.xmlsh.core.XValue;
 import org.xmlsh.core.io.FileOutputPort;
 import org.xmlsh.core.io.OutputPort;
 import org.xmlsh.util.Util;
-
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.s3.model.GetObjectRequest;
@@ -27,240 +25,221 @@ import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.amazonaws.services.s3.transfer.Download;
 
-
 public class s3get extends AWSS3Command {
 
-	private boolean bRecurse = false ;
-	private boolean bVerbose = false ;
+  private boolean bRecurse = false;
+  private boolean bVerbose = false;
 
-	private List<Download> mDownloads = new LinkedList<Download>();
+  private List<Download> mDownloads = new LinkedList<Download>();
   private String mDelim = S3Path.kDEF_DELIM;
-  private boolean bForce = false ;
-	/**
-	 * @param args
-	 * @throws IOException 
-	 */
-	@Override
-	public int run(List<XValue> args) throws Exception {
+  private boolean bForce = false;
 
+  /**
+   * @param args
+   * @throws IOException
+   */
+  @Override
+  public int run(List<XValue> args) throws Exception {
 
-		Options opts = getOptions("f=force,meta:,r=recurse,v=verbose,delim:");
-        parseOptions(opts, args);
-        setSerializeOpts(this.getSerializeOpts(opts));
+    Options opts = getOptions("f=force,meta:,r=recurse,v=verbose,delim:");
+    parseOptions(opts, args);
+    setSerializeOpts(this.getSerializeOpts(opts));
 
+    OutputPort metaPort = null;
+    if(opts.hasOpt("meta"))
+      metaPort = mShell.getEnv()
+          .getOutputPort(opts.getOptStringRequired("meta"), false);
 
-		OutputPort	metaPort = null ;
-		if( opts.hasOpt("meta"))
-			metaPort = mShell.getEnv().getOutputPort( opts.getOptStringRequired("meta") , false );
+    args = opts.getRemainingArgs();
 
-		args = opts.getRemainingArgs();
-
-		bRecurse = opts.hasOpt("recurse");
-		bVerbose = opts.hasOpt("verbose"); 
+    bRecurse = opts.hasOpt("recurse");
+    bVerbose = opts.hasOpt("verbose");
     mDelim = opts.getOptString("delim", S3Path.kDEF_DELIM);
     bForce = opts.hasOpt("force");
 
+    try {
+      getS3Client(opts);
+    } catch (UnexpectedException e) {
+      usage(e.getLocalizedMessage());
+      return 1;
 
+    }
 
-		try {
-			getS3Client(opts);
-		} catch (UnexpectedException e) {
-			usage( e.getLocalizedMessage() );
-			return 1;
+    S3Path src;
+    OutputPort dest;
 
-		}
+    int ret = 0;
 
-		S3Path 		src;
-		OutputPort	dest;
+    switch(args.size()){
+    case 0:
+      src = getS3Path();
+      return 1;
 
-		int ret = 0;
+    case 1: {
+      src = getS3Path(args.get(0));
+      dest = getStdout();
 
-		switch( args.size() ){
-		case 0 :
-		  src = getS3Path();
-			return 1; 
+      ret += get(src, dest, metaPort);
 
-		case	1 :
-		{
-			src  = getS3Path(args.get(0));
-			dest = getStdout();
+      break;
+    }
 
-			ret += get(  src , dest , metaPort   );
+    default:
 
-			break ;
-		}
+      List<XValue> srcs = args;
+      XValue xds = srcs.remove(args.size() - 1);
 
-		default	:
+      for(XValue s : srcs) {
+        src = getS3Path(s);
+        String prefix = null;
+        if(bRecurse)
+          prefix = src.getKey();
 
-			List<XValue> srcs = args ;
-			XValue xds  = srcs.remove(args.size()-1);
+        ret += get(src, xds, metaPort, prefix);
+      }
 
-			for( XValue s : srcs ){
-				src = getS3Path( s );
-				String prefix = null ;
-				if( bRecurse )
-					prefix = src.getKey() ;
+    }
 
-				ret += get(  src , xds  , metaPort  , prefix );
-			}
+    waitForDownloads();
+    shutdownTransferManager();
 
-		}
+    return ret;
 
-		waitForDownloads();
-		shutdownTransferManager();
+  }
 
-		return ret;
+  private void waitForDownloads() throws AmazonServiceException,
+      AmazonClientException, InterruptedException {
+    while(!mDownloads.isEmpty()) {
+      Download d = mDownloads.remove(0);
+      d.waitForCompletion();
+    }
 
-	}
+  }
 
-	private void waitForDownloads() throws AmazonServiceException, AmazonClientException, InterruptedException {
-		while( !mDownloads.isEmpty()){
-			Download d = mDownloads.remove(0);
-			d.waitForCompletion();
-		}
+  private int get(S3Path src, XValue dest, OutputPort metaPort, String prefix)
+      throws CoreException, IOException, AmazonServiceException,
+      AmazonClientException, InterruptedException {
 
-	}
+    if(src.isDirectory()) {
+      int ret = 0;
+      if(!bRecurse && !bForce) {
+        mShell.printErr("Skipping directory: " + src.getKey());
+        return 0;
+      }
 
-	private int get( S3Path src , XValue dest, OutputPort metaPort , String prefix ) throws CoreException, IOException, AmazonServiceException, AmazonClientException, InterruptedException 
-	{
+      ListObjectsRequest request = getListRequest(src, null);
+      traceCall("listObjects");
 
+      ObjectListing list = getAWSClient().listObjects(request);
 
-		if( src.isDirectory()){
-			int ret = 0;
-			if( ! bRecurse && ! bForce  ){
-				mShell.printErr("Skipping directory: " + src.getKey());
-				return 0;
-			}
+      do {
 
-			ListObjectsRequest request = getListRequest( src ,null  );
-			traceCall("listObjects");
+        List<S3ObjectSummary> objs = list.getObjectSummaries();
+        for(S3ObjectSummary obj : objs) {
+          S3Path s = getS3Path(obj.getBucketName(), obj.getKey());
+          if(s.isDirectory())
+            continue;
+          ret += get(s, dest, metaPort, prefix);
+        }
+        waitForDownloads();
+        if(list.isTruncated()) {
+          // String marker = list.getNextMarker();
+          list = getAWSClient().listNextBatchOfObjects(list);
+        }
+        else
+          break;
+      } while(true);
 
-			ObjectListing list = getAWSClient().listObjects(request);
+      return ret;
 
-			do {
+    }
+    else
+      return get(src, getOutput(src, dest, prefix), metaPort);
 
-				List<S3ObjectSummary>  objs = list.getObjectSummaries();
-				for ( S3ObjectSummary obj : objs ){
-					S3Path s = getS3Path( obj.getBucketName() , obj.getKey());
-					if( s.isDirectory() )
-						continue ;
-					ret += get( s , dest , metaPort , prefix );
-				}
-				waitForDownloads();
-				if( list.isTruncated()){
-					// String marker = list.getNextMarker();
-					list = getAWSClient().listNextBatchOfObjects(list);
-				}
-				else
-					break;
-			} while( true );
+  }
 
-			return ret ;
+  private OutputPort getOutput(S3Path src, XValue dest, String prefix)
+      throws CoreException, IOException {
 
+    String fname = dest.toString();
+    String key = src.getKey();
 
-		}  else 
-			return get( src , getOutput(src,dest, prefix )  , metaPort );
+    if(!Util.isBlank(prefix)) {
+      if(!key.startsWith(prefix) && !bForce) {
+        mShell.printErr("Skipping key - does not start with prefix: " + key);
+        return null;
+      }
+      key = key.substring(prefix.length());
+      while(key.startsWith(mDelim))
+        key = key.substring(1);
 
+    }
 
-	}
+    File out = getFile(fname);
+    if(out.isDirectory() || fname.endsWith(mDelim))
+      out = new File(out, key);
 
-	private OutputPort getOutput(S3Path src , XValue dest , String prefix ) throws CoreException, IOException {
+    File parent = out.getParentFile();
+    if(parent != null && !parent.exists())
+      parent.mkdirs();
 
-		String fname = dest.toString();
-		String key = src.getKey();
+    return new FileOutputPort(out, false, false);
 
-		if( ! Util.isBlank(prefix)){
-			if( !key.startsWith(prefix) && ! bForce ){
-				mShell.printErr("Skipping key - does not start with prefix: " + key );
-				return null ;
-			}
-			key = key.substring( prefix.length() );
-			while( key.startsWith(mDelim))
-				key = key.substring(1);
+  }
 
-		}
+  private int get(S3Path src, OutputPort dest, OutputPort metaPort) {
 
-		File out = getFile( fname );
-		if( out.isDirectory() || fname.endsWith(mDelim))
-			out = new File( out , key );
+    if(bVerbose)
+      mShell.printErr("Getting " + src.toString());
 
-		File parent = out.getParentFile();
-		if( parent != null && ! parent.exists() )
-			parent.mkdirs();
+    try {
 
-		return new FileOutputPort( out , false , false );
+      GetObjectRequest request = new GetObjectRequest(src.getBucket(),
+          src.getKey());
 
+      ObjectMetadata meta = null;
+      if(dest.isFile()) {
 
+        traceCall("getObject");
+        Download download = getTransferManager().download(request,
+            dest.getFile());
+        mDownloads.add(download);
 
+      }
+      else {
+        traceCall("getObject");
 
+        S3Object obj = getAWSClient().getObject(request);
+        meta = obj.getObjectMetadata();
 
+        InputStream is = obj.getObjectContent();
+        OutputStream os = dest.asOutputStream(getSerializeOpts());
+        Util.copyStream(is, os);
+        os.close();
+        is.close();
+      }
 
-	}
+      if(metaPort != null) {
+        mWriter = metaPort.asXMLStreamWriter(getSerializeOpts());
+        startDocument();
+        writeMeta(meta);
+        endDocument();
+        mWriter.close();
+      }
 
-	private int get( S3Path src , OutputPort dest, OutputPort metaPort  ) 
-	{
+    } catch (Exception e) {
 
-		if( bVerbose )
-			mShell.printErr("Getting " + src.toString() );
+      mShell.printErr("Exception getting: " + src, e);
+      return 1;
+    }
 
-		try {
+    return 0;
 
-			GetObjectRequest request = 
-					new GetObjectRequest(src.getBucket(),src.getKey());
+  }
 
-			ObjectMetadata meta = null ;
-			if( dest.isFile() )
-			{
-
-				traceCall("getObject");
-				Download download = getTransferManager().download(request,  dest.getFile());
-				mDownloads.add(download);
-
-			} else
-			{
-				traceCall("getObject");
-
-				S3Object obj = getAWSClient().getObject(request);
-				meta = obj.getObjectMetadata() ;
-
-				InputStream is = obj.getObjectContent();
-				OutputStream os = dest.asOutputStream(getSerializeOpts());
-				Util.copyStream(is, os);
-				os.close();
-				is.close();
-			}
-
-			if( metaPort != null ){
-				mWriter = metaPort.asXMLStreamWriter(getSerializeOpts());
-				startDocument();
-				writeMeta( meta );
-				endDocument();
-				mWriter.close();
-			}
-
-		} catch( Exception e )
-		{
-
-			mShell.printErr("Exception getting: " + src  , e);
-			return 1;
-		}
-
-		return 0;
-
-	}
-
-
-
-
-	@Override
-	public void usage() {
-		super.usage("Usage: s3get source [target]");
-	}
-
-
-
-
-
-
+  @Override
+  public void usage() {
+    super.usage("Usage: s3get source [target]");
+  }
 
 }

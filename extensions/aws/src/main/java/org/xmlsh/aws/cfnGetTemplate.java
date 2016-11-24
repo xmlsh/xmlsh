@@ -9,11 +9,7 @@ package org.xmlsh.aws;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
-
 import javax.xml.stream.XMLStreamException;
-
-import net.sf.saxon.s9api.SaxonApiException;
-
 import org.xmlsh.aws.util.AWSCFNCommand;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.Options;
@@ -22,119 +18,98 @@ import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.io.OutputPort;
 import org.xmlsh.sh.shell.SerializeOpts;
-
 import com.amazonaws.services.cloudformation.model.GetTemplateRequest;
 import com.amazonaws.services.cloudformation.model.GetTemplateResult;
+import net.sf.saxon.s9api.SaxonApiException;
 
 public class cfnGetTemplate extends AWSCFNCommand {
 
+  @Override
+  public int run(List<XValue> args) throws Exception {
 
+    Options opts = getOptions("j=json,n=name:");
+    parseOptions(opts, args);
+    setSerializeOpts(this.getSerializeOpts(opts));
 
-	@Override
-	public int run(List<XValue> args) throws Exception {
+    args = opts.getRemainingArgs();
 
+    boolean bJson = opts.hasOpt("json");
 
+    try {
+      getCFNClient(opts);
+    } catch (UnexpectedException e) {
+      usage(e.getLocalizedMessage());
+      return 1;
 
-		Options opts = getOptions("j=json,n=name:");
-        parseOptions(opts, args);
-        setSerializeOpts(this.getSerializeOpts(opts));
+    }
 
+    int ret = getTemplate(opts.getOptStringRequired("name"), bJson);
 
-		args = opts.getRemainingArgs();
+    return ret;
 
-		boolean bJson = opts.hasOpt("json");
+  }
 
+  private int getTemplate(String stack, boolean bJson)
+      throws IOException, XMLStreamException, SaxonApiException, CoreException {
 
+    OutputPort stdout = getStdout();
 
+    GetTemplateRequest request = new GetTemplateRequest().withStackName(stack);
 
-		try {
-			getCFNClient(opts);
-		} catch (UnexpectedException e) {
-			usage( e.getLocalizedMessage() );
-			return 1;
+    traceCall("getTemplate");
 
-		}
+    GetTemplateResult result = getAWSClient().getTemplate(request);
 
+    if(bJson) {
+      SerializeOpts opts = getSerializeOpts().clone();
+      opts.setOutput_text_encoding("utf-8");
 
-		int ret = getTemplate(opts.getOptStringRequired("name"),bJson);
+      PrintWriter w = stdout.asPrintWriter(opts);
+      w.print(result.getTemplateBody());
+      w.close();
 
+    }
+    else {
+      mWriter = new SafeXMLStreamWriter(
+          stdout.asXMLStreamWriter(getSerializeOpts()));
 
+      startDocument();
+      startElement(this.getName());
 
-		return ret;
+      characters(result.getTemplateBody());
 
+      endElement();
+      endDocument();
+      closeWriter();
 
-	}
+      stdout.writeSequenceTerminator(getSerializeOpts());
+    }
+    return 0;
 
-
-
-	private int getTemplate(String stack, boolean bJson) throws IOException, XMLStreamException, SaxonApiException, CoreException {
-
-
-
-        OutputPort stdout = getStdout();
-
-
-
-		GetTemplateRequest request = new GetTemplateRequest().withStackName(stack);
-
-		traceCall("getTemplate");
-
-        GetTemplateResult result = getAWSClient().getTemplate(request);
-
-
-
-		if( bJson ){
-			SerializeOpts opts = getSerializeOpts().clone();
-			opts.setOutput_text_encoding("utf-8");
-
-			PrintWriter w = stdout.asPrintWriter(opts);
-			w.print(result.getTemplateBody());
-			w.close();
-
-
-		} else {
-			mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(getSerializeOpts()));
-
-
-			startDocument();
-			startElement(this.getName());
-
-
-
-
-
-			characters( result.getTemplateBody());
-
-			endElement();
-			endDocument();
-			closeWriter();
-
-			stdout.writeSequenceTerminator(getSerializeOpts());
-		}
-		return 0;
-
-	}
+  }
 
 }
 
-
-
 /*
- * Copyright (C) 2008-2014   David A. Lee.
+ * Copyright (C) 2008-2014 David A. Lee.
  * 
- * The contents of this file are subject to the "Simplified BSD License" (the "License");
- * you may not use this file except in compliance with the License. You may obtain a copy of the
- * License at http://www.opensource.org/licenses/bsd-license.php 
-
+ * The contents of this file are subject to the "Simplified BSD License" (the
+ * "License");
+ * you may not use this file except in compliance with the License. You may
+ * obtain a copy of the
+ * License at http://www.opensource.org/licenses/bsd-license.php
+ * 
  * Software distributed under the License is distributed on an "AS IS" basis,
  * WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * See the License for the specific language governing rights and limitations under the License.
+ * See the License for the specific language governing rights and limitations
+ * under the License.
  *
  * The Original Code is: all this file.
  *
  * The Initial Developer of the Original Code is David A. Lee
  *
- * Portions created by (your name) are Copyright (C) (your legal entity). All Rights Reserved.
+ * Portions created by (your name) are Copyright (C) (your legal entity). All
+ * Rights Reserved.
  *
  * Contributor(s): David A. Lee
  * 

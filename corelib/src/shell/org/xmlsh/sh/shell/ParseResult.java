@@ -6,7 +6,7 @@
 
 package org.xmlsh.sh.shell;
 
-import static org.xmlsh.sh.shell.CharAttr.ATTR_PRESERVE;
+import static org.xmlsh.util.CharAttr.ATTR_PRESERVE;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -18,6 +18,7 @@ import org.xmlsh.core.EvalEnv;
 import org.xmlsh.core.EvalFlag;
 import org.xmlsh.core.XValue;
 import org.xmlsh.sh.core.CharAttributeBuffer;
+import org.xmlsh.sh.core.CharAttrs;
 import org.xmlsh.sh.core.EvalUtils;
 import org.xmlsh.util.Util;
 
@@ -303,7 +304,7 @@ public class ParseResult {
     /*******/
     if(!av.isEmpty()) {
 
-      CharAttributeBuffer wilds[] = av.split('/');
+      CharAttributeBuffer wilds[] = av.split('/',true);
       if(wilds.length > 0) {
 
         List<String> rs = new ArrayList<String>();

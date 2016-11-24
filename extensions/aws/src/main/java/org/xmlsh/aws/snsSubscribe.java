@@ -2,102 +2,77 @@ package org.xmlsh.aws;
 
 import java.io.IOException;
 import java.util.List;
-
 import javax.xml.stream.XMLStreamException;
-
-import net.sf.saxon.s9api.SaxonApiException;
-
 import org.xmlsh.aws.util.AWSSNSCommand;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.io.OutputPort;
-
 import com.amazonaws.services.sns.model.SubscribeRequest;
 import com.amazonaws.services.sns.model.SubscribeResult;
-
+import net.sf.saxon.s9api.SaxonApiException;
 
 public class snsSubscribe extends AWSSNSCommand {
 
+  /**
+   * @param args
+   * @throws IOException
+   */
+  @Override
+  public int run(List<XValue> args) throws Exception {
 
+    Options opts = getOptions("t=topic:,p=protocol:,e=endpoint-arn:");
+    opts.parse(args);
 
+    args = opts.getRemainingArgs();
 
+    setSerializeOpts(this.getSerializeOpts(opts));
 
-	/**
-	 * @param args
-	 * @throws IOException 
-	 */
-	@Override
-	public int run(List<XValue> args) throws Exception {
+    try {
+      getSNSClient(opts);
+    } catch (UnexpectedException e) {
+      usage(e.getLocalizedMessage());
+      return 1;
 
+    }
 
-		Options opts = getOptions("t=topic:,p=protocol:,e=endpoint-arn:");
-		opts.parse(args);
+    int ret;
 
-		args = opts.getRemainingArgs();
+    ret = subscribe(opts.getOptStringRequired("topic"),
+        opts.getOptStringRequired("protocol"),
+        opts.getOptStringRequired("endpoint-arn"));
 
+    return ret;
 
+  }
 
-		setSerializeOpts(this.getSerializeOpts(opts));
+  private int subscribe(String arn, String protocol, String endpoint)
+      throws IOException, XMLStreamException, SaxonApiException, CoreException {
 
-		try {
-			getSNSClient(opts);
-		} catch (UnexpectedException e) {
-			usage( e.getLocalizedMessage() );
-			return 1;
+    SubscribeRequest request = new SubscribeRequest(arn, protocol, endpoint);
+    traceCall("subscribe");
 
-		}
+    SubscribeResult result = getAWSClient().subscribe(request);
 
-		int ret;
+    OutputPort stdout = this.getStdout();
+    mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
 
-		ret = subscribe( opts.getOptStringRequired("topic"),
-				opts.getOptStringRequired("protocol"),
-				opts.getOptStringRequired("endpoint-arn"));
+    startDocument();
+    startElement(getName());
 
+    startElement("subscription");
+    attribute("arn", result.getSubscriptionArn());
 
-		return ret;
+    endElement();
 
+    endElement();
+    endDocument();
+    closeWriter();
+    stdout.writeSequenceTerminator(getSerializeOpts());
 
-	}
+    return 0;
 
-
-	private int subscribe(String arn, String protocol, String endpoint ) throws IOException, XMLStreamException, SaxonApiException, CoreException {
-
-
-		SubscribeRequest request = new SubscribeRequest(arn,protocol,endpoint);
-		traceCall("subscribe");
-
-		SubscribeResult result = getAWSClient().subscribe(request);
-
-		OutputPort stdout = this.getStdout();
-		mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
-
-
-		startDocument();
-		startElement(getName());
-
-
-		startElement("subscription");
-		attribute("arn",result.getSubscriptionArn());
-
-		endElement();
-
-
-
-		endElement();
-		endDocument();
-		closeWriter();
-		stdout.writeSequenceTerminator(getSerializeOpts());
-
-		return 0;
-
-
-
-
-	}
-
-
-
+  }
 
 }

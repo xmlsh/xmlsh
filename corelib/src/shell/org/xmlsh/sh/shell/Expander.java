@@ -5,7 +5,7 @@
 
 package org.xmlsh.sh.shell;
 
-import static org.xmlsh.sh.shell.CharAttr.ATTR_ESCAPED;
+import static org.xmlsh.util.CharAttr.ATTR_ESCAPED;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
@@ -19,6 +19,7 @@ import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.Variables;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.XVariable;
+import org.xmlsh.sh.core.CharAttrs;
 import org.xmlsh.sh.core.EvalUtils;
 import org.xmlsh.types.XDMTypeFamily;
 import org.xmlsh.util.NameValueMap;

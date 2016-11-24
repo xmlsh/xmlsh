@@ -29,7 +29,6 @@ import org.xmlsh.core.XValue;
 import org.xmlsh.core.XVariable;
 import org.xmlsh.core.XVariableExpr;
 import org.xmlsh.json.JSONUtils;
-import org.xmlsh.sh.shell.CharAttrs;
 import org.xmlsh.sh.shell.Expander;
 import org.xmlsh.sh.shell.ParseResult;
 import org.xmlsh.sh.shell.Shell;

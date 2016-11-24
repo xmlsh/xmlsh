@@ -2,157 +2,132 @@ package org.xmlsh.aws;
 
 import java.io.IOException;
 import java.util.List;
-
 import javax.xml.stream.XMLStreamException;
-
-import net.sf.saxon.s9api.SaxonApiException;
-
 import org.xmlsh.aws.util.AWSSNSCommand;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.io.OutputPort;
-
 import com.amazonaws.services.sns.model.ListSubscriptionsByTopicRequest;
 import com.amazonaws.services.sns.model.ListSubscriptionsByTopicResult;
 import com.amazonaws.services.sns.model.ListSubscriptionsRequest;
 import com.amazonaws.services.sns.model.ListSubscriptionsResult;
 import com.amazonaws.services.sns.model.Subscription;
-
+import net.sf.saxon.s9api.SaxonApiException;
 
 public class snsListSubscriptions extends AWSSNSCommand {
 
+  /**
+   * @param args
+   * @throws IOException
+   */
+  @Override
+  public int run(List<XValue> args) throws Exception {
 
+    Options opts = getOptions();
+    parseOptions(opts, args);
 
-	/**
-	 * @param args
-	 * @throws IOException 
-	 */
-	@Override
-	public int run(List<XValue> args) throws Exception {
+    args = opts.getRemainingArgs();
 
+    setSerializeOpts(this.getSerializeOpts(opts));
 
-		Options opts = getOptions();
-        parseOptions(opts, args);
+    try {
+      getSNSClient(opts);
+    } catch (UnexpectedException e) {
+      usage(e.getLocalizedMessage());
+      return 1;
 
-		args = opts.getRemainingArgs();
+    }
 
+    int ret;
 
+    if(args.size() == 0)
+      ret = list();
+    else
+      ret = list(args.get(0).toString());
 
-		setSerializeOpts(this.getSerializeOpts(opts));
+    return ret;
 
+  }
 
+  private int list()
+      throws IOException, XMLStreamException, SaxonApiException, CoreException {
 
+    OutputPort stdout = this.getStdout();
+    mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
 
-		try {
-			getSNSClient(opts);
-		} catch (UnexpectedException e) {
-			usage( e.getLocalizedMessage() );
-			return 1;
+    startDocument();
+    startElement(getName());
 
-		}
+    traceCall("listSubscriptions");
 
-		int ret;
+    ListSubscriptionsResult result = getAWSClient().listSubscriptions();
 
-		if( args.size() == 0 )
-			ret = list();
-		else
-			ret = list(args.get(0).toString());
+    do {
+      for(Subscription subscription : result.getSubscriptions()) {
+        startElement("subscription");
+        attribute("endpoint", subscription.getEndpoint());
+        attribute("owner", subscription.getOwner());
+        attribute("protocol", subscription.getProtocol());
+        attribute("subscription-arn", subscription.getSubscriptionArn());
+        attribute("topic-arn", subscription.getTopicArn());
 
+        endElement();
 
-		return ret;
+      }
+      if(result.getNextToken() != null)
+        result = getAWSClient().listSubscriptions(new ListSubscriptionsRequest()
+            .withNextToken(result.getNextToken()));
 
+    } while(result.getNextToken() != null);
 
-	}
+    endElement();
+    endDocument();
+    closeWriter();
+    stdout.writeSequenceTerminator(getSerializeOpts());
 
+    return 0;
 
-	private int list() throws IOException, XMLStreamException, SaxonApiException, CoreException {
+  }
 
+  private int list(String topic)
+      throws IOException, XMLStreamException, SaxonApiException, CoreException {
 
-		OutputPort stdout = this.getStdout();
-		mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
+    OutputPort stdout = this.getStdout();
+    mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
 
+    startDocument();
+    startElement(getName());
 
-		startDocument();
-		startElement(getName());
+    ListSubscriptionsByTopicResult result = getAWSClient()
+        .listSubscriptionsByTopic(new ListSubscriptionsByTopicRequest(topic));
 
-		traceCall("listSubscriptions");
+    do {
+      for(Subscription subscription : result.getSubscriptions()) {
+        startElement("subscription");
+        attribute("endpoint", subscription.getEndpoint());
+        attribute("owner", subscription.getOwner());
+        attribute("protocol", subscription.getProtocol());
+        attribute("subscription-arn", subscription.getSubscriptionArn());
+        attribute("topic-arn", subscription.getTopicArn());
 
-		ListSubscriptionsResult result = getAWSClient().listSubscriptions();
+        endElement();
 
-		do {
-			for( Subscription subscription : result.getSubscriptions()){
-				startElement("subscription");
-				attribute("endpoint",subscription.getEndpoint());
-				attribute("owner",subscription.getOwner());
-				attribute("protocol",subscription.getProtocol());
-				attribute("subscription-arn",subscription.getSubscriptionArn());
-				attribute("topic-arn",subscription.getTopicArn());
+      }
+      if(result.getNextToken() != null)
+        result = getAWSClient().listSubscriptionsByTopic(
+            new ListSubscriptionsByTopicRequest(topic, result.getNextToken()));
 
-				endElement();
+    } while(result.getNextToken() != null);
 
-			}
-			if( result.getNextToken() != null )
-				result = getAWSClient().listSubscriptions( new ListSubscriptionsRequest().withNextToken(result.getNextToken()));
+    endElement();
+    endDocument();
+    closeWriter();
+    stdout.writeSequenceTerminator(getSerializeOpts());
 
-		} while(result.getNextToken() != null );
+    return 0;
 
-
-
-		endElement();
-		endDocument();
-		closeWriter();
-		stdout.writeSequenceTerminator(getSerializeOpts());
-
-		return 0;
-
-	}
-
-	private int list(String topic) throws IOException, XMLStreamException, SaxonApiException, CoreException {
-
-
-		OutputPort stdout = this.getStdout();
-		mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
-
-
-		startDocument();
-		startElement(getName());
-
-
-		ListSubscriptionsByTopicResult result = getAWSClient().listSubscriptionsByTopic(new ListSubscriptionsByTopicRequest(topic));
-
-		do {
-			for( Subscription subscription : result.getSubscriptions()){
-				startElement("subscription");
-				attribute("endpoint",subscription.getEndpoint());
-				attribute("owner",subscription.getOwner());
-				attribute("protocol",subscription.getProtocol());
-				attribute("subscription-arn",subscription.getSubscriptionArn());
-				attribute("topic-arn",subscription.getTopicArn());
-
-				endElement();
-
-			}
-			if( result.getNextToken() != null )
-				result = getAWSClient().listSubscriptionsByTopic( new ListSubscriptionsByTopicRequest(topic,result.getNextToken()));
-
-		} while(result.getNextToken() != null );
-
-
-
-		endElement();
-		endDocument();
-		closeWriter();
-		stdout.writeSequenceTerminator(getSerializeOpts());
-
-
-		return 0;
-
-
-
-
-	}
-
+  }
 
 }

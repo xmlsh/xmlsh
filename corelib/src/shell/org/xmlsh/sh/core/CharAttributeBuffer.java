@@ -9,8 +9,8 @@ package org.xmlsh.sh.core;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
-import org.xmlsh.sh.shell.CharAttr;
-import org.xmlsh.sh.shell.CharAttrs;
+import org.xmlsh.util.CharAttr;
+import lombok.val;
 
 /*
  * Like StringBuilder but stores extended attributes with each charactor.
@@ -23,6 +23,19 @@ public class CharAttributeBuffer {
   private int length;
   private char[] charArray;
   private byte[] attrArray;
+  
+
+  @FunctionalInterface
+  public interface CharAttributeDecoder {
+    void decode(StringBuilder sb, char ch, char esc, byte attrs);
+  }
+
+
+  @FunctionalInterface
+  public interface CharAttributeEncoder {
+    byte encode(CharAttributeBuffer sb, char ch, char esc , byte attrs);
+  }
+
 
   public CharAttributeBuffer() {
     this(DEFAULT_CAPACITY);
@@ -76,18 +89,19 @@ public class CharAttributeBuffer {
     this(s, (byte) 0);
   }
 
-  public void append(char c) {
-    append(c, (byte) 0);
+  public CharAttributeBuffer  append(char c) {
+    return append(c, (byte) 0);
   }
 
-  public void append(char c, CharAttrs attr) {
-    append(c, attr.toBits());
+  public CharAttributeBuffer append(char c, CharAttrs attr) {
+    return append(c, attr.toBits());
   }
 
-  public void append(char c, byte attr) {
+  public CharAttributeBuffer append(char c, byte attr) {
     ensure(length + 1);
     charArray[length] = c;
     attrArray[length++] = attr;
+    return this;
   }
 
   private void ensure(int size) {
@@ -110,31 +124,61 @@ public class CharAttributeBuffer {
 
   @Override
   public String toString() {
-    return new String(charArray, 0, length);
+    return decodeString();
   }
 
-  public String decodeString(CharAttributeDecoder decoder) {
-    StringBuilder sb = new StringBuilder(length);
-    for(int i = 0; i < length; i++)
-      decoder.decode(sb, charArray[i], attrArray[i]);
+  public static CharAttributeBuffer encodeString(String s,  CharAttributeEncoder encoder, char esc, CharAttrs attrs ) {
+    if( s == null ) return null ; // preserve null
+    byte ca = attrs.toBits();
+    CharAttributeBuffer b = new CharAttributeBuffer(s.length());
+    for( char c : s.toCharArray() )
+      ca = encoder.encode( b , c , esc , ca);
+    return b;
+  }
+  
+  public static String decodeString(CharAttributeBuffer cb , CharAttributeDecoder decoder, char esc ) {
+    if( cb == null ) return null;
+    StringBuilder sb = new StringBuilder(cb.length);
+    for(int i = 0; i < cb.length; i++)
+      decoder.decode(sb, cb.charArray[i], esc , cb.attrArray[i]);
     return sb.toString();
   }
 
-  public static CharAttributeDecoder defaultDecoder() {
-
-    return new CharAttributeDecoder() {
-      @Override
-      public void decode(StringBuilder sb, char ch, byte attrs) {
+  public static CharAttributeDecoder defaultDecoder = 
+    (StringBuilder sb, char ch, char esc , byte attrs) -> {
         if((attrs & CharAttr.ATTR_ESCAPED.toBit()) != 0)
-          sb.append('\\');
+          sb.append(esc);
         sb.append(ch);
-      }
-    };
+      }   ;
+    public static CharAttributeEncoder defaultEncoder = 
+        (CharAttributeBuffer cb, char ch, char esc, byte attrs) -> {
+          if( attrs == 0 ){ // not escaped 
+            if( ch == esc)
+              return CharAttr.ATTR_ESCAPED.toBit();
+          }
+          cb.append(ch,attrs);
+          return 0;
+        }   ;
+      
 
+  public static String decodeString( CharAttributeBuffer sb, char esc) {
+    return decodeString(sb , defaultDecoder, esc);
+  }
+  public String decodeString() {
+    return decodeString( this , '\\');
+  }
+  public String decodeString(char esc) {
+    return decodeString( this , esc);
+  }  
+  public static CharAttributeBuffer encodeString(String s, char esc, CharAttrs attrs) {
+    return encodeString( s,defaultEncoder, esc, attrs);
+  }
+  public static CharAttributeBuffer encodeString(String s, char esc) {
+    return encodeString(s,esc,CharAttrs.NONE);
   }
 
-  public String decodeString() {
-    return decodeString(defaultDecoder());
+  public static CharAttributeBuffer encodeString(String s) {
+    return encodeString( s,defaultEncoder, '\\',CharAttrs.NONE);
   }
 
   public char[] getCharArray() {
@@ -169,14 +213,27 @@ public class CharAttributeBuffer {
     length += len;
   }
 
-  public int indexOf(int start, char c, int attr) {
+  public int indexOf(int start, char c, byte attr) {
     for(int i = start; i < length; i++) {
       if(charArray[i] == c && attrArray[i] == attr)
         return i;
     }
     return -1;
   }
+  public int indexOf(char delim) {
+    return indexOf( 0,delim , CharAttr.NONE );
+  }
 
+  public int lastIndexOf(char c) {
+      return lastIndexOf( 0 , c, CharAttr.NONE );
+  }
+  public int lastIndexOf(int first , char c, byte attr) {
+    for(int i = length-1; i >=first ; i--) {
+      if(charArray[i] == c && attrArray[i] == attr)
+        return i;
+    }
+    return -1;
+  }
   public void delete(int start, int len) {
     if(start + len > length)
       len = (length - start);
@@ -188,17 +245,18 @@ public class CharAttributeBuffer {
     length -= len;
 
   }
-
-  // split using c as a repeatable seperator e.g. a/b//c == [a,b,c]
-  public CharAttributeBuffer[] split(char c) {
+  
+  // split using c as an optionally repeatable seperator e.g. a/b//c == [a,b,c]
+  public CharAttributeBuffer[] split(char c,boolean repeatable) {
     ArrayList<CharAttributeBuffer> list = new ArrayList<CharAttributeBuffer>();
 
     int start = 0;
     for(int i = 0; i < length; i++) {
       if(charArray[i] == c) {
         list.add(subsequence(start, i));
-        while(i < length && charArray[i + 1] == c)
-          i++;
+        if( repeatable)
+          while(i < length && charArray[i + 1] == c)
+            i++;
         start = i + 1;
       }
     }
@@ -208,7 +266,9 @@ public class CharAttributeBuffer {
     return list.toArray(new CharAttributeBuffer[list.size()]);
 
   }
-
+  public CharAttributeBuffer subsequence(int start) {
+    return subsequence(start,length);
+  }
   public CharAttributeBuffer subsequence(int start, int i) {
     return new CharAttributeBuffer(
         Arrays.copyOfRange(charArray, start, i),
@@ -246,7 +306,7 @@ public class CharAttributeBuffer {
     return true;
   }
 
-  public void append(CharAttributeBuffer achars) {
+  public CharAttributeBuffer append(CharAttributeBuffer achars) {
     if(achars != null) {
       int len = achars.length;
       ensure(length + len);
@@ -254,6 +314,7 @@ public class CharAttributeBuffer {
       System.arraycopy(achars.attrArray, 0, attrArray, 0, len);
       length += len;
     }
+    return this ;
   }
 
   public void append(String s, CharAttrs attr) {
@@ -271,6 +332,22 @@ public class CharAttributeBuffer {
           .append(CharAttrs.fromBits(attrArray[i]));
     }
   }
+
+  public String[] splitString(char cs) {
+    return splitString(cs,'\\',false);
+  }
+  
+  public String[] splitString(char cs,char esc, boolean repeatable) {
+    val cv = split(cs,repeatable);
+    val sa = new String[cv.length];
+    int i =0 ;
+    for( val v : cv ){
+      sa[i++] = v.decodeString(esc) ;
+    }
+    return sa;
+  }
+
+
 }
 
 /*

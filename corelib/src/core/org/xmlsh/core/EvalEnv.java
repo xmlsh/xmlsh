@@ -10,9 +10,9 @@ import static org.xmlsh.core.EvalFlag.EXPAND_SEQUENCES;
 import static org.xmlsh.core.EvalFlag.EXPAND_VAR;
 import static org.xmlsh.core.EvalFlag.EXPAND_WILD;
 import static org.xmlsh.core.EvalFlag.SPLIT_WORDS;
-import static org.xmlsh.sh.shell.CharAttr.ATTR_PRESERVE;
+import static org.xmlsh.util.CharAttr.ATTR_PRESERVE;
 import java.util.EnumSet;
-import org.xmlsh.sh.shell.CharAttrs;
+import org.xmlsh.sh.core.CharAttrs;
 import org.xmlsh.util.Util;
 
 /*

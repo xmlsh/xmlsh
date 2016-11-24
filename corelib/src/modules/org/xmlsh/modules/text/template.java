@@ -13,7 +13,6 @@ import java.io.Reader;
 import java.io.Writer;
 import java.util.List;
 import java.util.Properties;
-
 import org.apache.commons.io.output.StringBuilderWriter;
 import org.apache.commons.lang3.text.StrBuilder;
 import org.apache.commons.lang3.text.StrSubstitutor;
@@ -34,83 +33,83 @@ import org.xmlsh.util.Util;
 
 public class template extends TextCommand {
 
-	String format;
-	XValueMap mVariables;
-	private String mFormat;
+  String format;
+  XValueMap mVariables;
+  private String mFormat;
 
-	@Override
-	protected OptionDefs getOptionDefs() {
-		return super.getOptionDefs().withOptions(
-				"t=template:,f=format:,V:,v,Vf:,vf:");
-	}
+  @Override
+  protected OptionDefs getOptionDefs() {
+    return super.getOptionDefs().withOptions(
+        "t=template:,f=format:,V:,v,Vf:,vf:");
+  }
 
-	@Override
-	protected void processStream(Reader r, PrintWriter w) throws IOException {
+  @Override
+  protected void processStream(Reader r, PrintWriter w) throws IOException {
 
-		mLogger.entry(r,w);
-		StrSubstitutor sub = new StrSubstitutor(mVariables);
-		StringBuilder sb = new StringBuilder();
-		char cbuf[] = new char[1024];
-		int len;
-		while ((len = r.read(cbuf)) >= 0) {
-			sb.append(cbuf, 0, len);
-		}
+    mLogger.entry(r, w);
+    StrSubstitutor sub = new StrSubstitutor(mVariables);
+    StringBuilder sb = new StringBuilder();
+    char cbuf[] = new char[1024];
+    int len;
+    while((len = r.read(cbuf)) >= 0) {
+      sb.append(cbuf, 0, len);
+    }
 
-		boolean result = sub.replaceIn(sb);
+    boolean result = sub.replaceIn(sb);
 
-		w.write(sb.toString());
-		w.flush();
-		mLogger.exit();
-	}
+    w.write(sb.toString());
+    w.flush();
+    mLogger.exit();
+  }
 
-	@Override
-	protected List<XValue> parseOpts(List<XValue> args) throws IOException,
-			CoreException, UnknownOption {
-		args = super.parseOpts(args);
-		mFormat = mOptions.getOptString("format", "text");
-		mVariables = new XValueMap();
+  @Override
+  protected List<XValue> parseOpts(List<XValue> args) throws IOException,
+      CoreException, UnknownOption {
+    args = super.parseOpts(args);
+    mFormat = mOptions.getOptString("format", "text");
+    mVariables = new XValueMap();
 
-		if (mOptions.hasOpt("V"))
-			mVariables.addAll(parseMap(mOptions.getOptValue("V")));
-		// if( opts.hasOpt("Vf") )
-		// variables.addAll( parseValueMap( mShell.getEnv().getInput(
-		// opts.getOptValue("Vf") ) ) );
-		if (mOptions.hasOpt("vf"))
-			mVariables.addAll(parseTextMap(mShell.getEnv().getInput(
-					mOptions.getOptValue("vf"))));
+    if(mOptions.hasOpt("V"))
+      mVariables.addAll(parseMap(mOptions.getOptValue("V")));
+    // if( opts.hasOpt("Vf") )
+    // variables.addAll( parseValueMap( mShell.getEnv().getInput(
+    // opts.getOptValue("Vf") ) ) );
+    if(mOptions.hasOpt("vf"))
+      mVariables.addAll(parseTextMap(mShell.getEnv().getInput(
+          mOptions.getOptValue("vf"))));
 
-		for (int i = 0; i < args.size() - 1; i += 2) {
-			mVariables.put(args.get(i).toString(), args.get(i + 1));
-		}
-		return args;
+    for(int i = 0; i < args.size() - 1; i += 2) {
+      mVariables.put(args.get(i).toString(), args.get(i + 1));
+    }
+    return args;
 
-	}
+  }
 
-	private XValueMap parseTextMap(InputPort input) throws IOException,
-			CoreException {
-		Properties props = new Properties();
-		try (InputStream is = input.asInputStream(getSerializeOpts())) {
-			props.load(is);
-			return XTypeUtils.newMapFromProperties(props);
-		}
-	}
+  private XValueMap parseTextMap(InputPort input) throws IOException,
+      CoreException {
+    Properties props = new Properties();
+    try (InputStream is = input.asInputStream(getSerializeOpts())) {
+      props.load(is);
+      return XTypeUtils.newMapFromProperties(props);
+    }
+  }
 
-	/*
-	 * private XValueMap parseValueMap(InputPort input) { Properties props; try
-	 * ( InputStream is = input.asInputStream(getSerializeOpts()) ){
-	 * props.load(is); return XValueMap.fromInput( input ); }
-	 * 
-	 * }
-	 */
-	private XValueMap parseMap(XValue value) throws InvalidArgumentException {
-		return XTypeUtils.newMapFromValue(value);
-	}
+  /*
+   * private XValueMap parseValueMap(InputPort input) { Properties props; try
+   * ( InputStream is = input.asInputStream(getSerializeOpts()) ){
+   * props.load(is); return XValueMap.fromInput( input ); }
+   * 
+   * }
+   */
+  private XValueMap parseMap(XValue value) throws InvalidArgumentException {
+    return XTypeUtils.newMapFromValue(value);
+  }
 
-	@Override
-	protected void process() throws Exception {
-		super.processStream();
+  @Override
+  protected void process() throws Exception {
+    super.processStream();
 
-	}
+  }
 
 }
 

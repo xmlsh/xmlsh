@@ -131,7 +131,7 @@ public class csv2xml extends XCommand {
   private CSVRecord parseCols(XValue cols) {
 
     if(cols.isAtomic())
-      return new CSVRecord(Arrays.asList(cols.toString().split(",")));
+      return new CSVRecord(Arrays.asList(Util.split(cols.toString(),',')));
     else
       return new CSVRecord(cols.asStringList());
 

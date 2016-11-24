@@ -4,11 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
 import javax.xml.stream.XMLStreamException;
-
-import net.sf.saxon.s9api.SaxonApiException;
-
 import org.xmlsh.aws.util.AWSEC2Command;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.Options;
@@ -18,7 +14,6 @@ import org.xmlsh.core.XValue;
 import org.xmlsh.core.io.OutputPort;
 import org.xmlsh.util.StringPair;
 import org.xmlsh.util.Util;
-
 import com.amazonaws.services.ec2.model.BlockDeviceMapping;
 import com.amazonaws.services.ec2.model.DescribeImagesRequest;
 import com.amazonaws.services.ec2.model.DescribeImagesResult;
@@ -27,157 +22,152 @@ import com.amazonaws.services.ec2.model.Image;
 import com.amazonaws.services.ec2.model.ProductCode;
 import com.amazonaws.services.ec2.model.StateReason;
 import com.amazonaws.services.ec2.model.Tag;
+import net.sf.saxon.s9api.SaxonApiException;
 
 public class ec2DescribeImages extends AWSEC2Command {
 
-	/**
-	 * @param args
-	 * @throws IOException
-	 */
-	@Override
-	public int run(List<XValue> args) throws Exception {
+  /**
+   * @param args
+   * @throws IOException
+   */
+  @Override
+  public int run(List<XValue> args) throws Exception {
 
+    Options opts = getOptions("f=filter:+");
+    parseOptions(opts, args);
 
-        Options opts = getOptions("f=filter:+");
-        parseOptions(opts, args);
+    args = opts.getRemainingArgs();
+    setSerializeOpts(this.getSerializeOpts(opts));
 
-        args = opts.getRemainingArgs();
-        setSerializeOpts(this.getSerializeOpts(opts));
+    try {
+      getEC2Client(opts);
+    } catch (UnexpectedException e) {
+      usage(e.getLocalizedMessage());
+      return 1;
 
-		try {
-			getEC2Client(opts);
-		} catch (UnexpectedException e) {
-			usage(e.getLocalizedMessage());
-			return 1;
-
-		}
-
-
-        Collection<Filter> filters = 
-                opts.hasOpt("filter") ?
-                        parseFilters( Util.toStringList(opts.getOptValues("filter"))) : null ;
-
-		int ret;
-		switch (args.size()) {
-		case 0:
-			ret = describe(null, filters);
-			break;
-		case 1:
-			ret = describe(args, filters);
-			break;
-
-		default:
-			usage();
-			return 1;
-		}
-
-		return ret;
-
-	}
-
-
-    protected Collection<Filter> parseFilters(List<String> values) {
-        if( values == null || values.size() == 0 )
-            return null;
-
-        ArrayList<Filter> filters = new ArrayList<Filter>(values.size());
-
-        for( String v : values ){
-            StringPair nv = new StringPair( v , '=' );
-            Filter filter = new Filter().withName(nv.getLeft()).withValues( nv.getRight().split(","));
-            filters.add(filter);
-        }
-        return filters;
     }
 
+    Collection<Filter> filters = opts.hasOpt("filter")
+        ? parseFilters(Util.toStringList(opts.getOptValues("filter"))) : null;
 
-    private int describe(List<XValue> args, Collection<Filter> filters) throws IOException, XMLStreamException, SaxonApiException, CoreException {
+    int ret;
+    switch(args.size()){
+    case 0:
+      ret = describe(null, filters);
+      break;
+    case 1:
+      ret = describe(args, filters);
+      break;
 
+    default:
+      usage();
+      return 1;
+    }
 
-        OutputPort stdout = getStdout();
-        mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(getSerializeOpts()));
+    return ret;
 
+  }
 
-        startDocument();
-        startElement(getName());
-		DescribeImagesRequest request = new DescribeImagesRequest();
-		if (args != null) {
+  protected Collection<Filter> parseFilters(List<String> values) {
+    if(values == null || values.size() == 0)
+      return null;
 
-			request.setImageIds(Util.toStringList(args));
+    ArrayList<Filter> filters = new ArrayList<Filter>(values.size());
 
-		}
+    for(String v : values) {
+      StringPair nv = new StringPair(v, '=');
+      Filter filter = new Filter().withName(nv.getLeft())
+          .withValues(nv.getRightA().splitString(','));
+      filters.add(filter);
+    }
+    return filters;
+  }
 
-		if (filters != null)
-			request.setFilters(filters);
+  private int describe(List<XValue> args, Collection<Filter> filters)
+      throws IOException, XMLStreamException, SaxonApiException, CoreException {
 
-		traceCall("describeImages");
+    OutputPort stdout = getStdout();
+    mWriter = new SafeXMLStreamWriter(
+        stdout.asXMLStreamWriter(getSerializeOpts()));
 
-		DescribeImagesResult result = getAWSClient().describeImages(request);
+    startDocument();
+    startElement(getName());
+    DescribeImagesRequest request = new DescribeImagesRequest();
+    if(args != null) {
 
+      request.setImageIds(Util.toStringList(args));
 
-		
-		for (Image image : result.getImages())
-			writeImage(image);
+    }
 
-		endElement();
-		endDocument();
-		closeWriter();
+    if(filters != null)
+      request.setFilters(filters);
 
-		stdout.writeSequenceTerminator(getSerializeOpts());
-		return 0;
+    traceCall("describeImages");
 
-	}
+    DescribeImagesResult result = getAWSClient().describeImages(request);
 
-	private void writeImage(Image image) throws XMLStreamException {
-		startElement("image");
-		attribute("image-id", image.getImageId());
-		attribute("architecture", image.getArchitecture());
-		attribute("hypervisor", image.getHypervisor());
+    for(Image image : result.getImages())
+      writeImage(image);
 
-		attribute("location", image.getImageLocation());
-		attribute("owner-alias", image.getImageOwnerAlias());
-		attribute("type", image.getImageType());
-		attribute("kernel-id", image.getKernelId());
-		attribute("name", image.getName());
-		attribute("owner-id", image.getOwnerId());
-		attribute("platform", image.getPlatform());
-		attribute("ramdisk-id", image.getRamdiskId());
-		attribute("root-device-name", image.getRootDeviceName());
-		attribute("root-device-type", image.getRootDeviceType());
+    endElement();
+    endDocument();
+    closeWriter();
 
-		attribute("state", image.getState());
-		attribute("virtualization-type", image.getVirtualizationType());
-		attribute("public", image.getPublic() ? "true" : "false");
+    stdout.writeSequenceTerminator(getSerializeOpts());
+    return 0;
 
-		List<ProductCode> codes = image.getProductCodes();
-		writeProductCodes(codes);
-		List<BlockDeviceMapping> deviceMappings = image
-				.getBlockDeviceMappings();
-		writeBlockDeviceMappings(deviceMappings);
-		StateReason stateReason = image.getStateReason();
-		writeStateReason(stateReason);
+  }
 
-		List<Tag> tags = image.getTags();
-		writeTags(tags);
+  private void writeImage(Image image) throws XMLStreamException {
+    startElement("image");
+    attribute("image-id", image.getImageId());
+    attribute("architecture", image.getArchitecture());
+    attribute("hypervisor", image.getHypervisor());
 
-		endElement();
+    attribute("location", image.getImageLocation());
+    attribute("owner-alias", image.getImageOwnerAlias());
+    attribute("type", image.getImageType());
+    attribute("kernel-id", image.getKernelId());
+    attribute("name", image.getName());
+    attribute("owner-id", image.getOwnerId());
+    attribute("platform", image.getPlatform());
+    attribute("ramdisk-id", image.getRamdiskId());
+    attribute("root-device-name", image.getRootDeviceName());
+    attribute("root-device-type", image.getRootDeviceType());
 
-	}
+    attribute("state", image.getState());
+    attribute("virtualization-type", image.getVirtualizationType());
+    attribute("public", image.getPublic() ? "true" : "false");
 
-	private void writeStateReason(StateReason stateReason)
-			throws XMLStreamException {
-		if (stateReason != null) {
-			startElement("state-reason");
-			attribute("code", stateReason.getCode());
-			attribute("message", stateReason.getMessage());
-			endElement();
-		}
+    List<ProductCode> codes = image.getProductCodes();
+    writeProductCodes(codes);
+    List<BlockDeviceMapping> deviceMappings = image
+        .getBlockDeviceMappings();
+    writeBlockDeviceMappings(deviceMappings);
+    StateReason stateReason = image.getStateReason();
+    writeStateReason(stateReason);
 
-	}
+    List<Tag> tags = image.getTags();
+    writeTags(tags);
 
-	@Override
-	public void usage() {
-		super.usage("Usage: ec2-describe-images [options] [image-id]");
-	}
+    endElement();
+
+  }
+
+  private void writeStateReason(StateReason stateReason)
+      throws XMLStreamException {
+    if(stateReason != null) {
+      startElement("state-reason");
+      attribute("code", stateReason.getCode());
+      attribute("message", stateReason.getMessage());
+      endElement();
+    }
+
+  }
+
+  @Override
+  public void usage() {
+    super.usage("Usage: ec2-describe-images [options] [image-id]");
+  }
 
 }

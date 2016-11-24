@@ -4,11 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
 import javax.xml.stream.XMLStreamException;
-
-import net.sf.saxon.s9api.SaxonApiException;
-
 import org.xmlsh.aws.util.AWSEC2Command;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InvalidArgumentException;
@@ -17,168 +13,158 @@ import org.xmlsh.core.SafeXMLStreamWriter;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.io.OutputPort;
-
+import org.xmlsh.util.Util;
 import com.amazonaws.services.ec2.model.LaunchPermission;
 import com.amazonaws.services.ec2.model.LaunchPermissionModifications;
 import com.amazonaws.services.ec2.model.ModifyImageAttributeRequest;
+import net.sf.saxon.s9api.SaxonApiException;
 
 public class ec2ModifyImageAttribute extends AWSEC2Command {
 
+  /**
+   * @param args
+   * @throws IOException
+   * 
+   * 
+   */
+  @Override
+  public int run(List<XValue> args) throws Exception {
 
-	/**
-	 * @param args
-	 * @throws IOException 
-	 * 
+    Options opts = getOptions("p=product-codes,l=launch,a=add:+,r=remove:+");
+    parseOptions(opts, args);
 
-	 */
-	@Override
-	public int run(List<XValue> args) throws Exception {
+    args = opts.getRemainingArgs();
+    setSerializeOpts(this.getSerializeOpts(opts));
 
+    if(args.size() != 1) {
+      usage(null);
+      return 1;
+    }
 
-		Options opts = getOptions("p=product-codes,l=launch,a=add:+,r=remove:+");
-        parseOptions(opts, args);
+    setSerializeOpts(this.getSerializeOpts(opts));
+    try {
+      getEC2Client(opts);
+    } catch (UnexpectedException e) {
+      usage(e.getLocalizedMessage());
+      return 1;
 
-		args = opts.getRemainingArgs();
-        setSerializeOpts(this.getSerializeOpts(opts));
+    }
+    boolean bAdd = opts.hasOpt("add") || !opts.hasOpt("remove");
 
+    int ret = modifyImage(args.get(0).toString(), bAdd, opts);
 
+    return ret;
+  }
 
+  private int modifyImage(String image_id, boolean bAdd, Options opts)
+      throws IOException, XMLStreamException, SaxonApiException, CoreException {
 
-		if( args.size() != 1 ){
-			usage(null);
-			return 1;
-		}
+    String attribute = opts.hasOpt("launch") ? "launchPermission"
+        : "productCodes";
 
+    ModifyImageAttributeRequest request = new ModifyImageAttributeRequest(
+        image_id, attribute);
 
-		setSerializeOpts(this.getSerializeOpts(opts));
-		try {
-			getEC2Client(opts);
-		} catch (UnexpectedException e) {
-			usage( e.getLocalizedMessage() );
-			return 1;
+    request.setOperationType(bAdd ? "add" : "remove");
+    if(opts.hasOpt("launch"))
+      // request.setLaunchPermission(getLaunchPermissions(bAdd,opts));
+      request.setUserIds(getUserIds(opts, bAdd));
+    else if(opts.hasOpt("product-codes")) {
+      request.setProductCodes(getProductCodes(opts, bAdd));
+      request.setUserIds(null);
+      request.setLaunchPermission(null);
+    }
+    else {
+      usage(null);
+      return 1;
+    }
 
-		}
-		boolean bAdd = opts.hasOpt("add") || ! opts.hasOpt("remove");
+    traceCall("modifyImageAttribute");
+    getAWSClient().modifyImageAttribute(request);
 
+    writeResult(image_id);
 
-		int ret = modifyImage( args.get(0).toString(), bAdd, opts );
+    return 0;
+  }
 
+  private Collection<String> getUserIds(Options opts, boolean bAdd)
+      throws InvalidArgumentException {
+    return parseStrings(opts.getOptValues(bAdd ? "add" : "remove"));
+  }
 
+  private Collection<String> getProductCodes(Options opts, boolean bAdd)
+      throws InvalidArgumentException {
 
+    Collection<String> codes = parseStrings(
+        opts.getOptValues(bAdd ? "add" : "remove"));
 
+    return codes;
 
-		return ret;	
-	}
+  }
 
-	private int modifyImage( String image_id, boolean bAdd, Options opts ) throws IOException, XMLStreamException, SaxonApiException, CoreException 
-	{
+  private Collection<String> parseStrings(List<XValue> values) {
+    Collection<String> p = new ArrayList<String>();
+    for(XValue xv : values) {
+      for(String vl : xv.asStringList()) {
+        for(String s : Util.split(vl,',') ) {
+          p.add(s);
+        }
+      }
+    }
+    return p;
+  }
 
-		String attribute	 = opts.hasOpt("launch") ? "launchPermission" : "productCodes" ;
+  private LaunchPermissionModifications getLaunchPermissions(boolean bAdd,
+      Options opts) throws InvalidArgumentException {
+    LaunchPermissionModifications launch = new LaunchPermissionModifications();
 
+    Collection<LaunchPermission> perms = parseLaunchPermissions(
+        opts.getOptValues("launch"));
 
-		ModifyImageAttributeRequest request = new ModifyImageAttributeRequest( image_id, attribute  );
+    if(bAdd)
+      launch.setAdd(perms);
+    else
+      launch.setRemove(perms);
 
-		request.setOperationType(bAdd ? "add" : "remove");
-		if( opts.hasOpt("launch"))
-			// request.setLaunchPermission(getLaunchPermissions(bAdd,opts));
-			request.setUserIds(getUserIds(opts,bAdd));
-		else
-			if( opts.hasOpt("product-codes")){
-				request.setProductCodes( getProductCodes( opts, bAdd ) );
-				request.setUserIds(null);
-				request.setLaunchPermission(null);
-			}
-			else {
-				usage(null);
-				return 1;
-			}
+    return launch;
+  }
 
+  private Collection<LaunchPermission> parseLaunchPermissions(
+      List<XValue> values) {
 
-		traceCall("modifyImageAttribute");
-		getAWSClient().modifyImageAttribute(request);
+    Collection<LaunchPermission> p = new ArrayList<LaunchPermission>();
+    for(XValue xv : values) {
+      for(String vl : xv.asStringList()) {
+        for(String s : Util.split(vl,',')) {
+          if(s.equals("all"))
+            p.add(new LaunchPermission().withGroup(s));
+          else
+            p.add(new LaunchPermission().withUserId(s));
+        }
+      }
+    }
+    return p;
+  }
 
-		writeResult( image_id );
+  private void writeResult(String image_id)
+      throws IOException, XMLStreamException, SaxonApiException, CoreException {
+    OutputPort stdout = this.getStdout();
+    mWriter = new SafeXMLStreamWriter(
+        stdout.asXMLStreamWriter(getSerializeOpts()));
 
+    startDocument();
+    startElement(this.getName());
 
-		return 0;
-	}
+    startElement("image");
+    attribute("image-id", image_id);
+    endElement();
 
-	private Collection<String> getUserIds(Options opts,boolean bAdd ) throws InvalidArgumentException {
-		return parseStrings(opts.getOptValues(bAdd ? "add" : "remove") );
-	}
+    endElement();
+    endDocument();
+    closeWriter();
 
-	private Collection<String> getProductCodes(Options opts,boolean bAdd ) throws InvalidArgumentException {
+    stdout.writeSequenceTerminator(getSerializeOpts());
 
-		Collection<String> codes = parseStrings( opts.getOptValues(bAdd ? "add" : "remove") );
-
-		return codes ;
-
-	}
-
-	private Collection<String> parseStrings(List<XValue> values) {
-		Collection<String> p = new ArrayList<String>();
-		for( XValue xv : values ){
-			for( String vl : xv.asStringList() ){
-				for( String s : vl.split(",") ){
-					p.add(s);
-				}
-			}
-		}
-		return p;
-	}
-
-	private LaunchPermissionModifications getLaunchPermissions(boolean bAdd, Options opts) throws InvalidArgumentException {
-		LaunchPermissionModifications launch = new LaunchPermissionModifications();
-
-
-
-		Collection<LaunchPermission> perms = parseLaunchPermissions( opts.getOptValues("launch") );
-
-		if( bAdd )
-			launch.setAdd(perms);	 		
-		else
-			launch.setRemove(perms);	 		
-
-		return launch;
-	}
-
-	private Collection<LaunchPermission> parseLaunchPermissions(List<XValue> values) {
-
-		Collection<LaunchPermission> p = new ArrayList<LaunchPermission>();
-		for( XValue xv : values ){
-			for( String vl : xv.asStringList() ){
-				for( String s : vl.split(",") ){
-					if( s.equals("all"))
-						p.add( new LaunchPermission().withGroup(s));
-					else
-						p.add( new LaunchPermission().withUserId(s));
-				}
-			}
-		}
-		return p;
-	}
-
-	private void writeResult(String image_id) throws IOException, XMLStreamException, SaxonApiException, CoreException {
-		OutputPort stdout = this.getStdout();
-		mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(getSerializeOpts()));
-
-
-		startDocument();
-		startElement(this.getName());
-
-		startElement("image");
-		attribute( "image-id", image_id);
-		endElement();
-
-		endElement();
-		endDocument();
-		closeWriter();
-
-		stdout.writeSequenceTerminator(getSerializeOpts());
-
-	}
-
-
-
+  }
 
 }

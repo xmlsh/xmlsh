@@ -3,11 +3,7 @@ package org.xmlsh.aws;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.xml.stream.XMLStreamException;
-
-import net.sf.saxon.s9api.SaxonApiException;
-
 import org.xmlsh.aws.util.AWSSDBCommand;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.Options;
@@ -15,124 +11,100 @@ import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.io.OutputPort;
 import org.xmlsh.util.Util;
-
 import com.amazonaws.services.simpledb.model.Attribute;
 import com.amazonaws.services.simpledb.model.DeleteAttributesRequest;
 import com.amazonaws.services.simpledb.model.UpdateCondition;
+import net.sf.saxon.s9api.SaxonApiException;
 
+public class sdbDeleteAttributes extends AWSSDBCommand {
 
-public class sdbDeleteAttributes	 extends  AWSSDBCommand {
+  /**
+   * @param args
+   * @throws IOException
+   */
+  @Override
+  public int run(List<XValue> args) throws Exception {
 
+    Options opts = getOptions("update:,exists:,q=quiet");
+    parseOptions(opts, args);
 
+    args = opts.getRemainingArgs();
 
-	/**
-	 * @param args
-	 * @throws IOException 
-	 */
-	@Override
-	public int run(List<XValue> args) throws Exception {
+    setSerializeOpts(this.getSerializeOpts(opts));
 
-		Options opts = getOptions("update:,exists:,q=quiet");
-        parseOptions(opts, args);
+    String updateName = opts.getOptString("update", null);
+    String updateExists = opts.getOptString("exists", null);
 
-		args = opts.getRemainingArgs();
+    try {
+      getSDBClient(opts);
+    } catch (UnexpectedException e) {
+      usage(e.getLocalizedMessage());
+      return 1;
 
+    }
 
+    if(args.size() < 2) {
+      usage(getName() + ":" + "domain item attributes ...");
 
-		setSerializeOpts(this.getSerializeOpts(opts));
+    }
+    String domain = args.remove(0).toString();
+    String item = args.remove(0).toString();
 
-		String updateName = opts.getOptString("update", null);
-		String updateExists = opts.getOptString("exists",null);
+    int ret = -1;
+    ret = delete(domain, item, args, updateName, updateExists,
+        opts.hasOpt("q"));
 
+    return ret;
 
-		try {
-			getSDBClient(opts);
-		} catch (UnexpectedException e) {
-			usage( e.getLocalizedMessage() );
-			return 1;
+  }
 
-		}
+  private int delete(String domain, String item, List<XValue> args,
+      String updateName, String updateExists, boolean bQuiet)
+      throws IOException, XMLStreamException, SaxonApiException, CoreException {
 
-		if( args.size() < 2){
-			usage(getName()+ ":" + "domain item attributes ...");
+    UpdateCondition cond = null;
+    if(!Util.isEmpty(updateName))
+      cond = new UpdateCondition(updateName, updateExists,
+          !Util.isEmpty(updateExists));
 
-		}
-		String domain = args.remove(0).toString();
-		String item   = args.remove(0).toString();
+    List<Attribute> attributes = getAttributes(args);
 
+    DeleteAttributesRequest request = new DeleteAttributesRequest(domain, item)
+        .withAttributes(attributes).withExpected(cond);
 
-		int ret = -1;
-		ret = delete(domain,item,args,updateName,updateExists, opts.hasOpt("q"));
+    traceCall("deleteAttributes");
 
+    getAWSClient().deleteAttributes(request);
 
+    if(!bQuiet) {
+      OutputPort stdout = this.getStdout();
+      mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
 
-		return ret;
+      emptyDocument();
 
+      closeWriter();
+      stdout.writeSequenceTerminator(getSerializeOpts());
 
-	}
+    }
 
+    return 0;
 
-	private int delete(String domain, String item, List<XValue > args, String updateName, String updateExists, boolean bQuiet) throws IOException, XMLStreamException, SaxonApiException, CoreException 
-	{
+  }
 
+  private List<Attribute> getAttributes(List<XValue> args) {
+    List<Attribute> attrs = new ArrayList<Attribute>(args.size());
+    while(!args.isEmpty()) {
 
+      String name = args.remove(0).toString();
+      attrs.add(new Attribute(name, null));
 
-		UpdateCondition cond = null  ;
-		if( ! Util.isEmpty(updateName))
-			cond =  new UpdateCondition( updateName , updateExists , ! Util.isEmpty(updateExists)) ;
+    }
+    return attrs;
+  }
 
-
-
-
-		List<Attribute> attributes = getAttributes( args );
-
-		DeleteAttributesRequest request = new DeleteAttributesRequest(domain,item).withAttributes(attributes).withExpected(cond);
-
-		traceCall("deleteAttributes");
-
-		getAWSClient().deleteAttributes(request);
-
-		if( ! bQuiet ){
-			OutputPort stdout = this.getStdout();
-			mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
-
-			emptyDocument();
-
-			closeWriter();
-			stdout.writeSequenceTerminator(getSerializeOpts());
-
-		}
-
-
-		return 0;
-
-
-	}
-
-
-	private List<Attribute> getAttributes(List<XValue> args) 
-	{
-		List<Attribute> attrs = new ArrayList<Attribute>(args.size());
-		while( !args.isEmpty()){
-
-			String name = args.remove(0).toString();
-			attrs.add( new Attribute(name,null) );
-
-
-
-		}
-		return attrs ;
-	}
-
-
-
-	@Override
-	public void usage() {
-		super.usage();
-	}
-
-
-
-
+  @Override
+  public void usage() {
+    super.usage();
+  }
 
 }

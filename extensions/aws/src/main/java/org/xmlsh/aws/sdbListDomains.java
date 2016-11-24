@@ -2,114 +2,89 @@ package org.xmlsh.aws;
 
 import java.io.IOException;
 import java.util.List;
-
 import javax.xml.stream.XMLStreamException;
-
-import net.sf.saxon.s9api.SaxonApiException;
-
 import org.xmlsh.aws.util.AWSSDBCommand;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.io.OutputPort;
-
 import com.amazonaws.services.simpledb.model.ListDomainsRequest;
 import com.amazonaws.services.simpledb.model.ListDomainsResult;
+import net.sf.saxon.s9api.SaxonApiException;
 
+public class sdbListDomains extends AWSSDBCommand {
 
-public class sdbListDomains	 extends  AWSSDBCommand {
+  /**
+   * @param args
+   * @throws IOException
+   */
+  @Override
+  public int run(List<XValue> args) throws Exception {
 
+    Options opts = getOptions();
+    parseOptions(opts, args);
 
+    setSerializeOpts(this.getSerializeOpts(opts));
+    args = opts.getRemainingArgs();
 
-	/**
-	 * @param args
-	 * @throws IOException 
-	 */
-	@Override
-	public int run(List<XValue> args) throws Exception {
+    if(args.size() != 0) {
+      usage();
+      return 1;
+    }
 
+    setSerializeOpts(this.getSerializeOpts(opts));
 
-		Options opts = getOptions();
-        parseOptions(opts, args);
+    try {
+      getSDBClient(opts);
+    } catch (UnexpectedException e) {
+      usage(e.getLocalizedMessage());
+      return 1;
 
-        setSerializeOpts(this.getSerializeOpts(opts));
-		args = opts.getRemainingArgs();
+    }
 
-		if( args.size() != 0 ){
-			usage();
-			return 1;
-		}
+    int ret = -1;
+    ret = list();
 
-		setSerializeOpts(this.getSerializeOpts(opts));
+    return ret;
 
-		try {
-			getSDBClient(opts);
-		} catch (UnexpectedException e) {
-			usage( e.getLocalizedMessage() );
-			return 1;
+  }
 
-		}
+  private int list()
+      throws IOException, XMLStreamException, SaxonApiException, CoreException {
 
+    OutputPort stdout = this.getStdout();
+    mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
 
-		int ret = -1;
-		ret = list();
+    startDocument();
+    startElement(getName());
 
+    String token = null;
 
+    do {
+      ListDomainsRequest listDomainsRequest = new ListDomainsRequest();
+      if(token != null)
+        listDomainsRequest.setNextToken(token);
 
-		return ret;
+      traceCall("listDomains");
 
+      ListDomainsResult result = getAWSClient().listDomains(listDomainsRequest);
+      writeStringList(null, "domain", "name", result.getDomainNames());
+      token = result.getNextToken();
+    } while(token != null);
+    endElement();
+    endDocument();
 
-	}
+    closeWriter();
+    stdout.writeSequenceTerminator(getSerializeOpts());
 
+    return 0;
 
-	private int list() throws IOException, XMLStreamException, SaxonApiException, CoreException 
-	{
+  }
 
-		OutputPort stdout = this.getStdout();
-		mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
-
-		startDocument();
-		startElement(getName());
-
-		String token = null ;
-
-		do {
-			ListDomainsRequest listDomainsRequest = new ListDomainsRequest();
-			if( token != null )
-				listDomainsRequest.setNextToken(token);
-
-			traceCall("listDomains");
-
-			ListDomainsResult result = getAWSClient().listDomains(listDomainsRequest);
-			writeStringList(  null , "domain" , "name" ,  result.getDomainNames() );
-			token = result.getNextToken();
-		} while( token != null );
-		endElement();
-		endDocument();
-
-
-
-
-		closeWriter();
-		stdout.writeSequenceTerminator(getSerializeOpts());
-
-
-		return 0;
-
-
-
-
-	}
-
-
-	@Override
-	public void usage() {
-		super.usage();
-	}
-
-
-
-
+  @Override
+  public void usage() {
+    super.usage();
+  }
 
 }

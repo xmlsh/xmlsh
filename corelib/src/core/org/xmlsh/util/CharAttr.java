@@ -4,7 +4,7 @@
  *
  */
 
-package org.xmlsh.sh.shell;
+package org.xmlsh.util;
 
 public enum CharAttr {
   ATTR_SOFT_QUOTE, ATTR_HARD_QUOTE, ATTR_PRESERVE,   // Do not touch, unquote or
@@ -14,6 +14,7 @@ public enum CharAttr {
   public byte toBit() {
     return (byte) (1 << ordinal());
   }
+  public static byte NONE = 0;
 
   public static CharAttr fromBit(byte bit) {
     if(bit == 0)

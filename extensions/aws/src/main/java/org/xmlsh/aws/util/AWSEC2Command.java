@@ -398,7 +398,7 @@ public abstract class AWSEC2Command extends AWSCommand<AmazonEC2Client> {
 		for (String v : values) {
 			StringPair nv = new StringPair(v, '=');
 			Filter filter = new Filter().withName(nv.getLeft()).withValues(
-					nv.getRight().split(","));
+					nv.getRightA().splitString(','));
 			filters.add(filter);
 		}
 

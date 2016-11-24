@@ -1,11 +1,12 @@
-package org.xmlsh.sh.shell;
+package org.xmlsh.sh.core;
 
-import static org.xmlsh.sh.shell.CharAttr.ATTR_ESCAPED;
-import static org.xmlsh.sh.shell.CharAttr.ATTR_HARD_QUOTE;
-import static org.xmlsh.sh.shell.CharAttr.ATTR_PRESERVE;
-import static org.xmlsh.sh.shell.CharAttr.ATTR_SOFT_QUOTE;
+import static org.xmlsh.util.CharAttr.ATTR_ESCAPED;
+import static org.xmlsh.util.CharAttr.ATTR_HARD_QUOTE;
+import static org.xmlsh.util.CharAttr.ATTR_PRESERVE;
+import static org.xmlsh.util.CharAttr.ATTR_SOFT_QUOTE;
 import java.util.EnumSet;
 import org.apache.commons.lang3.EnumUtils;
+import org.xmlsh.util.CharAttr;
 import org.xmlsh.util.Util;
 
 public class CharAttrs implements Cloneable {
@@ -17,7 +18,7 @@ public class CharAttrs implements Cloneable {
   };
 
   private EnumSet<CharAttr> mSet;
-  private static CharAttrs NONE = new CharAttrs();
+  public static final CharAttrs NONE = new CharAttrs();
 
   @Override
   public CharAttrs clone() {
@@ -36,7 +37,9 @@ public class CharAttrs implements Cloneable {
   public CharAttrs(CharAttr attr) {
     this.mSet = EnumSet.of(attr);
   }
-
+  public CharAttrs(CharAttr first, CharAttr... attrs) {
+    this.mSet = EnumSet.of(first,attrs);
+  }
   public CharAttrs(EnumSet<CharAttr> set) {
     this.mSet = set;
   }
@@ -136,15 +139,15 @@ public class CharAttrs implements Cloneable {
     return new CharAttrs();
   }
 
-  public static CharAttrs newInstance(CharAttr attr) {
-    return new CharAttrs(attr);
+  public static CharAttrs newInstance(CharAttr first, CharAttr... attrs) {
+    return new CharAttrs(first,attrs);
   }
 
-  public static CharAttrs constInstance() {
+  public static final CharAttrs constInstance() {
     return NONE;
   }
 
-  public static CharAttrs constInstance(CharAttr attr) {
+  public static final CharAttrs constInstance(CharAttr attr) {
     if(attr == null)
       return constInstance();
     return constInstances[attr.ordinal()];

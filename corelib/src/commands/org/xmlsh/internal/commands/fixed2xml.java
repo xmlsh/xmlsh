@@ -123,7 +123,7 @@ public class fixed2xml extends XCommand {
   private CSVRecord parseCols(XValue cols) {
 
     if(cols.isAtomic())
-      return new CSVRecord(Arrays.asList(cols.toString().split(",")));
+      return new CSVRecord(Arrays.asList(Util.split(cols.toString(),',')));
     else
       return new CSVRecord(cols.asStringList());
 
@@ -132,7 +132,7 @@ public class fixed2xml extends XCommand {
   private String[] parseWidths(XValue specs) {
 
     if(specs.isAtomic())
-      return specs.toString().split(",");
+      return Util.split(specs.toString(),',');
 
     List<String> list = specs.asStringList();
 

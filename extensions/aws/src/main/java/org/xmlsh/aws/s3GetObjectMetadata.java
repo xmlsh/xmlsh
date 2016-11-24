@@ -2,11 +2,7 @@ package org.xmlsh.aws;
 
 import java.io.IOException;
 import java.util.List;
-
 import javax.xml.stream.XMLStreamException;
-
-import net.sf.saxon.s9api.SaxonApiException;
-
 import org.xmlsh.aws.util.AWSS3Command;
 import org.xmlsh.aws.util.S3Path;
 import org.xmlsh.core.CoreException;
@@ -14,105 +10,87 @@ import org.xmlsh.core.Options;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.io.OutputPort;
-
 import com.amazonaws.services.s3.model.GetObjectMetadataRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
-
+import net.sf.saxon.s9api.SaxonApiException;
 
 public class s3GetObjectMetadata extends AWSS3Command {
 
+  /**
+   * @param args
+   * @throws IOException
+   */
+  @Override
+  public int run(List<XValue> args) throws Exception {
 
+    Options opts = getOptions();
+    parseOptions(opts, args);
 
-	/**
-	 * @param args
-	 * @throws IOException 
-	 */
-	@Override
-	public int run(List<XValue> args) throws Exception {
+    args = opts.getRemainingArgs();
 
+    setSerializeOpts(this.getSerializeOpts(opts));
 
-		Options opts = getOptions();
-        parseOptions(opts, args);
+    try {
+      getS3Client(opts);
+    } catch (UnexpectedException e) {
+      usage(e.getLocalizedMessage());
+      return 1;
 
+    }
 
-		args = opts.getRemainingArgs();
+    S3Path src;
 
-		setSerializeOpts(this.getSerializeOpts(opts));
+    switch(args.size()){
+    case 0:
+      src = getS3Path();
+    case 1:
+      src = getS3Path(args.get(0));
+      break;
+    default:
 
-		try {
-			getS3Client(opts);
-		} catch (UnexpectedException e) {
-			usage( e.getLocalizedMessage() );
-			return 1;
+      usage();
+      return 1;
 
-		}
+    }
 
-		S3Path 		src;
+    OutputPort metaPort = getStdout();
 
-		switch( args.size() ){
-		case  0 :
-		  src = getS3Path();
-		case	1 :
-			src  = getS3Path(args.get(0));
-			break;
-		default	:
+    int ret = 0;
+    try {
+      ret = getMetadata(src, metaPort);
+    } catch (Exception e) {
+      mShell.printErr("Exception getting metadata from " + src);
+      ret = 1;
 
-			usage() ; 
-			return 1; 
+    }
 
-		}
+    return ret;
 
+  }
 
-		OutputPort metaPort = getStdout();
+  private int getMetadata(S3Path src, OutputPort metaPort)
+      throws CoreException, IOException, XMLStreamException, SaxonApiException {
 
-		int ret = 0;
-		try {
-			ret = getMetadata( src ,  metaPort  );
-		} catch( Exception e ){
-			mShell.printErr("Exception getting metadata from " + src );
-			ret = 1;
+    GetObjectMetadataRequest request = new GetObjectMetadataRequest(
+        src.getBucket(), src.getKey());
 
+    traceCall("getObjectMetadata");
 
-		}
+    ObjectMetadata data = getAWSClient().getObjectMetadata(request);
 
-		return ret;
-
-	}
-
-	private int getMetadata( S3Path src , OutputPort metaPort ) throws CoreException, IOException, XMLStreamException, SaxonApiException 
-	{
-
-
-		GetObjectMetadataRequest request = 
-				new GetObjectMetadataRequest(src.getBucket(),src.getKey());
-
-
-		traceCall("getObjectMetadata");
-
-		ObjectMetadata data = getAWSClient().getObjectMetadata(request  );
-
-		mWriter = metaPort.asXMLStreamWriter(getSerializeOpts());
+    mWriter = metaPort.asXMLStreamWriter(getSerializeOpts());
     startDocument();
-		writeMeta( data );
+    writeMeta(data);
     endDocument();
-		mWriter.close();
+    mWriter.close();
 
+    return 0;
 
-		return 0;
+  }
 
-	}
-
-
-
-	@Override
-	public void usage() {
-		super.usage("Usage: s3get source [target]");
-	}
-
-
-
-
-
-
+  @Override
+  public void usage() {
+    super.usage("Usage: s3get source [target]");
+  }
 
 }

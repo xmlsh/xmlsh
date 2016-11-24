@@ -2,110 +2,82 @@ package org.xmlsh.aws;
 
 import java.io.IOException;
 import java.util.List;
-
 import javax.xml.stream.XMLStreamException;
-
-import net.sf.saxon.s9api.SaxonApiException;
-
 import org.xmlsh.aws.util.AWSSNSCommand;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.io.OutputPort;
-
 import com.amazonaws.services.sns.model.ListTopicsRequest;
 import com.amazonaws.services.sns.model.ListTopicsResult;
 import com.amazonaws.services.sns.model.Topic;
-
+import net.sf.saxon.s9api.SaxonApiException;
 
 public class snsListTopics extends AWSSNSCommand {
 
+  /**
+   * @param args
+   * @throws IOException
+   */
+  @Override
+  public int run(List<XValue> args) throws Exception {
 
+    Options opts = getOptions();
+    parseOptions(opts, args);
 
-	/**
-	 * @param args
-	 * @throws IOException 
-	 */
-	@Override
-	public int run(List<XValue> args) throws Exception {
+    args = opts.getRemainingArgs();
 
+    setSerializeOpts(this.getSerializeOpts(opts));
 
-		Options opts = getOptions();
-        parseOptions(opts, args);
+    try {
+      getSNSClient(opts);
+    } catch (UnexpectedException e) {
+      usage(e.getLocalizedMessage());
+      return 1;
 
-		args = opts.getRemainingArgs();
+    }
 
+    int ret;
 
+    ret = list();
 
-		setSerializeOpts(this.getSerializeOpts(opts));
+    return ret;
 
+  }
 
+  private int list()
+      throws IOException, XMLStreamException, SaxonApiException, CoreException {
 
+    OutputPort stdout = this.getStdout();
+    mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
 
-		try {
-			getSNSClient(opts);
-		} catch (UnexpectedException e) {
-			usage( e.getLocalizedMessage() );
-			return 1;
+    startDocument();
+    startElement(getName());
 
-		}
+    traceCall("listTopics");
 
-		int ret;
+    ListTopicsResult result = getAWSClient().listTopics();
+    do {
+      for(Topic topic : result.getTopics()) {
+        startElement("topic");
+        attribute("arn", topic.getTopicArn());
+        endElement();
 
-		ret = list();
+      }
+      if(result.getNextToken() != null)
+        result = getAWSClient().listTopics(
+            new ListTopicsRequest().withNextToken(result.getNextToken()));
 
+    } while(result.getNextToken() != null);
 
-		return ret;
+    endElement();
+    endDocument();
+    closeWriter();
+    stdout.writeSequenceTerminator(getSerializeOpts());
 
+    return 0;
 
-	}
-
-
-	private int list() throws IOException, XMLStreamException, SaxonApiException, CoreException {
-
-
-		OutputPort stdout = this.getStdout();
-		mWriter = stdout.asXMLStreamWriter(getSerializeOpts());
-
-
-		startDocument();
-		startElement(getName());
-
-
-		traceCall("listTopics");
-
-		ListTopicsResult result = getAWSClient().listTopics();
-		do {
-			for( Topic topic : result.getTopics()){
-				startElement("topic");
-				attribute("arn", topic.getTopicArn());
-				endElement();
-
-			}
-			if( result.getNextToken() != null )
-				result = getAWSClient().listTopics( new ListTopicsRequest().withNextToken(result.getNextToken()));
-
-
-		} while( result.getNextToken() != null );
-
-
-
-
-		endElement();
-		endDocument();
-		closeWriter();
-		stdout.writeSequenceTerminator(getSerializeOpts());
-
-
-		return 0;
-
-
-
-
-	}
-
-
-
+  }
 
 }

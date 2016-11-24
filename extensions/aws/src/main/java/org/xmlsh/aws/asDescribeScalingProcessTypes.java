@@ -8,11 +8,7 @@ package org.xmlsh.aws;
 
 import java.io.IOException;
 import java.util.List;
-
 import javax.xml.stream.XMLStreamException;
-
-import net.sf.saxon.s9api.SaxonApiException;
-
 import org.xmlsh.annotations.Command;
 import org.xmlsh.annotations.Option;
 import org.xmlsh.aws.util.AWSASCommand;
@@ -22,89 +18,83 @@ import org.xmlsh.core.SafeXMLStreamWriter;
 import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.io.OutputPort;
-
 import com.amazonaws.services.autoscaling.model.DescribeScalingProcessTypesRequest;
 import com.amazonaws.services.autoscaling.model.DescribeScalingProcessTypesResult;
 import com.amazonaws.services.autoscaling.model.ProcessType;
+import net.sf.saxon.s9api.SaxonApiException;
 
-
-@Command( name= "as-describe-scaling-process-types" , 
-options= { @Option("-a") } )
+@Command(name = "as-describe-scaling-process-types", options = {
+    @Option("-a") })
 @Option("bar")
-public class asDescribeScalingProcessTypes extends AWSASCommand
-{
+public class asDescribeScalingProcessTypes extends AWSASCommand {
 
-	@Override
-	public int run(List<XValue> args) throws Exception
-	{
+  @Override
+  public int run(List<XValue> args) throws Exception {
 
-		Options opts = getOptions();
-		opts.parse(args);
+    Options opts = getOptions();
+    opts.parse(args);
 
-		args = opts.getRemainingArgs();
+    args = opts.getRemainingArgs();
 
+    setSerializeOpts(this.getSerializeOpts(opts));
 
-		setSerializeOpts(this.getSerializeOpts(opts));
+    try {
+      getASClient(opts);
+    } catch (UnexpectedException e) {
+      usage(e.getLocalizedMessage());
+      return 1;
 
-		try {
-			getASClient(opts);
-		} catch (UnexpectedException e) {
-			usage(e.getLocalizedMessage());
-			return 1;
+    }
 
-		}
+    int ret = describe();
 
-		int ret = describe();
+    return ret;
 
-		return ret;
+  }
 
-	}
+  private int describe() throws XMLStreamException, IOException,
+      SaxonApiException, CoreException {
 
-	private int describe() throws XMLStreamException, IOException,
-	SaxonApiException, CoreException
-	{
+    OutputPort stdout = this.getStdout();
+    mWriter = new SafeXMLStreamWriter(
+        stdout.asXMLStreamWriter(getSerializeOpts()));
 
-		OutputPort stdout = this.getStdout();
-		mWriter = new SafeXMLStreamWriter(
-				stdout.asXMLStreamWriter(getSerializeOpts()));
+    startDocument();
+    startElement(this.getName());
 
-		startDocument();
-		startElement(this.getName());
+    traceCall("describeScalingProcessTypes");
 
-		traceCall("describeScalingProcessTypes");
+    DescribeScalingProcessTypesRequest request = new DescribeScalingProcessTypesRequest();
+    DescribeScalingProcessTypesResult result = getAWSClient()
+        .describeScalingProcessTypes(request);
 
-		DescribeScalingProcessTypesRequest request = new DescribeScalingProcessTypesRequest();
-		DescribeScalingProcessTypesResult result = getAWSClient()
-				.describeScalingProcessTypes(request);
+    writeScalingProceessTypes(result);
 
-		writeScalingProceessTypes(result);
+    endElement();
+    endDocument();
 
-		endElement();
-		endDocument();
+    closeWriter();
 
-		closeWriter();
+    stdout.writeSequenceTerminator(getSerializeOpts());
 
-		stdout.writeSequenceTerminator(getSerializeOpts());
+    return 0;
 
-		return 0;
+  }
 
-	}
+  private void writeScalingProceessTypes(
+      DescribeScalingProcessTypesResult stypes) throws XMLStreamException {
 
-	private void writeScalingProceessTypes(
-			DescribeScalingProcessTypesResult stypes) throws XMLStreamException
-			{
+    startElement("process-types");
+    for(ProcessType pt : stypes.getProcesses()) {
+      startElement("process-type");
 
-		startElement("process-types");
-		for (ProcessType pt : stypes.getProcesses()) {
-			startElement("process-type");
+      attribute("name", pt.getProcessName());
+      endElement();
 
-			attribute("name", pt.getProcessName());
-			endElement();
+    }
 
-		}
-
-		endElement();
-			}
+    endElement();
+  }
 
 }
 

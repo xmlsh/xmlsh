@@ -3,11 +3,7 @@ package org.xmlsh.aws;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
-
 import javax.xml.stream.XMLStreamException;
-
-import net.sf.saxon.s9api.SaxonApiException;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.xmlsh.aws.util.AWSEC2Command;
@@ -18,133 +14,112 @@ import org.xmlsh.core.UnexpectedException;
 import org.xmlsh.core.XValue;
 import org.xmlsh.core.io.OutputPort;
 import org.xmlsh.util.Util;
-
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.ec2.model.DescribeInstancesRequest;
 import com.amazonaws.services.ec2.model.Filter;
 import com.amazonaws.services.ec2.model.Reservation;
-
+import net.sf.saxon.s9api.SaxonApiException;
 
 public class ec2DescribeInstances extends AWSEC2Command {
 
-	private static Logger mLogger = LogManager.getLogger();
+  private static Logger mLogger = LogManager.getLogger();
 
+  /**
+   * @param args
+   * @throws IOException
+   */
+  @Override
+  public int run(List<XValue> args) throws Exception {
 
+    Options opts = getOptions();
+    parseOptions(opts, args);
 
-	/**
-	 * @param args
-	 * @throws IOException 
-	 */
-	@Override
-	public int run(List<XValue> args) throws Exception {
+    args = opts.getRemainingArgs();
+    parseCommonOptions(opts);
 
+    setSerializeOpts(this.getSerializeOpts(opts));
 
-        Options opts = getOptions();
-        parseOptions(opts, args);
+    try {
+      getEC2Client(opts);
+    } catch (UnexpectedException e) {
+      usage(e.getLocalizedMessage());
+      return 1;
 
-        args = opts.getRemainingArgs();
-        parseCommonOptions( opts );
+    }
 
-		setSerializeOpts(this.getSerializeOpts(opts));
+    Collection<Filter> filters = opts.hasOpt("filter")
+        ? parseFilters(Util.toStringList(opts.getOptValues("filter"))) : null;
 
+    int ret = describe(args, filters);
 
+    return ret;
 
-		try {
-			getEC2Client(opts);
-		} catch (UnexpectedException e) {
-			usage( e.getLocalizedMessage() );
-			return 1;
+  }
 
-		}
+  private int describe(List<XValue> args, Collection<Filter> filters)
+      throws IOException, XMLStreamException, SaxonApiException, CoreException,
+      InterruptedException {
 
-		Collection<Filter> filters = 
-				opts.hasOpt("filter") ?
-						parseFilters( Util.toStringList(opts.getOptValues("filter"))) : null ;
+    OutputPort stdout = this.getStdout();
+    mWriter = new SafeXMLStreamWriter(
+        stdout.asXMLStreamWriter(getSerializeOpts()));
 
+    startDocument();
+    startElement(this.getName());
 
+    DescribeInstancesRequest request = new DescribeInstancesRequest();
+    if(args != null && args.size() > 0) {
 
-						int ret = describe(args,filters);
+      request.setInstanceIds(Util.toStringList(args));
 
+    }
+    if(filters != null)
+      request.setFilters(filters);
 
-						return ret;
+    traceCall("describeInstances");
 
+    List<Reservation> result = null;
 
-	}
+    int retry = rateRetry;
+    int delay = retryDelay;
+    do {
+      try {
+        result = getAWSClient().describeInstances(request).getReservations();
+        break;
+      } catch (AmazonServiceException e) {
+        mShell.printErr("AmazonServiceException", e);
+        if(retry > 0
+            && Util.isEqual("RequestLimitExceeded", e.getErrorCode())) {
+          mShell.printErr("AWS RequestLimitExceeded - sleeping " + delay);
+          Thread.sleep(delay);
+          retry--;
+          delay *= 2;
 
+        }
+        else
+          throw e;
 
-	private int describe(List<XValue> args, Collection<Filter> filters) throws IOException, XMLStreamException, SaxonApiException, CoreException, InterruptedException {
+      }
+    } while(retry > 0);
 
+    for(Reservation res : result) {
+      writeReservation(res);
 
-		OutputPort stdout = this.getStdout();
-		mWriter = new SafeXMLStreamWriter(stdout.asXMLStreamWriter(getSerializeOpts()));
+    }
 
+    endElement();
+    endDocument();
+    closeWriter();
 
-		startDocument();
-		startElement(this.getName());
+    stdout.writeSequenceTerminator(getSerializeOpts());
 
-		DescribeInstancesRequest  request = new DescribeInstancesRequest();
-		if( args != null && args.size() > 0 ){
+    return 0;
 
-			request.setInstanceIds(Util.toStringList(args));
+  }
 
-		}
-		if( filters != null )
-			request.setFilters(filters);
-
-
-		traceCall("describeInstances");
-
-		List<Reservation> result = null;
-
-		int retry = rateRetry ;
-		int delay = retryDelay ;
-		do {
-			try {
-				result = getAWSClient().describeInstances(request).getReservations();
-				break ;
-			} catch( AmazonServiceException e ){
-				mShell.printErr("AmazonServiceException" , e );
-				if( retry > 0 && Util.isEqual("RequestLimitExceeded",e.getErrorCode())){
-					mShell.printErr("AWS RequestLimitExceeded - sleeping " + delay );
-					Thread.sleep( delay );
-					retry--;
-					delay *= 2 ;
-
-
-				}
-				else
-					throw e;
-
-			}
-		} while( retry > 0 );
-
-
-		for( Reservation  res : result ){
-			writeReservation(res);
-
-		}
-
-		endElement();
-		endDocument();
-		closeWriter();
-
-		stdout.writeSequenceTerminator(getSerializeOpts());
-
-		return 0;
-
-	}
-
-
-
-
-	@Override
-	public void usage() {
-		super.usage("Usage: ec2-describe-instances [options] [instance-id]");
-	}
-
-
-
-
-
+  @Override
+  public void usage() {
+    super.usage("Usage: ec2-describe-instances [options] [instance-id]");
+  }
 
 }
