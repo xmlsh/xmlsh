@@ -1,0 +1,23 @@
+/*
+ * Global version settings
+ * Include in allprojects
+ */
+
+apply plugin: "com.zoltu.git-versioning"
+
+ext {
+    currentVersion = project.hasProperty("currentVersion") ?
+                       project.getProperty("currentVersion") : version;
+}
+ 
+
+afterEvaluate  { p ->  
+  if( p.hasProperty("currentVersion") ) 
+    p.version =  p.getProperty("currentVersion")
+  println "After eval: ${p.name} version: ${p.version}"
+
+  if( "${p.version}".endsWith( "SNAPSHOT" ) )
+     p.status 'integration'
+  else
+     p.status 'release'
+}

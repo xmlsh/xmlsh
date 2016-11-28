@@ -1,0 +1,63 @@
+def esc( s )
+{
+   [ "'" : '|\'' , '(\\[nr|\\[\\]])' : '|$1' , '\\\\u' : '|0x' ].each { n,v  ->
+     s = s.replaceAll(n,v)
+   }
+   return "'$s'";
+}      
+
+ext.hasTC = System.getProperty("teamcity.version",System.getProperty("syste.teamcity.version",null)) ? true : false 
+
+ext.tcBuild = { buildNum  ->
+   def bn=esc(buildNum)
+   println "##teamcity[buildNumber $bn]"
+
+}
+
+ext.tcService = { String name , Map nv  ->
+   String s=''
+   nv.each { prop,value -> 
+     s+= ' ' 
+     s+= prop 
+     s+= '=' 
+     s+= esc(value) 
+   }
+   println "##teamcity[$name$s]"
+}
+ext.tcMessage = { String msg ->  
+  tcService( "message" , [ text: msg ] )
+}
+
+ext.tcSet= { String name, String value ->
+  tcService( "setParameter" , [ name: name , value: value ] )
+}
+
+ext.tcOpen = { String msg , String desc  -> 
+  tcService( "blockOpened" , [ name: msg , description: desc?: msg] )
+}
+
+ext.tcClose  = { String msg ->
+  tcService( "blockClosed" , [ name: msg ] )
+}
+
+
+ext.tcDebug  = rootProject.hasProperty("tc-debug") 
+task setBuildNumber( type: Task ) {
+  outputs.upToDateWhen  {false }
+  doLast {
+      def buildPrefix = project.getProp("buildPrefix","")
+      def buildSuffix = project.getProp("buildSuffix","")
+      def buildNumber = project.getProp("buildNumber",null)
+    if( tcDebug  ) 
+      tcMessage "properties provided buildPrefix=$buildPrefix buildSuffix=$buildSuffix buildNumber=$buildNumber currentVersion=$currentVersion"
+    def bn = buildNumber?: "${buildPrefix}${version}${buildSuffix}"
+    tcOpen 'setBuildNumber' , "Setting dynamic build number"
+    tcSet 'version',version
+    tcSet 'buildNumber', bn
+    if( tcDebug  ) 
+      tcMessage "Resolved buildNumber=$bn version=$version" 
+    tcBuild bn
+    tcClose 'setBuildNumber' 
+ }
+}
+

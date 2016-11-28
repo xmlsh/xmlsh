@@ -1,0 +1,83 @@
+
+// Local publishing
+publishing {
+  repositories { 
+  if( ! hasTC )
+    mavenLocal()
+   ivy {
+       url "${rootProject.buildDir}/repo"
+    }
+  }
+}
+task cleanRepo(type: Delete) { 
+  delete "${rootProject.buildDir}/repo"
+}
+
+
+afterEvaluate { p ->
+  //p.tasks["publish"].dependsOn p.tasks["publishMavenJavaPublicationToMavenLocal"]
+  p.tasks.withType( PublishToIvyRepository ) { task ->
+       println "project: ${p.name} Found tasks for Ivy: ${task.name}"
+   }
+  p.tasks.withType( PublishToMavenLocal ) { task ->
+       println "project: ${p.name} Found tasks for Maven: ${task.name}"
+       if( ! hasTC )
+         p.tasks.publish.dependsOn task
+  }
+}
+
+rootProject.tasks.withType( PublishToIvyRepository ) { task ->
+  task.dependsOn cleanRepo
+}
+rootProject.tasks.withType( PublishToMavenRepository ) { task ->
+  task.dependsOn cleanRepo
+}
+
+def printArtifact( a ) {
+  println "  file: ${a.file}  classifier: ${a.classifier?:''} extension: ${a.extension?:''}"
+  // println " -- properties " 
+  // a.properties.each {  key,value -> println "  $key " }
+  // println "------"
+}
+def notation( MavenPublication p ) {
+  "${p.groupId}:${p.artifactId}:${p.version}@${p.classifier?:''}"
+}
+def notation( IvyPublication p ) {
+  "${p.organisation}:${p.module}:${p.revision}@${p.ext}"
+}
+  
+
+def printMavenPublication( MavenPublication p ) {
+  println "[" + notation(p) + "]"
+  p.artifacts.all { printArtifact it }
+}
+
+def printIvyPublication( IvyPublication p ) {
+  println "[" + notation(p) + "]"
+  //println "module: ${p.module} org: ${p.organisation} revision: ${p.revision}"
+  p.artifacts.all { printArtifact it }
+}
+
+task printPublications {
+  doLast {
+   publishing.publications.withType( IvyPublication ) {
+    println "Publication: ${it.name}"
+    printIvyPublication( it );
+   }
+
+    publishing.publications.withType( MavenPublication ) {
+      println "Publication: ${it.name}"
+      printMavenPublication( it );
+   }
+ }
+}
+task collectPublications {
+  doLast { 
+    publishing.publications.withType( MavenPublication ) {
+       if( it.ext == "jar" )
+         rootProject.libVersions[it.name]=notation(it)
+       if( it.ext == "war" )
+         rootProject.warVersions[it.name]=notation(it)
+   }
+ }
+}

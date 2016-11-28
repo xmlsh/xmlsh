@@ -1,0 +1,11 @@
+buildscript {
+  repositories {
+    jcenter()
+  }
+}
+plugins {
+  id "com.zoltu.git-versioning" version "2.0.30"
+}
+ext.gradleCommon = ".."
+apply from: "../buildscripts/core.gradle"
+defaultTasks 'version'

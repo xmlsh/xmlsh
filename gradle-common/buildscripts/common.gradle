@@ -1,0 +1,46 @@
+/*
+ * 
+ * 
+ */
+ext {
+ lombokVersion = "1.16.10"
+ hasJavaSource = ! project.fileTree("src").include("**/*.java").isEmpty() 
+}
+import org.gradle.plugins.ide.eclipse.model.Library
+apply from: "${gradleCommon}/buildscripts/version.gradle"
+apply from: "${gradleCommon}/buildscripts/utils.gradle"
+
+apply plugin: 'eclipse'
+apply plugin: 'maven'
+apply plugin: 'maven-publish'
+apply plugin: 'ivy-publish'
+apply from: "$gradleCommon/buildscripts/resolve.gradle"
+apply from: "${gradleCommon}/buildscripts/publish.gradle"
+
+if( hasJavaSource )  {
+  apply plugin: 'java' 
+  compileJava {
+      sourceCompatibility = 1.8
+      targetCompatibility = 1.8
+  }
+
+  eclipse {
+    classpath {
+        downloadJavadoc = true
+        downloadSources = true
+    }
+  }
+
+  cleanEclipse.doLast {
+    delete file(".settings")
+    delete file("bin")
+  }
+
+
+  dependencies {
+      compileOnly "org.projectlombok:lombok:${rootProject.lombokVersion}"
+  }
+}
+
+
+

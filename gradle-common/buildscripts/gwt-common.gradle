@@ -1,0 +1,199 @@
+buildscript {
+  repositories {
+    jcenter()
+  }
+ dependencies {
+    classpath 'de.richsource.gradle.plugins:gwt-gradle-plugin:0.+'
+ }
+}
+apply plugin: 'war'
+apply plugin: 'gwt'
+// http://stackoverflow.com/questions/9577929/cleanest-way-in-gradle-to-get-the-path-to-a-jar-file-in-the-gradle-dependency-ca/39158467#39158467
+configurations {
+  lombok 
+  war
+}
+
+dependencies {
+  lombok "org.projectlombok:lombok:${rootProject.lombokVersion}"
+  compile 'javax.validation:validation-api:1.0.0.GA'
+}
+
+//apply plugin: 'jetty'
+
+def boolean optBool( prop ) {
+  project.hasProperty(prop) ? 
+    project.getProperty(prop) == "true" 
+  : false 
+}
+  
+def getTransport() {
+  if( project.hasProperty("transport") )
+    return "${transport}"
+  else
+     return (debug ) ? "NONE" : "CONFIDENTIAL"
+}
+ 
+ext {
+  servletName = "${project.name}"
+  gwtModule = 'com.nexstra.gwt.odd.store.Store'
+  debug = optBool( "debug") 
+  draft = optBool( "draft" ) || debug 
+  warTask = draft ?
+     project.tasks['draftWar'] : 
+     project.tasks['war']; 
+  gwtSdkVersion = '2.8.0'
+  webXmlSrcFile=file('src/main/web.xml')
+  webXmlFile=file( "${project.buildDir}/web.xml" )
+  lombok= configurations.lombok.asPath
+}
+ 
+
+archivesBaseName = "${servletName}"
+
+// Use a HTTP only (non HTTPS) web.xml 
+task genXmlTask(type: Copy) {
+   def transport = getTransport()
+   description= "Use correct (confidential/non-confidential) configuation for local debugging"
+   from webXmlSrcFile
+   inputs.property "transport" , transport
+   println "Configured with web.xml for transport=${transport}"
+   into "${project.buildDir}"
+   filter {
+      it.replaceAll('<transport-guarantee>(\\w+)</transport-guarantee>',"<transport-guarantee>${transport}</transport-guarantee>")
+    }
+    doLast {
+       println "Renerating web.xml for transport=${transport}"
+   }
+}
+
+
+gwt {
+  gwtVersion="${project.gwtSdkVersion}"
+  modules=[ "${project.gwtModule}" ]
+  compiler {
+     localWorkers="${gwtWorkers}"
+     compileReport=true
+     draft=draft
+   }
+    superDev {
+        noPrecompile=true
+    }
+   dev {
+
+   }
+   gwtDev {
+     jvmArgs  "-javaagent:${lombok}=ECJ" 
+   }
+   maxHeapSize="4G"
+   //Specify the deployment Port
+   //jettyRunWar.httpPort = 8080
+}
+compileGwt {
+     jvmArgs  "-javaagent:${lombok}=ECJ" 
+  minHeapSize="1G"
+  maxHeapSize="4G"
+}
+draftCompileGwt {
+  jvmArgs  "-javaagent:${lombok}=ECJ" 
+  minHeapSize="1G"
+  maxHeapSize="4G"
+}
+
+gwtDev { 
+   dependsOn genXmlTask 
+} 
+war {
+  classpath fileTree('libs')
+  archiveName "${servletName}.war"
+  dependsOn  genXmlTask
+  webXml project.webXmlFile
+}
+
+// draftWar should be configured like war
+// https://steffenschaefer.github.io/gwt-gradle-plugin/doc/latest/draft_war
+draftWar {
+  classpath fileTree('libs')
+  archiveName "${servletName}.war"
+  dependsOn  genXmlTask
+  webXml project.webXmlFile
+}
+
+
+/*
+task jettyDraftWar(type: JettyRunWar) {
+    dependsOn draftWar
+    dependsOn.remove('war')
+    webApp=draftWar.archivePath
+    additionalRuntimeJars = configurations.providedCompile
+}
+*/
+
+// In this section you declare the dependencies for your production and test code
+dependencies {
+  providedCompile 'org.apache.logging.log4j:log4j-api:2+'
+  providedCompile project(':odd-lib')
+  gwt fileTree('libs')
+  gwt "org.projectlombok:lombok:${rootProject.lombokVersion}"
+  runtime group: 'com.google.gwt' , name: 'gwt-servlet' , version: "${project.gwtSdkVersion}"
+  gwt group: 'javax.validation', name: 'validation-api', version: '1.0.0.GA'
+  providedRuntime group: 'org.apache.logging.log4j', name: 'log4j-web', version: '2.6.+'
+  
+
+}
+
+clean.doLast {
+   println "Deleteing war"
+   println project.delete("war")
+}
+
+
+
+warTemplate {
+  dependsOn  genXmlTask
+  webXml project.webXmlFile
+}
+
+
+
+task explodedWar(type: Sync, dependsOn: warTask ) {
+  into "war"
+  with warTask
+}
+
+task sourceJar(type: Jar) { from sourceSets.main.allJava }
+sourceJar.onlyIf = { true  }
+
+publishing {
+  publications {
+   mavenJava(MavenPublication) {
+    artifactId "${servletName}"
+    from components.web
+    artifact sourceJar { classifier "sources" }
+   }
+  }
+  publications {
+    ivyJava(IvyPublication) {
+     from components.web
+    }
+   }
+}
+
+artifacts {
+  archives warTask
+}
+task setupEclipse( dependsOn: warTemplate)  {
+ doLast {
+  ant.propertyfile(file: ".settings/com.google.gdt.eclipse.core.prefs") {
+    ant.entry(key: "eclipse.preferences.version", value: "1")
+     ant.entry(key: "warSrcDir", value: "war")
+     ant.entry(key: "warSrcDirIsOutput", value: "false")
+     ant.entry(key: "jarsExcludedFromWebInfLib",value: "gwt-servlet.jar");
+  }
+ }
+}
+tasks["eclipse"].dependsOn setupEclipse
+
+
+
+//build.dependsOn setupEclipse

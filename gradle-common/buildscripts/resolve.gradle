@@ -1,0 +1,37 @@
+// requires tc-gradle.gradle
+repositories {
+ // mavenLocal only on non TC buidls
+   if(  ! project.hasTC )
+        mavenLocal()
+  if( rootProject.hasProperty("resolveArtifactory") ){
+  
+    if( ! rootProject.hasProperty("artifactoryResolveKey" ) ){
+	    assert rootProject.hasProperty('artifactoryKey') 
+	    rootProject.ext.artifactoryResolveKey = rootProject.getProperty('artifactoryKey')
+    }
+    if( ! rootProject.hasProperty("artifactoryResolveUrl" ) ){
+	    assert rootProject.hasProperty('artifactoryUrl') 
+	    rootProject.ext.artifactoryResolveUrl = rootProject.getProperty('artifactoryUrl') 
+    }
+    if( ! rootProject.hasProperty("artifactoryResolveUser" ) ){
+	    assert rootProject.hasProperty('artifactoryUser') 
+	    rootProject.ext.artifactoryResolveUser = rootProject.getProperty('artifactoryUser')
+    }
+    if( ! rootProject.hasProperty("artifactoryResolvePassword" ) ){
+	    assert rootProject.hasProperty('artifactoryPassword') 
+	    rootProject.ext.artifactoryResolvePassword =rootProject.getProperty('artifactoryPassword') 
+    }
+    def sURL= "${-> rootProject.artifactoryResolveUrl}/${-> rootProject.artifactoryResolveKey}"
+    maven {
+      credentials {
+        username "${-> rootProject.artifactoryResolveUser}"
+        password "${-> rootProject.artifactoryResolvePassword}"
+      }
+      url sURL
+    }
+  }
+  else {
+    jcenter()
+  }
+}
+

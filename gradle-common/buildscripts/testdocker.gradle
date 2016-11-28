@@ -1,0 +1,37 @@
+buildscript {
+  repositories {
+    jcenter()
+  }
+  dependencies {
+    classpath 'com.bmuschko:gradle-docker-plugin:3.0.3'
+    classpath 'com.github.docker-java:docker-java:3.0.3' 
+  }
+}
+
+
+import com.bmuschko.gradle.docker.tasks.AbstractDockerRemoteApiTask
+import com.bmuschko.gradle.docker.utils.CollectionUtil
+import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.Nested
+import org.gradle.api.tasks.Optional
+import com.github.dockerjava.api.model.Network 
+
+class DockerListNetworks extends AbstractDockerRemoteApiTask {
+    def List<Network> networks 
+ 
+    DockerListNetworks() {
+      ext.getNetworks = { networks } 
+    }
+
+    @Override
+    void runRemoteCommand(dockerClient) {
+        def containerCommand = dockerClient.listNetworksCmd()
+        networks = containerCommand.exec()
+        logger.quiet "Listed Networks"
+    }
+    Network getNetworks() {
+        networks
+    }
+
+}
+

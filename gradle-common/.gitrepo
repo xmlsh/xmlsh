@@ -1,0 +1,11 @@
+; DO NOT EDIT (unless you know what you are doing)
+;
+; This subdirectory is a git "subrepo", and this file is maintained by the
+; git-subrepo command. See https://github.com/git-commands/git-subrepo#readme
+;
+[subrepo]
+	remote = git@github.com:nexstra/gradle-common.git
+	branch = master
+	commit = 0d73ca4d66813c6d0517731e5d17a24b3635e089
+	parent = 8dcc38a3d4f9ff940ecbd40da3fb1604ae5cd48b
+	cmdver = 0.3.0

@@ -1,0 +1,117 @@
+buildscript {
+  repositories { 
+    jcenter()
+  }
+  dependencies {
+    //if( hasProperty("include-jackson" ) ) classpath 'com.fasterxml.jackson.core:jackson-databind:2.4.1.3'
+  }
+}
+/*
+import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
+
+if( hasProp("include-jackson" ) ) {
+
+  project.ext.toJSON = { obj -> 
+    ObjectMapper mapper = new ObjectMapper();
+    mapper = mapper.setVisibility( PropertyAccessor.ALL , Visibility.NONE )
+    mapper = mapper.setVisibility( PropertyAccessor.GETTER, Visibility.PUBLIC_ONLY )
+    mapper.writeValueAsString( obj )
+  }
+}
+*/
+if( hasProp('taskDetails') )  {
+  def path = rootProject.getProperty("taskDetails")
+  gradle.taskGraph.afterTask { task , state ->
+    println "project:${project.name} name:$task.name group:$task.group : $task.description"
+    println """
+  didWork: ${state.didWork} executed: ${state.executed} failure: ${state.failure}  skipMessage: ${state.skipMessage} skipped: ${state.skipped} upToDate: ${state.upToDate}
+"""
+    if( task.path == path ){
+    StringBuffer taskDetails = new StringBuffer()
+    taskDetails << """-------------
+conv:$task.convention.plugins
+inputs:
+"""
+        task.inputs.properties.each{ name,value ->
+            taskDetails << "   property: ${name} value: ${value}\n"
+        }
+        task.inputs.files.each{ it ->
+            taskDetails << "   ${it.absolutePath}\n"
+        }
+        taskDetails << "outputs:\n"
+        task.outputs.files.each{ it ->
+            taskDetails << "   ${it.absolutePath}\n"
+        }
+        taskDetails << "-------------"
+        println taskDetails
+    }
+  }
+}
+// Generate a task dependency graph in output/reports
+if( hasProp("taskGraph" ) ){
+  visteg { 
+      enabled =  true
+      destination = 'build/reports/visteg.dot'
+  }
+}
+
+task printProps(type: Task ) {
+  doLast {
+    System.properties.sort().each { k,v -> println "${k}: ${v}" }
+  }
+}
+def printRepo( rep ) {
+   println "Repository: $rep.name URL: ${->rep.url}"
+
+}
+
+task printRepos(type: Task ){
+ doLast { 
+    project.getRepositories().each { 
+    printRepo it 
+   }
+ }
+} 
+project.afterEvaluate {
+   def at = project.tasks.findByName("artifactory")
+   if( at != null  ){
+      println " -- artifactory task found -- "
+      if( hasProp("resolve") ){
+        def res = at.getProperty("resolve");
+        println " resolve: ${res.contextUrl}" 
+     }
+  }
+}
+
+task resolve(type: Task ){
+  group 'dependencies'
+  description 'gradle resolve -Partifact=":artifact-notation:"'
+  requiredProperties 'artifact'
+}
+if( rootProject.hasProperty('artifact') ) {
+  resolve.doLast {
+      println "  Project:" + project.name
+      rootProject.configurations.resolve { conf ->
+        println "    Configuration: ${conf.name}"
+        conf.allDependencies.each { dep ->
+          println "      ${dep.group}:${dep.name}:${dep.version}"
+        }
+        conf.resolvedConfiguration.resolvedArtifacts.each { 
+	  println  "Resolved artifact: ${it.name}"
+	  println  "  id: ${it.id.displayName}"
+	  println  "  file: ${it.file.absolutePath}"
+	  println  "  Type: ${it.type} Extension: ${it.extension} Classifier: ${it.classifier}"
+	  println  "  ModuleVersion: ${it.moduleVersion.id}"
+         }
+      }
+    }
+   configurations.create("resolve") 
+   artifact = rootProject.properties['artifact'] 
+   println "resolving artifact $artifact"
+   dependencies.add('resolve', artifact )
+   resolve.dependsOn configurations.resolve
+}
+
+

@@ -1,0 +1,21 @@
+buildscript {
+  repositories { 
+    jcenter()
+  }
+}
+ext.hasProp = { String prop ->  project.hasProperty(prop)  }
+ext.debug = hasProp("debug")
+ext.getProp = { String prop , defValue->
+  def v = null 
+  if( project.hasProperty(prop) )
+      v = project.getProperty(prop)
+  else 
+    v = defValue
+  if( ext.debug ) println "getProp( ${prop} , ${defValue} ) result : ${v} "
+  return v
+}
+
+if( ! ext.hasProp("gradleCommon") )
+   ext.gradleCommon="${rootProject.rootDir}/gradle-common"
+apply from: "${gradleCommon}/buildscripts/version.gradle"
+apply from: "${gradleCommon}/buildscripts/tc-version.gradle"
