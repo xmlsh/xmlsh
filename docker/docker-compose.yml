@@ -1,0 +1,13 @@
+version: '2'
+services:
+  xmlsh:
+    image: 114709661826.dkr.ecr.us-west-2.amazonaws.com/nexstra/xmlsh:latest
+    entrypoint: 
+      - /xmlsh-2.0/bin/xmlsh
+      - -c
+    logging:
+      driver: awslogs
+      options:
+        "awslogs-region" : "us-west-2"
+        "awslogs-group" : "ecscli"
+        "awslogs-stream-prefix" : "ecscli"

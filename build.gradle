@@ -4,17 +4,18 @@ buildscript {
   }
   dependencies {
     classpath 'net.saliman:gradle-properties-plugin:1.4.4'
-    classpath 'com.bmuschko:gradle-docker-plugin:3+'
   }
 }
 
-apply plugin: 'application'
-mainClassName = 'org.xmlsh.sh.shell.Shell'
-applicationName = 'xmlsh'
 
-applicationDefaultJvmArgs=[
-     '-Djavax.xml.parsers.SAXParserFactory=org.apache.xerces.jaxp.SAXParserFactoryImpl',
-     '-Dxmlsh.env.XMODPATH=$APP_HOME']
+allprojects {
+    buildscript {
+    repositories() { 
+    jcenter()
+    }
+    }
+}
+apply plugin: 'application'
 
 def getDate() {
     def date = new Date()
@@ -108,10 +109,12 @@ subprojects {
             }
         }
     }
-    clean << {
+    clean  {
+      doLast {
         println "Cleaning output [libs,bin]... "
         project.delete("libs")
         project.delete("bin")
+      }
     }
 
     // Disable install of sub projects
@@ -138,13 +141,10 @@ distributions {
 
 evaluationDependsOn ":extensions"
 evaluationDependsOn ":extensions:aws"
-applicationDistribution.
-      from(  project(":extensions:aws").installDist  ){
-         into("modules/aws")
-         exclude { it.file.name in project(":xmlsh-core").configurations.exported.files.name }
-      }
-evaluationDependsOn ":extensions"
-evaluationDependsOn ":extensions:marklogic"
+
+mainClassName = 'org.xmlsh.sh.shell.Shell'
+applicationName = 'xmlsh'
+
 applicationDistribution.
       from( project(":extensions:marklogic").installDist ) {
    into("modules/marklogic")
@@ -152,7 +152,6 @@ applicationDistribution.
 
 }
 
-evaluationDependsOn ":extensions:jstache"
 applicationDistribution.
       from( project(":extensions:jstache").installDist ) {
    into("modules/jstache") 
@@ -160,6 +159,20 @@ applicationDistribution.
   
 }
 
+ applicationDefaultJvmArgs=[
+     '-Djavax.xml.parsers.SAXParserFactory=org.apache.xerces.jaxp.SAXParserFactoryImpl',
+     '-Dxmlsh.env.XMODPATH=$APP_HOME']
+     
+
+
+applicationDistribution.
+      from(  project(":extensions:aws").installDist  ){
+         into("modules/aws")
+         exclude { it.file.name in project(":xmlsh-core").configurations.exported.files.name }
+      }
+evaluationDependsOn ":extensions"
+evaluationDependsOn ":extensions:marklogic"
+evaluationDependsOn ":extensions:jstache"
 run {
     standardInput = System.in
      /* Can pass all the properties: */
@@ -181,7 +194,6 @@ uploadArchives {
 
             }
         }
-
     }
 
   }
@@ -224,42 +236,3 @@ dependencies {
     testCompile   'junit:junit:4.+'
 
 }
-
-buildscript {
- repositories() { 
-   jcenter()
-  }
-
-}
-apply plugin: 'java'
-apply plugin: 'application'
-apply plugin: 'com.bmuschko.docker-java-application'
-sourceCompatibility = '1.8'
-
-repositories {
-  jcenter()
-        maven {
-            url rootProject.getProperty("xmlsh.awsRepoBucket") + "/maven2"
-            credentials(AwsCredentials) {
-                accessKey rootProject.getProperty("xmlsh.awsAccessKey")
-                secretKey rootProject.getProperty("xmlsh.awsSecretKey")
-            }
-        }
-}
-
-
-docker {
-   if( System.getenv("DOCKER_HOST") != null )
-     url = System.getenv("DOCKER_HOST")
-
-   if( System.getenv("DOCKER_CERT_PATH") != null )
-     certPath =  new File( System.getenv("DOCKER_CERT_PATH") )
-}
-
-docker {
-  javaApplication {
-    baseImage = 'daldei/centos7-java8'
-    maintainer = 'David lee "dlee@xmlsh.org"'
-  }
-}
-

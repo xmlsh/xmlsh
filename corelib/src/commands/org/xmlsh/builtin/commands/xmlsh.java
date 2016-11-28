@@ -14,7 +14,6 @@ import org.xmlsh.core.ICommand;
 import org.xmlsh.core.Options;
 import org.xmlsh.core.ScriptCommand.SourceMode;
 import org.xmlsh.core.XValue;
-import org.xmlsh.sh.core.EvalScriptExpr;
 import org.xmlsh.sh.core.ICommandExpr;
 import org.xmlsh.sh.module.CommandFactory;
 import org.xmlsh.sh.shell.Shell;
@@ -45,7 +44,7 @@ public class xmlsh extends BuiltinCommand {
   public int run(List<XValue> args) throws Exception {
     mLogger.entry(args);
     Options opts = new Options(
-        "x,v,c:,rcfile:,e,norc,+location,redirect-output:,redirect-input:,redirect-error:");
+        "x,v,c:+,rcfile:,e,norc,+location,redirect-output:,redirect-input:,redirect-error:");
     opts.parse(args);
     Shell shell = getShell();
 
@@ -64,9 +63,9 @@ public class xmlsh extends BuiltinCommand {
       if(opts.hasOpt("location"))
         shell.setOption("location", opts.getOptFlag("location", true));
 
-      String command = null;
+      List<XValue> command = null;
       if(opts.hasOpt("c"))
-        command = opts.getOptStringRequired("c").toString();
+        command = opts.getOptValuesRequired("c");
 
       boolean bNoRc = opts.hasOpt("norc");
       args = opts.getRemainingArgs();
@@ -96,9 +95,20 @@ public class xmlsh extends BuiltinCommand {
 
         // Run command
         if(command != null) {
-          shell.setArgs(args);
-          ICommandExpr cmd = new EvalScriptExpr(command);
-          ret = shell.exec(cmd);
+            if(! args.isEmpty()  ) shell.setArg0(args.remove(0).toString());
+            shell.setArgs(args);
+            ret = -1;
+     
+            for(XValue cv : command ){
+              String scmd = cv.toString();
+              mLogger.trace("cmd: {} args: " , scmd, args );
+              ICommandExpr c = shell.parseEval(scmd);
+              if(c == null) {
+                shell.printErr(scmd + ": not found", getLocation());
+
+              } else 
+                ret = shell.exec(c);
+            }
 
         }
         else // Run script

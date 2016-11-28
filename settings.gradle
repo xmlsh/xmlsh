@@ -1,10 +1,10 @@
 include "xmlsh-core", 
        "extensions:aws" , 
        "extensions:marklogic" ,
-	   "extensions:jstache"
+	   "extensions:jstache" , "xmlsh-docker"
 
 //      "extensions:jstache"
 
 project(":xmlsh-core").projectDir=file("corelib")
-
+project(":xmlsh-docker").projectDir=file("docker")
 

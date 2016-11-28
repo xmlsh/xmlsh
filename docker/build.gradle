@@ -1,0 +1,126 @@
+buildscript {
+  dependencies {
+    classpath 'net.saliman:gradle-properties-plugin:1.4.4'
+    classpath 'com.bmuschko:gradle-docker-plugin:3+'
+  }
+}
+
+
+apply plugin: 'java'
+apply plugin: 'application'
+apply plugin: 'distribution'
+apply plugin: 'com.bmuschko.docker-java-application'
+mainClassName = 'org.xmlsh.sh.shell.Shell'
+applicationName = 'xmlsh'
+
+distributions {
+	main {
+    contents {
+      with project(":").distributions.main.contents
+    }
+	 baseName = "xmlshd"
+         contents {
+              exclude "xmlshd-${version}.jar"
+        }
+   }
+}
+
+ applicationDefaultJvmArgs=[
+     '-Djavax.xml.parsers.SAXParserFactory=org.apache.xerces.jaxp.SAXParserFactoryImpl',
+     '-Dxmlsh.env.XMODPATH=$APP_HOME']
+     
+
+
+
+sourceCompatibility = '1.8'
+
+repositories {
+  jcenter()
+        maven {
+            url rootProject.getProperty("xmlsh.awsRepoBucket") + "/maven2"
+            credentials(AwsCredentials) {
+                accessKey rootProject.getProperty("xmlsh.awsAccessKey")
+                secretKey rootProject.getProperty("xmlsh.awsSecretKey")
+            }
+        }
+}
+
+
+docker {
+   if( System.getenv("DOCKER_HOST") != null )
+     url = System.getenv("DOCKER_HOST")
+
+   if( System.getenv("DOCKER_CERT_PATH") != null )
+     certPath =  new File( System.getenv("DOCKER_CERT_PATH") )
+}
+
+docker {
+  javaApplication {
+    baseImage = 'daldei/centos7-java8'
+    maintainer = 'David lee "dlee@xmlsh.org"'
+    tag ='nexstra/xmlshd:latest'
+  }
+}
+import     com.bmuschko.gradle.docker.tasks.image.*
+import     com.bmuschko.gradle.docker.*
+
+import org.gradle.api.plugins.ApplicationPlugin
+project.tasks[DockerJavaApplicationPlugin.DOCKERFILE_TASK_NAME].deleteAllActions()
+
+
+task myBuildDockerfile( type: Dockerfile  ){
+  def Tar tarTask = project.tasks[ApplicationPlugin.TASK_DIST_TAR_NAME] 
+    outputs.upToDateWhen { false }
+    outputs.files project.file("$project.buildDir/docker/Dockerfile")
+    inputs.file { project.extensions.docker.javaApplication.baseImage } 
+    dependsOn { tarTask  }
+    
+    from { project.extensions.docker.javaApplication.baseImage }
+    maintainer { "David A. Lee" }
+    addFile( { tarTask.archivePath.name }, {'/'})
+
+    def  eps =  ["/${distTar.archiveName}" - ".${distTar.extension}" + "/unix/xmlsh", "-norc"]
+    entryPoint {  eps  }
+    defaultCommand { [ "-c" , "xversion" ] }
+    doLast {
+      println "Ran Dockerfile"
+    }
+   
+
+}
+project.tasks[DockerJavaApplicationPlugin.DOCKERFILE_TASK_NAME].dependsOn myBuildDockerfile
+
+
+
+/*
+import org.gradle.util.TextUtil;
+import org.gradle.api.internal.plugins.*;
+
+public class MyUnixStartScriptGenerator extends  DefaultTemplateBasedStartScriptGenerator implements ScriptGenerator {
+ 
+ public MyUnixStartScriptGenerator() {
+  super(
+            TextUtil.getUnixLineSeparator(),
+            StartScriptTemplateBindingFactory.unix(),
+            resources.text.fromFile('src/resources/unixStartScript.txt')
+    );
+    }
+}
+def gen = new MyUnixStartScriptGenerator()
+
+println "afterEval" 
+task startScripts(type:CreateStartScripts , overwrite: true ) {
+    unixStartScriptGenerator = gen 
+    outputs.upToDateWhen { false }
+ // println "unix: " + unixStartScriptGenerator.template.class.toString()
+
+  doFirst {
+ //      println "unix: " + unixStartScriptGenerator.template.class.toString()
+  }
+  doLast {
+//       println "unix: " + unixStartScriptGenerator.template.class.toString()
+  }
+*/
+
+
+
