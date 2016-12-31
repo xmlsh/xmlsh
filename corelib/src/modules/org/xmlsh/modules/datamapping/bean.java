@@ -11,6 +11,7 @@ import java.util.List;
 
 import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.description.modifier.Visibility;
+import net.bytebuddy.description.modifier.ModifierContributor.ForMethod;
 import net.bytebuddy.dynamic.DynamicType;
 import net.bytebuddy.dynamic.loading.ClassLoadingStrategy;
 import net.bytebuddy.implementation.FieldAccessor;
@@ -52,10 +53,11 @@ public class bean extends AbstractBuiltinFunction {
         protected DynamicType.Builder<?> newProperty(DynamicType.Builder<?> b,
                 String name, Class<?> cls) {
             b=b.defineField( name, String.class, Visibility.PUBLIC ).
-              defineMethod( JavaUtils.toSetterName(name)  ,Void.TYPE, ( List<Class<?>> )(List)  Collections.singletonList(cls) , Visibility.PUBLIC).
-              intercept( FieldAccessor.ofField(name) ).
-             defineMethod(JavaUtils.toGetterName(name),cls , Collections.EMPTY_LIST, Visibility.PUBLIC).
-                     intercept( FieldAccessor.ofField(name) );
+              defineMethod( JavaUtils.toSetterName(name)  ,Void.TYPE , Visibility.PUBLIC )
+              .withParameter( cls )
+              .intercept( FieldAccessor.ofField(name) ).
+             defineMethod(JavaUtils.toGetterName(name),cls , Visibility.PUBLIC)
+                     .intercept( FieldAccessor.ofField(name) );
             return b;
         }
     

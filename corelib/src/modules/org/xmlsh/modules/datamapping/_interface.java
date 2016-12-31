@@ -34,9 +34,10 @@ public class _interface extends AbstractBuiltinFunction {
 
 	    for( XValue a : args ){
 	        String f = a.toString();
-            b=b.defineMethod( JavaUtils.toSetterName(f)  ,Void.TYPE, ( List<Class<?>> )(List)  Collections.
-                    singletonList(String.class) , Visibility.PUBLIC).withoutCode().
-                defineMethod( JavaUtils.toGetterName(f) , String.class ,( List<Class<?>> ) (List) Collections.emptyList() , Visibility.PUBLIC ).withoutCode();
+            b=b.defineMethod( JavaUtils.toSetterName(f)  ,Void.TYPE, Visibility.PUBLIC)
+                .withParameter(String.class)
+                .withoutCode().
+                defineMethod( JavaUtils.toGetterName(f) , String.class , Visibility.PUBLIC ).withoutCode();
 	    }
 
 	    Class cls = b.make()
@@ -45,9 +46,7 @@ public class _interface extends AbstractBuiltinFunction {
 
 	   		return XValue.newXValue( cls  );
 
-
 	}
-
 }
 
 

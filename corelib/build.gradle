@@ -25,6 +25,9 @@ sourceSets {
             srcDir 'src/resources'
         }
     }
+    test {
+       java { srcDirs = ['src/test/java' ] }
+    }
 }
 
 
@@ -84,10 +87,12 @@ dependencies {
     compile 'com.fasterxml.woodstox:woodstox-core:latest.release'
     compile 'org.slf4j:slf4j-api:latest.release',
             'org.xmlsh:stax-utils:1+'
+            
+
+	compile 'org.dynalang:dynalink:0.7'
 
 
-
-    compile 'net.bytebuddy:byte-buddy:0.7.+'
+    compile 'net.bytebuddy:byte-buddy:1.5.11+'
     compile 'org.xmlsh:jline2:2.14-SNAPSHOT'
     compile 'com.jayway.jsonpath:json-path:2.+'
     compile 'org.ccil.cowan.tagsoup:tagsoup:1.+'

@@ -4,7 +4,12 @@ buildscript {
     classpath 'com.bmuschko:gradle-docker-plugin:3+'
   }
 }
+/*
+plugins {
+  id 'com.github.johnrengelman.shadow' version '1.2.4'
+}
 
+*/
 
 apply plugin: 'java'
 apply plugin: 'application'
@@ -65,7 +70,7 @@ import     com.bmuschko.gradle.docker.tasks.image.*
 import     com.bmuschko.gradle.docker.*
 
 import org.gradle.api.plugins.ApplicationPlugin
-project.tasks[DockerJavaApplicationPlugin.DOCKERFILE_TASK_NAME].deleteAllActions()
+project.tasks[DockerJavaApplicationPlugin.DOCKERFILE_TASK_NAME].enabled = false ;
 
 
 task myBuildDockerfile( type: Dockerfile  ){
@@ -81,7 +86,7 @@ task myBuildDockerfile( type: Dockerfile  ){
 
     def  eps =  ["/${distTar.archiveName}" - ".${distTar.extension}" + "/unix/xmlsh", "-norc"]
     entryPoint {  eps  }
-    defaultCommand { [ "-c" , "xversion" ] }
+    defaultCommand { [ "-c" , "echo Usage: xmlsh -c 'command' [-c 'command'] args" ] }
     doLast {
       println "Ran Dockerfile"
     }
@@ -89,38 +94,4 @@ task myBuildDockerfile( type: Dockerfile  ){
 
 }
 project.tasks[DockerJavaApplicationPlugin.DOCKERFILE_TASK_NAME].dependsOn myBuildDockerfile
-
-
-
-/*
-import org.gradle.util.TextUtil;
-import org.gradle.api.internal.plugins.*;
-
-public class MyUnixStartScriptGenerator extends  DefaultTemplateBasedStartScriptGenerator implements ScriptGenerator {
- 
- public MyUnixStartScriptGenerator() {
-  super(
-            TextUtil.getUnixLineSeparator(),
-            StartScriptTemplateBindingFactory.unix(),
-            resources.text.fromFile('src/resources/unixStartScript.txt')
-    );
-    }
-}
-def gen = new MyUnixStartScriptGenerator()
-
-println "afterEval" 
-task startScripts(type:CreateStartScripts , overwrite: true ) {
-    unixStartScriptGenerator = gen 
-    outputs.upToDateWhen { false }
- // println "unix: " + unixStartScriptGenerator.template.class.toString()
-
-  doFirst {
- //      println "unix: " + unixStartScriptGenerator.template.class.toString()
-  }
-  doLast {
-//       println "unix: " + unixStartScriptGenerator.template.class.toString()
-  }
-*/
-
-
 
