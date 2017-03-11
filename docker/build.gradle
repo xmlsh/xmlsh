@@ -57,13 +57,20 @@ docker {
 
    if( System.getenv("DOCKER_CERT_PATH") != null )
      certPath =  new File( System.getenv("DOCKER_CERT_PATH") )
-}
+
+ registryCredentials { 
+    url = 'https://index.docker.io/v1'
+    username = registryUser
+    password = registryPassword
+    email = 'dlee@calldei.com'
+  }
+} 
 
 docker {
   javaApplication {
     baseImage = 'daldei/centos7-java8'
     maintainer = 'David lee "dlee@xmlsh.org"'
-    tag ='nexstra/xmlshd:latest'
+    tag ='daldei/xmlsh:latest'
   }
 }
 import     com.bmuschko.gradle.docker.tasks.image.*
