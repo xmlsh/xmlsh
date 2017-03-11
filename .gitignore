@@ -13,3 +13,6 @@ _err.txt
 /bin/
 .metadata
 version.properties
+.project
+.classpath
+.settings

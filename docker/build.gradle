@@ -75,23 +75,26 @@ project.tasks[DockerJavaApplicationPlugin.DOCKERFILE_TASK_NAME].enabled = false 
 
 task myBuildDockerfile( type: Dockerfile  ){
   def Tar tarTask = project.tasks[ApplicationPlugin.TASK_DIST_TAR_NAME] 
-    outputs.upToDateWhen { false }
-    outputs.files project.file("$project.buildDir/docker/Dockerfile")
-    inputs.file { project.extensions.docker.javaApplication.baseImage } 
-    dependsOn { tarTask  }
-    
-    from { project.extensions.docker.javaApplication.baseImage }
-    maintainer { "David A. Lee" }
-    addFile( { tarTask.archivePath.name }, {'/'})
+  outputs.upToDateWhen { false }
+  outputs.files project.file("$project.buildDir/docker/Dockerfile")
+  inputs.file { project.extensions.docker.javaApplication.baseImage } 
+  dependsOn { tarTask  }
+  
+  from { project.extensions.docker.javaApplication.baseImage }
+  maintainer { "David A. Lee" }
+  addFile( { tarTask.archivePath.name }, {'/'})
 
-    def  eps =  ["/${distTar.archiveName}" - ".${distTar.extension}" + "/unix/xmlsh", "-norc"]
-    entryPoint {  eps  }
-    defaultCommand { [ "-c" , "echo Usage: xmlsh -c 'command' [-c 'command'] args" ] }
-    doLast {
-      println "Ran Dockerfile"
-    }
-   
+  def  eps =  ["/${distTar.archiveName}" - ".${distTar.extension}" + "/unix/xmlsh", "-norc", "-c" ]
+  entryPoint {  eps  }
+  defaultCommand { [ "echo Usage: xmlsh -c 'command' [-c 'command'] args" ] }
+  doLast {
+    println "Ran Dockerfile"
+  }
+ 
 
 }
 project.tasks[DockerJavaApplicationPlugin.DOCKERFILE_TASK_NAME].dependsOn myBuildDockerfile
 
+build {
+  dependsOn dockerBuildImage
+}

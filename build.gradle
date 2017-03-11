@@ -8,6 +8,7 @@ buildscript {
 }
 plugins {
   id 'com.github.johnrengelman.shadow' version '1.2.4'
+  id 'de.sebastianboegl.shadow.transformer.log4j' version '1.0.1' 
 }
 
 allprojects {
