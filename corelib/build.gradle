@@ -108,7 +108,7 @@ dependencies {
 	compile 'net.sf.supercsv:super-csv:2.3+'
 
     compile  group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl' , version: '2.+'
-
+    compile  group: 'org.dynalang', name: 'dynalink' , version: '0.7'
     testCompile 'junit:junit:4.+'
     //testRuntime project(":app")
 

@@ -7,20 +7,31 @@
 package org.xmlsh.util;
 
 public enum CharAttr {
-  ATTR_SOFT_QUOTE, ATTR_HARD_QUOTE, ATTR_PRESERVE,   // Do not touch, unquote or
-                                                     // expand
-  ATTR_ESCAPED;
 
+  ATTR_SOFT_QUOTE, 
+  ATTR_HARD_QUOTE, 
+  ATTR_PRESERVE,   // Do not touch, unquote or
+  ATTR_ESCAPED;
+  private byte bit;
+  
+  CharAttr() { 
+    bit = (byte) (1<<ordinal());
+  }
   public byte toBit() {
-    return (byte) (1 << ordinal());
+    return bit;  
   }
   public static byte NONE = 0;
+  public static byte SOFT_QUOTE = ATTR_SOFT_QUOTE.bit ;
+  public static byte HARD_QUOTE = ATTR_HARD_QUOTE.bit ;
+  public static byte PRESERVE = ATTR_PRESERVE.bit ;
+  public static byte ESCAPED = ATTR_ESCAPED.bit ;
+  
 
-  public static CharAttr fromBit(byte bit) {
-    if(bit == 0)
+  public static CharAttr fromBit(byte b) {
+    if(b == 0)
       return null;
     for(CharAttr attr : CharAttr.values()) {
-      if((bit & (1 << attr.ordinal())) == 0)
+      if((b & attr.bit) == 0)
         return attr;
     }
     return null;

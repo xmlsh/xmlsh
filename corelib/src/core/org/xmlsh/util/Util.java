@@ -2006,8 +2006,8 @@ public class Util {
   }
 
   public static String escape(String string, char escape,CharAttrs attrs) {
-    if(string.indexOf(escape) < 0)
-      return string;
+   // if(string.indexOf(escape) < 0)
+   //   return string;
     return CharAttributeBuffer.encodeString(string,escape, attrs).decodeString(escape);
   }
 }

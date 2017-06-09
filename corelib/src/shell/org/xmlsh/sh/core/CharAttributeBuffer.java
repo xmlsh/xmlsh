@@ -124,7 +124,8 @@ public class CharAttributeBuffer {
 
   @Override
   public String toString() {
-    return decodeString();
+    //return decodeString();
+    return new String( this.charArray , 0, this.length);
   }
 
   public static CharAttributeBuffer encodeString(String s,  CharAttributeEncoder encoder, char esc, CharAttrs attrs ) {
@@ -146,18 +147,41 @@ public class CharAttributeBuffer {
 
   public static CharAttributeDecoder defaultDecoder = 
     (StringBuilder sb, char ch, char esc , byte attrs) -> {
-        if((attrs & CharAttr.ATTR_ESCAPED.toBit()) != 0)
+        if((attrs & CharAttr.ESCAPED) != 0)
           sb.append(esc);
         sb.append(ch);
       }   ;
     public static CharAttributeEncoder defaultEncoder = 
         (CharAttributeBuffer cb, char ch, char esc, byte attrs) -> {
-          if( attrs == 0 ){ // not escaped 
-            if( ch == esc)
-              return CharAttr.ATTR_ESCAPED.toBit();
+          
+          // Hard quoted 'a\\b'   -- esc ignored except \' 
+          // Soft quoted  "a\\b"  -- esc added literally , sets esc bit
+          // currently escaped adds literally clears bit
+          // not quoted sets escbit only 
+          byte retattrs = attrs;
+          if( (attrs & CharAttr.ESCAPED) != 0 ){
+            retattrs &= ~CharAttr.ESCAPED;
+          }
+          else
+          if( (attrs & CharAttr.HARD_QUOTE ) != 0  ){
+            if( ch == esc )
+              retattrs |= CharAttr.ESCAPED;
+          }
+          else
+          if( (attrs & CharAttr.SOFT_QUOTE ) != 0  ){
+             if( ch == esc  )
+               retattrs |= CharAttr.ESCAPED;
+             else
+             if( ch == '"')
+               attrs |= CharAttr.ESCAPED ;
+          }
+          else
+          if( ch == esc ){
+            retattrs |= CharAttr.ESCAPED;
+            return retattrs;
           }
           cb.append(ch,attrs);
-          return 0;
+          return (retattrs);
         }   ;
       
 
