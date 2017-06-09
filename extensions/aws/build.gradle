@@ -10,7 +10,8 @@ def sdks = [
    'aws-java-sdk-sqs',
    'aws-java-sdk-sns',
    'aws-java-sdk-glacier',
-   'aws-java-sdk-autoscaling' ]
+   'aws-java-sdk-autoscaling' ,
+   'aws-java-sdk-ssm' ]
 
 
 ext {
