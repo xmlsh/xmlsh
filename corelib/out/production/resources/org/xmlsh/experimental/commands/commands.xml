@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<commands>
+
+<command name="xobsufcate" url="http://www.xmlsh.org/CommandXobsufcate"/>
+<command name="xsysinfo" url="http://www.xmlsh.org/CommandXsysinfo"/>
+</commands>

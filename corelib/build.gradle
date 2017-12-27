@@ -111,6 +111,7 @@ dependencies {
     compile  group: 'org.dynalang', name: 'dynalink' , version: '0.7'
     testCompile 'junit:junit:4.+'
     //testRuntime project(":app")
+    compile  group: "mysql" , name: 'mysql-connector-java' , version: '6.0.6'
 
 
 }

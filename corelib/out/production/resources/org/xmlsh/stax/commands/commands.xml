@@ -1,0 +1,68 @@
+
+<commands>
+
+	<command name="closeReader" url="http://www.xmlsh.org/CommandStAXcloseReader">
+		<synopsis>Close a StAX reader</synopsis>
+		<usage>
+			<para>closeReader $reader</para>
+		</usage>
+	</command>
+
+	<function name="getAttribute" url="http://www.xmlsh.org/FuncitonStAXgetAttribute">
+		<synopsis>Get an attribute value from a StAX START_ELEMENT event</synopsis>
+		<usage>
+			<para>getAttribute( $event qname  )</para>
+		</usage>
+	</function>
+
+	<function name="getData" url="http://www.xmlsh.org/FunctionStAXgetData">
+		<synopsis>Get a StAX event’s data</synopsis>
+		<usage>
+			<para>getData($event)</para>
+		</usage>
+	</function>
+
+	<function name="getEventType" url="http://www.xmlsh.org/FunctionStAXgetEventType">
+		<synopsis>Get a StAX event’s type</synopsis>
+		<usage>
+			<para>getEventType($event)</para>
+		</usage>
+	</function>
+	<function name="getName" url="http://www.xmlsh.org/FunctionStAXgetName">
+		<synopsis>Get StAX event’s name (as QName)</synopsis>
+		<usage>
+			<para>getName($event)</para>
+		</usage>
+	</function>
+	<function name="getNamespace" url="http://www.xmlsh.org/FunctionStAXgetNamespace">
+		<synopsis>Get a StAX event’s namespace URI (as string)</synopsis>
+		<usage>
+			<para>getNamespace($event)</para>
+		</usage>
+	</function>
+
+	<function name="hasNext" url="http://www.xmlsh.org/FunctionStAXhasNext">
+		<synopsis>Advance the StAX stream to the next matching event</synopsis>
+		<usage>
+			<para>hasNext($reader)</para>
+			<para>hasNext($reader event_type)</para>
+			<para>hasNext($reader event_type qname)</para>
+		</usage>
+	</function>
+
+	<function name="nextEvent" url="http://www.xmlsh.org/FunctionStAXnextEvent">
+		<synopsis>Return the next event</synopsis>
+		<usage>
+			<para>nextEvent($reader)</para>
+			<para>nextEvent($reader event_type)</para>
+			<para>nextEvent($reader event_type qname)</para>
+		</usage>
+	</function>
+	<function name="newEventReader" url="http://www.xmlsh.org/FunctionStAXnewEventReader">
+		<synopsis>Create a new XMLEventReader</synopsis>
+		<usage>
+			<para>newEventReader()</para>
+			<para>newEventReader(uri)</para>
+		</usage>
+	</function>
+</commands>

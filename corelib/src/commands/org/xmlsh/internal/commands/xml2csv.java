@@ -11,6 +11,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import javax.xml.namespace.QName;
 import org.apache.logging.log4j.LogManager;
@@ -63,7 +64,7 @@ public class xml2csv extends XCommand {
   public int run(List<XValue> args) throws Exception {
 
     Options opts = new Options(
-        "nameing=nameing-strategy:,header,attr,delim:,quote:,tab,newline:",
+        "nameing=nameing-strategy:,header,attr,delim:,quote:,tab,newline:,colnames:",
         SerializeOpts.getOptionDefs());
     opts.parse(args);
     setSerializeOpts(opts);
@@ -73,12 +74,17 @@ public class xml2csv extends XCommand {
 
     String delim = opts.getOptString("delim", ",");
     String quote = opts.getOptString("quote", "\"");
+    CSVRecord header = null;
+    if(opts.hasOpt("colnames")) {
+      header = parseCols(opts.getOptValue("colnames"));
+    }
 
     // -tab overrides -delim
     if(opts.hasOpt("tab"))
       delim = "\t";
     mNamingStrategy = Util
         .getNamingStrategy(opts.getOptString("nameing-strategy", "simple"));
+
     OutputPort stdout = getStdout();
 
     try (OutputStream os = stdout.asOutputStream(getSerializeOpts());
@@ -96,7 +102,6 @@ public class xml2csv extends XCommand {
       if(bAttr) {
         mFieldXPath = "for $a in @* order by $a/name() return $a/string()";
         mHeaderXPath = "for $a in @* order by $a/name() return $a/node-name()";
-
       }
 
       XQueryExecutable expr = mCompiler.compile(mRowXpath);
@@ -116,22 +121,18 @@ public class xml2csv extends XCommand {
       boolean bFirst = true;
       for(XdmItem row : eval) {
         if(bFirst && bHeader) {
-          writeHeader(mFormatter, row, headerEval);
+          CSVRecord rec = header == null ? parseRow( mFormatter , row , eval , true ) : header;
+          mFormatter.writeHeader(rec);
           bFirst = false;
         }
-        writeLine(mFormatter, row, fieldEval, false);
-
+        writeLine(mFormatter, row, fieldEval);
       }
-
     }
-
     return 0;
-
   }
-
-  private void writeLine(CSVFormatter mFormatter, XdmItem row,
-      XQueryEvaluator eval, boolean bHeader)
-      throws SaxonApiException, IOException {
+  private CSVRecord parseRow(CSVFormatter mFormatter, XdmItem row,
+                         XQueryEvaluator eval, boolean bHeader)
+  throws SaxonApiException, IOException {
     mLogger.entry(row, eval, bHeader);
     List<String> fields = new ArrayList<String>();
 
@@ -139,18 +140,22 @@ public class xml2csv extends XCommand {
       eval.setContextItem(row);
 
     for(XdmItem field : eval) {
-      fields.add(bHeader ? mNamingStrategy.fromXmlName(fromSaxonName(field))
-          : field.toString());
-
+      fields.add(bHeader ?
+        mNamingStrategy.fromXmlName(fromSaxonName(field))
+                     : field.toString());
     }
-    CSVRecord rec = new CSVRecord(fields);
-    if(bHeader)
-      mFormatter.writeHeader(rec);
-    else
-      mFormatter.writeRow(rec);
-
+    return  new CSVRecord(fields);
   }
 
+
+
+  private void writeLine(CSVFormatter mFormatter, XdmItem row,
+      XQueryEvaluator eval)
+      throws SaxonApiException, IOException {
+    CSVRecord rec = parseRow( mFormatter , row , eval , false );
+    mFormatter.writeRow(rec);
+
+  }
   private QName fromSaxonName(XdmItem field) {
     mLogger.entry(field);
     if(field instanceof XdmNode) {
@@ -163,13 +168,14 @@ public class xml2csv extends XCommand {
       return new QName(field.getStringValue());
   }
 
-  private void writeHeader(CSVFormatter mFormatter, XdmItem row,
-      XQueryEvaluator eval) throws SaxonApiException, IOException {
-    mLogger.entry(row, eval);
-    writeLine(mFormatter, row, eval, true);
+  private CSVRecord parseCols(XValue cols) {
+
+    if(cols.isAtomic())
+      return new CSVRecord(Arrays.asList(Util.split(cols.toString(), ',')));
+    else
+      return new CSVRecord(cols.asStringList());
 
   }
-
 }
 
 //

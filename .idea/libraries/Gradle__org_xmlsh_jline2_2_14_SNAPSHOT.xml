@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: org.xmlsh:jline2:2.14-SNAPSHOT">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.xmlsh/jline2/2.14-SNAPSHOT/cb97b09eb31a768fc04e2d57486133500feb05e/jline2-2.14-SNAPSHOT.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.xmlsh/jline2/2.14-SNAPSHOT/e30a1167a35ac6195642276b70e3ad4973ae47a7/jline2-2.14-SNAPSHOT-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

@@ -8,6 +8,8 @@ package org.xmlsh.internal.commands;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
+import java.sql.Types;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.Driver;
@@ -33,13 +35,11 @@ import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.xmlsh.core.CoreException;
-import org.xmlsh.core.InputPort;
-import org.xmlsh.core.Options;
-import org.xmlsh.core.XCommand;
-import org.xmlsh.core.XValue;
+import org.apache.xalan.lib.sql.QueryParameter;
+import org.xmlsh.core.*;
 import org.xmlsh.core.io.OutputPort;
 import org.xmlsh.sh.shell.SerializeOpts;
+import org.xmlsh.util.JavaUtils;
 import org.xmlsh.util.StringPair;
 import org.xmlsh.util.Util;
 import net.sf.saxon.s9api.SaxonApiException;
@@ -312,7 +312,7 @@ public class xsql extends XCommand {
     Properties options = null;
 
     Options opts = new Options(
-        "cp=classpath:,pool=pooldriver:,d=driver:,u=user:,p=password:,root:,row:,attr,c=connect:,jdbc=jdbcconnection:,q=query:,o=option:+,insert,update=execute,tableAttr:,fieldAttr:,fetch:,table:,batch:,cache,close,release,column:+,fetchmin",
+        "cp=classpath:,pool=pooldriver:,d=driver:,u=user:,p=password:,root:,row:,attr,c=connect:,jdbc=jdbcconnection:,q=query:,o=option:+,insert,update=execute,tableAttr:,fieldAttr:,fetch:,table:,batch:,cache,close,release,column:+,fetchmin,param:+",
         SerializeOpts.getOptionDefs());
     opts.parse(args);
 
@@ -368,7 +368,7 @@ public class xsql extends XCommand {
     /*
      * Optional properties
      */
-    if(opts.hasOpt("o")) {
+    if(opts.hasOpt("o")){
       options = new Properties();
 
       // Add custom name spaces
@@ -425,7 +425,8 @@ public class xsql extends XCommand {
 
       }
       else if(query != null)
-        runQuery(conn, getSerializeOpts(opts), root, row, query, bAttr, fetch);
+        runQuery(conn, getSerializeOpts(opts), root, row, query, bAttr, fetch ,
+           opts.hasOpt("param") ? opts.getOptValues("param"): null );
     } finally {
       if(bRelease || !bCache || bClose)
         dbdriver.releaseConnection(conn);
@@ -753,15 +754,30 @@ public class xsql extends XCommand {
 
   private void runQuery(Connection conn, SerializeOpts serializeOpts,
       String root, String row, String query,
-      boolean bAttr, String fetch) throws SQLException, IOException,
+      boolean bAttr, String fetch,
+      List<XValue> parameters
+      ) throws SQLException, IOException,
       XMLStreamException, SaxonApiException, CoreException {
-    Statement pStmt = null;
+    PreparedStatement pStmt = null;
     ResultSet rs = null;
     try {
 
-      pStmt = conn.createStatement();
+      pStmt = conn.prepareStatement(query);
       if(fetch != null)
         pStmt.setFetchSize(Util.parseInt(fetch, 1));
+      if( parameters != null ){
+        int index = 1;
+        for(XValue qp : parameters) {
+          if(qp.isAtomic()){
+            if(qp.isString())
+              pStmt.setString(index++, qp.toString());
+            else
+              pStmt.setObject(index++, qp.getJavaNative());
+          }
+          else
+            throw new UnexpectedException("Non-atomic type for paramater " + index + " not supported");
+        }
+      }
 
       OutputPort stdout = getStdout();
       XMLStreamWriter writer = stdout.asXMLStreamWriter(serializeOpts);
@@ -769,7 +785,7 @@ public class xsql extends XCommand {
       writer.writeStartDocument();
       writer.writeStartElement(root);
 
-      rs = pStmt.executeQuery(query);
+      rs = pStmt.executeQuery();
       ResultSetMetaData meta = rs.getMetaData();
 
       while(rs.next()) {
@@ -874,13 +890,13 @@ public class xsql extends XCommand {
   private String getAttrName(int i, ResultSetMetaData meta)
       throws SQLException {
 
-    return toXmlName(meta.getColumnName(i + 1));
+    return toXmlName(meta.getColumnLabel(i + 1));
 
   }
 
   private String getColName(int i, ResultSetMetaData meta) throws SQLException {
 
-    return toXmlName(meta.getColumnName(i + 1));
+    return toXmlName(meta.getColumnLabel(i + 1));
 
   }
 

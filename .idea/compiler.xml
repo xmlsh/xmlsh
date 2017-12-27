@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile default="true" name="Default" enabled="true" />
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="aws_main" target="1.8" />
+      <module name="aws_test" target="1.8" />
+      <module name="extensions_main" target="1.8" />
+      <module name="extensions_test" target="1.8" />
+      <module name="jstache_main" target="1.8" />
+      <module name="jstache_test" target="1.8" />
+      <module name="marklogic_main" target="1.8" />
+      <module name="marklogic_test" target="1.8" />
+      <module name="xmlsh-core_main" target="1.8" />
+      <module name="xmlsh-core_test" target="1.8" />
+      <module name="xmlsh-docker_main" target="1.8" />
+      <module name="xmlsh-docker_main~1" target="1.8" />
+      <module name="xmlsh-docker_test" target="1.8" />
+      <module name="xmlsh-docker_test~1" target="1.8" />
+      <module name="xmlsh_main" target="1.8" />
+      <module name="xmlsh_test" target="1.8" />
+    </bytecodeTargetLevel>
+  </component>
+</project>

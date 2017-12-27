@@ -1,0 +1,32 @@
+<commands>
+ 
+   <function name="boolean" url="http://www.xmlsh.org/FunctionJsonBoolean">
+		    <synopsis>construct a JSON boolean</synopsis>
+	  </function>
+	  
+	     <function name="null" url="http://www.xmlsh.org/FunctionJsonNull">
+		    <synopsis>construct a JSON null</synopsis>
+	  </function>
+	     <function name="array" url="http://www.xmlsh.org/FunctionJsonarray">
+		    <synopsis>construct a JSON array</synopsis>
+	  </function>
+	     <function name="json" url="http://www.xmlsh.org/FunctionJsonJson">
+		    <synopsis>construct a JSON object from a string</synopsis>
+	  </function>
+	     <function name="object" url="http://www.xmlsh.org/FunctionJsonObject">
+		    <synopsis>construct a JSON object</synopsis>
+	  </function>
+	     <function name="boolean" url="http://www.xmlsh.org/FunctionJsonPath">
+		    <synopsis>Evaluate a JsonPath on a JSON object</synopsis>
+	  </function>
+	  	     <function name="string" url="http://www.xmlsh.org/FunctionJsonString">
+		    <synopsis>construct a JSON string</synopsis>
+	  </function>
+	  	     <function name="value" url="http://www.xmlsh.org/FunctionJsonValue">
+		    <synopsis>construct a JSON value</synopsis>
+	  </function>
+	  	  </function>
+	  	     <function name="number" url="http://www.xmlsh.org/FunctionJsonNumber">
+		    <synopsis>construct a JSON number</synopsis>
+	  </function>
+</commands>

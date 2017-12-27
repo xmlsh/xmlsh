@@ -1,0 +1,41 @@
+<commands>
+ 
+   <function name="string" url="http://www.xmlsh.org/FunctionXSString">
+		    <synopsis>Convert to string</synopsis>
+		    <usage>
+			      <para>string( args )</para>
+		    </usage>
+	  </function>
+   
+   <function name="integer" url="http://www.xmlsh.org/FunctionXSInteger">
+		    <synopsis>Convert to integer</synopsis>
+		    <usage>
+			      <para>integer( arg )</para>
+		    </usage>
+	  </function>
+	    <function name="decimal" url="http://www.xmlsh.org/FunctionXSInteger">
+		    <synopsis>Convert to integer</synopsis>
+		    <usage>
+			      <para>decimal( arg )</para>
+		    </usage>
+	  </function>
+	     <function name="attribute" url="http://www.xmlsh.org/FunctionXSAttribute">
+		    <synopsis>constructs an attribute</synopsis>
+		    <usage>
+			      <para>attribute( name value )</para>
+		    </usage>
+	  </function>
+	  	     <function name="elemement" url="http://www.xmlsh.org/FunctionXSElement">
+		    <synopsis>constructs an element</synopsis>
+		    <usage>
+			      <para>element( name value [value ...] )</para>
+		    </usage>
+	  </function>
+	  	     <function name="document" url="http://www.xmlsh.org/FunctionXSDocument">
+		    <synopsis>constructs a document</synopsis>
+		    <usage>
+			      <para>document( root )</para>
+		    </usage>
+	  </function>
+	  
+</commands>

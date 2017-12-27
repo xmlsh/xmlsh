@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: org.xmlsh:mustache-cli:1.0">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.xmlsh/mustache-cli/1.0/61eefc53962e1d22a691778eb657ce251d43810/mustache-cli-1.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.xmlsh/mustache-cli/1.0/8ba536d370158120360f66e024f2fefc5fa15fac/mustache-cli-1.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

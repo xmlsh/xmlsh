@@ -77,23 +77,23 @@ import     com.bmuschko.gradle.docker.tasks.image.*
 import     com.bmuschko.gradle.docker.*
 
 import org.gradle.api.plugins.ApplicationPlugin
-project.tasks[DockerJavaApplicationPlugin.DOCKERFILE_TASK_NAME].enabled = false ;
+//project.tasks[DockerJavaApplicationPlugin.DOCKERFILE_TASK_NAME].enabled = false ;
 
 
 task myBuildDockerfile( type: Dockerfile  ){
   def Tar tarTask = project.tasks[ApplicationPlugin.TASK_DIST_TAR_NAME] 
   outputs.upToDateWhen { false }
   outputs.files project.file("$project.buildDir/docker/Dockerfile")
-  inputs.file { project.extensions.docker.javaApplication.baseImage } 
+  //inputs.filesroperty { project.extensions.docker.javaApplication.baseImage } 
   dependsOn { tarTask  }
   
   from { project.extensions.docker.javaApplication.baseImage }
   maintainer { "David A. Lee" }
   addFile( { tarTask.archivePath.name }, {'/'})
-
-  def  eps =  ["/${distTar.archiveName}" - ".${distTar.extension}" + "/unix/xmlsh", "-norc", "-c" ]
-  entryPoint {  eps  }
-  defaultCommand { [ "echo Usage: xmlsh -c 'command' [-c 'command'] args" ] }
+  def  eps =  [
+     "/bin/bash" , "-c" , "exec /${distTar.archiveName}" - ".${distTar.extension}" + "/unix/xmlsh", "-norc", "-c" ]
+  entryPoint {  eps }
+  defaultCommand { "xmlsh" }
   doLast {
     println "Ran Dockerfile"
   }

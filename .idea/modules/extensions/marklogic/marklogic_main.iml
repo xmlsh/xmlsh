@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module external.linked.project.id=":extensions:marklogic:main" external.linked.project.path="$MODULE_DIR$/../../../../extensions/marklogic" external.root.project.path="$MODULE_DIR$/../../../.." external.system.id="GRADLE" external.system.module.group="org.xmlsh.extensions" external.system.module.type="sourceSet" external.system.module.version="unspecified" type="JAVA_MODULE" version="4">
+  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_8">
+    <output url="file://$MODULE_DIR$/../../../../extensions/marklogic/out/production/classes" />
+    <exclude-output />
+    <content url="file://$MODULE_DIR$/../../../../extensions/marklogic/src/main">
+      <sourceFolder url="file://$MODULE_DIR$/../../../../extensions/marklogic/src/main/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../../extensions/marklogic/src/main/resources" type="java-resource" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="Gradle: com.marklogic:marklogic-xcc:8.0.2" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: org.ow2.asm:asm:5.0.4" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: org.fusesource.jansi:jansi:1.11" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: net.bytebuddy:byte-buddy:1.5.11" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: org.xmlsh:jline2:2.14-SNAPSHOT" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: com.jayway.jsonpath:json-path:2.4.0" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: org.ccil.cowan.tagsoup:tagsoup:1.2.1" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: com.fasterxml.woodstox:woodstox-core:5.0.3" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: org.slf4j:slf4j-api:1.8.0-beta0" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: org.xmlsh:stax-utils:1.0" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: org.dynalang:dynalink:0.7" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: commons-codec:commons-codec:1.11" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: commons-io:commons-io:2.6" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: commons-logging:commons-logging:1.2" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: org.apache.httpcomponents:httpcore:4.4.8" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: xerces:xercesImpl:2.11.0" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: xml-resolver:xml-resolver:1.2" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: xom:xom:1.2.5" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: net.sf.saxon:Saxon-HE:9.6.0-10" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: com.thaiopensource:trang:20091111" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: saxon:saxon:6.5.3" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: net.sf.supercsv:super-csv:2.3.1" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: org.apache.logging.log4j:log4j-slf4j-impl:2.10.0" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: mysql:mysql-connector-java:6.0.6" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: xml-apis:xml-apis:1.4.01" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: org.apache.ant:ant-launcher:1.9.9" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: isorelax:isorelax:20030108" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: com.thaiopensource:jing:20091111" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: org.apache.logging.log4j:log4j-api:2.10.0" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: org.apache.logging.log4j:log4j-core:2.10.0" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: org.apache.commons:commons-lang3:3.7" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: net.minidev:json-smart:2.3" level="project" />
+    <orderEntry type="module" module-name="xmlsh-core_main" scope="PROVIDED" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: net.minidev:accessors-smart:1.2" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: xalan:xalan:2.7.0" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: com.fasterxml.jackson.core:jackson-annotations:2.9.3" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: com.fasterxml.jackson.core:jackson-core:2.9.3" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: com.fasterxml.jackson.core:jackson-databind:2.9.3" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.9.3" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.9.3" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: org.apache.ant:ant:1.9.9" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: org.projectlombok:lombok:1.16.18" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: org.codehaus.woodstox:stax2-api:3.1.4" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: javax.validation:validation-api:1.1.0.Final" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: com.fasterxml.jackson.module:jackson-module-jsonSchema:2.9.3" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: org.apache.httpcomponents:httpclient:4.5.4" level="project" />
+  </component>
+</module>

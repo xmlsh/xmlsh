@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<commands>
+
+<command name="base64" url="http://www.xmlsh.org/CommandBase64">
+	<snopsis>Encode/Decode files to/from base64</snopsis>
+</command>
+
+<command name="cat" url="http://www.xmlsh.org/CommandCat">
+	<snopsis>Copy (or concatenate) files</snopsis>
+</command>
+<command name="chmod" url="http://www.xmlsh.org/CommandChmod">
+	<synopsis>Change file permissions</synopsis>
+</command>
+<command name="cp" url="http://www.xmlsh.org/CommandCp">
+	<synopsis>Copy one or more files</synopsis>
+</command>
+<command name="ls" url="http://www.xmlsh.org/CommandLs">
+	<synopsis>List files in a directory</synopsis>
+</command>
+<command name="mkdir" url="http://www.xmlsh.org/CommandMkdir">
+	<synopsis>Create directory</synopsis>
+</command>
+<command name="more" url="http://www.xmlsh.org/CommandMore">
+	<synopsis>Simple pagenator</synopsis>
+</command>
+<command name="mv" url="http://www.xmlsh.org/CommandMv">
+	<synopsis>Move/Rename files</synopsis>
+</command>
+<command name="rm" url="http://www.xmlsh.org/CommandRm">
+	<synopsis>Remove/Delete files</synopsis>
+</command>
+<command name="rmdir" url="http://www.xmlsh.org/CommandRmdir">
+	<synopsis>Remove/Delete directories</synopsis>
+</command>
+<command name="sleep" url="http://www.xmlsh.org/CommandSleep">
+	<synopsis>Delay execution</synopsis>
+</command>
+<command name="touch" url="http://www.xmlsh.org/CommandTouch" >
+	<synopsis>Create (and update) timestamp of a file</synopsis>
+</command>
+<command name="tee" url="http://www.xmlsh.org/CommandTee" >
+	<synopsis>Read from STDIN and write to STDOUT and files</synopsis>
+</command>
+<command name="mktemp" url="http://www.xmlsh.org/CommandMktemp" >
+	<synopsis>Creates a temporary file</synopsis>
+</command>
+
+</commands>
+	

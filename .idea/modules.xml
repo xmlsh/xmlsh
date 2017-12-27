@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/extensions/aws/aws.iml" filepath="$PROJECT_DIR$/.idea/modules/extensions/aws/aws.iml" group="extensions/aws" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/extensions/aws/aws_main.iml" filepath="$PROJECT_DIR$/.idea/modules/extensions/aws/aws_main.iml" group="extensions/aws" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/extensions/aws/aws_test.iml" filepath="$PROJECT_DIR$/.idea/modules/extensions/aws/aws_test.iml" group="extensions/aws" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/extensions/extensions.iml" filepath="$PROJECT_DIR$/.idea/modules/extensions/extensions.iml" group="extensions" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/extensions/extensions_main.iml" filepath="$PROJECT_DIR$/.idea/modules/extensions/extensions_main.iml" group="extensions" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/extensions/extensions_test.iml" filepath="$PROJECT_DIR$/.idea/modules/extensions/extensions_test.iml" group="extensions" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/extensions/jstache/jstache.iml" filepath="$PROJECT_DIR$/.idea/modules/extensions/jstache/jstache.iml" group="extensions/jstache" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/extensions/jstache/jstache_main.iml" filepath="$PROJECT_DIR$/.idea/modules/extensions/jstache/jstache_main.iml" group="extensions/jstache" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/extensions/jstache/jstache_test.iml" filepath="$PROJECT_DIR$/.idea/modules/extensions/jstache/jstache_test.iml" group="extensions/jstache" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/extensions/marklogic/marklogic.iml" filepath="$PROJECT_DIR$/.idea/modules/extensions/marklogic/marklogic.iml" group="extensions/marklogic" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/extensions/marklogic/marklogic_main.iml" filepath="$PROJECT_DIR$/.idea/modules/extensions/marklogic/marklogic_main.iml" group="extensions/marklogic" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/extensions/marklogic/marklogic_test.iml" filepath="$PROJECT_DIR$/.idea/modules/extensions/marklogic/marklogic_test.iml" group="extensions/marklogic" />
+      <module fileurl="file://$PROJECT_DIR$/xmlsh.iml" filepath="$PROJECT_DIR$/xmlsh.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/corelib/xmlsh-core.iml" filepath="$PROJECT_DIR$/.idea/modules/corelib/xmlsh-core.iml" group="xmlsh-core" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/corelib/xmlsh-core_main.iml" filepath="$PROJECT_DIR$/.idea/modules/corelib/xmlsh-core_main.iml" group="xmlsh-core" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/corelib/xmlsh-core_test.iml" filepath="$PROJECT_DIR$/.idea/modules/corelib/xmlsh-core_test.iml" group="xmlsh-core" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/docker/xmlsh-docker_main~1.iml" filepath="$PROJECT_DIR$/.idea/modules/docker/xmlsh-docker_main~1.iml" group="xmlsh-docker" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/docker/xmlsh-docker_test~1.iml" filepath="$PROJECT_DIR$/.idea/modules/docker/xmlsh-docker_test~1.iml" group="xmlsh-docker" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/docker/xmlsh-docker~1.iml" filepath="$PROJECT_DIR$/.idea/modules/docker/xmlsh-docker~1.iml" group="xmlsh-docker" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/xmlsh_main.iml" filepath="$PROJECT_DIR$/.idea/modules/xmlsh_main.iml" group="xmlsh" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/xmlsh_test.iml" filepath="$PROJECT_DIR$/.idea/modules/xmlsh_test.iml" group="xmlsh" />
+    </modules>
+  </component>
+</project>
