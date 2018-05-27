@@ -62,12 +62,8 @@ configurations {
 
 dependencies {
 
-    compile "org.apache.ant:ant:1.9+"
-
-
     compile 'com.thaiopensource:trang:20091111' ,
             'com.thaiopensource:jing:20091111'
-
 
     compile 'org.apache.logging.log4j:log4j-api:2.+' ,
             'org.apache.logging.log4j:log4j-core:2.+'
