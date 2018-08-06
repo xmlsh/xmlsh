@@ -23,45 +23,43 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="Gradle: org.apache.ant:ant:1.9.9" level="project" />
     <orderEntry type="library" name="Gradle: com.thaiopensource:trang:20091111" level="project" />
     <orderEntry type="library" name="Gradle: com.thaiopensource:jing:20091111" level="project" />
-    <orderEntry type="library" name="Gradle: org.apache.logging.log4j:log4j-slf4j-impl:2.10.0" level="project" />
-    <orderEntry type="library" name="Gradle: org.apache.logging.log4j:log4j-core:2.10.0" level="project" />
-    <orderEntry type="library" name="Gradle: org.apache.logging.log4j:log4j-api:2.10.0" level="project" />
-    <orderEntry type="library" name="Gradle: com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.9.3" level="project" />
-    <orderEntry type="library" name="Gradle: com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.9.3" level="project" />
-    <orderEntry type="library" name="Gradle: com.fasterxml.jackson.module:jackson-module-jsonSchema:2.9.3" level="project" />
-    <orderEntry type="library" name="Gradle: com.fasterxml.jackson.core:jackson-databind:2.9.3" level="project" />
-    <orderEntry type="library" name="Gradle: com.fasterxml.jackson.core:jackson-annotations:2.9.3" level="project" />
-    <orderEntry type="library" name="Gradle: com.fasterxml.jackson.core:jackson-core:2.9.3" level="project" />
-    <orderEntry type="library" name="Gradle: org.apache.httpcomponents:httpclient:4.5.4" level="project" />
-    <orderEntry type="library" name="Gradle: commons-codec:commons-codec:1.11" level="project" />
+    <orderEntry type="library" name="Gradle: org.apache.logging.log4j:log4j-slf4j-impl:2.11.1" level="project" />
+    <orderEntry type="library" name="Gradle: org.apache.logging.log4j:log4j-core:2.11.1" level="project" />
+    <orderEntry type="library" name="Gradle: org.apache.logging.log4j:log4j-api:2.11.1" level="project" />
+    <orderEntry type="library" name="Gradle: com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.9.6" level="project" />
+    <orderEntry type="library" name="Gradle: com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.9.6" level="project" />
+    <orderEntry type="library" name="Gradle: com.fasterxml.jackson.module:jackson-module-jsonSchema:2.9.6" level="project" />
+    <orderEntry type="library" name="Gradle: com.fasterxml.jackson.core:jackson-databind:2.9.6" level="project" />
+    <orderEntry type="library" name="Gradle: com.fasterxml.jackson.core:jackson-annotations:2.9.0" level="project" />
+    <orderEntry type="library" name="Gradle: com.fasterxml.jackson.core:jackson-core:2.9.6" level="project" />
+    <orderEntry type="library" name="Gradle: org.apache.httpcomponents:httpclient:4.5.6" level="project" />
+    <orderEntry type="library" name="Gradle: commons-codec:commons-codec:1.10" level="project" />
     <orderEntry type="library" name="Gradle: commons-io:commons-io:2.6" level="project" />
     <orderEntry type="library" name="Gradle: org.apache.commons:commons-lang3:3.7" level="project" />
     <orderEntry type="library" name="Gradle: commons-logging:commons-logging:1.2" level="project" />
-    <orderEntry type="library" name="Gradle: org.apache.httpcomponents:httpcore:4.4.8" level="project" />
-    <orderEntry type="library" name="Gradle: com.fasterxml.woodstox:woodstox-core:5.0.3" level="project" />
+    <orderEntry type="library" name="Gradle: org.apache.httpcomponents:httpcore:4.4.10" level="project" />
+    <orderEntry type="library" name="Gradle: com.fasterxml.woodstox:woodstox-core:5.1.0" level="project" />
     <orderEntry type="library" name="Gradle: com.jayway.jsonpath:json-path:2.4.0" level="project" />
-    <orderEntry type="library" name="Gradle: org.slf4j:slf4j-api:1.8.0-beta0" level="project" />
+    <orderEntry type="library" name="Gradle: org.slf4j:slf4j-api:1.8.0-beta2" level="project" />
     <orderEntry type="library" name="Gradle: org.xmlsh:stax-utils:1.0" level="project" />
     <orderEntry type="library" name="Gradle: org.dynalang:dynalink:0.7" level="project" />
     <orderEntry type="library" name="Gradle: net.bytebuddy:byte-buddy:1.5.11" level="project" />
     <orderEntry type="library" name="Gradle: org.xmlsh:jline2:2.14-SNAPSHOT" level="project" />
     <orderEntry type="library" name="Gradle: org.ccil.cowan.tagsoup:tagsoup:1.2.1" level="project" />
     <orderEntry type="library" name="Gradle: xom:xom:1.2.5" level="project" />
-    <orderEntry type="library" name="Gradle: xerces:xercesImpl:2.11.0" level="project" />
+    <orderEntry type="library" name="Gradle: xerces:xercesImpl:2.9.1" level="project" />
     <orderEntry type="library" name="Gradle: xml-resolver:xml-resolver:1.2" level="project" />
-    <orderEntry type="library" name="Gradle: net.sf.saxon:Saxon-HE:9.6.0-10" level="project" />
-    <orderEntry type="library" name="Gradle: org.projectlombok:lombok:1.16.18" level="project" />
+    <orderEntry type="library" name="Gradle: net.sf.saxon:Saxon-HE:9.8.0-14" level="project" />
+    <orderEntry type="library" name="Gradle: org.projectlombok:lombok:1.18.2" level="project" />
     <orderEntry type="library" name="Gradle: saxon:saxon:6.5.3" level="project" />
     <orderEntry type="library" name="Gradle: net.sf.supercsv:super-csv:2.3.1" level="project" />
     <orderEntry type="library" name="Gradle: mysql:mysql-connector-java:6.0.6" level="project" />
-    <orderEntry type="library" name="Gradle: org.apache.ant:ant-launcher:1.9.9" level="project" />
     <orderEntry type="library" name="Gradle: xalan:xalan:2.7.0" level="project" />
     <orderEntry type="library" name="Gradle: xml-apis:xml-apis:1.4.01" level="project" />
     <orderEntry type="library" name="Gradle: isorelax:isorelax:20030108" level="project" />
-    <orderEntry type="library" name="Gradle: org.codehaus.woodstox:stax2-api:3.1.4" level="project" />
+    <orderEntry type="library" name="Gradle: org.codehaus.woodstox:stax2-api:4.1" level="project" />
     <orderEntry type="library" name="Gradle: javax.validation:validation-api:1.1.0.Final" level="project" />
     <orderEntry type="library" name="Gradle: net.minidev:json-smart:2.3" level="project" />
     <orderEntry type="library" name="Gradle: net.minidev:accessors-smart:1.2" level="project" />

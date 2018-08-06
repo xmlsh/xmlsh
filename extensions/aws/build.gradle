@@ -36,7 +36,7 @@ dependencies {
     testRuntime  'xerces:xercesImpl:2.+'
     testRuntime 'xml-resolver:xml-resolver:1.2+' 
     testRuntime 'xom:xom:latest.release'
-    testRuntime 'net.sf.saxon:Saxon-HE:9.6.+' 
+    testRuntime 'net.sf.saxon:Saxon-HE:9.8.+' 
 
 }
 

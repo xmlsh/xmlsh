@@ -15,7 +15,7 @@ import javax.xml.stream.XMLStreamException;
 
 import net.sf.saxon.expr.StaticProperty;
 import net.sf.saxon.om.EmptyAtomicSequence;
-import net.sf.saxon.om.FunctionItem;
+import net.sf.saxon.om.Function;
 import net.sf.saxon.om.Item;
 import net.sf.saxon.om.NodeInfo;
 import net.sf.saxon.om.Sequence;
@@ -210,7 +210,7 @@ public class XMLUtils
               return ((ObjectValue<?>) item).getObject().getClass().toString();
           } else if (item instanceof AtomicValue) {
               return ((AtomicValue) item).getItemType().toString();
-          } else if (item instanceof FunctionItem) {
+          } else if (item instanceof Function) {
               return "function(*)";
           } else {
               return item.getClass().toString();

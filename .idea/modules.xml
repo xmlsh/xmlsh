@@ -18,9 +18,6 @@
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/corelib/xmlsh-core.iml" filepath="$PROJECT_DIR$/.idea/modules/corelib/xmlsh-core.iml" group="xmlsh-core" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/corelib/xmlsh-core_main.iml" filepath="$PROJECT_DIR$/.idea/modules/corelib/xmlsh-core_main.iml" group="xmlsh-core" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/corelib/xmlsh-core_test.iml" filepath="$PROJECT_DIR$/.idea/modules/corelib/xmlsh-core_test.iml" group="xmlsh-core" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/docker/xmlsh-docker_main~1.iml" filepath="$PROJECT_DIR$/.idea/modules/docker/xmlsh-docker_main~1.iml" group="xmlsh-docker" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/docker/xmlsh-docker_test~1.iml" filepath="$PROJECT_DIR$/.idea/modules/docker/xmlsh-docker_test~1.iml" group="xmlsh-docker" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/docker/xmlsh-docker~1.iml" filepath="$PROJECT_DIR$/.idea/modules/docker/xmlsh-docker~1.iml" group="xmlsh-docker" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/xmlsh_main.iml" filepath="$PROJECT_DIR$/.idea/modules/xmlsh_main.iml" group="xmlsh" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/xmlsh_test.iml" filepath="$PROJECT_DIR$/.idea/modules/xmlsh_test.iml" group="xmlsh" />
     </modules>

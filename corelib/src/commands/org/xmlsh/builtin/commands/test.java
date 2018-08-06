@@ -206,7 +206,9 @@ public class test extends BuiltinCommand {
   }
 
   private boolean evalBinary(XValue av1, String op, XValue value)
-      throws Error, IOException {
+  throws Error, IOException, UnexpectedException, InvalidArgumentException
+  {
+
     if(op.equals("="))
       return av1.equals(value);
     else if(op.equals("!="))
@@ -230,6 +232,10 @@ public class test extends BuiltinCommand {
     else if(op.equals("-ot"))
       return getFile(av1).lastModified() < getFile(value).lastModified();
 
+    else if( op.equals("-o" ) )
+      return av1.toBoolean() || value.toBoolean() ;
+    else if( op.equals("-a" ) )
+      return av1.toBoolean() && value.toBoolean() ;
     else
       throw new Error("Invalid binary operator " + op);
 

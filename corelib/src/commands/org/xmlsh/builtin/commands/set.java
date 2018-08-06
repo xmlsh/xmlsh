@@ -42,9 +42,12 @@ public class set extends BuiltinCommand {
     args = opts.getRemainingArgs();
     // Only set args here if there are any left
     // could be set +x which would clear $*
+
     if(args != null && (args.size() > 0)) {
       mShell.setArgs(args);
 
+    } else if( opts.hasDashDash() ){
+      mShell.setArgs( XValue.emptyList() );
     }
     return 0;
   }

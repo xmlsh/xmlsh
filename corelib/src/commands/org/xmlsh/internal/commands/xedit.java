@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
+
+import net.sf.saxon.om.*;
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Namespaces;
@@ -24,13 +26,6 @@ import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.util.NameValueMap;
 import org.xmlsh.util.Util;
 import org.xmlsh.xpath.EvalDefinition;
-import net.sf.saxon.om.CodedName;
-import net.sf.saxon.om.DocumentInfo;
-import net.sf.saxon.om.Item;
-import net.sf.saxon.om.MutableNodeInfo;
-import net.sf.saxon.om.NamePool;
-import net.sf.saxon.om.NodeInfo;
-import net.sf.saxon.om.TreeModel;
 import net.sf.saxon.s9api.Axis;
 import net.sf.saxon.s9api.DocumentBuilder;
 import net.sf.saxon.s9api.Processor;
@@ -434,10 +429,12 @@ public class xedit extends XCommand {
   private void addAttribute(MutableNodeInfo node, String prefix, String uri,
       String local, String value) {
 
-    NamePool pool = node.getNamePool();
-    int nameCode = pool.allocate(prefix, uri, local);
+   // NamePool pool = node.getNamePool();
+   // int nameCode = pool.allocate(prefix, uri, local);
 
-    CodedName name = new CodedName(nameCode, pool);
+   // CodedName name = new CodedName(nameCode, pool);
+
+    NodeName name = new FingerprintedQName(prefix,uri,local);
     node.addAttribute(name, BuiltInAtomicType.UNTYPED_ATOMIC, value, 0);
     if(!Util.isEmpty(prefix)) {
 
@@ -522,12 +519,14 @@ public class xedit extends XCommand {
 
     QName qn = xv.asQName(getShell());
 
-    NamePool pool = node.getNamePool();
-    int newNameCode = pool.allocate(qn.getPrefix(), qn.getNamespaceURI(),
-        qn.getLocalPart());
+  //  NamePool pool = node.getNamePool();
+  //  int newNameCode = pool.allocate(qn.getPrefix(), qn.getNamespaceURI(),
+  //      qn.getLocalPart());
 
-    CodedName name = new CodedName(newNameCode, pool);
-    node.rename(name);
+  //  CodedName name = new CodedName(newNameCode, pool);
+
+  NodeName name = new FingerprintedQName(qn.getPrefix(), qn.getNamespaceURI(), qn.getLocalPart() );
+  node.rename(name);
 
   }
 
@@ -625,7 +624,7 @@ public class xedit extends XCommand {
 
     XdmNode xnode = importNode(node);
 
-    return ((DocumentImpl) xnode.getUnderlyingNode().getDocumentRoot())
+    return ((DocumentImpl) xnode.getUnderlyingNode().getRoot())
         .getDocumentElement();
   }
 

@@ -19,8 +19,7 @@ import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.Source;
 
 import net.sf.saxon.Configuration;
-import net.sf.saxon.evpull.Decomposer;
-import net.sf.saxon.evpull.EventToStaxBridge;
+import net.sf.saxon.pull.StaxBridge;
 import net.sf.saxon.om.NodeInfo;
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XdmItem;
@@ -204,18 +203,18 @@ public class VariableInputPort extends InputPort {
 		XMLStreamReader sr = new EventToStaxBridge2(iter, config.getNamePool());
 		return sr;
 		 */
-		XValue value = mVariable.getValue();
+//		XValue value = mVariable.getValue();
 
 		//System.err.println("sysid: " + this.getSystemId() );
 		//System.err.println("base: " + value.asXdmNode().getBaseURI());
 
-		Configuration config = Shell.getProcessor().getUnderlyingConfiguration();
+	//	Configuration config = Shell.getProcessor().getUnderlyingConfiguration();
 
 		/*
 		 * IF variable is an atomic value then treat as string and parse to XML
 		 */
 
-		if( value.isAtomic() ){
+	//	if( value.isAtomic() ){
 
 			try {
 				XMLInputFactory factory = XMLInputFactory.newInstance();
@@ -229,16 +228,18 @@ public class VariableInputPort extends InputPort {
 			}
 
 
-		}
+		//}
 
 
 
 		// SequenceIterator iter = value.asSequenceIterator();
-		NodeInfo nodeInfo = value.asNodeInfo();
+	//	NodeInfo nodeInfo = value.asNodeInfo();
 
 		/*
 		 * 2010-05-19 - EventReaders assume documents, if not a document then wrap with one
 		 */
+
+		 /*
 		if( nodeInfo.getNodeKind() != net.sf.saxon.type.Type.DOCUMENT )
 			nodeInfo = S9Util.wrapDocument( nodeInfo ).getUnderlyingNode(); ;
 
@@ -250,7 +251,7 @@ public class VariableInputPort extends InputPort {
 			// EventIteratorOverSequence eviter = new EventIteratorOverSequence(iter);
 
 
-			EventToStaxBridge ps = new EventToStaxBridge(	decomposed , config.makePipelineConfiguration() );
+			EventToStaxBridge ps = new StaxBridge(	decomposed , config.makePipelineConfiguration() );
 
 
 
@@ -266,7 +267,7 @@ public class VariableInputPort extends InputPort {
 
 			return ps;
 
-
+*/
 
 	}
 

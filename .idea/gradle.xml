@@ -11,7 +11,6 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/corelib" />
-            <option value="$PROJECT_DIR$/docker" />
             <option value="$PROJECT_DIR$/extensions" />
             <option value="$PROJECT_DIR$/extensions/aws" />
             <option value="$PROJECT_DIR$/extensions/jstache" />

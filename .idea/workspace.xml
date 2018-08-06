@@ -1,7 +1,84 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="fe03ad95-a775-442f-aef3-067af4c81b8e" name="Default" comment="" />
+    <list default="true" id="fe03ad95-a775-442f-aef3-067af4c81b8e" name="Default" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/codeStyles/Project.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/dbnavigator.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/hotswap_agent.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_fasterxml_jackson_core_jackson_core_2_9_6.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_fasterxml_jackson_core_jackson_databind_2_9_6.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__commons_codec_commons_codec_1_10.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__net_bytebuddy_byte_buddy_1_8_15.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__net_bytebuddy_byte_buddy_agent_1_8_15.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__net_sf_saxon_Saxon_HE_9_8_0_14.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_apache_logging_log4j_log4j_api_2_11_1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_codehaus_woodstox_stax2_api_4_1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_mockito_mockito_core_2_21_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_projectlombok_lombok_1_16_22.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_projectlombok_lombok_1_18_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_slf4j_slf4j_api_1_8_0_beta2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__xerces_xercesImpl_2_9_1.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_fasterxml_jackson_core_jackson_annotations_2_9_3.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_fasterxml_jackson_core_jackson_annotations_2_9_0.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_fasterxml_jackson_core_jackson_core_2_9_3.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_fasterxml_jackson_core_jackson_databind_2_9_3.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_fasterxml_jackson_dataformat_jackson_dataformat_xml_2_9_3.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_fasterxml_jackson_dataformat_jackson_dataformat_xml_2_9_6.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_fasterxml_jackson_module_jackson_module_jaxb_annotations_2_9_3.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_fasterxml_jackson_module_jackson_module_jaxb_annotations_2_9_6.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_fasterxml_jackson_module_jackson_module_jsonSchema_2_9_3.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_fasterxml_jackson_module_jackson_module_jsonSchema_2_9_6.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__com_fasterxml_woodstox_woodstox_core_5_0_3.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_fasterxml_woodstox_woodstox_core_5_1_0.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__commons_codec_commons_codec_1_11.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__commons_logging_commons_logging_1_2.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__commons_logging_commons_logging_1_2.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__net_bytebuddy_byte_buddy_1_7_9.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__net_bytebuddy_byte_buddy_agent_1_7_9.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__net_minidev_accessors_smart_1_2.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__net_minidev_accessors_smart_1_2.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__net_minidev_json_smart_2_3.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__net_minidev_json_smart_2_3.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__net_sf_saxon_Saxon_HE_9_6_0_10.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__org_apache_ant_ant_1_9_9.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__org_apache_ant_ant_launcher_1_9_9.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__org_apache_commons_commons_lang3_3_7.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_apache_commons_commons_lang3_3_7.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__org_apache_httpcomponents_httpclient_4_5_4.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_apache_httpcomponents_httpclient_4_5_6.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__org_apache_httpcomponents_httpcore_4_4_8.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_apache_httpcomponents_httpcore_4_4_10.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__org_apache_logging_log4j_log4j_api_2_10_0.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__org_apache_logging_log4j_log4j_core_2_10_0.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_apache_logging_log4j_log4j_core_2_11_1.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__org_apache_logging_log4j_log4j_slf4j_impl_2_10_0.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_apache_logging_log4j_log4j_slf4j_impl_2_11_1.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__org_codehaus_woodstox_stax2_api_3_1_4.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__org_mockito_mockito_core_2_13_0.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__org_projectlombok_lombok_1_16_18.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__org_slf4j_slf4j_api_1_8_0_beta0.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__software_amazon_ion_ion_java_1_0_2.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__software_amazon_ion_ion_java_1_0_2.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__xerces_xercesImpl_2_11_0.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__xml_apis_xml_apis_1_4_01.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__xml_apis_xml_apis_1_4_01.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules/corelib/xmlsh-core_main.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/corelib/xmlsh-core_main.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules/corelib/xmlsh-core_test.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/corelib/xmlsh-core_test.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules/docker/xmlsh-docker_main~1.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules/docker/xmlsh-docker_test~1.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules/docker/xmlsh-docker~1.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules/extensions/aws/aws_main.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/extensions/aws/aws_main.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules/extensions/aws/aws_test.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/extensions/aws/aws_test.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules/extensions/jstache/jstache_main.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/extensions/jstache/jstache_main.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules/extensions/jstache/jstache_test.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/extensions/jstache/jstache_test.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules/extensions/marklogic/marklogic_main.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/extensions/marklogic/marklogic_main.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules/extensions/marklogic/marklogic_test.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/extensions/marklogic/marklogic_test.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules/xmlsh_main.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/xmlsh_main.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules/xmlsh_test.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/xmlsh_test.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/corelib/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/corelib/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/corelib/src/commands/org/xmlsh/builtin/commands/set.java" beforeDir="false" afterPath="$PROJECT_DIR$/corelib/src/commands/org/xmlsh/builtin/commands/set.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/corelib/src/commands/org/xmlsh/builtin/commands/test.java" beforeDir="false" afterPath="$PROJECT_DIR$/corelib/src/commands/org/xmlsh/builtin/commands/test.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/corelib/src/commands/org/xmlsh/internal/commands/xed.java" beforeDir="false" afterPath="$PROJECT_DIR$/corelib/src/commands/org/xmlsh/internal/commands/xed.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/corelib/src/commands/org/xmlsh/internal/commands/xedit.java" beforeDir="false" afterPath="$PROJECT_DIR$/corelib/src/commands/org/xmlsh/internal/commands/xedit.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/corelib/src/core/org/xmlsh/core/io/VariableInputPort.java" beforeDir="false" afterPath="$PROJECT_DIR$/corelib/src/core/org/xmlsh/core/io/VariableInputPort.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/corelib/src/core/org/xmlsh/core/io/VariableOutputPort.java" beforeDir="false" afterPath="$PROJECT_DIR$/corelib/src/core/org/xmlsh/core/io/VariableOutputPort.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/corelib/src/core/org/xmlsh/core/io/XdmStreamInputPort.java" beforeDir="false" afterPath="$PROJECT_DIR$/corelib/src/core/org/xmlsh/core/io/XdmStreamInputPort.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/corelib/src/core/org/xmlsh/util/StAXUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/corelib/src/core/org/xmlsh/util/StAXUtils.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/corelib/src/core/org/xmlsh/util/Util.java" beforeDir="false" afterPath="$PROJECT_DIR$/corelib/src/core/org/xmlsh/util/Util.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/corelib/src/core/org/xmlsh/util/XMLUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/corelib/src/core/org/xmlsh/util/XMLUtils.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/extensions/aws/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/extensions/aws/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/settings.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/settings.gradle" afterDir="false" />
+    </list>
     <ignored path="$PROJECT_DIR$/.gradle/" />
     <ignored path="$PROJECT_DIR$/build/" />
     <ignored path="$PROJECT_DIR$/out/" />
@@ -27,7 +104,6 @@
     <ignored path="$PROJECT_DIR$/docker/build/" />
     <ignored path="$PROJECT_DIR$/docker/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
-    <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -44,30 +120,15 @@
         <task path="$PROJECT_DIR$">
           <activation />
         </task>
+        <task path="$PROJECT_DIR$/corelib">
+          <activation />
+        </task>
         <projects_view>
           <tree_state>
             <expand>
               <path>
                 <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
                 <item name="xmlsh" type="f1a62948:ProjectNode" />
-              </path>
-              <path>
-                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
-                <item name="xmlsh" type="f1a62948:ProjectNode" />
-                <item name="xmlsh" type="2d1252cf:ModuleNode" />
-              </path>
-              <path>
-                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
-                <item name="xmlsh" type="f1a62948:ProjectNode" />
-                <item name="xmlsh" type="2d1252cf:ModuleNode" />
-                <item name="Tasks" type="e4a08cd1:TasksNode" />
-              </path>
-              <path>
-                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
-                <item name="xmlsh" type="f1a62948:ProjectNode" />
-                <item name="xmlsh" type="2d1252cf:ModuleNode" />
-                <item name="Tasks" type="e4a08cd1:TasksNode" />
-                <item name="build" type="c8890929:TasksNode$1" />
               </path>
             </expand>
             <select />
@@ -76,173 +137,129 @@
       </state>
     </system>
   </component>
+  <component name="FUSProjectUsageTrigger">
+    <session id="-1766702116">
+      <usages-collector id="statistics.lifecycle.project">
+        <counts>
+          <entry key="project.closed" value="2" />
+          <entry key="project.open.time.13" value="1" />
+          <entry key="project.open.time.3" value="1" />
+          <entry key="project.opened" value="2" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.extensions.open">
+        <counts>
+          <entry key="java" value="40" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.types.open">
+        <counts>
+          <entry key="JAVA" value="40" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.extensions.edit">
+        <counts>
+          <entry key="java" value="1010" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.types.edit">
+        <counts>
+          <entry key="JAVA" value="1010" />
+        </counts>
+      </usages-collector>
+    </session>
+  </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="xsql.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/corelib/src/commands/org/xmlsh/internal/commands/xsql.java">
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/corelib/src/core/org/xmlsh/core/io/VariableOutputPort.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="15192">
-              <caret line="892" column="38" lean-forward="false" selection-start-line="892" selection-start-column="38" selection-end-line="892" selection-end-column="38" />
+            <state relative-caret-position="144">
+              <caret line="286" column="3" lean-forward="true" selection-start-line="286" selection-start-column="3" selection-end-line="286" selection-end-column="3" />
               <folding>
-                <element signature="imports" expanded="true" />
-                <element signature="e#23148#23149#0" expanded="true" />
-                <element signature="e#23203#23204#0" expanded="true" />
+                <element signature="method#appendVar#2;class#VariableOutputPort#0" />
+                <element signature="e#8200#8201#0" expanded="true" />
+                <element signature="e#8221#8222#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ResultSetMetaData.java" pinned="false" current-in-tab="true">
-        <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/mysql/mysql-connector-java/6.0.6/db709b9df634cc45886828ce72b271662b4915db/mysql-connector-java-6.0.6-sources.jar!/com/mysql/cj/jdbc/result/ResultSetMetaData.java">
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/corelib/src/commands/org/xmlsh/stax/commands/writeNamespace.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="18">
-              <caret line="240" column="0" lean-forward="false" selection-start-line="240" selection-start-column="0" selection-end-line="240" selection-end-column="0" />
-              <folding />
+            <state relative-caret-position="96">
+              <caret line="23" column="9" selection-start-line="23" selection-start-column="9" selection-end-line="23" selection-end-column="9" />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="StreamWriterToReceiver.java" pinned="false" current-in-tab="false">
-        <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.sf.saxon/Saxon-HE/9.6.0-10/b0c7f9d0bf81f68328110828e1d4a6286b3b7c5a/Saxon-HE-9.6.0-10-sources.jar!/net/sf/saxon/event/StreamWriterToReceiver.java">
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/corelib/src/commands/org/xmlsh/builtin/commands/set.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="5238">
-              <caret line="315" column="0" lean-forward="false" selection-start-line="315" selection-start-column="0" selection-end-line="315" selection-end-column="0" />
-              <folding />
+            <state relative-caret-position="408">
+              <caret line="49" column="43" selection-start-line="49" selection-start-column="43" selection-end-line="49" selection-end-column="43" />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Unsafe.class" pinned="false" current-in-tab="false">
-        <entry file="jar:///usr/java/jdk1.8.0_144/jre/lib/rt.jar!/sun/misc/Unsafe.class">
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/corelib/src/commands/org/xmlsh/builtin/commands/test.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="5508">
-              <caret line="351" column="37" lean-forward="false" selection-start-line="351" selection-start-column="37" selection-end-line="351" selection-end-column="37" />
+            <state relative-caret-position="322">
+              <caret line="237" column="32" selection-start-line="237" selection-start-column="32" selection-end-line="237" selection-end-column="32" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/corelib/src/shell/org/xmlsh/sh/shell/Shell.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="210">
+              <caret line="1272" column="9" selection-start-line="1272" selection-start-column="4" selection-end-line="1272" selection-end-column="9" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/corelib/src/core/org/xmlsh/core/Options.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="210">
+              <caret line="367" column="27" selection-start-line="367" selection-start-column="27" selection-end-line="367" selection-end-column="27" />
               <folding>
-                <marker date="1508257778854" expanded="false" signature="0:104" ph="/.../" />
-                <marker date="1508257778854" expanded="false" signature="132:297" ph="..." />
-                <marker date="1508257778854" expanded="true" signature="1446:1451" ph="{}" />
-                <marker date="1508257778854" expanded="true" signature="1507:1705" ph="{...}" />
-                <marker date="1508257778854" expanded="true" signature="2830:2848" ph="/**...*/" />
-                <marker date="1508257778854" expanded="false" signature="2905:2912" ph=" { " />
-                <marker date="1508257778854" expanded="false" signature="2949:2953" ph=" }" />
-                <marker date="1508257778854" expanded="true" signature="2957:2975" ph="/**...*/" />
-                <marker date="1508257778854" expanded="false" signature="3043:3050" ph=" { " />
-                <marker date="1508257778854" expanded="false" signature="3086:3090" ph=" }" />
-                <marker date="1508257778854" expanded="true" signature="3094:3112" ph="/**...*/" />
-                <marker date="1508257778854" expanded="false" signature="3175:3182" ph=" { " />
-                <marker date="1508257778854" expanded="false" signature="3222:3226" ph=" }" />
-                <marker date="1508257778854" expanded="true" signature="3230:3248" ph="/**...*/" />
-                <marker date="1508257778854" expanded="false" signature="3322:3329" ph=" { " />
-                <marker date="1508257778854" expanded="false" signature="3368:3372" ph=" }" />
-                <marker date="1508257778854" expanded="true" signature="3376:3394" ph="/**...*/" />
-                <marker date="1508257778854" expanded="false" signature="3459:3466" ph=" { " />
-                <marker date="1508257778854" expanded="false" signature="3507:3511" ph=" }" />
-                <marker date="1508257778854" expanded="true" signature="3515:3533" ph="/**...*/" />
-                <marker date="1508257778854" expanded="false" signature="3609:3616" ph=" { " />
-                <marker date="1508257778854" expanded="false" signature="3656:3660" ph=" }" />
-                <marker date="1508257778854" expanded="true" signature="3664:3682" ph="/**...*/" />
-                <marker date="1508257778854" expanded="false" signature="3741:3748" ph=" { " />
-                <marker date="1508257778854" expanded="false" signature="3786:3790" ph=" }" />
-                <marker date="1508257778854" expanded="true" signature="3794:3812" ph="/**...*/" />
-                <marker date="1508257778854" expanded="false" signature="3882:3889" ph=" { " />
-                <marker date="1508257778854" expanded="false" signature="3926:3930" ph=" }" />
-                <marker date="1508257778854" expanded="true" signature="3934:3952" ph="/**...*/" />
-                <marker date="1508257778854" expanded="false" signature="4013:4020" ph=" { " />
-                <marker date="1508257778854" expanded="false" signature="4059:4063" ph=" }" />
-                <marker date="1508257778854" expanded="true" signature="4067:4085" ph="/**...*/" />
-                <marker date="1508257778854" expanded="false" signature="4157:4164" ph=" { " />
-                <marker date="1508257778854" expanded="false" signature="4202:4206" ph=" }" />
-                <marker date="1508257778854" expanded="true" signature="4210:4228" ph="/**...*/" />
-                <marker date="1508257778854" expanded="false" signature="4287:4294" ph=" { " />
-                <marker date="1508257778854" expanded="false" signature="4332:4336" ph=" }" />
-                <marker date="1508257778854" expanded="true" signature="4340:4358" ph="/**...*/" />
-                <marker date="1508257778854" expanded="false" signature="4428:4435" ph=" { " />
-                <marker date="1508257778854" expanded="false" signature="4472:4476" ph=" }" />
-                <marker date="1508257778854" expanded="true" signature="4480:4498" ph="/**...*/" />
-                <marker date="1508257778854" expanded="false" signature="4557:4564" ph=" { " />
-                <marker date="1508257778854" expanded="false" signature="4602:4606" ph=" }" />
-                <marker date="1508257778854" expanded="true" signature="4610:4628" ph="/**...*/" />
-                <marker date="1508257778854" expanded="false" signature="4698:4705" ph=" { " />
-                <marker date="1508257778854" expanded="false" signature="4742:4746" ph=" }" />
-                <marker date="1508257778854" expanded="true" signature="4750:4768" ph="/**...*/" />
-                <marker date="1508257778854" expanded="false" signature="4829:4836" ph=" { " />
-                <marker date="1508257778854" expanded="false" signature="4875:4879" ph=" }" />
-                <marker date="1508257778854" expanded="true" signature="4883:4901" ph="/**...*/" />
-                <marker date="1508257778854" expanded="false" signature="4973:4980" ph=" { " />
-                <marker date="1508257778854" expanded="false" signature="5018:5022" ph=" }" />
-                <marker date="1508257778854" expanded="true" signature="5026:5044" ph="/**...*/" />
-                <marker date="1508257778854" expanded="false" signature="5107:5114" ph=" { " />
-                <marker date="1508257778854" expanded="false" signature="5154:5158" ph=" }" />
-                <marker date="1508257778854" expanded="true" signature="5162:5180" ph="/**...*/" />
-                <marker date="1508257778854" expanded="false" signature="5254:5261" ph=" { " />
-                <marker date="1508257778854" expanded="false" signature="5300:5304" ph=" }" />
-                <marker date="1508257778854" expanded="false" signature="6330:6337" ph=" { " />
-                <marker date="1508257778854" expanded="false" signature="6384:6388" ph=" }" />
-                <marker date="1508257778854" expanded="true" signature="6541:6613" ph="{...}" />
-                <marker date="1508257778854" expanded="true" signature="6662:6680" ph="/**...*/" />
-                <marker date="1508257778854" expanded="true" signature="6732:6860" ph="{...}" />
-                <marker date="1508257778854" expanded="true" signature="6864:6882" ph="/**...*/" />
-                <marker date="1508257778854" expanded="true" signature="6944:7186" ph="{...}" />
-                <marker date="1508257778854" expanded="true" signature="7950:7968" ph="/**...*/" />
-                <marker date="1508257778854" expanded="true" signature="8034:8052" ph="/**...*/" />
-                <marker date="1508257778854" expanded="true" signature="8117:8135" ph="/**...*/" />
-                <marker date="1508257778854" expanded="true" signature="10263:10424" ph="{...}" />
-                <marker date="1508257778854" expanded="true" signature="10495:10659" ph="{...}" />
-                <marker date="1508257778854" expanded="true" signature="10727:10881" ph="{...}" />
-                <marker date="1508257778854" expanded="true" signature="10952:11109" ph="{...}" />
-                <marker date="1508257778854" expanded="true" signature="11186:11349" ph="{...}" />
-                <marker date="1508257778854" expanded="false" signature="11504:11511" ph=" { " />
-                <marker date="1508257778854" expanded="false" signature="11542:11546" ph=" }" />
-                <marker date="1508257778854" expanded="true" signature="11557:13032" ph="{...}" />
+                <element signature="e#9070#9071#0" expanded="true" />
+                <element signature="e#9104#9105#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Field.java" pinned="false" current-in-tab="false">
-        <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/mysql/mysql-connector-java/6.0.6/db709b9df634cc45886828ce72b271662b4915db/mysql-connector-java-6.0.6-sources.jar!/com/mysql/cj/core/result/Field.java">
+      <file pinned="false" current-in-tab="false">
+        <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.sf.saxon/Saxon-HE/9.8.0-14/1b2746382ee89d1e8af9bee26f00a1db43a8a6fd/Saxon-HE-9.8.0-14-sources.jar!/net/sf/saxon/tree/linked/SystemIdMap.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="3096">
-              <caret line="204" column="9" lean-forward="false" selection-start-line="204" selection-start-column="9" selection-end-line="204" selection-end-column="9" />
-              <folding>
-                <element signature="e#7447#7448#0" expanded="true" />
-                <element signature="e#7496#7497#0" expanded="true" />
-                <element signature="e#7535#7536#0" expanded="true" />
-                <element signature="e#7592#7593#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="558">
+              <caret line="54" column="52" selection-start-line="54" selection-start-column="52" selection-end-line="54" selection-end-column="52" />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Statement.java" pinned="false" current-in-tab="false">
-        <entry file="jar:///usr/java/jdk1.8.0_144/src.zip!/java/sql/Statement.java">
+      <file pinned="false" current-in-tab="false">
+        <entry file="jar:///usr/java/jdk1.8.0_144/src.zip!/javax/xml/transform/Source.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="178">
-              <caret line="108" column="14" lean-forward="false" selection-start-line="108" selection-start-column="9" selection-end-line="108" selection-end-column="14" />
-              <folding>
-                <element signature="docComment;method#executeUpdate#0;class#Statement#0" expanded="false" />
-                <element signature="docComment;method#close#0;class#Statement#0" expanded="false" />
-              </folding>
+            <state relative-caret-position="230">
+              <caret line="43" column="16" selection-start-line="43" selection-start-column="16" selection-end-line="43" selection-end-column="16" />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="PreparedStatement.java" pinned="false" current-in-tab="false">
-        <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/mysql/mysql-connector-java/6.0.6/db709b9df634cc45886828ce72b271662b4915db/mysql-connector-java-6.0.6-sources.jar!/com/mysql/cj/jdbc/PreparedStatement.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="61632">
-              <caret line="3529" column="0" lean-forward="false" selection-start-line="3529" selection-start-column="0" selection-end-line="3529" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="XValue.java" pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/corelib/src/core/org/xmlsh/core/XValue.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="8982">
-              <caret line="618" column="0" lean-forward="false" selection-start-line="618" selection-start-column="0" selection-end-line="618" selection-end-column="0" />
+            <state relative-caret-position="244">
+              <caret line="644" column="35" selection-start-line="644" selection-start-column="35" selection-end-line="644" selection-end-column="35" />
               <folding>
+                <element signature="e#7484#7485#0" expanded="true" />
+                <element signature="e#7514#7515#0" expanded="true" />
                 <element signature="e#15263#15264#0" expanded="true" />
                 <element signature="e#15300#15301#0" expanded="true" />
                 <element signature="e#22616#22617#0" expanded="true" />
@@ -252,26 +269,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ConnectionImpl.java" pinned="false" current-in-tab="false">
-        <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/mysql/mysql-connector-java/6.0.6/db709b9df634cc45886828ce72b271662b4915db/mysql-connector-java-6.0.6-sources.jar!/com/mysql/cj/jdbc/ConnectionImpl.java">
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/corelib/src/core/org/xmlsh/types/IMethods.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="738">
-              <caret line="154" column="0" lean-forward="false" selection-start-line="154" selection-start-column="0" selection-end-line="154" selection-end-column="0" />
-              <folding>
-                <element signature="e#6087#6088#0" expanded="true" />
-                <element signature="e#6167#6168#0" expanded="true" />
-                <element signature="e#6377#6378#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="StatementImpl.java" pinned="false" current-in-tab="false">
-        <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/mysql/mysql-connector-java/6.0.6/db709b9df634cc45886828ce72b271662b4915db/mysql-connector-java-6.0.6-sources.jar!/com/mysql/cj/jdbc/StatementImpl.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="7452">
-              <caret line="490" column="0" lean-forward="false" selection-start-line="490" selection-start-column="0" selection-end-line="490" selection-end-column="0" />
-              <folding />
+            <state relative-caret-position="198">
+              <caret line="37" column="22" selection-start-line="37" selection-start-column="22" selection-end-line="37" selection-end-column="22" />
             </state>
           </provider>
         </entry>
@@ -280,37 +282,40 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>header</find>
-      <find>parseRow</find>
-      <find>columns</find>
-      <find>sQuestions</find>
-      <find>prepare</find>
-      <find>getMetadata</find>
-      <find>setString</find>
-      <find>query</find>
-      <find>option</find>
-      <find>QueryParam</find>
-      <find>isString</find>
-      <find>to</find>
-      <find>instanceof D</find>
-      <find>isNumber</find>
-      <find>isInt</find>
-      <find>insert</find>
-      <find>field</find>
-      <find>addQueryField</find>
-      <find>describeTable</find>
-      <find>JavaUtils</find>
-      <find>?</find>
-      <find>runQuery</find>
-      <find>meta.</find>
-      <find>run(</find>
-      <find>&quot;column&quot;</find>
-      <find>column</find>
-      <find>useJDBC4ColumnNameAndLabelSemantics</find>
       <find>getColumnLable</find>
       <find>useOldAliasBehavior</find>
       <find>Label</find>
+      <find>PullToStax</find>
+      <find>EventToStaxBridge</find>
+      <find>StaxBridge</find>
+      <find>XmlStreamReader</find>
+      <find>XMLStreamReader</find>
+      <find>Name</find>
+      <find>Util.java</find>
+      <find>writeXdmItem</find>
+      <find>Location</find>
+      <find>locationId</find>
+      <find>xed</find>
+      <find>NodeName</find>
+      <find>0</find>
+      <find>ExplicitLocation.UNKNOWN_LOCATION</find>
+      <find>builder</find>
+      <find>null</find>
+      <find>VariableOutputPort</find>
+      <find>setSystemId</find>
+      <find>System IDs of</find>
+      <find>writeNamespace</find>
+      <find>set</find>
+      <find>&quot;--&quot;</find>
+      <find>mDashDash</find>
+      <find>mArgs</find>
+      <find>Binary</find>
+      <find>&quot;-o&quot;</find>
+      <find>-o</find>
     </findStrings>
+    <dirStrings>
+      <dir>$PROJECT_DIR$/extensions/aws</dir>
+    </dirStrings>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -318,12 +323,12 @@
   <component name="GradleLocalSettings">
     <option name="myGradleHomes">
       <map>
-        <entry key="$PROJECT_DIR$" value="/Java/gradle-4.3.1" />
+        <entry key="$PROJECT_DIR$" value="/Java/gradle-4.9" />
       </map>
     </option>
     <option name="myGradleVersions">
       <map>
-        <entry key="$PROJECT_DIR$" value="4.3.1" />
+        <entry key="$PROJECT_DIR$" value="4.9" />
       </map>
     </option>
     <option name="availableProjects">
@@ -350,10 +355,6 @@
                 <option name="path" value="$PROJECT_DIR$/corelib" />
               </ExternalProjectPojo>
               <ExternalProjectPojo>
-                <option name="name" value=":xmlsh-docker" />
-                <option name="path" value="$PROJECT_DIR$/docker" />
-              </ExternalProjectPojo>
-              <ExternalProjectPojo>
                 <option name="name" value=":extensions:aws" />
                 <option name="path" value="$PROJECT_DIR$/extensions/aws" />
               </ExternalProjectPojo>
@@ -375,11 +376,6 @@
         <entry key="$PROJECT_DIR$">
           <value>
             <list>
-              <ExternalTaskPojo>
-                <option name="description" value="Pushes created Docker image to the repository." />
-                <option name="linkedExternalProjectPath" value="$PROJECT_DIR$" />
-                <option name="name" value="dockerPushImage" />
-              </ExternalTaskPojo>
               <ExternalTaskPojo>
                 <option name="description" value="Displays the sub-projects of root project 'xmlsh'." />
                 <option name="linkedExternalProjectPath" value="$PROJECT_DIR$" />
@@ -426,6 +422,11 @@
                 <option name="name" value="jar" />
               </ExternalTaskPojo>
               <ExternalTaskPojo>
+                <option name="description" value="Generates the Gradle metadata file for publication 'mavenJava'." />
+                <option name="linkedExternalProjectPath" value="$PROJECT_DIR$" />
+                <option name="name" value="generateMetadataFileForMavenJavaPublication" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
                 <option name="description" value="Processes main resources." />
                 <option name="linkedExternalProjectPath" value="$PROJECT_DIR$" />
                 <option name="name" value="processResources" />
@@ -455,19 +456,9 @@
                 <option name="name" value="allDeps" />
               </ExternalTaskPojo>
               <ExternalTaskPojo>
-                <option name="description" value="Copies the distribution resources to a temporary directory for image creation." />
-                <option name="linkedExternalProjectPath" value="$PROJECT_DIR$" />
-                <option name="name" value="dockerCopyDistResources" />
-              </ExternalTaskPojo>
-              <ExternalTaskPojo>
                 <option name="description" value="Initializes a new Gradle build." />
                 <option name="linkedExternalProjectPath" value="$PROJECT_DIR$" />
                 <option name="name" value="init" />
-              </ExternalTaskPojo>
-              <ExternalTaskPojo>
-                <option name="description" value="Creates the Docker image for the Java application." />
-                <option name="linkedExternalProjectPath" value="$PROJECT_DIR$" />
-                <option name="name" value="dockerDistTar" />
               </ExternalTaskPojo>
               <ExternalTaskPojo>
                 <option name="description" value="Runs the unit tests." />
@@ -637,10 +628,6 @@
                 <option name="name" value="generatePomFileForMavenJavaPublication" />
               </ExternalTaskPojo>
               <ExternalTaskPojo>
-                <option name="linkedExternalProjectPath" value="$PROJECT_DIR$" />
-                <option name="name" value="myBuildDockerfile" />
-              </ExternalTaskPojo>
-              <ExternalTaskPojo>
                 <option name="description" value="Creates OS specific scripts to run the project as a JVM application using the shadow jar" />
                 <option name="linkedExternalProjectPath" value="$PROJECT_DIR$" />
                 <option name="name" value="startShadowScripts" />
@@ -691,11 +678,6 @@
                 <option name="description" value="Compiles test Java source." />
                 <option name="linkedExternalProjectPath" value="$PROJECT_DIR$" />
                 <option name="name" value="compileTestJava" />
-              </ExternalTaskPojo>
-              <ExternalTaskPojo>
-                <option name="description" value="Builds the Docker image for the Java application." />
-                <option name="linkedExternalProjectPath" value="$PROJECT_DIR$" />
-                <option name="name" value="dockerBuildImage" />
               </ExternalTaskPojo>
               <ExternalTaskPojo>
                 <option name="description" value="Displays a help message." />
@@ -762,6 +744,11 @@
                 <option name="description" value="Displays the configuration model of project ':xmlsh-core'. [incubating]" />
                 <option name="linkedExternalProjectPath" value="$PROJECT_DIR$/corelib" />
                 <option name="name" value="model" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="description" value="Generates the Gradle metadata file for publication 'mavenJava'." />
+                <option name="linkedExternalProjectPath" value="$PROJECT_DIR$/corelib" />
+                <option name="name" value="generateMetadataFileForMavenJavaPublication" />
               </ExternalTaskPojo>
               <ExternalTaskPojo>
                 <option name="description" value="Compiles JJTree files into JavaCC files" />
@@ -1039,6 +1026,11 @@
                 <option name="name" value="model" />
               </ExternalTaskPojo>
               <ExternalTaskPojo>
+                <option name="description" value="Generates the Gradle metadata file for publication 'mavenJava'." />
+                <option name="linkedExternalProjectPath" value="$PROJECT_DIR$/docker" />
+                <option name="name" value="generateMetadataFileForMavenJavaPublication" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
                 <option name="description" value="Processes main resources." />
                 <option name="linkedExternalProjectPath" value="$PROJECT_DIR$/docker" />
                 <option name="name" value="processResources" />
@@ -1304,6 +1296,11 @@
                 <option name="name" value="model" />
               </ExternalTaskPojo>
               <ExternalTaskPojo>
+                <option name="description" value="Generates the Gradle metadata file for publication 'mavenJava'." />
+                <option name="linkedExternalProjectPath" value="$PROJECT_DIR$/extensions" />
+                <option name="name" value="generateMetadataFileForMavenJavaPublication" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
                 <option name="description" value="Processes main resources." />
                 <option name="linkedExternalProjectPath" value="$PROJECT_DIR$/extensions" />
                 <option name="name" value="processResources" />
@@ -1548,6 +1545,11 @@
                 <option name="description" value="Displays the configuration model of project ':extensions:aws'. [incubating]" />
                 <option name="linkedExternalProjectPath" value="$PROJECT_DIR$/extensions/aws" />
                 <option name="name" value="model" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="description" value="Generates the Gradle metadata file for publication 'mavenJava'." />
+                <option name="linkedExternalProjectPath" value="$PROJECT_DIR$/extensions/aws" />
+                <option name="name" value="generateMetadataFileForMavenJavaPublication" />
               </ExternalTaskPojo>
               <ExternalTaskPojo>
                 <option name="description" value="Processes main resources." />
@@ -1796,6 +1798,11 @@
                 <option name="name" value="model" />
               </ExternalTaskPojo>
               <ExternalTaskPojo>
+                <option name="description" value="Generates the Gradle metadata file for publication 'mavenJava'." />
+                <option name="linkedExternalProjectPath" value="$PROJECT_DIR$/extensions/jstache" />
+                <option name="name" value="generateMetadataFileForMavenJavaPublication" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
                 <option name="description" value="Processes main resources." />
                 <option name="linkedExternalProjectPath" value="$PROJECT_DIR$/extensions/jstache" />
                 <option name="name" value="processResources" />
@@ -2042,6 +2049,11 @@
                 <option name="name" value="model" />
               </ExternalTaskPojo>
               <ExternalTaskPojo>
+                <option name="description" value="Generates the Gradle metadata file for publication 'mavenJava'." />
+                <option name="linkedExternalProjectPath" value="$PROJECT_DIR$/extensions/marklogic" />
+                <option name="name" value="generateMetadataFileForMavenJavaPublication" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
                 <option name="description" value="Processes main resources." />
                 <option name="linkedExternalProjectPath" value="$PROJECT_DIR$/extensions/marklogic" />
                 <option name="name" value="processResources" />
@@ -2263,18 +2275,19 @@
     </option>
     <option name="modificationStamps">
       <map>
-        <entry key="$USER_HOME$/.gradle/gradle.properties" value="1415771374" />
+        <entry key="$USER_HOME$/.gradle/gradle.properties" value="2286412326" />
         <entry key="$USER_HOME$/.gradle/init.gradle" value="0" />
-        <entry key="$PROJECT_DIR$" value="17907238531000" />
-        <entry key="$PROJECT_DIR$/build.gradle" value="1647187658" />
-        <entry key="$PROJECT_DIR$/corelib/build.gradle" value="361567656" />
+        <entry key="$PROJECT_DIR$" value="18019795727000" />
+        <entry key="$PROJECT_DIR$/.gradle" value="0" />
+        <entry key="$PROJECT_DIR$/build.gradle" value="846540711" />
+        <entry key="$PROJECT_DIR$/corelib/build.gradle" value="1148316058" />
         <entry key="$PROJECT_DIR$/docker/build.gradle" value="344674935" />
-        <entry key="$PROJECT_DIR$/extensions/aws/build.gradle" value="3650919224" />
+        <entry key="$PROJECT_DIR$/extensions/aws/build.gradle" value="1257640969" />
         <entry key="$PROJECT_DIR$/extensions/build.gradle" value="197619571" />
         <entry key="$PROJECT_DIR$/extensions/jstache/build.gradle" value="3369541834" />
         <entry key="$PROJECT_DIR$/extensions/marklogic/build.gradle" value="2268667959" />
         <entry key="$PROJECT_DIR$/gradle.properties" value="909668970" />
-        <entry key="$PROJECT_DIR$/settings.gradle" value="4067801382" />
+        <entry key="$PROJECT_DIR$/settings.gradle" value="375946566" />
         <entry key="$PROJECT_DIR$/utils.gradle" value="55525753" />
       </map>
     </option>
@@ -2290,18 +2303,12 @@
                       <ExternalModuleBuildClasspathPojo>
                         <option name="entries">
                           <list>
-                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.saliman/gradle-properties-plugin/1.4.4/d933b714bdfb6c0d14699a793cd8643421726566/gradle-properties-plugin-1.4.4-sources.jar" />
                             <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.saliman/gradle-properties-plugin/1.4.4/d05c5d96633ceee2eabe90d368bfc73038e4e872/gradle-properties-plugin-1.4.4.jar" />
-                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.jengelman.gradle.plugins/shadow/2.0.2/3807e2b318177ddbab5b1d7df202a1dde44492f/shadow-2.0.2-sources.jar" />
-                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.jengelman.gradle.plugins/shadow/2.0.2/963416053472408f1d694ea3d08407a06d9e6567/shadow-2.0.2.jar" />
-                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/gradle.plugin.de.sebastianboegl.gradle.plugins/shadow-log4j-transformer/2.1.1/aa7177f06fd6f295b6962bc420ce58a4ddd3f0ef/shadow-log4j-transformer-2.1.1-sources.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.jengelman.gradle.plugins/shadow/2.0.4/30c957bc8507c15a3b6e48a47c6a44bda676c9b5/shadow-2.0.4.jar" />
                             <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/gradle.plugin.de.sebastianboegl.gradle.plugins/shadow-log4j-transformer/2.1.1/49cf2b00bd1b7fb02b219aeedcd10807c91db3b9/shadow-log4j-transformer-2.1.1.jar" />
-                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.codehaus.groovy/groovy-backports-compat23/2.4.4/8c7351852ffdd79f8e06b4052f662cc996e3598c/groovy-backports-compat23-2.4.4-sources.jar" />
                             <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.codehaus.groovy/groovy-backports-compat23/2.4.4/db18ea377b154334e5323451835d329802222fa/groovy-backports-compat23-2.4.4.jar" />
-                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.logging.log4j/log4j-core/2.10.0/a2041b29bc3e761fba750c0df933cd48f76f5b3a/log4j-core-2.10.0-sources.jar" />
-                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.logging.log4j/log4j-core/2.10.0/c90b597163cd28ab6d9687edd53db601b6ea75a1/log4j-core-2.10.0.jar" />
-                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.logging.log4j/log4j-api/2.10.0/fd42afa6acbfb3801accec744106ee28b9342567/log4j-api-2.10.0-sources.jar" />
-                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.logging.log4j/log4j-api/2.10.0/fec5797a55b786184a537abd39c3fa1449d752d6/log4j-api-2.10.0.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.logging.log4j/log4j-core/2.11.1/592a48674c926b01a9a747c7831bcd82a9e6d6e4/log4j-core-2.11.1.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.logging.log4j/log4j-api/2.11.1/268f0fe4df3eefe052b57c87ec48517d64fb2a10/log4j-api-2.11.1.jar" />
                           </list>
                         </option>
                         <option name="path" value="$PROJECT_DIR$" />
@@ -2313,21 +2320,13 @@
                       <ExternalModuleBuildClasspathPojo>
                         <option name="entries">
                           <list>
-                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.saliman/gradle-properties-plugin/1.4.4/d933b714bdfb6c0d14699a793cd8643421726566/gradle-properties-plugin-1.4.4-sources.jar" />
                             <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.saliman/gradle-properties-plugin/1.4.4/d05c5d96633ceee2eabe90d368bfc73038e4e872/gradle-properties-plugin-1.4.4.jar" />
-                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.jengelman.gradle.plugins/shadow/2.0.2/3807e2b318177ddbab5b1d7df202a1dde44492f/shadow-2.0.2-sources.jar" />
-                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.jengelman.gradle.plugins/shadow/2.0.2/963416053472408f1d694ea3d08407a06d9e6567/shadow-2.0.2.jar" />
-                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/gradle.plugin.de.sebastianboegl.gradle.plugins/shadow-log4j-transformer/2.1.1/aa7177f06fd6f295b6962bc420ce58a4ddd3f0ef/shadow-log4j-transformer-2.1.1-sources.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.jengelman.gradle.plugins/shadow/2.0.4/30c957bc8507c15a3b6e48a47c6a44bda676c9b5/shadow-2.0.4.jar" />
                             <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/gradle.plugin.de.sebastianboegl.gradle.plugins/shadow-log4j-transformer/2.1.1/49cf2b00bd1b7fb02b219aeedcd10807c91db3b9/shadow-log4j-transformer-2.1.1.jar" />
-                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.codehaus.groovy/groovy-backports-compat23/2.4.4/8c7351852ffdd79f8e06b4052f662cc996e3598c/groovy-backports-compat23-2.4.4-sources.jar" />
                             <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.codehaus.groovy/groovy-backports-compat23/2.4.4/db18ea377b154334e5323451835d329802222fa/groovy-backports-compat23-2.4.4.jar" />
-                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.logging.log4j/log4j-core/2.10.0/a2041b29bc3e761fba750c0df933cd48f76f5b3a/log4j-core-2.10.0-sources.jar" />
-                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.logging.log4j/log4j-core/2.10.0/c90b597163cd28ab6d9687edd53db601b6ea75a1/log4j-core-2.10.0.jar" />
-                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.logging.log4j/log4j-api/2.10.0/fd42afa6acbfb3801accec744106ee28b9342567/log4j-api-2.10.0-sources.jar" />
-                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.logging.log4j/log4j-api/2.10.0/fec5797a55b786184a537abd39c3fa1449d752d6/log4j-api-2.10.0.jar" />
-                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/ca.coglinc/javacc-gradle-plugin/2.1.0/7a8dd439fa2daad88fae65f1e48f7543e898fdd1/javacc-gradle-plugin-2.1.0-sources.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.logging.log4j/log4j-core/2.11.1/592a48674c926b01a9a747c7831bcd82a9e6d6e4/log4j-core-2.11.1.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.logging.log4j/log4j-api/2.11.1/268f0fe4df3eefe052b57c87ec48517d64fb2a10/log4j-api-2.11.1.jar" />
                             <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/ca.coglinc/javacc-gradle-plugin/2.1.0/aa9a41074acc1104bd9e827594e844bd0954b778/javacc-gradle-plugin-2.1.0.jar" />
-                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.java.dev.javacc/javacc/6.1.2/25c27dadbc5ef793dd86c33f5a210b38360b720b/javacc-6.1.2-sources.jar" />
                             <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.java.dev.javacc/javacc/6.1.2/2cc0cc39477da416fcf7aa052c3506c0236a0ac3/javacc-6.1.2.jar" />
                           </list>
                         </option>
@@ -2340,20 +2339,13 @@
                       <ExternalModuleBuildClasspathPojo>
                         <option name="entries">
                           <list>
-                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.saliman/gradle-properties-plugin/1.4.4/d933b714bdfb6c0d14699a793cd8643421726566/gradle-properties-plugin-1.4.4-sources.jar" />
                             <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.saliman/gradle-properties-plugin/1.4.4/d05c5d96633ceee2eabe90d368bfc73038e4e872/gradle-properties-plugin-1.4.4.jar" />
-                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.jengelman.gradle.plugins/shadow/2.0.2/3807e2b318177ddbab5b1d7df202a1dde44492f/shadow-2.0.2-sources.jar" />
-                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.jengelman.gradle.plugins/shadow/2.0.2/963416053472408f1d694ea3d08407a06d9e6567/shadow-2.0.2.jar" />
-                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/gradle.plugin.de.sebastianboegl.gradle.plugins/shadow-log4j-transformer/2.1.1/aa7177f06fd6f295b6962bc420ce58a4ddd3f0ef/shadow-log4j-transformer-2.1.1-sources.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.jengelman.gradle.plugins/shadow/2.0.4/30c957bc8507c15a3b6e48a47c6a44bda676c9b5/shadow-2.0.4.jar" />
                             <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/gradle.plugin.de.sebastianboegl.gradle.plugins/shadow-log4j-transformer/2.1.1/49cf2b00bd1b7fb02b219aeedcd10807c91db3b9/shadow-log4j-transformer-2.1.1.jar" />
-                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.codehaus.groovy/groovy-backports-compat23/2.4.4/8c7351852ffdd79f8e06b4052f662cc996e3598c/groovy-backports-compat23-2.4.4-sources.jar" />
                             <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.codehaus.groovy/groovy-backports-compat23/2.4.4/db18ea377b154334e5323451835d329802222fa/groovy-backports-compat23-2.4.4.jar" />
-                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.logging.log4j/log4j-core/2.10.0/a2041b29bc3e761fba750c0df933cd48f76f5b3a/log4j-core-2.10.0-sources.jar" />
-                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.logging.log4j/log4j-core/2.10.0/c90b597163cd28ab6d9687edd53db601b6ea75a1/log4j-core-2.10.0.jar" />
-                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.logging.log4j/log4j-api/2.10.0/fd42afa6acbfb3801accec744106ee28b9342567/log4j-api-2.10.0-sources.jar" />
-                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.logging.log4j/log4j-api/2.10.0/fec5797a55b786184a537abd39c3fa1449d752d6/log4j-api-2.10.0.jar" />
-                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.bmuschko/gradle-docker-plugin/3.2.1/99bb0361aafdbfbb3c71fbc7c4ab2bc6c324d8b6/gradle-docker-plugin-3.2.1-sources.jar" />
-                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.bmuschko/gradle-docker-plugin/3.2.1/445d3c530f52485c00bfeb364924da2e85a87ff1/gradle-docker-plugin-3.2.1.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.logging.log4j/log4j-core/2.11.1/592a48674c926b01a9a747c7831bcd82a9e6d6e4/log4j-core-2.11.1.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.logging.log4j/log4j-api/2.11.1/268f0fe4df3eefe052b57c87ec48517d64fb2a10/log4j-api-2.11.1.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.bmuschko/gradle-docker-plugin/3.5.0/d46e87191bd01775bf30a15300365d1fcc4a8890/gradle-docker-plugin-3.5.0.jar" />
                           </list>
                         </option>
                         <option name="path" value="$PROJECT_DIR$/docker" />
@@ -2365,18 +2357,12 @@
                       <ExternalModuleBuildClasspathPojo>
                         <option name="entries">
                           <list>
-                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.saliman/gradle-properties-plugin/1.4.4/d933b714bdfb6c0d14699a793cd8643421726566/gradle-properties-plugin-1.4.4-sources.jar" />
                             <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.saliman/gradle-properties-plugin/1.4.4/d05c5d96633ceee2eabe90d368bfc73038e4e872/gradle-properties-plugin-1.4.4.jar" />
-                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.jengelman.gradle.plugins/shadow/2.0.2/3807e2b318177ddbab5b1d7df202a1dde44492f/shadow-2.0.2-sources.jar" />
-                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.jengelman.gradle.plugins/shadow/2.0.2/963416053472408f1d694ea3d08407a06d9e6567/shadow-2.0.2.jar" />
-                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/gradle.plugin.de.sebastianboegl.gradle.plugins/shadow-log4j-transformer/2.1.1/aa7177f06fd6f295b6962bc420ce58a4ddd3f0ef/shadow-log4j-transformer-2.1.1-sources.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.jengelman.gradle.plugins/shadow/2.0.4/30c957bc8507c15a3b6e48a47c6a44bda676c9b5/shadow-2.0.4.jar" />
                             <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/gradle.plugin.de.sebastianboegl.gradle.plugins/shadow-log4j-transformer/2.1.1/49cf2b00bd1b7fb02b219aeedcd10807c91db3b9/shadow-log4j-transformer-2.1.1.jar" />
-                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.codehaus.groovy/groovy-backports-compat23/2.4.4/8c7351852ffdd79f8e06b4052f662cc996e3598c/groovy-backports-compat23-2.4.4-sources.jar" />
                             <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.codehaus.groovy/groovy-backports-compat23/2.4.4/db18ea377b154334e5323451835d329802222fa/groovy-backports-compat23-2.4.4.jar" />
-                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.logging.log4j/log4j-core/2.10.0/a2041b29bc3e761fba750c0df933cd48f76f5b3a/log4j-core-2.10.0-sources.jar" />
-                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.logging.log4j/log4j-core/2.10.0/c90b597163cd28ab6d9687edd53db601b6ea75a1/log4j-core-2.10.0.jar" />
-                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.logging.log4j/log4j-api/2.10.0/fd42afa6acbfb3801accec744106ee28b9342567/log4j-api-2.10.0-sources.jar" />
-                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.logging.log4j/log4j-api/2.10.0/fec5797a55b786184a537abd39c3fa1449d752d6/log4j-api-2.10.0.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.logging.log4j/log4j-core/2.11.1/592a48674c926b01a9a747c7831bcd82a9e6d6e4/log4j-core-2.11.1.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.logging.log4j/log4j-api/2.11.1/268f0fe4df3eefe052b57c87ec48517d64fb2a10/log4j-api-2.11.1.jar" />
                           </list>
                         </option>
                         <option name="path" value="$PROJECT_DIR$/extensions" />
@@ -2388,18 +2374,12 @@
                       <ExternalModuleBuildClasspathPojo>
                         <option name="entries">
                           <list>
-                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.saliman/gradle-properties-plugin/1.4.4/d933b714bdfb6c0d14699a793cd8643421726566/gradle-properties-plugin-1.4.4-sources.jar" />
                             <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.saliman/gradle-properties-plugin/1.4.4/d05c5d96633ceee2eabe90d368bfc73038e4e872/gradle-properties-plugin-1.4.4.jar" />
-                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.jengelman.gradle.plugins/shadow/2.0.2/3807e2b318177ddbab5b1d7df202a1dde44492f/shadow-2.0.2-sources.jar" />
-                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.jengelman.gradle.plugins/shadow/2.0.2/963416053472408f1d694ea3d08407a06d9e6567/shadow-2.0.2.jar" />
-                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/gradle.plugin.de.sebastianboegl.gradle.plugins/shadow-log4j-transformer/2.1.1/aa7177f06fd6f295b6962bc420ce58a4ddd3f0ef/shadow-log4j-transformer-2.1.1-sources.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.jengelman.gradle.plugins/shadow/2.0.4/30c957bc8507c15a3b6e48a47c6a44bda676c9b5/shadow-2.0.4.jar" />
                             <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/gradle.plugin.de.sebastianboegl.gradle.plugins/shadow-log4j-transformer/2.1.1/49cf2b00bd1b7fb02b219aeedcd10807c91db3b9/shadow-log4j-transformer-2.1.1.jar" />
-                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.codehaus.groovy/groovy-backports-compat23/2.4.4/8c7351852ffdd79f8e06b4052f662cc996e3598c/groovy-backports-compat23-2.4.4-sources.jar" />
                             <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.codehaus.groovy/groovy-backports-compat23/2.4.4/db18ea377b154334e5323451835d329802222fa/groovy-backports-compat23-2.4.4.jar" />
-                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.logging.log4j/log4j-core/2.10.0/a2041b29bc3e761fba750c0df933cd48f76f5b3a/log4j-core-2.10.0-sources.jar" />
-                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.logging.log4j/log4j-core/2.10.0/c90b597163cd28ab6d9687edd53db601b6ea75a1/log4j-core-2.10.0.jar" />
-                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.logging.log4j/log4j-api/2.10.0/fd42afa6acbfb3801accec744106ee28b9342567/log4j-api-2.10.0-sources.jar" />
-                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.logging.log4j/log4j-api/2.10.0/fec5797a55b786184a537abd39c3fa1449d752d6/log4j-api-2.10.0.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.logging.log4j/log4j-core/2.11.1/592a48674c926b01a9a747c7831bcd82a9e6d6e4/log4j-core-2.11.1.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.logging.log4j/log4j-api/2.11.1/268f0fe4df3eefe052b57c87ec48517d64fb2a10/log4j-api-2.11.1.jar" />
                           </list>
                         </option>
                         <option name="path" value="$PROJECT_DIR$/extensions/aws" />
@@ -2411,18 +2391,12 @@
                       <ExternalModuleBuildClasspathPojo>
                         <option name="entries">
                           <list>
-                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.saliman/gradle-properties-plugin/1.4.4/d933b714bdfb6c0d14699a793cd8643421726566/gradle-properties-plugin-1.4.4-sources.jar" />
                             <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.saliman/gradle-properties-plugin/1.4.4/d05c5d96633ceee2eabe90d368bfc73038e4e872/gradle-properties-plugin-1.4.4.jar" />
-                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.jengelman.gradle.plugins/shadow/2.0.2/3807e2b318177ddbab5b1d7df202a1dde44492f/shadow-2.0.2-sources.jar" />
-                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.jengelman.gradle.plugins/shadow/2.0.2/963416053472408f1d694ea3d08407a06d9e6567/shadow-2.0.2.jar" />
-                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/gradle.plugin.de.sebastianboegl.gradle.plugins/shadow-log4j-transformer/2.1.1/aa7177f06fd6f295b6962bc420ce58a4ddd3f0ef/shadow-log4j-transformer-2.1.1-sources.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.jengelman.gradle.plugins/shadow/2.0.4/30c957bc8507c15a3b6e48a47c6a44bda676c9b5/shadow-2.0.4.jar" />
                             <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/gradle.plugin.de.sebastianboegl.gradle.plugins/shadow-log4j-transformer/2.1.1/49cf2b00bd1b7fb02b219aeedcd10807c91db3b9/shadow-log4j-transformer-2.1.1.jar" />
-                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.codehaus.groovy/groovy-backports-compat23/2.4.4/8c7351852ffdd79f8e06b4052f662cc996e3598c/groovy-backports-compat23-2.4.4-sources.jar" />
                             <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.codehaus.groovy/groovy-backports-compat23/2.4.4/db18ea377b154334e5323451835d329802222fa/groovy-backports-compat23-2.4.4.jar" />
-                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.logging.log4j/log4j-core/2.10.0/a2041b29bc3e761fba750c0df933cd48f76f5b3a/log4j-core-2.10.0-sources.jar" />
-                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.logging.log4j/log4j-core/2.10.0/c90b597163cd28ab6d9687edd53db601b6ea75a1/log4j-core-2.10.0.jar" />
-                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.logging.log4j/log4j-api/2.10.0/fd42afa6acbfb3801accec744106ee28b9342567/log4j-api-2.10.0-sources.jar" />
-                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.logging.log4j/log4j-api/2.10.0/fec5797a55b786184a537abd39c3fa1449d752d6/log4j-api-2.10.0.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.logging.log4j/log4j-core/2.11.1/592a48674c926b01a9a747c7831bcd82a9e6d6e4/log4j-core-2.11.1.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.logging.log4j/log4j-api/2.11.1/268f0fe4df3eefe052b57c87ec48517d64fb2a10/log4j-api-2.11.1.jar" />
                           </list>
                         </option>
                         <option name="path" value="$PROJECT_DIR$/extensions/jstache" />
@@ -2434,18 +2408,12 @@
                       <ExternalModuleBuildClasspathPojo>
                         <option name="entries">
                           <list>
-                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.saliman/gradle-properties-plugin/1.4.4/d933b714bdfb6c0d14699a793cd8643421726566/gradle-properties-plugin-1.4.4-sources.jar" />
                             <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.saliman/gradle-properties-plugin/1.4.4/d05c5d96633ceee2eabe90d368bfc73038e4e872/gradle-properties-plugin-1.4.4.jar" />
-                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.jengelman.gradle.plugins/shadow/2.0.2/3807e2b318177ddbab5b1d7df202a1dde44492f/shadow-2.0.2-sources.jar" />
-                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.jengelman.gradle.plugins/shadow/2.0.2/963416053472408f1d694ea3d08407a06d9e6567/shadow-2.0.2.jar" />
-                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/gradle.plugin.de.sebastianboegl.gradle.plugins/shadow-log4j-transformer/2.1.1/aa7177f06fd6f295b6962bc420ce58a4ddd3f0ef/shadow-log4j-transformer-2.1.1-sources.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.jengelman.gradle.plugins/shadow/2.0.4/30c957bc8507c15a3b6e48a47c6a44bda676c9b5/shadow-2.0.4.jar" />
                             <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/gradle.plugin.de.sebastianboegl.gradle.plugins/shadow-log4j-transformer/2.1.1/49cf2b00bd1b7fb02b219aeedcd10807c91db3b9/shadow-log4j-transformer-2.1.1.jar" />
-                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.codehaus.groovy/groovy-backports-compat23/2.4.4/8c7351852ffdd79f8e06b4052f662cc996e3598c/groovy-backports-compat23-2.4.4-sources.jar" />
                             <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.codehaus.groovy/groovy-backports-compat23/2.4.4/db18ea377b154334e5323451835d329802222fa/groovy-backports-compat23-2.4.4.jar" />
-                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.logging.log4j/log4j-core/2.10.0/a2041b29bc3e761fba750c0df933cd48f76f5b3a/log4j-core-2.10.0-sources.jar" />
-                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.logging.log4j/log4j-core/2.10.0/c90b597163cd28ab6d9687edd53db601b6ea75a1/log4j-core-2.10.0.jar" />
-                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.logging.log4j/log4j-api/2.10.0/fd42afa6acbfb3801accec744106ee28b9342567/log4j-api-2.10.0-sources.jar" />
-                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.logging.log4j/log4j-api/2.10.0/fec5797a55b786184a537abd39c3fa1449d752d6/log4j-api-2.10.0.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.logging.log4j/log4j-core/2.11.1/592a48674c926b01a9a747c7831bcd82a9e6d6e4/log4j-core-2.11.1.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.logging.log4j/log4j-api/2.11.1/268f0fe4df3eefe052b57c87ec48517d64fb2a10/log4j-api-2.11.1.jar" />
                           </list>
                         </option>
                         <option name="path" value="$PROJECT_DIR$/extensions/marklogic" />
@@ -2496,160 +2464,88 @@
               <option name="name" value="xmlsh" />
               <option name="projectBuildClasspath">
                 <list>
-                  <option value="/Java/gradle/src/announce" />
-                  <option value="/Java/gradle/src/antlr" />
-                  <option value="/Java/gradle/src/base-services" />
-                  <option value="/Java/gradle/src/base-services-groovy" />
-                  <option value="/Java/gradle/src/build-cache" />
-                  <option value="/Java/gradle/src/build-cache-http" />
-                  <option value="/Java/gradle/src/build-comparison" />
-                  <option value="/Java/gradle/src/build-init" />
-                  <option value="/Java/gradle/src/build-option" />
-                  <option value="/Java/gradle/src/cli" />
-                  <option value="/Java/gradle/src/code-quality" />
-                  <option value="/Java/gradle/src/composite-builds" />
-                  <option value="/Java/gradle/src/core" />
-                  <option value="/Java/gradle/src/core-api" />
-                  <option value="/Java/gradle/src/dependency-management" />
-                  <option value="/Java/gradle/src/diagnostics" />
-                  <option value="/Java/gradle/src/ear" />
-                  <option value="/Java/gradle/src/ide" />
-                  <option value="/Java/gradle/src/ide-native" />
-                  <option value="/Java/gradle/src/ide-play" />
-                  <option value="/Java/gradle/src/installation-beacon" />
-                  <option value="/Java/gradle/src/internal-android-performance-testing" />
-                  <option value="/Java/gradle/src/internal-integ-testing" />
-                  <option value="/Java/gradle/src/internal-performance-testing" />
-                  <option value="/Java/gradle/src/internal-testing" />
-                  <option value="/Java/gradle/src/ivy" />
-                  <option value="/Java/gradle/src/jacoco" />
-                  <option value="/Java/gradle/src/javascript" />
-                  <option value="/Java/gradle/src/jvm-services" />
-                  <option value="/Java/gradle/src/language-groovy" />
-                  <option value="/Java/gradle/src/language-java" />
-                  <option value="/Java/gradle/src/language-jvm" />
-                  <option value="/Java/gradle/src/language-native" />
-                  <option value="/Java/gradle/src/language-scala" />
-                  <option value="/Java/gradle/src/launcher" />
-                  <option value="/Java/gradle/src/logging" />
-                  <option value="/Java/gradle/src/maven" />
-                  <option value="/Java/gradle/src/messaging" />
-                  <option value="/Java/gradle/src/model-core" />
-                  <option value="/Java/gradle/src/model-groovy" />
-                  <option value="/Java/gradle/src/native" />
-                  <option value="/Java/gradle/src/osgi" />
-                  <option value="/Java/gradle/src/persistent-cache" />
-                  <option value="/Java/gradle/src/platform-base" />
-                  <option value="/Java/gradle/src/platform-jvm" />
-                  <option value="/Java/gradle/src/platform-native" />
-                  <option value="/Java/gradle/src/platform-play" />
-                  <option value="/Java/gradle/src/plugin-development" />
-                  <option value="/Java/gradle/src/plugin-use" />
-                  <option value="/Java/gradle/src/plugins" />
-                  <option value="/Java/gradle/src/process-services" />
-                  <option value="/Java/gradle/src/publish" />
-                  <option value="/Java/gradle/src/reporting" />
-                  <option value="/Java/gradle/src/resources" />
-                  <option value="/Java/gradle/src/resources-gcs" />
-                  <option value="/Java/gradle/src/resources-http" />
-                  <option value="/Java/gradle/src/resources-s3" />
-                  <option value="/Java/gradle/src/resources-sftp" />
-                  <option value="/Java/gradle/src/scala" />
-                  <option value="/Java/gradle/src/signing" />
-                  <option value="/Java/gradle/src/test-kit" />
-                  <option value="/Java/gradle/src/testing-base" />
-                  <option value="/Java/gradle/src/testing-jvm" />
-                  <option value="/Java/gradle/src/testing-native" />
-                  <option value="/Java/gradle/src/tooling-api" />
-                  <option value="/Java/gradle/src/tooling-api-builders" />
-                  <option value="/Java/gradle/src/version-control" />
-                  <option value="/Java/gradle/src/workers" />
-                  <option value="/Java/gradle/src/wrapper" />
-                  <option value="/Java/gradle/lib/gradle-kotlin-dsl-0.12.3.jar" />
-                  <option value="/Java/gradle/lib/gradle-kotlin-dsl-tooling-builders-0.12.3.jar" />
-                  <option value="/Java/gradle/lib/gradle-kotlin-dsl-tooling-models-0.12.3.jar" />
-                  <option value="/Java/gradle/lib/gradle-launcher-4.3.1.jar" />
-                  <option value="/Java/gradle/lib/gradle-runtime-api-info-4.3.1.jar" />
-                  <option value="/Java/gradle/lib/gradle-tooling-api-4.3.1.jar" />
-                  <option value="/Java/gradle/lib/gradle-wrapper-4.3.1.jar" />
-                  <option value="/Java/gradle/lib/gradle-installation-beacon-4.3.1.jar" />
-                  <option value="/Java/gradle/lib/gradle-core-4.3.1.jar" />
-                  <option value="/Java/gradle/lib/gradle-jvm-services-4.3.1.jar" />
-                  <option value="/Java/gradle/lib/gradle-core-api-4.3.1.jar" />
-                  <option value="/Java/gradle/lib/gradle-build-cache-4.3.1.jar" />
-                  <option value="/Java/gradle/lib/gradle-logging-4.3.1.jar" />
-                  <option value="/Java/gradle/lib/gradle-process-services-4.3.1.jar" />
-                  <option value="/Java/gradle/lib/gradle-resources-4.3.1.jar" />
-                  <option value="/Java/gradle/lib/gradle-persistent-cache-4.3.1.jar" />
-                  <option value="/Java/gradle/lib/gradle-native-4.3.1.jar" />
-                  <option value="/Java/gradle/lib/gradle-model-groovy-4.3.1.jar" />
-                  <option value="/Java/gradle/lib/gradle-model-core-4.3.1.jar" />
-                  <option value="/Java/gradle/lib/gradle-base-services-groovy-4.3.1.jar" />
-                  <option value="/Java/gradle/lib/gradle-messaging-4.3.1.jar" />
-                  <option value="/Java/gradle/lib/gradle-base-services-4.3.1.jar" />
-                  <option value="/Java/gradle/lib/gradle-build-option-4.3.1.jar" />
-                  <option value="/Java/gradle/lib/gradle-cli-4.3.1.jar" />
+                  <option value="/Java/gradle/lib/gradle-kotlin-dsl-0.18.4.jar" />
+                  <option value="/Java/gradle/lib/gradle-kotlin-dsl-provider-plugins-0.18.4.jar" />
+                  <option value="/Java/gradle/lib/gradle-kotlin-dsl-tooling-builders-0.18.4.jar" />
+                  <option value="/Java/gradle/lib/gradle-kotlin-dsl-tooling-models-0.18.4.jar" />
+                  <option value="/Java/gradle/lib/gradle-launcher-4.9.jar" />
+                  <option value="/Java/gradle/lib/gradle-runtime-api-info-4.9.jar" />
+                  <option value="/Java/gradle/lib/gradle-tooling-api-4.9.jar" />
+                  <option value="/Java/gradle/lib/gradle-wrapper-4.9.jar" />
+                  <option value="/Java/gradle/lib/gradle-installation-beacon-4.9.jar" />
+                  <option value="/Java/gradle/lib/gradle-core-4.9.jar" />
+                  <option value="/Java/gradle/lib/gradle-jvm-services-4.9.jar" />
+                  <option value="/Java/gradle/lib/gradle-core-api-4.9.jar" />
+                  <option value="/Java/gradle/lib/gradle-build-cache-4.9.jar" />
+                  <option value="/Java/gradle/lib/gradle-logging-4.9.jar" />
+                  <option value="/Java/gradle/lib/gradle-process-services-4.9.jar" />
+                  <option value="/Java/gradle/lib/gradle-resources-4.9.jar" />
+                  <option value="/Java/gradle/lib/gradle-persistent-cache-4.9.jar" />
+                  <option value="/Java/gradle/lib/gradle-native-4.9.jar" />
+                  <option value="/Java/gradle/lib/gradle-model-groovy-4.9.jar" />
+                  <option value="/Java/gradle/lib/gradle-model-core-4.9.jar" />
+                  <option value="/Java/gradle/lib/gradle-base-services-groovy-4.9.jar" />
+                  <option value="/Java/gradle/lib/gradle-messaging-4.9.jar" />
+                  <option value="/Java/gradle/lib/gradle-base-services-4.9.jar" />
+                  <option value="/Java/gradle/lib/gradle-build-option-4.9.jar" />
+                  <option value="/Java/gradle/lib/gradle-cli-4.9.jar" />
+                  <option value="/Java/gradle/lib/gradle-docs-4.9.jar" />
                   <option value="/Java/gradle/lib/groovy-all-2.4.12.jar" />
-                  <option value="/Java/gradle/lib/ant-1.9.6.jar" />
-                  <option value="/Java/gradle/lib/gradle-docs-4.3.1.jar" />
-                  <option value="/Java/gradle/lib/ant-launcher-1.9.6.jar" />
-                  <option value="/Java/gradle/lib/plugins/gradle-code-quality-4.3.1.jar" />
-                  <option value="/Java/gradle/lib/plugins/gradle-antlr-4.3.1.jar" />
-                  <option value="/Java/gradle/lib/plugins/gradle-osgi-4.3.1.jar" />
-                  <option value="/Java/gradle/lib/plugins/gradle-signing-4.3.1.jar" />
-                  <option value="/Java/gradle/lib/plugins/gradle-ide-native-4.3.1.jar" />
-                  <option value="/Java/gradle/lib/plugins/gradle-testing-native-4.3.1.jar" />
-                  <option value="/Java/gradle/lib/plugins/gradle-language-native-4.3.1.jar" />
-                  <option value="/Java/gradle/lib/plugins/gradle-plugin-development-4.3.1.jar" />
-                  <option value="/Java/gradle/lib/plugins/gradle-maven-4.3.1.jar" />
-                  <option value="/Java/gradle/lib/plugins/gradle-ide-play-4.3.1.jar" />
-                  <option value="/Java/gradle/lib/plugins/gradle-ide-4.3.1.jar" />
-                  <option value="/Java/gradle/lib/plugins/gradle-scala-4.3.1.jar" />
-                  <option value="/Java/gradle/lib/plugins/gradle-build-comparison-4.3.1.jar" />
-                  <option value="/Java/gradle/lib/plugins/gradle-ear-4.3.1.jar" />
-                  <option value="/Java/gradle/lib/plugins/gradle-platform-play-4.3.1.jar" />
-                  <option value="/Java/gradle/lib/plugins/gradle-javascript-4.3.1.jar" />
-                  <option value="/Java/gradle/lib/plugins/gradle-ivy-4.3.1.jar" />
-                  <option value="/Java/gradle/lib/plugins/gradle-jacoco-4.3.1.jar" />
-                  <option value="/Java/gradle/lib/plugins/gradle-build-init-4.3.1.jar" />
-                  <option value="/Java/gradle/lib/plugins/gradle-plugins-4.3.1.jar" />
-                  <option value="/Java/gradle/lib/plugins/gradle-tooling-api-builders-4.3.1.jar" />
-                  <option value="/Java/gradle/lib/plugins/gradle-test-kit-4.3.1.jar" />
-                  <option value="/Java/gradle/lib/plugins/gradle-composite-builds-4.3.1.jar" />
-                  <option value="/Java/gradle/lib/plugins/gradle-announce-4.3.1.jar" />
-                  <option value="/Java/gradle/lib/plugins/gradle-language-groovy-4.3.1.jar" />
-                  <option value="/Java/gradle/lib/plugins/gradle-language-scala-4.3.1.jar" />
-                  <option value="/Java/gradle/lib/plugins/gradle-testing-jvm-4.3.1.jar" />
-                  <option value="/Java/gradle/lib/plugins/gradle-language-java-4.3.1.jar" />
-                  <option value="/Java/gradle/lib/plugins/gradle-language-jvm-4.3.1.jar" />
-                  <option value="/Java/gradle/lib/plugins/gradle-platform-jvm-4.3.1.jar" />
-                  <option value="/Java/gradle/lib/plugins/gradle-platform-native-4.3.1.jar" />
-                  <option value="/Java/gradle/lib/plugins/gradle-diagnostics-4.3.1.jar" />
-                  <option value="/Java/gradle/lib/plugins/gradle-testing-base-4.3.1.jar" />
-                  <option value="/Java/gradle/lib/plugins/gradle-reporting-4.3.1.jar" />
-                  <option value="/Java/gradle/lib/plugins/gradle-publish-4.3.1.jar" />
-                  <option value="/Java/gradle/lib/plugins/gradle-platform-base-4.3.1.jar" />
-                  <option value="/Java/gradle/lib/plugins/gradle-plugin-use-4.3.1.jar" />
-                  <option value="/Java/gradle/lib/plugins/gradle-resources-s3-4.3.1.jar" />
-                  <option value="/Java/gradle/lib/plugins/gradle-resources-gcs-4.3.1.jar" />
-                  <option value="/Java/gradle/lib/plugins/gradle-build-cache-http-4.3.1.jar" />
-                  <option value="/Java/gradle/lib/plugins/gradle-resources-http-4.3.1.jar" />
-                  <option value="/Java/gradle/lib/plugins/gradle-resources-sftp-4.3.1.jar" />
-                  <option value="/Java/gradle/lib/plugins/gradle-workers-4.3.1.jar" />
-                  <option value="/Java/gradle/lib/plugins/gradle-dependency-management-4.3.1.jar" />
-                  <option value="/Java/gradle/lib/plugins/gradle-version-control-4.3.1.jar" />
+                  <option value="/Java/gradle/lib/ant-1.9.11.jar" />
+                  <option value="/Java/gradle/lib/ant-launcher-1.9.11.jar" />
+                  <option value="/Java/gradle/lib/plugins/gradle-announce-4.9.jar" />
+                  <option value="/Java/gradle/lib/plugins/gradle-antlr-4.9.jar" />
+                  <option value="/Java/gradle/lib/plugins/gradle-code-quality-4.9.jar" />
+                  <option value="/Java/gradle/lib/plugins/gradle-osgi-4.9.jar" />
+                  <option value="/Java/gradle/lib/plugins/gradle-signing-4.9.jar" />
+                  <option value="/Java/gradle/lib/plugins/gradle-ide-native-4.9.jar" />
+                  <option value="/Java/gradle/lib/plugins/gradle-testing-native-4.9.jar" />
+                  <option value="/Java/gradle/lib/plugins/gradle-language-native-4.9.jar" />
+                  <option value="/Java/gradle/lib/plugins/gradle-plugin-development-4.9.jar" />
+                  <option value="/Java/gradle/lib/plugins/gradle-maven-4.9.jar" />
+                  <option value="/Java/gradle/lib/plugins/gradle-ide-play-4.9.jar" />
+                  <option value="/Java/gradle/lib/plugins/gradle-ide-4.9.jar" />
+                  <option value="/Java/gradle/lib/plugins/gradle-scala-4.9.jar" />
+                  <option value="/Java/gradle/lib/plugins/gradle-build-comparison-4.9.jar" />
+                  <option value="/Java/gradle/lib/plugins/gradle-ear-4.9.jar" />
+                  <option value="/Java/gradle/lib/plugins/gradle-platform-play-4.9.jar" />
+                  <option value="/Java/gradle/lib/plugins/gradle-javascript-4.9.jar" />
+                  <option value="/Java/gradle/lib/plugins/gradle-ivy-4.9.jar" />
+                  <option value="/Java/gradle/lib/plugins/gradle-jacoco-4.9.jar" />
+                  <option value="/Java/gradle/lib/plugins/gradle-build-init-4.9.jar" />
+                  <option value="/Java/gradle/lib/plugins/gradle-plugins-4.9.jar" />
+                  <option value="/Java/gradle/lib/plugins/gradle-tooling-api-builders-4.9.jar" />
+                  <option value="/Java/gradle/lib/plugins/gradle-test-kit-4.9.jar" />
+                  <option value="/Java/gradle/lib/plugins/gradle-language-groovy-4.9.jar" />
+                  <option value="/Java/gradle/lib/plugins/gradle-language-scala-4.9.jar" />
+                  <option value="/Java/gradle/lib/plugins/gradle-testing-junit-platform-4.9.jar" />
+                  <option value="/Java/gradle/lib/plugins/gradle-testing-jvm-4.9.jar" />
+                  <option value="/Java/gradle/lib/plugins/gradle-language-java-4.9.jar" />
+                  <option value="/Java/gradle/lib/plugins/gradle-language-jvm-4.9.jar" />
+                  <option value="/Java/gradle/lib/plugins/gradle-platform-jvm-4.9.jar" />
+                  <option value="/Java/gradle/lib/plugins/gradle-platform-native-4.9.jar" />
+                  <option value="/Java/gradle/lib/plugins/gradle-diagnostics-4.9.jar" />
+                  <option value="/Java/gradle/lib/plugins/gradle-publish-4.9.jar" />
+                  <option value="/Java/gradle/lib/plugins/gradle-testing-base-4.9.jar" />
+                  <option value="/Java/gradle/lib/plugins/gradle-platform-base-4.9.jar" />
+                  <option value="/Java/gradle/lib/plugins/gradle-plugin-use-4.9.jar" />
+                  <option value="/Java/gradle/lib/plugins/gradle-dependency-management-4.9.jar" />
+                  <option value="/Java/gradle/lib/plugins/gradle-composite-builds-4.9.jar" />
+                  <option value="/Java/gradle/lib/plugins/gradle-reporting-4.9.jar" />
+                  <option value="/Java/gradle/lib/plugins/gradle-resources-s3-4.9.jar" />
+                  <option value="/Java/gradle/lib/plugins/gradle-resources-gcs-4.9.jar" />
+                  <option value="/Java/gradle/lib/plugins/gradle-build-cache-http-4.9.jar" />
+                  <option value="/Java/gradle/lib/plugins/gradle-resources-http-4.9.jar" />
+                  <option value="/Java/gradle/lib/plugins/gradle-resources-sftp-4.9.jar" />
+                  <option value="/Java/gradle/lib/plugins/gradle-workers-4.9.jar" />
+                  <option value="/Java/gradle/lib/plugins/gradle-version-control-4.9.jar" />
                   <option value="/Java/gradle/lib/plugins/ivy-2.2.0.jar" />
-                  <option value="$PROJECT_DIR$/buildSrc/src/main/java" />
-                  <option value="$PROJECT_DIR$/buildSrc/src/main/groovy" />
                 </list>
               </option>
             </ExternalProjectBuildClasspathPojo>
           </value>
         </entry>
       </map>
-    </option>
-    <option name="externalProjectsViewState">
-      <projects_view />
     </option>
     <option name="projectSyncType">
       <map>
@@ -2662,6 +2558,16 @@
       <list>
         <option value="$PROJECT_DIR$/corelib/src/commands/org/xmlsh/internal/commands/xml2csv.java" />
         <option value="$PROJECT_DIR$/corelib/src/commands/org/xmlsh/internal/commands/xsql.java" />
+        <option value="$PROJECT_DIR$/corelib/src/core/org/xmlsh/util/XMLUtils.java" />
+        <option value="$PROJECT_DIR$/corelib/src/core/org/xmlsh/core/io/VariableInputPort.java" />
+        <option value="$PROJECT_DIR$/corelib/src/core/org/xmlsh/core/io/XdmStreamInputPort.java" />
+        <option value="$PROJECT_DIR$/corelib/src/commands/org/xmlsh/internal/commands/xedit.java" />
+        <option value="$PROJECT_DIR$/corelib/src/core/org/xmlsh/util/StAXUtils.java" />
+        <option value="$PROJECT_DIR$/corelib/src/core/org/xmlsh/util/Util.java" />
+        <option value="$PROJECT_DIR$/corelib/src/commands/org/xmlsh/internal/commands/xed.java" />
+        <option value="$PROJECT_DIR$/corelib/src/core/org/xmlsh/core/io/VariableOutputPort.java" />
+        <option value="$PROJECT_DIR$/corelib/src/commands/org/xmlsh/builtin/commands/set.java" />
+        <option value="$PROJECT_DIR$/corelib/src/commands/org/xmlsh/builtin/commands/test.java" />
       </list>
     </option>
   </component>
@@ -2671,10 +2577,17 @@
     <detection-done>true</detection-done>
     <sorting>DEFINITION_ORDER</sorting>
   </component>
+  <component name="MavenRunner">
+    <option name="jreName" value="#JAVA_INTERNAL" />
+  </component>
+  <component name="NamedScopeManager">
+    <scope name="Saxon" pattern="lib:net.sf.saxon..*" />
+  </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="y" value="57" />
-    <option name="width" value="1219" />
-    <option name="height" value="919" />
+    <option name="x" value="213" />
+    <option name="y" value="161" />
+    <option name="width" value="1431" />
+    <option name="height" value="788" />
   </component>
   <component name="ProjectInspectionProfilesVisibleTreeState">
     <entry key="Project Default">
@@ -2795,21 +2708,11 @@
     </entry>
   </component>
   <component name="ProjectView">
-    <navigator currentView="ProjectPane" proportions="" version="1">
-      <flattenPackages />
-      <showMembers />
-      <showModules />
-      <showLibraryContents />
-      <hideEmptyPackages />
-      <abbreviatePackageNames />
-      <autoscrollToSource />
+    <navigator proportions="" version="1">
       <autoscrollFromSource ProjectPane="true" />
-      <sortByType />
-      <manualOrder />
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="PackagesPane" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -2820,11 +2723,6 @@
             <path>
               <item name="xmlsh" type="b2602c69:ProjectViewProjectNode" />
               <item name="xmlsh" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="build" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="xmlsh" type="b2602c69:ProjectViewProjectNode" />
-              <item name="xmlsh" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
               <item name="corelib" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
             </path>
             <path>
@@ -2847,6 +2745,35 @@
               <item name="src" type="462c0819:PsiDirectoryNode" />
               <item name="commands" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
               <item name="xmlsh" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="xmlsh" type="b2602c69:ProjectViewProjectNode" />
+              <item name="xmlsh" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="corelib" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="commands" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="xmlsh" type="462c0819:PsiDirectoryNode" />
+              <item name="commands" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="xmlsh" type="b2602c69:ProjectViewProjectNode" />
+              <item name="xmlsh" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="corelib" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="commands" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="xmlsh" type="462c0819:PsiDirectoryNode" />
+              <item name="commands" type="462c0819:PsiDirectoryNode" />
+              <item name="set" type="1a9f42e2:ClassTreeNode" />
+            </path>
+            <path>
+              <item name="xmlsh" type="b2602c69:ProjectViewProjectNode" />
+              <item name="xmlsh" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="corelib" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="commands" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="xmlsh" type="462c0819:PsiDirectoryNode" />
+              <item name="commands" type="462c0819:PsiDirectoryNode" />
+              <item name="test" type="1a9f42e2:ClassTreeNode" />
             </path>
             <path>
               <item name="xmlsh" type="b2602c69:ProjectViewProjectNode" />
@@ -2870,89 +2797,6 @@
             <path>
               <item name="xmlsh" type="b2602c69:ProjectViewProjectNode" />
               <item name="xmlsh" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="corelib" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="commands" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="xmlsh" type="462c0819:PsiDirectoryNode" />
-              <item name="internal" type="462c0819:PsiDirectoryNode" />
-              <item name="commands" type="462c0819:PsiDirectoryNode" />
-              <item name="csv2xml" type="1a9f42e2:ClassTreeNode" />
-            </path>
-            <path>
-              <item name="xmlsh" type="b2602c69:ProjectViewProjectNode" />
-              <item name="xmlsh" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="corelib" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="core" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-            </path>
-            <path>
-              <item name="xmlsh" type="b2602c69:ProjectViewProjectNode" />
-              <item name="xmlsh" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="corelib" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="core" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="xmlsh" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="xmlsh" type="b2602c69:ProjectViewProjectNode" />
-              <item name="xmlsh" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="corelib" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="core" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="xmlsh" type="462c0819:PsiDirectoryNode" />
-              <item name="core" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="xmlsh" type="b2602c69:ProjectViewProjectNode" />
-              <item name="xmlsh" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="corelib" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="core" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="xmlsh" type="462c0819:PsiDirectoryNode" />
-              <item name="core" type="462c0819:PsiDirectoryNode" />
-              <item name="XValue" type="1a9f42e2:ClassTreeNode" />
-            </path>
-            <path>
-              <item name="xmlsh" type="b2602c69:ProjectViewProjectNode" />
-              <item name="xmlsh" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="corelib" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="core" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="xmlsh" type="462c0819:PsiDirectoryNode" />
-              <item name="types" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="xmlsh" type="b2602c69:ProjectViewProjectNode" />
-              <item name="xmlsh" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="corelib" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="core" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="xmlsh" type="462c0819:PsiDirectoryNode" />
-              <item name="types" type="462c0819:PsiDirectoryNode" />
-              <item name="XTypeUtils" type="1a9f42e2:ClassTreeNode" />
-            </path>
-            <path>
-              <item name="xmlsh" type="b2602c69:ProjectViewProjectNode" />
-              <item name="xmlsh" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="corelib" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="core" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="xmlsh" type="462c0819:PsiDirectoryNode" />
-              <item name="util" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="xmlsh" type="b2602c69:ProjectViewProjectNode" />
-              <item name="xmlsh" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="corelib" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="core" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="xmlsh" type="462c0819:PsiDirectoryNode" />
-              <item name="util" type="462c0819:PsiDirectoryNode" />
-              <item name="JavaUtils" type="1a9f42e2:ClassTreeNode" />
-            </path>
-            <path>
-              <item name="xmlsh" type="b2602c69:ProjectViewProjectNode" />
-              <item name="xmlsh" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
               <item name="extensions" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
             </path>
             <path>
@@ -2971,52 +2815,18 @@
             <path>
               <item name="xmlsh" type="b2602c69:ProjectViewProjectNode" />
               <item name="xmlsh" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="extensions" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="aws" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="gradle-common" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="xmlsh" type="b2602c69:ProjectViewProjectNode" />
               <item name="xmlsh" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="extensions" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="aws" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="gradle-common" type="462c0819:PsiDirectoryNode" />
+              <item name="tc-version" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="xmlsh" type="b2602c69:ProjectViewProjectNode" />
               <item name="xmlsh" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="extensions" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="aws" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="java" type="462c0819:PsiDirectoryNode" />
-              <item name="aws" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="xmlsh" type="b2602c69:ProjectViewProjectNode" />
-              <item name="xmlsh" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="extensions" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="aws" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="java" type="462c0819:PsiDirectoryNode" />
-              <item name="aws" type="462c0819:PsiDirectoryNode" />
-              <item name="util" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="xmlsh" type="b2602c69:ProjectViewProjectNode" />
-              <item name="xmlsh" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="extensions" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="aws" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="java" type="462c0819:PsiDirectoryNode" />
-              <item name="aws" type="462c0819:PsiDirectoryNode" />
-              <item name="util" type="462c0819:PsiDirectoryNode" />
-              <item name="DDBTypes" type="1a9f42e2:ClassTreeNode" />
             </path>
             <path>
               <item name="xmlsh" type="b2602c69:ProjectViewProjectNode" />
@@ -3026,108 +2836,25 @@
               <item name="xmlsh" type="b2602c69:ProjectViewProjectNode" />
               <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
               <item name="&lt; 1.8.0_144 &gt;" type="70bed36:NamedLibraryElementNode" />
-            </path>
-            <path>
-              <item name="xmlsh" type="b2602c69:ProjectViewProjectNode" />
-              <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
-              <item name="&lt; 1.8.0_144 &gt;" type="70bed36:NamedLibraryElementNode" />
-              <item name="rt.jar" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="xmlsh" type="b2602c69:ProjectViewProjectNode" />
-              <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
-              <item name="&lt; 1.8.0_144 &gt;" type="70bed36:NamedLibraryElementNode" />
-              <item name="rt.jar" type="462c0819:PsiDirectoryNode" />
-              <item name="java" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="xmlsh" type="b2602c69:ProjectViewProjectNode" />
-              <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
-              <item name="&lt; 1.8.0_144 &gt;" type="70bed36:NamedLibraryElementNode" />
-              <item name="rt.jar" type="462c0819:PsiDirectoryNode" />
-              <item name="java" type="462c0819:PsiDirectoryNode" />
-              <item name="sql" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="xmlsh" type="b2602c69:ProjectViewProjectNode" />
-              <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
-              <item name="&lt; 1.8.0_144 &gt;" type="70bed36:NamedLibraryElementNode" />
-              <item name="rt.jar" type="462c0819:PsiDirectoryNode" />
-              <item name="java" type="462c0819:PsiDirectoryNode" />
-              <item name="sql" type="462c0819:PsiDirectoryNode" />
-              <item name="ParameterMetaData" type="1a9f42e2:ClassTreeNode" />
-            </path>
-            <path>
-              <item name="xmlsh" type="b2602c69:ProjectViewProjectNode" />
-              <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
-              <item name="&lt; 1.8.0_144 &gt;" type="70bed36:NamedLibraryElementNode" />
-              <item name="rt.jar" type="462c0819:PsiDirectoryNode" />
-              <item name="java" type="462c0819:PsiDirectoryNode" />
-              <item name="sql" type="462c0819:PsiDirectoryNode" />
-              <item name="PreparedStatement" type="1a9f42e2:ClassTreeNode" />
-            </path>
-            <path>
-              <item name="xmlsh" type="b2602c69:ProjectViewProjectNode" />
-              <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
-              <item name="Gradle: mysql:mysql-connector-java:6.0.6" type="70bed36:NamedLibraryElementNode" />
-            </path>
-            <path>
-              <item name="xmlsh" type="b2602c69:ProjectViewProjectNode" />
-              <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
-              <item name="Gradle: mysql:mysql-connector-java:6.0.6" type="70bed36:NamedLibraryElementNode" />
-              <item name="mysql-connector-java-6.0.6.jar" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="xmlsh" type="b2602c69:ProjectViewProjectNode" />
-              <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
-              <item name="Gradle: mysql:mysql-connector-java:6.0.6" type="70bed36:NamedLibraryElementNode" />
-              <item name="mysql-connector-java-6.0.6.jar" type="462c0819:PsiDirectoryNode" />
-              <item name="mysql" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="xmlsh" type="b2602c69:ProjectViewProjectNode" />
-              <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
-              <item name="Gradle: mysql:mysql-connector-java:6.0.6" type="70bed36:NamedLibraryElementNode" />
-              <item name="mysql-connector-java-6.0.6.jar" type="462c0819:PsiDirectoryNode" />
-              <item name="mysql" type="462c0819:PsiDirectoryNode" />
-              <item name="cj" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="xmlsh" type="b2602c69:ProjectViewProjectNode" />
-              <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
-              <item name="Gradle: mysql:mysql-connector-java:6.0.6" type="70bed36:NamedLibraryElementNode" />
-              <item name="mysql-connector-java-6.0.6.jar" type="462c0819:PsiDirectoryNode" />
-              <item name="mysql" type="462c0819:PsiDirectoryNode" />
-              <item name="cj" type="462c0819:PsiDirectoryNode" />
-              <item name="jdbc" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="xmlsh" type="b2602c69:ProjectViewProjectNode" />
-              <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
-              <item name="Gradle: mysql:mysql-connector-java:6.0.6" type="70bed36:NamedLibraryElementNode" />
-              <item name="mysql-connector-java-6.0.6.jar" type="462c0819:PsiDirectoryNode" />
-              <item name="mysql" type="462c0819:PsiDirectoryNode" />
-              <item name="cj" type="462c0819:PsiDirectoryNode" />
-              <item name="jdbc" type="462c0819:PsiDirectoryNode" />
-              <item name="PreparedStatementWrapper" type="1a9f42e2:ClassTreeNode" />
             </path>
           </expand>
           <select />
         </subPane>
       </pane>
+      <pane id="PackagesPane" />
       <pane id="Scope" />
-      <pane id="Scratches" />
     </panes>
   </component>
   <component name="PropertiesComponent">
-    <property name="settings.editor.selected.configurable" value="reference.projectsettings.compiler.annotationProcessors" />
-    <property name="nodejs_interpreter_path" value="/usr/bin/node" />
+    <property name="HbShouldOpenHtmlAsHb" value="" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/build.gradle" />
+    <property name="nodejs_interpreter_path" value="/usr/bin/node" />
     <property name="project.structure.last.edited" value="Global Libraries" />
     <property name="project.structure.proportion" value="0.0" />
     <property name="project.structure.side.proportion" value="0.2" />
-    <property name="HbShouldOpenHtmlAsHb" value="" />
+    <property name="settings.editor.selected.configurable" value="reference.projectsettings.compiler.annotationProcessors" />
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -3143,38 +2870,26 @@
   </component>
   <component name="RunManager" selected="Application.Unnamed">
     <configuration default="true" type="Applet" factoryName="Applet">
-      <option name="WIDTH" value="400" />
-      <option name="HEIGHT" value="300" />
       <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
-      <module />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
     </configuration>
     <configuration name="Unnamed" type="Application" factoryName="Application">
-      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
       <option name="MAIN_CLASS_NAME" value="org.xmlsh.sh.shell.Shell" />
-      <option name="VM_PARAMETERS" value="" />
-      <option name="PROGRAM_PARAMETERS" value="" />
-      <option name="WORKING_DIRECTORY" value="file:///tmp/hpe" />
-      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-      <option name="ALTERNATIVE_JRE_PATH" />
-      <option name="ENABLE_SWING_INSPECTOR" value="false" />
-      <option name="ENV_VARIABLES" />
-      <option name="PASS_PARENT_ENVS" value="true" />
       <module name="xmlsh-core_main" />
-      <envs />
+      <option name="WORKING_DIRECTORY" value="file:///tmp/hpe" />
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
     </configuration>
     <configuration default="true" type="Application" factoryName="Application">
-      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
-      <option name="MAIN_CLASS_NAME" />
-      <option name="VM_PARAMETERS" />
-      <option name="PROGRAM_PARAMETERS" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-      <option name="ALTERNATIVE_JRE_PATH" />
-      <option name="ENABLE_SWING_INSPECTOR" value="false" />
-      <option name="ENV_VARIABLES" />
-      <option name="PASS_PARENT_ENVS" value="true" />
-      <module name="" />
-      <envs />
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
     </configuration>
     <configuration name="xmlsh [build]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
@@ -3192,79 +2907,51 @@
         </option>
         <option name="vmOptions" />
       </ExternalSystemSettings>
+      <method v="2" />
     </configuration>
     <configuration default="true" type="JUnit" factoryName="JUnit">
       <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
-      <module name="" />
-      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-      <option name="ALTERNATIVE_JRE_PATH" />
-      <option name="PACKAGE_NAME" />
-      <option name="MAIN_CLASS_NAME" />
-      <option name="METHOD_NAME" />
-      <option name="TEST_OBJECT" value="class" />
-      <option name="VM_PARAMETERS" value="-ea" />
-      <option name="PARAMETERS" />
       <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
-      <option name="ENV_VARIABLES" />
-      <option name="PASS_PARENT_ENVS" value="true" />
-      <option name="TEST_SEARCH_SCOPE">
-        <value defaultName="singleModule" />
-      </option>
-      <envs />
-      <patterns />
-    </configuration>
-    <configuration default="true" type="Remote" factoryName="Remote">
-      <option name="USE_SOCKET_TRANSPORT" value="true" />
-      <option name="SERVER_MODE" value="false" />
-      <option name="SHMEM_ADDRESS" value="javadebug" />
-      <option name="HOST" value="localhost" />
-      <option name="PORT" value="5005" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
     </configuration>
     <configuration default="true" type="TestNG" factoryName="TestNG">
       <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
-      <module name="" />
-      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-      <option name="ALTERNATIVE_JRE_PATH" />
-      <option name="SUITE_NAME" />
-      <option name="PACKAGE_NAME" />
-      <option name="MAIN_CLASS_NAME" />
-      <option name="METHOD_NAME" />
-      <option name="GROUP_NAME" />
-      <option name="TEST_OBJECT" value="CLASS" />
-      <option name="VM_PARAMETERS" value="-ea" />
-      <option name="PARAMETERS" />
       <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
-      <option name="OUTPUT_DIRECTORY" />
-      <option name="ANNOTATION_TYPE" />
-      <option name="ENV_VARIABLES" />
-      <option name="PASS_PARENT_ENVS" value="true" />
-      <option name="TEST_SEARCH_SCOPE">
-        <value defaultName="singleModule" />
-      </option>
-      <option name="USE_DEFAULT_REPORTERS" value="false" />
-      <option name="PROPERTIES_FILE" />
-      <envs />
       <properties />
       <listeners />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
     </configuration>
     <configuration default="true" type="#org.jetbrains.idea.devkit.run.PluginConfigurationType" factoryName="Plugin">
       <module name="" />
       <option name="VM_PARAMETERS" value="-Xmx512m -Xms256m -XX:MaxPermSize=250m -ea" />
       <option name="PROGRAM_PARAMETERS" />
       <predefined_log_file id="idea.log" enabled="true" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
     </configuration>
-    <list size="2">
-      <item index="0" class="java.lang.String" itemvalue="Application.Unnamed" />
-      <item index="1" class="java.lang.String" itemvalue="Gradle.xmlsh [build]" />
+    <list>
+      <item itemvalue="Application.Unnamed" />
+      <item itemvalue="Gradle.xmlsh [build]" />
     </list>
     <recent_temporary>
-      <list size="1">
-        <item index="0" class="java.lang.String" itemvalue="Gradle.xmlsh [build]" />
+      <list>
+        <item itemvalue="Gradle.xmlsh [build]" />
       </list>
     </recent_temporary>
   </component>
-  <component name="ShelveChangesManager" show_recycled="false">
-    <option name="remove_strategy" value="false" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <created>1532926997742</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1532926997742</updated>
+    </task>
+    <servers />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -3276,51 +2963,56 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="57" width="2048" height="1092" extended-state="6" />
-    <editor active="true" />
+    <frame x="-6" y="24" width="2060" height="1109" extended-state="6" />
     <layout>
-      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32881" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Palette&#9;" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.44676408" sideWeight="0.36789632" order="13" side_tool="true" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32776618" sideWeight="0.5613161" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32881" sideWeight="0.498004" order="8" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32881" sideWeight="0.49401796" order="11" side_tool="false" content_ui="tabs" />
-      <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24626121" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Docker" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32881" sideWeight="0.49786097" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Gradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.19840479" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
-      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.44676408" sideWeight="0.6321037" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="true" content_ui="tabs" />
-      <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Amazon EC2" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
-      <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="sbt" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
-      <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
-      <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
-      <window_info id="Connector for AWS Lambda" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="true" content_ui="tabs" />
-      <window_info id="CBT" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
-      <window_info id="Build" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.41127348" sideWeight="0.43868396" order="9" side_tool="false" content_ui="tabs" />
-      <window_info id="Inspection Results" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32937366" sideWeight="0.5" order="17" side_tool="false" content_ui="tabs" />
-      <window_info id="Dynamic Properties" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="15" side_tool="false" content_ui="tabs" />
-      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32776618" sideWeight="0.4775673" order="14" side_tool="false" content_ui="tabs" />
-      <window_info id="SBT" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
-      <window_info id="Java Enterprise" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="15" side_tool="false" content_ui="tabs" />
-      <window_info id="Image Layers" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="Database Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3256785" sideWeight="0.5" order="16" side_tool="false" content_ui="tabs" />
-      <window_info id="sbt-shell-toolwindow" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
-      <window_info id="Bean Validation" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="13" side_tool="false" content_ui="tabs" />
-      <window_info id="Web" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24974975" sideWeight="0.5107991" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.43110648" sideWeight="0.49451646" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Theme Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="14" side_tool="false" content_ui="tabs" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.25449103" />
+      <window_info id="Structure" order="1" weight="0.25" />
+      <window_info id="Capture Tool" order="2" />
+      <window_info id="Designer" order="3" />
+      <window_info id="UI Designer" order="4" />
+      <window_info id="Favorites" order="5" side_tool="true" />
+      <window_info id="Image Layers" order="6" />
+      <window_info id="Web" order="7" sideWeight="0.5107991" side_tool="true" weight="0.24974975" />
+      <window_info id="DB Browser" order="8" />
+      <window_info anchor="bottom" id="YouTrack" order="0" />
+      <window_info anchor="bottom" id="Sequence" order="1" />
+      <window_info anchor="bottom" id="Database Changes" order="2" show_stripe_button="false" />
+      <window_info anchor="bottom" id="DB Execution Console" order="3" />
+      <window_info anchor="bottom" id="Message" order="4" />
+      <window_info anchor="bottom" id="Find" order="5" sideWeight="0.49251497" visible="true" weight="0.43013972" />
+      <window_info anchor="bottom" id="Run" order="6" sideWeight="0.5613161" weight="0.32776618" />
+      <window_info anchor="bottom" id="Debug" order="7" sideWeight="0.6321037" weight="0.44676408" />
+      <window_info anchor="bottom" id="Cvs" order="8" weight="0.25" />
+      <window_info anchor="bottom" id="Inspection" order="9" weight="0.4" />
+      <window_info anchor="bottom" id="Docker" order="10" sideWeight="0.49786097" weight="0.32881" />
+      <window_info anchor="bottom" id="TODO" order="11" sideWeight="0.49938726" weight="0.32837528" />
+      <window_info anchor="bottom" id="Version Control" order="12" sideWeight="0.49754903" weight="0.32837528" />
+      <window_info anchor="bottom" id="Build" order="13" sideWeight="0.43811274" weight="0.41075516" />
+      <window_info anchor="bottom" id="Amazon EC2" order="14" />
+      <window_info anchor="bottom" id="Terminal" order="15" sideWeight="0.49401796" weight="0.32881" />
+      <window_info anchor="bottom" id="sbt-shell-toolwindow" order="16" />
+      <window_info anchor="bottom" id="Event Log" order="17" sideWeight="0.50748503" side_tool="true" visible="true" weight="0.43013972" />
+      <window_info anchor="bottom" id="Messages" order="18" sideWeight="0.4730539" weight="0.3263473" />
+      <window_info anchor="bottom" id="Java Enterprise" order="19" />
+      <window_info anchor="bottom" id="Database Console" order="20" weight="0.3256785" />
+      <window_info anchor="bottom" id="Inspection Results" order="21" weight="0.32937366" />
+      <window_info anchor="right" id="Commander" order="0" weight="0.4" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+      <window_info anchor="right" id="Palette" order="3" />
+      <window_info anchor="right" id="Palette&#9;" order="4" />
+      <window_info anchor="right" id="Connector for AWS Lambda" order="5" side_tool="true" />
+      <window_info anchor="right" id="Database" order="6" />
+      <window_info anchor="right" id="Capture Analysis" order="7" />
+      <window_info anchor="right" id="Gradle" order="8" visible="true" weight="0.19311377" />
+      <window_info anchor="right" id="sbt" order="9" />
+      <window_info anchor="right" id="CBT" order="10" />
+      <window_info anchor="right" id="Maven Projects" order="11" />
+      <window_info anchor="right" id="SBT" order="12" />
+      <window_info anchor="right" id="Bean Validation" order="13" />
+      <window_info anchor="right" id="Theme Preview" order="14" />
+      <window_info anchor="right" id="Dynamic Properties" order="15" />
+      <window_info anchor="right" id="PlantUML" order="16" />
     </layout>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -3354,274 +3046,38 @@
       <breakpoints-dialog>
         <breakpoints-dialog />
       </breakpoints-dialog>
-      <option name="time" value="19" />
     </breakpoint-manager>
-    <watches-manager />
+  </component>
+  <component name="com.vaadin.designer2.intellij.settings.SizePresetsSettingsComponent">
+    <option name="sizePresets">
+      <list>
+        <SizePreset>
+          <option name="caption" value="Phone" />
+          <option name="height" value="568" />
+          <option name="width" value="320" />
+        </SizePreset>
+        <SizePreset>
+          <option name="caption" value="Tablet" />
+          <option name="height" value="1024" />
+          <option name="width" value="768" />
+        </SizePreset>
+        <SizePreset>
+          <option name="caption" value="Desktop" />
+          <option name="height" value="900" />
+          <option name="width" value="1440" />
+        </SizePreset>
+      </list>
+    </option>
+  </component>
+  <component name="designer2.settings">
+    <option name="autodetectServerAddress" value="true" />
+    <option name="serverIp" value="localhost" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/corelib/src/commands/org/xmlsh/internal/commands/http.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="288">
-          <caret line="20" column="34" lean-forward="false" selection-start-line="20" selection-start-column="34" selection-end-line="20" selection-end-column="34" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/corelib/src/commands/org/xmlsh/internal/commands/xsql.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="15444">
-          <caret line="858" column="0" lean-forward="false" selection-start-line="858" selection-start-column="0" selection-end-line="858" selection-end-column="0" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#23148#23149#0" expanded="true" />
-            <element signature="e#23203#23204#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/mysql/mysql-connector-java/6.0.6/db709b9df634cc45886828ce72b271662b4915db/mysql-connector-java-6.0.6-sources.jar!/com/mysql/cj/jdbc/result/ResultSetImpl.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="13644">
-          <caret line="758" column="53" lean-forward="true" selection-start-line="758" selection-start-column="53" selection-end-line="758" selection-end-column="53" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/mysql/mysql-connector-java/6.0.6/db709b9df634cc45886828ce72b271662b4915db/mysql-connector-java-6.0.6-sources.jar!/com/mysql/cj/api/mysqla/result/ColumnDefinition.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="882">
-          <caret line="72" column="49" lean-forward="false" selection-start-line="72" selection-start-column="45" selection-end-line="72" selection-end-column="49" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/mysql/mysql-connector-java/6.0.6/db709b9df634cc45886828ce72b271662b4915db/mysql-connector-java-6.0.6-sources.jar!/com/mysql/cj/mysqla/io/ColumnDefinitionReader.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1818">
-          <caret line="131" column="0" lean-forward="false" selection-start-line="131" selection-start-column="0" selection-end-line="131" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/mysql/mysql-connector-java/6.0.6/db709b9df634cc45886828ce72b271662b4915db/mysql-connector-java-6.0.6-sources.jar!/com/mysql/cj/mysqla/io/MysqlaProtocol.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="29862">
-          <caret line="1659" column="0" lean-forward="false" selection-start-line="1659" selection-start-column="0" selection-end-line="1659" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/mysql/mysql-connector-java/6.0.6/db709b9df634cc45886828ce72b271662b4915db/mysql-connector-java-6.0.6-sources.jar!/com/mysql/cj/core/result/Field.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="792">
-          <caret line="68" column="16" lean-forward="true" selection-start-line="68" selection-start-column="16" selection-end-line="68" selection-end-column="16" />
-          <folding>
-            <element signature="e#7447#7448#0" expanded="true" />
-            <element signature="e#7496#7497#0" expanded="true" />
-            <element signature="e#7535#7536#0" expanded="true" />
-            <element signature="e#7592#7593#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/corelib/src/commands/org/xmlsh/internal/commands/http.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="288">
-          <caret line="20" column="34" lean-forward="false" selection-start-line="20" selection-start-column="34" selection-end-line="20" selection-end-column="34" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/mysql/mysql-connector-java/6.0.6/db709b9df634cc45886828ce72b271662b4915db/mysql-connector-java-6.0.6-sources.jar!/com/mysql/cj/api/mysqla/result/ColumnDefinition.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="882">
-          <caret line="72" column="49" lean-forward="false" selection-start-line="72" selection-start-column="45" selection-end-line="72" selection-end-column="49" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/mysql/mysql-connector-java/6.0.6/db709b9df634cc45886828ce72b271662b4915db/mysql-connector-java-6.0.6-sources.jar!/com/mysql/cj/jdbc/result/ResultSetImpl.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="11628">
-          <caret line="758" column="53" lean-forward="false" selection-start-line="758" selection-start-column="53" selection-end-line="758" selection-end-column="53" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar:///usr/java/jdk1.8.0_144/src.zip!/java/sql/ResultSetMetaData.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-148">
-          <caret line="157" column="11" lean-forward="false" selection-start-line="157" selection-start-column="11" selection-end-line="157" selection-end-column="11" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/extensions/aws/src/main/java/org/xmlsh/aws/ddbBatchWrite.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="167">
-          <caret line="39" column="18" lean-forward="false" selection-start-line="39" selection-start-column="18" selection-end-line="39" selection-end-column="18" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.sf.supercsv/super-csv/2.3.1/b78387cfbedc3d3b3d6024d9f07388e0b39bd5aa/super-csv-2.3.1-sources.jar!/org/supercsv/io/AbstractCsvWriter.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="159">
-          <caret line="156" column="17" lean-forward="false" selection-start-line="156" selection-start-column="17" selection-end-line="156" selection-end-column="17" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/corelib/src/commands/org/xmlsh/util/commands/CSVRecord.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="339">
-          <caret line="39" column="11" lean-forward="false" selection-start-line="39" selection-start-column="11" selection-end-line="39" selection-end-column="11" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/corelib/src/commands/org/xmlsh/util/commands/CSVFormatter.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="204">
-          <caret line="57" column="14" lean-forward="false" selection-start-line="57" selection-start-column="14" selection-end-line="57" selection-end-column="14" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/corelib/src/commands/org/xmlsh/internal/commands/csv2xml.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="266">
-          <caret line="137" column="3" lean-forward="true" selection-start-line="130" selection-start-column="1" selection-end-line="137" selection-end-column="3" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/corelib/src/core/org/xmlsh/util/INamingStrategy.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="72">
-          <caret line="6" column="23" lean-forward="true" selection-start-line="6" selection-start-column="17" selection-end-line="6" selection-end-column="32" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/corelib/src/commands/org/xmlsh/internal/commands/xml2csv.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="244">
-          <caret line="66" column="83" lean-forward="false" selection-start-line="66" selection-start-column="83" selection-end-line="66" selection-end-column="83" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/corelib/src/core/org/xmlsh/util/StringPair.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="172">
-          <caret line="15" column="13" lean-forward="false" selection-start-line="15" selection-start-column="13" selection-end-line="15" selection-end-column="13" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/mysql/mysql-connector-java/6.0.6/db709b9df634cc45886828ce72b271662b4915db/mysql-connector-java-6.0.6-sources.jar!/com/mysql/cj/jdbc/CallableStatement.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1334">
-          <caret line="313" column="22" lean-forward="false" selection-start-line="313" selection-start-column="22" selection-end-line="313" selection-end-column="22" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar:///usr/java/jdk1.8.0_144/src.zip!/java/sql/Wrapper.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-278">
-          <caret line="41" column="17" lean-forward="false" selection-start-line="41" selection-start-column="17" selection-end-line="41" selection-end-column="17" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar:///usr/java/jdk1.8.0_144/src.zip!/java/sql/ParameterMetaData.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="30">
-          <caret line="42" column="26" lean-forward="true" selection-start-line="42" selection-start-column="17" selection-end-line="42" selection-end-column="34" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/mysql/mysql-connector-java/6.0.6/db709b9df634cc45886828ce72b271662b4915db/mysql-connector-java-6.0.6-sources.jar!/com/mysql/cj/jdbc/MysqlParameterMetadata.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-576">
-          <caret line="58" column="4" lean-forward="false" selection-start-line="58" selection-start-column="4" selection-end-line="58" selection-end-column="4" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar:///usr/java/jdk1.8.0_144/src.zip!/java/sql/Connection.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="469">
-          <caret line="137" column="9" lean-forward="false" selection-start-line="137" selection-start-column="9" selection-end-line="137" selection-end-column="9" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/mysql/mysql-connector-java/6.0.6/db709b9df634cc45886828ce72b271662b4915db/mysql-connector-java-6.0.6-sources.jar!/com/mysql/cj/jdbc/PreparedStatementWrapper.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="218">
-          <caret line="324" column="57" lean-forward="false" selection-start-line="324" selection-start-column="57" selection-end-line="324" selection-end-column="57" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar:///usr/java/jdk1.8.0_144/src.zip!/java/sql/PreparedStatement.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="524">
-          <caret line="406" column="9" lean-forward="false" selection-start-line="406" selection-start-column="9" selection-end-line="406" selection-end-column="9" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/corelib/src/core/org/xmlsh/types/TypeFamily.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="216">
-          <caret line="12" column="12" lean-forward="false" selection-start-line="12" selection-start-column="12" selection-end-line="12" selection-end-column="12" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/extensions/aws/src/main/java/org/xmlsh/aws/util/DDBTypes.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="199">
-          <caret line="965" column="20" lean-forward="false" selection-start-line="965" selection-start-column="20" selection-end-line="965" selection-end-column="20" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar:///usr/java/jdk1.8.0_144/src.zip!/java/lang/Class.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="172">
-          <caret line="509" column="26" lean-forward="false" selection-start-line="509" selection-start-column="26" selection-end-line="509" selection-end-column="26" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/corelib/src/core/org/xmlsh/types/XTypeUtils.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="172">
-          <caret line="111" column="23" lean-forward="false" selection-start-line="111" selection-start-column="23" selection-end-line="111" selection-end-column="23" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/corelib/src/core/org/xmlsh/types/IMethods.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="117">
-          <caret line="20" column="17" lean-forward="false" selection-start-line="20" selection-start-column="17" selection-end-line="20" selection-end-column="17" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/corelib/src/core/org/xmlsh/util/Util.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="202">
-          <caret line="188" column="29" lean-forward="false" selection-start-line="188" selection-start-column="24" selection-end-line="188" selection-end-column="29" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar:///usr/java/jdk1.8.0_144/src.zip!/java/sql/Types.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="23" column="3" lean-forward="false" selection-start-line="23" selection-start-column="3" selection-end-line="23" selection-end-column="3" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/corelib/src/core/org/xmlsh/types/ITypeFamily.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="175">
-          <caret line="11" column="17" lean-forward="false" selection-start-line="11" selection-start-column="17" selection-end-line="11" selection-end-column="17" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/corelib/src/core/org/xmlsh/util/JavaUtils.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="164">
-          <caret line="1013" column="25" lean-forward="false" selection-start-line="1013" selection-start-column="25" selection-end-line="1013" selection-end-column="25" />
+          <caret line="1013" column="25" selection-start-line="1013" selection-start-column="25" selection-end-line="1013" selection-end-column="25" />
           <folding>
             <element signature="e#21216#21217#0" expanded="true" />
             <element signature="e#21264#21265#0" expanded="true" />
@@ -3631,172 +3087,48 @@
         </state>
       </provider>
     </entry>
-    <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/mysql/mysql-connector-java/6.0.6/db709b9df634cc45886828ce72b271662b4915db/mysql-connector-java-6.0.6-sources.jar!/com/mysql/cj/mysqla/io/ColumnDefinitionReader.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="167">
-          <caret line="71" column="0" lean-forward="false" selection-start-line="71" selection-start-column="0" selection-end-line="71" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/mysql/mysql-connector-java/6.0.6/db709b9df634cc45886828ce72b271662b4915db/mysql-connector-java-6.0.6-sources.jar!/com/mysql/cj/mysqla/io/MysqlaProtocol.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="167">
-          <caret line="1005" column="0" lean-forward="false" selection-start-line="1005" selection-start-column="0" selection-end-line="1005" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/mysql/mysql-connector-java/6.0.6/db709b9df634cc45886828ce72b271662b4915db/mysql-connector-java-6.0.6-sources.jar!/com/mysql/cj/mysqla/io/ColumnDefinitionReader.java" />
+    <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/mysql/mysql-connector-java/6.0.6/db709b9df634cc45886828ce72b271662b4915db/mysql-connector-java-6.0.6-sources.jar!/com/mysql/cj/mysqla/io/MysqlaProtocol.java" />
     <entry file="file://$PROJECT_DIR$/corelib/src/core/org/xmlsh/core/AbstractCommand.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="167">
-          <caret line="82" column="0" lean-forward="false" selection-start-line="82" selection-start-column="0" selection-end-line="82" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/corelib/src/core/org/xmlsh/core/Options.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="159">
-          <caret line="648" column="22" lean-forward="false" selection-start-line="648" selection-start-column="22" selection-end-line="648" selection-end-column="22" />
-          <folding />
+          <caret line="82" selection-start-line="82" selection-end-line="82" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/corelib/src/core/org/xmlsh/core/XCommand.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="159">
-          <caret line="81" column="0" lean-forward="false" selection-start-line="81" selection-start-column="0" selection-end-line="81" selection-end-column="0" />
+          <caret line="81" selection-start-line="81" selection-end-line="81" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/corelib/src/shell/org/xmlsh/sh/core/SimpleCommandExpr.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="293">
-          <caret line="170" column="0" lean-forward="false" selection-start-line="170" selection-start-column="0" selection-end-line="170" selection-end-column="0" />
+          <caret line="170" selection-start-line="170" selection-end-line="170" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/corelib/src/core/org/xmlsh/core/XValue.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="8982">
-          <caret line="618" column="0" lean-forward="false" selection-start-line="618" selection-start-column="0" selection-end-line="618" selection-end-column="0" />
-          <folding>
-            <element signature="e#15263#15264#0" expanded="true" />
-            <element signature="e#15300#15301#0" expanded="true" />
-            <element signature="e#22616#22617#0" expanded="true" />
-            <element signature="e#22669#22670#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/mysql/mysql-connector-java/6.0.6/db709b9df634cc45886828ce72b271662b4915db/mysql-connector-java-6.0.6-sources.jar!/com/mysql/cj/jdbc/StatementImpl.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="7452">
-          <caret line="490" column="0" lean-forward="false" selection-start-line="490" selection-start-column="0" selection-end-line="490" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/mysql/mysql-connector-java/6.0.6/db709b9df634cc45886828ce72b271662b4915db/mysql-connector-java-6.0.6-sources.jar!/com/mysql/cj/jdbc/ConnectionImpl.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="738">
-          <caret line="154" column="0" lean-forward="false" selection-start-line="154" selection-start-column="0" selection-end-line="154" selection-end-column="0" />
-          <folding>
-            <element signature="e#6087#6088#0" expanded="true" />
-            <element signature="e#6167#6168#0" expanded="true" />
-            <element signature="e#6377#6378#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/mysql/mysql-connector-java/6.0.6/db709b9df634cc45886828ce72b271662b4915db/mysql-connector-java-6.0.6-sources.jar!/com/mysql/cj/jdbc/PreparedStatement.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="61632">
-          <caret line="3529" column="0" lean-forward="false" selection-start-line="3529" selection-start-column="0" selection-end-line="3529" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
+    <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/mysql/mysql-connector-java/6.0.6/db709b9df634cc45886828ce72b271662b4915db/mysql-connector-java-6.0.6-sources.jar!/com/mysql/cj/jdbc/StatementImpl.java" />
+    <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/mysql/mysql-connector-java/6.0.6/db709b9df634cc45886828ce72b271662b4915db/mysql-connector-java-6.0.6-sources.jar!/com/mysql/cj/jdbc/ConnectionImpl.java" />
+    <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/mysql/mysql-connector-java/6.0.6/db709b9df634cc45886828ce72b271662b4915db/mysql-connector-java-6.0.6-sources.jar!/com/mysql/cj/jdbc/PreparedStatement.java" />
+    <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.sf.saxon/Saxon-HE/9.6.0-10/b0c7f9d0bf81f68328110828e1d4a6286b3b7c5a/Saxon-HE-9.6.0-10-sources.jar!/net/sf/saxon/event/StreamWriterToReceiver.java" />
+    <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/mysql/mysql-connector-java/6.0.6/db709b9df634cc45886828ce72b271662b4915db/mysql-connector-java-6.0.6-sources.jar!/com/mysql/cj/core/result/Field.java" />
+    <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/mysql/mysql-connector-java/6.0.6/db709b9df634cc45886828ce72b271662b4915db/mysql-connector-java-6.0.6-sources.jar!/com/mysql/cj/jdbc/result/ResultSetMetaData.java" />
     <entry file="jar:///usr/java/jdk1.8.0_144/jre/lib/rt.jar!/sun/misc/Unsafe.class">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="5508">
-          <caret line="351" column="37" lean-forward="false" selection-start-line="351" selection-start-column="37" selection-end-line="351" selection-end-column="37" />
+          <caret line="351" column="37" selection-start-line="351" selection-start-column="37" selection-end-line="351" selection-end-column="37" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.sf.saxon/Saxon-HE/9.8.0-14/1b2746382ee89d1e8af9bee26f00a1db43a8a6fd/Saxon-HE-9.8.0-14-sources.jar!/com/saxonica/xqj/SaxonXQItem.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3078">
+          <caret line="180" column="28" selection-start-line="180" selection-start-column="23" selection-end-line="180" selection-end-column="33" />
           <folding>
-            <marker date="1508257778854" expanded="false" signature="0:104" ph="/.../" />
-            <marker date="1508257778854" expanded="false" signature="132:297" ph="..." />
-            <marker date="1508257778854" expanded="true" signature="1446:1451" ph="{}" />
-            <marker date="1508257778854" expanded="true" signature="1507:1705" ph="{...}" />
-            <marker date="1508257778854" expanded="true" signature="2830:2848" ph="/**...*/" />
-            <marker date="1508257778854" expanded="false" signature="2905:2912" ph=" { " />
-            <marker date="1508257778854" expanded="false" signature="2949:2953" ph=" }" />
-            <marker date="1508257778854" expanded="true" signature="2957:2975" ph="/**...*/" />
-            <marker date="1508257778854" expanded="false" signature="3043:3050" ph=" { " />
-            <marker date="1508257778854" expanded="false" signature="3086:3090" ph=" }" />
-            <marker date="1508257778854" expanded="true" signature="3094:3112" ph="/**...*/" />
-            <marker date="1508257778854" expanded="false" signature="3175:3182" ph=" { " />
-            <marker date="1508257778854" expanded="false" signature="3222:3226" ph=" }" />
-            <marker date="1508257778854" expanded="true" signature="3230:3248" ph="/**...*/" />
-            <marker date="1508257778854" expanded="false" signature="3322:3329" ph=" { " />
-            <marker date="1508257778854" expanded="false" signature="3368:3372" ph=" }" />
-            <marker date="1508257778854" expanded="true" signature="3376:3394" ph="/**...*/" />
-            <marker date="1508257778854" expanded="false" signature="3459:3466" ph=" { " />
-            <marker date="1508257778854" expanded="false" signature="3507:3511" ph=" }" />
-            <marker date="1508257778854" expanded="true" signature="3515:3533" ph="/**...*/" />
-            <marker date="1508257778854" expanded="false" signature="3609:3616" ph=" { " />
-            <marker date="1508257778854" expanded="false" signature="3656:3660" ph=" }" />
-            <marker date="1508257778854" expanded="true" signature="3664:3682" ph="/**...*/" />
-            <marker date="1508257778854" expanded="false" signature="3741:3748" ph=" { " />
-            <marker date="1508257778854" expanded="false" signature="3786:3790" ph=" }" />
-            <marker date="1508257778854" expanded="true" signature="3794:3812" ph="/**...*/" />
-            <marker date="1508257778854" expanded="false" signature="3882:3889" ph=" { " />
-            <marker date="1508257778854" expanded="false" signature="3926:3930" ph=" }" />
-            <marker date="1508257778854" expanded="true" signature="3934:3952" ph="/**...*/" />
-            <marker date="1508257778854" expanded="false" signature="4013:4020" ph=" { " />
-            <marker date="1508257778854" expanded="false" signature="4059:4063" ph=" }" />
-            <marker date="1508257778854" expanded="true" signature="4067:4085" ph="/**...*/" />
-            <marker date="1508257778854" expanded="false" signature="4157:4164" ph=" { " />
-            <marker date="1508257778854" expanded="false" signature="4202:4206" ph=" }" />
-            <marker date="1508257778854" expanded="true" signature="4210:4228" ph="/**...*/" />
-            <marker date="1508257778854" expanded="false" signature="4287:4294" ph=" { " />
-            <marker date="1508257778854" expanded="false" signature="4332:4336" ph=" }" />
-            <marker date="1508257778854" expanded="true" signature="4340:4358" ph="/**...*/" />
-            <marker date="1508257778854" expanded="false" signature="4428:4435" ph=" { " />
-            <marker date="1508257778854" expanded="false" signature="4472:4476" ph=" }" />
-            <marker date="1508257778854" expanded="true" signature="4480:4498" ph="/**...*/" />
-            <marker date="1508257778854" expanded="false" signature="4557:4564" ph=" { " />
-            <marker date="1508257778854" expanded="false" signature="4602:4606" ph=" }" />
-            <marker date="1508257778854" expanded="true" signature="4610:4628" ph="/**...*/" />
-            <marker date="1508257778854" expanded="false" signature="4698:4705" ph=" { " />
-            <marker date="1508257778854" expanded="false" signature="4742:4746" ph=" }" />
-            <marker date="1508257778854" expanded="true" signature="4750:4768" ph="/**...*/" />
-            <marker date="1508257778854" expanded="false" signature="4829:4836" ph=" { " />
-            <marker date="1508257778854" expanded="false" signature="4875:4879" ph=" }" />
-            <marker date="1508257778854" expanded="true" signature="4883:4901" ph="/**...*/" />
-            <marker date="1508257778854" expanded="false" signature="4973:4980" ph=" { " />
-            <marker date="1508257778854" expanded="false" signature="5018:5022" ph=" }" />
-            <marker date="1508257778854" expanded="true" signature="5026:5044" ph="/**...*/" />
-            <marker date="1508257778854" expanded="false" signature="5107:5114" ph=" { " />
-            <marker date="1508257778854" expanded="false" signature="5154:5158" ph=" }" />
-            <marker date="1508257778854" expanded="true" signature="5162:5180" ph="/**...*/" />
-            <marker date="1508257778854" expanded="false" signature="5254:5261" ph=" { " />
-            <marker date="1508257778854" expanded="false" signature="5300:5304" ph=" }" />
-            <marker date="1508257778854" expanded="false" signature="6330:6337" ph=" { " />
-            <marker date="1508257778854" expanded="false" signature="6384:6388" ph=" }" />
-            <marker date="1508257778854" expanded="true" signature="6541:6613" ph="{...}" />
-            <marker date="1508257778854" expanded="true" signature="6662:6680" ph="/**...*/" />
-            <marker date="1508257778854" expanded="true" signature="6732:6860" ph="{...}" />
-            <marker date="1508257778854" expanded="true" signature="6864:6882" ph="/**...*/" />
-            <marker date="1508257778854" expanded="true" signature="6944:7186" ph="{...}" />
-            <marker date="1508257778854" expanded="true" signature="7950:7968" ph="/**...*/" />
-            <marker date="1508257778854" expanded="true" signature="8034:8052" ph="/**...*/" />
-            <marker date="1508257778854" expanded="true" signature="8117:8135" ph="/**...*/" />
-            <marker date="1508257778854" expanded="true" signature="10263:10424" ph="{...}" />
-            <marker date="1508257778854" expanded="true" signature="10495:10659" ph="{...}" />
-            <marker date="1508257778854" expanded="true" signature="10727:10881" ph="{...}" />
-            <marker date="1508257778854" expanded="true" signature="10952:11109" ph="{...}" />
-            <marker date="1508257778854" expanded="true" signature="11186:11349" ph="{...}" />
-            <marker date="1508257778854" expanded="false" signature="11504:11511" ph=" { " />
-            <marker date="1508257778854" expanded="false" signature="11542:11546" ph=" }" />
-            <marker date="1508257778854" expanded="true" signature="11557:13032" ph="{...}" />
+            <element signature="imports" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -3804,7 +3136,7 @@
     <entry file="file://$PROJECT_DIR$/corelib/src/commands/org/xmlsh/internal/commands/xsql.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="15192">
-          <caret line="892" column="38" lean-forward="false" selection-start-line="892" selection-start-column="38" selection-end-line="892" selection-end-column="38" />
+          <caret line="892" column="38" selection-start-line="892" selection-start-column="38" selection-end-line="892" selection-end-column="38" />
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="e#23148#23149#0" expanded="true" />
@@ -3813,43 +3145,298 @@
         </state>
       </provider>
     </entry>
-    <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.sf.saxon/Saxon-HE/9.6.0-10/b0c7f9d0bf81f68328110828e1d4a6286b3b7c5a/Saxon-HE-9.6.0-10-sources.jar!/net/sf/saxon/event/StreamWriterToReceiver.java">
+    <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.sf.saxon/Saxon-HE/9.8.0-14/1b2746382ee89d1e8af9bee26f00a1db43a8a6fd/Saxon-HE-9.8.0-14-sources.jar!/com/saxonica/xqj/pull/PullToStax.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="5238">
-          <caret line="315" column="0" lean-forward="false" selection-start-line="315" selection-start-column="0" selection-end-line="315" selection-end-column="0" />
-          <folding />
+        <state relative-caret-position="414">
+          <caret line="38" selection-start-line="35" selection-end-line="38" />
         </state>
       </provider>
     </entry>
-    <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/mysql/mysql-connector-java/6.0.6/db709b9df634cc45886828ce72b271662b4915db/mysql-connector-java-6.0.6-sources.jar!/com/mysql/cj/core/result/Field.java">
+    <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.sf.saxon/Saxon-HE/9.8.0-14/1b2746382ee89d1e8af9bee26f00a1db43a8a6fd/Saxon-HE-9.8.0-14-sources.jar!/net/sf/saxon/pull/PullProvider.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3096">
-          <caret line="204" column="9" lean-forward="false" selection-start-line="204" selection-start-column="9" selection-end-line="204" selection-end-column="9" />
+        <state relative-caret-position="270">
+          <caret line="29" column="17" selection-start-line="29" selection-start-column="17" selection-end-line="29" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/corelib/src/core/org/xmlsh/util/XMLDelegateOutputFactory.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="108">
+          <caret line="20" column="13" selection-start-line="20" selection-start-column="13" selection-end-line="20" selection-end-column="13" />
           <folding>
-            <element signature="e#7447#7448#0" expanded="true" />
-            <element signature="e#7496#7497#0" expanded="true" />
-            <element signature="e#7535#7536#0" expanded="true" />
-            <element signature="e#7592#7593#0" expanded="true" />
+            <element signature="imports" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/corelib/src/core/org/xmlsh/util/XMLUtils.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2916">
+          <caret line="212" column="45" selection-start-line="212" selection-start-column="45" selection-end-line="212" selection-end-column="45" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.sf.saxon/Saxon-HE/9.8.0-14/1b2746382ee89d1e8af9bee26f00a1db43a8a6fd/Saxon-HE-9.8.0-14-sources.jar!/net/sf/saxon/om/FocusTrackingIterator.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="504">
+          <caret line="43" column="12" selection-start-line="43" selection-start-column="12" selection-end-line="43" selection-end-column="12" />
         </state>
       </provider>
     </entry>
     <entry file="jar:///usr/java/jdk1.8.0_144/src.zip!/java/sql/Statement.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="178">
-          <caret line="108" column="14" lean-forward="false" selection-start-line="108" selection-start-column="9" selection-end-line="108" selection-end-column="14" />
+        <state relative-caret-position="846">
+          <caret line="108" column="14" selection-start-line="108" selection-start-column="9" selection-end-line="108" selection-end-column="14" />
           <folding>
-            <element signature="docComment;method#executeUpdate#0;class#Statement#0" expanded="false" />
-            <element signature="docComment;method#close#0;class#Statement#0" expanded="false" />
+            <element signature="e#2163#3494#0" />
+            <element signature="e#3555#4266#0" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/mysql/mysql-connector-java/6.0.6/db709b9df634cc45886828ce72b271662b4915db/mysql-connector-java-6.0.6-sources.jar!/com/mysql/cj/jdbc/result/ResultSetMetaData.java">
+    <entry file="file://$PROJECT_DIR$/corelib/src/core/org/xmlsh/json/JXONConverter.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="18">
-          <caret line="240" column="0" lean-forward="false" selection-start-line="240" selection-start-column="0" selection-end-line="240" selection-end-column="0" />
-          <folding />
+        <state relative-caret-position="215">
+          <caret line="26" column="29" selection-start-line="26" selection-start-column="24" selection-end-line="26" selection-end-column="39" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/corelib/src/core/org/xmlsh/core/io/StreamInputPort.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="167">
+          <caret line="43" column="57" lean-forward="true" selection-start-line="43" selection-start-column="57" selection-end-line="43" selection-end-column="57" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.sf.saxon/Saxon-HE/9.8.0-14/1b2746382ee89d1e8af9bee26f00a1db43a8a6fd/Saxon-HE-9.8.0-14-sources.jar!/net/sf/saxon/pull/StaxBridge.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="172">
+          <caret line="847" column="18" selection-start-line="847" selection-start-column="18" selection-end-line="847" selection-end-column="18" />
+          <folding>
+            <element signature="e#4389#4390#0" expanded="true" />
+            <element signature="e#4418#4419#0" expanded="true" />
+            <element signature="e#9337#9338#0" expanded="true" />
+            <element signature="e#9372#9373#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/corelib/src/core/org/xmlsh/core/io/VariableInputPort.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="340">
+          <caret line="227" column="7" lean-forward="true" selection-start-line="217" selection-end-line="227" selection-end-column="7" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#6932#6933#0" expanded="true" />
+            <element signature="e#6951#6952#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/corelib/src/core/org/xmlsh/core/io/XdmStreamInputPort.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="422">
+          <caret line="129" lean-forward="true" selection-start-line="129" selection-end-line="129" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#5873#5874#0" expanded="true" />
+            <element signature="e#5892#5893#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.sf.saxon/Saxon-HE/9.8.0-14/1b2746382ee89d1e8af9bee26f00a1db43a8a6fd/Saxon-HE-9.8.0-14-sources.jar!/net/sf/saxon/om/MutableNodeInfo.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="538">
+          <caret line="209" column="39" selection-start-line="209" selection-start-column="39" selection-end-line="209" selection-end-column="39" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.sf.saxon/Saxon-HE/9.8.0-14/1b2746382ee89d1e8af9bee26f00a1db43a8a6fd/Saxon-HE-9.8.0-14-sources.jar!/net/sf/saxon/om/CodedName.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="252">
+          <caret line="19" column="11" selection-start-line="19" selection-start-column="11" selection-end-line="19" selection-end-column="11" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.sf.saxon/Saxon-HE/9.8.0-14/1b2746382ee89d1e8af9bee26f00a1db43a8a6fd/Saxon-HE-9.8.0-14-sources.jar!/net/sf/saxon/om/NodeName.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="173">
+          <caret line="32" column="20" selection-start-line="32" selection-start-column="17" selection-end-line="32" selection-end-column="25" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.sf.saxon/Saxon-HE/9.8.0-14/1b2746382ee89d1e8af9bee26f00a1db43a8a6fd/Saxon-HE-9.8.0-14-sources.jar!/net/sf/saxon/om/NameOfNode.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="220">
+          <caret line="36" column="41" selection-start-line="36" selection-start-column="23" selection-end-line="36" selection-end-column="41" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.sf.saxon/Saxon-HE/9.8.0-14/1b2746382ee89d1e8af9bee26f00a1db43a8a6fd/Saxon-HE-9.8.0-14-sources.jar!/net/sf/saxon/om/NodeInfo.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="180">
+          <caret line="55" column="17" selection-start-line="55" selection-start-column="17" selection-end-line="55" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.sf.saxon/Saxon-HE/9.8.0-14/1b2746382ee89d1e8af9bee26f00a1db43a8a6fd/Saxon-HE-9.8.0-14-sources.jar!/net/sf/saxon/om/FingerprintedQName.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="207">
+          <caret line="20" column="11" selection-start-line="20" selection-start-column="11" selection-end-line="20" selection-end-column="11" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.sf.saxon/Saxon-HE/9.8.0-14/1b2746382ee89d1e8af9bee26f00a1db43a8a6fd/Saxon-HE-9.8.0-14-sources.jar!/net/sf/saxon/expr/parser/Location.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="198">
+          <caret line="18" column="19" selection-start-line="18" selection-start-column="17" selection-end-line="18" selection-end-column="25" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.sf.saxon/Saxon-HE/9.8.0-14/1b2746382ee89d1e8af9bee26f00a1db43a8a6fd/Saxon-HE-9.8.0-14-sources.jar!/net/sf/saxon/event/Receiver.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="180">
+          <caret line="185" column="16" selection-start-line="185" selection-start-column="9" selection-end-line="185" selection-end-column="19" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/corelib/src/core/org/xmlsh/util/StAXUtils.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="207">
+          <caret line="46" column="12" selection-start-line="46" selection-start-column="12" selection-end-line="46" selection-end-column="12" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.sf.saxon/Saxon-HE/9.8.0-14/1b2746382ee89d1e8af9bee26f00a1db43a8a6fd/Saxon-HE-9.8.0-14-sources.jar!/net/sf/saxon/event/TreeReceiver.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="320">
+          <caret line="332" column="29" lean-forward="true" selection-start-line="332" selection-start-column="29" selection-end-line="332" selection-end-column="29" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/corelib/src/core/org/xmlsh/util/Util.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="172">
+          <caret line="291" column="13" selection-start-line="291" selection-start-column="13" selection-end-line="291" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/extensions/aws/src/main/java/org/xmlsh/aws/util/DDBTypes.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="181">
+          <caret line="32" column="29" lean-forward="true" selection-start-line="32" selection-start-column="29" selection-end-line="32" selection-end-column="29" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/corelib/src/commands/org/xmlsh/internal/commands/xed.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="154">
+          <caret line="369" column="74" selection-start-line="369" selection-start-column="41" selection-end-line="369" selection-end-column="74" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/corelib/src/commands/org/xmlsh/internal/commands/xedit.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="210">
+          <caret line="95" column="27" selection-start-line="95" selection-start-column="27" selection-end-line="95" selection-end-column="27" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar:///usr/java/jdk1.8.0_144/src.zip!/javax/xml/transform/Source.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="230">
+          <caret line="43" column="16" selection-start-line="43" selection-start-column="16" selection-end-line="43" selection-end-column="16" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.sf.saxon/Saxon-HE/9.8.0-14/1b2746382ee89d1e8af9bee26f00a1db43a8a6fd/Saxon-HE-9.8.0-14-sources.jar!/net/sf/saxon/tree/linked/SystemIdMap.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="558">
+          <caret line="54" column="52" selection-start-line="54" selection-start-column="52" selection-end-line="54" selection-end-column="52" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/corelib/src/core/org/xmlsh/core/io/VariableOutputPort.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="144">
+          <caret line="286" column="3" lean-forward="true" selection-start-line="286" selection-start-column="3" selection-end-line="286" selection-end-column="3" />
+          <folding>
+            <element signature="method#appendVar#2;class#VariableOutputPort#0" />
+            <element signature="e#8200#8201#0" expanded="true" />
+            <element signature="e#8221#8222#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/corelib/src/commands/org/xmlsh/stax/commands/writeNamespace.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="96">
+          <caret line="23" column="9" selection-start-line="23" selection-start-column="9" selection-end-line="23" selection-end-column="9" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar:///usr/java/jdk1.8.0_144/src.zip!/java/util/concurrent/CopyOnWriteArrayList.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="180">
+          <caret line="130" column="11" selection-start-line="130" selection-start-column="11" selection-end-line="130" selection-end-column="11" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/corelib/src/core/org/xmlsh/core/Options.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="210">
+          <caret line="367" column="27" selection-start-line="367" selection-start-column="27" selection-end-line="367" selection-end-column="27" />
+          <folding>
+            <element signature="e#9070#9071#0" expanded="true" />
+            <element signature="e#9104#9105#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/corelib/src/shell/org/xmlsh/sh/shell/Shell.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="210">
+          <caret line="1272" column="9" selection-start-line="1272" selection-start-column="4" selection-end-line="1272" selection-end-column="9" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/corelib/src/commands/org/xmlsh/builtin/commands/set.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="408">
+          <caret line="49" column="43" selection-start-line="49" selection-start-column="43" selection-end-line="49" selection-end-column="43" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/corelib/src/core/org/xmlsh/core/XValue.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="244">
+          <caret line="644" column="35" selection-start-line="644" selection-start-column="35" selection-end-line="644" selection-end-column="35" />
+          <folding>
+            <element signature="e#7484#7485#0" expanded="true" />
+            <element signature="e#7514#7515#0" expanded="true" />
+            <element signature="e#15263#15264#0" expanded="true" />
+            <element signature="e#15300#15301#0" expanded="true" />
+            <element signature="e#22616#22617#0" expanded="true" />
+            <element signature="e#22669#22670#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/corelib/src/core/org/xmlsh/types/IMethods.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="198">
+          <caret line="37" column="22" selection-start-line="37" selection-start-column="22" selection-end-line="37" selection-end-column="22" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/corelib/src/commands/org/xmlsh/builtin/commands/test.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="322">
+          <caret line="237" column="32" selection-start-line="237" selection-start-column="32" selection-end-line="237" selection-end-column="32" />
         </state>
       </provider>
     </entry>
@@ -3941,6 +3528,7 @@
       </state>
       <state key="ScopeChooserConfigurable.UI">
         <settings>
+          <last-edited>Saxon</last-edited>
           <splitter-proportions>
             <option name="proportions">
               <list>
@@ -3948,6 +3536,9 @@
               </list>
             </option>
           </splitter-proportions>
+          <order>
+            <scope name="Saxon" />
+          </order>
         </settings>
       </state>
     </states>

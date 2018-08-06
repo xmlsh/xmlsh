@@ -19,14 +19,14 @@ import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.Source;
 
 import net.sf.saxon.Configuration;
-import net.sf.saxon.evpull.Decomposer;
-import net.sf.saxon.evpull.EventToStaxBridge;
+import net.sf.saxon.pull.StaxBridge;
 import net.sf.saxon.om.NodeInfo;
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XdmValue;
 
+import net.sf.saxon.trans.XPathException;
 import org.xml.sax.InputSource;
 import org.xmlsh.core.CoreException;
 import org.xmlsh.core.InputPort;
@@ -115,9 +115,41 @@ public class XdmStreamInputPort extends InputPort {
 
 	@Override
 	public XMLStreamReader asXMLStreamReader(SerializeOpts opts) throws CoreException, IOException {
+    Configuration config = Shell.getProcessor().getUnderlyingConfiguration();
 
-		// TODO: This code was copied from VariableInputPort 
+    try {
+      XMLInputFactory factory = XMLInputFactory.newInstance();
+      if( ! opts.isSupports_dtd())
+        factory.setProperty(XMLInputFactory.SUPPORT_DTD, "false");
+      XMLStreamReader reader =  factory.createXMLStreamReader(getSystemId() , asInputStream(opts));
+      return reader;
+    } catch (Exception e)
+    {
+      throw new CoreException( e );
+    }
 
+  /* basic
+    XMLInputFactory factory = XMLInputFactory.newInstance();
+    //XMLInputFactory factory = new WstxInputFactory();
+    factory.setXMLReporter(new StaxBridge.StaxErrorReporter());
+    reader = factory.createXMLStreamReader(systemId, inputStream);
+
+    */
+    // lazy
+    /*
+    StaxBridge ps = new StaxBridge();
+    ps.setPipelineConfiguration(config.makePipelineConfiguration() );
+    try {
+      ps.setInputStream(  this.getSystemId(), this.asInputStream(opts)   );
+
+    }
+    catch(XPathException e) {
+      throw new CoreException(e);
+    }
+    return ps.getXMLStreamReader();
+    */
+    // TODO: This code was copied from VariableInputPort
+/*
 		XValue value = XValue.newXValue(mReader.read());
 
 		//System.err.println("sysid: " + this.getSystemId() );
@@ -127,7 +159,7 @@ public class XdmStreamInputPort extends InputPort {
 
 		/*
 		 * IF variable is an atomic value then treat as string and parse to XML
-		 */
+		 *  **  /
 
 		if( value.isAtomic() ){
 
@@ -152,33 +184,35 @@ public class XdmStreamInputPort extends InputPort {
 
 		/*
 		 * 2010-05-19 - EventReaders assume documents, if not a document then wrap with one
-		 */
+		 *   /
 		if( nodeInfo.getNodeKind() != net.sf.saxon.type.Type.DOCUMENT )
 			nodeInfo = S9Util.wrapDocument( nodeInfo ).getUnderlyingNode(); ;
 
 
 
 
-			Decomposer decomposed = new Decomposer( nodeInfo , config.makePipelineConfiguration()  );
+	//		Decomposer decomposed = new Decomposer( nodeInfo , config.makePipelineConfiguration()  );
 
 			// EventIteratorOverSequence eviter = new EventIteratorOverSequence(iter);
 
 
-			EventToStaxBridge ps = new EventToStaxBridge(	decomposed , config.makePipelineConfiguration() );
-
+			StaxBridge ps = new StaxBridge();
+			ps.setPipelineConfiguration(config.makePipelineConfiguration() );
+    ps.setInputStream(   asInputStream(opts) );
 
 
 			// TODO: Bug in Saxon 9.1.0.6 
 			// PullToStax starts in state 0 not state START_DOCUMENT
-			if( ps.getEventType() == 0 )
+			if( ps.current() == 0 )
 				try {
 					ps.next();
-				} catch (XMLStreamException e) {
+				} catch (Exception e) {
 					throw new CoreException(e);
 				}
 
 
 			return ps;
+			*/
 
 	}
 

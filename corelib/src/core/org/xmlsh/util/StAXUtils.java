@@ -44,7 +44,7 @@ public class StAXUtils {
 			NamespaceBinding[] nsb = node.getDeclaredNamespaces(null);
 			if( nsb != null ){
 				for( NamespaceBinding ns : nsb ){
-					NamePool np = node.getNamePool();
+					//NamePool np = node.getNamePool();
 					String ns_prefix = ns.getPrefix();
 					String ns_uri = ns.getURI();
 

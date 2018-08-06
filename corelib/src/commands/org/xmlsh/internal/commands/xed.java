@@ -10,6 +10,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.transform.Source;
+
+import net.sf.saxon.expr.parser.ExplicitLocation;
+import net.sf.saxon.expr.parser.Location;
+import net.sf.saxon.om.*;
+import net.sf.saxon.tree.NamespaceNode;
 import org.xmlsh.core.InputPort;
 import org.xmlsh.core.InvalidArgumentException;
 import org.xmlsh.core.Namespaces;
@@ -23,13 +28,6 @@ import org.xmlsh.sh.shell.Shell;
 import org.xmlsh.types.TypeFamily;
 import org.xmlsh.util.Util;
 import net.sf.saxon.event.Builder;
-import net.sf.saxon.om.CodedName;
-import net.sf.saxon.om.DocumentInfo;
-import net.sf.saxon.om.Item;
-import net.sf.saxon.om.MutableNodeInfo;
-import net.sf.saxon.om.NamePool;
-import net.sf.saxon.om.NodeInfo;
-import net.sf.saxon.om.TreeModel;
 import net.sf.saxon.s9api.Axis;
 import net.sf.saxon.s9api.DocumentBuilder;
 import net.sf.saxon.s9api.Processor;
@@ -265,10 +263,11 @@ public class xed extends XCommand {
   private void addAttribute(MutableNodeInfo node, String prefix, String uri,
       String local, String value) {
 
-    NamePool pool = node.getNamePool();
-    int nameCode = pool.allocate(prefix, uri, local);
+    //NamePool pool =  node.getNamePool();
+    // int nameCode = pool.allocate(prefix, uri, local);
 
-    CodedName name = new CodedName(nameCode, pool);
+    // CodedName name = new CodedName(nameCode, pool);
+    NodeName name = NameOfNode.makeName(node);
     node.addAttribute(name, BuiltInAtomicType.UNTYPED_ATOMIC, value, 0);
     if(!Util.isEmpty(prefix)) {
 
@@ -306,10 +305,11 @@ public class xed extends XCommand {
       throws IndexOutOfBoundsException,
       SaxonApiUncheckedException, SaxonApiException {
 
-    NamePool pool = node.getNamePool();
-    int newNameCode = pool.allocateClarkName(opt_rename);
+    //NamePool pool = node.getNamePool();
+    //int newNameCode = pool.allocateClarkName(opt_rename);
 
-    CodedName name = new CodedName(newNameCode, pool);
+   // CodedName name = new CodedName(newNameCode, pool);
+    NodeName name = FingerprintedQName.fromClarkName(opt_rename);
     node.rename(name);
 
   }
@@ -367,7 +367,7 @@ public class xed extends XCommand {
     Builder builder = parent.newBuilder();
     builder.open();
     builder.startDocument(0);
-    builder.characters(value.toString(), 0, 0);
+    builder.characters(value.toString(), ExplicitLocation.UNKNOWN_LOCATION, 0);
     builder.endDocument();
     builder.close();
     return builder.getCurrentRoot().iterateAxis(net.sf.saxon.om.AxisInfo.CHILD)
@@ -396,7 +396,7 @@ public class xed extends XCommand {
 
     XdmNode xnode = importNode(node);
 
-    return ((DocumentImpl) xnode.getUnderlyingNode().getDocumentRoot())
+    return ((DocumentImpl) xnode.getUnderlyingNode().getRoot())
         .getDocumentElement();
   }
 

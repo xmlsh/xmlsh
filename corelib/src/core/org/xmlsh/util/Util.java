@@ -56,6 +56,7 @@ import net.sf.saxon.event.ComplexContentOutputter;
 import net.sf.saxon.event.NamespaceReducer;
 import net.sf.saxon.event.Receiver;
 import net.sf.saxon.event.TreeReceiver;
+import net.sf.saxon.expr.parser.ExplicitLocation;
 import net.sf.saxon.lib.FeatureKeys;
 import net.sf.saxon.om.Item;
 import net.sf.saxon.om.NodeInfo;
@@ -767,8 +768,8 @@ public class Util {
       TreeReceiver tree = new TreeReceiver(out2);
       tree.open();
       tree.startDocument(0);
-      tree.append((Item) item.getUnderlyingValue(), 0,
-          NodeInfo.LOCAL_NAMESPACES); // NodeInfo.NO_NAMESPACES);//NodeInfo.ALL_NAMESPACES);
+      tree.append((Item) item.getUnderlyingValue(), ExplicitLocation.UNKNOWN_LOCATION ,
+                  NodeInfo.LOCAL_NAMESPACES); // NodeInfo.NO_NAMESPACES);//NodeInfo.ALL_NAMESPACES);
 
       tree.endDocument();
       tree.close();

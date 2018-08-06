@@ -97,7 +97,7 @@ dependencies {
     runtime 'xml-apis:xml-apis:1.4.+'
     compile 'xml-resolver:xml-resolver:1.2+'
     compile 'xom:xom:latest.release'
-    compile ('net.sf.saxon:Saxon-HE:9.6.+' ){ force=true  }
+    compile ('net.sf.saxon:Saxon-HE:9.8.+' ){ force=true  }
     compile "org.projectlombok:lombok:+"
 
     compile  'saxon:saxon:6.5.+'

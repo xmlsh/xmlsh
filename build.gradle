@@ -234,7 +234,7 @@ dependencies {
     //compile 'xml-apis:xml-apis:1.4.+'
     compile 'xml-resolver:xml-resolver:1.2+'
     runtime 'xom:xom:latest.release'
-    compile 'net.sf.saxon:Saxon-HE:9.6.+'
+    compile 'net.sf.saxon:Saxon-HE:9.8.+'
     compile 'saxon:saxon:6.5.+'
     testCompile   'junit:junit:4.+'
 

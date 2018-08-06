@@ -267,11 +267,13 @@ public class VariableOutputPort extends OutputPort
 	 */
 	private void appendVar( XdmItem xitem ) throws InvalidArgumentException
 	{
-		if( xitem instanceof XdmNode ){
+	/* Saxon 6.9 - nodes systemid is imutable
+
+		  if( xitem instanceof XdmNode ){
 			XdmNode node = (XdmNode)xitem;
 			node.getUnderlyingNode().setSystemId(getSystemId());
 		}
-
+*/
 		XValue value = mVariable.getValue();
 		if (value == null)
 			mVariable.setValue(XValue.newXValue(xitem));
